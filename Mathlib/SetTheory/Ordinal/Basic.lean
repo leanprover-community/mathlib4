@@ -367,7 +367,6 @@ noncomputable alias principalSegOut := principalSegToType
 /-- The order type of an element inside a well order.
 
 This is registered as a principal segment embedding into the ordinals, with top `type r`. -/
-@[simps!]
 def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordinal.{u} r (· < ·) := by
   refine ⟨RelEmbedding.ofMonotone _ fun a b ha ↦
     ((PrincipalSeg.ofElement r a).codRestrict _ ?_ ?_).ordinal_type_lt, type r, fun a ↦ ⟨?_, ?_⟩⟩
@@ -394,6 +393,10 @@ theorem type_subrel (r : α → α → Prop) [IsWellOrder α r] (a : α) :
     type (Subrel r { b | r b a }) = typein r a :=
   rfl
 
+@[simp]
+theorem top_typein (r : α → α → Prop) [IsWellOrder α r] : (typein r).top = type r :=
+  rfl
+
 theorem typein_lt_type (r : α → α → Prop) [IsWellOrder α r] (a : α) : typein r a < type r :=
   (typein r).lt_top a
 
@@ -402,7 +405,7 @@ theorem typein_lt_self {o : Ordinal} (i : o.toType) : typein (α := o.toType) (�
   apply typein_lt_type
 
 @[simp]
-theorem typein_apply_top {α β} {r : α → α → Prop} {s : β → β → Prop}
+theorem typein_top {α β} {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (f : r ≺i s) : typein s f.top = type r :=
   f.subrelIso.ordinal_type_eq
 
