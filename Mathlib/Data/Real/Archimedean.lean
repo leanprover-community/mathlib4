@@ -68,7 +68,7 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     intro n n0 y yS
     have := (Int.sub_one_lt_floor _).trans_le (Int.cast_le.2 <| (hf n).2 _ ⟨y, yS, Int.floor_le _⟩)
     simp only [Rat.cast_div, Rat.cast_intCast, Rat.cast_natCast, gt_iff_lt]
-    rwa [lt_div_iff (Nat.cast_pos.2 n0 : (_ : ℝ) < _), sub_mul, inv_mul_cancel₀]
+    rwa [lt_div_iff₀ (Nat.cast_pos.2 n0 : (_ : ℝ) < _), sub_mul, inv_mul_cancel₀]
     exact ne_of_gt (Nat.cast_pos.2 n0)
   have hg : IsCauSeq abs (fun n => f n / n : ℕ → ℚ) := by
     intro ε ε0
@@ -82,7 +82,7 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     have j0 := Nat.cast_pos.1 ((inv_pos.2 ε0).trans_le ij)
     have k0 := Nat.cast_pos.1 ((inv_pos.2 ε0).trans_le ik)
     rcases hf₁ _ j0 with ⟨y, yS, hy⟩
-    refine lt_of_lt_of_le ((Rat.cast_lt (K := ℝ)).1 ?_) ((inv_le ε0 (Nat.cast_pos.2 k0)).1 ik)
+    refine lt_of_lt_of_le ((Rat.cast_lt (K := ℝ)).1 ?_) ((inv_le_comm₀ ε0 (Nat.cast_pos.2 k0)).1 ik)
     simpa using sub_lt_iff_lt_add'.2 (lt_of_le_of_lt hy <| sub_lt_iff_lt_add.1 <| hf₂ _ k0 _ yS)
   let g : CauSeq ℚ abs := ⟨fun n => f n / n, hg⟩
   refine ⟨mk g, ⟨fun x xS => ?_, fun y h => ?_⟩⟩
@@ -93,7 +93,7 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     replace hK := hK.le.trans (Nat.cast_le.2 nK)
     have n0 : 0 < n := Nat.cast_pos.1 ((inv_pos.2 xz).trans_le hK)
     refine le_trans ?_ (hf₂ _ n0 _ xS).le
-    rwa [le_sub_comm, inv_le (Nat.cast_pos.2 n0 : (_ : ℝ) < _) xz]
+    rwa [le_sub_comm, inv_le_comm₀ (Nat.cast_pos.2 n0 : (_ : ℝ) < _) xz]
   · exact
       mk_le_of_forall_le
         ⟨1, fun n n1 =>

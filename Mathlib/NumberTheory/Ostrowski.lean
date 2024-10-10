@@ -103,9 +103,8 @@ lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ (∀ n : ℕ , (f n) ^ c 
     f.equiv g := by
     refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, ?_⟩⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, fun n ↦ by rw [← h]⟩⟩⟩
     ext x
-    rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (apply_nonneg f _)
-      (apply_nonneg f _), h x.den, ← MulRingNorm.apply_natAbs_eq,← MulRingNorm.apply_natAbs_eq,
-      h (natAbs x.num)]
+    rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
+      ← MulRingNorm.apply_natAbs_eq,← MulRingNorm.apply_natAbs_eq, h (natAbs x.num)]
 
 open Rat.MulRingNorm
 
@@ -326,10 +325,9 @@ lemma mulRingNorm_apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
   replace hia := List.mem_enumFrom hia
   push_cast
   rw [map_mul, map_pow]
-  apply mul_le_mul_of_nonneg_right (le_of_lt (hcoef _))
-    (pow_nonneg (apply_nonneg f ↑m) i)
+  gcongr
   simp only [zero_le, zero_add, tsub_zero, true_and] at hia
-  exact List.mem_iff_get.mpr ⟨⟨i, hia.1⟩, hia.2.symm⟩
+  exact (hcoef (List.mem_iff_get.mpr ⟨⟨i, hia.1⟩, hia.2.symm⟩)).le
 
 /-! ## Step 1: if f is a MulRingNorm and f n > 1 for some natural n, then f n > 1 for all n ≥ 2 -/
 
@@ -347,8 +345,8 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
       apply List.sum_le_sum
       rintro ⟨i, a⟩ _
       simp only [Function.comp_apply, Function.uncurry_apply_pair]
-      exact mul_le_of_le_of_le_one' (mod_cast le_refl n₀) (pow_le_one₀ (apply_nonneg f ↑n₀) h)
-        (pow_nonneg (apply_nonneg f ↑n₀) i) (Nat.cast_nonneg n₀)
+      exact mul_le_of_le_of_le_one' (mod_cast le_refl n₀) (pow_le_one₀ (by positivity) h)
+        (by positivity) (by positivity)
     _ = n₀ * (Nat.log n₀ m + 1) := by
       rw [List.mapIdx_eq_enum_map, List.eq_replicate_of_mem (a := (n₀ : ℝ))
         (l := List.map (Function.uncurry fun _ _ ↦ n₀) (List.enum L)),
@@ -361,19 +359,21 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
   · simp only [CharP.cast_eq_zero, map_zero, zero_le_one]
   have h_ineq2 (k : ℕ) (hk : 0 < k) :
       f n ≤ (n₀ * (logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * k ^ (k : ℝ)⁻¹ := by
-    have h_exp : (f n ^ (k : ℝ)) ^ (k : ℝ)⁻¹ = f n := by
-      apply rpow_rpow_inv (apply_nonneg f ↑n)
-      simp only [ne_eq, Nat.cast_eq_zero]
-      exact Nat.pos_iff_ne_zero.mp hk
     have : 0 ≤ logb n₀ n := logb_nonneg (one_lt_cast.2 hn₀) (mod_cast Nat.one_le_of_lt h₀.bot_lt)
-    rw [← mul_rpow (by positivity) (by positivity), ← h_exp, rpow_natCast, ← map_pow,
-      ← Nat.cast_pow]
-    gcongr
-    apply le_trans (h_ineq1 (one_le_pow k n h₀.bot_lt))
-    rw [mul_assoc, Nat.cast_pow, logb_pow (mod_cast h₀.bot_lt), mul_comm _ (k : ℝ),
-      mul_add (k : ℝ), mul_one]
-    gcongr
-    exact one_le_cast.mpr hk
+    calc
+    f n = (f ↑(n ^ k)) ^ (k : ℝ)⁻¹ := by
+      rw [Nat.cast_pow, map_pow, ← rpow_natCast, rpow_rpow_inv (by positivity) (by positivity)]
+    _   ≤ (n₀ * (logb n₀ ↑(n ^ k) + 1)) ^ (k : ℝ)⁻¹ := by
+      gcongr
+      exact h_ineq1 <| one_le_pow₀ (one_le_iff_ne_zero.mpr h₀)
+    _   = (n₀ * (k * logb n₀ n + 1)) ^ (k : ℝ)⁻¹ := by
+      rw [Nat.cast_pow, logb_pow (mod_cast h₀.bot_lt)]
+    _   ≤ (n₀ * ( k * logb n₀ n + k)) ^ (k : ℝ)⁻¹ := by
+      gcongr
+      exact one_le_cast.mpr hk
+    _ = (n₀ * (logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * k ^ (k : ℝ)⁻¹ := by
+      rw [← mul_rpow (by positivity) (by positivity), mul_assoc, add_mul, one_mul,
+      mul_comm _ (k : ℝ)]
 -- For 0 < logb n₀ n below we also need to exclude n = 1.
   rcases eq_or_ne n 1 with rfl | h₁; simp only [Nat.cast_one, map_one, le_refl]
   refine le_of_tendsto_of_tendsto tendsto_const_nhds ?_ (eventually_atTop.2 ⟨1, h_ineq2⟩)

@@ -35,7 +35,7 @@ universe u v v' u₁' w w'
 variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
-open Cardinal Basis Submodule Function Set FiniteDimensional DirectSum
+open Basis Cardinal DirectSum Function Module Set Submodule
 
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
 variable [Module R M]
@@ -142,7 +142,7 @@ theorem rank_prod' : Module.rank R (M × M₁) = Module.rank R M + Module.rank R
 
 /-- The finrank of `M × M'` is `(finrank R M) + (finrank R M')`. -/
 @[simp]
-theorem FiniteDimensional.finrank_prod [Module.Finite R M] [Module.Finite R M'] :
+theorem Module.finrank_prod [Module.Finite R M] [Module.Finite R M'] :
     finrank R (M × M') = finrank R M + finrank R M' := by
   simp [finrank, rank_lt_aleph0 R M, rank_lt_aleph0 R M']
 
@@ -209,7 +209,7 @@ theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
 
 open Fintype
 
-namespace FiniteDimensional
+namespace Module
 
 @[simp]
 theorem finrank_finsupp {ι : Type v} [Fintype ι] : finrank R (ι →₀ M) = card ι * finrank R M := by
@@ -234,7 +234,7 @@ theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i 
 theorem finrank_matrix (m n : Type*) [Fintype m] [Fintype n] :
     finrank R (Matrix m n R) = card m * card n := by simp [finrank]
 
-end FiniteDimensional
+end Module
 
 end Finsupp
 
@@ -260,13 +260,13 @@ theorem rank_pi [Finite η] : Module.rank R (∀ i, φ i) =
 variable (R)
 
 /-- The finrank of `(ι → R)` is `Fintype.card ι`. -/
-theorem FiniteDimensional.finrank_pi {ι : Type v} [Fintype ι] :
+theorem Module.finrank_pi {ι : Type v} [Fintype ι] :
     finrank R (ι → R) = Fintype.card ι := by
   simp [finrank]
 
 --TODO: this should follow from `LinearEquiv.finrank_eq`, that is over a field.
 /-- The finrank of a finite product is the sum of the finranks. -/
-theorem FiniteDimensional.finrank_pi_fintype
+theorem Module.finrank_pi_fintype
     {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i : ι, AddCommGroup (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (∀ i, M i) = ∑ i, finrank R (M i) := by
@@ -294,12 +294,12 @@ variable (R)
 
 /-- The vector space of functions on a `Fintype ι` has finrank equal to the cardinality of `ι`. -/
 @[simp]
-theorem FiniteDimensional.finrank_fintype_fun_eq_card : finrank R (η → R) = Fintype.card η :=
+theorem Module.finrank_fintype_fun_eq_card : finrank R (η → R) = Fintype.card η :=
   finrank_eq_of_rank_eq rank_fun'
 
 /-- The vector space of functions on `Fin n` has finrank equal to `n`. -/
 -- @[simp] -- Porting note (#10618): simp already proves this
-theorem FiniteDimensional.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
+theorem Module.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
 
 variable {R}
 
@@ -343,7 +343,7 @@ theorem rank_tensorProduct' :
 
 /-- The `S`-finrank of `M ⊗[R] M'` is `(finrank S M) * (finrank R M')`. -/
 @[simp]
-theorem FiniteDimensional.finrank_tensorProduct :
+theorem Module.finrank_tensorProduct :
     finrank R (M ⊗[S] M') = finrank R M * finrank S M' := by simp [finrank]
 
 end TensorProduct
@@ -352,7 +352,7 @@ section SubmoduleRank
 
 section
 
-open FiniteDimensional
+open Module
 
 namespace Submodule
 
@@ -413,7 +413,7 @@ theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) 
 theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
   (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
 
-open Submodule FiniteDimensional
+open Submodule Module
 
 variable (R)
 
