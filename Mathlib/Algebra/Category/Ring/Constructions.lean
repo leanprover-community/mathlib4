@@ -234,7 +234,8 @@ instance : IsLocalHom (equalizerFork f g).ι := by
   rw [isUnit_iff_exists_inv]
   exact ⟨⟨y, this⟩, Subtype.eq h₃⟩
 
-instance equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
+@[instance]
+theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F WalkingParallelPair.zero) := by
   have := limMap_π (diagramIsoParallelPair F).hom WalkingParallelPair.zero
   rw [← IsIso.comp_inv_eq] at this
@@ -247,7 +248,7 @@ instance equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
   change IsLocalHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _)
   infer_instance
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias equalizer_ι_isLocalRingHom := equalizer_ι_isLocalHom
 
 open CategoryTheory.Limits.WalkingParallelPair Opposite

@@ -222,7 +222,7 @@ class IsLocalHom (f : F) : Prop where
   /-- A local homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias IsLocalRingHom := IsLocalHom
 
 @[simp]
@@ -242,29 +242,31 @@ theorem isLocalHom_of_leftInverse [FunLike G S R] [MonoidHomClass G S R]
     {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalHom f where
   map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias isLocalRingHom_of_leftInverse := isLocalHom_of_leftInverse
 
-instance MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
+@[instance]
+theorem MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
     [IsLocalHom f] : IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias MonoidHom.isLocalRingHom_comp := MonoidHom.isLocalHom_comp
 
 -- see note [lower instance priority]
-instance (priority := 100) isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
+@[instance 100]
+theorem isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
     IsLocalHom (f : R →* S) :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias isLocalRingHom_toMonoidHom := isLocalHom_toMonoidHom
 
 theorem MonoidHom.isLocalHom_of_comp (f : R →* S) (g : S →* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=
   ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (ha.map g)⟩
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias MonoidHom.isLocalRingHom_of_comp := MonoidHom.isLocalHom_of_comp
 
 end IsLocalHom

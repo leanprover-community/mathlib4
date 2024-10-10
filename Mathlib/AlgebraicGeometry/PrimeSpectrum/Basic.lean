@@ -631,7 +631,7 @@ theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRin
   rw [this, PrimeSpectrum.ext_iff]
   rfl
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias isLocalRingHom_iff_comap_closedPoint := isLocalHom_iff_comap_closedPoint
 
 @[simp]
