@@ -96,10 +96,10 @@ def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    for sytax in (← getNames stx) do
-      if contains_double_underscore sytax then
-        Linter.logLint linter.style.nameCheck sytax
-          m!"The declID '{sytax}' contains '__', which does not follow the mathlib naming \
+    for name in (← getNames stx) do
+      if contains_double_underscore name then
+        Linter.logLint linter.style.nameCheck name
+          m!"The declaration '{name}' contains '__', which does not follow the mathlib naming \
              conventions. Consider using single underscores instead."
 
 initialize addLinter doubleUnderscore
