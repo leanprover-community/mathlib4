@@ -56,6 +56,7 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
   /-- The order embedding is an initial segment -/
   mem_range_of_rel' : ∀ a b, s b (toRelEmbedding a) → b ∈ Set.range toRelEmbedding
 
+-- Porting note: deleted `scoped[InitialSeg]`
 @[inherit_doc]
 infixl:25 " ≼i " => InitialSeg
 
@@ -76,6 +77,9 @@ instance : FunLike (r ≼i s) α β where
 
 instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'
+
+instance : RelHomClass (r ≼i s) r s where
+  map_rel f := f.map_rel_iff.2
 
 /-- An initial segment embedding between the `<` relations of two partial orders is an order
 embedding. -/
@@ -285,6 +289,7 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
   /-- The image of the order embedding is the set of elements `b` such that `s b top` -/
   down' : ∀ b, s b top ↔ ∃ a, toRelEmbedding a = b
 
+-- Porting note: deleted `scoped[InitialSeg]`
 @[inherit_doc]
 infixl:25 " ≺i " => PrincipalSeg
 
