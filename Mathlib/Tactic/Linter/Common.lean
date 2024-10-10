@@ -7,8 +7,9 @@ Authors: Damiano Testa, Moritz Firsching
 import Lean.Elab.Command
 
 /-!
-This file contains functions that are used by some linters.
+This file contains functions that are used by multiple linters.
 -/
+
 open Lean Parser Elab Command Meta
 namespace Mathlib.Linter
 
