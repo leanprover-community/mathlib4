@@ -176,9 +176,6 @@ protected theorem mdifferentiableAt {x : M} (hx : x ∈ e.source) : MDifferentia
 theorem mdifferentiableAt_symm {x : M'} (hx : x ∈ e.target) : MDifferentiableAt I' I e.symm x :=
   (he.2 x hx).mdifferentiableAt (e.open_target.mem_nhds hx)
 
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
-  [SmoothManifoldWithCorners I'' M'']
-
 theorem symm_comp_deriv {x : M} (hx : x ∈ e.source) :
     (mfderiv I' I e.symm (e x)).comp (mfderiv I I' e x) =
       ContinuousLinearMap.id 𝕜 (TangentSpace I x) := by
