@@ -364,7 +364,9 @@ def principalSegToType {α β : Ordinal} (h : α < β) :
 @[deprecated principalSegToType (since := "2024-08-26")]
 noncomputable alias principalSegOut := principalSegToType
 
-/-- The order type of an element inside a well order. -/
+/-- The order type of an element inside a well order.
+
+This is registered as a principal segment embedding into the ordinals, with top `type r`. -/
 @[simps!]
 def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordinal.{u} r (· < ·) := by
   refine ⟨RelEmbedding.ofMonotone _ fun a b ha ↦
