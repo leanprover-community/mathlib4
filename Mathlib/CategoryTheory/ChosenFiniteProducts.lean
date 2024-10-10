@@ -1,10 +1,12 @@
 /-
 Copyright (c) 2024 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Adam Topaz, Robin Carlier
 -/
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 
 /-!
 # Categories with chosen finite products
@@ -28,7 +30,7 @@ binary product and `𝟙_ C` for the explicit terminal object.
 
 namespace CategoryTheory
 
-universe v u
+universe v v₁ u u₁
 
 /--
 An instance of `ChosenFiniteProducts C` bundles an explicit choice of a binary
@@ -196,5 +198,166 @@ instance (priority := 100) : Limits.HasFiniteProducts C :=
   hasFiniteProducts_of_has_binary_and_terminal
 
 end ChosenFiniteProducts
+
+open Limits MonoidalCategory ChosenFiniteProducts
+
+/-- Promote a finite products preserving functor to a monoidal functor between
+categories equipped with the monoidal category structure given by chosen finite products. -/
+@[simps]
+def Functor.toMonoidalFunctorOfChosenFiniteProducts {C : Type u} [Category.{v} C]
+    [ChosenFiniteProducts C] {D : Type u₁} [Category.{v₁} D]
+    [ChosenFiniteProducts D] (F : C ⥤ D)
+    [h₀ : PreservesLimit (Functor.empty.{0} C) F]
+    [h₁ : PreservesLimitsOfShape (Discrete WalkingPair) F] :
+    MonoidalFunctor C D where
+  toFunctor := F
+  ε := IsLimit.conePointsIsoOfNatIso
+    (h₀.preserves terminal.isLimit) terminal.isLimit (Functor.isEmptyExt _ _)|>.inv
+  μ x y := IsLimit.conePointsIsoOfNatIso
+    (h₁.preservesLimit.preserves (ChosenFiniteProducts.product _ _).isLimit)
+    (ChosenFiniteProducts.product _ _).isLimit (pairComp _ _ _)|>.inv
+  μ_natural_left {X Y} f X' := by
+    dsimp only [mapCone_pt, IsLimit.conePointsIsoOfNatIso_inv]
+    apply h₁.preservesLimit.preserves (ChosenFiniteProducts.product _ _).isLimit|>.hom_ext
+    dsimp only [comp_obj, pair_obj_left, mapCone_pt, IsLimit.conePointsIsoOfNatIso_inv,
+      mapCone_π_app, BinaryFan.π_app_left]
+    simp only [Category.assoc]
+    rintro ⟨⟨_⟩⟩
+    · simp only [pairComp, diagramIsoPair_inv_app, comp_obj, pair_obj_left, pair_obj_right,
+        Iso.refl_inv, BinaryFan.π_app_left, Category.comp_id, Category.id_comp]
+      rw [←Functor.map_comp, ← fst, whiskerRight_fst, Functor.map_comp, fst,
+        ← F.mapCone_π_app, IsLimit.map_π]
+      simp only [const_obj_obj, pair_obj_left, comp_obj, BinaryFan.π_app_left,
+        diagramIsoPair_inv_app, pair_obj_right, Iso.refl_inv, Category.comp_id]
+      rw [← fst, whiskerRight_fst]
+      conv_rhs => rw [fst, ← F.mapCone_π_app, IsLimit.map_π_assoc]
+      simp only [diagramIsoPair_inv_app, comp_obj, pair_obj_left, pair_obj_right, Iso.refl_inv,
+        Category.comp_id, BinaryFan.π_app_left, Category.id_comp]
+      rfl
+    · rw [←Functor.map_comp]
+      conv_rhs => arg 2; congr; (conv => arg 2; change snd _ _); rw [whiskerRight_snd f X', snd]
+      rw [← F.mapCone_π_app, IsLimit.map_π, ← F.mapCone_π_app, IsLimit.map_π]
+      simp only [pair_obj_right, const_obj_obj, comp_obj, BinaryFan.π_app_right]
+      rw [← snd, whiskerRight_snd_assoc]
+      rfl
+  μ_natural_right {X Y} X' g := by
+    dsimp only [mapCone_pt, IsLimit.conePointsIsoOfNatIso_inv]
+    apply h₁.preservesLimit.preserves (ChosenFiniteProducts.product _ _).isLimit|>.hom_ext
+    dsimp only [comp_obj, pair_obj_left, mapCone_pt, IsLimit.conePointsIsoOfNatIso_inv,
+      mapCone_π_app, BinaryFan.π_app_left]
+    simp only [Category.assoc]
+    rintro ⟨⟨_⟩⟩
+    · rw [←Functor.map_comp]
+      conv_rhs => arg 2; congr; (conv => arg 2; change fst _ _); rw [whiskerLeft_fst X' g, fst]
+      rw [← F.mapCone_π_app, IsLimit.map_π, ← F.mapCone_π_app, IsLimit.map_π]
+      simp only [pair_obj_left, const_obj_obj, comp_obj, BinaryFan.π_app_left]
+      rw [← fst, whiskerLeft_fst_assoc]
+      rfl
+    · simp only [pairComp, diagramIsoPair_inv_app, comp_obj, pair_obj_right, pair_obj_left,
+        Iso.refl_inv, BinaryFan.π_app_right, Category.comp_id, Category.id_comp]
+      rw [←Functor.map_comp, ← snd, whiskerLeft_snd, Functor.map_comp, snd,
+        ← F.mapCone_π_app, IsLimit.map_π]
+      simp only [const_obj_obj, pair_obj_right, comp_obj, BinaryFan.π_app_right,
+        diagramIsoPair_inv_app, pair_obj_left, Iso.refl_inv, Category.comp_id]
+      rw [← snd, whiskerLeft_snd]
+      conv_rhs => rw [snd, ← F.mapCone_π_app, IsLimit.map_π_assoc]
+      simp only [diagramIsoPair_inv_app, comp_obj, pair_obj_left, pair_obj_right, Iso.refl_inv,
+        Category.comp_id, BinaryFan.π_app_left, Category.id_comp]
+      rfl
+  associativity X Y Z := by
+    dsimp only [mapCone_pt, IsLimit.conePointsIsoOfNatIso_inv]
+    apply h₁.preservesLimit.preserves (ChosenFiniteProducts.product _ _).isLimit|>.hom_ext
+    simp only [comp_obj, mapCone_pt, mapCone_π_app, Category.assoc]
+    rintro ⟨⟨_⟩⟩
+    · rw [←Functor.map_comp]
+      slice_lhs 3 4 => congr; (conv => arg 2; change fst _ _); rw [associator_hom_fst X]
+      rw [← F.mapCone_π_app, IsLimit.map_π]
+      slice_rhs 3 4 => arg 1; change fst _ _
+      simp only [whiskerLeft_fst_assoc, associator_hom_fst_assoc, pair_obj_left, map_comp]
+      rw [fst, ← F.mapCone_π_app, IsLimit.map_π_assoc]
+      slice_lhs 2 2 => change fst _ _
+      rw [Category.assoc, whiskerRight_fst_assoc]
+      simp only [pair_obj_left, BinaryFan.π_app_left, comp_obj]
+      congr 1
+      simp only [pairComp, diagramIsoPair_inv_app, comp_obj, pair_obj_left, pair_obj_right,
+        Iso.refl_inv, Category.id_comp, Category.comp_id]
+      rw [fst, ← F.mapCone_π_app, IsLimit.map_π]
+      simp only [const_obj_obj, pair_obj_left, comp_obj, BinaryFan.π_app_left,
+        diagramIsoPair_inv_app, pair_obj_right, Iso.refl_inv, Category.comp_id]
+      rfl
+    · apply h₁.preservesLimit.preserves (ChosenFiniteProducts.product _ _).isLimit|>.hom_ext
+      rintro ⟨⟨_⟩⟩ <;> simp only [Category.assoc]
+      · slice_rhs 3 4 => rw [← F.mapCone_π_app, IsLimit.map_π]
+        simp only [comp_obj, pair_obj_left, mapCone_pt, pair_obj_right, BinaryFan.π_app_right,
+          mapCone_π_app, BinaryFan.π_app_left, Category.assoc]
+        rw [←Functor.map_comp, ←Functor.map_comp]
+        rw [← snd, ← fst, associator_hom_snd_fst]
+        simp only [map_comp, pairComp, diagramIsoPair_inv_app, comp_obj, pair_obj_left,
+          pair_obj_right, Iso.refl_inv, Category.id_comp, Category.comp_id]
+        slice_lhs 2 3 => rw [fst, ← F.mapCone_π_app, IsLimit.map_π]
+        simp only [const_obj_obj, pair_obj_left, comp_obj, BinaryFan.π_app_left,
+          diagramIsoPair_inv_app, pair_obj_right, Iso.refl_inv, Category.comp_id]
+        rw [← snd, whiskerLeft_snd_assoc]
+        slice_rhs 3 4 =>
+          equals fst _ _ =>
+            rw [fst, ← F.mapCone_π_app, IsLimit.map_π,
+              diagramIsoPair_inv_app, Iso.refl_inv]
+            simp only [const_obj_obj, comp_obj, pair_obj_left,
+              BinaryFan.π_app_left, Category.comp_id]
+            rfl
+        rw [associator_hom_snd_fst, ← fst, whiskerRight_fst_assoc]
+        congr 1
+        rw [snd, ← F.mapCone_π_app, IsLimit.map_π]
+        simp only [const_obj_obj, pair_obj_left, comp_obj, BinaryFan.π_app_left,
+          diagramIsoPair_inv_app, pair_obj_right, Iso.refl_inv, Category.comp_id]
+        rfl
+      · slice_rhs 3 4 => rw [← F.mapCone_π_app, IsLimit.map_π]
+        simp only [comp_obj, pair_obj_left, mapCone_pt, pair_obj_right, BinaryFan.π_app_right,
+          mapCone_π_app, BinaryFan.π_app_left, Category.assoc]
+        rw [←Functor.map_comp, ←Functor.map_comp]
+        rw [← snd, ← snd, associator_hom_snd_snd]
+        simp only [map_comp, pairComp, diagramIsoPair_inv_app, comp_obj, pair_obj_left,
+          pair_obj_right, Iso.refl_inv, Category.id_comp, Category.comp_id]
+        slice_lhs 2 3 =>
+          equals snd _ _ =>
+            rw [snd, ← F.mapCone_π_app, IsLimit.map_π,
+              diagramIsoPair_inv_app, Iso.refl_inv]
+            simp only [const_obj_obj, comp_obj, pair_obj_right,
+              BinaryFan.π_app_right, Category.comp_id]
+            rfl
+        rw [whiskerRight_snd]
+        slice_rhs 2 4 =>
+          rw [← snd, whiskerLeft_snd_assoc]
+          arg 2; equals snd _ _ =>
+            rw [snd, ← F.mapCone_π_app, IsLimit.map_π,
+              diagramIsoPair_inv_app, Iso.refl_inv]
+            simp only [const_obj_obj, comp_obj, pair_obj_right,
+              BinaryFan.π_app_right, Category.comp_id]
+            rfl
+        rw [associator_hom_snd_snd]
+  left_unitality X := by
+    slice_rhs 2 3 =>
+      conv => enter [2, 2]; change BinaryFan.snd _
+      equals snd _ _ =>
+        simp only [mapCone_pt, pairComp, IsLimit.conePointsIsoOfNatIso_inv]
+        rw [← F.mapCone_π_app, IsLimit.map_π,
+          diagramIsoPair_inv_app, Iso.refl_inv]
+        simp only [const_obj_obj, comp_obj, pair_obj_right,
+          BinaryFan.π_app_right, Category.comp_id]
+        rfl
+    rw [whiskerRight_snd]
+    rfl
+  right_unitality X := by
+    slice_rhs 2 3 =>
+      conv => enter [2, 2]; change BinaryFan.fst _
+      equals fst _ _ =>
+        simp only [mapCone_pt, pairComp, IsLimit.conePointsIsoOfNatIso_inv]
+        rw [← F.mapCone_π_app, IsLimit.map_π,
+          diagramIsoPair_inv_app, Iso.refl_inv]
+        simp only [const_obj_obj, comp_obj, pair_obj_left,
+          BinaryFan.π_app_left, Category.comp_id]
+        rfl
+    rw [whiskerLeft_fst]
+    rfl
 
 end CategoryTheory
