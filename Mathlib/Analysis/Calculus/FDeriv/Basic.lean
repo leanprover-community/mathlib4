@@ -561,6 +561,14 @@ theorem DifferentiableWithinAt.mono_of_mem (h : DifferentiableWithinAt 𝕜 f s 
     (hst : s ∈ 𝓝[t] x) : DifferentiableWithinAt 𝕜 f t x :=
   (h.hasFDerivWithinAt.mono_of_mem hst).differentiableWithinAt
 
+theorem DifferentiableWithinAt.congr_nhds (h : DifferentiableWithinAt 𝕜 f s x) {t : Set E}
+    (hst : 𝓝[s] x = 𝓝[t] x) : DifferentiableWithinAt 𝕜 f t x :=
+  h.mono_of_mem <| hst ▸ self_mem_nhdsWithin
+
+theorem differentiableWithinAt_congr_nhds {t : Set E} (hst : 𝓝[s] x = 𝓝[t] x) :
+    DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
+  ⟨fun h => h.congr_nhds hst, fun h => h.congr_nhds hst.symm⟩
+
 theorem differentiableWithinAt_univ :
     DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x := by
   simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
@@ -572,6 +580,24 @@ theorem differentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
 theorem differentiableWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     DifferentiableWithinAt 𝕜 f (s ∩ t) x ↔ DifferentiableWithinAt 𝕜 f s x := by
   simp only [DifferentiableWithinAt, hasFDerivWithinAt_inter' ht]
+
+theorem differentiableWithinAt_insert_self :
+    DifferentiableWithinAt 𝕜 f (insert x s) x ↔ DifferentiableWithinAt 𝕜 f s x :=
+  ⟨fun h ↦ h.mono (subset_insert x s), fun h ↦ h.hasFDerivWithinAt.insert.differentiableWithinAt⟩
+
+theorem differentiableWithinAt_insert {y : E} :
+    DifferentiableWithinAt 𝕜 f (insert y s) x ↔ DifferentiableWithinAt 𝕜 f s x := by
+  rcases eq_or_ne x y with (rfl | h)
+  · exact differentiableWithinAt_insert_self
+  apply differentiableWithinAt_congr_nhds
+  exact nhdsWithin_insert_of_ne h
+
+alias ⟨DifferentiableWithinAt.of_insert, DifferentiableWithinAt.insert'⟩ :=
+differentiableWithinAt_insert
+
+protected theorem DifferentiableWithinAt.insert (h : DifferentiableWithinAt 𝕜 f s x) :
+    DifferentiableWithinAt 𝕜 f (insert x s) x :=
+  h.insert'
 
 theorem DifferentiableAt.differentiableWithinAt (h : DifferentiableAt 𝕜 f x) :
     DifferentiableWithinAt 𝕜 f s x :=

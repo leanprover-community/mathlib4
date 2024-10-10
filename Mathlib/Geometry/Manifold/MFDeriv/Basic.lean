@@ -162,11 +162,293 @@ theorem mdifferentiableOn_of_locally_mdifferentiableOn
   rcases h x xs with ⟨t, t_open, xt, ht⟩
   exact (mdifferentiableWithinAt_inter (t_open.mem_nhds xt)).1 (ht x ⟨xs, xt⟩)
 
+/-******************************************************************************************-/
+
+#check mdifferentiableWithinAt_iff
+
+open ChartedSpace
+
+/-- One can reformulate smoothness within a set at a point as continuity within this set at this
+point, and smoothness in the corresponding extended chart. -/
+theorem mdifferentiableWithinAt_iff_bah :
+    MDifferentiableWithinAt I I' f s x ↔
+      ContinuousWithinAt f s x ∧
+        DifferentiableWithinAt 𝕜 (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm)
+          ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+  simp_rw [MDifferentiableWithinAt, ChartedSpace.liftPropWithinAt_iff']; rfl
+
+/-- One can reformulate smoothness within a set at a point as continuity within this set at this
+point, and smoothness in the corresponding extended chart. This form states smoothness of `f`
+written in such a way that the set is restricted to lie within the domain/codomain of the
+corresponding charts.
+Even though this expression is more complicated than the one in `mdifferentiableWithinAt_iff`, it is
+a smaller set, but their germs at `extChartAt I x x` are equal. It is sometimes useful to rewrite
+using this in the goal.
+-/
+theorem mdifferentiableWithinAt_iff_bah' :
+    MDifferentiableWithinAt I I' f s x ↔
+      ContinuousWithinAt f s x ∧
+        DifferentiableWithinAt 𝕜 (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm)
+          ((extChartAt I x).target ∩
+            (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source))
+          (extChartAt I x x) := by
+  simp only [MDifferentiableWithinAt, liftPropWithinAt_iff']
+  exact and_congr_right fun hc => differentiableWithinAt_congr_set <|
+    hc.nhdsWithin_extChartAt_symm_preimage_inter_range I I'
+
+#check contDiffWithinAt_congr_nhds
+
+/-- One can reformulate smoothness within a set at a point as continuity within this set at this
+point, and smoothness in the corresponding extended chart in the target. -/
+theorem mdifferentiableWithinAt_iff_target :
+    MDifferentiableWithinAt I I' f s x ↔
+      ContinuousWithinAt f s x ∧
+      MDifferentiableWithinAt I 𝓘(𝕜, E') (extChartAt I' (f x) ∘ f) s x := by
+  simp_rw [MDifferentiableWithinAt, liftPropWithinAt_iff', ← and_assoc]
+  have cont :
+    ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
+        ContinuousWithinAt f s x :=
+      and_iff_left_of_imp <| (continuousAt_extChartAt _ _).comp_continuousWithinAt
+  simp_rw [cont, DifferentiableWithinAtProp, extChartAt, PartialHomeomorph.extend,
+    PartialEquiv.coe_trans,
+    ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
+    chartAt_self_eq, PartialHomeomorph.refl_apply]
+  rfl
+
+theorem mdifferentiableAt_iff_target {x : M} :
+    MDifferentiableAt I I' f x ↔
+      ContinuousAt f x ∧ MDifferentiableAt I 𝓘(𝕜, E') (extChartAt I' (f x) ∘ f) x := by
+  rw [MDifferentiableAt, MDifferentiableAt, mdifferentiableWithinAt_iff_target, continuousWithinAt_univ]
+
+section SmoothManifoldWithCorners
+
+theorem mdifferentiableWithinAt_iff_source_of_mem_maximalAtlas
+    [SmoothManifoldWithCorners I M] (he : e ∈ maximalAtlas I M) (hx : x ∈ e.source) :
+    MDifferentiableWithinAt I I' f s x ↔
+      MDifferentiableWithinAt 𝓘(𝕜, E) I' (f ∘ (e.extend I).symm) ((e.extend I).symm ⁻¹' s ∩ range I)
+        (e.extend I x) := by
+  have h2x := hx; rw [← e.extend_source I] at h2x
+  simp_rw [MDifferentiableWithinAt,
+    (differentiableWithinAt_localInvariantProp I I' n).liftPropWithinAt_indep_chart_source he hx,
+    StructureGroupoid.liftPropWithinAt_self_source,
+    e.extend_symm_continuousWithinAt_comp_right_iff, differentiableWithinAtProp_self_source,
+    DifferentiableWithinAtProp, Function.comp, e.left_inv hx, (e.extend I).left_inv h2x]
+  rfl
+
+theorem mdifferentiableWithinAt_iff_source_of_mem_source
+    [SmoothManifoldWithCorners I M] {x' : M} (hx' : x' ∈ (chartAt H x).source) :
+    MDifferentiableWithinAt I I' f s x' ↔
+      MDifferentiableWithinAt 𝓘(𝕜, E) I' (f ∘ (extChartAt I x).symm)
+        ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x') :=
+  mdifferentiableWithinAt_iff_source_of_mem_maximalAtlas (chart_mem_maximalAtlas I x) hx'
+
+theorem mdifferentiableAt_iff_source_of_mem_source
+    [SmoothManifoldWithCorners I M] {x' : M} (hx' : x' ∈ (chartAt H x).source) :
+    MDifferentiableAt I I' f x' ↔
+      MDifferentiableWithinAt 𝓘(𝕜, E) I' (f ∘ (extChartAt I x).symm) (range I) (extChartAt I x x') := by
+  simp_rw [MDifferentiableAt, mdifferentiableWithinAt_iff_source_of_mem_source hx', preimage_univ, univ_inter]
+
+theorem mdifferentiableWithinAt_iff_target_of_mem_source
+    [SmoothManifoldWithCorners I' M'] {x : M} {y : M'} (hy : f x ∈ (chartAt H' y).source) :
+    MDifferentiableWithinAt I I' f s x ↔
+      ContinuousWithinAt f s x ∧ MDifferentiableWithinAt I 𝓘(𝕜, E') (extChartAt I' y ∘ f) s x := by
+  simp_rw [MDifferentiableWithinAt]
+  rw [(differentiableWithinAt_localInvariantProp I I' n).liftPropWithinAt_indep_chart_target
+      (chart_mem_maximalAtlas I' y) hy,
+    and_congr_right]
+  intro hf
+  simp_rw [StructureGroupoid.liftPropWithinAt_self_target]
+  simp_rw [((chartAt H' y).continuousAt hy).comp_continuousWithinAt hf]
+  rw [← extChartAt_source I'] at hy
+  simp_rw [(continuousAt_extChartAt' I' hy).comp_continuousWithinAt hf]
+  rfl
+
+theorem mdifferentiableAt_iff_target_of_mem_source
+    [SmoothManifoldWithCorners I' M'] {x : M} {y : M'} (hy : f x ∈ (chartAt H' y).source) :
+    MDifferentiableAt I I' f x ↔
+      ContinuousAt f x ∧ MDifferentiableAt I 𝓘(𝕜, E') (extChartAt I' y ∘ f) x := by
+  rw [MDifferentiableAt, mdifferentiableWithinAt_iff_target_of_mem_source hy, continuousWithinAt_univ,
+    MDifferentiableAt]
+
+variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
+
+theorem mdifferentiableWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtlas I M)
+    (he' : e' ∈ maximalAtlas I' M') (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
+    MDifferentiableWithinAt I I' f s x ↔
+      ContinuousWithinAt f s x ∧
+        DifferentiableWithinAt 𝕜 (e'.extend I' ∘ f ∘ (e.extend I).symm)
+          ((e.extend I).symm ⁻¹' s ∩ range I) (e.extend I x) :=
+  (differentiableWithinAt_localInvariantProp I I' n).liftPropWithinAt_indep_chart he hx he' hy
+
+/-- An alternative formulation of `mdifferentiableWithinAt_iff_of_mem_maximalAtlas`
+  if the set if `s` lies in `e.source`. -/
+theorem mdifferentiableWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I M)
+    (he' : e' ∈ maximalAtlas I' M') (hs : s ⊆ e.source) (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
+    MDifferentiableWithinAt I I' f s x ↔
+      ContinuousWithinAt f s x ∧
+        DifferentiableWithinAt 𝕜 (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s)
+          (e.extend I x) := by
+  rw [mdifferentiableWithinAt_iff_of_mem_maximalAtlas he he' hx hy, and_congr_right_iff]
+  refine fun _ => differentiableWithinAt_congr_nhds ?_
+  simp_rw [nhdsWithin_eq_iff_eventuallyEq, e.extend_symm_preimage_inter_range_eventuallyEq I hs hx]
+
+/-- One can reformulate smoothness within a set at a point as continuity within this set at this
+point, and smoothness in any chart containing that point. -/
+theorem mdifferentiableWithinAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
+    (hy : f x' ∈ (chartAt H' y).source) :
+    MDifferentiableWithinAt I I' f s x' ↔
+      ContinuousWithinAt f s x' ∧
+        DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
+          ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x') :=
+  mdifferentiableWithinAt_iff_of_mem_maximalAtlas (chart_mem_maximalAtlas _ x)
+    (chart_mem_maximalAtlas _ y) hx hy
+
+theorem mdifferentiableWithinAt_iff_of_mem_source' {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
+    (hy : f x' ∈ (chartAt H' y).source) :
+    MDifferentiableWithinAt I I' f s x' ↔
+      ContinuousWithinAt f s x' ∧
+        DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
+          ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' y).source))
+          (extChartAt I x x') := by
+  refine (mdifferentiableWithinAt_iff_of_mem_source hx hy).trans ?_
+  rw [← extChartAt_source I] at hx
+  rw [← extChartAt_source I'] at hy
+  rw [and_congr_right_iff]
+  set e := extChartAt I x; set e' := extChartAt I' (f x)
+  refine fun hc => differentiableWithinAt_congr_nhds ?_
+  rw [← e.image_source_inter_eq', ← map_extChartAt_nhdsWithin_eq_image' I hx, ←
+    map_extChartAt_nhdsWithin' I hx, inter_comm, nhdsWithin_inter_of_mem]
+  exact hc (extChartAt_source_mem_nhds' _ hy)
+
+theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
+    (hy : f x' ∈ (chartAt H' y).source) :
+    MDifferentiableAt I I' f x' ↔
+      ContinuousAt f x' ∧
+        DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (range I)
+          (extChartAt I x x') :=
+  (mdifferentiableWithinAt_iff_of_mem_source hx hy).trans <| by
+    rw [continuousWithinAt_univ, preimage_univ, univ_inter]
+
+theorem mdifferentiableOn_iff_of_mem_maximalAtlas (he : e ∈ maximalAtlas I M)
+    (he' : e' ∈ maximalAtlas I' M') (hs : s ⊆ e.source) (h2s : MapsTo f s e'.source) :
+    MDifferentiableOn I I' f s ↔
+      ContinuousOn f s ∧
+        DifferentiableOn 𝕜 (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s) := by
+  simp_rw [ContinuousOn, DifferentiableOn, Set.forall_mem_image, ← forall_and, MDifferentiableOn]
+  exact forall₂_congr fun x hx => mdifferentiableWithinAt_iff_image he he' hs (hs hx) (h2s hx)
+
+theorem mdifferentiableOn_iff_of_mem_maximalAtlas' (he : e ∈ maximalAtlas I M)
+    (he' : e' ∈ maximalAtlas I' M') (hs : s ⊆ e.source) (h2s : MapsTo f s e'.source) :
+    MDifferentiableOn I I' f s ↔
+      DifferentiableOn 𝕜 (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s) :=
+  (mdifferentiableOn_iff_of_mem_maximalAtlas he he' hs h2s).trans <| and_iff_right_of_imp fun h ↦
+    (e.continuousOn_writtenInExtend_iff _ _ hs h2s).1 h.continuousOn
+
+/-- If the set where you want `f` to be smooth lies entirely in a single chart, and `f` maps it
+  into a single chart, the smoothness of `f` on that set can be expressed by purely looking in
+  these charts.
+  Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
+  that this set lies in `(extChartAt I x).target`. -/
+theorem mdifferentiableOn_iff_of_subset_source {x : M} {y : M'} (hs : s ⊆ (chartAt H x).source)
+    (h2s : MapsTo f s (chartAt H' y).source) :
+    MDifferentiableOn I I' f s ↔
+      ContinuousOn f s ∧
+        DifferentiableOn 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (extChartAt I x '' s) :=
+  mdifferentiableOn_iff_of_mem_maximalAtlas (chart_mem_maximalAtlas I x) (chart_mem_maximalAtlas I' y) hs
+    h2s
+
+/-- If the set where you want `f` to be smooth lies entirely in a single chart, and `f` maps it
+  into a single chart, the smoothness of `f` on that set can be expressed by purely looking in
+  these charts.
+  Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
+  that this set lies in `(extChartAt I x).target`. -/
+theorem mdifferentiableOn_iff_of_subset_source' {x : M} {y : M'} (hs : s ⊆ (extChartAt I x).source)
+    (h2s : MapsTo f s (extChartAt I' y).source) :
+    MDifferentiableOn I I' f s ↔
+        DifferentiableOn 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (extChartAt I x '' s) := by
+  rw [extChartAt_source] at hs h2s
+  exact mdifferentiableOn_iff_of_mem_maximalAtlas' (chart_mem_maximalAtlas I x)
+    (chart_mem_maximalAtlas I' y) hs h2s
+
+/-- One can reformulate smoothness on a set as continuity on this set, and smoothness in any
+extended chart. -/
+theorem mdifferentiableOn_iff :
+    MDifferentiableOn I I' f s ↔
+      ContinuousOn f s ∧
+        ∀ (x : M) (y : M'),
+          DifferentiableOn 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
+            ((extChartAt I x).target ∩
+              (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' y).source)) := by
+  constructor
+  · intro h
+    refine ⟨fun x hx => (h x hx).1, fun x y z hz => ?_⟩
+    simp only [mfld_simps] at hz
+    let w := (extChartAt I x).symm z
+    have : w ∈ s := by simp only [w, hz, mfld_simps]
+    specialize h w this
+    have w1 : w ∈ (chartAt H x).source := by simp only [w, hz, mfld_simps]
+    have w2 : f w ∈ (chartAt H' y).source := by simp only [w, hz, mfld_simps]
+    convert ((mdifferentiableWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
+    · simp only [w, hz, mfld_simps]
+    · mfld_set_tac
+  · rintro ⟨hcont, hdiff⟩ x hx
+    refine (differentiableWithinAt_localInvariantProp I I' n).liftPropWithinAt_iff.mpr ?_
+    refine ⟨hcont x hx, ?_⟩
+    dsimp [DifferentiableWithinAtProp]
+    convert hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
+    mfld_set_tac
+
+/-- One can reformulate smoothness on a set as continuity on this set, and smoothness in any
+extended chart in the target. -/
+theorem mdifferentiableOn_iff_target :
+    MDifferentiableOn I I' f s ↔
+      ContinuousOn f s ∧
+        ∀ y : M', MDifferentiableOn I 𝓘(𝕜, E') (extChartAt I' y ∘ f)
+          (s ∩ f ⁻¹' (extChartAt I' y).source) := by
+  simp only [mdifferentiableOn_iff, ModelWithCorners.source_eq, chartAt_self_eq,
+    PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_trans, extChartAt,
+    PartialHomeomorph.extend, Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
+  intro h
+  constructor
+  · refine fun h' y => ⟨?_, fun x _ => h' x y⟩
+    have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
+    convert (h''.comp' (chartAt H' y).continuousOn_toFun).comp' h
+    simp
+  · exact fun h' x y => (h' y).2 x 0
+
+/-- One can reformulate smoothness as continuity and smoothness in any extended chart. -/
+theorem mdifferentiable_iff :
+    MDifferentiable I I' f ↔
+      Continuous f ∧
+        ∀ (x : M) (y : M'),
+          DifferentiableOn 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
+            ((extChartAt I x).target ∩
+              (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) := by
+  simp [← mdifferentiableOn_univ, mdifferentiableOn_iff, continuous_iff_continuousOn_univ]
+
+/-- One can reformulate smoothness as continuity and smoothness in any extended chart in the
+target. -/
+theorem mdifferentiable_iff_target :
+    MDifferentiable I I' f ↔
+      Continuous f ∧ ∀ y : M',
+        MDifferentiableOn I 𝓘(𝕜, E') (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) := by
+  rw [← mdifferentiableOn_univ, mdifferentiableOn_iff_target]
+  simp [continuous_iff_continuousOn_univ]
+
+end SmoothManifoldWithCorners
+
+/-********************************************************************************-/
+
+#exit
+
+
+
+
 /-! ### Deducing differentiability from smoothness -/
 
 variable {n : ℕ∞}
 
-theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n f s x)
+theorem MDifferentiableWithinAt.mdifferentiableWithinAt (hf : MDifferentiableWithinAt I I' n f s x)
     (hn : 1 ≤ n) : MDifferentiableWithinAt I I' f s x := by
   suffices h : MDifferentiableWithinAt I I' f (s ∩ f ⁻¹' (extChartAt I' (f x)).source) x by
     rwa [mdifferentiableWithinAt_inter'] at h
@@ -175,18 +457,18 @@ theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n
   rw [mdifferentiableWithinAt_iff]
   exact ⟨hf.1.mono inter_subset_left, (hf.2.differentiableWithinAt hn).mono (by mfld_set_tac)⟩
 
-theorem ContMDiffAt.mdifferentiableAt (hf : ContMDiffAt I I' n f x) (hn : 1 ≤ n) :
+theorem MDifferentiableAt.mdifferentiableAt (hf : MDifferentiableAt I I' n f x) (hn : 1 ≤ n) :
     MDifferentiableAt I I' f x :=
-  mdifferentiableWithinAt_univ.1 <| ContMDiffWithinAt.mdifferentiableWithinAt hf hn
+  mdifferentiableWithinAt_univ.1 <| MDifferentiableWithinAt.mdifferentiableWithinAt hf hn
 
-theorem ContMDiffOn.mdifferentiableOn (hf : ContMDiffOn I I' n f s) (hn : 1 ≤ n) :
+theorem MDifferentiableOn.mdifferentiableOn (hf : MDifferentiableOn I I' n f s) (hn : 1 ≤ n) :
     MDifferentiableOn I I' f s := fun x hx => (hf x hx).mdifferentiableWithinAt hn
 
 nonrec theorem SmoothWithinAt.mdifferentiableWithinAt (hf : SmoothWithinAt I I' f s x) :
     MDifferentiableWithinAt I I' f s x :=
   hf.mdifferentiableWithinAt le_top
 
-theorem ContMDiff.mdifferentiable (hf : ContMDiff I I' n f) (hn : 1 ≤ n) : MDifferentiable I I' f :=
+theorem MDifferentiable.mdifferentiable (hf : MDifferentiable I I' n f) (hn : 1 ≤ n) : MDifferentiable I I' f :=
   fun x => (hf x).mdifferentiableAt hn
 
 nonrec theorem SmoothAt.mdifferentiableAt (hf : SmoothAt I I' f x) : MDifferentiableAt I I' f x :=
@@ -196,7 +478,7 @@ nonrec theorem SmoothOn.mdifferentiableOn (hf : SmoothOn I I' f s) : MDifferenti
   hf.mdifferentiableOn le_top
 
 theorem Smooth.mdifferentiable (hf : Smooth I I' f) : MDifferentiable I I' f :=
-  ContMDiff.mdifferentiable hf le_top
+  MDifferentiable.mdifferentiable hf le_top
 
 theorem Smooth.mdifferentiableAt (hf : Smooth I I' f) : MDifferentiableAt I I' f x :=
   hf.mdifferentiable x
