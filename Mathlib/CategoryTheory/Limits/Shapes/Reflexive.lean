@@ -549,10 +549,10 @@ underlying parallel pair. -/
 noncomputable def inclusionWalkingReflexivePairColimitEquiv
     [HasCoequalizer (F.map left) (F.map right)] :
     colimit F ≅ coequalizer (F.map left) (F.map right) :=
-  (Functor.Final.colimitIso WalkingParallelPair.inclusionWalkingReflexivePair F).symm.trans
-    <| HasColimit.isoOfNatIso
-      <| diagramIsoParallelPair
-        <| WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F
+  (Functor.Final.colimitIso WalkingParallelPair.inclusionWalkingReflexivePair F).symm.trans <|
+    HasColimit.isoOfNatIso <|
+      diagramIsoParallelPair <|
+        WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F
 
 @[simp]
 lemma inclusionWalkingReflexivePairEquiv_obj (G : ReflexiveCofork F) :
@@ -561,15 +561,15 @@ lemma inclusionWalkingReflexivePairEquiv_obj (G : ReflexiveCofork F) :
 /-- A reflexive cofork is a colimit cocone if and only if the underlying cofork is. -/
 noncomputable def ReflexiveCofork.isColimitEquiv (G : ReflexiveCofork F) :
     IsColimit (G.toCofork) ≃ IsColimit G :=
-  (IsColimit.precomposeHomEquiv (diagramIsoParallelPair _).symm (G.whisker _)).trans
-    <| Functor.Final.isColimitWhiskerEquiv _ _
+  (IsColimit.precomposeHomEquiv (diagramIsoParallelPair _).symm (G.whisker _)).trans <|
+    Functor.Final.isColimitWhiskerEquiv _ _
 
 variable {A B : C} {f g : A ⟶ B} [IsReflexivePair f g]
 
 instance ofIsReflexivePairHasColimit_of_hasCoequalizer [HasCoequalizer f g] :
     HasColimit (ofIsReflexivePair f g) := by
-  suffices _ : HasColimit
-      <| WalkingParallelPair.inclusionWalkingReflexivePair ⋙ (ofIsReflexivePair f g) by
+  suffices _ : HasColimit <|
+    WalkingParallelPair.inclusionWalkingReflexivePair ⋙ (ofIsReflexivePair f g) by
     · apply Functor.Final.hasColimit_of_comp WalkingParallelPair.inclusionWalkingReflexivePair
   exact Limits.hasColimitOfIso <| inclusionWalkingReflexivePairOfIsReflexivePairIso f g
 
@@ -577,8 +577,8 @@ instance ofIsReflexivePairHasColimit_of_hasCoequalizer [HasCoequalizer f g] :
 walking reflexive pair -/
 noncomputable def ofIsReflexivePairColimitEquiv [HasCoequalizer f g] :
     colimit (ofIsReflexivePair f g) ≅ coequalizer f g :=
-  (Functor.Final.colimitIso _ _).symm.trans
-    <| HasColimit.isoOfNatIso <| inclusionWalkingReflexivePairOfIsReflexivePairIso _ _
+  (Functor.Final.colimitIso _ _).symm.trans <|
+    HasColimit.isoOfNatIso <| inclusionWalkingReflexivePairOfIsReflexivePairIso _ _
 
 end Limits
 
