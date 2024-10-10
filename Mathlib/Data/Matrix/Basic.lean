@@ -1234,6 +1234,8 @@ def entryAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
   toFun M := M i j
   map_add' _ _ := rfl
 
+-- It is necessary to spell out the name of the coercion explicitly on the RHS
+-- for unification to succeed
 lemma entryAddHom_eq_comp {i : m} {j : n} :
     entryAddHom α i j =
       ((Pi.evalAddHom _ j).comp (Pi.evalAddHom _ i)).comp (AddHomClass.toAddHom ofAddEquiv.symm) :=
@@ -1256,6 +1258,8 @@ def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
   map_add' _ _ := rfl
   map_zero' := rfl
 
+-- It is necessary to spell out the name of the coercion explicitly on the RHS
+-- for unification to succeed
 lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
     entryAddMonoidHom α i j =
       ((Pi.evalAddMonoidHom _ j).comp (Pi.evalAddMonoidHom _ i)).comp
@@ -1287,6 +1291,8 @@ def entryLinearMap (i : m) (j : n) :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+-- It is necessary to spell out the name of the coercion explicitly on the RHS
+-- for unification to succeed
 lemma entryLinearMap_eq_comp {i : m} {j : n} :
     entryLinearMap R α i j =
       LinearMap.proj j ∘ₗ LinearMap.proj i ∘ₗ ofLinearEquiv.symm.toLinearMap := by
