@@ -70,7 +70,7 @@ initialize addLinter setOptionLinter
 end Style.setOption
 
 /-- The `nameCheck` linter emits a warning on declarations whose name is non-standard style.
-(Currently, this only includes declarations whose names include a double underscore.)
+(Currently, this only includes declarations whose name includes a double underscore.)
 
 **Why is this bad?** Double underscores in theorem names can be considered non-standard style and
 probably have been introduced by accident
