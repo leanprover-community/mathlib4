@@ -69,8 +69,8 @@ def parse_response(resp: str) -> Dict[str, Any]:
 
 def evaluate_in_sage(query: str) -> Dict[str, Any]:
     data = urllib.parse.urlencode({'code': query}).encode('utf-8')
-    headers = {'content-type': 'application/x-www-form-urlencoded',
-               'user-agent': 'LeanProver (https://leanprover-community.github.io/)'}
+    headers = {'Content-Type': 'application/x-www-form-urlencoded',
+               'User-Agent': 'LeanProver (https://leanprover-community.github.io/)'}
     req = urllib.request.Request('https://sagecell.sagemath.org/service', data=data, headers=headers)
     with urllib.request.urlopen(req) as response:
         response_data = response.read().decode()
