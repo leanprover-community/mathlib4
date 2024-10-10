@@ -214,20 +214,16 @@ theorem hasMFDerivWithinAt_fst (s : Set (M × M')) (x : M × M') :
       (ContinuousLinearMap.fst 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2)) :=
   (hasMFDerivAt_fst I I' x).hasMFDerivWithinAt
 
-omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableAt_fst {x : M × M'} : MDifferentiableAt (I.prod I') I Prod.fst x :=
-  (contMDiffAt_fst).mdifferentiableAt le_rfl
+  (hasMFDerivAt_fst I I' x).mdifferentiableAt
 
-omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableWithinAt_fst {s : Set (M × M')} {x : M × M'} :
     MDifferentiableWithinAt (I.prod I') I Prod.fst s x :=
   (mdifferentiableAt_fst I I').mdifferentiableWithinAt
 
-omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiable_fst : MDifferentiable (I.prod I') I (Prod.fst : M × M' → M) := fun _ =>
   mdifferentiableAt_fst I I'
 
-omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableOn_fst {s : Set (M × M')} : MDifferentiableOn (I.prod I') I Prod.fst s :=
   (mdifferentiable_fst I I').mdifferentiableOn
 
@@ -280,20 +276,16 @@ theorem hasMFDerivWithinAt_snd (s : Set (M × M')) (x : M × M') :
       (ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2)) :=
   (hasMFDerivAt_snd I I' x).hasMFDerivWithinAt
 
-omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableAt_snd {x : M × M'} : MDifferentiableAt (I.prod I') I' Prod.snd x :=
-  contMDiffAt_snd.mdifferentiableAt le_rfl
+  (hasMFDerivAt_snd I I' x).mdifferentiableAt
 
-omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableWithinAt_snd {s : Set (M × M')} {x : M × M'} :
     MDifferentiableWithinAt (I.prod I') I' Prod.snd s x :=
   (mdifferentiableAt_snd I I').mdifferentiableWithinAt
 
-omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiable_snd : MDifferentiable (I.prod I') I' (Prod.snd : M × M' → M') := fun _ =>
   mdifferentiableAt_snd I I'
 
-omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableOn_snd {s : Set (M × M')} : MDifferentiableOn (I.prod I') I' Prod.snd s :=
   (mdifferentiable_snd I I').mdifferentiableOn
 
@@ -393,13 +385,13 @@ theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
     rw [this, mfderiv_comp (I' := I)]
     · simp only [mfderiv_fst, id_eq]
       rfl
-    · exact hf.comp _ (smooth_id.prod_mk smooth_const).mdifferentiableAt
+    · apply hf.comp _  ((mdifferentiableAt_id _).prod_mk (mdifferentiableAt_const I I'))
     · exact mdifferentiableAt_fst I I'
   · have : (fun z : M × M' => f (p.1, z.2)) = (fun z : M' => f (p.1, z)) ∘ Prod.snd := rfl
     rw [this, mfderiv_comp (I' := I')]
     · simp only [mfderiv_snd, id_eq]
       rfl
-    · exact hf.comp _ (smooth_const.prod_mk smooth_id).mdifferentiableAt
+    · exact hf.comp _ ((mdifferentiableAt_const I' I).prod_mk (mdifferentiableAt_id _))
     · exact mdifferentiableAt_snd I I'
 
 /-- The total derivative of a function in two variables is the sum of the partial derivatives.
