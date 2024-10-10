@@ -40,7 +40,7 @@ theorem colimit_exists_rep (x : colimit (C := SheafedSpace C) F) :
     (isColimitOfPreserves (SheafedSpace.forget _) (colimit.isColimit F)) x
 
 instance {X Y : SheafedSpace C} (f g : X ⟶ Y) : Epi (coequalizer.π f g).base := by
-  rw [←show _ = (coequalizer.π f g).base from
+  rw [← show _ = (coequalizer.π f g).base from
       ι_comp_coequalizerComparison f g (SheafedSpace.forget C),
       ← PreservesCoequalizer.iso_hom]
   apply epi_comp
