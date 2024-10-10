@@ -28,7 +28,7 @@ Equiv, MulEquiv, AddEquiv
 
 open Function
 
-variable {F α β A B M N P Q G H : Type*}
+variable {F α β M N P G H : Type*}
 
 /-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
 @[to_additive (attr := simps)
@@ -168,7 +168,7 @@ theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α
 
 namespace MulEquiv
 section Mul
-variable [Mul M] [Mul N] [Mul P] [Mul Q]
+variable [Mul M] [Mul N] [Mul P]
 
 section coe
 
@@ -387,6 +387,18 @@ theorem eq_symm_comp {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
 theorem symm_comp_eq {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
     e.symm ∘ g = f ↔ g = e ∘ f :=
   e.toEquiv.symm_comp_eq f g
+
+@[to_additive (attr := simp)]
+theorem _root_.MulEquivClass.apply_coe_symm_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
+    [MulEquivClass F α β] (e : F) (x : β) :
+    e ((e : α ≃* β).symm x) = x :=
+  (e : α ≃* β).right_inv x
+
+@[to_additive (attr := simp)]
+theorem _root_.MulEquivClass.coe_symm_apply_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
+    [MulEquivClass F α β] (e : F) (x : α) :
+    (e : α ≃* β).symm (e x) = x :=
+  (e : α ≃* β).left_inv x
 
 end symm
 

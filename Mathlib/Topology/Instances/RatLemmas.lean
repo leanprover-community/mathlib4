@@ -36,7 +36,7 @@ local notation "ℚ∞" => OnePoint ℚ
 
 namespace Rat
 
-variable {p q : ℚ} {s t : Set ℚ}
+variable {p : ℚ} {s : Set ℚ}
 
 theorem interior_compact_eq_empty (hs : IsCompact s) : interior s = ∅ :=
   isDenseEmbedding_coe_real.toIsDenseInducing.interior_compact_eq_empty dense_irrational hs
@@ -72,7 +72,7 @@ theorem not_secondCountableTopology_opc : ¬SecondCountableTopology ℚ∞ := by
   exact not_firstCountableTopology_opc inferInstance
 
 instance : TotallyDisconnectedSpace ℚ := by
-  clear p q s t
+  clear p s
   refine ⟨fun s hsu hs x hx y hy => ?_⟩; clear hsu
   by_contra! H : x ≠ y
   wlog hlt : x < y

@@ -117,7 +117,7 @@ theorem eps_pos (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 0 < ε :=
 
 theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
     (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 100 / ε ^ 5 ≤ m :=
-  (div_le_of_nonneg_of_le_mul (eps_pow_five_pos hPε).le (by positivity) hPε).trans <| by
+  (div_le_of_le_mul₀ (eps_pow_five_pos hPε).le (by positivity) hPε).trans <| by
     norm_cast
     rwa [Nat.le_div_iff_mul_le' (stepBound_pos (P.parts_nonempty <|
       univ_nonempty.ne_empty).card_pos), stepBound, mul_left_comm, ← mul_pow]
@@ -175,8 +175,8 @@ theorem initialBound_pos : 0 < initialBound ε l :=
 
 theorem hundred_lt_pow_initialBound_mul {ε : ℝ} (hε : 0 < ε) (l : ℕ) :
     100 < ↑4 ^ initialBound ε l * ε ^ 5 := by
-  rw [← rpow_natCast 4, ← div_lt_iff (pow_pos hε 5), lt_rpow_iff_log_lt _ zero_lt_four, ←
-    div_lt_iff, initialBound, Nat.cast_max, Nat.cast_max]
+  rw [← rpow_natCast 4, ← div_lt_iff₀ (pow_pos hε 5), lt_rpow_iff_log_lt _ zero_lt_four, ←
+    div_lt_iff₀, initialBound, Nat.cast_max, Nat.cast_max]
   · push_cast
     exact lt_max_of_lt_right (lt_max_of_lt_right <| Nat.lt_floor_add_one _)
   · exact log_pos (by norm_num)
