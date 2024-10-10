@@ -73,7 +73,7 @@ end Style.setOption
 (Currently, this only includes declarations whose name includes a double underscore.)
 
 **Why is this bad?** Double underscores in theorem names can be considered non-standard style and
-probably have been introduced by accident
+probably have been introduced by accident.
 **How to fix this?** Use single underscores to separate parts of a name, following standard naming
 conventions.
 -/
