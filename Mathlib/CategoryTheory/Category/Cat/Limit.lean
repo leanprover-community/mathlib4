@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Mario Carneiro, Emily Riehl
 -/
+import Mathlib.AlgebraicTopology.NerveAdjunction
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # The category of small categories has all small limits.
@@ -14,6 +16,12 @@ An object in the limit consists of a family of objects,
 which are carried to one another by the functors in the diagram.
 A morphism between two such objects is a family of morphisms between the corresponding objects,
 which are carried to one another by the action on morphisms of the functors in the diagram.
+
+# The category of small categories has all small colimits.
+
+A reflective subcategory inherits any colimits present in the ambient category, constructed
+by applying the reflector. Thus the fully faithful nerve embedding into simplicial sets and
+its left adjoint provide a construction of colimits in the category of small categories.
 
 ## Future work
 Can the indexing category live in a lower universe?
@@ -149,6 +157,12 @@ instance : PreservesLimits Cat.objects.{v, v} where
         preservesLimitOfPreservesLimitCone (HasLimits.limitConeIsLimit F)
           (Limits.IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Cat.objects))
             (Cones.ext (by rfl) (by aesop_cat))) }
+
+/-- The category of small categories has all small colimits as a reflective subcategory of the
+category of simplicial sets, which has all small colimits.-/
+
+instance : HasColimits Cat.{v, v} :=
+  hasColimits_of_reflective nerveFunctor
 
 end Cat
 
