@@ -106,12 +106,7 @@ def ker : TwoSidedIdeal R :=
     (by rintro _ _ (h : f _ = 0); simp [h])
 
 lemma mem_ker {x : R} : x ∈ ker f ↔ f x = 0 := by
-  delta ker; rw [mem_mk']
-  · rfl
-  · rintro _ _ (h1 : f _ = 0) (h2 : f _ = 0); simp [h1, h2]
-  · rintro _ (h : f _ = 0); simp [h]
-  · rintro _ _ (h : f _ = 0); simp [h]
-  · rintro _ _ (h : f _ = 0); simp [h]
+  delta ker; rw [mem_mk']; rfl
 
 end NonUnitalNonAssocRing
 
@@ -226,6 +221,7 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
     smul_mem' := fun r x hx => I.mul_mem_left r x hx }
   monotone' _ _ h _ h' := h h'
 
+@[simp]
 lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ asIdeal I ↔ x ∈ I := by simp [asIdeal]
 
@@ -266,8 +262,39 @@ def orderIsoIdeal : TwoSidedIdeal R ≃o Ideal R where
   right_inv J := SetLike.ext fun x ↦ mem_span_iff.trans
     ⟨fun h ↦ mem_mk' _ _ _ _ _ _ _ |>.1 <| h (mk'
       J J.zero_mem J.add_mem J.neg_mem (J.mul_mem_left _) (J.mul_mem_right _))
-      (fun x => by simp [mem_mk']), by aesop⟩
+      (fun x => by simp), by aesop⟩
 
 end CommRing
 
 end TwoSidedIdeal
+
+namespace Ideal
+variable {R : Type*} [Ring R]
+
+/-- Bundle an `Ideal` that is already two-sided as a `TwoSidedIdeal`. -/
+def toTwoSided (I : Ideal R) (mul_mem_right : ∀ {x y}, x ∈ I → x * y ∈ I) : TwoSidedIdeal R :=
+  TwoSidedIdeal.mk' I I.zero_mem I.add_mem I.neg_mem (I.smul_mem _) mul_mem_right
+
+@[simp]
+lemma mem_toTwoSided {I : Ideal R} {h} {x : R} :
+    x ∈ I.toTwoSided h ↔ x ∈ I := by
+  simp [toTwoSided]
+
+@[simp]
+lemma coe_toTwoSided (I : Ideal R) (h) : (I.toTwoSided h : Set R) = I := by
+  simp [toTwoSided]
+
+@[simp]
+lemma toTwoSided_asIdeal (I : TwoSidedIdeal R) (h) : (TwoSidedIdeal.asIdeal I).toTwoSided h = I :=
+  by ext; simp
+
+@[simp]
+lemma asIdeal_toTwoSided (I : Ideal R) (h) : TwoSidedIdeal.asIdeal (I.toTwoSided h) = I := by
+  ext
+  simp
+
+instance : CanLift (Ideal R) (TwoSidedIdeal R) TwoSidedIdeal.asIdeal
+    (fun I => ∀ {x y}, x ∈ I → x * y ∈ I) where
+  prf I mul_mem_right := ⟨I.toTwoSided mul_mem_right, asIdeal_toTwoSided ..⟩
+
+end Ideal

@@ -83,7 +83,7 @@ sets with finite measures.
 The term "measure-dense" is justified by the fact that the approximating condition translates
 to the usual notion of density in the metric space made by constant indicators of measurable sets
 equipped with the `Lᵖ` norm. -/
-structure Measure.MeasureDense (μ : Measure X) (𝒜 : Set (Set X)) : Prop :=
+structure Measure.MeasureDense (μ : Measure X) (𝒜 : Set (Set X)) : Prop where
   /-- Each set has to be measurable. -/
   measurable : ∀ s ∈ 𝒜, MeasurableSet s
   /-- Any measurable set can be approximated by sets in the family. -/
@@ -319,7 +319,7 @@ section IsSeparable
 
 The term "separable" is justified by the fact that the definition translates to the usual notion
 of separability in the metric space made by constant indicators equipped with the `Lᵖ` norm. -/
-class IsSeparable (μ : Measure X) : Prop :=
+class IsSeparable (μ : Measure X) : Prop where
   exists_countable_measureDense : ∃ 𝒜, 𝒜.Countable ∧ μ.MeasureDense 𝒜
 
 /-- By definition, a separable measure admits a countable and measure-dense family of sets. -/
@@ -425,7 +425,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   refine ⟨D, ?_, ?_⟩
   · -- Countability directly follows from countability of `u` and `𝒜₀`. The function `f` below
     -- is the uncurryfied version of `key`, which is easier to manipulate as countability of the
-    -- domain is automatically infered.
+    -- domain is automatically inferred.
     let f (nds : Σ n : ℕ, (Fin n → u) × (Fin n → 𝒜₀)) : Lp E p μ := key nds.1 nds.2.1 nds.2.2
     have := count_𝒜₀.to_subtype
     have := countable_u.to_subtype

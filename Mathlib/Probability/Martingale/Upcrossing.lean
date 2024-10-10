@@ -148,7 +148,7 @@ noncomputable def lowerCrossingTime [Preorder ι] [OrderBot ι] [InfSet ι] (a b
 section
 
 variable [Preorder ι] [OrderBot ι] [InfSet ι]
-variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n m : ℕ} {ω : Ω}
+variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n : ℕ} {ω : Ω}
 
 @[simp]
 theorem upperCrossingTime_zero : upperCrossingTime a b f N 0 = ⊥ :=

@@ -165,6 +165,43 @@ theorem const_comp (x : SimplexCategory) {y z : SimplexCategory}
     const x y i ≫ f = const x z (f.toOrderHom i) :=
   rfl
 
+theorem const_fac_thru_zero (n m : SimplexCategory) (i : Fin (m.len + 1)) :
+    const n m i = const n [0] 0 ≫ SimplexCategory.const [0] m i := by
+  rw [const_comp]; rfl
+
+theorem eq_const_of_zero {n : SimplexCategory} (f : ([0] : SimplexCategory) ⟶ n) :
+    f = const _ n (f.toOrderHom 0) := by
+  ext x; match x with | 0 => rfl
+
+theorem exists_eq_const_of_zero {n : SimplexCategory} (f : ([0] : SimplexCategory) ⟶ n) :
+    ∃ a, f = const _ n a := ⟨_, eq_const_of_zero _⟩
+
+theorem eq_const_to_zero {n : SimplexCategory} (f : n ⟶ [0]) :
+    f = const n _ 0 := by
+  ext : 3
+  apply @Subsingleton.elim (Fin 1)
+
+theorem eq_of_one_to_one (f : ([1] : SimplexCategory) ⟶ [1]) :
+    (∃ a, f = const [1] _ a) ∨ f = 𝟙 _ := by
+  match e0 : f.toOrderHom 0, e1 : f.toOrderHom 1 with
+  | 0, 0 | 1, 1 =>
+    refine .inl ⟨f.toOrderHom 0, ?_⟩
+    ext i : 3
+    match i with
+    | 0 => rfl
+    | 1 => exact e1.trans e0.symm
+  | 0, 1 =>
+    right
+    ext i : 3
+    match i with
+    | 0 => exact e0
+    | 1 => exact e1
+  | 1, 0 =>
+    have := f.toOrderHom.monotone (by decide : (0 : Fin 2) ≤ 1)
+    rw [e0, e1] at this
+    exact Not.elim (by decide) this
+
+
 /-- Make a morphism `[n] ⟶ [m]` from a monotone map between fin's.
 This is useful for constructing morphisms between `[n]` directly
 without identifying `n` with `[n].len`.
@@ -172,6 +209,36 @@ without identifying `n` with `[n].len`.
 @[simp]
 def mkHom {n m : ℕ} (f : Fin (n + 1) →o Fin (m + 1)) : ([n] : SimplexCategory) ⟶ [m] :=
   SimplexCategory.Hom.mk f
+
+/-- The morphism `[1] ⟶ [n]` that picks out a specified `h : i ≤ j` in `Fin (n+1)`.-/
+def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n] :=
+  SimplexCategory.mkHom {
+    toFun := fun | 0 => i | 1 => j
+    monotone' := fun
+      | 0, 0, _ | 1, 1, _ => le_rfl
+      | 0, 1, _ => h
+  }
+
+/-- The morphism `[1] ⟶ [n]` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`.-/
+def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
+  SimplexCategory.mkHom {
+    toFun := fun | 0 => i.castSucc | 1 => i.succ
+    monotone' := fun
+      | 0, 0, _ | 1, 1, _ => le_rfl
+      | 0, 1, _ => Fin.castSucc_le_succ i
+  }
+
+/-- The morphism `[2] ⟶ [n]` that picks out a specified composite of morphisms in `Fin (n+1)`.-/
+def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
+    ([2] : SimplexCategory) ⟶ [n] :=
+  SimplexCategory.mkHom {
+    toFun := fun | 0 => i | 1 => j | 2 => k
+    monotone' := fun
+      | 0, 0, _ | 1, 1, _ | 2, 2, _  => le_rfl
+      | 0, 1, _ => h₁
+      | 1, 2, _ => h₂
+      | 0, 2, _ => Fin.le_trans h₁ h₂
+  }
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
@@ -400,6 +467,40 @@ lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fi
       · rwa [succ_le_castSucc_iff, lt_pred_iff]
       rw [succ_pred]
 
+
+theorem eq_of_one_to_two (f : ([1] : SimplexCategory) ⟶ [2]) :
+    f = (δ (n := 1) 0) ∨ f = (δ (n := 1) 1) ∨ f = (δ (n := 1) 2) ∨
+      ∃ a, f = SimplexCategory.const _ _ a := by
+  have : f.toOrderHom 0 ≤ f.toOrderHom 1 := f.toOrderHom.monotone (by decide : (0 : Fin 2) ≤ 1)
+  match e0 : f.toOrderHom 0, e1 : f.toOrderHom 1 with
+  | 1, 2 =>
+    left
+    ext i : 3
+    match i with
+    | 0 => exact e0
+    | 1 => exact e1
+  | 0, 2 =>
+    right; left
+    ext i : 3
+    match i with
+    | 0 => exact e0
+    | 1 => exact e1
+  | 0, 1 =>
+    right; right; left
+    ext i : 3
+    match i with
+    | 0 => exact e0
+    | 1 => exact e1
+  | 0, 0 | 1, 1 | 2, 2 =>
+    right; right; right; use f.toOrderHom 0
+    ext i : 3
+    match i with
+    | 0 => rfl
+    | 1 => exact e1.trans e0.symm
+  | 1, 0 | 2, 0 | 2, 1 =>
+    rw [e0, e1] at this
+    exact Not.elim (by decide) this
+
 end Generators
 
 section Skeleton
@@ -489,6 +590,14 @@ def inclusion {n : ℕ} : SimplexCategory.Truncated n ⥤ SimplexCategory :=
 
 instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Full := FullSubcategory.full _
 instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
+
+/-- A proof that the full subcategory inclusion is fully faithful.-/
+noncomputable def inclusion.fullyFaithful (n : ℕ) :
+    (inclusion : Truncated n ⥤ _).op.FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
+
+@[ext]
+theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
+    f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
 
 end Truncated
 

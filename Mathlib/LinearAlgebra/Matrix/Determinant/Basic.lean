@@ -747,7 +747,7 @@ theorem det_fin_one_of (a : R) : det !![a] = a :=
 theorem det_fin_two (A : Matrix (Fin 2) (Fin 2) R) : det A = A 0 0 * A 1 1 - A 0 1 * A 1 0 := by
   simp only [det_succ_row_zero, det_unique, Fin.default_eq_zero, submatrix_apply,
     Fin.succ_zero_eq_one, Fin.sum_univ_succ, Fin.val_zero, Fin.zero_succAbove, univ_unique,
-    Fin.val_succ, Fin.coe_fin_one, Fin.succ_succAbove_zero, sum_singleton]
+    Fin.val_succ, Fin.val_eq_zero, Fin.succ_succAbove_zero, sum_singleton]
   ring
 
 @[simp]
@@ -763,7 +763,7 @@ theorem det_fin_three (A : Matrix (Fin 3) (Fin 3) R) :
   simp only [det_succ_row_zero, ← Nat.not_even_iff_odd, submatrix_apply, Fin.succ_zero_eq_one,
     submatrix_submatrix, det_unique, Fin.default_eq_zero, comp_apply, Fin.succ_one_eq_two,
     Fin.sum_univ_succ, Fin.val_zero, Fin.zero_succAbove, univ_unique, Fin.val_succ,
-    Fin.coe_fin_one, Fin.succ_succAbove_zero, sum_singleton, Fin.succ_succAbove_one, even_add_self]
+    Fin.val_eq_zero, Fin.succ_succAbove_zero, sum_singleton, Fin.succ_succAbove_one, even_add_self]
   ring
 
 end Matrix

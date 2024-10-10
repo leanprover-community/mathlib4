@@ -15,12 +15,11 @@ This file contains the `FiniteDimensional ℝ ℂ` instance, as well as some res
 (`finrank` and `Module.rank`).
 -/
 
-open FiniteDimensional
+open Module
 
 namespace Complex
 
-instance : FiniteDimensional ℝ ℂ :=
-  of_fintype_basis basisOneI
+instance : FiniteDimensional ℝ ℂ := .of_fintype_basis basisOneI
 
 @[simp]
 theorem finrank_real_complex : finrank ℝ ℂ = 2 := by
@@ -50,8 +49,8 @@ theorem rank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
     simp only [Cardinal.lift_id']
 
 theorem finrank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
-    FiniteDimensional.finrank ℝ E = 2 * FiniteDimensional.finrank ℂ E := by
-  rw [← FiniteDimensional.finrank_mul_finrank ℝ ℂ E, Complex.finrank_real_complex]
+    Module.finrank ℝ E = 2 * Module.finrank ℂ E := by
+  rw [← Module.finrank_mul_finrank ℝ ℂ E, Complex.finrank_real_complex]
 
 section Rational
 

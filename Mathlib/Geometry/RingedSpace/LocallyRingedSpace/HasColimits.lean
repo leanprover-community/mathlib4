@@ -215,7 +215,7 @@ instance coequalizer_π_stalk_isLocalRingHom (x : Y) :
   constructor
   rintro a ha
   rcases TopCat.Presheaf.germ_exist _ _ a with ⟨U, hU, s, rfl⟩
-  erw [PresheafedSpace.stalkMap_germ_apply (coequalizer.π f.1 g.1 : _) U ⟨_, hU⟩] at ha
+  rw [PresheafedSpace.stalkMap_germ_apply (coequalizer.π f.1 g.1 : _) U _ hU] at ha
   let V := imageBasicOpen f g U s
   have hV : (coequalizer.π f.1 g.1).base ⁻¹' ((coequalizer.π f.1 g.1).base '' V.1) = V.1 :=
     imageBasicOpen_image_preimage f g U s
@@ -226,10 +226,10 @@ instance coequalizer_π_stalk_isLocalRingHom (x : Y) :
     imageBasicOpen_image_open f g U s
   have VleU : (⟨(coequalizer.π f.val g.val).base '' V.1, V_open⟩ : TopologicalSpace.Opens _) ≤ U :=
     Set.image_subset_iff.mpr (Y.toRingedSpace.basicOpen_le _)
-  have hxV : x ∈ V := ⟨⟨_, hU⟩, ha, rfl⟩
+  have hxV : x ∈ V := ⟨hU, ha⟩
   erw [←
-    (coequalizer f.val g.val).presheaf.germ_res_apply (homOfLE VleU)
-      ⟨_, @Set.mem_image_of_mem _ _ (coequalizer.π f.val g.val).base x V.1 hxV⟩ s]
+    (coequalizer f.val g.val).presheaf.germ_res_apply (homOfLE VleU) _
+      (@Set.mem_image_of_mem _ _ (coequalizer.π f.val g.val).base x V.1 hxV) s]
   apply RingHom.isUnit_map
   rw [← isUnit_map_iff ((coequalizer.π f.val g.val : _).c.app _), ← comp_apply,
     NatTrans.naturality, comp_apply, ← isUnit_map_iff (Y.presheaf.map (eqToHom hV').op)]
@@ -247,6 +247,8 @@ noncomputable def coequalizer : LocallyRingedSpace where
   localRing x := by
     obtain ⟨y, rfl⟩ :=
       (TopCat.epi_iff_surjective (coequalizer.π f.val g.val).base).mp inferInstance x
+    -- TODO: this instance was found automatically before #6045
+    have _ : IsLocalRingHom ((coequalizer.π f.val g.val).stalkMap y) := inferInstance
     exact ((coequalizer.π f.val g.val : _).stalkMap y).domain_localRing
 
 /-- The explicit coequalizer cofork of locally ringed spaces. -/
@@ -275,9 +277,12 @@ noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g)
     -- but this is no longer possible
     set h := _
     change IsLocalRingHom h
-    suffices IsLocalRingHom (((coequalizerCofork f g).π.val.stalkMap _).comp h) from
-      isLocalRingHom_of_comp _ ((coequalizerCofork f g).π.val.stalkMap _)
-    change IsLocalRingHom (_ ≫ (coequalizerCofork f g).π.val.stalkMap y)
+    suffices _ : IsLocalRingHom (((coequalizerCofork f g).π.1.stalkMap _).comp h) by
+      apply isLocalRingHom_of_comp _ ((coequalizerCofork f g).π.1.stalkMap _)
+    -- note to reviewers: this `change` is now more brittle because it now has to fully resolve
+    -- the type to be able to search for `MonoidHomClass`, even though of course all homs in
+    -- `CommRingCat` are clearly such
+    change IsLocalRingHom (h ≫ (coequalizerCofork f g).π.val.stalkMap y)
     erw [← PresheafedSpace.stalkMap.comp]
     apply isLocalRingHom_stalkMap_congr _ _ (coequalizer.π_desc s.π.1 e).symm y
     infer_instance
