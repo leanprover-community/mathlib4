@@ -5,14 +5,11 @@ Authors: Damiano Testa, Moritz Firsching
 -/
 
 import Lean.Elab.Command
-open Lean Parser Elab Command Meta
-
 
 /-!
 This file contains functions that are used by some linters.
 -/
-
-
+open Lean Parser Elab Command Meta
 namespace Mathlib.Linter
 
 /--

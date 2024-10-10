@@ -69,43 +69,38 @@ initialize addLinter setOptionLinter
 
 end Style.setOption
 
-/-- The `check_declID` linter: if it emits a warning, then a declID is considered
-non-standard style.  -/
-register_option linter.style.check_declID : Bool := {
-  defValue := false
-  descr := "enable the `setOption` linter"
-}
-
-namespace Style.checkDeclID
-
-/-- Checks whether a given identifier name contains "__". -/
-def contains_double_underscore (stx : Syntax) : Bool :=
-  match stx.getSubstring? with
-  | some str => 1 < (str.toString.splitOn "__").length
-  | none => false
-
-/-- The `checkDeclID` linter: if this linter emits a warning, then a declID is considered
-non-standard style. Currently we only check if it contains a double underscore ("__") as a
-substring.
+/-- The `check_declID` linter emits a warning on declarations whose name is non-standard style.
+(Currently, this only includes declarations whose names include a double underscore.)
 
 **Why is this bad?** Double underscores in theorem names can be considered non-standard style and
 probably have been introduced by accident
 **How to fix this?** Use single underscores to separate parts of a name, following standard naming
 conventions.
 -/
-def checkDeclIDLinter: Linter where
-  run := withSetOptionIn fun _stx => do
+register_option linter.style.check_declID : Bool := {
+  defValue := false
+  descr := "enable the `check_declID` linter"
+}
+
+namespace Style.checkDeclID
+
+/-- Checks whether the original input of a given syntax contains "__". -/
+def contains_double_underscore (stx : Syntax) : Bool :=
+  match stx.getSubstring? with
+  | some str => 1 < (str.toString.splitOn "__").length
+  | none => false
+
+@[inherit_doc linter.style.check_declID]
+def checkDeclIDLinter: Linter where run := withSetOptionIn fun stx => do
     unless Linter.getLinterValue linter.style.check_declID (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    for stx in (← getNames _stx) do
-      if (contains_double_underscore stx) then
-        Linter.logLint linter.style.check_declID stx
-          m!"The declID '{stx}' contains '__', which does not follow naming conventions. \
-              Consider using single underscores instead."
-      else
-        continue
+    for sytax in (← getNames stx) do
+      if contains_double_underscore sytax then
+        Linter.logLint linter.style.check_declID sytax
+          m!"The declID '{sytax}' contains '__', which does not follow the mathlib naming \
+             conventions. Consider using single underscores instead."
 
 initialize addLinter checkDeclIDLinter
 
