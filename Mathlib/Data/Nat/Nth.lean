@@ -1,13 +1,14 @@
 /-
 Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Scott Morrison, Eric Rodriguez
+Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.OrderIsoNat
+import Mathlib.Order.WellFounded
 
 /-!
 # The `n`th Number Satisfying a Predicate
@@ -301,6 +302,10 @@ theorem count_nth_of_lt_card_finite {n : ℕ} (hp : (setOf p).Finite) (hlt : n <
 
 theorem count_nth_of_infinite (hp : (setOf p).Infinite) (n : ℕ) : count p (nth p n) = n :=
   count_nth fun hf => absurd hf hp
+
+theorem surjective_count_of_infinite_setOf (h : {n | p n}.Infinite) :
+    Function.Surjective (Nat.count p) :=
+  fun n => ⟨nth p n, count_nth_of_infinite h n⟩
 
 theorem count_nth_succ {n : ℕ} (hn : ∀ hf : (setOf p).Finite, n < hf.toFinset.card) :
     count p (nth p n + 1) = n + 1 := by rw [count_succ, count_nth hn, if_pos (nth_mem _ hn)]

@@ -294,4 +294,17 @@ theorem sum_int_mod (s : Multiset ℤ) (n : ℤ) : s.sum % n = (s.map (· % n)).
 theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)).prod % n := by
   induction s using Multiset.induction <;> simp [Int.mul_emod, *]
 
+section OrderedSub
+
+theorem sum_map_tsub [AddCommMonoid α] [PartialOrder α] [ExistsAddOfLE α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] [Sub α]
+    [OrderedSub α] (l : Multiset ι) {f g : ι → α} (hfg : ∀ x ∈ l, g x ≤ f x) :
+    (l.map fun x ↦ f x - g x).sum = (l.map f).sum - (l.map g).sum :=
+  eq_tsub_of_add_eq <| by
+    rw [← sum_map_add]
+    congr 1
+    exact map_congr rfl fun x hx => tsub_add_cancel_of_le <| hfg _ hx
+
+end OrderedSub
+
 end Multiset

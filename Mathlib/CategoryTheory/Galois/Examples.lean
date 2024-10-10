@@ -4,12 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.RepresentationTheory.Action.Basic
 import Mathlib.RepresentationTheory.Action.Concrete
 import Mathlib.RepresentationTheory.Action.Limits
-import Mathlib.CategoryTheory.Limits.FintypeCat
-import Mathlib.CategoryTheory.Limits.Shapes.Types
-import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Examples of Galois categories and fiber functors
@@ -25,9 +21,9 @@ universe u v w
 
 namespace CategoryTheory
 
-namespace FintypeCat
-
 open Limits Functor PreGaloisCategory
+
+namespace FintypeCat
 
 /-- Complement of the image of a morphism `f : X ⟶ Y` in `FintypeCat`. -/
 noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
@@ -152,6 +148,23 @@ theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
 theorem Action.isConnected_iff_transitive (X : Action FintypeCat (MonCat.of G)) [Nonempty X.V] :
     IsConnected X ↔ MulAction.IsPretransitive G X.V :=
   ⟨fun _ ↦ pretransitive_of_isConnected G X, fun _ ↦ isConnected_of_transitive G X.V⟩
+
+variable {G}
+
+/-- If `X` is a connected `G`-set and `x` is an element of `X`, `X` is isomorphic
+to the quotient of `G` by the stabilizer of `x` as `G`-sets. -/
+noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat (MonCat.of G))
+    [IsConnected X] (x : X.V) [Fintype (G ⧸ (MulAction.stabilizer G x))] :
+    X ≅ G ⧸ₐ MulAction.stabilizer G x :=
+  haveI : MulAction.IsPretransitive G X.V := Action.pretransitive_of_isConnected G X
+  let e : X.V ≃ G ⧸ MulAction.stabilizer G x :=
+    (Equiv.Set.univ X.V).symm.trans <|
+      (Equiv.setCongr ((MulAction.orbit_eq_univ G x).symm)).trans <|
+      MulAction.orbitEquivQuotientStabilizer G x
+  Iso.symm <| Action.mkIso (FintypeCat.equivEquivIso e.symm) <| fun σ : G ↦ by
+    ext (a : G ⧸ MulAction.stabilizer G x)
+    obtain ⟨τ, rfl⟩ := Quotient.exists_rep a
+    exact mul_smul σ τ x
 
 end FintypeCat
 

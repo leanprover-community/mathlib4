@@ -36,7 +36,7 @@ variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 
 section ConditionallyCompleteLattice
 
-variable [ConditionallyCompleteLattice β]
+variable [ConditionallyCompleteLattice β] {f : α → β}
 
 /-- Essential supremum of `f` with respect to measure `μ`: the smallest `c : β` such that
 `f x ≤ c` a.e. -/
@@ -67,6 +67,32 @@ theorem essSup_const (c : β) (hμ : μ ≠ 0) : essSup (fun _ : α => c) μ = c
 
 theorem essInf_const (c : β) (hμ : μ ≠ 0) : essInf (fun _ : α => c) μ = c :=
   have := NeZero.mk hμ; essInf_const' _
+
+section SMul
+variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+  [NoZeroSMulDivisors R ℝ≥0∞] {c : R}
+
+@[simp]
+lemma essSup_smul_measure (hc : c ≠ 0) (f : α → β) : essSup f (c • μ) = essSup f μ := by
+  simp_rw [essSup, Measure.ae_smul_measure_eq hc]
+
+end SMul
+
+variable [Nonempty α]
+
+lemma essSup_eq_ciSup (hμ : ∀ a, μ {a} ≠ 0) (hf : BddAbove (Set.range f)) :
+    essSup f μ = ⨆ a, f a := by rw [essSup, ae_eq_top.2 hμ, limsup_top_eq_ciSup hf]
+
+lemma essInf_eq_ciInf (hμ : ∀ a, μ {a} ≠ 0) (hf : BddBelow (Set.range f)) :
+    essInf f μ = ⨅ a, f a := by rw [essInf, ae_eq_top.2 hμ, liminf_top_eq_ciInf hf]
+
+variable [MeasurableSingletonClass α]
+
+@[simp] lemma essSup_count_eq_ciSup (hf : BddAbove (Set.range f)) :
+    essSup f .count = ⨆ a, f a := essSup_eq_ciSup (by simp) hf
+
+@[simp] lemma essInf_count_eq_ciInf (hf : BddBelow (Set.range f)) :
+    essInf f .count = ⨅ a, f a := essInf_eq_ciInf (by simp) hf
 
 end ConditionallyCompleteLattice
 
@@ -171,10 +197,6 @@ theorem essSup_mono_measure' {α : Type*} {β : Type*} {_ : MeasurableSpace α}
 theorem essInf_antitone_measure {f : α → β} (hμν : μ ≪ ν) : essInf f ν ≤ essInf f μ := by
   refine liminf_le_liminf_of_le (Measure.ae_le_iff_absolutelyContinuous.mpr hμν) ?_ ?_
   all_goals isBoundedDefault
-
-theorem essSup_smul_measure {f : α → β} {c : ℝ≥0∞} (hc : c ≠ 0) :
-    essSup f (c • μ) = essSup f μ := by
-  simp_rw [essSup, Measure.ae_smul_measure_eq hc]
 
 lemma essSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essSup f μ = ⨆ i, f i := by
   rw [essSup, ae_eq_top.2 hμ, limsup_top_eq_iSup]

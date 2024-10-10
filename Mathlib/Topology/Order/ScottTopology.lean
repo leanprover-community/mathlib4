@@ -107,7 +107,7 @@ lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) := fun _d _ _ _a ha ↦ (
 end Preorder
 
 section CompleteLattice
-variable [CompleteLattice α] {s t : Set α}
+variable [CompleteLattice α] {s : Set α}
 
 lemma dirSupInacc_iff_forall_sSup :
     DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
@@ -124,7 +124,7 @@ namespace Topology
 /-! ### Scott-Hausdorff topology -/
 
 section ScottHausdorff
-variable [Preorder α] {s : Set α}
+variable [Preorder α]
 
 /-- The Scott-Hausdorff topology.
 
@@ -334,7 +334,18 @@ lemma scott_eq_upper_of_completeLinearOrder : scott α = upper α := by
   letI := scott α
   rw [@isOpen_iff_Iic_compl_or_univ _ _ (scott α) ({ topology_eq_scott := rfl }) U]
 
+/- The upper topology on a complete linear order is the Scott topology -/
+instance [TopologicalSpace α] [IsUpper α] : IsScott α where
+  topology_eq_scott := by
+    rw [scott_eq_upper_of_completeLinearOrder]
+    exact IsUpper.topology_eq α
+
 end CompleteLinearOrder
+
+lemma isOpen_iff_scottContinuous_mem [Preorder α] {s : Set α} [TopologicalSpace α] [IsScott α] :
+    IsOpen s ↔ ScottContinuous fun x ↦ x ∈ s := by
+  rw [scottContinuous_iff_continuous]
+  exact isOpen_iff_continuous_mem
 
 end IsScott
 
