@@ -12,7 +12,7 @@ import Mathlib.Tactic.Ring.RingNF
 /-!
 # Fermat numbers
 
-The Fermat numbers are a sequence of natural numbers defined as 2^{2^n} + 1, for all natural
+The Fermat numbers are a sequence of natural numbers defined as `fermat n = 2^(2^n) + 1`, for all natural
 numbers n.
 
 ## Main theorems
