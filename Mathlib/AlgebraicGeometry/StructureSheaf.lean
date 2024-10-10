@@ -174,7 +174,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     fconstructor
     · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
     · simp only [add_mul, RingHom.map_add, Pi.add_apply, RingHom.map_mul]
-      erw [← wa, ← wb]
+      rw [← wa, ← wb]
       simp only [mul_assoc]
       congr 2
       rw [mul_comm]
@@ -187,7 +187,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     fconstructor
     · exact nm
     · simp only [RingHom.map_neg, Pi.neg_apply]
-      erw [← w]
+      rw [← w]
       simp only [neg_mul]
   mul_mem' := by
     intro a b ha hb x
@@ -200,7 +200,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     fconstructor
     · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
     · simp only [Pi.mul_apply, RingHom.map_mul]
-      erw [← wa, ← wb]
+      rw [← wa, ← wb]
       simp only [mul_left_comm, mul_assoc, mul_comm]
 
 end StructureSheaf
@@ -878,7 +878,7 @@ instance IsLocalization.to_stalk (p : PrimeSpectrum R) :
   rw [stalkAlgebra_map]
   congr 1
   change toStalk R p = _ ≫ (stalkIso R p).inv
-  erw [Iso.eq_comp_inv]
+  rw [Iso.eq_comp_inv]
   exact toStalk_comp_stalkToFiberRingHom R p
 
 instance openAlgebra (U : (Opens (PrimeSpectrum R))ᵒᵖ) : Algebra R ((structureSheaf R).val.obj U) :=
@@ -1095,7 +1095,7 @@ are not definitionally equal.
 theorem comap_id {U V : Opens (PrimeSpectrum.Top R)} (hUV : U = V) :
     (comap (RingHom.id R) U V fun p hpV => by rwa [hUV, PrimeSpectrum.comap_id]) =
       eqToHom (show (structureSheaf R).1.obj (op U) = _ by rw [hUV]) := by
-  erw [comap_id_eq_map U V (eqToHom hUV.symm), eqToHom_op, eqToHom_map]
+  rw [comap_id_eq_map U V (eqToHom hUV.symm), eqToHom_op, eqToHom_map]
 
 @[simp]
 theorem comap_id' (U : Opens (PrimeSpectrum.Top R)) :
