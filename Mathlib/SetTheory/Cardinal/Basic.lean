@@ -856,6 +856,8 @@ theorem mk_sigma_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v
     (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
   mk_congr <| Equiv.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
 
+/-- Similar to `mk_sigma_congr` with indexing types in different universes. This is not a strict
+generalization. -/
 theorem mk_sigma_congr' {ι : Type u} {ι' : Type v} {f : ι → Type max w (max u v)}
     {g : ι' → Type max w (max u v)} (e : ι ≃ ι')
     (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
@@ -1132,6 +1134,8 @@ theorem mk_pi_congr_prop {ι ι' : Prop} {f : ι → Type v} {g : ι' → Type v
     (h : ∀ i, #(f i) = #(g (e.mp i))) : #(Π i, f i) = #(Π i, g i) :=
   mk_congr <| Equiv.piCongr (.ofIff e) fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
 
+/-- Similar to `mk_pi_congr` with indexing types in different universes. This is not a strict
+generalization. -/
 theorem mk_pi_congr' {ι : Type u} {ι' : Type v} {f : ι → Type max w (max u v)}
     {g : ι' → Type max w (max u v)} (e : ι ≃ ι')
     (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
