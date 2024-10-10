@@ -385,8 +385,6 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
 
 /-! ## step 2: given m,n ≥ 2 and |m|=m^s, |n|=n^t for s,t > 0, we have t ≤ s -/
 
-open Real
-
 variable {m n : ℕ} (hm : 1 < m) (hn : 1 < n) (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1)
 
 include hm notbdd in
@@ -461,17 +459,17 @@ private lemma symmetric_roles {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t
 
 /-! ## Archimedean case: end goal -/
 
+include notbdd in
 /-- If `f` is not bounded and not trivial, then it is equivalent to the standard absolute value on
 `ℚ`. -/
-theorem mulRingNorm_equiv_standard_of_unbounded (notbdd: ¬ ∀ (n : ℕ), f n ≤ 1) :
-    MulRingNorm.equiv f mulRingNorm_real := by
+theorem mulRingNorm_equiv_standard_of_unbounded : MulRingNorm.equiv f mulRingNorm_real := by
   obtain ⟨m, hm⟩ := Classical.exists_not_of_not_forall notbdd
   have oneltm : 1 < m := by
     by_contra!
     apply hm
     replace this : m = 0 ∨ m = 1 := by omega
     rcases this with (rfl | rfl)
-    all_goals simp only [CharP.cast_eq_zero, map_zero, zero_le_one,Nat.cast_one, map_one, le_refl]
+    all_goals simp only [CharP.cast_eq_zero, map_zero, zero_le_one, Nat.cast_one, map_one, le_refl]
   rw [← equiv_on_nat_iff_equiv]
   set s := Real.logb m (f m) with hs
   use s⁻¹
