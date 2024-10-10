@@ -385,8 +385,7 @@ noncomputable def subrelIso (f : r ≺i s) :
     (Equiv.setCongr (funext fun _ ↦ propext f.mem_range_iff_rel)), f.map_rel_iff⟩
 
 @[simp]
-theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
-    f (f.subrelIso b) = b :=
+theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) : f (f.subrelIso b) = b :=
   Equiv.apply_ofInjective_symm f.injective _
 
 @[simp]
