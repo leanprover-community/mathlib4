@@ -66,6 +66,12 @@ theorem add_coeff' {x y : HahnSeries Γ R} : (x + y).coeff = x.coeff + y.coeff :
 theorem add_coeff {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a + y.coeff a :=
   rfl
 
+@[simp]
+theorem nsmul_coeff {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [add_nsmul, ih]
+
 /--
 `addOppositeEquiv` is an additive monoid isomorphism between
 Hahn series over `Γ` with coefficients in the opposite additive monoid `Rᵃᵒᵖ`
