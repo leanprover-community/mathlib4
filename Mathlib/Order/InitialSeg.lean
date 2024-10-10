@@ -246,7 +246,7 @@ instance [IsIrrefl β s] [IsTrichotomous β s] : FunLike (r ≺i s) α β where
     cases (DFunLike.coe_injective h : f = g)
     congr
     refine extensional_of_trichotomous_of_irrefl s fun x ↦ ?_
-    rw [hf, hg]
+    rw [← hf, hg]
 
 instance [IsIrrefl β s] [IsTrichotomous β s] : EmbeddingLike (r ≺i s) α β where
   injective' f := f.inj'
