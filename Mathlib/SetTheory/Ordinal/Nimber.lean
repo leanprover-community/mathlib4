@@ -373,7 +373,7 @@ theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by
     all_goals
       refine Nimber.rec (fun c hc ↦ ?_)
       rw [OrderIso.lt_iff_lt] at hc
-      obtain ⟨c, rfl⟩ := Ordinal.lt_omega.1 (hc.trans (Ordinal.nat_lt_omega _))
+      obtain ⟨c, rfl⟩ := Ordinal.lt_omega0.1 (hc.trans (Ordinal.nat_lt_omega0 _))
       replace hc := Nat.cast_lt.1 hc
       rw [add_nat, ne_eq, EmbeddingLike.apply_eq_iff_eq, Nat.cast_inj]
       have := hc.ne
@@ -382,7 +382,7 @@ theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by
   · apply le_of_not_lt
     intro hc
     rw [← toOrdinal.lt_iff_lt, Ordinal.toNimber_toOrdinal] at hc
-    obtain ⟨c, hc'⟩ := Ordinal.lt_omega.1 (hc.trans (Ordinal.nat_lt_omega _))
+    obtain ⟨c, hc'⟩ := Ordinal.lt_omega0.1 (hc.trans (Ordinal.nat_lt_omega0 _))
     rw [hc', Nat.cast_lt] at hc
     obtain h | h := Nat.lt_xor_cases hc
     · have := add_nat (c ^^^ b) b
