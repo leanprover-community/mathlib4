@@ -49,7 +49,7 @@ Lawson topology, preorder
 
 open Set TopologicalSpace
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Topology
 
@@ -94,7 +94,7 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
   convert IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
     (isTopologicalBasis_opens (α := WithScott α))
     WithLower.toLower WithScott.toScott
-  erw [@topology_eq_lawson α _ _ _]
+  rw [@topology_eq_lawson α _ _ _]
   rw [lawson]
   apply (congrArg₂ Inf.inf _) _
   · letI _ := lower α; exact @IsLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩ |>.inducing.induced

@@ -500,7 +500,7 @@ lemma homMk_comp_homMk {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFra
     (z₃ : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f) :
     homMk z₁ ≫ homMk z₂ = homMk (z₁.comp₀ z₂ z₃) := by
   change Hom.comp _ _ = _
-  erw [Hom.comp_eq, comp_eq z₁ z₂ z₃ h₃]
+  rw [Hom.comp_eq, comp_eq z₁ z₂ z₃ h₃]
 
 lemma homMk_eq_of_leftFractionRel {X Y : C} (z₁ z₂ : W.LeftFraction X Y)
     (h : LeftFractionRel z₁ z₂) :
