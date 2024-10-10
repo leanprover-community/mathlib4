@@ -390,8 +390,8 @@ Notes:
 * This tactic only works with a working internet connection, since it calls Sage
   using the SageCell web API at <https://sagecell.sagemath.org/>.
   Many thanks to the Sage team and organization for allowing this use.
-* This tactic assumes that the user has `python3` installed with version at least 3.6,
-  and available on the path. (Test by opening a terminal and executing `python3 --version`.)
+* This tactic assumes that the user has `python3` installed and available on the path.
+  (Test by opening a terminal and executing `python3 --version`.)
 
 Examples:
 
