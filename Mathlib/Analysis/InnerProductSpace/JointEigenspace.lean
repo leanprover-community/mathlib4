@@ -160,26 +160,14 @@ lemma LinearMap.IsSymmetric.maxGenEigenspace_eq_eigenspace
     congr! 2 with n; exact genEigenspace_eq_eigenspace hT n.succ_pos
   _ = eigenspace T μ := by simp [genEigenspace_def, eigenspace_def]
 
-
 theorem LinearMap.IsSymmetric.iSup_iInf_eq_top_of_commute_of_fintype {ι : Type*}
     (T : ι → E →ₗ[𝕜] E) (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise fun i j ↦ Commute (T i) (T j)):
-    ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ := by
-  rw [← iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute T]
-  · conv =>
-      enter [1,1]
-      ext χ
-      rhs
-      ext i
-      rw [← LinearMap.IsSymmetric.maxGenEigenspace_eq_eigenspace (hT i)]
-  · exact h
-  · intro i
-    conv =>
-      enter [1,1]
-      ext μ
-      rw [LinearMap.IsSymmetric.maxGenEigenspace_eq_eigenspace (hT i)]
-    rw [← orthogonal_eq_bot_iff]
-    apply (orthogonalComplement_iSup_eigenspaces_eq_bot)
-    exact hT i
+    ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ := by calc
+  _ = ⨆ χ : ι → 𝕜, ⨅ i, maxGenEigenspace (T i) (χ i) := by
+    congr! 4; exact (LinearMap.IsSymmetric.maxGenEigenspace_eq_eigenspace (hT _)).symm
+  _ = ⊤ := by
+    exact iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute T h
+     (fun ι ↦ (by rw [← orthogonal_eq_bot_iff]; apply orthogonalComplement_iSup_eigenspaces_eq_bot))
 
 
 /-Just needs the analogue of Oliver's result, set up for tuples of symmetric
