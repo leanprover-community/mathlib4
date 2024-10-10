@@ -5,8 +5,8 @@ Authors: Heather Macbeth, Floris van Doorn
 -/
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Topology.ContinuousMap.Basic
+import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # Smooth sections
