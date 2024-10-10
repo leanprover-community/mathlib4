@@ -556,7 +556,7 @@ theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.bas
   rw [iff_iff_eq]
   congr 2
   rw [RingHom.algebraMap_toAlgebra]
-  refine (PresheafedSpace.stalkMap_germ hU.fromSpec.toHom _ ⟨_, hy⟩).trans ?_
+  refine (Scheme.stalkMap_germ hU.fromSpec _ _ hy).trans ?_
   rw [← Scheme.Hom.app, IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
   rfl
 

@@ -58,7 +58,7 @@ instance instCompl : HasCompl (Booleanisation α) where
 @[simp] lemma compl_lift (a : α) : (lift a)ᶜ = comp a := rfl
 @[simp] lemma compl_comp (a : α) : (comp a)ᶜ = lift a := rfl
 
-variable [GeneralizedBooleanAlgebra α] {x y : Booleanisation α} {a b : α}
+variable [GeneralizedBooleanAlgebra α] {a b : α}
 
 /-- The order on `Booleanisation α` is as follows: For `a b : α`,
 * `a ≤ b` iff `a ≤ b` in `α`

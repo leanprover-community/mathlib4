@@ -105,6 +105,12 @@ lemma preimage_image_eq (U : X.Opens) : f ⁻¹ᵁ f ''ᵁ U = U := by
   apply Opens.ext
   simp [Set.preimage_image_eq _ f.openEmbedding.inj]
 
+lemma image_le_image_iff (f : X ⟶ Y) [IsOpenImmersion f] (U U' : X.Opens) :
+    f ''ᵁ U ≤ f ''ᵁ U' ↔ U ≤ U' := by
+  refine ⟨fun h ↦ ?_, image_le_image_of_le f⟩
+  rw [← preimage_image_eq f U, ← preimage_image_eq f U']
+  apply preimage_le_preimage_of_le f h
+
 lemma image_preimage_eq_opensRange_inter (U : Y.Opens) : f ''ᵁ f ⁻¹ᵁ U = f.opensRange ⊓ U := by
   apply Opens.ext
   simp [Set.image_preimage_eq_range_inter]

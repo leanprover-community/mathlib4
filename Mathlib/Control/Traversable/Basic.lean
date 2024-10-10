@@ -61,8 +61,8 @@ universe u v w
 
 section ApplicativeTransformation
 
-variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
-variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
+variable (F : Type u → Type v) [Applicative F]
+variable (G : Type u → Type w) [Applicative G]
 
 /-- A transformation between applicative functors.  It is a natural
 transformation such that `app` preserves the `Pure.pure` and
@@ -204,8 +204,7 @@ export Traversable (traverse)
 section Functions
 
 variable {t : Type u → Type u}
-variable {m : Type u → Type v} [Applicative m]
-variable {α β : Type u}
+variable {α : Type u}
 variable {f : Type u → Type u} [Applicative f]
 
 /-- A traversable functor commutes with all applicative functors. -/
@@ -249,8 +248,6 @@ instance : LawfulTraversable Id where
   naturality _ _ _ _ _ := rfl
 
 section
-
-variable {F : Type u → Type v} [Applicative F]
 
 instance : Traversable Option :=
   ⟨Option.traverse⟩

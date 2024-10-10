@@ -162,7 +162,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
       · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai] at h
         exact ⟨div_nonneg_of_nonpos h.2 hai, div_le_one_of_ge h.1 hai⟩
       · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai] at h
-        exact ⟨div_nonneg h.1 hai, div_le_one_of_le h.2 hai⟩
+        exact ⟨div_nonneg h.1 hai, div_le_one_of_le₀ h.2 hai⟩
     · specialize h i
       simp only [smul_eq_mul, Pi.mul_apply]
       rcases eq_or_ne (a i) 0 with hai | hai

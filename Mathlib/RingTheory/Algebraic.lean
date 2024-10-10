@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Algebraic elements and algebraic extensions

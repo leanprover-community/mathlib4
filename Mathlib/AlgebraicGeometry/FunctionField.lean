@@ -36,9 +36,9 @@ noncomputable abbrev Scheme.functionField [IrreducibleSpace X] : CommRingCat :=
 /-- The restriction map from a component to the function field. -/
 noncomputable abbrev Scheme.germToFunctionField [IrreducibleSpace X] (U : X.Opens)
     [h : Nonempty U] : Γ(X, U) ⟶ X.functionField :=
-  X.presheaf.germ
-    ⟨genericPoint X,
-      ((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using h)⟩
+  X.presheaf.germ U
+    (genericPoint X)
+      (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using h))
 
 noncomputable instance [IrreducibleSpace X] (U : X.Opens) [Nonempty U] :
     Algebra Γ(X, U) X.functionField :=
@@ -47,7 +47,7 @@ noncomputable instance [IrreducibleSpace X] (U : X.Opens) [Nonempty U] :
 noncomputable instance [IsIntegral X] : Field X.functionField := by
   refine .ofIsUnitOrEqZero fun a ↦ ?_
   obtain ⟨U, m, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ a
-  rw [or_iff_not_imp_right, ← (X.presheaf.germ ⟨_, m⟩).map_zero]
+  rw [or_iff_not_imp_right, ← (X.presheaf.germ _ _ m).map_zero]
   intro ha
   replace ha := ne_of_apply_ne _ ha
   have hs : genericPoint X ∈ RingedSpace.basicOpen _ s := by
@@ -56,22 +56,22 @@ noncomputable instance [IsIntegral X] : Field X.functionField := by
     · erw [basicOpen_eq_bot_iff]
       exact ha
     · exact (RingedSpace.basicOpen _ _).isOpen
-  have := (X.presheaf.germ ⟨_, hs⟩).isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)
+  have := (X.presheaf.germ _ _ hs).isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)
   rwa [TopCat.Presheaf.germ_res_apply] at this
 
-theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : U) :
-    Function.Injective (X.presheaf.germ x) := by
+theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : X) (hx : x ∈ U) :
+    Function.Injective (X.presheaf.germ U x hx) := by
   rw [injective_iff_map_eq_zero]
   intro y hy
-  rw [← (X.presheaf.germ x).map_zero] at hy
-  obtain ⟨W, hW, iU, iV, e⟩ := X.presheaf.germ_eq _ x.prop x.prop _ _ hy
+  rw [← (X.presheaf.germ U x hx).map_zero] at hy
+  obtain ⟨W, hW, iU, iV, e⟩ := X.presheaf.germ_eq _ hx hx _ _ hy
   cases Subsingleton.elim iU iV
   haveI : Nonempty W := ⟨⟨_, hW⟩⟩
   exact map_injective_of_isIntegral X iU e
 
 theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : X.Opens) [Nonempty U] :
     Function.Injective (X.germToFunctionField U) :=
-  germ_injective_of_isIntegral _ _
+  germ_injective_of_isIntegral _ _ _
 
 theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
     [hX : IrreducibleSpace X] [IrreducibleSpace Y] :
@@ -94,7 +94,7 @@ instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
     [Nonempty U] : IsScalarTower Γ(X, U) (X.presheaf.stalk x) X.functionField := by
   apply IsScalarTower.of_algebraMap_eq'
   simp_rw [RingHom.algebraMap_toAlgebra]
-  change _ = X.presheaf.germ x ≫ _
+  change _ = X.presheaf.germ U x x.2 ≫ _
   rw [X.presheaf.germ_stalkSpecializes]
 
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
@@ -148,7 +148,8 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens
     @isIntegral_of_isAffine_of_isDomain _ _ _
       (by rw [Scheme.Opens.toScheme_presheaf_obj, Opens.openEmbedding_obj_top]; infer_instance)
   delta IsFractionRing Scheme.functionField
-  convert hU.isLocalization_stalk ⟨genericPoint X, _⟩ using 1
+  convert hU.isLocalization_stalk ⟨genericPoint X,
+    (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩ using 1
   rw [hU.primeIdealOf_genericPoint, genericPoint_eq_bot_of_affine]
   ext; exact mem_nonZeroDivisors_iff_ne_zero
 
