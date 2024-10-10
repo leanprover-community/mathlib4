@@ -29,6 +29,9 @@ instance (priority := 100)  isLocalHom_toRingHom {F : Type*} [FunLike F R S]
    [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
+@[deprecated "2024-10-10"]
+alias isLocalRingHom_toRingHom := isLocalHom_toRingHom
+
 instance RingHom.isLocalHom_comp (g : S →+* T) (f : R →+* S) [IsLocalHom g]
     [IsLocalHom f] : IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
