@@ -109,6 +109,7 @@ abbrev actionTopology : TopologicalSpace A :=
 /-- A class asserting that the topology on a module over a topological ring `R` is
 the action topology. See `actionTopology` for more discussion of the action topology. -/
 class IsActionTopology [τA : TopologicalSpace A] : Prop where
+  /-- Note that this should not be used directly, and `eq_actionTopology`, which takes `R` and `A` explicitly, should be used instead. -/
   eq_actionTopology' : τA = actionTopology R A
 
 theorem eq_actionTopology [τA : TopologicalSpace A] [IsActionTopology R A] :
