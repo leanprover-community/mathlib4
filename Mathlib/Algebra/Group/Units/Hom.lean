@@ -257,6 +257,9 @@ instance (priority := 100) isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
     IsLocalHom (f : R →* S) :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
+@[deprecated "2024-10-10"]
+alias isLocalRingHom_toMonoidHom := isLocalHom_toMonoidHom
+
 theorem MonoidHom.isLocalHom_of_comp (f : R →* S) (g : S →* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=
   ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (ha.map g)⟩
