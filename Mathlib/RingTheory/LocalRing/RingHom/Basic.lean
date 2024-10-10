@@ -24,14 +24,23 @@ variable [Semiring R] [Semiring S] [Semiring T]
 instance isLocalHom_id (R : Type*) [Semiring R] : IsLocalHom (RingHom.id R) where
   map_nonunit _ := id
 
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_id := isLocalHom_id
+
 -- see note [lower instance priority]
 instance (priority := 100)  isLocalHom_toRingHom {F : Type*} [FunLike F R S]
    [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_toRingHom := isLocalHom_toRingHom
+
 instance RingHom.isLocalHom_comp (g : S →+* T) (f : R →+* S) [IsLocalHom g]
     [IsLocalHom f] : IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
+
+@[deprecated (since := "2024-10-10")]
+alias RingHom.isLocalRingHom_comp := RingHom.isLocalHom_comp
 
 theorem isLocalHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=

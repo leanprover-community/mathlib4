@@ -249,6 +249,9 @@ instance MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
     [IsLocalHom f] : IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
 
+@[deprecated (since := "2024-10-10")]
+alias MonoidHom.isLocalRingHom_comp := MonoidHom.isLocalHom_comp
+
 -- see note [lower instance priority]
 @[instance 100]
 theorem isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
