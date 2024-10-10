@@ -3,27 +3,6 @@ import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Triangulated.Lemmas
 
-section MiseAJour
-
-universe u₁ v₁ u₂ v₂ u₃ v₃
-
-theorem CategoryTheory.Adjunction.comp_homEquiv {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C]
-    {D : Type u₂} [CategoryTheory.Category.{v₂, u₂} D] {F : CategoryTheory.Functor C D}
-    {G : CategoryTheory.Functor D C} {E : Type u₃} [ℰ : CategoryTheory.Category.{v₃, u₃} E]
-    {H : CategoryTheory.Functor D E} {I : CategoryTheory.Functor E D} (adj₁ : F ⊣ G)
-    (adj₂ : H ⊣ I) : (adj₁.comp adj₂).homEquiv = fun (x : C) (x_1 : E) =>
-    (adj₂.homEquiv (F.obj x) x_1).trans (adj₁.homEquiv x (I.obj x_1)) := sorry
-
-@[simp]
-theorem CategoryTheory.Adjunction.homEquiv_apply{C : Type u₁} [CategoryTheory.Category.{v₁, u₁}     C] {D : Type u₂} [CategoryTheory.Category.{v₂, u₂}     D] {F : CategoryTheory.Functor C D} {G : CategoryTheory.Functor D C} (adj : F ⊣ G) (X : C) (Y : D) (f : F.obj X ⟶ Y) :
-(adj.homEquiv X Y) f = CategoryTheory.CategoryStruct.comp (adj.unit.app X) (G.map f) := sorry
-
-@[simp]
-theorem CategoryTheory.Adjunction.homEquiv_symm_apply{C : Type u₁} [CategoryTheory.Category.{v₁, u₁}     C] {D : Type u₂} [CategoryTheory.Category.{v₂, u₂}     D] {F : CategoryTheory.Functor C D} {G : CategoryTheory.Functor D C} (adj : F ⊣ G) (X : C) (Y : D) (g : X ⟶ G.obj Y) :
-(adj.homEquiv X Y).symm g = CategoryTheory.CategoryStruct.comp (F.map g) (adj.counit.app Y) := sorry
-
-end MiseAJour
-
 namespace CategoryTheory
 
 open Category Functor CategoryTheory Opposite

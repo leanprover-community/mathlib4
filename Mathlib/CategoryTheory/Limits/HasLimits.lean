@@ -490,8 +490,9 @@ def limYoneda :
   NatIso.ofComponents fun F => NatIso.ofComponents fun W => limit.homIso F (unop W)
 
 /-- The constant functor and limit functor are adjoint to each other-/
-def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim where
-  homEquiv c g :=
+def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim := Adjunction.mk'
+ {
+  homEquiv := fun c g ↦
     { toFun := fun f => limit.lift _ ⟨c, f⟩
       invFun := fun f =>
         { app := fun j => f ≫ limit.π _ _ }
@@ -506,6 +507,7 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim where
     dsimp
     ext
     simp
+ }
 
 instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
   ⟨_, ⟨constLimAdj⟩⟩
@@ -546,7 +548,7 @@ def isLimitConeOfAdj (F : J ⥤ C) :
     have eq := NatTrans.congr_app (adj.counit.naturality s.π) j
     have eq' := NatTrans.congr_app (adj.left_triangle_components s.pt) j
     dsimp at eq eq' ⊢
-    rw [Adjunction.homEquiv_unit, assoc, eq, reassoc_of% eq']
+    rw [assoc, eq, reassoc_of% eq']
   uniq s m hm := (adj.homEquiv _ _).symm.injective (by ext j; simpa using hm j)
 
 end Adjunction
@@ -1029,8 +1031,9 @@ def colimCoyoneda : colim.op ⋙ coyoneda ⋙ (whiskeringRight _ _ _).obj uliftF
 
 /-- The colimit functor and constant functor are adjoint to each other
 -/
-def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J where
-  homEquiv f c :=
+def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J := Adjunction.mk'
+ {
+  homEquiv := fun f c ↦
     { toFun := fun g =>
         { app := fun _ => colimit.ι _ _ ≫ g }
       invFun := fun g => colimit.desc _ ⟨_, g⟩
@@ -1038,6 +1041,7 @@ def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J where
       right_inv := by aesop_cat }
   unit := { app := fun g => { app := colimit.ι _ } }
   counit := { app := fun c => colimit.desc _ ⟨_, 𝟙 _⟩ }
+ }
 
 instance : IsLeftAdjoint (colim : (J ⥤ C) ⥤ C) :=
   ⟨_, ⟨colimConstAdj⟩⟩
