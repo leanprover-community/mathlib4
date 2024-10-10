@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
-import Mathlib.Analysis.Convex.Normed
 
 /-! # Tangent bundles
 
@@ -65,7 +64,7 @@ variable (M)
 open SmoothManifoldWithCorners
 
 /-- Let `M` be a smooth manifold with corners with model `I` on `(E, H)`.
-Then `VectorBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
+Then `tangentBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
 It is indexed by the atlas of `M`, with fiber `E` and its change of coordinates from the chart `i`
 to the chart `j` at point `x : M` is the derivative of the composite
 ```
@@ -411,13 +410,3 @@ theorem inTangentCoordinates_eq (f : N → M) (g : N → M') (ϕ : N → E →L[
 end inTangentCoordinates
 
 end General
-
-section Real
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
-  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M]
-
-instance {x : M} : PathConnectedSpace (TangentSpace I x) := by unfold TangentSpace; infer_instance
-
-end Real

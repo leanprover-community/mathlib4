@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
+Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
@@ -9,6 +9,10 @@ import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
 /-!
 # Derivatives of maps in the tangent bundle
+
+This file contains properties of derivatives which need the manifold structure of the tangent
+bundle. Notably, it includes formulas for the tangent maps to charts, and unique differentiability
+statements for subsets of the tangent bundle.
 -/
 
 open Bundle

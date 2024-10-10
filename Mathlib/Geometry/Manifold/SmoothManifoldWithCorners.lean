@@ -3,10 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.ChartedSpace
+import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Data.Bundle
+import Mathlib.Geometry.Manifold.ChartedSpace
 
 /-!
 # Smooth manifolds (possibly with boundary or corners)
@@ -1408,3 +1409,12 @@ abbrev TangentBundle :=
   Bundle.TotalSpace E (TangentSpace I : M → Type _)
 
 end TangentSpace
+
+section Real
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
+
+instance : PathConnectedSpace (TangentSpace I x) := inferInstanceAs (PathConnectedSpace E)
+
+end Real
