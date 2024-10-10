@@ -140,7 +140,7 @@ lemma right_to_left_iso_apply (adj : F ⊣ G) (commG : CommShift G A) (a : A) (X
   sorry
 
 lemma lemme1 (X : C) (Y : D) (u : F.obj X ⟶ Y⟦(0 : A)⟧) :
-    ((shiftEquiv D (0 : A)).symm.toAdjunction.homEquiv (F.obj X) Y).invFun u =
+    ((shiftEquiv D (0 : A)).symm.toAdjunction.homEquiv (F.obj X) Y).symm u =
     ((shiftFunctorZero' D (-0 : A) neg_zero).app (F.obj X)).hom ≫ u ≫
     ((shiftFunctorZero D A).app Y).hom := by
   simp
@@ -157,6 +157,53 @@ lemma lemme1 (X : C) (Y : D) (u : F.obj X ⟶ Y⟦(0 : A)⟧) :
   rw [shiftFunctorAdd'_add_zero' D (0 : A) (-0) (by simp) (by simp)]
   simp
 
+lemma lemme2 (X : C) (Y : D) (u : X⟦(-0 : A)⟧ ⟶ (G.obj Y)) :
+    ((shiftEquiv C (0 : A)).symm.toAdjunction.homEquiv X (G.obj Y)) u =
+    ((shiftFunctorZero' C (-0 : A) neg_zero).app X).inv ≫ u ≫
+    ((shiftFunctorZero C A).app (G.obj Y)).inv := by
+  simp only [Equivalence.symm_inverse, shiftEquiv'_functor, Equivalence.symm_functor,
+    shiftEquiv'_inverse, homEquiv_unit, id_obj, comp_obj, Equivalence.toAdjunction_unit,
+    Iso.app_inv]
+  have heq : (shiftEquiv C (0 : A)).symm.unit =
+      (shiftFunctorCompIsoId C (-0 : A) 0 (by simp)).inv := by
+    change (shiftEquiv C (0 : A)).symm.unitIso.hom = _
+    rw [Equivalence.symm_unitIso]
+    simp
+  rw [heq]
+  simp only [shiftFunctorCompIsoId, Iso.trans_inv, Iso.symm_inv, NatTrans.comp_app, id_obj,
+    comp_obj, assoc]
+  erw [(shiftFunctorZero C A).inv.naturality u]
+  simp only [id_obj]
+  rw [← assoc, ← assoc]; congr 1
+  rw [shiftFunctorAdd'_eqToIso (C := C) (A := A) (-0) 0 0 (-0) 0 (-0) (by simp) (by simp) (by simp)
+    (by simp)]
+  simp only [Iso.trans_hom, eqToIso.hom, NatTrans.comp_app, comp_obj, eqToHom_app]
+  rw [shiftFunctorAdd'_add_zero]
+  simp only [Iso.trans_hom, Iso.symm_hom, isoWhiskerLeft_hom, NatTrans.comp_app, comp_obj, id_obj,
+    rightUnitor_inv_app, whiskerLeft_app, id_comp, eqToHom_refl, comp_id]
+  rw [← assoc]; congr 1
+  simp only [shiftFunctorZero', Iso.trans_inv, eqToIso.inv, NatTrans.comp_app, id_obj, eqToHom_app]
+
+lemma lemme3 (adj : F ⊣ G) (X : C) (Y : D) (u : X ⟶ G.obj (Y⟦0⟧)) :
+    (adj.homEquiv X ((shiftEquiv D 0).functor.obj Y)).symm u ≫
+    ((shiftFunctorZero D A).app Y).hom = (adj.homEquiv X Y).symm
+    (u ≫ G.map ((shiftFunctorZero D A).app Y).hom) := by simp
+
+lemma lemme4 (commF : CommShift F A) (X : C) (Y : D) (u : F.obj X ⟶ Y) (a : A) (ha : a = 0) :
+    ((yoneda.obj Y).map ((commF.iso a).hom.app X).op)
+    (((shiftFunctorZero' D a ha).app (F.obj X)).hom ≫ u) =
+    F.map ((shiftFunctorZero' C a ha).app X).hom ≫ u := by
+  simp only [comp_obj, yoneda_obj_obj, id_obj, Iso.app_hom, yoneda_obj_map, Quiver.Hom.unop_op]
+  rw [← assoc]; congr 1
+  have := Functor.commShiftIso_zero' F a ha
+  change commF.iso a = _ at this
+  rw [this]
+  simp
+
+lemma lemme5 (adj : F ⊣ G) (X : C) (Y : D) (u : F.obj X ⟶ Y) (a : A) (ha : a = 0) :
+    (adj.homEquiv (X⟦a⟧) Y) (F.map ((shiftFunctorZero' C a ha).app X).hom ≫ u) =
+    ((shiftFunctorZero' C a ha).app X).hom ≫ adj.homEquiv X Y u := by simp
+
 noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     CommShift G A where
   iso := left_to_right_iso adj commF
@@ -166,25 +213,15 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     ext X u
     simp at u
     rw [left_to_right_iso_apply''']
-    simp only [Equivalence.symm_inverse, shiftEquiv'_functor, comp_obj, yoneda_obj_obj,
-      Equivalence.symm_functor, shiftEquiv'_inverse, comp_homEquiv, Iso.trans_hom, Equiv.toIso_hom,
+    simp only [Equivalence.symm_inverse, comp_obj, Equivalence.symm_functor,
+      comp_homEquiv, Iso.trans_hom, Equiv.toIso_hom,
       mapIso_hom, Iso.op_hom, Iso.app_hom, Equiv.coe_trans, types_comp_apply,
-      Equiv.symm_trans_apply, homEquiv_counit, id_obj, map_comp, Equivalence.toAdjunction_counit,
-      assoc, yoneda_obj_map, Quiver.Hom.unop_op, Function.comp_apply, homEquiv_unit,
-      Equivalence.toAdjunction_unit, CommShift.isoZero_hom_app, FunctorToTypes.comp, yoneda_map_app]
-    slice_lhs 3 4 => rw [← Functor.map_comp, ← Functor.map_comp]
-                     erw [← (commF.iso (-0)).hom.naturality u]
-                     rw [Functor.map_comp, Functor.map_comp]
-    slice_lhs 2 3 => rw [← Functor.map_comp]; erw [← adj.unit.naturality (u⟦(-0 : A)⟧')]
-    simp only [Equivalence.symm_inverse, shiftEquiv'_functor, comp_obj, id_obj, Functor.id_map,
-      map_comp, assoc]
-    slice_lhs 1 2 => erw [← (shiftEquiv C (0 : A)).symm.unit.naturality u]
+      Equiv.symm_trans_apply, id_obj, map_comp,
+      assoc, Quiver.Hom.unop_op, Function.comp_apply,
+      CommShift.isoZero_hom_app, FunctorToTypes.comp]
+    erw [lemme1]; erw [lemme2]
+    rw [lemme3]; rw [lemme4]; erw [lemme5]
     simp
-    have : commF.iso (-0) = CommShift.isoZero' F A (-0) (by simp) :=
-      @commShiftIso_zero' C D _ _ F A _ _ _ commF (-0) (by simp)
-    rw [this]
-    simp
-    sorry
   add a b := by
     ext Y
     apply Functor.map_injective (yoneda (C := C))
