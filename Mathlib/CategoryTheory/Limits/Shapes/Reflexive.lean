@@ -391,13 +391,14 @@ open WalkingReflexivePair WalkingReflexivePair.Hom
 section
 section NatTrans
 
-variable {F G: WalkingReflexivePair ⥤ C}
-/-- A constructor for natural transforms to a diagram of the form `reflexivePair f g s`. -/
-def mkNatTrans (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
-    (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left := by aesop_cat)
-    (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right := by aesop_cat)
-    (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion := by aesop_cat) :
-    F ⟶ G where
+variable {F G : WalkingReflexivePair ⥤ C}
+  (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
+  (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left := by aesop_cat)
+  (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right := by aesop_cat)
+  (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion := by aesop_cat)
+
+/-- A constructor for natural transformations betweens functors from `WalkingReflexivePair`. -/
+def mkNatTrans : F ⟶ G where
   app := fun x ↦ match x with
     | zero => e₀
     | one => e₁
@@ -411,20 +412,16 @@ def mkNatTrans (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj on
         Category.assoc]
 
 @[simp]
-lemma mkNatTrans_app_zero (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
-    (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left)
-    (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right)
-    (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion) :
-    (mkNatTrans e₀ e₁ h₁ h₂ h₃).app zero = e₀ := rfl
+lemma mkNatTrans_app_zero : (mkNatTrans e₀ e₁ h₁ h₂ h₃).app zero = e₀ := rfl
 
 @[simp]
-lemma mkNatTrans_app_one (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
-    (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left)
-    (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right)
-    (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion) :
-    (mkNatTrans e₀ e₁ h₁ h₂ h₃).app one = e₁ := rfl
+lemma mkNatTrans_app_one : (mkNatTrans e₀ e₁ h₁ h₂ h₃).app one = e₁ := rfl
 
-/-- Constructor for natural isomorphisms with a `reflexivePair`. -/
+end NatTrans
+section NatIso
+
+variable {F G : WalkingReflexivePair ⥤ C}
+/-- Constructor for natural isomorphisms between functors out of `WalkingReflexivePair`. -/
 @[simps!]
 def mkNatIso (e₀ : F.obj zero ≅ G.obj zero) (e₁ : F.obj one ≅ G.obj one)
     (h₁ : F.map left ≫ e₀.hom = e₁.hom ≫ G.map left := by aesop_cat)
@@ -451,7 +448,7 @@ def diagramIsoReflexivePair :
     F ≅ reflexivePair (F.map left) (F.map right) (F.map reflexion) :=
   mkNatIso (Iso.refl _) (Iso.refl _)
 
-end NatTrans
+end NatIso
 
 /-- A `reflexivePair` composed with a functor is isomorphic to the `reflexivePair` obtained by
 applying the functor at each map. -/
@@ -463,7 +460,7 @@ def compRightIso {D : Type u₂} [Category.{v₂} D] {A B : C}
       (by simp only [← Functor.map_comp, sr, Functor.map_id]) :=
   mkNatIso (Iso.refl _) (Iso.refl _)
 
-lemma whiskerRightMkNatTrans {F G: WalkingReflexivePair ⥤ C}
+lemma whiskerRightMkNatTrans {F G : WalkingReflexivePair ⥤ C}
     (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
     {h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left}
     {h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right}
