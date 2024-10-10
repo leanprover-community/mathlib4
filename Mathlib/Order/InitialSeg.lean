@@ -513,13 +513,11 @@ subsequent element in `α` is mapped to the least element in `β` that hasn't be
 This construction is guaranteed to work as long as there exists some order embedding `r ↪r s`. -/
 noncomputable def collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
   have := RelEmbedding.isWellOrder f
-  ⟨RelEmbedding.ofMonotone _ fun a b => collapseF.lt f _, by
-    intro a b h
-    rcases (@IsWellFounded.wf _ r).has_min { a | ¬s _ b } ⟨_, asymm h⟩ with ⟨m, hm, hm'⟩
+  ⟨RelEmbedding.ofMonotone _ fun a b => collapseF.lt f _, fun a b h ↦ by
+    obtain ⟨m, hm, hm'⟩ := (@IsWellFounded.wf _ r).has_min { a | ¬s _ b } ⟨_, asymm h⟩
     use m
-    rcases @trichotomous β s _ b (collapseF f m).1 with (lt | rfl | gt)
-    · apply (collapseF.not_lt f m ?_ lt).elim
-      intro c h
+    obtain lt | rfl | gt := @trichotomous β s _ b (collapseF f m).1
+    · refine (collapseF.not_lt f m (fun c h ↦ ?_) lt).elim
       by_contra hn
       exact hm' _ hn h
     · rfl
