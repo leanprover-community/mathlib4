@@ -745,14 +745,6 @@ theorem mul_lt_one_right [MulPosStrictMono α]
     (ha : a < 1) (hb : b < 1) (b0 : 0 < b) : a * b < 1 :=
   (mul_lt_of_lt_one_left b0 ha).trans hb
 
-theorem mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono α]
-    (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
-  mul_lt_one_of_lt_of_le_left ha hb ha₀
-
-theorem mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono α]
-    (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) : a * b < 1 :=
-  mul_lt_one_of_le_of_lt_right ha hb hb₀
-
 /-! Lemmas of the form `1 ≤ a → 1 ≤ b → 1 ≤ a * b`. -/
 
 /-- Assumes left covariance. -/
@@ -795,9 +787,6 @@ alias one_le_mul_of_le_of_le := Left.one_le_mul₀
 alias one_lt_mul_of_le_of_lt := Right.one_lt_mul_of_le_of_lt₀
 alias one_lt_mul_of_lt_of_le := Left.one_lt_mul_of_lt_of_le₀
 alias one_lt_mul_of_lt_of_lt := Left.one_lt_mul₀
-
-alias one_le_mul_of_one_le_of_one_le := one_le_mul_of_le_of_le
-alias one_lt_mul := one_lt_mul_of_le_of_lt
 
 /-! Lemmas of the form `b ≤ c → a ≤ 1 → b * a ≤ c`. -/
 
@@ -1071,6 +1060,17 @@ lemma pow_le_of_le_one [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀]
 
 lemma sq_le [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀] (h₀ : 0 ≤ a) (h₁ : a ≤ 1) :
     a ^ 2 ≤ a := pow_le_of_le_one h₀ h₁ two_ne_zero
+
+lemma one_le_mul_of_one_le_of_one_le [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a) (hb : 1 ≤ b) :
+    (1 : M₀) ≤ a * b := Left.one_le_mul_of_le_of_le ha hb <| zero_le_one.trans ha
+
+alias one_lt_mul := one_lt_mul_of_le_of_lt
+
+lemma mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) :
+    a * b < 1 := (mul_le_of_le_one_right ha₀ hb).trans_lt ha
+
+lemma mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono M₀] (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) :
+    a * b < 1 := (mul_le_of_le_one_left hb₀ ha).trans_lt hb
 
 section
 variable [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀]
