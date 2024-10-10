@@ -40,6 +40,9 @@ instance CommRingCat.isLocalHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S 
     [IsLocalHom g] [IsLocalHom f] : IsLocalHom (f ≫ g) :=
   RingHom.isLocalHom_comp _ _
 
+@[deprecated "2024-10-10"]
+alias CommRingCat.isLocalRingHom_comp := CommRingCat.isLocalHom_comp
+
 theorem isLocalHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalHom f.hom :=
   { map_nonunit := fun a ha => by
       convert f.inv.isUnit_map ha
