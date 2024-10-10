@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
 
-import Batteries.Tactic.Lemma
 import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.NumberTheory.ArithmeticFunction
 
 /-!
@@ -18,8 +16,6 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 ## Main Results
 * There are `d^(ω n)` ways to write `n` as a product of `d` natural numbers, when `n` is squarefree
 (`card_finMulAntidiagonal_of_squarefree`)
-* There are `3^(ω n)` pairs of natural numbers whose `lcm` is `n`, when `n` is squarefree
-(`card_pair_lcm_eq`)
 -/
 
 open Finset
