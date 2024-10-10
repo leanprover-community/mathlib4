@@ -365,6 +365,7 @@ def principalSegToType {α β : Ordinal} (h : α < β) :
 noncomputable alias principalSegOut := principalSegToType
 
 /-- The order type of an element inside a well order. -/
+@[simps!]
 def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordinal.{u} r (· < ·) := by
   refine ⟨RelEmbedding.ofMonotone _ fun a b ha ↦
     ((PrincipalSeg.ofElement r a).codRestrict _ ?_ ?_).ordinal_type_lt, type r, fun a ↦ ⟨?_, ?_⟩⟩
@@ -385,10 +386,6 @@ theorem type_subrel (r : α → α → Prop) [IsWellOrder α r] (a : α) :
     type (Subrel r { b | r b a }) = typein r a :=
   rfl
 
-@[simp]
-theorem top_typein (r : α → α → Prop) [IsWellOrder α r] : (typein r).top = type r :=
-  rfl
-
 theorem typein_lt_type (r : α → α → Prop) [IsWellOrder α r] (a : α) : typein r a < type r :=
   (typein r).lt_top a
 
@@ -397,8 +394,8 @@ theorem typein_lt_self {o : Ordinal} (i : o.toType) : typein (α := o.toType) (�
   apply typein_lt_type
 
 @[simp]
-theorem typein_top {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
-    (f : r ≺i s) : typein s f.top = type r :=
+theorem typein_apply_top {α β} {r : α → α → Prop} {s : β → β → Prop}
+    [IsWellOrder α r] [IsWellOrder β s] (f : r ≺i s) : typein s f.top = type r :=
   f.subrelIso.ordinal_type_eq
 
 @[simp]
@@ -443,7 +440,7 @@ theorem typein_enum (r : α → α → Prop) [IsWellOrder α r] {o} (h : o < typ
 
 theorem enum_type {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
     (f : s ≺i r) {h : type s < type r} : enum r ⟨type s, h⟩ = f.top :=
-  (typein r).injective <| (typein_enum _ _).trans (typein_top _).symm
+  (typein r).injective <| (typein_enum _ _).trans (typein_apply_top _).symm
 
 @[simp]
 theorem enum_typein (r : α → α → Prop) [IsWellOrder α r] (a : α) :
