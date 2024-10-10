@@ -86,7 +86,8 @@ then the eigenspaces of the restriction of B to any eigenspace of A exhaust that
 theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric) (hAB : Commute A B) :
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
   conv_rhs => rw [← (eigenspace A α).map_subtype_top]
-  have H : ∀ μ, genEigenspace B μ 1 = eigenspace B μ := fun μ ↦ rfl
+  have H : ∀ μ, genEigenspace B μ 1 = eigenspace B μ :=
+    fun μ ↦ (by rw [genEigenspace_def, eigenspace_def, pow_one])
   simp only [← H, ← Submodule.map_iSup,
     (eigenspace A α).inf_genEigenspace _ (mapsTo_genEigenspace_of_comm hAB α 1)]
   congr 1
@@ -112,8 +113,6 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_iSup_eigenspace_inf_eigenspace_eq_top hA hB hAB
 
-/-- If `F` is an invariant subspace of a symmetric operator `S`, then `F` is the supremum of the
-eigenspaces of the restriction of `S` to `F`. -/
 /-- In finite dimensions, the indexed supremum of joint `maxGenEigenspaces` of a finite tuple of
 commuting operators equals `⊤` provided the indexed supremum of `maxGenEigenspaces` of each
 operator in the tuple equals `⊤`. -/
@@ -126,39 +125,10 @@ theorem iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_com
     (fun i j ↦ Module.End.mapsTo_maxGenEigenspace_of_comm ?_) h'
   rcases eq_or_ne j i with rfl | hij <;> tauto
 
-/-- Every generalized eigenspace of a symmetric operator is an eigenspace. -/
-theorem genEigenspace_eq_eigenspace
-    {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {n : ℕ} {μ : 𝕜} (hn : 1 ≤ n) :
-    genEigenspace T μ n = genEigenspace T μ 1 := by
-  refine Nat.le_induction rfl (fun k hk ih ↦ ?_) n hn
-  refine ih ▸ le_antisymm (fun x hx ↦ ?_) ((genEigenspace T μ).mono k.le_succ)
-  obtain (rfl | hx_ne) := eq_or_ne x 0
-  · exact zero_mem _
-  · have hμ : HasEigenvalue T μ := hasEigenvalue_of_hasGenEigenvalue (k := k + 1) <|
-      (genEigenspace T μ (k + 1)).ne_bot_iff.mpr ⟨x, hx, hx_ne⟩
-    have hT' := LinearMap.isSymmetric_iff_isSelfAdjoint T |>.mp hT
-    have hTμ : ((T - μ • 1) ^ k).IsSymmetric  := by
-      rw [LinearMap.isSymmetric_iff_isSelfAdjoint]
-      refine .pow (hT'.sub (.smul ?_ ?_)) k
-      · exact hT.conj_eigenvalue_eq_self hμ
-      · exact (LinearMap.isSymmetric_iff_isSelfAdjoint 1).mp LinearMap.IsSymmetric.id
-    rw [mem_genEigenspace, ← norm_eq_zero, ← sq_eq_zero_iff, norm_sq_eq_inner (𝕜 := 𝕜),
-      hTμ, ← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, ← pow_add]
-    simp [mem_genEigenspace .. |>.mp <| (genEigenspace T μ).mono (show k + 1 ≤ k + k by gcongr) hx]
-
-lemma maxGenEigenspace_eq_eigenspace
-    {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {μ : 𝕜} :
-    maxGenEigenspace T μ = eigenspace T μ := calc
-  _ = ⨆ n, genEigenspace T μ (n + 1) := by
-    rw [maxGenEigenspace_def, ← sup_iSup_nat_succ, genEigenspace_def]; simp [LinearMap.one_eq_id]
-  _ = ⨆ _ : ℕ, genEigenspace T μ 1 := by
-    congr! 2 with n; exact genEigenspace_eq_eigenspace hT n.succ_pos
-  _ = eigenspace T μ := by simp [genEigenspace_def, eigenspace_def]
-
 /-- In finite dimensions, the indexed supremum of the joint eigenspaces of a commuting tuple of
 symmetric linear operators equals `⊤`. -/
-theorem iSup_iInf_eq_top_of_commute {ι : Type*}
-    (T : ι → E →ₗ[𝕜] E) (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise fun i j ↦ Commute (T i) (T j)):
+theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
+    (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise fun i j ↦ Commute (T i) (T j)):
     ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ := calc
   _ = ⨆ χ : ι → 𝕜, ⨅ i, maxGenEigenspace (T i) (χ i) :=
     congr(⨆ χ : ι → 𝕜, ⨅ i, $((hT i).maxGenEigenspace_eq_eigenspace.symm))
@@ -173,7 +143,7 @@ theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Fintyp
     (hT :∀ i, (T i).IsSymmetric) (hC : ∀ i j, Commute (T i) (T j)) :
     DirectSum.IsInternal (fun α : n → 𝕜 ↦ ⨅ j, eigenspace (T j) (α j)) := by
   rw [OrthogonalFamily.isInternal_iff]
-  · rw [iSup_iInf_eq_top_of_commute _ hT fun ⦃_ _⦄ _ ↦ hC _ _, top_orthogonal_eq_bot]
+  · rw [iSup_iInf_eq_top_of_commute hT fun ⦃_ _⦄ _ ↦ hC _ _, top_orthogonal_eq_bot]
   · exact orthogonalFamily_iInf_eigenspaces hT
 
 end RCLike
