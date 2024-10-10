@@ -164,7 +164,7 @@ end MonoidHom
 
 namespace IsUnit
 
-variable {F G α M N : Type*} [FunLike F M N] [FunLike G N M]
+variable {F G M N : Type*} [FunLike F M N] [FunLike G N M]
 
 section Monoid
 

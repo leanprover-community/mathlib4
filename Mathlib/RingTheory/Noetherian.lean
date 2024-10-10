@@ -229,19 +229,19 @@ universe w
 variable {R M P : Type*} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
   [Module R N] [AddCommMonoid P] [Module R P]
 
-theorem isNoetherian_iff :
-    IsNoetherian R M ↔ WellFounded ((· > ·) : Submodule R M → Submodule R M → Prop) := by
-  have := (CompleteLattice.wellFounded_characterisations <| Submodule R M).out 0 3
+theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
+  have := (CompleteLattice.wellFoundedGT_characterisations <| Submodule R M).out 0 3
   -- Porting note: inlining this makes rw complain about it being a metavariable
   rw [this]
   exact
     ⟨fun ⟨h⟩ => fun k => (fg_iff_compact k).mp (h k), fun h =>
       ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩
 
-alias ⟨IsNoetherian.wf, _⟩ := isNoetherian_iff
+theorem isNoetherian_iff :
+    IsNoetherian R M ↔ WellFounded ((· > ·) : Submodule R M → Submodule R M → Prop) := by
+  rw [isNoetherian_iff', ← isWellFounded_iff]
 
-theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
-  rw [isNoetherian_iff, ← isWellFounded_iff]
+alias ⟨IsNoetherian.wf, _⟩ := isNoetherian_iff
 
 alias ⟨IsNoetherian.wellFoundedGT, isNoetherian_mk⟩ := isNoetherian_iff'
 
@@ -303,14 +303,13 @@ variable {R M P : Type*} {N : Type w} [Ring R] [AddCommGroup M] [Module R M] [Ad
 lemma Submodule.finite_ne_bot_of_independent {ι : Type*} {N : ι → Submodule R M}
     (h : CompleteLattice.Independent N) :
     Set.Finite {i | N i ≠ ⊥} :=
-  CompleteLattice.WellFounded.finite_ne_bot_of_independent
-    (IsWellFounded.wf) h
+  CompleteLattice.WellFoundedGT.finite_ne_bot_of_independent h
 
 /-- A linearly-independent family of vectors in a module over a non-trivial ring must be finite if
 the module is Noetherian. -/
 theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι → M}
     (hv : LinearIndependent R v) : Finite ι := by
-  refine CompleteLattice.WellFounded.finite_of_independent IsWellFounded.wf
+  refine CompleteLattice.WellFoundedGT.finite_of_independent
     hv.independent_span_singleton
     fun i contra => ?_
   apply hv.ne_zero i

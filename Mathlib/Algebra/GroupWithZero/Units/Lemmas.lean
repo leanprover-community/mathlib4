@@ -15,8 +15,7 @@ import Mathlib.Algebra.GroupWithZero.Hom
 
 assert_not_exists DenselyOrdered
 
-variable {α M M₀ G₀ M₀' G₀' F F' : Type*}
-
+variable {M M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]
 
 section Monoid

@@ -259,21 +259,6 @@ instance {X : LocallyRingedSpace} : Unique (∅ ⟶ X) where
 noncomputable
 def emptyIsInitial : Limits.IsInitial (∅ : LocallyRingedSpace.{u}) := Limits.IsInitial.ofUnique _
 
-theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Opens Y}
-    (s : Y.presheaf.obj (op U)) :
-    (Opens.map f.1.base).obj (Y.toRingedSpace.basicOpen s) =
-      @RingedSpace.basicOpen X.toRingedSpace ((Opens.map f.1.base).obj U) (f.1.c.app _ s) := by
-  ext x
-  constructor
-  · rintro ⟨⟨y, hyU⟩, hy : IsUnit _, rfl : y = _⟩
-    erw [RingedSpace.mem_basicOpen _ _ ⟨x, show x ∈ (Opens.map f.1.base).obj U from hyU⟩,
-      ← PresheafedSpace.stalkMap_germ_apply]
-    exact (f.val.stalkMap _).isUnit_map hy
-  · rintro ⟨y, hy : IsUnit _, rfl⟩
-    erw [RingedSpace.mem_basicOpen _ _ ⟨f.1.base y.1, y.2⟩]
-    erw [← PresheafedSpace.stalkMap_germ_apply] at hy
-    exact (isUnit_map_iff (f.stalkMap _) _).mp hy
-
 -- This actually holds for all ringed spaces with nontrivial stalks.
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
@@ -301,7 +286,7 @@ lemma basicOpen_eq_bot_of_isNilpotent (X : LocallyRingedSpace.{u}) (U : Opens X.
 
 instance component_nontrivial (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) [hU : Nonempty U] :
     Nontrivial (X.presheaf.obj <| op U) :=
-  (X.presheaf.germ hU.some).domain_nontrivial
+  (X.presheaf.germ _ _ hU.some.2).domain_nontrivial
 
 @[simp]
 lemma iso_hom_val_base_inv_val_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
@@ -399,30 +384,33 @@ lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
       X.presheaf.stalkSpecializes (specializes_of_eq <| by simp) y :=
   DFunLike.congr_fun (stalkMap_inv_hom e x) y
 
-@[reassoc]
-lemma stalkMap_germ (U : Opens Y)
-    (x : (Opens.map f.val.base).obj U) :
-    Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ ≫ f.stalkMap x.val =
-      f.val.c.app (op U) ≫ X.presheaf.germ x :=
-  PresheafedSpace.stalkMap_germ f.val U x
-
-lemma stalkMap_germ_apply (U : Opens Y) (x : (Opens.map f.val.base).obj U) (y) :
-    f.stalkMap x.val (Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ y) =
-      X.presheaf.germ x (f.val.c.app (op U) y) :=
-  PresheafedSpace.stalkMap_germ_apply f.val U x y
-
 @[reassoc (attr := simp)]
-lemma stalkMap_germ' (U : Opens Y) (x : X) (hx : f.val.base x ∈ U) :
-    Y.presheaf.germ ⟨f.val.base x, hx⟩ ≫ f.stalkMap x =
-      f.val.c.app (op U) ≫ X.presheaf.germ (U := (Opens.map f.val.base).obj U) ⟨x, hx⟩ :=
-  PresheafedSpace.stalkMap_germ' f.val U x hx
+lemma stalkMap_germ (U : Opens Y) (x : X) (hx : f.val.base x ∈ U) :
+    Y.presheaf.germ U (f.val.base x) hx ≫ f.stalkMap x =
+      f.val.c.app (op U) ≫ X.presheaf.germ ((Opens.map f.1.base).obj U) x hx :=
+  PresheafedSpace.stalkMap_germ f.val U x hx
 
-@[simp]
-lemma stalkMap_germ'_apply
-    (U : Opens Y) (x : X) (hx : f.val.base x ∈ U) (y : Y.presheaf.obj (op U)) :
-    f.stalkMap x (Y.presheaf.germ (U := U) ⟨f.val.base x, hx⟩ y) =
-      X.presheaf.germ (U := (Opens.map f.val.base).obj U) ⟨x, hx⟩ (f.val.c.app (op U) y) :=
-  PresheafedSpace.stalkMap_germ_apply f.val U ⟨x, hx⟩ y
+lemma stalkMap_germ_apply (U : Opens Y) (x : X) (hx : f.val.base x ∈ U) (y) :
+    f.stalkMap x (Y.presheaf.germ U (f.val.base x) hx y) =
+      X.presheaf.germ ((Opens.map f.1.base).obj U) x hx (f.val.c.app (op U) y) :=
+  PresheafedSpace.stalkMap_germ_apply f.val U x hx y
+
+theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Opens Y}
+    (s : Y.presheaf.obj (op U)) :
+    (Opens.map f.1.base).obj (Y.toRingedSpace.basicOpen s) =
+      @RingedSpace.basicOpen X.toRingedSpace ((Opens.map f.1.base).obj U) (f.1.c.app _ s) := by
+  ext x
+  constructor
+  · rintro ⟨hxU, hx⟩
+    rw [SetLike.mem_coe, X.toRingedSpace.mem_basicOpen _ _ hxU]
+    delta toRingedSpace
+    rw [← stalkMap_germ_apply]
+    exact (f.val.stalkMap _).isUnit_map hx
+  · rintro ⟨hxU, hx⟩
+    simp only [Opens.map_coe, Set.mem_preimage, SetLike.mem_coe, toRingedSpace] at hx ⊢
+    rw [RingedSpace.mem_basicOpen _ s (f.1.base x) hxU]
+    rw [← stalkMap_germ_apply] at hx
+    exact (isUnit_map_iff (f.val.stalkMap _) _).mp hx
 
 variable {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : OpenEmbedding f)
   (V : Opens U) (x : U) (hx : x ∈ V)
@@ -435,25 +423,25 @@ def restrictStalkIso : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x
 
 @[reassoc (attr := simp)]
 lemma restrictStalkIso_hom_eq_germ :
-    (X.restrict h).presheaf.germ ⟨x, hx⟩ ≫ (X.restrictStalkIso h x).hom =
-      X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ :=
+    (X.restrict h).presheaf.germ _ x hx ≫ (X.restrictStalkIso h x).hom =
+      X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ :=
   PresheafedSpace.restrictStalkIso_hom_eq_germ X.toPresheafedSpace h V x hx
 
 lemma restrictStalkIso_hom_eq_germ_apply (y) :
-    (X.restrictStalkIso h x).hom ((X.restrict h).presheaf.germ ⟨x, hx⟩ y) =
-      X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ y :=
+    (X.restrictStalkIso h x).hom ((X.restrict h).presheaf.germ _ x hx y) =
+      X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ y :=
   PresheafedSpace.restrictStalkIso_hom_eq_germ_apply X.toPresheafedSpace h V x hx y
 
 @[reassoc (attr := simp)]
 lemma restrictStalkIso_inv_eq_germ :
-    X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ ≫
-      (X.restrictStalkIso h x).inv = (X.restrict h).presheaf.germ ⟨x, hx⟩ :=
+    X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ ≫
+      (X.restrictStalkIso h x).inv = (X.restrict h).presheaf.germ _ x hx :=
   PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace h V x hx
 
 lemma restrictStalkIso_inv_eq_germ_apply (y) :
     (X.restrictStalkIso h x).inv
-      (X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ y) =
-        (X.restrict h).presheaf.germ ⟨x, hx⟩ y :=
+      (X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ y) =
+        (X.restrict h).presheaf.germ _ x hx y :=
   PresheafedSpace.restrictStalkIso_inv_eq_germ_apply X.toPresheafedSpace h V x hx y
 
 lemma restrictStalkIso_inv_eq_ofRestrict :

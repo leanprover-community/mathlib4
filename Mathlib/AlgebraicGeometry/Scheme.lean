@@ -450,22 +450,24 @@ variable (X : Scheme) {V U : X.Opens} (f g : Γ(X, U))
 def basicOpen : X.Opens :=
   X.toLocallyRingedSpace.toRingedSpace.basicOpen f
 
-@[simp]
-theorem mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ x f) :=
-  RingedSpace.mem_basicOpen _ _ _
+theorem mem_basicOpen (x : X) (hx : x ∈ U) :
+    x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x hx f) :=
+  RingedSpace.mem_basicOpen _ _ _ _
 
-theorem mem_basicOpen_top' {U : X.Opens} (f : Γ(X, U)) (x : X) :
-    x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ (⟨x, m⟩ : U) f) := by
-  fconstructor
-  · rintro ⟨y, hy1, rfl⟩
-    exact ⟨y.2, hy1⟩
-  · rintro ⟨m, hm⟩
-    exact ⟨⟨x, m⟩, hm, rfl⟩
+/-- A variant of `mem_basicOpen` for bundled `x : U`. -/
+@[simp]
+theorem mem_basicOpen' (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x x.2 f) :=
+  RingedSpace.mem_basicOpen _ _ _ _
+
+/-- A variant of `mem_basicOpen` without the `x ∈ U` assumption. -/
+theorem mem_basicOpen'' {U : X.Opens} (f : Γ(X, U)) (x : X) :
+    x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ U x m f) :=
+  Iff.rfl
 
 @[simp]
 theorem mem_basicOpen_top (f : Γ(X, ⊤)) (x : X) :
-    x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ (⟨x, trivial⟩ : (⊤ : Opens _)) f) :=
-  RingedSpace.mem_basicOpen _ f ⟨x, trivial⟩
+    x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ ⊤ x trivial f) :=
+  RingedSpace.mem_top_basicOpen _ f x
 
 @[simp]
 theorem basicOpen_res (i : op U ⟶ op V) : X.basicOpen (X.presheaf.map i f) = V ⊓ X.basicOpen f :=
@@ -668,28 +670,17 @@ lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
       (X.presheaf.stalkCongr (.of_eq (by simp))).hom y :=
   DFunLike.congr_fun (stalkMap_inv_hom e x) y
 
-@[reassoc]
-lemma stalkMap_germ (U : Y.Opens) (x : f ⁻¹ᵁ U) :
-    Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ ≫ f.stalkMap x =
-      f.app U ≫ X.presheaf.germ x :=
-  PresheafedSpace.stalkMap_germ f.val U x
-
-lemma stalkMap_germ_apply (U : Y.Opens) (x : f ⁻¹ᵁ U) (y) :
-    f.stalkMap x.val (Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ y) =
-      X.presheaf.germ x (f.val.c.app (op U) y) :=
-  PresheafedSpace.stalkMap_germ_apply f.val U x y
-
 @[reassoc (attr := simp)]
-lemma stalkMap_germ' (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) :
-    Y.presheaf.germ ⟨f.val.base x, hx⟩ ≫ f.stalkMap x =
-      f.app U ≫ X.presheaf.germ (U := f⁻¹ᵁ U) ⟨x, hx⟩ :=
-  PresheafedSpace.stalkMap_germ' f.val U x hx
+lemma stalkMap_germ (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) :
+    Y.presheaf.germ U (f.val.base x) hx ≫ f.stalkMap x =
+      f.app U ≫ X.presheaf.germ (f ⁻¹ᵁ U) x hx :=
+  PresheafedSpace.stalkMap_germ f.val U x hx
 
 @[simp]
-lemma stalkMap_germ'_apply (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) (y) :
-    f.stalkMap x (Y.presheaf.germ ⟨f.val.base x, hx⟩ y) =
-      X.presheaf.germ (U := (Opens.map f.val.base).obj U) ⟨x, hx⟩ (f.val.c.app (op U) y) :=
-  PresheafedSpace.stalkMap_germ_apply f.val U ⟨x, hx⟩ y
+lemma stalkMap_germ_apply (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) (y) :
+    f.stalkMap x (Y.presheaf.germ _ (f.val.base x) hx y) =
+      X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
+  PresheafedSpace.stalkMap_germ_apply f.val U x hx y
 
 end Scheme
 
