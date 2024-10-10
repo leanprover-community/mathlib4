@@ -1151,6 +1151,9 @@ theorem gc_ord_card : GaloisConnection ord card := fun _ _ => ord_le
 theorem lt_ord {c o} : o < ord c ↔ o.card < c :=
   gc_ord_card.lt_iff_lt
 
+theorem pos_iff_ord_pos {c : Cardinal} : 0 < c ↔ 0 < c.ord := by
+  rw [lt_ord, card_zero]
+
 @[simp]
 theorem card_ord (c) : (ord c).card = c :=
   Quotient.inductionOn c fun α => by
