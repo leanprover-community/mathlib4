@@ -107,12 +107,50 @@ noncomputable section Colim
 variable {C : Type u₁} {D : Type u₁} [Category.{v₁} C] [Category.{v₃} D]
 variable {H : Type (max u₁ u₂)} [Category.{max u₁ v₂} H]
 
+variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') [F'.IsLeftKanExtension α]
+
+@[simps]
+noncomputable def coconeOfIsLeftKanExtension (c : Cocone F) : Cocone F' where
+  pt := c.pt
+  ι := F'.descOfIsLeftKanExtension α _ c.ι
+
+def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsColimit c) :
+    IsColimit (F'.coconeOfIsLeftKanExtension α c) where
+  desc s := hc.desc (Cocone.mk _ (α ≫ whiskerLeft L s.ι))
+  fac s := by
+    have : F'.descOfIsLeftKanExtension α ((const D).obj c.pt) c.ι ≫
+        (Functor.const _).map
+          (hc.desc (Cocone.mk _ (α ≫ whiskerLeft L s.ι))) = s.ι :=
+      F'.hom_ext_of_isLeftKanExtension α _ _ (by aesop_cat)
+    exact congr_app this
+  uniq s m hm := hc.hom_ext (fun j ↦ by
+    have := hm (L.obj j)
+    nth_rw 1 [← F'.descOfIsLeftKanExtension_fac_app α ((const D).obj c.pt)]
+    dsimp at this ⊢
+    rw [assoc, this, IsColimit.fac, NatTrans.comp_app, whiskerLeft_app])
+
 /-- Composing the left Kan extension of `L : C ⥤ D` with `colim` on shapes `D` is isomorphic
 to `colim` on shapes `C`. -/
 @[simps!]
 def lanCompColimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
     [HasColimitsOfShape C H] [HasColimitsOfShape D H] : L.lan ⋙ colim ≅ colim (C := H) :=
-  NatIso.removeOp <| fullyFaithfulCancelRight coyoneda <|
+  NatIso.ofComponents (fun F => IsColimit.coconePointUniqueUpToIso
+    (colimit.isColimit (L.leftKanExtension F))
+    (isColimitCoconeOfIsLeftKanExtension _ (leftKanExtensionUnit _ _) (colimit.isColimit F)))
+    (fun f => by
+      simp only [comp_obj, colim_obj, comp_map, colim_map]
+      ext d
+      simp only [ι_colimMap_assoc]
+      unfold colimit.ι
+      rw [IsColimit.comp_coconePointUniqueUpToIso_hom, ← NatTrans.comp_app]
+      simp only [coconeOfIsLeftKanExtension_pt, coconeOfIsLeftKanExtension_ι,
+        NatTrans.comp_app, const_obj_obj, IsColimit.comp_coconePointUniqueUpToIso_hom_assoc]
+
+      sorry)
+
+#check map_app
+
+  /-NatIso.removeOp <| fullyFaithfulCancelRight coyoneda <|
     colimConstAdj.compCoyonedaIso ≪≫
     isoWhiskerLeft coyoneda (Functor.mapIso _ (constCompWhiskeringLeftIso _ _).symm ≪≫
       whiskeringLeftObjCompIso _ _) ≪≫
@@ -120,7 +158,9 @@ def lanCompColimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
     isoWhiskerRight (L.lanAdjunction _).compCoyonedaIso.symm _ ≪≫
     Functor.associator _ _ _ ≪≫
     isoWhiskerLeft L.lan.op colimConstAdj.compCoyonedaIso.symm ≪≫
-    (Functor.associator L.lan.op colim.op coyoneda).symm
+    (Functor.associator L.lan.op colim.op coyoneda).symm-/
+
+#exit
 
 end Colim
 
