@@ -22,7 +22,7 @@ symmetric operators on a finite-dimensional inner product space.
    `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
    `eigenspace B μ ⊓ eigenspace A ν`
 * `LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype` establishes the
-   analogous result to `LinearMap.IsSymmetric.directSum_isInternal_of_commute` for finite commuting
+   analogous result to `LinearMap.IsSymmetric.directSum_isInternal_of_commute` for commuting
    tuples of symmetric operators.
 
 ## TODO
@@ -160,27 +160,25 @@ lemma LinearMap.IsSymmetric.maxGenEigenspace_eq_eigenspace
     congr! 2 with n; exact genEigenspace_eq_eigenspace hT n.succ_pos
   _ = eigenspace T μ := by simp [genEigenspace_def, eigenspace_def]
 
-theorem LinearMap.IsSymmetric.iSup_iInf_eq_top_of_commute_of_fintype {ι : Type*}
+/-- In finite dimensions, the indexed supremum of the joint eigenspaces of a commuting tuple of
+symmetric linear operators equals `⊤`. -/
+theorem LinearMap.IsSymmetric.iSup_iInf_eq_top_of_commute [FiniteDimensional 𝕜 E] {ι : Type*}
     (T : ι → E →ₗ[𝕜] E) (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise fun i j ↦ Commute (T i) (T j)):
-    ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ := by calc
-  _ = ⨆ χ : ι → 𝕜, ⨅ i, maxGenEigenspace (T i) (χ i) := by
-    congr! 4; exact (LinearMap.IsSymmetric.maxGenEigenspace_eq_eigenspace (hT _)).symm
-  _ = ⊤ := by
-    exact iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute T h
-     (fun ι ↦ (by rw [← orthogonal_eq_bot_iff]; apply orthogonalComplement_iSup_eigenspaces_eq_bot))
-
-
-/-Just needs the analogue of Oliver's result, set up for tuples of symmetric
-operators.-/
+    ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ := calc
+  _ = ⨆ χ : ι → 𝕜, ⨅ i, maxGenEigenspace (T i) (χ i) :=
+    congr(⨆ χ : ι → 𝕜, ⨅ i, $((hT i).maxGenEigenspace_eq_eigenspace.symm))
+  _ = ⊤ :=
+    iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute T h fun i ↦ by
+    rw [← orthogonal_eq_bot_iff, congr(⨆ μ, $((hT i).maxGenEigenspace_eq_eigenspace)),
+      (hT i).orthogonalComplement_iSup_eigenspaces_eq_bot]
 
 /-- In finite dimensions, given a finite commuting family of symmetric linear operators, the inner
 product space on which they act decomposes as an internal direct sum of joint eigenspaces. -/
-theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Finite n]
-    [DecidableEq (n → 𝕜)] (hT :∀ i, (T i).IsSymmetric)
+theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute (hT :∀ i, (T i).IsSymmetric)
     (hC : ∀ i j, Commute (T i) (T j)) :
     DirectSum.IsInternal (fun α : n → 𝕜 ↦ ⨅ j, eigenspace (T j) (α j)) := by
   rw [OrthogonalFamily.isInternal_iff]
-  · sorry --exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot hT hC
+  · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot hT hC
   · exact orthogonalFamily_iInf_eigenspaces hT
 
 end RCLike
