@@ -314,7 +314,7 @@ theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
     (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.openEmbedding ≫ f) (Y.ofRestrict _) ?_).hom ?_ hU,
     fun hU => hU.image_of_isOpenImmersion f⟩
   · erw [Scheme.comp_base, coe_comp, Set.range_comp] -- now `erw` after #13170
-    dsimp [Opens.coe_inclusion, Scheme.restrict]
+    dsimp [Opens.coe_inclusion', Scheme.restrict]
     erw [Subtype.range_coe, Subtype.range_coe] -- now `erw` after #13170
     rfl
   · infer_instance
@@ -557,7 +557,7 @@ theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.bas
   congr 2
   rw [RingHom.algebraMap_toAlgebra]
   refine (Scheme.stalkMap_germ hU.fromSpec _ _ hy).trans ?_
-  rw [← Scheme.Hom.app, IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
+  rw [IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
   rfl
 
 -- Porting note: I have split this into two lemmas
