@@ -5,6 +5,9 @@ Authors: Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+-- import Mathlib.CategoryTheory.Category.Cat
+-- import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
+-- import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # The Grothendieck construction
@@ -21,6 +24,10 @@ The category `∫ F` is defined as follows:
 The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first factors, i.e.
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
+
+## TODO
+1. Implement more functoriality for the Grothendieck construction (make things into pseudofunctors).
+2. Obtain the results in `CategoryTheory.Grothendieck` as a specialization of these results?
 
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
