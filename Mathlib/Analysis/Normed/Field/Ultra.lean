@@ -7,7 +7,7 @@ import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Ultra
 
 /-!
-## Sufficient contidition to have an ultrametric norm on a field
+## Sufficient conditions to have an ultrametric norm on a field
 
 This file provides ways of constructing an instance of `IsUltrametricDist` based on
 facts about the existing norm.
@@ -19,13 +19,13 @@ facts about the existing norm.
 
 ## Implementation details
 
-The proof relies on a bounded-from-above argument, so the imports need to include `rpow`
+The proof relies on a bounded-from-above argument.
 
 ## Tags
 
 ultrametric, nonarchimedean
 -/
-open Metric IsUltrametricDist NNReal
+open Metric NNReal
 
 namespace IsUltrametricDist
 
@@ -35,30 +35,29 @@ variable {R F : Type*} [NormedDivisionRing R] [NormedField F]
 
 lemma isUltrametricDist_of_forall_norm_add_one_le_max_norm_one
     (h : ∀ x : R, ‖x + 1‖ ≤ max ‖x‖ 1) : IsUltrametricDist R := by
-  apply isUltrametricDist_of_forall_norm_add_le_max_norm
-  intro x y
-  rcases eq_or_ne y 0 with rfl|hy
-  · simp
-  rw [← div_le_div_right (c := ‖y‖) (by simpa using hy), ← norm_div, add_div, div_self hy,
-      ← max_div_div_right (norm_nonneg _), div_self (by simp [hy]), ← norm_div]
-  exact h _
+  refine isUltrametricDist_of_forall_norm_add_le_max_norm (fun x y ↦ ?_)
+  rcases eq_or_ne y 0 with rfl | hy
+  · simpa only [add_zero] using le_max_left _ _
+  · have p : 0 < ‖y‖ := norm_pos_iff.mpr hy
+    simpa only [div_add_one hy, norm_div, div_le_iff₀ p, max_mul_of_nonneg _ _ p.le, one_mul,
+      div_mul_cancel₀ _ p.ne'] using h (x / y)
+
+lemma isUltrametricDist_of_forall_norm_add_one_of_norm_le_one
+    (h : ∀ x : R, ‖x‖ ≤ 1 → ‖x + 1‖ ≤ 1) : IsUltrametricDist R := by
+  refine isUltrametricDist_of_forall_norm_add_one_le_max_norm_one fun x ↦ ?_
+  rcases le_or_lt ‖x‖ 1 with H|H
+  · exact (h _ H).trans (le_max_right _ _)
+  · suffices ‖x + 1‖ ≤ ‖x‖ from this.trans (le_max_left _ _)
+    rw [← div_le_div_right (c := ‖x‖) (H.trans' zero_lt_one), div_self (H.trans' zero_lt_one).ne',
+        ← norm_div, add_div, div_self (by simpa using (H.trans' zero_lt_one)), add_comm]
+    apply h
+    simp [inv_le_one_iff₀, H.le]
 
 lemma isUltrametricDist_of_forall_norm_sub_one_of_norm_le_one
     (h : ∀ x : R, ‖x‖ ≤ 1 → ‖x - 1‖ ≤ 1) : IsUltrametricDist R := by
-  have : ∀ x : R, ‖x‖ ≤ 1 → ‖x + 1‖ ≤ 1 := by
-    intro x hx
-    specialize h (-x) (by simpa using hx)
-    rwa [← neg_add', norm_neg] at h
-  apply isUltrametricDist_of_forall_norm_add_one_le_max_norm_one
-  intro x
-  cases le_or_lt ‖x‖ 1 with
-  | inl h => simpa [h] using this _ h
-  | inr h =>
-    suffices ‖x + 1‖ ≤ ‖x‖ by simp [this]
-    rw [← div_le_div_right (c := ‖x‖) (h.trans' zero_lt_one), div_self (h.trans' zero_lt_one).ne',
-        ← norm_div, add_div, div_self (by simpa using (h.trans' zero_lt_one)), add_comm]
-    apply this
-    simp [inv_le_one_iff₀, h.le]
+  have (x : R) (hx : ‖x‖ ≤ 1) : ‖x + 1‖ ≤ 1 := by
+    simpa only [← neg_add', norm_neg] using h (-x) (norm_neg x ▸ hx)
+  exact isUltrametricDist_of_forall_norm_add_one_of_norm_le_one this
 
 /-- To prove that a normed field is nonarchimedean, it suffices to prove that the norm
 of the image of any natural is less than or equal to one. -/
