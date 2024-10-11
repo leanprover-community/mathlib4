@@ -621,15 +621,17 @@ theorem map_maximal_mem (f : s ≃o t) (hx : Maximal (· ∈ s) x) :
 def mapSetOfMinimal (f : s ≃o t) : {x | Minimal (· ∈ s) x} ≃o {x | Minimal (· ∈ t) x} where
   toFun x := ⟨f ⟨x, x.2.1⟩, f.map_minimal_mem x.2⟩
   invFun x := ⟨f.symm ⟨x, x.2.1⟩, f.symm.map_minimal_mem x.2⟩
-  left_inv x := Subtype.ext (by apply congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩)
-  right_inv x := Subtype.ext (by apply congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩)
-  map_rel_iff' {_ _} := f.map_rel_iff
+  left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩ :)
+  right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩ :)
+  map_rel_iff' := f.map_rel_iff
 
 /-- If two sets are order isomorphic, their maximals are also order isomorphic. -/
 def mapSetOfMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) x} where
   toFun x := ⟨f ⟨x, x.2.1⟩, f.map_maximal_mem x.2⟩
   invFun x := ⟨f.symm ⟨x, x.2.1⟩, f.symm.map_maximal_mem x.2⟩
-  __ := (show OrderDual.ofDual ⁻¹' s ≃o OrderDual.ofDual ⁻¹' t from f.dual).mapSetOfMinimal
+  left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩ :)
+  right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩ :)
+  map_rel_iff' := f.map_rel_iff
 
 /-- If two sets are antitonically order isomorphic, their minimals/maximals are too. -/
 def setOfMinimalIsoSetOfMaximal (f : s ≃o tᵒᵈ) :

@@ -244,7 +244,7 @@ instance commShiftMapCochainComplex :
     ext
     rw [CommShift.isoAdd_hom_app]
     dsimp
-    erw [id_comp, id_comp]
+    rw [id_comp, id_comp]
     simp only [CochainComplex.shiftFunctorAdd_hom_app_f,
       CochainComplex.shiftFunctorAdd_inv_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
       eqToHom_map, eqToHom_trans, eqToHom_refl]

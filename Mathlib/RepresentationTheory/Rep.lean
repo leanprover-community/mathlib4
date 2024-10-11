@@ -371,7 +371,7 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
           Rep.ihom_obj_ρ_apply,
           LinearMap.comp_apply, LinearMap.comp_apply] --, ρ_inv_self_apply (A := C)]
         dsimp
-        erw [ρ_inv_self_apply]
+        rw [ρ_inv_self_apply]
         rfl}
   left_inv f := Action.Hom.ext (TensorProduct.ext' fun _ _ => rfl)
   right_inv f := by ext; rfl
@@ -569,7 +569,7 @@ theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
 /- Porting note: rest of broken proof was
   simp only [AddEquiv.apply_eq_iff_eq, AddEquiv.apply_symm_apply,
     Representation.asModuleEquiv_symm_map_rho, Representation.ofModule_asModule_act] -/
-  erw [Representation.asModuleEquiv_symm_map_rho]
+  rw [Representation.asModuleEquiv_symm_map_rho]
   rfl
 
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
