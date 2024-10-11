@@ -176,7 +176,7 @@ theorem direct_sum_isInternal (hT : T.IsSymmetric) :
   hT.orthogonalFamily_eigenspaces'.isInternal_iff.mpr
     hT.orthogonalComplement_iSup_eigenspaces_eq_bot'
 
-theorem isSemisimple {T : Module.End 𝕜 E} [CompleteSpace E] (hT : T.IsSymmetric) :
+theorem isSemisimple {T : Module.End 𝕜 E} (hT : T.IsSymmetric) :
     T.IsSemisimple := by
   refine Module.End.isSemisimple_iff.mpr fun p hp ↦ ⟨pᗮ, fun x hx ↦ ?_, IsCompl.mk ?_ ?_⟩
   · exact invariant_perp_comap hT hp hx
