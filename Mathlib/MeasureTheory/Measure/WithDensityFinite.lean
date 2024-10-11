@@ -104,7 +104,7 @@ lemma sfiniteSeq_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] (n
     sfiniteSeq μ n ≪ μ.toFinite :=
   (sfiniteSeq_le μ n).absolutelyContinuous.trans (absolutelyContinuous_toFinite μ)
 
-@[deprecated (since := "2024-10-04")]
+@[deprecated (since := "2024-10-11")]
 alias sFiniteSeq_absolutelyContinuous_toFinite := sfiniteSeq_absolutelyContinuous_toFinite
 
 lemma toFinite_absolutelyContinuous (μ : Measure α) [SFinite μ] : μ.toFinite ≪ μ :=
