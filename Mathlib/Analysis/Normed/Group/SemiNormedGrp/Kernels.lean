@@ -145,14 +145,12 @@ def cokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       ext a
       simp only [comp_apply, Limits.zero_comp]
       -- Porting note: `simp` not firing on the below
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [comp_apply, NormedAddGroupHom.zero_apply]
+      rw [comp_apply, NormedAddGroupHom.zero_apply]
       -- Porting note: Lean 3 didn't need this instance
       letI : SeminormedAddCommGroup ((forget SemiNormedGrp).obj Y) :=
         (inferInstance : SeminormedAddCommGroup Y)
       -- Porting note: again simp doesn't seem to be firing in the below line
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [← NormedAddGroupHom.mem_ker, f.range.ker_normedMk, f.mem_range]
+      rw [← NormedAddGroupHom.mem_ker, f.range.ker_normedMk, f.mem_range]
     -- This used to be `simp only [exists_apply_eq_apply]` before leanprover/lean4#2644
       convert exists_apply_eq_apply f a)
 
