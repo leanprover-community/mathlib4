@@ -19,7 +19,7 @@ is a (not necessarily commutative) `K`-algebra.
 ## Implementation notes
 
 We require the `K`-center of `D` to be smaller than or equal to the smallest subalgebra so that when
-we prove something is central simple, there we don't need to prove `⊥ ≤ center K D` even though this
+we prove something is central, there we don't need to prove `⊥ ≤ center K D` even though this
 direction is trivial.
 
 ### Central Simple Algebras
