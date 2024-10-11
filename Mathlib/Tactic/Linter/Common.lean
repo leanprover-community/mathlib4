@@ -14,18 +14,16 @@ open Lean Parser Elab Command Meta
 namespace Mathlib.Linter
 
 /--
-If `stx` is a declaration, then `getNames stx` returns the array of identifiers
-for the name of the declarations whose syntax range is contained in `stx`.
+If `pos` is a `String.Pos`, then `getNamesFrom pos` returns the array of identifiers
+for the names of the declarations whose syntax begins in position at least `pos`.
 -/
-def getNames {m} [Monad m] [MonadEnv m] [MonadFileMap m] (stx : Syntax) : m (Array Syntax) := do
+def getNamesFrom {m} [Monad m] [MonadEnv m] [MonadFileMap m] (pos : String.Pos) :
+    m (Array Syntax) := do
   let drs := declRangeExt.getState (← getEnv)
-  let stxPos := stx.getRange?.getD default
   let fm ← getFileMap
-  let stxPos1 := stxPos.start
-  let stxPos2 := stxPos.stop
   let mut nms := #[]
   for (nm, rgs) in drs do
-    if stxPos1 ≤ fm.ofPosition rgs.range.pos && fm.ofPosition rgs.range.pos ≤ stxPos2 then
+    if pos ≤ fm.ofPosition rgs.range.pos then
       let ofPos1 := fm.ofPosition rgs.selectionRange.pos
       let ofPos2 := fm.ofPosition rgs.selectionRange.endPos
       nms := nms.push (mkIdentFrom (.ofRange ⟨ofPos1, ofPos2⟩) nm)

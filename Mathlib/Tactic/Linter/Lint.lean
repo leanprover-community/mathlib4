@@ -91,7 +91,7 @@ def getIds : Syntax → Array Syntax
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if Linter.getLinterValue linter.dupNamespace (← getOptions) then
-    for id in (← getNames stx) do
+    for id in (← getNamesFrom (stx.getPos?.getD default)) do
       let declName := id.getId
       let nm := declName.components
       let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
