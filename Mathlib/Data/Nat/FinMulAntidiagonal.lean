@@ -56,9 +56,8 @@ end PNat
 
 namespace Nat
 
-/--
-  The `Finset` of all `d`-tuples of natural numbers whose product is `n`. Defined to be `∅` when
-  `n=0`. -/
+/-- The `Finset` of all `d`-tuples of natural numbers whose product is `n`. Defined to be `∅` when
+`n = 0`. -/
 def finMulAntidiagonal (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
   if hn : 0 < n then
     (Finset.finAntidiagonal d (Additive.ofMul (α := ℕ+) ⟨n, hn⟩)).map <|
@@ -181,7 +180,7 @@ lemma finMulAntidiagonal_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree 
 
 private def primeFactorsPiBij (d n : ℕ) :
     ∀ f ∈ (n.primeFactors.pi fun _ => (univ : Finset <| Fin d)), Fin d → ℕ :=
-  fun f _ i => ∏ p in Finset.filter (fun p => f p.1 p.2 = i) n.primeFactors.attach,  p
+  fun f _ i => ∏ p in Finset.filter (fun p => f p.1 p.2 = i) n.primeFactors.attach, p
 
 private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
   (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
