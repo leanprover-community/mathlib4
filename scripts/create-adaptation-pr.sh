@@ -292,7 +292,7 @@ if git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet 
   if [ "$AUTO" = "yes" ]; then
     echo "Auto mode enabled. Bailing out due to unresolved conflicts or uncommitted changes."
     echo "PR has been created, and message posted to Zulip."
-    echo "Error occured while merging the new branch into 'nightly-testing'."
+    echo "Error occurred while merging the new branch into 'nightly-testing'."
     exit 2
   fi
 fi

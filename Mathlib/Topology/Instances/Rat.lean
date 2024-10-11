@@ -81,7 +81,7 @@ namespace Rat
 instance : NoncompactSpace ℚ := Int.closedEmbedding_coe_rat.noncompactSpace
 
 theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.2 :=
-  Rat.isUniformEmbedding_coe_real.toUniformInducing.uniformContinuous_iff.2 <| by
+  Rat.isUniformEmbedding_coe_real.isUniformInducing.uniformContinuous_iff.2 <| by
     simp only [Function.comp_def, Rat.cast_add]
     exact Real.uniformContinuous_add.comp
       (Rat.uniformContinuous_coe_real.prodMap Rat.uniformContinuous_coe_real)
@@ -106,7 +106,7 @@ instance : TopologicalRing ℚ := inferInstance
 
 nonrec theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
   simpa only [preimage_cast_Icc]
-    using totallyBounded_preimage Rat.isUniformEmbedding_coe_real.toUniformInducing
+    using totallyBounded_preimage Rat.isUniformEmbedding_coe_real.isUniformInducing
       (totallyBounded_Icc (a : ℝ) b)
 
 end Rat

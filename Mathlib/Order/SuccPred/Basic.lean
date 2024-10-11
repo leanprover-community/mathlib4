@@ -24,7 +24,7 @@ order...
 
 Maximal elements don't have a sensible successor. Thus the naïve typeclass
 ```lean
-class NaiveSuccOrder (α : Type*) [Preorder α] :=
+class NaiveSuccOrder (α : Type*) [Preorder α] where
   (succ : α → α)
   (succ_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
   (lt_succ_iff : ∀ {a b}, a < succ b ↔ a ≤ b)

@@ -222,9 +222,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   have W_nhd : ∀ x, W x ∈ 𝓝 x := by
     intro x
     refine IsOpen.mem_nhds ?_ ?_
-    · -- Porting note: mathlib3 `continuity` found `continuous_set_coe`
-      apply isOpen_lt (continuous_set_coe _ _)
-      continuity
+    · apply isOpen_lt <;> fun_prop
     · dsimp only [W, Set.mem_setOf_eq]
       rw [h_eq]
       exact lt_add_of_pos_right _ pos

@@ -1086,7 +1086,7 @@ section
 /-- A mixin over a normed field, saying that the norm field structure is the same as `ℝ` or `ℂ`.
 To endow such a field with a compatible `RCLike` structure in a proof, use
 `letI := IsRCLikeNormedField.rclike 𝕜`.-/
-class IsRCLikeNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop :=
+class IsRCLikeNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop where
   out : ∃ h : RCLike 𝕜, hk = h.toNormedField
 
 instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedField 𝕜 := ⟨⟨h, rfl⟩⟩
