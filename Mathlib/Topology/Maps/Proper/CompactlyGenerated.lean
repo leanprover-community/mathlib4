@@ -21,7 +21,10 @@ variable {f : X → Y}
 
 /-- If `Y` is Hausdorff and compactly generated, then proper maps `X → Y` are exactly
 continuous maps such that the preimage of any compact set is compact. This is in particular true
-if `Y` is Hausdorff and sequential or locally compact. -/
+if `Y` is Hausdorff and sequential or locally compact.
+
+There was an older version of this theorem which was changed to this one to make use
+of the `CompactlyGeneratedSpace` typeclass. (since 2024-11-10) -/
 theorem isProperMap_iff_isCompact_preimage :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) where
   mp hf := ⟨hf.continuous, fun _ ↦ hf.isCompact_preimage⟩
@@ -30,7 +33,10 @@ theorem isProperMap_iff_isCompact_preimage :
       fun _ hK ↦ image_inter_preimage .. ▸ (((h hK).inter_left hs).image hf).isClosed,
       fun _ ↦ h isCompact_singleton⟩
 
-/-- Version of `isProperMap_iff_isCompact_preimage` in terms of `cocompact`. -/
+/-- Version of `isProperMap_iff_isCompact_preimage` in terms of `cocompact`.
+
+There was an older version of this theorem which was changed to this one to make use
+of the `CompactlyGeneratedSpace` typeclass. (since 2024-11-10) -/
 lemma isProperMap_iff_tendsto_cocompact :
     IsProperMap f ↔ Continuous f ∧ Tendsto f (cocompact X) (cocompact Y) := by
   simp_rw [isProperMap_iff_isCompact_preimage,

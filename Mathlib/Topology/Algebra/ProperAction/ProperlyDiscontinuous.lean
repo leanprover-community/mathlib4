@@ -31,7 +31,10 @@ open Prod Set
 /-- If a discrete group acts on a T2 space `X` such that `X × X` is compactly
 generated, and if the action is continuous in the second variable, then the action is properly
 discontinuous if and only if it is proper. This is in particular true if `X` is first-countable or
-weakly locally compact. -/
+weakly locally compact.
+
+There was an older version of this theorem which was changed to this one to make use
+of the `CompactlyGeneratedSpace` typeclass. (since 2024-11-10) -/
 theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G]
     [ContinuousConstSMul G X] [CompactlyGeneratedSpace (X × X)] :
     ProperlyDiscontinuousSMul G X ↔ ProperSMul G X := by
