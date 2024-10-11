@@ -370,6 +370,14 @@ pair -/
 noncomputable def ofIsReflexivePair (f g : A ⟶ B) [IsReflexivePair f g] :
     WalkingReflexivePair ⥤ C := reflexivePair f g (commonSection f g)
 
+@[simp]
+lemma ofIsReflexivePair_map_left (f g : A ⟶ B) [IsReflexivePair f g] :
+  (ofIsReflexivePair f g).map .left = f := rfl
+
+@[simp]
+lemma ofIsReflexivePair_map_right (f g : A ⟶ B) [IsReflexivePair f g] :
+  (ofIsReflexivePair f g).map .right = g := rfl
+
 /-- The natural isomorphism between the diagram obtained by forgetting the reflexion of
 `ofIsReflexivePair f g` and the original parallel pair. -/
 noncomputable def inclusionWalkingReflexivePairOfIsReflexivePairIso
@@ -397,7 +405,7 @@ variable {F G : WalkingReflexivePair ⥤ C}
   (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right := by aesop_cat)
   (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion := by aesop_cat)
 
-/-- A constructor for natural transformations betweens functors from `WalkingReflexivePair`. -/
+/-- A constructor for natural transformations between functors from `WalkingReflexivePair`. -/
 def mkNatTrans : F ⟶ G where
   app := fun x ↦ match x with
     | zero => e₀
@@ -515,11 +523,6 @@ lemma app_one_eq_π (G : ReflexiveCofork F) : G.ι.app zero = G.π := rfl
 abbrev toCofork (G : ReflexiveCofork F) : Cofork (F.map left) (F.map right) :=
   Cofork.ofπ G.π (by simp)
 
-@[simp]
-lemma toCofork.π (G : ReflexiveCofork F) : Cofork.π (G.toCofork) = G.π := by
-  dsimp only [toCofork, Cofork.π]
-  aesop_cat
-
 end ReflexiveCofork
 
 noncomputable section
@@ -529,55 +532,108 @@ variable (F : WalkingReflexivePair ⥤ C)
 
 /-- Forgetting the reflexion yields an equivalence between cocones over a bundled reflexive pair and
 coforks on the underlying parallel pair. -/
+@[simps! functor_obj_pt inverse_obj_pt]
 def inclusionWalkingReflexivePairEquivCocone :
-    Cocone F ≌ Cofork (F.map left) (F.map right) :=
+    ReflexiveCofork F ≌ Cofork (F.map left) (F.map right) :=
   (Functor.Final.coconesEquiv _ F).symm.trans
     (Cocones.precomposeEquivalence
       (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F))).symm
 
-@[inherit_doc inclusionWalkingReflexivePairEquivCocone]
-def inclusionWalkingReflexivePairEquiv_obj (G : ReflexiveCofork F) :
+@[simp]
+lemma inclusionWalkingReflexivePairEquivCocone_functor_obj_π (G : ReflexiveCofork F) :
+    ((inclusionWalkingReflexivePairEquivCocone F).functor.obj G).π = G.π := by
+  dsimp [inclusionWalkingReflexivePairEquivCocone]
+  rw [ReflexiveCofork.π, Cofork.π]
+  aesop_cat
+
+@[simp]
+lemma inclusionWalkingReflexivePairEquivCocone_inverse_obj_π
+    (G : Cofork (F.map left) (F.map right)) :
+    ((inclusionWalkingReflexivePairEquivCocone F).inverse.obj G).π = G.π := by
+  apply Functor.Final.induction (WalkingParallelPair.inclusionWalkingReflexivePair)
+    (fun Z k => ((F.map k) ≫ (eqToHom _) ≫ (G.ι.app Z) = G.π))
+  · intro X₁ X₂ k₁ k₂ _ _ _
+    cases X₁ <;> cases X₂ <;> cases k₁ <;> cases k₂ <;> aesop_cat
+  · intro X₁ X₂ k₁ k₂ _ _ _
+    cases X₁ <;> cases X₂ <;> cases k₁ <;> cases k₂ <;> aesop_cat
+  rotate_left
+  · exact WalkingParallelPair.zero
+  · exact reflexion
+  · simp
+
+/-- The equivalence between reflexive coforks and coforks sends a reflexive cofork to its underlying
+cofork. -/
+def inclusionWalkingReflexivePairEquivObjIso (G : ReflexiveCofork F) :
     (inclusionWalkingReflexivePairEquivCocone F).functor.obj G ≅ G.toCofork :=
   Cofork.ext (Iso.refl _)
     (by simp [inclusionWalkingReflexivePairEquivCocone, Cofork.π])
-
-instance reflexivePair_hasColimit_of_hasCoequalizer
-    [h : HasCoequalizer (F.map left) (F.map right)] : HasColimit F := by
-  have := Limits.hasColimitOfIso (show _ ≅ parallelPair (F.map left) (F.map right) from
-    diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F))
-  apply Functor.Final.hasColimit_of_comp WalkingParallelPair.inclusionWalkingReflexivePair
 
 lemma hasReflexiveCoequalizer_iff_hasCoequalizer :
     HasColimit F ↔ HasCoequalizer (F.map left) (F.map right) := by
   simpa only [hasColimit_iff_hasInitial_cocone]
     using Equivalence.hasInitial_iff (inclusionWalkingReflexivePairEquivCocone F)
 
+instance reflexivePair_hasColimit_of_hasCoequalizer
+    [h : HasCoequalizer (F.map left) (F.map right)] : HasColimit F :=
+  hasReflexiveCoequalizer_iff_hasCoequalizer _|>.mpr h
+
 /-- A reflexive cofork is a colimit cocone if and only if the underlying cofork is. -/
 def ReflexiveCofork.isColimitEquiv (G : ReflexiveCofork F) :
     IsColimit (G.toCofork) ≃ IsColimit G :=
-  IsColimit.equivIsoColimit (inclusionWalkingReflexivePairEquiv_obj F G).symm|>.trans <|
+  IsColimit.equivIsoColimit (inclusionWalkingReflexivePairEquivObjIso F G).symm|>.trans <|
     (IsColimit.precomposeHomEquiv (diagramIsoParallelPair _).symm (G.whisker _)).trans <|
       Functor.Final.isColimitWhiskerEquiv _ _
 
+section
+
+variable [HasCoequalizer (F.map left) (F.map right)]
+
 /-- The colimit of a functor out of the walking reflexive pair is the same as the colimit of the
 underlying parallel pair. -/
-def inclusionWalkingReflexivePairColimitEquiv
-    [HasCoequalizer (F.map left) (F.map right)] :
+def reflexiveCoequalizerIsoCoequalizer :
     colimit F ≅ coequalizer (F.map left) (F.map right) :=
   ((ReflexiveCofork.isColimitEquiv _ _).symm (colimit.isColimit F)).coconePointUniqueUpToIso
-    (colimit.isColimit _)variable {A B : C} {f g : A ⟶ B} [IsReflexivePair f g]
+    (colimit.isColimit _)
 
-instance ofIsReflexivePairHasColimit_of_hasCoequalizer [HasCoequalizer f g] :
-    HasColimit (ofIsReflexivePair f g) := by
-  have := Limits.hasColimitOfIso <| inclusionWalkingReflexivePairOfIsReflexivePairIso f g
-  apply Functor.Final.hasColimit_of_comp WalkingParallelPair.inclusionWalkingReflexivePair
+@[simp]
+lemma ι_reflexiveCoequalizerIsoCoequalizer_hom :
+    colimit.ι F zero ≫ (reflexiveCoequalizerIsoCoequalizer F).hom =
+      coequalizer.π (F.map left) (F.map right) :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom
+    ((ReflexiveCofork.isColimitEquiv F _).symm _) _ WalkingParallelPair.one
+
+@[simp]
+lemma π_reflexiveCoequalizerIsoCoequalizer_inv :
+    coequalizer.π _ _ ≫ (reflexiveCoequalizerIsoCoequalizer F).inv = colimit.ι F _ := by
+  rw [reflexiveCoequalizerIsoCoequalizer]
+  simp only [colimit.comp_coconePointUniqueUpToIso_inv, Cofork.ofπ_pt, colimit.cocone_x,
+    Cofork.ofπ_ι_app, colimit.cocone_ι]
+
+end
+
+variable {A B : C} {f g : A ⟶ B} [IsReflexivePair f g] [h : HasCoequalizer f g]
+
+instance ofIsReflexivePair_hasColimit_of_hasCoequalizer :
+    HasColimit (ofIsReflexivePair f g) :=
+  hasReflexiveCoequalizer_iff_hasCoequalizer _|>.mpr h
 
 /-- The coequalizer of a reflexive pair can be promoted to the colimit of a diagram out of the
 walking reflexive pair -/
-def ofIsReflexivePairColimitEquiv [HasCoequalizer f g] :
+def colimitOfIsReflexivePairIsoCoequalizer :
     colimit (ofIsReflexivePair f g) ≅ coequalizer f g :=
-  (Functor.Final.colimitIso _ _).symm.trans <|
-    HasColimit.isoOfNatIso <| inclusionWalkingReflexivePairOfIsReflexivePairIso _ _
+  @reflexiveCoequalizerIsoCoequalizer _ _ (ofIsReflexivePair f g) h
+
+
+@[simp]
+lemma ι_colimitOfIsReflexivePairIsoCoequalizer_hom :
+    colimit.ι (ofIsReflexivePair f g) zero ≫ colimitOfIsReflexivePairIsoCoequalizer.hom =
+      coequalizer.π f g := @ι_reflexiveCoequalizerIsoCoequalizer_hom _ _ _ h
+
+@[simp]
+lemma π_colimitOfIsReflexivePairIsoCoequalizer_inv :
+    coequalizer.π f g ≫ colimitOfIsReflexivePairIsoCoequalizer.inv =
+      colimit.ι (ofIsReflexivePair f g) zero :=
+  @π_reflexiveCoequalizerIsoCoequalizer_inv _ _ (ofIsReflexivePair f g) h
 
 end
 end Limits
