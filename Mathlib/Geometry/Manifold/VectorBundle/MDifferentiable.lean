@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
 import Mathlib.Topology.VectorBundle.Hom
 import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
+import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
 open Bundle Set PartialHomeomorph ContinuousLinearMap Pretrivialization Filter
 
