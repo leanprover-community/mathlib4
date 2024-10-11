@@ -77,7 +77,7 @@ variable (𝕜)
 /-- The absolute convex hull of a set `s` is the minimal absolute convex set that includes `s`. -/
 @[simps! isClosed]
 def absConvexHull : ClosureOperator (Set E) :=
-  .ofCompletePred (AbsConvex 𝕜) fun _ ↦ AbsConvex.sInter
+  .ofCompletePred (AbsConvex 𝕜) fun _ ↦ .sInter
 
 variable {𝕜} {s : Set E}
 
