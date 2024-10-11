@@ -145,7 +145,48 @@ theorem IsActionTopology.toContinuousAdd [TopologicalSpace A] [IsActionTopology 
 theorem actionTopology_le [τA : TopologicalSpace A] [ContinuousSMul R A] [ContinuousAdd A] :
     actionTopology R A ≤ τA := sInf_le ⟨inferInstance, inferInstance⟩
 
+set_option linter.unusedVariables false in
+/-- A copy of `A` with the `R`-action topology -/
+structure WithActionTopology (R A : Type*) where val : A
+
+namespace WithActionTopology
+variable (R A : Type*)
+
+/-- `mk` as an `Equiv`. -/
+def mkEquiv : A ≃ WithActionTopology R A where
+  toFun := .mk; invFun x := x.val; left_inv _ := rfl; right_inv _ := rfl
+
+theorem coe_mkEquiv : ⇑(mkEquiv R A) = mk := rfl
+
+variable [TopologicalSpace R] [Add A] [SMul R A]
+
+instance : TopologicalSpace (WithActionTopology R A) := (actionTopology R A).coinduced (mkEquiv _ _)
+
+theorem inducingVal : Inducing (@val R A) := _
+
+instance : Add (WithActionTopology R A) where add x y := ⟨x.val + y.val⟩
+instance : ContinuousAdd (WithActionTopology R A) := continuousAdd_induced
+
+variable [TopologicalSpace A] [ContinuousAdd A] [ContinuousSMul R A]
+theorem continuous_val : Continuous (@val R A) := by
+  rw [continuous_iff_coinduced_le, instTopologicalSpace, @coinduced_compose,
+    Function.comp_def]
+  erw [@coinduced_id]
+  exact actionTopology_le R A
+
+variable {R A} in
+theorem _root_.IsActionTopology.of_continuous
+    (h : Continuous (.mk : A → WithActionTopology R A)) :
+    IsActionTopology R A where
+  eq_actionTopology' := by
+    refine le_antisymm ?_ (actionTopology_le _ _)
+    rwa [continuous_iff_le_induced, instTopologicalSpace, ← coe_mkEquiv, ← Equiv.induced_symm,
+      induced_compose, Equiv.symm_comp_self, @induced_id] at h
+
+end WithActionTopology
+
 end basics
+
 
 namespace IsActionTopology
 
@@ -170,24 +211,16 @@ is `R`'s topology.
 -/
 
 /-- The action by left-multiplication is the action topology. -/
-instance _root_.TopologicalSemiring.toIsActionTopology : IsActionTopology R R where
-  eq_actionTopology' := by
-    /- Let `R` be a topological ring with topology τR. To prove that `τR` is the action
-    topology, it suffices to prove inclusions in both directions.
-    One way is obvious: addition and multiplication are continuous for `R`, so the
-    action topology is finer than `R` because it's the finest topology with these properties.-/
-    refine le_antisymm ?_ (actionTopology_le R R)
-    /- The other way is more interesting. We can interpret the problem as proving that
-    the identity function is continuous from `R` with the action topology to `R` with
-    its usual topology to `R` with the action topology.
-    -/
-    rw [← continuous_id_iff_le]
+instance _root_.TopologicalSemiring.toIsActionTopology : IsActionTopology R R :=
+  .of_continuous <| by
+    rw [← Function.id_comp]
     /-
     The idea needed here is to rewrite the identity function as the composite of `r ↦ (r,1)`
     from `R` to `R × R`, and multiplication on `R × R`, where we topologise `R × R`
     by giving the first `R` the usual topology and the second `R` the action topology.
     -/
-    rw [show (id : R → R) = (fun rs ↦ rs.1 • rs.2) ∘ (fun r ↦ (r, 1)) by ext; simp]
+    rw [show (WithActionTopology.mk) =
+      (fun rs ↦ rs.1.val • rs.2.val) ∘ (fun r ↦ (WithActionTopology.mk r, WithActionTopology.mk (1 : R))) by ext; simp]
     /-
     It thus suffices to show that each of these maps are continuous.
     -/
