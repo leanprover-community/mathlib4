@@ -29,8 +29,8 @@ reflexive.
   `WalkingParallelPair` to `WalkingReflexivePair`. It acts on reflexive pairs as forgetting
   the common section.
 * `HasReflexiveCoequalizers` is the predicate that a category has all colimits of reflexive pairs.
-* `ofIsReflexivePairColimitEquiv`: an isomorphism promoting the coequalizer of a reflexive pair to
-  the colimit of a diagram out of the walking reflexive pair
+* `reflexiveCoequalizerIsoCoequalizer`: an isomorphism promoting the coequalizer of a reflexive pair
+  to the colimit of a diagram out of the walking reflexive pair.
 
 ## Main statements
 
@@ -533,23 +533,22 @@ variable (F : WalkingReflexivePair ⥤ C)
 /-- Forgetting the reflexion yields an equivalence between cocones over a bundled reflexive pair and
 coforks on the underlying parallel pair. -/
 @[simps! functor_obj_pt inverse_obj_pt]
-def inclusionWalkingReflexivePairEquivCocone :
+def reflexiveCoforkEquivCofork :
     ReflexiveCofork F ≌ Cofork (F.map left) (F.map right) :=
-  (Functor.Final.coconesEquiv _ F).symm.trans
-    (Cocones.precomposeEquivalence
-      (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F))).symm
+  (Functor.Final.coconesEquiv _ F).symm.trans (Cocones.precomposeEquivalence
+    (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F))).symm
 
 @[simp]
-lemma inclusionWalkingReflexivePairEquivCocone_functor_obj_π (G : ReflexiveCofork F) :
-    ((inclusionWalkingReflexivePairEquivCocone F).functor.obj G).π = G.π := by
-  dsimp [inclusionWalkingReflexivePairEquivCocone]
+lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :
+    ((reflexiveCoforkEquivCofork F).functor.obj G).π = G.π := by
+  dsimp [reflexiveCoforkEquivCofork]
   rw [ReflexiveCofork.π, Cofork.π]
   aesop_cat
 
 @[simp]
 lemma inclusionWalkingReflexivePairEquivCocone_inverse_obj_π
     (G : Cofork (F.map left) (F.map right)) :
-    ((inclusionWalkingReflexivePairEquivCocone F).inverse.obj G).π = G.π := by
+    ((reflexiveCoforkEquivCofork F).inverse.obj G).π = G.π := by
   apply Functor.Final.induction (WalkingParallelPair.inclusionWalkingReflexivePair)
     (fun Z k => ((F.map k) ≫ (eqToHom _) ≫ (G.ι.app Z) = G.π))
   · intro X₁ X₂ k₁ k₂ _ _ _
@@ -563,15 +562,15 @@ lemma inclusionWalkingReflexivePairEquivCocone_inverse_obj_π
 
 /-- The equivalence between reflexive coforks and coforks sends a reflexive cofork to its underlying
 cofork. -/
-def inclusionWalkingReflexivePairEquivObjIso (G : ReflexiveCofork F) :
-    (inclusionWalkingReflexivePairEquivCocone F).functor.obj G ≅ G.toCofork :=
+def reflexiveCoforkEquivCoforkObjIso (G : ReflexiveCofork F) :
+    (reflexiveCoforkEquivCofork F).functor.obj G ≅ G.toCofork :=
   Cofork.ext (Iso.refl _)
-    (by simp [inclusionWalkingReflexivePairEquivCocone, Cofork.π])
+    (by simp [reflexiveCoforkEquivCofork, Cofork.π])
 
 lemma hasReflexiveCoequalizer_iff_hasCoequalizer :
     HasColimit F ↔ HasCoequalizer (F.map left) (F.map right) := by
   simpa only [hasColimit_iff_hasInitial_cocone]
-    using Equivalence.hasInitial_iff (inclusionWalkingReflexivePairEquivCocone F)
+    using Equivalence.hasInitial_iff (reflexiveCoforkEquivCofork F)
 
 instance reflexivePair_hasColimit_of_hasCoequalizer
     [h : HasCoequalizer (F.map left) (F.map right)] : HasColimit F :=
@@ -580,7 +579,7 @@ instance reflexivePair_hasColimit_of_hasCoequalizer
 /-- A reflexive cofork is a colimit cocone if and only if the underlying cofork is. -/
 def ReflexiveCofork.isColimitEquiv (G : ReflexiveCofork F) :
     IsColimit (G.toCofork) ≃ IsColimit G :=
-  IsColimit.equivIsoColimit (inclusionWalkingReflexivePairEquivObjIso F G).symm|>.trans <|
+  IsColimit.equivIsoColimit (reflexiveCoforkEquivCoforkObjIso F G).symm|>.trans <|
     (IsColimit.precomposeHomEquiv (diagramIsoParallelPair _).symm (G.whisker _)).trans <|
       Functor.Final.isColimitWhiskerEquiv _ _
 
