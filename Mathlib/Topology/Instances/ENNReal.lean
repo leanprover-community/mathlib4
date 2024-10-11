@@ -91,7 +91,7 @@ theorem continuousAt_coe_iff {α : Type*} [TopologicalSpace α] {x : ℝ≥0} {f
 
 theorem nhds_coe_coe {r p : ℝ≥0} :
     𝓝 ((r : ℝ≥0∞), (p : ℝ≥0∞)) = (𝓝 (r, p)).map fun p : ℝ≥0 × ℝ≥0 => (↑p.1, ↑p.2) :=
-  ((openEmbedding_coe.prod openEmbedding_coe).map_nhds_eq (r, p)).symm
+  ((openEmbedding_coe.prodMap openEmbedding_coe).map_nhds_eq (r, p)).symm
 
 theorem continuous_ofReal : Continuous ENNReal.ofReal :=
   (continuous_coe_iff.2 continuous_id).comp continuous_real_toNNReal

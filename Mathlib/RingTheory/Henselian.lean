@@ -194,7 +194,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       have hf'c : ∀ n, IsUnit (f'.eval (c n)) := by
         intro n
         haveI := isLocalRingHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
-        apply isUnit_of_map_unit (Ideal.Quotient.mk I)
+        apply IsUnit.of_map (Ideal.Quotient.mk I)
         convert h₂ using 1
         exact SModEq.def.mp ((hc_mod n).eval _)
       have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) := by
@@ -234,7 +234,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         I'm not sure why the `erw` is now needed here. It looks like it should work.
         It looks like a diamond between `instHAdd` on `Nat` and `AddSemigroup.toAdd` which is
         used by `instHAdd` -/
-        erw [hc]
+        rw [hc]
         rw [← add_zero (c m), sub_eq_add_neg]
         refine ih.add ?_
         symm
