@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Data.Real.IsNonarchimedean
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
