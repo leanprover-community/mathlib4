@@ -845,12 +845,11 @@ lemma exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠ 0
     ∃ y' < y, ∃ z' < z, x < y' + z' := by
   contrapose! h;
   simpa using biSup_add_biSup_le' (by exact ⟨0, hy.bot_lt⟩) (by exact ⟨0, hz.bot_lt⟩) h
+end Inv
 
 /-! ### Multiplication and order -/
 
-lemma ge_of_forall_gt_iff_ge {x y : ENNReal} : (∀ z : NNReal, z < y → z ≤ x) ↔ y ≤ x := by
-  sorry
-
+/-- This lemma is superseded by `mul_le_of_forall_mul_le`. -/
 private lemma top_mul_le_of_forall_mul_le {a b : ℝ≥0∞} (h : ∀ c < ∞, ∀ d < a, c * d ≤ b) :
     ∞ * a ≤ b := by
   induction a with
@@ -868,8 +867,16 @@ private lemma top_mul_le_of_forall_mul_le {a b : ℝ≥0∞} (h : ∀ c < ∞, �
         (div_lt_top coe_ne_top (coe_ne_zero.2 h'.ne.symm))
       specialize h (3 * (c / a)) this (a / 2)
         (ENNReal.half_lt_self (coe_ne_zero.2 h'.ne.symm) coe_ne_top)
-      rw [mul_assoc] at h
-      sorry
+      rw [mul_assoc 3, div_eq_mul_inv (c : ENNReal), mul_assoc (c : ENNReal),
+        ← ENNReal.mul_comm_div, ← ENNReal.mul_div_right_comm,
+        ENNReal.inv_mul_cancel (ne_zero_of_lt (coe_lt_coe.2 h')) coe_ne_top, one_div,
+        ← mul_assoc] at h
+      have key : (c : ENNReal) ≤ b := by
+        apply h.trans'
+        rw [← div_eq_mul_inv, ENNReal.le_div_iff_mul_le (Or.inl two_ne_zero) (Or.inl two_ne_top),
+        mul_comm _ 2, ← two_add_one_eq_three]
+        exact ENNReal.mul_right_mono (a := (c : ENNReal)) (le_add_right (le_refl 2))
+      exact (not_le_of_lt b_c key).rec
 
 lemma mul_le_of_forall_mul_le {a b c : ℝ≥0∞} (h : ∀ d < a, ∀ e < b, d * e ≤ c) : a * b ≤ c := by
   induction a with
@@ -879,18 +886,37 @@ lemma mul_le_of_forall_mul_le {a b c : ℝ≥0∞} (h : ∀ d < a, ∀ e < b, d 
       rw [mul_comm]
       exact top_mul_le_of_forall_mul_le fun d hd e he ↦ mul_comm d e ▸ h e he d hd
     | coe b =>
-      refine (@ge_of_forall_gt_iff_ge c (a * b)).1 fun d d_ab ↦ ?_
-      rw [← coe_mul, coe_lt_coe] at d_ab
+      refine WithTop.ge_of_forall_gt_iff_ge.1 fun d d_ab ↦ ?_
+      rw [← ofNNReal, ← coe_mul, coe_lt_coe] at d_ab
       rcases exists_between d_ab with ⟨e, e_d, e_ab⟩
-      have key₁ : (a : ENNReal) * d / e < a := by sorry
-      have key₂ : (e : ENNReal) / a < b := by sorry
-      specialize h (a * d / e) key₁ (e / a) key₂
-      sorry
+      have a_pos : 0 < a := by
+        refine (or_iff_right fun ha ↦ ?_).1 (eq_zero_or_pos a)
+        rw [ha, zero_mul b] at e_ab
+        exact not_lt_zero' e_ab
+      have h_de : (d : ENNReal) / e < 1 := by
+        apply div_lt_of_lt_mul
+        rw [one_mul, coe_lt_coe]
+        exact e_d
+      have key₁ : (a : ENNReal) * d / e < a := by
+        rw [← mul_div]
+        apply (smul_lt_smul_of_pos_left h_de a_pos).trans_eq
+        rw [smul_def, smul_eq_mul, mul_one]
+      have key₂ : (e : ENNReal) / a < b := by
+        apply div_lt_of_lt_mul
+        rw [mul_comm, ← coe_mul, coe_lt_coe]
+        exact e_ab
+      apply (h (a * d / e) key₁ (e / a) key₂).trans_eq'
+      rw [← ofNNReal, ENNReal.mul_comm_div, ENNReal.div_eq_inv_mul, ← ENNReal.mul_comm_div,
+        ← ENNReal.mul_div_right_comm,
+        ENNReal.inv_mul_cancel (ne_zero_of_lt (coe_lt_coe.2 e_d)) coe_ne_top, one_div,
+        mul_comm (a : ENNReal), mul_assoc,
+        ENNReal.mul_inv_cancel (ne_zero_of_lt (coe_lt_coe.2 a_pos)) coe_ne_top, mul_one]
 
 lemma le_mul_of_forall_le_mul {a b c : ℝ≥0∞} (h₁ : a ≠ 0 ∨ b ≠ ∞) (h₂ : a ≠ ∞ ∨ b ≠ 0)
     (h : ∀ d > a, ∀ e > b, c ≤ d * e) : c ≤ a * b := by
-  sorry
+  rw [← ENNReal.inv_le_inv, ENNReal.mul_inv h₁ h₂]
+  exact mul_le_of_forall_mul_le fun d d_a e e_b ↦ ENNReal.le_inv_iff_le_inv.1
+    <| (h d⁻¹ (ENNReal.lt_inv_iff_lt_inv.1 d_a) e⁻¹ (ENNReal.lt_inv_iff_lt_inv.1 e_b)).trans_eq
+    (ENNReal.mul_inv (Or.inr e_b.ne_top) (Or.inl d_a.ne_top)).symm
 
-
-end Inv
 end ENNReal
