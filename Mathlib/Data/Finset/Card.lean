@@ -799,7 +799,7 @@ termination_by s => #s
 
 /-- Suppose that, given that `p t` can be defined on all supersets of `s` of cardinality less than
 `n`, one knows how to define `p s`. Then one can inductively define `p s` for all finsets `s` of
-cardinality less than `n`, starting from finsets of #`n` and iterating. This
+cardinality less than `n`, starting from finsets of card `n` and iterating. This
 can be used either to define data, or to prove properties. -/
 def strongDownwardInduction {p : Finset α → Sort*} {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Finset α}, #t₂ ≤ n → t₁ ⊂ t₂ → p t₂) → #t₁ ≤ n → p t₁) :
