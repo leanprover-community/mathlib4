@@ -54,8 +54,9 @@ instance (priority := 100) PreservesColimits.preservesFilteredColimits (F : C �
     [PreservesColimitsOfSize.{w, w'} F] : PreservesFilteredColimitsOfSize.{w, w'} F where
   preserves_filtered_colimits _ := inferInstance
 
-instance compPreservesFilteredColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFilteredColimits F]
-    [PreservesFilteredColimits G] : PreservesFilteredColimits (F ⋙ G) where
+instance compPreservesFilteredColimits (F : C ⥤ D) (G : D ⥤ E)
+    [PreservesFilteredColimitsOfSize.{w, w'} F] [PreservesFilteredColimitsOfSize.{w, w'} G] :
+      PreservesFilteredColimitsOfSize.{w, w'} (F ⋙ G) where
   preserves_filtered_colimits _ := inferInstance
 
 /-- A functor preserving larger filtered colimits also preserves smaller filtered colimits. -/
@@ -109,8 +110,9 @@ instance (priority := 100) ReflectsColimits.reflectsFilteredColimits (F : C ⥤ 
     [ReflectsColimitsOfSize.{w, w'} F] : ReflectsFilteredColimitsOfSize.{w, w'} F where
   reflects_filtered_colimits _ := inferInstance
 
-instance compReflectsFilteredColimits (F : C ⥤ D) (G : D ⥤ E) [ReflectsFilteredColimits F]
-    [ReflectsFilteredColimits G] : ReflectsFilteredColimits (F ⋙ G) where
+instance compReflectsFilteredColimits (F : C ⥤ D) (G : D ⥤ E)
+    [ReflectsFilteredColimitsOfSize.{w, w'} F] [ReflectsFilteredColimitsOfSize.{w, w'} G] :
+      ReflectsFilteredColimitsOfSize.{w, w'} (F ⋙ G) where
   reflects_filtered_colimits _ := inferInstance
 
 /-- A functor reflecting larger filtered colimits also reflects smaller filtered colimits. -/
@@ -168,8 +170,9 @@ instance (priority := 100) PreservesLimits.preservesCofilteredLimits (F : C ⥤ 
     [PreservesLimitsOfSize.{w, w'} F] : PreservesCofilteredLimitsOfSize.{w, w'} F where
   preserves_cofiltered_limits _ := inferInstance
 
-instance compPreservesCofilteredLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesCofilteredLimits F]
-    [PreservesCofilteredLimits G] : PreservesCofilteredLimits (F ⋙ G) where
+instance compPreservesCofilteredLimits (F : C ⥤ D) (G : D ⥤ E)
+    [PreservesCofilteredLimitsOfSize.{w, w'} F] [PreservesCofilteredLimitsOfSize.{w, w'} G] :
+      PreservesCofilteredLimitsOfSize.{w, w'} (F ⋙ G) where
   preserves_cofiltered_limits _ := inferInstance
 
 /-- A functor preserving larger cofiltered limits also preserves smaller cofiltered limits. -/
@@ -223,8 +226,9 @@ instance (priority := 100) ReflectsLimits.reflectsCofilteredLimits (F : C ⥤ D)
     [ReflectsLimitsOfSize.{w, w'} F] : ReflectsCofilteredLimitsOfSize.{w, w'} F where
   reflects_cofiltered_limits _ := inferInstance
 
-instance compReflectsCofilteredLimits (F : C ⥤ D) (G : D ⥤ E) [ReflectsCofilteredLimits F]
-    [ReflectsCofilteredLimits G] : ReflectsCofilteredLimits (F ⋙ G) where
+instance compReflectsCofilteredLimits (F : C ⥤ D) (G : D ⥤ E)
+    [ReflectsCofilteredLimitsOfSize.{w, w'} F] [ReflectsCofilteredLimitsOfSize.{w, w'} G] :
+      ReflectsCofilteredLimitsOfSize.{w, w'} (F ⋙ G) where
   reflects_cofiltered_limits _ := inferInstance
 
 /-- A functor reflecting larger cofiltered limits also reflects smaller cofiltered limits. -/
