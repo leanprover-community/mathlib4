@@ -72,6 +72,10 @@ lemma eHolderNorm_ne_top : eHolderNorm r f ≠ ∞ ↔ MemHolder r f := by
 protected alias ⟨_, MemHolder.eHolderNorm_lt_top⟩ := eHolderNorm_lt_top
 protected alias ⟨_, MemHolder.eHolderNorm_ne_top⟩ := eHolderNorm_ne_top
 
+lemma coe_nnHolderNorm_le_eHolderNorm {r : ℝ≥0} {f : X → Y} :
+    (nnHolderNorm r f : ℝ≥0∞) ≤ eHolderNorm r f :=
+  coe_toNNReal_le_self
+
 variable (X) in
 lemma eHolderNorm_const (r : ℝ≥0) (c : Y) : eHolderNorm r (Function.const X c) = 0 := by
   rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot]
@@ -80,6 +84,19 @@ lemma eHolderNorm_const (r : ℝ≥0) (c : Y) : eHolderNorm r (Function.const X 
 variable (X) in
 lemma eHolderNorm_zero [Zero Y] (r : ℝ≥0) : eHolderNorm r (0 : X → Y) = 0 :=
   eHolderNorm_const X r 0
+
+variable (X) in
+@[simp]
+lemma nnHolderNorm_const (r : ℝ≥0) (c : Y) : nnHolderNorm r (Function.const X c) = 0 := by
+  refine le_antisymm (ENNReal.coe_le_coe.1 <|
+    le_trans coe_nnHolderNorm_le_eHolderNorm ?_) (zero_le _)
+  rw [eHolderNorm_const]
+  rfl
+
+variable (X) in
+@[simp]
+lemma nnHolderNorm_zero [Zero Y] (r : ℝ≥0) : nnHolderNorm r (0 : X → Y) = 0 :=
+  nnHolderNorm_const X r 0
 
 attribute [simp] eHolderNorm_const eHolderNorm_zero
 
@@ -147,10 +164,6 @@ lemma memHolder_iff_holderWith {r : ℝ≥0} {f : X → Y} :
     MemHolder r f ↔ HolderWith (nnHolderNorm r f) r f :=
   ⟨MemHolder.holderWith, HolderWith.memHolder⟩
 
-lemma coe_nnHolderNorm_le_eHolderNorm {r : ℝ≥0} {f : X → Y} :
-    (nnHolderNorm r f : ℝ≥0∞) ≤ eHolderNorm r f :=
-  coe_toNNReal_le_self
-
 lemma HolderWith.coe_nnHolderNorm_eq_eHolderNorm
     {C r : ℝ≥0} {f : X → Y} (hf : HolderWith C r f) :
     (nnHolderNorm r f : ℝ≥0∞) = eHolderNorm r f := by
@@ -171,6 +184,10 @@ lemma MemHolder.comp {r s : ℝ≥0} {Z : Type*} [MetricSpace Z] {f : Z → X} {
     (hf : MemHolder r f) (hg : MemHolder s g) : MemHolder (s * r) (g ∘ f) :=
   (hg.holderWith.comp hf.holderWith).memHolder
 
+lemma MemHolder.nnHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} (hf : MemHolder r f) :
+    nnHolderNorm r f = 0 ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
+  rw [← ENNReal.coe_eq_zero, hf.coe_nnHolderNorm_eq_eHolderNorm, eHolderNorm_eq_zero]
+
 end MetricSpace
 
 section SeminormedAddCommGroup
@@ -189,13 +206,18 @@ lemma MemHolder.nsmul [Module ℝ Y] [BoundedSMul ℝ Y] (n : ℕ) (hf : MemHold
     MemHolder r (n • f) := by
   simp [← Nat.cast_smul_eq_nsmul (R := ℝ), hf.smul]
 
+lemma MemHolder.nnHolderNorm_add_le (hf : MemHolder r f) (hg : MemHolder r g) :
+    nnHolderNorm r (f + g) ≤ nnHolderNorm r f + nnHolderNorm r g :=
+  (hf.add hg).holderWith.nnholderNorm_le.trans <|
+    coe_le_coe.2 (hf.holderWith.add hg.holderWith).nnholderNorm_le
+
 lemma eHolderNorm_add_le :
     eHolderNorm r (f + g) ≤ eHolderNorm r f + eHolderNorm r g := by
   by_cases hfg : MemHolder r f  ∧ MemHolder r g
   · obtain ⟨hf, hg⟩ := hfg
-    rw [← hf.coe_nnHolderNorm_eq_eHolderNorm, ← hg.coe_nnHolderNorm_eq_eHolderNorm, ← coe_add]
-    exact (hf.add hg).holderWith.eHolderNorm_le.trans <|
-      coe_le_coe.2 (hf.holderWith.add hg.holderWith).nnholderNorm_le
+    rw [← hf.coe_nnHolderNorm_eq_eHolderNorm, ← hg.coe_nnHolderNorm_eq_eHolderNorm,
+      ← (hf.add hg).coe_nnHolderNorm_eq_eHolderNorm, ← coe_add, ENNReal.coe_le_coe]
+    exact hf.nnHolderNorm_add_le hg
   · rw [Classical.not_and_iff_or_not_not, ← eHolderNorm_eq_top, ← eHolderNorm_eq_top] at hfg
     obtain (h | h) := hfg
     all_goals simp [h]
@@ -223,8 +245,18 @@ lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul �
     rw [inv_smul_smul₀ hc] at this
     exact this.eHolderNorm_lt_top.ne hf
 
+lemma MemHolder.nnHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul α Y]
+    (hf : MemHolder r f) (c : α) :
+    nnHolderNorm r (c • f) = ‖c‖₊ * nnHolderNorm r f := by
+  rw [← ENNReal.coe_inj, coe_mul, hf.coe_nnHolderNorm_eq_eHolderNorm,
+    hf.smul.coe_nnHolderNorm_eq_eHolderNorm, eHolderNorm_smul]
+
 lemma eHolderNorm_nsmul [Module ℝ Y] [BoundedSMul ℝ Y] (n : ℕ) :
     eHolderNorm r (n • f) = n • eHolderNorm r f := by
   simp [← Nat.cast_smul_eq_nsmul (R := ℝ), eHolderNorm_smul]
+
+lemma MemHolder.nnHolderNorm_nsmul [Module ℝ Y] [BoundedSMul ℝ Y] (n : ℕ) (hf : MemHolder r f) :
+    nnHolderNorm r (n • f) = n • nnHolderNorm r f := by
+  simp [← Nat.cast_smul_eq_nsmul (R := ℝ), hf.nnHolderNorm_smul]
 
 end SeminormedAddCommGroup
