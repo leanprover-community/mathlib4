@@ -196,6 +196,10 @@ instance {V : Type u} [AddCommGroup V] [Module k V] :
 instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
     IsTrivial (Rep.of ρ) where
 
+noncomputable def trivialFunctor : ModuleCat k ⥤ Rep k G where
+  obj V := trivial k G V
+  map f := { hom := f, comm := fun g => rfl }
+
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.instPreservesLimitsForget.{u} _ _
@@ -553,7 +557,7 @@ lemma tprodIsoFree_inv_hom_single_single' {α : Type u} (i : α) (g : G) (r : k)
   tprodIsoFree_hom_hom_single_tmul_single' _ _ _ _
 
 end
-section idfk
+section
 
 variable [Group G] [Fintype G] (A : Rep k G)
 
@@ -569,7 +573,15 @@ abbrev norm (A : Rep k G) : A ⟶ A :=
     simpa using Fintype.sum_bijective (α := A) (fun x => g⁻¹ * x * g)
       ((Group.mulRight_bijective g).comp (Group.mulLeft_bijective g⁻¹)) _ _ (by simp)
 
-end idfk
+lemma ρ_norm_eq (g : G) (x : A) : A.ρ g (hom (norm A) x) = hom (norm A) x := by
+  simpa using Fintype.sum_bijective (α := A) (g * ·)
+    (Group.mulLeft_bijective g) _ _ fun x => by simp
+
+lemma norm_ρ_eq (g : G) (x : A) : hom (norm A) (A.ρ g x) = hom (norm A) x := by
+  simpa using Fintype.sum_bijective (α := A) (· * g)
+    (Group.mulRight_bijective g) _ _ fun x => by simp
+
+end
 section MonoidalClosed
 open MonoidalCategory Action
 

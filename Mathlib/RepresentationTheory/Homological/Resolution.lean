@@ -67,10 +67,52 @@ suppress_compilation
 noncomputable section
 
 universe u v w
-
 open CategoryTheory
 
+namespace CategoryTheory.ShortComplex
+open Limits
+section
+
+variable {C : Type*} [Category C] [Abelian C] (S : SnakeInput C)
+
+theorem SnakeInput.mono_δ (h₀ : IsZero S.L₀.X₂) : Mono S.δ :=
+  (S.L₁'.exact_iff_mono (IsZero.eq_zero_of_src h₀ S.L₁'.f)).1 S.L₁'_exact
+
+theorem SnakeInput.epi_δ (h₃ : IsZero S.L₃.X₂) : Epi S.δ :=
+  (S.L₂'.exact_iff_epi (IsZero.eq_zero_of_tgt h₃ S.L₂'.g)).1 S.L₂'_exact
+
+theorem SnakeInput.isIso_δ (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) : IsIso S.δ :=
+  @Balanced.isIso_of_mono_of_epi _ _ _ _ _ S.δ (S.mono_δ h₀) (S.epi_δ h₃)
+
+noncomputable def SnakeInput.δIso (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) :
+    S.L₀.X₃ ≅ S.L₃.X₁ :=
+  @asIso _ _ _ _ S.δ (SnakeInput.isIso_δ S h₀ h₃)
+
+end
+section
+
+variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+    {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
+
+theorem ShortExact.mono_δ (hi : IsZero (S.X₂.homology i)) : Mono (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).mono_δ hi
+
+theorem ShortExact.epi_δ (hj : IsZero (S.X₂.homology j)) : Epi (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).epi_δ hj
+
+theorem ShortExact.isIso_δ (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
+    IsIso (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).isIso_δ hi hj
+
+noncomputable def ShortExact.δIso (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
+    S.X₃.homology i ≅ S.X₁.homology j :=
+  @asIso _ _ _ _ (hS.δ i j hij) (hS.isIso_δ i j hij hi hj)
+
+end
+end CategoryTheory.ShortComplex
+
 namespace HomologicalComplex
+
 theorem cyclesIsoSc'_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [HasForget₂ C Ab]
     [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*}
     {c : ComplexShape ι} (K : HomologicalComplex C c) {i j k : ι} (x : (forget₂ C Ab).obj (K.X j))
@@ -119,6 +161,32 @@ def kerLEquivOfCompEqComp (H : f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.
     LinearMap.ker f ≃ₛₗ[σ₂₁] LinearMap.ker g :=
   LinearEquiv.ofSubmodules e₁₂.symm _ _ <| by
     simp [Submodule.map_equiv_eq_comap_symm, ← LinearMap.ker_comp, H]
+
+omit [RingHomCompTriple σ₁₄ σ₄₃ σ₁₃] in
+@[simp]
+theorem subtype_comp_kerLEquivOfCompEqComp (H : f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.comp g) :
+    (LinearMap.ker g).subtype.comp (kerLEquivOfCompEqComp f g H).toLinearMap
+      = e₁₂.symm.toLinearMap.comp (LinearMap.ker f).subtype := by ext; rfl
+
+omit [RingHomCompTriple σ₁₄ σ₄₃ σ₁₃] in
+@[simp]
+theorem subtype_comp_kerLEquivOfCompEqComp_symm
+    (H : f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.comp g) :
+    (LinearMap.ker f).subtype.comp (kerLEquivOfCompEqComp f g H).symm.toLinearMap
+      = e₁₂.toLinearMap.comp (LinearMap.ker g).subtype := by ext; rfl
+
+omit [RingHomCompTriple σ₁₄ σ₄₃ σ₁₃] in
+@[simp]
+theorem kerLEquivOfCompEqComp_apply
+    (H : f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.comp g) (x) :
+    (kerLEquivOfCompEqComp f g H x).1 = e₁₂.symm x  := rfl
+
+omit [RingHomCompTriple σ₁₄ σ₄₃ σ₁₃] in
+@[simp]
+theorem kerLEquivOfCompEqComp_symm_apply
+    (H : f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.comp g) (x) :
+    ((kerLEquivOfCompEqComp f g H).symm x).1
+      = e₁₂ x := rfl
 
 end LinearEquiv
 

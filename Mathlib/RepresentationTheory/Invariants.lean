@@ -255,6 +255,26 @@ noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat.{u} k where
   map {A B} f := ModuleCat.ofHom ((hom f ∘ₗ A.ρ.invariants.subtype).codRestrict
     B.ρ.invariants fun ⟨c, hc⟩ g => by simp [← hom_comm_apply'', hc g])
 
+noncomputable def invariantsAdj : trivialFunctor ⊣ invariantsFunctor k G :=
+  Adjunction.mkOfHomEquiv {
+    homEquiv := fun X Y => {
+      toFun := fun f => ModuleCat.ofHom <| LinearMap.codRestrict _ f.hom fun x g =>
+        (hom_comm_apply f _ _).symm
+      invFun := fun f => {
+        hom := ModuleCat.ofHom <| Submodule.subtype _ ∘ₗ f
+        comm := fun g => by ext x; exact ((f x).2 g).symm }
+      left_inv := by intros f; rfl
+      right_inv := by intros f; rfl }
+    homEquiv_naturality_left_symm := by intros; rfl
+    homEquiv_naturality_right := by intros; rfl }
+
+instance : (invariantsFunctor k G).PreservesZeroMorphisms where
+
+instance : (invariantsFunctor k G).Additive where
+
+noncomputable instance : Limits.PreservesLimits (invariantsFunctor k G) :=
+  invariantsAdj.rightAdjointPreservesLimits
+
 section inf
 
 variable (S : Subgroup G) [S.Normal]
@@ -277,7 +297,7 @@ end inf
 
 section coinvariants
 
-variable {k G : Type u} [CommRing k] [Group G] {A B C D : Rep k G} {n : ℕ} (α : Type u)
+variable {k G : Type u} [CommRing k] [Group G] {A B C D : Rep k G} {n : ℕ}
   {V : Type u} [AddCommGroup V] [Module k V]
 
 open Representation
@@ -309,21 +329,13 @@ theorem coinvariantsMap_comp (f : A ⟶ B) (g : B ⟶ C) :
     coinvariantsMap (f ≫ g) = coinvariantsMap g ∘ₗ coinvariantsMap f := by
   ext; simp
 
-variable (α : Type u)
 variable (A B)
 
-@[simps]
-def coinvariantsHomEquiv :
-    (coinvariants A.ρ →ₗ[k] B) ≃ (A ⟶ trivial k G B) where
-  toFun := fun f => {
-    hom := f ∘ₗ (coinvariantsKer A.ρ).mkQ
-    comm := fun g => by
-      ext x
-      exact congr(f $((Submodule.Quotient.eq <| coinvariantsKer A.ρ).2
-        (mem_coinvariantsKer _ g x _ rfl))) }
-  invFun := fun f => coinvariantsLift f
-  left_inv := fun x => Submodule.linearMap_qext _ rfl
-  right_inv := fun x => Action.Hom.ext rfl
+noncomputable def liftRestrictNorm [Fintype G] :
+    A.ρ.coinvariants →ₗ[k] A.ρ.invariants :=
+  A.ρ.coinvariantsLift ((hom <| norm A).codRestrict _
+    fun a g => ρ_norm_eq A g a) fun g => by
+      ext x; exact norm_ρ_eq A g x
 
 variable (k G) in
 @[simps]
@@ -331,7 +343,40 @@ def coinvariantsFunctor : Rep k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k (A.ρ.coinvariants)
   map f := coinvariantsMap f
 
+noncomputable def coinvariantsAdj : coinvariantsFunctor k G ⊣ trivialFunctor :=
+  Adjunction.mkOfHomEquiv {
+    homEquiv := fun X Y => {
+      toFun := fun f => {
+        hom := f ∘ₗ X.ρ.coinvariantsKer.mkQ
+        comm := fun g => by
+          ext x
+          exact congr(f $((Submodule.Quotient.eq <| X.ρ.coinvariantsKer).2
+            (X.ρ.mem_coinvariantsKer g x _ rfl))) }
+      invFun := fun f => coinvariantsLift f
+      left_inv := fun x => Submodule.linearMap_qext _ rfl
+      right_inv := fun x => Action.Hom.ext rfl }
+    homEquiv_naturality_left_symm := by intros; apply Submodule.linearMap_qext; rfl
+    homEquiv_naturality_right := by intros; rfl }
+
+instance : (coinvariantsFunctor k G).PreservesZeroMorphisms where
+  map_zero X Y := by
+    apply Submodule.linearMap_qext
+    rfl
+
+noncomputable instance : Limits.PreservesColimits (coinvariantsFunctor k G) :=
+  coinvariantsAdj.leftAdjointPreservesColimits
+
 end coinvariants
+
+@[simps]
+noncomputable def liftRestrictNormNatTrans [Fintype G] :
+    coinvariantsFunctor k G ⟶ invariantsFunctor k G where
+  app A := liftRestrictNorm A
+  naturality X Y f := by
+    apply Submodule.linearMap_qext
+    apply LinearMap.ext fun _ => Subtype.ext _
+    simp [ModuleCat.ofHom, ModuleCat.comp_def, ModuleCat.hom_def, ModuleCat.coe_of,
+      liftRestrictNorm, hom_comm_apply'']
 
 section coinf
 
@@ -354,4 +399,5 @@ noncomputable def coinfFunctor : Rep k G ⥤ Rep k (G ⧸ S) :=
   map := fun f => coinfMap S f }
 
 end coinf
+
 end Rep

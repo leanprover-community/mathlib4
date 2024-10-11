@@ -3,7 +3,6 @@ import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 
 universe v u
 
-
 open CategoryTheory ShortComplex Limits
 
 section
@@ -41,80 +40,6 @@ noncomputable def CategoryTheory.ShortComplex.natTransSnakeInput : SnakeInput D 
 
 end
 
-namespace Rep
-
-variable {k G : Type u} [CommRing k] [Group G] [Fintype G] (A : Rep k G)
-
-lemma ρ_norm_eq (g : G) (x : A) : A.ρ g (hom (norm A) x) = hom (norm A) x := by
-  simpa using Fintype.sum_bijective (α := A) (g * ·)
-    (Group.mulLeft_bijective g) _ _ fun x => by simp
-
-lemma norm_ρ_eq (g : G) (x : A) : hom (norm A) (A.ρ g x) = hom (norm A) x := by
-  simpa using Fintype.sum_bijective (α := A) (· * g)
-    (Group.mulRight_bijective g) _ _ fun x => by simp
-
-noncomputable def liftRestrictNorm : A.ρ.coinvariants →ₗ[k] A.ρ.invariants :=
-  A.ρ.coinvariantsLift ((hom <| norm A).codRestrict _
-    fun a g => ρ_norm_eq A g a) fun g => by
-      ext x; exact norm_ρ_eq A g x
-
-noncomputable def trivialFunctor : ModuleCat k ⥤ Rep k G where
-  obj V := trivial k G V
-  map f := { hom := f, comm := fun g => rfl }
-
-noncomputable def coinvariantsAdj : coinvariantsFunctor k G ⊣ trivialFunctor :=
-  Adjunction.mkOfHomEquiv {
-    homEquiv := fun X Y => {
-      toFun := fun f => {
-        hom := f ∘ₗ X.ρ.coinvariantsKer.mkQ
-        comm := fun g => by
-          ext x
-          exact congr(f $((Submodule.Quotient.eq <| X.ρ.coinvariantsKer).2
-            (X.ρ.mem_coinvariantsKer g x _ rfl))) }
-      invFun := fun f => coinvariantsLift f
-      left_inv := fun x => Submodule.linearMap_qext _ rfl
-      right_inv := fun x => Action.Hom.ext rfl }
-    homEquiv_naturality_left_symm := by intros; apply Submodule.linearMap_qext; rfl
-    homEquiv_naturality_right := by intros; rfl }
-
-noncomputable def invariantsAdj : trivialFunctor ⊣ invariantsFunctor k G :=
-  Adjunction.mkOfHomEquiv {
-    homEquiv := fun X Y => {
-      toFun := fun f => ModuleCat.ofHom <| LinearMap.codRestrict _ f.hom fun x g =>
-        (hom_comm_apply f _ _).symm
-      invFun := fun f => {
-        hom := ModuleCat.ofHom <| Submodule.subtype _ ∘ₗ f
-        comm := fun g => by ext x; exact ((f x).2 g).symm }
-      left_inv := by intros f; rfl
-      right_inv := by intros f; rfl }
-    homEquiv_naturality_left_symm := by intros; rfl
-    homEquiv_naturality_right := by intros; rfl }
-
-instance : (coinvariantsFunctor k G).PreservesZeroMorphisms where
-  map_zero X Y := by
-    apply Submodule.linearMap_qext
-    rfl
-
-noncomputable instance : PreservesColimits (coinvariantsFunctor k G) :=
-  coinvariantsAdj.leftAdjointPreservesColimits
-
-instance : (invariantsFunctor k G).PreservesZeroMorphisms where
-
-instance : (invariantsFunctor k G).Additive where
-
-noncomputable instance : PreservesLimits (invariantsFunctor k G) :=
-  invariantsAdj.rightAdjointPreservesLimits
-
-@[simps]
-noncomputable def liftRestrictNormNatTrans : coinvariantsFunctor k G ⟶ invariantsFunctor k G where
-  app A := liftRestrictNorm A
-  naturality X Y f := by
-    apply Submodule.linearMap_qext
-    apply LinearMap.ext fun _ => Subtype.ext _
-    simp [ModuleCat.ofHom, ModuleCat.comp_def, ModuleCat.hom_def, ModuleCat.coe_of,
-      liftRestrictNorm, hom_comm_apply'']
-
-end Rep
 open Rep
 
 noncomputable def TateCohomology {k G : Type u} [CommRing k] [Group G]

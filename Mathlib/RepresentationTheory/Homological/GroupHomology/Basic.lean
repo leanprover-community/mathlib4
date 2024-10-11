@@ -398,17 +398,17 @@ abbrev toCycles (i j : ℕ) : ModuleCat.of k ((Fin i → G) →₀ A) ⟶ cycles
 
 abbrev opcycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).opcycles n
 
-noncomputable def pOpcycles (n : ℕ) :
+noncomputable abbrev pOpcycles (n : ℕ) :
     ModuleCat.of k ((Fin n → G) →₀ A) ⟶ opcycles A n := (inhomogeneousChains A).pOpcycles n
 
-noncomputable def fromOpcycles (i j : ℕ) :
+noncomputable abbrev fromOpcycles (i j : ℕ) :
     opcycles A i ⟶ ModuleCat.of k ((Fin j → G) →₀ A) := (inhomogeneousChains A).fromOpcycles i j
 
 end groupHomology
 open groupHomology Rep
 variable {k G : Type u} [CommRing k] [Group G] [DecidableEq G] (A : Rep k G)
 
-def groupHomology (n : ℕ) : ModuleCat k :=
+abbrev groupHomology (n : ℕ) : ModuleCat k :=
   (inhomogeneousChains A).homology n
 
 abbrev groupHomologyπ (n : ℕ) :
