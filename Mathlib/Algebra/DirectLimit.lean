@@ -311,7 +311,7 @@ theorem of.zero_exact_aux [∀ i (k : G i), Decidable (k ≠ 0)] [Nonempty ι] [
           simp [LinearMap.map_sub, totalize_of_le, hik, hjk, DirectedSystem.map_map,
             DirectSum.apply_eq_component, DirectSum.component.of]⟩)
       ⟨ind, fun _ h => (Finset.not_mem_empty _ h).elim, LinearMap.map_zero _⟩
-      (fun x _ y _ ⟨i, hi, hxi⟩ ⟨j, hj, hyj⟩ =>
+      (fun x y _ _ ⟨i, hi, hxi⟩ ⟨j, hj, hyj⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, fun l hl =>
           (Finset.mem_union.1 (DFinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
@@ -721,7 +721,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
   · refine Nonempty.elim (by infer_instance) fun ind : ι => ?_
     refine ⟨ind, ∅, fun _ => False.elim, isSupported_zero, fun [_] => ?_⟩
     rw [(restriction _).map_zero, (FreeCommRing.lift _).map_zero]
-  · intro x _ y _ ⟨i, s, hi, hxs, ihs⟩ ⟨j, t, hj, hyt, iht⟩
+  · intro x y _ _ ⟨i, s, hi, hxs, ihs⟩ ⟨j, t, hj, hyt, iht⟩
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
     have : ∀ z : Σi, G i, z ∈ s ∪ t → z.1 ≤ k := by
       rintro z (hz | hz)

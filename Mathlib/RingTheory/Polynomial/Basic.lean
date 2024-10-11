@@ -589,7 +589,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
       · simpa [h] using hx.left
       · simp [h]
     · simp
-    · exact fun f _ g _ hf hg n => by simp [I.add_mem (hf n) (hg n)]
+    · exact fun f g _ _ hf hg n => by simp [I.add_mem (hf n) (hg n)]
     · refine fun f g _ hg n => ?_
       rw [smul_eq_mul, coeff_mul]
       exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
@@ -1191,7 +1191,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
       · simpa [h] using hx.left
       · simp [Ne.symm h]
     · simp
-    · exact fun f _ g _ hf hg n => by simp [I.add_mem (hf n) (hg n)]
+    · exact fun f g _ _ hf hg n => by simp [I.add_mem (hf n) (hg n)]
     · refine fun f g _ hg n => ?_
       rw [smul_eq_mul, coeff_mul]
       exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)

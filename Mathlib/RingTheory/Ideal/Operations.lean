@@ -85,7 +85,7 @@ theorem mem_annihilator_span (s : Set M) (r : R) :
     · intro x hx
       exact h ⟨x, hx⟩
     · exact smul_zero _
-    · intro x _ y _ hx hy
+    · intro x y _ _ hx hy
       rw [smul_add, hx, hy, zero_add]
     · intro a x _ hx
       rw [smul_comm, hx, smul_zero]
@@ -316,7 +316,7 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
     refine @Finsupp.sum_single_index ι R M _ _ i _ (fun i y => y • f i) ?_
     simp
   · exact ⟨0, fun _ => I.zero_mem, Finsupp.sum_zero_index⟩
-  · rintro x - y - ⟨ax, hax, rfl⟩ ⟨ay, hay, rfl⟩
+  · rintro x y - - ⟨ax, hax, rfl⟩ ⟨ay, hay, rfl⟩
     refine ⟨ax + ay, fun i => I.add_mem (hax i) (hay i), Finsupp.sum_add_index' ?_ ?_⟩ <;>
       intros <;> simp only [zero_smul, add_smul]
   · rintro c x - ⟨a, ha, rfl⟩

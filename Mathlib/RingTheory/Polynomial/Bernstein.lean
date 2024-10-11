@@ -251,7 +251,7 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
         rintro ⟨a, w⟩; simp only [Fin.val_mk]
         rw [iterate_derivative_at_1_eq_zero_of_lt ℚ n ((tsub_lt_tsub_iff_left_of_le h).mpr w)]
       · simp
-      · intro x _ y _ hx hy; simp [hx, hy]
+      · intro x y _ _ hx hy; simp [hx, hy]
       · intro a x _ h; simp [h]
 
 /-- The Bernstein polynomials are linearly independent.

@@ -494,7 +494,7 @@ lemma baseChange_span (s : Set M) :
   · intro m hm
     exact subset_span ⟨m, hm, rfl⟩
   · simp
-  · intro m₁ _ m₂ _ hm₁ hm₂
+  · intro m₁ m₂ _ _ hm₁ hm₂
     rw [tmul_add]
     exact Submodule.add_mem _ hm₁ hm₂
   · intro r m' _ hm'

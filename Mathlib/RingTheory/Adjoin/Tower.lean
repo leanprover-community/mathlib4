@@ -127,7 +127,7 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
     span_le]
   refine fun r hr =>
     Submonoid.closure_induction (fun c hc => hxy c hc) (subset_span <| mem_insert_self _ _)
-      (fun p _ q _ hp hq => hyy <| Submodule.mul_mem_mul hp hq) hr
+      (fun p q _ _ hp hq => hyy <| Submodule.mul_mem_mul hp hq) hr
 
 end Semiring
 

@@ -235,7 +235,7 @@ theorem KaehlerDifferential.span_range_derivation :
     apply Submodule.subset_span
     exact ⟨x, KaehlerDifferential.DLinearMap_apply R S x⟩
   · exact ⟨zero_mem _, Submodule.zero_mem _⟩
-  · rintro x - y - ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩; exact ⟨add_mem hx₁ hy₁, Submodule.add_mem _ hx₂ hy₂⟩
+  · rintro x y - - ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩; exact ⟨add_mem hx₁ hy₁, Submodule.add_mem _ hx₂ hy₂⟩
   · rintro r x - ⟨hx₁, hx₂⟩
     exact ⟨((KaehlerDifferential.ideal R S).restrictScalars S).smul_mem r hx₁,
       Submodule.smul_mem _ r hx₂⟩
@@ -294,7 +294,7 @@ theorem Derivation.liftKaehlerDifferential_unique (f f' : Ω[S⁄R] →ₗ[S] M)
   refine Submodule.span_induction ?_ ?_ ?_ ?_ this
   · rintro _ ⟨x, rfl⟩; exact congr_arg (fun D : Derivation R S M => D x) hf
   · rw [map_zero, map_zero]
-  · intro x _ y _ hx hy; rw [map_add, map_add, hx, hy]
+  · intro x y _ _ hx hy; rw [map_add, map_add, hx, hy]
   · intro a x _ e; simp [e]
 
 variable (R S)
@@ -474,8 +474,8 @@ instance KaehlerDifferential.finite [EssFiniteType R S] :
     refine adjoin_induction ?_ ?_ ?_ ?_ hx
     · exact fun x hx ↦ Submodule.subset_span (Finset.mem_image_of_mem _ hx)
     · simp
-    · exact fun x _ y _ hx hy ↦ (D R S).map_add x y ▸ add_mem hx hy
-    · intro x _ y _ hx hy
+    · exact fun x y _ _ hx hy ↦ (D R S).map_add x y ▸ add_mem hx hy
+    · intro x y _ _ hx hy
       simp only [Derivation.leibniz]
       exact add_mem (Submodule.smul_mem _ _ hy) (Submodule.smul_mem _ _ hx)
   obtain ⟨t, ht, ht', hxt⟩ := (essFiniteType_cond_iff R S (EssFiniteType.finset R S)).mp

@@ -277,7 +277,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
         exact ⟨C r, map_C _ _⟩
       · intro _ _ _ _ h₁ h₂
         exact add_mem h₁ h₂
-      · intro x₁ _ x₂ _ h₁ h₂
+      · intro x₁ x₂ _ _ h₁ h₂
         obtain ⟨_, ⟨p₁, rfl⟩, q₁, hq₁, rfl⟩ := AddSubmonoid.mem_sup.mp h₁
         obtain ⟨_, ⟨p₂, rfl⟩, q₂, hq₂, rfl⟩ := AddSubmonoid.mem_sup.mp h₂
         rw [add_mul, mul_add, add_assoc, ← map_mul]
@@ -353,7 +353,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
         exact ⟨C r, aeval_C _ _⟩
       · intro _ _ _ _ h₁ h₂
         exact add_mem h₁ h₂
-      · intro p₁ _ p₂ _ h₁ h₂
+      · intro p₁ p₂ _ _ h₁ h₂
         obtain ⟨_, ⟨x₁, rfl⟩, y₁, hy₁, rfl⟩ := AddSubmonoid.mem_sup.mp h₁
         obtain ⟨_, ⟨x₂, rfl⟩, y₂, hy₂, rfl⟩ := AddSubmonoid.mem_sup.mp h₂
         rw [mul_add, add_mul, add_assoc, ← map_mul]

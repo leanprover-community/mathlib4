@@ -623,13 +623,13 @@ of the closure of `s`. -/
 @[elab_as_elim]
 theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
     (mem : ∀ (x) (hx : x ∈ s), p x (subset_closure hx)) (zero : p 0 (zero_mem _))
-    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {x} (hx : x ∈ closure s)  : p x hx :=
   let K : NonUnitalSubsemiring R :=
     { carrier := { x | ∃ hx, p x hx }
-      mul_mem' := (Exists.elim · fun _ ha ↦ (Exists.elim · fun _ hb ↦ ⟨_, mul _ _ _ _ ha hb⟩))
-      add_mem' := (Exists.elim · fun _ ha ↦ (Exists.elim · fun _ hb ↦ ⟨_, add _ _ _ _ ha hb⟩))
+      mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩
+      add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
       zero_mem' := ⟨_, zero⟩ }
   closure_le (t := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
@@ -638,10 +638,10 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
 theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → y ∈ closure s → Prop}
     (mem_mem : ∀ (x) (hx : x ∈ s) (y) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
     (zero_left : ∀ x hx, p 0 x (zero_mem _) hx) (zero_right : ∀ x hx, p x 0 hx (zero_mem _))
-    (add_left : ∀ x hx y hy z hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
-    (add_right : ∀ x hx y hy z hz, p x y hx hy → p x z hx hz → p x (y + z) hx (add_mem hy hz))
-    (mul_left : ∀ x hx y hy z hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
-    (mul_right : ∀ x hx y hy z hz, p x y hx hy → p x z hx hz → p x (y * z) hx (mul_mem hy hz))
+    (add_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
+    (add_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y + z) hx (add_mem hy hz))
+    (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y * z) hx (mul_mem hy hz))
     {x y : R} (hx : x ∈ closure s) (hy : y ∈ closure s) :
     p x y hx hy := by
   induction hy using closure_induction with

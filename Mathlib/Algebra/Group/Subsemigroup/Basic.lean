@@ -296,11 +296,11 @@ is preserved under multiplication, then `p` holds for all elements of the closur
   elements of the additive closure of `s`."]
 theorem closure_induction {p : (x : M) → x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h))
-    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
     p x hx :=
   let S : Subsemigroup M :=
     { carrier := { x | ∃ hx, p x hx }
-      mul_mem' := fun ⟨hx, hpx⟩ ⟨hy, hpy⟩ ↦ ⟨mul_mem hx hy, mul _ hx _ hy hpx hpy⟩ }
+      mul_mem' := fun ⟨hx, hpx⟩ ⟨hy, hpy⟩ ↦ ⟨_, mul _ hx _ hy hpx hpy⟩ }
   closure_le (S := S) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 @[deprecated closure_induction (since := "2024-10-09")]
@@ -310,9 +310,9 @@ alias closure_induction' := closure_induction
 @[to_additive (attr := elab_as_elim) "An induction principle for additive closure membership for
   predicates with two arguments."]
 theorem closure_induction₂ {p : (x y : M) → x ∈ closure s → y ∈ closure s → Prop}
-    (mem : ∀ (x) (hx : x ∈ s) (y) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
-    (mul_left : ∀ x hx y hy z hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
-    (mul_right : ∀ x hx y hy z hz, p z x hz hx → p z y hz hy → p z (x * y) hz (mul_mem hx hy))
+    (mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
+    (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ x y z hx hy hz, p z x hz hx → p z y hz hy → p z (x * y) hz (mul_mem hx hy))
     {x y : M} (hx : x ∈ closure s) (hy : y ∈ closure s) : p x y hx hy := by
   induction hx using closure_induction with
   | mem z hz => induction hy using closure_induction with

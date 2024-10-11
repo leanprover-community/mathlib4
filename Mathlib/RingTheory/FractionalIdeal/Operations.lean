@@ -158,7 +158,7 @@ theorem isFractional_span_iff {s : Set P} :
         (by
           rw [smul_zero]
           exact isInteger_zero)
-        (fun x _ y _ hx hy => by
+        (fun x y _ _ hx hy => by
           rw [smul_add]
           exact isInteger_add hx hy)
         fun s x _ hx => by
@@ -520,7 +520,7 @@ def spanFinset {ι : Type*} (s : Finset ι) (f : ι → K) : FractionalIdeal R�
       exact ha' i hi
     · rw [smul_zero]
       exact IsLocalization.isInteger_zero
-    · intro x _ y _ hx hy
+    · intro x y _ _ hx hy
       rw [smul_add]
       exact IsLocalization.isInteger_add hx hy
     · intro c x _ hx

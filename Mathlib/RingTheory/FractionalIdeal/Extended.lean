@@ -46,7 +46,7 @@ def extended (I : FractionalIdeal M K) : FractionalIdeal N L where
     have ⟨a, ha, frac⟩ := I.isFractional
     refine ⟨f a, hf ha, fun b hb ↦ ?_⟩
     refine span_induction (fun x hx ↦ ?_) ⟨0, by simp⟩
-      (fun x _ y _ hx hy ↦ smul_add (f a) x y ▸ isInteger_add hx hy) (fun b c _ hc ↦ ?_) hb
+      (fun x y _ _ hx hy ↦ smul_add (f a) x y ▸ isInteger_add hx hy) (fun b c _ hc ↦ ?_) hb
     · rcases hx with ⟨k, kI, rfl⟩
       obtain ⟨c, hc⟩ := frac k kI
       exact ⟨f c, by simp [← IsLocalization.map_smul, ← hc]⟩
@@ -70,7 +70,7 @@ theorem extended_zero : extended L hf (0 : FractionalIdeal M K) = 0 :=
 @[simp]
 theorem extended_one : extended L hf (1 : FractionalIdeal M K) = 1 := by
   refine coeToSubmodule_injective <| Submodule.ext fun x ↦ ⟨fun hx ↦ span_induction
-    ?_ (zero_mem _) (fun y _ z _ hy hz ↦ add_mem hy hz) (fun b y _ hy ↦ smul_mem _ b hy) hx, ?_⟩
+    ?_ (zero_mem _) (fun y z _ _ hy hz ↦ add_mem hy hz) (fun b y _ hy ↦ smul_mem _ b hy) hx, ?_⟩
   · rintro ⟨b, _, rfl⟩
     rw [Algebra.linearMap_apply, Algebra.algebraMap_eq_smul_one]
     exact smul_mem _ _ <| subset_span ⟨1, by simp [one_mem_one]⟩
@@ -98,7 +98,7 @@ theorem extended_mul : (I * J).extended L hf = (I.extended L hf) * (J.extended L
   · rcases h with ⟨x, hx, rfl⟩
     replace hx : x ∈ (I : Submodule A K) * (J : Submodule A K) := coe_mul I J ▸ hx
     rw [Submodule.mul_eq_span_mul_set] at hx
-    refine span_induction (fun y hy ↦ ?_) (by simp) (fun y _ z _ hy hz ↦ ?_)
+    refine span_induction (fun y hy ↦ ?_) (by simp) (fun y z _ _ hy hz ↦ ?_)
       (fun a y _ hy ↦ ?_) hx
     · rcases Set.mem_mul.mp hy with ⟨i, hi, j, hj, rfl⟩
       exact subset_span <| Set.mem_mul.mpr

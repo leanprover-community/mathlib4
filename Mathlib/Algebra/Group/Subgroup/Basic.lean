@@ -894,9 +894,9 @@ theorem closure_induction {p : (g : G) → g ∈ closure k → Prop}
     (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx)) {x} (hx : x ∈ closure k) : p x hx :=
   let K : Subgroup G :=
     { carrier := { x | ∃ hx, p x hx }
-      mul_mem' := (Exists.elim · fun _ ha ↦ (Exists.elim · fun _ hb ↦ ⟨_, mul _ _ _ _ ha hb⟩))
+      mul_mem' := fun ⟨_, ha⟩ ⟨_, hb⟩ ↦ ⟨_, mul _ _ _ _ ha hb⟩
       one_mem' := ⟨_, one⟩
-      inv_mem' := by refine (Exists.elim · fun _ hb ↦ ⟨_, inv _ _ hb⟩) }
+      inv_mem' := fun ⟨_, hb⟩ ↦ ⟨_, inv _ _ hb⟩ }
   closure_le (K := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 @[deprecated closure_induction (since := "2024-10-10")]
@@ -909,17 +909,17 @@ alias closure_induction' := closure_induction
 theorem closure_induction₂ {p : (x y : G) → x ∈ closure k → y ∈ closure k → Prop}
     (mem : ∀ (x) (hx : x ∈ k) (y) (hy : y ∈ k), p x y (subset_closure hx) (subset_closure hy))
     (one_left : ∀ x hx, p 1 x (one_mem _) hx) (one_right : ∀ x hx, p x 1 hx (one_mem _))
-    (mul_left : ∀ x hx y hy z hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
-    (mul_right : ∀ y hy z hz x hx, p x y hx hy → p x z hx hz → p x (y * z) hx (mul_mem hy hz))
-    (inv_left : ∀ x hx y hy, p x y hx hy → p x⁻¹ y (inv_mem hx) hy)
-    (inv_right : ∀ x hx y hy, p x y hx hy → p x y⁻¹ hx (inv_mem hy))
+    (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ y z x hy hz hx, p x y hx hy → p x z hx hz → p x (y * z) hx (mul_mem hy hz))
+    (inv_left : ∀ x y hx hy, p x y hx hy → p x⁻¹ y (inv_mem hx) hy)
+    (inv_right : ∀ x y hx hy, p x y hx hy → p x y⁻¹ hx (inv_mem hy))
     {x y : G} (hx : x ∈ closure k) (hy : y ∈ closure k) : p x y hx hy := by
   induction hy using closure_induction with
   | mem z hz => induction hx using closure_induction with
     | mem _ h => exact mem _ h _ hz
     | one => exact one_left _ (subset_closure hz)
     | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
-    | inv _ _ h => exact inv_left _ _ _ (subset_closure hz) h
+    | inv _ _ h => exact inv_left _ _ _ _ h
   | one => exact one_right x hx
   | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ hx h₁ h₂
   | inv _ _ h => exact inv_right _ _ _ _ h
@@ -944,11 +944,11 @@ def closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y 
       | mem x hx y hy => exact hcomm x hx y hy
       | one_left x _ => exact Commute.one_left x
       | one_right x _ => exact Commute.one_right x
-      | mul_left x _ y _ z _ h₁ h₂ => exact Commute.mul_left h₁ h₂
-      | mul_right x _ y _ z _ h₁ h₂ => exact Commute.mul_right h₁ h₂
-      | inv_left x _ y _ h => -- `Commute.inv_left` is not imported
+      | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
+      | mul_right _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_right h₁ h₂
+      | inv_left _ _ _ _ h => -- `Commute.inv_left` is not imported
         rw [inv_mul_eq_iff_eq_mul, ← mul_assoc, h, mul_assoc, mul_inv_cancel, mul_one]
-      | inv_right x _ y _ h =>
+      | inv_right _ _ _ _ h =>
         rw [mul_inv_eq_iff_eq_mul, mul_assoc, h, ← mul_assoc, inv_mul_cancel, one_mul] }
 
 variable (G)

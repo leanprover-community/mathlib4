@@ -443,8 +443,8 @@ theorem _root_.Subalgebra.starClosure_eq_adjoin (S : Subalgebra R A) :
 theorem adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_adjoin R s h))
     (algebraMap : ∀ r, p (_root_.algebraMap R _ r) (_root_.algebraMap_mem _ r))
-    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     (star : ∀ x hx, p x hx → p (star x) (star_mem hx))
     {a : A} (ha : a ∈ adjoin R s) : p a ha := by
   refine Algebra.adjoin_induction (fun x hx ↦ ?_) algebraMap add mul ha
@@ -455,7 +455,7 @@ theorem adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
 
 @[elab_as_elim]
 theorem adjoin_induction₂ {s : Set A} {p : (x y : A) → x ∈ adjoin R s → y ∈ adjoin R s → Prop}
-    (mem_mem : ∀ (x) (hx : x ∈ s) (y) (hy : y ∈ s), p x y (subset_adjoin R s hx)
+    (mem_mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_adjoin R s hx)
       (subset_adjoin R s hy))
     (algebraMap_both : ∀ r₁ r₂, p (algebraMap R A r₁) (algebraMap R A r₂)
       (_root_.algebraMap_mem _ r₁) (_root_.algebraMap_mem _ r₂))
@@ -463,17 +463,17 @@ theorem adjoin_induction₂ {s : Set A} {p : (x y : A) → x ∈ adjoin R s → 
       (subset_adjoin R s hx))
     (algebraMap_right : ∀ (r) (x) (hx : x ∈ s), p x (algebraMap R A r) (subset_adjoin R s hx)
       (_root_.algebraMap_mem _ r))
-    (add_left : ∀ x hx y hy z hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
-    (add_right : ∀ x hx y hy z hz, p x y hx hy → p x z hx hz → p x (y + z) hx (add_mem hy hz))
-    (mul_left : ∀ x hx y hy z hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
-    (mul_right : ∀ x hx y hy z hz, p x y hx hy → p x z hx hz → p x (y * z) hx (mul_mem hy hz))
-    (star_left : ∀ x hx y hy, p x y hx hy → p (star x) y (star_mem hx) hy)
-    (star_right : ∀ x hx y hy, p x y hx hy → p x (star y) hx (star_mem hy))
+    (add_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
+    (add_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y + z) hx (add_mem hy hz))
+    (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y * z) hx (mul_mem hy hz))
+    (star_left : ∀ x y hx hy, p x y hx hy → p (star x) y (star_mem hx) hy)
+    (star_right : ∀ x y hx hy, p x y hx hy → p x (star y) hx (star_mem hy))
     {a b : A} (ha : a ∈ adjoin R s) (hb : b ∈ adjoin R s) :
     p a b ha hb := by
   induction hb using adjoin_induction with
   | mem z hz => induction ha using adjoin_induction with
-    | mem _ h => exact mem_mem _ h _ hz
+    | mem _ h => exact mem_mem _ _ h hz
     | algebraMap _ => exact algebraMap_left _ _ hz
     | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
     | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
@@ -490,7 +490,7 @@ theorem adjoin_induction₂ {s : Set A} {p : (x y : A) → x ∈ adjoin R s → 
   | star _ _ h => exact star_right _ _ _ _ h
 
 /-- The difference with `StarSubalgebra.adjoin_induction` is that this acts on the subtype. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated adjoin_induction (since := "2024-10-11")]
 theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (mem : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin R s h⟩) (algebraMap : ∀ r, p (algebraMap R _ r))
     (add : ∀ x y, p x → p y → p (x + y)) (mul : ∀ x y, p x → p y → p (x * y))

@@ -232,14 +232,14 @@ lemma lie_baseChange {I : LieIdeal R L} {N : LieSubmodule R L M} :
         apply Submodule.subset_span
         exact ⟨y, hy, m', hm', rfl⟩
       · simp
-      · intro u _ v _ hu hv
+      · intro u v _ _ hu hv
         rw [lie_add]
         exact Submodule.add_mem _ hu hv
       · intro a u _ hu
         rw [lie_smul]
         exact Submodule.smul_mem _ a hu
     · simp
-    · intro x _ y _ hx hy m' hm'
+    · intro x y _ _ hx hy m' hm'
       rw [add_lie]
       exact Submodule.add_mem _ (hx _ hm') (hy _ hm')
     · intro a x _ hx m' hm'

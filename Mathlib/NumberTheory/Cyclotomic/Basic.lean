@@ -131,8 +131,8 @@ theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTow
     · exact ((isCyclotomicExtension_iff _ _ _).1 hT).1 hn
   · refine adjoin_induction (hx := ((isCyclotomicExtension_iff T B _).1 hT).2 x)
       (fun c ⟨n, hn⟩ => subset_adjoin ⟨n, Or.inr hn.1, hn.2⟩) (fun b => ?_)
-      (fun x _ y _ hx hy => Subalgebra.add_mem _ hx hy)
-      fun x _ y _ hx hy => Subalgebra.mul_mem _ hx hy
+      (fun x y _ _ hx hy => Subalgebra.add_mem _ hx hy)
+      fun x y _ _ hx hy => Subalgebra.mul_mem _ hx hy
     let f := IsScalarTower.toAlgHom A B C
     have hb : f b ∈ (adjoin A {b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1}).map f :=
       ⟨b, ((isCyclotomicExtension_iff _ _ _).1 hS).2 b, rfl⟩
@@ -650,12 +650,12 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero ((n : ℕ) : A)] :
       rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
         @IsScalarTower.algebraMap_apply A K _ _ _ _ _ (_root_.CyclotomicField.algebra n K) _ _ w,
         ← RingHom.map_mul, hw, ← IsScalarTower.algebraMap_apply]
-    · rintro y - z - ⟨a, ha⟩ ⟨b, hb⟩
+    · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
       refine ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
       rw [RingHom.map_mul, add_mul, ← mul_assoc, ha,
         mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, hb]
       simp only [map_add, map_mul]
-    · rintro y - z - ⟨a, ha⟩ ⟨b, hb⟩
+    · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
       refine ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
       rw [RingHom.map_mul, mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), mul_assoc, ←
         mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, ha]

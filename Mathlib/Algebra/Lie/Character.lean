@@ -52,7 +52,7 @@ theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
   refine Submodule.span_induction ?_ ?_ ?_ ?_ h
   · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lieCharacter_apply_lie
   · exact χ.map_zero
-  · intro y _ z _ hy hz; rw [LieHom.map_add, hy, hz, add_zero]
+  · intro y z _ _ hy hz; rw [LieHom.map_add, hy, hz, add_zero]
   · intro t y _ hy; rw [LieHom.map_smul, hy, smul_zero]
 
 /-- For an Abelian Lie algebra, characters are just linear forms. -/

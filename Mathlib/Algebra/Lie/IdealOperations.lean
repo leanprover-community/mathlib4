@@ -91,7 +91,7 @@ theorem lieIdeal_oper_eq_linear_span [LieModule R L M] :
         · use ⟨⁅y, ↑x⁆, I.lie_mem x.property⟩, n
         · use x, ⟨⁅y, ↑n⁆, N.lie_mem n.property⟩
       · simp only [lie_zero, Submodule.zero_mem]
-      · intro m₁ _ m₂ _ hm₁ hm₂; rw [lie_add]; exact Submodule.add_mem _ hm₁ hm₂
+      · intro m₁ m₂ _ _ hm₁ hm₂; rw [lie_add]; exact Submodule.add_mem _ hm₁ hm₂
       · intro t m'' _ hm''; rw [lie_smul]; exact Submodule.smul_mem _ t hm''
     change _ ≤ ({ Submodule.span R s with lie_mem := fun hm' => aux _ _ hm' } : LieSubmodule R L M)
     rw [lieIdeal_oper_eq_span, lieSpan_le]

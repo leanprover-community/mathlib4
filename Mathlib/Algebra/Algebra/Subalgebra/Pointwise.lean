@@ -48,7 +48,7 @@ theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A
   rintro x (hx : x ∈ Algebra.adjoin R (S ∪ T : Set A))
   refine
     Algebra.adjoin_induction (fun x hx => ?_) (fun r => ?_) (fun _ _ _ _ => Submodule.add_mem _)
-      (fun x _ y _ hx hy => ?_) hx
+      (fun x y _ _ hx hy => ?_) hx
   · rcases hx with hxS | hxT
     · rw [← mul_one x]
       exact Submodule.mul_mem_mul hxS (show (1 : A) ∈ T from one_mem T)

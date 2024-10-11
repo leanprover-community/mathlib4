@@ -177,7 +177,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (
     simpa only [closure_iUnion, closure_eq (S _)] using this
   refine closure_induction (fun _ ↦ mem_iUnion.1) ?_ ?_
   · exact hι.elim fun i ↦ ⟨i, (S i).one_mem⟩
-  · rintro x - y - ⟨i, hi⟩ ⟨j, hj⟩
+  · rintro x y - - ⟨i, hi⟩ ⟨j, hj⟩
     rcases hS i j with ⟨k, hki, hkj⟩
     exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
 
@@ -611,7 +611,7 @@ theorem mul_right_mem_add_closure (ha : a ∈ AddSubmonoid.closure (S : Set R)) 
   induction ha using AddSubmonoid.closure_induction with
   | mem r hr => exact AddSubmonoid.mem_closure.mpr fun y hy => hy (mul_mem hr hb)
   | one => simp only [zero_mul, zero_mem _]
-  | mul r _ s _ hr hs => simpa only [add_mul] using add_mem hr hs
+  | mul r s _ _ hr hs => simpa only [add_mul] using add_mem hr hs
 
 /-- The product of two elements of the additive closure of a submonoid `M` is an element of the
 additive closure of `M`. -/
@@ -620,7 +620,7 @@ theorem mul_mem_add_closure (ha : a ∈ AddSubmonoid.closure (S : Set R))
   induction hb using AddSubmonoid.closure_induction with
   | mem r hr => exact MulMemClass.mul_right_mem_add_closure ha hr
   | one => simp only [mul_zero, zero_mem _]
-  | mul r _ s _ hr hs => simpa only [mul_add] using add_mem hr hs
+  | mul r s _ _ hr hs => simpa only [mul_add] using add_mem hr hs
 
 /-- The product of an element of `S` and an element of the additive closure of a multiplicative
 submonoid `S` is contained in the additive closure of `S`. -/

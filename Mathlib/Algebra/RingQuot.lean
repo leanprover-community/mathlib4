@@ -501,7 +501,7 @@ def idealQuotientToRingQuot (r : B → B → Prop) : B ⧸ Ideal.ofRel r →+* R
         rw [← sub_eq_iff_eq_add] at su
         rw [← su, RingHom.map_sub, mkRingHom_rel h, sub_self]
       · simp
-      · intro a _ b _ ha hb
+      · intro a b _ _ ha hb
         simp [ha, hb]
       · intro a x _ hx
         simp [hx])

@@ -72,13 +72,13 @@ theorem adjoin_attach_biUnion [DecidableEq A] {α : Type*} {s : Finset α} (f : 
 theorem adjoin_induction {p : (x : A) → x ∈ adjoin R s → Prop}
     (mem : ∀ (x) (hx : x ∈ s), p x (subset_adjoin hx))
     (algebraMap : ∀ r, p (algebraMap R A r) (algebraMap_mem _ r))
-    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {x : A} (hx : x ∈ adjoin R s) : p x hx :=
   let S : Subalgebra R A :=
     { carrier := { x | ∃ hx, p x hx }
-      mul_mem' := (Exists.elim · fun _ ha ↦ (Exists.elim · fun _ hb ↦ ⟨_, mul _ _ _ _ ha hb⟩))
-      add_mem' := (Exists.elim · fun _ ha ↦ (Exists.elim · fun _ hb ↦ ⟨_, add _ _ _ _ ha hb⟩))
+      mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩
+      add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
       algebraMap_mem' := fun r ↦ ⟨_, algebraMap r⟩ }
   adjoin_le (S := S) (fun y hy ↦ ⟨subset_adjoin hy, mem y hy⟩) hx |>.elim fun _ ↦ _root_.id
 
@@ -90,17 +90,17 @@ alias adjoin_induction'' := adjoin_induction
 natural properties. -/
 @[elab_as_elim]
 theorem adjoin_induction₂ {s : Set A} {p : (x y : A) → x ∈ adjoin R s → y ∈ adjoin R s → Prop}
-    (mem_mem : ∀ (x) (hx : x ∈ s) (y) (hy : y ∈ s), p x y (subset_adjoin hx) (subset_adjoin hy))
+    (mem_mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_adjoin hx) (subset_adjoin hy))
     (algebraMap_both : ∀ r₁ r₂, p (algebraMap R A r₁) (algebraMap R A r₂) (algebraMap_mem _ r₁)
       (algebraMap_mem _ r₂))
     (algebraMap_left : ∀ (r) (x) (hx : x ∈ s), p (algebraMap R A r) x (algebraMap_mem _ r)
       (subset_adjoin hx))
     (algebraMap_right : ∀ (r) (x) (hx : x ∈ s), p x (algebraMap R A r) (subset_adjoin hx)
       (algebraMap_mem _ r))
-    (add_left : ∀ x hx y hy z hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
-    (add_right : ∀ x hx y hy z hz, p x y hx hy → p x z hx hz → p x (y + z) hx (add_mem hy hz))
-    (mul_left : ∀ x hx y hy z hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
-    (mul_right : ∀ x hx y hy z hz, p x y hx hy → p x z hx hz → p x (y * z) hx (mul_mem hy hz))
+    (add_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
+    (add_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y + z) hx (add_mem hy hz))
+    (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y * z) hx (mul_mem hy hz))
     {x y : A} (hx : x ∈ adjoin R s) (hy : y ∈ adjoin R s) :
     p x y hx hy := by
   induction hy using adjoin_induction with
@@ -119,7 +119,7 @@ theorem adjoin_induction₂ {s : Set A} {p : (x y : A) → x ∈ adjoin R s → 
   | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
 
 /-- The difference with `Algebra.adjoin_induction` is that this acts on the subtype. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated adjoin_induction (since := "2024-10-11")]
 theorem adjoin_induction' {p : adjoin R s → Prop} (mem : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin h⟩)
     (algebraMap : ∀ r, p (algebraMap R _ r)) (add : ∀ x y, p x → p y → p (x + y))
     (mul : ∀ x y, p x → p y → p (x * y)) (x : adjoin R s) : p x :=
@@ -232,8 +232,8 @@ theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a�
     convert Subalgebra.smul_mem (adjoin R (f '' (s ∪ {1}))) this r
     rw [algebraMap_eq_smul_one]
     exact f.map_smul _ _
-  | add y _ z _ hy hz => simpa [hy, hz] using Subalgebra.add_mem _ hy hz
-  | mul y _ z _ hy hz => simpa [hf, hy, hz] using Subalgebra.mul_mem _ hy hz
+  | add y z _ _ hy hz => simpa [hy, hz] using Subalgebra.add_mem _ hy hz
+  | mul y z _ _ hy hz => simpa [hf, hy, hz] using Subalgebra.mul_mem _ hy hz
 
 theorem adjoin_inl_union_inr_eq_prod (s) (t) :
     adjoin R (LinearMap.inl R A B '' (s ∪ {1}) ∪ LinearMap.inr R A B '' (t ∪ {1})) =
@@ -268,10 +268,10 @@ def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * 
       | algebraMap_both r₁ r₂ => exact commutes r₁ <| algebraMap R A r₂
       | algebraMap_left r x _ => exact commutes r x
       | algebraMap_right r x _ => exact commutes r x |>.symm
-      | mul_left x _ y _ z _ h₁ h₂ => exact Commute.mul_left h₁ h₂
-      | mul_right x _ y _ z _ h₁ h₂ => exact Commute.mul_right h₁ h₂
-      | add_left x _ y _ z _ h₁ h₂ => exact Commute.add_left h₁ h₂
-      | add_right x _ y _ z _ h₁ h₂ => exact Commute.add_right h₁ h₂ }
+      | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
+      | mul_right _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_right h₁ h₂
+      | add_left _ _ _ _ _ _ h₁ h₂ => exact Commute.add_left h₁ h₂
+      | add_right _ _ _ _ _ _ h₁ h₂ => exact Commute.add_right h₁ h₂ }
 
 variable {R}
 
@@ -281,8 +281,8 @@ lemma commute_of_mem_adjoin_of_forall_mem_commute {a b : A} {s : Set A}
   induction hb using adjoin_induction with
   | mem x hx => exact h x hx
   | algebraMap r => exact commutes r a |>.symm
-  | add y _ z _ hy hz => exact hy.add_right hz
-  | mul y _ z _ hy hz => exact hy.mul_right hz
+  | add y z _ _ hy hz => exact hy.add_right hz
+  | mul y z _ _ hy hz => exact hy.mul_right hz
 
 lemma commute_of_mem_adjoin_singleton_of_commute {a b c : A}
     (hc : c ∈ adjoin R {b}) (h : Commute a b) :

@@ -95,7 +95,7 @@ def auxHom : (MvPolynomial Unit R) ⧸ (Ideal.span { C r * X () - 1 }) →ₐ[R]
     · rintro p ⟨q, rfl⟩
       simp
     · simp
-    · intro p _ q _ hp hq
+    · intro p q _ _ hp hq
       simp [hp, hq]
     · intro a x _ hx
       simp [hx]

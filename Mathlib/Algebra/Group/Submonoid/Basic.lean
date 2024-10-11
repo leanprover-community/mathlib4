@@ -374,7 +374,7 @@ is preserved under multiplication, then `p` holds for all elements of the closur
       additive closure of `s`."]
 theorem closure_induction {s : Set M} {p : (x : M) → x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (one : p 1 (one_mem _))
-    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
     p x hx :=
   let S : Submonoid M :=
     { carrier := { x | ∃ hx, p x hx }
@@ -391,8 +391,8 @@ alias closure_induction' := closure_induction
 theorem closure_induction₂ {p : (x y : M) → x ∈ closure s → y ∈ closure s → Prop}
     (mem : ∀ (x) (hx : x ∈ s) (y) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
     (one_left : ∀ x hx, p 1 x (one_mem _) hx) (one_right : ∀ x hx, p x 1 hx (one_mem _))
-    (mul_left : ∀ x hx y hy z hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
-    (mul_right : ∀ x hx y hy z hz, p z x hz hx → p z y hz hy → p z (x * y) hz (mul_mem hx hy))
+    (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ x y z hx hy hz, p z x hz hx → p z y hz hy → p z (x * y) hz (mul_mem hx hy))
     {x y : M} (hx : x ∈ closure s) (hy : y ∈ closure s) : p x y hx hy := by
   induction hy using closure_induction with
   | mem z hz => induction hx using closure_induction with

@@ -532,7 +532,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
       rfl
     · use 0
       simp only [map_zero]
-    · rintro x - y - ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
+    · rintro x y - - ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
       use x + y
       simp only [map_add]
     · rintro a x - ⟨x, hx, rfl⟩
@@ -600,7 +600,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
       rfl
     · use 0
       simp only [map_zero]
-    · rintro x - y - ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
+    · rintro x y - - ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
       use x + y
       simp only [map_add]
     · rintro a x - ⟨x, hx, rfl⟩

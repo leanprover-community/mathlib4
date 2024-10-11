@@ -161,7 +161,7 @@ theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   rw [StarOrderedRing.nonneg_iff] at ha
   refine AddSubmonoid.closure_induction (fun x hx => ?_)
-    (by rw [mul_zero, zero_mul]) (fun x _ y _ hx hy => ?_) ha
+    (by rw [mul_zero, zero_mul]) (fun x y _ _ hx hy => ?_) ha
   · obtain ⟨x, rfl⟩ := hx
     convert star_mul_self_nonneg (x * c) using 1
     rw [star_mul, ← mul_assoc, mul_assoc _ _ c]
@@ -316,9 +316,9 @@ lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b) (hc : 0 < c
         refine ⟨z • y, ?_⟩
         simp only [star_smul, smul_mul_smul_comm, hz, hy]
       case zeroc => simpa only [zero_smul] using zero_mem _
-      case addc => exact fun c' _ d _ ↦ by simpa only [add_smul] using add_mem
+      case addc => exact fun c' d _ _ ↦ by simpa only [add_smul] using add_mem
     case zero => simpa only [smul_zero] using zero_mem _
-    case add => exact fun x _ y _ ↦ by simpa only [smul_add] using add_mem
+    case add => exact fun x y _ _ ↦ by simpa only [smul_add] using add_mem
   case ne =>
     refine (smul_ne_zero ?_ ?_).symm
     · exact (ne_of_lt hc).symm

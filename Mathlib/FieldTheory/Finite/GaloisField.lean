@@ -127,14 +127,14 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     exact Nat.not_lt_zero 1 (pow_eq_zero hn.symm ▸ hp)
   · simp [g_poly]
   · simp only [g_poly, aeval_X_pow, aeval_X, map_sub, add_pow_char_pow, sub_eq_zero]
-    intro x _ y _ hx hy
+    intro x y _ _ hx hy
     rw [hx, hy]
   · intro x _ hx
     simp only [g_poly, sub_eq_zero, aeval_X_pow, aeval_X, map_sub, sub_neg_eq_add] at *
     rw [neg_pow, hx, CharP.neg_one_pow_char_pow]
     simp
   · simp only [g_poly, aeval_X_pow, aeval_X, map_sub, mul_pow, sub_eq_zero]
-    intro x _ y _ hx hy
+    intro x y _ _ hx hy
     rw [hx, hy]
 
 theorem card (h : n ≠ 0) : Fintype.card (GaloisField p n) = p ^ n := by
