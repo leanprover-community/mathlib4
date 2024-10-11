@@ -48,6 +48,7 @@ import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.DeprecateMe
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Eqns
+import Mathlib.Tactic.Erw
 import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.ExtractLets
