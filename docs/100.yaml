@@ -183,7 +183,7 @@
 49:
   title  : The Cayley-Hamilton Theorem
   decl   : Matrix.aeval_self_charpoly
-  author : Scott Morrison
+  author : Kim Morrison
 50:
   title  : The Number of Platonic Solids
 51:
@@ -345,7 +345,7 @@
   title  : Morley’s Theorem
 85:
   title  : Divisibility by 3 Rule
-  author : Scott Morrison
+  author : Kim Morrison
   decls  :
     - Nat.three_dvd_iff
 86:

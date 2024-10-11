@@ -49,7 +49,7 @@ Lawson topology, preorder
 
 open Set TopologicalSpace
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Topology
 
@@ -94,7 +94,7 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
   convert IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
     (isTopologicalBasis_opens (α := WithScott α))
     WithLower.toLower WithScott.toScott
-  erw [@topology_eq_lawson α _ _ _]
+  rw [@topology_eq_lawson α _ _ _]
   rw [lawson]
   apply (congrArg₂ Inf.inf _) _
   · letI _ := lower α; exact @IsLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩ |>.inducing.induced
@@ -145,7 +145,7 @@ instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.
 -/
 def homeomorph [TopologicalSpace α] [IsLawson α] : WithLawson α ≃ₜ α :=
-  ofLawson.toHomeomorphOfInducing ⟨by erw [@IsLawson.topology_eq_lawson α _ _, induced_id]; rfl⟩
+  ofLawson.toHomeomorphOfInducing ⟨by erw [IsLawson.topology_eq_lawson (α := α), induced_id]; rfl⟩
 
 theorem isOpen_preimage_ofLawson {S : Set α} :
     IsOpen (ofLawson ⁻¹' S) ↔ (lawson α).IsOpen S := Iff.rfl

@@ -365,6 +365,29 @@ instance (priority := 100) SeminormedCommGroup.to_uniformGroup : UniformGroup E 
 instance (priority := 100) SeminormedCommGroup.toTopologicalGroup : TopologicalGroup E :=
   inferInstance
 
+/-! ### SeparationQuotient -/
+
+namespace SeparationQuotient
+
+@[to_additive instNorm]
+instance instMulNorm : Norm (SeparationQuotient E) where
+  norm := lift Norm.norm fun _ _ h => h.norm_eq_norm'
+
+set_option linter.docPrime false in
+@[to_additive (attr := simp) norm_mk]
+theorem norm_mk' (p : E) : ‖mk p‖ = ‖p‖ := rfl
+
+@[to_additive]
+instance : NormedCommGroup (SeparationQuotient E) where
+  __ : CommGroup (SeparationQuotient E) := instCommGroup
+  dist_eq := Quotient.ind₂ dist_eq_norm_div
+
+set_option linter.docPrime false in
+@[to_additive (attr := simp) nnnorm_mk]
+theorem nnnorm_mk' (p : E) : ‖mk p‖₊ = ‖p‖₊ := rfl
+
+end SeparationQuotient
+
 @[to_additive]
 theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n ≥ N, u n = v n)
     (hv : CauchySeq fun n => ∏ k ∈ range (n + 1), v k) :

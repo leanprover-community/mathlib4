@@ -28,7 +28,7 @@ Equiv, MulEquiv, AddEquiv
 
 open Function
 
-variable {F α β A B M N P Q G H : Type*}
+variable {F α β M N P G H : Type*}
 
 /-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
 @[to_additive (attr := simps)
@@ -130,7 +130,6 @@ instance (priority := 100) instMonoidHomClass
         _ = e (EquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
         _ = 1 := EquivLike.right_inv e 1 }
 
-variable [EquivLike F α β]
 variable {F}
 
 @[to_additive (attr := simp)]
@@ -169,7 +168,7 @@ theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α
 
 namespace MulEquiv
 section Mul
-variable [Mul M] [Mul N] [Mul P] [Mul Q]
+variable [Mul M] [Mul N] [Mul P]
 
 section coe
 
@@ -389,6 +388,18 @@ theorem symm_comp_eq {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
     e.symm ∘ g = f ↔ g = e ∘ f :=
   e.toEquiv.symm_comp_eq f g
 
+@[to_additive (attr := simp)]
+theorem _root_.MulEquivClass.apply_coe_symm_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
+    [MulEquivClass F α β] (e : F) (x : β) :
+    e ((e : α ≃* β).symm x) = x :=
+  (e : α ≃* β).right_inv x
+
+@[to_additive (attr := simp)]
+theorem _root_.MulEquivClass.coe_symm_apply_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
+    [MulEquivClass F α β] (e : F) (x : α) :
+    (e : α ≃* β).symm (e x) = x :=
+  (e : α ≃* β).left_inv x
+
 end symm
 
 section simps
@@ -436,6 +447,8 @@ theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
 
 end trans
 
+section unique
+
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
 def mulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
@@ -447,6 +460,8 @@ def mulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
   default := mulEquivOfUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
+
+end unique
 
 end Mul
 

@@ -75,7 +75,7 @@ def fromKleisli : Kleisli T ⥤ C where
     -- Porting note: hack for missing unfold_projs tactic
     change T.map (f ≫ T.map g ≫ T.μ.app Z) ≫ T.μ.app Z = _
     simp only [Functor.map_comp, Category.assoc]
-    erw [← T.μ.naturality_assoc g, T.assoc]
+    rw [← T.μ.naturality_assoc g, T.assoc]
     rfl
 
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
@@ -159,7 +159,7 @@ def adj : fromCokleisli U ⊣ toCokleisli U :=
       homEquiv_naturality_right := fun {X} {Y} {_} f g => by
         -- Porting note: working around lack of unfold_projs
         change f ≫ g = U.δ.app X ≫ U.map f ≫ U.ε.app Y ≫ g
-        erw [← Category.assoc (U.map f), U.ε.naturality]; dsimp
+        rw [← Category.assoc (U.map f), U.ε.naturality]; dsimp
         simp only [← Category.assoc, Comonad.left_counit, Category.id_comp] }
 
 /-- The composition of the adjunction gives the original functor. -/
