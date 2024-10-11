@@ -74,8 +74,8 @@ jobs:
           lake exe lint-style
 
       - name: "check the formatting of the PR title and for missing or inconsistent labels"
-        # TODO: skip this check if the PR is in draft stage!
-        shell: bash # just in case
+        if: github.event.pull_request.draft == false && github.event.pull_request.base == 'master'
+        shell: bash
         env:
           TITLE: ${{ github.event.pull_request.title }}
         run: |
