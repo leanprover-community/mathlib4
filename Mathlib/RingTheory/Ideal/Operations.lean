@@ -1070,8 +1070,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
         rw [Finset.coe_insert] at h ⊢
         rw [Finset.coe_insert] at h
         simp only [Set.biUnion_insert] at h ⊢
-        rw [← Set.union_assoc (f i : Set R)] at h
-        rw [Set.union_eq_self_of_subset_right hfji] at h
+        rw [← Set.union_assoc (f i : Set R),
+            Set.union_eq_self_of_subset_right hfji] at h
         exact h
       specialize ih hp' hn' h'
       refine ih.imp id (Or.imp id (Exists.imp fun k => ?_))
@@ -1079,8 +1079,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     by_cases Ha : f a ≤ f i
     · have h' : (I : Set R) ⊆ f i ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j := by
         rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_assoc,
-          Set.union_right_comm (f a : Set R)] at h
-        rw [Set.union_eq_self_of_subset_left Ha] at h
+          Set.union_right_comm (f a : Set R),
+          Set.union_eq_self_of_subset_left Ha] at h
         exact h
       specialize ih hp.2 hn h'
       right
@@ -1091,8 +1091,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     by_cases Hb : f b ≤ f i
     · have h' : (I : Set R) ⊆ f a ∪ f i ∪ ⋃ j ∈ (↑t : Set ι), f j := by
         rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_assoc,
-          Set.union_assoc (f a : Set R)] at h
-        rw [Set.union_eq_self_of_subset_left Hb] at h
+          Set.union_assoc (f a : Set R),
+          Set.union_eq_self_of_subset_left Hb] at h
         exact h
       specialize ih hp.2 hn h'
       rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
