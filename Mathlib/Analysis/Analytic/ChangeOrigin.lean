@@ -60,7 +60,7 @@ p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
 def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
     E[×l]→L[𝕜] E[×k]→L[𝕜] F :=
   let a := ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
-    (by erw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
+    (by rw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
   a (p (k + l))
 
 theorem changeOriginSeriesTerm_apply (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l)

@@ -20,7 +20,7 @@ assert_not_exists Ring
 
 open Nat
 
-variable {α : Type*} {l : List α}
+variable {α : Type*}
 
 namespace List
 

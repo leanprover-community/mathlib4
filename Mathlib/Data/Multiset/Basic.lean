@@ -528,6 +528,11 @@ theorem le_cons_of_not_mem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
     perm_middle.subperm_left.2
       ((subperm_cons _).2 <| ((sublist_or_mem_of_sublist s).resolve_right m₁).subperm)
 
+theorem cons_le_of_not_mem (hs : a ∉ s) : a ::ₘ s ≤ t ↔ a ∈ t ∧ s ≤ t := by
+  apply Iff.intro (fun h ↦ ⟨subset_of_le h (mem_cons_self a s), le_trans (le_cons_self s a) h⟩)
+  rintro ⟨h₁, h₂⟩; rcases exists_cons_of_mem h₁ with ⟨_, rfl⟩
+  exact cons_le_cons _ ((le_cons_of_not_mem hs).mp h₂)
+
 @[simp]
 theorem singleton_ne_zero (a : α) : ({a} : Multiset α) ≠ 0 :=
   ne_of_gt (lt_cons_self _ _)
@@ -1827,25 +1832,17 @@ theorem filter_filter (q) [DecidablePred q] (s : Multiset α) :
     filter p (filter q s) = filter (fun a => p a ∧ q a) s :=
   Quot.inductionOn s fun l => by simp
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 lemma filter_comm (q) [DecidablePred q] (s : Multiset α) :
-    filter p (filter q s) = filter q (filter p s) := by simp [_root_.and_comm]
+    filter p (filter q s) = filter q (filter p s) := by simp [and_comm]
 
 theorem filter_add_filter (q) [DecidablePred q] (s : Multiset α) :
     filter p s + filter q s = filter (fun a => p a ∨ q a) s + filter (fun a => p a ∧ q a) s :=
   Multiset.induction_on s rfl fun a s IH => by by_cases p a <;> by_cases q a <;> simp [*]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) s = s := by
   rw [filter_add_filter, filter_eq_self.2, filter_eq_nil.2]
   · simp only [add_zero]
-  · simp [Decidable.em, -Bool.not_eq_true, -not_and, not_and_or, _root_.or_comm]
+  · simp [Decidable.em, -Bool.not_eq_true, -not_and, not_and_or, or_comm]
   · simp only [Bool.not_eq_true, decide_eq_true_eq, Bool.eq_false_or_eq_true,
       decide_True, implies_true, Decidable.em]
 
@@ -2685,13 +2682,9 @@ lemma add_eq_union_left_of_le [DecidableEq α] {s t u : Multiset α} (h : t ≤ 
   · rintro ⟨h0, rfl⟩
     exact h0
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 lemma add_eq_union_right_of_le [DecidableEq α] {x y z : Multiset α} (h : z ≤ y) :
     x + y = x ∪ z ↔ y = z ∧ x.Disjoint y := by
-  simpa only [_root_.and_comm] using add_eq_union_left_of_le h
+  simpa only [and_comm] using add_eq_union_left_of_le h
 
 theorem disjoint_map_map {f : α → γ} {g : β → γ} {s : Multiset α} {t : Multiset β} :
     Disjoint (s.map f) (t.map g) ↔ ∀ a ∈ s, ∀ b ∈ t, f a ≠ g b := by

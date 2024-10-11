@@ -83,10 +83,6 @@ lemma LocallyLinear.map (f : α ↪ β) (hG : G.LocallyLinear) : (G.map f).Local
   · rw [← Equiv.coe_toEmbedding, ← map_symm]
     exact LocallyLinear.map _
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
     G.EdgeDisjointTriangles ↔
       ∀ ⦃e : Sym2 α⦄, ¬ e.IsDiag → {s ∈ G.cliqueSet 3 | e ∈ (s : Finset α).sym2}.Subsingleton := by
@@ -96,7 +92,7 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
     ext s
     simp only [mem_sym2_iff, Sym2.mem_iff, forall_eq_or_imp, forall_eq, Set.sep_and,
       Set.mem_inter_iff, Set.mem_sep_iff, mem_cliqueSet_iff, Set.mem_setOf_eq,
-      and_and_and_comm (b := _ ∈ _), _root_.and_self, is3Clique_iff]
+      and_and_and_comm (b := _ ∈ _), and_self, is3Clique_iff]
     constructor
     · rintro ⟨⟨c, d, e, hcd, hce, hde, rfl⟩, hab⟩
       simp only [mem_insert, mem_singleton] at hab
@@ -260,7 +256,7 @@ lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ 
   by_contra! hε
   refine lt_irrefl (ε * card α ^ 2) ?_
   have hε₀ : 0 < ε := hε.trans_lt' (by norm_num)
-  rw [inv_pos_le_iff_one_le_mul (zero_lt_two' 𝕜)] at hε
+  rw [inv_le_iff_one_le_mul₀ (zero_lt_two' 𝕜)] at hε
   calc
     _ ≤ (G.edgeFinset.card : 𝕜) := by
       simpa using hG.le_card_sub_card bot_le (cliqueFree_bot (le_succ _))
@@ -280,7 +276,7 @@ lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ 
   apply tsub_lt_self <;> positivity
 
 lemma FarFromTriangleFree.lt_one (hG : G.FarFromTriangleFree ε) : ε < 1 :=
-  hG.lt_half.trans <| inv_lt_one one_lt_two
+  hG.lt_half.trans two_inv_lt_one
 
 theorem FarFromTriangleFree.nonpos (h₀ : G.FarFromTriangleFree ε) (h₁ : G.CliqueFree 3) :
     ε ≤ 0 := by

@@ -146,7 +146,7 @@ theorem Ideal.mul_homogeneous_element_mem_of_mem {I : Ideal A} (r x : A) (hx₁ 
   obtain ⟨i, hi⟩ := hx₁
   have mem₁ : (DirectSum.decompose 𝒜 r k : A) * x ∈ 𝒜 (k + i) :=
     GradedMul.mul_mem (SetLike.coe_mem _) hi
-  erw [GradedRing.proj_apply, DirectSum.decompose_of_mem 𝒜 mem₁, coe_of_apply]
+  rw [GradedRing.proj_apply, DirectSum.decompose_of_mem 𝒜 mem₁, coe_of_apply]
   split_ifs
   · exact I.mul_mem_left _ hx₂
   · exact I.zero_mem
