@@ -863,7 +863,7 @@ private lemma top_mul_le_of_forall_mul_le {a b : ℝ≥0∞} (h : ∀ c < ∞, �
     · simp only [coe_zero, mul_zero, zero_le]
     · rw [top_mul (coe_ne_zero.2 h'.ne.symm)]
       refine (top_mul (coe_ne_zero.2 h'.ne.symm)) ▸ WithTop.le_of_forall_lt_iff_le.1 fun c b_c ↦ ?_
-      have : (3 * (c / a) : ENNReal) < ⊤ := mul_lt_top (by decide)
+      have : (3 : ENNReal) * (c / a) < ∞ := mul_lt_top coe_lt_top
         (div_lt_top coe_ne_top (coe_ne_zero.2 h'.ne.symm))
       specialize h (3 * (c / a)) this (a / 2)
         (ENNReal.half_lt_self (coe_ne_zero.2 h'.ne.symm) coe_ne_top)
