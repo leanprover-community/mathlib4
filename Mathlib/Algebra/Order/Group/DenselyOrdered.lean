@@ -18,7 +18,7 @@ section DenselyOrdered
 
 variable [Group α] [LinearOrder α]
 variable [CovariantClass α α (· * ·) (· ≤ ·)]
-variable [DenselyOrdered α] {a b c : α}
+variable [DenselyOrdered α] {a b : α}
 
 @[to_additive]
 theorem le_of_forall_lt_one_mul_le (h : ∀ ε < 1, a * ε ≤ b) : a ≤ b :=

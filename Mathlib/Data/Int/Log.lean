@@ -94,7 +94,7 @@ theorem zpow_log_le_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) : (b : R) ^
     rw [zpow_natCast, ← Nat.cast_pow, ← Nat.le_floor_iff hr.le]
     exact Nat.pow_log_le_self b (Nat.floor_pos.mpr hr1).ne'
   · rw [log_of_right_le_one _ hr1, zpow_neg, zpow_natCast, ← Nat.cast_pow]
-    exact inv_le_of_inv_le hr (Nat.ceil_le.1 <| Nat.le_pow_clog hb _)
+    exact inv_le_of_inv_le₀ hr (Nat.ceil_le.1 <| Nat.le_pow_clog hb _)
 
 theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (log b r + 1) := by
   rcases le_or_lt r 0 with hr | hr
@@ -106,11 +106,11 @@ theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (lo
     apply Nat.lt_of_floor_lt
     exact Nat.lt_pow_succ_log_self hb _
   · rw [log_of_right_le_one _ hr1.le]
-    have hcri : 1 < r⁻¹ := one_lt_inv hr hr1
+    have hcri : 1 < r⁻¹ := (one_lt_inv₀ hr).2 hr1
     have : 1 ≤ Nat.clog b ⌈r⁻¹⌉₊ :=
       Nat.succ_le_of_lt (Nat.clog_pos hb <| Nat.one_lt_cast.1 <| hcri.trans_le (Nat.le_ceil _))
     rw [neg_add_eq_sub, ← neg_sub, ← Int.ofNat_one, ← Int.ofNat_sub this, zpow_neg, zpow_natCast,
-      lt_inv hr (pow_pos (Nat.cast_pos.mpr <| zero_lt_one.trans hb) _), ← Nat.cast_pow]
+      lt_inv_comm₀ hr (pow_pos (Nat.cast_pos.mpr <| zero_lt_one.trans hb) _), ← Nat.cast_pow]
     refine Nat.lt_ceil.1 ?_
     exact Nat.pow_pred_clog_lt_self hb <| Nat.one_lt_cast.1 <| hcri.trans_le <| Nat.le_ceil _
 
@@ -146,7 +146,7 @@ theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z 
 theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) : log b r₁ ≤ log b r₂ := by
   rcases le_total r₁ 1 with h₁ | h₁ <;> rcases le_total r₂ 1 with h₂ | h₂
   · rw [log_of_right_le_one _ h₁, log_of_right_le_one _ h₂, neg_le_neg_iff, Int.ofNat_le]
-    exact Nat.clog_mono_right _ (Nat.ceil_mono <| inv_le_inv_of_le h₀ h)
+    exact Nat.clog_mono_right _ (Nat.ceil_mono <| inv_anti₀ h₀ h)
   · rw [log_of_right_le_one _ h₁, log_of_one_le_right _ h₂]
     exact (neg_nonpos.mpr (Int.natCast_nonneg _)).trans (Int.natCast_nonneg _)
   · obtain rfl := le_antisymm h (h₂.trans h₁)
@@ -203,8 +203,8 @@ theorem clog_of_right_le_zero (b : ℕ) {r : R} (hr : r ≤ 0) : clog b r = 0 :=
 theorem clog_inv (b : ℕ) (r : R) : clog b r⁻¹ = -log b r := by
   cases' lt_or_le 0 r with hrp hrp
   · obtain hr | hr := le_total 1 r
-    · rw [clog_of_right_le_one _ (inv_le_one hr), log_of_one_le_right _ hr, inv_inv]
-    · rw [clog_of_one_le_right _ (one_le_inv hrp hr), log_of_right_le_one _ hr, neg_neg]
+    · rw [clog_of_right_le_one _ (inv_le_one_of_one_le₀ hr), log_of_one_le_right _ hr, inv_inv]
+    · rw [clog_of_one_le_right _ ((one_le_inv₀ hrp).2 hr), log_of_right_le_one _ hr, neg_neg]
   · rw [clog_of_right_le_zero _ (inv_nonpos.mpr hrp), log_of_right_le_zero _ hrp, neg_zero]
 
 @[simp]
@@ -235,13 +235,13 @@ theorem self_le_zpow_clog {b : ℕ} (hb : 1 < b) (r : R) : r ≤ (b : R) ^ clog 
   rcases le_or_lt r 0 with hr | hr
   · rw [clog_of_right_le_zero _ hr, zpow_zero]
     exact hr.trans zero_le_one
-  rw [← neg_log_inv_eq_clog, zpow_neg, le_inv hr (zpow_pos_of_pos _ _)]
+  rw [← neg_log_inv_eq_clog, zpow_neg, le_inv_comm₀ hr (zpow_pos_of_pos _ _)]
   · exact zpow_log_le_self hb (inv_pos.mpr hr)
   · exact Nat.cast_pos.mpr (zero_le_one.trans_lt hb)
 
 theorem zpow_pred_clog_lt_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) :
     (b : R) ^ (clog b r - 1) < r := by
-  rw [← neg_log_inv_eq_clog, ← neg_add', zpow_neg, inv_lt _ hr]
+  rw [← neg_log_inv_eq_clog, ← neg_add', zpow_neg, inv_lt_comm₀ _ hr]
   · exact lt_zpow_succ_log_self hb _
   · exact zpow_pos_of_pos (Nat.cast_pos.mpr <| zero_le_one.trans_lt hb) _
 
@@ -271,7 +271,7 @@ theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b ((b : R) ^ z : R) = 
 theorem clog_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) :
     clog b r₁ ≤ clog b r₂ := by
   rw [← neg_log_inv_eq_clog, ← neg_log_inv_eq_clog, neg_le_neg_iff]
-  exact log_mono_right (inv_pos.mpr <| h₀.trans_le h) (inv_le_inv_of_le h₀ h)
+  exact log_mono_right (inv_pos.mpr <| h₀.trans_le h) (inv_anti₀ h₀ h)
 
 variable (R)
 

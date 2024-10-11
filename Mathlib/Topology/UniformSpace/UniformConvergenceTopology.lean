@@ -88,7 +88,7 @@ connection API to do most of the work.
 
 * `UniformOnFun.postcomp_uniformContinuous`: if `f : γ → β` is uniformly
   continuous, then `(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is uniformly continuous.
-* `UniformOnFun.postcomp_uniformInducing`: if `f : γ → β` is a uniform
+* `UniformOnFun.postcomp_isUniformInducing`: if `f : γ → β` is a uniform
   inducing, then `(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is a uniform inducing.
 * `UniformOnFun.precomp_uniformContinuous`: let `f : γ → α`, `𝔖 : Set (Set α)`,
   `𝔗 : Set (Set γ)`, and assume that `∀ T ∈ 𝔗, f '' T ∈ 𝔖`. Then, the function
@@ -367,10 +367,13 @@ a uniform inducing function for the uniform structures of uniform convergence.
 
 More precisely, if `f : γ → β` is uniform inducing,
 then `(f ∘ ·) : (α →ᵤ γ) → (α →ᵤ β)` is uniform inducing. -/
-protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf : UniformInducing f) :
-    UniformInducing (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) :=
+lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
+    (hf : IsUniformInducing f) : IsUniformInducing (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) :=
   ⟨((UniformFun.hasBasis_uniformity _ _).comap _).eq_of_same_basis <|
     UniformFun.hasBasis_uniformity_of_basis _ _ (hf.basis_uniformity (𝓤 β).basis_sets)⟩
+
+@[deprecated (since := "2024-10-05")]
+alias postcomp_uniformInducing := postcomp_isUniformInducing
 
 /-- Post-composition by a uniform embedding is
 a uniform embedding for the uniform structures of uniform convergence.
@@ -380,7 +383,7 @@ then `(f ∘ ·) : (α →ᵤ γ) → (α →ᵤ β)` is a uniform embedding. -/
 protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) :
  IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
-  toUniformInducing := UniformFun.postcomp_uniformInducing hf.toUniformInducing
+  toIsUniformInducing := UniformFun.postcomp_isUniformInducing hf.isUniformInducing
   inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
 
 @[deprecated (since := "2024-10-01")]
@@ -392,7 +395,7 @@ alias postcomp_uniformEmbedding := UniformFun.postcomp_isUniformEmbedding
 protected theorem comap_eq {f : γ → β} :
     𝒰(α, γ, ‹UniformSpace β›.comap f) = 𝒰(α, β, _).comap (f ∘ ·) := by
   letI : UniformSpace γ := .comap f ‹_›
-  exact (UniformFun.postcomp_uniformInducing (f := f) ⟨rfl⟩).comap_uniformSpace.symm
+  exact (UniformFun.postcomp_isUniformInducing (f := f) ⟨rfl⟩).comap_uniformSpace.symm
 
 /-- Post-composition by a uniformly continuous function is uniformly continuous on `α →ᵤ β`.
 
@@ -465,7 +468,7 @@ protected def uniformEquivProdArrow [UniformSpace γ] : (α →ᵤ β × γ) ≃
   -- But `uβ × uγ` is defined as `comap fst uβ ⊓ comap snd uγ`, so we just have to apply
   -- `UniformFun.inf_eq` and `UniformFun.comap_eq`, which leaves us to check
   -- that some square commutes.
-  Equiv.toUniformEquivOfUniformInducing (Equiv.arrowProdEquivProdArrow _ _ _) <| by
+  Equiv.toUniformEquivOfIsUniformInducing (Equiv.arrowProdEquivProdArrow _ _ _) <| by
     constructor
     change
       comap (Prod.map (Equiv.arrowProdEquivProdArrow _ _ _) (Equiv.arrowProdEquivProdArrow _ _ _))
@@ -490,10 +493,10 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
     -- But `Π i, uδ i` is defined as `⨅ i, comap (eval i) (uδ i)`, so we just have to apply
     -- `UniformFun.iInf_eq` and `UniformFun.comap_eq`, which leaves us to check
     -- that some square commutes.
-    @Equiv.toUniformEquivOfUniformInducing
+    @Equiv.toUniformEquivOfIsUniformInducing
     _ _ 𝒰(α, ∀ i, δ i, Pi.uniformSpace δ)
     (@Pi.uniformSpace ι (fun i => α → δ i) fun i => 𝒰(α, δ i, _)) (Equiv.piComm _) <| by
-      refine @UniformInducing.mk ?_ ?_ ?_ ?_ ?_ ?_
+      refine @IsUniformInducing.mk ?_ ?_ ?_ ?_ ?_ ?_
       change comap (Prod.map Function.swap Function.swap) _ = _
       rw [← uniformity_comap]
       congr
@@ -865,8 +868,8 @@ uniform structures of `𝔖`-convergence.
 
 More precisely, if `f : γ → β` is a uniform inducing, then
 `(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is a uniform inducing. -/
-protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf : UniformInducing f) :
-    UniformInducing (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) := by
+lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
+    (hf : IsUniformInducing f) : IsUniformInducing (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) := by
   -- This is a direct consequence of `UniformOnFun.comap_eq`
   constructor
   replace hf : (𝓤 β).comap (Prod.map f f) = _ := hf.comap_uniformity
@@ -876,6 +879,9 @@ protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf
   rw [← UniformSpace.ext hf, UniformOnFun.comap_eq]
   rfl
 
+@[deprecated (since := "2024-10-05")]
+alias postcomp_uniformInducing := postcomp_isUniformInducing
+
 /-- Post-composition by a uniform embedding is a uniform embedding for the
 uniform structures of `𝔖`-convergence.
 
@@ -883,7 +889,7 @@ More precisely, if `f : γ → β` is a uniform embedding, then
 `(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is a uniform embedding. -/
 protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) : IsUniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
-  toUniformInducing := UniformOnFun.postcomp_uniformInducing hf.toUniformInducing
+  toIsUniformInducing := UniformOnFun.postcomp_isUniformInducing hf.isUniformInducing
   inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
 
 @[deprecated (since := "2024-10-01")]
@@ -1012,9 +1018,8 @@ protected def uniformEquivProdArrow [UniformSpace γ] :
   -- which leaves us to check that some square commutes.
   -- We could also deduce this from `UniformFun.uniformEquivProdArrow`,
   -- but it turns out to be more annoying.
-  ((UniformOnFun.ofFun 𝔖).symm.trans <|
-    (Equiv.arrowProdEquivProdArrow _ _ _).trans <|
-      (UniformOnFun.ofFun 𝔖).prodCongr (UniformOnFun.ofFun 𝔖)).toUniformEquivOfUniformInducing <| by
+  ((UniformOnFun.ofFun 𝔖).symm.trans <| (Equiv.arrowProdEquivProdArrow _ _ _).trans <|
+    (UniformOnFun.ofFun 𝔖).prodCongr (UniformOnFun.ofFun 𝔖)).toUniformEquivOfIsUniformInducing <| by
       constructor
       rw [uniformity_prod, comap_inf, comap_comap, comap_comap]
       have H := @UniformOnFun.inf_eq α (β × γ) 𝔖
@@ -1038,7 +1043,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i : ι) → δ i)) ≃ᵤ 
   -- which leaves us to check that some square commutes.
   -- We could also deduce this from `UniformFun.uniformEquivPiComm`, but it turns out
   -- to be more annoying.
-  @Equiv.toUniformEquivOfUniformInducing (α →ᵤ[𝔖] ((i : ι) → δ i)) ((i : ι) → α →ᵤ[𝔖] δ i)
+  @Equiv.toUniformEquivOfIsUniformInducing (α →ᵤ[𝔖] ((i : ι) → δ i)) ((i : ι) → α →ᵤ[𝔖] δ i)
       _ _ (Equiv.piComm _) <| by
     constructor
     change comap (Prod.map Function.swap Function.swap) _ = _

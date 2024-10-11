@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.CountablyGenerated
+import Mathlib.Order.Filter.Ker
 import Mathlib.Order.Filter.Pi
 
 /-!

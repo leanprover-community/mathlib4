@@ -58,6 +58,10 @@ theorem mem_prod_iff {s : Set (α × β)} {f : Filter α} {g : Filter β} :
     exact mem_inf_of_inter (preimage_mem_comap ht₁) (preimage_mem_comap ht₂) h
 
 @[simp]
+theorem compl_diagonal_mem_prod {l₁ l₂ : Filter α} : (diagonal α)ᶜ ∈ l₁ ×ˢ l₂ ↔ Disjoint l₁ l₂ := by
+  simp only [mem_prod_iff, Filter.disjoint_iff, prod_subset_compl_diagonal_iff_disjoint]
+
+@[simp]
 theorem prod_mem_prod_iff [f.NeBot] [g.NeBot] : s ×ˢ t ∈ f ×ˢ g ↔ s ∈ f ∧ t ∈ g :=
   ⟨fun h =>
     let ⟨_s', hs', _t', ht', H⟩ := mem_prod_iff.1 h
@@ -411,10 +415,6 @@ end Prod
 section Coprod
 
 variable {f : Filter α} {g : Filter β}
-
-/-- Coproduct of filters. -/
-protected def coprod (f : Filter α) (g : Filter β) : Filter (α × β) :=
-  f.comap Prod.fst ⊔ g.comap Prod.snd
 
 theorem coprod_eq_prod_top_sup_top_prod (f : Filter α) (g : Filter β) :
     Filter.coprod f g = f ×ˢ ⊤ ⊔ ⊤ ×ˢ g := by
