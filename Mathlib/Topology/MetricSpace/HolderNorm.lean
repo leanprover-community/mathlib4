@@ -26,7 +26,7 @@ for which `WithHolder C r f` is true.
 
 ## Tags
 
-Hölder norm, Holder norm, Holder norm
+Hölder norm, Hoelder norm, Holder norm
 
 -/
 
@@ -77,11 +77,13 @@ lemma coe_nnHolderNorm_le_eHolderNorm {r : ℝ≥0} {f : X → Y} :
   coe_toNNReal_le_self
 
 variable (X) in
+@[simp]
 lemma eHolderNorm_const (r : ℝ≥0) (c : Y) : eHolderNorm r (Function.const X c) = 0 := by
   rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot]
   exact fun C' hC' => ⟨0, .const, hC'⟩
 
 variable (X) in
+@[simp]
 lemma eHolderNorm_zero [Zero Y] (r : ℝ≥0) : eHolderNorm r (0 : X → Y) = 0 :=
   eHolderNorm_const X r 0
 
