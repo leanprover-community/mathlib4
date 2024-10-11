@@ -144,7 +144,7 @@ section Localization
 
 open IsLocalization Submonoid
 
-variable {R S : Type*} [CommRing R] [CommRing S] {I : Ideal R}
+variable {R S : Type*} [CommRing R] [CommRing S]
 variable (y : R) [Algebra R S] [IsLocalization.Away y S]
 
 variable (S)

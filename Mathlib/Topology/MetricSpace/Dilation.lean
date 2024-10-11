@@ -370,12 +370,15 @@ theorem cancel_left {g : β →ᵈ γ} {f₁ f₂ : α →ᵈ β} (hg : Injectiv
   ⟨fun h => Dilation.ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
 
 /-- A dilation from a metric space is a uniform inducing map -/
-protected theorem uniformInducing : UniformInducing (f : α → β) :=
-  (antilipschitz f).uniformInducing (lipschitz f).uniformContinuous
+theorem isUniformInducing : IsUniformInducing (f : α → β) :=
+  (antilipschitz f).isUniformInducing (lipschitz f).uniformContinuous
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing := isUniformInducing
 
 theorem tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α} :
     Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto ((f : α → β) ∘ g) a (𝓝 (f b)) :=
-  (Dilation.uniformInducing f).inducing.tendsto_nhds_iff
+  (Dilation.isUniformInducing f).inducing.tendsto_nhds_iff
 
 /-- A dilation is continuous. -/
 theorem toContinuous : Continuous (f : α → β) :=
@@ -406,11 +409,11 @@ theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
     ContinuousOn ((f : α → β) ∘ g) s ↔ ContinuousOn g s :=
-  (Dilation.uniformInducing f).inducing.continuousOn_iff.symm
+  (Dilation.isUniformInducing f).inducing.continuousOn_iff.symm
 
 theorem comp_continuous_iff {γ} [TopologicalSpace γ] {g : γ → α} :
     Continuous ((f : α → β) ∘ g) ↔ Continuous g :=
-  (Dilation.uniformInducing f).inducing.continuous_iff.symm
+  (Dilation.isUniformInducing f).inducing.continuous_iff.symm
 
 end PseudoEmetricDilation
 

@@ -176,7 +176,7 @@ variable (L : Type*) [Field L] [UniformSpace L] [CompletableTopField L]
 instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K where
   nice F F_cau inf_F := by
     let i : K →+* L := K.subtype
-    have hi : UniformInducing i := isUniformEmbedding_subtype_val.toUniformInducing
+    have hi : IsUniformInducing i := isUniformEmbedding_subtype_val.isUniformInducing
     rw [← hi.cauchy_map_iff] at F_cau ⊢
     rw [map_comm (show (i ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ i by ext; rfl)]
     apply CompletableTopField.nice _ F_cau
@@ -201,12 +201,12 @@ variable {α β : Type*} [Field β] [b : UniformSpace β] [CompletableTopField �
 
 /-- The pullback of a completable topological field along a uniform inducing
 ring homomorphism is a completable topological field. -/
-theorem UniformInducing.completableTopField
+theorem IsUniformInducing.completableTopField
     [UniformSpace α] [T0Space α]
-    {f : α →+* β} (hf : UniformInducing f) :
+    {f : α →+* β} (hf : IsUniformInducing f) :
     CompletableTopField α := by
   refine CompletableTopField.mk (fun F F_cau inf_F => ?_)
-  rw [← UniformInducing.cauchy_map_iff hf] at F_cau ⊢
+  rw [← IsUniformInducing.cauchy_map_iff hf] at F_cau ⊢
   have h_comm : (f ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ f := by
     ext; simp only [Function.comp_apply, map_inv₀, Subfield.coe_inv]
   rw [Filter.map_comm h_comm]

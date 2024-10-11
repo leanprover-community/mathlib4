@@ -770,6 +770,16 @@ theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 
+set_option linter.docPrime false in
+@[to_additive Inseparable.norm_eq_norm]
+theorem Inseparable.norm_eq_norm' {u v : E} (h : Inseparable u v) : ‖u‖ = ‖v‖ :=
+  h.map continuous_norm' |>.eq
+
+set_option linter.docPrime false in
+@[to_additive Inseparable.nnnorm_eq_nnnorm]
+theorem Inseparable.nnnorm_eq_nnnorm' {u v : E} (h : Inseparable u v) : ‖u‖₊ = ‖v‖₊ :=
+  h.map continuous_nnnorm' |>.eq
+
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
   rw [← closedBall_zero', mem_closedBall_one_iff, (norm_nonneg' x).le_iff_eq]
