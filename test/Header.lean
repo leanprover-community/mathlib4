@@ -263,3 +263,46 @@ Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y.
   Patrick Massot
 -/
 "
+
+-- However, in this case the wrapped lines must end with a comma.
+/--
+info: Text: `(c) 2024 Damiano Testa`
+Range: (13, 35)
+Message: 'Copyright line should end with '. All rights reserved.''
+---
+info: Text: `Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Name LastName
+  and others.`
+Range: (83, 187)
+Message: 'If an authors line spans multiple lines, each line but the last must end with a trailing comma'
+---
+info: Text: `Released `
+Range: (83, 92)
+Message: 'The authors line should begin with 'Authors: ''
+---
+info: Text: `  `
+Range: (174, 176)
+Message: 'Double spaces are not allowed.'
+---
+info: Text: ` and `
+Range: (175, 180)
+Message: 'Please, do not use 'and'; use ',' instead.'
+---
+info: Text: `.`
+Range: (106, 107)
+Message: 'Please, do not end the authors' line with a period.'
+---
+info: Text: `  and many other authors. All rights reserved.`
+Range: (36, 82)
+Message: 'Second copyright line should be "Released under Apache 2.0 license as described in the file LICENSE."'
+-/
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 Damiano Testa
+  and many other authors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Name LastName
+  and others.
+-/
+"
