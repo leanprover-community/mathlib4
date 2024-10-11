@@ -273,12 +273,12 @@ def isoSpec :
     (X.presheaf.mapIso (eqToIso U.openEmbedding_obj_top).op).op
 
 open LocalRing in
-lemma isoSpec_hom_apply (x : U) :
+lemma isoSpec_hom_val_base_apply (x : U) :
     hU.isoSpec.hom.1.base x = (Spec.map (X.presheaf.germ x)).val.base (closedPoint _) := by
-  dsimp [Scheme.isoSpec_hom, Scheme.toSpecΓ_base]
+  dsimp [Scheme.isoSpec_hom, Scheme.toSpecΓ_val_base]
   rw [← Scheme.comp_val_base_apply, ← Spec.map_comp,
     (Iso.eq_comp_inv _).mpr (Scheme.Opens.germ_stalkIso_hom _ (V := ⊤) ⟨x, trivial⟩),
-    reassoc_of% X.presheaf.germ_res, Spec.map_comp, Scheme.comp_val_base_apply]
+    X.presheaf.germ_res_assoc, Spec.map_comp, Scheme.comp_val_base_apply]
   congr 1
   exact LocalRing.comap_closedPoint _
 
@@ -308,6 +308,9 @@ instance isOpenImmersion_fromSpec :
   delta fromSpec
   infer_instance
 
+@[reassoc (attr := simp)]
+lemma isoSpec_inv_ι : hU.isoSpec.inv ≫ U.ι = hU.fromSpec := rfl
+
 @[simp]
 theorem range_fromSpec :
     Set.range hU.fromSpec.1.base = (U : Set X) := by
@@ -333,7 +336,7 @@ theorem map_fromSpec {V : X.Opens} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
   rfl
 
 @[reassoc]
-lemma map_appLE_fromSpec (f : X ⟶ Y) {V : X.Opens} {U : Y.Opens}
+lemma Spec_map_appLE_fromSpec (f : X ⟶ Y) {V : X.Opens} {U : Y.Opens}
     (hU : IsAffineOpen U) (hV : IsAffineOpen V) (i : V ≤ f ⁻¹ᵁ U) :
     Spec.map (f.appLE U V i) ≫ hU.fromSpec = hV.fromSpec ≫ f := by
   have : IsAffine U := hU
@@ -606,7 +609,7 @@ theorem fromSpec_primeIdealOf (x : U) :
 open LocalRing in
 theorem primeIdealOf_eq_map_closedPoint (x : U) :
     hU.primeIdealOf x = (Spec.map (X.presheaf.germ x)).val.base (closedPoint _) :=
-  hU.isoSpec_hom_apply _
+  hU.isoSpec_hom_val_base_apply _
 
 theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.1.base y ∈ U) :
     @IsLocalization.AtPrime
