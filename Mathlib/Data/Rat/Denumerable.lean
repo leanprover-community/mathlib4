@@ -6,6 +6,7 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Ring.Rat
 import Mathlib.SetTheory.Cardinal.Basic
 
+
 /-!
 # Denumerability of ℚ
 
