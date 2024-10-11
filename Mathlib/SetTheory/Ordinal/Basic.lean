@@ -660,7 +660,7 @@ theorem lift_card (a) : Cardinal.lift.{u,v} (card a)= card (lift.{u,v} a) :=
 
 theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
     (h : card.{max u v} b ≤ Cardinal.lift.{v,u} a) : ∃ a', lift.{v,u} a' = b :=
-  let ⟨c, e⟩ := Cardinal.lift_down h
+  let ⟨c, e⟩ := Cardinal.mem_range_of_le_lift h
   Cardinal.inductionOn c
     (fun α =>
       inductionOn b fun β s _ e' => by
