@@ -417,7 +417,28 @@ lemma range_map {X Y S X' Y' S' : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (f' : 
     (e₂ : g ≫ i₃ = i₂ ≫ g') [Mono i₃] :
     Set.range (pullback.map f g f' g' i₁ i₂ i₃ e₁ e₂).1.base =
       (pullback.fst f' g').val.base ⁻¹' Set.range i₁.val.base ∩
-        (pullback.snd f' g').val.base ⁻¹' Set.range i₂.val.base := sorry
+        (pullback.snd f' g').val.base ⁻¹' Set.range i₂.val.base := by
+  ext z
+  constructor
+  · rintro ⟨t, rfl⟩
+    constructor
+    · use (pullback.fst f g).val.base t
+      rw [← Scheme.comp_val_base_apply, ← Scheme.comp_val_base_apply]
+      simp
+    · use (pullback.snd f g).val.base t
+      rw [← Scheme.comp_val_base_apply, ← Scheme.comp_val_base_apply]
+      simp
+  · intro ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
+    let T₁ : Triplet (pullback.fst f' g') i₁ := Triplet.mk' z x hx.symm
+    obtain ⟨w₁, hw₁⟩ := T₁.exists_preimage
+    let T₂ : Triplet (pullback.snd f' g') i₂ := Triplet.mk' z y hy.symm
+    obtain ⟨w₂, hw₂⟩ := T₂.exists_preimage
+    let T : Triplet (pullback.fst (pullback.fst f' g') i₁) (pullback.fst (pullback.snd f' g') i₂) :=
+      Triplet.mk' w₁ w₂ <| by simp [hw₁.left, hw₂.left, T₁, T₂]
+    obtain ⟨t, _, ht₂⟩ := T.exists_preimage
+    use (pullbackFstFstIso f g f' g' i₁ i₂ i₃ e₁ e₂).hom.val.base t
+    rw [pullback_map_eq_pullbackFstFstIso_inv, ← Scheme.comp_val_base_apply, Iso.hom_inv_id_assoc]
+    simp [ht₂, T, hw₂.left, T₂]
 
 end Pullback
 
