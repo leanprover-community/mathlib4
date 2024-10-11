@@ -26,7 +26,7 @@ for which `WithHolder C r f` is true.
 
 ## Tags
 
-Hölder norm, Holder norm, Holder norm
+Hölder norm, Hoelder norm, Holder norm
 
 -/
 
@@ -73,15 +73,15 @@ protected alias ⟨_, MemHolder.eHolderNorm_lt_top⟩ := eHolderNorm_lt_top
 protected alias ⟨_, MemHolder.eHolderNorm_ne_top⟩ := eHolderNorm_ne_top
 
 variable (X) in
+@[simp]
 lemma eHolderNorm_const (r : ℝ≥0) (c : Y) : eHolderNorm r (Function.const X c) = 0 := by
   rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot]
   exact fun C' hC' => ⟨0, .const, hC'⟩
 
 variable (X) in
+@[simp]
 lemma eHolderNorm_zero [Zero Y] (r : ℝ≥0) : eHolderNorm r (0 : X → Y) = 0 :=
   eHolderNorm_const X r 0
-
-attribute [simp] eHolderNorm_const eHolderNorm_zero
 
 lemma eHolderNorm_of_isEmpty [hX : IsEmpty X] :
     eHolderNorm r f = 0 := by
