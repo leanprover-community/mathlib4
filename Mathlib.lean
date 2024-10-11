@@ -3761,7 +3761,6 @@ import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
 import Mathlib.Probability.BorelCantelli
 import Mathlib.Probability.CDF
-import Mathlib.Probability.CondCount
 import Mathlib.Probability.ConditionalExpectation
 import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.Density
@@ -3819,6 +3818,7 @@ import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Process.PartitionFiltration
 import Mathlib.Probability.Process.Stopping
 import Mathlib.Probability.StrongLaw
+import Mathlib.Probability.UniformOn
 import Mathlib.Probability.Variance
 import Mathlib.RepresentationTheory.Action.Basic
 import Mathlib.RepresentationTheory.Action.Concrete
