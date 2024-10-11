@@ -422,6 +422,16 @@ lemma smul_graphOn_univ (x : α × β) (f : F) :
 
 end Group
 
+section CommGroup
+variable [CommGroup α]
+
+@[to_additive] lemma smul_div_smul_comm (a : α) (s : Set α) (b : α) (t : Set α) :
+    a • s / b • t = (a / b) • (s / t) := by
+  simp_rw [← image_smul, smul_eq_mul, ← singleton_mul, mul_div_mul_comm _ s,
+    singleton_div_singleton]
+
+end CommGroup
+
 section GroupWithZero
 
 variable [GroupWithZero α] [MulAction α β] {s t : Set β} {a : α}
