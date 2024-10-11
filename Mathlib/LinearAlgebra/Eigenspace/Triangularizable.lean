@@ -45,16 +45,21 @@ variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 namespace Module.End
 
+theorem exists_hasEigenvalue_of_unifEigenspace_eq_top [Nontrivial M] {f : End R M} (k : ℕ∞)
+    (hf : ⨆ μ, f.unifEigenspace μ k = ⊤) :
+    ∃ μ, f.HasEigenvalue μ := by
+  by_contra! contra
+  suffices ∀ μ, f.unifEigenspace μ k = ⊥ by simp [this] at hf
+  contrapose! contra
+  peel contra with μ hμ
+  exact HasUnifEigenvalue.lt zero_lt_one hμ
+
+@[deprecated exists_hasEigenvalue_of_unifEigenspace_eq_top (since := "2024-10-11")]
 theorem exists_hasEigenvalue_of_iSup_genEigenspace_eq_top [Nontrivial M] {f : End R M}
     (hf : ⨆ μ, ⨆ k, f.genEigenspace μ k = ⊤) :
     ∃ μ, f.HasEigenvalue μ := by
-  by_contra! contra
-  suffices ∀ μ, ⨆ k, f.genEigenspace μ k = ⊥ by simp [this] at hf
-  intro μ
-  replace contra : ∀ k, f.genEigenspace μ k = ⊥ := fun k ↦ by
-    have hk : ¬ f.HasGenEigenvalue μ k := fun hk ↦ contra μ (f.hasEigenvalue_of_hasGenEigenvalue hk)
-    rwa [hasGenEigenvalue_iff, not_not] at hk
-  simp [contra]
+  simp_rw [← maxGenEigenspace_def] at hf
+  apply exists_hasEigenvalue_of_unifEigenspace_eq_top _ hf
 
 -- This is Lemma 5.21 of [axler2015], although we are no longer following that proof.
 /-- In finite dimensions, over an algebraically closed field, every linear endomorphism has an
@@ -71,8 +76,8 @@ noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f
 -- Lemma 8.21 of [axler2015]
 /-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
 linear endomorphism span the whole space. -/
-theorem iSup_genEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
-    ⨆ (μ : K) (k : ℕ), f.genEigenspace μ k = ⊤ := by
+theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+    ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ := by
   -- We prove the claim by strong induction on the dimension of the vector space.
   induction' h_dim : finrank K V using Nat.strong_induction_on with n ih generalizing V
   cases' n with n
@@ -105,34 +110,42 @@ theorem iSup_genEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : E
     -- Therefore the dimension `ER` mus be smaller than `finrank K V`.
     have h_dim_ER : finrank K ER < n.succ := by linarith
     -- This allows us to apply the induction hypothesis on `ER`:
-    have ih_ER : ⨆ (μ : K) (k : ℕ), f'.genEigenspace μ k = ⊤ :=
+    have ih_ER : ⨆ (μ : K), f'.maxGenEigenspace μ = ⊤ :=
       ih (finrank K ER) h_dim_ER f' rfl
     -- The induction hypothesis gives us a statement about subspaces of `ER`. We can transfer this
     -- to a statement about subspaces of `V` via `Submodule.subtype`:
-    have ih_ER' : ⨆ (μ : K) (k : ℕ), (f'.genEigenspace μ k).map ER.subtype = ER := by
+    have ih_ER' : ⨆ (μ : K), (f'.maxGenEigenspace μ).map ER.subtype = ER := by
       simp only [(Submodule.map_iSup _ _).symm, ih_ER, Submodule.map_subtype_top ER]
     -- Moreover, every generalized eigenspace of `f'` is contained in the corresponding generalized
     -- eigenspace of `f`.
     have hff' :
-      ∀ μ k, (f'.genEigenspace μ k).map ER.subtype ≤ f.genEigenspace μ k := by
+      ∀ μ, (f'.maxGenEigenspace μ).map ER.subtype ≤ f.maxGenEigenspace μ := by
       intros
-      rw [genEigenspace_restrict]
+      rw [maxGenEigenspace, unifEigenspace_restrict]
       apply Submodule.map_comap_le
     -- It follows that `ER` is contained in the span of all generalized eigenvectors.
-    have hER : ER ≤ ⨆ (μ : K) (k : ℕ), f.genEigenspace μ k := by
+    have hER : ER ≤ ⨆ (μ : K), f.maxGenEigenspace μ := by
       rw [← ih_ER']
-      exact iSup₂_mono hff'
+      exact iSup_mono hff'
     -- `ES` is contained in this span by definition.
-    have hES : ES ≤ ⨆ (μ : K) (k : ℕ), f.genEigenspace μ k :=
-      le_trans (le_iSup (fun k => f.genEigenspace μ₀ k) (finrank K V))
-        (le_iSup (fun μ : K => ⨆ k : ℕ, f.genEigenspace μ k) μ₀)
+    have hES : ES ≤ ⨆ (μ : K), f.maxGenEigenspace μ :=
+      ((f.unifEigenspace μ₀).mono le_top).trans (le_iSup f.maxGenEigenspace μ₀)
     -- Moreover, we know that `ER` and `ES` are disjoint.
     have h_disjoint : Disjoint ER ES := generalized_eigenvec_disjoint_range_ker f μ₀
     -- Since the dimensions of `ER` and `ES` add up to the dimension of `V`, it follows that the
     -- span of all generalized eigenvectors is all of `V`.
-    show ⨆ (μ : K) (k : ℕ), f.genEigenspace μ k = ⊤
+    show ⨆ (μ : K), f.maxGenEigenspace μ = ⊤
     rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add h_disjoint]
     apply sup_le hER hES
+
+-- Lemma 8.21 of [axler2015]
+/-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
+linear endomorphism span the whole space. -/
+@[deprecated iSup_maxGenEigenspace_eq_top (since := "2024-10-11")]
+theorem iSup_genEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+    ⨆ (μ : K) (k : ℕ), f.genEigenspace μ k = ⊤ := by
+  simp_rw [← maxGenEigenspace_def]
+  apply iSup_maxGenEigenspace_eq_top
 
 end Module.End
 
