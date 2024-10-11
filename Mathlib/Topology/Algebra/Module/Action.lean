@@ -109,7 +109,8 @@ abbrev actionTopology : TopologicalSpace A :=
 /-- A class asserting that the topology on a module over a topological ring `R` is
 the action topology. See `actionTopology` for more discussion of the action topology. -/
 class IsActionTopology [τA : TopologicalSpace A] : Prop where
-  /-- Note that this should not be used directly, and `eq_actionTopology`, which takes `R` and `A` explicitly, should be used instead. -/
+  /-- Note that this should not be used directly, and `eq_actionTopology`, which takes `R` and `A`
+  explicitly, should be used instead. -/
   eq_actionTopology' : τA = actionTopology R A
 
 theorem eq_actionTopology [τA : TopologicalSpace A] [IsActionTopology R A] :
@@ -134,11 +135,11 @@ theorem ActionTopology.continuousAdd : @ContinuousAdd A (actionTopology R A) _ :
   continuousAdd_sInf <| fun _ _ ↦ by simp_all only [Set.mem_setOf_eq]
 
 instance IsActionTopology.toContinuousSMul [TopologicalSpace A] [IsActionTopology R A] :
-    ContinuousSMul R A := eq_ActionTopology R A ▸ ActionTopology.continuousSMul R A
+    ContinuousSMul R A := eq_actionTopology R A ▸ ActionTopology.continuousSMul R A
 
 -- this can't be an instance because typclass inference can't be expected to find `R`.
 theorem IsActionTopology.toContinuousAdd [TopologicalSpace A] [IsActionTopology R A] :
-    ContinuousAdd A := eq_ActionTopology R A ▸ ActionTopology.continuousAdd R A
+    ContinuousAdd A := eq_actionTopology R A ▸ ActionTopology.continuousAdd R A
 
 /-- The action topology is `≤` any topology making `A` into a topological module. -/
 theorem actionTopology_le [τA : TopologicalSpace A] [ContinuousSMul R A] [ContinuousAdd A] :
@@ -234,7 +235,7 @@ theorem iso (e : A ≃L[R] B) : IsActionTopology R B where
     let g' : B →ₗ[R] A := e.symm
     let h : A →+ B := e
     let h' : B →+ A := e.symm
-    simp_rw [e.toHomeomorph.symm.inducing.1, eq_ActionTopology R A, actionTopology, induced_sInf]
+    simp_rw [e.toHomeomorph.symm.inducing.1, eq_actionTopology R A, actionTopology, induced_sInf]
     apply congr_arg
     ext τ
     rw [Set.mem_image]
