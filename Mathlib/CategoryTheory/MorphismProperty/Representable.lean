@@ -344,7 +344,7 @@ lemma relative.of_exists [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
   all_goals obtain ⟨c, g_fst, g_snd, BC, H⟩ := h₀ g
   · refine ⟨c, g_snd, g_fst, BC⟩
   · refine (P.arrow_mk_iso_iff ?_).2 H
-    exact Arrow.isoMk (F.preimageIso (h.isoIsPullback BC)) (Iso.refl _)
+    exact Arrow.isoMk (F.preimageIso (h.isoIsPullback X (F.obj a) BC)) (Iso.refl _)
       (F.map_injective (by simp))
 
 lemma relative_of_snd [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
