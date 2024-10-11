@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.NormedSpace.HomeomorphBall
+import Mathlib.Analysis.Calculus.ContDiff.WithLp
 
 /-!
 # Calculus in inner product spaces
@@ -261,71 +262,6 @@ theorem DifferentiableOn.dist (hf : DifferentiableOn ℝ f s) (hg : Differentiab
 end
 
 end DerivInner
-
-
-section PiLp
-
-/-! ### Results for `PiLp` -/
-
-open ContinuousLinearMap
-
-variable {𝕜 ι : Type*} {E : ι → Type*} {H : Type*}
-variable [RCLike 𝕜] [NormedAddCommGroup H] [∀ i, NormedAddCommGroup (E i)]
-  [∀ i, NormedSpace 𝕜 (E i)] [NormedSpace 𝕜 H] [Fintype ι] (p) [Fact (1 ≤ p)]
-  {f : H → PiLp p E} {f' : H →L[𝕜] PiLp p E} {t : Set H} {y : H}
-
-theorem differentiableWithinAt_piLp :
-    DifferentiableWithinAt 𝕜 f t y ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x => f x i) t y := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_differentiableWithinAt_iff,
-    differentiableWithinAt_pi]
-  rfl
-
-theorem differentiableAt_piLp :
-    DifferentiableAt 𝕜 f y ↔ ∀ i, DifferentiableAt 𝕜 (fun x => f x i) y := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_differentiableAt_iff, differentiableAt_pi]
-  rfl
-
-theorem differentiableOn_piLp :
-    DifferentiableOn 𝕜 f t ↔ ∀ i, DifferentiableOn 𝕜 (fun x => f x i) t := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_differentiableOn_iff, differentiableOn_pi]
-  rfl
-
-theorem differentiable_piLp : Differentiable 𝕜 f ↔ ∀ i, Differentiable 𝕜 fun x => f x i := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_differentiable_iff, differentiable_pi]
-  rfl
-
-theorem hasStrictFDerivAt_piLp :
-    HasStrictFDerivAt f f' y ↔
-      ∀ i, HasStrictFDerivAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') y := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_hasStrictFDerivAt_iff, hasStrictFDerivAt_pi']
-  rfl
-
-theorem hasFDerivWithinAt_piLp :
-    HasFDerivWithinAt f f' t y ↔
-      ∀ i, HasFDerivWithinAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') t y := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_hasFDerivWithinAt_iff, hasFDerivWithinAt_pi']
-  rfl
-
-theorem contDiffWithinAt_piLp {n : ℕ∞} :
-    ContDiffWithinAt 𝕜 n f t y ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => f x i) t y := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_contDiffWithinAt_iff, contDiffWithinAt_pi]
-  rfl
-
-theorem contDiffAt_piLp {n : ℕ∞} :
-    ContDiffAt 𝕜 n f y ↔ ∀ i, ContDiffAt 𝕜 n (fun x => f x i) y := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_contDiffAt_iff, contDiffAt_pi]
-  rfl
-
-theorem contDiffOn_piLp {n : ℕ∞} :
-    ContDiffOn 𝕜 n f t ↔ ∀ i, ContDiffOn 𝕜 n (fun x => f x i) t := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_contDiffOn_iff, contDiffOn_pi]
-  rfl
-
-theorem contDiff_piLp {n : ℕ∞} : ContDiff 𝕜 n f ↔ ∀ i, ContDiff 𝕜 n fun x => f x i := by
-  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_contDiff_iff, contDiff_pi]
-  rfl
-
-end PiLp
 
 section PiLike
 
