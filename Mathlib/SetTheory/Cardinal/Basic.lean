@@ -358,7 +358,7 @@ theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b 
   lift_injective.eq_iff
 
 @[simp]
-theorem lift_le {a b : Cardinal.{v}} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
+theorem lift_le {a b : Cardinal.{v}} : lift.{u} a ≤ lift.{u} b ↔ a ≤ b :=
   liftInitialSeg.le_iff_le
 
 @[simp]
