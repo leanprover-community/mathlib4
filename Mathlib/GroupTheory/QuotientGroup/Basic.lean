@@ -524,7 +524,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
         (@leftRel ↑(H ⊔ N) (H ⊔ N : Subgroup G).toGroup (N.subgroupOf (H ⊔ N)))
       -- Porting note: Lean couldn't find this automatically
       refine Quotient.eq.mpr ?_
-      change Setoid.r _ _
+      change leftRel _ _ _
       rw [leftRel_apply]
       change h⁻¹ * (h * n) ∈ N
       rwa [← mul_assoc, inv_mul_cancel, one_mul]

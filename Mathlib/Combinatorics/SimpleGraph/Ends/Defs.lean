@@ -179,12 +179,12 @@ theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.Co
 
 theorem hom_refl (C : G.ComponentCompl L) : C.hom (subset_refl L) = C := by
   change C.map _ = C
-  erw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
+  rw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
 
 theorem hom_trans (C : G.ComponentCompl L) (h : K ⊆ L) (h' : M ⊆ K) :
     C.hom (h'.trans h) = (C.hom h).hom h' := by
   change C.map _ = (C.map _).map _
-  erw [ConnectedComponent.map_comp, induceHom_comp]
+  rw [ConnectedComponent.map_comp, induceHom_comp]
   rfl
 
 theorem hom_mk {v : V} (vnL : v ∉ L) (h : K ⊆ L) :

@@ -5,8 +5,7 @@ Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Set.Countable
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.Ker
+import Mathlib.Order.Filter.Basic
 
 /-!
 # Filter bases
@@ -632,10 +631,6 @@ alias ⟨_, _root_.Disjoint.filter_principal⟩ := disjoint_principal_principal
 theorem disjoint_pure_pure {x y : α} : Disjoint (pure x : Filter α) (pure y) ↔ x ≠ y := by
   simp only [← principal_singleton, disjoint_principal_principal, disjoint_singleton]
 
-@[simp]
-theorem compl_diagonal_mem_prod {l₁ l₂ : Filter α} : (diagonal α)ᶜ ∈ l₁ ×ˢ l₂ ↔ Disjoint l₁ l₂ := by
-  simp only [mem_prod_iff, Filter.disjoint_iff, prod_subset_compl_diagonal_iff_disjoint]
-
 -- Porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
 theorem HasBasis.disjoint_iff_left (h : l.HasBasis p s) :
     Disjoint l l' ↔ ∃ i, p i ∧ (s i)ᶜ ∈ l' := by
@@ -722,7 +717,7 @@ protected theorem HasBasis.biInter_mem {f : Set α → Set β} (h : HasBasis l p
   h.biInf_mem hf
 
 protected theorem HasBasis.ker (h : HasBasis l p s) : l.ker = ⋂ (i) (_ : p i), s i :=
-  l.ker_def.trans <| h.biInter_mem monotone_id
+  sInter_eq_biInter.trans <| h.biInter_mem monotone_id
 
 variable {ι'' : Type*} [Preorder ι''] (l) (s'' : ι'' → Set α)
 
