@@ -273,10 +273,12 @@ structure SageError where
 def SageResult := Except SageError SageSuccess
 
 
-section ApiCall
+section SageMathApi
+
+/-! # Interaction with SageMath -/
 
 /--
-These functions are used to format the output of Sage for parsing in Lean.
+These Python functions are used to format the output of Sage for parsing in Lean.
 They are stored here as a string since they are passed to Sage via the web API.
 -/
 def sageFormattingFunctions : String :=
@@ -346,17 +348,19 @@ print(serialize_polynomials(1, coeffs))
 "
   return sageFormattingFunctions ++ command
 
-/-- Parse a `SageResult` from the raw SageMath API output -/
+/-- Parse a `SageResult` from the raw SageMath API output. -/
 instance : FromJson SageResult where fromJson? j := do
+  -- we expect the output has either "success": true and contains "stdout",
+  -- or has "success": false and error information under "execute_reply"
   if let .ok true := j.getObjValAs? Bool "success" then
-    -- parse SageSuccess from stdout, which is formatted as SageCoeffAndPower in JSON
+    -- parse SageSuccess from stdout, which is formatted as SageCoeffAndPower
     -- (see sageCreateQuery for the format of stdout)
     let stdout ← j.getObjValAs? String "stdout"
     let coeffAndPower ← Json.parse stdout >>= fromJson?
     let sageSuccess := { data := some coeffAndPower }
     return .ok sageSuccess
   else
-    -- parse SageError from execute_reply.ename, execute_reply.evalue
+    -- parse SageError from execute_reply
     let executeReply ← j.getObjVal? "execute_reply"
     let errorName ← executeReply.getObjValAs? String "ename"
     let errorValue ← executeReply.getObjValAs? String "evalue"
@@ -369,37 +373,42 @@ register_option polyrith.sageUserAgent : String :=
     descr := "The User-Agent header value for HTTP calls to SageMath API" }
 
 /--
-This tactic calls the Sage API using `curl`. The output is parsed as `SageResult`.
+This function calls the Sage API at <https://sagecell.sagemath.org/service>.
+The output is parsed as `SageResult`.
 -/
-def sageOutput (trace : Bool) (α : Expr) (atoms : Nat)
-    (hyps : Array (Source × Poly)) (tgt : Poly) : CoreM SageResult := do
-  let apiUrl := "https://sagecell.sagemath.org/service"
+def runSage (trace : Bool) (α : Expr) (atoms : Nat) (hyps : Array (Source × Poly)) (tgt : Poly) :
+    CoreM SageResult := do
   let query ← sageCreateQuery α atoms hyps tgt
   if trace then
     -- dry run enabled
     return .ok { trace := query }
 
   -- send query to SageMath API
+  let apiUrl := "https://sagecell.sagemath.org/service"
   let query' := System.Uri.escapeUri query
   let data := s!"code={query'}"
-  let out ← IO.Process.output { cmd := "curl", args := #[
+  let curlArgs := #[
     "-X", "POST",
     "--user-agent", polyrith.sageUserAgent.get (← getOptions),
     "--data-raw", data,
     apiUrl
-  ] }
+  ]
+  let out ← IO.Process.output { cmd := "curl", args := curlArgs }
   if out.exitCode != 0 then
     IO.throwServerError <|
       "Could not send API request to SageMath. " ++
       s!"curl exited with code {out.exitCode}:\n{out.stderr}"
 
+  -- parse results
   match Json.parse out.stdout >>= fromJson? with
   | .ok result => return result
   | .error e => IO.throwServerError <|
       s!"Could not parse SageMath output (error: {e})\nSageMath output:\n{out.stdout}"
 
-end ApiCall
+end SageMathApi
 
+
+/-! # Main function -/
 
 /--
 This is the main body of the `polyrith` tactic. It takes in the following inputs:
@@ -442,7 +451,7 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     if hyps'.isEmpty then
       return ← byRing "polyrith did not find any relevant hypotheses"
     let vars := (← get).atoms.size
-    match ← sageOutput traceOnly α vars hyps' tgt with
+    match ← runSage traceOnly α vars hyps' tgt with
     | .ok { trace, data } =>
       if let some trace := trace then logInfo trace
       if let some {coeffs := polys, power := pow} := data then
