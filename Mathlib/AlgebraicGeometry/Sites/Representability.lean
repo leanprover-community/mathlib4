@@ -48,27 +48,14 @@ Consider the following setup:
 Later, we will also assume:
 * The family f is locally surjective with respect to the Zariski topology
 -/
-variable (F : Sheaf (Scheme.zariskiTopology.{u}) (Type u)) {ι : Type u}
-  {X : ι → Scheme.{u}} (f : (i : ι) → yoneda.obj (X i) ⟶ F.1)
-  (hf : ∀ i, openImmersion.presheaf (f i))
+variable (F : Sheaf (Scheme.zariskiTopology.{u}) (Type u))
+  {ι : Type u} {X : ι → Scheme.{u}}
+  (f : (i : ι) → yoneda.obj (X i) ⟶ F.1) (hf : ∀ i, openImmersion.presheaf (f i))
 
 namespace Representability
 
 variable {F f}
 variable (i j k : ι)
-
-lemma isOpenImmersion_snd (i j : ι) : IsOpenImmersion ((hf i).rep.snd (f j)) :=
-  (hf i).property_snd (f j)
-
-/-- Temporary comment since this has a `'` in the name -/
-lemma isOpenImmersion_fst' (i j : ι) : IsOpenImmersion ((hf i).rep.fst' (f j)) :=
-  (hf j).property _ _ _ ((hf i).1.isPullback' (f j)).flip
-
-lemma fst'_self_eq_snd (i : ι) : (hf i).rep.fst' (f i) = (hf i).rep.snd (f i) :=
-  openImmersion.fst'_self_eq_snd openImmersion_le_monomorphisms (hf i)
-
-lemma isIso_fst'_self (i : ι) : IsIso ((hf i).rep.fst' (f i)) :=
-  openImmersion.isIso_fst'_self openImmersion_le_monomorphisms (hf i)
 
 open Functor.relativelyRepresentable in
 /-- We get a family of gluing data by taking `U i = X i` and `V i j = (hf i).rep.pullback (f j)`. -/
@@ -79,16 +66,17 @@ noncomputable def glueData : GlueData where
   V := fun (i, j) ↦ (hf i).rep.pullback (f j)
   f i j := (hf i).rep.fst' (f j)
   f_mono i j := by
-    have := isOpenImmersion_fst' hf i j
+    have := (hf j).property _ _ _ ((hf i).1.isPullback' (f j)).flip
     infer_instance
-  f_id := isIso_fst'_self hf
+  f_id i := openImmersion.isIso_fst'_self openImmersion_le_monomorphisms (hf i)
   t i j := (hf i).rep.symmetry (hf j).rep
-  t_id i := by apply (hf i).rep.hom_ext' <;> simp [fst'_self_eq_snd hf i]
+  t_id i := by apply (hf i).rep.hom_ext' <;>
+    simp [openImmersion.fst'_self_eq_snd openImmersion_le_monomorphisms (hf i)]
   t' i j k := lift₃ _ _ _ (pullback₃.p₂ _ _ _) (pullback₃.p₃ _ _ _) (pullback₃.p₁ _ _ _)
     (by simp) (by simp)
   t_fac i j k := by apply (hf j).rep.hom_ext' <;> simp
   cocycle i j k := by apply pullback₃.hom_ext <;> simp
-  f_open := isOpenImmersion_fst' hf
+  f_open i j := (hf j).property _ _ _ ((hf i).1.isPullback' (f j)).flip
 
 /-- The map from `X i` to the glued scheme `(glueData hf).glued` -/
 noncomputable def toGlued (i : ι) : X i ⟶ (glueData hf).glued :=
