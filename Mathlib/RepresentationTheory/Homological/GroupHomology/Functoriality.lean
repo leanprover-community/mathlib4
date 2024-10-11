@@ -301,6 +301,48 @@ noncomputable def mapShortComplexH1 :
     simp [ModuleCat.coe_of, ModuleCat.comp_def, ModuleCat.ofHom, shortComplexH1,
       ← compatible_apply (f := f)]
 
+@[simp]
+theorem mapShortComplexH1_zero :
+    mapShortComplexH1 A B f 0 = 0 := by
+  refine ShortComplex.hom_ext _ _ ?_ ?_ rfl
+  all_goals
+  { apply ModuleCat.finsupp_lhom_ext
+    intro g
+    ext x
+    simp only [shortComplexH1, moduleCatMk_X₁, moduleCatMk_X₂, ModuleCat.coe_of, Action.forget_obj,
+      coe_def, ModuleCat.hom_def, ModuleCat.ofHom, mapShortComplexH1_τ₁, fTwo,
+      mapShortComplexH1_τ₂, fOne, ModuleCat.comp_def, LinearMap.coe_comp, Function.comp_apply,
+      Finsupp.lsingle_apply, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single,
+      Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, LinearMap.zero_apply,
+      Finsupp.single_zero, zero_τ₁, zero_τ₂, Limits.comp_zero]
+    rfl }
+
+@[simp]
+theorem mapShortComplexH1_comp {k G H K : Type u} [CommRing k] [Group G] [Group H] [Group K]
+    [DecidableEq G] [DecidableEq H] [DecidableEq K]
+    (A : Rep k G) (B : Rep k H) (C : Rep k K) (f : G →* H) (g : H →* K) (φ : A →ₗ[k] B)
+    (ψ : B →ₗ[k] C) [IsPairMap A B f φ] [IsPairMap B C g ψ] :
+    mapShortComplexH1 A C (g.comp f) (ψ ∘ₗ φ)
+      = (mapShortComplexH1 A B f φ) ≫ (mapShortComplexH1 B C g ψ) := by
+  refine ShortComplex.hom_ext _ _ ?_ ?_ rfl
+  · apply ModuleCat.finsupp_lhom_ext
+    intro g
+    ext x
+    simp only [shortComplexH1, moduleCatMk_X₁, ModuleCat.coe_of, Action.forget_obj, coe_def,
+      ModuleCat.hom_def, ModuleCat.ofHom, mapShortComplexH1_τ₁, fTwo, MonoidHom.coe_comp,
+      ModuleCat.comp_def, LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply,
+      Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.mapRange.linearMap_apply,
+      Finsupp.mapRange_single, comp_τ₁]
+    rfl
+  · apply ModuleCat.finsupp_lhom_ext
+    intro g
+    ext x
+    simp only [shortComplexH1, moduleCatMk_X₂, ModuleCat.coe_of, Action.forget_obj, coe_def,
+      ModuleCat.hom_def, ModuleCat.ofHom, mapShortComplexH1_τ₂, fOne, MonoidHom.coe_comp,
+      ModuleCat.comp_def, LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply,
+      Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.mapRange.linearMap_apply,
+      Finsupp.mapRange_single, comp_τ₂]
+
 noncomputable abbrev mapOneCycles :
     ModuleCat.of k (oneCycles A) ⟶ ModuleCat.of k (oneCycles B) :=
   ShortComplex.cyclesMap' (mapShortComplexH1 A B f φ) (shortComplexH1 A).moduleCatLeftHomologyData
@@ -659,7 +701,12 @@ theorem H1ShortComplex₃_exact (H : ShortExact X) :
 /-- The short complex `H₁(G, X₁) ⟶ H₁(G, X₂) ⟶ H₁(G, X₃)`. -/
 noncomputable abbrev H1ShortComplex₂ (H : ShortExact X) :=
   ShortComplex.mk (mapH1 X.X₁ X.X₂ (MonoidHom.id G) X.f.hom)
-    (mapH1 X.X₂ X.X₃ (MonoidHom.id G) X.g.hom) <| by sorry
+    (mapH1 X.X₂ X.X₃ (MonoidHom.id G) X.g.hom) <| by
+      suffices mapH1 X.X₁ X.X₃ (MonoidHom.id G) ((X.f ≫ X.g).hom) = 0 by
+        simp_rw [← leftHomologyMap'_comp, ← mapShortComplexH1_comp, Rep.hom_def, ← Rep.comp_hom,
+          ← Rep.hom_def, X.zero]
+        simp
+      simp [mapH1]
 
 noncomputable def isoH1ShortComplex₂ (H : ShortExact X) :
     homologyShortComplex₂ H 1 ≅ H1ShortComplex₂ H :=
