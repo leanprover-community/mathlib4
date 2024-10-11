@@ -274,9 +274,7 @@ lemma Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo
         Submodule.range_subtype]
     simpa only [← ih, iSup_comm (ι := K), iSup_iSup_eq_right] using h' i
 
-/-- In finite dimensions, the indexed supremum of joint `maxGenEigenspaces` of a finite tuple of
-commuting operators equals `⊤` provided the indexed supremum of `maxGenEigenspaces` of each
-operator in the tuple equals `⊤`. -/
+/-- A commuting family of triangularizable endomorphisms is simultaneously triangularizable. -/
 theorem iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
     [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
     (f : ι → Module.End K V) (h : Pairwise fun i j ↦ Commute (f i) (f j))
