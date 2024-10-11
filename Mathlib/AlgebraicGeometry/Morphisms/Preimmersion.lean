@@ -68,7 +68,7 @@ instance : MorphismProperty.IsMultiplicative @IsPreimmersion where
   comp_mem {X Y Z} f g hf hg := by
     refine ⟨hg.base_embedding.comp hf.base_embedding, fun x ↦ ?_⟩
     rw [Scheme.stalkMap_comp]
-    exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.1.1 x))
+    exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.base x))
 
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion f]
     [IsPreimmersion g] : IsPreimmersion (f ≫ g) :=
