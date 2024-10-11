@@ -25,7 +25,7 @@ set_option linter.deprecated false
 
 universe u v
 
-variable {α : Sort u} {β : Sort v}
+variable {α : Sort u}
 
 @[deprecated (since := "2024-09-11")]
 class IsLeftCancel (α : Sort u) (op : α → α → α) : Prop where

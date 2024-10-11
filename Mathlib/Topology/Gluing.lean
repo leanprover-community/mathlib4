@@ -167,10 +167,8 @@ theorem eqvGen_of_π_eq
   let diagram := parallelPair 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap ⋙ forget _
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
     dsimp only [coequalizer.π, ContinuousMap.toFun_eq_coe] at h
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [← ι_preservesColimitsIso_hom, forget_map_eq_coe, types_comp_apply, h]
+    rw [← ι_preservesColimitsIso_hom, forget_map_eq_coe, types_comp_apply, h]
     simp
-    rfl
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
       (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ :=
@@ -216,8 +214,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     dsimp only at *
     -- Porting note: there were `subst e₁` and `subst e₂`, instead of the `rw`
     rw [← e₁, ← e₂] at *
-    erw [D.glue_condition_apply] -- now `erw` after #13170
-    rfl -- now `rfl` after #13170
+    rw [D.glue_condition_apply]
 
 theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
   intro x y h
@@ -266,8 +263,7 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
     generalize 𝖣.ι i '' U = U' -- next 4 lines were `simp` before #13170
     simp only [GlueData.diagram_l, GlueData.diagram_r, Set.mem_preimage, coe_comp,
       Function.comp_apply]
-    erw [D.glue_condition_apply]
-    rfl
+    rw [D.glue_condition_apply]
   rw [← this, Set.image_preimage_eq_inter_range]
   symm
   apply Set.inter_eq_self_of_subset_left
@@ -349,10 +345,7 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     refine ⟨⟨⟨(h.t i j x.1.1).1, ?_⟩, h.t i j x.1.1⟩, rfl⟩
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     exact h.t_inter _ ⟨x, hx⟩ hx'
-  -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
-  have : Continuous (h.t i j) := map_continuous (self := ContinuousMap.toContinuousMapClass) _
-  set_option tactic.skipAssignedInstances false in
-  exact ((Continuous.subtype_mk (by fun_prop) _).prod_mk (by fun_prop)).subtype_mk _
+  fun_prop
 
 /-- This is a constructor of `TopCat.GlueData` whose arguments are in terms of elements and
 intersections rather than subobjects and pullbacks. Please refer to `TopCat.GlueData.MkCore` for
@@ -393,7 +386,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     rw [ContinuousMap.coe_mk]
     erw [Subtype.mk_eq_mk]
     rw [Prod.mk.inj_iff]
-    erw [Subtype.mk_eq_mk]
+    rw [Subtype.mk_eq_mk]
     rw [Subtype.ext_iff]
     rw [and_self_iff]
     convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
@@ -460,7 +453,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion' (TopCat.of α) (U i))
   use Set.inter_subset_left
   constructor
-  · erw [← Set.image_preimage_eq_inter_range]
+  · rw [← Set.image_preimage_eq_inter_range]
     apply (Opens.openEmbedding (X := TopCat.of α) (U i)).isOpenMap
     convert hs i using 1
     erw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]

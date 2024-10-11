@@ -66,14 +66,10 @@ theorem filter_dvd_eq_properDivisors (h : n ≠ 0) :
 
 theorem properDivisors.not_self_mem : ¬n ∈ properDivisors n := by simp [properDivisors]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 @[simp]
 theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n < m := by
   rcases eq_or_ne m 0 with (rfl | hm); · simp [properDivisors]
-  simp only [_root_.and_comm, ← filter_dvd_eq_properDivisors hm, mem_filter, mem_range]
+  simp only [and_comm, ← filter_dvd_eq_properDivisors hm, mem_filter, mem_range]
 
 theorem insert_self_properDivisors (h : n ≠ 0) : insert n (properDivisors n) = divisors n := by
   rw [divisors, properDivisors, Ico_succ_right_eq_insert_Ico (one_le_iff_ne_zero.2 h),
@@ -100,15 +96,11 @@ theorem dvd_of_mem_divisors {m : ℕ} (h : n ∈ divisors m) : n ∣ m := by
   · apply dvd_zero
   · simp [mem_divisors.1 h]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 @[simp]
 theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x ∈ divisorsAntidiagonal n ↔ x.fst * x.snd = n ∧ n ≠ 0 := by
   simp only [divisorsAntidiagonal, Finset.mem_Ico, Ne, Finset.mem_filter, Finset.mem_product]
-  rw [_root_.and_comm]
+  rw [and_comm]
   apply and_congr_right
   rintro rfl
   constructor <;> intro h
@@ -429,14 +421,10 @@ theorem sum_properDivisors_eq_one_iff_prime : ∑ x ∈ n.properDivisors, x = 1 
             (one_mem_properDivisors_iff_one_lt.2 (succ_lt_succ (Nat.succ_pos _))))
           ((sum_singleton _ _).trans h.symm)
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ} :
     x ∈ properDivisors (p ^ k) ↔ ∃ (j : ℕ) (_ : j < k), x = p ^ j := by
   rw [mem_properDivisors, Nat.dvd_prime_pow pp, ← exists_and_right]
-  simp only [exists_prop, _root_.and_assoc]
+  simp only [exists_prop, and_assoc]
   apply exists_congr
   intro a
   constructor <;> intro h
@@ -481,17 +469,13 @@ theorem prod_divisorsAntidiagonal' {M : Type*} [CommMonoid M] (f : ℕ → ℕ �
   rw [← map_swap_divisorsAntidiagonal, Finset.prod_map]
   exact prod_divisorsAntidiagonal fun i j => f j i
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 /-- The factors of `n` are the prime divisors -/
 theorem primeFactors_eq_to_filter_divisors_prime (n : ℕ) :
     n.primeFactors = (divisors n).filter Prime := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
   · ext q
-    simpa [hn, hn.ne', mem_primeFactorsList] using _root_.and_comm
+    simpa [hn, hn.ne', mem_primeFactorsList] using and_comm
 
 @[deprecated (since := "2024-07-17")]
 alias prime_divisors_eq_to_filter_divisors_prime := primeFactors_eq_to_filter_divisors_prime

@@ -264,7 +264,7 @@ theorem opNorm_le_of_shell' {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 <
   · refine opNorm_le_of_ball ε_pos hC fun x hx => hf x ?_ ?_
     · simp [h0]
     · rwa [ball_zero_eq] at hx
-  · rw [← inv_inv c, norm_inv, inv_lt_one_iff_of_pos (norm_pos_iff.2 <| inv_ne_zero h0)] at hc
+  · rw [← inv_inv c, norm_inv, inv_lt_one₀ (norm_pos_iff.2 <| inv_ne_zero h0)] at hc
     refine opNorm_le_of_shell ε_pos hC hc ?_
     rwa [norm_inv, div_eq_mul_inv, inv_inv]
 
