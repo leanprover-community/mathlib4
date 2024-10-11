@@ -76,7 +76,7 @@ def getImportIds (s : Syntax) : Array Syntax :=
 /--
 `parseUpToHere pos post` takes as input `pos : String.Pos` and the optional `post : String`.
 It parses the current file from the beginning until `pos`, appending `post` at the end.
-
+It returns a syntax node of kind `Lean.Parser.Module.module`.
 The option of appending a final string to the text gives more control to avoid syntax errors,
 for instance in the presence of `#guard_msgs in` or `set_option ... in`.
 
