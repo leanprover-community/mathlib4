@@ -801,26 +801,13 @@ lemma inv_iSup (f : ι → ℝ≥0∞) : (⨆ i, f i)⁻¹ = ⨅ i, (f i)⁻¹ :
 lemma inv_sInf (s : Set ℝ≥0∞) : (sInf s)⁻¹ = ⨆ a ∈ s, a⁻¹ := by simp [sInf_eq_iInf, inv_iInf]
 lemma inv_sSup (s : Set ℝ≥0∞) : (sSup s)⁻¹ = ⨅ a ∈ s, a⁻¹ := by simp [sSup_eq_iSup, inv_iSup]
 
-lemma mul_iInf_le_iInf_mul {ι : Type*} (u v : ι → ℝ≥0∞) :
-    (⨅ x, u x) * (⨅ x, v x) ≤ ⨅ x, (u * v) x := by
-  refine mul_le_of_forall_mul_le fun a a_u b b_v ↦ ?_
-  rw [lt_iInf_iff] at a_u b_v
-  rcases a_u with ⟨c, a_c, c_u⟩
-  rcases b_v with ⟨d, b_d, d_v⟩
-  simp only [Pi.add_apply, le_iInf_iff]
-  exact fun x ↦ mul_le_mul (a_c.trans_le (c_u x)).le (b_d.trans_le (d_v x)).le (zero_le b)
-    (zero_le u x)
+lemma iInf_mul_le_mul_iInf {ι : Type*} (u v : ι → ℝ≥0∞) :
+    (⨅ i, u i) * ⨅ i, v i ≤ ⨅ i, u i * v i :=
+  le_iInf fun i ↦ mul_le_mul' (iInf_le u i) (iInf_le v i)
 
-lemma iSup_mul_le_mul_iSup {ι : Type*} {u v : ι → ℝ≥0∞} (h : ⨆ x, u x ≠ 0 ∨ ⨆ x, v x ≠ ∞)
-    (h' : ⨆ x, u x ≠ ∞ ∨ ⨆ x, v x ≠ 0) :
-    ⨆ x, (u * v) x ≤ (⨆ x, u x) * (⨆ x, v x) := by
-  refine le_mul_of_forall_le_mul h h' fun a a_u b b_v ↦ ?_
-  rw [gt_iff_lt, iSup_lt_iff] at a_u b_v
-  rcases a_u with ⟨c, a_c, c_u⟩
-  rcases b_v with ⟨d, b_d, d_v⟩
-  simp only [Pi.add_apply, iSup_le_iff]
-  exact fun x ↦ mul_le_mul ((c_u x).trans_lt a_c).le ((d_v x).trans_lt b_d).le (zero_le v x)
-    (zero_le a)
+lemma iSup_mul_le_mul_iSup {ι : Type*} {u v : ι → ℝ≥0∞} :
+    ⨆ i, u i * v i ≤ (⨆ i, u i) * ⨆ i, v i :=
+  iSup_le fun i ↦ mul_le_mul' (le_iSup u i) (le_iSup v i)
 
 lemma add_iSup [Nonempty ι] (f : ι → ℝ≥0∞) : a + ⨆ i, f i = ⨆ i, a + f i := by
   obtain rfl | ha := eq_or_ne a ∞
