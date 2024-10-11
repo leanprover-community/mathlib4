@@ -37,7 +37,7 @@ universe u
 namespace SetTheory
 
 open scoped PGame
-open Ordinal
+open Ordinal Nimber
 
 namespace PGame
 
@@ -272,7 +272,7 @@ theorem equiv_nim_grundyValue (G : PGame.{u}) [G.Impartial] : G ≈ nim (grundyV
 termination_by G
 
 theorem grundyValue_eq_iff_equiv_nim {G : PGame} [G.Impartial] {o : Nimber} :
-    grundyValue G = o ↔ G ≈ nim (Nimber.toOrdinal o) :=
+    grundyValue G = o ↔ G ≈ nim (toOrdinal o) :=
   ⟨by rintro rfl; exact equiv_nim_grundyValue G,
    by intro h; rw [← nim_equiv_iff_eq]; exact Equiv.trans (Equiv.symm (equiv_nim_grundyValue G)) h⟩
 
@@ -346,16 +346,16 @@ theorem grundyValue_nim_add_nim (x y : Ordinal) :
     · simpa [grundyValue_nim_add_nim x (toLeftMovesNim.symm j)]
   · intro k hk
     obtain h | h := Nimber.lt_add_cases hk
-    · let a := Nimber.toOrdinal (k + toNimber y)
+    · let a := toOrdinal (k + toNimber y)
       use toLeftMovesAdd (Sum.inl (toLeftMovesNim ⟨a, h⟩))
       simp [a, grundyValue_nim_add_nim a y]
-    · let a := Nimber.toOrdinal (k + toNimber x)
+    · let a := toOrdinal (k + toNimber x)
       use toLeftMovesAdd (Sum.inr (toLeftMovesNim ⟨a, h⟩))
       simp [a, grundyValue_nim_add_nim x a, add_comm (toNimber x)]
 termination_by (x, y)
 
 theorem nim_add_nim_equiv (x y : Ordinal) :
-    nim x + nim y ≈ nim (Nimber.toOrdinal (toNimber x + toNimber y)) := by
+    nim x + nim y ≈ nim (toOrdinal (toNimber x + toNimber y)) := by
   rw [← grundyValue_eq_iff_equiv_nim, grundyValue_nim_add_nim]
 
 @[simp]
@@ -364,6 +364,10 @@ theorem grundyValue_add (G H : PGame) [G.Impartial] [H.Impartial] :
   rw [← (grundyValue G).toOrdinal_toNimber, ← (grundyValue H).toOrdinal_toNimber,
     ← grundyValue_nim_add_nim, grundyValue_eq_iff_equiv]
   exact add_congr (equiv_nim_grundyValue G) (equiv_nim_grundyValue H)
+
+theorem grundyValue_add_nat (G H : PGame) [G.Impartial] [H.Impartial] {n m : ℕ}
+    (hG : grundyValue G = ∗n) (hH : grundyValue H = ∗m) : grundyValue (G + H) = ∗(n ^^^ m) := by
+  rw [grundyValue_add, hG, hH, add_nat]
 
 end PGame
 
