@@ -33,9 +33,44 @@ open Function Set Cardinal Equiv Order Ordinal
 
 universe u v w
 
-namespace Cardinal
+/-! ### Omega ordinals -/
+
+namespace Ordinal
+
+/-- An ordinal is initial when it is the first ordinal with a given cardinality. -/
+def IsInitial (o : Ordinal) : Prop :=
+  o.card.ord = o
+
+theorem IsInitial.ord_card {o : Ordinal} (h : IsInitial o) : o.card.ord = o := h
+
+theorem IsInitial.le_of_card_le {a b : Ordinal} (ha : IsInitial a)
+    (hb : a.card ≤ b.card) : a ≤ b := by
+  rw [← ha.ord_card]
+  exact (ord_mono hb).trans (ord_card_le b)
+
+theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
+  rw [IsInitial, card_ord]
+
+theorem isInitial_natCast (n : ℕ) : IsInitial n := by
+  rw [IsInitial, card_nat, ord_nat]
+
+theorem isInitial_zero : IsInitial 0 := by
+  exact_mod_cast isInitial_natCast 0
+
+theorem isInitial_one : IsInitial 1 := by
+  exact_mod_cast isInitial_natCast 1
+
+theorem isInitial_omega0 : IsInitial ω := by
+  rw [IsInitial, card_omega0, ord_aleph0]
+
+-- TODO: define `omega` as the enumerator function of `IsInitial`, and redefine
+-- `aleph x = (omega x).card`.
+
+end Ordinal
 
 /-! ### Aleph cardinals -/
+
+namespace Cardinal
 
 /-- The `aleph'` function gives the cardinals listed by their ordinal index. `aleph' n = n`,
 `aleph' ω = ℵ₀`, `aleph' (ω + 1) = succ ℵ₀`, etc.
