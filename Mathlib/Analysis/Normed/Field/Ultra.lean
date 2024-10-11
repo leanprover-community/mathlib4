@@ -59,46 +59,53 @@ lemma isUltrametricDist_of_forall_norm_sub_one_of_norm_le_one
     simpa only [← neg_add', norm_neg] using h (-x) (norm_neg x ▸ hx)
   exact isUltrametricDist_of_forall_norm_add_one_of_norm_le_one this
 
+/-- This technical lemma is used in the proof of
+`isUltrametricDist_of_forall_norm_natCast_le_one`. -/
+lemma isUltrametricDist_of_forall_pow_norm_le_nsmul_pow_max_one_norm
+    (h : ∀ (x : R) (m : ℕ), ‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m) :
+    IsUltrametricDist R := by
+  -- it will suffice to prove that `‖x + 1‖ ≤ max 1 ‖x‖`
+  refine isUltrametricDist_of_forall_norm_add_one_le_max_norm_one fun x => ?_
+  -- using this more powerful statement in the hypothesis by morally taking the `m`-th root
+  -- to get an inequality of the form `‖x + 1‖ ≤ C • max 1 ‖x‖` where the `C : ℝ` is arbitrary.
+  -- specifically, we will use `C = m + 1` and approach `m = 0` from above.
+  -- we rely on the denseness of the reals to approach `max 1 ‖x‖` from above by values `a : ℝ`
+  -- and show that any such value must be greater than or equal to our LHS: `‖x + 1‖ ≤ a`.
+  rw [max_comm]
+  refine le_of_forall_le_of_dense ?_
+  intro a ha
+  have ha' : 1 < a := (max_lt_iff.mp ha).left
+  -- `max 1 ‖x‖ < a`, so there must be some `m : ℕ` such that `m + 1 < (a / max 1 ‖x‖) ^ m`
+  -- by the virtue of exponential growth being faster than linear growth
+  obtain ⟨m, hm⟩ : ∃ m : ℕ, (a / (max 1 ‖x‖)) ^ m > ((m + 1) : ℕ) := by
+    apply_mod_cast Real.exists_natCast_add_one_lt_pow_of_one_lt
+    rwa [one_lt_div (by positivity)]
+  -- and we rearrange again to get `(m + 1) • max 1 ‖x‖ ^ m < a ^ m`
+  rw [div_pow, gt_iff_lt, lt_div_iff₀ (by positivity), ← nsmul_eq_mul] at hm
+  -- which squeezes down to get our `‖x + 1‖ ≤ a` using our to-be-proven hypothesis of
+  -- `‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m`, so we're done
+  refine le_of_pow_le_pow_left ?_ (zero_lt_one.trans ha').le ((h _ _).trans hm.le)
+  rintro rfl
+  simp at hm
+
 /-- To prove that a normed field is nonarchimedean, it suffices to prove that the norm
 of the image of any natural is less than or equal to one. -/
 lemma isUltrametricDist_of_forall_norm_natCast_le_one
     (h : ∀ n : ℕ, ‖(n : F)‖ ≤ 1) : IsUltrametricDist F := by
   -- we first use our hypothesis about the norm of naturals to have that multiplication by
   -- naturals keeps the norm small
-  replace h : ∀ (x : F) (n : ℕ), ‖n • x‖ ≤ ‖x‖ := by
-    intros x n
+  replace h (x : F) (n : ℕ) : ‖n • x‖ ≤ ‖x‖ := by
     rw [nsmul_eq_mul, norm_mul]
     rcases (norm_nonneg x).eq_or_lt with hx|hx
     · simp [← hx]
     · rw [mul_le_iff_le_one_left hx]
       exact h _
   -- it will suffice to prove that `‖x + 1‖ ≤ max 1 ‖x‖`
-  refine isUltrametricDist_of_forall_norm_add_one_le_max_norm_one fun x => ?_
-  rw [max_comm]
   -- which we will do by "complicating" the goal:
   -- proving it for all powers `m`, `‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m`,
-  suffices ∀ (m : ℕ), ‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m by
-    -- and using this more powerful statement by morally taking the `m`-th root
-    -- to get an inequality of the form `‖x + 1‖ ≤ C • max 1 ‖x‖` where the `C : ℝ` is arbitrary.
-    -- specifically, we will use `C = m + 1` and approach `m = 0` from above.
-    -- we rely on the denseness of the reals to approach `max 1 ‖x‖` from above by values `a : ℝ`
-    -- and show that any such value must be greater than or equal to our LHS: `‖x + 1‖ ≤ a`.
-    refine le_of_forall_le_of_dense ?_
-    intro a ha
-    have ha' : 1 < a := (max_lt_iff.mp ha).left
-    -- `max 1 ‖x‖ < a`, so there must be some `m : ℕ` such that `m + 1 < (a / max 1 ‖x‖) ^ m`
-    -- by the virtue of exponential growth being faster than linear growth
-    obtain ⟨m, hm⟩ : ∃ m : ℕ, (a / (max 1 ‖x‖)) ^ m > ((m + 1) : ℕ) := by
-      apply_mod_cast Real.exists_natCast_add_one_lt_pow_of_one_lt
-      rwa [one_lt_div (by positivity)]
-    -- and we rearrange again to get `(m + 1) • max 1 ‖x‖ ^ m < a ^ m`
-    rw [div_pow, gt_iff_lt, lt_div_iff₀ (by positivity), ← nsmul_eq_mul] at hm
-    -- which squeezes down to get our `‖x + 1‖ ≤ a` using our to-be-proven hypothesis of
-    -- `‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m`, so we're done
-    refine le_of_pow_le_pow_left ?_ (zero_lt_one.trans ha').le ((this _).trans hm.le)
-    rintro rfl
-    simp at hm
-  intro m
+  suffices ∀ (x : F) (m : ℕ), ‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m from
+    isUltrametricDist_of_forall_pow_norm_le_nsmul_pow_max_one_norm this
+  intro x m
   -- we can distribute powers into the right term of `max` here
   have hp : max 1 ‖x‖ ^ m = max 1 (‖x‖ ^ m) := by
     rcases max_cases 1 ‖x‖ with (⟨hm, hx⟩|⟨hm, hx⟩)
