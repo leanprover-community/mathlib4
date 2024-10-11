@@ -8,6 +8,7 @@ import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.AlgebraicGeometry.Cover.Open
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.RingTheory.Localization.InvSubmonoid
+import Mathlib.RingTheory.RingHom.Surjective
 
 /-!
 # Affine schemes
@@ -112,6 +113,13 @@ noncomputable
 def arrowIsoSpecΓOfIsAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     Arrow.mk f ≅ Arrow.mk (Spec.map (Scheme.Γ.map f.op)) :=
   Arrow.isoMk X.isoSpec Y.isoSpec (ΓSpec.adjunction.unit_naturality _)
+
+/-- If `f : A ⟶ B` is a ring homomorphism, the corresponding arrow is isomorphic
+to the arrow of the morphism induced on global sections by the map on prime spectra. -/
+def arrowIsoΓSpecOfIsAffine {A B : CommRingCat} (f : A ⟶ B) :
+    Arrow.mk f ≅ Arrow.mk ((Spec.map f).app ⊤) :=
+  Arrow.isoMk (Scheme.ΓSpecIso _).symm (Scheme.ΓSpecIso _).symm
+    (Scheme.ΓSpecIso_inv_naturality f).symm
 
 namespace AffineScheme
 
@@ -712,6 +720,109 @@ lemma Scheme.eq_zeroLocus_of_isClosed_of_isAffine (X : Scheme.{u}) [IsAffine X] 
     exact zeroLocus_isClosed X I.carrier
 
 end ZeroLocus
+
+section Factorization
+
+variable {X : Scheme.{u}} {A : CommRingCat}
+
+/-- If `X ⟶ Spec A` is a morphism of schemes, then `Spec` of `A ⧸ specTargetImage f`
+is the scheme-theoretic image of `f`. For this quotient as an object of `CommRingCat` see
+`specTargetImage` below. -/
+def specTargetImageIdeal (f : X ⟶ Spec A) : Ideal A :=
+  (RingHom.ker <| (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop)
+
+/-- If `X ⟶ Spec A` is a morphism of schemes, then `Spec` of `specTargetImage f` is the
+scheme-theoretic image of `f` and `f` factors as
+`specTargetImageFactorization f ≫ Spec.map (specTargetImageRingHom f)`
+(see `specTargetImageFactorization_comp`). -/
+def specTargetImage (f : X ⟶ Spec A) : CommRingCat :=
+  CommRingCat.of (A ⧸ specTargetImageIdeal f)
+
+/-- If `f : X ⟶ Spec A` is a morphism of schemes, then `f` factors via
+the inclusion of `Spec (specTargetImage f)` into `X`. -/
+def specTargetImageFactorization (f : X ⟶ Spec A) : X ⟶ Spec (specTargetImage f) :=
+  (ΓSpec.adjunction).homEquiv X (op <| specTargetImage f) (Opposite.op (RingHom.kerLift _))
+
+/-- If `f : X ⟶ Spec A` is a morphism of schemes, the induced morphism on spectra of
+`specTargetImageRingHom f` is the inclusion of the scheme-theoretic image of `f` into `Spec A`. -/
+def specTargetImageRingHom (f : X ⟶ Spec A) : A ⟶ specTargetImage f :=
+  Ideal.Quotient.mk (specTargetImageIdeal f)
+
+variable (f : X ⟶ Spec A)
+
+lemma specTargetImageRingHom_surjective : Function.Surjective (specTargetImageRingHom f) :=
+  Ideal.Quotient.mk_surjective
+
+lemma specTargetImageFactorization_app_injective :
+    Function.Injective <| (specTargetImageFactorization f).app ⊤ := by
+  let φ : A ⟶ Γ(X, ⊤) := (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop
+  let φ' : specTargetImage f ⟶ Scheme.Γ.obj (op X) := RingHom.kerLift φ
+  show Function.Injective <| ((ΓSpec.adjunction.homEquiv X _) φ'.op).app ⊤
+  rw [ΓSpec_adjunction_homEquiv_eq]
+  apply (RingHom.kerLift_injective φ).comp
+  exact ((ConcreteCategory.isIso_iff_bijective (Scheme.ΓSpecIso _).hom).mp inferInstance).injective
+
+@[reassoc (attr := simp)]
+lemma specTargetImageFactorization_comp :
+    specTargetImageFactorization f ≫ Spec.map (specTargetImageRingHom f) = f := by
+  let φ : A ⟶ Γ(X, ⊤) := (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop
+  let φ' : specTargetImage f ⟶ Scheme.Γ.obj (op X) := RingHom.kerLift φ
+  apply ((ΓSpec.adjunction).homEquiv X (op A)).symm.injective
+  apply Opposite.unop_injective
+  rw [Adjunction.homEquiv_naturality_left_symm, Adjunction.homEquiv_counit]
+  change (_ ≫ _) ≫ _ = φ
+  erw [← Spec_Γ_naturality]
+  rw [Category.assoc]
+  erw [ΓSpecIso_inv_ΓSpec_adjunction_homEquiv φ']
+  ext a
+  apply RingHom.kerLift_mk
+
+open RingHom
+
+variable {Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y)
+
+/-- The scheme-theoretic image of a morphism `f : X ⟶ Y` with affine target.
+`f` factors as `affineTargetImageFactorization f ≫ affineTargetImageInclusion f`
+(see `affineTargetImageFactorization_comp`). -/
+def affineTargetImage (f : X ⟶ Y) : Scheme.{u} :=
+  Spec <| specTargetImage (f ≫ Y.isoSpec.hom)
+
+instance : IsAffine (affineTargetImage f) := inferInstanceAs <| IsAffine <| Spec _
+
+/-- The inclusion of the scheme-theoretic image of a morphism with affine target. -/
+def affineTargetImageInclusion (f : X ⟶ Y) : affineTargetImage f ⟶ Y :=
+  Spec.map (specTargetImageRingHom (f ≫ Y.isoSpec.hom)) ≫ Y.isoSpec.inv
+
+lemma affineTargetImageInclusion_app_surjective :
+    Function.Surjective <| (affineTargetImageInclusion f).app ⊤ := by
+  simp only [Scheme.comp_coeBase, Opens.map_comp_obj, Opens.map_top, Scheme.comp_app,
+    CommRingCat.coe_comp, affineTargetImageInclusion]
+  apply Function.Surjective.comp
+  · haveI : (toMorphismProperty (fun f ↦ Function.Surjective f)).RespectsIso := by
+      rw [← toMorphismProperty_respectsIso_iff]
+      exact surjective_respectsIso
+    exact (MorphismProperty.arrow_mk_iso_iff
+      (toMorphismProperty (fun f ↦ Function.Surjective f))
+      (arrowIsoΓSpecOfIsAffine (specTargetImageRingHom (f ≫ Y.isoSpec.hom))).symm).mpr <|
+        specTargetImageRingHom_surjective (f ≫ Y.isoSpec.hom)
+  · apply Function.Bijective.surjective
+    apply ConcreteCategory.bijective_of_isIso
+
+/-- The induced morphism from `X` to the scheme-theoretic image
+of a morphism `f : X ⟶ Y` with affine target. -/
+def affineTargetImageFactorization (f : X ⟶ Y) : X ⟶ affineTargetImage f :=
+  specTargetImageFactorization (f ≫ Y.isoSpec.hom)
+
+lemma affineTargetImageFactorization_app_injective :
+    Function.Injective <| (affineTargetImageFactorization f).app ⊤ :=
+  specTargetImageFactorization_app_injective (f ≫ Y.isoSpec.hom)
+
+@[reassoc (attr := simp)]
+lemma affineTargetImageFactorization_comp :
+    affineTargetImageFactorization f ≫ affineTargetImageInclusion f = f := by
+  simp [affineTargetImageFactorization, affineTargetImageInclusion]
+
+end Factorization
 
 section Stalks
 
