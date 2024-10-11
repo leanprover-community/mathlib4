@@ -23,7 +23,7 @@ universe u v
 
 namespace Algebra.IsCentral
 
-variable (K : Type u) [Field K] (D : Type v) [Ring D] [Algebra K D] [IsCentral K D]
+variable (K : Type u) [CommSemiring K] (D : Type v) [Semiring D] [Algebra K D] [IsCentral K D]
 
 @[simp]
 lemma center_eq_bot : Subalgebra.center K D = ⊥ := eq_bot_iff.2 IsCentral.out
