@@ -74,7 +74,7 @@ theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
 
 For the more common omega function skipping over finite ordinals, see `Ordinal.omega`. -/
 def omega' : Ordinal.{u} ↪o Ordinal.{u} where
-  toFun := enumOrd IsInitial
+  toFun := enumOrd {x | IsInitial x}
   inj' _ _ h := enumOrd_injective not_bddAbove_isInitial h
   map_rel_iff' := enumOrd_le_iff not_bddAbove_isInitial
 
@@ -154,9 +154,12 @@ theorem omega_max (o₁ o₂ : Ordinal) : ω_ (max o₁ o₂) = max (ω_ o₁) (
 theorem omega_zero : ω_ 0 = ω := by
   rw [omega_eq_omega', add_zero, omega'_omega0]
 
-theorem omega_lt_omega1 : ω < ω₁ := by
+theorem omega0_lt_omega1 : ω < ω₁ := by
   rw [← omega_zero, omega_lt]
   exact zero_lt_one
+
+@[deprecated omega0_lt_omega1 (since := "2024-10-11")]
+alias omega_lt_omega1 := omega0_lt_omega1
 
 end Ordinal
 
