@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Order.Bounded
 import Mathlib.SetTheory.Cardinal.PartENat
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Enum
 
 /-!
 # Aleph and beth functions
@@ -63,8 +63,97 @@ theorem isInitial_one : IsInitial 1 := by
 theorem isInitial_omega0 : IsInitial ω := by
   rw [IsInitial, card_omega0, ord_aleph0]
 
--- TODO: define `omega` as the enumerator function of `IsInitial`, and redefine
--- `aleph x = (omega x).card`.
+theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
+  rintro ⟨a, ha⟩
+  have := ha (isInitial_ord (succ a.card))
+  rw [ord_le] at this
+  exact (lt_succ _).not_le this
+
+/-- The `omega'` function gives the initial ordinals listed by their ordinal index. `omega' n = n`,
+`omega' ω = ω`, `aleph' (ω + 1) = ω₁`, etc.
+
+For the more common omega function skipping over finite ordinals, see `Ordinal.omega`. -/
+def omega' : Ordinal.{u} ↪o Ordinal.{u} where
+  toFun := enumOrd IsInitial
+  inj' _ _ h := enumOrd_injective not_bddAbove_isInitial h
+  map_rel_iff' := enumOrd_le_iff not_bddAbove_isInitial
+
+-- This shouldn't fire for theorems ending in `omega'`.
+set_option linter.docPrime false
+
+theorem coe_omega' : omega' = enumOrd {x | IsInitial x} :=
+  rfl
+
+theorem omega'_lt {o₁ o₂ : Ordinal} : omega' o₁ < omega' o₂ ↔ o₁ < o₂ :=
+  omega'.lt_iff_lt
+
+theorem omega'_le {o₁ o₂ : Ordinal} : omega' o₁ ≤ omega' o₂ ↔ o₁ ≤ o₂ :=
+  omega'.le_iff_le
+
+theorem omega'_max (o₁ o₂ : Ordinal) : omega' (max o₁ o₂) = max (omega' o₁) (omega' o₂) :=
+  omega'.monotone.map_max
+
+theorem isInitial_omega' (o : Ordinal) : IsInitial (omega' o) :=
+  enumOrd_mem not_bddAbove_isInitial o
+
+theorem le_omega'_apply (o : Ordinal) : o ≤ omega' o :=
+  le_enumOrd_apply not_bddAbove_isInitial
+
+@[simp]
+theorem omega'_zero : omega' 0 = 0 := by
+  rw [coe_omega', enumOrd_eq_zero]
+  exact isInitial_zero
+
+@[simp]
+theorem omega'_natCast (n : ℕ) : omega' n = n := by
+  induction n with
+  | zero => exact omega'_zero
+  | succ n IH =>
+    apply (le_omega'_apply _).antisymm'
+    apply enumOrd_succ_le not_bddAbove_isInitial (isInitial_natCast _) (IH.trans_lt _)
+    rw [Nat.cast_lt]
+    exact lt_succ n
+
+@[simp]
+theorem omega'_omega0 : omega' ω = ω := by
+  apply (le_omega'_apply _).antisymm' (enumOrd_le_of_forall_lt _ _)
+  · exact isInitial_omega0
+  · intro a ha
+    obtain ⟨n, rfl⟩ := lt_omega0.1 ha
+    exact (omega'_natCast _).trans_lt ha
+
+/-- The `omega` function gives the infinite initial ordinals listed by their ordinal index.
+`omega 0 = ω`, `omega 1 = ω₁` is the first uncountable ordinal, and so on.
+
+For a version including finite ordinals, see `Ordinal.omega'`. -/
+def omega : Ordinal ↪o Ordinal :=
+  (OrderEmbedding.addLeft ω).trans omega'
+
+@[inherit_doc]
+scoped prefix:75 "ω_ " => omega
+
+/-- `ω₁` is the first uncountable ordinal. -/
+scoped notation "ω₁" => ω_ 1
+
+theorem omega_eq_omega' (o : Ordinal) : ω_ o = omega' (ω + o) :=
+  rfl
+
+theorem omega_lt {o₁ o₂ : Ordinal} : ω_ o₁ < ω_ o₂ ↔ o₁ < o₂ :=
+  omega.lt_iff_lt
+
+theorem omega_le {o₁ o₂ : Ordinal} : ω_ o₁ ≤ ω_ o₂ ↔ o₁ ≤ o₂ :=
+  omega.le_iff_le
+
+theorem omega_max (o₁ o₂ : Ordinal) : ω_ (max o₁ o₂) = max (ω_ o₁) (ω_ o₂) :=
+  omega.monotone.map_max
+
+@[simp]
+theorem omega_zero : ω_ 0 = ω := by
+  rw [omega_eq_omega', add_zero, omega'_omega0]
+
+theorem omega_lt_omega1 : ω < ω₁ := by
+  rw [← omega_zero, omega_lt]
+  exact zero_lt_one
 
 end Ordinal
 
@@ -438,22 +527,3 @@ theorem beth_normal : IsNormal.{u} fun o => (beth o).ord :=
       exact ciSup_le' fun b => ord_le.1 (ha _ b.2)⟩
 
 end Cardinal
-
-/-! ### Omega ordinals -/
-
-namespace Ordinal
-
-/--
-`ω_ o` is a notation for the *initial ordinal* of cardinality
-`aleph o`. Thus, for example `ω_ 0 = ω`.
--/
-scoped notation "ω_" o => ord <| aleph o
-
-/--
-`ω₁` is the first uncountable ordinal.
--/
-scoped notation "ω₁" => ord <| aleph 1
-
-lemma omega_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
-
-end Ordinal
