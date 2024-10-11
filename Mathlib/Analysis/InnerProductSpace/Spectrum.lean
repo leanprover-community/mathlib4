@@ -108,7 +108,7 @@ theorem orthogonalComplement_iSup_eigenspaces (hT : T.IsSymmetric) (μ : 𝕜) :
   have H₂ : eigenspace T μ ⟂ p := (Submodule.isOrtho_orthogonal_right _).mono_left (le_iSup _ _)
   exact H₂.disjoint
 
-/-- Every generalized eigenspace of a symmetric operator is an eigenspace. -/
+/-- The generalized eigenspaces of a symmetric operator coincide with the eigenspace. -/
 theorem genEigenspace_eq_eigenspace
     {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {n : ℕ} {μ : 𝕜} (hn : 1 ≤ n) :
     genEigenspace T μ n = genEigenspace T μ 1 := by
