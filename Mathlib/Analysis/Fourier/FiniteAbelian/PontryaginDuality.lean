@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.DirectSum.AddChar
 import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
-import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
+import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.GroupTheory.FiniteAbelian
 
 /-!
@@ -23,90 +23,56 @@ noncomputable section
 
 open Circle Finset Function Multiplicative
 open Fintype (card)
+open Real hiding exp
 open scoped BigOperators DirectSum
 
 variable {α : Type*} [AddCommGroup α] {n : ℕ} {a b : α}
 
 namespace AddChar
-
-private def zmodAuxAux (n : ℕ) : ℤ →+ Additive Circle where
-  toFun x := .ofMul <| e <| x / n
-  map_zero' := by dsimp; rw [Int.cast_zero, zero_div, ofMul_eq_zero, map_zero_eq_one]
-  map_add' x y := by rw [← ofMul_mul, Equiv.apply_eq_iff_eq, Int.cast_add, add_div, map_add_eq_mul]
-
-@[simp]
-lemma zmodAuxAux_apply (n : ℕ) (z : ℤ) : zmodAuxAux n z = Additive.ofMul (e <| z / n) := rfl
-
-/-- The character sending `k : ZMod n` to `e ^ (2 * π * i * k / n)`. -/
-private def zmodAux (n : ℕ) : AddChar (ZMod n) Circle :=
-  AddChar.toAddMonoidHomEquiv.symm <| ZMod.lift n ⟨zmodAuxAux n, by
-    obtain hn | hn := eq_or_ne (n : ℝ) 0 <;> simp [hn, zmodAuxAux]⟩
-
---TODO: Heavily generalise. Yaël's attempts at generalising failed :(
-@[simp] lemma aux (n : ℕ) (h) :
-    (⟨zmodAuxAux n, h⟩ : {f : ℤ →+ Additive Circle // f n = 0}) = zmodAuxAux n := rfl
-
-@[simp] lemma zmodAux_apply (n : ℕ) (z : ℤ) : zmodAux n z = e (z / n) := by simp [zmodAux]
-
--- probably an evil lemma
--- @[simp] lemma zmodAux_apply (n : ℕ) (x : ZMod n) : zmodAux n x = e (x / n) :=
--- by simp [zmodAux]
-
-lemma zmodAux_injective (hn : n ≠ 0) : Injective (zmodAux n) := by
-  replace hn : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.2 hn
-  simp [zmodAux, ZMod.lift_injective, CharP.intCast_eq_zero_iff _ n, e_eq_one, div_eq_iff hn,
-    mul_comm _ (n : ℝ), -forall_exists_index]
-  norm_cast
-  exact fun _ ↦ id
+variable (n : ℕ) [NeZero n]
 
 /-- Indexing of the complex characters of `ZMod n`. `AddChar.zmod n x` is the character sending `y`
 to `e ^ (2 * π * i * x * y / n)`. -/
-def zmod (n : ℕ) (x : ZMod n) : AddChar (ZMod n) Circle :=
-  (zmodAux n).compAddMonoidHom <| AddMonoidHom.mulLeft x
+def zmod (x : ZMod n) : AddChar (ZMod n) Circle :=
+  AddChar.compAddMonoidHom ⟨AddCircle.toCircle, AddCircle.toCircle_zero, AddCircle.toCircle_add⟩ <|
+    ZMod.toAddCircle.comp <| .mulLeft x
 
-@[simp] lemma zmod_apply (n : ℕ) (x y : ℤ) :
-    (zmod n x) (y : ZMod n) = e (x * y / n) := by
-  simp [zmod, ← Int.cast_mul x y, -Int.cast_mul]
+@[simp] lemma zmod_intCast (x y : ℤ) : zmod n x y = exp (2 * π * (x * y / n)) := by
+  simp [zmod, ← Int.cast_mul x y, -Int.cast_mul, ZMod.toAddCircle_intCast,
+    AddCircle.toCircle_apply_mk]
 
-@[simp] lemma zmod_zero (n : ℕ) : zmod n 0 = 1 := by
-  refine DFunLike.ext _ _ ?_
-  rw [ZMod.intCast_surjective.forall]
-  rintro y
-  simpa using zmod_apply n 0 y
+@[simp] lemma zmod_zero : zmod n 0 = 1 :=
+  DFunLike.ext _ _ <| by simp [ZMod.intCast_surjective.forall, zmod]
 
-@[simp] lemma zmod_add (n : ℕ) : ∀ x y : ZMod n, zmod n (x + y) = zmod n x * zmod n y := by
-  simp only [DFunLike.ext_iff, ZMod.intCast_surjective.forall, ← Int.cast_add, AddChar.mul_apply,
-    zmod_apply]
-  simp [add_mul, add_div, map_add_eq_mul]
+variable {n}
 
--- probably an evil lemma
--- @[simp] lemma zmod_apply (n : ℕ) (x y : ZMod n) : zmod n x y = e (x * y / n) :=
--- by simp [addChar.zmod, ZMod.coe_mul]
+@[simp] lemma zmod_add : ∀ x y : ZMod n, zmod n (x + y) = zmod n x * zmod n y := by
+  simp [DFunLike.ext_iff, ← Int.cast_add, zmod, add_mul, add_div, map_add_eq_mul]
 
-lemma zmod_injective (hn : n ≠ 0) : Injective (zmod n) := by
+lemma zmod_injective : Injective (zmod n) := by
   simp_rw [Injective, ZMod.intCast_surjective.forall]
   rintro x y h
-  replace hn : (n : ℝ) ≠ 0 := by positivity
-  simpa only [Int.cast_one, mul_one, one_mul, e_inj, AddCommGroup.div_modEq_div hn,
-    AddCommGroup.intCast_modEq_intCast', AddCommGroup.modEq_iff_int_modEq,
-    CharP.intCast_eq_intCast (ZMod n) n] using (zmod_apply _ _ _).symm.trans <|
-    (DFunLike.congr_fun h ((1 : ℤ) : ZMod n)).trans <| zmod_apply _ _ _
+  replace hn : (n : ℝ) ≠ 0 := by have := NeZero.ne n; positivity
+  simpa [pi_ne_zero, exp_inj, hn, CharP.intCast_eq_intCast (ZMod n) n] using
+    (zmod_intCast ..).symm.trans <| (DFunLike.congr_fun h ((1 : ℤ) : ZMod n)).trans <|
+      zmod_intCast ..
 
-@[simp] lemma zmod_inj (hn : n ≠ 0) {x y : ZMod n} : zmod n x = zmod n y ↔ x = y :=
-  (zmod_injective hn).eq_iff
+@[simp] lemma zmod_inj {x y : ZMod n} : zmod n x = zmod n y ↔ x = y := zmod_injective.eq_iff
 
-def zmodHom (n : ℕ) : AddChar (ZMod n) (AddChar (ZMod n) Circle) where
+/-- `AddChar.zmod` bundled as an `AddChar`. -/
+def zmodHom : AddChar (ZMod n) (AddChar (ZMod n) Circle) where
   toFun := zmod n
   map_zero_eq_one' := by simp
   map_add_eq_mul' := by simp
 
-def mkZModAux {ι : Type} [DecidableEq ι] (n : ι → ℕ) (u : ∀ i, ZMod (n i)) :
-    AddChar (⨁ i, ZMod (n i)) Circle :=
+/-- Character on a product of `ZMod`s given by `x ↦ ∏ i, e ^ (2 * π * I * x i * y / n)`. -/
+private def mkZModAux {ι : Type} [DecidableEq ι] (n : ι → ℕ) [∀ i, NeZero (n i)]
+    (u : ∀ i, ZMod (n i)) : AddChar (⨁ i, ZMod (n i)) Circle :=
   AddChar.directSum fun i ↦ zmod (n i) (u i)
 
-lemma mkZModAux_injective {ι : Type} [DecidableEq ι] {n : ι → ℕ} (hn : ∀ i, n i ≠ 0) :
+private lemma mkZModAux_injective {ι : Type} [DecidableEq ι] {n : ι → ℕ} [∀ i, NeZero (n i)] :
     Injective (mkZModAux n) :=
-  AddChar.directSum_injective.comp fun f g h ↦ by simpa [Function.funext_iff, hn] using h
+  AddChar.directSum_injective.comp fun f g h ↦ by simpa [Function.funext_iff] using h
 
 /-- The circle-valued characters of a finite abelian group are the same as its complex-valued
 characters. -/
@@ -123,23 +89,22 @@ def circleEquivComplex [Finite α] : AddChar α Circle ≃+ AddChar α ℂ where
 @[simp] lemma card_eq [Fintype α] : card (AddChar α ℂ) = card α := by
   obtain ⟨ι, _, n, hn, ⟨e⟩⟩ := AddCommGroup.equiv_directSum_zmod_of_finite' α
   classical
-  have hn' : ∀ i, n i ≠ 0 := fun i ↦ by have := hn i; positivity
+  have hn' i : NeZero (n i) := by have := hn i; exact ⟨by positivity⟩
   let f : α → AddChar α ℂ := fun a ↦ coeHom.compAddChar ((mkZModAux n <| e a).compAddMonoidHom e)
   have hf : Injective f := circleEquivComplex.injective.comp
-    ((compAddMonoidHom_injective_left _ e.surjective).comp <| (mkZModAux_injective hn').comp <|
+    ((compAddMonoidHom_injective_left _ e.surjective).comp <| mkZModAux_injective.comp <|
       DFunLike.coe_injective.comp <| e.injective.comp Additive.ofMul.injective)
   exact (card_addChar_le _ _).antisymm (Fintype.card_le_of_injective _ hf)
 
 /-- `ZMod n` is (noncanonically) isomorphic to its group of characters. -/
-def zmodAddEquiv (hn : n ≠ 0) : ZMod n ≃+ AddChar (ZMod n) ℂ := by
-  haveI : NeZero n := ⟨hn⟩
+def zmodAddEquiv : ZMod n ≃+ AddChar (ZMod n) ℂ := by
   refine AddEquiv.ofBijective
-    (circleEquivComplex.toAddMonoidHom.comp <| AddChar.toAddMonoidHom <| zmodHom n) ?_
+    (circleEquivComplex.toAddMonoidHom.comp <| AddChar.toAddMonoidHom zmodHom) ?_
   rw [Fintype.bijective_iff_injective_and_card, card_eq]
-  exact ⟨circleEquivComplex.injective.comp <| zmod_injective hn, rfl⟩
+  exact ⟨circleEquivComplex.injective.comp zmod_injective, rfl⟩
 
-@[simp] lemma zmodAddEquiv_apply [NeZero n] (x : ZMod n) :
-    zmodAddEquiv (NeZero.ne _) x = circleEquivComplex (zmod n x) := rfl
+@[simp] lemma zmodAddEquiv_apply (x : ZMod n) :
+    zmodAddEquiv x = circleEquivComplex (zmod n x) := rfl
 
 section Finite
 variable (α) [Finite α]
@@ -193,9 +158,8 @@ lemma doubleDualEmb_inj : (doubleDualEmb a : AddChar (AddChar α ℂ) ℂ) = dou
 lemma doubleDualEmb_ne_zero : (doubleDualEmb a : AddChar (AddChar α ℂ) ℂ) ≠ 0 ↔ a ≠ 0 :=
   doubleDualEmb_eq_zero.not
 
-/-- The double dual isomorphism. -/
-def doubleDualEquiv : α ≃+ AddChar (AddChar α ℂ) ℂ :=
-  AddEquiv.ofBijective _ doubleDualEmb_bijective
+/-- The double dual isomorphism of a finite abelian group. -/
+def doubleDualEquiv : α ≃+ AddChar (AddChar α ℂ) ℂ := .ofBijective _ doubleDualEmb_bijective
 
 @[simp]
 lemma coe_doubleDualEquiv : ⇑(doubleDualEquiv : α ≃+ AddChar (AddChar α ℂ) ℂ) = doubleDualEmb := rfl
