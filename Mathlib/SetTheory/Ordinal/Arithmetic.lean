@@ -40,7 +40,6 @@ Some properties of the operations are also used to discuss general tools on ordi
 * `IsNormal`: a function `f : Ordinal → Ordinal` satisfies `IsNormal` if it is strictly increasing
   and order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
   `a < o`.
-* `enumOrd`: enumerates an unbounded set of ordinals by the ordinals themselves.
 * `sup`, `lsub`: the supremum / least strict upper bound of an indexed family of ordinals in
   `Type u`, as an ordinal in `Type u`.
 * `bsup`, `blsub`: the supremum / least strict upper bound of a set of ordinals indexed by ordinals
@@ -61,8 +60,7 @@ universe u v w
 
 namespace Ordinal
 
-variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
-  {t : γ → γ → Prop}
+variable {α β γ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
 
 /-! ### Further properties of addition on ordinals -/
 
@@ -2376,6 +2374,26 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
   · exact (mul_isNormal ho).apply_omega0
 
 end Ordinal
+
+namespace Cardinal
+
+open Ordinal
+
+theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
+  refine ⟨fun h => aleph0_ne_zero ?_, fun a => lt_imp_lt_of_le_imp_le fun h => ?_⟩
+  · rw [← Ordinal.le_zero, ord_le] at h
+    simpa only [card_zero, nonpos_iff_eq_zero] using co.trans h
+  · rw [ord_le] at h ⊢
+    rwa [← @add_one_of_aleph0_le (card a), ← card_succ]
+    rw [← ord_le, ← le_succ_of_isLimit, ord_le]
+    · exact co.trans h
+    · rw [ord_aleph0]
+      exact Ordinal.omega0_isLimit
+
+theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
+  toType_noMax_of_succ_lt (ord_isLimit h).2
+
+end Cardinal
 
 variable {α : Type u} {r : α → α → Prop} {a b : α}
 
