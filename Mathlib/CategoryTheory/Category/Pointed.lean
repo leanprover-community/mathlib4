@@ -22,8 +22,6 @@ open CategoryTheory
 
 universe u
 
-variable {α β : Type*}
-
 /-- The category of pointed types. -/
 structure Pointed : Type (u + 1) where
   /-- the underlying type -/

@@ -45,9 +45,9 @@ assert_not_exists DivisionMonoid.toDivInvOneMonoid
 assert_not_exists mul_rotate
 
 
-universe u v w x
+universe u v
 
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+variable {α : Type u} {R : Type v}
 
 open Function
 

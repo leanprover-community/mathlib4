@@ -128,7 +128,7 @@ theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
     specialize δseq_lim ε ε_pos
     simp only [dist_zero_right, Real.norm_eq_abs, eventually_atTop] at δseq_lim
     rcases δseq_lim with ⟨N, hN⟩
-    apply @tendsto_atTop_of_eventually_const _ _ _ _ _ _ _ N
+    apply tendsto_atTop_of_eventually_const (i₀ := N)
     intro n n_large
     have key : x ∉ thickening ε E := by simpa only [thickening, mem_setOf_eq, not_lt] using ε_lt.le
     refine le_antisymm ?_ bot_le
