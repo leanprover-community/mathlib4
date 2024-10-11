@@ -596,7 +596,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
   · exact ⟨X, h, Or.inl (Finset.Subset.refl X)⟩
   · exact ⟨Y \ X, h, Or.inr sdiff_subset⟩
 
-/-! ### Explicit description of a finset from its #-/
+/-! ### Explicit description of a finset from its card -/
 
 
 theorem card_eq_one : #s = 1 ↔ ∃ a, s = {a} := by
