@@ -3,10 +3,8 @@ Copyright (c) 2024 Anatole Dedeker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guirardel
 -/
-import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.Sequences
 
 /-!
 # Proper group action
