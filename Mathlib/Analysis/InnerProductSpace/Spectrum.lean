@@ -179,13 +179,7 @@ theorem direct_sum_isInternal (hT : T.IsSymmetric) :
 theorem isSemisimple {T : Module.End 𝕜 E} [CompleteSpace E] (hT : T.IsSymmetric) :
     T.IsSemisimple := by
   refine Module.End.isSemisimple_iff.mpr fun p hp ↦ ⟨pᗮ, fun x hx ↦ ?_, IsCompl.mk ?_ ?_⟩
-  · apply invariant_perp_comap
-    sorry
-    -- This should be a lemma in API for symmetric operators (use invariant_perp_comap)
-    --simp only [Submodule.mem_comap, Submodule.mem_orthogonal] at hx ⊢
-    --intro y hy
-    --rw [← hT y x]
-    --exact hx (T y) (hp hy)
+  · exact invariant_perp_comap hT hp hx
   · rw [disjoint_iff]
     exact Submodule.inf_orthogonal_eq_bot p
   · rw [codisjoint_iff]
