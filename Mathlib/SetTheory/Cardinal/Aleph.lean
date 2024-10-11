@@ -138,6 +138,9 @@ scoped notation "ω₁" => ω_ 1
 theorem omega_eq_omega' (o : Ordinal) : ω_ o = omega' (ω + o) :=
   rfl
 
+theorem isInitial_omega (o : Ordinal) : IsInitial (ω_ o) :=
+  isInitial_omega' _
+
 theorem omega_lt {o₁ o₂ : Ordinal} : ω_ o₁ < ω_ o₂ ↔ o₁ < o₂ :=
   omega.lt_iff_lt
 
