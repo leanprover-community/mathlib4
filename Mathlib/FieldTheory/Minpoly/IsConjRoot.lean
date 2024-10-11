@@ -29,8 +29,8 @@ and `y` in `L`, `IsConjRoot K x y` is equivalent to the existence of an algebra 
 
 open Polynomial minpoly IntermediateField
 
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
-variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+variable {R S A : Type*} [CommRing R] [CommRing S] [Ring A] [Algebra R A] [Algebra R S]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra K A]
 
 variable (R) in
 def IsConjRoot (x x' : A) : Prop := (minpoly R x) = (minpoly R x')
@@ -46,6 +46,17 @@ theorem trans {x x' x'': A} (h₁ : IsConjRoot R x x') (h₂ : IsConjRoot R x' x
 
 theorem _root_.isConjRoot_def {x x' : A} : IsConjRoot R x x' ↔ minpoly R x = minpoly R x' := Iff.rfl
 
+theorem aeval_eq_zero {x x' : A} (h : IsConjRoot R x x') : aeval x' (minpoly R x) = 0 :=
+  h ▸ minpoly.aeval R x'
+
+theorem of_aeval_eq_zero [IsDomain A] [Nontrivial A] {x x' : A} (hx : IsIntegral K x)
+    (h : aeval x' (minpoly K x) = 0) : IsConjRoot K x x' :=
+  minpoly.eq_of_irreducible_of_monic (minpoly.irreducible hx) h (minpoly.monic hx)
+
+theorem iff_aeval_eq_zero [IsDomain A] [Nontrivial A] {x x' : A}
+    (h : IsIntegral K x) : IsConjRoot K x x' ↔ aeval x' (minpoly K x) = 0 :=
+  ⟨aeval_eq_zero, of_aeval_eq_zero h⟩
+
 theorem of_algEquiv (x : A) (s : A ≃ₐ[R] A) : IsConjRoot R x (s x) :=
   Eq.symm (minpoly.algEquiv_eq s x)
 
@@ -53,20 +64,20 @@ theorem of_algEquiv₂ (x : A) (s₁ s₂ : A ≃ₐ[R] A) : IsConjRoot R (s₁ 
   isConjRoot_def.mpr <| (minpoly.algEquiv_eq s₂ x) ▸ (minpoly.algEquiv_eq s₁ x)
 
 theorem exist_algEquiv [Normal K L] {x x': L} (h : IsConjRoot K x x') :
-    ∃ σ : L ≃ₐ[K] L, x' = σ x := by
+    ∃ σ : L ≃ₐ[K] L, σ x = x' := by
   obtain ⟨σ, hσ⟩ :=
     exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K x')
-  exact ⟨AlgEquiv.ofBijective σ (σ.normal_bijective _ _ _), hσ.symm⟩
+  exact ⟨AlgEquiv.ofBijective σ (σ.normal_bijective _ _ _), hσ⟩
 
 theorem iff_exist_algEquiv [Normal K L] {x x' : L} :
-    IsConjRoot K x x' ↔ ∃ σ : L ≃ₐ[K] L, x' = σ x :=
+    IsConjRoot K x x' ↔ ∃ σ : L ≃ₐ[K] L, σ x = x' :=
   ⟨exist_algEquiv, fun ⟨_, h⟩ => h ▸ of_algEquiv _ _⟩
 
 theorem iff_mem_aroots [CommRing A] [IsDomain A] [Algebra R A] {x x' : A} :
     IsConjRoot R x x' ↔ x' ∈ (minpoly R x).aroots A := sorry
 
 theorem iff_mem_minpoly_rootSet [CommRing A] [IsDomain A] [Algebra R A] {x x' : A} :
-    IsConjRoot R x x' ↔ x' ∈ (minpoly R x).rootSet A := sorry
+    IsConjRoot R x x' ↔ x' ∈ (minpoly R x).rootSet A := iff_mem_aroots.trans (by sorry)
 
 theorem isIntegral {x x' : L} (hx : IsIntegral K x) (h : IsConjRoot K x x') :
     IsIntegral K x' := by sorry
@@ -74,19 +85,6 @@ theorem isIntegral {x x' : L} (hx : IsIntegral K x) (h : IsConjRoot K x x') :
 theorem iff_eq_zero {x : A} : IsConjRoot R 0 x ↔ x = 0 := sorry
 
 theorem ne_zero {x x' : A} (hx : x ≠ 0) (h : IsConjRoot R x x') : x' ≠ 0 := sorry
-
-theorem eq_of_degree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
-    (g : degree (minpoly R x) = 1) : x = x' := by
-  sorry
-
-theorem eq_of_natDegree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
-    (g : natDegree (minpoly R x) = 1) : x = x' := sorry
-
-#check Polynomial.aroots
-open Polynomial
-theorem card_rootSet_eq_natDegree {K L} [Field K] [Field L] [Algebra K L] {p : K[X]}
-    (hsep : p.Separable) (hp : p.Splits (algebraMap K L)) :
-    Nat.card (p.rootSet L) = p.natDegree := sorry
 
 -- seperable implies root number = degree
 -- when degree >= 1, and split the aroot multiset and root set are not empty -- convert to Prod
@@ -97,18 +95,28 @@ theorem card_rootSet_eq_natDegree {K L} [Field K] [Field L] [Algebra K L] {p : K
 theorem not_mem_iff_exist_ne {x : L} (h : IsSeparable K x)
     (sp : (minpoly K x).Splits (algebraMap K L)) :
     x ∉ (⊥ : Subalgebra K L) ↔ ∃ x' : L, x ≠ x' ∧ IsConjRoot K x x' := by
-  constructor
-  · intro hbot
+  calc
+    _ ↔ 2 ≤ (minpoly K x).natDegree := (minpoly.two_le_natDegree_iff h.isIntegral).symm
+    _ ↔ 2 ≤ Fintype.card ((minpoly K x).rootSet L) :=
+      (Polynomial.card_rootSet_eq_natDegree h sp) ▸ Iff.rfl
+    _ ↔ Nontrivial ((minpoly K x).rootSet L) := Fintype.one_lt_card_iff_nontrivial
+    _ ↔ ∃ x' : ((minpoly K x).rootSet L), ↑x' ≠ x :=
+      (nontrivial_iff_exists_ne ⟨x, mem_rootSet.mpr ⟨minpoly.ne_zero h.isIntegral,
+          minpoly.aeval K x⟩⟩).trans ⟨fun ⟨x', hx'⟩ => ⟨x', Subtype.coe_ne_coe.mpr hx'⟩,
+          fun ⟨x', hx'⟩ => ⟨x', Subtype.coe_ne_coe.mp hx'⟩⟩
+    _ ↔ _ := ⟨fun ⟨⟨x', hx'⟩, hne⟩  => ⟨x', ⟨hne.symm, iff_mem_minpoly_rootSet.mpr hx'⟩⟩,
+        fun ⟨x', hne, hx'⟩ => ⟨⟨x', iff_mem_minpoly_rootSet.mp hx'⟩, hne.symm⟩⟩
 
 variable (R) in
-theorem of_isScalarTower {S : Type*} [CommRing S] [Algebra R S] [Algebra S A]
-    [IsScalarTower R S A] {x x' : A} (h : IsConjRoot S x x') : IsConjRoot R x x' := sorry
--- minpoly.aeval_of_isScalarTower
+theorem of_isScalarTower {A} [CommRing A] [Algebra K A] [Algebra L A] [IsScalarTower K L A]
+    [IsDomain A] [Nontrivial A] {x x' : A} (hx : IsIntegral K x) (h : IsConjRoot L x x') :
+    IsConjRoot K x x' :=
+  of_aeval_eq_zero hx <| minpoly.aeval_of_isScalarTower K x x' (aeval_eq_zero h)
 
--- isIntegral_algHom_iff
 theorem algHom_iff {B} [Ring B] [Algebra R B] {x x' : A} (f : A →ₐ[R] B)
     (hf : Function.Injective f) :
-  IsConjRoot R (f x) (f x') ↔ IsConjRoot R x x' := sorry
+    IsConjRoot R (f x) (f x') ↔ IsConjRoot R x x' := by
+  rw [isConjRoot_def, isConjRoot_def, algHom_eq f hf, algHom_eq f hf]
 
 theorem add_algebraMap {x x' : A} (r : R) (h : IsConjRoot R x x') :
     IsConjRoot R (x + algebraMap R A r) (x' + algebraMap R A r) := sorry
@@ -125,7 +133,7 @@ theorem neg {x x' : A} (r : R) (h : IsConjRoot R x x') :  IsConjRoot R (-x) (-x'
 theorem sub_algebraMap {x x' : A} (r : R) (h : IsConjRoot R x x') :
     IsConjRoot R (x - algebraMap R A r) (x' - algebraMap R A r) := sorry
 
-theorem smul {x x' : A} (r : R) (h : IsConjRoot R x x') :  IsConjRoot R (r • x) (r • x') := sorry
+theorem smul {x x' : A} (r : R) (h : IsConjRoot R x x') :  IsConjRoot R (r • x) (r • x') := sorry -- maybe too hard?
 
 
 -/
