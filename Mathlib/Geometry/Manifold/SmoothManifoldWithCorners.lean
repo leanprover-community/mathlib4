@@ -82,6 +82,14 @@ but again in product manifolds the natural model with corners will not be this o
 one (and they are not defeq as `(fun p : E × F ↦ (p.1, p.2))` is not defeq to the identity).
 So, it is important to use the above incantation to maximize the applicability of theorems.
 
+We also define `TangentSpace I (x : M)` as a type synonym of `E`, and `TangentBundle I M` as a
+type synonym for `Π (x : M), TangentSpace I x` (in the form of an
+abbrev of `Bundle.TotalSpace E (TangentSpace I : M → Type _)`). Apart from basic typeclasses on
+`TangentSpace I x`, nothing is proved about them in this file, but it is useful to have them
+available as definitions early on to get a clean import structure below. The smooth bundle structure
+is defined in `VectorBundle.Tangent`, while the definition is used to talk about manifold
+derivatives in `MFDeriv.Basic`, and neither file needs import the other.
+
 ## Implementation notes
 
 We want to talk about manifolds modelled on a vector space, but also on manifolds with
