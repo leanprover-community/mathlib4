@@ -2200,7 +2200,7 @@ open Ordinal
 theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
   le_antisymm (ord_le.2 <| le_rfl) <|
     le_of_forall_lt fun o h => by
-      rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
+      rcases Ordinal.lt_lift_iff.1 h with ⟨o, h', rfl⟩
       rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
       exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
 
