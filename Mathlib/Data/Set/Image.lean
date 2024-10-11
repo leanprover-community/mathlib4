@@ -817,9 +817,8 @@ theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = 
     range (Quot.lift f hf) = range f :=
   ext fun _ => (surjective_quot_mk _).exists
 
--- Porting note: the `Setoid α` instance is not being filled in
 @[simp]
-theorem range_quotient_mk [sa : Setoid α] : (range (α := Quotient sa) fun x : α => ⟦x⟧) = univ :=
+theorem range_quotient_mk {s : Setoid α} : range (Quotient.mk s) = univ :=
   range_quot_mk _
 
 @[simp]
@@ -1089,6 +1088,9 @@ theorem Surjective.nonempty_preimage (hf : Surjective f) {s : Set β} :
 theorem Injective.image_injective (hf : Injective f) : Injective (image f) := by
   intro s t h
   rw [← preimage_image_eq s hf, ← preimage_image_eq t hf, h]
+
+lemma Injective.image_strictMono (inj : Function.Injective f) : StrictMono (image f) :=
+  monotone_image.strictMono_of_injective inj.image_injective
 
 theorem Surjective.preimage_subset_preimage_iff {s t : Set β} (hf : Surjective f) :
     f ⁻¹' s ⊆ f ⁻¹' t ↔ s ⊆ t := by

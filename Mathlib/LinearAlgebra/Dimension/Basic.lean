@@ -93,15 +93,6 @@ theorem cardinal_le_rank' {s : Set M}
 
 end LinearIndependent
 
-@[deprecated (since := "2023-12-27")]
-alias cardinal_lift_le_rank_of_linearIndependent := LinearIndependent.cardinal_lift_le_rank
-@[deprecated (since := "2023-12-27")]
-alias cardinal_lift_le_rank_of_linearIndependent' := LinearIndependent.cardinal_lift_le_rank
-@[deprecated (since := "2023-12-27")]
-alias cardinal_le_rank_of_linearIndependent := LinearIndependent.cardinal_le_rank
-@[deprecated (since := "2023-12-27")]
-alias cardinal_le_rank_of_linearIndependent' := LinearIndependent.cardinal_le_rank'
-
 section SurjectiveInjective
 
 section Module
@@ -285,10 +276,11 @@ theorem lift_rank_map_le (f : M →ₗ[R] M') (p : Submodule R M) :
 theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
     Module.rank R (p.map f) ≤ Module.rank R p := by simpa using lift_rank_map_le f p
 
-theorem rank_le_of_submodule (s t : Submodule R M) (h : s ≤ t) :
-    Module.rank R s ≤ Module.rank R t :=
+lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
     Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
+
+@[deprecated (since := "2024-09-30")] alias rank_le_of_submodule := Submodule.rank_mono
 
 /-- Two linearly equivalent vector spaces have the same dimension, a version with different
 universes. -/
@@ -331,9 +323,11 @@ theorem rank_range_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
     Module.rank R (LinearMap.range f) = Module.rank R M' := by
   rw [LinearMap.range_eq_top.2 h, rank_top]
 
-theorem rank_submodule_le (s : Submodule R M) : Module.rank R s ≤ Module.rank R M := by
+theorem Submodule.rank_le (s : Submodule R M) : Module.rank R s ≤ Module.rank R M := by
   rw [← rank_top R M]
-  exact rank_le_of_submodule _ _ le_top
+  exact rank_mono le_top
+
+@[deprecated (since := "2024-10-02")] alias rank_submodule_le := Submodule.rank_le
 
 theorem LinearMap.lift_rank_le_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
     lift.{v} (Module.rank R M') ≤ lift.{v'} (Module.rank R M) := by

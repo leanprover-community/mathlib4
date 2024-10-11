@@ -79,7 +79,7 @@ variable {f}
 
 @[reassoc (attr := simp)]
 theorem KernelFork.condition (s : KernelFork f) : Fork.ι s ≫ f = 0 := by
-  erw [Fork.condition, HasZeroMorphisms.comp_zero]
+  rw [Fork.condition, HasZeroMorphisms.comp_zero]
 
 -- Porting note (#10618): simp can prove this, removed simp tag
 theorem KernelFork.app_one (s : KernelFork f) : s.π.app one = 0 := by
@@ -435,7 +435,7 @@ def kernel.zeroKernelFork : KernelFork f where
 def kernel.isLimitConeZeroCone [Mono f] : IsLimit (kernel.zeroKernelFork f) :=
   Fork.IsLimit.mk _ (fun s => 0)
     (fun s => by
-      erw [zero_comp]
+      rw [zero_comp]
       refine (zero_of_comp_mono f ?_).symm
       exact KernelFork.condition _)
     fun _ _ _ => zero_of_to_zero _

@@ -21,9 +21,6 @@ namespace Filter
 
 variable {ι : Sort*} {α β : Type*} {f g : Filter α} {s : Set α} {a : α}
 
-/-- The *kernel* of a filter is the intersection of all its sets. -/
-def ker (f : Filter α) : Set α := ⋂₀ f.sets
-
 lemma ker_def (f : Filter α) : f.ker = ⋂ s ∈ f, s := sInter_eq_biInter
 
 @[simp] lemma mem_ker : a ∈ f.ker ↔ ∀ s ∈ f, a ∈ s := mem_sInter

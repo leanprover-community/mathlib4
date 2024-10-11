@@ -221,7 +221,7 @@ attribute [aesop safe apply (rule_sets := [finsetNonempty])] Nonempty.inv Nonemp
 @[to_additive (attr := simp)]
 theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := image_eq_empty
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 theorem inv_subset_inv (h : s ⊆ t) : s⁻¹ ⊆ t⁻¹ :=
   image_subset_image h
 
@@ -271,6 +271,9 @@ theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.tra
 
 @[to_additive (attr := simp)]
 theorem card_inv (s : Finset α) : s⁻¹.card = s.card := card_image_of_injective _ inv_injective
+
+@[to_additive (attr := simp)]
+lemma dens_inv [Fintype α] (s : Finset α) : s⁻¹.dens = s.dens := by simp [dens]
 
 @[to_additive (attr := simp)]
 theorem preimage_inv (s : Finset α) : s.preimage (·⁻¹) inv_injective.injOn = s⁻¹ :=
@@ -370,7 +373,7 @@ theorem singleton_mul (a : α) : {a} * s = s.image (a * ·) :=
 theorem singleton_mul_singleton (a b : α) : ({a} : Finset α) * {b} = {a * b} :=
   image₂_singleton
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 theorem mul_subset_mul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ * t₁ ⊆ s₂ * t₂ :=
   image₂_subset
 
@@ -417,7 +420,7 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
       `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' + t'`."]
 theorem subset_mul {s t : Set α} :
     ↑u ⊆ s * t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' * t' :=
-  subset_image₂
+  subset_set_image₂
 
 @[to_additive]
 theorem image_mul [DecidableEq β] : (s * t).image (f : α → β) = s.image f * t.image f :=
@@ -556,7 +559,7 @@ theorem singleton_div (a : α) : {a} / s = s.image (a / ·) :=
 theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
   image₂_singleton
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 theorem div_subset_div : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ / t₁ ⊆ s₂ / t₂ :=
   image₂_subset
 
@@ -603,7 +606,7 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
       `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' - t'`."]
 theorem subset_div {s t : Set α} :
     ↑u ⊆ s / t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' / t' :=
-  subset_image₂
+  subset_set_image₂
 
 @[to_additive (attr := simp (default + 1))]
 lemma sup_div_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
@@ -898,6 +901,12 @@ theorem isUnit_coe : IsUnit (s : Set α) ↔ IsUnit s := by
 @[to_additive (attr := simp)]
 lemma univ_div_univ [Fintype α] : (univ / univ : Finset α) = univ := by simp [div_eq_mul_inv]
 
+@[to_additive] lemma subset_div_left (ht : 1 ∈ t) : s ⊆ s / t := by
+  rw [div_eq_mul_inv]; exact subset_mul_left _ <| by simpa
+
+@[to_additive] lemma inv_subset_div_right (hs : 1 ∈ s) : t⁻¹ ⊆ s / t := by
+  rw [div_eq_mul_inv]; exact subset_mul_right _ hs
+
 end DivisionMonoid
 
 /-- `Finset α` is a commutative division monoid under pointwise operations if `α` is. -/
@@ -1144,7 +1153,7 @@ theorem smul_singleton (b : β) : s • ({b} : Finset β) = s.image (· • b) :
 theorem singleton_smul_singleton (a : α) (b : β) : ({a} : Finset α) • ({b} : Finset β) = {a • b} :=
   image₂_singleton
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 theorem smul_subset_smul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ • t₁ ⊆ s₂ • t₂ :=
   image₂_subset
 
@@ -1191,7 +1200,7 @@ theorem union_smul_inter_subset_union [DecidableEq α] : (s₁ ∪ s₂) • (t�
       finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
 theorem subset_smul {s : Set α} {t : Set β} :
     ↑u ⊆ s • t → ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
-  subset_image₂
+  subset_set_image₂
 
 end SMul
 
@@ -1266,7 +1275,7 @@ theorem singleton_vsub (a : β) : ({a} : Finset β) -ᵥ t = t.image (a -ᵥ ·)
 theorem singleton_vsub_singleton (a b : β) : ({a} : Finset β) -ᵥ {b} = {a -ᵥ b} :=
   image₂_singleton
 
-@[mono]
+@[mono, gcongr]
 theorem vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ :=
   image₂_subset
 
@@ -1301,7 +1310,7 @@ end
 finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' -ᵥ t'`. -/
 theorem subset_vsub {s t : Set β} :
     ↑u ⊆ s -ᵥ t → ∃ s' t' : Finset β, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' -ᵥ t' :=
-  subset_image₂
+  subset_set_image₂
 
 end VSub
 
@@ -1365,7 +1374,7 @@ theorem Nonempty.smul_finset (hs : s.Nonempty) : (a • s).Nonempty :=
 theorem singleton_smul (a : α) : ({a} : Finset α) • t = a • t :=
   image₂_singleton_left
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 theorem smul_finset_subset_smul_finset : s ⊆ t → a • s ⊆ a • t :=
   image_subset_image
 
@@ -1376,6 +1385,10 @@ theorem smul_finset_singleton (b : β) : a • ({b} : Finset β) = {a • b} :=
 @[to_additive]
 theorem smul_finset_union : a • (s₁ ∪ s₂) = a • s₁ ∪ a • s₂ :=
   image_union _ _
+
+@[to_additive]
+lemma smul_finset_insert (a : α) (b : β) (s : Finset β) : a • insert b s = insert (a • b) (a • s) :=
+  image_insert ..
 
 @[to_additive]
 theorem smul_finset_inter_subset : a • (s₁ ∩ s₂) ⊆ a • s₁ ∩ a • s₂ :=

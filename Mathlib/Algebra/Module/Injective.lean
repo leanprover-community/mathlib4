@@ -67,8 +67,8 @@ theorem Module.injective_module_of_injective_object
     [inj : CategoryTheory.Injective <| ModuleCat.of R Q] :
     Module.Injective R Q where
   out X Y _ _ _ _ f hf g := by
-    have : CategoryTheory.Mono (ModuleCat.ofHom f) := (ModuleCat.mono_iff_injective _).mpr hf
-    obtain ⟨l, rfl⟩ := inj.factors (ModuleCat.ofHom g) (ModuleCat.ofHom f)
+    have : CategoryTheory.Mono (ModuleCat.asHom f) := (ModuleCat.mono_iff_injective _).mpr hf
+    obtain ⟨l, rfl⟩ := inj.factors (ModuleCat.asHom g) (ModuleCat.asHom f)
     exact ⟨l, fun _ ↦ rfl⟩
 
 theorem Module.injective_iff_injective_object :

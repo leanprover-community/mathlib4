@@ -516,7 +516,8 @@ variable [MeasurableSpace β]
 
 /-- A class registering that either `α` is countable or `β` is a countably generated
 measurable space. -/
-class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] : Prop :=
+class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
+    Prop where
   countableOrCountablyGenerated : Countable α ∨ MeasurableSpace.CountablyGenerated β
 
 instance instCountableOrCountablyGeneratedOfCountable [h1 : Countable α] :

@@ -107,41 +107,19 @@ def Finset.enum [DecidableEq α] : List α → List (Finset α)
   | [] => [∅]
   | x :: xs => do
     let r ← Finset.enum xs
-    [r, {x} ∪ r]
+    [r, insert x r]
 
 @[simp]
 theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
     s ∈ Finset.enum xs ↔ ∀ x ∈ s, x ∈ xs := by
-  induction' xs with xs_hd generalizing s <;> simp [*, Finset.enum]
-  · simp [Finset.eq_empty_iff_forall_not_mem]
-  · constructor
-    · rintro ⟨a, h, h'⟩ x hx
-      cases' h' with _ h' a b
-      · right
-        apply h
-        subst a
-        exact hx
-      · simp only [h', mem_union, mem_singleton] at hx ⊢
-        cases' hx with hx hx'
-        · exact Or.inl hx
-        · exact Or.inr (h _ hx')
-    · intro h
-      exists s \ ({xs_hd} : Finset α)
-      simp only [and_imp, mem_sdiff, mem_singleton]
-      simp only [or_iff_not_imp_left] at h
-      exists h
-      by_cases h : xs_hd ∈ s
-      · have : {xs_hd} ⊆ s := by
-          simp only [HasSubset.Subset, *, forall_eq, mem_singleton]
-        simp only [union_sdiff_of_subset this, or_true, Finset.union_sdiff_of_subset,
-          eq_self_iff_true]
-      · left
-        symm
-        simp only [sdiff_eq_self]
-        intro a
-        simp only [and_imp, mem_inter, mem_singleton]
-        rintro h₀ rfl
-        exact (h h₀).elim
+  induction xs generalizing s with
+  | nil => simp [enum, eq_empty_iff_forall_not_mem]
+  | cons x xs ih =>
+      simp only [enum, List.bind_eq_bind, List.mem_bind, List.mem_cons, List.mem_singleton,
+        List.not_mem_nil, or_false, ih]
+      refine ⟨by aesop, fun hs => ⟨s.erase x, ?_⟩⟩
+      simp only [or_iff_not_imp_left] at hs
+      simp (config := { contextual := true }) [eq_comm (a := s), or_iff_not_imp_left, hs]
 
 instance Finset.finEnum [FinEnum α] : FinEnum (Finset α) :=
   ofList (Finset.enum (toList α)) (by intro; simp)

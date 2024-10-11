@@ -69,7 +69,7 @@ theorem pointwise_vadd_span (v : V) (s : Set P) : v +ᵥ affineSpan k s = affine
 
 theorem map_pointwise_vadd (f : P₁ →ᵃ[k] P₂) (v : V₁) (s : AffineSubspace k P₁) :
     (v +ᵥ s).map f = f.linear v +ᵥ s.map f := by
-  erw [pointwise_vadd_eq_map, pointwise_vadd_eq_map, map_map, map_map]
+  rw [pointwise_vadd_eq_map, pointwise_vadd_eq_map, map_map, map_map]
   congr 1
   ext
   exact f.map_vadd _ _
