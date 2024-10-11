@@ -148,6 +148,7 @@ theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by
 theorem zero_mk (s : S) : mk (0 : M) s = 0 :=
   OreLocalization.zero_oreDiv _
 
+/-- A variant of `mk_add_mk` that is `rfl` but has a stranger multiplication order. -/
 theorem mk_add_mk' {m1 m2 : M} {s1 s2 : S} :
     mk m1 s1 + mk m2 s2 = mk (s2 • m1 + s1 • m2) (s2 * s1) := by with_unfolding_all rfl
 
@@ -195,6 +196,7 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
 
 example : OreLocalization.instMonoid = LocalizedModule.instMonoid (A := R) (S := S) := rfl
 
+/-- A variant of `mk_mul_mk` that is `rfl` but has a stranger multiplication order. -/
 theorem mk_mul_mk' {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ s₂ : S} :
     mk a₁ s₁ * mk a₂ s₂ = mk (a₁ * a₂) (s₂ * s₁) := by
   with_unfolding_all rfl
@@ -244,6 +246,9 @@ instance {A : Type*} [CommRing A] [Algebra R A] {S : Submonoid R} :
     CommRing (LocalizedModule S A) where
   __ := inferInstanceAs (Ring (LocalizedModule S A))
   __ := inferInstanceAs (CommSemiring (LocalizedModule S A))
+
+example {R : Type*} [CommRing R] {S : Submonoid R} :
+  (LocalizedModule.instCommRing : CommRing R[S⁻¹]) = OreLocalization.instCommRing := rfl
 
 theorem mk_smul_mk (r : R) (m : M) (s t : S) :
     Localization.mk r s • mk m t = mk (r • m) (s * t) :=
