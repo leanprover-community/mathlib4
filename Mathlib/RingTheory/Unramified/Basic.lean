@@ -169,6 +169,9 @@ theorem of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B) :
     FormallyUnramified R B :=
   of_surjective e.toAlgHom e.surjective
 
+theorem iff_of_equiv (e : A ≃ₐ[R] B) : FormallyUnramified R A ↔ FormallyUnramified R B :=
+  ⟨fun _ ↦ of_equiv e, fun _ ↦ of_equiv e.symm⟩
+
 end of_surjective
 
 section BaseChange
