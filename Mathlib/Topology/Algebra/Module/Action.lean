@@ -159,49 +159,63 @@ instance instSubsingleton (R : Type*) [TopologicalSpace R] (A : Type*) [Add A] [
 end subsingleton
 
 section self
+variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
 
-/-
-
+/-!
 We now fix once and for all a topological semiring `R`.
 
 We first prove that the action topology on `R` considered as a module over itself,
 is `R`'s topology.
-
 -/
-instance _root_.TopologicalSemiring.toIsActionTopology (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R] :
-    IsActionTopology R R := by
-  constructor
-  /- Let `R` be a topological ring with topology τR. To prove that `τR` is the action
-  topology, it suffices to prove inclusions in both directions.
-  One way is obvious: addition and multiplication are continuous for `R`, so the
-  action topology is finer than `R` because it's the finest topology with these properties.-/
-  refine le_antisymm ?_ (actionTopology_le R R)
-  /- The other way is more interesting. We can interpret the problem as proving that
-  the identity function is continuous from `R` with the action topology to `R` with
-  its usual topology to `R` with the action topology.
-  -/
-  rw [← continuous_id_iff_le]
-  /-
-  The idea needed here is to rewrite the identity function as the composite of `r ↦ (r,1)`
-  from `R` to `R × R`, and multiplication on `R × R`, where we topologise `R × R`
-  by giving the first `R` the usual topology and the second `R` the action topology.
-  -/
-  rw [show (id : R → R) = (fun rs ↦ rs.1 • rs.2) ∘ (fun r ↦ (r, 1)) by ext; simp]
-  /-
-  It thus suffices to show that each of these maps are continuous.
-  -/
-  apply @Continuous.comp R (R × R) R τR (@instTopologicalSpaceProd R R τR (actionTopology R R))
-      (actionTopology R R)
-  · /-
-    The map R × R → R is `•`, so by a fundamental property of the action topology,
-    this is continuous. -/
-    exact @continuous_smul _ _ _ _ (actionTopology R R) <| ActionTopology.continuousSMul ..
-  · /-
-    The map `R → R × R` sending `r` to `(r,1)` is a map into a product, so it suffices to show
-    that each of the two factors is continuous. But the first is the identity function and the
-    second is a constant function. -/
-    exact @Continuous.prod_mk _ _ _ _ (actionTopology R R) _ _ _ continuous_id <|
-      @continuous_const _ _ _ (actionTopology R R) _
+
+/-- The action by left-multiplication is the action topology. -/
+instance _root_.TopologicalSemiring.toIsActionTopology : IsActionTopology R R where
+  eq_actionTopology' := by
+    /- Let `R` be a topological ring with topology τR. To prove that `τR` is the action
+    topology, it suffices to prove inclusions in both directions.
+    One way is obvious: addition and multiplication are continuous for `R`, so the
+    action topology is finer than `R` because it's the finest topology with these properties.-/
+    refine le_antisymm ?_ (actionTopology_le R R)
+    /- The other way is more interesting. We can interpret the problem as proving that
+    the identity function is continuous from `R` with the action topology to `R` with
+    its usual topology to `R` with the action topology.
+    -/
+    rw [← continuous_id_iff_le]
+    /-
+    The idea needed here is to rewrite the identity function as the composite of `r ↦ (r,1)`
+    from `R` to `R × R`, and multiplication on `R × R`, where we topologise `R × R`
+    by giving the first `R` the usual topology and the second `R` the action topology.
+    -/
+    rw [show (id : R → R) = (fun rs ↦ rs.1 • rs.2) ∘ (fun r ↦ (r, 1)) by ext; simp]
+    /-
+    It thus suffices to show that each of these maps are continuous.
+    -/
+    apply @Continuous.comp R (R × R) R τR (@instTopologicalSpaceProd R R τR (actionTopology R R))
+        (actionTopology R R)
+    · /-
+      The map R × R → R is `•`, so by a fundamental property of the action topology,
+      this is continuous. -/
+      exact @continuous_smul _ _ _ _ (actionTopology R R) <| ActionTopology.continuousSMul ..
+    · /-
+      The map `R → R × R` sending `r` to `(r,1)` is a map into a product, so it suffices to show
+      that each of the two factors is continuous. But the first is the identity function and the
+      second is a constant function. -/
+      exact @Continuous.prod_mk _ _ _ _ (actionTopology R R) _ _ _ continuous_id <|
+        @continuous_const _ _ _ (actionTopology R R) _
+
+/-- The action by right-multiplication is the action topology. -/
+instance _root_.TopologicalSemiring.toOppositeIsActionTopology : IsActionTopology Rᵐᵒᵖ R where
+  eq_actionTopology' := by
+    -- the same argument as above with some tweaks
+    refine le_antisymm ?_ (actionTopology_le Rᵐᵒᵖ R)
+    rw [← continuous_id_iff_le]
+    rw [show (id : R → R) = (fun rs ↦ rs.1 • rs.2) ∘ (fun r ↦ (MulOpposite.op r, 1)) by ext; simp]
+    apply @Continuous.comp _ _ _ _ (@instTopologicalSpaceProd _ _ _ (actionTopology Rᵐᵒᵖ R))
+        (actionTopology Rᵐᵒᵖ R)
+    · exact @continuous_smul _ _ _ _ (actionTopology Rᵐᵒᵖ R) <| ActionTopology.continuousSMul ..
+    · refine @Continuous.prod_mk _ _ _ _ (actionTopology Rᵐᵒᵖ R) _ _ _ MulOpposite.continuous_op <|
+        @continuous_const _ _ _ (actionTopology Rᵐᵒᵖ R) _
+
 
 end self
 
@@ -235,13 +249,5 @@ theorem iso (e : A ≃L[R] B) : IsActionTopology R B where
       simp
 
 end iso
-
-section MulOpposite
-
-instance mulOpposite (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R] :
-    IsActionTopology Rᵐᵒᵖ R where
-  eq_actionTopology' := sorry
-
-end MulOpposite
 
 end IsActionTopology
