@@ -415,7 +415,7 @@ end ΓSpec
 
 theorem Scheme.toSpecΓ_val_base (X : Scheme.{u}) (x) :
     (Scheme.toSpecΓ X).1.base x =
-      (Spec.map (X.presheaf.germ (U := ⊤) ⟨x, trivial⟩)).1.base (LocalRing.closedPoint _) := rfl
+      (Spec.map (X.presheaf.germ ⊤ x trivial)).1.base (LocalRing.closedPoint _) := rfl
 
 @[reassoc (attr := simp)]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :

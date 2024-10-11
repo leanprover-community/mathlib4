@@ -125,11 +125,11 @@ theorem Scheme.isoSpec_Spec (R : CommRingCat.{u}) :
     (Spec R).isoSpec = Scheme.Spec.mapIso (Scheme.ΓSpecIso R).op :=
   Iso.ext (SpecMap_ΓSpecIso_hom R).symm
 
-theorem Scheme.isoSpec_Spec_hom (R : CommRingCat.{u}) :
+@[simp] theorem Scheme.isoSpec_Spec_hom (R : CommRingCat.{u}) :
     (Spec R).isoSpec.hom = Spec.map (Scheme.ΓSpecIso R).hom :=
   (SpecMap_ΓSpecIso_hom R).symm
 
-theorem Scheme.isoSpec_Spec_inv (R : CommRingCat.{u}) :
+@[simp] theorem Scheme.isoSpec_Spec_inv (R : CommRingCat.{u}) :
     (Spec R).isoSpec.inv = Spec.map (Scheme.ΓSpecIso R).inv :=
   congr($(isoSpec_Spec R).inv)
 
