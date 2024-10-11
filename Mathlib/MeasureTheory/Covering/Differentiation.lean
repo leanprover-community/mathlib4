@@ -573,7 +573,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
         conv_rhs => rw [← mul_one (t ^ n)]
         gcongr
         rw [zpow_neg_one]
-        exact inv_lt_one ht
+        exact inv_lt_one_of_one_lt₀ ht
   calc
     ν s =
       ν (s ∩ f ⁻¹' {0}) + ν (s ∩ f ⁻¹' {∞}) +

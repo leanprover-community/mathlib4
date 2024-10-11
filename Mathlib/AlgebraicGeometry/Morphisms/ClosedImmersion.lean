@@ -85,7 +85,7 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion f]
 
 /-- Composition with an isomorphism preserves closed immersions. -/
 instance respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
-  constructor <;> intro X Y Z e f hf <;> infer_instance
+  apply MorphismProperty.RespectsIso.mk <;> intro X Y Z e f hf <;> infer_instance
 
 /-- Given two commutative rings `R S : CommRingCat` and a surjective morphism
 `f : R ⟶ S`, the induced scheme morphism `specObj S ⟶ specObj R` is a
@@ -96,11 +96,11 @@ theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surje
   surj_on_stalks x := by
     haveI : (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f)).RespectsIso := by
       rw [← RingHom.toMorphismProperty_respectsIso_iff]
-      exact surjective_respectsIso
+      exact RingHom.surjective_respectsIso
     apply (MorphismProperty.arrow_mk_iso_iff
       (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f))
       (Scheme.arrowStalkMapSpecIso f x)).mpr
-    exact surjective_localRingHom_of_surjective f h x.asIdeal
+    exact RingHom.surjective_localRingHom_of_surjective f h x.asIdeal
 
 /-- For any ideal `I` in a commutative ring `R`, the quotient map `specObj R ⟶ specObj (R ⧸ I)`
 is a closed immersion. -/
@@ -178,7 +178,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
   have (i : 𝒰.J) : IsAffine (𝒰.obj i) := Scheme.isAffine_affineCover X _
   let res (i : 𝒰.J) : Γ(X, ⊤) ⟶ Γ(𝒰.obj i, ⊤) := (𝒰.map i).app ⊤
   refine stalkMap_injective_of_isAffine_of _ _ (fun (g : Γ(Y, ⊤)) h ↦ ?_)
-  rw [TopCat.Presheaf.Γgerm, Scheme.stalkMap_germ'_apply] at h
+  rw [TopCat.Presheaf.Γgerm, Scheme.stalkMap_germ_apply] at h
   obtain ⟨U, w, (hx : x ∈ U), hg⟩ :=
     X.toRingedSpace.eq_zero_res_of_eq_zero_germ ⊤ (φ g) ⟨x, trivial⟩ h
   obtain ⟨_, ⟨s, rfl⟩, hyv, bsle⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_basicOpen Y)

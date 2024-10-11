@@ -3,7 +3,7 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # The compact-open topology
@@ -166,8 +166,6 @@ theorem continuous_eval [LocallyCompactPair X Y] : Continuous fun p : C(X, Y) ×
   rintro ⟨f, x⟩ U ⟨hx : f x ∈ U, hU : IsOpen U⟩
   rcases exists_mem_nhds_isCompact_mapsTo f.continuous (hU.mem_nhds hx) with ⟨K, hxK, hK, hKU⟩
   filter_upwards [prod_mem_nhds (eventually_mapsTo hK hU hKU) hxK] using fun _ h ↦ h.1 h.2
-
-@[deprecated (since := "2023-12-26")] alias continuous_eval' := continuous_eval
 
 /-- Evaluation of a continuous map `f` at a point `x` is continuous in `f`.
 
@@ -376,7 +374,7 @@ theorem continuous_curry [LocallyCompactSpace (X × Y)] :
 /-- The uncurried form of a continuous map `X → C(Y, Z)` is a continuous map `X × Y → Z`. -/
 theorem continuous_uncurry_of_continuous [LocallyCompactSpace Y] (f : C(X, C(Y, Z))) :
     Continuous (Function.uncurry fun x y => f x y) :=
-  continuous_eval.comp <| f.continuous.prod_map continuous_id
+  continuous_eval.comp <| f.continuous.prodMap continuous_id
 
 /-- The uncurried form of a continuous map `X → C(Y, Z)` as a continuous map `X × Y → Z` (if `Y` is
     locally compact). If `X` is also locally compact, then this is a homeomorphism between the two
@@ -390,7 +388,7 @@ theorem continuous_uncurry [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     Continuous (uncurry : C(X, C(Y, Z)) → C(X × Y, Z)) := by
   apply continuous_of_continuous_uncurry
   rw [← (Homeomorph.prodAssoc _ _ _).comp_continuous_iff']
-  apply continuous_eval.comp (continuous_eval.prod_map continuous_id)
+  apply continuous_eval.comp (continuous_eval.prodMap continuous_id)
 
 /-- The family of constant maps: `Y → C(X, Y)` as a continuous map. -/
 def const' : C(Y, C(X, Y)) :=

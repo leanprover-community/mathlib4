@@ -167,7 +167,7 @@ instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirecte
 /-- A monotone function on an upwards-directed type is directed. -/
 theorem directed_of_isDirected_le [LE α] [IsDirected α (· ≤ ·)] {f : α → β} {r : β → β → Prop}
     (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f :=
-  directed_id.mono_comp H
+  directed_id.mono_comp _ H
 
 theorem Monotone.directed_le [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {f : α → β} :
     Monotone f → Directed (· ≤ ·) f :=

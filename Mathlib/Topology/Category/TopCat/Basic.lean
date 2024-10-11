@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro
+Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Category instance for topological spaces
@@ -56,7 +56,7 @@ instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
 instance instFunLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y :=
   inferInstanceAs <| FunLike C(X, Y) X Y
 
-instance instMonoidHomClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
+instance instContinuousMapClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
   inferInstanceAs <| ContinuousMapClass C(X, Y) X Y
 
 -- Porting note (#10618): simp can prove this; removed simp
