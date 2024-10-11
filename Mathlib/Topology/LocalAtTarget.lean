@@ -150,8 +150,8 @@ theorem inducing_iff_inducing_of_iSup_eq_top (h : Continuous f) :
         (show f x ∈ iSup U by
           rw [hU]
           trivial)
-    rw [← OpenEmbedding.map_nhds_eq (h.1 _ (U i).2).openEmbedding_subtype_val ⟨x, hi⟩]
-    rw [(H i) ⟨x, hi⟩, Filter.subtype_coe_map_comap, Function.comp_apply, Subtype.coe_mk,
+    rw [← OpenEmbedding.map_nhds_eq (h.1 _ (U i).2).openEmbedding_subtype_val ⟨x, hi⟩,
+      (H i) ⟨x, hi⟩, Filter.subtype_coe_map_comap, Function.comp_apply, Subtype.coe_mk,
       inf_eq_left, Filter.le_principal_iff]
     exact Filter.preimage_mem_comap ((U i).2.mem_nhds hi)
 

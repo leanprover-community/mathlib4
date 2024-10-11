@@ -312,8 +312,7 @@ noncomputable def comp (p : R[X]) : PolynomialModule R M →ₗ[R] PolynomialMod
   LinearMap.comp ((eval p).restrictScalars R) (map R[X] (lsingle R 0))
 
 theorem comp_single (p : R[X]) (i : ℕ) (m : M) : comp p (single R i m) = p ^ i • single R 0 m := by
-  rw [comp_apply]
-  rw [map_single, eval_single]
+  rw [comp_apply, map_single, eval_single]
   rfl
 
 theorem comp_eval (p : R[X]) (q : PolynomialModule R M) (r : R) :

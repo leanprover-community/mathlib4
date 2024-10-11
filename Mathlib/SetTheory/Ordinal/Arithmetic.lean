@@ -40,7 +40,6 @@ Some properties of the operations are also used to discuss general tools on ordi
 * `IsNormal`: a function `f : Ordinal → Ordinal` satisfies `IsNormal` if it is strictly increasing
   and order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
   `a < o`.
-* `enumOrd`: enumerates an unbounded set of ordinals by the ordinals themselves.
 * `sup`, `lsub`: the supremum / least strict upper bound of an indexed family of ordinals in
   `Type u`, as an ordinal in `Type u`.
 * `bsup`, `blsub`: the supremum / least strict upper bound of a set of ordinals indexed by ordinals
