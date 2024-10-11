@@ -24,7 +24,7 @@ universe u
 
 /-- The category of topological spaces and continuous maps. -/
 @[to_additive existing TopCat]
-def TopCat : Type (u + 1) :=
+abbrev TopCat : Type (u + 1) :=
   Bundled TopologicalSpace
 
 namespace TopCat
@@ -34,27 +34,11 @@ instance bundledHom : BundledHom @ContinuousMap where
   id := @ContinuousMap.id
   comp := @ContinuousMap.comp
 
-deriving instance LargeCategory for TopCat
-
--- Porting note: currently no derive handler for ConcreteCategory
--- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance concreteCategory : ConcreteCategory TopCat :=
-  inferInstanceAs <| ConcreteCategory (Bundled TopologicalSpace)
-
-instance : CoeSort TopCat Type* where
-  coe X := X.α
+instance instFunLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y :=
+  ConcreteCategory.instFunLike
 
 instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
   X.str
-
--- We leave this temporarily as a reminder of the downstream instances #13170
--- -- Porting note: cannot find a coercion to function otherwise
--- -- attribute [instance] ConcreteCategory.instFunLike in
--- instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
---   coe (f : C(X, Y)) := f
-
-instance instFunLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y :=
-  inferInstanceAs <| FunLike C(X, Y) X Y
 
 instance instContinuousMapClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
   inferInstanceAs <| ContinuousMapClass C(X, Y) X Y
