@@ -29,7 +29,7 @@ namespace Ideal
 
 lemma noZeroDivisors_or_valuationRing_of_zero_divisors_mem_jacobson [IsPrincipalIdealRing R]
     (h0 : {x : R | ∃ y ≠ 0, y * x = 0} ⊆ (jacobson ⊥ : Ideal R)) :
-    NoZeroDivisors R ∨ (ValuationRing R ∧
+    NoZeroDivisors R ∨ (PreValuationRing R ∧
       (jacobson ⊥ : Ideal R).IsMaximal ∧ ∀ I : Ideal R, ∃ k, I = (jacobson ⊥) ^ k) := by
   classical
   rcases subsingleton_or_nontrivial R with _|_
