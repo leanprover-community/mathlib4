@@ -739,7 +739,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     dsimp
     rw [Fin.predAbove_of_le_castSucc i x h']
     dsimp [δ]
-    erw [Fin.succAbove_of_castSucc_lt _ _ _]
+    rw [Fin.succAbove_of_castSucc_lt _ _ _]
     · rw [Fin.castSucc_castPred]
     · exact (Fin.castSucc_lt_succ_iff.mpr h')
   · simp only [not_le] at h'
@@ -754,10 +754,10 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
       refine hi.symm.trans ?_
       congr 1
       dsimp [δ]
-      erw [Fin.succAbove_of_castSucc_lt i.succ]
+      rw [Fin.succAbove_of_castSucc_lt i.succ]
       exact Fin.lt_succ
     · dsimp [δ]
-      erw [Fin.succAbove_of_le_castSucc i.succ _]
+      rw [Fin.succAbove_of_le_castSucc i.succ _]
       simp only [Fin.lt_iff_val_lt_val, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,
         Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
       cases' Nat.le.dest h' with c hc
@@ -803,17 +803,17 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
     by_cases h' : θ.toOrderHom x ≤ i
     · simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [Fin.predAbove_of_le_castSucc _ _ (by rwa [Fin.castSucc_castPred])]
+      rw [Fin.predAbove_of_le_castSucc _ _ (by rwa [Fin.castSucc_castPred])]
       dsimp [δ]
-      erw [Fin.succAbove_of_castSucc_lt i]
+      rw [Fin.succAbove_of_castSucc_lt i]
       · rw [Fin.castSucc_castPred]
       · rw [(hi x).le_iff_lt] at h'
         exact h'
     · simp only [not_le] at h'
       dsimp [σ, δ]
-      erw [Fin.predAbove_of_castSucc_lt _ _ (by rwa [Fin.castSucc_castPred])]
+      rw [Fin.predAbove_of_castSucc_lt _ _ (by rwa [Fin.castSucc_castPred])]
       rw [Fin.succAbove_of_le_castSucc i _]
-      · erw [Fin.succ_pred]
+      · rw [Fin.succ_pred]
       · exact Nat.le_sub_one_of_lt (Fin.lt_iff_val_lt_val.mp h')
   · obtain rfl := le_antisymm (Fin.le_last i) (not_lt.mp h)
     use θ ≫ σ (Fin.last _)

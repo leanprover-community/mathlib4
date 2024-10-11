@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl
 -/
 
-import Mathlib.AlgebraicTopology.Nerve
+import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 

@@ -128,7 +128,7 @@ def DifferentiableWithinAtProp (f : H → H') (s : Set H) (x : H) : Prop :=
 
 /-- Being differentiable in the model space is a local property, invariant under smooth maps.
 Therefore, it will lift nicely to manifolds. -/
-theorem differentiable_within_at_localInvariantProp :
+theorem differentiableWithinAt_localInvariantProp :
     (contDiffGroupoid ⊤ I).LocalInvariantProp (contDiffGroupoid ⊤ I')
       (DifferentiableWithinAtProp I I') :=
   { is_local := by
@@ -172,6 +172,9 @@ theorem differentiable_within_at_localInvariantProp :
       convert (this.differentiableWithinAt le_top).comp _ h _
       · ext y; simp only [mfld_simps]
       · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1 }
+
+@[deprecated (since := "2024-10-10")]
+alias differentiable_within_at_localInvariantProp := differentiableWithinAt_localInvariantProp
 
 /-- Predicate ensuring that, at a point and within a set, a function can have at most one
 derivative. This is expressed using the preferred chart at the considered point. -/

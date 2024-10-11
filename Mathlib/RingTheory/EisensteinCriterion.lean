@@ -34,7 +34,7 @@ theorem map_eq_C_mul_X_pow_of_forall_coeff_mem {f : R[X]} {P : Ideal R}
     by_cases hf0 : f = 0
     · simp [hf0]
     rcases lt_trichotomy (n : WithBot ℕ) (degree f) with (h | h | h)
-    · erw [coeff_map, eq_zero_iff_mem.2 (hfP n h), coeff_C_mul, coeff_X_pow, if_neg,
+    · rw [coeff_map, eq_zero_iff_mem.2 (hfP n h), coeff_C_mul, coeff_X_pow, if_neg,
         mul_zero]
       rintro rfl
       exact not_lt_of_ge degree_le_natDegree h
