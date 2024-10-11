@@ -104,7 +104,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 e
-      erw [Set.preimage_iInter]
+      rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
       -- Porting note: needed more hand holding here
@@ -113,7 +113,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       rw [dif_pos he, ← Set.preimage_comp]
       apply congrFun
       apply congrArg
-      erw [← coe_comp, D.w] -- now `erw` after #13170
+      rw [← coe_comp, D.w] -- now `erw` after #13170
       rfl
 
 end CofilteredLimit

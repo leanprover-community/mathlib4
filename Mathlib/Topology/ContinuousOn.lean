@@ -54,11 +54,19 @@ theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
   simp [mem_closure_iff_frequently, frequently_nhdsWithin_iff]
 
 @[simp]
-theorem eventually_nhdsWithin_nhdsWithin {a : α} {s : Set α} {p : α → Prop} :
+theorem eventually_eventually_nhdsWithin {a : α} {s : Set α} {p : α → Prop} :
     (∀ᶠ y in 𝓝[s] a, ∀ᶠ x in 𝓝[s] y, p x) ↔ ∀ᶠ x in 𝓝[s] a, p x := by
   refine ⟨fun h => ?_, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
   simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
+
+@[deprecated (since := "2024-10-04")]
+alias eventually_nhdsWithin_nhdsWithin := eventually_eventually_nhdsWithin
+
+@[simp]
+theorem eventually_mem_nhdsWithin_iff {x : α} {s t : Set α} :
+    (∀ᶠ x' in 𝓝[s] x, t ∈ 𝓝[s] x') ↔ t ∈ 𝓝[s] x :=
+  eventually_eventually_nhdsWithin
 
 theorem nhdsWithin_eq (a : α) (s : Set α) :
     𝓝[s] a = ⨅ t ∈ { t : Set α | a ∈ t ∧ IsOpen t }, 𝓟 (t ∩ s) :=

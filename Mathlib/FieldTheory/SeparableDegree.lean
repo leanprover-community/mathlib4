@@ -208,7 +208,7 @@ def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
     (hS ▸ isAlgebraic_adjoin (S := S) fun x hx ↦ (hK x hx).1)
   have halg := (topEquiv (F := F) (E := E)).isAlgebraic
   Classical.choice <| Function.Embedding.antisymm
-    (halg.algHomEmbeddingOfSplits (fun _ ↦ splits_of_mem_adjoin F (S := S) hK (hS ▸ mem_top)) _)
+    (halg.algHomEmbeddingOfSplits (fun _ ↦ splits_of_mem_adjoin F E (S := S) hK (hS ▸ mem_top)) _)
     (halg.algHomEmbeddingOfSplits (fun _ ↦ IsAlgClosed.splits_codomain _) _)
 
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K`
