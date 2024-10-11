@@ -67,8 +67,7 @@ end ContinuousMapClass
 
 namespace ContinuousMap
 
-variable {X Y γ δ : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace γ]
-  [TopologicalSpace δ]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 instance instFunLike : FunLike C(X, Y) X Y where
   coe := ContinuousMap.toFun
@@ -110,8 +109,6 @@ theorem coe_copy (f : C(X, Y)) (f' : X → Y) (h : f' = f) : ⇑(f.copy f' h) = 
 
 theorem copy_eq (f : C(X, Y)) (f' : X → Y) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
-
-variable {f g : C(X, Y)}
 
 /-- Deprecated. Use `map_continuous` instead. -/
 protected theorem continuous (f : C(X, Y)) : Continuous f :=

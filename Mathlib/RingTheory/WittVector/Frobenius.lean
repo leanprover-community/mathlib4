@@ -48,7 +48,7 @@ and bundle it into `WittVector.frobenius`.
 
 namespace WittVector
 
-variable {p : ℕ} {R S : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S]
+variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
