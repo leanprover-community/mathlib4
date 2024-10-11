@@ -17,7 +17,7 @@ for all natural numbers `n`.
 
 ## Main theorems
 
-- `Nat.coprime_fermatNumberNumber_fermat`: two distinct Fermat numbers are coprime.
+- `Nat.coprime_fermatNumber_fermatNumber`: two distinct Fermat numbers are coprime.
 -/
 
 namespace Nat
