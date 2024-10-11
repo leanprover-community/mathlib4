@@ -90,22 +90,44 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Name LastName
 -/"
 
--- TODO: should this raise an error?
+/--
+info: Text: `Authors: Name LastName
+
+Here comes an implicit docstring which doesn't belong here!`
+Range: (126, 209)
+Message: 'If an authors line spans multiple lines, each line but the last must end with a trailing comma'
+-/
 #guard_msgs in
 #check_copyright
 "/-
 Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Name LastName
-stuff
+
+Here comes an implicit docstring which doesn't belong here!
 -/
 "
 
--- TODO: should this raise an error "Copyright too short" instead?
 /--
-info: Text: ``
-Range: (126, 126)
-Message: 'The authors line should begin with 'Authors: ''
+info: Text: `Authors: Name LastName
+Here comes an implicit docstring which shouldn't be here!`
+Range: (126, 206)
+Message: 'If an authors line spans multiple lines, each line but the last must end with a trailing comma'
+-/
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Name LastName
+Here comes an implicit docstring which shouldn't be here!
+-/
+"
+
+/--
+info: Text: `-|`
+Range: (126, 128)
+Message: 'Copyright too short!'
 -/
 #guard_msgs in
 #check_copyright
@@ -114,6 +136,14 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 "
+
+/--
+info: Text: `-|`
+Range: (1, 3)
+Message: 'Copyright too short!'
+-/
+#guard_msgs in
+#check_copyright ""
 
 /--
 info: Text: `-|`

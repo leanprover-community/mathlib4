@@ -179,9 +179,21 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
       output := output.push
         (toSyntax copyright (copyrightAuthor.takeRight copStop.length),
          s!"Copyright line should end with '. All rights reserved.'")
-    -- Validate the authors line.
-    let authorsLine := "\n".intercalate authorsLines.dropLast
+    -- Validate the authors line(s). The last line is the closing comment: trim that off right away.
+    let authorsLines := authorsLines.dropLast
+    -- Complain about a missing authors line.
+    dbg_trace authorsLines
+    if authorsLines.length == 0 then
+      output := output.push (toSyntax copyright "-/", s!"Copyright too short!")
+    else
+    -- If the list of authors spans multiple lines, all but the last line should end with a trailing
+    -- comma. This excludes e.g. other comments in the copyright header.
+    let authorsLine := "\n".intercalate authorsLines
     let authorsStart := (("\n".intercalate [openComment, copyrightAuthor, license, ""])).endPos
+    if authorsLines.length > 1 && !authorsLines.dropLast.all (·.endsWith ",") then
+      output := output.push ((toSyntax copyright authorsLine),
+        "If an authors line spans multiple lines, \
+        each line but the last must end with a trailing comma")
     output := output.append (authorsLineChecks authorsLine authorsStart)
     let expectedLicense := "Released under Apache 2.0 license as described in the file LICENSE."
     if license != expectedLicense then
