@@ -2375,6 +2375,26 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
 
 end Ordinal
 
+namespace Cardinal
+
+open Ordinal
+
+theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
+  refine ⟨fun h => aleph0_ne_zero ?_, fun a => lt_imp_lt_of_le_imp_le fun h => ?_⟩
+  · rw [← Ordinal.le_zero, ord_le] at h
+    simpa only [card_zero, nonpos_iff_eq_zero] using co.trans h
+  · rw [ord_le] at h ⊢
+    rwa [← @add_one_of_aleph0_le (card a), ← card_succ]
+    rw [← ord_le, ← le_succ_of_isLimit, ord_le]
+    · exact co.trans h
+    · rw [ord_aleph0]
+      exact Ordinal.omega0_isLimit
+
+theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
+  toType_noMax_of_succ_lt (ord_isLimit h).2
+
+end Cardinal
+
 variable {α : Type u} {r : α → α → Prop} {a b : α}
 
 namespace Acc
