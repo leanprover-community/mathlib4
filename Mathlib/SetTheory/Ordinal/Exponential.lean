@@ -455,6 +455,39 @@ theorem log_mod_opow_log_lt_log_self {b o : Ordinal} (hb : 1 < b) (hbo : b ≤ o
     rw [← Ordinal.pos_iff_ne_zero]
     exact opow_pos _ (zero_lt_one.trans hb)
 
+theorem log_eq_iff {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) (y : Ordinal) :
+    log b x = y ↔ b ^ y ≤ x ∧ x < b ^ succ y := by
+  constructor
+  · rintro rfl
+    use opow_log_le_self b hx, lt_opow_succ_log_self hb x
+  · rintro ⟨hx₁, hx₂⟩
+    apply le_antisymm
+    · rwa [← lt_succ_iff, ← lt_opow_iff_log_lt hb hx]
+    · rwa [← opow_le_iff_le_log hb hx]
+
+theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hw : w < b ^ u) :
+    log b (b ^ u * v + w) = u + log b v := by
+  rw [log_eq_iff hb]
+  · constructor
+    · rw [opow_add]
+      exact (mul_le_mul_left' (opow_log_le_self b hv) _).trans (le_add_right _ w)
+    · apply (add_lt_add_left hw _).trans_le
+      rw [← mul_succ, ← add_succ, opow_add]
+      apply mul_le_mul_left'
+      rw [succ_le_iff]
+      exact lt_opow_succ_log_self hb _
+  · exact fun h ↦ mul_ne_zero (opow_ne_zero u (bot_lt_of_lt hb).ne') hv <|
+      left_eq_zero_of_add_eq_zero h
+
+theorem log_opow_mul {b v : Ordinal} (hb : 1 < b) (u : Ordinal) (hv : v ≠ 0) :
+    log b (b ^ u * v) = u + log b v := by
+  simpa using log_opow_mul_add hb hv (opow_pos u (bot_lt_of_lt hb))
+
+theorem log_opow {b : Ordinal} (hb : 1 < b) (x : Ordinal) : log b (b ^ x) = x := by
+  convert log_opow_mul hb x zero_ne_one.symm using 1
+  · rw [mul_one]
+  · rw [log_one_right, add_zero]
+
 theorem div_opow_log_pos (b : Ordinal) {o : Ordinal} (ho : o ≠ 0) : 0 < o / (b ^ log b o) := by
   rcases eq_zero_or_pos b with (rfl | hb)
   · simpa using Ordinal.pos_iff_ne_zero.2 ho
