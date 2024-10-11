@@ -6,7 +6,7 @@
       properties: ['wall-clock', 'task-clock', 'instructions:u', 'branches', 'branch-misses']
     rusage_properties: ['maxrss']
     cmd: |
-      bash -c 'set -eo pipefail; lake clean && LEAN_PATH=$(lean --print-libdir) lake build --no-cache -v --lean ./scripts/bench/fake-root/bin/lean | ./scripts/bench/accumulate_profile.py | grep -v took'
+      bash -c 'set -eo pipefail; lake clean && LEAN_PATH=$(lean --print-libdir) lake build batteries && rm .lake/packages/batteries/.lake/build/bin/runLinter && lake build --no-cache -v --lean ./scripts/bench/fake-root/bin/lean | ./scripts/bench/accumulate_profile.py | grep -v took'
     parse_output: true
     runs: 1
 - attributes:
