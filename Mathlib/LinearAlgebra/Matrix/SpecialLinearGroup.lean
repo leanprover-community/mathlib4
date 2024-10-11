@@ -125,7 +125,7 @@ instance : Inhabited (SpecialLinearGroup n R) :=
   ⟨1⟩
 
 instance [Fintype R] [DecidableEq R] : Fintype (SpecialLinearGroup n R) := Subtype.fintype _
-instance [Finite R] [DecidableEq R] : Finite (SpecialLinearGroup n R) := Subtype.finite
+instance [Finite R] : Finite (SpecialLinearGroup n R) := Subtype.finite
 
 /-- The transpose of a matrix in `SL(n, R)` -/
 def transpose (A : SpecialLinearGroup n R) : SpecialLinearGroup n R :=
