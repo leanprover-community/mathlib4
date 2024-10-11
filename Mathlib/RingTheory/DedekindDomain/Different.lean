@@ -385,12 +385,16 @@ def differentIdeal [NoZeroSMulDivisors A B] : Ideal B :=
   (1 / Submodule.traceDual A (FractionRing A) 1 : Submodule B (FractionRing B)).comap
     (Algebra.linearMap B (FractionRing B))
 
+set_option maxHeartbeats 400000 in
 lemma coeSubmodule_differentIdeal_fractionRing
-    [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B]
-    [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
+    [NoZeroSMulDivisors A B]
+    [letI : Algebra (FractionRing A) (FractionRing B) := FractionRing.liftAlgebra _ _;
+      Algebra.IsSeparable (FractionRing A) (FractionRing B)]
+    [Algebra.IsIntegral A B]
     [FiniteDimensional (FractionRing A) (FractionRing B)] :
     coeSubmodule (FractionRing B) (differentIdeal A B) =
       1 / Submodule.traceDual A (FractionRing A) 1 := by
+  letI : Algebra (FractionRing A) (FractionRing B) := FractionRing.liftAlgebra _ _
   have : IsIntegralClosure B A (FractionRing B) :=
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
   rw [coeSubmodule, differentIdeal, Submodule.map_comap_eq, inf_eq_right]
@@ -403,6 +407,7 @@ lemma coeSubmodule_differentIdeal_fractionRing
   · simpa only [FractionalIdeal.coe_one] using this
   · exact one_ne_zero
   · exact one_ne_zero
+
 
 lemma coeSubmodule_differentIdeal [NoZeroSMulDivisors A B] :
     coeSubmodule L (differentIdeal A B) = 1 / Submodule.traceDual A K 1 := by

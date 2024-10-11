@@ -82,7 +82,7 @@ lemma sections_smul_localizations_def
     {U : (Opens (PrimeSpectrum.Top R))ᵒᵖ} (x : U.unop)
     (r : (Spec.structureSheaf R).val.obj U)
     (m : Localizations M ↑x) :
-  r • m = r.1 x • m := rfl
+  r • m = (by exact r.1 x : Localization.AtPrime _) • m := rfl
 
 /--
 For any `R`-module `M` and any open subset `U ⊆ Spec R`, `M^~(U)` is an `𝒪_{Spec R}(U)`-submodule
@@ -119,8 +119,9 @@ def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
     · simp only [Opens.coe_inf, Pi.smul_apply, LinearMapClass.map_smul] at wa wr ⊢
       rw [mul_comm, ← Algebra.smul_def] at wr
-      rw [sections_smul_localizations_def, ← wa, ← mul_smul, ← smul_assoc, mul_comm sr, mul_smul,
-        wr, mul_comm rr, Algebra.smul_def, ← map_mul]
+      rw [Pi.smul_apply r a, sections_smul_localizations_def, ← wa, ← mul_smul, ← smul_assoc,
+        mul_comm sr, mul_smul, wr, mul_comm rr, Algebra.smul_def,
+        ← IsScalarTower.algebraMap_smul (R := R) (Localization.AtPrime y.1.asIdeal), map_mul]
       rfl
 
 end Tilde

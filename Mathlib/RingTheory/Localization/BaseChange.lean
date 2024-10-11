@@ -40,6 +40,11 @@ given by `m/s ↦ (1/s) ⊗ₜ m`.
 -/
 theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseChange A f := by
   refine ⟨fun _ ↦ IsLocalizedModule.isBaseChange S A f, fun h ↦ ?_⟩
+  let e := IsLocalization.algEquiv S A (Localization S)
+  letI : Module A (LocalizedModule S M) := Module.compHom _ e.toAlgHom.toRingHom
+  have : IsScalarTower R A (LocalizedModule S M) := by
+    refine ⟨fun x y z ↦ show e _ • z = x • e y • z from ?_⟩
+    rw [map_smul, smul_assoc]
   have : IsBaseChange A (LocalizedModule.mkLinearMap S M) := IsLocalizedModule.isBaseChange S A _
   let e := (this.equiv.symm.trans h.equiv).restrictScalars R
   convert IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
