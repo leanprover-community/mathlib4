@@ -214,8 +214,9 @@ theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = const
 
 @[simp]
 theorem monomial_zero_eq_C : ⇑(monomial R 0) = C R := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [monomial, Finsupp.single_zero, MvPowerSeries.monomial_zero_eq_C]
+  -- This used to be `rw`, but we need `rw; rfl` after leanprover/lean4#2644
+  rw [monomial, Finsupp.single_zero, MvPowerSeries.monomial_zero_eq_C]
+  rfl
 
 theorem monomial_zero_eq_C_apply (a : R) : monomial R 0 a = C R a := by simp
 
@@ -251,7 +252,6 @@ theorem coeff_X (n : ℕ) : coeff R n (X : R⟦X⟧) = if n = 1 then 1 else 0 :=
 
 @[simp]
 theorem coeff_zero_X : coeff R 0 (X : R⟦X⟧) = 0 := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   rw [coeff, Finsupp.single_zero, X, MvPowerSeries.coeff_zero_X]
 
 @[simp]
