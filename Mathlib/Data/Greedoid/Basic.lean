@@ -58,10 +58,7 @@ theorem feasible_set_inj {G₁ G₂ : Greedoid α} :
     G₁.ground_set = G₂.ground_set ∧ G₁.feasible = G₂.feasible ↔ G₁ = G₂ :=
   ⟨fun h => by apply eq_of_veq <;> simp [h], fun h => by simp [h]⟩
 
-
-
 variable {G : Greedoid α}
-
 variable {s : Finset α}
 variable {s₁ : Finset α} (hs₁ : s₁ ∈ G)
 variable {s₂ : Finset α} (hs₂ : s₂ ∈ G)
@@ -101,12 +98,14 @@ protected theorem accessible_property :
     by_contra h''; simp at h''; apply h' _ ht₂ _ ht₁; omega
   have := card_cons _ ▸ ht₃ ▸ hu₂ _ hx₂ h; omega
 
-instance : Accessible G.feasible := ⟨G.accessible_property⟩
+instance : Accessible G.feasible :=
+  ⟨G.accessible_property⟩
 
 section Membership
 
 @[simp]
-theorem system_feasible_set_mem_mem : G.feasible s ↔ s ∈ G := by rfl
+theorem system_feasible_set_mem_mem : G.feasible s ↔ s ∈ G := by
+  rfl
 
 theorem mem_accessible
     (hs₁ : s ∈ G) (hs₂ : s.Nonempty) :
@@ -121,7 +120,8 @@ theorem mem_exchange
 end Membership
 
 @[simp]
-theorem emptyset_feasible : ∅ ∈ G := G.contains_emptyset
+theorem emptyset_feasible : ∅ ∈ G :=
+  G.contains_emptyset
 
 end Greedoid
 

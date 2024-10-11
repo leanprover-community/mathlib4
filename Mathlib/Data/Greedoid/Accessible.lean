@@ -21,7 +21,7 @@ when using the former definition.
 
 namespace Greedoid
 
-open Nat Finset
+open Nat Finset List
 
 variable {α : Type*}
 
@@ -40,25 +40,19 @@ namespace Accessible
 
 variable {Sys : Finset α → Prop} [Accessible Sys]
 
-/-- A helper lemma for `nonempty_contains_emptyset`.-/
-theorem nonempty_contains_emptyset'
-    {s : Finset α} (hs : Sys s) {n : ℕ} (hn : n = s.card) :
-    Sys ∅ := by
-  induction n generalizing s with
-  | zero => exact card_eq_zero.mp hn.symm ▸ hs
-  | succ _ ih =>
-    rcases Accessible.accessible hs (by rw[← card_ne_zero]; omega) with ⟨t, _, _, ht⟩
-    exact ih ht (by omega)
-
 theorem nonempty_contains_emptyset
-    (h : ∃ s, Sys s) :
-    Sys ∅ :=
-  have ⟨_, h⟩ := h; nonempty_contains_emptyset' h rfl
+    {s : Finset α} (hs : Sys s) :
+    Sys ∅ := by
+  induction' h : s.card generalizing s
+  case zero => exact card_eq_zero.mp h ▸ hs
+  case succ _ ih =>
+    rcases accessible hs (by rw [← card_ne_zero]; omega) with ⟨_, _, _, h⟩
+    exact ih h (by omega)
 
 @[simp]
 theorem nonempty_contains_emptyset_iff :
     (∃ s, Sys s) ↔ Sys ∅ :=
-  ⟨fun h => nonempty_contains_emptyset h, fun h => ⟨∅, h⟩⟩
+  ⟨fun ⟨_, hs⟩ => nonempty_contains_emptyset hs, fun h => ⟨∅, h⟩⟩
 
 -- TODO: Find better name.
 -- TODO: Find a better way to inform `hS`.
@@ -84,7 +78,7 @@ theorem construction_on_accessible
     [DecidableEq α] {s : Finset α} (hs : Sys s) :
     ∃ l : List α, l.Nodup ∧ Multiset.ofList l = s.val ∧ ∀ l', l' <:+ l →
       ∃ s', Multiset.ofList l' = s'.val ∧ Sys s' := by
-  have hS := nonempty_contains_emptyset ⟨s, hs⟩
+  have hS := nonempty_contains_emptyset hs
   induction hs using induction_on_accessible hS with
   | empty => use []; simp; use ∅; simp [hS]
   | insert hs hs₂ h₁ h₂ h₃ =>
@@ -107,7 +101,7 @@ theorem construction_on_accessible
       simp [← h₂, ← card_val s₂, ← hl₀₂]
     have h₆ := Multiset.eq_of_le_of_card_le h₄ h₅
     apply And.intro (by simp [hl₀₁, hx]) (And.intro h₆ _)
-    intro l' hl'; rw [List.suffix_cons_iff] at hl'; apply hl'.elim _ (fun h => hl₀₃ _ h)
+    intro l' hl'; rw [suffix_cons_iff] at hl'; apply hl'.elim _ (fun h => hl₀₃ _ h)
     intro hl'; use s₁; simp [hs, hl', h₆]
 
 end Accessible
