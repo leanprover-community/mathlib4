@@ -113,7 +113,8 @@ open Ideal
 
 variable {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S] [Algebra R S] {M : Submonoid R}
 
-instance LocalRing.of_nilradical_isMaximal [h : (nilradical R).IsMaximal] : LocalRing R := by
+instance (priority := 100) LocalRing.of_nilradical_isMaximal [h : (nilradical R).IsMaximal] :
+    LocalRing R := by
   refine LocalRing.of_unique_max_ideal ⟨nilradical R, h, fun I hI ↦ ?_⟩
   rw [nilradical_eq_sInf] at h ⊢
   exact (IsMaximal.eq_of_le h hI.ne_top (sInf_le hI.isPrime)).symm
