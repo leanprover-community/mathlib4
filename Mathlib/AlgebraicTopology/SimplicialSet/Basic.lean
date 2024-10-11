@@ -444,4 +444,43 @@ noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
 
 end Augmented
 
+section Spine
+
+variable (X : SSet.{u})
+
+
+/-- A path in a simplicial set `X` of length `n` is a directed path of `n` edges.-/
+@[ext]
+structure Path (n : ℕ) where
+  vertex (i : Fin (n + 1)) : X _[0]
+  arrow (i : Fin n) : X _[1]
+  arrow_src (i : Fin n) : X.δ 1 (arrow i) = vertex i.castSucc
+  arrow_tgt (i : Fin n) : X.δ 0 (arrow i) = vertex i.succ
+
+/-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed by
+traversing through its vertices in order.-/
+@[simps]
+def spine {n : ℕ} (Δ : X _[n]) : X.Path n where
+  vertex i := X.map (SimplexCategory.const [0] [n] i).op Δ
+  arrow i := X.map (SimplexCategory.mkOfSucc i).op Δ
+    -- X.map (SimplexCategory.mkOfLe _ _ i.castSucc_le_succ).op Δ
+  arrow_src i := by
+    dsimp [SimplicialObject.δ]
+    simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
+    apply congr_fun
+    congr 2
+    ext j
+    fin_cases j
+    rfl
+  arrow_tgt i := by
+    dsimp [SimplicialObject.δ]
+    simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
+    apply congr_fun
+    congr 2
+    ext j
+    fin_cases j
+    rfl
+
+end Spine
+
 end SSet

@@ -74,6 +74,103 @@ lemma δ₀_eq {x : nerve C _[n + 1]} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ�
 
 end Nerve
 
+namespace SSet
+variable (X : SSet.{u})
+
+/-- A simplicial set `X` satisfies the strict segal condition if its simplices are uniquely
+determined by their spine.-/
+def StrictSegal : Prop := ∀ (n : ℕ), Function.Bijective (X.spine (n := n))
+
+variable {X} in
+noncomputable def StrictSegal.spineToSimplex {hx : StrictSegal X} {n : ℕ} : Path X n → X _[n] :=
+  (Equiv.ofBijective _ (hx n)).invFun
+
+theorem StrictSegal.spineToSimplex_spine {hx : StrictSegal X} {n : ℕ} (f : Path X n) :
+    X.spine (StrictSegal.spineToSimplex (hx := hx) f) = f :=
+  (Equiv.ofBijective _ (hx n)).right_inv f
+
+end SSet
+
+namespace Nerve
+
+/-- Simplices in the nerve of categories are uniquely determined by their spine. Indeed, this
+property describes the essential image of the nerve functor.-/
+theorem strictSegal (C : Type u) [Category.{v} C] : SSet.StrictSegal (nerve C) := by
+  intro n
+  constructor
+  · intro Δ Δ' h
+    exact ComposableArrows.ext
+      (fun i ↦ Functor.congr_obj (congr_fun (congr_arg Path.vertex h) i) 0)
+      (fun i hi ↦
+        Functor.congr_hom (congr_fun (congr_arg Path.arrow h) ⟨i, hi⟩) (show 0 ⟶ 1 by tauto))
+  · intro F
+    refine ⟨ComposableArrows.mkOfObjOfMapSucc (fun i ↦ (F.vertex i).obj 0)
+      (fun i ↦ eqToHom (Functor.congr_obj (F.arrow_src i).symm 0) ≫
+        (F.arrow i).map' 0 1 ≫ eqToHom (Functor.congr_obj (F.arrow_tgt i) 0)), ?_⟩
+    ext i
+    · exact ComposableArrows.ext₀ rfl
+    · refine ComposableArrows.ext₁ ?_ ?_ ?_
+      · exact Functor.congr_obj (F.arrow_src i).symm 0
+      · exact Functor.congr_obj (F.arrow_tgt i).symm 0
+      · dsimp
+        apply ComposableArrows.mkOfObjOfMapSucc_map_succ
+
+-- /-- Simplices in the nerve of categories are uniquely determined by their spine. Indeed, this
+-- property describes the essential image of the nerve functor.-/
+-- lemma spine_nerve_bijective (C : Type u) [Category.{v} C] (n : ℕ) :
+--     Function.Bijective ((nerve C).spine (n := n)) := by
+--   constructor
+--   · intro Δ Δ' h
+--     exact ComposableArrows.ext
+--       (fun i ↦ Functor.congr_obj (congr_fun (congr_arg Path.vertex h) i) 0)
+--       (fun i hi ↦
+--         Functor.congr_hom (congr_fun (congr_arg Path.arrow h) ⟨i, hi⟩) (show 0 ⟶ 1 by tauto))
+--   · intro F
+--     refine ⟨ComposableArrows.mkOfObjOfMapSucc (fun i ↦ (F.vertex i).obj 0)
+--       (fun i ↦ eqToHom (Functor.congr_obj (F.arrow_src i).symm 0) ≫
+--         (F.arrow i).map' 0 1 ≫ eqToHom (Functor.congr_obj (F.arrow_tgt i) 0)), ?_⟩
+--     ext i
+--     · exact ComposableArrows.ext₀ rfl
+--     · refine ComposableArrows.ext₁ ?_ ?_ ?_
+--       · exact Functor.congr_obj (F.arrow_src i).symm 0
+--       · exact Functor.congr_obj (F.arrow_tgt i).symm 0
+--       · dsimp
+--         apply ComposableArrows.mkOfObjOfMapSucc_map_succ
+
+
+end Nerve
+
+namespace SSet
+
+/-- The identity natural transformation exhibits a simplicial set as a right extension of its
+restriction along `(Truncated.inclusion (n := 2)).op`.-/
+@[simps!]
+def rightExtensionInclusion (X : SSet.{u}) (n : ℕ) :
+    RightExtension (Truncated.inclusion (n := n)).op
+      (Functor.op Truncated.inclusion ⋙ X) := RightExtension.mk _ (𝟙 _)
+
+noncomputable def rightExtensionInclusion₂IsPointwiseRightKanExtensionAt
+    (X : SSet.{u}) (hX : ∀ (n : ℕ), Function.Bijective (X.spine (n := n))) (n : ℕ) :
+    (rightExtensionInclusion X 2).IsPointwiseRightKanExtensionAt ⟨[n]⟩ := by
+  show IsLimit _
+  unfold rightExtensionInclusion
+  simp only [RightExtension.mk, RightExtension.coneAt, Truncated.inclusion,
+    CostructuredArrow.mk_left, const_obj_obj, op_obj, fullSubcategoryInclusion.obj,
+    comp_obj, StructuredArrow.proj_obj, whiskeringLeft_obj_obj, CostructuredArrow.mk_right,
+    CostructuredArrow.mk_hom_eq_self, NatTrans.id_app, comp_id]
+  exact {
+    lift := fun s x => by
+      dsimp
+
+      sorry
+    fac := sorry
+    uniq := sorry
+  }
+
+end SSet
+
+
+namespace Nerve
 /-- The essential data of the nerve functor is contained in the 2-truncation, which is
 recorded by the composite functor `nerveFunctor₂`.-/
 def nerveFunctor₂ : Cat.{v, u} ⥤ SSet.Truncated 2 := nerveFunctor ⋙ truncation 2
@@ -90,7 +187,6 @@ theorem nerve₂_restrictedNerve (C : Type*) [Category C] :
 def nerve₂RestrictedIso (C : Type*) [Category C] :
     (Truncated.inclusion (n := 2)).op ⋙ nerve C ≅ nerve₂ C := Iso.refl _
 
-namespace Nerve
 
 /-- The identity natural transformation exhibits `nerve C`  as a right extension of its restriction
 to the 2-truncated simplex category along `(Truncated.inclusion (n := 2)).op`.-/
