@@ -389,9 +389,9 @@ end Ring
 
 section FieldLike
 
-/-- The iff variation of `ascPochhammer_eq_zero_of_nonpos_int` for a ring with
+/-- The iff variation of `ascPochhammer_eval_neg_coe_nat_of_lt` for a ring with
 `[NeZero (1 : R)]` and  `[NoZeroDivisors R]`. -/
-theorem ascPochhammer_eq_zero_iff {R : Type*} [Ring R] [NeZero (1 : R)] [NoZeroDivisors R]
+theorem ascPochhammer_eval_eq_zero_iff {R : Type*} [Ring R] [NeZero (1 : R)] [NoZeroDivisors R]
     (n : ℕ) (r : R) : (ascPochhammer R n).eval r = 0 ↔ ∃ rn : ℕ, rn = -r ∧ rn < n := by
   refine ⟨fun zero' ↦ ?_, fun hrn ↦ ?_⟩
   · induction n with

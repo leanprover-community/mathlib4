@@ -127,7 +127,7 @@ theorem ordinaryHypergeometricSeries_symm :
 
 /-- If any parameter to the series is a sufficiently large nonpositive integer, then the series
 term is zero. -/
-lemma ordinaryHypergeometricSeries_eq_zero_of_nonpos_int {n k : ℕ}
+lemma ordinaryHypergeometricSeries_eq_zero_of_neg_nat {n k : ℕ}
     (habc : k = -a ∨ k = -b ∨ k = -c) (hk : k < n) :
     ordinaryHypergeometricSeries 𝔸 a b c n = 0 := by
   rw [ordinaryHypergeometricSeries]
@@ -145,20 +145,20 @@ open Asymptotics Filter Real Set Nat
 variable {𝕂 : Type*} (𝔸 𝔹 : Type*) [RCLike 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   (a b c : 𝕂)
 
-theorem ordinaryHypergeometric_radius_top_of_nonpos_int₁ {ak : ℕ} (ha : ak = -a) :
+theorem ordinaryHypergeometric_radius_top_of_neg_nat₁ {ak : ℕ} (ha : ak = -a) :
     (ordinaryHypergeometricSeries 𝔸 a b c).radius = ⊤ := by
   apply FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + ak)
-  exact fun _ ↦ ordinaryHypergeometricSeries_eq_zero_of_nonpos_int a b c (Or.inl ha) (by linarith)
+  exact fun _ ↦ ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b c (Or.inl ha) (by linarith)
 
-theorem ordinaryHypergeometric_radius_top_of_nonpos_int₂ {bk : ℕ} (hb : bk = -b) :
+theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {bk : ℕ} (hb : bk = -b) :
     (ordinaryHypergeometricSeries 𝔸 a b c).radius = ⊤ := by
   rw [ordinaryHypergeometricSeries_symm]
-  exact ordinaryHypergeometric_radius_top_of_nonpos_int₁ 𝔸 b a c hb
+  exact ordinaryHypergeometric_radius_top_of_neg_nat₁ 𝔸 b a c hb
 
-theorem ordinaryHypergeometric_radius_top_of_nonpos_int₃ {ck : ℕ} (hc : ck = -c) :
+theorem ordinaryHypergeometric_radius_top_of_neg_nat₃ {ck : ℕ} (hc : ck = -c) :
     (ordinaryHypergeometricSeries 𝔸 a b c).radius = ⊤ := by
   apply FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + ck)
-  refine fun _ ↦ ordinaryHypergeometricSeries_eq_zero_of_nonpos_int a b c (Or.inr <| Or.inr hc)
+  refine fun _ ↦ ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b c (Or.inr <| Or.inr hc)
     (by linarith)
 
 /-- An iff variation on `ordinaryHypergeometricSeries_eq_zero_of_nonpos_int` for `[RCLike 𝕂]`. -/
@@ -181,7 +181,7 @@ lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :
       push_neg
       exact ⟨fun _ ↦ 1, by simp⟩
   · have ⟨_, h, hn⟩ := zero
-    exact ordinaryHypergeometricSeries_eq_zero_of_nonpos_int a b c h hn
+    exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b c h hn
 
 theorem ordinaryHypergeometricSeries_succ_norm_div_norm (n : ℕ)
     (habc : ∀ kn : ℕ, (kn = -a ∨ kn = -b ∨ kn = -c) → n ≤ kn) :
@@ -261,16 +261,14 @@ are non-positive integers. This proof uses a similar technique to
 theorem ordinaryHypergeometricSeries_radius_eq_one
     (habc : ∀ kn : ℕ, ↑kn ≠ -a ∧ ↑kn ≠ -b ∧ ↑kn ≠ -c) :
     (ordinaryHypergeometricSeries 𝔸 a b c).radius = 1 := by
-  apply le_antisymm
-  · refine ENNReal.le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
+  apply le_antisymm <;> refine ENNReal.le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+  · rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
     have := FormalMultilinearSeries.summable_norm_mul_pow _ hr
     contrapose! this
     apply not_summable_of_ratio_test_tendsto_gt_one this
     refine ordinaryHypergeometric_ratio_tendsto_nhds_atTop 𝔸 a b c ?_ habc
-    exact NNReal.coe_pos.2 <| lt_trans zero_lt_one this
-  · refine ENNReal.le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← Nat.cast_one, ENNReal.coe_lt_natCast, Nat.cast_one] at hr
+    exact NNReal.coe_pos.2 (lt_trans zero_lt_one this)
+  · rw [← Nat.cast_one, ENNReal.coe_lt_natCast, Nat.cast_one] at hr
     by_cases hr' : r = 0
     · simp [hr']
     · apply FormalMultilinearSeries.le_radius_of_summable_norm
@@ -279,6 +277,6 @@ theorem ordinaryHypergeometricSeries_radius_eq_one
         · exact (ordinaryHypergeometricSeries_eq_zero_iff 𝔸 a b c n).not.2 (by aesop)
         · exact (pow_ne_zero n <| NNReal.coe_ne_zero.2 hr')
       apply ordinaryHypergeometric_ratio_tendsto_nhds_atTop 𝔸 a b c ?_ habc
-      exact (Ne.intro hr').lt_of_le' <| NNReal.coe_nonneg r
+      exact (Ne.intro hr').lt_of_le' (NNReal.coe_nonneg r)
 
 end RCLike
