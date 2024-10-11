@@ -128,7 +128,7 @@ lemma isEquivalence_iff : G.IsEquivalence ↔ G'.IsEquivalence :=
 end
 
 /-- Condition that a `LocalizerMorphism` induces an equivalence on the localized categories -/
-class IsLocalizedEquivalence : Prop :=
+class IsLocalizedEquivalence : Prop where
   /-- the induced functor on the constructed localized categories is an equivalence -/
   isEquivalence : (Φ.localizedFunctor W₁.Q W₂.Q).IsEquivalence
 

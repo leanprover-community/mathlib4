@@ -24,7 +24,7 @@ order...
 
 Maximal elements don't have a sensible successor. Thus the naïve typeclass
 ```lean
-class NaiveSuccOrder (α : Type*) [Preorder α] :=
+class NaiveSuccOrder (α : Type*) [Preorder α] where
   (succ : α → α)
   (succ_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
   (lt_succ_iff : ∀ {a b}, a < succ b ↔ a ≤ b)
@@ -927,7 +927,7 @@ lemma gc_pred_succ : GaloisConnection (pred : α → α) succ := fun _ _ ↦ pre
 
 end Preorder
 
-variable [PartialOrder α] [SuccOrder α] [PredOrder α] {a b : α}
+variable [PartialOrder α] [SuccOrder α] [PredOrder α] {a : α}
 
 @[simp]
 theorem succ_pred_of_not_isMin (h : ¬IsMin a) : succ (pred a) = a :=

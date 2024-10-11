@@ -240,8 +240,8 @@ theorem RingHom.PropertyIsLocal.ofLocalizationSpan (hP : RingHom.PropertyIsLocal
   rintro ⟨_, r, hr, rfl⟩
   rw [← IsLocalization.map_comp (M := Submonoid.powers r) (S := Localization.Away r)
     (T := Submonoid.powers (f r))]
-  apply hP.StableUnderCompositionWithLocalizationAway.right _ r
-  exact hs' ⟨r, hr⟩
+  · apply hP.StableUnderCompositionWithLocalizationAway.right _ r
+    exact hs' ⟨r, hr⟩
 
 lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
     (hP : RingHom.OfLocalizationSpanTarget P) (hP' : RingHom.RespectsIso P)
