@@ -52,7 +52,7 @@ variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
 
 /--
 The class `IsValExtension R A` states that the valuation of `A` is an extension of the valuation
-on `R`. More precisely, the valuation on `R` is equivlent to the comap of the valuation on `A`.
+on `R`. More precisely, the valuation on `R` is equivalent to the comap of the valuation on `A`.
 -/
 class IsValExtension : Prop where
   /-- The valuation on `R` is equivalent to the comap of the valuation on `A` -/

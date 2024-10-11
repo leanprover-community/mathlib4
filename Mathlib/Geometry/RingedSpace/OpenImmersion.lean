@@ -118,7 +118,7 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
       dsimp
       simp only [NatTrans.naturality_assoc, TopCat.Presheaf.pushforward_obj_obj,
         TopCat.Presheaf.pushforward_obj_map, Quiver.Hom.unop_op, Category.assoc]
-      erw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
+      rw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
       congr 1
 
 @[reassoc (attr := simp)]
