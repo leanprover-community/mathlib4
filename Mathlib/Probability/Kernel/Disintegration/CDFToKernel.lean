@@ -235,7 +235,7 @@ variable {f : α × β → ℚ → ℝ}
 conditions are the same, but the limit properties of `IsRatCondKernelCDF` are replaced by
 limits of integrals. -/
 structure IsRatCondKernelCDFAux (f : α × β → ℚ → ℝ) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
-    Prop :=
+    Prop where
   measurable : Measurable f
   mono' (a : α) {q r : ℚ} (_hqr : q ≤ r) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ f (a, c) r
   nonneg' (a : α) (q : ℚ) : ∀ᵐ c ∂(ν a), 0 ≤ f (a, c) q
@@ -425,7 +425,7 @@ respect to `ν` if it is measurable, tends to 0 at -∞ and to 1 at +∞ for all
 `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all
 measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`. -/
 structure IsCondKernelCDF (f : α × β → StieltjesFunction) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
-    Prop :=
+    Prop where
   measurable (x : ℝ) : Measurable fun p ↦ f p x
   integrable (a : α) (x : ℝ) : Integrable (fun b ↦ f (a, b) x) (ν a)
   tendsto_atTop_one (p : α × β) : Tendsto (f p) atTop (𝓝 1)
