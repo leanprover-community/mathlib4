@@ -228,15 +228,13 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     (TopCat.GlueData.ι_eq_iff_rel
       D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
       i j x y)
-  rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff]
-  · rw [← comp_apply]
-    simp_rw [← D.ι_isoCarrier_inv]
+  rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff, ← comp_apply]
+  · simp_rw [← D.ι_isoCarrier_inv]
     rfl -- `rfl` was not needed before #13170
   · infer_instance
 
 theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι i).1.base ⁻¹' U) := by
-  rw [← (TopCat.homeoOfIso D.isoCarrier.symm).isOpen_preimage]
-  rw [TopCat.GlueData.isOpen_iff]
+  rw [← (TopCat.homeoOfIso D.isoCarrier.symm).isOpen_preimage, TopCat.GlueData.isOpen_iff]
   apply forall_congr'
   intro i
   rw [← Set.preimage_comp, ← ι_isoCarrier_inv]
