@@ -65,7 +65,7 @@ theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.
     · exact hB.orthogonalFamily_eigenspaces.pairwise h₁ hv2 w hw2
     · exact hA.orthogonalFamily_eigenspaces.pairwise h₂ hv1 w hw1
 
-/-- The joint eigenspaces of a tuple of commuting symmetric operators form an
+/-- The joint eigenspaces of a family of commuting symmetric operators form an
 `OrthogonalFamily`. -/
 theorem orthogonalFamily_iInf_eigenspaces
     (hT : ∀ i, (T i).IsSymmetric) :
@@ -86,12 +86,10 @@ then the eigenspaces of the restriction of B to any eigenspace of A exhaust that
 theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric) (hAB : Commute A B) :
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
   conv_rhs => rw [← (eigenspace A α).map_subtype_top]
-  have H : ∀ μ, genEigenspace B μ 1 = eigenspace B μ :=
-    fun μ ↦ (by rw [genEigenspace_def, eigenspace_def, pow_one])
-  simp only [← H, ← Submodule.map_iSup,
+  simp only [← eigenspace_eq_genEigenspace_one (B := B), ← Submodule.map_iSup,
     (eigenspace A α).inf_genEigenspace _ (mapsTo_genEigenspace_of_comm hAB α 1)]
   congr 1
-  simpa only [H, Submodule.orthogonal_eq_bot_iff]
+  simpa only [eigenspace_eq_genEigenspace_one, Submodule.orthogonal_eq_bot_iff]
     using orthogonalComplement_iSup_eigenspaces_eq_bot <|
       hB.restrict_invariant <| mapsTo_genEigenspace_of_comm hAB α 1
 
@@ -113,8 +111,8 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_iSup_eigenspace_inf_eigenspace_eq_top hA hB hAB
 
-/-- In finite dimensions, the indexed supremum of the joint eigenspaces of a commuting tuple of
-symmetric linear operators equals `⊤`. -/
+/-- In finite dimensions, the indexed supremum of the joint eigenspaces of a commuting family
+of symmetric linear operators equals `⊤`. -/
 theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
     (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise fun i j ↦ Commute (T i) (T j)):
     ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ := calc
@@ -125,7 +123,7 @@ theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
     rw [← orthogonal_eq_bot_iff, congr(⨆ μ, $((hT i).maxGenEigenspace_eq_eigenspace)),
       (hT i).orthogonalComplement_iSup_eigenspaces_eq_bot]
 
-/-- In finite dimensions, given a finite commuting family of symmetric linear operators, the inner
+/-- In finite dimensions, given a commuting family of symmetric linear operators, the inner
 product space on which they act decomposes as an internal direct sum of joint eigenspaces. -/
 theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Fintype n]
     (hT :∀ i, (T i).IsSymmetric) (hC : ∀ i j, Commute (T i) (T j)) :

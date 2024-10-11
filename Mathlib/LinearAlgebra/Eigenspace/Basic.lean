@@ -485,6 +485,9 @@ theorem genEigenspace_zero (f : End R M) (k : ℕ) :
     f.genEigenspace 0 k = LinearMap.ker (f ^ k) :=
   unifEigenspace_zero_nat _ _
 
+theorem eigenspace_eq_genEigenspace_one {f : End R M} {μ : R} :
+    genEigenspace f μ 1 = eigenspace f μ := by rw [genEigenspace_def, eigenspace_def, pow_one]
+
 /-- A nonzero element of a generalized eigenspace is a generalized eigenvector.
     (Def 8.9 of [axler2015])-/
 abbrev HasGenEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
