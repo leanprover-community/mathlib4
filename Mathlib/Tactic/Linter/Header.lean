@@ -180,7 +180,6 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
     -- Validate the authors line(s). The last line is the closing comment: trim that off right away.
     let authorsLines := authorsLines.dropLast
     -- Complain about a missing authors line.
-    dbg_trace authorsLines
     if authorsLines.length == 0 then
       output := output.push (toSyntax copyright "-/", s!"Copyright too short!")
     else
@@ -252,6 +251,9 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   let mainModule ← getMainModule
+  -- `Mathlib.lean` imports `Mathlib.Tactic`, which the broad imports check below would flag.
+  -- Since that file is imports-only, we can simply skip linting it.
+  if mainModule == `Mathlib then return
   let fm ← getFileMap
   let md := (getMainModuleDoc (← getEnv)).toArray
   -- The end of the first module doc-string, or the end of the file if there is none.
@@ -262,8 +264,9 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   -- We try to parse the file up to `firstDocModPos`.
   let upToStx ← parseUpToHere firstDocModPos <|> (do
-    -- If parsing failed, there are some non-module docs, so we parse until the end of the
-    -- imports, adding an extra `section` after, so that we trigger a "no module doc" warning.
+    -- If parsing failed, there is some command which is not a module docstring.
+    -- In that case, we parse until the end of the imports and add an an extra `section` afterwards,
+    -- so we trigger a "no module doc-string" warning.
     let fil ← getFileName
     let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
     parseUpToHere (stx.getTailPos?.getD default) "\nsection")
