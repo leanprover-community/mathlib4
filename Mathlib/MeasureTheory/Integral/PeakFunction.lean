@@ -147,7 +147,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
         · exact Eventually.of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
         · exact Eventually.of_forall ut
       _ = ∫ x in t, φ i x * δ ∂μ := by
-        apply setIntegral_congr ht fun x hx => ?_
+        apply setIntegral_congr_fun ht fun x hx => ?_
         rw [Real.norm_of_nonneg (hφpos _ (hts hx))]
       _ = (∫ x in t, φ i x ∂μ) * δ := by rw [integral_mul_right]
       _ ≤ 2 * δ := by gcongr; linarith [(le_abs_self _).trans h'i.le]

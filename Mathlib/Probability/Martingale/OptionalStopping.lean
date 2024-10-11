@@ -145,7 +145,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       ENNReal.ofReal
         (∫ ω in {ω | ((range (n+1)).sup' nonempty_range_succ fun k => f k ω) < ↑ε}, f n ω ∂μ) := by
       rw [← ENNReal.ofReal_add, ← integral_union]
-      · rw [← integral_univ]
+      · rw [← setIntegral_univ]
         convert rfl
         ext ω
         change (ε : ℝ) ≤ _ ∨ _ < (ε : ℝ) ↔ _
@@ -187,7 +187,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       simp_rw [stoppedValue, this, le_rfl]
     _ = ENNReal.ofReal (∫ ω, stoppedValue f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω ∂μ) := by
       rw [← ENNReal.ofReal_add, ← integral_union]
-      · rw [← integral_univ (μ := μ)]
+      · rw [← setIntegral_univ (μ := μ)]
         convert rfl
         ext ω
         change _ ↔ (ε : ℝ) ≤ _ ∨ _ < (ε : ℝ)

@@ -48,7 +48,7 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
     μ (Metric.ball 0 1) =
       .ofReal ((∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
   obtain hE | hE := subsingleton_or_nontrivial E
-  · rw [(Metric.nonempty_ball.mpr zero_lt_one).eq_zero, ← integral_univ, Set.univ_nonempty.eq_zero,
+  · rw [(Metric.nonempty_ball.mpr zero_lt_one).eq_zero, ← setIntegral_univ, Set.univ_nonempty.eq_zero,
       integral_singleton, finrank_zero_of_subsingleton, Nat.cast_zero, zero_div, zero_add,
       Real.Gamma_one, div_one, norm_zero, Real.zero_rpow (ne_of_gt hp), neg_zero, Real.exp_zero,
       smul_eq_mul, mul_one, ofReal_toReal (measure_ne_top μ {0})]

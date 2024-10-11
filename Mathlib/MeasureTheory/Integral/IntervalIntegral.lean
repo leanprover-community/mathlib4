@@ -786,7 +786,7 @@ theorem integral_congr {a b : ℝ} (h : EqOn f g [[a, b]]) :
     ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ := by
   rcases le_total a b with hab | hab <;>
     simpa [hab, integral_of_le, integral_of_ge] using
-      setIntegral_congr measurableSet_Ioc (h.mono Ioc_subset_Icc_self)
+      setIntegral_congr_fun measurableSet_Ioc (h.mono Ioc_subset_Icc_self)
 
 theorem integral_add_adjacent_intervals_cancel (hab : IntervalIntegrable f μ a b)
     (hbc : IntervalIntegrable f μ b c) :
@@ -1075,7 +1075,7 @@ variable {μ : Measure ℝ} {f : ℝ → E}
 theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral (hfi : Integrable f μ) (y : ℝ) :
     HasSum (fun n : ℤ => ∫ x in y + n..y + n + 1, f x ∂μ) (∫ x, f x ∂μ) := by
   simp_rw [integral_of_le (le_add_of_nonneg_right zero_le_one)]
-  rw [← integral_univ, ← iUnion_Ioc_add_intCast y]
+  rw [← setIntegral_univ, ← iUnion_Ioc_add_intCast y]
   exact
     hasSum_integral_iUnion (fun i => measurableSet_Ioc) (pairwise_disjoint_Ioc_add_intCast y)
       hfi.integrableOn

@@ -95,7 +95,7 @@ theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace �
 theorem integral_comp_abs {f : ℝ → ℝ} :
     ∫ x, f |x| = 2 * ∫ x in Ioi (0 : ℝ), f x := by
   have eq : ∫ (x : ℝ) in Ioi 0, f |x| = ∫ (x : ℝ) in Ioi 0, f x := by
-    refine setIntegral_congr measurableSet_Ioi (fun _ hx => ?_)
+    refine setIntegral_congr_fun measurableSet_Ioi (fun _ hx => ?_)
     rw [abs_eq_self.mpr (le_of_lt (by exact hx))]
   by_cases hf : IntegrableOn (fun x => f |x|) (Ioi 0)
   · have int_Iic : IntegrableOn (fun x ↦ f |x|) (Iic 0) := by
@@ -112,7 +112,7 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
         rw [two_mul, eq]
         congr! 1
         rw [← neg_zero, ← integral_comp_neg_Iic, neg_zero]
-        refine setIntegral_congr measurableSet_Iic (fun _ hx => ?_)
+        refine setIntegral_congr_fun measurableSet_Iic (fun _ hx => ?_)
         rw [abs_eq_neg_self.mpr (by exact hx)]
   · have : ¬ Integrable (fun x => f |x|) := by
       contrapose! hf
