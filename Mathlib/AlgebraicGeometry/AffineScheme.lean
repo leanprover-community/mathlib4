@@ -273,7 +273,7 @@ variable {X Y : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U))
 
 attribute [-simp] eqToHom_op in
 /-- The isomorphism `U ≅ Spec Γ(X, U)` for an affine `U`. -/
-@[simps! hom inv]
+@[simps! (config := .lemmasOnly) hom inv]
 def isoSpec :
     ↑U ≅ Spec Γ(X, U) :=
   haveI : IsAffine U := hU
@@ -283,7 +283,7 @@ def isoSpec :
 open LocalRing in
 lemma isoSpec_hom_val_base_apply (x : U) :
     hU.isoSpec.hom.1.base x = (Spec.map (X.presheaf.germ _ x x.2)).val.base (closedPoint _) := by
-  dsimp [Scheme.isoSpec_hom, Scheme.toSpecΓ_val_base]
+  dsimp [IsAffineOpen.isoSpec_hom, Scheme.isoSpec_hom, Scheme.toSpecΓ_val_base]
   rw [← Scheme.comp_val_base_apply, ← Spec.map_comp,
     (Iso.eq_comp_inv _).mpr (Scheme.Opens.germ_stalkIso_hom U (V := ⊤) x trivial),
     X.presheaf.germ_res_assoc, Spec.map_comp, Scheme.comp_val_base_apply]
@@ -323,7 +323,7 @@ lemma isoSpec_inv_ι : hU.isoSpec.inv ≫ U.ι = hU.fromSpec := rfl
 @[simp]
 theorem range_fromSpec :
     Set.range hU.fromSpec.1.base = (U : Set X) := by
-  delta IsAffineOpen.fromSpec; dsimp
+  delta IsAffineOpen.fromSpec; dsimp [IsAffineOpen.isoSpec_inv]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   · exact Subtype.range_coe
   erw [← coe_comp, ← TopCat.epi_iff_surjective] -- now `erw` after #13170
