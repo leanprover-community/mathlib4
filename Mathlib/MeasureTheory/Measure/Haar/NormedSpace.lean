@@ -18,7 +18,7 @@ open scoped NNReal ENNReal Pointwise Topology
 
 open Inv Set Function MeasureTheory.Measure Filter
 
-open FiniteDimensional
+open Module
 
 namespace MeasureTheory
 
@@ -122,11 +122,11 @@ alias set_integral_comp_smul_of_pos := setIntegral_comp_smul_of_pos
 
 theorem integral_comp_mul_left (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y := by
-  simp_rw [← smul_eq_mul, Measure.integral_comp_smul, FiniteDimensional.finrank_self, pow_one]
+  simp_rw [← smul_eq_mul, Measure.integral_comp_smul, Module.finrank_self, pow_one]
 
 theorem integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (a⁻¹ * x)) = |a| • ∫ y : ℝ, g y := by
-  simp_rw [← smul_eq_mul, Measure.integral_comp_inv_smul, FiniteDimensional.finrank_self, pow_one]
+  simp_rw [← smul_eq_mul, Measure.integral_comp_inv_smul, Module.finrank_self, pow_one]
 
 theorem integral_comp_mul_right (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y := by
