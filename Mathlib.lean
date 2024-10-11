@@ -1316,6 +1316,7 @@ import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.PSeriesComplex
 import Mathlib.Analysis.Quaternion
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Analysis.RCLike.Inner
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Arsinh
