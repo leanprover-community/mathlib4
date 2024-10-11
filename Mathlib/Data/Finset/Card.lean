@@ -42,7 +42,7 @@ The notation `#s` can be accessed in the `Finset` locale. -/
 def card (s : Finset α) : ℕ :=
   Multiset.card s.1
 
-scoped prefix:arg "#" => Finset.card
+@[inherit_doc] scoped prefix:arg "#" => Finset.card
 
 theorem card_def (s : Finset α) : #s = Multiset.card s.1 :=
   rfl
