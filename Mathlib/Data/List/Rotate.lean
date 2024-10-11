@@ -610,7 +610,7 @@ variable [DecidableEq α]
 instance isRotatedDecidable (l l' : List α) : Decidable (l ~r l') :=
   decidable_of_iff' _ isRotated_iff_mem_map_range
 
-instance {l l' : List α} : Decidable (@Setoid.r _ (IsRotated.setoid α) l l') :=
+instance {l l' : List α} : Decidable (IsRotated.setoid α l l') :=
   List.isRotatedDecidable _ _
 
 end Decidable

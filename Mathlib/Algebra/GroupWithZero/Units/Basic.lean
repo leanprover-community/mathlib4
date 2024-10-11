@@ -23,7 +23,7 @@ We also define `Ring.inverse`, a globally defined function on any ring
 assert_not_exists Multiplicative
 assert_not_exists DenselyOrdered
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+variable {α M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
 
 namespace Units
@@ -158,7 +158,6 @@ theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
 namespace Units
 
 variable [GroupWithZero G₀]
-variable {a b : G₀}
 
 /-- Embed a non-zero element of a `GroupWithZero` into the unit group.
   By combining this function with the operations on units,
@@ -214,7 +213,7 @@ theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀
 end Units
 
 section GroupWithZero
-variable [GroupWithZero G₀] {a b c d : G₀} {m n : ℕ}
+variable [GroupWithZero G₀] {a b c : G₀} {m n : ℕ}
 
 theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
   (Units.mk0 x hx).isUnit

@@ -3,7 +3,6 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.RingTheory.Bezout
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.Localization.FractionRing
@@ -287,22 +286,22 @@ section dvd
 
 variable {R : Type*}
 
-theorem iff_dvd_total [Monoid R] : PreValuationRing R ↔ IsTotal R (· ∣ ·) := by
+theorem iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) := by
   classical
   refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
   · obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b <;> simp
   · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := @IsTotal.total _ _ H a b <;> use c <;> simp
 
-theorem iff_ideal_total [CommRing R] : PreValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := by
+theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := by
   classical
-  refine ⟨fun _ => ⟨le_total⟩, fun H => iff_dvd_total.mpr ⟨fun a b => ?_⟩⟩
+  refine ⟨fun _ => ⟨le_total⟩, fun H => PreValuationRing.iff_dvd_total.mpr ⟨fun a b => ?_⟩⟩
   have := @IsTotal.total _ _ H (Ideal.span {a}) (Ideal.span {b})
   simp_rw [Ideal.span_singleton_le_span_singleton] at this
   exact this.symm
 
 variable (K)
 
-theorem dvd_total [Monoid R] [h : PreValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
+theorem dvd_total [h : ValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
   @IsTotal.total _ _ (iff_dvd_total.mp h) x y
 
 end dvd

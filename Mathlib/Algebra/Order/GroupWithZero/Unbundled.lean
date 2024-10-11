@@ -936,7 +936,7 @@ section MonoidWithZero
 variable [MonoidWithZero M₀]
 
 section Preorder
-variable [Preorder M₀] {a b c d : M₀} {m n : ℕ}
+variable [Preorder M₀] {a b : M₀} {m n : ℕ}
 
 @[simp] lemma pow_nonneg [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 0 ≤ a) : ∀ n, 0 ≤ a ^ n
   | 0 => pow_zero a ▸ zero_le_one
@@ -1161,7 +1161,7 @@ lemma div_self_le_one (a : G₀) : a / a ≤ 1 := by obtain rfl | ha := eq_or_ne
 end Preorder
 
 section PartialOrder
-variable [PartialOrder G₀] [ZeroLEOneClass G₀] [PosMulReflectLT G₀] {a b c d : G₀}
+variable [PartialOrder G₀] [ZeroLEOneClass G₀] [PosMulReflectLT G₀] {a b c : G₀}
 
 @[simp] lemma inv_pos : 0 < a⁻¹ ↔ 0 < a :=
   suffices ∀ a : G₀, 0 < a → 0 < a⁻¹ from ⟨fun h ↦ inv_inv a ▸ this _ h, this a⟩
@@ -1415,7 +1415,7 @@ end MulPosStrictMono
 end PartialOrder
 
 section LinearOrder
-variable [LinearOrder G₀] [ZeroLEOneClass G₀] [PosMulReflectLT G₀] {a b c : G₀}
+variable [LinearOrder G₀] [ZeroLEOneClass G₀] [PosMulReflectLT G₀] {a b : G₀}
 
 @[simp] lemma inv_neg'' : a⁻¹ < 0 ↔ a < 0 := by simp only [← not_le, inv_nonneg]
 @[simp] lemma inv_nonpos : a⁻¹ ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, inv_pos]
