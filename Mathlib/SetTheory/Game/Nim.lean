@@ -337,8 +337,7 @@ theorem grundyValue_le_of_forall_moveRight {G : PGame} [G.Impartial] {o : Nimber
 
 /-- The Grundy value of the sum of two nim games with natural numbers of piles equals their nimber
 addition. -/
-theorem grundyValue_nim_add_nim (x y : Ordinal) :
-    grundyValue (nim x + nim y) = toNimber x + toNimber y := by
+theorem grundyValue_nim_add_nim (x y : Ordinal) : grundyValue (nim x + nim y) = ∗x + ∗y := by
   apply (grundyValue_le_of_forall_moveLeft _).antisymm (le_grundyValue_of_Iio_subset_moveLeft _)
   · intro i
     apply leftMoves_add_cases i <;> intro j <;> have := (toLeftMovesNim_symm_lt j).ne
@@ -346,16 +345,16 @@ theorem grundyValue_nim_add_nim (x y : Ordinal) :
     · simpa [grundyValue_nim_add_nim x (toLeftMovesNim.symm j)]
   · intro k hk
     obtain h | h := Nimber.lt_add_cases hk
-    · let a := toOrdinal (k + toNimber y)
+    · let a := toOrdinal (k + ∗y)
       use toLeftMovesAdd (Sum.inl (toLeftMovesNim ⟨a, h⟩))
       simp [a, grundyValue_nim_add_nim a y]
-    · let a := toOrdinal (k + toNimber x)
+    · let a := toOrdinal (k + ∗x)
       use toLeftMovesAdd (Sum.inr (toLeftMovesNim ⟨a, h⟩))
-      simp [a, grundyValue_nim_add_nim x a, add_comm (toNimber x)]
+      simp [a, grundyValue_nim_add_nim x a, add_comm (∗x)]
 termination_by (x, y)
 
 theorem nim_add_nim_equiv (x y : Ordinal) :
-    nim x + nim y ≈ nim (toOrdinal (toNimber x + toNimber y)) := by
+    nim x + nim y ≈ nim (toOrdinal (∗x + ∗y)) := by
   rw [← grundyValue_eq_iff_equiv_nim, grundyValue_nim_add_nim]
 
 @[simp]
