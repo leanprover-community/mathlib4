@@ -1120,8 +1120,7 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
   have : _ = (pullback.fst f g).val.base :=
     PreservesPullback.iso_hom_fst
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
-  erw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
-   -- now `erw` after #13170
+  rw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   -- Porting note (#11224): change `rw` to `erw` on this lemma
   · erw [TopCat.pullback_fst_range]
@@ -1129,8 +1128,7 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
     constructor
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
-  · erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
-    rw [show (inv (pullback.snd f g)).val.base = _ from
+  · rw [← TopCat.epi_iff_surjective, show (inv (pullback.snd f g)).val.base = _ from
         (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).map_inv _]
     infer_instance
 
