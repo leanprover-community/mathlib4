@@ -6,6 +6,7 @@ Authors: Neil Strickland
 import Mathlib.Algebra.BigOperators.Group.Multiset
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.Data.Multiset.Sort
 
 /-!
@@ -188,7 +189,7 @@ theorem prod_add (u v : PrimeMultiset) : (u + v).prod = u.prod * v.prod := by
 
 theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = u.prod ^ d := by
   induction d with
-  | zero => simp only [Nat.zero_eq, zero_nsmul, pow_zero, prod_zero]
+  | zero => simp only [zero_nsmul, pow_zero, prod_zero]
   | succ n ih => rw [succ_nsmul, prod_add, ih, pow_succ]
 
 end PrimeMultiset

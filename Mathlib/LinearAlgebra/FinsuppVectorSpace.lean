@@ -110,8 +110,7 @@ theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
           Finsupp.single_apply_left sigma_mk_injective]
       · have : Sigma.mk i x ≠ Sigma.mk j y := fun h' => h <| congrArg (fun s => s.fst) h'
         -- Porting note: previously `this` not needed
-        simp only [basis_repr, single_apply, h, this, false_and_iff, if_false, LinearEquiv.map_zero,
-        zero_apply]
+        simp only [basis_repr, single_apply, h, this, if_false, LinearEquiv.map_zero, zero_apply]
 
 /-- The basis on `ι →₀ M` with basis vectors `fun i ↦ single i 1`. -/
 @[simps]
@@ -154,9 +153,16 @@ theorem _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :
   simp only [apply_ite (Finsupp.single _), Finsupp.single_zero, Finset.sum_ite_eq,
     if_pos (Finset.mem_univ _)]
 
-theorem equivFun_symm_stdBasis [Finite n] (b : Basis n R M) (i : n) :
-    b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
+@[simp]
+theorem equivFun_symm_single [Finite n] (b : Basis n R M) (i : n) :
+    b.equivFun.symm (Pi.single i 1) = b i := by
   cases nonempty_fintype n
-  simp
+  simp [Pi.single_apply]
+
+set_option linter.deprecated false in
+@[deprecated equivFun_symm_single (since := "2024-08-09")]
+theorem equivFun_symm_stdBasis [Finite n] (b : Basis n R M) (i : n) :
+    b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i :=
+  equivFun_symm_single ..
 
 end Basis

@@ -22,7 +22,7 @@ open scoped TensorProduct
 namespace Algebra
 
 variable (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
-variable [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable [Algebra R S] [Algebra R T]
 
 /--
 An `R`-algebra is essentially of finite type if
@@ -34,7 +34,7 @@ class EssFiniteType : Prop where
     IsLocalization ((IsUnit.submonoid S).comap (algebraMap (adjoin R (s : Set S)) S)) S
 
 /-- Let `S` be an `R`-algebra essentially of finite type, this is a choice of a finset `s ⊆ S`
-such that `S` is the localization of `R[s]`.  -/
+such that `S` is the localization of `R[s]`. -/
 noncomputable
 def EssFiniteType.finset [h : EssFiniteType R S] : Finset S := h.cond.choose
 
@@ -101,6 +101,9 @@ lemma EssFiniteType.of_isLocalization (M : Submonoid R) [IsLocalization M S] :
   exact ⟨_, IsLocalization.map_units S t, x, e.symm⟩
 
 lemma EssFiniteType.of_id : EssFiniteType R R := inferInstance
+
+section
+variable [Algebra S T] [IsScalarTower R S T]
 
 lemma EssFiniteType.aux (σ : Subalgebra R S)
     (hσ : ∀ s : S, ∃ t ∈ σ, IsUnit t ∧ s * t ∈ σ)
@@ -197,6 +200,8 @@ lemma EssFiniteType.of_comp [h : EssFiniteType R T] : EssFiniteType S T := by
 lemma EssFiniteType.comp_iff [EssFiniteType R S] :
     EssFiniteType R T ↔ EssFiniteType S T :=
   ⟨fun _ ↦ of_comp R S T, fun _ ↦ comp R S T⟩
+
+end
 
 variable {R S} in
 lemma EssFiniteType.algHom_ext [EssFiniteType R S]

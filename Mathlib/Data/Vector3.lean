@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Fin2
-import Mathlib.Init.Logic
-import Mathlib.Mathport.Notation
+import Mathlib.Util.Notation3
 import Mathlib.Tactic.TypeStar
 
 /-!
@@ -181,11 +180,10 @@ theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (
     insert a (b :: t +-+ v)
       (Eq.recOn (congr_arg (· + 1) e' : _ + 1 = _) (fs (add i k))) =
       Eq.recOn (congr_arg (· + 1) e' : _ + 1 = _) (b :: t +-+ insert a v i)
-  rw [←
-    (Eq.recOn e' rfl :
+  rw [← (Eq.recOn e' rfl :
       fs (Eq.recOn e' (i.add k) : Fin2 ((n + k) + 1)) =
         Eq.recOn (congr_arg (· + 1) e' : _ + 1 = _) (fs (i.add k)))]
-  simp; rw [IH]; exact Eq.recOn e' rfl
+  simpa [IH] using Eq.recOn e' rfl
 
 end Vector3
 
@@ -237,7 +235,7 @@ theorem vectorAllP_singleton (p : α → Prop) (x : α) : VectorAllP p (cons x [
 @[simp]
 theorem vectorAllP_cons (p : α → Prop) (x : α) (v : Vector3 α n) :
     VectorAllP p (x :: v) ↔ p x ∧ VectorAllP p v :=
-  Vector3.recOn v (and_true_iff _).symm fun _ _ _ => Iff.rfl
+  Vector3.recOn v (iff_of_eq (and_true _)).symm fun _ _ _ => Iff.rfl
 
 theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
     VectorAllP p v ↔ ∀ i, p (v i) := by

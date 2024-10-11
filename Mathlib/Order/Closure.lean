@@ -114,7 +114,8 @@ def id : ClosureOperator α where
 instance : Inhabited (ClosureOperator α) :=
   ⟨id α⟩
 
-variable {α} [PartialOrder α] (c : ClosureOperator α)
+variable {α}
+variable (c : ClosureOperator α)
 
 @[ext]
 theorem ext : ∀ c₁ c₂ : ClosureOperator α, (∀ x, c₁ x = c₂ x) → c₁ = c₂ :=
@@ -247,7 +248,7 @@ end SemilatticeSup
 
 section CompleteLattice
 
-variable [CompleteLattice α] (c : ClosureOperator α) {p : α → Prop}
+variable [CompleteLattice α] (c : ClosureOperator α)
 
 /-- Define a closure operator from a predicate that's preserved under infima. -/
 @[simps!]

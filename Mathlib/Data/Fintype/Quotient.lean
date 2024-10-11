@@ -32,10 +32,10 @@ def Quotient.finChoiceAux {ι : Type*} [DecidableEq ι] {α : ι → Type*} [S :
     · exact fun a l => ⟦fun j h =>
         if e : j = i then by rw [e]; exact a else l _ ((List.mem_cons.1 h).resolve_left e)⟧
     refine fun a₁ l₁ a₂ l₂ h₁ h₂ => Quotient.sound fun j h => ?_
-    by_cases e : j = i <;> simp [e]
-    · subst j
+    by_cases e : j = i
+    · simp [e]; subst j
       exact h₁
-    · exact h₂ _ _
+    · simpa [e] using h₂ _ _
 
 theorem Quotient.finChoiceAux_eq {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [S : ∀ i, Setoid (α i)] :
@@ -63,7 +63,7 @@ def Quotient.finChoice {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → T
         (⟦fun (i : ι) (_ : i ∈ a) => Quotient.out (f i)⟧ : Quotient (by infer_instance))
       apply eq_of_heq
       trans (g a)
-      · exact eq_rec_heq (φ := fun l : Multiset ι => @Quotient (∀ i ∈ l, α i) (by infer_instance))
+      · exact eqRec_heq (φ := fun l : Multiset ι => @Quotient (∀ i ∈ l, α i) (by infer_instance))
           (Quotient.sound h) (g a)
       · change HEq (g a) (g b); congr 1; exact Quotient.sound h))
     (fun f => ⟦fun i => f i (Finset.mem_univ _)⟧) (fun a b h => Quotient.sound fun i => by apply h)

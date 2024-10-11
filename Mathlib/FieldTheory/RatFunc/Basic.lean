@@ -167,7 +167,7 @@ theorem mul_inv_cancel : ∀ {p : RatFunc K}, p ≠ 0 → p * p⁻¹ = 1
     have : p ≠ 0 := fun hp => h <| by rw [hp, ofFractionRing_zero]
     simpa only [← ofFractionRing_inv, ← ofFractionRing_mul, ← ofFractionRing_one,
       ofFractionRing.injEq] using  -- Porting note: `ofFractionRing.injEq` was not present
-      _root_.mul_inv_cancel this
+      mul_inv_cancel₀ this
 
 end IsDomain
 
@@ -258,7 +258,7 @@ macro "frac_tac" : tactic => `(tactic| repeat (rintro (⟨⟩ : RatFunc _)) <;>
     ← ofFractionRing_inv,
     add_assoc, zero_add, add_zero, mul_assoc, mul_zero, mul_one, mul_add, inv_zero,
     add_comm, add_left_comm, mul_comm, mul_left_comm, sub_eq_add_neg, div_eq_mul_inv,
-    add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_right_neg])
+    add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_neg_cancel])
 
 /-- Solve equations for `RatFunc K` by applying `RatFunc.induction_on`. -/
 macro "smul_tac" : tactic => `(tactic|
@@ -269,7 +269,7 @@ macro "smul_tac" : tactic => `(tactic|
     simp_rw [← ofFractionRing_smul] <;>
     simp only [add_comm, mul_comm, zero_smul, succ_nsmul, zsmul_eq_mul, mul_add, mul_one, mul_zero,
       neg_add, mul_neg,
-      Int.ofNat_eq_coe, Int.cast_zero, Int.cast_add, Int.cast_one,
+      Int.cast_zero, Int.cast_add, Int.cast_one,
       Int.cast_negSucc, Int.cast_natCast, Nat.cast_succ,
       Localization.mk_zero, Localization.add_mk_self, Localization.neg_mk,
       ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg])
@@ -308,7 +308,7 @@ def instAddCommGroup : AddCommGroup (RatFunc K) where
   zero_add := by frac_tac
   add_zero := by frac_tac
   neg := Neg.neg
-  add_left_neg := by frac_tac
+  neg_add_cancel := by frac_tac
   sub := Sub.sub
   sub_eq_add_neg := by frac_tac
   nsmul := (· • ·)
@@ -522,7 +522,9 @@ instance instField [IsDomain K] : Field (RatFunc K) where
   mul_inv_cancel _ := mul_inv_cancel
   zpow := zpowRec
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 section IsFractionRing
 
@@ -636,15 +638,7 @@ theorem algebraMap_injective : Function.Injective (algebraMap K[X] (RatFunc K)) 
   rw [← ofFractionRing_comp_algebraMap]
   exact ofFractionRing_injective.comp (IsFractionRing.injective _ _)
 
-@[simp]
-theorem algebraMap_eq_zero_iff {x : K[X]} : algebraMap K[X] (RatFunc K) x = 0 ↔ x = 0 :=
-  ⟨(injective_iff_map_eq_zero _).mp (algebraMap_injective K) _, fun hx => by
-    rw [hx, RingHom.map_zero]⟩
-
 variable {K}
-
-theorem algebraMap_ne_zero {x : K[X]} (hx : x ≠ 0) : algebraMap K[X] (RatFunc K) x ≠ 0 :=
-  mt (algebraMap_eq_zero_iff K).mp hx
 
 section LiftAlgHom
 
@@ -710,7 +704,14 @@ instance : IsFractionRing K[X] (RatFunc K) where
     simp only [← ofFractionRing_algebraMap, Function.comp_apply, ← ofFractionRing_mul]
     rw [ofFractionRing.injEq]  -- Porting note: added
 
+@[deprecated "Use NoZeroSMulDivisors.algebraMap_eq_zero_iff instead." (since := "2024-09-08")]
+theorem algebraMap_eq_zero_iff {x : K[X]} : algebraMap K[X] (RatFunc K) x = 0 ↔ x = 0 := by
+  simp
+
 variable {K}
+
+theorem algebraMap_ne_zero {x : K[X]} (hx : x ≠ 0) : algebraMap K[X] (RatFunc K) x ≠ 0 := by
+  simpa
 
 @[simp]
 theorem liftOn_div {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ p, f p 0 = f 0 1)
@@ -826,7 +827,7 @@ def numDenom (x : RatFunc K) : K[X] × K[X] :=
         Polynomial.leadingCoeff_C, div_C_mul, div_C_mul, ← mul_assoc, ← Polynomial.C_mul, ←
         mul_assoc, ← Polynomial.C_mul]
       constructor <;> congr <;>
-        rw [inv_div, mul_comm, mul_div_assoc, ← mul_assoc, inv_inv, _root_.mul_inv_cancel ha',
+        rw [inv_div, mul_comm, mul_div_assoc, ← mul_assoc, inv_inv, mul_inv_cancel₀ ha',
           one_mul, inv_div])
 
 @[simp]

@@ -17,14 +17,20 @@ functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGrp` for `A : Cᵒᵖ` and
 
 -/
 
+open CategoryTheory Limits
+
+variable {C : Type*} [Category C] [Preadditive C] [HasShift C ℤ]
+
 namespace CategoryTheory
 
 open Limits Pretriangulated.Opposite
 
 namespace Pretriangulated
 
-variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
+section
+
+variable [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+  [Pretriangulated C]
 
 instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).IsHomological where
   exact T hT := by
@@ -45,11 +51,13 @@ lemma preadditiveYoneda_map_distinguished
     ((shortComplexOfDistTriangle T hT).op.map (preadditiveYoneda.obj B)).Exact :=
   (preadditiveYoneda.obj B).map_distinguished_op_exact T hT
 
+end
+
 noncomputable instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).ShiftSequence ℤ :=
   Functor.ShiftSequence.tautological _ _
 
 lemma preadditiveCoyoneda_homologySequenceδ_apply
-    (A : Cᵒᵖ) (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (x : A.unop ⟶ T.obj₃⟦n₀⟧) :
+    (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {A : Cᵒᵖ} (x : A.unop ⟶ T.obj₃⟦n₀⟧) :
     (preadditiveCoyoneda.obj A).homologySequenceδ T n₀ n₁ h x =
       x ≫ T.mor₃⟦n₀⟧' ≫ (shiftFunctorAdd' C 1 n₀ n₁ (by omega)).inv.app _ := by
   apply Category.assoc

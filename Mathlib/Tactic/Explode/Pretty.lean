@@ -63,3 +63,7 @@ def entriesToMessageData (entries : Entries) : MetaM MessageData := do
   let paddedThms ← padRight <| entries.l.map (·.thm)
 
   rowToMessageData paddedLines paddedDeps paddedThms entries.l
+
+end Explode
+
+end Mathlib

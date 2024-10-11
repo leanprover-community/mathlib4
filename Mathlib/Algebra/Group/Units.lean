@@ -133,14 +133,10 @@ theorem ext : Function.Injective (val : αˣ → α)
 theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
   ext.eq_iff
 
-@[to_additive]
-theorem ext_iff {a b : αˣ} : a = b ↔ (a : α) = b :=
-  eq_iff.symm
-
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive "Additive units have decidable equality
 if the base `AddMonoid` has deciable equality."]
-instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ ext_iff
+instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ Units.ext_iff
 
 @[to_additive (attr := simp)]
 theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
@@ -327,7 +323,7 @@ instance instDivInvMonoid : DivInvMonoid αˣ where
 /-- Units of a monoid form a group. -/
 @[to_additive "Additive units of an additive monoid form an additive group."]
 instance instGroup : Group αˣ where
-  mul_left_inv := fun u => ext u.inv_val
+  inv_mul_cancel := fun u => ext u.inv_val
 
 /-- Units of a commutative monoid form a commutative group. -/
 @[to_additive "Additive units of an additive commutative monoid form
@@ -383,7 +379,7 @@ theorem Units.val_mkOfMulEqOne [CommMonoid α] {a b : α} (h : a * b = 1) :
 
 section Monoid
 
-variable [Monoid α] {a b c : α}
+variable [Monoid α] {a : α}
 
 /-- Partial division. It is defined when the
   second argument is invertible, and unlike the division operator
@@ -468,6 +464,72 @@ theorem val_div_eq_divp (u₁ u₂ : αˣ) : ↑(u₁ / u₂) = ↑u₁ /ₚ u�
 
 end Monoid
 
+namespace LeftCancelMonoid
+
+variable [LeftCancelMonoid α] [Subsingleton αˣ] {a b : α}
+
+@[to_additive]
+protected theorem eq_one_of_mul_right (h : a * b = 1) : a = 1 :=
+  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ (by
+    rw [← mul_left_cancel_iff (a := a), ← mul_assoc, h, one_mul, mul_one]) h) 1
+
+@[to_additive]
+protected theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 := by
+  rwa [LeftCancelMonoid.eq_one_of_mul_right h, one_mul] at h
+
+@[to_additive (attr := simp)]
+protected theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
+  ⟨fun h => ⟨LeftCancelMonoid.eq_one_of_mul_right h, LeftCancelMonoid.eq_one_of_mul_left h⟩, by
+    rintro ⟨rfl, rfl⟩
+    exact mul_one _⟩
+
+@[to_additive]
+protected theorem mul_ne_one : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := by rw [not_iff_comm]; simp
+
+end LeftCancelMonoid
+
+namespace RightCancelMonoid
+
+variable [RightCancelMonoid α] [Subsingleton αˣ] {a b : α}
+
+@[to_additive]
+protected theorem eq_one_of_mul_right (h : a * b = 1) : a = 1 :=
+  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ (by
+    rw [← mul_right_cancel_iff (a := b), mul_assoc, h, one_mul, mul_one]) h) 1
+
+@[to_additive]
+protected theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 := by
+  rwa [RightCancelMonoid.eq_one_of_mul_right h, one_mul] at h
+
+@[to_additive (attr := simp)]
+protected theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
+  ⟨fun h => ⟨RightCancelMonoid.eq_one_of_mul_right h, RightCancelMonoid.eq_one_of_mul_left h⟩, by
+    rintro ⟨rfl, rfl⟩
+    exact mul_one _⟩
+
+@[to_additive]
+protected theorem mul_ne_one : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := by rw [not_iff_comm]; simp
+
+end RightCancelMonoid
+
+section CancelMonoid
+
+variable [CancelMonoid α] [Subsingleton αˣ] {a b : α}
+
+@[to_additive]
+theorem eq_one_of_mul_right' (h : a * b = 1) : a = 1 := LeftCancelMonoid.eq_one_of_mul_right h
+
+@[to_additive]
+theorem eq_one_of_mul_left' (h : a * b = 1) : b = 1 := LeftCancelMonoid.eq_one_of_mul_left h
+
+@[to_additive]
+theorem mul_eq_one' : a * b = 1 ↔ a = 1 ∧ b = 1 := LeftCancelMonoid.mul_eq_one
+
+@[to_additive]
+theorem mul_ne_one' : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := LeftCancelMonoid.mul_ne_one
+
+end CancelMonoid
+
 section CommMonoid
 
 variable [CommMonoid α]
@@ -501,6 +563,8 @@ theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
   ⟨fun h => ⟨eq_one_of_mul_right h, eq_one_of_mul_left h⟩, by
     rintro ⟨rfl, rfl⟩
     exact mul_one _⟩
+
+@[to_additive] theorem mul_ne_one : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := by rw [not_iff_comm]; simp
 
 end CommMonoid
 
@@ -587,9 +651,9 @@ lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
 @[to_additive] lemma IsUnit.pow (n : ℕ) : IsUnit a → IsUnit (a ^ n) := by
   rintro ⟨u, rfl⟩; exact ⟨u ^ n, rfl⟩
 
-theorem units_eq_one [Unique Mˣ] (u : Mˣ) : u = 1 := by subsingleton
+theorem units_eq_one [Subsingleton Mˣ] (u : Mˣ) : u = 1 := by subsingleton
 
-@[to_additive] lemma isUnit_iff_eq_one [Unique Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
+@[to_additive] lemma isUnit_iff_eq_one [Subsingleton Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
   ⟨fun ⟨u, hu⟩ ↦ by rw [← hu, Subsingleton.elim u 1, Units.val_one], fun h ↦ h ▸ isUnit_one⟩
 
 end Monoid
@@ -916,7 +980,8 @@ lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u := 
   rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
 
 @[to_additive]
-lemma Group.isUnit [Group α] (a : α) : IsUnit a := ⟨⟨a, a⁻¹, mul_inv_self _, inv_mul_self _⟩, rfl⟩
+lemma Group.isUnit [Group α] (a : α) : IsUnit a :=
+  ⟨⟨a, a⁻¹, mul_inv_cancel _, inv_mul_cancel _⟩, rfl⟩
 
 -- namespace
 end IsUnit
@@ -934,7 +999,7 @@ noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     toInv := invOfIsUnit h,
-    mul_left_inv := fun a => by
+    inv_mul_cancel := fun a => by
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 
@@ -942,7 +1007,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
     toInv := invOfIsUnit h,
-    mul_left_inv := fun a => by
+    inv_mul_cancel := fun a => by
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 

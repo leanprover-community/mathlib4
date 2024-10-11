@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral
 # Derivatives of interval integrals depending on parameters
 
 In this file we restate theorems about derivatives of integrals depending on parameters for interval
-integrals.  -/
+integrals. -/
 
 
 open TopologicalSpace MeasureTheory Filter Metric
@@ -18,7 +18,7 @@ open TopologicalSpace MeasureTheory Filter Metric
 open scoped Topology Filter Interval
 
 variable {𝕜 : Type*} [RCLike 𝕜] {μ : Measure ℝ} {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E] {H : Type*} [NormedAddCommGroup H]
+  [NormedSpace ℝ E] [NormedSpace 𝕜 E] {H : Type*} [NormedAddCommGroup H]
   [NormedSpace 𝕜 H] {a b ε : ℝ} {bound : ℝ → ℝ}
 
 namespace intervalIntegral

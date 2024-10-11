@@ -187,24 +187,28 @@ theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
     rw [h.aestronglyMeasurable_iff] at hf
     rw [integral_non_aestronglyMeasurable hf]
 
-theorem snorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν)
-    (p : ℝ≥0∞) : snorm f p μ = snorm g p ν := by
+theorem eLpNorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν)
+    (p : ℝ≥0∞) : eLpNorm f p μ = eLpNorm g p ν := by
   by_cases h0 : p = 0
   · simp [h0]
   by_cases h_top : p = ∞
-  · simp only [h_top, snorm, snormEssSup, ENNReal.top_ne_zero, eq_self_iff_true, if_true, if_false]
+  · simp only [h_top, eLpNorm, eLpNormEssSup, ENNReal.top_ne_zero, eq_self_iff_true, if_true,
+      if_false]
     apply essSup_eq
     exact h.comp (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
-  simp only [snorm_eq_snorm' h0 h_top, snorm', one_div]
+  simp only [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm', one_div]
   congr 1
   apply lintegral_eq
   exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
     p.toReal)
 
+@[deprecated (since := "2024-07-27")]
+alias snorm_eq := eLpNorm_eq
+
 theorem memℒp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
     (hf : Memℒp f p μ) : Memℒp g p ν := by
   refine ⟨h.aestronglyMeasurable_snd hf.aestronglyMeasurable, ?_⟩
-  rw [← h.snorm_eq]
+  rw [← h.eLpNorm_eq]
   exact hf.2
 
 theorem memℒp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
@@ -290,13 +294,13 @@ theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → �
   refine uniformIntegrable_of' hp hp' hfmeas fun ε hε => ?_
   by_cases hι : Nonempty ι
   swap; · exact ⟨0, fun i => False.elim (hι <| Nonempty.intro i)⟩
-  obtain ⟨C, hC₁, hC₂⟩ := hℒp.snorm_indicator_norm_ge_pos_le (hfmeas _) hε
+  obtain ⟨C, hC₁, hC₂⟩ := hℒp.eLpNorm_indicator_norm_ge_pos_le (hfmeas _) hε
   refine ⟨⟨C, hC₁.le⟩, fun i => le_trans (le_of_eq ?_) hC₂⟩
   have : {x | (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
     ext x
     simp_rw [← norm_toNNReal]
     exact Real.le_toNNReal_iff_coe_le (norm_nonneg _)
-  rw [this, ← snorm_norm, ← snorm_norm (Set.indicator _ _)]
+  rw [this, ← eLpNorm_norm, ← eLpNorm_norm (Set.indicator _ _)]
   simp_rw [norm_indicator_eq_indicator_norm, coe_nnnorm]
   let F : E → ℝ := (fun x : E => if (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖x‖₊ then ‖x‖ else 0)
   have F_meas : Measurable F := by
@@ -305,8 +309,8 @@ theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → �
     intro k
     ext x
     simp only [Set.indicator, Set.mem_setOf_eq]; norm_cast
-  rw [this, this, ← snorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
-    (hf i).map_eq, snorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]
+  rw [this, this, ← eLpNorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
+    (hf i).map_eq, eLpNorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]
 
 /-- A sequence of identically distributed Lᵖ functions is p-uniformly integrable. -/
 theorem Memℒp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}

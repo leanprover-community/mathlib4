@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Prime numbers
@@ -83,7 +82,7 @@ theorem prime_def_lt'' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m 
   simp only [Nat.isUnit_iff]
   apply Or.imp_right _ (h.2 a _)
   · rintro rfl
-    rw [← mul_right_inj' (zero_lt_of_lt h1).ne', ← hab, mul_one]
+    rw [← mul_right_inj' (not_eq_zero_of_lt h1), ← hab, mul_one]
   · rw [hab]
     exact dvd_mul_right _ _
 
@@ -104,7 +103,7 @@ theorem prime_def_lt' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m <
             revert p2
             decide
           · rfl
-          · exact (h (le_add_left _ _) l).elim d⟩
+          · exact (h (le_add_left 2 m) l).elim d⟩
 
 theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m ≤ sqrt p → ¬m ∣ p :=
   prime_def_lt'.trans <|
@@ -162,7 +161,7 @@ theorem Prime.not_dvd_one {p : ℕ} (pp : Prime p) : ¬p ∣ 1 :=
   Irreducible.not_dvd_one pp
 
 theorem prime_mul_iff {a b : ℕ} : Nat.Prime (a * b) ↔ a.Prime ∧ b = 1 ∨ b.Prime ∧ a = 1 := by
-  simp only [iff_self_iff, irreducible_mul_iff, ← irreducible_iff_nat_prime, Nat.isUnit_iff]
+  simp only [irreducible_mul_iff, ← irreducible_iff_nat_prime, Nat.isUnit_iff]
 
 theorem not_prime_mul {a b : ℕ} (a1 : a ≠ 1) (b1 : b ≠ 1) : ¬Prime (a * b) := by
   simp [prime_mul_iff, _root_.not_or, *]
@@ -236,15 +235,16 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → minFacProp n (minFacAux n k)
   | k => fun i e a => by
     rw [minFacAux]
-    by_cases h : n < k * k <;> simp [h]
+    by_cases h : n < k * k
     · have pp : Prime n :=
         prime_def_le_sqrt.2
           ⟨n2, fun m m2 l d => not_lt_of_ge l <| lt_of_lt_of_le (sqrt_lt.2 h) (a m m2 d)⟩
-      exact ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
+      simpa [h] using ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
     have k2 : 2 ≤ k := by
       subst e
       apply Nat.le_add_left
-    by_cases dk : k ∣ n <;> simp [dk]
+    simp only [h, ↓reduceIte]
+    by_cases dk : k ∣ n <;> simp only [dk, ↓reduceIte]
     · exact ⟨k2, dk, a⟩
     · refine
         have := minFac_lemma n k h
@@ -269,7 +269,7 @@ theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
     revert n0 n1
     rcases n with (_ | _ | _) <;> simp [succ_le_succ]
   simp only [minFac_eq, Nat.isUnit_iff]
-  by_cases d2 : 2 ∣ n <;> simp [d2]
+  by_cases d2 : 2 ∣ n <;> simp only [d2, ↓reduceIte]
   · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩
   · refine
       minFacAux_has_prop n2 3 0 rfl fun m m2 d => (Nat.eq_or_lt_of_le m2).resolve_left (mt ?_ d2)
@@ -337,7 +337,7 @@ theorem minFac_le_div {n : ℕ} (pos : 0 < n) (np : ¬Prime n) : minFac n ≤ n 
   | ⟨0, h0⟩ => absurd pos <| by rw [h0, mul_zero]; decide
   | ⟨1, h1⟩ => by
     rw [mul_one] at h1
-    rw [prime_def_minFac, not_and_or, ← h1, eq_self_iff_true, _root_.not_true, or_false_iff,
+    rw [prime_def_minFac, not_and_or, ← h1, eq_self_iff_true, _root_.not_true, _root_.or_false,
       not_le] at np
     rw [le_antisymm (le_of_lt_succ np) (succ_le_of_lt pos), minFac_one, Nat.div_one]
   | ⟨x + 2, hx⟩ => by

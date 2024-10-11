@@ -23,8 +23,8 @@ neighborhood `U` of `x`.
 -/
 noncomputable def IsAffineOpen.fromSpecStalk
     {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) {x : X} (hxU : x ∈ U) :
-    Spec (X.stalk x) ⟶ X :=
-  Spec.map (X.presheaf.germ ⟨x, hxU⟩) ≫ hU.fromSpec
+    Spec (X.presheaf.stalk x) ⟶ X :=
+  Spec.map (X.presheaf.germ _ x hxU) ≫ hU.fromSpec
 
 /--
 The morphism from `Spec(O_x)` to `X` given by `IsAffineOpen.fromSpec` does not depend on the affine
@@ -37,13 +37,13 @@ theorem IsAffineOpen.fromSpecStalk_eq {X : Scheme} (x : X) {U V : X.Opens}
     Opens.isBasis_iff_nbhd.mp (isBasis_affine_open X) (show x ∈ U ⊓ V from ⟨hxU, hxV⟩)
   transitivity fromSpecStalk h₁ h₂
   · delta fromSpecStalk
-    rw [← hU.map_fromSpec h₁ (homOfLE $ h₃.trans inf_le_left).op]
-    erw [← Scheme.Spec_map (X.presheaf.map _).op, ← Scheme.Spec_map (X.presheaf.germ ⟨x, h₂⟩).op]
+    rw [← hU.map_fromSpec h₁ (homOfLE <| h₃.trans inf_le_left).op]
+    erw [← Scheme.Spec_map (X.presheaf.map _).op, ← Scheme.Spec_map (X.presheaf.germ _ x h₂).op]
     rw [← Functor.map_comp_assoc, ← op_comp, TopCat.Presheaf.germ_res, Scheme.Spec_map,
       Quiver.Hom.unop_op]
   · delta fromSpecStalk
-    rw [← hV.map_fromSpec h₁ (homOfLE $ h₃.trans inf_le_right).op]
-    erw [← Scheme.Spec_map (X.presheaf.map _).op, ← Scheme.Spec_map (X.presheaf.germ ⟨x, h₂⟩).op]
+    rw [← hV.map_fromSpec h₁ (homOfLE <| h₃.trans inf_le_right).op]
+    erw [← Scheme.Spec_map (X.presheaf.map _).op, ← Scheme.Spec_map (X.presheaf.germ _ x h₂).op]
     rw [← Functor.map_comp_assoc, ← op_comp, TopCat.Presheaf.germ_res, Scheme.Spec_map,
       Quiver.Hom.unop_op]
 
@@ -51,7 +51,7 @@ theorem IsAffineOpen.fromSpecStalk_eq {X : Scheme} (x : X) {U V : X.Opens}
 If `x` is a point of `X`, this is the canonical morphism from `Spec(O_x)` to `X`.
 -/
 noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
-    Scheme.Spec.obj (op (X.stalk x)) ⟶ X :=
+    Scheme.Spec.obj (op (X.presheaf.stalk x)) ⟶ X :=
   (isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)
 
 @[simp]

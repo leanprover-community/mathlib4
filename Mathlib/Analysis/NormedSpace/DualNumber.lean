@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.DualNumber
-import Mathlib.Analysis.NormedSpace.TrivSqZeroExt
+import Mathlib.Analysis.Normed.Algebra.TrivSqZeroExt
 
 /-!
 # Results on `DualNumber R` related to the norm
@@ -25,7 +25,7 @@ open TrivSqZeroExt
 
 variable (𝕜 : Type*) {R : Type*}
 variable [Field 𝕜] [CharZero 𝕜] [CommRing R] [Algebra 𝕜 R]
-variable [UniformSpace R] [TopologicalRing R] [CompleteSpace R] [T2Space R]
+variable [UniformSpace R] [TopologicalRing R] [T2Space R]
 
 @[simp]
 theorem exp_eps : exp 𝕜 (eps : DualNumber R) = 1 + eps :=

@@ -16,7 +16,6 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
-
 open Mathlib (Vector)
 open Encodable Denumerable
 
@@ -84,7 +83,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
     simp only [k', exists_prop, mem_coe, mem_bind_iff, Option.mem_def] at h'
     obtain ⟨n, hn, hx⟩ := h'
     have := (H _).1 _ hn
-    simp [mem_decode₂, encode_injective.eq_iff] at this
+    simp only [decode₂_encode, coe_some, bind_some, mem_map_iff] at this
     obtain ⟨a', ha, rfl⟩ | ⟨a', ha, rfl⟩ := this <;> simp only [encodek, Option.some_inj] at hx <;>
       rw [hx] at ha
     · exact Or.inl ha
@@ -174,6 +173,15 @@ protected theorem not {p : α → Prop} (hp : ComputablePred p) : ComputablePred
         simp only [Bool.not_eq_true]
         cases f n <;> rfl⟩
 
+/-- The computable functions are closed under if-then-else definitions
+with computable predicates. -/
+theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computable f₂)
+    {c : ℕ → Prop} [DecidablePred c] (hc : ComputablePred c) :
+    Computable fun k ↦ if c k then f₁ k else f₂ k := by
+  simp_rw [← Bool.cond_decide]
+  obtain ⟨inst, hc⟩ := hc
+  convert hc.cond hf₁ hf₂
+
 theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
   unfold RePred
@@ -214,8 +222,8 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
                 (Partrec.nat_iff.1 <| eval_part.comp (const cf) Computable.id)
                 (Partrec.nat_iff.1 <| eval_part.comp (const cg) Computable.id) ((hC _).1 fC),
         fun h => by {
-          obtain rfl | rfl := h <;> simp [ComputablePred, Set.mem_empty_iff_false] <;>
-            exact ⟨by infer_instance, Computable.const _⟩ }⟩
+          obtain rfl | rfl := h <;> simpa [ComputablePred, Set.mem_empty_iff_false] using
+            Computable.const _}⟩
 
 /-- The Halting problem is recursively enumerable -/
 theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
@@ -273,8 +281,6 @@ namespace Nat.Partrec'
 
 open Mathlib.Vector Partrec Computable
 
-open Nat (Partrec')
-
 open Nat.Partrec'
 
 theorem to_part {n f} (pf : @Partrec' n f) : _root_.Partrec f := by
@@ -304,13 +310,13 @@ theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v => f v.tail :=
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n fun v => (f v).bind fun a => g (a ::ᵥ v) :=
   (@comp n (n + 1) g (fun i => Fin.cases f (fun i v => some (v.get i)) i) hg fun i => by
-        refine Fin.cases ?_ (fun i => ?_) i <;> simp [*]
-        exact prim (Nat.Primrec'.get _)).of_eq
+      refine Fin.cases ?_ (fun i => ?_) i <;> simp [*]
+      exact prim (Nat.Primrec'.get _)).of_eq
     fun v => by simp [mOfFn, Part.bind_assoc, pure]
 
 protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f)
     (hg : @Partrec' (n + 1) g) : @Partrec' n fun v => (f v).map fun a => g (a ::ᵥ v) := by
-  simp [(Part.bind_some_eq_map _ _).symm]; exact hf.bind hg
+  simpa [(Part.bind_some_eq_map _ _).symm] using hf.bind hg
 
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
   vector-valued functions. -/

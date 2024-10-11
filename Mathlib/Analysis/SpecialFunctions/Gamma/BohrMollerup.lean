@@ -42,50 +42,6 @@ open Filter Set MeasureTheory
 
 open scoped Nat ENNReal Topology Real
 
-section Convexity
-
--- Porting note: move the following lemmas to `Analysis.Convex.Function`
-variable {𝕜 E β : Type*} {s : Set E} {f g : E → β} [OrderedSemiring 𝕜] [SMul 𝕜 E] [AddCommMonoid E]
-  [OrderedAddCommMonoid β]
-
-theorem ConvexOn.congr [SMul 𝕜 β] (hf : ConvexOn 𝕜 s f) (hfg : EqOn f g s) : ConvexOn 𝕜 s g :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab => by
-    simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha hb hab)] using hf.2 hx hy ha hb hab⟩
-
-theorem ConcaveOn.congr [SMul 𝕜 β] (hf : ConcaveOn 𝕜 s f) (hfg : EqOn f g s) : ConcaveOn 𝕜 s g :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab => by
-    simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha hb hab)] using hf.2 hx hy ha hb hab⟩
-
-theorem StrictConvexOn.congr [SMul 𝕜 β] (hf : StrictConvexOn 𝕜 s f) (hfg : EqOn f g s) :
-    StrictConvexOn 𝕜 s g :=
-  ⟨hf.1, fun x hx y hy hxy a b ha hb hab => by
-    simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha.le hb.le hab)] using
-      hf.2 hx hy hxy ha hb hab⟩
-
-theorem StrictConcaveOn.congr [SMul 𝕜 β] (hf : StrictConcaveOn 𝕜 s f) (hfg : EqOn f g s) :
-    StrictConcaveOn 𝕜 s g :=
-  ⟨hf.1, fun x hx y hy hxy a b ha hb hab => by
-    simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha.le hb.le hab)] using
-      hf.2 hx hy hxy ha hb hab⟩
-
-theorem ConvexOn.add_const [Module 𝕜 β] (hf : ConvexOn 𝕜 s f) (b : β) :
-    ConvexOn 𝕜 s (f + fun _ => b) :=
-  hf.add (convexOn_const _ hf.1)
-
-theorem ConcaveOn.add_const [Module 𝕜 β] (hf : ConcaveOn 𝕜 s f) (b : β) :
-    ConcaveOn 𝕜 s (f + fun _ => b) :=
-  hf.add (concaveOn_const _ hf.1)
-
-theorem StrictConvexOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
-    [Module 𝕜 γ] (hf : StrictConvexOn 𝕜 s f) (b : γ) : StrictConvexOn 𝕜 s (f + fun _ => b) :=
-  hf.add_convexOn (convexOn_const _ hf.1)
-
-theorem StrictConcaveOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
-    [Module 𝕜 γ] (hf : StrictConcaveOn 𝕜 s f) (b : γ) : StrictConcaveOn 𝕜 s (f + fun _ => b) :=
-  hf.add_concaveOn (concaveOn_const _ hf.1)
-
-end Convexity
-
 namespace Real
 
 section Convexity
@@ -196,9 +152,10 @@ theorem f_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn
 
 theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (n : ℕ) :
     f (x + n) = f x + ∑ m ∈ Finset.range n, log (x + m) := by
-  induction' n with n hn
-  · simp
-  · have : x + n.succ = x + n + 1 := by push_cast; ring
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    have : x + n.succ = x + n + 1 := by push_cast; ring
     rw [this, hf_feq, hn]
     · rw [Finset.range_succ, Finset.sum_insert Finset.not_mem_range_self]
       abel
@@ -228,7 +185,7 @@ theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
     -- nth_rw_rhs 1 [(by ring : (n : ℝ) = ↑n - 1 + 1)]
     -- rw [hf_feq npos, add_sub_cancel]
     rw [eq_sub_iff_add_eq, ← hf_feq npos, sub_add_cancel]
-  rwa [this, le_div_iff hx, sub_sub_cancel, le_sub_iff_add_le, mul_comm _ x, add_comm] at c
+  rwa [this, le_div_iff₀ hx, sub_sub_cancel, le_sub_iff_add_le, mul_comm _ x, add_comm] at c
 
 theorem logGammaSeq_add_one (x : ℝ) (n : ℕ) :
     logGammaSeq (x + 1) n = logGammaSeq x (n + 1) + log x - (x + 1) * (log (n + 1) - log n) := by
@@ -304,7 +261,7 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
       ∀ᶠ n : ℕ in atTop,
         logGammaSeq (x - 1) n =
           logGammaSeq x (n - 1) + x * (log (↑(n - 1) + 1) - log ↑(n - 1)) - log (x - 1) := by
-      refine Eventually.mp (eventually_ge_atTop 1) (eventually_of_forall fun n hn => ?_)
+      refine Eventually.mp (eventually_ge_atTop 1) (Eventually.of_forall fun n hn => ?_)
       have := logGammaSeq_add_one (x - 1) (n - 1)
       rw [sub_add_cancel, Nat.sub_add_cancel hn] at this
       rw [this]

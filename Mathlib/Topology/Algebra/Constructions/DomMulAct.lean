@@ -7,11 +7,17 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
-# Topological structure on `DomMulAct _`
+# Topological space structure on `Mᵈᵐᵃ` and `Mᵈᵃᵃ`
 
-In this file we define topology on `DomMulAct _` and prove basic facts about this topology.
-The topology on `Mᵈᵐᵃ` is the same as the topology on `M`
-(formally, it is induced by `DomMulAct.mk.symm`, since the types aren't definitionally equal).
+In this file we define `TopologicalSpace` structure on `Mᵈᵐᵃ` and `Mᵈᵃᵃ`
+and prove basic theorems about these topologies.
+The topologies on `Mᵈᵐᵃ` and `Mᵈᵃᵃ` are the same as the topology on `M`.
+Formally, they are induced by `DomMulAct.mk.symm` and `DomAddAct.mk.symm`,
+since the types aren't definitionally equal.
+
+## Tags
+
+topological space, group action, domain action
 -/
 
 open Filter TopologicalSpace
@@ -21,7 +27,8 @@ namespace DomMulAct
 
 variable {M : Type*} [TopologicalSpace M]
 
-@[to_additive]
+/-- Put the same topological space structure on `Mᵈᵐᵃ` as on the original space. -/
+@[to_additive "Put the same topological space structure on `Mᵈᵃᵃ` as on the original space."]
 instance instTopologicalSpace : TopologicalSpace Mᵈᵐᵃ := .induced mk.symm  ‹_›
 
 @[to_additive (attr := continuity, fun_prop)]
@@ -31,7 +38,7 @@ theorem continuous_mk : Continuous (@mk M) := continuous_induced_rng.2 continuou
 theorem continuous_mk_symm : Continuous (@mk M).symm := continuous_induced_dom
 
 /-- `DomMulAct.mk` as a homeomorphism. -/
-@[to_additive (attr := simps toEquiv) "`DomAddAct.mk` as a homeomorphism"]
+@[to_additive (attr := simps toEquiv) "`DomAddAct.mk` as a homeomorphism."]
 def mkHomeomorph : M ≃ₜ Mᵈᵐᵃ where
   toEquiv := mk
 
@@ -94,6 +101,19 @@ instance instFirstCountableTopology [FirstCountableTopology M] : FirstCountableT
 @[to_additive]
 instance instSecondCountableTopology [SecondCountableTopology M] : SecondCountableTopology Mᵈᵐᵃ :=
   inducing_mk_symm.secondCountableTopology
+
+@[to_additive]
+instance instCompactSpace [CompactSpace M] : CompactSpace Mᵈᵐᵃ :=
+  mkHomeomorph.compactSpace
+
+@[to_additive]
+instance instLocallyCompactSpace [LocallyCompactSpace M] : LocallyCompactSpace Mᵈᵐᵃ :=
+  openEmbedding_mk_symm.locallyCompactSpace
+
+@[to_additive]
+instance instWeaklyLocallyCompactSpace [WeaklyLocallyCompactSpace M] :
+    WeaklyLocallyCompactSpace Mᵈᵐᵃ :=
+  closedEmbedding_mk_symm.weaklyLocallyCompactSpace
 
 @[to_additive (attr := simp)]
 theorem map_mk_nhds (x : M) : map (mk : M → Mᵈᵐᵃ) (𝓝 x) = 𝓝 (mk x) :=

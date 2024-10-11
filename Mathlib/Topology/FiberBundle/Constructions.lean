@@ -25,14 +25,9 @@ fiber bundle, fibre bundle, fiberwise product, pullback
 
 -/
 
-
 open TopologicalSpace Filter Set Bundle
 
-open scoped Classical
-open Topology Bundle
-
 /-! ### The trivial bundle -/
-
 
 namespace Bundle
 
@@ -143,13 +138,12 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
   have hf₁ : Continuous f₁ := (Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
   have hf₂ : ContinuousOn f₂ (e₁.source ×ˢ e₂.source) :=
     e₁.toPartialHomeomorph.continuousOn.prod_map e₂.toPartialHomeomorph.continuousOn
-  have hf₃ : Continuous f₃ :=
-    (continuous_fst.comp continuous_fst).prod_mk (continuous_snd.prod_map continuous_snd)
+  have hf₃ : Continuous f₃ := by fun_prop
   refine ((hf₃.comp_continuousOn hf₂).comp hf₁.continuousOn ?_).congr ?_
   · rw [e₁.source_eq, e₂.source_eq]
     exact mapsTo_preimage _ _
   rintro ⟨b, v₁, v₂⟩ ⟨hb₁, _⟩
-  simp only [f₃, Prod.toFun', Prod.mk.inj_iff, Function.comp_apply, and_true_iff]
+  simp only [f₃, Prod.toFun', Prod.mk.inj_iff, Function.comp_apply, and_true]
   rw [e₁.coe_fst]
   rw [e₁.source_eq, mem_preimage]
   exact hb₁
@@ -181,8 +175,7 @@ theorem Prod.right_inv {x : B × F₁ × F₂}
 theorem Prod.continuous_inv_fun :
     ContinuousOn (Prod.invFun' e₁ e₂) ((e₁.baseSet ∩ e₂.baseSet) ×ˢ univ) := by
   rw [(Prod.inducing_diag F₁ E₁ F₂ E₂).continuousOn_iff]
-  have H₁ : Continuous fun p : B × F₁ × F₂ ↦ ((p.1, p.2.1), (p.1, p.2.2)) :=
-    (continuous_id.prod_map continuous_fst).prod_mk (continuous_id.prod_map continuous_snd)
+  have H₁ : Continuous fun p : B × F₁ × F₂ ↦ ((p.1, p.2.1), (p.1, p.2.2)) := by fun_prop
   refine (e₁.continuousOn_symm.prod_map e₂.continuousOn_symm).comp H₁.continuousOn ?_
   exact fun x h ↦ ⟨⟨h.1.1, mem_univ _⟩, ⟨h.1.2, mem_univ _⟩⟩
 
@@ -231,7 +224,7 @@ variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSp
 noncomputable instance FiberBundle.prod : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) where
   totalSpaceMk_inducing' b := by
     rw [← (Prod.inducing_diag F₁ E₁ F₂ E₂).of_comp_iff]
-    exact (totalSpaceMk_inducing F₁ E₁ b).prod_map (totalSpaceMk_inducing F₂ E₂ b)
+    exact (totalSpaceMk_inducing F₁ E₁ b).prodMap (totalSpaceMk_inducing F₂ E₂ b)
   trivializationAtlas' := { e |
     ∃ (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂ (π F₂ E₂))
       (_ : MemTrivializationAtlas e₁) (_ : MemTrivializationAtlas e₂),
@@ -258,7 +251,7 @@ universe u v w₁ w₂ U
 variable {B : Type u} (F : Type v) (E : B → Type w₁) {B' : Type w₂} (f : B' → B)
 
 instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) := by
-  -- Porting note: Original proof was `delta_instance bundle.pullback`
+  -- Porting note: Original proof was `delta_instance Bundle.Pullback`
   intro x
   rw [Bundle.Pullback]
   infer_instance
@@ -297,7 +290,7 @@ variable [TopologicalSpace F] [TopologicalSpace B]
 theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     {f : B' → B} {x : B'} : Continuous (@TotalSpace.mk _ F (f *ᵖ E) x) := by
   simp only [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, induced_compose,
-    induced_inf, Function.comp, induced_const, top_inf_eq, pullbackTopology_def]
+    induced_inf, Function.comp_def, induced_const, top_inf_eq, pullbackTopology_def]
   exact le_of_eq (FiberBundle.totalSpaceMk_inducing F E (f x)).induced
 
 variable {E F}
@@ -314,7 +307,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
   target := (f ⁻¹' e.baseSet) ×ˢ univ
   map_source' x h := by
     simp_rw [e.source_eq, mem_preimage, Pullback.lift_proj] at h
-    simp_rw [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff, mem_preimage, h]
+    simp_rw [prod_mk_mem_set_prod_eq, mem_univ, and_true, mem_preimage, h]
   map_target' y h := by
     rw [mem_prod, mem_preimage] at h
     simp_rw [e.source_eq, mem_preimage, Pullback.lift_proj, h.1]
@@ -322,7 +315,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
     simp_rw [mem_preimage, e.mem_source, Pullback.lift_proj] at h
     simp_rw [Pullback.lift, e.symm_apply_apply_mk h]
   right_inv' x h := by
-    simp_rw [mem_prod, mem_preimage, mem_univ, and_true_iff] at h
+    simp_rw [mem_prod, mem_preimage, mem_univ, and_true] at h
     simp_rw [Pullback.lift_mk, e.apply_mk_symm h]
   open_source := by
     simp_rw [e.source_eq, ← preimage_comp]
@@ -335,11 +328,11 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
         e.continuousOn.comp (Pullback.continuous_lift F E f).continuousOn Subset.rfl)
   continuousOn_invFun := by
     dsimp only
-    simp_rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuousOn_iff, Function.comp,
+    simp_rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuousOn_iff, Function.comp_def,
       pullbackTotalSpaceEmbedding]
     refine
       continuousOn_fst.prod
-        (e.continuousOn_symm.comp ((map_continuous f).prod_map continuous_id).continuousOn
+        (e.continuousOn_symm.comp ((map_continuous f).prodMap continuous_id).continuousOn
           Subset.rfl)
   source_eq := by
     dsimp only

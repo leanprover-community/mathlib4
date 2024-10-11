@@ -22,7 +22,7 @@ We show that flatness is stable under composition and base change.
                             then `S ⊗[R] M` is `S`-flat.
 * `Module.Flat.of_isLocalizedModule`: if `M` is a flat `R`-module and `S` is a submonoid of `R`
                                           then the localization of `M` at `S` is flat as a module
-                                          for the localzation of `R` at `S`.
+                                          for the localization of `R` at `S`.
 -/
 
 universe u v w t
@@ -157,8 +157,8 @@ variable {R : Type u} {M Mp : Type*} (Rp : Type v)
 
 instance localizedModule [Module.Flat R M] (S : Submonoid R) : Module.Flat (Localization S)
     (LocalizedModule S M) := by
-  fapply Module.Flat.isBaseChange (R := R) (M := M) (S := Localization S)
-  exact LocalizedModule.mkLinearMap S M
+  apply Module.Flat.isBaseChange (R := R) (S := Localization S)
+    (f := LocalizedModule.mkLinearMap S M)
   rw [← isLocalizedModule_iff_isBaseChange S]
   exact localizedModuleIsLocalizedModule S
 

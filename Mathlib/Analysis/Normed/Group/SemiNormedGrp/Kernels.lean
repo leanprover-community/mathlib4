@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca, Johan Commelin, Scott Morrison
+Authors: Riccardo Brasca, Johan Commelin, Kim Morrison
 -/
 import Mathlib.Analysis.Normed.Group.SemiNormedGrp
 import Mathlib.Analysis.Normed.Group.Quotient
@@ -124,7 +124,7 @@ instance hasLimit_parallelPair {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) :
                 show NormedAddGroupHom.compHom (f - g) c.ι = 0 by
                   rw [AddMonoidHom.map_sub, AddMonoidHom.sub_apply, sub_eq_zero]; exact c.condition)
             (fun c => NormedAddGroupHom.ker.incl_comp_lift _ _ _) fun c g h => by
-        -- Porting note: the `simp_rw` was was `rw [← h]` but motive is not type correct in mathlib4
+        -- Porting note: the `simp_rw` was `rw [← h]` but motive is not type correct in mathlib4
               ext x; dsimp; simp_rw [← h]; rfl}
 
 instance : Limits.HasEqualizers.{u, u + 1} SemiNormedGrp :=

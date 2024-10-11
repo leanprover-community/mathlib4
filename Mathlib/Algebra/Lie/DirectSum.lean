@@ -157,14 +157,14 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
         erw [AddHom.coe_mk, single_apply, single_apply]
         · simp? [h] says simp only [h, ↓reduceDIte, single_apply]
         · intros
-          erw [single_add]
+          rw [single_add]
       · -- This used to be the end of the proof before leanprover/lean4#2644
         -- with `simp [of, singleAddHom]`
         simp only [of, singleAddHom, bracket_apply]
         erw [AddHom.coe_mk, single_apply, single_apply]
         · simp only [h, dite_false, single_apply, lie_self]
         · intros
-          erw [single_add] }
+          rw [single_add] }
 
 /-- The projection map onto one component, as a morphism of Lie algebras. -/
 @[simps]
@@ -173,7 +173,8 @@ def lieAlgebraComponent (j : ι) : (⨁ i, L i) →ₗ⁅R⁆ L j :=
     toFun := component R ι L j
     map_lie' := fun {x y} => by simp [component, lapply] }
 
-@[ext]
+-- Note(kmill): `ext` cannot generate an iff theorem here since `x` and `y` do not determine `R`.
+@[ext (iff := false)]
 theorem lieAlgebra_ext {x y : ⨁ i, L i}
     (h : ∀ i, lieAlgebraComponent R ι L i x = lieAlgebraComponent R ι L i y) : x = y :=
   DFinsupp.ext h

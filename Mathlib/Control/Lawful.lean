@@ -48,19 +48,17 @@ end StateT
 
 namespace ExceptT
 
-variable {α β ε : Type u} {m : Type u → Type v} (x : ExceptT ε m α)
+variable {α ε : Type u} {m : Type u → Type v} (x : ExceptT ε m α)
 
 -- Porting note: This is proven by proj reduction in Lean 3.
 @[simp]
 theorem run_mk (x : m (Except ε α)) : ExceptT.run (ExceptT.mk x) = x :=
   rfl
 
-variable [Monad m]
-
 attribute [simp] run_bind
 
 @[simp]
-theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
+theorem run_monadLift {n} [Monad m] [MonadLiftT n m] (x : n α) :
     (monadLift x : ExceptT ε m α).run = Except.ok <$> (monadLift x : m α) :=
   rfl
 
@@ -75,7 +73,6 @@ namespace ReaderT
 
 section
 
-variable {ρ : Type u}
 variable {m : Type u → Type v}
 variable {α σ : Type u}
 
@@ -115,6 +112,7 @@ variable {α β : Type u} {m : Type u → Type v} (x : OptionT m α)
 theorem run_mk (x : m (Option α)) : OptionT.run (OptionT.mk x) = x :=
   rfl
 
+section Monad
 variable [Monad m]
 
 @[simp]
@@ -141,6 +139,8 @@ theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <
 theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
     (monadLift x : OptionT m α).run = (monadLift x : m α) >>= fun a => pure (some a) :=
   rfl
+
+end Monad
 
 @[simp]
 theorem run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :

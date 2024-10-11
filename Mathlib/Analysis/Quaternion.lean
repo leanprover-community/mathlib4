@@ -86,12 +86,11 @@ noncomputable instance : NormedDivisionRing ℍ where
     simp only [norm_eq_sqrt_real_inner, inner_self, normSq.map_mul]
     exact Real.sqrt_mul normSq_nonneg _
 
--- Porting note: added `noncomputable`
 noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
   toAlgebra := Quaternion.algebra
 
-instance : CstarRing ℍ where
+instance : CStarRing ℍ where
   norm_mul_self_le x :=
     le_of_eq <| Eq.symm <| (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
 
@@ -196,9 +195,9 @@ theorem continuous_im : Continuous fun q : ℍ => q.im := by
   simpa only [← sub_self_re] using continuous_id.sub (continuous_coe.comp continuous_re)
 
 instance : CompleteSpace ℍ :=
-  haveI : UniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
-    linearIsometryEquivTuple.toContinuousLinearEquiv.symm.uniformEmbedding
-  (completeSpace_congr this).1 (by infer_instance)
+  haveI : IsUniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
+    linearIsometryEquivTuple.toContinuousLinearEquiv.symm.isUniformEmbedding
+  (completeSpace_congr this).1 inferInstance
 
 section infinite_sum
 

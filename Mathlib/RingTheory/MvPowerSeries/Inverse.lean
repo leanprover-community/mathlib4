@@ -7,7 +7,7 @@ Authors: Johan Commelin, Kenny Lau
 import Mathlib.Algebra.Group.Units
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Formal (multivariate) power series - Inverses
@@ -281,7 +281,7 @@ instance : InvOneClass (MvPowerSeries σ k) :=
 theorem C_inv (r : k) : (C σ k r)⁻¹ = C σ k r⁻¹ := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · simp
-  rw [MvPowerSeries.inv_eq_iff_mul_eq_one, ← map_mul, inv_mul_cancel hr, map_one]
+  rw [MvPowerSeries.inv_eq_iff_mul_eq_one, ← map_mul, inv_mul_cancel₀ hr, map_one]
   simpa using hr
 
 @[simp]

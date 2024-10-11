@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 import Mathlib.Data.NNReal.Basic
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # Group seminorms
@@ -48,7 +48,7 @@ open Set
 
 open NNReal
 
-variable {ι R R' E F G : Type*}
+variable {R R' E F G : Type*}
 
 /-- A seminorm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
 subadditive and such that `f (-x) = f x` for all `x`. -/
@@ -141,11 +141,9 @@ theorem map_sub_le_max : f (x - y) ≤ max (f x) (f y) := by
 
 end NonarchAddGroupSeminormClass
 
-variable [FunLike F E ℝ]
-
 -- See note [lower instance priority]
-instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass [AddGroup E]
-    [NonarchAddGroupSeminormClass F E] : AddGroupSeminormClass F E ℝ :=
+instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass
+    [FunLike F E ℝ] [AddGroup E] [NonarchAddGroupSeminormClass F E] : AddGroupSeminormClass F E ℝ :=
   { ‹NonarchAddGroupSeminormClass F E› with
     map_add_le_add := fun f x y =>
       haveI h_nonneg : ∀ a, 0 ≤ f a := by
@@ -157,8 +155,8 @@ instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass 
     map_neg_eq_map := NonarchAddGroupSeminormClass.map_neg_eq_map' }
 
 -- See note [lower instance priority]
-instance (priority := 100) NonarchAddGroupNormClass.toAddGroupNormClass [AddGroup E]
-    [NonarchAddGroupNormClass F E] : AddGroupNormClass F E ℝ :=
+instance (priority := 100) NonarchAddGroupNormClass.toAddGroupNormClass
+    [FunLike F E ℝ] [AddGroup E] [NonarchAddGroupNormClass F E] : AddGroupNormClass F E ℝ :=
   { ‹NonarchAddGroupNormClass F E› with
     map_add_le_add := map_add_le_add
     map_neg_eq_map := NonarchAddGroupSeminormClass.map_neg_eq_map' }
@@ -327,7 +325,7 @@ end Group
 
 section CommGroup
 
-variable [CommGroup E] [CommGroup F] (p q : GroupSeminorm E) (x y : E)
+variable [CommGroup E] [CommGroup F] (p q : GroupSeminorm E) (x : E)
 
 @[to_additive]
 theorem comp_mul_le (f g : F →* E) : p.comp (f * g) ≤ p.comp f + p.comp g := fun _ =>
@@ -383,7 +381,7 @@ end GroupSeminorm
 see that `SMul R ℝ` should be fixed because `ℝ` is fixed. -/
 namespace AddGroupSeminorm
 
-variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (p : AddGroupSeminorm E)
+variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
 instance toOne [DecidableEq E] : One (AddGroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else 1
@@ -437,7 +435,7 @@ namespace NonarchAddGroupSeminorm
 
 section AddGroup
 
-variable [AddGroup E] [AddGroup F] [AddGroup G] {p q : NonarchAddGroupSeminorm E}
+variable [AddGroup E] {p q : NonarchAddGroupSeminorm E}
 
 instance funLike : FunLike (NonarchAddGroupSeminorm E) E ℝ where
   coe f := f.toFun
@@ -479,7 +477,7 @@ theorem coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
 theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 
-variable (p q) (f : F →+ E)
+variable (p q)
 
 instance : Zero (NonarchAddGroupSeminorm E) :=
   ⟨{  toFun := 0
@@ -524,7 +522,7 @@ end AddGroup
 
 section AddCommGroup
 
-variable [AddCommGroup E] [AddCommGroup F] (p q : NonarchAddGroupSeminorm E) (x y : E)
+variable [AddCommGroup E]
 
 theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
     BddBelow (range fun y => p y + q (x - y)) :=
@@ -655,7 +653,7 @@ namespace GroupNorm
 
 section Group
 
-variable [Group E] [Group F] [Group G] {p q : GroupNorm E}
+variable [Group E] {p q : GroupNorm E}
 
 @[to_additive]
 instance funLike : FunLike (GroupNorm E) E ℝ where
@@ -705,7 +703,7 @@ theorem coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
 theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 
-variable (p q) (f : F →* E)
+variable (p q)
 
 @[to_additive]
 instance : Add (GroupNorm E) :=
@@ -789,7 +787,7 @@ namespace NonarchAddGroupNorm
 
 section AddGroup
 
-variable [AddGroup E] [AddGroup F] {p q : NonarchAddGroupNorm E}
+variable [AddGroup E] {p q : NonarchAddGroupNorm E}
 
 instance funLike : FunLike (NonarchAddGroupNorm E) E ℝ where
   coe f := f.toFun
@@ -831,7 +829,7 @@ theorem coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
 theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 
-variable (p q) (f : F →+ E)
+variable (p q)
 
 instance : Sup (NonarchAddGroupNorm E) :=
   ⟨fun p q =>

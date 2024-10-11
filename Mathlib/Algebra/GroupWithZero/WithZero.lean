@@ -255,7 +255,7 @@ instance groupWithZero : GroupWithZero (WithZero α) where
   __ := divInvMonoid
   __ := nontrivial
   inv_zero := WithZero.inv_zero
-  mul_inv_cancel a ha := by lift a to α using ha; norm_cast; apply mul_right_inv
+  mul_inv_cancel a ha := by lift a to α using ha; norm_cast; apply mul_inv_cancel
 
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/
@@ -265,6 +265,43 @@ def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
   right_inv _ := rfl
   map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
+
+/-- Any group with zero is isomorphic to adjoining `0` to the units of itself. -/
+def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
+    [DecidablePred (fun a : G ↦ a = 0)] :
+    WithZero Gˣ ≃* G where
+  toFun := WithZero.recZeroCoe 0 Units.val
+  invFun a := if h : a = 0 then 0 else (Units.mk0 a h : Gˣ)
+  left_inv := (by induction · <;> simp)
+  right_inv _ := by simp only; split <;> simp_all
+  map_mul' x y := by
+    induction x <;> induction y <;>
+    simp [← WithZero.coe_mul, ← Units.val_mul]
+
+/-- A version of `Equiv.optionCongr` for `WithZero`. -/
+noncomputable def _root_.MulEquiv.withZero [Group β] (e : α ≃* β) :
+    WithZero α ≃* WithZero β where
+  toFun := map' e.toMonoidHom
+  invFun := map' e.symm.toMonoidHom
+  left_inv := (by induction · <;> simp)
+  right_inv := (by induction · <;> simp)
+  map_mul' x y := by
+    induction x <;> induction y <;>
+    simp
+
+/-- The inverse of `MulEquiv.withZero`. -/
+protected noncomputable def _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
+    α ≃* β where
+  toFun x := unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply])
+  invFun x := unzero (x := e.symm x) (by simp [e.symm_apply_eq])
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_mul' _ _ := by
+    simp only [coe_mul, map_mul]
+    generalize_proofs A B C
+    suffices ((unzero A : β) : WithZero β) = (unzero B) * (unzero C) by
+      rwa [← WithZero.coe_mul, WithZero.coe_inj] at this
+    simp
 
 end Group
 

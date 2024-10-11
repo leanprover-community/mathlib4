@@ -325,7 +325,7 @@ def ofι (I : MulticospanIndex.{w} C) (P : C) (ι : ∀ a, P ⟶ I.left a)
         | WalkingMulticospan.right b => ι (I.fstTo b) ≫ I.fst b
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _) <;>
-          dsimp <;> simp
+          dsimp <;> simp only [Category.id_comp, Category.comp_id]
         apply w }
 
 @[reassoc (attr := simp)]
