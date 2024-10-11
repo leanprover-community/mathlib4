@@ -220,7 +220,7 @@ theorem eventually_homothety_mem_of_mem_interior (x : Q) {s : Set Q} {y : Q} (hy
   obtain ⟨u, hu₁, hu₂, hu₃⟩ := mem_interior.mp hy
   obtain ⟨ε, hε, hyε⟩ := Metric.isOpen_iff.mp hu₂ y hu₃
   refine ⟨ε / ‖y -ᵥ x‖, div_pos hε hxy, fun δ (hδ : ‖δ - 1‖ < ε / ‖y -ᵥ x‖) => hu₁ (hyε ?_)⟩
-  rw [lt_div_iff hxy, ← norm_smul, sub_smul, one_smul] at hδ
+  rw [lt_div_iff₀ hxy, ← norm_smul, sub_smul, one_smul] at hδ
   rwa [homothety_apply, Metric.mem_ball, dist_eq_norm_vsub W, vadd_vsub_eq_sub_vsub]
 
 theorem eventually_homothety_image_subset_of_finite_subset_interior (x : Q) {s : Set Q} {t : Set Q}

@@ -155,11 +155,11 @@ def restrictScalarsId'App (hf : f = RingHom.id R) (M : ModuleCat R) :
 
 variable (hf : f = RingHom.id R)
 
-lemma restrictScalarsId'App_hom_apply (M : ModuleCat R) (x : M) :
+@[simp] lemma restrictScalarsId'App_hom_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId'App f hf M).hom x = x :=
   rfl
 
-lemma restrictScalarsId'App_inv_apply (M : ModuleCat R) (x : M) :
+@[simp] lemma restrictScalarsId'App_inv_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId'App f hf M).inv x = x :=
   rfl
 
@@ -202,11 +202,11 @@ def restrictScalarsComp'App (hgf : gf = g.comp f) (M : ModuleCat R₃) :
 
 variable (hgf : gf = g.comp f)
 
-lemma restrictScalarsComp'App_hom_apply (M : ModuleCat R₃) (x : M) :
+@[simp] lemma restrictScalarsComp'App_hom_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp'App f g gf hgf M).hom x = x :=
   rfl
 
-lemma restrictScalarsComp'App_inv_apply (M : ModuleCat R₃) (x : M) :
+@[simp] lemma restrictScalarsComp'App_inv_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp'App f g gf hgf M).inv x = x :=
   rfl
 
@@ -531,7 +531,7 @@ protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScala
         Functor.comp_map]
       rw [coe_comp, coe_comp, Function.comp, Function.comp]
       conv_rhs => rw [← LinearMap.coe_toAddHom, ← AddHom.toFun_eq_coe]
-      erw [CoextendScalars.map_apply, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+      rw [CoextendScalars.map_apply, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
         restrictScalars.map_apply f]
       change s • (g y) = g (s • y)
       rw [map_smul]

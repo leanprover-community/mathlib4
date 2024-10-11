@@ -107,10 +107,10 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
         (hs y hy)
     rw [← norm_iteratedFDerivWithin_fderivWithin hs hx, J]
     have A : ContDiffOn 𝕜 n (fun y => B.precompR Du (f y) (fderivWithin 𝕜 g s y)) s :=
-      (B.precompR Du).isBoundedBilinearMap.contDiff.comp_contDiff_on₂
+      (B.precompR Du).isBoundedBilinearMap.contDiff.comp_contDiffOn₂
         (hf.of_le (Nat.cast_le.2 (Nat.le_succ n))) (hg.fderivWithin hs In)
     have A' : ContDiffOn 𝕜 n (fun y => B.precompL Du (fderivWithin 𝕜 f s y) (g y)) s :=
-      (B.precompL Du).isBoundedBilinearMap.contDiff.comp_contDiff_on₂ (hf.fderivWithin hs In)
+      (B.precompL Du).isBoundedBilinearMap.contDiff.comp_contDiffOn₂ (hf.fderivWithin hs In)
         (hg.of_le (Nat.cast_le.2 (Nat.le_succ n)))
     rw [iteratedFDerivWithin_add_apply' A A' hs hx]
     apply (norm_add_le _ _).trans ((add_le_add I1 I2).trans (le_of_eq ?_))
@@ -304,7 +304,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
       (g := (fun v ↦ v.multinomial *
           ∏ j ∈ insert i u, ‖iteratedFDerivWithin 𝕜 (v.count j) (f j) s x‖) ∘
         Sym.toMultiset ∘ Subtype.val ∘ (Finset.symInsertEquiv hi).symm)
-      (by simp) (by simp only [← comp_apply (g := Finset.symInsertEquiv hi), comp.assoc]; simp)]
+      (by simp) (by simp only [← comp_apply (g := Finset.symInsertEquiv hi), comp_assoc]; simp)]
     rw [← Finset.univ_sigma_univ, Finset.sum_sigma, Finset.sum_range]
     simp only [comp_apply, Finset.symInsertEquiv_symm_apply_coe]
     refine Finset.sum_le_sum ?_
@@ -449,7 +449,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
         exact Nat.add_sub_of_le (Finset.mem_range_succ_iff.1 hi)
     _ ≤ ∑ i ∈ Finset.range (n + 1), (n ! : ℝ) * 1 * C * D ^ (n + 1) * 1 := by
       gcongr with i
-      apply inv_le_one
+      apply inv_le_one_of_one_le₀
       simpa only [Nat.one_le_cast] using (n - i).factorial_pos
     _ = (n + 1)! * C * D ^ (n + 1) := by
       simp only [mul_assoc, mul_one, Finset.sum_const, Finset.card_range, nsmul_eq_mul,
