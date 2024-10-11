@@ -409,11 +409,11 @@ theorem mod_opow_log_lt_self (b : Ordinal) {o : Ordinal} (ho : o ≠ 0) : o % (b
   · simpa using Ordinal.pos_iff_ne_zero.2 ho
   · exact (mod_lt _ <| opow_ne_zero _ hb).trans_le (opow_log_le_self _ ho)
 
-theorem log_mod_opow_log_lt_log_self {b o : Ordinal} (hb : 1 < b) (ho : o ≠ 0) (hbo : b ≤ o) :
+theorem log_mod_opow_log_lt_log_self {b o : Ordinal} (hb : 1 < b) (hbo : b ≤ o) :
     log b (o % (b ^ log b o)) < log b o := by
   rcases eq_or_ne (o % (b ^ log b o)) 0 with h | h
   · rw [h, log_zero_right]
-    apply log_pos hb ho hbo
+    exact log_pos hb (one_le_iff_ne_zero.1 (hb.le.trans hbo)) hbo
   · rw [← succ_le_iff, succ_log_def hb h]
     apply csInf_le'
     apply mod_lt
