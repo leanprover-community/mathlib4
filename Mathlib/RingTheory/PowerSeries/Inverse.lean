@@ -55,7 +55,7 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
           ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 := by
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
+  rw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
   simp only [Finsupp.single_eq_zero]
   split_ifs; · rfl
   congr 1
