@@ -24,14 +24,14 @@ open ComplexConjugate
 /-- The only closed subfields of `ℂ` are `ℝ` and `ℂ`. -/
 theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set ℂ)) :
     K = ofReal.fieldRange ∨ K = ⊤ := by
-  suffices range (ofReal' : ℝ → ℂ) ⊆ K by
+  suffices range (ofReal : ℝ → ℂ) ⊆ K by
     rw [range_subset_iff, ← coe_algebraMap] at this
     have :=
       (Subalgebra.isSimpleOrder_of_finrank finrank_real_complex).eq_bot_or_eq_top
         (Subfield.toIntermediateField K this).toSubalgebra
     simp_rw [← SetLike.coe_set_eq, IntermediateField.coe_toSubalgebra] at this ⊢
     exact this
-  suffices range (ofReal' : ℝ → ℂ) ⊆ closure (Set.range ((ofReal' : ℝ → ℂ) ∘ ((↑) : ℚ → ℝ))) by
+  suffices range (ofReal : ℝ → ℂ) ⊆ closure (Set.range ((ofReal : ℝ → ℂ) ∘ ((↑) : ℚ → ℝ))) by
     refine subset_trans this ?_
     rw [← IsClosed.closure_eq hc]
     apply closure_mono
