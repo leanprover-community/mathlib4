@@ -372,11 +372,11 @@ noncomputable def ofIsReflexivePair (f g : A ⟶ B) [IsReflexivePair f g] :
 
 @[simp]
 lemma ofIsReflexivePair_map_left (f g : A ⟶ B) [IsReflexivePair f g] :
-  (ofIsReflexivePair f g).map .left = f := rfl
+    (ofIsReflexivePair f g).map .left = f := rfl
 
 @[simp]
 lemma ofIsReflexivePair_map_right (f g : A ⟶ B) [IsReflexivePair f g] :
-  (ofIsReflexivePair f g).map .right = g := rfl
+    (ofIsReflexivePair f g).map .right = g := rfl
 
 /-- The natural isomorphism between the diagram obtained by forgetting the reflexion of
 `ofIsReflexivePair f g` and the original parallel pair. -/
