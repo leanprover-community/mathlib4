@@ -287,15 +287,17 @@ section dvd
 
 variable {R : Type*}
 
-theorem iff_dvd_total [Monoid R] : PreValuationRing R ↔ IsTotal R (· ∣ ·) := by
+theorem _root_.PreValuationRing.iff_dvd_total [Monoid R] :
+    PreValuationRing R ↔ IsTotal R (· ∣ ·) := by
   classical
   refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
   · obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b <;> simp
   · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := @IsTotal.total _ _ H a b <;> use c <;> simp
 
-theorem iff_ideal_total [CommRing R] : PreValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := by
+theorem _root_.PreValuationRing.iff_ideal_total [CommRing R] :
+    PreValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := by
   classical
-  refine ⟨fun _ => ⟨le_total⟩, fun H => iff_dvd_total.mpr ⟨fun a b => ?_⟩⟩
+  refine ⟨fun _ => ⟨le_total⟩, fun H => PreValuationRing.iff_dvd_total.mpr ⟨fun a b => ?_⟩⟩
   have := @IsTotal.total _ _ H (Ideal.span {a}) (Ideal.span {b})
   simp_rw [Ideal.span_singleton_le_span_singleton] at this
   exact this.symm
@@ -303,12 +305,20 @@ theorem iff_ideal_total [CommRing R] : PreValuationRing R ↔ IsTotal (Ideal R) 
 variable (K)
 
 theorem dvd_total [Monoid R] [h : PreValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
-  @IsTotal.total _ _ (iff_dvd_total.mp h) x y
+  @IsTotal.total _ _ (PreValuationRing.iff_dvd_total.mp h) x y
 
 end dvd
 
 variable {R : Type*} [CommRing R] [IsDomain R] (K : Type*)
 variable [Field K] [Algebra R K] [IsFractionRing R K]
+
+theorem iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) :=
+  Iff.trans (⟨fun inst ↦ inst.toPreValuationRing, fun _ ↦ .mk⟩)
+    PreValuationRing.iff_dvd_total
+
+theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) :=
+  Iff.trans (⟨fun inst ↦ inst.toPreValuationRing, fun _ ↦ .mk⟩)
+    PreValuationRing.iff_ideal_total
 
 theorem unique_irreducible [ValuationRing R] ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
     Associated p q := by
@@ -362,7 +372,6 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
 
 instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
   classical
-  suffices PreValuationRing R from .mk
   refine iff_dvd_total.mpr ⟨fun a b => ?_⟩
   obtain ⟨g, e : _ = Ideal.span _⟩ := IsBezout.span_pair_isPrincipal a b
   obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton'.mp
@@ -387,8 +396,8 @@ protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
         IsTotal R (· ∣ ·), IsTotal (Ideal R) (· ≤ ·), LocalRing R ∧ IsBezout R] := by
   tfae_have 1 ↔ 2 := iff_isInteger_or_isInteger R _
-  tfae_have 1 ↔ 3 := Iff.trans (⟨fun inst ↦ inst.toPreValuationRing, fun _ ↦ .mk⟩) iff_dvd_total
-  tfae_have 1 ↔ 4 := Iff.trans (⟨fun inst ↦ inst.toPreValuationRing, fun _ ↦ .mk⟩) iff_ideal_total
+  tfae_have 1 ↔ 3 := iff_dvd_total
+  tfae_have 1 ↔ 4 := iff_ideal_total
   tfae_have 1 ↔ 5 := iff_local_bezout_domain
   tfae_finish
 
