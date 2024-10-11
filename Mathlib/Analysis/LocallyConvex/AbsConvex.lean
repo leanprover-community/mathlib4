@@ -212,9 +212,7 @@ lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
   intro a ha
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 ha
   apply segment_subset_convexHull (mem_union_left (-s) hy) (mem_union_right _ (neg_mem_neg.mpr hy))
-  use (1+r)/2
-  use (1-r)/2
-  constructor
+  refine ⟨(1 + r)/2, (1 - r)/2, ?_, ?_⟩
   · rw [← zero_div 2]
     exact (div_le_div_right zero_lt_two).mpr (neg_le_iff_add_nonneg'.mp (neg_le_of_abs_le hr))
   · constructor
