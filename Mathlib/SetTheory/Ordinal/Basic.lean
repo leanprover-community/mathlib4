@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Sum.Order
-import Mathlib.Order.InitialSeg
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.PPWithUniv
 
@@ -1312,7 +1311,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
 
 theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c' :=
   ⟨fun h => by
-    let ⟨a, e, h'⟩ := lt_lift_iff.1 h
+    let ⟨a, h', e⟩ := lt_lift_iff.1 h
     rw [← univ_id] at h'
     rcases lt_univ.{u}.1 h' with ⟨c', rfl⟩
     exact ⟨c', by simp only [e.symm, lift_lift]⟩, fun ⟨c', e⟩ => e.symm ▸ lift_lt_univ' _⟩
