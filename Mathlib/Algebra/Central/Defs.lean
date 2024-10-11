@@ -41,6 +41,14 @@ rise to nontrivial quotients of `D` so there are no central simple algebras in t
 to our definition, if K is not a field.
 The theory of central simple algebras really is a theory over fields.
 
+Thus to declare a central simple algebra, one should use the following:
+```lean
+variable (k D : Type*) [Field k] [Ring D] [Algebra k D]
+variable [Algebra.IsCentral k D] [IsSimpleRing D]
+variable [FiniteDimensional k D]
+```
+where `FiniteDimensional k D` is often but not always necessary.
+
 ## Tags
 central algebra, center, simple ring, central simple algebra
 
