@@ -98,7 +98,6 @@ def parseUpToHere (pos : String.Pos) (post : String := "") : CommandElabM Syntax
 is a substring of `s`:
 the syntax is an atom with value `pattern` whose the range is the range of `pattern` in `s`. -/
 def toSyntax (s pattern : String) (offset : String.Pos := 0) : Syntax :=
-  --let firstSubstring := ((s.splitOn pattern).getD (1 + offset) "").toSubstring
   let beg := ((s.splitOn pattern).getD 0 "").endPos + offset
   let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).endPos + offset
   mkAtomFrom (.ofRange ⟨beg, fin⟩) pattern
@@ -227,9 +226,9 @@ Apache ...
 Authors ...
 -/
 
-import*
+import statements*
 module doc-string*
-rest
+remaining file
 ```
 It emits a warning if
 * the copyright statement is malformed;
