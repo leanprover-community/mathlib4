@@ -38,7 +38,7 @@ instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
 
 instance CommRingCat.isLocalRingHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
     [IsLocalRingHom g] [IsLocalRingHom f] : IsLocalRingHom (f ≫ g) :=
-  _root_.isLocalRingHom_comp _ _
+  RingHom.isLocalRingHom_comp _ _
 
 theorem isLocalRingHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalRingHom f.hom :=
   { map_nonunit := fun a ha => by

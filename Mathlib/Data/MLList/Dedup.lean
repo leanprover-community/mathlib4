@@ -36,7 +36,6 @@ def dedupBy (L : MLList m α) (f : α → m β) : MLList m α :=
 
 /-- Lazily deduplicate a lazy list, using a stored `HashMap`. -/
 @[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
-def dedup (L : MLList m β) : MLList m β :=
-  L.dedupBy (fun b => pure b)
+def dedup (L : MLList m β) : MLList m β := L.dedupBy pure
 
 end MLList

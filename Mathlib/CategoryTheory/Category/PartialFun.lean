@@ -30,8 +30,6 @@ open CategoryTheory Option
 
 universe u
 
-variable {α β : Type*}
-
 /-- The category of types equipped with partial functions. -/
 def PartialFun : Type _ :=
   Type*
