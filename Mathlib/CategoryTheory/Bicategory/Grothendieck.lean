@@ -5,9 +5,7 @@ Authors: Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
--- import Mathlib.CategoryTheory.Category.Cat
--- import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
--- import Mathlib.Tactic.CategoryTheory.ToApp
+import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
 
 /-!
 # The Grothendieck construction
@@ -146,8 +144,8 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
   map_id a := by
     ext1
     · dsimp
-    -- todo: app version
-    simp [StrongPseudoNatTrans.naturality_id_hom_app, ← Functor.map_comp_assoc]
+    simp [StrongPseudoNatTrans.naturality_id_hom_app, ← Functor.map_comp_assoc,
+      Strict.leftUnitor_eqToIso, Strict.rightUnitor_eqToIso]
   map_comp {a b c} f g := by
     ext
     · dsimp
@@ -163,9 +161,15 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
 
 theorem map_comp_forget (α : F ⟶ G) : map α ⋙ forget G = forget F := rfl
 
-/-- The underlying homomorphism of `m4apIdIso`. This is done so that `mapIdIso` compiles. -/
+/-- The underlying homomorphism of `mapIdIso`. This is done so that `mapIdIso` compiles. -/
 abbrev mapIdIso_hom : map (𝟙 F) ⟶ 𝟭 (∫ F) where
   app a := eqToHom (by aesop_cat)
+  naturality := by
+    intros x y f
+    simp only [id_obj, categoryStruct_Hom, eqToHom_refl, comp_id, Functor.id_map,
+      id_comp] -- why is this not working??
+    sorry
+
 
 abbrev mapIdIso_inv : 𝟭 (∫ F) ⟶ map (𝟙 F) where
   app a := eqToHom (by aesop_cat)
