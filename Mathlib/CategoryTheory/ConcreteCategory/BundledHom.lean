@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Yury Kudryashov
+Authors: Kim Morrison, Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
@@ -73,6 +73,12 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c) where
       map_id := fun X => 𝒞.id_toFun X.str
       map_comp := fun f g => by dsimp; erw [𝒞.comp_toFun];rfl }
   forget_faithful := { map_injective := by (intros; apply 𝒞.hom_ext) }
+
+/-- This unification hint helps `rw` to figure out how to apply statements about abstract
+concrete categories to specific concrete categories. Crucially, it fires also at `reducible`
+levels so `rw` can use it (and we don't have to use `erw`). -/
+unif_hint (C : Bundled c) where
+  ⊢ (CategoryTheory.forget (Bundled c)).obj C =?= Bundled.α C
 
 variable {hom}
 

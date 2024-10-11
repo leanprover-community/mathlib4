@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.Algebra.Module.LocalizedModuleIntegers
 import Mathlib.RingTheory.Localization.Algebra
-import Mathlib.RingTheory.LocalProperties
+import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 
