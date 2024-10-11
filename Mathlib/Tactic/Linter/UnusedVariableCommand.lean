@@ -300,6 +300,15 @@ def getBracketedBinderIds' : Syntax → CommandElabM (Array Syntax)
   | `(bracketedBinderF|[$_]) => return #[.missing]
   | _ => throwUnsupportedSyntax
 
+def getForallStrings : Expr → CommandElabM (Array String)
+  | .forallE na x bod bi | .lam na x bod bi => do
+    if let .instImplicit := bi then
+      let (str, _) := ← liftCoreM do Meta.MetaM.run do return (← Meta.ppExpr x).pretty
+      return #[str] ++ (← getForallStrings bod)
+    else
+      return #[na.toString] ++ (← getForallStrings bod)
+  | _ => return #[]
+
 @[inherit_doc Mathlib.Linter.linter.unusedVariableCommand]
 def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.unusedVariableCommand (← getOptions) do
@@ -333,6 +342,9 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
   -- TODO: find a way to deal with proofs that use the equation compiler directly.
   if let some decl := stx.find? (#[``declaration, `lemma].contains <|·.getKind) then
     -- skip examples, since they have access to all the variables
+    if decl[1].isOfKind ``Lean.Parser.Command.definition then
+      let id := ((decl.find? (·.isOfKind ``declId)).getD default)[0].getId
+      logInfo m!"{← getForallStrings (((← getEnv).find? id).getD default).value!}"
     if decl[1].isOfKind ``Lean.Parser.Command.example then
       return
     let _renStx ← stx.replaceM fun s => match s.getKind with
