@@ -94,7 +94,6 @@ def parseUpToHere (pos : String.Pos) (post : String := "") : CommandElabM Syntax
   -- Append a further string after the content of `upToHere`.
   Parser.testParseModule (← getEnv) "linter.style.header" (upToHere.toString ++ post)
 
--- xxx review
 /-- `toSyntax s pattern` converts the two input strings into a `Syntax`, assuming that `pattern`
 is a substring of `s`:
 the syntax is an atom with value `pattern` whose the range is the range of `pattern` in `s`. -/
@@ -254,10 +253,9 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   let mainModule ← getMainModule
-  if mainModule == `Mathlib then return
   let fm ← getFileMap
   let md := (getMainModuleDoc (← getEnv)).toArray
-  -- the end of the first module doc, or the end of the file if there are no module docs.
+  -- The end of the first module doc-string, or the end of the file if there is none.
   let firstDocModPos := match md[0]? with
                           | none     => fm.positions.back
                           | some doc => fm.ofPosition doc.declarationRange.endPos
@@ -271,7 +269,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
     parseUpToHere (stx.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
-  -- Report on broad or duplicate imports.
+  -- Report on broad imports.
   for (imp, msg) in broadImportsCheck importIds do
     Linter.logLint linter.style.header imp msg
   let afterImports := firstNonImport? upToStx
@@ -283,7 +281,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if mainModule != `Mathlib.Init then
     for (stx, m) in copyrightHeaderChecks copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
-  -- Report a missing moduli doc-string.
+  -- Report a missing module doc-string.
   match afterImports with
     | none => return
     | some (.node _ ``Lean.Parser.Command.moduleDoc _) => return
