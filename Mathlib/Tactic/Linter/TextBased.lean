@@ -127,11 +127,9 @@ inductive ComparisonResult
   /-- The contexts describe different errors: two separate style exceptions are required
   to cover both. -/
   | Different
-  /-- The existing exception also covers the new error.
-  Indicate whether we prefer keeping the existing exception (the more common case)
-  or would rather replace it by the new exception
-  (this is more rare, and currently only happens for particular file length errors). -/
-  | Comparable (preferExisting : Bool)
+  /-- The existing exception also covers the new error:
+  we keep the existing exception. -/
+  | Comparable
   deriving BEq
 
 /-- Determine whether a `new` `ErrorContext` is covered by an `existing` exception,
@@ -146,16 +144,15 @@ def compare (existing new : ErrorContext) : ComparisonResult :=
   -- NB: keep the following in sync with `parse?_errorContext` below.
   -- Generally, comparable errors must have equal `StyleError`s, but there are some exceptions.
   else match (existing.error, new.error) with
-  -- We do *not* care about the *kind* of wrong copyright,
-  -- nor about the particular length of a too long line.
-  | (StyleError.copyright _, StyleError.copyright _) => ComparisonResult.Comparable true
+  -- We do *not* care about the *kind* of wrong copyright.
+  | (StyleError.copyright _, StyleError.copyright _) => ComparisonResult.Comparable
   -- In all other cases, `StyleErrors` must compare equal.
-  | (a, b) => if a == b then ComparisonResult.Comparable true else ComparisonResult.Different
+  | (a, b) => if a == b then ComparisonResult.Comparable else ComparisonResult.Different
 
 /-- Find the first style exception in `exceptions` (if any) which covers a style exception `e`. -/
 def ErrorContext.find?_comparable (e : ErrorContext) (exceptions : Array ErrorContext) :
     Option ErrorContext :=
-  (exceptions).find? (fun new ↦ compare e new matches ComparisonResult.Comparable _)
+  (exceptions).find? (fun new ↦ compare e new == ComparisonResult.Comparable)
 
 /-- Output the formatted error message, containing its context.
 `style` specifies if the error should be formatted for humans to read, github problem matchers
