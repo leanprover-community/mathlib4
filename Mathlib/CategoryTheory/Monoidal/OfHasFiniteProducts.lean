@@ -297,13 +297,13 @@ def Functor.toMonoidalFunctorOfHasFiniteProducts : MonoidalFunctor C D where
     dsimp
     simp only [prod.map_map_assoc, IsIso.hom_inv_id, Category.comp_id, prod.map_id_id,
       Category.id_comp, IsIso.eq_inv_comp]
-    erw [prod.map_snd, Category.comp_id, prodComparison_snd]
+    rw [prod.map_snd, Category.comp_id, prodComparison_snd]
   right_unitality X := by
     rw [← cancel_epi (prod.map (𝟙 (F.obj X)) (terminalComparison F))]
     dsimp
     simp only [prod.map_map_assoc, Category.comp_id, IsIso.hom_inv_id, prod.map_id_id,
       Category.id_comp, IsIso.eq_inv_comp]
-    erw [prod.map_fst, Category.comp_id, prodComparison_fst]
+    rw [prod.map_fst, Category.comp_id, prodComparison_fst]
 
 instance [F.IsEquivalence] : F.toMonoidalFunctorOfHasFiniteProducts.IsEquivalence := by assumption
 
