@@ -172,20 +172,15 @@ lemma memHolder_iff_holderWith {r : ℝ≥0} {f : X → Y} :
     MemHolder r f ↔ HolderWith (nnHolderNorm r f) r f :=
   ⟨MemHolder.holderWith, HolderWith.memHolder⟩
 
-lemma HolderWith.coe_nnHolderNorm_eq_eHolderNorm
-    {C r : ℝ≥0} {f : X → Y} (hf : HolderWith C r f) :
-    (nnHolderNorm r f : ℝ≥0∞) = eHolderNorm r f := by
-  rw [nnHolderNorm, coe_toNNReal]
-  exact ne_of_lt <| lt_of_le_of_lt hf.eHolderNorm_le <| coe_lt_top (r := C)
-
 lemma MemHolder.coe_nnHolderNorm_eq_eHolderNorm
     {r : ℝ≥0} {f : X → Y} (hf : MemHolder r f) :
-    (nnHolderNorm r f : ℝ≥0∞) = eHolderNorm r f :=
-  hf.holderWith.coe_nnHolderNorm_eq_eHolderNorm
+    (nnHolderNorm r f : ℝ≥0∞) = eHolderNorm r f := by
+  rw [nnHolderNorm, coe_toNNReal]
+  exact ne_of_lt <| lt_of_le_of_lt hf.holderWith.eHolderNorm_le <| coe_lt_top
 
 lemma HolderWith.nnholderNorm_le {C r : ℝ≥0} {f : X → Y} (hf : HolderWith C r f) :
     nnHolderNorm r f ≤ C := by
-  rw [← ENNReal.coe_le_coe, hf.coe_nnHolderNorm_eq_eHolderNorm]
+  rw [← ENNReal.coe_le_coe, hf.memHolder.coe_nnHolderNorm_eq_eHolderNorm]
   exact hf.eHolderNorm_le
 
 lemma MemHolder.comp {r s : ℝ≥0} {Z : Type*} [MetricSpace Z] {f : Z → X} {g : X → Y}
@@ -238,7 +233,7 @@ lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul �
   by_cases hf : MemHolder r f
   · refine le_antisymm ((hf.holderWith.smul c).eHolderNorm_le.trans ?_) <| mul_le_of_le_div' ?_
     · rw [coe_mul, hf.coe_nnHolderNorm_eq_eHolderNorm, mul_comm]
-    · rw [← (hf.holderWith.smul c).coe_nnHolderNorm_eq_eHolderNorm, ← coe_div hc]
+    · rw [← (hf.holderWith.smul c).memHolder.coe_nnHolderNorm_eq_eHolderNorm, ← coe_div hc]
       refine HolderWith.eHolderNorm_le fun x₁ x₂ => ?_
       rw [coe_div hc, ← ENNReal.mul_div_right_comm,
         ENNReal.le_div_iff_mul_le (Or.inl <| coe_ne_zero.2 hc) <| Or.inl coe_ne_top,
