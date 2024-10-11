@@ -73,6 +73,19 @@ lemma noZeroDivisors_or_valuationRing_of_zero_divisors_mem_jacobson [IsPrincipal
   by_cases hN : ∀ a b : R, a * b = 0 → a = 0 ∨ b = 0
   · refine Or.inl ⟨fun h ↦ hN _ _ h⟩
   refine Or.inr ?_
+  suffices ∀ (I : Ideal R), ∃ k, I = (Ideal.jacobson ⊥) ^ k by
+    refine ⟨?_, ?_, this⟩
+    · rw [PreValuationRing.iff_ideal_total]
+      constructor
+      intro I J
+      obtain ⟨k, rfl⟩ := this I
+      obtain ⟨l, rfl⟩ := this J
+      refine (le_total k l).symm.imp ?_ ?_ <;> exact pow_le_pow_right
+    · rw [isMaximal_def, isCoatom_iff_ge_of_le]
+      refine ⟨by simp, fun I hI hI' ↦ ?_⟩
+      obtain ⟨_|k, rfl⟩ := this I
+      · simp at hI
+      · exact pow_le_self (by simp)
   push_neg at hN
   have hsk : ∃ k, s ^ k = 0 := by
     obtain ⟨a, b, hab, ha0, hb0⟩ := hN
@@ -114,43 +127,27 @@ lemma noZeroDivisors_or_valuationRing_of_zero_divisors_mem_jacobson [IsPrincipal
     · obtain ⟨n, y, hy, rfl⟩ := this _ hx
       lift y to Rˣ using (hu hy)
       exact ⟨_, _, rfl⟩
-  have hM : (span {s}).IsMaximal := by
-    rw [isMaximal_iff]
-    refine ⟨?_, fun I a _ has haI ↦ ?_⟩
-    · rwa [← ne_top_iff_one, ne_eq, span_singleton_eq_top]
-    rw [← eq_top_iff_one]
-    exact eq_top_of_isUnit_mem (x := a) _ haI (hu has)
-  refine ⟨⟨?_⟩, hs ▸ hM, ?_⟩
-  · intro a b
-    obtain ⟨n, y, hy, rfl⟩ := this a
-    obtain ⟨m, z, hz, rfl⟩ := this b
-    wlog hnm : n ≤ m generalizing n m y z
-    · exact (this _ z _ y (le_of_not_le hnm)).imp (fun _ ↦ Or.symm)
-    refine ⟨s ^ (m - n) * (y⁻¹ : Rˣ) * z, Or.inl ?_⟩
-    rw [mul_right_comm, ← mul_assoc, ← mul_assoc, ← pow_add, add_tsub_cancel_of_le hnm,
-        mul_right_comm]
-    simp
-  · intro I
-    rw [hs]
-    have hk' : ∃ k, s ^ k ∈ I := by
-      refine hsk.imp ?_
-      simp (config := {contextual := true}) [span_singleton_pow]
-    refine ⟨Nat.find hk', ?_⟩
-    ext x
-    constructor <;> intro hsy
-    · obtain ⟨k, y, hy'⟩ := this x
-      rw [hy', span_singleton_pow, mem_span_singleton]
-      refine (pow_dvd_pow _ ?_).trans (dvd_mul_right _ _)
-      simp only [Nat.find_le_iff]
-      refine ⟨_, le_rfl, ?_⟩
-      have := congr($hy' * y⁻¹)
-      simp only [mul_assoc, Units.mul_inv, mul_one] at this
-      rw [← this]
-      exact mul_mem_right _ _ hsy
-    · have := Nat.find_spec hk'
-      rw [span_singleton_pow, mem_span_singleton] at hsy
-      obtain ⟨y, rfl⟩ := hsy
-      exact mul_mem_right _ _ this
+  intro I
+  rw [hs]
+  have hk' : ∃ k, s ^ k ∈ I := by
+    refine hsk.imp ?_
+    simp (config := {contextual := true}) [span_singleton_pow]
+  refine ⟨Nat.find hk', ?_⟩
+  ext x
+  constructor <;> intro hsy
+  · obtain ⟨k, y, hy'⟩ := this x
+    rw [hy', span_singleton_pow, mem_span_singleton]
+    refine (pow_dvd_pow _ ?_).trans (dvd_mul_right _ _)
+    simp only [Nat.find_le_iff]
+    refine ⟨_, le_rfl, ?_⟩
+    have := congr($hy' * y⁻¹)
+    simp only [mul_assoc, Units.mul_inv, mul_one] at this
+    rw [← this]
+    exact mul_mem_right _ _ hsy
+  · have := Nat.find_spec hk'
+    rw [span_singleton_pow, mem_span_singleton] at hsy
+    obtain ⟨y, rfl⟩ := hsy
+    exact mul_mem_right _ _ this
 
 end Ideal
 
