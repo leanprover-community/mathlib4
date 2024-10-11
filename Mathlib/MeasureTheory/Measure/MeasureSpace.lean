@@ -1029,6 +1029,10 @@ instance [NeZero μ] : NeZero (μ univ) := ⟨measure_univ_ne_zero.2 <| NeZero.n
 theorem measure_univ_pos : 0 < μ univ ↔ μ ≠ 0 :=
   pos_iff_ne_zero.trans measure_univ_ne_zero
 
+lemma nonempty_of_neZero (μ : Measure α) [NeZero μ] : Nonempty α :=
+  have : μ Set.univ ≠ 0 := by simpa only [ne_eq, measure_univ_eq_zero] using NeZero.ne μ
+  (isEmpty_or_nonempty α).resolve_left fun h ↦ by simp [Set.eq_empty_of_isEmpty] at this
+
 /-! ### Pushforward and pullback -/
 
 

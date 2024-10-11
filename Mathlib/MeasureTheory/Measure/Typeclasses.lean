@@ -122,6 +122,9 @@ theorem Measure.isFiniteMeasure_map {m : MeasurableSpace α} (μ : Measure α) [
   · rw [map_of_not_aemeasurable hf]
     exact MeasureTheory.isFiniteMeasureZero
 
+instance IsFiniteMeasure_comap_equiv (f : β ≃ᵐ α) [IsFiniteMeasure μ] :
+    IsFiniteMeasure (μ.comap f) := by rw [← MeasurableEquiv.map_symm]; infer_instance
+
 @[simp]
 theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 0 ↔ μ = 0 := by
   rw [← MeasureTheory.Measure.measure_univ_eq_zero, ← coe_measureUnivNNReal]
@@ -276,6 +279,9 @@ variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 theorem isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=
   ⟨by simp [map_apply_of_aemeasurable, hf]⟩
+
+instance IsProbabilityMeasure_comap_equiv (f : β ≃ᵐ α) : IsProbabilityMeasure (μ.comap f) := by
+  rw [← MeasurableEquiv.map_symm]; exact isProbabilityMeasure_map f.symm.measurable.aemeasurable
 
 /-- Note that this is not quite as useful as it looks because the measure takes values in `ℝ≥0∞`.
 Thus the subtraction appearing is the truncated subtraction of `ℝ≥0∞`, rather than the
