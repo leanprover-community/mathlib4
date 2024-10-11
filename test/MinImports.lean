@@ -74,18 +74,17 @@ import Mathlib.Data.Nat.Notation
 #min_imports in
 lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 
+set_option linter.minImports true
 /--
 warning: Imports increased to
 [Init.Guard, Mathlib.Data.Int.Notation]
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
-set_option linter.minImports true in
 #guard (0 : ℤ) = 0
 
 #guard_msgs in
 -- no new imports needed here, so no message
-set_option linter.minImports true in
 #guard (0 : ℤ) = 0
 
 set_option linter.minImports false in
@@ -98,13 +97,7 @@ note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
 -- again, the imports pick-up, after the reset
-set_option linter.minImports true in
 #guard (0 : ℤ) = 0
-
--- finally, we leave the linter "on", to give it a chance to parse `eoi`
--- and to silence it, we make sure to put in a command for each import
-
-set_option linter.minImports true
 
 /--
 warning: Imports increased to
