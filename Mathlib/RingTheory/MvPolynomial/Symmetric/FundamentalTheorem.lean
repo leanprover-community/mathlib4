@@ -146,7 +146,7 @@ variable (σ) in
 noncomputable def esymmAlgHomMonomial (t : Fin n →₀ ℕ) (r : R) :
     MvPolynomial σ R := (esymmAlgHom σ R n <| monomial t r).val
 
-variable {i : Fin n} {j : Fin m} {r : R}
+variable {i : Fin n} {r : R}
 
 lemma isSymmetric_esymmAlgHomMonomial (t : Fin n →₀ ℕ) (r : R) :
     (esymmAlgHomMonomial σ t r).IsSymmetric := (esymmAlgHom _ _ _ _).2
@@ -235,6 +235,7 @@ lemma supDegree_esymmAlgHomMonomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm :
     · exact (monic_esymm this).pow toLex_add toLex.injective
     · rwa [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_esymmAlgHomMonomial _ hnm]
 
+omit [Fintype σ] in
 lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (hp : p.IsSymmetric) :
     Antitone ↑(ofLex <| p.supDegree toLex) := by
   obtain rfl | h0 := eq_or_ne p 0

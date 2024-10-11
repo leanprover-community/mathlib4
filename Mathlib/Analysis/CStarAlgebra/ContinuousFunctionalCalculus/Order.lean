@@ -7,7 +7,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
-import Mathlib.Topology.ContinuousFunction.StarOrdered
+import Mathlib.Topology.ContinuousMap.StarOrdered
 
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 

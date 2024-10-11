@@ -25,7 +25,7 @@ set_option linter.deprecated false
 
 universe u v
 
-variable {α : Sort u} {β : Sort v}
+variable {α : Sort u}
 
 @[deprecated (since := "2024-09-11")]
 class IsLeftCancel (α : Sort u) (op : α → α → α) : Prop where
@@ -57,7 +57,7 @@ instance (priority := 100) (α : Sort u) (lt : α → α → Prop) [IsStrictWeak
 
 section
 
-variable {α : Sort u} {r : α → α → Prop}
+variable {r : α → α → Prop}
 
 local infixl:50 " ≺ " => r
 
@@ -83,7 +83,7 @@ namespace StrictWeakOrder
 
 section
 
-variable {α : Sort u} {r : α → α → Prop}
+variable {r : α → α → Prop}
 
 local infixl:50 " ≺ " => r
 

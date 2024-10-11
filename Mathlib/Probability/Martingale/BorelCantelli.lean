@@ -39,7 +39,6 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
 namespace MeasureTheory
 
 variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
-  {ω : Ω}
 
 /-!
 ### One sided martingale bound
