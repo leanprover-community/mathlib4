@@ -265,7 +265,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- We try to parse the file up to `firstDocModPos`.
   let upToStx ← parseUpToHere firstDocModPos <|> (do
     -- If parsing failed, there is some command which is not a module docstring.
-    -- In that case, we parse until the end of the imports and add an an extra `section` afterwards,
+    -- In that case, we parse until the end of the imports and add an extra `section` afterwards,
     -- so we trigger a "no module doc-string" warning.
     let fil ← getFileName
     let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
