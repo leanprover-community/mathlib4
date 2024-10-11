@@ -399,7 +399,7 @@ lemma coprodSpec_coprodMk (x) :
     (coprodSpec R S).1.base (coprodMk _ _ x) = (PrimeSpectrum.primeSpectrumProd R S).symm x := by
   apply PrimeSpectrum.ext
   obtain (x | x) := x <;>
-    simp only [coprodMk_inl, coprodMk_inr, ← Scheme.comp_val_base_apply,
+    simp only [coprodMk_inl, coprodMk_inr, ← Scheme.comp_base_apply,
       coprodSpec, coprod.inl_desc, coprod.inr_desc]
   · show Ideal.comap _ _ = x.asIdeal.prod ⊤
     ext; simp [Ideal.prod, CommRingCat.ofHom]

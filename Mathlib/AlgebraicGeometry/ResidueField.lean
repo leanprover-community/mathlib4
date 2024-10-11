@@ -86,7 +86,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 -- `residueFieldMap`.
 instance (x): IsLocalRingHom (F := Y.presheaf.stalk (f.val.base x) →+* X.presheaf.stalk x)
     (f.stalkMap x) :=
-  f.2 x
+  f.1.2 x
 
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
@@ -114,12 +114,12 @@ lemma residueFieldMap_comp {Z : Scheme.{u}} (g : Y ⟶ Z) (x : X) :
 lemma evaluation_naturality {V : Opens Y} (x : X) (hx : f.val.base x ∈ V) :
     Y.evaluation V (f.val.base x) hx ≫ f.residueFieldMap x =
       f.app V ≫ X.evaluation (f ⁻¹ᵁ V) x hx :=
-  LocallyRingedSpace.evaluation_naturality f ⟨x, hx⟩
+  LocallyRingedSpace.evaluation_naturality f.1 ⟨x, hx⟩
 
 lemma evaluation_naturality_apply {V : Opens Y} (x : X) (hx : f.val.base x ∈ V) (s) :
     f.residueFieldMap x (Y.evaluation V (f.val.base x) hx s) =
       X.evaluation (f ⁻¹ᵁ V) x hx (f.app V s) :=
-  LocallyRingedSpace.evaluation_naturality_apply f ⟨x, hx⟩ s
+  LocallyRingedSpace.evaluation_naturality_apply f.1 ⟨x, hx⟩ s
 
 instance [IsOpenImmersion f] (x) : IsIso (f.residueFieldMap x) :=
   (LocalRing.ResidueField.mapEquiv
