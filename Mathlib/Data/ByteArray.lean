@@ -3,17 +3,23 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-
+import Batteries.Data.ByteSubarray -- Only needed for the deprecation.
 import Mathlib.Init
+
 /-!
 # Main result
 Introduce main properties of `Up` (well-ordered relation for "upwards" induction on `ℕ`) and of
  `ByteArray`
+
+This entire file has been deprecated on 2024-08-19 in favour of `ByteSubarray` in Batteries.
 -/
+
+set_option linter.deprecated false
 
 namespace Nat
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
+@[deprecated (since := "2024-08-19")]
 def Up (ub a i : Nat) := i < a ∧ i < ub
 
 theorem Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
@@ -22,11 +28,13 @@ theorem Up.WF (ub) : WellFounded (Up ub) :=
   Subrelation.wf (h₂ := (measure (ub - ·)).wf) fun ⟨ia, iu⟩ ↦ Nat.sub_lt_sub_left iu ia
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
+@[deprecated (since := "2024-08-19")]
 def upRel (ub : Nat) : WellFoundedRelation Nat := ⟨Up ub, Up.WF ub⟩
 
 end Nat
 
 /-- A terminal byte slice, a suffix of a byte array. -/
+@[deprecated (since := "2024-08-19")]
 structure ByteSliceT := (arr : ByteArray) (off : Nat)
 
 namespace ByteSliceT
@@ -43,6 +51,7 @@ end ByteSliceT
 def ByteArray.toSliceT (arr : ByteArray) : ByteSliceT := ⟨arr, 0⟩
 
 /-- A byte slice, given by a backing byte array, and an offset and length. -/
+@[deprecated Batteries.ByteSubarray (since := "2024-08-19")]
 structure ByteSlice := (arr : ByteArray) (off len : Nat)
 
 namespace ByteSlice
@@ -57,6 +66,7 @@ def toArray : ByteSlice → ByteArray
 universe u v
 
 /-- The inner loop of the `forIn` implementation for byte slices. -/
+@[deprecated (since := "2024-08-19")]
 def forIn.loop {m : Type u → Type v} {β : Type u} [Monad m] (f : UInt8 → β → m (ForInStep β))
     (arr : ByteArray) (off _end : Nat) (i : Nat) (b : β) : m β :=
   if h : i < _end then do
@@ -64,8 +74,8 @@ def forIn.loop {m : Type u → Type v} {β : Type u} [Monad m] (f : UInt8 → β
     | ForInStep.done b => pure b
     | ForInStep.yield b => have := Nat.Up.next h; loop f arr off _end (i+1) b
   else pure b
-termination_by _end - i
 
+@[deprecated (since := "2024-08-19")]
 instance {m : Type u → Type v} : ForIn m ByteSlice UInt8 :=
   ⟨fun ⟨arr, off, len⟩ b f ↦ forIn.loop f arr off (off + len) off b⟩
 
@@ -77,19 +87,6 @@ def ByteSliceT.toSlice : ByteSliceT → ByteSlice
 
 /-- Convert a byte array into a byte slice. -/
 def ByteArray.toSlice (arr : ByteArray) : ByteSlice := ⟨arr, 0, arr.size⟩
-
-/-- Convert a string of assumed-ASCII characters into a byte array.
-(If any characters are non-ASCII they will be reduced modulo 256.) -/
-def String.toAsciiByteArray (s : String) : ByteArray :=
-  let rec loop (p : Pos) (out : ByteArray) : ByteArray :=
-    if h : s.atEnd p then out else
-    let c := s.get p
-    have : utf8ByteSize s - (next s p).byteIdx < utf8ByteSize s - p.byteIdx :=
-      Nat.sub_lt_sub_left (Nat.lt_of_not_le <| mt decide_eq_true h)
-        (Nat.lt_add_of_pos_right (Char.utf8Size_pos _))
-    loop (s.next p) (out.push c.toUInt8)
-    termination_by utf8ByteSize s - p.byteIdx
-  loop 0 ByteArray.empty
 
 /-- Convert a byte slice into a string. This does not handle non-ASCII characters correctly:
 every byte will become a unicode character with codepoint < 256. -/

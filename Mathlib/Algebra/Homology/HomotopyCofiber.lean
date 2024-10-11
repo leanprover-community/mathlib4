@@ -240,10 +240,8 @@ noncomputable def inr : G ⟶ homotopyCofiber φ where
 
 section
 
-variable (hc : ∀ j, ∃ i, c.Rel i j)
-
 /-- The composition `φ ≫ mappingCone.inr φ` is homotopic to `0`. -/
-noncomputable def inrCompHomotopy :
+noncomputable def inrCompHomotopy (hc : ∀ j, ∃ i, c.Rel i j) :
     Homotopy (φ ≫ inr φ) 0 where
   hom i j :=
     if hij : c.Rel j i then inlX φ i j hij else 0
@@ -257,6 +255,8 @@ noncomputable def inrCompHomotopy :
         add_neg_cancel_left, inr_f]
     · rw [dNext_eq_zero _ _  hj, zero_add, zero_f, add_zero, homotopyCofiber_d,
         inlX_d' _ _ _ _ hj, comp_f, inr_f]
+
+variable (hc : ∀ j, ∃ i, c.Rel i j)
 
 lemma inrCompHomotopy_hom (i j : ι) (hij : c.Rel j i) :
     (inrCompHomotopy φ hc).hom i j = inlX φ i j hij := dif_pos hij

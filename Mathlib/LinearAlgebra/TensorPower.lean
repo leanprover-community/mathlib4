@@ -31,7 +31,7 @@ suppress_compilation
 
 open scoped TensorProduct
 
-/-- Homogenous tensor powers $M^{\otimes n}$. `⨂[R]^n M` is a shorthand for
+/-- Homogeneous tensor powers $M^{\otimes n}$. `⨂[R]^n M` is a shorthand for
 `⨂[R] (i : Fin n), M`. -/
 abbrev TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMonoid M]
     [Module R M] : Type _ :=

@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Batteries.Data.List.OfFn
+import Batteries.Data.List.Pairwise
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.List.Basic
 
 /-!
 # Lists from functions
@@ -16,7 +17,6 @@ of length `n`.
 
 The main statements pertain to lists generated using `List.ofFn`
 
-- `List.length_ofFn`, which tells us the length of such a list
 - `List.get?_ofFn`, which tells us the nth element of such a list
 - `List.equivSigmaTuple`, which is an `Equiv` between lists and the functions that generate them
   via `List.ofFn`.
@@ -32,59 +32,12 @@ open Nat
 
 namespace List
 
-@[simp]
-theorem length_ofFn_go {n} (f : Fin n → α) (i j h) : length (ofFn.go f i j h) = i := by
-  induction i generalizing j <;> simp_all [ofFn.go]
-
-/-- The length of a list converted from a function is the size of the domain. -/
-@[simp]
-theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
-  simp [ofFn, length_ofFn_go]
-
-theorem getElem_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk : k < (ofFn.go f i j h).length) :
-    (ofFn.go f i j h)[k] = f ⟨j + k, by simp at hk; omega⟩ := by
-  let i+1 := i
-  cases k <;> simp [ofFn.go, getElem_ofFn_go (i := i)]
-  congr 2; omega
-
-theorem get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
-    get (ofFn.go f i j h) ⟨k, hk⟩ = f ⟨j + k, by simp at hk; omega⟩ := by
-  simp [getElem_ofFn_go]
-
-@[simp]
-theorem getElem_ofFn {n} (f : Fin n → α) (i : Nat) (h : i < (ofFn f).length) :
-    (ofFn f)[i] = f ⟨i, by simp_all⟩ := by
-  simp [ofFn, getElem_ofFn_go]
-
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   simp; congr
 
 /-- The `n`th element of a list -/
-@[simp]
-theorem getElem?_ofFn {n} (f : Fin n → α) (i) : (ofFn f)[i]? = ofFnNthVal f i :=
-  if h : i < (ofFn f).length
-  then by
-    rw [getElem?_eq_getElem h, getElem_ofFn]
-    · simp only [length_ofFn] at h; simp [ofFnNthVal, h]
-  else by
-    rw [ofFnNthVal, dif_neg] <;>
-    simpa using h
-
-/-- The `n`th element of a list -/
 theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i := by
   simp
-
-set_option linter.deprecated false in
-@[deprecated get_ofFn (since := "2023-01-17")]
-theorem nthLe_ofFn {n} (f : Fin n → α) (i : Fin n) :
-    nthLe (ofFn f) i ((length_ofFn f).symm ▸ i.2) = f i := by
-  simp [nthLe]
-
-set_option linter.deprecated false in
-@[simp, deprecated get_ofFn (since := "2023-01-17")]
-theorem nthLe_ofFn' {n} (f : Fin n → α) {i : ℕ} (h : i < (ofFn f).length) :
-    nthLe (ofFn f) i h = f ⟨i, length_ofFn f ▸ h⟩ :=
-  nthLe_ofFn f ⟨i, length_ofFn f ▸ h⟩
 
 @[simp]
 theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
@@ -129,7 +82,7 @@ theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
 
 @[simp]
 theorem ofFn_eq_nil_iff {n : ℕ} {f : Fin n → α} : ofFn f = [] ↔ n = 0 := by
-  cases n <;> simp only [ofFn_zero, ofFn_succ, eq_self_iff_true, Nat.succ_ne_zero]
+  cases n <;> simp only [ofFn_zero, ofFn_succ, eq_self_iff_true, Nat.succ_ne_zero, reduceCtorEq]
 
 theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
     (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
@@ -200,11 +153,6 @@ theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
 @[deprecated ofFn_getElem_eq_map (since := "2024-06-12")]
 theorem ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| l.get ·) = l.map f := by
   simp
-
-set_option linter.deprecated false in
-@[deprecated ofFn_get (since := "2023-01-17")]
-theorem ofFn_nthLe : ∀ l : List α, (ofFn fun i => nthLe l i i.2) = l :=
-  ofFn_get
 
 -- not registered as a simp lemma, as otherwise it fires before `forall_mem_ofFn_iff` which
 -- is much more useful

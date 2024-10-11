@@ -125,13 +125,14 @@ end mapOfHomotopy
 section map
 
 variable {K₁ L₁ K₂ L₂ K₃ L₃ : CochainComplex C ℤ} (φ₁ : K₁ ⟶ L₁) (φ₂ : K₂ ⟶ L₂) (φ₃ : K₃ ⟶ L₃)
-  (a : K₁ ⟶ K₂) (b : L₁ ⟶ L₂) (comm : φ₁ ≫ b = a ≫ φ₂)
-  (a' : K₂ ⟶ K₃) (b' : L₂ ⟶ L₃) (comm' : φ₂ ≫ b' = a' ≫ φ₃)
+  (a : K₁ ⟶ K₂) (b : L₁ ⟶ L₂)
 
 /-- The morphism `mappingCone φ₁ ⟶ mappingCone φ₂` that is induced by a commutative square. -/
-noncomputable def map : mappingCone φ₁ ⟶ mappingCone φ₂ :=
+noncomputable def map (comm : φ₁ ≫ b = a ≫ φ₂) : mappingCone φ₁ ⟶ mappingCone φ₂ :=
   desc φ₁ ((Cochain.ofHom a).comp (inl φ₂) (zero_add _)) (b ≫ inr φ₂)
     (by simp [reassoc_of% comm])
+
+variable (comm : φ₁ ≫ b = a ≫ φ₂)
 
 lemma map_eq_mapOfHomotopy : map φ₁ φ₂ a b comm = mapOfHomotopy (Homotopy.ofEq comm) := by
   simp [map, mapOfHomotopy]
@@ -140,9 +141,12 @@ lemma map_id : map φ φ (𝟙 _) (𝟙 _) (by rw [id_comp, comp_id]) = 𝟙 _ :
   ext n
   simp [ext_from_iff _ (n + 1) n rfl, map]
 
+variable (a' : K₂ ⟶ K₃) (b' : L₂ ⟶ L₃)
+
 @[reassoc]
-lemma map_comp : map φ₁ φ₃ (a ≫ a') (b ≫ b') (by rw [reassoc_of% comm, comm', assoc]) =
-    map φ₁ φ₂ a b comm ≫ map φ₂ φ₃ a' b' comm' := by
+lemma map_comp (comm' : φ₂ ≫ b' = a' ≫ φ₃) :
+    map φ₁ φ₃ (a ≫ a') (b ≫ b') (by rw [reassoc_of% comm, comm', assoc]) =
+      map φ₁ φ₂ a b comm ≫ map φ₂ φ₃ a' b' comm' := by
   ext n
   simp [ext_from_iff _ (n+1) n rfl, map]
 

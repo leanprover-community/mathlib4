@@ -6,12 +6,8 @@ Authors: Bhavik Mehta, Joël Riou
 import Mathlib.CategoryTheory.Comma.Presheaf
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Over
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Types
 
 /-!
 # Colimit of representables
@@ -207,7 +203,7 @@ noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
       naturality := fun {x₁ x₂} f => by
         dsimp
         rw [comp_id]
-        erw [← yonedaEquiv_symm_map]
+        rw [← yonedaEquiv_symm_map]
         congr 1
         rw [f.unop.2] }
 

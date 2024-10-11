@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Geometry.RingedSpace.PresheafedSpace
 import Mathlib.Topology.Category.TopCat.Limits.Basic
@@ -97,7 +97,7 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
   obj j := op (colimit.ι (F ⋙ PresheafedSpace.forget C) j _* (F.obj j).presheaf)
   map {j j'} f :=
     ((pushforward C (colimit.ι (F ⋙ PresheafedSpace.forget C) j')).map (F.map f).c ≫
-      (Pushforward.comp  ((F ⋙ PresheafedSpace.forget C).map f)
+      (Pushforward.comp ((F ⋙ PresheafedSpace.forget C).map f)
         (colimit.ι (F ⋙ PresheafedSpace.forget C) j') (F.obj j).presheaf).inv ≫
       (pushforwardEq (colimit.w (F ⋙ PresheafedSpace.forget C) f) (F.obj j).presheaf).hom).op
   map_id j := by
@@ -327,7 +327,7 @@ theorem colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ Presheafed
     congr_app (Iso.symm_inv _)]
   dsimp
   rw [map_id, comp_id, assoc, assoc, assoc, NatTrans.naturality]
-  erw [← comp_c_app_assoc]
+  rw [← comp_c_app_assoc]
   rw [congr_app (colimit.isoColimitCocone_ι_hom _ _), assoc]
   erw [limitObjIsoLimitCompEvaluation_inv_π_app_assoc, limMap_π_assoc]
   -- Porting note: `convert` doesn't work due to meta variable, so change to a `suffices` block

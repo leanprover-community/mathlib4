@@ -3,6 +3,8 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Ultrafilter
@@ -86,6 +88,12 @@ theorem one_mem_one : (1 : Set α) ∈ (1 : Filter α) :=
 theorem pure_one : pure 1 = (1 : Filter α) :=
   rfl
 
+@[to_additive (attr := simp) zero_prod]
+theorem one_prod {l : Filter β} : (1 : Filter α) ×ˢ l = map (1, ·) l := pure_prod
+
+@[to_additive (attr := simp) prod_zero]
+theorem prod_one {l : Filter β} : l ×ˢ (1 : Filter α) = map (·, 1) l := prod_pure
+
 @[to_additive (attr := simp)]
 theorem principal_one : 𝓟 1 = (1 : Filter α) :=
   principal_singleton _
@@ -116,7 +124,7 @@ theorem eventually_one {p : α → Prop} : (∀ᶠ x in 1, p x) ↔ p 1 :=
 theorem tendsto_one {a : Filter β} {f : β → α} : Tendsto f a 1 ↔ ∀ᶠ x in a, f x = 1 :=
   tendsto_pure
 
-@[to_additive (attr := simp) zero_prod_zero]
+@[to_additive zero_prod_zero]
 theorem one_prod_one [One β] : (1 : Filter α) ×ˢ (1 : Filter β) = 1 :=
   prod_pure_pure
 
@@ -543,7 +551,7 @@ theorem pow_mem_pow (hs : s ∈ f) : ∀ n : ℕ, s ^ n ∈ f ^ n
 
 @[to_additive (attr := simp) nsmul_bot]
 theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', bot_mul]
+  rw [← Nat.sub_one_add_one hn, pow_succ', bot_mul]
 
 @[to_additive]
 theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
@@ -589,7 +597,7 @@ variable [DivisionMonoid α] {f g : Filter α}
 @[to_additive]
 protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1 := by
   refine ⟨fun hfg => ?_, ?_⟩
-  · obtain ⟨t₁, h₁, t₂, h₂, h⟩ : (1 : Set α) ∈ f * g := hfg.symm.subst one_mem_one
+  · obtain ⟨t₁, h₁, t₂, h₂, h⟩ : (1 : Set α) ∈ f * g := hfg.symm ▸ one_mem_one
     have hfg : (f * g).NeBot := hfg.symm.subst one_neBot
     rw [(hfg.nonempty_of_mem <| mul_mem_mul h₁ h₂).subset_one_iff, Set.mul_eq_one_iff] at h
     obtain ⟨a, b, rfl, rfl, h⟩ := h
@@ -707,7 +715,7 @@ theorem isUnit_pure (a : α) : IsUnit (pure a : Filter α) :=
 
 @[simp]
 theorem isUnit_iff_singleton : IsUnit f ↔ ∃ a, f = pure a := by
-  simp only [isUnit_iff, Group.isUnit, and_true_iff]
+  simp only [isUnit_iff, Group.isUnit, and_true]
 
 @[to_additive]
 theorem map_inv' : f⁻¹.map m = (f.map m)⁻¹ :=
@@ -1042,7 +1050,7 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (F
 @[to_additive "An additive action of an additive monoid on a type `β` gives an additive action on
  `Filter β`."]
 protected def mulActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
-  mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp, ← mul_smul]
+  mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp_def, ← mul_smul]
   one_smul f := by simp only [← Filter.map_smul, one_smul, map_id']
 
 scoped[Pointwise] attribute [instance] Filter.mulAction Filter.addAction Filter.mulActionFilter

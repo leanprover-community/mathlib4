@@ -44,7 +44,7 @@ variable
 theorem uniqueMDiffWithinAt_univ : UniqueMDiffWithinAt I univ x := by
   unfold UniqueMDiffWithinAt
   simp only [preimage_univ, univ_inter]
-  exact I.unique_diff _ (mem_range_self _)
+  exact I.uniqueDiffOn _ (mem_range_self _)
 
 variable {I}
 
@@ -120,12 +120,12 @@ theorem mdifferentiableWithinAt_univ :
 theorem mdifferentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
     MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
   rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
-    (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_inter ht]
+    (differentiableWithinAt_localInvariantProp I I').liftPropWithinAt_inter ht]
 
 theorem mdifferentiableWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
   rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
-    (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_inter' ht]
+    (differentiableWithinAt_localInvariantProp I I').liftPropWithinAt_inter' ht]
 
 theorem MDifferentiableAt.mdifferentiableWithinAt (h : MDifferentiableAt I I' f x) :
     MDifferentiableWithinAt I I' f s x :=
@@ -277,7 +277,7 @@ theorem UniqueMDiffOn.eq (U : UniqueMDiffOn I s) (hx : x ∈ s) (h : HasMFDerivW
 /-!
 ### General lemmas on derivatives of functions between manifolds
 
-We mimick the API for functions between vector spaces
+We mimic the API for functions between vector spaces
 -/
 
 /-- One can reformulate differentiability within a set at a point as continuity within this set at
@@ -288,7 +288,7 @@ theorem mdifferentiableWithinAt_iff_of_mem_source {x' : M} {y : M'}
       ContinuousWithinAt f s x' ∧
         DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
           ((extChartAt I x).symm ⁻¹' s ∩ Set.range I) ((extChartAt I x) x') :=
-  (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_indep_chart
+  (differentiableWithinAt_localInvariantProp I I').liftPropWithinAt_indep_chart
     (StructureGroupoid.chart_mem_maximalAtlas _ x) hx (StructureGroupoid.chart_mem_maximalAtlas _ y)
     hy
 

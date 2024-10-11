@@ -85,9 +85,6 @@ instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
 @[instance] abbrev Equiv.Perm.coeEmbedding : Coe (Equiv.Perm α) (α ↪ α) :=
   Equiv.coeEmbedding
 
--- Porting note : `theorem Equiv.coe_eq_to_embedding : ↑f = f.toEmbedding` is a
--- syntactic tautology in Lean 4
-
 end Equiv
 
 namespace Function
