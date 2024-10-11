@@ -764,8 +764,6 @@ theorem MDifferentiableWithinAt.congr_of_eventuallyEq (h : MDifferentiableWithin
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : MDifferentiableWithinAt I I' f₁ s x :=
   (h.hasMFDerivWithinAt.congr_of_eventuallyEq h₁ hx).mdifferentiableWithinAt
 
-variable (I I')
-
 theorem Filter.EventuallyEq.mdifferentiableWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f₁ s x := by
   constructor
@@ -776,8 +774,6 @@ theorem Filter.EventuallyEq.mdifferentiableWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s
     apply h₁.mono
     intro y
     apply Eq.symm
-
-variable {I I'}
 
 theorem MDifferentiableWithinAt.congr_mono (h : MDifferentiableWithinAt I I' f s x)
     (ht : ∀ x ∈ t, f₁ x = f x) (hx : f₁ x = f x) (h₁ : t ⊆ s) :
@@ -812,7 +808,7 @@ theorem Filter.EventuallyEq.mfderivWithin_eq (hs : UniqueMDiffWithinAt I s x) (h
   · exact (h.hasMFDerivWithinAt.congr_of_eventuallyEq hL hx).mfderivWithin hs
   · unfold mfderivWithin
     rw [if_neg h, if_neg]
-    rwa [← hL.mdifferentiableWithinAt_iff I I' hx]
+    rwa [← hL.mdifferentiableWithinAt_iff hx]
 
 theorem mfderivWithin_congr (hs : UniqueMDiffWithinAt I s x) (hL : ∀ x ∈ s, f₁ x = f x)
     (hx : f₁ x = f x) : mfderivWithin I I' f₁ s x = (mfderivWithin I I' f s x : _) :=
