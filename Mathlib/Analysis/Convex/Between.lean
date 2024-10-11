@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Interval.Set.Group
+import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Tactic.FieldSimp
@@ -127,6 +128,14 @@ variable {R}
 
 lemma mem_segment_iff_wbtw {x y z : V} : y ∈ segment R x z ↔ Wbtw R x y z := by
   rw [Wbtw, affineSegment_eq_segment]
+
+alias ⟨_, Wbtw.mem_segment⟩ := mem_segment_iff_wbtw
+
+lemma Convex.mem_of_wbtw {p₀ p₁ p₂ : V} {s : Set V} (hs : Convex R s) (h₀₁₂ : Wbtw R p₀ p₁ p₂)
+    (h₀ : p₀ ∈ s) (h₂ : p₂ ∈ s) : p₁ ∈ s := hs.segment_subset h₀ h₂ h₀₁₂.mem_segment
+
+lemma AffineSubspace.mem_of_wbtw {s : AffineSubspace R P} {x y z : P} (hxyz : Wbtw R x y z)
+    (hx : x ∈ s) (hz : z ∈ s) : y ∈ s := by obtain ⟨ε, -, rfl⟩ := hxyz; exact lineMap_mem _ hx hz
 
 theorem Wbtw.map {x y z : P} (h : Wbtw R x y z) (f : P →ᵃ[R] P') : Wbtw R (f x) (f y) (f z) := by
   rw [Wbtw, ← affineSegment_image]
@@ -574,7 +583,7 @@ end LinearOrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
 variable {R}
 
 theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
@@ -652,6 +661,12 @@ theorem Sbtw.left_mem_image_Ioi {x y z : P} (h : Sbtw R x y z) :
 
 theorem Sbtw.left_mem_affineSpan {x y z : P} (h : Sbtw R x y z) : x ∈ line[R, z, y] :=
   h.symm.right_mem_affineSpan
+
+lemma AffineSubspace.right_mem_of_wbtw {s : AffineSubspace R P} (hxyz : Wbtw R x y z) (hx : x ∈ s)
+    (hy : y ∈ s) (hxy : x ≠ y) : z ∈ s := by
+  obtain ⟨ε, -, rfl⟩ := hxyz
+  have hε : ε ≠ 0 := by rintro rfl; simp at hxy
+  simpa [hε] using lineMap_mem ε⁻¹ hx hy
 
 theorem wbtw_smul_vadd_smul_vadd_of_nonneg_of_le (x : P) (v : V) {r₁ r₂ : R} (hr₁ : 0 ≤ r₁)
     (hr₂ : r₁ ≤ r₂) : Wbtw R x (r₁ • v +ᵥ x) (r₂ • v +ᵥ x) := by

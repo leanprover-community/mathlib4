@@ -803,6 +803,23 @@ lemma finsetSum_iSup_of_monotone {α ι : Type*} [Preorder ι] [IsDirected ι (�
 @[deprecated (since := "2024-07-14")]
 alias finset_sum_iSup_nat := finsetSum_iSup_of_monotone
 
+lemma le_iInf_mul_iInf {g : κ → ℝ≥0∞} (hf : ∃ i, f i ≠ ∞) (hg : ∃ j, g j ≠ ∞)
+    (ha : ∀ i j, a ≤ f i * g j) : a ≤ (⨅ i, f i) * ⨅ j, g j := by
+  rw [← iInf_ne_top_subtype]
+  have := nonempty_subtype.2 hf
+  have := hg.nonempty
+  replace hg : ⨅ j, g j ≠ ∞ := by simpa using hg
+  rw [iInf_mul fun h ↦ (hg h).elim, le_iInf_iff]
+  rintro ⟨i, hi⟩
+  simpa [mul_iInf fun h ↦ (hi h).elim] using ha i
+
+lemma iInf_mul_iInf {f g : ι → ℝ≥0∞} (hf : ∃ i, f i ≠ ∞) (hg : ∃ j, g j ≠ ∞)
+    (h : ∀ i j, ∃ k, f k * g k ≤ f i * g j) : (⨅ i, f i) * ⨅ i, g i = ⨅ i, f i * g i := by
+  refine le_antisymm (le_iInf fun i ↦ mul_le_mul' (iInf_le ..) (iInf_le ..))
+    (le_iInf_mul_iInf hf hg fun i j ↦ ?_)
+  obtain ⟨k, hk⟩ := h i j
+  exact iInf_le_of_le k hk
+
 lemma smul_iSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (f : ι → ℝ≥0∞) (c : R) :
     c • ⨆ i, f i = ⨆ i, c • f i := by
   simp only [← smul_one_mul c (f _), ← smul_one_mul c (iSup _), ENNReal.mul_iSup]

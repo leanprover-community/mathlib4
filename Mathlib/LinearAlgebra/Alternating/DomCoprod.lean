@@ -225,7 +225,7 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
   refine Quotient.inductionOn' σ fun σ => ?_
   -- unfold the quotient mess left by `Finset.sum_partition`
   -- Porting note: Was `conv in .. => ..`.
-  erw
+  rw
     [@Finset.filter_congr _ _ _ (fun a => @Quotient.decidableEq _ _
       (QuotientGroup.leftRelDecidable (MonoidHom.range (Perm.sumCongrHom ιa ιb)))
       (Quotient.mk (QuotientGroup.leftRel (MonoidHom.range (Perm.sumCongrHom ιa ιb))) a)

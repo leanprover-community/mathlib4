@@ -379,7 +379,7 @@ theorem Units.val_mkOfMulEqOne [CommMonoid α] {a b : α} (h : a * b = 1) :
 
 section Monoid
 
-variable [Monoid α] {a b c : α}
+variable [Monoid α] {a : α}
 
 /-- Partial division. It is defined when the
   second argument is invertible, and unlike the division operator

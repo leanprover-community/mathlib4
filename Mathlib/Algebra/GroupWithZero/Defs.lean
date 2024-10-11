@@ -26,7 +26,7 @@ universe u
 
 -- We have to fix the universe of `G₀` here, since the default argument to
 -- `GroupWithZero.div'` cannot contain a universe metavariable.
-variable {G₀ : Type u} {M₀ M₀' G₀' : Type*}
+variable {G₀ : Type u} {M₀ : Type*}
 
 /-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/

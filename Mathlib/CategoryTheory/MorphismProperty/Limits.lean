@@ -203,7 +203,7 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
   simp
 
 /-- The condition that a property of morphisms is stable by finite products. -/
-class IsStableUnderFiniteProducts : Prop :=
+class IsStableUnderFiniteProducts : Prop where
   isStableUnderProductsOfShape (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
 
 lemma isStableUnderProductsOfShape_of_isStableUnderFiniteProducts
