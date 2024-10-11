@@ -111,9 +111,15 @@ lemma HolderWith.eHolderNorm_le {C : ℝ≥0} (hf : HolderWith C r f) :
     eHolderNorm r f ≤ C :=
   iInf₂_le C hf
 
+/-- See also `memHolder_const` for the version with the spelling `fun _ ↦ c`. -/
 @[simp]
 lemma memHolder_const {c : Y} : MemHolder r (Function.const X c) :=
   (HolderWith.const (C := 0)).memHolder
+
+/-- Version of `memHolder_const` with the spelling `fun _ ↦ c` for the constant function. -/
+@[simp]
+lemma memHolder_const' {c : Y} : MemHolder r (fun _ ↦ c : X → Y) :=
+  memHolder_const
 
 @[simp]
 lemma memHolder_zero [Zero Y] : MemHolder r (0 : X → Y) :=
