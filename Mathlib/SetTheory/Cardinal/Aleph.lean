@@ -51,6 +51,14 @@ theorem IsInitial.le_of_card_le {a b : Ordinal} (ha : IsInitial a)
 theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
   rw [IsInitial, card_ord]
 
+theorem IsInitial.card_le_card {a b : Ordinal} (ha : IsInitial a) (hb : IsInitial b) :
+    a.card ≤ b.card ↔ a ≤ b := by
+  rw [← ord_le_ord, ha.ord_card, hb.ord_card]
+
+theorem IsInitial.card_lt_card {a b : Ordinal} (ha : IsInitial a) (hb : IsInitial b) :
+    a.card < b.card ↔ a < b :=
+  lt_iff_lt_of_le_iff_le (hb.card_le_card ha)
+
 theorem isInitial_natCast (n : ℕ) : IsInitial n := by
   rw [IsInitial, card_nat, ord_nat]
 
@@ -69,12 +77,21 @@ theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
   rw [ord_le] at this
   exact (lt_succ _).not_le this
 
+/-- Initial ordinals are order-isomorphic to the cardinals. -/
+@[simps!]
+def isInitialIso : {x // IsInitial x} ≃o Cardinal where
+  toFun x := x.1.card
+  invFun x := ⟨x.ord, isInitial_ord _⟩
+  left_inv x := Subtype.ext x.2.ord_card
+  right_inv x := card_ord x
+  map_rel_iff' {a b} := a.2.card_le_card b.2
+
 /-- The `omega'` function gives the initial ordinals listed by their ordinal index. `omega' n = n`,
 `omega' ω = ω`, `aleph' (ω + 1) = ω₁`, etc.
 
 For the more common omega function skipping over finite ordinals, see `Ordinal.omega`. -/
 def omega' : Ordinal.{u} ↪o Ordinal.{u} where
-  toFun := enumOrd IsInitial
+  toFun := enumOrd {x | IsInitial x}
   inj' _ _ h := enumOrd_injective not_bddAbove_isInitial h
   map_rel_iff' := enumOrd_le_iff not_bddAbove_isInitial
 
@@ -162,27 +179,26 @@ end Ordinal
 
 /-! ### Aleph cardinals -/
 
-namespace Cardinal
-
 /-- The `aleph'` function gives the cardinals listed by their ordinal index. `aleph' n = n`,
 `aleph' ω = ℵ₀`, `aleph' (ω + 1) = succ ℵ₀`, etc.
 
 For the more common aleph function skipping over finite cardinals, see `Cardinal.aleph`. -/
-def aleph' : Ordinal.{u} ≃o Cardinal.{u} := by
-  let f := RelEmbedding.collapse Cardinal.ord.orderEmbedding.ltEmbedding.{u}
-  refine (OrderIso.ofRelIsoLT <| RelIso.ofSurjective f ?_).symm
-  apply f.eq_or_principal.resolve_right
-  rintro ⟨o, e⟩
-  have : ∀ c, f c < o := fun c => (e _).1 ⟨_, rfl⟩
-  refine Ordinal.inductionOn o ?_ this
-  intro α r _ h
-  let s := ⨆ a, invFun f (Ordinal.typein r a)
-  apply (lt_succ s).not_le
-  have I : Injective f := f.toEmbedding.injective
-  simpa only [typein_enum, leftInverse_invFun I (succ s)] using
-    le_ciSup
-      (Cardinal.bddAbove_range.{u, u} fun a : α => invFun f (Ordinal.typein r a))
-      (Ordinal.enum r ⟨_, h (succ s)⟩)
+def Cardinal.aleph' : Ordinal.{u} ≃o Cardinal.{u} :=
+  (enumOrdOrderIso _ not_bddAbove_isInitial).trans isInitialIso
+
+set_option linter.docPrime false in
+@[simp]
+theorem Ordinal.card_omega' (o : Ordinal) : (omega' o).card = aleph' o :=
+  rfl
+
+namespace Cardinal
+
+-- This shouldn't fire for theorems ending in `aleph'`.
+set_option linter.docPrime false
+
+@[simp]
+theorem ord_aleph' (o : Ordinal) : (aleph' o).ord = omega' o := by
+  rw [← o.card_omega', (isInitial_omega' o).ord_card]
 
 /-- The `aleph'` index function, which gives the ordinal index of a cardinal.
   (The `aleph'` part is because unlike `aleph` this counts also the
@@ -215,26 +231,6 @@ def alephIdx.relIso : @RelIso Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) :=
 @[deprecated aleph' (since := "2024-08-28")]
 def alephIdx : Cardinal → Ordinal :=
   aleph'.symm
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx.initialSeg_coe : (alephIdx.initialSeg : Cardinal → Ordinal) = alephIdx :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx_lt {a b} : alephIdx a < alephIdx b ↔ a < b :=
-  alephIdx.initialSeg.toRelEmbedding.map_rel_iff
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx_le {a b} : alephIdx a ≤ alephIdx b ↔ a ≤ b := by
-  rw [← not_lt, ← not_lt, alephIdx_lt]
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx.init {a b} : b < alephIdx a → ∃ c, alephIdx c = b :=
-  alephIdx.initialSeg.init
 
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-28")]
