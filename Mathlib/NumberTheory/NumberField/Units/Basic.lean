@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # Units of a number field

@@ -439,7 +439,7 @@ def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) where
     exacts [hx.1, ⟨⟨hx.1, hx.2⟩, hx.1⟩]
   right_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true_iff, mem_univ] at hx
+    simp only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ] at hx
     dsimp only
     rw [Z.coordChange_comp, Z.coordChange_self]
     · exact hx.2
@@ -469,9 +469,9 @@ def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
   invFun p := ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩
   toFun p := ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩
   map_source' p hp := by
-    simpa only [Set.mem_preimage, and_true_iff, Set.mem_univ, Set.prod_mk_mem_set_prod_eq] using hp
+    simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.prod_mk_mem_set_prod_eq] using hp
   map_target' p hp := by
-    simpa only [Set.mem_preimage, and_true_iff, Set.mem_univ, Set.mem_prod] using hp
+    simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.mem_prod] using hp
   left_inv' := by
     rintro ⟨x, v⟩ hx
     replace hx : x ∈ Z.baseSet i := hx
@@ -479,7 +479,7 @@ def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
     rw [Z.coordChange_comp, Z.coordChange_self] <;> apply_rules [mem_baseSet_at, mem_inter]
   right_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prod_mk_mem_set_prod_eq, and_true_iff, mem_univ] at hx
+    simp only [prod_mk_mem_set_prod_eq, and_true, mem_univ] at hx
     dsimp only
     rw [Z.coordChange_comp, Z.coordChange_self]
     exacts [hx, ⟨⟨hx, Z.mem_baseSet_at _⟩, hx⟩]
@@ -493,7 +493,7 @@ theorem mem_localTrivAsPartialEquiv_source (p : Z.TotalSpace) :
 theorem mem_localTrivAsPartialEquiv_target (p : B × F) :
     p ∈ (Z.localTrivAsPartialEquiv i).target ↔ p.1 ∈ Z.baseSet i := by
   erw [mem_prod]
-  simp only [and_true_iff, mem_univ]
+  simp only [and_true, mem_univ]
 
 theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :
     (Z.localTrivAsPartialEquiv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
@@ -508,9 +508,9 @@ theorem localTrivAsPartialEquiv_trans (i j : ι) :
     simp only [mem_localTrivAsPartialEquiv_target, mfld_simps]
     rfl
   · rintro ⟨x, v⟩ hx
-    simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm, true_and_iff,
+    simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm,
       Prod.mk.inj_iff, prod_mk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
-      and_true_iff, mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
+      mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
       PartialEquiv.coe_trans, TotalSpace.proj] at hx ⊢
     simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
 

@@ -388,7 +388,7 @@ structure GlueData' where
   cocycle : ∀ i j k hij hik hjk, t' i j k hij hik hjk ≫
     t' j k i hjk hij.symm hik.symm ≫ t' k i j hik.symm hjk.symm hij = 𝟙 _
 
-attribute [local instance] GlueData'.f_mono GlueData'.f_hasPullback mono_comp
+attribute [local instance] GlueData'.f_mono GlueData'.f_hasPullback
 
 attribute [reassoc (attr := simp)] GlueData'.t_inv GlueData'.cocycle
 

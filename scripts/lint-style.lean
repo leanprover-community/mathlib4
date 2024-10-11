@@ -21,13 +21,14 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   let style : ErrorFormat := match args.hasFlag "github" with
     | true => ErrorFormat.github
     | false => ErrorFormat.humanReadable
+  let fix := args.hasFlag "fix"
   -- Read all module names to lint.
   let mut allModules := #[]
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     allModules := allModules.append ((← IO.FS.lines s).map (·.stripPrefix "import "))
   -- note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually
   allModules := allModules.erase "Batteries"
-  let numberErrorFiles ← lintModules allModules style (args.hasFlag "fix")
+  let numberErrorFiles ← lintModules allModules style fix
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.

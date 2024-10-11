@@ -260,7 +260,7 @@ noncomputable def ιTotal (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂)
 @[reassoc (attr := simp)]
 lemma XXIsoOfEq_hom_ιTotal {x₁ y₁ : I₁} (h₁ : x₁ = y₁) {x₂ y₂ : I₂} (h₂ : x₂ = y₂)
     (i₁₂ : I₁₂) (h : ComplexShape.π c₁ c₂ c₁₂ (y₁, y₂) = i₁₂) :
-    (K.XXIsoOfEq h₁ h₂).hom ≫ K.ιTotal c₁₂ y₁ y₂ i₁₂ h =
+    (K.XXIsoOfEq _ _ _ h₁ h₂).hom ≫ K.ιTotal c₁₂ y₁ y₂ i₁₂ h =
       K.ιTotal c₁₂ x₁ x₂ i₁₂ (by rw [h₁, h₂, h]) := by
   subst h₁ h₂
   simp
@@ -268,7 +268,7 @@ lemma XXIsoOfEq_hom_ιTotal {x₁ y₁ : I₁} (h₁ : x₁ = y₁) {x₂ y₂ :
 @[reassoc (attr := simp)]
 lemma XXIsoOfEq_inv_ιTotal {x₁ y₁ : I₁} (h₁ : x₁ = y₁) {x₂ y₂ : I₂} (h₂ : x₂ = y₂)
     (i₁₂ : I₁₂) (h : ComplexShape.π c₁ c₂ c₁₂ (x₁, x₂) = i₁₂) :
-    (K.XXIsoOfEq h₁ h₂).inv ≫ K.ιTotal c₁₂ x₁ x₂ i₁₂ h =
+    (K.XXIsoOfEq _ _ _ h₁ h₂).inv ≫ K.ιTotal c₁₂ x₁ x₂ i₁₂ h =
       K.ιTotal c₁₂ y₁ y₂ i₁₂ (by rw [← h, h₁, h₂]) := by
   subst h₁ h₂
   simp

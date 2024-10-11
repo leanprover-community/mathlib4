@@ -20,9 +20,6 @@ open CategoryTheory
 
 universe u
 
-variable {α β : Type*}
-
-
 /-- The category of bipointed types. -/
 structure Bipointed : Type (u + 1) where
   /-- The underlying type of a bipointed type. -/

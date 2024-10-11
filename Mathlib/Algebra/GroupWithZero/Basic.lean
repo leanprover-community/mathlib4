@@ -37,7 +37,7 @@ assert_not_exists DenselyOrdered
 
 open Function
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+variable {M₀ G₀ : Type*}
 
 section
 
@@ -136,7 +136,7 @@ theorem right_ne_zero_of_mul_eq_one (h : a * b = 1) : b ≠ 0 :=
 end
 
 section MonoidWithZero
-variable [MonoidWithZero M₀] {a : M₀} {m n : ℕ}
+variable [MonoidWithZero M₀] {a : M₀} {n : ℕ}
 
 @[simp] lemma zero_pow : ∀ {n : ℕ}, n ≠ 0 → (0 : M₀) ^ n = 0
   | n + 1, _ => by rw [pow_succ, mul_zero]
@@ -234,7 +234,7 @@ end CancelMonoidWithZero
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c g h x : G₀}
+variable [GroupWithZero G₀] {a b x : G₀}
 
 theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
     Function.Injective fun y => x * y := fun y y' w => by
@@ -291,7 +291,7 @@ end GroupWithZero
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c : G₀}
+variable [GroupWithZero G₀] {a : G₀}
 
 @[simp]
 theorem zero_div (a : G₀) : 0 / a = 0 := by rw [div_eq_mul_inv, zero_mul]
@@ -411,8 +411,7 @@ lemma zpow_add' {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :
   · simp [hn]
   by_cases ha : a = 0
   · subst a
-    simp only [false_or_iff, eq_self_iff_true, not_true, Ne, hm, hn, false_and_iff,
-      or_false_iff] at h
+    simp only [false_or, eq_self_iff_true, not_true, Ne, hm, hn, false_and, or_false] at h
     rw [zero_zpow _ h, zero_zpow _ hm, zero_mul]
   · exact zpow_add₀ ha m n
 
@@ -422,7 +421,7 @@ end GroupWithZero
 
 section CommGroupWithZero
 
-variable [CommGroupWithZero G₀] {a b c d : G₀}
+variable [CommGroupWithZero G₀]
 
 theorem div_mul_eq_mul_div₀ (a b c : G₀) : a / c * b = a * b / c := by
   simp_rw [div_eq_mul_inv, mul_assoc, mul_comm c⁻¹]
