@@ -475,6 +475,9 @@ lemma genEigenspace_def (f : End R M) (μ : R) (k : ℕ) :
     f.genEigenspace μ k = LinearMap.ker ((f - μ • 1) ^ k) := by
   rw [genEigenspace, OrderHom.coe_mk, unifEigenspace_nat]
 
+theorem eigenspace_eq_genEigenspace_one {f : End R M} {μ : R} :
+    genEigenspace f μ 1 = eigenspace f μ := by rw [genEigenspace_def, eigenspace_def, pow_one]
+
 @[simp]
 theorem mem_genEigenspace (f : End R M) (μ : R) (k : ℕ) (m : M) :
     m ∈ f.genEigenspace μ k ↔ ((f - μ • (1 : End R M)) ^ k) m = 0 :=
@@ -484,9 +487,6 @@ theorem mem_genEigenspace (f : End R M) (μ : R) (k : ℕ) (m : M) :
 theorem genEigenspace_zero (f : End R M) (k : ℕ) :
     f.genEigenspace 0 k = LinearMap.ker (f ^ k) :=
   unifEigenspace_zero_nat _ _
-
-theorem eigenspace_eq_genEigenspace_one {f : End R M} {μ : R} :
-    genEigenspace f μ 1 = eigenspace f μ := by rw [genEigenspace_def, eigenspace_def, pow_one]
 
 /-- A nonzero element of a generalized eigenspace is a generalized eigenvector.
     (Def 8.9 of [axler2015])-/
