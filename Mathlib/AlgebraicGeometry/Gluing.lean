@@ -229,7 +229,7 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
       D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
       i j x y)
   rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff]
-  · erw [← comp_apply] -- now `erw` after #13170
+  · rw [← comp_apply]
     simp_rw [← D.ι_isoCarrier_inv]
     rfl -- `rfl` was not needed before #13170
   · infer_instance
@@ -342,7 +342,7 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
   intro x y h
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   obtain ⟨j, y, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective y
-  erw [← comp_apply, ← comp_apply] at h -- now `erw` after #13170
+  rw [← comp_apply, ← comp_apply] at h
   simp_rw [← SheafedSpace.comp_base, ← LocallyRingedSpace.comp_val] at h
   erw [ι_fromGlued, ι_fromGlued] at h
   let e :=
@@ -390,7 +390,7 @@ instance : Epi 𝒰.fromGlued.val.base := by
   intro x
   obtain ⟨y, h⟩ := 𝒰.covers x
   use (𝒰.gluedCover.ι (𝒰.f x)).1.base y
-  erw [← comp_apply] -- now `erw` after #13170
+  rw [← comp_apply]
   rw [← 𝒰.ι_fromGlued (𝒰.f x)] at h
   exact h
 
