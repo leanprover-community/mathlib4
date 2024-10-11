@@ -92,7 +92,7 @@ protected theorem Homeomorph.contractibleSpace_iff (e : X ≃ₜ Y) :
 namespace ContractibleSpace
 
 instance [Nonempty Y] [Subsingleton Y] : ContractibleSpace Y :=
-  let ⟨h⟩ := (unique_iff_subsingleton_and_nonempty Y).mpr ⟨‹_›, ‹_›⟩
+  let ⟨_⟩ := nonempty_unique Y
   ⟨⟨(Homeomorph.homeomorphOfUnique Y Unit).toHomotopyEquiv⟩⟩
 
 variable (X Y) in
