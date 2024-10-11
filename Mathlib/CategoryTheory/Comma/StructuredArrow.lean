@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Scott Morrison
+Authors: Adam Topaz, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.PUnit
@@ -888,5 +888,72 @@ def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
           dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp
+
+section Pre
+
+variable {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) {G : D ⥤ E} {e : E}
+
+/-- The functor establishing the equivalence `StructuredArrow.preEquivalence`. -/
+@[simps!]
+def StructuredArrow.preEquivalence.functor (f : StructuredArrow e G) :
+    StructuredArrow f (pre e F G) ⥤ StructuredArrow f.right F where
+  obj g := mk g.hom.right
+  map φ := homMk φ.right.right <| by
+    have := w φ
+    simp only [Functor.const_obj_obj] at this ⊢
+    rw [← this, comp_right]
+    simp
+
+/-- The inverse functor establishing the equivalence `StructuredArrow.preEquivalence`. -/
+@[simps!]
+def StructuredArrow.preEquivalence.inverse (f : StructuredArrow e G) :
+    StructuredArrow f.right F ⥤ StructuredArrow f (pre e F G) where
+  obj g := mk
+            (Y := mk (Y := g.right)
+              (f.hom ≫ (G.map g.hom : G.obj f.right ⟶ (F ⋙ G).obj g.right)))
+            (homMk g.hom)
+  map φ := homMk <| homMk φ.right <| by
+    simp only [Functor.const_obj_obj, Functor.comp_obj, mk_right, mk_left, mk_hom_eq_self,
+      Functor.comp_map, Category.assoc, ← w φ, Functor.map_comp]
+
+/-- A structured arrow category on a `StructuredArrow.pre e F G` functor is equivalent to the
+structured arrow category on F -/
+def StructuredArrow.preEquivalence (f : StructuredArrow e G) :
+    StructuredArrow f (pre e F G) ≌ StructuredArrow f.right F where
+  functor := StructuredArrow.preEquivalence.functor F f
+  inverse := StructuredArrow.preEquivalence.inverse F f
+  unitIso := NatIso.ofComponents (fun _ => isoMk (isoMk (Iso.refl _)))
+  counitIso := NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
+
+/-- The functor establishing the equivalence `CostructuredArrow.preEquivalence`. -/
+@[simps!]
+def CostructuredArrow.preEquivalence.functor (f : CostructuredArrow G e) :
+    CostructuredArrow (pre F G e) f ⥤ CostructuredArrow F f.left where
+  obj g := mk g.hom.left
+  map φ := homMk φ.left.left <| by
+    have := w φ
+    simp only [Functor.const_obj_obj] at this ⊢
+    rw [← this, comp_left]
+    simp
+
+/-- The inverse functor establishing the equivalence `CostructuredArrow.preEquivalence`. -/
+@[simps!]
+def CostructuredArrow.preEquivalence.inverse (f : CostructuredArrow G e) :
+    CostructuredArrow F f.left ⥤ CostructuredArrow (pre F G e) f where
+  obj g := mk (Y := mk (Y := g.left) (G.map g.hom ≫ f.hom)) (homMk g.hom)
+  map φ := homMk <| homMk φ.left <| by
+    simp only [Functor.const_obj_obj, Functor.comp_obj, mk_left, Functor.comp_map, mk_hom_eq_self,
+      ← w φ, Functor.map_comp, Category.assoc]
+
+/-- A costructured arrow category on a `CostructuredArrow.pre F G e` functor is equivalent to the
+costructured arrow category on F -/
+def CostructuredArrow.preEquivalence (f : CostructuredArrow G e) :
+    CostructuredArrow (pre F G e) f ≌ CostructuredArrow F f.left where
+  functor := CostructuredArrow.preEquivalence.functor F f
+  inverse := CostructuredArrow.preEquivalence.inverse F f
+  unitIso := NatIso.ofComponents (fun _ => isoMk (isoMk (Iso.refl _)))
+  counitIso := NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
+
+end Pre
 
 end CategoryTheory

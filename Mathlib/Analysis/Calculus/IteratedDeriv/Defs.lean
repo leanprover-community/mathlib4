@@ -82,7 +82,7 @@ iterated derivative. -/
 theorem iteratedFDerivWithin_eq_equiv_comp :
     iteratedFDerivWithin 𝕜 n f s =
       ContinuousMultilinearMap.piFieldEquiv 𝕜 (Fin n) F ∘ iteratedDerivWithin n f s := by
-  rw [iteratedDerivWithin_eq_equiv_comp, ← Function.comp.assoc, LinearIsometryEquiv.self_comp_symm,
+  rw [iteratedDerivWithin_eq_equiv_comp, ← Function.comp_assoc, LinearIsometryEquiv.self_comp_symm,
     Function.id_comp]
 
 /-- The `n`-th Fréchet derivative applied to a vector `(m 0, ..., m (n-1))` is the derivative
@@ -203,7 +203,7 @@ theorem iteratedDeriv_eq_equiv_comp : iteratedDeriv n f =
 iterated derivative. -/
 theorem iteratedFDeriv_eq_equiv_comp : iteratedFDeriv 𝕜 n f =
     ContinuousMultilinearMap.piFieldEquiv 𝕜 (Fin n) F ∘ iteratedDeriv n f := by
-  rw [iteratedDeriv_eq_equiv_comp, ← Function.comp.assoc, LinearIsometryEquiv.self_comp_symm,
+  rw [iteratedDeriv_eq_equiv_comp, ← Function.comp_assoc, LinearIsometryEquiv.self_comp_symm,
     Function.id_comp]
 
 /-- The `n`-th Fréchet derivative applied to a vector `(m 0, ..., m (n-1))` is the derivative
