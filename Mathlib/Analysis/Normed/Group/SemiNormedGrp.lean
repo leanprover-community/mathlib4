@@ -56,7 +56,7 @@ instance (M : SemiNormedGrp) : SeminormedAddCommGroup M :=
 -- Porting note (#10754): added instance
 instance funLike {V W : SemiNormedGrp} : FunLike (V ⟶ W) V W where
   coe := (forget SemiNormedGrp).map
-  coe_injective' := fun f g h => by cases f; cases g; congr
+  coe_injective' f g h := by cases f; cases g; congr
 
 instance toAddMonoidHomClass {V W : SemiNormedGrp} : AddMonoidHomClass (V ⟶ W) V W where
   map_add f := f.map_add'

@@ -20,6 +20,7 @@ section
 
 universe u v w
 variable {α : Type u} {β : Type v} {γ : Type w} [UniformSpace α] [UniformSpace β] [UniformSpace γ]
+  {f : α → β}
 
 /-!
 ### Uniform inducing maps
@@ -29,99 +30,162 @@ variable {α : Type u} {β : Type v} {γ : Type w} [UniformSpace α] [UniformSpa
 on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated
 space, then this implies that `f` is injective, hence it is a `IsUniformEmbedding`. -/
 @[mk_iff]
-structure UniformInducing (f : α → β) : Prop where
+structure IsUniformInducing (f : α → β) : Prop where
   /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
   under `Prod.map f f`. -/
   comap_uniformity : comap (fun x : α × α => (f x.1, f x.2)) (𝓤 β) = 𝓤 α
 
-lemma uniformInducing_iff_uniformSpace {f : α → β} :
-    UniformInducing f ↔ ‹UniformSpace β›.comap f = ‹UniformSpace α› := by
-  rw [uniformInducing_iff, UniformSpace.ext_iff, Filter.ext_iff]
+@[deprecated (since := "2024-10-08")] alias UniformInducing := IsUniformInducing
+
+lemma isUniformInducing_iff_uniformSpace {f : α → β} :
+    IsUniformInducing f ↔ ‹UniformSpace β›.comap f = ‹UniformSpace α› := by
+  rw [isUniformInducing_iff, UniformSpace.ext_iff, Filter.ext_iff]
   rfl
 
-protected alias ⟨UniformInducing.comap_uniformSpace, _⟩ := uniformInducing_iff_uniformSpace
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_iff_uniformSpace := isUniformInducing_iff_uniformSpace
 
-lemma uniformInducing_iff' {f : α → β} :
-    UniformInducing f ↔ UniformContinuous f ∧ comap (Prod.map f f) (𝓤 β) ≤ 𝓤 α := by
-  rw [uniformInducing_iff, UniformContinuous, tendsto_iff_comap, le_antisymm_iff, and_comm]; rfl
+protected alias ⟨IsUniformInducing.comap_uniformSpace, _⟩ := isUniformInducing_iff_uniformSpace
 
-protected lemma Filter.HasBasis.uniformInducing_iff {ι ι'} {p : ι → Prop} {p' : ι' → Prop} {s s'}
+@[deprecated (since := "2024-10-08")] alias UniformInducing.comap_uniformSpace :=
+  IsUniformInducing.comap_uniformSpace
+
+lemma isUniformInducing_iff' {f : α → β} :
+    IsUniformInducing f ↔ UniformContinuous f ∧ comap (Prod.map f f) (𝓤 β) ≤ 𝓤 α := by
+  rw [isUniformInducing_iff, UniformContinuous, tendsto_iff_comap, le_antisymm_iff, and_comm]; rfl
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_iff' := isUniformInducing_iff'
+
+protected lemma Filter.HasBasis.isUniformInducing_iff {ι ι'} {p : ι → Prop} {p' : ι' → Prop} {s s'}
     (h : (𝓤 α).HasBasis p s) (h' : (𝓤 β).HasBasis p' s') {f : α → β} :
-    UniformInducing f ↔
+    IsUniformInducing f ↔
       (∀ i, p' i → ∃ j, p j ∧ ∀ x y, (x, y) ∈ s j → (f x, f y) ∈ s' i) ∧
         (∀ j, p j → ∃ i, p' i ∧ ∀ x y, (f x, f y) ∈ s' i → (x, y) ∈ s j) := by
-  simp [uniformInducing_iff', h.uniformContinuous_iff h', (h'.comap _).le_basis_iff h, subset_def]
+  simp [isUniformInducing_iff', h.uniformContinuous_iff h', (h'.comap _).le_basis_iff h, subset_def]
 
-theorem UniformInducing.mk' {f : α → β}
-    (h : ∀ s, s ∈ 𝓤 α ↔ ∃ t ∈ 𝓤 β, ∀ x y : α, (f x, f y) ∈ t → (x, y) ∈ s) : UniformInducing f :=
+@[deprecated (since := "2024-10-05")]
+alias Filter.HasBasis.uniformInducing_iff := Filter.HasBasis.isUniformInducing_iff
+
+theorem IsUniformInducing.mk' {f : α → β}
+    (h : ∀ s, s ∈ 𝓤 α ↔ ∃ t ∈ 𝓤 β, ∀ x y : α, (f x, f y) ∈ t → (x, y) ∈ s) : IsUniformInducing f :=
   ⟨by simp [eq_comm, Filter.ext_iff, subset_def, h]⟩
 
-theorem uniformInducing_id : UniformInducing (@id α) :=
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.mk' := IsUniformInducing.mk'
+
+theorem IsUniformInducing.id : IsUniformInducing (@id α) :=
   ⟨by rw [← Prod.map_def, Prod.map_id, comap_id]⟩
 
-theorem UniformInducing.comp {g : β → γ} (hg : UniformInducing g) {f : α → β}
-    (hf : UniformInducing f) : UniformInducing (g ∘ f) :=
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_id := IsUniformInducing.id
+
+theorem IsUniformInducing.comp {g : β → γ} (hg : IsUniformInducing g) {f : α → β}
+    (hf : IsUniformInducing f) : IsUniformInducing (g ∘ f) :=
   ⟨by rw [← hf.1, ← hg.1, comap_comap]; rfl⟩
 
-theorem UniformInducing.of_comp_iff {g : β → γ} (hg : UniformInducing g) {f : α → β} :
-    UniformInducing (g ∘ f) ↔ UniformInducing f := by
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.comp := IsUniformInducing.comp
+
+theorem IsUniformInducing.of_comp_iff {g : β → γ} (hg : IsUniformInducing g) {f : α → β} :
+    IsUniformInducing (g ∘ f) ↔ IsUniformInducing f := by
   refine ⟨fun h ↦ ?_, hg.comp⟩
-  rw [uniformInducing_iff, ← hg.comap_uniformity, comap_comap, ← h.comap_uniformity,
+  rw [isUniformInducing_iff, ← hg.comap_uniformity, comap_comap, ← h.comap_uniformity,
     Function.comp_def, Function.comp_def]
 
-theorem UniformInducing.basis_uniformity {f : α → β} (hf : UniformInducing f) {ι : Sort*}
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.of_comp_iff := IsUniformInducing.of_comp_iff
+
+theorem IsUniformInducing.basis_uniformity {f : α → β} (hf : IsUniformInducing f) {ι : Sort*}
     {p : ι → Prop} {s : ι → Set (β × β)} (H : (𝓤 β).HasBasis p s) :
     (𝓤 α).HasBasis p fun i => Prod.map f f ⁻¹' s i :=
   hf.1 ▸ H.comap _
 
-theorem UniformInducing.cauchy_map_iff {f : α → β} (hf : UniformInducing f) {F : Filter α} :
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.basis_uniformity := IsUniformInducing.basis_uniformity
+
+theorem IsUniformInducing.cauchy_map_iff {f : α → β} (hf : IsUniformInducing f) {F : Filter α} :
     Cauchy (map f F) ↔ Cauchy F := by
   simp only [Cauchy, map_neBot_iff, prod_map_map_eq, map_le_iff_le_comap, ← hf.comap_uniformity]
 
-theorem uniformInducing_of_compose {f : α → β} {g : β → γ} (hf : UniformContinuous f)
-    (hg : UniformContinuous g) (hgf : UniformInducing (g ∘ f)) : UniformInducing f := by
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.cauchy_map_iff := IsUniformInducing.cauchy_map_iff
+
+theorem IsUniformInducing.of_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f)
+    (hg : UniformContinuous g) (hgf : IsUniformInducing (g ∘ f)) : IsUniformInducing f := by
   refine ⟨le_antisymm ?_ hf.le_comap⟩
   rw [← hgf.1, ← Prod.map_def, ← Prod.map_def, ← Prod.map_comp_map f f g g, ← comap_comap]
   exact comap_mono hg.le_comap
 
-theorem UniformInducing.uniformContinuous {f : α → β} (hf : UniformInducing f) :
-    UniformContinuous f := (uniformInducing_iff'.1 hf).1
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_of_compose := IsUniformInducing.of_comp
 
-theorem UniformInducing.uniformContinuous_iff {f : α → β} {g : β → γ} (hg : UniformInducing g) :
+theorem IsUniformInducing.uniformContinuous {f : α → β} (hf : IsUniformInducing f) :
+    UniformContinuous f := (isUniformInducing_iff'.1 hf).1
+
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.uniformContinuous := IsUniformInducing.uniformContinuous
+
+theorem IsUniformInducing.uniformContinuous_iff {f : α → β} {g : β → γ} (hg : IsUniformInducing g) :
     UniformContinuous f ↔ UniformContinuous (g ∘ f) := by
   dsimp only [UniformContinuous, Tendsto]
   simp only [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map, Function.comp_def]
 
-protected theorem UniformInducing.uniformInducing_comp_iff {f : α → β} {g : β → γ}
-    (hg : UniformInducing g) : UniformInducing (g ∘ f) ↔ UniformInducing f := by
-  simp only [uniformInducing_iff, ← hg.comap_uniformity, comap_comap, Function.comp_def]
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.uniformContinuous_iff := IsUniformInducing.uniformContinuous_iff
 
-theorem UniformInducing.uniformContinuousOn_iff {f : α → β} {g : β → γ} {S : Set α}
-    (hg : UniformInducing g) :
+protected theorem IsUniformInducing.isUniformInducing_comp_iff {f : α → β} {g : β → γ}
+    (hg : IsUniformInducing g) : IsUniformInducing (g ∘ f) ↔ IsUniformInducing f := by
+  simp only [isUniformInducing_iff, ← hg.comap_uniformity, comap_comap, Function.comp_def]
+
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.uniformInducing_comp_iff := IsUniformInducing.isUniformInducing_comp_iff
+
+theorem IsUniformInducing.uniformContinuousOn_iff {f : α → β} {g : β → γ} {S : Set α}
+    (hg : IsUniformInducing g) :
     UniformContinuousOn f S ↔ UniformContinuousOn (g ∘ f) S := by
   dsimp only [UniformContinuousOn, Tendsto]
   rw [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map, comp_def, comp_def]
 
-theorem UniformInducing.inducing {f : α → β} (h : UniformInducing f) : Inducing f := by
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.uniformContinuousOn_iff := IsUniformInducing.uniformContinuousOn_iff
+
+theorem IsUniformInducing.inducing {f : α → β} (h : IsUniformInducing f) : Inducing f := by
   obtain rfl := h.comap_uniformSpace
   exact inducing_induced f
 
-theorem UniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
-    {e₁ : α → α'} {e₂ : β → β'} (h₁ : UniformInducing e₁) (h₂ : UniformInducing e₂) :
-    UniformInducing fun p : α × β => (e₁ p.1, e₂ p.2) :=
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.inducing := IsUniformInducing.inducing
+
+theorem IsUniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
+    {e₁ : α → α'} {e₂ : β → β'} (h₁ : IsUniformInducing e₁) (h₂ : IsUniformInducing e₂) :
+    IsUniformInducing fun p : α × β => (e₁ p.1, e₂ p.2) :=
   ⟨by simp [Function.comp_def, uniformity_prod, ← h₁.1, ← h₂.1, comap_inf, comap_comap]⟩
 
-theorem UniformInducing.isDenseInducing {f : α → β} (h : UniformInducing f) (hd : DenseRange f) :
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.prod := IsUniformInducing.prod
+
+lemma IsUniformInducing.isDenseInducing (h : IsUniformInducing f) (hd : DenseRange f) :
     IsDenseInducing f :=
   { dense := hd
     induced := h.inducing.induced }
 
-theorem SeparationQuotient.uniformInducing_mk : UniformInducing (mk : α → SeparationQuotient α) :=
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.isDenseInducing := IsUniformInducing.isDenseInducing
+
+lemma SeparationQuotient.isUniformInducing_mk :
+    IsUniformInducing (mk : α → SeparationQuotient α) :=
   ⟨comap_mk_uniformity⟩
 
-protected theorem UniformInducing.injective [T0Space α] {f : α → β} (h : UniformInducing f) :
+@[deprecated (since := "2024-10-05")]
+alias SeparationQuotient.uniformInducing_mk := SeparationQuotient.isUniformInducing_mk
+
+protected theorem IsUniformInducing.injective [T0Space α] {f : α → β} (h : IsUniformInducing f) :
     Injective f :=
   h.inducing.injective
+
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.injective := IsUniformInducing.injective
 
 /-!
 ### Uniform embeddings
@@ -130,16 +194,19 @@ protected theorem UniformInducing.injective [T0Space α] {f : α → β} (h : Un
 /-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
 injective. If `α` is a separated space, then the latter assumption follows from the former. -/
 @[mk_iff]
-structure IsUniformEmbedding (f : α → β) extends UniformInducing f : Prop where
+structure IsUniformEmbedding (f : α → β) extends IsUniformInducing f : Prop where
   /-- A uniform embedding is injective. -/
   inj : Function.Injective f
+
+lemma IsUniformEmbedding.isUniformInducing (hf : IsUniformEmbedding f) : IsUniformInducing f :=
+  hf.toIsUniformInducing
 
 @[deprecated (since := "2024-10-03")] alias UniformEmbedding := IsUniformEmbedding
 
 theorem isUniformEmbedding_iff' {f : α → β} :
     IsUniformEmbedding f ↔
       Injective f ∧ UniformContinuous f ∧ comap (Prod.map f f) (𝓤 β) ≤ 𝓤 α := by
-  rw [isUniformEmbedding_iff, and_comm, uniformInducing_iff']
+  rw [isUniformEmbedding_iff, and_comm, isUniformInducing_iff']
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_iff' := isUniformEmbedding_iff'
@@ -149,7 +216,7 @@ theorem Filter.HasBasis.isUniformEmbedding_iff' {ι ι'} {p : ι → Prop} {p' :
     IsUniformEmbedding f ↔ Injective f ∧
       (∀ i, p' i → ∃ j, p j ∧ ∀ x y, (x, y) ∈ s j → (f x, f y) ∈ s' i) ∧
         (∀ j, p j → ∃ i, p' i ∧ ∀ x y, (f x, f y) ∈ s' i → (x, y) ∈ s j) := by
-  rw [isUniformEmbedding_iff, and_comm, h.uniformInducing_iff h']
+  rw [isUniformEmbedding_iff, and_comm, h.isUniformInducing_iff h']
 
 @[deprecated (since := "2024-10-01")]
 alias Filter.HasBasis.uniformEmbedding_iff' := Filter.HasBasis.isUniformEmbedding_iff'
@@ -181,14 +248,14 @@ alias uniformEmbedding_set_inclusion := isUniformEmbedding_set_inclusion
 
 theorem IsUniformEmbedding.comp {g : β → γ} (hg : IsUniformEmbedding g) {f : α → β}
     (hf : IsUniformEmbedding f) : IsUniformEmbedding (g ∘ f) :=
-  { hg.toUniformInducing.comp hf.toUniformInducing with inj := hg.inj.comp hf.inj }
+  { hg.isUniformInducing.comp hf.isUniformInducing with inj := hg.inj.comp hf.inj }
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.comp := IsUniformEmbedding.comp
 
 theorem IsUniformEmbedding.of_comp_iff {g : β → γ} (hg : IsUniformEmbedding g) {f : α → β} :
     IsUniformEmbedding (g ∘ f) ↔ IsUniformEmbedding f := by
-  simp_rw [isUniformEmbedding_iff, hg.toUniformInducing.of_comp_iff, hg.inj.of_comp_iff f]
+  simp_rw [isUniformEmbedding_iff, hg.isUniformInducing.of_comp_iff, hg.inj.of_comp_iff f]
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.of_comp_iff := IsUniformEmbedding.of_comp_iff
@@ -218,21 +285,27 @@ theorem isUniformEmbedding_inr : IsUniformEmbedding (Sum.inr : β → α ⊕ β)
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_inr := isUniformEmbedding_inr
 
-/-- If the domain of a `UniformInducing` map `f` is a T₀ space, then `f` is injective,
+/-- If the domain of a `IsUniformInducing` map `f` is a T₀ space, then `f` is injective,
 hence it is a `IsUniformEmbedding`. -/
-protected theorem UniformInducing.isUniformEmbedding [T0Space α] {f : α → β}
-    (hf : UniformInducing f) : IsUniformEmbedding f :=
+protected theorem IsUniformInducing.isUniformEmbedding [T0Space α] {f : α → β}
+    (hf : IsUniformInducing f) : IsUniformEmbedding f :=
   ⟨hf, hf.inducing.injective⟩
 
-@[deprecated (since := "2024-10-01")]
-alias UniformInducing.uniformEmbedding := UniformInducing.isUniformEmbedding
-
-theorem isUniformEmbedding_iff_uniformInducing [T0Space α] {f : α → β} :
-    IsUniformEmbedding f ↔ UniformInducing f :=
-  ⟨IsUniformEmbedding.toUniformInducing, UniformInducing.isUniformEmbedding⟩
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.isUniformEmbedding := IsUniformInducing.isUniformEmbedding
 
 @[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_iff_uniformInducing := isUniformEmbedding_iff_uniformInducing
+alias IsUniformInducing.uniformEmbedding := IsUniformInducing.isUniformEmbedding
+
+theorem isUniformEmbedding_iff_isUniformInducing [T0Space α] {f : α → β} :
+    IsUniformEmbedding f ↔ IsUniformInducing f :=
+  ⟨IsUniformEmbedding.isUniformInducing, IsUniformInducing.isUniformEmbedding⟩
+
+@[deprecated (since := "2024-10-05")]
+alias isUniformEmbedding_iff_uniformInducing := isUniformEmbedding_iff_isUniformInducing
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_iff_isUniformInducing := isUniformEmbedding_iff_isUniformInducing
 
 /-- If a map `f : α → β` sends any two distinct points to point that are **not** related by a fixed
 `s ∈ 𝓤 β`, then `f` is uniform inducing with respect to the discrete uniformity on `α`:
@@ -252,13 +325,13 @@ theorem comap_uniformity_of_spaced_out {α} {f : α → β} {s : Set (β × β)}
 theorem isUniformEmbedding_of_spaced_out {α} {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
     (hf : Pairwise fun x y => (f x, f y) ∉ s) : @IsUniformEmbedding α β ⊥ ‹_› f := by
   let _ : UniformSpace α := ⊥; have := discreteTopology_bot α
-  exact UniformInducing.isUniformEmbedding ⟨comap_uniformity_of_spaced_out hs hf⟩
+  exact IsUniformInducing.isUniformEmbedding ⟨comap_uniformity_of_spaced_out hs hf⟩
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_of_spaced_out := isUniformEmbedding_of_spaced_out
 
 protected lemma IsUniformEmbedding.embedding {f : α → β} (h : IsUniformEmbedding f) : Embedding f :=
-  { toInducing := h.toUniformInducing.inducing
+  { toInducing := h.isUniformInducing.inducing
     inj := h.inj }
 
 @[deprecated (since := "2024-10-01")]
@@ -282,8 +355,8 @@ theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopolo
     { (isUniformEmbedding_of_spaced_out hs hf).embedding with
       isClosed_range := isClosed_range_of_spaced_out hs hf }
 
-theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α → β} (b : β)
-    (he₁ : UniformInducing e) (he₂ : IsDenseInducing e) (hs : s ∈ 𝓤 α) :
+theorem closure_image_mem_nhds_of_isUniformInducing {s : Set (α × α)} {e : α → β} (b : β)
+    (he₁ : IsUniformInducing e) (he₂ : IsDenseInducing e) (hs : s ∈ 𝓤 α) :
     ∃ a, closure (e '' { a' | (a, a') ∈ s }) ∈ 𝓝 b := by
   obtain ⟨U, ⟨hU, hUo, hsymm⟩, hs⟩ :
     ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ SymmetricRel U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
@@ -295,6 +368,9 @@ theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α �
   refine mem_closure_iff_nhds.2 fun V hV => ?_
   rcases he₂.dense.mem_nhds (inter_mem hV (ho.mem_nhds hy)) with ⟨x, hxV, hxU⟩
   exact ⟨e x, hxV, mem_image_of_mem e hxU⟩
+
+@[deprecated (since := "2024-10-05")]
+alias closure_image_mem_nhds_of_uniformInducing := closure_image_mem_nhds_of_isUniformInducing
 
 theorem isUniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : IsUniformEmbedding e)
     (de : IsDenseEmbedding e) : IsUniformEmbedding (IsDenseEmbedding.subtypeEmb p e) :=
@@ -309,28 +385,31 @@ alias uniformEmbedding_subtypeEmb := isUniformEmbedding_subtypeEmb
 theorem IsUniformEmbedding.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : IsUniformEmbedding e₁) (h₂ : IsUniformEmbedding e₂) :
     IsUniformEmbedding fun p : α × β => (e₁ p.1, e₂ p.2) :=
-  { h₁.toUniformInducing.prod h₂.toUniformInducing with inj := h₁.inj.prodMap h₂.inj }
+  { h₁.isUniformInducing.prod h₂.isUniformInducing with inj := h₁.inj.prodMap h₂.inj }
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.prod := IsUniformEmbedding.prod
 
 /-- A set is complete iff its image under a uniform inducing map is complete. -/
-theorem isComplete_image_iff {m : α → β} {s : Set α} (hm : UniformInducing m) :
+theorem isComplete_image_iff {m : α → β} {s : Set α} (hm : IsUniformInducing m) :
     IsComplete (m '' s) ↔ IsComplete s := by
   have fact1 : SurjOn (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 <| m '' s) := surjOn_image .. |>.filter_map_Iic
   have fact2 : MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 <| m '' s) := mapsTo_image .. |>.filter_map_Iic
   simp_rw [IsComplete, imp.swap (a := Cauchy _), ← mem_Iic (b := 𝓟 _), fact1.forall fact2,
     hm.cauchy_map_iff, exists_mem_image, map_le_iff_le_comap, hm.inducing.nhds_eq_comap]
 
-/-- If `f : X → Y` is an `UniformInducing` map, the image `f '' s` of a set `s` is complete
+/-- If `f : X → Y` is an `IsUniformInducing` map, the image `f '' s` of a set `s` is complete
   if and only if `s` is complete. -/
-theorem UniformInducing.isComplete_iff {f : α → β} {s : Set α} (hf : UniformInducing f) :
+theorem IsUniformInducing.isComplete_iff {f : α → β} {s : Set α} (hf : IsUniformInducing f) :
     IsComplete (f '' s) ↔ IsComplete s := isComplete_image_iff hf
+
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.isComplete_iff := IsUniformInducing.isComplete_iff
 
 /-- If `f : X → Y` is an `IsUniformEmbedding`, the image `f '' s` of a set `s` is complete
   if and only if `s` is complete. -/
 theorem IsUniformEmbedding.isComplete_iff {f : α → β} {s : Set α} (hf : IsUniformEmbedding f) :
-    IsComplete (f '' s) ↔ IsComplete s := hf.toUniformInducing.isComplete_iff
+    IsComplete (f '' s) ↔ IsComplete s := hf.isUniformInducing.isComplete_iff
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.isComplete_iff := IsUniformEmbedding.isComplete_iff
@@ -342,39 +421,48 @@ theorem Subtype.isComplete_iff {p : α → Prop} {s : Set { x // p x }} :
 
 alias ⟨isComplete_of_complete_image, _⟩ := isComplete_image_iff
 
-theorem completeSpace_iff_isComplete_range {f : α → β} (hf : UniformInducing f) :
+theorem completeSpace_iff_isComplete_range {f : α → β} (hf : IsUniformInducing f) :
     CompleteSpace α ↔ IsComplete (range f) := by
   rw [completeSpace_iff_isComplete_univ, ← isComplete_image_iff hf, image_univ]
 
-alias ⟨_, UniformInducing.completeSpace⟩ := completeSpace_iff_isComplete_range
+alias ⟨_, IsUniformInducing.completeSpace⟩ := completeSpace_iff_isComplete_range
 
-theorem UniformInducing.isComplete_range [CompleteSpace α] {f : α → β} (hf : UniformInducing f) :
+@[deprecated (since := "2024-10-08")] alias UniformInducing.completeSpace :=
+  IsUniformInducing.completeSpace
+
+lemma IsUniformInducing.isComplete_range [CompleteSpace α] (hf : IsUniformInducing f) :
     IsComplete (range f) :=
   (completeSpace_iff_isComplete_range hf).1 ‹_›
+
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.isComplete_range := IsUniformInducing.isComplete_range
 
 /-- If `f` is a surjective uniform inducing map,
 then its domain is a complete space iff its codomain is a complete space.
 See also `_root_.completeSpace_congr` for a version that assumes `f` to be an equivalence. -/
-theorem UniformInducing.completeSpace_congr {f : α → β} (hf : UniformInducing f)
+theorem IsUniformInducing.completeSpace_congr {f : α → β} (hf : IsUniformInducing f)
     (hsurj : f.Surjective) : CompleteSpace α ↔ CompleteSpace β := by
   rw [completeSpace_iff_isComplete_range hf, hsurj.range_eq, completeSpace_iff_isComplete_univ]
 
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.completeSpace_congr := IsUniformInducing.completeSpace_congr
+
 theorem SeparationQuotient.completeSpace_iff :
     CompleteSpace (SeparationQuotient α) ↔ CompleteSpace α :=
-  .symm <| uniformInducing_mk.completeSpace_congr surjective_mk
+  .symm <| isUniformInducing_mk.completeSpace_congr surjective_mk
 
 instance SeparationQuotient.instCompleteSpace [CompleteSpace α] :
     CompleteSpace (SeparationQuotient α) :=
   completeSpace_iff.2 ‹_›
 
-/-- See also `UniformInducing.completeSpace_congr`
+/-- See also `IsUniformInducing.completeSpace_congr`
 for a version that works for non-injective maps. -/
 theorem completeSpace_congr {e : α ≃ β} (he : IsUniformEmbedding e) :
     CompleteSpace α ↔ CompleteSpace β :=
   he.completeSpace_congr e.surjective
 
 theorem completeSpace_coe_iff_isComplete {s : Set α} : CompleteSpace s ↔ IsComplete s := by
-  rw [completeSpace_iff_isComplete_range isUniformEmbedding_subtype_val.toUniformInducing,
+  rw [completeSpace_iff_isComplete_range isUniformEmbedding_subtype_val.isUniformInducing,
     Subtype.range_coe]
 
 alias ⟨_, IsComplete.completeSpace_coe⟩ := completeSpace_coe_iff_isComplete
@@ -384,13 +472,13 @@ theorem IsClosed.completeSpace_coe [CompleteSpace α] {s : Set α} (hs : IsClose
   hs.isComplete.completeSpace_coe
 
 theorem completeSpace_ulift_iff : CompleteSpace (ULift α) ↔ CompleteSpace α :=
-  UniformInducing.completeSpace_congr ⟨rfl⟩ ULift.down_surjective
+  IsUniformInducing.completeSpace_congr ⟨rfl⟩ ULift.down_surjective
 
 /-- The lift of a complete space to another universe is still complete. -/
 instance ULift.instCompleteSpace [CompleteSpace α] : CompleteSpace (ULift α) :=
   completeSpace_ulift_iff.2 ‹_›
 
-theorem completeSpace_extension {m : β → α} (hm : UniformInducing m) (dense : DenseRange m)
+theorem completeSpace_extension {m : β → α} (hm : IsUniformInducing m) (dense : DenseRange m)
     (h : ∀ f : Filter β, Cauchy f → ∃ x : α, map m f ≤ 𝓝 x) : CompleteSpace α :=
   ⟨fun {f : Filter α} (hf : Cauchy f) =>
     let p : Set (α × α) → Set α → Set α := fun s t => { y : α | ∃ x : α, x ∈ t ∧ (x, y) ∈ s }
@@ -436,7 +524,7 @@ theorem completeSpace_extension {m : β → α} (hm : UniformInducing m) (dense 
         _ ≤ 𝓝 x := le_nhds_of_cauchy_adhp ‹Cauchy g› this
         ⟩⟩
 
-lemma totallyBounded_image_iff {f : α → β} {s : Set α} (hf : UniformInducing f) :
+lemma totallyBounded_image_iff {f : α → β} {s : Set α} (hf : IsUniformInducing f) :
     TotallyBounded (f '' s) ↔ TotallyBounded s := by
   refine ⟨fun hs ↦ ?_, fun h ↦ h.image hf.uniformContinuous⟩
   simp_rw [(hf.basis_uniformity (basis_sets _)).totallyBounded_iff]
@@ -445,21 +533,21 @@ lemma totallyBounded_image_iff {f : α → β} {s : Set α} (hf : UniformInducin
   use u, hfin
   rwa [biUnion_image, image_subset_iff, preimage_iUnion₂] at h
 
-theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : UniformInducing f)
+theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : IsUniformInducing f)
     (hs : TotallyBounded s) : TotallyBounded (f ⁻¹' s) :=
   (totallyBounded_image_iff hf).1 <| hs.subset <| image_preimage_subset ..
 
 instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace (α ⊕ β) := by
   rw [completeSpace_iff_isComplete_univ, ← range_inl_union_range_inr]
-  exact isUniformEmbedding_inl.toUniformInducing.isComplete_range.union
-    isUniformEmbedding_inr.toUniformInducing.isComplete_range
+  exact isUniformEmbedding_inl.isUniformInducing.isComplete_range.union
+    isUniformEmbedding_inr.isUniformInducing.isComplete_range
 
 end
 
 theorem isUniformEmbedding_comap {α : Type*} {β : Type*} {f : α → β} [u : UniformSpace β]
     (hf : Function.Injective f) : @IsUniformEmbedding α β (UniformSpace.comap f u) u f :=
   @IsUniformEmbedding.mk _ _ (UniformSpace.comap f u) _ _
-    (@UniformInducing.mk _ _ (UniformSpace.comap f u) _ _ rfl) hf
+    (@IsUniformInducing.mk _ _ (UniformSpace.comap f u) _ _ rfl) hf
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_comap := isUniformEmbedding_comap
@@ -482,10 +570,10 @@ alias Embedding.to_uniformEmbedding := Embedding.to_isUniformEmbedding
 section UniformExtension
 
 variable {α : Type*} {β : Type*} {γ : Type*} [UniformSpace α] [UniformSpace β] [UniformSpace γ]
-  {e : β → α} (h_e : UniformInducing e) (h_dense : DenseRange e) {f : β → γ}
+  {e : β → α} (h_e : IsUniformInducing e) (h_dense : DenseRange e) {f : β → γ}
   (h_f : UniformContinuous f)
 
-local notation "ψ" => IsDenseInducing.extend (UniformInducing.isDenseInducing h_e h_dense) f
+local notation "ψ" => IsDenseInducing.extend (IsUniformInducing.isDenseInducing h_e h_dense) f
 
 include h_e h_dense h_f in
 theorem uniformly_extend_exists [CompleteSpace γ] (a : α) : ∃ c, Tendsto f (comap e (𝓝 a)) (𝓝 c) :=
@@ -506,7 +594,7 @@ theorem uniform_extend_subtype [CompleteSpace γ] {p : α → Prop} {e : α → 
     isUniformEmbedding_subtypeEmb _ he de
   have : b ∈ closure (e '' { x | p x }) :=
     (closure_mono <| monotone_image <| hp) (mem_of_mem_nhds hb)
-  let ⟨c, hc⟩ := uniformly_extend_exists ue'.toUniformInducing de'.dense hf ⟨b, this⟩
+  let ⟨c, hc⟩ := uniformly_extend_exists ue'.isUniformInducing de'.dense hf ⟨b, this⟩
   replace hc : Tendsto (f ∘ Subtype.val (p := p)) (((𝓝 b).comap e).comap Subtype.val) (𝓝 c) := by
     simpa only [nhds_subtype_eq_comap, comap_comap, IsDenseEmbedding.subtypeEmb_coe] using hc
   refine ⟨c, (tendsto_comap'_iff ?_).1 hc⟩

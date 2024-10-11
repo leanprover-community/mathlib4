@@ -14,7 +14,9 @@ import Mathlib.CategoryTheory.Yoneda
 
 We provide various useful constructors:
 * `mkOfHomEquiv`
-* `mkOfUnitCounit`
+* `mk'`: construct an adjunction from the data of a hom set equivalence, unit and counit natural
+  transformations together with proofs of the equalities `homEquiv_unit` and `homEquiv_counit`
+  relating them to each other.
 * `leftAdjointOfEquiv` / `rightAdjointOfEquiv`
   construct a left/right adjoint of a given functor given the action on objects and
   the relevant equivalence of morphism spaces.
@@ -30,6 +32,44 @@ adjoint can be obtained as `F.rightAdjoint`.
 `toEquivalence` upgrades an adjunction to an equivalence,
 given witnesses that the unit and counit are pointwise isomorphisms.
 Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an equivalence.
+
+## Overview of the directory `CategoryTheory.Adjunction`
+
+* Adjoint lifting theorems are in the directory `Lifting`.
+* The file `AdjointFunctorTheorems` proves the adjoint functor theorems.
+* The file `Comma` shows that for a functor `G : D ⥤ C` the data of an initial object in each
+  `StructuredArrow` category on `G` is equivalent to a left adjoint to `G`, as well as the dual.
+* The file `Evaluation` shows that products and coproducts are adjoint to evaluation of functors.
+* The file `FullyFaithful` characterizes when adjoints are full or faithful in terms of the unit
+  and counit.
+* The file `Limits` proves that left adjoints preserve colimits and right adjoints preserve limits.
+* The file `Mates` establishes the bijection between the 2-cells
+  ```
+          L₁                  R₁
+        C --→ D             C ←-- D
+      G ↓  ↗  ↓ H         G ↓  ↘  ↓ H
+        E --→ F             E ←-- F
+          L₂                  R₂
+  ```
+  where `L₁ ⊣ R₁` and `L₂ ⊣ R₂`. Specializing to a pair of adjoints `L₁ L₂ : C ⥤ D`,
+  `R₁ R₂ : D ⥤ C`, it provides equivalences `(L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂)` and `(L₂ ≅ L₁) ≃ (R₁ ≅ R₂)`.
+* The file `Opposites` contains constructions to relate adjunctions of functors to adjunctions of
+  their opposites.
+* The file `Reflective` defines reflective functors, i.e. fully faithful right adjoints. Note that
+  many facts about reflective functors are proved in the earlier file `FullyFaithful`.
+* The file `Restrict` defines the restriction of an adjunction along fully faithful functors.
+* The file `Triple` proves that in an adjoint triple, the left adjoint is fully faithful if and
+  only if the right adjoint is.
+* The file `Unique` proves uniqueness of adjoints.
+* The file `Whiskering` proves that functors `F : D ⥤ E` and `G : E ⥤ D` with an adjunction
+  `F ⊣ G`, induce adjunctions between the functor categories `C ⥤ D` and `C ⥤ E`,
+  and the functor categories `E ⥤ C` and `D ⥤ C`.
+
+## Other files related to adjunctions
+
+* The file `CategoryTheory.Monad.Adjunction` develops the basic relationship between adjunctions
+  and (co)monads. There it is also shown that given an adjunction `L ⊣ R` and an isomorphism
+  `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
 -/
 
 
@@ -58,8 +98,6 @@ hom set equivalence.
 
 To construct adjoints to a given functor, there are constructors `leftAdjointOfEquiv` and
 `adjunctionOfEquivLeft` (as well as their duals).
-
-Uniqueness of adjoints is shown in `CategoryTheory.Adjunction.Unique`.
 
 See <https://stacks.math.columbia.edu/tag/0037>.
 -/

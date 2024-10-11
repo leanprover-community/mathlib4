@@ -59,10 +59,10 @@ If we interpret sections over `U` as functions of `X` defined on `U`, then this 
 corresponds to evaluation at `x`.
 -/
 def evaluation (U : X.Opens) (x : X) (hx : x ∈ U) : Γ(X, U) ⟶ X.residueField x :=
-  X.presheaf.germ ⟨x, hx⟩ ≫ X.residue _
+  X.presheaf.germ U x hx ≫ X.residue _
 
 @[reassoc]
-lemma germ_residue (x : U) : X.presheaf.germ x ≫ X.residue x.1 = X.evaluation U x x.2 := rfl
+lemma germ_residue (x hx) : X.presheaf.germ U x hx ≫ X.residue x = X.evaluation U x hx := rfl
 
 /-- The global evaluation map from `Γ(X, ⊤)` to the residue field at `x`. -/
 abbrev Γevaluation (x : X) : Γ(X, ⊤) ⟶ X.residueField x :=
@@ -79,7 +79,14 @@ lemma evaluation_ne_zero_iff_mem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U))
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
-instance (x) : IsLocalRingHom (f.stalkMap x) := inferInstanceAs (IsLocalRingHom (f.val.stalkMap x))
+
+-- TODO: This instance is found before #6045.
+-- We need this strange instance for `residueFieldMap`, the type of `F` must be fixed
+-- like this. The instance `IsLocalRingHom (f.stalkMap x)` already exists, but does not work for
+-- `residueFieldMap`.
+instance (x): IsLocalRingHom (F := Y.presheaf.stalk (f.val.base x) →+* X.presheaf.stalk x)
+    (f.stalkMap x) :=
+  f.2 x
 
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/

@@ -381,9 +381,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
         suffices u.sup id ≤ s from le_antisymm husup this
         rw [sSup', Finset.sup_id_eq_sSup]
         exact sSup_le_sSup huspan
-      -- Porting note: had to split this out of the `obtain`
-      have := Finset.subset_image_iff.mp huspan
-      obtain ⟨t, ⟨-, rfl⟩⟩ := this
+      obtain ⟨t, -, rfl⟩ := Finset.subset_set_image_iff.mp huspan
       rw [Finset.sup_image, Function.id_comp, Finset.sup_eq_iSup, supr_rw, ←
         span_eq_iSup_of_singleton_spans, eq_comm] at ssup
       exact ⟨t, ssup⟩

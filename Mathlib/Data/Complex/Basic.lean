@@ -329,8 +329,7 @@ instance addCommGroup : AddCommGroup ℂ :=
       intros; ext <;> simp [AddMonoid.nsmul_succ, add_mul, add_comm,
         smul_re, smul_im]
     zsmul_succ' := by
-      intros; ext <;> simp [SubNegMonoid.zsmul_succ', add_mul, add_comm,
-        smul_re, smul_im]
+      intros; ext <;> simp [add_mul, smul_re, smul_im]
     zsmul_neg' := by
       intros; ext <;> simp [zsmul_neg', add_mul, smul_re, smul_im]
     add_assoc := by intros; ext <;> simp [add_assoc]
