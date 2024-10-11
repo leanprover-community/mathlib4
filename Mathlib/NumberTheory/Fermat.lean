@@ -58,6 +58,12 @@ theorem fermatNumber_eq_prod_add_two (n : ℕ) :
   rw [fermatNumber_product, Nat.sub_add_cancel]
   exact le_of_lt <| two_lt_fermatNumber _
 
+theorem fermat_succ_succ (n : ℕ) :
+    fermatNumber (n + 2) = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
+  simp only [fermatNumber, add_sub_self_right]
+  rw [← add_sub_self_right (2 ^ 2 ^ (n + 2) + 1) <| 2 * 2 ^ 2 ^ (n + 1)]
+  ring_nf
+
 /--
 **Goldbach's theorem** : no two distinct Fermat numbers share a common factor greater than one.
 
