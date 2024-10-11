@@ -282,13 +282,14 @@ def isoSpec :
 
 open LocalRing in
 lemma isoSpec_hom_val_base_apply (x : U) :
-    hU.isoSpec.hom.1.base x = (Spec.map (X.presheaf.germ x)).val.base (closedPoint _) := by
+    hU.isoSpec.hom.1.base x = (Spec.map (X.presheaf.germ _ x x.2)).val.base (closedPoint _) := by
   dsimp [Scheme.isoSpec_hom, Scheme.toSpecΓ_val_base]
   rw [← Scheme.comp_val_base_apply, ← Spec.map_comp,
-    (Iso.eq_comp_inv _).mpr (Scheme.Opens.germ_stalkIso_hom _ (V := ⊤) ⟨x, trivial⟩),
+    (Iso.eq_comp_inv _).mpr (Scheme.Opens.germ_stalkIso_hom U (V := ⊤) x trivial),
     X.presheaf.germ_res_assoc, Spec.map_comp, Scheme.comp_val_base_apply]
   congr 1
-  exact LocalRing.comap_closedPoint _
+  have := isLocalRingHom_of_isIso (U.stalkIso x).inv
+  exact LocalRing.comap_closedPoint (U.stalkIso x).inv
 
 lemma isoSpec_inv_app_top :
     hU.isoSpec.inv.app ⊤ = U.topIso.hom ≫ (Scheme.ΓSpecIso Γ(X, U)).inv := by
@@ -616,7 +617,7 @@ theorem fromSpec_primeIdealOf (x : U) :
 
 open LocalRing in
 theorem primeIdealOf_eq_map_closedPoint (x : U) :
-    hU.primeIdealOf x = (Spec.map (X.presheaf.germ x)).val.base (closedPoint _) :=
+    hU.primeIdealOf x = (Spec.map (X.presheaf.germ _ x x.2)).val.base (closedPoint _) :=
   hU.isoSpec_hom_val_base_apply _
 
 theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.1.base y ∈ U) :
