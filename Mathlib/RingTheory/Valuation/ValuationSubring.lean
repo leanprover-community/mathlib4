@@ -529,7 +529,7 @@ theorem mem_nonunits_iff_exists_mem_maximalIdeal {a : K} :
 theorem image_maximalIdeal : ((↑) : A → K) '' LocalRing.maximalIdeal A = A.nonunits := by
   ext a
   simp only [Set.mem_image, SetLike.mem_coe, mem_nonunits_iff_exists_mem_maximalIdeal]
-  erw [Subtype.exists]
+  rw [Subtype.exists]
   simp_rw [exists_and_right, exists_eq_right]
 
 end nonunits

@@ -765,11 +765,20 @@ theorem lintegral_indicator (f : α → ℝ≥0∞) {s : Set α} (hs : Measurabl
   refine ⟨⟨φ.restrict s, fun x => ?_⟩, le_rfl⟩
   simp [hφ x, hs, indicator_le_indicator]
 
+lemma setLIntegral_indicator (f : α → ℝ≥0∞) {s t : Set α} (hs : MeasurableSet s) :
+    ∫⁻ a in t, s.indicator f a ∂μ = ∫⁻ a in s ∩ t, f a ∂μ := by
+  rw [lintegral_indicator _ hs, Measure.restrict_restrict hs]
+
 theorem lintegral_indicator₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeasurableSet s μ) :
     ∫⁻ a, s.indicator f a ∂μ = ∫⁻ a in s, f a ∂μ := by
   rw [← lintegral_congr_ae (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq),
     lintegral_indicator _ (measurableSet_toMeasurable _ _),
     Measure.restrict_congr_set hs.toMeasurable_ae_eq]
+
+lemma setLIntegral_indicator₀ (f : α → ℝ≥0∞) {s t : Set α}
+    (hs : NullMeasurableSet s (μ.restrict t)) :
+    ∫⁻ a in t, s.indicator f a ∂μ = ∫⁻ a in s ∩ t, f a ∂μ := by
+  rw [lintegral_indicator₀ _ hs, Measure.restrict_restrict₀ hs]
 
 theorem lintegral_indicator_const_le (s : Set α) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) a ∂μ ≤ c * μ s :=
@@ -859,6 +868,13 @@ lemma lintegral_le_meas {s : Set α} {f : α → ℝ≥0∞} (hf : ∀ a, f a �
   by_cases hx : x ∈ s
   · simpa [hx] using hf x
   · simpa [hx] using h'f x hx
+
+lemma setLIntegral_le_meas {s t : Set α} (hs : MeasurableSet s)
+    {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, a ∈ t → f a ≤ 1)
+    (hf' : ∀ a ∈ s, a ∉ t → f a = 0) : ∫⁻ a in s, f a ∂μ ≤ μ t := by
+  rw [← lintegral_indicator _ hs]
+  refine lintegral_le_meas (fun a ↦ ?_) (by aesop)
+  by_cases has : a ∈ s <;> [by_cases hat : a ∈ t; skip] <;> simp [*]
 
 theorem lintegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hμf : μ {x | f x = ∞} ≠ 0) : ∫⁻ x, f x ∂μ = ∞ :=
