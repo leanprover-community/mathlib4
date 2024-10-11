@@ -61,7 +61,7 @@ theorem cosZeta_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
       congr 1
       have : (Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ) = _ :=
         (Polynomial.map_map (algebraMap ℚ ℝ) ofReal _).symm
-      rw [this, ← ofReal_eq_coe, ← ofReal_eq_coe]
+      rw [this, ← ofRealHom_eq_coe, ← ofRealHom_eq_coe]
       apply Polynomial.map_aeval_eq_aeval_map
       simp only [Algebra.id.map_eq_id, RingHomCompTriple.comp_eq]
   · rw [← Nat.cast_ofNat, ← Nat.cast_one, ← Nat.cast_mul, natCast_re, Nat.cast_lt]
@@ -91,7 +91,7 @@ theorem sinZeta_two_mul_nat_add_one (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
       congr 1
       have : (Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ) = _ :=
         (Polynomial.map_map (algebraMap ℚ ℝ) ofReal _).symm
-      rw [this, ← ofReal_eq_coe, ← ofReal_eq_coe]
+      rw [this, ← ofRealHom_eq_coe, ← ofRealHom_eq_coe]
       apply Polynomial.map_aeval_eq_aeval_map
       simp only [Algebra.id.map_eq_id, RingHomCompTriple.comp_eq]
   · rw [← Nat.cast_ofNat, ← Nat.cast_one, ← Nat.cast_mul, ← Nat.cast_add_one, natCast_re,
