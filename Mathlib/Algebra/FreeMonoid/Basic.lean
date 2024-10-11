@@ -146,29 +146,6 @@ theorem of_ne_one (a : α) : of a ≠ 1 := by
 
 end Length
 
-/-! ### symbols -/
-
-section Symbols
-variable [DecidableEq α]
-
-/-- The set of unique symbols in a free monoid element -/
-@[to_additive "The set of unique symbols in an additive free monoid element"]
-def symbols (a : FreeMonoid α) : Finset α := List.toFinset a
-
-@[to_additive (attr := simp)]
-theorem symbols_one : symbols (1 : FreeMonoid α) = ∅ := rfl
-
-@[to_additive (attr := simp)]
-theorem symbols_of {m : α} : symbols (of m : FreeMonoid α) = {m} := rfl
-
-@[to_additive (attr := simp)]
-theorem symbols_mul (a b : FreeMonoid α) :
-    symbols (a * b : FreeMonoid α) = symbols a ∪ symbols b := by
-  simp only [symbols, List.mem_toFinset, Finset.mem_union]
-  apply List.toFinset_append
-
-end Symbols
-
 section Mem
 variable {m : α}
 
@@ -190,10 +167,6 @@ theorem mem_of_self : m ∈ of m := List.mem_singleton_self _
 
 @[to_additive (attr := simp)]
 theorem mem_mul {a b : FreeMonoid α} : m ∈ (a * b) ↔ m ∈ a ∨ m ∈ b := List.mem_append
-
-@[to_additive (attr := simp)]
-theorem mem_symbols [DecidableEq α] {a : FreeMonoid α}: m ∈ symbols a ↔ m ∈ a :=
-  List.mem_toFinset
 
 end Mem
 
