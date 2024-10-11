@@ -1029,6 +1029,14 @@ theorem orthogonalProjection_isSymmetric [HasOrthogonalProjection K] :
     (K.subtypeL ∘L orthogonalProjection K : E →ₗ[𝕜] E).IsSymmetric :=
   inner_orthogonalProjection_left_eq_right K
 
+/-- The orthogonal complement of an invariant submodule is invariant. -/
+lemma invariant_perp_comap {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {p : Submodule 𝕜 E}
+    (hp : p ≤ Submodule.comap T p) {x : E} (hx : x ∈ pᗮ) : x ∈ Submodule.comap T pᗮ := by
+  simp only [Submodule.mem_comap, Submodule.mem_orthogonal] at hx ⊢
+  intro y hy
+  rw [← hT y x]
+  exact hx (T y) (hp hy)
+
 open Module
 
 /-- Given a finite-dimensional subspace `K₂`, and a subspace `K₁`

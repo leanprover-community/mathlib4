@@ -7,6 +7,8 @@ import Mathlib.Analysis.InnerProductSpace.Rayleigh
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+import Mathlib.LinearAlgebra.Semisimple
+import Mathlib.Analysis.InnerProductSpace.Projection
 
 /-! # Spectral theory of self-adjoint operators
 
@@ -45,7 +47,6 @@ Spectral theory for compact self-adjoint operators, bounded self-adjoint operato
 self-adjoint operator, spectral theorem, diagonalization theorem
 
 -/
-
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -135,7 +136,6 @@ theorem orthogonalComplement_iSup_eigenspaces (hT : T.IsSymmetric) (μ : 𝕜) :
 
 /-! ### Finite-dimensional theory -/
 
-
 variable [FiniteDimensional 𝕜 E]
 
 /-- The mutual orthogonal complement of the eigenspaces of a self-adjoint operator on a
@@ -175,6 +175,21 @@ theorem direct_sum_isInternal (hT : T.IsSymmetric) :
     DirectSum.IsInternal fun μ : Eigenvalues T => eigenspace T μ :=
   hT.orthogonalFamily_eigenspaces'.isInternal_iff.mpr
     hT.orthogonalComplement_iSup_eigenspaces_eq_bot'
+
+theorem isSemisimple {T : Module.End 𝕜 E} [CompleteSpace E] (hT : T.IsSymmetric) :
+    T.IsSemisimple := by
+  refine Module.End.isSemisimple_iff.mpr fun p hp ↦ ⟨pᗮ, fun x hx ↦ ?_, IsCompl.mk ?_ ?_⟩
+  · apply invariant_perp_comap
+    sorry
+    -- This should be a lemma in API for symmetric operators (use invariant_perp_comap)
+    --simp only [Submodule.mem_comap, Submodule.mem_orthogonal] at hx ⊢
+    --intro y hy
+    --rw [← hT y x]
+    --exact hx (T y) (hp hy)
+  · rw [disjoint_iff]
+    exact Submodule.inf_orthogonal_eq_bot p
+  · rw [codisjoint_iff]
+    apply Submodule.sup_orthogonal_of_completeSpace
 
 variable (hT : T.IsSymmetric)
 
