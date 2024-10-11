@@ -30,15 +30,6 @@ universe u
 
 namespace Scheme
 
-/-- Open immersions as a morphism property -/
--- Note(Calle): Should this be incorporated into the `OpenImmersion` file?
--- Furthermore, should this be an instance?
-abbrev openImmersion : MorphismProperty (Scheme.{u}) := @IsOpenImmersion
-
-lemma openImmersion_le_monomorphisms :
-    openImmersion ≤ MorphismProperty.monomorphisms Scheme.{u} := fun _ _ _ _ ↦
-  MorphismProperty.monomorphisms.infer_property _
-
 /-
 Consider the following setup:
 * F is `Type u`-valued a sheaf on `Sch` with respect to the Zariski topology
@@ -50,7 +41,7 @@ Later, we will also assume:
 -/
 variable (F : Sheaf (Scheme.zariskiTopology.{u}) (Type u))
   {ι : Type u} {X : ι → Scheme.{u}}
-  (f : (i : ι) → yoneda.obj (X i) ⟶ F.1) (hf : ∀ i, openImmersion.presheaf (f i))
+  (f : (i : ι) → yoneda.obj (X i) ⟶ F.1) (hf : ∀ i, IsOpenImmersion.presheaf (f i))
 
 namespace Representability
 
@@ -65,17 +56,17 @@ noncomputable def glueData : GlueData where
   U := X
   V := fun (i, j) ↦ (hf i).rep.pullback (f j)
   f i j := (hf i).rep.fst' (f j)
-  f_mono i j := by
+  f_mono i j :=
     have := (hf j).property _ _ _ ((hf i).1.isPullback' (f j)).flip
-    infer_instance
-  f_id i := openImmersion.isIso_fst'_self openImmersion_le_monomorphisms (hf i)
+    IsOpenImmersion.mono _
+  f_id i := IsOpenImmersion.isIso_fst'_self IsOpenImmersion.le_monomorphisms (hf i)
   t i j := (hf i).rep.symmetry (hf j).rep
   t_id i := by apply (hf i).rep.hom_ext' <;>
-    simp [openImmersion.fst'_self_eq_snd openImmersion_le_monomorphisms (hf i)]
+    simp [IsOpenImmersion.fst'_self_eq_snd IsOpenImmersion.le_monomorphisms (hf i)]
   t' i j k := lift₃ _ _ _ (pullback₃.p₂ _ _ _) (pullback₃.p₃ _ _ _) (pullback₃.p₁ _ _ _)
     (by simp) (by simp)
-  t_fac i j k := by apply (hf j).rep.hom_ext' <;> simp
-  cocycle i j k := by apply pullback₃.hom_ext <;> simp
+  t_fac i j k := (hf j).rep.hom_ext' (by simp) (by simp)
+  cocycle i j k := pullback₃.hom_ext (by simp) (by simp) (by simp)
   f_open i j := (hf j).property _ _ _ ((hf i).1.isPullback' (f j)).flip
 
 /-- The map from `X i` to the glued scheme `(glueData hf).glued` -/
