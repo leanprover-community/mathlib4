@@ -790,7 +790,7 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
     intro; rfl
   · generalize_proofs H₀ H₁ H₂; revert H₂
     generalize hk : pred (succAbove i j) H₁ = k
-    erw [pred_succAbove _ _ (Fin.not_lt.1 hlt)] at hk; cases hk
+    rw [pred_succAbove _ _ (Fin.not_lt.1 hlt)] at hk; cases hk
     intro; rfl
 
 @[simp]
