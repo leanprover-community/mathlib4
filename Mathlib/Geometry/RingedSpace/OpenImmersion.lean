@@ -869,9 +869,10 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
     HasColimit.isoOfNatIso Discrete.natIsoFunctor ≪≫ TopCat.sigmaIsoSigma.{v, v} _).hom eq
   simp_rw [CategoryTheory.Iso.trans_hom, ← TopCat.comp_app, ← PresheafedSpace.comp_base] at eq
   rw [ι_preservesColimitsIso_inv] at eq
+  -- Slight regression below?
   change
-    ((SheafedSpace.forget C).map (colimit.ι F i) ≫ _) y =
-      ((SheafedSpace.forget C).map (colimit.ι F j) ≫ _) x at eq
+    ((SheafedSpace.forget C).map (colimit.ι F i) ≫ _ ≫ _ ≫ _) y =
+      ((SheafedSpace.forget C).map (colimit.ι F j) ≫ _ ≫ _ ≫ _) x at eq
   cases i; cases j
   rw [ι_preservesColimitsIso_hom_assoc, ι_preservesColimitsIso_hom_assoc,
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
