@@ -379,7 +379,7 @@ theorem Units.val_mkOfMulEqOne [CommMonoid α] {a b : α} (h : a * b = 1) :
 
 section Monoid
 
-variable [Monoid α] {a b c : α}
+variable [Monoid α] {a : α}
 
 /-- Partial division. It is defined when the
   second argument is invertible, and unlike the division operator
@@ -651,9 +651,9 @@ lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
 @[to_additive] lemma IsUnit.pow (n : ℕ) : IsUnit a → IsUnit (a ^ n) := by
   rintro ⟨u, rfl⟩; exact ⟨u ^ n, rfl⟩
 
-theorem units_eq_one [Unique Mˣ] (u : Mˣ) : u = 1 := by subsingleton
+theorem units_eq_one [Subsingleton Mˣ] (u : Mˣ) : u = 1 := by subsingleton
 
-@[to_additive] lemma isUnit_iff_eq_one [Unique Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
+@[to_additive] lemma isUnit_iff_eq_one [Subsingleton Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
   ⟨fun ⟨u, hu⟩ ↦ by rw [← hu, Subsingleton.elim u 1, Units.val_one], fun h ↦ h ▸ isUnit_one⟩
 
 end Monoid

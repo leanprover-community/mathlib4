@@ -214,8 +214,6 @@ A family `{ eᵢ }` of idempotent elements is complete orthogonal if
 structure CompleteOrthogonalIdempotents (e : I → R) extends OrthogonalIdempotents e : Prop where
   complete : ∑ i, e i = 1
 
-variable (he : CompleteOrthogonalIdempotents e)
-
 lemma CompleteOrthogonalIdempotents.unique_iff [Unique I] :
     CompleteOrthogonalIdempotents e ↔ e default = 1 := by
   rw [completeOrthogonalIdempotents_iff, OrthogonalIdempotents.unique, Fintype.sum_unique,
