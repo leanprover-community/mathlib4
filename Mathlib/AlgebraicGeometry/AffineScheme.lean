@@ -326,7 +326,7 @@ theorem range_fromSpec :
   delta IsAffineOpen.fromSpec; dsimp [IsAffineOpen.isoSpec_inv]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   · exact Subtype.range_coe
-  erw [← coe_comp, ← TopCat.epi_iff_surjective] -- now `erw` after #13170
+  rw [← coe_comp, ← TopCat.epi_iff_surjective]
   infer_instance
 
 @[simp]
@@ -398,7 +398,7 @@ theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
   refine ⟨fun hU => @isAffine_of_isIso _ _
     (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.openEmbedding ≫ f) (Y.ofRestrict _) ?_).hom ?_ hU,
     fun hU => hU.image_of_isOpenImmersion f⟩
-  · erw [Scheme.comp_val_base, coe_comp, Set.range_comp] -- now `erw` after #13170
+  · rw [Scheme.comp_val_base, coe_comp, Set.range_comp]
     dsimp [Opens.coe_inclusion', Scheme.restrict]
     erw [Subtype.range_coe, Subtype.range_coe] -- now `erw` after #13170
     rfl
