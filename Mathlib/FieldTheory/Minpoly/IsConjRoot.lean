@@ -92,6 +92,7 @@ theorem card_rootSet_eq_natDegree {K L} [Field K] [Field L] [Algebra K L] {p : K
 -- when degree >= 1, and split the aroot multiset and root set are not empty -- convert to Prod
 -- Polynomial.nodup_aroots_iff_of_splits
 -- Add `Polynomial.Splits` not `Normal`
+#check IntermediateField.splits_iff_mem
 #check Polynomial.card_rootSet_eq_natDegree
 theorem not_mem_iff_exist_ne {x : L} (h : IsSeparable K x)
     (sp : (minpoly K x).Splits (algebraMap K L)) :
