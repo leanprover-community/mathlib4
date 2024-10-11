@@ -198,7 +198,7 @@ theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton
 @[simp]
 theorem type_eq_one_iff_unique [IsWellOrder α r] : type r = 1 ↔ Nonempty (Unique α) :=
   ⟨fun h ↦ let ⟨s⟩ := type_eq.1 h; ⟨s.toEquiv.unique⟩,
-    fun ⟨h⟩ ↦ type_eq_one_of_unique r⟩
+    fun ⟨_⟩ ↦ type_eq_one_of_unique r⟩
 
 theorem type_pUnit : type (@EmptyRelation PUnit) = 1 :=
   rfl
