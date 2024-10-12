@@ -24,10 +24,10 @@ section RealComposition
 
 open Real
 
-variable {α : Type*} {m : MeasurableSpace α} {f : α → ℝ} (hf : Measurable f)
+variable {α : Type*} {m : MeasurableSpace α} {f : α → ℝ}
 
 @[measurability]
-theorem Measurable.arctan : Measurable fun x => arctan (f x) :=
+theorem Measurable.arctan (hf : Measurable f) : Measurable fun x => arctan (f x) :=
   measurable_arctan.comp hf
 
 end RealComposition

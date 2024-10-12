@@ -32,6 +32,8 @@ For a module over a normed ring:
 seminorm, locally convex, LCTVS
 -/
 
+assert_not_exists balancedCore
+
 open NormedField Set Filter
 
 open scoped NNReal Pointwise Topology Uniformity
@@ -471,8 +473,7 @@ theorem smul_inf [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
 
 section Classical
 
-open scoped Classical
-
+open Classical in
 /-- We define the supremum of an arbitrary subset of `Seminorm 𝕜 E` as follows:
 * if `s` is `BddAbove` *as a set of functions `E → ℝ`* (that is, if `s` is pointwise bounded
 above), we take the pointwise supremum of all elements of `s`, and we prove that it is indeed a
@@ -494,7 +495,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
     if h : BddAbove ((↑) '' s : Set (E → ℝ)) then
       { toFun := ⨆ p : s, ((p : Seminorm 𝕜 E) : E → ℝ)
         map_zero' := by
-          rw [iSup_apply, ← @Real.ciSup_const_zero s]
+          rw [iSup_apply, ← @Real.iSup_const_zero s]
           congr!
           rename_i _ _ _ i
           exact map_zero i.1
@@ -657,13 +658,13 @@ theorem ball_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ) (x :
     (c • p).ball x r = p.ball x (r / c) := by
   ext
   rw [mem_ball, mem_ball, smul_apply, NNReal.smul_def, smul_eq_mul, mul_comm,
-    lt_div_iff (NNReal.coe_pos.mpr hc)]
+    lt_div_iff₀ (NNReal.coe_pos.mpr hc)]
 
 theorem closedBall_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ) (x : E) :
     (c • p).closedBall x r = p.closedBall x (r / c) := by
   ext
   rw [mem_closedBall, mem_closedBall, smul_apply, NNReal.smul_def, smul_eq_mul, mul_comm,
-    le_div_iff (NNReal.coe_pos.mpr hc)]
+    le_div_iff₀ (NNReal.coe_pos.mpr hc)]
 
 theorem ball_sup (p : Seminorm 𝕜 E) (q : Seminorm 𝕜 E) (e : E) (r : ℝ) :
     ball (p ⊔ q) e r = ball p e r ∩ ball q e r := by
@@ -814,14 +815,14 @@ theorem closedBall_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : 
 @[simp]
 theorem ball_eq_emptyset (p : Seminorm 𝕜 E) {x : E} {r : ℝ} (hr : r ≤ 0) : p.ball x r = ∅ := by
   ext
-  rw [Seminorm.mem_ball, Set.mem_empty_iff_false, iff_false_iff, not_lt]
+  rw [Seminorm.mem_ball, Set.mem_empty_iff_false, iff_false, not_lt]
   exact hr.trans (apply_nonneg p _)
 
 @[simp]
 theorem closedBall_eq_emptyset (p : Seminorm 𝕜 E) {x : E} {r : ℝ} (hr : r < 0) :
     p.closedBall x r = ∅ := by
   ext
-  rw [Seminorm.mem_closedBall, Set.mem_empty_iff_false, iff_false_iff, not_le]
+  rw [Seminorm.mem_closedBall, Set.mem_empty_iff_false, iff_false, not_le]
   exact hr.trans_le (apply_nonneg _ _)
 
 theorem closedBall_smul_ball (p : Seminorm 𝕜 E) {r₁ : ℝ} (hr₁ : r₁ ≠ 0) (r₂ : ℝ) :
@@ -898,7 +899,7 @@ theorem smul_ball_zero {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} (hk : k ≠ 0)
     k • p.ball 0 r = p.ball 0 (‖k‖ * r) := by
   ext
   rw [mem_smul_set_iff_inv_smul_mem₀ hk, p.mem_ball_zero, p.mem_ball_zero, map_smul_eq_mul,
-    norm_inv, ← div_eq_inv_mul, div_lt_iff (norm_pos_iff.2 hk), mul_comm]
+    norm_inv, ← div_eq_inv_mul, div_lt_iff₀ (norm_pos_iff.2 hk), mul_comm]
 
 theorem smul_closedBall_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     k • p.closedBall 0 r ⊆ p.closedBall 0 (‖k‖ * r) := by
@@ -951,7 +952,7 @@ protected theorem absorbent_closedBall (hpr : p x < r) : Absorbent 𝕜 (closedB
 theorem smul_ball_preimage (p : Seminorm 𝕜 E) (y : E) (r : ℝ) (a : 𝕜) (ha : a ≠ 0) :
     (a • ·) ⁻¹' p.ball y r = p.ball (a⁻¹ • y) (r / ‖a‖) :=
   Set.ext fun _ => by
-    rw [mem_preimage, mem_ball, mem_ball, lt_div_iff (norm_pos_iff.mpr ha), mul_comm, ←
+    rw [mem_preimage, mem_ball, mem_ball, lt_div_iff₀ (norm_pos_iff.mpr ha), mul_comm, ←
       map_smul_eq_mul p, smul_sub, smul_inv_smul₀ ha]
 
 end NormedField
@@ -1046,7 +1047,7 @@ theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p 
   obtain ⟨k, hk₀, hk⟩ : ∃ k : 𝕜, 0 < ‖k‖ ∧ ‖k‖ * r < ε := by
     rcases le_or_lt r 0 with hr | hr
     · use 1; simpa using hr.trans_lt hε
-    · simpa [lt_div_iff hr] using exists_norm_lt 𝕜 (div_pos hε hr)
+    · simpa [lt_div_iff₀ hr] using exists_norm_lt 𝕜 (div_pos hε hr)
   rw [← set_smul_mem_nhds_zero_iff (norm_pos_iff.1 hk₀), smul_closedBall_zero hk₀] at hp
   exact mem_of_superset hp <| p.closedBall_mono hk.le
 
@@ -1183,14 +1184,14 @@ lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) 
   refine ⟨-(n+1), ?_, ?_, ?_, ?_⟩
   · show c ^ (-(n + 1)) ≠ 0; exact zpow_ne_zero _ (norm_pos_iff.1 cpos)
   · show p ((c ^ (-(n + 1))) • x) < ε
-    rw [map_smul_eq_mul, zpow_neg, norm_inv, ← div_eq_inv_mul, div_lt_iff cnpos, mul_comm,
+    rw [map_smul_eq_mul, zpow_neg, norm_inv, ← div_eq_inv_mul, div_lt_iff₀ cnpos, mul_comm,
         norm_zpow]
-    exact (div_lt_iff εpos).1 (hn.2)
+    exact (div_lt_iff₀ εpos).1 (hn.2)
   · show ε / ‖c‖ ≤ p (c ^ (-(n + 1)) • x)
-    rw [zpow_neg, div_le_iff cpos, map_smul_eq_mul, norm_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos),
-        zpow_one, mul_inv_rev, mul_comm, ← mul_assoc, ← mul_assoc, mul_inv_cancel (ne_of_gt cpos),
-        one_mul, ← div_eq_inv_mul, le_div_iff (zpow_pos_of_pos cpos _), mul_comm]
-    exact (le_div_iff εpos).1 hn.1
+    rw [zpow_neg, div_le_iff₀ cpos, map_smul_eq_mul, norm_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos),
+        zpow_one, mul_inv_rev, mul_comm, ← mul_assoc, ← mul_assoc, mul_inv_cancel₀ (ne_of_gt cpos),
+        one_mul, ← div_eq_inv_mul, le_div_iff₀ (zpow_pos cpos _), mul_comm]
+    exact (le_div_iff₀ εpos).1 hn.1
   · show ‖(c ^ (-(n + 1)))‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x
     have : ε⁻¹ * ‖c‖ * p x = ε⁻¹ * p x * ‖c‖ := by ring
     rw [zpow_neg, norm_inv, inv_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos), zpow_one, this,
@@ -1254,7 +1255,7 @@ lemma bddAbove_of_absorbent {ι : Sort*} {p : ι → Seminorm 𝕜 E} {s : Set E
   obtain ⟨c, hc₀, hc⟩ : ∃ c ≠ 0, (c : 𝕜) • x ∈ s :=
     (eventually_mem_nhdsWithin.and (hs.eventually_nhdsWithin_zero x)).exists
   rcases h _ hc with ⟨M, hM⟩
-  refine ⟨M / ‖c‖, forall_mem_range.mpr fun i ↦ (le_div_iff' (norm_pos_iff.2 hc₀)).2 ?_⟩
+  refine ⟨M / ‖c‖, forall_mem_range.mpr fun i ↦ (le_div_iff₀' (norm_pos_iff.2 hc₀)).2 ?_⟩
   exact hM ⟨i, map_smul_eq_mul ..⟩
 
 end NontriviallyNormedField
@@ -1328,5 +1329,3 @@ lemma rescale_to_shell [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (h
   rescale_to_shell_semi_normed hc εpos (norm_ne_zero_iff.mpr hx)
 
 end normSeminorm
-
-assert_not_exists balancedCore

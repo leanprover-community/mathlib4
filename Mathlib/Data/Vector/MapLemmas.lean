@@ -10,7 +10,7 @@ import Mathlib.Data.Vector.Snoc
   This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
 -/
 
-set_option autoImplicit true
+variable {α β γ ζ σ σ₁ σ₂ φ : Type*} {n : ℕ} {s : σ} {s₁ : σ₁} {s₂ : σ₂}
 
 namespace Mathlib
 
@@ -36,12 +36,12 @@ theorem mapAccumr_mapAccumr :
   induction xs using Vector.revInductionOn generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr_map (f₂ : α → β) :
+theorem mapAccumr_map {s : σ₁} (f₂ : α → β) :
     (mapAccumr f₁ (map f₂ xs) s) = (mapAccumr (fun x s => f₁ (f₂ x) s) xs s) := by
   induction xs using Vector.revInductionOn generalizing s <;> simp_all
 
 @[simp]
-theorem map_mapAccumr (f₁ : β → γ) :
+theorem map_mapAccumr {s : σ₂} (f₁ : β → γ) :
     (map f₁ (mapAccumr f₂ xs s).snd) = (mapAccumr (fun x s =>
         let r := (f₂ x s); (r.fst, f₁ r.snd)
       ) xs s).snd := by
@@ -222,9 +222,8 @@ accumulation state
 section RedundantState
 variable {xs : Vector α n} {ys : Vector β n}
 
-protected theorem map_eq_mapAccumr :
+protected theorem map_eq_mapAccumr {f : α → β} :
     map f xs = (mapAccumr (fun x (_ : Unit) ↦ ((), f x)) xs ()).snd := by
-  clear ys
   induction xs using Vector.revInductionOn <;> simp_all
 
 /--
@@ -241,7 +240,7 @@ theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (
   use fun s _ => s ∈ S, h₀
   exact @fun s _q a h => ⟨closure a s h, out a s s₀ h h₀⟩
 
-protected theorem map₂_eq_mapAccumr₂ :
+protected theorem map₂_eq_mapAccumr₂ {f : α → β → γ} :
     map₂ f xs ys = (mapAccumr₂ (fun x y (_ : Unit) ↦ ((), f x y)) xs ys ()).snd := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
@@ -266,7 +265,6 @@ theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (
 @[simp]
 theorem mapAccumr_eq_map_of_constant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
     mapAccumr f xs s = (s, (map (fun x => (f x s).snd) xs)) := by
-  clear ys
   induction xs using revInductionOn <;> simp_all
 
 /--

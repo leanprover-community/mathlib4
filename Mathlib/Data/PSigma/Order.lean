@@ -1,11 +1,11 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Minchao Wu
+Authors: Kim Morrison, Minchao Wu
 -/
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.BoundedOrder
-import Mathlib.Mathport.Notation
+import Mathlib.Util.Notation3
 import Init.NotationExtra
 import Mathlib.Data.Sigma.Basic
 

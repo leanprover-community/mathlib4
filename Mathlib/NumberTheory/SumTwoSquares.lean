@@ -5,7 +5,7 @@ Authors: Chris Hughes, Michael Stoll
 -/
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
-import Mathlib.Tactic.LinearCombination
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
 # Sums of two squares
@@ -216,7 +216,7 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     exact even_two_mul _
   · obtain ⟨b, a, hb₀, ha₀, hab, hb⟩ := Nat.sq_mul_squarefree_of_pos hn₀
     refine ⟨a, b, hab.symm, (ZMod.isSquare_neg_one_iff hb).mpr fun {q} hqp hqb hq4 => ?_⟩
-    refine Nat.odd_iff_not_even.mp ?_ (H hqp hq4)
+    refine Nat.not_even_iff_odd.2 ?_ (H hqp hq4)
     have hqb' : padicValNat q b = 1 :=
       b.factorization_def hqp ▸ le_antisymm (hb.natFactorization_le_one _)
         ((hqp.dvd_iff_one_le_factorization hb₀.ne').mp hqb)

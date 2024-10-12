@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Scott Morrison
+Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Submonoid.Basic
@@ -23,7 +23,7 @@ Functions with finite support are used (at least) in the following parts of the 
 
 * the linear combination of a family of vectors `v i` with coefficients `f i` (as used, e.g., to
   define linearly independent family `LinearIndependent`) is defined as a map
-  `Finsupp.total : (ι → M) → (ι →₀ R) →ₗ[R] M`.
+  `Finsupp.linearCombination : (ι → M) → (ι →₀ R) →ₗ[R] M`.
 
 Some other constructions are naturally equivalent to `α →₀ M` with some `α` and `M` but are defined
 in a different way in the library:
@@ -212,9 +212,6 @@ noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →�
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
   ext fun a => by rwa [Unique.eq_default a]
 
-theorem unique_ext_iff [Unique α] {f g : α →₀ M} : f = g ↔ f default = g default :=
-  ⟨fun h => h ▸ rfl, unique_ext⟩
-
 end Basic
 
 /-! ### Declarations about `single` -/
@@ -365,17 +362,21 @@ theorem unique_single [Unique α] (x : α →₀ M) : x = single default (x defa
 
 @[simp]
 theorem unique_single_eq_iff [Unique α] {b' : M} : single a b = single a' b' ↔ b = b' := by
-  rw [unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same, single_eq_same]
+  rw [Finsupp.unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same,
+    single_eq_same]
 
-lemma apply_single [AddCommMonoid N] [AddCommMonoid P]
-    {F : Type*} [FunLike F N P] [AddMonoidHomClass F N P] (e : F)
-    (a : α) (n : N) (b : α) :
+lemma apply_single' [Zero N] [Zero P] (e : N → P) (he : e 0 = 0) (a : α) (n : N) (b : α) :
     e ((single a n) b) = single a (e n) b := by
   classical
   simp only [single_apply]
   split_ifs
   · rfl
-  · exact map_zero e
+  · exact he
+
+lemma apply_single [Zero N] [Zero P] {F : Type*} [FunLike F N P] [ZeroHomClass F N P]
+    (e : F) (a : α) (n : N) (b : α) :
+    e ((single a n) b) = single a (e n) b :=
+  apply_single' e (map_zero e) a n b
 
 theorem support_eq_singleton {f : α →₀ M} {a : α} :
     f.support = {a} ↔ f a ≠ 0 ∧ f = single a (f a) :=
@@ -501,8 +502,9 @@ theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
   simp only [update, h, ite_false, mem_support_iff, ne_eq]
   congr!
 
-theorem support_update_subset [DecidableEq α] [DecidableEq M] :
+theorem support_update_subset [DecidableEq α] :
     support (f.update a b) ⊆ insert a f.support := by
+  classical
   rw [support_update]
   split_ifs
   · exact (erase_subset _ _).trans (subset_insert _ _)
@@ -712,6 +714,10 @@ theorem mapRange_comp (f : N → P) (hf : f 0 = 0) (f₂ : M → N) (hf₂ : f�
     (g : α →₀ M) : mapRange (f ∘ f₂) h g = mapRange f hf (mapRange f₂ hf₂ g) :=
   ext fun _ => rfl
 
+@[simp]
+lemma mapRange_mapRange (e₁ : N → P) (e₂ : M → N) (he₁ he₂) (f : α →₀ M) :
+    mapRange e₁ he₁ (mapRange e₂ he₂ f) = mapRange (e₁ ∘ e₂) (by simp [*]) f := ext fun _ ↦ rfl
+
 theorem support_mapRange {f : M → N} {hf : f 0 = 0} {g : α →₀ M} :
     (mapRange f hf g).support ⊆ g.support :=
   support_onFinset_subset
@@ -727,6 +733,14 @@ theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →�
   ext
   simp only [Finsupp.mem_support_iff, Ne, Finsupp.mapRange_apply]
   exact he.ne_iff' he0
+
+/-- `Finsupp.mapRange` of a surjective function is surjective. -/
+lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
+    Surjective (Finsupp.mapRange (α := α) e he₀) := by
+  classical
+  let d (n : N) : M := if n = 0 then 0 else surjInv he n
+  have : RightInverse d e := fun n ↦ by by_cases h : n = 0 <;> simp [d, h, he₀, surjInv_eq he n]
+  exact fun f ↦ ⟨mapRange d (by simp [d]) f, by simp [this.comp_eq_id]⟩
 
 end MapRange
 
@@ -754,7 +768,7 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   mem_support_toFun a₂ := by
     dsimp
     split_ifs with h
-    · simp only [h, true_iff_iff, Ne]
+    · simp only [h, true_iff, Ne]
       rw [← not_mem_support_iff, not_not]
       classical apply Finset.choose_mem
     · simp only [h, Ne, ne_self_iff_false, not_true_eq_false]
@@ -908,6 +922,20 @@ theorem support_add_eq [DecidableEq α] {g₁ g₂ : α →₀ M} (h : Disjoint 
 theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   (zipWith_single_single _ _ _ _ _).symm
 
+theorem support_single_add {a : α} {b : M} {f : α →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
+    support (single a b + f) = cons a f.support ha := by
+  classical
+  have H := support_single_ne_zero a hb
+  rw [support_add_eq, H, cons_eq_insert, insert_eq]
+  rwa [H, disjoint_singleton_left]
+
+theorem support_add_single {a : α} {b : M} {f : α →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
+    support (f + single a b) = cons a f.support ha := by
+  classical
+  have H := support_single_ne_zero a hb
+  rw [support_add_eq, H, union_comm, cons_eq_insert, insert_eq]
+  rwa [H, disjoint_singleton_right]
+
 instance instAddZeroClass : AddZeroClass (α →₀ M) :=
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
@@ -1031,6 +1059,60 @@ theorem induction₂ {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
 theorem induction_linear {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
     (hadd : ∀ f g : α →₀ M, p f → p g → p (f + g)) (hsingle : ∀ a b, p (single a b)) : p f :=
   induction₂ f h0 fun _a _b _f _ _ w => hadd _ _ w (hsingle _ _)
+
+section LinearOrder
+
+variable [LinearOrder α] {p : (α →₀ M) → Prop}
+
+/-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
+
+The theorem `induction_on_max₂` swaps the argument order in the sum. -/
+theorem induction_on_max (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (single a b + f)) :
+    p f := by
+  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
+  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  · rwa [support_eq_empty.1 h]
+  · have hs' : (erase a f).support = s := by
+      rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
+    rw [← single_add_erase a f]
+    refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
+    rw [← mem_support_iff, hs]
+    exact mem_insert_self a s
+
+/-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
+
+The theorem `induction_on_min₂` swaps the argument order in the sum. -/
+theorem induction_on_min (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (single a b + f)) :
+    p f :=
+  induction_on_max (α := αᵒᵈ) f h0 ha
+
+/-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
+
+The theorem `induction_on_max` swaps the argument order in the sum. -/
+theorem induction_on_max₂ (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (f + single a b)) :
+    p f := by
+  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
+  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  · rwa [support_eq_empty.1 h]
+  · have hs' : (erase a f).support = s := by
+      rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
+    rw [← erase_add_single a f]
+    refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
+    rw [← mem_support_iff, hs]
+    exact mem_insert_self a s
+
+/-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
+
+The theorem `induction_on_min` swaps the argument order in the sum. -/
+theorem induction_on_min₂ (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (f + single a b)) :
+    p f :=
+  induction_on_max₂ (α := αᵒᵈ) f h0 ha
+
+end LinearOrder
 
 @[simp]
 theorem add_closure_setOf_eq_single :

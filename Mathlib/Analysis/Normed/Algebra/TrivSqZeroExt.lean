@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Normed.Lp.ProdLp
 import Mathlib.Topology.Instances.TrivSqZeroExt
 
@@ -52,7 +52,7 @@ variable (𝕜 : Type*) {S R M : Type*}
 
 local notation "tsze" => TrivSqZeroExt
 
-open NormedSpace -- For `exp`.
+open NormedSpace -- For `NormedSpace.exp`.
 
 namespace TrivSqZeroExt
 
@@ -81,11 +81,13 @@ variable [Field 𝕜] [CharZero 𝕜] [Ring R] [AddCommGroup M]
 theorem snd_expSeries_of_smul_comm
     (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) (n : ℕ) :
     snd (expSeries 𝕜 (tsze R M) (n + 1) fun _ => x) = (expSeries 𝕜 R n fun _ => x.fst) • x.snd := by
-  simp_rw [expSeries_apply_eq, snd_smul, snd_pow_of_smul_comm _ _ hx, nsmul_eq_smul_cast 𝕜 (n + 1),
-    smul_smul, smul_assoc, Nat.factorial_succ, Nat.pred_succ, Nat.cast_mul, mul_inv_rev,
+  simp_rw [expSeries_apply_eq, snd_smul, snd_pow_of_smul_comm _ _ hx,
+    ← Nat.cast_smul_eq_nsmul 𝕜 (n + 1), smul_smul, smul_assoc, Nat.factorial_succ, Nat.pred_succ,
+    Nat.cast_mul, mul_inv_rev,
     inv_mul_cancel_right₀ ((Nat.cast_ne_zero (R := 𝕜)).mpr <| Nat.succ_ne_zero n)]
 
-/-- If `exp R x.fst` converges to `e` then `(exp R x).snd` converges to `e • x.snd`. -/
+/-- If `NormedSpace.exp R x.fst` converges to `e`
+then `(NormedSpace.exp R x).snd` converges to `e • x.snd`. -/
 theorem hasSum_snd_expSeries_of_smul_comm (x : tsze R M)
     (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) {e : R}
     (h : HasSum (fun n => expSeries 𝕜 R n fun _ => x.fst) e) :
@@ -97,7 +99,8 @@ theorem hasSum_snd_expSeries_of_smul_comm (x : tsze R M)
     inv_one, one_smul, snd_one, sub_zero]
   exact h.smul_const _
 
-/-- If `exp R x.fst` converges to `e` then `exp R x` converges to `inl e + inr (e • x.snd)`. -/
+/-- If `NormedSpace.exp R x.fst` converges to `e`
+then `NormedSpace.exp R x` converges to `inl e + inr (e • x.snd)`. -/
 theorem hasSum_expSeries_of_smul_comm
     (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd)
     {e : R} (h : HasSum (fun n => expSeries 𝕜 R n fun _ => x.fst) e) :
@@ -189,9 +192,8 @@ noncomputable section Seminormed
 
 section Ring
 variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
-variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M]
-variable [BoundedSMul S R] [BoundedSMul S M] [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M]
-variable [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
+variable [Algebra S R] [Module S M]
+variable [BoundedSMul S R] [BoundedSMul S M]
 
 instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
   inferInstanceAs <| SeminormedAddCommGroup (WithLp 1 <| R × M)
@@ -213,6 +215,9 @@ theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊
 
 @[simp] theorem nnnorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnnorm_def]
 @[simp] theorem nnnorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnnorm_def]
+
+variable [Module R M] [BoundedSMul R M] [Module Rᵐᵒᵖ M] [BoundedSMul Rᵐᵒᵖ M]
+  [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1SeminormedRing : SeminormedRing (tsze R M) where
   norm_mul
@@ -311,7 +316,8 @@ variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒ�
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
 variable [CompleteSpace R] [CompleteSpace M]
 
--- Evidence that we have sufficient instances on `tsze R N` to make `exp_add_of_commute` usable
+-- Evidence that we have sufficient instances on `tsze R N`
+-- to make `NormedSpace.exp_add_of_commute` usable
 example (a b : tsze R M) (h : Commute a b) : exp 𝕜 (a + b) = exp 𝕜 a * exp 𝕜 b :=
   exp_add_of_commute h
 

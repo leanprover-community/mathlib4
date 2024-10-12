@@ -82,30 +82,33 @@ theorem algebraicIndependent_iff_injective_aeval :
 @[simp]
 theorem algebraicIndependent_empty_type_iff [IsEmpty ι] :
     AlgebraicIndependent R x ↔ Injective (algebraMap R A) := by
-  have : aeval x = (Algebra.ofId R A).comp (@isEmptyAlgEquiv R ι _ _).toAlgHom := by
-    ext i
-    exact IsEmpty.elim' ‹IsEmpty ι› i
-  rw [AlgebraicIndependent, this, ← Injective.of_comp_iff' _ (@isEmptyAlgEquiv R ι _ _).bijective]
-  rfl
+  rw [algebraicIndependent_iff_injective_aeval, MvPolynomial.aeval_injective_iff_of_isEmpty]
 
 namespace AlgebraicIndependent
 
+theorem of_comp (f : A →ₐ[R] A') (hfv : AlgebraicIndependent R (f ∘ x)) :
+    AlgebraicIndependent R x := by
+  have : aeval (f ∘ x) = f.comp (aeval x) := by ext; simp
+  rw [AlgebraicIndependent, this, AlgHom.coe_comp] at hfv
+  exact hfv.of_comp
+
 variable (hx : AlgebraicIndependent R x)
+include hx
 
 theorem algebraMap_injective : Injective (algebraMap R A) := by
-  simpa [Function.comp] using
+  simpa [Function.comp_def] using
     (Injective.of_comp_iff (algebraicIndependent_iff_injective_aeval.1 hx) MvPolynomial.C).2
       (MvPolynomial.C_injective _ _)
 
 theorem linearIndependent : LinearIndependent R x := by
-  rw [linearIndependent_iff_injective_total]
-  have : Finsupp.total ι A R x =
-      (MvPolynomial.aeval x).toLinearMap.comp (Finsupp.total ι _ R X) := by
+  rw [linearIndependent_iff_injective_linearCombination]
+  have : Finsupp.linearCombination R x =
+      (MvPolynomial.aeval x).toLinearMap.comp (Finsupp.linearCombination R X) := by
     ext
     simp
   rw [this]
   refine hx.comp ?_
-  rw [← linearIndependent_iff_injective_total]
+  rw [← linearIndependent_iff_injective_linearCombination]
   exact linearIndependent_X _ _
 
 protected theorem injective [Nontrivial R] : Injective x :=
@@ -128,7 +131,7 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
     intro p
     rw [AlgHom.mem_range]
     refine ⟨MvPolynomial.rename (codRestrict x (range x) mem_range_self) p, ?_⟩
-    simp [Function.comp, aeval_rename]
+    simp [Function.comp_def, aeval_rename]
   intro x y hxy
   rw [this] at hxy
   rw [adjoin_eq_range] at hf_inj
@@ -136,12 +139,6 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
 
 theorem map' {f : A →ₐ[R] A'} (hf_inj : Injective f) : AlgebraicIndependent R (f ∘ x) :=
   hx.map hf_inj.injOn
-
-theorem of_comp (f : A →ₐ[R] A') (hfv : AlgebraicIndependent R (f ∘ x)) :
-    AlgebraicIndependent R x := by
-  have : aeval (f ∘ x) = f.comp (aeval x) := by ext; simp
-  rw [AlgebraicIndependent, this, AlgHom.coe_comp] at hfv
-  exact hfv.of_comp
 
 end AlgebraicIndependent
 
@@ -296,24 +293,12 @@ theorem algebraicIndependent_sUnion_of_directed {s : Set (Set A)} (hsn : s.Nonem
   exact algebraicIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
 
 theorem exists_maximal_algebraicIndependent (s t : Set A) (hst : s ⊆ t)
-    (hs : AlgebraicIndependent R ((↑) : s → A)) :
-    ∃ u : Set A, AlgebraicIndependent R ((↑) : u → A) ∧ s ⊆ u ∧ u ⊆ t ∧
-      ∀ x : Set A, AlgebraicIndependent R ((↑) : x → A) → u ⊆ x → x ⊆ t → x = u := by
-  rcases zorn_subset_nonempty { u : Set A | AlgebraicIndependent R ((↑) : u → A) ∧ s ⊆ u ∧ u ⊆ t }
-      (fun c hc chainc hcn =>
-        ⟨⋃₀ c, by
-          refine ⟨⟨algebraicIndependent_sUnion_of_directed hcn chainc.directedOn
-              fun a ha => (hc ha).1, ?_, ?_⟩, ?_⟩
-          · cases' hcn with x hx
-            exact subset_sUnion_of_subset _ x (hc hx).2.1 hx
-          · exact sUnion_subset fun x hx => (hc hx).2.2
-          · intro s
-            exact subset_sUnion_of_mem⟩)
-      s ⟨hs, Set.Subset.refl s, hst⟩ with
-    ⟨u, ⟨huai, _, hut⟩, hsu, hx⟩
-  use u, huai, hsu, hut
-  intro x hxai huv hxt
-  exact hx _ ⟨hxai, _root_.trans hsu huv, hxt⟩ huv
+    (hs : AlgebraicIndependent R ((↑) : s → A)) : ∃ u, s ⊆ u ∧
+      Maximal (fun (x : Set A) ↦ AlgebraicIndependent R ((↑) : x → A) ∧ x ⊆ t) u := by
+  refine zorn_subset_nonempty { u : Set A | AlgebraicIndependent R ((↑) : u → A) ∧ u ⊆ t}
+    (fun c hc chainc hcn ↦ ⟨⋃₀ c, ⟨?_, ?_⟩, fun _ ↦ subset_sUnion_of_mem⟩) s ⟨hs, hst⟩
+  · exact algebraicIndependent_sUnion_of_directed hcn chainc.directedOn (fun x hxc ↦ (hc hxc).1)
+  exact fun x ⟨w, hyc, hwy⟩ ↦ (hc hyc).2 hwy
 
 section repr
 
@@ -443,10 +428,9 @@ theorem exists_isTranscendenceBasis (h : Injective (algebraMap R A)) :
   cases' exists_maximal_algebraicIndependent (∅ : Set A) Set.univ (Set.subset_univ _)
       ((algebraicIndependent_empty_iff R A).2 h) with
     s hs
-  use s, hs.1
-  intro t ht hr
+  refine ⟨s, hs.2.1.1, fun t ht hst ↦ ?_⟩
   simp only [Subtype.range_coe_subtype, setOf_mem_eq] at *
-  exact Eq.symm (hs.2.2.2 t ht hr (Set.subset_univ _))
+  exact hs.2.eq_of_le ⟨ht, subset_univ _⟩ hst
 
 variable {R}
 

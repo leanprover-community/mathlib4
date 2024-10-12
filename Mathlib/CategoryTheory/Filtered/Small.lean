@@ -56,11 +56,11 @@ namespace FilteredClosureSmall
     in `C`. This would require some kind of inductive-recursive definition, which Lean does not
     allow. Our solution is to define a function `ℕ → Σ t : Type (max v w), t → C` by (strong)
     induction and then take the union over all natural numbers, mimicking what one would do in a
-    set-theoretic setting.  -/
+    set-theoretic setting. -/
 
 /-- One step of the inductive procedure consists of adjoining all maxima and coequalizers of all
     objects and morphisms obtained so far. This is quite redundant, picking up many objects which we
-    already hit in earlier iterations, but this is easier to work with later.  -/
+    already hit in earlier iterations, but this is easier to work with later. -/
 private inductive InductiveStep (n : ℕ) (X : ∀ (k : ℕ), k < n → Σ t : Type (max v w), t → C) :
     Type (max v w)
   | max : {k k' : ℕ} → (hk : k < n) → (hk' : k' < n) → (X _ hk).1 → (X _ hk').1 → InductiveStep n X
@@ -78,7 +78,7 @@ private noncomputable def inductiveStepRealization (n : ℕ)
     as a function of `ℕ`.
 
    The function is defined by well-founded recursion, but we really want to use its
-   definitional equalities in the proofs below, so lets make it semireducible.  -/
+   definitional equalities in the proofs below, so lets make it semireducible. -/
 @[semireducible] private noncomputable def bundledAbstractFilteredClosure :
     ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
@@ -97,7 +97,7 @@ end FilteredClosureSmall
 theorem small_fullSubcategory_filteredClosure :
     Small.{max v w} (FullSubcategory (FilteredClosure f)) := by
   refine small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
-    FullSubcategory.ext ?_
+    (fun _ _ => FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
   | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
@@ -211,7 +211,7 @@ private noncomputable def inductiveStepRealization (n : ℕ)
    `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`.
 
    The function is defined by well-founded recursion, but we really want to use its
-   definitional equalities in the proofs below, so lets make it semireducible.  -/
+   definitional equalities in the proofs below, so lets make it semireducible. -/
 @[semireducible] private noncomputable def bundledAbstractCofilteredClosure :
     ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
@@ -232,7 +232,8 @@ end CofilteredClosureSmall
 theorem small_fullSubcategory_cofilteredClosure :
     Small.{max v w} (FullSubcategory (CofilteredClosure f)) := by
   refine small_of_injective_of_exists
-    (CofilteredClosureSmall.abstractCofilteredClosureRealization f) FullSubcategory.ext ?_
+    (CofilteredClosureSmall.abstractCofilteredClosureRealization f)
+    (fun _ _ => FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
   | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩

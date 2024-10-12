@@ -58,7 +58,7 @@ open Function
 def PFun (α β : Type*) :=
   α → Part β
 
-/-- `α →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`.  -/
+/-- `α →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`. -/
 infixr:25 " →. " => PFun
 
 namespace PFun
@@ -246,7 +246,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
           injection h₂.symm.trans e with h; simp [h]
         next e =>
           injection h₂.symm.trans e
-    · simp [fix] at h₃
+    · simp only [fix, Part.mem_assert_iff] at h₃
       cases' h₃ with h₃ h₄
       refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique h h' with e
@@ -286,7 +286,7 @@ def fixInduction {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α} (h
   have h₂ := (Part.mem_assert_iff.1 h).snd
   generalize_proofs at h₂
   clear h
-  induction' ‹Acc _ _› with a ha IH
+  induction ‹Acc _ _› with | intro a ha IH => _
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 
@@ -410,16 +410,10 @@ theorem core_inter (s t : Set β) : f.core (s ∩ t) = f.core s ∩ f.core t :=
 theorem mem_core_res (f : α → β) (s : Set α) (t : Set β) (x : α) :
     x ∈ (res f s).core t ↔ x ∈ s → f x ∈ t := by simp [mem_core, mem_res]
 
-section
-
-open scoped Classical
-
 theorem core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = sᶜ ∪ f ⁻¹' t := by
   ext x
   rw [mem_core_res]
   by_cases h : x ∈ s <;> simp [h]
-
-end
 
 theorem core_restrict (f : α → β) (s : Set β) : (f : α →. β).core s = s.preimage f := by
   ext x; simp [core_def]
@@ -551,7 +545,7 @@ theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
   trans ∃ hp hq, (f x).get hp = y.1 ∧ (g x).get hq = y.2
   · simp only [prodLift, Part.mem_mk_iff, And.exists, Prod.ext_iff]
   -- Porting note: was just `[exists_and_left, exists_and_right]`
-  · simp only [exists_and_left, exists_and_right, (· ∈ ·), Part.Mem]
+  · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
 /-- Product of partial functions. -/
 def prodMap (f : α →. γ) (g : β →. δ) : α × β →. γ × δ := fun x =>
@@ -575,7 +569,7 @@ theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × 
     y ∈ f.prodMap g x ↔ y.1 ∈ f x.1 ∧ y.2 ∈ g x.2 := by
   trans ∃ hp hq, (f x.1).get hp = y.1 ∧ (g x.2).get hq = y.2
   · simp only [prodMap, Part.mem_mk_iff, And.exists, Prod.ext_iff]
-  · simp only [exists_and_left, exists_and_right, (· ∈ ·), Part.Mem]
+  · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
 @[simp]
 theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :

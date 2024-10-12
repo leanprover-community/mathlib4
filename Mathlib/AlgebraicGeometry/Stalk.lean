@@ -33,9 +33,9 @@ A morphism from `Spec(O_x)` to `X`, which is defined with the help of an affine 
 neighborhood `U` of `x`.
 -/
 noncomputable def IsAffineOpen.fromSpecStalk
-    {x : X} (hxU : x ∈ U) :
+    {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) {x : X} (hxU : x ∈ U) :
     Spec (X.presheaf.stalk x) ⟶ X :=
-  Spec.map (X.presheaf.germ ⟨x, hxU⟩) ≫ hU.fromSpec
+  Spec.map (X.presheaf.germ _ x hxU) ≫ hU.fromSpec
 
 /--
 The morphism from `Spec(O_x)` to `X` given by `IsAffineOpen.fromSpec` does not depend on the affine
@@ -46,16 +46,22 @@ theorem IsAffineOpen.fromSpecStalk_eq (x : X) (hxU : x ∈ U) (hxV : x ∈ V) :
   obtain ⟨U', h₁, h₂, h₃ : U' ≤ U ⊓ V⟩ :=
     Opens.isBasis_iff_nbhd.mp (isBasis_affine_open X) (show x ∈ U ⊓ V from ⟨hxU, hxV⟩)
   transitivity fromSpecStalk h₁ h₂
-  · rw [fromSpecStalk, fromSpecStalk, ← hU.map_fromSpec h₁ (homOfLE $ h₃.trans inf_le_left).op,
-      ← Spec.map_comp_assoc, TopCat.Presheaf.germ_res]
-  · rw [fromSpecStalk, fromSpecStalk, ← hV.map_fromSpec h₁ (homOfLE $ h₃.trans inf_le_right).op,
-      ← Spec.map_comp_assoc, TopCat.Presheaf.germ_res]
+  · delta fromSpecStalk
+    rw [← hU.map_fromSpec h₁ (homOfLE <| h₃.trans inf_le_left).op]
+    erw [← Scheme.Spec_map (X.presheaf.map _).op, ← Scheme.Spec_map (X.presheaf.germ _ x h₂).op]
+    rw [← Functor.map_comp_assoc, ← op_comp, TopCat.Presheaf.germ_res, Scheme.Spec_map,
+      Quiver.Hom.unop_op]
+  · delta fromSpecStalk
+    rw [← hV.map_fromSpec h₁ (homOfLE <| h₃.trans inf_le_right).op]
+    erw [← Scheme.Spec_map (X.presheaf.map _).op, ← Scheme.Spec_map (X.presheaf.germ _ x h₂).op]
+    rw [← Functor.map_comp_assoc, ← op_comp, TopCat.Presheaf.germ_res, Scheme.Spec_map,
+      Quiver.Hom.unop_op]
 
 /--
 If `x` is a point of `X`, this is the canonical morphism from `Spec(O_x)` to `X`.
 -/
-noncomputable def Scheme.fromSpecStalk (X : Scheme.{u}) (x : X) :
-    Spec (X.presheaf.stalk x) ⟶ X :=
+noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
+    Scheme.Spec.obj (op (X.presheaf.stalk x)) ⟶ X :=
   (isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)
 
 @[simp]

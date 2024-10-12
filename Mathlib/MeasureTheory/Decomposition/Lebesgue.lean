@@ -108,9 +108,15 @@ theorem haveLebesgueDecomposition_add (μ ν : Measure α) [HaveLebesgueDecompos
     μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) :=
   (haveLebesgueDecomposition_spec μ ν).2.2
 
+/-- For the versions of this lemma where `ν.withDensity (μ.rnDeriv ν)` or `μ.singularPart ν` are
+isolated, see `MeasureTheory.Measure.measure_sub_singularPart` and
+`MeasureTheory.Measure.measure_sub_rnDeriv`. -/
 lemma singularPart_add_rnDeriv (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] :
     μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) = μ := (haveLebesgueDecomposition_add μ ν).symm
 
+/-- For the versions of this lemma where `μ.singularPart ν` or `ν.withDensity (μ.rnDeriv ν)` are
+isolated, see `MeasureTheory.Measure.measure_sub_singularPart` and
+`MeasureTheory.Measure.measure_sub_rnDeriv`. -/
 lemma rnDeriv_add_singularPart (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] :
     ν.withDensity (μ.rnDeriv ν) + μ.singularPart ν = μ := by rw [add_comm, singularPart_add_rnDeriv]
 
@@ -464,6 +470,17 @@ lemma singularPart_restrict (μ ν : Measure α) [HaveLebesgueDecomposition μ �
     rw [withDensity_indicator hs, ← restrict_withDensity hs, ← Measure.restrict_add,
       ← μ.haveLebesgueDecomposition_add ν]
 
+lemma measure_sub_singularPart (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+    [IsFiniteMeasure μ] :
+    μ - μ.singularPart ν = ν.withDensity (μ.rnDeriv ν) := by
+  nth_rw 1 [← rnDeriv_add_singularPart μ ν]
+  exact Measure.add_sub_cancel
+
+lemma measure_sub_rnDeriv (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] [IsFiniteMeasure μ] :
+    μ - ν.withDensity (μ.rnDeriv ν) = μ.singularPart ν := by
+  nth_rw 1 [← singularPart_add_rnDeriv μ ν]
+  exact Measure.add_sub_cancel
+
 /-- Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
 measurable function such that `μ = s + fν`, then `f = μ.rnDeriv ν`.
 
@@ -604,7 +621,7 @@ theorem rnDeriv_smul_right (ν μ : Measure α) [IsFiniteMeasure ν]
       rwa [add_right_inj] at this
     rw [← ν.haveLebesgueDecomposition_add (r • μ), singularPart_smul_right _ _ _ hr,
       ENNReal.smul_def r, withDensity_smul_measure, ← ENNReal.smul_def, ← smul_assoc,
-      smul_eq_mul, inv_mul_cancel hr, one_smul]
+      smul_eq_mul, inv_mul_cancel₀ hr, one_smul]
     exact ν.haveLebesgueDecomposition_add μ
 
 /-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
@@ -691,7 +708,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       have hb₁ : (0 : ℝ) < (νA : ℝ)⁻¹ := by rw [_root_.inv_pos]; exact hb
       have h' : 1 / (↑n + 1) * νA < c := by
         rw [← NNReal.coe_lt_coe, ← mul_lt_mul_right hb₁, NNReal.coe_mul, mul_assoc, ←
-          NNReal.coe_inv, ← NNReal.coe_mul, _root_.mul_inv_cancel, ← NNReal.coe_mul, mul_one,
+          NNReal.coe_inv, ← NNReal.coe_mul, mul_inv_cancel₀, ← NNReal.coe_mul, mul_one,
           NNReal.coe_inv]
         · exact hn
         · exact hb.ne'
@@ -824,9 +841,9 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
         refine Measurable.aemeasurable ?_
         convert (iSup_mem_measurableLE _ hf₁ n).1
         simp
-      · refine Filter.eventually_of_forall fun a ↦ ?_
+      · refine Filter.Eventually.of_forall fun a ↦ ?_
         simp [iSup_monotone' f _]
-      · refine Filter.eventually_of_forall fun a ↦ ?_
+      · refine Filter.Eventually.of_forall fun a ↦ ?_
         simp [tendsto_atTop_iSup (iSup_monotone' f a)]
     have hξm : Measurable ξ := by
       convert measurable_iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
@@ -990,7 +1007,7 @@ theorem rnDeriv_smul_right' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite �
       rwa [add_right_inj] at this
     rw [← ν.haveLebesgueDecomposition_add (r • μ), singularPart_smul_right _ _ _ hr,
       ENNReal.smul_def r, withDensity_smul_measure, ← ENNReal.smul_def, ← smul_assoc,
-      smul_eq_mul, inv_mul_cancel hr, one_smul]
+      smul_eq_mul, inv_mul_cancel₀ hr, one_smul]
     exact ν.haveLebesgueDecomposition_add μ
   · exact (measurable_rnDeriv _ _).aemeasurable
   · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _

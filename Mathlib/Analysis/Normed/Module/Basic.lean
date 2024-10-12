@@ -8,7 +8,7 @@ import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Module.Rat
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.MulAction
 
 /-!
@@ -62,7 +62,7 @@ instance NormedField.to_boundedSMul : BoundedSMul 𝕜 𝕜 :=
   NormedSpace.boundedSMul
 
 variable (𝕜) in
-theorem norm_zsmul [NormedSpace 𝕜 E] (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
+theorem norm_zsmul (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
   rw [← norm_smul, ← Int.smul_one_eq_cast, smul_assoc, one_smul]
 
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
@@ -118,6 +118,9 @@ instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, Sem
     simp_rw [← coe_nnnorm, ← NNReal.coe_mul, NNReal.coe_le_coe, Pi.nnnorm_def,
       NNReal.mul_finset_sup]
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
+
+instance SeparationQuotient.instNormedSpace : NormedSpace 𝕜 (SeparationQuotient E) where
+  norm_smul_le := norm_smul_le
 
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
   norm_smul_le _ x := norm_smul_le _ x.unop
@@ -178,6 +181,7 @@ section NontriviallyNormedSpace
 
 variable (𝕜 E)
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [Nontrivial E]
+include 𝕜
 
 /-- If `E` is a nontrivial normed space over a nontrivially normed field `𝕜`, then `E` is unbounded:
 for any `c : ℝ`, there exists a vector `x : E` with norm strictly greater than `c`. -/
@@ -185,7 +189,7 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
   rcases NormedField.exists_lt_norm 𝕜 (c / ‖x‖) with ⟨r, hr⟩
   use r • x
-  rwa [norm_smul, ← _root_.div_lt_iff]
+  rwa [norm_smul, ← div_lt_iff₀]
   rwa [norm_pos_iff]
 
 protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
@@ -212,6 +216,7 @@ section NormedSpace
 
 variable (𝕜 E)
 variable [NormedField 𝕜] [Infinite 𝕜] [NormedAddCommGroup E] [Nontrivial E] [NormedSpace 𝕜 E]
+include 𝕜
 
 /-- A normed vector space over an infinite normed field is a noncompact space.
 This cannot be an instance because in order to apply it,
@@ -346,6 +351,10 @@ instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, S
 
 variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
+instance SeparationQuotient.instNormedAlgebra : NormedAlgebra 𝕜 (SeparationQuotient E) where
+  __ : NormedSpace 𝕜 (SeparationQuotient E) := inferInstance
+  __ : Algebra 𝕜 (SeparationQuotient E) := inferInstance
+
 instance MulOpposite.instNormedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ where
   __ := instAlgebra
@@ -453,8 +462,10 @@ Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` inst
 This definition allows the `RestrictScalars.normedSpace` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
 inferred, and because it is likely to create instance diamonds.
+
+See Note [reducible non-instances].
 -/
-def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
+abbrev NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   RestrictScalars.normedSpace _ 𝕜' E
 
 end NormedSpace
@@ -486,10 +497,187 @@ Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` inst
 This definition allows the `RestrictScalars.normedAlgebra` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
 inferred, and because it is likely to create instance diamonds.
+
+See Note [reducible non-instances].
 -/
-def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
+abbrev NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
   RestrictScalars.normedAlgebra _ 𝕜' _
 
 end NormedAlgebra
 
 end RestrictScalars
+
+section Core
+/-!
+### Structures for constructing new normed spaces
+
+This section contains tools meant for constructing new normed spaces. These allow one to easily
+construct all the relevant instances (distances measures, etc) while proving only a minimal
+set of axioms. Furthermore, tools are provided to add a norm structure to a type that already
+has a preexisting uniformity or bornology: in such cases, it is necessary to keep the preexisting
+instances, while ensuring that the norm induces the same uniformity/bornology.
+-/
+
+open scoped Uniformity Bornology
+
+/-- A structure encapsulating minimal axioms needed to defined a seminormed vector space, as found
+in textbooks. This is meant to be used to easily define `SeminormedAddCommGroup E` instances from
+scratch on a type with no preexisting distance or topology. -/
+structure SeminormedAddCommGroup.Core (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [AddCommGroup E]
+    [Norm E] [Module 𝕜 E] : Prop where
+  norm_nonneg (x : E) : 0 ≤ ‖x‖
+  norm_smul (c : 𝕜) (x : E) : ‖c • x‖ = ‖c‖ * ‖x‖
+  norm_triangle (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖
+
+/-- Produces a `PseudoMetricSpace E` instance from a `SeminormedAddCommGroup.Core`. Note that
+if this is used to define an instance on a type, it also provides a new uniformity and
+topology on the type. See note [reducible non-instances]. -/
+abbrev PseudoMetricSpace.ofSeminormedAddCommGroupCore {𝕜 E : Type*} [NormedField 𝕜] [AddCommGroup E]
+    [Norm E] [Module 𝕜 E] (core : SeminormedAddCommGroup.Core 𝕜 E) :
+    PseudoMetricSpace E where
+  dist x y := ‖x - y‖
+  dist_self x := by
+    show ‖x - x‖ = 0
+    simp only [sub_self]
+    have : (0 : E) = (0 : 𝕜) • (0 : E) := by simp
+    rw [this, core.norm_smul]
+    simp
+  dist_comm x y := by
+    show ‖x - y‖ = ‖y - x‖
+    have : y - x = (-1 : 𝕜) • (x - y) := by simp
+    rw [this, core.norm_smul]
+    simp
+  dist_triangle x y z := by
+    show ‖x - z‖ ≤ ‖x - y‖ + ‖y - z‖
+    have : x - z = (x - y) + (y - z) := by abel
+    rw [this]
+    exact core.norm_triangle _ _
+  edist_dist x y := by exact (ENNReal.ofReal_eq_coe_nnreal _).symm
+
+/-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedAddCommGroup.Core`. Note that
+if this is used to define an instance on a type, it also provides a new uniformity and
+topology on the type. See note [reducible non-instances]. -/
+abbrev PseudoEMetricSpace.ofSeminormedAddCommGroupCore {𝕜 E : Type*} [NormedField 𝕜]
+    [AddCommGroup E] [Norm E] [Module 𝕜 E]
+    (core : SeminormedAddCommGroup.Core 𝕜 E) : PseudoEMetricSpace E :=
+  (PseudoMetricSpace.ofSeminormedAddCommGroupCore core).toPseudoEMetricSpace
+
+/-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedAddCommGroup.Core` on a type that
+already has an existing uniform space structure. This requires a proof that the uniformity induced
+by the norm is equal to the preexisting uniformity. See note [reducible non-instances]. -/
+abbrev PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceUniformity {𝕜 E : Type*} [NormedField 𝕜]
+    [AddCommGroup E] [Norm E] [Module 𝕜 E] [U : UniformSpace E]
+    (core : SeminormedAddCommGroup.Core 𝕜 E)
+    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
+        (self := PseudoEMetricSpace.ofSeminormedAddCommGroupCore core)]) :
+    PseudoMetricSpace E :=
+  .replaceUniformity (.ofSeminormedAddCommGroupCore core) H
+
+open Bornology in
+/-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedAddCommGroup.Core` on a type that
+already has a preexisting uniform space structure and a preexisting bornology. This requires proofs
+that the uniformity induced by the norm is equal to the preexisting uniformity, and likewise for
+the bornology. See note [reducible non-instances]. -/
+abbrev PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceAll {𝕜 E : Type*} [NormedField 𝕜]
+    [AddCommGroup E] [Norm E] [Module 𝕜 E] [U : UniformSpace E] [B : Bornology E]
+    (core : SeminormedAddCommGroup.Core 𝕜 E)
+    (HU : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
+      (self := PseudoEMetricSpace.ofSeminormedAddCommGroupCore core)])
+    (HB : ∀ s : Set E, @IsBounded _ B s
+      ↔ @IsBounded _ (PseudoMetricSpace.ofSeminormedAddCommGroupCore core).toBornology s) :
+    PseudoMetricSpace E :=
+  .replaceBornology (.replaceUniformity (.ofSeminormedAddCommGroupCore core) HU) HB
+
+/-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedAddCommGroup.Core`. Note that
+if this is used to define an instance on a type, it also provides a new distance measure from the
+norm.  it must therefore not be used on a type with a preexisting distance measure or topology.
+See note [reducible non-instances]. -/
+abbrev SeminormedAddCommGroup.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [AddCommGroup E]
+    [Norm E] [Module 𝕜 E] (core : SeminormedAddCommGroup.Core 𝕜 E) : SeminormedAddCommGroup E :=
+  { PseudoMetricSpace.ofSeminormedAddCommGroupCore core with }
+
+/-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedAddCommGroup.Core` on a type
+that already has an existing uniform space structure. This requires a proof that the uniformity
+induced by the norm is equal to the preexisting uniformity. See note [reducible non-instances]. -/
+abbrev SeminormedAddCommGroup.ofCoreReplaceUniformity {𝕜 : Type*} {E : Type*} [NormedField 𝕜]
+    [AddCommGroup E] [Norm E] [Module 𝕜 E] [U : UniformSpace E]
+    (core : SeminormedAddCommGroup.Core 𝕜 E)
+    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
+      (self := PseudoEMetricSpace.ofSeminormedAddCommGroupCore core)]) :
+    SeminormedAddCommGroup E :=
+  { PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceUniformity core H with }
+
+open Bornology in
+/-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedAddCommGroup.Core` on a type
+that already has a preexisting uniform space structure and a preexisting bornology. This requires
+proofs that the uniformity induced by the norm is equal to the preexisting uniformity, and likewise
+for the bornology. See note [reducible non-instances]. -/
+abbrev SeminormedAddCommGroup.ofCoreReplaceAll {𝕜 : Type*} {E : Type*} [NormedField 𝕜]
+    [AddCommGroup E] [Norm E] [Module 𝕜 E] [U : UniformSpace E] [B : Bornology E]
+    (core : SeminormedAddCommGroup.Core 𝕜 E)
+    (HU : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
+      (self := PseudoEMetricSpace.ofSeminormedAddCommGroupCore core)])
+    (HB : ∀ s : Set E, @IsBounded _ B s
+      ↔ @IsBounded _ (PseudoMetricSpace.ofSeminormedAddCommGroupCore core).toBornology s) :
+    SeminormedAddCommGroup E :=
+  { PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceAll core HU HB with }
+
+/-- A structure encapsulating minimal axioms needed to defined a normed vector space, as found
+in textbooks. This is meant to be used to easily define `NormedAddCommGroup E` and `NormedSpace E`
+instances from scratch on a type with no preexisting distance or topology. -/
+structure NormedSpace.Core (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    [Norm E] extends SeminormedAddCommGroup.Core 𝕜 E : Prop where
+  norm_eq_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0
+
+variable {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Norm E]
+
+/-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core`. Note that if this is
+used to define an instance on a type, it also provides a new distance measure from the norm.
+it must therefore not be used on a type with a preexisting distance measure.
+See note [reducible non-instances]. -/
+abbrev NormedAddCommGroup.ofCore (core : NormedSpace.Core 𝕜 E) : NormedAddCommGroup E :=
+  { SeminormedAddCommGroup.ofCore core.toCore with
+    eq_of_dist_eq_zero := by
+      intro x y h
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      exact h }
+
+/-- Produces a `NormedAddCommGroup E` instance from a `NormedAddCommGroup.Core` on a type
+that already has an existing uniform space structure. This requires a proof that the uniformity
+induced by the norm is equal to the preexisting uniformity. See note [reducible non-instances]. -/
+abbrev NormedAddCommGroup.ofCoreReplaceUniformity [U : UniformSpace E] (core : NormedSpace.Core 𝕜 E)
+    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
+      (self := PseudoEMetricSpace.ofSeminormedAddCommGroupCore core.toCore)]) :
+    NormedAddCommGroup E :=
+  { SeminormedAddCommGroup.ofCoreReplaceUniformity core.toCore H with
+    eq_of_dist_eq_zero := by
+      intro x y h
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      exact h }
+
+open Bornology in
+/-- Produces a `NormedAddCommGroup E` instance from a `NormedAddCommGroup.Core` on a type
+that already has a preexisting uniform space structure and a preexisting bornology. This requires
+proofs that the uniformity induced by the norm is equal to the preexisting uniformity, and likewise
+for the bornology. See note [reducible non-instances]. -/
+abbrev NormedAddCommGroup.ofCoreReplaceAll [U : UniformSpace E] [B : Bornology E]
+    (core : NormedSpace.Core 𝕜 E)
+    (HU : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
+      (self := PseudoEMetricSpace.ofSeminormedAddCommGroupCore core.toCore)])
+    (HB : ∀ s : Set E, @IsBounded _ B s
+      ↔ @IsBounded _ (PseudoMetricSpace.ofSeminormedAddCommGroupCore core.toCore).toBornology s) :
+    NormedAddCommGroup E :=
+  { SeminormedAddCommGroup.ofCoreReplaceAll core.toCore HU HB with
+    eq_of_dist_eq_zero := by
+      intro x y h
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      exact h }
+
+/-- Produces a `NormedSpace 𝕜 E` instance from a `NormedSpace.Core`. This is meant to be used
+on types where the `NormedAddCommGroup E` instance has also been defined using `core`.
+See note [reducible non-instances]. -/
+abbrev NormedSpace.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [SeminormedAddCommGroup E]
+    [Module 𝕜 E] (core : NormedSpace.Core 𝕜 E) : NormedSpace 𝕜 E where
+  norm_smul_le r x := by rw [core.norm_smul r x]
+
+end Core

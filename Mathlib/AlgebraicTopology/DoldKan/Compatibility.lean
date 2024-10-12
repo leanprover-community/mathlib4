@@ -180,7 +180,7 @@ def τ₁ (η : G ⋙ F ≅ eB.functor) : eB.functor ⋙ e'.inverse ⋙ e'.funct
     _ ≅ G ⋙ F := isoWhiskerLeft _ hF
     _ ≅ eB.functor := η
 
-variable (η : G ⋙ F ≅ eB.functor) (hη : τ₀ = τ₁ hF hG η)
+variable (η : G ⋙ F ≅ eB.functor)
 
 /-- The counit isomorphism of `equivalence`. -/
 @[simps!]
@@ -192,7 +192,8 @@ def equivalenceCounitIso : G ⋙ F ⋙ eB.inverse ≅ 𝟭 B :=
 
 variable {η hF hG}
 
-theorem equivalenceCounitIso_eq : (equivalence hF hG).counitIso = equivalenceCounitIso η := by
+theorem equivalenceCounitIso_eq (hη : τ₀ = τ₁ hF hG η) :
+    (equivalence hF hG).counitIso = equivalenceCounitIso η := by
   ext1; apply NatTrans.ext; ext Y
   dsimp [equivalence]
   simp only [comp_id, id_comp, Functor.map_comp, equivalence₂CounitIso_eq,
@@ -218,7 +219,7 @@ def υ : eA.functor ≅ F ⋙ e'.inverse :=
     _ ≅ (eA.functor ⋙ e'.functor) ⋙ e'.inverse := Iso.refl _
     _ ≅ F ⋙ e'.inverse := isoWhiskerRight hF _
 
-variable (ε : eA.functor ≅ F ⋙ e'.inverse) (hε : υ hF = ε) (hG)
+variable (ε : eA.functor ≅ F ⋙ e'.inverse) (hG)
 
 /-- The unit isomorphism of `equivalence`. -/
 @[simps!]
@@ -238,7 +239,8 @@ def equivalenceUnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ G :=
 
 variable {ε hF hG}
 
-theorem equivalenceUnitIso_eq : (equivalence hF hG).unitIso = equivalenceUnitIso hG ε := by
+theorem equivalenceUnitIso_eq (hε : υ hF = ε) :
+    (equivalence hF hG).unitIso = equivalenceUnitIso hG ε := by
   ext1; apply NatTrans.ext; ext X
   dsimp [equivalence]
   simp only [assoc, comp_id, equivalenceUnitIso_hom_app]

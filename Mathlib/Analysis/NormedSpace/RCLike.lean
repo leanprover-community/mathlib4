@@ -61,7 +61,7 @@ theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f :
   have r_ne_zero : (r : 𝕜) ≠ 0 := RCLike.ofReal_ne_zero.mpr r_pos.ne'
   have eq : f z = ‖z‖ / r * f z₁ := by
     rw [hz₁, LinearMap.map_smul, smul_eq_mul]
-    rw [← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ r_ne_zero, mul_inv_cancel, one_mul]
+    rw [← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ r_ne_zero, mul_inv_cancel₀, one_mul]
     simp only [z_zero, RCLike.ofReal_eq_zero, norm_eq_zero, Ne, not_false_iff]
   rw [eq, norm_mul, norm_div, RCLike.norm_coe_norm, RCLike.norm_of_nonneg r_pos.le,
     div_mul_eq_mul_div, div_mul_eq_mul_div, mul_comm]
@@ -90,7 +90,7 @@ alias ContinuousLinearMap.op_norm_bound_of_ball_bound :=
   ContinuousLinearMap.opNorm_bound_of_ball_bound
 
 variable (𝕜)
-
+include 𝕜 in
 theorem NormedSpace.sphere_nonempty_rclike [Nontrivial E] {r : ℝ} (hr : 0 ≤ r) :
     Nonempty (sphere (0 : E) r) :=
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E

@@ -3,6 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
+import Mathlib.Data.Finset.Piecewise
+import Mathlib.Order.Filter.Curry
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.NhdsSet
 
@@ -30,10 +32,8 @@ product, sum, disjoint union, subspace, quotient space
 
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Topology TopologicalSpace Set Filter Function
 
 universe u v
@@ -326,7 +326,7 @@ theorem ContinuousAt.fst'' {f : X → Z} {x : X × Y} (hf : ContinuousAt f x.fst
     ContinuousAt (fun x : X × Y => f x.fst) x :=
   hf.comp continuousAt_fst
 
-theorem Filter.Tendsto.fst_nhds {l : Filter X} {f : X → Y × Z} {p : Y × Z}
+theorem Filter.Tendsto.fst_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × Z}
     (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).1) l (𝓝 <| p.1) :=
   continuousAt_fst.tendsto.comp h
 
@@ -362,7 +362,7 @@ theorem ContinuousAt.snd'' {f : Y → Z} {x : X × Y} (hf : ContinuousAt f x.snd
     ContinuousAt (fun x : X × Y => f x.snd) x :=
   hf.comp continuousAt_snd
 
-theorem Filter.Tendsto.snd_nhds {l : Filter X} {f : X → Y × Z} {p : Y × Z}
+theorem Filter.Tendsto.snd_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × Z}
     (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).2) l (𝓝 <| p.2) :=
   continuousAt_snd.tendsto.comp h
 
@@ -400,9 +400,11 @@ theorem Continuous.comp₄ {g : X × Y × Z × ζ → ε} (hg : Continuous g) {e
   hg.comp₃ he hf <| hk.prod_mk hl
 
 @[continuity]
-theorem Continuous.prod_map {f : Z → X} {g : W → Y} (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun p : Z × W => (f p.1, g p.2) :=
+theorem Continuous.prodMap {f : Z → X} {g : W → Y} (hf : Continuous f) (hg : Continuous g) :
+    Continuous (Prod.map f g) :=
   hf.fst'.prod_mk hg.snd'
+
+@[deprecated (since := "2024-10-05")] alias Continuous.prod_map := Continuous.prodMap
 
 /-- A version of `continuous_inf_dom_left` for binary functions -/
 theorem continuous_inf_dom_left₂ {X Y Z} {f : X → Y → Z} {ta1 ta2 : TopologicalSpace X}
@@ -411,7 +413,7 @@ theorem continuous_inf_dom_left₂ {X Y Z} {f : X → Y → Z} {ta1 ta2 : Topolo
     haveI := ta1 ⊓ ta2; haveI := tb1 ⊓ tb2; exact Continuous fun p : X × Y => f p.1 p.2 := by
   have ha := @continuous_inf_dom_left _ _ id ta1 ta2 ta1 (@continuous_id _ (id _))
   have hb := @continuous_inf_dom_left _ _ id tb1 tb2 tb1 (@continuous_id _ (id _))
-  have h_continuous_id := @Continuous.prod_map _ _ _ _ ta1 tb1 (ta1 ⊓ ta2) (tb1 ⊓ tb2) _ _ ha hb
+  have h_continuous_id := @Continuous.prodMap _ _ _ _ ta1 tb1 (ta1 ⊓ ta2) (tb1 ⊓ tb2) _ _ ha hb
   exact @Continuous.comp _ _ _ (id _) (id _) _ _ _ h h_continuous_id
 
 /-- A version of `continuous_inf_dom_right` for binary functions -/
@@ -421,7 +423,7 @@ theorem continuous_inf_dom_right₂ {X Y Z} {f : X → Y → Z} {ta1 ta2 : Topol
     haveI := ta1 ⊓ ta2; haveI := tb1 ⊓ tb2; exact Continuous fun p : X × Y => f p.1 p.2 := by
   have ha := @continuous_inf_dom_right _ _ id ta1 ta2 ta2 (@continuous_id _ (id _))
   have hb := @continuous_inf_dom_right _ _ id tb1 tb2 tb2 (@continuous_id _ (id _))
-  have h_continuous_id := @Continuous.prod_map _ _ _ _ ta2 tb2 (ta1 ⊓ ta2) (tb1 ⊓ tb2) _ _ ha hb
+  have h_continuous_id := @Continuous.prodMap _ _ _ _ ta2 tb2 (ta1 ⊓ ta2) (tb1 ⊓ tb2) _ _ ha hb
   exact @Continuous.comp _ _ _ (id _) (id _) _ _ _ h h_continuous_id
 
 /-- A version of `continuous_sInf_dom` for binary functions -/
@@ -433,7 +435,7 @@ theorem continuous_sInf_dom₂ {X Y Z} {f : X → Y → Z} {tas : Set (Topologic
     exact @Continuous _ _ _ tc fun p : X × Y => f p.1 p.2 := by
   have hX := continuous_sInf_dom hX continuous_id
   have hY := continuous_sInf_dom hY continuous_id
-  have h_continuous_id := @Continuous.prod_map _ _ _ _ tX tY (sInf tas) (sInf tbs) _ _ hX hY
+  have h_continuous_id := @Continuous.prodMap _ _ _ _ tX tY (sInf tas) (sInf tbs) _ _ hX hY
   exact @Continuous.comp _ _ _ (id _) (id _) _ _ _ hf h_continuous_id
 
 theorem Filter.Eventually.prod_inl_nhds {p : X → Prop} {x : X} (h : ∀ᶠ x in 𝓝 x, p x) (y : Y) :
@@ -516,6 +518,22 @@ theorem Filter.HasBasis.prod_nhds' {ιX ιY : Type*} {pX : ιX → Prop} {pY : �
     (𝓝 p).HasBasis (fun i : ιX × ιY => pX i.1 ∧ pY i.2) fun i => sx i.1 ×ˢ sy i.2 :=
   hx.prod_nhds hy
 
+theorem MapClusterPt.curry_prodMap {α β : Type*}
+    {f : α → X} {g : β → Y} {la : Filter α} {lb : Filter β} {x : X} {y : Y}
+    (hf : MapClusterPt x la f) (hg : MapClusterPt y lb g) :
+    MapClusterPt (x, y) (la.curry lb) (.map f g) := by
+  rw [mapClusterPt_iff] at hf hg
+  rw [((𝓝 x).basis_sets.prod_nhds (𝓝 y).basis_sets).mapClusterPt_iff_frequently]
+  rintro ⟨s, t⟩ ⟨hs, ht⟩
+  rw [frequently_curry_iff]
+  exact (hf s hs).mono fun x hx ↦ (hg t ht).mono fun y hy ↦ ⟨hx, hy⟩
+
+theorem MapClusterPt.prodMap {α β : Type*}
+    {f : α → X} {g : β → Y} {la : Filter α} {lb : Filter β} {x : X} {y : Y}
+    (hf : MapClusterPt x la f) (hg : MapClusterPt y lb g) :
+    MapClusterPt (x, y) (la ×ˢ lb) (.map f g) :=
+  (hf.curry_prodMap hg).mono <| map_mono curry_le_prod
+
 theorem mem_nhds_prod_iff' {x : X} {y : Y} {s : Set (X × Y)} :
     s ∈ 𝓝 (x, y) ↔ ∃ u v, IsOpen u ∧ x ∈ u ∧ IsOpen v ∧ y ∈ v ∧ u ×ˢ v ⊆ s :=
   ((nhds_basis_opens x).prod_nhds (nhds_basis_opens y)).mem_iff.trans <| by
@@ -566,13 +584,19 @@ theorem ContinuousAt.prod {f : X → Y} {g : X → Z} {x : X} (hf : ContinuousAt
     (hg : ContinuousAt g x) : ContinuousAt (fun x => (f x, g x)) x :=
   hf.prod_mk_nhds hg
 
-theorem ContinuousAt.prod_map {f : X → Z} {g : Y → W} {p : X × Y} (hf : ContinuousAt f p.fst)
-    (hg : ContinuousAt g p.snd) : ContinuousAt (fun p : X × Y => (f p.1, g p.2)) p :=
+theorem ContinuousAt.prodMap {f : X → Z} {g : Y → W} {p : X × Y} (hf : ContinuousAt f p.fst)
+    (hg : ContinuousAt g p.snd) : ContinuousAt (Prod.map f g) p :=
   hf.fst''.prod hg.snd''
 
-theorem ContinuousAt.prod_map' {f : X → Z} {g : Y → W} {x : X} {y : Y} (hf : ContinuousAt f x)
-    (hg : ContinuousAt g y) : ContinuousAt (fun p : X × Y => (f p.1, g p.2)) (x, y) :=
-  hf.fst'.prod hg.snd'
+@[deprecated (since := "2024-10-05")] alias ContinuousAt.prod_map := ContinuousAt.prodMap
+
+/-- A version of `ContinuousAt.prodMap` that avoids `Prod.fst`/`Prod.snd`
+by assuming that the point is `(x, y)`. -/
+theorem ContinuousAt.prodMap' {f : X → Z} {g : Y → W} {x : X} {y : Y} (hf : ContinuousAt f x)
+    (hg : ContinuousAt g y) : ContinuousAt (Prod.map f g) (x, y) :=
+  hf.prodMap hg
+
+@[deprecated (since := "2024-10-05")] alias ContinuousAt.prod_map' := ContinuousAt.prodMap'
 
 theorem ContinuousAt.comp₂ {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X}
     (hf : ContinuousAt f (g x, h x)) (hg : ContinuousAt g x) (hh : ContinuousAt h x) :
@@ -602,7 +626,7 @@ theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : S
     (hs : ⋃₀ s = univ) (ht : ⋃₀ t = univ) :
     @instTopologicalSpaceProd X Y (generateFrom s) (generateFrom t) =
       generateFrom (image2 (·  ×ˢ ·) s t) :=
-  let G := generateFrom  (image2  (·  ×ˢ ·) s t)
+  let G := generateFrom (image2  (·  ×ˢ ·) s t)
   le_antisymm
     (le_generateFrom fun g ⟨u, hu, v, hv, g_eq⟩ =>
       g_eq.symm ▸
@@ -646,7 +670,7 @@ theorem isOpen_prod_iff {s : Set (X × Y)} :
   isOpen_iff_mem_nhds.trans <| by simp_rw [Prod.forall, mem_nhds_prod_iff', and_left_comm]
 
 /-- A product of induced topologies is induced by the product map -/
-theorem prod_induced_induced (f : X → Y) (g : Z → W) :
+theorem prod_induced_induced {X Z} (f : X → Y) (g : Z → W) :
     @instTopologicalSpaceProd X Z (induced f ‹_›) (induced g ‹_›) =
       induced (fun p => (f p.1, g p.2)) instTopologicalSpaceProd := by
   delta instTopologicalSpaceProd
@@ -712,8 +736,14 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
         rw [← snd_image_prod st.1 t]
         exact isOpenMap_snd _ H
     · intro H
-      simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false_iff] at H
+      simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false] at H
       exact H.1.prod H.2
+
+theorem quotientMap_fst [Nonempty Y] : QuotientMap (Prod.fst : X × Y → X) :=
+  isOpenMap_fst.to_quotientMap continuous_fst Prod.fst_surjective
+
+theorem quotientMap_snd [Nonempty X] : QuotientMap (Prod.snd : X × Y → Y) :=
+  isOpenMap_snd.to_quotientMap continuous_snd Prod.snd_surjective
 
 theorem closure_prod_eq {s : Set X} {t : Set Y} : closure (s ×ˢ t) = closure s ×ˢ closure t :=
   ext fun ⟨a, b⟩ => by
@@ -754,46 +784,60 @@ theorem Dense.prod {s : Set X} {t : Set Y} (hs : Dense s) (ht : Dense t) : Dense
   exact ⟨hs x.1, ht x.2⟩
 
 /-- If `f` and `g` are maps with dense range, then `Prod.map f g` has dense range. -/
-theorem DenseRange.prod_map {ι : Type*} {κ : Type*} {f : ι → Y} {g : κ → Z} (hf : DenseRange f)
+theorem DenseRange.prodMap {ι : Type*} {κ : Type*} {f : ι → Y} {g : κ → Z} (hf : DenseRange f)
     (hg : DenseRange g) : DenseRange (Prod.map f g) := by
   simpa only [DenseRange, prod_range_range_eq] using hf.prod hg
 
-theorem Inducing.prod_map {f : X → Y} {g : Z → W} (hf : Inducing f) (hg : Inducing g) :
+@[deprecated (since := "2024-10-05")] alias DenseRange.prod_map := DenseRange.prodMap
+
+theorem Inducing.prodMap {f : X → Y} {g : Z → W} (hf : Inducing f) (hg : Inducing g) :
     Inducing (Prod.map f g) :=
   inducing_iff_nhds.2 fun (x, z) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
     hg.nhds_eq_comap, prod_comap_comap_eq]
 
+@[deprecated (since := "2024-10-05")] alias Inducing.prod_map := Inducing.prodMap
+
 @[simp]
 theorem inducing_const_prod {x : X} {f : Y → Z} : (Inducing fun x' => (x, f x')) ↔ Inducing f := by
-  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp,
+  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp_def,
     induced_const, top_inf_eq]
 
 @[simp]
 theorem inducing_prod_const {y : Y} {f : X → Z} : (Inducing fun x => (f x, y)) ↔ Inducing f := by
-  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp,
+  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp_def,
     induced_const, inf_top_eq]
 
-theorem Embedding.prod_map {f : X → Y} {g : Z → W} (hf : Embedding f) (hg : Embedding g) :
+theorem Embedding.prodMap {f : X → Y} {g : Z → W} (hf : Embedding f) (hg : Embedding g) :
     Embedding (Prod.map f g) :=
-  { hf.toInducing.prod_map hg.toInducing with
+  { hf.toInducing.prodMap hg.toInducing with
     inj := fun ⟨x₁, z₁⟩ ⟨x₂, z₂⟩ => by simp [hf.inj.eq_iff, hg.inj.eq_iff] }
 
-protected theorem IsOpenMap.prod {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : IsOpenMap g) :
-    IsOpenMap fun p : X × Z => (f p.1, g p.2) := by
+@[deprecated (since := "2024-10-05")] alias Embedding.prod_map := Embedding.prodMap
+
+protected theorem IsOpenMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : IsOpenMap g) :
+    IsOpenMap (Prod.map f g) := by
   rw [isOpenMap_iff_nhds_le]
   rintro ⟨a, b⟩
-  rw [nhds_prod_eq, nhds_prod_eq, ← Filter.prod_map_map_eq]
+  rw [nhds_prod_eq, nhds_prod_eq, ← Filter.prod_map_map_eq']
   exact Filter.prod_mono (hf.nhds_le a) (hg.nhds_le b)
 
-protected theorem OpenEmbedding.prod {f : X → Y} {g : Z → W} (hf : OpenEmbedding f)
-    (hg : OpenEmbedding g) : OpenEmbedding fun x : X × Z => (f x.1, g x.2) :=
-  openEmbedding_of_embedding_open (hf.1.prod_map hg.1) (hf.isOpenMap.prod hg.isOpenMap)
+@[deprecated (since := "2024-10-05")] alias IsOpenMap.prod := IsOpenMap.prodMap
+
+protected theorem OpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : OpenEmbedding f)
+    (hg : OpenEmbedding g) : OpenEmbedding (Prod.map f g) :=
+  openEmbedding_of_embedding_open (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
+
+@[deprecated (since := "2024-10-05")] alias OpenEmbedding.prod := OpenEmbedding.prodMap
 
 theorem embedding_graph {f : X → Y} (hf : Continuous f) : Embedding fun x => (x, f x) :=
   embedding_of_embedding_compose (continuous_id.prod_mk hf) continuous_fst embedding_id
 
 theorem embedding_prod_mk (x : X) : Embedding (Prod.mk x : Y → X × Y) :=
   embedding_of_embedding_compose (Continuous.Prod.mk x) continuous_snd embedding_id
+
+theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
+    (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
+  ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
 
 end Prod
 
@@ -842,6 +886,10 @@ theorem continuous_inl : Continuous (@inl X Y) := ⟨fun _ => And.left⟩
 @[continuity, fun_prop]
 -- Porting note: the proof was `continuous_sup_rng_right continuous_coinduced_rng`
 theorem continuous_inr : Continuous (@inr X Y) := ⟨fun _ => And.right⟩
+
+@[fun_prop, continuity]
+lemma continuous_sum_swap : Continuous (@Sum.swap X Y) :=
+  Continuous.sum_elim continuous_inr continuous_inl
 
 theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) ∧ IsOpen (inr ⁻¹' s) :=
   Iff.rfl
@@ -907,7 +955,11 @@ theorem Continuous.sum_map {f : X → Y} {g : Z → W} (hf : Continuous f) (hg :
 
 theorem isOpenMap_sum {f : X ⊕ Y → Z} :
     IsOpenMap f ↔ (IsOpenMap fun a => f (inl a)) ∧ IsOpenMap fun b => f (inr b) := by
-  simp only [isOpenMap_iff_nhds_le, Sum.forall, nhds_inl, nhds_inr, Filter.map_map, comp]
+  simp only [isOpenMap_iff_nhds_le, Sum.forall, nhds_inl, nhds_inr, Filter.map_map, comp_def]
+
+theorem IsOpenMap.sumMap {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : IsOpenMap g) :
+    IsOpenMap (Sum.map f g) := by
+  exact isOpenMap_sum.2 ⟨isOpenMap_inl.comp hf,isOpenMap_inr.comp hg⟩
 
 @[simp]
 theorem isOpenMap_sum_elim {f : X → Z} {g : Y → Z} :
@@ -933,7 +985,7 @@ end Sum
 
 section Subtype
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {p : X → Prop}
+variable [TopologicalSpace X] [TopologicalSpace Y] {p : X → Prop}
 
 theorem inducing_subtype_val {t : Set Y} : Inducing ((↑) : t → Y) := ⟨rfl⟩
 
@@ -970,6 +1022,10 @@ theorem IsOpenMap.restrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs : Is
 nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set X} (hs : IsClosed s) :
     ClosedEmbedding ((↑) : s → X) :=
   closedEmbedding_subtype_val hs
+
+theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
+    IsClosedMap ((↑) : s → X) :=
+  hs.closedEmbedding_subtype_val.isClosedMap
 
 @[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
@@ -1051,7 +1107,7 @@ theorem embedding_inclusion {s t : Set X} (h : s ⊆ t) : Embedding (inclusion h
   embedding_subtype_val.codRestrict _ _
 
 /-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
-by `X`on `s` is discrete, then also the topology induces on `t` is discrete.  -/
+by `X`on `s` is discrete, then also the topology induces on `t` is discrete. -/
 theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X}
     (_ : DiscreteTopology s) (ts : t ⊆ s) : DiscreteTopology t :=
   (embedding_inclusion ts).discreteTopology
@@ -1084,7 +1140,7 @@ end Subtype
 
 section Quotient
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable [TopologicalSpace X] [TopologicalSpace Y]
 variable {r : X → X → Prop} {s : Setoid X}
 
 theorem quotientMap_quot_mk : QuotientMap (@Quot.mk X r) :=
@@ -1110,7 +1166,7 @@ theorem Continuous.quotient_lift {f : X → Y} (h : Continuous f) (hs : ∀ a b,
   continuous_coinduced_dom.2 h
 
 theorem Continuous.quotient_liftOn' {f : X → Y} (h : Continuous f)
-    (hs : ∀ a b, @Setoid.r _ s a b → f a = f b) :
+    (hs : ∀ a b, s a b → f a = f b) :
     Continuous (fun x => Quotient.liftOn' x f hs : Quotient s → Y) :=
   h.quotient_lift hs
 
@@ -1127,7 +1183,7 @@ variable {ι : Type*} {π : ι → Type*} {κ : Type*} [TopologicalSpace X]
   [T : ∀ i, TopologicalSpace (π i)] {f : X → ∀ i : ι, π i}
 
 theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i := by
-  simp only [continuous_iInf_rng, continuous_induced_rng, comp]
+  simp only [continuous_iInf_rng, continuous_induced_rng, comp_def]
 
 @[continuity, fun_prop]
 theorem continuous_pi (h : ∀ i, Continuous fun a => f a i) : Continuous f :=
@@ -1185,16 +1241,50 @@ theorem Pi.continuous_postcomp [TopologicalSpace Y] {g : X → Y} (hg : Continuo
 lemma Pi.induced_precomp' {ι' : Type*} (φ : ι' → ι) :
     induced (fun (f : (∀ i, π i)) (j : ι') ↦ f (φ j)) Pi.topologicalSpace =
     ⨅ i', induced (eval (φ i')) (T (φ i')) := by
-  simp [Pi.topologicalSpace, induced_iInf, induced_compose, comp]
+  simp [Pi.topologicalSpace, induced_iInf, induced_compose, comp_def]
 
 lemma Pi.induced_precomp [TopologicalSpace Y] {ι' : Type*} (φ : ι' → ι) :
     induced (· ∘ φ) Pi.topologicalSpace =
     ⨅ i', induced (eval (φ i')) ‹TopologicalSpace Y› :=
   induced_precomp' φ
 
+@[continuity, fun_prop]
 lemma Pi.continuous_restrict (S : Set ι) :
     Continuous (S.restrict : (∀ i : ι, π i) → (∀ i : S, π i)) :=
   Pi.continuous_precomp' ((↑) : S → ι)
+
+@[continuity, fun_prop]
+lemma Pi.continuous_restrict₂ {s t : Set ι} (hst : s ⊆ t) : Continuous (restrict₂ (π := π) hst) :=
+  continuous_pi fun _ ↦ continuous_apply _
+
+@[continuity, fun_prop]
+theorem Finset.continuous_restrict (s : Finset ι) : Continuous (s.restrict (π := π)) :=
+  continuous_pi fun _ ↦ continuous_apply _
+
+@[continuity, fun_prop]
+theorem Finset.continuous_restrict₂ {s t : Finset ι} (hst : s ⊆ t) :
+    Continuous (Finset.restrict₂ (π := π) hst) :=
+  continuous_pi fun _ ↦ continuous_apply _
+
+variable [TopologicalSpace Z]
+
+@[continuity, fun_prop]
+theorem Pi.continuous_restrict_apply (s : Set X) {f : X → Z} (hf : Continuous f) :
+    Continuous (s.restrict f) := hf.comp continuous_subtype_val
+
+@[continuity, fun_prop]
+theorem Pi.continuous_restrict₂_apply {s t : Set X} (hst : s ⊆ t)
+    {f : t → Z} (hf : Continuous f) :
+    Continuous (restrict₂ (π := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
+
+@[continuity, fun_prop]
+theorem Finset.continuous_restrict_apply (s : Finset X) {f : X → Z} (hf : Continuous f) :
+    Continuous (s.restrict f) := hf.comp continuous_subtype_val
+
+@[continuity, fun_prop]
+theorem Finset.continuous_restrict₂_apply {s t : Finset X} (hst : s ⊆ t)
+    {f : t → Z} (hf : Continuous f) :
+    Continuous (restrict₂ (π := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
 
 lemma Pi.induced_restrict (S : Set ι) :
     induced (S.restrict) Pi.topologicalSpace =
@@ -1269,6 +1359,7 @@ theorem isOpen_pi_iff {s : Set (∀ a, π a)} :
     · exact Subset.trans
         (pi_mono fun i hi => (eval_image_pi_subset hi).trans (h1 i).choose_spec.1) h2
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
+    classical
     refine ⟨I, fun a => ite (a ∈ I) (t a) univ, fun i => ?_, ?_⟩
     · by_cases hi : i ∈ I
       · use t i
@@ -1335,7 +1426,8 @@ theorem pi_generateFrom_eq {π : ι → Type*} {g : ∀ a, Set (Set (π a))} :
     rintro _ ⟨s, i, hi, rfl⟩
     letI := fun a => generateFrom (g a)
     exact isOpen_set_pi i.finite_toSet (fun a ha => GenerateOpen.basic _ (hi a ha))
-  · refine le_iInf fun i => coinduced_le_iff_le_induced.1 <| le_generateFrom fun s hs => ?_
+  · classical
+    refine le_iInf fun i => coinduced_le_iff_le_induced.1 <| le_generateFrom fun s hs => ?_
     refine GenerateOpen.basic _ ⟨update (fun i => univ) i s, {i}, ?_⟩
     simp [hs]
 
@@ -1361,13 +1453,14 @@ theorem pi_generateFrom_eq_finite {π : ι → Type*} {g : ∀ a, Set (Set (π a
     refine isOpen_iff_forall_mem_open.2 fun f hf => ?_
     choose c hcg hfc using fun a => sUnion_eq_univ_iff.1 (hg a) (f a)
     refine ⟨pi i t ∩ pi ((↑i)ᶜ : Set ι) c, inter_subset_left, ?_, ⟨hf, fun a _ => hfc a⟩⟩
+    classical
     rw [← univ_pi_piecewise]
     refine GenerateOpen.basic _ ⟨_, fun a => ?_, rfl⟩
     by_cases a ∈ i <;> simp [*]
 
 theorem induced_to_pi {X : Type*} (f : X → ∀ i, π i) :
     induced f Pi.topologicalSpace = ⨅ i, induced (f · i) inferInstance := by
-  simp_rw [Pi.topologicalSpace, induced_iInf, induced_compose, Function.comp]
+  simp_rw [Pi.topologicalSpace, induced_iInf, induced_compose, Function.comp_def]
 
 /-- Suppose `π i` is a family of topological spaces indexed by `i : ι`, and `X` is a type
 endowed with a family of maps `f i : X → π i` for every `i : ι`, hence inducing a
@@ -1479,7 +1572,7 @@ theorem inducing_sigma {f : Sigma σ → X} :
   refine ⟨fun h ↦ ⟨fun i ↦ h.comp embedding_sigmaMk.1, fun i ↦ ?_⟩, ?_⟩
   · rcases h.isOpen_iff.1 (isOpen_range_sigmaMk (i := i)) with ⟨U, hUo, hU⟩
     refine ⟨U, hUo, ?_⟩
-    simpa [ext_iff] using hU
+    simpa [Set.ext_iff] using hU
   · refine fun ⟨h₁, h₂⟩ ↦ inducing_iff_nhds.2 fun ⟨i, x⟩ ↦ ?_
     rw [Sigma.nhds_mk, (h₁ i).nhds_eq_comap, comp_apply, ← comap_comap, map_comap_of_mem]
     rcases h₂ i with ⟨U, hUo, hU⟩
@@ -1489,7 +1582,7 @@ theorem inducing_sigma {f : Sigma σ → X} :
 @[simp 1100]
 theorem continuous_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} :
     Continuous (Sigma.map f₁ f₂) ↔ ∀ i, Continuous (f₂ i) :=
-  continuous_sigma_iff.trans <| by simp only [Sigma.map, embedding_sigmaMk.continuous_iff, comp]
+  continuous_sigma_iff.trans <| by simp only [Sigma.map, embedding_sigmaMk.continuous_iff, comp_def]
 
 @[continuity, fun_prop]
 theorem Continuous.sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} (hf : ∀ i, Continuous (f₂ i)) :
@@ -1497,7 +1590,7 @@ theorem Continuous.sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁
   continuous_sigma_map.2 hf
 
 theorem isOpenMap_sigma {f : Sigma σ → X} : IsOpenMap f ↔ ∀ i, IsOpenMap fun a => f ⟨i, a⟩ := by
-  simp only [isOpenMap_iff_nhds_le, Sigma.forall, Sigma.nhds_eq, map_map, comp]
+  simp only [isOpenMap_iff_nhds_le, Sigma.forall, Sigma.nhds_eq, map_map, comp_def]
 
 theorem isOpenMap_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} :
     IsOpenMap (Sigma.map f₁ f₂) ↔ ∀ i, IsOpenMap (f₂ i) :=
@@ -1567,8 +1660,8 @@ theorem IsClosed.trans (ht : IsClosed t) (hs : IsClosed s) : IsClosed (t : Set X
 end Monad
 
 section NhdsSet
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}
-  {s : Set X} {t : Set Y} {x : X}
+variable [TopologicalSpace X] [TopologicalSpace Y]
+  {s : Set X} {t : Set Y}
 
 /-- The product of a neighborhood of `s` and a neighborhood of `t` is a neighborhood of `s ×ˢ t`,
 formulated in terms of a filter inequality. -/
@@ -1589,3 +1682,5 @@ theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {px : X → Prop} {
   nhdsSet_prod_le _ _ (mem_of_superset (prod_mem_prod hs ht) fun _ ⟨hx, hy⟩ ↦ hp hx hy)
 
 end NhdsSet
+
+set_option linter.style.longFile 1700

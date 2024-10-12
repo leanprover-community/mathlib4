@@ -3,6 +3,7 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.MvPolynomial.Basic
@@ -213,7 +214,7 @@ theorem isWeightedHomogeneous_one (w : σ → M) : IsWeightedHomogeneous w (1 : 
 theorem isWeightedHomogeneous_X (w : σ → M) (i : σ) :
     IsWeightedHomogeneous w (X i : MvPolynomial σ R) (w i) := by
   apply isWeightedHomogeneous_monomial
-  simp only [weight, LinearMap.toAddMonoidHom_coe, total_single, one_nsmul]
+  simp only [weight, LinearMap.toAddMonoidHom_coe, linearCombination_single, one_nsmul]
 
 namespace IsWeightedHomogeneous
 
@@ -399,7 +400,7 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_same {m : M} {p : MvP
   · split_ifs
     · rfl
     rw [zero_coeff]
-  · rw [hp zero_coeff, if_pos]; rfl
+  · rw [hp zero_coeff, if_pos rfl]
 
 theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
     {p : MvPolynomial σ R} (hp : IsWeightedHomogeneous w p m) :
@@ -409,9 +410,7 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
   ext x
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
-  · split_ifs
-    · rw [zero_coeff]; rw [coeff_zero]
-    · rw [coeff_zero]
+  · simp [zero_coeff]
   · rw [if_neg]
     · rw [coeff_zero]
     · rw [hp zero_coeff]; exact Ne.symm hn
@@ -424,8 +423,8 @@ theorem weightedHomogeneousComponent_of_mem [DecidableEq M] {m n : M}
   ext x
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
-  · split_ifs
-    all_goals simp only [zero_coeff, coeff_zero]
+  · split_ifs <;>
+    simp only [zero_coeff, coeff_zero]
   · rw [h zero_coeff]
     simp only [show n = m ↔ m = n from eq_comm]
     split_ifs with h1
@@ -439,8 +438,7 @@ theorem weightedHomogeneousComponent_of_isWeightedHomogeneous_same
   ext x
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
-  · split_ifs
-    rfl; rw [zero_coeff]
+  · simp [zero_coeff]
   · rw [hp zero_coeff, if_pos rfl]
 
 theorem weightedHomogeneousComponent_of_isWeightedHomogeneous_ne
@@ -450,7 +448,7 @@ theorem weightedHomogeneousComponent_of_isWeightedHomogeneous_ne
   ext x
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
-  · split_ifs <;> simp only [zero_coeff, coeff_zero]
+  · simp [zero_coeff]
   · rw [if_neg (by simp only [hp zero_coeff, hn.symm, not_false_eq_true]), coeff_zero]
 
 variable (R w)
@@ -508,7 +506,7 @@ theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i
   rcases Classical.em (d = 0) with (rfl | hd)
   · simp only [coeff_weightedHomogeneousComponent, if_pos, map_zero, coeff_zero_C]
   · rw [coeff_weightedHomogeneousComponent, if_neg, coeff_C, if_neg (Ne.symm hd)]
-    simp only [weight, LinearMap.toAddMonoidHom_coe, Finsupp.total_apply, Finsupp.sum,
+    simp only [weight, LinearMap.toAddMonoidHom_coe, Finsupp.linearCombination_apply, Finsupp.sum,
       sum_eq_zero_iff, Finsupp.mem_support_iff, Ne, smul_eq_zero, not_forall, not_or,
       and_self_left, exists_prop]
     simp only [DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply, not_forall] at hd
@@ -520,13 +518,8 @@ def NonTorsionWeight (w : σ → M) :=
   ∀ n x, n • w x = (0 : M) → n = 0
 
 theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
-    NonTorsionWeight w := by
-  intro n x
-  rw [smul_eq_zero]
-  intro hnx
-  cases' hnx with hn hx
-  · exact hn
-  · exact absurd hx (hw x)
+    NonTorsionWeight w :=
+  fun _ x hnx => (smul_eq_zero_iff_left (hw x)).mp hnx
 
 end CanonicallyOrderedAddCommMonoid
 
@@ -538,7 +531,7 @@ variable [CanonicallyLinearOrderedAddCommMonoid M] {w : σ → M} (φ : MvPolyno
   has weighted degree zero if and only if `∀ x : σ, m x = 0`. -/
 theorem weightedDegree_eq_zero_iff (hw : NonTorsionWeight w) {m : σ →₀ ℕ} :
     weight w m = 0 ↔ ∀ x : σ, m x = 0 := by
-  simp only [weight, Finsupp.total, LinearMap.toAddMonoidHom_coe, coe_lsum,
+  simp only [weight, Finsupp.linearCombination, LinearMap.toAddMonoidHom_coe, coe_lsum,
     LinearMap.coe_smulRight, LinearMap.id_coe, id_eq]
   rw [Finsupp.sum, Finset.sum_eq_zero_iff]
   apply forall_congr'
@@ -589,7 +582,7 @@ theorem weightedHomogeneousComponent_eq_zero_of_not_mem [DecidableEq M]
 
 variable (R)
 
-/-- The `decompose'` argument of `weightedDecomposition`.  -/
+/-- The `decompose'` argument of `weightedDecomposition`. -/
 def decompose' [DecidableEq M] := fun φ : MvPolynomial σ R =>
   DirectSum.mk (fun i : M => ↥(weightedHomogeneousSubmodule R w i))
     (Finset.image (weight w) φ.support) fun m =>

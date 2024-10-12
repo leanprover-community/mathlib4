@@ -40,23 +40,42 @@ open Function
 variable {α β : Type*}
 
 section Group
-variable [Lattice α] [Group α] [CovariantClass α α (· * ·) (· ≤ ·)]
-  [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [Lattice α] [Group α]
 
 -- Special case of Bourbaki A.VI.9 (1)
 @[to_additive]
-lemma mul_sup (a b c : α) : c * (a ⊔ b) = c * a ⊔ c * b := (OrderIso.mulLeft _).map_sup _ _
+lemma mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+    c * (a ⊔ b) = c * a ⊔ c * b :=
+  (OrderIso.mulLeft _).map_sup _ _
 
 @[to_additive]
-lemma sup_mul (a b c : α) : (a ⊔ b) * c = a * c ⊔ b * c := (OrderIso.mulRight _).map_sup _ _
+lemma sup_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+    (a ⊔ b) * c = a * c ⊔ b * c :=
+  (OrderIso.mulRight _).map_sup _ _
 
 @[to_additive]
-lemma mul_inf (a b c : α) : c * (a ⊓ b) = c * a ⊓ c * b := (OrderIso.mulLeft _).map_inf _ _
+lemma mul_inf [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+    c * (a ⊓ b) = c * a ⊓ c * b :=
+  (OrderIso.mulLeft _).map_inf _ _
 
 @[to_additive]
-lemma inf_mul (a b c : α) : (a ⊓ b) * c = a * c ⊓ b * c := (OrderIso.mulRight _).map_inf _ _
+lemma inf_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+    (a ⊓ b) * c = a * c ⊓ b * c :=
+  (OrderIso.mulRight _).map_inf _ _
 
--- Special case of Bourbaki A.VI.9 (2)
+@[to_additive]
+lemma sup_div [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+    (a ⊔ b) / c = a / c ⊔ b / c :=
+  (OrderIso.divRight _).map_sup _ _
+
+@[to_additive]
+lemma inf_div [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+    (a ⊓ b) / c = a / c ⊓ b / c :=
+  (OrderIso.divRight _).map_inf _ _
+
+section
+variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+
 @[to_additive] lemma inv_sup (a b : α) : (a ⊔ b)⁻¹ = a⁻¹ ⊓ b⁻¹ := (OrderIso.inv α).map_sup _ _
 
 @[to_additive] lemma inv_inf (a b : α) : (a ⊓ b)⁻¹ = a⁻¹ ⊔ b⁻¹ := (OrderIso.inv α).map_inf _ _
@@ -65,24 +84,20 @@ lemma inf_mul (a b c : α) : (a ⊓ b) * c = a * c ⊓ b * c := (OrderIso.mulRig
 lemma div_sup (a b c : α) : c / (a ⊔ b) = c / a ⊓ c / b := (OrderIso.divLeft c).map_sup _ _
 
 @[to_additive]
-lemma sup_div (a b c : α) : (a ⊔ b) / c = a / c ⊔ b / c := (OrderIso.divRight _).map_sup _ _
-
-@[to_additive]
 lemma div_inf (a b c : α) : c / (a ⊓ b) = c / a ⊔ c / b := (OrderIso.divLeft c).map_inf _ _
-
-@[to_additive]
-lemma inf_div (a b c : α) : (a ⊓ b) / c = a / c ⊓ b / c := (OrderIso.divRight _).map_inf _ _
 
 -- In fact 0 ≤ n•a implies 0 ≤ a, see L. Fuchs, "Partially ordered algebraic systems"
 -- Chapter V, 1.E
 -- See also `one_le_pow_iff` for the existing version in linear orders
 @[to_additive]
 lemma pow_two_semiclosed
-    [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α} (ha : 1 ≤ a ^ 2) : 1 ≤ a := by
+    {a : α} (ha : 1 ≤ a ^ 2) : 1 ≤ a := by
   suffices this : (a ⊓ 1) * (a ⊓ 1) = a ⊓ 1 by
     rwa [← inf_eq_right, ← mul_right_eq_self]
   rw [mul_inf, inf_mul, ← pow_two, mul_one, one_mul, inf_assoc, inf_left_idem, inf_comm,
     inf_assoc, inf_of_le_left ha]
+
+end
 
 end Group
 

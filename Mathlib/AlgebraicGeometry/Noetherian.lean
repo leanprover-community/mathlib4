@@ -58,6 +58,7 @@ section localizationProps
 variable {R : Type u} [CommRing R] (S : Finset R) (hS : Ideal.span (α := R) S = ⊤)
   (hN : ∀ s : S, IsNoetherianRing (Away (M := R) s))
 
+include hS hN in
 /-- Let `R` be a ring, and `f i` a finite collection of elements of `R` generating the unit ideal.
 If the localization of `R` at each `f i` is noetherian, so is `R`.
 

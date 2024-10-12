@@ -216,7 +216,10 @@ theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
     simp [← Multicoequalizer.ι_sigmaπ]
     rfl ⟩
 
-variable (F : C ⥤ C') [H : ∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
+variable (F : C ⥤ C')
+
+section
+variable [∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
 
 instance (i j k : D.J) : HasPullback (F.map (D.f i j)) (F.map (D.f i k)) :=
   ⟨⟨⟨_, isLimitOfHasPullbackOfPreservesLimit F (D.f i j) (D.f i k)⟩⟩⟩
@@ -291,12 +294,16 @@ theorem diagramIso_inv_app_right (i : D.J) :
     (D.diagramIso F).inv.app (WalkingMultispan.right i) = 𝟙 _ :=
   rfl
 
+end
+
 variable [HasMulticoequalizer D.diagram] [PreservesColimit D.diagram.multispan F]
 
 theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
   ⟨⟨⟨_, PreservesColimit.preserves (colimit.isColimit _)⟩⟩⟩
 
 attribute [local instance] hasColimit_multispan_comp
+
+variable [∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
 
 theorem hasColimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
   hasColimitOfIso (D.diagramIso F).symm
@@ -381,7 +388,7 @@ structure GlueData' where
   cocycle : ∀ i j k hij hik hjk, t' i j k hij hik hjk ≫
     t' j k i hjk hij.symm hik.symm ≫ t' k i j hik.symm hjk.symm hij = 𝟙 _
 
-attribute [local instance] GlueData'.f_mono GlueData'.f_hasPullback mono_comp
+attribute [local instance] GlueData'.f_mono GlueData'.f_hasPullback
 
 attribute [reassoc (attr := simp)] GlueData'.t_inv GlueData'.cocycle
 

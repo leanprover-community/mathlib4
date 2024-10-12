@@ -58,7 +58,7 @@ theorem exists_deriv_eq_zero (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI
 
 /-- **Rolle's Theorem**, a version for a function on an open interval: if `f` has derivative `f'`
 on `(a, b)` and has the same limit `l` at `𝓝[>] a` and `𝓝[<] b`, then `f' c = 0`
-for some `c ∈ (a, b)`.  -/
+for some `c ∈ (a, b)`. -/
 theorem exists_hasDerivAt_eq_zero' (hab : a < b) (hfa : Tendsto f (𝓝[>] a) (𝓝 l))
     (hfb : Tendsto f (𝓝[<] b) (𝓝 l)) (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x) :
     ∃ c ∈ Ioo a b, f' c = 0 :=
