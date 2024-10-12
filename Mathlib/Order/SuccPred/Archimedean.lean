@@ -139,7 +139,7 @@ abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
   decidableLE := inferInstance
   decidableLT := inferInstance
 
-lemma lt_or_le_of_dierected [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : α} (h₁ : v₁ ≤ r)
+lemma lt_or_le_of_directed [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : α} (h₁ : v₁ ≤ r)
     (h₂ : v₂ ≤ r) : v₁ < v₂ ∨ v₂ ≤ v₁ := by
   rw [Classical.or_iff_not_imp_right]
   intro nh
