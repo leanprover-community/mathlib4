@@ -56,6 +56,15 @@ structure on `M` is semisimple. This is equivalent to saying that every `f`-inva
 of `M` has an `f`-invariant complement: see `Module.End.isSemisimple_iff`. -/
 abbrev IsSemisimple := IsSemisimpleModule R[X] (AEval' f)
 
+/-- A weaker version of semisimplicity that only prescribes behaviour on finitely-generated
+submodules. -/
+def IsFinitelySemisimple : Prop :=
+  ∀ (p : Submodule R M) (hp : p ≤ p.comap f),
+    Module.Finite R p → IsSemisimple (LinearMap.restrict f hp)
+
+-- TODO API for `IsFinitelySemisimple` (including implied by `IsSemisimple` and equivalent for
+-- finitely-generated modules).
+
 variable {f g}
 
 lemma isSemisimple_iff :
@@ -65,6 +74,42 @@ lemma isSemisimple_iff :
   let e := CompleteLatticeHom.toOrderIsoRangeOfInjective _ (AEval.injective_comapSubmodule R M f)
   simp_rw [Module.End.IsSemisimple, IsSemisimpleModule, e.complementedLattice_iff,
     s.isComplemented_iff, ← SetLike.mem_coe, h, mem_setOf_eq]
+
+lemma isFinitelySemisimple_iff :
+    f.IsFinitelySemisimple ↔ ∀ (p : Submodule R M) (hp : p ≤ p.comap f),
+      Module.Finite R p → IsSemisimple (LinearMap.restrict f hp) :=
+  Iff.rfl
+
+/-- A characterisation of `Module.End.IsFinitelySemisimple` using only the lattice of submodules of
+`M` (thus avoiding submodules of submodules). -/
+lemma isFinitelySemisimple_iff' :
+    f.IsFinitelySemisimple ↔ ∀ p : Submodule R M, p ≤ p.comap f → Module.Finite R p →
+      ∀ q, q ≤ q.comap f → q ≤ p → ∃ r, r ≤ p ∧ r ≤ r.comap f ∧ Disjoint q r ∧ q ⊔ r = p := by
+  -- Holy moly this is revolting. Fix it up. Should `Submodule.map_comap_subtype` feature?
+  -- Probably `Set.Iic.isCompl_iff` can help.
+  simp_rw [isFinitelySemisimple_iff, isSemisimple_iff]
+  refine forall₃_congr fun p hp _ ↦ ⟨fun hp'' q hq hq' ↦ ?_, fun hp'' q hq ↦ ?_⟩
+  · obtain ⟨r, hr, hr'⟩ := hp'' (q.comap p.subtype) (fun x hx ↦ by simpa using hq hx)
+    have : q = (q.comap p.subtype).map p.subtype := by ext; simp [hq'] -- Missing API?
+    refine ⟨r.map p.subtype, p.map_subtype_le r, ?_, ?_, ?_⟩
+    · rintro - ⟨⟨x, hx⟩, hx', rfl⟩
+      exact ⟨⟨f x, hp hx⟩, hr hx', rfl⟩
+    · -- Missing API?
+      rw [this, disjoint_iff, ← Submodule.map_inf _ p.injective_subtype, hr'.inf_eq_bot,
+        Submodule.map_bot]
+    · -- Missing API?
+      rw [this, ← Submodule.map_sup, hr'.sup_eq_top, Submodule.map_top, Submodule.range_subtype]
+  · obtain ⟨r, hr, hr', hr'', hr'''⟩ := hp'' (q.map p.subtype)
+      (by rintro - ⟨⟨x, hx⟩, hx', rfl⟩; exact ⟨⟨f x, hp hx⟩, hq hx', rfl⟩) (p.map_subtype_le q)
+    have : q = (q.map p.subtype).comap p.subtype := by ext; simp -- Missing API?
+    have this' : r = (r.comap p.subtype).map p.subtype := by ext; simp [hr] -- Missing API?
+    refine ⟨r.comap p.subtype, fun x hx ↦ hr' hx, ?_, ?_⟩
+    · rw [disjoint_iff, this, ← Submodule.comap_inf, hr''.eq_bot, Submodule.comap_bot,
+        Submodule.ker_subtype]
+    · rw [this', ← Submodule.map_sup] at hr'''
+      conv_rhs at hr''' => rw [← p.map_subtype_top]
+      rw [codisjoint_iff]
+      exact Submodule.map_injective_of_injective p.injective_subtype hr'''
 
 @[simp]
 lemma isSemisimple_zero [IsSemisimpleModule R M] : IsSemisimple (0 : Module.End R M) := by
@@ -76,11 +121,78 @@ lemma isSemisimple_id [IsSemisimpleModule R M] : IsSemisimple (LinearMap.id : Mo
 
 @[simp] lemma isSemisimple_neg : (-f).IsSemisimple ↔ f.IsSemisimple := by simp [isSemisimple_iff]
 
+variable (f) in
+private lemma _root_.LinearEquiv.isSemisimple_aux {M₂ : Type*} [AddCommGroup M₂] [Module R M₂]
+    (g : End R M₂) (e : M ≃ₗ[R] M₂) (h : e ∘ₗ f = g ∘ₗ e) (hf : f.IsSemisimple) :
+    g.IsSemisimple := by
+  rw [← e.eq_toLinearMap_symm_comp] at h
+  simp only [h, isSemisimple_iff] at hf ⊢
+  intro p hp
+  obtain ⟨q, hq₁, hq₂⟩ := hf (p.comap e) (by
+    rw [Submodule.comap_comp]
+    erw [← p.comap_comp (e.symm : M₂ →ₗ[R] M) (e : M →ₗ[R] M₂)]
+    simp only [LinearEquiv.comp_coe, LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap,
+      Submodule.comap_id]
+    rw [Submodule.comap_comp]
+    exact Submodule.comap_mono hp)
+  refine ⟨q.map e, ?_, ?_⟩
+  · have foo : q.map e = q.comap e.symm := by ext; aesop
+    erw [Submodule.map_le_iff_le_comap, foo, ← Submodule.comap_comp, ← Submodule.comap_comp]
+    exact hq₁
+  · -- How can this not exist!?
+    let e' : BoundedLatticeHom (Submodule R M) (Submodule R M₂) :=
+      { toFun := fun r ↦ r.map e
+        map_sup' := fun a b ↦ Submodule.map_sup a b e
+        map_inf' := fun a b ↦ Submodule.map_inf _ e.injective
+        map_top' := by simp
+        map_bot' := by simp }
+    convert hq₂.map e'
+    simp [e', Submodule.map_comap_eq_of_surjective e.surjective]
+
+variable (f) in
+protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddCommGroup M₂] [Module R M₂]
+    (g : End R M₂) (e : M ≃ₗ[R] M₂) (he : e ∘ₗ f = g ∘ₗ e) :
+    f.IsSemisimple ↔ g.IsSemisimple := by
+  refine ⟨LinearEquiv.isSemisimple_aux f g e he, LinearEquiv.isSemisimple_aux g f e.symm ?_⟩
+  rw [← e.eq_toLinearMap_symm_comp] at he
+  simp [he, LinearMap.comp_assoc]
+
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
   have ⟨n, h0⟩ := hn
   rw [← aeval_X (R := R) f]; rw [← aeval_X_pow (R := R) f] at h0
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
   exact hs.annihilator_isRadical _ _ ⟨n, h0⟩
+
+lemma eq_zero_of_isNilpotent_of_isFinitelySemisimple
+    (hn : IsNilpotent f) (hs : IsFinitelySemisimple f) : f = 0 := by
+  -- TODO Tidy up this ugly proof
+  obtain ⟨k : ℕ, hk : f ^ k = 0⟩ := id hn
+  ext x
+  let p := Submodule.span R {(f ^ i) x | (i : ℕ) (_ : i ≤ k)}
+  have hp : p ≤ p.comap f := by
+    simp only [p, Submodule.span_le]
+    rintro - ⟨i, hi, rfl⟩
+    simp only [exists_prop, Submodule.comap_coe, mem_preimage, SetLike.mem_coe]
+    apply Submodule.subset_span
+    rcases lt_trichotomy k i with hik | rfl | hik
+    · linarith
+    · use k
+      simp [hk]
+    · refine ⟨i + 1, hik, ?_⟩
+      simp only [LinearMap.pow_apply, iterate_succ, comp_apply]
+      exact iterate_succ_apply' f i x
+  have hp' : Module.Finite R p := by
+    apply Module.Finite.span_of_finite
+    let g : ℕ → M := fun i ↦ (f ^ i) x
+    have : {(f ^ i) x | (i : ℕ) (_ : i ≤ k)} = g '' Iic k := by ext; simp [g]
+    rw [this]
+    exact toFinite (g '' Iic k)
+  let f' : Module.End R p := LinearMap.restrict f hp
+  replace hs : IsSemisimple f' := hs p hp hp'
+  have hn : IsNilpotent f' := isNilpotent.restrict hp hn
+  have : f' = 0 := eq_zero_of_isNilpotent_isSemisimple hn hs
+  simpa [f', LinearMap.restrict_apply, Subtype.ext_iff] using
+    LinearMap.congr_fun this ⟨x, Submodule.subset_span ⟨0, k.zero_le, rfl⟩⟩
 
 @[simp]
 lemma isSemisimple_sub_algebraMap_iff {μ : R} :
@@ -101,6 +213,37 @@ lemma IsSemisimple.restrict {p : Submodule R M} {hp : MapsTo f p p} (hf : f.IsSe
   rw [← q.comap_map_eq_of_injective p.injective_subtype]
   exact p.isCompl_comap_subtype_of_isCompl_of_le hr₂ <| p.map_subtype_le q
 
+-- TODO DRY up the below two lemmas wrt their `IsSemisimple` counterparts
+
+@[simp]
+lemma isFinitelySemisimple_sub_algebraMap_iff {μ : R} :
+    (f - algebraMap R (End R M) μ).IsFinitelySemisimple ↔ f.IsFinitelySemisimple := by
+  -- 🤮
+  suffices ∀ p : Submodule R M, p ≤ p.comap (f - algebraMap R (Module.End R M) μ) ↔ p ≤ p.comap f by
+    simp_rw [isFinitelySemisimple_iff, this]
+    refine forall₃_congr fun p hp hp' ↦ ?_
+    rw [← LinearMap.restrict_sub hp (fun _ hx ↦ p.smul_mem μ hx)]
+    exact isSemisimple_sub_algebraMap_iff
+  refine fun p ↦ ⟨fun h x hx ↦ ?_, fun h x hx ↦ p.sub_mem (h hx) (p.smul_mem μ hx)⟩
+  simpa using p.add_mem (h hx) (p.smul_mem μ hx)
+
+lemma IsFinitelySemisimple.restrict {p : Submodule R M} {hp : MapsTo f p p}
+    (hf : f.IsFinitelySemisimple) :
+    IsFinitelySemisimple (f.restrict hp) := by
+  -- 🤮
+  simp only [isFinitelySemisimple_iff] at hf ⊢
+  intro r hr₁ hr₂
+  have : r = (r.map p.subtype).comap p.subtype := by ext; simp -- Missing API?
+  set r' := r.map p.subtype
+  have hr₁' : r' ≤ r'.comap f := by
+    rintro - ⟨⟨x, hx₀⟩, hx, rfl⟩
+    specialize hr₁ hx
+    simp only [Submodule.mem_comap, LinearMap.restrict_apply] at hr₁
+    simpa [r', hr₁] using hp hx₀
+  have hr₂' : Module.Finite R r' := Finite.map r p.subtype
+  specialize hf r' hr₁' hr₂'
+  let e : r ≃ₗ[R] r' := p.equivSubtypeMap r
+  rwa [e.isSemisimple_iff ((LinearMap.restrict f hp).restrict hr₁) (LinearMap.restrict f hr₁') rfl]
 end CommRing
 
 section field
