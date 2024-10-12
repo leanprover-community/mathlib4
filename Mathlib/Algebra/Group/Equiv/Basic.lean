@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Logic.Equiv.Basic
+import Mathlib.Util.SetSynthOrder
 
 /-!
 # Multiplicative and additive equivs
@@ -116,6 +117,9 @@ instance (priority := 100) instMulHomClass (F : Type*)
     [Mul M] [Mul N] [EquivLike F M N] [h : MulEquivClass F M N] : MulHomClass F M N :=
   { h with }
 
+set_synth_order MulEquivClass.instMulHomClass #[5, 6, 3, 4]
+set_synth_order AddEquivClass.instAddHomClass #[5, 6, 3, 4]
+
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) instMonoidHomClass
@@ -129,6 +133,9 @@ instance (priority := 100) instMonoidHomClass
           congr_arg _ (EquivLike.right_inv e 1).symm
         _ = e (EquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
         _ = 1 := EquivLike.right_inv e 1 }
+
+set_synth_order MulEquivClass.instMonoidHomClass #[3, 6, 4, 5]
+set_synth_order AddEquivClass.instAddMonoidHomClass #[3, 6, 4, 5]
 
 variable {F}
 
