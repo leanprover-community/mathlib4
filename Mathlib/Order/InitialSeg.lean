@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 import Mathlib.Data.Sum.Order
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
-import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.UpperLower.Defs
 import Mathlib.Order.WellFounded
 /-!
 # Initial and principal segments
