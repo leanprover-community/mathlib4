@@ -455,6 +455,16 @@ theorem toOpen_toSpecΓ_app {X : Scheme.{u}} (U) :
   dsimp
   exact Category.id_comp _
 
+lemma ΓSpecIso_inv_ΓSpec_adjunction_homEquiv {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
+    (Scheme.ΓSpecIso B).inv ≫ ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).app ⊤ = φ := by
+  simp only [Adjunction.homEquiv_apply, Scheme.Spec_map, Opens.map_top, Scheme.comp_app]
+  simp
+
+lemma ΓSpec_adjunction_homEquiv_eq {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
+    (((ΓSpec.adjunction.homEquiv X (op B)) φ.op).app ⊤) = (Scheme.ΓSpecIso B).hom ≫ φ := by
+  simp_rw [← ΓSpecIso_inv_ΓSpec_adjunction_homEquiv φ]
+  simp
+
 theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
     (Scheme.ΓSpecIso Γ(X, U)).hom = (Spec.map U.topIso.inv).app ⊤ ≫
       U.toScheme.toSpecΓ.app ⊤ ≫ U.topIso.hom := by simp
