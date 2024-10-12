@@ -104,6 +104,9 @@ set_option linter.docPrime false
 theorem coe_omega' : omega' = enumOrd {x | IsInitial x} :=
   rfl
 
+theorem omega'_strictMono : StrictMono omega' :=
+  omega'.strictMono
+
 theorem omega'_lt {o₁ o₂ : Ordinal} : omega' o₁ < omega' o₂ ↔ o₁ < o₂ :=
   omega'.lt_iff_lt
 
@@ -134,13 +137,27 @@ theorem omega'_natCast (n : ℕ) : omega' n = n := by
     rw [Nat.cast_lt]
     exact lt_succ n
 
+theorem omega'_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b < o, omega' b < a) :
+    omega' o ≤ a :=
+  enumOrd_le_of_forall_lt ha H
+
 @[simp]
 theorem omega'_omega0 : omega' ω = ω := by
-  apply (le_omega'_apply _).antisymm' (enumOrd_le_of_forall_lt _ _)
-  · exact isInitial_omega0
-  · intro a ha
-    obtain ⟨n, rfl⟩ := lt_omega0.1 ha
-    exact (omega'_natCast _).trans_lt ha
+  apply (le_omega'_apply _).antisymm' (omega'_le_of_forall_lt isInitial_omega0 _)
+  intro a ha
+  obtain ⟨n, rfl⟩ := lt_omega0.1 ha
+  exact (omega'_natCast _).trans_lt ha
+
+theorem isNormal_omega' : IsNormal omega' := by
+  rw [isNormal_iff_strictMono_limit]
+  use omega'_strictMono
+  intro o ho a ha
+  apply (omega'_le_of_forall_lt (isInitial_ord _) _).trans (ord_card_le a)
+  intro b hb
+  rw [← IsInitial.card_lt_card (isInitial_omega' _) (isInitial_ord _), card_ord]
+  apply lt_of_lt_of_le _ (card_le_card <| ha _ (ho.succ_lt hb))
+  rw [IsInitial.card_lt_card (isInitial_omega' _) (isInitial_omega' _), omega'_lt]
+  exact lt_succ b
 
 /-- The `omega` function gives the infinite initial ordinals listed by their ordinal index.
 `omega 0 = ω`, `omega 1 = ω₁` is the first uncountable ordinal, and so on.
@@ -181,26 +198,28 @@ theorem omega0_lt_omega1 : ω < ω₁ := by
 @[deprecated omega0_lt_omega1 (since := "2024-10-11")]
 alias omega_lt_omega1 := omega0_lt_omega1
 
+theorem isNormal_omega : IsNormal omega :=
+  isNormal_omega'.trans (add_isNormal _)
+
 end Ordinal
 
 /-! ### Aleph cardinals -/
+
+namespace Cardinal
 
 /-- The `aleph'` function gives the cardinals listed by their ordinal index. `aleph' n = n`,
 `aleph' ω = ℵ₀`, `aleph' (ω + 1) = succ ℵ₀`, etc.
 
 For the more common aleph function skipping over finite cardinals, see `Cardinal.aleph`. -/
-def Cardinal.aleph' : Ordinal.{u} ≃o Cardinal.{u} :=
+def aleph' : Ordinal.{u} ≃o Cardinal.{u} :=
   (enumOrdOrderIso _ not_bddAbove_isInitial).trans isInitialIso
-
-set_option linter.docPrime false in
-@[simp]
-theorem Ordinal.card_omega' (o : Ordinal) : (omega' o).card = aleph' o :=
-  rfl
-
-namespace Cardinal
 
 -- This shouldn't fire for theorems ending in `aleph'`.
 set_option linter.docPrime false
+
+@[simp]
+theorem _root_.Ordinal.card_omega' (o : Ordinal) : (omega' o).card = aleph' o :=
+  rfl
 
 @[simp]
 theorem ord_aleph' (o : Ordinal) : (aleph' o).ord = omega' o := by
@@ -334,6 +353,14 @@ For a version including finite cardinals, see `Cardinal.aleph'`. -/
 def aleph : Ordinal ↪o Cardinal :=
   (OrderEmbedding.addLeft ω).trans aleph'.toOrderEmbedding
 
+@[simp]
+theorem _root_.Ordinal.card_omega (o : Ordinal) : (omega o).card = aleph o :=
+  rfl
+
+@[simp]
+theorem ord_aleph (o : Ordinal) : (aleph o).ord = omega o := by
+  rw [← o.card_omega, (isInitial_omega o).ord_card]
+
 theorem aleph_eq_aleph' (o : Ordinal) : aleph o = aleph' (ω + o) :=
   rfl
 
@@ -405,12 +432,15 @@ theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = aleph o :=
       rwa [← aleph0_le_aleph', aleph'.apply_symm_apply]⟩,
     fun ⟨o, e⟩ => e.symm ▸ aleph0_le_aleph _⟩
 
-theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
-  ⟨fun o => ord_lt_ord.2 <| aleph'_lt.2 <| lt_succ o, fun o l a => by
-    simp [ord_le, aleph'_le_of_limit l]⟩
+@[deprecated isNormal_omega' (since := "2024-10-11")]
+theorem aleph'_isNormal : IsNormal (ord ∘ aleph') := by
+  convert isNormal_omega'
+  exact funext ord_aleph'
 
-theorem aleph_isNormal : IsNormal (ord ∘ aleph) :=
-  aleph'_isNormal.trans <| add_isNormal ω
+@[deprecated isNormal_omega (since := "2024-10-11")]
+theorem aleph_isNormal : IsNormal (ord ∘ aleph) := by
+  convert isNormal_omega
+  exact funext ord_aleph
 
 theorem succ_aleph0 : succ ℵ₀ = aleph 1 := by rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
 

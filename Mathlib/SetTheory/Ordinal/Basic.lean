@@ -728,9 +728,6 @@ theorem type_nat_lt : @type ℕ (· < ·) _ = ω :=
 theorem card_omega0 : card ω = ℵ₀ :=
   rfl
 
-@[deprecated (since := "2024-09-30")]
-alias card_omega := card_omega0
-
 @[simp]
 theorem lift_omega0 : lift ω = ω :=
   lift_lift _
