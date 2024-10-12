@@ -3754,6 +3754,7 @@ import Mathlib.Order.Synonym
 import Mathlib.Order.TypeTags
 import Mathlib.Order.ULift
 import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.UpperLower.Defs
 import Mathlib.Order.UpperLower.Hom
 import Mathlib.Order.UpperLower.LocallyFinite
 import Mathlib.Order.WellFounded
