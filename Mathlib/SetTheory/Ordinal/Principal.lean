@@ -87,11 +87,31 @@ end Arbitrary
 
 /-! ### Principal ordinals are unbounded -/
 
-#adaptation_note /-- 2024-04-23
-After https://github.com/leanprover/lean4/pull/3965,
-we need to write `lt_blsub₂.{u}` twice below,
-where previously the universe annotation was not necessary.
-This appears to be correct behaviour, as `lt_blsub₂.{0}` also works. -/
+/-- Provides an explicit ordinal, principal under any specified operation, and at least larger than
+`o`. -/
+theorem principal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
+    Principal op (nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2)) o) := by
+  intro a b ha hb
+  rw [lt_nfp] at *
+  obtain ⟨m, hm⟩ := ha
+  obtain ⟨n, hn⟩ := hb
+  obtain h | h := le_total
+    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2))^[m] o)
+    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2))^[n] o)
+  · use n + 1
+    rw [Function.iterate_succ']
+    dsimp
+    apply (lt_succ _).trans_le
+    apply Ordinal.le_iSup
+
+/-- Principal ordinals under any operation are unbounded. -/
+theorem not_bddAbove_principal (op : Ordinal → Ordinal → Ordinal) :
+    ¬ BddAbove { o | Principal op o } := by
+  rintro ⟨a, ha⟩
+  exact ((le_nfp _ _).trans (ha (principal_nfp_iSup op (succ a)))).not_lt (lt_succ a)
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-10-11")]
 theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     Principal op (nfp (fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b)) o) := by
   intro a b ha hb
@@ -108,10 +128,12 @@ theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordin
     rw [Function.iterate_succ']
     exact lt_blsub₂ (@fun a _ b _ => op a b) hm (hn.trans_le h)
 
-/-- Principal ordinals under any operation form a ZFC proper class. -/
+set_option linter.deprecated false in
 theorem unbounded_principal (op : Ordinal → Ordinal → Ordinal) :
     Set.Unbounded (· < ·) { o | Principal op o } := fun o =>
   ⟨_, principal_nfp_blsub₂ op o, (le_nfp _ o).not_lt⟩
+
+#exit
 
 /-! #### Additive principal ordinals -/
 
