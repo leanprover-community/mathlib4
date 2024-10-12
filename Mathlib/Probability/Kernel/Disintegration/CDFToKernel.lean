@@ -63,7 +63,8 @@ to `ν` if is measurable, if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for a
 and for all measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`.
 Also the `ℚ → ℝ` function `f (a, b)` should satisfy the properties of a Sieltjes function for
 `(ν a)`-almost all `b : β`. -/
-structure IsRatCondKernelCDF (f : α × β → ℚ → ℝ) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) : Prop :=
+structure IsRatCondKernelCDF (f : α × β → ℚ → ℝ) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
+    Prop where
   measurable : Measurable f
   isRatStieltjesPoint_ae (a : α) : ∀ᵐ b ∂(ν a), IsRatStieltjesPoint f (a, b)
   integrable (a : α) (q : ℚ) : Integrable (fun b ↦ f (a, b) q) (ν a)
@@ -147,7 +148,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
       · exact mod_cast ha.le
       · refine le_of_forall_lt_rat_imp_le fun q hq ↦ h q ?_
         exact mod_cast hq
-    · exact fun _ ↦ measurableSet_Iic.nullMeasurableSet
+    · exact fun _ ↦ nullMeasurableSet_Iic
     · refine Monotone.directed_ge fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
       exact mod_cast hrr'
     · obtain ⟨q, hq⟩ := exists_rat_gt x
@@ -234,7 +235,7 @@ variable {f : α × β → ℚ → ℝ}
 conditions are the same, but the limit properties of `IsRatCondKernelCDF` are replaced by
 limits of integrals. -/
 structure IsRatCondKernelCDFAux (f : α × β → ℚ → ℝ) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
-    Prop :=
+    Prop where
   measurable : Measurable f
   mono' (a : α) {q r : ℚ} (_hqr : q ≤ r) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ f (a, c) r
   nonneg' (a : α) (q : ℚ) : ∀ᵐ c ∂(ν a), 0 ≤ f (a, c) q
@@ -424,7 +425,7 @@ respect to `ν` if it is measurable, tends to 0 at -∞ and to 1 at +∞ for all
 `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all
 measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`. -/
 structure IsCondKernelCDF (f : α × β → StieltjesFunction) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
-    Prop :=
+    Prop where
   measurable (x : ℝ) : Measurable fun p ↦ f p x
   integrable (a : α) (x : ℝ) : Integrable (fun b ↦ f (a, b) x) (ν a)
   tendsto_atTop_one (p : α × β) : Tendsto (f p) atTop (𝓝 1)
@@ -550,7 +551,7 @@ lemma setLIntegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     refine Monotone.directed_le fun i j hij ↦ ?_
     refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩)
     exact mod_cast hij
-  simp_rw [measure_iUnion_eq_iSup h_dir, measure_iUnion_eq_iSup h_dir_prod]
+  simp_rw [h_dir.measure_iUnion, h_dir_prod.measure_iUnion]
   rw [lintegral_iSup_directed]
   · simp_rw [setLIntegral_toKernel_Iic hf _ _ hs]
   · refine fun q ↦ Measurable.aemeasurable ?_

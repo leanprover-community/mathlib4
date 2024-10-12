@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
-import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
+import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
 /-!
@@ -228,7 +228,7 @@ theorem tendsto_setIntegral_of_monotone {ι : Type*} [Countable ι] [Semilattice
   refine Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε ε0 => ?_
   lift ε to ℝ≥0 using ε0.le
   have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) :=
-    tendsto_measure_iUnion h_mono (ENNReal.Icc_mem_nhds hfi'.ne (ENNReal.coe_pos.2 ε0).ne')
+    tendsto_measure_iUnion_atTop h_mono (ENNReal.Icc_mem_nhds hfi'.ne (ENNReal.coe_pos.2 ε0).ne')
   filter_upwards [this] with i hi
   rw [mem_closedBall_iff_norm', ← integral_diff (hsm i) hfi hsub, ← coe_nnnorm, NNReal.coe_le_coe, ←
     ENNReal.coe_le_coe]
@@ -1260,7 +1260,7 @@ variable [NormedSpace ℝ F] [NormedSpace ℝ E]
 
 theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
   have : CompleteSpace E ↔ CompleteSpace F :=
-    completeSpace_congr (e := L.toEquiv) L.uniformEmbedding
+    completeSpace_congr (e := L.toEquiv) L.isUniformEmbedding
   obtain ⟨_, _⟩|⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
   · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
   · simp [integral, *]

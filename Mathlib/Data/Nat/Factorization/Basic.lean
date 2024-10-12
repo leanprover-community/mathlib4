@@ -13,7 +13,7 @@ import Mathlib.Tactic.IntervalCases
 # Basic lemmas on prime factorizations
 -/
 
-open Nat Finset List Finsupp
+open Finset List Finsupp
 
 namespace Nat
 variable {a b m n p : ℕ}

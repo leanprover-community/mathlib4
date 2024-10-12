@@ -99,11 +99,12 @@ theorem map_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] (f : 
     (g : M₂ →ₛₗ[σ₂₃] M₃) (p : Submodule R M) : map (g.comp f : M →ₛₗ[σ₁₃] M₃) p = map g (map f p) :=
   SetLike.coe_injective <| by simp only [← image_comp, map_coe, LinearMap.coe_comp, comp_apply]
 
+@[gcongr]
 theorem map_mono {f : F} {p p' : Submodule R M} : p ≤ p' → map f p ≤ map f p' :=
   image_subset _
 
 @[simp]
-theorem map_zero : map (0 : M →ₛₗ[σ₁₂] M₂) p = ⊥ :=
+protected theorem map_zero : map (0 : M →ₛₗ[σ₁₂] M₂) p = ⊥ :=
   have : ∃ x : M, x ∈ p := ⟨0, p.zero_mem⟩
   ext <| by simp [this, eq_comm]
 
@@ -118,6 +119,10 @@ theorem map_inf_le (f : F) {p q : Submodule R M} :
 theorem map_inf (f : F) {p q : Submodule R M} (hf : Injective f) :
     (p ⊓ q).map f = p.map f ⊓ q.map f :=
   SetLike.coe_injective <| Set.image_inter hf
+
+lemma map_iInf {ι : Type*} [Nonempty ι] {p : ι → Submodule R M} (f : F) (hf : Injective f) :
+    (⨅ i, p i).map f = ⨅ i, (p i).map f :=
+  SetLike.coe_injective <| by simpa only [map_coe, iInf_coe] using hf.injOn.image_iInter_eq
 
 theorem range_map_nonempty (N : Submodule R M) :
     (Set.range (fun ϕ => Submodule.map ϕ N : (M →ₛₗ[σ₁₂] M₂) → Submodule R₂ M₂)).Nonempty :=
@@ -186,6 +191,7 @@ theorem comap_comp (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃
     comap (g.comp f : M →ₛₗ[σ₁₃] M₃) p = comap f (comap g p) :=
   rfl
 
+@[gcongr]
 theorem comap_mono {f : F} {q q' : Submodule R₂ M₂} : q ≤ q' → comap f q ≤ comap f q' :=
   preimage_mono
 

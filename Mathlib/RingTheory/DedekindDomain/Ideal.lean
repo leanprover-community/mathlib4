@@ -720,7 +720,7 @@ theorem Ideal.eq_prime_pow_of_succ_lt_of_le {P I : Ideal A} [P_prime : P.IsPrime
 theorem Ideal.pow_succ_lt_pow {P : Ideal A} [P_prime : P.IsPrime] (hP : P ≠ ⊥) (i : ℕ) :
     P ^ (i + 1) < P ^ i :=
   lt_of_le_of_ne (Ideal.pow_le_pow_right (Nat.le_succ _))
-    (mt (pow_eq_pow_iff hP (mt Ideal.isUnit_iff.mp P_prime.ne_top)).mp i.succ_ne_self)
+    (mt (pow_inj_of_not_isUnit (mt Ideal.isUnit_iff.mp P_prime.ne_top) hP).mp i.succ_ne_self)
 
 theorem Associates.le_singleton_iff (x : A) (n : ℕ) (I : Ideal A) :
     Associates.mk I ^ n ≤ Associates.mk (Ideal.span {x}) ↔ x ∈ I ^ n := by
@@ -918,6 +918,17 @@ theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ
     simp
   · rw [emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J] at hn
     exact_mod_cast hn
+
+theorem Ideal.eq_prime_pow_mul_coprime [DecidableEq (Ideal T)] {I : Ideal T} (hI : I ≠ ⊥)
+    (P : Ideal T) [hpm : P.IsMaximal] :
+    ∃ Q : Ideal T, P ⊔ Q = ⊤ ∧ I = P ^ (Multiset.count P (normalizedFactors I)) * Q := by
+  use (filter (¬ P = ·) (normalizedFactors I)).prod
+  constructor
+  · refine P.sup_multiset_prod_eq_top (fun p hpi ↦ ?_)
+    have hp : Prime p := prime_of_normalized_factor p (filter_subset _ (normalizedFactors I) hpi)
+    exact hpm.coprime_of_ne ((isPrime_of_prime hp).isMaximal hp.ne_zero) (of_mem_filter hpi)
+  · nth_rw 1 [← prod_normalizedFactors_eq_self hI, ← filter_add_not (P = ·) (normalizedFactors I)]
+    rw [prod_add, pow_count]
 
 end IsDedekindDomain
 
@@ -1180,26 +1191,6 @@ theorem Ideal.le_mul_of_no_prime_factors {I J K : Ideal R}
     (UniqueFactorizationMonoid.dvd_of_dvd_mul_right_of_no_prime_factors (b := K) hJ0 ?_ hJ)
   exact fun hPJ hPK => mt Ideal.isPrime_of_prime (coprime _ hPJ hPK)
 
-theorem Ideal.le_of_pow_le_prime {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (h : I ^ n ≤ P) :
-    I ≤ P := by
-  by_cases hP0 : P = ⊥
-  · simp only [hP0, le_bot_iff] at h ⊢
-    exact pow_eq_zero h
-  rw [← Ideal.dvd_iff_le] at h ⊢
-  exact ((Ideal.prime_iff_isPrime hP0).mpr hP).dvd_of_dvd_pow h
-
-theorem Ideal.pow_le_prime_iff {I P : Ideal R} [_hP : P.IsPrime] {n : ℕ} (hn : n ≠ 0) :
-    I ^ n ≤ P ↔ I ≤ P :=
-  ⟨Ideal.le_of_pow_le_prime, fun h => _root_.trans (Ideal.pow_le_self hn) h⟩
-
-theorem Ideal.prod_le_prime {ι : Type*} {s : Finset ι} {f : ι → Ideal R} {P : Ideal R}
-    [hP : P.IsPrime] : ∏ i ∈ s, f i ≤ P ↔ ∃ i ∈ s, f i ≤ P := by
-  by_cases hP0 : P = ⊥
-  · simp only [hP0, le_bot_iff]
-    rw [← Ideal.zero_eq_bot, Finset.prod_eq_zero_iff]
-  simp only [← Ideal.dvd_iff_le]
-  exact ((Ideal.prime_iff_isPrime hP0).mpr hP).dvd_finset_prod_iff _
-
 /-- The intersection of distinct prime powers in a Dedekind domain is the product of these
 prime powers. -/
 theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f : ι → Ideal R)
@@ -1217,15 +1208,13 @@ theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f :
   rw [Finset.inf_insert, Finset.prod_insert ha, ih]
   refine le_antisymm (Ideal.le_mul_of_no_prime_factors ?_ inf_le_left inf_le_right) Ideal.mul_le_inf
   intro P hPa hPs hPp
-  obtain ⟨b, hb, hPb⟩ := Ideal.prod_le_prime.mp hPs
+  obtain ⟨b, hb, hPb⟩ := hPp.prod_le.mp hPs
   haveI := Ideal.isPrime_of_prime (prime a (Finset.mem_insert_self a s))
   haveI := Ideal.isPrime_of_prime (prime b (Finset.mem_insert_of_mem hb))
   refine coprime a (Finset.mem_insert_self a s) b (Finset.mem_insert_of_mem hb) ?_ ?_
   · exact (ne_of_mem_of_not_mem hb ha).symm
-  · refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-      (Ideal.le_of_pow_le_prime hPa)).trans
-      ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-      (Ideal.le_of_pow_le_prime hPb)).symm
+  · refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp (hPp.le_of_pow_le hPa)).trans
+      ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp (hPp.le_of_pow_le hPb)).symm
     · exact (prime a (Finset.mem_insert_self a s)).ne_zero
     · exact (prime b (Finset.mem_insert_of_mem hb)).ne_zero
 
@@ -1240,17 +1229,13 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype
       simp only [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ, ciInf_pos,
         ← IsDedekindDomain.inf_prime_pow_eq_prod _ _ _ (fun i _ => prime i)
         (coprime.set_pairwise _)])).trans <|
-    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => Ideal.coprime_of_no_prime_ge (by
+    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => Ideal.coprime_of_no_prime_ge <| by
       intro P hPi hPj hPp
       haveI := Ideal.isPrime_of_prime (prime i)
       haveI := Ideal.isPrime_of_prime (prime j)
-      refine coprime hij ?_
-      refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-        (Ideal.le_of_pow_le_prime hPi)).trans
-        ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-          (Ideal.le_of_pow_le_prime hPj)).symm
-      · exact (prime i).ne_zero
-      · exact (prime j).ne_zero)
+      exact coprime hij <| ((Ring.DimensionLeOne.prime_le_prime_iff_eq (prime i).ne_zero).mp
+        (hPp.le_of_pow_le hPi)).trans <| Eq.symm <|
+          (Ring.DimensionLeOne.prime_le_prime_iff_eq (prime j).ne_zero).mp (hPp.le_of_pow_le hPj)
 
 open scoped Classical
 
@@ -1267,7 +1252,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I 
         (factors I).toFinset.prod_coe_sort fun P => P ^ (factors I).count P
       _ = ((factors I).map fun P => P).prod := (Finset.prod_multiset_map_count (factors I) id).symm
       _ = (factors I).prod := by rw [Multiset.map_id']
-      _ = I := (@associated_iff_eq (Ideal R) _ Ideal.uniqueUnits _ _).mp (factors_prod hI)
+      _ = I := associated_iff_eq.mp (factors_prod hI)
       )
 
 @[simp]

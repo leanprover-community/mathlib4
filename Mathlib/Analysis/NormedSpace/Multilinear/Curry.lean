@@ -603,3 +603,58 @@ theorem curryFinFinset_apply_const (hk : s.card = k) (hl : sᶜ.card = l) (f : G
 end
 
 end ContinuousMultilinearMap
+
+namespace ContinuousLinearMap
+
+variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+
+/-- Given a linear map into continuous multilinear maps
+`B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F`, one can not always uncurry it as `G` and `E` might
+live in a different universe. However, one can always lift it to a continuous multilinear map
+on `(G × (Π i, E i)) ^ (1 + n)`, which maps `(v_0, ..., v_n)` to `B (g_0) (u_1, ..., u_n)` where
+`g_0` is the `G`-coordinate of `v_0` and `u_i` is the `E_i` coordinate of `v_i`. -/
+noncomputable def continuousMultilinearMapOption (B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F) :
+    ContinuousMultilinearMap 𝕜 (fun (_ : Option ι) ↦ (G × (Π i, E i))) F :=
+  MultilinearMap.mkContinuous
+  { toFun := fun p ↦ B (p none).1 (fun i ↦ (p i).2 i)
+    map_add' := by
+      intro inst v j x y
+      match j with
+      | none => simp
+      | some j =>
+        classical
+        have B z : (fun i ↦ (Function.update v (some j) z (some i)).2 i) =
+            Function.update (fun (i : ι) ↦ (v i).2 i) j (z.2 j) := by
+          ext i
+          rcases eq_or_ne i j with rfl | hij
+          · simp
+          · simp [hij]
+        simp [B]
+    map_smul' := by
+      intro inst v j c x
+      match j with
+      | none => simp
+      | some j =>
+        classical
+        have B z : (fun i ↦ (Function.update v (some j) z (some i)).2 i) =
+            Function.update (fun (i : ι) ↦ (v i).2 i) j (z.2 j) := by
+          ext i
+          rcases eq_or_ne i j with rfl | hij
+          · simp
+          · simp [hij]
+        simp [B] } (‖B‖) <| by
+  intro b
+  simp only [MultilinearMap.coe_mk, Fintype.prod_option]
+  apply (ContinuousMultilinearMap.le_opNorm _ _).trans
+  rw [← mul_assoc]
+  gcongr with i _
+  · apply (B.le_opNorm _).trans
+    gcongr
+    exact norm_fst_le _
+  · exact (norm_le_pi_norm _ _).trans (norm_snd_le _)
+
+lemma continuousMultilinearMapOption_apply_eq_self (B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F)
+    (a : G) (v : Π i, E i) : B.continuousMultilinearMapOption (fun _ ↦ (a, v)) = B a v := rfl
+
+end ContinuousLinearMap

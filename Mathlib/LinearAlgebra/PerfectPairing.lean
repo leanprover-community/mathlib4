@@ -34,7 +34,7 @@ open Function Module
 variable (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 /-- A perfect pairing of two (left) modules over a commutative ring. -/
-structure PerfectPairing :=
+structure PerfectPairing where
   toLin : M →ₗ[R] N →ₗ[R] R
   bijectiveLeft : Bijective toLin
   bijectiveRight : Bijective toLin.flip
@@ -139,6 +139,11 @@ def IsReflexive.toPerfectPairingDual : PerfectPairing R (Dual R M) M where
   toLin := LinearMap.id
   bijectiveLeft := bijective_id
   bijectiveRight := bijective_dual_eval R M
+
+@[simp]
+lemma IsReflexive.toPerfectPairingDual_apply {f : Dual R M} {x : M} :
+    IsReflexive.toPerfectPairingDual (R := R) f x = f x :=
+  rfl
 
 variable (e : N ≃ₗ[R] Dual R M)
 
