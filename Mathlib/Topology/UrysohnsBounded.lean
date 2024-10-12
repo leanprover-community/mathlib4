@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded
 
 /-!
 # Urysohn's lemma for bounded continuous functions
 
 In this file we reformulate Urysohn's lemma `exists_continuous_zero_one_of_isClosed` in terms of
 bounded continuous functions `X →ᵇ ℝ`. These lemmas live in a separate file because
-`Topology.ContinuousFunction.Bounded` imports too many other files.
+`Topology.ContinuousMap.Bounded` imports too many other files.
 
 ## Tags
 

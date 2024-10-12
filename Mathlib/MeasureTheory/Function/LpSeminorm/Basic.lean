@@ -404,18 +404,18 @@ theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0)
     eLpNorm (fun _ : α => c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   have hp : 0 < p.toReal := ENNReal.toReal_pos hp_ne_zero hp_ne_top
   by_cases hμ : μ = 0
-  · simp only [hμ, Measure.coe_zero, Pi.zero_apply, or_true_iff, ENNReal.zero_lt_top,
+  · simp only [hμ, Measure.coe_zero, Pi.zero_apply, or_true, ENNReal.zero_lt_top,
       eLpNorm_measure_zero]
   by_cases hc : c = 0
-  · simp only [hc, true_or_iff, eq_self_iff_true, ENNReal.zero_lt_top, eLpNorm_zero']
+  · simp only [hc, true_or, eq_self_iff_true, ENNReal.zero_lt_top, eLpNorm_zero']
   rw [eLpNorm_const' c hp_ne_zero hp_ne_top]
   by_cases hμ_top : μ Set.univ = ∞
   · simp [hc, hμ_top, hp]
   rw [ENNReal.mul_lt_top_iff]
-  simp only [true_and_iff, one_div, ENNReal.rpow_eq_zero_iff, hμ, false_or_iff, or_false_iff,
+  simp only [true_and, one_div, ENNReal.rpow_eq_zero_iff, hμ, false_or, or_false,
     ENNReal.coe_lt_top, nnnorm_eq_zero, ENNReal.coe_eq_zero,
-    MeasureTheory.Measure.measure_univ_eq_zero, hp, inv_lt_zero, hc, and_false_iff, false_and_iff,
-    inv_pos, or_self_iff, hμ_top, Ne.lt_top hμ_top, iff_true_iff]
+    MeasureTheory.Measure.measure_univ_eq_zero, hp, inv_lt_zero, hc, false_and,
+    inv_pos, or_self_iff, hμ_top, Ne.lt_top hμ_top, iff_true]
   exact ENNReal.rpow_lt_top_of_nonneg (inv_nonneg.mpr hp.le) hμ_top
 
 @[deprecated (since := "2024-07-27")]
@@ -794,10 +794,16 @@ theorem eLpNorm'_smul_measure {p : ℝ} (hp : 0 ≤ p) {f : α → F} (c : ℝ�
 @[deprecated (since := "2024-07-27")]
 alias snorm'_smul_measure := eLpNorm'_smul_measure
 
-theorem eLpNormEssSup_smul_measure {f : α → F} {c : ℝ≥0∞} (hc : c ≠ 0) :
+section SMul
+variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+  [NoZeroSMulDivisors R ℝ≥0∞] {c : R}
+
+@[simp] lemma eLpNormEssSup_smul_measure (hc : c ≠ 0) (f : α → F) :
     eLpNormEssSup f (c • μ) = eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup]
-  exact essSup_smul_measure hc
+  exact essSup_smul_measure hc _
+
+end SMul
 
 @[deprecated (since := "2024-07-27")]
 alias snormEssSup_smul_measure := eLpNormEssSup_smul_measure

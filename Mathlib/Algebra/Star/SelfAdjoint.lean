@@ -91,6 +91,7 @@ lemma commute_iff {R : Type*} [Mul R] [StarMul R] {x y : R}
   · simpa only [star_mul, hx.star_eq, hy.star_eq] using h.symm
 
 /-- Functions in a `StarHomClass` preserve self-adjoint elements. -/
+@[aesop 10% apply]
 theorem map {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R S]
     {x : R} (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx

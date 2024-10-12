@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Probability.IdentDistrib
+import Mathlib.Probability.Independence.Integrable
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Analysis.PSeries
@@ -107,11 +108,11 @@ theorem truncation_eq_of_nonneg {f : α → ℝ} {A : ℝ} (h : ∀ x, 0 ≤ f x
     truncation f A = indicator (Set.Ioc 0 A) id ∘ f := by
   ext x
   rcases (h x).lt_or_eq with (hx | hx)
-  · simp only [truncation, indicator, hx, Set.mem_Ioc, id, Function.comp_apply, true_and_iff]
+  · simp only [truncation, indicator, hx, Set.mem_Ioc, id, Function.comp_apply]
     by_cases h'x : f x ≤ A
     · have : -A < f x := by linarith [h x]
-      simp only [this, true_and_iff]
-    · simp only [h'x, and_false_iff]
+      simp only [this, true_and]
+    · simp only [h'x, and_false]
   · simp only [truncation, indicator, hx, id, Function.comp_apply, ite_self]
 
 theorem truncation_nonneg {f : α → ℝ} (A : ℝ) {x : α} (h : 0 ≤ f x) : 0 ≤ truncation f A x :=
@@ -298,7 +299,7 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
       · simp (config := {contextual := true}) only [Set.mem_Ioc, Set.mem_Ioi,
           Set.iUnion_subset_iff, Set.setOf_subset_setOf, imp_true_iff]
     rw [this]
-    apply tendsto_measure_iUnion
+    apply tendsto_measure_iUnion_atTop
     intro m n hmn x hx
     exact ⟨hx.1, hx.2.trans (Nat.cast_le.2 hmn)⟩
   apply le_of_tendsto_of_tendsto A tendsto_const_nhds
@@ -395,7 +396,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
   set Y := fun n : ℕ => truncation (X n) n
   set S := fun n => ∑ i ∈ range n, Y i with hS
   let u : ℕ → ℕ := fun n => ⌊c ^ n⌋₊
-  have u_mono : Monotone u := fun i j hij => Nat.floor_mono (pow_le_pow_right c_one.le hij)
+  have u_mono : Monotone u := fun i j hij => Nat.floor_mono (pow_right_mono₀ c_one.le hij)
   have I1 : ∀ K, ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * Var[Y j] ≤ 2 * 𝔼[X 0] := by
     intro K
     calc
@@ -456,7 +457,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
           refine zero_lt_one.trans_le ?_
           apply Nat.le_floor
           rw [Nat.cast_one]
-          apply one_le_pow_of_one_le c_one.le
+          apply one_le_pow₀ c_one.le
       _ = ENNReal.ofReal (∑ i ∈ range N, Var[S (u i)] / (u i * ε) ^ 2) := by
         rw [ENNReal.ofReal_sum_of_nonneg fun i _ => ?_]
         exact div_nonneg (variance_nonneg _ _) (sq_nonneg _)
@@ -546,7 +547,7 @@ theorem strong_law_aux5 :
     · have : -(n : ℝ) < X n ω := by
         apply lt_of_lt_of_le _ (hnonneg n ω)
         simpa only [Right.neg_neg_iff, Nat.cast_pos] using npos
-      simp only [this, true_and_iff, not_le] at h
+      simp only [this, true_and, not_le] at h
       exact (hn h).elim
   filter_upwards [B] with ω hω
   convert isLittleO_sum_range_of_tendsto_zero hω using 1
@@ -562,7 +563,7 @@ theorem strong_law_aux6 {c : ℝ} (c_one : 1 < c) :
   have H : ∀ n : ℕ, (0 : ℝ) < ⌊c ^ n⌋₊ := by
     intro n
     refine zero_lt_one.trans_le ?_
-    simp only [Nat.one_le_cast, Nat.one_le_floor_iff, one_le_pow_of_one_le c_one.le n]
+    simp only [Nat.one_le_cast, Nat.one_le_floor_iff, one_le_pow₀ c_one.le]
   filter_upwards [strong_law_aux4 X hint hindep hident hnonneg c_one,
     strong_law_aux5 X hint hident hnonneg] with ω hω h'ω
   rw [← tendsto_sub_nhds_zero_iff, ← Asymptotics.isLittleO_one_iff ℝ]
