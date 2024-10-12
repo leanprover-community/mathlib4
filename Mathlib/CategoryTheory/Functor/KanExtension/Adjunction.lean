@@ -109,11 +109,13 @@ variable {H : Type (max u₁ u₂)} [Category.{max u₁ v₂} H]
 
 variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') [F'.IsLeftKanExtension α]
 
+/-- Construct a cocone for a left Kan extension of `F` given a cocone for `F`. -/
 @[simps]
 noncomputable def coconeOfIsLeftKanExtension (c : Cocone F) : Cocone F' where
   pt := c.pt
   ι := F'.descOfIsLeftKanExtension α _ c.ι
 
+/-- If `c` is a colimit cocone, then `coconeOfIsLeftKanExtension α c` is a colimit cocone, too. -/
 @[simps]
 def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsColimit c) :
     IsColimit (F'.coconeOfIsLeftKanExtension α c) where
@@ -138,11 +140,11 @@ def lanCompColimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
   NatIso.ofComponents (fun F => IsColimit.coconePointUniqueUpToIso
     (colimit.isColimit (L.leftKanExtension F))
     (isColimitCoconeOfIsLeftKanExtension _ (leftKanExtensionUnit _ _) (colimit.isColimit F)))
-    (fun {G₁ G₂} η => by
-      simp only [comp_obj, colim_obj, comp_map, colim_map]
-      rw [← Iso.inv_comp_eq, ← assoc, ← Iso.eq_comp_inv]
-      ext c
+    (fun _ => by
+      simp only [comp_obj, colim_obj, colim_map, ← Iso.inv_comp_eq, ← assoc, ← Iso.eq_comp_inv]
+      ext
       simp only [ι_colimMap_assoc]
+      conv_lhs => simp only [comp_map, colim, colimMap, IsColimit.map, colimit.cocone]
       erw [IsColimit.coconePointUniqueUpToIso_inv_desc]
       simp only [isColimitCoconeOfIsLeftKanExtension_desc, Cocones.precompose_obj_pt,
         colimit.cocone_x, Cocones.precompose_obj_ι, whiskerLeft_comp, colimit.isColimit_desc,
