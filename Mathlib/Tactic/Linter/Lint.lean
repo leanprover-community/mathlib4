@@ -5,6 +5,7 @@ Authors: Floris van Doorn
 -/
 import Batteries.Tactic.Lint
 import Mathlib.Tactic.Linter.Common
+import Lean.Elab.Open
 
 /-!
 # Linters for Mathlib
@@ -91,7 +92,14 @@ def getIds : Syntax → Array Syntax
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if Linter.getLinterValue linter.dupNamespace (← getOptions) then
-    for id in (← getNamesFrom (stx.getPos?.getD default)) do
+    let mut aliases := #[]
+    if let some exp := stx.find? (·.isOfKind ``Lean.Parser.Command.export) then
+      if let `(export $_ ($ids*)) := exp then
+        let currNamespace ← getCurrNamespace
+        for idStx in ids do
+          let id := idStx.getId
+          aliases := aliases.push (mkAtomFrom (.ofRange (idStx.raw.getRange?.getD default)) (currNamespace ++ id).toString)
+    for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
       let declName := id.getId
       if declName.hasMacroScopes then continue
       let nm := declName.components
@@ -99,6 +107,8 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
         | return
       Linter.logLint linter.dupNamespace id
         m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
+
+#check resolveNameUsingNamespaces
 
 initialize addLinter dupNamespace
 
