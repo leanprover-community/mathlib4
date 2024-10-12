@@ -8,19 +8,22 @@ import Mathlib.SetTheory.Cardinal.PartENat
 import Mathlib.SetTheory.Ordinal.Enum
 
 /-!
-# Aleph and beth functions
+# Omega, aleph, and beth functions
 
-* The function `Cardinal.aleph'` gives the cardinals listed by their ordinal index.
-  `aleph' n = n`, `aleph' ω = ℵ₀`, `aleph' (ω + 1) = succ ℵ₀`, etc.
-  It is an order isomorphism between ordinals and cardinals.
-* The function `Cardinal.aleph` gives the infinite cardinals listed by their
-  ordinal index. `aleph 0 = ℵ₀`, `aleph 1 = succ ℵ₀` is the first
-  uncountable cardinal, and so on. The notation `ω_` combines the latter with `Cardinal.ord`,
-  giving an enumeration of (infinite) initial ordinals.
-  Thus `ω_ 0 = ω` and `ω₁ = ω_ 1` is the first uncountable ordinal.
+* The function `Ordinal.omega'` enumerates the initial ordinals, i.e. the smallest ordinals with any
+  given cardinality. Thus `omega' n = n`, `omega' ω = ω`, `omega' (ω + 1) = ω₁`, etc.
+  `Ordinal.omega` is the more standard function which skips over finite ordinals.
+* The function `Cardinal.aleph'` is an order isomorphism between ordinals and cardinals. Thus
+  `aleph n = n`, `aleph' ω = ℵ₀`, `aleph' (ω + 1) = ℵ₁`, etc. `Cardinal.aleph` is the more standard
+  function which skips over finite ordinals.
 * The function `Cardinal.beth` enumerates the Beth cardinals. `beth 0 = ℵ₀`,
   `beth (succ o) = 2 ^ beth o`, and for a limit ordinal `o`, `beth o` is the supremum of `beth a`
   for `a < o`.
+
+## Notation
+
+- `ω_ o` is notation for `Ordinal.omega o`. `ω₁` is notation for `ω_ 1`. These are scoped notations
+  in `Ordinal`.
 -/
 
 assert_not_exists Module
