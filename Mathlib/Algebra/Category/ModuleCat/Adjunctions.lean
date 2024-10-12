@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.CategoryTheory.Linear.LinearFunctor
