@@ -108,8 +108,6 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       Linter.logLint linter.dupNamespace id
         m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
 
-#check resolveNameUsingNamespaces
-
 initialize addLinter dupNamespace
 
 end DupNamespaceLinter
