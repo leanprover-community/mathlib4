@@ -54,7 +54,7 @@ instance : CoeSort RingedSpace Type* where
 
 /-- If the germ of a section `f` is zero in the stalk at `x`, then `f` is zero on some neighbourhood
 around `x`. -/
-lemma eq_zero_res_of_eq_zero_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x : U)
+lemma exists_res_eq_zero_of_germ_eq_zero (U : Opens X) (f : X.presheaf.obj (op U)) (x : U)
     (h : X.presheaf.germ U x.val x.property f = 0) :
     ∃ (V : Opens X) (i : V ⟶ U) (_ : x.1 ∈ V), X.presheaf.map i.op f = 0 := by
   have h1 : X.presheaf.germ U x.val x.property f = X.presheaf.germ U x.val x.property 0 := by simpa

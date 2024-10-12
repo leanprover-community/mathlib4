@@ -92,7 +92,7 @@ namespace Hom
 
 variable {X Y : Scheme.{u}} (f : Hom X Y) {U U' : Y.Opens} {V V' : X.Opens}
 
-lemma map_le (hUU' : U ≤ U') : f⁻¹ᵁ U ≤ f⁻¹ᵁ U' := fun _ ha ↦ hUU' ha
+lemma preimage_le (hUU' : U ≤ U') : f⁻¹ᵁ U ≤ f⁻¹ᵁ U' := fun _ ha ↦ hUU' ha
 
 /-- Given a morphism of schemes `f : X ⟶ Y`, and open `U ⊆ Y`,
 this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`. -/
@@ -583,7 +583,7 @@ theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U
   refine (Scheme.congr_app this _).trans ?_
   simp [eqToHom_map]
 
-lemma germ_eq_zero_of {X : Scheme.{u}} {U : Opens X} (x : U) {f s : Γ(X, U)}
+lemma germ_eq_zero_of_pow_mul_eq_zero {X : Scheme.{u}} {U : Opens X} (x : U) {f s : Γ(X, U)}
     (hx : x.val ∈ X.basicOpen s) {n : ℕ} (hf : s ^ n * f = 0) : X.presheaf.germ U x x.2 f = 0 := by
   rw [Scheme.mem_basicOpen] at hx
   have hu : IsUnit (X.presheaf.germ _ x x.2 (s ^ n)) := by

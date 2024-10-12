@@ -548,7 +548,7 @@ theorem lift_injective_iff :
 
 variable (M) in
 include M in
-lemma injective_iff {T} [CommRing T] (f : S →+* T) :
+lemma injective_iff_map_algebraMap_eq {T} [CommRing T] (f : S →+* T) :
     Function.Injective f ↔ ∀ x y,
       algebraMap R S x = algebraMap R S y ↔ f (algebraMap R S x) = f (algebraMap R S y) := by
   rw [← IsLocalization.lift_of_comp (M := M) f, IsLocalization.lift_injective_iff]
@@ -1029,10 +1029,10 @@ namespace IsLocalization
 variable {K : Type*} [IsLocalization M S]
 
 include M in
-lemma injective_of {T} [CommRing T] (f : S →+* T)
+lemma injective_of_map_algebraMap_zero {T} [CommRing T] (f : S →+* T)
     (h : ∀ x, f (algebraMap R S x) = 0 → algebraMap R S x = 0) :
     Function.Injective f := by
-  rw [IsLocalization.injective_iff M]
+  rw [IsLocalization.injective_iff_map_algebraMap_eq M]
   refine fun x y ↦ ⟨fun hz ↦ hz ▸ rfl, fun hz ↦ ?_⟩
   rw [← sub_eq_zero, ← map_sub, ← map_sub] at hz
   apply h at hz

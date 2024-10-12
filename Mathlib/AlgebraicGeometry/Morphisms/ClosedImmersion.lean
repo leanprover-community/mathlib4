@@ -6,7 +6,7 @@ Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
+import Mathlib.AlgebraicGeometry.ResidueField
 import Mathlib.RingTheory.RingHom.Surjective
 
 /-!
@@ -154,17 +154,19 @@ lemma surjective_of_isClosed_range_of_injective [CompactSpace X]
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
   haveI (i : 𝒰.J) : IsAffine (𝒰.obj i) := Scheme.isAffine_affineCover X _
   apply Set.range_iff_surjective.mp
-  apply hI ▸ (Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_compactSpace _).mpr
+  apply hI ▸ (Scheme.zeroLocus_eq_top_iff_subset_nilradical _).mpr
   intro s hs
   simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
     Submodule.mem_toAddSubmonoid, SetLike.mem_coe, mem_nilradical, ← IsNilpotent.map_iff hfinj]
   refine Scheme.isNilpotent_of_isNilpotent_cover _ 𝒰 (fun i ↦ ?_)
-  rw [Scheme.isNilpotent_iff_basicOpen_eq_bot_of_compactSpace]
-  erw [basicOpen_eq_bot_iff_forall_evaluation_eq_zero]
+  rw [Scheme.isNilpotent_iff_basicOpen_eq_bot]
+  rw [Scheme.basicOpen_eq_bot_iff_forall_evaluation_eq_zero]
   intro x
-  suffices h : f.val.base ((𝒰.map i).val.base x.val) ∉ Y.toRingedSpace.basicOpen s by
-    erw [← Γevaluation_naturality_apply (𝒰.map i ≫ f)]
-    simpa
+  suffices h : f.val.base ((𝒰.map i).val.base x.val) ∉ Y.basicOpen s by
+    erw [← Scheme.Γevaluation_naturality_apply (𝒰.map i ≫ f)]
+    simpa only [Scheme.comp_val_base, TopCat.coe_comp, Function.comp_apply,
+      Scheme.residueFieldMap_comp, CommRingCat.comp_apply, map_eq_zero,
+      Scheme.evaluation_eq_zero_iff_not_mem_basicOpen]
   exact (Y.mem_zeroLocus_iff I _).mp (hI ▸ Set.mem_range_self ((𝒰.map i).val.base x.val)) s hs
 
 /-- If `f : X ⟶ Y` is open, injective, `X` is quasi-compact and `Y` is affine, then `f` is stalkwise
@@ -177,17 +179,17 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
   have (i : 𝒰.J) : IsAffine (𝒰.obj i) := Scheme.isAffine_affineCover X _
   let res (i : 𝒰.J) : Γ(X, ⊤) ⟶ Γ(𝒰.obj i, ⊤) := (𝒰.map i).app ⊤
-  refine stalkMap_injective_of_isAffine_of _ _ (fun (g : Γ(Y, ⊤)) h ↦ ?_)
+  refine stalkMap_injective_of_isAffine _ _ (fun (g : Γ(Y, ⊤)) h ↦ ?_)
   rw [TopCat.Presheaf.Γgerm, Scheme.stalkMap_germ_apply] at h
   obtain ⟨U, w, (hx : x ∈ U), hg⟩ :=
-    X.toRingedSpace.eq_zero_res_of_eq_zero_germ ⊤ (φ g) ⟨x, trivial⟩ h
+    X.toRingedSpace.exists_res_eq_zero_of_germ_eq_zero ⊤ (φ g) ⟨x, trivial⟩ h
   obtain ⟨_, ⟨s, rfl⟩, hyv, bsle⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_basicOpen Y)
     (show f.val.base x ∈ ⟨f.val.base '' U.carrier, hfopen U.carrier U.is_open'⟩ from ⟨x, by simpa⟩)
   let W (i : 𝒰.J) : TopologicalSpace.Opens (𝒰.obj i) := (𝒰.obj i).basicOpen ((res i) (φ s))
   have hwle (i : 𝒰.J) : W i ≤ (𝒰.map i)⁻¹ᵁ U := by
     show ((𝒰.obj i).basicOpen ((𝒰.map i ≫ f).app ⊤ s)) ≤ _
     rw [← Scheme.preimage_basicOpen, Scheme.comp_coeBase, Opens.map_comp_obj]
-    refine Scheme.Hom.map_le _ (le_trans (Scheme.Hom.map_le f bsle) (le_of_eq ?_))
+    refine Scheme.Hom.preimage_le _ (le_trans (f.preimage_le bsle) (le_of_eq ?_))
     simp [Set.preimage_image_eq _ hfinj₁]
   have h0 (i : 𝒰.J) : (𝒰.map i).appLE _ (W i) (by simp) (φ g) = 0 := by
     rw [← Scheme.Hom.appLE_map _ _ (homOfLE <| hwle i).op, ← Scheme.Hom.map_appLE _ le_rfl w.op]
@@ -195,7 +197,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
     erw [hg]
     simp only [map_zero]
   have h1 (i : 𝒰.J) : ∃ n, (res i) (φ (s ^ n * g)) = 0 := by
-    obtain ⟨n, hn⟩ := exists_of_Γres_zero_of_qcqs (s := ((res i) (φ s))) (h0 i)
+    obtain ⟨n, hn⟩ := exists_of_res_zero_of_qcqs_of_top (s := ((res i) (φ s))) (h0 i)
     exact ⟨n, by rwa [map_mul, map_mul, map_pow, map_pow]⟩
   have h2 : ∃ n, ∀ i, (res i) (φ (s ^ n * g)) = 0 := by
     choose fn hfn using h1
@@ -204,7 +206,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
     simp only [map_mul, map_pow, map_mul, map_pow] at hfn
     apply pow_mul_eq_zero_of_le (Finset.le_sup (Finset.mem_univ i)) (hfn i)
   obtain ⟨n, hn⟩ := h2
-  apply germ_eq_zero_of (U := ⊤) ⟨f.val.base x, trivial⟩ hyv
+  apply germ_eq_zero_of_pow_mul_eq_zero (U := ⊤) ⟨f.val.base x, trivial⟩ hyv
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at hfinj₂
   exact hfinj₂ _ (Scheme.zero_of_zero_cover _ _ hn)
 

@@ -354,7 +354,7 @@ lemma exists_of_res_eq_of_qcqs {X : Scheme.{u}} {U : TopologicalSpace.Opens X}
   obtain ⟨n, hc⟩ := (is_localization_basicOpen_of_qcqs hU hU' s).exists_of_eq s hfg
   use n
 
-lemma exists_of_Γres_eq_of_qcqs {X : Scheme.{u}} [CompactSpace X] [QuasiSeparatedSpace X]
+lemma exists_of_res_eq_of_qcqs_of_top {X : Scheme.{u}} [CompactSpace X] [QuasiSeparatedSpace X]
     {f g s : Γ(X, ⊤)} (hfg : f |_ X.basicOpen s = g |_ X.basicOpen s) :
     ∃ n, s ^ n * f = s ^ n * g :=
   exists_of_res_eq_of_qcqs (U := ⊤) CompactSpace.isCompact_univ isQuasiSeparated_univ hfg
@@ -368,7 +368,7 @@ lemma exists_of_res_zero_of_qcqs {X : Scheme.{u}} {U : TopologicalSpace.Opens X}
   apply exists_of_res_eq_of_qcqs hU hU'
   simpa
 
-lemma exists_of_Γres_zero_of_qcqs {X : Scheme} [CompactSpace X] [QuasiSeparatedSpace X]
+lemma exists_of_res_zero_of_qcqs_of_top {X : Scheme} [CompactSpace X] [QuasiSeparatedSpace X]
     {f s : Γ(X, ⊤)} (hf : f |_ X.basicOpen s = 0) :
     ∃ n, s ^ n * f = 0 :=
   exists_of_res_zero_of_qcqs (U := ⊤) CompactSpace.isCompact_univ isQuasiSeparated_univ hf
