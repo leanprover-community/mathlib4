@@ -193,9 +193,17 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 
+@[simp]
+theorem MulEquivClass.coe_toMulEquiv
+    {F : Type*} {α : Type*} {β : Type*} [EquivLike F α β]
+    [Mul α] [Mul β] [MulEquivClass F α β] (f : F) :
+  ⇑(f : α ≃* β) = ⇑f := rfl
+
+
 instance isLocalRingHom_equiv [Monoid M] [Monoid N] [EquivLike F M N]
     [MulEquivClass F M N] (f : F) : IsLocalRingHom f where
   map_nonunit a ha := by
     convert ha.map (f : M ≃* N).symm
     rw [MulEquiv.eq_symm_apply]
+    simp
     rfl -- note to reviewers: ugly `rfl`

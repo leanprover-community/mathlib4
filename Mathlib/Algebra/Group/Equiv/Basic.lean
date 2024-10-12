@@ -184,6 +184,12 @@ instance : EquivLike (M ≃* N) M N where
     congr
     apply Equiv.coe_fn_injective h₁
 
+@[simp]
+theorem MulEquivClass.coe_toMulEquiv
+    {F : Type*} {α : Type*} {β : Type*} [EquivLike F α β]
+    [Mul α] [Mul β] [MulEquivClass F α β] (f : F) :
+  ⇑(f : α ≃* β) = ⇑f := rfl
+
 @[to_additive] -- shortcut instance that doesn't generate any subgoals
 instance : CoeFun (M ≃* N) fun _ ↦ M → N where
   coe f := f
