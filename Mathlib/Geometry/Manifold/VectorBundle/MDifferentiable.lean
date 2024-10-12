@@ -80,8 +80,6 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
   {b₁ : M → B₁} {b₂ : M → B₂} {m₀ : M}
   {ϕ : Π (m : M), E₁ (b₁ m) →L[𝕜] E₂ (b₂ m)} {v : Π (m : M), E₁ (b₁ m)} {s : Set M}
 
-#check DifferentiableWithinAt.insert
-
 /-- Consider a smooth map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
 on `m`, one can apply `ϕ m` to `g m`, and the resulting map is smooth.
@@ -91,9 +89,9 @@ as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense wh
 smooth, but we want to apply this lemma with only local information. Therefore, we formulate it
 using smoothness of `ϕ` read in coordinates.
 
-Version for `MDifferentiableWithinAt`. We also give a version for `MDifferentiableAt`, but no version for
-`MDifferentiableOn` or `MDifferentiable` as our assumption, written in coordinates, only makes sense around
-a point.
+Version for `MDifferentiableWithinAt`. We also give a version for `MDifferentiableAt`, but no
+version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written in coordinates,
+only makes sense around a point.
  -/
 lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
     (hϕ : MDifferentiableWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂)
@@ -105,7 +103,7 @@ lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
   --rw [← mdifferentiableWithinAt_insert_self] at hϕ hv hb₂ ⊢
   rw [mdifferentiableWithinAt_totalSpace] at hv ⊢
   refine ⟨hb₂, ?_⟩
-  apply (MDifferentiableWithinAt.clm_apply hϕ hv.2).congr_of_eventuallyEq --?_ (mem_insert m₀ s)
+  apply (MDifferentiableWithinAt.clm_apply hϕ hv.2).congr_of_eventuallyEq_insert
   have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by
     apply hv.1.insert.continuousWithinAt
     apply (trivializationAt F₁ E₁ (b₁ m₀)).open_baseSet.mem_nhds

@@ -77,6 +77,24 @@ end ModelWithCorners
 
 end ModelWithCorners
 
+
+section ChartsSelf
+
+theorem mdifferentiableAt_chartAt_self {x : M} :
+    MDifferentiableAt I I (chartAt H x) x := by
+  rw [mdifferentiableAt_iff]
+  refine ⟨(chartAt H x).continuousAt (ChartedSpace.mem_chart_source x), ?_⟩
+  apply differentiableWithinAt_id.congr_of_eventuallyEq_insert
+
+
+
+
+
+
+end ChartsSelf
+
+
+
 section Charts
 
 variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']

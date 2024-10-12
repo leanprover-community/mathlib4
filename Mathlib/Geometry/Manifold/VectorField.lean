@@ -6,12 +6,10 @@ Authors: Sébastien Gouëzel
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
 /-!
 # Glouglou
-
-All this should probably be extended to `Within` versions, as we will need them when defining
-things on manifolds possibly with boundary.
 
 -/
 
@@ -630,18 +628,23 @@ lemma mpullback_neg :
 
 open ContinuousLinearMap
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
-Version within a set at a point. -/
-protected lemma ContMDiffWithinAt.mpullbackWithin [CompleteSpace E]
+/-! ### Smoothness of pullback of vector fields -/
+section
+
+variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] [CompleteSpace E]
+
+/-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
+differentiable. Version within a set at a point. -/
+protected lemma MDifferentiableWithinAt.mpullbackWithin
     (hV : MDifferentiableWithinAt I' I'.tangent
       (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
     (hf : ContMDiffWithinAt I I' n f s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible)
     (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) :
     MDifferentiableWithinAt I I.tangent
       (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) (s ∩ f ⁻¹' t) x₀ := by
-  /- We want to apply the general theorem `ContMDiffWithinAt.clm_apply_of_inCoordinates`, stating
-  that applying linear maps to vector fields gives a smooth result when the linear map and the
-  vector field are smooth. This theorem is general, we will apply it to
+  /- We want to apply the general theorem `MDifferentiableWithinAt.clm_apply_of_inCoordinates`,
+  stating that applying linear maps to vector fields gives a smooth result when the linear map and
+  the vector field are smooth. This theorem is general, we will apply it to
   `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse`-/
   let b₁ := f
   let b₂ : M → M := id
@@ -654,26 +657,28 @@ protected lemma ContMDiffWithinAt.mpullbackWithin [CompleteSpace E]
     exact MapsTo.mono_left (mapsTo_preimage _ _) inter_subset_right
   /- The only nontrivial fact, from which the conclusion follows, is
   that `ϕ` depends smoothly on `x`. -/
-  suffices hϕ : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E) 1
+  suffices hϕ : MDifferentiableWithinAt I 𝓘(𝕜, E' →L[𝕜] E)
       (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
         E' (TangentSpace I' (M := M')) E (TangentSpace I (M := M))
         (b₁ x₀) (b₁ x) (b₂ x₀) (b₂ x) (ϕ x)) s x₀ from
-    ContMDiffWithinAt.clm_apply_of_inCoordinates (hϕ.mono inter_subset_left) hv contMDiffWithinAt_id
+    MDifferentiableWithinAt.clm_apply_of_inCoordinates (hϕ.mono inter_subset_left)
+      hv mdifferentiableWithinAt_id
   /- To prove that `ϕ` depends smoothly on `x`, we use that the derivative depends smoothly on `x`
   (this is `ContMDiffWithinAt.mfderivWithin_const`), and that taking the inverse is a smooth
   operation at an invertible map. -/
   -- the derivative in coordinates depends smoothly on the point
-  have : ContMDiffWithinAt I 𝓘(𝕜, E →L[𝕜] E') m
+  have : MDifferentiableWithinAt I 𝓘(𝕜, E →L[𝕜] E')
       (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
         E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
         x₀ x (f x₀) (f x) (mfderivWithin I I' f s x)) s x₀ :=
-    hf.mfderivWithin_const hmn hx₀ hs
+    (hf.mfderivWithin_const hmn hx₀ hs).mdifferentiableWithinAt le_rfl
   -- therefore, its inverse in coordinates also depends smoothly on the point
-  have : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E) m
+  have : MDifferentiableWithinAt I 𝓘(𝕜, E' →L[𝕜] E)
       (ContinuousLinearMap.inverse ∘ (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
         E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
         x₀ x (f x₀) (f x) (mfderivWithin I I' f s x))) s x₀ := by
-    apply ContMDiffAt.comp_contMDiffWithinAt _ _ this
+    apply MDifferentiableAt.comp_mdifferentiableWithinAt _ _ this
+    apply ContMDiffAt.mdifferentiableAt _ le_rfl
     apply ContDiffAt.contMDiffAt
     apply IsInvertible.contDiffAt_map_inverse
     rw [inCoordinates_eq (FiberBundle.mem_baseSet_trivializationAt' x₀)
@@ -696,12 +701,79 @@ protected lemma ContMDiffWithinAt.mpullbackWithin [CompleteSpace E]
   simp only [inverse_equiv_comp, inverse_comp_equiv, ContinuousLinearEquiv.symm_symm, ϕ]
   rfl
 
+lemma MDifferentiableWithinAt.mpullbackWithin_of_eq
+    (hV : MDifferentiableWithinAt I' I'.tangent
+      (fun (y : M') ↦ (V y : TangentBundle I' M')) t y₀)
+    (hf : ContMDiffWithinAt I I' n f s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible)
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) (h : y₀ = f x₀) :
+    MDifferentiableWithinAt I I.tangent
+      (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) (s ∩ f⁻¹' t) x₀ := by
+  subst h
+  exact MDifferentiableWithinAt.mpullbackWithin hV hf hf' hx₀ hs hmn
 
-#exit
+/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+Version on a set. -/
+protected lemma MDifferentiableOn.mpullbackWithin
+    (hV : MDifferentiableOn I' I'.tangent (fun (y : M') ↦ (V y : TangentBundle I' M')) t)
+    (hf : ContMDiffOn I I' n f s) (hf' : ∀ x ∈ s ∩ f ⁻¹' t, (mfderivWithin I I' f s x).IsInvertible)
+    (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) :
+    MDifferentiableOn I I.tangent
+      (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) (s ∩ f ⁻¹' t) :=
+  fun _ hx₀ ↦ MDifferentiableWithinAt.mpullbackWithin
+    (hV _ hx₀.2) (hf _ hx₀.1) (hf' _ hx₀) hx₀.1 hs hmn
+
+/-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
+differentiable. Version within a set at a point, but with full pullback. -/
+protected lemma MDifferentiableWithinAt.mpullback
+    (hV : MDifferentiableWithinAt I' I'.tangent
+      (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
+    (hf : ContMDiffAt I I' n f x₀) (hf' : (mfderiv I I' f x₀).IsInvertible) (hmn : 2 ≤ n) :
+    MDifferentiableWithinAt I I.tangent
+      (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) (f ⁻¹' t) x₀ := by
+  simp only [← contMDiffWithinAt_univ, ← mfderivWithin_univ, ← mpullbackWithin_univ] at hV hf hf' ⊢
+  simpa using MDifferentiableWithinAt.mpullbackWithin hV hf hf' (mem_univ _) uniqueMDiffOn_univ hmn
+
+/-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
+differentiable. Version within a set at a point, but with full pullback. -/
+protected lemma MDifferentiableWithinAt.mpullback_of_eq
+    (hV : MDifferentiableWithinAt I' I'.tangent (fun (y : M') ↦ (V y : TangentBundle I' M')) t y₀)
+    (hf : ContMDiffAt I I' n f x₀) (hf' : (mfderiv I I' f x₀).IsInvertible) (hmn : 2 ≤ n)
+    (hy₀ : y₀ = f x₀) :
+    MDifferentiableWithinAt I I.tangent
+      (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) (f ⁻¹' t) x₀ := by
+  subst hy₀
+  exact MDifferentiableWithinAt.mpullback hV hf hf' hmn
+
+/-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
+differentiable. Version on a set, but with full pullback -/
+protected lemma MDifferentiableOn.mpullback
+    (hV : MDifferentiableOn I' I'.tangent (fun (y : M') ↦ (V y : TangentBundle I' M')) t)
+    (hf : ContMDiff I I' n f) (hf' : ∀ x ∈ f ⁻¹' t, (mfderiv I I' f x).IsInvertible)
+    (hmn : 2 ≤ n) :
+    MDifferentiableOn I I.tangent
+      (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) (f ⁻¹' t) :=
+  fun x₀ hx₀ ↦ MDifferentiableWithinAt.mpullback (hV _ hx₀) (hf x₀) (hf' _ hx₀) hmn
+
+/-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
+differentiable. Version at a point. -/
+protected lemma MDifferentiableAt.mpullback
+    (hV : MDifferentiableAt I' I'.tangent (fun (y : M') ↦ (V y : TangentBundle I' M')) (f x₀))
+    (hf : ContMDiffAt I I' n f x₀) (hf' : (mfderiv I I' f x₀).IsInvertible) (hmn : 2 ≤ n) :
+    MDifferentiableAt I I.tangent
+      (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) x₀ := by
+  simpa using MDifferentiableWithinAt.mpullback hV hf hf' hmn
+
+/-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
+differentiable. -/
+protected lemma MDifferentiable.mpullback
+    (hV : MDifferentiable I' I'.tangent (fun (y : M') ↦ (V y : TangentBundle I' M')))
+    (hf : ContMDiff I I' n f) (hf' : ∀ x, (mfderiv I I' f x).IsInvertible) (hmn : 2 ≤ n) :
+    MDifferentiable I I.tangent (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) :=
+  fun x ↦ MDifferentiableAt.mpullback (hV (f x)) (hf x) (hf' x) hmn
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point. -/
-protected lemma ContMDiffWithinAt.mpullbackWithin [CompleteSpace E]
+protected lemma ContMDiffWithinAt.mpullbackWithin
     (hV : ContMDiffWithinAt I' I'.tangent m
       (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
     (hf : ContMDiffWithinAt I I' n f s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible)
@@ -765,7 +837,7 @@ protected lemma ContMDiffWithinAt.mpullbackWithin [CompleteSpace E]
   simp only [inverse_equiv_comp, inverse_comp_equiv, ContinuousLinearEquiv.symm_symm, ϕ]
   rfl
 
-lemma ContMDiffWithinAt.mpullbackWithin_of_eq [CompleteSpace E]
+lemma ContMDiffWithinAt.mpullbackWithin_of_eq
     (hV : ContMDiffWithinAt I' I'.tangent m
       (fun (y : M') ↦ (V y : TangentBundle I' M')) t y₀)
     (hf : ContMDiffWithinAt I I' n f s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible)
@@ -777,7 +849,7 @@ lemma ContMDiffWithinAt.mpullbackWithin_of_eq [CompleteSpace E]
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version on a set. -/
-protected lemma ContMDiffOn.mpullbackWithin [CompleteSpace E]
+protected lemma ContMDiffOn.mpullbackWithin
     (hV : ContMDiffOn I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t)
     (hf : ContMDiffOn I I' n f s) (hf' : ∀ x ∈ s ∩ f ⁻¹' t, (mfderivWithin I I' f s x).IsInvertible)
     (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) :
@@ -788,7 +860,7 @@ protected lemma ContMDiffOn.mpullbackWithin [CompleteSpace E]
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, but with full pullback. -/
-protected lemma ContMDiffWithinAt.mpullback [CompleteSpace E]
+protected lemma ContMDiffWithinAt.mpullback
     (hV : ContMDiffWithinAt I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
     (hf : ContMDiffAt I I' n f x₀) (hf' : (mfderiv I I' f x₀).IsInvertible) (hmn : m + 1 ≤ n) :
     ContMDiffWithinAt I I.tangent m
@@ -798,7 +870,7 @@ protected lemma ContMDiffWithinAt.mpullback [CompleteSpace E]
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, but with full pullback. -/
-protected lemma ContMDiffWithinAt.mpullback_of_eq [CompleteSpace E]
+protected lemma ContMDiffWithinAt.mpullback_of_eq
     (hV : ContMDiffWithinAt I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t y₀)
     (hf : ContMDiffAt I I' n f x₀) (hf' : (mfderiv I I' f x₀).IsInvertible) (hmn : m + 1 ≤ n)
     (hy₀ : y₀ = f x₀) :
@@ -809,7 +881,7 @@ protected lemma ContMDiffWithinAt.mpullback_of_eq [CompleteSpace E]
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version on a set, but with full pullback -/
-protected lemma ContMDiffOn.mpullback [CompleteSpace E]
+protected lemma ContMDiffOn.mpullback
     (hV : ContMDiffOn I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t)
     (hf : ContMDiff I I' n f) (hf' : ∀ x ∈ f ⁻¹' t, (mfderiv I I' f x).IsInvertible)
     (hmn : m + 1 ≤ n) :
@@ -819,7 +891,7 @@ protected lemma ContMDiffOn.mpullback [CompleteSpace E]
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version at a point. -/
-protected lemma ContMDiffAt.mpullback [CompleteSpace E]
+protected lemma ContMDiffAt.mpullback
     (hV : ContMDiffAt I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) (f x₀))
     (hf : ContMDiffAt I I' n f x₀) (hf' : (mfderiv I I' f x₀).IsInvertible) (hmn : m + 1 ≤ n) :
     ContMDiffAt I I.tangent m
@@ -828,11 +900,13 @@ protected lemma ContMDiffAt.mpullback [CompleteSpace E]
   simpa using ContMDiffWithinAt.mpullback hV hf hf' hmn
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`. -/
-protected lemma ContMDiff.mpullback [CompleteSpace E]
+protected lemma ContMDiff.mpullback
     (hV : ContMDiff I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')))
     (hf : ContMDiff I I' n f) (hf' : ∀ x, (mfderiv I I' f x).IsInvertible) (hmn : m + 1 ≤ n) :
     ContMDiff I I.tangent m (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) :=
   fun x ↦ ContMDiffAt.mpullback (hV (f x)) (hf x) (hf' x) hmn
+
+end
 
 lemma mpullbackWithin_comp (g : M' → M'') (f : M → M') (V : Π (x : M''), TangentSpace I'' x)
     (s : Set M) (t : Set M') (x₀ : M) (hg : MDifferentiableWithinAt I' I'' g t (f x₀))
