@@ -54,6 +54,14 @@ theorem IsInitial.le_of_card_le {a b : Ordinal} (ha : IsInitial a)
 theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
   rw [IsInitial, card_ord]
 
+theorem IsInitial.card_le_card {a b : Ordinal} (ha : IsInitial a) (hb : IsInitial b) :
+    a.card ≤ b.card ↔ a ≤ b := by
+  rw [← ord_le_ord, ha.ord_card, hb.ord_card]
+
+theorem IsInitial.card_lt_card {a b : Ordinal} (ha : IsInitial a) (hb : IsInitial b) :
+    a.card < b.card ↔ a < b :=
+  lt_iff_lt_of_le_iff_le (hb.card_le_card ha)
+
 theorem isInitial_natCast (n : ℕ) : IsInitial n := by
   rw [IsInitial, card_nat, ord_nat]
 
