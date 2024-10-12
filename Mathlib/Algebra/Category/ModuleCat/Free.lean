@@ -26,7 +26,7 @@ linear algebra, module, free
 
 -/
 
-open CategoryTheory
+open CategoryTheory Module
 
 namespace ModuleCat
 
@@ -177,11 +177,11 @@ theorem free_shortExact_rank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
 
 theorem free_shortExact_finrank_add {n p : ℕ} [Module.Free R S.X₁] [Module.Free R S.X₃]
     [Module.Finite R S.X₁] [Module.Finite R S.X₃]
-    (hN : FiniteDimensional.finrank R S.X₁ = n)
-    (hP : FiniteDimensional.finrank R S.X₃ = p)
+    (hN : Module.finrank R S.X₁ = n)
+    (hP : Module.finrank R S.X₃ = p)
     [StrongRankCondition R] :
-    FiniteDimensional.finrank R S.X₂ = n + p := by
-  apply FiniteDimensional.finrank_eq_of_rank_eq
+    finrank R S.X₂ = n + p := by
+  apply finrank_eq_of_rank_eq
   rw [free_shortExact_rank_add hS', ← hN, ← hP]
   simp only [Nat.cast_add, finrank_eq_rank]
 
