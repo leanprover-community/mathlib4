@@ -670,7 +670,7 @@ theorem lift.initialSeg_coe : (lift.initialSeg.{v, u} : Ordinal → Ordinal) = l
 
 @[simp]
 theorem lift_lift (a : Ordinal.{u}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
-  (liftInitialSeg.{v}.trans liftInitialSeg.{w}).eq liftInitialSeg.{max v w, u} a
+  (liftInitialSeg.trans liftInitialSeg).eq liftInitialSeg a
 
 @[simp]
 theorem lift_zero : lift 0 = 0 :=
@@ -681,11 +681,11 @@ theorem lift_one : lift 1 = 1 :=
   type_eq_one_of_unique _
 
 @[simp]
-theorem lift_card (a) : Cardinal.lift.{u, v} (card a) = card (lift.{u, v} a) :=
+theorem lift_card (a) : Cardinal.lift.{u, v} (card a) = card (lift.{u} a) :=
   inductionOn a fun _ _ _ => rfl
 
-theorem mem_range_lift_of_le {a : Ordinal.{u}} {b : Ordinal.{max u v}} (h : b ≤ lift.{v, u} a) :
-    b ∈ Set.range lift.{v, u} :=
+theorem mem_range_lift_of_le {a : Ordinal.{u}} {b : Ordinal.{max u v}} (h : b ≤ lift.{v} a) :
+    b ∈ Set.range lift.{v} :=
   liftInitialSeg.mem_range_of_le h
 
 @[deprecated mem_range_lift_of_le (since := "2024-10-07")]
@@ -694,11 +694,11 @@ theorem lift_down {a : Ordinal.{u}} {b : Ordinal.{max u v}} (h : b ≤ lift.{v,u
   mem_range_lift_of_le h
 
 theorem le_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
-    b ≤ lift.{v,u} a ↔ ∃ a' ≤ a, lift.{v, u} a' = b :=
+    b ≤ lift.{v} a ↔ ∃ a' ≤ a, lift.{v} a' = b :=
   liftInitialSeg.le_apply_iff
 
 theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
-    b < lift.{v,u} a ↔ ∃ a' < a, lift.{v, u} a' = b :=
+    b < lift.{v} a ↔ ∃ a' < a, lift.{v} a' = b :=
   liftInitialSeg.lt_apply_iff
 
 /-! ### The first infinite ordinal ω -/
