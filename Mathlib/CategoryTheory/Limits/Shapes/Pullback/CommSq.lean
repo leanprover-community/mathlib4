@@ -270,7 +270,7 @@ theorem of_hasBinaryProduct [HasBinaryProduct X Y] [HasZeroObject C] [HasZeroMor
 
 section
 
-variable {P': C} {fst' : P' ⟶ X} {snd' : P' ⟶ Y}
+variable {P' : C} {fst' : P' ⟶ X} {snd' : P' ⟶ Y}
 
 /-- Any object at the top left of a pullback square is isomorphic to the object at the top left
 of any other pullback square with the same cospan. -/
@@ -362,6 +362,18 @@ lemma of_iso (h : IsPullback fst snd f g)
               rw [← reassoc_of% commfst, e₂.hom_inv_id, Category.comp_id]
             · change snd = e₁.hom ≫ snd' ≫ e₃.inv
               rw [← reassoc_of% commsnd, e₃.hom_inv_id, Category.comp_id]))⟩
+section
+
+variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
+
+lemma fst_iso_of_mono_eq (h : IsPullback fst snd f f) : IsIso fst :=
+  h.cone.fst_iso_of_mono_eq h.isLimit
+
+lemma snd_iso_of_mono_eq {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
+    (h : IsPullback fst snd f f) : IsIso snd :=
+  h.cone.snd_iso_of_mono_eq h.isLimit
+
+end
 
 end IsPullback
 
@@ -539,6 +551,18 @@ lemma of_iso (h : IsPushout f g inl inr)
         (spanExt e₁ e₂ e₃ commf.symm commg.symm) _).1
           (IsColimit.ofIsoColimit h.isColimit
             (PushoutCocone.ext e₄ comminl comminr))⟩
+
+section
+
+variable {P X Y : C} {inl : X ⟶ P} {inr : X ⟶ P} {f : Y ⟶ X} [Epi f]
+
+lemma inl_iso_of_epi_eq (h : IsPushout f f inl inr) : IsIso inl :=
+  h.cocone.inl_iso_of_epi_eq h.isColimit
+
+lemma inr_iso_of_epi_eq (h : IsPushout f f inl inr) : IsIso inr :=
+  h.cocone.inr_iso_of_epi_eq h.isColimit
+
+end
 
 end IsPushout
 
