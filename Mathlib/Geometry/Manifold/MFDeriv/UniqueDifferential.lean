@@ -92,7 +92,7 @@ theorem UniqueMDiffOn.uniqueDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M)
   apply UniqueMDiffOn.uniqueDiffOn
   rw [← PartialEquiv.image_source_inter_eq', inter_comm, extChartAt_source]
   exact (hs.inter (chartAt H x).open_source).image_denseRange'
-    (fun y hy ↦ hasMFDerivWithinAt_extChartAt I hy.2)
+    (fun y hy ↦ hasMFDerivWithinAt_extChartAt hy.2)
     fun y hy ↦ ((mdifferentiable_chart _ _).mfderiv_surjective hy.2).denseRange
 
 variable [SmoothManifoldWithCorners I M]  in

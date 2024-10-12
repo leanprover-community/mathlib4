@@ -21,11 +21,11 @@ open scoped Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
-  (I'' : ModelWithCorners 𝕜 E'' H'') {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
+  {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   [SmoothManifoldWithCorners I M]
 
 /-- The derivative of the chart at a base point is the chart of the tangent bundle, composed with
@@ -79,7 +79,7 @@ lemma inTangentCoordinates_eq_mfderiv_comp [SmoothManifoldWithCorners I' M']
   rw [inTangentCoordinates_eq _ _ _ _ _ hx hy, tangentBundleCore_coordChange]
   congr
   · have : MDifferentiableAt I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x) :=
-      mdifferentiableAt_extChartAt I' hy
+      mdifferentiableAt_extChartAt hy
     simp at this
     simp [mfderiv, this]
   · simp only [mfderivWithin, writtenInExtChartAt, modelWithCornersSelf_coe, range_id, inter_univ]
@@ -91,7 +91,7 @@ lemma inTangentCoordinates_eq_mfderiv_comp [SmoothManifoldWithCorners I' M']
 
 
 open Bundle
-variable (H) in
+variable (I) in
 /-- The canonical identification between the tangent bundle to the model space and the product,
 as a diffeomorphism -/
 def tangentBundleModelSpaceDiffeomorph (n : ℕ∞) :
