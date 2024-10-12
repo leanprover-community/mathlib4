@@ -127,6 +127,7 @@ differentiable functions between manifolds. -/
 def DifferentiableWithinAtProp (f : H → H') (s : Set H) (x : H) : Prop :=
   DifferentiableWithinAt 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ Set.range I) (I x)
 
+variable {I I'} in
 /-- Being differentiable in the model space is a local property, invariant under smooth maps.
 Therefore, it will lift nicely to manifolds. -/
 theorem differentiableWithinAt_localInvariantProp :
@@ -197,6 +198,7 @@ this would not mean anything relevant. -/
 def MDifferentiableWithinAt (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (DifferentiableWithinAtProp I I') f s x
 
+variable {I I'} in
 theorem mdifferentiableWithinAt_iff' (f : M → M') (s : Set M) (x : M) :
     MDifferentiableWithinAt I I' f s x ↔ ContinuousWithinAt f s x ∧
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f)
@@ -230,6 +232,7 @@ this would not mean anything relevant. -/
 def MDifferentiableAt (f : M → M') (x : M) :=
   LiftPropAt (DifferentiableWithinAtProp I I') f x
 
+variable {I I'} in
 theorem mdifferentiableAt_iff (f : M → M') (x : M) :
     MDifferentiableAt I I' f x ↔ ContinuousAt f x ∧
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) := by

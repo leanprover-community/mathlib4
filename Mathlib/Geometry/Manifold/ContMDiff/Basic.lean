@@ -28,11 +28,11 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare the prerequisites for a charted space `M` over the pair `(E, H)`.
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M]
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
   -- declare the prerequisites for a charted space `M'` over the pair `(E', H')`.
   {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M']
+  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M']
   -- declare the prerequisites for a charted space `M''` over the pair `(E'', H'')`.
   {E'' : Type*}
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
@@ -43,7 +43,6 @@ variable [ChartedSpace H M] [ChartedSpace H' M'] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
   {e : PartialHomeomorph M H}
   {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
-variable {I I'}
 
 /-! ### Smoothness of the composition of smooth functions between manifolds -/
 
@@ -385,7 +384,6 @@ lemma contMDiff_openEmbedding [Nonempty M] :
       h.toPartialHomeomorph_target] at this
     exact this
 
-variable {I I'}
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is smooth. -/
 lemma contMDiffOn_openEmbedding_symm [Nonempty M] :

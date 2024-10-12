@@ -50,14 +50,17 @@ open scoped Topology
 -- Let `M` be a manifold with corners over the pair `(E, H)`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 namespace ModelWithCorners
+
+variable (I) in
 /-- `p ∈ M` is an interior point of a manifold `M` iff its image in the extended chart
 lies in the interior of the model space. -/
 def IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (range I)
 
+variable (I) in
 /-- `p ∈ M` is a boundary point of a manifold `M` iff its image in the extended chart
 lies on the boundary of the model space. -/
 def IsBoundaryPoint (x : M) := extChartAt I x x ∈ frontier (range I)
@@ -106,7 +109,6 @@ lemma compl_interior : (I.interior M)ᶜ = I.boundary M:= by
 lemma compl_boundary : (I.boundary M)ᶜ = I.interior M:= by
   rw [← compl_interior, compl_compl]
 
-variable {I} in
 lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
     range I ∈ 𝓝 (extChartAt I x x) := by
   rw [mem_nhds_iff]
@@ -145,18 +147,18 @@ lemma _root_.BoundarylessManifold.isInteriorPoint {x : M} [BoundarylessManifold 
 
 /-- If `I` is boundaryless, `M` has full interior. -/
 lemma interior_eq_univ [BoundarylessManifold I M] : I.interior M = univ :=
-  eq_univ_of_forall fun _ => BoundarylessManifold.isInteriorPoint I
+  eq_univ_of_forall fun _ => BoundarylessManifold.isInteriorPoint
 
 /-- Boundaryless manifolds have empty boundary. -/
 lemma Boundaryless.boundary_eq_empty [BoundarylessManifold I M] : I.boundary M = ∅ := by
   rw [← I.compl_interior, I.interior_eq_univ, compl_empty_iff]
 
 instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
-  isEmpty_coe_sort.mpr (Boundaryless.boundary_eq_empty I)
+  isEmpty_coe_sort.mpr Boundaryless.boundary_eq_empty
 
 /-- `M` is boundaryless iff its boundary is empty. -/
 lemma Boundaryless.iff_boundary_eq_empty : I.boundary M = ∅ ↔ BoundarylessManifold I M := by
-  refine ⟨fun h ↦ { isInteriorPoint' := ?_ }, fun a ↦ boundary_eq_empty I⟩
+  refine ⟨fun h ↦ { isInteriorPoint' := ?_ }, fun a ↦ boundary_eq_empty⟩
   intro x
   show x ∈ I.interior M
   rw [← compl_interior, compl_empty_iff] at h
@@ -172,7 +174,7 @@ end BoundarylessManifold
 /-! Interior and boundary of the product of two manifolds. -/
 section prod
 
-variable {I}
+variable
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
@@ -198,7 +200,7 @@ lemma interior_prod :
 lemma boundary_prod :
     (I.prod J).boundary (M × N) = Set.prod univ (J.boundary N) ∪ Set.prod (I.boundary M) univ := by
   let h := calc (I.prod J).boundary (M × N)
-    _ = ((I.prod J).interior (M × N))ᶜ := (I.prod J).compl_interior.symm
+    _ = ((I.prod J).interior (M × N))ᶜ := compl_interior.symm
     _ = ((I.interior M) ×ˢ (J.interior N))ᶜ := by rw [interior_prod]
     _ = (I.interior M)ᶜ ×ˢ univ ∪ univ ×ˢ (J.interior N)ᶜ := by rw [compl_prod_eq_union]
   rw [h, I.compl_interior, J.compl_interior, union_comm]
@@ -207,14 +209,14 @@ lemma boundary_prod :
 /-- If `M` is boundaryless, `∂(M×N) = M × ∂N`. -/
 lemma boundary_of_boundaryless_left [BoundarylessManifold I M] :
     (I.prod J).boundary (M × N) = Set.prod (univ : Set M) (J.boundary N) := by
-  rw [boundary_prod, Boundaryless.boundary_eq_empty I]
+  rw [boundary_prod, Boundaryless.boundary_eq_empty (I := I)]
   have : Set.prod (∅ : Set M) (univ : Set N) = ∅ := Set.empty_prod
   rw [this, union_empty]
 
 /-- If `N` is boundaryless, `∂(M×N) = ∂M × N`. -/
 lemma boundary_of_boundaryless_right [BoundarylessManifold J N] :
     (I.prod J).boundary (M × N) = Set.prod (I.boundary M) (univ : Set N) := by
-  rw [boundary_prod, Boundaryless.boundary_eq_empty J]
+  rw [boundary_prod, Boundaryless.boundary_eq_empty (I := J)]
   have : Set.prod (univ : Set M) (∅ : Set N) = ∅ := Set.prod_empty
   rw [this, empty_union]
 
