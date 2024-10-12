@@ -2429,14 +2429,14 @@ variable (r : α → α → Prop) [hwf : IsWellFounded α r]
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
 `r b a`). -/
 noncomputable def rank (a : α) : Ordinal.{u} :=
-  (hwf.apply a).rank
+  (hwf.apply r a).rank
 
-theorem rank_eq : hwf.rank a = ⨆ b : { b // r b a }, succ (hwf.rank b) := by
+theorem rank_eq (a : α) : rank r a = ⨆ b : { b // r b a }, succ (rank r b) := by
   rw [rank, Acc.rank_eq]
   rfl
 
 variable {r} in
-theorem rank_lt_of_rel (h : r a b) : rank a < hwf.rank b :=
+theorem rank_lt_of_rel (h : r a b) : rank r a < rank r b :=
   Acc.rank_lt_of_rel _ h
 
 end IsWellFounded
