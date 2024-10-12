@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Convex.EGauge
-import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
 import Mathlib.Tactic.Peel
+import Mathlib.Topology.Instances.ENNReal
 
 /-!
 # Asymptotics in a Topological Vector Space
