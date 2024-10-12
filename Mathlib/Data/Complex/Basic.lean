@@ -73,13 +73,14 @@ theorem range_im : range im = univ :=
   im_surjective.range_eq
 
 -- Porting note: refactored instance to allow `norm_cast` to work
-/-- The natural inclusion of the real numbers into the complex numbers.
-The name `Complex.ofReal` is reserved for the bundled homomorphism. -/
+/-- The natural inclusion of the real numbers into the complex numbers. -/
 @[coe]
 def ofReal (r : ℝ) : ℂ :=
   ⟨r, 0⟩
 instance : Coe ℝ ℂ :=
   ⟨ofReal⟩
+
+@[deprecated (since := "2024-10-12")] alias ofReal' := ofReal
 
 @[simp, norm_cast]
 theorem ofReal_re (r : ℝ) : Complex.re (r : ℂ) = r :=
