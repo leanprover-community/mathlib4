@@ -171,7 +171,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
     ‖∫ x in s, φ i x • g x ∂μ‖ =
       ‖(∫ x in s \ u, φ i x • g x ∂μ) + ∫ x in s ∩ u, φ i x • g x ∂μ‖ := by
       conv_lhs => rw [← diff_union_inter s u]
-      rw [integral_union disjoint_sdiff_inter (hs.inter u_open.measurableSet)
+      rw [setIntegral_union disjoint_sdiff_inter (hs.inter u_open.measurableSet)
           (h''i.mono_set diff_subset) (h''i.mono_set inter_subset_left)]
     _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := norm_add_le _ _
     _ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ := add_le_add C B

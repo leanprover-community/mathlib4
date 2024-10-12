@@ -106,7 +106,7 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
       exact integrableOn_Ici_iff_integrableOn_Ioi.mpr hf
     calc
       _ = (∫ x in Iic 0, f |x|) + ∫ x in Ioi 0, f |x| := by
-        rw [← integral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi int_Iic hf,
+        rw [← setIntegral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi int_Iic hf,
           Iic_union_Ioi, restrict_univ]
       _ = 2 * ∫ x in Ioi 0, f x := by
         rw [two_mul, eq]
