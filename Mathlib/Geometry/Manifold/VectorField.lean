@@ -991,12 +991,14 @@ lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
     rfl
   · exact contMDiff_tangentBundleModelSpaceHomeomorph H I
 
+variable [SmoothManifoldWithCorners I M] in
 lemma isInvertible_mfderivWithin_extChartAt_symm {y : E} (hy : y ∈ (extChartAt I x).target) :
     (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) y).IsInvertible :=
   ContinuousLinearMap.IsInvertible.of_inverse
     (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt hy)
     (mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm hy)
 
+variable [SmoothManifoldWithCorners I M] in
 lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).source) :
     (mfderiv I 𝓘(𝕜, E) (extChartAt I x) y).IsInvertible := by
   have h'y : extChartAt I x y ∈ (extChartAt I x).target := (extChartAt I x).map_source hy
@@ -1022,11 +1024,11 @@ lemma mlieBracket_swap_apply : mlieBracket I V W x = - mlieBracket I W V x :=
 lemma mlieBracket_swap : mlieBracket I V W = - mlieBracket I W V :=
   mlieBracketWithin_swap
 
-#check UniqueMDiffWithinAt
+variable [SmoothManifoldWithCorners I M] [CompleteSpace E]
 
-lemma mlieBracketWithin_add_left [CompleteSpace E]
-    (hV : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (V x : TangentBundle I M)) s x)
-    (hV₁ : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (V₁ x : TangentBundle I M)) s x)
+lemma mlieBracketWithin_add_left
+    (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
+    (hV₁ : MDifferentiableWithinAt I I.tangent (fun x ↦ (V₁ x : TangentBundle I M)) s x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (V + V₁) W s x =
       mlieBracketWithin I V W s x + mlieBracketWithin I V₁ W s x := by
@@ -1035,36 +1037,34 @@ lemma mlieBracketWithin_add_left [CompleteSpace E]
   congr 1
   rw [lieBracketWithin_add_left]
   · apply MDifferentiableWithinAt.differentiableWithinAt
-    apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
-    have Z := ContMDiffWithinAt.mpullbackWithin_of_eq hV
+    have Z := MDifferentiableWithinAt.mpullbackWithin_of_eq hV
       (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target I x))
       (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x)) (mem_range_self _)
       I.uniqueMDiffOn le_rfl (extChartAt_to_inv I x).symm
     rw [inter_comm]
-    exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ Z
+    exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
+      le_rfl).comp_mdifferentiableWithinAt _ Z
   · apply MDifferentiableWithinAt.differentiableWithinAt
-    apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
-    have Z := ContMDiffWithinAt.mpullbackWithin_of_eq hV₁
+    have Z := MDifferentiableWithinAt.mpullbackWithin_of_eq hV₁
       (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target I x))
       (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x)) (mem_range_self _)
       I.uniqueMDiffOn le_rfl (extChartAt_to_inv I x).symm
     rw [inter_comm]
-    exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ Z
+    exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
+      le_rfl).comp_mdifferentiableWithinAt _ Z
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
 
-#exit
-
-lemma mlieBracket_add_left [CompleteSpace E]
-    (hV : ContMDiffAt I I.tangent 1 (fun x ↦ (V x : TangentBundle I M)) x)
-    (hV₁ : ContMDiffAt I I.tangent 1 (fun x ↦ (V₁ x : TangentBundle I M)) x) :
+lemma mlieBracket_add_left
+    (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x)
+    (hV₁ : MDifferentiableAt I I.tangent (fun x ↦ (V₁ x : TangentBundle I M)) x) :
     mlieBracket I (V + V₁) W  x =
       mlieBracket I V W x + mlieBracket I V₁ W x := by
   simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hV hV₁ ⊢
   exact mlieBracketWithin_add_left hV hV₁ (uniqueMDiffWithinAt_univ _)
 
-lemma mlieBracketWithin_add_right [CompleteSpace E]
-    (hW : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (W x : TangentBundle I M)) s x)
-    (hW₁ : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (W₁ x : TangentBundle I M)) s x)
+lemma mlieBracketWithin_add_right
+    (hW : MDifferentiableWithinAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) s x)
+    (hW₁ : MDifferentiableWithinAt I I.tangent (fun x ↦ (W₁ x : TangentBundle I M)) s x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (W + W₁) s x =
       mlieBracketWithin I V W s x + mlieBracketWithin I V W₁ s x := by
@@ -1072,9 +1072,9 @@ lemma mlieBracketWithin_add_right [CompleteSpace E]
     mlieBracketWithin_swap (V := V), mlieBracketWithin_swap (V := V), Pi.neg_apply, Pi.neg_apply]
   abel
 
-lemma mlieBracket_add_right [CompleteSpace E]
-    (hW : ContMDiffAt I I.tangent 1 (fun x ↦ (W x : TangentBundle I M)) x)
-    (hW₁ : ContMDiffAt I I.tangent 1 (fun x ↦ (W₁ x : TangentBundle I M)) x) :
+lemma mlieBracket_add_right
+    (hW : MDifferentiableAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) x)
+    (hW₁ : MDifferentiableAt I I.tangent (fun x ↦ (W₁ x : TangentBundle I M)) x) :
     mlieBracket I V (W + W₁) x =
       mlieBracket I V W x + mlieBracket I V W₁ x := by
   simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hW hW₁ ⊢
@@ -1108,32 +1108,32 @@ lemma _root_.ContDiff.mlieBracket {m n : ℕ∞} (hV : ContDiff 𝕜 n V)
   contDiff_iff_contDiffAt.2 (fun _ ↦ hV.contDiffAt.mlieBracket hW.contDiffAt hmn)
 -/
 
-theorem mlieBracketWithin_of_mem [CompleteSpace E]
+theorem mlieBracketWithin_of_mem
     (st : t ∈ 𝓝[s] x) (hs : UniqueMDiffWithinAt I s x)
-    (hV : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (V x : TangentBundle I M)) t x)
-    (hW : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (W x : TangentBundle I M)) t x) :
+    (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) t x)
+    (hW : MDifferentiableWithinAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) t x) :
     mlieBracketWithin I V W s x = mlieBracketWithin I V W t x := by
   simp only [mlieBracketWithin, fderivWithin_of_mem, mpullback_apply]
   congr 1
   rw [lieBracketWithin_of_mem]
-  ·
+  · sorry
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
   · apply MDifferentiableWithinAt.differentiableWithinAt
-    apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
-    have Z := ContMDiffWithinAt.mpullbackWithin_of_eq hV
+    have Z := MDifferentiableWithinAt.mpullbackWithin_of_eq hV
       (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target I x))
       (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x)) (mem_range_self _)
       I.uniqueMDiffOn le_rfl (extChartAt_to_inv I x).symm
     rw [inter_comm]
-    exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ Z
+    exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
+      le_rfl).comp_mdifferentiableWithinAt _ Z
   · apply MDifferentiableWithinAt.differentiableWithinAt
-    apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
-    have Z := ContMDiffWithinAt.mpullbackWithin_of_eq hW
+    have Z := MDifferentiableWithinAt.mpullbackWithin_of_eq hW
       (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target I x))
       (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x)) (mem_range_self _)
       I.uniqueMDiffOn le_rfl (extChartAt_to_inv I x).symm
     rw [inter_comm]
-    exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ Z
+    exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
+      le_rfl).comp_mdifferentiableWithinAt _ Z
 
 
 

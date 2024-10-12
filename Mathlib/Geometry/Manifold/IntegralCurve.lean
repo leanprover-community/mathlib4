@@ -161,12 +161,12 @@ lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (h
   have hsrc := extChartAt_source I (γ t₀) ▸ hsrc
   rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
   apply (HasMFDerivAt.comp t
-    (hasMFDerivAt_extChartAt I hsrc) (hγ _ ht)).congr_mfderiv
+    (hasMFDerivAt_extChartAt (I := I) hsrc) (hγ _ ht)).congr_mfderiv
   rw [ContinuousLinearMap.ext_iff]
   intro a
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
     ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
-    mfderiv_chartAt_eq_tangentCoordChange I hsrc]
+    mfderiv_chartAt_eq_tangentCoordChange hsrc]
   rfl
 
 variable [SmoothManifoldWithCorners I M] in
@@ -179,12 +179,12 @@ lemma IsIntegralCurveAt.eventually_hasDerivAt (hγ : IsIntegralCurveAt γ v t₀
   have hsrc := mem_of_mem_nhds ht1
   rw [mem_preimage, extChartAt_source I (γ t₀)] at hsrc
   rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
-  apply (HasMFDerivAt.comp t (hasMFDerivAt_extChartAt I hsrc) ht2).congr_mfderiv
+  apply (HasMFDerivAt.comp t (hasMFDerivAt_extChartAt (I := I) hsrc) ht2).congr_mfderiv
   rw [ContinuousLinearMap.ext_iff]
   intro a
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
     ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
-    mfderiv_chartAt_eq_tangentCoordChange I hsrc]
+    mfderiv_chartAt_eq_tangentCoordChange hsrc]
   rfl
 
 /-! ### Translation lemmas -/

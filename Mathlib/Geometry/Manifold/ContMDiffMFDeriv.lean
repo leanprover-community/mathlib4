@@ -163,17 +163,17 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
   rw [inTangentCoordinates_eq_mfderiv_comp, A,
     ← mfderivWithin_comp_of_eq, ← mfderiv_comp_mfderivWithin_of_eq]
   · exact mfderivWithin_eq_fderivWithin
-  · exact mdifferentiableAt_extChartAt _ (by simpa using h'x)
+  · exact mdifferentiableAt_extChartAt (by simpa using h'x)
   · apply MDifferentiableWithinAt.comp (I' := I) (u := u) _ _ _ inter_subset_right
     · convert hx.mdifferentiableWithinAt le_rfl
       exact PartialEquiv.left_inv (extChartAt I (g x₀)) h2
-    · apply (mdifferentiableWithinAt_extChartAt_symm _ _).mono
+    · apply (mdifferentiableWithinAt_extChartAt_symm _).mono
       · exact inter_subset_left.trans (extChartAt_target_subset_range I (g x₀))
       · exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
   · exact h3
   · simp only [Function.comp_def, PartialEquiv.left_inv (extChartAt I (g x₀)) h2]
   · exact hx.mdifferentiableWithinAt le_rfl
-  · apply (mdifferentiableWithinAt_extChartAt_symm _ _).mono
+  · apply (mdifferentiableWithinAt_extChartAt_symm _).mono
     · exact inter_subset_left.trans (extChartAt_target_subset_range I (g x₀))
     · exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
   · exact inter_subset_right
