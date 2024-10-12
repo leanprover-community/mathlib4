@@ -409,7 +409,7 @@ theorem mul_eq_opow_log_succ {a b : Ordinal.{u}} (ha : a ≠ 0) (hb : Principal 
     (hb₂ : 2 < b) : a * b = b ^ succ (log b a) := by
   apply le_antisymm
   · have hbl := principal_mul_isLimit hb₂ hb
-    rw [← (isNormal_mul_right (Ordinal.pos_iff_ne_zero.2 ha)).bsup_eq.{u, u} hbl, bsup_le_iff]
+    rw [← (isNormal_mul_right (Ordinal.pos_iff_ne_zero.2 ha)).bsup_eq hbl, bsup_le_iff]
     intro c hcb
     have hb₁ : 1 < b := (lt_succ 1).trans (by rwa [succ_one])
     have hbo₀ : b ^ log b a ≠ 0 := Ordinal.pos_iff_ne_zero.1 (opow_pos _ (zero_lt_one.trans hb₁))
