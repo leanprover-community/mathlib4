@@ -188,7 +188,7 @@ end
 
 section LE
 
-variable [LE α] {P : α → Prop} {x y : α}
+variable {α : Type*} [LE α] {P : α → Prop} {x y : α}
 
 /-- `Minimal P x` means that `x` is a minimal element satisfying `P`. -/
 def Minimal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → y ≤ x → x ≤ y
