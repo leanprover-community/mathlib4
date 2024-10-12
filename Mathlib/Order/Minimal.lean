@@ -10,13 +10,8 @@ import Mathlib.Order.Interval.Set.Basic
 /-!
 # Minimality and Maximality
 
-This file defines minimality and maximality of an element with respect to a predicate `P` on
-an ordered type `α`.
-
-## Main declarations
-
-* `Minimal P x`: `x` is minimal satisfying `P`.
-* `Maximal P x`: `x` is maximal satisfying `P`.
+This file proves basic facts about minimality and maximality
+of an element with respect to a predicate `P` on an ordered type `α`.
 
 ## Implementation Details
 
