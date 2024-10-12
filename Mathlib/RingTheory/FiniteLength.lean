@@ -34,9 +34,11 @@ variable {R} {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Modul
 
 theorem LinearEquiv.isFiniteLength (e : M ≃ₗ[R] N)
     (h : IsFiniteLength R M) : IsFiniteLength R N := by
-  induction' h with M _ _ _ M _ _ S _ _ ih generalizing N
-  · have := e.symm.toEquiv.subsingleton; exact .of_subsingleton
-  · have : IsSimpleModule R (N ⧸ Submodule.map (e : M →ₗ[R] N) S) :=
+  induction h generalizing N with
+  | of_subsingleton =>
+    have := e.symm.toEquiv.subsingleton; exact .of_subsingleton
+  | @of_simple_quotient M _ _ S _ _ ih =>
+    have : IsSimpleModule R (N ⧸ Submodule.map (e : M →ₗ[R] N) S) :=
       IsSimpleModule.congr (Submodule.Quotient.equiv S _ e rfl).symm
     exact .of_simple_quotient (ih <| e.submoduleMap S)
 

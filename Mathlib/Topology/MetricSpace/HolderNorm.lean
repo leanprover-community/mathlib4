@@ -61,7 +61,8 @@ lemma HolderWith.memHolder {C : ℝ≥0} (hf : HolderWith C r f) : MemHolder r f
   refine ⟨fun h => ?_,
     fun hf => let ⟨C, hC⟩ := hf; iInf_lt_top.2 ⟨C, iInf_lt_top.2 ⟨hC, coe_lt_top⟩⟩⟩
   simp_rw [eHolderNorm, iInf_lt_top] at h
-  exact let ⟨C, hC, _⟩ := h; ⟨C, hC⟩
+  let ⟨C, hC, _⟩ := h
+  exact ⟨C, hC⟩
 
 lemma eHolderNorm_ne_top : eHolderNorm r f ≠ ∞ ↔ MemHolder r f := by
   rw [← eHolderNorm_lt_top, lt_top_iff_ne_top]
@@ -92,8 +93,7 @@ variable (X) in
 lemma nnHolderNorm_const (r : ℝ≥0) (c : Y) : nnHolderNorm r (Function.const X c) = 0 := by
   refine le_antisymm (ENNReal.coe_le_coe.1 <|
     le_trans coe_nnHolderNorm_le_eHolderNorm ?_) (zero_le _)
-  rw [eHolderNorm_const]
-  rfl
+  rw [eHolderNorm_const, ENNReal.coe_zero]
 
 variable (X) in
 @[simp]
