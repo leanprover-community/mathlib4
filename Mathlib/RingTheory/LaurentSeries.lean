@@ -23,7 +23,7 @@ type with a zero. They are denoted `R⸨X⸩`.
 
 * Defines `LaurentSeries` as an abbreviation for `HahnSeries ℤ`.
 * Defines `hasseDeriv` of a Laurent series with coefficients in a module over a ring.
-* Provides a coercion `from power series `R⟦X⟧` into `R⸨X⸩` given by `HahnSeries.ofPowerSeries`.
+* Provides a coercion from power series `R⟦X⟧` into `R⸨X⸩` given by `HahnSeries.ofPowerSeries`.
 * Defines `LaurentSeries.powerSeriesPart`
 * Defines the localization map `LaurentSeries.of_powerSeries_localization` which evaluates to
   `HahnSeries.ofPowerSeries`.
@@ -66,7 +66,7 @@ inside the `X`-adic completion of `RatFunc K`.
 
 * Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ _`, the definition of the
 coefficients is given in terms of `HahnSeries.coeff` and this forces sometimes to go back-and-forth
-from `X : _⸨X⸩` to `single 1 1 : HahnSeries ℤ _`.
+from `X : ⸨_⸩` to `single 1 1 : HahnSeries ℤ _`.
 * To prove the isomorphism between the `X`-adic completion of `RatFunc K` and `K⸨X⸩` we construct
 two completions of `RatFunc K`: the first (`LaurentSeries.ratfuncAdicComplPkg`) is its abstract
 uniform completion; the second (`LaurentSeries.LaurentSeriesPkg`) is simply `K⸨X⸩`, once we prove
@@ -199,11 +199,6 @@ variable [Semiring R]
 
 instance : Coe R⟦X⟧ R⸨X⸩ :=
   ⟨HahnSeries.ofPowerSeries ℤ R⟩
-
-/- Porting note: now a syntactic tautology and not needed elsewhere
-theorem coe_powerSeries (x : R⟦X⟧) :
-    (x : R⸨X⸩) = HahnSeries.ofPowerSeries ℤ R x :=
-  rfl -/
 
 @[simp]
 theorem coeff_coe_powerSeries (x : R⟦X⟧) (n : ℕ) :
@@ -361,8 +356,6 @@ theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : S⟦X⟧) :
     ((r • x : S⟦X⟧) : S⸨X⸩) = r • (ofPowerSeries ℤ S x) := by
   ext
   simp [coeff_coe, coeff_smul, smul_ite]
-
--- Porting note: RingHom.map_bit0 and RingHom.map_bit1 no longer exist
 
 @[norm_cast]
 theorem coe_pow (n : ℕ) : ((f ^ n : R⟦X⟧) : R⸨X⸩) = (ofPowerSeries ℤ R f) ^ n :=
