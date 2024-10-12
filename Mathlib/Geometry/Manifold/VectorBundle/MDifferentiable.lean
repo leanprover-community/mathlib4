@@ -111,7 +111,7 @@ lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
     apply (trivializationAt F₁ E₁ (b₁ m₀)).open_baseSet.mem_nhds
     exact FiberBundle.mem_baseSet_trivializationAt' (b₁ m₀)
   have A' : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₂ m ∈ (trivializationAt F₂ E₂ (b₂ m₀)).baseSet := by
-    apply hb₂.continuousWithinAt
+    apply hb₂.insert.continuousWithinAt
     apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
     exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
   filter_upwards [A, A'] with m hm h'm

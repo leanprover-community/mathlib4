@@ -829,6 +829,11 @@ theorem MDifferentiableWithinAt.congr_of_eventuallyEq_of_mem
     MDifferentiableWithinAt I I' f₁ s x :=
   h.congr_of_eventuallyEq h₁ (mem_of_mem_nhdsWithin hx h₁ :)
 
+theorem MDifferentiableWithinAt.congr_of_eventuallyEq_insert
+    (h : MDifferentiableWithinAt I I' f s x) (h₁ : f₁ =ᶠ[𝓝[insert x s] x] f) :
+    MDifferentiableWithinAt I I' f₁ s x :=
+  (h.insert.congr_of_eventuallyEq_of_mem h₁ (mem_insert x s)).of_insert
+
 theorem Filter.EventuallyEq.mdifferentiableWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f₁ s x := by
   constructor
