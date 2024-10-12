@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Synonym
 import Mathlib.Order.Hom.Set
-import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Bounds.Image
 
 /-!
 # Galois connections, insertions and coinsertions
