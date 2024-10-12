@@ -636,6 +636,18 @@ theorem MDifferentiableWithinAt.hasMFDerivWithinAt (h : MDifferentiableWithinAt 
   simp only [mfderivWithin, h, if_pos, mfld_simps]
   exact DifferentiableWithinAt.hasFDerivWithinAt h.2
 
+theorem MDifferentiableWithinAt.mono_of_mem (h : MDifferentiableWithinAt I I' f s x) {t : Set M}
+    (hst : s ∈ 𝓝[t] x) : MDifferentiableWithinAt I I' f t x :=
+  (h.hasMFDerivWithinAt.mono_of_mem hst).mdifferentiableWithinAt
+
+theorem MDifferentiableWithinAt.congr_nhds (h : MDifferentiableWithinAt I I' f s x) {t : Set M}
+    (hst : 𝓝[s] x = 𝓝[t] x) : MDifferentiableWithinAt I I' f t x :=
+  h.mono_of_mem <| hst ▸ self_mem_nhdsWithin
+
+theorem mdifferentiableWithinAt_congr_nhds {t : Set M} (hst : 𝓝[s] x = 𝓝[t] x) :
+    MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x :=
+  ⟨fun h => h.congr_nhds hst, fun h => h.congr_nhds hst.symm⟩
+
 protected theorem MDifferentiableWithinAt.mfderivWithin (h : MDifferentiableWithinAt I I' f s x) :
     mfderivWithin I I' f s x =
       fderivWithin 𝕜 (writtenInExtChartAt I I' x f : _) ((extChartAt I x).symm ⁻¹' s ∩ range I)
@@ -691,26 +703,30 @@ lemma mfderivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
 
 theorem hasMFDerivWithinAt_insert {y : M} :
     HasMFDerivWithinAt I I' f (insert y s) x f' ↔ HasMFDerivWithinAt I I' f s x f' := by
-  have : T2Space H := I.closedEmbedding.toEmbedding.t2Space
-  have : T1Space M := ChartedSpace.T1Space H M
-  rcases eq_or_ne x y with (rfl | h)
-  · simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO]
-    apply Asymptotics.isLittleO_insert
-    simp only [sub_self, map_zero]
-  refine ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem ?_⟩
-  simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
+  have : T1Space M := I.t1Space M
+  refine ⟨fun h => h.mono <| subset_insert y s, fun hf ↦ ?_⟩
+  rcases eq_or_ne x y with rfl | h
+  · rw [HasMFDerivWithinAt] at hf ⊢
+    refine ⟨hf.1.insert_self, ?_⟩
+    have : (extChartAt I x).target ∈
+        𝓝[(extChartAt I x).symm ⁻¹' insert x s ∩ range I] (extChartAt I x) x :=
+      nhdsWithin_mono _ inter_subset_right (extChartAt_target_mem_nhdsWithin I x)
+    rw [← hasFDerivWithinAt_inter' this]
+    apply hf.2.insert.mono
+    rintro z ⟨⟨hz, h2z⟩, h'z⟩
+    simp only [mem_inter_iff, mem_preimage, mem_insert_iff, mem_range] at hz h2z ⊢
+    rcases hz with xz | h'z
+    · left
+      have : x ∈ (extChartAt I x).source := mem_extChartAt_source I x
+      exact (((extChartAt I x).eq_symm_apply this h'z).1 xz.symm).symm
+    · exact Or.inr ⟨h'z, h2z⟩
+  · apply hf.mono_of_mem ?_
+    simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
 
+alias ⟨HasMFDerivWithinAt.of_insert, HasMFDerivWithinAt.insert'⟩ := hasMFDerivWithinAt_insert
 
-  refine ⟨fun h ↦ h.mono (subset_insert y s), fun h ↦ ?_⟩
-
-
-#exit
-
-
-alias ⟨HasFDerivWithinAt.of_insert, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
-
-protected theorem HasFDerivWithinAt.insert (h : HasFDerivWithinAt g g' s x) :
-    HasFDerivWithinAt g g' (insert x s) x :=
+protected theorem HasMFDerivWithinAt.insert (h : HasMFDerivWithinAt I I' f s x f') :
+    HasMFDerivWithinAt I I' f (insert x s) x f' :=
   h.insert'
 
 theorem mfderivWithin_eq_mfderiv (hs : UniqueMDiffWithinAt I s x) (h : MDifferentiableAt I I' f x) :
@@ -726,6 +742,7 @@ theorem mdifferentiableWithinAt_insert {y : M} :
     MDifferentiableWithinAt I I' f (insert y s) x ↔ MDifferentiableWithinAt I I' f s x := by
   rcases eq_or_ne x y with (rfl | h)
   · exact mdifferentiableWithinAt_insert_self
+  have : T1Space M := I.t1Space M
   apply mdifferentiableWithinAt_congr_nhds
   exact nhdsWithin_insert_of_ne h
 
