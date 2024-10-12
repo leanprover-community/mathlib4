@@ -65,8 +65,8 @@ protected theorem one : padicValNat p 1 = 0 := by simp [padicValNat]
 
 @[simp]
 theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p ∣ n := by
-  simp only [padicValNat, ne_eq, pos_iff_ne_zero, dite_eq_else, find_eq_zero, zero_add, pow_one,
-    and_imp, ← or_iff_not_imp_left]
+  simp only [padicValNat, ne_eq, pos_iff_ne_zero, dite_eq_right_iff, find_eq_zero, zero_add,
+    pow_one, and_imp, ← or_iff_not_imp_left]
 
 end padicValNat
 
