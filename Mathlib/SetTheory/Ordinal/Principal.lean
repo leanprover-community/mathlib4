@@ -337,7 +337,8 @@ theorem mul_lt_omega0_opow {a b c : Ordinal} (c0 : 0 < c) (ha : a < ω ^ c) (hb 
   rcases zero_or_succ_or_limit c with (rfl | ⟨c, rfl⟩ | l)
   · exact (lt_irrefl _).elim c0
   · rw [opow_succ] at ha
-    rcases ((isNormal_mul_right <| opow_pos _ omega0_pos).limit_lt omega0_isLimit).1 ha with ⟨n, hn, an⟩
+    obtain ⟨n, hn, an⟩ :=
+      ((isNormal_mul_right <| opow_pos _ omega0_pos).limit_lt omega0_isLimit).1 ha
     apply (mul_le_mul_right' (le_of_lt an) _).trans_lt
     rw [opow_succ, mul_assoc, mul_lt_mul_iff_left (opow_pos _ omega0_pos)]
     exact principal_mul_omega0 hn hb
@@ -408,7 +409,7 @@ theorem mul_eq_opow_log_succ {a b : Ordinal.{u}} (ha : a ≠ 0) (hb : Principal 
     (hb₂ : 2 < b) : a * b = b ^ succ (log b a) := by
   apply le_antisymm
   · have hbl := principal_mul_isLimit hb₂ hb
-    rw [← IsNormal.bsup_eq.{u, u} (isNormal_mul_right (Ordinal.pos_iff_ne_zero.2 ha)) hbl, bsup_le_iff]
+    rw [← (isNormal_mul_right (Ordinal.pos_iff_ne_zero.2 ha)).bsup_eq.{u, u} hbl, bsup_le_iff]
     intro c hcb
     have hb₁ : 1 < b := (lt_succ 1).trans (by rwa [succ_one])
     have hbo₀ : b ^ log b a ≠ 0 := Ordinal.pos_iff_ne_zero.1 (opow_pos _ (zero_lt_one.trans hb₁))
