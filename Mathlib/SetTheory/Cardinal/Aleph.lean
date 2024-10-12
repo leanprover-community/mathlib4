@@ -1,26 +1,29 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
+Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Order.Bounded
 import Mathlib.SetTheory.Cardinal.PartENat
 import Mathlib.SetTheory.Ordinal.Enum
 
 /-!
-# Aleph and beth functions
+# Omega, aleph, and beth functions
 
-* The function `Cardinal.aleph'` gives the cardinals listed by their ordinal index.
-  `aleph' n = n`, `aleph' ω = ℵ₀`, `aleph' (ω + 1) = succ ℵ₀`, etc.
-  It is an order isomorphism between ordinals and cardinals.
-* The function `Cardinal.aleph` gives the infinite cardinals listed by their
-  ordinal index. `aleph 0 = ℵ₀`, `aleph 1 = succ ℵ₀` is the first
-  uncountable cardinal, and so on. The notation `ω_` combines the latter with `Cardinal.ord`,
-  giving an enumeration of (infinite) initial ordinals.
-  Thus `ω_ 0 = ω` and `ω₁ = ω_ 1` is the first uncountable ordinal.
+* The function `Ordinal.omega'` enumerates the initial ordinals, i.e. the smallest ordinals with any
+  given cardinality. Thus `omega' n = n`, `omega' ω = ω`, `omega' (ω + 1) = ω₁`, etc.
+  `Ordinal.omega` is the more standard function which skips over finite ordinals.
+* The function `Cardinal.aleph'` is an order isomorphism between ordinals and cardinals. Thus
+  `aleph n = n`, `aleph' ω = ℵ₀`, `aleph' (ω + 1) = ℵ₁`, etc. `Cardinal.aleph` is the more standard
+  function which skips over finite ordinals.
 * The function `Cardinal.beth` enumerates the Beth cardinals. `beth 0 = ℵ₀`,
   `beth (succ o) = 2 ^ beth o`, and for a limit ordinal `o`, `beth o` is the supremum of `beth a`
   for `a < o`.
+
+## Notation
+
+- `ω_ o` is notation for `Ordinal.omega o`. `ω₁` is notation for `ω_ 1`. These are scoped notations
+  in `Ordinal`.
 -/
 
 assert_not_exists Module
@@ -171,9 +174,12 @@ theorem omega_max (o₁ o₂ : Ordinal) : ω_ (max o₁ o₂) = max (ω_ o₁) (
 theorem omega_zero : ω_ 0 = ω := by
   rw [omega_eq_omega', add_zero, omega'_omega0]
 
-theorem omega_lt_omega1 : ω < ω₁ := by
+theorem omega0_lt_omega1 : ω < ω₁ := by
   rw [← omega_zero, omega_lt]
   exact zero_lt_one
+
+@[deprecated omega0_lt_omega1 (since := "2024-10-11")]
+alias omega_lt_omega1 := omega0_lt_omega1
 
 end Ordinal
 
