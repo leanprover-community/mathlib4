@@ -25,10 +25,6 @@ inverse isomorphisms.
 
 We show that the composition of (lax) monoidal functors gives a (lax) monoidal functor.
 
-See also `CategoryTheory.Monoidal.Functorial` for a typeclass decorating an object-level
-function with the additional data of a monoidal functor.
-This is useful when stating that a pre-existing functor is monoidal.
-
 See `CategoryTheory.Monoidal.NaturalTransformation` for monoidal natural transformations.
 
 We show in `CategoryTheory.Monoidal.Mon_` that lax monoidal functors take monoid objects
