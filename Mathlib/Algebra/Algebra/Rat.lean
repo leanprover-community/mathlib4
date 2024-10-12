@@ -97,6 +97,8 @@ instance _root_.RingHomClass.toLinearMapClassRat [FunLike F R S] [RingHomClass F
     LinearMapClass F ℚ R S where
   map_smulₛₗ f q a := by simp [smul_def, cast_id]
 
+set_synth_order RingHomClass.toLinearMapClassRat #[7, 8, 3, 4, 5, 6]
+
 variable [SMul R S]
 
 instance instSMulCommClass [SMulCommClass R S S] : SMulCommClass ℚ R S where
