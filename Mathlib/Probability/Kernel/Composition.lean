@@ -1046,6 +1046,10 @@ theorem comp_apply' (η : Kernel β γ) (κ : Kernel α β) (a : α) {s : Set γ
     (η ∘ₖ κ) a s = ∫⁻ b, η b s ∂κ a := by
   rw [comp_apply, Measure.bind_apply hs (Kernel.measurable _)]
 
+@[simp] lemma zero_comp (κ : Kernel α β) : (0 : Kernel β γ) ∘ₖ κ = 0 := by ext; simp [comp_apply]
+
+@[simp] lemma comp_zero (κ : Kernel β γ) : κ ∘ₖ (0 : Kernel α β) = 0 := by ext; simp [comp_apply]
+
 theorem comp_eq_snd_compProd (η : Kernel β γ) [IsSFiniteKernel η] (κ : Kernel α β)
     [IsSFiniteKernel κ] : η ∘ₖ κ = snd (κ ⊗ₖ prodMkLeft α η) := by
   ext a s hs
@@ -1100,18 +1104,20 @@ lemma const_comp' (μ : Measure γ) (κ : Kernel α β) [IsMarkovKernel κ] :
     const β μ ∘ₖ κ = const α μ := by
   ext; simp_rw [const_comp, measure_univ, one_smul, const_apply]
 
-lemma map_comp (κ : Kernel α β) (η : Kernel β γ) {f : γ → δ} (hf : Measurable f) :
+lemma map_comp (κ : Kernel α β) (η : Kernel β γ) (f : γ → δ) :
     (η ∘ₖ κ).map f = (η.map f) ∘ₖ κ := by
-  ext a s hs
-  rw [map_apply' _ hf _ hs, comp_apply', comp_apply' _ _ _ hs]
-  · simp_rw [map_apply' _ hf _ hs]
-  · exact hf hs
+  by_cases hf : Measurable f
+  · ext a s hs
+    rw [map_apply' _ hf _ hs, comp_apply', comp_apply' _ _ _ hs]
+    · simp_rw [map_apply' _ hf _ hs]
+    · exact hf hs
+  · simp [map_of_not_measurable _ hf]
 
 lemma fst_comp (κ : Kernel α β) (η : Kernel β (γ × δ)) : (η ∘ₖ κ).fst = η.fst ∘ₖ κ := by
-  simp [fst_eq, map_comp κ η measurable_fst]
+  simp [fst_eq, map_comp κ η _]
 
 lemma snd_comp (κ : Kernel α β) (η : Kernel β (γ × δ)) : (η ∘ₖ κ).snd = η.snd ∘ₖ κ := by
-  simp_rw [snd_eq, map_comp κ η measurable_snd]
+  simp_rw [snd_eq, map_comp κ η _]
 
 @[simp] lemma snd_compProd_prodMkLeft
     (κ : Kernel α β) (η : Kernel β γ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
