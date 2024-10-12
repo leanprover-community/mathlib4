@@ -87,22 +87,25 @@ end Arbitrary
 
 /-! ### Principal ordinals are unbounded -/
 
-/-- Provides an explicit ordinal, principal under any specified operation, and at least larger than
-`o`. -/
-theorem principal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
+private theorem principal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     Principal op (nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2)) o) := by
   intro a b ha hb
   rw [lt_nfp] at *
-  obtain ⟨m, hm⟩ := ha
-  obtain ⟨n, hn⟩ := hb
+  obtain ⟨m, ha⟩ := ha
+  obtain ⟨n, hb⟩ := hb
   obtain h | h := le_total
     ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2))^[m] o)
     ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2))^[n] o)
   · use n + 1
     rw [Function.iterate_succ']
-    dsimp
     apply (lt_succ _).trans_le
-    apply Ordinal.le_iSup
+    exact Ordinal.le_iSup (fun y : Set.Iio _ ×ˢ Set.Iio _ ↦ succ (op y.1.1 y.1.2))
+      ⟨_, Set.mk_mem_prod (ha.trans_le h) hb⟩
+  · use m + 1
+    rw [Function.iterate_succ']
+    apply (lt_succ _).trans_le
+    exact Ordinal.le_iSup (fun y : Set.Iio _ ×ˢ Set.Iio _ ↦ succ (op y.1.1 y.1.2))
+      ⟨_, Set.mk_mem_prod ha (hb.trans_le h)⟩
 
 /-- Principal ordinals under any operation are unbounded. -/
 theorem not_bddAbove_principal (op : Ordinal → Ordinal → Ordinal) :
@@ -132,8 +135,6 @@ set_option linter.deprecated false in
 theorem unbounded_principal (op : Ordinal → Ordinal → Ordinal) :
     Set.Unbounded (· < ·) { o | Principal op o } := fun o =>
   ⟨_, principal_nfp_blsub₂ op o, (le_nfp _ o).not_lt⟩
-
-#exit
 
 /-! #### Additive principal ordinals -/
 
