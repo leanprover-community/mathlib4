@@ -244,6 +244,12 @@ theorem insertRight {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
 
 end Numeric
 
+@[deprecated Numeric.insertLeft (since := "2024-10-11")]
+alias insertLeft_numeric := Numeric.insertLeft
+
+@[deprecated Numeric.insertRight (since := "2024-10-11")]
+alias insertRight_numeric := Numeric.insertRight
+
 /-- Pre-games defined by natural numbers are numeric. -/
 theorem numeric_nat : ∀ n : ℕ, Numeric n
   | 0 => numeric_zero
