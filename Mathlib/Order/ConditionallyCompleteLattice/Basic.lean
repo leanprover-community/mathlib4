@@ -219,7 +219,7 @@ complete linear orders, we prefix `sInf` and `sSup` by a `c` everywhere. The sam
 hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness. -/
 class ConditionallyCompleteLinearOrderBot (α : Type*) extends ConditionallyCompleteLinearOrder α,
-  OrderBot α where
+    OrderBot α where
   /-- The supremum of the empty set is special-cased to `⊥` -/
   csSup_empty : sSup ∅ = ⊥
 
