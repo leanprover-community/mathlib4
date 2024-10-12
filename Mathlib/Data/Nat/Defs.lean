@@ -57,7 +57,7 @@ assert_not_exists Monoid
 open Function
 
 namespace Nat
-variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
+variable {a b c d m n k : ℕ} {p : ℕ → Prop}
 
 -- TODO: Move the `LinearOrder ℕ` instance to `Order.Nat` (#13092).
 instance instLinearOrder : LinearOrder ℕ where

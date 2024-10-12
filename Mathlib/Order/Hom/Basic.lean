@@ -915,7 +915,7 @@ open Set
 
 section LE
 
-variable [LE α] [LE β] [LE γ]
+variable [LE α] [LE β]
 
 --@[simp] Porting note (#10618): simp can prove it
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
@@ -929,7 +929,7 @@ theorem symm_apply_le (e : α ≃o β) {x : α} {y : β} : e.symm y ≤ x ↔ y 
 
 end LE
 
-variable [Preorder α] [Preorder β] [Preorder γ]
+variable [Preorder α] [Preorder β]
 
 protected theorem monotone (e : α ≃o β) : Monotone e :=
   e.toOrderEmbedding.monotone
@@ -1053,7 +1053,7 @@ end Equiv
 namespace StrictMono
 
 variable [LinearOrder α] [Preorder β]
-variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f)
+variable (f : α → β) (h_mono : StrictMono f)
 
 /-- A strictly monotone function with a right inverse is an order isomorphism. -/
 @[simps (config := .asFn)]
