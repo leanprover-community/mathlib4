@@ -8,7 +8,7 @@ import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.NatFib
-import Mathlib.Tactic.NormNUm.NatLog
+import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Tactic.NormNum.LegendreSymbol

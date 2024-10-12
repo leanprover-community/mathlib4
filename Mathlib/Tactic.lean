@@ -174,6 +174,7 @@ import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.NatFib
+import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
 import Mathlib.Tactic.NormNum.Pow
