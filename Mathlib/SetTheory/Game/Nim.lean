@@ -364,10 +364,6 @@ theorem grundyValue_add (G H : PGame) [G.Impartial] [H.Impartial] :
     ← grundyValue_nim_add_nim, grundyValue_eq_iff_equiv]
   exact add_congr (equiv_nim_grundyValue G) (equiv_nim_grundyValue H)
 
-theorem grundyValue_add_nat (G H : PGame) [G.Impartial] [H.Impartial] {n m : ℕ}
-    (hG : grundyValue G = ∗n) (hH : grundyValue H = ∗m) : grundyValue (G + H) = ∗(n ^^^ m) := by
-  rw [grundyValue_add, hG, hH, add_nat]
-
 end PGame
 
 end SetTheory
