@@ -1,7 +1,9 @@
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Triangulated.Lemmas
+import Mathlib.CategoryTheory.Adjunction.Opposites
 
 namespace CategoryTheory
 
@@ -49,6 +51,19 @@ noncomputable def right_to_left_iso (adj : F ⊣ G) (commG : CommShift G A) (a :
   (Adjunction.natIsoEquiv (Adjunction.comp adj (shiftEquiv' D (-a) a
   (add_left_neg _)).symm.toAdjunction) (Adjunction.comp (shiftEquiv' C (-a) a
   (add_left_neg _)).symm.toAdjunction adj)).toFun (commG.iso (-a))
+
+noncomputable def left_to_right_iso_op (adj : F ⊣ G) (commG : CommShift G A) (a : A) :
+    (F ⋙ (shiftEquiv' D (-a) a sorry).symm.functor).op ≅
+      ((shiftEquiv' C (-a) a sorry).symm.functor ⋙ F).op :=
+    (left_to_right_iso (C := OppositeShift D A) (D := OppositeShift C A)
+    adj.opAdjointOpOfAdjoint commG.op a).symm
+
+lemma right_to_left_eq_left_to_right_op (adj : F ⊣ G) (commG : CommShift G A) (a : A) :
+    right_to_left_iso adj commG a = NatIso.removeOp (left_to_right_iso_op adj commG a) := by
+  ext X
+  simp [right_to_left_iso, left_to_right_iso_op, left_to_right_iso]
+  sorry
+
 
 lemma right_to_left_iso_apply (adj : F ⊣ G) (commG : CommShift G A) (a : A) (X : C) (Y : D) :
     (coyoneda.map (op ((right_to_left_iso adj commG a).hom.app X))).app Y = sorry := by

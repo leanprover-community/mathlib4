@@ -3,6 +3,7 @@ import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Triangulated.Basic
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.CategoryTheory.Shift.Opposite
 
 universe u v
 
@@ -451,15 +452,61 @@ lemma shiftEquiv'_add_symm_homEquiv (a a' b b' c c' : A) (ha : a + a' = 0) (hb :
       ((shiftFunctor C (b')).obj X) Y) u) ≫
       (shiftFunctorAdd' C a b c h).inv.app Y =
       ((shiftEquiv' C c c' hc).symm.toAdjunction.homEquiv X Y)
-      ((shiftFunctorAdd' C b' a' c' sorry).hom.app X ≫ u) := sorry
+      ((shiftFunctorAdd' C b' a' c' (by rw [eq_neg_of_add_eq_zero_right hc,
+        eq_neg_of_add_eq_zero_right ha, eq_neg_of_add_eq_zero_right hb, ← h,
+        neg_add_rev])).hom.app X ≫ u) := by
+  have he : ∀ (a a' : A) (ha : a + a' = 0) (X : C), (shiftEquiv' C a a' ha).symm.unit.app X =
+      (shiftFunctorZero C A).inv.app X ≫ (shiftFunctorAdd' C a' a 0
+      (by rw [eq_neg_of_add_eq_zero_left ha, add_right_neg])).hom.app X := by
+    intro a a' ha X
+    change (shiftEquiv' C a a' ha).symm.unitIso.hom.app X = _
+    rw [Equivalence.symm_unitIso]
+    simp [shiftFunctorCompIsoId]
+  simp only [Equivalence.symm_inverse, shiftEquiv'_functor, Equivalence.symm_functor,
+    shiftEquiv'_inverse, Adjunction.homEquiv_apply, Functor.comp_obj, Equivalence.toAdjunction_unit,
+    Functor.map_comp, assoc]
+  rw [he b b' hb, he c c' hc, he a a' ha]
+  simp only [Functor.id_obj, Functor.comp_obj, Functor.map_comp, assoc]
+  have heq : u⟦c⟧' = (shiftFunctorAdd' C a b c h).hom.app ((X⟦b'⟧)⟦a'⟧) ≫ (u⟦a⟧')⟦b⟧' ≫
+      (shiftFunctorAdd' C a b c h).inv.app Y := by
+    conv_rhs => rw [← assoc]; erw [← (shiftFunctorAdd' C a b c h).hom.naturality u]
+                rw [assoc, Iso.hom_inv_id_app, comp_id]
+  rw [heq]
+  slice_rhs 2 3 => rw [shiftFunctorAdd'_assoc_hom_app b' a' c c' b 0
+        (by rw [eq_neg_of_add_eq_zero_right hc,
+        eq_neg_of_add_eq_zero_right ha, eq_neg_of_add_eq_zero_right hb, ← h,
+        neg_add_rev]) (by rw [eq_neg_of_add_eq_zero_right ha, ← h]; simp)
+        (by rw [eq_neg_of_add_eq_zero_right ha, eq_neg_of_add_eq_zero_right hb, ← h, add_assoc,
+        ← add_assoc (-a)]; simp) X]
+  slice_rhs 3 4 => rw [← shiftFunctorAdd'_assoc_hom_app a' a b 0 c b
+    (by rw [eq_neg_of_add_eq_zero_right ha]; simp) h (by rw [eq_neg_of_add_eq_zero_right ha]; simp)
+    (X⟦b'⟧)]
+  rw [shiftFunctorAdd'_zero_add]
+  simp
 
 lemma shiftEquiv_add_symm_homEquiv (a a' b b' c c' : A) (ha : a + a' = 0) (hb : b + b' = 0)
     (hc : c + c' = 0) (h : a + b = c) (X Y : C) (u : X ⟶ Y⟦c⟧) :
         ((shiftEquiv' C b b' hb).symm.toAdjunction.homEquiv X
         ((shiftFunctor C a).obj Y)).symm (u ≫ (shiftFunctorAdd' C a b c h).hom.app Y) =
         ((shiftEquiv' C a a' ha).symm.toAdjunction.homEquiv (X⟦b'⟧) Y)
-        ((shiftFunctorAdd' C b' a' c' sorry).inv.app X ≫
-        ((shiftEquiv' C c c' hc).symm.toAdjunction.homEquiv X Y).symm u) := sorry
+        ((shiftFunctorAdd' C b' a' c' (by rw [eq_neg_of_add_eq_zero_right hc,
+        eq_neg_of_add_eq_zero_right ha, eq_neg_of_add_eq_zero_right hb, ← h,
+        neg_add_rev])).inv.app X ≫
+        ((shiftEquiv' C c c' hc).symm.toAdjunction.homEquiv X Y).symm u) := by
+  have := shiftEquiv'_add_symm_homEquiv C a a' b b' c c' ha hb hc h X Y
+    ((shiftFunctorAdd' C b' a' c' (by rw [eq_neg_of_add_eq_zero_right hc,
+        eq_neg_of_add_eq_zero_right ha, eq_neg_of_add_eq_zero_right hb, ← h,
+        neg_add_rev])).inv.app X ≫
+    ((shiftEquiv' C c c' hc).symm.toAdjunction.homEquiv X Y).symm u)
+  rw [← cancel_mono ((shiftFunctorAdd' C a b c h).hom.app Y), assoc, Iso.inv_hom_id_app] at this
+  conv_lhs at this => erw [comp_id]
+  apply_fun (fun x ↦ ((shiftEquiv' C b b' hb).symm.toAdjunction.homEquiv X
+        ((shiftFunctor C a).obj Y)).symm x) at this
+  erw [Equiv.apply_symm_apply] at this
+  rw [this]
+  congr 1
+  conv_rhs => rw [← assoc, Iso.hom_inv_id_app]; erw [id_comp]
+              rw [Equiv.apply_symm_apply]
 
 end Shift
 
@@ -473,6 +520,12 @@ variable {C : Type u} {D : Type u'} [Category.{v,u} C] [Category.{v',u'} D] (F :
 
 theorem zero' (a : A) (ha : a = 0) : ∀ [self : F.CommShift A],
     CommShift.iso a = CommShift.isoZero' F a ha := sorry
+
+def op (commF : CommShift F A) :
+    CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A where
+  iso a := (NatIso.op (commF.iso a)).symm
+  zero := sorry
+  add := sorry
 
 end CommShift
 end Functor
