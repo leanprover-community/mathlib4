@@ -174,19 +174,19 @@ theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure
   conv_rhs => enter [2, a]; erw [bind_apply hs hg]
   rfl
 
-theorem bind_dirac {f : α → Measure β} (hf : Measurable f) (a : α) : bind (dirac a) f = f a := by
+theorem dirac_bind {f : α → Measure β} (hf : Measurable f) (a : α) : bind (dirac a) f = f a := by
   ext1 s hs
   erw [bind_apply hs hf, lintegral_dirac' a ((measurable_coe hs).comp hf)]
   rfl
 
 @[simp]
-theorem dirac_bind {m : Measure α} : bind m dirac = m := by
+theorem bind_dirac {m : Measure α} : bind m dirac = m := by
   ext1 s hs
   simp only [bind_apply hs measurable_dirac, dirac_apply' _ hs, lintegral_indicator 1 hs,
     Pi.one_apply, lintegral_one, restrict_apply, MeasurableSet.univ, univ_inter]
 
 @[simp]
-lemma dirac_bind_eq_map (m : Measure α) {f : α → β} (hf : Measurable f) :
+lemma bind_dirac_eq_map (m : Measure α) {f : α → β} (hf : Measurable f) :
     m.bind (fun x ↦ Measure.dirac (f x)) = m.map f := by
   ext s hs
   rw [bind_apply hs]
@@ -211,11 +211,10 @@ theorem join_map_join (μ : Measure (Measure (Measure α))) : join (map join μ)
   funext ν
   exact join_eq_bind ν
 
-theorem join_map_dirac (μ : Measure α) : join (map dirac μ) = μ :=
-  dirac_bind
+theorem join_map_dirac (μ : Measure α) : join (map dirac μ) = μ := bind_dirac
 
 theorem join_dirac (μ : Measure α) : join (dirac μ) = μ :=
-  (join_eq_bind (dirac μ)).trans (bind_dirac measurable_id _)
+  (join_eq_bind (dirac μ)).trans (dirac_bind measurable_id _)
 
 end Measure
 
