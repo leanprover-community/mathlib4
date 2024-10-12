@@ -63,6 +63,21 @@ theorem isInitial_one : IsInitial 1 := by
 theorem isInitial_omega0 : IsInitial ω := by
   rw [IsInitial, card_omega0, ord_aleph0]
 
+theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
+  rintro ⟨a, ha⟩
+  have := ha (isInitial_ord (succ a.card))
+  rw [ord_le] at this
+  exact (lt_succ _).not_le this
+
+/-- Initial ordinals are order-isomorphic to the cardinals. -/
+@[simps!]
+def isInitialIso : {x // IsInitial x} ≃o Cardinal where
+  toFun x := x.1.card
+  invFun x := ⟨x.ord, isInitial_ord _⟩
+  left_inv x := Subtype.ext x.2.ord_card
+  right_inv x := card_ord x
+  map_rel_iff' {a b} := a.2.card_le_card b.2
+
 -- TODO: define `omega` as the enumerator function of `IsInitial`, and redefine
 -- `aleph x = (omega x).card`.
 
