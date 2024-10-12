@@ -337,8 +337,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
     exact
       Or.inr
         ⟨by rw [separable_iff_derivative_ne_zero hf, Classical.not_not, H], contract p f,
-          of_irreducible_map (expand F p : F[X] →+* F[X])
-            (by rwa [← expand_contract p H hp.ne'] at hf),
+          Irreducible.of_map (by rwa [← expand_contract p H hp.ne'] at hf),
           expand_contract p H hp.ne'⟩
   else Or.inl <| (separable_iff_derivative_ne_zero hf).2 H
 

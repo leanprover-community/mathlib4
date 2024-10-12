@@ -1075,7 +1075,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
     rcases lt_or_gt_of_ne hp with (h | h)
     · apply StrictAntiOn.injOn
       intro x hx y hy hxy
-      rw [← inv_lt_inv (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx),
+      rw [← inv_lt_inv₀ (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx),
         ← rpow_neg (le_of_lt hy)]
       exact rpow_lt_rpow (le_of_lt hx) hxy (neg_pos.mpr h)
     exact StrictMonoOn.injOn fun x hx y _ hxy => rpow_lt_rpow (mem_Ioi.mp hx).le hxy h
@@ -1129,7 +1129,7 @@ theorem integrableOn_Ioi_comp_rpow_iff [NormedSpace ℝ E] (f : ℝ → E) {p : 
     rcases lt_or_gt_of_ne hp with (h | h)
     · apply StrictAntiOn.injOn
       intro x hx y hy hxy
-      rw [← inv_lt_inv (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx), ←
+      rw [← inv_lt_inv₀ (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx), ←
         rpow_neg (le_of_lt hy)]
       exact rpow_lt_rpow (le_of_lt hx) hxy (neg_pos.mpr h)
     exact StrictMonoOn.injOn fun x hx y _hy hxy => rpow_lt_rpow (mem_Ioi.mp hx).le hxy h
