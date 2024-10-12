@@ -221,13 +221,16 @@ def broadImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id
           make sure to benchmark it. If this is fine, feel free to allow this linter.")
   return output
 
-/-- Check the `Syntax` imports for syntactically duplicate imports. -/
-def duplicateImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id.run do
+/-- Check the syntax `imports` for syntactically duplicate imports.
+The output is an array of `Syntax` atoms whose ranges are the import statements,
+and the embedded strings are the error message of the linter.
+-/
+def duplicateImportsCheck (imports : Array Syntax)  : Array Syntax := Id.run do
   let mut output := #[]
   let mut importsSoFar := #[]
   for i in imports do
     if importsSoFar.contains i then
-      output := output.push (i, s!"Duplicate imports: {i} already imported")
+      output := output.push (mkAtomFrom i s!"Duplicate imports: {i} already imported")
     else importsSoFar := importsSoFar.push i
   return output
 
@@ -289,8 +292,10 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- Report on broad or duplicate imports.
   for (imp, msg) in broadImportsCheck importIds do
     Linter.logLint linter.style.header imp msg
-  for (imp, msg) in duplicateImportsCheck importIds do
-    Linter.logLint linter.style.header imp msg
+  for out in duplicateImportsCheck importIds do
+    let .atom _ errorMessage := out
+     | return
+    Linter.logLint linter.style.header out errorMessage
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
   let copyright := match upToStx.getHeadInfo with
