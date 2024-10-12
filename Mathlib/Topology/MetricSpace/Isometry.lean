@@ -84,10 +84,12 @@ theorem prod_map {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (h
     (hg : Isometry g) : Isometry (Prod.map f g) := fun x y => by
   simp only [Prod.edist_eq, Prod.map_fst, hf.edist_eq, Prod.map_snd, hg.edist_eq]
 
-theorem _root_.isometry_dcomp {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
+protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
-    Isometry (fun g : (i : ι) → α i => fun i => f i (g i)) := fun x y => by
-  simp only [edist_pi_def, (hf _).edist_eq]
+    Isometry (Pi.map f) := fun x y => by
+  simp only [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
+
+@[deprecated (since := "2024-10-06")] alias _root_.isometry_dcomp := Isometry.piMap
 
 /-- The composition of isometries is an isometry. -/
 theorem comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f) : Isometry (g ∘ f) :=
