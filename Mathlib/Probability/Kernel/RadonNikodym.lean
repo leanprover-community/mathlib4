@@ -557,6 +557,9 @@ lemma measurable_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFini
   simp_rw [← κ.singularPart_eq_singularPart_measure, κ.singularPart_def η]
   exact Kernel.measurable_coe _ hs
 
+lemma rnDeriv_self (κ : Kernel α γ) [IsFiniteKernel κ] (a : α) : rnDeriv κ κ a =ᵐ[κ a] 1 :=
+  (κ.rnDeriv_eq_rnDeriv_measure).trans (κ a).rnDeriv_self
+
 lemma rnDeriv_singularPart (κ ν : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) :
     rnDeriv (singularPart κ ν) ν a =ᵐ[ν a] 0 := by
   filter_upwards [(singularPart κ ν).rnDeriv_eq_rnDeriv_measure,
