@@ -1397,7 +1397,7 @@ theorem add_moveRight_inr (x : PGame) {y : PGame} (i) :
   rfl
 
 /-- Case on possible left moves of `x + y`. -/
-def leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Sort*}
+theorem leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Prop}
     (hl : ∀ i, P <| toLeftMovesAdd (Sum.inl i)) (hr : ∀ i, P <| toLeftMovesAdd (Sum.inr i)) :
     P k := by
   rw [← toLeftMovesAdd.apply_symm_apply k]
@@ -1406,7 +1406,7 @@ def leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Sort*}
   · exact hr i
 
 /-- Case on possible right moves of `x + y`. -/
-def rightMoves_add_cases {x y : PGame} (k) {P : (x + y).RightMoves → Sort*}
+theorem rightMoves_add_cases {x y : PGame} (k) {P : (x + y).RightMoves → Prop}
     (hl : ∀ j, P <| toRightMovesAdd (Sum.inl j)) (hr : ∀ j, P <| toRightMovesAdd (Sum.inr j)) :
     P k := by
   rw [← toRightMovesAdd.apply_symm_apply k]
@@ -1686,7 +1686,7 @@ theorem moveRight_insertLeft' {x x' : PGame} (i) :
   rfl
 
 /-- Case on possible left moves of `insertLeft x x'`. -/
-def leftMoves_insertLeft_cases {x x' : PGame} (k) {P : (insertLeft x x').LeftMoves → Sort*}
+theorem leftMoves_insertLeft_cases {x x' : PGame} (k) {P : (insertLeft x x').LeftMoves → Prop}
     (hs : ∀ i, P <| toLeftMovesInsertLeft (some i)) (hn : P <| toLeftMovesInsertLeft none) :
     P k := by
   rw [← toLeftMovesInsertLeft.apply_symm_apply k]
@@ -1773,7 +1773,7 @@ theorem moveRight_insertRight_some {x x' : PGame} (i) :
   rfl
 
 /-- Case on possible right moves of `insertRight x x'`. -/
-def rightMoves_insertRight_cases {x x' : PGame} (k) {P : (insertRight x x').RightMoves → Sort*}
+theorem rightMoves_insertRight_cases {x x' : PGame} (k) {P : (insertRight x x').RightMoves → Prop}
     (hs : ∀ i, P <| toRightMovesInsertRight (some i)) (hn : P <| toRightMovesInsertRight none) :
     P k := by
   rw [← toRightMovesInsertRight.apply_symm_apply k]
