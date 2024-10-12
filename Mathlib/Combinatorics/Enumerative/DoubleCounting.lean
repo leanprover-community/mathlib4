@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Real.Basic
 
 /-!
 # Double countings
@@ -73,7 +72,7 @@ theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (
   exact sum_comm
 
 theorem sum_sum_bipartiteAbove_eq_sum_sum_bipartiteBelow
-    (f : α → β → ℝ) [∀ a b, Decidable (r a b)] :
+    [AddCommMonoid R] (f : α → β → R) [∀ a b, Decidable (r a b)] :
     ∑ a ∈ s, ∑ b ∈ t.bipartiteAbove r a, f a b = ∑ b ∈ t, ∑ a ∈ s.bipartiteBelow r b, f a b := by
   simp_rw [bipartiteAbove, bipartiteBelow, sum_filter]
   exact sum_comm
