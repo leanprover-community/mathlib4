@@ -256,7 +256,7 @@ theorem grundyValue_le_of_forall_moveLeft {G : PGame} {o : Nimber}
 /-- The **Sprague-Grundy theorem** states that every impartial game is equivalent to a game of nim,
 namely the game of nim corresponding to the game's Grundy value. -/
 theorem equiv_nim_grundyValue (G : PGame.{u}) [G.Impartial] :
-    G ≈ nim (Nimber.toOrdinal (grundyValue G)) := by
+    G ≈ nim (toOrdinal (grundyValue G)) := by
   rw [Impartial.equiv_iff_add_equiv_zero, ← Impartial.forall_leftMoves_fuzzy_iff_equiv_zero]
   intro x
   apply leftMoves_add_cases x <;>
