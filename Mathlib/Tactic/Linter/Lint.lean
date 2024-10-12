@@ -93,6 +93,7 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if Linter.getLinterValue linter.dupNamespace (← getOptions) then
     for id in (← getNamesFrom (stx.getPos?.getD default)) do
       let declName := id.getId
+      if declName.hasMacroScopes then continue
       let nm := declName.components
       let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
         | return
