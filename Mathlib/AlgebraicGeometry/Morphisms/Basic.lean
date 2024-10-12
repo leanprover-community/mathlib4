@@ -279,7 +279,7 @@ section IsLocalAtSourceAndTarget
 
 /-- If `P` is local at the source and the target, then restriction on both source and target
 preserves `P`. -/
-lemma resLE_of_isLocalAtTarget [IsLocalAtTarget P] {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
+lemma resLE [IsLocalAtTarget P] {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
     (hf : P f) : P (f.resLE U V e) :=
   IsLocalAtSource.comp (IsLocalAtTarget.restrict hf U) _
 
@@ -288,7 +288,7 @@ open immersions, then `P` can be checked locally around points. -/
 lemma iff_exists_resLE [IsLocalAtTarget P] [P.RespectsRight @IsOpenImmersion] :
     P f ↔ ∀ x : X, ∃ (U : Y.Opens) (V : X.Opens) (_ : x ∈ V.1) (e : V ≤ f ⁻¹ᵁ U),
       P (f.resLE U V e) := by
-  refine ⟨fun hf x ↦ ⟨⊤, ⊤, trivial, by simp, resLE_of_isLocalAtTarget _ hf⟩, fun hf ↦ ?_⟩
+  refine ⟨fun hf x ↦ ⟨⊤, ⊤, trivial, by simp, resLE _ hf⟩, fun hf ↦ ?_⟩
   choose U V hxU e hf using hf
   rw [IsLocalAtSource.iff_of_iSup_eq_top (fun x : X ↦ V x) (P := P)]
   · intro x
