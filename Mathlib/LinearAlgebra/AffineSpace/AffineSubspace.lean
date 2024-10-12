@@ -1291,7 +1291,9 @@ lemma affineSpan_subset_span {s : Set V} :
     (affineSpan k s : Set V) ⊆  Submodule.span k s :=
   affineSpan_le_toAffineSubspace_span
 
-@[simp] lemma affineSpan_insert_zero (s : Set V) :
+-- TODO: We want this to be simp, but `affineSpan` gets simped away to `spanPoints`!
+-- Let's delete `spanPoints`
+lemma affineSpan_insert_zero (s : Set V) :
     (affineSpan k (insert 0 s) : Set V) = Submodule.span k s := by
   rw [← Submodule.span_insert_zero]
   refine affineSpan_subset_span.antisymm ?_
