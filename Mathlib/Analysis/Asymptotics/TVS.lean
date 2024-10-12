@@ -23,6 +23,11 @@ specific base ring.
 
 * `isLittleOTVS_iff_isLittleO`: the equivalence between these two definitions in the case of a
   normed space.
+
+## TODO
+
+Use this to redefine `HasFDerivAtFilter`, as the base ring is already chosen there, and this removes
+the choice of norm being part of the statement.
 -/
 
 open Set Filter Asymptotics Metric
