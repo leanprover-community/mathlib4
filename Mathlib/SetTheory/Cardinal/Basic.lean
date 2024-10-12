@@ -852,6 +852,34 @@ theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
 theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
   mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
 
+theorem mk_sigma_congr_lift {ι : Type v} {ι' : Type v'} {f : ι → Type w} {g : ι' → Type w'}
+    (e : ι ≃ ι') (h : ∀ i, lift.{w'} #(f i) = lift.{w} #(g (e i))) :
+    lift.{max v' w'} #(Σ i, f i) = lift.{max v w} #(Σ i, g i) :=
+  Cardinal.lift_mk_eq'.2 ⟨.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.lift_mk_eq'.1 (h i)⟩
+
+theorem mk_sigma_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
+  mk_congr <| Equiv.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+/-- Similar to `mk_sigma_congr` with indexing types in different universes. This is not a strict
+generalization. -/
+theorem mk_sigma_congr' {ι : Type u} {ι' : Type v} {f : ι → Type max w (max u v)}
+    {g : ι' → Type max w (max u v)} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
+  mk_congr <| Equiv.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_sigma_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Σ i, f i) = #(Σ i, g i) :=
+  mk_sigma_congr (Equiv.refl ι) h
+
+theorem mk_psigma_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Σ' i, f i) = #(Σ' i, g i) :=
+  mk_congr <| .psigmaCongrRight fun i => Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_psigma_congrRight_prop {ι : Prop} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Σ' i, f i) = #(Σ' i, g i) :=
+  mk_congr <| .psigmaCongrRight fun i => Classical.choice <| Cardinal.eq.mp (h i)
+
 theorem mk_sigma_arrow {ι} (α : Type*) (f : ι → Type*) :
     #(Sigma f → α) = #(Π i, f i → α) := mk_congr <| Equiv.piCurry fun _ _ ↦ α
 
@@ -1097,6 +1125,34 @@ def prod {ι : Type u} (f : ι → Cardinal) : Cardinal :=
 @[simp]
 theorem mk_pi {ι : Type u} (α : ι → Type v) : #(Π i, α i) = prod fun i => #(α i) :=
   mk_congr <| Equiv.piCongrRight fun _ => outMkEquiv.symm
+
+theorem mk_pi_congr_lift {ι : Type v} {ι' : Type v'} {f : ι → Type w} {g : ι' → Type w'}
+    (e : ι ≃ ι') (h : ∀ i, lift.{w'} #(f i) = lift.{w} #(g (e i))) :
+    lift.{max v' w'} #(Π i, f i) = lift.{max v w} #(Π i, g i) :=
+  Cardinal.lift_mk_eq'.2 ⟨.piCongr e fun i ↦ Classical.choice <| Cardinal.lift_mk_eq'.1 (h i)⟩
+
+theorem mk_pi_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
+  mk_congr <| Equiv.piCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_pi_congr_prop {ι ι' : Prop} {f : ι → Type v} {g : ι' → Type v} (e : ι ↔ ι')
+    (h : ∀ i, #(f i) = #(g (e.mp i))) : #(Π i, f i) = #(Π i, g i) :=
+  mk_congr <| Equiv.piCongr (.ofIff e) fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+/-- Similar to `mk_pi_congr` with indexing types in different universes. This is not a strict
+generalization. -/
+theorem mk_pi_congr' {ι : Type u} {ι' : Type v} {f : ι → Type max w (max u v)}
+    {g : ι' → Type max w (max u v)} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
+  mk_congr <| Equiv.piCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_pi_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Π i, f i) = #(Π i, g i) :=
+  mk_pi_congr (Equiv.refl ι) h
+
+theorem mk_pi_congrRight_prop {ι : Prop} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Π i, f i) = #(Π i, g i) :=
+  mk_pi_congr_prop Iff.rfl h
 
 @[simp]
 theorem prod_const (ι : Type u) (a : Cardinal.{v}) :
