@@ -114,6 +114,7 @@ noncomputable def coconeOfIsLeftKanExtension (c : Cocone F) : Cocone F' where
   pt := c.pt
   ι := F'.descOfIsLeftKanExtension α _ c.ι
 
+@[simps]
 def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsColimit c) :
     IsColimit (F'.coconeOfIsLeftKanExtension α c) where
   desc s := hc.desc (Cocone.mk _ (α ≫ whiskerLeft L s.ι))
@@ -137,30 +138,21 @@ def lanCompColimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
   NatIso.ofComponents (fun F => IsColimit.coconePointUniqueUpToIso
     (colimit.isColimit (L.leftKanExtension F))
     (isColimitCoconeOfIsLeftKanExtension _ (leftKanExtensionUnit _ _) (colimit.isColimit F)))
-    (fun f => by
+    (fun {G₁ G₂} η => by
       simp only [comp_obj, colim_obj, comp_map, colim_map]
-      ext d
-      simp only [ι_colimMap_assoc]
+      rw [← Iso.inv_comp_eq, ← assoc, ← Iso.eq_comp_inv]
+      ext c
+      simp
+      erw [IsColimit.coconePointUniqueUpToIso_inv_desc]
+      simp
+      conv_rhs => rw [← assoc]
+      rw [Iso.eq_comp_inv, assoc, assoc]
       unfold colimit.ι
-      rw [IsColimit.comp_coconePointUniqueUpToIso_hom, ← NatTrans.comp_app]
-      simp only [coconeOfIsLeftKanExtension_pt, coconeOfIsLeftKanExtension_ι,
-        NatTrans.comp_app, const_obj_obj, IsColimit.comp_coconePointUniqueUpToIso_hom_assoc]
-
-      sorry)
-
-#check map_app
-
-  /-NatIso.removeOp <| fullyFaithfulCancelRight coyoneda <|
-    colimConstAdj.compCoyonedaIso ≪≫
-    isoWhiskerLeft coyoneda (Functor.mapIso _ (constCompWhiskeringLeftIso _ _).symm ≪≫
-      whiskeringLeftObjCompIso _ _) ≪≫
-    (Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (L.lanAdjunction _).compCoyonedaIso.symm _ ≪≫
-    Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft L.lan.op colimConstAdj.compCoyonedaIso.symm ≪≫
-    (Functor.associator L.lan.op colim.op coyoneda).symm-/
-
-#exit
+      unfold colimit.cocone
+      rw [IsColimit.comp_coconePointUniqueUpToIso_hom]
+      simp only [coconeOfIsLeftKanExtension]
+      erw [descOfIsLeftKanExtension_fac_app_assoc]
+      simp)
 
 end Colim
 
