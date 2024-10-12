@@ -33,7 +33,7 @@ namespace Polynomial
 noncomputable def Legendre (n : ℕ) : ℝ[X] :=
   C (n ! : ℝ)⁻¹ * derivative^[n] (X ^ n * (1 - X) ^ n)
 
-lemma Finsum_iterate_deriv [CommRing R] {k : ℕ} {h : ℕ → ℕ} :
+lemma Finsum_iterate_deriv [CommRing R] (k : ℕ) (h : ℕ → ℕ) :
     derivative^[k] (∑ m in Finset.range (k + 1), (h m) • ((- 1) ^ m : R[X]) * X ^ (k + m)) =
     ∑ m in Finset.range (k + 1), (h m) • (- 1) ^ m * derivative^[k] (X ^ (k + m)) := by
   induction' k + 1 with n hn
@@ -42,8 +42,7 @@ lemma Finsum_iterate_deriv [CommRing R] {k : ℕ} {h : ℕ → ℕ} :
     simp only [Fin.coe_castSucc, Fin.val_last, iterate_map_add, hn, add_right_inj]
     rw [nsmul_eq_mul, mul_assoc, ← nsmul_eq_mul, Polynomial.iterate_derivative_smul, nsmul_eq_mul,
       mul_assoc]
-    have := Int.even_or_odd n
-    rcases this with (hn1 | hn2)
+    rcases n.even_or_odd with (hn1 | hn2)
     · simp_all only [nsmul_eq_mul, Int.even_coe_nat, Even.neg_pow, one_pow, one_mul]
     · rw [Odd.neg_one_pow]
       simp only [neg_mul, one_mul, iterate_map_neg, mul_neg]
@@ -80,8 +79,8 @@ theorem Legendre_eq_sum (n : ℕ) : Legendre n = ∑ k in Finset.range (n + 1),
   intro m
   simp only [one_div, coeff_mul_C, coeff_natCast_ite, Nat.cast_ite, CharP.cast_eq_zero, ite_mul,
     zero_mul]
-  if h : m = 0 then
-    simp [h]
+  by_cases h : m = 0
+  · simp [h]
     rw [Nat.cast_div]
     · rw [← one_div, ← div_mul_eq_div_mul_one_div]
       norm_cast
@@ -91,8 +90,7 @@ theorem Legendre_eq_sum (n : ℕ) : Legendre n = ∑ k in Finset.range (n + 1),
         apply mul_ne_zero (Nat.factorial_ne_zero x) (Nat.factorial_ne_zero n)
     · exact Nat.factorial_dvd_factorial (by omega)
     · norm_cast; exact Nat.factorial_ne_zero x
-  else
-    simp only [h, ↓reduceIte]
+  · simp only [h, ↓reduceIte]
 
 /-- `Legendre n` is an integer polynomial. -/
 lemma Legendre_eq_int_poly (n : ℕ) : ∃ a : ℕ → ℤ, Legendre n = ∑ k in Finset.range (n + 1),
