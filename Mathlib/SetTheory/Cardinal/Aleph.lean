@@ -173,6 +173,9 @@ theorem omega_eq_omega' (o : Ordinal) : ω_ o = omega' (ω + o) :=
 theorem isInitial_omega (o : Ordinal) : IsInitial (ω_ o) :=
   isInitial_omega' _
 
+theorem omega_strictMono : StrictMono omega :=
+  omega.strictMono
+
 theorem omega_lt {o₁ o₂ : Ordinal} : ω_ o₁ < ω_ o₂ ↔ o₁ < o₂ :=
   omega.lt_iff_lt
 
