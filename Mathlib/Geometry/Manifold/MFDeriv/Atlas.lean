@@ -259,8 +259,9 @@ theorem mdifferentiableOn_extChartAt_symm :
 
 end extChartAt
 
-
 section ChartsSelf
+/-! Without the assumption that the space is a smooth manifolds, charts and extended charts are
+still differentiable at their original point, since they give the identity in charts. -/
 
 theorem mdifferentiableAt_chartAt_self {x : M} :
     MDifferentiableAt I I (chartAt H x) x := by
@@ -295,10 +296,8 @@ theorem mdifferentiableAt_chartAt_symm_self {x : M} :
   simp [A, B]
 
 theorem mdifferentiableWitinAt_extChartAt_symm_self {x : M} :
-    MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I x).symm (range I) (extChartAt I x x) := by
-  apply (mdifferentiableAt_chartAt_symm_self I (x := x)).comp_mdifferentiableWithinAt_of_eq
-
-
-
+    MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I x).symm (range I) (extChartAt I x x) :=
+  (mdifferentiableAt_chartAt_symm_self I (x := x)).comp_mdifferentiableWithinAt_of_eq
+    _ (I.mdifferentiableWithinAt_symm (mem_range_self _)) (by simp)
 
 end ChartsSelf
