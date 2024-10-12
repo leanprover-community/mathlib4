@@ -68,7 +68,7 @@ theorem Succ.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) {a b 
   obtain ⟨n, rfl⟩ := h.exists_succ_iterate
   exact Iterate.rec (fun b => p a ↔ p b) (fun c hc => hc.trans (hsucc _)) Iff.rfl n
 
-lemma le_total_of_ge {r v₁ v₂ : α} (h₁ : r ≤ v₁) (h₂ : r ≤ v₂) : v₁ ≤ v₂ ∨ v₂ ≤ v₁ := by
+lemma le_total_of_codirected {r v₁ v₂ : α} (h₁ : r ≤ v₁) (h₂ : r ≤ v₂) : v₁ ≤ v₂ ∨ v₂ ≤ v₁ := by
   obtain ⟨n, rfl⟩ := h₁.exists_succ_iterate
   obtain ⟨m, rfl⟩ := h₂.exists_succ_iterate
   clear h₁ h₂
@@ -106,8 +106,8 @@ theorem Pred.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (pred a)) {a b 
     p a ↔ p b :=
   (Succ.rec_iff (α := αᵒᵈ) hsucc h).symm
 
-lemma le_total_of_le {r v₁ v₂ : α} (h₁ : v₁ ≤ r) (h₂ : v₂ ≤ r) : v₁ ≤ v₂ ∨ v₂ ≤ v₁ :=
-  Or.symm (le_total_of_ge (α := αᵒᵈ) h₁ h₂)
+lemma le_total_of_directed {r v₁ v₂ : α} (h₁ : v₁ ≤ r) (h₂ : v₂ ≤ r) : v₁ ≤ v₂ ∨ v₂ ≤ v₁ :=
+  Or.symm (le_total_of_codirected (α := αᵒᵈ) h₁ h₂)
 
 end PredOrder
 
@@ -117,11 +117,11 @@ section PartialOrder
 
 variable [PartialOrder α]
 
-lemma lt_or_le_of_ge [SuccOrder α] [IsSuccArchimedean α] {r v₁ v₂ : α} (h₁ : r ≤ v₁) (h₂ : r ≤ v₂) :
-    v₁ < v₂ ∨ v₂ ≤ v₁ := by
+lemma lt_or_le_of_codirected [SuccOrder α] [IsSuccArchimedean α] {r v₁ v₂ : α} (h₁ : r ≤ v₁)
+    (h₂ : r ≤ v₂) : v₁ < v₂ ∨ v₂ ≤ v₁ := by
   rw [Classical.or_iff_not_imp_right]
   intro nh
-  rcases le_total_of_ge h₁ h₂ with h | h
+  rcases le_total_of_codirected h₁ h₂ with h | h
   · apply lt_of_le_of_ne h (ne_of_not_le nh).symm
   · contradiction
 
@@ -134,16 +134,16 @@ abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
      LinearOrder α where
   le_total a b :=
     have ⟨c, ha, hb⟩ := directed_of (· ≥ ·) a b
-    le_total_of_ge ha hb
+    le_total_of_codirected ha hb
   decidableEq := inferInstance
   decidableLE := inferInstance
   decidableLT := inferInstance
 
-lemma lt_or_le_of_le [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : α} (h₁ : v₁ ≤ r) (h₂ : v₂ ≤ r) :
-    v₁ < v₂ ∨ v₂ ≤ v₁ := by
+lemma lt_or_le_of_dierected [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : α} (h₁ : v₁ ≤ r)
+    (h₂ : v₂ ≤ r) : v₁ < v₂ ∨ v₂ ≤ v₁ := by
   rw [Classical.or_iff_not_imp_right]
   intro nh
-  rcases le_total_of_le h₁ h₂ with h | h
+  rcases le_total_of_directed h₁ h₂ with h | h
   · apply lt_of_le_of_ne h (ne_of_not_le nh).symm
   · contradiction
 
