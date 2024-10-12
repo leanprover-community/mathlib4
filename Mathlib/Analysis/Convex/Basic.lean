@@ -606,7 +606,7 @@ lemma stdSimplex_of_isEmpty_index [IsEmpty ι] [Nontrivial 𝕜] : stdSimplex �
   eq_empty_of_forall_not_mem <| by rintro f ⟨-, hf⟩; simp at hf
 
 lemma stdSimplex_unique [Nonempty ι] [Subsingleton ι] : stdSimplex 𝕜 ι = {fun _ ↦ 1} := by
-  cases (unique_iff_subsingleton_and_nonempty ι).mpr ⟨‹_›, ‹_›⟩
+  cases nonempty_unique ι
   refine eq_singleton_iff_unique_mem.2 ⟨⟨fun _ ↦ zero_le_one, Fintype.sum_unique _⟩, ?_⟩
   rintro f ⟨-, hf⟩
   rw [Fintype.sum_unique] at hf
