@@ -65,6 +65,11 @@ def firstNonImport? : Syntax → Option Syntax
 
 /-- `getImportIds s` takes as input `s : Syntax`.
 It returns the array of all `import` identifiers in `s`. -/
+-- We cannot use `importsOf` instead, as
+-- - that function is defined in the `ImportGraph` project; we would like to minimise imports
+--   to Mathlib.Init (where this linter is imported)
+-- - that function does not return the Syntax corresponding to each import,
+--   which we use to log more precise warnings.
 partial
 def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
