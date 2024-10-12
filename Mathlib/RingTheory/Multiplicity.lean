@@ -342,8 +342,8 @@ theorem emultiplicity_le_emultiplicity_iff {c d : β} :
           not_true_eq_false, not_false_eq_true, implies_true]
       next h_2 => simp_all only [not_exists, Decidable.not_not, le_top]
     next h_1 =>
-      simp_all only [not_exists, Decidable.not_not, not_true_eq_false, top_le_iff, dite_eq_else,
-        ENat.coe_ne_top, imp_false, not_false_eq_true, implies_true]
+      simp_all only [not_exists, Decidable.not_not, not_true_eq_false, top_le_iff,
+        dite_eq_right_iff, ENat.coe_ne_top, imp_false, not_false_eq_true, implies_true]
 
 theorem multiplicity.Finite.multiplicity_le_multiplicity_iff {c d : β} (hab : Finite a b)
     (hcd : Finite c d) : multiplicity a b ≤ multiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b → c ^ n ∣ d := by
