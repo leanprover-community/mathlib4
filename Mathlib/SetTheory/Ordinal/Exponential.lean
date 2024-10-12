@@ -191,11 +191,11 @@ theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
   | H₃ c l IH =>
     refine
       eq_of_forall_ge_iff fun d =>
-        (((isNormal_opow a1).trans (isNormal_add b)).limit_le l).trans ?_
+        (((isNormal_opow a1).trans (isNormal_add_right b)).limit_le l).trans ?_
     dsimp only [Function.comp_def]
     simp (config := { contextual := true }) only [IH]
     exact
-      (((isNormal_mul <| opow_pos b (Ordinal.pos_iff_ne_zero.2 a0)).trans
+      (((isNormal_mul_right <| opow_pos b (Ordinal.pos_iff_ne_zero.2 a0)).trans
               (isNormal_opow a1)).limit_le
           l).symm
 
@@ -228,7 +228,7 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
   | H₃ c l IH =>
     refine
       eq_of_forall_ge_iff fun d =>
-        (((isNormal_opow a1).trans (isNormal_mul (Ordinal.pos_iff_ne_zero.2 b0))).limit_le
+        (((isNormal_opow a1).trans (isNormal_mul_right (Ordinal.pos_iff_ne_zero.2 b0))).limit_le
               l).trans
           ?_
     dsimp only [Function.comp_def]

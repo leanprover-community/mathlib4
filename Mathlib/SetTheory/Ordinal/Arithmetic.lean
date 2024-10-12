@@ -479,14 +479,14 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ 
           · rcases a with ⟨a | a, h₁⟩ <;> rcases b with ⟨b | b, h₂⟩ <;> cases h₁ <;> cases h₂ <;>
               rintro ⟨⟩ <;> constructor <;> assumption⟩
 
-theorem isNormal_add (a : Ordinal) : IsNormal (a + ·) :=
+theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
   ⟨fun b => (add_lt_add_iff_left a).2 (lt_succ b), fun _b l _c => add_le_of_limit l⟩
 
-@[deprecated isNormal_add (since := "2024-10-11")]
-alias add_isNormal := isNormal_add
+@[deprecated isNormal_add_right (since := "2024-10-11")]
+alias add_isNormal := isNormal_add_right
 
 theorem isLimit_add (a) {b} : IsLimit b → IsLimit (a + b) :=
-  (isNormal_add a).isLimit
+  (isNormal_add_right a).isLimit
 
 @[deprecated isLimit_add (since := "2024-10-11")]
 alias add_isLimit := isLimit_add
@@ -748,7 +748,7 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
         | H β s =>
           exact mul_le_of_limit_aux h H⟩
 
-theorem isNormal_mul {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
+theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
   -- Porting note(#12129): additional beta reduction needed
   ⟨fun b => by
       beta_reduce
@@ -756,18 +756,18 @@ theorem isNormal_mul {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
       simpa only [add_zero] using (add_lt_add_iff_left (a * b)).2 h,
     fun b l c => mul_le_of_limit l⟩
 
-@[deprecated isNormal_mul (since := "2024-10-11")]
-alias mul_isNormal := isNormal_mul
+@[deprecated isNormal_mul_right (since := "2024-10-11")]
+alias mul_isNormal := isNormal_mul_right
 
 theorem lt_mul_of_limit {a b c : Ordinal} (h : IsLimit c) : a < b * c ↔ ∃ c' < c, a < b * c' := by
   -- Porting note: `bex_def` is required.
   simpa only [not_forall₂, not_le, bex_def] using not_congr (@mul_le_of_limit b c a h)
 
 theorem mul_lt_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b < a * c ↔ b < c :=
-  (isNormal_mul a0).lt_iff
+  (isNormal_mul_right a0).lt_iff
 
 theorem mul_le_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b ≤ a * c ↔ b ≤ c :=
-  (isNormal_mul a0).le_iff
+  (isNormal_mul_right a0).le_iff
 
 theorem mul_lt_mul_of_pos_left {a b c : Ordinal} (h : a < b) (c0 : 0 < c) : c * a < c * b :=
   (mul_lt_mul_iff_left c0).2 h
@@ -782,10 +782,10 @@ theorem le_of_mul_le_mul_left {a b c : Ordinal} (h : c * a ≤ c * b) (h0 : 0 < 
   le_imp_le_of_lt_imp_lt (fun h' => mul_lt_mul_of_pos_left h' h0) h
 
 theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :=
-  (isNormal_mul a0).inj
+  (isNormal_mul_right a0).inj
 
 theorem isLimit_mul {a b : Ordinal} (a0 : 0 < a) : IsLimit b → IsLimit (a * b) :=
-  (isNormal_mul a0).isLimit
+  (isNormal_mul_right a0).isLimit
 
 @[deprecated isLimit_mul (since := "2024-10-11")]
 alias mul_isLimit := isLimit_mul
@@ -2234,7 +2234,7 @@ namespace Ordinal
 theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
     a < b + c ↔ ∃ c' < c, a < b + c' := by
   -- Porting note: `bex_def` is required.
-  rw [← IsNormal.bsup_eq.{u, u} (isNormal_add b) h, lt_bsup, bex_def]
+  rw [← IsNormal.bsup_eq.{u, u} (isNormal_add_right b) h, lt_bsup, bex_def]
 
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
   simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph0, card_eq_nat]
@@ -2369,19 +2369,19 @@ alias IsNormal.apply_omega := IsNormal.apply_omega0
 
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
-  (isNormal_add o).apply_omega0
+  (isNormal_add_right o).apply_omega0
 
 set_option linter.deprecated false in
 @[deprecated iSup_add_nat (since := "2024-08-27")]
 theorem sup_add_nat (o : Ordinal) : (sup fun n : ℕ => o + n) = o + ω :=
-  (isNormal_add o).apply_omega0
+  (isNormal_add_right o).apply_omega0
 
 @[simp]
 theorem iSup_mul_nat (o : Ordinal) : ⨆ n : ℕ, o * n = o * ω := by
   rcases eq_zero_or_pos o with (rfl | ho)
   · rw [zero_mul]
     exact iSup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
-  · exact (isNormal_mul ho).apply_omega0
+  · exact (isNormal_mul_right ho).apply_omega0
 
 set_option linter.deprecated false in
 @[deprecated iSup_add_nat (since := "2024-08-27")]

@@ -564,9 +564,9 @@ theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * ω := by
   · rw [iterate_succ_apply', Nat.add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, hn]
 
 theorem nfp_add_eq_mul_omega0 {a b} (hba : b ≤ a * ω) : nfp (a + ·) b = a * ω := by
-  apply le_antisymm (nfp_le_fp (isNormal_add a).monotone hba _)
+  apply le_antisymm (nfp_le_fp (isNormal_add_right a).monotone hba _)
   · rw [← nfp_add_zero]
-    exact nfp_monotone (isNormal_add a).monotone (Ordinal.zero_le b)
+    exact nfp_monotone (isNormal_add_right a).monotone (Ordinal.zero_le b)
   · dsimp; rw [← mul_one_add, one_add_omega0]
 
 @[deprecated (since := "2024-09-30")]
@@ -575,7 +575,7 @@ alias nfp_add_eq_mul_omega := nfp_add_eq_mul_omega0
 theorem add_eq_right_iff_mul_omega0_le {a b : Ordinal} : a + b = b ↔ a * ω ≤ b := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← nfp_add_zero a, ← deriv_zero_right]
-    cases' (isNormal_add a).fp_iff_deriv.1 h with c hc
+    cases' (isNormal_add_right a).fp_iff_deriv.1 h with c hc
     rw [← hc]
     exact (isNormal_deriv _).monotone (Ordinal.zero_le _)
   · have := Ordinal.add_sub_cancel_of_le h
@@ -587,14 +587,14 @@ alias add_eq_right_iff_mul_omega_le := add_eq_right_iff_mul_omega0_le
 
 theorem add_le_right_iff_mul_omega0_le {a b : Ordinal} : a + b ≤ b ↔ a * ω ≤ b := by
   rw [← add_eq_right_iff_mul_omega0_le]
-  exact (isNormal_add a).le_iff_eq
+  exact (isNormal_add_right a).le_iff_eq
 
 @[deprecated (since := "2024-09-30")]
 alias add_le_right_iff_mul_omega_le := add_le_right_iff_mul_omega0_le
 
 theorem deriv_add_eq_mul_omega0_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * ω + b := by
   revert b
-  rw [← funext_iff, IsNormal.eq_iff_zero_and_succ (isNormal_deriv _) (isNormal_add _)]
+  rw [← funext_iff, IsNormal.eq_iff_zero_and_succ (isNormal_deriv _) (isNormal_add_right _)]
   refine ⟨?_, fun a h => ?_⟩
   · rw [deriv_zero_right, add_zero]
     exact nfp_add_zero a
@@ -629,10 +629,10 @@ theorem nfp_mul_eq_opow_omega0 {a b : Ordinal} (hb : 0 < b) (hba : b ≤ (a ^ ω
     simp_rw [Ordinal.le_zero.1 hba, zero_mul]
     exact nfp_zero_left 0
   apply le_antisymm
-  · apply nfp_le_fp (isNormal_mul ha).monotone hba
+  · apply nfp_le_fp (isNormal_mul_right ha).monotone hba
     rw [← opow_one_add, one_add_omega0]
   rw [← nfp_mul_one ha]
-  exact nfp_monotone (isNormal_mul ha).monotone (one_le_iff_pos.2 hb)
+  exact nfp_monotone (isNormal_mul_right ha).monotone (one_le_iff_pos.2 hb)
 
 @[deprecated (since := "2024-09-30")]
 alias nfp_mul_eq_opow_omega := nfp_mul_eq_opow_omega0
@@ -646,7 +646,7 @@ theorem eq_zero_or_opow_omega0_le_of_mul_eq_right {a b : Ordinal} (hab : a * b =
   intro hb
   rw [← nfp_mul_one ha]
   rw [← Ne, ← one_le_iff_ne_zero] at hb
-  exact nfp_le_fp (isNormal_mul ha).monotone hb (le_of_eq hab)
+  exact nfp_le_fp (isNormal_mul_right ha).monotone hb (le_of_eq hab)
 
 @[deprecated (since := "2024-09-30")]
 alias eq_zero_or_opow_omega_le_of_mul_eq_right := eq_zero_or_opow_omega0_le_of_mul_eq_right
@@ -672,7 +672,7 @@ alias mul_eq_right_iff_opow_omega_dvd := mul_eq_right_iff_opow_omega0_dvd
 theorem mul_le_right_iff_opow_omega0_dvd {a b : Ordinal} (ha : 0 < a) :
     a * b ≤ b ↔ (a ^ ω) ∣ b := by
   rw [← mul_eq_right_iff_opow_omega0_dvd]
-  exact (isNormal_mul ha).le_iff_eq
+  exact (isNormal_mul_right ha).le_iff_eq
 
 @[deprecated (since := "2024-09-30")]
 alias mul_le_right_iff_opow_omega_dvd := mul_le_right_iff_opow_omega0_dvd
@@ -680,11 +680,11 @@ alias mul_le_right_iff_opow_omega_dvd := mul_le_right_iff_opow_omega0_dvd
 theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
     (hca : c ≤ a ^ ω) : nfp (a * ·) (a ^ ω * b + c) = (a ^ (ω : Ordinal.{u})) * succ b := by
   apply le_antisymm
-  · apply nfp_le_fp (isNormal_mul ha).monotone
+  · apply nfp_le_fp (isNormal_mul_right ha).monotone
     · rw [mul_succ]
       apply add_le_add_left hca
     · dsimp only; rw [← mul_assoc, ← opow_one_add, one_add_omega0]
-  · cases' mul_eq_right_iff_opow_omega0_dvd.1 ((isNormal_mul ha).nfp_fp ((a ^ ω) * b + c)) with
+  · cases' mul_eq_right_iff_opow_omega0_dvd.1 ((isNormal_mul_right ha).nfp_fp ((a ^ ω) * b + c)) with
       d hd
     rw [hd]
     apply mul_le_mul_left'
@@ -701,7 +701,7 @@ theorem deriv_mul_eq_opow_omega0_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :
     deriv (a * ·) b = (a ^ ω) * b := by
   revert b
   rw [← funext_iff,
-    IsNormal.eq_iff_zero_and_succ (isNormal_deriv _) (isNormal_mul (opow_pos ω ha))]
+    IsNormal.eq_iff_zero_and_succ (isNormal_deriv _) (isNormal_mul_right (opow_pos ω ha))]
   refine ⟨?_, fun c h => ?_⟩
   · dsimp only; rw [deriv_zero_right, nfp_mul_zero, mul_zero]
   · rw [deriv_succ, h]
