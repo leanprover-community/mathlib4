@@ -13,19 +13,28 @@ import Mathlib.Topology.Instances.ENNReal
 /-!
 # Asymptotics in a Topological Vector Space
 
-This file defines `IsLittleOTVS` as a generalization of `IsLittleO` from normed spaces to toplogical
-spaces.
+This file defines `Asymptotics.IsLittleOTVS` as a generalization of `Asymptotics.IsLittleO` from
+normed spaces to toplogical spaces.
+
+This frees the user from having to chose a canonical norm, at the expense of having to pick a
+specific base ring.
+
+## Main results
+
+* `isLittleOTVS_iff_isLittleO`: the equivalence between these two definitions in the case of a
+  normed space.
 -/
 
 open Set Filter Asymptotics Metric
 open scoped Topology Pointwise ENNReal NNReal
 
-section TVS
+namespace Asymptotics
 
 /-- `IsLittleOTVS 𝕜 f g l` is a generalization of `f =o[l] g` (`IsLittleO f g l`) that works in
 topological `𝕜`-vector spaces. -/
-def IsLittleOTVS (𝕜 : Type*) {α E F : Type*} [NNNorm 𝕜] [TopologicalSpace E] [TopologicalSpace F]
-    [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F] (f : α → E) (g : α → F) (l : Filter α) : Prop :=
+def IsLittleOTVS (𝕜 : Type*) {α E F : Type*}
+    [NNNorm 𝕜] [TopologicalSpace E] [TopologicalSpace F] [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F]
+    (f : α → E) (g : α → F) (l : Filter α) : Prop :=
   ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F), ∀ ε ≠ (0 : ℝ≥0),
     ∀ᶠ x in l, egauge 𝕜 U (f x) ≤ ε * egauge 𝕜 V (g x)
 
@@ -33,7 +42,7 @@ variable {α 𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 
-theorem Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Type*} {pE : ιE → Prop} {pF : ιF → Prop}
+theorem _root_.Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Type*} {pE : ιE → Prop} {pF : ιF → Prop}
     {sE : ιE → Set E} {sF : ιF → Set F} (hE : HasBasis (𝓝 (0 : E)) pE sE)
     (hF : HasBasis (𝓝 (0 : F)) pF sF) {f : α → E} {g : α → F} {l : Filter α} :
     IsLittleOTVS 𝕜 f g l ↔ ∀ i, pE i → ∃ j, pF j ∧ ∀ ε ≠ (0 : ℝ≥0),
@@ -165,4 +174,6 @@ lemma isLittleOTVS_iff_isLittleO {E F : Type*} [NormedAddCommGroup E] [NormedAdd
       _ = δ * ‖g x‖₊ := by simp
       _ ≤ δ * egauge 𝕜 (ball 0 1) (g x) := by gcongr; apply le_egauge_ball_one
 
-end TVS
+alias ⟨isLittleOTVS.isLittleO, IsLittle.isLittleOTVS⟩ := isLittleOTVS_iff_isLittleO
+
+end Asymptotics
