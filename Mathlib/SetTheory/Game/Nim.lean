@@ -336,8 +336,7 @@ theorem grundyValue_le_of_forall_moveRight {G : PGame} [G.Impartial] {o : Nimber
   contrapose! h
   exact exists_grundyValue_moveRight_of_lt h
 
-/-- The Grundy value of the sum of two nim games with natural numbers of piles equals their nimber
-addition. -/
+/-- The Grundy value of the sum of two nim games equals their nimber addition. -/
 theorem grundyValue_nim_add_nim (x y : Ordinal) : grundyValue (nim x + nim y) = ∗x + ∗y := by
   apply (grundyValue_le_of_forall_moveLeft _).antisymm (le_grundyValue_of_Iio_subset_moveLeft _)
   · intro i
