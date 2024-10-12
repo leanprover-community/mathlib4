@@ -444,12 +444,7 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
 
 lemma intCast_val_sub_eq_ite {n : ℕ} (a b : Fin n) :
     ((a - b).val : ℤ) = a.val - b.val + if b ≤ a then 0 else n := by
-  split
-  · rw [Fin.sub_val_of_le]
-    · omega
-    · assumption
-  · rw [Fin.coe_sub_iff_lt.2 (Fin.not_le.1 ‹_›)]
-    omega
+  split <;> fin_omega
 
 section OfNatCoe
 
