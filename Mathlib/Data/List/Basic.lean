@@ -887,6 +887,11 @@ theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
 
 /-! ### map -/
 
+-- `List.map_const` (the version with `Function.const` instead of a lambda) is already tagged
+-- `simp` in Core
+-- TODO: Upstream the tagging to Core?
+attribute [simp] map_const'
+
 @[deprecated (since := "2024-06-21")] alias map_congr := map_congr_left
 
 theorem bind_pure_eq_map (f : α → β) (l : List α) : l.bind (pure ∘ f) = map f l :=

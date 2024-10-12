@@ -690,6 +690,47 @@ theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p))
   obtain ⟨f, hf, hf'⟩ := p.exists_dual_map_eq_bot_of_nmem hx hp'
   exact ⟨f, by aesop, hf'⟩
 
+variable {ι 𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
+open LinearMap Set FiniteDimensional
+
+theorem _root_.FiniteDimensional.mem_span_of_iInf_ker_le_ker [FiniteDimensional 𝕜 E]
+    {L : ι → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
+    (h : ⨅ i, LinearMap.ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
+  by_contra hK
+  rcases exists_dual_map_eq_bot_of_nmem hK inferInstance with ⟨φ, φne, hφ⟩
+  let φs := (Module.evalEquiv 𝕜 E).symm φ
+  have : K φs = 0 := by
+    refine h <| (Submodule.mem_iInf _).2 fun i ↦ (mem_bot 𝕜).1 ?_
+    rw [← hφ, Submodule.mem_map]
+    exact ⟨L i, Submodule.subset_span ⟨i, rfl⟩, (apply_evalEquiv_symm_apply 𝕜 E _ φ).symm⟩
+  simp only [apply_evalEquiv_symm_apply, φs, φne] at this
+
+/-- Given some linear forms $L_1, ..., L_n, K$ over a vector space $E$, if
+$\bigcap_{i=1}^n \mathrm{ker}(L_i) \subseteq \mathrm{ker}(K)$, then $K$ is in the space generated
+by $L_1, ..., L_n$. -/
+theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
+    (h : ⨅ i, ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
+  have _ := Fintype.ofFinite ι
+  let φ : E →ₗ[𝕜] ι → 𝕜 := LinearMap.pi L
+  let p := ⨅ i, ker (L i)
+  have p_eq : p = ker φ := (ker_pi L).symm
+  let ψ : (E ⧸ p) →ₗ[𝕜] ι → 𝕜 := p.liftQ φ p_eq.le
+  have _ : FiniteDimensional 𝕜 (E ⧸ p) := of_injective ψ (ker_eq_bot.1 (ker_liftQ_eq_bot' p φ p_eq))
+  let L' i : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ (L i) (iInf_le _ i)
+  let K' : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ K h
+  have : ⨅ i, ker (L' i) ≤ ker K' := by
+    simp_rw [← ker_pi, L', pi_liftQ_eq_liftQ_pi, ker_liftQ_eq_bot' p φ p_eq]
+    exact bot_le
+  obtain ⟨c, hK'⟩ :=
+    (mem_span_range_iff_exists_fun 𝕜).1 (FiniteDimensional.mem_span_of_iInf_ker_le_ker this)
+  refine (mem_span_range_iff_exists_fun 𝕜).2 ⟨c, ?_⟩
+  conv_lhs => enter [2]; intro i; rw [← p.liftQ_mkQ (L i) (iInf_le _ i)]
+  rw [← p.liftQ_mkQ K h]
+  ext x
+  convert LinearMap.congr_fun hK' (p.mkQ x)
+  simp only [coeFn_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply, smul_eq_mul]
+
 end Submodule
 
 section DualBases

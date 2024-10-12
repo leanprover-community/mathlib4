@@ -119,6 +119,9 @@ instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, Sem
       NNReal.mul_finset_sup]
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
 
+instance SeparationQuotient.instNormedSpace : NormedSpace 𝕜 (SeparationQuotient E) where
+  norm_smul_le := norm_smul_le
+
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
   norm_smul_le _ x := norm_smul_le _ x.unop
 
@@ -347,6 +350,10 @@ instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, S
   { Pi.normedSpace, Pi.algebra _ E with }
 
 variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
+
+instance SeparationQuotient.instNormedAlgebra : NormedAlgebra 𝕜 (SeparationQuotient E) where
+  __ : NormedSpace 𝕜 (SeparationQuotient E) := inferInstance
+  __ : Algebra 𝕜 (SeparationQuotient E) := inferInstance
 
 instance MulOpposite.instNormedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ where

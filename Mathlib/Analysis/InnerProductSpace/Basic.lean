@@ -2368,6 +2368,33 @@ theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {
 
 end ReApplyInnerSelf_Seminormed
 
+section SeparationQuotient
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+theorem Inseparable.inner_eq_inner {x₁ x₂ y₁ y₂ : E}
+    (hx : Inseparable x₁ x₂) (hy : Inseparable y₁ y₂) :
+    inner x₁ y₁ = (inner x₂ y₂ : 𝕜) :=
+  ((hx.prod hy).map continuous_inner).eq
+
+namespace SeparationQuotient
+
+instance : Inner 𝕜 (SeparationQuotient E) where
+  inner := SeparationQuotient.lift₂ Inner.inner fun _ _ _ _ => Inseparable.inner_eq_inner
+
+@[simp]
+theorem inner_mk_mk (x y : E) :
+    inner (mk x) (mk y) = (inner x y : 𝕜) := rfl
+
+instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
+  norm_sq_eq_inner := Quotient.ind norm_sq_eq_inner
+  conj_symm := Quotient.ind₂ inner_conj_symm
+  add_left := Quotient.ind fun x => Quotient.ind₂ <| inner_add_left x
+  smul_left := Quotient.ind₂ inner_smul_left
+
+end SeparationQuotient
+
+end SeparationQuotient
+
 section UniformSpace.Completion
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
