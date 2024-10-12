@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 import Batteries.Tactic.Lint
 import Mathlib.Tactic.Linter.Common
-import Lean.Elab.Open
 
 /-!
 # Linters for Mathlib
