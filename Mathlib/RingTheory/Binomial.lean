@@ -169,13 +169,13 @@ theorem ascPochhammer_smeval_cast (R : Type*) [Semiring R] {S : Type*} [NonAssoc
     [Pow S ℕ] [Module R S] [IsScalarTower R S S] [NatPowAssoc S]
     (x : S) (n : ℕ) : (ascPochhammer R n).smeval x = (ascPochhammer ℕ n).smeval x := by
   induction n with
-  | zero => simp only [Nat.zero_eq, ascPochhammer_zero, smeval_one, one_smul]
+  | zero => simp only [ascPochhammer_zero, smeval_one, one_smul]
   | succ n hn =>
     simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
     simp only [← C_eq_natCast, smeval_C_mul, hn, Nat.cast_smul_eq_nsmul R n]
     simp only [nsmul_eq_mul, Nat.cast_id]
 
-variable {R S : Type*}
+variable {R : Type*}
 
 theorem ascPochhammer_smeval_eq_eval [Semiring R] (r : R) (n : ℕ) :
     (ascPochhammer ℕ n).smeval r = (ascPochhammer R n).eval r := by
@@ -241,7 +241,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
   nsmul_right_injective n hn r s hrs := Int.eq_of_mul_eq_mul_left (Int.ofNat_ne_zero.mpr hn) hrs
   multichoose := Int.multichoose
   factorial_nsmul_multichoose r k := by
-    rw [Int.multichoose, nsmul_eq_mul]
+    rw [Int.multichoose.eq_def, nsmul_eq_mul]
     cases r with
     | ofNat n =>
       simp only [multichoose, nsmul_eq_mul, Int.ofNat_eq_coe, Int.ofNat_mul_out]
@@ -452,7 +452,7 @@ theorem choose_smul_choose [NatPowAssoc R] (r : R) (n k : ℕ) (hkn : k ≤ n) :
   refine nsmul_right_injective (Nat.factorial n) (Nat.factorial_ne_zero n) ?_
   simp only
   rw [nsmul_left_comm, ← descPochhammer_eq_factorial_smul_choose,
-    ← Nat.choose_mul_factorial_mul_factorial hkn, ← smul_mul_smul,
+    ← Nat.choose_mul_factorial_mul_factorial hkn, ← smul_mul_smul_comm,
     ← descPochhammer_eq_factorial_smul_choose, mul_nsmul',
     ← descPochhammer_eq_factorial_smul_choose, smul_mul_assoc]
   nth_rw 2 [← Nat.sub_add_cancel hkn]

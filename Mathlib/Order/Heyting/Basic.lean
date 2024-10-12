@@ -124,36 +124,36 @@ theorem hnot_apply [∀ i, HNot (π i)] (a : ∀ i, π i) (i : ι) : (￢a) i = 
 end Pi
 
 /-- A generalized Heyting algebra is a lattice with an additional binary operation `⇨` called
-Heyting implication such that `a ⇨` is right adjoint to `a ⊓`.
+Heyting implication such that `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)`.
 
  This generalizes `HeytingAlgebra` by not requiring a bottom element. -/
 class GeneralizedHeytingAlgebra (α : Type*) extends Lattice α, OrderTop α, HImp α where
-  /-- `a ⇨` is right adjoint to `a ⊓` -/
+  /-- `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)` -/
   le_himp_iff (a b c : α) : a ≤ b ⇨ c ↔ a ⊓ b ≤ c
 
 /-- A generalized co-Heyting algebra is a lattice with an additional binary
-difference operation `\` such that `\ a` is right adjoint to `⊔ a`.
+difference operation `\` such that `(· \ a)` is right adjoint to `(· ⊔ a)`.
 
 This generalizes `CoheytingAlgebra` by not requiring a top element. -/
 class GeneralizedCoheytingAlgebra (α : Type*) extends Lattice α, OrderBot α, SDiff α where
-  /-- `\ a` is right adjoint to `⊔ a` -/
+  /-- `(· \ a)` is right adjoint to `(· ⊔ a)` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
 
 /-- A Heyting algebra is a bounded lattice with an additional binary operation `⇨` called Heyting
-implication such that `a ⇨` is right adjoint to `a ⊓`. -/
+implication such that `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)`. -/
 class HeytingAlgebra (α : Type*) extends GeneralizedHeytingAlgebra α, OrderBot α, HasCompl α where
-  /-- `a ⇨` is right adjoint to `a ⊓` -/
+  /-- `aᶜ` is defined as `a ⇨ ⊥` -/
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 
 /-- A co-Heyting algebra is a bounded lattice with an additional binary difference operation `\`
-such that `\ a` is right adjoint to `⊔ a`. -/
+such that `(· \ a)` is right adjoint to `(· ⊔ a)`. -/
 class CoheytingAlgebra (α : Type*) extends GeneralizedCoheytingAlgebra α, OrderTop α, HNot α where
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
 
 /-- A bi-Heyting algebra is a Heyting algebra that is also a co-Heyting algebra. -/
 class BiheytingAlgebra (α : Type*) extends HeytingAlgebra α, SDiff α, HNot α where
-  /-- `\ a` is right adjoint to `⊔ a` -/
+  /-- `(· \ a)` is right adjoint to `(· ⊔ a)` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
@@ -589,7 +589,7 @@ end GeneralizedCoheytingAlgebra
 
 section HeytingAlgebra
 
-variable [HeytingAlgebra α] {a b c : α}
+variable [HeytingAlgebra α] {a b : α}
 
 @[simp]
 theorem himp_bot (a : α) : a ⇨ ⊥ = aᶜ :=
@@ -760,7 +760,7 @@ end HeytingAlgebra
 
 section CoheytingAlgebra
 
-variable [CoheytingAlgebra α] {a b c : α}
+variable [CoheytingAlgebra α] {a b : α}
 
 @[simp]
 theorem top_sdiff' (a : α) : ⊤ \ a = ￢a :=
@@ -983,7 +983,7 @@ protected abbrev Function.Injective.generalizedHeytingAlgebra [Sup α] [Inf α] 
       exact le_top,
     le_himp_iff := fun a b c => by
       change f _ ≤ _ ↔ f _ ≤ _
-      erw [map_himp, map_inf, le_himp_iff] }
+      rw [map_himp, map_inf, le_himp_iff] }
 
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedCoheytingAlgebra` along an injection. -/
@@ -1001,7 +1001,7 @@ protected abbrev Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α
       exact bot_le,
     sdiff_le_iff := fun a b c => by
       change f _ ≤ _ ↔ f _ ≤ _
-      erw [map_sdiff, map_sup, sdiff_le_iff] }
+      rw [map_sdiff, map_sup, sdiff_le_iff] }
 
 -- See note [reducible non-instances]
 /-- Pullback a `HeytingAlgebra` along an injection. -/
@@ -1017,7 +1017,7 @@ protected abbrev Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [B
       change f _ ≤ _
       rw [map_bot]
       exact bot_le,
-    himp_bot := fun a => hf <| by erw [map_himp, map_compl, map_bot, himp_bot] }
+    himp_bot := fun a => hf <| by rw [map_himp, map_compl, map_bot, himp_bot] }
 
 -- See note [reducible non-instances]
 /-- Pullback a `CoheytingAlgebra` along an injection. -/
@@ -1033,7 +1033,7 @@ protected abbrev Function.Injective.coheytingAlgebra [Sup α] [Inf α] [Top α] 
       change f _ ≤ _
       rw [map_top]
       exact le_top,
-    top_sdiff := fun a => hf <| by erw [map_sdiff, map_hnot, map_top, top_sdiff'] }
+    top_sdiff := fun a => hf <| by rw [map_sdiff, map_hnot, map_top, top_sdiff'] }
 
 -- See note [reducible non-instances]
 /-- Pullback a `BiheytingAlgebra` along an injection. -/

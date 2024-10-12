@@ -223,12 +223,12 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     [IsFiniteMeasure μ] : IsHaarMeasure μ := by
   obtain ⟨K⟩ := PositiveCompacts.nonempty' (α := G)
   let K' : PositiveCompacts (G ⧸ Γ) :=
-    K.map π continuous_coinduced_rng (QuotientGroup.isOpenMap_coe Γ)
+    K.map π QuotientGroup.continuous_mk QuotientGroup.isOpenMap_coe
   haveI : IsMulLeftInvariant μ :=
     MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient ν
   rw [haarMeasure_unique μ K']
   have finiteCovol : covolume Γ.op G ν ≠ ⊤ :=
-    ne_top_of_lt $ QuotientMeasureEqMeasurePreimage.covolume_ne_top μ (ν := ν)
+    ne_top_of_lt <| QuotientMeasureEqMeasurePreimage.covolume_ne_top μ (ν := ν)
   obtain ⟨s, fund_dom_s⟩ := i
   rw [fund_dom_s.covolume_eq_volume] at finiteCovol
   -- TODO: why `rw` fails?
@@ -379,7 +379,7 @@ attribute [-instance] Quotient.instMeasurableSpace
   integral of a function `f` on `G` with respect to a right-invariant measure `μ` is equal to the
   integral over the quotient `G ⧸ Γ` of the automorphization of `f`. -/
 @[to_additive "This is a simple version of the **Unfolding Trick**: Given a subgroup `Γ` of an
-  additive  group `G`, the integral of a function `f` on `G` with respect to a right-invariant
+  additive group `G`, the integral of a function `f` on `G` with respect to a right-invariant
   measure `μ` is equal to the integral over the quotient `G ⧸ Γ` of the automorphization of `f`."]
 lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E}

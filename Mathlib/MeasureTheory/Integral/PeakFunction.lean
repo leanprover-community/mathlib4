@@ -30,7 +30,7 @@ functions are also called approximations of unity, or approximations of identity
   at `0` and integrable.
 
 Note that there are related results about convolution with respect to peak functions in the file
-`Analysis.Convolution`, such as `MeasureTheory.convolution_tendsto_right` there.
+`Mathlib.Analysis.Convolution`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
@@ -144,8 +144,8 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
       _ ≤ ∫ x in t, ‖φ i x‖ * δ ∂μ := by
         apply setIntegral_mono_set
         · exact I.norm.mul_const _
-        · exact eventually_of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
-        · exact eventually_of_forall ut
+        · exact Eventually.of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
+        · exact Eventually.of_forall ut
       _ = ∫ x in t, φ i x * δ ∂μ := by
         apply setIntegral_congr ht fun x hx => ?_
         rw [Real.norm_of_nonneg (hφpos _ (hts hx))]
@@ -319,7 +319,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
             · intro x hx
               exact pow_le_pow_left t'_pos.le (le_of_lt (hv hx)) _
           _ ≤ ∫ y in s, c y ^ n ∂μ :=
-            setIntegral_mono_set (I n) (J n) (eventually_of_forall inter_subset_right)
+            setIntegral_mono_set (I n) (J n) (Eventually.of_forall inter_subset_right)
       simp_rw [φ, ← div_eq_inv_mul, div_pow, div_div]
       apply div_le_div (pow_nonneg t_pos n) _ _ B
       · exact pow_le_pow_left (hnc _ hx.1) (ht x hx) _
@@ -341,10 +341,10 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     have B : Tendsto (fun i ↦ ∫ (x : α) in s, φ i x ∂μ) atTop (𝓝 1) :=
       tendsto_const_nhds.congr (fun n ↦ (hiφ n).symm)
     have C : ∀ᶠ (i : ℕ) in atTop, AEStronglyMeasurable (fun x ↦ φ i x) (μ.restrict s) := by
-      apply eventually_of_forall (fun n ↦ ((I n).const_mul _).aestronglyMeasurable)
+      apply Eventually.of_forall (fun n ↦ ((I n).const_mul _).aestronglyMeasurable)
     exact tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto hs.measurableSet
       hs.measurableSet (Subset.rfl) (self_mem_nhdsWithin)
-      hs.measure_lt_top.ne (eventually_of_forall hnφ) A B C hmg hcg
+      hs.measure_lt_top.ne (Eventually.of_forall hnφ) A B C hmg hcg
   convert this
   simp_rw [φ, ← smul_smul, integral_smul]
 
@@ -392,7 +392,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuou
 ### Peak functions of the form `x ↦ c ^ dim * φ (c x)`
 -/
 
-open FiniteDimensional Bornology
+open Module Bornology
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
   [MeasurableSpace F] [BorelSpace F] {μ : Measure F} [IsAddHaarMeasure μ]
@@ -438,7 +438,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
         simp [norm_smul, abs_of_pos cpos, mul_pow]; ring
       _ < δ ^ finrank ℝ F * ε := by
         apply hM
-        rw [div_lt_iff δpos] at hc
+        rw [div_lt_iff₀ δpos] at hc
         simp only [mem_compl_iff, mem_closedBall, dist_zero_right, norm_smul, Real.norm_eq_abs,
           abs_of_nonneg cpos.le, not_le, gt_iff_lt]
         exact hc.trans_le (by gcongr)

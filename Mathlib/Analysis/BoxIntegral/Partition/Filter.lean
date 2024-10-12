@@ -163,11 +163,8 @@ prepartition (and consider the special case `π = ⊥` separately if needed).
 integral, rectangular box, partition, filter
 -/
 
-
 open Set Function Filter Metric Finset Bool
-
-open scoped Classical
-open Topology Filter NNReal
+open scoped Classical Topology Filter NNReal
 
 noncomputable section
 
@@ -226,7 +223,7 @@ instance : Inhabited IntegrationParams :=
   ⟨⊥⟩
 
 instance : DecidableRel ((· ≤ ·) : IntegrationParams → IntegrationParams → Prop) :=
-  fun _ _ => And.decidable
+  fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
 
 instance : DecidableEq IntegrationParams :=
   fun _ _ => decidable_of_iff _ IntegrationParams.ext_iff.symm
@@ -518,7 +515,7 @@ theorem eventually_isPartition (l : IntegrationParams) (I : Box ι) :
     ∀ᶠ π in l.toFilteriUnion I ⊤, TaggedPrepartition.IsPartition π :=
   eventually_iSup.2 fun _ =>
     eventually_inf_principal.2 <|
-      eventually_of_forall fun π h =>
+      Eventually.of_forall fun π h =>
         π.isPartition_iff_iUnion_eq.2 (h.trans Prepartition.iUnion_top)
 
 end IntegrationParams

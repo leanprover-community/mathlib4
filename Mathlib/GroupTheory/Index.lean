@@ -3,7 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Data.Finite.Card
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
 
@@ -54,9 +56,8 @@ noncomputable def relindex : ℕ :=
 @[to_additive]
 theorem index_comap_of_surjective {f : G' →* G} (hf : Function.Surjective f) :
     (H.comap f).index = H.index := by
-  letI := QuotientGroup.leftRel H
-  letI := QuotientGroup.leftRel (H.comap f)
-  have key : ∀ x y : G', Setoid.r x y ↔ Setoid.r (f x) (f y) := by
+  have key : ∀ x y : G',
+      QuotientGroup.leftRel (H.comap f) x y ↔ QuotientGroup.leftRel H (f x) (f y) := by
     simp only [QuotientGroup.leftRel_apply]
     exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
   refine Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨?_, ?_⟩)
@@ -156,9 +157,9 @@ theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b �
 
 @[to_additive]
 theorem mul_mem_iff_of_index_two (h : H.index = 2) {a b : G} : a * b ∈ H ↔ (a ∈ H ↔ b ∈ H) := by
-  by_cases ha : a ∈ H; · simp only [ha, true_iff_iff, mul_mem_cancel_left ha]
-  by_cases hb : b ∈ H; · simp only [hb, iff_true_iff, mul_mem_cancel_right hb]
-  simp only [ha, hb, iff_self_iff, iff_true_iff]
+  by_cases ha : a ∈ H; · simp only [ha, true_iff, mul_mem_cancel_left ha]
+  by_cases hb : b ∈ H; · simp only [hb, iff_true, mul_mem_cancel_right hb]
+  simp only [ha, hb, iff_true]
   rcases index_eq_two_iff.1 h with ⟨c, hc⟩
   refine (hc _).or.resolve_left ?_
   rwa [mul_assoc, mul_mem_cancel_right ((hc _).or.resolve_right hb)]
@@ -446,6 +447,25 @@ lemma pow_mem_of_relindex_ne_zero_of_dvd (h : H.relindex K ≠ 0) {a : G} (ha : 
     (hn : ∀ m, 0 < m → m ≤ H.relindex K → m ∣ n) : a ^ n ∈ H ⊓ K := by
   convert pow_mem_of_index_ne_zero_of_dvd h ⟨a, ha⟩ hn
   simp [pow_mem ha, mem_subgroupOf]
+
+@[simp]
+lemma index_toAddSubgroup : (Subgroup.toAddSubgroup H).index = H.index :=
+  rfl
+
+@[simp]
+lemma _root_.AddSubgroup.index_toSubgroup {G : Type*} [AddGroup G] (H : AddSubgroup G) :
+    (AddSubgroup.toSubgroup H).index = H.index :=
+  rfl
+
+@[simp]
+lemma relindex_toAddSubgroup :
+    (Subgroup.toAddSubgroup H).relindex (Subgroup.toAddSubgroup K) = H.relindex K :=
+  rfl
+
+@[simp]
+lemma _root_.AddSubgroup.relindex_toSubgroup {G : Type*} [AddGroup G] (H K : AddSubgroup G) :
+    (AddSubgroup.toSubgroup H).relindex (AddSubgroup.toSubgroup K) = H.relindex K :=
+  rfl
 
 section FiniteIndex
 

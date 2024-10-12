@@ -8,7 +8,7 @@ import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Module.Rat
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.MulAction
 
 /-!
@@ -119,6 +119,9 @@ instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, Sem
       NNReal.mul_finset_sup]
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
 
+instance SeparationQuotient.instNormedSpace : NormedSpace 𝕜 (SeparationQuotient E) where
+  norm_smul_le := norm_smul_le
+
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
   norm_smul_le _ x := norm_smul_le _ x.unop
 
@@ -186,7 +189,7 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
   rcases NormedField.exists_lt_norm 𝕜 (c / ‖x‖) with ⟨r, hr⟩
   use r • x
-  rwa [norm_smul, ← _root_.div_lt_iff]
+  rwa [norm_smul, ← div_lt_iff₀]
   rwa [norm_pos_iff]
 
 protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
@@ -348,6 +351,10 @@ instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, S
 
 variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
+instance SeparationQuotient.instNormedAlgebra : NormedAlgebra 𝕜 (SeparationQuotient E) where
+  __ : NormedSpace 𝕜 (SeparationQuotient E) := inferInstance
+  __ : Algebra 𝕜 (SeparationQuotient E) := inferInstance
+
 instance MulOpposite.instNormedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ where
   __ := instAlgebra
@@ -455,8 +462,10 @@ Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` inst
 This definition allows the `RestrictScalars.normedSpace` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
 inferred, and because it is likely to create instance diamonds.
+
+See Note [reducible non-instances].
 -/
-def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
+abbrev NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   RestrictScalars.normedSpace _ 𝕜' E
 
 end NormedSpace
@@ -488,8 +497,10 @@ Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` inst
 This definition allows the `RestrictScalars.normedAlgebra` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
 inferred, and because it is likely to create instance diamonds.
+
+See Note [reducible non-instances].
 -/
-def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
+abbrev NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
   RestrictScalars.normedAlgebra _ 𝕜' _
 
 end NormedAlgebra

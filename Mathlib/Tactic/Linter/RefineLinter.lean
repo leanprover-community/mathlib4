@@ -3,8 +3,8 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+
 import Lean.Elab.Command
-import Lean.Linter.Util
 
 /-!
 # The "refine" linter
@@ -20,11 +20,16 @@ This linter is an incentive to discourage uses of `refine'`, without being a ban
 
 open Lean Elab
 
-namespace Mathlib.Linter.refine
+namespace Mathlib.Linter
 
-/-- The refine linter emits a warning on usages of `refine'`. -/
+/-- The "refine" linter flags usages of the `refine'` tactic.
+
+The tactics `refine` and `refine'` are similar, but they handle meta-variables slightly differently.
+This means that they are not completely interchangeable, nor can one completely replace the other.
+However, `refine` is more readable and (heuristically) tends to be more efficient on average.
+-/
 register_option linter.refine : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the refine linter"
 }
 
@@ -36,17 +41,9 @@ def getRefine' : Syntax → Array Syntax
     if kind == ``Lean.Parser.Tactic.refine' then rargs.push stx else rargs
   | _ => default
 
-/-- The "refine" linter flags usages of the `refine'` tactic.
-
-The tactics `refine` and `refine'` are similar, but they handle meta-variables slightly differently.
-This means that they are not completely interchangeable, nor can one completely replace the other.
-However, `refine` is more readable and (heuristically) tends to be more efficient on average.
--/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine o
-
-@[inherit_doc getLinterHash]
+@[inherit_doc linter.refine]
 def refineLinter : Linter where run := withSetOptionIn fun _stx => do
-  unless getLinterHash (← getOptions) do
+  unless Linter.getLinterValue linter.refine (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
@@ -56,3 +53,5 @@ def refineLinter : Linter where run := withSetOptionIn fun _stx => do
       please strongly consider using `refine` or `apply` instead."
 
 initialize addLinter refineLinter
+
+end Mathlib.Linter

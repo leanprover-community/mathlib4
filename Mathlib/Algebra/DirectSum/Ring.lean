@@ -265,17 +265,18 @@ instance semiring : Semiring (⨁ i, A i) :=
 
 theorem ofPow {i} (a : A i) (n : ℕ) :
     of _ i a ^ n = of _ (n • i) (GradedMonoid.GMonoid.gnpow _ a) := by
-  induction' n with n n_ih
-  · exact of_eq_of_gradedMonoid_eq (pow_zero <| GradedMonoid.mk _ a).symm
-  · rw [pow_succ, n_ih, of_mul_of]
+  induction n with
+  | zero => exact of_eq_of_gradedMonoid_eq (pow_zero <| GradedMonoid.mk _ a).symm
+  | succ n n_ih =>
+    rw [pow_succ, n_ih, of_mul_of]
     exact of_eq_of_gradedMonoid_eq (pow_succ (GradedMonoid.mk _ a) n).symm
 
 theorem ofList_dProd {α} (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
     of A _ (l.dProd fι fA) = (l.map fun a => of A (fι a) (fA a)).prod := by
-  induction' l with head tail
-  · simp only [List.map_nil, List.prod_nil, List.dProd_nil]
-    rfl
-  · rename_i ih
+  induction l with
+  | nil => simp only [List.map_nil, List.prod_nil, List.dProd_nil]; rfl
+  | cons head tail =>
+    rename_i ih
     simp only [List.map_cons, List.prod_cons, List.dProd_cons, ← ih]
     rw [DirectSum.of_mul_of (fA head)]
     rfl

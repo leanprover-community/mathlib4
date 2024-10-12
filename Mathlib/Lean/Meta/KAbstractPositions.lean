@@ -3,6 +3,7 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
+import Mathlib.Init
 import Lean.HeadIndex
 import Lean.Meta.ExprLens
 import Lean.Meta.Check
@@ -86,3 +87,5 @@ example (h : [5] ≠ []) : List.getLast [5] h = 5 := by
 def kabstractIsTypeCorrect (e subExpr : Expr) (pos : SubExpr.Pos) : MetaM Bool := do
   withLocalDeclD `_a (← inferType subExpr) fun fvar => do
     isTypeCorrect (← replaceSubexpr (fun _ => pure fvar) pos e)
+
+end Lean.Meta

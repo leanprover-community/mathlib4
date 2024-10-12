@@ -392,7 +392,6 @@ Notes:
   Many thanks to the Sage team and organization for allowing this use.
 * This tactic assumes that the user has `python3` installed and available on the path.
   (Test by opening a terminal and executing `python3 --version`.)
-  It also assumes that the `requests` library is installed: `python3 -m pip install requests`.
 
 Examples:
 
@@ -426,8 +425,4 @@ elab_rules : tactic
       if !traceMe then Lean.Meta.Tactic.TryThis.addSuggestion tk stx
     | .error g => replaceMainGoal [g]
 
-end Polyrith
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.Polyrith

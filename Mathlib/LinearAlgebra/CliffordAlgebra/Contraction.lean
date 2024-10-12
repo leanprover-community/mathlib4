@@ -40,8 +40,7 @@ Within this file, we use the local notation
 
 -/
 
-open LinearMap (BilinMap)
-open LinearMap (BilinForm)
+open LinearMap (BilinMap BilinForm)
 
 universe u1 u2 u3
 

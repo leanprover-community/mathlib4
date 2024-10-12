@@ -3,10 +3,9 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Init.Core
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Cyclotomic extensions
@@ -59,7 +58,7 @@ included in the `Cyclotomic` locale.
 -/
 
 
-open Polynomial Algebra FiniteDimensional Set
+open Polynomial Algebra Module Set
 
 universe u v w z
 

@@ -752,7 +752,7 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
       rw [← integrableOn_iff_integrable_of_support_subset A]
       apply Integrable.smul_of_top_right hif
       exact memℒp_top_of_bound hig.aestronglyMeasurable.restrict
-        (K / (μ (a i)).toReal) (eventually_of_forall hibound)
+        (K / (μ (a i)).toReal) (Eventually.of_forall hibound)
     · exact hig.smul_const _
   have L0 : Tendsto (fun i ↦ ∫ y, g i y • (f y - c) ∂μ) l (𝓝 0) := by
     have := hf.const_mul K
@@ -773,8 +773,8 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
       have : g i x = 0 := by rw [← Function.nmem_support]; exact fun h ↦ hx (hi h)
       simp [this]
     rw [← setIntegral_eq_integral_of_forall_compl_eq_zero this (μ := μ)]
-    refine integral_mono_of_nonneg (eventually_of_forall (fun x ↦ by positivity)) ?_
-      (eventually_of_forall (fun x ↦ ?_))
+    refine integral_mono_of_nonneg (Eventually.of_forall (fun x ↦ by positivity)) ?_
+      (Eventually.of_forall (fun x ↦ ?_))
     · apply (Integrable.sub h''i _).norm.const_mul
       change IntegrableOn (fun _ ↦ c) (a i) μ
       simp [integrableOn_const, mu_ai]

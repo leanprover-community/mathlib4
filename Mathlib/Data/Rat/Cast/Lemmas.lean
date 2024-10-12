@@ -3,8 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Cast.Defs
 import Mathlib.Algebra.Field.Basic
+import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Some exiled lemmas about casting
@@ -20,13 +21,18 @@ namespace Rat
 
 variable {α : Type*} [DivisionRing α]
 
+@[simp, norm_cast]
+lemma cast_pow (p : ℚ) (n : ℕ) : ↑(p ^ n) = (p ^ n : α) := by
+  rw [cast_def, cast_def, den_pow, num_pow, Nat.cast_pow, Int.cast_pow, div_eq_mul_inv, ← inv_pow,
+    ← (Int.cast_commute _ _).mul_pow, ← div_eq_mul_inv]
+
 -- Porting note: rewrote proof
 @[simp]
 theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   cases' n with n
   · simp
   rw [cast_def, inv_natCast_num, inv_natCast_den, if_neg n.succ_ne_zero,
-    Int.sign_eq_one_of_pos (Nat.cast_pos.mpr n.succ_pos), Int.cast_one, one_div]
+    Int.sign_eq_one_of_pos (Int.ofNat_succ_pos n), Int.cast_one, one_div]
 
 -- Porting note: proof got a lot easier - is this still the intended statement?
 @[simp]
@@ -41,7 +47,7 @@ theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
   rw [Rat.cast_def, NNRat.cast_def, NNRat.cast_def]
   have hn := @num_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
   on_goal 1 => have hd := @den_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
-  case hdp => simpa only [Nat.cast_pos] using q.den_pos
+  case hdp => simpa only [Int.ofNat_pos] using q.den_pos
   simp only [Int.cast_natCast, Nat.cast_inj] at hn hd
   rw [hn, hd, Int.cast_natCast]
 
