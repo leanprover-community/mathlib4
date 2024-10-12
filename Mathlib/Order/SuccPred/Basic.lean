@@ -24,7 +24,7 @@ order...
 
 Maximal elements don't have a sensible successor. Thus the naïve typeclass
 ```lean
-class NaiveSuccOrder (α : Type*) [Preorder α] :=
+class NaiveSuccOrder (α : Type*) [Preorder α] where
   (succ : α → α)
   (succ_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
   (lt_succ_iff : ∀ {a b}, a < succ b ↔ a ≤ b)
@@ -223,15 +223,13 @@ lemma le_succ_of_wcovBy (h : a ⩿ b) : b ≤ succ a := by
 
 alias _root_.WCovBy.le_succ := le_succ_of_wcovBy
 
-theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ succ^[k] x := by
-  conv_lhs => rw [(by simp only [Function.iterate_id, id] : x = id^[k] x)]
-  exact Monotone.le_iterate_of_le succ_mono le_succ k x
+theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ succ^[k] x :=
+  id_le_iterate_of_id_le le_succ _ _
 
 theorem isMax_iterate_succ_of_eq_of_lt {n m : ℕ} (h_eq : succ^[n] a = succ^[m] a)
     (h_lt : n < m) : IsMax (succ^[n] a) := by
   refine max_of_succ_le (le_trans ?_ h_eq.symm.le)
-  have : succ (succ^[n] a) = succ^[n + 1] a := by rw [Function.iterate_succ', comp]
-  rw [this]
+  rw [← iterate_succ_apply' succ]
   have h_le : n + 1 ≤ m := Nat.succ_le_of_lt h_lt
   exact Monotone.monotone_iterate_of_le_map succ_mono (le_succ a) h_le
 
@@ -426,6 +424,11 @@ theorem le_succ_iff_eq_or_le : a ≤ succ b ↔ a = succ b ∨ a ≤ b := by
 
 theorem lt_succ_iff_eq_or_lt_of_not_isMax (hb : ¬IsMax b) : a < succ b ↔ a = b ∨ a < b :=
   (lt_succ_iff_of_not_isMax hb).trans le_iff_eq_or_lt
+
+theorem not_isMin_succ [Nontrivial α] (a : α) : ¬ IsMin (succ a) := by
+  obtain ha | ha := (le_succ a).eq_or_lt
+  · exact (ha ▸ succ_eq_iff_isMax.1 ha.symm).not_isMin
+  · exact not_isMin_of_lt ha
 
 theorem Iic_succ (a : α) : Iic (succ a) = insert (succ a) (Iic a) :=
   ext fun _ => le_succ_iff_eq_or_le
@@ -802,6 +805,9 @@ theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
 theorem pred_lt_iff_eq_or_lt_of_not_isMin (ha : ¬IsMin a) : pred a < b ↔ a = b ∨ a < b :=
   (pred_lt_iff_of_not_isMin ha).trans le_iff_eq_or_lt
 
+theorem not_isMax_pred [Nontrivial α] (a : α) : ¬ IsMax (pred a) :=
+  not_isMin_succ (α := αᵒᵈ) a
+
 theorem Ici_pred (a : α) : Ici (pred a) = insert (pred a) (Ici a) :=
   ext fun _ => pred_le_iff_eq_or_le
 
@@ -921,7 +927,7 @@ lemma gc_pred_succ : GaloisConnection (pred : α → α) succ := fun _ _ ↦ pre
 
 end Preorder
 
-variable [PartialOrder α] [SuccOrder α] [PredOrder α] {a b : α}
+variable [PartialOrder α] [SuccOrder α] [PredOrder α] {a : α}
 
 @[simp]
 theorem succ_pred_of_not_isMin (h : ¬IsMin a) : succ (pred a) = a :=
@@ -1202,3 +1208,32 @@ instance [hα : Nonempty α] : IsEmpty (SuccOrder (WithBot α)) :=
 end Succ
 
 end WithBot
+
+section OrderIso
+
+variable {X Y : Type*} [Preorder X] [Preorder Y]
+
+-- See note [reducible non instances]
+/-- `SuccOrder` transfers across equivalences between orders. -/
+protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y where
+  succ y := f (succ (f.symm y))
+  le_succ y := by rw [← map_inv_le_iff f]; exact le_succ (f.symm y)
+  max_of_succ_le h := by
+    rw [← f.symm.isMax_apply]
+    refine max_of_succ_le ?_
+    simp [f.le_symm_apply, h]
+  succ_le_of_lt h := by rw [← le_map_inv_iff]; exact succ_le_of_lt (by simp [h])
+
+-- See note [reducible non instances]
+/-- `PredOrder` transfers across equivalences between orders. -/
+protected abbrev PredOrder.ofOrderIso [PredOrder X] (f : X ≃o Y) :
+    PredOrder Y where
+  pred y := f (pred (f.symm y))
+  pred_le y := by rw [← le_map_inv_iff f]; exact pred_le (f.symm y)
+  min_of_le_pred h := by
+    rw [← f.symm.isMin_apply]
+    refine min_of_le_pred ?_
+    simp [f.symm_apply_le, h]
+  le_pred_of_lt h := by rw [← map_inv_le_iff]; exact le_pred_of_lt (by simp [h])
+
+end OrderIso

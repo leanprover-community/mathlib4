@@ -205,10 +205,10 @@ theorem eq_curry_iff (f : A ⨯ Y ⟶ X) (g : Y ⟶ A ⟹ X) : g = curry f ↔ u
 
 -- I don't think these two should be simp.
 theorem uncurry_eq (g : Y ⟶ A ⟹ X) : uncurry g = Limits.prod.map (𝟙 A) g ≫ (exp.ev A).app X :=
-  Adjunction.homEquiv_counit _
+  rfl
 
 theorem curry_eq (g : A ⨯ Y ⟶ X) : curry g = (exp.coev A).app Y ≫ (exp A).map g :=
-  Adjunction.homEquiv_unit _
+  rfl
 
 theorem uncurry_id_eq_ev (A X : C) [Exponentiable A] : uncurry (𝟙 (A ⟹ X)) = (exp.ev A).app X := by
   rw [uncurry_eq, prod.map_id_id, id_comp]
@@ -226,21 +226,15 @@ end CartesianClosed
 
 open CartesianClosed
 
-/-- Show that the exponential of the terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
+/-- The exponential with the terminal object is naturally isomorphic to the identity. The typeclass
+argument is explicit: any instance can be used.-/
+def expTerminalNatIso [Exponentiable (⊤_ C)] : 𝟭 C ≅ exp (⊤_ C) :=
+  MonoidalClosed.unitNatIso (C := C)
 
-The typeclass argument is explicit: any instance can be used.
--/
+/-- The exponential of any object with the terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
+The typeclass argument is explicit: any instance can be used.-/
 def expTerminalIsoSelf [Exponentiable (⊤_ C)] : (⊤_ C) ⟹ X ≅ X :=
-  Yoneda.ext ((⊤_ C) ⟹ X) X
-    (fun {Y} f => (Limits.prod.leftUnitor Y).inv ≫ CartesianClosed.uncurry f)
-    (fun {Y} f => CartesianClosed.curry ((Limits.prod.leftUnitor Y).hom ≫ f))
-    (fun g => by
-      rw [curry_eq_iff, Iso.hom_inv_id_assoc])
-    (fun g => by simp)
-    (fun f g => by
-      -- Porting note: `rw` is a bit brittle here, requiring the `dsimp` rule cancellation.
-      dsimp [-prod.leftUnitor_inv]
-      rw [uncurry_natural_left, prod.leftUnitor_inv_naturality_assoc f])
+  (expTerminalNatIso.app X).symm
 
 /-- The internal element which points at the given morphism. -/
 def internalizeHom (f : A ⟶ Y) : ⊤_ C ⟶ A ⟹ Y :=

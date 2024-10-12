@@ -113,7 +113,7 @@ theorem compProdFun_iUnion (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSF
         Set.mem_empty_iff_false] using hf_disj hij hbci hbcj
     · exact fun i ↦ measurable_prod_mk_left (hf_meas i)
   rw [h_tsum, lintegral_tsum]
-  · rfl
+  · simp [compProdFun]
   · intro i
     have hm : MeasurableSet {p : (α × β) × γ | (p.1.2, p.2) ∈ f i} :=
       measurable_fst.snd.prod_mk measurable_snd (hf_meas i)
@@ -234,7 +234,7 @@ lemma compProd_zero_left (κ : Kernel (α × β) γ) :
   · rw [Kernel.compProd_of_not_isSFiniteKernel_right _ _ h]
 
 @[simp]
-lemma compProd_zero_right (κ : Kernel α β) (γ : Type*) [MeasurableSpace γ] :
+lemma compProd_zero_right (κ : Kernel α β) (γ : Type*) {mγ : MeasurableSpace γ} :
     κ ⊗ₖ (0 : Kernel (α × β) γ) = 0 := by
   by_cases h : IsSFiniteKernel κ
   · ext a s hs
@@ -320,9 +320,8 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
     classical
     rw [Set.indicator_apply]
     split_ifs with h
-    · simp only [h, true_and_iff]
-      rfl
-    · simp only [h, false_and_iff, and_false_iff, Set.setOf_false, measure_empty]
+    · simp only [h, true_and, Set.inter_def, Set.mem_setOf]
+    · simp only [h, false_and, and_false, Set.setOf_false, measure_empty]
   simp_rw [this]
   rw [lintegral_indicator _ hs]
 
@@ -567,7 +566,7 @@ section MapComap
 /-! ### map, comap -/
 
 
-variable {γ δ : Type*} [MeasurableSpace γ] {mδ : MeasurableSpace δ} {f : β → γ} {g : γ → α}
+variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : β → γ} {g : γ → α}
 
 /-- The pushforward of a kernel along a measurable function. This is an implementation detail,
 use `map κ f` instead. -/
@@ -581,7 +580,7 @@ open Classical in
 If the function is not measurable, we use zero instead. This choice of junk
 value ensures that typeclass inference can infer that the `map` of a kernel
 satisfying `IsZeroOrMarkovKernel` again satisfies this property. -/
-noncomputable def map (κ : Kernel α β) (f : β → γ) : Kernel α γ :=
+noncomputable def map [MeasurableSpace γ] (κ : Kernel α β) (f : β → γ) : Kernel α γ :=
   if hf : Measurable f then mapOfMeasurable κ f hf else 0
 
 theorem map_of_not_measurable (κ : Kernel α β) {f : β → γ} (hf : ¬(Measurable f)) :
@@ -593,8 +592,7 @@ theorem map_of_not_measurable (κ : Kernel α β) {f : β → γ} (hf : ¬(Measu
   simp [map, hf]
 
 theorem map_apply (κ : Kernel α β) (hf : Measurable f) (a : α) : map κ f a = (κ a).map f := by
-  simp only [map, hf, ↓reduceDIte, mapOfMeasurable]
-  rfl
+  simp only [map, hf, ↓reduceDIte, mapOfMeasurable, coe_mk]
 
 theorem map_apply' (κ : Kernel α β) (hf : Measurable f) (a : α) {s : Set γ} (hs : MeasurableSet s) :
     map κ f a s = κ a (f ⁻¹' s) := by rw [map_apply _ hf, Measure.map_apply hf hs]
@@ -804,7 +802,7 @@ lemma map_prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : Kernel α β) (f : 
     rfl
   · simp [map_of_not_measurable _ hf]
 
-lemma map_prodMkRight (κ : Kernel α β) (γ : Type*) [MeasurableSpace γ] (f : β → δ) :
+lemma map_prodMkRight (κ : Kernel α β) (γ : Type*) {mγ : MeasurableSpace γ} (f : β → δ) :
     map (prodMkRight γ κ) f = prodMkRight γ (map κ f) := by
   by_cases hf : Measurable f
   · simp only [map, hf, ↓reduceDIte]
@@ -834,10 +832,10 @@ instance IsFiniteKernel.swapLeft (κ : Kernel (α × β) γ) [IsFiniteKernel κ]
 instance IsSFiniteKernel.swapLeft (κ : Kernel (α × β) γ) [IsSFiniteKernel κ] :
     IsSFiniteKernel (swapLeft κ) := by rw [Kernel.swapLeft]; infer_instance
 
-@[simp] lemma swapLeft_prodMkLeft (κ : Kernel α β) (γ : Type*) [MeasurableSpace γ] :
+@[simp] lemma swapLeft_prodMkLeft (κ : Kernel α β) (γ : Type*) {_ : MeasurableSpace γ} :
     swapLeft (prodMkLeft γ κ) = prodMkRight γ κ := rfl
 
-@[simp] lemma swapLeft_prodMkRight (κ : Kernel α β) (γ : Type*) [MeasurableSpace γ] :
+@[simp] lemma swapLeft_prodMkRight (κ : Kernel α β) (γ : Type*) {_ : MeasurableSpace γ} :
     swapLeft (prodMkRight γ κ) = prodMkLeft γ κ := rfl
 
 /-- Define a `Kernel α (γ × β)` from a `Kernel α (β × γ)` by taking the map of `Prod.swap`.
@@ -916,8 +914,8 @@ lemma fst_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hg : Mea
     fst (map κ (fun x ↦ (f x, g x))) = map κ f := by
   by_cases hf : Measurable f
   · ext x s hs
-    rw [fst_apply' _ _ hs, map_apply' _ (hf.prod hg), map_apply' _ hf _ hs]
-    · rfl
+    rw [fst_apply' _ _ hs, map_apply' _ (hf.prod hg) _, map_apply' _ hf _ hs]
+    · simp only [Set.preimage, Set.mem_setOf]
     · exact measurable_fst hs
   · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
       contrapose! hf; exact hf.fst
@@ -993,7 +991,7 @@ lemma snd_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hf : Mea
   by_cases hg : Measurable g
   · ext x s hs
     rw [snd_apply' _ _ hs, map_apply' _ (hf.prod hg), map_apply' _ hg _ hs]
-    · rfl
+    · simp only [Set.preimage, Set.mem_setOf]
     · exact measurable_snd hs
   · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
       contrapose! hg; exact hg.snd
