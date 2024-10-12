@@ -234,6 +234,39 @@ lemma SuccOrder.forall_ne_bot_iff
   simp only [Function.iterate_succ', Function.comp_apply]
   apply h
 
+section IsLeast
+
+-- TODO: generalize to PartialOrder and `DirectedOn` after #16272
+lemma BddAbove.exists_isGreatest_of_nonempty {X : Type*} [LinearOrder X] [SuccOrder X]
+    [IsSuccArchimedean X] {S : Set X} (hS : BddAbove S) (hS' : S.Nonempty) :
+    ∃ x, IsGreatest S x := by
+  obtain ⟨m, hm⟩ := hS
+  obtain ⟨n, hn⟩ := hS'
+  by_cases hm' : m ∈ S
+  · exact ⟨_, hm', hm⟩
+  have hn' := hm hn
+  revert hn hm hm'
+  refine Succ.rec ?_ ?_ hn'
+  · simp (config := {contextual := true})
+  intro m _ IH hm hn hm'
+  rw [mem_upperBounds] at IH hm
+  simp_rw [Order.le_succ_iff_eq_or_le] at hm
+  replace hm : ∀ x ∈ S, x ≤ m := by
+    intro x hx
+    refine (hm x hx).resolve_left ?_
+    rintro rfl
+    exact hm' hx
+  by_cases hmS : m ∈ S
+  · exact ⟨m, hmS, hm⟩
+  · exact IH hm hn hmS
+
+lemma BddBelow.exists_isLeast_of_nonempty {X : Type*} [LinearOrder X] [PredOrder X]
+    [IsPredArchimedean X] {S : Set X} (hS : BddBelow S) (hS' : S.Nonempty) :
+    ∃ x, IsLeast S x :=
+  hS.dual.exists_isGreatest_of_nonempty hS'
+
+end IsLeast
+
 section OrderIso
 
 variable {X Y : Type*} [PartialOrder X] [PartialOrder Y]

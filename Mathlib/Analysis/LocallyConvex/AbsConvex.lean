@@ -53,7 +53,11 @@ variable {𝕜 E F G ι : Type*}
 section AbsolutelyConvex
 
 variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [SMul ℝ E] [AddCommMonoid E]
-/-- A set is absolutely convex if it is balanced and convex. -/
+/-- A set is absolutely convex if it is balanced and convex. Mathlib's definition of `Convex`
+requires the scalars to be an `OrderedSemiring` whereas the definition of `Balanced` requires the
+scalars to be a `SeminormedRing`. Mathlib doesn't currently have a concept of a semi-normed ordered
+ring, so we define a set as `AbsConvex` if it is balanced over a `SeminormedRing` `𝕜` and convex
+over `ℝ`. -/
 def AbsConvex (s : Set E) : Prop := Balanced 𝕜 s ∧ Convex ℝ s
 
 variable {𝕜}
@@ -77,7 +81,7 @@ variable (𝕜)
 /-- The absolute convex hull of a set `s` is the minimal absolute convex set that includes `s`. -/
 @[simps! isClosed]
 def absConvexHull : ClosureOperator (Set E) :=
-  .ofCompletePred (AbsConvex 𝕜) fun _ ↦ AbsConvex.sInter
+  .ofCompletePred (AbsConvex 𝕜) fun _ ↦ .sInter
 
 variable {𝕜} {s : Set E}
 
@@ -222,9 +226,7 @@ lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
   intro a ha
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 ha
   apply segment_subset_convexHull (mem_union_left (-s) hy) (mem_union_right _ (neg_mem_neg.mpr hy))
-  use (1+r)/2
-  use (1-r)/2
-  constructor
+  refine ⟨(1 + r)/2, (1 - r)/2, ?_, ?_⟩
   · rw [← zero_div 2]
     exact (div_le_div_right zero_lt_two).mpr (neg_le_iff_add_nonneg'.mp (neg_le_of_abs_le hr))
   · constructor

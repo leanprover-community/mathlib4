@@ -1252,7 +1252,7 @@ theorem linearIndependent_option' :
     LinearIndependent K (fun o => Option.casesOn' o x v : Option ι → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   -- Porting note: Explicit universe level is required in `Equiv.optionEquivSumPUnit`.
-  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{_, u'} ι).symm, linearIndependent_sum,
+  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{u', _} ι).symm, linearIndependent_sum,
     @range_unique _ PUnit, @linearIndependent_unique_iff PUnit, disjoint_span_singleton]
   dsimp [(· ∘ ·)]
   refine ⟨fun h => ⟨h.1, fun hx => h.2.1 <| h.2.2 hx⟩, fun h => ⟨h.1, ?_, fun hx => (h.2 hx).elim⟩⟩
@@ -1400,6 +1400,10 @@ theorem LinearIndependent.subset_span_extend (hs : LinearIndependent K (fun x =>
     (hst : s ⊆ t) : t ⊆ span K (hs.extend hst) :=
   let ⟨_hbt, _hsb, htb, _hli⟩ := Classical.choose_spec (exists_linearIndependent_extension hs hst)
   htb
+
+theorem LinearIndependent.span_extend_eq_span (hs : LinearIndependent K (fun x => x : s → V))
+    (hst : s ⊆ t) : span K (hs.extend hst) = span K t :=
+  le_antisymm (span_mono (hs.extend_subset hst)) (span_le.2 (hs.subset_span_extend hst))
 
 theorem LinearIndependent.linearIndependent_extend (hs : LinearIndependent K (fun x => x : s → V))
     (hst : s ⊆ t) : LinearIndependent K ((↑) : hs.extend hst → V) :=
