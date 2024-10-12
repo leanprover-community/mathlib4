@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Sum.Order
-import Mathlib.Order.InitialSeg
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.PPWithUniv
 
@@ -661,7 +660,7 @@ theorem lift_card (a) : Cardinal.lift.{u,v} (card a)= card (lift.{u,v} a) :=
 
 theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
     (h : card.{max u v} b ≤ Cardinal.lift.{v,u} a) : ∃ a', lift.{v,u} a' = b :=
-  let ⟨c, e⟩ := Cardinal.lift_down h
+  let ⟨c, e⟩ := Cardinal.mem_range_of_le_lift h
   Cardinal.inductionOn c
     (fun α =>
       inductionOn b fun β s _ e' => by
@@ -1320,7 +1319,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
 
 theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c' :=
   ⟨fun h => by
-    let ⟨a, e, h'⟩ := lt_lift_iff.1 h
+    let ⟨a, h', e⟩ := lt_lift_iff.1 h
     rw [← univ_id] at h'
     rcases lt_univ.{u}.1 h' with ⟨c', rfl⟩
     exact ⟨c', by simp only [e.symm, lift_lift]⟩, fun ⟨c', e⟩ => e.symm ▸ lift_lt_univ' _⟩
