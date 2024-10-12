@@ -19,9 +19,9 @@ We define singular cardinals and prove theorems about singular and regular cardi
 
 open Ordinal Cardinal
 
-section Singular
-
 namespace Cardinal
+
+section Singular
 
 variable {c : Cardinal}
 
