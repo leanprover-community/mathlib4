@@ -255,7 +255,8 @@ theorem grundyValue_le_of_forall_moveLeft {G : PGame} {o : Nimber}
 
 /-- The **Sprague-Grundy theorem** states that every impartial game is equivalent to a game of nim,
 namely the game of nim corresponding to the game's Grundy value. -/
-theorem equiv_nim_grundyValue (G : PGame.{u}) [G.Impartial] : G ≈ nim (grundyValue G) := by
+theorem equiv_nim_grundyValue (G : PGame.{u}) [G.Impartial] :
+    G ≈ nim (Nimber.toOrdinal (grundyValue G)) := by
   rw [Impartial.equiv_iff_add_equiv_zero, ← Impartial.forall_leftMoves_fuzzy_iff_equiv_zero]
   intro x
   apply leftMoves_add_cases x <;>
@@ -277,7 +278,7 @@ theorem grundyValue_eq_iff_equiv_nim {G : PGame} [G.Impartial] {o : Nimber} :
    by intro h; rw [← nim_equiv_iff_eq]; exact Equiv.trans (Equiv.symm (equiv_nim_grundyValue G)) h⟩
 
 @[simp]
-theorem nim_grundyValue (o : Ordinal.{u}) : grundyValue (nim o) = o :=
+theorem nim_grundyValue (o : Ordinal.{u}) : grundyValue (nim o) = ∗o :=
   grundyValue_eq_iff_equiv_nim.2 PGame.equiv_rfl
 
 theorem grundyValue_eq_iff_equiv (G H : PGame) [G.Impartial] [H.Impartial] :
@@ -288,7 +289,7 @@ theorem grundyValue_eq_iff_equiv (G H : PGame) [G.Impartial] [H.Impartial] :
 theorem grundyValue_zero : grundyValue 0 = 0 :=
   grundyValue_eq_iff_equiv_nim.2 (Equiv.symm nim_zero_equiv)
 
-theorem grundyValue_iff_equiv_zero (G : PGame) [G.Impartial] : grundyValue G = 0 ↔ (G ≈ 0) := by
+theorem grundyValue_iff_equiv_zero (G : PGame) [G.Impartial] : grundyValue G = 0 ↔ G ≈ 0 := by
   rw [← grundyValue_eq_iff_equiv, grundyValue_zero]
 
 @[simp]
