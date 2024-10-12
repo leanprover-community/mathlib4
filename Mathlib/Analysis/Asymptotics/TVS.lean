@@ -22,6 +22,8 @@ open scoped Topology Pointwise ENNReal NNReal
 
 section TVS
 
+/-- `IsLittleOTVS 𝕜 f g l` is a generalization of `f =o[l] g` (`IsLittleO f g l`) that works in
+topological `𝕜`-vector spaces. -/
 def IsLittleOTVS (𝕜 : Type*) {α E F : Type*} [NNNorm 𝕜] [TopologicalSpace E] [TopologicalSpace F]
     [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F] (f : α → E) (g : α → F) (l : Filter α) : Prop :=
   ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F), ∀ ε ≠ (0 : ℝ≥0),
