@@ -684,8 +684,8 @@ theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
     · rw [mul_succ]
       apply add_le_add_left hca
     · dsimp only; rw [← mul_assoc, ← opow_one_add, one_add_omega0]
-  · cases' mul_eq_right_iff_opow_omega0_dvd.1 ((isNormal_mul_right ha).nfp_fp ((a ^ ω) * b + c)) with
-      d hd
+  · obtain ⟨d, hd⟩ :=
+      mul_eq_right_iff_opow_omega0_dvd.1 ((isNormal_mul_right ha).nfp_fp ((a ^ ω) * b + c))
     rw [hd]
     apply mul_le_mul_left'
     have := le_nfp (a * ·) (a ^ ω * b + c)
