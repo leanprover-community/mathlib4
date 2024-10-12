@@ -142,16 +142,16 @@ def lanCompColimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
       simp only [comp_obj, colim_obj, comp_map, colim_map]
       rw [← Iso.inv_comp_eq, ← assoc, ← Iso.eq_comp_inv]
       ext c
-      simp
+      simp only [ι_colimMap_assoc]
       erw [IsColimit.coconePointUniqueUpToIso_inv_desc]
-      simp
+      simp only [isColimitCoconeOfIsLeftKanExtension_desc, Cocones.precompose_obj_pt,
+        colimit.cocone_x, Cocones.precompose_obj_ι, whiskerLeft_comp, colimit.isColimit_desc,
+        colimit.ι_desc, NatTrans.comp_app, comp_obj, const_obj_obj, whiskerLeft_app,
+        colimit.cocone_ι]
       conv_rhs => rw [← assoc]
       rw [Iso.eq_comp_inv, assoc, assoc]
-      unfold colimit.ι
-      unfold colimit.cocone
-      rw [IsColimit.comp_coconePointUniqueUpToIso_hom]
-      simp only [coconeOfIsLeftKanExtension]
-      erw [descOfIsLeftKanExtension_fac_app_assoc]
+      simp only [colimit.ι, colimit.cocone, lan]
+      rw [descOfIsLeftKanExtension_fac_app_assoc]
       simp)
 
 end Colim
