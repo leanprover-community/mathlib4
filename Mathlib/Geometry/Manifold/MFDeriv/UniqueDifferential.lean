@@ -82,7 +82,7 @@ theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s) {e : Parti
     (he : e.MDifferentiable I I') : UniqueMDiffOn I' (e.target ∩ e.symm ⁻¹' s) := fun _x hx ↦
   e.right_inv hx.1 ▸ (hs _ hx.2).preimage_partialHomeomorph he (e.map_target hx.1)
 
-variable [SmoothManifoldWithCorners I M]  in
+variable [SmoothManifoldWithCorners I M] in
 /-- If a set in a manifold has the unique derivative property, then its pullback by any extended
 chart, in the vector space, also has the unique derivative property. -/
 theorem UniqueMDiffOn.uniqueDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M) :
@@ -95,7 +95,7 @@ theorem UniqueMDiffOn.uniqueDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M)
     (fun y hy ↦ hasMFDerivWithinAt_extChartAt hy.2)
     fun y hy ↦ ((mdifferentiable_chart _).mfderiv_surjective hy.2).denseRange
 
-variable [SmoothManifoldWithCorners I M]  in
+variable [SmoothManifoldWithCorners I M] in
 /-- When considering functions between manifolds, this statement shows up often. It entails
 the unique differential of the pullback in extended charts of the set where the function can
 be read in the charts. -/
