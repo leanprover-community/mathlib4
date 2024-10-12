@@ -80,6 +80,8 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
   {b₁ : M → B₁} {b₂ : M → B₂} {m₀ : M}
   {ϕ : Π (m : M), E₁ (b₁ m) →L[𝕜] E₂ (b₂ m)} {v : Π (m : M), E₁ (b₁ m)} {s : Set M}
 
+#check DifferentiableWithinAt.insert
+
 /-- Consider a smooth map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
 on `m`, one can apply `ϕ m` to `g m`, and the resulting map is smooth.
@@ -103,9 +105,9 @@ lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
   --rw [← mdifferentiableWithinAt_insert_self] at hϕ hv hb₂ ⊢
   rw [mdifferentiableWithinAt_totalSpace] at hv ⊢
   refine ⟨hb₂, ?_⟩
-  apply (MDifferentiableWithinAt.clm_apply hϕ hv.2).congr_of_eventuallyEq_of_mem ?_ (mem_insert m₀ s)
+  apply (MDifferentiableWithinAt.clm_apply hϕ hv.2).congr_of_eventuallyEq --?_ (mem_insert m₀ s)
   have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by
-    apply hv.1.continuousWithinAt
+    apply hv.1.insert.continuousWithinAt
     apply (trivializationAt F₁ E₁ (b₁ m₀)).open_baseSet.mem_nhds
     exact FiberBundle.mem_baseSet_trivializationAt' (b₁ m₀)
   have A' : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₂ m ∈ (trivializationAt F₂ E₂ (b₂ m₀)).baseSet := by

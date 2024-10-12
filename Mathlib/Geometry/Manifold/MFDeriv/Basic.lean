@@ -689,10 +689,53 @@ lemma mfderivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
     mfderivWithin I I' f s x = mfderiv I I' f x :=
   mfderivWithin_of_mem_nhds (hs.mem_nhds hx)
 
+theorem hasMFDerivWithinAt_insert {y : M} :
+    HasMFDerivWithinAt I I' f (insert y s) x f' ↔ HasMFDerivWithinAt I I' f s x f' := by
+  have : T2Space H := I.closedEmbedding.toEmbedding.t2Space
+  have : T1Space M := ChartedSpace.T1Space H M
+  rcases eq_or_ne x y with (rfl | h)
+  · simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO]
+    apply Asymptotics.isLittleO_insert
+    simp only [sub_self, map_zero]
+  refine ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem ?_⟩
+  simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
+
+
+  refine ⟨fun h ↦ h.mono (subset_insert y s), fun h ↦ ?_⟩
+
+
+#exit
+
+
+alias ⟨HasFDerivWithinAt.of_insert, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
+
+protected theorem HasFDerivWithinAt.insert (h : HasFDerivWithinAt g g' s x) :
+    HasFDerivWithinAt g g' (insert x s) x :=
+  h.insert'
+
 theorem mfderivWithin_eq_mfderiv (hs : UniqueMDiffWithinAt I s x) (h : MDifferentiableAt I I' f x) :
     mfderivWithin I I' f s x = mfderiv I I' f x := by
   rw [← mfderivWithin_univ]
   exact mfderivWithin_subset (subset_univ _) hs h.mdifferentiableWithinAt
+
+theorem mdifferentiableWithinAt_insert_self :
+    MDifferentiableWithinAt I I' f (insert x s) x ↔ MDifferentiableWithinAt I I' f s x :=
+  ⟨fun h ↦ h.mono (subset_insert x s), fun h ↦ h.hasMFDerivWithinAt.insert.mdifferentiableWithinAt⟩
+
+theorem mdifferentiableWithinAt_insert {y : M} :
+    MDifferentiableWithinAt I I' f (insert y s) x ↔ MDifferentiableWithinAt I I' f s x := by
+  rcases eq_or_ne x y with (rfl | h)
+  · exact mdifferentiableWithinAt_insert_self
+  apply mdifferentiableWithinAt_congr_nhds
+  exact nhdsWithin_insert_of_ne h
+
+alias ⟨MDifferentiableWithinAt.of_insert, MDifferentiableWithinAt.insert'⟩ :=
+mdifferentiableWithinAt_insert
+
+protected theorem MDifferentiableWithinAt.insert (h : MDifferentiableWithinAt I I' f s x) :
+    MDifferentiableWithinAt I I' f (insert x s) x :=
+  h.insert'
+
 
 /-! ### Deriving continuity from differentiability on manifolds -/
 
