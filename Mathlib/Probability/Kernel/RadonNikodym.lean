@@ -498,39 +498,39 @@ variable {ξ : Kernel α γ} {f : α → γ → ℝ≥0∞} [IsFiniteKernel η]
 
 omit hαγ in
 lemma eq_rnDeriv_measure (h : κ = η.withDensity f + ξ)
-    (hf : Measurable (Function.uncurry f)) (hξ : ∀ a, ξ a ⟂ₘ η a) (a : α) :
+    (hf : Measurable (Function.uncurry f)) (a : α) (hξ : ξ a ⟂ₘ η a) :
     f a =ᵐ[η a] ∂(κ a)/∂(η a) := by
   have : κ a = ξ a + (η a).withDensity (f a) := by
     rw [h, coe_add, Pi.add_apply, η.withDensity_apply hf, add_comm]
-  exact (κ a).eq_rnDeriv₀ (hf.comp measurable_prod_mk_left).aemeasurable (hξ a) this
+  exact (κ a).eq_rnDeriv₀ (hf.comp measurable_prod_mk_left).aemeasurable hξ this
 
 omit hαγ in
 lemma eq_singularPart_measure (h : κ = η.withDensity f + ξ)
-    (hf : Measurable (Function.uncurry f)) (hξ : ∀ a, ξ a ⟂ₘ η a) (a : α) :
+    (hf : Measurable (Function.uncurry f)) (a : α) (hξ : ξ a ⟂ₘ η a) :
     ξ a = (κ a).singularPart (η a) := by
   have : κ a = ξ a + (η a).withDensity (f a) := by
     rw [h, coe_add, Pi.add_apply, η.withDensity_apply hf, add_comm]
-  exact (κ a).eq_singularPart (hf.comp measurable_prod_mk_left) (hξ a) this
+  exact (κ a).eq_singularPart (hf.comp measurable_prod_mk_left) hξ this
 
 variable [IsFiniteKernel κ] {a : α}
 
 lemma rnDeriv_eq_rnDeriv_measure : rnDeriv κ η a =ᵐ[η a] ∂(κ a)/∂(η a) :=
-  eq_rnDeriv_measure (rnDeriv_add_singularPart κ η).symm (measurable_rnDeriv κ η)
-    (mutuallySingular_singularPart κ η) a
+  eq_rnDeriv_measure (rnDeriv_add_singularPart κ η).symm (measurable_rnDeriv κ η) a
+    (mutuallySingular_singularPart κ η a)
 
 lemma singularPart_eq_singularPart_measure : singularPart κ η a = (κ a).singularPart (η a) :=
-  eq_singularPart_measure (rnDeriv_add_singularPart κ η).symm (measurable_rnDeriv κ η)
-    (mutuallySingular_singularPart κ η) a
+  eq_singularPart_measure (rnDeriv_add_singularPart κ η).symm (measurable_rnDeriv κ η) a
+    (mutuallySingular_singularPart κ η a)
 
 lemma eq_rnDeriv (h : κ = η.withDensity f + ξ)
-    (hf : Measurable (Function.uncurry f)) (hξ : ∀ a, ξ a ⟂ₘ η a) (a : α) :
+    (hf : Measurable (Function.uncurry f)) (a : α) (hξ : ξ a ⟂ₘ η a) :
     f a =ᵐ[η a] rnDeriv κ η a :=
-  (eq_rnDeriv_measure h hf hξ a).trans rnDeriv_eq_rnDeriv_measure.symm
+  (eq_rnDeriv_measure h hf a hξ).trans rnDeriv_eq_rnDeriv_measure.symm
 
 lemma eq_singularPart (h : κ = η.withDensity f + ξ)
-    (hf : Measurable (Function.uncurry f)) (hξ : ∀ a, ξ a ⟂ₘ η a) (a : α) :
+    (hf : Measurable (Function.uncurry f)) (a : α) (hξ : ξ a ⟂ₘ η a) :
     ξ a = singularPart κ η a :=
-  (eq_singularPart_measure h hf hξ a).trans singularPart_eq_singularPart_measure.symm
+  (eq_singularPart_measure h hf a hξ).trans singularPart_eq_singularPart_measure.symm
 
 end Unique
 
