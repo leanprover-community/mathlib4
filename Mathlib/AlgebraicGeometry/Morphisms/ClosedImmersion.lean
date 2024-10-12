@@ -129,7 +129,7 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
       exact ClosedEmbedding.isClosedMap h _ hZ
   surj_on_stalks x := by
     have h := (f ≫ g).stalkMap_surjective x
-    simp_rw [Scheme.comp_val, Scheme.stalkMap_comp] at h
+    simp_rw [Scheme.stalkMap_comp] at h
     exact Function.Surjective.of_comp h
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where

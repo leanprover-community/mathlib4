@@ -577,7 +577,7 @@ def toLocallyRingedSpaceHom : toLocallyRingedSpace Y f ⟶ Y :=
   ⟨f, fun _ => inferInstance⟩
 
 @[simp]
-theorem toLocallyRingedSpaceHom_val : (toLocallyRingedSpaceHom Y f).val = f :=
+theorem toLocallyRingedSpaceHom_val : (toLocallyRingedSpaceHom Y f).toShHom = f :=
   rfl
 
 instance toLocallyRingedSpace_isOpenImmersion :
@@ -933,15 +933,15 @@ variable [H : LocallyRingedSpace.IsOpenImmersion f]
 instance (priority := 100) of_isIso [IsIso g] : LocallyRingedSpace.IsOpenImmersion g :=
   @PresheafedSpace.IsOpenImmersion.ofIsIso _ _ _ _ g.1
     ⟨⟨(inv g).1, by
-        erw [← LocallyRingedSpace.comp_val]; rw [IsIso.hom_inv_id]
-        erw [← LocallyRingedSpace.comp_val]; rw [IsIso.inv_hom_id]; constructor <;> rfl⟩⟩
+        erw [← LocallyRingedSpace.comp_toShHom]; rw [IsIso.hom_inv_id]
+        erw [← LocallyRingedSpace.comp_toShHom]; rw [IsIso.inv_hom_id]; constructor <;> rfl⟩⟩
 
 instance comp (g : Z ⟶ Y) [LocallyRingedSpace.IsOpenImmersion g] :
     LocallyRingedSpace.IsOpenImmersion (f ≫ g) :=
   PresheafedSpace.IsOpenImmersion.comp f.1 g.1
 
 instance mono : Mono f :=
-  LocallyRingedSpace.forgetToSheafedSpace.mono_of_mono_map (show Mono f.val by infer_instance)
+  LocallyRingedSpace.forgetToSheafedSpace.mono_of_mono_map (show Mono f.toShHom by infer_instance)
 
 instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace.map f) :=
   H
@@ -971,7 +971,7 @@ set_option synthInstance.maxHeartbeats 80000 in
 def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
   PullbackCone.isLimitAux' _ fun s => by
     refine ⟨LocallyRingedSpace.Hom.mk (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift
-        f.1 g.1 (PullbackCone.mk _ _ (congr_arg LocallyRingedSpace.Hom.val s.condition))) ?_,
+        f.1 g.1 (PullbackCone.mk _ _ (congr_arg LocallyRingedSpace.Hom.toShHom s.condition))) ?_,
       LocallyRingedSpace.Hom.ext' _ _
         (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_fst f.1 g.1 _),
       LocallyRingedSpace.Hom.ext' _ _
@@ -980,7 +980,8 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
       have :=
         PresheafedSpace.stalkMap.congr_hom _ _
           (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.1 g.1
-            (PullbackCone.mk s.fst.1 s.snd.1 (congr_arg LocallyRingedSpace.Hom.val s.condition)))
+            (PullbackCone.mk s.fst.1 s.snd.1
+              (congr_arg LocallyRingedSpace.Hom.toShHom s.condition)))
           x
       change _ = _ ≫ s.snd.1.stalkMap x at this
       rw [PresheafedSpace.stalkMap.comp, ← IsIso.eq_inv_comp] at this
@@ -991,7 +992,8 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
       rw [← cancel_mono (pullbackConeOfLeft f g).snd]
       exact h₂.trans <| LocallyRingedSpace.Hom.ext' _ _
         (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.1 g.1 <|
-          PullbackCone.mk s.fst.1 s.snd.1 <| congr_arg LocallyRingedSpace.Hom.val s.condition).symm
+          PullbackCone.mk s.fst.1 s.snd.1 <| congr_arg
+            LocallyRingedSpace.Hom.toShHom s.condition).symm
 
 instance hasPullback_of_left : HasPullback f g :=
   ⟨⟨⟨_, pullbackConeOfLeftIsLimit f g⟩⟩⟩
@@ -1192,13 +1194,13 @@ instance (U : Opens X) : IsIso (H.invApp _ U) := by delta invApp; infer_instance
 
 theorem inv_invApp (U : Opens X) :
     inv (H.invApp _ U) =
-      f.1.c.app (op (opensFunctor f |>.obj U)) ≫
+      f.c.app (op (opensFunctor f |>.obj U)) ≫
         X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) :=
   PresheafedSpace.IsOpenImmersion.inv_invApp f.1 U
 
 @[reassoc (attr := simp)]
 theorem invApp_app (U : Opens X) :
-    H.invApp _ U ≫ f.1.c.app (op (opensFunctor f |>.obj U)) =
+    H.invApp _ U ≫ f.c.app (op (opensFunctor f |>.obj U)) =
       X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) :=
   PresheafedSpace.IsOpenImmersion.invApp_app f.1 U
 
@@ -1206,7 +1208,7 @@ attribute [elementwise] invApp_app
 
 @[reassoc (attr := simp)]
 theorem app_invApp (U : Opens Y) :
-    f.1.c.app (op U) ≫ H.invApp _ ((Opens.map f.1.base).obj U) =
+    f.c.app (op U) ≫ H.invApp _ ((Opens.map f.1.base).obj U) =
       Y.presheaf.map
         ((homOfLE (Set.image_preimage_subset f.base U.1)).op :
           op U ⟶ op (opensFunctor f |>.obj ((Opens.map f.base).obj U))) :=
@@ -1215,7 +1217,7 @@ theorem app_invApp (U : Opens Y) :
 /-- A variant of `app_inv_app` that gives an `eqToHom` instead of `homOfLe`. -/
 @[reassoc]
 theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.1.base) :
-    f.1.c.app (op U) ≫ H.invApp _ ((Opens.map f.1.base).obj U) =
+    f.c.app (op U) ≫ H.invApp _ ((Opens.map f.1.base).obj U) =
       Y.presheaf.map
         (eqToHom <|
             le_antisymm (Set.image_preimage_subset f.base U.1) <|

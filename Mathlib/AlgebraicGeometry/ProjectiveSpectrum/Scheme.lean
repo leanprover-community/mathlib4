@@ -676,7 +676,7 @@ lemma toSpec_preimage_basicOpen {f}
 
 @[reassoc]
 lemma toOpen_toSpec_val_c_app (f) (U) :
-    StructureSheaf.toOpen (A⁰_ f) U.unop ≫ (toSpec 𝒜 f).val.c.app U =
+    StructureSheaf.toOpen (A⁰_ f) U.unop ≫ (toSpec 𝒜 f).c.app U =
       awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.map (homOfLE le_top).op :=
   Eq.trans (by congr) <| ΓSpec.toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app _ U
 

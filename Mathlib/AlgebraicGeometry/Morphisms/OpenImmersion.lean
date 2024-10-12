@@ -43,7 +43,7 @@ theorem isOpenImmersion_eq_inf :
 
 instance isOpenImmersion_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @IsOpenImmersion where
-  comp_mem f g _ _ := LocallyRingedSpace.IsOpenImmersion.comp f.val g.val
+  comp_mem f g _ _ := LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
 
 instance isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersion := by
   apply MorphismProperty.respectsIso_of_isStableUnderComposition

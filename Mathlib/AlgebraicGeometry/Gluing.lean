@@ -123,7 +123,8 @@ def gluedScheme : Scheme := by
     D.toLocallyRingedSpaceGlueData.toGlueData.glued
   intro x
   obtain ⟨i, y, rfl⟩ := D.toLocallyRingedSpaceGlueData.ι_jointly_surjective x
-  refine ⟨_, ((D.U i).affineCover.map y).val ≫ D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
+  refine ⟨_, ((D.U i).affineCover.map y).toLRSHom ≫
+    D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
   · erw [TopCat.coe_comp, Set.range_comp] -- now `erw` after #13170
     refine Set.mem_image_of_mem _ ?_
@@ -155,7 +156,8 @@ abbrev isoLocallyRingedSpace :
   𝖣.gluedIso forgetToLocallyRingedSpace
 
 theorem ι_isoLocallyRingedSpace_inv (i : D.J) :
-    D.toLocallyRingedSpaceGlueData.toGlueData.ι i ≫ D.isoLocallyRingedSpace.inv = (𝖣.ι i).val :=
+    D.toLocallyRingedSpaceGlueData.toGlueData.ι i ≫
+      D.isoLocallyRingedSpace.inv = (𝖣.ι i).toLRSHom :=
   𝖣.ι_gluedIso_inv forgetToLocallyRingedSpace i
 
 instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by

@@ -193,7 +193,7 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
   exact (X.toΓSpecBase _* X.presheaf).germ_res le_top.hom _ _
 
 /-- The canonical morphism from `X` to the spectrum of its global sections. -/
-@[simps! val_base]
+@[simps! base]
 def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
   __ := X.toΓSpecSheafedSpace
   prop := by
@@ -245,7 +245,7 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f 
   -- Porting note: was `apply Spec.basicOpen_hom_ext`
   refine Spec.basicOpen_hom_ext w ?_
   intro r U
-  rw [LocallyRingedSpace.comp_val_c_app]
+  rw [LocallyRingedSpace.comp_c_app]
   erw [toOpen_comp_comap_assoc]
   rw [Category.assoc]
   erw [toΓSpecSheafedSpace_app_spec, ← X.presheaf.map_comp]
@@ -269,7 +269,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
     apply LocallyRingedSpace.comp_ring_hom_ext
     · ext1 x
       dsimp
-      show PrimeSpectrum.comap (f.val.c.app (op ⊤)) (X.toΓSpecFun x) = Y.toΓSpecFun (f.val.base x)
+      show PrimeSpectrum.comap (f.c.app (op ⊤)) (X.toΓSpecFun x) = Y.toΓSpecFun (f.base x)
       dsimp [toΓSpecFun]
       -- TODO: this instance was found automatically before #6045
       have := @AlgebraicGeometry.LocallyRingedSpace.isLocalRingHomStalkMap X Y
@@ -278,14 +278,14 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       congr 2
       exact (PresheafedSpace.stalkMap_germ f.1 ⊤ x trivial).symm
     · intro r
-      rw [LocallyRingedSpace.comp_val_c_app, ← Category.assoc]
+      rw [LocallyRingedSpace.comp_c_app, ← Category.assoc]
       erw [Y.toΓSpecSheafedSpace_app_spec, f.1.c.naturality]
       rfl
 
 namespace ΓSpec
 
 theorem left_triangle (X : LocallyRingedSpace) :
-    SpecΓIdentity.inv.app (Γ.obj (op X)) ≫ (identityToΓSpec.app X).val.c.app (op ⊤) = 𝟙 _ :=
+    SpecΓIdentity.inv.app (Γ.obj (op X)) ≫ (identityToΓSpec.app X).c.app (op ⊤) = 𝟙 _ :=
   X.Γ_Spec_left_triangle
 
 /-- `SpecΓIdentity` is iso so these are mutually two-sided inverses. -/
@@ -368,7 +368,7 @@ def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
   unit :=
   { app := fun X ↦ ⟨locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace⟩
     naturality := fun _ _ f ↦
-      Scheme.Hom.ext' (locallyRingedSpaceAdjunction.{u}.unit.naturality f.val) }
+      Scheme.Hom.ext' (locallyRingedSpaceAdjunction.{u}.unit.naturality f.toLRSHom) }
   counit := (NatIso.op Scheme.SpecΓIdentity.{u}).inv
   left_triangle_components Y :=
     locallyRingedSpaceAdjunction.left_triangle_components Y.toLocallyRingedSpace
@@ -382,7 +382,7 @@ theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
 theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : X ⟶ Scheme.Spec.obj R) :
     (ΓSpec.adjunction.homEquiv X R).symm f =
-      (locallyRingedSpaceAdjunction.homEquiv X.1 R).symm f.val := rfl
+      (locallyRingedSpaceAdjunction.homEquiv X.1 R).symm f.toLRSHom := rfl
 
 theorem adjunction_counit_app' {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := rfl

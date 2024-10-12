@@ -684,7 +684,7 @@ section ZeroLocus
 /-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum
 of `Γ(X, ⊤)` under `toΓSpecFun` agrees with the associated zero locus on `X`. -/
 lemma Scheme.toΓSpec_preimage_zeroLocus_eq {X : Scheme.{u}} (s : Set Γ(X, ⊤)) :
-    X.toSpecΓ.val.base ⁻¹' PrimeSpectrum.zeroLocus s = X.zeroLocus s :=
+    X.toSpecΓ.base ⁻¹' PrimeSpectrum.zeroLocus s = X.zeroLocus s :=
   LocallyRingedSpace.toΓSpec_preimage_zeroLocus_eq s
 
 open ConcreteCategory

@@ -46,7 +46,7 @@ def toScheme {X : Scheme.{u}} (U : X.Opens) : Scheme.{u} :=
 instance : CoeOut X.Opens Scheme := ⟨toScheme⟩
 
 /-- The restriction of a scheme to an open subset. -/
-@[simps! val_base_apply]
+@[simps! base_apply]
 def ι : ↑U ⟶ X := X.ofRestrict _
 
 instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestrict _))
@@ -371,7 +371,7 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U : Y.Opens) : IsIso (f ∣
 
 theorem morphismRestrict_base_coe {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) :
     @Coe.coe U Y (⟨fun x => x.1⟩) ((f ∣_ U).base x) = f.base x.1 :=
-  congr_arg (fun f => (Scheme.Hom.val f).base x)
+  congr_arg (fun f => (Scheme.Hom.toLRSHom f).base x)
     (morphismRestrict_ι f U)
 
 theorem morphismRestrict_base {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
@@ -538,7 +538,7 @@ lemma resLE_comp_ι : f.resLE U V e ≫ U.ι = V.ι ≫ f := by
 @[reassoc]
 lemma resLE_comp_resLE {Z : Scheme.{u}} (g : Y ⟶ Z) {W : Z.Opens} (e') :
     f.resLE U V e ≫ g.resLE W U e' = (f ≫ g).resLE W V
-      (e.trans ((Opens.map f.val.base).map (homOfLE e')).le) := by
+      (e.trans ((Opens.map f.base).map (homOfLE e')).le) := by
   simp [← cancel_mono W.ι]
 
 @[reassoc (attr := simp)]
