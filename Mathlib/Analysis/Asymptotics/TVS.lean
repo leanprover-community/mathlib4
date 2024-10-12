@@ -58,6 +58,11 @@ theorem _root_.Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Type*} {pE : ιE → 
   · refine fun s t hsub h ε hε ↦ (h ε hε).mono fun x hx ↦ hx.trans ?_
     gcongr
 
+@[simp]
+theorem isLittleOTVS_map {f : α → E} {g : α → F} {k : β → α} {l : Filter β} :
+    IsLittleOTVS 𝕜 f g (map k l) ↔ IsLittleOTVS 𝕜 (f ∘ k) (g ∘ k) l := by
+  simp [IsLittleOTVS]
+
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
     (h : IsLittleOTVS 𝕜 f g l) (c : α → 𝕜) :
     IsLittleOTVS 𝕜 (fun x ↦ c x • f x) (fun x ↦ c x • g x) l := by
