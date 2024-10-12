@@ -141,23 +141,18 @@ theorem omega'_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b < o
     omega' o ≤ a :=
   enumOrd_le_of_forall_lt ha H
 
-@[simp]
-theorem omega'_omega0 : omega' ω = ω := by
-  apply (le_omega'_apply _).antisymm' (omega'_le_of_forall_lt isInitial_omega0 _)
-  intro a ha
-  obtain ⟨n, rfl⟩ := lt_omega0.1 ha
-  exact (omega'_natCast _).trans_lt ha
-
 theorem isNormal_omega' : IsNormal omega' := by
   rw [isNormal_iff_strictMono_limit]
-  use omega'_strictMono
-  intro o ho a ha
-  apply (omega'_le_of_forall_lt (isInitial_ord _) _).trans (ord_card_le a)
-  intro b hb
-  rw [← IsInitial.card_lt_card (isInitial_omega' _) (isInitial_ord _), card_ord]
+  refine ⟨omega'_strictMono, fun o ho a ha ↦
+    (omega'_le_of_forall_lt (isInitial_ord _) fun b hb ↦ ?_).trans (ord_card_le a)⟩
+  rw [← (isInitial_omega' _).card_lt_card (isInitial_ord _), card_ord]
   apply lt_of_lt_of_le _ (card_le_card <| ha _ (ho.succ_lt hb))
-  rw [IsInitial.card_lt_card (isInitial_omega' _) (isInitial_omega' _), omega'_lt]
+  rw [(isInitial_omega' _).card_lt_card (isInitial_omega' _), omega'_lt]
   exact lt_succ b
+
+@[simp]
+theorem omega'_omega0 : omega' ω = ω := by
+  simp_rw [← isNormal_omega'.apply_omega0, omega'_natCast, iSup_natCast]
 
 /-- The `omega` function gives the infinite initial ordinals listed by their ordinal index.
 `omega 0 = ω`, `omega 1 = ω₁` is the first uncountable ordinal, and so on.
@@ -190,6 +185,10 @@ theorem omega_max (o₁ o₂ : Ordinal) : ω_ (max o₁ o₂) = max (ω_ o₁) (
 @[simp]
 theorem omega_zero : ω_ 0 = ω := by
   rw [omega_eq_omega', add_zero, omega'_omega0]
+
+theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
+  rw [← omega_zero, omega_le]
+  exact Ordinal.zero_le o
 
 theorem omega0_lt_omega1 : ω < ω₁ := by
   rw [← omega_zero, omega_lt]
