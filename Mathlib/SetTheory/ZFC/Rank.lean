@@ -202,7 +202,7 @@ theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le.{u + 1, u} _) <;> intro h
   · rw [lt_lift_iff]
-    rintro ⟨o, rfl, h⟩
+    rintro ⟨o, h, rfl⟩
     simpa [Ordinal.lt_iSup.{u + 1, u}] using lt_rank_iff.1 h
   · simpa using rank_lt_of_mem h.2
 
