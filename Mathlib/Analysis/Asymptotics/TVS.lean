@@ -43,7 +43,7 @@ def IsLittleOTVS (𝕜 : Type*) {α E F : Type*}
   ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F), ∀ ε ≠ (0 : ℝ≥0),
     ∀ᶠ x in l, egauge 𝕜 U (f x) ≤ ε * egauge 𝕜 V (g x)
 
-variable {α 𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
+variable {α β 𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 
