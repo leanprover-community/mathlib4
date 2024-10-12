@@ -746,7 +746,7 @@ instance : Coe (Sym2 α) (Finset α) := ⟨Sym2.toFinset⟩
 @[simp] lemma coe_toFinset {z : Sym2 α} : ((z : Finset α) : Set α) = z := by
   ext; simp
 
-lemma toFinset_eq [Fintype α] {e : Sym2 α} : (e : Finset α) = {v | v ∈ e}.toFinset := by
+@[simp] lemma toFinset_eq [Fintype α] {e : Sym2 α} : (e : Finset α) = {v | v ∈ e}.toFinset := by
   ext; simp
 
 lemma card_toFinset_of_isDiag {z : Sym2 α} (h : z.IsDiag) : (z : Finset α).card = 1 := by
