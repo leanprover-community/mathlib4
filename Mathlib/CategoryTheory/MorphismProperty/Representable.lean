@@ -374,13 +374,11 @@ lemma relative_map_iff [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCosp
     P.relative F (F.map f) ↔ P f :=
   ⟨fun hf ↦ of_relative_map hf, fun hf ↦ relative_map hP hf⟩
 
-
 /-- If `P' : MorphismProperty C` is satisfied whenever `P` is, then also `P'.relative` is
 satisfied whenever `P.relative` is. -/
 lemma relative_monotone {P' : MorphismProperty C} (h : P ≤ P') :
     P.relative F ≤ P'.relative F := fun _ _ _ hf ↦
   ⟨hf.rep, fun _ _ g fst snd BC ↦ h _ (hf.property g fst snd BC)⟩
-
 
 section
 
