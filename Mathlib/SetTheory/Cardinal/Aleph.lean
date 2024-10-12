@@ -95,6 +95,9 @@ set_option linter.docPrime false
 theorem coe_omega' : omega' = enumOrd {x | IsInitial x} :=
   rfl
 
+theorem omega'_strictMono : StrictMono omega' :=
+  omega'.strictMono
+
 theorem omega'_lt {o₁ o₂ : Ordinal} : omega' o₁ < omega' o₂ ↔ o₁ < o₂ :=
   omega'.lt_iff_lt
 
@@ -125,13 +128,22 @@ theorem omega'_natCast (n : ℕ) : omega' n = n := by
     rw [Nat.cast_lt]
     exact lt_succ n
 
+theorem omega'_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b < o, omega' b < a) :
+    omega' o ≤ a :=
+  enumOrd_le_of_forall_lt ha H
+
+theorem isNormal_omega' : IsNormal omega' := by
+  rw [isNormal_iff_strictMono_limit]
+  refine ⟨omega'_strictMono, fun o ho a ha ↦
+    (omega'_le_of_forall_lt (isInitial_ord _) fun b hb ↦ ?_).trans (ord_card_le a)⟩
+  rw [← (isInitial_omega' _).card_lt_card (isInitial_ord _), card_ord]
+  apply lt_of_lt_of_le _ (card_le_card <| ha _ (ho.succ_lt hb))
+  rw [(isInitial_omega' _).card_lt_card (isInitial_omega' _), omega'_lt]
+  exact lt_succ b
+
 @[simp]
 theorem omega'_omega0 : omega' ω = ω := by
-  apply (le_omega'_apply _).antisymm' (enumOrd_le_of_forall_lt _ _)
-  · exact isInitial_omega0
-  · intro a ha
-    obtain ⟨n, rfl⟩ := lt_omega0.1 ha
-    exact (omega'_natCast _).trans_lt ha
+  simp_rw [← isNormal_omega'.apply_omega0, omega'_natCast, iSup_natCast]
 
 /-- The `omega` function gives the infinite initial ordinals listed by their ordinal index.
 `omega 0 = ω`, `omega 1 = ω₁` is the first uncountable ordinal, and so on.
@@ -152,6 +164,9 @@ theorem omega_eq_omega' (o : Ordinal) : ω_ o = omega' (ω + o) :=
 theorem isInitial_omega (o : Ordinal) : IsInitial (ω_ o) :=
   isInitial_omega' _
 
+theorem omega_strictMono : StrictMono omega :=
+  omega.strictMono
+
 theorem omega_lt {o₁ o₂ : Ordinal} : ω_ o₁ < ω_ o₂ ↔ o₁ < o₂ :=
   omega.lt_iff_lt
 
@@ -165,12 +180,19 @@ theorem omega_max (o₁ o₂ : Ordinal) : ω_ (max o₁ o₂) = max (ω_ o₁) (
 theorem omega_zero : ω_ 0 = ω := by
   rw [omega_eq_omega', add_zero, omega'_omega0]
 
+theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
+  rw [← omega_zero, omega_le]
+  exact Ordinal.zero_le o
+
 theorem omega0_lt_omega1 : ω < ω₁ := by
   rw [← omega_zero, omega_lt]
   exact zero_lt_one
 
 @[deprecated omega0_lt_omega1 (since := "2024-10-11")]
 alias omega_lt_omega1 := omega0_lt_omega1
+
+theorem isNormal_omega : IsNormal omega :=
+  isNormal_omega'.trans (add_isNormal _)
 
 end Ordinal
 
