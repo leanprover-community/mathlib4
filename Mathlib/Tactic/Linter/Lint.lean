@@ -98,7 +98,8 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
         let currNamespace ← getCurrNamespace
         for idStx in ids do
           let id := idStx.getId
-          aliases := aliases.push (mkAtomFrom (.ofRange (idStx.raw.getRange?.getD default)) (currNamespace ++ id).toString)
+          aliases := aliases.push
+            (mkIdentFrom (.ofRange (idStx.raw.getRange?.getD default)) (currNamespace ++ id))
     for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
       let declName := id.getId
       if declName.hasMacroScopes then continue
