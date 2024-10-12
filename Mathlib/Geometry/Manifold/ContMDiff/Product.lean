@@ -44,7 +44,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare functions, sets, points and smoothness indices
   {e : PartialHomeomorph M H}
   {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
-variable {I I'}
 
 section ProdMk
 
@@ -135,7 +134,7 @@ theorem contMDiffWithinAt_fst {s : Set (M × N)} {p : M × N} :
   rw [contMDiffWithinAt_iff']
   refine ⟨continuousWithinAt_fst, contDiffWithinAt_fst.congr (fun y hy => ?_) ?_⟩
   · exact (extChartAt I p.1).right_inv ⟨hy.1.1.1, hy.1.2.1⟩
-  · exact (extChartAt I p.1).right_inv <| (extChartAt I p.1).map_source (mem_extChartAt_source _ _)
+  · exact (extChartAt I p.1).right_inv <| (extChartAt I p.1).map_source (mem_extChartAt_source _)
 
 theorem ContMDiffWithinAt.fst {f : N → M × M'} {s : Set N} {x : N}
     (hf : ContMDiffWithinAt J (I.prod I') n f s x) :
@@ -191,7 +190,7 @@ theorem contMDiffWithinAt_snd {s : Set (M × N)} {p : M × N} :
   rw [contMDiffWithinAt_iff']
   refine ⟨continuousWithinAt_snd, contDiffWithinAt_snd.congr (fun y hy => ?_) ?_⟩
   · exact (extChartAt J p.2).right_inv ⟨hy.1.1.2, hy.1.2.2⟩
-  · exact (extChartAt J p.2).right_inv <| (extChartAt J p.2).map_source (mem_extChartAt_source _ _)
+  · exact (extChartAt J p.2).right_inv <| (extChartAt J p.2).map_source (mem_extChartAt_source _)
 
 theorem ContMDiffWithinAt.snd {f : N → M × M'} {s : Set N} {x : N}
     (hf : ContMDiffWithinAt J (I.prod I') n f s x) :

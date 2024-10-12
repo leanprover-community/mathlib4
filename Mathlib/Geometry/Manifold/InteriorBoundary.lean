@@ -71,8 +71,8 @@ protected def interior : Set M := { x : M | I.IsInteriorPoint x }
 
 lemma isInteriorPoint_iff {x : M} :
     I.IsInteriorPoint x ↔ extChartAt I x x ∈ interior (extChartAt I x).target :=
-  ⟨fun h ↦ (chartAt H x).mem_interior_extend_target _ (mem_chart_target H x) h,
-    fun h ↦ PartialHomeomorph.interior_extend_target_subset_interior_range _ _ h⟩
+  ⟨fun h ↦ (chartAt H x).mem_interior_extend_target (mem_chart_target H x) h,
+    fun h ↦ PartialHomeomorph.interior_extend_target_subset_interior_range _ h⟩
 
 variable (M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/
@@ -128,11 +128,11 @@ variable [I.Boundaryless]
 /-- Boundaryless `ModelWithCorners` implies boundaryless manifold. -/
 instance : BoundarylessManifold I M where
   isInteriorPoint' x := by
-    let r := ((chartAt H x).isOpen_extend_target I).interior_eq
+    let r := ((chartAt H x).isOpen_extend_target (I := I)).interior_eq
     have : extChartAt I x = (chartAt H x).extend I := rfl
     rw [← this] at r
     rw [isInteriorPoint_iff, r]
-    exact PartialEquiv.map_source _ (mem_extChartAt_source _ _)
+    exact PartialEquiv.map_source _ (mem_extChartAt_source _)
 
 end Boundaryless
 
@@ -178,7 +178,7 @@ variable
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
-  (J : ModelWithCorners 𝕜 E' H') {x : M} {y : N}
+  {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
 
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma interior_prod :
