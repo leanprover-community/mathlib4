@@ -302,6 +302,9 @@ lemma setLIntegral_rnDeriv_le (s : Set α) :
     ∫⁻ x in s, μ.rnDeriv ν x ∂ν ≤ μ s :=
   (withDensity_apply_le _ _).trans (Measure.le_iff'.1 (withDensity_rnDeriv_le μ ν) s)
 
+lemma lintegral_rnDeriv_le : ∫⁻ x, μ.rnDeriv ν x ∂ν ≤ μ .univ :=
+  (setLIntegral_univ _).symm ▸ Measure.setLIntegral_rnDeriv_le .univ
+
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_rnDeriv_le := setLIntegral_rnDeriv_le
 
