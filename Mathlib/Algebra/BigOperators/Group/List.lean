@@ -125,7 +125,7 @@ theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
 
 @[to_additive sum_eq_card_nsmul]
 theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
-  rw [← prod_replicate, ← List.eq_replicate.mpr ⟨rfl, h⟩]
+  rw [← prod_replicate, ← List.eq_replicate_iff.mpr ⟨rfl, h⟩]
 
 @[to_additive]
 theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι → N} (h₁ : r 1 1)
@@ -189,21 +189,14 @@ theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
     exact fun m' h' ↦ Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
 
 @[to_additive (attr := simp)]
-theorem prod_take_mul_prod_drop : ∀ (L : List M) (i : ℕ), (L.take i).prod * (L.drop i).prod = L.prod
-  | [], i => by simp [Nat.zero_le]
-  | L, 0 => by simp
-  | h :: t, n + 1 => by
-    dsimp
-    rw [prod_cons, prod_cons, mul_assoc, prod_take_mul_prod_drop t]
+theorem prod_take_mul_prod_drop (L : List M) (i : ℕ) :
+    (L.take i).prod * (L.drop i).prod = L.prod := by
+  simp [← prod_append]
 
 @[to_additive (attr := simp)]
-theorem prod_take_succ :
-    ∀ (L : List M) (i : ℕ) (p : i < L.length), (L.take (i + 1)).prod = (L.take i).prod * L[i]
-  | [], i, p => by cases p
-  | h :: t, 0, _ => rfl
-  | h :: t, n + 1, p => by
-    dsimp
-    rw [prod_cons, prod_cons, prod_take_succ t n (Nat.lt_of_succ_lt_succ p), mul_assoc]
+theorem prod_take_succ (L : List M) (i : ℕ) (p : i < L.length) :
+    (L.take (i + 1)).prod = (L.take i).prod * L[i] := by
+  simp [take_succ, p]
 
 /-- A list with product not one must have positive length. -/
 @[to_additive "A list with sum not zero must have positive length."]
@@ -273,9 +266,9 @@ last. -/
 @[to_additive
 "A variant of `sum_range_succ` which pulls off the first term in the sum rather than the last."]
 lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
-    ((range n.succ).map f).prod = f 0 * ((range n).map fun i ↦ f i.succ).prod :=
-  Nat.recOn n (show 1 * f 0 = f 0 * 1 by rw [one_mul, mul_one]) fun _ hd => by
-    rw [List.prod_range_succ, hd, mul_assoc, ← List.prod_range_succ]
+    ((range n.succ).map f).prod = f 0 * ((range n).map fun i ↦ f i.succ).prod := by
+  rw [range_succ_eq_map]
+  simp [Function.comp_def]
 
 @[to_additive] lemma prod_eq_one (hl : ∀ x ∈ l, x = 1) : l.prod = 1 := by
   induction l with
@@ -349,7 +342,7 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
     · simp only [map, erase_cons_tail (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
         mul_left_comm (f a) (f b)]
 
-@[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.fold_op_eq
+@[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldl_op_eq
 
 @[to_additive] lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
 
@@ -633,7 +626,7 @@ end MonoidHom
 end MonoidHom
 
 @[simp] lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum :=
-  (List.foldl_eq_foldr Nat.add_comm Nat.add_assoc _ _).symm
+  (List.foldl_eq_foldr _ _).symm
 
 namespace List
 
@@ -646,20 +639,15 @@ lemma ranges_join (l : List ℕ) : l.ranges.join = range l.sum := by simp [range
 lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by simp [mem_mem_ranges_iff_lt_natSum]
 
-lemma countP_join (p : α → Bool) : ∀ L : List (List α), countP p L.join = (L.map (countP p)).sum
-  | [] => rfl
-  | a :: l => by rw [join, countP_append, map_cons, sum_cons, countP_join _ l]
-
-lemma count_join [BEq α] (L : List (List α)) (a : α) : L.join.count a = (L.map (count a)).sum :=
-  countP_join _ _
-
 @[simp]
 theorem length_bind (l : List α) (f : α → List β) :
     length (List.bind l f) = sum (map (length ∘ f) l) := by
   rw [List.bind, length_join, map_map, Nat.sum_eq_listSum]
 
 lemma countP_bind (p : β → Bool) (l : List α) (f : α → List β) :
-    countP p (l.bind f) = sum (map (countP p ∘ f) l) := by rw [List.bind, countP_join, map_map]
+    countP p (l.bind f) = sum (map (countP p ∘ f) l) := by
+  rw [List.bind, countP_join, map_map]
+  simp
 
 lemma count_bind [BEq β] (l : List α) (f : α → List β) (x : β) :
     count x (l.bind f) = sum (map (count x ∘ f) l) := countP_bind _ _ _

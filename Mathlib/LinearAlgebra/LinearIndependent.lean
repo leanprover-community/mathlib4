@@ -11,7 +11,8 @@ import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Module
+import Mathlib.Tactic.NoncommRing
 
 /-!
 
@@ -411,8 +412,8 @@ theorem linearIndependent_comp_subtype {s : Set ι} :
     Set.subset_def, Finset.mem_coe]
   constructor
   · intro h l hl₁ hl₂
-    have := h (l.subtypeDomain s) ((Finsupp.sum_subtypeDomain_index hl₁).trans hl₂)
-    exact (Finsupp.subtypeDomain_eq_zero_iff hl₁).1 this
+    exact (Finsupp.subtypeDomain_eq_zero_iff hl₁).1 <|
+      h (l.subtypeDomain s) ((Finsupp.sum_subtypeDomain_index hl₁).trans hl₂)
   · intro h l hl
     refine Finsupp.embDomain_eq_zero.1 (h (l.embDomain <| Function.Embedding.subtype s) ?_ ?_)
     · suffices ∀ i hi, ¬l ⟨i, hi⟩ = 0 → i ∈ s by simpa
@@ -591,15 +592,13 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
     exact (hgs i hi).symm ▸ zero_smul _ _
   · rw [← hsum, Finset.sum_congr rfl _]
     intros
-    erw [Pi.smul_apply, smul_assoc]
-    rfl
+    rw [Pi.smul_apply', smul_assoc, Units.smul_def]
 
 lemma LinearIndependent.eq_of_pair {x y : M} (h : LinearIndependent R ![x, y])
     {s t s' t' : R} (h' : s • x + t • y = s' • x + t' • y) : s = s' ∧ t = t' := by
   have : (s - s') • x + (t - t') • y = 0 := by
-    rw [← sub_eq_zero_of_eq h', ← sub_eq_zero]
-    simp only [sub_smul]
-    abel
+    rw [← sub_eq_zero_of_eq h']
+    match_scalars <;> noncomm_ring
   simpa [sub_eq_zero] using h.eq_zero_of_pair this
 
 lemma LinearIndependent.eq_zero_of_pair' {x y : M} (h : LinearIndependent R ![x, y])
@@ -617,8 +616,7 @@ lemma LinearIndependent.linear_combination_pair_of_det_ne_zero {R M : Type*} [Co
   apply LinearIndependent.pair_iff.2 (fun s t hst ↦ ?_)
   have H : (s * a + t * c) • x + (s * b + t * d) • y = 0 := by
     convert hst using 1
-    simp only [_root_.add_smul, smul_add, smul_smul]
-    abel
+    module
   have I1 : s * a + t * c = 0 := (h.eq_zero_of_pair H).1
   have I2 : s * b + t * d = 0 := (h.eq_zero_of_pair H).2
   have J1 : (a * d - b * c) * s = 0 := by linear_combination d * I1 - c * I2
@@ -1112,11 +1110,10 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
                   rw [Finset.sum_insert has, Finset.sum_insert has]
                 _ =
                     (∑ i ∈ insert a s, g i * i (x * y)) -
-                      ∑ i ∈ insert a s, a x * (g i * i y) :=
-                  congr
-                    (congr_arg Sub.sub
-                      (Finset.sum_congr rfl fun i _ => by rw [i.map_mul, mul_assoc]))
-                    (Finset.sum_congr rfl fun _ _ => by rw [mul_assoc, mul_left_comm])
+                      ∑ i ∈ insert a s, a x * (g i * i y) := by
+                  congrm ∑ i ∈ insert a s, ?_ - ∑ i ∈ insert a s, ?_
+                  · rw [map_mul, mul_assoc]
+                  · rw [mul_assoc, mul_left_comm]
                 _ =
                     (∑ i ∈ insert a s, (g i • (i : G → L))) (x * y) -
                       a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y := by
@@ -1232,7 +1229,7 @@ theorem mem_span_insert_exchange :
   have a0 : a ≠ 0 := by
     rintro rfl
     simp_all
-  simp [a0, smul_add, smul_smul]
+  match_scalars <;> simp [a0]
 
 theorem linearIndependent_iff_not_mem_span :
     LinearIndependent K v ↔ ∀ i, v i ∉ span K (v '' (univ \ {i})) := by
@@ -1255,7 +1252,7 @@ theorem linearIndependent_option' :
     LinearIndependent K (fun o => Option.casesOn' o x v : Option ι → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   -- Porting note: Explicit universe level is required in `Equiv.optionEquivSumPUnit`.
-  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{_, u'} ι).symm, linearIndependent_sum,
+  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{u', _} ι).symm, linearIndependent_sum,
     @range_unique _ PUnit, @linearIndependent_unique_iff PUnit, disjoint_span_singleton]
   dsimp [(· ∘ ·)]
   refine ⟨fun h => ⟨h.1, fun hx => h.2.1 <| h.2.2 hx⟩, fun h => ⟨h.1, ?_, fun hx => (h.2 hx).elim⟩⟩
@@ -1306,8 +1303,8 @@ theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
     by_cases ht : t = 0
     · exact ⟨by simpa [ht, hx] using hst, ht⟩
     apply_fun (t⁻¹ • ·) at hst
-    simp only [smul_add, smul_smul, inv_mul_cancel₀ ht, one_smul, smul_zero] at hst
-    cases H (-(t⁻¹ * s)) (by rwa [neg_smul, neg_eq_iff_eq_neg, eq_neg_iff_add_eq_zero])
+    simp only [smul_add, smul_smul, inv_mul_cancel₀ ht] at hst
+    cases H (-(t⁻¹ * s)) <| by linear_combination (norm := match_scalars <;> noncomm_ring) -hst
 
 theorem linearIndependent_fin_cons {n} {v : Fin n → V} :
     LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) ↔
@@ -1403,6 +1400,10 @@ theorem LinearIndependent.subset_span_extend (hs : LinearIndependent K (fun x =>
     (hst : s ⊆ t) : t ⊆ span K (hs.extend hst) :=
   let ⟨_hbt, _hsb, htb, _hli⟩ := Classical.choose_spec (exists_linearIndependent_extension hs hst)
   htb
+
+theorem LinearIndependent.span_extend_eq_span (hs : LinearIndependent K (fun x => x : s → V))
+    (hst : s ⊆ t) : span K (hs.extend hst) = span K t :=
+  le_antisymm (span_mono (hs.extend_subset hst)) (span_le.2 (hs.subset_span_extend hst))
 
 theorem LinearIndependent.linearIndependent_extend (hs : LinearIndependent K (fun x => x : s → V))
     (hst : s ⊆ t) : LinearIndependent K ((↑) : hs.extend hst → V) :=

@@ -406,8 +406,13 @@ partial def _root_.Lean.MVarId.gcongr
       -- by the `apply`.
       for g in gs do
         if !(← g.isAssigned) && !subgoals.contains g then
-          try sideGoalDischarger g
-          catch _ => out := out.push g
+          let s ← saveState
+          try
+            let (_, g') ← g.intros
+            sideGoalDischarger g'
+          catch _ =>
+            s.restore
+            out := out.push g
       -- Return all unresolved subgoals, "main" or "side"
       return (true, names, out ++ subgoals)
   -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,

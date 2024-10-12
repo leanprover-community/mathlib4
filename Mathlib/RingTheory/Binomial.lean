@@ -175,7 +175,7 @@ theorem ascPochhammer_smeval_cast (R : Type*) [Semiring R] {S : Type*} [NonAssoc
     simp only [← C_eq_natCast, smeval_C_mul, hn, Nat.cast_smul_eq_nsmul R n]
     simp only [nsmul_eq_mul, Nat.cast_id]
 
-variable {R S : Type*}
+variable {R : Type*}
 
 theorem ascPochhammer_smeval_eq_eval [Semiring R] (r : R) (n : ℕ) :
     (ascPochhammer ℕ n).smeval r = (ascPochhammer R n).eval r := by

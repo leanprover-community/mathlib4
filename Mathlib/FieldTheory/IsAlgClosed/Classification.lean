@@ -3,9 +3,9 @@ Copyright (c) 2022 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Polynomial.Cardinal
+import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.Data.ZMod.Algebra
+import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.AlgebraicIndependent
 
@@ -48,13 +48,13 @@ theorem cardinal_mk_le_sigma_polynomial :
             Polynomial.degree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective R L),
             Polynomial.degree_eq_bot]
           exact p.2.1
-        erw [Polynomial.mem_roots h, Polynomial.IsRoot, Polynomial.eval_map, ← Polynomial.aeval_def,
+        rw [Polynomial.mem_roots h, Polynomial.IsRoot, Polynomial.eval_map, ← Polynomial.aeval_def,
           p.2.2]⟩)
     fun x y => by
       intro h
       simp? at h says simp only [Set.coe_setOf, ne_eq, Set.mem_setOf_eq, Sigma.mk.inj_iff] at h
       refine (Subtype.heq_iff_coe_eq ?_).1 h.2
-      simp only [h.1, iff_self_iff, forall_true_iff]
+      simp only [h.1, forall_true_iff]
 
 /-- The cardinality of an algebraic extension is at most the maximum of the cardinality
 of the base ring or `ℵ₀` -/
