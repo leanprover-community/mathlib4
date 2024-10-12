@@ -186,7 +186,6 @@
   "Mathlib.Util.AssertExists",
   "Mathlib.Util.CompileInductive",
   "Mathlib.Util.Delaborators",
-  "Mathlib.Util.SetSynthOrder",
   "Mathlib.Util.Syntax",
   "Mathlib.Util.Tactic",
   "Mathlib.Util.WhatsNew",
