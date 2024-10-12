@@ -432,8 +432,8 @@ instance : One Cardinal.{u} :=
 instance : Nontrivial Cardinal.{u} :=
   ⟨⟨1, 0, mk_ne_zero _⟩⟩
 
-theorem mk_eq_one (α : Type u) [Unique α] : #α = 1 :=
-  (Equiv.equivOfUnique α (ULift (Fin 1))).cardinal_eq
+theorem mk_eq_one (α : Type u) [Subsingleton α] [Nonempty α] : #α = 1 :=
+  let ⟨_⟩ := nonempty_unique α; (Equiv.equivOfUnique α (ULift (Fin 1))).cardinal_eq
 
 theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
   ⟨fun ⟨f⟩ => ⟨fun _ _ => f.injective (Subsingleton.elim _ _)⟩, fun ⟨h⟩ =>

@@ -190,15 +190,14 @@ theorem type_pEmpty : type (@EmptyRelation PEmpty) = 0 :=
 theorem type_empty : type (@EmptyRelation Empty) = 0 :=
   type_eq_zero_of_empty _
 
-theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Unique α] : type r = 1 :=
-  (RelIso.relIsoOfUniqueOfIrrefl r _).ordinal_type_eq
+theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
+  cases nonempty_unique α
+  exact (RelIso.relIsoOfUniqueOfIrrefl r _).ordinal_type_eq
 
 @[simp]
 theorem type_eq_one_iff_unique [IsWellOrder α r] : type r = 1 ↔ Nonempty (Unique α) :=
-  ⟨fun h =>
-    let ⟨s⟩ := type_eq.1 h
-    ⟨s.toEquiv.unique⟩,
-    fun ⟨h⟩ => @type_eq_one_of_unique α r _ h⟩
+  ⟨fun h ↦ let ⟨s⟩ := type_eq.1 h; ⟨s.toEquiv.unique⟩,
+    fun ⟨_⟩ ↦ type_eq_one_of_unique r⟩
 
 theorem type_pUnit : type (@EmptyRelation PUnit) = 1 :=
   rfl
