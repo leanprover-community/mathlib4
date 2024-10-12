@@ -78,7 +78,7 @@ def subring : Subring ℚ_[p] where
   zero_mem' := by norm_num
   one_mem' := by norm_num
   add_mem' hx hy := (padicNormE.nonarchimedean _ _).trans <| max_le_iff.2 ⟨hx, hy⟩
-  mul_mem' hx hy := (padicNormE.mul _ _).trans_le <| mul_le_one hx (norm_nonneg _) hy
+  mul_mem' hx hy := (padicNormE.mul _ _).trans_le <| mul_le_one₀ hx (norm_nonneg _) hy
   neg_mem' hx := (norm_neg _).trans_le hx
 
 @[simp]
@@ -304,7 +304,7 @@ variable (p : ℕ) [hp : Fact p.Prime]
 theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (-(k : ℤ)) < ε := by
   obtain ⟨k, hk⟩ := exists_nat_gt ε⁻¹
   use k
-  rw [← inv_lt_inv hε (_root_.zpow_pos_of_pos _ _)]
+  rw [← inv_lt_inv₀ hε (zpow_pos _ _)]
   · rw [zpow_neg, inv_inv, zpow_natCast]
     apply lt_of_lt_of_le hk
     norm_cast
@@ -356,7 +356,7 @@ theorem valuation_nonneg (x : ℤ_[p]) : 0 ≤ x.valuation := by
   by_cases hx : x = 0
   · simp [hx]
   have h : (1 : ℝ) < p := mod_cast hp.1.one_lt
-  rw [← neg_nonpos, ← (zpow_strictMono h).le_iff_le]
+  rw [← neg_nonpos, ← (zpow_right_strictMono₀ h).le_iff_le]
   show (p : ℝ) ^ (-valuation x) ≤ (p : ℝ) ^ (0 : ℤ)
   rw [← norm_eq_pow_val hx]
   simpa using x.property
@@ -373,7 +373,7 @@ theorem valuation_p_pow_mul (n : ℕ) (c : ℤ_[p]) (hc : c ≠ 0) :
       exact_mod_cast pow_eq_zero hc
     · exact hc
   rwa [norm_eq_pow_val aux, norm_p_pow, norm_eq_pow_val hc, ← zpow_add₀, ← neg_add,
-    zpow_inj, neg_inj] at this
+    zpow_right_inj₀, neg_inj] at this
   · exact mod_cast hp.1.pos
   · exact mod_cast hp.1.ne_one
   · exact mod_cast hp.1.ne_zero
@@ -433,8 +433,7 @@ See `unitCoeff_spec`. -/
 def unitCoeff {x : ℤ_[p]} (hx : x ≠ 0) : ℤ_[p]ˣ :=
   let u : ℚ_[p] := x * (p : ℚ_[p]) ^ (-x.valuation)
   have hu : ‖u‖ = 1 := by
-    simp [u, hx, Nat.zpow_ne_zero_of_pos (mod_cast hp.1.pos) x.valuation, norm_eq_pow_val,
-      zpow_neg, inv_mul_cancel]
+    simp [u, hx, zpow_ne_zero (G₀ := ℝ) _ (Nat.cast_ne_zero.2 hp.1.pos.ne'), norm_eq_pow_val]
   mkUnits hu
 
 @[simp]
@@ -468,7 +467,7 @@ theorem norm_le_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
     intro m
     refine pow_pos ?_ m
     exact mod_cast hp.1.pos
-  rw [inv_le_inv (aux _) (aux _)]
+  rw [inv_le_inv₀ (aux _) (aux _)]
   have : p ^ n ≤ p ^ k ↔ n ≤ k := (pow_right_strictMono hp.1.one_lt).le_iff_le
   rw [← this]
   norm_cast
@@ -528,7 +527,7 @@ instance : LocalRing ℤ_[p] :=
   LocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add
 
 theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
-  have : (p : ℝ)⁻¹ < 1 := inv_lt_one <| mod_cast hp.1.one_lt
+  have : (p : ℝ)⁻¹ < 1 := inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
   rwa [← norm_p, ← mem_nonunits] at this
 
 theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
@@ -569,7 +568,7 @@ instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
       exact hx hn
     · refine ⟨x'.lim, fun n => ?_⟩
       have : (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) := by
-        apply zpow_pos_of_pos
+        apply zpow_pos
         exact mod_cast hp.1.pos
       obtain ⟨i, hi⟩ := equiv_def₃ (equiv_lim x') this
       by_cases hin : i ≤ n

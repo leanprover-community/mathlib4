@@ -72,7 +72,8 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
   have h₂ : ∀ z : E, ‖z‖ ≤ 1 → 1 - δ' ≤ ‖z‖ → ‖‖z‖⁻¹ • z - z‖ ≤ δ' := by
     rintro z hz hδz
     nth_rw 3 [← one_smul ℝ z]
-    rwa [← sub_smul, norm_smul_of_nonneg (sub_nonneg_of_le <| one_le_inv (hδ'.trans_le hδz) hz),
+    rwa [← sub_smul,
+      norm_smul_of_nonneg (sub_nonneg_of_le <| (one_le_inv₀ (hδ'.trans_le hδz)).2 hz),
       sub_mul, inv_mul_cancel₀ (hδ'.trans_le hδz).ne', one_mul, sub_le_comm]
   set x' := ‖x‖⁻¹ • x
   set y' := ‖y‖⁻¹ • y
