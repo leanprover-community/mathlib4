@@ -44,6 +44,8 @@ class CoalgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
     extends CoalgHomClass F R A B, SemilinearEquivClass F (RingHom.id R) A B : Prop
 
+set_synth_order CoalgEquivClass.toSemilinearEquivClass #[11, 12, 4, 5, 6, 7, 8, 9, 10]
+
 namespace CoalgEquivClass
 
 variable {F R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
