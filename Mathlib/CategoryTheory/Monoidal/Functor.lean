@@ -506,13 +506,19 @@ theorem map_associator_inv (X Y Z : C) :
 
 @[reassoc]
 theorem map_leftUnitor (X : C) :
-    F.map (λ_ X).hom = δ F (𝟙_ C) X ≫ η F ▷ F.obj X ≫ (λ_ (F.obj X)).hom := by
-  simp only [LaxMonoidal.left_unitality, whiskerRight_η_ε_assoc, δ_μ_assoc]
+    F.map (λ_ X).hom = δ F (𝟙_ C) X ≫ η F ▷ F.obj X ≫ (λ_ (F.obj X)).hom := by simp
+
+@[reassoc]
+theorem map_leftUnitor_inv (X : C) :
+    F.map (λ_ X).inv = (λ_ (F.obj X)).inv ≫ ε F ▷ F.obj X ≫ μ F (𝟙_ C) X  := by simp
 
 @[reassoc]
 theorem map_rightUnitor (X : C) :
-    F.map (ρ_ X).hom = δ F X (𝟙_ C) ≫ F.obj X ◁ η F ≫ (ρ_ (F.obj X)).hom := by
-  rw [LaxMonoidal.right_unitality, whiskerLeft_η_ε_assoc, δ_μ_assoc]
+    F.map (ρ_ X).hom = δ F X (𝟙_ C) ≫ F.obj X ◁ η F ≫ (ρ_ (F.obj X)).hom := by simp
+
+@[reassoc]
+theorem map_rightUnitor_inv (X : C) :
+    F.map (ρ_ X).inv = (ρ_ (F.obj X)).inv ≫ F.obj X ◁ ε F  ≫ μ F X (𝟙_ C):= by simp
 
 /-- The tensorator as a natural isomorphism. -/
 @[simps!]
