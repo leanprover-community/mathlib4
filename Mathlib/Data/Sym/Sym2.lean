@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2.Init
@@ -735,6 +736,9 @@ instance : Coe (Sym2 α) (Finset α) := ⟨Sym2.toFinset⟩
   induction z; simp
 
 @[simp] lemma coe_toFinset {z : Sym2 α} : ((z : Finset α) : Set α) = z := by
+  ext; simp
+
+@[simp] lemma toFinset_eq [Fintype α] {e : Sym2 α} : (e : Finset α) = {v | v ∈ e}.toFinset := by
   ext; simp
 
 lemma card_toFinset_of_isDiag {z : Sym2 α} (h : z.IsDiag) : (z : Finset α).card = 1 := by
