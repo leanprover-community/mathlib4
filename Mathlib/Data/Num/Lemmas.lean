@@ -215,7 +215,7 @@ theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
     cases b
     · erw [ofNat'_bit true n, ofNat'_bit]
       simp only [← bit1_of_bit1, ← bit0_of_bit0, cond]
-    · erw [show n.bit true + 1 = (n + 1).bit false by simp [Nat.bit, mul_add],
+    · rw [show n.bit true + 1 = (n + 1).bit false by simp [Nat.bit, mul_add],
         ofNat'_bit, ofNat'_bit, ih]
       simp only [cond, add_one, bit1_succ])
 
@@ -867,7 +867,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     · rfl
     · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]
     · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_zero]
-    · simp
+    · simp [Nat.testBit_add_one]
     · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_succ, IH]
     · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_succ, IH]
 

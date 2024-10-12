@@ -43,7 +43,7 @@ def of {X : Type v} [AddCommGroup X] [Module R X] (Q : QuadraticForm R X) :
 /-- A type alias for `QuadraticForm.LinearIsometry` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
 @[ext]
-structure Hom (V W : QuadraticModuleCat.{v} R) :=
+structure Hom (V W : QuadraticModuleCat.{v} R) where
   /-- The underlying isometry -/
   toIsometry : V.form →qᵢ W.form
 

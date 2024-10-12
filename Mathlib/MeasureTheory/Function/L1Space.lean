@@ -438,12 +438,13 @@ theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α 
   integrable_const_iff.2 <| Or.inr <| measure_lt_top _ _
 
 @[simp]
-theorem Integrable.of_finite [Finite α] [MeasurableSpace α] [MeasurableSingletonClass α]
-    (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
-  ⟨(StronglyMeasurable.of_finite f).aestronglyMeasurable, .of_finite⟩
+lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMeasure μ] {f : α → β} :
+    Integrable f μ := ⟨.of_finite, .of_finite⟩
 
-lemma Integrable.of_isEmpty [IsEmpty α] (f : α → β) (μ : Measure α) :
-    Integrable f μ := Integrable.of_finite μ f
+/-- This lemma is a special case of `Integrable.of_finite`. -/
+-- Eternal deprecation for discoverability, don't remove
+@[deprecated Integrable.of_finite, nolint deprecatedNoSince]
+lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
 @[deprecated (since := "2024-02-05")] alias integrable_of_fintype := Integrable.of_finite
 

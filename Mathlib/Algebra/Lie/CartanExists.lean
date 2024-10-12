@@ -39,7 +39,7 @@ variable [Module.Finite K L]
 variable [Module.Finite R L] [Module.Free R L]
 variable [Module.Finite R M] [Module.Free R M]
 
-open FiniteDimensional LieSubalgebra Module.Free Polynomial
+open Module LieSubalgebra Module.Free Polynomial
 
 variable (K)
 
@@ -117,7 +117,7 @@ section Field
 
 variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 
-open FiniteDimensional LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
+open Module LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
 #adaptation_note /-- otherwise there is a spurious warning on `contrapose!` below. -/
 set_option linter.unusedVariables false in
@@ -360,7 +360,7 @@ lemma exists_isCartanSubalgebra_engel_of_finrank_le_card (h : finrank K L ≤ #K
   suffices finrank K (engel K x) ≤ finrank K (engel K y) by
     suffices engel K y = engel K x from this.ge
     apply LieSubalgebra.to_submodule_injective
-    exact eq_of_le_of_finrank_le hyx this
+    exact Submodule.eq_of_le_of_finrank_le hyx this
   rw [(isRegular_iff_finrank_engel_eq_rank K x).mp hx]
   apply rank_le_finrank_engel
 
