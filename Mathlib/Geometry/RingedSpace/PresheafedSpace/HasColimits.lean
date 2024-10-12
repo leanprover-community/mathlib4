@@ -326,9 +326,9 @@ theorem colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ Presheafed
   rw [Iso.trans_inv, Iso.trans_inv, Iso.app_inv, sheafIsoOfIso_inv, pushforwardToOfIso_app,
     congr_app (Iso.symm_inv _)]
   dsimp
-  rw [map_id, comp_id, assoc, assoc, assoc, NatTrans.naturality]
-  rw [← comp_c_app_assoc]
-  rw [congr_app (colimit.isoColimitCocone_ι_hom _ _), assoc]
+  rw [map_id, comp_id, assoc, assoc, assoc, NatTrans.naturality,
+      ← comp_c_app_assoc,
+      congr_app (colimit.isoColimitCocone_ι_hom _ _), assoc]
   erw [limitObjIsoLimitCompEvaluation_inv_π_app_assoc, limMap_π_assoc]
   -- Porting note: `convert` doesn't work due to meta variable, so change to a `suffices` block
   set f := _

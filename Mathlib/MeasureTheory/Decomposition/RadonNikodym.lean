@@ -388,13 +388,13 @@ alias set_integral_toReal_rnDeriv := setIntegral_toReal_rnDeriv
 
 lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal := by
-  rw [← integral_univ, setIntegral_toReal_rnDeriv hμν Set.univ]
+  rw [← setIntegral_univ, setIntegral_toReal_rnDeriv hμν Set.univ]
 
 lemma integral_toReal_rnDeriv' [IsFiniteMeasure μ] [SigmaFinite ν] :
     ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal - (μ.singularPart ν Set.univ).toReal := by
   rw [← ENNReal.toReal_sub_of_le (μ.singularPart_le ν Set.univ) (measure_ne_top _ _),
     ← Measure.sub_apply .univ (Measure.singularPart_le μ ν), Measure.measure_sub_singularPart,
-    ← Measure.setIntegral_toReal_rnDeriv_eq_withDensity, integral_univ]
+    ← Measure.setIntegral_toReal_rnDeriv_eq_withDensity, setIntegral_univ]
 
 end integral
 
@@ -563,8 +563,8 @@ theorem integral_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ 
     [SigmaFinite μ] {f : α → E} :
     ∫ x, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x, f x ∂μ := by
   by_cases hf : Integrable f μ
-  · rw [← integral_univ, ← withDensityᵥ_apply ((integrable_rnDeriv_smul_iff hμν).mpr hf) .univ,
-      ← integral_univ, ← withDensityᵥ_apply hf .univ, withDensityᵥ_rnDeriv_smul hμν hf]
+  · rw [← setIntegral_univ, ← withDensityᵥ_apply ((integrable_rnDeriv_smul_iff hμν).mpr hf) .univ,
+      ← setIntegral_univ, ← withDensityᵥ_apply hf .univ, withDensityᵥ_rnDeriv_smul hμν hf]
   · rw [integral_undef hf, integral_undef]
     contrapose! hf
     exact (integrable_rnDeriv_smul_iff hμν).mp hf
