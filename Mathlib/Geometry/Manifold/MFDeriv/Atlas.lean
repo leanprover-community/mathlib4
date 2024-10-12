@@ -77,24 +77,6 @@ end ModelWithCorners
 
 end ModelWithCorners
 
-
-section ChartsSelf
-
-theorem mdifferentiableAt_chartAt_self {x : M} :
-    MDifferentiableAt I I (chartAt H x) x := by
-  rw [mdifferentiableAt_iff]
-  refine ⟨(chartAt H x).continuousAt (ChartedSpace.mem_chart_source x), ?_⟩
-  apply differentiableWithinAt_id.congr_of_eventuallyEq_insert
-
-
-
-
-
-
-end ChartsSelf
-
-
-
 section Charts
 
 variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
@@ -150,7 +132,6 @@ theorem mdifferentiable_chart (x : M) : (chartAt H x).MDifferentiable I I :=
   mdifferentiable_of_mem_atlas _ (chart_mem_atlas _ _)
 
 end Charts
-
 
 /-! ### Differentiable partial homeomorphisms -/
 
@@ -277,3 +258,47 @@ theorem mdifferentiableOn_extChartAt_symm :
   exact (mdifferentiableWithinAt_extChartAt_symm _ hy).mono (extChartAt_target_subset_range I x)
 
 end extChartAt
+
+
+section ChartsSelf
+
+theorem mdifferentiableAt_chartAt_self {x : M} :
+    MDifferentiableAt I I (chartAt H x) x := by
+  rw [mdifferentiableAt_iff]
+  refine ⟨(chartAt H x).continuousAt (ChartedSpace.mem_chart_source x), ?_⟩
+  apply differentiableWithinAt_id.congr_of_eventuallyEq_of_mem _ (mem_range_self _ )
+  filter_upwards [extChartAt_target_mem_nhdsWithin I x] with y hy
+  have A : I.symm y ∈ (chartAt H x).target := by
+    simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.trans_target,
+      ModelWithCorners.target_eq, ModelWithCorners.toPartialEquiv_coe_symm, mem_inter_iff,
+      mem_range, mem_preimage] at hy
+    exact hy.2
+  have B : y ∈ range I := extChartAt_target_subset_range I x hy
+  simp [A, B]
+
+theorem mdifferentiableAt_extChartAt_self {x : M} :
+    MDifferentiableAt I 𝓘(𝕜, E) (extChartAt I x) x :=
+  I.mdifferentiableAt.comp _ (mdifferentiableAt_chartAt_self I)
+
+theorem mdifferentiableAt_chartAt_symm_self {x : M} :
+    MDifferentiableAt I I (chartAt H x).symm (chartAt H x x) := by
+  rw [mdifferentiableAt_iff]
+  refine ⟨(chartAt H x).symm.continuousAt (by simp), ?_⟩
+  apply differentiableWithinAt_id.congr_of_eventuallyEq_of_mem _ (mem_range_self _ )
+  filter_upwards [extChartAt_target_mem_nhdsWithin I x] with y hy
+  have A : I.symm y ∈ (chartAt H x).target := by
+    simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.trans_target,
+      ModelWithCorners.target_eq, ModelWithCorners.toPartialEquiv_coe_symm, mem_inter_iff,
+      mem_range, mem_preimage] at hy
+    exact hy.2
+  have B : y ∈ range I := extChartAt_target_subset_range I x hy
+  simp [A, B]
+
+theorem mdifferentiableWitinAt_extChartAt_symm_self {x : M} :
+    MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I x).symm (range I) (extChartAt I x x) := by
+  apply (mdifferentiableAt_chartAt_symm_self I (x := x)).comp_mdifferentiableWithinAt_of_eq
+
+
+
+
+end ChartsSelf

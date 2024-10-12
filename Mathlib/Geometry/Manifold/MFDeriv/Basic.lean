@@ -959,15 +959,29 @@ theorem MDifferentiableWithinAt.comp (hg : MDifferentiableWithinAt I' I'' g u (f
   have G : HasMFDerivWithinAt I' I'' g u (f x) g' := ⟨hg.1, hg'⟩
   exact (HasMFDerivWithinAt.comp x G F h).mdifferentiableWithinAt
 
+theorem MDifferentiableWithinAt.comp_of_eq {y : M'} (hg : MDifferentiableWithinAt I' I'' g u y)
+    (hf : MDifferentiableWithinAt I I' f s x) (h : s ⊆ f ⁻¹' u) (hy : f x = y) :
+    MDifferentiableWithinAt I I'' (g ∘ f) s x := by
+  subst hy; exact hg.comp _ hf h
+
 theorem MDifferentiableAt.comp (hg : MDifferentiableAt I' I'' g (f x))
     (hf : MDifferentiableAt I I' f x) : MDifferentiableAt I I'' (g ∘ f) x :=
   (hg.hasMFDerivAt.comp x hf.hasMFDerivAt).mdifferentiableAt
+
+theorem MDifferentiableAt.comp_of_eq {y : M'} (hg : MDifferentiableAt I' I'' g y)
+    (hf : MDifferentiableAt I I' f x) (hy : f x = y) : MDifferentiableAt I I'' (g ∘ f) x := by
+  subst hy; exact hg.comp _ hf
 
 theorem MDifferentiableAt.comp_mdifferentiableWithinAt
     (hg : MDifferentiableAt I' I'' g (f x)) (hf : MDifferentiableWithinAt I I' f s x) :
     MDifferentiableWithinAt I I'' (g ∘ f) s x := by
   rw [← mdifferentiableWithinAt_univ] at hg
   exact hg.comp _ hf (by simp)
+
+theorem MDifferentiableAt.comp_mdifferentiableWithinAt_of_eq {y : M'}
+    (hg : MDifferentiableAt I' I'' g y) (hf : MDifferentiableWithinAt I I' f s x) (hy : f x = y) :
+    MDifferentiableWithinAt I I'' (g ∘ f) s x := by
+  subst hy; exact hg.comp_mdifferentiableWithinAt _ hf
 
 theorem mfderivWithin_comp (hg : MDifferentiableWithinAt I' I'' g u (f x))
     (hf : MDifferentiableWithinAt I I' f s x) (h : s ⊆ f ⁻¹' u) (hxs : UniqueMDiffWithinAt I s x) :
