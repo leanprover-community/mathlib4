@@ -7,6 +7,13 @@ import Mathlib.Order.SetNotation
 
 set_option linter.dupNamespace false
 
+namespace termG
+-- this creates a hygienic declaration starting with `termG.termG.«_@».test.Lint...`
+-- and the linter ignores it
+set_option linter.dupNamespace true in
+local notation "G" => Unit
+end termG
+
 /--
 warning: The namespace 'add' is duplicated in the declaration 'add.add'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
