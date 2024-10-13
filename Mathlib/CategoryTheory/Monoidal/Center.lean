@@ -30,15 +30,13 @@ In this file, we take the second approach using the monoidal composition `⊗≫
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.MonoidalCategory
-
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 noncomputable section
 
 namespace CategoryTheory
+
+open MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 
@@ -307,11 +305,22 @@ variable (C)
 
 /-- The forgetful monoidal functor from the Drinfeld center to the original category. -/
 @[simps]
-def forget : MonoidalFunctor (Center C) C where
+def forget : Center C ⥤ C where
   obj X := X.1
   map f := f.f
-  ε := 𝟙 (𝟙_ C)
-  μ X Y := 𝟙 (X.1 ⊗ Y.1)
+
+instance : (forget C).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso := fun _ _ ↦ Iso.refl _}
+
+@[simp] lemma forget_ε : ε (forget C) = 𝟙 _ := rfl
+@[simp] lemma forget_η : η (forget C) = 𝟙 _ := rfl
+
+variable {C}
+
+@[simp] lemma forget_μ (X Y : Center C) : μ (forget C) X Y = 𝟙 _ := rfl
+@[simp] lemma forget_δ (X Y : Center C) : δ (forget C) X Y = 𝟙 _ := rfl
 
 instance : (forget C).ReflectsIsomorphisms where
   reflects f i := by dsimp at i; change IsIso (isoMk f).hom; infer_instance
@@ -349,13 +358,28 @@ variable (C)
 /-- The functor lifting a braided category to its center, using the braiding as the half-braiding.
 -/
 @[simps]
-def ofBraided : MonoidalFunctor C (Center C) where
+def ofBraided : C ⥤ Center C where
   obj := ofBraidedObj
   map f :=
     { f
       comm := fun U => braiding_naturality_left f U }
-  ε := { f := 𝟙 _ }
-  μ X Y := { f := 𝟙 _ }
+
+instance : (ofBraided C).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso :=
+        { hom := { f := 𝟙 _ }
+          inv := { f := 𝟙 _ } }
+      μIso := fun _ _ ↦
+        { hom := { f := 𝟙 _ }
+          inv := { f := 𝟙 _ } } }
+
+@[simp] lemma ofBraided_ε_f : (ε (ofBraided C)).f = 𝟙 _ := rfl
+@[simp] lemma ofBraided_η_f : (η (ofBraided C)).f = 𝟙 _ := rfl
+
+variable {C}
+
+@[simp] lemma ofBraided_μ_f (X Y : C) : (μ (ofBraided C) X Y).f = 𝟙 _ := rfl
+@[simp] lemma ofBraided_δ_f (X Y : C) : (δ (ofBraided C) X Y).f = 𝟙 _ := rfl
 
 end
 
