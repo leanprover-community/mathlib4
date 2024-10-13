@@ -118,6 +118,19 @@ theorem _root_.piFinset_support_lof_sub (p : Π i, κ i) (a : Π i, M i (p i)) :
   simp_rw [DirectSum.lof_eq_of]
   exact fun hq ↦ funext fun i ↦ Finset.mem_singleton.mp (DirectSum.support_of_subset (hq i))
 
+/-- Two multilinear maps from direct sums are equal if they agree on the generators. -/
+theorem ext_directSum ⦃f g : MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M'⦄
+    (h : ∀ p : Π i, κ i,
+      f.compLinearMap (fun i => DirectSum.lof R _ _ (p i)) =
+      g.compLinearMap (fun i => DirectSum.lof R _ _ (p i))) : f = g := by
+  ext x
+  show f (fun i ↦ x i) = g (fun i ↦ x i)
+  rw [funext (fun i ↦ Eq.symm (DirectSum.sum_support_of (x i)))]
+  simp_rw [MultilinearMap.map_sum_finset]
+  congr! 1 with p
+  simp_rw [MultilinearMap.ext_iff] at h
+  exact h _ _
+
 /-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
 on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ ⨁ j : κ i, M i j`.-/
 def fromDirectSumEquiv :
