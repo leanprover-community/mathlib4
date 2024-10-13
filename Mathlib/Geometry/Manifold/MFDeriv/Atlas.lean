@@ -41,6 +41,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 section ModelWithCorners
 namespace ModelWithCorners
 
+/- In general, the model with corner `I` is implicit in most theorems in differential geometry, but
+this section is about `I` as a map, not as a parameter. Therefore, we make it explicit. -/
 variable (I)
 
 /-! #### Model with corners -/

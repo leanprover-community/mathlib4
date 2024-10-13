@@ -260,8 +260,6 @@ protected theorem hasCompactSupport : HasCompactSupport f :=
   f.isCompact_symm_image_closedBall.of_isClosed_subset isClosed_closure
     f.tsupport_subset_symm_image_closedBall
 
-variable (I)
-
 variable (c) in
 /-- The closures of supports of smooth bump functions centered at `c` form a basis of `𝓝 c`.
 In other words, each of these closures is a neighborhood of `c` and each neighborhood of `c`
@@ -282,10 +280,10 @@ neighborhood of `c` and each neighborhood of `c` includes `support f` for some
 `f : SmoothBumpFunction I c` such that `tsupport f ⊆ s`. -/
 theorem nhds_basis_support {s : Set M} (hs : s ∈ 𝓝 c) :
     (𝓝 c).HasBasis (fun f : SmoothBumpFunction I c => tsupport f ⊆ s) fun f => support f :=
-  ((nhds_basis_tsupport I c).restrict_subset hs).to_hasBasis'
+  ((nhds_basis_tsupport c).restrict_subset hs).to_hasBasis'
     (fun f hf => ⟨f, hf.2, subset_closure⟩) fun f _ => f.support_mem_nhds
 
-variable [SmoothManifoldWithCorners I M] {I}
+variable [SmoothManifoldWithCorners I M]
 
 /-- A smooth bump function is infinitely smooth. -/
 protected theorem smooth : Smooth I 𝓘(ℝ) f := by
