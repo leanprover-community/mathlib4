@@ -66,7 +66,7 @@ lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card Î
 end
 
 /-- A hamiltonian cycle is a cycle that visits every vertex once. -/
-structure IsHamiltonianCycle (p : G.Walk a a) extends p.IsCycle : Prop :=
+structure IsHamiltonianCycle (p : G.Walk a a) extends p.IsCycle : Prop where
   isHamiltonian_tail : p.tail.IsHamiltonian
 
 variable {p : G.Walk a a}

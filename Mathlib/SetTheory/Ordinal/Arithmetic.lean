@@ -40,7 +40,6 @@ Some properties of the operations are also used to discuss general tools on ordi
 * `IsNormal`: a function `f : Ordinal → Ordinal` satisfies `IsNormal` if it is strictly increasing
   and order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
   `a < o`.
-* `enumOrd`: enumerates an unbounded set of ordinals by the ordinals themselves.
 * `sup`, `lsub`: the supremum / least strict upper bound of an indexed family of ordinals in
   `Type u`, as an ordinal in `Type u`.
 * `bsup`, `blsub`: the supremum / least strict upper bound of a set of ordinals indexed by ordinals
@@ -61,8 +60,7 @@ universe u v w
 
 namespace Ordinal
 
-variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
-  {t : γ → γ → Prop}
+variable {α β γ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
 
 /-! ### Further properties of addition on ordinals -/
 
@@ -78,38 +76,21 @@ theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) := b
   rw [← add_one_eq_succ, lift_add, lift_one]
   rfl
 
-instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) :=
-  ⟨fun a b c =>
-    inductionOn a fun α r hr =>
-      inductionOn b fun β₁ s₁ hs₁ =>
-        inductionOn c fun β₂ s₂ hs₂ ⟨f⟩ =>
-          ⟨have fl : ∀ a, f (Sum.inl a) = Sum.inl a := fun a => by
-              simpa only [InitialSeg.trans_apply, InitialSeg.leAdd_apply] using
-                @InitialSeg.eq _ _ _ _ _
-                  ((InitialSeg.leAdd r s₁).trans f) (InitialSeg.leAdd r s₂) a
-            have : ∀ b, { b' // f (Sum.inr b) = Sum.inr b' } := by
-              intro b; cases e : f (Sum.inr b)
-              · rw [← fl] at e
-                have := f.inj' e
-                contradiction
-              · exact ⟨_, rfl⟩
-            let g (b) := (this b).1
-            have fr : ∀ b, f (Sum.inr b) = Sum.inr (g b) := fun b => (this b).2
-            ⟨⟨⟨g, fun x y h => by
-                  injection f.inj' (by rw [fr, fr, h] : f (Sum.inr x) = f (Sum.inr y))⟩,
-                @fun a b => by
-                  -- Porting note:
-                  --  `relEmbedding.coe_fn_to_embedding` & `initial_seg.coe_fn_to_rel_embedding`
-                  --  → `InitialSeg.coe_coe_fn`
-                  simpa only [Sum.lex_inr_inr, fr, InitialSeg.coe_coe_fn, Embedding.coeFn_mk] using
-                    @RelEmbedding.map_rel_iff _ _ _ _ f.toRelEmbedding (Sum.inr a) (Sum.inr b)⟩,
-              fun a b H => by
-                rcases f.mem_range_of_rel (by rw [fr] <;> exact Sum.lex_inr_inr.2 H) with
-                  ⟨a' | a', h⟩
-                · rw [fl] at h
-                  cases h
-                · rw [fr] at h
-                  exact ⟨a', Sum.inr.inj h⟩⟩⟩⟩
+instance add_contravariantClass_le :
+    ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
+  elim c a b := by
+    refine inductionOn₃ a b c fun α r _ β s _ γ t _ ⟨f⟩ ↦ ?_
+    have H₁ a : f (Sum.inl a) = Sum.inl a := by
+      simpa using ((InitialSeg.leAdd t r).trans f).eq (InitialSeg.leAdd t s) a
+    have H₂ a : ∃ b, f (Sum.inr a) = Sum.inr b := by
+      generalize hx : f (Sum.inr a) = x
+      obtain x | x := x
+      · rw [← H₁, f.inj] at hx
+        contradiction
+      · exact ⟨x, rfl⟩
+    choose g hg using H₂
+    refine (RelEmbedding.ofMonotone g fun _ _ h ↦ ?_).ordinal_type_le
+    rwa [← @Sum.lex_inr_inr _ t _ s, ← hg, ← hg, f.map_rel_iff, Sum.lex_inr_inr]
 
 theorem add_left_cancel (a) {b c : Ordinal} : a + b = a + c ↔ b = c := by
   simp only [le_antisymm_iff, add_le_add_iff_left]
@@ -118,14 +99,14 @@ private theorem add_lt_add_iff_left' (a) {b c : Ordinal} : a + b < a + c ↔ b <
   rw [← not_le, ← not_le, add_le_add_iff_left]
 
 instance add_covariantClass_lt : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· < ·) :=
-  ⟨fun a _b _c => (add_lt_add_iff_left' a).2⟩
+  ⟨fun a _b _c ↦ (add_lt_add_iff_left' a).2⟩
 
 instance add_contravariantClass_lt : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· < ·) :=
-  ⟨fun a _b _c => (add_lt_add_iff_left' a).1⟩
+  ⟨fun a _b _c ↦ (add_lt_add_iff_left' a).1⟩
 
 instance add_swap_contravariantClass_lt :
     ContravariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· < ·) :=
-  ⟨fun _a _b _c => lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
+  ⟨fun _a _b _c ↦ lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
 
 theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ a ≤ b
   | 0 => by simp
@@ -136,10 +117,9 @@ theorem add_right_cancel {a b : Ordinal} (n : ℕ) : a + n = b + n ↔ a = b := 
   simp only [le_antisymm_iff, add_le_add_iff_right]
 
 theorem add_eq_zero_iff {a b : Ordinal} : a + b = 0 ↔ a = 0 ∧ b = 0 :=
-  inductionOn a fun α r _ =>
-    inductionOn b fun β s _ => by
-      simp_rw [← type_sum_lex, type_eq_zero_iff_isEmpty]
-      exact isEmpty_sum
+  inductionOn₂ a b fun α r _ β s _ => by
+    simp_rw [← type_sum_lex, type_eq_zero_iff_isEmpty]
+    exact isEmpty_sum
 
 theorem left_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : a = 0 :=
   (add_eq_zero_iff.1 h).1
@@ -2091,133 +2071,10 @@ theorem Ordinal.not_bddAbove_compl_of_small (s : Set Ordinal.{u}) [hs : Small.{u
   rw [union_compl_self, small_univ_iff] at this
   exact not_small_ordinal this
 
-/-! ### Enumerating unbounded sets of ordinals with ordinals -/
+/-! ### Casting naturals into ordinals, compatibility with operations -/
 
 
 namespace Ordinal
-
-section
-
-/-- Enumerator function for an unbounded set of ordinals. -/
-def enumOrd (S : Set Ordinal.{u}) : Ordinal → Ordinal :=
-  lt_wf.fix fun o f => sInf (S ∩ Set.Ici (blsub.{u, u} o f))
-
-variable {S : Set Ordinal.{u}}
-
-/-- The equation that characterizes `enumOrd` definitionally. This isn't the nicest expression to
-    work with, so consider using `enumOrd_def` instead. -/
-theorem enumOrd_def' (o) :
-    enumOrd S o = sInf (S ∩ Set.Ici (blsub.{u, u} o fun a _ => enumOrd S a)) :=
-  lt_wf.fix_eq _ _
-
-/-- The set in `enumOrd_def'` is nonempty. -/
-theorem enumOrd_def'_nonempty (hS : Unbounded (· < ·) S) (a) : (S ∩ Set.Ici a).Nonempty :=
-  let ⟨b, hb, hb'⟩ := hS a
-  ⟨b, hb, le_of_not_gt hb'⟩
-
-private theorem enumOrd_mem_aux (hS : Unbounded (· < ·) S) (o) :
-    enumOrd S o ∈ S ∩ Set.Ici (blsub.{u, u} o fun c _ => enumOrd S c) := by
-  rw [enumOrd_def']
-  exact csInf_mem (enumOrd_def'_nonempty hS _)
-
-theorem enumOrd_mem (hS : Unbounded (· < ·) S) (o) : enumOrd S o ∈ S :=
-  (enumOrd_mem_aux hS o).left
-
-theorem blsub_le_enumOrd (hS : Unbounded (· < ·) S) (o) :
-    (blsub.{u, u} o fun c _ => enumOrd S c) ≤ enumOrd S o :=
-  (enumOrd_mem_aux hS o).right
-
-theorem enumOrd_strictMono (hS : Unbounded (· < ·) S) : StrictMono (enumOrd S) := fun _ _ h =>
-  (lt_blsub.{u, u} _ _ h).trans_le (blsub_le_enumOrd hS _)
-
-/-- A more workable definition for `enumOrd`. -/
-theorem enumOrd_def (o) : enumOrd S o = sInf (S ∩ { b | ∀ c, c < o → enumOrd S c < b }) := by
-  rw [enumOrd_def']
-  congr; ext
-  exact ⟨fun h a hao => (lt_blsub.{u, u} _ _ hao).trans_le h, blsub_le⟩
-
-/-- The set in `enumOrd_def` is nonempty. -/
-theorem enumOrd_def_nonempty (hS : Unbounded (· < ·) S) {o} :
-    { x | x ∈ S ∧ ∀ c, c < o → enumOrd S c < x }.Nonempty :=
-  ⟨_, enumOrd_mem hS o, fun _ b => enumOrd_strictMono hS b⟩
-
-@[simp]
-theorem enumOrd_range {f : Ordinal → Ordinal} (hf : StrictMono f) : enumOrd (range f) = f :=
-  funext fun o => by
-    apply Ordinal.induction o
-    intro a H
-    rw [enumOrd_def a]
-    have Hfa : f a ∈ range f ∩ { b | ∀ c, c < a → enumOrd (range f) c < b } :=
-      ⟨mem_range_self a, fun b hb => by
-        rw [H b hb]
-        exact hf hb⟩
-    refine (csInf_le' Hfa).antisymm ((le_csInf_iff'' ⟨_, Hfa⟩).2 ?_)
-    rintro _ ⟨⟨c, rfl⟩, hc : ∀ b < a, enumOrd (range f) b < f c⟩
-    rw [hf.le_iff_le]
-    contrapose! hc
-    exact ⟨c, hc, (H c hc).ge⟩
-
-@[simp]
-theorem enumOrd_univ : enumOrd Set.univ = id := by
-  rw [← range_id]
-  exact enumOrd_range strictMono_id
-
-@[simp]
-theorem enumOrd_zero : enumOrd S 0 = sInf S := by
-  rw [enumOrd_def]
-  simp [Ordinal.not_lt_zero]
-
-theorem enumOrd_succ_le {a b} (hS : Unbounded (· < ·) S) (ha : a ∈ S) (hb : enumOrd S b < a) :
-    enumOrd S (succ b) ≤ a := by
-  rw [enumOrd_def]
-  exact
-    csInf_le' ⟨ha, fun c hc => ((enumOrd_strictMono hS).monotone (le_of_lt_succ hc)).trans_lt hb⟩
-
-theorem enumOrd_le_of_subset {S T : Set Ordinal} (hS : Unbounded (· < ·) S) (hST : S ⊆ T) (a) :
-    enumOrd T a ≤ enumOrd S a := by
-  apply Ordinal.induction a
-  intro b H
-  rw [enumOrd_def]
-  exact csInf_le' ⟨hST (enumOrd_mem hS b), fun c h => (H c h).trans_lt (enumOrd_strictMono hS h)⟩
-
-theorem enumOrd_surjective (hS : Unbounded (· < ·) S) : ∀ s ∈ S, ∃ a, enumOrd S a = s := fun s hs =>
-  ⟨sSup { a | enumOrd S a ≤ s }, by
-    apply le_antisymm
-    · rw [enumOrd_def]
-      refine csInf_le' ⟨hs, fun a ha => ?_⟩
-      have : enumOrd S 0 ≤ s := by
-        rw [enumOrd_zero]
-        exact csInf_le' hs
-      -- Porting note: `flip` is required to infer a metavariable.
-      rcases flip exists_lt_of_lt_csSup ha ⟨0, this⟩ with ⟨b, hb, hab⟩
-      exact (enumOrd_strictMono hS hab).trans_le hb
-    · by_contra! h
-      exact (le_csSup ⟨s, fun a => ((enumOrd_strictMono hS).id_le a).trans⟩
-        (enumOrd_succ_le hS hs h)).not_lt (lt_succ _)⟩
-
-/-- An order isomorphism between an unbounded set of ordinals and the ordinals. -/
-def enumOrdOrderIso (hS : Unbounded (· < ·) S) : Ordinal ≃o S :=
-  StrictMono.orderIsoOfSurjective (fun o => ⟨_, enumOrd_mem hS o⟩) (enumOrd_strictMono hS) fun s =>
-    let ⟨a, ha⟩ := enumOrd_surjective hS s s.prop
-    ⟨a, Subtype.eq ha⟩
-
-theorem range_enumOrd (hS : Unbounded (· < ·) S) : range (enumOrd S) = S := by
-  rw [range_eq_iff]
-  exact ⟨enumOrd_mem hS, enumOrd_surjective hS⟩
-
-/-- A characterization of `enumOrd`: it is the unique strict monotonic function with range `S`. -/
-theorem eq_enumOrd (f : Ordinal → Ordinal) (hS : Unbounded (· < ·) S) :
-    StrictMono f ∧ range f = S ↔ f = enumOrd S := by
-  constructor
-  · rintro ⟨h₁, h₂⟩
-    rwa [← h₁.range_inj (enumOrd_strictMono hS), range_enumOrd hS]
-  · rintro rfl
-    exact ⟨enumOrd_strictMono hS, range_enumOrd hS⟩
-
-end
-
-/-! ### Casting naturals into ordinals, compatibility with operations -/
-
 
 @[simp]
 theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
@@ -2517,6 +2374,26 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
   · exact (mul_isNormal ho).apply_omega0
 
 end Ordinal
+
+namespace Cardinal
+
+open Ordinal
+
+theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
+  refine ⟨fun h => aleph0_ne_zero ?_, fun a => lt_imp_lt_of_le_imp_le fun h => ?_⟩
+  · rw [← Ordinal.le_zero, ord_le] at h
+    simpa only [card_zero, nonpos_iff_eq_zero] using co.trans h
+  · rw [ord_le] at h ⊢
+    rwa [← @add_one_of_aleph0_le (card a), ← card_succ]
+    rw [← ord_le, ← le_succ_of_isLimit, ord_le]
+    · exact co.trans h
+    · rw [ord_aleph0]
+      exact Ordinal.omega0_isLimit
+
+theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
+  toType_noMax_of_succ_lt (ord_isLimit h).2
+
+end Cardinal
 
 variable {α : Type u} {r : α → α → Prop} {a b : α}
 

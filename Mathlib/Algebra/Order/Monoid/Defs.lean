@@ -15,7 +15,7 @@ This file provides the definitions of ordered monoids.
 
 open Function
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-- An ordered (additive) commutative monoid is a commutative monoid with a partial order such that
 addition is monotone. -/
