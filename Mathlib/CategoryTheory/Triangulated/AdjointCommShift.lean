@@ -27,6 +27,7 @@ noncomputable def left_to_right_iso (adj : F ⊣ G) (commF : CommShift F A) (a :
   (Adjunction.natIsoEquiv (Adjunction.comp adj (shiftEquiv D a).symm.toAdjunction)
   (Adjunction.comp (shiftEquiv C a).symm.toAdjunction adj)).invFun (commF.iso (-a))
 
+-- unpack the composite adjunctions here, it's better for later
 lemma comp_left_to_right_iso_hom_app (adj : F ⊣ G) (commF : CommShift F A) (a : A) (X : C) (Y : D)
     (u : X ⟶ G.obj (Y⟦a⟧)) :
     u ≫ (left_to_right_iso adj commF a).hom.app Y =
@@ -51,17 +52,9 @@ lemma left_to_right_iso_hom_app (adj : F ⊣ G) (commF : CommShift F A) (a : A) 
     ((CommShift.iso (-a)).hom.app (G.obj (Y⟦a⟧)) ≫
     ((adj.comp (shiftEquiv D a).symm.toAdjunction).homEquiv (G.obj (Y⟦a⟧)) Y).symm
     (𝟙 (G.obj (Y⟦a⟧)))) := by
-  sorry
-
-/- This causes universe problems (the LHS is in v₁ and the RHS in v₂).
-lemma left_to_right_iso_hom_app_apply (adj : F ⊣ G) (commF : CommShift F A) (a : A) (X : C) (Y : D) :
-    (yoneda.map ((left_to_right_iso adj commF a).hom.app Y)).app (op X) =
-    (((Adjunction.comp adj (shiftEquiv D a).symm.toAdjunction).homEquiv X Y).symm.toIso ≪≫
-    (yoneda.obj Y).mapIso ((commF.iso (-a)).app X).op ≪≫
-    ((Adjunction.comp (shiftEquiv C a).symm.toAdjunction adj).homEquiv X Y).toIso).hom := by
-  ext u
-  simp [comp_left_to_right_iso_hom_app]
--/
+  conv_lhs => rw [← id_comp ((left_to_right_iso adj commF a).hom.app Y)]
+  rw [comp_left_to_right_iso_hom_app]
+  simp
 
 noncomputable def right_to_left_iso (adj : F ⊣ G) (commG : CommShift G A) (a : A) :=
   (Adjunction.natIsoEquiv (Adjunction.comp adj (shiftEquiv' D (-a) a
@@ -113,21 +106,15 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     ext Y
     rw [left_to_right_iso_hom_app]
     rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
-    simp only [Equivalence.symm_inverse, comp_obj, Equivalence.symm_functor,
-      comp_homEquiv, Iso.trans_hom, Equiv.toIso_hom,
-      mapIso_hom, Iso.op_hom, Iso.app_hom, Equiv.coe_trans, types_comp_apply,
-      Equiv.symm_trans_apply, id_obj, map_comp,
-      assoc, Quiver.Hom.unop_op, Function.comp_apply,
-      CommShift.isoZero_hom_app, FunctorToTypes.comp]
+    simp only [Equivalence.symm_inverse, shiftEquiv'_functor, comp_obj, Equivalence.symm_functor,
+      shiftEquiv'_inverse, Equiv.symm_trans_apply, map_id, id_comp,
+      Equiv.trans_apply, map_comp, CommShift.isoZero_hom_app]
     conv_lhs => erw [shiftEquiv_homEquiv_zero'_symm_app D (0 : A) rfl _ Y]
                 erw [← homEquiv_naturality_right_symm]
-    simp only [shiftEquiv'_functor, yoneda_obj_obj, shiftEquiv'_inverse, id_obj,
-      shiftFunctorZero'_eq_shiftFunctorZero, map_comp, assoc,
-      counit_naturality, comp_obj, yoneda_obj_map, Quiver.Hom.unop_op,
-      Equivalence.toAdjunction_unit, yoneda_map_app]
+    simp only [id_obj, shiftFunctorZero'_eq_shiftFunctorZero, id_comp, counit_naturality,
+      comp_obj, map_comp]
     change ((shiftEquiv C (0 : A)).symm.toAdjunction.homEquiv _ (G.obj Y))
-      ((adj.homEquiv ((shiftFunctor C (-0)).obj _) Y)
-      ((F.commShiftIso (-0)).hom.app _ ≫ _)) = _
+      ((adj.homEquiv ((shiftFunctor C (-0)).obj _) Y) ((F.commShiftIso (-0)).hom.app _ ≫ _)) = _
     rw [F.commShiftIso_zero' (-0 : A) (by simp)]
     simp only [CommShift.isoZero'_hom_app, map_comp, assoc]
     rw [← assoc ((shiftFunctorZero' D (-0 : A) (by simp)).inv.app _),
@@ -181,8 +168,9 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
         (shiftFunctorAdd C a b).inv.app (G.obj Y) := by
       intro u
       dsimp only [shiftEquiv]
-      erw [← shiftEquiv'_add_symm_homEquiv C a (-a) b (-b) (a + b) (-(a + b)) (add_right_neg a)
-        (add_right_neg b) (add_right_neg (a + b)) rfl]
+      /-erw [← shiftEquiv'_add_symm_homEquiv C a (-a) b (-b) (a + b) (-(a + b)) (add_right_neg a)
+        (add_right_neg b) (add_right_neg (a + b)) rfl]-/ -- a bit more complicated than this...
+      sorry
     erw [heq]
     conv_rhs => rw [← assoc, ← assoc]
     congr 1
