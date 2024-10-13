@@ -17,13 +17,6 @@ lemma tada {A : Type*} [CommMonoid A] {G : Type*} [Group G] [Fintype G] [MulDist
   exact Finset.prod_bijective (fun g ↦ g0 * g)
     (Group.mulLeft_bijective g0) (by simp) (fun g _ ↦ rfl)
 
-lemma comap_smul {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-    {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
-    (P : Ideal B) (g : G) : (g • P).comap (algebraMap A B) = P.comap (algebraMap A B) := by
-  ext a
-  rw [Ideal.mem_comap, Ideal.mem_comap, Ideal.mem_pointwise_smul_iff_inv_smul_mem,
-      Algebra.algebraMap_eq_smul_one, smul_comm, smul_one]
-
 lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
     [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
     (h : a ≤ g • a) (n : ℕ) : a ≤ g ^ n • a := by
@@ -60,6 +53,13 @@ lemma smul_eq_of_smul_le
 end ForMathlib
 
 section part_a
+
+lemma comap_smul {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+    {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+    (P : Ideal B) (g : G) : (g • P).comap (algebraMap A B) = P.comap (algebraMap A B) := by
+  ext a
+  rw [Ideal.mem_comap, Ideal.mem_comap, Ideal.mem_pointwise_smul_iff_inv_smul_mem,
+      Algebra.algebraMap_eq_smul_one, smul_comm, smul_one]
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   {G : Type*} [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
@@ -253,36 +253,22 @@ end fixedfield
 section integrallemma
 
 -- this only requires algebraic, not integral
-theorem Polynomial.nonzero_const_if_isIntegral (R S : Type*) [CommRing R] [Nontrivial R]
-    [CommRing S] [Algebra R S] [Algebra.IsAlgebraic R S] [IsDomain S] (s : S) (hs : s ≠ 0) :
-    ∃ (q : Polynomial R), q.coeff 0 ≠ 0 ∧ q.eval₂ (algebraMap R S) s = 0 := by
-  obtain ⟨p, p_monic, p_eval⟩ := (@Algebra.isAlgebraic_def R S).mp inferInstance s
-  have p_nzero := p_monic
-  obtain ⟨q, p_eq, q_ndvd⟩ := Polynomial.exists_eq_pow_rootMultiplicity_mul_and_not_dvd p p_nzero 0
-  rw [C_0, sub_zero] at p_eq
-  rw [C_0, sub_zero] at q_ndvd
-  use q
-  constructor
-  · intro q_coeff_0
-    exact q_ndvd <| X_dvd_iff.mpr q_coeff_0
-  · rw [p_eq, map_mul] at p_eval
-    rcases NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero p_eval with Xpow_eval | q_eval
-    · by_contra
-      apply hs
-      rw [aeval_X_pow] at Xpow_eval
-      exact pow_eq_zero Xpow_eval
-    · exact q_eval
+theorem Polynomial.nonzero_const_if_isIntegral (R S : Type*) [CommRing R] [Ring S] [Algebra R S]
+    [h : Algebra.IsAlgebraic R S] [NoZeroDivisors S] (s : S) (hs : s ≠ 0) :
+    ∃ (q : Polynomial R), q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
+  obtain ⟨p, hp0, hp⟩ := h.isAlgebraic s
+  obtain ⟨q, hpq, hq⟩ := Polynomial.exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
+  rw [C_0, sub_zero] at hpq hq
+  rw [hpq, map_mul, aeval_X_pow, mul_eq_zero, or_iff_right (pow_ne_zero _ hs)] at hp
+  exact ⟨q, mt X_dvd_iff.mpr hq, hp⟩
 
-theorem Algebra.exists_dvd_nonzero_if_isIntegral (R S : Type*) [CommRing R] [Nontrivial R]
-    [CommRing S] [Algebra R S] [Algebra.IsAlgebraic R S] [IsDomain S] (s : S) (hs : s ≠ 0) :
+theorem Algebra.exists_dvd_nonzero_if_isIntegral (R S : Type*) [CommRing R]
+    [CommRing S] [Algebra R S] [Algebra.IsAlgebraic R S] [NoZeroDivisors S] (s : S) (hs : s ≠ 0) :
     ∃ r : R, r ≠ 0 ∧ s ∣ (algebraMap R S) r := by
-  obtain ⟨q, q_zero_coeff, q_eval_zero⟩ := Polynomial.nonzero_const_if_isIntegral R S s hs
-  use q.coeff 0
-  refine ⟨q_zero_coeff, ?_⟩
-  rw [← Polynomial.eval₂_X (algebraMap R S) s, ← dvd_neg, ← Polynomial.eval₂_C (algebraMap R S) s]
-  rw [← zero_add (-_), Mathlib.Tactic.RingNF.add_neg, ← q_eval_zero, ← Polynomial.eval₂_sub]
-  apply Polynomial.eval₂_dvd
-  exact Polynomial.X_dvd_sub_C
+  obtain ⟨q, hq0, hq⟩ := Polynomial.nonzero_const_if_isIntegral R S s hs
+  have key := map_dvd (Polynomial.aeval s) (Polynomial.X_dvd_sub_C (p := q))
+  rw [map_sub, hq, zero_sub, dvd_neg, Polynomial.aeval_X, Polynomial.aeval_C] at key
+  exact ⟨q.coeff 0, hq0, key⟩
 
 end integrallemma
 
@@ -403,7 +389,5 @@ theorem fullHom_surjective
   obtain ⟨g, hg⟩ := key (AlgEquiv.ofRingEquiv (f := f)
     (fun x ↦ fullHom_surjective1 G P Q K L hAB f x x.2))
   exact ⟨g, by rwa [AlgEquiv.ext_iff] at hg ⊢⟩
-
--- theorem part_b :
 
 end part_b
