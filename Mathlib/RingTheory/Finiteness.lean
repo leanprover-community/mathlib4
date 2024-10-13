@@ -537,6 +537,22 @@ lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[
   refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
   rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
 
+variable (R) in
+lemma _root_.Module.finite_of_finite [Finite R] [Module.Finite R M] : Finite M := by
+  obtain ⟨n, f, hf⟩ := exists_fin' R M; exact .of_surjective f hf
+
+@[deprecated (since := "2024-10-13")]
+alias _root_.FiniteDimensional.finite_of_finite := finite_of_finite
+
+-- See note [lower instance priority]
+instance (priority := 100) of_finite [Finite M] : Module.Finite R M := by
+  cases nonempty_fintype M
+  exact ⟨⟨Finset.univ, by rw [Finset.coe_univ]; exact Submodule.span_univ⟩⟩
+
+/-- A module over a finite ring has finite dimension iff it is finite. -/
+lemma _root_.Module.finite_iff_finite [Finite R] : Module.Finite R M ↔ Finite M :=
+  ⟨fun _ ↦ finite_of_finite R, fun _ ↦ .of_finite⟩
+
 theorem of_surjective [hM : Module.Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) :
     Module.Finite R N :=
   ⟨by
@@ -620,6 +636,12 @@ instance span_singleton (x : M) : Module.Finite R (R ∙ x) :=
 instance span_finset (s : Finset M) : Module.Finite R (span R (s : Set M)) :=
   ⟨(Submodule.fg_top _).mpr ⟨s, rfl⟩⟩
 
+lemma _root_.Set.Finite.submoduleSpan [Finite R] {s : Set M} (hs : s.Finite) :
+    (Submodule.span R s : Set M).Finite := by
+  lift s to Finset M using hs
+  rw [Set.Finite, ← Module.finite_iff_finite (R := R)]
+  dsimp
+  infer_instance
 
 theorem Module.End.isNilpotent_iff_of_finite {R M : Type*} [CommSemiring R] [AddCommMonoid M]
     [Module R M] [Module.Finite R M] {f : End R M} :

@@ -169,7 +169,7 @@ instance finiteDimensional_of_noetherian [IsNoetherian R S] :
 lemma finite_of_finite [IsNoetherian R S] (hfin : Finite (ResidueField R)) :
     Finite (ResidueField S) := by
   have := @finiteDimensional_of_noetherian R S
-  exact FiniteDimensional.finite_of_finite (ResidueField R) (ResidueField S)
+  exact Module.finite_of_finite (ResidueField R) (ResidueField S)
 
 end FiniteDimensional
 
