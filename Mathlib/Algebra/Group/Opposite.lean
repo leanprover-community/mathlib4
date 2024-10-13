@@ -131,13 +131,13 @@ instance instMonoid [Monoid α] : Monoid αᵐᵒᵖ where
 
 @[to_additive]
 instance instLeftCancelMonoid [RightCancelMonoid α] : LeftCancelMonoid αᵐᵒᵖ where
-  toLeftCancelSemigroup := instLeftCancelSemigroup
-  __ := instMonoid
+  toMonoid := instMonoid
+  __ := instLeftCancelSemigroup
 
 @[to_additive]
 instance instRightCancelMonoid [LeftCancelMonoid α] : RightCancelMonoid αᵐᵒᵖ where
-  toRightCancelSemigroup := instRightCancelSemigroup
-  __ := instMonoid
+  toMonoid := instMonoid
+  __ := instRightCancelSemigroup
 
 @[to_additive]
 instance instCancelMonoid [CancelMonoid α] : CancelMonoid αᵐᵒᵖ where
@@ -151,8 +151,8 @@ instance instCommMonoid [CommMonoid α] : CommMonoid αᵐᵒᵖ where
 
 @[to_additive]
 instance instCancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid αᵐᵒᵖ where
-  toLeftCancelMonoid := instLeftCancelMonoid
-  __ := instCommMonoid
+  toCommMonoid := instCommMonoid
+  __ := instLeftCancelMonoid
 
 @[to_additive AddOpposite.instSubNegMonoid]
 instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
@@ -161,11 +161,10 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
   zpow n a := op <| a.unop ^ n
   zpow_zero' _ := unop_injective <| zpow_zero _
   zpow_succ' _ _ := unop_injective <| by
-    simp only [Int.ofNat_eq_coe]
     rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast]
   zpow_neg' _ _ := unop_injective <| DivInvMonoid.zpow_neg' _ _
 
-@[to_additive AddOpposite.instSubtractionMonoid]
+@[to_additive]
 instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid αᵐᵒᵖ where
   toDivInvMonoid := instDivInvMonoid
   __ := instInvolutiveInv
@@ -180,7 +179,7 @@ instance instDivisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid α�
 @[to_additive]
 instance instGroup [Group α] : Group αᵐᵒᵖ where
   toDivInvMonoid := instDivInvMonoid
-  mul_left_inv _ := unop_injective <| mul_inv_self _
+  inv_mul_cancel _ := unop_injective <| mul_inv_cancel _
 
 @[to_additive]
 instance instCommGroup [CommGroup α] : CommGroup αᵐᵒᵖ where
@@ -572,12 +571,12 @@ def MulEquiv.op {α β} [Mul α] [Mul β] : α ≃* β ≃ (αᵐᵒᵖ ≃* β�
     { toFun := MulOpposite.op ∘ f ∘ unop, invFun := MulOpposite.op ∘ f.symm ∘ unop,
       left_inv := fun x => unop_injective (f.symm_apply_apply x.unop),
       right_inv := fun x => unop_injective (f.apply_symm_apply x.unop),
-      map_mul' := fun x y => unop_injective (f.map_mul y.unop x.unop) }
+      map_mul' := fun x y => unop_injective (map_mul f y.unop x.unop) }
   invFun f :=
     { toFun := unop ∘ f ∘ MulOpposite.op, invFun := unop ∘ f.symm ∘ MulOpposite.op,
       left_inv := fun x => by simp,
       right_inv := fun x => by simp,
-      map_mul' := fun x y => congr_arg unop (f.map_mul (MulOpposite.op y) (MulOpposite.op x)) }
+      map_mul' := fun x y => congr_arg unop (map_mul f (MulOpposite.op y) (MulOpposite.op x)) }
   left_inv _ := rfl
   right_inv _ := rfl
 

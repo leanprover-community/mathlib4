@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.Data.ENNReal.Basic
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded
 import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
@@ -33,11 +33,7 @@ members of the approximating sequence are nonnegative bounded continuous functio
 
 -/
 
-
-open scoped Classical
-open NNReal ENNReal Topology BoundedContinuousFunction
-
-open NNReal ENNReal Set Metric EMetric Filter
+open NNReal ENNReal Topology BoundedContinuousFunction Set Metric EMetric Filter
 
 noncomputable section thickenedIndicator
 
@@ -132,7 +128,7 @@ theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
     specialize δseq_lim ε ε_pos
     simp only [dist_zero_right, Real.norm_eq_abs, eventually_atTop] at δseq_lim
     rcases δseq_lim with ⟨N, hN⟩
-    apply @tendsto_atTop_of_eventually_const _ _ _ _ _ _ _ N
+    apply tendsto_atTop_of_eventually_const (i₀ := N)
     intro n n_large
     have key : x ∉ thickening ε E := by simpa only [thickening, mem_setOf_eq, not_lt] using ε_lt.le
     refine le_antisymm ?_ bot_le

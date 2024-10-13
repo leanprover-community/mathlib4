@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Scott Morrison, Simon Hudon
+Authors: Yury Kudryashov, Kim Morrison, Simon Hudon
 -/
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Equiv.Basic
@@ -93,7 +93,7 @@ end MulAction
 
 /-- In a groupoid, endomorphisms form a group -/
 instance group {C : Type u} [Groupoid.{v} C] (X : C) : Group (End X) where
-  mul_left_inv := Groupoid.comp_inv
+  inv_mul_cancel := Groupoid.comp_inv
   inv := Groupoid.inv
 
 end End
@@ -128,7 +128,7 @@ instance : Group (Aut X) where
   mul_assoc _ _ _ := (Iso.trans_assoc _ _ _).symm
   one_mul := Iso.trans_refl
   mul_one := Iso.refl_trans
-  mul_left_inv := Iso.self_symm_id
+  inv_mul_cancel := Iso.self_symm_id
 
 theorem Aut_mul_def (f g : Aut X) : f * g = g.trans f := rfl
 

@@ -48,15 +48,15 @@ theorem Int.not_isField : ¬IsField ℤ := fun h =>
 
 namespace NumberField
 
-variable (K L : Type*) [Field K] [Field L] [nf : NumberField K]
+variable (K L : Type*) [Field K] [Field L]
 
 -- See note [lower instance priority]
 attribute [instance] NumberField.to_charZero NumberField.to_finiteDimensional
 
-protected theorem isAlgebraic : Algebra.IsAlgebraic ℚ K :=
+protected theorem isAlgebraic [NumberField K] : Algebra.IsAlgebraic ℚ K :=
   Algebra.IsAlgebraic.of_finite _ _
 
-instance [NumberField L] [Algebra K L] : FiniteDimensional K L :=
+instance [NumberField K] [NumberField L] [Algebra K L] : FiniteDimensional K L :=
   Module.Finite.of_restrictScalars_finite ℚ K L
 
 /-- The ring of integers (or number ring) corresponding to a number field
@@ -79,7 +79,7 @@ instance : CommRing (𝓞 K) :=
   inferInstanceAs (CommRing (integralClosure _ _))
 instance : IsDomain (𝓞 K) :=
   inferInstanceAs (IsDomain (integralClosure _ _))
-instance : CharZero (𝓞 K) :=
+instance [NumberField K] : CharZero (𝓞 K) :=
   inferInstanceAs (CharZero (integralClosure _ _))
 instance : Algebra (𝓞 K) K :=
   inferInstanceAs (Algebra (integralClosure _ _) _)
@@ -105,9 +105,6 @@ lemma coe_eq_algebraMap (x : 𝓞 K) : (x : K) = algebraMap _ _ x := rfl
 
 @[ext] theorem ext {x y : 𝓞 K} (h : (x : K) = (y : K)) : x = y :=
   Subtype.ext h
-
-theorem ext_iff {x y : 𝓞 K} : x = y ↔ (x : K) = (y : K) :=
-  Subtype.ext_iff
 
 @[norm_cast]
 theorem eq_iff {x y : 𝓞 K} : (x : K) = (y : K) ↔ x = y :=
@@ -137,21 +134,54 @@ lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = 
 @[simp] lemma neg_mk (x : K) (hx) : (-⟨x, hx⟩ : 𝓞 K) = ⟨-x, neg_mem hx⟩ :=
   rfl
 
+/-- The ring homomorphism `(𝓞 K) →+* (𝓞 L)` given by restricting a ring homomorphism
+  `f : K →+* L` to `𝓞 K`. -/
+def mapRingHom {K L F : Type*} [Field K] [Field L] [FunLike F K L]
+    [RingHomClass F K L] (f : F) : (𝓞 K) →+* (𝓞 L) where
+  toFun k := ⟨f k.val, map_isIntegral_int f k.2⟩
+  map_zero' := by ext; simp only [map_mk, map_zero]
+  map_one' := by ext; simp only [map_mk, map_one]
+  map_add' x y:= by ext; simp only [map_mk, map_add]
+  map_mul' x y := by ext; simp only [map_mk, map_mul]
+
+/-- The ring isomorphsim `(𝓞 K) ≃+* (𝓞 L)` given by restricting
+  a ring isomorphsim `e : K ≃+* L` to `𝓞 K`. -/
+def mapRingEquiv {K L E : Type*} [Field K] [Field L] [EquivLike E K L]
+    [RingEquivClass E K L] (e : E) : (𝓞 K) ≃+* (𝓞 L) :=
+  RingEquiv.ofRingHom (mapRingHom e) (mapRingHom (e : K ≃+* L).symm)
+    (RingHom.ext fun x => ext (EquivLike.right_inv e x.1))
+      (RingHom.ext fun x => ext (EquivLike.left_inv e x.1))
+
 end RingOfIntegers
 
 /-- Given an algebra between two fields, create an algebra between their two rings of integers. -/
 instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
-  RingHom.toAlgebra
-    { toFun := fun k => ⟨algebraMap K L (algebraMap _ K k), IsIntegral.algebraMap k.2⟩
-      map_zero' := by ext; simp only [RingOfIntegers.map_mk, map_zero]
-      map_one' := by ext; simp only [RingOfIntegers.map_mk, map_one]
-      map_add' := fun x y => by ext; simp only [RingOfIntegers.map_mk, map_add]
-      map_mul' := fun x y => by ext; simp only [RingOfIntegers.map_mk, map_mul] }
+  (RingOfIntegers.mapRingHom (algebraMap K L)).toAlgebra
 
 -- diamond at `reducible_and_instances` #10906
 example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 
 namespace RingOfIntegers
+
+/-- The algebra homomorphism `(𝓞 K) →ₐ[𝓞 k] (𝓞 L)` given by restricting a algebra homomorphism
+  `f : K →ₐ[k] L` to `𝓞 K`. -/
+def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
+    [Algebra k L] [FunLike F K L] [AlgHomClass F k K L] (f : F) : (𝓞 K) →ₐ[𝓞 k] (𝓞 L) where
+  toRingHom := mapRingHom f
+  commutes' x := SetCoe.ext (AlgHomClass.commutes ((f : K →ₐ[k] L).restrictScalars (𝓞 k)) x)
+
+/-- The isomorphism of algebras `(𝓞 K) ≃ₐ[𝓞 k] (𝓞 L)` given by restricting
+  an isomorphism of algebras `e : K ≃ₐ[k] L` to `𝓞 K`. -/
+def mapAlgEquiv {k K L E : Type*} [Field k] [Field K] [Field L] [Algebra k K]
+    [Algebra k L] [EquivLike E K L] [AlgEquivClass E k K L] (e : E) : (𝓞 K) ≃ₐ[𝓞 k] (𝓞 L) :=
+  AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (e : K ≃ₐ[k] L).symm)
+    (AlgHom.ext fun x => ext (EquivLike.right_inv e x.1))
+      (AlgHom.ext fun x => ext (EquivLike.left_inv e x.1))
+
+instance inst_isScalarTower (k K L : Type*) [Field k] [Field K] [Field L]
+    [Algebra k K] [Algebra k L] [Algebra K L] [IsScalarTower k K L] :
+    IsScalarTower (𝓞 k) (𝓞 K) (𝓞 L) :=
+  IsScalarTower.of_algHom (mapAlgHom (IsScalarTower.toAlgHom k K L))
 
 variable {K}
 
@@ -167,7 +197,7 @@ lemma coe_injective : Function.Injective (algebraMap (𝓞 K) K) :=
 This is a convenient abbreviation for `map_eq_zero_iff` applied to
 `NoZeroSMulDivisors.algebraMap_injective`.
 -/
-@[simp] lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
+lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
   map_eq_zero_iff _ coe_injective
 
 /-- The canonical map from `𝓞 K` to `K` is injective.
@@ -204,6 +234,8 @@ variable (K)
 
 instance [CharZero K] : CharZero (𝓞 K) :=
   CharZero.of_module _ K
+
+variable [NumberField K]
 
 instance : IsNoetherian ℤ (𝓞 K) :=
   IsIntegralClosure.isNoetherian _ ℚ K _
@@ -253,6 +285,8 @@ def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ
 
 end RingOfIntegers
 
+variable [NumberField K]
+
 /-- A basis of `K` over `ℚ` that is also a basis of `𝓞 K` over `ℤ`. -/
 noncomputable def integralBasis : Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℚ K :=
   Basis.localizationLocalization ℚ (nonZeroDivisors ℤ) K (RingOfIntegers.basis K)
@@ -273,7 +307,7 @@ theorem mem_span_integralBasis {x : K} :
   rw [integralBasis, Basis.localizationLocalization_span, LinearMap.mem_range,
       IsScalarTower.coe_toAlgHom', RingHom.mem_range]
 
-theorem RingOfIntegers.rank : FiniteDimensional.finrank ℤ (𝓞 K) = FiniteDimensional.finrank ℚ K :=
+theorem RingOfIntegers.rank : Module.finrank ℤ (𝓞 K) = Module.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)
 
 end NumberField
@@ -303,7 +337,7 @@ section
 
 open scoped Polynomial
 
-attribute [-instance] algebraRat
+attribute [-instance] DivisionRing.toRatAlgebra
 
 /-- The quotient of `ℚ[X]` by the ideal generated by an irreducible polynomial of `ℚ[X]`
 is a number field. -/

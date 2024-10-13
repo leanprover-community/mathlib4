@@ -144,7 +144,7 @@ theorem nhdsSet_insert (x : X) (s : Set X) : 𝓝ˢ (insert x s) = 𝓝 x ⊔ �
   rw [insert_eq, nhdsSet_union, nhdsSet_singleton]
 
 /-- Preimage of a set neighborhood of `t` under a continuous map `f` is a set neighborhood of `s`
-provided that `f` maps `s` to `t`.  -/
+provided that `f` maps `s` to `t`. -/
 theorem Continuous.tendsto_nhdsSet {f : X → Y} {t : Set Y} (hf : Continuous f)
     (hst : MapsTo f s t) : Tendsto f (𝓝ˢ s) (𝓝ˢ t) :=
   ((hasBasis_nhdsSet s).tendsto_iff (hasBasis_nhdsSet t)).mpr fun U hU =>

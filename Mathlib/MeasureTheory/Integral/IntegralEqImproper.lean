@@ -150,15 +150,17 @@ end MetricSpace
 section Preorderα
 
 variable [Preorder α] [TopologicalSpace α] [OrderClosedTopology α] [OpensMeasurableSpace α]
-  {a b : ι → α} (ha : Tendsto a l atBot) (hb : Tendsto b l atTop)
+  {a b : ι → α}
 
-theorem aecover_Ici : AECover μ l fun i => Ici (a i) where
+theorem aecover_Ici (ha : Tendsto a l atBot) : AECover μ l fun i => Ici (a i) where
   ae_eventually_mem := ae_of_all μ ha.eventually_le_atBot
   measurableSet _ := measurableSet_Ici
 
-theorem aecover_Iic : AECover μ l fun i => Iic <| b i := aecover_Ici (α := αᵒᵈ) hb
+theorem aecover_Iic (hb : Tendsto b l atTop) : AECover μ l fun i => Iic <| b i :=
+  aecover_Ici (α := αᵒᵈ) hb
 
-theorem aecover_Icc : AECover μ l fun i => Icc (a i) (b i) :=
+theorem aecover_Icc (ha : Tendsto a l atBot) (hb : Tendsto b l atTop) :
+    AECover μ l fun i => Icc (a i) (b i) :=
   (aecover_Ici ha).inter (aecover_Iic hb)
 
 end Preorderα
@@ -168,11 +170,15 @@ section LinearOrderα
 variable [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] [OpensMeasurableSpace α]
   {a b : ι → α} (ha : Tendsto a l atBot) (hb : Tendsto b l atTop)
 
+include ha in
 theorem aecover_Ioi [NoMinOrder α] : AECover μ l fun i => Ioi (a i) where
   ae_eventually_mem := ae_of_all μ ha.eventually_lt_atBot
   measurableSet _ := measurableSet_Ioi
 
+include hb in
 theorem aecover_Iio [NoMaxOrder α] : AECover μ l fun i => Iio (b i) := aecover_Ioi (α := αᵒᵈ) hb
+
+include ha hb
 
 theorem aecover_Ioo [NoMinOrder α] [NoMaxOrder α] : AECover μ l fun i => Ioo (a i) (b i) :=
   (aecover_Ioi ha).inter (aecover_Iio hb)
@@ -190,30 +196,38 @@ section FiniteIntervals
 variable [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] [OpensMeasurableSpace α]
   {a b : ι → α} {A B : α} (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B))
 
+include ha in
 theorem aecover_Ioi_of_Ioi : AECover (μ.restrict (Ioi A)) l fun i ↦ Ioi (a i) where
   ae_eventually_mem := (ae_restrict_mem measurableSet_Ioi).mono fun _x hx ↦ ha.eventually <|
     eventually_lt_nhds hx
   measurableSet _ := measurableSet_Ioi
 
+include hb in
 theorem aecover_Iio_of_Iio : AECover (μ.restrict (Iio B)) l fun i ↦ Iio (b i) :=
   aecover_Ioi_of_Ioi (α := αᵒᵈ) hb
 
+include ha in
 theorem aecover_Ioi_of_Ici : AECover (μ.restrict (Ioi A)) l fun i ↦ Ici (a i) :=
   (aecover_Ioi_of_Ioi ha).superset (fun _ ↦ Ioi_subset_Ici_self) fun _ ↦ measurableSet_Ici
 
+include hb in
 theorem aecover_Iio_of_Iic : AECover (μ.restrict (Iio B)) l fun i ↦ Iic (b i) :=
   aecover_Ioi_of_Ici (α := αᵒᵈ) hb
 
+include ha hb in
 theorem aecover_Ioo_of_Ioo : AECover (μ.restrict <| Ioo A B) l fun i => Ioo (a i) (b i) :=
   ((aecover_Ioi_of_Ioi ha).mono <| Measure.restrict_mono Ioo_subset_Ioi_self le_rfl).inter
     ((aecover_Iio_of_Iio hb).mono <| Measure.restrict_mono Ioo_subset_Iio_self le_rfl)
 
+include ha hb in
 theorem aecover_Ioo_of_Icc : AECover (μ.restrict <| Ioo A B) l fun i => Icc (a i) (b i) :=
   (aecover_Ioo_of_Ioo ha hb).superset (fun _ ↦ Ioo_subset_Icc_self) fun _ ↦ measurableSet_Icc
 
+include ha hb in
 theorem aecover_Ioo_of_Ico : AECover (μ.restrict <| Ioo A B) l fun i => Ico (a i) (b i) :=
   (aecover_Ioo_of_Ioo ha hb).superset (fun _ ↦ Ioo_subset_Ico_self) fun _ ↦ measurableSet_Ico
 
+include ha hb in
 theorem aecover_Ioo_of_Ioc : AECover (μ.restrict <| Ioo A B) l fun i => Ioc (a i) (b i) :=
   (aecover_Ioo_of_Ioo ha hb).superset (fun _ ↦ Ioo_subset_Ioc_self) fun _ ↦ measurableSet_Ioc
 
@@ -452,7 +466,7 @@ end Integrable
 section Integral
 
 variable {α ι E : Type*} [MeasurableSpace α] {μ : Measure α} {l : Filter ι} [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [CompleteSpace E]
+  [NormedSpace ℝ E]
 
 theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → E} (hfi : Integrable f μ) :
@@ -460,8 +474,8 @@ theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated]
   suffices h : Tendsto (fun i => ∫ x : α, (φ i).indicator f x ∂μ) l (𝓝 (∫ x : α, f x ∂μ)) from by
     convert h using 2; rw [integral_indicator (hφ.measurableSet _)]
   tendsto_integral_filter_of_dominated_convergence (fun x => ‖f x‖)
-    (eventually_of_forall fun i => hfi.aestronglyMeasurable.indicator <| hφ.measurableSet i)
-    (eventually_of_forall fun i => ae_of_all _ fun x => norm_indicator_le_norm_self _ _) hfi.norm
+    (Eventually.of_forall fun i => hfi.aestronglyMeasurable.indicator <| hφ.measurableSet i)
+    (Eventually.of_forall fun i => ae_of_all _ fun x => norm_indicator_le_norm_self _ _) hfi.norm
     (hφ.ae_tendsto_indicator f)
 
 /-- Slight reformulation of
@@ -588,7 +602,7 @@ end IntegrableOfIntervalIntegral
 section IntegralOfIntervalIntegral
 
 variable {ι E : Type*} {μ : Measure ℝ} {l : Filter ι} [IsCountablyGenerated l]
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {a b : ι → ℝ} {f : ℝ → E}
+  [NormedAddCommGroup E] [NormedSpace ℝ E] {a b : ι → ℝ} {f : ℝ → E}
 
 theorem intervalIntegral_tendsto_integral (hfi : Integrable f μ) (ha : Tendsto a l atBot)
     (hb : Tendsto b l atTop) : Tendsto (fun i => ∫ x in a i..b i, f x ∂μ) l (𝓝 <| ∫ x, f x ∂μ) := by
@@ -698,7 +712,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
     rw [← top_le_iff, ← volume_Ici (a := b)]
     exact measure_mono hb
   rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.uniformEmbedding_coe E).embedding
+  exact (Completion.isUniformEmbedding_coe E).embedding
 
 variable [CompleteSpace E]
 
@@ -779,7 +793,7 @@ theorem integrableOn_Ioi_deriv_of_nonneg (hcont : ContinuousWithinAt g (Ici a) a
         (fun y hy => hderiv y hy.1) fun y hy => g'pos y hy.1
     _ = ∫ y in a..id x, ‖g' y‖ := by
       simp_rw [intervalIntegral.integral_of_le h'x]
-      refine setIntegral_congr measurableSet_Ioc fun y hy => ?_
+      refine setIntegral_congr_fun measurableSet_Ioc fun y hy => ?_
       dsimp
       rw [abs_of_nonneg]
       exact g'pos _ hy.1
@@ -895,7 +909,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
     rw [← volume_Iic (a := b)]
     exact measure_mono hb
   rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.uniformEmbedding_coe E).embedding
+  exact (Completion.isUniformEmbedding_coe E).embedding
 
 variable [CompleteSpace E]
 
@@ -982,8 +996,8 @@ see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic` and
 theorem integral_of_hasDerivAt_of_tendsto [CompleteSpace E]
     (hderiv : ∀ x, HasDerivAt f (f' x) x) (hf' : Integrable f')
     (hbot : Tendsto f atBot (𝓝 m)) (htop : Tendsto f atTop (𝓝 n)) : ∫ x, f' x = n - m := by
-  rw [← integral_univ, ← Set.Iic_union_Ioi (a := 0),
-    integral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi hf'.integrableOn hf'.integrableOn,
+  rw [← setIntegral_univ, ← Set.Iic_union_Ioi (a := 0),
+    setIntegral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi hf'.integrableOn hf'.integrableOn,
     integral_Iic_of_hasDerivAt_of_tendsto' (fun x _ ↦ hderiv x) hf'.integrableOn hbot,
     integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ ↦ hderiv x) hf'.integrableOn htop]
   abel
@@ -1061,7 +1075,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
     rcases lt_or_gt_of_ne hp with (h | h)
     · apply StrictAntiOn.injOn
       intro x hx y hy hxy
-      rw [← inv_lt_inv (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx),
+      rw [← inv_lt_inv₀ (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx),
         ← rpow_neg (le_of_lt hy)]
       exact rpow_lt_rpow (le_of_lt hx) hxy (neg_pos.mpr h)
     exact StrictMonoOn.injOn fun x hx y _ hxy => rpow_lt_rpow (mem_Ioi.mp hx).le hxy h
@@ -1072,7 +1086,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
       rw [← rpow_mul (le_of_lt hx), one_div_mul_cancel hp, rpow_one]
   have := integral_image_eq_integral_abs_deriv_smul measurableSet_Ioi a1 a2 g
   rw [a3] at this; rw [this]
-  refine setIntegral_congr measurableSet_Ioi ?_
+  refine setIntegral_congr_fun measurableSet_Ioi ?_
   intro x hx; dsimp only
   rw [abs_mul, abs_of_nonneg (rpow_nonneg (le_of_lt hx) _)]
 
@@ -1115,7 +1129,7 @@ theorem integrableOn_Ioi_comp_rpow_iff [NormedSpace ℝ E] (f : ℝ → E) {p : 
     rcases lt_or_gt_of_ne hp with (h | h)
     · apply StrictAntiOn.injOn
       intro x hx y hy hxy
-      rw [← inv_lt_inv (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx), ←
+      rw [← inv_lt_inv₀ (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx), ←
         rpow_neg (le_of_lt hy)]
       exact rpow_lt_rpow (le_of_lt hx) hxy (neg_pos.mpr h)
     exact StrictMonoOn.injOn fun x hx y _hy hxy => rpow_lt_rpow (mem_Ioi.mp hx).le hxy h
@@ -1227,7 +1241,7 @@ theorem integral_mul_deriv_eq_deriv_mul [CompleteSpace A]
     (huv' : Integrable (u * v')) (hu'v : Integrable (u' * v))
     (h_bot : Tendsto (u * v) atBot (𝓝 a')) (h_top : Tendsto (u * v) atTop (𝓝 b')) :
     ∫ (x : ℝ), u x * v' x = b' - a' - ∫ (x : ℝ), u' x * v x :=
-  integral_bilinear_hasDerivAt_right_eq_sub  (L := ContinuousLinearMap.mul ℝ A)
+  integral_bilinear_hasDerivAt_right_eq_sub (L := ContinuousLinearMap.mul ℝ A)
     hu hv huv' hu'v h_bot h_top
 
 /-- **Integration by parts on (-∞, ∞).**

@@ -85,7 +85,7 @@ instance : PartialOrder (Pretopology C) :=
   { Pretopology.LE with
     le_refl := fun K => le_def.mpr le_rfl
     le_trans := fun K₁ K₂ K₃ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
-    le_antisymm := fun K₁ K₂ h₁₂ h₂₁ => Pretopology.ext _ _ (le_antisymm h₁₂ h₂₁) }
+    le_antisymm := fun K₁ K₂ h₁₂ h₂₁ => Pretopology.ext (le_antisymm h₁₂ h₂₁) }
 
 instance : OrderTop (Pretopology C) where
   top :=

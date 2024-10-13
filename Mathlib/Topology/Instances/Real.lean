@@ -3,23 +3,24 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Real.Star
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Periodic
+import Mathlib.Data.Real.Star
+import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.Star
+import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Instances.Int
+import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Order.Bornology
 
 /-!
 # Topological properties of ℝ
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Filter Int Metric Set TopologicalSpace Bornology
 open scoped Topology Uniformity Interval
 
@@ -127,6 +128,12 @@ instance Real.instCompleteSpace : CompleteSpace ℝ := by
 
 theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
   rw [Real.ball_eq_Ioo]; apply totallyBounded_Ioo
+
+theorem Real.subfield_eq_of_closed {K : Subfield ℝ} (hc : IsClosed (K : Set ℝ)) : K = ⊤ := by
+  rw [SetLike.ext'_iff, Subfield.coe_top, ← hc.closure_eq]
+  refine Rat.denseRange_cast.mono ?_ |>.closure_eq
+  rintro - ⟨_, rfl⟩
+  exact SubfieldClass.ratCast_mem K _
 
 section
 

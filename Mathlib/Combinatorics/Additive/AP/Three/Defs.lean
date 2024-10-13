@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Algebra.SMulWithZero
 import Mathlib.Combinatorics.Additive.FreimanHom
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.Interval.Finset.Fin
 
 /-!
@@ -43,7 +43,7 @@ the size of the biggest 3AP-free subset of `{0, ..., n - 1}`.
 3AP-free, Salem-Spencer, Roth, arithmetic progression, average, three-free
 -/
 
-open Finset Function Nat
+open Finset Function
 open scoped Pointwise
 
 variable {F α β 𝕜 E : Type*}
@@ -103,18 +103,18 @@ end Monoid
 section CommMonoid
 variable [CommMonoid α] [CommMonoid β] {s A : Set α} {t B : Set β} {f : α → β} {a : α}
 
-/-- Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms. -/
+/-- Geometric progressions of length three are reflected under `2`-Freiman homomorphisms. -/
 @[to_additive
-"Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms."]
+"Arithmetic progressions of length three are reflected under `2`-Freiman homomorphisms."]
 lemma ThreeGPFree.of_image (hf : IsMulFreimanHom 2 s t f) (hf' : s.InjOn f) (hAs : A ⊆ s)
     (hA : ThreeGPFree (f '' A)) : ThreeGPFree A :=
   fun _ ha _ hb _ hc habc ↦ hf' (hAs ha) (hAs hb) <| hA (mem_image_of_mem _ ha)
     (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) <|
     hf.mul_eq_mul (hAs ha) (hAs hc) (hAs hb) (hAs hb) habc
 
-/-- Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms. -/
+/-- Geometric progressions of length three are unchanged under `2`-Freiman isomorphisms. -/
 @[to_additive
-"Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms."]
+"Arithmetic progressions of length three are unchanged under `2`-Freiman isomorphisms."]
 lemma threeGPFree_image (hf : IsMulFreimanIso 2 s t f) (hAs : A ⊆ s) :
     ThreeGPFree (f '' A) ↔ ThreeGPFree A := by
   rw [ThreeGPFree, ThreeGPFree]
@@ -125,25 +125,23 @@ lemma threeGPFree_image (hf : IsMulFreimanIso 2 s t f) (hAs : A ⊆ s) :
 
 @[to_additive] alias ⟨_, ThreeGPFree.image⟩ := threeGPFree_image
 
-/-- Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms. -/
-@[to_additive]
+/-- Geometric progressions of length three are reflected under `2`-Freiman homomorphisms. -/
+@[to_additive
+"Arithmetic progressions of length three are reflected under `2`-Freiman homomorphisms."]
 lemma IsMulFreimanHom.threeGPFree (hf : IsMulFreimanHom 2 s t f) (hf' : s.InjOn f)
     (ht : ThreeGPFree t) : ThreeGPFree s :=
-  fun _ ha _ hb _ hc habc ↦ hf' ha hb <| ht (hf.mapsTo ha) (hf.mapsTo hb) (hf.mapsTo hc) <|
-    hf.mul_eq_mul ha hc hb hb habc
+  (ht.mono hf.mapsTo.image_subset).of_image hf hf' subset_rfl
 
-/-- Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms. -/
-@[to_additive]
+/-- Geometric progressions of length three are unchanged under `2`-Freiman isomorphisms. -/
+@[to_additive
+"Arithmetic progressions of length three are unchanged under `2`-Freiman isomorphisms."]
 lemma IsMulFreimanIso.threeGPFree_congr (hf : IsMulFreimanIso 2 s t f) :
-    ThreeGPFree s ↔ ThreeGPFree t where
-  mpr := hf.isMulFreimanHom.threeGPFree hf.bijOn.injOn
-  mp hs a hfa b hfb c hfc habc := by
-    obtain ⟨a, ha, rfl⟩ := hf.bijOn.surjOn hfa
-    obtain ⟨b, hb, rfl⟩ := hf.bijOn.surjOn hfb
-    obtain ⟨c, hc, rfl⟩ := hf.bijOn.surjOn hfc
-    exact congr_arg f $ hs ha hb hc $ (hf.mul_eq_mul ha hc hb hb).1 habc
+    ThreeGPFree s ↔ ThreeGPFree t := by
+  rw [← threeGPFree_image hf subset_rfl, hf.bijOn.image_eq]
 
-@[to_additive]
+/-- Geometric progressions of length three are preserved under semigroup homomorphisms. -/
+@[to_additive
+"Arithmetic progressions of length three are preserved under semigroup homomorphisms."]
 theorem ThreeGPFree.image' [FunLike F α β] [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
     (h : ThreeGPFree s) : ThreeGPFree (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ habc
@@ -155,7 +153,7 @@ section CancelCommMonoid
 
 variable [CancelCommMonoid α] {s : Set α} {a : α}
 
-lemma ThreeGPFree.eq_right (hs : ThreeGPFree s) :
+@[to_additive] lemma ThreeGPFree.eq_right (hs : ThreeGPFree s) :
     ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a * c = b * b → b = c := by
   rintro a ha b hb c hc habc
   obtain rfl := hs ha hb hc habc
@@ -184,7 +182,7 @@ lemma ThreeGPFree.eq_right (hs : ThreeGPFree s) :
 @[to_additive]
 theorem ThreeGPFree.smul_set (hs : ThreeGPFree s) : ThreeGPFree (a • s) := by
   rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ h
-  exact congr_arg (a • ·) $ hs hb hc hd $ by simpa [mul_mul_mul_comm _ _ a] using h
+  exact congr_arg (a • ·) <| hs hb hc hd <| by simpa [mul_mul_mul_comm _ _ a] using h
 
 @[to_additive] lemma threeGPFree_smul_set : ThreeGPFree (a • s) ↔ ThreeGPFree s where
   mp hs b hb c hc d hd h := mul_left_cancel
@@ -214,7 +212,7 @@ variable [CancelCommMonoidWithZero α] [NoZeroDivisors α] {s : Set α} {a : α}
 
 lemma ThreeGPFree.smul_set₀ (hs : ThreeGPFree s) (ha : a ≠ 0) : ThreeGPFree (a • s) := by
   rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ h
-  exact congr_arg (a • ·) $ hs hb hc hd $ by simpa [mul_mul_mul_comm _ _ a, ha] using h
+  exact congr_arg (a • ·) <| hs hb hc hd <| by simpa [mul_mul_mul_comm _ _ a, ha] using h
 
 theorem threeGPFree_smul_set₀ (ha : a ≠ 0) : ThreeGPFree (a • s) ↔ ThreeGPFree s :=
   ⟨fun hs b hb c hc d hd h ↦
@@ -275,7 +273,7 @@ variable {s t} {n : ℕ}
 @[to_additive]
 theorem ThreeGPFree.le_mulRothNumber (hs : ThreeGPFree (s : Set α)) (h : s ⊆ t) :
     s.card ≤ mulRothNumber t :=
-  le_findGreatest (card_le_card h) ⟨s, h, rfl, hs⟩
+  Nat.le_findGreatest (card_le_card h) ⟨s, h, rfl, hs⟩
 
 @[to_additive]
 theorem ThreeGPFree.mulRothNumber_eq (hs : ThreeGPFree (s : Set α)) :
@@ -441,7 +439,7 @@ theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat 
 
 lemma Fin.addRothNumber_eq_rothNumberNat (hkn : 2 * k ≤ n) :
     addRothNumber (Iio k : Finset (Fin n.succ)) = rothNumberNat k :=
-  IsAddFreimanIso.addRothNumber_congr $ mod_cast isAddFreimanIso_Iio two_ne_zero hkn
+  IsAddFreimanIso.addRothNumber_congr <| mod_cast isAddFreimanIso_Iio two_ne_zero hkn
 
 lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) (hkn : k ≤ n) :
     addRothNumber (Iio k : Finset (Fin n.succ)) ≤ rothNumberNat k := by

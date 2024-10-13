@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Logic.Encodable.Basic
-import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Rat.Init
 
 /-! # The rationals are `Encodable`.

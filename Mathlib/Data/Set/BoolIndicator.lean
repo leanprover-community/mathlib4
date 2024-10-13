@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Dagur Tómas Ásgeirsson. All rights reserved.
+Copyright (c) 2022 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Tómas Ásgeirsson, Leonardo de Moura
+Authors: Dagur Asgeirsson, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Basic
 

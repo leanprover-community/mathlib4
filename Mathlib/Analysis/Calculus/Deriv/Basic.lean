@@ -90,8 +90,7 @@ universe u v w
 
 noncomputable section
 
-open scoped Classical Topology Filter ENNReal NNReal
-
+open scoped Topology ENNReal NNReal
 open Filter Asymptotics Set
 
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
@@ -417,7 +416,7 @@ theorem norm_deriv_eq_norm_fderiv : ‖deriv f x‖ = ‖fderiv 𝕜 f x‖ := b
 
 theorem DifferentiableAt.derivWithin (h : DifferentiableAt 𝕜 f x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin f s x = deriv f x := by
-  unfold derivWithin deriv
+  unfold _root_.derivWithin deriv
   rw [h.fderivWithin hxs]
 
 theorem HasDerivWithinAt.deriv_eq_zero (hd : HasDerivWithinAt f 0 s x)

@@ -290,8 +290,8 @@ lemma comp_assoc_of_third_is_zero_cochain {n₁ n₂ n₁₂ : ℤ}
 lemma comp_assoc_of_second_degree_eq_neg_third_degree {n₁ n₂ n₁₂ : ℤ}
     (z₁ : Cochain F G n₁) (z₂ : Cochain G K (-n₂)) (z₃ : Cochain K L n₂) (h₁₂ : n₁ + (-n₂) = n₁₂) :
     (z₁.comp z₂ h₁₂).comp z₃
-      (show n₁₂ + n₂ = n₁ by rw [← h₁₂, add_assoc, neg_add_self, add_zero]) =
-      z₁.comp (z₂.comp z₃ (neg_add_self n₂)) (add_zero n₁) :=
+      (show n₁₂ + n₂ = n₁ by rw [← h₁₂, add_assoc, neg_add_cancel, add_zero]) =
+      z₁.comp (z₂.comp z₃ (neg_add_cancel n₂)) (add_zero n₁) :=
   comp_assoc _ _ _ _ _ (by omega)
 
 @[simp]
@@ -478,7 +478,7 @@ lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n�
     ← h₁₂, Int.negOnePow_succ, add_comp, assoc,
     HomologicalComplex.d_comp_d, comp_zero, zero_add, comp_add,
     HomologicalComplex.d_comp_d_assoc, zero_comp, smul_zero,
-    add_zero, add_right_neg, Units.neg_smul,
+    add_zero, add_neg_cancel, Units.neg_smul,
     Linear.units_smul_comp, Linear.comp_units_smul]
 
 lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
@@ -539,8 +539,8 @@ lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
   have eq := h.comm p
   rw [dNext_eq h.hom (show (ComplexShape.up ℤ).Rel p (p+1) by simp),
     prevD_eq h.hom (show (ComplexShape.up ℤ).Rel (p-1) p by simp)] at eq
-  rw [Cochain.ofHomotopy, δ_v (-1) 0 (neg_add_self 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
-  simp only [Cochain.mk_v, add_left_neg, one_smul, Int.negOnePow_zero,
+  rw [Cochain.ofHomotopy, δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
+  simp only [Cochain.mk_v, neg_add_cancel, one_smul, Int.negOnePow_zero,
     Cochain.sub_v, Cochain.ofHom_v, eq]
   abel
 
@@ -548,8 +548,8 @@ lemma δ_neg_one_cochain (z : Cochain F G (-1)) :
     δ (-1) 0 z = Cochain.ofHom (Homotopy.nullHomotopicMap'
       (fun i j hij => z.v i j (by dsimp at hij; rw [← hij, add_neg_cancel_right]))) := by
   ext p
-  rw [δ_v (-1) 0 (neg_add_self 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
-  simp only [neg_add_self, one_smul, Cochain.ofHom_v, Int.negOnePow_zero]
+  rw [δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
+  simp only [neg_add_cancel, one_smul, Cochain.ofHom_v, Int.negOnePow_zero]
   rw [Homotopy.nullHomotopicMap'_f (show (ComplexShape.up ℤ).Rel (p-1) p by simp)
     (show (ComplexShape.up ℤ).Rel p (p+1) by simp)]
   abel
@@ -603,9 +603,6 @@ instance : Coe (Cocycle F G n) (Cochain F G n) where
 @[ext]
 lemma ext (z₁ z₂ : Cocycle F G n) (h : (z₁ : Cochain F G n) = z₂) : z₁ = z₂ :=
   Subtype.ext h
-
-protected lemma ext_iff (z₁ z₂ : Cocycle F G n) : z₁ = z₂ ↔ (z₁ : Cochain F G n) = z₂ :=
-  Subtype.ext_iff
 
 instance : SMul R (Cocycle F G n) where
   smul r z := ⟨r • z.1, by

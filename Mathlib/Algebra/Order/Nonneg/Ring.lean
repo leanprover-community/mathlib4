@@ -78,11 +78,23 @@ instance orderedCommSemiring [OrderedCommSemiring α] : OrderedCommSemiring { x 
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
+instance orderedCommMonoid [OrderedCommSemiring α] : OrderedCommMonoid { x : α // 0 ≤ x } where
+  mul_le_mul_left a _ h c := mul_le_mul le_rfl h a.prop c.prop
+
 instance strictOrderedCommSemiring [StrictOrderedCommSemiring α] :
     StrictOrderedCommSemiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.strictOrderedCommSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+
+instance existsAddOfLE [StrictOrderedCommSemiring α] [ExistsAddOfLE α] :
+    ExistsAddOfLE { x : α // 0 ≤ x } :=
+  ⟨fun {a b} h ↦ by
+    rw [← Subtype.coe_le_coe] at h
+    obtain ⟨c, hc⟩ := exists_add_of_le h
+    refine ⟨⟨c, ?_⟩, by simp [Subtype.ext_iff, hc]⟩
+    rw [← add_zero a.val, hc] at h
+    exact le_of_add_le_add_left h⟩
 
 instance nontrivial [LinearOrderedSemiring α] : Nontrivial { x : α // 0 ≤ x } :=
   ⟨⟨0, 1, fun h => zero_ne_one (congr_arg Subtype.val h)⟩⟩
@@ -93,7 +105,7 @@ instance linearOrderedSemiring [LinearOrderedSemiring α] :
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance linearOrderedCommMonoidWithZero [LinearOrderedCommRing α] :
+instance linearOrderedCommMonoidWithZero [LinearOrderedCommSemiring α] :
     LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } :=
   { Nonneg.linearOrderedSemiring, Nonneg.orderedCommSemiring with
     mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop }

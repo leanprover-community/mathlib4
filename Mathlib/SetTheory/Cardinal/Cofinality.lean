@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.FixedPoint
 
 /-!
@@ -42,13 +42,10 @@ cofinality, regular cardinals, limits cardinals, inaccessible cardinals,
 infinite pigeonhole principle
 -/
 
-
 noncomputable section
 
 open Function Cardinal Set Order
-
-open scoped Classical
-open Cardinal Ordinal
+open scoped Ordinal
 
 universe u v w
 
@@ -198,7 +195,7 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
 
 
 private theorem card_mem_cof {o} : ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = o.card :=
-  ⟨_, _, lsub_typein o, mk_ordinal_out o⟩
+  ⟨_, _, lsub_typein o, mk_toType o⟩
 
 /-- The set in the `lsub` characterization of `cof` is nonempty. -/
 theorem cof_lsub_def_nonempty (o) :
@@ -213,7 +210,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     refine
       (cof_type_le fun a => ?_).trans
         (@mk_le_of_injective _ _
-          (fun s : typein ((· < ·) : o.out.α → o.out.α → Prop) ⁻¹' Set.range f =>
+          (fun s : typein ((· < ·) : o.toType → o.toType → Prop) ⁻¹' Set.range f =>
             Classical.choose s.prop)
           fun s t hst => by
           let H := congr_arg f hst
@@ -222,18 +219,18 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     have := typein_lt_self a
     simp_rw [← hf, lt_lsub_iff] at this
     cases' this with i hi
-    refine ⟨enum (· < ·) (f i) ?_, ?_, ?_⟩
+    refine ⟨enum (α := o.toType) (· < ·) ⟨f i, ?_⟩, ?_, ?_⟩
     · rw [type_lt, ← hf]
       apply lt_lsub
     · rw [mem_preimage, typein_enum]
       exact mem_range_self i
     · rwa [← typein_le_typein, typein_enum]
-  · rcases cof_eq (· < · : (Quotient.out o).α → (Quotient.out o).α → Prop) with ⟨S, hS, hS'⟩
+  · rcases cof_eq (α := o.toType) (· < ·) with ⟨S, hS, hS'⟩
     let f : S → Ordinal := fun s => typein LT.lt s.val
     refine ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self (o := o) i)
       (le_of_forall_lt fun a ha => ?_), by rwa [type_lt o] at hS'⟩
     rw [← type_lt o] at ha
-    rcases hS (enum (· < ·) a ha) with ⟨b, hb, hb'⟩
+    rcases hS (enum (· < ·) ⟨a, ha⟩) with ⟨b, hb, hb'⟩
     rw [← typein_le_typein, typein_enum] at hb'
     exact hb'.trans_lt (lt_lsub.{u, u} f ⟨b, hb⟩)
 
@@ -306,30 +303,59 @@ theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) 
     (∀ i, f i < c) → lsub.{u, u} f < c :=
   lsub_lt_ord_lift (by rwa [(#ι).lift_id])
 
+set_option linter.deprecated false in
+theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
+    cof (iSup f) ≤ Cardinal.lift.{v, u} #ι := by
+  rw [← Ordinal.sup] at *
+  rw [← sup_eq_lsub_iff_lt_sup.{u, v}] at H
+  rw [H]
+  exact cof_lsub_le_lift f
+
+set_option linter.deprecated false in
+@[deprecated cof_iSup_le_lift (since := "2024-08-27")]
 theorem cof_sup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, v} f) :
     cof (sup.{u, v} f) ≤ Cardinal.lift.{v, u} #ι := by
   rw [← sup_eq_lsub_iff_lt_sup.{u, v}] at H
   rw [H]
   exact cof_lsub_le_lift f
 
+theorem cof_iSup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
+    cof (iSup f) ≤ #ι := by
+  rw [← (#ι).lift_id]
+  exact cof_iSup_le_lift H
+
+set_option linter.deprecated false in
+@[deprecated cof_iSup_le (since := "2024-08-27")]
 theorem cof_sup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, u} f) :
     cof (sup.{u, u} f) ≤ #ι := by
   rw [← (#ι).lift_id]
   exact cof_sup_le_lift H
 
-theorem sup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
-    (hf : ∀ i, f i < c) : sup.{u, v} f < c :=
+theorem iSup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
+    (hf : ∀ i, f i < c) : iSup f < c :=
   (sup_le_lsub.{u, v} f).trans_lt (lsub_lt_ord_lift hι hf)
 
+set_option linter.deprecated false in
+@[deprecated iSup_lt_ord_lift (since := "2024-08-27")]
+theorem sup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
+    (hf : ∀ i, f i < c) : sup.{u, v} f < c :=
+  iSup_lt_ord_lift hι hf
+
+theorem iSup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
+    (∀ i, f i < c) → iSup f < c :=
+  iSup_lt_ord_lift (by rwa [(#ι).lift_id])
+
+set_option linter.deprecated false in
+@[deprecated iSup_lt_ord (since := "2024-08-27")]
 theorem sup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → sup.{u, u} f < c :=
   sup_lt_ord_lift (by rwa [(#ι).lift_id])
 
 theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
     (hι : Cardinal.lift.{v, u} #ι < c.ord.cof)
-    (hf : ∀ i, f i < c) : iSup.{max u v + 1, u + 1} f < c := by
+    (hf : ∀ i, f i < c) : iSup f < c := by
   rw [← ord_lt_ord, iSup_ord (Cardinal.bddAbove_range.{u, v} _)]
-  refine sup_lt_ord_lift hι fun i => ?_
+  refine iSup_lt_ord_lift hι fun i => ?_
   rw [ord_lt_ord]
   apply hf
 
@@ -340,7 +366,7 @@ theorem iSup_lt {ι} {f : ι → Cardinal} {c : Cardinal} (hι : #ι < c.ord.cof
 theorem nfpFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
     (hc' : Cardinal.lift.{v, u} #ι < cof c) (hf : ∀ (i), ∀ b < c, f i b < c) {a} (ha : a < c) :
     nfpFamily.{u, v} f a < c := by
-  refine sup_lt_ord_lift ((Cardinal.lift_le.2 (mk_list_le_max ι)).trans_lt ?_) fun l => ?_
+  refine iSup_lt_ord_lift ((Cardinal.lift_le.2 (mk_list_le_max ι)).trans_lt ?_) fun l => ?_
   · rw [lift_max]
     apply max_lt _ hc'
     rwa [Cardinal.lift_aleph0]
@@ -355,7 +381,7 @@ theorem nfpFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ 
 theorem nfpBFamily_lt_ord_lift {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
     (hc' : Cardinal.lift.{v, u} o.card < cof c) (hf : ∀ (i hi), ∀ b < c, f i hi b < c) {a} :
     a < c → nfpBFamily.{u, v} o f a < c :=
-  nfpFamily_lt_ord_lift hc (by rwa [mk_ordinal_out]) fun i => hf _ _
+  nfpFamily_lt_ord_lift hc (by rwa [mk_toType]) fun i => hf _ _
 
 theorem nfpBFamily_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
     (hc' : o.card < cof c) (hf : ∀ (i hi), ∀ b < c, f i hi b < c) {a} :
@@ -384,7 +410,7 @@ theorem le_cof_iff_blsub {b : Ordinal} {a : Cardinal} :
 
 theorem cof_blsub_le_lift {o} (f : ∀ a < o, Ordinal) :
     cof (blsub.{u, v} o f) ≤ Cardinal.lift.{v, u} o.card := by
-  rw [← mk_ordinal_out o]
+  rw [← mk_toType o]
   exact cof_lsub_le_lift _
 
 theorem cof_blsub_le {o} (f : ∀ a < o, Ordinal) : cof (blsub.{u, u} o f) ≤ o.card := by
@@ -556,7 +582,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
   let hrr' : r' ↪r r := Subrel.relEmbedding _ _
   haveI := hrr'.isWellOrder
   refine
-    ⟨_, _, hrr'.ordinal_type_le.trans ?_, @fun i j _ h _ => (enum r' j h).prop _ ?_,
+    ⟨_, _, hrr'.ordinal_type_le.trans ?_, @fun i j _ h _ => (enum r' ⟨j, h⟩).prop _ ?_,
       le_antisymm (blsub_le fun i hi => lsub_le_iff.1 hf.le _) ?_⟩
   · rw [← hι, hr]
   · change r (hrr'.1 _) (hrr'.1 _)
@@ -654,16 +680,19 @@ theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (aleph o).ord.cof = o.cof :=
   aleph_isNormal.cof_eq ho
 
 @[simp]
-theorem cof_omega : cof ω = ℵ₀ :=
-  (aleph0_le_cof.2 omega_isLimit).antisymm' <| by
-    rw [← card_omega]
+theorem cof_omega0 : cof ω = ℵ₀ :=
+  (aleph0_le_cof.2 omega0_isLimit).antisymm' <| by
+    rw [← card_omega0]
     apply cof_le_card
+
+@[deprecated (since := "2024-09-30")]
+alias cof_omega := cof_omega0
 
 theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r)) :
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) :=
   let ⟨S, H, e⟩ := cof_eq r
   ⟨S, fun a =>
-    let a' := enum r _ (h.2 _ (typein_lt_type r a))
+    let a' := enum r ⟨_, h.2 _ (typein_lt_type r a)⟩
     let ⟨b, h, ab⟩ := H a'
     ⟨b, h,
       (IsOrderConnected.conn a b a' <|
@@ -683,16 +712,16 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       rcases @cof_eq Ordinal.{u} (· < ·) _ with ⟨S, H, Se⟩
       rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u+1, v, u}, Cardinal.lift_lt, ← Se]
       refine lt_of_not_ge fun h => ?_
-      cases' Cardinal.lift_down h with a e
+      cases' Cardinal.mem_range_of_le_lift h with a e
       refine Quotient.inductionOn a (fun α e => ?_) e
       cases' Quotient.exact e with f
       have f := Equiv.ulift.symm.trans f
       let g a := (f a).1
-      let o := succ (sup.{u, u} g)
+      let o := succ (iSup g)
       rcases H o with ⟨b, h, l⟩
       refine l (lt_succ_iff.2 ?_)
       rw [← show g (f.symm ⟨b, h⟩) = b by simp [g]]
-      apply le_sup)
+      apply Ordinal.le_iSup)
 
 /-! ### Infinite pigeonhole principle -/
 
@@ -780,18 +809,28 @@ theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ :=
     rcases lt_aleph0.1 hx with ⟨n, rfl⟩
     exact mod_cast nat_lt_aleph0 (2 ^ n)⟩
 
-protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c :=
-  isSuccLimit_of_succ_lt fun x h => (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)
+protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
+  rw [Cardinal.isSuccLimit_iff]
+  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h =>
+    (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)⟩
 
+protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
+  H.isSuccLimit.isSuccPrelimit
+
+theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
+  aleph0_le_of_isSuccLimit H.isSuccLimit
+
+set_option linter.deprecated false in
+@[deprecated IsStrongLimit.isSuccLimit (since := "2024-09-17")]
 theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
-  ⟨H.ne_zero, H.isSuccLimit⟩
+  ⟨H.ne_zero, H.isSuccPrelimit⟩
 
-theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccLimit o) : IsStrongLimit (beth o) := by
+theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (beth o) := by
   rcases eq_or_ne o 0 with (rfl | h)
   · rw [beth_zero]
     exact isStrongLimit_aleph0
   · refine ⟨beth_ne_zero o, fun a ha => ?_⟩
-    rw [beth_limit ⟨h, isSuccLimit_iff_succ_lt.1 H⟩] at ha
+    rw [beth_limit ⟨h, isSuccPrelimit_iff_succ_lt.1 H⟩] at ha
     rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
     have := power_le_power_left two_ne_zero ha.le
     rw [← beth_succ] at this
@@ -807,7 +846,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α �
     rintro ⟨s, hs⟩
     exact (not_unbounded_iff s).2 hs (unbounded_of_isEmpty s)
   have h' : IsStrongLimit #α := ⟨ha, h⟩
-  have ha := h'.isLimit.aleph0_le
+  have ha := h'.aleph0_le
   apply le_antisymm
   · have : { s : Set α | Bounded r s } = ⋃ i, 𝒫{ j | r j i } := setOf_exists _
     rw [← coe_setOf, this]
@@ -842,7 +881,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
     exact lt_cof_type hs
   · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
     · rw [mk_singleton]
-      exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (ord_isLimit h'.isLimit.aleph0_le))
+      exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (ord_isLimit h'.aleph0_le))
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
 
@@ -955,13 +994,25 @@ theorem lsub_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c
     (∀ i, f i < c.ord) → Ordinal.lsub f < c.ord :=
   lsub_lt_ord (by rwa [hc.cof_eq])
 
+theorem iSup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
+    (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → iSup f < c.ord :=
+  iSup_lt_ord_lift (by rwa [hc.cof_eq])
+
+set_option linter.deprecated false in
+@[deprecated iSup_lt_ord_lift_of_isRegular (since := "2024-08-27")]
 theorem sup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → Ordinal.sup.{u, v} f < c.ord :=
-  sup_lt_ord_lift (by rwa [hc.cof_eq])
+  iSup_lt_ord_lift_of_isRegular hc hι
 
+theorem iSup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
+    (∀ i, f i < c.ord) → iSup f < c.ord :=
+  iSup_lt_ord (by rwa [hc.cof_eq])
+
+set_option linter.deprecated false in
+@[deprecated iSup_lt_ord_of_isRegular (since := "2024-08-27")]
 theorem sup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → Ordinal.sup f < c.ord :=
-  sup_lt_ord (by rwa [hc.cof_eq])
+  iSup_lt_ord_of_isRegular hc hι
 
 theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : Cardinal.lift.{v, u} o.card < c) :
@@ -1040,7 +1091,7 @@ theorem nfpBFamily_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordina
     (hc : IsRegular c) (ho : Cardinal.lift.{v, u} o.card < c) (hc' : c ≠ ℵ₀)
     (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
     a < c.ord → nfpBFamily.{u, v} o f a < c.ord :=
-  nfpFamily_lt_ord_lift_of_isRegular hc (by rwa [mk_ordinal_out]) hc' fun i => hf _ _
+  nfpFamily_lt_ord_lift_of_isRegular hc (by rwa [mk_toType]) hc' fun i => hf _ _
 
 theorem nfpBFamily_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c}
     (hc : IsRegular c) (ho : o.card < c) (hc' : c ≠ ℵ₀)
@@ -1089,7 +1140,7 @@ theorem derivBFamily_lt_ord_lift {o : Ordinal} {f : ∀ a < o, Ordinal → Ordin
     (hc : IsRegular c) (hι : Cardinal.lift.{v, u} o.card < c) (hc' : c ≠ ℵ₀)
     (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
     a < c.ord → derivBFamily.{u, v} o f a < c.ord :=
-  derivFamily_lt_ord_lift hc (by rwa [mk_ordinal_out]) hc' fun i => hf _ _
+  derivFamily_lt_ord_lift hc (by rwa [mk_toType]) hc' fun i => hf _ _
 
 theorem derivBFamily_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : IsRegular c)
     (hι : o.card < c) (hc' : c ≠ ℵ₀) (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
@@ -1148,6 +1199,16 @@ namespace Ordinal
 open Cardinal
 open scoped Ordinal
 
+-- TODO: generalize universes
+lemma iSup_sequence_lt_omega1 {α : Type u} [Countable α]
+    (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < ω₁) :
+    iSup o < ω₁ := by
+  apply iSup_lt_ord_lift _ ho
+  rw [Cardinal.isRegular_aleph_one.cof_eq]
+  exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
+
+set_option linter.deprecated false in
+@[deprecated iSup_sequence_lt_omega1 (since := "2024-08-27")]
 lemma sup_sequence_lt_omega1 {α} [Countable α] (o : α → Ordinal) (ho : ∀ n, o n < ω₁) :
     sup o < ω₁ := by
   apply sup_lt_ord_lift _ ho

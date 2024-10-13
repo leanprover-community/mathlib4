@@ -34,7 +34,7 @@ variable (T)
 def Arrow :=
   Comma.{v, v, v} (𝟭 T) (𝟭 T)
 
-/- Porting note: could not derive `Category` above so this instance works in its place-/
+/- Porting note: could not derive `Category` above so this instance works in its place -/
 instance : Category (Arrow T) := commaCategory
 
 -- Satisfying the inhabited linter
@@ -48,7 +48,7 @@ namespace Arrow
 @[ext]
 lemma hom_ext {X Y : Arrow T} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
     f = g :=
-  CommaMorphism.ext _ _ h₁ h₂
+  CommaMorphism.ext h₁ h₂
 
 @[simp]
 theorem id_left (f : Arrow T) : CommaMorphism.left (𝟙 f) = 𝟙 f.left :=
@@ -152,7 +152,7 @@ theorem hom.congr_right {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ�
 theorem iso_w {f g : Arrow T} (e : f ≅ g) : g.hom = e.inv.left ≫ f.hom ≫ e.hom.right := by
   have eq := Arrow.hom.congr_right e.inv_hom_id
   rw [Arrow.comp_right, Arrow.id_right] at eq
-  erw [Arrow.w_assoc, eq, Category.comp_id]
+  rw [Arrow.w_assoc, eq, Category.comp_id]
 
 theorem iso_w' {W X Y Z : T} {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) :
     g = e.inv.left ≫ f ≫ e.hom.right :=

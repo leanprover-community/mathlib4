@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
+import Mathlib.Algebra.Group.Support
 import Mathlib.Order.Filter.Lift
 import Mathlib.Topology.Defs.Filter
 
@@ -76,7 +77,7 @@ open Topology
 
 lemma isOpen_mk {p h₁ h₂ h₃} : IsOpen[⟨p, h₁, h₂, h₃⟩] s ↔ p s := Iff.rfl
 
-@[ext]
+@[ext (iff := false)]
 protected theorem TopologicalSpace.ext :
     ∀ {f g : TopologicalSpace X}, IsOpen[f] = IsOpen[g] → f = g
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
@@ -128,7 +129,7 @@ theorem Set.Finite.isOpen_biInter {s : Set α} {f : α → Set X} (hs : s.Finite
 
 theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsOpen (s i)) :
     IsOpen (⋂ i, s i) :=
-  (finite_range _).isOpen_sInter  (forall_mem_range.2 h)
+  (finite_range _).isOpen_sInter (forall_mem_range.2 h)
 
 theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
@@ -155,6 +156,12 @@ theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (
 @[simp] theorem isClosed_empty : IsClosed (∅ : Set X) := isClosed_const
 
 @[simp] theorem isClosed_univ : IsClosed (univ : Set X) := isClosed_const
+
+lemma IsOpen.isLocallyClosed (hs : IsOpen s) : IsLocallyClosed s :=
+  ⟨_, _, hs, isClosed_univ, (inter_univ _).symm⟩
+
+lemma IsClosed.isLocallyClosed (hs : IsClosed s) : IsLocallyClosed s :=
+  ⟨_, _, isOpen_univ, hs, (univ_inter _).symm⟩
 
 theorem IsClosed.union : IsClosed s₁ → IsClosed s₂ → IsClosed (s₁ ∪ s₂) := by
   simpa only [← isOpen_compl_iff, compl_union] using IsOpen.inter
@@ -792,8 +799,10 @@ theorem frequently_frequently_nhds {p : X → Prop} :
   simp only [not_frequently, eventually_eventually_nhds]
 
 @[simp]
-theorem eventually_mem_nhds : (∀ᶠ x' in 𝓝 x, s ∈ 𝓝 x') ↔ s ∈ 𝓝 x :=
+theorem eventually_mem_nhds_iff : (∀ᶠ x' in 𝓝 x, s ∈ 𝓝 x') ↔ s ∈ 𝓝 x :=
   eventually_eventually_nhds
+
+@[deprecated (since := "2024-10-04")] alias eventually_mem_nhds := eventually_mem_nhds_iff
 
 @[simp]
 theorem nhds_bind_nhds : (𝓝 x).bind 𝓝 = 𝓝 x :=
@@ -839,18 +848,18 @@ theorem tendsto_nhds {f : α → X} {l : Filter α} :
 theorem tendsto_atTop_nhds [Nonempty α] [SemilatticeSup α] {f : α → X} :
     Tendsto f atTop (𝓝 x) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ N, ∀ n, N ≤ n → f n ∈ U :=
   (atTop_basis.tendsto_iff (nhds_basis_opens x)).trans <| by
-    simp only [and_imp, exists_prop, true_and_iff, mem_Ici]
+    simp only [and_imp, exists_prop, true_and, mem_Ici]
 
 theorem tendsto_const_nhds {f : Filter α} : Tendsto (fun _ : α => x) f (𝓝 x) :=
   tendsto_nhds.mpr fun _ _ ha => univ_mem' fun _ => ha
 
-theorem tendsto_atTop_of_eventually_const {ι : Type*} [SemilatticeSup ι] [Nonempty ι]
+theorem tendsto_atTop_of_eventually_const {ι : Type*} [Preorder ι]
     {u : ι → X} {i₀ : ι} (h : ∀ i ≥ i₀, u i = x) : Tendsto u atTop (𝓝 x) :=
-  Tendsto.congr' (EventuallyEq.symm (eventually_atTop.mpr ⟨i₀, h⟩)) tendsto_const_nhds
+  Tendsto.congr' (EventuallyEq.symm ((eventually_ge_atTop i₀).mono h)) tendsto_const_nhds
 
-theorem tendsto_atBot_of_eventually_const {ι : Type*} [SemilatticeInf ι] [Nonempty ι]
+theorem tendsto_atBot_of_eventually_const {ι : Type*} [Preorder ι]
     {u : ι → X} {i₀ : ι} (h : ∀ i ≤ i₀, u i = x) : Tendsto u atBot (𝓝 x) :=
-  Tendsto.congr' (EventuallyEq.symm (eventually_atBot.mpr ⟨i₀, h⟩)) tendsto_const_nhds
+  tendsto_atTop_of_eventually_const (ι := ιᵒᵈ) h
 
 theorem pure_le_nhds : pure ≤ (𝓝 : X → Filter X) := fun _ _ hs => mem_pure.2 <| mem_of_mem_nhds hs
 
@@ -888,6 +897,11 @@ theorem Filter.HasBasis.clusterPt_iff {ιX ιF} {pX : ιX → Prop} {sX : ιX �
     {sF : ιF → Set X} {F : Filter X} (hX : (𝓝 x).HasBasis pX sX) (hF : F.HasBasis pF sF) :
     ClusterPt x F ↔ ∀ ⦃i⦄, pX i → ∀ ⦃j⦄, pF j → (sX i ∩ sF j).Nonempty :=
   hX.inf_basis_neBot_iff hF
+
+theorem Filter.HasBasis.clusterPt_iff_frequently {ι} {p : ι → Prop} {s : ι → Set X} {F : Filter X}
+    (hx : (𝓝 x).HasBasis p s) : ClusterPt x F ↔ ∀ i, p i → ∃ᶠ x in F, x ∈ s i := by
+  simp only [hx.clusterPt_iff F.basis_sets, Filter.frequently_iff, inter_comm (s _),
+    Set.Nonempty, id, mem_inter_iff]
 
 theorem clusterPt_iff {F : Filter X} :
     ClusterPt x F ↔ ∀ ⦃U : Set X⦄, U ∈ 𝓝 x → ∀ ⦃V⦄, V ∈ F → (U ∩ V).Nonempty :=
@@ -934,31 +948,57 @@ theorem clusterPt_iff_ultrafilter {f : Filter X} : ClusterPt x f ↔
     ∃ u : Ultrafilter X, u ≤ f ∧ u ≤ 𝓝 x := by
   simp_rw [ClusterPt, ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
 
-theorem mapClusterPt_def {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
-    MapClusterPt x F u ↔ ClusterPt x (map u F) := Iff.rfl
+section MapClusterPt
 
-theorem mapClusterPt_iff {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
-    MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s := by
-  simp_rw [MapClusterPt, ClusterPt, inf_neBot_iff_frequently_left, frequently_map]
-  rfl
+variable {F : Filter α} {u : α → X} {x : X}
 
-theorem mapClusterPt_iff_ultrafilter {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
-    MapClusterPt x F u ↔ ∃ U : Ultrafilter ι, U ≤ F ∧ Tendsto u U (𝓝 x) := by
+theorem mapClusterPt_def : MapClusterPt x F u ↔ ClusterPt x (map u F) := Iff.rfl
+alias ⟨MapClusterPt.clusterPt, _⟩ := mapClusterPt_def
+
+theorem MapClusterPt.mono {G : Filter α} (h : MapClusterPt x F u) (hle : F ≤ G) :
+    MapClusterPt x G u :=
+  h.clusterPt.mono (map_mono hle)
+
+theorem MapClusterPt.tendsto_comp' [TopologicalSpace Y] {f : X → Y} {y : Y}
+    (hf : Tendsto f (𝓝 x ⊓ map u F) (𝓝 y)) (hu : MapClusterPt x F u) : MapClusterPt y F (f ∘ u) :=
+  (tendsto_inf.2 ⟨hf, tendsto_map.mono_left inf_le_right⟩).neBot (hx := hu)
+
+theorem MapClusterPt.tendsto_comp [TopologicalSpace Y] {f : X → Y} {y : Y}
+    (hf : Tendsto f (𝓝 x) (𝓝 y)) (hu : MapClusterPt x F u) : MapClusterPt y F (f ∘ u) :=
+  hu.tendsto_comp' (hf.mono_left inf_le_left)
+
+theorem MapClusterPt.continuousAt_comp [TopologicalSpace Y] {f : X → Y} (hf : ContinuousAt f x)
+    (hu : MapClusterPt x F u) : MapClusterPt (f x) F (f ∘ u) :=
+  hu.tendsto_comp hf
+
+theorem Filter.HasBasis.mapClusterPt_iff_frequently {ι : Sort*} {p : ι → Prop} {s : ι → Set X}
+    (hx : (𝓝 x).HasBasis p s) : MapClusterPt x F u ↔ ∀ i, p i → ∃ᶠ a in F, u a ∈ s i := by
+  simp_rw [MapClusterPt, hx.clusterPt_iff_frequently, frequently_map]
+
+theorem mapClusterPt_iff : MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s :=
+  (𝓝 x).basis_sets.mapClusterPt_iff_frequently
+
+theorem mapClusterPt_iff_ultrafilter :
+    MapClusterPt x F u ↔ ∃ U : Ultrafilter α, U ≤ F ∧ Tendsto u U (𝓝 x) := by
   simp_rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff, tendsto_iff_comap,
     ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
 
-theorem mapClusterPt_comp {X α β : Type*} {x : X} [TopologicalSpace X] {F : Filter α} {φ : α → β}
-    {u : β → X} : MapClusterPt x F (u ∘ φ) ↔ MapClusterPt x (map φ F) u := Iff.rfl
+theorem mapClusterPt_comp {φ : α → β} {u : β → X} :
+    MapClusterPt x F (u ∘ φ) ↔ MapClusterPt x (map φ F) u := Iff.rfl
 
-theorem mapClusterPt_of_comp {F : Filter α} {φ : β → α} {p : Filter β}
-    {u : α → X} [NeBot p] (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) :
-    MapClusterPt x F u := by
-  have :=
-    calc
-      map (u ∘ φ) p = map u (map φ p) := map_map
-      _ ≤ map u F := map_mono h
-  have : map (u ∘ φ) p ≤ 𝓝 x ⊓ map u F := le_inf H this
-  exact neBot_of_le this
+theorem Filter.Tendsto.mapClusterPt [NeBot F] (h : Tendsto u F (𝓝 x)) : MapClusterPt x F u :=
+  .of_le_nhds h
+
+theorem MapClusterPt.of_comp {φ : β → α} {p : Filter β} (h : Tendsto φ p F)
+    (H : MapClusterPt x p (u ∘ φ)) : MapClusterPt x F u :=
+  H.clusterPt.mono <| map_mono h
+
+@[deprecated MapClusterPt.of_comp (since := "2024-09-07")]
+theorem mapClusterPt_of_comp {φ : β → α} {p : Filter β} [NeBot p]
+    (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) : MapClusterPt x F u :=
+  .of_comp h H.mapClusterPt
+
+end MapClusterPt
 
 theorem accPt_sup (x : X) (F G : Filter X) :
     AccPt x (F ⊔ G) ↔ AccPt x F ∨ AccPt x G := by
@@ -1085,7 +1125,7 @@ theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x)
 lemma nhdsWithin_neBot : (𝓝[s] x).NeBot ↔ ∀ ⦃t⦄, t ∈ 𝓝 x → (t ∩ s).Nonempty := by
   rw [nhdsWithin, inf_neBot_iff]
   exact forall₂_congr fun U _ ↦
-    ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono $ inter_subset_inter_right _ hsu⟩
+    ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono <| inter_subset_inter_right _ hsu⟩
 
 @[gcongr]
 theorem nhdsWithin_mono (x : X) {s t : Set X} (h : s ⊆ t) : 𝓝[s] x ≤ 𝓝[t] x :=
@@ -1362,6 +1402,14 @@ theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x
     (hs : s ∈ 𝓝 (f x)) : ∀ᶠ y in 𝓝 x, f y ∈ s :=
   hf hs
 
+/-- If a function `f` tends to somewhere other than `𝓝 (f x)` at `x`,
+then `f` is not continuous at `x`
+-/
+lemma not_continuousAt_of_tendsto {f : X → Y} {l₁ : Filter X} {l₂ : Filter Y} {x : X}
+    (hf : Tendsto f l₁ l₂) [l₁.NeBot] (hl₁ : l₁ ≤ 𝓝 x) (hl₂ : Disjoint (𝓝 (f x)) l₂) :
+    ¬ ContinuousAt f x := fun cont ↦
+  (cont.mono_left hl₁).not_tendsto hl₂ hf
+
 /-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
 @[deprecated (since := "2024-01-15")]
 theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {f : X → M₀} :
@@ -1443,7 +1491,7 @@ theorem Filter.EventuallyEq.continuousAt (h : f =ᶠ[𝓝 x] fun _ => y) :
 
 theorem continuous_of_const (h : ∀ x y, f x = f y) : Continuous f :=
   continuous_iff_continuousAt.mpr fun x =>
-    Filter.EventuallyEq.continuousAt <| eventually_of_forall fun y => h y x
+    Filter.EventuallyEq.continuousAt <| Eventually.of_forall fun y => h y x
 
 theorem continuousAt_id : ContinuousAt id x :=
   continuous_id.continuousAt
@@ -1730,3 +1778,5 @@ example [TopologicalSpace X] [TopologicalSpace Y] {x₀ : X} (f : X → X → Y)
   -- hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl -- works
 ```
 -/
+
+set_option linter.style.longFile 1900

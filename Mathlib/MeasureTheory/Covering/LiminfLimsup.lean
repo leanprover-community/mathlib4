@@ -105,7 +105,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
     obtain ⟨η, hη, hη'⟩ := this
     replace hη' : 1 ≤ η := by
       simpa only [ENNReal.one_le_coe_iff] using
-        le_of_tendsto (hd' w (fun j => r₁ (f j)) hr <| eventually_of_forall hw') hη'
+        le_of_tendsto (hd' w (fun j => r₁ (f j)) hr <| Eventually.of_forall hw') hη'
     exact (lt_self_iff_false _).mp (lt_of_lt_of_le hη hη')
   refine ⟨1 - C⁻¹, tsub_lt_self zero_lt_one (inv_pos.mpr hC), ?_⟩
   replace hC : C ≠ 0 := ne_of_gt hC
@@ -198,13 +198,13 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
       convert TendstoNhdsWithinIoi.const_mul hM hr <;> simp only [mul_zero]
     refine eventuallyLE_antisymm_iff.mpr ⟨?_, ?_⟩
     · exact blimsup_cthickening_ae_le_of_eventually_mul_le μ p (inv_pos.mpr hM) hr'
-        (eventually_of_forall fun i => by rw [inv_mul_cancel_left₀ hM.ne' (r i)])
+        (Eventually.of_forall fun i => by rw [inv_mul_cancel_left₀ hM.ne' (r i)])
     · exact blimsup_cthickening_ae_le_of_eventually_mul_le μ p hM hr
-        (eventually_of_forall fun i => le_refl _)
+        (Eventually.of_forall fun i => le_refl _)
   let r' : ℕ → ℝ := fun i => if 0 < r i then r i else 1 / ((i : ℝ) + 1)
   have hr' : Tendsto r' atTop (𝓝[>] 0) := by
     refine tendsto_nhdsWithin_iff.mpr
-      ⟨Tendsto.if' hr tendsto_one_div_add_atTop_nhds_zero_nat, eventually_of_forall fun i => ?_⟩
+      ⟨Tendsto.if' hr tendsto_one_div_add_atTop_nhds_zero_nat, Eventually.of_forall fun i => ?_⟩
     by_cases hi : 0 < r i
     · simp [r', hi]
     · simp only [r', hi, one_div, mem_Ioi, if_false, inv_pos]; positivity
@@ -220,8 +220,8 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
     ext i; simp [← and_or_left, lt_or_le 0 (r i)]
   rw [hp, blimsup_or_eq_sup, blimsup_or_eq_sup]
   simp only [sup_eq_union]
-  rw [blimsup_congr (eventually_of_forall h₀), blimsup_congr (eventually_of_forall h₁),
-    blimsup_congr (eventually_of_forall h₂)]
+  rw [blimsup_congr (Eventually.of_forall h₀), blimsup_congr (Eventually.of_forall h₁),
+    blimsup_congr (Eventually.of_forall h₂)]
   exact ae_eq_set_union (this (fun i => p i ∧ 0 < r i) hr') (ae_eq_refl _)
 
 theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ → Set α} {r : ℕ → ℝ}
@@ -268,14 +268,14 @@ theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M 
   let q : ℕ → Prop := fun i => p i ∧ 0 < r i
   have h₁ : blimsup (fun i => thickening (r i) (s i)) atTop p =
       blimsup (fun i => thickening (r i) (s i)) atTop q := by
-    refine blimsup_congr' (eventually_of_forall fun i h => ?_)
+    refine blimsup_congr' (Eventually.of_forall fun i h => ?_)
     replace hi : 0 < r i := by contrapose! h; apply thickening_of_nonpos h
     simp only [q, hi, iff_self_and, imp_true_iff]
   have h₂ : blimsup (fun i => thickening (M * r i) (s i)) atTop p =
       blimsup (fun i => thickening (M * r i) (s i)) atTop q := by
-    refine blimsup_congr' (eventually_of_forall fun i h ↦ ?_)
+    refine blimsup_congr' (Eventually.of_forall fun i h ↦ ?_)
     replace h : 0 < r i := by
       rw [← mul_pos_iff_of_pos_left hM]; contrapose! h; apply thickening_of_nonpos h
     simp only [q, h, iff_self_and, imp_true_iff]
   rw [h₁, h₂]
-  exact blimsup_thickening_mul_ae_eq_aux μ q s hM r hr (eventually_of_forall fun i hi => hi.2)
+  exact blimsup_thickening_mul_ae_eq_aux μ q s hM r hr (Eventually.of_forall fun i hi => hi.2)

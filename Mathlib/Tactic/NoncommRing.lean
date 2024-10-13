@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jireh Loreaux, Scott Morrison, Oliver Nash
+Authors: Jireh Loreaux, Kim Morrison, Oliver Nash
 -/
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Tactic.Abel

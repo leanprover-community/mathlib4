@@ -47,7 +47,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
     rw [Prod.mk.injEq]
     constructor <;> intro h
     · simp only [mem_product, mem_range] at hx
-      have h' : x₁ < p := lt_of_lt_of_le hx.left $ mod_lt _ Fin.size_pos'
+      have h' : x₁ < p := lt_of_lt_of_le hx.left <| mod_lt _ Fin.size_pos'
       rw [h, add_mul_mod_self_left, add_mul_div_left _ _ Fin.size_pos', eq_comm (b := x₂)]
       exact ⟨mod_eq_of_lt h', self_eq_add_left.mpr (div_eq_of_lt h')⟩
     · rw [← h.left, ← h.right, mod_add_div]

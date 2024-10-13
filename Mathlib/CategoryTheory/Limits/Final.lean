@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.IsConnected
@@ -224,7 +224,7 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
       ι :=
         { app := fun X => G.map (homToLift F X) ≫ c.ι.app (lift F X)
           naturality := fun X Y f => by
-            dsimp; simp
+            dsimp; simp only [Category.comp_id]
             -- This would be true if we'd chosen `lift F X` to be `lift F Y`
             -- and `homToLift F X` to be `f ≫ homToLift F Y`.
             apply
@@ -325,6 +325,7 @@ We can't make this an instance, because `F` is not determined by the goal.
 theorem hasColimit_of_comp [HasColimit (F ⋙ G)] : HasColimit G :=
   HasColimit.mk (colimitCoconeOfComp F (getColimitCocone (F ⋙ G)))
 
+include F in
 theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShape D E where
   has_colimit := fun _ => hasColimit_of_comp F
 
@@ -357,7 +358,7 @@ variable {C : Type v} [Category.{v} C] {D : Type u₁} [Category.{v} D] (F : C �
 namespace Final
 
 theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ F.obj X}
-    (t : EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
+    (t : Relation.EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
     Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) := by
   induction t with
   | rel x y r =>
@@ -493,7 +494,7 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
       π :=
         { app := fun d => c.π.app (lift F d) ≫ G.map (homToLift F d)
           naturality := fun X Y f => by
-            dsimp; simp
+            dsimp; simp only [Category.id_comp, Category.assoc]
             -- This would be true if we'd chosen `lift F Y` to be `lift F X`
             -- and `homToLift F Y` to be `homToLift F X ≫ f`.
             apply
@@ -596,6 +597,7 @@ We can't make this an instance, because `F` is not determined by the goal.
 theorem hasLimit_of_comp [HasLimit (F ⋙ G)] : HasLimit G :=
   HasLimit.mk (limitConeOfComp F (getLimitCone (F ⋙ G)))
 
+include F in
 theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D E where
   has_limit := fun _ => hasLimit_of_comp F
 
@@ -810,5 +812,29 @@ theorem IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsC
   isCofiltered_of_isFiltered_op _
 
 end Filtered
+
+section
+
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable {E : Type u₃} [Category.{v₃} E]
+
+open Functor
+
+/-- The functor `StructuredArrow.pre X T S` is final if `T` is final. -/
+instance StructuredArrow.final_pre (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E) :
+    Final (pre X T S) := by
+  refine ⟨fun f => ?_⟩
+  rw [isConnected_iff_of_equivalence (StructuredArrow.preEquivalence T f)]
+  exact Final.out f.right
+
+/-- The functor `CostructuredArrow.pre X T S` is initial if `T` is initial. -/
+instance CostructuredArrow.initial_pre (T : C ⥤ D) [Initial T] (S : D ⥤ E) (X : E) :
+    Initial (CostructuredArrow.pre T S X) := by
+  refine ⟨fun f => ?_⟩
+  rw [isConnected_iff_of_equivalence (CostructuredArrow.preEquivalence T f)]
+  exact Initial.out f.left
+
+end
 
 end CategoryTheory

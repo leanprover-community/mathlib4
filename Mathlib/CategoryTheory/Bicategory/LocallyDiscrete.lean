@@ -82,7 +82,7 @@ instance subsingleton2Hom {a b : LocallyDiscrete C} (f g : a ⟶ b) : Subsinglet
 
 /-- Extract the equation from a 2-morphism in a locally discrete 2-category. -/
 theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f = g :=
-  Discrete.ext _ _ η.1.1
+  Discrete.ext η.1.1
 
 end LocallyDiscrete
 
@@ -102,9 +102,12 @@ instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C) where
 
 /-- A locally discrete bicategory is strict. -/
 instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C) where
-  id_comp f := Discrete.ext _ _ (Category.id_comp _)
-  comp_id f := Discrete.ext _ _ (Category.comp_id _)
-  assoc f g h := Discrete.ext _ _ (Category.assoc _ _ _)
+  id_comp f := Discrete.ext (Category.id_comp _)
+  comp_id f := Discrete.ext (Category.comp_id _)
+  assoc f g h := Discrete.ext (Category.assoc _ _ _)
+
+attribute [local simp]
+  Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso Strict.associator_eqToIso
 
 variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, v₂} B] [Strict B]
 
