@@ -144,7 +144,7 @@ section ScottHausdorff
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
 `d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
 def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α where
-  IsOpen u := ∀ ⦃d : Set α⦄, d ∈ D →  d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
+  IsOpen u := ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
   isOpen_univ := fun d _ ⟨b, hb⟩ _ _ _ _ ↦ ⟨b, hb, (Ici b ∩ d).subset_univ⟩
   isOpen_inter s t hs ht d hd₀ hd₁ hd₂ a hd₃ ha := by
