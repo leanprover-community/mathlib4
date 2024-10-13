@@ -1478,6 +1478,11 @@ theorem sum_range_tsub [AddCommMonoid α] [PartialOrder α] [Sub α] [OrderedSub
     have h₂ : f 0 ≤ f n := h (Nat.zero_le _)
     rw [tsub_add_eq_add_tsub h₂, add_tsub_cancel_of_le h₁]
 
+theorem sum_tsub_distrib [AddCommMonoid α] [PartialOrder α] [ExistsAddOfLE α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] [Sub α]
+    [OrderedSub α] (s : Finset ι) {f g : ι → α} (hfg : ∀ x ∈ s, g x ≤ f x) :
+    ∑ x ∈ s, (f x - g x) = ∑ x ∈ s, f x - ∑ x ∈ s, g x := sum_map_tsub _ hfg
+
 @[to_additive (attr := simp)]
 theorem prod_const (b : β) : ∏ _x ∈ s, b = b ^ s.card :=
   (congr_arg _ <| s.val.map_const b).trans <| Multiset.prod_replicate s.card b
@@ -2257,9 +2262,6 @@ theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
   rfl
 
 end AddCommMonoid
-
-@[deprecated (since := "2023-12-23")] alias Equiv.prod_comp' := Fintype.prod_equiv
-@[deprecated (since := "2023-12-23")] alias Equiv.sum_comp' := Fintype.sum_equiv
 
 theorem Finset.sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
     (s : Finset ι) (p : Sym2 ι → α) :
