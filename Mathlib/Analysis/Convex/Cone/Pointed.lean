@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Apurva Nakade All rights reserved.
+Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
@@ -70,8 +70,8 @@ def _root_.ConvexCone.toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) : P
       convert hS
       simp [← hzero]
     · apply ConvexCone.smul_mem
-      convert hpos
-      exact hx
+      · convert hpos
+      · exact hx
 
 @[simp]
 lemma _root_.ConvexCone.mem_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) (x : E) :
@@ -186,6 +186,7 @@ def dual (S : PointedCone ℝ E) : PointedCone ℝ E :=
 theorem toConvexCone_dual (S : PointedCone ℝ E) : ↑(dual S) = (S : Set E).innerDualCone :=
   rfl
 
+open scoped InnerProductSpace in
 @[simp]
 theorem mem_dual {S : PointedCone ℝ E} {y : E} : y ∈ dual S ↔ ∀ ⦃x⦄, x ∈ S → 0 ≤ ⟪x, y⟫_ℝ := by
   rfl

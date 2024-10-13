@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Logic.Small.Group
 import Mathlib.Logic.Small.Ring
@@ -10,9 +10,9 @@ import Mathlib.Logic.Small.Ring
 # Transfer module and algebra structures from `α` to `Shrink α`.
 -/
 
-set_option autoImplicit true
-
 noncomputable section
+
+variable {α β : Type*}
 
 instance [Semiring α] [AddCommMonoid β] [Module α β] [Small β] : Module α (Shrink β) :=
   (equivShrink _).symm.module α

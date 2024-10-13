@@ -16,7 +16,7 @@ the pretriangulated category `HomotopyCategory C (ComplexShape.up ℤ)` is trian
 
 open CategoryTheory Category Limits Pretriangulated ComposableArrows
 
-variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
+variable {C : Type*} [Category C] [Preadditive C] [HasBinaryBiproducts C]
   {X₁ X₂ X₃ : CochainComplex C ℤ} (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃)
 
 namespace CochainComplex
@@ -58,10 +58,10 @@ the mapping cone of the morphism `mappingCone f ⟶ mappingCone (f ≫ g)`. -/
 noncomputable def hom :
     mappingCone g ⟶ mappingCone (mappingConeCompTriangle f g).mor₁ :=
   lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by dsimp; simp))
-    (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_self 1)) (by
+    (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_cancel 1)) (by
       ext p _ rfl
       simp [mappingConeCompTriangle, map, ext_from_iff _ _ _ rfl,
-        inl_v_d_assoc _ (p+1) p (p+2) (by linarith) (by linarith)])
+        inl_v_d_assoc _ (p+1) p (p+2) (by omega) (by omega)])
 
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes, this
 is the canonical morphism (which is an homotopy equivalence) from the mapping cone of
@@ -72,7 +72,7 @@ noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ map
       ext p
       rw [ext_from_iff _ (p + 1) _ rfl, ext_to_iff _ _ (p + 1) rfl]
       simp [map, δ_zero_cochain_comp,
-        Cochain.comp_v _ _ (add_neg_self 1) p (p+1) p (by linarith) (by linarith)])
+        Cochain.comp_v _ _ (add_neg_cancel 1) p (p+1) p (by omega) (by omega)])
 
 @[reassoc (attr := simp)]
 lemma hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
@@ -86,43 +86,25 @@ this is the `homotopyInvHomId` field of the homotopy equivalence
 the morphism `mappingCone f ⟶ mappingCone (f ≫ g)`. -/
 noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
   (Cochain.equivHomotopy _ _).symm ⟨-((snd _).comp ((fst (f ≫ g)).1.comp
-    ((inl f).comp (inl _) (by linarith)) (show 1 + (-2) = -1 by linarith)) (zero_add (-1))), by
-      rw [δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_self 1),
+    ((inl f).comp (inl _) (by omega)) (show 1 + (-2) = -1 by omega)) (zero_add (-1))), by
+      rw [δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
         Int.negOnePow_neg, Int.negOnePow_one, Units.neg_smul, one_smul,
-        δ_comp _ _ (show 1 + (-2) = -1 by linarith) 2 (-1) 0 (by linarith)
-          (by linarith) (by linarith),
-        δ_comp _ _ (show (-1) + (-1) = -2 by linarith) 0 0 (-1) (by linarith)
-          (by linarith) (by linarith), Int.negOnePow_neg, Int.negOnePow_neg,
-        Int.negOnePow_even 2 ⟨1, by linarith⟩, Int.negOnePow_one, Units.neg_smul,
+        δ_comp _ _ (show 1 + (-2) = -1 by omega) 2 (-1) 0 (by omega)
+          (by omega) (by omega),
+        δ_comp _ _ (show (-1) + (-1) = -2 by omega) 0 0 (-1) (by omega)
+          (by omega) (by omega), Int.negOnePow_neg, Int.negOnePow_neg,
+        Int.negOnePow_even 2 ⟨1, by omega⟩, Int.negOnePow_one, Units.neg_smul,
         one_smul, one_smul, δ_inl, δ_inl, δ_snd, Cocycle.δ_eq_zero, Cochain.zero_comp, add_zero,
         Cochain.neg_comp, neg_neg]
       ext n
       rw [ext_from_iff _ (n + 1) n rfl, ext_from_iff _ (n + 1) n rfl,
-        ext_from_iff _ (n + 2) (n + 1) (by linarith)]
-      simp? [hom, inv, ext_to_iff _ n (n + 1) rfl, map, Cochain.comp_v _ _
-          (add_neg_self 1) n (n + 1) n (by linarith) (by linarith),
-        Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n + 1) (n + 2) n
-          (by linarith) (by linarith),
-        Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n + 2) (n + 1) n
-          (by linarith) (by linarith)] says
-        simp only [mappingConeCompTriangle_obj₁, mappingConeCompTriangle_obj₂,
-          mappingConeCompTriangle_mor₁, map, inv, hom, Cochain.ofHom_comp, ofHom_desc, ofHom_lift,
-          descCocycle_coe, AddSubmonoid.coe_zero, Cochain.comp_zero_cochain_v,
-          inl_v_descCochain_v_assoc, Cochain.zero_cochain_comp_v, assoc, inl_v_snd_v_assoc,
-          zero_comp, Cochain.id_comp, Cochain.comp_assoc_of_first_is_zero_cochain,
-          Cochain.comp_add, Cochain.comp_neg, Cochain.comp_assoc_of_second_is_zero_cochain,
-          neg_add_rev, neg_neg, Cochain.add_v, Cochain.neg_v,
-          Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n (by linarith) (by linarith),
-          Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n + 1) (n + 2) n (by linarith)
-            (by linarith),
-          Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n + 2) (n + 1) n (by linarith)
-            (by linarith),
-          Cochain.ofHom_v, HomologicalComplex.id_f, Preadditive.comp_add, Preadditive.comp_neg,
-          inl_v_fst_v_assoc, neg_zero, add_zero, comp_id, add_left_neg, inr_f_snd_v_assoc,
-          inr_f_descCochain_v_assoc, inr_f_fst_v_assoc, comp_zero, zero_add,
-          ext_to_iff _ n (n + 1) rfl, liftCochain_v_fst_v, inl_v_descCochain_v, inl_v_fst_v,
-          liftCochain_v_snd_v, Cochain.zero_v, inl_v_snd_v, and_self, neg_add_cancel_right,
-          inr_f_descCochain_v, inr_f_fst_v, inr_f_snd_v]⟩
+        ext_from_iff _ (n + 2) (n + 1) (by omega)]
+      simp [hom, inv, ext_to_iff _ n (n + 1) rfl, map, Cochain.comp_v _ _
+          (add_neg_cancel 1) n (n + 1) n (by omega) (by omega),
+        Cochain.comp_v _ _ (show 1 + -2 = -1 by omega) (n + 1) (n + 2) n
+          (by omega) (by omega),
+        Cochain.comp_v _ _ (show (-1) + -1 = -2 by omega) (n + 2) (n + 1) n
+          (by omega) (by omega)]⟩
 
 end MappingConeCompHomotopyEquiv
 
@@ -175,26 +157,28 @@ end CochainComplex
 
 namespace HomotopyCategory
 
+variable [HasZeroObject C]
+
 lemma mappingConeCompTriangleh_distinguished :
     (CochainComplex.mappingConeCompTriangleh f g) ∈
       distTriang (HomotopyCategory C (ComplexShape.up ℤ)) := by
-  refine' ⟨_, _, (CochainComplex.mappingConeCompTriangle f g).mor₁, ⟨_⟩⟩
-  refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (isoOfHomotopyEquiv
-    (CochainComplex.mappingConeCompHomotopyEquiv f g)) (by aesop_cat) (by simp) _
-  · dsimp [CochainComplex.mappingConeCompTriangleh]
-    rw [CategoryTheory.Functor.map_id, comp_id, ← Functor.map_comp_assoc]
-    congr 2
-    exact (CochainComplex.mappingConeCompHomotopyEquiv_comm₂ f g).symm
+  refine ⟨_, _, (CochainComplex.mappingConeCompTriangle f g).mor₁, ⟨?_⟩⟩
+  refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (isoOfHomotopyEquiv
+    (CochainComplex.mappingConeCompHomotopyEquiv f g)) (by aesop_cat) (by simp) ?_
+  dsimp [CochainComplex.mappingConeCompTriangleh]
+  rw [CategoryTheory.Functor.map_id, comp_id, ← Functor.map_comp_assoc]
+  congr 2
+  exact (CochainComplex.mappingConeCompHomotopyEquiv_comm₂ f g).symm
 
 noncomputable instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) :=
   IsTriangulated.mk' (by
     rintro ⟨X₁ : CochainComplex C ℤ⟩ ⟨X₂ : CochainComplex C ℤ⟩ ⟨X₃ : CochainComplex C ℤ⟩ u₁₂' u₂₃'
     obtain ⟨u₁₂, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective u₁₂'
     obtain ⟨u₂₃, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective u₂₃'
-    refine' ⟨_, _, _, _, _, _, _, _, Iso.refl _, Iso.refl _, Iso.refl _, by simp, by simp,
+    refine ⟨_, _, _, _, _, _, _, _, Iso.refl _, Iso.refl _, Iso.refl _, by simp, by simp,
         _, _, mappingCone_triangleh_distinguished u₁₂,
         _, _, mappingCone_triangleh_distinguished u₂₃,
-        _, _, mappingCone_triangleh_distinguished (u₁₂ ≫ u₂₃), ⟨_⟩⟩
+        _, _, mappingCone_triangleh_distinguished (u₁₂ ≫ u₂₃), ⟨?_⟩⟩
     let α := CochainComplex.mappingCone.triangleMap u₁₂ (u₁₂ ≫ u₂₃) (𝟙 X₁) u₂₃ (by rw [id_comp])
     let β := CochainComplex.mappingCone.triangleMap (u₁₂ ≫ u₂₃) u₂₃ u₁₂ (𝟙 X₃) (by rw [comp_id])
     refine Triangulated.Octahedron.mk ((HomotopyCategory.quotient _ _).map α.hom₃)
@@ -203,7 +187,7 @@ noncomputable instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ
     · exact ((quotient _ _).mapTriangle.map α).comm₃.symm.trans (by simp [α])
     · exact ((quotient _ _).mapTriangle.map β).comm₂.trans (by simp [β])
     · exact ((quotient _ _).mapTriangle.map β).comm₃
-    · refine' isomorphic_distinguished _ (mappingConeCompTriangleh_distinguished u₁₂ u₂₃) _ _
+    · refine isomorphic_distinguished _ (mappingConeCompTriangleh_distinguished u₁₂ u₂₃) _ ?_
       exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
         (by aesop_cat) (by aesop_cat) (by simp [CochainComplex.mappingConeCompTriangleh]))
 

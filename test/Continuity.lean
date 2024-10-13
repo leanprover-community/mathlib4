@@ -1,6 +1,6 @@
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Topology.Basic
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 
 set_option autoImplicit true
 section basic
@@ -27,8 +27,7 @@ example {g : X → X} (y : Y) : Continuous ((fun _ ↦ y) ∘ g) := by continuit
 
 example {f : X → Y} (x : X) : Continuous (fun (_ : X) ↦ f x) := by continuity
 
-example [TopologicalSpace X] [TopologicalSpace Y]
-    (f₁ f₂ : X → Y) (hf₁ : Continuous f₁) (hf₂ : Continuous f₂)
+example (f₁ f₂ : X → Y) (hf₁ : Continuous f₁) (hf₂ : Continuous f₂)
     (g : Y → ℝ) (hg : Continuous g) : Continuous (fun x => (max (g (f₁ x)) (g (f₂ x))) + 1) := by
   continuity
 
@@ -46,7 +45,7 @@ example : Continuous (fun x : ℝ => exp ((max x (-x)) + sin x)^2) := by
 example : Continuous (fun x : ℝ => exp ((max x (-x)) + sin (cos x))^2) := by
   continuity
 
--- Examples taken from `Topology.ContinuousFunction.Basic`:
+-- Examples taken from `Topology.ContinuousMap.Basic`:
 
 example (b : Y) : Continuous (fun _ : X => b) := by continuity
 
@@ -54,8 +53,7 @@ example (f : C(X, Y)) (g : C(Y, Z)) : Continuous (g ∘ f) := by continuity
 
 example (f : C(X, Y)) (g : C(X, Z)) : Continuous (fun x => (f x, g x)) := by continuity
 
-example (f : C(X, Y)) (g : C(W, Z)) : Continuous (Prod.map f g) := --by continuity
-  f.continuous.prod_map g.continuous
+example (f : C(X, Y)) (g : C(W, Z)) : Continuous (Prod.map f g) := by continuity
 
 example (f : ∀ i, C(X, X' i)) : Continuous (fun a i => f i a) := by continuity
 
