@@ -94,8 +94,7 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
   convert IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
     (isTopologicalBasis_opens (α := WithScott α))
     WithLower.toLower WithScott.toScott
-  rw [@topology_eq_lawson α _ _ _]
-  rw [lawson]
+  rw [@topology_eq_lawson α _ _ _, lawson]
   apply (congrArg₂ Inf.inf _) _
   · letI _ := lower α; exact @IsLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩ |>.inducing.induced
   letI _ := scott α univ
@@ -179,7 +178,7 @@ lemma lawsonClosed_of_lowerClosed (s : Set α) (h : IsClosed (WithLower.ofLower 
 /-- An upper set is Lawson open if and only if it is Scott open -/
 lemma lawsonOpen_iff_scottOpen_of_isUpperSet {s : Set α} (h : IsUpperSet s) :
     IsOpen (WithLawson.ofLawson ⁻¹' s) ↔ IsOpen (WithScott.ofScott ⁻¹' s) :=
-  ⟨fun hs => (IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open (D := univ)).mpr
+  ⟨fun hs => IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open (D := univ).mpr
     ⟨h, (scottHausdorff_le_lawson s) hs⟩, lawson_le_scott _⟩
 
 variable (L : TopologicalSpace α) (S : TopologicalSpace α)
@@ -209,7 +208,7 @@ include S in
 lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
     IsClosed[L] s ↔ DirSupClosed s := by
   rw [lawsonClosed_iff_scottClosed_of_isLowerSet L S _ h,
-    @IsScott.isClosed_iff_isLowerSet_and_dirSupClosed (D := univ)]
+    @IsScott.isClosed_iff_isLowerSet_and_dirSupClosed]
   aesop
 
 end Preorder
@@ -228,7 +227,7 @@ lemma singleton_isClosed (a : α) : IsClosed ({a} : Set α) := by
     (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
   rw [lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
   apply lawsonClosed_of_scottClosed
-  exact IsScott.isClosed_Iic (D := univ)
+  exact IsScott.isClosed_Iic
 
 -- see Note [lower instance priority]
 /-- The Lawson topology on a partial order is T₀. -/
