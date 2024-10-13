@@ -66,6 +66,8 @@ variable {𝔸} (a b c : 𝕂)
 
 /-- `ordinaryHypergeometric (a b c : 𝕂) : 𝔸 → 𝔸` is the ordinary hypergeometric map, defined as the
 sum of the `FormalMultilinearSeries` `ordinaryHypergeometricSeries 𝔸 a b c`.
+
+Note that this takes the junk value `0` outside the radius of convergence.
 -/
 noncomputable def ordinaryHypergeometric (x : 𝔸) : 𝔸 :=
   (ordinaryHypergeometricSeries 𝔸 a b c).sum x
@@ -75,30 +77,29 @@ notation "₂F₁" => ordinaryHypergeometric
 
 theorem ordinaryHypergeometricSeries_apply_eq (x : 𝔸) (n : ℕ) :
     (ordinaryHypergeometricSeries 𝔸 a b c n fun _ => x) =
-    ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
-    ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n := by
+      ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
+        ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n := by
   simp [ordinaryHypergeometricSeries]
 
 /-- This naming follows the convention of `NormedSpace.expSeries_apply_eq'`. -/
 theorem ordinaryHypergeometricSeries_apply_eq' (x : 𝔸) :
     (fun n => ordinaryHypergeometricSeries 𝔸 a b c n fun _ => x) =
-    fun n => ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
-    ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n := by
+      fun n => ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
+        ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n := by
   simp [ordinaryHypergeometricSeries]
 
 theorem ordinaryHypergeometric_sum_eq (x : 𝔸) : (ordinaryHypergeometricSeries 𝔸 a b c).sum x =
     ∑' n : ℕ, ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
-    ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n :=
+      ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n :=
   tsum_congr fun n => ordinaryHypergeometricSeries_apply_eq a b c x n
 
 theorem ordinaryHypergeometric_eq_tsum : ₂F₁ a b c =
     fun (x : 𝔸) => ∑' n : ℕ, ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a *
-    (ascPochhammer 𝕂 n).eval b * ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n :=
+      (ascPochhammer 𝕂 n).eval b * ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n :=
   funext (ordinaryHypergeometric_sum_eq a b c)
 
 theorem ordinaryHypergeometricSeries_apply_zero (n : ℕ) :
-    (ordinaryHypergeometricSeries 𝔸 a b c n fun _ => (0:𝔸)) =
-    Pi.single (f := fun _ => 𝔸) 0 1 n := by
+    (ordinaryHypergeometricSeries 𝔸 a b c n fun _ => 0) = Pi.single (f := fun _ => 𝔸) 0 1 n := by
   rw [ordinaryHypergeometricSeries_apply_eq]
   cases n <;> simp
 
@@ -122,14 +123,13 @@ theorem ordinaryHypergeometric_unop [T2Space 𝔸] (x : 𝔸ᵐᵒᵖ) :
 theorem ordinaryHypergeometricSeries_symm :
     ordinaryHypergeometricSeries 𝔸 a b c = ordinaryHypergeometricSeries 𝔸 b a c := by
   ext
-  simp [ordinaryHypergeometricSeries]
-  group
+  simp [ordinaryHypergeometricSeries, mul_assoc, mul_left_comm]
 
 /-- If any parameter to the series is a sufficiently large nonpositive integer, then the series
 term is zero. -/
 lemma ordinaryHypergeometricSeries_eq_zero_of_neg_nat {n k : ℕ}
     (habc : k = -a ∨ k = -b ∨ k = -c) (hk : k < n) :
-    ordinaryHypergeometricSeries 𝔸 a b c n = 0 := by
+      ordinaryHypergeometricSeries 𝔸 a b c n = 0 := by
   rw [ordinaryHypergeometricSeries]
   rcases habc with h | h | h
   all_goals
@@ -142,29 +142,32 @@ section RCLike
 
 open Asymptotics Filter Real Set Nat
 
-variable {𝕂 : Type*} (𝔸 𝔹 : Type*) [RCLike 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+open scoped Topology
+
+variable {𝕂 : Type*} (𝔸 : Type*) [RCLike 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   (a b c : 𝕂)
 
-theorem ordinaryHypergeometric_radius_top_of_neg_nat₁ {ak : ℕ} (ha : ak = -a) :
-    (ordinaryHypergeometricSeries 𝔸 a b c).radius = ⊤ := by
-  apply FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + ak)
-  exact fun _ ↦ ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b c (Or.inl ha) (by linarith)
+theorem ordinaryHypergeometric_radius_top_of_neg_nat₁ {k : ℕ} :
+    (ordinaryHypergeometricSeries 𝔸 (-(k : 𝕂)) b c).radius = ⊤ := by
+  refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
+  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat (-(k : 𝕂)) b c
+    (Or.inl (neg_neg _).symm) (by omega)
 
-theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {bk : ℕ} (hb : bk = -b) :
-    (ordinaryHypergeometricSeries 𝔸 a b c).radius = ⊤ := by
+theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {k : ℕ} :
+    (ordinaryHypergeometricSeries 𝔸 a (-(k : 𝕂)) c).radius = ⊤ := by
   rw [ordinaryHypergeometricSeries_symm]
-  exact ordinaryHypergeometric_radius_top_of_neg_nat₁ 𝔸 b a c hb
+  exact ordinaryHypergeometric_radius_top_of_neg_nat₁ 𝔸 a c
 
-theorem ordinaryHypergeometric_radius_top_of_neg_nat₃ {ck : ℕ} (hc : ck = -c) :
-    (ordinaryHypergeometricSeries 𝔸 a b c).radius = ⊤ := by
-  apply FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + ck)
-  refine fun _ ↦ ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b c (Or.inr <| Or.inr hc)
-    (by linarith)
+theorem ordinaryHypergeometric_radius_top_of_neg_nat₃ {k : ℕ} :
+    (ordinaryHypergeometricSeries 𝔸 a b (-(k : 𝕂))).radius = ⊤ := by
+  refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
+  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b (-(k : 𝕂))
+    (Or.inr <| Or.inr (neg_neg _).symm) (by omega)
 
 /-- An iff variation on `ordinaryHypergeometricSeries_eq_zero_of_nonpos_int` for `[RCLike 𝕂]`. -/
 lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :
     ordinaryHypergeometricSeries 𝔸 a b c n = 0 ↔
-    ∃ k : ℕ, (k = -a ∨ k = -b ∨ k = -c) ∧ k < n := by
+      ∃ k < n, (k = -a ∨ k = -b ∨ k = -c) := by
   refine ⟨fun h ↦ ?_, fun zero ↦ ?_⟩
   · rw [ordinaryHypergeometricSeries,
       smul_eq_zero (c:=(_ * (Polynomial.eval c (ascPochhammer 𝕂 n))⁻¹))
@@ -175,18 +178,18 @@ lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :
       · exact False.elim <| Nat.cast_ne_zero.2 (Nat.factorial_ne_zero n) hn
       all_goals
         let ⟨kn, hkn, hn⟩ := (ascPochhammer_eval_eq_zero_iff _ _).1 h
-        exact ⟨kn, by tauto, hn⟩
+        exact ⟨kn, by tauto⟩
     · rw [ContinuousMultilinearMap.ext_iff] at hm
       absurd hm
       push_neg
       exact ⟨fun _ ↦ 1, by simp⟩
   · have ⟨_, h, hn⟩ := zero
-    exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b c h hn
+    exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b c hn h
 
 theorem ordinaryHypergeometricSeries_succ_norm_div_norm (n : ℕ)
     (habc : ∀ kn : ℕ, (kn = -a ∨ kn = -b ∨ kn = -c) → n ≤ kn) :
-    ‖ordinaryHypergeometricSeries 𝔸 a b c (n+1)‖ / ‖ordinaryHypergeometricSeries 𝔸 a b c n‖ =
-    ‖a + n‖ * ‖b + n‖ * ‖c + n‖⁻¹ * ‖1 + (n : 𝕂)‖⁻¹ := by
+      ‖ordinaryHypergeometricSeries 𝔸 a b c (n+1)‖ / ‖ordinaryHypergeometricSeries 𝔸 a b c n‖ =
+        ‖a + n‖ * ‖b + n‖ * ‖c + n‖⁻¹ * ‖1 + (n : 𝕂)‖⁻¹ := by
   simp [ordinaryHypergeometricSeries, factorial_succ, ascPochhammer_succ_eval]
   rw [norm_smul (x:=ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 (n + 1) 𝔸),
     norm_smul (x:=ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸)]
@@ -212,7 +215,7 @@ theorem ordinaryHypergeometricSeries_succ_norm_div_norm (n : ℕ)
   exact cast_ne_zero.2 (factorial_ne_zero n)
 
 private theorem linear_div_tendsto_one_atTop :
-    Tendsto (fun (k:ℕ) ↦ (a + k) / (b + k)) atTop (nhds 1) := by
+    Tendsto (fun (k:ℕ) ↦ (a + k) / (b + k)) atTop (𝓝 1) := by
   apply Filter.Tendsto.congr'
   case f₁ => exact fun k ↦ (a * (↑k)⁻¹ + 1) / (b * (↑k)⁻¹ + 1)
   refine ((eventually_ne_atTop 0).mp (Eventually.of_forall ?_))
@@ -230,7 +233,7 @@ private theorem linear_div_tendsto_one_atTop :
 /-- The ratio of successive terms of `ordinaryHypergeometricSeries` tends to one. This theorem
 is used in the proof `ordinaryHypergeometric_ratio_tendsto_nhds_atTop`. -/
 theorem ordinaryHypergeometricSeries_ratio_tendsto_one_atTop :
-    Tendsto (fun (k:ℕ) ↦ (a + k) * (b + k) * (c + k)⁻¹ * ((1 : 𝕂) + k)⁻¹) atTop (nhds 1) := by
+    Tendsto (fun (k:ℕ) ↦ (a + k) * (b + k) * (c + k)⁻¹ * ((1 : 𝕂) + k)⁻¹) atTop (𝓝 1) := by
   conv =>
     enter [1, n]
     rw [mul_assoc, ← mul_inv, ← div_eq_mul_inv, mul_div_mul_comm]
@@ -241,8 +244,8 @@ theorem ordinaryHypergeometricSeries_ratio_tendsto_one_atTop :
 is used for the ratio test in `ordinaryHypergeometricSeries_radius_eq_one`. -/
 theorem ordinaryHypergeometric_ratio_tendsto_nhds_atTop {r : ℝ} (hr : 0 < r)
     (habc : ∀ kn : ℕ, ↑kn ≠ -a ∧ ↑kn ≠ -b ∧ ↑kn ≠ -c) : Tendsto (fun n ↦
-    ‖‖ordinaryHypergeometricSeries 𝔸 a b c (n + 1)‖ * r ^ (n + 1)‖ /
-    ‖‖ordinaryHypergeometricSeries 𝔸 a b c n‖ * r ^ n‖) atTop (nhds r) := by
+      ‖‖ordinaryHypergeometricSeries 𝔸 a b c (n + 1)‖ * r ^ (n + 1)‖ /
+        ‖‖ordinaryHypergeometricSeries 𝔸 a b c n‖ * r ^ n‖) atTop (𝓝 r) := by
   simp_rw [← norm_div, mul_div_mul_comm, pow_succ, mul_div_right_comm]
   apply Real.norm_of_nonneg (le_of_lt hr) ▸ Filter.Tendsto.norm
   conv =>
@@ -260,7 +263,7 @@ are non-positive integers. This proof uses a similar technique to
 `formalMultilinearSeries_geometric_radius`. -/
 theorem ordinaryHypergeometricSeries_radius_eq_one
     (habc : ∀ kn : ℕ, ↑kn ≠ -a ∧ ↑kn ≠ -b ∧ ↑kn ≠ -c) :
-    (ordinaryHypergeometricSeries 𝔸 a b c).radius = 1 := by
+      (ordinaryHypergeometricSeries 𝔸 a b c).radius = 1 := by
   apply le_antisymm <;> refine ENNReal.le_of_forall_nnreal_lt (fun r hr ↦ ?_)
   · rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
     have := FormalMultilinearSeries.summable_norm_mul_pow _ hr

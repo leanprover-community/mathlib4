@@ -22,8 +22,8 @@ that are focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactor
 
 As with many other families of polynomials, even though the coefficients are always in `ℕ` or `ℤ` ,
 we define the polynomial with coefficients in any `[Semiring S]` or `[Ring R]`.
-With constraints `[NeZero (1 : 𝕂)]` and `[NoZeroDivisors 𝕂]` we show that the
-evaluation of `ascPochhammer S n` is zero iff `n` is a sufficiently large non-positive integer.
+In an integral domain `S`, we show that `ascPochhammer S n` is zero iff
+`n` is a sufficiently large non-positive integer.
 
 ## TODO
 
@@ -372,27 +372,21 @@ theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
   rw [← Nat.cast_add, descPochhammer_eval_eq_descFactorial ℤ (a + b) b,
     Nat.add_descFactorial_eq_ascFactorial]
 
-/- If the Pochhammer function is evaluated at a sufficiently large non-postive integer `k`, then it
-is zero. "Sufficiently large" means that `-n < k`. -/
+/- The Pochhammer polynomial of degree `n` has roots at `0`, `-1`, ..., `-(n - 1)`. -/
 theorem ascPochhammer_eval_neg_coe_nat_of_lt {R : Type u} [Ring R] {n k : ℕ} (h : k < n) :
     (ascPochhammer R n).eval (-(k : R)) = 0 := by
   induction n with
-  | zero => exact False.elim (Nat.not_lt_zero k h)
+  | zero => contradiction
   | succ n ih =>
     rw [ascPochhammer_succ_eval]
-    have {a b : R} : a = 0 ∨ b = 0 → a * b = 0 := -- This theorem should be moved to `mul_eq_zero`
-      fun o => o.elim (fun h => mul_eq_zero_of_left h b) (mul_eq_zero_of_right a)
-    refine this <| or_iff_not_imp_left.2 fun np => ?_
-    simp [(Nat.lt_succ_iff_lt_or_eq.1 h).resolve_left (ih.mt np)]
+    rcases lt_trichotomy k n with hkn | rfl | hkn
+    · simp [ih hkn]
+    · simp
+    · omega
 
-end Ring
-
-section FieldLike
-
-/-- The iff variation of `ascPochhammer_eval_neg_coe_nat_of_lt` for a ring with
-`[NeZero (1 : R)]` and  `[NoZeroDivisors R]`. -/
-theorem ascPochhammer_eval_eq_zero_iff {R : Type*} [Ring R] [NeZero (1 : R)] [NoZeroDivisors R]
-    (n : ℕ) (r : R) : (ascPochhammer R n).eval r = 0 ↔ ∃ rn : ℕ, rn = -r ∧ rn < n := by
+/-- The iff variation of `ascPochhammer_eval_neg_coe_nat_of_lt` for an integral domain. -/
+theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
+    (n : ℕ) (r : R) : (ascPochhammer R n).eval r = 0 ↔ ∃ k < n, k = -r := by
   refine ⟨fun zero' ↦ ?_, fun hrn ↦ ?_⟩
   · induction n with
     | zero => simp only [ascPochhammer_zero, Polynomial.eval_one, one_ne_zero] at zero'
@@ -401,11 +395,11 @@ theorem ascPochhammer_eval_eq_zero_iff {R : Type*} [Ring R] [NeZero (1 : R)] [No
       cases zero' with
       | inl h =>
         have ⟨rn, hrn, rrn⟩ := ih h
-        exact ⟨rn, hrn, le_trans rrn <| Nat.cast_le.2 <| Nat.le_succ n⟩
+        exact ⟨rn, by omega, rrn⟩
       | inr h =>
-        exact ⟨n, eq_neg_of_add_eq_zero_right h, lt_add_one n⟩
+        exact ⟨n, lt_add_one n, eq_neg_of_add_eq_zero_right h⟩
   · have ⟨rn, hrn, rnn⟩ := hrn
-    convert ascPochhammer_eval_neg_coe_nat_of_lt rnn
-    simp [hrn]
+    convert ascPochhammer_eval_neg_coe_nat_of_lt hrn
+    simp [rnn]
 
-end FieldLike
+end Ring
