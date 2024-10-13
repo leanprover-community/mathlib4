@@ -42,12 +42,20 @@ variable {M} {N : Type u'} [Monoid N]
 /-- A multiplicative morphism between monoids gives a monoidal functor between the corresponding
 discrete monoidal categories.
 -/
-@[to_additive (attr := simps) Discrete.addMonoidalFunctor]
-def Discrete.monoidalFunctor (F : M →* N) : MonoidalFunctor (Discrete M) (Discrete N) where
-  obj X := Discrete.mk (F X.as)
-  map f := Discrete.eqToHom (DFunLike.congr_arg F (eq_of_hom f))
-  ε := Discrete.eqToHom F.map_one.symm
-  μ X Y := Discrete.eqToHom (F.map_mul X.as Y.as).symm
+@[to_additive Discrete.addMonoidalFunctor]
+def Discrete.monoidalFunctor (F : M →* N) : Discrete M ⥤ Discrete N :=
+  Discrete.functor (fun X ↦ Discrete.mk (F X))
+
+@[to_additive (attr := simp) Discrete.addMonoidalFunctor_obj]
+lemma Discrete.monoidalFunctor_obj (F : M →* N) (m : M) :
+    (Discrete.monoidalFunctor F).obj (Discrete.mk m) = Discrete.mk (F m) := rfl
+
+@[to_additive Discrete.addMonoidalFunctorMonoidal]
+instance Discrete.monoidalFunctorMonoidal (F : M →* N) :
+    (Discrete.monoidalFunctor F).Monoidal :=
+    Functor.CoreMonoidal.toMonoidal
+      { εIso := Discrete.eqToIso F.map_one.symm
+        μIso := fun m₁ m₂ ↦ Discrete.eqToIso (F.map_mul _ _).symm }
 
 /-- An additive morphism between add_monoids gives a
 monoidal functor between the corresponding discrete monoidal categories. -/
@@ -60,9 +68,11 @@ variable {K : Type u} [Monoid K]
 @[to_additive Discrete.addMonoidalFunctorComp
       "The monoidal natural isomorphism corresponding to\ncomposing two additive morphisms."]
 def Discrete.monoidalFunctorComp (F : M →* N) (G : N →* K) :
-    Discrete.monoidalFunctor F ⊗⋙
-      Discrete.monoidalFunctor G ≅ Discrete.monoidalFunctor (G.comp F) where
-  hom := { app := fun X => 𝟙 _ }
-  inv := { app := fun X => 𝟙 _ }
+    Discrete.monoidalFunctor F ⋙ Discrete.monoidalFunctor G ≅
+      Discrete.monoidalFunctor (G.comp F) := Iso.refl _
+
+@[to_additive Discrete.addMonoidalFunctorComp_isMonoidal]
+instance Discrete.monoidalFunctorComp_isMonoidal (F : M →* N) (G : N →* K) :
+    NatTrans.IsMonoidal (Discrete.monoidalFunctorComp F G).hom where
 
 end CategoryTheory

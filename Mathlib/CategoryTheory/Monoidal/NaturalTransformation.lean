@@ -18,7 +18,7 @@ an additional compatibility relation with the tensorators:
 
 open CategoryTheory
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 open CategoryTheory.Category
 
@@ -61,6 +61,19 @@ instance {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' : G₁
     simp only [comp_obj, comp_μ, hcomp_app, assoc, naturality_assoc,
       tensor_assoc, tensor_comp, μ_natural_assoc]
     simp only [← map_comp, tensor]
+
+instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.leftUnitor.hom where
+instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.rightUnitor.hom where
+
+instance {E' : Type u₄} [Category.{v₄} E'] [MonoidalCategory E']
+    (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') [F.LaxMonoidal] [G.LaxMonoidal] [H.LaxMonoidal]:
+    NatTrans.IsMonoidal (Functor.associator F G H).hom where
+  unit := by
+    simp only [comp_obj, comp_ε, assoc, Functor.map_comp, associator_hom_app, comp_id,
+      Functor.comp_map]
+  tensor X Y := by
+    simp only [comp_obj, comp_μ, associator_hom_app, Functor.comp_map, map_comp,
+      comp_id, tensorHom_id, id_whiskerRight, assoc, id_comp]
 
 end IsMonoidal
 
