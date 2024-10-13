@@ -704,7 +704,7 @@ the full version `ProbabilityTheory.strong_law_ae`. -/
 lemma strong_law_ae_of_measurable
     (X : ℕ → Ω → E) (hint : Integrable (X 0) μ) (h' : StronglyMeasurable (X 0))
     (hindep : Pairwise (fun i j ↦ IndepFun (X i) (X j) μ))
-     (hident : ∀ i, IdentDistrib (X i) (X 0) μ μ) :
+    (hident : ∀ i, IdentDistrib (X i) (X 0) μ μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i ∈ range n, X i ω)) atTop (𝓝 (μ [X 0])) := by
   /- Choose a simple function `φ` such that `φ (X 0)` approximates well enough `X 0` -- this is
   possible as `X 0` is strongly measurable. Then `φ (X n)` approximates well `X n`.
