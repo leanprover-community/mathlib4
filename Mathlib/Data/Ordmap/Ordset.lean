@@ -530,12 +530,12 @@ theorem splitMax_eq :
   | _, l, x, nil => rfl
   | _, l, x, node ls ll lx lr => by rw [splitMax', splitMax_eq ls ll lx lr, findMax', eraseMax]
 
--- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
+@[elab_as_elim]
 theorem findMin'_all {P : α → Prop} : ∀ (t) (x : α), All P t → P x → P (findMin' t x)
   | nil, _x, _, hx => hx
   | node _ ll lx _, _, ⟨h₁, h₂, _⟩, _ => findMin'_all ll lx h₁ h₂
 
--- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
+@[elab_as_elim]
 theorem findMax'_all {P : α → Prop} : ∀ (x : α) (t), P x → All P t → P (findMax' x t)
   | _x, nil, hx, _ => hx
   | _, node _ _ lx lr, _, ⟨_, h₂, h₃⟩ => findMax'_all lx lr h₂ h₃
@@ -1111,7 +1111,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
   · rcases Nat.eq_zero_or_pos (size rl) with rl0 | rl0
     · rw [rl0, not_lt, Nat.le_zero, Nat.mul_eq_zero] at h
       replace h := h.resolve_left (by decide)
-      erw [rl0, h, Nat.le_zero, Nat.mul_eq_zero] at H2
+      rw [rl0, h, Nat.le_zero, Nat.mul_eq_zero] at H2
       rw [hr.2.size_eq, rl0, h, H2.resolve_left (by decide)] at H1
       cases H1 (by decide)
     refine hl.node4L hr.left hr.right rl0 ?_

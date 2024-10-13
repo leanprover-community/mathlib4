@@ -548,6 +548,26 @@ theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
 theorem Monic.comp_X_sub_C {p : R[X]} (hp : p.Monic) (r : R) : (p.comp (X - C r)).Monic := by
   simpa using hp.comp_X_add_C (-r)
 
+@[simp]
+theorem comp_neg_X_leadingCoeff_eq (p : R[X]) :
+    (p.comp (-X)).leadingCoeff = (-1) ^ p.natDegree * p.leadingCoeff := by
+  nontriviality R
+  by_cases h : p = 0
+  · simp [h]
+  rw [Polynomial.leadingCoeff, natDegree_comp_eq_of_mul_ne_zero, coeff_comp_degree_mul_degree] <;>
+  simp [mul_comm, h]
+
+theorem Monic.neg_one_pow_natDegree_mul_comp_neg_X {p : R[X]} (hp : p.Monic) :
+    ((-1) ^ p.natDegree * p.comp (-X)).Monic := by
+  simp only [Monic]
+  calc
+    ((-1) ^ p.natDegree * p.comp (-X)).leadingCoeff =
+        (p.comp (-X) * C ((-1) ^ p.natDegree)).leadingCoeff := by
+      simp [mul_comm]
+    _ = 1 := by
+      apply monic_mul_C_of_leadingCoeff_mul_eq_one
+      simp [← pow_add, hp]
+
 variable [IsDomain R] {p q : R[X]}
 
 @[simp]

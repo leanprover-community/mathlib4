@@ -419,7 +419,7 @@ instance ring : Ring (FreeAbelianGroup α) :=
       dsimp only [(· * ·), Mul.mul, OfNat.ofNat, One.one]
       rw [lift.of]
       refine FreeAbelianGroup.induction_on x rfl (fun L ↦ ?_) (fun L ih ↦ ?_) fun x1 x2 ih1 ih2 ↦ ?_
-      · erw [lift.of]
+      · rw [lift.of]
         congr 1
         exact mul_one L
       · rw [map_neg, ih]
