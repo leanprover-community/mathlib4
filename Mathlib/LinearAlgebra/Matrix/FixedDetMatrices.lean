@@ -35,9 +35,8 @@ lemma ext (m : R) {A B : FixedDetMatrix n R m} (h : ∀ i j , A.1 i j = B.1 i j)
   ext i j
   apply h
 
-instance (m : R) : HSMul (SpecialLinearGroup n R) (FixedDetMatrix n R m)
-    ((FixedDetMatrix n R m)) :=
-{ hSMul := fun g A => ⟨g * A.1, by simp only [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩}
+instance (m : R) : SMul (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
+  smul g A := ⟨g * A.1, by simp only [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩
 
 lemma smul_def (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrix n R m)) : g • A =
     ⟨g * A.1, by simp only [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩ := rfl
