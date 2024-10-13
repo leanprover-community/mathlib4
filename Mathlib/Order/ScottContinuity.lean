@@ -183,8 +183,8 @@ lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
     IsLUB (f '' d) u ↔ IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) u := by
   rw [IsLUB, Prod.upperBounds hf hd, ← IsLUB]
 
-
-lemma step1' {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.snd '' d).Nonempty)
+/-- TODO: Come up with better name -/
+lemma step1 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.snd '' d).Nonempty)
     (hd₂ : DirectedOn (· ≤ ·) (Prod.snd '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
     (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) {a : α} :
     IsLUB (f '' {a} ×ˢ (Prod.snd '' d)) (f (a,p₂)) := by
@@ -203,7 +203,7 @@ lemma ScottContinuous_prod_of_ScottContinuous {f : α × β → γ}
     (fun a => (h₂ a).monotone) ) hd₂]
   rw [← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion]
   apply IsLUB.iUnion
-  apply fun a => step1' (Nonempty.image Prod.snd hd₁) (DirectedOn.Prod.snd hd₂) hdp h₁
+  apply fun a => step1 (Nonempty.image Prod.snd hd₁) (DirectedOn.Prod.snd hd₂) hdp h₁
   have e2 : IsLUB ((fun a ↦ f (a, p.2)) '' (Prod.fst '' d)) (f (p.1,p.2)) :=
     h₂ p.2 (Nonempty.image Prod.fst hd₁) (DirectedOn.Prod.fst hd₂) ((isLUB_prod (p.1,p.2)).mp hdp).1
   rw [Set.range]
