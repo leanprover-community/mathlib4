@@ -77,4 +77,8 @@ instance instSecondCountableTopology
           this.mono (closure_mono hsK) interior_subset
         exact hKc.closure_subset_of_isOpen (isOpen_interior.preimage (map_continuous f)) hKV
 
+instance instSeprableSpace [SecondCountableTopology X] [LocallyCompactPair X Y] [R1Space X]
+    [SecondCountableTopology Y] : SeparableSpace C(X, Y) :=
+  inferInstance
+
 end ContinuousMap
