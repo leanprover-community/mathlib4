@@ -1181,6 +1181,7 @@ set_option linter.deprecated false in
 theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v} f ≤ a ↔ ∀ i, f i ≤ a :=
   Ordinal.iSup_le_iff
 
+/-- `ciSup_le'` whenever the input type is small in the output universe. -/
 protected theorem iSup_le {ι} {f : ι → Ordinal.{u}} {a} :
     (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
