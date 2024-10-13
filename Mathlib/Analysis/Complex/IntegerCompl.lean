@@ -23,7 +23,7 @@ namespace ComplexIntegerComplement
 
 local notation "ℂ_ℤ " => ComplexIntegerComplement
 
-noncomputable instance : UniformSpace ℂ_ℤ  :=  instUniformSpaceSubtype
+noncomputable instance : UniformSpace ℂ_ℤ := instUniformSpaceSubtype
 
 theorem Complex.closedEmbedding_coe_complex : ClosedEmbedding ((↑) : ℤ → ℂ) := by
   apply Metric.closedEmbedding_of_pairwise_le_dist zero_lt_one
