@@ -30,7 +30,7 @@ def getGoalLocations (locations : Array GoalsLocation) : Array SubExpr.Pos := Id
 
 /-- Replace the sub-expression at the given position by a fresh meta-variable. -/
 def insertMetaVar (e : Expr) (pos : SubExpr.Pos) : MetaM Expr :=
-replaceSubexpr (fun _ ↦ do mkFreshExprMVar none .synthetic) pos e
+  replaceSubexpr (fun _ ↦ do mkFreshExprMVar none .synthetic) pos e
 
 /-- Replace all meta-variable names by "?_". -/
 def String.renameMetaVar (s : String) : String :=

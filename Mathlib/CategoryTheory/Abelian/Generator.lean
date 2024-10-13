@@ -9,8 +9,6 @@ import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.CategoryTheory.Preadditive.Generator
 import Mathlib.CategoryTheory.Abelian.Opposite
 
-#align_import category_theory.abelian.generator from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
-
 /-!
 # A complete abelian category with enough injectives and a separator has an injective coseparator
 
@@ -37,8 +35,8 @@ theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG
   haveI : WellPowered C := wellPowered_of_isDetector G hG.isDetector
   haveI : HasProductsOfShape (Subobject (op G)) C := hasProductsOfShape_of_small _ _
   let T : C := Injective.under (piObj fun P : Subobject (op G) => unop P)
-  refine' ⟨T, inferInstance, (Preadditive.isCoseparator_iff _).2 fun X Y f hf => _⟩
-  refine' (Preadditive.isSeparator_iff _).1 hG _ fun h => _
+  refine ⟨T, inferInstance, (Preadditive.isCoseparator_iff _).2 fun X Y f hf => ?_⟩
+  refine (Preadditive.isSeparator_iff _).1 hG _ fun h => ?_
   suffices hh : factorThruImage (h ≫ f) = 0 by
     rw [← Limits.image.fac (h ≫ f), hh, zero_comp]
   let R := Subobject.mk (factorThruImage (h ≫ f)).op
@@ -50,12 +48,10 @@ theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG
   exact zero_of_comp_mono q
     (by rw [← Injective.comp_factorThru q (Limits.image.ι (h ≫ f)), Limits.image.fac_assoc,
       Category.assoc, hf, comp_zero])
-#align category_theory.abelian.has_injective_coseparator CategoryTheory.Abelian.has_injective_coseparator
 
 theorem has_projective_separator [HasColimits C] [EnoughProjectives C] (G : C)
     (hG : IsCoseparator G) : ∃ G : C, Projective G ∧ IsSeparator G := by
   obtain ⟨T, hT₁, hT₂⟩ := has_injective_coseparator (op G) ((isSeparator_op_iff _).2 hG)
   exact ⟨unop T, inferInstance, (isSeparator_unop_iff _).2 hT₂⟩
-#align category_theory.abelian.has_projective_separator CategoryTheory.Abelian.has_projective_separator
 
 end CategoryTheory.Abelian

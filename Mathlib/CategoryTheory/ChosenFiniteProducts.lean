@@ -38,10 +38,10 @@ Users should use the monoidal notation: `X ⊗ Y` for the product and `𝟙_ C` 
 the terminal object.
 -/
 class ChosenFiniteProducts (C : Type u) [Category.{v} C] where
-  /-- A choice of a limit binary fan for any two objects of the category.-/
+  /-- A choice of a limit binary fan for any two objects of the category. -/
   product : (X Y : C) → Limits.LimitCone (Limits.pair X Y)
   /-- A choice of a terminal object. -/
-  terminal : Limits.LimitCone (Functor.empty.{v} C)
+  terminal : Limits.LimitCone (Functor.empty.{0} C)
 
 namespace ChosenFiniteProducts
 
@@ -103,12 +103,80 @@ lemma lift_fst {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ fst _ _ = 
 lemma lift_snd {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ snd _ _ = g := by
   simp [lift, snd]
 
+instance mono_lift_of_mono_left {W X Y : C} (f : W ⟶ X) (g : W ⟶ Y)
+    [Mono f] : Mono (lift f g) :=
+  mono_of_mono_fac <| lift_fst _ _
+
+instance mono_lift_of_mono_right {W X Y : C} (f : W ⟶ X) (g : W ⟶ Y)
+    [Mono g] : Mono (lift f g) :=
+  mono_of_mono_fac <| lift_snd _ _
+
 @[ext 1050]
 lemma hom_ext {T X Y : C} (f g : T ⟶ X ⊗ Y)
     (h_fst : f ≫ fst _ _ = g ≫ fst _ _)
     (h_snd : f ≫ snd _ _ = g ≫ snd _ _) :
     f = g :=
   (product X Y).isLimit.hom_ext fun ⟨j⟩ => j.recOn h_fst h_snd
+
+@[reassoc (attr := simp)]
+lemma tensorHom_fst {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
+    (f ⊗ g) ≫ fst _ _ = fst _ _ ≫ f := lift_fst _ _
+
+@[reassoc (attr := simp)]
+lemma tensorHom_snd {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
+    (f ⊗ g) ≫ snd _ _ = snd _ _ ≫ g := lift_snd _ _
+
+@[reassoc (attr := simp)]
+lemma whiskerLeft_fst (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) :
+    (X ◁ g) ≫ fst _ _ = fst _ _ :=
+  (tensorHom_fst _ _).trans (by simp)
+
+@[reassoc (attr := simp)]
+lemma whiskerLeft_snd (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) :
+    (X ◁ g) ≫ snd _ _ = snd _ _ ≫ g :=
+  tensorHom_snd _ _
+
+@[reassoc (attr := simp)]
+lemma whiskerRight_fst {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
+    (f ▷ Y) ≫ fst _ _ = fst _ _ ≫ f :=
+  tensorHom_fst _ _
+
+@[reassoc (attr := simp)]
+lemma whiskerRight_snd {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
+    (f ▷ Y) ≫ snd _ _ = snd _ _ :=
+  (tensorHom_snd _ _).trans (by simp)
+
+@[reassoc (attr := simp)]
+lemma associator_hom_fst (X Y Z : C) :
+    (α_ X Y Z).hom ≫ fst _ _ = fst _ _ ≫ fst _ _ := lift_fst _ _
+
+@[reassoc (attr := simp)]
+lemma associator_hom_snd_fst (X Y Z : C) :
+    (α_ X Y Z).hom ≫ snd _ _ ≫ fst _ _ = fst _ _ ≫ snd _ _  := by
+  erw [lift_snd_assoc, lift_fst]
+  rfl
+
+@[reassoc (attr := simp)]
+lemma associator_hom_snd_snd (X Y Z : C) :
+    (α_ X Y Z).hom ≫ snd _ _ ≫ snd _ _ = snd _ _  := by
+  erw [lift_snd_assoc, lift_snd]
+  rfl
+
+@[reassoc (attr := simp)]
+lemma associator_inv_fst (X Y Z : C) :
+    (α_ X Y Z).inv ≫ fst _ _ ≫ fst _ _ = fst _ _ := by
+  erw [lift_fst_assoc, lift_fst]
+  rfl
+
+@[reassoc (attr := simp)]
+lemma associator_inv_fst_snd (X Y Z : C) :
+    (α_ X Y Z).inv ≫ fst _ _ ≫ snd _ _ = snd _ _ ≫ fst _ _ := by
+  erw [lift_fst_assoc, lift_snd]
+  rfl
+
+@[reassoc (attr := simp)]
+lemma associator_inv_snd (X Y Z : C) :
+    (α_ X Y Z).inv ≫ snd _ _ = snd _ _ ≫ snd _ _ := lift_snd _ _
 
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.

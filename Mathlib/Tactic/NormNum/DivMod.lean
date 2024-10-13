@@ -13,8 +13,6 @@ This file adds support for the `%`, `/`, and `∣` (divisibility) operators on `
 to the `norm_num` tactic.
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib
 open Lean hiding Rat mkRat
 open Meta
@@ -34,7 +32,7 @@ lemma isInt_ediv {a b q m a' : ℤ} {b' r : ℕ}
   rw [Int.add_mul_ediv_right _ _ (Int.ofNat_ne_zero.2 ((Nat.zero_le ..).trans_lt h₂).ne')]
   rw [Int.ediv_eq_zero_of_lt, zero_add] <;> [simp; simpa using h₂]⟩
 
-lemma isInt_ediv_neg {a b q : ℤ} (h : IsInt (a / -b) q) (hq : -q = q') : IsInt (a / b) q' :=
+lemma isInt_ediv_neg {a b q q' : ℤ} (h : IsInt (a / -b) q) (hq : -q = q') : IsInt (a / b) q' :=
   ⟨by rw [Int.cast_id, ← hq, ← @Int.cast_id q, ← h.out, ← Int.ediv_neg, Int.neg_neg]⟩
 
 lemma isNat_neg_of_isNegNat {a : ℤ} {b : ℕ} (h : IsInt a (.negOfNat b)) : IsNat (-a) b :=
@@ -49,7 +47,7 @@ partial def evalIntDiv : NormNumExt where eval {u α} e := do
   guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := ℤ))
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℤ := ⟨⟩
   haveI' : $e =Q ($a / $b) := ⟨⟩
-  let rℤ : Q(Ring ℤ) := q(Int.instRingInt)
+  let rℤ : Q(Ring ℤ) := q(Int.instRing)
   let ⟨za, na, pa⟩ ← (← derive a).toInt rℤ
   match ← derive (u := .zero) b with
   | .isNat inst nb pb =>
@@ -107,7 +105,7 @@ partial def evalIntMod : NormNumExt where eval {u α} e := do
   guard <|← withNewMCtxDepth <| isDefEq f q(HMod.hMod (α := ℤ))
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℤ := ⟨⟩
   haveI' : $e =Q ($a % $b) := ⟨⟩
-  let rℤ : Q(Ring ℤ) := q(Int.instRingInt)
+  let rℤ : Q(Ring ℤ) := q(Int.instRing)
   let some ⟨za, na, pa⟩ := (← derive a).toInt rℤ | failure
   go a na za pa b (← derive (u := .zero) b)
 where
@@ -118,7 +116,7 @@ where
       assumeInstancesCommute
       if nb.natLit! == 0 then
         have _ : $nb =Q nat_lit 0 := ⟨⟩
-        return .isInt q(Int.instRingInt) na za q(isInt_emod_zero $pa $pb)
+        return .isInt q(Int.instRing) na za q(isInt_emod_zero $pa $pb)
       else
         let ⟨r, p⟩ := core a na za pa b nb pb
         return .isNat q(instAddMonoidWithOne) r p
@@ -149,8 +147,8 @@ theorem isInt_dvd_true : {a b : ℤ} → {a' b' c : ℤ} →
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨_, rfl⟩
 
 theorem isInt_dvd_false : {a b : ℤ} → {a' b' : ℤ} →
-    IsInt a a' → IsInt b b' → Int.mod b' a' != 0 → ¬a ∣ b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => mt Int.mod_eq_zero_of_dvd (by simpa using e)
+    IsInt a a' → IsInt b b' → Int.emod b' a' != 0 → ¬a ∣ b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => mt Int.emod_eq_zero_of_dvd (by simpa using e)
 
 /-- The `norm_num` extension which identifies expressions of the form `(a : ℤ) ∣ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
@@ -160,7 +158,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   haveI' : $e =Q ($a ∣ $b) := ⟨⟩
   -- We assert that the default instance for `Dvd` is `Int.dvd` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(Dvd.dvd (α := ℤ))
-  let rℤ : Q(Ring ℤ) := q(Int.instRingInt)
+  let rℤ : Q(Ring ℤ) := q(Int.instRing)
   let ⟨za, na, pa⟩ ← (← derive a).toInt rℤ
   let ⟨zb, nb, pb⟩ ← (← derive b).toInt rℤ
   if zb % za == 0 then
@@ -169,7 +167,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     haveI' : Int.mul $na $c =Q $nb := ⟨⟩
     return .isTrue q(isInt_dvd_true $pa $pb (.refl $nb))
   else
-    have : Q(Int.mod $nb $na != 0) := (q(Eq.refl true) : Expr)
+    have : Q(Int.emod $nb $na != 0) := (q(Eq.refl true) : Expr)
     return .isFalse q(isInt_dvd_false $pa $pb $this)
 
 end Mathlib.Meta.NormNum

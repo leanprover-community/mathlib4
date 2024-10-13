@@ -44,7 +44,7 @@ Although I don't know whether it's of any use, `ModularCyclotomicCharacter'`
 is the general case for integral domains, with target in `(ZMod d)ˣ`
 where `d` is the number of `n`th roots of unity in `L`.
 
-## Todo
+## TODO
 
 * Prove the compatibility of `ModularCyclotomicCharacter n` and `ModularCyclotomicCharacter m`
   if `n ∣ m`.
@@ -104,8 +104,9 @@ local notation "χ₀" => ModularCyclotomicCharacter.toFun
 theorem toFun_spec (g : L ≃+* L) {n : ℕ+} (t : rootsOfUnity n L) :
     g (t : Lˣ) = (t ^ (χ₀ n g).val : Lˣ) := by
   rw [ModularCyclotomicCharacter_aux_spec g n t, ← zpow_natCast, ModularCyclotomicCharacter.toFun,
-    ZMod.val_int_cast, ← Subgroup.coe_zpow]
-  exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <| zpow_eq_zpow_emod _ pow_card_eq_one
+    ZMod.val_intCast, ← Subgroup.coe_zpow]
+  exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <|
+    zpow_eq_zpow_emod _ pow_card_eq_one (G := rootsOfUnity n L)
 
 theorem toFun_spec' (g : L ≃+* L) {n : ℕ+} {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
     g t = t ^ (χ₀ n g).val :=
@@ -145,8 +146,8 @@ lemma comp (g h : L ≃+* L) : χ₀ n (g * h) =
     ← Subgroup.coe_pow]
   congr 2
   norm_cast
-  simp only [pow_eq_pow_iff_modEq, ← ZMod.nat_cast_eq_nat_cast_iff, SubmonoidClass.coe_pow,
-    ZMod.nat_cast_val, Nat.cast_mul, ZMod.cast_mul (m := orderOf ζ) orderOf_dvd_card]
+  simp only [pow_eq_pow_iff_modEq, ← ZMod.natCast_eq_natCast_iff, SubmonoidClass.coe_pow,
+    ZMod.natCast_val, Nat.cast_mul, ZMod.cast_mul (m := orderOf ζ) orderOf_dvd_card]
 
 end ModularCyclotomicCharacter
 
@@ -195,7 +196,7 @@ lemma spec (g : L ≃+* L) {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
   congr 1
   exact (ZMod.ringEquivCongr_val _ _).symm
 
-lemma unique (g : L ≃+* L) {c : ZMod n}  (hc : ∀ t ∈ rootsOfUnity n L, g t = t ^ c.val) :
+lemma unique (g : L ≃+* L) {c : ZMod n} (hc : ∀ t ∈ rootsOfUnity n L, g t = t ^ c.val) :
     c = ModularCyclotomicCharacter L hn g := by
   change c = (ZMod.ringEquivCongr hn) (toFun n g)
   rw [← toFun_unique' n g (ZMod.ringEquivCongr hn.symm c)

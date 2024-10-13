@@ -1,12 +1,10 @@
 /-
 Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Scott Morrison
+Authors: Reid Barton, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Types
-
-#align_import category_theory.functor.hom from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
 The hom functor, sending `(X, Y)` to the type `X ⟶ Y`.
@@ -29,6 +27,5 @@ covariant in `Y`. -/
 def hom : Cᵒᵖ × C ⥤ Type v where
   obj p := unop p.1 ⟶ p.2
   map f h := f.1.unop ≫ h ≫ f.2
-#align category_theory.functor.hom CategoryTheory.Functor.hom
 
 end CategoryTheory.Functor

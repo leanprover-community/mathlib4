@@ -1,4 +1,5 @@
 import Mathlib.Data.List.EditDistance.Defs
+import Mathlib.Algebra.Group.Nat
 
 #guard
   (suffixLevenshtein Levenshtein.defaultCost "kitten".toList "sitting".toList).1 =
