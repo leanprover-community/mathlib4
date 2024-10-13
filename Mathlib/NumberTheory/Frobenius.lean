@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Order.Group.Action.Synonym
 import Mathlib.FieldTheory.Fixed
 import Mathlib.NumberTheory.RamificationInertia
 import Mathlib.RingTheory.Ideal.Pointwise
@@ -23,7 +24,7 @@ lemma comap_smul {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   rw [Ideal.mem_comap, Ideal.mem_comap, Ideal.mem_pointwise_smul_iff_inv_smul_mem,
       Algebra.algebraMap_eq_smul_one, smul_comm, smul_one]
 
-lemma tada'' {G : Type*} [Monoid G] {α : Type*} [PartialOrder α] {g : G} {a : α}
+lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
     [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
     (h : a ≤ g • a) (n : ℕ) : a ≤ g ^ n • a := by
   induction' n with n hn
@@ -31,13 +32,30 @@ lemma tada'' {G : Type*} [Monoid G] {α : Type*} [PartialOrder α] {g : G} {a : 
   · rw [pow_succ', mul_smul]
     exact h.trans (smul_mono_right g hn)
 
-lemma tada' {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
+instance {G : Type*} [Monoid G] {α : Type*} [Preorder α]
+    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le] :
+    CovariantClass G αᵒᵈ HSMul.hSMul LE.le :=
+  ⟨fun g _ _ h ↦ smul_mono_right (α := α) g h⟩
+
+lemma pow_smul_le {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
+    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
+    (h : g • a ≤ a) (n : ℕ) : g ^ n • a ≤ a :=
+  le_pow_smul (α := αᵒᵈ) h n
+
+lemma smul_eq_of_le_smul
+    {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
     [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
     (h : a ≤ g • a) : g • a = a := by
-  have key := smul_mono_right g (tada'' h (Nat.card G - 1))
+  have key := smul_mono_right g (le_pow_smul h (Nat.card G - 1))
   rw [smul_smul, ← pow_succ',
     Nat.sub_one_add_one_eq_of_pos Nat.card_pos, pow_card_eq_one', one_smul] at key
   exact le_antisymm key h
+
+lemma smul_eq_of_smul_le
+    {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
+    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
+    (h : g • a ≤ a) : g • a = a :=
+  smul_eq_of_le_smul (α := αᵒᵈ) h
 
 end ForMathlib
 
@@ -66,7 +84,7 @@ theorem part_a (P Q : Ideal B) [hP : P.IsPrime] [hQ : Q.IsPrime]
   obtain ⟨g, -, hg⟩ := this P Q hPQ
   obtain ⟨g', -, hg'⟩ := this Q (g • P) ((comap_smul P g).trans hPQ).symm
   have hg'' := hg.trans hg'
-  have key := tada' hg''
+  have key := smul_eq_of_le_smul hg''
   rw [key] at hg'
   exact ⟨g, le_antisymm hg hg'⟩
 
@@ -389,46 +407,3 @@ theorem fullHom_surjective
 -- theorem part_b :
 
 end part_b
-
-/-
-B ---> B / Q -----> L = Frac(B/Q)
-/\       /\         /\
-|        |          |
-|        |          |
-A ---> A / P ----> K = Frac(A/P)
--/
-
--- for part b, we need to show that (Stab Q) surjects
--- really should show: (Stab Q) surjects onto Aut((B/Q)/(A/P)) which bijects to Aut(L/K)
--- but maybe it actually is easier to do it in one go
-
--- find key element of B that generates L/K ?
--- fix an automorphism sigma which does something to b
-
--- can we show that (Stab Q) acts nicely on (B/Q)/(A/P),
--- effectively reducing to the case of integral domains?
-
--- easiest case: fields
--- suppose that K = L^G
--- can we show that G surjects onto Aut(L/K)?
--- FieldTheory/Fixed tells us exactly this!
-
--- next case: integral domains with primes 0 over 0
--- B > L
--- ^   ^
--- A > K
--- suppose that A = B^G
--- then K = L^G (let x=b/a in L be fixed by G, then b in B^G = A)
--- so we're done already...
-
--- general strategy: we know that (Stab Q) acts on L
--- if we can show that L ^ (Stab Q) = K, then we win
--- apparently L ^ (Stab Q) might be a purely inseparable extension of K?
--- but this is fine, since the automorphism group will still descend
-
--- general case: A = B ^ G
--- issue: (A/P) = (B/Q) ^ (Stab Q) requires H^1(G,Q)=1
-
--- we must show that any Aut(L/K) must fix L^(Stab Q) pointwise
--- since we know that Stab Q surjects onto Aut(L/L^(Stab Q))
--- maybe show that b fixed by (Stab Q) mod Q satisfies a nice polynomial?
