@@ -106,7 +106,7 @@ def OpenCover.bind (f : ∀ x : 𝒰.J, OpenCover (𝒰.obj x)) : OpenCover X wh
     change x ∈ Set.range ((f (𝒰.f x)).map ((f (𝒰.f x)).f y) ≫ 𝒰.map (𝒰.f x)).1.base
     use z
     erw [comp_apply]
-    erw [hz, hy] -- now `erw` after #13170
+    rw [hz, hy]
   -- Porting note: weirdly, even though no input is needed, `inferInstance` does not work
   -- `PresheafedSpace.IsOpenImmersion.comp` is marked as `instance`
   IsOpen x := PresheafedSpace.IsOpenImmersion.comp _ _
