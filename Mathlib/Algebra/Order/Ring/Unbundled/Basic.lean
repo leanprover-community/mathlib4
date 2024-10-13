@@ -338,7 +338,7 @@ theorem mul_lt_of_one_lt_right [ExistsAddOfLE α] [PosMulStrictMono α]
 
 section Monotone
 
-variable [Preorder β] {f g : β → α}
+variable [Preorder β] {f : β → α}
 
 theorem strictAnti_mul_left [ExistsAddOfLE α] [PosMulStrictMono α]
     [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
@@ -409,7 +409,7 @@ end StrictOrderedSemiring
 
 section LinearOrderedSemiring
 
-variable [Semiring α] [LinearOrder α] {a b c d : α}
+variable [Semiring α] [LinearOrder α] {a b c : α}
 
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
     [MulPosStrictMono α] [PosMulStrictMono α]
@@ -741,7 +741,7 @@ end LinearOrderedSemiring
 
 section LinearOrderedCommSemiring
 
-variable [CommSemiring α] [LinearOrder α] {a b c d : α}
+variable [CommSemiring α] [LinearOrder α] {a d : α}
 
 lemma max_mul_mul_le_max_mul_max [PosMulMono α] [MulPosMono α] (b c : α) (ha : 0 ≤ a) (hd : 0 ≤ d) :
     max (a * b) (d * c) ≤ max a c * max d b :=

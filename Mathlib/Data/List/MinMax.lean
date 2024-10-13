@@ -28,7 +28,7 @@ variable {α β : Type*}
 
 section ArgAux
 
-variable (r : α → α → Prop) [DecidableRel r] {l : List α} {o : Option α} {a m : α}
+variable (r : α → α → Prop) [DecidableRel r] {l : List α} {o : Option α} {a : α}
 
 /-- Auxiliary definition for `argmax` and `argmin`. -/
 def argAux (a : Option α) (b : α) : Option α :=
@@ -88,7 +88,7 @@ end ArgAux
 
 section Preorder
 
-variable [Preorder β] [@DecidableRel β (· < ·)] {f : α → β} {l : List α} {o : Option α} {a m : α}
+variable [Preorder β] [@DecidableRel β (· < ·)] {f : α → β} {l : List α} {a m : α}
 
 /-- `argmax f l` returns `some a`, where `f a` is maximal among the elements of `l`, in the sense
 that there is no `b ∈ l` with `f a < f b`. If `a`, `b` are such that `f a = f b`, it returns
@@ -154,7 +154,7 @@ end Preorder
 
 section LinearOrder
 
-variable [LinearOrder β] {f : α → β} {l : List α} {o : Option α} {a m : α}
+variable [LinearOrder β] {f : α → β} {l : List α} {a m : α}
 
 theorem le_of_mem_argmax : a ∈ l → m ∈ argmax f l → f a ≤ f m := fun ha hm =>
   le_of_not_lt <| not_lt_of_mem_argmax ha hm
