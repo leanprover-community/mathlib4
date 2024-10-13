@@ -3,6 +3,9 @@ import Mathlib.Tactic.NormNum
 
 open Random
 
+-- TODO(kmill): remove once the mathlib ToExpr Int instance is removed
+set_option eval.pp false
+
 section Rand
 
 /--
@@ -33,7 +36,8 @@ section RandT
 /--
 info: Got 6
 Got 27
-33
+---
+info: 33
 -/
 #guard_msgs in
 #eval show IO _ from do
@@ -47,7 +51,8 @@ Got 27
 /--
 info: Got 6
 Got 27
-33
+---
+info: 33
 -/
 #guard_msgs in
 #eval show Lean.Meta.MetaM _ from do
@@ -62,7 +67,8 @@ Got 27
 /--
 info: Got 4
 Got 4
-8
+---
+info: 8
 -/
 #guard_msgs in
 #eval show Lean.Meta.MetaM _ from do

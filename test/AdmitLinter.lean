@@ -1,5 +1,7 @@
 import Mathlib.Tactic.Linter.AdmitLinter
 
+set_option linter.admit true
+
 /--
 warning: declaration uses 'sorry'
 ---
@@ -7,7 +9,6 @@ warning: The `admit` tactic is discouraged: please consider using the synonymous
 note: this linter can be disabled with `set_option linter.admit false`
 -/
 #guard_msgs in
-set_option linter.admit true in
 example : True := by admit
 
 /--
@@ -26,7 +27,6 @@ warning: The `admit` tactic is discouraged: please consider using the synonymous
 note: this linter can be disabled with `set_option linter.admit false`
 -/
 #guard_msgs in
-set_option linter.admit true in
 example : True ∧ True := by
   have : True := by
     · admit
