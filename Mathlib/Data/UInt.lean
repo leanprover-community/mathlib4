@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.BitVec
 
 /-!
 # Adds Mathlib specific instances to the `UIntX` data types.
@@ -52,12 +53,15 @@ run_cmd
       open $typeName (eq_of_val_eq) in
       lemma val_injective : Function.Injective val := @eq_of_val_eq
 
+      open $typeName (eq_of_toBitVec_eq) in
+      lemma toBitVec_injective : Function.Injective toBitVec := @eq_of_toBitVec_eq
+
       instance instCommMonoid : CommMonoid $typeName :=
-        Function.Injective.commMonoid val val_injective
+        Function.Injective.commMonoid toBitVec toBitVec_injective
           rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
       instance instNonUnitalCommRing : NonUnitalCommRing $typeName :=
-        Function.Injective.nonUnitalCommRing val val_injective
+        Function.Injective.nonUnitalCommRing toBitVec toBitVec_injective
           rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
           (fun _ _ => rfl) (fun _ _ => rfl)
 
@@ -72,9 +76,9 @@ run_cmd
       lemma intCast_def (z : ℤ) : (z : $typeName) = ⟨z⟩ := rfl
 
       local instance instCommRing : CommRing $typeName :=
-        Function.Injective.commRing val val_injective
+        Function.Injective.commRing toBitVec toBitVec_injective
           rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-          (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => sorry)
+          (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
       namespace CommRing
       attribute [scoped instance] instCommRing instNatCast instIntCast
