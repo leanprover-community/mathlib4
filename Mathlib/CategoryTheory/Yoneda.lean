@@ -106,6 +106,10 @@ def ext (X Y : C) (p : ∀ {Z : C}, (Z ⟶ X) → (Z ⟶ Y))
 theorem isIso {X Y : C} (f : X ⟶ Y) [IsIso (yoneda.map f)] : IsIso f :=
   isIso_of_fully_faithful yoneda f
 
+/-- To prove that two morphisms `u,v : X ⟶ Y` are equal, it suffices
+-/
+def hom_ext : ℕ := sorry
+
 end Yoneda
 
 namespace Coyoneda

@@ -11,8 +11,14 @@ open Category Functor CategoryTheory Opposite
 
 namespace Adjunction
 
-variable {C D : Type*} [Category C] [Category D]
+universe u₁ u₂ v₁ v₂ u
+
+/-variable {C D : Type*} [Category C] [Category D]
   {F : C ⥤ D} {G : D ⥤ C} {A : Type*} [AddGroup A]
+  [HasShift C A] [HasShift D A]-/
+
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁,u₁} C] [Category.{v₂,u₂} D]
+  {F : C ⥤ D} {G : D ⥤ C} {A : Type u} [AddGroup A]
   [HasShift C A] [HasShift D A]
 
 namespace CommShift
@@ -39,6 +45,7 @@ lemma comp_left_to_right_iso_hom_app (adj : F ⊣ G) (commF : CommShift F A) (a 
                    erw [(commF.iso (-a)).hom.naturality u]
   simp
 
+/- This causes universe problems (the LHS is in v₁ and the RHS in v₂).
 lemma left_to_right_iso_hom_app_apply (adj : F ⊣ G) (commF : CommShift F A) (a : A) (X : C) (Y : D) :
     (yoneda.map ((left_to_right_iso adj commF a).hom.app Y)).app (op X) =
     (((Adjunction.comp adj (shiftEquiv D a).symm.toAdjunction).homEquiv X Y).symm.toIso ≪≫
@@ -46,6 +53,7 @@ lemma left_to_right_iso_hom_app_apply (adj : F ⊣ G) (commF : CommShift F A) (a
     ((Adjunction.comp (shiftEquiv C a).symm.toAdjunction adj).homEquiv X Y).toIso).hom := by
   ext u
   simp [comp_left_to_right_iso_hom_app]
+-/
 
 noncomputable def right_to_left_iso (adj : F ⊣ G) (commG : CommShift G A) (a : A) :=
   (Adjunction.natIsoEquiv (Adjunction.comp adj (shiftEquiv' D (-a) a
@@ -53,17 +61,35 @@ noncomputable def right_to_left_iso (adj : F ⊣ G) (commG : CommShift G A) (a :
   (add_left_neg _)).symm.toAdjunction adj)).toFun (commG.iso (-a))
 
 noncomputable def left_to_right_iso_op (adj : F ⊣ G) (commG : CommShift G A) (a : A) :
-    (F ⋙ (shiftEquiv' D (-a) a sorry).symm.functor).op ≅
-      ((shiftEquiv' C (-a) a sorry).symm.functor ⋙ F).op :=
+    (F ⋙ (shiftEquiv' D (-a) a (neg_add_self a)).symm.functor).op ≅
+      ((shiftEquiv' C (-a) a (neg_add_self a)).symm.functor ⋙ F).op :=
     (left_to_right_iso (C := OppositeShift D A) (D := OppositeShift C A)
     adj.opAdjointOpOfAdjoint commG.op a).symm
 
+lemma zut (adj : F ⊣ G) (commG : CommShift G A) (a : A) (X : C) (Y : D) (u : F.obj (X⟦a⟧) ⟶ Y) :
+    0 = 0 := by
+  set G' : OppositeShift D A ⥤ OppositeShift C A := G.op
+  set F' : OppositeShift C A ⥤ OppositeShift D A := F.op
+  set commG' : CommShift G' A := commG.op
+  set adj' : G' ⊣ F' := adj.opAdjointOpOfAdjoint
+  have := comp_left_to_right_iso_hom_app (C := OppositeShift D A)
+    (D := OppositeShift C A) (F := G') (G := F') adj' commG' a _ _ u.op
+  rfl
+
 lemma right_to_left_eq_left_to_right_op (adj : F ⊣ G) (commG : CommShift G A) (a : A) :
     right_to_left_iso adj commG a = NatIso.removeOp (left_to_right_iso_op adj commG a) := by
+  set G' : OppositeShift D A ⥤ OppositeShift C A := G.op
+  set F' : OppositeShift C A ⥤ OppositeShift D A := F.op
+  set commG' : CommShift G' A := commG.op
+  set adj' : G' ⊣ F' := adj.opAdjointOpOfAdjoint
+  have := commG'
   ext X
-  simp [right_to_left_iso, left_to_right_iso_op, left_to_right_iso]
-  sorry
-
+  apply Functor.map_injective (yoneda (C := D))
+  ext Y u
+  simp at u
+  conv_rhs => rw [yoneda_map_app, left_to_right_iso_op]
+  have := comp_left_to_right_iso_hom_app (C := OppositeShift D A)
+    (D := OppositeShift C A) (F := G') (G := F') adj' commG' a
 
 lemma right_to_left_iso_apply (adj : F ⊣ G) (commG : CommShift G A) (a : A) (X : C) (Y : D) :
     (coyoneda.map (op ((right_to_left_iso adj commG a).hom.app X))).app Y = sorry := by
@@ -79,7 +105,8 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     ext Y
     apply Functor.map_injective (yoneda (C := C))
     ext X u
-    rw [left_to_right_iso_hom_app_apply, Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
+    rw [yoneda_map_app, yoneda_map_app, comp_left_to_right_iso_hom_app]
+    rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
     simp only [Equivalence.symm_inverse, comp_obj, Equivalence.symm_functor,
       comp_homEquiv, Iso.trans_hom, Equiv.toIso_hom,
       mapIso_hom, Iso.op_hom, Iso.app_hom, Equiv.coe_trans, types_comp_apply,
@@ -106,16 +133,17 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     ext Y
     apply Functor.map_injective (yoneda (C := C))
     ext X u
-    rw [CommShift.isoAdd_hom_app, Functor.map_comp, Functor.map_comp, Functor.map_comp,
-      NatTrans.comp_app, NatTrans.comp_app, NatTrans.comp_app]
-    conv_rhs => rw [left_to_right_iso_hom_app_apply, Adjunction.comp_homEquiv]
+    conv_rhs => rw [yoneda_map_app, CommShift.isoAdd_hom_app, ← assoc, ← assoc, ← assoc]
+                rw [comp_left_to_right_iso_hom_app, Adjunction.comp_homEquiv]
     simp only [Equivalence.symm_inverse, comp_obj,
       Equivalence.symm_functor, Iso.trans_hom, Equiv.toIso_hom,
       mapIso_hom, Iso.op_hom, Iso.app_hom, assoc, types_comp_apply, yoneda_obj_map,
       Quiver.Hom.unop_op]
-    conv_rhs => rw [yoneda_map_app, yoneda_map_app, yoneda_map_app]
-                rw [Equiv.symm_trans_apply]
-                rw [adj.homEquiv_naturality_right_symm]
+    rw [Adjunction.comp_homEquiv]
+    simp only [shiftEquiv'_functor, shiftEquiv'_inverse,
+      Equiv.symm_trans_apply, map_comp, assoc, counit_naturality, comp_obj,
+      id_obj, Equiv.trans_apply]
+    conv_rhs => rw [adj.homEquiv_naturality_right_symm]
     have heq : ∀ (u : F.obj (unop X) ⟶ Y⟦a + b⟧),
         ((shiftEquiv D b).symm.toAdjunction.homEquiv (F.obj (unop X))
         ((shiftFunctor D a).obj Y)).symm (u ≫ (shiftFunctorAdd D a b).hom.app Y) =
@@ -130,8 +158,6 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     erw [← (shiftEquiv D a).symm.toAdjunction.homEquiv_naturality_left]
     simp only [shiftEquiv'_functor, shiftEquiv'_inverse,
       Equivalence.symm_functor, Equivalence.symm_inverse, comp_obj, map_comp, assoc]
-    rw [Adjunction.comp_homEquiv]
-    simp only [comp_obj, map_comp, Equiv.trans_apply, assoc]
     rw [← assoc]
     erw [← (shiftEquiv C b).symm.toAdjunction.homEquiv_naturality_right]
     conv_rhs => rw [comp_left_to_right_iso_hom_app,
@@ -170,7 +196,7 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
       rw [F.commShiftIso_add' hadd]
       simp [CommShift.isoAdd']; rfl
     rw [this]
-    rw [left_to_right_iso_hom_app_apply]
+    rw [yoneda_map_app, comp_left_to_right_iso_hom_app]
     simp [Adjunction.comp_homEquiv, Functor.commShiftIso]
 
 noncomputable def right_to_left (adj : F ⊣ G) (commG : CommShift G A) :
