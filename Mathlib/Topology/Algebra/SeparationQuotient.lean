@@ -4,7 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.Module.Basic
+
+-- TODO when `f` is a CLM, coerce it to `ContinuousAddMonoidHom`
+-- when `f`
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -142,25 +146,27 @@ variable {N : Type*} [TopologicalSpace N]
 
 /-- The lift of a `MonoidHom M N` to `MonoidHom (SeparationQuotient M) N`. -/
 @[to_additive "The lift of a `AddMonoidHom M N` to `AddMonoidHom (SeparationQuotient M) N`."]
-noncomputable def liftMonoidHom [CommMonoid M] [ContinuousMul M] [CommMonoid N]
-    (f : MonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) :
-    MonoidHom (SeparationQuotient M) N where
+noncomputable def liftContinuousMonoidHom [CommMonoid M] [ContinuousMul M] [CommMonoid N]
+    (f : ContinuousMonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) :
+    ContinuousMonoidHom (SeparationQuotient M) N where
   toFun := SeparationQuotient.lift f hf
   map_one' := by
-    rw [← (@MonoidHom.map_one M N _ _ f), ← SeparationQuotient.lift_mk hf 1, ← mk_one]
+    rw [← (@MonoidHom.map_one M N _ _ f), ← mk_one, SeparationQuotient.lift_mk hf 1]
+    simp only [map_one, MonoidHom.coe_coe]
   map_mul' {x y} := by
     simp only
     obtain ⟨x', hx'⟩ := surjective_mk x
     obtain ⟨y', hy'⟩ := surjective_mk y
     rw [← hx', ← hy', SeparationQuotient.lift_mk hf x', SeparationQuotient.lift_mk hf y', ← mk_mul,
       SeparationQuotient.lift_mk hf (x' * y')]
-    exact MonoidHom.map_mul f x' y'
+    exact MulHomClass.map_mul f x' y'
+  continuous_toFun := by
+    exact SeparationQuotient.continuous_lift.mpr f.2
 
-omit [TopologicalSpace N] in
 @[to_additive (attr := simp)]
 theorem CommMonoidHom_lift_apply [CommMonoid M] [ContinuousMul M] [CommMonoid N]
-    (f : MonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) (x : M) :
-    liftMonoidHom f hf (mk x) = f x := rfl
+    (f : ContinuousMonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) (x : M) :
+    liftContinuousMonoidHom f hf (mk x) = f x := rfl
 
 end Monoid
 
@@ -423,6 +429,14 @@ variable {R M}
 /-- The lift as a continuous linear map of `f` with `f x = f y` for `Inseparable x y`. -/
 noncomputable def liftCLM {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y) :
     (SeparationQuotient M) →SL[σ] N where
+  -- { liftContinuousAddMonoidHom f hf with
+  --   map_smul' := by
+  --     intro r x
+  --     obtain ⟨x', hx'⟩ := surjective_mk x
+  --     rw [← hx', ← mk_smul]
+  --     simp only [lift_mk]
+  --     exact ContinuousLinearMap.map_smulₛₗ f r x'
+  -- }
   toFun := SeparationQuotient.lift f hf
   map_add' {x y} := by
     obtain ⟨x', hx'⟩ := surjective_mk x
@@ -437,7 +451,7 @@ noncomputable def liftCLM {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, In
     exact ContinuousLinearMap.map_smulₛₗ f r x'
 
 @[simp]
-theorem CLM_lift_apply {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
+theorem liftCLM_apply {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
     (x : M) : liftCLM f hf (mk x) = f x := rfl
 
 end Module

@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.Normed.Module.Dual
+-- import Mathlib.Analysis.Normed.Group.SeparationQuotient
 
 /-!
 # The Fréchet-Riesz representation theorem
@@ -68,6 +69,72 @@ variable {E}
 @[simp]
 theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
   rfl
+
+-- section NullSubmodule
+
+-- open SeparationQuotientAddGroup LinearMap
+
+-- variable (E)
+
+-- /-- The null space with respect to the norm. -/
+-- def nullSubmodule : Submodule 𝕜 E :=
+--   { nullSubgroup with
+--     smul_mem' := by
+--       intro c x hx
+--       simp only [Set.mem_setOf_eq] at hx
+--       simp only [Set.mem_setOf_eq]
+--       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+--         AddSubgroup.mem_toAddSubmonoid]
+--       have : ‖c • x‖ = 0 := by
+--         rw [norm_smul, hx, mul_zero]
+--       exact this }
+
+-- @[simp]
+-- lemma mem_nullSubmodule_iff {x : E} : x ∈ nullSubmodule 𝕜 E ↔ ‖x‖ = 0 := Iff.rfl
+
+-- lemma inner_eq_zero_of_left_mem_nullSubmodule (x y : E) (h : x ∈ nullSubmodule 𝕜 E) :
+--     ⟪x, y⟫_𝕜 = 0 := by
+--   rw [← norm_eq_zero, ← sq_eq_zero_iff]
+--   apply le_antisymm _ (sq_nonneg _)
+--   rw [sq]
+--   nth_rw 2 [← RCLike.norm_conj]
+--   rw [_root_.inner_conj_symm]
+--   calc ‖⟪x, y⟫_𝕜‖ * ‖⟪y, x⟫_𝕜‖ ≤ re ⟪x, x⟫_𝕜 * re ⟪y, y⟫_𝕜 := inner_mul_inner_self_le _ _
+--   _ = (‖x‖ * ‖x‖) * re ⟪y, y⟫_𝕜 := by rw [inner_self_eq_norm_mul_norm x]
+--   _ = (0 * 0) * re ⟪y, y⟫_𝕜 := by rw [(mem_nullSubmodule_iff 𝕜 E).mp h]
+--   _ = 0 := by ring
+
+-- lemma inner_nullSubmodule_right_eq_zero (x y : E) (h : y ∈ nullSubmodule 𝕜 E) : ⟪x, y⟫_𝕜 = 0 := by
+--   rw [inner_eq_zero_symm]
+--   exact inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E y x h
+
+-- lemma norm_sub_eq_norm (x y : E) (h : y ∈ (nullSubmodule 𝕜 E)) : ‖x - y‖ = ‖x‖ := by
+--   rw [← sq_eq_sq (norm_nonneg _) (norm_nonneg _), sq, sq,
+--     ← @inner_self_eq_norm_mul_norm 𝕜 E _ _ _ x, ← @inner_self_eq_norm_mul_norm 𝕜 E _ _ _ (x-y),
+--     inner_sub_sub_self, inner_nullSubmodule_right_eq_zero 𝕜 E x y h,
+--     inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E y x h,
+--       inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E y y h]
+--   simp only [sub_zero, add_zero]
+
+-- /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
+-- lemma nullSubmodule_le_ker_toDualMap (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) := by
+--   intro y hy
+--   refine LinearMap.mem_ker.mpr ?_
+--   simp only [toDualMap_apply]
+--   exact inner_nullSubmodule_right_eq_zero 𝕜 E x y hy
+
+-- /-- The kernel of the map `x ↦ ⟪x, ⬝⟫` includes the null space. -/
+-- lemma nullSubmodule_le_ker_toDualMap' : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E) := by
+--   intro x hx
+--   refine LinearMap.mem_ker.mpr ?_
+--   ext y
+--   simp only [toDualMap_apply, ContinuousLinearMap.zero_apply]
+--   exact inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E x y hx
+
+-- lemma isClosed_nullSubmodule : IsClosed (nullSubmodule 𝕜 E : Set E) := by
+--   apply isClosed_nullSubgroup
+
+-- end NullSubmodule
 
 end Seminormed
 
