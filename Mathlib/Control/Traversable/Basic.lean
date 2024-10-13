@@ -61,7 +61,7 @@ universe u v w
 
 section ApplicativeTransformation
 
-variable (F : Type u → Type v) [Applicative F]
+variable (F : Type u → Type v) [Applicative F] [Zero (ULift _)]
 variable (G : Type u → Type w) [Applicative G]
 
 /-- A transformation between applicative functors.  It is a natural

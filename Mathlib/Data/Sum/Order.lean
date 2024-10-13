@@ -25,7 +25,7 @@ type synonym.
 -/
 
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 namespace Sum
 
