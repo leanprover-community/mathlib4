@@ -306,9 +306,6 @@ def getForallStrings : Expr → CommandElabM (Array String)
     if let .instImplicit := bi then
       let x_no_bvars := x.replace (if ·.ctorName == "bvar" then some (.const `Nat []) else none)
       let (str, _) ← liftCoreM do Meta.MetaM.run do return (← Meta.ppExpr (x_no_bvars)).pretty
-      --let xs := ← liftTermElabM do Term.exprToSyntax x
-      --elabCommand (← `(#check $xs))
-      --dbg_trace "panicking str: '{str}'"
       return #[str.takeWhile (· != ' ')] ++ (← getForallStrings bod)
     else
       return #[na.toString.takeWhile (· != ' ')] ++ (← getForallStrings bod)
@@ -319,9 +316,7 @@ def getUsedVariableNames (pos : String.Pos) : CommandElabM (Array String) := do
   let declRangeExt := declRangeExt.getState (← getEnv)
   let names := declRangeExt.toList.find? fun d => (d.2.selectionRange.pos == fm.toPosition pos)
   let decl := ((← getEnv).find? (names.getD default).1).getD default
-  --let val := decl.value?.getD default
-  --dbg_trace "decl {decl.name}\n\nvalue: {val}\n\ntype: {← getForallStrings decl.type}"
-  return /-(← getForallStrings val) ++-/ (← getForallStrings decl.type)
+  getForallStrings decl.type
 
 @[inherit_doc Mathlib.Linter.linter.unusedVariableCommand]
 def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -361,8 +356,6 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
         let declIdStx := (decl.find? (·.isOfKind ``declId)).getD default
         getUsedVariableNames (declIdStx.getPos?.getD default)
       else return #[]
-    --let declId := (stx.find? (·.isOfKind ``declId)).getD default
-    --let ns ← getCurrNamespace
     if decl[1].isOfKind ``Lean.Parser.Command.example then
       return
     let _renStx ← stx.replaceM fun s => match s.getKind with
@@ -371,14 +364,10 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
           return some (← `(declValSimple| := by included_variables plumb; sorry))
         | _               => return none
     let toFalse := mkIdent `toFalse
-    --let renStx ← renStx.replaceM fun s => match s with
-    --    | `(def $d $vs* : $t := $pf) => return some (← `(theorem $d $vs* : $toFalse $t := $pf))
-    --    | _               => return none
     let renStx ← if decl.isOfKind `lemma then mkNewThm decl else getDeclBinders decl
     -- replace the declaration in the initial `stx` with the "revised" one.  This takes care of
     -- handling `include h in` and other "`in`"s.
     let newRStx : Syntax := stx.replaceM (m := Id) (if · == decl then return some renStx else return none)
-    --logInfo newRStx
     let s ← get
     elabCommand (← `(def $toFalse (S : Sort _) := False))
     try
@@ -389,28 +378,16 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     let left2 := (← usedVarsRef.get).2.toList
     let left := left2.map Prod.fst
     let _leftPretty := (left2.map Prod.snd).map fun l => l.prettyPrint.pretty
-    --dbg_trace "\nLeft: {left2}\n\nPretty: {leftPretty}\n\nused: {usedVarNames}"
     let mut filt := []
     let mut filt2 := []
     for s in usedVarNames do
-      --dbg_trace "filtering in {s}"
       filt2 := filt2 ++ left2.filter fun (_a, b) =>
         let comp := if _a.eraseMacroScopes.isAnonymous then b.prettyPrint.pretty else _a.toString
-        --dbg_trace "* _a: {_a.eraseMacroScopes}\n* s: {s}\n* b: {b.prettyPrint.pretty}\n* s.isPrefixOf b.prettyPrint.pretty: {(s.isPrefixOf b.prettyPrint.pretty)}\n"
         (s.isPrefixOf comp)
 
       filt := filt ++ left.filter (s.isPrefixOf ·.toString)
     for (s, _) in filt2 do
-      --dbg_trace "* excluding {s}"
       usedVarsRef.addUsedVarName s
---    for s in filt do
---      dbg_trace "* excluding {s}"
---      usedVarsRef.addUsedVarName s
-    --dbg_trace "filt: {filt}"
-      --if s.isPrefixOf
-
-    --logInfo m!"'{if ns.isAnonymous then "" else s!"{ns}."}{declId}' {usedVarNames}\navailable variables {(← usedVarsRef.get).2.toList}"
-    --logInfo renStx
 
 initialize addLinter unusedVariableCommandLinter
 
