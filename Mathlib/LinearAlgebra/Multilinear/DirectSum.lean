@@ -120,27 +120,31 @@ theorem _root_.piFinset_support_lof_sub (p : Π i, κ i) (a : Π i, M i (p i)) :
 
 /-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
 on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ ⨁ j : κ i, M i j`.-/
-def fromDirectSumEquiv : ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p i)) M') ≃ₗ[R]
-    MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M' := by
-  refine LinearEquiv.ofLinear (fromDirectSumₗ R κ) (LinearMap.pi
-    (fun p ↦ MultilinearMap.compLinearMapₗ (fun i ↦ DirectSum.lof R (κ i) _ (p i)))) ?_ ?_
-  · ext f x
-    simp only [coe_comp, Function.comp_apply, fromDirectSumₗ_apply, pi_apply,
-      MultilinearMap.compLinearMapₗ_apply, MultilinearMap.compLinearMap_apply, id_coe, id_eq]
-    change _ = f (fun i ↦ x i)
-    nth_rewrite 3 [funext (fun i ↦ Eq.symm (DirectSum.sum_support_of (x i)))]
-    rw [MultilinearMap.map_sum_finset]
-    rfl
-  · ext f p a
-    simp only [coe_comp, Function.comp_apply, LinearMap.pi_apply, compLinearMapₗ_apply,
-      compLinearMap_apply, fromDirectSumₗ_apply, id_coe, id_eq]
-    rw [Finset.sum_subset (piFinset_support_lof_sub R κ p a)]
-    · rw [Finset.sum_singleton]
-      simp only [lof_apply]
-    · simp only [Finset.mem_singleton, Fintype.mem_piFinset, DFinsupp.mem_support_toFun, ne_eq,
-        not_forall, not_not, forall_exists_index, forall_eq, lof_apply]
-      intro i hi
-      exact (f p).map_coord_zero i hi
+def fromDirectSumEquiv :
+    ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p i)) M') ≃ₗ[R]
+    MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M' :=
+  LinearEquiv.ofLinear
+    (fromDirectSumₗ R κ)
+    (LinearMap.pi (fun p ↦ MultilinearMap.compLinearMapₗ (fun i ↦ DirectSum.lof R (κ i) _ (p i))))
+    (by
+      ext f x
+      simp only [coe_comp, Function.comp_apply, fromDirectSumₗ_apply, pi_apply,
+        MultilinearMap.compLinearMapₗ_apply, MultilinearMap.compLinearMap_apply, id_coe, id_eq]
+      change _ = f (fun i ↦ x i)
+      nth_rewrite 3 [funext (fun i ↦ Eq.symm (DirectSum.sum_support_of (x i)))]
+      rw [MultilinearMap.map_sum_finset]
+      rfl)
+    (by
+      ext f p a
+      simp only [coe_comp, Function.comp_apply, LinearMap.pi_apply, compLinearMapₗ_apply,
+        compLinearMap_apply, fromDirectSumₗ_apply, id_coe, id_eq]
+      rw [Finset.sum_subset (piFinset_support_lof_sub R κ p a)]
+      · rw [Finset.sum_singleton]
+        simp only [lof_apply]
+      · simp only [Finset.mem_singleton, Fintype.mem_piFinset, DFinsupp.mem_support_toFun, ne_eq,
+          not_forall, not_not, forall_exists_index, forall_eq, lof_apply]
+        intro i hi
+        exact (f p).map_coord_zero i hi)
 
 @[simp]
 theorem fromDirectSumEquiv_apply (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) M')
