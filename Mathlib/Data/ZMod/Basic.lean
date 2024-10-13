@@ -1482,15 +1482,15 @@ end general
 section two
 variable [Module (ZMod 2) G]
 
-@[simp] lemma ZModModule.add_self (x : G) : x + x = 0 := by
+lemma ZModModule.add_self (x : G) : x + x = 0 := by
   simpa [two_nsmul] using char_nsmul_eq_zero 2 x
 
-@[simp] lemma ZModModule.neg_eq_self (x : G) : -x = x := by simp [eq_comm, ← sub_eq_zero]
+lemma ZModModule.neg_eq_self (x : G) : -x = x := by simp [add_self, eq_comm, ← sub_eq_zero]
 
-@[simp] lemma ZModModule.sub_eq_add (x y : G) : x - y = x + y := by simp [sub_eq_add_neg]
+lemma ZModModule.sub_eq_add (x y : G) : x - y = x + y := by simp [neg_eq_self, sub_eq_add_neg]
 
 lemma ZModModule.add_add_add_cancel (x y z : G) : (x + y) + (y + z) = x + z := by
-  simpa using sub_add_sub_cancel x y z
+  simpa [sub_eq_add] using sub_add_sub_cancel x y z
 
 end two
 end Module
