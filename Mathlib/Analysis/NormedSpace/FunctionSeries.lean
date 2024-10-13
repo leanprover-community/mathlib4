@@ -89,8 +89,7 @@ theorem tendstoUniformlyOn_tsum_nat_eventually {α F : Type*} [NormedAddCommGrou
   use Finset.range N
   intro b hb x hx n hn
   apply hN n _ x hx
-  by_contra h
-  simp only [not_le] at h
+  by_contra! h
   rw [← Finset.mem_range] at h
   exact hn (hb h)
 
