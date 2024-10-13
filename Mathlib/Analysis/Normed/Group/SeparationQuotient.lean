@@ -5,7 +5,6 @@ Authors: Yoh Tanimoto
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 
 -- TODO modify doc, check if instances are really needed, golf
 -- want to define liftCLM. problem: a CLM on a normed vector space

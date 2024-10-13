@@ -7,7 +7,7 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 -- TODO when `f` is a CLM, coerce it to `ContinuousAddMonoidHom`
--- when `f`
+-- generalize `liftCLM` to `→SL` from `→L`
 
 /-!
 # Algebraic operations on `SeparationQuotient`
