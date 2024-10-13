@@ -97,7 +97,8 @@ theorem exists_list_of_mem_closure {a : R} (h : a ∈ closure s) :
     ∃ L : List (List R), (∀ l ∈ L, ∀ x ∈ l, x ∈ s ∨ x = (-1 : R)) ∧ (L.map List.prod).sum = a :=
   AddGroup.InClosure.recOn h
     fun {x} hx ↦ match x, Monoid.exists_list_of_mem_closure hx with
-    | _, ⟨L, h1, rfl⟩ => ⟨[L], List.forall_mem_singleton.2 fun r hr ↦ Or.inl (h1 r hr), zero_add _⟩
+    | _, ⟨L, h1, rfl⟩ =>
+      ⟨[L], List.forall_mem_singleton.2 fun r hr ↦ Or.inl (h1 r hr), List.sum_singleton⟩
     ⟨[], List.forall_mem_nil _, rfl⟩
     fun {b} _ ih ↦ match b, ih with
     | _, ⟨L1, h1, rfl⟩ =>

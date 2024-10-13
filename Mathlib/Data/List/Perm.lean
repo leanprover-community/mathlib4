@@ -145,17 +145,17 @@ lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePre
   convert countP_eq_countP_filter_add l _ P
   simp only [decide_not]
 
-theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} (rcomm : RightCommutative f) (p : l₁ ~ l₂) :
+theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} [rcomm : RightCommutative f] (p : l₁ ~ l₂) :
     ∀ b, foldl f b l₁ = foldl f b l₂ :=
-  p.foldl_eq' fun x _hx y _hy z => rcomm z x y
+  p.foldl_eq' fun x _hx y _hy z => rcomm.right_comm z x y
 
-theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : LeftCommutative f) (p : l₁ ~ l₂) :
+theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} [lcomm : LeftCommutative f] (p : l₁ ~ l₂) :
     ∀ b, foldr f b l₁ = foldr f b l₂ := by
   intro b
   induction p using Perm.recOnSwap' generalizing b with
   | nil => rfl
   | cons _ _ r  => simp [r b]
-  | swap' _ _ _ r => simp only [foldr_cons]; rw [lcomm, r b]
+  | swap' _ _ _ r => simp only [foldr_cons]; rw [lcomm.left_comm, r b]
   | trans _ _ r₁ r₂ => exact Eq.trans (r₁ b) (r₂ b)
 
 section
@@ -166,8 +166,13 @@ local notation a " * " b => op a b
 
 local notation l " <*> " a => foldl op a l
 
-theorem Perm.fold_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l₁ <*> a) = l₂ <*> a :=
-  h.foldl_eq (right_comm _ IC.comm IA.assoc) _
+theorem Perm.foldl_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l₁ <*> a) = l₂ <*> a :=
+  h.foldl_eq _
+
+theorem Perm.foldr_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : l₁.foldr op a = l₂.foldr op a :=
+  h.foldr_eq _
+
+@[deprecated (since := "2024-09-28")] alias Perm.fold_op_eq := Perm.foldl_op_eq
 
 end
 
@@ -266,7 +271,7 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     · have h₂ : x ∉ t₂ := h h₁
       simp [*]
     by_cases h₂ : x ∈ t₂
-    · simp only [*, inter_cons_of_not_mem, false_or_iff, mem_append, inter_cons_of_mem,
+    · simp only [*, inter_cons_of_not_mem, false_or, mem_append, inter_cons_of_mem,
         not_false_iff]
       refine Perm.trans (Perm.cons _ l_ih) ?_
       change [x] ++ xs ∩ t₁ ++ xs ∩ t₂ ~ xs ∩ t₁ ++ ([x] ++ xs ∩ t₂)
@@ -582,7 +587,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       convert hk' using 1
       exact get_insertNth_add_succ _ _ _ 0 _
     · obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt H'
-      erw [length_insertNth _ _ hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
+      rw [length_insertNth _ _ hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
       rw [get_insertNth_add_succ]
       · convert get_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
         · simp [Nat.add_assoc, Nat.add_left_comm]

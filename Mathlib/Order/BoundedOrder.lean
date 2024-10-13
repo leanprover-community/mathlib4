@@ -33,7 +33,7 @@ open Function OrderDual
 
 universe u v
 
-variable {α : Type u} {β : Type v} {γ δ : Type*}
+variable {α : Type u} {β : Type v}
 
 /-! ### Top, bottom element -/
 
@@ -83,6 +83,11 @@ theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
   (h.trans_le le_top).ne
 
 alias LT.lt.ne_top := ne_top_of_lt
+
+theorem lt_top_of_lt (h : a < b) : a < ⊤ :=
+  lt_of_lt_of_le h le_top
+
+alias LT.lt.lt_top := lt_top_of_lt
 
 end Preorder
 
@@ -253,6 +258,11 @@ theorem ne_bot_of_gt (h : a < b) : b ≠ ⊥ :=
 
 alias LT.lt.ne_bot := ne_bot_of_gt
 
+theorem bot_lt_of_lt (h : a < b) : ⊥ < b :=
+  lt_of_le_of_lt bot_le h
+
+alias LT.lt.bot_lt := bot_lt_of_lt
+
 end Preorder
 
 variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a b : α}
@@ -343,7 +353,7 @@ theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : Par
 
 section SemilatticeSupTop
 
-variable [SemilatticeSup α] [OrderTop α] {a : α}
+variable [SemilatticeSup α] [OrderTop α]
 
 -- Porting note: Not simp because simp can prove it
 theorem top_sup_eq (a : α) : ⊤ ⊔ a = ⊤ :=
@@ -390,7 +400,7 @@ end SemilatticeInfTop
 
 section SemilatticeInfBot
 
-variable [SemilatticeInf α] [OrderBot α] {a : α}
+variable [SemilatticeInf α] [OrderBot α]
 
 -- Porting note: Not simp because simp can prove it
 lemma bot_inf_eq (a : α) : ⊥ ⊓ a = ⊥ := inf_of_le_left bot_le

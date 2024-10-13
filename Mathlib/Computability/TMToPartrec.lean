@@ -340,8 +340,8 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       have := PFun.mem_fix_iff.1 h2
       simp only [hf, Part.bind_some] at this
       split_ifs at this with h
-      · simp only [List.headI_nil, List.headI_cons, exists_false, or_false_iff, Part.mem_some_iff,
-          List.tail_cons, false_and_iff, Sum.inl.injEq, reduceCtorEq] at this
+      · simp only [List.headI_nil, List.headI_cons, exists_false, or_false, Part.mem_some_iff,
+          List.tail_cons, false_and, Sum.inl.injEq, reduceCtorEq] at this
         subst this
         exact ⟨_, ⟨h, @(hm)⟩, rfl⟩
       · refine IH (n.succ::v.val) (by simp_all) _ rfl fun m h' => ?_
@@ -1604,10 +1604,10 @@ def trStmts₁ : Λ' → Finset Λ'
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
-  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
   all_goals
     simp (config := { contextual := true }) only [trStmts₁, Finset.mem_insert, Finset.mem_union,
-      or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and_iff]
+      or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and]
     repeat exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
   · simp
     intro s h x h'
@@ -1801,8 +1801,8 @@ theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts
   have W := fun {q} => trStmts₁_self q
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
-  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _
-  all_goals simp [trStmts₁, -Finset.singleton_subset_iff] at HS₁ ⊢
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
+    simp [trStmts₁, -Finset.singleton_subset_iff] at HS₁ ⊢
   any_goals
     cases' Finset.insert_subset_iff.1 HS₁ with h₁ h₂
     first | have h₃ := h₂ W | try simp [Finset.subset_iff] at h₂

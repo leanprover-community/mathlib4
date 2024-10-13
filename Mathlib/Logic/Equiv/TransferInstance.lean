@@ -677,11 +677,13 @@ namespace Finite
 
 attribute [-instance] Fin.instMul
 
-/-- Any finite group in universe `u` is equivalent to some finite group in universe `0`. -/
-lemma exists_type_zero_nonempty_mulEquiv (G : Type u) [Group G] [Finite G] :
-    ∃ (G' : Type) (_ : Group G') (_ : Fintype G'), Nonempty (G ≃* G') := by
+/-- Any finite group in universe `u` is equivalent to some finite group in universe `v`. -/
+lemma exists_type_univ_nonempty_mulEquiv (G : Type u) [Group G] [Finite G] :
+    ∃ (G' : Type v) (_ : Group G') (_ : Fintype G'), Nonempty (G ≃* G') := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin G
-  letI groupH : Group (Fin n) := Equiv.group e.symm
-  exact ⟨Fin n, inferInstance, inferInstance, ⟨MulEquiv.symm <| Equiv.mulEquiv e.symm⟩⟩
+  let f : Fin n ≃ ULift (Fin n) := Equiv.ulift.symm
+  let e : G ≃ ULift (Fin n) := e.trans f
+  letI groupH : Group (ULift (Fin n)) := e.symm.group
+  exact ⟨ULift (Fin n), groupH, inferInstance, ⟨MulEquiv.symm <| e.symm.mulEquiv⟩⟩
 
 end Finite

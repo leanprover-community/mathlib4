@@ -45,12 +45,12 @@ theorem Chain.iff_mem {a : α} {l : List α} :
     Chain.imp fun a b h => h.2.2⟩
 
 theorem chain_singleton {a b : α} : Chain R a [b] ↔ R a b := by
-  simp only [chain_cons, Chain.nil, and_true_iff]
+  simp only [chain_cons, Chain.nil, and_true]
 
 theorem chain_split {a b : α} {l₁ l₂ : List α} :
     Chain R a (l₁ ++ b :: l₂) ↔ Chain R a (l₁ ++ [b]) ∧ Chain R b l₂ := by
   induction' l₁ with x l₁ IH generalizing a <;>
-    simp only [*, nil_append, cons_append, Chain.nil, chain_cons, and_true_iff, and_assoc]
+    simp only [*, nil_append, cons_append, Chain.nil, chain_cons, and_true, and_assoc]
 
 @[simp]
 theorem chain_append_cons_cons {a b c : α} {l₁ l₂ : List α} :
@@ -99,7 +99,7 @@ protected theorem Chain.pairwise [IsTrans α R] :
   | a, _, @Chain.cons _ _ _ b l h hb =>
     hb.pairwise.cons
       (by
-        simp only [mem_cons, forall_eq_or_imp, h, true_and_iff]
+        simp only [mem_cons, forall_eq_or_imp, h, true_and]
         exact fun c hc => _root_.trans h (rel_of_pairwise_cons hb.pairwise hc))
 
 theorem chain_iff_pairwise [IsTrans α R] {a : α} {l : List α} : Chain R a l ↔ Pairwise R (a :: l) :=
@@ -137,6 +137,19 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     · apply h 0
     intro i w
     exact h (i+1) (by simp only [length_cons]; omega)
+
+theorem chain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain r a (replicate n a) :=
+  match n with
+  | 0 => Chain.nil
+  | n + 1 => Chain.cons h (chain_replicate_of_rel n h)
+
+theorem chain_eq_iff_eq_replicate {a : α} {l : List α} :
+    Chain (· = ·) a l ↔ l = replicate l.length a :=
+  match l with
+  | [] => by simp
+  | b :: l => by
+    rw [chain_cons]
+    simp (config := {contextual := true}) [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
 
 theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
     Chain' S l := by cases l <;> [trivial; exact Chain.imp H p]
@@ -232,8 +245,7 @@ theorem chain'_append :
   | [], l => by simp
   | [a], l => by simp [chain'_cons', and_comm]
   | a :: b :: l₁, l₂ => by
-    rw [cons_append, cons_append, chain'_cons, chain'_cons, ← cons_append, chain'_append,
-      and_assoc]
+    rw [cons_append, cons_append, chain'_cons, chain'_cons, ← cons_append, chain'_append, and_assoc]
     simp
 
 theorem Chain'.append (h₁ : Chain' R l₁) (h₂ : Chain' R l₂)
@@ -266,7 +278,7 @@ theorem Chain'.take (h : Chain' R l) (n : ℕ) : Chain' R (take n l) :=
   h.prefix (take_prefix _ _)
 
 theorem chain'_pair {x y} : Chain' R [x, y] ↔ R x y := by
-  simp only [chain'_singleton, chain'_cons, and_true_iff]
+  simp only [chain'_singleton, chain'_cons, and_true]
 
 theorem Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R (x :: l)) :
     Chain' R (y :: l) :=
@@ -418,6 +430,17 @@ lemma Chain'.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
     rw [List.chain'_iff_get] at hl
     apply hl
     omega
+
+theorem chain'_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain' r (replicate n a) :=
+  match n with
+  | 0 => chain'_nil
+  | n + 1 => chain_replicate_of_rel n h
+
+theorem chain'_eq_iff_eq_replicate {l : List α} :
+    Chain' (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a :=
+  match l with
+  | [] => by simp
+  | a :: l => by simp [Chain', chain_eq_iff_eq_replicate, replicate_succ]
 
 end List
 
