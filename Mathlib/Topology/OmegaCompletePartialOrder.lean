@@ -95,7 +95,7 @@ instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
   isOpen_inter := Scott.IsOpen.inter α
   isOpen_sUnion := Scott.isOpen_sUnion α
 
-lemma isOpen_iff_scottContinuous_mem {α} [OmegaCompletePartialOrder α] {s : Set (Scott α)} :
+lemma isOpen_iff_ωScottContinuous_mem {α} [OmegaCompletePartialOrder α] {s : Set (Scott α)} :
     IsOpen s ↔ ωScottContinuous fun x ↦ x ∈ s := by rfl
 
 lemma scott_eq_Scott {α} [OmegaCompletePartialOrder α] :
