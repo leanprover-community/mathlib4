@@ -5,6 +5,7 @@ Authors: Damiano Testa, Moritz Firsching
 -/
 
 import Lean.DeclarationRange
+import Lean.ResolveName
 
 /-!
 This file contains functions that are used by multiple linters.
@@ -28,3 +29,17 @@ def getNamesFrom {m} [Monad m] [MonadEnv m] [MonadFileMap m] (pos : String.Pos) 
       let ofPos2 := fm.ofPosition rgs.selectionRange.endPos
       nms := nms.push (mkIdentFrom (.ofRange ⟨ofPos1, ofPos2⟩) nm)
   return nms
+
+/--
+If `stx` is a syntax node for an `export` statement, then `getAliasSyntax stx` returns the array of
+identifiers with the "exported" names.
+-/
+def getAliasSyntax {m} [Monad m] [MonadResolveName m] (stx : Syntax) : m (Array Syntax) := do
+    let mut aliases := #[]
+    if let `(export $_ ($ids*)) := stx then
+      let currNamespace ← getCurrNamespace
+      for idStx in ids do
+        let id := idStx.getId
+        aliases := aliases.push
+          (mkIdentFrom (.ofRange (idStx.raw.getRange?.getD default)) (currNamespace ++ id))
+    return aliases

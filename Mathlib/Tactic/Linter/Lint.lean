@@ -92,13 +92,8 @@ def getIds : Syntax → Array Syntax
 def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if Linter.getLinterValue linter.dupNamespace (← getOptions) then
     let mut aliases := #[]
-    if let some exp := stx.find? (·.isOfKind ``Lean.Parser.Command.export) then
-      if let `(export $_ ($ids*)) := exp then
-        let currNamespace ← getCurrNamespace
-        for idStx in ids do
-          let id := idStx.getId
-          aliases := aliases.push
-            (mkIdentFrom (.ofRange (idStx.raw.getRange?.getD default)) (currNamespace ++ id))
+    if let some exp := stx.find? (·.isOfKind `Lean.Parser.Command.export) then
+      aliases ← getAliasSyntax exp
     for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
       let declName := id.getId
       if declName.hasMacroScopes then continue
