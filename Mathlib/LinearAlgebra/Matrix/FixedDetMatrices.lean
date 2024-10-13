@@ -25,7 +25,7 @@ namespace FixedDetMatrix
 
 open ModularGroup Matrix SpecialLinearGroup MatrixGroups
 
-lemma ext' (m : R) {A B : FixedDetMatrix n R m} (h : A.1 = B.1) : A = B := by
+lemma ext' {m : R} {A B : FixedDetMatrix n R m} (h : A.1 = B.1) : A = B := by
   cases A; cases B
   congr
 
