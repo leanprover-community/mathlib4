@@ -202,8 +202,7 @@ noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
     { app := fun x => yonedaEquiv.symm x.unop.2
       naturality := fun {x₁ x₂} f => by
         dsimp
-        rw [comp_id]
-        rw [← yonedaEquiv_symm_map]
+        rw [comp_id, ← yonedaEquiv_symm_map]
         congr 1
         rw [f.unop.2] }
 

@@ -221,14 +221,11 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
       diagonalSucc_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
       zero_mul, single_zero] -/
   · rw [TensorProduct.tmul_zero, map_zero]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     rw [map_zero]
   · intro _ _ _ _ _ hx
-    rw [TensorProduct.tmul_add, map_add]; rw [map_add, hx]
+    rw [TensorProduct.tmul_add, map_add, map_add, hx]
     simp_rw [lift_apply, smul_single, smul_eq_mul]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    rw [diagonalSucc_inv_single_single]
-    rw [sum_single_index, mul_comm]
+    rw [diagonalSucc_inv_single_single, sum_single_index, mul_comm]
     rw [zero_mul, single_zero]
 
 theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
@@ -240,15 +237,11 @@ theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
       TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero] -/
-  · rw [TensorProduct.zero_tmul, map_zero]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    rw [map_zero]
+  · rw [TensorProduct.zero_tmul, map_zero, map_zero]
   · intro _ _ _ _ _ hx
-    rw [TensorProduct.add_tmul, map_add]; rw [map_add, hx]
+    rw [TensorProduct.add_tmul, map_add, map_add, hx]
     simp_rw [lift_apply, smul_single']
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    rw [diagonalSucc_inv_single_single]
-    rw [sum_single_index]
+    rw [diagonalSucc_inv_single_single, sum_single_index]
     rw [zero_mul, single_zero]
 
 end Rep
@@ -266,7 +259,6 @@ def ofMulActionBasisAux :
       (ofMulAction k G (Fin (n + 1) → G)).asModule :=
   { (Rep.equivalenceModuleMonoidAlgebra.1.mapIso (diagonalSucc k G n).symm).toLinearEquiv with
     map_smul' := fun r x => by
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
       congr 1
       /- Porting note (#11039): broken proof was
@@ -357,21 +349,23 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     Category.comp_id, Action.comp_hom, MonoidalClosed.linearHomEquivComm_symm_hom]
   -- Porting note: This is a sure sign that coercions for morphisms in `ModuleCat`
   -- are still not set up properly.
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   rw [ModuleCat.coe_comp]
   simp only [ModuleCat.coe_comp, Function.comp_apply]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [diagonalSucc_hom_single]
-  erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
-  · simp only [one_smul]
-    erw [Representation.linHom_apply]
-    simp only [LinearMap.comp_apply, MonoidHom.one_apply, LinearMap.one_apply]
-    erw [Finsupp.llift_apply]
-    rw [Finsupp.lift_apply]
-    erw [Finsupp.sum_single_index]
-    · rw [one_smul]
+  -- The prototype linter that checks if `erw` could be replaced with `rw` would time out
+  -- if it replaces the next `erw`s with `rw`s. So we focus down on the relevant part.
+  conv_lhs =>
+    erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
+    · simp only [one_smul]
+      erw [Representation.linHom_apply]
+      simp only [LinearMap.comp_apply, MonoidHom.one_apply, LinearMap.one_apply]
+      erw [Finsupp.llift_apply]
+      rw [Finsupp.lift_apply]
+      erw [Finsupp.sum_single_index]
+      · rw [one_smul]
+      · rw [zero_smul]
     · rw [zero_smul]
-  · rw [zero_smul]
 
 /-- Auxiliary lemma for defining group cohomology, used to show that the isomorphism
 `diagonalHomEquiv` commutes with the differentials in two complexes which compute
