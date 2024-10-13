@@ -1435,44 +1435,6 @@ end ZMod
 section Module
 variable {n : ℕ} {S G : Type*} [AddCommGroup G] [SetLike S G] [AddSubgroupClass S G] {K : S} {x : G}
 
-section ofTorsion
-
-/-- A commutative group with `n`-torsion is acted on by `ZMod n`. -/
--- See note [reducible non instances
-abbrev SMul.zmodOfTorsion (h : ∀ x : G, n • x = 0) : SMul (ZMod n) G where
-  smul := ZMod.lift n
-    { val.toFun := (· • ·)
-      val.map_zero' := zero_zsmul _
-      val.map_add' := add_zsmul _
-      property := by ext; simp [h] }
-
-lemma _root_.SMul.zmodOfTorsion_def (h : ∀ x : G, n • x = 0) (a : ZMod n) (x : G) :
-    have := SMul.zmodOfTorsion h
-    a • x = ZMod.lift (A := G → G) n
-      { val.toFun := (· • ·)
-        val.map_zero' := zero_zsmul _
-        val.map_add' := add_zsmul _
-        property := by ext; simp [h] } a x := rfl
-
-/-- A commutative group with `n`-torsion is acted on by `ZMod n`. -/
--- See note [reducible non instances]
-abbrev zmodOfTorsion (h : ∀ x : G, n • x = 0) : Module (ZMod n) G where
-  toSMul := .zmodOfTorsion h
-  smul_zero := by simp [intCast_surjective.forall, SMul.zmodOfTorsion_def]
-  smul_add := by simp [intCast_surjective.forall, SMul.zmodOfTorsion_def]
-  zero_smul := by
-    rw [← Int.cast_zero (R := ZMod n)]
-    simp [intCast_surjective.forall, SMul.zmodOfTorsion_def, -Int.cast_one]
-  add_smul := by
-    simp [intCast_surjective.forall, SMul.zmodOfTorsion_def, -Int.cast_one]
-  one_smul := by
-    rw [← Int.cast_one]
-    simp [intCast_surjective.forall, SMul.zmodOfTorsion_def, -Int.cast_one]
-  mul_smul := by
-    simp [intCast_surjective.forall, SMul.zmodOfTorsion_def, ← Int.cast_mul, mul_smul]
-
-end ofTorsion
-
 section general
 variable [Module (ZMod n) G] {x : G}
 
