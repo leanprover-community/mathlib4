@@ -680,7 +680,7 @@ theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
     rw [hd]
     apply mul_le_mul_left'
     have := le_nfp (a * ·) (a ^ ω * b + c)
-    erw [hd] at this
+    rw [hd] at this
     have := (add_lt_add_left hc (a ^ ω * b)).trans_le this
     rw [add_zero, mul_lt_mul_iff_left (opow_pos ω ha)] at this
     rwa [succ_le_iff]

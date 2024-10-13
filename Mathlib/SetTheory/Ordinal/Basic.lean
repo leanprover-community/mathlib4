@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Sum.Order
-import Mathlib.Order.InitialSeg
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.PPWithUniv
 
@@ -191,15 +190,14 @@ theorem type_pEmpty : type (@EmptyRelation PEmpty) = 0 :=
 theorem type_empty : type (@EmptyRelation Empty) = 0 :=
   type_eq_zero_of_empty _
 
-theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Unique α] : type r = 1 :=
-  (RelIso.relIsoOfUniqueOfIrrefl r _).ordinal_type_eq
+theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
+  cases nonempty_unique α
+  exact (RelIso.relIsoOfUniqueOfIrrefl r _).ordinal_type_eq
 
 @[simp]
 theorem type_eq_one_iff_unique [IsWellOrder α r] : type r = 1 ↔ Nonempty (Unique α) :=
-  ⟨fun h =>
-    let ⟨s⟩ := type_eq.1 h
-    ⟨s.toEquiv.unique⟩,
-    fun ⟨h⟩ => @type_eq_one_of_unique α r _ h⟩
+  ⟨fun h ↦ let ⟨s⟩ := type_eq.1 h; ⟨s.toEquiv.unique⟩,
+    fun ⟨_⟩ ↦ type_eq_one_of_unique r⟩
 
 theorem type_pUnit : type (@EmptyRelation PUnit) = 1 :=
   rfl
@@ -361,22 +359,18 @@ instance NeZero.one : NeZero (1 : Ordinal) :=
 
 /-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
 `α.toType` into `β.toType`. -/
-def initialSegToType {α β : Ordinal} (h : α ≤ β) :
-    @InitialSeg α.toType β.toType (· < ·) (· < ·) := by
-  change α.out.r ≼i β.out.r
-  rw [← Quotient.out_eq α, ← Quotient.out_eq β] at h; revert h
-  cases Quotient.out α; cases Quotient.out β; exact Classical.choice
+def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.toType ≤i β.toType := by
+  apply Classical.choice (type_le_iff.mp _)
+  rwa [type_lt, type_lt]
 
 @[deprecated initialSegToType (since := "2024-08-26")]
 noncomputable alias initialSegOut := initialSegToType
 
 /-- Given two ordinals `α < β`, then `principalSegToType α β` is the principal segment embedding
 of `α.toType` into `β.toType`. -/
-def principalSegToType {α β : Ordinal} (h : α < β) :
-    @PrincipalSeg α.toType β.toType (· < ·) (· < ·) := by
-  change α.out.r ≺i β.out.r
-  rw [← Quotient.out_eq α, ← Quotient.out_eq β] at h; revert h
-  cases Quotient.out α; cases Quotient.out β; exact Classical.choice
+def principalSegToType {α β : Ordinal} (h : α < β) : α.toType <i β.toType := by
+  apply Classical.choice (type_lt_iff.mp _)
+  rwa [type_lt, type_lt]
 
 @[deprecated principalSegToType (since := "2024-08-26")]
 noncomputable alias principalSegOut := principalSegToType
@@ -665,7 +659,7 @@ theorem lift_card (a) : Cardinal.lift.{u,v} (card a)= card (lift.{u,v} a) :=
 
 theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
     (h : card.{max u v} b ≤ Cardinal.lift.{v,u} a) : ∃ a', lift.{v,u} a' = b :=
-  let ⟨c, e⟩ := Cardinal.lift_down h
+  let ⟨c, e⟩ := Cardinal.mem_range_of_le_lift h
   Cardinal.inductionOn c
     (fun α =>
       inductionOn b fun β s _ e' => by
@@ -697,9 +691,9 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
     ⟨a', e, lift_lt.1 <| e.symm ▸ h⟩,
     fun ⟨_, e, h⟩ => e ▸ lift_lt.2 h⟩
 
-/-- Initial segment version of the lift operation on ordinals, embedding `ordinal.{u}` in
-  `ordinal.{v}` as an initial segment when `u ≤ v`. -/
-def liftInitialSeg : @InitialSeg Ordinal.{u} Ordinal.{max u v} (· < ·) (· < ·) :=
+/-- Initial segment version of the lift operation on ordinals, embedding `Ordinal.{u}` in
+`Ordinal.{v}` as an initial segment when `u ≤ v`. -/
+def liftInitialSeg : Ordinal.{u} ≤i Ordinal.{max u v} :=
   ⟨⟨⟨lift.{v}, fun _ _ => lift_inj.1⟩, lift_lt⟩, fun _ _ h => lift_down (le_of_lt h)⟩
 
 @[deprecated liftInitialSeg (since := "2024-09-21")]
@@ -1027,9 +1021,9 @@ theorem lift_univ : lift.{w} univ.{u, v} = univ.{u, max v w} :=
 theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
   congr_fun lift_umax _
 
-/-- Principal segment version of the lift operation on ordinals, embedding `ordinal.{u}` in
-  `ordinal.{v}` as a principal segment when `u < v`. -/
-def liftPrincipalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < ·) (· < ·) :=
+/-- Principal segment version of the lift operation on ordinals, embedding `Ordinal.{u}` in
+`Ordinal.{v}` as a principal segment when `u < v`. -/
+def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
   ⟨↑liftInitialSeg.{u, max (u + 1) v}, univ.{u, v}, by
     refine fun b => inductionOn b ?_; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
@@ -1327,7 +1321,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
 
 theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c' :=
   ⟨fun h => by
-    let ⟨a, e, h'⟩ := lt_lift_iff.1 h
+    let ⟨a, h', e⟩ := lt_lift_iff.1 h
     rw [← univ_id] at h'
     rcases lt_univ.{u}.1 h' with ⟨c', rfl⟩
     exact ⟨c', by simp only [e.symm, lift_lift]⟩, fun ⟨c', e⟩ => e.symm ▸ lift_lt_univ' _⟩

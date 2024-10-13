@@ -90,7 +90,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     intro x y
     apply section_ext X.sheaf (V x ⊓ V y)
     rintro z ⟨hzVx, hzVy⟩
-    erw [germ_res_apply, germ_res_apply]
+    rw [germ_res_apply, germ_res_apply]
     apply (h z ((iVU x).le hzVx)).mul_right_inj.mp
     -- Porting note: now need explicitly typing the rewrites
     rw [← X.presheaf.germ_res_apply (iVU x) z hzVx f]
