@@ -173,7 +173,7 @@ variable  {s : Set α}
 
 lemma topology_eq [IsScottHausdorff α D] : ‹_› = scottHausdorff α D := topology_eq_scottHausdorff
 
-variable {α} {D}
+variable {α D}
 
 lemma isOpen_iff [IsScottHausdorff α D] :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
