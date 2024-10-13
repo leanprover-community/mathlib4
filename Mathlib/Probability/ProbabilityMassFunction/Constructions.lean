@@ -32,7 +32,7 @@ noncomputable section
 variable {α β γ : Type*}
 
 open scoped Classical
-open NNReal ENNReal
+open NNReal ENNReal Finset MeasureTheory
 
 section Map
 
@@ -82,12 +82,18 @@ variable (s : Set β)
 theorem toOuterMeasure_map_apply : (p.map f).toOuterMeasure s = p.toOuterMeasure (f ⁻¹' s) := by
   simp [map, Set.indicator, toOuterMeasure_apply p (f ⁻¹' s)]
 
+variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+
 @[simp]
-theorem toMeasure_map_apply [MeasurableSpace α] [MeasurableSpace β] (hf : Measurable f)
+theorem toMeasure_map_apply (hf : Measurable f)
     (hs : MeasurableSet s) : (p.map f).toMeasure s = p.toMeasure (f ⁻¹' s) := by
   rw [toMeasure_apply_eq_toOuterMeasure_apply _ s hs,
     toMeasure_apply_eq_toOuterMeasure_apply _ (f ⁻¹' s) (measurableSet_preimage hf hs)]
   exact toOuterMeasure_map_apply f p s
+
+@[simp]
+lemma toMeasure_map (p : PMF α) (hf : Measurable f) : p.toMeasure.map f = (p.map f).toMeasure := by
+  ext s hs : 1; rw [PMF.toMeasure_map_apply _ _ _ hf hs, Measure.map_apply hf hs]
 
 end Measure
 
@@ -184,6 +190,14 @@ theorem ofFintype_apply (a : α) : ofFintype f h a = f a := rfl
 theorem support_ofFintype : (ofFintype f h).support = Function.support f := rfl
 
 theorem mem_support_ofFintype_iff (a : α) : a ∈ (ofFintype f h).support ↔ f a ≠ 0 := Iff.rfl
+
+@[simp]
+lemma map_ofFintype [Fintype β] (f : α → ℝ≥0∞) (h : ∑ a, f a = 1) (g : α → β) :
+    (ofFintype f h).map g = ofFintype (fun b ↦ ∑ a with g a = b, f a)
+      (by simpa [Finset.sum_fiberwise_eq_sum_filter univ univ g f]) := by
+  ext b : 1
+  simp only [sum_filter, eq_comm, map_apply, ofFintype_apply]
+  exact tsum_eq_sum fun _ h ↦ (h <| mem_univ _).elim
 
 section Measure
 
