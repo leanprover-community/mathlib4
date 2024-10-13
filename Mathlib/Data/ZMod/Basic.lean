@@ -34,7 +34,7 @@ This is a ring hom if the ring has characteristic dividing `n`
 
 assert_not_exists Submodule
 
-open Function
+open Function ZMod
 
 namespace ZMod
 
@@ -1433,8 +1433,48 @@ end lift
 end ZMod
 
 section Module
-variable {S G : Type*} [AddCommGroup G] {n : ℕ} [Module (ZMod n) G] [SetLike S G]
-  [AddSubgroupClass S G] {K : S} {x : G}
+variable {n : ℕ} {S G : Type*} [AddCommGroup G] [SetLike S G] [AddSubgroupClass S G] {K : S} {x : G}
+
+section ofTorsion
+
+/-- A commutative group with `n`-torsion is acted on by `ZMod n`. -/
+-- See note [reducible non instances
+abbrev SMul.zmodOfTorsion (h : ∀ x : G, n • x = 0) : SMul (ZMod n) G where
+  smul := ZMod.lift n
+    { val.toFun := (· • ·)
+      val.map_zero' := zero_zsmul _
+      val.map_add' := add_zsmul _
+      property := by ext; simp [h] }
+
+lemma _root_.SMul.zmodOfTorsion_def (h : ∀ x : G, n • x = 0) (a : ZMod n) (x : G) :
+    have := SMul.zmodOfTorsion h
+    a • x = ZMod.lift (A := G → G) n
+      { val.toFun := (· • ·)
+        val.map_zero' := zero_zsmul _
+        val.map_add' := add_zsmul _
+        property := by ext; simp [h] } a x := rfl
+
+/-- A commutative group with `n`-torsion is acted on by `ZMod n`. -/
+-- See note [reducible non instances]
+abbrev zmodOfTorsion (h : ∀ x : G, n • x = 0) : Module (ZMod n) G where
+  toSMul := .zmodOfTorsion h
+  smul_zero := by simp [intCast_surjective.forall, SMul.zmodOfTorsion_def]
+  smul_add := by simp [intCast_surjective.forall, SMul.zmodOfTorsion_def]
+  zero_smul := by
+    rw [← Int.cast_zero (R := ZMod n)]
+    simp [intCast_surjective.forall, SMul.zmodOfTorsion_def, -Int.cast_one]
+  add_smul := by
+    simp [intCast_surjective.forall, SMul.zmodOfTorsion_def, -Int.cast_one]
+  one_smul := by
+    rw [← Int.cast_one]
+    simp [intCast_surjective.forall, SMul.zmodOfTorsion_def, -Int.cast_one]
+  mul_smul := by
+    simp [intCast_surjective.forall, SMul.zmodOfTorsion_def, ← Int.cast_mul, mul_smul]
+
+end ofTorsion
+
+section general
+variable [Module (ZMod n) G] {x : G}
 
 lemma zmod_smul_mem (hx : x ∈ K) : ∀ a : ZMod n, a • x ∈ K := by
   simpa [ZMod.forall, Int.cast_smul_eq_zsmul] using zsmul_mem hx
@@ -1453,6 +1493,44 @@ instance instZModModule : Module (ZMod n) K :=
   Subtype.coe_injective.module _ (AddSubmonoidClass.subtype K) coe_zmod_smul
 
 end AddSubgroupClass
+
+variable (n)
+
+lemma ZModModule.char_nsmul_eq_zero (x : G) : n • x = 0 := by
+  simp [← Nat.cast_smul_eq_nsmul (ZMod n)]
+
+variable (G) in
+lemma ZModModule.char_ne_one [Nontrivial G] : n ≠ 1 := by
+  rintro rfl
+  obtain ⟨x, hx⟩ := exists_ne (0 : G)
+  exact hx <| by simpa using char_nsmul_eq_zero 1 x
+
+variable (G) in
+lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
+  have := NeZero.ne n
+  have := char_ne_one n G
+  omega
+
+@[simp] lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
+  Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by
+    simpa [char_nsmul_eq_zero, IsPeriodicPt] using isFixedPt_id _⟩
+
+end general
+
+section two
+variable [Module (ZMod 2) G]
+
+@[simp] lemma ZModModule.add_self (x : G) : x + x = 0 := by
+  simpa [two_nsmul] using char_nsmul_eq_zero 2 x
+
+@[simp] lemma ZModModule.neg_eq_self (x : G) : -x = x := by simp [eq_comm, ← sub_eq_zero]
+
+@[simp] lemma ZModModule.sub_eq_add (x y : G) : x - y = x + y := by simp [sub_eq_add_neg]
+
+lemma ZModModule.add_add_add_cancel (x y z : G) : (x + y) + (y + z) = x + z := by
+  simpa using sub_add_sub_cancel x y z
+
+end two
 end Module
 
 section AddGroup
