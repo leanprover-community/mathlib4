@@ -9,7 +9,7 @@ import Mathlib.MeasureTheory.MeasurableSpace.Defs
 /-!
 # Measurable space instance for additive characters
 
-This file endows `AddChar A M` with the discrete measurable space structure whenever `A` and `M` 
+This file endows `AddChar A M` with the discrete measurable space structure whenever `A` and `M`
 are themselves discrete measurable spaces.
 
 ## TODO
