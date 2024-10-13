@@ -99,7 +99,7 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       if declName.hasMacroScopes then continue
       let nm := declName.components
       let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
-        | return
+        | continue
       Linter.logLint linter.dupNamespace id
         m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
 
