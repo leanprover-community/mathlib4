@@ -43,12 +43,8 @@ lemma smul_def (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrix n R m))
   rfl
 
 instance (m : R) : MulAction (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
-  smul := fun g A => g • A
-  one_smul := by intro b; rw [smul_def]; simp only [coe_one, one_mul, Subtype.coe_eta]
-  mul_smul := by
-      intro x y b
-      simp_rw [smul_def, ← mul_assoc]
-      rfl
+  one_smul b := by rw [smul_def]; simp only [coe_one, one_mul, Subtype.coe_eta]
+  mul_smul x y b := by simp_rw [smul_def, ← mul_assoc, coe_mul]
 
 lemma smul_coe (m : R) (g : SpecialLinearGroup n R) (A : FixedDetMatrix n R m) :
     (g • A).1 = g * A.1 := by
