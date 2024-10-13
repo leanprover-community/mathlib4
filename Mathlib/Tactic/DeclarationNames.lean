@@ -35,11 +35,11 @@ If `stx` is a syntax node for an `export` statement, then `getAliasSyntax stx` r
 identifiers with the "exported" names.
 -/
 def getAliasSyntax {m} [Monad m] [MonadResolveName m] (stx : Syntax) : m (Array Syntax) := do
-    let mut aliases := #[]
-    if let `(export $_ ($ids*)) := stx then
-      let currNamespace ← getCurrNamespace
-      for idStx in ids do
-        let id := idStx.getId
-        aliases := aliases.push
-          (mkIdentFrom (.ofRange (idStx.raw.getRange?.getD default)) (currNamespace ++ id))
-    return aliases
+  let mut aliases := #[]
+  if let `(export $_ ($ids*)) := stx then
+    let currNamespace ← getCurrNamespace
+    for idStx in ids do
+      let id := idStx.getId
+      aliases := aliases.push
+        (mkIdentFrom (.ofRange (idStx.raw.getRange?.getD default)) (currNamespace ++ id))
+  return aliases
