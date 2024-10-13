@@ -1088,7 +1088,7 @@ alias ⟨_, _root_.StrictMono.withTop_map⟩ := strictMono_map_iff
 theorem map_le_iff (f : α → β) (a b : WithTop α)
     (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     a.map f ≤ b.map f ↔ a ≤ b := by
-  erw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
+  rw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
   simp [mono_iff]
 
 theorem coe_untop'_le (a : WithTop α) (b : α) : a.untop' b ≤ a :=
