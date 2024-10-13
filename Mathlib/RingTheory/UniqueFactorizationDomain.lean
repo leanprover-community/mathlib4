@@ -1027,7 +1027,7 @@ theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α
 /-- If `P` holds for units and powers of primes,
 and `P x ∧ P y` for coprime `x, y` implies `P (x * y)`,
 then `P` holds on a product of powers of distinct primes. -/
--- @[elab_as_elim] Porting note: commented out
+@[elab_as_elim]
 theorem induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → ℕ)
     (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q)
     (h1 : ∀ {x}, IsUnit x → P x) (hpr : ∀ {p} (i : ℕ), Prime p → P (p ^ i))
@@ -1066,7 +1066,6 @@ theorem induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}
 
 /-- If `f` maps `p ^ i` to `(f p) ^ i` for primes `p`, and `f`
 is multiplicative on coprime elements, then `f` is multiplicative on all products of primes. -/
--- @[elab_as_elim] Porting note: commented out
 theorem multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α → ℕ)
     (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q)
     (h1 : ∀ {x y}, IsUnit y → f (x * y) = f x * f y)

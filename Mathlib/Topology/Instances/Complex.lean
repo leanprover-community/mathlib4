@@ -54,7 +54,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
   set ι : K → K.topologicalClosure := ⇑(Subfield.inclusion K.le_topologicalClosure)
   have ui : IsUniformInducing ι :=
     ⟨by
-      erw [uniformity_subtype, uniformity_subtype, Filter.comap_comap]
+      rw [uniformity_subtype, uniformity_subtype, Filter.comap_comap]
       congr ⟩
   let di := ui.isDenseInducing (?_ : DenseRange ι)
   · -- extψ : closure(K) →+* ℂ is the extension of ψ : K →+* ℂ

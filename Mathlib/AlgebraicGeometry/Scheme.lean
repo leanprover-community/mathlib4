@@ -560,7 +560,7 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
   ext x
   simp only [SetLike.mem_coe, Scheme.mem_basicOpen_top, Opens.coe_top]
   suffices IsUnit (StructureSheaf.toStalk R x f) ↔ f ∉ PrimeSpectrum.asIdeal x by exact this
-  erw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x),
+  rw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x),
     StructureSheaf.stalkToFiberRingHom_toStalk]
   exact
     (IsLocalization.AtPrime.isUnit_to_map_iff (Localization.AtPrime (PrimeSpectrum.asIdeal x))

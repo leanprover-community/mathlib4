@@ -65,7 +65,7 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
     cases' (AddTorsor.nonempty : Nonempty P1) with p
     congr with v
     apply vadd_right_cancel (f p)
-    erw [← f_add, h, ← g_add]
+    rw [← f_add, h, ← g_add]
 
 instance AffineMap.hasCoeToFun (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]

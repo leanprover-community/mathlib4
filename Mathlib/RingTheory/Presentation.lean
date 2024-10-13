@@ -236,7 +236,7 @@ private lemma span_range_relation_eq_ker_baseChange :
       | h_C a =>
         simp only [Generators.algebraMap_apply, algHom_C, TensorProduct.algebraMap_apply,
           id.map_eq_id, RingHom.id_apply, e]
-        erw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
+        rw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
         simp only [TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply,
           TensorProduct.map_tmul, AlgHom.coe_id, id_eq, map_one, algebraMap_eq]
         erw [aeval_C]
@@ -248,7 +248,7 @@ private lemma span_range_relation_eq_ker_baseChange :
         congr
         erw [aeval_X]
         rw [Generators.baseChange_val]
-    erw [H] at H'
+    rw [H] at H'
     replace H' : e.symm x ∈ Ideal.map TensorProduct.includeRight P.ker := H'
     erw [← P.span_range_relation_eq_ker, ← Ideal.mem_comap, Ideal.comap_symm,
       Ideal.map_map, Ideal.map_span, ← Set.range_comp] at H'

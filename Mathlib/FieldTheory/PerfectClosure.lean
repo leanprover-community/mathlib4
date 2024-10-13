@@ -92,7 +92,6 @@ theorem quot_mk_eq_mk (x : ℕ × K) : (Quot.mk (R K p) x : PerfectClosure K p) 
 variable {K p}
 
 /-- Lift a function `ℕ × K → L` to a function on `PerfectClosure K p`. -/
--- Porting note: removed `@[elab_as_elim]` for "unexpected eliminator resulting type L"
 def liftOn {L : Type*} (x : PerfectClosure K p) (f : ℕ × K → L)
     (hf : ∀ x y, R K p x y → f x = f y) : L :=
   Quot.liftOn x f hf

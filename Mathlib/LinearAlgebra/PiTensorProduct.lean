@@ -411,7 +411,7 @@ theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (
   -- show _ • _ = _
   -- rw [one_smul]
   erw [AddCon.lift_coe]
-  erw [FreeAddMonoid.of]
+  rw [FreeAddMonoid.of]
   dsimp [FreeAddMonoid.ofList]
   rw [← one_smul R (φ f)]
   erw [Equiv.refl_apply]

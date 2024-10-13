@@ -6,7 +6,7 @@ Authors: Josha Dekker
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.CardinalInter
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.Order.Filter.Bases
 

@@ -245,7 +245,7 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
         dsimp
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [leftRegular_ρ_apply]
-        erw [map_mul]
+        rw [map_mul]
         rfl }
   hom_inv_id := by
     apply Hom.ext

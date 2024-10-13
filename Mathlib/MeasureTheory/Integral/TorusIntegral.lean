@@ -220,10 +220,10 @@ theorem torusIntegral_succAbove
     ((Fin.insertNthOrderIso (fun _ => ℝ) i).preimage_Icc _ _).trans (Icc_prod_eq _ _)
   rw [torusIntegral, ← hem.map_eq, setIntegral_map_equiv, heπ, Measure.volume_eq_prod,
     setIntegral_prod, circleIntegral_def_Icc]
-  · refine setIntegral_congr measurableSet_Icc fun θ _ => ?_
+  · refine setIntegral_congr_fun measurableSet_Icc fun θ _ => ?_
     simp (config := { unfoldPartialApp := true }) only [e, torusIntegral, ← integral_smul,
       deriv_circleMap, i.prod_univ_succAbove _, smul_smul, torusMap, circleMap_zero]
-    refine setIntegral_congr measurableSet_Icc fun Θ _ => ?_
+    refine setIntegral_congr_fun measurableSet_Icc fun Θ _ => ?_
     simp only [MeasurableEquiv.piFinSuccAbove_symm_apply, i.insertNth_apply_same,
       i.insertNth_apply_succAbove, (· ∘ ·), Fin.insertNthEquiv, Equiv.coe_fn_mk]
     congr 2

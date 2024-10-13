@@ -141,10 +141,14 @@ abbrev mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
 
 end Unique
 
+theorem nonempty_unique (α : Sort u) [Subsingleton α] [Nonempty α] : Nonempty (Unique α) := by
+  inhabit α
+  exact ⟨Unique.mk' α⟩
+
 theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
     Nonempty (Unique α) ↔ Subsingleton α ∧ Nonempty α :=
   ⟨fun ⟨u⟩ ↦ by constructor <;> exact inferInstance,
-   fun ⟨hs, hn⟩ ↦ ⟨by inhabit α; exact Unique.mk' α⟩⟩
+   fun ⟨hs, hn⟩ ↦ nonempty_unique α⟩
 
 variable {α : Sort*}
 

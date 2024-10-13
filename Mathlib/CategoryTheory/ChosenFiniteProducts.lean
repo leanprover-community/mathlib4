@@ -29,7 +29,7 @@ binary product and `𝟙_ C` for the explicit terminal object.
 
 namespace CategoryTheory
 
-universe v v₁ u u₁
+universe v v₁ v₂ u u₁ u₂
 
 /--
 An instance of `ChosenFiniteProducts C` bundles an explicit choice of a binary
@@ -195,6 +195,213 @@ instance (priority := 100) : Limits.HasFiniteProducts C :=
   letI : Limits.HasBinaryProducts C := Limits.hasBinaryProducts_of_hasLimit_pair _
   letI : Limits.HasTerminal C := Limits.hasTerminal_of_unique (𝟙_ _)
   hasFiniteProducts_of_has_binary_and_terminal
+
+section ChosenFiniteProductsComparison
+
+variable {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F : C ⥤ D)
+
+section terminalComparison
+
+/-- When `C` and `D` have chosen finite products and `F : C ⥤ D` is any functor,
+`terminalComparison F` is the unique map `F (𝟙_ C) ⟶ 𝟙_ D`. -/
+abbrev terminalComparison : F.obj (𝟙_ C) ⟶ 𝟙_ D := toUnit _
+
+@[simp]
+lemma map_toUnit_comp_terminalCompariso (A : C) :
+    F.map (toUnit A) ≫ terminalComparison F = toUnit _ := toUnit_unique _ _
+
+open Limits
+
+/-- If `terminalComparison F` is an Iso, then `F` preserves terminal objects. -/
+noncomputable def preservesLimitEmptyOfIsIsoTerminalComparison [IsIso (terminalComparison F)] :
+    PreservesLimit (Functor.empty.{0} C) F := by
+  apply preservesLimitOfPreservesLimitCone terminal.isLimit
+  apply isLimitChangeEmptyCone D terminal.isLimit
+  exact asIso (terminalComparison F)|>.symm
+
+/-- If `F` preserves terminal objects, then `terminalComparison F` is an isomorphism. -/
+def PreservesTerminalIso [h : PreservesLimit (Functor.empty.{0} C) F] : F.obj (𝟙_ C) ≅ 𝟙_ D :=
+  (isLimitChangeEmptyCone D (h.preserves terminal.isLimit) (asEmptyCone (F.obj (𝟙_ C)))
+    (Iso.refl _)).conePointUniqueUpToIso terminal.isLimit
+
+@[simp]
+lemma PreservesTerminalIso_hom [PreservesLimit (Functor.empty.{0} C) F] :
+    (PreservesTerminalIso F).hom = terminalComparison F := toUnit_unique _ _
+
+instance terminalComparison_isIso_of_preservesLimits [PreservesLimit (Functor.empty.{0} C) F] :
+    IsIso (terminalComparison F) := by
+  rw [← PreservesTerminalIso_hom]
+  infer_instance
+
+end terminalComparison
+
+section prodComparison
+
+variable (A B : C)
+
+/-- When `C` and `D` have chosen finite products and `F : C ⥤ D` is any functor,
+`prodComparison F A B` is the canonical comparison morphism from `F (A ⊗ B)` to `F(A) ⊗ F(B)`. -/
+def prodComparison (A B : C) : F.obj (A ⊗ B) ⟶ F.obj A ⊗ F.obj B :=
+  lift (F.map (fst A B)) (F.map (snd A B))
+
+@[reassoc (attr := simp)]
+theorem prodComparison_fst : prodComparison F A B ≫ fst _ _ = F.map (fst A B) :=
+  lift_fst _ _
+
+@[reassoc (attr := simp)]
+theorem prodComparison_snd : prodComparison F A B ≫ snd _ _ = F.map (snd A B) :=
+  lift_snd _ _
+
+@[reassoc]
+theorem inv_prodComparison_map_fst [IsIso (prodComparison F A B)] :
+    inv (prodComparison F A B) ≫ F.map (fst _ _) = fst _ _ := by simp [IsIso.inv_comp_eq]
+
+@[reassoc]
+theorem inv_prodComparison_map_snd [IsIso (prodComparison F A B)] :
+    inv (prodComparison F A B) ≫ F.map (snd _ _) = snd _ _ := by simp [IsIso.inv_comp_eq]
+
+variable {A B} {A' B' : C}
+
+/-- Naturality of the `prodComparison` morphism in both arguments. -/
+@[reassoc]
+theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
+    F.map (f ⊗ g) ≫ prodComparison F A' B' =
+      prodComparison F A B ≫ (F.map f ⊗ F.map g) := by
+  apply hom_ext <;>
+  simp only [Category.assoc, prodComparison_fst, tensorHom_fst, prodComparison_fst_assoc,
+    prodComparison_snd, tensorHom_snd, prodComparison_snd_assoc, ← F.map_comp]
+
+/-- If the product comparison morphism is an iso, its inverse is natural. -/
+@[reassoc]
+theorem prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodComparison F A B)]
+    [IsIso (prodComparison F A' B')] :
+    inv (prodComparison F A B) ≫ F.map (f ⊗ g) =
+      (F.map f ⊗ F.map g) ≫ inv (prodComparison F A' B') := by
+  rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, prodComparison_natural]
+
+/-- The product comparison morphism from `F(A ⊗ -)` to `FA ⊗ F-`, whose components are given by
+`prodComparison`. -/
+@[simps]
+def prodComparisonNatTrans (A : C) :
+    (curriedTensor C).obj A ⋙ F ⟶ F ⋙ (curriedTensor D).obj (F.obj A) where
+  app B := prodComparison F A B
+  naturality x y f := by
+    apply hom_ext <;>
+    simp only [Functor.comp_obj, curriedTensor_obj_obj,
+      Functor.comp_map, curriedTensor_obj_map, Category.assoc, prodComparison_fst, whiskerLeft_fst,
+      prodComparison_snd, prodComparison_snd_assoc, whiskerLeft_snd, ← F.map_comp]
+
+/-- The product comparison morphism from `F(- ⊗ -)` to `F- ⊗ F-`, whose components are given by
+`prodComparison`. -/
+@[simps]
+def prodComparisonBifunctorNatTrans :
+    curriedTensor C ⋙ (whiskeringRight _ _ _).obj F ⟶
+      F ⋙ curriedTensor D ⋙ (whiskeringLeft _ _ _).obj F where
+  app A := prodComparisonNatTrans F A
+  naturality x y f := by
+    ext z
+    apply hom_ext <;>
+    simp only [Functor.comp_obj, whiskeringRight_obj_obj, curriedTensor_obj_obj,
+      whiskeringLeft_obj_obj, Functor.comp_map, whiskeringRight_obj_map, NatTrans.comp_app,
+      whiskerRight_app, curriedTensor_map_app, prodComparisonNatTrans_app, Category.assoc,
+      prodComparison_fst, whiskeringLeft_obj_map, whiskerLeft_app, whiskerRight_fst,
+      prodComparison_fst_assoc, prodComparison_snd, whiskerRight_snd, ← F.map_comp]
+
+/-- The natural isomorphism `F(A ⊗ -) ≅ FA ⊗ F-`, provided each `prodComparison F A B` is an
+isomorphism (as `B` changes). -/
+@[simps]
+noncomputable def prodComparisonNatIso (A : C)
+    [∀ B, IsIso (prodComparison F A B)] :
+    (curriedTensor C).obj A ⋙ F ≅ F ⋙ (curriedTensor D).obj (F.obj A) := by
+  refine { @asIso _ _ _ _ _ (?_) with hom := prodComparisonNatTrans F A }
+  apply NatIso.isIso_of_isIso_app
+
+/-- The natural isomorphism of bifunctors `F(- ⊗ -) ≅ F- ⊗ F-`, provided each
+`prodComparison F A B` is an isomorphism. -/
+@[simps]
+noncomputable def prodComparisonBifunctorsNatIso
+    [∀ A B, IsIso (prodComparison F A B)] :
+    curriedTensor C ⋙ (whiskeringRight _ _ _).obj F ≅
+      F ⋙ curriedTensor D ⋙ (whiskeringLeft _ _ _).obj F := by
+  refine { @asIso _ _ _ _ _ ?_ with hom := prodComparisonBifunctorNatTrans F }
+  exact @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ (fun A ↦ Iso.isIso_hom (prodComparisonNatIso F A))
+
+theorem prodComparison_comp {E : Type u₂} [Category.{v₂} E] [ChosenFiniteProducts E] (G : D ⥤ E) :
+    prodComparison (F ⋙ G) A B =
+      G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
+  unfold prodComparison
+  ext <;> simp <;> rw [← G.map_comp] <;> simp
+
+open Limits
+
+section PreservesLimitPairs
+
+variable (A B)
+variable [PreservesLimit (pair A B) F]
+
+/-- If `F` preserves the limit of the pair `(A, B)`, then the binary fan given by
+`(F.map fst A B, F.map (snd A B))` is a limit cone. -/
+def isLimitChosenFiniteProductsOfPreservesLimits :
+    IsLimit <| BinaryFan.mk (F.map (fst A B)) (F.map (snd A B)) :=
+  mapIsLimitOfPreservesOfIsLimit F (fst _ _) (snd _ _) <|
+    (product A B).isLimit.ofIsoLimit <| isoBinaryFanMk (product A B).cone
+
+/-- If `F` preserves the limit of the pair `(A, B)`, then `prodComparison F A B` is an isomorphism.
+-/
+def prodComparisonIso : F.obj (A ⊗ B) ≅ F.obj A ⊗ F.obj B :=
+  IsLimit.conePointUniqueUpToIso (isLimitChosenFiniteProductsOfPreservesLimits F A B)
+    (product _ _).isLimit
+
+@[simp]
+lemma prodComparisonIso_hom : (prodComparisonIso F A B).hom = prodComparison F A B := by
+  rfl
+
+instance isIso_prodComparison_of_preservesLimit_pair: IsIso (prodComparison F A B) := by
+  rw [← prodComparisonIso_hom]
+  infer_instance
+
+end PreservesLimitPairs
+
+section ProdComparisonIso
+
+/-- If `prodComparison F A B` is an isomorphism, then `F` preserves the limit of `pair A B`. -/
+noncomputable def preservesLimitPairOfIsIsoProdComparison (A B : C) [IsIso (prodComparison F A B)] :
+    PreservesLimit (pair A B) F := by
+  apply preservesLimitOfPreservesLimitCone (product A B).isLimit
+  apply IsLimit.equivOfNatIsoOfIso (pairComp A B F) _
+    ((product (F.obj A) (F.obj B)).cone.extend (prodComparison F A B)) _|>.invFun
+  rotate_left
+  · apply Cones.ext
+    case φ => exact Iso.refl _
+    rintro ⟨⟨j⟩⟩
+    · simp only [Cones.postcompose_obj_pt, Functor.mapCone_pt, Functor.const_obj_obj,
+      pair_obj_left, Cones.postcompose_obj_π, NatTrans.comp_app, Functor.comp_obj,
+      Functor.mapCone_π_app, BinaryFan.π_app_left, Cone.extend_pt, Iso.refl_hom, Cone.extend_π,
+      yoneda_obj_obj, Cone.extensions_app, Functor.op_obj, Functor.const_map_app, Category.id_comp]
+      rw [← fst, ← fst, pairComp]
+      simp
+    · simp only [Cones.postcompose_obj_pt, Functor.mapCone_pt, Functor.const_obj_obj,
+      pair_obj_right, Cones.postcompose_obj_π, NatTrans.comp_app, Functor.comp_obj,
+      Functor.mapCone_π_app, BinaryFan.π_app_right, Cone.extend_pt, Iso.refl_hom, Cone.extend_π,
+      yoneda_obj_obj, Cone.extensions_app, Functor.op_obj, Functor.const_map_app, Category.id_comp]
+      rw [← snd, ← snd, pairComp]
+      simp
+  · exact IsLimit.extendIso _ (product (F.obj A) (F.obj B)).isLimit
+
+/-- If `prodComparison F A B` is an isomorphism for all `A B` then `F` preserves limits of shape
+`Discrete (WalkingPair)`. -/
+noncomputable def preservesLimitsOfShapeDiscreteWalkingPairOfIsoProdComparison
+    [∀ A B, IsIso (prodComparison F A B)] : PreservesLimitsOfShape (Discrete WalkingPair) F := by
+  constructor
+  intro K
+  refine @preservesLimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoPair K).symm ?_
+  apply preservesLimitPairOfIsIsoProdComparison
+
+end ProdComparisonIso
+
+end prodComparison
+
+end ChosenFiniteProductsComparison
 
 end ChosenFiniteProducts
 

@@ -126,9 +126,9 @@ instance Prod.instTietzeExtension {Y : Type v} {Z : Type w} [TopologicalSpace Y]
     obtain ⟨g₂, hg₂⟩ := (ContinuousMap.snd.comp f).exists_restrict_eq hs
     exact ⟨g₁.prodMk g₂, by ext1 x; congrm(($(hg₁) x), $(hg₂) x)⟩
 
-instance Unique.instTietzeExtension {Y : Type v} [TopologicalSpace Y] [Unique Y] :
-    TietzeExtension.{u, v} Y where
-  exists_restrict_eq' _ _ f := ⟨.const _ default, by ext; subsingleton⟩
+instance Unique.instTietzeExtension {Y : Type v} [TopologicalSpace Y]
+    [Nonempty Y] [Subsingleton Y] : TietzeExtension.{u, v} Y where
+  exists_restrict_eq' _ _ f := ‹Nonempty Y›.elim fun y ↦ ⟨.const _ y, by ext; subsingleton⟩
 
 /-- Any retract of a `TietzeExtension` space is one itself. -/
 theorem TietzeExtension.of_retract {Y : Type v} {Z : Type w} [TopologicalSpace Y]

@@ -104,7 +104,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         intro x
         rw [hfdef]
         dsimp only
-        erw [dif_neg x.property, Subtype.coe_eta]
+        rw [dif_neg x.property, Subtype.coe_eta]
       rw [hfg]
       have hf : ∑ ι ∈ s2, f ι = 0 := by
         rw [Finset.sum_insert

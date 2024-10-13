@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Order.Floor
-import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Data.Nat.Log
 
 /-!
@@ -135,12 +134,11 @@ theorem log_one_left (r : R) : log 1 r = 0 := by
 -- Porting note: needed to replace b ^ z with (b : R) ^ z in the below
 theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z := by
   obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z
-  · rw [log_of_one_le_right _ (one_le_zpow_of_nonneg _ <| Int.natCast_nonneg _), zpow_natCast, ←
-      Nat.cast_pow, Nat.floor_natCast, Nat.log_pow hb]
-    exact mod_cast hb.le
-  · rw [log_of_right_le_one _ (zpow_le_one_of_nonpos _ <| neg_nonpos.mpr (Int.natCast_nonneg _)),
+  · rw [log_of_one_le_right _ (one_le_zpow₀ (mod_cast hb.le) <| Int.natCast_nonneg _), zpow_natCast,
+      ← Nat.cast_pow, Nat.floor_natCast, Nat.log_pow hb]
+  · rw [log_of_right_le_one _ (zpow_le_one_of_nonpos₀ (mod_cast hb.le) <|
+      neg_nonpos.2 (Int.natCast_nonneg _)),
       zpow_neg, inv_inv, zpow_natCast, ← Nat.cast_pow, Nat.ceil_natCast, Nat.clog_pow _ _ hb]
-    exact mod_cast hb.le
 
 @[mono]
 theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) : log b r₁ ≤ log b r₂ := by
@@ -160,10 +158,10 @@ variable (R)
 def zpowLogGi {b : ℕ} (hb : 1 < b) :
     GaloisCoinsertion
       (fun z : ℤ =>
-        Subtype.mk ((b : R) ^ z) <| zpow_pos_of_pos (mod_cast zero_lt_one.trans hb) z)
+        Subtype.mk ((b : R) ^ z) <| zpow_pos (mod_cast zero_lt_one.trans hb) z)
       fun r : Set.Ioi (0 : R) => Int.log b (r : R) :=
   GaloisCoinsertion.monotoneIntro (fun r₁ _ => log_mono_right r₁.2)
-    (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_strictMono <| mod_cast hb).monotone hz)
+    (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_right_strictMono₀ <| mod_cast hb).monotone hz)
     (fun r => Subtype.coe_le_coe.mp <| zpow_log_le_self hb r.2) fun _ => log_zpow (R := R) hb _
 
 variable {R}
@@ -235,7 +233,7 @@ theorem self_le_zpow_clog {b : ℕ} (hb : 1 < b) (r : R) : r ≤ (b : R) ^ clog 
   rcases le_or_lt r 0 with hr | hr
   · rw [clog_of_right_le_zero _ hr, zpow_zero]
     exact hr.trans zero_le_one
-  rw [← neg_log_inv_eq_clog, zpow_neg, le_inv_comm₀ hr (zpow_pos_of_pos _ _)]
+  rw [← neg_log_inv_eq_clog, zpow_neg, le_inv_comm₀ hr (zpow_pos ..)]
   · exact zpow_log_le_self hb (inv_pos.mpr hr)
   · exact Nat.cast_pos.mpr (zero_le_one.trans_lt hb)
 
@@ -243,7 +241,7 @@ theorem zpow_pred_clog_lt_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) :
     (b : R) ^ (clog b r - 1) < r := by
   rw [← neg_log_inv_eq_clog, ← neg_add', zpow_neg, inv_lt_comm₀ _ hr]
   · exact lt_zpow_succ_log_self hb _
-  · exact zpow_pos_of_pos (Nat.cast_pos.mpr <| zero_le_one.trans_lt hb) _
+  · exact zpow_pos (Nat.cast_pos.mpr <| zero_le_one.trans_lt hb) _
 
 @[simp]
 theorem clog_zero_right (b : ℕ) : clog b (0 : R) = 0 :=
@@ -278,9 +276,9 @@ variable (R)
 /-- Over suitable subtypes, `Int.clog` and `zpow` form a galois insertion -/
 def clogZPowGi {b : ℕ} (hb : 1 < b) :
     GaloisInsertion (fun r : Set.Ioi (0 : R) => Int.clog b (r : R)) fun z : ℤ =>
-      ⟨(b : R) ^ z, zpow_pos_of_pos (mod_cast zero_lt_one.trans hb) z⟩ :=
+      ⟨(b : R) ^ z, zpow_pos (mod_cast zero_lt_one.trans hb) z⟩ :=
   GaloisInsertion.monotoneIntro
-    (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_strictMono <| mod_cast hb).monotone hz)
+    (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_right_strictMono₀ <| mod_cast hb).monotone hz)
     (fun r₁ _ => clog_mono_right r₁.2)
     (fun _ => Subtype.coe_le_coe.mp <| self_le_zpow_clog hb _) fun _ => clog_zpow (R := R) hb _
 

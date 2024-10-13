@@ -94,7 +94,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
     MeasureTheory.integral_mul_le_Lp_mul_Lq_of_nonneg e (posf' a s) (posf' b t) (f_mem_Lp ha hs)
       (f_mem_Lp hb ht) using
     1
-  · refine setIntegral_congr measurableSet_Ioi fun x hx => ?_
+  · refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
     dsimp only
     have A : exp (-x) = exp (-a * x) * exp (-b * x) := by
       rw [← exp_add, ← add_mul, ← neg_add, hab, neg_one_mul]
@@ -103,7 +103,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
     rw [A, B]
     ring
   · rw [one_div_one_div, one_div_one_div]
-    congr 2 <;> exact setIntegral_congr measurableSet_Ioi fun x hx => fpow (by assumption) _ hx
+    congr 2 <;> exact setIntegral_congr_fun measurableSet_Ioi fun x hx => fpow (by assumption) _ hx
 
 theorem convexOn_log_Gamma : ConvexOn ℝ (Ioi 0) (log ∘ Gamma) := by
   refine convexOn_iff_forall_pos.mpr ⟨convex_Ioi _, fun x hx y hy a b ha hb hab => ?_⟩

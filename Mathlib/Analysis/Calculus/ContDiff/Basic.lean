@@ -781,15 +781,20 @@ theorem ContDiff.comp₃ {g : E₁ × E₂ × E₃ → G} {f₁ : F → E₁} {f
     ContDiff 𝕜 n fun x => g (f₁ x, f₂ x, f₃ x) :=
   hg.comp₂ hf₁ <| hf₂.prod hf₃
 
-theorem ContDiff.comp_contDiff_on₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂} {s : Set F}
+theorem ContDiff.comp_contDiffOn₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂} {s : Set F}
     (hg : ContDiff 𝕜 n g) (hf₁ : ContDiffOn 𝕜 n f₁ s) (hf₂ : ContDiffOn 𝕜 n f₂ s) :
     ContDiffOn 𝕜 n (fun x => g (f₁ x, f₂ x)) s :=
   hg.comp_contDiffOn <| hf₁.prod hf₂
 
-theorem ContDiff.comp_contDiff_on₃ {g : E₁ × E₂ × E₃ → G} {f₁ : F → E₁} {f₂ : F → E₂} {f₃ : F → E₃}
+@[deprecated (since := "2024-10-10")] alias ContDiff.comp_contDiff_on₂ := ContDiff.comp_contDiffOn₂
+
+theorem ContDiff.comp_contDiffOn₃ {g : E₁ × E₂ × E₃ → G} {f₁ : F → E₁} {f₂ : F → E₂} {f₃ : F → E₃}
     {s : Set F} (hg : ContDiff 𝕜 n g) (hf₁ : ContDiffOn 𝕜 n f₁ s) (hf₂ : ContDiffOn 𝕜 n f₂ s)
     (hf₃ : ContDiffOn 𝕜 n f₃ s) : ContDiffOn 𝕜 n (fun x => g (f₁ x, f₂ x, f₃ x)) s :=
-  hg.comp_contDiff_on₂ hf₁ <| hf₂.prod hf₃
+  hg.comp_contDiffOn₂ hf₁ <| hf₂.prod hf₃
+
+@[deprecated (since := "2024-10-10")] alias ContDiff.comp_contDiff_on₃ := ContDiff.comp_contDiffOn₃
+
 
 end NAry
 
@@ -802,7 +807,7 @@ theorem ContDiff.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} 
 theorem ContDiffOn.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} {s : Set X}
     (hg : ContDiffOn 𝕜 n g s) (hf : ContDiffOn 𝕜 n f s) :
     ContDiffOn 𝕜 n (fun x => (g x).comp (f x)) s :=
-  (isBoundedBilinearMap_comp (𝕜 := 𝕜) (E := E) (F := F) (G := G)).contDiff.comp_contDiff_on₂ hg hf
+  (isBoundedBilinearMap_comp (𝕜 := 𝕜) (E := E) (F := F) (G := G)).contDiff.comp_contDiffOn₂ hg hf
 
 theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F} {n : ℕ∞} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x) (g x) :=
@@ -810,7 +815,7 @@ theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F} {n : ℕ∞}
 
 theorem ContDiffOn.clm_apply {f : E → F →L[𝕜] G} {g : E → F} {n : ℕ∞} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x => (f x) (g x)) s :=
-  isBoundedBilinearMap_apply.contDiff.comp_contDiff_on₂ hf hg
+  isBoundedBilinearMap_apply.contDiff.comp_contDiffOn₂ hf hg
 
 -- Porting note: In Lean 3 we had to give implicit arguments in proofs like the following,
 -- to speed up elaboration. In Lean 4 this isn't necessary anymore.

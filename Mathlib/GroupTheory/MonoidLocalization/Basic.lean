@@ -268,8 +268,6 @@ theorem ndrec_mk {p : Localization S → Sort u} (f : ∀ (a : M) (b : S), p (mk
 /-- Non-dependent recursion principle for localizations: given elements `f a b : p`
 for all `a b`, such that `r S (a, b) (c, d)` implies `f a b = f c d`,
 then `f` is defined on the whole `Localization S`. -/
--- Porting note: the attribute `elab_as_elim` fails with `unexpected eliminator resulting type p`
--- @[to_additive (attr := elab_as_elim)
 @[to_additive
     "Non-dependent recursion principle for `AddLocalization`s: given elements `f a b : p`
 for all `a b`, such that `r S (a, b) (c, d)` implies `f a b = f c d`,
@@ -293,8 +291,6 @@ theorem induction_on {p : Localization S → Prop} (x) (H : ∀ y : M × S, p (m
 /-- Non-dependent recursion principle for localizations: given elements `f x y : p`
 for all `x` and `y`, such that `r S x x'` and `r S y y'` implies `f x y = f x' y'`,
 then `f` is defined on the whole `Localization S`. -/
--- Porting note: the attribute `elab_as_elim` fails with `unexpected eliminator resulting type p`
--- @[to_additive (attr := elab_as_elim)
 @[to_additive
     "Non-dependent recursion principle for localizations: given elements `f x y : p`
 for all `x` and `y`, such that `r S x x'` and `r S y y'` implies `f x y = f x' y'`,

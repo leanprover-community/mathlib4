@@ -153,7 +153,7 @@ it is true in is in the ultrafilter. -/
 theorem sentence_realize (φ : L.Sentence) :
     (u : Filter α).Product M ⊨ φ ↔ ∀ᶠ a : α in u, M a ⊨ φ := by
   simp_rw [Sentence.Realize]
-  erw [← realize_formula_cast φ, iff_eq_eq]
+  rw [← realize_formula_cast φ, iff_eq_eq]
   exact congr rfl (Subsingleton.elim _ _)
 
 nonrec instance Product.instNonempty : Nonempty ((u : Filter α).Product M) :=

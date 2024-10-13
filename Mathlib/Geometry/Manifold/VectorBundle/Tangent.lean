@@ -4,16 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
-import Mathlib.Analysis.Convex.Normed
 
 /-! # Tangent bundles
 
 This file defines the tangent bundle as a smooth vector bundle.
 
-Let `M` be a smooth manifold with corners with model `I` on `(E, H)`. We define the tangent bundle
-of `M` using the `VectorBundleCore` construction indexed by the charts of `M` with fibers `E`.
-Given two charts `i, j : PartialHomeomorph M H`, the coordinate change between `i` and `j`
-at a point `x : M` is the derivative of the composite
+Let `M` be a manifold with model `I` on `(E, H)`. The tangent space `TangentSpace I (x : M)` has
+already been defined as a type synonym for `E`, and the tangent bundle `TangentBundle I M` as an
+abbrev of `Bundle.TotalSpace E (TangentSpace I : M → Type _)`.
+
+In this file, when `M` is smooth, we construct a smooth vector bundle structure
+on `TangentBundle I M` using the `VectorBundleCore` construction indexed by the charts of `M`
+with fibers `E`. Given two charts `i, j : PartialHomeomorph M H`, the coordinate change
+between `i` and `j` at a point `x : M` is the derivative of the composite
 ```
   I.symm   i.symm    j     I
 E -----> H -----> M --> H --> E
@@ -21,12 +24,13 @@ E -----> H -----> M --> H --> E
 within the set `range I ⊆ E` at `I (i x) : E`.
 This defines a smooth vector bundle `TangentBundle` with fibers `TangentSpace`.
 
-## Main definitions
+## Main definitions and results
 
-* `TangentSpace I M x` is the fiber of the tangent bundle at `x : M`, which is defined to be `E`.
+* `tangentBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
 
-* `TangentBundle I M` is the total space of `TangentSpace I M`, proven to be a smooth vector
-  bundle.
+* When `M` is a smooth manifold with corners, `TangentBundle I M` has a smooth vector bundle
+structure over `M`. In particular, it is a topological space, a vector bundle, a fiber bundle,
+and a smooth manifold.
 -/
 
 
@@ -65,7 +69,7 @@ variable (M)
 open SmoothManifoldWithCorners
 
 /-- Let `M` be a smooth manifold with corners with model `I` on `(E, H)`.
-Then `VectorBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
+Then `tangentBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
 It is indexed by the atlas of `M`, with fiber `E` and its change of coordinates from the chart `i`
 to the chart `j` at point `x : M` is the derivative of the composite
 ```
@@ -164,48 +168,11 @@ lemma continuousOn_tangentCoordChange (x y : M) : ContinuousOn (tangentCoordChan
 
 end tangentCoordChange
 
-/-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
-`(tangentBundleCore I M).to_topological_vector_bundle_core.fiber x`, but we use `E` to help the
-kernel.
--/
-@[nolint unusedArguments]
-def TangentSpace {𝕜} [NontriviallyNormedField 𝕜] {E} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {H} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M} [TopologicalSpace M]
-    [ChartedSpace H M] [SmoothManifoldWithCorners I M] (_x : M) : Type* := E
--- Porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
-
-instance {x : M} : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
-instance {x : M} : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
-instance {x : M} : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
-
 variable (M)
-
--- is empty if the base manifold is empty
-/-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
-`Bundle.TotalSpace` to be able to put a suitable topology on it. -/
--- Porting note(#5171): was nolint has_nonempty_instance
-abbrev TangentBundle :=
-  Bundle.TotalSpace E (TangentSpace I : M → Type _)
 
 local notation "TM" => TangentBundle I M
 
 section TangentBundleInstances
-
-/- In general, the definition of `TangentSpace` is not reducible, so that type class inference
-does not pick wrong instances. In this section, we record the right instances for
-them, noting in particular that the tangent bundle is a smooth manifold. -/
-section
-
-variable {M}
-variable (x : M)
-
-instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
-
-instance : Inhabited (TangentSpace I x) := ⟨0⟩
-
--- Porting note: removed unneeded ContinuousAdd (TangentSpace I x)
-
-end
 
 instance : TopologicalSpace TM :=
   (tangentBundleCore I M).toTopologicalSpace
@@ -448,13 +415,3 @@ theorem inTangentCoordinates_eq (f : N → M) (g : N → M') (ϕ : N → E →L[
 end inTangentCoordinates
 
 end General
-
-section Real
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
-  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M]
-
-instance {x : M} : PathConnectedSpace (TangentSpace I x) := by unfold TangentSpace; infer_instance
-
-end Real

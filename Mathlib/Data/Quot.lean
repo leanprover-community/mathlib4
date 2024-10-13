@@ -109,7 +109,6 @@ theorem liftOn_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f
   ⟨fun hf => hf.comp Quot.exists_rep, fun hf y => let ⟨x, hx⟩ := hf y; ⟨Quot.mk _ x, hx⟩⟩
 
 /-- Descends a function `f : α → β → γ` to quotients of `α` and `β`. -/
--- Porting note: removed `@[elab_as_elim]`, gave "unexpected resulting type γ"
 -- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 protected def lift₂ (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂)
     (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b) (q₁ : Quot r) (q₂ : Quot s) : γ :=
@@ -123,7 +122,6 @@ theorem lift₂_mk (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ →
   rfl
 
 /-- Descends a function `f : α → β → γ` to quotients of `α` and `β` and applies it. -/
--- porting note (#11083): removed `@[elab_as_elim]`, gave "unexpected resulting type γ"
 -- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 protected def liftOn₂ (p : Quot r) (q : Quot s) (f : α → β → γ)
     (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂) (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b) : γ :=
@@ -451,7 +449,6 @@ protected theorem lift_mk (f : α → β) (c) (a : α) : lift f c (mk a) = f a :
   rfl
 
 /-- Lift a constant function on `q : Trunc α`. -/
--- Porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
 -- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 protected def liftOn (q : Trunc α) (f : α → β) (c : ∀ a b : α, f a = f b) : β :=
   lift f c q
@@ -560,7 +557,6 @@ theorem surjective_Quotient_mk'' : Function.Surjective (Quotient.mk'' : α → Q
 
 /-- A version of `Quotient.liftOn` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
--- Porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
 -- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 protected def liftOn' (q : Quotient s₁) (f : α → φ) (h : ∀ a b, s₁ a b → f a = f b) :
     φ :=
@@ -577,7 +573,6 @@ protected theorem liftOn'_mk'' (f : α → φ) (h) (x : α) :
 
 /-- A version of `Quotient.liftOn₂` taking `{s₁ : Setoid α} {s₂ : Setoid β}` as implicit arguments
 instead of instance arguments. -/
--- Porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
 -- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 protected def liftOn₂' (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → γ)
     (h : ∀ a₁ a₂ b₁ b₂, s₁ a₁ b₁ → s₂ a₂ b₂ → f a₁ a₂ = f b₁ b₂) : γ :=

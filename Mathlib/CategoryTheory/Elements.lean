@@ -223,9 +223,9 @@ def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : (CostructuredArrow yoneda F
         Category.comp_id, yoneda_obj_map]
       have : yoneda.map f.unop.left ≫ (unop X).hom = (unop Y).hom := by
         convert f.unop.3
-      erw [← this]
+      rw [← this]
       simp only [yoneda_map_app, FunctorToTypes.comp]
-      erw [Category.id_comp]⟩
+      rw [Category.id_comp]⟩
 
 @[simp]
 theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :

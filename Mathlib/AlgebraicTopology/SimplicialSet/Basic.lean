@@ -303,7 +303,7 @@ lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : Λ[n+1, i] ⟶
   have H₁ := congrFun (σ₁.naturality (factor_δ f' j).op) (face i j hji)
   have H₂ := congrFun (σ₂.naturality (factor_δ f' j).op) (face i j hji)
   dsimp at H₁ H₂
-  erw [H, H₁, H₂, h _ hji]
+  rw [H, H₁, H₂, h _ hji]
 
 end horn
 

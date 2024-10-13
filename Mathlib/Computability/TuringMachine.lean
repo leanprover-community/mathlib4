@@ -178,7 +178,6 @@ instance ListBlank.hasEmptyc {Γ} [Inhabited Γ] : EmptyCollection (ListBlank Γ
 
 /-- A modified version of `Quotient.liftOn'` specialized for `ListBlank`, with the stronger
 precondition `BlankExtends` instead of `BlankRel`. -/
--- Porting note: Removed `@[elab_as_elim]`
 protected abbrev ListBlank.liftOn {Γ} [Inhabited Γ] {α} (l : ListBlank Γ) (f : List Γ → α)
     (H : ∀ a b, BlankExtends a b → f a = f b) : α :=
   l.liftOn' f <| by rintro a b (h | h) <;> [exact H _ _ h; exact (H _ _ h).symm]

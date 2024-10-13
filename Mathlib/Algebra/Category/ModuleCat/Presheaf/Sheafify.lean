@@ -81,7 +81,6 @@ lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
   · rw [hr₀', R.map_comp, comp_apply, ← hr₀, NatTrans.naturality_apply]
   · rw [hm₀', A.map_comp, AddCommGrp.coe_comp, Function.comp_apply, ← hm₀]
     erw [NatTrans.naturality_apply]
-    rfl
 
 variable (hr₀ : (r₀.map (whiskerRight α (forget _))).IsAmalgamation r)
   (hm₀ : (m₀.map (whiskerRight φ (forget _))).IsAmalgamation m)
@@ -105,7 +104,6 @@ lemma isCompatible_map_smul : ((r₀.smul m₀).map (whiskerRight φ (forget _))
   have hb₀ : (φ.app (Opposite.op Z)) b₀ = (A.map (f₁.op ≫ g₁.op)) m := by
     dsimp [b₀]
     erw [NatTrans.naturality_apply, hb₁, Functor.map_comp, comp_apply]
-    rfl
   have ha₀' : (α.app (Opposite.op Z)) a₀ = (R.map (f₂.op ≫ g₂.op)) r := by
     rw [ha₀, ← op_comp, fac, op_comp]
   have hb₀' : (φ.app (Opposite.op Z)) b₀ = (A.map (f₂.op ≫ g₂.op)) m := by
@@ -222,9 +220,7 @@ lemma map_smul_eq {Y : Cᵒᵖ} (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.ap
 protected lemma one_smul : smul α φ 1 m = m := by
   apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
   rintro Y f ⟨m₀, hm₀⟩
-  rw [← hm₀]
-  erw [map_smul_eq α φ 1 m f.op 1 (by simp) m₀ hm₀, one_smul]
-  rfl
+  rw [← hm₀, map_smul_eq α φ 1 m f.op 1 (by simp) m₀ hm₀, one_smul]
 
 protected lemma zero_smul : smul α φ 0 m = 0 := by
   apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
@@ -248,7 +244,7 @@ protected lemma smul_add : smul α φ r (m + m') = smul α φ r m + smul α φ r
   erw [(A.val.map f.op).map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
     map_smul_eq α φ r m' f.op r₀ hr₀ m₀' hm₀',
     map_smul_eq α φ r (m + m') f.op r₀ hr₀ (m₀ + m₀')
-      (by erw [map_add, map_add, hm₀, hm₀']; rfl),
+      (by rw [map_add, map_add, hm₀, hm₀']),
     smul_add, map_add]
 
 protected lemma add_smul : smul α φ (r + r') m = smul α φ r m + smul α φ r' m := by
@@ -298,7 +294,7 @@ lemma map_smul :
   rintro Y f ⟨⟨r₀, hr₀⟩, ⟨m₀, hm₀⟩⟩
   erw [← comp_apply, ← Functor.map_comp,
     map_smul_eq α φ r m (π ≫ f.op) r₀ (by rw [hr₀, Functor.map_comp, comp_apply]) m₀
-      (by erw [hm₀, Functor.map_comp, comp_apply]; rfl),
+      (by rw [hm₀, Functor.map_comp, comp_apply]),
     map_smul_eq α φ (R.val.map π r) (A.val.map π m) f.op r₀ hr₀ m₀ hm₀]
 
 end Sheafify

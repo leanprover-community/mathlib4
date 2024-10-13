@@ -486,7 +486,7 @@ theorem app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Preshea
     (U : Opens X) (h : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f)) :
     Function.Injective (f.app (op U)) := fun s t hst =>
   section_ext F _ _ _ fun x hx =>
-    h x hx <| by erw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply, hst]
+    h x hx <| by rw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply, hst]
 
 theorem app_injective_iff_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X}
     (f : F.1 ⟶ G) :

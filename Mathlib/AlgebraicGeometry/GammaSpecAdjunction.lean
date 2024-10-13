@@ -156,7 +156,7 @@ def toΓSpecCBasicOpens :
   naturality r s f := by
     apply (StructureSheaf.to_basicOpen_epi (Γ.obj (op X)) r.unop).1
     simp only [← Category.assoc]
-    erw [X.toΓSpecCApp_spec r.unop]
+    rw [X.toΓSpecCApp_spec r.unop]
     convert X.toΓSpecCApp_spec s.unop
     symm
     apply X.presheaf.map_comp
@@ -413,6 +413,10 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
 
 end ΓSpec
 
+theorem Scheme.toSpecΓ_val_base (X : Scheme.{u}) (x) :
+    (Scheme.toSpecΓ X).1.base x =
+      (Spec.map (X.presheaf.germ ⊤ x trivial)).1.base (LocalRing.closedPoint _) := rfl
+
 @[reassoc (attr := simp)]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
     f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map (f.app ⊤) :=
@@ -454,6 +458,16 @@ theorem toOpen_toSpecΓ_app {X : Scheme.{u}} (U) :
   rw [← Category.assoc, ← unop_comp, ΓSpec.adjunction.left_triangle_components]
   dsimp
   exact Category.id_comp _
+
+lemma ΓSpecIso_inv_ΓSpec_adjunction_homEquiv {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
+    (Scheme.ΓSpecIso B).inv ≫ ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).app ⊤ = φ := by
+  simp only [Adjunction.homEquiv_apply, Scheme.Spec_map, Opens.map_top, Scheme.comp_app]
+  simp
+
+lemma ΓSpec_adjunction_homEquiv_eq {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
+    (((ΓSpec.adjunction.homEquiv X (op B)) φ.op).app ⊤) = (Scheme.ΓSpecIso B).hom ≫ φ := by
+  simp_rw [← ΓSpecIso_inv_ΓSpec_adjunction_homEquiv φ]
+  simp
 
 theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
     (Scheme.ΓSpecIso Γ(X, U)).hom = (Spec.map U.topIso.inv).app ⊤ ≫

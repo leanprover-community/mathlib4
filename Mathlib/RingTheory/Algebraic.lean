@@ -48,11 +48,11 @@ def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
 variable (R A)
 
 /-- An algebra is algebraic if all its elements are algebraic. -/
-protected class Algebra.IsAlgebraic : Prop :=
+protected class Algebra.IsAlgebraic : Prop where
   isAlgebraic : ∀ x : A, IsAlgebraic R x
 
 /-- An algebra is transcendental if some element is transcendental. -/
-protected class Algebra.Transcendental : Prop :=
+protected class Algebra.Transcendental : Prop where
   transcendental : ∃ x : A, Transcendental R x
 
 variable {R A}

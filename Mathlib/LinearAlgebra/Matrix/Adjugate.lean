@@ -256,7 +256,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
 
 theorem mul_adjugate_apply (A : Matrix n n α) (i j k) :
     A i k * adjugate A k j = cramer Aᵀ (Pi.single k (A i k)) j := by
-  erw [← smul_eq_mul, adjugate, of_apply, ← Pi.smul_apply, ← LinearMap.map_smul, ← Pi.single_smul',
+  rw [← smul_eq_mul, adjugate, of_apply, ← Pi.smul_apply, ← LinearMap.map_smul, ← Pi.single_smul',
     smul_eq_mul, mul_one]
 
 theorem mul_adjugate (A : Matrix n n α) : A * adjugate A = A.det • (1 : Matrix n n α) := by

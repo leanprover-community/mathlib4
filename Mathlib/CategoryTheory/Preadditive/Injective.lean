@@ -108,7 +108,7 @@ instance (X : Type u₁) [Nonempty X] : Injective X where
       change dite (f y ∈ Set.range f) (fun h => g (Classical.choose h)) _ = _
       split_ifs <;> rename_i h
       · rw [mono_iff_injective] at mono
-        erw [mono (Classical.choose_spec h)]
+        rw [mono (Classical.choose_spec h)]
       · exact False.elim (h ⟨y, rfl⟩)⟩
 
 instance Type.enoughInjectives : EnoughInjectives (Type u₁) where

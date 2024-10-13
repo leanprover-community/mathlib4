@@ -859,7 +859,7 @@ def kernelForkBiproductToSubtype (p : Set K) :
         ext j k
         simp only [Category.assoc, biproduct.ι_fromSubtype_assoc, biproduct.ι_toSubtype_assoc,
           comp_zero, zero_comp]
-        erw [dif_neg k.2]
+        rw [dif_neg k.2]
         simp only [zero_comp])
   isLimit :=
     KernelFork.IsLimit.ofι _ _ (fun {W} g _ => g ≫ biproduct.toSubtype f pᶜ)

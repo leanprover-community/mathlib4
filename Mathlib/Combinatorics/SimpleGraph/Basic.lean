@@ -518,7 +518,7 @@ variable (G G₁ G₂)
 
 theorem edge_other_ne {e : Sym2 V} (he : e ∈ G.edgeSet) {v : V} (h : v ∈ e) :
     Sym2.Mem.other h ≠ v := by
-  erw [← Sym2.other_spec h, Sym2.eq_swap] at he
+  rw [← Sym2.other_spec h, Sym2.eq_swap] at he
   exact G.ne_of_adj he
 
 instance decidableMemEdgeSet [DecidableRel G.Adj] : DecidablePred (· ∈ G.edgeSet) :=

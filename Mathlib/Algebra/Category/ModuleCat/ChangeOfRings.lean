@@ -531,7 +531,7 @@ protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScala
         Functor.comp_map]
       rw [coe_comp, coe_comp, Function.comp, Function.comp]
       conv_rhs => rw [← LinearMap.coe_toAddHom, ← AddHom.toFun_eq_coe]
-      erw [CoextendScalars.map_apply, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+      rw [CoextendScalars.map_apply, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
         restrictScalars.map_apply f]
       change s • (g y) = g (s • y)
       rw [map_smul]

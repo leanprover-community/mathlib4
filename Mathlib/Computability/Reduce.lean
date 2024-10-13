@@ -311,9 +311,7 @@ protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
     (h : ∀ p : Set ℕ, C (of p)) : C d :=
   Quotient.inductionOn' d h
 
-/-- Lifts a function on sets of natural numbers to many-one degrees.
--/
--- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
+/-- Lifts a function on sets of natural numbers to many-one degrees. -/
 protected abbrev liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
     (h : ∀ p q, ManyOneEquiv p q → f p = f q) : φ :=
   Quotient.liftOn' d f h
@@ -323,9 +321,8 @@ protected theorem liftOn_eq {φ} (p : Set ℕ) (f : Set ℕ → φ)
     (h : ∀ p q, ManyOneEquiv p q → f p = f q) : (of p).liftOn f h = f p :=
   rfl
 
-/-- Lifts a binary function on sets of natural numbers to many-one degrees.
--/
-@[reducible, simp] -- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
+/-- Lifts a binary function on sets of natural numbers to many-one degrees. -/
+@[reducible, simp]
 protected def liftOn₂ {φ} (d₁ d₂ : ManyOneDegree) (f : Set ℕ → Set ℕ → φ)
     (h : ∀ p₁ p₂ q₁ q₂, ManyOneEquiv p₁ p₂ → ManyOneEquiv q₁ q₂ → f p₁ q₁ = f p₂ q₂) : φ :=
   d₁.liftOn (fun p => d₂.liftOn (f p) fun q₁ q₂ hq => h _ _ _ _ (by rfl) hq)

@@ -377,7 +377,7 @@ theorem multichoose_eq : ∀ n k : ℕ, multichoose n k = (n + k - 1).choose k
   | n + 1, k + 1 => by
     have : n + (k + 1) < (n + 1) + (k + 1) := Nat.add_lt_add_right (Nat.lt_succ_self _) _
     have : (n + 1) + k < (n + 1) + (k + 1) := Nat.add_lt_add_left (Nat.lt_succ_self _) _
-    erw [multichoose_succ_succ, Nat.add_comm, Nat.succ_add_sub_one, ← Nat.add_assoc,
+    rw [multichoose_succ_succ, Nat.add_comm, Nat.succ_add_sub_one, ← Nat.add_assoc,
       Nat.choose_succ_succ]
     simp [multichoose_eq n (k+1), multichoose_eq (n+1) k]
 

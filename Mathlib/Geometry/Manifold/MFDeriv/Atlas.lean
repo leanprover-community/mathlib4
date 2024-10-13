@@ -127,37 +127,6 @@ theorem mdifferentiable_of_mem_atlas (h : e ∈ atlas H M) : e.MDifferentiable I
 theorem mdifferentiable_chart (x : M) : (chartAt H x).MDifferentiable I I :=
   mdifferentiable_of_mem_atlas _ (chart_mem_atlas _ _)
 
-/-- The derivative of the chart at a base point is the chart of the tangent bundle, composed with
-the identification between the tangent bundle of the model space and the product space. -/
-theorem tangentMap_chart {p q : TangentBundle I M} (h : q.1 ∈ (chartAt H p.1).source) :
-    tangentMap I I (chartAt H p.1) q =
-      (TotalSpace.toProd _ _).symm
-        ((chartAt (ModelProd H E) p : TangentBundle I M → ModelProd H E) q) := by
-  dsimp [tangentMap]
-  rw [MDifferentiableAt.mfderiv]
-  · rfl
-  · exact mdifferentiableAt_atlas _ (chart_mem_atlas _ _) h
-
-/-- The derivative of the inverse of the chart at a base point is the inverse of the chart of the
-tangent bundle, composed with the identification between the tangent bundle of the model space and
-the product space. -/
-theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
-    (h : q.1 ∈ (chartAt H p.1).target) :
-    tangentMap I I (chartAt H p.1).symm q =
-      (chartAt (ModelProd H E) p).symm (TotalSpace.toProd H E q) := by
-  dsimp only [tangentMap]
-  rw [MDifferentiableAt.mfderiv (mdifferentiableAt_atlas_symm _ (chart_mem_atlas _ _) h)]
-  simp only [ContinuousLinearMap.coe_coe, TangentBundle.chartAt, h, tangentBundleCore,
-    mfld_simps, (· ∘ ·)]
-  -- `simp` fails to apply `PartialEquiv.prod_symm` with `ModelProd`
-  congr
-  exact ((chartAt H (TotalSpace.proj p)).right_inv h).symm
-
-lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y).source) :
-    mfderiv I I (chartAt H y) x = tangentCoordChange I x y x := by
-  have := mdifferentiableAt_atlas I (ChartedSpace.chart_mem_atlas _) hsrc
-  simp [mfderiv, if_pos this, Function.comp_assoc]
-
 end Charts
 
 
@@ -175,9 +144,6 @@ protected theorem mdifferentiableAt {x : M} (hx : x ∈ e.source) : MDifferentia
 
 theorem mdifferentiableAt_symm {x : M'} (hx : x ∈ e.target) : MDifferentiableAt I' I e.symm x :=
   (he.2 x hx).mdifferentiableAt (e.open_target.mem_nhds hx)
-
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
-  [SmoothManifoldWithCorners I'' M'']
 
 theorem symm_comp_deriv {x : M} (hx : x ∈ e.source) :
     (mfderiv I' I e.symm (e x)).comp (mfderiv I I' e x) =

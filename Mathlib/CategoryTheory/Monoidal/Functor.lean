@@ -309,6 +309,27 @@ noncomputable def MonoidalFunctor.toOplaxMonoidalFunctor (F : MonoidalFunctor C 
         rw [← F.map_comp, Iso.hom_inv_id, F.map_id]
       simp }
 
+/-- Construct a (strong) monoidal functor out of an oplax monoidal functor whose tensorators and
+unitors are isomorphisms -/
+@[simps]
+noncomputable def MonoidalFunctor.fromOplaxMonoidalFunctor (F : OplaxMonoidalFunctor C D)
+    [IsIso F.η] [∀ (X Y : C), IsIso (F.δ X Y)] : MonoidalFunctor C D :=
+    { F with
+      ε := inv F.η
+      μ := fun X Y => inv (F.δ X Y)
+      associativity := by
+        intro X Y Z
+        rw [← inv_whiskerRight, IsIso.inv_comp_eq, IsIso.inv_comp_eq]
+        simp
+      left_unitality := by
+        intro X
+        rw [← inv_whiskerRight, ← IsIso.inv_comp_eq]
+        simp
+      right_unitality := by
+        intro X
+        rw [← inv_whiskerLeft, ← IsIso.inv_comp_eq]
+        simp }
+
 end
 
 open MonoidalCategory

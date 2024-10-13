@@ -190,7 +190,7 @@ theorem isTheta_exp_arg_mul_im (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x
   refine Real.isTheta_exp_comp_one.2 ⟨π * b, ?_⟩
   rw [eventually_map] at hb ⊢
   refine hb.mono fun x hx => ?_
-  erw [abs_mul]
+  rw [abs_mul]
   exact mul_le_mul (abs_arg_le_pi _) hx (abs_nonneg _) Real.pi_pos.le
 
 theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|) :

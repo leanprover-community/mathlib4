@@ -239,7 +239,7 @@ theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι
   rw [TopCat.GlueData.isOpen_iff]
   apply forall_congr'
   intro i
-  erw [← Set.preimage_comp, ← ι_isoCarrier_inv]
+  rw [← Set.preimage_comp, ← ι_isoCarrier_inv]
   rfl
 
 /-- The open cover of the glued space given by the glue data. -/

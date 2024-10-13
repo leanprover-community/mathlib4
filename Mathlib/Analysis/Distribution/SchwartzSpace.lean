@@ -139,7 +139,7 @@ theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
   refine ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite ?_⟩
   refine (Filter.eventually_cofinite_ne 0).mono fun x hx => ?_
   rw [Real.norm_of_nonneg (zpow_nonneg (norm_nonneg _) _), zpow_neg, ← div_eq_mul_inv, le_div_iff₀']
-  exacts [hd' x, zpow_pos_of_pos (norm_pos_iff.mpr hx) _]
+  exacts [hd' x, zpow_pos (norm_pos_iff.mpr hx) _]
 
 theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
     f =O[cocompact E] fun x => ‖x‖ ^ s := by

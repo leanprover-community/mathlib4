@@ -23,7 +23,7 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     (hF : ∀ t ∈ Ioi 0, HasSum (fun i ↦ a i * rexp (-p i * t)) (F t))
     (h_sum : Summable fun i ↦ ‖a i‖ / (p i) ^ s.re) :
     HasSum (fun i ↦ Gamma s * a i / p i ^ s) (mellin F s) := by
-  simp_rw [mellin, smul_eq_mul, ← setIntegral_congr measurableSet_Ioi
+  simp_rw [mellin, smul_eq_mul, ← setIntegral_congr_fun measurableSet_Ioi
     (fun t ht ↦ congr_arg _ (hF t ht).tsum_eq), ← tsum_mul_left]
   convert hasSum_integral_of_summable_integral_norm
     (F := fun i t ↦ t ^ (s - 1) * (a i * rexp (-p i * t))) (fun i ↦ ?_) ?_ using 2 with i
@@ -56,7 +56,7 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     have := Real.integral_rpow_mul_exp_neg_mul_Ioi hs hpi
     simp_rw [← neg_mul (p i), one_div, inv_rpow hpi.le, ← div_eq_inv_mul] at this
     rw [norm_of_nonneg (integral_nonneg (fun _ ↦ norm_nonneg _)), ← this]
-    refine setIntegral_congr measurableSet_Ioi (fun t ht ↦ ?_)
+    refine setIntegral_congr_fun measurableSet_Ioi (fun t ht ↦ ?_)
     rw [norm_mul, norm_real, Real.norm_eq_abs, Real.abs_exp, Complex.norm_eq_abs,
       abs_cpow_eq_rpow_re_of_pos ht, sub_re, one_re]
 

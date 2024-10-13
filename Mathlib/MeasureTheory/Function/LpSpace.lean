@@ -254,7 +254,7 @@ theorem nnnorm_coe_ennreal (f : Lp E p μ) : (‖f‖₊ : ℝ≥0∞) = eLpNorm
 
 @[simp]
 lemma norm_toLp (f : α → E) (hf : Memℒp f p μ) : ‖hf.toLp f‖ = ENNReal.toReal (eLpNorm f p μ) := by
-  erw [norm_def, eLpNorm_congr_ae (Memℒp.coeFn_toLp hf)]
+  rw [norm_def, eLpNorm_congr_ae (Memℒp.coeFn_toLp hf)]
 
 @[simp]
 theorem nnnorm_toLp (f : α → E) (hf : Memℒp f p μ) :

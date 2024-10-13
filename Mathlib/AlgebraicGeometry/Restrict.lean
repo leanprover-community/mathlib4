@@ -170,7 +170,7 @@ lemma Scheme.map_basicOpen' (r : Γ(U, ⊤)) :
     U.ι ''ᵁ (U.toScheme.basicOpen r) = X.basicOpen
       (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
   refine (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans ?_
-  erw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op]
+  rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op]
   rw [← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
     op_id, CategoryTheory.Functor.map_id]
   congr
@@ -604,6 +604,6 @@ def Scheme.OpenCover.restrict {X : Scheme.{u}} (𝒰 : X.OpenCover) (U : Opens X
     rw [← cancel_mono U.ι]
     simp only [morphismRestrict_ι, pullbackCover_J, Equiv.refl_apply, pullbackCover_obj,
       pullbackCover_map, Category.assoc, pullback.condition]
-    erw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
+    rw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
 
 end AlgebraicGeometry

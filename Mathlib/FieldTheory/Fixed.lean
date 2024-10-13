@@ -193,7 +193,7 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
   have h : Polynomial.map (MulSemiringActionHom.toRingHom (IsInvariantSubring.subtypeHom G
     (subfield G F).toSubring)) f = Polynomial.map
     ((IsInvariantSubring.subtypeHom G (subfield G F).toSubring)) f := rfl
-  erw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
+  rw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
     Polynomial.map_toSubring _ _, prodXSubSMul]
   refine
     Fintype.prod_dvd_of_coprime

@@ -612,7 +612,7 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : K⸨X⸩}
   · exact fun _ => by rw [triv]
   · intro hn
     apply eq_of_sub_eq_zero
-    erw [← HahnSeries.sub_coeff]
+    rw [← HahnSeries.sub_coeff]
     apply coeff_zero_of_lt_valuation K H hn
 
 /- Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series. -/

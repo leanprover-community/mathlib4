@@ -6,7 +6,7 @@ Authors: Winston Yin
 import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.Analysis.ODE.PicardLindelof
 import Mathlib.Geometry.Manifold.InteriorBoundary
-import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 
 /-!
 # Integral curves of vector fields on a manifold
@@ -65,7 +65,7 @@ open Function Set
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 /-- If `γ : ℝ → M` is $C^1$ on `s : Set ℝ` and `v` is a vector field on `M`,
 `IsIntegralCurveOn γ v s` means `γ t` is tangent to `v (γ t)` for all `t ∈ s`. The value of `γ`
@@ -150,6 +150,7 @@ lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
 lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) : Continuous γ :=
   continuous_iff_continuousAt.mpr fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
 
+variable [SmoothManifoldWithCorners I M] in
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/
 lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (ht : t ∈ s)
@@ -168,6 +169,7 @@ lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (h
     mfderiv_chartAt_eq_tangentCoordChange I hsrc]
   rfl
 
+variable [SmoothManifoldWithCorners I M] in
 lemma IsIntegralCurveAt.eventually_hasDerivAt (hγ : IsIntegralCurveAt γ v t₀) :
     ∀ᶠ t in 𝓝 t₀, HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
       (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t := by
@@ -304,7 +306,7 @@ end Scaling
 
 section ExistUnique
 
-variable (t₀) {x₀ : M}
+variable [SmoothManifoldWithCorners I M] (t₀) {x₀ : M}
 
 /-- Existence of local integral curves for a $C^1$ vector field at interior points of a smooth
 manifold. -/
