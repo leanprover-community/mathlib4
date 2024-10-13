@@ -134,7 +134,7 @@ lemma ordinaryHypergeometricSeries_eq_zero_of_neg_nat {n k : ℕ}
   rcases habc with h | h | h
   all_goals
     ext
-    simp [(ascPochhammer_eval_eq_zero_iff n _).2 ⟨k, h, hk⟩]
+    simp [(ascPochhammer_eval_eq_zero_iff n _).2 ⟨k, hk, h⟩]
 
 end Field
 
@@ -178,7 +178,7 @@ lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :
       · exact False.elim <| Nat.cast_ne_zero.2 (Nat.factorial_ne_zero n) hn
       all_goals
         let ⟨kn, hkn, hn⟩ := (ascPochhammer_eval_eq_zero_iff _ _).1 h
-        exact ⟨kn, by tauto⟩
+        exact ⟨kn, hkn, by tauto⟩
     · rw [ContinuousMultilinearMap.ext_iff] at hm
       absurd hm
       push_neg
@@ -187,7 +187,7 @@ lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :
     exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b c hn h
 
 theorem ordinaryHypergeometricSeries_succ_norm_div_norm (n : ℕ)
-    (habc : ∀ kn : ℕ, (kn = -a ∨ kn = -b ∨ kn = -c) → n ≤ kn) :
+    (habc : ∀ kn < n, (↑kn ≠ -a ∧ ↑kn ≠ -b ∧ ↑kn ≠ -c)) :
       ‖ordinaryHypergeometricSeries 𝔸 a b c (n+1)‖ / ‖ordinaryHypergeometricSeries 𝔸 a b c n‖ =
         ‖a + n‖ * ‖b + n‖ * ‖c + n‖⁻¹ * ‖1 + (n : 𝕂)‖⁻¹ := by
   simp [ordinaryHypergeometricSeries, factorial_succ, ascPochhammer_succ_eval]
@@ -211,7 +211,7 @@ theorem ordinaryHypergeometricSeries_succ_norm_div_norm (n : ℕ)
   any_goals
     apply (ascPochhammer_eval_eq_zero_iff n _).not.2
     push_neg
-    exact fun kn hkn ↦ habc kn (by tauto)
+    exact fun kn hkn ↦ by simp [habc kn hkn]
   exact cast_ne_zero.2 (factorial_ne_zero n)
 
 private theorem linear_div_tendsto_one_atTop :
