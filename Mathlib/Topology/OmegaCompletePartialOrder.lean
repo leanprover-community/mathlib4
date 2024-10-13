@@ -102,7 +102,7 @@ lemma scott_eq_Scott {α} [OmegaCompletePartialOrder α] :
     Topology.scott α (Set.range fun c : Chain α => Set.range c) = Scott.topologicalSpace α := by
   ext U
   letI := Topology.scott α (Set.range fun c : Chain α => Set.range c)
-  rw [isOpen_iff_scottContinuous_mem, @isOpen_iff_continuous_mem,
+  rw [isOpen_iff_ωScottContinuous_mem, @isOpen_iff_continuous_mem,
     @Topology.IsScott.ωscottContinuous_iff_continuous _ _
       (Topology.scott α (Set.range fun c : Chain α => Set.range c)) ({ topology_eq_scott := rfl })]
 
