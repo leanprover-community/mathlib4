@@ -65,8 +65,9 @@ instance : CommSemiring (BitVec w) :=
   cases h : Int.negSucc n % ((2 ^ w : Nat) : Int)
   case ofNat =>
     rw [Int.ofNat_eq_coe, Int.negSucc_emod] at h
-    simp only
-    all_goals omega
+    · dsimp only
+      omega
+    · omega
   case negSucc a =>
     have neg := Int.negSucc_lt_zero a
     have _ : 0 ≤ Int.negSucc n % ((2 ^ w : Nat) : Int) := Int.emod_nonneg _ (by omega)
