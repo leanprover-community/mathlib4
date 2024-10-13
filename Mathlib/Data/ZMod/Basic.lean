@@ -1473,7 +1473,7 @@ lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
   have := char_ne_one n G
   omega
 
-@[simp] lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
+lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
   Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by
     simpa [char_nsmul_eq_zero, IsPeriodicPt] using isFixedPt_id _⟩
 
