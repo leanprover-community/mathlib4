@@ -29,11 +29,11 @@ There are two kinds of proof of Cauchy-Davenport:
 
 ## Main declarations
 
-* `Finset.min_le_card_mul`: A generalisation of the Cauchy-Davenport theorem to arbitrary groups.
-* `Monoid.IsTorsionFree.card_add_card_sub_one_le_card_mul`: The Cauchy-Davenport theorem in
-  torsion-free groups.
-* `ZMod.min_le_card_add`: The Cauchy-Davenport theorem.
-* `Finset.card_add_card_sub_one_le_card_mul`: The Cauchy-Davenport theorem in linear ordered
+* `cauchy_davenport_minOrder_mul`: A generalisation of the Cauchy-Davenport theorem to arbitrary
+  groups.
+* `cauchy_davenport_of_isTorsionFree`: The Cauchy-Davenport theorem in torsion-free groups.
+* `ZMod.cauchy_davenport`: The Cauchy-Davenport theorem for `ZMod p`.
+* `cauchy_davenport_mul_of_linearOrder_isCancelMul`: The Cauchy-Davenport theorem in linear ordered
   cancellative semigroups.
 
 ## TODO
@@ -184,7 +184,7 @@ by `|s| + |t| - 1`. -/
 @[to_additive AddMonoid.IsTorsionFree.card_add_card_sub_one_le_card_add
 "The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is lower-bounded
 by `|s| + |t| - 1`."]
-lemma Monoid.IsTorsionFree.cauchy_davenport_mul (h : IsTorsionFree α)
+lemma cauchy_davenport_mul_of_isTorsionFree (h : IsTorsionFree α)
     (hs : s.Nonempty) (ht : t.Nonempty) : s.card + t.card - 1 ≤ (s * t).card := by
   simpa only [h.minOrder, min_eq_right, le_top, Nat.cast_le]
     using cauchy_davenport_minOrder_mul hs ht
@@ -207,7 +207,7 @@ lemma ZMod.cauchy_davenport {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs
 @[to_additive
 "The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups. The size of
 `s + t` is lower-bounded by `|s| + |t| - 1`."]
-lemma cauchy_davenport_mul_of_linearOrder_cancel [LinearOrder α] [Semigroup α] [IsCancelMul α]
+lemma cauchy_davenport_mul_of_linearOrder_isCancelMul [LinearOrder α] [Semigroup α] [IsCancelMul α]
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
     {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : s.card + t.card - 1 ≤ (s * t).card := by
   suffices s * {t.min' ht} ∩ ({s.max' hs} * t) = {s.max' hs * t.min' ht} by
