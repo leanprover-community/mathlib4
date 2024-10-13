@@ -1867,6 +1867,7 @@ noncomputable def dualDistribInvOfBasis (b : Π i, Basis (κ i) R (M i)) :
   ∑ p : (Π i, κ i), (ringLmapEquivSelf R ℕ _).symm (⨂ₜ[R] i, (b i).dualBasis (p i)) ∘ₗ
     (applyₗ (⨂ₜ[R] i, b i (p i)))
 
+omit [(x : R) → Decidable (x ≠ 0)] in
 @[simp]
 theorem dualDistribInvOfBasis_apply (b : Π i, Basis (κ i) R (M i))
     (f : Dual R (⨂[R] i, M i)) : dualDistribInvOfBasis b f =
@@ -1914,7 +1915,7 @@ isomorphism `⨂[R] i, R ≃ R` given by multipliccation (`constantBaseRingEquiv
 @[simps!]
 noncomputable def dualDistribEquivOfBasis (b : Π i, Basis (κ i) R (M i)) :
     (⨂[R] i, Dual R (M i)) ≃ₗ[R] Dual R (⨂[R] i, M i) := by
-  refine' LinearEquiv.ofLinear (dualDistrib R M) (dualDistribInvOfBasis b) _ _
+  refine LinearEquiv.ofLinear (dualDistrib R M) (dualDistribInvOfBasis b) ?_ ?_
   · exact dualDistrib_dualDistribInvOfBasis_left_inverse _
   · exact dualDistrib_dualDistribInvOfBasis_right_inverse _
 
@@ -1932,4 +1933,4 @@ noncomputable def dualDistribEquiv : (⨂[R] i, Dual R (M i)) ≃ₗ[R] Dual R (
 end Ring
 
 end PiTensorProduct
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2000
