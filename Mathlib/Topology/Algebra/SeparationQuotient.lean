@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.Module.Basic
 
 -- TODO when `f` is a CLM, coerce it to `ContinuousAddMonoidHom`
 -- when `f`
@@ -164,7 +163,7 @@ noncomputable def liftContinuousMonoidHom [CommMonoid M] [ContinuousMul M] [Comm
     exact SeparationQuotient.continuous_lift.mpr f.2
 
 @[to_additive (attr := simp)]
-theorem CommMonoidHom_lift_apply [CommMonoid M] [ContinuousMul M] [CommMonoid N]
+theorem liftContinuousCommMonoidHom_apply [CommMonoid M] [ContinuousMul M] [CommMonoid N]
     (f : ContinuousMonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) (x : M) :
     liftContinuousMonoidHom f hf (mk x) = f x := rfl
 
@@ -429,14 +428,6 @@ variable {R M}
 /-- The lift as a continuous linear map of `f` with `f x = f y` for `Inseparable x y`. -/
 noncomputable def liftCLM {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y) :
     (SeparationQuotient M) →SL[σ] N where
-  -- { liftContinuousAddMonoidHom f hf with
-  --   map_smul' := by
-  --     intro r x
-  --     obtain ⟨x', hx'⟩ := surjective_mk x
-  --     rw [← hx', ← mk_smul]
-  --     simp only [lift_mk]
-  --     exact ContinuousLinearMap.map_smulₛₗ f r x'
-  -- }
   toFun := SeparationQuotient.lift f hf
   map_add' {x y} := by
     obtain ⟨x', hx'⟩ := surjective_mk x

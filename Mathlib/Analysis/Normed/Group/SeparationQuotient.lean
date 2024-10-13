@@ -5,6 +5,7 @@ Authors: Yoh Tanimoto
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Hom
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 
 -- TODO modify doc, check if instances are really needed, golf
 -- want to define liftCLM. problem: a CLM on a normed vector space
@@ -160,8 +161,8 @@ noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
       intro v
       obtain ⟨v', hv'⟩ := surjective_mk v
       rw [← hv']
-      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, AddCommMonoidHom_lift_apply,
-        AddMonoidHom.coe_coe, norm_mk]
+      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+        liftContinuousAddCommMonoidHom_apply, AddMonoidHom.coe_coe, norm_mk]
       exact le_opNorm f v'}
 
 @[simp]
