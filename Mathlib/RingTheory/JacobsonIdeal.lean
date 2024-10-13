@@ -11,11 +11,8 @@ import Mathlib.RingTheory.TwoSidedIdeal.Operations
 /-!
 # Jacobson radical
 
-The Jacobson radical of a module `M` over a ring `R` is defined to be the intersection of all
-maximal submodules of `M`. The Jacobson radical of a ring `R` is the Jacobson radical of `R` as
-an `R`-module, which is equal to the intersection of all maximal left ideals of `R`.
-This is similar to how the nilradical of a commutative ring `R` is equal to the intersection
-of all prime ideals of `R`.
+The Jacobson radical of a ring `R` is defined to be the intersection of all maximal ideals of `R`.
+This is similar to how the nilradical is equal to the intersection of all prime ideals of `R`.
 
 We can extend the idea of the nilradical of `R` to ideals of `R`,
 by letting the nilradical of an ideal `I` be the intersection of prime ideals containing `I`.
@@ -25,10 +22,7 @@ as the intersection of maximal ideals containing `I`.
 
 ## Main definitions
 
-Let `R` be a ring, `I` a left ideal of `R`, and `M` an `R`-module.
-
-* `Module.jacobson R M` is the Jacobson radical of `M`,
-i.e. the infimum of all maximal submodules in `M`.
+Let `R` be a ring, and `I` be a left ideal of `R`
 
 * `Ideal.jacobson I` is the Jacobson radical, i.e. the infimum of all maximal ideals containing `I`.
 
@@ -53,19 +47,6 @@ Jacobson, Jacobson radical, Local Ideal
 
 
 universe u v
-
-namespace Module
-
-variable (R : Type u) (M : Type v)
-
-/-- The Jacobson radical of an `R`-module `M` is the infimum of all maximal submodules in `M`. -/
-def jacobson : Submodule R M :=
-  sInf { m : Submodule R M | IsCoatom m }
-
-
-
-
-end Module
 
 namespace Ideal
 
