@@ -72,7 +72,7 @@ lemma empty_not_mem_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈
     ∅ ∉ hC.diffFinset hs ht := by
   classical
   simp only [diffFinset, mem_sdiff, Finset.mem_singleton, eq_self_iff_true, not_true,
-    and_false_iff, not_false_iff]
+    and_false, not_false_iff]
 
 lemma diffFinset_subset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     ↑(hC.diffFinset hs ht) ⊆ C := by
@@ -209,7 +209,7 @@ lemma empty_not_mem_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C) (hI : �
     ∅ ∉ hC.diffFinset₀ hs hI := by
   classical
   simp only [diffFinset₀, mem_sdiff, Finset.mem_singleton, eq_self_iff_true, not_true,
-    and_false_iff, not_false_iff]
+    and_false, not_false_iff]
 
 lemma diffFinset₀_subset (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     ↑(hC.diffFinset₀ hs hI) ⊆ C := by
