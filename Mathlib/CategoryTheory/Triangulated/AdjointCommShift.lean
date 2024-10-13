@@ -174,100 +174,42 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
       unit_naturality_assoc, CommShift.isoAdd_hom_app]
     have heq : ∀ (u : (G.obj (Y⟦a + b⟧))⟦- (a + b)⟧ ⟶ G.obj Y),
         (shiftEquiv C (a + b)).symm.toAdjunction.homEquiv (G.obj (Y⟦a + b⟧)) (G.obj Y) u =
-        ((shiftEquiv' C b (-b) sorry).symm.toAdjunction.homEquiv _ ((shiftFunctor C a).obj (G.obj Y)))
-      (((shiftEquiv' C a (-a) sorry).symm.toAdjunction.homEquiv
-      ((shiftFunctor C (-b)).obj _) (G.obj Y)) ((shiftFunctorAdd' C (-b) (-a) (-(a + b))
-      hadd).inv.app _ ≫ u)) ≫
-      (shiftFunctorAdd C a b).inv.app (G.obj Y) := sorry
+        ((shiftEquiv C b).symm.toAdjunction.homEquiv _ ((shiftFunctor C a).obj (G.obj Y)))
+        (((shiftEquiv C a).symm.toAdjunction.homEquiv
+        ((shiftFunctor C (-b)).obj _) (G.obj Y)) ((shiftFunctorAdd' C (-b) (-a) (-(a + b))
+        hadd).inv.app _ ≫ u)) ≫
+        (shiftFunctorAdd C a b).inv.app (G.obj Y) := by
+      intro u
+      dsimp only [shiftEquiv]
+      erw [← shiftEquiv'_add_symm_homEquiv C a (-a) b (-b) (a + b) (-(a + b)) (add_right_neg a)
+        (add_right_neg b) (add_right_neg (a + b)) rfl]
     erw [heq]
     conv_rhs => rw [← assoc, ← assoc]
     congr 1
     rw [adj.homEquiv_naturality_left, Iso.inv_hom_id_app_assoc]
-
-/-    have heq' : ∀ (X : D) (u : X ⟶ Y⟦a + b⟧),
-        ((shiftEquiv D (a + b)).symm.toAdjunction.homEquiv _ _).symm u =
-        ((shiftEquiv D a).symm.toAdjunction.homEquiv _ _)
-        ((shiftFunctorAdd' D (-b) (-a) (-(a + b)) hadd).inv.app X) ≫ sorry
-         := sorry-/
-
-/-
-((shiftEquiv' C b b' hb).symm.toAdjunction.homEquiv X
-        ((shiftFunctor C a).obj Y)).symm (u ≫ (shiftFunctorAdd' C a b c h).hom.app Y) =
-        ((shiftEquiv' C a a' ha).symm.toAdjunction.homEquiv (X⟦b'⟧) Y)
-        ((shiftFunctorAdd' C b' a' c' (by rw [eq_neg_of_add_eq_zero_right hc,
-        eq_neg_of_add_eq_zero_right ha, eq_neg_of_add_eq_zero_right hb, ← h,
-        neg_add_rev])).inv.app X ≫
-        ((shiftEquiv' C c c' hc).symm.toAdjunction.homEquiv X Y).symm u)
--/
-
-  #exit
-    conv_rhs => rw [CommShift.isoAdd_hom_app, ← assoc, ← assoc]
-                rw [left_to_right_iso_hom_app, Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
-    simp only [Equivalence.symm_inverse, comp_obj,
-      Equivalence.symm_functor, Iso.trans_hom, Equiv.toIso_hom,
-      mapIso_hom, Iso.op_hom, Iso.app_hom, assoc, types_comp_apply,
-      Quiver.Hom.unop_op]
-
-
-
-    have : 𝟙 (G.obj ((shiftFunctor D b).obj ((shiftFunctor D a).obj Y))) =
-        𝟙 _ ≫ G.map (𝟙 _) := sorry
-    rw [this]
-    conv_rhs => rw [adj.homEquiv_naturality_right_symm]
-    have heq : ∀ (X : C) (u : F.obj X ⟶ Y⟦a + b⟧),
-        ((shiftEquiv D b).symm.toAdjunction.homEquiv (F.obj X)
-        ((shiftFunctor D a).obj Y)).symm (u ≫ (shiftFunctorAdd D a b).hom.app Y) =
-        ((shiftEquiv D a).symm.toAdjunction.homEquiv ((F.obj X)⟦-b⟧) Y)
-        ((shiftFunctorAdd' D (-b) (-a) (-(a + b)) hadd).inv.app (F.obj X) ≫
-        ((shiftEquiv D (a + b)).symm.toAdjunction.homEquiv (F.obj X) Y).symm u) := by
+    have heq' : ∀ (X : D) (u : X ⟶ Y⟦a + b⟧),
+        (shiftFunctorAdd' D (-b) (-a) (-(a + b)) hadd).inv.app X ≫
+        ((shiftEquiv D (a + b)).symm.toAdjunction.homEquiv X Y).symm u =
+        ((shiftEquiv D a).symm.toAdjunction.homEquiv _ _).symm
+        (((shiftEquiv D b).symm.toAdjunction.homEquiv _ _).symm
+        (u ≫ (shiftFunctorAdd D a b).hom.app Y)) := by
       intro X u
-      rw [← shiftFunctorAdd'_eq_shiftFunctorAdd]
-      erw [shiftEquiv_add_symm_homEquiv D a (-a) b (-b) (a + b) (-(a + b)) (add_right_neg _)
-        (add_right_neg _) (add_right_neg _) rfl (F.obj X) Y u]
-    erw [heq]
-    erw [← (shiftEquiv D a).symm.toAdjunction.homEquiv_naturality_left]
-    simp only [shiftEquiv'_functor, shiftEquiv'_inverse,
-      Equivalence.symm_functor, Equivalence.symm_inverse, comp_obj, map_comp, assoc]
-    rw [← assoc]
-    erw [← (shiftEquiv C b).symm.toAdjunction.homEquiv_naturality_right]
-    conv_rhs => rw [comp_left_to_right_iso_hom_app,
-                  Adjunction.comp_homEquiv adj (shiftEquiv D a).symm.toAdjunction]
-    simp only [Equivalence.symm_functor, shiftEquiv'_inverse,
-      Equivalence.symm_inverse, shiftEquiv'_functor, comp_obj, map_comp,
-      Equiv.symm_trans_apply, assoc, counit_naturality, id_obj, counit_naturality_assoc,
-      left_triangle_components_assoc]
-    erw [(adj.homEquiv ((shiftFunctor C (-b)).obj (unop X))
-      ((shiftFunctor D a).obj Y)).symm_apply_apply]
-    erw [((shiftEquiv D a).symm.toAdjunction.homEquiv
-      (F.obj ((shiftFunctor C (-b)).obj (unop X))) Y).symm_apply_apply]
-    rw [Adjunction.comp_homEquiv]
-    simp only [Equivalence.toAdjunction_counit,
-      Equiv.trans_apply, comp_obj, map_comp, Equivalence.toAdjunction_unit, assoc]
-    have heq' : ∀ (u : ((unop X)⟦-b⟧)⟦-a⟧ ⟶ G.obj Y),
-        ((shiftEquiv C b).symm.toAdjunction.homEquiv (unop X) ((shiftFunctor C a).obj (G.obj Y)))
-        (((shiftEquiv C a).symm.toAdjunction.homEquiv
-        ((shiftFunctor C (-b)).obj (unop X)) (G.obj Y)) u) ≫
-        (shiftFunctorAdd C a b).inv.app (G.obj Y) =
-        ((shiftEquiv C (a + b)).symm.toAdjunction.homEquiv (unop X) (G.obj Y))
-        ((shiftFunctorAdd' C (-b) (-a) (-(a + b)) hadd).hom.app (unop X) ≫ u) := by
-      intro u
-      rw [← shiftFunctorAdd'_eq_shiftFunctorAdd]
-      erw [shiftEquiv'_add_symm_homEquiv C a (-a) b (-b) (a + b) (-(a + b)) (add_right_neg _)
-        (add_right_neg _) (add_right_neg _) rfl (unop X) (G.obj Y) u]
+      erw [← shiftEquiv_add_symm_homEquiv D a (-a) b (-b) (a + b) (-(a + b)) (add_right_neg a)
+        (add_right_neg b) (add_right_neg (a + b)) rfl]
+      simp [shiftFunctorAdd'_eq_shiftFunctorAdd]
     erw [heq']
-    erw [← adj.homEquiv_naturality_left]
-    have : ∀ (u : (F.obj (unop X))⟦-(a + b)⟧ ⟶ Y),
-        F.map ((shiftFunctorAdd' C (-b) (-a) (-(a + b)) hadd).hom.app (unop X)) ≫
-        (CommShift.iso (-a)).hom.app ((shiftFunctor C (-b)).obj (unop X)) ≫
-        (shiftFunctor D (-a)).map ((CommShift.iso (-b)).hom.app (unop X)) ≫
-        (shiftFunctorAdd' D (-b) (-a) (-(a + b)) hadd).inv.app (F.obj (unop X)) ≫ u =
-        (F.commShiftIso (-(a + b))).hom.app (unop X) ≫ u := by
-      intro u
-      rw [F.commShiftIso_add' hadd]
-      simp [CommShift.isoAdd']; rfl
-    rw [this]
-    rw [yoneda_map_app, comp_left_to_right_iso_hom_app]
-    simp [Adjunction.comp_homEquiv, Functor.commShiftIso]
+    simp only [Equivalence.symm_inverse, shiftEquiv'_functor, comp_obj, Equivalence.symm_functor,
+      shiftEquiv'_inverse]
+    erw [← (shiftEquiv D a).symm.toAdjunction.homEquiv_naturality_left_symm]
+    conv_rhs => rw [comp_left_to_right_iso_hom_app, Adjunction.comp_homEquiv,
+                  Adjunction.comp_homEquiv]
+    simp only [Equivalence.symm_inverse, shiftEquiv'_functor, Equivalence.symm_functor,
+      shiftEquiv'_inverse, map_id, id_comp, map_comp, assoc, comp_obj, Equiv.symm_trans_apply,
+      counit_naturality, id_obj, Equiv.trans_apply, NatIso.cancel_natIso_hom_left]
+    conv_rhs => erw [← (shiftEquiv C b).symm.toAdjunction.homEquiv_naturality_right]
+                rw [comp_left_to_right_iso_hom_app, Adjunction.comp_homEquiv,
+                  Adjunction.comp_homEquiv]
+    simp
   /-  apply Functor.map_injective (yoneda (C := C))
     ext X u
     conv_rhs => rw [yoneda_map_app, CommShift.isoAdd_hom_app, ← assoc, ← assoc, ← assoc]

@@ -486,14 +486,14 @@ lemma shiftEquiv'_add_symm_homEquiv (a a' b b' c c' : A) (ha : a + a' = 0) (hb :
 
 lemma shiftEquiv_add_symm_homEquiv (a a' b b' c c' : A) (ha : a + a' = 0) (hb : b + b' = 0)
     (hc : c + c' = 0) (h : a + b = c) (X Y : C) (u : X ⟶ Y⟦c⟧) :
-        ((shiftEquiv' C b b' hb).symm.toAdjunction.homEquiv X
-        ((shiftFunctor C a).obj Y)).symm (u ≫ (shiftFunctorAdd' C a b c h).hom.app Y) =
-        ((shiftEquiv' C a a' ha).symm.toAdjunction.homEquiv (X⟦b'⟧) Y)
+        ((shiftEquiv' C a a' ha).symm.toAdjunction.homEquiv (X⟦b'⟧) Y).symm
+        (((shiftEquiv' C b b' hb).symm.toAdjunction.homEquiv X
+        ((shiftFunctor C a).obj Y)).symm (u ≫ (shiftFunctorAdd' C a b c h).hom.app Y)) =
         ((shiftFunctorAdd' C b' a' c' (by rw [eq_neg_of_add_eq_zero_right hc,
         eq_neg_of_add_eq_zero_right ha, eq_neg_of_add_eq_zero_right hb, ← h,
         neg_add_rev])).inv.app X ≫
-        ((shiftEquiv' C c c' hc).symm.toAdjunction.homEquiv X Y).symm u) := by
-  have := shiftEquiv'_add_symm_homEquiv C a a' b b' c c' ha hb hc h X Y
+        ((shiftEquiv' C c c' hc).symm.toAdjunction.homEquiv X Y).symm u) := by sorry
+/-  have := shiftEquiv'_add_symm_homEquiv C a a' b b' c c' ha hb hc h X Y
     ((shiftFunctorAdd' C b' a' c' (by rw [eq_neg_of_add_eq_zero_right hc,
         eq_neg_of_add_eq_zero_right ha, eq_neg_of_add_eq_zero_right hb, ← h,
         neg_add_rev])).inv.app X ≫
@@ -506,7 +506,7 @@ lemma shiftEquiv_add_symm_homEquiv (a a' b b' c c' : A) (ha : a + a' = 0) (hb : 
   rw [this]
   congr 1
   conv_rhs => rw [← assoc, Iso.hom_inv_id_app]; erw [id_comp]
-              rw [Equiv.apply_symm_apply]
+              rw [Equiv.apply_symm_apply]-/
 
 end Shift
 
