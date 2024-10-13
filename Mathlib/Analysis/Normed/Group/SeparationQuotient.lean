@@ -166,7 +166,7 @@ noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
 
 @[simp]
 theorem liftNormedAddGroupHom_apply (f : NormedAddGroupHom M N) (hf : ∀ x ∈ nullSubgroup, f x = 0)
-    (x : M) : liftNormedAddGroupHom f hf (normedMk x) = f x := rfl
+    (x : M) : liftNormedAddGroupHom f hf (mk x) = f x := rfl
 
 theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
     (hf : ∀ x ∈ nullSubgroup, f x = 0) (x : SeparationQuotient M) :
