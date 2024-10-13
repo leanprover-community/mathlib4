@@ -5,12 +5,7 @@ Authors: Simon Hudon, Harun Khan, Alex Keizer
 -/
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Data.ZMod.Defs
-import Mathlib.Tactic.Ring
-import Mathlib.Data.Nat.Bitwise
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Data.Nat.Bits
-import Mathlib.Data.ZMod.Defs
-
+import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Basic Theorems About Bitvectors
@@ -64,31 +59,19 @@ instance : CommSemiring (BitVec w) :=
     (fun _ => rfl) /- toFin_natCast -/
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
-theorem ofInt_negSucc (w n : Nat ) :
+@[simp] theorem ofInt_negSucc {w n : Nat} :
     BitVec.ofInt w (Int.negSucc n) = ~~~.ofNat w n := by
-  simp [BitVec.ofInt]
-  rw [BitVec.toNat_eq]
-  simp only [Int.toNat, toNat_ofNatLt, toNat_not, toNat_ofNat]
-  split
-  · rename_i a b c
-    simp only [Int.ofNat_eq_coe] at c
-    rw [Int.negSucc_emod] at c
-    symm
-    rw [← Int.natCast_inj]
-    rw [Nat.cast_sub]
-    rw [Nat.cast_sub]
-    have _ : 0 < 2 ^ w := by simp
-    simp_all only [gt_iff_lt, Nat.ofNat_pos, pow_pos, Nat.cast_pow,
-      Nat.cast_ofNat, Nat.cast_one, Int.ofNat_emod]
-    have h : 0 < 2 ^ w := by simp
-    · omega
-    · omega
-    · omega
-  · have nonneg : Int.negSucc n % 2 ^ w ≥ 0 := by
-      simp only [ge_iff_le, ne_eq, pow_eq_zero_iff', OfNat.ofNat_ne_zero, false_and,
-        not_false_eq_true, Int.emod_nonneg (Int.negSucc n) _]
-    simp_all only [Nat.ofNat_pos, gt_iff_lt, pow_pos, ne_eq, pow_eq_zero_iff',
-      OfNat.ofNat_ne_zero, false_and, not_false_eq_true, ge_iff_le, Int.negSucc_not_nonneg]
+  simp only [BitVec.ofInt, Int.toNat, Int.ofNat_eq_coe, toNat_eq, toNat_ofNatLt, toNat_not,
+    toNat_ofNat]
+  cases h : Int.negSucc n % ((2 ^ w : Nat) : Int)
+  case ofNat =>
+    rw [Int.ofNat_eq_coe, Int.negSucc_emod] at h
+    simp only
+    all_goals omega
+  case negSucc a =>
+    have neg := Int.negSucc_lt_zero a
+    have _ : 0 ≤ Int.negSucc n % ((2 ^ w : Nat) : Int) := Int.emod_nonneg _ (by omega)
+    omega
 
 @[simp] lemma ofFin_neg {x : Fin (2 ^ w)} : ofFin (-x) = -(ofFin x) := by
   ext; rw [neg_eq_zero_sub]; simp; rfl
