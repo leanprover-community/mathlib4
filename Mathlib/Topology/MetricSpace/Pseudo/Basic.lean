@@ -61,24 +61,34 @@ namespace Metric
 -- instantiate pseudometric space as a topology
 variable {x y z : α} {δ ε ε₁ ε₂ : ℝ} {s : Set α}
 
-nonrec theorem uniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
-    UniformInducing f ↔ UniformContinuous f ∧
+nonrec theorem isUniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
+    IsUniformInducing f ↔ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
-  uniformInducing_iff'.trans <| Iff.rfl.and <|
+  isUniformInducing_iff'.trans <| Iff.rfl.and <|
     ((uniformity_basis_dist.comap _).le_basis_iff uniformity_basis_dist).trans <| by
       simp only [subset_def, Prod.forall, gt_iff_lt, preimage_setOf_eq, Prod.map_apply, mem_setOf]
 
-nonrec theorem uniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
-    UniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_iff := isUniformInducing_iff
+
+nonrec theorem isUniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
+    IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ := by
-  rw [uniformEmbedding_iff, and_comm, uniformInducing_iff]
+  rw [isUniformEmbedding_iff, and_comm, isUniformInducing_iff]
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_iff := isUniformEmbedding_iff
 
 /-- If a map between pseudometric spaces is a uniform embedding then the distance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y`. -/
-theorem controlled_of_uniformEmbedding [PseudoMetricSpace β] {f : α → β} (h : UniformEmbedding f) :
+theorem controlled_of_isUniformEmbedding [PseudoMetricSpace β] {f : α → β}
+    (h : IsUniformEmbedding f) :
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, dist a b < δ → dist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
-  ⟨uniformContinuous_iff.1 h.uniformContinuous, (uniformEmbedding_iff.1 h).2.2⟩
+  ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformEmbedding_iff.1 h).2.2⟩
+
+@[deprecated (since := "2024-10-01")]
+alias controlled_of_uniformEmbedding := controlled_of_isUniformEmbedding
 
 theorem totallyBounded_iff {s : Set α} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, ball y ε :=
@@ -169,8 +179,20 @@ end Metric
 
 open Metric
 
+theorem Metric.inseparable_iff_nndist {x y : α} : Inseparable x y ↔ nndist x y = 0 := by
+  rw [EMetric.inseparable_iff, edist_nndist, ENNReal.coe_eq_zero]
+
+alias ⟨Inseparable.nndist_eq_zero, _⟩ := Metric.inseparable_iff_nndist
+
 theorem Metric.inseparable_iff {x y : α} : Inseparable x y ↔ dist x y = 0 := by
-  rw [EMetric.inseparable_iff, edist_nndist, dist_nndist, ENNReal.coe_eq_zero, NNReal.coe_eq_zero]
+  rw [Metric.inseparable_iff_nndist, dist_nndist, NNReal.coe_eq_zero]
+
+alias ⟨Inseparable.dist_eq_zero, _⟩ := Metric.inseparable_iff
+
+/-- A weaker version of `tendsto_nhds_unique` for `PseudoMetricSpace`. -/
+theorem tendsto_nhds_unique_dist {f : β → α} {l : Filter β} {x y : α} [NeBot l]
+    (ha : Tendsto f l (𝓝 x)) (hb : Tendsto f l (𝓝 y)) : dist x y = 0 :=
+  (tendsto_nhds_unique_inseparable ha hb).dist_eq_zero
 
 section Real
 

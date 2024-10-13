@@ -1,13 +1,15 @@
 /-
 Copyright (c) 2024 Weihong Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Weihong Xu
+Authors: Kevin Buzzard, Johan Commelin, Amelia Livingston, Sophie Morel, Jujian Zhang, Weihong Xu
 -/
 
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.AlgebraicGeometry.Modules.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
+import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStructures
 
 /-!
 
@@ -18,8 +20,14 @@ such that `M^~(U)` is the set of dependent functions that are locally fractions.
 
 ## Main definitions
 
-* `ModuleCat.tildeInAddCommGrp` : `M^~` as a sheaf of abelian groups.
+* `ModuleCat.tildeInType` : `M^~` as a sheaf of types groups.
 * `ModuleCat.tilde` : `M^~` as a sheaf of `𝒪_{Spec R}`-modules.
+
+## Technical note
+
+To get the `R`-module structure on the stalks on `M^~`, we had to define
+`ModuleCat.tildeInModuleCat`, which is `M^~` seen as sheaf of `R`-modules. We get it by
+applying a forgetful functor to `ModuleCat.tilde M`.
 
 -/
 
@@ -138,27 +146,8 @@ instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     AddCommGroup (M.tildeInType.1.obj U) :=
   inferInstanceAs <| AddCommGroup (Tilde.sectionsSubmodule M U)
 
-/--
-`M^~` as a presheaf of abelian groups over `Spec R`
--/
-def preTildeInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
-  obj U := .of ((M.tildeInType).1.obj U)
-  map {U V} i :=
-    { toFun := M.tildeInType.1.map i
-      map_zero' := rfl
-      map_add' := fun x y => rfl}
-
-/--
-`M^~` as a sheaf of abelian groups over `Spec R`
--/
-def tildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
-  ⟨M.preTildeInAddCommGrp,
-    TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrp) _ |>.mpr
-      (TopCat.Presheaf.isSheaf_of_iso (NatIso.ofComponents (fun _ => Iso.refl _) fun _ => rfl)
-        M.tildeInType.2)⟩
-
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    Module ((Spec (.of R)).ringCatSheaf.1.obj U) (M.tildeInAddCommGrp.1.obj U) :=
+    Module ((Spec (.of R)).ringCatSheaf.1.obj U) (M.tildeInType.1.obj U) :=
   inferInstanceAs <| Module _ (Tilde.sectionsSubmodule M U)
 
 /--
@@ -166,9 +155,103 @@ noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
 -/
 noncomputable def tilde : (Spec (CommRingCat.of R)).Modules where
   val :=
-  { presheaf := M.tildeInAddCommGrp.1
-    module := inferInstance
-    map_smul := fun _ _ _ => rfl }
-  isSheaf := M.tildeInAddCommGrp.2
+    { obj := fun U ↦ ModuleCat.of _ (M.tildeInType.val.obj U)
+      map := fun {U V} i ↦
+        { toFun := M.tildeInType.val.map i
+          map_smul' := by intros; rfl
+          map_add' := by intros; rfl } }
+  isSheaf := (TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrp) _ ).2
+    M.tildeInType.2
+
+/--
+This is `M^~` as a sheaf of `R`-modules.
+-/
+noncomputable def tildeInModuleCat :
+    TopCat.Presheaf (ModuleCat R) (PrimeSpectrum.Top R) :=
+  (PresheafOfModules.forgetToPresheafModuleCat (op ⊤) <|
+    Limits.initialOpOfTerminal Limits.isTerminalTop).obj (tilde M).1 ⋙
+  ModuleCat.restrictScalars (StructureSheaf.globalSectionsIso R).hom
+
+namespace Tilde
+
+@[simp]
+theorem res_apply (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U)
+    (s : (tildeInModuleCat M).obj (op U)) (x : V) :
+    ((tildeInModuleCat M).map i.op s).1 x = (s.1 (i x) : _) :=
+  rfl
+
+lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
+    (s : (tildeInModuleCat M).1.obj (op U)) (x : U) :
+    (r • s).1 x = r • (s.1 x) := rfl
+
+lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
+    (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
+    st = 0 := by
+  refine Limits.Concrete.colimit_no_zero_smul_divisor
+    _ _ _ ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq <| funext fun pt ↦ ?_⟩
+    _ hst
+  apply LocalizedModule.eq_zero_of_smul_eq_zero _ (i.unop pt).2 _
+    (congr_fun (Subtype.ext_iff.1 hs) pt)
+
+/--
+If `U` is an open subset of `Spec R`, this is the morphism of `R`-modules from `M` to
+`M^~(U)`.
+-/
+def toOpen (U : Opens (PrimeSpectrum.Top R)) :
+    ModuleCat.of R M ⟶ (tildeInModuleCat M).1.obj (op U) where
+  toFun f :=
+  ⟨fun x ↦ LocalizedModule.mkLinearMap _ _ f, fun x ↦
+    ⟨U, x.2, 𝟙 _, f, 1, fun y ↦ ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp⟩⟩⟩
+  map_add' f g := Subtype.eq <| funext fun x ↦ LinearMap.map_add _ _ _
+  map_smul' r m := by
+    simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, LinearMapClass.map_smul,
+      RingHom.id_apply]
+    rfl
+
+@[simp]
+theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
+    toOpen M U ≫ (tildeInModuleCat M).map i.op = toOpen M V :=
+  rfl
+
+/--
+If `x` is a point of `Spec R`, this is the morphism of `R`-modules from `M` to the stalk of
+`M^~` at `x`.
+-/
+noncomputable def toStalk (x : PrimeSpectrum.Top R) :
+    ModuleCat.of R M ⟶ TopCat.Presheaf.stalk (tildeInModuleCat M) x :=
+  (toOpen M ⊤ ≫ TopCat.Presheaf.germ (tildeInModuleCat M) ⊤ x (by trivial))
+
+open LocalizedModule TopCat.Presheaf in
+lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
+    IsUnit ((algebraMap R (Module.End R ((tildeInModuleCat M).stalk x))) r) := by
+  rw [Module.End_isUnit_iff]
+  refine ⟨LinearMap.ker_eq_bot.1 <| eq_bot_iff.2 fun st (h : r.1 • st = 0) ↦
+    smul_stalk_no_nonzero_divisor M r st h, fun st ↦ ?_⟩
+  obtain ⟨U, mem, s, rfl⟩ := germ_exist (F := M.tildeInModuleCat) x st
+  let O := U ⊓ (PrimeSpectrum.basicOpen r)
+  refine ⟨germ M.tildeInModuleCat O x ⟨mem, r.2⟩
+    ⟨fun q ↦ (Localization.mk 1 ⟨r, q.2.2⟩ : Localization.AtPrime q.1.asIdeal) • s.1
+      ⟨q.1, q.2.1⟩, fun q ↦ ?_⟩, by
+        simpa only [Module.algebraMap_end_apply, ← map_smul] using
+          germ_ext (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _) (iWV := homOfLE inf_le_left) _ <|
+          Subtype.eq <| funext fun y ↦ smul_eq_iff_of_mem (S := y.1.1.primeCompl) r _ _ _ |>.2 rfl⟩
+  obtain ⟨V, mem_V, iV, num, den, hV⟩ := s.2 ⟨q.1, q.2.1⟩
+  refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y ↦ ?_⟩
+  obtain ⟨h1, h2⟩ := hV ⟨y, y.2.1⟩
+  refine ⟨y.1.asIdeal.primeCompl.mul_mem y.2.2.2 h1, ?_⟩
+  simp only [Opens.coe_inf, isLocallyFraction_pred, mkLinearMap_apply,
+    smul_eq_iff_of_mem (S := y.1.1.primeCompl) (hr := h1), mk_smul_mk, one_smul, mul_one] at h2 ⊢
+  simpa only [h2, mk_smul_mk, one_smul, smul'_mk, mk_eq] using ⟨1, by simp only [one_smul]; rfl⟩
+
+/--
+The morphism of `R`-modules from the localization of `M` at the prime ideal corresponding to `x`
+to the stalk of `M^~` at `x`.
+-/
+noncomputable def localizationToStalk (x : PrimeSpectrum.Top R) :
+    ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) ⟶
+    (TopCat.Presheaf.stalk (tildeInModuleCat M) x) :=
+  LocalizedModule.lift _ (toStalk M x) <| isUnit_toStalk M x
+
+end Tilde
 
 end ModuleCat

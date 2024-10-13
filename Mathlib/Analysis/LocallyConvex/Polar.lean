@@ -5,7 +5,7 @@ Authors: Moritz Doll, Kalle Kytölä
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm
-import Mathlib.Topology.Algebra.Module.WeakDual
+import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
 # Polar set
@@ -63,6 +63,10 @@ theorem polar_mem (s : Set E) (y : F) (hy : y ∈ B.polar s) : ∀ x ∈ s, ‖B
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
   simp only [map_zero, norm_zero, zero_le_one]
+
+theorem polar_nonempty (s : Set E) : Set.Nonempty (B.polar s) := by
+  use 0
+  exact zero_mem_polar B s
 
 theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
   ext

@@ -17,6 +17,11 @@ import Mathlib.Topology.MetricSpace.DilationEquiv
 # Normed fields
 
 In this file we continue building the theory of (semi)normed rings and fields.
+
+Some useful results that relate the topology of the normed field to the discrete topology include:
+* `discreteTopology_or_nontriviallyNormedField`
+* `discreteTopology_of_bddAbove_range_norm`
+
 -/
 
 -- Guard against import creep.
@@ -143,7 +148,7 @@ instance Pi.normedCommutativeRing {π : ι → Type*} [Fintype ι] [∀ i, Norme
 end NormedCommRing
 
 -- see Note [lower instance priority]
-instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing α] :
+instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSeminormedRing α] :
     ContinuousMul α :=
   ⟨continuous_iff_continuousAt.2 fun x =>
       tendsto_iff_norm_sub_tendsto_zero.2 <| by
@@ -169,8 +174,36 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a topological ring. -/
-instance (priority := 100) semi_normed_top_ring [NonUnitalSeminormedRing α] :
+instance (priority := 100) NonUnitalSeminormedRing.toTopologicalRing [NonUnitalSeminormedRing α] :
     TopologicalRing α where
+
+namespace SeparationQuotient
+
+instance [NonUnitalSeminormedRing α] : NonUnitalNormedRing (SeparationQuotient α) where
+  __ : NonUnitalRing (SeparationQuotient α) := inferInstance
+  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
+  norm_mul := Quotient.ind₂ norm_mul_le
+
+instance [NonUnitalSeminormedCommRing α] : NonUnitalNormedCommRing (SeparationQuotient α) where
+  __ : NonUnitalCommRing (SeparationQuotient α) := inferInstance
+  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
+  norm_mul := Quotient.ind₂ norm_mul_le
+
+instance [SeminormedRing α] : NormedRing (SeparationQuotient α) where
+  __ : Ring (SeparationQuotient α) := inferInstance
+  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
+  norm_mul := Quotient.ind₂ norm_mul_le
+
+instance [SeminormedCommRing α] : NormedCommRing (SeparationQuotient α) where
+  __ : CommRing (SeparationQuotient α) := inferInstance
+  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
+  norm_mul := Quotient.ind₂ norm_mul_le
+
+instance [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
+    NormOneClass (SeparationQuotient α) where
+  norm_one := norm_one (α := α)
+
+end SeparationQuotient
 
 section NormedDivisionRing
 
@@ -291,6 +324,32 @@ end NormedDivisionRing
 
 namespace NormedField
 
+/-- A normed field is either nontrivially normed or has a discrete topology.
+In the discrete topology case, all the norms are 1, by `norm_eq_one_iff_ne_zero_of_discrete`.
+The nontrivially normed field instance is provided by a subtype with a proof that the
+forgetful inheritance to the existing `NormedField` instance is definitionally true.
+This allows one to have the new `NontriviallyNormedField` instance without data clashes. -/
+lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [h : NormedField 𝕜] :
+    DiscreteTopology 𝕜 ∨ Nonempty ({h' : NontriviallyNormedField 𝕜 // h'.toNormedField = h}) := by
+  by_cases H : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1
+  · exact Or.inr ⟨(⟨NontriviallyNormedField.ofNormNeOne H, rfl⟩)⟩
+  · simp_rw [discreteTopology_iff_isOpen_singleton_zero, Metric.isOpen_singleton_iff, dist_eq_norm,
+             sub_zero]
+    refine Or.inl ⟨1, zero_lt_one, ?_⟩
+    contrapose! H
+    refine H.imp ?_
+    -- contextual to reuse the `a ≠ 0` hypothesis in the proof of `a ≠ 0 ∧ ‖a‖ ≠ 1`
+    simp (config := {contextual := true}) [add_comm, ne_of_lt]
+
+lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
+    (h : BddAbove (Set.range fun k : 𝕜 ↦ ‖k‖)) :
+    DiscreteTopology 𝕜 := by
+  refine (NormedField.discreteTopology_or_nontriviallyNormedField _).resolve_right ?_
+  rintro ⟨_, rfl⟩
+  obtain ⟨x, h⟩ := h
+  obtain ⟨k, hk⟩ := NormedField.exists_lt_norm 𝕜 x
+  exact hk.not_le (h (Set.mem_range_self k))
+
 section Densely
 
 variable (α) [DenselyNormedField α]
@@ -333,3 +392,31 @@ instance Rat.instDenselyNormedField : DenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=
     let ⟨q, h⟩ := exists_rat_btwn hr
     ⟨q, by rwa [← Rat.norm_cast_real, Real.norm_eq_abs, abs_of_pos (h₀.trans_lt h.1)]⟩
+
+section Complete
+
+lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedField K] :
+    CompleteSpace K ↔ IsComplete (Metric.closedBall 0 1 : Set K) := by
+  constructor <;> intro h
+  · exact Metric.isClosed_ball.isComplete
+  rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _|⟨_, rfl⟩
+  · rwa [completeSpace_iff_isComplete_univ,
+         ← NormedDivisionRing.discreteTopology_unit_closedBall_eq_univ]
+  refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_
+  obtain ⟨k, hk⟩ := hu.norm_bddAbove
+  have kpos : 0 ≤ k := (_root_.norm_nonneg (u 0)).trans (hk (by simp))
+  obtain ⟨x, hx⟩ := NormedField.exists_lt_norm K k
+  have hu' : CauchySeq ((· / x) ∘ u) := (uniformContinuous_div_const' x).comp_cauchySeq hu
+  have hb : ∀ n, ((· / x) ∘ u) n ∈ Metric.closedBall 0 1 := by
+    intro
+    simp only [Function.comp_apply, Metric.mem_closedBall, dist_zero_right, norm_div]
+    rw [div_le_one (kpos.trans_lt hx)]
+    exact hx.le.trans' (hk (by simp))
+  obtain ⟨a, -, ha'⟩ := cauchySeq_tendsto_of_isComplete h hb hu'
+  refine ⟨a * x, (((continuous_mul_right x).tendsto a).comp ha').congr ?_⟩
+  have hx' : x ≠ 0 := by
+    contrapose! hx
+    simp [hx, kpos]
+  simp [div_mul_cancel₀ _ hx']
+
+end Complete

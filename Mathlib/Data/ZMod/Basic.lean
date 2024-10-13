@@ -435,7 +435,7 @@ theorem castHom_bijective [Fintype R] (h : Fintype.card R = n) :
       intro hn
       rw [hn] at h
       exact (Fintype.card_eq_zero_iff.mp h).elim' 0⟩
-  rw [Fintype.bijective_iff_injective_and_card, ZMod.card, h, eq_self_iff_true, and_true_iff]
+  rw [Fintype.bijective_iff_injective_and_card, ZMod.card, h, eq_self_iff_true, and_true]
   apply ZMod.castHom_injective
 
 /-- The unique ring isomorphism between `ZMod n` and a ring `R`
@@ -826,6 +826,17 @@ theorem eq_iff_modEq_nat (n : ℕ) {a b : ℕ} : (a : ZMod n) = b ↔ a ≡ b [M
   · rw [Fin.ext_iff, Nat.ModEq, ← val_natCast, ← val_natCast]
     exact Iff.rfl
 
+theorem eq_zero_iff_even {n : ℕ} : (n : ZMod 2) = 0 ↔ Even n :=
+  (CharP.cast_eq_zero_iff (ZMod 2) 2 n).trans even_iff_two_dvd.symm
+
+theorem eq_one_iff_odd {n : ℕ} : (n : ZMod 2) = 1 ↔ Odd n := by
+  rw [← @Nat.cast_one (ZMod 2), ZMod.eq_iff_modEq_nat, Nat.odd_iff, Nat.ModEq]
+
+theorem ne_zero_iff_odd {n : ℕ} : (n : ZMod 2) ≠ 0 ↔ Odd n := by
+  constructor <;>
+    · contrapose
+      simp [eq_zero_iff_even]
+
 theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
     ((x : ZMod n) * (x : ZMod n)⁻¹) = 1 := by
   rw [Nat.Coprime, Nat.gcd_comm, Nat.gcd_rec] at h
@@ -1005,7 +1016,7 @@ theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
   cases n
-  · erw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
+  · rw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
     exact
       ⟨fun h => h.elim (by simp) Or.inl, fun h =>
         Or.inr (h.elim id fun h => h.elim (by simp) id)⟩
@@ -1014,7 +1025,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
   constructor
   · rintro ⟨m, he⟩
     cases' m with m
-    · erw [mul_zero, mul_eq_zero] at he
+    · rw [mul_zero, mul_eq_zero] at he
       rcases he with (⟨⟨⟩⟩ | he)
       exact Or.inl (a.val_eq_zero.1 he)
     cases m
@@ -1207,7 +1218,7 @@ theorem valMinAbs_eq_zero {n : ℕ} (x : ZMod n) : x.valMinAbs = 0 ↔ x = 0 := 
 theorem natCast_natAbs_valMinAbs {n : ℕ} [NeZero n] (a : ZMod n) :
     (a.valMinAbs.natAbs : ZMod n) = if a.val ≤ (n : ℕ) / 2 then a else -a := by
   have : (a.val : ℤ) - n ≤ 0 := by
-    erw [sub_nonpos, Int.ofNat_le]
+    rw [sub_nonpos, Int.ofNat_le]
     exact a.val_le
   rw [valMinAbs_def_pos]
   split_ifs
