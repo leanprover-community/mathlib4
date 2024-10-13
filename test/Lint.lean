@@ -15,7 +15,7 @@ local notation "G" => Unit
 
 /-- info: [termG, termG] -/
 #guard_msgs in
-open Lean Elab Command in
+open Lean in
 run_meta
   let env ← getEnv
   let consts := env.constants.toList.find? (·.1.getRoot == `termG)
