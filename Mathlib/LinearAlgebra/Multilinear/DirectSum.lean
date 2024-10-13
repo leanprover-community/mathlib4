@@ -21,7 +21,7 @@ the linear equivalence between `Π p : (i : ι) → κ i, MultilinearMap R (fun 
 
 namespace MultilinearMap
 
-open DirectSum LinearMap BigOperators Function
+open DirectSum LinearMap Function
 
 variable (R : Type*) [CommSemiring R]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -31,7 +31,7 @@ variable [Π i (j : κ i), AddCommMonoid (M i j)] [AddCommMonoid M']
 variable [Π i (j : κ i), Module R (M i j)] [Module R M']
 variable [Π i (j : κ i) (x : M i j), Decidable (x ≠ 0)]
 
-theorem fromDirectSum_aux1 (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) M')
+private theorem fromDirectSum_aux1 (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) M')
     (x : Π i, ⨁ (j : κ i), M i j) {p : Π i, κ i}
     (hp : p ∉ Fintype.piFinset (fun i ↦ (x i).support)) :
     (f p) (fun j ↦ (x j) (p j)) = 0 := by
@@ -41,11 +41,11 @@ theorem fromDirectSum_aux1 (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦
 
 omit [Fintype ι] [(i : ι) → DecidableEq (κ i)]
   [(i : ι) → (j : κ i) → (x : M i j) → Decidable (x ≠ 0)] in
-theorem fromDirectSum_aux2 (x : Π i, ⨁ (j : κ i), M i j) (i : ι) (p : Π i, κ i)
+private theorem fromDirectSum_aux2 (x : Π i, ⨁ (j : κ i), M i j) (i : ι) (p : Π i, κ i)
     (a : ⨁ (j : κ i), M i j) :
     (fun j ↦ (update x i a j) (p j)) = update (fun j ↦ x j (p j)) i (a (p i)) := by
   ext j
-  by_cases h : j =i
+  by_cases h : j = i
   · rw [h]; simp only [update_same]
   · simp only [ne_eq, h, not_false_eq_true, update_noteq]
 
@@ -97,8 +97,10 @@ def fromDirectSum (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i
 
 @[simp]
 theorem fromDirectSum_apply (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) M')
-    (x : Π i, ⨁ (j : κ i), M i j) : fromDirectSum R κ f x =
-    ∑ p in Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) := rfl
+    (x : Π i, ⨁ (j : κ i), M i j) :
+    fromDirectSum R κ f x =
+      ∑ p in Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) :=
+  rfl
 
 /-- The construction `MultilinearMap.fromDirectSum`, as an `R`-linear map.-/
 def fromDirectSumₗ : ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p i)) M') →ₗ[R]
@@ -115,8 +117,10 @@ def fromDirectSumₗ : ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p 
 
 @[simp]
 theorem fromDirectSumₗ_apply (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) M')
-    (x : Π i, ⨁ (j : κ i), M i j) : fromDirectSumₗ R κ f x =
-    ∑ p in Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) := rfl
+    (x : Π i, ⨁ (j : κ i), M i j) :
+    fromDirectSumₗ R κ f x =
+      ∑ p in Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) :=
+  rfl
 
 theorem _root_.piFinset_support_lof_sub (p : Π i, κ i) (a : Π i, M i (p i)) :
     Fintype.piFinset (fun i ↦ DFinsupp.support (lof R (κ i) (M i) (p i) (a i))) ⊆ {p} := by
@@ -151,12 +155,15 @@ def fromDirectSumEquiv : ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (
 
 @[simp]
 theorem fromDirectSumEquiv_apply (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) M')
-    (x : Π i, ⨁ (j : κ i), M i j) : fromDirectSumEquiv R κ f x =
-    ∑ p in Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) := rfl
+    (x : Π i, ⨁ (j : κ i), M i j) :
+    fromDirectSumEquiv R κ f x =
+      ∑ p in Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) :=
+  rfl
 
 @[simp]
 theorem fromDirectSumEquiv_symm_apply (f : MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M')
-    (p : Π i, κ i) : (fromDirectSumEquiv R κ).symm f p =
-    f.compLinearMap (fun i ↦ DirectSum.lof R (κ i) _ (p i)) := rfl
+    (p : Π i, κ i) :
+    (fromDirectSumEquiv R κ).symm f p = f.compLinearMap (fun i ↦ DirectSum.lof R (κ i) _ (p i)) :=
+  rfl
 
 end MultilinearMap

@@ -388,7 +388,7 @@ equivalent to `∏ i, κ i →₀ ⨂[R] i, M i`.
 -/
 def finsuppPiTensorProduct : (⨂[R] i, κ i →₀ M i) ≃ₗ[R] ((i : ι) → κ i) →₀ ⨂[R] i, M i :=
   PiTensorProduct.congr (fun i ↦ finsuppLEquivDirectSum R (M i) (κ i)) ≪≫ₗ
-  (PiTensorProduct.directSum R (fun (i : ι) ↦ fun (_ : κ i) ↦ M i)) ≪≫ₗ
+  (PiTensorProduct.directSum R (fun (i : ι) (_ : κ i) ↦ M i)) ≪≫ₗ
   (finsuppLEquivDirectSum R (⨂[R] i, M i) ((i : ι) → κ i)).symm
 
 @[simp]

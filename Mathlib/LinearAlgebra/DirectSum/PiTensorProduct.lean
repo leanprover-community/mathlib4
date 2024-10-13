@@ -32,7 +32,7 @@ variable {κ : ι → Type*} [(i : ι) → DecidableEq (κ i)]
 variable (M : (i : ι) → κ i → Type*) (M' : Type*)
 variable [Π i (j : κ i), AddCommMonoid (M i j)] [AddCommMonoid M']
 variable [Π i (j : κ i), Module R (M i j)] [Module R M']
-variable [Π i (j : κ i) (x : M i j),  Decidable (x ≠ 0)]
+variable [Π i (j : κ i) (x : M i j), Decidable (x ≠ 0)]
 
 /-- The linear equivalence `⨂[R] i, (⨁ j : κ i, M i j) ≃ ⨁ p : (i : ι) → κ i, ⨂[R] i, M i (p i)`,
  i.e. "tensor product distributes over direct sum". -/
