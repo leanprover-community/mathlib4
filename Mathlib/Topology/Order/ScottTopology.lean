@@ -291,22 +291,22 @@ lemma monotone_of_continuous [IsScott α D] (hf : Continuous f) : Monotone f := 
   simpa only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true]
     using isUpperSet_of_isOpen (D := D) ((isOpen_compl_iff.2 isClosed_Iic).preimage hf) hab h
 
-@[simp] lemma scottContinuous_iff_continuous [IsScott α univ] :
-    ScottContinuous f ↔ Continuous f := by
+@[simp] lemma scottContinuous_iff_continuous {D : Set (Set α)} [Topology.IsScott α D]
+    (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D) : ScottContinuousOn D f ↔ Continuous f := by
   refine ⟨fun h ↦ continuous_def.2 fun u hu ↦ ?_, ?_⟩
-  · rw [isOpen_iff_isUpperSet_and_dirSupInaccOn (D := univ)]
-    exact ⟨(isUpperSet_of_isOpen (D := univ) hu).preimage h.monotone, fun t h₀ hd₁ hd₂ a hd₃ ha ↦
-      image_inter_nonempty_iff.mp <| (isOpen_iff_isUpperSet_and_dirSupInaccOn (D := univ).mp hu).2
-        trivial (Nonempty.image f hd₁)
-        (directedOn_image.mpr (hd₂.mono @(h.monotone))) (h hd₁ hd₂ hd₃) ha⟩
-  · refine fun hf t d₁ d₂ a d₃ ↦
-      ⟨(monotone_of_continuous (D := univ) hf).mem_upperBounds_image d₃.1,
+  · rw [isOpen_iff_isUpperSet_and_dirSupInaccOn (D := D)]
+    exact ⟨(isUpperSet_of_isOpen (D := univ) hu).preimage (h.monotone D hD),
+      fun t h₀ hd₁ hd₂ a hd₃ ha ↦ image_inter_nonempty_iff.mp <|
+        (isOpen_iff_isUpperSet_and_dirSupInaccOn (D := univ).mp hu).2 trivial (Nonempty.image f hd₁)
+        (directedOn_image.mpr (hd₂.mono @(h.monotone D hD))) (h h₀ hd₁ hd₂ hd₃) ha⟩
+  · refine fun hf t h₀ d₁ d₂ a d₃ ↦
+      ⟨(monotone_of_continuous (D := D) hf).mem_upperBounds_image d₃.1,
       fun b hb ↦ ?_⟩
     by_contra h
     let u := (Iic b)ᶜ
-    have hu : IsOpen (f ⁻¹' u) := (isOpen_compl_iff.2 isClosed_Iic).preimage hf
-    rw [isOpen_iff_isUpperSet_and_dirSupInaccOn (D := univ)] at hu
-    obtain ⟨c, hcd, hfcb⟩ := hu.2 trivial d₁ d₂ d₃ h
+    have hu : IsOpen (f ⁻¹' u) := (isOpen_compl_iff.2 Topology.IsScott.isClosed_Iic).preimage hf
+    rw [isOpen_iff_isUpperSet_and_dirSupInaccOn (D := D)] at hu
+    obtain ⟨c, hcd, hfcb⟩ := hu.2 h₀ d₁ d₂ d₃ h
     simp [upperBounds] at hb
     exact hfcb <| hb _ hcd
 
@@ -365,7 +365,7 @@ end CompleteLinearOrder
 
 lemma isOpen_iff_scottContinuous_mem [Preorder α] {s : Set α} [TopologicalSpace α]
     [IsScott α univ] : IsOpen s ↔ ScottContinuous fun x ↦ x ∈ s := by
-  rw [scottContinuous_iff_continuous]
+  rw [← scottContinuousOn_univ, scottContinuous_iff_continuous (fun _ _ _ ↦ by trivial)]
   exact isOpen_iff_continuous_mem
 
 end IsScott
