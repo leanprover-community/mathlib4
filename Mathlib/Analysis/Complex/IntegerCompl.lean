@@ -25,25 +25,10 @@ local notation "ℂ_ℤ " => ComplexIntegerComplement
 
 noncomputable instance : UniformSpace ℂ_ℤ := instUniformSpaceSubtype
 
-theorem Complex.closedEmbedding_coe_complex : ClosedEmbedding ((↑) : ℤ → ℂ) := by
-  apply Metric.closedEmbedding_of_pairwise_le_dist zero_lt_one
-  convert Int.pairwise_one_le_dist
-  simp_rw [dist_eq_norm]
-  norm_cast
-  rw [Int.norm_eq_abs]
-  exact Int.cast_abs
-
-lemma ℂ_ℤ_Isclosed : IsClosed (((↑) : ℤ → ℂ) '' ⊤) := by
-  simp only [Set.top_eq_univ, Set.image_univ]
-  exact Complex.closedEmbedding_coe_complex.isClosed_range
-
-lemma ℂ_ℤ_IsOpen : IsOpen {z : ℂ | ¬ ∃ (n : ℤ), z = ↑n} := by
-  refine IsClosed.not ?_
-  convert ℂ_ℤ_Isclosed
-  ext y
-  aesop
-
-instance : LocallyCompactSpace ℂ_ℤ := IsOpen.locallyCompactSpace ℂ_ℤ_IsOpen
+instance : LocallyCompactSpace ℂ_ℤ := by
+  apply IsOpen.locallyCompactSpace
+  convert Complex.isOpen_compl_range_intCast
+  simp only [Set.mem_range, eq_comm]
 
 instance : Coe ℂ_ℤ ℂ := ⟨fun x => x.1⟩
 
