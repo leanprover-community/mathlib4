@@ -39,8 +39,8 @@ variable [Π i (j : κ i) (x : M i j),  Decidable (x ≠ 0)]
 protected def directSum :
     (⨂[R] i, (⨁ j : κ i, M i j)) ≃ₗ[R] ⨁ p : Π i, κ i, ⨂[R] i, M i (p i) := by
   refine LinearEquiv.ofLinear (R := R) (R₂ := R) ?toFun ?invFun ?left ?right
-  · exact lift (MultilinearMap.fromDirectSumEquiv R (M := M)
-      (fun p ↦ (DirectSum.lof R _ _ p).compMultilinearMap (PiTensorProduct.tprod R)))
+  · exact lift (MultilinearMap.fromDirectSumEquiv R (κ := κ) (M := M)
+      fun p ↦ (DirectSum.lof R _ _ p).compMultilinearMap (PiTensorProduct.tprod R))
   · exact DirectSum.toModule R _ _ (fun p ↦ lift (LinearMap.compMultilinearMap
       (PiTensorProduct.map (fun i ↦ DirectSum.lof R _ _ (p i))) (tprod R)))
   · ext p x
@@ -57,7 +57,7 @@ protected def directSum :
     simp only [compMultilinearMap_apply, coe_comp, Function.comp_apply, lift.tprod,
       MultilinearMap.fromDirectSumEquiv_apply, map_sum, toModule_lof, map_tprod, id_coe, id_eq]
     change _ = tprod R (fun i ↦ x i)
-    rw [funext (fun i ↦ Eq.symm (DirectSum.sum_support_of (fun j ↦ M i j) (x i)))]
+    nth_rewrite 3 [funext (fun i ↦ Eq.symm (DirectSum.sum_support_of (x i)))]
     rw [MultilinearMap.map_sum_finset]
     rfl
 

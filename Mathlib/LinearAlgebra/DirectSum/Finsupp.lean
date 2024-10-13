@@ -62,8 +62,8 @@ This belongs to a companion PR.
 * generalize to `MonoidAlgebra`, `AlgHom `
 
 * reprove `TensorProduct.finsuppLeft'` using existing heterobasic version of `TensorProduct.congr`
->>>>>>> origin/master
 -/
+
 
 noncomputable section
 
@@ -366,8 +366,6 @@ theorem finsuppTensorFinsuppRid_self :
   rw [finsuppTensorFinsupp', finsuppTensorFinsuppLid, finsuppTensorFinsuppRid,
     TensorProduct.lid_eq_rid]
 
-end TensorProduct
-
 /-!
 The case of `PiTensorProduct`.
 -/
@@ -379,13 +377,9 @@ open PiTensorProduct BigOperators
 attribute [local ext] TensorProduct.ext
 
 variable (R : Type*) [CommSemiring R]
-variable {ι : Type*}
-variable [Fintype ι]
-variable [DecidableEq ι]
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 variable (κ : ι → Type*) [(i : ι) → DecidableEq (κ i)]
-variable (M : ι → Type*)
-variable [∀ i, AddCommMonoid (M i)]
-variable [∀ i, Module R (M i)]
+variable (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 variable [(i : ι) → (x : M i) → Decidable (x ≠ 0)]
 
 /-- If `ι` is a `Fintype`, `κ i` is a family of types indexed by `ι` and `M i` is a family
@@ -398,7 +392,7 @@ def finsuppPiTensorProduct : (⨂[R] i, κ i →₀ M i) ≃ₗ[R] ((i : ι) →
   (finsuppLEquivDirectSum R (⨂[R] i, M i) ((i : ι) → κ i)).symm
 
 @[simp]
-theorem finsuppPiTensorProduct_tprod_single (p : (i : ι) → κ i) (m : (i : ι) → M i) :
+theorem finsuppPiTensorProduct_single (p : (i : ι) → κ i) (m : (i : ι) → M i) :
     finsuppPiTensorProduct R κ M (⨂ₜ[R] i, Finsupp.single (p i) (m i)) =
     Finsupp.single p (⨂ₜ[R] i, m i) := by
   classical
@@ -420,7 +414,7 @@ theorem finsuppPiTensorProduct_apply (f : (i : ι) → (κ i →₀ M i)) (p : (
     finsuppPiTensorProduct R κ M (⨂ₜ[R] i, f i) p = ⨂ₜ[R] i, f i (p i) := by
   rw [congrArg (tprod R) (funext (fun i ↦ (Eq.symm (Finsupp.sum_single (f i)))))]
   erw [MultilinearMap.map_sum_finset (tprod R)]
-  simp only [map_sum, finsuppPiTensorProduct_tprod_single]
+  simp only [map_sum, finsuppPiTensorProduct_single]
   rw [Finset.sum_apply']
   rw [← Finset.sum_union_eq_right (s₁ := {p}) (fun _ _ h ↦ by
        simp only [Fintype.mem_piFinset, Finsupp.mem_support_iff, ne_eq, not_forall, not_not] at h
@@ -430,10 +424,10 @@ theorem finsuppPiTensorProduct_apply (f : (i : ι) → (κ i →₀ M i)) (p : (
    Finset.sum_singleton, Finsupp.single_eq_same]
 
 @[simp]
-theorem finsuppPiTensorProduct_symm_single_tprod (p : (i : ι) → κ i) (m : (i : ι) → M i) :
+theorem finsuppPiTensorProduct_symm_single (p : (i : ι) → κ i) (m : (i : ι) → M i) :
     (finsuppPiTensorProduct R κ M).symm (Finsupp.single p (⨂ₜ[R] i, m i)) =
     ⨂ₜ[R] i, Finsupp.single (p i) (m i) :=
-  (LinearEquiv.symm_apply_eq _).2 (finsuppPiTensorProduct_tprod_single _ _ _ _ _).symm
+  (LinearEquiv.symm_apply_eq _).2 (finsuppPiTensorProduct_single _ _ _ _ _).symm
 
 variable [(x : R) → Decidable (x ≠ 0)]
 
@@ -463,5 +457,3 @@ theorem finsuppPiTensorProduct'_tprod_single (p : (i : ι) → κ i) (r : ι →
       (by rw [(Finsupp.single_eq_of_ne (Ne.symm hi))])]
 
 end PiTensorProduct
-
-end

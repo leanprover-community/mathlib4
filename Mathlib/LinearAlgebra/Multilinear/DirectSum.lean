@@ -39,6 +39,8 @@ theorem fromDirectSum_aux1 (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦
   obtain ⟨i, hi⟩ := hp
   exact (f p).map_coord_zero i hi
 
+omit [Fintype ι] [(i : ι) → DecidableEq (κ i)]
+  [(i : ι) → (j : κ i) → (x : M i j) → Decidable (x ≠ 0)] in
 theorem fromDirectSum_aux2 (x : Π i, ⨁ (j : κ i), M i j) (i : ι) (p : Π i, κ i)
     (a : ⨁ (j : κ i), M i j) :
     (fun j ↦ (update x i a j) (p j)) = update (fun j ↦ x j (p j)) i (a (p i)) := by
@@ -121,7 +123,7 @@ theorem _root_.piFinset_support_lof_sub (p : Π i, κ i) (a : Π i, M i (p i)) :
   intro q
   simp only [Fintype.mem_piFinset, ne_eq, Finset.mem_singleton]
   simp_rw [DirectSum.lof_eq_of]
-  exact fun hq ↦ funext fun i ↦ Finset.mem_singleton.mp (DirectSum.support_of_subset _ (hq i))
+  exact fun hq ↦ funext fun i ↦ Finset.mem_singleton.mp (DirectSum.support_of_subset (hq i))
 
 /-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
 on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ ⨁ j : κ i, M i j`.-/
@@ -133,7 +135,7 @@ def fromDirectSumEquiv : ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (
     simp only [coe_comp, Function.comp_apply, fromDirectSumₗ_apply, pi_apply,
       MultilinearMap.compLinearMapₗ_apply, MultilinearMap.compLinearMap_apply, id_coe, id_eq]
     change _ = f (fun i ↦ x i)
-    rw [funext (fun i ↦ Eq.symm (DirectSum.sum_support_of (fun j ↦ M i j) (x i)))]
+    nth_rewrite 3 [funext (fun i ↦ Eq.symm (DirectSum.sum_support_of (x i)))]
     rw [MultilinearMap.map_sum_finset]
     rfl
   · ext f p a
