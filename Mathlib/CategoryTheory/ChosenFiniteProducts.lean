@@ -273,7 +273,7 @@ variable (A B : C)
 
 /-- When `C` and `D` have chosen finite products and `F : C ⥤ D` is any functor,
 `prodComparison F A B` is the canonical comparison morphism from `F (A ⊗ B)` to `F(A) ⊗ F(B)`. -/
-def prodComparison (A B : C) : F.obj (A ⊗ B) ⟶ (F.obj A) ⊗ (F.obj B) :=
+def prodComparison (A B : C) : F.obj (A ⊗ B) ⟶ F.obj A ⊗ F.obj B :=
   lift (F.map (fst A B)) (F.map (snd A B))
 
 @[reassoc (attr := simp)]
