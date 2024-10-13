@@ -542,8 +542,6 @@ end tangentMap
 
 namespace TangentBundle
 
-variable (I M)
-
 open Bundle
 
 /-- The derivative of the zero section of the tangent bundle maps `⟨x, v⟩` to `⟨⟨x, 0⟩, ⟨v, 0⟩⟩`.

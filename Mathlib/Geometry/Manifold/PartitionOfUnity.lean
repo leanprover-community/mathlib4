@@ -371,7 +371,6 @@ theorem IsSubordinate.support_subset {fs : SmoothBumpCovering ι I M s} {U : M �
   Subset.trans subset_closure (h i)
 
 variable (I) in
-
 /-- Let `M` be a smooth manifold with corners modelled on a finite dimensional real vector space.
 Suppose also that `M` is a Hausdorff `σ`-compact topological space. Let `s` be a closed set
 in `M` and `U : M → Set M` be a collection of sets such that `U x ∈ 𝓝 x` for every `x ∈ s`.
@@ -383,7 +382,7 @@ theorem exists_isSubordinate [T2Space M] [SigmaCompactSpace M] (hs : IsClosed s)
   haveI : LocallyCompactSpace H := I.locallyCompactSpace
   haveI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
   -- Next we choose a covering by supports of smooth bump functions
-  have hB := fun x hx => SmoothBumpFunction.nhds_basis_support I (hU x hx)
+  have hB := fun x hx => SmoothBumpFunction.nhds_basis_support (I := I) (hU x hx)
   rcases refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set hs hB with
     ⟨ι, c, f, hf, hsub', hfin⟩
   choose hcs hfU using hf
