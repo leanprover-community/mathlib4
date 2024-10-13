@@ -180,27 +180,27 @@ lemma associator_inv_snd (X Y Z : C) :
 
 @[simp]
 lemma leftUnitor_hom (X : C) :
-  (λ_ X).hom = snd _ _ := rfl
+    (λ_ X).hom = snd _ _ := rfl
 
 @[simp]
 lemma rightUnitor_hom (X : C) :
-  (ρ_ X).hom = fst _ _ := rfl
+    (ρ_ X).hom = fst _ _ := rfl
 
 @[reassoc (attr := simp)]
 lemma leftUnitor_inv_fst (X : C) :
-  (λ_ X).inv ≫ fst _ _ = toUnit _ := toUnit_unique _ _
+    (λ_ X).inv ≫ fst _ _ = toUnit _ := toUnit_unique _ _
 
 @[reassoc (attr := simp)]
 lemma leftUnitor_inv_snd (X : C) :
-  (λ_ X).inv ≫ snd _ _ = 𝟙 X := lift_snd _ _
+    (λ_ X).inv ≫ snd _ _ = 𝟙 X := lift_snd _ _
 
 @[reassoc (attr := simp)]
 lemma rightUnitor_inv_fst (X : C) :
-  (ρ_ X).inv ≫ fst _ _ = 𝟙 X := lift_fst _ _
+    (ρ_ X).inv ≫ fst _ _ = 𝟙 X := lift_fst _ _
 
 @[reassoc (attr := simp)]
 lemma rightUnitor_inv_snd (X : C) :
-  (ρ_ X).inv ≫ snd _ _ = toUnit _ := toUnit_unique _ _
+    (ρ_ X).inv ≫ snd _ _ = toUnit _ := toUnit_unique _ _
 
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
