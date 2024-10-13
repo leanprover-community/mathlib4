@@ -81,6 +81,12 @@ def DirSupInacc (s : Set α) : Prop :=
 @[simp] lemma dirSupInaccOn_univ : DirSupInaccOn univ s ↔ DirSupInacc s := by
   simp [DirSupInaccOn, DirSupInacc]
 
+@[simp] lemma DirSupInacc.dirSupInaccOn {D : Set (Set α)} :
+    DirSupInacc s → DirSupInaccOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
+
+lemma DirSupInaccOn.mono {D₁ D₂ : Set (Set α)} (hD : D₁ ⊆ D₂) (hf : DirSupInaccOn D₂ s) :
+    DirSupInaccOn D₁ s := fun ⦃_⦄ a ↦ hf (hD a)
+
 /--
 A set `s` is said to be closed under directed joins if, whenever a directed set `d` has a least
 upper bound `a` and is a subset of `s` then `a` also lies in `s`.
