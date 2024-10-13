@@ -147,7 +147,7 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
       rw [integral_withDensity_eq_integral_smul, μ.toSphere_apply_univ,
         ENNReal.toReal_mul, ENNReal.toReal_nat, ← nsmul_eq_mul, smul_assoc,
         integral_subtype_comap measurableSet_Ioi fun a ↦ Real.toNNReal (a ^ (dim E - 1)) • f a,
-        setIntegral_congr measurableSet_Ioi fun x hx ↦ ?_]
+        setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_]
       · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
       · exact (measurable_subtype_coe.pow_const _).real_toNNReal
 
