@@ -223,7 +223,7 @@ lemma integral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondKerne
     (a : α) (x : ℝ) :
     ∫ b, stieltjesOfMeasurableRat f hf.measurable (a, b) x ∂(ν a)
       = (κ a (univ ×ˢ Iic x)).toReal := by
-  rw [← integral_univ, setIntegral_stieltjesOfMeasurableRat hf _ _ MeasurableSet.univ]
+  rw [← setIntegral_univ, setIntegral_stieltjesOfMeasurableRat hf _ _ MeasurableSet.univ]
 
 end stieltjesOfMeasurableRat
 
