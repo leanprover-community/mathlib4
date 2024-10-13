@@ -156,13 +156,20 @@ lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : SimpleGraph.
     (M.map f.toHom).IsMatching ↔ M.IsMatching := by
   constructor
   · intro h
-    -- have : M = (M.map f).map f.symm := by
-    --   sorry
-    sorry
+    have hM := IsMatching.map f.symm.toHom (by
+      simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h
+
+    have : (M.map f.toHom).map f.symm.toHom = M := by
+      rw [← @Rel.inv_id]
+
+      rw [← SimpleGraph.Subgraph.map_comp]
+
+      sorry
+    rw [← this]
+    exact hM
   · intro h
     exact IsMatching.map f.toHom (by
-      
-      sorry) h
+      simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
