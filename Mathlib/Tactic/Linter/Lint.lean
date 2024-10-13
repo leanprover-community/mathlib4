@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Batteries.Tactic.Lint
-import Mathlib.Tactic.Linter.Common
+import Mathlib.Tactic.DeclarationNames
 
 /-!
 # Linters for Mathlib
