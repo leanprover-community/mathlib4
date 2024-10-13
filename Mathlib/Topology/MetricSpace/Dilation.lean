@@ -87,9 +87,6 @@ instance funLike : FunLike (α →ᵈ β) α β where
 instance toDilationClass : DilationClass (α →ᵈ β) α β where
   edist_eq' f := edist_eq' f
 
-instance : CoeFun (α →ᵈ β) fun _ => α → β :=
-  DFunLike.hasCoeToFun
-
 @[simp]
 theorem toFun_eq_coe {f : α →ᵈ β} : f.toFun = (f : α → β) :=
   rfl
@@ -326,7 +323,7 @@ instance : Monoid (α →ᵈ α) where
   mul := comp
   mul_one := comp_id
   one_mul := id_comp
-  mul_assoc f g h := comp_assoc _ _ _
+  mul_assoc _ _ _ := comp_assoc _ _ _
 
 theorem one_def : (1 : α →ᵈ α) = Dilation.id α :=
   rfl
@@ -435,9 +432,11 @@ protected theorem embedding [PseudoEMetricSpace β] [DilationClass F α β] (f :
   (Dilation.isUniformEmbedding f).embedding
 
 /-- A dilation from a complete emetric space is a closed embedding -/
-protected theorem closedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :
-    ClosedEmbedding f :=
-  (antilipschitz f).closedEmbedding (lipschitz f).uniformContinuous
+lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :
+    IsClosedEmbedding f :=
+  (antilipschitz f).isClosedEmbedding (lipschitz f).uniformContinuous
+
+@[deprecated (since := "2024-10-20")] alias closedEmbedding := isClosedEmbedding
 
 end EmetricDilation
 

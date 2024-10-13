@@ -625,10 +625,10 @@ end OfRingEquiv
 -- @[simps (config := .lemmasOnly) one]
 instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul ϕ ψ := ψ.trans ϕ
-  mul_assoc ϕ ψ χ := rfl
+  mul_assoc _ _ _ := rfl
   one := refl
-  one_mul ϕ := ext fun x => rfl
-  mul_one ϕ := ext fun x => rfl
+  one_mul _ := ext fun _ => rfl
+  mul_one _ := ext fun _ => rfl
   inv := symm
   inv_mul_cancel ϕ := ext <| symm_apply_apply ϕ
 

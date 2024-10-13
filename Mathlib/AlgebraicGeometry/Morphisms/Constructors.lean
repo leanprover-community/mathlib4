@@ -123,7 +123,7 @@ instance HasAffineProperty.diagonal_affineProperty_isLocal
     {Q : AffineTargetMorphismProperty} [Q.IsLocal] :
     Q.diagonal.IsLocal where
   respectsIso := inferInstance
-  to_basicOpen {X Y} _ f r hf :=
+  to_basicOpen {_ Y} _ f r hf :=
     diagonal_of_diagonal_of_isPullback (targetAffineLocally Q)
       (isPullback_morphismRestrict f (Y.basicOpen r)).flip
       ((diagonal_iff (targetAffineLocally Q)).mp hf)
@@ -165,7 +165,7 @@ theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
     apply hP₂ _ (fun i ↦ i₂ ⁻¹ᵁ U i)
     · rw [← top_le_iff] at hU ⊢
       rintro x -
-      simpa using @hU (i₂.1.base x) trivial
+      simpa using @hU (i₂.base x) trivial
     · rintro i
       refine H _ ((X'.restrictIsoOfEq ?_).hom ≫ i₁ ∣_ _) (i₂ ∣_ _) _ ?_
       · exact congr($(h.1.1) ⁻¹ᵁ U i)
@@ -184,7 +184,7 @@ section Topologically
 /-- `topologically P` holds for a morphism if the underlying topological map satisfies `P`. -/
 def topologically
     (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop) :
-    MorphismProperty Scheme.{u} := fun _ _ f => P f.1.base
+    MorphismProperty Scheme.{u} := fun _ _ f => P f.base
 
 variable (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop)
 
@@ -205,7 +205,7 @@ lemma topologically_iso_le
     MorphismProperty.isomorphisms Scheme ≤ (topologically P) := by
   intro X Y e (he : IsIso e)
   have : IsIso e := he
-  exact hP (TopCat.homeoOfIso (asIso e.val.base))
+  exact hP (TopCat.homeoOfIso (asIso e.base))
 
 /-- If a property of maps of topological spaces is satisfied by homeomorphisms and is stable
 under composition, the induced property on schemes respects isomorphisms. -/
@@ -222,20 +222,34 @@ lemma topologically_respectsIso
 we may check the corresponding properties on topological spaces. -/
 lemma topologically_isLocalAtTarget
     [(topologically P).RespectsIso]
-    (hP₂ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) (s : Set β),
-      P f → P (s.restrictPreimage f))
+    (hP₂ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) (s : Set β)
+      (_ : Continuous f) (_ : IsOpen s), P f → P (s.restrictPreimage f))
     (hP₃ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) {ι : Type u}
       (U : ι → TopologicalSpace.Opens β) (_ : iSup U = ⊤) (_ : Continuous f),
       (∀ i, P ((U i).carrier.restrictPreimage f)) → P f) :
     IsLocalAtTarget (topologically P) := by
   apply IsLocalAtTarget.mk'
   · intro X Y f U hf
-    simp_rw [topologically, morphismRestrict_val_base]
-    exact hP₂ f.val.base U.carrier hf
+    simp_rw [topologically, morphismRestrict_base]
+    exact hP₂ f.base U.carrier f.base.2 U.2 hf
   · intro X Y f ι U hU hf
-    apply hP₃ f.val.base U hU f.val.base.continuous fun i ↦ ?_
-    rw [← morphismRestrict_val_base]
+    apply hP₃ f.base U hU f.base.continuous fun i ↦ ?_
+    rw [← morphismRestrict_base]
     exact hf i
+
+/-- A variant of `topologically_isLocalAtTarget`
+that takes one iff statement instead of two implications. -/
+lemma topologically_isLocalAtTarget'
+    [(topologically P).RespectsIso]
+    (hP : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) {ι : Type u}
+      (U : ι → TopologicalSpace.Opens β) (_ : iSup U = ⊤) (_ : Continuous f),
+      P f ↔ (∀ i, P ((U i).carrier.restrictPreimage f))) :
+    IsLocalAtTarget (topologically P) := by
+  refine topologically_isLocalAtTarget P ?_ (fun f _ U hU hU' ↦ (hP f U hU hU').mpr)
+  introv hf hs H
+  refine by simpa using (hP f (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ?_ hf).mp H ⟨1⟩
+  rw [← top_le_iff]
+  exact le_iSup (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ⟨0⟩
 
 end Topologically
 
@@ -255,8 +269,8 @@ lemma stalkwise_respectsIso (hP : RingHom.RespectsIso P) :
     simp only [stalkwise, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
     intro x
     rw [Scheme.stalkMap_comp]
-    exact (RingHom.RespectsIso.cancel_right_isIso hP _ _).mpr <| hf (e.val.base x)
-  postcomp {X Y Z} e (he : IsIso e) f hf := by
+    exact (RingHom.RespectsIso.cancel_right_isIso hP _ _).mpr <| hf (e.base x)
+  postcomp {X Y Z} e (he : IsIso _) f hf := by
     simp only [stalkwise, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
     intro x
     rw [Scheme.stalkMap_comp]
@@ -273,7 +287,7 @@ lemma stalkwiseIsLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P) :
     apply ((RingHom.toMorphismProperty P).arrow_mk_iso_iff <|
       morphismRestrictStalkMap f U x).mpr <| hf _
   · intro X Y f ι U hU hf x
-    have hy : f.val.base x ∈ iSup U := by rw [hU]; trivial
+    have hy : f.base x ∈ iSup U := by rw [hU]; trivial
     obtain ⟨i, hi⟩ := Opens.mem_iSup.mp hy
     exact ((RingHom.toMorphismProperty P).arrow_mk_iso_iff <|
       morphismRestrictStalkMap f (U i) ⟨x, hi⟩).mp <| hf i ⟨x, hi⟩

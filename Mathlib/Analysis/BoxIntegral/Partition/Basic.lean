@@ -113,9 +113,9 @@ instance : LE (Prepartition I) :=
 
 instance partialOrder : PartialOrder (Prepartition I) where
   le := (· ≤ ·)
-  le_refl π I hI := ⟨I, hI, le_rfl⟩
-  le_trans π₁ π₂ π₃ h₁₂ h₂₃ I₁ hI₁ :=
-    let ⟨I₂, hI₂, hI₁₂⟩ := h₁₂ hI₁
+  le_refl _ I hI := ⟨I, hI, le_rfl⟩
+  le_trans _ _ _ h₁₂ h₂₃ _ hI₁ :=
+    let ⟨_, hI₂, hI₁₂⟩ := h₁₂ hI₁
     let ⟨I₃, hI₃, hI₂₃⟩ := h₂₃ hI₂
     ⟨I₃, hI₃, hI₁₂.trans hI₂₃⟩
   le_antisymm := by
@@ -129,7 +129,7 @@ instance partialOrder : PartialOrder (Prepartition I) where
 
 instance : OrderTop (Prepartition I) where
   top := single I I le_rfl
-  le_top π J hJ := ⟨I, by simp, π.le_of_mem hJ⟩
+  le_top π _ hJ := ⟨I, by simp, π.le_of_mem hJ⟩
 
 instance : OrderBot (Prepartition I) where
   bot := ⟨∅,
@@ -558,11 +558,11 @@ theorem sum_fiberwise {α M} [AddCommMonoid M] (π : Prepartition I) (f : Box ι
 @[simps]
 def disjUnion (π₁ π₂ : Prepartition I) (h : Disjoint π₁.iUnion π₂.iUnion) : Prepartition I where
   boxes := π₁.boxes ∪ π₂.boxes
-  le_of_mem' J hJ := (Finset.mem_union.1 hJ).elim π₁.le_of_mem π₂.le_of_mem
+  le_of_mem' _ hJ := (Finset.mem_union.1 hJ).elim π₁.le_of_mem π₂.le_of_mem
   pairwiseDisjoint :=
     suffices ∀ J₁ ∈ π₁, ∀ J₂ ∈ π₂, J₁ ≠ J₂ → Disjoint (J₁ : Set (ι → ℝ)) J₂ by
       simpa [pairwise_union_of_symmetric (symmetric_disjoint.comap _), pairwiseDisjoint]
-    fun J₁ h₁ J₂ h₂ _ => h.mono (π₁.subset_iUnion h₁) (π₂.subset_iUnion h₂)
+    fun _ h₁ _ h₂ _ => h.mono (π₁.subset_iUnion h₁) (π₂.subset_iUnion h₂)
 
 @[simp]
 theorem mem_disjUnion (H : Disjoint π₁.iUnion π₂.iUnion) :

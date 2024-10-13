@@ -165,8 +165,8 @@ instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) 
 @[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
   { npow := fun z a => ⟨Monoid.npow z a.1, Monoid.npow z a.2⟩,
-    npow_zero := fun z => Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
-    npow_succ := fun z a => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
+    npow_zero := fun _ => Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
+    npow_succ := fun _ _ => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
     one_mul := by simp,
     mul_one := by simp }
 
@@ -180,8 +180,8 @@ instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) :=
 
 @[to_additive]
 instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
-  { mul_inv_rev := fun a b => Prod.ext (mul_inv_rev _ _) (mul_inv_rev _ _),
-    inv_eq_of_mul := fun a b h =>
+  { mul_inv_rev := fun _ _ => Prod.ext (mul_inv_rev _ _) (mul_inv_rev _ _),
+    inv_eq_of_mul := fun _ _ h =>
       Prod.ext (inv_eq_of_mul_eq_one_right <| congr_arg fst h)
         (inv_eq_of_mul_eq_one_right <| congr_arg snd h),
     inv_inv := by simp }

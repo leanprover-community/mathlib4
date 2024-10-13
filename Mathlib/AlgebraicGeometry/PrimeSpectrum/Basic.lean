@@ -326,10 +326,13 @@ theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
   rw [range_comap_of_surjective _ f hf]
   exact isClosed_zeroLocus _
 
-theorem closedEmbedding_comap_of_surjective (hf : Surjective f) : ClosedEmbedding (comap f) :=
+theorem isClosedEmbedding_comap_of_surjective (hf : Surjective f) : IsClosedEmbedding (comap f) :=
   { induced := (comap_inducing_of_surjective S f hf).induced
     inj := comap_injective_of_surjective f hf
     isClosed_range := isClosed_range_comap_of_surjective S f hf }
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_comap_of_surjective := isClosedEmbedding_comap_of_surjective
 
 end SpecOfSurjective
 
@@ -351,17 +354,18 @@ noncomputable
 def primeSpectrumProdHomeo :
     PrimeSpectrum (R × S) ≃ₜ PrimeSpectrum R ⊕ PrimeSpectrum S := by
   refine ((primeSpectrumProd R S).symm.toHomeomorphOfInducing ?_).symm
-  refine (closedEmbedding_of_continuous_injective_closed ?_ (Equiv.injective _) ?_).toInducing
+  refine (IsClosedEmbedding.of_continuous_injective_isClosedMap ?_
+    (Equiv.injective _) ?_).toInducing
   · rw [continuous_sum_dom]
     simp only [Function.comp_def, primeSpectrumProd_symm_inl, primeSpectrumProd_symm_inr]
     exact ⟨(comap _).2, (comap _).2⟩
   · rw [isClosedMap_sum]
     constructor
     · simp_rw [primeSpectrumProd_symm_inl]
-      refine (closedEmbedding_comap_of_surjective _ _ ?_).isClosedMap
+      refine (isClosedEmbedding_comap_of_surjective _ _ ?_).isClosedMap
       exact Prod.fst_surjective
     · simp_rw [primeSpectrumProd_symm_inr]
-      refine (closedEmbedding_comap_of_surjective _ _ ?_).isClosedMap
+      refine (isClosedEmbedding_comap_of_surjective _ _ ?_).isClosedMap
       exact Prod.snd_surjective
 
 end SpecProd
@@ -457,12 +461,15 @@ theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S
   · rintro h₁ _ ⟨⟨n, rfl⟩, h₃⟩
     exact h₁ (x.2.mem_of_pow_mem _ h₃)
 
-theorem localization_away_openEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
-    [IsLocalization.Away r S] : OpenEmbedding (comap (algebraMap R S)) :=
+theorem localization_away_isOpenEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
+    [IsLocalization.Away r S] : IsOpenEmbedding (comap (algebraMap R S)) :=
   { toEmbedding := localization_comap_embedding S (Submonoid.powers r)
     isOpen_range := by
       rw [localization_away_comap_range S r]
       exact isOpen_basicOpen }
+
+@[deprecated (since := "2024-10-18")]
+alias localization_away_openEmbedding := localization_away_isOpenEmbedding
 
 theorem isCompact_basicOpen (f : R) : IsCompact (basicOpen f : Set (PrimeSpectrum R)) := by
   rw [← localization_away_comap_range (Localization (Submonoid.powers f))]
@@ -624,17 +631,20 @@ def closedPoint : PrimeSpectrum R :=
 
 variable {R}
 
-theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S]
-    (f : R →+* S) : IsLocalRingHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
+theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S]
+    (f : R →+* S) : IsLocalHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
   -- Porting note: inline `this` does **not** work
   have := (local_hom_TFAE f).out 0 4
   rw [this, PrimeSpectrum.ext_iff]
   rfl
 
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_iff_comap_closedPoint := isLocalHom_iff_comap_closedPoint
+
 @[simp]
 theorem comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S] (f : R →+* S)
-    [IsLocalRingHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
-  (isLocalRingHom_iff_comap_closedPoint f).mp inferInstance
+    [IsLocalHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
+  (isLocalHom_iff_comap_closedPoint f).mp inferInstance
 
 theorem specializes_closedPoint (x : PrimeSpectrum R) : x ⤳ closedPoint R :=
   (PrimeSpectrum.le_iff_specializes _ _).mp (LocalRing.le_maximalIdeal x.2.1)
@@ -646,6 +656,10 @@ theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
     exact fun h x _ => (specializes_closedPoint x).mem_open U.2 h
   · rintro rfl
     trivial
+
+lemma closed_point_mem_iff {U : TopologicalSpace.Opens (PrimeSpectrum R)} :
+    closedPoint R ∈ U ↔ U = ⊤ :=
+  ⟨(eq_top_iff.mpr fun x _ ↦ (specializes_closedPoint x).mem_open U.2 ·), (· ▸ trivial)⟩
 
 @[simp]
 theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [LocalRing T]
