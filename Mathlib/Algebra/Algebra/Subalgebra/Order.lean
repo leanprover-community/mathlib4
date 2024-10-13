@@ -13,6 +13,8 @@ import Mathlib.Algebra.Ring.Subring.Order
 # Order instances on subalgebras
 -/
 
+open scoped AlgebraOrderInstances
+
 namespace Subalgebra
 
 variable {R A : Type*}

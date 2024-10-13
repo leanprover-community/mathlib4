@@ -21,6 +21,8 @@ is only registered for `LinearOrderedAddCommGroup α` (which doesn't have a bott
 the group is trivial), this shouldn't create diamonds.
 -/
 
+open scoped AlgebraOrderInstances
+
 variable {α β : Type*}
 
 namespace WithTop

@@ -29,6 +29,8 @@ number `n` such that `x ≤ n • y`.
 * `ℕ`, `ℤ`, and `ℚ` are archimedean.
 -/
 
+open scoped AlgebraOrderInstances
+
 open Int Set
 
 variable {α : Type*}

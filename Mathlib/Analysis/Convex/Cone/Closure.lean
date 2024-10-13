@@ -13,6 +13,8 @@ defining maps between proper cones. The current API is basic and should be exten
 
 -/
 
+open scoped AlgebraOrderInstances
+
 namespace ConvexCone
 
 variable {𝕜 : Type*} [OrderedSemiring 𝕜]

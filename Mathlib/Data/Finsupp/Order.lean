@@ -19,6 +19,8 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
+open scoped AlgebraOrderInstances
+
 noncomputable section
 
 open Finset

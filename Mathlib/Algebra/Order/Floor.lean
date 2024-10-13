@@ -54,6 +54,8 @@ many lemmas.
 rounding, floor, ceil
 -/
 
+open scoped AlgebraOrderInstances
+
 open Set
 
 variable {F α β : Type*}

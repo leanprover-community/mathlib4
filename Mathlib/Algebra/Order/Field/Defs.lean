@@ -23,6 +23,8 @@ A linear ordered (semi)field is a (semi)field equipped with a linear order such 
 -- Guard against import creep.
 assert_not_exists MonoidHom
 
+open scoped AlgebraOrderInstances
+
 variable {α : Type*}
 
 /-- A linear ordered semifield is a field with a linear order respecting the operations. -/
@@ -99,3 +101,13 @@ lemma le_mul_div_mul_right (h : a / b ≤ 0) : a / b ≤ a * c / (b * c) := by
   obtain rfl | hc := eq_or_ne c 0
   · simpa
   · rw [mul_div_mul_right _ _ hc]
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] LinearOrderedSemifield.toSemifield
+attribute [instance 50] LinearOrderedField.toField
+
+-- add higer-priority versions in scope `AlgebraOrderInstances`
+namespace AlgebraOrderInstances
+attribute [scoped instance 1000] LinearOrderedSemifield.toSemifield
+attribute [scoped instance 1000] LinearOrderedField.toField
+end AlgebraOrderInstances

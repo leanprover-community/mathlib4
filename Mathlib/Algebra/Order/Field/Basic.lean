@@ -14,6 +14,7 @@ import Mathlib.Tactic.Positivity.Core
 # Lemmas about linear ordered (semi)fields
 -/
 
+open scoped AlgebraOrderInstances
 
 open Function OrderDual
 

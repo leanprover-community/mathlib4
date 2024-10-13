@@ -31,7 +31,7 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open scoped Classical
+open scoped Classical AlgebraOrderInstances
 open NNReal ENNReal
 
 section Map

@@ -47,6 +47,8 @@ A nonempty open star-convex set in `ℝ^n` is diffeomorphic to the entire space.
 -/
 
 
+open scoped AlgebraOrderInstances
+
 open Set
 
 open Convex Pointwise

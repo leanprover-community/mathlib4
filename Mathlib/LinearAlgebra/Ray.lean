@@ -23,6 +23,8 @@ common positive multiple.
 -/
 
 
+open scoped AlgebraOrderInstances
+
 noncomputable section
 
 section StrictOrderedCommSemiring

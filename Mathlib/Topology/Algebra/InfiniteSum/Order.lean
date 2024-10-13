@@ -14,7 +14,9 @@ import Mathlib.Topology.Order.MonotoneConvergence
 This file provides lemmas about the interaction of infinite sums and products and order operations.
 -/
 
+
 open Finset Filter Function
+open scoped AlgebraOrderInstances
 
 variable {ι κ α : Type*}
 

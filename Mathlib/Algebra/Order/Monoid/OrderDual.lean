@@ -9,6 +9,8 @@ import Mathlib.Algebra.Order.Monoid.Defs
 
 /-! # Ordered monoid structures on the order dual. -/
 
+open scoped AlgebraOrderInstances
+
 universe u
 
 variable {α : Type u}

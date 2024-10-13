@@ -35,6 +35,7 @@ to a constant, and it should be possible to deduce the value of this constant us
 formula).
 -/
 
+open scoped AlgebraOrderInstances
 
 noncomputable section
 

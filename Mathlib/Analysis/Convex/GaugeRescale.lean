@@ -16,7 +16,7 @@ to the interior, the closure, and the frontier of the other set.
 -/
 
 open Metric Bornology Filter Set
-open scoped NNReal Topology Pointwise
+open scoped NNReal Topology Pointwise AlgebraOrderInstances
 
 noncomputable section
 

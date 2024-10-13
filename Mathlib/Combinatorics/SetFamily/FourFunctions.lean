@@ -54,7 +54,7 @@ earlier file and give it a proper API.
 -/
 
 open Finset Fintype Function
-open scoped FinsetFamily
+open scoped FinsetFamily AlgebraOrderInstances
 
 variable {α β : Type*}
 

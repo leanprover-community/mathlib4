@@ -16,6 +16,8 @@ This file contains the results concerning the interaction of finset big operator
 rings.
 -/
 
+open scoped AlgebraOrderInstances
+
 variable {ι R : Type*}
 
 namespace Finset

@@ -13,6 +13,8 @@ import Mathlib.Algebra.Order.Ring.Cast
 # `norm_num` extensions for inequalities.
 -/
 
+open scoped AlgebraOrderInstances
+
 open Lean Meta Qq
 
 namespace Mathlib.Meta.NormNum

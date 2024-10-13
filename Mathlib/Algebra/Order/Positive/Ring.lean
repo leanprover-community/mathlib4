@@ -14,6 +14,7 @@ type `{x : R // 0 < x}`. In each case we try to require the weakest possible typ
 assumptions on `R` but possibly, there is a room for improvements.
 -/
 
+open scoped AlgebraOrderInstances
 
 open Function
 

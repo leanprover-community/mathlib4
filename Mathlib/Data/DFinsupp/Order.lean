@@ -18,6 +18,8 @@ This file lifts order structures on the `α i` to `Π₀ i, α i`.
 
 -/
 
+open scoped AlgebraOrderInstances
+
 open Finset
 
 variable {ι : Type*} {α : ι → Type*}

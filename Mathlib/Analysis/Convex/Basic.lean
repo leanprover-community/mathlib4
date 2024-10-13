@@ -32,7 +32,7 @@ variable {𝕜 E F β : Type*}
 
 open LinearMap Set
 
-open scoped Convex Pointwise
+open scoped Convex Pointwise AlgebraOrderInstances
 
 /-! ### Convexity of sets -/
 

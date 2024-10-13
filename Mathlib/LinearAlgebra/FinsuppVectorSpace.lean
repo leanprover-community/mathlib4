@@ -18,7 +18,7 @@ This file contains results on the `R`-module structure on functions of finite su
 noncomputable section
 
 open Set LinearMap Submodule
-open scoped Cardinal
+open scoped Cardinal AlgebraOrderInstances
 
 universe u v w
 

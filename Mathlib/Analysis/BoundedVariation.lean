@@ -48,7 +48,7 @@ that the sets one uses are nonempty and bounded above as these are only conditio
 -/
 
 
-open scoped NNReal ENNReal Topology UniformConvergence
+open scoped NNReal ENNReal Topology UniformConvergence AlgebraOrderInstances
 
 open Set MeasureTheory Filter
 

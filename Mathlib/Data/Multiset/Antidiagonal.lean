@@ -15,6 +15,8 @@ such that `t₁ + t₂ = s`. These pairs are counted with multiplicities.
 assert_not_exists OrderedCommMonoid
 assert_not_exists Ring
 
+-- open scoped AlgebraOrderInstances
+
 universe u
 
 namespace Multiset

@@ -37,6 +37,9 @@ Moreover, we show the convergence of the continued fractions computations, that 
 convergence, fractions
 -/
 
+
+open scoped AlgebraOrderInstances
+
 variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
 
 open GenContFract (of)
