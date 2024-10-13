@@ -5,7 +5,6 @@ Authors: Simon Hudon, Harun Khan, Alex Keizer
 -/
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Data.ZMod.Defs
-import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Basic Theorems About Bitvectors
