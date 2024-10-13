@@ -89,7 +89,7 @@ theorem toFin_inj {x y : BitVec w} : x.toFin = y.toFin ↔ x = y :=
 lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
   rw [toFin_inj]; simp only [ofFin_natCast]
 
-theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = Int.cast z := by
+theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
   cases w
   case zero =>
     simp only [eq_nil]
