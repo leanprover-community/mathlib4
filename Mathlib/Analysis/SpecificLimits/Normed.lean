@@ -218,16 +218,14 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
 lemma tendsto_const_div_pow (r : ℝ) (k : ℕ) (hk : k ≠ 0) :
     Tendsto (fun n : ℕ => r / n ^ k) atTop (𝓝 0) := by
   have h := Filter.Tendsto.const_mul r (l := atTop) (f := fun n : ℕ => 1 / n^k) (c := 0) ?_
-  simp only [one_div, mul_zero] at *
-  apply h.congr
-  intro y
-  ring
-  simp only [one_div]
-  apply tendsto_inv_atTop_zero.comp
-  have ha := Filter.tendsto_pow_atTop hk (α := ℕ)
-  have hb := tendsto_natCast_atTop_atTop (R := ℝ)
-  apply (hb.comp ha).congr
-  simp only [Nat.reduceAdd, comp_apply, Nat.cast_pow, implies_true]
+  · simp only [one_div, mul_zero] at *
+    apply h.congr
+    intro y
+    ring
+  · simp only [one_div]
+    apply tendsto_inv_atTop_zero.comp
+    apply ((tendsto_natCast_atTop_atTop (R := ℝ)).comp (Filter.tendsto_pow_atTop hk (α := ℕ))).congr
+    simp only [Nat.reduceAdd, comp_apply, Nat.cast_pow, implies_true]
 
 /-- If `0 ≤ r < 1`, then `n ^ k r ^ n` tends to zero for any natural `k`.
 This is a specialized version of `tendsto_pow_const_mul_const_pow_of_abs_lt_one`, singled out
