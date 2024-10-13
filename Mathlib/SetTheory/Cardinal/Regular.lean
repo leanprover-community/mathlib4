@@ -76,5 +76,5 @@ theorem isSingular_aleph_omega : (aleph ω).IsSingular := by
   rw [aleph_cof omega0_isLimit, cof_omega0, ← aleph_zero, aleph_lt]
   exact omega0_pos
 
-end Cardinal
 end Singular
+end Cardinal
