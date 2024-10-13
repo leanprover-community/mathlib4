@@ -209,7 +209,7 @@ section Preorder
 
 It is defined as the join of the topology of upper sets and the Scott-Hausdorff topology. -/
 def scott (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α :=
-    upperSet α ⊔ scottHausdorff α D
+  upperSet α ⊔ scottHausdorff α D
 
 lemma upperSet_le_scott [Preorder α] : upperSet α ≤ scott α univ := le_sup_left
 
