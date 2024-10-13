@@ -93,7 +93,7 @@ instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ
 
 -- priority manually adjusted in #11980
 instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
-  { Complex.ofReal.comp (algebraMap R ℝ) with
+  { Complex.ofRealHom.comp (algebraMap R ℝ) with
     smul := (· • ·)
     smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
     commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes] }
