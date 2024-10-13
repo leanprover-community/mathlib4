@@ -178,14 +178,6 @@ lemma associator_inv_fst_snd (X Y Z : C) :
 lemma associator_inv_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ snd _ _ = snd _ _ ≫ snd _ _ := lift_snd _ _
 
-@[simp]
-lemma leftUnitor_hom (X : C) :
-    (λ_ X).hom = snd _ _ := rfl
-
-@[simp]
-lemma rightUnitor_hom (X : C) :
-    (ρ_ X).hom = fst _ _ := rfl
-
 @[reassoc (attr := simp)]
 lemma leftUnitor_inv_fst (X : C) :
     (λ_ X).inv ≫ fst _ _ = toUnit _ := toUnit_unique _ _
