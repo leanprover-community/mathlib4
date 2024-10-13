@@ -36,27 +36,24 @@ instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
   rcases R with ⟨α, str⟩
   exact IsLocalization.epi M _
 
+-- TODO: This is added in #17403
+-- `IsLocalHom (f ≫ g)` cannot be infered from `IsLocalRingHom (f ≫ g)`
+instance CommRingCat.isLocalHom_ofIsLocalRingHom {R S : CommRingCat} (f : R ⟶ S)
+    [IsLocalRingHom f] : IsLocalHom f :=
+  inferInstance
+
 @[instance]
-theorem CommRingCat.isLocalHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
-    [IsLocalHom g] [IsLocalHom f] : IsLocalHom (f ≫ g) :=
-  RingHom.isLocalHom_comp _ _
+theorem CommRingCat.isLocalRingHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
+    [IsLocalHom g] [IsLocalHom f] : IsLocalRingHom (f ≫ g) :=
+  RingHom.isLocalRingHom_comp _ _
 
-@[deprecated (since := "2024-10-10")]
-alias CommRingCat.isLocalRingHom_comp := CommRingCat.isLocalHom_comp
-
-theorem isLocalHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalHom f.hom :=
+theorem isLocalRingHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalRingHom f.hom :=
   { map_nonunit := fun a ha => by
       convert f.inv.isUnit_map ha
       exact (RingHom.congr_fun f.hom_inv_id _).symm }
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_iso := isLocalHom_of_iso
-
 -- see Note [lower instance priority]
 @[instance 100]
-theorem isLocalHom_of_isIso {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
-    IsLocalHom f :=
-  isLocalHom_of_iso (asIso f)
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_isIso := isLocalHom_of_isIso
+theorem isLocalRingHom_of_isIso {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
+    IsLocalRingHom f :=
+  isLocalRingHom_of_iso (asIso f)

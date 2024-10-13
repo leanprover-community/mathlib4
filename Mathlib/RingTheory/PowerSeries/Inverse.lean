@@ -267,7 +267,7 @@ end Field
 
 section LocalRing
 
-variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
+variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
 
 @[instance]
 theorem map.isLocalHom : IsLocalHom (map f) :=

@@ -21,40 +21,33 @@ section
 
 variable [Semiring R] [Semiring S] [Semiring T]
 
-@[instance]
-theorem isLocalHom_id (R : Type*) [Semiring R] : IsLocalHom (RingHom.id R) where
-  map_nonunit _ := id
+/-- A local ring homomorphism is a morphism `f` between (semi)rings such that `a` in the domain
+is a unit if `f a` is a unit for any `a`. This definition is genralised to monoid case, see
+`IsLocalHom`. We keep this alias to help instance synthesis. -/
+abbrev IsLocalRingHom {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) := IsLocalHom f
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_id := isLocalHom_id
+@[instance]
+theorem isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R) where
+  map_nonunit _ := id
 
 -- see note [lower instance priority]
 @[instance 100]
-theorem isLocalHom_toRingHom {F : Type*} [FunLike F R S]
-    [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=
+theorem isLocalRingHom_toRingHom {F : Type*} [FunLike F R S]
+    [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalRingHom (f : R →+* S) :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_toRingHom := isLocalHom_toRingHom
-
 @[instance]
-theorem RingHom.isLocalHom_comp (g : S →+* T) (f : R →+* S) [IsLocalHom g]
-    [IsLocalHom f] : IsLocalHom (g.comp f) where
+theorem RingHom.isLocalRingHom_comp (g : S →+* T) (f : R →+* S) [IsLocalRingHom g]
+    [IsLocalRingHom f] : IsLocalRingHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
 
-@[deprecated (since := "2024-10-10")]
-alias RingHom.isLocalRingHom_comp := RingHom.isLocalHom_comp
-
-theorem isLocalHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalHom (g.comp f)] :
-    IsLocalHom f :=
-  ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (g.isUnit_map ha)⟩
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_comp := isLocalHom_of_comp
+theorem isLocalRingHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalRingHom (g.comp f)] :
+    IsLocalRingHom f :=
+  ⟨fun _ h => (isUnit_map_iff (g.comp f) _).mp (h.map g)⟩
 
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
 theorem RingHom.domain_localRing {R S : Type*} [CommSemiring R] [CommSemiring S] [H : LocalRing S]
-    (f : R →+* S) [IsLocalHom f] : LocalRing R := by
+    (f : R →+* S) [IsLocalRingHom f] : LocalRing R := by
   haveI : Nontrivial R := pullback_nonzero f f.map_zero f.map_one
   apply LocalRing.of_nonunits_add
   intro a b
@@ -72,7 +65,7 @@ variable [CommSemiring R] [LocalRing R] [CommSemiring S] [LocalRing S]
 /--
 The image of the maximal ideal of the source is contained within the maximal ideal of the target.
 -/
-theorem map_nonunit (f : R →+* S) [IsLocalHom f] (a : R) (h : a ∈ maximalIdeal R) :
+theorem map_nonunit (f : R →+* S) [IsLocalRingHom f] (a : R) (h : a ∈ maximalIdeal R) :
     f a ∈ maximalIdeal S := fun H => h <| isUnit_of_map_unit f a H
 
 end
@@ -104,7 +97,7 @@ theorem local_hom_TFAE (f : R →+* S) :
 end
 
 theorem of_surjective [CommSemiring R] [LocalRing R] [CommSemiring S] [Nontrivial S] (f : R →+* S)
-    [IsLocalHom f] (hf : Function.Surjective f) : LocalRing S :=
+    [IsLocalRingHom f] (hf : Function.Surjective f) : LocalRing S :=
   of_isUnit_or_isUnit_of_isUnit_add (by
     intro a b hab
     obtain ⟨a, rfl⟩ := hf a

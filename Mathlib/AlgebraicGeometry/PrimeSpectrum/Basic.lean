@@ -636,7 +636,7 @@ alias isLocalRingHom_iff_comap_closedPoint := isLocalHom_iff_comap_closedPoint
 
 @[simp]
 theorem comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S] (f : R →+* S)
-    [IsLocalHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
+    [IsLocalRingHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
   (isLocalHom_iff_comap_closedPoint f).mp inferInstance
 
 theorem specializes_closedPoint (x : PrimeSpectrum R) : x ⤳ closedPoint R :=

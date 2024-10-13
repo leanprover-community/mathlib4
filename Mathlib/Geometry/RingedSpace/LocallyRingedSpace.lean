@@ -90,25 +90,29 @@ noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x :
   f.val.stalkMap x
 
 @[instance]
-theorem isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    IsLocalHom (f.stalkMap x) :=
+theorem isLocalRingHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+    IsLocalRingHom (f.stalkMap x) :=
   f.2 x
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHomStalkMap := isLocalHomStalkMap
+@[instance]
+theorem isLocalRingHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+    IsLocalRingHom (f.val.stalkMap x) :=
+  f.2 x
 
+-- TODO: Unexpected behaviour in #17403
+-- Even `IsLocalHom` is defined as a abbrev of `IsLocalRingHom`, we
+-- still need to add this instance. The instance synthesize fail to find
+-- `IsLocalHom (f.val.stalkMap x)` from `IsLocalRingHom (f.val.stalkMap x)`.
+-- This is for `AlgebraicGeometry.LocallyRingedSpace.preimage_basicOpen` in this file.
 @[instance]
 theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalHom (f.val.stalkMap x) :=
   f.2 x
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHomValStalkMap := isLocalHomValStalkMap
-
 /-- The identity morphism on a locally ringed space. -/
 @[simps]
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
-  ⟨𝟙 _, fun x => by erw [PresheafedSpace.stalkMap.id]; apply isLocalHom_id⟩
+  ⟨𝟙 _, fun x => by erw [PresheafedSpace.stalkMap.id]; apply isLocalRingHom_id⟩
 
 instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
   ⟨id X⟩
@@ -117,7 +121,7 @@ instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
 def comp {X Y Z : LocallyRingedSpace.{u}} (f : Hom X Y) (g : Hom Y Z) : Hom X Z :=
   ⟨f.val ≫ g.val, fun x => by
     erw [PresheafedSpace.stalkMap.comp]
-    exact @RingHom.isLocalHom_comp _ _ _ _ _ _ _ _ (f.2 _) (g.2 _)⟩
+    exact @RingHom.isLocalRingHom_comp _ _ _ _ _ _ _ _ (f.2 _) (g.2 _)⟩
 
 /-- The category of locally ringed spaces. -/
 instance : Category LocallyRingedSpace.{u} where

@@ -7,7 +7,7 @@ Authors: Johan Commelin, Kenny Lau
 import Mathlib.Algebra.Group.Units
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # Formal (multivariate) power series - Inverses
@@ -167,7 +167,7 @@ end CommRing
 
 section LocalRing
 
-variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
+variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
 
 -- Thanks to the linter for informing us that this instance does
 -- not actually need R and S to be local rings!
