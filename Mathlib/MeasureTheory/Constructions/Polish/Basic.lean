@@ -109,6 +109,12 @@ variable [MeasurableSpace α]
 instance standardBorel_of_polish [τ : TopologicalSpace α]
     [BorelSpace α] [PolishSpace α] : StandardBorelSpace α := by exists τ
 
+instance standardBorelSpace_of_discreteMeasurableSpace [DiscreteMeasurableSpace α] [Countable α] :
+    StandardBorelSpace α :=
+  let _ : TopologicalSpace α := ⊥
+  have : DiscreteTopology α := ⟨rfl⟩
+  inferInstance
+
 instance countablyGenerated_of_standardBorel [StandardBorelSpace α] :
     MeasurableSpace.CountablyGenerated α :=
   letI := upgradeStandardBorel α

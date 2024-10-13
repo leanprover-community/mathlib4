@@ -26,7 +26,7 @@ variable [Preorder M]
 
 namespace Left
 
-variable [CovariantClass M M (· * ·) (· ≤ ·)] {a b : M}
+variable [CovariantClass M M (· * ·) (· ≤ ·)] {a : M}
 
 @[to_additive Left.nsmul_nonneg]
 theorem one_le_pow_of_le (ha : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
@@ -58,7 +58,7 @@ end Left
 
 section Left
 
-variable [CovariantClass M M (· * ·) (· ≤ ·)] {x : M}
+variable [CovariantClass M M (· * ·) (· ≤ ·)]
 
 @[to_additive nsmul_left_monotone]
 theorem pow_right_monotone {a : M} (ha : 1 ≤ a) : Monotone fun n : ℕ ↦ a ^ n :=

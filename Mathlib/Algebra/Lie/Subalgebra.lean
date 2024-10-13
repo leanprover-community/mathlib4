@@ -295,7 +295,7 @@ theorem rangeRestrict_apply (x : L) : f.rangeRestrict x = ⟨f x, f.mem_range_se
 
 theorem surjective_rangeRestrict : Function.Surjective f.rangeRestrict := by
   rintro ⟨y, hy⟩
-  erw [mem_range] at hy; obtain ⟨x, rfl⟩ := hy
+  rw [mem_range] at hy; obtain ⟨x, rfl⟩ := hy
   use x
   simp only [Subtype.mk_eq_mk, rangeRestrict_apply]
 

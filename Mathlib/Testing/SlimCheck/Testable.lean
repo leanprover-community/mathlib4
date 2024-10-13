@@ -423,7 +423,7 @@ end Testable
 
 section PrintableProp
 
-variable {α : Type*} {x y : α}
+variable {α : Type*}
 
 instance Eq.printableProp [Repr α] {x y : α} : PrintableProp (x = y) where
   printProp := s!"{repr x} = {repr y}"

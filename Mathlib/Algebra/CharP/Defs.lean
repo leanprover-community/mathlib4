@@ -12,6 +12,7 @@ import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.ULift
 import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Characteristic of semirings

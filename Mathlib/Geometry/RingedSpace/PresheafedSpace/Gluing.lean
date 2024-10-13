@@ -140,10 +140,9 @@ theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
   rw [Set.image_comp]
   -- Porting note: `rw` to `erw` on `coe_comp`
   erw [coe_comp]
-  erw [Set.preimage_comp, Set.image_preimage_eq, TopCat.pullback_snd_image_fst_preimage]
-   -- now `erw` after #13170
+  rw [Set.preimage_comp, Set.image_preimage_eq, TopCat.pullback_snd_image_fst_preimage]
   · rfl
-  erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
+  rw [← TopCat.epi_iff_surjective]
   infer_instance
 
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/0GiBUh6.png) commute. -/
@@ -191,20 +190,18 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     replace this := (congr_arg ((PresheafedSpace.Hom.base ·)) this).symm
     replace this := congr_arg (ContinuousMap.toFun ·) this
     dsimp at this
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [coe_comp, coe_comp] at this
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
+    rw [coe_comp, coe_comp] at this
+    rw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
     · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
-      erw [← comp_apply, ← comp_base, D.t_inv, id_base, id_apply] -- now `erw` after #13170
+      rw [← comp_apply, ← comp_base, D.t_inv, id_base, id_apply]
     refine congr_arg (_ '' ·) ?_
     refine congr_fun ?_ _
     refine Set.image_eq_preimage_of_inverse ?_ ?_
     · intro x
-      erw [← comp_apply, ← comp_base, IsIso.inv_hom_id, id_base, id_apply] -- now `erw` after #13170
+      rw [← comp_apply, ← comp_base, IsIso.inv_hom_id, id_base, id_apply]
     · intro x
-      erw [← comp_apply, ← comp_base, IsIso.hom_inv_id, id_base, id_apply] -- now `erw` after #13170
+      rw [← comp_apply, ← comp_base, IsIso.hom_inv_id, id_base, id_apply]
   · rw [← IsIso.eq_inv_comp, IsOpenImmersion.inv_invApp, Category.assoc,
       (D.t' k i j).c.naturality_assoc]
     simp_rw [← Category.assoc]
@@ -261,7 +258,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
     change (D.t i j ≫ D.t j i).base '' _ = _
     rw [𝖣.t_inv]
     simp
-  · erw [← coe_comp, ← TopCat.mono_iff_injective] -- now `erw` after #13170
+  · rw [← coe_comp, ← TopCat.mono_iff_injective]
     infer_instance
 
 /-- (Implementation). The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, 𝖣.ι j ⁻¹' (𝖣.ι i '' U))` -/
@@ -334,9 +331,9 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     rw [Set.preimage_preimage]
     change (D.f j k ≫ 𝖣.ι j).base ⁻¹' _ = _
     -- Porting note: used to be `congr 3`
-    refine congr_arg (· ⁻¹' _) ?_
-    convert congr_arg (ContinuousMap.toFun (α := D.V ⟨j, k⟩) (β := D.glued) ·) ?_
-    refine congr_arg (PresheafedSpace.Hom.base (C := C) ·) ?_
+    suffices D.f j k ≫ D.ι j = colimit.ι D.diagram.multispan (WalkingMultispan.left (j, k)) by
+      rw [this]
+      rfl
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 
@@ -368,11 +365,11 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
                   (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom _) =
                 D.opensImagePreimageMap _ _ _ ≫
                   ((D.f k j).c.app _ ≫ (D.t j k).c.app _) ≫ (D.V (j, k)).presheaf.map (eqToHom _)
-            erw [opensImagePreimageMap_app_assoc]
+            rw [opensImagePreimageMap_app_assoc]
             simp_rw [Category.assoc]
-            erw [opensImagePreimageMap_app_assoc, (D.t j k).c.naturality_assoc]
-            rw [snd_invApp_t_app_assoc]
-            erw [← PresheafedSpace.comp_c_app_assoc]
+            rw [opensImagePreimageMap_app_assoc, (D.t j k).c.naturality_assoc,
+                snd_invApp_t_app_assoc,
+                ← PresheafedSpace.comp_c_app_assoc]
             -- light-blue = green is relatively easy since the part that differs does not involve
             -- partial inverses.
             have :
@@ -380,19 +377,21 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
                 (pullbackSymmetry _ _).hom ≫ (π₁ j, i, k) ≫ D.t j i ≫ D.f i j := by
               rw [← 𝖣.t_fac_assoc, 𝖣.t'_comp_eq_pullbackSymmetry_assoc,
                 pullbackSymmetry_hom_comp_snd_assoc, pullback.condition, 𝖣.t_fac_assoc]
-            rw [congr_app this]
-            erw [PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom]
+            rw [congr_app this,
+                PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom]
             simp_rw [Category.assoc]
             congr 1
-            rw [← IsIso.eq_inv_comp]
-            erw [IsOpenImmersion.inv_invApp]
+            rw [← IsIso.eq_inv_comp,
+                IsOpenImmersion.inv_invApp]
             simp_rw [Category.assoc]
             erw [NatTrans.naturality_assoc, ← PresheafedSpace.comp_c_app_assoc,
               congr_app (pullbackSymmetry_hom_comp_snd _ _)]
             simp_rw [Category.assoc]
             erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.inv_naturality_assoc,
               IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc]
-            repeat' erw [← (D.V (j, k)).presheaf.map_comp]
+            rw [← (D.V (j, k)).presheaf.map_comp]
+            erw [← (D.V (j, k)).presheaf.map_comp]
+            repeat rw [← (D.V (j, k)).presheaf.map_comp]
             -- Porting note: was just `congr`
             exact congr_arg ((D.V (j, k)).presheaf.map ·) rfl } }
 
@@ -411,9 +410,9 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     · exact h2.symm
     · have := D.ι_gluedIso_inv (PresheafedSpace.forget _) i
       dsimp at this
-      erw [← this, coe_comp] -- now `erw` after #13170
+      rw [← this, coe_comp]
       refine Function.Injective.comp ?_ (TopCat.GlueData.ι_injective D.toTopGlueData i)
-      erw [← TopCat.mono_iff_injective] -- now `erw` after #13170
+      rw [← TopCat.mono_iff_injective]
       infer_instance
   delta ιInvApp
   rw [limit.lift_π]

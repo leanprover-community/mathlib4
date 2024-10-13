@@ -48,7 +48,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
 
 namespace MeasureTheory
 
-variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
+variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
 variable {a b : ℝ} {f : ℕ → Ω → ℝ} {ω : Ω} {R : ℝ≥0}
 
 section AeConvergence
@@ -399,8 +399,8 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
       setIntegral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←
       setIntegral_trim hle hgmeas htmeas, ←
       setIntegral_trim hle stronglyMeasurable_limitProcess htmeas, ← integral_trim hle hgmeas, ←
-      integral_trim hle stronglyMeasurable_limitProcess, ← integral_univ,
-      this 0 _ MeasurableSet.univ, integral_univ, ht (measure_lt_top _ _)]
+      integral_trim hle stronglyMeasurable_limitProcess, ← setIntegral_univ,
+      this 0 _ MeasurableSet.univ, setIntegral_univ, ht (measure_lt_top _ _)]
   · rintro f hf hfmeas heq -
     rw [integral_iUnion (fun n => hle _ (hfmeas n)) hf hg.integrableOn,
       integral_iUnion (fun n => hle _ (hfmeas n)) hf hlimint.integrableOn]
