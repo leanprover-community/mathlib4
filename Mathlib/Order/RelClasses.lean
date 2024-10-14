@@ -425,13 +425,13 @@ end WellFoundedGT
 namespace IsWellOrder
 
 theorem trans_lt_le [IsWellOrder α r] {a b c : α} (hab : r a b) (hcb : ¬ r c b) : r a c := by
-  rcases @trichotomous α r _ b c with (lt | rfl | gt)
+  rcases trichotomous_of r b c with (lt | rfl | gt)
   · exact _root_.trans hab lt
   · exact hab
   · exact (hcb gt).elim
 
 theorem trans_le_lt [IsWellOrder α r] {a b c : α} (hab : ¬ r b a) (hcb : r b c) : r a c := by
-  rcases @trichotomous α r _ a b with (lt | rfl | gt)
+  rcases trichotomous_of r a b with (lt | rfl | gt)
   · exact _root_.trans lt hcb
   · exact hcb
   · exact (hab gt).elim
