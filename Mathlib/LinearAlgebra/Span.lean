@@ -254,8 +254,8 @@ theorem span_nat_eq (s : AddSubmonoid M) : (span ℕ (s : Set M)).toAddSubmonoid
 theorem span_int_eq_addSubgroup_closure {M : Type*} [AddCommGroup M] (s : Set M) :
     (span ℤ s).toAddSubgroup = AddSubgroup.closure s :=
   Eq.symm <|
-    AddSubgroup.closure_eq_of_le _ subset_span fun x hx =>
-      span_induction hx (fun x hx => AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
+    AddSubgroup.closure_eq_of_le _ subset_span fun _ hx =>
+      span_induction hx (fun _ hx => AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
         (fun _ _ => AddSubgroup.add_mem _) fun _ _ _ => AddSubgroup.zsmul_mem _ ‹_› _
 
 @[simp]

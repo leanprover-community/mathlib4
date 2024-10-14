@@ -708,7 +708,7 @@ theorem drop.aux_none : ∀ n, @drop.aux α n none = Computation.pure none
       rw [ret_bind, drop.aux_none n]
 
 theorem destruct_dropn : ∀ (s : WSeq α) (n), destruct (drop s n) = destruct s >>= drop.aux n
-  | s, 0 => (bind_pure' _).symm
+  | _, 0 => (bind_pure' _).symm
   | s, n + 1 => by
     rw [← dropn_tail, destruct_dropn _ n, destruct_tail, LawfulMonad.bind_assoc]
     rfl

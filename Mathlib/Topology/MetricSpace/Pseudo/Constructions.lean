@@ -23,11 +23,11 @@ variable {α β : Type*} [PseudoMetricSpace α]
 abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace β) :
     PseudoMetricSpace α where
   dist x y := dist (f x) (f y)
-  dist_self x := dist_self _
-  dist_comm x y := dist_comm _ _
-  dist_triangle x y z := dist_triangle _ _ _
+  dist_self _ := dist_self _
+  dist_comm _ _ := dist_comm _ _
+  dist_triangle _ _ _ := dist_triangle _ _ _
   edist x y := edist (f x) (f y)
-  edist_dist x y := edist_dist _ _
+  edist_dist _ _ := edist_dist _ _
   toUniformSpace := UniformSpace.comap f m.toUniformSpace
   uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf
   toBornology := Bornology.induced f
@@ -147,7 +147,7 @@ variable [PseudoMetricSpace β]
 instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
-    (fun x y => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
+    (fun _ _ => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
       simp only [sup_eq_max, dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
         Prod.edist_eq]
   i.replaceBornology fun s => by
