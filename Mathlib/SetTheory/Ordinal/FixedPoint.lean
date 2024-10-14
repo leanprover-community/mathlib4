@@ -208,7 +208,7 @@ theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
       exact
         let ⟨o', h, hl⟩ := h
         IH o' h (le_of_not_le hl),
-    fun ⟨o, e⟩ i => e ▸ (derivFamily_fp (H i) _).le⟩
+    fun ⟨_, e⟩ i => e ▸ (derivFamily_fp (H i) _).le⟩
 
 theorem fp_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
     (∀ i, f i a = a) ↔ ∃ o, derivFamily.{u, v} f o = a :=

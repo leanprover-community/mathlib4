@@ -426,7 +426,7 @@ theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x => 
   "Counterpart to `List.sum_take_succ` when we have a negation operation"]
 theorem prod_drop_succ :
     ∀ (L : List G) (i : ℕ) (p : i < L.length), (L.drop (i + 1)).prod = L[i]⁻¹ * (L.drop i).prod
-  | [], i, p => False.elim (Nat.not_lt_zero _ p)
+  | [], _, p => False.elim (Nat.not_lt_zero _ p)
   | _ :: _, 0, _ => by simp
   | _ :: xs, i + 1, p => prod_drop_succ xs i (Nat.lt_of_succ_lt_succ p)
 

@@ -86,7 +86,7 @@ instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrd LinOrd :=
 instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrd FinPartOrd where
   forget₂ :=
     { obj := fun X => FinPartOrd.of X
-      map := @fun X Y => id }
+      map := @fun _ _ => id }
 
 /-- Constructs an equivalence between nonempty finite linear orders from an order isomorphism
 between them. -/

@@ -302,12 +302,12 @@ instance : CompleteLattice (Submonoid M) :=
 
 @[to_additive (attr := simp)]
 theorem subsingleton_iff : Subsingleton (Submonoid M) ↔ Subsingleton M :=
-  ⟨fun h =>
+  ⟨fun _ =>
     ⟨fun x y =>
       have : ∀ i : M, i = 1 := fun i =>
         mem_bot.mp <| Subsingleton.elim (⊤ : Submonoid M) ⊥ ▸ mem_top i
       (this x).trans (this y).symm⟩,
-    fun h =>
+    fun _ =>
     ⟨fun x y => Submonoid.ext fun i => Subsingleton.elim 1 i ▸ by simp [Submonoid.one_mem]⟩⟩
 
 @[to_additive (attr := simp)]
@@ -594,7 +594,7 @@ def ofClosureMEqTopRight {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (
   map_one' := h1
   map_mul' x y :=
     dense_induction y hs (fun y hy x => hmul x y hy) (by simp [h1])
-      (fun y₁ y₂ (h₁ : ∀ x, f _ = f _ * f _) (h₂ : ∀ x, f _ = f _ * f _) x => by
+      (fun y₁ y₂ (h₁ : ∀ _, f _ = f _ * f _) (h₂ : ∀ _, f _ = f _ * f _) x => by
         simp [← mul_assoc, h₁, h₂]) x
 
 @[to_additive (attr := simp, norm_cast)]

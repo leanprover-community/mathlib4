@@ -55,7 +55,7 @@ def buildLimit
     (i : Fork s t) : Cone F where
   pt := i.pt
   π :=
-    { app := fun j => i.ι ≫ c₁.π.app ⟨_⟩
+    { app := fun _ => i.ι ≫ c₁.π.app ⟨_⟩
       naturality := fun j₁ j₂ f => by
         dsimp
         rw [Category.id_comp, Category.assoc, ← hs ⟨⟨_, _⟩, f⟩, i.condition_assoc, ht] }
@@ -264,7 +264,7 @@ def buildColimit
     (i : Cofork s t) : Cocone F where
   pt := i.pt
   ι :=
-    { app := fun j => c₂.ι.app ⟨_⟩ ≫ i.π
+    { app := fun _ => c₂.ι.app ⟨_⟩ ≫ i.π
       naturality := fun j₁ j₂ f => by
         dsimp
         have reassoced (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} {h : _ ⟶ W} :

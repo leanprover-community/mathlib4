@@ -316,7 +316,7 @@ theorem getLast_cons_cons (a₁ a₂ : α) (l : List α) :
 
 theorem dropLast_append_getLast : ∀ {l : List α} (h : l ≠ []), dropLast l ++ [getLast l h] = l
   | [], h => absurd rfl h
-  | [a], h => rfl
+  | [_], _ => rfl
   | a :: b :: l, h => by
     rw [dropLast_cons₂, cons_append, getLast_cons (cons_ne_nil _ _)]
     congr
@@ -381,16 +381,16 @@ theorem dropLast_append_getLast? : ∀ {l : List α}, ∀ a ∈ l.getLast?, drop
 
 theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.iget
   | [] => by simp [getLastI, Inhabited.default]
-  | [a] => rfl
-  | [a, b] => rfl
-  | [a, b, c] => rfl
+  | [_] => rfl
+  | [_, _] => rfl
+  | [_, _, _] => rfl
   | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast? (c :: l)]
 
 #adaptation_note /-- 2024-07-10: removed `@[simp]` since the LHS simplifies using the simp set. -/
 theorem getLast?_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), getLast? (l₁ ++ a :: l₂) = getLast? (a :: l₂)
-  | [], a, l₂ => rfl
-  | [b], a, l₂ => rfl
+  | [], _, _ => rfl
+  | [_], _, _ => rfl
   | b :: c :: l₁, a, l₂ => by rw [cons_append, cons_append, getLast?_cons_cons,
     ← cons_append, getLast?_append_cons (c :: l₁)]
 
@@ -468,7 +468,7 @@ theorem cons_head?_tail : ∀ {l : List α} {a : α}, a ∈ head? l → a :: tai
 
 theorem head!_mem_head? [Inhabited α] : ∀ {l : List α}, l ≠ [] → head! l ∈ head? l
   | [], h => by contradiction
-  | a :: l, _ => rfl
+  | _ :: _, _ => rfl
 
 theorem cons_head!_tail [Inhabited α] {l : List α} (h : l ≠ []) : head! l :: tail l = l :=
   cons_head?_tail (head!_mem_head? h)
@@ -861,7 +861,7 @@ theorem modifyNthTail_modifyNthTail_same {f g : List α → List α} (n : ℕ) (
 theorem modifyNth_eq_set (f : α → α) :
     ∀ (n) (l : List α), modifyNth f n l = ((fun a => set l n (f a)) <$> l[n]?).getD l
   | 0, l => by cases l <;> simp
-  | n + 1, [] => rfl
+  | _ + 1, [] => rfl
   | n + 1, b :: l =>
     (congr_arg (cons b) (modifyNth_eq_set f n l)).trans <| by cases h : l[n]? <;> simp [h]
 
@@ -994,8 +994,8 @@ theorem zipWith_nil (f : α → β → γ) (l : List α) : zipWith f l [] = [] :
 @[simp]
 theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as = zipWith f as bs
   | [], [] => rfl
-  | [], b :: bs => rfl
-  | a :: as, [] => rfl
+  | [], _ :: _ => rfl
+  | _ :: _, [] => rfl
   | a :: as, b :: bs => by
     simp! [zipWith_flip]
     rfl
@@ -1153,7 +1153,7 @@ section Scanl
 variable {f : β → α → β} {b : β} {a : α} {l : List α}
 
 theorem length_scanl : ∀ a l, length (scanl f a l) = l.length + 1
-  | a, [] => rfl
+  | _, [] => rfl
   | a, x :: l => by
     rw [scanl, length_cons, length_cons, ← succ_eq_add_one, congr_arg succ]
     exact length_scanl _ _
@@ -1244,7 +1244,7 @@ variable {f : α → α → α}
 
 theorem foldl1_eq_foldr1 [hassoc : Std.Associative f] :
     ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
-  | a, b, nil => rfl
+  | _, _, nil => rfl
   | a, b, c :: l => by
     simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l]
     rw [hassoc.assoc]
@@ -1259,7 +1259,7 @@ theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Asso
 
 theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
     ∀ a l, foldl f a l = foldr f a l
-  | a, nil => rfl
+  | _, nil => rfl
   | a, b :: l => by
     simp only [foldr_cons, foldl_eq_of_comm_of_assoc]
     rw [foldl_eq_foldr a l]
@@ -1274,11 +1274,11 @@ variable (hf : ∀ a b c, f (f a b) c = f (f a c) b)
 include hf
 
 theorem foldl_eq_of_comm' : ∀ a b l, foldl f a (b :: l) = f (foldl f a l) b
-  | a, b, [] => rfl
+  | _, _, [] => rfl
   | a, b, c :: l => by rw [foldl, foldl, foldl, ← foldl_eq_of_comm' .., foldl, hf]
 
 theorem foldl_eq_foldr' : ∀ a l, foldl f a l = foldr (flip f) a l
-  | a, [] => rfl
+  | _, [] => rfl
   | a, b :: l => by rw [foldl_eq_of_comm' hf, foldr, foldl_eq_foldr' ..]; rfl
 
 end FoldlEqFoldlr'
@@ -1289,7 +1289,7 @@ variable {f : α → β → β}
 
 theorem foldr_eq_of_comm' (hf : ∀ a b c, f a (f b c) = f b (f a c)) :
     ∀ a b l, foldr f a (b :: l) = foldr f (f b a) l
-  | a, b, [] => rfl
+  | _, _, [] => rfl
   | a, b, c :: l => by rw [foldr, foldr, foldr, hf, ← foldr_eq_of_comm' hf ..]; rfl
 
 end FoldlEqFoldlr'
@@ -1306,7 +1306,7 @@ local notation l " <*> " a => foldl op a l
 
 theorem foldl_op_eq_op_foldr_assoc :
     ∀ {l : List α} {a₁ a₂}, ((l <*> a₁) ⋆ a₂) = a₁ ⋆ l.foldr (· ⋆ ·) a₂
-  | [], a₁, a₂ => rfl
+  | [], _, _ => rfl
   | a :: l, a₁, a₂ => by
     simp only [foldl_cons, foldr_cons, foldl_assoc, ha.assoc]; rw [foldl_op_eq_op_foldr_assoc]
 
@@ -1716,7 +1716,7 @@ lemma map_filter' {f : α → β} (hf : Injective f) (l : List α)
 
 lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
     l.attach.filter p =
-      (l.filter fun x => ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun x => mem_of_mem_filter) := by
+      (l.filter fun x => ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun _ => mem_of_mem_filter) := by
   classical
   refine map_injective_iff.2 Subtype.coe_injective ?_
   simp [comp_def, map_filter' _ Subtype.coe_injective]
@@ -1724,7 +1724,7 @@ lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α
 -- Porting note: `Lean.Internal.coeM` forces us to type-ascript `{x // x ∈ l}`
 lemma filter_attach (l : List α) (p : α → Bool) :
     (l.attach.filter fun x => p x : List {x // x ∈ l}) =
-      (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
+      (l.filter p).attach.map (Subtype.map id fun _ => mem_of_mem_filter) :=
   map_injective_iff.2 Subtype.coe_injective <| by
     simp_rw [map_map, comp_def, Subtype.map, id, ← Function.comp_apply (g := Subtype.val),
       ← filter_map, attach_map_subtype_val]
@@ -1887,7 +1887,7 @@ theorem map_diff [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l�
 
 theorem erase_diff_erase_sublist_of_sublist {a : α} :
     ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → (l₂.erase a).diff (l₁.erase a) <+ l₂.diff l₁
-  | [], l₂, _ => erase_sublist _ _
+  | [], _, _ => erase_sublist _ _
   | b :: l₁, l₂, h =>
     if heq : b = a then by simp only [heq, erase_cons_head, diff_cons]; rfl
     else by

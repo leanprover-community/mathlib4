@@ -109,7 +109,7 @@ def OpenCover.bind (f : ∀ x : 𝒰.J, OpenCover (𝒰.obj x)) : OpenCover X wh
     rw [hz, hy]
   -- Porting note: weirdly, even though no input is needed, `inferInstance` does not work
   -- `PresheafedSpace.IsOpenImmersion.comp` is marked as `instance`
-  IsOpen x := PresheafedSpace.IsOpenImmersion.comp _ _
+  IsOpen _ := PresheafedSpace.IsOpenImmersion.comp _ _
 
 /-- An isomorphism `X ⟶ Y` is an open cover of `Y`. -/
 @[simps J obj map]
@@ -168,7 +168,7 @@ def OpenCover.pullbackCover {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X
     W.OpenCover where
   J := 𝒰.J
   obj x := pullback f (𝒰.map x)
-  map x := pullback.fst _ _
+  map _ := pullback.fst _ _
   f x := 𝒰.f (f.1.base x)
   covers x := by
     rw [←
@@ -198,7 +198,7 @@ def OpenCover.pullbackCover' {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ 
     W.OpenCover where
   J := 𝒰.J
   obj x := pullback (𝒰.map x) f
-  map x := pullback.snd _ _
+  map _ := pullback.snd _ _
   f x := 𝒰.f (f.1.base x)
   covers x := by
     rw [←
@@ -261,7 +261,7 @@ def OpenCover.inter {X : Scheme.{u}} (𝒰₁ : Scheme.OpenCover.{v₁} X)
   covers x := by
     rw [IsOpenImmersion.range_pullback_to_base_of_left]
     exact ⟨𝒰₁.covers x, 𝒰₂.covers x⟩
-  IsOpen x := inferInstance
+  IsOpen _ := inferInstance
 
 /--
 An affine open cover of `X` consists of a family of open immersions into `X` from
@@ -372,13 +372,13 @@ attribute [instance] OpenCover.Hom.isOpen
 /-- The identity morphism in the category of open covers of a scheme. -/
 def OpenCover.Hom.id {X : Scheme.{u}} (𝓤 : OpenCover.{v} X) : 𝓤.Hom 𝓤 where
   idx j := j
-  app j := 𝟙 _
+  app _ := 𝟙 _
 
 /-- The composition of two morphisms in the category of open covers of a scheme. -/
 def OpenCover.Hom.comp {X : Scheme.{u}} {𝓤 𝓥 𝓦 : OpenCover.{v} X}
     (f : 𝓤.Hom 𝓥) (g : 𝓥.Hom 𝓦) : 𝓤.Hom 𝓦 where
   idx j := g.idx <| f.idx j
-  app j := f.app _ ≫ g.app _
+  app _ := f.app _ ≫ g.app _
 
 instance OpenCover.category {X : Scheme.{u}} : Category (OpenCover.{v} X) where
   Hom 𝓤 𝓥 := 𝓤.Hom 𝓥

@@ -1048,7 +1048,7 @@ variable [PartialOrder M₀] {a b c d : M₀}
 
 @[simp] lemma pow_pos [ZeroLEOneClass M₀] [PosMulStrictMono M₀] (ha : 0 < a) : ∀ n, 0 < a ^ n
   | 0 => by nontriviality; rw [pow_zero]; exact zero_lt_one
-  | n + 1 => pow_succ a _ ▸ mul_pos (pow_pos ha _) ha
+  | _ + 1 => pow_succ a _ ▸ mul_pos (pow_pos ha _) ha
 
 lemma mul_self_lt_mul_self [PosMulStrictMono M₀] [MulPosMono M₀] (ha : 0 ≤ a) (hab : a < b) :
     a * a < b * b := mul_lt_mul' hab.le hab ha <| ha.trans_lt hab
