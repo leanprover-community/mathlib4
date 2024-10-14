@@ -70,7 +70,7 @@ lemma prod_induction
   | nil => simpa
   | cons a l ih =>
     rw [List.prod_cons]
-    simp only [Bool.not_eq_true, List.mem_cons, forall_eq_or_imp] at base
+    simp only [mem_cons, forall_eq_or_imp] at base
     exact hom _ _ (base.1) (ih base.2)
 
 end Mul
