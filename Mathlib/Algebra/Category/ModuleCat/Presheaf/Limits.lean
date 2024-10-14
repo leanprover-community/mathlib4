@@ -139,6 +139,8 @@ variable [Small.{v} J]
 
 instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{v} R) where
 
+instance hasLimitsOfSize : HasLimitsOfSize.{v, v} (PresheafOfModules.{v} R) where
+
 noncomputable instance evaluationPreservesLimitsOfShape (X : Cᵒᵖ) :
     PreservesLimitsOfShape J (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
 
@@ -159,5 +161,6 @@ noncomputable instance toPresheafPreservesFiniteLimits :
     PreservesFiniteLimits (toPresheaf.{v} R) where
 
 end Finite
+
 
 end PresheafOfModules
