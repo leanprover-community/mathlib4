@@ -46,7 +46,8 @@ variable (M N : Type*) [Monoid M] [Monoid N]
 variable (R : Type v) [Semiring R]
 
 -- note we could not use `extends` since these typeclasses are made with `old_structure_cmd`
-instance (priority := 100) MulSemiringAction.toMulDistribMulAction [h : MulSemiringAction M R] :
+instance (priority := 100) MulSemiringAction.toMulDistribMulAction
+    (M R) {_ : Monoid M} {_ : Semiring R} [h : MulSemiringAction M R] :
     MulDistribMulAction M R :=
   { h with }
 

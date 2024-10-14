@@ -600,7 +600,7 @@ theorem map_comp_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSem
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 theorem map_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring W] [Algebra A W]
     [IsLocalization U W] {l : P →+* A} (hl : T ≤ U.comap l) (x : S) :
-    map W l hl (map Q g hy x) = map W (l.comp g) (fun x hx => hl (hy hx)) x := by
+    map W l hl (map Q g hy x) = map W (l.comp g) (fun _ hx => hl (hy hx)) x := by
   rw [← map_comp_map (Q := Q) hy hl]; rfl
 
 theorem map_smul (x : S) (z : R) : map Q g hy (z • x : S) = g z • map Q g hy x := by
@@ -1101,7 +1101,7 @@ theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRi
   refine ⟨IsLocalization.injective _ hM, fun x => ?_⟩
   obtain ⟨r, ⟨m, hm⟩, rfl⟩ := mk'_surjective M x
   obtain ⟨n, hn⟩ := hR.mul_inv_cancel (nonZeroDivisors.ne_zero <| hM hm)
-  exact ⟨r * n, by erw [eq_mk'_iff_mul_eq, ← map_mul, mul_assoc, _root_.mul_comm n, hn, mul_one]⟩
+  exact ⟨r * n, by rw [eq_mk'_iff_mul_eq, ← map_mul, mul_assoc, _root_.mul_comm n, hn, mul_one]⟩
 
 /-- If `R` is a field, then localizing at a submonoid not containing `0` adds no new elements. -/
 theorem Field.localization_map_bijective {K Kₘ : Type*} [Field K] [CommRing Kₘ] {M : Submonoid K}

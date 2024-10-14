@@ -65,7 +65,7 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
     cases' (AddTorsor.nonempty : Nonempty P1) with p
     congr with v
     apply vadd_right_cancel (f p)
-    erw [← f_add, h, ← g_add]
+    rw [← f_add, h, ← g_add]
 
 instance AffineMap.hasCoeToFun (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
@@ -213,8 +213,8 @@ variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
   -- Porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
   smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add, map_vadd f]⟩
-  one_smul f := ext fun p => one_smul _ _
-  mul_smul c₁ c₂ f := ext fun p => mul_smul _ _ _
+  one_smul _ := ext fun _ => one_smul _ _
+  mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
 
 @[simp, norm_cast]
 theorem coe_smul (c : R) (f : P1 →ᵃ[k] V2) : ⇑(c • f) = c • ⇑f :=

@@ -205,7 +205,7 @@ theorem sublistsLenAux_append :
     ∀ (n : ℕ) (l : List α) (f : List α → β) (g : β → γ) (r : List β) (s : List γ),
       sublistsLenAux n l (g ∘ f) (r.map g ++ s) = (sublistsLenAux n l f r).map g ++ s
   | 0, l, f, g, r, s => by unfold sublistsLenAux; simp
-  | n + 1, [], f, g, r, s => rfl
+  | _ + 1, [], _, _, _, _ => rfl
   | n + 1, a :: l, f, g, r, s => by
     unfold sublistsLenAux
     simp only [show (g ∘ f) ∘ List.cons a = g ∘ f ∘ List.cons a by rfl, sublistsLenAux_append,

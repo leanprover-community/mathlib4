@@ -189,10 +189,10 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   invFun := Prod.invFun' e₁ e₂
   source := π (F₁ × F₂) (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)
   target := (e₁.baseSet ∩ e₂.baseSet) ×ˢ Set.univ
-  map_source' x h := ⟨h, Set.mem_univ _⟩
-  map_target' x h := h.1
-  left_inv' x := Prod.left_inv
-  right_inv' x := Prod.right_inv
+  map_source' _ h := ⟨h, Set.mem_univ _⟩
+  map_target' _ h := h.1
+  left_inv' _ := Prod.left_inv
+  right_inv' _ := Prod.right_inv
   open_source := by
     convert (e₁.open_source.prod e₂.open_source).preimage
         (FiberBundle.Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
@@ -205,7 +205,7 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   open_baseSet := e₁.open_baseSet.inter e₂.open_baseSet
   source_eq := rfl
   target_eq := rfl
-  proj_toFun x _ := rfl
+  proj_toFun _ _ := rfl
 
 @[simp]
 theorem baseSet_prod : (prod e₁ e₂).baseSet = e₁.baseSet ∩ e₂.baseSet := rfl
@@ -339,7 +339,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
     rw [e.source_eq]
     rfl
   target_eq := rfl
-  proj_toFun y _ := rfl
+  proj_toFun _ _ := rfl
 
 noncomputable instance FiberBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     (f : K) : FiberBundle F ((f : B' → B) *ᵖ E) where
