@@ -160,7 +160,39 @@ instance instSubsingleton (R : Type*) [TopologicalSpace R] (A : Type*) [Add A] [
 
 end subsingleton
 
+section iso
+
+variable {R : Type*} [τR : TopologicalSpace R] [Semiring R]
+variable {A : Type*} [AddCommMonoid A] [Module R A] [τA : TopologicalSpace A] [IsModuleTopology R A]
+variable {B : Type*} [AddCommMonoid B] [Module R B] [τB : TopologicalSpace B]
+
+/-- If `A` and `B` are homeomorphic via a homeomorphism which is also `R`-linear, and if
+`A` has the module topology, then so does `B`. -/
+theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
+  eq_moduleTopology' := by
+    -- get these in before I start putting new topologies on A and B and have to use `@`
+    let g : A →ₗ[R] B := e
+    let g' : B →ₗ[R] A := e.symm
+    let h : A →+ B := e
+    let h' : B →+ A := e.symm
+    simp_rw [e.toHomeomorph.symm.inducing.1, eq_moduleTopology R A, moduleTopology, induced_sInf]
+    apply congr_arg
+    ext τ
+    rw [Set.mem_image]
+    constructor
+    · rintro ⟨σ, ⟨hσ1, hσ2⟩, rfl⟩
+      exact ⟨continuousSMul_induced g', continuousAdd_induced h'⟩
+    · rintro ⟨h1, h2⟩
+      use τ.induced e
+      rw [induced_compose]
+      refine ⟨⟨continuousSMul_induced g, continuousAdd_induced h⟩, ?_⟩
+      nth_rw 2 [← induced_id (t := τ)]
+      simp
+
+end iso
+
 section self
+
 variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
 
 /-!
@@ -207,37 +239,6 @@ instance _root_.TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R wh
         @continuous_const _ _ _ (moduleTopology R R) _
 
 end self
-
-section iso
-
-variable {R : Type*} [τR : TopologicalSpace R] [Semiring R]
-variable {A : Type*} [AddCommMonoid A] [Module R A] [τA : TopologicalSpace A] [IsModuleTopology R A]
-variable {B : Type*} [AddCommMonoid B] [Module R B] [τB : TopologicalSpace B]
-
-/-- If `A` and `B` are homeomorphic via a homeomorphism which is also `R`-linear, and if
-`A` has the module topology, then so does `B`. -/
-theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
-  eq_moduleTopology' := by
-    -- get these in before I start putting new topologies on A and B and have to use `@`
-    let g : A →ₗ[R] B := e
-    let g' : B →ₗ[R] A := e.symm
-    let h : A →+ B := e
-    let h' : B →+ A := e.symm
-    simp_rw [e.toHomeomorph.symm.inducing.1, eq_moduleTopology R A, moduleTopology, induced_sInf]
-    apply congr_arg
-    ext τ
-    rw [Set.mem_image]
-    constructor
-    · rintro ⟨σ, ⟨hσ1, hσ2⟩, rfl⟩
-      exact ⟨continuousSMul_induced g', continuousAdd_induced h'⟩
-    · rintro ⟨h1, h2⟩
-      use τ.induced e
-      rw [induced_compose]
-      refine ⟨⟨continuousSMul_induced g, continuousAdd_induced h⟩, ?_⟩
-      nth_rw 2 [← induced_id (t := τ)]
-      simp
-
-end iso
 
 section MulOpposite
 
