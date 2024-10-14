@@ -38,7 +38,7 @@ open scoped ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
-variable {α E E' F G G' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
+variable {α E E' F G G' 𝕜 : Type*} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E for an inner product space
   [NormedAddCommGroup E]
