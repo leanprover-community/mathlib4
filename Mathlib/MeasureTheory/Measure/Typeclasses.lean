@@ -548,24 +548,36 @@ section SFinite
 class SFinite (μ : Measure α) : Prop where
   out' : ∃ m : ℕ → Measure α, (∀ n, IsFiniteMeasure (m n)) ∧ μ = Measure.sum m
 
-/-- A sequence of finite measures such that `μ = sum (sFiniteSeq μ)` (see `sum_sFiniteSeq`). -/
-noncomputable
-def sFiniteSeq (μ : Measure α) [h : SFinite μ] : ℕ → Measure α := h.1.choose
+/-- A sequence of finite measures such that `μ = sum (sfiniteSeq μ)` (see `sum_sfiniteSeq`). -/
+noncomputable def sfiniteSeq (μ : Measure α) [h : SFinite μ] : ℕ → Measure α := h.1.choose
 
-instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
+@[deprecated (since := "2024-10-11")] alias sFiniteSeq := sfiniteSeq
+
+instance isFiniteMeasure_sfiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure (sfiniteSeq μ n) :=
   h.1.choose_spec.1 n
 
-lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = μ :=
+set_option linter.deprecated false in
+@[deprecated (since := "2024-10-11")]
+instance isFiniteMeasure_sFiniteSeq [SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
+  isFiniteMeasure_sfiniteSeq n
+
+lemma sum_sfiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sfiniteSeq μ) = μ :=
   h.1.choose_spec.2.symm
 
-lemma sFiniteSeq_le (μ : Measure α) [SFinite μ] (n : ℕ) : sFiniteSeq μ n ≤ μ :=
-  (le_sum _ n).trans (sum_sFiniteSeq μ).le
+@[deprecated (since := "2024-10-11")] alias sum_sFiniteSeq := sum_sfiniteSeq
+
+lemma sfiniteSeq_le (μ : Measure α) [SFinite μ] (n : ℕ) : sfiniteSeq μ n ≤ μ :=
+  (le_sum _ n).trans (sum_sfiniteSeq μ).le
+
+@[deprecated (since := "2024-10-11")] alias sFiniteSeq_le := sfiniteSeq_le
 
 instance : SFinite (0 : Measure α) := ⟨fun _ ↦ 0, inferInstance, by rw [Measure.sum_zero]⟩
 
 @[simp]
-lemma sFiniteSeq_zero (n : ℕ) : sFiniteSeq (0 : Measure α) n = 0 :=
-  bot_unique <| sFiniteSeq_le _ _
+lemma sfiniteSeq_zero (n : ℕ) : sfiniteSeq (0 : Measure α) n = 0 :=
+  bot_unique <| sfiniteSeq_le _ _
+
+@[deprecated (since := "2024-10-11")] alias sFiniteSeq_zero := sfiniteSeq_zero
 
 /-- A countable sum of finite measures is s-finite.
 This lemma is superseded by the instance below. -/
@@ -582,7 +594,7 @@ lemma sfinite_sum_of_countable [Countable ι]
 
 instance [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] : SFinite (Measure.sum m) := by
   change SFinite (Measure.sum (fun i ↦ m i))
-  simp_rw [← sum_sFiniteSeq (m _), Measure.sum_sum]
+  simp_rw [← sum_sfiniteSeq (m _), Measure.sum_sum]
   apply sfinite_sum_of_countable
 
 instance [SFinite μ] [SFinite ν] : SFinite (μ + ν) := by
@@ -590,8 +602,8 @@ instance [SFinite μ] [SFinite ν] : SFinite (μ + ν) := by
   simpa using inferInstanceAs (SFinite (.sum (cond · μ ν)))
 
 instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
-  ⟨fun n ↦ (sFiniteSeq μ n).restrict s, fun n ↦ inferInstance,
-    by rw [← restrict_sum_of_countable, sum_sFiniteSeq]⟩
+  ⟨fun n ↦ (sfiniteSeq μ n).restrict s, fun n ↦ inferInstance,
+    by rw [← restrict_sum_of_countable, sum_sfiniteSeq]⟩
 
 variable (μ) in
 /-- For an s-finite measure `μ`, there exists a finite measure `ν`
@@ -599,12 +611,12 @@ such that each of `μ` and `ν` is absolutely continuous with respect to the oth
 -/
 theorem exists_isFiniteMeasure_absolutelyContinuous [SFinite μ] :
     ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν ∧ ν ≪ μ := by
-  rcases ENNReal.exists_pos_tsum_mul_lt_of_countable top_ne_zero (sFiniteSeq μ · univ)
+  rcases ENNReal.exists_pos_tsum_mul_lt_of_countable top_ne_zero (sfiniteSeq μ · univ)
     fun _ ↦ measure_ne_top _ _ with ⟨c, hc₀, hc⟩
-  have {s : Set α} : sum (fun n ↦ c n • sFiniteSeq μ n) s = 0 ↔ μ s = 0 := by
-    conv_rhs => rw [← sum_sFiniteSeq μ, sum_apply_of_countable]
+  have {s : Set α} : sum (fun n ↦ c n • sfiniteSeq μ n) s = 0 ↔ μ s = 0 := by
+    conv_rhs => rw [← sum_sfiniteSeq μ, sum_apply_of_countable]
     simp [(hc₀ _).ne']
-  refine ⟨.sum fun n ↦ c n • sFiniteSeq μ n, ⟨?_⟩, fun _ ↦ this.1, fun _ ↦ this.2⟩
+  refine ⟨.sum fun n ↦ c n • sfiniteSeq μ n, ⟨?_⟩, fun _ ↦ this.1, fun _ ↦ this.2⟩
   simpa [mul_comm] using hc
 
 variable (μ) in
@@ -791,9 +803,9 @@ theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} {_ : MeasurableSpa
     [SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
     (As_disj : Pairwise (AEDisjoint μ on As)) :
     Set.Countable { i : ι | 0 < μ (As i) } := by
-  rw [← sum_sFiniteSeq μ] at As_disj As_mble ⊢
-  have obs : { i : ι | 0 < sum (sFiniteSeq μ) (As i) }
-      ⊆ ⋃ n, { i : ι | 0 < sFiniteSeq μ n (As i) } := by
+  rw [← sum_sfiniteSeq μ] at As_disj As_mble ⊢
+  have obs : { i : ι | 0 < sum (sfiniteSeq μ) (As i) }
+      ⊆ ⋃ n, { i : ι | 0 < sfiniteSeq μ n (As i) } := by
     intro i hi
     by_contra con
     simp only [mem_iUnion, mem_setOf_eq, not_exists, not_lt, nonpos_iff_eq_zero] at *
@@ -939,7 +951,7 @@ This only holds when `μ` is s-finite -- for example for σ-finite measures. For
 this assumption (but requiring that `t` has finite measure), see `measure_toMeasurable_inter`. -/
 theorem measure_toMeasurable_inter_of_sFinite [SFinite μ] {s : Set α} (hs : MeasurableSet s)
     (t : Set α) : μ (toMeasurable μ t ∩ s) = μ (t ∩ s) :=
-  measure_toMeasurable_inter_of_sum hs (fun _ ↦ measure_ne_top _ t) (sum_sFiniteSeq μ).symm
+  measure_toMeasurable_inter_of_sum hs (fun _ ↦ measure_ne_top _ t) (sum_sfiniteSeq μ).symm
 
 @[simp]
 theorem restrict_toMeasurable_of_sFinite [SFinite μ] (s : Set α) :

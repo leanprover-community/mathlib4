@@ -64,10 +64,10 @@ theorem pos_iff {z : ℂ} : 0 < z ↔ 0 < z.re ∧ 0 = z.im :=
   lt_def
 
 @[simp, norm_cast]
-theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by simp [le_def, ofReal']
+theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by simp [le_def, ofReal]
 
 @[simp, norm_cast]
-theorem real_lt_real {x y : ℝ} : (x : ℂ) < (y : ℂ) ↔ x < y := by simp [lt_def, ofReal']
+theorem real_lt_real {x y : ℝ} : (x : ℂ) < (y : ℂ) ↔ x < y := by simp [lt_def, ofReal]
 
 @[simp, norm_cast]
 theorem zero_le_real {x : ℝ} : (0 : ℂ) ≤ (x : ℂ) ↔ 0 ≤ x :=
@@ -106,9 +106,9 @@ lemma neg_re_eq_abs {z : ℂ} : -z.re = abs z ↔ z ≤ 0 := by
 @[simp]
 lemma re_eq_neg_abs {z : ℂ} : z.re = -abs z ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_abs]
 
-lemma monotone_ofReal : Monotone ofReal' := by
+lemma monotone_ofReal : Monotone ofReal := by
   intro x y hxy
-  simp only [ofReal_eq_coe, real_le_real, hxy]
+  simp only [ofRealHom_eq_coe, real_le_real, hxy]
 
 end Complex
 
@@ -122,11 +122,11 @@ private alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
 
 /-- Extension for the `positivity` tactic: `Complex.ofReal` is positive/nonnegative/nonzero if its
 input is. -/
-@[positivity Complex.ofReal' _, Complex.ofReal _]
+@[positivity Complex.ofReal _, Complex.ofReal _]
 def evalComplexOfReal : PositivityExt where eval {u α} _ _ e := do
   -- TODO: Can we avoid duplicating the code?
   match u, α, e with
-  | 0, ~q(ℂ), ~q(Complex.ofReal' $a) =>
+  | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>
     assumeInstancesCommute
     match ← core q(inferInstance) q(inferInstance) a with
     | .positive pa => return .positive q(ofReal_pos $pa)
@@ -140,7 +140,7 @@ def evalComplexOfReal : PositivityExt where eval {u α} _ _ e := do
     | .nonnegative pa => return .nonnegative q(ofReal_nonneg $pa)
     | .nonzero pa => return .nonzero q(ofReal_ne_zero_of_ne_zero $pa)
     | _ => return .none
-  | _, _ => throwError "not Complex.ofReal'"
+  | _, _ => throwError "not Complex.ofReal"
 
 example (x : ℝ) (hx : 0 < x) : 0 < (x : ℂ) := by positivity
 example (x : ℝ) (hx : 0 ≤ x) : 0 ≤ (x : ℂ) := by positivity
