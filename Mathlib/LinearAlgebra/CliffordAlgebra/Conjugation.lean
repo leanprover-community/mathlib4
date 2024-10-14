@@ -190,32 +190,27 @@ variable (Q)
 section Involute
 
 theorem submodule_map_involute_eq_comap (p : Submodule R (CliffordAlgebra Q)) :
-    p.map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
-      p.comap (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap :=
+    p.map involute = p.comap involute :=
   Submodule.map_equiv_eq_comap_symm involuteEquiv.toLinearEquiv _
 
 @[simp]
 theorem ι_range_map_involute :
-    (ι Q).range.map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
-      LinearMap.range (ι Q) :=
+    (ι Q).range.map involute = LinearMap.range (ι Q) :=
   (ι_range_map_lift _ _).trans (LinearMap.range_neg _)
 
 @[simp]
 theorem ι_range_comap_involute :
-    (ι Q).range.comap (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
-      LinearMap.range (ι Q) := by
+    (ι Q).range.comap involute = LinearMap.range (ι Q) := by
   rw [← submodule_map_involute_eq_comap, ι_range_map_involute]
 
 @[simp]
 theorem evenOdd_map_involute (n : ZMod 2) :
-    (evenOdd Q n).map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
-      evenOdd Q n := by
+    (evenOdd Q n).map involute = evenOdd Q n := by
   simp_rw [evenOdd, Submodule.map_iSup, Submodule.map_pow, ι_range_map_involute]
 
 @[simp]
 theorem evenOdd_comap_involute (n : ZMod 2) :
-    (evenOdd Q n).comap (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
-      evenOdd Q n := by
+    (evenOdd Q n).comap involute = evenOdd Q n := by
   rw [← submodule_map_involute_eq_comap, evenOdd_map_involute]
 
 end Involute
@@ -223,56 +218,44 @@ end Involute
 section Reverse
 
 theorem submodule_map_reverse_eq_comap (p : Submodule R (CliffordAlgebra Q)) :
-    p.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
-      p.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) :=
+    p.map reverse = p.comap reverse :=
   Submodule.map_equiv_eq_comap_symm (reverseEquiv : _ ≃ₗ[R] _) _
 
 @[simp]
 theorem ι_range_map_reverse :
-    (ι Q).range.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q)
-      = LinearMap.range (ι Q) := by
+    (ι Q).range.map reverse = LinearMap.range (ι Q) := by
   rw [reverse, reverseOp, Submodule.map_comp, ι_range_map_lift, LinearMap.range_comp,
     ← Submodule.map_comp]
   exact Submodule.map_id _
 
 @[simp]
-theorem ι_range_comap_reverse :
-    (ι Q).range.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q)
-      = LinearMap.range (ι Q) := by
+theorem ι_range_comap_reverse : (ι Q).range.comap reverse = LinearMap.range (ι Q) := by
   rw [← submodule_map_reverse_eq_comap, ι_range_map_reverse]
 
 /-- Like `Submodule.map_mul`, but with the multiplication reversed. -/
 theorem submodule_map_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
-    (p * q).map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
-      q.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) *
-        p.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) := by
-  simp_rw [reverse, Submodule.map_comp, Submodule.map_mul, Submodule.map_unop_mul]
+    (p * q).map reverse = q.map reverse * p.map reverse := by
+  simp_rw [reverse, Submodule.map_comp]; erw [Submodule.map_mul, Submodule.map_unop_mul]; rfl
 
 theorem submodule_comap_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
-    (p * q).comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
-      q.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) *
-        p.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) := by
+    (p * q).comap reverse = q.comap reverse * p.comap reverse := by
   simp_rw [← submodule_map_reverse_eq_comap, submodule_map_mul_reverse]
 
 /-- Like `Submodule.map_pow` -/
 theorem submodule_map_pow_reverse (p : Submodule R (CliffordAlgebra Q)) (n : ℕ) :
-    (p ^ n).map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
-      p.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) ^ n := by
-  simp_rw [reverse, Submodule.map_comp, Submodule.map_pow, Submodule.map_unop_pow]
+    (p ^ n).map reverse = p.map reverse ^ n := by
+  simp_rw [reverse, Submodule.map_comp]; erw [Submodule.map_pow, Submodule.map_unop_pow]; rfl
 
 theorem submodule_comap_pow_reverse (p : Submodule R (CliffordAlgebra Q)) (n : ℕ) :
-    (p ^ n).comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
-      p.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) ^ n := by
+    (p ^ n).comap reverse = p.comap reverse ^ n := by
   simp_rw [← submodule_map_reverse_eq_comap, submodule_map_pow_reverse]
 
 @[simp]
-theorem evenOdd_map_reverse (n : ZMod 2) :
-    (evenOdd Q n).map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) = evenOdd Q n := by
+theorem evenOdd_map_reverse (n : ZMod 2) : (evenOdd Q n).map reverse = evenOdd Q n := by
   simp_rw [evenOdd, Submodule.map_iSup, submodule_map_pow_reverse, ι_range_map_reverse]
 
 @[simp]
-theorem evenOdd_comap_reverse (n : ZMod 2) :
-    (evenOdd Q n).comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) = evenOdd Q n := by
+theorem evenOdd_comap_reverse (n : ZMod 2) : (evenOdd Q n).comap reverse = evenOdd Q n := by
   rw [← submodule_map_reverse_eq_comap, evenOdd_map_reverse]
 
 end Reverse

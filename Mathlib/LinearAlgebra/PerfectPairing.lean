@@ -190,7 +190,7 @@ open LinearEquiv
 @[simp]
 lemma dualCoannihilator_map_linearEquiv_flip (p : Submodule R M) :
     (p.map e.flip).dualCoannihilator = p.dualAnnihilator.map e.symm := by
-  ext; simp [LinearEquiv.symm_apply_eq, Submodule.mem_dualCoannihilator]
+  ext; simp [symm_apply_eq, Submodule.mem_dualCoannihilator, -mem_map_equiv]
 
 @[simp]
 lemma map_dualAnnihilator_linearEquiv_flip_symm (p : Submodule R N) :
