@@ -40,8 +40,7 @@ def matricesOver (I : Ideal R) : Ideal (Matrix n n R) where
 
 @[simp]
 theorem mem_matricesOver (I : Ideal R) (M : Matrix n n R) :
-    M ∈ I.matricesOver n ↔ ∀ i j, M i j ∈ I :=
-  by rfl
+    M ∈ I.matricesOver n ↔ ∀ i j, M i j ∈ I := by rfl
 
 def matricesOver_mono {I J : Ideal (Matrix n n R)} :
     I ≤ J → I.matricesOver n ≤ J.matricesOver n :=
