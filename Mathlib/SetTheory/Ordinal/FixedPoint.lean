@@ -3,6 +3,7 @@ Copyright (c) 2018 Violeta Hernández Palacios, Mario Carneiro. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Mario Carneiro
 -/
+import Mathlib.Logic.Small.List
 import Mathlib.SetTheory.Ordinal.Enum
 import Mathlib.SetTheory.Ordinal.Exponential
 
@@ -39,7 +40,7 @@ namespace Ordinal
 
 section
 
-variable {ι : Type u} {f : ι → Ordinal.{max u v} → Ordinal.{max u v}}
+variable {ι : Type*} {f : ι → Ordinal.{u} → Ordinal.{u}}
 
 /-- The next common fixed point, at least `a`, for a family of normal functions.
 
@@ -48,57 +49,52 @@ finitely many functions in the family to `a`.
 
 `Ordinal.nfpFamily_fp` shows this is a fixed point, `Ordinal.le_nfpFamily` shows it's at
 least `a`, and `Ordinal.nfpFamily_le_fp` shows this is the least ordinal with these properties. -/
-def nfpFamily (f : ι → Ordinal.{max u v} → Ordinal.{max u v}) (a : Ordinal.{max u v}) : Ordinal :=
+def nfpFamily (f : ι → Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) : Ordinal :=
   ⨆ i, List.foldr f a i
 
-theorem nfpFamily_eq_sup (f : ι → Ordinal.{max u v} → Ordinal.{max u v}) (a : Ordinal.{max u v}) :
-    nfpFamily.{u, v} f a = ⨆ i, List.foldr f a i :=
+@[deprecated (since := "2024-10-14")]
+theorem nfpFamily_eq_sup (f : ι → Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
+    nfpFamily f a = ⨆ i, List.foldr f a i :=
   rfl
 
-theorem foldr_le_nfpFamily (f : ι → Ordinal → Ordinal)
-    (a l) : List.foldr f a l ≤ nfpFamily.{u, v} f a :=
+theorem foldr_le_nfpFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u})
+    (a l) : List.foldr f a l ≤ nfpFamily f a :=
   Ordinal.le_iSup _ _
 
-theorem le_nfpFamily (f : ι → Ordinal → Ordinal) (a) : a ≤ nfpFamily f a :=
-  Ordinal.le_iSup (fun _ ↦ List.foldr _ a _) []
+theorem le_nfpFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) (a) : a ≤ nfpFamily f a :=
+  foldr_le_nfpFamily f a []
 
-theorem lt_nfpFamily {a b} : a < nfpFamily.{u, v} f b ↔ ∃ l, a < List.foldr f b l :=
+theorem lt_nfpFamily [Small.{u} ι] {a b} : a < nfpFamily f b ↔ ∃ l, a < List.foldr f b l :=
   Ordinal.lt_iSup
 
-theorem nfpFamily_le_iff {a b} : nfpFamily.{u, v} f a ≤ b ↔ ∀ l, List.foldr f a l ≤ b :=
+theorem nfpFamily_le_iff [Small.{u} ι] {a b} : nfpFamily f a ≤ b ↔ ∀ l, List.foldr f a l ≤ b :=
   Ordinal.iSup_le_iff
 
-theorem nfpFamily_le {a b} : (∀ l, List.foldr f a l ≤ b) → nfpFamily.{u, v} f a ≤ b :=
+theorem nfpFamily_le [Small.{u} ι] {a b} : (∀ l, List.foldr f a l ≤ b) → nfpFamily f a ≤ b :=
   Ordinal.iSup_le
 
-theorem nfpFamily_monotone (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily.{u, v} f) := by
-  intro _ _ h
-  apply Ordinal.iSup_le
-  intro l
-  exact (List.foldr_monotone hf l h).trans (Ordinal.le_iSup _ l)
+theorem monotone_nfpFamily [Small.{u} ι] (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily f) :=
+  fun _ _ h ↦ nfpFamily_le <| fun l ↦ (List.foldr_monotone hf l h).trans (foldr_le_nfpFamily _ _ l)
 
-theorem apply_lt_nfpFamily (H : ∀ i, IsNormal (f i)) {a b} (hb : b < nfpFamily.{u, v} f a) (i) :
-    f i b < nfpFamily.{u, v} f a :=
+theorem apply_lt_nfpFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a b}
+    (hb : b < nfpFamily f a) (i) : f i b < nfpFamily f a :=
   let ⟨l, hl⟩ := lt_nfpFamily.1 hb
-  Ordinal.lt_iSup.2 ⟨i::l, (H i).strictMono hl⟩
+  lt_nfpFamily.2 ⟨i::l, (H i).strictMono hl⟩
 
-theorem apply_lt_nfpFamily_iff [Nonempty ι] (H : ∀ i, IsNormal (f i)) {a b} :
-    (∀ i, f i b < nfpFamily.{u, v} f a) ↔ b < nfpFamily.{u, v} f a := by
-  constructor
-  · intro h
-    exact lt_nfpFamily.2 <|
-      let ⟨l, hl⟩ := Ordinal.lt_iSup.1 <| h <| Classical.arbitrary ι
-      ⟨l, (H _).le_apply.trans_lt hl⟩
-  · exact apply_lt_nfpFamily H
+theorem apply_lt_nfpFamily_iff [Nonempty ι] [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a b} :
+    (∀ i, f i b < nfpFamily f a) ↔ b < nfpFamily f a := by
+  refine ⟨fun h ↦ ?_, apply_lt_nfpFamily H⟩
+  let ⟨l, hl⟩ := lt_nfpFamily.1 (h (Classical.arbitrary ι))
+  exact lt_nfpFamily.2 <| ⟨l, (H _).le_apply.trans_lt hl⟩
 
-theorem nfpFamily_le_apply [Nonempty ι] (H : ∀ i, IsNormal (f i)) {a b} :
-    (∃ i, nfpFamily.{u, v} f a ≤ f i b) ↔ nfpFamily.{u, v} f a ≤ b := by
+theorem nfpFamily_le_apply [Nonempty ι] [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a b} :
+    (∃ i, nfpFamily f a ≤ f i b) ↔ nfpFamily f a ≤ b := by
   rw [← not_iff_not]
   push_neg
   exact apply_lt_nfpFamily_iff H
 
 theorem nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : ∀ i, f i b ≤ b) :
-    nfpFamily.{u, v} f a ≤ b := by
+    nfpFamily f a ≤ b := by
   apply Ordinal.iSup_le
   intro l
   induction' l with i l IH generalizing a
@@ -106,14 +102,14 @@ theorem nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : �
   · exact (H i (IH ab)).trans (h i)
 
 theorem nfpFamily_fp {i} (H : IsNormal (f i)) (a) :
-    f i (nfpFamily.{u, v} f a) = nfpFamily.{u, v} f a := by
+    f i (nfpFamily f a) = nfpFamily f a := by
   rw [nfpFamily, H.map_iSup]
   apply le_antisymm <;> refine Ordinal.iSup_le fun l => ?_
   · exact Ordinal.le_iSup _ (i::l)
   · exact H.le_apply.trans (Ordinal.le_iSup _ _)
 
 theorem apply_le_nfpFamily [hι : Nonempty ι] {f : ι → Ordinal → Ordinal} (H : ∀ i, IsNormal (f i))
-    {a b} : (∀ i, f i b ≤ nfpFamily.{u, v} f a) ↔ b ≤ nfpFamily.{u, v} f a := by
+    {a b} : (∀ i, f i b ≤ nfpFamily f a) ↔ b ≤ nfpFamily f a := by
   refine ⟨fun h => ?_, fun h i => ?_⟩
   · cases' hι with i
     exact (H i).le_apply.trans (h i)
@@ -139,7 +135,7 @@ theorem not_bddAbove_fp_family (H : ∀ i, IsNormal (f i)) :
 @[deprecated not_bddAbove_fp_family (since := "2024-09-20")]
 theorem fp_family_unbounded (H : ∀ i, IsNormal (f i)) :
     (⋂ i, Function.fixedPoints (f i)).Unbounded (· < ·) := fun a =>
-  ⟨nfpFamily.{u, v} f a, fun s ⟨i, hi⟩ => by
+  ⟨nfpFamily f a, fun s ⟨i, hi⟩ => by
     rw [← hi, mem_fixedPoints_iff]
     exact nfpFamily_fp.{u, v} (H i) a, (le_nfpFamily f a).not_lt⟩
 
@@ -148,17 +144,17 @@ theorem fp_family_unbounded (H : ∀ i, IsNormal (f i)) :
 This is defined for all functions such that `Ordinal.derivFamily_zero`,
 `Ordinal.derivFamily_succ`, and `Ordinal.derivFamily_limit` are satisfied. -/
 def derivFamily (f : ι → Ordinal → Ordinal) (o : Ordinal) : Ordinal :=
-  limitRecOn o (nfpFamily.{u, v} f 0) (fun _ IH => nfpFamily.{u, v} f (succ IH))
+  limitRecOn o (nfpFamily f 0) (fun _ IH => nfpFamily f (succ IH))
     fun a _ => bsup.{max u v, u} a
 
 @[simp]
 theorem derivFamily_zero (f : ι → Ordinal → Ordinal) :
-    derivFamily.{u, v} f 0 = nfpFamily.{u, v} f 0 :=
+    derivFamily.{u, v} f 0 = nfpFamily f 0 :=
   limitRecOn_zero _ _ _
 
 @[simp]
 theorem derivFamily_succ (f : ι → Ordinal → Ordinal) (o) :
-    derivFamily.{u, v} f (succ o) = nfpFamily.{u, v} f (succ (derivFamily.{u, v} f o)) :=
+    derivFamily.{u, v} f (succ o) = nfpFamily f (succ (derivFamily.{u, v} f o)) :=
   limitRecOn_succ _ _ _ _
 
 theorem derivFamily_limit (f : ι → Ordinal → Ordinal) {o} :
@@ -243,7 +239,7 @@ def nfpBFamily (o : Ordinal) (f : ∀ b < o, Ordinal → Ordinal) : Ordinal → 
   nfpFamily (familyOfBFamily o f)
 
 theorem nfpBFamily_eq_nfpFamily {o : Ordinal} (f : ∀ b < o, Ordinal → Ordinal) :
-    nfpBFamily.{u, v} o f = nfpFamily.{u, v} (familyOfBFamily o f) :=
+    nfpBFamily.{u, v} o f = nfpFamily (familyOfBFamily o f) :=
   rfl
 
 theorem foldr_le_nfpBFamily {o : Ordinal}
