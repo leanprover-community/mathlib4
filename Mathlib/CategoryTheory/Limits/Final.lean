@@ -527,7 +527,7 @@ is given explicitly. -/
 lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X ⟶ Y) :
     (extendCone.obj c).π.app Y = c.π.app X ≫ G.map f := by
   apply induction (k₀ := f) (z := rfl) F fun Z g =>
-   c.π.app Z ≫ G.map g = c.π.app X ≫ G.map f
+    c.π.app Z ≫ G.map g = c.π.app X ≫ G.map f
   · intro _ _ _ _ _ h₁ h₂
     simp [← h₂, ← h₁, ← Functor.comp_map, c.π.naturality]
   · intro _ _ _ _ _ h₁ h₂
