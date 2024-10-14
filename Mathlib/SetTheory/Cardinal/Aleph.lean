@@ -387,7 +387,7 @@ scoped notation "ℵ₁" => ℵ_ 1
 theorem aleph'_omega0_add (o : Ordinal) : aleph' (ω + o) = ℵ_ o :=
   rfl
 
-@[deprecated (since := "2024-10-14")]
+@[deprecated aleph'_omega0_add (since := "2024-10-14")]
 theorem aleph_eq_aleph' (o : Ordinal) : ℵ_ o = aleph' (ω + o) :=
   rfl
 
