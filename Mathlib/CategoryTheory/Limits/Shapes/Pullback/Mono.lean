@@ -210,24 +210,23 @@ theorem pullbackSymmetry_hom_of_mono_eq : (pullbackSymmetry f f).hom = 𝟙 _ :=
   · simp [fst_eq_snd_of_mono_eq]
 
 variable {f} in
-lemma PullbackCone.fst_iso_of_mono_eq {t : PullbackCone f f} (ht : IsLimit t) :
+lemma PullbackCone.isIso_fst_of_mono_of_isLimit {t : PullbackCone f f} (ht : IsLimit t) :
     IsIso t.fst := by
   refine ⟨⟨PullbackCone.IsLimit.lift ht (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩⟩
   apply PullbackCone.IsLimit.hom_ext ht
   · simp
   · simp [fst_eq_snd_of_mono_eq]
 
--- TODO: wrong namespace?
 variable {f} in
-lemma PullbackCone.snd_iso_of_mono_eq {t : PullbackCone f f} (ht : IsLimit t) :
+lemma PullbackCone.isIso_snd_of_mono_of_isLimit {t : PullbackCone f f} (ht : IsLimit t) :
     IsIso t.snd :=
-  t.fst_eq_snd_of_mono_eq ▸ t.fst_iso_of_mono_eq ht
+  t.fst_eq_snd_of_mono_eq ▸ t.isIso_fst_of_mono_of_isLimit ht
 
-instance fst_iso_of_mono_eq : IsIso (pullback.fst f f) :=
-  PullbackCone.fst_iso_of_mono_eq (getLimitCone (cospan f f)).isLimit
+instance isIso_fst_of_mono : IsIso (pullback.fst f f) :=
+  PullbackCone.isIso_fst_of_mono_of_isLimit (getLimitCone (cospan f f)).isLimit
 
-instance snd_iso_of_mono_eq : IsIso (pullback.snd f f) :=
-  PullbackCone.snd_iso_of_mono_eq (getLimitCone (cospan f f)).isLimit
+instance isIso_snd_of_mono : IsIso (pullback.snd f f) :=
+  PullbackCone.isIso_snd_of_mono_of_isLimit (getLimitCone (cospan f f)).isLimit
 end
 
 namespace PushoutCocone
@@ -387,7 +386,7 @@ theorem pullback_symmetry_hom_of_epi_eq : (pushoutSymmetry f f).hom = 𝟙 _ := 
   ext <;> simp [inl_eq_inr_of_epi_eq]
 
 variable {f} in
-lemma PushoutCocone.inl_iso_of_epi_eq {t : PushoutCocone f f} (ht : IsColimit t) :
+lemma PushoutCocone.isIso_inl_of_epi_of_isColimit {t : PushoutCocone f f} (ht : IsColimit t) :
     IsIso t.inl := by
   refine ⟨⟨PushoutCocone.IsColimit.desc ht (𝟙 _) (𝟙 _) (by simp), by simp, ?_⟩⟩
   apply PushoutCocone.IsColimit.hom_ext ht
@@ -395,15 +394,15 @@ lemma PushoutCocone.inl_iso_of_epi_eq {t : PushoutCocone f f} (ht : IsColimit t)
   · simp [inl_eq_inr_of_epi_eq]
 
 variable {f} in
-lemma PushoutCocone.inr_iso_of_epi_eq {t : PushoutCocone f f} (ht : IsColimit t) :
+lemma PushoutCocone.isIso_inr_of_epi_of_isColimit {t : PushoutCocone f f} (ht : IsColimit t) :
     IsIso t.inr :=
-  t.inl_eq_inr_of_epi_eq ▸ t.inl_iso_of_epi_eq ht
+  t.inl_eq_inr_of_epi_eq ▸ t.isIso_inl_of_epi_of_isColimit ht
 
-instance inl_iso_of_epi_eq : IsIso (pushout.inl f f) :=
-  PushoutCocone.inl_iso_of_epi_eq (getColimitCocone (span f f)).isColimit
+instance isIso_inl_of_epi : IsIso (pushout.inl f f) :=
+  PushoutCocone.isIso_inl_of_epi_of_isColimit (getColimitCocone (span f f)).isColimit
 
-instance inr_iso_of_epi_eq : IsIso (pushout.inr f f) :=
-  PushoutCocone.inr_iso_of_epi_eq (getColimitCocone (span f f)).isColimit
+instance isIso_inr_of_epi : IsIso (pushout.inr f f) :=
+  PushoutCocone.isIso_inr_of_epi_of_isColimit (getColimitCocone (span f f)).isColimit
 
 end
 

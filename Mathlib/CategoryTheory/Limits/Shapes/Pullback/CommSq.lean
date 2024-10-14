@@ -23,7 +23,7 @@ We provide another API for pullbacks and pushouts.
  snd         f
   |          |
   v          v
-  Y ---g---> Zfst
+  Y ---g---> Z
 
 ```
 is a pullback square.
@@ -366,10 +366,10 @@ section
 
 variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
 
-lemma fst_iso_of_mono_eq (h : IsPullback fst snd f f) : IsIso fst :=
+lemma isIso_fst_of_mono (h : IsPullback fst snd f f) : IsIso fst :=
   h.cone.fst_iso_of_mono_eq h.isLimit
 
-lemma snd_iso_of_mono_eq {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
+lemma isIso_snd_iso_of_mono {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
     (h : IsPullback fst snd f f) : IsIso snd :=
   h.cone.snd_iso_of_mono_eq h.isLimit
 
@@ -556,10 +556,10 @@ section
 
 variable {P X Y : C} {inl : X ⟶ P} {inr : X ⟶ P} {f : Y ⟶ X} [Epi f]
 
-lemma inl_iso_of_epi_eq (h : IsPushout f f inl inr) : IsIso inl :=
+lemma isIso_inl_iso_of_epi (h : IsPushout f f inl inr) : IsIso inl :=
   h.cocone.inl_iso_of_epi_eq h.isColimit
 
-lemma inr_iso_of_epi_eq (h : IsPushout f f inl inr) : IsIso inr :=
+lemma isIso_inr_iso_of_epi (h : IsPushout f f inl inr) : IsIso inr :=
   h.cocone.inr_iso_of_epi_eq h.isColimit
 
 end
