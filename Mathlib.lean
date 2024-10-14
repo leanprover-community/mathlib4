@@ -4526,7 +4526,8 @@ import Mathlib.Topology.Algebra.Order.Rolle
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.Algebra.PontryaginDual
-import Mathlib.Topology.Algebra.ProperAction
+import Mathlib.Topology.Algebra.ProperAction.Basic
+import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
 import Mathlib.Topology.Algebra.ProperConstSMul
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Ring.Ideal
@@ -4716,6 +4717,7 @@ import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.Maps.OpenQuotient
 import Mathlib.Topology.Maps.Proper.Basic
+import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 import Mathlib.Topology.Maps.Proper.UniversallyClosed
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.Antilipschitz
