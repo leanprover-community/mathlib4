@@ -214,7 +214,7 @@ def aleph : Ordinal ↪o Cardinal :=
   (OrderEmbedding.addLeft ω).trans aleph'.toOrderEmbedding
 
 @[inherit_doc]
-scoped prefix:75 "ℵ_ " => aleph
+scoped notation "ℵ_ " => aleph
 
 /-- `ℵ₁` is the first uncountable ordinal. -/
 scoped notation "ℵ₁" => ℵ_ 1
@@ -354,7 +354,7 @@ def beth (o : Ordinal.{u}) : Cardinal.{u} :=
   limitRecOn o ℵ₀ (fun _ x => 2 ^ x) fun a _ IH => ⨆ b : Iio a, IH b.1 b.2
 
 @[inherit_doc]
-scoped prefix:75 "ℶ_ " => beth
+scoped notation "ℶ_ " => beth
 
 @[simp]
 theorem beth_zero : ℶ_ 0 = ℵ₀ :=
