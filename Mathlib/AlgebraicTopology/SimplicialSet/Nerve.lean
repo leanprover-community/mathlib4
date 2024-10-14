@@ -82,12 +82,14 @@ determined by their spine.-/
 def StrictSegal : Prop := ∀ (n : ℕ), Function.Bijective (X.spine (n := n))
 
 variable {X} in
-noncomputable def StrictSegal.spineToSimplex {hx : StrictSegal X} {n : ℕ} : Path X n → X _[n] :=
-  (Equiv.ofBijective _ (hx n)).invFun
+@[simp]
+noncomputable def StrictSegal.spineToSimplex {hX : StrictSegal X} {n : ℕ} : Path X n → X _[n] :=
+  (Equiv.ofBijective _ (hX n)).invFun
 
-theorem StrictSegal.spineToSimplex_spine {hx : StrictSegal X} {n : ℕ} (f : Path X n) :
-    X.spine (StrictSegal.spineToSimplex (hx := hx) f) = f :=
-  (Equiv.ofBijective _ (hx n)).right_inv f
+@[simp]
+theorem StrictSegal.spineToSimplex_spine {hX : StrictSegal X} {n : ℕ} (f : Path X n) :
+    X.spine (StrictSegal.spineToSimplex (hX := hX) f) = f :=
+  (Equiv.ofBijective _ (hX n)).right_inv f
 
 end SSet
 
@@ -149,6 +151,82 @@ def rightExtensionInclusion (X : SSet.{u}) (n : ℕ) :
     RightExtension (Truncated.inclusion (n := n)).op
       (Functor.op Truncated.inclusion ⋙ X) := RightExtension.mk _ (𝟙 _)
 
+
+section
+
+local notation (priority := high) "[" n "]" => SimplexCategory.mk n
+
+set_option quotPrecheck false
+local macro:max (priority := high) "[" n:term "]₂" : term =>
+  `((⟨SimplexCategory.mk $n, by decide⟩ : SimplexCategory.Truncated 2))
+
+/-- The object of `StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op` corresponding to the
+map [0] ⟶ [n] with image `i`. -/
+private
+def pt {n} (i : Fin (n + 1)) : StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op :=
+  .mk (Y := op [0]₂) (.op (SimplexCategory.const _ _ i))
+
+
+/-- The object of `StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op` corresponding to
+the map `[1] ⟶ [n]` with image `i ⟶ i+1`. -/
+private
+def ar {n} (i : Fin n) : StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op :=
+  .mk (Y := op [1]₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i)))
+
+/-- An arrow in `StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op` arising from
+`const 0 : [0] ⟶ [1]`. -/
+private
+def ar.src {n} (i : Fin n) : (ar i) ⟶ (pt i.castSucc) := by
+  refine StructuredArrow.homMk (.op (SimplexCategory.const _ _ 0)) ?_
+  apply Quiver.Hom.unop_inj
+  ext z; revert z
+  intro (0 : Fin 1)
+  unfold ar pt
+  simp only [StructuredArrow.mk_left, const_obj_obj, len_mk, StructuredArrow.mk_right, op_obj,
+    StructuredArrow.mk_hom_eq_self, Fin.isValue, op_map, Quiver.Hom.unop_op, unop_comp,
+    comp_toOrderHom, OrderHom.comp_coe, Function.comp_apply, Fin.coe_eq_castSucc]
+  rfl
+
+/-- An arrow in `StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op` arising from
+`const 1 : [0] ⟶ [1]`. -/
+private
+def ar.tgt {n} (i : Fin n) : (ar i) ⟶ (pt i.succ) := by
+  refine StructuredArrow.homMk (.op (SimplexCategory.const _ _ 1)) ?_
+  apply Quiver.Hom.unop_inj
+  ext z; revert z
+  intro (0 : Fin 1)
+  unfold ar pt
+  simp only [StructuredArrow.mk_left, const_obj_obj, len_mk, StructuredArrow.mk_right, op_obj,
+    StructuredArrow.mk_hom_eq_self, Fin.isValue, op_map, Quiver.Hom.unop_op, unop_comp,
+    comp_toOrderHom, OrderHom.comp_coe, Function.comp_apply]
+  rfl
+
+theorem ran.lift.arrow_src {X : SSet.{u}} {n} {i : Fin n}
+    (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
+      (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt) :
+    X.δ 1 (s.π.app (ar i) x) = s.π.app (pt i.castSucc) x :=
+      by
+  have hi := congr_fun (s.π.naturality (ar.src i)) x
+  unfold hom at hi
+  simp at hi
+  rw [hi]
+  simp [ar.src, Truncated.inclusion]
+  have : δ 1 = [0].const [1] 0 := SimplexCategory.eq_const_of_zero _
+  rw [← this]
+  rfl
+
+theorem ran.lift.arrow_tgt {X : SSet.{u}} {n} {i : Fin n}
+    (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
+      (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt) :
+    X.δ 0 (s.π.app (ar i) x) = s.π.app (pt i.succ) x := by
+  have hi := congr_fun (s.π.naturality (ar.tgt i)) x
+  simp at hi
+  rw [hi]
+  simp [ar.tgt, Truncated.inclusion]
+  have : δ 0 = [0].const [1] 1 := SimplexCategory.eq_const_of_zero _
+  rw [← this]
+  rfl
+
 noncomputable def rightExtensionInclusion₂IsPointwiseRightKanExtensionAt
     (X : SSet.{u}) (hX : ∀ (n : ℕ), Function.Bijective (X.spine (n := n))) (n : ℕ) :
     (rightExtensionInclusion X 2).IsPointwiseRightKanExtensionAt ⟨[n]⟩ := by
@@ -161,11 +239,42 @@ noncomputable def rightExtensionInclusion₂IsPointwiseRightKanExtensionAt
   exact {
     lift := fun s x => by
       dsimp
-
+      refine StrictSegal.spineToSimplex (hX := hX) ?_
+      exact {
+        vertex := fun i ↦ s.π.app (pt i) x
+        arrow := fun i ↦ s.π.app (ar i) x
+        arrow_src := fun i ↦ ran.lift.arrow_src s x
+        arrow_tgt := fun i ↦ ran.lift.arrow_tgt s x
+      }
+    fac := by
+      intro s j
+      ext x
+      simp only [comp_obj, StructuredArrow.proj_obj, op_obj, fullSubcategoryInclusion.obj,
+        const_obj_obj, RightExtension.mk_left, whiskeringLeft_obj_obj, RightExtension.mk_hom,
+        NatTrans.id_app, const_obj_map, Functor.comp_map, StructuredArrow.proj_map, op_map,
+        fullSubcategoryInclusion.map, StrictSegal.spineToSimplex, Equiv.invFun_as_coe, id_eq,
+        types_comp_apply]
+      unfold Equiv.ofBijective
+      simp only [Equiv.coe_fn_symm_mk]
+      unfold Function.surjInv
       sorry
-    fac := sorry
-    uniq := sorry
+    uniq := by
+      intro s lift' fact'
+      ext x
+      apply (hX n).injective
+      ext i
+      · have := congr_fun (fact' (StructuredArrow.mk (Y := op [0]₂) ([0].const [n] i).op)) x
+        simp at this
+        simp
+        rw [this]
+
+        --(congrArg (·.obj 0) <| congr_fun (fact'
+        --  (StructuredArrow.mk (Y := op [0]₂) ([0].const [n] i).op)) x)
+        sorry
+      · sorry
   }
+
+end
 
 end SSet
 
