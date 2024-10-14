@@ -12,9 +12,9 @@ import Mathlib.Logic.ExistsUnique
 This file provides API for sets that define functions.
 
 ## Main definitions
+
 - `Set.asPartialFun` converts `Set (α × α)` to `α → Option α`.
 - `Set.asFun` converts `Set (α × α)` to `α → α` if possible.
-
 -/
 
 variable {α : Type*}
