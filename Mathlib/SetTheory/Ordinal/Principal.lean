@@ -261,15 +261,8 @@ theorem opow_principal_add_of_principal_add {a} (ha : Principal (· + ·) a) (b 
   · rw [← opow_mul]
     exact principal_add_omega0_opow _
 
-theorem principal_add_mul_left (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
+theorem mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
     (hb : Principal (· + ·) b) : Principal (· + ·) (a * b) := by
-  obtain rfl | ⟨c, rfl⟩ := principal_add_iff_zero_or_omega0_opow.1 hb
-  · rw [mul_zero]
-    exact principal_zero
-  · rw [principal_add_iff_add_self_lt]
-    intro d hd
-    dsimp at hd
-    rw [lt_mul_of_limit (isLimit_opow_left isLimit_omega0 _)] at hd ⊢
   rcases eq_zero_or_pos a with (rfl | _)
   · rw [zero_mul]
     exact principal_zero
@@ -284,11 +277,6 @@ theorem principal_add_mul_left (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b �
       use x + y, hb hx hy
       rw [mul_add]
       exact Left.add_lt_add hx' hy'
-
-@[deprecated principal_add_mul_left (since := "2024-10-14")]
-alias mul_principal_add_is_principal_add := principal_add_mul_left
-
-#exit
 
 /-! #### Multiplicative principal ordinals -/
 
