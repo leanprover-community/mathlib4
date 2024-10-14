@@ -290,6 +290,7 @@ import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Group.Submonoid.Pointwise
 import Mathlib.Algebra.Group.Submonoid.Units
 import Mathlib.Algebra.Group.Subsemigroup.Basic
+import Mathlib.Algebra.Group.Subsemigroup.Defs
 import Mathlib.Algebra.Group.Subsemigroup.Membership
 import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Group.Support
