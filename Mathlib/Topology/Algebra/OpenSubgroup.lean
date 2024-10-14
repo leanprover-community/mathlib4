@@ -3,10 +3,8 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Nailin Guan, Yi Song, Xuchun Li
 -/
-import Mathlib.GroupTheory.Index
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Sets.Opens
 
 /-!
@@ -459,7 +457,7 @@ end
 /-!
 ## The Open Normal Subgroup in a Clopen Neighborhood of One
 This section define `OpenSubgroupSubClopenNhdsOfOne` (`OpenNormalSubgroupSubClopenNhdsOfOne`),
-which can pick an open subgroup (open normal subgroup) contained in aclopen neighborhood of `1`.
+which can pick an open subgroup contained in a clopen neighborhood of `1`.
 -/
 
 namespace TopologicalGroup
@@ -721,23 +719,6 @@ theorem openSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSp
   rw [Set.mem_mul]
   use 1, einW, x, xin
   rw [one_mul]
-
-/-- The open normal subgroup contained in a clopen nhd of `1` in a compact topological group. -/
-noncomputable def OpenNormalSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] [CompactSpace G] {U : Set G}
-    (UClopen : IsClopen U) (einU : 1 ∈ U) : OpenNormalSubgroup G :=
-  let H := OpenSubgroupSubClopenNhdsOfOne UClopen einU
-  letI : Subgroup.FiniteIndex H.1 := Subgroup.finiteIndex_of_finite_quotient H.1
-  { toSubgroup := Subgroup.normalCore H
-    isOpen' := Subgroup.isOpen_of_isClosed_of_finiteIndex _ <|
-      Subgroup.normalCore_isClosed H.1 <| OpenSubgroup.isClosed H }
-
-theorem openNormalSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] [CompactSpace G] {U : Set G}
-    (UClopen : IsClopen U) (einU : 1 ∈ U) :
-    ((OpenNormalSubgroupSubClopenNhdsOfOne UClopen einU) : Set G) ⊆ U :=
-    fun _ b ↦ openSubgroupSubClopenNhdsOfOne_spec UClopen einU
-      (Subgroup.normalCore_le (OpenSubgroupSubClopenNhdsOfOne UClopen einU).1 b)
 
 end TopologicalGroup
 
