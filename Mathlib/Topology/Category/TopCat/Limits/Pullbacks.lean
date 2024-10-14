@@ -71,12 +71,14 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
         ext a
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        erw [comp_apply, ContinuousMap.coe_mk]
+        -- This used to be `rw`, but we need `rw; rfl` after leanprover/lean4#2644
+        rw [comp_apply, ContinuousMap.coe_mk]
+        rfl
       · delta pullbackCone
         ext a
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        erw [comp_apply, ContinuousMap.coe_mk]
+        -- This used to be `rw`, but we need `rw; rfl` after leanprover/lean4#2644
+        rw [comp_apply, ContinuousMap.coe_mk]
+        rfl
       · intro m h₁ h₂
         -- Porting note (#11041): used to be `ext x`.
         apply ContinuousMap.ext; intro x
@@ -198,13 +200,13 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   constructor
   · rintro ⟨y, rfl⟩
     simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
-    erw [← comp_apply, ← comp_apply] -- now `erw` after #13170
+    rw [← comp_apply, ← comp_apply]
     simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, comp_apply]
     exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
   have : f₁ x₁ = f₂ x₂ := by
     apply (TopCat.mono_iff_injective _).mp H₃
-    erw [← comp_apply, eq₁, ← comp_apply, eq₂, -- now `erw` after #13170
+    rw [← comp_apply, eq₁, ← comp_apply, eq₂,
       comp_apply, comp_apply, hx₁, hx₂, ← comp_apply, pullback.condition]
     rfl -- `rfl` was not needed before #13170
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
