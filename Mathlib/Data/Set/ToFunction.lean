@@ -33,7 +33,7 @@ open Classical in
 noncomputable def asPartialFun (X : Set (α × α)) : α → Option α :=
   fun a : α => if hb : ∃ b, (a, b) ∈ X then hb.choose else none
 
-theorem αsPartialFun_eq {X : Set (α × α)} (hX : isPartialFun X) {a b : α} (hab : (a, b) ∈ X) :
+theorem asPartialFun_eq {X : Set (α × α)} (hX : isPartialFun X) {a b : α} (hab : (a, b) ∈ X) :
     asPartialFun X a = b := by
   have hba : ∃ b, (a, b) ∈ X := ⟨b, hab⟩
   simpa [asPartialFun, hba] using hX _ _ _ ⟨hba.choose_spec, hab⟩
