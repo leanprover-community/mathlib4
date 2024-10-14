@@ -492,7 +492,7 @@ theorem isLimit_add (a) {b} : IsLimit b → IsLimit (a + b) :=
 @[deprecated isLimit_add (since := "2024-10-11")]
 alias add_isLimit := isLimit_add
 
-alias IsLimit.add := isLimit_add
+alias IsLimit.add := add_isLimit
 
 /-! ### Subtraction on ordinals -/
 
