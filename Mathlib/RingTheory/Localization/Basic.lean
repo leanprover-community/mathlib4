@@ -92,6 +92,15 @@ theorem mk'_mem_iff {x} {y : M} {I : Ideal S} : mk' S x y ∈ I ↔ algebraMap R
 
 variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 
+variable (M) in
+include M in
+/- This is not an instance because the submonoid `M` would become a metavariable
+  in typeclass search. -/
+theorem algHom_subsingleton [Algebra R P] : Subsingleton (S →ₐ[R] P) :=
+  ⟨fun f g =>
+    AlgHom.coe_ringHom_injective <|
+      IsLocalization.ringHom_ext M <| by rw [f.comp_algebraMap, g.comp_algebraMap]⟩
+
 section AlgEquiv
 
 variable {Q : Type*} [CommSemiring Q] [Algebra R Q] [IsLocalization M Q]
