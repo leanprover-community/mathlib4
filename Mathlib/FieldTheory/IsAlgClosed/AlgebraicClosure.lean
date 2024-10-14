@@ -404,7 +404,7 @@ instance : IsAlgClosure k (AlgebraicClosure k) := by
   exact ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic⟩
 
 instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
-  IsAlgClosure.algebraic
+  IsAlgClosure.isAlgebraic
 
 instance [CharZero k] : CharZero (AlgebraicClosure k) :=
   charZero_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k)))

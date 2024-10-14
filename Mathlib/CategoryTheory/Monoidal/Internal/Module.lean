@@ -88,7 +88,7 @@ theorem algebraMap (A : Mon_ (ModuleCat.{u} R)) (r : R) : algebraMap R A.X r = A
 @[simps!]
 def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
   obj A := AlgebraCat.of R A.X
-  map {A B} f :=
+  map {_ _} f :=
     { f.hom.toAddMonoidHom with
       toFun := f.hom
       map_one' := LinearMap.congr_fun f.one_hom (1 : R)
@@ -173,8 +173,8 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
         { hom :=
             { hom :=
                 { toFun := _root_.id
-                  map_add' := fun x y => rfl
-                  map_smul' := fun r a => rfl }
+                  map_add' := fun _ _ => rfl
+                  map_smul' := fun _ _ => rfl }
               mul_hom := by
                 -- Porting note: `ext` did not pick up `TensorProduct.ext`
                 refine TensorProduct.ext ?_
@@ -183,8 +183,8 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
           inv :=
             { hom :=
                 { toFun := _root_.id
-                  map_add' := fun x y => rfl
-                  map_smul' := fun r a => rfl }
+                  map_add' := fun _ _ => rfl
+                  map_smul' := fun _ _ => rfl }
               mul_hom := by
                 -- Porting note: `ext` did not pick up `TensorProduct.ext`
                 refine TensorProduct.ext ?_
@@ -196,17 +196,17 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
         { hom :=
             { toFun := _root_.id
               map_zero' := rfl
-              map_add' := fun x y => rfl
+              map_add' := fun _ _ => rfl
               map_one' := (algebraMap R A).map_one
               map_mul' := fun x y => @LinearMap.mul'_apply R _ _ _ _ _ _ x y
-              commutes' := fun r => rfl }
+              commutes' := fun _ => rfl }
           inv :=
             { toFun := _root_.id
               map_zero' := rfl
-              map_add' := fun x y => rfl
+              map_add' := fun _ _ => rfl
               map_one' := (algebraMap R A).map_one.symm
               map_mul' := fun x y => (@LinearMap.mul'_apply R _ _ _ _ _ _ x y).symm
-              commutes' := fun r => rfl } })
+              commutes' := fun _ => rfl } })
 
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] ModuleCat.MonModuleEquivalenceAlgebra.functor_map_apply
@@ -221,11 +221,11 @@ def monModuleEquivalenceAlgebraForget :
     (fun A =>
       { hom :=
           { toFun := _root_.id
-            map_add' := fun x y => rfl
-            map_smul' := fun c x => rfl }
+            map_add' := fun _ _ => rfl
+            map_smul' := fun _ _ => rfl }
         inv :=
           { toFun := _root_.id
-            map_add' := fun x y => rfl
-            map_smul' := fun c x => rfl } })
+            map_add' := fun _ _ => rfl
+            map_smul' := fun _ _ => rfl } })
 
 end ModuleCat

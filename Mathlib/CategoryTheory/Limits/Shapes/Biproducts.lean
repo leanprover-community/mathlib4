@@ -176,7 +176,7 @@ attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 /-- Extract the cone from a bicone. -/
 def toConeFunctor : Bicone F ⥤ Cone (Discrete.functor F) where
   obj B := { pt := B.pt, π := { app := fun j => B.π j.as } }
-  map {X Y} F := { hom := F.hom, w := fun _ => F.wπ _ }
+  map {_ _} F := { hom := F.hom, w := fun _ => F.wπ _ }
 
 /-- A shorthand for `toConeFunctor.obj` -/
 abbrev toCone (B : Bicone F) : Cone (Discrete.functor F) := toConeFunctor.obj B
@@ -197,7 +197,7 @@ theorem toCone_proj (B : Bicone F) (j : J) : Fan.proj B.toCone j = B.π j := rfl
 /-- Extract the cocone from a bicone. -/
 def toCoconeFunctor : Bicone F ⥤ Cocone (Discrete.functor F) where
   obj B := { pt := B.pt, ι := { app := fun j => B.ι j.as } }
-  map {X Y} F := { hom := F.hom, w := fun _ => F.wι _ }
+  map {_ _} F := { hom := F.hom, w := fun _ => F.wι _ }
 
 /-- A shorthand for `toCoconeFunctor.obj` -/
 abbrev toCocone (B : Bicone F) : Cocone (Discrete.functor F) := toCoconeFunctor.obj B
@@ -859,10 +859,10 @@ def kernelForkBiproductToSubtype (p : Set K) :
         ext j k
         simp only [Category.assoc, biproduct.ι_fromSubtype_assoc, biproduct.ι_toSubtype_assoc,
           comp_zero, zero_comp]
-        erw [dif_neg k.2]
+        rw [dif_neg k.2]
         simp only [zero_comp])
   isLimit :=
-    KernelFork.IsLimit.ofι _ _ (fun {W} g _ => g ≫ biproduct.toSubtype f pᶜ)
+    KernelFork.IsLimit.ofι _ _ (fun {_} g _ => g ≫ biproduct.toSubtype f pᶜ)
       (by
         intro W' g' w
         ext j
@@ -898,7 +898,7 @@ def cokernelCoforkBiproductFromSubtype (p : Set K) :
         · simp only [zero_comp]
         · exact not_not.mpr k.2)
   isColimit :=
-    CokernelCofork.IsColimit.ofπ _ _ (fun {W} g _ => biproduct.fromSubtype f pᶜ ≫ g)
+    CokernelCofork.IsColimit.ofπ _ _ (fun {_} g _ => biproduct.fromSubtype f pᶜ ≫ g)
       (by
         intro W g' w
         ext j

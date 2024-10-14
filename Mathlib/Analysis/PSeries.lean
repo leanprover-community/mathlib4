@@ -283,7 +283,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
           (eventually_cofinite_ne 0)).exists
     apply hk₀
     rw [← pos_iff_ne_zero, ← @Nat.cast_pos ℝ] at hk₀
-    simpa [inv_lt_one_iff_of_pos (rpow_pos_of_pos hk₀ _), one_lt_rpow_iff_of_pos hk₀, hp,
+    simpa [inv_lt_one₀ (rpow_pos_of_pos hk₀ _), one_lt_rpow_iff_of_pos hk₀, hp,
       hp.not_lt, hk₀] using hk₁
 
 @[simp]
