@@ -293,7 +293,7 @@ def getUsedVariableNames (pos : String.Pos) : CommandElabM (Array String) := do
 def lemmaToThm (stx : Syntax) : Syntax :=
   let toDecl := stx.replaceM (m := Id) fun d =>
     match d with
-      | .node kind `group args => return some (.node kind `Lean.Parser.Command.theorem args)
+      | .node kind `group args => return some (.node kind ``Command.theorem args)
       | _ => return none
   let toDecl := toDecl.replaceM (m := Id) fun d =>
     match d with
@@ -301,7 +301,26 @@ def lemmaToThm (stx : Syntax) : Syntax :=
       | _ => return none
   let toDecl := toDecl.replaceM (m := Id) fun d =>
     match d with
-      | .node kind `lemma args => return some (.node kind `Lean.Parser.Command.declaration args)
+      | .node kind `lemma args => return some (.node kind ``declaration args)
+      | _ => return none
+  toDecl
+
+/--
+`exampleToDef stx` assumes that `stx` is of kind `example` and converts it into `def`.
+
+We go to `def` from `example`, since the inclusion mechanism for variables is the same in the two
+commands (and different from `theorem`).
+-/
+def exampleToDef (stx : Syntax) (nm : Name) : Syntax :=
+  let toDecl := stx.replaceM (m := Id) fun d =>
+    match d with
+      | .node kind ``Command.example args => do
+        let did := .node default ``Lean.Parser.Command.declId #[mkIdent nm, mkNullNode #[]]
+        return some (.node kind ``definition ((args.insertAt 1 did).push (mkNullNode #[])))
+      | _ => return none
+  let toDecl := toDecl.replaceM (m := Id) fun d =>
+    match d with
+      | atm@(.atom _ "example") => return (mkAtomFrom atm "def")
       | _ => return none
   toDecl
 
@@ -341,10 +360,12 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
       if #[``definition, ``Command.structure, ``Command.abbrev].contains decl[1].getKind then
         let declIdStx := (decl.find? (·.isOfKind ``declId)).getD default
         getUsedVariableNames (declIdStx.getPos?.getD default)
+      else if decl[1].getKind == ``Command.example then
+        let toDef := exampleToDef decl `newName
+        elabCommand toDef
+        let cinfo := ((← getEnv).find? ((← getCurrNamespace) ++ `newName)).getD default
+        getForallStrings cinfo.type
       else return #[]
-    -- Skip examples, since they have access to all the variables
-    if decl[1].isOfKind ``Lean.Parser.Command.example then
-      return
     let toFalse := mkIdent `toFalse
     let toThm : Syntax := if decl.isOfKind `lemma then lemmaToThm decl else decl
     let renStx ← mkThm toThm
