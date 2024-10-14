@@ -80,7 +80,7 @@ protected theorem IsTransitive.powerset (h : x.IsTransitive) : (powerset x).IsTr
 theorem isTransitive_iff_sUnion_subset : x.IsTransitive ↔ (⋃₀ x : ZFSet) ⊆ x :=
   ⟨fun h y hy => by
     rcases mem_sUnion.1 hy with ⟨z, hz, hz'⟩
-    exact h.mem_trans hz' hz, fun H y hy z hz => H <| mem_sUnion_of_mem hz hy⟩
+    exact h.mem_trans hz' hz, fun H _ hy _ hz => H <| mem_sUnion_of_mem hz hy⟩
 
 alias ⟨IsTransitive.sUnion_subset, _⟩ := isTransitive_iff_sUnion_subset
 

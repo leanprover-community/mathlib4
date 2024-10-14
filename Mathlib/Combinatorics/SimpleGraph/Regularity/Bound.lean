@@ -40,7 +40,7 @@ def stepBound (n : ℕ) : ℕ :=
 theorem le_stepBound : id ≤ stepBound := fun n =>
   Nat.le_mul_of_pos_right _ <| pow_pos (by norm_num) n
 
-theorem stepBound_mono : Monotone stepBound := fun a b h =>
+theorem stepBound_mono : Monotone stepBound := fun _ _ h =>
   Nat.mul_le_mul h <| Nat.pow_le_pow_of_le_right (by norm_num) h
 
 theorem stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=

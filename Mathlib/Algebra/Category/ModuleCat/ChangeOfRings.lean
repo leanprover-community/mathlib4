@@ -137,9 +137,9 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
     { toFun := g
       map_add' := by simp
       map_smul' := g.map_smul }
-  left_inv g := rfl
-  right_inv g := rfl
-  map_add' g₁ g₂ := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_add' _ _ := rfl
 
 section
 
@@ -248,7 +248,7 @@ def restrictScalarsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S
       map_smul' := fun s m ↦ congr_arg (· • m) (e.right_inv s).symm }) (by intros; rfl)
   counitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso'
     { __ := AddEquiv.refl M
-      map_smul' := fun r m ↦ congr_arg (· • (_ : M)) (e.left_inv r)}) (by intros; rfl)
+      map_smul' := fun r _ ↦ congr_arg (· • (_ : M)) (e.left_inv r)}) (by intros; rfl)
   functor_unitIso_comp := by intros; rfl
 
 instance restrictScalars_isEquivalence_of_ringEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
@@ -375,7 +375,7 @@ instance mulAction : MulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M 
 instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
   { CoextendScalars.mulAction f _ with
     smul_add := fun s g h => LinearMap.ext fun _ : S => by simp
-    smul_zero := fun s => LinearMap.ext fun _ : S => by simp }
+    smul_zero := fun _ => LinearMap.ext fun _ : S => by simp }
 
 /-- `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`, this action defines an `S`-module structure on
 Hom(S, M).
@@ -496,7 +496,7 @@ def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) :
 def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars f).obj Y :=
   { toFun := fun y : Y =>
       { toFun := fun s : S => (s • y : Y)
-        map_add' := fun s s' => add_smul _ _ _
+        map_add' := fun _ _ => add_smul _ _ _
         map_smul' := fun r (s : S) => by
           dsimp only [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply]
           erw [smul_eq_mul, mul_smul]
@@ -582,7 +582,7 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
             CoextendScalars.smul_apply', one_mul] }
     unit := RestrictionCoextensionAdj.unit'.{u₁,u₂,v} f
     counit := RestrictionCoextensionAdj.counit'.{u₁,u₂,v} f
-    homEquiv_unit := LinearMap.ext fun y => rfl
+    homEquiv_unit := LinearMap.ext fun _ => rfl
     homEquiv_counit := fun {X Y g} => LinearMap.ext <| by
       -- Porting note (#10745): previously simp [RestrictionCoextensionAdj.counit']
       intro x; dsimp

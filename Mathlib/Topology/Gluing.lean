@@ -379,7 +379,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     refine Subtype.ext ?_
     exact h.cocycle i j k ⟨x, hx⟩ hx'
   -- Porting note: was not necessary in mathlib3
-  f_mono i j := (TopCat.mono_iff_injective _).mpr fun x y h => Subtype.ext h
+  f_mono _ _ := (TopCat.mono_iff_injective _).mpr fun _ _ h => Subtype.ext h
 
 variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 
@@ -389,7 +389,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
   mk'.{u}
     { J
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
-      V := fun i j => (Opens.map <| Opens.inclusion' _).obj (U j)
+      V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
       t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
         -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
         refine Continuous.subtype_mk ?_ ?_
@@ -400,15 +400,15 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
         -- Porting note: no longer needed `cases U i`!
         simp
       t_id := fun i => by ext; rfl
-      t_inter := fun i j k x hx => hx
-      cocycle := fun i j k x h => rfl }
+      t_inter := fun _ _ _ _ hx => hx
+      cocycle := fun _ _ _ _ _ => rfl }
 
 /-- The canonical map from the glue of a family of open subsets `α` into `α`.
 This map is an open embedding (`fromOpenSubsetsGlue_openEmbedding`),
 and its range is `⋃ i, (U i : Set α)` (`range_fromOpenSubsetsGlue`).
 -/
 def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
-  Multicoequalizer.desc _ _ (fun x => Opens.inclusion' _) (by rintro ⟨i, j⟩; ext x; rfl)
+  Multicoequalizer.desc _ _ (fun _ => Opens.inclusion' _) (by rintro ⟨i, j⟩; ext x; rfl)
 
 -- Porting note: `elementwise` here produces a bad lemma,
 -- where too much has been simplified, despite the `nosimp`.

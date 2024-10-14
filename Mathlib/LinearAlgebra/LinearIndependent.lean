@@ -144,8 +144,8 @@ theorem linearIndependent_iff' :
               fun hnis => hnis.elim his
         _ = (∑ j ∈ s, Finsupp.single j (g j)) i := (map_sum ..).symm
         _ = 0 := DFunLike.ext_iff.1 h i,
-      fun hf l hl =>
-      Finsupp.ext fun i =>
+      fun hf _ hl =>
+      Finsupp.ext fun _ =>
         _root_.by_contradiction fun hni => hni <| hf _ _ hl _ <| Finsupp.mem_support_iff.2 hni⟩
 
 theorem linearIndependent_iff'' :
