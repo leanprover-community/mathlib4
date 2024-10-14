@@ -8,6 +8,12 @@ import Mathlib.Topology.VectorBundle.Hom
 import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
+
+/-!
+# Differentiability of functions in vector bundles
+
+-/
+
 open Bundle Set PartialHomeomorph ContinuousLinearMap Pretrivialization Filter
 
 open scoped Manifold Bundle Topology

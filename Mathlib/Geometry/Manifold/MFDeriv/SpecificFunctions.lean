@@ -428,7 +428,7 @@ theorem MDifferentiableAt.prod_map' {p : M × N}
   exact hf.prod_map hg
 
 theorem MDifferentiableOn.prod_map
-   (hf : MDifferentiableOn I I' f s) (hg : MDifferentiableOn J J' g r) :
+    (hf : MDifferentiableOn I I' f s) (hg : MDifferentiableOn J J' g r) :
     MDifferentiableOn (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) :=
   (hf.comp mdifferentiableOn_fst (prod_subset_preimage_fst _ _)).prod_mk <|
     hg.comp mdifferentiableOn_snd (prod_subset_preimage_snd _ _)

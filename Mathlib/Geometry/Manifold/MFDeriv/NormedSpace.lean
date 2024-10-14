@@ -97,7 +97,7 @@ theorem MDifferentiableOn.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set 
   (hf x hx).clm_precomp
 
 theorem MDifferentiable.clm_precomp
-   {f : M → F₁ →L[𝕜] F₂} (hf : MDifferentiable I 𝓘(𝕜, F₁ →L[𝕜] F₂) f) :
+    {f : M → F₁ →L[𝕜] F₂} (hf : MDifferentiable I 𝓘(𝕜, F₁ →L[𝕜] F₂) f) :
     MDifferentiable I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃))
       (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
   (hf x).clm_precomp
