@@ -9,7 +9,6 @@ import Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Subsingleton
 
 /-!
 # Units (i.e., invertible elements) of a monoid
