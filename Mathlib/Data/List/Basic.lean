@@ -287,10 +287,6 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
     map f (reverseAux l₁ l₂) = reverseAux (map f l₁) (map f l₂) := by
   simp only [reverseAux_eq, map_append, map_reverse]
 
-/-! ### empty -/
-
-@[deprecated (since := "2024-08-15")] alias isEmpty_iff_eq_nil := isEmpty_iff
-
 /-! ### getLast -/
 
 attribute [simp] getLast_cons
@@ -508,9 +504,6 @@ theorem get_cons {l : List α} {a : α} {n} (hl) :
     (a :: l).get ⟨n, hl⟩ = if hn : n = 0 then a else
       l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ :=
   getElem_cons hl
-
-theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
-    (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp
 
 /-! ### Induction from the right -/
 
@@ -886,6 +879,11 @@ theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
   simp [getElem_set_of_ne, h]
 
 /-! ### map -/
+
+-- `List.map_const` (the version with `Function.const` instead of a lambda) is already tagged
+-- `simp` in Core
+-- TODO: Upstream the tagging to Core?
+attribute [simp] map_const'
 
 @[deprecated (since := "2024-06-21")] alias map_congr := map_congr_left
 
@@ -1358,7 +1356,7 @@ theorem intersperse_cons_cons (a b c : α) (tl : List α) :
 
 section SplitAtOn
 
-variable (p : α → Bool) (xs ys : List α) (ls : List (List α)) (f : List α → List α)
+variable (p : α → Bool) (xs : List α) (ls : List (List α))
 
 attribute [simp] splitAt_eq
 
@@ -1534,8 +1532,6 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l
 /-! ### find -/
 
 section find?
-
-variable {p : α → Bool} {l : List α} {a : α}
 
 @[deprecated (since := "2024-05-05")] alias find?_mem := mem_of_find?_eq_some
 
@@ -2179,18 +2175,13 @@ end Forall
 theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = L.get ⟨i, length_attach (L := L) ▸ i.2⟩ := by simp
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 @[simp 1100]
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
     (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
   induction' xs with x xs xs_ih
   · simp only [not_mem_nil, map_nil]
   · cases' x with a b
-    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih,
-      _root_.and_comm]
+    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
 
 theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n ++ xs.drop (n + m) := by
   induction n generalizing xs
@@ -2278,8 +2269,7 @@ theorem disjoint_reverse_right {l₁ l₂ : List α} : Disjoint l₁ l₂.revers
 end Disjoint
 
 section lookup
-
-variable {α β : Type*} [BEq α] [LawfulBEq α]
+variable [BEq α] [LawfulBEq α]
 
 lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
     lookup a (as.map fun x => (x, f x)) = some (f a) := by
