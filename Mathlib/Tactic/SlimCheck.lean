@@ -163,25 +163,6 @@ Options:
 -/
 syntax (name := slimCheckSyntax) "slim_check" (config)? : tactic
 
--- workaround for https://github.com/leanprover/lean4/pull/3090
-private unsafe def evalExprCore3090
-  (α) (value : Expr) (checkType : Expr → MetaM Unit) (safety := DefinitionSafety.safe) : MetaM α :=
-  withoutModifyingEnv do
-    let name ← mkFreshUserName `_tmp
-    let value ← instantiateMVars value
-    let us := collectLevelParams {} value |>.params
-    if value.hasMVar then
-      throwError "failed to evaluate expression, it contains metavariables{indentExpr value}"
-    let type ← inferType value
-    checkType type
-    let decl := Declaration.defnDecl {
-       name, levelParams := us.toList, type
-       value, hints := ReducibilityHints.opaque,
-       safety
-    }
-    addAndCompile decl
-    evalConst α name
-
 elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
   let cfg ← elabConfig (mkOptionalNode cfg)
   let (_, g) ← (← getMainGoal).revert ((← getLocalHyps).map (Expr.fvarId!))
@@ -220,7 +201,7 @@ elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
   --   when_tracing `slim_check.instance   <| do
   --   { inst ← summarize_instance inst >>= pp,
   --     trace!"\n[testable instance]{format.indent inst 2}" },
-  let code ← unsafe evalExprCore3090 (CoreM PUnit) e (fun _ => pure ())
+  let code ← unsafe evalExpr (CoreM PUnit) q(CoreM PUnit) e
   _ ← code
   admitGoal g
 
