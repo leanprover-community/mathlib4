@@ -6,10 +6,10 @@ Authors: Kevin Buzzard, Will Sawin
 import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
-# An "action topology" for modules over a topological ring
+# A "module topology" for modules over a topological ring
 
 If `R` is a topological group (or even just a topological space) acting on an additive
-abelian group `A`, we define the *action topology* to be the finest topology on `A`
+abelian group `A`, we define the *module topology* to be the finest topology on `A`
 making `• : R × A → A` and `+ : A × A → A` continuous (with all the products having the
 product topology).
 
@@ -33,7 +33,7 @@ However pushforward and products are monotone, so `τ × τ ≤ σ × σ`, and t
 The proof for `•` follows mutatis mutandis.
 
 A *topological module* for a topological ring `R` is an `R`-module `A` with a topology
-making `+` and `•` continuous. The discussion so far has shown that the action topology makes `A`
+making `+` and `•` continuous. The discussion so far has shown that the module topology makes `A`
 into a topological module, and moreover is the finest topology with this property.
 
 A crucial observation is that if `M` is a topological `R`-module, if `A` is an `R`-module with no
@@ -45,47 +45,48 @@ and now the pullback of `U` under `•` is just the pullback along the continuou
 so it's open. The proof for `+` is similar.
 
 As a consequence of this, we see that if `φ : A → M` is a linear map between topological `R`-modules
-modules and if `A` has the action topology, then `φ` is automatically continuous.
-Indeed the argument above shows that if `A → M` is linear then the action
-topology on `A` is `≤` the pullback of the action topology on `M` (because it's the inf of a set
+modules and if `A` has the module topology, then `φ` is automatically continuous.
+Indeed the argument above shows that if `A → M` is linear then the module
+topology on `A` is `≤` the pullback of the module topology on `M` (because it's the inf of a set
 containing this topology) which is the definition of continuity.
 
-We also deduce that the action topology is a functor from the category of `R`-modules
+We also deduce that the module topology is a functor from the category of `R`-modules
 (`R` a topological ring) to the category of topological `R`-modules, and it is perhaps
 unsurprising that this is an adjoint to the forgetful functor. Indeed, if `A` is an `R`-module
 and `M` is a topological `R`-module, then the previous paragraph shows that
 the linear maps `A → M` are precisely the continuous linear maps
-from (`A` with its action topology) to `M`, so the action topology is a left adjoint
+from (`A` with its module topology) to `M`, so the module topology is a left adjoint
 to the forgetful functor.
 
-This file develops the theory of the action topology. We prove that the action topology on
-`R` as a module over itself is `R`'s original topology, and that the action topology
+This file develops the theory of the module topology. We prove that the module topology on
+`R` as a module over itself is `R`'s original topology, and that the module topology
 is isomorphism-invariant.
 
 ## Main theorems
 
-* `ActionTopology.instSelf : IsActionTopology R R`. The action topology on `R` is `R`'s topology.
-* `ActionTopology.iso [IsActionTopology R A] (e : A ≃L[R] B) : IsActionTopology R B`. If `A` and
+* `TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R`. The module
+    topology on `R` is `R`'s topology.
+* `IsModuleTopology.iso [IsModuleTopology R A] (e : A ≃L[R] B) : IsModuleTopology R B`. If `A` and
     `B` are `R`-modules with topologies, if `e` is a topological isomorphism between them,
-    and if `A` has the action topology, then `B` has the action topology.
+    and if `A` has the module topology, then `B` has the module topology.
 
 ## TODO
 
-Forthcoming PRs from the FLT repo will show that the action topology on a (binary or finite) product
-of modules is the product of the action topologies, and that the action topology on the quotient
-of a module `M` is the quotient topology when `M` is equipped with the action topology.
+Forthcoming PRs from the FLT repo will show that the module topology on a (binary or finite) product
+of modules is the product of the module topologies, and that the module topology on the quotient
+of a module `M` is the quotient topology when `M` is equipped with the module topology.
 
 We will also show the slightly more subtle result that if `M`, `N` and `P` are `R`-modules
-equipped with the action topology and if furthermore `M` is finite as an `R`-module,
+equipped with the module topology and if furthermore `M` is finite as an `R`-module,
 then any bilinear map `M × N → P` is continuous.
 
 As a consequence of this, we deduce that if `R` is a commutative topological ring
-and `A` is an `R`-algebra of finite type as `R`-module, then `A` with its action
+and `A` is an `R`-algebra of finite type as `R`-module, then `A` with its module
 topology becomes a topological ring (i.e., multiplication is continuous).
 
 Other TODOs (not done in the FLT repo):
 
-* The action topology is a functor from the category of `R`-modules
+* The module topology is a functor from the category of `R`-modules
   to the category of topological `R`-modules, and it's an adjoint to the forgetful functor.
 
 -/
@@ -93,35 +94,35 @@ Other TODOs (not done in the FLT repo):
 section basics
 
 /-
-This section is just boilerplate, defining the action topology and making
+This section is just boilerplate, defining the module topology and making
 some infrastructure.
 -/
 variable (R : Type*) [TopologicalSpace R] (A : Type*) [Add A] [SMul R A]
 
-/-- The action topology, for a module `A` over a topological ring `R`. It's the finest topology
+/-- The module topology, for a module `A` over a topological ring `R`. It's the finest topology
 making addition and the `R`-action continuous, or equivalently the finest topology making `A`
 into a topological `R`-module. More precisely it's the Inf of the set of
 topologies with these properties; theorems `continuousSMul` and `continuousAdd` show
-that the action topology also has these properties. -/
-abbrev actionTopology : TopologicalSpace A :=
+that the module topology also has these properties. -/
+abbrev moduleTopology : TopologicalSpace A :=
   sInf {t | @ContinuousSMul R A _ _ t ∧ @ContinuousAdd A t _}
 
 /-- A class asserting that the topology on a module over a topological ring `R` is
-the action topology. See `actionTopology` for more discussion of the action topology. -/
-class IsActionTopology [τA : TopologicalSpace A] : Prop where
-  /-- Note that this should not be used directly, and `eq_actionTopology`, which takes `R` and `A`
+the module topology. See `moduleTopology` for more discussion of the module topology. -/
+class IsModuleTopology [τA : TopologicalSpace A] : Prop where
+  /-- Note that this should not be used directly, and `eq_moduleTopology`, which takes `R` and `A`
   explicitly, should be used instead. -/
-  eq_actionTopology' : τA = actionTopology R A
+  eq_moduleTopology' : τA = moduleTopology R A
 
-theorem eq_actionTopology [τA : TopologicalSpace A] [IsActionTopology R A] :
-    τA = actionTopology R A :=
-  IsActionTopology.eq_actionTopology' (R := R) (A := A)
+theorem eq_moduleTopology [τA : TopologicalSpace A] [IsModuleTopology R A] :
+    τA = moduleTopology R A :=
+  IsModuleTopology.eq_moduleTopology' (R := R) (A := A)
 
 /-- Scalar multiplication `• : R × A → A` is continuous if `R` is a topological
-ring, and `A` is an `R` module with the action topology. -/
-theorem ActionTopology.continuousSMul : @ContinuousSMul R A _ _ (actionTopology R A) :=
+ring, and `A` is an `R` module with the module topology. -/
+theorem ModuleTopology.continuousSMul : @ContinuousSMul R A _ _ (moduleTopology R A) :=
   /- Proof: We need to prove that the product topology is finer than the pullback
-     of the action topology. But the action topology is an Inf and thus a limit,
+     of the module topology. But the module topology is an Inf and thus a limit,
      and pullback is a right adjoint, so it preserves limits.
      We must thus show that the product topology is finer than an Inf, so it suffices
      to show it's a lower bound, which is not hard. All this is wrapped into
@@ -130,30 +131,30 @@ theorem ActionTopology.continuousSMul : @ContinuousSMul R A _ _ (actionTopology 
   continuousSMul_sInf <| fun _ _ ↦ by simp_all only [Set.mem_setOf_eq]
 
 /-- Addition `+ : A × A → A` is continuous if `R` is a topological
-ring, and `A` is an `R` module with the action topology. -/
-theorem ActionTopology.continuousAdd : @ContinuousAdd A (actionTopology R A) _ :=
+ring, and `A` is an `R` module with the module topology. -/
+theorem ModuleTopology.continuousAdd : @ContinuousAdd A (moduleTopology R A) _ :=
   continuousAdd_sInf <| fun _ _ ↦ by simp_all only [Set.mem_setOf_eq]
 
-instance IsActionTopology.toContinuousSMul [TopologicalSpace A] [IsActionTopology R A] :
-    ContinuousSMul R A := eq_actionTopology R A ▸ ActionTopology.continuousSMul R A
+instance IsModuleTopology.toContinuousSMul [TopologicalSpace A] [IsModuleTopology R A] :
+    ContinuousSMul R A := eq_moduleTopology R A ▸ ModuleTopology.continuousSMul R A
 
 -- this can't be an instance because typclass inference can't be expected to find `R`.
-theorem IsActionTopology.toContinuousAdd [TopologicalSpace A] [IsActionTopology R A] :
-    ContinuousAdd A := eq_actionTopology R A ▸ ActionTopology.continuousAdd R A
+theorem IsModuleTopology.toContinuousAdd [TopologicalSpace A] [IsModuleTopology R A] :
+    ContinuousAdd A := eq_moduleTopology R A ▸ ModuleTopology.continuousAdd R A
 
-/-- The action topology is `≤` any topology making `A` into a topological module. -/
-theorem actionTopology_le [τA : TopologicalSpace A] [ContinuousSMul R A] [ContinuousAdd A] :
-    actionTopology R A ≤ τA := sInf_le ⟨inferInstance, inferInstance⟩
+/-- The module topology is `≤` any topology making `A` into a topological module. -/
+theorem moduleTopology_le [τA : TopologicalSpace A] [ContinuousSMul R A] [ContinuousAdd A] :
+    moduleTopology R A ≤ τA := sInf_le ⟨inferInstance, inferInstance⟩
 
 end basics
 
-namespace IsActionTopology
+namespace IsModuleTopology
 
 section subsingleton
 
 instance instSubsingleton (R : Type*) [TopologicalSpace R] (A : Type*) [Add A] [SMul R A]
-    [Subsingleton A] [TopologicalSpace A] : IsActionTopology R A where
-  eq_actionTopology' := by
+    [Subsingleton A] [TopologicalSpace A] : IsModuleTopology R A where
+  eq_moduleTopology' := by
     ext U
     simp only [isOpen_discrete]
 
@@ -165,63 +166,64 @@ variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemirin
 /-!
 We now fix once and for all a topological semiring `R`.
 
-We first prove that the action topology on `R` considered as a module over itself,
+We first prove that the module topology on `R` considered as a module over itself,
 is `R`'s topology.
 -/
 
-/-- The action by left-multiplication is the action topology. -/
-instance _root_.TopologicalSemiring.toIsActionTopology : IsActionTopology R R where
-  eq_actionTopology' := by
-    /- Let `R` be a topological ring with topology τR. To prove that `τR` is the action
+/-- The topology on a topological semiring `R` agrees with the module topology when considering
+`R` as an `R`-module. -/
+instance _root_.TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R where
+  eq_moduleTopology' := by
+    /- Let `R` be a topological ring with topology τR. To prove that `τR` is the module
     topology, it suffices to prove inclusions in both directions.
     One way is obvious: addition and multiplication are continuous for `R`, so the
-    action topology is finer than `R` because it's the finest topology with these properties.-/
-    refine le_antisymm ?_ (actionTopology_le R R)
+    module topology is finer than `R` because it's the finest topology with these properties.-/
+    refine le_antisymm ?_ (moduleTopology_le R R)
     /- The other way is more interesting. We can interpret the problem as proving that
-    the identity function is continuous from `R` with the action topology to `R` with
-    its usual topology to `R` with the action topology.
+    the identity function is continuous from `R` with the module topology to `R` with
+    its usual topology to `R` with the module topology.
     -/
     rw [← continuous_id_iff_le]
     /-
     The idea needed here is to rewrite the identity function as the composite of `r ↦ (r,1)`
     from `R` to `R × R`, and multiplication on `R × R`, where we topologise `R × R`
-    by giving the first `R` the usual topology and the second `R` the action topology.
+    by giving the first `R` the usual topology and the second `R` the module topology.
     -/
     rw [show (id : R → R) = (fun rs ↦ rs.1 • rs.2) ∘ (fun r ↦ (r, 1)) by ext; simp]
     /-
     It thus suffices to show that each of these maps are continuous.
     -/
-    apply @Continuous.comp R (R × R) R τR (@instTopologicalSpaceProd R R τR (actionTopology R R))
-        (actionTopology R R)
+    apply @Continuous.comp R (R × R) R τR (@instTopologicalSpaceProd R R τR (moduleTopology R R))
+        (moduleTopology R R)
     · /-
-      The map R × R → R is `•`, so by a fundamental property of the action topology,
+      The map R × R → R is `•`, so by a fundamental property of the module topology,
       this is continuous. -/
-      exact @continuous_smul _ _ _ _ (actionTopology R R) <| ActionTopology.continuousSMul ..
+      exact @continuous_smul _ _ _ _ (moduleTopology R R) <| ModuleTopology.continuousSMul ..
     · /-
       The map `R → R × R` sending `r` to `(r,1)` is a map into a product, so it suffices to show
       that each of the two factors is continuous. But the first is the identity function and the
       second is a constant function. -/
-      exact @Continuous.prod_mk _ _ _ _ (actionTopology R R) _ _ _ continuous_id <|
-        @continuous_const _ _ _ (actionTopology R R) _
+      exact @Continuous.prod_mk _ _ _ _ (moduleTopology R R) _ _ _ continuous_id <|
+        @continuous_const _ _ _ (moduleTopology R R) _
 
 end self
 
 section iso
 
 variable {R : Type*} [τR : TopologicalSpace R] [Semiring R]
-variable {A : Type*} [AddCommMonoid A] [Module R A] [τA : TopologicalSpace A] [IsActionTopology R A]
+variable {A : Type*} [AddCommMonoid A] [Module R A] [τA : TopologicalSpace A] [IsModuleTopology R A]
 variable {B : Type*} [AddCommMonoid B] [Module R B] [τB : TopologicalSpace B]
 
 /-- If `A` and `B` are homeomorphic via a homeomorphism which is also `R`-linear, and if
-`A` has the action topology, then so does `B`. -/
-theorem iso (e : A ≃L[R] B) : IsActionTopology R B where
-  eq_actionTopology' := by
+`A` has the module topology, then so does `B`. -/
+theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
+  eq_moduleTopology' := by
     -- get these in before I start putting new topologies on A and B and have to use `@`
     let g : A →ₗ[R] B := e
     let g' : B →ₗ[R] A := e.symm
     let h : A →+ B := e
     let h' : B →+ A := e.symm
-    simp_rw [e.toHomeomorph.symm.inducing.1, eq_actionTopology R A, actionTopology, induced_sInf]
+    simp_rw [e.toHomeomorph.symm.inducing.1, eq_moduleTopology R A, moduleTopology, induced_sInf]
     apply congr_arg
     ext τ
     rw [Set.mem_image]
@@ -241,10 +243,10 @@ section MulOpposite
 
 variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
 
-/-- The action by right-multiplication is the action topology. -/
-instance _root_.TopologicalSemiring.toOppositeIsActionTopology : IsActionTopology Rᵐᵒᵖ R :=
+/-- The module topology coming from the action of `Rᵐᵒᵖ` on `R` is `R`'s topology. -/
+instance _root_.TopologicalSemiring.toOppositeIsModuleTopology : IsModuleTopology Rᵐᵒᵖ R :=
   .iso (MulOpposite.opContinuousLinearEquiv Rᵐᵒᵖ).symm
 
 end MulOpposite
 
-end IsActionTopology
+end IsModuleTopology
