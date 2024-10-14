@@ -1312,14 +1312,39 @@ end
 
 /-******************************************************************************-/
 
+variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
 
 /- The Lie bracket of vector fields on manifolds is well defined, i.e., it is invariant under
 diffeomorphisms.
-TODO: write a version localized to sets.
+TODO: write a version localized to sets. -/
 lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) (s : Set M) (t : Set M')
-    (hu : UniqueMDiffWithinAt I s x₀) :
+    (hu : UniqueMDiffWithinAt I s x₀)
+    (hf : MDifferentiableWithinAt I I' f s x₀) :
     mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
       mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
+  have A : (extChartAt I x₀).symm (extChartAt I x₀ x₀) = x₀ := by simp
+  by_cases hfi : (mfderivWithin I I' f s x₀).IsInvertible; swap
+  · simp only [mlieBracketWithin_apply, mpullbackWithin_apply,
+      ContinuousLinearMap.inverse_of_not_isInvertible hfi, ContinuousLinearMap.zero_apply]
+    rw [lieBracketWithin_eq_zero_of_eq_zero]
+    · simp [-extChartAt]
+    · simp only [mpullbackWithin_apply]
+      rw [A, ContinuousLinearMap.inverse_of_not_isInvertible hfi]
+      simp [-extChartAt]
+    · simp only [mpullbackWithin_apply]
+      rw [A, ContinuousLinearMap.inverse_of_not_isInvertible hfi]
+      simp [-extChartAt]
+  -- Now, interesting case where the derivative of `f` is invertible
+  simp only [mlieBracketWithin_apply, mpullbackWithin_apply]
+  rw [← ContinuousLinearMap.IsInvertible.inverse_comp_apply
+    (isInvertible_mfderiv_extChartAt (mem_extChartAt_source I' (f x₀))) hfi]
+  rw [← mfderiv_comp_mfderivWithin _ (mdifferentiableAt_extChartAt_self I') hf hu]
+  sorry
+
+
+
+
+
   suffices mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm
         (mpullbackWithin I I' f (mlieBracketWithin I' V W t) s)
         ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target) (extChartAt I x₀ x₀) =
@@ -1355,9 +1380,6 @@ lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) (s : 
     ContinuousLinearMap.id _ _:= sorry
   rw [this]
   simp
-
-end VectorField
--/
 
 end VectorField
 
