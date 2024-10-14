@@ -51,12 +51,12 @@ lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
 This is bundled as a bilinear map in `BilinForm.dualSubmoduleToDual`. -/
 noncomputable
 def dualSubmoduleParing {N : Submodule R M} (x : B.dualSubmodule N) (y : N) : R :=
-  (x.prop y y.prop).choose
+  (Submodule.mem_one.mp <| x.prop y y.prop).choose
 
 @[simp]
 lemma dualSubmoduleParing_spec {N : Submodule R M} (x : B.dualSubmodule N) (y : N) :
     algebraMap R S (B.dualSubmoduleParing x y) = B x y :=
-  (x.prop y y.prop).choose_spec
+  (Submodule.mem_one.mp <| x.prop y y.prop).choose_spec
 
 /-- The natural paring of `B.dualSubmodule N` and `N`. -/
 -- TODO: Show that this is perfect when `N` is a lattice and `B` is nondegenerate.
@@ -94,7 +94,7 @@ lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     rw [← (B.dualBasis hB b).sum_repr x]
     apply sum_mem
     rintro i -
-    obtain ⟨r, hr⟩ := hx (b i) (Submodule.subset_span ⟨_, rfl⟩)
+    obtain ⟨r, hr⟩ := Submodule.mem_one.mp <| hx (b i) (Submodule.subset_span ⟨_, rfl⟩)
     simp only [dualBasis_repr_apply, ← hr, Algebra.linearMap_apply, algebraMap_smul]
     apply Submodule.smul_mem
     exact Submodule.subset_span ⟨_, rfl⟩
@@ -107,7 +107,7 @@ lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     rw [← IsScalarTower.algebraMap_smul S (f j), map_smul]
     simp_rw [apply_dualBasis_left]
     rw [smul_eq_mul, mul_ite, mul_one, mul_zero, ← (algebraMap R S).map_zero, ← apply_ite]
-    exact ⟨_, rfl⟩
+    exact Submodule.mem_one.mpr ⟨_, rfl⟩
 
 lemma dualSubmodule_dualSubmodule_flip_of_basis {ι : Type*} [Finite ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
