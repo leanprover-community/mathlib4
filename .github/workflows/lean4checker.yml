@@ -103,7 +103,7 @@ jobs:
           type: 'stream'
           topic: 'lean4checker failure'
           content: |
-            ❌ lean4checker [failed](${{ steps.ci_url.outputs.summary }}) on ${{ github.sha }}
+            ❌ lean4checker [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }}
         continue-on-error: true
 
       - name: Post failure message on Zulip main topic
