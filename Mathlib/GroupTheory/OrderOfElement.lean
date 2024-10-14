@@ -962,6 +962,19 @@ theorem pow_gcd_card_eq_one_iff : x ^ n = 1 ↔ x ^ gcd n (Fintype.card G) = 1 :
     let ⟨m, hm⟩ := gcd_dvd_left n (Fintype.card G)
     rw [hm, pow_mul, h, one_pow]⟩
 
+lemma smul_eq_of_le_smul
+    {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
+    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le] (h : a ≤ g • a) : g • a = a := by
+  have key := smul_mono_right g (le_pow_smul h (Nat.card G - 1))
+  rw [smul_smul, ← pow_succ',
+    Nat.sub_one_add_one_eq_of_pos Nat.card_pos, pow_card_eq_one', one_smul] at key
+  exact le_antisymm key h
+
+lemma smul_eq_of_smul_le
+    {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
+    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le] (h : g • a ≤ a) : g • a = a :=
+  smul_eq_of_le_smul (α := αᵒᵈ) h
+
 end FiniteGroup
 
 section PowIsSubgroup
