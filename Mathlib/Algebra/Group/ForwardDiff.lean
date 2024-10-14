@@ -77,6 +77,7 @@ version.
 -/
 
 variable (M G) in
+/-- Linear-endomorphism version of the forward difference operator. -/
 @[simps]
 def fwdDiffₗ : Module.End ℤ (M → G) where
   toFun := fwdDiff
@@ -89,6 +90,7 @@ lemma coe_fwdDiffₗ_pow (n : ℕ) : ↑(fwdDiffₗ M G ^ n) = fwdDiff^[n] := by
   ext; rw [LinearMap.pow_apply, coe_fwdDiffₗ]
 
 variable (M G) in
+/-- Linear-endomorphism version of the shift-by-1 operator. -/
 def shiftₗ : Module.End ℤ (M → G) := fwdDiffₗ M G + 1
 
 lemma shiftₗ_apply (f : M → G) (y : M) : shiftₗ M G f y = f (y + 1) := by
