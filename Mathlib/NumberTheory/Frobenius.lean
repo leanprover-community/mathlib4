@@ -589,9 +589,42 @@ def stabilizerAction :
     simp
     rw [smul_smul]
 
+-- not sure if we can make this strategy work without localization...
+theorem keylemma0 [DecidableEq (Ideal B)] [Fintype G] :
+    IsCoprime Q (∏ g ∈ (Finset.univ : Finset G).filter (fun g ↦ g • Q ≠ Q), g • Q) := by
+  let P := ∏ g ∈ (Finset.univ : Finset G).filter (fun g ↦ g • Q ≠ Q), g • Q
+  change IsCoprime Q P
+  have h1 : ¬ P ≤ Q := by
+    rw [Ideal.IsPrime.prod_le inferInstance]
+    rintro ⟨g, hg1, hg2⟩
+    exact (Finset.mem_filter.mp hg1).2 (smul_eq_of_smul_le hg2)
+  obtain ⟨b, hbP, hbQ⟩ := SetLike.not_le_iff_exists.mp h1
+  let f := MulSemiringAction.CharacteristicPolynomial.F G b
+  sorry
+
 theorem keylemma [DecidableEq (Ideal B)] :
     ∃ b : B, ∀ g : G, algebraMap B (B ⧸ Q) (g • b) = if g • Q = Q then 1 else 0 := by
-  sorry
+  classical
+  obtain ⟨_⟩ := nonempty_fintype G
+  have key := keylemma0 G Q
+  rw [Ideal.isCoprime_iff_exists] at key
+  obtain ⟨q, hq, p, hp, hqp⟩ := key
+  use p
+  intro g
+  split_ifs with hg
+  · rw [← eq_sub_iff_add_eq'] at hqp
+    rwa [hqp, smul_sub, smul_one, map_sub, map_one, sub_eq_self,
+        Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem, ← hg,
+        Ideal.smul_mem_pointwise_smul_iff]
+  · let s : Finset G := Finset.univ.filter (fun g ↦ g • Q ≠ Q)
+    change p ∈ ∏ g ∈ s, g • Q at hp
+    rw [eq_comm, ← inv_smul_eq_iff] at hg
+    have hs : g⁻¹ ∈ s := Finset.mem_filter.mpr ⟨Finset.mem_univ g⁻¹, hg⟩
+    have key := Finset.insert_erase hs
+    rw [← key, Finset.prod_insert (s.not_mem_erase g⁻¹)] at hp
+    rw [Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem]
+    rw [← Ideal.mem_inv_pointwise_smul_iff]
+    exact Ideal.mul_le_right hp
 
 open Polynomial in
 omit [P.IsPrime] [IsFractionRing (A ⧸ P) K] in
