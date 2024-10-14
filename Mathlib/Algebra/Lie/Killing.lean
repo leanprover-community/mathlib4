@@ -46,7 +46,7 @@ namespace LieAlgebra
 
 NB: This is not standard terminology (the literature does not seem to name Lie algebras with this
 property). -/
-class IsKilling : Prop :=
+class IsKilling : Prop where
   /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/
   killingCompl_top_eq_bot : LieIdeal.killingCompl R L ⊤ = ⊥
 

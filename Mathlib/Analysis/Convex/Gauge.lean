@@ -316,7 +316,7 @@ theorem comap_gauge_nhds_zero_le (ha : Absorbent ℝ s) (hb : Bornology.IsVonNBo
   rcases (hb hu).exists_pos with ⟨r, hr₀, hr⟩
   filter_upwards [preimage_mem_comap (gt_mem_nhds (inv_pos.2 hr₀))] with x (hx : gauge s x < r⁻¹)
   rcases exists_lt_of_gauge_lt ha hx with ⟨c, hc₀, hcr, y, hy, rfl⟩
-  have hrc := (lt_inv hr₀ hc₀).2 hcr
+  have hrc := (lt_inv_comm₀ hr₀ hc₀).2 hcr
   rcases hr c⁻¹ (hrc.le.trans (le_abs_self _)) hy with ⟨z, hz, rfl⟩
   simpa only [smul_inv_smul₀ hc₀.ne']
 

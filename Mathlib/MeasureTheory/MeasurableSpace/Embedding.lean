@@ -60,6 +60,8 @@ structure MeasurableEmbedding [MeasurableSpace α] [MeasurableSpace β] (f : α 
   /-- The image of a measurable set under a measurable embedding is a measurable set. -/
   protected measurableSet_image' : ∀ ⦃s⦄, MeasurableSet s → MeasurableSet (f '' s)
 
+attribute [fun_prop] MeasurableEmbedding.measurable
+
 namespace MeasurableEmbedding
 
 variable {mα : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {g : β → γ}
@@ -155,7 +157,7 @@ instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
 theorem coe_toEquiv (e : α ≃ᵐ β) : (e.toEquiv : α → β) = e :=
   rfl
 
-@[measurability]
+@[measurability, fun_prop]
 protected theorem measurable (e : α ≃ᵐ β) : Measurable (e : α → β) :=
   e.measurable_toFun
 
@@ -349,6 +351,18 @@ def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
   toEquiv := .prodAssoc α β γ
   measurable_toFun := measurable_fst.fst.prod_mk <| measurable_fst.snd.prod_mk measurable_snd
   measurable_invFun := (measurable_fst.prod_mk measurable_snd.fst).prod_mk measurable_snd.snd
+
+/-- `PUnit` is a left identity for product of measurable spaces up to a measurable equivalence. -/
+def punitProd : PUnit × α ≃ᵐ α where
+  toEquiv := Equiv.punitProd α
+  measurable_toFun := measurable_snd
+  measurable_invFun := measurable_prod_mk_left
+
+/-- `PUnit` is a right identity for product of measurable spaces up to a measurable equivalence. -/
+def prodPUnit : α × PUnit ≃ᵐ α where
+  toEquiv := Equiv.prodPUnit α
+  measurable_toFun := measurable_fst
+  measurable_invFun := measurable_prod_mk_right
 
 variable [MeasurableSpace δ] in
 /-- Sums of measurable spaces are symmetric. -/

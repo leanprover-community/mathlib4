@@ -2368,6 +2368,33 @@ theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {
 
 end ReApplyInnerSelf_Seminormed
 
+section SeparationQuotient
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+theorem Inseparable.inner_eq_inner {x₁ x₂ y₁ y₂ : E}
+    (hx : Inseparable x₁ x₂) (hy : Inseparable y₁ y₂) :
+    inner x₁ y₁ = (inner x₂ y₂ : 𝕜) :=
+  ((hx.prod hy).map continuous_inner).eq
+
+namespace SeparationQuotient
+
+instance : Inner 𝕜 (SeparationQuotient E) where
+  inner := SeparationQuotient.lift₂ Inner.inner fun _ _ _ _ => Inseparable.inner_eq_inner
+
+@[simp]
+theorem inner_mk_mk (x y : E) :
+    inner (mk x) (mk y) = (inner x y : 𝕜) := rfl
+
+instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
+  norm_sq_eq_inner := Quotient.ind norm_sq_eq_inner
+  conj_symm := Quotient.ind₂ inner_conj_symm
+  add_left := Quotient.ind fun x => Quotient.ind₂ <| inner_add_left x
+  smul_left := Quotient.ind₂ inner_smul_left
+
+end SeparationQuotient
+
+end SeparationQuotient
+
 section UniformSpace.Completion
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -2384,11 +2411,11 @@ open UniformSpace Function
 
 instance toInner {𝕜' E' : Type*} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
     Inner 𝕜' (Completion E') where
-  inner := curry <| (isDenseInducing_coe.prod isDenseInducing_coe).extend (uncurry inner)
+  inner := curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend (uncurry inner)
 
 @[simp]
 theorem inner_coe (a b : E) : inner (a : Completion E) (b : Completion E) = (inner a b : 𝕜) :=
-  (isDenseInducing_coe.prod isDenseInducing_coe).extend_eq
+  (isDenseInducing_coe.prodMap isDenseInducing_coe).extend_eq
     (continuous_inner : Continuous (uncurry inner : E × E → 𝕜)) (a, b)
 
 protected theorem continuous_inner :
@@ -2401,7 +2428,7 @@ protected theorem continuous_inner :
   rw [Completion.toInner, inner, uncurry_curry _]
   change
     Continuous
-      (((isDenseInducing_toCompl E).prod (isDenseInducing_toCompl E)).extend fun p : E × E =>
+      (((isDenseInducing_toCompl E).prodMap (isDenseInducing_toCompl E)).extend fun p : E × E =>
         inner' p.1 p.2)
   exact (isDenseInducing_toCompl E).extend_Z_bilin (isDenseInducing_toCompl E) this
 

@@ -146,7 +146,7 @@ variable (σ) in
 noncomputable def esymmAlgHomMonomial (t : Fin n →₀ ℕ) (r : R) :
     MvPolynomial σ R := (esymmAlgHom σ R n <| monomial t r).val
 
-variable {i : Fin n} {j : Fin m} {r : R}
+variable {i : Fin n} {r : R}
 
 lemma isSymmetric_esymmAlgHomMonomial (t : Fin n →₀ ℕ) (r : R) :
     (esymmAlgHomMonomial σ t r).IsSymmetric := (esymmAlgHom _ _ _ _).2

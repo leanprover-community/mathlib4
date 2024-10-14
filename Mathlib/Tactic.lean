@@ -143,6 +143,7 @@ import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic.Linter.OldObtain
+import Mathlib.Tactic.Linter.PPRoundtrip
 import Mathlib.Tactic.Linter.RefineLinter
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Tactic.Linter.TextBased
@@ -209,6 +210,7 @@ import Mathlib.Tactic.RewriteSearch
 import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.Ring.Compare
 import Mathlib.Tactic.Ring.PNat
 import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.Sat.FromLRAT
