@@ -479,6 +479,23 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
     exact mul_le_mul' (opow_log_le_self b hx) (opow_log_le_self b hy)
   · simpa only [log_of_left_le_one hb, zero_add] using le_rfl
 
+theorem lt_omega0_opow {a b : Ordinal} (ha : a < ω ^ b) (hb : b ≠ 0) :
+    ∃ c < b, ∃ n : ℕ, a < ω ^ c * n := by
+  use log ω a, lt_log_of_lt_opow hb ha
+  obtain ⟨n, hn⟩ := lt_omega0.1 (div_opow_log_lt a one_lt_omega0)
+  use n.succ
+  rw [natCast_succ, ← hn]
+  exact lt_mul_succ_div a (opow_ne_zero _ omega0_ne_zero)
+
+theorem lt_omega0_opow_succ {a b : Ordinal} (ha : a < ω ^ succ b) : ∃ n : ℕ, a < ω ^ b * n := by
+  obtain ⟨c, hc, n, hn⟩ := lt_omega0_opow ha (succ_ne_zero b)
+  refine ⟨n, hn.trans_le (mul_le_mul_right' ?_ _)⟩
+  rwa [opow_le_opow_iff_right one_lt_omega0, ← lt_succ_iff]
+
+theorem omega0_opow_mul_nat_lt (a : Ordinal) (n : ℕ) : ω ^ a * n < ω ^ succ a := by
+  rw [opow_succ]
+  exact mul_lt_mul_of_pos_left (nat_lt_omega0 n) (opow_pos a omega0_pos)
+
 /-! ### Interaction with `Nat.cast` -/
 
 @[simp, norm_cast]
