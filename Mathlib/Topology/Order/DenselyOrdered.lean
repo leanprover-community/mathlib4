@@ -230,31 +230,31 @@ theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
     exact ⟨Ioo x b, Ioo_mem_nhdsWithin_Iio' (hb x.2), fun z hz => hx _ hz.1.le⟩
 
 /-- A set with a point in both the frontier and the set is not open -/
-private lemma frontier_to_not_IsOpen{α: Type*} [TopologicalSpace α] {s: Set α} {a: α}
+lemma not_isOpen_of_mem_of_mem_frontier {α: Type*} [TopologicalSpace α] {s: Set α} {a: α}
     (hb: a ∈ s) (hf: a ∈ frontier s): ¬IsOpen s := by
   apply not_imp_not.mpr IsOpen.inter_frontier_eq
   simp_rw [Set.eq_empty_iff_forall_not_mem, Set.mem_inter_iff, not_forall, Classical.not_not]
   refine ⟨a, ⟨hb, hf⟩⟩
 
-/-- The interval `(-∞, a]` is not open. -/
-theorem not_IsOpen_Iic [NoMaxOrder α]: ¬IsOpen (Set.Iic a) := by
+/-- The interval `(-∞, a]` is not open -/
+theorem not_isOpen_Iic [NoMaxOrder α]: ¬IsOpen (Set.Iic a) := by
   apply not_imp_not.mpr IsOpen.inter_frontier_eq
   rw [frontier_Iic, Set.inter_singleton_eq_empty, Set.mem_Iic, Classical.not_not]
 
-/-- The interval `[a, ∞)` is not open. -/
-theorem not_IsOpen_Ici [NoMinOrder α] : ¬IsOpen (Set.Ici a) := not_IsOpen_Iic (α := αᵒᵈ)
+/-- The interval `[a, ∞)` is not open -/
+theorem not_isOpen_Ici [NoMinOrder α] : ¬IsOpen (Set.Ici a) := not_isOpen_Iic (α := αᵒᵈ)
 
 /-- The interval `(a, b]` is not open when a < b -/
-theorem not_IsOpen_Ioc [NoMaxOrder α] (h: a < b): ¬IsOpen (Set.Ioc a b) :=
-  frontier_to_not_IsOpen (Set.mem_Ioc.mpr ⟨h, le_refl _⟩) (by simp [frontier_Ioc h])
+theorem not_isOpen_Ioc [NoMaxOrder α] (h: a < b): ¬IsOpen (Set.Ioc a b) :=
+  not_isOpen_of_mem_of_mem_frontier (Set.mem_Ioc.mpr ⟨h, le_refl _⟩) (by simp [frontier_Ioc h])
 
 /-- The interval `[a, b)` is not open when a < b -/
-theorem not_IsOpen_Ico [NoMinOrder α] (h: a < b): ¬IsOpen (Set.Ico a b) := by
-  simpa only [Set.Ioc, and_comm] using (not_IsOpen_Ioc (α := αᵒᵈ) (LT.lt.dual h))
+theorem not_isOpen_Ico [NoMinOrder α] (h: a < b): ¬IsOpen (Set.Ico a b) := by
+  simpa only [Set.Ioc, and_comm] using (not_isOpen_Ioc (α := αᵒᵈ) (LT.lt.dual h))
 
 /-- The interval `[a, b]` is not open when a ≤ b -/
-theorem not_IsOpen_Icc [NoMinOrder α] [NoMaxOrder α] (h: a ≤ b): ¬IsOpen (Set.Icc a b) :=
-  frontier_to_not_IsOpen (Set.mem_Icc.mpr ⟨h, le_refl _⟩) (by simp [frontier_Icc h])
+theorem not_isOpen_Icc [NoMinOrder α] [NoMaxOrder α] (h: a ≤ b): ¬IsOpen (Set.Icc a b) :=
+  not_isOpen_of_mem_of_mem_frontier (Set.mem_Icc.mpr ⟨h, le_refl _⟩) (by simp [frontier_Icc h])
 
 set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem comap_coe_nhdsWithin_Ioi_of_Ioo_subset (ha : s ⊆ Ioi a)
