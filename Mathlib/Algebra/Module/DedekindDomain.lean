@@ -28,12 +28,10 @@ variable [IsDedekindDomain R]
 
 open UniqueFactorizationMonoid
 
-open scoped Classical
-
 /-- Over a Dedekind domain, an `I`-torsion module is the internal direct sum of its `p i ^ e i`-
 torsion submodules, where `I = ∏ i, p i ^ e i` is its unique decomposition in prime ideals. -/
-theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal {I : Ideal R} (hI : I ≠ ⊥)
-    (hM : Module.IsTorsionBySet R M I) :
+theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal [DecidableEq (Ideal R)]
+    {I : Ideal R} (hI : I ≠ ⊥) (hM : Module.IsTorsionBySet R M I) :
     DirectSum.IsInternal fun p : (factors I).toFinset =>
       torsionBySet R M (p ^ (factors I).count ↑p : Ideal R) := by
   let P := factors I
@@ -59,7 +57,8 @@ theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal {I : Ideal R} (hI 
 /-- A finitely generated torsion module over a Dedekind domain is an internal direct sum of its
 `p i ^ e i`-torsion submodules where `p i` are factors of `(⊤ : Submodule R M).annihilator` and
 `e i` are their multiplicities. -/
-theorem isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsion R M) :
+theorem isInternal_prime_power_torsion [DecidableEq (Ideal R)] [Module.Finite R M]
+    (hM : Module.IsTorsion R M) :
     DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
       torsionBySet R M (p ^ (factors (⊤ : Submodule R M).annihilator).count ↑p : Ideal R) := by
   have hM' := Module.isTorsionBySet_annihilator_top R M
@@ -72,8 +71,9 @@ theorem isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsio
 `p i ^ e i`-torsion submodules for some prime ideals `p i` and numbers `e i`. -/
 theorem exists_isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsion R M) :
     ∃ (P : Finset <| Ideal R) (_ : DecidableEq P) (_ : ∀ p ∈ P, Prime p) (e : P → ℕ),
-      DirectSum.IsInternal fun p : P => torsionBySet R M (p ^ e p : Ideal R) :=
-  ⟨_, _, fun p hp => prime_of_factor p (Multiset.mem_toFinset.mp hp), _,
+      DirectSum.IsInternal fun p : P => torsionBySet R M (p ^ e p : Ideal R) := by
+  classical
+  exact ⟨_, _, fun p hp => prime_of_factor p (Multiset.mem_toFinset.mp hp), _,
     isInternal_prime_power_torsion hM⟩
 
 end Submodule

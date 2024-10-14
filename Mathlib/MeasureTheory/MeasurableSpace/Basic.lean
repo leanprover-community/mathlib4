@@ -5,12 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
 import Mathlib.Data.Prod.TProd
-import Mathlib.GroupTheory.Coset
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Measurable spaces and measurable functions
@@ -190,6 +190,21 @@ theorem Measurable.mono {ma ma' : MeasurableSpace α} {mb mb' : MeasurableSpace 
     (hf : @Measurable α β ma mb f) (ha : ma ≤ ma') (hb : mb' ≤ mb) : @Measurable α β ma' mb' f :=
   fun _t ht => ha _ <| hf <| hb _ ht
 
+lemma Measurable.iSup' {mα : ι → MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β} (i₀ : ι)
+    (h : Measurable[mα i₀] f) :
+    Measurable[⨆ i, mα i] f :=
+  h.mono (le_iSup mα i₀) le_rfl
+
+lemma Measurable.sup_of_left {mα mα' : MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β}
+    (h : Measurable[mα] f) :
+    Measurable[mα ⊔ mα'] f :=
+  h.mono le_sup_left le_rfl
+
+lemma Measurable.sup_of_right {mα mα' : MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β}
+    (h : Measurable[mα'] f) :
+    Measurable[mα ⊔ mα'] f :=
+  h.mono le_sup_right le_rfl
+
 theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measurable α α mα m id :=
   measurable_id.mono le_rfl hm
 
@@ -216,7 +231,7 @@ theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
 theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : Measurable f :=
   fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 
-@[to_additive (attr := measurability)]
+@[to_additive (attr := measurability, fun_prop)]
 theorem measurable_one [One α] : Measurable (1 : β → α) :=
   @measurable_const _ _ _ _ 1
 
@@ -335,6 +350,16 @@ theorem measurable_to_countable [MeasurableSpace α] [Countable α] [MeasurableS
 theorem measurable_to_countable' [MeasurableSpace α] [Countable α] [MeasurableSpace β] {f : β → α}
     (h : ∀ x, MeasurableSet (f ⁻¹' {x})) : Measurable f :=
   measurable_to_countable fun y => h (f y)
+
+theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞} :
+    Measurable f ↔ ∀ n : ℕ, MeasurableSet (f ⁻¹' {↑n}) := by
+  refine ⟨fun hf n ↦ hf <| measurableSet_singleton _, fun h ↦ measurable_to_countable' fun n ↦ ?_⟩
+  cases n with
+  | top =>
+    rw [← WithTop.none_eq_top, ← compl_range_some, preimage_compl, ← iUnion_singleton_eq_range,
+      preimage_iUnion]
+    exact .compl <| .iUnion h
+  | coe n => exact h n
 
 @[measurability]
 theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
@@ -493,7 +518,7 @@ alias Measurable.subtype_val := Measurable.subtype_coe
 @[measurability]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
     Measurable fun x => (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
-  hs.2 ▸ by simp only [← preimage_comp, (· ∘ ·), Subtype.coe_mk, hf hs.1]
+  hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, Subtype.coe_mk, hf hs.1]
 
 @[measurability]
 protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
@@ -646,6 +671,7 @@ theorem Measurable.prod_mk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace
     {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
   Measurable.prod hf hg
 
+@[fun_prop]
 theorem Measurable.prod_map [MeasurableSpace δ] {f : α → β} {g : γ → δ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Prod.map f g) :=
   (hf.comp measurable_fst).prod_mk (hg.comp measurable_snd)
@@ -790,7 +816,7 @@ variable [∀ a, MeasurableSpace (π a)] [MeasurableSpace γ]
 
 theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Measurable fun x => g x a := by
   simp_rw [measurable_iff_comap_le, MeasurableSpace.pi, MeasurableSpace.comap_iSup,
-    MeasurableSpace.comap_comp, Function.comp, iSup_le_iff]
+    MeasurableSpace.comap_comp, Function.comp_def, iSup_le_iff]
 
 @[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, π a => f a :=
@@ -818,7 +844,7 @@ theorem measurable_update'  {a : δ} [DecidableEq δ] :
     exact measurable_snd
   · exact measurable_pi_iff.1 measurable_fst _
 
-theorem measurable_uniqueElim [Unique δ] [∀ i, MeasurableSpace (π i)] :
+theorem measurable_uniqueElim [Unique δ] :
     Measurable (uniqueElim : π (default : δ) → ∀ i, π i) := by
   simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
 
@@ -838,6 +864,42 @@ theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Mea
 theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
     Measurable (update · a x) :=
   measurable_update'.comp measurable_prod_mk_right
+
+@[measurability, fun_prop]
+theorem Set.measurable_restrict (s : Set δ) : Measurable (s.restrict (π := π)) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem Set.measurable_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
+    Measurable (restrict₂ (π := π) hst) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (π := π)) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem Finset.measurable_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
+    Measurable (Finset.restrict₂ (π := π) hst) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem Set.measurable_restrict_apply (s : Set α) {f : α → γ} (hf : Measurable f) :
+    Measurable (s.restrict f) := hf.comp measurable_subtype_coe
+
+@[measurability, fun_prop]
+theorem Set.measurable_restrict₂_apply {s t : Set α} (hst : s ⊆ t)
+    {f : t → γ} (hf : Measurable f) :
+    Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
+
+@[measurability, fun_prop]
+theorem Finset.measurable_restrict_apply (s : Finset α) {f : α → γ} (hf : Measurable f) :
+    Measurable (s.restrict f) := hf.comp measurable_subtype_coe
+
+@[measurability, fun_prop]
+theorem Finset.measurable_restrict₂_apply {s t : Finset α} (hst : s ⊆ t)
+    {f : t → γ} (hf : Measurable f) :
+    Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
 variable (π) in
 theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg π h).mp := by
@@ -1066,7 +1128,7 @@ lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := mea
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurable_set_not_mem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
-  (measurable_discrete Not).comp <| measurable_set_mem a
+  (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
@@ -1078,6 +1140,20 @@ lemma measurableSet_not_mem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
 
 lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
   measurable_set_iff.2 fun _ ↦ measurable_set_not_mem _
+
+lemma MeasurableSet.setOf_finite [Countable α] : MeasurableSet {s : Set α | s.Finite} :=
+  Countable.setOf_finite.measurableSet
+
+lemma MeasurableSet.setOf_infinite [Countable α] : MeasurableSet {s : Set α | s.Infinite} :=
+  .setOf_finite |> .compl
+
+lemma MeasurableSet.sep_finite [Countable α] {S : Set (Set α)} (hS : MeasurableSet S) :
+    MeasurableSet {s ∈ S | s.Finite} :=
+  hS.inter .setOf_finite
+
+lemma MeasurableSet.sep_infinite [Countable α] {S : Set (Set α)} (hS : MeasurableSet S) :
+    MeasurableSet {s ∈ S | s.Infinite} :=
+  hS.inter .setOf_infinite
 
 end Set
 end Constructions
@@ -1189,7 +1265,7 @@ namespace MeasurableSet
 variable [MeasurableSpace α]
 
 instance Subtype.instMembership : Membership α (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun a s => a ∈ (s : Set α)⟩
+  ⟨fun s a => a ∈ (s : Set α)⟩
 
 @[simp]
 theorem mem_coe (a : α) (s : Subtype (MeasurableSet : Set α → Prop)) : a ∈ (s : Set α) ↔ a ∈ s :=

@@ -28,7 +28,7 @@ open Computability
 
 universe u
 
-variable {α β γ : Type*} [dec : DecidableEq α]
+variable {α β γ : Type*}
 
 /-- This is the definition of regular expressions. The names used here is to mirror the definition
 of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
@@ -153,6 +153,9 @@ def matchEpsilon : RegularExpression α → Bool
   | comp P Q => P.matchEpsilon && Q.matchEpsilon
   | star _P => true
 
+section DecidableEq
+variable [DecidableEq α]
+
 #adaptation_note /-- around nightly-2024-02-25,
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
 /-- `P.deriv a` matches `x` if `P` matches `a :: x`, the Brzozowski derivative of `P` with respect
@@ -212,14 +215,15 @@ theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :
     · simp [List.singleton_inj]; tauto
   · rw [rmatch, rmatch, deriv]
     split_ifs with h
-    · simp only [deriv_one, zero_rmatch, cons.injEq, and_false]
-    · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false]
+    · simp only [deriv_one, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
+    · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
-  induction' x with _ _ ih generalizing P Q
-  · simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
-  · repeat rw [rmatch]
+  induction x generalizing P Q with
+  | nil => simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
+  | cons _ _ ih =>
+    repeat rw [rmatch]
     rw [deriv_add]
     exact ih _ _
 
@@ -238,7 +242,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       subst hu
       repeat rw [rmatch] at h₂
       simp [h₂]
-  · rw [rmatch]; simp [deriv]
+  · rw [rmatch]; simp only [deriv]
     split_ifs with hepsilon
     · rw [add_rmatch_iff, ih]
       constructor
@@ -291,7 +295,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · intro t' ht'
           cases ht' with
           | head ht' =>
-            simp only [ne_eq, not_false_iff, true_and, rmatch]
+            simp only [ne_eq, not_false_iff, true_and, rmatch, reduceCtorEq]
             exact ht
           | tail _ ht' => exact helem t' ht'
     · rintro ⟨S, hsum, helem⟩
@@ -302,7 +306,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · exact ⟨[], [], by tauto⟩
         · cases' t' with b t
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
-            simp only [eq_self_iff_true, not_true, Ne, false_and_iff] at helem
+            simp only [eq_self_iff_true, not_true, Ne, false_and] at helem
           simp only [List.join, List.cons_append, List.cons_eq_cons] at hsum
           refine ⟨t, U.join, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
@@ -342,6 +346,8 @@ theorem rmatch_iff_matches' (P : RegularExpression α) (x : List α) :
 
 instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _ ↦
   decidable_of_iff _ (rmatch_iff_matches' _ _)
+
+end DecidableEq
 
 #adaptation_note /-- around nightly-2024-02-25,
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/

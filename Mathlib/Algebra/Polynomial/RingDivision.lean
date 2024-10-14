@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Commelin
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.BigOperators
@@ -26,6 +26,26 @@ namespace Polynomial
 universe u v w z
 
 variable {R : Type u} {S : Type v} {T : Type w} {a b : R} {n : ℕ}
+
+section Semiring
+
+variable [Semiring R] {p q : R[X]}
+
+theorem Monic.comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.comp q).Monic := by
+  nontriviality R
+  have : (p.comp q).natDegree = p.natDegree * q.natDegree := by
+    apply natDegree_comp_eq_of_mul_ne_zero
+    simp [hp.leadingCoeff, hq.leadingCoeff]
+  rw [Monic.def, Polynomial.leadingCoeff, this, coeff_comp_degree_mul_degree h, hp.leadingCoeff,
+    hq.leadingCoeff, one_pow, mul_one]
+
+theorem Monic.comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
+  nontriviality R
+  refine hp.comp (monic_X_add_C _) fun ha => ?_
+  rw [natDegree_X_add_C] at ha
+  exact one_ne_zero ha
+
+end Semiring
 
 section CommRing
 
@@ -130,7 +150,7 @@ theorem natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p
   classical
   obtain rfl | hp := eq_or_ne p 0
   · obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
-  exact natDegree_pow' $ by
+  exact natDegree_pow' <| by
     rw [← leadingCoeff_pow, Ne, leadingCoeff_eq_zero]; exact pow_ne_zero _ hp
 
 theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
@@ -179,7 +199,7 @@ theorem natDegree_eq_zero_of_isUnit (h : IsUnit p) : natDegree p = 0 := by
   nontriviality R
   obtain ⟨q, hq⟩ := h.exists_right_inv
   have := natDegree_mul (left_ne_zero_of_mul_eq_one hq) (right_ne_zero_of_mul_eq_one hq)
-  rw [hq, natDegree_one, eq_comm, add_eq_zero_iff] at this
+  rw [hq, natDegree_one, eq_comm, add_eq_zero] at this
   exact this.1
 
 theorem degree_eq_zero_of_isUnit [Nontrivial R] (h : IsUnit p) : degree p = 0 :=
@@ -209,8 +229,6 @@ theorem not_isUnit_of_degree_pos (p : R[X])
 theorem not_isUnit_of_natDegree_pos (p : R[X])
     (hpl : 0 < p.natDegree) : ¬ IsUnit p :=
   not_isUnit_of_degree_pos _ (natDegree_pos_iff_degree_pos.mp hpl)
-
-variable [CharZero R]
 
 end NoZeroDivisors
 
@@ -311,6 +329,7 @@ variable [CommSemiring R] {a p : R[X]}
 section Monic
 
 variable (hp : p.Monic)
+include hp
 
 theorem Monic.C_dvd_iff_isUnit {a : R} : C a ∣ p ↔ IsUnit a :=
   ⟨fun h => isUnit_iff_dvd_one.mpr <|
@@ -526,6 +545,29 @@ theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
   simp_rw [eval_divByMonic_eq_trailingCoeff_comp] at hpq
   simp_rw [rootMultiplicity_eq_natTrailingDegree, mul_comp, natTrailingDegree_mul' hpq]
 
+theorem Monic.comp_X_sub_C {p : R[X]} (hp : p.Monic) (r : R) : (p.comp (X - C r)).Monic := by
+  simpa using hp.comp_X_add_C (-r)
+
+@[simp]
+theorem comp_neg_X_leadingCoeff_eq (p : R[X]) :
+    (p.comp (-X)).leadingCoeff = (-1) ^ p.natDegree * p.leadingCoeff := by
+  nontriviality R
+  by_cases h : p = 0
+  · simp [h]
+  rw [Polynomial.leadingCoeff, natDegree_comp_eq_of_mul_ne_zero, coeff_comp_degree_mul_degree] <;>
+  simp [mul_comm, h]
+
+theorem Monic.neg_one_pow_natDegree_mul_comp_neg_X {p : R[X]} (hp : p.Monic) :
+    ((-1) ^ p.natDegree * p.comp (-X)).Monic := by
+  simp only [Monic]
+  calc
+    ((-1) ^ p.natDegree * p.comp (-X)).leadingCoeff =
+        (p.comp (-X) * C ((-1) ^ p.natDegree)).leadingCoeff := by
+      simp [mul_comm]
+    _ = 1 := by
+      apply monic_mul_C_of_leadingCoeff_mul_eq_one
+      simp [← pow_add, hp]
+
 variable [IsDomain R] {p q : R[X]}
 
 @[simp]
@@ -653,17 +695,6 @@ theorem natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
       mul_one]
   · exact Multiset.forall_mem_map_iff.2 fun a _ => monic_X_sub_C a
 
-theorem Monic.comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.comp q).Monic := by
-  rw [Monic.def, leadingCoeff_comp h, Monic.def.1 hp, Monic.def.1 hq, one_pow, one_mul]
-
-theorem Monic.comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
-  refine hp.comp (monic_X_add_C _) fun ha => ?_
-  rw [natDegree_X_add_C] at ha
-  exact one_ne_zero ha
-
-theorem Monic.comp_X_sub_C (hp : p.Monic) (r : R) : (p.comp (X - C r)).Monic := by
-  simpa using hp.comp_X_add_C (-r)
-
 theorem units_coeff_zero_smul (c : R[X]ˣ) (p : R[X]) : (c : R[X]).coeff 0 • p = c * p := by
   rw [← Polynomial.C_mul', ← Polynomial.eq_C_of_degree_eq_zero (degree_coe_units c)]
 
@@ -681,7 +712,7 @@ theorem comp_eq_zero_iff : p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧
   · exact fun h =>
       Or.rec (fun h => by rw [h, zero_comp]) (fun h => by rw [h.2, comp_C, h.1, C_0]) h
 
-lemma aeval_ne_zero_of_isCoprime [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
+lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
   by_contra! hpq
   rcases h with ⟨_, _, h⟩

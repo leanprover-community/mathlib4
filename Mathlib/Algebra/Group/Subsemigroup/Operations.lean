@@ -279,6 +279,16 @@ theorem map_iSup {ι : Sort*} (f : M →ₙ* N) (s : ι → Subsemigroup M) :
   (gc_map_comap f).l_iSup
 
 @[to_additive]
+theorem map_inf (S T : Subsemigroup M) (f : M →ₙ* N) (hf : Function.Injective f) :
+    (S ⊓ T).map f = S.map f ⊓ T.map f := SetLike.coe_injective (Set.image_inter hf)
+
+@[to_additive]
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : M →ₙ* N) (hf : Function.Injective f)
+    (s : ι → Subsemigroup M) : (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
+
+@[to_additive]
 theorem comap_inf (S T : Subsemigroup N) (f : M →ₙ* N) : (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=
   (gc_map_comap f).u_inf
 
@@ -309,6 +319,7 @@ def gciMapComap (hf : Function.Injective f) : GaloisCoinsertion (map f) (comap f
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 
 variable (hf : Function.Injective f)
+include hf
 
 @[to_additive]
 theorem comap_map_eq_of_injective (S : Subsemigroup M) : (S.map f).comap f = S :=
@@ -353,6 +364,7 @@ end GaloisCoinsertion
 section GaloisInsertion
 
 variable {ι : Type*} {f : M →ₙ* N} (hf : Function.Surjective f)
+include hf
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 @[to_additive " `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. "]
@@ -487,9 +499,9 @@ theorem coe_equivMapOfInjective_apply (f : M →ₙ* N) (hf : Function.Injective
 theorem closure_closure_coe_preimage {s : Set M} :
     closure ((Subtype.val : closure s → M) ⁻¹' s) = ⊤ :=
   eq_top_iff.2 fun x =>
-    Subtype.recOn x fun _ hx _ =>
-      closure_induction' (p := fun y hy ↦ ⟨y, hy⟩ ∈ closure (((↑) : closure s → M) ⁻¹' s))
-        (fun _ hg => subset_closure hg) (fun _ _ _ _ => Subsemigroup.mul_mem _) hx
+    Subtype.recOn x fun _ hx' _ => closure_induction'
+      (p := fun y hy ↦ (⟨y, hy⟩ : closure s) ∈ closure (((↑) : closure s → M) ⁻¹' s))
+        _ (fun _ hg => subset_closure hg) (fun _ _ _ _ => Subsemigroup.mul_mem _) hx'
 
 /-- Given `Subsemigroup`s `s`, `t` of semigroups `M`, `N` respectively, `s × t` as a subsemigroup
 of `M × N`. -/
@@ -529,7 +541,7 @@ theorem top_prod_top : (⊤ : Subsemigroup M).prod (⊤ : Subsemigroup N) = ⊤ 
 
 @[to_additive bot_prod_bot]
 theorem bot_prod_bot : (⊥ : Subsemigroup M).prod (⊥ : Subsemigroup N) = ⊥ :=
-  SetLike.coe_injective <| by simp [coe_prod, Prod.one_eq_mk]
+  SetLike.coe_injective <| by simp [coe_prod]
 
 /-- The product of subsemigroups is isomorphic to their product as semigroups. -/
 @[to_additive prodEquiv
@@ -592,6 +604,15 @@ theorem coe_srange (f : M →ₙ* N) : (f.srange : Set N) = Set.range f :=
 @[to_additive (attr := simp)]
 theorem mem_srange {f : M →ₙ* N} {y : N} : y ∈ f.srange ↔ ∃ x, f x = y :=
   Iff.rfl
+
+@[to_additive]
+private theorem srange_mk_aux_mul {f : M → N} (hf : ∀ (x y : M), f (x * y) = f x * f y)
+    {x y : N} (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
+    x * y ∈ Set.range f :=
+  (srange ⟨f, hf⟩).mul_mem hx hy
+
+@[to_additive (attr := simp)] theorem srange_mk (f : M → N) (hf) :
+    srange ⟨f, hf⟩ = ⟨Set.range f, srange_mk_aux_mul hf⟩ := rfl
 
 @[to_additive]
 theorem srange_eq_map (f : M →ₙ* N) : f.srange = (⊤ : Subsemigroup M).map f :=
@@ -772,3 +793,18 @@ def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map (e : M �
     invFun := fun x => ⟨e.symm x, _⟩ }
 
 end MulEquiv
+
+namespace Subsemigroup
+
+variable [Mul M] [Mul N]
+
+@[to_additive]
+theorem map_comap_eq (f : M →ₙ* N) (S : Subsemigroup N) : (S.comap f).map f = S ⊓ f.srange :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+@[to_additive]
+theorem map_comap_eq_self {f : M →ₙ* N} {S : Subsemigroup N} (h : S ≤ f.srange) :
+    (S.comap f).map f = S := by
+  simpa only [inf_of_le_left h] using map_comap_eq f S
+
+end Subsemigroup

@@ -89,9 +89,6 @@ lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α}
   simp only [nhds_generateFrom, @forall_swap (b ∈ _), tendsto_iInf, mem_setOf_eq, and_imp,
     tendsto_principal]; rfl
 
-@[deprecated (since := "2023-12-24")]
-alias ⟨_, tendsto_nhds_generateFrom⟩ := tendsto_nhds_generateFrom_iff
-
 /-- Construct a topology on α given the filter of neighborhoods of each point of α. -/
 protected def mkOfNhds (n : α → Filter α) : TopologicalSpace α where
   IsOpen s := ∀ a ∈ s, s ∈ n a
@@ -270,7 +267,7 @@ theorem continuous_of_discreteTopology [TopologicalSpace β] {f : α → β} : C
 
 /-- A function to a discrete topological space is continuous if and only if the preimage of every
 singleton is open. -/
-theorem continuous_discrete_rng [TopologicalSpace β] [DiscreteTopology β]
+theorem continuous_discrete_rng {α} [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β]
     {f : α → β} : Continuous f ↔ ∀ b : β, IsOpen (f ⁻¹' {b}) :=
   ⟨fun h b => (isOpen_discrete _).preimage h, fun h => ⟨fun s _ => by
     rw [← biUnion_of_singleton s, preimage_iUnion₂]
@@ -520,6 +517,12 @@ lemma generateFrom_insert_univ {α : Type*} {s : Set (Set α)} :
     generateFrom (insert univ s) = generateFrom s :=
   generateFrom_insert_of_generateOpen .univ
 
+@[simp]
+lemma generateFrom_insert_empty {α : Type*} {s : Set (Set α)} :
+    generateFrom (insert ∅ s) = generateFrom s := by
+  rw [← sUnion_empty]
+  exact generateFrom_insert_of_generateOpen (.sUnion ∅ (fun s_1 a ↦ False.elim a))
+
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/
 def nhdsAdjoint (a : α) (f : Filter α) : TopologicalSpace α where
@@ -614,9 +617,6 @@ lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
     Continuous[t, generateFrom b] f ↔ ∀ s ∈ b, IsOpen (f ⁻¹' s) := by
   rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]
   simp only [isOpen_coinduced, preimage_id', subset_def, mem_setOf]
-
-@[deprecated (since := "2023-12-24")]
-alias ⟨_, continuous_generateFrom⟩ := continuous_generateFrom_iff
 
 @[continuity, fun_prop]
 theorem continuous_induced_dom {t : TopologicalSpace β} : Continuous[induced f t, t] f :=
@@ -740,6 +740,15 @@ theorem map_nhds_induced_of_surjective [T : TopologicalSpace α] {f : β → α}
     (a : β) : map f (@nhds β (TopologicalSpace.induced f T) a) = 𝓝 (f a) := by
   rw [nhds_induced, map_comap_of_surjective hf]
 
+theorem continuous_nhdsAdjoint_dom [TopologicalSpace β] {f : α → β} {a : α} {l : Filter α} :
+    Continuous[nhdsAdjoint a l, _] f ↔ Tendsto f l (𝓝 (f a)) := by
+  simp_rw [continuous_iff_le_induced, gc_nhds _ _, nhds_induced, tendsto_iff_comap]
+
+theorem coinduced_nhdsAdjoint (f : α → β) (a : α) (l : Filter α) :
+    coinduced f (nhdsAdjoint a l) = nhdsAdjoint (f a) (map f l) :=
+  eq_of_forall_ge_iff fun _ ↦ by
+    rw [gc_nhds, ← continuous_iff_coinduced_le, continuous_nhdsAdjoint_dom, Tendsto]
+
 end Constructions
 
 section Induced
@@ -776,7 +785,7 @@ end Induced
 
 section Sierpinski
 
-variable {α : Type*} [TopologicalSpace α]
+variable {α : Type*}
 
 @[simp]
 theorem isOpen_singleton_true : IsOpen ({True} : Set Prop) :=
@@ -796,6 +805,8 @@ theorem tendsto_nhds_true {l : Filter α} {p : α → Prop} :
 theorem tendsto_nhds_Prop {l : Filter α} {p : α → Prop} {q : Prop} :
     Tendsto p l (𝓝 q) ↔ (q → ∀ᶠ x in l, p x) := by
   by_cases q <;> simp [*]
+
+variable [TopologicalSpace α]
 
 theorem continuous_Prop {p : α → Prop} : Continuous p ↔ IsOpen { x | p x } := by
   simp only [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_Prop, isOpen_iff_mem_nhds]; rfl
@@ -862,8 +873,16 @@ theorem isOpen_iSup_iff {s : Set α} : IsOpen[⨆ i, t i] s ↔ ∀ i, IsOpen[t 
   show s ∈ {s | IsOpen[iSup t] s} ↔ s ∈ { x : Set α | ∀ i : ι, IsOpen[t i] x } by
     simp [setOf_isOpen_iSup]
 
+theorem isOpen_sSup_iff {s : Set α} {T : Set (TopologicalSpace α)} :
+    IsOpen[sSup T] s ↔ ∀ t ∈ T, IsOpen[t] s := by
+  simp only [sSup_eq_iSup, isOpen_iSup_iff]
+
 set_option tactic.skipAssignedInstances false in
 theorem isClosed_iSup_iff {s : Set α} : IsClosed[⨆ i, t i] s ↔ ∀ i, IsClosed[t i] s := by
   simp [← @isOpen_compl_iff _ _ (⨆ i, t i), ← @isOpen_compl_iff _ _ (t _), isOpen_iSup_iff]
+
+theorem isClosed_sSup_iff {s : Set α} {T : Set (TopologicalSpace α)} :
+    IsClosed[sSup T] s ↔ ∀ t ∈ T, IsClosed[t] s := by
+  simp only [sSup_eq_iSup, isClosed_iSup_iff]
 
 end iInf

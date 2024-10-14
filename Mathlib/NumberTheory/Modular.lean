@@ -143,7 +143,7 @@ theorem tendsto_normSq_coprime_pair :
     dsimp only [Pi.smul_apply, LinearMap.pi_apply, smul_eq_mul]
     fin_cases i
     · show (z : ℂ).im⁻¹ * (f c).im = c 0
-      rw [f_def, add_im, im_ofReal_mul, ofReal_im, add_zero, mul_left_comm, inv_mul_cancel hz,
+      rw [f_def, add_im, im_ofReal_mul, ofReal_im, add_zero, mul_left_comm, inv_mul_cancel₀ hz,
         mul_one]
     · show (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
       rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
@@ -289,7 +289,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
   · exact normSq_denom_pos g z
 
 /-- Given `z : ℍ` and a bottom row `(c,d)`, among the `g : SL(2,ℤ)` with this bottom row, minimize
-  `|(g•z).re|`.  -/
+  `|(g•z).re|`. -/
 theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     ∃ g : SL(2, ℤ), (↑ₘg) 1 = cd ∧ ∀ g' : SL(2, ℤ), (↑ₘg) 1 = (↑ₘg') 1 →
       |(g • z).re| ≤ |(g' • z).re| := by
@@ -351,13 +351,13 @@ theorem g_eq_of_c_eq_one (hc : (↑ₘg) 1 0 = 1) : g = T ^ (↑ₘg) 0 0 * S * 
 
 /-- If `1 < |z|`, then `|S • z| < 1`. -/
 theorem normSq_S_smul_lt_one (h : 1 < normSq z) : normSq ↑(S • z) < 1 := by
-  simpa [coe_S, num, denom] using (inv_lt_inv z.normSq_pos zero_lt_one).mpr h
+  simpa [coe_S, num, denom] using (inv_lt_inv₀ z.normSq_pos zero_lt_one).mpr h
 
 /-- If `|z| < 1`, then applying `S` strictly decreases `im`. -/
 theorem im_lt_im_S_smul (h : normSq z < 1) : z.im < (S • z).im := by
   have : z.im < z.im / normSq (z : ℂ) := by
     have imz : 0 < z.im := im_pos z
-    apply (lt_div_iff z.normSq_pos).mpr
+    apply (lt_div_iff₀ z.normSq_pos).mpr
     nlinarith
   convert this
   simp only [ModularGroup.im_smul_eq_div_normSq]
@@ -380,7 +380,7 @@ scoped[Modular] notation "𝒟ᵒ" => ModularGroup.fdo
 open scoped Modular
 
 theorem abs_two_mul_re_lt_one_of_mem_fdo (h : z ∈ 𝒟ᵒ) : |2 * z.re| < 1 := by
-  rw [abs_mul, abs_two, ← lt_div_iff' (zero_lt_two' ℝ)]
+  rw [abs_mul, abs_two, ← lt_div_iff₀' (zero_lt_two' ℝ)]
   exact h.2
 
 theorem three_lt_four_mul_im_sq_of_mem_fdo (h : z ∈ 𝒟ᵒ) : 3 < 4 * z.im ^ 2 := by
@@ -465,7 +465,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg
         (by linarith) (by linarith))
       hc
   have h₂ : (c * z.im) ^ 4 / normSq (denom (↑g) z) ^ 2 ≤ 1 :=
-    div_le_one_of_le
+    div_le_one_of_le₀
       (pow_four_le_pow_two_of_pow_two_le (UpperHalfPlane.c_mul_im_sq_le_normSq_denom z g))
       (sq_nonneg _)
   let nsq := normSq (denom g z)

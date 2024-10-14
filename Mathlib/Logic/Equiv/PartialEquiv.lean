@@ -289,9 +289,7 @@ theorem symm_target : e.symm.target = e.source :=
   rfl
 
 @[simp, mfld_simps]
-theorem symm_symm : e.symm.symm = e := by
-  cases e
-  rfl
+theorem symm_symm : e.symm.symm = e := rfl
 
 theorem symm_bijective :
     Function.Bijective (PartialEquiv.symm : PartialEquiv α β → PartialEquiv β α) :=
@@ -318,7 +316,7 @@ def IsImage (s : Set α) (t : Set β) : Prop :=
 
 namespace IsImage
 
-variable {e} {s : Set α} {t : Set β} {x : α} {y : β}
+variable {e} {s : Set α} {t : Set β} {x : α}
 
 theorem apply_mem_iff (h : e.IsImage s t) (hx : x ∈ e.source) : e x ∈ t ↔ x ∈ s :=
   h hx
@@ -358,7 +356,7 @@ theorem symm_image_eq (h : e.IsImage s t) : e.symm '' (e.target ∩ t) = e.sourc
   h.symm.image_eq
 
 theorem iff_preimage_eq : e.IsImage s t ↔ e.source ∩ e ⁻¹' t = e.source ∩ s := by
-  simp only [IsImage, ext_iff, mem_inter_iff, mem_preimage, and_congr_right_iff]
+  simp only [IsImage, Set.ext_iff, mem_inter_iff, mem_preimage, and_congr_right_iff]
 
 alias ⟨preimage_eq, of_preimage_eq⟩ := iff_preimage_eq
 
@@ -721,7 +719,7 @@ theorem EqOnSource.restr {e e' : PartialEquiv α β} (he : e ≈ e') (s : Set α
 theorem EqOnSource.source_inter_preimage_eq {e e' : PartialEquiv α β} (he : e ≈ e') (s : Set β) :
     e.source ∩ e ⁻¹' s = e'.source ∩ e' ⁻¹' s := by rw [he.eqOn.inter_preimage_eq, source_eq he]
 
-/-- Composition of a partial equivlance and its inverse is equivalent to
+/-- Composition of a partial equivalence and its inverse is equivalent to
 the restriction of the identity to the source. -/
 theorem self_trans_symm : e.trans e.symm ≈ ofSet e.source := by
   have A : (e.trans e.symm).source = e.source := by mfld_set_tac
@@ -792,7 +790,7 @@ theorem refl_prod_refl :
 theorem prod_trans {η : Type*} {ε : Type*} (e : PartialEquiv α β) (f : PartialEquiv β γ)
     (e' : PartialEquiv δ η) (f' : PartialEquiv η ε) :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') := by
-  ext ⟨x, y⟩ <;> simp [ext_iff]; tauto
+  ext ⟨x, y⟩ <;> simp [Set.ext_iff]; tauto
 
 end Prod
 
@@ -845,8 +843,8 @@ variable {ι : Type*} {αi βi γi : ι → Type*}
 /-- The product of a family of partial equivalences, as a partial equivalence on the pi type. -/
 @[simps (config := mfld_cfg) apply source target]
 protected def pi (ei : ∀ i, PartialEquiv (αi i) (βi i)) : PartialEquiv (∀ i, αi i) (∀ i, βi i) where
-  toFun f i := ei i (f i)
-  invFun f i := (ei i).symm (f i)
+  toFun := Pi.map fun i ↦ ei i
+  invFun := Pi.map fun i ↦ (ei i).symm
   source := pi univ fun i => (ei i).source
   target := pi univ fun i => (ei i).target
   map_source' _ hf i hi := (ei i).map_source (hf i hi)

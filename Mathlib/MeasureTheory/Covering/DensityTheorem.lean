@@ -35,7 +35,7 @@ open scoped NNReal Topology
 
 namespace IsUnifLocDoublingMeasure
 
-variable {α : Type*} [MetricSpace α] [MeasurableSpace α] (μ : Measure α)
+variable {α : Type*} [PseudoMetricSpace α] [MeasurableSpace α] (μ : Measure α)
   [IsUnifLocDoublingMeasure μ]
 
 section
@@ -69,7 +69,7 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
     (rpos : 0 < r) : closedBall y r ∈ (vitaliFamily μ K).setsAt x := by
   let R := scalingScaleOf μ (max (4 * K + 3) 3)
   simp only [vitaliFamily, VitaliFamily.enlarge, Vitali.vitaliFamily, mem_union, mem_setOf_eq,
-    isClosed_ball, true_and_iff, (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall,
+    isClosed_ball, true_and, (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall,
     measurableSet_closedBall]
   /- The measure is doubling on scales smaller than `R`. Therefore, we treat differently small
     and large balls. For large balls, this follows directly from the enlargement we used in the
@@ -123,7 +123,7 @@ theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter 
     apply (((Metric.tendsto_nhds.mp δlim _ (div_pos hε hK)).and δpos).and xmem).mono
     rintro j ⟨⟨hjε, hj₀ : 0 < δ j⟩, hx⟩ y hy
     replace hjε : (K + 1) * δ j < ε := by
-      simpa [abs_eq_self.mpr hj₀.le] using (lt_div_iff' hK).mp hjε
+      simpa [abs_eq_self.mpr hj₀.le] using (lt_div_iff₀' hK).mp hjε
     simp only [mem_closedBall] at hx hy ⊢
     linarith [dist_triangle_right y x (w j)]
 

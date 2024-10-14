@@ -65,7 +65,7 @@ variable {α : Type u} {β : Type*} [t : TopologicalSpace α] {B : Set (Set α)}
   it suffices to take unions of the basis sets to get a topology (without taking
   finite intersections as well). -/
 structure IsTopologicalBasis (s : Set (Set α)) : Prop where
-  /-- For every point `x`, the set of `t ∈ s` such that `x ∈ t` is directed downwards.  -/
+  /-- For every point `x`, the set of `t ∈ s` such that `x ∈ t` is directed downwards. -/
   exists_subset_inter : ∀ t₁ ∈ s, ∀ t₂ ∈ s, ∀ x ∈ t₁ ∩ t₂, ∃ t₃ ∈ s, x ∈ t₃ ∧ t₃ ⊆ t₁ ∩ t₂
   /-- The sets from `s` cover the whole space. -/
   sUnion_eq : ⋃₀ s = univ
@@ -242,7 +242,7 @@ protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α
     convert (hf.basis_nhds (h.nhds_hasBasis (a := f a))).to_image_id with s
     aesop
 
-protected theorem IsTopologicalBasis.induced [s : TopologicalSpace β] (f : α → β)
+protected theorem IsTopologicalBasis.induced {α} [s : TopologicalSpace β] (f : α → β)
     {T : Set (Set β)} (h : IsTopologicalBasis T) :
     IsTopologicalBasis (t := induced f s) ((preimage f) '' T) :=
   h.inducing (t := induced f s) (inducing_induced f)
@@ -285,11 +285,6 @@ protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpa
     {B : Set (Set β)} (hB : IsTopologicalBasis B) {f : α → β} :
     Continuous f ↔ ∀ s ∈ B, IsOpen (f ⁻¹' s) := by
   rw [hB.eq_generateFrom, continuous_generateFrom_iff]
-
-@[deprecated (since := "2023-12-24")]
-protected theorem IsTopologicalBasis.continuous {β : Type*} [TopologicalSpace β] {B : Set (Set β)}
-    (hB : IsTopologicalBasis B) (f : α → β) (hf : ∀ s ∈ B, IsOpen (f ⁻¹' s)) : Continuous f :=
-  hB.continuous_iff.2 hf
 
 variable (α)
 
@@ -382,9 +377,9 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
       (htd i).exists_mem_open (huo i i.2).1 ⟨_, (huo i i.2).2⟩
     choose y hyt hyu using this
     lift y to ∀ i : I, t i using hyt
-    refine ⟨f ⟨I, y⟩, huU fun i (hi : i ∈ I) ↦ ?_, mem_range_self _⟩
+    refine ⟨f ⟨I, y⟩, huU fun i (hi : i ∈ I) ↦ ?_, mem_range_self ⟨I, y⟩⟩
     simp only [f, dif_pos hi]
-    exact hyu _
+    exact hyu ⟨i, _⟩
 
 instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) :=
   quotientMap_quot_mk.separableSpace
@@ -476,7 +471,7 @@ theorem IsSeparable.univ_pi {ι : Type*} [Countable ι] {X : ι → Type*} {s : 
     refine ⟨range g, countable_range g, fun f hf ↦ mem_closure_iff.2 fun o ho hfo ↦ ?_⟩
     rcases isOpen_pi_iff.1 ho f hfo with ⟨I, u, huo, hI⟩
     rsuffices ⟨f, hf⟩ : ∃ f : (i : I) → c i, g ⟨I, f⟩ ∈ Set.pi I u
-    · exact ⟨g ⟨I, f⟩, hI hf, mem_range_self _⟩
+    · exact ⟨g ⟨I, f⟩, hI hf, mem_range_self ⟨I, f⟩⟩
     suffices H : ∀ i ∈ I, (u i ∩ c i).Nonempty by
       choose f hfu hfc using H
       refine ⟨fun i ↦ ⟨f i i.2, hfc i i.2⟩, fun i (hi : i ∈ I) ↦ ?_⟩
@@ -711,7 +706,7 @@ protected theorem IsTopologicalBasis.secondCountableTopology {b : Set (Set α)}
     (hb : IsTopologicalBasis b) (hc : b.Countable) : SecondCountableTopology α :=
   ⟨⟨b, hc, hb.eq_generateFrom⟩⟩
 
-lemma SecondCountableTopology.mk' {b : Set (Set α)} (hc : b.Countable) :
+lemma SecondCountableTopology.mk' {α} {b : Set (Set α)} (hc : b.Countable) :
     @SecondCountableTopology α (generateFrom b) :=
   @SecondCountableTopology.mk α (generateFrom b) ⟨b, hc, rfl⟩
 
@@ -769,7 +764,7 @@ instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
 
 /-- If `β` is a second-countable space, then its induced topology via
 `f` on `α` is also second-countable. -/
-theorem secondCountableTopology_induced (β) [t : TopologicalSpace β] [SecondCountableTopology β]
+theorem secondCountableTopology_induced (α β) [t : TopologicalSpace β] [SecondCountableTopology β]
     (f : α → β) : @SecondCountableTopology α (t.induced f) := by
   rcases @SecondCountableTopology.is_open_generated_countable β _ _ with ⟨b, hb, eq⟩
   letI := t.induced f
@@ -782,7 +777,7 @@ instance Subtype.secondCountableTopology (s : Set α) [SecondCountableTopology �
     SecondCountableTopology s :=
   secondCountableTopology_induced s α (↑)
 
-lemma secondCountableTopology_iInf {ι} [Countable ι] {t : ι → TopologicalSpace α}
+lemma secondCountableTopology_iInf {α ι} [Countable ι] {t : ι → TopologicalSpace α}
     (ht : ∀ i, @SecondCountableTopology α (t i)) : @SecondCountableTopology α (⨅ i, t i) := by
   rw [funext fun i => @eq_generateFrom_countableBasis α (t i) (ht i), ← generateFrom_iUnion]
   exact SecondCountableTopology.mk' <|
@@ -802,9 +797,8 @@ instance {ι : Type*} {π : ι → Type*} [Countable ι] [∀ a, TopologicalSpac
 instance (priority := 100) SecondCountableTopology.to_separableSpace [SecondCountableTopology α] :
     SeparableSpace α := by
   choose p hp using fun s : countableBasis α => nonempty_of_mem_countableBasis s.2
-  exact
-    ⟨⟨range p, countable_range _,
-        (isBasis_countableBasis α).dense_iff.2 fun o ho _ => ⟨p ⟨o, ho⟩, hp _, mem_range_self _⟩⟩⟩
+  exact ⟨⟨range p, countable_range _, (isBasis_countableBasis α).dense_iff.2 fun o ho _ =>
+          ⟨p ⟨o, ho⟩, hp ⟨o, _⟩, mem_range_self _⟩⟩⟩
 
 /-- A countable open cover induces a second-countable topology if all open covers
 are themselves second countable. -/
@@ -884,7 +878,7 @@ end Sigma
 
 section Sum
 
-variable {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+variable {β : Type*} [TopologicalSpace β]
 
 /-- In a sum space `α ⊕ β`, one can form a topological basis by taking the union of
 topological bases on each of the two components. -/
@@ -964,18 +958,19 @@ end TopologicalSpace
 
 open TopologicalSpace
 
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
+variable {α β : Type*} [TopologicalSpace α] {f : α → β}
 
-protected theorem Inducing.secondCountableTopology [SecondCountableTopology β] (hf : Inducing f) :
-    SecondCountableTopology α := by
+protected theorem Inducing.secondCountableTopology [TopologicalSpace β] [SecondCountableTopology β]
+    (hf : Inducing f) : SecondCountableTopology α := by
   rw [hf.1]
   exact secondCountableTopology_induced α β f
 
-protected theorem Embedding.secondCountableTopology [SecondCountableTopology β] (hf : Embedding f) :
-    SecondCountableTopology α :=
+protected theorem Embedding.secondCountableTopology
+    [TopologicalSpace β] [SecondCountableTopology β]
+    (hf : Embedding f) : SecondCountableTopology α :=
   hf.1.secondCountableTopology
 
-protected theorem Embedding.separableSpace [TopologicalSpace α]
+protected theorem Embedding.separableSpace
     [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : Embedding f) :
     TopologicalSpace.SeparableSpace α := by
   have := hf.secondCountableTopology

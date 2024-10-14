@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2014 Robert Lewis. All rights reserved.
+Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
+Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Ring.Int
@@ -22,7 +22,7 @@ section DivisionRing
 variable [DivisionRing α] {n : ℤ}
 
 theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
-  have hn : n ≠ 0 := by rintro rfl; exact Int.odd_iff_not_even.1 h even_zero
+  have hn : n ≠ 0 := by rintro rfl; exact Int.not_even_iff_odd.2 h even_zero
   obtain ⟨k, rfl⟩ := h
   simp_rw [zpow_add' (.inr (.inl hn)), zpow_one, zpow_mul, zpow_two, neg_mul_neg,
     neg_mul_eq_mul_neg]

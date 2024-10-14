@@ -72,7 +72,7 @@ We then set up an API for `Pell.Solution₁ d`.
 -/
 
 
-open Zsqrtd
+open CharZero Zsqrtd
 
 /-- An element of `ℤ√d` has norm one (i.e., `a.re^2 - d*a.im^2 = 1`) if and only if
 it is contained in the submonoid of unitary elements.
@@ -128,7 +128,7 @@ theorem prop_y (a : Solution₁ d) : d * a.y ^ 2 = a.x ^ 2 - 1 := by rw [← a.p
 /-- Two solutions are equal if their `x` and `y` components are equal. -/
 @[ext]
 theorem ext {a b : Solution₁ d} (hx : a.x = b.x) (hy : a.y = b.y) : a = b :=
-  Subtype.ext <| Zsqrtd.ext _ _ hx hy
+  Subtype.ext <| Zsqrtd.ext hx hy
 
 /-- Construct a solution from `x`, `y` and a proof that the equation is satisfied. -/
 def mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : Solution₁ d where
@@ -145,7 +145,7 @@ theorem y_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).y = y :=
 
 @[simp]
 theorem coe_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (↑(mk x y prop) : ℤ√d) = ⟨x, y⟩ :=
-  Zsqrtd.ext _ _ (x_mk x y prop) (y_mk x y prop)
+  Zsqrtd.ext (x_mk x y prop) (y_mk x y prop)
 
 @[simp]
 theorem x_one : (1 : Solution₁ d).x = 1 :=
@@ -206,7 +206,7 @@ theorem y_ne_zero_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : a.y ≠ 0 := 
 theorem d_pos_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : 0 < d := by
   refine pos_of_mul_pos_left ?_ (sq_nonneg a.y)
   rw [a.prop_y, sub_pos]
-  exact one_lt_pow ha two_ne_zero
+  exact one_lt_pow₀ ha two_ne_zero
 
 /-- If a solution has `x > 1`, then `d` is not a square. -/
 theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare d := by
@@ -254,7 +254,7 @@ theorem y_mul_pos {a b : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (hbx : 0
 have positive `x`. -/
 theorem x_pow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℕ) : 0 < (a ^ n).x := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, pow_zero, x_one, zero_lt_one]
+  · simp only [pow_zero, x_one, zero_lt_one]
   · rw [pow_succ]
     exact x_mul_pos ih hax
 
@@ -263,7 +263,7 @@ natural exponents have positive `y`. -/
 theorem y_pow_succ_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (n : ℕ) :
     0 < (a ^ n.succ).y := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, ← Nat.one_eq_succ_zero, hay, pow_one]
+  · simp only [pow_one, hay]
   · rw [pow_succ']
     exact y_mul_pos hax hay (x_pow_pos hax _) ih
 
@@ -305,8 +305,8 @@ theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
         (lt_or_gt_of_ne (a.x_ne_zero h₀.le)).elim
           ((le_total 0 a.y).elim (fun hy hx => ⟨-a⁻¹, ?_, ?_, ?_⟩) fun hy hx => ⟨-a, ?_, ?_, ?_⟩)
           ((le_total 0 a.y).elim (fun hy hx => ⟨a, hx, hy, ?_⟩) fun hy hx => ⟨a⁻¹, hx, ?_, ?_⟩) <;>
-      simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton_iff, true_or_iff,
-        eq_self_iff_true, x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true_iff] <;>
+      simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
+        eq_self_iff_true, x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true] <;>
     assumption
 
 end Solution₁
@@ -624,7 +624,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     lift (a * a₁⁻¹).x to ℕ using hxx₁.le with x' hx'
     -- Porting note: `ih` has its arguments in a different order compared to lean 3.
     obtain ⟨n, hn⟩ := ih x' (mod_cast hxx₂.trans_eq hax'.symm) hyy hx' hxx₁
-    exact ⟨n + 1, by rw [pow_succ', ← hn, mul_comm a, ← mul_assoc, mul_inv_self, one_mul]⟩
+    exact ⟨n + 1, by rw [pow_succ', ← hn, mul_comm a, ← mul_assoc, mul_inv_cancel, one_mul]⟩
 
 /-- Every solution is, up to a sign, a power of a given fundamental solution. -/
 theorem eq_zpow_or_neg_zpow {a₁ : Solution₁ d} (h : IsFundamental a₁) (a : Solution₁ d) :

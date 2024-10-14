@@ -31,13 +31,16 @@ theorem mem_image2_iff (hf : Injective2 f) : f a b ∈ image2 f s t ↔ a ∈ s 
     exact ⟨ha', hb'⟩, fun ⟨ha, hb⟩ => mem_image2_of_mem ha hb⟩
 
 /-- image2 is monotone with respect to `⊆`. -/
+@[gcongr]
 theorem image2_subset (hs : s ⊆ s') (ht : t ⊆ t') : image2 f s t ⊆ image2 f s' t' := by
   rintro _ ⟨a, ha, b, hb, rfl⟩
   exact mem_image2_of_mem (hs ha) (ht hb)
 
+@[gcongr]
 theorem image2_subset_left (ht : t ⊆ t') : image2 f s t ⊆ image2 f s t' :=
   image2_subset Subset.rfl ht
 
+@[gcongr]
 theorem image2_subset_right (hs : s ⊆ s') : image2 f s t ⊆ image2 f s' t :=
   image2_subset hs Subset.rfl
 
@@ -175,11 +178,11 @@ theorem image2_image_right (f : α → γ → δ) (g : β → γ) :
 
 @[simp]
 theorem image2_left (h : t.Nonempty) : image2 (fun x _ => x) s t = s := by
-  simp [nonempty_def.mp h, ext_iff]
+  simp [nonempty_def.mp h, Set.ext_iff]
 
 @[simp]
 theorem image2_right (h : s.Nonempty) : image2 (fun _ y => y) s t = t := by
-  simp [nonempty_def.mp h, ext_iff]
+  simp [nonempty_def.mp h, Set.ext_iff]
 
 lemma image2_range (f : α' → β' → γ) (g : α → α') (h : β → β') :
     image2 f (range g) (range h) = range fun x : α × β ↦ f (g x.1) (h x.2) := by

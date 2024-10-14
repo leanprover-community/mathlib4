@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Yury G. Kudryashov
+Authors: Andrew Yang, Yury Kudryashov
 -/
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Inseparable points in a topological space
@@ -53,20 +54,15 @@ theorem specializes_TFAE (x y : X) :
       y ∈ closure ({ x } : Set X),
       closure ({ y } : Set X) ⊆ closure { x },
       ClusterPt y (pure x)] := by
-  tfae_have 1 → 2
-  · exact (pure_le_nhds _).trans
-  tfae_have 2 → 3
-  · exact fun h s hso hy => h (hso.mem_nhds hy)
-  tfae_have 3 → 4
-  · exact fun h s hsc hx => of_not_not fun hy => h sᶜ hsc.isOpen_compl hy hx
-  tfae_have 4 → 5
-  · exact fun h => h _ isClosed_closure (subset_closure <| mem_singleton _)
-  tfae_have 6 ↔ 5
-  · exact isClosed_closure.closure_subset_iff.trans singleton_subset_iff
-  tfae_have 5 ↔ 7
-  · rw [mem_closure_iff_clusterPt, principal_singleton]
-  tfae_have 5 → 1
-  · refine fun h => (nhds_basis_opens _).ge_iff.2 ?_
+  tfae_have 1 → 2 := (pure_le_nhds _).trans
+  tfae_have 2 → 3 := fun h s hso hy => h (hso.mem_nhds hy)
+  tfae_have 3 → 4 := fun h s hsc hx => of_not_not fun hy => h sᶜ hsc.isOpen_compl hy hx
+  tfae_have 4 → 5 := fun h => h _ isClosed_closure (subset_closure <| mem_singleton _)
+  tfae_have 6 ↔ 5 := isClosed_closure.closure_subset_iff.trans singleton_subset_iff
+  tfae_have 5 ↔ 7 := by
+    rw [mem_closure_iff_clusterPt, principal_singleton]
+  tfae_have 5 → 1 := by
+    refine fun h => (nhds_basis_opens _).ge_iff.2 ?_
     rintro s ⟨hy, ho⟩
     rcases mem_closure_iff.1 h s ho hy with ⟨z, hxs, rfl : z = x⟩
     exact ho.mem_nhds hxs
@@ -358,7 +354,7 @@ lemma specializingMap_iff_isClosed_image_closure_singleton (hf : Continuous f) :
   exact isClosed_closure
 
 lemma IsClosedMap.specializingMap (hf : IsClosedMap f) : SpecializingMap f :=
-  specializingMap_iff_stableUnderSpecialization_image_singleton.mpr $
+  specializingMap_iff_stableUnderSpecialization_image_singleton.mpr <|
     fun _ ↦ (hf _ isClosed_closure).stableUnderSpecialization
 
 lemma Inducing.specializingMap (hf : Inducing f) (h : StableUnderSpecialization (range f)) :
@@ -541,6 +537,10 @@ instance [Inhabited X] : Inhabited (SeparationQuotient X) :=
 instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
+@[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mk 1⟩
+
+@[to_additive (attr := simp)] theorem mk_one [One X] : mk (1 : X) = 1 := rfl
+
 theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
   refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
@@ -548,6 +548,9 @@ theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
 
 theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =>
   quotientMap_mk.isOpen_preimage.1 <| by rwa [preimage_image_mk_open hs]
+
+theorem isOpenQuotientMap_mk : IsOpenQuotientMap (mk : X → SeparationQuotient X) :=
+  ⟨surjective_mk, continuous_mk, isOpenMap_mk⟩
 
 theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := by
   refine Subset.antisymm ?_ (subset_preimage_image _ _)
@@ -600,14 +603,8 @@ theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
   rw [nhdsWithin, ← comap_principal, Filter.push_pull, nhdsWithin, map_mk_nhds]
 
 /-- The map `(x, y) ↦ (mk x, mk y)` is a quotient map. -/
-theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) := by
-  have hsurj : Surjective (Prod.map mk mk : X × Y → _) := surjective_mk.prodMap surjective_mk
-  refine quotientMap_iff.2 ⟨hsurj, fun s ↦ ?_⟩
-  refine ⟨fun hs ↦ hs.preimage (continuous_mk.prod_map continuous_mk), fun hs ↦ ?_⟩
-  refine isOpen_iff_mem_nhds.2 <| hsurj.forall.2 fun (x, y) h ↦ ?_
-  rw [Prod.map_mk, nhds_prod_eq, ← map_mk_nhds, ← map_mk_nhds, Filter.prod_map_map_eq',
-    ← nhds_prod_eq, Filter.mem_map]
-  exact hs.mem_nhds h
+theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) :=
+  (isOpenQuotientMap_mk.prodMap isOpenQuotientMap_mk).quotientMap
 
 /-- Lift a map `f : X → α` such that `Inseparable x y → f x = f y` to a map
 `SeparationQuotient X → α`. -/

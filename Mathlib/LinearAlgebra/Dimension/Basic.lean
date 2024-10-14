@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
+Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
 import Mathlib.LinearAlgebra.LinearIndependent
 
@@ -66,10 +66,9 @@ lemma nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndependent 
 
 end
 
-variable [Ring R] [Ring R'] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
-variable [Module R M] [Module R M'] [Module R M₁] [Module R' M'] [Module R' M₁]
 
 namespace LinearIndependent
+variable [Ring R] [AddCommGroup M] [Module R M]
 
 variable [Nontrivial R]
 
@@ -94,18 +93,13 @@ theorem cardinal_le_rank' {s : Set M}
 
 end LinearIndependent
 
-@[deprecated (since := "2023-12-27")]
-alias cardinal_lift_le_rank_of_linearIndependent := LinearIndependent.cardinal_lift_le_rank
-@[deprecated (since := "2023-12-27")]
-alias cardinal_lift_le_rank_of_linearIndependent' := LinearIndependent.cardinal_lift_le_rank
-@[deprecated (since := "2023-12-27")]
-alias cardinal_le_rank_of_linearIndependent := LinearIndependent.cardinal_le_rank
-@[deprecated (since := "2023-12-27")]
-alias cardinal_le_rank_of_linearIndependent' := LinearIndependent.cardinal_le_rank'
-
 section SurjectiveInjective
 
 section Module
+variable [Ring R] [AddCommGroup M] [Module R M] [Ring R']
+
+section
+variable [AddCommGroup M'] [Module R' M']
 
 /-- If `M / R` and `M' / R'` are modules, `i : R' → R` is a map which sends non-zero elements to
 non-zero elements, `j : M →+ M'` is an injective group homomorphism, such that the scalar
@@ -144,6 +138,10 @@ theorem lift_rank_eq_of_equiv_equiv (i : ZeroHom R R') (j : M ≃+ M')
   (lift_rank_le_of_surjective_injective i j hi.2 j.injective hc).antisymm <|
     lift_rank_le_of_injective_injective i j.symm (fun _ _ ↦ hi.1 <| by rwa [i.map_zero])
       j.symm.injective fun _ _ ↦ j.symm_apply_eq.2 <| by erw [hc, j.apply_symm_apply]
+end
+
+section
+variable [AddCommGroup M₁] [Module R' M₁]
 
 /-- The same-universe version of `lift_rank_le_of_injective_injective`. -/
 theorem rank_le_of_injective_injective (i : R' → R) (j : M →+ M₁)
@@ -165,6 +163,7 @@ theorem rank_eq_of_equiv_equiv (i : ZeroHom R R') (j : M ≃+ M₁)
     Module.rank R M = Module.rank R' M₁ := by
   simpa only [lift_id] using lift_rank_eq_of_equiv_equiv i j hi hc
 
+end
 end Module
 
 namespace Algebra
@@ -208,7 +207,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
   simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
   simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, ZeroHom.coe_coe, this]
 
-variable {S' : Type v} [CommRing R'] [Ring S'] [Algebra R' S']
+variable {S' : Type v} [Ring S'] [Algebra R' S']
 
 /-- The same-universe version of `Algebra.lift_rank_le_of_injective_injective`. -/
 theorem rank_le_of_injective_injective
@@ -233,6 +232,11 @@ theorem rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
 end Algebra
 
 end SurjectiveInjective
+
+variable [Ring R] [AddCommGroup M] [Module R M]
+  [Ring R']
+  [AddCommGroup M'] [AddCommGroup M₁]
+  [Module R M'] [Module R M₁] [Module R' M'] [Module R' M₁]
 
 section
 
@@ -272,10 +276,11 @@ theorem lift_rank_map_le (f : M →ₗ[R] M') (p : Submodule R M) :
 theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
     Module.rank R (p.map f) ≤ Module.rank R p := by simpa using lift_rank_map_le f p
 
-theorem rank_le_of_submodule (s t : Submodule R M) (h : s ≤ t) :
-    Module.rank R s ≤ Module.rank R t :=
+lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
     Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
+
+@[deprecated (since := "2024-09-30")] alias rank_le_of_submodule := Submodule.rank_mono
 
 /-- Two linearly equivalent vector spaces have the same dimension, a version with different
 universes. -/
@@ -318,9 +323,11 @@ theorem rank_range_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
     Module.rank R (LinearMap.range f) = Module.rank R M' := by
   rw [LinearMap.range_eq_top.2 h, rank_top]
 
-theorem rank_submodule_le (s : Submodule R M) : Module.rank R s ≤ Module.rank R M := by
+theorem Submodule.rank_le (s : Submodule R M) : Module.rank R s ≤ Module.rank R M := by
   rw [← rank_top R M]
-  exact rank_le_of_submodule _ _ le_top
+  exact rank_mono le_top
+
+@[deprecated (since := "2024-10-02")] alias rank_submodule_le := Submodule.rank_le
 
 theorem LinearMap.lift_rank_le_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
     lift.{v} (Module.rank R M') ≤ lift.{v'} (Module.rank R M) := by

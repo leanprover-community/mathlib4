@@ -459,13 +459,12 @@ section UMP
 
 variable {T : Type*} [Monoid T]
 variable (f : R →* T) (fS : S →* Units T)
-variable (hf : ∀ s : S, f s = fS s)
 
 /-- The universal lift from a morphism `R →* T`, which maps elements of `S` to units of `T`,
 to a morphism `R[S⁻¹] →* T`. -/
 @[to_additive "The universal lift from a morphism `R →+ T`, which maps elements of `S` to
   additive-units of `T`, to a morphism `AddOreLocalization R S →+ T`."]
-def universalMulHom : R[S⁻¹] →* T where
+def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
   -- Porting note(#12129): additional beta reduction needed
   toFun x :=
     x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by
@@ -473,7 +472,7 @@ def universalMulHom : R[S⁻¹] →* T where
       have : (fS ⟨t * s, ht⟩ : T) = f t * fS s := by
         simp only [← hf, MonoidHom.map_mul]
       conv_rhs =>
-        rw [MonoidHom.map_mul, ← one_mul (f r), ← Units.val_one, ← mul_right_inv (fS s)]
+        rw [MonoidHom.map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
         rw [Units.val_mul, mul_assoc, ← mul_assoc _ (fS s : T), ← this, ← mul_assoc]
       simp only [one_mul, Units.inv_mul]
   map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp
@@ -488,6 +487,8 @@ def universalMulHom : R[S⁻¹] →* T where
       Units.val_mul, mul_assoc, ← mul_assoc (fS s₁ : T), ← mul_assoc (fS s₁ : T), Units.mul_inv,
       one_mul, ← hf, ← mul_assoc, ← map_mul _ _ r₁, ha, map_mul, hf s₂, mul_assoc,
       ← mul_assoc (fS s₂ : T), (fS s₂).mul_inv, one_mul]
+
+variable (hf : ∀ s : S, f s = fS s)
 
 @[to_additive]
 theorem universalMulHom_apply {r : R} {s : S} :
@@ -504,7 +505,7 @@ theorem universalMulHom_unique (φ : R[S⁻¹] →* T) (huniv : ∀ r : R, φ (n
     φ = universalMulHom f fS hf := by
   ext x; induction' x with r s
   rw [universalMulHom_apply, ← huniv r, numeratorHom_apply, ← one_mul (φ (r /ₒ s)), ←
-    Units.val_one, ← mul_left_inv (fS s), Units.val_mul, mul_assoc, ← hf, ← huniv, ← φ.map_mul,
+    Units.val_one, ← inv_mul_cancel (fS s), Units.val_mul, mul_assoc, ← hf, ← huniv, ← φ.map_mul,
     numeratorHom_apply, OreLocalization.mul_cancel]
 
 end UMP
@@ -867,7 +868,7 @@ instance instNegOreLocalization : Neg X[S⁻¹] :=
 protected theorem neg_def (r : X) (s : S) : -(r /ₒ s) = -r /ₒ s := by
   with_unfolding_all rfl
 
-protected theorem add_left_neg (x : X[S⁻¹]) : -x + x = 0 := by
+protected theorem neg_add_cancel (x : X[S⁻¹]) : -x + x = 0 := by
   induction' x with r s; simp
 
 /-- `zsmul` of `OreLocalization` -/
@@ -876,7 +877,7 @@ protected def zsmul : ℤ → X[S⁻¹] → X[S⁻¹] := zsmulRec
 
 unseal OreLocalization.zsmul in
 instance instAddGroupOreLocalization : AddGroup X[S⁻¹] where
-  add_left_neg := OreLocalization.add_left_neg
+  neg_add_cancel := OreLocalization.neg_add_cancel
   zsmul := OreLocalization.zsmul
 
 end AddGroup

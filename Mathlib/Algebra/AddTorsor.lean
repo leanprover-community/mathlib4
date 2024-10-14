@@ -3,7 +3,8 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Torsors of additive group actions
@@ -146,7 +147,7 @@ theorem vadd_vsub_eq_sub_vsub (g : G) (p q : P) : g +ᵥ p -ᵥ q = g - (q -ᵥ 
 as subtracting the points and subtracting that group element. -/
 theorem vsub_vadd_eq_vsub_sub (p₁ p₂ : P) (g : G) : p₁ -ᵥ (g +ᵥ p₂) = p₁ -ᵥ p₂ - g := by
   rw [← add_right_inj (p₂ -ᵥ p₁ : G), vsub_add_vsub_cancel, ← neg_vsub_eq_vsub_rev, vadd_vsub, ←
-    add_sub_assoc, ← neg_vsub_eq_vsub_rev, neg_add_self, zero_sub]
+    add_sub_assoc, ← neg_vsub_eq_vsub_rev, neg_add_cancel, zero_sub]
 
 /-- Cancellation subtracting the results of two subtractions. -/
 @[simp]
@@ -247,7 +248,6 @@ instance instAddTorsor : AddTorsor (G × G') (P × P') where
   zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
   add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)
   vsub p₁ p₂ := (p₁.1 -ᵥ p₂.1, p₁.2 -ᵥ p₂.2)
-  nonempty := Prod.instNonempty
   vsub_vadd' _ _ := Prod.ext (vsub_vadd _ _) (vsub_vadd _ _)
   vadd_vsub' _ _ := Prod.ext (vadd_vsub _ _) (vadd_vsub _ _)
 

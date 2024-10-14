@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
+Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Limits.Products
 
@@ -71,12 +71,14 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
         ext a
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        erw [comp_apply, ContinuousMap.coe_mk]
+        -- This used to be `rw`, but we need `rw; rfl` after leanprover/lean4#2644
+        rw [comp_apply, ContinuousMap.coe_mk]
+        rfl
       · delta pullbackCone
         ext a
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        erw [comp_apply, ContinuousMap.coe_mk]
+        -- This used to be `rw`, but we need `rw; rfl` after leanprover/lean4#2644
+        rw [comp_apply, ContinuousMap.coe_mk]
+        rfl
       · intro m h₁ h₂
         -- Porting note (#11041): used to be `ext x`.
         apply ContinuousMap.ext; intro x
@@ -198,13 +200,13 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   constructor
   · rintro ⟨y, rfl⟩
     simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
-    erw [← comp_apply, ← comp_apply] -- now `erw` after #13170
+    rw [← comp_apply, ← comp_apply]
     simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, comp_apply]
     exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
   have : f₁ x₁ = f₂ x₂ := by
     apply (TopCat.mono_iff_injective _).mp H₃
-    erw [← comp_apply, eq₁, ← comp_apply, eq₂, -- now `erw` after #13170
+    rw [← comp_apply, eq₁, ← comp_apply, eq₂,
       comp_apply, comp_apply, hx₁, hx₂, ← comp_apply, pullback.condition]
     rfl -- `rfl` was not needed before #13170
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
@@ -214,17 +216,14 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   erw [← comp_apply, ← comp_apply] -- now `erw` after #13170
   · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
     simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
-    erw [pullbackFst_apply, hx₁]
-    rw [← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl, comp_apply (g := g₁)]
-    rfl -- `rfl` was not needed before #13170
+    rw [pullbackFst_apply, hx₁, ← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl,
+        comp_apply (g := g₁)]
   · simp only [cospan_left, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
     erw [hx₁] -- now `erw` after #13170
-    rfl -- `rfl` was not needed before #13170
   · simp only [cospan_right, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_snd_assoc, comp_apply]
     erw [hx₂] -- now `erw` after #13170
-    rfl -- `rfl` was not needed before #13170
 
 theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
     Set.range (pullback.fst f g) = { x : X | ∃ y : Y, f x = g y } := by
@@ -318,8 +317,7 @@ theorem fst_embedding_of_right_embedding {X Y S : TopCat} (f : X ⟶ S) {g : Y �
 theorem embedding_of_pullback_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S} (H₁ : Embedding f)
     (H₂ : Embedding g) : Embedding (limit.π (cospan f g) WalkingCospan.one) := by
   convert H₂.comp (snd_embedding_of_left_embedding H₁ g)
-  erw [← coe_comp]
-  rw [← limit.w _ WalkingCospan.Hom.inr]
+  rw [← coe_comp, ← limit.w _ WalkingCospan.Hom.inr]
   rfl
 
 theorem snd_openEmbedding_of_left_openEmbedding {X Y S : TopCat} {f : X ⟶ S} (H : OpenEmbedding f)
@@ -343,8 +341,7 @@ theorem openEmbedding_of_pullback_open_embeddings {X Y S : TopCat} {f : X ⟶ S}
     (H₁ : OpenEmbedding f) (H₂ : OpenEmbedding g) :
     OpenEmbedding (limit.π (cospan f g) WalkingCospan.one) := by
   convert H₂.comp (snd_openEmbedding_of_left_openEmbedding H₁ g)
-  erw [← coe_comp]
-  rw [← limit.w _ WalkingCospan.Hom.inr]
+  rw [← coe_comp, ← limit.w _ WalkingCospan.Hom.inr]
   rfl
 
 theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.CategoryTheory.FinCategory.Basic
@@ -61,10 +61,11 @@ noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α where
   map {X Y} := Fintype.equivFin _
 
 /-- The constructed category (`AsType α`) is equivalent to `ObjAsType α`. -/
-noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α :=
-  Equivalence.mk (asTypeToObjAsType α) (objAsTypeToAsType α)
-    (NatIso.ofComponents Iso.refl)
-    (NatIso.ofComponents Iso.refl)
+noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α where
+  functor := asTypeToObjAsType α
+  inverse := objAsTypeToAsType α
+  unitIso := NatIso.ofComponents Iso.refl
+  counitIso := NatIso.ofComponents Iso.refl
 
 noncomputable instance asTypeFinCategory : FinCategory (AsType α) where
   fintypeHom := fun _ _ => show Fintype (Fin _) from inferInstance

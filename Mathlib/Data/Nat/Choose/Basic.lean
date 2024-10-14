@@ -60,6 +60,21 @@ theorem choose_succ_succ (n k : ℕ) : choose (succ n) (succ k) = choose n k + c
 theorem choose_succ_succ' (n k : ℕ) : choose (n + 1) (k + 1) = choose n k + choose n (k + 1) :=
   rfl
 
+theorem choose_succ_left (n k : ℕ) (hk : 0 < k) :
+    choose (n + 1) k = choose n (k - 1) + choose n k := by
+  obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
+  rfl
+
+theorem choose_succ_right (n k : ℕ) (hn : 0 < n) :
+    choose n (k + 1) = choose (n - 1) k + choose (n - 1) (k + 1) := by
+  obtain ⟨l, rfl⟩ : ∃ l, n = l + 1 := Nat.exists_eq_add_of_le' hn
+  rfl
+
+theorem choose_eq_choose_pred_add {n k : ℕ} (hn : 0 < n) (hk : 0 < k) :
+    choose n k = choose (n - 1) (k - 1) + choose (n - 1) k := by
+  obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
+  rw [choose_succ_right _ _ hn, Nat.add_one_sub_one]
+
 theorem choose_eq_zero_of_lt : ∀ {n k}, n < k → choose n k = 0
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
   | 0, k + 1, _ => choose_zero_succ _
@@ -362,10 +377,8 @@ theorem multichoose_eq : ∀ n k : ℕ, multichoose n k = (n + k - 1).choose k
   | n + 1, k + 1 => by
     have : n + (k + 1) < (n + 1) + (k + 1) := Nat.add_lt_add_right (Nat.lt_succ_self _) _
     have : (n + 1) + k < (n + 1) + (k + 1) := Nat.add_lt_add_left (Nat.lt_succ_self _) _
-    erw [multichoose_succ_succ, Nat.add_comm, Nat.succ_add_sub_one, ← Nat.add_assoc,
+    rw [multichoose_succ_succ, Nat.add_comm, Nat.succ_add_sub_one, ← Nat.add_assoc,
       Nat.choose_succ_succ]
     simp [multichoose_eq n (k+1), multichoose_eq (n+1) k]
-  termination_by a b => a + b
-  decreasing_by all_goals assumption
 
 end Nat

@@ -124,6 +124,9 @@ instance : Pow (SpecialLinearGroup n R) ℕ where
 instance : Inhabited (SpecialLinearGroup n R) :=
   ⟨1⟩
 
+instance [Fintype R] [DecidableEq R] : Fintype (SpecialLinearGroup n R) := Subtype.fintype _
+instance [Finite R] : Finite (SpecialLinearGroup n R) := Subtype.finite
+
 /-- The transpose of a matrix in `SL(n, R)` -/
 def transpose (A : SpecialLinearGroup n R) : SpecialLinearGroup n R :=
   ⟨A.1.transpose, A.1.det_transpose ▸ A.2⟩
@@ -177,7 +180,7 @@ instance monoid : Monoid (SpecialLinearGroup n R) :=
 
 instance : Group (SpecialLinearGroup n R) :=
   { SpecialLinearGroup.monoid, SpecialLinearGroup.hasInv with
-    mul_left_inv := fun A => by
+    inv_mul_cancel := fun A => by
       ext1
       simp [adjugate_mul] }
 
@@ -185,8 +188,8 @@ instance : Group (SpecialLinearGroup n R) :=
 def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R where
   toFun A :=
     LinearEquiv.ofLinear (Matrix.toLin' ↑ₘA) (Matrix.toLin' ↑ₘA⁻¹)
-      (by rw [← toLin'_mul, ← coe_mul, mul_right_inv, coe_one, toLin'_one])
-      (by rw [← toLin'_mul, ← coe_mul, mul_left_inv, coe_one, toLin'_one])
+      (by rw [← toLin'_mul, ← coe_mul, mul_inv_cancel, coe_one, toLin'_one])
+      (by rw [← toLin'_mul, ← coe_mul, inv_mul_cancel, coe_one, toLin'_one])
   map_one' := LinearEquiv.toLinearMap_injective Matrix.toLin'_one
   map_mul' A B := LinearEquiv.toLinearMap_injective <| Matrix.toLin'_mul ↑ₘA ↑ₘB
 
@@ -285,7 +288,7 @@ def center_equiv_rootsOfUnity' (i : n) :
   map_mul' A B := by
     dsimp
     ext
-    simp only [Submonoid.coe_mul, coe_mul, rootsOfUnity.val_mkOfPowEq_coe, Units.val_mul]
+    simp only [rootsOfUnity.val_mkOfPowEq_coe, Subgroup.coe_mul, Units.val_mul]
     rw [← scalar_eq_coe_self_center A i, ← scalar_eq_coe_self_center B i]
     simp
 

@@ -39,11 +39,12 @@ open Function
 
 open SetFamily
 
-variable {F α β : Type*} [DecidableEq α] [DecidableEq β]
+variable {F α β : Type*}
 
 namespace Finset
 
 section Sups
+variable [DecidableEq α] [DecidableEq β]
 variable [SemilatticeSup α] [SemilatticeSup β] [FunLike F α β] [SupHomClass F α β]
 variable (s s₁ s₂ t t₁ t₂ u v : Finset α)
 
@@ -98,10 +99,11 @@ theorem forall_sups_iff {p : α → Prop} : (∀ c ∈ s ⊻ t, p c) ↔ ∀ a �
 theorem sups_subset_iff : s ⊻ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a ⊔ b ∈ u :=
   image₂_subset_iff
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem sups_nonempty : (s ⊻ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected theorem Nonempty.sups : s.Nonempty → t.Nonempty → (s ⊻ t).Nonempty :=
   Nonempty.image₂
 
@@ -144,7 +146,7 @@ theorem sups_inter_subset_right : s ⊻ (t₁ ∩ t₂) ⊆ s ⊻ t₁ ∩ s ⊻
 
 theorem subset_sups {s t : Set α} :
     ↑u ⊆ s ⊻ t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' ⊻ t' :=
-  subset_image₂
+  subset_set_image₂
 
 lemma image_sups (f : F) (s t : Finset α) : image f (s ⊻ t) = image f s ⊻ image f t :=
   image_image₂_distrib <| map_sup f
@@ -189,6 +191,7 @@ theorem sups_sups_sups_comm : s ⊻ t ⊻ (u ⊻ v) = s ⊻ u ⊻ (t ⊻ v) :=
 end Sups
 
 section Infs
+variable [DecidableEq α] [DecidableEq β]
 variable [SemilatticeInf α] [SemilatticeInf β] [FunLike F α β] [InfHomClass F α β]
 variable (s s₁ s₂ t t₁ t₂ u v : Finset α)
 
@@ -243,10 +246,11 @@ theorem forall_infs_iff {p : α → Prop} : (∀ c ∈ s ⊼ t, p c) ↔ ∀ a �
 theorem infs_subset_iff : s ⊼ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a ⊓ b ∈ u :=
   image₂_subset_iff
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem infs_nonempty : (s ⊼ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected theorem Nonempty.infs : s.Nonempty → t.Nonempty → (s ⊼ t).Nonempty :=
   Nonempty.image₂
 
@@ -289,7 +293,7 @@ theorem infs_inter_subset_right : s ⊼ (t₁ ∩ t₂) ⊆ s ⊼ t₁ ∩ s ⊼
 
 theorem subset_infs {s t : Set α} :
     ↑u ⊆ s ⊼ t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' ⊼ t' :=
-  subset_image₂
+  subset_set_image₂
 
 lemma image_infs (f : F) (s t : Finset α) : image f (s ⊼ t) = image f s ⊼ image f t :=
   image_image₂_distrib <| map_inf f
@@ -337,6 +341,7 @@ open FinsetFamily
 
 section DistribLattice
 
+variable [DecidableEq α]
 variable [DistribLattice α] (s t u : Finset α)
 
 theorem sups_infs_subset_left : s ⊻ t ⊼ u ⊆ (s ⊻ t) ⊼ (s ⊻ u) :=
@@ -354,6 +359,7 @@ theorem infs_sups_subset_right : (t ⊻ u) ⊼ s ⊆ t ⊼ s ⊻ u ⊼ s :=
 end DistribLattice
 
 section Finset
+variable [DecidableEq α]
 variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α}
 
 @[simp] lemma powerset_union (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
@@ -385,6 +391,7 @@ end Finset
 
 section DisjSups
 
+variable [DecidableEq α]
 variable [SemilatticeSup α] [OrderBot α] [@DecidableRel α Disjoint] (s s₁ s₂ t t₁ t₂ u : Finset α)
 
 /-- The finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t` and `a` and `b` are disjoint.
@@ -475,20 +482,25 @@ theorem disjSups_comm : s ○ t = t ○ s := by
     rw [sup_comm] at hs
     exact ⟨b, hb, a, ha, hd, hs⟩
 
+instance : @Std.Commutative (Finset α) (· ○ ·) := ⟨disjSups_comm⟩
+
 end DisjSups
 
 open FinsetFamily
 
 section DistribLattice
 
+variable [DecidableEq α]
 variable [DistribLattice α] [OrderBot α] [@DecidableRel α Disjoint] (s t u v : Finset α)
 
 theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) := by
-  refine associative_of_commutative_of_le disjSups_comm ?_
+  refine (associative_of_commutative_of_le inferInstance ?_).assoc
   simp only [le_eq_subset, disjSups_subset_iff, mem_disjSups]
   rintro s t u _ ⟨a, ha, b, hb, hab, rfl⟩ c hc habc
   rw [disjoint_sup_left] at habc
   exact ⟨a, ha, _, ⟨b, hb, c, hc, habc.2, rfl⟩, hab.sup_right habc.1, (sup_assoc ..).symm⟩
+
+instance : @Std.Associative (Finset α) (· ○ ·) := ⟨disjSups_assoc⟩
 
 theorem disjSups_left_comm : s ○ (t ○ u) = t ○ (s ○ u) := by
   simp_rw [← disjSups_assoc, disjSups_comm s]
@@ -500,6 +512,7 @@ theorem disjSups_disjSups_disjSups_comm : s ○ t ○ (u ○ v) = s ○ u ○ (t
 
 end DistribLattice
 section Diffs
+variable [DecidableEq α]
 variable [GeneralizedBooleanAlgebra α] (s s₁ s₂ t t₁ t₂ u v : Finset α)
 
 /-- `s \\ t` is the finset of elements of the form `a \ b` where `a ∈ s`, `b ∈ t`. -/
@@ -544,9 +557,10 @@ lemma forall_mem_diffs {p : α → Prop} : (∀ c ∈ s \\ t, p c) ↔ ∀ a ∈
 
 @[simp] lemma diffs_subset_iff : s \\ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a \ b ∈ u := image₂_subset_iff
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma diffs_nonempty : (s \\ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := image₂_nonempty_iff
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected lemma Nonempty.diffs : s.Nonempty → t.Nonempty → (s \\ t).Nonempty := Nonempty.image₂
 
 lemma Nonempty.of_diffs_left : (s \\ t).Nonempty → s.Nonempty := Nonempty.of_image₂_left
@@ -568,7 +582,7 @@ lemma diffs_inter_subset_right : s \\ (t₁ ∩ t₂) ⊆ s \\ t₁ ∩ s \\ t�
 
 lemma subset_diffs {s t : Set α} :
     ↑u ⊆ Set.image2 (· \ ·) s t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' \\ t' :=
-  subset_image₂
+  subset_set_image₂
 
 variable (s t u)
 
@@ -601,7 +615,7 @@ variable {s t} {a b c : α}
 
 variable (s t)
 
-@[simp] lemma image_compl : s.image compl = sᶜˢ := by simp [compls, map_eq_image]
+@[simp] lemma image_compl [DecidableEq α] : s.image compl = sᶜˢ := by simp [compls, map_eq_image]
 
 @[simp, norm_cast] lemma coe_compls : (↑sᶜˢ : Set α) = compl '' ↑s := coe_map _ _
 
@@ -618,15 +632,19 @@ lemma exists_compls_iff {p : α → Prop} : (∃ a ∈ sᶜˢ, p a) ↔ ∃ a �
 
 lemma compls_subset_iff : sᶜˢ ⊆ t ↔ s ⊆ tᶜˢ := by rw [← compls_subset_compls, compls_compls]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma compls_nonempty : sᶜˢ.Nonempty ↔ s.Nonempty := map_nonempty
 
 protected alias ⟨Nonempty.of_compls, Nonempty.compls⟩ := compls_nonempty
+attribute [aesop safe apply (rule_sets := [finsetNonempty])] Nonempty.compls
 
 @[simp] lemma compls_empty : (∅ : Finset α)ᶜˢ = ∅ := map_empty _
 @[simp] lemma compls_eq_empty : sᶜˢ = ∅ ↔ s = ∅ := map_eq_empty
 @[simp] lemma compls_singleton (a : α) : {a}ᶜˢ = {aᶜ} := map_singleton _ _
 @[simp] lemma compls_univ [Fintype α] : (univ : Finset α)ᶜˢ = univ := by ext; simp
+
+variable [DecidableEq α]
+
 @[simp] lemma compls_union (s t : Finset α) : (s ∪ t)ᶜˢ = sᶜˢ ∪ tᶜˢ := map_union _ _
 @[simp] lemma compls_inter (s t : Finset α) : (s ∩ t)ᶜˢ = sᶜˢ ∩ tᶜˢ := map_inter _ _
 
@@ -645,7 +663,7 @@ protected alias ⟨Nonempty.of_compls, Nonempty.compls⟩ := compls_nonempty
 @[simp] lemma diffs_compls_eq_infs (s t : Finset α) : s \\ tᶜˢ = s ⊼ t := by
   rw [← infs_compls_eq_diffs, compls_compls]
 
-variable [Fintype α] {𝒜 : Finset (Finset α)} {n : ℕ}
+variable {α : Type*} [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {n : ℕ}
 
 protected lemma _root_.Set.Sized.compls (h𝒜 : (𝒜 : Set (Finset α)).Sized n) :
     (𝒜ᶜˢ : Set (Finset α)).Sized (Fintype.card α - n) :=

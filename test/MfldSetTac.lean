@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Heather Macbeth, Frédéric Dupuis
+Authors: Heather Macbeth, Frédéric Dupuis
 -/
 
 import Mathlib.Logic.Equiv.PartialEquiv
@@ -24,7 +24,8 @@ section stub_lemmas
 structure PartialHomeomorph (α : Type u) (β : Type u) extends PartialEquiv α β
 
 noncomputable
-instance PartialHomeomorph.has_coe_to_fun : CoeFun (PartialHomeomorph α β) (fun _ ↦ α → β) := test_sorry
+instance PartialHomeomorph.has_coe_to_fun : CoeFun (PartialHomeomorph α β) (fun _ ↦ α → β) :=
+  test_sorry
 
 noncomputable
 def PartialHomeomorph.symm (_e : PartialHomeomorph α β) : PartialHomeomorph β α := test_sorry
@@ -46,7 +47,7 @@ test_sorry
   (e.toPartialEquiv.symm : β → α) = (e.symm : β → α) :=
 test_sorry
 
-structure ModelWithCorners (𝕜 E H : Type u) extends PartialEquiv H E :=
+structure ModelWithCorners (𝕜 E H : Type u) extends PartialEquiv H E where
   (source_eq : source = Set.univ)
 
 attribute [mfld_simps] ModelWithCorners.source_eq
@@ -55,7 +56,8 @@ noncomputable
 def ModelWithCorners.symm (_I : ModelWithCorners 𝕜 E H) : PartialEquiv E H := test_sorry
 
 noncomputable
-instance ModelWithCorners.has_coe_to_fun : CoeFun (ModelWithCorners 𝕜 E H) (fun _ ↦ H → E) := test_sorry
+instance ModelWithCorners.has_coe_to_fun : CoeFun (ModelWithCorners 𝕜 E H) (fun _ ↦ H → E) :=
+  test_sorry
 
 @[mfld_simps] lemma ModelWithCorners.left_inv (I : ModelWithCorners 𝕜 E H) (x : H) :
   I.symm (I x) = x :=

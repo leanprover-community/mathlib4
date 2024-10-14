@@ -3,11 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Data.ZMod.Algebra
+import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
-import Mathlib.FieldTheory.Perfect
 
 /-!
 ## The Frobenius operator
@@ -48,7 +48,7 @@ and bundle it into `WittVector.frobenius`.
 
 namespace WittVector
 
-variable {p : ℕ} {R S : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S]
+variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -291,7 +291,8 @@ theorem frobenius_eq_map_frobenius : @frobenius p R _ _ = map (_root_.frobenius 
 
 @[simp]
 theorem frobenius_zmodp (x : 𝕎 (ZMod p)) : frobenius x = x := by
-  simp only [ext_iff, coeff_frobenius_charP, ZMod.pow_card, eq_self_iff_true, forall_const]
+  simp only [WittVector.ext_iff, coeff_frobenius_charP, ZMod.pow_card, eq_self_iff_true,
+    forall_const]
 
 variable (R)
 

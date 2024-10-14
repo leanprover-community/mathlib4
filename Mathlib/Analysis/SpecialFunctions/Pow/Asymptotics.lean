@@ -62,7 +62,7 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
       linarith
     case cos =>
       rw [isBigO_iff]
-      exact ⟨1, eventually_of_forall fun x => by simp [Real.abs_cos_le_one]⟩
+      exact ⟨1, Eventually.of_forall fun x => by simp [Real.abs_cos_le_one]⟩
   case inr.inl => -- b = 0
     refine Tendsto.mono_right ?_ (Iff.mpr pure_le_nhds_iff rfl)
     rw [tendsto_pure]
@@ -166,7 +166,7 @@ theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
   lift a to ℝ≥0 using ha'
   -- Porting note: reduced defeq abuse
   simp only [Set.mem_Ioi, coe_lt_coe] at ha hc
-  rw [ENNReal.coe_rpow_of_nonneg _ hy.le]
+  rw [← ENNReal.coe_rpow_of_nonneg _ hy.le]
   exact mod_cast hc a ha
 
 end Limits
@@ -190,7 +190,7 @@ theorem isTheta_exp_arg_mul_im (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x
   refine Real.isTheta_exp_comp_one.2 ⟨π * b, ?_⟩
   rw [eventually_map] at hb ⊢
   refine hb.mono fun x hx => ?_
-  erw [abs_mul]
+  rw [abs_mul]
   exact mul_le_mul (abs_arg_le_pi _) hx (abs_nonneg _) Real.pi_pos.le
 
 theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|) :

@@ -23,12 +23,11 @@ For the last statement, we both prove it as a proposition and define a bundled
 rectangular box, measure
 -/
 
-
 open Set
 
 noncomputable section
 
-open scoped ENNReal Classical BoxIntegral
+open scoped ENNReal BoxIntegral
 
 variable {ι : Type*}
 
