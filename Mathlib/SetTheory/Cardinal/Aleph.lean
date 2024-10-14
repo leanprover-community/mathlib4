@@ -37,7 +37,9 @@ universe u v w
 
 namespace Ordinal
 
-/-- An ordinal is initial when it is the first ordinal with a given cardinality. -/
+/-- An ordinal is initial when it is the first ordinal with a given cardinality.
+
+This is written as `o.card.ord = o`, i.e. `o` is the smallest ordinal with cardinality `o.card`. -/
 def IsInitial (o : Ordinal) : Prop :=
   o.card.ord = o
 
