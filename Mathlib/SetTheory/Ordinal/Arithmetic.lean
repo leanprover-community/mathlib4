@@ -421,7 +421,7 @@ theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
 
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
-  ⟨fun h _ pa => (H.le_iff.2 ((H₂ _).1 le_rfl _ pa)).trans h, fun h => by
+  ⟨fun h a pa => (H.le_iff.2 ((H₂ _).1 le_rfl _ pa)).trans h, fun h => by
     -- Porting note: `refine'` didn't work well so `induction` is used
     induction b using limitRecOn with
     | H₁ =>
@@ -454,7 +454,7 @@ theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (l : IsLimit o) : IsLimit (f o
     (succ_le_of_lt h₂).trans_lt (H.lt_iff.2 h₁)⟩
 
 theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
-  ⟨fun h _ l => (add_le_add_left l.le _).trans h, fun H =>
+  ⟨fun h b' l => (add_le_add_left l.le _).trans h, fun H =>
     le_of_not_lt <| by
       -- Porting note: `induction` tactics are required because of the parser bug.
       induction a using inductionOn with
@@ -480,17 +480,11 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ 
           · rcases a with ⟨a | a, h₁⟩ <;> rcases b with ⟨b | b, h₂⟩ <;> cases h₁ <;> cases h₂ <;>
               rintro ⟨⟩ <;> constructor <;> assumption⟩
 
-theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
+theorem add_isNormal (a : Ordinal) : IsNormal (a + ·) :=
   ⟨fun b => (add_lt_add_iff_left a).2 (lt_succ b), fun _b l _c => add_le_of_limit l⟩
 
-@[deprecated isNormal_add_right (since := "2024-10-11")]
-alias add_isNormal := isNormal_add_right
-
-theorem isLimit_add (a) {b} : IsLimit b → IsLimit (a + b) :=
-  (isNormal_add_right a).isLimit
-
-@[deprecated isLimit_add (since := "2024-10-11")]
-alias add_isLimit := isLimit_add
+theorem add_isLimit (a) {b} : IsLimit b → IsLimit (a + b) :=
+  (add_isNormal a).isLimit
 
 alias IsLimit.add := add_isLimit
 
@@ -561,12 +555,9 @@ theorem sub_sub (a b c : Ordinal) : a - b - c = a - (b + c) :=
 theorem add_sub_add_cancel (a b c : Ordinal) : a + b - (a + c) = b - c := by
   rw [← sub_sub, add_sub_cancel]
 
-theorem isLimit_sub {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
+theorem sub_isLimit {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
   ⟨ne_of_gt <| lt_sub.2 <| by rwa [add_zero], fun c h => by
     rw [lt_sub, add_succ]; exact l.2 _ (lt_sub.1 h)⟩
-
-@[deprecated isLimit_sub (since := "2024-10-11")]
-alias sub_isLimit := isLimit_sub
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem one_add_omega0 : 1 + ω = ω := by
@@ -598,9 +589,10 @@ alias one_add_of_omega_le := one_add_of_omega0_le
 instance monoid : Monoid Ordinal.{u} where
   mul a b :=
     Quotient.liftOn₂ a b
-      (fun ⟨α, r, _⟩ ⟨β, s, _⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧ :
+      (fun ⟨α, r, wo⟩ ⟨β, s, wo'⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧ :
         WellOrder → WellOrder → Ordinal)
-      fun ⟨_, _, _⟩ _ _ _ ⟨f⟩ ⟨g⟩ => Quot.sound ⟨RelIso.prodLexCongr g f⟩
+      fun ⟨α₁, r₁, o₁⟩ ⟨α₂, r₂, o₂⟩ ⟨β₁, s₁, p₁⟩ ⟨β₂, s₂, p₂⟩ ⟨f⟩ ⟨g⟩ =>
+      Quot.sound ⟨RelIso.prodLexCongr g f⟩
   one := 1
   mul_assoc a b c :=
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
@@ -739,7 +731,7 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
         Sum.lex_inl_inl] using h
 
 theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
-  ⟨fun h _ l => (mul_le_mul_left' l.le _).trans h, fun H =>
+  ⟨fun h b' l => (mul_le_mul_left' l.le _).trans h, fun H =>
     -- Porting note: `induction` tactics are required because of the parser bug.
     le_of_not_lt <| by
       induction a using inductionOn with
@@ -748,26 +740,23 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
         | H β s =>
           exact mul_le_of_limit_aux h H⟩
 
-theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
+theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
   -- Porting note(#12129): additional beta reduction needed
   ⟨fun b => by
       beta_reduce
       rw [mul_succ]
       simpa only [add_zero] using (add_lt_add_iff_left (a * b)).2 h,
-    fun _ l _ => mul_le_of_limit l⟩
-
-@[deprecated isNormal_mul_right (since := "2024-10-11")]
-alias mul_isNormal := isNormal_mul_right
+    fun b l c => mul_le_of_limit l⟩
 
 theorem lt_mul_of_limit {a b c : Ordinal} (h : IsLimit c) : a < b * c ↔ ∃ c' < c, a < b * c' := by
   -- Porting note: `bex_def` is required.
   simpa only [not_forall₂, not_le, bex_def] using not_congr (@mul_le_of_limit b c a h)
 
 theorem mul_lt_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b < a * c ↔ b < c :=
-  (isNormal_mul_right a0).lt_iff
+  (mul_isNormal a0).lt_iff
 
 theorem mul_le_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b ≤ a * c ↔ b ≤ c :=
-  (isNormal_mul_right a0).le_iff
+  (mul_isNormal a0).le_iff
 
 theorem mul_lt_mul_of_pos_left {a b c : Ordinal} (h : a < b) (c0 : 0 < c) : c * a < c * b :=
   (mul_lt_mul_iff_left c0).2 h
@@ -782,23 +771,17 @@ theorem le_of_mul_le_mul_left {a b c : Ordinal} (h : c * a ≤ c * b) (h0 : 0 < 
   le_imp_le_of_lt_imp_lt (fun h' => mul_lt_mul_of_pos_left h' h0) h
 
 theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :=
-  (isNormal_mul_right a0).inj
+  (mul_isNormal a0).inj
 
-theorem isLimit_mul {a b : Ordinal} (a0 : 0 < a) : IsLimit b → IsLimit (a * b) :=
-  (isNormal_mul_right a0).isLimit
+theorem mul_isLimit {a b : Ordinal} (a0 : 0 < a) : IsLimit b → IsLimit (a * b) :=
+  (mul_isNormal a0).isLimit
 
-@[deprecated isLimit_mul (since := "2024-10-11")]
-alias mul_isLimit := isLimit_mul
-
-theorem isLimit_mul_left {a b : Ordinal} (l : IsLimit a) (b0 : 0 < b) : IsLimit (a * b) := by
+theorem mul_isLimit_left {a b : Ordinal} (l : IsLimit a) (b0 : 0 < b) : IsLimit (a * b) := by
   rcases zero_or_succ_or_limit b with (rfl | ⟨b, rfl⟩ | lb)
   · exact b0.false.elim
   · rw [mul_succ]
-    exact isLimit_add _ l
-  · exact isLimit_mul l.pos lb
-
-@[deprecated isLimit_mul_left (since := "2024-10-11")]
-alias mul_isLimit_left := isLimit_mul_left
+    exact add_isLimit _ l
+  · exact mul_isLimit l.pos lb
 
 theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
   | 0, a => by rw [zero_nsmul, Nat.cast_zero, mul_zero]
@@ -922,11 +905,11 @@ theorem isLimit_add_iff {a b} : IsLimit (a + b) ↔ IsLimit b ∨ b = 0 ∧ IsLi
       exact ⟨h', h⟩
     left
     rw [← add_sub_cancel a b]
-    apply isLimit_sub h
+    apply sub_isLimit h
     suffices a + 0 < a + b by simpa only [add_zero] using this
     rwa [add_lt_add_iff_left, Ordinal.pos_iff_ne_zero]
   rcases h with (h | ⟨rfl, h⟩)
-  · exact isLimit_add a h
+  · exact add_isLimit a h
   · simpa only [add_zero]
 
 theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ c)
@@ -1343,6 +1326,90 @@ theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a
   convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
   rw [symm_apply_apply]
 
+-- TODO: move this together with `bddAbove_range`.
+
+instance small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
+  let f : o.toType → Set.Iio o :=
+    fun x => ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
+  let hf : Surjective f := fun b =>
+    ⟨enum (α := o.toType) (· < ·) ⟨b.val,
+        by
+          rw [type_lt]
+          exact b.prop⟩,
+      Subtype.ext (typein_enum _ _)⟩
+  small_of_surjective hf
+
+instance small_Iic (o : Ordinal.{u}) : Small.{u} (Set.Iic o) := by
+  rw [← Iio_succ]
+  infer_instance
+
+theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
+  obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
+  use a
+  intro b hb
+  simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
+
+theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
+  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
+    bddAbove_of_small _⟩
+
+theorem bddAbove_range_comp {ι : Type u} {f : ι → Ordinal.{v}} (hf : BddAbove (range f))
+    (g : Ordinal.{v} → Ordinal.{max v w}) : BddAbove (range (g ∘ f)) := by
+  rw [range_comp, bddAbove_iff_small]
+  rw [bddAbove_iff_small] at hf
+  exact small_lift _
+
+theorem iSup_le_iff_of_small {ι : Type u} {f : ι → Ordinal.{v}} [Small.{v} ι] {a} :
+    iSup f ≤ a ↔ ∀ i, f i ≤ a :=
+  ciSup_le_iff' (Ordinal.bddAbove_iff_small.mpr (small_range f))
+
+theorem small_of_exists_injection {f : Ordinal.{u} → Ordinal.{v}} (h : f.Injective)
+    {S : Set Ordinal.{u}} [hs : Small.{u} S] : Small.{v} S := by
+  rcases hs.equiv_small with ⟨α, ⟨hα⟩⟩
+  rcases univLE_of_injective h α with ⟨β, ⟨hβ⟩⟩
+  rw [small_iff]
+  exact ⟨β, ⟨hα.trans hβ⟩⟩
+
+-- TODO: make sSup version.
+theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
+    {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
+    f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
+  haveI : Small.{v} (range g) := small_of_exists_injection H.strictMono.injective
+  rw [H.le_set' Set.univ Set.univ_nonempty g]
+  · rw [← iSup_range', Ordinal.iSup_le_iff_of_small]
+    simp
+  · intro o
+    rw [Ordinal.iSup_le_iff_of_small]
+    simp
+
+theorem IsNormal.map_iSup_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
+    {ι : Type w} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
+    [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
+  haveI : Small.{u} (range g) := bddAbove_iff_small.mp hg
+  haveI : Small.{v} (range g) := small_of_exists_injection H.strictMono.injective
+  have hfg : BddAbove (range (f ∘ g)) := bddAbove_iff_small.mpr <| by
+    rw [range_comp]
+    exact small_image f (range g)
+  change f (⨆ i, g i) ≤ a ↔ ⨆ i, (f ∘ g) i ≤ a
+  rw [ciSup_le_iff hfg]
+  simp_all only [Function.comp]
+  rw [H.le_set' Set.univ Set.univ_nonempty g] <;>
+    simp [ciSup_le_iff hg]
+
+set_option linter.deprecated false in
+@[deprecated IsNormal.map_iSup (since := "2024-08-27")]
+theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
+    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) := by
+  rw [Ordinal.sup, Ordinal.sup]
+  apply eq_of_forall_ge_iff
+  intro a
+  rw [H.le_set' Set.univ Set.univ_nonempty g]
+  · rw [Ordinal.iSup_le_iff]
+    simp
+  · intro o
+    rw [Ordinal.iSup_le_iff]
+    simp
+
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]
 theorem sup_eq_sSup {s : Set Ordinal.{u}} (hs : Small.{u} s) :
@@ -1456,7 +1523,7 @@ theorem bsup_le_iff {o f a} : bsup.{u, v} o f ≤ a ↔ ∀ i h, f i h ≤ a :=
   sup_le_iff.trans
     ⟨fun h i hi => by
       rw [← familyOfBFamily_enum o f]
-      exact h _, fun h _ => h _ _⟩
+      exact h _, fun h i => h _ _⟩
 
 theorem bsup_le {o : Ordinal} {f : ∀ b < o, Ordinal} {a} :
     (∀ i h, f i h ≤ a) → bsup.{u, v} o f ≤ a :=
@@ -2215,7 +2282,7 @@ namespace Ordinal
 theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
     a < b + c ↔ ∃ c' < c, a < b + c' := by
   -- Porting note: `bex_def` is required.
-  rw [← IsNormal.bsup_eq.{u, u} (isNormal_add_right b) h, lt_bsup, bex_def]
+  rw [← IsNormal.bsup_eq.{u, u} (add_isNormal b) h, lt_bsup, bex_def]
 
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
   simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph0, card_eq_nat]
@@ -2295,9 +2362,9 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
     rcases lt_omega0.1 hb with ⟨n, rfl⟩
     exact
       (add_le_add_right (mul_div_le _ _) _).trans
-        (lt_sub.1 <| nat_lt_limit (isLimit_sub l hx) _).le
+        (lt_sub.1 <| nat_lt_limit (sub_isLimit l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
-    refine isLimit_mul_left omega0_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
+    refine mul_isLimit_left omega0_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
     intro e
     simp only [e, mul_zero]
 
@@ -2350,19 +2417,19 @@ alias IsNormal.apply_omega := IsNormal.apply_omega0
 
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
-  (isNormal_add_right o).apply_omega0
+  (add_isNormal o).apply_omega0
 
 set_option linter.deprecated false in
 @[deprecated iSup_add_nat (since := "2024-08-27")]
 theorem sup_add_nat (o : Ordinal) : (sup fun n : ℕ => o + n) = o + ω :=
-  (isNormal_add_right o).apply_omega0
+  (add_isNormal o).apply_omega0
 
 @[simp]
 theorem iSup_mul_nat (o : Ordinal) : ⨆ n : ℕ, o * n = o * ω := by
   rcases eq_zero_or_pos o with (rfl | ho)
   · rw [zero_mul]
     exact iSup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
-  · exact (isNormal_mul_right ho).apply_omega0
+  · exact (mul_isNormal ho).apply_omega0
 
 set_option linter.deprecated false in
 @[deprecated iSup_add_nat (since := "2024-08-27")]
