@@ -41,22 +41,14 @@ lemma IsInvertible.toEquiv_eq {f : E →L[𝕜] F} (hf : f.IsInvertible) :
 
 @[simp] lemma isInvertible_equiv {f : E ≃L[𝕜] F} : IsInvertible (f : E →L[𝕜] F) := ⟨f, rfl⟩
 
+lemma inverse_of_not_isInvertible {f : E →L[𝕜] F} (hf : ¬ f.IsInvertible) : f.inverse = 0 :=
+  inverse_non_equiv _ hf
+
 lemma IsInvertible.comp {g : F →L[𝕜] G} {f : E →L[𝕜] F}
     (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).IsInvertible := by
   rcases hg with ⟨N, rfl⟩
   rcases hf with ⟨M, rfl⟩
   exact ⟨M.trans N, rfl⟩
-
-lemma IsInvertible.inverse_comp {g : F →L[𝕜] G} {f : E →L[𝕜] F}
-    (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by
-  rcases hg with ⟨N, rfl⟩
-  rcases hf with ⟨M, rfl⟩
-  simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
-  rfl
-
-lemma IsInvertible.inverse_comp_apply {g : F →L[𝕜] G} {f : E →L[𝕜] F} {v : G}
-    (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
-  simp only [hg.inverse_comp hf, coe_comp', Function.comp_apply]
 
 lemma IsInvertible.of_inverse {f : E →L[𝕜] F} {g : F →L[𝕜] E}
     (hf : f ∘L g = id 𝕜 F) (hg : g ∘L f = id 𝕜 E) :
@@ -74,6 +66,30 @@ lemma IsInvertible.of_inverse {f : E →L[𝕜] F} {g : F →L[𝕜] E}
       simpa using this }
   exact ⟨M, rfl⟩
 
+lemma inverse_eq {f : E →L[𝕜] F} {g : F →L[𝕜] E}
+    (hf : f ∘L g = id 𝕜 F) (hg : g ∘L f = id 𝕜 E) :
+    f.inverse = g := by
+  let M : E ≃L[𝕜] F :=
+  { f with
+    invFun := g
+    left_inv := by
+      intro x
+      have : (g ∘L f) x = x := by simp [hg]
+      simpa using this
+    right_inv := by
+      intro x
+      have : (f ∘L g) x = x := by simp [hf]
+      simpa using this }
+  change (M : E →L[𝕜] F).inverse = g
+  simp only [inverse_equiv]
+  rfl
+
+lemma IsInvertible.inverse_apply_eq {f : E →L[𝕜] F} {x : E} {y : F} (hf : f.IsInvertible) :
+    f.inverse y = x ↔ y = f x := by
+  rcases hf with ⟨M, rfl⟩
+  simp
+  exact ContinuousLinearEquiv.symm_apply_eq M
+
 /-- At an invertible map `e : E →L[𝕜] F` between Banach spaces, the operation of
 inversion is `C^n`, for all `n`. -/
 theorem IsInvertible.contDiffAt_map_inverse {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -82,9 +98,6 @@ theorem IsInvertible.contDiffAt_map_inverse {E F : Type*} [NormedAddCommGroup E]
     ContDiffAt 𝕜 n inverse e := by
   rcases he with ⟨M, rfl⟩
   exact _root_.contDiffAt_map_inverse M
-
-lemma inverse_of_not_isInvertible {f : E →L[𝕜] F} (hf : ¬ f.IsInvertible) : f.inverse = 0 :=
-  inverse_non_equiv _ hf
 
 @[simp] lemma isInvertible_equiv_comp {e : F ≃L[𝕜] G} {f : E →L[𝕜] F} :
     ((e : F →L[𝕜] G) ∘L f).IsInvertible ↔ f.IsInvertible := by
@@ -123,6 +136,24 @@ lemma inverse_of_not_isInvertible {f : E →L[𝕜] F} (hf : ¬ f.IsInvertible) 
     rfl
   · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf]
     simp
+
+lemma IsInvertible.inverse_comp_of_left {g : F →L[𝕜] G} {f : E →L[𝕜] F}
+    (hg : g.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by
+  rcases hg with ⟨N, rfl⟩
+  simp
+
+lemma IsInvertible.inverse_comp_apply_of_left {g : F →L[𝕜] G} {f : E →L[𝕜] F} {v : G}
+    (hg : g.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
+  simp only [hg.inverse_comp_of_left, coe_comp', Function.comp_apply]
+
+lemma IsInvertible.inverse_comp_of_right {g : F →L[𝕜] G} {f : E →L[𝕜] F}
+    (hf : f.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by
+  rcases hf with ⟨M, rfl⟩
+  simp
+
+lemma IsInvertible.inverse_comp_apply_of_right {g : F →L[𝕜] G} {f : E →L[𝕜] F} {v : G}
+    (hf : f.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
+  simp only [hf.inverse_comp_of_right, coe_comp', Function.comp_apply]
 
 end ContinuousLinearMap
 
@@ -1323,6 +1354,8 @@ lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) (s : 
     mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
       mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
   have A : (extChartAt I x₀).symm (extChartAt I x₀ x₀) = x₀ := by simp
+  have A' : x₀ = (extChartAt I x₀).symm (extChartAt I x₀ x₀) := by simp
+  /-
   by_cases hfi : (mfderivWithin I I' f s x₀).IsInvertible; swap
   · simp only [mlieBracketWithin_apply, mpullbackWithin_apply,
       ContinuousLinearMap.inverse_of_not_isInvertible hfi, ContinuousLinearMap.zero_apply]
@@ -1334,52 +1367,32 @@ lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) (s : 
     · simp only [mpullbackWithin_apply]
       rw [A, ContinuousLinearMap.inverse_of_not_isInvertible hfi]
       simp [-extChartAt]
+  -/
   -- Now, interesting case where the derivative of `f` is invertible
   simp only [mlieBracketWithin_apply, mpullbackWithin_apply]
-  rw [← ContinuousLinearMap.IsInvertible.inverse_comp_apply
-    (isInvertible_mfderiv_extChartAt (mem_extChartAt_source I' (f x₀))) hfi]
+  rw [← ContinuousLinearMap.IsInvertible.inverse_comp_apply_of_left
+    (isInvertible_mfderiv_extChartAt (mem_extChartAt_source I' (f x₀)))]
   rw [← mfderiv_comp_mfderivWithin _ (mdifferentiableAt_extChartAt_self I') hf hu]
-  sorry
+  rw [eq_comm, (isInvertible_mfderiv_extChartAt (mem_extChartAt_source I x₀)).inverse_apply_eq]
+  have : (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm (range I) (extChartAt I x₀ x₀)).inverse =
+      mfderiv I 𝓘(𝕜, E) (extChartAt I x₀) x₀ := by
+    apply ContinuousLinearMap.inverse_eq
+    · convert mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt (I := I) (x := x₀)
+        (y := extChartAt I x₀ x₀) (by simp)
+    · convert mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm (I := I) (x := x₀)
+        (y := extChartAt I x₀ x₀) (by simp)
+  rw [← this, ← ContinuousLinearMap.IsInvertible.inverse_comp_apply_of_right]; swap
+  · exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x₀)
+  rw [← mfderivWithin_comp_of_eq]; rotate_left
+  · apply MDifferentiableAt.comp_mdifferentiableWithinAt
+    apply mdifferentiableAt_extChartAt
 
 
 
 
 
-  suffices mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm
-        (mpullbackWithin I I' f (mlieBracketWithin I' V W t) s)
-        ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target) (extChartAt I x₀ x₀) =
-      mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm
-        (mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s)
-        ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target) (extChartAt I x₀ x₀) by
-    rw [mpullbackWithin_eq_iff] at this
-    · convert this <;> simp
-    · sorry
-  rw [← mpullbackWithin_comp]; rotate_left
-  · sorry
-  · sorry
-  · sorry
-  · apply UniqueDiffWithinAt.uniqueMDiffWithinAt
-    exact uniqueMDiffWithinAt_iff.mp hu
-  · sorry
-  · sorry
-  rw [mpullbackWithin_apply, mpullbackWithin_apply]
-  conv_rhs => rw [mlieBracketWithin, mpullbackWithin_apply]
-  have Ex : (extChartAt I x₀).symm ((extChartAt I x₀) x₀) = x₀ := by simp
-  simp only [comp_apply, Ex]
-  rw [← ContinuousLinearMap.IsInvertible.inverse_comp_apply]; rotate_left
-  · sorry
-  · sorry
-  rw [← mfderivWithin_comp]; rotate_left
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  have : mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, E)
-      ((extChartAt I ((extChartAt I x₀).symm ((extChartAt I x₀) x₀))) ∘ ↑(extChartAt I x₀).symm)
-      (↑(extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target) ((extChartAt I x₀) x₀) =
-    ContinuousLinearMap.id _ _:= sorry
-  rw [this]
-  simp
+
+
 
 end VectorField
 
