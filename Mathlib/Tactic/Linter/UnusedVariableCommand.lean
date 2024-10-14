@@ -356,6 +356,7 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
   -- in order to update the `usedVarsRef` counter.
   -- TODO: find a way to deal with proofs that use the equation compiler directly.
   if let some decl := stx.find? (#[``declaration, `lemma].contains <|·.getKind) then
+    let s ← get
     let usedVarNames := ← do
       if #[``definition, ``Command.structure, ``Command.abbrev].contains decl[1].getKind then
         let declIdStx := (decl.find? (·.isOfKind ``declId)).getD default
@@ -373,7 +374,6 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     -- This handles `include h in` and other "`in`"s.
     let newRStx : Syntax := stx.replaceM (m := Id)
       (if · == decl then return some renStx else return none)
-    let s ← get
     elabCommand (← `(def $toFalse (S : Sort _) := False))
     try
       elabCommand newRStx
