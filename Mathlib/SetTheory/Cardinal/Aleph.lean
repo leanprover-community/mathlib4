@@ -277,7 +277,7 @@ theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = aleph o :=
     fun ⟨o, e⟩ => e.symm ▸ aleph0_le_aleph _⟩
 
 theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
-  ⟨fun o => ord_lt_ord.2 <| aleph'_lt.2 <| lt_succ o, fun o l a => by
+  ⟨fun o => ord_lt_ord.2 <| aleph'_lt.2 <| lt_succ o, fun l a => by
     simp [ord_le, aleph'_le_of_limit l]⟩
 
 theorem aleph_isNormal : IsNormal (ord ∘ aleph) :=
