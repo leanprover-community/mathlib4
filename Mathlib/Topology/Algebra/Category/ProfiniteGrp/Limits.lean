@@ -3,9 +3,8 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Nailin Guan, Youle Fang, Yuyang Zhao
 -/
-import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
-import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Topology.Algebra.ClopenNhdofOne
 
 /-!
 # A profinite group is the projective limit of finite groups
