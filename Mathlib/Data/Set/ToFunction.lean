@@ -42,7 +42,8 @@ end set_as_partial_function
 
 section set_as_total_function
 
-/-- Does given set on `α × α` represent a total function? -/
+/-- A set `s : Set (α × α)` represents a total function when for every `x : α` there's exactly one
+`y : α` with `(x, y) ∈ s`. -/
 def isFun (X : Set (α × α)) : Prop :=
   ∀ x : α, ∃! y : α, (x, y) ∈ X
 
