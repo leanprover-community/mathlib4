@@ -3,12 +3,9 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
-import Mathlib.CategoryTheory.CommSq
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
+
 import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 
 /-!
@@ -367,11 +364,11 @@ section
 variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
 
 lemma isIso_fst_of_mono (h : IsPullback fst snd f f) : IsIso fst :=
-  h.cone.fst_iso_of_mono_eq h.isLimit
+  h.cone.isIso_fst_of_mono_of_isLimit h.isLimit
 
 lemma isIso_snd_iso_of_mono {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
     (h : IsPullback fst snd f f) : IsIso snd :=
-  h.cone.snd_iso_of_mono_eq h.isLimit
+  h.cone.isIso_snd_of_mono_of_isLimit h.isLimit
 
 end
 
@@ -557,10 +554,10 @@ section
 variable {P X Y : C} {inl : X ⟶ P} {inr : X ⟶ P} {f : Y ⟶ X} [Epi f]
 
 lemma isIso_inl_iso_of_epi (h : IsPushout f f inl inr) : IsIso inl :=
-  h.cocone.inl_iso_of_epi_eq h.isColimit
+  h.cocone.isIso_inl_of_epi_of_isColimit h.isColimit
 
 lemma isIso_inr_iso_of_epi (h : IsPushout f f inl inr) : IsIso inr :=
-  h.cocone.inr_iso_of_epi_eq h.isColimit
+  h.cocone.isIso_inr_of_epi_of_isColimit h.isColimit
 
 end
 
