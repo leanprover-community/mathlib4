@@ -124,9 +124,9 @@ theorem SuperpolynomialDecay.mul_polynomial [ContinuousAdd β] [ContinuousMul β
 
 end CommSemiring
 
-section OrderedCommSemiring
+section LinearOrderedCommRing
 
-variable [TopologicalSpace β] [OrderedCommSemiring β] [OrderTopology β]
+variable [TopologicalSpace β] [LinearOrderedCommRing β] [OrderTopology β]
 
 theorem SuperpolynomialDecay.trans_eventuallyLE (hk : 0 ≤ᶠ[l] k) (hg : SuperpolynomialDecay l k g)
     (hg' : SuperpolynomialDecay l k g') (hfg : g ≤ᶠ[l] f) (hfg' : f ≤ᶠ[l] g') :
@@ -135,11 +135,6 @@ theorem SuperpolynomialDecay.trans_eventuallyLE (hk : 0 ≤ᶠ[l] k) (hg : Super
     (hfg.mp (hk.mono fun _ hx hx' => mul_le_mul_of_nonneg_left hx' (pow_nonneg hx z)))
     (hfg'.mp (hk.mono fun _ hx hx' => mul_le_mul_of_nonneg_left hx' (pow_nonneg hx z)))
 
-end OrderedCommSemiring
-
-section LinearOrderedCommRing
-
-variable [TopologicalSpace β] [LinearOrderedCommRing β] [OrderTopology β]
 variable (l k f)
 
 theorem superpolynomialDecay_iff_abs_tendsto_zero :

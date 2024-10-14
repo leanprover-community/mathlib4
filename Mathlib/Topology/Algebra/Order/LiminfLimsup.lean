@@ -131,15 +131,15 @@ instance (priority := 100) OrderBot.to_BoundedGENhdsClass [OrderBot α] : Bounde
   ⟨fun _a ↦ isBounded_ge_of_bot⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderTopology.to_BoundedLENhdsClass [IsDirected α (· ≤ ·)]
-    [OrderTopology α] : BoundedLENhdsClass α :=
+instance (priority := 100) OrderTopology.to_BoundedLENhdsClass {α : Type*} [LinearOrder α]
+    [TopologicalSpace α] [OrderTopology α] : BoundedLENhdsClass α :=
   ⟨fun a ↦
     ((isTop_or_exists_gt a).elim fun h ↦ ⟨a, Eventually.of_forall h⟩) <|
       Exists.imp fun _b ↦ ge_mem_nhds⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderTopology.to_BoundedGENhdsClass [IsDirected α (· ≥ ·)]
-    [OrderTopology α] : BoundedGENhdsClass α :=
+instance (priority := 100) OrderTopology.to_BoundedGENhdsClass {α : Type*} [LinearOrder α]
+    [TopologicalSpace α] [OrderTopology α] : BoundedGENhdsClass α :=
   ⟨fun a ↦ ((isBot_or_exists_lt a).elim fun h ↦ ⟨a, Eventually.of_forall h⟩) <|
     Exists.imp fun _b ↦ le_mem_nhds⟩
 
