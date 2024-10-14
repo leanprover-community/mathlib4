@@ -74,7 +74,7 @@ instance : FunLike (RingCon R) R (R → Prop) where
     rcases x with ⟨⟨x, _⟩, _⟩
     rcases y with ⟨⟨y, _⟩, _⟩
     congr!
-    rw [Setoid.ext_iff, (show x.Rel = y.Rel from h)]
+    rw [Setoid.ext_iff, (show ⇑x = ⇑y from h)]
     simp
 
 theorem rel_eq_coe : c.r = c :=
@@ -445,7 +445,7 @@ instance : InfSet (RingCon R) where
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
     under the map to the underlying equivalence relation. -/
 theorem sInf_toSetoid (S : Set (RingCon R)) : (sInf S).toSetoid = sInf ((·.toSetoid) '' S) :=
-  Setoid.ext' fun x y =>
+  Setoid.ext fun x y =>
     ⟨fun h r ⟨c, hS, hr⟩ => by rw [← hr]; exact h c hS, fun h c hS => h c.toSetoid ⟨c, hS, rfl⟩⟩
 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
