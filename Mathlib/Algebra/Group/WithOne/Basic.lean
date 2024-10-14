@@ -65,7 +65,6 @@ def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   invFun F := F.toMulHom.comp coeMulHom
   left_inv _ := MulHom.ext fun _ => rfl
   right_inv F := MonoidHom.ext fun x => WithOne.cases_on x F.map_one.symm (fun _ => rfl)
--- Porting note: the above proofs were broken because they were parenthesized wrong by mathport?
 
 variable (f : α →ₙ* β)
 
@@ -121,8 +120,6 @@ def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :
     left_inv := (by induction · <;> simp)
     right_inv := (by induction · <;> simp) }
 
--- Porting note: for this declaration and the two below I added the `to_additive` attribute because
--- it seemed to be missing from mathlib3
 @[to_additive (attr := simp)]
 theorem _root_.MulEquiv.withOneCongr_refl : (MulEquiv.refl α).withOneCongr = MulEquiv.refl _ :=
   MulEquiv.toMonoidHom_injective map_id
