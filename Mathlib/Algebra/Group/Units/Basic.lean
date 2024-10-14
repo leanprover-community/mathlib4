@@ -293,11 +293,6 @@ section Monoid
 
 variable [Monoid M] {a b c : M}
 
-/-- `IsUnit x` is decidable if we can decide if `x` comes from `Mˣ`. -/
-@[to_additive "`IsAddUnit x` is decidable if we can decide if `x` comes from `AddUnits M`."]
-instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
-  h
-
 @[to_additive]
 theorem mul_left_inj (h : IsUnit a) : b * a = c * a ↔ b = c :=
   let ⟨u, hu⟩ := h
