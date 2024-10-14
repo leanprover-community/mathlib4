@@ -65,40 +65,45 @@ lemma fwdDiff_smul {R : Type} [Ring R] [Module R G] (f : M → R) (g : M → G) 
 
 end smul
 
-section linear_end
-/-
-NB. This contains versions of the forward-difference operator and the shift operator bundled as
+namespace fwdDiff_aux
+/-!
+## Forward-difference and shift operators as linear endomorphisms
+
+This section contains versions of the forward-difference operator and the shift operator bundled as
 `ℤ`-linear endomorphisms. These are useful for certain proofs; but they are slightly annoying to
 use, as the source and target types of the maps have to be specified each time, and various
-coercions need to be un-wound when the operators are applied. So we conceal them from the user.
+coercions need to be un-wound when the operators are applied, so we also provide the un-bundled
+version.
 -/
 
 variable (M G) in
 @[simps]
-private def fwdDiffₗ : Module.End ℤ (M → G) where
+def fwdDiffₗ : Module.End ℤ (M → G) where
   toFun := fwdDiff
   map_add' := fwdDiff_add
   map_smul' := fwdDiff_const_smul
 
-private lemma coe_fwdDiffₗ : ↑(fwdDiffₗ M G) = fwdDiff := rfl
+lemma coe_fwdDiffₗ : ↑(fwdDiffₗ M G) = fwdDiff := rfl
 
-private lemma coe_fwdDiffₗ_pow (n : ℕ) : ↑(fwdDiffₗ M G ^ n) = fwdDiff^[n] := by
+lemma coe_fwdDiffₗ_pow (n : ℕ) : ↑(fwdDiffₗ M G ^ n) = fwdDiff^[n] := by
   ext; rw [LinearMap.pow_apply, coe_fwdDiffₗ]
 
 variable (M G) in
-private def shiftₗ : Module.End ℤ (M → G) := fwdDiffₗ M G + 1
+def shiftₗ : Module.End ℤ (M → G) := fwdDiffₗ M G + 1
 
-private lemma shiftₗ_apply (f : M → G) (y : M) : shiftₗ M G f y = f (y + 1) := by
+lemma shiftₗ_apply (f : M → G) (y : M) : shiftₗ M G f y = f (y + 1) := by
   rw [shiftₗ, LinearMap.add_apply, Pi.add_apply, LinearMap.one_apply, fwdDiffₗ_apply, fwdDiff,
     sub_add_cancel]
 
-private lemma shiftₗ_pow_apply (f : M → G) (k : ℕ) (y : M) : (shiftₗ M G ^ k) f y = f (y + k) := by
+lemma shiftₗ_pow_apply (f : M → G) (k : ℕ) (y : M) : (shiftₗ M G ^ k) f y = f (y + k) := by
   induction' k with k IH generalizing f
   · simp only [pow_zero, LinearMap.one_apply, cast_zero, add_zero]
   · simp only [pow_add, pow_one, LinearMap.mul_apply, IH (shiftₗ M G f), shiftₗ_apply, add_assoc,
       cast_add_one]
 
-end linear_end
+end fwdDiff_aux
+
+open fwdDiff_aux
 
 @[simp] lemma fwdDiff_finset_sum {α : Type*} (s : Finset α) (f : α → M → G) :
     Δ (∑ k ∈ s, f k) = ∑ k ∈ s, Δ (f k) :=
