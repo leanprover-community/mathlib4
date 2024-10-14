@@ -5,7 +5,7 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.RingTheory.OreLocalization.Basic
+import Mathlib.GroupTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids

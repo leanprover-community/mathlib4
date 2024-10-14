@@ -5,7 +5,6 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 import Mathlib.GroupTheory.OreLocalization.Basic
-import Mathlib.RingTheory.OreLocalization.OreSet
 
 /-!
 
