@@ -436,16 +436,16 @@ def mkNatIso (e₀ : F.obj zero ≅ G.obj zero) (e₁ : F.obj one ≅ G.obj one)
     (h₂ : F.map right ≫ e₀.hom = e₁.hom ≫ G.map right := by aesop_cat)
     (h₃ : F.map reflexion ≫ e₁.hom = e₀.hom ≫ G.map reflexion := by aesop_cat) :
     F ≅ G where
-      hom := mkNatTrans e₀.hom e₁.hom
-      inv := mkNatTrans e₀.inv e₁.inv
+  hom := mkNatTrans e₀.hom e₁.hom
+  inv := mkNatTrans e₀.inv e₁.inv
         (by rw [← cancel_epi e₁.hom, e₁.hom_inv_id_assoc, ← reassoc_of% h₁, e₀.hom_inv_id,
             Category.comp_id])
         (by rw [← cancel_epi e₁.hom, e₁.hom_inv_id_assoc, ← reassoc_of% h₂, e₀.hom_inv_id,
             Category.comp_id])
         (by rw [← cancel_epi e₀.hom, e₀.hom_inv_id_assoc, ← reassoc_of% h₃, e₁.hom_inv_id,
             Category.comp_id])
-      hom_inv_id := by ext x; cases x <;> simp
-      inv_hom_id := by ext x; cases x <;> simp
+  hom_inv_id := by ext x; cases x <;> simp
+  inv_hom_id := by ext x; cases x <;> simp
 
 variable (F)
 
@@ -546,7 +546,7 @@ lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :
   aesop_cat
 
 @[simp]
-lemma inclusionWalkingReflexivePairEquivCocone_inverse_obj_π
+lemma reflexiveCoforkEquivCofork_inverse_obj_π
     (G : Cofork (F.map left) (F.map right)) :
     ((reflexiveCoforkEquivCofork F).inverse.obj G).π = G.π := by
   apply Functor.Final.induction (WalkingParallelPair.inclusionWalkingReflexivePair)
@@ -594,14 +594,14 @@ def reflexiveCoequalizerIsoCoequalizer :
   ((ReflexiveCofork.isColimitEquiv _ _).symm (colimit.isColimit F)).coconePointUniqueUpToIso
     (colimit.isColimit _)
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma ι_reflexiveCoequalizerIsoCoequalizer_hom :
     colimit.ι F zero ≫ (reflexiveCoequalizerIsoCoequalizer F).hom =
       coequalizer.π (F.map left) (F.map right) :=
   IsColimit.comp_coconePointUniqueUpToIso_hom
     ((ReflexiveCofork.isColimitEquiv F _).symm _) _ WalkingParallelPair.one
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma π_reflexiveCoequalizerIsoCoequalizer_inv :
     coequalizer.π _ _ ≫ (reflexiveCoequalizerIsoCoequalizer F).inv = colimit.ι F _ := by
   rw [reflexiveCoequalizerIsoCoequalizer]
@@ -623,12 +623,12 @@ def colimitOfIsReflexivePairIsoCoequalizer :
   @reflexiveCoequalizerIsoCoequalizer _ _ (ofIsReflexivePair f g) h
 
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma ι_colimitOfIsReflexivePairIsoCoequalizer_hom :
     colimit.ι (ofIsReflexivePair f g) zero ≫ colimitOfIsReflexivePairIsoCoequalizer.hom =
       coequalizer.π f g := @ι_reflexiveCoequalizerIsoCoequalizer_hom _ _ _ h
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma π_colimitOfIsReflexivePairIsoCoequalizer_inv :
     coequalizer.π f g ≫ colimitOfIsReflexivePairIsoCoequalizer.inv =
       colimit.ι (ofIsReflexivePair f g) zero :=
