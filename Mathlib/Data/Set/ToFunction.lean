@@ -56,7 +56,7 @@ theorem isFun.isPartialFun {X : Set (α × α)} (hX : isFun X) : isPartialFun X 
 noncomputable def asFun {X : Set (α × α)} (hX : isFun X) : α → α :=
   fun a : α => (hX a).choose
 
-theorem αsFun_eq {X : Set (α × α)} (hX : isFun X) {a b : α} (hab : (a, b) ∈ X) :
+theorem asFun_eq {X : Set (α × α)} (hX : isFun X) {a b : α} (hab : (a, b) ∈ X) :
     asFun hX a = b :=
   ((hX a).choose_spec.2 b hab).symm
 
