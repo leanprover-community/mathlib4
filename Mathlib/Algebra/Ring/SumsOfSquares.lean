@@ -88,7 +88,7 @@ in `R` is a term `x : R` such that `x = y * y` for some `y : R` and in Mathlib t
 -/
 theorem mem_sumSqIn_of_isSquare [AddMonoid R] {x : R} (px : IsSquare x) : x ∈ sumSqIn R := by
   rcases px with ⟨y, py⟩
-  rw [py, ← AddMonoid.add_zero (y * y)]
+  rw [py, ← add_zero (y * y)]
   exact IsSumSq.sq_add _ _ IsSumSq.zero
 
 @[deprecated (since := "2024-08-09")] alias SquaresInSumSq := mem_sumSqIn_of_isSquare
