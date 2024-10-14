@@ -289,6 +289,22 @@ def getUsedVariableNames (pos : String.Pos) : CommandElabM (Array String) := do
   let decl := ((← getEnv).find? (names.getD default).1).getD default
   getForallStrings decl.type
 
+/-- `lemmaToThm stx` assumes that `stx` is of kind `lemma` and converts it into `theorem`. -/
+def lemmaToThm (stx : Syntax) : Syntax :=
+  let toDecl := stx.replaceM (m := Id) fun d =>
+    match d with
+      | .node kind `group args => return some (.node kind `Lean.Parser.Command.theorem args)
+      | _ => return none
+  let toDecl := toDecl.replaceM (m := Id) fun d =>
+    match d with
+      | atm@(.atom _ "lemma") => return (mkAtomFrom atm "theorem")
+      | _ => return none
+  let toDecl := toDecl.replaceM (m := Id) fun d =>
+    match d with
+      | .node kind `lemma args => return some (.node kind `Lean.Parser.Command.declaration args)
+      | _ => return none
+  toDecl
+
 @[inherit_doc Mathlib.Linter.linter.unusedVariableCommand]
 def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.unusedVariableCommand (← getOptions) do
@@ -330,7 +346,8 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     if decl[1].isOfKind ``Lean.Parser.Command.example then
       return
     let toFalse := mkIdent `toFalse
-    let renStx ← if decl.isOfKind `lemma then mkThm' decl else mkThm decl
+    let toThm : Syntax := if decl.isOfKind `lemma then lemmaToThm decl else decl
+    let renStx ← mkThm toThm
     -- Replace the declaration in the initial `stx` with the "revised" one.
     -- This handles `include h in` and other "`in`"s.
     let newRStx : Syntax := stx.replaceM (m := Id)
