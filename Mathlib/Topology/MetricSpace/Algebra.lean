@@ -6,6 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.Algebra.SeparationQuotient
 
 /-!
 # Compatibility of algebraic operations with metric space structures
@@ -212,6 +213,12 @@ instance Prod.instBoundedSMul {α β γ : Type*} [PseudoMetricSpace α] [PseudoM
   dist_pair_smul' _x₁ _x₂ _y :=
     max_le ((dist_pair_smul _ _ _).trans <| mul_le_mul_of_nonneg_left (le_max_left _ _) dist_nonneg)
       ((dist_pair_smul _ _ _).trans <| mul_le_mul_of_nonneg_left (le_max_right _ _) dist_nonneg)
+
+instance {α β : Type*}
+    [PseudoMetricSpace α] [PseudoMetricSpace β] [Zero α] [Zero β] [SMul α β] [BoundedSMul α β] :
+    BoundedSMul α (SeparationQuotient β) where
+  dist_smul_pair' _ := Quotient.ind₂ <| dist_smul_pair _
+  dist_pair_smul' _ _ := Quotient.ind <| dist_pair_smul _ _
 
 -- We don't have the `SMul α γ → SMul β δ → SMul (α × β) (γ × δ)` instance, but if we did, then
 -- `BoundedSMul α γ → BoundedSMul β δ → BoundedSMul (α × β) (γ × δ)` would hold

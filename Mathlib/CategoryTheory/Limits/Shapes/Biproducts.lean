@@ -403,6 +403,14 @@ instance (priority := 100) hasFiniteCoproducts_of_hasFiniteBiproducts [HasFinite
     HasFiniteCoproducts C where
   out _ := ⟨fun _ => hasColimitOfIso Discrete.natIsoFunctor⟩
 
+instance (priority := 100) hasProductsOfShape_of_hasBiproductsOfShape [HasBiproductsOfShape J C] :
+    HasProductsOfShape J C where
+  has_limit _ := hasLimitOfIso Discrete.natIsoFunctor.symm
+
+instance (priority := 100) hasCoproductsOfShape_of_hasBiproductsOfShape [HasBiproductsOfShape J C] :
+    HasCoproductsOfShape J C where
+  has_colimit _ := hasColimitOfIso Discrete.natIsoFunctor
+
 variable {C}
 
 /-- The isomorphism between the specified limit and the specified colimit for
@@ -546,6 +554,17 @@ theorem biproduct.isoCoproduct_inv {f : J → C} [HasBiproduct f] :
 theorem biproduct.isoCoproduct_hom {f : J → C} [HasBiproduct f] :
     (biproduct.isoCoproduct f).hom = biproduct.desc (Sigma.ι f) :=
   biproduct.hom_ext' _ _ fun j => by simp [← Iso.eq_comp_inv]
+
+/-- If a category has biproducts of a shape `J`, its `colim` and `lim` functor on diagrams over `J`
+are isomorphic. -/
+@[simps!]
+def HasBiproductsOfShape.colimIsoLim [HasBiproductsOfShape J C] :
+    colim (J := Discrete J) (C := C) ≅ lim :=
+  NatIso.ofComponents (fun F => (Sigma.isoColimit F).symm ≪≫
+      (biproduct.isoCoproduct _).symm ≪≫ biproduct.isoProduct _ ≪≫ Pi.isoLimit F)
+    fun η => colimit.hom_ext fun ⟨i⟩ => limit.hom_ext fun ⟨j⟩ => by
+      by_cases h : i = j <;>
+       simp_all [h, Sigma.isoColimit, Pi.isoLimit, biproduct.ι_π, biproduct.ι_π_assoc]
 
 theorem biproduct.map_eq_map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ b, f b ⟶ g b) :
     biproduct.map p = biproduct.map' p := by
@@ -840,7 +859,7 @@ def kernelForkBiproductToSubtype (p : Set K) :
         ext j k
         simp only [Category.assoc, biproduct.ι_fromSubtype_assoc, biproduct.ι_toSubtype_assoc,
           comp_zero, zero_comp]
-        erw [dif_neg k.2]
+        rw [dif_neg k.2]
         simp only [zero_comp])
   isLimit :=
     KernelFork.IsLimit.ofι _ _ (fun {W} g _ => g ≫ biproduct.toSubtype f pᶜ)

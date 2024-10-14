@@ -3,9 +3,9 @@ Copyright (c) 2022 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Polynomial.Cardinal
+import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.Data.ZMod.Algebra
+import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.AlgebraicIndependent
 
@@ -48,7 +48,7 @@ theorem cardinal_mk_le_sigma_polynomial :
             Polynomial.degree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective R L),
             Polynomial.degree_eq_bot]
           exact p.2.1
-        erw [Polynomial.mem_roots h, Polynomial.IsRoot, Polynomial.eval_map, ← Polynomial.aeval_def,
+        rw [Polynomial.mem_roots h, Polynomial.IsRoot, Polynomial.eval_map, ← Polynomial.aeval_def,
           p.2.2]⟩)
     fun x y => by
       intro h
@@ -92,8 +92,8 @@ variable (hv : AlgebraicIndependent R v)
 theorem isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenceBasis R v) :
     IsAlgClosure (Algebra.adjoin R (Set.range v)) K :=
   letI := RingHom.domain_nontrivial (algebraMap R K)
-  { alg_closed := by infer_instance
-    algebraic := hv.isAlgebraic }
+  { isAlgClosed := by infer_instance
+    isAlgebraic := hv.isAlgebraic }
 
 variable (hw : AlgebraicIndependent R w)
 
