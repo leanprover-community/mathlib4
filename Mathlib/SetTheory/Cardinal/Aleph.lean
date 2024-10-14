@@ -187,7 +187,7 @@ theorem omega_max (o₁ o₂ : Ordinal) : ω_ (max o₁ o₂) = max (ω_ o₁) (
 
 @[simp]
 theorem omega_zero : ω_ 0 = ω := by
-  rw [omega_eq_omega', add_zero, omega'_omega0]
+  rw [← omega'_omega0_add, add_zero, omega'_omega0]
 
 theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
   rw [← omega_zero, omega_le]
@@ -414,7 +414,7 @@ theorem aleph_zero : ℵ_ 0 = ℵ₀ := by
 
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
   apply le_antisymm _ (ciSup_le' _)
-  · rw [← aleph'_omega0_add', aleph'_limit (ho.add _)]
+  · rw [← aleph'_omega0_add, aleph'_limit (ho.add _)]
     refine ciSup_mono' (bddAbove_of_small _) ?_
     rintro ⟨i, hi⟩
     cases' lt_or_le i ω with h h
