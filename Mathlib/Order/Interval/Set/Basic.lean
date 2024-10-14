@@ -1481,7 +1481,7 @@ end Lattice
 
 section LinearOrder
 
-variable [LinearOrder α] [LinearOrder β] {f : α → β} {a a₁ a₂ b b₁ b₂ c d : α}
+variable [LinearOrder α] {a a₁ a₂ b b₁ b₂ c : α}
 
 @[simp]
 theorem Ioi_inter_Ioi : Ioi a ∩ Ioi b = Ioi (a ⊔ b) :=

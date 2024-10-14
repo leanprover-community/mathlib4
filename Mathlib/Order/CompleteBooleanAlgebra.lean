@@ -200,7 +200,7 @@ abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Coframe α where
 end Order.Coframe
 
 namespace CompleteDistribLattice.MinimalAxioms
-variable (minAx : MinimalAxioms α) {s : Set α} {a b : α}
+variable (minAx : MinimalAxioms α)
 
 /-- The `CompleteDistribLattice.MinimalAxioms` element corresponding to a complete distrib lattice.
 -/
@@ -502,7 +502,7 @@ end Coframe
 
 section CompleteDistribLattice
 
-variable [CompleteDistribLattice α] {a b : α} {s t : Set α}
+variable [CompleteDistribLattice α]
 
 instance OrderDual.instCompleteDistribLattice [CompleteDistribLattice α] :
     CompleteDistribLattice αᵒᵈ where
@@ -578,7 +578,7 @@ instance OrderDual.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] :
 
 section CompleteBooleanAlgebra
 
-variable [CompleteBooleanAlgebra α] {a b : α} {s : Set α} {f : ι → α}
+variable [CompleteBooleanAlgebra α] {s : Set α} {f : ι → α}
 
 theorem compl_iInf : (iInf f)ᶜ = ⨆ i, (f i)ᶜ :=
   le_antisymm
@@ -821,7 +821,7 @@ end lift
 
 namespace PUnit
 
-variable (s : Set PUnit.{u + 1}) (x y : PUnit.{u + 1})
+variable (s : Set PUnit.{u + 1})
 
 instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit where
   __ := PUnit.instBooleanAlgebra

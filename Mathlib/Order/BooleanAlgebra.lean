@@ -58,7 +58,7 @@ open Function OrderDual
 
 universe u v
 
-variable {α : Type u} {β : Type*} {w x y z : α}
+variable {α : Type u} {β : Type*} {x y z : α}
 
 /-!
 ### Generalized Boolean algebras
@@ -779,7 +779,7 @@ instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit where
 
 namespace DistribLattice
 
-variable (α : Type*) [DistribLattice α]
+variable (α) [DistribLattice α]
 
 /--
 An alternative constructor for boolean algebras:
