@@ -143,12 +143,8 @@ noncomputable def lanCompColimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasLeftKan
       simp only [isColimitCoconeOfIsLeftKanExtension_desc, Cocones.precompose_obj_pt,
         colimit.cocone_x, Cocones.precompose_obj_ι, whiskerLeft_comp, colimit.isColimit_desc,
         colimit.ι_desc, NatTrans.comp_app, comp_obj, const_obj_obj, whiskerLeft_app,
-        colimit.cocone_ι]
-      conv_rhs => rw [← assoc]
-      rw [Iso.eq_comp_inv]
-      simp only [colimit.ι, colimit.cocone, lan]
-      rw [descOfIsLeftKanExtension_fac_app_assoc]
-      simp)
+        colimit.cocone_ι, ← assoc, Iso.eq_comp_inv]
+      simp [colimit.ι, colimit.cocone, lan])
 
 end Colim
 
@@ -303,8 +299,7 @@ noncomputable def ranCompLimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasRightKanE
         Cones.postcompose_obj_pt, limit.cone_x, Cones.postcompose_obj_π, whiskerLeft_comp,
         limit.lift_π, assoc, liftOfIsRightKanExtension_fac, NatTrans.comp_app, const_obj_obj,
         whiskerLeft_app, limit.cone_π]
-      simp only [limit.π, limit.cone, ran]
-      erw [IsLimit.conePointUniqueUpToIso_hom_comp_assoc])
+      simp [limit.π, limit.cone, ← Iso.inv_comp_eq])
 
 end Lim
 
