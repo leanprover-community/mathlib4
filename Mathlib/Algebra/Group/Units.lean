@@ -9,6 +9,7 @@ import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Subsingleton
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -569,7 +570,7 @@ theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
 end CommMonoid
 
 /-!
-# `IsUnit` predicate
+### `IsUnit` predicate
 -/
 
 
@@ -577,15 +578,28 @@ section IsUnit
 
 variable {M : Type*} {N : Type*}
 
+/-- An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided additive inverse.
+The actual definition says that `a` is equal to some `u : AddUnits M`,
+where `AddUnits M` is a bundled version of `IsAddUnit`.
+
+While we define this predicate as a typeclass, we mostly use it as a non-typeclass predicate.
+However, sometimes we use the multiplicative version as a `Prop`-valued version of `Invertible`. -/
+class IsAddUnit {M : Type*} [AddMonoid M] (a : M) : Prop where
+  exists_addUnits : ∃ u : AddUnits M, ↑u = a
+
 /-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where
-`Mˣ` is a bundled version of `IsUnit`. -/
-@[to_additive
-      "An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided additive inverse.
-      The actual definition says that `a` is equal to some `u : AddUnits M`,
-      where `AddUnits M` is a bundled version of `IsAddUnit`."]
-def IsUnit [Monoid M] (a : M) : Prop :=
-  ∃ u : Mˣ, (u : M) = a
+`Mˣ` is a bundled version of `IsUnit`.
+
+While we define this predicate as a typeclass, we mostly use it as a non-typeclass predicate.
+However, sometimes we it as a `Prop`-valued version of `Invertible`. -/
+@[to_additive, mk_iff]
+class IsUnit [Monoid M] (a : M) : Prop where
+  /-- There exists a bundled unit equal to a given element satisfying `IsUnit a`.
+  See also `IsUnit.unit`. -/
+  exists_units : ∃ u : Mˣ, (u : M) = a
+
+attribute [to_additive] isUnit_iff
 
 /-- See `isUnit_iff_exists_and_exists` for a similar lemma with two existentials. -/
 @[to_additive "See `isAddUnit_iff_exists_and_exists` for a similar lemma with two existentials."]
@@ -602,24 +616,24 @@ theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
     ⟨fun ⟨b, hba, hab⟩ => ⟨⟨b, hba⟩, ⟨b, hab⟩⟩,
       fun ⟨⟨b, hb⟩, ⟨_, hc⟩⟩ => ⟨b, hb, left_inv_eq_right_inv hc hb ▸ hc⟩⟩
 
-@[to_additive (attr := nontriviality)]
+@[to_additive (attr := nontriviality, instance)]
 theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
   ⟨⟨a, a, by subsingleton, by subsingleton⟩, rfl⟩
 
 @[to_additive]
 instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
-  { prf := fun _ ↦ id }
+  { prf := fun _ ⟨h⟩ ↦ h }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   uniq _ := Units.val_eq_one.mp (by subsingleton)
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, instance)]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
   ⟨u, rfl⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, instance)]
 theorem isUnit_one [Monoid M] : IsUnit (1 : M) :=
   ⟨1, rfl⟩
 
@@ -707,19 +721,13 @@ section Monoid
 
 variable [Monoid M] {a b c : M}
 
-/-- The element of the group of units, corresponding to an element of a monoid which is a unit. When
-`α` is a `DivisionMonoid`, use `IsUnit.unit'` instead. -/
+/-- The element of the group of units, corresponding to an element of a monoid which is a unit.
+When the monoid is a `DivisionMonoid`, use `IsUnit.unit'` instead. -/
+@[to_additive "The element of the additive group of additive units,
+corresponding to an element of an additive monoid which is an additive unit.
+When the additive monoid is a `SubtractionMonoid`, use `IsAddUnit.addUnit'` instead."]
 protected noncomputable def unit (h : IsUnit a) : Mˣ :=
-  (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
-
--- Porting note: `to_additive` doesn't carry over `noncomputable` so we make an explicit defn
-/-- "The element of the additive group of additive units, corresponding to an element of
-an additive monoid which is an additive unit. When `α` is a `SubtractionMonoid`, use
-`IsAddUnit.addUnit'` instead. -/
-protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : IsAddUnit a) :
-    AddUnits N :=
-  (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
-attribute [to_additive existing] IsUnit.unit
+  (Classical.choose h.1).copy a (Classical.choose_spec h.1).symm _ rfl
 
 @[to_additive (attr := simp)]
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
@@ -743,8 +751,8 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 
 /-- `IsUnit x` is decidable if we can decide if `x` comes from `Mˣ`. -/
 @[to_additive "`IsAddUnit x` is decidable if we can decide if `x` comes from `AddUnits M`."]
-instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
-  h
+instance (x : M) [Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
+  decidable_of_iff _ (isUnit_iff x).symm
 
 @[to_additive]
 theorem mul_left_inj (h : IsUnit a) : b * a = c * a ↔ b = c :=
@@ -979,7 +987,7 @@ end IsUnit
 lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u := by
   rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
 
-@[to_additive]
+@[to_additive (attr := instance)]
 lemma Group.isUnit [Group α] (a : α) : IsUnit a :=
   ⟨⟨a, a⁻¹, mul_inv_cancel _, inv_mul_cancel _⟩, rfl⟩
 

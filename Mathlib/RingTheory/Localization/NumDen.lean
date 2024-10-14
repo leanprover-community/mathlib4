@@ -98,7 +98,7 @@ lemma num_eq_zero (x : K) : IsFractionRing.num A x = 0 ↔ x = 0 :=
   ⟨eq_zero_of_num_eq_zero, fun h ↦ h ▸ num_zero⟩
 
 theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A x := by
-  cases' h with d hd
+  cases' h.1 with d hd
   have d_ne_zero : algebraMap A K (den A x) ≠ 0 :=
     IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (den A x).2
   use ↑d⁻¹ * num A x
@@ -108,16 +108,7 @@ theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A
   rw [← mul_assoc, mul_inv_cancel₀ d_ne_zero, one_mul, mk'_spec']
 
 theorem isUnit_den_iff (x : K) : IsUnit (den A x : A) ↔ IsLocalization.IsInteger A x where
-  mp h := by
-    obtain ⟨den, hd⟩ := IsUnit.exists_right_inv h
-    use (num A x) * den
-    conv => rhs; rw [← mk'_num_den' A x]
-    rw [map_mul, div_eq_mul_inv]
-    congr 1
-    apply eq_inv_of_mul_eq_one_right
-    rw [← map_mul]
-    norm_cast
-    simp only [hd, OneMemClass.coe_one, map_one]
+  mp := isInteger_of_isUnit_den
   mpr h := by
     have ⟨v, h⟩ := h
     apply IsRelPrime.isUnit_of_dvd (num_den_reduced A x).symm
