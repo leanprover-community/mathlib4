@@ -26,7 +26,7 @@ section set_as_partial_function
 /-- A set `s : Set (α × α)` represents a partial function when for every `x : α` there's at most
 one `y : α` with `(x, y) ∈ s`. -/
 def isPartialFun (X : Set (α × α)) : Prop :=
-  ∀ x y z : α, (x, y) ∈ X ∧ (x, z) ∈ X → y = z
+  ∀ x : α, {y : α | (x, y) ∈ X}.Subsingleton
 
 open Classical in
 /-- Use given set on `α × α` as a partial function. -/
