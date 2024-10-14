@@ -226,6 +226,65 @@ noncomputable def fieldEquivOfRingEquiv [Algebra B L] [IsFractionRing B L] (h : 
         mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero]
       exact h.symm.map_ne_zero_iff)
 
+@[simp]
+lemma fieldEquivOfRingEquiv_commutes [Algebra B L] [IsFractionRing B L] (h : A ≃+* B)
+    (a : A) : fieldEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
+  simp [fieldEquivOfRingEquiv]
+
+section fieldEquivOfAlgEquiv
+
+variable {A B C : Type*}
+  [CommRing A] [CommRing B] [CommRing C]
+  [IsDomain A] [IsDomain B] [IsDomain C]
+  [Algebra A B] [Algebra A C]
+  (K L M : Type*) [Field K] [Field L] [Field M]
+  [Algebra A K] [Algebra B L] [Algebra C M]
+  [IsFractionRing A K] [IsFractionRing B L] [IsFractionRing C M]
+  [Algebra A L] [IsScalarTower A B L]
+  [Algebra A M] [IsScalarTower A C M]
+  [Algebra K L] [IsScalarTower A K L]
+  [Algebra K M] [IsScalarTower A K M]
+
+noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : L ≃ₐ[K] M where
+  __ := IsFractionRing.fieldEquivOfRingEquiv f.toRingEquiv
+  commutes' := by
+    intro x
+    obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
+    simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L]
+    simp [← IsScalarTower.algebraMap_apply A C M]
+
+@[simp]
+lemma fieldEquivOfAlgEquiv_commutes (f : B ≃ₐ[A] C) (b : B) :
+    fieldEquivOfAlgEquiv K L M f (algebraMap B L b) = algebraMap C M (f b) :=
+  fieldEquivOfRingEquiv_commutes f.toRingEquiv b
+
+end fieldEquivOfAlgEquiv
+
+section fieldEquivOfAlgEquivHom
+
+variable {A B : Type*} [CommRing A] [CommRing B] [IsDomain A] [IsDomain B] [Algebra A B]
+  (K L : Type*) [Field K] [Field L]
+  [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
+  [Algebra A L] [IsScalarTower A B L] [Algebra K L] [IsScalarTower A K L]
+
+noncomputable def fieldEquivOfAlgEquivHom : (B ≃ₐ[A] B) →* (L ≃ₐ[K] L) where
+  toFun := fieldEquivOfAlgEquiv K L L
+  map_one' := by
+    ext x
+    obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := B) x
+    simp
+  map_mul' := fun f g ↦ by
+    ext x
+    obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := B) x
+    simp
+
+@[simp]
+lemma fieldEquivOfAlgEquivHom_commutes (f : B ≃ₐ[A] B) (b : B) :
+    fieldEquivOfAlgEquivHom K L f (algebraMap B L b) = algebraMap B L (f b) :=
+  fieldEquivOfAlgEquiv_commutes K L L f b
+
+end fieldEquivOfAlgEquivHom
+
 theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsFractionRing R S ↔
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
