@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel, David Renshaw
+Authors: Sébastien Gouëzel, David Renshaw, Matthew Robert Ballard
 -/
 
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
+import Batteries.Lean.Meta.Simp
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
@@ -40,7 +41,22 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     if let some r ← Simp.dischargeUsingAssumption? prop then
       return some r
 
-    -- Discharge strategy 2: Normalize inequalities using NormNum
+    -- Discharge strategy 2: use norm_cast
+    -- Try to cast all hypotheses (that are proofs) and `prop` into normal form before checking
+    let r'' ← NormCast.derive prop
+    let proofHypotheses ← (← getLocalHyps).filterM (isProof ·)
+    for hyp in proofHypotheses do
+      -- Use normCast to normalize and then check if `prop` can be discharged.
+      let ty ← inferType hyp
+      let r' ← NormCast.derive ty
+      if (← isDefEq r''.expr r'.expr) then
+        let m ← mkFreshMVarId
+        let r ← applySimpResultToProp m hyp ty r'
+        if let some p := r then
+          let rsymm ← Lean.Meta.Simp.mkEqSymm prop r''
+          return some (← Lean.Meta.Simp.mkCast rsymm p.1)
+
+    -- Discharge strategy 3: normalize inequalities using norm_num
     let prop : Q(Prop) ← (do pure prop)
     let pf? ← match prop with
     | ~q(($e : $α) ≠ $b) =>
@@ -54,13 +70,13 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     | _ => pure none
     if let some pf := pf? then return some pf
 
-    -- Discharge strategy 3: Use positivity
+    -- Discharge strategy 4: use positivity
     let pf? ←
       try some <$> Mathlib.Meta.Positivity.solve prop
       catch _ => pure none
     if let some pf := pf? then return some pf
 
-    -- Discharge strategy 4: Use the simplifier
+    -- Discharge strategy 5: use the simplifier
     let ctx ← readThe Simp.Context
     let stats : Simp.Stats := { (← get) with }
 
@@ -115,8 +131,8 @@ should be given explicitly. If your expression is not completely reduced by the 
 invocation, check the denominators of the resulting expression and provide proofs that they are
 nonzero to enable further progress.
 
-To check that denominators are nonzero, `field_simp` will look for facts in the context, and
-will try to apply `norm_num` to close numerical goals.
+To check that denominators are nonzero, `field_simp` will look for facts in the context,
+normalize them with `norm_cast`, and will try to apply `norm_num` to close numerical goals.
 
 The invocation of `field_simp` removes the lemma `one_div` from the simpset, as this lemma
 works against the algorithm explained above. It also removes

@@ -482,7 +482,6 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
         ring
       _ ≤ Cq * Cp ^ n * r0 ^ n := mul_le_mul' (mul_le_mul' A B) le_rfl
       _ = Cq / 4 ^ n := by
-        simp only [r0]
         field_simp [mul_pow, (zero_lt_one.trans_le hCp1).ne']
         ring
   refine ⟨r, r_pos, NNReal.summable_of_le I ?_⟩

@@ -53,7 +53,6 @@ theorem isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 *
 
 theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
     IsPrimitiveRoot ζ n ↔ ∃ i < (n : ℕ), ∃ _ : i.Coprime n, exp (2 * π * I * (i / n)) = ζ := by
-  have hn0 : (n : ℂ) ≠ 0 := mod_cast hn
   constructor; swap
   · rintro ⟨i, -, hi, rfl⟩; exact isPrimitiveRoot_exp_of_coprime i n hn hi
   intro h
@@ -62,7 +61,7 @@ theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
   refine ⟨i, hi, ((isPrimitiveRoot_exp n hn).pow_iff_coprime (Nat.pos_of_ne_zero hn) i).mp h, ?_⟩
   rw [← exp_nat_mul]
   congr 1
-  field_simp [hn0, mul_comm (i : ℂ)]
+  field_simp [mul_comm (i : ℂ)]
 
 /-- The complex `n`-th roots of unity are exactly the
 complex numbers of the form `exp (2 * Real.pi * Complex.I * (i / n))` for some `i < n`. -/

@@ -241,7 +241,8 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   rw [(by simp :
     (p 1 : ℂ) * z - p 0 = (p 1 * z - p 0) * ↑(Matrix.det (↑g : Matrix (Fin 2) (Fin 2) ℤ)))]
   rw [← hg, det_fin_two]
-  simp only [Int.coe_castRingHom, coe_matrix_coe, Int.cast_mul, ofReal_intCast, map_apply, denom,
+  dsimp [denom]
+  simp only [Int.coe_castRingHom, coe_matrix_coe, Int.cast_mul, ofReal_intCast, map_apply,
     Int.cast_sub, coe_GLPos_coe_GL_coe_matrix, coe'_apply_complex]
   ring
 
