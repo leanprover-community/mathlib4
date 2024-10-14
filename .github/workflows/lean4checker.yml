@@ -79,13 +79,6 @@ jobs:
           cd ..
           lake env lean4checker/.lake/build/bin/lean4checker
 
-      - id: ci_url
-        run: |
-          url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          curl -s "${url}" |
-            # extract the CI run number from the unique line that matches `  href=".../job/[job number]"`
-            awk -v url="${url}" -F'/' '/^ *href/ {gsub(/"/, "", $NF); printf("summary<<EOF\n%s/job/%s\nEOF", url, $NF)}' >> "$GITHUB_OUTPUT"
-
       - name: Post success message on Zulip
         if: success()
         uses: zulip/github-actions-zulip/send-message@v1
@@ -97,7 +90,7 @@ jobs:
           type: 'stream'
           topic: 'lean4checker'
           content: |
-            ✅ lean4checker [succeeded](${{ steps.ci_url.outputs.summary }}) on ${{ github.sha }}
+            ✅ lean4checker [succeeded](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }}
 
       - name: Post failure message on Zulip
         if: failure()
@@ -110,7 +103,7 @@ jobs:
           type: 'stream'
           topic: 'lean4checker failure'
           content: |
-            ❌ lean4checker [failed](${{ steps.ci_url.outputs.summary }}) on ${{ github.sha }}
+            ❌ lean4checker [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }}
         continue-on-error: true
 
       - name: Post failure message on Zulip main topic
@@ -124,5 +117,5 @@ jobs:
           type: 'stream'
           topic: 'lean4checker'
           content: |
-            ❌ lean4checker failed on ${{ github.sha }}
+            ❌ lean4checker [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }}
         continue-on-error: true
