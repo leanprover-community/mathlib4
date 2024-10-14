@@ -374,22 +374,23 @@ limit ordinal `o`, `f o` is the supremum of `f a` for `a < o`. This is spelled o
 - `limit_le : ∀ o, IsLimit o → ∀ a, f o ≤ a ↔ ∀ b < o, f b ≤ a`
 
 See `isNormal_iff_strictMono_limit` for an alternate spelling. -/
+@[mk_iff]
 structure IsNormal (f : Ordinal → Ordinal) : Prop where
   /-- `f o < f (succ o)` is sufficient for strict monotonicity when combined with the other
   condition. -/
   lt_succ_apply : ∀ o, f o < f (succ o)
   /-- For a limit ordinal `o`, `f o` is the supremum of `f a` for `a < o`. -/
-  limit_le : ∀ {o}, IsLimit o → ∀ a, f o ≤ a ↔ ∀ b < o, f b ≤ a
+  limit_le : ∀ {o}, IsLimit o → ∀ {a}, f o ≤ a ↔ ∀ b < o, f b ≤ a
 
 theorem IsNormal.limit_lt {f} (H : IsNormal f) {o} (h : IsLimit o) {a} :
     a < f o ↔ ∃ b < o, a < f b :=
-  not_iff_not.1 <| by simpa only [exists_prop, not_exists, not_and, not_lt] using H.limit_le h a
+  not_iff_not.1 <| by simpa only [exists_prop, not_exists, not_and, not_lt] using H.limit_le h
 
 theorem IsNormal.strictMono {f} (H : IsNormal f) : StrictMono f := fun a b =>
   limitRecOn b (Not.elim (not_lt_of_le <| Ordinal.zero_le _))
     (fun _b IH h =>
       (lt_or_eq_of_le (le_of_lt_succ h)).elim (fun h => (IH h).trans (H.1 _)) fun e => e ▸ H.1 _)
-    fun _b l _IH h => lt_of_lt_of_le (H.1 a) ((H.limit_le l _).1 le_rfl _ (l.2 _ h))
+    fun _b l _IH h => lt_of_lt_of_le (H.1 a) ((H.limit_le l).1 le_rfl _ (l.2 _ h))
 
 theorem IsNormal.monotone {f} (H : IsNormal f) : Monotone f :=
   H.strictMono.monotone
@@ -398,7 +399,7 @@ theorem IsNormal.monotone {f} (H : IsNormal f) : Monotone f :=
 or equal to the supremum of `f a` for `a < o`. -/
 theorem isNormal_iff_strictMono_limit (f : Ordinal → Ordinal) :
     IsNormal f ↔ StrictMono f ∧ ∀ o, IsLimit o → ∀ a, (∀ b < o, f b ≤ a) → f o ≤ a :=
-  ⟨fun hf => ⟨hf.strictMono, fun _ ha c => (hf.limit_le ha c).2⟩, fun ⟨hs, hl⟩ =>
+  ⟨fun hf => ⟨hf.strictMono, fun _ ha _ => (hf.limit_le ha).2⟩, fun ⟨hs, hl⟩ =>
     ⟨fun a => hs (lt_succ a), fun ha c =>
       ⟨fun hac _b hba => ((hs hba).trans_le hac).le, hl _ ha c⟩⟩⟩
 
@@ -438,7 +439,7 @@ theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempt
       rcases not_forall₂.1 (mt (H₂ S).2 <| (lt_succ S).not_le) with ⟨a, h₁, h₂⟩
       exact (H.le_iff.2 <| succ_le_of_lt <| not_le.1 h₂).trans (h _ h₁)
     | H₃ S L _ =>
-      refine (H.limit_le L _).2 fun a h' => ?_
+      refine (H.limit_le L).2 fun a h' => ?_
       rcases not_forall₂.1 (mt (H₂ a).2 h'.not_le) with ⟨b, h₁, h₂⟩
       exact (H.le_iff.2 <| (not_le.1 h₂).le).trans (h _ h₁)⟩
 
@@ -451,7 +452,7 @@ theorem IsNormal.refl : IsNormal id :=
 
 theorem IsNormal.trans {f g} (H₁ : IsNormal f) (H₂ : IsNormal g) : IsNormal (f ∘ g) :=
   ⟨fun _x => H₁.lt_iff.2 (H₂.1 _), @fun o l _a =>
-    H₁.le_set' (· < o) ⟨0, l.pos⟩ g _ fun _c => H₂.limit_le l _⟩
+    H₁.le_set' (· < o) ⟨0, l.pos⟩ g _ fun _c => H₂.limit_le l⟩
 
 theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (l : IsLimit o) : IsLimit (f o) :=
   ⟨ne_of_gt <| (Ordinal.zero_le _).trans_lt <| H.lt_iff.2 l.pos, fun _ h =>
