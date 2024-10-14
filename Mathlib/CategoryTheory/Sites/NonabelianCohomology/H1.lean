@@ -99,14 +99,14 @@ lemma one_ev (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
 variable {G U}
 
 instance : Mul (OneCochain G U) where
-  mul γ₁ γ₂ := { ev := fun i j T a b ↦ γ₁.ev i j a b * γ₂.ev i j a b }
+  mul γ₁ γ₂ := { ev := fun i j _ a b ↦ γ₁.ev i j a b * γ₂.ev i j a b }
 
 @[simp]
 lemma mul_ev (γ₁ γ₂ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
     (γ₁ * γ₂).ev i j a b = γ₁.ev i j a b * γ₂.ev i j a b := rfl
 
 instance : Inv (OneCochain G U) where
-  inv γ := { ev := fun i j T a b ↦ (γ.ev i j a b) ⁻¹}
+  inv γ := { ev := fun i j _ a b ↦ (γ.ev i j a b) ⁻¹}
 
 @[simp]
 lemma inv_ev (γ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :

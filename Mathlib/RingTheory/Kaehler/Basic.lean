@@ -545,8 +545,8 @@ theorem KaehlerDifferential.kerTotal_mkQ_single_smul (r : R) (x y) : (y𝖣r •
 noncomputable def KaehlerDifferential.derivationQuotKerTotal :
     Derivation R S ((S →₀ S) ⧸ KaehlerDifferential.kerTotal R S) where
   toFun x := 1𝖣x
-  map_add' x y := KaehlerDifferential.kerTotal_mkQ_single_add _ _ _ _ _
-  map_smul' r s := KaehlerDifferential.kerTotal_mkQ_single_smul _ _ _ _ _
+  map_add' _ _ := KaehlerDifferential.kerTotal_mkQ_single_add _ _ _ _ _
+  map_smul' _ _ := KaehlerDifferential.kerTotal_mkQ_single_smul _ _ _ _ _
   map_one_eq_zero' := KaehlerDifferential.kerTotal_mkQ_single_algebraMap_one _ _ _
   leibniz' a b :=
     (KaehlerDifferential.kerTotal_mkQ_single_mul _ _ _ _ _).trans

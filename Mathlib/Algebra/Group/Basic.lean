@@ -426,7 +426,7 @@ lemma one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
 
 @[to_additive (attr := simp) neg_zsmul]
 lemma zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
-  | (n + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
+  | (_ + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
   | 0 => by
     change a ^ (0 : ℤ) = (a ^ (0 : ℤ))⁻¹
     simp
