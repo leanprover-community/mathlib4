@@ -23,7 +23,8 @@ namespace Set
 
 section set_as_partial_function
 
-/-- Does given set on `α × α` represent a partial function? -/
+/-- A set `s : Set (α × α)` represents a partial function when for every `x : α` there's at most
+one `y : α` with `(x, y) ∈ s`. -/
 def isPartialFun (X : Set (α × α)) : Prop :=
   ∀ x y z : α, (x, y) ∈ X ∧ (x, z) ∈ X → y = z
 
