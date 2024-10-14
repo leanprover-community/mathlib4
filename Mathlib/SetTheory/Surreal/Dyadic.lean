@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.GroupTheory.MonoidLocalization.Away
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Defs
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Surreal.Multiplication
+import Mathlib.Tactic.Linarith
 
 /-!
 # Dyadic numbers
