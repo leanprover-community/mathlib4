@@ -29,8 +29,9 @@ Note that in the last two results, the type `m` is arbitrary and does not have t
 namespace TensorProduct
 
 variable (R : Type*) [CommSemiring R] (M : Type*) [AddCommMonoid M] [Module R M]
-  (N : Type*) [AddCommMonoid N] [Module R N] (ι : Type*) [DecidableEq ι] [Finite ι]
+  (N : Type*) [AddCommMonoid N] [Module R N] (ι : Type*) [Finite ι]
 
+open scoped Classical in
 /-- `finiteLeft R M N n` is the natural `R`-module isomorphism `Mⁿ ⊗[R] N = (M ⊗[R] N)ⁿ`
 when `n` is a finite type. -/
 noncomputable def finiteLeft : (ι → M) ⊗[R] N ≃ₗ[R] ι → M ⊗[R] N :=
@@ -57,6 +58,7 @@ theorem finiteLeft_apply (t : (ι → M) ⊗[R] N) (i : ι) :
 
 variable (R M N ι)
 
+open scoped Classical in
 /-- `finiteRight R M N n` is the natural `R`-module isomorphism `M ⊗[R] Nⁿ = (M ⊗[R] N)ⁿ`
 when `n` is a finite type. -/
 noncomputable def finiteRight : M ⊗[R] (ι → N) ≃ₗ[R] ι → M ⊗[R] N :=
@@ -151,7 +153,7 @@ variable (R M)
 
 /-- If `ι` is finite then `piTensorFiniteRid R M κ ι` is the natural isomorphism
 `(κ → M) ⊗[R] (ι → R) ≃ₗ[R] κ × ι → M`. -/
-noncomputable def piTensorFiniteRid (κ ι : Type*) [Finite ι] [DecidableEq ι] :
+noncomputable def piTensorFiniteRid (κ ι : Type*) [Finite ι] :
     (κ → M) ⊗[R] (ι → R) ≃ₗ[R] κ × ι → M :=
   (finiteScalarRight R (κ → M) ι :
     (κ → M) ⊗[R] (ι → R) ≃ₗ[R] (ι → κ → M)) ≪≫ₗ
