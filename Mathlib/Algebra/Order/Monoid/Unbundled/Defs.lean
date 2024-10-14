@@ -328,7 +328,7 @@ theorem Group.mulRightReflectLT_of_mulRightStrictMono [Group N] [LT N]
 
 section Trans
 
-variable [IsTrans N r] (m n : M) {a b c d : N}
+variable [IsTrans N r] (m : M) {a b c : N}
 
 --  Lemmas with 3 elements.
 theorem act_rel_of_rel_of_act_rel (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
@@ -361,7 +361,7 @@ theorem rel_of_act_rel_act (m : M) {a b : N} (ab : r (μ m a) (μ m b)) : r a b 
 
 section Trans
 
-variable [IsTrans N r] (m n : M) {a b c d : N}
+variable [IsTrans N r] (m : M) {a b c : N}
 
 --  Lemmas with 3 elements.
 theorem act_rel_of_act_rel_of_rel_act_rel (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
@@ -450,11 +450,11 @@ theorem covariant_lt_iff_contravariant_le [LinearOrder N] :
 
 variable (mu : N → N → N)
 
-theorem covariant_flip_iff [IsSymmOp N N mu] :
-    Covariant N N (flip mu) r ↔ Covariant N N mu r := by rw [IsSymmOp.flip_eq]
+theorem covariant_flip_iff [h : Std.Commutative mu] :
+    Covariant N N (flip mu) r ↔ Covariant N N mu r := by unfold flip; simp_rw [h.comm]
 
-theorem contravariant_flip_iff [IsSymmOp N N mu] :
-    Contravariant N N (flip mu) r ↔ Contravariant N N mu r := by rw [IsSymmOp.flip_eq]
+theorem contravariant_flip_iff [h : Std.Commutative mu] :
+    Contravariant N N (flip mu) r ↔ Contravariant N N mu r := by unfold flip; simp_rw [h.comm]
 
 instance contravariant_lt_of_covariant_le [LinearOrder N]
     [CovariantClass N N mu (· ≤ ·)] : ContravariantClass N N mu (· < ·) where

@@ -127,7 +127,7 @@ theorem SimpleFunc.stronglyMeasurable {α β} {_ : MeasurableSpace α} [Topologi
 @[nontriviality]
 theorem StronglyMeasurable.of_finite [Finite α] {_ : MeasurableSpace α}
     [MeasurableSingletonClass α] [TopologicalSpace β]
-    (f : α → β) : StronglyMeasurable f :=
+    {f : α → β} : StronglyMeasurable f :=
   ⟨fun _ => SimpleFunc.ofFinite f, fun _ => tendsto_const_nhds⟩
 
 @[deprecated (since := "2024-02-05")]
@@ -136,7 +136,7 @@ alias stronglyMeasurable_of_fintype := StronglyMeasurable.of_finite
 @[deprecated StronglyMeasurable.of_finite (since := "2024-02-06")]
 theorem stronglyMeasurable_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} [TopologicalSpace β]
     (f : α → β) : StronglyMeasurable f :=
-  .of_finite f
+  .of_finite
 
 theorem stronglyMeasurable_const {α β} {_ : MeasurableSpace α} [TopologicalSpace β] {b : β} :
     StronglyMeasurable fun _ : α => b :=
@@ -887,7 +887,7 @@ theorem stronglyMeasurable_of_measurableSpace_le_on {α E} {m m₂ : MeasurableS
             exact MeasurableSet.empty
           ext1 y
           simp only [mem_inter_iff, mem_preimage, mem_singleton_iff, mem_compl_iff,
-            mem_empty_iff_false, iff_false_iff, not_and, not_not_mem]
+            mem_empty_iff_false, iff_false, not_and, not_not_mem]
           refine Function.mtr fun hys => ?_
           rw [hg_seq_zero y hys n]
           exact Ne.symm hx
@@ -1108,7 +1108,7 @@ variable {m : MeasurableSpace α} {μ ν : Measure α} [TopologicalSpace β] [To
   {f g : α → β}
 
 lemma of_finite [DiscreteMeasurableSpace α] [Finite α] : AEStronglyMeasurable f μ :=
-  ⟨_, .of_finite _, ae_eq_rfl⟩
+  ⟨_, .of_finite, ae_eq_rfl⟩
 
 section Mk
 

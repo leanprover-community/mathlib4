@@ -48,7 +48,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
 
 namespace MeasureTheory
 
-variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
+variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
 variable {a b : ℝ} {f : ℕ → Ω → ℝ} {ω : Ω} {R : ℝ≥0}
 
 section AeConvergence
@@ -173,8 +173,8 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
           exact norm_nonneg _
       · simp only [Ne, ENNReal.coe_ne_top, not_false_iff]
     · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
-  · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or_iff]
-  · simp only [Ne, ENNReal.ofReal_ne_top, not_false_iff, true_or_iff]
+  · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or]
+  · simp only [Ne, ENNReal.ofReal_ne_top, not_false_iff, true_or]
 
 theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) : ∀ᵐ ω ∂μ, ∀ a b : ℚ, a < b → upcrossings a b f ω < ∞ := by
@@ -191,7 +191,7 @@ theorem Submartingale.exists_ae_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submar
 
 theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) :
-    ∀ᵐ ω ∂μ.trim (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
+    ∀ᵐ ω ∂μ.trim (sSup_le fun _ ⟨_, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
       ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   letI := (⨆ n, ℱ n)
   rw [ae_iff, trim_measurableSet_eq]
@@ -399,8 +399,8 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
       setIntegral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←
       setIntegral_trim hle hgmeas htmeas, ←
       setIntegral_trim hle stronglyMeasurable_limitProcess htmeas, ← integral_trim hle hgmeas, ←
-      integral_trim hle stronglyMeasurable_limitProcess, ← integral_univ,
-      this 0 _ MeasurableSet.univ, integral_univ, ht (measure_lt_top _ _)]
+      integral_trim hle stronglyMeasurable_limitProcess, ← setIntegral_univ,
+      this 0 _ MeasurableSet.univ, setIntegral_univ, ht (measure_lt_top _ _)]
   · rintro f hf hfmeas heq -
     rw [integral_iUnion (fun n => hle _ (hfmeas n)) hf hg.integrableOn,
       integral_iUnion (fun n => hle _ (hfmeas n)) hf hlimint.integrableOn]

@@ -276,7 +276,7 @@ def supported (s : Set α) : Submodule R (α →₀ M) where
     simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
     intro h ha
     exact (ha rfl).elim
-  smul_mem' a p hp := Subset.trans (Finset.coe_subset.2 support_smul) hp
+  smul_mem' _ _ hp := Subset.trans (Finset.coe_subset.2 support_smul) hp
 
 variable {M}
 
@@ -365,7 +365,7 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
   · exact zero_mem _
   · refine fun x a l _ _ => add_mem ?_
     by_cases h : ∃ i, x ∈ s i
-    · simp only [mem_comap, coe_comp, coeSubtype, Function.comp_apply, restrictDom_apply,
+    · simp only [mem_comap, coe_comp, coe_subtype, Function.comp_apply, restrictDom_apply,
         mem_iUnion, h, filter_single_of_pos]
       cases' h with i hi
       exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
@@ -1266,7 +1266,7 @@ theorem mem_span_finset {s : Finset M} {x : M} :
       (Finsupp.mem_span_image_iff_linearCombination _).1
         (show x ∈ span R (_root_.id '' (↑s : Set M)) by rwa [Set.image_id])
     ⟨v, hvx ▸ (linearCombination_apply_of_mem_supported _ hvs).symm⟩,
-    fun ⟨f, hf⟩ => hf ▸ sum_mem fun i hi => smul_mem _ _ <| subset_span hi⟩
+    fun ⟨_, hf⟩ => hf ▸ sum_mem fun _ hi => smul_mem _ _ <| subset_span hi⟩
 
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
 `m` can be written as a finite `R`-linear combination of elements of `s`.
