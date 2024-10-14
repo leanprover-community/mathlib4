@@ -389,7 +389,7 @@ instance : PartialOrder (Con M) where
 an addition."]
 instance : CompleteLattice (Con M) where
   __ := completeLatticeOfInf (Con M) fun s =>
-      ⟨fun r hr x y h => (h : ∀ r ∈ s, (r : Con M) x y) r hr, fun r hr x y h r' hr' =>
+      ⟨fun r hr x y h => (h : ∀ r ∈ s, (r : Con M) x y) r hr, fun _ hr _ _ h _ hr' =>
         hr hr'
           h⟩
   inf c d := ⟨c.toSetoid ⊓ d.toSetoid, fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩⟩
@@ -399,7 +399,7 @@ instance : CompleteLattice (Con M) where
   top := { Setoid.completeLattice.top with mul' := by tauto }
   le_top _ := fun _ _ _ => trivial
   bot := { Setoid.completeLattice.bot with mul' := fun h1 h2 => h1 ▸ h2 ▸ rfl }
-  bot_le c := fun x y h => h ▸ c.refl x
+  bot_le c := fun x _ h => h ▸ c.refl x
 
 /-- The infimum of two congruence relations equals the infimum of the underlying binary
     operations. -/
@@ -572,10 +572,10 @@ the order-preserving bijection between the set of additive congruence relations 
 the additive congruence relations on the quotient of `M` by `c`."]
 def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
   toFun d :=
-    d.1.mapOfSurjective (↑) (fun x y => rfl) (by rw [mul_ker_mk_eq]; exact d.2) <|
+    d.1.mapOfSurjective (↑) (fun _ _ => rfl) (by rw [mul_ker_mk_eq]; exact d.2) <|
       @Quotient.exists_rep _ c.toSetoid
   invFun d :=
-    ⟨comap ((↑) : M → c.Quotient) (fun x y => rfl) d, fun x y h =>
+    ⟨comap ((↑) : M → c.Quotient) (fun _ _ => rfl) d, fun x y h =>
       show d x y by rw [c.eq.2 h]; exact d.refl _⟩
   left_inv d :=
     -- Porting note: by exact needed for unknown reason

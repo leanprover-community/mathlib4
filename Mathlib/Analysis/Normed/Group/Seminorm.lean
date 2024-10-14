@@ -145,7 +145,7 @@ end NonarchAddGroupSeminormClass
 instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass
     [FunLike F E ℝ] [AddGroup E] [NonarchAddGroupSeminormClass F E] : AddGroupSeminormClass F E ℝ :=
   { ‹NonarchAddGroupSeminormClass F E› with
-    map_add_le_add := fun f x y =>
+    map_add_le_add := fun f _ _ =>
       haveI h_nonneg : ∀ a, 0 ≤ f a := by
         intro a
         rw [← NonarchAddGroupSeminormClass.map_zero f, ← sub_self a]
@@ -346,7 +346,7 @@ noncomputable instance : Inf (GroupSeminorm E) :=
       map_one' :=
         ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
           -- Porting note: replace `add_nonneg` with `positivity` once we have the extension
-          (fun x => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _)) fun r hr =>
+          (fun _ => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _)) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
         le_ciInf_add_ciInf fun u v => by
@@ -370,8 +370,8 @@ noncomputable instance : Lattice (GroupSeminorm E) :=
     inf_le_right := fun p q x =>
       ciInf_le_of_le mul_bddBelow_range_add (1 : E) <| by
         simpa only [div_one x, map_one_eq_zero p, zero_add (q x)] using le_rfl
-    le_inf := fun a b c hb hc x =>
-      le_ciInf fun u => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
+    le_inf := fun a _ _ hb hc _ =>
+      le_ciInf fun _ => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
 
 end CommGroup
 
@@ -427,7 +427,7 @@ theorem smul_sup (r : R) (p q : AddGroupSeminorm E) : r • (p ⊔ q) = r • p 
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
       mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
-  ext fun x => Real.smul_max _ _
+  ext fun _ => Real.smul_max _ _
 
 end AddGroupSeminorm
 
@@ -483,7 +483,7 @@ instance : Zero (NonarchAddGroupSeminorm E) :=
   ⟨{  toFun := 0
       map_zero' := Pi.zero_apply _
       add_le_max' := fun r s => by simp only [Pi.zero_apply]; rw [max_eq_right]; rfl
-      neg' := fun x => rfl }⟩
+      neg' := fun _ => rfl }⟩
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : NonarchAddGroupSeminorm E) = 0 :=
@@ -588,7 +588,7 @@ theorem smul_sup (r : R) (p q : GroupSeminorm E) : r • (p ⊔ q) = r • p ⊔
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
       mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
-  ext fun x => Real.smul_max _ _
+  ext fun _ => Real.smul_max _ _
 
 end GroupSeminorm
 
@@ -642,7 +642,7 @@ theorem smul_sup (r : R) (p q : NonarchAddGroupSeminorm E) : r • (p ⊔ q) = r
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
       mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
-  ext fun x => Real.smul_max _ _
+  ext fun _ => Real.smul_max _ _
 
 end NonarchAddGroupSeminorm
 
