@@ -197,8 +197,8 @@ def gluing : Scheme.GlueData.{u} where
   U i := pullback (𝒰.map i ≫ f) g
   V := fun ⟨i, j⟩ => v 𝒰 f g i j
   -- `p⁻¹(Uᵢ ∩ Uⱼ)` where `p : Uᵢ ×[Z] Y ⟶ Uᵢ ⟶ X`.
-  f i j := pullback.fst _ _
-  f_id i := inferInstance
+  f _ _ := pullback.fst _ _
+  f_id _ := inferInstance
   f_open := inferInstance
   t i j := t 𝒰 f g i j
   t_id i := t_id 𝒰 f g i

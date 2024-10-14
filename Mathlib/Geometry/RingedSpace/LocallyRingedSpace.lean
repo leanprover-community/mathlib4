@@ -130,7 +130,7 @@ def comp {X Y Z : LocallyRingedSpace.{u}} (f : Hom X Y) (g : Hom Y Z) : Hom X Z 
 instance : Category LocallyRingedSpace.{u} where
   Hom := Hom
   id := id
-  comp {X Y Z} f g := comp f g
+  comp {_ _ _} f g := comp f g
   comp_id {X Y} f := Hom.ext' _ _ <| by simp [comp]
   id_comp {X Y} f := Hom.ext' _ _ <| by simp [comp]
   assoc {_ _ _ _} f g h := Hom.ext' _ _ <| by simp [comp]
@@ -139,7 +139,7 @@ instance : Category LocallyRingedSpace.{u} where
 @[simps]
 def forgetToSheafedSpace : LocallyRingedSpace.{u} ⥤ SheafedSpace CommRingCat.{u} where
   obj X := X.toSheafedSpace
-  map {X Y} f := f.1
+  map {_ _} f := f.1
 
 /-- The canonical map `X ⟶ Spec Γ(X, ⊤)`. This is the unit of the `Γ-Spec` adjunction. -/
 instance : forgetToSheafedSpace.Faithful where

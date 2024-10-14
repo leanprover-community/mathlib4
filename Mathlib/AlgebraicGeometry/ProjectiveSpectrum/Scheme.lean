@@ -454,7 +454,7 @@ theorem carrier.asIdeal.ne_top : carrier.asIdeal f_deg hm q ≠ ⊤ := fun rid =
 theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
   (carrier.asIdeal.homogeneous f_deg hm q).isPrime_of_homogeneous_mem_or_mem
     (carrier.asIdeal.ne_top f_deg hm q) fun {x y} ⟨nx, hnx⟩ ⟨ny, hny⟩ hxy =>
-    show (∀ i, _ ∈ _) ∨ ∀ i, _ ∈ _ by
+    show (∀ _, _ ∈ _) ∨ ∀ _, _ ∈ _ by
       rw [← and_forall_ne nx, and_iff_left, ← and_forall_ne ny, and_iff_left]
       · apply q.2.mem_or_mem; convert hxy (nx + ny) using 1
         dsimp

@@ -149,7 +149,7 @@ variable (C)
 /-- The forgetful functor from `SheafedSpace` to `Top`. -/
 def forget : SheafedSpace C ⥤ TopCat where
   obj X := (X : TopCat)
-  map {X Y} f := f.base
+  map {_ _} f := f.base
 
 end
 

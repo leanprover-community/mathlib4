@@ -570,7 +570,7 @@ theorem forall_mem_range {p : α → Prop} : (∀ a ∈ range f, p a) ↔ ∀ i,
 
 theorem forall_subtype_range_iff {p : range f → Prop} :
     (∀ a : range f, p a) ↔ ∀ i, p ⟨f i, mem_range_self _⟩ :=
-  ⟨fun H i => H _, fun H ⟨y, i, hi⟩ => by
+  ⟨fun H _ => H _, fun H ⟨y, i, hi⟩ => by
     subst hi
     apply H⟩
 
@@ -584,7 +584,7 @@ theorem exists_subtype_range_iff {p : range f → Prop} :
   ⟨fun ⟨⟨a, i, hi⟩, ha⟩ => by
     subst a
     exact ⟨i, ha⟩,
-   fun ⟨i, hi⟩ => ⟨_, hi⟩⟩
+   fun ⟨_, hi⟩ => ⟨_, hi⟩⟩
 
 theorem range_iff_surjective : range f = univ ↔ Surjective f :=
   eq_univ_iff_forall
@@ -663,7 +663,7 @@ theorem insert_image_compl_eq_range (f : α → β) (x : α) : insert (f x) (f '
 
 theorem image_preimage_eq_range_inter {f : α → β} {t : Set β} : f '' (f ⁻¹' t) = range f ∩ t :=
   ext fun x =>
-    ⟨fun ⟨x, hx, HEq⟩ => HEq ▸ ⟨mem_range_self _, hx⟩, fun ⟨⟨y, h_eq⟩, hx⟩ =>
+    ⟨fun ⟨_, hx, HEq⟩ => HEq ▸ ⟨mem_range_self _, hx⟩, fun ⟨⟨y, h_eq⟩, hx⟩ =>
       h_eq ▸ mem_image_of_mem f <| show y ∈ f ⁻¹' t by rw [preimage, mem_setOf, h_eq]; exact hx⟩
 
 theorem image_preimage_eq_inter_range {f : α → β} {t : Set β} : f '' (f ⁻¹' t) = t ∩ range f := by
