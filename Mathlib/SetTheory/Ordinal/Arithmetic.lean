@@ -1378,8 +1378,8 @@ theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
 theorem IsNormal.map_iSup_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
     [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
-  haveI : Small.{u} (range g) := bddAbove_iff_small.mp hg
-  haveI : Small.{v} (range g) := small_of_exists_injection H.strictMono.injective
+  have : Small.{u} (range g) := bddAbove_iff_small.mp hg
+  have : Small.{v} (range g) := small_of_exists_injection H.strictMono.injective
   have hfg : BddAbove (range (f ∘ g)) := bddAbove_iff_small.mpr <| by
     rw [range_comp]
     exact small_image f (range g)
