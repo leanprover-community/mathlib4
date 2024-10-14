@@ -378,7 +378,7 @@ theorem Sized.rotateR_size {l x r} (hl : Sized l) :
   rw [← size_dual, dual_rotateR, hl.dual.rotateL_size, size_dual, size_dual, add_comm (size l)]
 
 theorem Sized.balance' {l x r} (hl : @Sized α l) (hr : Sized r) : Sized (balance' l x r) := by
-  unfold balance'; split_ifs
+  unfold Ordnode.balance'; split_ifs
   · exact hl.node' hr
   · exact hl.rotateL hr
   · exact hl.rotateR hr
@@ -530,12 +530,12 @@ theorem splitMax_eq :
   | _, _, _, nil => rfl
   | _, l, x, node ls ll lx lr => by rw [splitMax', splitMax_eq ls ll lx lr, findMax', eraseMax]
 
--- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
+@[elab_as_elim]
 theorem findMin'_all {P : α → Prop} : ∀ (t) (x : α), All P t → P x → P (findMin' t x)
   | nil, _x, _, hx => hx
   | node _ ll lx _, _, ⟨h₁, h₂, _⟩, _ => findMin'_all ll lx h₁ h₂
 
--- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
+@[elab_as_elim]
 theorem findMax'_all {P : α → Prop} : ∀ (x : α) (t), P x → All P t → P (findMax' x t)
   | _x, nil, hx, _ => hx
   | _, node _ _ lx lr, _, ⟨_, h₂, h₃⟩ => findMax'_all lx lr h₂ h₃
@@ -1111,7 +1111,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
   · rcases Nat.eq_zero_or_pos (size rl) with rl0 | rl0
     · rw [rl0, not_lt, Nat.le_zero, Nat.mul_eq_zero] at h
       replace h := h.resolve_left (by decide)
-      erw [rl0, h, Nat.le_zero, Nat.mul_eq_zero] at H2
+      rw [rl0, h, Nat.le_zero, Nat.mul_eq_zero] at H2
       rw [hr.2.size_eq, rl0, h, H2.resolve_left (by decide)] at H1
       cases H1 (by decide)
     refine hl.node4L hr.left hr.right rl0 ?_
@@ -1258,7 +1258,7 @@ theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o
       suffices H : _ by
         refine ⟨Valid'.balanceL (hl.of_lt ?_ ?_) v H, ?_⟩
         · refine @findMin'_all (P := fun a : α => Bounded nil o₁ (a : WithBot α))
-            rl rx (sep.2.1.1.imp ?_) hr.1.1.to_nil
+            _ rl rx (sep.2.1.1.imp ?_) hr.1.1.to_nil
           exact fun y h => hl.1.1.to_nil.mono_right (le_of_lt h)
         · exact
             @findMin'_all _ (fun a => All (· < a) (.node ls ll lx lr)) rl rx

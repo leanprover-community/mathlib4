@@ -246,7 +246,7 @@ variable {C D E J : Type*} [Category C] [Category D] [Category E] [Category J]
 /-- If `τ : F₁ ⟶ F₂` is a natural transformation between two functors
 which commute with a shift by an additive monoid `A`, this typeclass
 asserts a compatibility of `τ` with these shifts. -/
-class CommShift : Prop :=
+class CommShift : Prop where
   comm' (a : A) : (F₁.commShiftIso a).hom ≫ whiskerRight τ _ =
     whiskerLeft _ τ ≫ (F₂.commShiftIso a).hom
 

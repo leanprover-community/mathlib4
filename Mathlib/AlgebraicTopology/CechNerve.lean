@@ -142,7 +142,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
     intro A
     ext
     · dsimp
-      erw [WidePullback.lift_π]
+      rw [WidePullback.lift_π]
       nth_rw 2 [← Category.id_comp A.left]
       congr 1
       convert X.left.map_id _
@@ -193,7 +193,7 @@ def cechConerve : CosimplicialObject C where
   map {x y} g := by
     refine WidePushout.desc (WidePushout.head _)
       (fun i => (@WidePushout.ι _ _ _ _ _ (fun _ => f.hom) (_) (g.toOrderHom i))) (fun j => ?_)
-    erw [← WidePushout.arrow_ι]
+    rw [← WidePushout.arrow_ι]
 
 /-- The morphism between Čech conerves associated to a morphism of arrows. -/
 @[simps]
@@ -308,7 +308,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
     ext
     · rfl
     · dsimp
-      erw [WidePushout.ι_desc]
+      rw [WidePushout.ι_desc]
       nth_rw 2 [← Category.comp_id A.right]
       congr 1
       convert X.right.map_id _

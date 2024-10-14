@@ -74,6 +74,12 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c) where
       map_comp := fun f g => by dsimp; erw [𝒞.comp_toFun];rfl }
   forget_faithful := { map_injective := by (intros; apply 𝒞.hom_ext) }
 
+/-- This unification hint helps `rw` to figure out how to apply statements about abstract
+concrete categories to specific concrete categories. Crucially, it fires also at `reducible`
+levels so `rw` can use it (and we don't have to use `erw`). -/
+unif_hint (C : Bundled c) where
+  ⊢ (CategoryTheory.forget (Bundled c)).obj C =?= Bundled.α C
+
 variable {hom}
 
 attribute [local instance] ConcreteCategory.instFunLike

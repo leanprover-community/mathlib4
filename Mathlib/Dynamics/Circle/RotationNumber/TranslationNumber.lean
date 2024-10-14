@@ -852,8 +852,8 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
   have hF₁ : ∀ g, ⇑(F₁ g) = f₁ g := fun _ => rfl
   have hF₂ : ∀ g, ⇑(F₂ g) = f₂ g := fun _ => rfl
   -- Now we apply `csSup_div_semiconj` and go back to `f₁` and `f₂`.
-  refine ⟨⟨⟨_, fun x y hxy => ?_⟩, fun x => ?_⟩, csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;>
-    simp only [hF₁, hF₂, ← map_inv, coe_mk]
+  refine ⟨⟨⟨fun x ↦ ⨆ g', (F₂ g')⁻¹ (F₁ g' x), fun x y hxy => ?_⟩, fun x => ?_⟩,
+    csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;> simp only [hF₁, hF₂, ← map_inv, coe_mk]
   · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]
     exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)

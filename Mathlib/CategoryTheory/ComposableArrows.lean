@@ -550,14 +550,14 @@ lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
   exact Functor.ext_of_iso (isoMkSucc (eqToIso h₀) (eqToIso h) (by
       rw [w]
       dsimp [app']
-      erw [eqToHom_app, assoc, assoc, eqToHom_trans, eqToHom_refl, comp_id])) this (by
+      rw [eqToHom_app, assoc, assoc, eqToHom_trans, eqToHom_refl, comp_id])) this (by
     rintro ⟨i, hi⟩
     dsimp
     cases' i with i
     · erw [homMkSucc_app_zero]
-    · erw [homMkSucc_app_succ]
+    · rw [homMkSucc_app_succ]
       dsimp [app']
-      erw [eqToHom_app])
+      rw [eqToHom_app])
 
 lemma precomp_surjective (F : ComposableArrows C (n + 1)) :
     ∃ (F₀ : ComposableArrows C n) (X₀ : C) (f₀ : X₀ ⟶ F₀.left), F = F₀.precomp f₀ :=

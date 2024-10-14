@@ -187,7 +187,7 @@ instance : TopologicalSpace (OnePoint X) where
     rw [preimage_sUnion]
     exact isOpen_biUnion fun s hs => (ho s hs).2
 
-variable {s : Set (OnePoint X)} {t : Set X}
+variable {s : Set (OnePoint X)}
 
 theorem isOpen_def :
     IsOpen s ↔ (∞ ∈ s → IsCompact ((↑) ⁻¹' s : Set X)ᶜ) ∧ IsOpen ((↑) ⁻¹' s : Set X) :=

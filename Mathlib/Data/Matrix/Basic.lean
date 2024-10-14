@@ -2098,7 +2098,6 @@ variants which this lemma would not apply to:
 * `Matrix.conjTranspose_intCast_smul`
 * `Matrix.conjTranspose_inv_natCast_smul`
 * `Matrix.conjTranspose_inv_intCast_smul`
-* `Matrix.conjTranspose_rat_smul`
 * `Matrix.conjTranspose_ratCast_smul`
 -/
 @[simp]
@@ -2166,7 +2165,6 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
     (c : ℚ) (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
   Matrix.ext <| by simp
 
-@[simp]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp

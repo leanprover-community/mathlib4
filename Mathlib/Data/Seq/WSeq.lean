@@ -717,12 +717,9 @@ theorem head_terminates_of_head_tail_terminates (s : WSeq α) [T : Terminates (h
     Terminates (head s) :=
   (head_terminates_iff _).2 <| by
     rcases (head_terminates_iff _).1 T with ⟨⟨a, h⟩⟩
-    simp? [tail] at h says simp only [tail, destruct_flatten] at h
+    simp? [tail] at h says simp only [tail, destruct_flatten, bind_map_left] at h
     rcases exists_of_mem_bind h with ⟨s', h1, _⟩
-    unfold Functor.map at h1
-    exact
-      let ⟨t, h3, _⟩ := Computation.exists_of_mem_map h1
-      Computation.terminates_of_mem h3
+    exact terminates_of_mem h1
 
 theorem destruct_some_of_destruct_tail_some {s : WSeq α} {a} (h : some a ∈ destruct (tail s)) :
     ∃ a', some a' ∈ destruct s := by

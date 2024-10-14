@@ -119,11 +119,11 @@ theorem AntisymmRel.image {a b : α} (h : AntisymmRel (· ≤ ·) a b) {f : α �
   ⟨hf h.1, hf h.2⟩
 
 instance instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization α (· ≤ ·)) where
-  le a b :=
-    (Quotient.liftOn₂' a b (· ≤ ·)) fun (_ _ _ _ : α) h₁ h₂ =>
+  le :=
+    Quotient.lift₂ (· ≤ ·) fun (_ _ _ _ : α) h₁ h₂ =>
       propext ⟨fun h => h₁.2.trans <| h.trans h₂.1, fun h => h₁.1.trans <| h.trans h₂.2⟩
-  lt a b :=
-    (Quotient.liftOn₂' a b (· < ·)) fun (_ _ _ _ : α) h₁ h₂ =>
+  lt :=
+    Quotient.lift₂ (· < ·) fun (_ _ _ _ : α) h₁ h₂ =>
       propext ⟨fun h => h₁.2.trans_lt <| h.trans_le h₂.1, fun h =>
                 h₁.1.trans_lt <| h.trans_le h₂.2⟩
   le_refl a := Quotient.inductionOn' a <| le_refl
@@ -138,11 +138,11 @@ theorem antisymmetrization_fibration :
 
 theorem acc_antisymmetrization_iff : Acc (· < ·)
     (@toAntisymmetrization α (· ≤ ·) _ a) ↔ Acc (· < ·) a :=
-  acc_liftOn₂'_iff
+  acc_lift₂_iff
 
 theorem wellFounded_antisymmetrization_iff :
     WellFounded (@LT.lt (Antisymmetrization α (· ≤ ·)) _) ↔ WellFounded (@LT.lt α _) :=
-  wellFounded_liftOn₂'_iff
+  wellFounded_lift₂_iff
 
 instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) :=
   ⟨wellFounded_antisymmetrization_iff.2 IsWellFounded.wf⟩
@@ -167,12 +167,12 @@ theorem toAntisymmetrization_lt_toAntisymmetrization_iff :
 @[simp]
 theorem ofAntisymmetrization_le_ofAntisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
     ofAntisymmetrization (· ≤ ·) a ≤ ofAntisymmetrization (· ≤ ·) b ↔ a ≤ b :=
-  (Quotient.out'RelEmbedding _).map_rel_iff
+  (Quotient.outRelEmbedding _).map_rel_iff
 
 @[simp]
 theorem ofAntisymmetrization_lt_ofAntisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
     ofAntisymmetrization (· ≤ ·) a < ofAntisymmetrization (· ≤ ·) b ↔ a < b :=
-  (Quotient.out'RelEmbedding _).map_rel_iff
+  (Quotient.outRelEmbedding _).map_rel_iff
 
 @[mono]
 theorem toAntisymmetrization_mono : Monotone (@toAntisymmetrization α (· ≤ ·) _) := fun _ _ => id
@@ -209,7 +209,7 @@ variable (α)
 /-- `ofAntisymmetrization` as an order embedding. -/
 @[simps]
 noncomputable def OrderEmbedding.ofAntisymmetrization : Antisymmetrization α (· ≤ ·) ↪o α :=
-  { Quotient.out'RelEmbedding _ with toFun := _root_.ofAntisymmetrization _ }
+  { Quotient.outRelEmbedding _ with toFun := _root_.ofAntisymmetrization _ }
 
 /-- `Antisymmetrization` and `orderDual` commute. -/
 def OrderIso.dualAntisymmetrization :

@@ -233,5 +233,8 @@ theorem nonemptyFinLinOrd_dual_comp_forget_to_linOrd :
 def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
     NonemptyFinLinOrd.dual ⋙ forget₂ NonemptyFinLinOrd FinPartOrd ≅
       forget₂ NonemptyFinLinOrd FinPartOrd ⋙ FinPartOrd.dual where
-  hom := { app := fun _ => OrderHom.id }
-  inv := { app := fun _ => OrderHom.id }
+  hom := { app := fun X => OrderHom.id }
+  inv := { app := fun X => OrderHom.id }
+
+/-- The generating arrow `i ⟶ i+1` in the category `Fin n`.-/
+def Fin.hom_succ {n} (i : Fin n) : i.castSucc ⟶ i.succ := homOfLE (Fin.castSucc_le_succ i)

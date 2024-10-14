@@ -734,7 +734,7 @@ lemma one_le_formalMultilinearSeries_geometric_radius (𝕜 : Type*) [Nontrivial
   apply le_trans ?_ (formalMultilinearSeries_geometric_apply_norm_le 𝕜 A n)
   conv_rhs => rw [← mul_one (‖formalMultilinearSeries_geometric 𝕜 A n‖)]
   gcongr
-  exact pow_le_one _ (coe_nonneg r) hr.le
+  exact pow_le_one₀ (coe_nonneg r) hr.le
 
 lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
@@ -760,7 +760,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNorme
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
     refine isBigO_of_le atTop (fun n ↦ ?_)
     rw [norm_one, Real.norm_of_nonneg (pow_nonneg (coe_nonneg r) _)]
-    exact pow_le_one _ (coe_nonneg r) hr.le
+    exact pow_le_one₀ (coe_nonneg r) hr.le
 
 lemma hasFPowerSeriesOnBall_inverse_one_sub
     (𝕜 : Type*) [NontriviallyNormedField 𝕜]

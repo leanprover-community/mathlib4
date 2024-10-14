@@ -70,7 +70,7 @@ noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) 
   qsmul := _
   qsmul_def := fun _ _ => rfl
 
-open FiniteDimensional
+open Module
 
 section
 

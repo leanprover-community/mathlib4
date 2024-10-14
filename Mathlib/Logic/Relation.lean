@@ -213,7 +213,7 @@ instance [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relat
 
 end Map
 
-variable {r : α → α → Prop} {a b c d : α}
+variable {r : α → α → Prop} {a b c : α}
 
 /-- `ReflTransGen r`: reflexive transitive closure of `r` -/
 @[mk_iff ReflTransGen.cases_tail_iff]

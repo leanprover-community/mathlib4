@@ -70,7 +70,7 @@ theorem nhds_coe {r : ℝ} : 𝓝 (r : EReal) = (𝓝 r).map (↑) :=
 
 theorem nhds_coe_coe {r p : ℝ} :
     𝓝 ((r : EReal), (p : EReal)) = (𝓝 (r, p)).map fun p : ℝ × ℝ => (↑p.1, ↑p.2) :=
-  ((openEmbedding_coe.prod openEmbedding_coe).map_nhds_eq (r, p)).symm
+  ((openEmbedding_coe.prodMap openEmbedding_coe).map_nhds_eq (r, p)).symm
 
 theorem tendsto_toReal {a : EReal} (ha : a ≠ ⊤) (h'a : a ≠ ⊥) :
     Tendsto EReal.toReal (𝓝 a) (𝓝 a.toReal) := by
@@ -358,7 +358,7 @@ private lemma continuousAt_mul_symm1 {a b : EReal}
     simp
   rw [this]
   apply ContinuousAt.comp (Continuous.continuousAt continuous_neg)
-    <| ContinuousAt.comp _ (ContinuousAt.prod_map (Continuous.continuousAt continuous_neg)
+    <| ContinuousAt.comp _ (ContinuousAt.prodMap (Continuous.continuousAt continuous_neg)
       (Continuous.continuousAt continuous_id))
   simp [h]
 

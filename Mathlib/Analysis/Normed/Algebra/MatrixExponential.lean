@@ -145,17 +145,15 @@ nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp 𝕂 A) := by
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact isUnit_exp _ A
 
--- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
-    exp 𝕂 (U.val * A * (U⁻¹).val) = U.val * exp 𝕂 A * (U⁻¹).val := by
+    exp 𝕂 (U * A * U⁻¹) = U * exp 𝕂 A * U⁻¹ := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact exp_units_conj _ U A
 
--- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 theorem exp_units_conj' (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
-    exp 𝕂 ((U⁻¹).val * A * U.val) = (U⁻¹).val * exp 𝕂 A * U.val :=
+    exp 𝕂 (U⁻¹ * A * U) = U⁻¹ * exp 𝕂 A * U :=
   exp_units_conj 𝕂 U⁻¹ A
 
 end Normed

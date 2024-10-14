@@ -81,14 +81,14 @@ sections whose restriction onto each stalk falls in the given submonoid. -/
 @[simps]
 noncomputable def submonoidPresheafOfStalk (S : ∀ x : X, Submonoid (F.stalk x)) :
     F.SubmonoidPresheaf where
-  obj U := ⨅ x : U.unop, Submonoid.comap (F.germ x) (S x)
+  obj U := ⨅ x : U.unop, Submonoid.comap (F.germ U.unop x.1 x.2) (S x)
   map {U V} i := by
     intro s hs
     simp only [Submonoid.mem_comap, Submonoid.mem_iInf] at hs ⊢
     intro x
-    change (F.map i.unop.op ≫ F.germ x) s ∈ _
+    change (F.map i.unop.op ≫ F.germ V.unop x.1 x.2) s ∈ _
     rw [F.germ_res]
-    exact hs ⟨_,_⟩
+    exact hs ⟨_, i.unop.le x.2⟩
 
 noncomputable instance : Inhabited F.SubmonoidPresheaf :=
   ⟨F.submonoidPresheafOfStalk fun _ => ⊥⟩
@@ -121,11 +121,9 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   refine IsLocalization.injective (M := m) (S := Localization m) ?_
   intro s hs t e
   apply section_ext F (unop U)
-  intro x
+  intro x hx
   rw [map_zero]
-  apply Submonoid.mem_iInf.mp hs x
-  -- Porting note: added `dsimp` to make `rw [← map_mul]` work
-  dsimp
+  apply Submonoid.mem_iInf.mp hs ⟨x, hx⟩
   rw [← map_mul, e, map_zero]
 
 end Presheaf

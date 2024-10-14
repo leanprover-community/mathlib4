@@ -44,9 +44,12 @@ def Inducing.comapPseudoMetricSpace {α β} [TopologicalSpace α] [m : PseudoMet
 /-- Pull back a pseudometric space structure by a uniform inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `UniformSpace`
 structure. -/
-def UniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : PseudoMetricSpace β]
-    (f : α → β) (h : UniformInducing f) : PseudoMetricSpace α :=
+def IsUniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : PseudoMetricSpace β]
+    (f : α → β) (h : IsUniformInducing f) : PseudoMetricSpace α :=
   .replaceUniformity (.induced f m) h.comap_uniformity.symm
+
+@[deprecated (since := "2024-10-08")] alias UniformInducing.comapPseudoMetricSpace :=
+  IsUniformInducing.comapPseudoMetricSpace
 
 instance Subtype.pseudoMetricSpace {p : α → Prop} : PseudoMetricSpace (Subtype p) :=
   PseudoMetricSpace.induced Subtype.val ‹_›

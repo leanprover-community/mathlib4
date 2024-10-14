@@ -65,7 +65,7 @@ namespace Finset
 /-- Type synonym of `Finset α` equipped with the colexicographic order rather than the inclusion
 order. -/
 @[ext]
-structure Colex (α) :=
+structure Colex (α) where
   /-- `toColex` is the "identity" function between `Finset α` and `Finset.Colex α`. -/
   toColex ::
   /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/

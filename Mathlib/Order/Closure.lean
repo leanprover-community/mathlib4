@@ -248,7 +248,7 @@ end SemilatticeSup
 
 section CompleteLattice
 
-variable [CompleteLattice α] (c : ClosureOperator α) {p : α → Prop}
+variable [CompleteLattice α] (c : ClosureOperator α)
 
 /-- Define a closure operator from a predicate that's preserved under infima. -/
 @[simps!]

@@ -276,13 +276,13 @@ theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ Complex.abs) :
       f ≈ _ := equiv_limAux f
       _ = CauSeq.const Complex.abs (↑(lim (cauSeqRe f)) + ↑(lim (cauSeqIm f)) * I) :=
         CauSeq.ext fun _ =>
-          Complex.ext (by simp [limAux, cauSeqRe, ofReal']) (by simp [limAux, cauSeqIm, ofReal'])
+          Complex.ext (by simp [limAux, cauSeqRe, ofReal]) (by simp [limAux, cauSeqIm, ofReal])
 
 theorem lim_re (f : CauSeq ℂ Complex.abs) : lim (cauSeqRe f) = (lim f).re := by
-  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal']
+  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal]
 
 theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := by
-  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal']
+  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal]
 
 theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
     IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>

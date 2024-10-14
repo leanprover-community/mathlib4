@@ -232,7 +232,7 @@ theorem smul_ofFunction {c : ℝ≥0∞} (hc : c ≠ ∞) : c • OuterMeasure.o
   haveI : Nonempty { t : ℕ → Set α // s ⊆ ⋃ i, t i } := ⟨⟨fun _ => s, subset_iUnion (fun _ => s) 0⟩⟩
   simp only [smul_apply, ofFunction_apply, ENNReal.tsum_mul_left, Pi.smul_apply, smul_eq_mul,
   iInf_subtype']
-  rw [ENNReal.iInf_mul_left fun h => (hc h).elim]
+  rw [ENNReal.mul_iInf fun h => (hc h).elim]
 
 end OfFunction
 

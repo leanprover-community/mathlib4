@@ -27,7 +27,7 @@ We prove the following facts:
 
 variable {ι : Type*} {E P : Type*}
 
-open AffineBasis FiniteDimensional Metric Set
+open AffineBasis Module Metric Set
 open scoped Convex Pointwise Topology
 
 section SeminormedAddCommGroup

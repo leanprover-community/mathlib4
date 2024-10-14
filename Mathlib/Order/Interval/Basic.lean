@@ -22,7 +22,7 @@ interval arithmetic.
 
 open Function OrderDual Set
 
-variable {α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*}
+variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 /-- The nonempty closed intervals in an order.
 
@@ -91,8 +91,7 @@ end LE
 
 section Preorder
 
-variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] {s : NonemptyInterval α} {x : α × α}
-  {a : α}
+variable [Preorder α] [Preorder β] [Preorder γ] {s : NonemptyInterval α} {x : α × α} {a : α}
 
 instance : Preorder (NonemptyInterval α) :=
   Preorder.lift toDualProd
@@ -189,7 +188,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [PartialOrder β] {s t : NonemptyInterval α} {x : α × α} {a b : α}
+variable [PartialOrder α] [PartialOrder β] {s t : NonemptyInterval α} {a b : α}
 
 instance : PartialOrder (NonemptyInterval α) :=
   PartialOrder.lift _ toDualProd_injective
@@ -272,7 +271,7 @@ namespace Interval
 
 section LE
 
-variable [LE α] {s t : Interval α}
+variable [LE α]
 
 -- Porting note: previously found using `deriving`
 instance : Inhabited (Interval α) := WithBot.inhabited

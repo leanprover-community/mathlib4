@@ -49,7 +49,7 @@ assert_not_exists Ring
 
 open Function
 
-variable {R R' M M' N G A B α β : Type*}
+variable {M N A B α β : Type*}
 
 /-- `Monoid.toMulAction` is faithful on nontrivial cancellative monoids with zero. -/
 instance CancelMonoidWithZero.faithfulSMul [CancelMonoidWithZero α] [Nontrivial α] :

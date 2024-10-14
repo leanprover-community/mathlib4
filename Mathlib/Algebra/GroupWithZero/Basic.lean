@@ -37,7 +37,7 @@ assert_not_exists DenselyOrdered
 
 open Function
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+variable {M₀ G₀ : Type*}
 
 section
 
@@ -136,7 +136,7 @@ theorem right_ne_zero_of_mul_eq_one (h : a * b = 1) : b ≠ 0 :=
 end
 
 section MonoidWithZero
-variable [MonoidWithZero M₀] {a : M₀} {m n : ℕ}
+variable [MonoidWithZero M₀] {a : M₀} {n : ℕ}
 
 @[simp] lemma zero_pow : ∀ {n : ℕ}, n ≠ 0 → (0 : M₀) ^ n = 0
   | n + 1, _ => by rw [pow_succ, mul_zero]
@@ -234,7 +234,7 @@ end CancelMonoidWithZero
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c g h x : G₀}
+variable [GroupWithZero G₀] {a b x : G₀}
 
 theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
     Function.Injective fun y => x * y := fun y y' w => by

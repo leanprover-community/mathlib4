@@ -280,6 +280,9 @@ theorem measure_union₀' (hs : NullMeasurableSet s μ) (hd : AEDisjoint μ s t)
 theorem measure_add_measure_compl₀ {s : Set α} (hs : NullMeasurableSet s μ) :
     μ s + μ sᶜ = μ univ := by rw [← measure_union₀' hs aedisjoint_compl_right, union_compl_self]
 
+lemma measure_of_measure_compl_eq_zero (hs : μ sᶜ = 0) : μ s = μ Set.univ := by
+  simpa [hs] using measure_add_measure_compl₀ <| .of_compl <| .of_null hs
+
 section MeasurableSingletonClass
 
 variable [MeasurableSingletonClass (NullMeasurableSpace α μ)]

@@ -338,7 +338,7 @@ theorem not_isPeriodicPt_of_pos_of_lt_minimalPeriod :
 theorem IsPeriodicPt.minimalPeriod_dvd (hx : IsPeriodicPt f n x) : minimalPeriod f x ∣ n :=
   (eq_or_lt_of_le <| n.zero_le).elim (fun hn0 => hn0 ▸ dvd_zero _) fun hn0 =>
     -- Porting note: `Nat.dvd_iff_mod_eq_zero` gained explicit arguments
-    (Nat.dvd_iff_mod_eq_zero _ _).2 <|
+    Nat.dvd_iff_mod_eq_zero.2 <|
       (hx.mod <| isPeriodicPt_minimalPeriod f x).eq_zero_of_lt_minimalPeriod <|
         Nat.mod_lt _ <| hx.minimalPeriod_pos hn0
 
@@ -433,7 +433,7 @@ theorem periodicOrbit_length : (periodicOrbit f x).length = minimalPeriod f x :=
 @[simp]
 theorem periodicOrbit_eq_nil_iff_not_periodic_pt :
     periodicOrbit f x = Cycle.nil ↔ x ∉ periodicPts f := by
-  simp only [periodicOrbit.eq_1, Cycle.coe_eq_nil, List.map_eq_nil, List.range_eq_nil]
+  simp only [periodicOrbit.eq_1, Cycle.coe_eq_nil, List.map_eq_nil_iff, List.range_eq_nil]
   exact minimalPeriod_eq_zero_iff_nmem_periodicPts
 
 theorem periodicOrbit_eq_nil_of_not_periodic_pt (h : x ∉ periodicPts f) :

@@ -11,7 +11,7 @@ import Batteries.WF
 # `Nat.find` and `Nat.findGreatest`
 -/
 
-variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
+variable {m n k : ℕ} {p q : ℕ → Prop}
 
 namespace Nat
 

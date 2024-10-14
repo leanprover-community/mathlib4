@@ -55,7 +55,7 @@ instance one (I : Ideal R) : One (R ⧸ I) :=
 protected def ringCon (I : Ideal R) : RingCon R :=
   { QuotientAddGroup.con I.toAddSubgroup with
     mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ => by
-      rw [Submodule.quotientRel_r_def] at h₁ h₂ ⊢
+      rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
       have F := I.add_mem (I.mul_mem_left a₂ h₁) (I.mul_mem_right b₁ h₂)
       have : a₁ * a₂ - b₁ * b₂ = a₂ * (a₁ - b₁) + (a₂ - b₂) * b₁ := by
         rw [mul_sub, sub_mul, sub_add_sub_cancel, mul_comm, mul_comm b₁]
@@ -177,7 +177,7 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
   rcases hI.exists_inv (mt eq_zero_iff_mem.2 h) with ⟨b, c, hc, abc⟩
   rw [mul_comm] at abc
   refine ⟨mk _ b, Quot.sound ?_⟩
-  simp only [Submodule.quotientRel_r_def]
+  simp only [Submodule.quotientRel_def]
   rw [← eq_sub_iff_add_eq'] at abc
   rwa [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
 
@@ -291,7 +291,7 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
     Quotient.liftOn₂' c m (fun r m => Submodule.Quotient.mk <| r • m) <| by
       intro c₁ m₁ c₂ m₂ hc hm
       apply Ideal.Quotient.eq.2
-      rw [Submodule.quotientRel_r_def] at hc hm
+      rw [Submodule.quotientRel_def] at hc hm
       intro i
       exact I.mul_sub_mul_mem hc (hm i)
   one_smul := by

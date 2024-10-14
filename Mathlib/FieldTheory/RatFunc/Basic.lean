@@ -269,7 +269,7 @@ macro "smul_tac" : tactic => `(tactic|
     simp_rw [← ofFractionRing_smul] <;>
     simp only [add_comm, mul_comm, zero_smul, succ_nsmul, zsmul_eq_mul, mul_add, mul_one, mul_zero,
       neg_add, mul_neg,
-      Int.ofNat_eq_coe, Int.cast_zero, Int.cast_add, Int.cast_one,
+      Int.cast_zero, Int.cast_add, Int.cast_one,
       Int.cast_negSucc, Int.cast_natCast, Nat.cast_succ,
       Localization.mk_zero, Localization.add_mk_self, Localization.neg_mk,
       ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg])

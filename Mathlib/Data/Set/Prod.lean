@@ -686,15 +686,6 @@ theorem disjoint_pi : Disjoint (s.pi t₁) (s.pi t₂) ↔ ∃ i ∈ s, Disjoint
 
 end Nonempty
 
--- Porting note: Removing `simp` - LHS does not simplify
-theorem range_dcomp (f : ∀ i, α i → β i) :
-    (range fun g : ∀ i, α i => fun i => f i (g i)) = pi univ fun i => range (f i) := by
-  refine Subset.antisymm ?_ fun x hx => ?_
-  · rintro _ ⟨x, rfl⟩ i -
-    exact ⟨x i, rfl⟩
-  · choose y hy using hx
-    exact ⟨fun i => y i trivial, funext fun i => hy i trivial⟩
-
 @[simp]
 theorem insert_pi (i : ι) (s : Set ι) (t : ∀ i, Set (α i)) :
     pi (insert i s) t = eval i ⁻¹' t i ∩ pi s t := by
@@ -809,8 +800,8 @@ theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
     (fun f : ∀ i, α i => f i) '' pi univ t = t i :=
   eval_image_pi (mem_univ i) ht
 
-theorem dcomp_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective (f i)) (t : ∀ i, Set (α i)) :
-    (f _ ∘' ·) '' s.pi t = s.pi fun i ↦ f i '' t i := by
+theorem piMap_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective (f i)) (t : ∀ i, Set (α i)) :
+    Pi.map f '' s.pi t = s.pi fun i ↦ f i '' t i := by
   refine Subset.antisymm (image_subset_iff.2 fun a ha i hi ↦ mem_image_of_mem _ (ha _ hi)) ?_
   intro b hb
   have : ∀ i, ∃ a, f i a = b i ∧ (i ∈ s → a ∈ t i) := by
@@ -822,9 +813,19 @@ theorem dcomp_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective 
   choose a hab hat using this
   exact ⟨a, hat, funext hab⟩
 
-theorem dcomp_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
-    (f _ ∘' ·) '' univ.pi t = univ.pi fun i ↦ f i '' t i :=
-  dcomp_image_pi (by simp) t
+@[deprecated (since := "2024-10-06")] alias dcomp_image_pi := piMap_image_pi
+
+theorem piMap_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
+    Pi.map f '' univ.pi t = univ.pi fun i ↦ f i '' t i :=
+  piMap_image_pi (by simp) t
+
+@[deprecated (since := "2024-10-06")] alias dcomp_image_univ_pi := piMap_image_univ_pi
+
+@[simp]
+theorem range_piMap (f : ∀ i, α i → β i) : range (Pi.map f) = pi univ fun i ↦ range (f i) := by
+  simp only [← image_univ, ← piMap_image_univ_pi, pi_univ]
+
+@[deprecated (since := "2024-10-06")] alias range_dcomp := range_piMap
 
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine

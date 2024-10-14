@@ -201,7 +201,7 @@ lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
     ((single₀ V).map f).f 0 = f := by
   rw [HomologicalComplex.single_map_f_self]
   dsimp [HomologicalComplex.singleObjXSelf, HomologicalComplex.singleObjXIsoOfEq]
-  erw [comp_id, id_comp]
+  rw [comp_id, id_comp]
 
 
 @[simp]
@@ -269,7 +269,7 @@ lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
     ((single₀ V).map f).f 0 = f := by
   rw [HomologicalComplex.single_map_f_self]
   dsimp [HomologicalComplex.singleObjXSelf, HomologicalComplex.singleObjXIsoOfEq]
-  erw [comp_id, id_comp]
+  rw [comp_id, id_comp]
 
 @[simp]
 lemma single₀ObjXSelf (X : V) :

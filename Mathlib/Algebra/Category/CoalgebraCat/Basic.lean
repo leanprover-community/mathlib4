@@ -62,7 +62,7 @@ lemma of_counit {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
 /-- A type alias for `CoalgHom` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
 @[ext]
-structure Hom (V W : CoalgebraCat.{v} R) :=
+structure Hom (V W : CoalgebraCat.{v} R) where
   /-- The underlying `CoalgHom` -/
   toCoalgHom : V →ₗc[R] W
 

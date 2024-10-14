@@ -794,10 +794,16 @@ theorem eLpNorm'_smul_measure {p : ℝ} (hp : 0 ≤ p) {f : α → F} (c : ℝ�
 @[deprecated (since := "2024-07-27")]
 alias snorm'_smul_measure := eLpNorm'_smul_measure
 
-theorem eLpNormEssSup_smul_measure {f : α → F} {c : ℝ≥0∞} (hc : c ≠ 0) :
+section SMul
+variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+  [NoZeroSMulDivisors R ℝ≥0∞] {c : R}
+
+@[simp] lemma eLpNormEssSup_smul_measure (hc : c ≠ 0) (f : α → F) :
     eLpNormEssSup f (c • μ) = eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup]
-  exact essSup_smul_measure hc
+  exact essSup_smul_measure hc _
+
+end SMul
 
 @[deprecated (since := "2024-07-27")]
 alias snormEssSup_smul_measure := eLpNormEssSup_smul_measure

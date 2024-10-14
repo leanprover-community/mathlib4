@@ -139,7 +139,7 @@ variable {E : Type*} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E]
 
 instance : FunLike (PartitionOfUnity ι X s) ι C(X, ℝ) where
   coe := toFun
-  coe_injective' := fun f g h ↦ by cases f; cases g; congr
+  coe_injective' f g h := by cases f; cases g; congr
 
 protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
   f.locallyFinite'
@@ -311,7 +311,7 @@ variable {s : Set X} (f : BumpCovering ι X s)
 
 instance : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
   coe := toFun
-  coe_injective' := fun f g h ↦ by cases f; cases g; congr
+  coe_injective' f g h := by cases f; cases g; congr
 
 protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
   f.locallyFinite'

@@ -128,7 +128,7 @@ theorem not_step_nil : ¬Step [] L := by
   generalize h' : [] = L'
   intro h
   cases' h with L₁ L₂
-  simp [List.nil_eq_append] at h'
+  simp [List.nil_eq_append_iff] at h'
 
 @[to_additive]
 theorem Step.cons_left_iff {a : α} {b : Bool} :
@@ -287,7 +287,8 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
   generalize eq : [(x1, not b1), (x2, b2)] = L'
   intro L h'
   cases h'
-  simp [List.cons_eq_append, List.nil_eq_append] at eq
+  simp only [List.cons_eq_append_iff, List.cons.injEq, Prod.mk.injEq, and_false,
+    List.nil_eq_append_iff, exists_const, or_self, or_false, List.cons_ne_nil] at eq
   rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩
   simp at h
 

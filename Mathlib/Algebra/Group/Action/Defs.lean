@@ -48,7 +48,7 @@ assert_not_exists MonoidWithZero
 
 open Function (Injective Surjective)
 
-variable {M N G H A B α β γ δ : Type*}
+variable {M N G H α β γ δ : Type*}
 
 /-! ### Faithful actions -/
 
@@ -487,7 +487,7 @@ lemma smul_inv_smul (g : G) (a : α) : g • g⁻¹ • a = a := by rw [smul_smu
   ⟨fun h ↦ by rw [h, smul_inv_smul], fun h ↦ by rw [← h, inv_smul_smul]⟩
 
 section Mul
-variable [Mul H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H] {g : G} {a b : H}
+variable [Mul H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H] {a b : H}
 
 @[simp] lemma Commute.smul_right_iff : Commute a (g • b) ↔ Commute a b :=
   ⟨fun h ↦ inv_smul_smul g b ▸ h.smul_right g⁻¹, fun h ↦ h.smul_right g⟩

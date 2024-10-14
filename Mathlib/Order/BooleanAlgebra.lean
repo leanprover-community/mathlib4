@@ -745,8 +745,8 @@ protected abbrev Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] 
     GeneralizedBooleanAlgebra α where
   __ := hf.generalizedCoheytingAlgebra f map_sup map_inf map_bot map_sdiff
   __ := hf.distribLattice f map_sup map_inf
-  sup_inf_sdiff a b := hf <| by erw [map_sup, map_sdiff, map_inf, sup_inf_sdiff]
-  inf_inf_sdiff a b := hf <| by erw [map_inf, map_sdiff, map_inf, inf_inf_sdiff, map_bot]
+  sup_inf_sdiff a b := hf <| by rw [map_sup, map_sdiff, map_inf, sup_inf_sdiff]
+  inf_inf_sdiff a b := hf <| by rw [map_inf, map_sdiff, map_inf, inf_inf_sdiff, map_bot]
 
 -- See note [reducible non-instances]
 /-- Pullback a `BooleanAlgebra` along an injection. -/

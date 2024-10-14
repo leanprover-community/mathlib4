@@ -34,7 +34,7 @@ assert_not_exists MonoidWithZero
 -- assert_not_exists AddMonoidWithOne
 assert_not_exists DenselyOrdered
 
-variable {A : Type*} {B : Type*} {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
+variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
 namespace Prod
 

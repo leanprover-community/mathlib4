@@ -110,7 +110,7 @@ def Coe.addMonoidHom : AddMonoidHom (R_hat R K) (K_hat R K) where
     refine funext fun v => ?_
     simp only [coe_apply, Pi.add_apply, Subring.coe_add]
     -- Porting note: added
-    erw [Pi.add_apply, Pi.add_apply, Subring.coe_add]
+    rw [Pi.add_apply, Pi.add_apply, Subring.coe_add]
 
 /-- The inclusion of `R_hat` in `K_hat` as a ring homomorphism. -/
 @[simps]
@@ -123,7 +123,7 @@ def Coe.ringHom : RingHom (R_hat R K) (K_hat R K) :=
       refine funext fun p => ?_
       simp only [Pi.mul_apply, Subring.coe_mul]
       -- Porting note: added
-      erw [Pi.mul_apply, Pi.mul_apply, Subring.coe_mul] }
+      rw [Pi.mul_apply, Pi.mul_apply, Subring.coe_mul] }
 
 end FiniteIntegralAdeles
 
@@ -337,7 +337,7 @@ instance : IsScalarTower R K (FiniteAdeleRing R K) :=
   IsScalarTower.of_algebraMap_eq' rfl
 
 instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
-  coe := fun x ↦ x.1
+  coe x := x.1
 
 @[ext]
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=

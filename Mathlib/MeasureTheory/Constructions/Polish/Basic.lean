@@ -109,6 +109,12 @@ variable [MeasurableSpace α]
 instance standardBorel_of_polish [τ : TopologicalSpace α]
     [BorelSpace α] [PolishSpace α] : StandardBorelSpace α := by exists τ
 
+instance standardBorelSpace_of_discreteMeasurableSpace [DiscreteMeasurableSpace α] [Countable α] :
+    StandardBorelSpace α :=
+  let _ : TopologicalSpace α := ⊥
+  have : DiscreteTopology α := ⟨rfl⟩
+  inferInstance
+
 instance countablyGenerated_of_standardBorel [StandardBorelSpace α] :
     MeasurableSpace.CountablyGenerated α :=
   letI := upgradeStandardBorel α
@@ -343,7 +349,7 @@ protected lemma AnalyticSet.preimage {X Y : Type*} [TopologicalSpace X] [Topolog
     [PolishSpace X] [T2Space Y] {s : Set Y} (hs : AnalyticSet s) {f : X → Y} (hf : Continuous f) :
     AnalyticSet (f ⁻¹' s) := by
   rcases analyticSet_iff_exists_polishSpace_range.1 hs with ⟨Z, _, _, g, hg, rfl⟩
-  have : IsClosed {x : X × Z | f x.1 = g x.2} := isClosed_diagonal.preimage (hf.prod_map hg)
+  have : IsClosed {x : X × Z | f x.1 = g x.2} := isClosed_eq hf.fst' hg.snd'
   convert this.analyticSet.image_of_continuous continuous_fst
   ext x
   simp [eq_comm]

@@ -219,7 +219,7 @@ variable (G : Type*) [Group G] [∀ (X : C), MulAction G (F.obj X)]
 
 /-- A compact, topological group `G` with a natural action on `F.obj X` for each `X : C`
 is a fundamental group of `F`, if `G` acts transitively on the fibers of Galois objects,
-the action on `F.obj X` is continuous for all `X : C` and the only trivally acting element of `G`
+the action on `F.obj X` is continuous for all `X : C` and the only trivially acting element of `G`
 is the identity. -/
 class IsFundamentalGroup [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
     extends IsNaturalSMul F G : Prop where

@@ -6,6 +6,7 @@ Authors: Peter Nelson, Yaël Dillies
 import Mathlib.Data.Finset.Order
 import Mathlib.Order.Atoms
 import Mathlib.Data.Set.Finite
+import Mathlib.Order.Minimal
 
 /-!
 # Order structures on finite types
