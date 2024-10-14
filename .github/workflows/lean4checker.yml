@@ -70,14 +70,19 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          git checkout v4.13.0-rc3
+          # This should be changed back to a version tag when
+          # anything subsequent to `v4.13.0-rc3` is released.
+          git checkout master
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .
           lake build
           ./test.sh
           cd ..
-          lake env lean4checker/.lake/build/bin/lean4checker
+          # After https://github.com/leanprover/lean4checker/pull/26
+          # lean4checker by default only runs on the current project
+          # so we explicitly check Batteries as well here.
+          lake env lean4checker/.lake/build/bin/lean4checker Batteries Mathlib
 
       - name: Post success message on Zulip
         if: success()
