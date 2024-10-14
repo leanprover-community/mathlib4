@@ -1141,9 +1141,9 @@ end Pi
 section Add
 
 theorem HasFTaylorSeriesUpToOn.add {q g} (hf : HasFTaylorSeriesUpToOn n f p s)
-    (hg : HasFTaylorSeriesUpToOn n g q s) : HasFTaylorSeriesUpToOn n (f + g) (p + q) s := by
-  convert HasFTaylorSeriesUpToOn.continuousLinearMap_comp
-    (ContinuousLinearMap.fst 𝕜 F F + .snd 𝕜 F F) (hf.prod hg)
+    (hg : HasFTaylorSeriesUpToOn n g q s) : HasFTaylorSeriesUpToOn n (f + g) (p + q) s :=
+  (hf.prod hg).continuousLinearMap_comp
+    (ContinuousLinearMap.fst 𝕜 F F + ContinuousLinearMap.snd 𝕜 F F)
 
 -- The sum is smooth.
 theorem contDiff_add : ContDiff 𝕜 n fun p : F × F => p.1 + p.2 :=
@@ -1208,6 +1208,12 @@ end Add
 
 section Neg
 
+theorem HasFTaylorSeriesUpToOn.neg (hf : HasFTaylorSeriesUpToOn n f p s) :
+    HasFTaylorSeriesUpToOn n (-f) (-p) s where
+  zero_eq x hx := congr(- $(hf.zero_eq x hx))
+  fderivWithin m hm x hx := (hf.fderivWithin m hm x hx).neg
+  cont m hm := (hf.cont m hm).neg
+
 -- The negative is smooth.
 theorem contDiff_neg : ContDiff 𝕜 n fun p : F => -p :=
   IsBoundedLinearMap.id.neg.contDiff
@@ -1257,6 +1263,11 @@ theorem iteratedFDeriv_neg_apply {i : ℕ} {f : E → F} :
 end Neg
 
 /-! ### Subtraction -/
+
+theorem HasFTaylorSeriesUpToOn.sub {q g} (hf : HasFTaylorSeriesUpToOn n f p s)
+    (hg : HasFTaylorSeriesUpToOn n g q s) : HasFTaylorSeriesUpToOn n (f - g) (p - q) s :=
+  (hf.prod hg).continuousLinearMap_comp
+    (ContinuousLinearMap.fst 𝕜 F F - ContinuousLinearMap.snd 𝕜 F F)
 
 /-- The difference of two `C^n` functions within a set at a point is `C^n` within this set
 at this point. -/
