@@ -13,6 +13,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.Algebra.Module.Opposites
 
 /-!
 # Theory of topological modules and continuous linear maps.
@@ -2399,5 +2400,15 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
+
+namespace MulOpposite
+
+variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
+  {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M] [ContinuousSMul R M]
+
+def opContinuousLinearEquiv : M ≃L[R] Mᵐᵒᵖ where
+  __ := MulOpposite.opLinearEquiv R
+
+end MulOpposite
 
 set_option linter.style.longFile 2500

@@ -204,20 +204,6 @@ instance _root_.TopologicalSemiring.toIsActionTopology : IsActionTopology R R wh
       exact @Continuous.prod_mk _ _ _ _ (actionTopology R R) _ _ _ continuous_id <|
         @continuous_const _ _ _ (actionTopology R R) _
 
-/-- The action by right-multiplication is the action topology. -/
-instance _root_.TopologicalSemiring.toOppositeIsActionTopology : IsActionTopology Rᵐᵒᵖ R where
-  eq_actionTopology' := by
-    -- the same argument as above with some tweaks
-    refine le_antisymm ?_ (actionTopology_le Rᵐᵒᵖ R)
-    rw [← continuous_id_iff_le]
-    rw [show (id : R → R) = (fun rs ↦ rs.1 • rs.2) ∘ (fun r ↦ (MulOpposite.op r, 1)) by ext; simp]
-    apply @Continuous.comp _ _ _ _ (@instTopologicalSpaceProd _ _ _ (actionTopology Rᵐᵒᵖ R))
-        (actionTopology Rᵐᵒᵖ R)
-    · exact @continuous_smul _ _ _ _ (actionTopology Rᵐᵒᵖ R) <| ActionTopology.continuousSMul ..
-    · refine @Continuous.prod_mk _ _ _ _ (actionTopology Rᵐᵒᵖ R) _ _ _ MulOpposite.continuous_op <|
-        @continuous_const _ _ _ (actionTopology Rᵐᵒᵖ R) _
-
-
 end self
 
 section iso
@@ -250,5 +236,15 @@ theorem iso (e : A ≃L[R] B) : IsActionTopology R B where
       simp
 
 end iso
+
+section MulOpposite
+
+variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
+
+/-- The action by right-multiplication is the action topology. -/
+instance _root_.TopologicalSemiring.toOppositeIsActionTopology : IsActionTopology Rᵐᵒᵖ R :=
+  .iso (MulOpposite.opContinuousLinearEquiv Rᵐᵒᵖ).symm
+
+end MulOpposite
 
 end IsActionTopology
