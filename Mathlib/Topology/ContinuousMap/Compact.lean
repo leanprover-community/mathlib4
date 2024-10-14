@@ -295,7 +295,7 @@ def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
     map_smul' := fun c f => by
       ext
       norm_cast
-    norm_map' := fun f => rfl }
+    norm_map' := fun _ => rfl }
 
 variable {α E}
 
