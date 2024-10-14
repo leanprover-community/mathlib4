@@ -411,7 +411,7 @@ theorem mul_eq_opow_log_succ {a b : Ordinal.{u}} (ha : a ≠ 0) (hb : Principal 
   · have hbl := principal_mul_isLimit hb₂ hb
     rw [← (isNormal_mul_right (Ordinal.pos_iff_ne_zero.2 ha)).bsup_eq hbl, bsup_le_iff]
     intro c hcb
-    have hb₁ : 1 < b := (lt_succ 1).trans (succ_one ▸ hb₂)
+    have hb₁ : 1 < b := one_lt_two.trans hb₂
     have hbo₀ : b ^ log b a ≠ 0 := Ordinal.pos_iff_ne_zero.1 (opow_pos _ (zero_lt_one.trans hb₁))
     apply (mul_le_mul_right' (le_of_lt (lt_mul_succ_div a hbo₀)) c).trans
     rw [mul_assoc, opow_succ]
