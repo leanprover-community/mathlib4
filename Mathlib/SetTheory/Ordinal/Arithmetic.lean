@@ -367,15 +367,19 @@ theorem mk_initialSeg (o : Ordinal.{u}) :
 /-! ### Normal ordinal functions -/
 
 
-/-- A normal ordinal function is a strictly increasing function which is
-  order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
-  `a < o`. -/
-def IsNormal (f : Ordinal → Ordinal) : Prop :=
-  (∀ o, f o < f (succ o)) ∧ ∀ o, IsLimit o → ∀ a, f o ≤ a ↔ ∀ b < o, f b ≤ a
+/-- A normal ordinal function is a strictly monotonic function which is order-continuous, i.e. for a
+limit ordinal `o`, `f o` is the supremum of `f a` for `a < o`. This is spelled out as:
 
-theorem IsNormal.limit_le {f} (H : IsNormal f) :
-    ∀ {o}, IsLimit o → ∀ {a}, f o ≤ a ↔ ∀ b < o, f b ≤ a :=
-  @H.2
+- `lt_succ_apply : ∀ o, f o < f (succ o)`
+- `limit_le : ∀ o, IsLimit o → ∀ a, f o ≤ a ↔ ∀ b < o, f b ≤ a`
+
+See `isNormal_iff_strictMono_limit` for an alternate spelling. -/
+structure IsNormal (f : Ordinal → Ordinal) : Prop where
+  /-- `f o < f (succ o)` is sufficient for strict monotonicity when combined with the other
+  condition. -/
+  lt_succ_apply : ∀ o, f o < f (succ o)
+  /-- For a limit ordinal `o`, `f o` is the supremum of `f a` for `a < o`. -/
+  limit_le : ∀ o, IsLimit o → ∀ a, f o ≤ a ↔ ∀ b < o, f b ≤ a
 
 theorem IsNormal.limit_lt {f} (H : IsNormal f) {o} (h : IsLimit o) {a} :
     a < f o ↔ ∃ b < o, a < f b :=
@@ -390,6 +394,8 @@ theorem IsNormal.strictMono {f} (H : IsNormal f) : StrictMono f := fun a b =>
 theorem IsNormal.monotone {f} (H : IsNormal f) : Monotone f :=
   H.strictMono.monotone
 
+/-- A function `f` is normal iff it's strictly monotonic and for a limit ordinal `o`, `f o` is less
+or equal to the supremum of `f a` for `a < o`. -/
 theorem isNormal_iff_strictMono_limit (f : Ordinal → Ordinal) :
     IsNormal f ↔ StrictMono f ∧ ∀ o, IsLimit o → ∀ a, (∀ b < o, f b ≤ a) → f o ≤ a :=
   ⟨fun hf => ⟨hf.strictMono, fun a ha c => (hf.2 a ha c).2⟩, fun ⟨hs, hl⟩ =>
