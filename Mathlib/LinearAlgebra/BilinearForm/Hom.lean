@@ -1,4 +1,4 @@
-  /-
+/-
 Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kexing Ying
@@ -316,6 +316,7 @@ variable {N₁ N₂ N₃ : Type*}
 variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
 variable [Module R N₁] [Module R N₂] [Module R N₃]
 
+#check LinearMap
 /-- When `N₁` and `N₂` are equivalent, bilinear maps on `M` into `N₁` are equivalent to bilinear
 maps into `N₂`. -/
 def congr₂ (e : N₁ ≃ₗ[R] N₂) : BilinMap R M N₁ ≃ₗ[R] BilinMap R M N₂ :=
