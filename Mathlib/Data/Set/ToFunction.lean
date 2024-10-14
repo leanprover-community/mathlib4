@@ -52,7 +52,8 @@ theorem isFun.isPartialFun {X : Set (α × α)} (hX : isFun X) : isPartialFun X 
   have hz := (hX x).choose_spec.2 z hxz
   exact hy.trans hz.symm
 
-/-- Use given set on `α × α` as a total function. -/
+/-- Turns `s : Set (α × α)` into a total function. Each `x : α` is mapped to the unique `y : α` with
+`(x, y) ∈ s`, or to `none` if none exists. -/
 noncomputable def asFun {X : Set (α × α)} (hX : isFun X) : α → α :=
   fun a : α => (hX a).choose
 
