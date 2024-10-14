@@ -228,10 +228,10 @@ theorem den_add (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 + c2).den : A) = c1.den * 
 instance : CommMonoid (NumDenSameDeg 𝒜 x) where
   one := 1
   mul := (· * ·)
-  mul_assoc c1 c2 c3 := ext _ (add_assoc _ _ _) (mul_assoc _ _ _) (mul_assoc _ _ _)
-  one_mul c := ext _ (zero_add _) (one_mul _) (one_mul _)
-  mul_one c := ext _ (add_zero _) (mul_one _) (mul_one _)
-  mul_comm c1 c2 := ext _ (add_comm _ _) (mul_comm _ _) (mul_comm _ _)
+  mul_assoc _ _ _ := ext _ (add_assoc _ _ _) (mul_assoc _ _ _) (mul_assoc _ _ _)
+  one_mul _ := ext _ (zero_add _) (one_mul _) (one_mul _)
+  mul_one _ := ext _ (add_zero _) (mul_one _) (mul_one _)
+  mul_comm _ _ := ext _ (add_comm _ _) (mul_comm _ _) (mul_comm _ _)
 
 instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
   pow c n :=
@@ -353,7 +353,7 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
     (Quotient.map' (· ^ n) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
           change Localization.mk _ _ = Localization.mk _ _
           simp only [num_pow, den_pow]
-          convert congr_arg (fun z : at x => z ^ n) h <;> erw [Localization.mk_pow] <;> rfl :
+          convert congr_arg (fun z : at x => z ^ n) h <;> rw [Localization.mk_pow] <;> rfl :
         HomogeneousLocalization 𝒜 x → HomogeneousLocalization 𝒜 x)
       z
 
@@ -366,7 +366,7 @@ instance : Add (HomogeneousLocalization 𝒜 x) where
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
       simp only [num_add, den_add, ← Localization.add_mk]
-      convert congr_arg₂ (· + ·) h h' <;> erw [Localization.add_mk] <;> rfl
+      convert congr_arg₂ (· + ·) h h' <;> rw [Localization.add_mk] <;> rfl
 
 @[simp] lemma mk_add (i j : NumDenSameDeg 𝒜 x) : mk (i + j) = mk i + mk j := rfl
 
@@ -379,7 +379,7 @@ instance : Mul (HomogeneousLocalization 𝒜 x) where
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
       simp only [num_mul, den_mul]
-      convert congr_arg₂ (· * ·) h h' <;> erw [Localization.mk_mul] <;> rfl
+      convert congr_arg₂ (· * ·) h h' <;> rw [Localization.mk_mul] <;> rfl
 
 @[simp] lemma mk_mul (i j : NumDenSameDeg 𝒜 x) : mk (i * j) = mk i * mk j := rfl
 

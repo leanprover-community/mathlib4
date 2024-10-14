@@ -43,12 +43,7 @@ protected lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
 protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by
   rw [Int.le_antisymm_iff, Int.lt_iff_le_not_le, ← and_or_left]; simp [em]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
-protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_iff_eq_or_lt,
-  _root_.or_comm]
+protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_iff_eq_or_lt, or_comm]
 
 end Order
 

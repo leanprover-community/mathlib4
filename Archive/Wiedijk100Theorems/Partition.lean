@@ -329,7 +329,7 @@ theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
 -/
 theorem distinctGF_prop [CommSemiring α] (n m : ℕ) (h : n < m + 1) :
     ((Nat.Partition.distincts n).card : α) = coeff α n (partialDistinctGF m) := by
-  erw [← partialDistinctGF_prop, Nat.Partition.distincts]
+  rw [← partialDistinctGF_prop, Nat.Partition.distincts]
   congr with p
   apply (and_iff_left _).symm
   intro i hi

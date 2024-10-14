@@ -273,9 +273,9 @@ instance : HasSSubset (Finset α) :=
 instance partialOrder : PartialOrder (Finset α) where
   le := (· ⊆ ·)
   lt := (· ⊂ ·)
-  le_refl s a := id
-  le_trans s t u hst htu a ha := htu <| hst ha
-  le_antisymm s t hst hts := ext fun a => ⟨@hst _, @hts _⟩
+  le_refl _ _ := id
+  le_trans _ _ _ hst htu _ ha := htu <| hst ha
+  le_antisymm _ _ hst hts := ext fun _ => ⟨@hst _, @hts _⟩
 
 instance : IsRefl (Finset α) (· ⊆ ·) :=
   show IsRefl (Finset α) (· ≤ ·) by infer_instance
@@ -806,6 +806,11 @@ theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _) (h : a ∉ s), 
   refine ⟨fun h => ?_, fun ⟨a, ha, h⟩ => ssubset_of_ssubset_of_subset (ssubset_cons _) h⟩
   obtain ⟨a, hs, ht⟩ := not_subset.1 h.2
   exact ⟨a, ht, cons_subset.2 ⟨hs, h.subset⟩⟩
+
+theorem cons_swap (hb : b ∉ s) (ha : a ∉ s.cons b hb) :
+    (s.cons b hb).cons a ha = (s.cons a fun h ↦ ha (mem_cons.mpr (.inr h))).cons b fun h ↦
+      ha (mem_cons.mpr (.inl ((mem_cons.mp h).elim symm (fun h ↦ False.elim (hb h))))) :=
+  eq_of_veq <| Multiset.cons_swap a b s.val
 
 end Cons
 
@@ -2598,7 +2603,7 @@ lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := b
 
 theorem exists_nat_subset_range (s : Finset ℕ) : ∃ n : ℕ, s ⊆ range n :=
   s.induction_on (by simp)
-    fun a s _ ⟨n, hn⟩ => ⟨max (a + 1) n, insert_subset (by simp) (hn.trans (by simp))⟩
+    fun a _ _ ⟨n, hn⟩ => ⟨max (a + 1) n, insert_subset (by simp) (hn.trans (by simp))⟩
 
 end Range
 
@@ -2632,7 +2637,7 @@ def notMemRangeEquiv (k : ℕ) : { n // n ∉ range k } ≃ ℕ where
     rw [Subtype.ext_iff_val]
     apply Nat.sub_add_cancel
     simpa using j.2
-  right_inv j := Nat.add_sub_cancel_right _ _
+  right_inv _ := Nat.add_sub_cancel_right _ _
 
 @[simp]
 theorem coe_notMemRangeEquiv (k : ℕ) :
@@ -3093,4 +3098,4 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
 
 end Mathlib.Meta
 
-set_option linter.style.longFile 3100
+set_option linter.style.longFile 3200

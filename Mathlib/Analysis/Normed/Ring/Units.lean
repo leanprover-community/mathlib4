@@ -145,7 +145,7 @@ theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t
   have := tsum_geometric_le_of_norm_lt_one t ht'
   have : (1 - ‖t‖)⁻¹ ≤ 2 := by
     rw [← inv_inv (2 : ℝ)]
-    refine inv_le_inv_of_le (by norm_num) ?_
+    refine inv_anti₀ (by norm_num) ?_
     have : (2 : ℝ)⁻¹ + (2 : ℝ)⁻¹ = 1 := by ring
     linarith
   linarith

@@ -70,7 +70,7 @@ theorem nhds_coe {r : ℝ} : 𝓝 (r : EReal) = (𝓝 r).map (↑) :=
 
 theorem nhds_coe_coe {r p : ℝ} :
     𝓝 ((r : EReal), (p : EReal)) = (𝓝 (r, p)).map fun p : ℝ × ℝ => (↑p.1, ↑p.2) :=
-  ((openEmbedding_coe.prod openEmbedding_coe).map_nhds_eq (r, p)).symm
+  ((openEmbedding_coe.prodMap openEmbedding_coe).map_nhds_eq (r, p)).symm
 
 theorem tendsto_toReal {a : EReal} (ha : a ≠ ⊤) (h'a : a ≠ ⊥) :
     Tendsto EReal.toReal (𝓝 a) (𝓝 a.toReal) := by
@@ -226,14 +226,14 @@ lemma limsup_add_le_add_limsup (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤)
   exact (add_lt_add a_x b_x).trans c_ab
 
 lemma limsup_add_liminf_le_limsup_add : (limsup u f) + (liminf v f) ≤ limsup (u + v) f :=
-  add_le_of_forall_add_le fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
+  add_le_of_forall_add_le fun _ a_u _ b_v ↦ (le_limsup_iff).2 fun _ c_ab ↦
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
     ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (add_lt_add ab_x.1 ab_x.2)
 
 lemma liminf_add_le_limsup_add_liminf (h : limsup u f ≠ ⊥ ∨ liminf v f ≠ ⊤)
     (h' : limsup u f ≠ ⊤ ∨ liminf v f ≠ ⊥) :
     liminf (u + v) f ≤ (limsup u f) + (liminf v f) :=
-  le_add_of_forall_le_add h h' fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦
+  le_add_of_forall_le_add h h' fun _ a_u _ b_v ↦ (liminf_le_iff).2 fun _ c_ab ↦
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_liminf_lt) b_v)
     ((eventually_lt_of_limsup_lt) a_u)) fun _ ab_x ↦ (add_lt_add ab_x.2 ab_x.1).trans c_ab
 
@@ -358,7 +358,7 @@ private lemma continuousAt_mul_symm1 {a b : EReal}
     simp
   rw [this]
   apply ContinuousAt.comp (Continuous.continuousAt continuous_neg)
-    <| ContinuousAt.comp _ (ContinuousAt.prod_map (Continuous.continuousAt continuous_neg)
+    <| ContinuousAt.comp _ (ContinuousAt.prodMap (Continuous.continuousAt continuous_neg)
       (Continuous.continuousAt continuous_id))
   simp [h]
 

@@ -46,7 +46,7 @@ theorem preimage_univ {f : α → β} [Fintype α] [Fintype β] (hf) : preimage 
 @[simp]
 theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β}
     (hs : Set.InjOn f (f ⁻¹' ↑s)) (ht : Set.InjOn f (f ⁻¹' ↑t)) :
-    (preimage (s ∩ t) f fun x₁ hx₁ x₂ hx₂ =>
+    (preimage (s ∩ t) f fun _ hx₁ _ hx₂ =>
         hs (mem_of_mem_inter_left hx₁) (mem_of_mem_inter_left hx₂)) =
       preimage s f hs ∩ preimage t f ht :=
   Finset.coe_injective (by simp)
@@ -54,8 +54,8 @@ theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : 
 @[simp]
 theorem preimage_union [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β} (hst) :
     preimage (s ∪ t) f hst =
-      (preimage s f fun x₁ hx₁ x₂ hx₂ => hst (mem_union_left _ hx₁) (mem_union_left _ hx₂)) ∪
-        preimage t f fun x₁ hx₁ x₂ hx₂ => hst (mem_union_right _ hx₁) (mem_union_right _ hx₂) :=
+      (preimage s f fun _ hx₁ _ hx₂ => hst (mem_union_left _ hx₁) (mem_union_left _ hx₂)) ∪
+        preimage t f fun _ hx₁ _ hx₂ => hst (mem_union_right _ hx₁) (mem_union_right _ hx₂) :=
   Finset.coe_injective (by simp)
 
 @[simp, nolint simpNF] -- Porting note: linter complains that LHS doesn't simplify
@@ -100,7 +100,7 @@ theorem preimage_subset {f : α ↪ β} {s : Finset β} {t : Finset α} (hs : s 
 theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
     s ⊆ t.map f ↔ ∃ u ⊆ t, s = u.map f := by
   classical
-  simp_rw [← coe_subset, coe_map, subset_image_iff, map_eq_image, eq_comm]
+  simp_rw [map_eq_image, subset_image_iff, eq_comm]
 
 theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a)) (t : Finset α) :
     (t.sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) =

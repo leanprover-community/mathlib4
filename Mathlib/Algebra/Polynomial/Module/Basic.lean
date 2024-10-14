@@ -250,7 +250,7 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
 @[simps! (config := .lemmasOnly)]
 def eval (r : R) : PolynomialModule R M →ₗ[R] M where
   toFun p := p.sum fun i m => r ^ i • m
-  map_add' x y := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
+  map_add' _ _ := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
   map_smul' s m := by
     refine (Finsupp.sum_smul_index' ?_).trans ?_
     · exact fun i => smul_zero _
@@ -312,8 +312,7 @@ noncomputable def comp (p : R[X]) : PolynomialModule R M →ₗ[R] PolynomialMod
   LinearMap.comp ((eval p).restrictScalars R) (map R[X] (lsingle R 0))
 
 theorem comp_single (p : R[X]) (i : ℕ) (m : M) : comp p (single R i m) = p ^ i • single R 0 m := by
-  rw [comp_apply]
-  erw [map_single, eval_single]
+  rw [comp_apply, map_single, eval_single]
   rfl
 
 theorem comp_eval (p : R[X]) (q : PolynomialModule R M) (r : R) :

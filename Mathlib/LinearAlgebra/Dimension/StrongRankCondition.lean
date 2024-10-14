@@ -430,6 +430,14 @@ theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   refine (ciSup_le' fun i => ?_).trans_lt (nat_lt_aleph0 S.card)
   exact linearIndependent_le_span_finset _ i.prop S hS
 
+noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R M]
+    {s t : Set M} [Module.Finite R (span R t)]
+    (hs : LinearIndependent R ((↑) : s → M)) (hst : s ⊆ t) :
+    Fintype (hs.extend hst) := by
+  refine Classical.choice (Cardinal.lt_aleph0_iff_fintype.1 ?_)
+  rw [← rank_span_set (hs.linearIndependent_extend hst), hs.span_extend_eq_span]
+  exact Module.rank_lt_aleph0 ..
+
 /-- If `M` is finite, `finrank M = rank M`. -/
 @[simp]
 theorem finrank_eq_rank [Module.Finite R M] : ↑(finrank R M) = Module.rank R M := by
