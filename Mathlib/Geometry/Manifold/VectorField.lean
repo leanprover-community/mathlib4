@@ -1145,52 +1145,40 @@ theorem mlieBracketWithin_subset (st : s ⊆ t) (ht : UniqueMDiffWithinAt I s x)
 
 end
 
-#check ContinuousWithinAt.preimage_mem_nhdsWithin''
-
-#check nhdsWithin_inter
-
-theorem mlieBracketWithin_congr_set' {y : M} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+/-- Variant of `mlieBracketWithin_congr_set` where one requires the sets to coincide only in
+the complement of a point. -/
+theorem mlieBracketWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     mlieBracketWithin I V W s x = mlieBracketWithin I V W t x := by
   simp only [mlieBracketWithin_apply]
   congr 1
   have : T1Space M := I.t1Space M
-  have h' : s =ᶠ[𝓝[{x}ᶜ] x] t := nhdsWithin_compl_singleton_le x y h
   suffices A : ((extChartAt I x).symm ⁻¹' s ∩ range I : Set E)
     =ᶠ[𝓝[{(extChartAt I x) x}ᶜ] (extChartAt I x x)]
       ((extChartAt I x).symm ⁻¹' t ∩ range I : Set E) by
     apply lieBracketWithin_congr_set' _ A
   obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | (y ∈ s) = (y ∈ t)} :=
     mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (nhdsWithin_compl_singleton_le x y h)
-
-#exit
-
-  rcases eq_or_ne x y with rfl | hy
-  · sorry
-  · have : 𝓝[{y}ᶜ] x = 𝓝 x := by
-      have : T1Space M := I.t1Space M
-      exact hy.nhdsWithin_compl_singleton
-    rw [this, ← extChartAt_to_inv I x] at h
-    apply nhdsWithin_le_nhds
-    filter_upwards [(continuousAt_extChartAt_symm I x).preimage_mem_nhds h] with y hy
-    simp only [eq_iff_iff, preimage_setOf_eq, mem_setOf_eq] at hy ⊢
-    change y ∈ (extChartAt I x).symm ⁻¹' s ∩ range I ↔ y ∈ (extChartAt I x).symm ⁻¹' t ∩ range I
-    aesop
-
-
-#exit
+  rw [← extChartAt_to_inv I x] at u_mem
+  have B : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 (extChartAt I x x) := by
+    rw [← nhdsWithin_univ, ← union_compl_self (range I), nhdsWithin_union]
+    apply Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin I x) self_mem_nhdsWithin
+  apply mem_nhdsWithin_iff_exists_mem_nhds_inter.2
+    ⟨_, Filter.inter_mem ((continuousAt_extChartAt_symm I x).preimage_mem_nhds u_mem) B, ?_⟩
+  rintro z ⟨hz, h'z⟩
+  simp only [eq_iff_iff, mem_setOf_eq]
+  change z ∈ (extChartAt I x).symm ⁻¹' s ∩ range I ↔ z ∈ (extChartAt I x).symm ⁻¹' t ∩ range I
+  by_cases hIz : z ∈ range I
+  · simp [-extChartAt, hIz] at hz ⊢
+    rw [← eq_iff_iff]
+    apply hu ⟨hz.1, ?_⟩
+    simp only [mem_compl_iff, mem_singleton_iff, ne_comm, ne_eq] at h'z ⊢
+    rw [(extChartAt I x).eq_symm_apply (by simp) hz.2]
+    exact Ne.symm h'z
+  · simp [hIz]
 
 theorem mlieBracketWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
-    mlieBracketWithin I V W s x = mlieBracketWithin I V W t x := by
-  simp only [mlieBracketWithin_apply]
-  congr 1
-  suffices A : ((extChartAt I x).symm ⁻¹' s ∩ range I : Set E) =ᶠ[𝓝 (extChartAt I x x)]
-      ((extChartAt I x).symm ⁻¹' t ∩ range I : Set E) by
-    apply lieBracketWithin_congr_set A
-  rw [← extChartAt_to_inv I x] at h
-  filter_upwards [(continuousAt_extChartAt_symm I x).preimage_mem_nhds h] with y hy
-  simp only [eq_iff_iff, preimage_setOf_eq, mem_setOf_eq] at hy ⊢
-  change y ∈ (extChartAt I x).symm ⁻¹' s ∩ range I ↔ y ∈ (extChartAt I x).symm ⁻¹' t ∩ range I
-  aesop
+    mlieBracketWithin I V W s x = mlieBracketWithin I V W t x :=
+  mlieBracketWithin_congr_set' x <| h.filter_mono inf_le_left
 
 theorem mlieBracketWithin_inter (ht : t ∈ 𝓝 x) :
     mlieBracketWithin I V W (s ∩ t) x = mlieBracketWithin I V W s x := by
@@ -1216,7 +1204,7 @@ theorem mlieBracketWithin_eq_mlieBracket (hs : UniqueMDiffWithinAt I s x)
 
 /-- Variant of `mlieBracketWithin_eventually_congr_set` where one requires the sets to coincide only
 in  the complement of a point. -/
-theorem mlieBracketWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem mlieBracketWithin_eventually_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     mlieBracketWithin I V W s =ᶠ[𝓝 x] mlieBracketWithin I V W t :=
   (eventually_nhds_nhdsWithin.2 h).mono fun _ => mlieBracketWithin_congr_set' y
 
