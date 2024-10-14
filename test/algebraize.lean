@@ -56,7 +56,7 @@ example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) : True := by
   fail_if_success -- Check that this instance is not available by default
     have h : Algebra A B := inferInstance
   algebraize [f']
-  guard_hyp algInst := f.toAlgebra
+  guard_hyp algInst := f'.toAlgebra
   trivial
 
 /-- Synthesize algebra instance from a composition -/
