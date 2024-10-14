@@ -6,7 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Algebra.Opposites
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread

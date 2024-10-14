@@ -6,7 +6,7 @@ Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Subsemigroup.Basic
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Defs
 
 /-!
 # Submonoids: definition and `CompleteLattice` structure
