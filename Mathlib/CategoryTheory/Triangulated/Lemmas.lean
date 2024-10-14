@@ -4,6 +4,8 @@ import Mathlib.CategoryTheory.Triangulated.Basic
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Shift.Opposite
+import Mathlib.CategoryTheory.Adjunction.Unique
+import Mathlib.CategoryTheory.Adjunction.Opposites
 
 universe u v
 
@@ -527,8 +529,125 @@ def op (commF : CommShift F A) :
   zero := sorry
   add := sorry
 
+noncomputable def removeOp (commFop : CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A) :
+    CommShift F A where
+  iso a := NatIso.removeOp (commFop.iso a).symm
+  zero := sorry
+  add := sorry
+
 end CommShift
 end Functor
+
+namespace Adjunction
+
+open Opposite
+
+universe u' v' u'' v''
+
+variable {C : Type u} {D : Type u'} {E : Type u''} [Category.{v,u} C] [Category.{v',u'} D]
+  [Category.{v'', u''} E] (F F' : C ⥤ D) (G G' : D ⥤ C) (adj : F ⊣ G) (adj' : F' ⊣ G')
+  (H : D ⥤ E) (K : E ⥤ D) (adj₁ : H ⊣ K)
+
+@[simp]
+def Functor_iso_to_iso_op : (F ≅ F') ≃ (F'.op ≅ F.op) :=
+  Equiv.mk NatIso.op NatIso.removeOp (fun _ ↦ by aesop) (fun _ ↦ by aesop)
+
+lemma natIsoEquiv_compat_op : (Functor_iso_to_iso_op G G').trans
+    ((Adjunction.natIsoEquiv adj.opAdjointOpOfAdjoint
+    adj'.opAdjointOpOfAdjoint).symm.trans
+    (Functor_iso_to_iso_op F' F).symm) =
+    (Adjunction.natIsoEquiv adj adj')
+     := by sorry
+
+/-
+lemma natIsoEquiv_compat_op :
+    (Functor_iso_to_iso_op F' F).trans (Adjunction.natIsoEquiv adj.opAdjointOpOfAdjoint
+    adj'.opAdjointOpOfAdjoint) = (Adjunction.natIsoEquiv adj adj').symm.trans
+    (Functor_iso_to_iso_op G G') := by
+  ext u X
+  simp only [Functor.op_obj, Functor_iso_to_iso_op, Equiv.trans_apply, Equiv.coe_fn_mk,
+    natIsoEquiv_apply_hom, NatIso.op_hom, natTransEquiv_apply_app, Functor.comp_obj,
+    NatTrans.comp_app, Functor.id_obj, opAdjointOpOfAdjoint_unit_app, whiskerLeft_app,
+    NatTrans.op_app, Functor.op_map, unop_comp, Quiver.Hom.unop_op, Functor.map_comp, op_comp,
+    opAdjointOpOfAdjoint_counit_app, Category.assoc, natIsoEquiv_symm_apply_hom,
+    natTransEquiv_symm_apply_app]
+  rw [opEquiv_apply, opEquiv_apply];  erw [Functor.map_id, Functor.map_id]
+  rw [opEquiv_symm_apply, opEquiv_symm_apply]
+  simp
+-/
+
+variable (A : Type*) [AddGroup A] [HasShift C A] [HasShift D A]
+
+lemma shiftEquiv'_symm_toAdjunction_op (a b : A) (h : a + b = 0) :
+    (shiftEquiv' C a b h).symm.toAdjunction.opAdjointOpOfAdjoint =
+    (shiftEquiv' (OppositeShift C A) b a
+    (by rw [eq_neg_of_add_eq_zero_left h]; simp)).symm.toAdjunction := by sorry
+
+lemma shiftEquiv_symm_toAdjunction_op (a : A) :
+    (shiftEquiv C a).symm.toAdjunction.opAdjointOpOfAdjoint =
+    (shiftEquiv' (OppositeShift C A) (-a) a (by simp)).symm.toAdjunction := by
+  have h : (shiftEquiv' C a (-a) (by simp)).symm.counit =
+      (shiftFunctorCompIsoId C a (-a) (by simp)).hom := by
+    change (shiftEquiv' C a (-a) (by simp)).symm.counitIso.hom = _
+    rw [Equivalence.symm_counitIso]
+    simp
+  have h' : (shiftEquiv' (OppositeShift C A) (-a) a (by simp)).symm.unit =
+      (shiftFunctorCompIsoId (OppositeShift C A) a (-a) (by simp)).inv := by
+    change (shiftEquiv' (OppositeShift C A) (-a) a (by simp)).symm.unitIso.hom = _
+    rw [Equivalence.symm_unitIso]
+    simp
+  have h'' : (shiftEquiv' (OppositeShift C A) (-a) a (by simp)).symm.counit =
+      (shiftFunctorCompIsoId (OppositeShift C A) (-a) a (by simp)).hom := by
+    change (shiftEquiv' (OppositeShift C A) (-a) a (by simp)).symm.counitIso.hom = _
+    rw [Equivalence.symm_counitIso]
+    simp
+  have h''' : (shiftEquiv' C a (-a) (by simp)).symm.unit =
+      (shiftFunctorCompIsoId C (-a) a (by simp)).inv := by
+    change (shiftEquiv' C a (-a) (by simp)).symm.unitIso.hom = _
+    rw [Equivalence.symm_unitIso]
+    simp
+  ext X
+  · simp only [Functor.id_obj, Equivalence.symm_inverse, shiftEquiv'_functor,
+    Equivalence.symm_functor, shiftEquiv'_inverse, Functor.comp_obj, Functor.op_obj,
+    opAdjointOpOfAdjoint_unit_app, Equivalence.toAdjunction_counit, Equivalence.toAdjunction_unit]
+    rw [opEquiv_apply, opEquiv_symm_apply]
+    simp only [unop_id, Functor.map_id, shiftEquiv, Category.id_comp]
+    rw [h, h']
+    simp only [shiftFunctorCompIsoId, Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app,
+      Functor.comp_obj, Functor.id_obj, op_comp, op_unop, Iso.trans_inv, Iso.symm_inv,
+      Functor.op_obj]
+    rw [oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorAdd'_hom_app]
+  · simp only [Equivalence.symm_functor, shiftEquiv'_inverse, Equivalence.symm_inverse,
+    shiftEquiv'_functor, Functor.comp_obj, Functor.op_obj, Functor.id_obj,
+    opAdjointOpOfAdjoint_counit_app, Equivalence.toAdjunction_unit, Equivalence.toAdjunction_counit]
+    rw [opEquiv_apply, opEquiv_symm_apply]
+    simp only [shiftEquiv, unop_id, Functor.map_id, Category.comp_id]
+    rw [h'', h''']
+    simp only [shiftFunctorCompIsoId, Iso.trans_inv, Iso.symm_inv, NatTrans.comp_app,
+      Functor.id_obj, Functor.comp_obj, op_comp, op_unop, Iso.trans_hom, Iso.symm_hom,
+      Functor.op_obj]
+    rw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorAdd'_inv_app]
+
+lemma comp_op : (Adjunction.comp adj adj₁).opAdjointOpOfAdjoint =
+    Adjunction.comp adj₁.opAdjointOpOfAdjoint adj.opAdjointOpOfAdjoint := by
+  ext _
+  · simp only [Functor.id_obj, Functor.comp_obj, Functor.op_obj, opAdjointOpOfAdjoint_unit_app,
+    Functor.comp_map, comp_counit_app, comp_unit_app, Functor.op_map]
+    rw [opEquiv_symm_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply, opEquiv_apply]
+    simp
+  · simp only [Functor.comp_obj, Functor.op_obj, Functor.id_obj, opAdjointOpOfAdjoint_counit_app,
+    comp_unit_app, Functor.comp_map, Category.assoc, comp_counit_app, Functor.op_map]
+    rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply, opEquiv_symm_apply]
+    simp
+
+lemma truc (a : A) :
+    (Adjunction.comp adj (shiftEquiv D a).symm.toAdjunction).opAdjointOpOfAdjoint =
+    Adjunction.comp (shiftEquiv' (OppositeShift D A) (-a) a (by simp)).symm.toAdjunction
+    adj.opAdjointOpOfAdjoint := by
+  rw [← shiftEquiv_symm_toAdjunction_op]
+  rw [comp_op]
+
+end Adjunction
 
 section
 

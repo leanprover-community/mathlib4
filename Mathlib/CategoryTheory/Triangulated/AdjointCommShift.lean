@@ -97,10 +97,17 @@ lemma right_to_left_eq_left_to_right_op (adj : F ⊣ G) (commG : CommShift G A) 
   set commG' : CommShift G' A := commG.op
   set adj' : G' ⊣ F' := adj.opAdjointOpOfAdjoint
   have := commG'
-  ext X
-  conv_rhs => rw [left_to_right_iso_op]
-  simp only [NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj]
-  -- Need `left_to_right_iso_inv_app`.
+  dsimp [left_to_right_iso_op, left_to_right_iso, right_to_left_iso]
+  rw [← natIsoEquiv_compat_op _ _ _ _ (adj.comp (shiftEquiv' D (-a) a (by simp)).symm.toAdjunction)
+    ((shiftEquiv' C (-a) a (by simp)).symm.toAdjunction.comp adj)]
+  simp only [Equivalence.symm_inverse, shiftEquiv'_functor, Equivalence.symm_functor,
+    shiftEquiv'_inverse, Functor_iso_to_iso_op, Equiv.trans_apply, Equiv.coe_fn_mk,
+    Equiv.coe_fn_symm_mk]
+  congr 1
+  rw [Adjunction.comp_op, Adjunction.comp_op]
+  change _ = (natIsoEquiv _ _).symm _
+  erw [shiftEquiv'_symm_toAdjunction_op, shiftEquiv'_symm_toAdjunction_op]
+  rfl
 
 lemma right_to_left_iso_apply (adj : F ⊣ G) (commG : CommShift G A) (a : A) (X : C) (Y : D) :
     (coyoneda.map (op ((right_to_left_iso adj commG a).hom.app X))).app Y = sorry := by
