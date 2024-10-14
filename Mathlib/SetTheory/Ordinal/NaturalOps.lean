@@ -307,7 +307,7 @@ theorem add_le_nadd : a + b ≤ a ♯ b := by
   | H₂ c h =>
     rwa [add_succ, nadd_succ, succ_le_succ_iff]
   | H₃ c hc H =>
-    simp_rw [← IsNormal.blsub_eq.{u, u} (add_isNormal a) hc, blsub_le_iff]
+    simp_rw [← IsNormal.blsub_eq.{u, u} (isNormal_add_right a) hc, blsub_le_iff]
     exact fun i hi => (H i hi).trans_lt (nadd_lt_nadd_left hi a)
 
 end Ordinal
@@ -721,7 +721,7 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
   · intro c hc H
     rcases eq_zero_or_pos a with (rfl | ha)
     · simp
-    · rw [← IsNormal.blsub_eq.{u, u} (mul_isNormal ha) hc, blsub_le_iff]
+    · rw [← IsNormal.blsub_eq.{u, u} (isNormal_mul_right ha) hc, blsub_le_iff]
       exact fun i hi => (H i hi).trans_lt (nmul_lt_nmul_of_pos_left hi ha)
 
 @[deprecated mul_le_nmul (since := "2024-08-20")]

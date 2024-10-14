@@ -479,11 +479,17 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ 
           · rcases a with ⟨a | a, h₁⟩ <;> rcases b with ⟨b | b, h₂⟩ <;> cases h₁ <;> cases h₂ <;>
               rintro ⟨⟩ <;> constructor <;> assumption⟩
 
-theorem add_isNormal (a : Ordinal) : IsNormal (a + ·) :=
+theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
   ⟨fun b => (add_lt_add_iff_left a).2 (lt_succ b), fun _b l _c => add_le_of_limit l⟩
 
-theorem add_isLimit (a) {b} : IsLimit b → IsLimit (a + b) :=
-  (add_isNormal a).isLimit
+@[deprecated isNormal_add_right (since := "2024-10-11")]
+alias add_isNormal := isNormal_add_right
+
+theorem isLimit_add (a) {b} : IsLimit b → IsLimit (a + b) :=
+  (isNormal_add_right a).isLimit
+
+@[deprecated isLimit_add (since := "2024-10-11")]
+alias add_isLimit := isLimit_add
 
 alias IsLimit.add := add_isLimit
 
@@ -554,9 +560,12 @@ theorem sub_sub (a b c : Ordinal) : a - b - c = a - (b + c) :=
 theorem add_sub_add_cancel (a b c : Ordinal) : a + b - (a + c) = b - c := by
   rw [← sub_sub, add_sub_cancel]
 
-theorem sub_isLimit {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
+theorem isLimit_sub {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
   ⟨ne_of_gt <| lt_sub.2 <| by rwa [add_zero], fun c h => by
     rw [lt_sub, add_succ]; exact l.2 _ (lt_sub.1 h)⟩
+
+@[deprecated isLimit_sub (since := "2024-10-11")]
+alias sub_isLimit := isLimit_sub
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem one_add_omega0 : 1 + ω = ω := by
@@ -739,7 +748,7 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
         | H β s =>
           exact mul_le_of_limit_aux h H⟩
 
-theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
+theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
   -- Porting note(#12129): additional beta reduction needed
   ⟨fun b => by
       beta_reduce
@@ -747,15 +756,18 @@ theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
       simpa only [add_zero] using (add_lt_add_iff_left (a * b)).2 h,
     fun b l c => mul_le_of_limit l⟩
 
+@[deprecated isNormal_mul_right (since := "2024-10-11")]
+alias mul_isNormal := isNormal_mul_right
+
 theorem lt_mul_of_limit {a b c : Ordinal} (h : IsLimit c) : a < b * c ↔ ∃ c' < c, a < b * c' := by
   -- Porting note: `bex_def` is required.
   simpa only [not_forall₂, not_le, bex_def] using not_congr (@mul_le_of_limit b c a h)
 
 theorem mul_lt_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b < a * c ↔ b < c :=
-  (mul_isNormal a0).lt_iff
+  (isNormal_mul_right a0).lt_iff
 
 theorem mul_le_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b ≤ a * c ↔ b ≤ c :=
-  (mul_isNormal a0).le_iff
+  (isNormal_mul_right a0).le_iff
 
 theorem mul_lt_mul_of_pos_left {a b c : Ordinal} (h : a < b) (c0 : 0 < c) : c * a < c * b :=
   (mul_lt_mul_iff_left c0).2 h
@@ -770,17 +782,23 @@ theorem le_of_mul_le_mul_left {a b c : Ordinal} (h : c * a ≤ c * b) (h0 : 0 < 
   le_imp_le_of_lt_imp_lt (fun h' => mul_lt_mul_of_pos_left h' h0) h
 
 theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :=
-  (mul_isNormal a0).inj
+  (isNormal_mul_right a0).inj
 
-theorem mul_isLimit {a b : Ordinal} (a0 : 0 < a) : IsLimit b → IsLimit (a * b) :=
-  (mul_isNormal a0).isLimit
+theorem isLimit_mul {a b : Ordinal} (a0 : 0 < a) : IsLimit b → IsLimit (a * b) :=
+  (isNormal_mul_right a0).isLimit
 
-theorem mul_isLimit_left {a b : Ordinal} (l : IsLimit a) (b0 : 0 < b) : IsLimit (a * b) := by
+@[deprecated isLimit_mul (since := "2024-10-11")]
+alias mul_isLimit := isLimit_mul
+
+theorem isLimit_mul_left {a b : Ordinal} (l : IsLimit a) (b0 : 0 < b) : IsLimit (a * b) := by
   rcases zero_or_succ_or_limit b with (rfl | ⟨b, rfl⟩ | lb)
   · exact b0.false.elim
   · rw [mul_succ]
-    exact add_isLimit _ l
-  · exact mul_isLimit l.pos lb
+    exact isLimit_add _ l
+  · exact isLimit_mul l.pos lb
+
+@[deprecated isLimit_mul_left (since := "2024-10-11")]
+alias mul_isLimit_left := isLimit_mul_left
 
 theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
   | 0, a => by rw [zero_nsmul, Nat.cast_zero, mul_zero]
@@ -904,11 +922,11 @@ theorem isLimit_add_iff {a b} : IsLimit (a + b) ↔ IsLimit b ∨ b = 0 ∧ IsLi
       exact ⟨h', h⟩
     left
     rw [← add_sub_cancel a b]
-    apply sub_isLimit h
+    apply isLimit_sub h
     suffices a + 0 < a + b by simpa only [add_zero] using this
     rwa [add_lt_add_iff_left, Ordinal.pos_iff_ne_zero]
   rcases h with (h | ⟨rfl, h⟩)
-  · exact add_isLimit a h
+  · exact isLimit_add a h
   · simpa only [add_zero]
 
 theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ c)
@@ -2216,7 +2234,7 @@ namespace Ordinal
 theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
     a < b + c ↔ ∃ c' < c, a < b + c' := by
   -- Porting note: `bex_def` is required.
-  rw [← IsNormal.bsup_eq.{u, u} (add_isNormal b) h, lt_bsup, bex_def]
+  rw [← IsNormal.bsup_eq.{u, u} (isNormal_add_right b) h, lt_bsup, bex_def]
 
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
   simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph0, card_eq_nat]
@@ -2296,9 +2314,9 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
     rcases lt_omega0.1 hb with ⟨n, rfl⟩
     exact
       (add_le_add_right (mul_div_le _ _) _).trans
-        (lt_sub.1 <| nat_lt_limit (sub_isLimit l hx) _).le
+        (lt_sub.1 <| nat_lt_limit (isLimit_sub l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
-    refine mul_isLimit_left omega0_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
+    refine isLimit_mul_left omega0_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
     intro e
     simp only [e, mul_zero]
 
@@ -2351,19 +2369,19 @@ alias IsNormal.apply_omega := IsNormal.apply_omega0
 
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
-  (add_isNormal o).apply_omega0
+  (isNormal_add_right o).apply_omega0
 
 set_option linter.deprecated false in
 @[deprecated iSup_add_nat (since := "2024-08-27")]
 theorem sup_add_nat (o : Ordinal) : (sup fun n : ℕ => o + n) = o + ω :=
-  (add_isNormal o).apply_omega0
+  (isNormal_add_right o).apply_omega0
 
 @[simp]
 theorem iSup_mul_nat (o : Ordinal) : ⨆ n : ℕ, o * n = o * ω := by
   rcases eq_zero_or_pos o with (rfl | ho)
   · rw [zero_mul]
     exact iSup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
-  · exact (mul_isNormal ho).apply_omega0
+  · exact (isNormal_mul_right ho).apply_omega0
 
 set_option linter.deprecated false in
 @[deprecated iSup_add_nat (since := "2024-08-27")]

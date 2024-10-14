@@ -652,7 +652,7 @@ theorem cof_add (a b : Ordinal) : b ≠ 0 → cof (a + b) = cof b := fun h => by
   rcases zero_or_succ_or_limit b with (rfl | ⟨c, rfl⟩ | hb)
   · contradiction
   · rw [add_succ, cof_succ, cof_succ]
-  · exact (add_isNormal a).cof_eq hb
+  · exact (isNormal_add_right a).cof_eq hb
 
 theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
   rcases zero_or_succ_or_limit o with (rfl | ⟨o, rfl⟩ | l)

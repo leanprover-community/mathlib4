@@ -165,9 +165,12 @@ theorem derivFamily_limit (f : ι → Ordinal → Ordinal) {o} :
     IsLimit o → derivFamily.{u, v} f o = bsup.{max u v, u} o fun a _ => derivFamily.{u, v} f a :=
   limitRecOn_limit _ _ _ _
 
-theorem derivFamily_isNormal (f : ι → Ordinal → Ordinal) : IsNormal (derivFamily f) :=
+theorem isNormal_derivFamily (f : ι → Ordinal → Ordinal) : IsNormal (derivFamily f) :=
   ⟨fun o => by rw [derivFamily_succ, ← succ_le_iff]; apply le_nfpFamily, fun o l a => by
     rw [derivFamily_limit _ l, bsup_le_iff]⟩
+
+@[deprecated isNormal_derivFamily (since := "2024-10-11")]
+alias derivFamily_isNormal := isNormal_derivFamily
 
 theorem derivFamily_fp {i} (H : IsNormal (f i)) (o : Ordinal.{max u v}) :
     f i (derivFamily.{u, v} f o) = derivFamily.{u, v} f o := by
@@ -185,7 +188,7 @@ theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
     (∀ i, f i a ≤ a) ↔ ∃ o, derivFamily.{u, v} f o = a :=
   ⟨fun ha => by
     suffices ∀ (o) (_ : a ≤ derivFamily.{u, v} f o), ∃ o, derivFamily.{u, v} f o = a from
-      this a (derivFamily_isNormal _).le_apply
+      this a (isNormal_derivFamily _).le_apply
     intro o
     induction' o using limitRecOn with o IH o l IH
     · intro h₁
@@ -215,7 +218,7 @@ theorem fp_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
 theorem derivFamily_eq_enumOrd (H : ∀ i, IsNormal (f i)) :
     derivFamily.{u, v} f = enumOrd (⋂ i, Function.fixedPoints (f i)) := by
   rw [eq_comm, eq_enumOrd _ (not_bddAbove_fp_family H)]
-  use (derivFamily_isNormal f).strictMono
+  use (isNormal_derivFamily f).strictMono
   rw [Set.range_eq_iff]
   refine ⟨?_, fun a ha => ?_⟩
   · rintro a S ⟨i, hi⟩
@@ -335,9 +338,12 @@ theorem derivBFamily_eq_derivFamily {o : Ordinal} (f : ∀ b < o, Ordinal → Or
     derivBFamily.{u, v} o f = derivFamily.{u, v} (familyOfBFamily o f) :=
   rfl
 
-theorem derivBFamily_isNormal {o : Ordinal} (f : ∀ b < o, Ordinal → Ordinal) :
+theorem isNormal_derivBFamily {o : Ordinal} (f : ∀ b < o, Ordinal → Ordinal) :
     IsNormal (derivBFamily o f) :=
-  derivFamily_isNormal _
+  isNormal_derivFamily _
+
+@[deprecated isNormal_derivBFamily (since := "2024-10-11")]
+alias derivBFamily_isNormal := isNormal_derivBFamily
 
 theorem derivBFamily_fp {i hi} (H : IsNormal (f i hi)) (a : Ordinal) :
     f i hi (derivBFamily.{u, v} o f a) = derivBFamily.{u, v} o f a := by
@@ -366,7 +372,7 @@ theorem fp_iff_derivBFamily (H : ∀ i hi, IsNormal (f i hi)) {a} :
 theorem derivBFamily_eq_enumOrd (H : ∀ i hi, IsNormal (f i hi)) :
     derivBFamily.{u, v} o f = enumOrd (⋂ (i) (hi), Function.fixedPoints (f i hi)) := by
   rw [eq_comm, eq_enumOrd _ (not_bddAbove_fp_bfamily H)]
-  use (derivBFamily_isNormal f).strictMono
+  use (isNormal_derivBFamily f).strictMono
   rw [Set.range_eq_iff]
   refine ⟨fun a => Set.mem_iInter₂.2 fun i hi => derivBFamily_fp (H i hi) a, fun a ha => ?_⟩
   rw [Set.mem_iInter₂] at ha
@@ -495,11 +501,14 @@ theorem deriv_succ (f o) : deriv f (succ o) = nfp f (succ (deriv f o)) :=
 theorem deriv_limit (f) {o} : IsLimit o → deriv f o = bsup.{u, 0} o fun a _ => deriv f a :=
   derivFamily_limit _
 
-theorem deriv_isNormal (f) : IsNormal (deriv f) :=
-  derivFamily_isNormal _
+theorem isNormal_deriv (f) : IsNormal (deriv f) :=
+  isNormal_derivFamily _
+
+@[deprecated isNormal_deriv (since := "2024-10-11")]
+alias deriv_isNormal := isNormal_deriv
 
 theorem deriv_id_of_nfp_id {f : Ordinal → Ordinal} (h : nfp f = id) : deriv f = id :=
-  ((deriv_isNormal _).eq_iff_zero_and_succ IsNormal.refl).2 (by simp [h])
+  ((isNormal_deriv _).eq_iff_zero_and_succ IsNormal.refl).2 (by simp [h])
 
 theorem IsNormal.deriv_fp {f} (H : IsNormal f) : ∀ o, f (deriv f o) = deriv f o :=
   @derivFamily_fp Unit (fun _ => f) Unit.unit H
@@ -518,7 +527,7 @@ theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoi
   exact (Set.iInter_const _).symm
 
 theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : deriv f = id :=
-  (IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) IsNormal.refl).2 <| by simp [h]
+  (IsNormal.eq_iff_zero_and_succ (isNormal_deriv _) IsNormal.refl).2 <| by simp [h]
 
 theorem nfp_zero_left (a) : nfp 0 a = a := by
   rw [← iSup_iterate_eq_nfp]
@@ -555,9 +564,9 @@ theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * ω := by
   · rw [iterate_succ_apply', Nat.add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, hn]
 
 theorem nfp_add_eq_mul_omega0 {a b} (hba : b ≤ a * ω) : nfp (a + ·) b = a * ω := by
-  apply le_antisymm (nfp_le_fp (add_isNormal a).monotone hba _)
+  apply le_antisymm (nfp_le_fp (isNormal_add_right a).monotone hba _)
   · rw [← nfp_add_zero]
-    exact nfp_monotone (add_isNormal a).monotone (Ordinal.zero_le b)
+    exact nfp_monotone (isNormal_add_right a).monotone (Ordinal.zero_le b)
   · dsimp; rw [← mul_one_add, one_add_omega0]
 
 @[deprecated (since := "2024-09-30")]
@@ -566,9 +575,9 @@ alias nfp_add_eq_mul_omega := nfp_add_eq_mul_omega0
 theorem add_eq_right_iff_mul_omega0_le {a b : Ordinal} : a + b = b ↔ a * ω ≤ b := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← nfp_add_zero a, ← deriv_zero_right]
-    cases' (add_isNormal a).fp_iff_deriv.1 h with c hc
+    cases' (isNormal_add_right a).fp_iff_deriv.1 h with c hc
     rw [← hc]
-    exact (deriv_isNormal _).monotone (Ordinal.zero_le _)
+    exact (isNormal_deriv _).monotone (Ordinal.zero_le _)
   · have := Ordinal.add_sub_cancel_of_le h
     nth_rw 1 [← this]
     rwa [← add_assoc, ← mul_one_add, one_add_omega0]
@@ -578,14 +587,14 @@ alias add_eq_right_iff_mul_omega_le := add_eq_right_iff_mul_omega0_le
 
 theorem add_le_right_iff_mul_omega0_le {a b : Ordinal} : a + b ≤ b ↔ a * ω ≤ b := by
   rw [← add_eq_right_iff_mul_omega0_le]
-  exact (add_isNormal a).le_iff_eq
+  exact (isNormal_add_right a).le_iff_eq
 
 @[deprecated (since := "2024-09-30")]
 alias add_le_right_iff_mul_omega_le := add_le_right_iff_mul_omega0_le
 
 theorem deriv_add_eq_mul_omega0_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * ω + b := by
   revert b
-  rw [← funext_iff, IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) (add_isNormal _)]
+  rw [← funext_iff, IsNormal.eq_iff_zero_and_succ (isNormal_deriv _) (isNormal_add_right _)]
   refine ⟨?_, fun a h => ?_⟩
   · rw [deriv_zero_right, add_zero]
     exact nfp_add_zero a
@@ -620,10 +629,10 @@ theorem nfp_mul_eq_opow_omega0 {a b : Ordinal} (hb : 0 < b) (hba : b ≤ (a ^ ω
     simp_rw [Ordinal.le_zero.1 hba, zero_mul]
     exact nfp_zero_left 0
   apply le_antisymm
-  · apply nfp_le_fp (mul_isNormal ha).monotone hba
+  · apply nfp_le_fp (isNormal_mul_right ha).monotone hba
     rw [← opow_one_add, one_add_omega0]
   rw [← nfp_mul_one ha]
-  exact nfp_monotone (mul_isNormal ha).monotone (one_le_iff_pos.2 hb)
+  exact nfp_monotone (isNormal_mul_right ha).monotone (one_le_iff_pos.2 hb)
 
 @[deprecated (since := "2024-09-30")]
 alias nfp_mul_eq_opow_omega := nfp_mul_eq_opow_omega0
@@ -637,7 +646,7 @@ theorem eq_zero_or_opow_omega0_le_of_mul_eq_right {a b : Ordinal} (hab : a * b =
   intro hb
   rw [← nfp_mul_one ha]
   rw [← Ne, ← one_le_iff_ne_zero] at hb
-  exact nfp_le_fp (mul_isNormal ha).monotone hb (le_of_eq hab)
+  exact nfp_le_fp (isNormal_mul_right ha).monotone hb (le_of_eq hab)
 
 @[deprecated (since := "2024-09-30")]
 alias eq_zero_or_opow_omega_le_of_mul_eq_right := eq_zero_or_opow_omega0_le_of_mul_eq_right
@@ -663,7 +672,7 @@ alias mul_eq_right_iff_opow_omega_dvd := mul_eq_right_iff_opow_omega0_dvd
 theorem mul_le_right_iff_opow_omega0_dvd {a b : Ordinal} (ha : 0 < a) :
     a * b ≤ b ↔ (a ^ ω) ∣ b := by
   rw [← mul_eq_right_iff_opow_omega0_dvd]
-  exact (mul_isNormal ha).le_iff_eq
+  exact (isNormal_mul_right ha).le_iff_eq
 
 @[deprecated (since := "2024-09-30")]
 alias mul_le_right_iff_opow_omega_dvd := mul_le_right_iff_opow_omega0_dvd
@@ -671,12 +680,12 @@ alias mul_le_right_iff_opow_omega_dvd := mul_le_right_iff_opow_omega0_dvd
 theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
     (hca : c ≤ a ^ ω) : nfp (a * ·) (a ^ ω * b + c) = (a ^ (ω : Ordinal.{u})) * succ b := by
   apply le_antisymm
-  · apply nfp_le_fp (mul_isNormal ha).monotone
+  · apply nfp_le_fp (isNormal_mul_right ha).monotone
     · rw [mul_succ]
       apply add_le_add_left hca
     · dsimp only; rw [← mul_assoc, ← opow_one_add, one_add_omega0]
-  · cases' mul_eq_right_iff_opow_omega0_dvd.1 ((mul_isNormal ha).nfp_fp ((a ^ ω) * b + c)) with
-      d hd
+  · obtain ⟨d, hd⟩ :=
+      mul_eq_right_iff_opow_omega0_dvd.1 ((isNormal_mul_right ha).nfp_fp ((a ^ ω) * b + c))
     rw [hd]
     apply mul_le_mul_left'
     have := le_nfp (a * ·) (a ^ ω * b + c)
@@ -692,7 +701,7 @@ theorem deriv_mul_eq_opow_omega0_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :
     deriv (a * ·) b = (a ^ ω) * b := by
   revert b
   rw [← funext_iff,
-    IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) (mul_isNormal (opow_pos ω ha))]
+    IsNormal.eq_iff_zero_and_succ (isNormal_deriv _) (isNormal_mul_right (opow_pos ω ha))]
   refine ⟨?_, fun c h => ?_⟩
   · dsimp only; rw [deriv_zero_right, nfp_mul_zero, mul_zero]
   · rw [deriv_succ, h]
