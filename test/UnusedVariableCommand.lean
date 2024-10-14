@@ -3,7 +3,7 @@ import Mathlib.Tactic.Linter.UnusedVariableCommand
 open Lean Elab Command Mathlib.Linter.UnusedVariableCommand in
 elab "mkt " cmd:command : command => do
   elabCommand cmd
-  let thm ← getDeclBinders cmd
+  let thm ← mkThm cmd
   logInfo m!"{thm}"
   elabCommand thm
 def toFalse (_S : Sort _) := False
