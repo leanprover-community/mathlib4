@@ -1350,7 +1350,7 @@ theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a
   rw [symm_apply_apply]
 
 theorem IsNormal.map_iSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
-    {ι : Type w} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
+    {ι : Type*} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
     [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
   have := bddAbove_iff_small.mp hg
   have := univLE_of_injective H.strictMono.injective
@@ -1366,6 +1366,16 @@ theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
     f (⨆ i, g i) = ⨆ i, f (g i) :=
   H.map_iSup_of_bddAbove g (bddAbove_of_small _)
+
+theorem IsNormal.map_sSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
+    {s : Set Ordinal.{u}} (hs : BddAbove s) (hn : s.Nonempty) : f (sSup s) = sSup (f '' s) := by
+  have := hn.to_subtype
+  rw [sSup_eq_iSup', sSup_image', H.map_iSup_of_bddAbove]
+  rwa [Subtype.range_coe_subtype, setOf_mem_eq]
+
+theorem IsNormal.map_sSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
+    {s : Set Ordinal.{u}} (hn : s.Nonempty) [Small.{u} s] : f (sSup s) = sSup (f '' s) :=
+  H.map_sSup_of_bddAbove (bddAbove_of_small s) hn
 
 set_option linter.deprecated false in
 @[deprecated IsNormal.map_iSup (since := "2024-08-27")]
