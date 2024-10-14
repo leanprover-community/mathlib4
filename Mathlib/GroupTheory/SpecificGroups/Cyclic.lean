@@ -10,7 +10,6 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.Group
 import Mathlib.GroupTheory.Exponent
-
 /-!
 # Cyclic groups
 
