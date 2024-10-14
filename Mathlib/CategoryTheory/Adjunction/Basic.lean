@@ -151,7 +151,7 @@ namespace Adjunction
 attribute [reassoc (attr := simp)] left_triangle_components right_triangle_components
 
 /-- The hom set equivalence associated to an adjunction. -/
-@[simps]
+@[simps (config := .lemmasOnly)]
 def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
     (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y) where
   toFun := fun f => adj.unit.app X ≫ G.map f
