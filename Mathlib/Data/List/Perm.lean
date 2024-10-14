@@ -131,12 +131,6 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
   · rintro (rfl | rfl)
     exacts [nil_subperm, Subperm.refl _]
 
-attribute [simp] nil_subperm
-
-@[simp]
-theorem subperm_nil : List.Subperm l [] ↔ l = [] :=
-  ⟨fun h ↦ length_eq_zero.1 <| Nat.le_zero.1 h.length_le, by rintro rfl; rfl⟩
-
 lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons_self _ _⟩
 
 lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePred P]
