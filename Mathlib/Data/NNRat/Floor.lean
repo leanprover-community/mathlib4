@@ -35,10 +35,10 @@ theorem floor_coe (q : ℚ≥0) : ⌊(q : ℚ)⌋₊ = ⌊q⌋₊ := rfl
 theorem ceil_coe (q : ℚ≥0) : ⌈(q : ℚ)⌉₊ = ⌈q⌉₊ := rfl
 
 @[simp, norm_cast]
-theorem coe_floor (q : ℚ≥0) : ↑⌊q⌋₊ = ⌊(q : ℚ)⌋ := Int.ofNat_floor_eq_floor q.coe_nonneg
+theorem coe_floor (q : ℚ≥0) : ↑⌊q⌋₊ = ⌊(q : ℚ)⌋ := Int.natCast_floor_eq_floor q.coe_nonneg
 
 @[simp, norm_cast]
-theorem coe_ceil (q : ℚ≥0) : ↑⌈q⌉₊ = ⌈(q : ℚ)⌉ := Int.ofNat_ceil_eq_ceil q.coe_nonneg
+theorem coe_ceil (q : ℚ≥0) : ↑⌈q⌉₊ = ⌈(q : ℚ)⌉ := Int.natCast_ceil_eq_ceil q.coe_nonneg
 
 protected theorem floor_def (q : ℚ≥0) : ⌊q⌋₊ = q.num / q.den := by
   rw [← Int.natCast_inj, NNRat.coe_floor, Rat.floor_def, Int.ofNat_ediv, den_coe, num_coe]

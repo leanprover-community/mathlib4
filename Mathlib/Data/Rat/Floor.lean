@@ -68,7 +68,7 @@ theorem floor_natCast_div_natCast (n d : ℕ) : ⌊(↑n / ↑d : ℚ)⌋ = n / 
 
 @[norm_cast]
 theorem natFloor_natCast_div_natCast (n d : ℕ) : ⌊(↑n / ↑d : ℚ)⌋₊ = n / d := by
-  rw [← Int.ofNat_inj, Int.ofNat_floor_eq_floor (by positivity)]
+  rw [← Int.ofNat_inj, Int.natCast_floor_eq_floor (by positivity)]
   push_cast
   exact floor_intCast_div_natCast n d
 
