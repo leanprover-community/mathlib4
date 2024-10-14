@@ -549,16 +549,11 @@ lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :
 lemma reflexiveCoforkEquivCofork_inverse_obj_π
     (G : Cofork (F.map left) (F.map right)) :
     ((reflexiveCoforkEquivCofork F).inverse.obj G).π = G.π := by
-  apply Functor.Final.induction (WalkingParallelPair.inclusionWalkingReflexivePair)
-    (fun Z k => ((F.map k) ≫ (eqToHom _) ≫ (G.ι.app Z) = G.π))
-  · intro X₁ X₂ k₁ k₂ _ _ _
-    cases X₁ <;> cases X₂ <;> cases k₁ <;> cases k₂ <;> aesop_cat
-  · intro X₁ X₂ k₁ k₂ _ _ _
-    cases X₁ <;> cases X₂ <;> cases k₁ <;> cases k₂ <;> aesop_cat
-  rotate_left
-  · exact WalkingParallelPair.zero
-  · exact reflexion
-  · simp
+  dsimp only [reflexiveCoforkEquivCofork, Equivalence.symm, Equivalence.trans,
+    ReflexiveCofork.π, Cocones.precomposeEquivalence, Cocones.precompose,
+    Functor.comp, Functor.Final.coconesEquiv]
+  rw [Functor.Final.extendCocone_obj_ι_app' (Y := .one) (f := 𝟙 zero)]
+  simp
 
 /-- The equivalence between reflexive coforks and coforks sends a reflexive cofork to its underlying
 cofork. -/
