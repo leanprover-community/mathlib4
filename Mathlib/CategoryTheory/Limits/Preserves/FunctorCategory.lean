@@ -89,8 +89,8 @@ instance whiskeringLeftPreservesLimitsOfShape (J : Type u) [Category.{v} J]
       change IsLimit (((evaluation E D).obj (F.obj Y)).mapCone c)
       exact PreservesLimit.preserves hc⟩⟩
 
-instance whiskeringLeftPreservesLimits [HasLimitsOfSize.{(max u₁ v₂)} D] (F : C ⥤ E) :
-    PreservesLimits ((whiskeringLeft C E D).obj F) :=
+instance whiskeringLeftPreservesLimits [HasLimitsOfSize.{w} D] (F : C ⥤ E) :
+    PreservesLimitsOfSize.{w, w'} ((whiskeringLeft C E D).obj F) :=
   ⟨fun {J} _ => whiskeringLeftPreservesLimitsOfShape J F⟩
 
 instance whiskeringRightPreservesLimitsOfShape {C : Type*} [Category C] {D : Type*}
