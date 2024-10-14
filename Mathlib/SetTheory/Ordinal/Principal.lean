@@ -253,8 +253,8 @@ alias principal_add_iff_zero_or_omega_opow := principal_add_iff_zero_or_omega0_o
 
 theorem opow_principal_add_of_principal_add {a} (ha : Principal (· + ·) a) (b : Ordinal) :
     Principal (· + ·) (a ^ b) := by
-  obtain rfl | ⟨c, rfl⟩ := principal_add_iff_zero_or_omega0_opow.1 ha
-  · obtain rfl | hb := eq_or_ne b 0
+  rcases principal_add_iff_zero_or_omega0_opow.1 ha with (rfl | ⟨c, rfl⟩)
+  · rcases eq_or_ne b 0 with (rfl | hb)
     · rw [opow_zero]
       exact principal_add_one
     · rwa [zero_opow hb]
