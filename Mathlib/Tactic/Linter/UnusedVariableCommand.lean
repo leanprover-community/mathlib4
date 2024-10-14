@@ -64,7 +64,7 @@ The "unusedVariableCommand" linter emits a warning when a variable declared in `
 is globally unused.
 -/
 register_option linter.unusedVariableCommand : Bool := {
-  defValue := false
+  defValue := true
   descr := "enable the unusedVariableCommand linter"
 }
 
