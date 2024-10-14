@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Batteries.Tactic.Lint
+import Mathlib.Tactic.Linter.Common
 
 /-!
 # Linters for Mathlib
@@ -90,16 +91,13 @@ def getIds : Syntax → Array Syntax
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if Linter.getLinterValue linter.dupNamespace (← getOptions) then
-    match getIds stx with
-      | #[id] =>
-        let ns := (← getScope).currNamespace
-        let declName := ns ++ (if id.getKind == ``declId then id[0].getId else id.getId)
-        let nm := declName.components
-        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
-          | return
-        Linter.logLint linter.dupNamespace id
-          m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
-      | _ => return
+    for id in (← getNames stx) do
+      let declName := id.getId
+      let nm := declName.components
+      let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
+        | return
+      Linter.logLint linter.dupNamespace id
+        m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
 
 initialize addLinter dupNamespace
 
