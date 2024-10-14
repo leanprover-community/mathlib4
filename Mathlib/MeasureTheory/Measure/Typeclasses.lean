@@ -146,7 +146,7 @@ theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
 theorem ae_eq_univ_iff_measure_eq [IsFiniteMeasure μ] (hs : NullMeasurableSet s μ) :
     s =ᵐ[μ] univ ↔ μ s = μ univ :=
   ⟨measure_congr, fun h ↦
-    (ae_eq_of_subset_of_measure_ge (subset_univ s) h.ge hs (measure_ne_top μ univ))⟩
+    ae_eq_of_subset_of_measure_ge (subset_univ _) h.ge hs (measure_ne_top _ _)⟩
 
 theorem ae_iff_measure_eq [IsFiniteMeasure μ] {p : α → Prop}
     (hp : NullMeasurableSet { a | p a } μ) : (∀ᵐ a ∂μ, p a) ↔ μ { a | p a } = μ univ := by
@@ -558,15 +558,14 @@ instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure
 lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = μ :=
   h.1.choose_spec.2.symm
 
+lemma sFiniteSeq_le (μ : Measure α) [SFinite μ] (n : ℕ) : sFiniteSeq μ n ≤ μ :=
+  (le_sum _ n).trans (sum_sFiniteSeq μ).le
+
 instance : SFinite (0 : Measure α) := ⟨fun _ ↦ 0, inferInstance, by rw [Measure.sum_zero]⟩
 
 @[simp]
-lemma sFiniteSeq_zero (n : ℕ) : sFiniteSeq (0 : Measure α) n = 0 := by
-  ext s hs
-  have h : ∑' n, sFiniteSeq (0 : Measure α) n s = 0 := by
-    simp [← Measure.sum_apply _ hs, sum_sFiniteSeq]
-  simp only [ENNReal.tsum_eq_zero] at h
-  exact h n
+lemma sFiniteSeq_zero (n : ℕ) : sFiniteSeq (0 : Measure α) n = 0 :=
+  bot_unique <| sFiniteSeq_le _ _
 
 /-- A countable sum of finite measures is s-finite.
 This lemma is superseded by the instance below. -/

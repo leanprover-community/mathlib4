@@ -28,7 +28,7 @@ namespace PreGaloisCategory
 
 open Functor
 
-variable {C : Type u₁} [Category.{u₂} C] (F : C ⥤ FintypeCat.{u₂})
+variable {C : Type u₁} [Category.{u₂} C] (F : C ⥤ FintypeCat.{w})
 
 /-- For a functor `F : C ⥤ FintypeCat`, the canonical embedding of `Aut F` into
 the product over `Aut (F.obj X)` for all objects `X`. -/
@@ -69,7 +69,7 @@ lemma autEmbedding_range :
   ext a
   simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_setOf_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
-  · use NatIso.ofComponents (fun X => a X) (fun {X Y} f ↦ h ⟨X, Y, f⟩)
+  · use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
     rfl
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/

@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Data.Set.Monotone
 import Mathlib.Data.Set.Image
 import Mathlib.Order.WellFounded
 
@@ -15,13 +16,13 @@ import Mathlib.Order.WellFounded
 
 open OrderDual
 
-variable {F α β γ δ : Type*}
+variable {α β : Type*}
 
 namespace OrderIso
 
 section LE
 
-variable [LE α] [LE β] [LE γ]
+variable [LE α] [LE β]
 
 theorem range_eq (e : α ≃o β) : Set.range e = Set.univ :=
   e.surjective.range_eq
@@ -57,7 +58,7 @@ end LE
 
 open Set
 
-variable [Preorder α] [Preorder β] [Preorder γ]
+variable [Preorder α]
 
 /-- Order isomorphism between two equal sets. -/
 def setCongr (s t : Set α) (h : s = t) :
@@ -121,9 +122,44 @@ theorem orderIsoOfSurjective_self_symm_apply (b : β) :
 end StrictMono
 
 /-- Two order embeddings on a well-order are equal provided that their ranges are equal. -/
-lemma OrderEmbedding.range_inj [LinearOrder α] [WellFoundedLT α] [PartialOrder β] {f g : α ↪o β} :
+lemma OrderEmbedding.range_inj [LinearOrder α] [WellFoundedLT α] [Preorder β] {f g : α ↪o β} :
     Set.range f = Set.range g ↔ f = g := by
   rw [f.strictMono.range_inj g.strictMono, DFunLike.coe_fn_eq]
+
+namespace OrderIso
+
+-- These results are also true whenever β is well-founded instead of α.
+-- You can use `RelEmbedding.isWellFounded` to transfer the instance over.
+
+instance subsingleton_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] [Preorder β] :
+    Subsingleton (α ≃o β) := by
+  refine ⟨fun f g ↦ ?_⟩
+  rw [OrderIso.ext_iff, ← coe_toOrderEmbedding, ← coe_toOrderEmbedding, DFunLike.coe_fn_eq,
+    ← OrderEmbedding.range_inj, coe_toOrderEmbedding, coe_toOrderEmbedding, range_eq, range_eq]
+
+instance subsingleton_of_wellFoundedLT' [LinearOrder β] [WellFoundedLT β] [Preorder α] :
+    Subsingleton (α ≃o β) := by
+  refine ⟨fun f g ↦ ?_⟩
+  change f.symm.symm = g.symm.symm
+  rw [Subsingleton.elim f.symm]
+
+instance unique_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] : Unique (α ≃o α) := Unique.mk' _
+
+instance subsingleton_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] [Preorder β] :
+    Subsingleton (α ≃o β) := by
+  refine ⟨fun f g ↦ ?_⟩
+  change f.dual.dual = g.dual.dual
+  rw [Subsingleton.elim f.dual]
+
+instance subsingleton_of_wellFoundedGT' [LinearOrder β] [WellFoundedGT β] [Preorder α] :
+    Subsingleton (α ≃o β) := by
+  refine ⟨fun f g ↦ ?_⟩
+  change f.dual.dual = g.dual.dual
+  rw [Subsingleton.elim f.dual]
+
+instance unique_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] : Unique (α ≃o α) := Unique.mk' _
+
+end OrderIso
 
 section BooleanAlgebra
 

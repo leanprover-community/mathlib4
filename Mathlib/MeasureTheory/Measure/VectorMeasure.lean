@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Measure.Typeclasses
-import Mathlib.Analysis.Complex.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 
@@ -13,7 +13,8 @@ import Mathlib.Analysis.Complex.Basic
 This file defines vector valued measures, which are σ-additive functions from a set to an add monoid
 `M` such that it maps the empty set and non-measurable sets to zero. In the case
 that `M = ℝ`, we called the vector measure a signed measure and write `SignedMeasure α`.
-Similarly, when `M = ℂ`, we call the measure a complex measure and write `ComplexMeasure α`.
+Similarly, when `M = ℂ`, we call the measure a complex measure and write `ComplexMeasure α`
+(defined in `MeasureTheory/Measure/Complex`).
 
 ## Main definitions
 
@@ -62,10 +63,6 @@ structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMo
 /-- A `SignedMeasure` is an `ℝ`-vector measure. -/
 abbrev SignedMeasure (α : Type*) [MeasurableSpace α] :=
   VectorMeasure α ℝ
-
-/-- A `ComplexMeasure` is a `ℂ`-vector measure. -/
-abbrev ComplexMeasure (α : Type*) [MeasurableSpace α] :=
-  VectorMeasure α ℂ
 
 open Set MeasureTheory
 

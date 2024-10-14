@@ -201,8 +201,8 @@ theorem lieIdeal_oper_eq_tensor_map_range :
     TensorProduct.map_range_eq_span_tmul, Submodule.map_span]
   congr; ext m; constructor
   · rintro ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩; use x ⊗ₜ n; constructor
-    · use ⟨x, hx⟩, ⟨n, hn⟩; simp
+    · use ⟨x, hx⟩, ⟨n, hn⟩; rfl
     · simp
-  · rintro ⟨t, ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩, h⟩; rw [← h]; use ⟨x, hx⟩, ⟨n, hn⟩; simp
+  · rintro ⟨t, ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩, h⟩; rw [← h]; use ⟨x, hx⟩, ⟨n, hn⟩; rfl
 
 end LieSubmodule
