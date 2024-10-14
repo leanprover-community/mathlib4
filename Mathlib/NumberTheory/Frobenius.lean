@@ -232,7 +232,6 @@ end fixedfield
 
 section integrallemma
 
--- this only requires algebraic, not integral
 theorem Polynomial.nonzero_const_if_isIntegral (R S : Type*) [CommRing R] [Ring S] [Algebra R S]
     [h : Algebra.IsAlgebraic R S] [NoZeroDivisors S] (s : S) (hs : s ≠ 0) :
     ∃ (q : Polynomial R), q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
@@ -250,8 +249,6 @@ theorem Algebra.exists_dvd_nonzero_if_isIntegral (R S : Type*) [CommRing R]
   rw [map_sub, hq, zero_sub, dvd_neg, Polynomial.aeval_X, Polynomial.aeval_C] at key
   exact ⟨q.coeff 0, hq0, key⟩
 
--- maybe separate out x = b / a as separate lemma
-
 end integrallemma
 
 section charpoly
@@ -264,9 +261,7 @@ variable {A : Type*} [CommRing A]
 
 
 variable (G) in
-/-- The characteristic polynomial of an element `b` of a `G`-semiring `B`
-is the polynomial `∏_{g ∈ G} (X - g • b)` (here `G` is finite; junk
-returned in the infinite case) .-/
+
 noncomputable def MulSemiringAction.CharacteristicPolynomial.F (b : B) : B[X] :=
   ∏ᶠ τ : G, (X - C (τ • b))
 
@@ -327,13 +322,6 @@ section full_descent
 
 variable (hFull : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = a)
 
--- Remark: the `splitting_of_full` approach is lousy and should be
--- replaced by the commented-out code below (lines 275-296 currently)
-
-/-- This "splitting" function from B to A will only ever be evaluated on
-G-invariant elements of B, and the two key facts about it are
-that it lifts such an element to `A`, and for reasons of
-convenience it lifts `1` to `1`. -/
 noncomputable def splitting_of_full
     (b : B) : A := by classical
   exact
@@ -448,13 +436,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]
 
 open Polynomial
-/-
-I didn't check that this definition was independent
-of the lift `b` of `bbar` (and it might not even be true).
-But this doesn't matter, because `G` no longer acts on `B/Q`.
-All we need is that `Mbar` is monic of degree `|G|`, is defined over the bottom ring
-and kills `bbar`.
--/
+
 variable {Q} in
 noncomputable def Mbar
     (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = algebraMap A B a)
@@ -468,16 +450,6 @@ omit [SMulCommClass G A B] [Q.IsPrime] [P.IsPrime] [Algebra (A ⧸ P) (B ⧸ Q)]
 theorem Mbar_monic [Nontrivial B] (bbar : B ⧸ Q) : (Mbar G P hFull' bbar).Monic := by
   have := M_monic hFull'
   simp [Mbar, (M_monic hFull' _).map]
-
--- omit [SMulCommClass G A B] [Q.IsPrime] [Algebra (A ⧸ P) (B ⧸ Q)]
---   [IsScalarTower A (A ⧸ P) (B ⧸ Q)] in
--- theorem Mbar_deg [Nontrivial A] [Nontrivial B] (bbar : B ⧸ Q) :
---     degree (Mbar G P hFull' bbar) = Nat.card G := by
---   simp only [Mbar]
---   rw [degree_map_eq_of_leadingCoeff_ne_zero]
---   · exact M_deg hFull' _
---   · rw [(M_monic hFull' _).leadingCoeff]
---     simp only [map_one, ne_eq, one_ne_zero, not_false_eq_true]
 
 /-- docstring -/
 theorem Quotient.out_eq'' {R : Type*} [CommRing R] {I : Ideal R} (x : R ⧸ I) :
@@ -521,37 +493,11 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
   (P : Ideal A) (Q : Ideal B) [P.IsPrime] [Q.IsPrime]
   [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
-  -- from this, we can prove that P = comap Q
   variable (K L : Type*) [Field K] [Field L]
   [Algebra (A ⧸ P) K] [IsFractionRing (A ⧸ P) K]
   [Algebra (B ⧸ Q) L] [IsFractionRing (B ⧸ Q) L]
   [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]
-
--- these first few lemmas might not be necessary!
-
--- omit [Algebra A B] [P.IsPrime] [Q.IsPrime] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
---   [IsFractionRing (B ⧸ Q) L] in
--- include K L in
--- theorem APBQ_injective (x : A ⧸ P) : algebraMap (A ⧸ P) (B ⧸ Q) x = 0 ↔ x = 0 := by
---   constructor
---   · intro hx
---     replace hx : algebraMap (A ⧸ P) L x = 0 := by
---       rw [IsScalarTower.algebraMap_apply (A ⧸ P) (B ⧸ Q) L, hx, map_zero]
---     rw [IsScalarTower.algebraMap_apply (A ⧸ P) K L] at hx
---     rw [← map_zero (algebraMap K L), (algebraMap K L).injective.eq_iff] at hx
---     rw [← map_zero (algebraMap (A ⧸ P) K), (IsFractionRing.injective (A ⧸ P) K).eq_iff] at hx
---     exact hx
---   · intro hx
---     rw [hx, map_zero]
-
--- include K L in
--- omit [P.IsPrime] [Q.IsPrime] [IsFractionRing (B ⧸ Q) L] in
--- theorem comap_Q_eq_P : Q.comap (algebraMap A B) = P := by
---   ext x
---   rw [Ideal.mem_comap, ← Ideal.Quotient.eq_zero_iff_mem, Ideal.Quotient.mk_algebraMap]
---   rw [IsScalarTower.algebraMap_apply A (A ⧸ P) (B ⧸ Q), APBQ_injective P Q K L]
---   rw [Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem]
 
 def quotientRingAction (Q' : Ideal B) (g : G) (hg : g • Q = Q') :
     B ⧸ Q ≃+* B ⧸ Q' :=
