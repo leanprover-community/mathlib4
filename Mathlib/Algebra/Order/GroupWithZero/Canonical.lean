@@ -243,6 +243,59 @@ lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
 lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
 
+lemma exp_le_exp_of_pow_le_pow (a : α) (hlt : a < 1) (h₀ : a ≠ 0) {n m : ℤ} (hle : a ^ n ≤ a ^ m) :
+    m ≤ n := by
+  have ha : 1 < a⁻¹ := by
+    rw [← inv_lt_inv₀]
+    simpa
+    simp only [inv_pos]
+    exact zero_lt_iff.mpr h₀
+    exact zero_lt_one' α
+  by_contra h
+  simp at h
+  have : (a⁻¹) ^ n < (a⁻¹) ^ m := by
+    apply zpow_lt_zpow_right₀ ha h
+  have h1 : (a⁻¹) ^ n = (a ^ n) ⁻¹ := by simp
+  have h2 : (a⁻¹) ^ m = (a ^ m) ⁻¹ := by simp
+  have h3 : 0 < a := zero_lt_iff.mpr h₀
+  rw [h1, h2] at this
+  rw [inv_lt_inv₀] at this
+  absurd hle
+  simpa
+  exact zpow_pos h3 n
+  exact zpow_pos h3 m
+
+lemma exp_zero_of_pow_eq_one_aux {n : ℕ} (ha : (0 : α) ^ n = 1) : n = 0 := by
+  induction n with
+  | zero => rfl
+  | succ n _ => simp at ha
+
+lemma exp_zero_of_zpow_eq_aux2 {n : ℤ} (ha : (0 : α) ^ n = 1) : n = 0 := by
+  have haux (n : ℤ) (ha : (0 : α) ^ n = 1) (hn : n ≥ 0) : n = 0 := by
+    have : n.toNat = 0 := by
+      apply exp_zero_of_pow_eq_one_aux (α := α)
+      rwa [← zpow_natCast, Int.toNat_of_nonneg hn]
+    rw [← Int.toNat_of_nonneg hn]
+    simpa
+  by_cases hn : n ≥ 0
+  · exact haux n ha hn
+  · apply Int.neg_eq_zero.mp
+    apply haux
+    · simpa
+    · simp only [ge_iff_le, Left.nonneg_neg_iff]
+      apply Int.le_of_not_le at hn
+      exact Int.neg_nonneg_of_nonpos hn
+
+lemma exp_zero_of_zpow_eq_one {a : α} (h : a < 1) {n : ℤ} (han : a ^ n = 1) : n = 0 := by
+  by_cases ha : a = 0
+  · subst ha
+    exact exp_zero_of_zpow_eq_aux2 han
+  · apply le_antisymm
+    · apply exp_le_exp_of_pow_le_pow a h ha
+      simp [han]
+    · apply exp_le_exp_of_pow_le_pow a h ha
+      simp [han]
+
 end LinearOrderedCommGroupWithZero
 
 instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
