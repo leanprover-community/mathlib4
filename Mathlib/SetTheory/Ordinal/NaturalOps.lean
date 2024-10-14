@@ -335,8 +335,8 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
   { NatOrdinal.linearOrder with
     add := (· + ·)
     add_assoc := nadd_assoc
-    add_le_add_left := fun a b => add_le_add_left
-    le_of_add_le_add_left := fun a b c => le_of_add_le_add_left
+    add_le_add_left := fun _ _ => add_le_add_left
+    le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left
     zero := 0
     zero_add := zero_nadd
     add_zero := nadd_zero
@@ -688,8 +688,8 @@ instance : OrderedCommSemiring NatOrdinal.{u} :=
     mul_one := nmul_one
     mul_comm := nmul_comm
     zero_le_one := @zero_le_one Ordinal _ _ _ _
-    mul_le_mul_of_nonneg_left := fun a b c h _ => nmul_le_nmul_left h c
-    mul_le_mul_of_nonneg_right := fun a b c h _ => nmul_le_nmul_right h c }
+    mul_le_mul_of_nonneg_left := fun _ _ c h _ => nmul_le_nmul_left h c
+    mul_le_mul_of_nonneg_right := fun _ _ c h _ => nmul_le_nmul_right h c }
 
 namespace Ordinal
 

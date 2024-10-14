@@ -43,7 +43,7 @@ def map : ∀ {X : ℕ → C} (_ : ∀ n, X n ⟶ X (n + 1)) (i j : ℕ), i ≤ 
   | _, _, 0, 0 => fun _ ↦ 𝟙 _
   | _, f, 0, 1 => fun _ ↦ f 0
   | _, f, 0, l + 1 => fun _ ↦ f 0 ≫ map (fun n ↦ f (n + 1)) 0 l (by omega)
-  | _, _, k + 1, 0 => nofun
+  | _, _, _ + 1, 0 => nofun
   | _, f, k + 1, l + 1 => fun _ ↦ map (fun n ↦ f (n + 1)) k l (by omega)
 
 lemma map_id (i : ℕ) : map f i i (by omega) = 𝟙 _ := by

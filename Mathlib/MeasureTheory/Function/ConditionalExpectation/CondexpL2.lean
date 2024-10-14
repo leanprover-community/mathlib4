@@ -457,7 +457,7 @@ theorem setIntegral_condexpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet
     ∫ a in s, (condexpIndSMul hm ht hμt x) a ∂μ =
         ∫ a in s, (condexpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) a • x ∂μ :=
       setIntegral_congr_ae (hm s hs)
-        ((condexpIndSMul_ae_eq_smul hm ht hμt x).mono fun x hx _ => hx)
+        ((condexpIndSMul_ae_eq_smul hm ht hμt x).mono fun _ hx _ => hx)
     _ = (∫ a in s, (condexpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) a ∂μ) • x :=
       (integral_smul_const _ x)
     _ = (μ (t ∩ s)).toReal • x := by rw [setIntegral_condexpL2_indicator hs ht hμs hμt]

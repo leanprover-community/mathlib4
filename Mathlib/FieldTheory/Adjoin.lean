@@ -1182,7 +1182,7 @@ open Module AdjoinRoot in
 in `K⟮α⟯` with `α` a root of `f`, then `f(g(x))` is irreducible. -/
 theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g.Monic)
     (hf : Irreducible f)
-    (hg : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (hx : minpoly K x = f),
+    (hg : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (_ : minpoly K x = f),
       Irreducible (g.map (algebraMap _ _) - C (AdjoinSimple.gen K x))) :
     Irreducible (f.comp g) := by
   have hf' : natDegree f ≠ 0 :=

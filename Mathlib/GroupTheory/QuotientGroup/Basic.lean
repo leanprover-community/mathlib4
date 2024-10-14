@@ -106,7 +106,7 @@ theorem monoidHom_ext ⦃f g : G ⧸ N →* M⦄ (h : f.comp (mk' N) = g.comp (m
   MonoidHom.ext fun x => QuotientGroup.induction_on x <| (DFunLike.congr_fun h : _)
 
 @[to_additive (attr := simp)]
-theorem eq_one_iff {N : Subgroup G} [nN : N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x ∈ N := by
+theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x ∈ N := by
   refine QuotientGroup.eq.trans ?_
   rw [mul_one, Subgroup.inv_mem_iff]
 
