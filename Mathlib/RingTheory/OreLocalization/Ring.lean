@@ -104,6 +104,14 @@ lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
   letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
   exact congr($(AddCommMonoid.uniqueNatModule.2 inst).smul n x)
 
+variable (S X) in
+/-- The function `m ↦ m /ₒ 1` as an `R`-linear map. -/
+@[simps]
+def mkLinearMap : X →ₗ[R] X[S⁻¹] where
+  toFun x := x /ₒ 1
+  map_add' x y := add_oreDiv.symm
+  map_smul' r x := by dsimp only; rw [← smul_div_one, oreDiv_one_smul, RingHom.id_apply]
+
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
 @[simps!]
 def numeratorRingHom : R →+* R[S⁻¹] where

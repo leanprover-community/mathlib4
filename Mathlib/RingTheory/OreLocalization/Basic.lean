@@ -242,12 +242,11 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
     rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
 
 /-- The scalar multiplication on the Ore localization of monoids. -/
-@[to_additive (attr := irreducible)
+@[to_additive
   "the vector addition on the Ore localization of additive monoids."]
-protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
-  liftExpand smul'' fun r₁ r₂ s hs => by
-    ext x
-    induction' x with x s₂
+protected def smul (y : R[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
+  liftExpand (fun r s ↦ smul'' r s x) (fun r₁ r₂ s hs => by
+    induction' x using OreLocalization.ind with x s₂
     show OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
     rcases oreCondition r₁ s₂ with ⟨r₁', s₁', h₁⟩
     rw [smul'_char _ _ _ _ _ _ h₁]
@@ -264,7 +263,7 @@ protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
     simp only [Submonoid.smul_def, Submonoid.coe_mul, smul_smul, mul_assoc, h₄]
     congr 1
     ext; simp only [Submonoid.coe_mul, ← mul_assoc]
-    rw [mul_assoc _ r₃', ← h₃, ← mul_assoc, ← mul_assoc]
+    rw [mul_assoc _ r₃', ← h₃, ← mul_assoc, ← mul_assoc]) y
 
 @[to_additive]
 instance : SMul R[S⁻¹] X[S⁻¹] :=
@@ -318,10 +317,10 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
 
 /-- `1` in the localization, defined as `1 /ₒ 1`. -/
 @[to_additive (attr := irreducible) "`0` in the additive localization, defined as `0 -ₒ 0`."]
-protected def one : R[S⁻¹] := 1 /ₒ 1
+protected def one [One X] : X[S⁻¹] := 1 /ₒ 1
 
 @[to_additive]
-instance : One R[S⁻¹] :=
+instance [One X] : One X[S⁻¹] :=
   ⟨OreLocalization.one⟩
 
 @[to_additive]
@@ -375,10 +374,9 @@ protected theorem mul_assoc (x y z : R[S⁻¹]) : x * y * z = x * (y * z) :=
   OreLocalization.mul_smul x y z
 
 /-- `npow` of `OreLocalization` -/
-@[to_additive (attr := irreducible) "`nsmul` of `AddOreLocalization`"]
+@[to_additive "`nsmul` of `AddOreLocalization`"]
 protected def npow : ℕ → R[S⁻¹] → R[S⁻¹] := npowRec
 
-unseal OreLocalization.npow in
 @[to_additive]
 instance : Monoid R[S⁻¹] where
   one_mul := OreLocalization.one_mul
