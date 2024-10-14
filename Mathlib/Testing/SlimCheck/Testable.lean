@@ -296,7 +296,7 @@ instance (priority := 100) forallTypesULiftTestable.{u}
     Testable (NamedBinder var <| ∀ x, f x) where
   run cfg min := do
     let r ← runProp (f (ULift Int)) cfg min
-    pure <| addVarInfo var "ULift ℤ" (· $ ULift Int) r
+    pure <| addVarInfo var "ULift ℤ" (· <| ULift Int) r
 
 instance factTestable [Testable p] : Testable (Fact p) where
   run cfg min := do
