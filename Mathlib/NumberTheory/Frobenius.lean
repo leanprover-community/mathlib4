@@ -589,108 +589,166 @@ def stabilizerAction :
     simp
     rw [smul_smul]
 
--- not sure if we can make this strategy work without localization...
-theorem keylemma0 [DecidableEq (Ideal B)] [Fintype G] :
-    IsCoprime Q (∏ g ∈ (Finset.univ : Finset G).filter (fun g ↦ g • Q ≠ Q), g • Q) := by
-  let P := ∏ g ∈ (Finset.univ : Finset G).filter (fun g ↦ g • Q ≠ Q), g • Q
-  change IsCoprime Q P
+section redo_part_b
+
+-- technical CRT lemma
+theorem lem1 [DecidableEq (Ideal B)] [Nontrivial B] :
+    ∃ a b : B, (∀ g : G, g • a = a) ∧ (a ∉ Q) ∧
+    (∀ g : G, algebraMap B (B ⧸ Q) (g • b) =
+      algebraMap B (B ⧸ Q) (if g • Q = Q then a else 0)) := by
+  obtain ⟨_⟩ := nonempty_fintype G
+  let P := ((Finset.univ : Finset G).filter (fun g ↦ g • Q ≠ Q)).inf (fun g ↦ g • Q)
   have h1 : ¬ P ≤ Q := by
-    rw [Ideal.IsPrime.prod_le inferInstance]
+    rw [Ideal.IsPrime.inf_le' inferInstance]
     rintro ⟨g, hg1, hg2⟩
     exact (Finset.mem_filter.mp hg1).2 (smul_eq_of_smul_le hg2)
   obtain ⟨b, hbP, hbQ⟩ := SetLike.not_le_iff_exists.mp h1
+  replace hbP : ∀ g : G, g • Q ≠ Q → b ∈ g • Q :=
+    fun g hg ↦ (Finset.inf_le (Finset.mem_filter.mpr ⟨Finset.mem_univ g, hg⟩) : P ≤ g • Q) hbP
   let f := MulSemiringAction.CharacteristicPolynomial.F G b
-  sorry
+  let n := f.natDegree
+  have hf : f.Monic := MulSemiringAction.CharacteristicPolynomial.F_monic b
+  let g := f.map (algebraMap B (B ⧸ Q))
+  obtain ⟨q, hq, hq0⟩ :=
+    g.exists_eq_pow_rootMultiplicity_mul_and_not_dvd
+    (Polynomial.map_monic_ne_zero hf) 0
+  let j := g.rootMultiplicity 0
+  let k := q.natDegree
+  rw [map_zero, sub_zero] at hq hq0
+  rw [Polynomial.X_dvd_iff] at hq0
+  change g = Polynomial.X ^ j * q at hq
+  let a := f.coeff j
+  use a
+  let r := ∑ i ∈ Finset.range (k + 1), Polynomial.monomial i (f.coeff (i + j))
+  have hr : r.map (algebraMap B (B ⧸ Q)) = q := by
+    ext n
+    rw [Polynomial.coeff_map, Polynomial.finset_sum_coeff]
+    simp only [Polynomial.coeff_monomial]
+    rw [Finset.sum_ite_eq']
+    simp only [Finset.mem_range_succ_iff]
+    split_ifs with hn
+    · rw [← Polynomial.coeff_map]
+      change g.coeff (n + j) = q.coeff n
+      rw [hq, Polynomial.coeff_X_pow_mul]
+    · rw [map_zero, eq_comm]
+      exact Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_not_le hn)
+  use a - r.eval b
+  have ha : ∀ g : G, g • a = a := MulSemiringAction.CharacteristicPolynomial.F_coeff_fixed b j
+  use ha
+  constructor
+  · rw [← Ideal.Quotient.eq_zero_iff_mem, ← Ideal.Quotient.algebraMap_eq,
+        ← Polynomial.coeff_map]
+    change g.coeff j ≠ 0
+    rwa [← zero_add j, hq, Polynomial.coeff_X_pow_mul]
+  · intro h
+    by_cases hh : h • Q = Q
+    · rw [if_pos hh, smul_sub, ha, map_sub, Ideal.Quotient.algebraMap_eq,
+          sub_eq_self, Ideal.Quotient.eq_zero_iff_mem, ← hh]
+      rw [Ideal.smul_mem_pointwise_smul_iff, ← Ideal.Quotient.eq_zero_iff_mem,
+          ← Ideal.Quotient.algebraMap_eq, ← Polynomial.eval₂_at_apply, ← Polynomial.eval_map, hr]
+      have hf : f.eval b = 0 :=
+        MulSemiringAction.CharacteristicPolynomial.F_eval_eq_zero b
+      replace hf : algebraMap B (B ⧸ Q) (f.eval b) = 0 := by
+        rw [hf, map_zero]
+      rw [← Polynomial.eval₂_at_apply, ← Polynomial.eval_map] at hf
+      change g.eval _ = 0 at hf
+      rw [hq, Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_X] at hf
+      refine eq_zero_of_ne_zero_of_mul_left_eq_zero (pow_ne_zero _ ?_) hf
+      rwa [Ne, Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem]
+    · rw [if_neg hh, map_zero, Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem]
+      have hr : r = ∑ i ∈ Finset.range (k + 1), Polynomial.monomial i (f.coeff (i + j)) := rfl
+      rw [Finset.sum_range_succ', zero_add] at hr
+      simp only [Polynomial.monomial_zero_left, ← Polynomial.monomial_mul_X,
+        ← Finset.sum_mul] at hr
+      rw [← Ideal.mem_inv_pointwise_smul_iff, hr, Polynomial.eval_add, Polynomial.eval_mul,
+          Polynomial.eval_X, Polynomial.eval_C]
+      rw [sub_add_cancel_right, neg_mem_iff]
+      apply Ideal.mul_mem_left
+      apply hbP
+      rw [Ne, inv_smul_eq_iff, eq_comm]
+      exact hh
 
-theorem keylemma [DecidableEq (Ideal B)] :
-    ∃ b : B, ∀ g : G, algebraMap B (B ⧸ Q) (g • b) = if g • Q = Q then 1 else 0 := by
-  classical
-  obtain ⟨_⟩ := nonempty_fintype G
-  have key := keylemma0 G Q
-  rw [Ideal.isCoprime_iff_exists] at key
-  obtain ⟨q, hq, p, hp, hqp⟩ := key
-  use p
-  intro g
+theorem lem2 [DecidableEq (Ideal B)] [Nontrivial B] (b₀ : B)
+    (hx : ∀ g : G, g • Q = Q → algebraMap B (B ⧸ Q) (g • b₀) = algebraMap B (B ⧸ Q) b₀) :
+    ∃ a b : B, (∀ g : G, g • a = a) ∧ (a ∉ Q) ∧
+    (∀ g : G, algebraMap B (B ⧸ Q) (g • b) =
+      algebraMap B (B ⧸ Q) (if g • Q = Q then a * b₀ else 0)) := by
+  obtain ⟨a, b, ha1, ha2, hb⟩ := lem1 G Q
+  refine ⟨a, b * b₀, ha1, ha2, fun g ↦ ?_⟩
+  rw [smul_mul', map_mul, hb]
+  specialize hb g
   split_ifs with hg
-  · rw [← eq_sub_iff_add_eq'] at hqp
-    rwa [hqp, smul_sub, smul_one, map_sub, map_one, sub_eq_self,
-        Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem, ← hg,
-        Ideal.smul_mem_pointwise_smul_iff]
-  · let s : Finset G := Finset.univ.filter (fun g ↦ g • Q ≠ Q)
-    change p ∈ ∏ g ∈ s, g • Q at hp
-    rw [eq_comm, ← inv_smul_eq_iff] at hg
-    have hs : g⁻¹ ∈ s := Finset.mem_filter.mpr ⟨Finset.mem_univ g⁻¹, hg⟩
-    have key := Finset.insert_erase hs
-    rw [← key, Finset.prod_insert (s.not_mem_erase g⁻¹)] at hp
-    rw [Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem]
-    rw [← Ideal.mem_inv_pointwise_smul_iff]
-    exact Ideal.mul_le_right hp
+  · rw [map_mul, hx g hg]
+  · rw [map_zero, zero_mul]
 
 open Polynomial in
-omit [P.IsPrime] [IsFractionRing (A ⧸ P) K] in
-theorem fullHom_surjective2
-    (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = algebraMap A B a)
+theorem lem3 {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [NoZeroDivisors S]
+    {a : S} {i j : ℕ} {p : Polynomial R} (h : p.map (algebraMap R S) = (X - C a) ^ i * X ^ j)
+    (f : S ≃ₐ[R] S) (hi : i ≠ 0) :
+    f a = a := by
+  by_cases ha : a = 0
+  · rw [ha, map_zero]
+  have key := congrArg (map f.toAlgHom.toRingHom) h
+  rw [map_map, Polynomial.map_mul, Polynomial.map_pow, Polynomial.map_pow, Polynomial.map_sub,
+      map_X, map_C] at key
+  rw [← f.toAlgHom.comp_algebraMap] at h
+  replace key := congrArg (eval a) (key.symm.trans h)
+  simp only [eval_mul, eval_pow, eval_sub, eval_X, eval_C, sub_self, zero_pow hi, zero_mul,
+    mul_eq_zero, or_iff_left (pow_ne_zero j ha), pow_eq_zero_iff hi, sub_eq_zero] at key
+  exact key.symm
+
+omit [P.IsPrime] [IsFractionRing (B ⧸ Q) L]
+open Polynomial in
+theorem lem4 (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = algebraMap A B a)
     (f : L ≃ₐ[K] L) (b : B ⧸ Q)
     (hx : ∀ g : MulAction.stabilizer G Q, stabilizerAction G P Q g b = b) :
     f (algebraMap (B ⧸ Q) L b) = (algebraMap (B ⧸ Q) L b) := by
   classical
-  obtain ⟨_⟩ := nonempty_fintype G
-  have key : ∃ b' : B, ∀ g : G, algebraMap B (B ⧸ Q) (g • b') = if g • Q = Q then b else 0 := by
-    revert hx
-    refine Quotient.inductionOn' b ?_
-    intro b hx
-    obtain ⟨b', hb'⟩ := keylemma G Q
-    use b * b'
-    intro g
-    rw [smul_mul', map_mul, hb']
-    split_ifs with hg
-    · rw [mul_one]
-      exact hx ⟨g, hg⟩
-    · rw [mul_zero]
-  obtain ⟨b', hb'⟩ := key
-  have key : (b' : B ⧸ Q) = b := by
-    simpa using hb' 1
-  subst key
-  have key := MulSemiringAction.CharacteristicPolynomial.M_spec_map hAB b'
+  cases nonempty_fintype G
+  revert hx
+  refine Quotient.inductionOn' b ?_
+  intro b₀ hx
+  change f (algebraMap (B ⧸ Q) L (algebraMap B (B ⧸ Q) b₀)) =
+    (algebraMap (B ⧸ Q) L (algebraMap B (B ⧸ Q) b₀))
+  cases subsingleton_or_nontrivial B
+  · rw [Subsingleton.elim b₀ 0, map_zero, map_zero, map_zero]
+  obtain ⟨a, b, ha1, ha2, hb⟩ := lem2 G Q b₀ (fun g hg ↦ hx ⟨g, hg⟩)
+  have key := MulSemiringAction.CharacteristicPolynomial.M_spec_map hAB b
   replace key := congrArg (map (algebraMap B (B ⧸ Q))) key
-  rw [map_map, ← IsScalarTower.algebraMap_eq,
-      IsScalarTower.algebraMap_eq A (A ⧸ P) (B ⧸ Q), ← map_map] at key
-  rw [MulSemiringAction.CharacteristicPolynomial.F] at key
-  rw [finprod_eq_prod_of_fintype, Polynomial.map_prod] at key
-  simp only [Polynomial.map_sub, map_X, map_C, hb'] at key
-  have key₀ : ∀ g : G, (X - C (if g • Q = Q then (b' : B ⧸ Q) else 0) : Polynomial (B ⧸ Q)) =
-      if g • Q = Q then X - C (b' : B ⧸ Q) else X := by
+  rw [map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A (A ⧸ P) (B ⧸ Q),
+      ← map_map, MulSemiringAction.CharacteristicPolynomial.F, finprod_eq_prod_of_fintype,
+      Polynomial.map_prod] at key
+  have key₀ : ∀ g : G, (X - C (g • b)).map (algebraMap B (B ⧸ Q)) =
+      if g • Q = Q then X - C (algebraMap B (B ⧸ Q) (a * b₀)) else X := by
     intro g
-    split_ifs <;> simp
+    rw [Polynomial.map_sub, map_X, map_C, hb]
+    split_ifs
+    · rfl
+    · rw [map_zero, map_zero, sub_zero]
   simp only [key₀] at key
-  simp [Finset.prod_ite] at key
-  let s : Finset G := (Finset.univ : Finset G).filter (fun g ↦ g • Q = Q)
-  have hs : ∀ g : G, g ∈ s ↔ g • Q = Q := fun g ↦ by simp [s]
-
+  rw [Finset.prod_ite, Finset.prod_const, Finset.prod_const] at key
   replace key := congrArg (map (algebraMap (B ⧸ Q) L)) key
-  rw [map_map, ← IsScalarTower.algebraMap_eq,
-      IsScalarTower.algebraMap_eq (A ⧸ P) K L, ← map_map] at key
-  rw [Polynomial.map_mul, Polynomial.map_pow, Polynomial.map_pow, Polynomial.map_sub,
+  rw [map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq (A ⧸ P) K L,
+      ← map_map, Polynomial.map_mul, Polynomial.map_pow, Polynomial.map_pow, Polynomial.map_sub,
       map_X, map_C] at key
-  have key₀ := congrArg (Polynomial.map (f.toAlgHom : L →+* L)) key
-  rw [Polynomial.map_mul, Polynomial.map_pow, Polynomial.map_pow, Polynomial.map_sub,
-      map_X, map_C] at key₀
-  rw [map_map _ (f.toAlgHom : L →+* L), f.toAlgHom.comp_algebraMap] at key₀
-  replace key := key.symm.trans key₀
-  by_cases h : (b' : B ⧸ Q) = 0
-  · simp [h]
-  have hs' : s.card ≠ 0 := Finset.card_ne_zero_of_mem ((hs 1).mpr (one_smul G Q))
-  replace key := congrArg
-    (Polynomial.eval ((algebraMap (B ⧸ Q) L) ((algebraMap B (B ⧸ Q) b')))) key
-  simp only [eval_mul ,eval_pow, eval_sub, eval_X, eval_C] at key
-  simp only [Ideal.Quotient.algebraMap_eq] at key
-  rw [sub_self, zero_pow hs', zero_mul, eq_comm, mul_eq_zero, or_iff_left] at key
-  · replace key := pow_eq_zero key
-    rw [sub_eq_zero] at key
-    exact key.symm
-  · apply mt pow_eq_zero
-    rw [NoZeroSMulDivisors.algebraMap_eq_zero_iff]
-    exact h
+  replace key := lem3 key f (Finset.card_ne_zero_of_mem (Finset.mem_filter.mpr
+    ⟨Finset.mem_univ 1, one_smul G Q⟩))
+  simp only [map_mul] at key
+  obtain ⟨a, rfl⟩ := hAB a ha1
+  rwa [← IsScalarTower.algebraMap_apply A B (B ⧸ Q),
+      IsScalarTower.algebraMap_apply A (A ⧸ P) (B ⧸ Q),
+      ← IsScalarTower.algebraMap_apply (A ⧸ P) (B ⧸ Q) L,
+      IsScalarTower.algebraMap_apply (A ⧸ P) K L,
+      f.commutes, mul_right_inj'] at key
+  rw [Ne, NoZeroSMulDivisors.algebraMap_eq_zero_iff,
+      NoZeroSMulDivisors.algebraMap_eq_zero_iff]
+  rw [← Ideal.Quotient.eq_zero_iff_mem, ← Ideal.Quotient.algebraMap_eq,
+      ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply A (A ⧸ P) (B ⧸ Q)] at ha2
+  contrapose! ha2
+  rw [ha2, map_zero]
+
+end redo_part_b
 
 noncomputable def fullHom : MulAction.stabilizer G Q →* (L ≃ₐ[K] L) :=
   MonoidHom.comp (liftHom (A ⧸ P) (B ⧸ Q) K L) (stabilizerAction G P Q)
@@ -736,7 +794,7 @@ theorem fullHom_surjective1
     rwa [Ne, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
   simp only [← IsScalarTower.algebraMap_apply (A ⧸ P) K L] at hx ⊢
   simp only [div_left_inj' key] at hx ⊢
-  refine fullHom_surjective2 G P Q K L hAB f b ?_
+  refine lem4 G P Q K L hAB f b ?_
   intro g
   specialize hx g
   apply IsFractionRing.injective (B ⧸ Q) L
