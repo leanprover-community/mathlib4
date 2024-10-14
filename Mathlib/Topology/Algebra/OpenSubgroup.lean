@@ -455,7 +455,7 @@ end OpenNormalSubgroup
 end
 
 /-!
-## The Open Normal Subgroup in a Clopen Neighborhood of One
+## The Open Subgroup in a Clopen Neighborhood of One
 This section define `OpenSubgroupSubClopenNhdsOfOne` (`OpenNormalSubgroupSubClopenNhdsOfOne`),
 which can pick an open subgroup contained in a clopen neighborhood of `1`.
 -/
