@@ -1349,15 +1349,12 @@ theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a
   convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
   rw [symm_apply_apply]
 
-theorem small_of_exists_injection {f : Ordinal.{u} → Ordinal.{v}} (h : f.Injective)
-    {S : Set Ordinal.{u}} [hs : Small.{u} S] : Small.{v} S := by
-  exact @Small.trans_univLE S hs (univLE_of_injective h)
-
 theorem IsNormal.map_iSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
     [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
-  have : Small.{u} (range g) := bddAbove_iff_small.mp hg
-  have : Small.{v} (range g) := small_of_exists_injection H.strictMono.injective
+  have := bddAbove_iff_small.mp hg
+  have := univLE_of_injective H.strictMono.injective
+  have := Small.trans_univLE.{u, v} (range g)
   have hfg : BddAbove (range (f ∘ g)) := bddAbove_iff_small.mpr <| by
     rw [range_comp]
     exact small_image f (range g)
@@ -1489,7 +1486,7 @@ theorem bsup_le_iff {o f a} : bsup.{u, v} o f ≤ a ↔ ∀ i h, f i h ≤ a :=
   sup_le_iff.trans
     ⟨fun h i hi => by
       rw [← familyOfBFamily_enum o f]
-      exact h _, fun h i => h _ _⟩
+      exact h _, fun h _ => h _ _⟩
 
 theorem bsup_le {o : Ordinal} {f : ∀ b < o, Ordinal} {a} :
     (∀ i h, f i h ≤ a) → bsup.{u, v} o f ≤ a :=
@@ -2388,7 +2385,7 @@ theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
 set_option linter.deprecated false in
 @[deprecated iSup_add_nat (since := "2024-08-27")]
 theorem sup_add_nat (o : Ordinal) : (sup fun n : ℕ => o + n) = o + ω :=
-  (add_isNormal o).apply_omega0
+  (isNormal_add_right o).apply_omega0
 
 @[simp]
 theorem iSup_mul_nat (o : Ordinal) : ⨆ n : ℕ, o * n = o * ω := by
@@ -2403,7 +2400,7 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
   rcases eq_zero_or_pos o with (rfl | ho)
   · rw [zero_mul]
     exact sup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
-  · exact (isNormal_mul_right ho).apply_omega0
+  · exact (mul_isNormal ho).apply_omega0
 
 end Ordinal
 
