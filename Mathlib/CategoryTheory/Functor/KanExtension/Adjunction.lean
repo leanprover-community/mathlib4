@@ -74,8 +74,8 @@ lemma lanObjObjIsoColimit_ι_inv
 lemma lanObjObjIsoColimit_lanUnit_map_hom
     (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) (f : CostructuredArrow L X) :
     (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom ≫ (L.lanObjObjIsoColimit F X).hom =
-    Limits.colimit.ι (CostructuredArrow.proj L X ⋙ F) f := by
-  exact LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
+    Limits.colimit.ι (CostructuredArrow.proj L X ⋙ F) f :=
+  LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
     (isPointwiseLeftKanExtensionLanUnit L F X) f
 
 variable (H) in
@@ -202,8 +202,8 @@ lemma ranObjObjIsoLimit_hom_π
 lemma ranObjObjIsoLimit_inv_π
     (F : C ⥤ H) [HasPointwiseRightKanExtension L F] (X : D) (f : StructuredArrow X L) :
     (L.ranObjObjIsoLimit F X).inv ≫ (L.ran.obj F).map f.hom ≫ (L.ranCounit.app F).app f.right =
-    Limits.limit.π _ f := by
-  exact RightExtension.IsPointwiseRightKanExtensionAt.isoLimit_inv_π (F := F)
+    Limits.limit.π _ f :=
+  RightExtension.IsPointwiseRightKanExtensionAt.isoLimit_inv_π (F := F)
     (isPointwiseRightKanExtensionRanCounit L F X) f
 
 variable (H) in
