@@ -166,7 +166,8 @@ scoped notation "ω_ " => omega
 /-- `ω₁` is the first uncountable ordinal. -/
 scoped notation "ω₁" => ω_ 1
 
-theorem omega_eq_omega' (o : Ordinal) : ω_ o = omega' (ω + o) :=
+@[simp]
+theorem omega'_omega0_add (o : Ordinal) : omega' (ω + o) = ω_ o :=
   rfl
 
 theorem isInitial_omega (o : Ordinal) : IsInitial (ω_ o) :=
@@ -382,6 +383,11 @@ scoped notation "ℵ_ " => aleph
 /-- `ℵ₁` is the first uncountable ordinal. -/
 scoped notation "ℵ₁" => ℵ_ 1
 
+@[simp]
+theorem aleph'_omega0_add (o : Ordinal) : aleph' (ω + o) = ℵ_ o :=
+  rfl
+
+@[deprecated (since := "2024-10-14")]
 theorem aleph_eq_aleph' (o : Ordinal) : ℵ_ o = aleph' (ω + o) :=
   rfl
 
