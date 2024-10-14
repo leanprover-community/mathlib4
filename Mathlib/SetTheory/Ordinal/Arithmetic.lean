@@ -1361,11 +1361,8 @@ theorem IsNormal.map_iSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsN
   have hfg : BddAbove (range (f ∘ g)) := bddAbove_iff_small.mpr <| by
     rw [range_comp]
     exact small_image f (range g)
-  change f (⨆ i, g i) ≤ a ↔ ⨆ i, (f ∘ g) i ≤ a
-  rw [ciSup_le_iff hfg]
-  simp_all only [Function.comp]
-  rw [H.le_set' Set.univ Set.univ_nonempty g] <;>
-    simp [ciSup_le_iff hg]
+  change _ ↔ ⨆ i, (f ∘ g) i ≤ a
+  rw [ciSup_le_iff hfg, H.le_set' _ Set.univ_nonempty g] <;> simp [ciSup_le_iff hg]
 
 -- TODO: make sSup version.
 theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
