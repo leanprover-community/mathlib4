@@ -46,7 +46,7 @@ section set_as_total_function
 def isFun (X : Set (α × α)) : Prop :=
   ∀ x : α, ∃! y : α, (x, y) ∈ X
 
-theorem isPartialFun_of_isFun {X : Set (α × α)} (hX : isFun X) : isPartialFun X := by
+theorem isFun.isPartialFun {X : Set (α × α)} (hX : isFun X) : isPartialFun X := by
   intro x y z ⟨hxy, hxz⟩
   have hy := (hX x).choose_spec.2 y hxy
   have hz := (hX x).choose_spec.2 z hxz
