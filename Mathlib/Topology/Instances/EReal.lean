@@ -187,8 +187,7 @@ variable {α : Type*} {u v : α → EReal}
 lemma add_iInf_le_iInf_add : (⨅ x, u x) + ⨅ x, v x ≤ ⨅ x, (u + v) x :=
   le_iInf fun i ↦ add_le_add (iInf_le u i) (iInf_le v i)
 
-lemma iSup_add_le_add_iSup :
-    ⨆ x, (u + v) x ≤ (⨆ x, u x) + ⨆ x, v x :=
+lemma iSup_add_le_add_iSup : ⨆ x, (u + v) x ≤ (⨆ x, u x) + ⨆ x, v x :=
   iSup_le fun i ↦ add_le_add (le_iSup u i) (le_iSup v i)
 
 /-! ### Liminfs and Limsups -/
