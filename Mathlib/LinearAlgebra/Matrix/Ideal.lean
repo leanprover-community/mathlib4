@@ -1,0 +1,189 @@
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang, Wojciech Nawrocki
+-/
+import Mathlib.Data.Matrix.Basis
+import Mathlib.RingTheory.TwoSidedIdeal.Operations
+
+/-!
+# Ideals in a matrix ring
+
+This file defines left (resp. two-sided) ideals in a matrix semiring (resp. ring)
+over left (resp. two-sided) ideals in the base semiring (resp. ring).
+
+## Main results
+
+* `TwoSidedIdeal.equivMatricesOver` and `TwoSidedIdeal.orderIsoMatricesOver`
+  establish an order isomorphism between two-sided ideals in `R` and those in `Mₙ(R)`.
+-/
+
+/-! ### Left ideals in a matrix ring -/
+
+namespace Ideal
+open Matrix
+
+variable {R : Type*} [Semiring R]
+         (n : Type*) [Fintype n] [DecidableEq n]
+
+/-- The left ideal of matrices with entries in `I ≤ R`. -/
+def matricesOver (I : Ideal R) : Ideal (Matrix n n R) where
+  carrier := { M | ∀ i j, M i j ∈ I }
+  add_mem' ha hb i j := I.add_mem (ha i j) (hb i j)
+  zero_mem' _ _ := I.zero_mem
+  smul_mem' M N hN := by
+    intro i j
+    rw [smul_eq_mul, mul_apply]
+    apply sum_mem
+    intro k _
+    apply I.mul_mem_left _ (hN k j)
+
+@[simp]
+theorem mem_matricesOver (I : Ideal R) (M : Matrix n n R) :
+    M ∈ I.matricesOver n ↔ ∀ i j, M i j ∈ I :=
+  by rfl
+
+def matricesOver_mono {I J : Ideal (Matrix n n R)} :
+    I ≤ J → I.matricesOver n ≤ J.matricesOver n :=
+  fun IJ _ MI i j => IJ (MI i j)
+
+@[simp]
+theorem matricesOver_bot : (⊥ : Ideal R).matricesOver n = ⊥ := by
+  ext M
+  simp only [mem_matricesOver, mem_bot]
+  constructor
+  · intro H; ext; apply H
+  · intro H; simp [H]
+
+@[simp]
+theorem matricesOver_top : (⊤ : Ideal R).matricesOver n = ⊤ := by
+  ext; simp
+
+end Ideal
+
+/-! ### Two-sided ideals in a matrix ring -/
+
+namespace TwoSidedIdeal
+open Matrix
+
+variable {R : Type*} [Ring R]
+         (n : Type*) [Fintype n]
+
+/-- The two-sided ideal of matrices with entries in `I ≤ R`. -/
+def matricesOver (I : TwoSidedIdeal R) : TwoSidedIdeal (Matrix n n R) :=
+  TwoSidedIdeal.mk' { M | ∀ i j, M i j ∈ I }
+    (fun _ _ => I.zero_mem)
+    (fun ha hb i j => I.add_mem (ha i j) (hb i j))
+    (fun ha i j => I.neg_mem (ha i j))
+    (fun ha i j => by
+      rw [mul_apply]
+      apply sum_mem
+      intro k _
+      apply I.mul_mem_left _ _ (ha k j))
+    (fun ha i j => by
+      rw [mul_apply]
+      apply sum_mem
+      intro k _
+      apply I.mul_mem_right _ _ (ha i k))
+
+@[simp]
+lemma mem_matricesOver (I : TwoSidedIdeal R) (M : Matrix n n R) :
+    M ∈ I.matricesOver n ↔ ∀ i j, M i j ∈ I := by
+  simp [matricesOver]
+
+def matricesOver_mono {I J : TwoSidedIdeal R} :
+    I ≤ J → I.matricesOver n ≤ J.matricesOver n :=
+  fun IJ _ MI i j => IJ (MI i j)
+
+@[simp]
+theorem matricesOver_bot : (⊥ : TwoSidedIdeal R).matricesOver n = ⊥ := by
+  ext M
+  simp only [mem_matricesOver, mem_bot]
+  constructor
+  · intro H; ext; apply H
+  · intro H; simp [H]
+
+@[simp]
+theorem matricesOver_top : (⊤ : TwoSidedIdeal R).matricesOver n = ⊤ := by
+  ext; simp
+
+theorem asIdeal_matricesOver [DecidableEq n] (I : TwoSidedIdeal R) :
+    asIdeal (I.matricesOver n) = (asIdeal I).matricesOver n := by
+  ext; simp
+
+variable {n : Type*} [Fintype n] [DecidableEq n]
+
+/--
+Two-sided ideals in `R` correspond bijectively to those in `Mₙ(R)`.
+Given an ideal `I ≤ R`, we send it to `Mₙ(I)`.
+Given an ideal `J ≤ Mₙ(R)`, we send it to `{x₀₀ | x ∈ J}`.
+-/
+@[simps]
+def equivMatricesOver (o : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n R) where
+  toFun I := I.matricesOver n
+  invFun J := TwoSidedIdeal.mk'
+    { x : R | ∃ N ∈ J, x = N o o }
+    ⟨0, J.zero_mem, rfl⟩
+    (by rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩; exact ⟨x + y, J.add_mem hx hy, rfl⟩)
+    (by rintro _ ⟨x, hx, rfl⟩; exact ⟨-x, J.neg_mem hx, rfl⟩)
+    (by
+      rintro x _ ⟨y, hy, rfl⟩
+      exact ⟨diagonal (fun _ ↦ x) * y, J.mul_mem_left _ _ hy, by simp⟩)
+    (by
+      rintro _ y ⟨x, hx, rfl⟩
+      exact ⟨x * diagonal (fun _ ↦ y), J.mul_mem_right _ _ hx, by simp⟩)
+  right_inv J := SetLike.ext fun x ↦ by
+    simp only [mem_mk', Set.mem_image, SetLike.mem_coe, mem_matricesOver]
+    constructor
+    · intro h
+      choose y hy1 hy2 using h
+      rw [matrix_eq_sum_stdBasisMatrix x]
+      refine sum_mem fun i _ ↦ sum_mem fun j _ ↦ ?_
+      suffices
+          stdBasisMatrix i j (x i j) =
+          stdBasisMatrix i o 1 * y i j * stdBasisMatrix o j 1 by
+        rw [this]
+        exact J.mul_mem_right _ _ (J.mul_mem_left _ _ <| hy1 _ _)
+      ext a b
+      by_cases hab : a = i ∧ b = j
+      · rcases hab with ⟨ha, hb⟩
+        subst ha hb
+        simp only [stdBasisMatrix, and_self, ↓reduceIte, StdBasisMatrix.mul_right_apply_same,
+          StdBasisMatrix.mul_left_apply_same, one_mul, mul_one]
+        exact hy2 a b
+      · conv_lhs =>
+          dsimp [stdBasisMatrix]
+          rw [if_neg (by tauto)]
+        rw [not_and_or] at hab
+        rcases hab with ha | hb
+        · rw [mul_assoc, StdBasisMatrix.mul_left_apply_of_ne (h := ha)]
+        · rw [StdBasisMatrix.mul_right_apply_of_ne (hbj := hb)]
+    · intro hx i j
+      refine ⟨stdBasisMatrix o i 1 * x * stdBasisMatrix j o 1,
+        J.mul_mem_right _ _ (J.mul_mem_left _ _ hx), ?_⟩
+      rw [StdBasisMatrix.mul_right_apply_same, StdBasisMatrix.mul_left_apply_same,
+        mul_one, one_mul]
+  left_inv I := SetLike.ext fun x ↦ by
+    simp only [mem_mk', Set.mem_image, SetLike.mem_coe, mem_matricesOver]
+    constructor
+    · intro h
+      choose y hy1 hy2 using h
+      exact hy2 ▸ hy1 _ _
+    · intro h
+      exact ⟨of fun _ _ => x, by simp [h], rfl⟩
+
+@[simps!]
+def orderIsoMatricesOver (o : n) : TwoSidedIdeal R ≃o TwoSidedIdeal (Matrix n n R) := {
+  equivMatricesOver o with
+  map_rel_iff' := @fun I J => by
+    simp only [equivMatricesOver_apply]
+    constructor
+    · intro le x xI
+      specialize @le (of fun _ _ => x) (by simp [xI])
+      letI : Inhabited n := ⟨o⟩
+      simpa using le
+    · intro IJ M MI i j
+      exact IJ <| MI i j
+}
+
+end TwoSidedIdeal
