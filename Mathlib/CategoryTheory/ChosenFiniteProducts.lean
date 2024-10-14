@@ -303,13 +303,47 @@ theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
   simp only [Category.assoc, prodComparison_fst, tensorHom_fst, prodComparison_fst_assoc,
     prodComparison_snd, tensorHom_snd, prodComparison_snd_assoc, ← F.map_comp]
 
-/-- If the product comparison morphism is an iso, its inverse is natural. -/
+/-- Naturality of the `prodComparison` morphism in the right argument. -/
 @[reassoc]
-theorem prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodComparison F A B)]
-    [IsIso (prodComparison F A' B')] :
+theorem prodComparison_natural_whiskerLeft (g : B ⟶ B') :
+    F.map (A ◁ g) ≫ prodComparison F A B' =
+      prodComparison F A B ≫ (F.obj A ◁ F.map g) := by
+  rw [← id_tensorHom, prodComparison_natural, Functor.map_id]
+  rfl
+
+/-- Naturality of the `prodComparison` morphism in the left argument. -/
+@[reassoc]
+theorem prodComparison_natural_whiskerRight (f : A ⟶ A') :
+    F.map (f ▷ B) ≫ prodComparison F A' B =
+      prodComparison F A B ≫ (F.map f ▷ F.obj B) := by
+  rw [← tensorHom_id, prodComparison_natural, Functor.map_id]
+  rfl
+
+section
+variable [IsIso (prodComparison F A B)]
+
+/-- If the product comparison morphism is an iso, its inverse is natural in both argument. -/
+@[reassoc]
+theorem prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodComparison F A' B')] :
     inv (prodComparison F A B) ≫ F.map (f ⊗ g) =
       (F.map f ⊗ F.map g) ≫ inv (prodComparison F A' B') := by
   rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, prodComparison_natural]
+
+/-- If the product comparison morphism is an iso, its inverse is natural in the right argument. -/
+@[reassoc]
+theorem prodComparison_inv_natural_whiskerLeft (g : B ⟶ B') [IsIso (prodComparison F A B')] :
+    inv (prodComparison F A B) ≫ F.map (A ◁ g) =
+      (F.obj A ◁ F.map g) ≫ inv (prodComparison F A B') := by
+  rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, prodComparison_natural_whiskerLeft]
+
+/-- If the product comparison morphism is an iso, its inverse is natural in the left argument. -/
+@[reassoc]
+theorem prodComparison_inv_natural_whiskerRight (f : A ⟶ A') [IsIso (prodComparison F A' B)] :
+    inv (prodComparison F A B) ≫ F.map (f ▷ B) =
+      (F.map f ▷ F.obj B) ≫ inv (prodComparison F A' B) := by
+  rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, prodComparison_natural_whiskerRight]
+
+end
 
 /-- The product comparison morphism from `F(A ⊗ -)` to `FA ⊗ F-`, whose components are given by
 `prodComparison`. -/
