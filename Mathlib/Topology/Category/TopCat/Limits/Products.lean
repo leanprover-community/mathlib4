@@ -51,7 +51,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan �
     dsimp
     rw [ContinuousMap.coe_mk, ← h ⟨i⟩]
     rfl
-  fac s j := rfl
+  fac _ _ := rfl
 
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
@@ -224,7 +224,7 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
   · rintro ⟨y, rfl⟩
     simp_rw [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
     -- sizable changes in this proof after #13170
-    erw  [← comp_apply, ← comp_apply]
+    rw [← comp_apply, ← comp_apply]
     simp_rw [Limits.prod.map_fst,
       Limits.prod.map_snd, comp_apply]
     exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩

@@ -159,7 +159,7 @@ See note [reducible non-instances]. -/
 abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
   le x y := x = y ∨ r x y
   lt := r
-  le_refl x := Or.inl rfl
+  le_refl _ := Or.inl rfl
   le_trans x y z h₁ h₂ :=
     match y, z, h₁, h₂ with
     | _, _, Or.inl rfl, h₂ => h₂
@@ -185,7 +185,7 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x 
   { __ := partialOrderOfSO r
     le_total := fun x y =>
       match y, trichotomous_of r x y with
-      | y, Or.inl h => Or.inl (Or.inr h)
+      | _, Or.inl h => Or.inl (Or.inr h)
       | _, Or.inr (Or.inl rfl) => Or.inl (Or.inl rfl)
       | _, Or.inr (Or.inr h) => Or.inr (Or.inr h),
     toMin := minOfLe,

@@ -134,7 +134,7 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
   left_inv' := fun ⟨xval, xprop⟩ _ => by
     rw [Subtype.mk_eq_mk, update_eq_iff]
     exact ⟨max_eq_left xprop, fun i _ => rfl⟩
-  right_inv' x hx := update_eq_iff.2 ⟨max_eq_left hx, fun i _ => rfl⟩
+  right_inv' _ hx := update_eq_iff.2 ⟨max_eq_left hx, fun _ _ => rfl⟩
   source_eq := rfl
   uniqueDiffOn' := by
     have : UniqueDiffOn ℝ _ :=
@@ -155,7 +155,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
   source := univ
   target := { x | ∀ i, 0 ≤ x i }
   map_source' x _ := x.property
-  map_target' x _ := mem_univ _
+  map_target' _ _ := mem_univ _
   left_inv' x _ := by ext i; simp only [Subtype.coe_mk, x.2 i, max_eq_left]
   right_inv' x hx := by ext1 i; simp only [hx i, max_eq_left]
   source_eq := rfl
