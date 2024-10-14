@@ -1367,10 +1367,7 @@ theorem iSup_le_iff_of_small {ι : Type u} {f : ι → Ordinal.{v}} [Small.{v} �
 
 theorem small_of_exists_injection {f : Ordinal.{u} → Ordinal.{v}} (h : f.Injective)
     {S : Set Ordinal.{u}} [hs : Small.{u} S] : Small.{v} S := by
-  rcases hs.equiv_small with ⟨α, ⟨hα⟩⟩
-  rcases univLE_of_injective h α with ⟨β, ⟨hβ⟩⟩
-  rw [small_iff]
-  exact ⟨β, ⟨hα.trans hβ⟩⟩
+  exact @Small.trans_univLE S hs (univLE_of_injective h)
 
 -- TODO: make sSup version.
 theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
