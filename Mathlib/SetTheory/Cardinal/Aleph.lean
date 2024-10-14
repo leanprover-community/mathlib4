@@ -200,7 +200,7 @@ theorem omega0_lt_omega1 : ω < ω₁ := by
 alias omega_lt_omega1 := omega0_lt_omega1
 
 theorem isNormal_omega : IsNormal omega :=
-  isNormal_omega'.trans (add_isNormal _)
+  isNormal_omega'.trans (isNormal_add_right _)
 
 end Ordinal
 
