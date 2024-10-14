@@ -165,9 +165,13 @@ theorem inf_iSup_unifEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x �
   intro μ
   by_cases hμ : μ ∈ m.support; swap
   · simp only [Finsupp.not_mem_support_iff.mp hμ, p.zero_mem]
+  have hm₂_aux := hm₂
+  simp_rw [Module.End.mem_unifEigenspace] at hm₂_aux
+  choose l hlk hl using hm₂_aux
+  let l₀ : ℕ := m.support.sup l
   have h_comm : ∀ (μ₁ μ₂ : K),
-    Commute ((f - algebraMap K (End K V) μ₁) ^ finrank K V)
-            ((f - algebraMap K (End K V) μ₂) ^ finrank K V) := fun μ₁ μ₂ ↦
+    Commute ((f - algebraMap K (End K V) μ₁) ^ l₀)
+            ((f - algebraMap K (End K V) μ₂) ^ l₀) := fun μ₁ μ₂ ↦
     ((Commute.sub_right rfl <| Algebra.commute_algebraMap_right _ _).sub_left
       (Algebra.commute_algebraMap_left _ _)).pow_pow _ _
   let g : End K V := (m.support.erase μ).noncommProd _ fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂
@@ -180,18 +184,18 @@ theorem inf_iSup_unifEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x �
     rintro μ' hμ'
     split_ifs with hμμ'
     · rw [hμμ']
-    replace hm₂ : ((f - algebraMap K (End K V) μ') ^ finrank K V) (m μ') = 0 := by
+    have hl₀ : ((f - algebraMap K (End K V) μ') ^ l₀) (m μ') = 0 := by
       sorry
       -- obtain ⟨k, hk⟩ := (mem_iSup_of_chain _ _).mp (hm₂ μ')
       -- simpa only [End.mem_genEigenspace] using
       --   Module.End.genEigenspace_le_genEigenspace_finrank _ _ k hk
     have : _ = g := (m.support.erase μ).noncommProd_erase_mul (Finset.mem_erase.mpr ⟨hμμ', hμ'⟩)
-      (fun μ ↦ (f - algebraMap K (End K V) μ) ^ finrank K V) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
-    rw [← this, LinearMap.mul_apply, hm₂, _root_.map_zero]
+      (fun μ ↦ (f - algebraMap K (End K V) μ) ^ l₀) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
+    rw [← this, LinearMap.mul_apply, hl₀, _root_.map_zero]
   have hg₁ : MapsTo g p p := Finset.noncommProd_induction _ _ _ (fun g' : End K V ↦ MapsTo g' p p)
       (fun f₁ f₂ ↦ MapsTo.comp) (mapsTo_id _) fun μ' _ ↦ by
     suffices MapsTo (f - algebraMap K (End K V) μ') p p by
-      simp only [LinearMap.coe_pow]; exact this.iterate (finrank K V)
+      simp only [LinearMap.coe_pow]; exact this.iterate l₀
     intro x hx
     rw [LinearMap.sub_apply, algebraMap_end_apply]
     exact p.sub_mem (h _ hx) (smul_mem p μ' hx)
@@ -206,7 +210,8 @@ theorem inf_iSup_unifEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x �
       rw [← Finset.supIndep_iff_disjoint_erase]
       simpa only [End.genEigenspace_def] using
         Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
-    · simpa only [End.genEigenspace_def] using this.supIndep' (m.support.erase μ)
+    · have := this.supIndep' (m.support.erase μ)
+      simpa only [End.genEigenspace_def] using this.supIndep' (m.support.erase μ)
   have hg₄ : SurjOn g
       ↑(p ⊓ f.unifEigenspace μ k) ↑(p ⊓ f.unifEigenspace μ k) := by
     have : MapsTo g
