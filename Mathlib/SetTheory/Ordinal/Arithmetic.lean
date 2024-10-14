@@ -1372,14 +1372,8 @@ theorem small_of_exists_injection {f : Ordinal.{u} → Ordinal.{v}} (h : f.Injec
 -- TODO: make sSup version.
 theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
-    f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
-  haveI : Small.{v} (range g) := small_of_exists_injection H.strictMono.injective
-  rw [H.le_set' Set.univ Set.univ_nonempty g]
-  · rw [← iSup_range', Ordinal.iSup_le_iff_of_small]
-    simp
-  · intro o
-    rw [Ordinal.iSup_le_iff_of_small]
-    simp
+    f (⨆ i, g i) = ⨆ i, f (g i) :=
+  H.map_iSup_bddAbove g (bddAbove_of_small _)
 
 theorem IsNormal.map_iSup_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
