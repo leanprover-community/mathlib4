@@ -128,7 +128,7 @@ lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full 
 
 /-- If the unit is an isomorphism, then the left adjoint is fully faithful. -/
 noncomputable def fullyFaithfulLOfIsIsoUnit [IsIso h.unit] : L.FullyFaithful where
-  preimage {X Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
+  preimage {_ Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
 
 /-- If each component of the counit is an epimorphism, then the right adjoint is faithful. -/
 lemma faithful_R_of_epi_counit_app [∀ X, Epi (h.counit.app X)] : R.Faithful where

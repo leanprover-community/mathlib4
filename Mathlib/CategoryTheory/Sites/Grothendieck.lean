@@ -207,8 +207,8 @@ See [MM92] Chapter III, Section 2, example (a), or
 https://en.wikipedia.org/wiki/Grothendieck_topology#The_discrete_and_indiscrete_topologies
 -/
 def trivial : GrothendieckTopology C where
-  sieves X := {⊤}
-  top_mem' X := rfl
+  sieves _ := {⊤}
+  top_mem' _ := rfl
   pullback_stable' X Y S f hf := by
     rw [Set.mem_singleton_iff] at hf ⊢
     simp [hf]
@@ -221,7 +221,7 @@ def trivial : GrothendieckTopology C where
 See https://en.wikipedia.org/wiki/Grothendieck_topology#The_discrete_and_indiscrete_topologies.
 -/
 def discrete : GrothendieckTopology C where
-  sieves X := Set.univ
+  sieves _ := Set.univ
   top_mem' := by simp
   pullback_stable' X Y f := by simp
   transitive' := by simp
@@ -241,9 +241,9 @@ theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : 
 /-- See <https://stacks.math.columbia.edu/tag/00Z6> -/
 instance : PartialOrder (GrothendieckTopology C) :=
   { instLEGrothendieckTopology with
-    le_refl := fun J₁ => le_def.mpr le_rfl
-    le_trans := fun J₁ J₂ J₃ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
-    le_antisymm := fun J₁ J₂ h₁₂ h₂₁ => GrothendieckTopology.ext (le_antisymm h₁₂ h₂₁) }
+    le_refl := fun _ => le_def.mpr le_rfl
+    le_trans := fun _ _ _ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
+    le_antisymm := fun _ _ h₁₂ h₂₁ => GrothendieckTopology.ext (le_antisymm h₁₂ h₂₁) }
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
 instance : InfSet (GrothendieckTopology C) where
@@ -323,7 +323,7 @@ See https://ncatlab.org/nlab/show/dense+topology, or [MM92] Chapter III, Section
 -/
 def dense : GrothendieckTopology C where
   sieves X S := ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)
-  top_mem' X Y f := ⟨Y, 𝟙 Y, ⟨⟩⟩
+  top_mem' _ Y _ := ⟨Y, 𝟙 Y, ⟨⟩⟩
   pullback_stable' := by
     intro X Y S h H Z f
     rcases H (f ≫ h) with ⟨W, g, H'⟩
@@ -355,7 +355,7 @@ See https://ncatlab.org/nlab/show/atomic+site, or [MM92] Chapter III, Section 2,
 -/
 def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
   sieves X S := ∃ (Y : _) (f : Y ⟶ X), S f
-  top_mem' X := ⟨_, 𝟙 _, ⟨⟩⟩
+  top_mem' _ := ⟨_, 𝟙 _, ⟨⟩⟩
   pullback_stable' := by
     rintro X Y S h ⟨Z, f, hf⟩
     rcases hro h f with ⟨W, g, k, comm⟩
@@ -394,15 +394,15 @@ theorem ext (S T : J.Cover X) (h : ∀ ⦃Y⦄ (f : Y ⟶ X), S f ↔ T f) : S =
 instance : OrderTop (J.Cover X) :=
   { (inferInstance : Preorder (J.Cover X)) with
     top := ⟨⊤, J.top_mem _⟩
-    le_top := fun S Y f _ => by tauto }
+    le_top := fun _ _ _ _ => by tauto }
 
 instance : SemilatticeInf (J.Cover X) :=
   { (inferInstance : Preorder _) with
     inf := fun S T => ⟨S ⊓ T, J.intersection_covering S.condition T.condition⟩
-    le_antisymm := fun S T h1 h2 => ext _ _ fun {Y} f => ⟨by apply h1, by apply h2⟩
-    inf_le_left := fun S T Y f hf => hf.1
-    inf_le_right := fun S T Y f hf => hf.2
-    le_inf := fun S T W h1 h2 Y f h => ⟨h1 _ h, h2 _ h⟩ }
+    le_antisymm := fun _ _ h1 h2 => ext _ _ fun {Y} f => ⟨by apply h1, by apply h2⟩
+    inf_le_left := fun _ _ _ _ hf => hf.1
+    inf_le_right := fun _ _ _ _ hf => hf.2
+    le_inf := fun _ _ _ h1 h2 _ _ h => ⟨h1 _ h, h2 _ h⟩ }
 
 instance : Inhabited (J.Cover X) :=
   ⟨⊤⟩

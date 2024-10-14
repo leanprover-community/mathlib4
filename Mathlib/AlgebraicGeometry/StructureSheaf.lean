@@ -117,7 +117,7 @@ variable (R)
 in the sense that if it holds on `U` it holds on any open subset `V` of `U`.
 -/
 def isFractionPrelocal : PrelocalPredicate (Localizations R) where
-  pred {U} f := IsFraction f
+  pred {_} f := IsFraction f
   res := by rintro V U i f ⟨r, s, w⟩; exact ⟨r, s, fun x => w (i x)⟩
 
 /-- We will define the structure sheaf as
@@ -225,12 +225,12 @@ structure presheaf.
 @[simps]
 def structurePresheafInCommRing : Presheaf CommRingCat (PrimeSpectrum.Top R) where
   obj U := CommRingCat.of ((structureSheafInType R).1.obj U)
-  map {U V} i :=
+  map {_ _} i :=
     { toFun := (structureSheafInType R).1.map i
       map_zero' := rfl
-      map_add' := fun x y => rfl
+      map_add' := fun _ _ => rfl
       map_one' := rfl
-      map_mul' := fun x y => rfl }
+      map_mul' := fun _ _ => rfl }
 
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AlgebraicGeometry.structurePresheafInCommRing_map_apply
@@ -240,7 +240,7 @@ with the `Type` valued structure presheaf.
 -/
 def structurePresheafCompForget :
     structurePresheafInCommRing R ⋙ forget CommRingCat ≅ (structureSheafInType R).1 :=
-  NatIso.ofComponents fun U => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 open TopCat.Presheaf
 
@@ -378,13 +378,13 @@ a section of the structure sheaf. -/
 def toOpen (U : Opens (PrimeSpectrum.Top R)) :
     CommRingCat.of R ⟶ (structureSheaf R).1.obj (op U) where
   toFun f :=
-    ⟨fun x => algebraMap R _ f, fun x =>
+    ⟨fun _ => algebraMap R _ f, fun x =>
       ⟨U, x.2, 𝟙 _, f, 1, fun y =>
         ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by rw [RingHom.map_one, mul_one]⟩⟩⟩
-  map_one' := Subtype.eq <| funext fun x => RingHom.map_one _
-  map_mul' f g := Subtype.eq <| funext fun x => RingHom.map_mul _ _ _
-  map_zero' := Subtype.eq <| funext fun x => RingHom.map_zero _
-  map_add' f g := Subtype.eq <| funext fun x => RingHom.map_add _ _ _
+  map_one' := Subtype.eq <| funext fun _ => RingHom.map_one _
+  map_mul' _ _ := Subtype.eq <| funext fun _ => RingHom.map_mul _ _ _
+  map_zero' := Subtype.eq <| funext fun _ => RingHom.map_zero _
+  map_add' _ _ := Subtype.eq <| funext fun _ => RingHom.map_add _ _ _
 
 @[simp]
 theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
@@ -570,7 +570,7 @@ def toBasicOpen (f : R) :
 @[simp]
 theorem toBasicOpen_mk' (s f : R) (g : Submonoid.powers s) :
     toBasicOpen R s (IsLocalization.mk' (Localization.Away s) f g) =
-      const R f g (PrimeSpectrum.basicOpen s) fun x hx => Submonoid.powers_le.2 hx g.2 :=
+      const R f g (PrimeSpectrum.basicOpen s) fun _ hx => Submonoid.powers_le.2 hx g.2 :=
   (IsLocalization.lift_mk'_spec _ _ _ _).2 <| by
     rw [toOpen_eq_const, toOpen_eq_const, const_mul_cancel']
 
@@ -624,7 +624,7 @@ Every section can locally be represented on basic opens `basicOpen g` as a fract
 theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
     (s : (structureSheaf R).1.obj (op U)) (x : U) :
     ∃ (f g : R) (i : PrimeSpectrum.basicOpen g ⟶ U), x.1 ∈ PrimeSpectrum.basicOpen g ∧
-      (const R f g (PrimeSpectrum.basicOpen g) fun y hy => hy) =
+      (const R f g (PrimeSpectrum.basicOpen g) fun _ hy => hy) =
       (structureSheaf R).1.map i.op s := by
   -- First, any section `s` can be represented as a fraction `f/g` on some open neighborhood of `x`
   -- and we may pass to a `basicOpen h`, since these form a basis
@@ -671,14 +671,14 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
     (h_cover : U ≤ ⨆ i ∈ t, PrimeSpectrum.basicOpen (h i))
     (hs :
       ∀ i : ι,
-        (const R (a i) (h i) (PrimeSpectrum.basicOpen (h i)) fun y hy => hy) =
+        (const R (a i) (h i) (PrimeSpectrum.basicOpen (h i)) fun _ hy => hy) =
           (structureSheaf R).1.map (iDh i).op s) :
     ∃ (a' h' : ι → R) (iDh' : ∀ i : ι, PrimeSpectrum.basicOpen (h' i) ⟶ U),
       (U ≤ ⨆ i ∈ t, PrimeSpectrum.basicOpen (h' i)) ∧
         (∀ (i) (_ : i ∈ t) (j) (_ : j ∈ t), a' i * h' j = h' i * a' j) ∧
           ∀ i ∈ t,
             (structureSheaf R).1.map (iDh' i).op s =
-              const R (a' i) (h' i) (PrimeSpectrum.basicOpen (h' i)) fun y hy => hy := by
+              const R (a' i) (h' i) (PrimeSpectrum.basicOpen (h' i)) fun _ hy => hy := by
   -- First we show that the fractions `(a i * h j) / (h i * h j)` and `(h i * a j) / (h i * h j)`
   -- coincide in the localization of `R` at `h i * h j`
   have fractions_eq :
@@ -1070,7 +1070,7 @@ This is a generalization of the fact that, for fixed `U`, the comap of the ident
 to OO_X(U) is the identity.
 -/
 theorem comap_id_eq_map (U V : Opens (PrimeSpectrum.Top R)) (iVU : V ⟶ U) :
-    (comap (RingHom.id R) U V fun p hpV => leOfHom iVU <| hpV) =
+    (comap (RingHom.id R) U V fun _ hpV => leOfHom iVU <| hpV) =
       (structureSheaf R).1.map iVU.op :=
   RingHom.ext fun s => Subtype.eq <| funext fun p => by
     rw [comap_apply]

@@ -19,15 +19,15 @@ variable {α : Type*} (s : Finset α)
 
 @[simp, norm_cast]
 theorem ofReal_prod (f : α → ℝ) : ((∏ i ∈ s, f i : ℝ) : ℂ) = ∏ i ∈ s, (f i : ℂ) :=
-  map_prod ofReal _ _
+  map_prod ofRealHom _ _
 
 @[simp, norm_cast]
 theorem ofReal_sum (f : α → ℝ) : ((∑ i ∈ s, f i : ℝ) : ℂ) = ∑ i ∈ s, (f i : ℂ) :=
-  map_sum ofReal _ _
+  map_sum ofRealHom _ _
 
 @[simp, norm_cast]
 lemma ofReal_expect (f : α → ℝ) : (𝔼 i ∈ s, f i : ℝ) = 𝔼 i ∈ s, (f i : ℂ) :=
-  map_expect ofReal ..
+  map_expect ofRealHom ..
 
 @[simp, norm_cast]
 lemma ofReal_balance [Fintype α] (f : α → ℝ) (a : α) :

@@ -295,7 +295,7 @@ theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
     simp [ord_le, aleph'_le_of_limit l]⟩
 
 theorem aleph_isNormal : IsNormal (ord ∘ aleph) :=
-  aleph'_isNormal.trans <| add_isNormal ω
+  aleph'_isNormal.trans <| isNormal_add_right ω
 
 theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
 
@@ -413,11 +413,15 @@ theorem beth_pos (o : Ordinal) : 0 < ℶ_ o :=
 theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
   (beth_pos o).ne'
 
-theorem beth_normal : IsNormal.{u} fun o => (ℶ_ o).ord :=
-  (isNormal_iff_strictMono_limit _).2
-    ⟨ord_strictMono.comp beth_strictMono, fun o ho a ha => by
-      rw [beth_limit ho, ord_le]
-      exact ciSup_le' fun b => ord_le.1 (ha _ b.2)⟩
+theorem isNormal_beth : IsNormal (ord ∘ beth) := by
+  refine (isNormal_iff_strictMono_limit _).2
+    ⟨ord_strictMono.comp beth_strictMono, fun o ho a ha ↦ ?_⟩
+  rw [comp_apply, beth_limit ho, ord_le]
+  exact ciSup_le' fun b => ord_le.1 (ha _ b.2)
+
+@[deprecated isNormal_beth (since := "2024-10-11")]
+theorem beth_normal : IsNormal.{u} fun o => (beth o).ord :=
+  isNormal_beth
 
 end Cardinal
 

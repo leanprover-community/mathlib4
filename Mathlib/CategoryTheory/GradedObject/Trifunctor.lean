@@ -42,7 +42,7 @@ def mapTrifunctorObj {I₁ : Type*} (X₁ : GradedObject I₁ C₁) (I₂ I₃ :
     GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject (I₁ × I₂ × I₃) C₄ where
   obj X₂ :=
     { obj := fun X₃ x => ((F.obj (X₁ x.1)).obj (X₂ x.2.1)).obj (X₃ x.2.2)
-      map := fun {X₃ Y₃} φ x => ((F.obj (X₁ x.1)).obj (X₂ x.2.1)).map (φ x.2.2) }
+      map := fun {_ _} φ x => ((F.obj (X₁ x.1)).obj (X₂ x.2.1)).map (φ x.2.2) }
   map {X₂ Y₂} φ :=
     { app := fun X₃ x => ((F.obj (X₁ x.1)).map (φ x.2.1)).app (X₃ x.2.2) }
 
@@ -77,7 +77,7 @@ def mapTrifunctorMapNatTrans (α : F ⟶ F') (I₁ I₂ I₃ : Type*) :
     mapTrifunctor F I₁ I₂ I₃ ⟶ mapTrifunctor F' I₁ I₂ I₃ where
   app X₁ :=
     { app := fun X₂ =>
-        { app := fun X₃ i => ((α.app _).app _).app _ }
+        { app := fun _ _ => ((α.app _).app _).app _ }
       naturality := fun {X₂ Y₂} φ => by
         ext X₃ ⟨i₁, i₂, i₃⟩
         dsimp
@@ -184,7 +184,7 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
     GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject J C₄ where
   obj X₂ :=
     { obj := fun X₃ => mapTrifunctorMapObj F p X₁ X₂ X₃
-      map := fun {X₃ Y₃} φ => mapTrifunctorMapMap F p (𝟙 X₁) (𝟙 X₂) φ
+      map := fun {_ _} φ => mapTrifunctorMapMap F p (𝟙 X₁) (𝟙 X₂) φ
       map_id := fun X₃ => by
         dsimp
         ext j i₁ i₂ i₃ h
