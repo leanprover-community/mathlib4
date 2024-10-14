@@ -117,5 +117,5 @@ jobs:
           type: 'stream'
           topic: 'lean4checker'
           content: |
-            ❌ lean4checker failed on ${{ github.sha }}
+            ❌ lean4checker [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }}
         continue-on-error: true
