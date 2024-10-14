@@ -406,14 +406,15 @@ theorem max_aleph_eq (o₁ o₂ : Ordinal) : max (ℵ_ o₁) (ℵ_ o₂) = ℵ_ 
 
 @[simp]
 theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) := by
-  rw [aleph_eq_aleph', add_succ, aleph'_succ, aleph_eq_aleph']
+  rw [← aleph'_omega0_add, ← aleph'_omega0_add, add_succ, aleph'_succ]
 
 @[simp]
-theorem aleph_zero : ℵ_ 0 = ℵ₀ := by rw [aleph_eq_aleph', add_zero, aleph'_omega0]
+theorem aleph_zero : ℵ_ 0 = ℵ₀ := by
+  rw [← aleph'_omega0_add, add_zero, aleph'_omega0]
 
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
   apply le_antisymm _ (ciSup_le' _)
-  · rw [aleph_eq_aleph', aleph'_limit (ho.add _)]
+  · rw [← aleph'_omega0_add', aleph'_limit (ho.add _)]
     refine ciSup_mono' (bddAbove_of_small _) ?_
     rintro ⟨i, hi⟩
     cases' lt_or_le i ω with h h
@@ -426,7 +427,7 @@ theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ
 theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by rw [← aleph'_omega0, aleph'_le]
 
 theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ aleph o := by
-  rw [aleph_eq_aleph', aleph0_le_aleph']
+  rw [← aleph'_omega0_add, aleph0_le_aleph']
   apply Ordinal.le_add_right
 
 theorem aleph'_pos {o : Ordinal} (ho : 0 < o) : 0 < aleph' o := by rwa [← aleph'_zero, aleph'_lt]
@@ -455,7 +456,7 @@ instance (o : Ordinal) : NoMaxOrder (ℵ_ o).ord.toType :=
 theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = aleph o :=
   ⟨fun h =>
     ⟨aleph'.symm c - ω, by
-      rw [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le, aleph'.apply_symm_apply]
+      rw [← aleph'_omega0_add, Ordinal.add_sub_cancel_of_le, aleph'.apply_symm_apply]
       rwa [← aleph0_le_aleph', aleph'.apply_symm_apply]⟩,
     fun ⟨o, e⟩ => e.symm ▸ aleph0_le_aleph _⟩
 
@@ -507,7 +508,7 @@ theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω �
     ∃ a, (ℵ_ a).ord = o := by
   cases' eq_aleph'_of_eq_card_ord ho with a ha
   use a - ω
-  rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
+  rwa [← aleph'_omega0_add, Ordinal.add_sub_cancel_of_le]
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]
 
 end deprecated
