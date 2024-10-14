@@ -308,7 +308,7 @@ theorem comp_congr (e : M' ≃ₗ[R] M'') (B : BilinForm R M) (l r : M' →ₗ[R
 
 end congr
 
-section congrRight
+section congrRight₂
 
 variable {N₁ N₂ N₃ : Type*}
 variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
@@ -316,27 +316,28 @@ variable [Module R N₁] [Module R N₂] [Module R N₃]
 
 /-- When `N₁` and `N₂` are equivalent, bilinear maps on `M` into `N₁` are equivalent to bilinear
 maps into `N₂`. -/
-def congrRight (e : N₁ ≃ₗ[R] N₂) : BilinMap R M N₁ ≃ₗ[R] BilinMap R M N₂ :=
+def _root_.LinearEquiv.congrRight₂ (e : N₁ ≃ₗ[R] N₂) : BilinMap R M N₁ ≃ₗ[R] BilinMap R M N₂ :=
   LinearEquiv.congrRight (LinearEquiv.congrRight e)
 
 @[simp]
-theorem congrRight_apply (e : N₁ ≃ₗ[R] N₂) (B : BilinMap R M N₁) :
-    congrRight e B = compr₂ B e := rfl
+theorem _root_.LinearEquiv.congrRight₂_apply (e : N₁ ≃ₗ[R] N₂) (B : BilinMap R M N₁) :
+    LinearEquiv.congrRight₂ e B = compr₂ B e := rfl
 
 @[simp]
-theorem congrRight_refl :
-    congrRight (.refl R N₁) = .refl R (BilinMap R M N₁) := rfl
+theorem _root_.LinearEquiv.congrRight₂_refl :
+    LinearEquiv.congrRight₂ (.refl R N₁) = .refl R (BilinMap R M N₁) := rfl
 
 @[simp]
-theorem congrRight_symm (e : N₁ ≃ₗ[R] N₂) :
-    (congrRight e (M := M)).symm = congrRight e.symm :=
+theorem _root_.LinearEquiv.congrRight_symm (e : N₁ ≃ₗ[R] N₂) :
+    (LinearEquiv.congrRight₂ e (M := M)).symm = LinearEquiv.congrRight₂ e.symm :=
   rfl
 
-theorem congrRight_trans (e₁₂ : N₁ ≃ₗ[R] N₂) (e₂₃ : N₂ ≃ₗ[R] N₃) :
-    congrRight (M := M) (e₁₂ ≪≫ₗ e₂₃) = congrRight e₁₂ ≪≫ₗ congrRight e₂₃ :=
+theorem _root_.LinearEquiv.congrRight₂_trans (e₁₂ : N₁ ≃ₗ[R] N₂) (e₂₃ : N₂ ≃ₗ[R] N₃) :
+    LinearEquiv.congrRight₂ (M := M) (e₁₂ ≪≫ₗ e₂₃) =
+    LinearEquiv.congrRight₂ e₁₂ ≪≫ₗ LinearEquiv.congrRight₂ e₂₃ :=
   rfl
 
-end congrRight
+end congrRight₂
 
 section LinMulLin
 
