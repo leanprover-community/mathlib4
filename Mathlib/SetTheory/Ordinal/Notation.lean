@@ -579,7 +579,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       rw [← mul_assoc]
       congr 2
       have := mt repr_inj.1 e0
-      rw [add_mul_limit ao (opow_isLimit_left omega0_isLimit this), mul_assoc,
+      rw [add_mul_limit ao (isLimit_opow_left omega0_isLimit this), mul_assoc,
         mul_omega0_dvd (natCast_pos.2 n₁.pos) (nat_lt_omega0 _)]
       simpa using opow_dvd_opow ω (one_le_iff_ne_zero.2 this)
 
@@ -1031,13 +1031,13 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
     · exact ⟨rfl, inferInstance⟩
     · have := opow_pos (repr a') omega0_pos
       refine
-        ⟨mul_isLimit this omega0_isLimit, fun i =>
+        ⟨isLimit_mul this omega0_isLimit, fun i =>
           ⟨this, ?_, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega0'⟩
       rw [← mul_succ, ← natCast_succ, Ordinal.mul_lt_mul_iff_left this]
       apply nat_lt_omega0
     · have := opow_pos (repr a') omega0_pos
       refine
-        ⟨add_isLimit _ (mul_isLimit this omega0_isLimit), fun i => ⟨this, ?_, ?_⟩,
+        ⟨isLimit_add _ (isLimit_mul this omega0_isLimit), fun i => ⟨this, ?_, ?_⟩,
           exists_lt_add exists_lt_mul_omega0'⟩
       · rw [← mul_succ, ← natCast_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega0
@@ -1045,13 +1045,13 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
         rw [repr, ← zero_def, repr, add_zero, iha.1, opow_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega0
     · rcases iha with ⟨h1, h2, h3⟩
-      refine ⟨opow_isLimit one_lt_omega0 h1, fun i => ?_,
+      refine ⟨isLimit_opow one_lt_omega0 h1, fun i => ?_,
         exists_lt_omega0_opow' one_lt_omega0 h1 h3⟩
       obtain ⟨h4, h5, h6⟩ := h2 i
       exact ⟨h4, h5, fun H => @NF.oadd_zero _ _ (h6 H.fst)⟩
     · rcases iha with ⟨h1, h2, h3⟩
       refine
-        ⟨add_isLimit _ (opow_isLimit one_lt_omega0 h1), fun i => ?_,
+        ⟨isLimit_add _ (isLimit_opow one_lt_omega0 h1), fun i => ?_,
           exists_lt_add (exists_lt_omega0_opow' one_lt_omega0 h1 h3)⟩
       obtain ⟨h4, h5, h6⟩ := h2 i
       refine ⟨h4, h5, fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (h6 H.fst)))⟩
@@ -1065,7 +1065,7 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
   · rcases ihb with ⟨h1, h2, h3⟩
     simp only [repr]
     exact
-      ⟨Ordinal.add_isLimit _ h1, fun i =>
+      ⟨Ordinal.isLimit_add _ h1, fun i =>
         ⟨oadd_lt_oadd_3 (h2 i).1, oadd_lt_oadd_3 (h2 i).2.1, fun H =>
           H.fst.oadd _ (NF.below_of_lt' (lt_trans (h2 i).2.1 H.snd'.repr_lt) ((h2 i).2.2 H.snd))⟩,
         exists_lt_add h3⟩
