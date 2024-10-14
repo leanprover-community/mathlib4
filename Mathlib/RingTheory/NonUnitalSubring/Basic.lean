@@ -713,13 +713,13 @@ theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {a b : R} (ha : 
 theorem mem_closure_iff {s : Set R} {x} :
     x ∈ closure s ↔ x ∈ AddSubgroup.closure (Subsemigroup.closure s : Set R) :=
   ⟨fun h =>
-    closure_induction h (fun x hx => AddSubgroup.subset_closure <| Subsemigroup.subset_closure hx)
-      (AddSubgroup.zero_mem _) (fun x y hx hy => AddSubgroup.add_mem _ hx hy)
-      (fun x hx => AddSubgroup.neg_mem _ hx) fun x y hx hy =>
+    closure_induction h (fun _ hx => AddSubgroup.subset_closure <| Subsemigroup.subset_closure hx)
+      (AddSubgroup.zero_mem _) (fun _ _ hx hy => AddSubgroup.add_mem _ hx hy)
+      (fun _ hx => AddSubgroup.neg_mem _ hx) fun x _ hx hy =>
       AddSubgroup.closure_induction hy
         (fun q hq =>
           AddSubgroup.closure_induction hx
-            (fun p hp => AddSubgroup.subset_closure ((Subsemigroup.closure s).mul_mem hp hq))
+            (fun _ hp => AddSubgroup.subset_closure ((Subsemigroup.closure s).mul_mem hp hq))
             (by rw [zero_mul q]; apply AddSubgroup.zero_mem _)
             (fun p₁ p₂ ihp₁ ihp₂ => by rw [add_mul p₁ p₂ q]; apply AddSubgroup.add_mem _ ihp₁ ihp₂)
             fun x hx => by
@@ -732,10 +732,10 @@ theorem mem_closure_iff {s : Set R} {x} :
         rw [f]; apply AddSubgroup.neg_mem _ hz,
     fun h =>
     AddSubgroup.closure_induction h
-      (fun x hx =>
-        Subsemigroup.closure_induction hx (fun x hx => subset_closure hx) fun x y hx hy =>
+      (fun _ hx =>
+        Subsemigroup.closure_induction hx (fun _ hx => subset_closure hx) fun _ _ hx hy =>
           mul_mem hx hy)
-      (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx⟩
+      (zero_mem _) (fun _ _ hx hy => add_mem hx hy) fun _ hx => neg_mem hx⟩
 
 /-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
 def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}

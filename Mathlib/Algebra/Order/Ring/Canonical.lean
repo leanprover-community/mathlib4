@@ -65,8 +65,8 @@ instance (priority := 100) toOrderedCommMonoid : OrderedCommMonoid α where
 instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
   { ‹CanonicallyOrderedCommSemiring α› with
     zero_le_one := zero_le _,
-    mul_le_mul_of_nonneg_left := fun a b c h _ => mul_le_mul_left' h _,
-    mul_le_mul_of_nonneg_right := fun a b c h _ => mul_le_mul_right' h _ }
+    mul_le_mul_of_nonneg_left := fun _ _ _ h _ => mul_le_mul_left' h _,
+    mul_le_mul_of_nonneg_right := fun _ _ _ h _ => mul_le_mul_right' h _ }
 
 @[simp]
 protected theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by

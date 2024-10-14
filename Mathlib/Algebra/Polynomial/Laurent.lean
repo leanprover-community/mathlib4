@@ -278,7 +278,7 @@ protected theorem induction_on' {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
   exact (mul_one _).symm
 
 theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
-  f.induction_on' (fun p q Tp Tq => Commute.add_right Tp Tq) fun m a =>
+  f.induction_on' (fun _ _ Tp Tq => Commute.add_right Tp Tq) fun m a =>
     show T n * _ = _ by
       rw [T, T, ← single_eq_C, single_mul_single, single_mul_single, single_mul_single]
       simp [add_comm]
@@ -492,7 +492,7 @@ variable [CommSemiring R]
 instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] :=
   { Polynomial.toLaurent with
     commutes' := fun f l => by simp [mul_comm]
-    smul_def' := fun f l => rfl }
+    smul_def' := fun _ _ => rfl }
 
 theorem algebraMap_X_pow (n : ℕ) : algebraMap R[X] R[T;T⁻¹] (X ^ n) = T n :=
   Polynomial.toLaurent_X_pow n

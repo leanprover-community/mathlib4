@@ -204,7 +204,7 @@ def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
     (isGLB_sInf : ∀ s : Set α, IsGLB s (sInf s)) : CompleteLattice α where
   __ := H1; __ := H2
   bot := sInf univ
-  bot_le x := (isGLB_sInf univ).1 trivial
+  bot_le _ := (isGLB_sInf univ).1 trivial
   top := sInf ∅
   le_top a := (isGLB_sInf ∅).2 <| by simp
   sup a b := sInf { x : α | a ≤ x ∧ b ≤ x }
@@ -212,16 +212,16 @@ def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
   le_inf a b c hab hac := by
     apply (isGLB_sInf _).2
     simp [*]
-  inf_le_right a b := (isGLB_sInf _).1 <| mem_insert_of_mem _ <| mem_singleton _
-  inf_le_left a b := (isGLB_sInf _).1 <| mem_insert _ _
+  inf_le_right _ _ := (isGLB_sInf _).1 <| mem_insert_of_mem _ <| mem_singleton _
+  inf_le_left _ _ := (isGLB_sInf _).1 <| mem_insert _ _
   sup_le a b c hac hbc := (isGLB_sInf _).1 <| by simp [*]
-  le_sup_left a b := (isGLB_sInf _).2 fun x => And.left
-  le_sup_right a b := (isGLB_sInf _).2 fun x => And.right
-  le_sInf s a ha := (isGLB_sInf s).2 ha
-  sInf_le s a ha := (isGLB_sInf s).1 ha
+  le_sup_left _ _ := (isGLB_sInf _).2 fun _ => And.left
+  le_sup_right _ _ := (isGLB_sInf _).2 fun _ => And.right
+  le_sInf s _ ha := (isGLB_sInf s).2 ha
+  sInf_le s _ ha := (isGLB_sInf s).1 ha
   sSup s := sInf (upperBounds s)
-  le_sSup s a ha := (isGLB_sInf (upperBounds s)).2 fun b hb => hb ha
-  sSup_le s a ha := (isGLB_sInf (upperBounds s)).1 ha
+  le_sSup s _ ha := (isGLB_sInf (upperBounds s)).2 fun _ hb => hb ha
+  sSup_le s _ ha := (isGLB_sInf (upperBounds s)).1 ha
 
 /-- Any `CompleteSemilatticeInf` is in fact a `CompleteLattice`.
 
@@ -251,22 +251,22 @@ def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
     (isLUB_sSup : ∀ s : Set α, IsLUB s (sSup s)) : CompleteLattice α where
   __ := H1; __ := H2
   top := sSup univ
-  le_top x := (isLUB_sSup univ).1 trivial
+  le_top _ := (isLUB_sSup univ).1 trivial
   bot := sSup ∅
   bot_le x := (isLUB_sSup ∅).2 <| by simp
   sup a b := sSup {a, b}
   sup_le a b c hac hbc := (isLUB_sSup _).2 (by simp [*])
-  le_sup_left a b := (isLUB_sSup _).1 <| mem_insert _ _
-  le_sup_right a b := (isLUB_sSup _).1 <| mem_insert_of_mem _ <| mem_singleton _
+  le_sup_left _ _ := (isLUB_sSup _).1 <| mem_insert _ _
+  le_sup_right _ _ := (isLUB_sSup _).1 <| mem_insert_of_mem _ <| mem_singleton _
   inf a b := sSup { x | x ≤ a ∧ x ≤ b }
   le_inf a b c hab hac := (isLUB_sSup _).1 <| by simp [*]
-  inf_le_left a b := (isLUB_sSup _).2 fun x => And.left
-  inf_le_right a b := (isLUB_sSup _).2 fun x => And.right
+  inf_le_left _ _ := (isLUB_sSup _).2 fun _ => And.left
+  inf_le_right _ _ := (isLUB_sSup _).2 fun _ => And.right
   sInf s := sSup (lowerBounds s)
-  sSup_le s a ha := (isLUB_sSup s).2 ha
-  le_sSup s a ha := (isLUB_sSup s).1 ha
-  sInf_le s a ha := (isLUB_sSup (lowerBounds s)).2 fun b hb => hb ha
-  le_sInf s a ha := (isLUB_sSup (lowerBounds s)).1 ha
+  sSup_le s _ ha := (isLUB_sSup s).2 ha
+  le_sSup s _ ha := (isLUB_sSup s).1 ha
+  sInf_le s _ ha := (isLUB_sSup (lowerBounds s)).2 fun _ hb => hb ha
+  le_sInf s _ ha := (isLUB_sSup (lowerBounds s)).1 ha
 
 /-- Any `CompleteSemilatticeSup` is in fact a `CompleteLattice`.
 
@@ -1227,7 +1227,8 @@ theorem iInf_pair {f : β → α} {a b : β} : ⨅ x ∈ ({a, b} : Set β), f x 
   rw [iInf_insert, iInf_singleton]
 
 theorem iSup_image {γ} {f : β → γ} {g : γ → α} {t : Set β} :
-    ⨆ c ∈ f '' t, g c = ⨆ b ∈ t, g (f b) := by rw [← sSup_image, ← sSup_image, ← image_comp]; rfl
+    ⨆ c ∈ f '' t, g c = ⨆ b ∈ t, g (f b) := by
+  rw [← sSup_image, ← sSup_image, ← image_comp, comp_def]
 
 theorem iInf_image :
     ∀ {γ} {f : β → γ} {g : γ → α} {t : Set β}, ⨅ c ∈ f '' t, g c = ⨅ b ∈ t, g (f b) :=
@@ -1325,6 +1326,14 @@ theorem biSup_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
 theorem biInf_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
     ⨅ x ∈ s ×ˢ t, f x = ⨅ (a ∈ s) (b ∈ t), f (a, b) :=
   @biSup_prod αᵒᵈ _ _ _ _ _ _
+
+theorem iSup_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g : δ → α) :
+    ⨆ d ∈ image2 f s t, g d = ⨆ b ∈ s, ⨆ c ∈ t, g (f b c) := by
+  rw [← image_prod, iSup_image, biSup_prod]
+
+theorem iInf_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g : δ → α) :
+    ⨅ d ∈ image2 f s t, g d = ⨅ b ∈ s, ⨅ c ∈ t, g (f b c) :=
+  iSup_image2 f s t (toDual ∘ g)
 
 theorem iSup_sum {f : β ⊕ γ → α} : ⨆ x, f x = (⨆ i, f (Sum.inl i)) ⊔ ⨆ j, f (Sum.inr j) :=
   eq_of_forall_ge_iff fun c => by simp only [sup_le_iff, iSup_le_iff, Sum.forall]

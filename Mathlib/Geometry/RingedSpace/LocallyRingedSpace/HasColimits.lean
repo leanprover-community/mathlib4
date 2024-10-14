@@ -106,7 +106,7 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
           (((forgetToSheafedSpace.mapCocone s).ι.app i).stalkMap y) :=
         (s.ι.app i).2 y
       infer_instance⟩
-  fac s j := LocallyRingedSpace.Hom.ext
+  fac _ _ := LocallyRingedSpace.Hom.ext
     (colimit.ι_desc (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u}) _ _)
   uniq s f h :=
     LocallyRingedSpace.Hom.ext

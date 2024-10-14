@@ -66,7 +66,7 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
     (cb : ∀ {a b₁ b₂}, rb b₁ b₂ → HEq (f a b₁) (f a b₂)) :
     φ qa qb :=
   Quot.hrecOn (motive := fun qa ↦ φ qa qb) qa
-    (fun a ↦ Quot.hrecOn qb (f a) (fun b₁ b₂ pb ↦ cb pb))
+    (fun a ↦ Quot.hrecOn qb (f a) (fun _ _ pb ↦ cb pb))
     fun a₁ a₂ pa ↦
       Quot.induction_on qb fun b ↦
         have h₁ : HEq (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₁) (@cb _)) (f a₁ b) := by

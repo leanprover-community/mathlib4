@@ -33,7 +33,7 @@ theorem eval_apply {β : α → Sort*} (x : α) (f : ∀ x, β x) : eval x f = f
 theorem const_def {y : β} : (fun _ : α ↦ y) = const α y :=
   rfl
 
-theorem const_injective [Nonempty α] : Injective (const α : β → α → β) := fun y₁ y₂ h ↦
+theorem const_injective [Nonempty α] : Injective (const α : β → α → β) := fun _ _ h ↦
   let ⟨x⟩ := ‹Nonempty α›
   congr_fun h x
 
@@ -839,13 +839,13 @@ protected theorem uncurry {α β γ : Type*} {f : α → β → γ} (hf : Inject
   fun ⟨_, _⟩ ⟨_, _⟩ h ↦ (hf h).elim (congr_arg₂ _)
 
 /-- As a map from the left argument to a unary function, `f` is injective. -/
-theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun a₁ a₂ h ↦
+theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun _ _ h ↦
   let ⟨b⟩ := ‹Nonempty β›
   hf.left b <| (congr_fun h b : _)
 
 /-- As a map from the right argument to a unary function, `f` is injective. -/
 theorem right' (hf : Injective2 f) [Nonempty α] : Function.Injective fun b a ↦ f a b :=
-  fun b₁ b₂ h ↦
+  fun _ _ h ↦
     let ⟨a⟩ := ‹Nonempty α›
     hf.right a <| (congr_fun h a : _)
 

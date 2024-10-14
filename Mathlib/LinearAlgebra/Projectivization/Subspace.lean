@@ -96,7 +96,7 @@ def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe whe
         assumption
       · apply B.mem_add
         assumption'⟩
-  le_l_u S := subset_span _
+  le_l_u _ := subset_span _
   choice_eq _ _ := rfl
 
 /-- The span of a subspace is the subspace. -/
@@ -128,7 +128,7 @@ instance : CompleteLattice (Subspace K V) :=
         exact ha hE hx)
     inf_le_left := fun A B _ hx => (@inf_le_left _ _ A B) hx
     inf_le_right := fun A B _ hx => (@inf_le_right _ _ A B) hx
-    le_inf := fun A B _ h1 h2 _ hx => (le_inf h1 h2) hx }
+    le_inf := fun _ _ _ h1 h2 _ hx => (le_inf h1 h2) hx }
 
 instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
 
