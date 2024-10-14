@@ -1392,16 +1392,8 @@ theorem IsNormal.map_iSup_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNorm
 set_option linter.deprecated false in
 @[deprecated IsNormal.map_iSup (since := "2024-08-27")]
 theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
-    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) := by
-  rw [Ordinal.sup, Ordinal.sup]
-  apply eq_of_forall_ge_iff
-  intro a
-  rw [H.le_set' Set.univ Set.univ_nonempty g]
-  · rw [Ordinal.iSup_le_iff]
-    simp
-  · intro o
-    rw [Ordinal.iSup_le_iff]
-    simp
+    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
+  H.map_iSup g
 
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]
