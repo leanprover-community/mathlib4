@@ -62,7 +62,6 @@ theorem foldr_le_nfpFamily (f : ι → Ordinal → Ordinal)
 theorem le_nfpFamily (f : ι → Ordinal → Ordinal) (a) : a ≤ nfpFamily f a :=
   Ordinal.le_iSup (fun _ ↦ List.foldr _ a _) []
 
-
 theorem lt_nfpFamily {a b} : a < nfpFamily.{u, v} f b ↔ ∃ l, a < List.foldr f b l :=
   Ordinal.lt_iSup
 
