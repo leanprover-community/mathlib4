@@ -716,6 +716,7 @@ section
 
 variable [F.LaxMonoidal] [G.LaxMonoidal]
 
+/-- The functor `C ⥤ D × E` obtained from two lax monoidal functors is lax monoidal. -/
 instance LaxMonoidal.prod' : (prod' F G).LaxMonoidal :=
   inferInstanceAs (diag C ⋙ prod F G).LaxMonoidal
 
@@ -745,6 +746,7 @@ section
 
 variable [F.OplaxMonoidal] [G.OplaxMonoidal]
 
+/-- The functor `C ⥤ D × E` obtained from two oplax monoidal functors is oplax monoidal. -/
 instance OplaxMonoidal.prod' : (prod' F G).OplaxMonoidal :=
   inferInstanceAs (diag C ⋙ prod F G).OplaxMonoidal
 
@@ -780,16 +782,34 @@ lemma prod_comp_snd {C D : Type*} [Category C] [Category D]
     {X Y Z : C × D} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).2 = f.2 ≫ g.2 := rfl
 
+/-- The functor `C ⥤ D × E` obtained from two monoidal functors is monoidal. -/
 instance Monoidal.prod' [F.Monoidal] [G.Monoidal] :
     (prod' F G).Monoidal where
+  -- automation should work, but it is terribly slow
   ε_η := by
     ext
     · simp only [prod_comp_fst, prod'_ε_fst, prod'_η_fst, ε_η,
         prodMonoidal_tensorUnit, prod_id]
-    · sorry
-  η_ε := sorry
-  μ_δ := sorry
-  δ_μ := sorry
+    · simp only [prod_comp_snd, prod'_ε_snd, prod'_η_snd, ε_η,
+        prodMonoidal_tensorUnit, prod_id]
+  η_ε := by
+    ext
+    · simp only [prod_comp_fst, prod'_ε_fst, prod'_η_fst, η_ε,
+        prod_id, prod'_obj]
+    · simp only [prod_comp_snd, prod'_ε_snd, prod'_η_snd, η_ε,
+        prod_id, prod'_obj]
+  μ_δ _ _ := by
+    ext
+    · simp only [prod_comp_fst, prod'_μ_fst, prod'_δ_fst, μ_δ,
+        prod'_obj, prodMonoidal_tensorObj, prod_id]
+    · simp only [prod_comp_snd, prod'_μ_snd, prod'_δ_snd, μ_δ,
+        prod'_obj, prodMonoidal_tensorObj, prod_id]
+  δ_μ _ _ := by
+    ext
+    · simp only [prod_comp_fst, prod'_μ_fst, prod'_δ_fst, δ_μ,
+        prod'_obj, prod_id]
+    · simp only [prod_comp_snd, prod'_μ_snd, prod'_δ_snd, δ_μ,
+        prod'_obj, prod_id]
 
 end Prod'
 
