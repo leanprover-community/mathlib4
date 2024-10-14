@@ -3,9 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Module.Injective
+import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Topology.Instances.AddCircle
 
@@ -53,6 +55,31 @@ theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun 
   rcases Submodule.mem_span_singleton.mp hn with ⟨n, rfl⟩
   rw [map_zsmul, LinearMap.toSpanSingleton_apply, DivisibleBy.div_cancel gₘ h0, ← map_zsmul g,
     SetLike.mk_smul_mk]
+
+namespace Module
+variable (R Q : Type*) [Ring R] [AddCommGroup Q] [Module R Q]
+
+theorem injective_object_of_injective_module [inj : Injective R Q] :
+    CategoryTheory.Injective (ModuleCat.of R Q) where
+  factors g f m :=
+    have ⟨l, h⟩ := inj.out f ((ModuleCat.mono_iff_injective f).mp m) g
+    ⟨l, LinearMap.ext h⟩
+
+theorem injective_module_of_injective_object
+    [inj : CategoryTheory.Injective <| ModuleCat.of R Q] :
+    Module.Injective R Q where
+  out X Y _ _ _ _ f hf g := by
+    have : CategoryTheory.Mono (ModuleCat.asHom f) := (ModuleCat.mono_iff_injective _).mpr hf
+    obtain ⟨l, rfl⟩ := inj.factors (ModuleCat.asHom g) (ModuleCat.asHom f)
+    exact ⟨l, fun _ ↦ rfl⟩
+
+theorem injective_iff_injective_object :
+    Module.Injective R Q ↔
+    CategoryTheory.Injective (ModuleCat.of R Q) :=
+  ⟨fun _ => injective_object_of_injective_module R Q,
+   fun _ => injective_module_of_injective_object R Q⟩
+
+end Module
 
 namespace AddCommGrp
 

@@ -15,6 +15,7 @@ we lift enough injectives of abelian groups to arbitrary $R$-modules by adjoint 
 `restrictScalars ⊣ coextendScalars`
 
 ## Implementation notes
+
 This file is not part of `Algebra/Module/Injective.lean` to prevent import loop: enough-injectives
 of abelian groups needs `Algebra/Module/Injective.lean` and this file needs enough-injectives of
 abelian groups.
@@ -36,3 +37,11 @@ instance [UnivLE.{u,v}] : EnoughInjectives (ModuleCat.{v} R) :=
   letI := (equivShrink.{v} R).symm.ring
   letI := enoughInjectives.{v} (Shrink.{v} R)
   EnoughInjectives.of_equivalence (restrictScalars (equivShrink R).symm.ringEquiv.toRingHom)
+
+instance ModuleCat.ulift_injective_of_injective.{v'}
+    {M : Type v} [Small.{v} R] [AddCommGroup M] [Module R M]
+    [CategoryTheory.Injective <| ModuleCat.of R M] :
+    CategoryTheory.Injective <| ModuleCat.of R (ULift.{v'} M) :=
+  Module.injective_object_of_injective_module
+    (inj := Module.ulift_injective_of_injective
+      (inj := Module.injective_module_of_injective_object _ _))
