@@ -27,8 +27,7 @@ Given such a localization map `f : M →* N`, we can define the surjection
 maps elements of `S` to invertible elements of the codomain. Similarly, given commutative monoids
 `P, Q`, a submonoid `T` of `P` and a localization map for `T` from `P` to `Q`, then a homomorphism
 `g : M →* P` such that `g(S) ⊆ T` induces a homomorphism of localizations, `LocalizationMap.map`,
-from `N` to `Q`.  We treat the special case of localizing away from an element in the sections
-`AwayMap` and `Away`.
+from `N` to `Q`.
 
 We also define the quotient of `M × S` by the unique congruence relation (equivalence relation
 preserving a binary operation) `r` such that for any other congruence relation `s` on `M × S`
