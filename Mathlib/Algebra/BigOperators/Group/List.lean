@@ -32,9 +32,9 @@ section Defs
 /-- Product of a list.
 
 `List.prod [a, b, c] = ((1 * a) * b) * c` -/
-@[to_additive "Sum of a list.\n\n`List.sum [a, b, c] = ((0 + a) + b) + c`"]
+@[to_additive existing]
 def prod {α} [Mul α] [One α] : List α → α :=
-  foldl (· * ·) 1
+  foldr (· * ·) 1
 
 /-- The alternating sum of a list. -/
 def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
@@ -55,7 +55,7 @@ section MulOneClass
 
 variable [MulOneClass M] {l : List M} {a : M}
 
-@[to_additive (attr := simp)]
+@[to_additive existing, simp]
 theorem prod_nil : ([] : List M).prod = 1 :=
   rfl
 

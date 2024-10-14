@@ -141,11 +141,13 @@ theorem ranges_length (l : List ℕ) :
     intro s _
     simp only [Function.comp_apply, length_map]
 
+set_option linter.deprecated false in
 /-- See `List.ranges_join` for the version about `List.sum`. -/
 lemma ranges_join' : ∀ l : List ℕ, l.ranges.join = range (Nat.sum l)
   | [] => rfl
-  | a :: l => by simp only [sum_cons, join, ← map_join, ranges_join', range_add]
+  | a :: l => by simp only [Nat.sum_cons, join, ← map_join, ranges_join', range_add]
 
+set_option linter.deprecated false in
 /-- Any entry of any member of `l.ranges` is strictly smaller than `Nat.sum l`.
 See `List.mem_mem_ranges_iff_lt_sum` for the version about `List.sum`. -/
 lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :

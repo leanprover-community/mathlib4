@@ -19,19 +19,24 @@ variable {α β : Type*}
 
 namespace List
 
+set_option linter.deprecated false
+
 @[deprecated (since := "2024-02-25")] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty
 
 /-- See `List.length_join` for the corresponding statement using `List.sum`. -/
+@[deprecated length_join (since := "2024-10-14")]
 lemma length_join' (L : List (List α)) : length (join L) = Nat.sum (map length L) := by
   induction L <;> [rfl; simp only [*, join, map, Nat.sum_cons, length_append]]
 
 /-- See `List.countP_join` for the corresponding statement using `List.sum`. -/
+@[deprecated countP_join (since := "2024-10-14")]
 lemma countP_join' (p : α → Bool) :
     ∀ L : List (List α), countP p L.join = Nat.sum (L.map (countP p))
   | [] => rfl
   | a :: l => by rw [join, countP_append, map_cons, Nat.sum_cons, countP_join' _ l]
 
 /-- See `List.count_join` for the corresponding statement using `List.sum`. -/
+@[deprecated count_join (since := "2024-10-14")]
 lemma count_join' [BEq α] (L : List (List α)) (a : α) :
     L.join.count a = Nat.sum (L.map (count a)) := countP_join' _ _
 
@@ -55,7 +60,7 @@ theorem take_sum_join' (L : List (List α)) (i : ℕ) :
     L.join.take (Nat.sum ((L.map length).take i)) = (L.take i).join := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [take_append, *]
+  · cases i <;> simp [take_append, *, Nat.sum_nil, Nat.sum_cons]
 
 /-- In a join, dropping all the elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the join after dropping the first `i` sublists.
@@ -65,7 +70,7 @@ theorem drop_sum_join' (L : List (List α)) (i : ℕ) :
     L.join.drop (Nat.sum ((L.map length).take i)) = (L.drop i).join := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [drop_append, *]
+  · cases i <;> simp [drop_append, *, Nat.sum_nil, Nat.sum_cons]
 
 /-- Taking only the first `i+1` elements in a list, and then dropping the first `i` ones, one is
 left with a list of length `1` made of the `i`-th element of the original list. -/
