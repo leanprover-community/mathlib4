@@ -305,6 +305,9 @@ lemma setLIntegral_rnDeriv_le (s : Set α) :
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_rnDeriv_le := setLIntegral_rnDeriv_le
 
+lemma lintegral_rnDeriv_le : ∫⁻ x, μ.rnDeriv ν x ∂ν ≤ μ Set.univ :=
+  (setLIntegral_univ _).symm ▸ Measure.setLIntegral_rnDeriv_le Set.univ
+
 lemma setLIntegral_rnDeriv' [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) {s : Set α}
     (hs : MeasurableSet s) :
     ∫⁻ x in s, μ.rnDeriv ν x ∂ν = μ s := by

@@ -35,7 +35,7 @@ open scoped NNReal Topology
 
 namespace IsUnifLocDoublingMeasure
 
-variable {α : Type*} [MetricSpace α] [MeasurableSpace α] (μ : Measure α)
+variable {α : Type*} [PseudoMetricSpace α] [MeasurableSpace α] (μ : Measure α)
   [IsUnifLocDoublingMeasure μ]
 
 section

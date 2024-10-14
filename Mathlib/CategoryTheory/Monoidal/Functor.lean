@@ -16,7 +16,7 @@ is a functor between the underlying categories equipped with morphisms
 * `μ X Y : (F.obj X) ⊗ (F.obj Y) ⟶ F.obj (X ⊗ Y)` (called the tensorator, or strength).
 satisfying various axioms. This is implemented as a typeclass `F.LaxMonoidal`.
 
-Similarly, we define the type class `F.OplaxMonoidal`. For these oplax functors,
+Similarly, we define the type class `F.OplaxMonoidal`. For these oplax monoidal functors,
 we have similar data `η` and `δ`, but with morphisms in the opposite direction.
 
 A monoidal functor (`F.Monoidal`) is defined here as the combination of `F.LaxMonoidal`
@@ -36,27 +36,11 @@ See <https://stacks.math.columbia.edu/tag/0FFL>.
 -/
 
 
-open CategoryTheory
-
 universe v₁ v₂ v₃ v₁' u₁ u₂ u₃ u₁'
-
-open CategoryTheory.Category
-
-open CategoryTheory.Functor
 
 namespace CategoryTheory
 
-section
-
-@[ext]
-lemma prod_hom_ext {C D : Type*} [Category C] [Category D]
-    {X Y : C × D} {f g : X ⟶ Y} (h₁ : f.1 = g.1) (h₂ : f.2 = g.2) : f = g := by
-  dsimp
-  ext <;> assumption
-
-end
-
-open MonoidalCategory
+open Category Functor MonoidalCategory
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
   {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
@@ -647,10 +631,24 @@ noncomputable def ofLaxMonoidal [F.LaxMonoidal] [IsIso (ε F)] [∀ X Y, IsIso (
   εIso := asIso (ε F)
   μIso X Y := asIso (μ F X Y)
 
+noncomputable def ofOplaxMonoidal [F.OplaxMonoidal] [IsIso (η F)] [∀ X Y, IsIso (δ F X Y)] :
+    F.CoreMonoidal where
+  εIso := (asIso (η F)).symm
+  μIso X Y := (asIso (δ F X Y)).symm
+  associativity X Y Z := by
+    simp [← cancel_epi (δ F X Y ▷ F.obj Z), ← cancel_epi (δ F (X ⊗ Y) Z)]
+  left_unitality X := by simp [← cancel_epi (λ_ (F.obj X)).inv]
+  right_unitality X := by simp [← cancel_epi (ρ_ (F.obj X)).inv]
+
 end CoreMonoidal
 
-noncomputable def Monoidal.ofLaxMonoidal [F.LaxMonoidal] [IsIso (ε F)] [∀ X Y, IsIso (μ F X Y)] :=
+noncomputable def Monoidal.ofLaxMonoidal
+    [F.LaxMonoidal] [IsIso (ε F)] [∀ X Y, IsIso (μ F X Y)] :=
   (CoreMonoidal.ofLaxMonoidal F).toMonoidal
+
+noncomputable def Monoidal.ofOplaxMonoidal
+    [F.OplaxMonoidal] [IsIso (η F)] [∀ X Y, IsIso (δ F X Y)] :=
+  (CoreMonoidal.ofOplaxMonoidal F).toMonoidal
 
 section Prod
 
@@ -670,14 +668,10 @@ instance : (prod F G).LaxMonoidal where
   left_unitality' _ := by dsimp; ext <;> simp
   right_unitality' _ := by dsimp; ext <;> simp
 
-@[simp]
-lemma prod_ε : ε (prod F G) = (ε F, ε G) := rfl
-
-@[simp]
-lemma prod_μ_fst (X Y : C × E) : (μ (prod F G) X Y).1 = μ F _ _ := rfl
-
-@[simp]
-lemma prod_μ_snd (X Y : C × E) : (μ (prod F G) X Y).2 = μ G _ _ := rfl
+@[simp] lemma prod_ε_fst : (ε (prod F G)).1 = ε F := rfl
+@[simp] lemma prod_ε_snd : (ε (prod F G)).2 = ε G := rfl
+@[simp] lemma prod_μ_fst (X Y : C × E) : (μ (prod F G) X Y).1 = μ F _ _ := rfl
+@[simp] lemma prod_μ_snd (X Y : C × E) : (μ (prod F G) X Y).2 = μ G _ _ := rfl
 
 end
 
@@ -689,23 +683,18 @@ instance : (prod F G).OplaxMonoidal where
   η' := (η F, η G)
   δ' X Y := (δ F _ _, δ G _ _)
 
-@[simp]
-lemma prod_η : η (prod F G) = (η F, η G) := rfl
-
-@[simp]
-lemma prod_δ_fst (X Y : C × E) : (δ (prod F G) X Y).1 = δ F _ _ := rfl
-
-@[simp]
-lemma prod_δ_snd (X Y : C × E) : (δ (prod F G) X Y).2 = δ G _ _ := rfl
+@[simp] lemma prod_η_fst : (η (prod F G)).1 = η F := rfl
+@[simp] lemma prod_η_snd : (η (prod F G)).2 = η G := rfl
+@[simp] lemma prod_δ_fst (X Y : C × E) : (δ (prod F G) X Y).1 = δ F _ _ := rfl
+@[simp] lemma prod_δ_snd (X Y : C × E) : (δ (prod F G) X Y).2 = δ G _ _ := rfl
 
 end
 
-set_option maxHeartbeats 800000 in
 instance [F.Monoidal] [G.Monoidal] : (prod F G).Monoidal where
-  ε_η := by dsimp; ext <;> dsimp <;> apply Monoidal.ε_η
-  η_ε := by dsimp; ext <;> dsimp <;> apply Monoidal.η_ε
-  μ_δ _ _ := by dsimp; ext <;> dsimp <;> apply Monoidal.μ_δ
-  δ_μ _ _ := by dsimp; ext <;> dsimp <;> apply Monoidal.δ_μ
+  ε_η := by ext <;> apply Monoidal.ε_η
+  η_ε := by ext <;> apply Monoidal.η_ε
+  μ_δ _ _ := by ext <;> apply Monoidal.μ_δ
+  δ_μ _ _ := by ext <;> apply Monoidal.δ_μ
 
 end Prod
 
