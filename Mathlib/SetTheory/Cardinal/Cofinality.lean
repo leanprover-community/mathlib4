@@ -681,7 +681,7 @@ theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (aleph o).ord.cof = o.cof :=
 
 @[simp]
 theorem cof_omega0 : cof ω = ℵ₀ :=
-  (aleph0_le_cof.2 omega0_isLimit).antisymm' <| by
+  (aleph0_le_cof.2 isLimit_omega0).antisymm' <| by
     rw [← card_omega0]
     apply cof_le_card
 

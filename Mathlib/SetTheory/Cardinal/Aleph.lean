@@ -186,7 +186,7 @@ theorem aleph'_limit {o : Ordinal} (ho : o.IsLimit) : aleph' o = ⨆ a : Iio o, 
 @[simp]
 theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
   eq_of_forall_ge_iff fun c => by
-    simp only [aleph'_le_of_limit omega0_isLimit, lt_omega0, exists_imp, aleph0_le]
+    simp only [aleph'_le_of_limit isLimit_omega0, lt_omega0, exists_imp, aleph0_le]
     exact forall_swap.trans (forall_congr' fun n => by simp only [forall_eq, aleph'_nat])
 
 @[deprecated (since := "2024-09-30")]
@@ -264,7 +264,7 @@ instance nonempty_toType_aleph (o : Ordinal) : Nonempty (aleph o).ord.toType := 
   exact fun h => (ord_injective h).not_gt (aleph_pos o)
 
 theorem ord_aleph_isLimit (o : Ordinal) : (aleph o).ord.IsLimit :=
-  ord_isLimit <| aleph0_le_aleph _
+  isLimit_ord <| aleph0_le_aleph _
 
 instance (o : Ordinal) : NoMaxOrder (aleph o).ord.toType :=
   toType_noMax_of_succ_lt (ord_aleph_isLimit o).2
