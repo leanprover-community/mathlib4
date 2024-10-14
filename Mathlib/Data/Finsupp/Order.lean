@@ -171,8 +171,8 @@ instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
   { Finsupp.orderedAddCommMonoid with
     le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
-instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α (· + ·) (· ≤ ·)] :
-    ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
+instance addLeftReflectLE [OrderedAddCommMonoid α] [AddLeftReflectLE α] :
+    AddLeftReflectLE (ι →₀ α) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
 section SMulZeroClass

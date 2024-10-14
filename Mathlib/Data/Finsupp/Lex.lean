@@ -91,39 +91,35 @@ section Covariants
 variable [LinearOrder α] [AddMonoid N] [LinearOrder N]
 
 /-!  We are about to sneak in a hypothesis that might appear to be too strong.
-We assume `CovariantClass` with *strict* inequality `<` also when proving the one with the
-*weak* inequality `≤`.  This is actually necessary: addition on `Lex (α →₀ N)` may fail to be
-monotone, when it is "just" monotone on `N`.
+We assume `AddLeftStrictMono` (covariant with *strict* inequality `<`) also when proving the one
+with the *weak* inequality `≤`.  This is actually necessary: addition on `Lex (α →₀ N)` may fail to
+be monotone, when it is "just" monotone on `N`.
 
 See `Counterexamples/ZeroDivisorsInAddMonoidAlgebras.lean` for a counterexample. -/
 
 
 section Left
 
-variable [CovariantClass N N (· + ·) (· < ·)]
+variable [AddLeftStrictMono N]
 
-instance Lex.covariantClass_lt_left :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (· + ·) (· < ·) :=
+instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (α →₀ N)) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 
-instance Lex.covariantClass_le_left :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (· + ·) (· ≤ ·) :=
-  covariantClass_le_of_lt _ _ _
+instance Lex.addLeftMono : AddLeftMono (Lex (α →₀ N)) :=
+  addLeftMono_of_addLeftStrictMono _
 
 end Left
 
 section Right
 
-variable [CovariantClass N N (Function.swap (· + ·)) (· < ·)]
+variable [AddRightStrictMono N]
 
-instance Lex.covariantClass_lt_right :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap (· + ·)) (· < ·) :=
+instance Lex.addRightStrictMono : AddRightStrictMono (Lex (α →₀ N)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
 
-instance Lex.covariantClass_le_right :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap (· + ·)) (· ≤ ·) :=
-  covariantClass_le_of_lt _ _ _
+instance Lex.addRightMono : AddRightMono (Lex (α →₀ N)) :=
+  addRightMono_of_addRightStrictMono _
 
 end Right
 
