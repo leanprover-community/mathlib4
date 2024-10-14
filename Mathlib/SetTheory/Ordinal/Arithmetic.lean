@@ -492,7 +492,7 @@ theorem isLimit_add (a) {b} : IsLimit b → IsLimit (a + b) :=
 @[deprecated isLimit_add (since := "2024-10-11")]
 alias add_isLimit := isLimit_add
 
-alias IsLimit.add := add_isLimit
+alias IsLimit.add := isLimit_add
 
 /-! ### Subtraction on ordinals -/
 
@@ -794,8 +794,8 @@ theorem isLimit_mul_left {a b : Ordinal} (l : IsLimit a) (b0 : 0 < b) : IsLimit 
   rcases zero_or_succ_or_limit b with (rfl | ⟨b, rfl⟩ | lb)
   · exact b0.false.elim
   · rw [mul_succ]
-    exact add_isLimit _ l
-  · exact mul_isLimit l.pos lb
+    exact isLimit_add _ l
+  · exact isLimit_mul l.pos lb
 
 @[deprecated isLimit_mul_left (since := "2024-10-11")]
 alias mul_isLimit_left := isLimit_mul_left
@@ -926,7 +926,7 @@ theorem isLimit_add_iff {a b} : IsLimit (a + b) ↔ IsLimit b ∨ b = 0 ∧ IsLi
     suffices a + 0 < a + b by simpa only [add_zero] using this
     rwa [add_lt_add_iff_left, Ordinal.pos_iff_ne_zero]
   rcases h with (h | ⟨rfl, h⟩)
-  · exact add_isLimit a h
+  · exact isLimit_add a h
   · simpa only [add_zero]
 
 theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ c)
@@ -1178,6 +1178,12 @@ theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
   ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
     bddAbove_of_small _⟩
 
+theorem bddAbove_range_comp {ι : Type u} {f : ι → Ordinal.{v}} (hf : BddAbove (range f))
+    (g : Ordinal.{v} → Ordinal.{max v w}) : BddAbove (range (g ∘ f)) := by
+  rw [range_comp, bddAbove_iff_small]
+  rw [bddAbove_iff_small] at hf
+  exact small_lift _
+
 /-- `le_ciSup` whenever the input type is small in the output universe. This lemma sometimes
 fails to infer `f` in simple cases and needs it to be given explicitly. -/
 protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] : ∀ i, f i ≤ iSup f :=
@@ -1343,39 +1349,11 @@ theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a
   convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
   rw [symm_apply_apply]
 
--- TODO: move this together with `bddAbove_range`.
-
-theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
-  obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
-  use a
-  intro b hb
-  simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
-
-theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
-  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
-    bddAbove_of_small _⟩
-
-theorem bddAbove_range_comp {ι : Type u} {f : ι → Ordinal.{v}} (hf : BddAbove (range f))
-    (g : Ordinal.{v} → Ordinal.{max v w}) : BddAbove (range (g ∘ f)) := by
-  rw [range_comp, bddAbove_iff_small]
-  rw [bddAbove_iff_small] at hf
-  exact small_lift _
-
-theorem iSup_le_iff_of_small {ι : Type u} {f : ι → Ordinal.{v}} [Small.{v} ι] {a} :
-    iSup f ≤ a ↔ ∀ i, f i ≤ a :=
-  ciSup_le_iff' (Ordinal.bddAbove_iff_small.mpr (small_range f))
-
 theorem small_of_exists_injection {f : Ordinal.{u} → Ordinal.{v}} (h : f.Injective)
     {S : Set Ordinal.{u}} [hs : Small.{u} S] : Small.{v} S := by
   exact @Small.trans_univLE S hs (univLE_of_injective h)
 
--- TODO: make sSup version.
-theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
-    {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
-    f (⨆ i, g i) = ⨆ i, f (g i) :=
-  H.map_iSup_bddAbove g (bddAbove_of_small _)
-
-theorem IsNormal.map_iSup_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
+theorem IsNormal.map_iSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
     [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
   have : Small.{u} (range g) := bddAbove_iff_small.mp hg
@@ -1388,6 +1366,12 @@ theorem IsNormal.map_iSup_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNorm
   simp_all only [Function.comp]
   rw [H.le_set' Set.univ Set.univ_nonempty g] <;>
     simp [ciSup_le_iff hg]
+
+-- TODO: make sSup version.
+theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
+    {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
+    f (⨆ i, g i) = ⨆ i, f (g i) :=
+  H.map_iSup_of_bddAbove g (bddAbove_of_small _)
 
 set_option linter.deprecated false in
 @[deprecated IsNormal.map_iSup (since := "2024-08-27")]
@@ -2267,7 +2251,7 @@ namespace Ordinal
 theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
     a < b + c ↔ ∃ c' < c, a < b + c' := by
   -- Porting note: `bex_def` is required.
-  rw [← IsNormal.bsup_eq.{u, u} (add_isNormal b) h, lt_bsup, bex_def]
+  rw [← IsNormal.bsup_eq.{u, u} (isNormal_add_right b) h, lt_bsup, bex_def]
 
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
   simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph0, card_eq_nat]
@@ -2349,7 +2333,7 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
       (add_le_add_right (mul_div_le _ _) _).trans
         (lt_sub.1 <| nat_lt_limit (isLimit_sub l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
-    refine mul_isLimit_left omega0_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
+    refine isLimit_mul_left omega0_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
     intro e
     simp only [e, mul_zero]
 
@@ -2402,7 +2386,7 @@ alias IsNormal.apply_omega := IsNormal.apply_omega0
 
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
-  (add_isNormal o).apply_omega0
+  (isNormal_add_right o).apply_omega0
 
 set_option linter.deprecated false in
 @[deprecated iSup_add_nat (since := "2024-08-27")]
