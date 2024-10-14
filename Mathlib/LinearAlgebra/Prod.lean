@@ -113,8 +113,8 @@ def prodEquiv [Module S M₂] [Module S M₃] [SMulCommClass R S M₂] [SMulComm
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv f := by ext <;> rfl
   right_inv f := by ext <;> rfl
-  map_add' a b := rfl
-  map_smul' r a := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 section
 

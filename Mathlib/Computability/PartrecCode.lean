@@ -492,7 +492,7 @@ instance : Membership (ℕ →. ℕ) Code :=
 
 @[simp]
 theorem eval_const : ∀ n m, eval (Code.const n) m = Part.some n
-  | 0, m => rfl
+  | 0, _ => rfl
   | n + 1, m => by simp! [eval_const n m]
 
 @[simp]

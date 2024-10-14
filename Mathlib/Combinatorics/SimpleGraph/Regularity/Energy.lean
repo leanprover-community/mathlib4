@@ -43,7 +43,7 @@ theorem energy_le_one : P.energy G ≤ 1 :=
   div_le_of_le_mul₀ (sq_nonneg _) zero_le_one <|
     calc
       ∑ uv ∈ P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2 ≤ P.parts.offDiag.card • (1 : ℚ) :=
-        sum_le_card_nsmul _ _ 1 fun uv _ =>
+        sum_le_card_nsmul _ _ 1 fun _ _ =>
           (sq_le_one_iff <| G.edgeDensity_nonneg _ _).2 <| G.edgeDensity_le_one _ _
       _ = P.parts.offDiag.card := Nat.smul_one_eq_cast _
       _ ≤ _ := by

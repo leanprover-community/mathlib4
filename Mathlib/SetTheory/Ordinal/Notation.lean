@@ -284,8 +284,8 @@ theorem oadd_lt_oadd_3 {e n a₁ a₂} (h : a₁ < a₂) : oadd e n a₁ < oadd 
 
 theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
   | 0, 0, _, _ => rfl
-  | oadd e n a, 0, _, _ => oadd_pos _ _ _
-  | 0, oadd e n a, _, _ => oadd_pos _ _ _
+  | oadd _ _ _, 0, _, _ => oadd_pos _ _ _
+  | 0, oadd _ _ _, _, _ => oadd_pos _ _ _
   | o₁@(oadd e₁ n₁ a₁), o₂@(oadd e₂ n₂ a₂), h₁, h₂ => by -- TODO: golf
     rw [cmp]
     have IHe := @cmp_compares _ _ h₁.fst h₂.fst
@@ -481,7 +481,7 @@ instance sub_nf (o₁ o₂) : ∀ [NF o₁] [NF o₂], NF (o₁ - o₂)
 @[simp]
 theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = repr o₁ - repr o₂
   | 0, o, _, h₂ => by cases o <;> exact (Ordinal.zero_sub _).symm
-  | oadd e n a, 0, _, _ => (Ordinal.sub_zero _).symm
+  | oadd _ _ _, 0, _, _ => (Ordinal.sub_zero _).symm
   | oadd e₁ n₁ a₁, oadd e₂ n₂ a₂, h₁, h₂ => by
     haveI := h₁.snd; haveI := h₂.snd; have h' := repr_sub a₁ a₂
     conv_lhs at h' => dsimp [HSub.hSub, Sub.sub, sub]
@@ -537,7 +537,7 @@ theorem oadd_mul (e₁ n₁ a₁ e₂ n₂ a₂) :
 
 theorem oadd_mul_nfBelow {e₁ n₁ a₁ b₁} (h₁ : NFBelow (oadd e₁ n₁ a₁) b₁) :
     ∀ {o₂ b₂}, NFBelow o₂ b₂ → NFBelow (oadd e₁ n₁ a₁ * o₂) (repr e₁ + b₂)
-  | 0, b₂, _ => NFBelow.zero
+  | 0, _, _ => NFBelow.zero
   | oadd e₂ n₂ a₂, b₂, h₂ => by
     have IH := oadd_mul_nfBelow h₁ h₂.snd
     by_cases e0 : e₂ = 0 <;> simp only [e0, oadd_mul, ↓reduceIte]
@@ -553,12 +553,12 @@ theorem oadd_mul_nfBelow {e₁ n₁ a₁ b₁} (h₁ : NFBelow (oadd e₁ n₁ a
 
 instance mul_nf : ∀ (o₁ o₂) [NF o₁] [NF o₂], NF (o₁ * o₂)
   | 0, o, _, h₂ => by cases o <;> exact NF.zero
-  | oadd e n a, o, ⟨⟨b₁, hb₁⟩⟩, ⟨⟨b₂, hb₂⟩⟩ => ⟨⟨_, oadd_mul_nfBelow hb₁ hb₂⟩⟩
+  | oadd _ _ _, _, ⟨⟨_, hb₁⟩⟩, ⟨⟨_, hb₂⟩⟩ => ⟨⟨_, oadd_mul_nfBelow hb₁ hb₂⟩⟩
 
 @[simp]
 theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = repr o₁ * repr o₂
   | 0, o, _, h₂ => by cases o <;> exact (zero_mul _).symm
-  | oadd e₁ n₁ a₁, 0, _, _ => (mul_zero _).symm
+  | oadd _ _ _, 0, _, _ => (mul_zero _).symm
   | oadd e₁ n₁ a₁, oadd e₂ n₂ a₂, h₁, h₂ => by
     have IH : repr (mul _ _) = _ := @repr_mul _ _ h₁ h₂.snd
     conv =>

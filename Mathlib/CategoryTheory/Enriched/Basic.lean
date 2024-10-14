@@ -147,7 +147,7 @@ def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
     EnrichedCategory (Type v) C where
   Hom := 𝒞.Hom
   id X _ := 𝟙 X
-  comp X Y Z p := p.1 ≫ p.2
+  comp _ _ _ p := p.1 ≫ p.2
   id_comp X Y := by ext; simp
   comp_id X Y := by ext; simp
   assoc W X Y Z := by ext ⟨f, g, h⟩; simp
@@ -281,7 +281,7 @@ attribute [reassoc (attr := simp)] EnrichedFunctor.map_comp
 @[simps]
 def EnrichedFunctor.id (C : Type u₁) [EnrichedCategory V C] : EnrichedFunctor V C C where
   obj X := X
-  map X Y := 𝟙 _
+  map _ _ := 𝟙 _
 
 instance : Inhabited (EnrichedFunctor V C C) :=
   ⟨EnrichedFunctor.id V C⟩
@@ -292,7 +292,7 @@ def EnrichedFunctor.comp {C : Type u₁} {D : Type u₂} {E : Type u₃} [Enrich
     [EnrichedCategory V D] [EnrichedCategory V E] (F : EnrichedFunctor V C D)
     (G : EnrichedFunctor V D E) : EnrichedFunctor V C E where
   obj X := G.obj (F.obj X)
-  map X Y := F.map _ _ ≫ G.map _ _
+  map _ _ := F.map _ _ ≫ G.map _ _
 
 section
 
@@ -419,7 +419,7 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
       map_comp := fun f g => congr_fun (F.map_comp _ _ _) ⟨f, g⟩ }
   invFun F :=
     { obj := fun X => F.obj X
-      map := fun X Y f => F.map f
+      map := fun _ _ f => F.map f
       map_id := fun X => by ext ⟨⟩; exact F.map_id X
       map_comp := fun X Y Z => by ext ⟨f, g⟩; exact F.map_comp f g }
   left_inv _ := rfl
