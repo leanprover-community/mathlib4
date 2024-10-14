@@ -267,9 +267,10 @@ def getForallStrings : Expr → CommandElabM (Array String)
     if let .instImplicit := bi then
       let x_no_bvars := x.replace (if ·.ctorName == "bvar" then some (.const `Nat []) else none)
       let (str, _) ← liftCoreM do Meta.MetaM.run do return (← Meta.ppExpr (x_no_bvars)).pretty
-      return #[str.takeWhile (· != ' ')] ++ (← getForallStrings bod)
+      return #[((str.splitOn ".{").getD 0 "").takeWhile (· != ' ')] ++ (← getForallStrings bod)
     else
-      return #[na.toString.takeWhile (· != ' ')] ++ (← getForallStrings bod)
+      return #[((na.toString.splitOn ".{").getD 0 "").takeWhile (· != ' ')] ++
+              (← getForallStrings bod)
   | _ => return #[]
 
 /--
