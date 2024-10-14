@@ -20,12 +20,41 @@ theorem isCyclic_of_card_eq_mul_primes {G : Type u} [Group G] {p q : ℕ} [hp : 
   have : (P : Set G) ∪ (Q : Set G) < ⊤ := by sorry
   sorry
 
-
 theorem gcd_totient_eq_one_iff (n : ℕ) (hne : n ≠ 0):
     Nat.gcd n n.totient = 1 ↔ Squarefree n ∧
     (∀ p q : ℕ, p ∈ n.primeFactors → q ∈ n.primeFactors → p < q → ¬(p ∣ q - 1)) := by
   constructor <;> intro h
-  · sorry
+  · have hsq : Squarefree n := by
+      by_contra hsq
+      rw [Nat.squarefree_iff_prime_squarefree] at hsq
+      push_neg at hsq
+      rcases hsq with ⟨p, hp, hdvd⟩
+      have hpn : p ∣ n := dvd_of_mul_right_dvd hdvd
+      have hpt : p ∣ n.totient := by
+        rw [Nat.totient_eq_prod_factorization hne]
+        refine (Prime.dvd_finsupp_prod_iff (Nat.Prime.prime hp)).mpr ?_
+        refine ⟨p, ?_, ?_⟩
+        · simp [hpn, hp, hne]
+        · refine (Nat.Prime.dvd_mul hp).2 <| Or.inl ?_
+          refine (Nat.dvd_prime_pow hp).mpr ⟨1, ?_, by simp⟩
+          suffices h : 2 ≤ n.factorization p by omega
+          rwa [← Nat.Prime.pow_dvd_iff_le_factorization hp hne, Nat.pow_two _]
+      have : p ∣ n.gcd n.totient := dvd_gcd hpn hpt
+      rw [h] at this
+      exact Nat.Prime.not_dvd_one hp this
+    constructor
+    · exact hsq
+    · intro p q hp hq _
+      intro hdvd
+      have hpn : p ∣ n := by exact Nat.dvd_of_mem_primeFactors hp
+      have hpt : p ∣ n.totient := by
+        rw [Nat.totient_eq_div_primeFactors_mul n, Nat.prod_primeFactors_of_squarefree hsq]
+        rw [Nat.div_self (Nat.pos_of_ne_zero hne), one_mul, Prime.dvd_finset_prod_iff]
+        · refine ⟨q, hq, hdvd⟩
+        · exact Nat.prime_iff.mp (Nat.prime_of_mem_primeFactors hp)
+      have : p ∣ n.gcd n.totient := dvd_gcd hpn hpt
+      rw [h] at this
+      exact Nat.Prime.not_dvd_one ((Nat.prime_of_mem_primeFactors hp)) this
   · rcases h with ⟨hsq, hpq⟩
     rw [Nat.totient_eq_div_primeFactors_mul n, Nat.prod_primeFactors_of_squarefree hsq]
     rw [Nat.div_self (Nat.pos_of_ne_zero hne), one_mul]
