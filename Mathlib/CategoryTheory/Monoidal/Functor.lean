@@ -16,7 +16,7 @@ is a functor between the underlying categories equipped with morphisms
 * `μ X Y : (F.obj X) ⊗ (F.obj Y) ⟶ F.obj (X ⊗ Y)` (called the tensorator, or strength).
 satisfying various axioms. This is implemented as a typeclass `F.LaxMonoidal`.
 
-Similarly, we define the type class `F.OplaxMonoidal`. For these oplax monoidal functors,
+Similarly, we define the typeclass `F.OplaxMonoidal`. For these oplax monoidal functors,
 we have similar data `η` and `δ`, but with morphisms in the opposite direction.
 
 A monoidal functor (`F.Monoidal`) is defined here as the combination of `F.LaxMonoidal`
@@ -887,9 +887,28 @@ def rightAdjointLaxMonoidal : G.LaxMonoidal where
     simp only [← G.map_comp, assoc, ← δ_natural_right_assoc F]
     erw [NatTrans.whiskerLeft_app_tensor_app adj.counit adj.counit]
     dsimp
-  associativity' := sorry
-  left_unitality' X := by
-    apply (adj.homEquiv _ _).symm.injective
+  associativity' X Y Z := (adj.homEquiv _ _).symm.injective (by
+    dsimp
+    simp only [homEquiv_unit, homEquiv_counit, map_comp, assoc, comp_whiskerRight,
+      counit_naturality, counit_naturality_assoc, left_triangle_components_assoc,
+      MonoidalCategory.whiskerLeft_comp]
+    dsimp
+    rw [← δ_natural_left_assoc, ← δ_natural_left_assoc, ← δ_natural_left_assoc]
+    erw [NatTrans.whiskerRight_app_tensor_app_assoc adj.counit adj.counit,
+      NatTrans.whiskerRight_app_tensor_app_assoc adj.counit adj.counit]
+    rw [tensorHom_def, assoc]
+    dsimp
+    rw [← comp_whiskerRight_assoc, left_triangle_components, id_whiskerRight, id_comp,
+      whisker_exchange_assoc, whisker_exchange_assoc, ← tensorHom_def_assoc,
+      associator_naturality, OplaxMonoidal.associativity_assoc]
+    rw [← δ_natural_right_assoc, ← δ_natural_right_assoc, ← δ_natural_right_assoc]
+    nth_rw 4 [tensorHom_def]
+    rw [← whisker_exchange, ← MonoidalCategory.whiskerLeft_comp_assoc,
+      ← MonoidalCategory.whiskerLeft_comp_assoc,
+      ← MonoidalCategory.whiskerLeft_comp_assoc, assoc, assoc,
+      counit_naturality, counit_naturality_assoc, left_triangle_components_assoc,
+      MonoidalCategory.whiskerLeft_comp, assoc, tensorHom_def, whisker_exchange])
+  left_unitality' X := (adj.homEquiv _ _).symm.injective (by
     dsimp
     rw [homEquiv_counit, homEquiv_counit, homEquiv_unit, homEquiv_unit, comp_whiskerRight,
       map_comp, map_comp, map_comp, map_comp, map_comp, map_comp, assoc, assoc, assoc, assoc,
@@ -898,37 +917,17 @@ def rightAdjointLaxMonoidal : G.LaxMonoidal where
       tensorHom_def, assoc, ← MonoidalCategory.comp_whiskerRight_assoc,
       ← MonoidalCategory.comp_whiskerRight_assoc, assoc, counit_naturality,
       left_triangle_components_assoc, id_whiskerLeft, assoc, assoc, Iso.inv_hom_id, comp_id,
-      left_unitality_hom_assoc]
-  right_unitality' := sorry
---@[simp]
---  associativity X Y Z := by
---    dsimp only
---    rw [← h.homEquiv_naturality_right, ← h.homEquiv_naturality_left, ← h.homEquiv_naturality_left,
---      ← h.homEquiv_naturality_left, Equiv.apply_eq_iff_eq,
---      ← cancel_epi (F.μ (G.obj X ⊗ G.obj Y) (G.obj Z)),
---      ← cancel_epi (F.μ (G.obj X) (G.obj Y) ▷ (F.obj (G.obj Z)))]
---    simp only [assoc]
---    calc
---      _ = (α_ _ _ _).hom ≫ (h.counit.app X ⊗ h.counit.app Y ⊗ h.counit.app Z) := by
---        rw [← F.μ_natural_left_assoc, IsIso.hom_inv_id_assoc, h.homEquiv_unit,
---          tensorHom_def_assoc (h.counit.app (X ⊗ Y)) (h.counit.app Z)]
---        dsimp only [comp_obj, id_obj]
---        simp_rw [← MonoidalCategory.comp_whiskerRight_assoc]
---        rw [F.map_comp_assoc, h.counit_naturality, h.left_triangle_components_assoc,
---          IsIso.hom_inv_id_assoc, ← tensorHom_def_assoc, associator_naturality]
---      _ = _ := by
---        rw [F.associativity_assoc, ← F.μ_natural_right_assoc, IsIso.hom_inv_id_assoc,
---          h.homEquiv_unit, tensorHom_def (h.counit.app X) (h.counit.app (Y ⊗ Z))]
---        dsimp only [id_obj, comp_obj]
---        rw [whisker_exchange_assoc, ← MonoidalCategory.whiskerLeft_comp, F.map_comp_assoc,
---          h.counit_naturality, h.left_triangle_components_assoc, whisker_exchange_assoc,
---          ← MonoidalCategory.whiskerLeft_comp, ← tensorHom_def, IsIso.hom_inv_id_assoc]
---  right_unitality X := by
---    rw [← h.homEquiv_naturality_right, ← h.homEquiv_naturality_left, ← Equiv.symm_apply_eq,
---      h.homEquiv_counit, F.map_rightUnitor_assoc, h.homEquiv_unit, F.map_whiskerLeft_assoc, assoc,
---      IsIso.hom_inv_id_assoc, tensorHom_def'_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
---      F.map_comp_assoc, h.counit_naturality, h.left_triangle_components_assoc]
---    simp
+      left_unitality_hom_assoc])
+  right_unitality' X := (adj.homEquiv _ _).symm.injective (by
+    dsimp
+    rw [homEquiv_counit, homEquiv_unit, MonoidalCategory.whiskerLeft_comp, homEquiv_unit,
+      homEquiv_counit, map_comp, map_comp, map_comp, map_comp, map_comp, map_comp,
+      assoc, assoc, assoc, assoc, assoc, counit_naturality, counit_naturality_assoc,
+      counit_naturality_assoc, left_triangle_components_assoc, ← δ_natural_right_assoc,
+      ← δ_natural_right_assoc, tensorHom_def, assoc, ← whisker_exchange_assoc,
+      ← MonoidalCategory.whiskerLeft_comp_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
+      assoc, counit_naturality, left_triangle_components_assoc, MonoidalCategory.whiskerRight_id,
+      assoc, assoc, Iso.inv_hom_id, comp_id, right_unitality_hom_assoc])
 
 lemma rightAdjointLaxMonoidal_ε :
     letI := adj.rightAdjointLaxMonoidal

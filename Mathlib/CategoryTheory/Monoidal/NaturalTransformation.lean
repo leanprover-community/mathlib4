@@ -40,7 +40,7 @@ open Functor.LaxMonoidal
 
 /-- A natural transformation between (lax) monoidal functors is monoidal if it satisfies
 `ε F ≫ τ.app (𝟙_ C) = ε G` and `μ F X Y ≫ app (X ⊗ Y) = (app X ⊗ app Y) ≫ μ G X Y`. -/
-class IsMonoidal where
+class IsMonoidal : Prop where
   unit : ε F₁ ≫ τ.app (𝟙_ C) = ε F₂ := by aesop_cat
   tensor (X Y : C) : μ F₁ _ _ ≫ τ.app (X ⊗ Y) = (τ.app X ⊗ τ.app Y) ≫ μ F₂ _ _ := by aesop_cat
 
@@ -100,43 +100,67 @@ end Iso
 
 namespace Adjunction
 
-variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.Monoidal] [G.LaxMonoidal] [adj.IsMonoidal]
+variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
+
+open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
+
+namespace IsMonoidal
+
+section
+
+variable [F.OplaxMonoidal] [G.LaxMonoidal] [adj.IsMonoidal]
+
+@[reassoc]
+lemma unit_app_unit_comp_map_η : adj.unit.app (𝟙_ C) ≫ G.map (η F) = ε G :=
+  Adjunction.IsMonoidal.leftAdjoint_ε.symm
+
+@[reassoc]
+lemma unit_app_tensor_comp_map_δ (X Y : C) :
+    adj.unit.app (X ⊗ Y) ≫ G.map (δ F X Y) = (adj.unit.app X ⊗ adj.unit.app Y) ≫ μ G _ _ := by
+  rw [leftAdjoint_μ (adj := adj), homEquiv_unit]
+  dsimp
+  simp only [← adj.unit_naturality_assoc, ← Functor.map_comp, ← δ_natural_assoc,
+    ← tensor_comp, left_triangle_components, tensorHom_id, id_whiskerRight, comp_id]
+
+@[reassoc]
+lemma map_ε_comp_counit_app_unit : F.map (ε G) ≫ adj.counit.app (𝟙_ D) = η F := by
+  rw [leftAdjoint_ε (adj := adj), homEquiv_unit, map_comp,
+    assoc, counit_naturality, left_triangle_components_assoc]
+
+@[reassoc]
+lemma map_μ_comp_counit_app_tensor (X Y : D) :
+    F.map (μ G X Y) ≫ adj.counit.app (X ⊗ Y) =
+      δ F _ _ ≫ (adj.counit.app X ⊗ adj.counit.app Y) := by
+  rw [leftAdjoint_μ (adj := adj), homEquiv_unit]
+  simp
+
+end
+
+section
+
+variable [F.Monoidal] [G.LaxMonoidal] [adj.IsMonoidal]
 
 instance : NatTrans.IsMonoidal adj.unit where
   unit := by
-    dsimp only [comp_obj, id_obj, Functor.id_map, comp_id, id_comp, implies_true, tensorHom_id,
-      id_whiskerRight, whiskerRight_tensor, Iso.inv_hom_id, MonoidalCategory.whiskerRight_id,
-      Iso.hom_inv_id, LaxMonoidal.ofTensorHom_ε, LaxMonoidal.comp_ε]
-    simp only [id_comp, Adjunction.IsMonoidal.leftAdjoint_ε (adj := adj), homEquiv_apply,
-      assoc, Monoidal.map_η_ε, comp_obj, comp_id]
+    dsimp
+    rw [id_comp, ← unit_app_unit_comp_map_η adj, assoc, Monoidal.map_η_ε]
+    dsimp
+    rw [comp_id]
   tensor X Y := by
-    dsimp only [id_obj, comp_obj, LaxMonoidal.id_μ, LaxMonoidal.comp_μ]
-    simp only [id_comp]
-    rw [Adjunction.IsMonoidal.leftAdjoint_μ (adj := adj)]
-    sorry
-    --dsimp
-    --simp only [id_comp, comp_id, assoc, Adjunction.homEquiv_unit,
-    --  ← h.unit_naturality_assoc, ← Functor.map_comp,
-    --  F.map_tensor, IsIso.hom_inv_id_assoc, ← tensor_comp_assoc,
-    --  Adjunction.left_triangle_components, tensorHom_id, id_whiskerRight,
-    --  IsIso.inv_hom_id, map_id]
+    dsimp
+    rw [← unit_app_tensor_comp_map_δ_assoc, id_comp, Monoidal.map_δ_μ, comp_id]
 
 instance : NatTrans.IsMonoidal adj.counit where
   unit := by
-    dsimp only [id_obj, comp_obj, LaxMonoidal.comp_ε, Functor.id_map, comp_id, id_comp,
-      implies_true, tensorHom_id, id_whiskerRight, whiskerRight_tensor, Iso.inv_hom_id,
-      MonoidalCategory.whiskerRight_id, Iso.hom_inv_id, LaxMonoidal.ofTensorHom_ε]
-    simp only [Adjunction.IsMonoidal.leftAdjoint_ε (adj := adj),
-      homEquiv_apply, comp_obj, map_comp, assoc, counit_naturality, id_obj,
-      left_triangle_components_assoc, Monoidal.ε_η]
-  tensor X Y := sorry
-  --  have eq := h.counit_naturality (F.μ (G.obj X) (G.obj Y)) =≫ inv (F.μ _ _)
-  --  simp only [assoc, IsIso.hom_inv_id, comp_id] at eq
-  --  dsimp
-  --  simp only [Adjunction.homEquiv_unit, comp_id, assoc,
-  --    map_comp, map_inv, h.counit_naturality, ← eq,
-  --    h.left_triangle_components_assoc,
-  --    IsIso.inv_hom_id_assoc, IsIso.hom_inv_id_assoc]
+    dsimp
+    rw [assoc, map_ε_comp_counit_app_unit adj, ε_η]
+  tensor X Y := by
+    dsimp
+    rw [assoc, map_μ_comp_counit_app_tensor, μ_δ_assoc, comp_id]
+
+end
+
+end IsMonoidal
 
 end Adjunction
 
