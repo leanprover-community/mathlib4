@@ -1072,6 +1072,22 @@ theorem inf_biInf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i,
     (a ⊓ ⨅ (i) (h : p i), f i h) = ⨅ (i) (h : p i), a ⊓ f i h :=
   @sup_biSup αᵒᵈ ι _ p f _ h
 
+lemma biSup_lt_eq_iSup {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α}:
+    ⨆ (i) (j < i), f j = ⨆ i, f i := by
+  apply le_antisymm
+  · exact iSup_le fun _ ↦ iSup_le fun _ ↦ iSup_le fun _ ↦ le_iSup _ _
+  · apply iSup_le (fun j ↦ ?_)
+    obtain ⟨i, jlt⟩ := exists_gt j
+    exact le_iSup_of_le i (le_iSup_of_le j (le_iSup_of_le jlt (le_refl _)))
+
+lemma biInf_lt_eq_iInf {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
+    ⨅ (i) (j < i), f j = ⨅ i, f i := by
+  apply le_antisymm
+  · apply le_iInf (fun j ↦ ?_)
+    obtain ⟨i, jlt⟩ := exists_gt j
+    apply iInf_le_of_le i (iInf_le_of_le j (iInf_le_of_le jlt (le_refl _)))
+  · exact le_iInf fun _ ↦ le_iInf fun _ ↦ le_iInf fun _ ↦ iInf_le _ _
+
 /-! ### `iSup` and `iInf` under `Prop` -/
 
 
