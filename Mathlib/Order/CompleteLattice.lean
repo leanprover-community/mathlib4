@@ -1227,7 +1227,8 @@ theorem iInf_pair {f : β → α} {a b : β} : ⨅ x ∈ ({a, b} : Set β), f x 
   rw [iInf_insert, iInf_singleton]
 
 theorem iSup_image {γ} {f : β → γ} {g : γ → α} {t : Set β} :
-    ⨆ c ∈ f '' t, g c = ⨆ b ∈ t, g (f b) := by rw [← sSup_image, ← sSup_image, ← image_comp]; rfl
+    ⨆ c ∈ f '' t, g c = ⨆ b ∈ t, g (f b) := by
+  rw [← sSup_image, ← sSup_image, ← image_comp, comp_def]
 
 theorem iInf_image :
     ∀ {γ} {f : β → γ} {g : γ → α} {t : Set β}, ⨅ c ∈ f '' t, g c = ⨅ b ∈ t, g (f b) :=
@@ -1325,6 +1326,14 @@ theorem biSup_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
 theorem biInf_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
     ⨅ x ∈ s ×ˢ t, f x = ⨅ (a ∈ s) (b ∈ t), f (a, b) :=
   @biSup_prod αᵒᵈ _ _ _ _ _ _
+
+theorem iSup_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g : δ → α) :
+    ⨆ d ∈ image2 f s t, g d = ⨆ b ∈ s, ⨆ c ∈ t, g (f b c) := by
+  rw [← image_prod, iSup_image, biSup_prod]
+
+theorem iInf_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g : δ → α) :
+    ⨅ d ∈ image2 f s t, g d = ⨅ b ∈ s, ⨅ c ∈ t, g (f b c) :=
+  iSup_image2 f s t (toDual ∘ g)
 
 theorem iSup_sum {f : β ⊕ γ → α} : ⨆ x, f x = (⨆ i, f (Sum.inl i)) ⊔ ⨆ j, f (Sum.inr j) :=
   eq_of_forall_ge_iff fun c => by simp only [sup_le_iff, iSup_le_iff, Sum.forall]

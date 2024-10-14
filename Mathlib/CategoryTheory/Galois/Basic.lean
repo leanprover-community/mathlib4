@@ -149,7 +149,7 @@ noncomputable instance {G : Type*} [Group G] [Finite G] :
 instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
   intro X Y f _
   haveI : IsIso (pullback.fst (F.map f) (F.map f)) :=
-    fst_iso_of_mono_eq (F.map f)
+    isIso_fst_of_mono (F.map f)
   haveI : IsIso (F.map (pullback.fst f f)) := by
     rw [← PreservesPullback.iso_hom_fst]
     exact IsIso.comp_isIso
