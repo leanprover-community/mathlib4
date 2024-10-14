@@ -615,8 +615,8 @@ instance Measure.withDensity.instSFinite [SFinite μ] {f : α → ℝ≥0∞} :
   · rcases exists_measurable_le_withDensity_eq μ f with ⟨g, hgm, -, h⟩
     exact h ▸ this hgm
   wlog hμ : IsFiniteMeasure μ generalizing μ
-  · rw [← sum_sFiniteSeq μ, withDensity_sum]
-    have (n : ℕ) : SFinite ((sFiniteSeq μ n).withDensity f) := this inferInstance
+  · rw [← sum_sfiniteSeq μ, withDensity_sum]
+    have (n : ℕ) : SFinite ((sfiniteSeq μ n).withDensity f) := this inferInstance
     infer_instance
   set s := {x | f x = ∞}
   have hs : MeasurableSet s := hfm (measurableSet_singleton _)
