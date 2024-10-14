@@ -264,10 +264,8 @@ noncomputable section Normed
 
 section Ring
 
-variable [NormedCommRing S] [NormedRing R] [NormedAddCommGroup M]
-variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M]
-variable [BoundedSMul S R] [BoundedSMul S M] [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M]
-variable [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
+variable [NormedRing R] [NormedAddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
   inferInstanceAs <| NormedAddCommGroup (WithLp 1 <| R × M)

@@ -297,7 +297,7 @@ end General
 section Pi
 
 variable {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] {s t : Set (∀ i, α i)}
-  {a b c : ∀ i, α i}
+  {a b : ∀ i, α i}
 
 
 @[inherit_doc]
