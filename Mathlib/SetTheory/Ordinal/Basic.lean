@@ -297,7 +297,7 @@ instance partialOrder : PartialOrder Ordinal where
 
 instance linearOrder : LinearOrder Ordinal :=
   {inferInstanceAs (PartialOrder Ordinal) with
-    le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨α, r, _⟩ ⟨β, s, _⟩ =>
+    le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
       (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
     decidableLE := Classical.decRel _ }
 
@@ -761,10 +761,10 @@ instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
   zero := 0
   one := 1
   zero_add o :=
-    inductionOn o fun α r _ =>
+    inductionOn o fun α _ _ =>
       Eq.symm <| Quotient.sound ⟨⟨(emptySum PEmpty α).symm, Sum.lex_inr_inr⟩⟩
   add_zero o :=
-    inductionOn o fun α r _ =>
+    inductionOn o fun α _ _ =>
       Eq.symm <| Quotient.sound ⟨⟨(sumEmpty α PEmpty).symm, Sum.lex_inl_inl⟩⟩
   add_assoc o₁ o₂ o₃ :=
     Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
@@ -967,8 +967,8 @@ noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
       rw [type_lt]
       exact x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
-  left_inv := fun ⟨o', h⟩ => Subtype.ext_val (typein_enum _ _)
-  right_inv h := enum_typein _ _
+  left_inv := fun ⟨_, _⟩ => Subtype.ext_val (typein_enum _ _)
+  right_inv _ := enum_typein _ _
   map_rel_iff' := by
     rintro ⟨a, _⟩ ⟨b, _⟩
     apply enum_le_enum'
@@ -997,7 +997,7 @@ noncomputable alias outOrderBotOfPos := toTypeOrderBotOfPos
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (α := o.toType) (· < ·) ⟨0, by rwa [type_lt]⟩ =
-      have H := toTypeOrderBotOfPos ho
+      have _ := toTypeOrderBotOfPos ho
       (⊥ : o.toType) :=
   rfl
 
@@ -1314,14 +1314,14 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
     cases' liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_top]) with o e
     have := card_ord c
     rw [← e, liftPrincipalSeg_coe, ← lift_card] at this
-    exact ⟨_, this.symm⟩, fun ⟨c', e⟩ => e.symm ▸ lift_lt_univ _⟩
+    exact ⟨_, this.symm⟩, fun ⟨_, e⟩ => e.symm ▸ lift_lt_univ _⟩
 
 theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c' :=
   ⟨fun h => by
     let ⟨a, h', e⟩ := lt_lift_iff.1 h
     rw [← univ_id] at h'
     rcases lt_univ.{u}.1 h' with ⟨c', rfl⟩
-    exact ⟨c', by simp only [e.symm, lift_lift]⟩, fun ⟨c', e⟩ => e.symm ▸ lift_lt_univ' _⟩
+    exact ⟨c', by simp only [e.symm, lift_lift]⟩, fun ⟨_, e⟩ => e.symm ▸ lift_lt_univ' _⟩
 
 theorem small_iff_lift_mk_lt_univ {α : Type u} :
     Small.{v} α ↔ Cardinal.lift.{v+1,_} #α < univ.{v, max u (v + 1)} := by

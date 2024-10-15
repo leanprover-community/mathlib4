@@ -42,7 +42,7 @@ def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α �
   if hf : Integrable f μ then
     { measureOf' := fun s => if MeasurableSet s then ∫ x in s, f x ∂μ else 0
       empty' := by simp
-      not_measurable' := fun s hs => if_neg hs
+      not_measurable' := fun _ hs => if_neg hs
       m_iUnion' := fun s hs₁ hs₂ => by
         dsimp only
         convert hasSum_integral_iUnion hs₁ hs₂ hf.integrableOn with n

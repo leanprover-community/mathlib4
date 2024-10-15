@@ -214,8 +214,8 @@ instance (priority := 100) IsSepClosure.isAlgClosure_of_perfectField
 then it is also a separable closure of `k`. -/
 instance (priority := 100) IsSepClosure.of_isAlgClosure_of_perfectField
     [Algebra k K] [IsAlgClosure k K] [PerfectField k] : IsSepClosure k K :=
-  ⟨haveI := IsAlgClosure.alg_closed (R := k) (K := K); inferInstance,
-    (IsAlgClosure.algebraic (R := k) (K := K)).isSeparable_of_perfectField⟩
+  ⟨haveI := IsAlgClosure.isAlgClosed (R := k) (K := K); inferInstance,
+    (IsAlgClosure.isAlgebraic (R := k) (K := K)).isSeparable_of_perfectField⟩
 
 variable {k} {K}
 
