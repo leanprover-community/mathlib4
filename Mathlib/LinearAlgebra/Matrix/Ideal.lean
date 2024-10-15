@@ -15,7 +15,7 @@ over left (resp. two-sided) ideals in the base semiring (resp. ring).
 ## Main results
 
 * `TwoSidedIdeal.equivMatricesOver` and `TwoSidedIdeal.orderIsoMatricesOver`
-  establish an order isomorphism between two-sided ideals in `R` and those in `Mₙ(R)`.
+  establish an order isomorphism between two-sided ideals in $R$ and those in $Mₙ(R)$.
 -/
 
 /-! ### Left ideals in a matrix ring -/
@@ -137,9 +137,9 @@ theorem asIdeal_matricesOver [DecidableEq n] (I : TwoSidedIdeal R) :
 variable {n : Type*} [Fintype n] [DecidableEq n]
 
 /--
-Two-sided ideals in `R` correspond bijectively to those in `Mₙ(R)`.
-Given an ideal `I ≤ R`, we send it to `Mₙ(I)`.
-Given an ideal `J ≤ Mₙ(R)`, we send it to `{Nᵢⱼ | ∃ N ∈ J}`.
+Two-sided ideals in $R$ correspond bijectively to those in $Mₙ(R)$.
+Given an ideal $I ≤ R$, we send it to $Mₙ(I)$.
+Given an ideal $J ≤ Mₙ(R)$, we send it to $\{Nᵢⱼ ∣ ∃ N ∈ J\}$.
 -/
 @[simps]
 def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n R) where
@@ -196,7 +196,7 @@ def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n 
       exact ⟨of fun _ _ => x, by simp [h], rfl⟩
 
 /--
-Two-sided ideals in `R` are order-isomorphic with those in `Mₙ(R)`.
+Two-sided ideals in $R$ are order-isomorphic with those in $Mₙ(R)$.
 See also `equivMatricesOver`.
 -/
 @[simps!]
