@@ -5,7 +5,7 @@ Authors: Kevin Buzzard, Jujian Zhang, Yunzhou Xie
 -/
 
 import Mathlib.Algebra.Central.Defs
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.Data.Matrix.Basis
 
 /-!
 # Central Algebras
