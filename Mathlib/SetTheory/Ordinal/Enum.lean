@@ -78,7 +78,7 @@ theorem enumOrd_lt_iff (hs : ¬ BddAbove s) {a b : Ordinal} :
 theorem id_le_enumOrd (hs : ¬ BddAbove s) : id ≤ enumOrd s :=
   (enumOrd_strictMono hs).id_le
 
-theorem le_enumOrd_apply (hs : ¬ BddAbove s) {a} : a ≤ enumOrd s a :=
+theorem le_enumOrd_self (hs : ¬ BddAbove s) {a} : a ≤ enumOrd s a :=
   (enumOrd_strictMono hs).le_apply
 
 theorem enumOrd_succ_le (hs : ¬ BddAbove s) (ha : a ∈ s) (hb : enumOrd s b < a) :
