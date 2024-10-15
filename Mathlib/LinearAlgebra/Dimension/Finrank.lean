@@ -48,6 +48,9 @@ Defined by convention to be `0` if the space has infinite rank.
 
 For a vector space `M` over a field `R`, this is the same as the finite dimension
 of `M` over `R`.
+
+Not that it is possible to have `M` with `¬(Module.Finite R M)` but `finrank R M ≠ 0`, for example
+$$\mathbb{Z} \oplus (\mathbb{Z}/2\mathbb{Z})^{\mathbb{N}}$$.
 -/
 noncomputable def finrank (R M : Type*) [Semiring R] [AddCommGroup M] [Module R M] : ℕ :=
   Cardinal.toNat (Module.rank R M)
