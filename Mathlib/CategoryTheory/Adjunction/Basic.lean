@@ -407,6 +407,7 @@ def mkOfHomEquiv (adj : CoreHomEquiv F G) : F ⊣ G :=
     homEquiv_unit := fun {X Y f} => by simp [← adj.homEquiv_naturality_right]
     homEquiv_counit := fun {X Y f} => by simp [← adj.homEquiv_naturality_left_symm] }
 
+@[simp]
 lemma mkOfHomEquiv_homEquiv (adj : CoreHomEquiv F G) :
     (mkOfHomEquiv adj).homEquiv = adj.homEquiv := by
   ext X Y g
