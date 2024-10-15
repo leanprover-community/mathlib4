@@ -8,19 +8,23 @@ import Mathlib.Topology.Algebra.Module.Basic
 /-!
 # A "module topology" for modules over a topological ring
 
-If `R` is a topological group (or even just a topological space) acting on an additive
-abelian group `A`, we define the *module topology* to be the finest topology on `A`
-making `• : R × A → A` and `+ : A × A → A` continuous (with all the products having the
-product topology).
+If `R` is a topological ring acting on an additive abelian group `A`, we define the
+*module topology* to be the finest topology on `A` making both the maps
+`• : R × A → A` and `+ : A × A → A` continuous (with all the products having the
+product topology). Note that `- : A → A` is also automatically continuous as it is `a ↦ (-1) • a`.
 
 This topology was suggested by Will Sawin [here](https://mathoverflow.net/a/477763/1384).
+
 
 ## Mathematical details
 
 I (buzzard) don't know of any reference for this other than Sawin's mathoverflow answer,
 so I expand some of the details here.
 
-First note that there *is* a finest topology with this property! Indeed, topologies on a fixed
+First note that the definition makes sense in far more generality (for example `R` just needs to
+be a topological space acting on an additive monoid).
+
+Next note that there *is* a finest topology with this property! Indeed, topologies on a fixed
 type form a complete lattice (infinite infs and sups exist). So if `τ` is the Inf of all
 the topologies on `A` which make `+` and `•` continuous, then the claim is that `+` and `•`
 are still continuous for `τ` (note that topologies are ordered so that finer topologies
@@ -33,8 +37,8 @@ However pushforward and products are monotone, so `τ × τ ≤ σ × σ`, and t
 The proof for `•` follows mutatis mutandis.
 
 A *topological module* for a topological ring `R` is an `R`-module `A` with a topology
-making `+` and `•` continuous. The discussion so far has shown that the module topology makes `A`
-into a topological module, and moreover is the finest topology with this property.
+making `+` and `•` continuous. The discussion so far has shown that the module topology makes
+an `R`-module `A` into a topological module, and moreover is the finest topology with this property.
 
 A crucial observation is that if `M` is a topological `R`-module, if `A` is an `R`-module with no
 topology, and if `φ : A → M` is linear, then the pullback of `M`'s topology to `A` is a topology
@@ -177,7 +181,7 @@ theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
     let h' : B →+ A := e.symm
     simp_rw [e.toHomeomorph.symm.inducing.1, eq_moduleTopology R A, moduleTopology, induced_sInf]
     apply congr_arg
-    ext τ
+    ext τ -- from this point the definitions of `g, g' etc` above don't work without `@`.
     rw [Set.mem_image]
     constructor
     · rintro ⟨σ, ⟨hσ1, hσ2⟩, rfl⟩
@@ -203,27 +207,29 @@ is `R`'s topology.
 -/
 
 /-- The topology on a topological semiring `R` agrees with the module topology when considering
-`R` as an `R`-module. -/
+`R` as an `R`-module in the obvious way (i.e., via `Semiring.toModule`). -/
 instance _root_.TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R where
   eq_moduleTopology' := by
-    /- Let `R` be a topological ring with topology τR. To prove that `τR` is the module
+    /- Let `R` be a topological ring with topology `τR`. To prove that `τR` is the module
     topology, it suffices to prove inclusions in both directions.
     One way is obvious: addition and multiplication are continuous for `R`, so the
-    module topology is finer than `R` because it's the finest topology with these properties.-/
+    module topology is finer than `τR` because it's the finest topology with these properties.-/
     refine le_antisymm ?_ (moduleTopology_le R R)
     /- The other way is more interesting. We can interpret the problem as proving that
-    the identity function is continuous from `R` with the module topology to `R` with
-    its usual topology to `R` with the module topology.
+    the identity function is continuous from `R` with its usual topology `τR` to `R` with
+    the module topology.
     -/
     rw [← continuous_id_iff_le]
     /-
     The idea needed here is to rewrite the identity function as the composite of `r ↦ (r,1)`
-    from `R` to `R × R`, and multiplication on `R × R`, where we topologise `R × R`
-    by giving the first `R` the usual topology and the second `R` the module topology.
+    from `R` to `R × R`, and multiplication `R × R → R`.
     -/
     rw [show (id : R → R) = (fun rs ↦ rs.1 • rs.2) ∘ (fun r ↦ (r, 1)) by ext; simp]
     /-
-    It thus suffices to show that each of these maps are continuous.
+    It thus suffices to show that each of these maps are continuous. For this claim to even make
+    sense, we need to topologise `R × R`. The trick is to do this by giving the first `R` the usual
+    topology `τR` and the second `R` the module topology. To do this we have to "fight mathlib"
+    a bit with `@`, because there is more than one topology on `R` here.
     -/
     apply @Continuous.comp R (R × R) R τR (@instTopologicalSpaceProd R R τR (moduleTopology R R))
         (moduleTopology R R)
@@ -233,8 +239,8 @@ instance _root_.TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R wh
       exact @continuous_smul _ _ _ _ (moduleTopology R R) <| ModuleTopology.continuousSMul ..
     · /-
       The map `R → R × R` sending `r` to `(r,1)` is a map into a product, so it suffices to show
-      that each of the two factors is continuous. But the first is the identity function and the
-      second is a constant function. -/
+      that each of the two factors is continuous. But the first is the identity function
+      on `(R, usual topology)` and the second is a constant function. -/
       exact @Continuous.prod_mk _ _ _ _ (moduleTopology R R) _ _ _ continuous_id <|
         @continuous_const _ _ _ (moduleTopology R R) _
 
@@ -244,7 +250,8 @@ section MulOpposite
 
 variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
 
-/-- The module topology coming from the action of `Rᵐᵒᵖ` on `R` is `R`'s topology. -/
+/-- The module topology coming from the action of the topological ring `Rᵐᵒᵖ` on `R`
+  (via `Semiring.toOppositeModule`, i.e. via `(op r) • m = m * r`) is `R`'s topology. -/
 instance _root_.TopologicalSemiring.toOppositeIsModuleTopology : IsModuleTopology Rᵐᵒᵖ R :=
   .iso (MulOpposite.opContinuousLinearEquiv Rᵐᵒᵖ).symm
 
