@@ -201,19 +201,23 @@ lemma RingHom.HoldsForLocalizationAway.containsIdentities (hPl : HoldsForLocaliz
   introv R
   exact hPl.of_bijective _ _ Function.bijective_id
 
-theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
-    RingHom.RespectsIso @P := by
-  constructor
-  · intro R S T _ _ _ f e hf
+lemma RingHom.StableUnderCompositionWithLocalizationAway.respectsIso
+    (hP : StableUnderCompositionWithLocalizationAway P) :
+    RespectsIso P where
+  left {R S T} _ _ _ f e hf := by
     letI := e.toRingHom.toAlgebra
     have : IsLocalization.Away (1 : S) T :=
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
-    exact hP.StableUnderCompositionWithLocalizationAway.left T (1 : S) f hf
-  · intro R S T _ _ _ f e hf
+    exact hP.left T (1 : S) f hf
+  right {R S T} _ _ _ f e hf := by
     letI := e.toRingHom.toAlgebra
     have : IsLocalization.Away (1 : R) S :=
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
-    exact hP.StableUnderCompositionWithLocalizationAway.right S (1 : R) f hf
+    exact hP.right S (1 : R) f hf
+
+theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
+    RingHom.RespectsIso @P :=
+  hP.StableUnderCompositionWithLocalizationAway.respectsIso
 
 -- Almost all arguments are implicit since this is not intended to use mid-proof.
 theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P) (r : R)
@@ -268,7 +272,7 @@ open scoped nonZeroDivisors
 /-- Let `I J : Ideal R`. If the localization of `I` at each maximal ideal `P` is included in
 the localization of `J` at `P`, then `I ≤ J`. -/
 theorem Ideal.le_of_localization_maximal {I J : Ideal R}
-    (h : ∀ (P : Ideal R) (hP : P.IsMaximal),
+    (h : ∀ (P : Ideal R) (_ : P.IsMaximal),
       Ideal.map (algebraMap R (Localization.AtPrime P)) I ≤
         Ideal.map (algebraMap R (Localization.AtPrime P)) J) :
     I ≤ J := by
@@ -300,7 +304,7 @@ theorem Ideal.eq_of_localization_maximal {I J : Ideal R}
 
 /-- An ideal is trivial if its localization at every maximal ideal is trivial. -/
 theorem ideal_eq_bot_of_localization' (I : Ideal R)
-    (h : ∀ (J : Ideal R) (hJ : J.IsMaximal),
+    (h : ∀ (J : Ideal R) (_ : J.IsMaximal),
       Ideal.map (algebraMap R (Localization.AtPrime J)) I = ⊥) :
     I = ⊥ :=
   Ideal.eq_of_localization_maximal fun P hP => by simpa using h P hP
@@ -309,7 +313,7 @@ theorem ideal_eq_bot_of_localization' (I : Ideal R)
 -- localized modules.
 /-- An ideal is trivial if its localization at every maximal ideal is trivial. -/
 theorem ideal_eq_bot_of_localization (I : Ideal R)
-    (h : ∀ (J : Ideal R) (hJ : J.IsMaximal),
+    (h : ∀ (J : Ideal R) (_ : J.IsMaximal),
       IsLocalization.coeSubmodule (Localization.AtPrime J) I = ⊥) :
     I = ⊥ :=
   ideal_eq_bot_of_localization' _ fun P hP =>
@@ -318,7 +322,7 @@ theorem ideal_eq_bot_of_localization (I : Ideal R)
       exact ⟨x, hx, rfl⟩
 
 theorem eq_zero_of_localization (r : R)
-    (h : ∀ (J : Ideal R) (hJ : J.IsMaximal), algebraMap R (Localization.AtPrime J) r = 0) :
+    (h : ∀ (J : Ideal R) (_ : J.IsMaximal), algebraMap R (Localization.AtPrime J) r = 0) :
     r = 0 := by
   rw [← Ideal.span_singleton_eq_bot]
   apply ideal_eq_bot_of_localization

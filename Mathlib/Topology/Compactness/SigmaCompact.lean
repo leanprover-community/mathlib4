@@ -251,7 +251,7 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEmbedding e) :
     SigmaCompactSpace Y :=
-  ⟨⟨fun n => e ⁻¹' compactCovering X n, fun n =>
+  ⟨⟨fun n => e ⁻¹' compactCovering X n, fun _ =>
       he.isCompact_preimage (isCompact_compactCovering _ _), by
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
 

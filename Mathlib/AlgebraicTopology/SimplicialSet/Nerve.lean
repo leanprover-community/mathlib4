@@ -3,7 +3,7 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet
+import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.CategoryTheory.ComposableArrows
 
 /-!
@@ -39,7 +39,7 @@ instance {C : Type*} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerv
 @[simps]
 def nerveFunctor : Cat ⥤ SSet where
   obj C := nerve C
-  map F := { app := fun Δ => (F.mapComposableArrows _).obj }
+  map F := { app := fun _ => (F.mapComposableArrows _).obj }
 
 namespace Nerve
 

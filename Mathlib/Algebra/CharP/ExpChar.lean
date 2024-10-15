@@ -207,7 +207,7 @@ theorem add_pow_expChar_pow_of_commute [Semiring R] {q : ℕ} [hR : ExpChar R q]
     {n : ℕ} (x y : R) (h : Commute x y) : (x + y) ^ q ^ n = x ^ q ^ n + y ^ q ^ n := by
   rcases hR with _ | hprime
   · simp only [one_pow, pow_one]
-  haveI := Fact.mk hprime; exact add_pow_char_pow_of_commute R x y h
+  haveI := Fact.mk hprime; exact add_pow_char_pow_of_commute R x y n h
 
 theorem sub_pow_expChar_of_commute [Ring R] {q : ℕ} [hR : ExpChar R q]
     (x y : R) (h : Commute x y) : (x - y) ^ q = x ^ q - y ^ q := by
@@ -219,7 +219,7 @@ theorem sub_pow_expChar_pow_of_commute [Ring R] {q : ℕ} [hR : ExpChar R q]
     {n : ℕ} (x y : R) (h : Commute x y) : (x - y) ^ q ^ n = x ^ q ^ n - y ^ q ^ n := by
   rcases hR with _ | hprime
   · simp only [one_pow, pow_one]
-  haveI := Fact.mk hprime; exact sub_pow_char_pow_of_commute R x y h
+  haveI := Fact.mk hprime; exact sub_pow_char_pow_of_commute R x y n h
 
 theorem add_pow_expChar [CommSemiring R] {q : ℕ} [hR : ExpChar R q]
     (x y : R) : (x + y) ^ q = x ^ q + y ^ q := by
@@ -231,7 +231,7 @@ theorem add_pow_expChar_pow [CommSemiring R] {q : ℕ} [hR : ExpChar R q]
     {n : ℕ} (x y : R) : (x + y) ^ q ^ n = x ^ q ^ n + y ^ q ^ n := by
   rcases hR with _ | hprime
   · simp only [one_pow, pow_one]
-  haveI := Fact.mk hprime; exact add_pow_char_pow R x y
+  haveI := Fact.mk hprime; exact add_pow_char_pow R x y n
 
 theorem sub_pow_expChar [CommRing R] {q : ℕ} [hR : ExpChar R q]
     (x y : R) : (x - y) ^ q = x ^ q - y ^ q := by
@@ -243,7 +243,7 @@ theorem sub_pow_expChar_pow [CommRing R] {q : ℕ} [hR : ExpChar R q]
     {n : ℕ} (x y : R) : (x - y) ^ q ^ n = x ^ q ^ n - y ^ q ^ n := by
   rcases hR with _ | hprime
   · simp only [one_pow, pow_one]
-  haveI := Fact.mk hprime; exact sub_pow_char_pow R x y
+  haveI := Fact.mk hprime; exact sub_pow_char_pow R x y n
 
 theorem ExpChar.neg_one_pow_expChar [Ring R] (q : ℕ) [hR : ExpChar R q] :
     (-1 : R) ^ q = -1 := by
@@ -255,7 +255,7 @@ theorem ExpChar.neg_one_pow_expChar_pow [Ring R] (q n : ℕ) [hR : ExpChar R q] 
     (-1 : R) ^ q ^ n = -1 := by
   rcases hR with _ | hprime
   · simp only [one_pow, pow_one]
-  haveI := Fact.mk hprime; exact CharP.neg_one_pow_char_pow R q n
+  haveI := Fact.mk hprime; exact CharP.neg_one_pow_char_pow R n q
 
 section frobenius
 

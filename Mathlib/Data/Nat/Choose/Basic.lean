@@ -77,7 +77,7 @@ theorem choose_eq_choose_pred_add {n k : ℕ} (hn : 0 < n) (hk : 0 < k) :
 
 theorem choose_eq_zero_of_lt : ∀ {n k}, n < k → choose n k = 0
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
-  | 0, k + 1, _ => choose_zero_succ _
+  | 0, _ + 1, _ => choose_zero_succ _
   | n + 1, k + 1, hk => by
     have hnk : n < k := lt_of_succ_lt_succ hk
     have hnk1 : n < k + 1 := lt_of_succ_lt hk
@@ -109,7 +109,7 @@ theorem choose_two_right (n : ℕ) : choose n 2 = n * (n - 1) / 2 := by
 theorem choose_pos : ∀ {n k}, k ≤ n → 0 < choose n k
   | 0, _, hk => by rw [Nat.eq_zero_of_le_zero hk]; decide
   | n + 1, 0, _ => by simp
-  | n + 1, k + 1, hk => Nat.add_pos_left (choose_pos (le_of_succ_le_succ hk)) _
+  | _ + 1, _ + 1, hk => Nat.add_pos_left (choose_pos (le_of_succ_le_succ hk)) _
 
 theorem choose_eq_zero_iff {n k : ℕ} : n.choose k = 0 ↔ n < k :=
   ⟨fun h => lt_of_not_ge (mt Nat.choose_pos h.symm.not_lt), Nat.choose_eq_zero_of_lt⟩
@@ -377,7 +377,7 @@ theorem multichoose_eq : ∀ n k : ℕ, multichoose n k = (n + k - 1).choose k
   | n + 1, k + 1 => by
     have : n + (k + 1) < (n + 1) + (k + 1) := Nat.add_lt_add_right (Nat.lt_succ_self _) _
     have : (n + 1) + k < (n + 1) + (k + 1) := Nat.add_lt_add_left (Nat.lt_succ_self _) _
-    erw [multichoose_succ_succ, Nat.add_comm, Nat.succ_add_sub_one, ← Nat.add_assoc,
+    rw [multichoose_succ_succ, Nat.add_comm, Nat.succ_add_sub_one, ← Nat.add_assoc,
       Nat.choose_succ_succ]
     simp [multichoose_eq n (k+1), multichoose_eq (n+1) k]
 

@@ -60,7 +60,7 @@ theorem nodup_iff_le {s : Multiset α} : Nodup s ↔ ∀ a : α, ¬a ::ₘ a ::�
 
 theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a ::ₘ a ::ₘ t :=
   nodup_iff_le.trans
-    ⟨fun h a t s_eq => h a (s_eq.symm ▸ cons_le_cons a (cons_le_cons a (zero_le _))), fun h a le =>
+    ⟨fun h a _ s_eq => h a (s_eq.symm ▸ cons_le_cons a (cons_le_cons a (zero_le _))), fun h a le =>
       let ⟨t, s_eq⟩ := le_iff_exists_add.mp le
       h a t (by rwa [cons_add, cons_add, zero_add] at s_eq)⟩
 
