@@ -43,7 +43,7 @@ positive part, negative part
 
 open Function
 
-variable {α β : Type*}
+variable {α : Type*}
 
 section Lattice
 variable [Lattice α]

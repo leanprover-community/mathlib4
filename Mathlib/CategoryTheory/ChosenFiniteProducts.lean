@@ -178,6 +178,22 @@ lemma associator_inv_fst_snd (X Y Z : C) :
 lemma associator_inv_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ snd _ _ = snd _ _ ≫ snd _ _ := lift_snd _ _
 
+@[reassoc (attr := simp)]
+lemma leftUnitor_inv_fst (X : C) :
+    (λ_ X).inv ≫ fst _ _ = toUnit _ := toUnit_unique _ _
+
+@[reassoc (attr := simp)]
+lemma leftUnitor_inv_snd (X : C) :
+    (λ_ X).inv ≫ snd _ _ = 𝟙 X := lift_snd _ _
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_inv_fst (X : C) :
+    (ρ_ X).inv ≫ fst _ _ = 𝟙 X := lift_fst _ _
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_inv_snd (X : C) :
+    (ρ_ X).inv ≫ snd _ _ = toUnit _ := toUnit_unique _ _
+
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
 -/
@@ -192,7 +208,7 @@ instance (priority := 100) : Limits.HasFiniteProducts C :=
   letI : ∀ (X Y : C), Limits.HasLimit (Limits.pair X Y) := fun _ _ =>
     .mk <| ChosenFiniteProducts.product _ _
   letI : Limits.HasBinaryProducts C := Limits.hasBinaryProducts_of_hasLimit_pair _
-  letI : Limits.HasTerminal C := Limits.hasTerminal_of_unique (𝟙_ _)
+  letI : Limits.HasTerminal C := Limits.hasTerminal_of_unique (𝟙_ C)
   hasFiniteProducts_of_has_binary_and_terminal
 
 end ChosenFiniteProducts

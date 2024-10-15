@@ -97,7 +97,7 @@ theorem rel_perm_imp (hr : RightUnique r) : (Forall₂ r ⇒ Forall₂ r ⇒ (·
   have : (flip (Forall₂ r) ∘r Perm ∘r Forall₂ r) b d := ⟨a, h₁, c, h, h₂⟩
   have : ((flip (Forall₂ r) ∘r Forall₂ r) ∘r Perm) b d := by
     rwa [← forall₂_comp_perm_eq_perm_comp_forall₂, ← Relation.comp_assoc] at this
-  let ⟨b', ⟨c', hbc, hcb⟩, hbd⟩ := this
+  let ⟨b', ⟨_, hbc, hcb⟩, hbd⟩ := this
   have : b' = b := right_unique_forall₂' hr hcb hbc
   this ▸ hbd
 
@@ -130,12 +130,6 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
     rwa [perm_singleton.mp hla, sublist_singleton] at h
   · rintro (rfl | rfl)
     exacts [nil_subperm, Subperm.refl _]
-
-attribute [simp] nil_subperm
-
-@[simp]
-theorem subperm_nil : List.Subperm l [] ↔ l = [] :=
-  ⟨fun h ↦ length_eq_zero.1 <| Nat.le_zero.1 h.length_le, by rintro rfl; rfl⟩
 
 lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons_self _ _⟩
 

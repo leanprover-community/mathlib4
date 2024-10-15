@@ -50,6 +50,15 @@ example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) : True := by
   guard_hyp algInst := f.toAlgebra
   trivial
 
+/-- Synthesize algebra instance from ring hom defined using a `let` statement. -/
+example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) : True := by
+  let f' : A →+* B := f
+  fail_if_success -- Check that this instance is not available by default
+    have h : Algebra A B := inferInstance
+  algebraize [f']
+  guard_hyp algInst := f'.toAlgebra
+  trivial
+
 /-- Synthesize algebra instance from a composition -/
 example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (g : B →+* C) :
     True := by
