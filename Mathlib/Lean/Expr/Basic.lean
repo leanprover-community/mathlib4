@@ -1,14 +1,15 @@
 /-
 Copyright (c) 2019 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis,
-Floris van Doorn, E.W.Ayers, Arthur Paulino
+Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis,
+Floris van Doorn, Edward Ayers, Arthur Paulino
 -/
+import Mathlib.Init
 import Lean.Meta.Tactic.Rewrite
 import Batteries.Lean.Expr
 import Batteries.Data.Rat.Basic
-import Batteries.Data.List.Basic
-import Batteries.Logic
+import Batteries.Tactic.Alias
+import Lean.Elab.Binders
 
 /-!
 # Additional operations on Expr and related types
@@ -17,8 +18,6 @@ This file defines basic operations on the types expr, name, declaration, level, 
 
 This file is mostly for non-tactics.
 -/
-
-set_option autoImplicit true
 
 namespace Lean
 
@@ -325,6 +324,13 @@ otherwise, it returns `none`. -/
   let (type, _, lhs, rhs) ← p.app4? ``LE.le
   return (type, lhs, rhs)
 
+/-- `Lean.Expr.lt? e` takes `e : Expr` as input.
+If `e` represents `a < b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
+otherwise, it returns `none`. -/
+@[inline] def lt? (p : Expr) : Option (Expr × Expr × Expr) := do
+  let (type, _, lhs, rhs) ← p.app4? ``LT.lt
+  return (type, lhs, rhs)
+
 /-- Given a proposition `ty` that is an `Eq`, `Iff`, or `HEq`, returns `(tyLhs, lhs, tyRhs, rhs)`,
 where `lhs : tyLhs` and `rhs : tyRhs`,
 and where `lhs` is related to `rhs` by the respective relation.
@@ -340,7 +346,10 @@ def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
 
 end recognizers
 
-def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
+universe u
+
+def modifyAppArgM {M : Type → Type u} [Functor M] [Pure M]
+    (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a
   | e => pure e
 
@@ -370,8 +379,8 @@ def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs) : Option Expr :=
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument.
 An argument `n` may be provided which says how many arguments we are expecting `e` to have. -/
-def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) :
-    M Expr := do
+def modifyArgM {M : Type → Type u} [Monad M] (modifier : Expr → M Expr)
+    (e : Expr) (i : Nat) (n := e.getAppNumArgs) : M Expr := do
   let some a := getArg? e i | return e
   let a ← modifier a
   return modifyArg (fun _ ↦ a) e i n

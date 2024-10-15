@@ -10,6 +10,7 @@ import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.CC.Datatypes
 import Mathlib.Tactic.CC.Lemmas
+import Batteries.Data.RBMap.Alter
 
 /-!
 # Process when an new equation is added to a congruence closure
@@ -191,8 +192,8 @@ def mkCCHCongrTheorem (fn : Expr) (nargs : Nat) : CCM (Option CCCongrTheorem) :=
 
   -- Check if `{ fn, nargs }` is in the cache
   let key₁ : CCCongrTheoremKey := { fn, nargs }
-  if let some it₁ := cache.findEntry? key₁ then
-    return it₁.2
+  if let some it := cache[key₁]? then
+    return it
 
   -- Try automatically generated congruence lemma with support for heterogeneous equality.
   let lemm ← mkCCHCongrWithArity fn nargs
@@ -494,7 +495,7 @@ partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Ex
         getHEqProof a b >>= liftOption
       else
         -- TODO(Leo): the following code assumes R is homogeneous.
-        -- We should add support arbitrary heterogenous reflexive relations.
+        -- We should add support arbitrary heterogeneous reflexive relations.
         getEqProof a b >>= liftOption >>= fun aEqb => liftM (liftFromEq R aEqb)
     let aRbEqTrue ← mkEqTrue aRb
     if flip then
@@ -661,7 +662,7 @@ equality to the todo list. If not, add `e` to the congruence table. -/
 def addCongruenceTable (e : Expr) : CCM Unit := do
   guard e.isApp
   let k ← mkCongruencesKey e
-  if let some es := (← get).congruences.find? k then
+  if let some es := (← get).congruences[k]? then
     for oldE in es do
       if ← isCongruent e oldE then
         -- Found new equivalence: `e ~ oldE`
@@ -686,7 +687,7 @@ def addSymmCongruenceTable (e : Expr) : CCM Unit := do
   let some (rel, lhs, rhs) ← e.relSidesIfSymm? | failure
   let k ← mkSymmCongruencesKey lhs rhs
   let newP := (e, rel)
-  if let some ps := (← get).symmCongruences.find? k then
+  if let some ps := (← get).symmCongruences[k]? then
     for p in ps do
       if ← compareSymm newP p then
         -- Found new equivalence: `e ~ p.1`
@@ -841,7 +842,7 @@ def dbgTraceACState : CCM Unit := do
 def mkACProof (e₁ e₂ : Expr) : MetaM Expr := do
   let eq ← mkEq e₁ e₂
   let .mvar m ← mkFreshExprSyntheticOpaqueMVar eq | failure
-  AC.rewriteUnnormalized m
+  AC.rewriteUnnormalizedRefl m
   let pr ← instantiateMVars (.mvar m)
   mkExpectedTypeHint pr eq
 
@@ -1191,7 +1192,7 @@ is already processed by `internalizeAC`, this operation does nothing. -/
 def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
   let some op ← isAC e | return
   let parentOp? ← parent?.casesOn (pure none) isAC
-  if parentOp?.any (op == ·) then return
+  if parentOp?.any (· == op) then return
 
   unless (← internalizeACVar e) do return
 
@@ -1469,7 +1470,8 @@ partial def propagateEqUp (e : Expr) : CCM Unit := do
     if ← isInterpretedValue ra <&&> isInterpretedValue rb <&&>
         pure (ra.int?.isNone || ra.int? != rb.int?) then
       raNeRb := some
-        (Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[ra, rb])) (← mkEqRefl (.const ``true [])))
+        (Expr.app (.proj ``Iff 0 (← mkAppOptM ``bne_iff_ne #[none, none, none, ra, rb]))
+          (← mkEqRefl (.const ``true [])))
     else
       if let some c₁ ← isConstructorApp? ra then
       if let some c₂ ← isConstructorApp? rb then
@@ -1622,7 +1624,7 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr := #[]) : CCM (Arr
       if pocc.symmTable then
         let some (rel, lhs, rhs) ← p.relSidesIfSymm? | failure
         let k' ← mkSymmCongruencesKey lhs rhs
-        if let some lst := (← get).symmCongruences.find? k' then
+        if let some lst := (← get).symmCongruences[k']? then
           let k := (p, rel)
           let newLst ← lst.filterM fun k₂ => (!·) <$> compareSymm k k₂
           if !newLst.isEmpty then
@@ -1633,7 +1635,7 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr := #[]) : CCM (Arr
               { ccs with symmCongruences := ccs.symmCongruences.erase k' }
       else
         let k' ← mkCongruencesKey p
-        if let some es := (← get).congruences.find? k' then
+        if let some es := (← get).congruences[k']? then
           let newEs := es.erase p
           if !newEs.isEmpty then
             modify fun ccs =>
@@ -1807,7 +1809,8 @@ def propagateValueInconsistency (e₁ e₂ : Expr) : CCM Unit := do
   let some eqProof ← getEqProof e₁ e₂ | failure
   let trueEqFalse ← mkEq (.const ``True []) (.const ``False [])
   let neProof :=
-    Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[e₁, e₂])) (← mkEqRefl (.const ``true []))
+    Expr.app (.proj ``Iff 0 (← mkAppOptM ``bne_iff_ne #[none, none, none, e₁, e₂]))
+      (← mkEqRefl (.const ``true []))
   let H ← mkAbsurd trueEqFalse eqProof neProof
   pushEq (.const ``True []) (.const ``False []) H
 
@@ -1847,7 +1850,7 @@ def propagateEqDown (e : Expr) : CCM Unit := do
 /-- Propagate equality from `¬∃ x, p x` to `∀ x, ¬p x`. -/
 def propagateExistsDown (e : Expr) : CCM Unit := do
   if ← isEqFalse e then
-    let hNotE ← mkAppM ``not_of_eq_false #[← getEqFalseProof e]
+    let hNotE ← mkAppM ``of_eq_false #[← getEqFalseProof e]
     let (all, hAll) ← e.forallNot_of_notExists hNotE
     internalizeCore all none
     pushEq all (.const ``True []) (← mkEqTrue hAll)
@@ -2098,3 +2101,5 @@ def add (type : Expr) (proof : Expr) : CCM Unit := do
 end CCM
 
 end Mathlib.Tactic.CC
+
+set_option linter.style.longFile 2300

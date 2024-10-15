@@ -45,6 +45,10 @@ section NonUnitalNonAssocRing
 
 variable {R : Type*} [NonUnitalNonAssocRing R] (I : TwoSidedIdeal R)
 
+instance [Nontrivial R] : Nontrivial (TwoSidedIdeal R) := by
+  obtain ⟨I, J, h⟩ : Nontrivial (RingCon R) := inferInstance
+  exact ⟨⟨I⟩, ⟨J⟩, by contrapose! h; aesop⟩
+
 instance setLike : SetLike (TwoSidedIdeal R) R where
   coe t := {r | t.ringCon r 0}
   coe_injective'  := by
@@ -75,8 +79,22 @@ def coeOrderEmbedding : TwoSidedIdeal R ↪o Set R where
   inj' := SetLike.coe_injective
   map_rel_iff' {I J} := ⟨fun (h : (I : Set R) ⊆ (J : Set R)) _ h' ↦ h h', fun h _ h' ↦ h h'⟩
 
-lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) :=
-  coeOrderEmbedding.map_rel_iff.symm
+lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) := Iff.rfl
+
+/-- Two-sided-ideals corresponds to congruence relations on a ring. -/
+def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
+  toFun := TwoSidedIdeal.ringCon
+  invFun := .mk
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' {I J} := Iff.symm <| le_iff.trans ⟨fun h x y r => by rw [rel_iff] at r ⊢; exact h r,
+    fun h x hx => by rw [SetLike.mem_coe, mem_iff] at hx ⊢; exact h hx⟩
+
+lemma ringCon_injective : Function.Injective (TwoSidedIdeal.ringCon (R := R)) := by
+  rintro ⟨x⟩ ⟨y⟩ rfl; rfl
+
+lemma ringCon_le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ I.ringCon ≤ J.ringCon :=
+  orderIsoRingCon.map_rel_iff.symm
 
 @[ext]
 lemma ext {I J : TwoSidedIdeal R} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
@@ -138,16 +156,17 @@ def mk' (carrier : Set R)
         rw [show a + c - (b + d) = (a - b) + (c - d) by abel]
         exact add_mem h1 h2 }
 
-lemma mem_mk' (carrier : Set R)
-    (zero_mem : 0 ∈ carrier)
-    (add_mem : ∀ {x y}, x ∈ carrier → y ∈ carrier → x + y ∈ carrier)
-    (neg_mem : ∀ {x}, x ∈ carrier → -x ∈ carrier)
-    (mul_mem_left : ∀ {x y}, y ∈ carrier → x * y ∈ carrier)
-    (mul_mem_right : ∀ {x y}, x ∈ carrier → x * y ∈ carrier)
-    (x : R) :
+@[simp]
+lemma mem_mk' (carrier : Set R) (zero_mem add_mem neg_mem mul_mem_left mul_mem_right) (x : R) :
     x ∈ mk' carrier zero_mem add_mem neg_mem mul_mem_left mul_mem_right ↔ x ∈ carrier := by
   rw [mem_iff]
   simp [mk']
+
+set_option linter.docPrime false in
+@[simp]
+lemma coe_mk' (carrier : Set R) (zero_mem add_mem neg_mem mul_mem_left mul_mem_right) :
+    (mk' carrier zero_mem add_mem neg_mem mul_mem_left mul_mem_right : Set R) = carrier :=
+  Set.ext <| mem_mk' carrier zero_mem add_mem neg_mem mul_mem_left mul_mem_right
 
 instance : SMulMemClass (TwoSidedIdeal R) R R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_left _ _ _ h

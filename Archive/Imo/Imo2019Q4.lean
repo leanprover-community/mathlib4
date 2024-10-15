@@ -9,8 +9,6 @@ import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.GCongr
 
-#align_import imo.imo2019_q4 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
-
 /-!
 # IMO 2019 Q4
 
@@ -77,7 +75,6 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     _ ≤ A ! * (A + 1) ^ n' := by gcongr; exact le_sum
     _ ≤ (A + n')! := factorial_mul_pow_le_factorial
     _ = (∑ i ∈ range (n' + 1), i)! := by rw [sum_range_succ]
-#align imo2019_q4.upper_bound Imo2019Q4.upper_bound
 
 end Imo2019Q4
 
@@ -103,4 +100,3 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   · refine monotone_factorial.ne_of_lt_of_lt_nat 7 ?_ ?_ _ h <;> decide
   -- n = 5
   · refine monotone_factorial.ne_of_lt_of_lt_nat 10 ?_ ?_ _ h <;> decide
-#align imo2019_q4 imo2019_q4

@@ -144,8 +144,8 @@ lemma LinearMap.localized'_ker_eq_ker_localizedMap (g : M →ₗ[R] P) :
 lemma LinearMap.ker_localizedMap_eq_localized'_ker (g : M →ₗ[R] P) :
     LinearMap.ker (IsLocalizedModule.map p f f' g) =
       ((LinearMap.ker g).localized' S p f).restrictScalars _ := by
-  rw [localized'_ker_eq_ker_localizedMap S p f f']
-  rfl
+  ext
+  simp [localized'_ker_eq_ker_localizedMap S p f f']
 
 /--
 The canonical map from the kernel of `g` to the kernel of `g` localized at a submonoid.
@@ -157,6 +157,7 @@ noncomputable def LinearMap.toKerIsLocalized (g : M →ₗ[R] P) :
     ker g →ₗ[R] ker (IsLocalizedModule.map p f f' g) :=
   f.restrict (fun x hx ↦ by simp [LinearMap.mem_ker, LinearMap.mem_ker.mp hx])
 
+include S in
 /-- The canonical map to the kernel of the localization of `g` is localizing.
 In other words, localization commutes with kernels. -/
 lemma LinearMap.toKerLocalized_isLocalizedModule (g : M →ₗ[R] P) :

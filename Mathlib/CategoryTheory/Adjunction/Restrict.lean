@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.HomCongr
 /-!
 
 # Restricting adjunctions
@@ -51,7 +51,6 @@ noncomputable def restrictFullyFaithful : L ⊣ R :=
         suffices R'.map (iD.map g) ≫ comm2.hom.app Y = comm2.hom.app Y' ≫ iC.map (R.map g) by
           simp [Trans.trans, this]
         apply comm2.hom.naturality g }
-#align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
 
 @[simp, reassoc]
 lemma map_restrictFullyFaithful_unit_app (X : C) :
@@ -70,6 +69,11 @@ lemma restrictFullyFaithful_homEquiv_apply {X : C} {Y : D} (f : L.obj X ⟶ Y) :
     (adj.restrictFullyFaithful hiC hiD comm1 comm2).homEquiv X Y f =
       hiC.preimage (adj.unit.app (iC.obj X) ≫ R'.map (comm1.hom.app X) ≫
         R'.map (iD.map f) ≫ comm2.hom.app Y) := by
-  simp [restrictFullyFaithful]
+  -- This proof was just `simp [restrictFullyFaithful]` before #16317
+  apply hiC.map_injective
+  simp only [homEquiv_apply, Functor.comp_obj, Functor.map_comp, map_restrictFullyFaithful_unit_app,
+    Functor.id_obj, assoc, Functor.FullyFaithful.map_preimage]
+  congr 2
+  exact (comm2.hom.naturality _).symm
 
 end CategoryTheory.Adjunction

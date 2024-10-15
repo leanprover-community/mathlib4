@@ -5,6 +5,10 @@ Authors: Dhruv Bhatia, Robert Y. Lewis, Mario Carneiro
 -/
 import Mathlib.Tactic.Polyrith
 
+-- Except for the `import`, the doc-modules and the following `set_option`, this file is just
+-- comments and whitespace.  Once the file gets revived, the linting can start!
+set_option linter.style.longLine false
+
 /-!
 
 Each call to `polyrith` makes a call to the SageCell web API at
@@ -179,7 +183,7 @@ A full test suite is provided at the bottom of the file.
 --   "(((((2 * var0) - 3) + (9 * var1)) + (3 * var2)) - (((8 - var3) + (3 * var2)) - (3 * var0)))"]
 --   "linear_combination 2 * h1 - h2 + 3 * h3 - 3 * h4"
 
--- /-! ### Case with ambiguous identifiers-/
+-- /-! ### Case with ambiguous identifiers -/
 
 -- example («def evil» y : ℤ) (h1 : 3*«def evil» + 2*y = 10) :
 --   3*«def evil» + 2*y = 10 :=
@@ -477,7 +481,7 @@ example (a b c d : ℚ) (h1 : a = 4) (h2 : 3 = b) (h3 : c*3 = d) (h4 : -d = a) :
     2*a - 3 + 9*c + 3*d = 8 - b + 3*d - 3*a := by
   polyrith
 
-/-! ### Case with ambiguous identifiers-/
+/-! ### Case with ambiguous identifiers -/
 -- set_option trace.Meta.Tactic.polyrith true
 example («def evil» y : ℤ) (h1 : 3*«def evil» + 2*y = 10) :
     3*«def evil» + 2*y = 10 := by
@@ -627,7 +631,7 @@ example (a b c d : ℚ) (h1 : a = 4) (h2 : 3 = b) (h3 : c*3 = d) (h4 : -d = a) :
     2*a - 3 + 9*c + 3*d = 8 - b + 3*d - 3*a := by
   create_polyrith_test
 
-/-! ### Case with ambiguous identifiers-/
+/-! ### Case with ambiguous identifiers -/
 
 example («def evil» y : ℤ) (h1 : 3*«def evil» + 2*y = 10) :
     3*«def evil» + 2*y = 10 := by

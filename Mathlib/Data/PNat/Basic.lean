@@ -10,8 +10,6 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
 import Mathlib.Order.Hom.Basic
 
-#align_import data.pnat.basic from "leanprover-community/mathlib"@"172bf2812857f5e56938cc148b7a539f52f84ca9"
-
 /-!
 # The positive natural numbers
 
@@ -32,40 +30,32 @@ instance instIsWellOrder : IsWellOrder ℕ+ (· < ·) where
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
   rw [natPred, add_tsub_cancel_iff_le.mpr <| show 1 ≤ (n : ℕ) from n.2]
-#align pnat.one_add_nat_pred PNat.one_add_natPred
 
 @[simp]
 theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
-#align pnat.nat_pred_add_one PNat.natPred_add_one
 
 @[mono]
 theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
-#align pnat.nat_pred_strict_mono PNat.natPred_strictMono
 
 @[mono]
 theorem natPred_monotone : Monotone natPred :=
   natPred_strictMono.monotone
-#align pnat.nat_pred_monotone PNat.natPred_monotone
 
 theorem natPred_injective : Function.Injective natPred :=
   natPred_strictMono.injective
-#align pnat.nat_pred_injective PNat.natPred_injective
 
 @[simp]
 theorem natPred_lt_natPred {m n : ℕ+} : m.natPred < n.natPred ↔ m < n :=
   natPred_strictMono.lt_iff_lt
-#align pnat.nat_pred_lt_nat_pred PNat.natPred_lt_natPred
 
 @[simp]
 theorem natPred_le_natPred {m n : ℕ+} : m.natPred ≤ n.natPred ↔ m ≤ n :=
   natPred_strictMono.le_iff_le
-#align pnat.nat_pred_le_nat_pred PNat.natPred_le_natPred
 
 @[simp]
 theorem natPred_inj {m n : ℕ+} : m.natPred = n.natPred ↔ m = n :=
   natPred_injective.eq_iff
-#align pnat.nat_pred_inj PNat.natPred_inj
 
 @[simp, norm_cast]
 lemma val_ofNat (n : ℕ) [NeZero n] :
@@ -83,31 +73,25 @@ namespace Nat
 
 @[mono]
 theorem succPNat_strictMono : StrictMono succPNat := fun _ _ => Nat.succ_lt_succ
-#align nat.succ_pnat_strict_mono Nat.succPNat_strictMono
 
 @[mono]
 theorem succPNat_mono : Monotone succPNat :=
   succPNat_strictMono.monotone
-#align nat.succ_pnat_mono Nat.succPNat_mono
 
 @[simp]
 theorem succPNat_lt_succPNat {m n : ℕ} : m.succPNat < n.succPNat ↔ m < n :=
   succPNat_strictMono.lt_iff_lt
-#align nat.succ_pnat_lt_succ_pnat Nat.succPNat_lt_succPNat
 
 @[simp]
 theorem succPNat_le_succPNat {m n : ℕ} : m.succPNat ≤ n.succPNat ↔ m ≤ n :=
   succPNat_strictMono.le_iff_le
-#align nat.succ_pnat_le_succ_pnat Nat.succPNat_le_succPNat
 
 theorem succPNat_injective : Function.Injective succPNat :=
   succPNat_strictMono.injective
-#align nat.succ_pnat_injective Nat.succPNat_injective
 
 @[simp]
 theorem succPNat_inj {n m : ℕ} : succPNat n = succPNat m ↔ n = m :=
   succPNat_injective.eq_iff
-#align nat.succ_pnat_inj Nat.succPNat_inj
 
 end Nat
 
@@ -123,18 +107,15 @@ open Nat
 @[simp, norm_cast]
 theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
   SetCoe.ext_iff
-#align pnat.coe_inj PNat.coe_inj
 
 @[simp, norm_cast]
 theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
-#align pnat.add_coe PNat.add_coe
 
 /-- `coe` promoted to an `AddHom`, that is, a morphism which preserves addition. -/
 def coeAddHom : AddHom ℕ+ ℕ where
   toFun := Coe.coe
   map_add' := add_coe
-#align pnat.coe_add_hom PNat.coeAddHom
 
 instance covariantClass_add_le : CovariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
   Positive.covariantClass_add_le
@@ -153,19 +134,14 @@ instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· 
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
   map_rel_iff' := natPred_le_natPred
-#align order_iso.pnat_iso_nat OrderIso.pnatIsoNat
-#align order_iso.pnat_iso_nat_apply OrderIso.pnatIsoNat_apply
 
 @[simp]
 theorem _root_.OrderIso.pnatIsoNat_symm_apply : OrderIso.pnatIsoNat.symm = Nat.succPNat :=
   rfl
-#align order_iso.pnat_iso_nat_symm_apply OrderIso.pnatIsoNat_symm_apply
 
 theorem lt_add_one_iff : ∀ {a b : ℕ+}, a < b + 1 ↔ a ≤ b := Nat.lt_add_one_iff
-#align pnat.lt_add_one_iff PNat.lt_add_one_iff
 
 theorem add_one_le_iff : ∀ {a b : ℕ+}, a + 1 ≤ b ↔ a < b := Nat.add_one_le_iff
-#align pnat.add_one_le_iff PNat.add_one_le_iff
 
 instance instOrderBot : OrderBot ℕ+ where
   bot := 1
@@ -174,7 +150,6 @@ instance instOrderBot : OrderBot ℕ+ where
 @[simp]
 theorem bot_eq_one : (⊥ : ℕ+) = 1 :=
   rfl
-#align pnat.bot_eq_one PNat.bot_eq_one
 
 /-- Strong induction on `ℕ+`, with `n = 1` treated separately. -/
 def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
@@ -186,7 +161,6 @@ def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
   cases' k with k
   · exact hz
   exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (Nat.lt_succ_iff.2 hm)
-#align pnat.case_strong_induction_on PNat.caseStrongInductionOn
 
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
 not only to `Prop`. -/
@@ -198,19 +172,16 @@ def recOn (n : ℕ+) {p : ℕ+ → Sort*} (p1 : p 1) (hp : ∀ n, p n → p (n +
   · cases' n with n
     · exact p1
     · exact hp _ (IH n.succ_pos)
-#align pnat.rec_on PNat.recOn
 
 @[simp]
 theorem recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
   rfl
-#align pnat.rec_on_one PNat.recOn_one
 
 @[simp]
 theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
     @PNat.recOn (n + 1) p p1 hp = hp n (@PNat.recOn n p p1 hp) := by
   cases' n with n h
   cases n <;> [exact absurd h (by decide); rfl]
-#align pnat.rec_on_succ PNat.recOn_succ
 
 @[simp]
 theorem ofNat_le_ofNat {m n : ℕ} [NeZero m] [NeZero n] :
@@ -227,45 +198,33 @@ theorem ofNat_inj {m n : ℕ} [NeZero m] [NeZero n] :
     (no_index (OfNat.ofNat m) : ℕ+) = no_index (OfNat.ofNat n) ↔ OfNat.ofNat m = OfNat.ofNat n :=
   Subtype.mk_eq_mk
 
-#noalign pnat.bit0_le_bit0
-#noalign pnat.bit0_le_bit1
-#noalign pnat.bit1_le_bit0
-#noalign pnat.bit1_le_bit1
-
 @[simp, norm_cast]
 theorem mul_coe (m n : ℕ+) : ((m * n : ℕ+) : ℕ) = m * n :=
   rfl
-#align pnat.mul_coe PNat.mul_coe
 
 /-- `PNat.coe` promoted to a `MonoidHom`. -/
 def coeMonoidHom : ℕ+ →* ℕ where
   toFun := Coe.coe
   map_one' := one_coe
   map_mul' := mul_coe
-#align pnat.coe_monoid_hom PNat.coeMonoidHom
 
 @[simp]
 theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = Coe.coe :=
   rfl
-#align pnat.coe_coe_monoid_hom PNat.coe_coeMonoidHom
 
 @[simp]
 theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 :=
   le_bot_iff
-#align pnat.le_one_iff PNat.le_one_iff
 
 theorem lt_add_left (n m : ℕ+) : n < m + n :=
   lt_add_of_pos_left _ m.2
-#align pnat.lt_add_left PNat.lt_add_left
 
 theorem lt_add_right (n m : ℕ+) : n < n + m :=
   (lt_add_left n m).trans_eq (add_comm _ _)
-#align pnat.lt_add_right PNat.lt_add_right
 
 @[simp, norm_cast]
 theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
   rfl
-#align pnat.pow_coe PNat.pow_coe
 
 /-- b is greater one if any a is less than b -/
 theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := bot_le.trans_lt hab
@@ -286,7 +245,6 @@ theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ
   · exact toPNat'_coe (tsub_pos_of_lt h)
   · rw [tsub_eq_zero_iff_le.mpr (le_of_not_gt h : (a : ℕ) ≤ b)]
     rfl
-#align pnat.sub_coe PNat.sub_coe
 
 theorem sub_le (a b : ℕ+) : a - b ≤ a := by
   rw [← coe_le_coe, sub_coe]
@@ -305,13 +263,11 @@ theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
     PNat.eq <| by
       rw [add_coe, sub_coe, if_pos h]
       exact add_tsub_cancel_of_le h.le
-#align pnat.add_sub_of_lt PNat.add_sub_of_lt
 
 /-- If `n : ℕ+` is different from `1`, then it is the successor of some `k : ℕ+`. -/
 theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n = k + 1
   | ⟨1, _⟩, h₁ => False.elim <| h₁ rfl
   | ⟨n + 2, _⟩, _ => ⟨⟨n + 1, by simp⟩, rfl⟩
-#align pnat.exists_eq_succ_of_ne_one PNat.exists_eq_succ_of_ne_one
 
 /-- Lemmas with div, dvd and mod operations -/
 theorem modDivAux_spec :
@@ -322,7 +278,6 @@ theorem modDivAux_spec :
     change (k : ℕ) + (k : ℕ) * (q + 1).pred = 0 + (k : ℕ) * (q + 1)
     rw [Nat.pred_succ, Nat.mul_succ, zero_add, add_comm]
   | k, r + 1, q, _ => rfl
-#align pnat.mod_div_aux_spec PNat.modDivAux_spec
 
 theorem mod_add_div (m k : ℕ+) : (mod m k + k * div m k : ℕ) = m := by
   let h₀ := Nat.mod_add_div (m : ℕ) (k : ℕ)
@@ -332,21 +287,17 @@ theorem mod_add_div (m k : ℕ+) : (mod m k + k * div m k : ℕ) = m := by
     exact (m.ne_zero h₀.symm).elim
   have := modDivAux_spec k ((m : ℕ) % (k : ℕ)) ((m : ℕ) / (k : ℕ)) this
   exact this.trans h₀
-#align pnat.mod_add_div PNat.mod_add_div
 
 theorem div_add_mod (m k : ℕ+) : (k * div m k + mod m k : ℕ) = m :=
   (add_comm _ _).trans (mod_add_div _ _)
-#align pnat.div_add_mod PNat.div_add_mod
 
 theorem mod_add_div' (m k : ℕ+) : (mod m k + div m k * k : ℕ) = m := by
   rw [mul_comm]
   exact mod_add_div _ _
-#align pnat.mod_add_div' PNat.mod_add_div'
 
 theorem div_add_mod' (m k : ℕ+) : (div m k * k + mod m k : ℕ) = m := by
   rw [mul_comm]
   exact div_add_mod _ _
-#align pnat.div_add_mod' PNat.div_add_mod'
 
 theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
   change (mod m k : ℕ) ≤ (m : ℕ) ∧ (mod m k : ℕ) ≤ (k : ℕ)
@@ -364,7 +315,6 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
       rw [mul_one] at h₂
       exact ⟨h₂, le_refl (k : ℕ)⟩
   · exact ⟨Nat.mod_le (m : ℕ) (k : ℕ), (Nat.mod_lt (m : ℕ) k.pos).le⟩
-#align pnat.mod_le PNat.mod_le
 
 theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
   constructor <;> intro h
@@ -376,7 +326,6 @@ theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
       simp only [mul_zero, ne_zero] at h
     use ⟨n.succ, n.succ_pos⟩
     rw [← coe_inj, h, mul_coe, mk_coe]
-#align pnat.dvd_iff PNat.dvd_iff
 
 theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by
   rw [dvd_iff]
@@ -390,34 +339,28 @@ theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by
     · replace h : (mod m k : ℕ) = (k : ℕ) := congr_arg _ h
       rw [mod_coe, if_neg h'] at h
       exact ((Nat.mod_lt (m : ℕ) k.pos).ne h).elim
-#align pnat.dvd_iff' PNat.dvd_iff'
 
 theorem le_of_dvd {m n : ℕ+} : m ∣ n → m ≤ n := by
   rw [dvd_iff']
   intro h
   rw [← h]
   apply (mod_le n m).left
-#align pnat.le_of_dvd PNat.le_of_dvd
 
 theorem mul_div_exact {m k : ℕ+} (h : k ∣ m) : k * divExact m k = m := by
   apply PNat.eq; rw [mul_coe]
   change (k : ℕ) * (div m k).succ = m
   rw [← div_add_mod m k, dvd_iff'.mp h, Nat.mul_succ]
-#align pnat.mul_div_exact PNat.mul_div_exact
 
 theorem dvd_antisymm {m n : ℕ+} : m ∣ n → n ∣ m → m = n := fun hmn hnm =>
   (le_of_dvd hmn).antisymm (le_of_dvd hnm)
-#align pnat.dvd_antisymm PNat.dvd_antisymm
 
 theorem dvd_one_iff (n : ℕ+) : n ∣ 1 ↔ n = 1 :=
   ⟨fun h => dvd_antisymm h (one_dvd n), fun h => h.symm ▸ dvd_refl 1⟩
-#align pnat.dvd_one_iff PNat.dvd_one_iff
 
 theorem pos_of_div_pos {n : ℕ+} {a : ℕ} (h : a ∣ n) : 0 < a := by
   apply pos_iff_ne_zero.2
   intro hzero
   rw [hzero] at h
   exact PNat.ne_zero n (eq_zero_of_zero_dvd h)
-#align pnat.pos_of_div_pos PNat.pos_of_div_pos
 
 end PNat

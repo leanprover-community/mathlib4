@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
-#align_import measure_theory.function.special_functions.inner from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
-
 /-!
 # Measurability of scalar products
 -/
@@ -23,7 +21,6 @@ theorem Measurable.inner {_ : MeasurableSpace α} [MeasurableSpace E] [OpensMeas
     [SecondCountableTopology E] {f g : α → E} (hf : Measurable f)
     (hg : Measurable g) : Measurable fun t => ⟪f t, g t⟫ :=
   Continuous.measurable2 continuous_inner hf hg
-#align measurable.inner Measurable.inner
 
 @[measurability]
 theorem Measurable.const_inner {_ : MeasurableSpace α} [MeasurableSpace E] [OpensMeasurableSpace E]
@@ -45,7 +42,6 @@ theorem AEMeasurable.inner {m : MeasurableSpace α} [MeasurableSpace E] [OpensMe
   refine hf.ae_eq_mk.mp (hg.ae_eq_mk.mono fun x hxg hxf => ?_)
   dsimp only
   congr
-#align ae_measurable.inner AEMeasurable.inner
 
 set_option linter.unusedVariables false in
 @[measurability]

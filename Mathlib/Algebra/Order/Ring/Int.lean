@@ -3,12 +3,10 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Ring.Int
-import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Set.Basic
-
-#align_import data.int.order.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # The integers form a linear ordered ring
@@ -53,19 +51,16 @@ instance instOrderedRing : OrderedRing ℤ := StrictOrderedRing.toOrderedRing'
 /-! ### Miscellaneous lemmas -/
 
 lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
-  simp [← Set.compl_setOf, isCompl_compl]
-#align int.is_compl_even_odd Int.isCompl_even_odd
+  simp [← not_even_iff_odd, ← Set.compl_setOf, isCompl_compl]
 
 lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| := by
   rw [← natCast_natAbs, Int.cast_natCast]
-#align nat.cast_nat_abs Nat.cast_natAbs
 
 /-- Note this holds in marginally more generality than `Int.cast_mul` -/
 lemma cast_mul_eq_zsmul_cast {α : Type*} [AddCommGroupWithOne α] :
     ∀ m n : ℤ, ↑(m * n) = m • (n : α) :=
   fun m ↦ Int.induction_on m (by simp) (fun _ ih ↦ by simp [add_mul, add_zsmul, ih]) fun _ ih ↦ by
     simp only [sub_mul, one_mul, cast_sub, ih, sub_zsmul, one_zsmul, ← sub_eq_add_neg, forall_const]
-#align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
 
 lemma two_le_iff_pos_of_even {m : ℤ} (even : Even m) : 2 ≤ m ↔ 0 < m :=
   le_iff_pos_of_dvd (by decide) even.two_dvd
@@ -74,8 +69,3 @@ lemma add_two_le_iff_lt_of_even_sub {m n : ℤ} (even : Even (n - m)) : m + 2 �
   rw [add_comm]; exact le_add_iff_lt_of_dvd_sub (by decide) even.two_dvd
 
 end Int
-
-#noalign bit0_mul
-#noalign mul_bit0
-#noalign bit1_mul
-#noalign mul_bit1

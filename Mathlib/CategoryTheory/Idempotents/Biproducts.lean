@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Idempotents.Karoubi
 
-#align_import category_theory.idempotents.biproducts from "leanprover-community/mathlib"@"362c2263e25ed3b9ed693773f32f91243612e1da"
-
 /-!
 
 # Biproducts in the idempotent completion of a preadditive category
@@ -67,7 +65,6 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
     · dsimp
       simp only [biproduct.ι_map, biproduct.map_π, hom_ext_iff, comp_f,
         assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero, instZero_zero]
-#align category_theory.idempotents.karoubi.biproducts.bicone CategoryTheory.Idempotents.Karoubi.Biproducts.bicone
 
 end Biproducts
 
@@ -86,7 +83,6 @@ theorem karoubi_hasFiniteBiproducts [HasFiniteBiproducts C] : HasFiniteBiproduct
             simp only [biproduct.ι_π_ne_assoc _ hb.symm, zero_comp]
           · intro hj
             simp only [Finset.mem_univ, not_true] at hj } }
-#align category_theory.idempotents.karoubi.karoubi_has_finite_biproducts CategoryTheory.Idempotents.Karoubi.karoubi_hasFiniteBiproducts
 
 attribute [instance] karoubi_hasFiniteBiproducts
 
@@ -97,7 +93,6 @@ def complement (P : Karoubi C) : Karoubi C where
   X := P.X
   p := 𝟙 _ - P.p
   idem := idem_of_id_sub_idem P.p P.idem
-#align category_theory.idempotents.karoubi.complement CategoryTheory.Idempotents.Karoubi.complement
 
 instance (P : Karoubi C) : HasBinaryBiproduct P P.complement :=
   hasBinaryBiproduct_of_total
@@ -146,7 +141,6 @@ def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.X
     simp only [toKaroubi_obj_X, biprod.lift_desc, instAdd_add, comp_f, decompId_p_f, decompId_i_f,
       idem, complement_X, complement_p, comp_sub, comp_id, sub_comp, id_comp, sub_self, sub_zero,
       add_sub_cancel, id_f, toKaroubi_obj_p]
-#align category_theory.idempotents.karoubi.decomposition CategoryTheory.Idempotents.Karoubi.decomposition
 
 end Karoubi
 

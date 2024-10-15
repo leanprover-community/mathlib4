@@ -412,7 +412,7 @@ then its line derivative at `x₀` in the direction `v` has norm bounded by `C *
 theorem HasLineDerivAt.le_of_lipschitz
     {f : E → F} {f' : F} {x₀ : E} (hf : HasLineDerivAt 𝕜 f f' x₀ v)
     {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖f'‖ ≤ C * ‖v‖ :=
-  hf.le_of_lipschitzOn univ_mem (lipschitzOn_univ.2 hlip)
+  hf.le_of_lipschitzOn univ_mem (lipschitzOnWith_univ.2 hlip)
 
 variable (𝕜)
 
@@ -444,7 +444,7 @@ its line derivative at `x₀` in the direction `v` has norm bounded by `C * ‖v
 Version using `lineDeriv`. -/
 theorem norm_lineDeriv_le_of_lipschitz {f : E → F} {x₀ : E}
     {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖lineDeriv 𝕜 f x₀ v‖ ≤ C * ‖v‖ :=
-  norm_lineDeriv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOn_univ.2 hlip)
+  norm_lineDeriv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOnWith_univ.2 hlip)
 
 variable {𝕜}
 
@@ -499,14 +499,14 @@ theorem HasLineDerivWithinAt.smul (h : HasLineDerivWithinAt 𝕜 f f' s x v) (c 
   have A : HasDerivAt g c 0 := by simpa using (hasDerivAt_id (0 : 𝕜)).const_smul c
   have B : HasDerivWithinAt (fun t ↦ f (x + t • v)) f' s' (g 0) := by simpa [g] using h
   have Z := B.scomp (0 : 𝕜) A.hasDerivWithinAt (mapsTo_preimage g s')
-  simp only [g, s', Function.comp, smul_eq_mul, mul_comm c, ← smul_smul] at Z
+  simp only [g, s', Function.comp_def, smul_eq_mul, mul_comm c, ← smul_smul] at Z
   convert Z
   ext t
   simp [← smul_smul]
 
 theorem hasLineDerivWithinAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     HasLineDerivWithinAt 𝕜 f (c • f') s x (c • v) ↔ HasLineDerivWithinAt 𝕜 f f' s x v :=
-  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
+  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel₀ hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
 theorem HasLineDerivAt.smul (h : HasLineDerivAt 𝕜 f f' x v) (c : 𝕜) :
     HasLineDerivAt 𝕜 f (c • f') x (c • v) := by
@@ -515,7 +515,7 @@ theorem HasLineDerivAt.smul (h : HasLineDerivAt 𝕜 f f' x v) (c : 𝕜) :
 
 theorem hasLineDerivAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     HasLineDerivAt 𝕜 f (c • f') x (c • v) ↔ HasLineDerivAt 𝕜 f f' x v :=
-  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
+  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel₀ hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
 theorem LineDifferentiableWithinAt.smul (h : LineDifferentiableWithinAt 𝕜 f s x v) (c : 𝕜) :
     LineDifferentiableWithinAt 𝕜 f s x (c • v) :=
@@ -523,7 +523,7 @@ theorem LineDifferentiableWithinAt.smul (h : LineDifferentiableWithinAt 𝕜 f s
 
 theorem lineDifferentiableWithinAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     LineDifferentiableWithinAt 𝕜 f s x (c • v) ↔ LineDifferentiableWithinAt 𝕜 f s x v :=
-  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
+  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel₀ hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
 theorem LineDifferentiableAt.smul (h : LineDifferentiableAt 𝕜 f x v) (c : 𝕜) :
     LineDifferentiableAt 𝕜 f x (c • v) :=
@@ -531,7 +531,7 @@ theorem LineDifferentiableAt.smul (h : LineDifferentiableAt 𝕜 f x v) (c : �
 
 theorem lineDifferentiableAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     LineDifferentiableAt 𝕜 f x (c • v) ↔ LineDifferentiableAt 𝕜 f x v :=
-  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
+  ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel₀ hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
 theorem lineDeriv_smul {c : 𝕜} : lineDeriv 𝕜 f x (c • v) = c • lineDeriv 𝕜 f x v := by
   rcases eq_or_ne c 0 with rfl|hc

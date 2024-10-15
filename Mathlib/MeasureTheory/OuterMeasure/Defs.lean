@@ -46,11 +46,6 @@ structure OuterMeasure (α : Type*) where
   protected mono : ∀ {s₁ s₂}, s₁ ⊆ s₂ → measureOf s₁ ≤ measureOf s₂
   protected iUnion_nat : ∀ s : ℕ → Set α, Pairwise (Disjoint on s) →
     measureOf (⋃ i, s i) ≤ ∑' i, measureOf (s i)
-#align measure_theory.outer_measure MeasureTheory.OuterMeasure
-#align measure_theory.outer_measure.measure_of MeasureTheory.OuterMeasure.measureOf
-#align measure_theory.outer_measure.empty MeasureTheory.OuterMeasure.empty
-#align measure_theory.outer_measure.mono MeasureTheory.OuterMeasure.mono
-#align measure_theory.outer_measure.Union_nat MeasureTheory.OuterMeasure.iUnion_nat
 
 /-- A mixin class saying that elements `μ : F` are outer measures on `α`.
 
@@ -69,10 +64,8 @@ instance : FunLike (OuterMeasure α) (Set α) ℝ≥0∞ where
 
 instance instCoeFun : CoeFun (OuterMeasure α) (fun _ => Set α → ℝ≥0∞) :=
   inferInstance
-#align measure_theory.outer_measure.has_coe_to_fun MeasureTheory.OuterMeasure.instCoeFun
 
 @[simp] theorem measureOf_eq_coe (m : OuterMeasure α) : m.measureOf = m := rfl
-#align measure_theory.outer_measure.measure_of_eq_coe MeasureTheory.OuterMeasure.measureOf_eq_coe
 
 instance : OuterMeasureClass (OuterMeasure α) α where
   measure_empty f := f.empty

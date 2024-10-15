@@ -8,19 +8,19 @@ import Mathlib.RingTheory.HahnSeries.Multiplication
 /-!
 # Vertex operators
 In this file we introduce heterogeneous vertex operators using Hahn series.  When `R = ℂ`, `V = W`,
-and `Γ = ℤ`, then this is the usual notion of `meromorphic left-moving 2D field`.  The notion we use
+and `Γ = ℤ`, then this is the usual notion of "meromorphic left-moving 2D field".  The notion we use
 here allows us to consider composites and scalar-multiply by multivariable Laurent series.
 ## Definitions
 * `HVertexOperator` : An `R`-linear map from an `R`-module `V` to `HahnModule Γ W`.
 * The coefficient function as an `R`-linear map.
+* Composition of heterogeneous vertex operators - values are Hahn series on lex order product.
 ## Main results
 * Ext
 ## TODO
-* Composition of heterogeneous vertex operators - values are Hahn series on lex order product
-  (needs PR#10781).
 * `HahnSeries Γ R`-module structure on `HVertexOperator Γ R V W` (needs PR#10846).  This means we
   can consider products of the form `(X-Y)^n A(X)B(Y)` for all integers `n`, where `(X-Y)^n` is
   expanded as `X^n(1-Y/X)^n` in `R((X))((Y))`.
+* curry for tensor product inputs
 * more API to make ext comparisons easier.
 * formal variable API, e.g., like the `T` function for Laurent polynomials.
 ## References
@@ -29,13 +29,15 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 
 -/
 
+assert_not_exists Cardinal
+
 noncomputable section
 
 variable {Γ : Type*} [PartialOrder Γ] {R : Type*} {V W : Type*} [CommRing R]
   [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
 /-- A heterogeneous `Γ`-vertex operator over a commutator ring `R` is an `R`-linear map from an
-`R`-module `V` to `Γ`-Hahn series with coefficients in an `R`-module `W`.-/
+`R`-module `V` to `Γ`-Hahn series with coefficients in an `R`-module `W`. -/
 abbrev HVertexOperator (Γ : Type*) [PartialOrder Γ] (R : Type*) [CommRing R]
     (V : Type*) (W : Type*) [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] :=
   V →ₗ[R] (HahnModule Γ R W)
@@ -59,8 +61,7 @@ def coeff (A : HVertexOperator Γ R V W) (n : Γ) : V →ₗ[R] W where
   toFun v := ((of R).symm (A v)).coeff n
   map_add' _ _ := by simp
   map_smul' _ _ := by
-    simp only [map_smul, RingHom.id_apply]
-    exact rfl
+    simp only [map_smul, RingHom.id_apply, of_symm_smul, HahnSeries.smul_coeff]
 
 @[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.coeff := coeff
 
@@ -85,15 +86,68 @@ condition, we produce a heterogeneous vertex operator. -/
 def of_coeff (f : Γ → V →ₗ[R] W)
     (hf : ∀(x : V), (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
   toFun x := (of R) { coeff := fun g => f g x, isPWO_support' := hf x }
-  map_add' _ _ := by
-    ext
-    simp
-  map_smul' _ _ := by
-    simp only [map_smul, RingHom.id_apply]
-    exact rfl
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 @[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.of_coeff := of_coeff
 
 end Coeff
+
+section Products
+
+variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [OrderedCancelAddCommMonoid Γ'] {R : Type*}
+  [CommRing R] {U V W : Type*} [AddCommGroup U] [Module R U][AddCommGroup V] [Module R V]
+  [AddCommGroup W] [Module R W] (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ' R U V)
+
+open HahnModule
+
+/-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
+series. -/
+@[simps]
+def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
+  coeff g' := A (coeff B g' u)
+  isPWO_support' := by
+    refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
+    simp_all only [coeff_apply, Function.support_subset_iff, ne_eq, Function.mem_support]
+    intro g' hg' hAB
+    apply hg'
+    simp_rw [hAB]
+    simp_all only [map_zero, HahnSeries.zero_coeff, not_true_eq_false]
+
+@[simp]
+theorem compHahnSeries_add (u v : U) :
+    compHahnSeries A B (u + v) = compHahnSeries A B u + compHahnSeries A B v := by
+  ext
+  simp only [compHahnSeries_coeff, map_add, coeff_apply, HahnSeries.add_coeff', Pi.add_apply]
+  rw [← HahnSeries.add_coeff]
+
+@[simp]
+theorem compHahnSeries_smul (r : R) (u : U) :
+    compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
+  ext
+  simp only [compHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply, HahnSeries.smul_coeff]
+  rw [← HahnSeries.smul_coeff]
+
+/-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
+@[simps]
+def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
+  toFun u := HahnModule.of R (HahnSeries.ofIterate (compHahnSeries A B u))
+  map_add' := by
+    intro u v
+    ext g
+    simp only [HahnSeries.ofIterate, compHahnSeries_add, Equiv.symm_apply_apply,
+      HahnModule.of_symm_add, HahnSeries.add_coeff', Pi.add_apply]
+  map_smul' := by
+    intro r x
+    ext g
+    simp only [HahnSeries.ofIterate, compHahnSeries_smul, HahnSeries.smul_coeff,
+      compHahnSeries_coeff, coeff_apply, Equiv.symm_apply_apply, RingHom.id_apply, of_symm_smul]
+
+@[simp]
+theorem comp_coeff (g : Γ' ×ₗ Γ) :
+    (comp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
+  rfl
+
+end Products
 
 end HVertexOperator

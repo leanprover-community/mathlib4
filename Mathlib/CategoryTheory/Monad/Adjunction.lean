@@ -1,12 +1,10 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Monad.Algebra
-
-#align_import category_theory.monad.adjunction from "leanprover-community/mathlib"@"ea3009f6c1a37dc031f741382dbb3ed93c965620"
 
 /-!
 # Adjunctions and (co)monads
@@ -46,17 +44,16 @@ the category `C`.
 @[simps! coe η μ]
 def toMonad (h : L ⊣ R) : Monad C where
   toFunctor := L ⋙ R
-  η' := h.unit
-  μ' := whiskerRight (whiskerLeft L h.counit) R
-  assoc' X := by
+  η := h.unit
+  μ := whiskerRight (whiskerLeft L h.counit) R
+  assoc X := by
     dsimp
     rw [← R.map_comp]
     simp
-  right_unit' X := by
+  right_unit X := by
     dsimp
     rw [← R.map_comp]
     simp
-#align category_theory.adjunction.to_monad CategoryTheory.Adjunction.toMonad
 
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a comonad on
 the category `D`.
@@ -65,32 +62,29 @@ the category `D`.
 @[simps coe ε δ]
 def toComonad (h : L ⊣ R) : Comonad D where
   toFunctor := R ⋙ L
-  ε' := h.counit
-  δ' := whiskerRight (whiskerLeft R h.unit) L
-  coassoc' X := by
+  ε := h.counit
+  δ := whiskerRight (whiskerLeft R h.unit) L
+  coassoc X := by
     dsimp
     rw [← L.map_comp]
     simp
-  right_counit' X := by
+  right_counit X := by
     dsimp
     rw [← L.map_comp]
     simp
-#align category_theory.adjunction.to_comonad CategoryTheory.Adjunction.toComonad
 
-/-- The monad induced by the Eilenberg-Moore adjunction is the original monad.  -/
+/-- The monad induced by the Eilenberg-Moore adjunction is the original monad. -/
 @[simps!]
 def adjToMonadIso (T : Monad C) : T.adj.toMonad ≅ T :=
   MonadIso.mk (NatIso.ofComponents fun X => Iso.refl _)
-#align category_theory.adjunction.adj_to_monad_iso CategoryTheory.Adjunction.adjToMonadIso
 
 /-- The comonad induced by the Eilenberg-Moore adjunction is the original comonad. -/
 @[simps!]
 def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
   ComonadIso.mk (NatIso.ofComponents fun X => Iso.refl _)
-#align category_theory.adjunction.adj_to_comonad_iso CategoryTheory.Adjunction.adjToComonadIso
 
 /--
-Given an adjunction `L ⊣ R`, if `L ⋙ R` is abstractly isomorphic to the identity functor, then the
+Given an adjunction `L ⊣ R`, if `L ⋙ R` is abstractly isomorphic to the identity functor, then the
 unit is an isomorphism.
 -/
 def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R where
@@ -106,11 +100,11 @@ def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R
     ext X
     exact (adj.toMonad.transport i).right_unit X
 
-lemma isIso_unit_of_iso  (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : IsIso adj.unit :=
+lemma isIso_unit_of_iso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : IsIso adj.unit :=
   (inferInstanceAs (IsIso (unitAsIsoOfIso adj i).hom))
 
 /--
-Given an adjunction `L ⊣ R`, if `L ⋙ R` is isomorphic to the identity functor, then `L` is
+Given an adjunction `L ⊣ R`, if `L ⋙ R` is isomorphic to the identity functor, then `L` is
 fully faithful.
 -/
 noncomputable def fullyFaithfulLOfCompIsoId (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : L.FullyFaithful :=
@@ -118,7 +112,7 @@ noncomputable def fullyFaithfulLOfCompIsoId (adj : L ⊣ R) (i : L ⋙ R ≅ �
   adj.fullyFaithfulLOfIsIsoUnit
 
 /--
-Given an adjunction `L ⊣ R`, if `R ⋙ L` is abstractly isomorphic to the identity functor, then the
+Given an adjunction `L ⊣ R`, if `R ⋙ L` is abstractly isomorphic to the identity functor, then the
 counit is an isomorphism.
 -/
 def counitAsIsoOfIso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : R ⋙ L ≅ 𝟭 D where
@@ -138,7 +132,7 @@ lemma isIso_counit_of_iso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : IsIso adj.c
   inferInstanceAs (IsIso (counitAsIsoOfIso adj j).hom)
 
 /--
-Given an adjunction `L ⊣ R`, if `R ⋙ L` is isomorphic to the identity functor, then `R` is
+Given an adjunction `L ⊣ R`, if `R ⋙ L` is isomorphic to the identity functor, then `R` is
 fully faithful.
 -/
 noncomputable def fullyFaithfulROfCompIsoId (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : R.FullyFaithful :=
@@ -166,7 +160,6 @@ def Monad.comparison (h : L ⊣ R) : D ⥤ h.toMonad.Algebra where
       h := by
         dsimp
         rw [← R.map_comp, Adjunction.counit_naturality, R.map_comp] }
-#align category_theory.monad.comparison CategoryTheory.Monad.comparison
 
 /-- The underlying object of `(Monad.comparison R).obj X` is just `R.obj X`.
 -/
@@ -174,11 +167,9 @@ def Monad.comparison (h : L ⊣ R) : D ⥤ h.toMonad.Algebra where
 def Monad.comparisonForget (h : L ⊣ R) : Monad.comparison h ⋙ h.toMonad.forget ≅ R where
   hom := { app := fun X => 𝟙 _ }
   inv := { app := fun X => 𝟙 _ }
-#align category_theory.monad.comparison_forget CategoryTheory.Monad.comparisonForget
 
 theorem Monad.left_comparison (h : L ⊣ R) : L ⋙ Monad.comparison h = h.toMonad.free :=
   rfl
-#align category_theory.monad.left_comparison CategoryTheory.Monad.left_comparison
 
 instance [R.Faithful] (h : L ⊣ R) : (Monad.comparison h).Faithful where
   map_injective {_ _} _ _ w := R.map_injective (congr_arg Monad.Algebra.Hom.f w : _)
@@ -213,7 +204,6 @@ def Comonad.comparison (h : L ⊣ R) : C ⥤ h.toComonad.Coalgebra where
         dsimp
         rw [← L.map_comp]
         simp }
-#align category_theory.comonad.comparison CategoryTheory.Comonad.comparison
 
 /-- The underlying object of `(Comonad.comparison L).obj X` is just `L.obj X`.
 -/
@@ -222,16 +212,13 @@ def Comonad.comparisonForget {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) :
     Comonad.comparison h ⋙ h.toComonad.forget ≅ L where
   hom := { app := fun X => 𝟙 _ }
   inv := { app := fun X => 𝟙 _ }
-#align category_theory.comonad.comparison_forget CategoryTheory.Comonad.comparisonForget
 
 theorem Comonad.left_comparison (h : L ⊣ R) : R ⋙ Comonad.comparison h = h.toComonad.cofree :=
   rfl
-#align category_theory.comonad.left_comparison CategoryTheory.Comonad.left_comparison
 
 instance Comonad.comparison_faithful_of_faithful [L.Faithful] (h : L ⊣ R) :
     (Comonad.comparison h).Faithful where
   map_injective {_ _} _ _ w := L.map_injective (congr_arg Comonad.Coalgebra.Hom.f w : _)
-#align category_theory.comonad.comparison_faithful_of_faithful CategoryTheory.Comonad.comparison_faithful_of_faithful
 
 instance (G : Comonad C) : (Comonad.comparison G.adj).Full where
   map_surjective f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
@@ -253,7 +240,6 @@ class MonadicRightAdjoint (R : D ⥤ C) where
   /-- `R` is a right adjoint -/
   adj : L ⊣ R
   eqv : (Monad.comparison adj).IsEquivalence
-#align category_theory.monadic_right_adjoint CategoryTheory.MonadicRightAdjoint
 
 /-- The left adjoint functor to `R` given by `[MonadicRightAdjoint R]`. -/
 def monadicLeftAdjoint (R : D ⥤ C) [MonadicRightAdjoint R] : C ⥤ D :=
@@ -282,10 +268,9 @@ from `C` to the category of Eilenberg-Moore algebras for the adjunction is an eq
 class ComonadicLeftAdjoint (L : C ⥤ D) where
   /-- a choice of right adjoint for `L` -/
   R : D ⥤ C
-  /-- `L` is a right adjoint -/
+  /-- `L` is a left adjoint -/
   adj : L ⊣ R
   eqv : (Comonad.comparison adj).IsEquivalence
-#align category_theory.comonadic_left_adjoint CategoryTheory.ComonadicLeftAdjoint
 
 /-- The right adjoint functor to `L` given by `[ComonadicLeftAdjoint L]`. -/
 def comonadicRightAdjoint (L : C ⥤ D) [ComonadicLeftAdjoint L] : D ⥤ C :=
@@ -311,7 +296,6 @@ noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget where
 instance μ_iso_of_reflective [Reflective R] : IsIso (reflectorAdjunction R).toMonad.μ := by
   dsimp
   infer_instance
-#align category_theory.μ_iso_of_reflective CategoryTheory.μ_iso_of_reflective
 
 instance δ_iso_of_coreflective [Coreflective R] : IsIso (coreflectorAdjunction R).toComonad.δ := by
   dsimp
@@ -346,12 +330,10 @@ instance comparison_essSurj [Reflective R] :
   rw [Adjunction.unit_naturality_assoc,
     Adjunction.right_triangle_components, comp_id]
   apply (X.unit_assoc _).symm
-#align category_theory.reflective.comparison_ess_surj CategoryTheory.Reflective.comparison_essSurj
 
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R) :
     (Monad.comparison adj).Full where
   map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
-#align category_theory.reflective.comparison_full CategoryTheory.Reflective.comparison_full
 
 end Reflective
 
@@ -394,7 +376,6 @@ instance (priority := 100) monadicOfReflective [Reflective R] :
     MonadicRightAdjoint R where
   adj := reflectorAdjunction R
   eqv := { full := Reflective.comparison_full _ }
-#align category_theory.monadic_of_reflective CategoryTheory.monadicOfReflective
 
 /-- Any coreflective inclusion has a comonadic left adjoint.
     cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/

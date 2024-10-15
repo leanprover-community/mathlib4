@@ -5,12 +5,10 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Complex.FiniteDimensional
-import Mathlib.FieldTheory.IntermediateField
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
-
-#align_import topology.instances.complex from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
+import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 # Some results about the topology of ℂ
@@ -41,10 +39,9 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
     simp only [Function.comp_apply, ofReal_ratCast, SetLike.mem_coe, SubfieldClass.ratCast_mem]
   nth_rw 1 [range_comp]
   refine subset_trans ?_ (image_closure_subset_closure_image continuous_ofReal)
-  rw [DenseRange.closure_range Rat.denseEmbedding_coe_real.dense]
+  rw [DenseRange.closure_range Rat.isDenseEmbedding_coe_real.dense]
   simp only [image_univ]
   rfl
-#align complex.subfield_eq_of_closed Complex.subfield_eq_of_closed
 
 /-- Let `K` a subfield of `ℂ` and let `ψ : K →+* ℂ` a ring homomorphism. Assume that `ψ` is uniform
 continuous, then `ψ` is either the inclusion map or the composition of the inclusion map with the
@@ -55,13 +52,13 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
   letI : TopologicalRing K.topologicalClosure :=
     Subring.instTopologicalRing K.topologicalClosure.toSubring
   set ι : K → K.topologicalClosure := ⇑(Subfield.inclusion K.le_topologicalClosure)
-  have ui : UniformInducing ι :=
+  have ui : IsUniformInducing ι :=
     ⟨by
-      erw [uniformity_subtype, uniformity_subtype, Filter.comap_comap]
+      rw [uniformity_subtype, uniformity_subtype, Filter.comap_comap]
       congr ⟩
-  let di := ui.denseInducing (?_ : DenseRange ι)
+  let di := ui.isDenseInducing (?_ : DenseRange ι)
   · -- extψ : closure(K) →+* ℂ is the extension of ψ : K →+* ℂ
-    let extψ := DenseInducing.extendRingHom ui di.dense hc
+    let extψ := IsDenseInducing.extendRingHom ui di.dense hc
     haveI hψ := (uniformContinuous_uniformly_extend ui di.dense hc).continuous
     cases' Complex.subfield_eq_of_closed (Subfield.isClosed_topologicalClosure K) with h h
     · left
@@ -79,7 +76,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [RingHom.comp_apply, RingHom.comp_apply, hr, RingEquiv.toRingHom_eq_coe] at this
         convert this using 1
-        · exact (DenseInducing.extend_eq di hc.continuous _).symm
+        · exact (IsDenseInducing.extend_eq di hc.continuous _).symm
         · rw [← ofReal.coe_rangeRestrict, hr]
           rfl
       obtain ⟨r, hr⟩ := SetLike.coe_mem (j (ι x))
@@ -97,11 +94,11 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
       · left
         ext1 z
         convert RingHom.congr_fun h z using 1
-        exact (DenseInducing.extend_eq di hc.continuous z).symm
+        exact (IsDenseInducing.extend_eq di hc.continuous z).symm
       · right
         ext1 z
         convert RingHom.congr_fun h z using 1
-        exact (DenseInducing.extend_eq di hc.continuous z).symm
+        exact (IsDenseInducing.extend_eq di hc.continuous z).symm
   · let j : { x // x ∈ closure (id '' { x | (K : Set ℂ) x }) } → (K.topologicalClosure : Set ℂ) :=
       fun x =>
       ⟨x, by
@@ -109,13 +106,12 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
         simp only [id, Set.image_id']
         rfl ⟩
     convert DenseRange.comp (Function.Surjective.denseRange _)
-        (DenseEmbedding.subtype denseEmbedding_id (K : Set ℂ)).dense (by continuity : Continuous j)
+      (IsDenseEmbedding.id.subtype (K : Set ℂ)).dense (by continuity : Continuous j)
     rintro ⟨y, hy⟩
     use
       ⟨y, by
         convert hy
         simp only [id, Set.image_id']
         rfl ⟩
-#align complex.uniform_continuous_ring_hom_eq_id_or_conj Complex.uniformContinuous_ringHom_eq_id_or_conj
 
 end ComplexSubfield

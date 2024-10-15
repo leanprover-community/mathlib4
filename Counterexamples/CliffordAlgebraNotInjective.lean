@@ -30,7 +30,7 @@ and discover that $αβγ ≠ 0$ as an element of $K$, but $αβγ = 0$ as an el
 
 Some Zulip discussion at https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/.F0.9D.94.BD.E2.82.82.5B.CE.B1.2C.20.CE.B2.2C.20.CE.B3.5D.20.2F.20.28.CE.B1.C2.B2.2C.20.CE.B2.C2.B2.2C.20.CE.B3.C2.B2.29/near/222716333.
 
-As a bonus result, we also show `QuadraticForm.not_forall_mem_range_toQuadraticForm`: that there
+As a bonus result, we also show `BilinMap.not_forall_toQuadraticMap_surjective`: that there
 are quadratic forms that cannot be expressed via even non-symmetric bilinear forms.
 -/
 
@@ -52,7 +52,7 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
   have :
       kIdeal = Ideal.span ((monomial · (1 : ZMod 2)) '' Set.range (Finsupp.single · 2)) := by
     simp_rw [kIdeal, X, monomial_mul, one_mul, ← Finsupp.single_add, ← Set.range_comp,
-      Function.comp]
+      Function.comp_def]
   rw [this, mem_ideal_span_monomial_image]
   simp
 
@@ -132,7 +132,7 @@ theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.Quotient.eq_zero_iff_mem]
   exact mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem
 
-/-- Though `αβγ` is not itself zero-/
+/-- Though `αβγ` is not itself zero -/
 theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
   X0_X1_X2_not_mem_kIdeal <| Ideal.Quotient.eq_zero_iff_mem.1 h
 
@@ -208,7 +208,7 @@ def Q : QuadraticForm K L :=
   QuadraticMap.ofPolar
     (fun x =>
       Quotient.liftOn' x Q' fun a b h => by
-        rw [Submodule.quotientRel_r_def] at h
+        rw [Submodule.quotientRel_def] at h
         suffices Q' (a - b) = 0 by rwa [Q'_sub, sub_eq_zero] at this
         apply Q'_zero_under_ideal (a - b) h)
     (fun a x => by
@@ -292,10 +292,10 @@ theorem CliffordAlgebra.not_forall_algebraMap_injective.{v} :
 
 open Q60596 in
 /-- The general bonus statement: not every quadratic form is the diagonal of a bilinear form. -/
-theorem QuadraticForm.not_forall_mem_range_toQuadraticForm.{v} :
+theorem BilinMap.not_forall_toQuadraticMap_surjective.{v} :
     -- TODO: make `R` universe polymorphic
-    ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] (Q : QuadraticForm R M),
-      Q ∈ Set.range BilinMap.toQuadraticMap :=
+    ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M],
+      Function.Surjective (BilinMap.toQuadraticMap : BilinForm R M → QuadraticForm R M) :=
   fun h => Q_not_in_range_toQuadraticForm <| by
     let uU := ULift.moduleEquiv (R := K) (M := L)
     obtain ⟨x, hx⟩ := h K (ULift L) (Q.comp uU)
