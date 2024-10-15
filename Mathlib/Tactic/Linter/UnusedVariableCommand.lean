@@ -68,6 +68,9 @@ register_option linter.unusedVariableCommand : Bool := {
   descr := "enable the unusedVariableCommand linter"
 }
 
+/--
+Toggles whether or not the linter prints the variables that it considers "used" in `def`initions.
+-/
 register_option showDefs : Bool := {
   defValue := false
   descr := "shows which variables are introduced in a definition"
@@ -86,6 +89,10 @@ node is the whole `variable` command.
 -/
 initialize usedVarsRef : IO.Ref (NameSet × NameMap Syntax) ← IO.mkRef ({}, {})
 
+/--
+`#show_used` is a convenience function that prints a summary of the variables that have been
+defined so far and whether or not they have been used at the point where `#show_used` is called.
+-/
 elab "#show_used" : command => do
   let varRef ← Mathlib.Linter.UnusedVariableCommand.usedVarsRef.get
   if varRef.2.isEmpty then logInfo "No variables present." else
@@ -265,22 +272,25 @@ def getBracketedBinderIds : Syntax → CommandElabM (Array Syntax)
   | `(bracketedBinderF|[$f])                           => return #[f]
   | _                                                  => throwUnsupportedSyntax
 
+/--
+`getNamelessVars exp` takes as input an expression, assumes that it is an iterated
+`forallE`/`lam` and reports whether or not each such constructor has macro-scoped name or not.
+This information is used by `getForallStrings`.
+-/
 def getNamelessVars : Expr → Array Bool
   | .forallE na _x bod _bi | .lam na _x bod _bi => #[na.hasMacroScopes] ++ getNamelessVars bod
   | _ => #[]
 
 /-- `getForallStrings expr` takes as input an `Expr`ession `expr`, and recursively extracts a
-string from `expr`, for every `.forallE` constructor with which `expr` starts.
+string from `expr`, for every `.forallE` constructor with which `expr` starts, returning them
+as an array.
 
-If the `.forallE` is not an instance, then the string is the name of the binder.
-If the `.forallE` is an instance, then the string is the pretty-printed name of the instance,
-up to the first space character.
+If the name associated to a `.forallE` constructor has macro-scopes (e.g. it is nameless),
+then the string is the pretty-printed name of the type of the variable.
+If the `.forallE` has an associated name that is not macro-scoped, then the string is the name of
+the binder.
 
 These strings are used to find used variables in the case of `def`-based declarations.
-For this reason, we only really return the binder names up to the first space-character.
-The heuristic is that if the binder name is a simple variable name, we are ok.
-Otherwise, the beginning of the instance is a good approximation to match the instance with a
-`variable` introduced instance-binder.
 
 This is not perfect, but works well in practice.
 -/
