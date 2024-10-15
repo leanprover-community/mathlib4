@@ -2433,8 +2433,7 @@ theorem rank_eq (h : Acc r a) :
 theorem rank_lt_of_rel (hb : Acc r b) (h : r a b) : (hb.inv h).rank < hb.rank :=
   (Order.lt_succ _).trans_le <| by
     rw [hb.rank_eq]
-    let x : {a // r a b} := ⟨a, h⟩
-    exact Ordinal.le_iSup _ x
+    exact Ordinal.le_iSup _ (⟨a, h⟩ : {a // r a b})
 
 end Acc
 
