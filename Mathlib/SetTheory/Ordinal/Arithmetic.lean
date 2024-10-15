@@ -758,9 +758,6 @@ theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
 @[deprecated isNormal_mul_right (since := "2024-10-11")]
 alias mul_isNormal := isNormal_mul_right
 
-@[deprecated isNormal_mul_right (since := "2024-10-11")]
-alias mul_isNormal := isNormal_mul_right
-
 theorem lt_mul_of_limit {a b c : Ordinal} (h : IsLimit c) : a < b * c ↔ ∃ c' < c, a < b * c' := by
   -- Porting note: `bex_def` is required.
   simpa only [not_forall₂, not_le, bex_def] using not_congr (@mul_le_of_limit b c a h)
