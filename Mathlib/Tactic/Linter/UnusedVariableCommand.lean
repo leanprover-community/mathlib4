@@ -68,6 +68,11 @@ register_option linter.unusedVariableCommand : Bool := {
   descr := "enable the unusedVariableCommand linter"
 }
 
+register_option showDefs : Bool := {
+  defValue := false
+  descr := "shows which variables are introduced in a definition"
+}
+
 namespace UnusedVariableCommand
 
 /--
@@ -80,6 +85,19 @@ There is an exception: for variables introduced with `variable ... in`, the `Syn
 node is the whole `variable` command.
 -/
 initialize usedVarsRef : IO.Ref (NameSet × NameMap Syntax) ← IO.mkRef ({}, {})
+
+elab "#show_used" : command => do
+  let varRef ← Mathlib.Linter.UnusedVariableCommand.usedVarsRef.get
+  if varRef.2.isEmpty then logInfo "No variables present." else
+  let mut msg := #[m!"Dictionary\n"]
+  let sorted := varRef.2.toList.toArray.qsort (·.2.prettyPrint.pretty < ·.2.prettyPrint.pretty)
+  let (used, unused) := sorted.partition (varRef.1.contains ·.1)
+  for (a, b) in used do
+    msg := msg.push (checkEmoji ++ m!" {b.prettyPrint.pretty} ↔ {a}")
+  for (a, b) in unused do
+    msg := msg.push (crossEmoji ++ m!" {b.prettyPrint.pretty} ↔ {a}")
+  msg := msg.push "" |>.push m!"{checkEmoji}: used" |>.push m!"{crossEmoji}: unused"
+  logInfo <| .joinSep msg.toList "\n"
 
 /-- Add the (unique) name `a` to the `NameSet` of variable names that some declaration used. -/
 def usedVarsRef.addUsedVarName (a : Name) : IO Unit := do
@@ -247,6 +265,10 @@ def getBracketedBinderIds : Syntax → CommandElabM (Array Syntax)
   | `(bracketedBinderF|[$f])                           => return #[f]
   | _                                                  => throwUnsupportedSyntax
 
+def getNamelessVars : Expr → Array Bool
+  | .forallE na _x bod _bi | .lam na _x bod _bi => #[na.hasMacroScopes] ++ getNamelessVars bod
+  | _ => #[]
+
 /-- `getForallStrings expr` takes as input an `Expr`ession `expr`, and recursively extracts a
 string from `expr`, for every `.forallE` constructor with which `expr` starts.
 
@@ -262,16 +284,15 @@ Otherwise, the beginning of the instance is a good approximation to match the in
 
 This is not perfect, but works well in practice.
 -/
-def getForallStrings : Expr → CommandElabM (Array String)
-  | .forallE na x bod bi | .lam na x bod bi => do
-    if let .instImplicit := bi then
-      let x_no_bvars := x.replace (if ·.ctorName == "bvar" then some (.const `Nat []) else none)
-      let (str, _) ← liftCoreM do Meta.MetaM.run do return (← Meta.ppExpr (x_no_bvars)).pretty
-      return #[((str.splitOn ".{").getD 0 "").takeWhile (· != ' ')] ++ (← getForallStrings bod)
-    else
-      return #[((na.toString.splitOn ".{").getD 0 "").takeWhile (· != ' ')] ++
-              (← getForallStrings bod)
-  | _ => return #[]
+def getForallStrings (e : Expr) : MetaM (Array String) :=
+  try
+    if e == default then return #[] else
+    let infers? := getNamelessVars e
+    Meta.forallTelescopeReducing e fun xs _ =>
+      (xs.zip infers?).mapM fun (exp, infer?) => do
+        let typ := ← if infer? then Meta.inferType exp else return exp
+        return (← Meta.ppExpr typ).pretty
+  catch _ => return #[]
 
 /--
 `getUsedVariableNames pos` takes as input a position `pos`.
@@ -283,11 +304,15 @@ This is used on `def`-like declaration to try to determine the section `variable
 declaration uses.
 -/
 def getUsedVariableNames (pos : String.Pos) : CommandElabM (Array String) := do
-  let fm ← getFileMap
-  let declRangeExt := declRangeExt.getState (← getEnv)
-  let names := declRangeExt.toList.find? fun d => (d.2.selectionRange.pos == fm.toPosition pos)
-  let decl := ((← getEnv).find? (names.getD default).1).getD default
-  getForallStrings decl.type
+  let env ← getEnv
+  let posit := (← getFileMap).toPosition pos
+  let declRangeExt := declRangeExt.getState env
+  let names := declRangeExt.toList.find? (·.2.selectionRange.pos == posit)
+  let decl := (env.find? (names.getD default).1).getD default
+  let (d, _) ← liftCoreM do Meta.MetaM.run do getForallStrings decl.type
+  if Linter.getLinterValue showDefs (← getOptions) then
+    dbg_trace "getForallStrings: {d}"
+  return d
 
 /-- `lemmaToThm stx` assumes that `stx` is of kind `lemma` and converts it into `theorem`. -/
 def lemmaToThm (stx : Syntax) : Syntax :=
@@ -346,11 +371,8 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
   if (stx.find? (·.isOfKind ``Lean.Parser.Command.variable)).isSome then
     let scope ← getScope
     let pairs := scope.varUIds.zip (← scope.varDecls.mapM getBracketedBinderIds).flatten
-    usedVarsRef.modify fun (used, varsDict) => Id.run do
-      let mut newVarsDict := varsDict
-      for (uniq, user) in pairs do
-        newVarsDict := newVarsDict.insert uniq user
-      (used, newVarsDict)
+    for (uniq, user) in pairs do
+      usedVarsRef.addDict uniq user
   -- On all declarations that are not examples, we "rename" them, so that we can elaborate
   -- their syntax again, and we replace `:= proof-term` by `:= by included_variables plumb: sorry`
   -- in order to update the `usedVarsRef` counter.
@@ -365,7 +387,10 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
         let toDef := exampleToDef decl `newName
         elabCommand toDef
         let cinfo := ((← getEnv).find? ((← getCurrNamespace) ++ `newName)).getD default
-        getForallStrings cinfo.type
+        let (d, _) ← liftCoreM do Meta.MetaM.run do getForallStrings cinfo.type
+        if Linter.getLinterValue showDefs (← getOptions) then
+          dbg_trace "getForallStrings: {d}"
+        return d
       else return #[]
     let toFalse := mkIdent `toFalse
     let toThm : Syntax := if decl.isOfKind `lemma then lemmaToThm decl else decl
@@ -389,19 +414,10 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
       filt2 := filt2 ++ left2.filter fun (_a, b) =>
         let new :=
           if _a.eraseMacroScopes.isAnonymous then
-            --dbg_trace "pp: {b.prettyPrint.pretty} -- s: {s}"
-            (s.isPrefixOf b.prettyPrint.pretty)
+            s == b.prettyPrint.pretty
           else
-            --dbg_trace "ems: {_a.eraseMacroScopes.toString} -- s: {s}"
             s == _a.eraseMacroScopes.toString
-        --let comp := if _a.eraseMacroScopes.isAnonymous then b.prettyPrint.pretty else _a.toString
-        --dbg_trace "{comp} -- {s.isPrefixOf comp}\nnew: {new}\n"
         new
-        --(s.isPrefixOf comp)
-
-/-
-
--/
 
       filt := filt ++ left.filter (s.isPrefixOf ·.toString)
     for (s, _) in filt2 do
