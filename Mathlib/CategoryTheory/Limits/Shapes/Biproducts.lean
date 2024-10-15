@@ -1028,12 +1028,12 @@ instance (priority := 100) hasZeroObject_of_hasFiniteBiproducts [HasFiniteBiprod
 
 section
 
-variable {C} [Unique J] (f : J → C)
+variable {C}
 
 attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The limit bicone for the biproduct over an index type with exactly one term. -/
 @[simps]
-def limitBiconeOfUnique : LimitBicone f where
+def limitBiconeOfUnique [Unique J] (f : J → C) : LimitBicone f where
   bicone :=
     { pt := f default
       π := fun j => eqToHom (by congr; rw [← Unique.uniq] )
@@ -1042,12 +1042,13 @@ def limitBiconeOfUnique : LimitBicone f where
     { isLimit := (limitConeOfUnique f).isLimit
       isColimit := (colimitCoconeOfUnique f).isColimit }
 
-instance (priority := 100) hasBiproduct_unique : HasBiproduct f :=
-  HasBiproduct.mk (limitBiconeOfUnique f)
+instance (priority := 100) hasBiproduct_unique [Subsingleton J] [Nonempty J] (f : J → C) :
+    HasBiproduct f :=
+  let ⟨_⟩ := nonempty_unique J; .mk (limitBiconeOfUnique f)
 
 /-- A biproduct over an index type with exactly one term is just the object over that term. -/
 @[simps!]
-def biproductUniqueIso : ⨁ f ≅ f default :=
+def biproductUniqueIso [Unique J] (f : J → C) : ⨁ f ≅ f default :=
   (biproduct.uniqueUpToIso _ (limitBiconeOfUnique f).isBilimit).symm
 
 end
