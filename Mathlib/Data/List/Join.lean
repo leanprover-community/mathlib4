@@ -19,8 +19,6 @@ variable {α β : Type*}
 
 namespace List
 
-@[deprecated (since := "2024-02-25")] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty
-
 /-- See `List.length_flatten` for the corresponding statement using `List.sum`. -/
 lemma length_flatten' (L : List (List α)) : length (flatten L) = Nat.sum (map length L) := by
   induction L <;> [rfl; simp only [*, flatten, map, Nat.sum_cons, length_append]]
@@ -134,6 +132,8 @@ theorem append_flatten_map_append (L : List (List α)) (x : List α) :
 
 @[deprecated (since := "2024-10-15")] alias append_join_map_append := append_flatten_map_append
 
-@[deprecated (since := "2024-08-15")] alias sublist_join := sublist_join_of_mem
+@[deprecated (since := "2024-08-15")] theorem sublist_join {l} {L : List (List α)} (h : l ∈ L) :
+    l <+ L.flatten :=
+  sublist_flatten_of_mem h
 
 end List
