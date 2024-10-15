@@ -68,6 +68,11 @@ instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type*)
     AddSubmonoidWithOneClass S R :=
   { h with }
 
+instance (priority := 100) SubsemiringClass.nonUnitalSubsemiringClass (S : Type*)
+    (R : Type u) [NonAssocSemiring R] [SetLike S R] [SubsemiringClass S R] :
+    NonUnitalSubsemiringClass S R where
+  mul_mem := mul_mem
+
 variable [SetLike S R] [hSR : SubsemiringClass S R] (s : S)
 
 namespace SubsemiringClass
