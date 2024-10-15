@@ -181,7 +181,7 @@ theorem toENatAux_le_nat {x : Ordinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ n
   | inr hx => simp [toENatAux_eq_top hx, (nat_lt_omega0 n).trans_le hx]
 
 lemma toENatAux_eq_nat {x : Ordinal} {n : ℕ} : toENatAux x = n ↔ x = n := by
-  simp only [le_antisymm_iff, toENatAux_le_nat, ← toENatAux_gc _, ofENat_nat]
+  simp [toENatAux]
 
 lemma toENatAux_eq_zero {x : Ordinal} : toENatAux x = 0 ↔ x = 0 := toENatAux_eq_nat
 
