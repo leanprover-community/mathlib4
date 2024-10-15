@@ -2406,6 +2406,7 @@ namespace MulOpposite
 variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
   {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M] [ContinuousSMul R M]
 
+/-- The function `op` is a continuous linear equivalence. -/
 def opContinuousLinearEquiv : M ≃L[R] Mᵐᵒᵖ where
   __ := MulOpposite.opLinearEquiv R
 
