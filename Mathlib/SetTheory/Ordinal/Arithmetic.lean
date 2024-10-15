@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Logic.UnivLE
 
 /-!
 # Ordinal arithmetic
@@ -1167,27 +1168,38 @@ theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (
     exact le_of_lt (Cardinal.lt_ord.2 ((lt_succ _).trans_le
       (le_ciSup (Cardinal.bddAbove_range.{_, v} _) _)))⟩
 
-/-- `le_ciSup` whenever the outputs live in a higher universe than the inputs. -/
-protected theorem le_iSup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ iSup f :=
-  le_ciSup (bddAbove_range f)
+theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
+  obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
+  use a
+  intro b hb
+  simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
+
+theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
+  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
+    bddAbove_of_small _⟩
+
+/-- `le_ciSup` whenever the input type is small in the output universe. This lemma sometimes
+fails to infer `f` in simple cases and needs it to be given explicitly. -/
+protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] : ∀ i, f i ≤ iSup f :=
+  le_ciSup (bddAbove_of_small _)
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.le_iSup (since := "2024-08-27")]
 theorem le_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ sup.{_, v} f := fun i =>
   Ordinal.le_iSup f i
 
-/-- `ciSup_le_iff'` whenever the outputs live in a higher universe than the inputs. -/
-protected theorem iSup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+/-- `ciSup_le_iff'` whenever the input type is small in the output universe. -/
+protected theorem iSup_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
-  ciSup_le_iff' (bddAbove_range f)
+  ciSup_le_iff' (bddAbove_of_small _)
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.iSup_le_iff (since := "2024-08-27")]
 theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v} f ≤ a ↔ ∀ i, f i ≤ a :=
   Ordinal.iSup_le_iff
 
-/-- `ciSup_le'` whenever the outputs live in a higher universe than the inputs. -/
-protected theorem iSup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+/-- `ciSup_le'` whenever the input type is small in the output universe. -/
+protected theorem iSup_le {ι} {f : ι → Ordinal.{u}} {a} :
     (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
 
@@ -1197,7 +1209,7 @@ theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i �
   Ordinal.iSup_le
 
 -- TODO: generalize to conditionally complete linear orders.
-protected theorem lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+protected theorem lt_iSup {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     a < iSup f ↔ ∃ i, a < f i := by
   rw [← not_iff_not]
   simpa using Ordinal.iSup_le_iff
@@ -1219,7 +1231,7 @@ theorem ne_sup_iff_lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} :
   ne_iSup_iff_lt_iSup
 
 -- TODO: state in terms of `IsSuccLimit`.
-theorem succ_lt_iSup_of_ne_iSup {ι : Type u} {f : ι → Ordinal.{max u v}}
+theorem succ_lt_iSup_of_ne_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι]
     (hf : ∀ i, f i ≠ iSup f) {a} (hao : a < iSup f) : succ a < iSup f := by
   by_contra! hoa
   exact hao.not_le (Ordinal.iSup_le fun i => le_of_lt_succ <|
@@ -1234,7 +1246,7 @@ theorem sup_not_succ_of_ne_sup {ι : Type u} {f : ι → Ordinal.{max u v}}
     hao.not_le (sup_le fun i => le_of_lt_succ <| (lt_of_le_of_ne (le_sup _ _) (hf i)).trans_le hoa)
 
 -- TODO: generalize to conditionally complete lattices.
-theorem iSup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
+theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
     iSup f = 0 ↔ ∀ i, f i = 0 := by
   refine
     ⟨fun h i => ?_, fun h =>
@@ -1304,14 +1316,14 @@ theorem sup_eq_of_range_eq {ι : Type u} {ι' : Type v}
   Ordinal.iSup_eq_of_range_eq h
 
 -- TODO: generalize to conditionally complete lattices
-theorem iSup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v w}) :
+theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{u} β]:
     iSup f = max (⨆ a, f (Sum.inl a)) (⨆ b, f (Sum.inr b)) := by
   apply (Ordinal.iSup_le _).antisymm (max_le _ _)
   · rintro (i | i)
-    · exact le_max_of_le_left (Ordinal.le_iSup.{u, max u v w} _ i)
-    · exact le_max_of_le_right (Ordinal.le_iSup.{v, max u v w} _ i)
+    · exact le_max_of_le_left (Ordinal.le_iSup (fun x ↦ f (Sum.inl x)) i)
+    · exact le_max_of_le_right (Ordinal.le_iSup (fun x ↦ f (Sum.inr x)) i)
   all_goals
-    apply csSup_le_csSup' (bddAbove_range _)
+    apply csSup_le_csSup' (bddAbove_of_small _)
     rintro i ⟨a, rfl⟩
     apply mem_range_self
 
@@ -1348,18 +1360,6 @@ theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a
     a ≤ sup.{u, u} fun x => ((@equivShrink s hs).symm x).val := by
   convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
   rw [symm_apply_apply]
-
--- TODO: move this together with `bddAbove_range`.
-
-theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
-  obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
-  use a
-  intro b hb
-  simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
-
-theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
-  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
-    bddAbove_of_small _⟩
 
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]
