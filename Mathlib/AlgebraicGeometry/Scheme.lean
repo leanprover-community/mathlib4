@@ -194,7 +194,7 @@ def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace where
   map := Hom.toLRSHom
 
 /-- The forget functor `Scheme ⥤ LocallyRingedSpace` is fully faithful. -/
-@[simps! preimage_toLRSHom]
+@[simps preimage_toLRSHom]
 def fullyFaithfulForgetToLocallyRingedSpace :
     forgetToLocallyRingedSpace.FullyFaithful where
   preimage := Hom.mk
