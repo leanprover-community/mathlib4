@@ -109,7 +109,7 @@ elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
       rw [show wrapped = ⟨@definition.{$us',*}, rfl⟩ from Subtype.ext wrapped.2.symm]
       rfl
     attribute [irreducible] $n definition
-    -- attribute [eqns $n_def] $n
+    attribute [eqns $n_def] $n
     attribute [$attrs:attrInstance,*] $n)
   if prot.isSome then
     modifyEnv (addProtected · ((← getCurrNamespace) ++ n.getId))
