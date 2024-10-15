@@ -150,7 +150,7 @@ noncomputable instance : SemilatticeSup (ENorm 𝕜 V) :=
         map_add_le' := fun _ _ =>
           max_le (le_trans (e₁.map_add_le _ _) <| add_le_add (le_max_left _ _) (le_max_left _ _))
             (le_trans (e₂.map_add_le _ _) <| add_le_add (le_max_right _ _) (le_max_right _ _))
-        map_smul_le' := fun c x => le_of_eq <| by simp only [map_smul, ENNReal.mul_max] }
+        map_smul_le' := fun c x => le_of_eq <| by simp only [map_smul, mul_max] }
     le_sup_left := fun _ _ _ => le_max_left _ _
     le_sup_right := fun _ _ _ => le_max_right _ _
     sup_le := fun _ _ _ h₁ h₂ x => max_le (h₁ x) (h₂ x) }
