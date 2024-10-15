@@ -12,7 +12,7 @@ import Mathlib.Order.Hom.Basic
 # Multiplication by a positive element as an order isomorphism
 -/
 
-variable {G₀} [GroupWithZero G₀] [Preorder G₀] [ZeroLEOneClass G₀] {a b c d : G₀}
+variable {G₀} [GroupWithZero G₀] [Preorder G₀] [ZeroLEOneClass G₀] {a : G₀}
 
 /-- `Equiv.mulLeft₀` as an order isomorphism. -/
 @[simps! (config := { simpRhs := true })]
