@@ -84,7 +84,7 @@ def functorToPresheaves : Type (max u w) ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ Typ
   obj X := {
     obj := fun ⟨S⟩ ↦ LocallyConstant S X
     map := fun f g ↦ g.comap f.unop }
-  map f := { app := fun S t ↦ t.map f }
+  map f := { app := fun _ t ↦ t.map f }
 
 /--
 Locally constant maps are the same as continuous maps when the target is equipped with the discrete
@@ -186,8 +186,7 @@ def componentHom (a : Fiber (f.comap g)) :
     simp only [Fiber.mk, Set.mem_preimage, Set.mem_singleton_iff]
     convert map_eq_image _ _ x
     exact map_preimage_eq_image_map _ _ a⟩
-  continuous_toFun := by
-    exact Continuous.subtype_mk (Continuous.comp g.continuous continuous_subtype_val) _
+  continuous_toFun := by exact Continuous.subtype_mk (g.continuous.comp continuous_subtype_val) _
     -- term mode gives "unknown free variable" error.
 
 lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
@@ -221,31 +220,30 @@ variable (P) (X : TopCat.{max u w})
     (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
 
 /-- `locallyConstantIsoContinuousMap` is a natural isomorphism. -/
-noncomputable def functorToPresheavesIsoTopCatToSheafCompHausLike (X : Type (max u w)) :
-    functorToPresheaves.{u, w}.obj X ≅
-      ((topCatToSheafCompHausLike P hs).obj (TopCat.discrete.obj X)).val :=
+noncomputable def functorToPresheavesIso (X : Type (max u w)) :
+    functorToPresheaves.{u, w}.obj X ≅ ((TopCat.discrete.obj X).toSheafCompHausLike P hs).val :=
   NatIso.ofComponents (fun S ↦ locallyConstantIsoContinuousMap _ _)
 
 /-- `CompHausLike.LocallyConstant.functorToPresheaves` lands in sheaves. -/
 @[simps]
 def functor :
-    have := CompHausLike.preregular hs
+    haveI := CompHausLike.preregular hs
     Type (max u w) ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
   obj X := {
     val := functorToPresheaves.{u, w}.obj X
     cond := by
-      rw [Presheaf.isSheaf_of_iso_iff (functorToPresheavesIsoTopCatToSheafCompHausLike P hs X)]
-      exact ((topCatToSheafCompHausLike P hs).obj (TopCat.discrete.obj X)).cond }
+      rw [Presheaf.isSheaf_of_iso_iff (functorToPresheavesIso P hs X)]
+      exact ((TopCat.discrete.obj X).toSheafCompHausLike P hs).cond }
   map f := ⟨functorToPresheaves.{u, w}.map f⟩
 
 /--
 `CompHausLike.LocallyConstant.functor` is naturally isomorphic to the restriction of
 `topCatToSheafCompHausLike` to discrete topological spaces.
 -/
-noncomputable def functorIsoTopCatToSheafCompHausLike :
+noncomputable def functorIso :
     functor.{u, w} P hs ≅ TopCat.discrete.{max w u} ⋙ topCatToSheafCompHausLike P hs :=
   NatIso.ofComponents (fun X ↦ (fullyFaithfulSheafToPresheaf _ _).preimageIso
-    (functorToPresheavesIsoTopCatToSheafCompHausLike P hs X))
+    (functorToPresheavesIso P hs X))
 
 /-- The counit is natural in both `S : CompHausLike P` and
 `Y : Sheaf (coherentTopology (CompHausLike P)) (Type (max u w))` -/
@@ -293,13 +291,13 @@ The unit of the adjunciton is given by mapping each element to the corresponding
 -/
 @[simps]
 def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
-  app X x := LocallyConstant.const _ x
+  app _ x := LocallyConstant.const _ x
 
 /-- The unit of the adjunction is an iso. -/
 noncomputable def unitIso : 𝟭 (Type max u w) ≅ functor.{u, w} P hs ⋙
     (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
   hom := unit P hs
-  inv := { app := fun X f ↦ f.toFun PUnit.unit }
+  inv := { app := fun _ f ↦ f.toFun PUnit.unit }
 
 lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
     (X : Type max u w) : functorToPresheaves.{u, w}.map ((unit P hs).app X) ≫

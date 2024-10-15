@@ -307,7 +307,7 @@ theorem separable_map {S} [CommRing S] [Nontrivial S] (f : F →+* S) {p : F[X]}
 
 theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι} :
     (∏ i ∈ s, (X - C (f i))).Separable ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
-  ⟨fun hfs x hx y hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
+  ⟨fun hfs _ hx _ hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
     rw [← prod_attach]
     exact
       separable_prod'
@@ -337,8 +337,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
     exact
       Or.inr
         ⟨by rw [separable_iff_derivative_ne_zero hf, Classical.not_not, H], contract p f,
-          of_irreducible_map (expand F p : F[X] →+* F[X])
-            (by rwa [← expand_contract p H hp.ne'] at hf),
+          Irreducible.of_map (by rwa [← expand_contract p H hp.ne'] at hf),
           expand_contract p H hp.ne'⟩
   else Or.inl <| (separable_iff_derivative_ne_zero hf).2 H
 
@@ -652,7 +651,7 @@ theorem IsSeparable.tower_bot {x : K} (h : IsSeparable F (algebraMap K E x)) : I
 variable (K E) in
 theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F E] :
     Algebra.IsSeparable F K :=
-  ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _)⟩
+  ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _ _)⟩
 
 end IsScalarTower
 

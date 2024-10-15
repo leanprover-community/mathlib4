@@ -11,6 +11,8 @@ import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.ULift
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Characteristic of semirings
@@ -102,10 +104,10 @@ lemma intCast_injOn_Ico [IsRightCancelAdd R] : InjOn (Int.cast : ℤ → R) (Ico
 
 lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   rcases lt_trichotomy a 0 with (h | rfl | h)
-  · rw [← neg_eq_zero, ← Int.cast_neg, ← dvd_neg]
+  · rw [← neg_eq_zero, ← Int.cast_neg, ← Int.dvd_neg]
     lift -a to ℕ using neg_nonneg.mpr (le_of_lt h) with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
-  · simp only [Int.cast_zero, eq_self_iff_true, dvd_zero]
+  · simp only [Int.cast_zero, eq_self_iff_true, Int.dvd_zero]
   · lift a to ℕ using le_of_lt h with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
 
@@ -242,7 +244,7 @@ section NoZeroDivisors
 
 variable [NoZeroDivisors R]
 
-lemma char_is_prime_of_two_le (p : ℕ) [hc : CharP R p] (hp : 2 ≤ p) : Nat.Prime p :=
+lemma char_is_prime_of_two_le (p : ℕ) [CharP R p] (hp : 2 ≤ p) : Nat.Prime p :=
   suffices ∀ (d) (_ : d ∣ p), d = 1 ∨ d = p from Nat.prime_def_lt''.mpr ⟨hp, this⟩
   fun (d : ℕ) (hdvd : ∃ e, p = d * e) =>
   let ⟨e, hmul⟩ := hdvd

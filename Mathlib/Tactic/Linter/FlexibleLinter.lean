@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 import Lean.Elab.Command
 import Batteries.Data.Array.Basic
-import Batteries.Lean.HashSet
 
 /-!
 #  The "flexible" linter

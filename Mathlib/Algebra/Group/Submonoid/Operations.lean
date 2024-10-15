@@ -591,7 +591,7 @@ theorem closure_closure_coe_preimage {s : Set M} : closure (((↑) : closure s �
     Subtype.recOn x fun x hx _ => by
       refine closure_induction'
         (p := fun y hy ↦ (⟨y, hy⟩ : closure s) ∈ closure (((↑) : closure s → M) ⁻¹' s))
-          (fun g hg => subset_closure hg) ?_ (fun g₁ g₂ hg₁ hg₂ => ?_) hx
+          _ (fun g hg => subset_closure hg) ?_ (fun g₁ g₂ hg₁ hg₂ => ?_) hx
       · exact Submonoid.one_mem _
       · exact Submonoid.mul_mem _
 
@@ -1182,7 +1182,7 @@ elements of `M`. -/
 noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.submonoid M where
   toFun x := ⟨x, Units.isUnit x⟩
   invFun x := x.prop.unit
-  left_inv x := IsUnit.unit_of_val_units _
+  left_inv _ := IsUnit.unit_of_val_units _
   right_inv x := by simp_rw [IsUnit.unit_spec]
   map_mul' x y := by simp_rw [Units.val_mul]; rfl
 

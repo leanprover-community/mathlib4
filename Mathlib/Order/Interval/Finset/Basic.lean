@@ -683,7 +683,7 @@ variable [LinearOrder α]
 
 section LocallyFiniteOrder
 
-variable [LocallyFiniteOrder α] {a b : α}
+variable [LocallyFiniteOrder α]
 
 theorem Ico_subset_Ico_iff {a₁ b₁ a₂ b₂ : α} (h : a₁ < b₁) :
     Ico a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ := by
@@ -790,7 +790,7 @@ end LinearOrder
 
 section Lattice
 
-variable [Lattice α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [Lattice α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ x : α}
 
 theorem uIcc_toDual (a b : α) : [[toDual a, toDual b]] = [[a, b]].map toDual.toEmbedding :=
   Icc_toDual _ _
@@ -862,7 +862,7 @@ end Lattice
 
 section DistribLattice
 
-variable [DistribLattice α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [DistribLattice α] [LocallyFiniteOrder α] {a b c : α}
 
 theorem eq_of_mem_uIcc_of_mem_uIcc : a ∈ [[b, c]] → b ∈ [[a, c]] → a = b := by
   simp_rw [mem_uIcc]
@@ -883,7 +883,7 @@ end DistribLattice
 
 section LinearOrder
 
-variable [LinearOrder α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [LinearOrder α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c : α}
 
 theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
