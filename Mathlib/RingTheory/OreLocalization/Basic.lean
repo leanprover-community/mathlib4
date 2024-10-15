@@ -242,7 +242,7 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
     rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
 
 /-- The scalar multiplication on the Ore localization of monoids. -/
-@[to_additive (attr := irreducible)
+@[to_additive
   "the vector addition on the Ore localization of additive monoids."]
 protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
   liftExpand smul'' fun r₁ r₂ s hs => by
