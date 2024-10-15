@@ -12,7 +12,6 @@ In this file we prove that `C(X, Y)` with compact-open topology has second count
 
 - both `X` and `Y` have second countable topology;
 - `X` is a locally compact space;
-- `X` is an `R₁` space.
 -/
 
 open scoped Topology
@@ -24,7 +23,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 theorem compactOpen_eq_generateFrom {S : Set (Set X)} {T : Set (Set Y)}
     (hS₁ : ∀ K ∈ S, IsCompact K) (hT : IsTopologicalBasis T)
-    (hS₂ : ∀ f : C(X, Y), ∀ x, ∀ V ∈ 𝓝 (f x), ∃ K ∈ S, K ∈ 𝓝 x ∧ MapsTo f K V) :
+    (hS₂ : ∀ f : C(X, Y), ∀ x, ∀ V ∈ T, f x ∈ V → ∃ K ∈ S, K ∈ 𝓝 x ∧ MapsTo f K V) :
     compactOpen = .generateFrom (.image2 (fun K t ↦
       {f : C(X, Y) | MapsTo f K (⋃₀ t)}) S {t : Set (Set Y) | t.Finite ∧ t ⊆ T}) := by
   apply le_antisymm
@@ -43,8 +42,12 @@ theorem compactOpen_eq_generateFrom {S : Set (Set X)} {T : Set (Set Y)}
       rwa [sUnion_eq_biUnion]
     rw [image_subset_iff] at hKT
     obtain ⟨s, hsS, hsf, hKs, hst⟩ : ∃ s ⊆ S, s.Finite ∧ K ⊆ ⋃₀ s ∧ MapsTo f (⋃₀ s) (⋃₀ t) := by
-      choose! L hLS hLmem hLt using fun x hx ↦ hS₂ f x (⋃₀ t)
-        ((isOpen_sUnion fun _ h ↦ hT.isOpen (htT h)).mem_nhds (hKT hx))
+      have : ∀ x ∈ K, ∃ L ∈ S, L ∈ 𝓝 x ∧ MapsTo f L (⋃₀ t) := by
+        intro x hx
+        rcases hKT hx with ⟨V, hVt, hxV⟩
+        rcases hS₂ f x V (htT hVt) hxV with ⟨L, hLS, hLx, hLV⟩
+        exact ⟨L, hLS, hLx, hLV.mono_right <| subset_sUnion_of_mem hVt⟩
+      choose! L hLS hLmem hLt using this
       rcases hK.elim_nhds_subcover L hLmem with ⟨s, hsK, hs⟩
       refine ⟨L '' s, image_subset_iff.2 fun x hx ↦ hLS x <| hsK x hx, s.finite_toSet.image _,
         by rwa [sUnion_image], ?_⟩
@@ -57,27 +60,48 @@ theorem compactOpen_eq_generateFrom {S : Set (Set X)} {T : Set (Set Y)}
     refine mem_iInf_of_mem _ <| mem_iInf_of_mem ?_ <| mem_principal_self _
     exact ⟨hst.mono_left (subset_sUnion_of_mem hL), mem_image2_of_mem (hsS hL) ⟨htf, htT⟩⟩
 
-instance instSecondCountableTopology
-    [SecondCountableTopology X] [LocallyCompactPair X Y] [R1Space X]
-    [SecondCountableTopology Y] : SecondCountableTopology C(X, Y) where
+/-- A version of `instSecondCountableTopology` with a technical assumption
+instead of `[SecondCountableTopology X] [LocallyCompactSpace X]`.
+It is here as a reminder of what could be an intermediate goal,
+if someone tries to weaken the assumptions in the instance
+(e.g., from `[LocallyCompactSpace X]` to `[LocallyCompactPair X Y]` - not sure if it's true). -/
+theorem secondCountableTopology [SecondCountableTopology Y]
+    (hX : ∃ S : Set (Set X), S.Countable ∧ (∀ K ∈ S, IsCompact K) ∧
+      ∀ f : C(X, Y), ∀ V, IsOpen V → ∀ x ∈ f ⁻¹' V, ∃ K ∈ S, K ∈ 𝓝 x ∧ MapsTo f K V) :
+    SecondCountableTopology C(X, Y) where
   is_open_generated_countable := by
-    set S := (closure '' countableBasis X) ∩ {K | IsCompact K}
-    refine ⟨_, ?_, compactOpen_eq_generateFrom (S := S) ?_ (isBasis_countableBasis _) ?_⟩
-    · refine .image2 (((countable_countableBasis X).image _).mono inter_subset_left) ?_ _
-      exact countable_setOf_finite_subset (countable_countableBasis Y)
-    · exact fun K ↦ And.right
-    · intro f x V hV
-      rcases exists_mem_nhds_isCompact_mapsTo (map_continuous f) (interior_mem_nhds.2 hV)
-        with ⟨K, hKx, hKc, hKV⟩
-      rcases (isBasis_countableBasis X).mem_nhds_iff.mp hKx with ⟨s, hs, hxs, hsK⟩
-      refine ⟨closure s, ⟨mem_image_of_mem _ hs, ?_⟩, ?_, ?_⟩
-      · exact hKc.closure_of_subset hsK
-      · exact mem_of_superset ((isBasis_countableBasis X).mem_nhds hs hxs) subset_closure
-      · suffices MapsTo f (closure K) (interior V) from
-          this.mono (closure_mono hsK) interior_subset
-        exact hKc.closure_subset_of_isOpen (isOpen_interior.preimage (map_continuous f)) hKV
+    rcases hX with ⟨S, hScount, hScomp, hS⟩
+    refine ⟨_, ?_, compactOpen_eq_generateFrom (S := S) hScomp (isBasis_countableBasis _) ?_⟩
+    · exact .image2 hScount (countable_setOf_finite_subset (countable_countableBasis Y)) _
+    · intro f x V hV hx
+      apply hS
+      exacts [isOpen_of_mem_countableBasis hV, hx]
 
-instance instSeprableSpace [SecondCountableTopology X] [LocallyCompactPair X Y] [R1Space X]
+instance instSecondCountableTopology [SecondCountableTopology X] [LocallyCompactSpace X]
+    [SecondCountableTopology Y] : SecondCountableTopology C(X, Y) := by
+  apply secondCountableTopology
+  have (U : countableBasis X) : LocallyCompactSpace U.1 :=
+    (isOpen_of_mem_countableBasis U.2).locallyCompactSpace
+  set K := fun U : countableBasis X ↦ CompactExhaustion.choice U.1
+  use ⋃ U : countableBasis X, Set.range fun n ↦ K U n
+  refine ⟨countable_iUnion fun _ ↦ countable_range _, ?_, ?_⟩
+  · simp only [mem_iUnion, mem_range]
+    rintro K ⟨U, n, rfl⟩
+    exact ((K U).isCompact _).image continuous_subtype_val
+  · intro f V hVo x hxV
+    obtain ⟨U, hU, hxU, hUV⟩ : ∃ U ∈ countableBasis X, x ∈ U ∧ U ⊆ f ⁻¹' V := by
+      rw [← (isBasis_countableBasis _).mem_nhds_iff]
+      exact (hVo.preimage (map_continuous f)).mem_nhds hxV
+    lift x to U using hxU
+    lift U to countableBasis X using hU
+    rcases (K U).exists_mem_nhds x with ⟨n, hn⟩
+    refine ⟨K U n, mem_iUnion.2 ⟨U, mem_range_self _⟩, ?_, ?_⟩
+    · rw [← map_nhds_subtype_coe_eq_nhds x.2]
+      exacts [image_mem_map hn, (isOpen_of_mem_countableBasis U.2).mem_nhds x.2]
+    · rw [mapsTo_image_iff]
+      exact fun y _ ↦ hUV y.2
+
+instance instSeprableSpace [SecondCountableTopology X] [LocallyCompactSpace X]
     [SecondCountableTopology Y] : SeparableSpace C(X, Y) :=
   inferInstance
 
