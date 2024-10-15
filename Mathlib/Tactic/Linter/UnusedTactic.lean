@@ -162,7 +162,7 @@ variable (ignoreTacticKinds : NameHashSet) (isTacKind : SyntaxNodeKind → Bool)
 `MetavarContext` `mctx`. -/
 def getNames (mctx : MetavarContext) : List Name :=
   let lcts := mctx.decls.toList.map (MetavarDecl.lctx ∘ Prod.snd)
-  let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).join.reduceOption
+  let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).flatten.reduceOption
   locDecls.map LocalDecl.userName
 
 mutual
