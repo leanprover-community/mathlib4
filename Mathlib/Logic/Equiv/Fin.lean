@@ -63,7 +63,7 @@ given by separating out the last element of the tuple.
 This is `Fin.snoc` as an `Equiv`. -/
 @[simps]
 def snocEquiv (α : Fin (n + 1) → Type*) : α (last n) × (∀ i, α (castSucc i)) ≃ ∀ i, α i where
-  toFun f i := Fin.snoc f.2 f.1 _
+  toFun f _ := Fin.snoc f.2 f.1 _
   invFun f := ⟨f _, Fin.init f⟩
   left_inv f := by simp
   right_inv f := by simp
@@ -444,7 +444,7 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
           (y.1 + n * x.1) % n = y.1 % n := Nat.add_mul_mod_self_left _ _ _
           _ = y.1 := Nat.mod_eq_of_lt y.2
           )
-  right_inv x := Fin.eq_of_val_eq <| Nat.mod_add_div _ _
+  right_inv _ := Fin.eq_of_val_eq <| Nat.mod_add_div _ _
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 This is like `finProdFinEquiv.symm` but with `m` infinite.
@@ -454,7 +454,7 @@ def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
   toFun a := (a / n, ↑a)
   invFun p := p.1 * n + ↑p.2
   -- TODO: is there a canonical order of `*` and `+` here?
-  left_inv a := Nat.div_add_mod' _ _
+  left_inv _ := Nat.div_add_mod' _ _
   right_inv p := by
     refine Prod.ext ?_ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
     dsimp only

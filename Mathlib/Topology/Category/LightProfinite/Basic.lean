@@ -160,7 +160,7 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] [CountableCategory J]
   lift S :=
     (CompHaus.limitConeIsLimit.{v, u} (F ⋙ lightProfiniteToCompHaus)).lift
       (lightProfiniteToCompHaus.mapCone S)
-  uniq S m h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (lightProfiniteToCompHaus.mapCone S) _ h
+  uniq S _ h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (lightProfiniteToCompHaus.mapCone S) _ h
 
 noncomputable instance createsCountableLimits {J : Type v} [SmallCategory J] [CountableCategory J] :
     CreatesLimitsOfShape J lightToProfinite.{max v u} where
@@ -338,7 +338,7 @@ noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiag
   inverse := lightDiagramToLightProfinite
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
-    (fun X ↦ lightDiagramToProfinite.preimageIso (Iso.refl _)) (by
+    (fun _ ↦ lightDiagramToProfinite.preimageIso (Iso.refl _)) (by
       intro _ _ f
       simp only [Functor.comp_obj, lightDiagramToLightProfinite_obj,
         lightProfiniteToLightDiagram_obj, Functor.id_obj, Functor.comp_map,
