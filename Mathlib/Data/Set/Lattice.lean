@@ -1174,10 +1174,10 @@ theorem union_distrib_iInter₂_right (s : ∀ i, κ i → Set α) (t : Set α) 
     (⋂ (i) (j), s i j) ∪ t = ⋂ (i) (j), s i j ∪ t := by simp_rw [union_distrib_iInter_right]
 
 lemma biUnion_lt_eq_iUnion [LT α] [NoMaxOrder α] {s : α → Set β} :
-  ⋃ (n) (m < n), s m  = ⋃ n, s n := biSup_lt_eq_iSup
+    ⋃ (n) (m < n), s m  = ⋃ n, s n := biSup_lt_eq_iSup
 
 lemma biInter_lt_eq_iInter [LT α] [NoMaxOrder α] {s : α → Set β} :
-  ⋂ (n) (m < n), s m  = ⋂ (n), s n := biInf_lt_eq_iInf
+    ⋂ (n) (m < n), s m  = ⋂ (n), s n := biInf_lt_eq_iInf
 
 section Function
 
