@@ -55,7 +55,7 @@ theorem mem_union_right (l₁ : List α) (h : a ∈ l₂) : a ∈ l₁ ∪ l₂ 
   mem_union_iff.2 (Or.inr h)
 
 theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ t ++ l₂ = l₁ ∪ l₂
-  | [], l₂ => ⟨[], by rfl, rfl⟩
+  | [], _ => ⟨[], by rfl, rfl⟩
   | a :: l₁, l₂ =>
     let ⟨t, s, e⟩ := sublist_suffix_of_union l₁ l₂
     if h : a ∈ l₁ ∪ l₂ then

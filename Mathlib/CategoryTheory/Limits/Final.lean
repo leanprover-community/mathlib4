@@ -238,6 +238,17 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
             · rw [← Functor.map_comp_assoc] } }
   map f := { hom := f.hom }
 
+/-- Alternative equational lemma for `(extendCocone c).ι.app` in case a lift of the object
+is given explicitly. -/
+lemma extendCocone_obj_ι_app' (c : Cocone (F ⋙ G)) {X : D} {Y : C} (f : X ⟶ F.obj Y) :
+    (extendCocone.obj c).ι.app X = G.map f ≫ c.ι.app Y := by
+  apply induction (k₀ := f) (z := rfl) F fun Z g =>
+    G.map g ≫ c.ι.app Z = G.map f ≫ c.ι.app Y
+  · intro _ _ _ _ _ h₁ h₂
+    simp [← h₁, ← Functor.comp_map, c.ι.naturality, h₂]
+  · intro _ _ _ _ _ h₁ h₂
+    simp [← h₂, ← h₁, ← Functor.comp_map, c.ι.naturality]
+
 @[simp]
 theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
     G.map (homToLift F (F.obj j)) ≫ s.ι.app (lift F (F.obj j)) = s.ι.app j := by
@@ -510,6 +521,17 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
                 c.w, z, Category.assoc]
             · rw [← Functor.map_comp] } }
   map f := { hom := f.hom }
+
+/-- Alternative equational lemma for `(extendCone c).π.app` in case a lift of the object
+is given explicitly. -/
+lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X ⟶ Y) :
+    (extendCone.obj c).π.app Y = c.π.app X ≫ G.map f := by
+  apply induction (k₀ := f) (z := rfl) F fun Z g =>
+    c.π.app Z ≫ G.map g = c.π.app X ≫ G.map f
+  · intro _ _ _ _ _ h₁ h₂
+    simp [← h₂, ← h₁, ← Functor.comp_map, c.π.naturality]
+  · intro _ _ _ _ _ h₁ h₂
+    simp [← h₁, ← Functor.comp_map, c.π.naturality, h₂]
 
 @[simp]
 theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :

@@ -313,15 +313,15 @@ def gluedCover : Scheme.GlueData.{u} where
   J := 𝒰.J
   U := 𝒰.obj
   V := fun ⟨x, y⟩ => pullback (𝒰.map x) (𝒰.map y)
-  f x y := pullback.fst _ _
-  f_id x := inferInstance
-  t x y := (pullbackSymmetry _ _).hom
+  f _ _ := pullback.fst _ _
+  f_id _ := inferInstance
+  t _ _ := (pullbackSymmetry _ _).hom
   t_id x := by simp
   t' x y z := gluedCoverT' 𝒰 x y z
   t_fac x y z := by apply pullback.hom_ext <;> simp
   -- The `cocycle` field could have been `by tidy` but lean timeouts.
   cocycle x y z := glued_cover_cocycle 𝒰 x y z
-  f_open x := inferInstance
+  f_open _ := inferInstance
 
 /-- The canonical morphism from the gluing of an open cover of `X` into `X`.
 This is an isomorphism, as witnessed by an `IsIso` instance. -/

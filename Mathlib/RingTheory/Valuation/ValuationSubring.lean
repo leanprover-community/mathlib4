@@ -227,7 +227,7 @@ def subtype (R : ValuationSubring K) : R →+* K :=
 
 /-- The canonical map on value groups induced by a coarsening of valuation rings. -/
 def mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : R.ValueGroup →*₀ S.ValueGroup where
-  toFun := Quotient.map' id fun x y ⟨u, hu⟩ => ⟨Units.map (R.inclusion S h).toMonoidHom u, hu⟩
+  toFun := Quotient.map' id fun _ _ ⟨u, hu⟩ => ⟨Units.map (R.inclusion S h).toMonoidHom u, hu⟩
   map_zero' := rfl
   map_one' := rfl
   map_mul' := by rintro ⟨⟩ ⟨⟩; rfl
@@ -349,7 +349,7 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
 instance linearOrderOverring : LinearOrder {S // A ≤ S} :=
   { (inferInstance : PartialOrder _) with
     le_total :=
-      let i : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
+      let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
       (primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total
     decidableLE := inferInstance }
 
@@ -613,7 +613,7 @@ def principalUnitGroupEquiv :
       rw [A.coe_mem_principalUnitGroup_iff]; simp⟩
   left_inv x := by simp
   right_inv x := by simp
-  map_mul' x y := rfl
+  map_mul' _ _ := rfl
 
 theorem principalUnitGroupEquiv_apply (a : A.principalUnitGroup) :
     (((principalUnitGroupEquiv A a : Aˣ) : A) : K) = (a : Kˣ) :=

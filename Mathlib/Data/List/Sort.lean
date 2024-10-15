@@ -213,7 +213,7 @@ theorem orderedInsert_nil (a : α) : [].orderedInsert r a = [a] :=
   rfl
 
 theorem orderedInsert_length : ∀ (L : List α) (a : α), (L.orderedInsert r a).length = L.length + 1
-  | [], a => rfl
+  | [], _ => rfl
   | hd :: tl, a => by
     dsimp [orderedInsert]
     split_ifs <;> simp [orderedInsert_length tl]
@@ -313,7 +313,7 @@ variable {r}
 it. -/
 theorem Sorted.insertionSort_eq : ∀ {l : List α}, Sorted r l → insertionSort r l = l
   | [], _ => rfl
-  | [a], _ => rfl
+  | [_], _ => rfl
   | a :: b :: l, h => by
     rw [insertionSort, Sorted.insertionSort_eq, orderedInsert, if_pos]
     exacts [rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
