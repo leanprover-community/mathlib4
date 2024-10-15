@@ -68,7 +68,7 @@ theorem mem_bipartiteAbove {b : β} : b ∈ t.bipartiteAbove r a ↔ b ∈ t ∧
 
 theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (r a b)] :
     (∑ a ∈ s, (t.bipartiteAbove r a).card) = ∑ b ∈ t, (s.bipartiteBelow r b).card := by
-   simp_rw [card_eq_sum_ones, sum_sum_bipartiteAbove_eq_sum_sum_bipartiteBelow]
+  simp_rw [card_eq_sum_ones, sum_sum_bipartiteAbove_eq_sum_sum_bipartiteBelow]
 
 @[to_additive]
 theorem prod_prod_bipartiteAbove_eq_prod_prod_bipartiteBelow
