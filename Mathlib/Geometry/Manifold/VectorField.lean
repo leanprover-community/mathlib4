@@ -1370,6 +1370,9 @@ lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) (s : 
   -/
   -- Now, interesting case where the derivative of `f` is invertible
   simp only [mlieBracketWithin_apply, mpullbackWithin_apply]
+  -- first, rewrite the pullback of the Lie bracket as a pullback in `E` under the map
+  -- `F = extChartAt I' (f x₀) ∘ f ∘ (extChartAt I x₀).symm` of a Lie bracket computed in `E'`,
+  -- of two vector fields `V'` and `W'`.
   rw [← ContinuousLinearMap.IsInvertible.inverse_comp_apply_of_left
     (isInvertible_mfderiv_extChartAt (mem_extChartAt_source I' (f x₀)))]
   rw [← mfderiv_comp_mfderivWithin _ (mdifferentiableAt_extChartAt_self I') hf hu]
@@ -1383,9 +1386,27 @@ lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) (s : 
         (y := extChartAt I x₀ x₀) (by simp)
   rw [← this, ← ContinuousLinearMap.IsInvertible.inverse_comp_apply_of_right]; swap
   · exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x₀)
-  rw [← mfderivWithin_comp_of_eq]; rotate_left
-  · apply MDifferentiableAt.comp_mdifferentiableWithinAt
-    apply mdifferentiableAt_extChartAt
+  rw [← mfderivWithin_comp_of_mem_of_eq]; rotate_left
+  · apply MDifferentiableAt.comp_mdifferentiableWithinAt (I' := I') _ _ hf
+    exact mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source (f x₀))
+  · apply mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target I x₀)
+  · sorry
+  · apply I.uniqueMDiffOn _ (mem_range_self _)
+  · simp
+  set V' := mpullbackWithin 𝓘(𝕜, E') I' (extChartAt I' (f x₀)).symm V (range I') with hV'
+  set W' := mpullbackWithin 𝓘(𝕜, E') I' (extChartAt I' (f x₀)).symm W (range I') with hW'
+  set F := ((extChartAt I' (f x₀)) ∘ f) ∘ ↑(extChartAt I x₀).symm with hF
+  have : extChartAt I' (f x₀) (f x₀) = F (extChartAt I x₀ x₀) := by simp [F]
+  rw [this, ← mpullbackWithin_apply]
+  -- second rewrite, the Lie bracket of the pullback as the Lie bracket of the pullback of the
+  -- vector fields `V'` and `W'` in `E'`.
+
+εₑ εₑ'
+
+
+
+
+
 
 
 

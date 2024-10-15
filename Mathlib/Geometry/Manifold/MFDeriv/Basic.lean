@@ -964,6 +964,18 @@ theorem MDifferentiableWithinAt.comp_of_eq {y : M'} (hg : MDifferentiableWithinA
     MDifferentiableWithinAt I I'' (g ∘ f) s x := by
   subst hy; exact hg.comp _ hf h
 
+theorem MDifferentiableWithinAt.comp_of_mem (hg : MDifferentiableWithinAt I' I'' g u (f x))
+    (hf : MDifferentiableWithinAt I I' f s x) (h : f ⁻¹' u ∈ 𝓝[s] x) :
+    MDifferentiableWithinAt I I'' (g ∘ f) s x :=
+  (hg.comp _ (hf.mono inter_subset_right) inter_subset_left).mono_of_mem
+    (Filter.inter_mem h self_mem_nhdsWithin)
+
+theorem MDifferentiableWithinAt.comp_of_mem_of_eq {y : M'}
+    (hg : MDifferentiableWithinAt I' I'' g u y)
+    (hf : MDifferentiableWithinAt I I' f s x) (h : f ⁻¹' u ∈ 𝓝[s] x) (hy : f x = y) :
+    MDifferentiableWithinAt I I'' (g ∘ f) s x := by
+  subst hy; exact MDifferentiableWithinAt.comp_of_mem _ hg hf h
+
 theorem MDifferentiableAt.comp (hg : MDifferentiableAt I' I'' g (f x))
     (hf : MDifferentiableAt I I' f x) : MDifferentiableAt I I'' (g ∘ f) x :=
   (hg.hasMFDerivAt.comp x hf.hasMFDerivAt).mdifferentiableAt
