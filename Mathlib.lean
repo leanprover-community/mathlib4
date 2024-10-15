@@ -2650,10 +2650,13 @@ import Mathlib.Data.ZMod.Factorial
 import Mathlib.Data.ZMod.IntUnitsPower
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.Data.ZMod.Units
+import Mathlib.Deprecated.AlgebraClasses
 import Mathlib.Deprecated.Aliases
 import Mathlib.Deprecated.Combinator
+import Mathlib.Deprecated.Equiv
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.HashMap
+import Mathlib.Deprecated.RelClasses
 import Mathlib.Deprecated.Ring
 import Mathlib.Deprecated.Subfield
 import Mathlib.Deprecated.Subgroup
@@ -2922,7 +2925,6 @@ import Mathlib.GroupTheory.Torsion
 import Mathlib.GroupTheory.Transfer
 import Mathlib.InformationTheory.Hamming
 import Mathlib.Init
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Logic
 import Mathlib.Lean.CoreM
