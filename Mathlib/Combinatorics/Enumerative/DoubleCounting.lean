@@ -70,8 +70,8 @@ theorem mem_bipartiteAbove {b : β} : b ∈ t.bipartiteAbove r a ↔ b ∈ t ∧
 theorem prod_prod_bipartiteAbove_eq_prod_prod_bipartiteBelow
     [CommMonoid R] (f : α → β → R) [∀ a b, Decidable (r a b)] :
     ∏ a ∈ s, ∏ b ∈ t.bipartiteAbove r a, f a b = ∏ b ∈ t, ∏ a ∈ s.bipartiteBelow r b, f a b := by
-  simp_rw [bipartiteAbove, bipartiteBelow, sum_filter]
-  exact sum_comm
+  simp_rw [bipartiteAbove, bipartiteBelow, prod_filter]
+  exact prod_comm
 
 theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (r a b)] :
     (∑ a ∈ s, (t.bipartiteAbove r a).card) = ∑ b ∈ t, (s.bipartiteBelow r b).card := by
