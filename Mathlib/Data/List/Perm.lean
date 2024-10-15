@@ -275,11 +275,9 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
 
 end
 
-
-
 theorem Perm.bind_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l, f a ~ g a) :
     l.bind f ~ l.bind g :=
-  Perm.join_congr <| by
+  Perm.flatten_congr <| by
     rwa [List.forall₂_map_right_iff, List.forall₂_map_left_iff, List.forall₂_same]
 
 theorem bind_append_perm (l : List α) (f g : α → List β) :
