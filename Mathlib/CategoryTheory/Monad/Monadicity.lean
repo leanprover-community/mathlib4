@@ -130,7 +130,7 @@ def leftAdjointComparison
     -- `Category.assoc`.
     -- dsimp [comparisonLeftAdjointHomEquiv]
     -- rw [← adj.homEquiv_naturality_right, Category.assoc]
-    simp [Cofork.IsColimit.homIso]
+    simp [Cofork.IsColimit.homIso, Adjunction.homEquiv_unit]
 
 /-- Provided we have the appropriate coequalizers, we have an adjunction to the comparison functor.
 -/
@@ -225,7 +225,7 @@ theorem comparisonAdjunction_counit_app
   change
     coequalizer.π _ _ ≫ coequalizer.desc ((adj.homEquiv _ B).symm (𝟙 _)) _ =
       coequalizer.π _ _ ≫ coequalizer.desc _ _
-  simp
+  simp [Adjunction.homEquiv_counit]
 
 end MonadicityInternal
 
