@@ -122,6 +122,27 @@ theorem fderivWithin.comp {g : F → G} {t : Set F} (hg : DifferentiableWithinAt
     fderivWithin 𝕜 (g ∘ f) s x = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) :=
   (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h).fderivWithin hxs
 
+theorem fderivWithin.comp_of_eq {g : F → G} {t : Set F} {y : F}
+    (hg : DifferentiableWithinAt 𝕜 g t y) (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t)
+    (hxs : UniqueDiffWithinAt 𝕜 s x) (hy : f x = y) :
+    fderivWithin 𝕜 (g ∘ f) s x = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) := by
+  subst hy; exact fderivWithin.comp _ hg hf h hxs
+
+/-- A variant for the derivative of a composition, written without `∘`. -/
+theorem fderivWithin.comp' {g : F → G} {t : Set F} (hg : DifferentiableWithinAt 𝕜 g t (f x))
+    (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 (fun y ↦ g (f y)) s x
+      = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) :=
+  fderivWithin.comp _ hg hf h hxs
+
+/-- A variant for the derivative of a composition, written without `∘`. -/
+theorem fderivWithin.comp_of_eq' {g : F → G} {t : Set F} {y : F}
+    (hg : DifferentiableWithinAt 𝕜 g t y) (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t)
+    (hxs : UniqueDiffWithinAt 𝕜 s x) (hy : f x = y) :
+    fderivWithin 𝕜 (fun y ↦ g (f y)) s x
+      = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) := by
+  subst hy; exact fderivWithin.comp _ hg hf h hxs
+
 /-- A version of `fderivWithin.comp` that is useful to rewrite the composition of two derivatives
   into a single derivative. This version always applies, but creates a new side-goal `f x = y`. -/
 theorem fderivWithin_fderivWithin {g : F → G} {f : E → F} {x : E} {y : F} {s : Set E} {t : Set F}

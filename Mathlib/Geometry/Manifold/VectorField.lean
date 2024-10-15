@@ -560,17 +560,17 @@ lemma lieBracketWithin_pullbackWithin {f : E → F} {V W : F → F} {x : E} {t :
   have hMx : M x = fderivWithin 𝕜 f s x := (mem_of_mem_nhdsWithin hx hM :)
   have AV : fderivWithin 𝕜 (pullbackWithin 𝕜 f V s) s x =
       fderivWithin 𝕜 (fun y ↦ ((M y).symm : F →L[𝕜] E) (V (f y))) s x := by
-    apply Filter.EventuallyEq.fderivWithin_eq
+    apply Filter.EventuallyEq.fderivWithin_eq_of_mem _ hx
     filter_upwards [hM] with y hy using pullbackWithin_eq_of_fderivWithin_eq hy _
-
   have AW : fderivWithin 𝕜 (pullbackWithin 𝕜 f W s) s x =
       fderivWithin 𝕜 (fun y ↦ ((M y).symm : F →L[𝕜] E) (W (f y))) s x := by
-    apply Filter.EventuallyEq.fderivWithin_eq
+    apply Filter.EventuallyEq.fderivWithin_eq_of_mem _ hx
     filter_upwards [hM] with y hy using pullbackWithin_eq_of_fderivWithin_eq hy _
   have Af : DifferentiableWithinAt 𝕜 f s x := h'f.differentiableWithinAt one_le_two
   simp only [lieBracketWithin_eq, pullbackWithin_eq_of_fderivWithin_eq hMx, map_sub, AV, AW]
   rw [fderivWithin_clm_apply, fderivWithin_clm_apply]
-  · simp [fderivWithin.comp' x hW Af, ← hMx,
+  · rw [fderivWithin.comp']
+    simp [fderivWithin.comp' x hW Af, ← hMx,
       fderiv.comp' x hV Af, M_diff, hf]
   · exact M_symm_smooth.differentiableAt le_rfl
   · exact hV.comp x Af
