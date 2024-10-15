@@ -727,7 +727,6 @@ theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → 
 
 theorem mem_closure_iff {s : Set R} {x} :
     x ∈ closure s ↔ x ∈ AddSubgroup.closure (Subsemigroup.closure s : Set R) :=
-<<<<<<< HEAD
   ⟨fun h => by
     induction h using closure_induction with
     | mem _ hx => exact AddSubgroup.subset_closure (Subsemigroup.subset_closure hx)
