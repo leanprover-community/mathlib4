@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Topology.Bornology.Basic
-import Mathlib.Topology.Defs.Filter
+import Mathlib.Topology.Basic
 
 /-! # Approximate units
 
@@ -121,10 +121,8 @@ def ApproximateUnit.ofUnit (α : Type*) [TopologicalSpace α] [MulOneClass α] [
     ApproximateUnit (fun _ => True) (fun _ : Unit => {(1 : α)}) where
   toFilter := 𝓟 {1}
   toHasBasis := Filter.hasBasis_principal {1}
-  filter_le := by
-    rw [Filter.mulLeftRightTendsto.le_iff]
-    simpa [- pure_one, tendsto_pure_left]
-      using fun _ _ ↦ mem_of_mem_nhds
+  filter_le := by simpa [mulLeftRightTendsto.le_iff, tendsto_pure_left]
+    using fun _ _ ↦ mem_of_mem_nhds
   bounded := ⟨{1}, by simp⟩
 
 section DirectedOn
