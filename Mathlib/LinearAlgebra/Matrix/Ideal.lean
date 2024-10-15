@@ -161,7 +161,7 @@ def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n 
         subst ha hb
         simp only [stdBasisMatrix, and_self, ↓reduceIte, StdBasisMatrix.mul_right_apply_same,
           StdBasisMatrix.mul_left_apply_same, one_mul, mul_one]
-        exact hy2 a b
+        rw [hy2 a b]
       · conv_lhs =>
           dsimp [stdBasisMatrix]
           rw [if_neg (by tauto)]
