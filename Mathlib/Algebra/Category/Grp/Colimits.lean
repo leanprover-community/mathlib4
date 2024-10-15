@@ -227,7 +227,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where
       rw [map_neg, map_neg, ih]
     | add x y ihx ihy =>
       simp only [quot_add]
-      erw [m.map_add, (descMorphism F s).map_add, ihx, ihy]
+      rw [m.map_add, (descMorphism F s).map_add, ihx, ihy]
 
 end Colimits
 

@@ -484,7 +484,7 @@ def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
   snd.left_inv a := by dsimp only; split_ifs <;> simp [*]
   snd.right_inv
     | none => by simp
-    | some ⟨a, ha⟩ => dif_neg ha
+    | some ⟨_, ha⟩ => dif_neg ha
 
 end
 
@@ -600,7 +600,7 @@ is naturally equivalent to the type of functions `{a // ¬ p a} → β`. -/
 @[simps]
 def subtypePreimage : { x : α → β // x ∘ Subtype.val = x₀ } ≃ ({ a // ¬p a } → β) where
   toFun (x : { x : α → β // x ∘ Subtype.val = x₀ }) a := (x : α → β) a
-  invFun x := ⟨fun a => if h : p a then x₀ ⟨a, h⟩ else x ⟨a, h⟩, funext fun ⟨a, h⟩ => dif_pos h⟩
+  invFun x := ⟨fun a => if h : p a then x₀ ⟨a, h⟩ else x ⟨a, h⟩, funext fun ⟨_, h⟩ => dif_pos h⟩
   left_inv := fun ⟨x, hx⟩ =>
     Subtype.val_injective <|
       funext fun a => by
@@ -817,7 +817,7 @@ section
 def arrowProdEquivProdArrow (α β γ : Type*) : (γ → α × β) ≃ (γ → α) × (γ → β) where
   toFun := fun f => (fun c => (f c).1, fun c => (f c).2)
   invFun := fun p c => (p.1 c, p.2 c)
-  left_inv := fun f => rfl
+  left_inv := fun _ => rfl
   right_inv := fun p => by cases p; rfl
 
 open Sum
@@ -830,7 +830,7 @@ def sumPiEquivProdPi {ι ι'} (π : ι ⊕ ι' → Type*) :
   toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
   invFun g := Sum.rec g.1 g.2
   left_inv f := by ext (i | i) <;> rfl
-  right_inv g := Prod.ext rfl rfl
+  right_inv _ := Prod.ext rfl rfl
 
 /-- The equivalence between a product of two dependent functions types and a single dependent
 function type. Basically a symmetric version of `Equiv.sumPiEquivProdPi`. -/
@@ -1028,7 +1028,7 @@ lemma coe_subtypeEquiv_eq_map {X Y} {p : X → Prop} {q : Y → Prop} (e : X ≃
   rfl
 
 @[simp]
-theorem subtypeEquiv_refl {p : α → Prop} (h : ∀ a, p a ↔ p (Equiv.refl _ a) := fun a => Iff.rfl) :
+theorem subtypeEquiv_refl {p : α → Prop} (h : ∀ a, p a ↔ p (Equiv.refl _ a) := fun _ => Iff.rfl) :
     (Equiv.refl α).subtypeEquiv h = Equiv.refl { a : α // p a } := by
   ext
   rfl
@@ -1090,7 +1090,7 @@ def subtypeSubtypeEquivSubtypeExists (p : α → Prop) (q : Subtype p → Prop) 
     ⟨a.1, a.1.2, by
       rcases a with ⟨⟨a, hap⟩, haq⟩
       exact haq⟩,
-    fun a => ⟨⟨a, a.2.fst⟩, a.2.snd⟩, fun ⟨⟨a, ha⟩, h⟩ => rfl, fun ⟨a, h₁, h₂⟩ => rfl⟩
+    fun a => ⟨⟨a, a.2.fst⟩, a.2.snd⟩, fun ⟨⟨_, _⟩, _⟩ => rfl, fun ⟨_, _, _⟩ => rfl⟩
 
 /-- A subtype of a subtype is equivalent to the subtype of elements satisfying both predicates. -/
 @[simps!]
@@ -1166,9 +1166,9 @@ def sigmaOptionEquivOfSome {α} (p : Option α → Type v) (h : p none → False
 `Sigma` type such that for all `i` we have `(f i).fst = i`. -/
 def piEquivSubtypeSigma (ι) (π : ι → Type*) :
     (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f i).1 = i } where
-  toFun := fun f => ⟨fun i => ⟨i, f i⟩, fun i => rfl⟩
+  toFun := fun f => ⟨fun i => ⟨i, f i⟩, fun _ => rfl⟩
   invFun := fun f i => by rw [← f.2 i]; exact (f.1 i).2
-  left_inv := fun f => funext fun i => rfl
+  left_inv := fun _ => funext fun _ => rfl
   right_inv := fun ⟨f, hf⟩ =>
     Subtype.eq <| funext fun i =>
       Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp
@@ -1211,7 +1211,7 @@ def subtypeProdEquivSigmaSubtype {α β} (p : α → β → Prop) :
   toFun x := ⟨x.1.1, x.1.2, x.property⟩
   invFun x := ⟨⟨x.1, x.2⟩, x.2.property⟩
   left_inv x := by ext <;> rfl
-  right_inv := fun ⟨a, b, pab⟩ => rfl
+  right_inv := fun ⟨_, _, _⟩ => rfl
 
 /-- The type `∀ (i : α), β i` can be split as a product by separating the indices in `α`
 depending on whether they satisfy a predicate `p` or not. -/
@@ -1360,11 +1360,11 @@ def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) {s₁ : Setoid α} 
     (h : ∀ x y : Subtype p₁, s₂.r x y ↔ s₁.r x y) : {x // p₂ x} ≃ Quotient s₂ where
   toFun a :=
     Quotient.hrecOn a.1 (fun a h => ⟦⟨a, (hp₂ _).2 h⟩⟧)
-      (fun a b hab => hfunext (by rw [Quotient.sound hab]) fun h₁ h₂ _ =>
+      (fun a b hab => hfunext (by rw [Quotient.sound hab]) fun _ _ _ =>
         heq_of_eq (Quotient.sound ((h _ _).2 hab)))
       a.2
   invFun a :=
-    Quotient.liftOn a (fun a => (⟨⟦a.1⟧, (hp₂ _).1 a.2⟩ : { x // p₂ x })) fun a b hab =>
+    Quotient.liftOn a (fun a => (⟨⟦a.1⟧, (hp₂ _).1 a.2⟩ : { x // p₂ x })) fun _ _ hab =>
       Subtype.ext_val (Quotient.sound ((h _ _).1 hab))
   left_inv := by exact fun ⟨a, ha⟩ => Quotient.inductionOn a (fun b hb => rfl) ha
   right_inv a := by exact Quotient.inductionOn a fun ⟨a, ha⟩ => rfl
