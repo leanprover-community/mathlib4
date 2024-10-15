@@ -185,9 +185,7 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
     arg 1
     arg 1
     unfold const
-  simp only [merge1_cons_head_cons]
-  congr
-  simp only [nil_add]
+  rw [merge1_cons_head_cons]
   sorry
 
 @[simp]
@@ -354,34 +352,11 @@ theorem apply_wellOrdered {s : LazySeries} (h_analytic : analytic s) {basis : Ba
                   ((apply (CoList.cons s_hd s_tl) ms).mul (CoList.cons (Y_deg, Y_coef) Y_tl))) := by
                 rw [h_ms_eq]
                 congr
-                simp only [apply_cons, mul_cons, mulMonomial_cons,
-                  zero_add, mul_assoc']
-                rw [cons_add]
-                · simp
-                  conv => lhs; arg 2; arg 2; simp [leadingExp]
-                  conv => rhs; arg 1; rw [← zero_add Y_deg]
-                  rw [WithBot.coe_add, ← add_assoc]
-                  apply WithBot.add_lt_add_right (by simp)
-                  conv => rhs; arg 1; rw [← zero_add 0]
-                  rw [WithBot.coe_add]
-                  apply WithBot.add_lt_add_of_le_of_lt (by simp)
-                  · apply apply_leadingExp_le_zero
-                  · exact h_neg
+                simp [apply_cons]
               use X_tl
               use .cons (Y_deg, Y_coef) Y_tl
               constructor
               · simp
-                rw [cons_add]
-                · simp
-                  conv => lhs; arg 2; arg 2; simp [leadingExp]
-                  conv => rhs; arg 1; rw [← zero_add Y_deg]
-                  rw [WithBot.coe_add, ← add_assoc]
-                  apply WithBot.add_lt_add_right (by simp)
-                  conv => rhs; arg 1; rw [← zero_add 0]
-                  rw [WithBot.coe_add]
-                  apply WithBot.add_lt_add_of_le_of_lt (by simp)
-                  · apply apply_leadingExp_le_zero
-                  · exact h_neg
               constructor
               · exact hX_tl_wo
               · exact hY_wo
@@ -575,7 +550,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                     apply eventuallyEq_iff_sub.mpr
                     simpa
                   conv =>
-                    rhs; ext x; rw [show basis_hd x ^ deg = basis_hd x ^ deg * 1 by ring] -- mul_one is blocked :(
+                    rhs; ext x; rw [← mul_one (basis_hd x ^ deg)]
                   apply IsLittleO.mul_isBigO
                   · exact hY_comp deg (by assumption)
                   apply isBigO_const_of_tendsto (y := s_hd) _ (by simp)
@@ -748,7 +723,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                 apply IsLittleO.add
                 · exact hX_comp deg h_deg
                 conv =>
-                  rhs; ext x; rw [show basis_hd x ^ deg = basis_hd x ^ deg * 1 by ring] -- mul_one is blocked :(
+                  rhs; ext x; rw [← mul_one (basis_hd x ^ deg)]
                 apply IsLittleO.mul_isBigO
                 · apply hY_comp deg
                   linarith
@@ -763,19 +738,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                   ((apply (CoList.cons s_hd s_tl) ms).mul (CoList.cons (Y_deg, Y_coef) Y_tl))) := by
                 rw [h_ms_eq]
                 congr
-                simp only [apply_cons, mul_cons, mulMonomial_cons,
-                  zero_add, mul_assoc']
-                rw [cons_add]
-                · simp
-                  conv => lhs; arg 2; arg 2; simp [leadingExp]
-                  conv => rhs; arg 1; rw [← zero_add Y_deg]
-                  rw [WithBot.coe_add, ← add_assoc]
-                  apply WithBot.add_lt_add_right (by simp)
-                  conv => rhs; arg 1; rw [← zero_add 0]
-                  rw [WithBot.coe_add]
-                  apply WithBot.add_lt_add_of_le_of_lt (by simp)
-                  · apply apply_leadingExp_le_zero
-                  · exact h_neg
+                simp [apply_cons]
               use X_tl
               use .cons (Y_deg, Y_coef) Y_tl
               use fun x ↦ fX x - basis_hd x ^ X_deg * XC x
@@ -792,17 +755,6 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                 exact hf_eq
               constructor
               · simp
-                rw [cons_add]
-                · simp
-                  conv => lhs; arg 2; arg 2; simp [leadingExp]
-                  conv => rhs; arg 1; rw [← zero_add Y_deg]
-                  rw [WithBot.coe_add, ← add_assoc]
-                  apply WithBot.add_lt_add_right (by simp)
-                  conv => rhs; arg 1; rw [← zero_add 0]
-                  rw [WithBot.coe_add]
-                  apply WithBot.add_lt_add_of_le_of_lt (by simp)
-                  · apply apply_leadingExp_le_zero
-                  · exact h_neg
               constructor
               · exact hX_tl_wo
               constructor
@@ -831,7 +783,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                 · apply hX_comp deg
                   linarith
                 conv =>
-                  rhs; ext x; rw [show basis_hd x ^ deg = basis_hd x ^ deg * 1 by ring] -- mul_one is blocked :(
+                  rhs; ext x; rw [← mul_one (basis_hd x ^ deg)]
                 apply IsLittleO.mul_isBigO
                 · apply hY_comp deg h_deg
                 apply toFun_IsBigO_one h_analytic hF_tendsto_zero
@@ -901,7 +853,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                 apply IsLittleO.add
                 · exact hX_comp deg h_deg
                 conv =>
-                  rhs; ext x; rw [show basis_hd x ^ deg = basis_hd x ^ deg * 1 by ring] -- mul_one is blocked :(
+                  rhs; ext x; rw [← mul_one (basis_hd x ^ deg)]
                 apply IsLittleO.mul_isBigO
                 · exact hY_comp deg (h ▸ h_deg)
                 apply toFun_IsBigO_one h_analytic hF_tendsto_zero

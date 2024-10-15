@@ -28,6 +28,21 @@ def leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ms : PreMS (basis_hd
   (nil := ⊥)
   (cons := fun (deg, _) _ ↦ deg)
 
+@[simp]
+theorem leadingExp_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
+    leadingExp (basis_hd := basis_hd) (basis_tl := basis_tl) .nil = ⊥ := by
+  simp [leadingExp]
+
+@[simp]
+theorem leadingExp_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {coef : PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)} :
+    leadingExp (basis_hd := basis_hd) (basis_tl := basis_tl) (CoList.cons (deg, coef) tl) = deg := by
+  simp [leadingExp]
+
+theorem leadingExp_of_head {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
+    ms.leadingExp = ms.head.elim ⊥ (fun (deg, _) ↦ deg) := by
+  apply ms.casesOn <;> simp [leadingExp]
+
 theorem leadingExp_eq_bot {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     ms = .nil ↔ ms.leadingExp = ⊥ := by
   apply ms.casesOn
@@ -46,13 +61,32 @@ theorem leadingExp_eq_coe {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreM
     subst h
     use (coef, tl)
 
+scoped instance {basis : _} : Preorder (ℝ × PreMS basis) where
+  le := fun x y ↦ x.1 ≤ y.1
+  le_refl := by simp
+  le_trans := by
+    intro x y z hxy hyz
+    simp at *
+    trans y.1 <;> assumption
+
+-- TODO: can be simpler??
+private theorem lt_iff_lt {basis : _} {deg1 deg2 : ℝ} {coef1 coef2 : PreMS basis} :
+    (deg1, coef1) < (deg2, coef2) ↔ deg1 < deg2 := by
+  constructor
+  · intro h
+    rw [lt_iff_le_not_le] at h ⊢
+    exact h
+  · intro h
+    rw [lt_iff_le_not_le] at h ⊢
+    exact h
+
+-- theorem lt_of_leadingExp_gt {}
+
 inductive wellOrdered : {basis : Basis} → (PreMS basis) → Prop
 | const (ms : PreMS []) : wellOrdered ms
 | colist {hd : _} {tl : _} (ms : PreMS (hd :: tl))
     (h_coef : ∀ i x, ms.get i = .some x → x.2.wellOrdered)
-    (h_wo : ∀ i j x y, (i < j) → (ms.get i = .some x) →
-      (ms.get j = .some y) → (y.1 < x.1)) : ms.wellOrdered
-
+    (h_sorted : CoList.Sorted (· > ·) ms) : ms.wellOrdered
 
 theorem wellOrdered.nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     wellOrdered (basis := basis_hd :: basis_tl) .nil := by
@@ -123,66 +157,38 @@ theorem wellOrdered.cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
       simp at h
       simp at h_tl_coef
       solve_by_elim
-  · intro i j x y h_lt hi hj
-    cases j with
-    | zero => simp at h_lt
-    | succ k =>
-      revert hi hj h_comp h_tl_tl
+  · apply CoList.Sorted.cons
+    · revert h_comp
       apply tl.casesOn
-      · intro h_comp h_tl_tl hi hj
-        focus
-        simp at hj
-      · intro (tl_deg, tl_coef) tl_tl h_comp h_tl_tl hi hj
-        simp [leadingExp] at h_comp
-        cases i with
-        | zero =>
-          simp at hi
-          cases k with
-          | zero =>
-            simp at hj
-            simpa [← hi, ← hj]
-          | succ l =>
-            simp at hj
-            specialize h_tl_tl 0 (l + 1) (tl_deg, tl_coef) y (by omega)
-            simp at h_tl_tl
-            specialize h_tl_tl hj
-            simp [← hi]
-            linarith
-        | succ m =>
-          cases k with
-          | zero => simp at h_lt
-          | succ l =>
-            simp at hi
-            simp at hj
-            specialize h_tl_tl m (l + 1) x y (by omega)
-            simp at h_tl_tl
-            exact h_tl_tl hi hj
+      · simp
+      · simp [leadingExp]
+        intro a b h
+        rwa [lt_iff_lt]
+    · exact h_tl_tl
 
 theorem wellOrdered_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {coef : PreMS basis_tl}
     {tl : PreMS (basis_hd :: basis_tl)}
     (h : wellOrdered (basis := basis_hd :: basis_tl) (.cons (deg, coef) tl)) :
     coef.wellOrdered ∧ tl.leadingExp < deg ∧ tl.wellOrdered := by
-  cases h with | colist _ h_coef h_comp =>
+  cases h with | colist _ h_coef h_sorted =>
+  replace h_sorted := CoList.Sorted_cons h_sorted
   constructor
   · specialize h_coef 0 (deg, coef)
     simpa using h_coef
   constructor
-  · revert h_comp
+  · revert h_sorted
     apply tl.casesOn
     · simp [leadingExp]
-    · intro (tl_deg, tl_coef) tl_tl h_comp
+    · intro (tl_deg, tl_coef) tl_tl h_sorted
+      simp [lt_iff_lt] at h_sorted
       simp [leadingExp]
-      specialize h_comp 0 1 (deg, coef) (tl_deg, tl_coef) (by linarith)
-      simpa using h_comp
+      exact h_sorted.left
   · constructor
     · intro i x hx
       specialize h_coef (i + 1) x
       simp at h_coef hx
       exact h_coef hx
-    · intro i j x y h_lt hx hy
-      specialize h_comp (i + 1) (j + 1) x y
-      simp at h_comp hx hy
-      exact h_comp h_lt hx hy
+    · exact h_sorted.right
 
 
 theorem wellOrdered.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -226,50 +232,18 @@ theorem wellOrdered.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       rw [h_ms_eq] at hx
       simp at hx
       simpa [← hx]
-  · intro i j x y h_lt hx hy
-    replace h_lt := Nat.exists_eq_add_of_lt h_lt
-    obtain ⟨k, hj⟩ := h_lt
-    rw [add_assoc, add_comm] at hj
-    subst hj
-    induction k generalizing y with
-    | zero =>
-      simp at hx
-      simp [CoList.get_eq_head, Function.iterate_add, Function.comp_apply] at hy
-      specialize h_survive _ (h_all i)
-      cases h_survive with
-      | inl h_ms_eq =>
-        simp [h_ms_eq] at hx
-      | inr h =>
-        obtain ⟨deg, coef, tl, h_ms_eq, _, h_comp, _⟩ := h
-        simp [h_ms_eq] at hx hy
-        revert h_comp hy
-        apply tl.casesOn
-        · intro _ hy
-          simp at hy
-        · intro (tl_deg, tl_coef) tl_tl h_comp hy
-          simp at hy
-          simp [leadingExp] at h_comp
-          simpa [← hx, ← hy]
-    | succ l ih =>
-      simp at hx hy ih
-      rw [show l + 1 + 1 + i = l + 1 + i + 1 by linarith] at hy
-      simp only [Function.iterate_succ', Function.comp_apply] at hy
-      specialize h_survive _ (h_all (l + 1 + i))
-      cases h_survive with
-      | inl h_ms_eq =>
-        simp [h_ms_eq] at hy
-      | inr h =>
-        obtain ⟨deg, coef, tl, h_ms_eq, _, h_comp, _⟩ := h
-        simp [h_ms_eq] at hx hy ih
-        revert h_comp hy
-        apply tl.casesOn
-        · intro _ hy
-          simp at hy
-        · intro (tl_deg, tl_coef) tl_tl h_comp hy
-          simp at hy
-          simp [leadingExp] at h_comp
-          rw [← hy]
-          linarith
+  · refine CoList.Sorted.coind motive ?_ h
+    intro hd tl ih
+    specialize h_survive _ ih
+    simp at h_survive
+    obtain ⟨deg, coef, tl, ⟨h_hd_eq, h_tl_eq⟩, h_coef, h_comp, h_tl⟩ := h_survive
+    subst h_hd_eq h_tl_eq
+    constructor
+    · revert h_comp
+      apply tl.casesOn
+      · simp
+      simp [leadingExp, lt_iff_lt]
+    · exact h_tl
 
 def allLt {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ms : PreMS (basis_hd :: basis_tl)) (a : ℝ) :
     Prop :=
@@ -430,12 +404,9 @@ theorem partialSumsFrom_eq_map {Cs : CoList (ℝ → ℝ)} {degs : CoList ℝ} {
         use .nil
         constructor
         · assumption
-        use D + init'
         use .nil
         constructor
         · assumption
-        constructor
-        · rfl
         simp [motive]
       · intro degs_hd degs_tl h_alal h_x_eq h_y_eq
         obtain ⟨Cs_hd, Cs_tl, h_Cs⟩ := CoList.atLeastAsLongAs_cons h_alal
@@ -444,15 +415,12 @@ theorem partialSumsFrom_eq_map {Cs : CoList (ℝ → ℝ)} {degs : CoList ℝ} {
         use D + init'
         use (partialSumsFrom Cs_tl degs_tl basis_fun fun x ↦ D x + init' x +
           basis_fun x ^ degs_hd * Cs_hd x)
-        use D + init'
         use (CoList.map (fun G ↦ D + G) (partialSumsFrom Cs_tl degs_tl basis_fun fun x ↦ init' x +
           basis_fun x ^ degs_hd * Cs_hd x))
         constructor
         · assumption
         constructor
         · assumption
-        constructor
-        · rfl
         simp [motive]
         simp at h_alal
         use Cs_tl

@@ -120,15 +120,12 @@ theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
       have h_out : CoList.out (add (basis := basis_hd :: basis_tl) CoList.nil
         (CoList.cons (deg, coef) tl)) = ?_ := by exact add_out_eq
       simp [add_out] at h_out
-      use ?_
-      use ?_
       use (deg, coef)
+      use ?_
       use tl
       constructor
       · have := CoList.out_eq_cons h_out
         exact this
-      constructor
-      · rfl
       constructor
       · rfl
       simp only [motive]
@@ -159,15 +156,12 @@ theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
       have h_out : CoList.out (add (basis := basis_hd :: basis_tl)
         (CoList.cons (deg, coef) tl) CoList.nil) = ?_ := by exact add_out_eq
       simp [add_out] at h_out
-      use ?_
-      use ?_
       use (deg, coef)
+      use ?_
       use tl
       constructor
       · have := CoList.out_eq_cons h_out
         exact this
-      constructor
-      · rfl
       constructor
       · rfl
       simp only [motive]
@@ -240,7 +234,25 @@ theorem cons_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_deg : ℝ} {X_co
       exact h_out
     · simp [h_lt] at h1
 
-theorem add_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_deg : ℝ} {Y_coef : PreMS basis_tl}
+theorem add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_deg : ℝ} {X_coef : PreMS basis_tl}
+    {X_tl Y : PreMS (basis_hd :: basis_tl)} (h_lt : Y.leadingExp < X_deg) :
+    add (CoList.cons (X_deg, X_coef) X_tl) Y = CoList.cons (X_deg, X_coef) (X_tl.add Y) := by
+  have h_out : CoList.out (add (basis := basis_hd :: basis_tl) (CoList.cons (X_deg, X_coef) X_tl) Y) =
+    ?_ := by exact add_out_eq
+  simp [add_out] at h_out
+  revert h_lt h_out
+  apply Y.casesOn
+  · simp
+  · intro (Y_deg, Y_coef) Y_tl h_lt h_out
+    simp [leadingExp] at h_lt
+    simp at h_out
+    split_ifs at h_out with h1
+    · replace h_out := CoList.out_eq_cons h_out
+      exact h_out
+    · exfalso -- why do I need it?
+      linarith
+
+theorem add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_deg : ℝ} {Y_coef : PreMS basis_tl}
     {Y_tl X : PreMS (basis_hd :: basis_tl)} (h_lt : X.leadingExp < Y_deg) :
     add X (CoList.cons (Y_deg, Y_coef) Y_tl) = CoList.cons (Y_deg, Y_coef) (X.add Y_tl) := by
   have h_out : CoList.out (add (basis := basis_hd :: basis_tl) X (CoList.cons (Y_deg, Y_coef) Y_tl)) =
@@ -258,19 +270,19 @@ theorem add_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_deg : ℝ} {Y_co
     · replace h_out := CoList.out_eq_cons h_out
       exact h_out
 
-theorem cons_add' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_tl Y : PreMS (basis_hd :: basis_tl)}
-    {X_deg : ℝ} {X_coef : PreMS basis_tl}
-    (h_lt : Y.allLt X_deg)
-    : add (CoList.cons (X_deg, X_coef) X_tl) Y =
-    CoList.cons (X_deg, X_coef) (X_tl.add Y) := by
-  apply cons_add
-  revert h_lt
-  apply Y.casesOn
-  · intro h_lt
-    simp [leadingExp]
-  · intro (Y_deg, Y_coef) Y_tl h_lt
-    simp [allLt] at h_lt
-    simp [leadingExp, h_lt.left]
+-- theorem cons_add' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_tl Y : PreMS (basis_hd :: basis_tl)}
+--     {X_deg : ℝ} {X_coef : PreMS basis_tl}
+--     (h_lt : Y.allLt X_deg)
+--     : add (CoList.cons (X_deg, X_coef) X_tl) Y =
+--     CoList.cons (X_deg, X_coef) (X_tl.add Y) := by
+--   apply cons_add
+--   revert h_lt
+--   apply Y.casesOn
+--   · intro h_lt
+--     simp [leadingExp]
+--   · intro (Y_deg, Y_coef) Y_tl h_lt
+--     simp [allLt] at h_lt
+--     simp [leadingExp, h_lt.left]
 
 -- TODO: prove add_cons'
 
@@ -316,13 +328,10 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
           use ?_
           use ?_
           use ?_
-          use ?_
           constructor
           · exact ha_eq
           constructor
           · exact hb_eq
-          constructor
-          · rfl
           simp only [motive]
           use .nil
           use .nil
@@ -337,13 +346,10 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
           use ?_
           use ?_
           use ?_
-          use ?_
           constructor
           · exact ha_eq
           constructor
           · exact hb_eq
-          constructor
-          · rfl
           simp only [motive]
           use .nil
           use .nil
@@ -363,13 +369,10 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
             use ?_
             use ?_
             use ?_
-            use ?_
             constructor
             · exact h_out
             constructor
             · exact h_out
-            constructor
-            · rfl
             simp only [motive]
             use Y_tl
             use CoList.cons (Z_deg, Z_coef) Z_tl
@@ -381,13 +384,10 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
             use ?_
             use ?_
             use ?_
-            use ?_
             constructor
             · exact h_out
             constructor
             · exact h_out
-            constructor
-            · rfl
             simp only [motive]
             use CoList.cons (Y_deg, Y_coef) Y_tl
             use Z_tl
@@ -399,13 +399,10 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
             use ?_
             use ?_
             use ?_
-            use ?_
             constructor
             · exact h_out
             constructor
             · exact h_out
-            constructor
-            · rfl
             simp only [motive]
             use Y_tl
             use Z_tl
@@ -429,13 +426,10 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
           use ?_
           use ?_
           use ?_
-          use ?_
           constructor
           · exact ha_eq
           constructor
           · exact ha_eq
-          constructor
-          · rfl
           simp only [motive]
           use X_tl
           use .nil
@@ -450,13 +444,10 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
             use ?_
             use ?_
             use ?_
-            use ?_
             constructor
             · exact h_out
             constructor
             · exact h_out
-            constructor
-            · rfl
             simp only [motive]
             use X_tl
             use CoList.cons (Z_deg, Z_coef) Z_tl
@@ -468,13 +459,10 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
             use ?_
             use ?_
             use ?_
-            use ?_
             constructor
             · exact h_out
             constructor
             · exact h_out
-            constructor
-            · rfl
             simp only [motive]
             use CoList.cons (X_deg, X_coef) X_tl
             use Z_tl
@@ -486,13 +474,10 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
             use ?_
             use ?_
             use ?_
-            use ?_
             constructor
             · exact h_out
             constructor
             · exact h_out
-            constructor
-            · rfl
             simp only [motive]
             use X_tl
             use Z_tl
@@ -516,13 +501,10 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
             use ?_
             use ?_
             use ?_
-            use ?_
             constructor
             · exact h_out
             constructor
             · exact h_out
-            constructor
-            · rfl
             simp only [motive]
             use X_tl
             use CoList.cons (Y_deg, Y_coef) Y_tl
@@ -534,13 +516,10 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
             use ?_
             use ?_
             use ?_
-            use ?_
             constructor
             · exact h_out
             constructor
             · exact h_out
-            constructor
-            · rfl
             simp only [motive]
             use CoList.cons (X_deg, X_coef) X_tl
             use Y_tl
@@ -552,13 +531,10 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
             use ?_
             use ?_
             use ?_
-            use ?_
             constructor
             · exact h_out
             constructor
             · exact h_out
-            constructor
-            · rfl
             simp only [motive]
             use X_tl
             use Y_tl
@@ -590,13 +566,11 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
               use ?_
               use ?_
               use ?_
-              use ?_
               constructor
               · exact ha_out
               constructor
-              · exact hb_out
-              constructor
-              · first | rfl | (congr 1; exact add_assoc')
+              · try rw [add_assoc']
+                exact hb_out
               simp only [motive]
               use ?_
               use ?_

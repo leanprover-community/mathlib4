@@ -259,6 +259,8 @@ coinductive all (li : CoList α) (p : α → Prop)
 def all {α : Type u} (li : CoList α) (p : α → Prop) : Prop :=
   ∀ n, (li.get n).elim True p
 
+def Sorted {α : Type u} (r : α → α → Prop) (li : CoList α) : Prop :=
+  ∀ i j x y, i < j → li.get i = .some x → li.get j = .some y → r x y
 
 ------
 
@@ -393,6 +395,13 @@ theorem get_eq_head {α : Type u} (li : CoList α) (n : ℕ) : li.get n = head (
     simp [get]
     apply ih
 
+theorem get_succ_none {α : Type u} {li : CoList α} {n : ℕ} (h : li.get n = none) : li.get (n + 1) = none := by
+  sorry
+
+theorem exists_pred_of_get_some {α : Type u} {li : CoList α} {x : α} {n : ℕ} (h : li.get (n + 1) = .some x)
+    : ∃ y, li.get n = .some y := by
+  sorry
+
 -- @[simp]
 -- theorem get_nil {α : Type u} {n : ℕ} : (nil (α := α)).get n = .none := by
 --   simp
@@ -401,10 +410,6 @@ theorem get_eq_head {α : Type u} (li : CoList α) (n : ℕ) : li.get n = head (
 theorem take_nil {α : Type u} {n : ℕ} : (nil (α := α)).take n = List.nil := by
   cases n <;> rfl
 
-@[simp]
-theorem take_succ {α : Type u} {n : ℕ} {hd : α} {tl : CoList α} :
-    (cons hd tl).take (n + 1) = hd :: tl.take n := by
-  rfl
 
 @[simp]
 theorem take_zero {α : Type u} {li : CoList α} : li.take 0 = [] := by
@@ -412,6 +417,33 @@ theorem take_zero {α : Type u} {li : CoList α} : li.take 0 = [] := by
   · rfl
   · intro hd tl
     rfl
+
+@[simp]
+theorem take_succ {α : Type u} {n : ℕ} {hd : α} {tl : CoList α} :
+    (cons hd tl).take (n + 1) = hd :: tl.take n := by
+  rfl
+
+theorem set_head {α : Type u} {li : CoList α} {x : α} {n : ℕ} :
+    (li.set n x).head =
+    match n with
+    | 0 => .some x
+    | _ + 1 => li.head := by
+  sorry
+
+theorem set_get_some {α : Type u} {li : CoList α} {x y : α} {n : ℕ}
+    (h_some : li.get n = .some y) :
+    (li.set n x).get n = x := by
+  sorry
+
+theorem set_get_none {α : Type u} {li : CoList α} {x : α} {n : ℕ}
+    (h_some : li.get n = .none) :
+    (li.set n x).get n = .none := by
+  sorry
+
+theorem set_get_stable {α : Type u} {li : CoList α} {x : α} {n m : ℕ}
+    (h : n ≠ m) :
+    (li.set m x).get n = li.get n := by
+  sorry
 
 @[simp]
 theorem map_nil {α : Type v} {β : Type v} (f : α → β) : nil.map f = nil := by
@@ -600,11 +632,15 @@ theorem all_cons {α : Type u} {p : α → Prop} {hd : α} {tl : CoList α} :
 theorem all_get {α : Type  u} {p : α → Prop} {li : CoList α} (h : li.all p) {n : ℕ} : (li.get n).elim True p := by
   sorry --induction n
 
+theorem set_all {α : Type u} {p : α → Prop} {li : CoList α} (h_all : li.all p) {n : ℕ} {x : α}
+    (hx : p x) : (li.set n x).all p := by
+  sorry
+
 /-- Coinduction principle for proving `a = b`. -/
 def Eq.coind {α : Type u} {a b : CoList α}
     (motive : CoList α → CoList α → Prop)
     (h_survive : ∀ a b, motive a b →
-      (∃ a_hd a_tl b_hd b_tl, a = cons a_hd a_tl ∧ b = cons b_hd b_tl ∧ a_hd = b_hd ∧ motive a_tl b_tl) ∨
+      (∃ hd a_tl b_tl, a = cons hd a_tl ∧ b = cons hd b_tl ∧ motive a_tl b_tl) ∨
       (a = nil ∧ b = nil))
     (h : motive a b) : a = b := by
   apply Subtype.eq
@@ -618,7 +654,7 @@ def Eq.coind {α : Type u} {a b : CoList α}
       specialize h_survive (tail^[m] a) (tail^[m] b) ih
       cases h_survive with
       | inl h =>
-        obtain ⟨a_hd, a_tl, b_hd, b_tl, h_a_eq, h_b_eq, _, h_tail⟩ := h
+        obtain ⟨hd, a_tl, b_tl, h_a_eq, h_b_eq, h_tail⟩ := h
         rw [h_a_eq, h_b_eq]
         simpa
       | inr h =>
@@ -628,9 +664,8 @@ def Eq.coind {α : Type u} {a b : CoList α}
   specialize h_survive _ _ this
   cases h_survive with
   | inl h =>
-    obtain ⟨a_hd, a_tl, b_hd, b_tl, h_a_eq, h_b_eq, h_head, _⟩ := h
-    rw [h_a_eq, h_b_eq]
-    simpa
+    obtain ⟨hd, a_tl, b_tl, h_a_eq, h_b_eq, _⟩ := h
+    simp [h_a_eq, h_b_eq]
   | inr h => rw [h.1, h.2]
 
 @[simp]
@@ -777,7 +812,27 @@ theorem map_all_iff {α : Type u} {β : Type u} {f : α → β} {p : β → Prop
     · simp [motive]
       use li
 
+theorem take_length_le {α : Type u} {li : CoList α} {n : ℕ} : (li.take n).length ≤ n := by
+  sorry
 
+theorem take_tail' {α : Type u} {li : CoList α} {n m : ℕ} : List.tail^[m] (li.take n) = (tail^[m] li).take (n - m) := by
+  sorry
+
+theorem mem_take_iff {α : Type u} {x : α} {li : CoList α} {n : ℕ} :
+    x ∈ li.take n ↔ ∃ m < n, li.get m = .some x := by
+  sorry
+
+theorem get_mem_take {α : Type u} {li : CoList α} {m n : ℕ} (h_mn : m < n) {x : α}
+    (h_get : li.get m = .some x) : x ∈ li.take n := by
+  sorry
+
+theorem head_mem_take_succ {α : Type u} {hd : α} {tl : CoList α} {n : ℕ} :
+    hd ∈ (cons hd tl).take (n + 1) := by
+  sorry
+
+theorem take_all {α : Type u} {li : CoList α} {p : α → Prop} (h : li.all p) {n : ℕ} :
+    ∀ x ∈ li.take n, p x := by
+  sorry
 
 theorem map_comp {α β γ : Type u} {f : α → β} {g : β → γ} {li : CoList α} :
     (li.map f).map g = li.map (g ∘ f) := by
@@ -799,89 +854,148 @@ theorem map_comp {α β γ : Type u} {f : α → β} {g : β → γ} {li : CoLis
       left
       use (g (f hd))
       use (map g (map f tl))
-      use (g (f hd))
       use (map (g ∘ f) tl)
       constructor
       · assumption
       constructor
       · assumption
-      constructor
-      · rfl
       simp [motive]
       use tl
   · simp [motive]
     use li
 
-namespace hidden
+@[simp]
+theorem cons_set_zero {α : Type u} {hd hd' : α} {tl : CoList α} :
+    (cons hd tl).set 0 hd' = cons hd' tl := by
+  simp [set, modify]
 
-def Infinite {α : Type u} (li : CoList α) : Prop :=
-  ∀ n, li.val n ≠ .none
+@[simp]
+theorem cons_set_succ {α : Type u} {hd x : α} {n : ℕ} {tl : CoList α} :
+    (cons hd tl).set (n + 1) x = cons hd (tl.set n x) := by
+  sorry
 
+theorem set_tail_stable_of_lt {α : Type u} {li : CoList α} {m n : ℕ} {x : α}
+    (h : m < n) :
+    tail^[n] (li.set m x) = tail^[n] li := by
+  sorry
 
-theorem Infinite.priniciple {α : Type u} (motive : CoList α → Prop)
-    (g : ∀ li, motive li → ∃ hd tl, li = cons hd tl ∧ motive tl)
-    (li : CoList α) (h : motive li) : Infinite li := by
-  unfold Infinite
-  simp_rw [val_eq_get]
-  intro n
-  have : get n li ≠ none ∧ motive (tail^[n] li) := by
-    induction n with
+theorem Sorted.nil {α : Type u} {r : α → α → Prop} : Sorted r (.nil (α := α)) := by
+  simp [Sorted]
+
+theorem Sorted.cons {α : Type u} {r : α → α → Prop} [IsTrans _ r] {hd : α} {tl : CoList α}
+    (h_lt : tl.head.elim True (r hd ·))
+    (h_tl : Sorted r tl) : Sorted r (.cons hd tl) := by
+  simp [Sorted] at *
+  intro i j x y h_ij hx hy
+  cases j with
+  | zero =>
+    simp at h_ij
+  | succ k =>
+    simp at hy
+    cases i with
     | zero =>
-      specialize g li h
-      obtain ⟨hd, tl, h_eq, _⟩ := g
-      constructor
-      · rw [h_eq]
-        simp
-      · simpa
+      simp at hx
+      subst hx
+      revert h_lt h_tl hy
+      apply tl.casesOn
+      · intro _ _ hy
+        simp at hy
+      · intro tl_hd tl_tl h_lt h_tl hy
+        simp at h_lt
+        cases k with
+        | zero =>
+          simp at hy
+          rwa [← hy]
+        | succ m =>
+          simp at hy
+          trans tl_hd
+          · assumption
+          specialize h_tl 0 (m + 1) tl_hd y (by omega)
+          solve_by_elim
+    | succ n =>
+      exact h_tl n k x y (by omega) hx hy
+
+theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] (motive : CoList α → Prop)
+    (h_survive : ∀ hd tl, motive (.cons hd tl) → tl.head.elim True (r hd ·) ∧ motive tl)
+    {li : CoList α} (h : motive li) : Sorted r li := by
+  have h_all : ∀ n, motive (CoList.tail^[n] li) := by
+    intro n
+    induction n with
+    | zero => simpa
     | succ m ih =>
-      let g' := g _ ih.right
-      obtain ⟨hd, tl, h_eq, h_tl⟩ := g'
-      specialize g _ h_tl
-      obtain ⟨tl_hd, tl_tl, h_tl_eq, _⟩ := g
-      constructor
-      · simp only [get_eq_head, Function.iterate_succ', Function.comp_apply]
-        rw [h_eq]
-        simp only [cons_tail]
-        rw [h_tl_eq]
-        simp
-      · simp only [Function.iterate_succ', Function.comp_apply]
-        rw [h_eq]
-        simpa
-  exact this.left
+      simp only [Function.iterate_succ', Function.comp_apply]
+      generalize tail^[m] li = t at *
+      revert ih
+      apply t.casesOn
+      · simp
+      · intro hd tl ih
+        exact (h_survive hd tl ih).right
+  simp [Sorted]
+  intro i j x y h_ij hx hy
+  replace h_ij := Nat.exists_eq_add_of_lt h_ij
+  obtain ⟨k, hj⟩ := h_ij
+  rw [Nat.add_assoc, Nat.add_comm] at hj
+  subst hj
+  induction k generalizing y with
+  | zero =>
+    simp [CoList.get_eq_head, Function.iterate_add, Function.comp_apply] at hy
+    specialize h_all i
+    generalize tail^[i] li = t at *
+    revert hx hy h_all
+    apply t.casesOn
+    · simp
+    intro hd tl hx hy h_all
+    specialize h_survive hd tl h_all
+    simp at hx hy
+    simp [hy, hx] at h_survive
+    exact h_survive.left
+  | succ l ih =>
+    simp at hx hy ih
+    rw [show l + 1 + 1 + i = l + 1 + i + 1 by omega] at hy
+    simp only [Function.iterate_succ', Function.comp_apply] at hy
+    specialize h_all (l + 1 + i)
+    generalize tail^[l + 1 + i] li = t at *
+    revert ih hy h_all
+    apply t.casesOn
+    · simp
+    intro hd tl ih hy h_all
+    specialize h_survive hd tl h_all
+    simp at ih hy
+    simp [hy] at h_survive
+    trans hd
+    exacts [ih, h_survive.left]
 
-def ones : CoList ℕ :=
-  let g : Unit → OutType ℕ Unit := fun _ ↦ .cons 1 ()
-  corec g ()
+theorem Sorted_cons {α : Type u} {r : α → α → Prop} {hd : α} {tl : CoList α}
+    (h : Sorted r (.cons hd tl)) :
+    tl.head.elim True (r hd ·) ∧ Sorted r tl := by
+  simp [Sorted] at *
+  constructor
+  · revert h
+    apply tl.casesOn
+    · simp
+    intro tl_hd tl_tl h
+    specialize h 0 1 hd tl_hd (by omega)
+    simpa using h
+  · intro i j
+    specialize h (i + 1) (j + 1)
+    simpa using h
 
-#eval! ones.take 5
+theorem Sorted_tail {α : Type u} {r : α → α → Prop} {li : CoList α} (h : li.Sorted r) :
+    li.tail.Sorted r := by
+  revert h
+  apply li.casesOn
+  · simp
+  · intro hd tl h
+    simp
+    exact (Sorted_cons h).right
 
-#eval! ones.fold 0 (fun x y => x + y) |>.take 5
-
-def onee := cons 1 nil
-
-#eval! onee.take 5
-#eval! onee.fold 0 (fun x y => x + y) |>.take 5
-
-
-example : Infinite ones := by
-  let motive : CoList ℕ → Prop := fun x => x = ones
-  apply Infinite.priniciple (motive := motive)
-  · intro li h
-    use 1
-    use ones
-    constructor
-    · rw [h]
-      conv =>
-        lhs
-        unfold ones
-        rw [corec_cons (hd := 1) (tl := ())]
-        · rfl
-        · tactic => rfl
-      rfl
-    · rfl
-  · rfl
-
-end hidden
+theorem Sorted_tail' {α : Type u} {r : α → α → Prop} {li : CoList α} (h : li.Sorted r) {n : ℕ} :
+    (CoList.tail^[n] li).Sorted r := by
+  induction n with
+  | zero => simpa
+  | succ m ih =>
+    simp only [Function.iterate_succ', Function.comp_apply]
+    exact Sorted_tail ih
 
 end CoList
 

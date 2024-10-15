@@ -24,7 +24,6 @@ end
 --theorems
 open Filter Asymptotics
 
-
 @[simp]
 theorem nil_mul {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     mul CoList.nil ms = .nil := by
@@ -34,12 +33,7 @@ theorem nil_mul {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
 theorem mul_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     mul ms CoList.nil = .nil := by
   simp [mul, mulMonomial]
-  apply ms.casesOn
-  · simp [merge1_nil]
-  · intro (deg, coef) tl
-    simp [merge1]
-    rw [CoList.corec_nil]
-    simp [leadingTerms]
+  apply ms.casesOn <;> simp
 
 @[simp]
 theorem mulMonomial_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {m_deg : ℝ} {m_coef : PreMS basis_tl} :
@@ -53,6 +47,43 @@ theorem mulMonomial_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg m_de
     .cons (m_deg + x_deg, mul m_coef x_coef) (mulMonomial x_tl m_coef m_deg) := by
   simp [mulMonomial]
 
+theorem mul_cons_cons_head {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg y_deg : ℝ} {x_coef y_coef : PreMS basis_tl}
+    {x_tl y_tl : PreMS (basis_hd :: basis_tl)} :
+    (mul (basis := basis_hd :: basis_tl) (CoList.cons (x_deg, x_coef) x_tl) (CoList.cons (y_deg, y_coef) y_tl)).head =
+    .some (x_deg + y_deg, x_coef.mul y_coef) := by
+  simp [mul]
+
+theorem mul_eq_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {X Y : PreMS (basis_hd :: basis_tl)} (h : X.mul Y = CoList.nil) :
+    X = .nil ∨ Y = .nil := by
+  revert h
+  apply X.casesOn
+  · simp
+  · intro (X_deg, X_coef) X_tl
+    apply Y.casesOn
+    · simp
+    · intro (Y_deg, Y_coef) Y_tl h
+      apply_fun CoList.head at h
+      simp [mul_cons_cons_head] at h
+
+theorem mul_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {coef : PreMS basis_tl}
+    {tl X Y : PreMS (basis_hd :: basis_tl)} (h : X.mul Y = .cons (deg, coef) tl) :
+    ∃ X_deg X_coef X_tl Y_deg Y_coef Y_tl, X = .cons (X_deg, X_coef) X_tl ∧ Y = .cons (Y_deg, Y_coef) Y_tl := by
+  revert h
+  apply X.casesOn
+  · simp
+  · intro (X_deg, X_coef) X_tl
+    apply Y.casesOn
+    · simp
+    · intro (Y_deg, Y_coef) Y_tl h
+      use X_deg
+      use X_coef
+      use X_tl
+      use Y_deg
+      use Y_coef
+      use Y_tl
+
+
 @[simp]
 theorem mul_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg y_deg : ℝ} {x_coef y_coef : PreMS basis_tl}
     {x_tl y_tl : PreMS (basis_hd :: basis_tl)} :
@@ -61,14 +92,62 @@ theorem mul_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg y_deg :
       (x_tl.mul (CoList.cons (y_deg, y_coef) y_tl))) := by
   simp [mul, merge1_cons_head_cons]
 
-@[simp]
-theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg : ℝ} {x_coef : PreMS basis_tl}
-    {x_tl y : PreMS (basis_hd :: basis_tl)} :
-    mul (CoList.cons (x_deg, x_coef) x_tl) y = (mulMonomial y x_coef x_deg).add (x_tl.mul y) := by
-  simp [mul, merge1_cons_eq_add]
+-- TODO: lots of copypaste from `mul_cons_cons`
+-- @[simp]
+-- theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg : ℝ} {x_coef : PreMS basis_tl}
+--     {x_tl y : PreMS (basis_hd :: basis_tl)} :
+--     mul (CoList.cons (x_deg, x_coef) x_tl) y = (mulMonomial y x_coef x_deg).add (x_tl.mul y) := by
+--   apply y.casesOn
+--   · simp
+--   · intro (y_deg, y_coef) y_tl
+--     simp
+--     rw [add_cons_cons]
 
+
+--   by_cases hy : y = CoList.nil
+--   · simp [hy]
+--   replace hy : y.leadingExp ≠ ⊥ := by
+--     revert hy
+--     apply y.casesOn
+--     · simp
+--     · simp [leadingExp]
+--   simp [mul]
+--   obtain ⟨hx_coef_wo, hx_comp, hx_tl_wo⟩ := wellOrdered_cons hx_wo
+--   rw [merge1_cons_eq_add]
+--   · let motive : CoList (PreMS (basis_hd :: basis_tl)) → Prop := fun li =>
+--       ∃ (z : PreMS (basis_hd :: basis_tl)), li = CoList.map (fun x ↦ y.mulMonomial x.2 x.1) z ∧
+--       z.wellOrdered
+--     apply CoList.Sorted.coind (r := (fun x1 x2 ↦ x1 > x2)) (motive := motive) -- why do I need to specify r?
+--     · intro hd tl ih
+--       simp only [motive] at ih
+--       obtain ⟨z, h_eq, hz_wo⟩ := ih
+--       revert h_eq hz_wo
+--       apply z.casesOn
+--       · simp
+--       · intro (z_deg, z_coef) z_tl h_eq hz_wo
+--         simp at h_eq
+--         obtain ⟨hz_coef_wo, hz_comp, hz_tl_wo⟩ := wellOrdered_cons hz_wo
+--         rw [h_eq.left, h_eq.right]
+--         constructor
+--         · revert hz_comp
+--           apply z_tl.casesOn
+--           · simp
+--           · intro (z_tl_hd_deg, z_tl_hd_coef) z_tl_tl hz_comp
+--             simp [lt_iff_lt]
+--             apply WithBot.add_lt_add_right
+--             · exact hy
+--             · simpa [leadingExp] using hz_comp
+--         · simp only [motive]
+--           use z_tl
+--     · simp only [motive]
+--       use (CoList.cons (x_deg, x_coef) x_tl)
+--       simp
+--       exact hx_wo
+
+
+-- TODO : can be proven without coinduction?
 @[simp]
-theorem mul_one {basis : Basis} {ms : PreMS basis} : mul ms (one basis) = ms := by
+theorem mul_one' {basis : Basis} {ms : PreMS basis} : mul ms (one basis) = ms := by
   cases basis with
   | nil => simp [mul, one, const]
   | cons basis_hd basis_tl =>
@@ -88,45 +167,40 @@ theorem mul_one {basis : Basis} {ms : PreMS basis} : mul ms (one basis) = ms := 
         use ?_
         use ?_
         constructor
-        · simp only [one, const, mul_cons_cons, add_zero]
-          congr <;> exact Eq.refl _
-        constructor
         · congr <;> exact Eq.refl _
-        constructor
-        · congr
-          exact mul_one
         simp only [motive]
-        simp [mul, one, const]
+        · exact Eq.refl _
+        · simp [one, const]
+          apply mul_one'
     · simp only [motive]
 
-theorem mul_eq_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {X Y : PreMS (basis_hd :: basis_tl)} (h : X.mul Y = CoList.nil) :
-    X = .nil ∨ Y = .nil := by
-  revert h
-  apply X.casesOn
-  · simp
-  · intro (X_deg, X_coef) X_tl
-    apply Y.casesOn
-    · simp
-    · intro (Y_deg, Y_coef) Y_tl h
-      simp only [mul_cons_cons, CoList.noConfusion] at h
-
-theorem mul_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {coef : PreMS basis_tl}
-    {tl X Y : PreMS (basis_hd :: basis_tl)} (h : X.mul Y = .cons (deg, coef) tl) :
-    ∃ X_deg X_coef X_tl Y_deg Y_coef Y_tl, X = .cons (X_deg, X_coef) X_tl ∧ Y = .cons (Y_deg, Y_coef) Y_tl := by
-  revert h
-  apply X.casesOn
-  · simp
-  · intro (X_deg, X_coef) X_tl
-    apply Y.casesOn
-    · simp
-    · intro (Y_deg, Y_coef) Y_tl h
-      use X_deg
-      use X_coef
-      use X_tl
-      use Y_deg
-      use Y_coef
-      use Y_tl
+@[simp]
+theorem one_mul' {basis : Basis} {ms : PreMS basis} : mul (one basis) ms = ms := by
+  cases basis with
+  | nil => simp [mul, one, const]
+  | cons basis_hd basis_tl =>
+    simp [one, const, mul]
+    let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
+      x = y.mulMonomial (const 1 basis_tl) 0
+    apply CoList.Eq.coind motive
+    · intro x y ih
+      subst ih
+      apply y.casesOn
+      · simp
+      · intro (deg, coef) tl
+        left
+        use ?_, ?_, ?_
+        simp
+        constructor
+        · constructor <;> exact Eq.refl _
+        · constructor
+          · constructor
+            · congr
+              symm
+              apply one_mul'
+            · exact Eq.refl _
+          · simp only [motive]
+    · simp only [motive]
 
 @[simp]
 theorem mul_assoc' {basis : Basis} {X Y Z : PreMS basis} :
@@ -436,7 +510,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
             · intro (a_deg, a_coef) a_tl h_deg h_lt h1 h_coef h_tl
               simp [leadingExp] at h_deg h_lt
               subst h_deg
-              rw [add_cons]
+              rw [add_cons_right]
               · congr
                 · have := h1.choose_spec
                   replace this := CoList.cons_eq_cons.mp this
@@ -520,7 +594,9 @@ theorem mul_leadingExp {basis_hd : _} {basis_tl : _} {x y : PreMS (basis_hd :: b
   apply y.casesOn
   · simp [leadingExp]
   intro (y_deg, y_coef) y_tl
-  simp only [leadingExp, mul_cons_cons, CoList.casesOn_cons, WithBot.coe_add]
+  have : CoList.head (mul (basis := basis_hd :: basis_tl) (CoList.cons (x_deg, x_coef) x_tl) (CoList.cons (y_deg, y_coef) y_tl)) = .some ?_ := by
+    exact mul_cons_cons_head
+  simp [leadingExp_of_head, this]
 
 noncomputable def longAdd_mulMonomial_tail_BM {basis_hd : _} {basis_tl : _} {k : ℕ}
     (BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)) (deg : ℝ) :
@@ -591,32 +667,52 @@ theorem longAdd_mulMonomial_tail_eq {basis_hd : _} {basis_tl : _} {k : ℕ}
         exact h1.right.symm
       · simp
 
+theorem longAdd_mulMonomial_tail_B_wellOrdered {basis_hd : _} {basis_tl : _} {k : ℕ}
+    {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {deg : ℝ}
+    (h_wo : ∀ j, (BM j).1.wellOrdered) :
+    ∀ j, (longAdd_mulMonomial_tail_BM BM deg j).1.wellOrdered := by
+  intro j
+  cases k with
+  | zero =>
+    fin_cases j
+  | succ l =>
+    simp [longAdd_mulMonomial_tail_BM]
+    split_ifs
+    · simp
+      generalize_proofs h
+      have hh := h.choose_spec
+      have := h_wo j
+      rw [hh] at this
+      have := wellOrdered_cons this
+      exact this.2.2
+    · exact h_wo j
+
+theorem longAdd_mulMonomial_tail_M_wellOrdered {basis_hd : _} {basis_tl : _} {k : ℕ}
+    {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {deg : ℝ}
+    (h_wo : ∀ j, (BM j).2.1.wellOrdered) :
+    ∀ j, (longAdd_mulMonomial_tail_BM BM deg j).2.1.wellOrdered := by
+  intro j
+  cases k with
+  | zero =>
+    fin_cases j
+  | succ l =>
+    simp [longAdd_mulMonomial_tail_BM]
+    split_ifs with h
+    · simp
+      exact h_wo j
+    · exact h_wo j
+
 theorem longAdd_mulMonomial_tail_BM_wellOrdered {basis_hd : _} {basis_tl : _} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {deg : ℝ}
     (h_wo : ∀ j, (BM j).1.wellOrdered ∧ (BM j).2.1.wellOrdered) :
     ∀ j, (longAdd_mulMonomial_tail_BM BM deg j).1.wellOrdered ∧
       (longAdd_mulMonomial_tail_BM BM deg j).2.1.wellOrdered := by
   intro j
-  cases k with
-  | zero =>
-    fin_cases j
-  | succ l =>
-    constructor
-    · simp [longAdd_mulMonomial_tail_BM]
-      split_ifs
-      · simp
-        generalize_proofs h
-        have hh := h.choose_spec
-        have := h_wo j
-        rw [hh] at this
-        have := wellOrdered_cons this.left
-        exact this.2.2
-      · exact (h_wo j).left
-    · simp [longAdd_mulMonomial_tail_BM]
-      split_ifs with h
-      · simp
-        exact (h_wo j).right
-      · exact (h_wo j).right
+  constructor
+  · apply longAdd_mulMonomial_tail_B_wellOrdered
+    exact fun j ↦ (h_wo j).left
+  · apply longAdd_mulMonomial_tail_M_wellOrdered
+    exact fun j ↦ (h_wo j).right
 
 noncomputable def longAdd_mulMonomial_tail_fB {basis_hd : _} {basis_tl : _} {k : ℕ}
     (BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)) (deg : ℝ)
@@ -791,7 +887,6 @@ mutual
             obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := wellOrdered_cons hX_wo
             obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := wellOrdered_cons hY_wo
             simp only [mul_cons_cons, CoList.cons_eq_cons, Prod.mk.injEq] at h_right_eq
-
             obtain ⟨⟨h_deg, h_coef⟩, h_tl⟩ := h_right_eq
             subst h_deg h_coef h_tl
             constructor
@@ -802,9 +897,7 @@ mutual
               · apply WithBot.add_lt_add_left
                 · simp
                 ·  exact hY_comp
-              · nth_rw 2 [leadingExp]
-                simp
-                apply WithBot.add_lt_add_right
+              · apply WithBot.add_lt_add_right
                 · simp
                 · exact hX_comp
             simp only [motive]
@@ -888,8 +981,7 @@ mutual
                   · simp
                     constructor
                     · exact h_left_comp
-                    · simp [leadingExp]
-                      exact h1
+                    · exact h1
                   simp only [motive]
                   use (l + 1) -- l + 1 = k
                   use ?_
@@ -925,9 +1017,7 @@ mutual
                       · apply WithBot.add_lt_add_left
                         · simp
                         · exact hY_comp
-                      · nth_rw 2 [leadingExp]
-                        simp
-                        apply WithBot.add_lt_add_right
+                      · apply WithBot.add_lt_add_right
                         · simp
                         · exact hX_comp
                   rw [← h_left_eq, ← h_right_eq.2, ← add_assoc']
@@ -982,9 +1072,7 @@ mutual
                       · apply WithBot.add_lt_add_left
                         · simp
                         ·  exact hY_comp
-                      · nth_rw 2 [leadingExp]
-                        simp
-                        apply WithBot.add_lt_add_right
+                      · apply WithBot.add_lt_add_right
                         · simp
                         · exact hX_comp
                   rw [← h_left_tl_eq', ← h_right_eq.2, ← add_assoc']
@@ -1350,7 +1438,7 @@ mutual
                 constructor
                 · apply majorated_of_EventuallyEq hf_eq
                   exact h_left_comp
-                simp only [motive] -- I am here
+                simp only [motive]
                 use (l + 1) -- =k
                 use ?_
                 use longAdd_mulMonomial_tail_fB BM left_deg hB_approx
@@ -1439,7 +1527,7 @@ mutual
                   · rw [← h_right_eq.1.1, ← h_right_eq.1.2, ← h_right_eq.2]
                     congr 1
                     · exact h_left_tl_eq
-                    · simp only [mul_cons_cons]
+                    · rw [mul_cons_cons]
                   constructor
                   · rw [← h_LC_eq]
                     simp [longAdd_mulMonomial_fC, longAdd_mulMonomial_tail_fB, longAdd_mulMonomial_tail_BM]

@@ -42,7 +42,7 @@ theorem invSeries'_get_eq_one {n : ℕ} : invSeries'.get n = .some 1 := by
 
 theorem invSeries'_eq_geom : invSeries'.toFormalMultilinearSeries = formalMultilinearSeries_geometric ℝ ℝ := by
   ext n f
-  simp only [formalMultilinearSeries_geometric, FormalMultilinearSeries.apply_eq_prod_smul_coeff, toFormalMultilinearSeries_coeff, invSeries'_get_eq_one, smul_eq_mul, Option.getD_some, _root_.mul_one, ContinuousMultilinearMap.mkPiAlgebraFin_apply]
+  simp only [formalMultilinearSeries_geometric, FormalMultilinearSeries.apply_eq_prod_smul_coeff, toFormalMultilinearSeries_coeff, invSeries'_get_eq_one, smul_eq_mul, Option.getD_some, mul_one, ContinuousMultilinearMap.mkPiAlgebraFin_apply]
   exact Eq.symm List.prod_ofFn
 
 theorem invSeries'_analytic : analytic invSeries' := by
@@ -56,7 +56,18 @@ theorem invSeries'_toFun_eq {x : ℝ} (hx : ‖x‖ < 1) : invSeries'.toFun x = 
   simp at this
   exact this.symm
 
+-- noncomputable def inv {basis : Basis} (ms : PreMS basis) : PreMS basis :=
+--   match basis with
+--   | [] => ms⁻¹
+--   | basis_hd :: basis_tl =>
+--     ms.casesOn'
+--     (nil := .nil)
+--     (cons := fun (deg, coef) tl =>
+--       mulMonomial (invSeries.apply (mulMonomial tl coef.inv (-deg))) coef.inv (-deg)
+--     )
+
 -- variant with true geometric series (not alternating one) but with neg
+-- generaly it's easier to use `inv`, but there is no API for `[1, -1, 1, ...]`, while enough for `[1, 1, 1, ...]`
 noncomputable def inv' {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   match basis with
   | [] => ms⁻¹
@@ -201,16 +212,6 @@ theorem inv'_isApproximation {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis
         | bot => simp [Ne.bot_lt']
         | coe => simpa [← WithBot.coe_add] using h_comp_wo
       · exact this
-
-noncomputable def inv {basis : Basis} (ms : PreMS basis) : PreMS basis :=
-  match basis with
-  | [] => ms⁻¹
-  | basis_hd :: basis_tl =>
-    ms.casesOn'
-    (nil := .nil)
-    (cons := fun (deg, coef) tl =>
-      mulMonomial (invSeries.apply (mulMonomial tl coef.inv (-deg))) coef.inv (-deg)
-    )
 
 end PreMS
 
