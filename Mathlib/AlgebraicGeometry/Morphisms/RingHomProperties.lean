@@ -205,7 +205,7 @@ lemma HasAffineProperty : HasAffineProperty P (sourceAffineLocally Q) where
   eq_targetAffineLocally' := eq_affineLocally P
 
 /- This is only `inferInstance` because of the `@[local instance]` on `HasAffineProperty` above. -/
-instance : IsLocalAtTarget P := inferInstance
+instance (priority := 900) : IsLocalAtTarget P := inferInstance
 
 theorem appLE (H : P f) (U : Y.affineOpens) (V : X.affineOpens) (e) : Q (f.appLE U V e) := by
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le] at H
@@ -469,7 +469,7 @@ lemma iff_exists_appLE : P f ↔
     · infer_instance
     · rfl
     · intro R S _ _ f
-      exact (locally_eq_of_localizationSpanTarget (isLocal_ringHomProperty P).respectsIso
+      exact (locally_iff_of_localizationSpanTarget (isLocal_ringHomProperty P).respectsIso
         (isLocal_ringHomProperty P).OfLocalizationSpanTarget _).symm
   rw [iff_exists_appLE_locally (P := P) ]
   haveI : HasRingHomProperty P Q := inst

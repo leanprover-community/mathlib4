@@ -492,6 +492,11 @@ theorem diagonal_conjTranspose [AddMonoid α] [StarAddMonoid α] (v : n → α) 
   rw [conjTranspose, diagonal_transpose, diagonal_map (star_zero _)]
   rfl
 
+theorem diagonal_unique [Unique m] [DecidableEq m] [Zero α] (d : m → α) :
+    diagonal d = of fun _ _ => d default := by
+  ext i j
+  rw [Subsingleton.elim i default, Subsingleton.elim j default, diagonal_apply_eq _ _, of_apply]
+
 section One
 
 variable [Zero α] [One α]
@@ -1164,7 +1169,7 @@ variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R 
 
 instance instAlgebra : Algebra R (Matrix n n α) where
   toRingHom := (Matrix.scalar n).comp (algebraMap R α)
-  commutes' r x := scalar_commute _ (fun r' => Algebra.commutes _ _) _
+  commutes' _ _ := scalar_commute _ (fun _ => Algebra.commutes _ _) _
   smul_def' r x := by ext; simp [Matrix.scalar, Algebra.smul_def r]
 
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
@@ -1354,7 +1359,7 @@ def mapMatrix (f : α →+* β) : Matrix m m α →+* Matrix m m β :=
   { f.toAddMonoidHom.mapMatrix with
     toFun := fun M => M.map f
     map_one' := by simp
-    map_mul' := fun L M => Matrix.map_mul }
+    map_mul' := fun _ _ => Matrix.map_mul }
 
 @[simp]
 theorem mapMatrix_id : (RingHom.id α).mapMatrix = RingHom.id (Matrix m m α) :=
@@ -2093,7 +2098,6 @@ variants which this lemma would not apply to:
 * `Matrix.conjTranspose_intCast_smul`
 * `Matrix.conjTranspose_inv_natCast_smul`
 * `Matrix.conjTranspose_inv_intCast_smul`
-* `Matrix.conjTranspose_rat_smul`
 * `Matrix.conjTranspose_ratCast_smul`
 -/
 @[simp]
@@ -2161,7 +2165,6 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
     (c : ℚ) (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
   Matrix.ext <| by simp
 
-@[simp]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp

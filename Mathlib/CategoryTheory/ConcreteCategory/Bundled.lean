@@ -22,7 +22,7 @@ universe u v
 
 namespace CategoryTheory
 
-variable {c d : Type u → Type v} {α : Type u}
+variable {c d : Type u → Type v}
 
 /-- `Bundled` is a type bundled with a type class instance for that type. Only
 the type class is exposed as a parameter. -/
