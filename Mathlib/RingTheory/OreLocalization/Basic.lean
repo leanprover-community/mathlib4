@@ -242,7 +242,7 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
     rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
 
 /-- The scalar multiplication on the Ore localization of monoids. -/
-@[to_additive (attr := irreducible)
+@[to_additive
   "the vector addition on the Ore localization of additive monoids."]
 protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
   liftExpand smul'' fun r₁ r₂ s hs => by
@@ -278,6 +278,11 @@ instance : Mul R[S⁻¹] :=
 theorem oreDiv_smul_oreDiv {r₁ : R} {r₂ : X} {s₁ s₂ : S} :
     (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁) := by
   with_unfolding_all rfl
+
+-- a variant of `oreDiv_smul_oreDiv` valid for `R` commutative
+theorem smul_def {R : Type*} [CommMonoid R] {S : Submonoid R} {A : Type*}
+    [MulAction R A] {r : R} {a : A} {s₁ s₂ : S} :
+    (r /ₒ s₁) • (a /ₒ s₂) = r • a /ₒ (s₂ * s₁) := rfl
 
 @[to_additive]
 theorem oreDiv_mul_oreDiv {r₁ : R} {r₂ : R} {s₁ s₂ : S} :
@@ -317,7 +322,7 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
 
 /-- `1` in the localization, defined as `1 /ₒ 1`. -/
-@[to_additive (attr := irreducible) "`0` in the additive localization, defined as `0 -ₒ 0`."]
+@[to_additive "`0` in the additive localization, defined as `0 -ₒ 0`."]
 protected def one : R[S⁻¹] := 1 /ₒ 1
 
 @[to_additive]
@@ -375,10 +380,9 @@ protected theorem mul_assoc (x y z : R[S⁻¹]) : x * y * z = x * (y * z) :=
   OreLocalization.mul_smul x y z
 
 /-- `npow` of `OreLocalization` -/
-@[to_additive (attr := irreducible) "`nsmul` of `AddOreLocalization`"]
+@[to_additive "`nsmul` of `AddOreLocalization`"]
 protected def npow : ℕ → R[S⁻¹] → R[S⁻¹] := npowRec
 
-unseal OreLocalization.npow in
 @[to_additive]
 instance : Monoid R[S⁻¹] where
   one_mul := OreLocalization.one_mul
@@ -520,7 +524,7 @@ variable [SMul R' X] [SMul R' M] [IsScalarTower R' M M] [IsScalarTower R' M X]
 variable [SMul R R'] [IsScalarTower R R' M]
 
 /-- Scalar multiplication in a monoid localization. -/
-@[to_additive (attr := irreducible) "Vector addition in an additive monoid localization."]
+@[to_additive "Vector addition in an additive monoid localization."]
 protected def hsmul (c : R) :
     X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun m s ↦ oreNum (c • 1) s • m /ₒ oreDenom (c • 1) s) (fun r t s ht ↦ by
@@ -625,7 +629,6 @@ variable [MulAction R X]
 
 
 /-- `0` in the localization, defined as `0 /ₒ 1`. -/
-@[irreducible]
 protected def zero : X[S⁻¹] := 0 /ₒ 1
 
 instance : Zero X[S⁻¹] :=
@@ -717,7 +720,6 @@ private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
     rw [this, hc, mul_assoc]
 
 /-- The addition on the Ore localization. -/
-@[irreducible]
 private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
   Quotient.lift (fun rs : X × S => add' rs.1 rs.2 x)
     (by
@@ -763,6 +765,13 @@ def oreDivAddChar' (r r' : X) (s s' : S) :
       Σ's'' : S, s'' * s = r'' * s' ∧ r /ₒ s + r' /ₒ s' = (s'' • r + r'' • r') /ₒ (s'' * s) :=
   ⟨oreNum (s : R) s', oreDenom (s : R) s', ore_eq (s : R) s', oreDiv_add_oreDiv⟩
 
+-- simplification of `oreDiv_add_oreDiv` in the commutative case
+theorem add_def {R : Type*} [CommMonoid R] {S : Submonoid R} {A : Type*}
+    [AddMonoid A] [DistribMulAction R A] {r r' : A} {s s' : S} :
+    r /ₒ s + r' /ₒ s' =
+      (s' • r + (s : R) • r') /ₒ (s' * s) := by
+  with_unfolding_all rfl
+
 @[simp]
 theorem add_oreDiv {r r' : X} {s : S} : r /ₒ s + r' /ₒ s = (r + r') /ₒ s := by
   simp [oreDiv_add_char s s 1 1 (by simp)]
@@ -792,7 +801,6 @@ protected theorem add_zero (x : X[S⁻¹]) : x + 0 = x := by
   induction x
   rw [← zero_oreDiv, add_oreDiv]; simp
 
-@[irreducible]
 private def nsmul : ℕ → X[S⁻¹] → X[S⁻¹] := nsmulRec
 
 instance : AddMonoid X[S⁻¹] where
@@ -854,7 +862,6 @@ variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddGroup X] [DistribMulAction R X]
 
 /-- Negation on the Ore localization is defined via negation on the numerator. -/
-@[irreducible]
 protected def neg : X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun (r : X) (s : S) => -r /ₒ s) fun r t s ht => by
     -- Porting note(#12129): additional beta reduction needed
@@ -872,10 +879,8 @@ protected theorem neg_add_cancel (x : X[S⁻¹]) : -x + x = 0 := by
   induction' x with r s; simp
 
 /-- `zsmul` of `OreLocalization` -/
-@[irreducible]
 protected def zsmul : ℤ → X[S⁻¹] → X[S⁻¹] := zsmulRec
 
-unseal OreLocalization.zsmul in
 instance instAddGroupOreLocalization : AddGroup X[S⁻¹] where
   neg_add_cancel := OreLocalization.neg_add_cancel
   zsmul := OreLocalization.zsmul

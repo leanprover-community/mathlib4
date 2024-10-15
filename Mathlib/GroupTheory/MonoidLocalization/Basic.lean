@@ -252,7 +252,6 @@ def recOnSubsingleton₂ {r : Localization S → Localization S → Sort u}
 theorem mk_mul (a c : M) (b d : S) : mk a b * mk c d = mk (a * c) (b * d) :=
   mul_comm b d ▸ OreLocalization.oreDiv_mul_oreDiv
 
-unseal OreLocalization.one in
 @[to_additive]
 theorem mk_one : mk 1 (1 : S) = 1 := OreLocalization.one_def
 
