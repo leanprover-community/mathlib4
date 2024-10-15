@@ -245,6 +245,7 @@ variable {A B C : Type*}
   [Algebra K L] [IsScalarTower A K L]
   [Algebra K M] [IsScalarTower A K M]
 
+/-- An algebra isomorphism of rings induces an algebra isomorphism of fraction fields. -/
 noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : L ≃ₐ[K] M where
   __ := IsFractionRing.fieldEquivOfRingEquiv f.toRingEquiv
   commutes' := by
@@ -267,6 +268,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [IsDomain A] [IsDomain B] [Alge
   [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
   [Algebra A L] [IsScalarTower A B L] [Algebra K L] [IsScalarTower A K L]
 
+/-- An algebra automorphism of a ring induces an algebra automorphism of its fraction field. -/
 noncomputable def fieldEquivOfAlgEquivHom : (B ≃ₐ[A] B) →* (L ≃ₐ[K] L) where
   toFun := fieldEquivOfAlgEquiv K L L
   map_one' := by
