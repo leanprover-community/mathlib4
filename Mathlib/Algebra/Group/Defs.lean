@@ -552,7 +552,7 @@ where
 attribute [to_additive existing] npowBinRec.go
 
 /--
-A variant of `npowRec` which a semigroup homomorphisms from `ℕ₊` to `M`.
+A variant of `npowRec` which is a semigroup homomorphisms from `ℕ₊` to `M`.
 -/
 def npowRec' {M : Type*} [One M] [Mul M] : ℕ → M → M
   | 0, _ => 1
