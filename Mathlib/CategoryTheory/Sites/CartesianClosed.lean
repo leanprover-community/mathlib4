@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Closed.Ideal
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
-import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
+import Mathlib.CategoryTheory.Sites.Sheafification
 /-!
 
 # Sheaf categories are cartesian closed

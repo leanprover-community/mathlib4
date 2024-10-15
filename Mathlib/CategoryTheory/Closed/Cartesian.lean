@@ -5,7 +5,6 @@ Authors: Bhavik Mehta, Edward Ayers, Thomas Read
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Adjunction.Limits
