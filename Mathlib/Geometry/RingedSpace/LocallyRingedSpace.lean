@@ -160,6 +160,10 @@ theorem comp_toShHom {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z
     Hom.toShHom (𝟙 X) = 𝟙 X.toSheafedSpace :=
   rfl
 
+theorem comp_base {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).base = f.base ≫ g.base :=
+  rfl
+
 theorem comp_c {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).c = g.c ≫ (Presheaf.pushforward _ g.base).map f.c :=
   rfl
