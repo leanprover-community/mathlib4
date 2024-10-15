@@ -106,10 +106,10 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
           (((forgetToSheafedSpace.mapCocone s).ι.app i).stalkMap y) :=
         (s.ι.app i).2 y
       infer_instance⟩
-  fac _ _ := LocallyRingedSpace.Hom.ext' _ _
+  fac _ _ := LocallyRingedSpace.Hom.ext'
     (colimit.ι_desc (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u}) _ _)
   uniq s f h :=
-    LocallyRingedSpace.Hom.ext' _ _
+    LocallyRingedSpace.Hom.ext'
       (IsColimit.uniq _ (forgetToSheafedSpace.mapCocone s) f.toShHom fun j =>
         congr_arg LocallyRingedSpace.Hom.toShHom (h j))
 
@@ -258,7 +258,7 @@ noncomputable def coequalizerCofork : Cofork f g :=
   @Cofork.ofπ _ _ _ _ f g (coequalizer f g) ⟨coequalizer.π f.toShHom g.toShHom,
     -- Porting note: this used to be automatic
     HasCoequalizer.coequalizer_π_stalk_isLocalRingHom _ _⟩
-    (LocallyRingedSpace.Hom.ext' _ _ (coequalizer.condition f.toShHom g.toShHom))
+    (LocallyRingedSpace.Hom.ext' (coequalizer.condition f.toShHom g.toShHom))
 
 theorem isLocalRingHom_stalkMap_congr {X Y : RingedSpace} (f g : X ⟶ Y) (H : f = g) (x)
     (h : IsLocalRingHom (f.stalkMap x)) :
@@ -289,7 +289,7 @@ noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g)
     apply isLocalRingHom_stalkMap_congr _ _ (coequalizer.π_desc s.π.toShHom e).symm y
     infer_instance
   constructor
-  · exact LocallyRingedSpace.Hom.ext' _ _ (coequalizer.π_desc _ _)
+  · exact LocallyRingedSpace.Hom.ext' (coequalizer.π_desc _ _)
   intro m h
   replace h : (coequalizerCofork f g).π.toShHom ≫ m.1 = s.π.toShHom := by rw [← h]; rfl
   apply LocallyRingedSpace.Hom.ext'

@@ -164,7 +164,7 @@ protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g := by
   cases f; cases g; congr 1
-  exact LocallyRingedSpace.Hom.ext' _ _ <| SheafedSpace.ext _ _ h_base
+  exact LocallyRingedSpace.Hom.ext' <| SheafedSpace.ext _ _ h_base
     (TopCat.Presheaf.ext fun U ↦ by simpa using h_app U)
 
 /-- An alternative ext lemma for scheme morphisms. -/
