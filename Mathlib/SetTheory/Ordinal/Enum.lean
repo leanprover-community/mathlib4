@@ -67,7 +67,7 @@ theorem enumOrd_injective (hs : ¬ BddAbove s) : Function.Injective (enumOrd s) 
 theorem enumOrd_inj (hs : ¬ BddAbove s) {a b : Ordinal} : enumOrd s a = enumOrd s b ↔ a = b :=
   (enumOrd_injective hs).eq_iff
 
-theorem enumOrd_le_iff (hs : ¬ BddAbove s) {a b : Ordinal} :
+theorem enumOrd_le_enumOrd (hs : ¬ BddAbove s) {a b : Ordinal} :
     enumOrd s a ≤ enumOrd s b ↔ a ≤ b :=
   (enumOrd_strictMono hs).le_iff_le
 
