@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang
+Authors: Jujian Zhang, Yunzhou Xie
 -/
 
 import Mathlib.Algebra.Central.Defs
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # Central Algebras
@@ -54,3 +55,15 @@ lemma baseField_essentially_unique
   exact ⟨x', (algebraMap K D).injective <| by simp [← H, algebraMap_eq_smul_one]⟩
 
 end Algebra.IsCentral
+
+section MatrixAlgebra
+
+variable (K : Type u) [Field K]
+
+open Matrix in
+instance MatrixRing.isCentral (ι : Type) [Fintype ι] [Nonempty ι] [DecidableEq ι] :
+    Algebra.IsCentral K (Matrix ι ι K) where
+  out := fun _ h => mem_range_scalar_of_commute_stdBasisMatrix fun _ _ _ =>
+    Subalgebra.mem_center_iff.mp h _
+
+end MatrixAlgebra
