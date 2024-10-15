@@ -149,14 +149,6 @@ theorem colimit_rep_eq_iff_exists [HasColimit F] {i j : J} (x : F.obj i) (y : F.
     colimit.ι F i x = colimit.ι F j y ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y :=
   ⟨Concrete.colimit_exists_of_rep_eq.{t} _ _ _, Concrete.colimit_rep_eq_of_exists _ _ _⟩
 
-theorem Concrete.colimit_rep_eq_zero [∀ c : C, Zero c] [∀ {c c' : C}, ZeroHomClass (c ⟶ c') c c']
-    [HasColimit F] (j : J) (x : F.obj j) (hx : colimit.ι F j x = 0) :
-    ∃ (j' : J) (i : j ⟶ j'), F.map i x = 0 := by
-  rw [show (0 : (forget C).obj (colimit F)) = colimit.ι F j 0 by simp,
-    Concrete.colimit_rep_eq_iff_exists] at hx
-  obtain ⟨j', i, y, g⟩ := hx
-  exact ⟨j', i, g ▸ by simp⟩
-
 end FilteredColimits
 
 end Colimits
