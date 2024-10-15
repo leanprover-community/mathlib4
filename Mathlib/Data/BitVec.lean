@@ -59,14 +59,13 @@ instance : CommSemiring (BitVec w) :=
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
 @[simp] lemma ofFin_neg {x : Fin (2 ^ w)} : ofFin (-x) = -(ofFin x) := by
-  ext; rw [neg_eq_zero_sub]; simp; rfl
+  rfl
 
 @[simp] lemma ofFin_natCast (n : ℕ) : ofFin (n : Fin (2^w)) = n := by
-  simp only [Nat.cast, NatCast.natCast, OfNat.ofNat, BitVec.ofNat, Nat.and_pow_two_sub_one_eq_mod]
   rfl
 
 lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
-  rw [toFin_inj]; simp only [ofFin_natCast]
+  rfl
 
 theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
   cases w
