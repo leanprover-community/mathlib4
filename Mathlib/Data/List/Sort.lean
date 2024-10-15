@@ -498,7 +498,7 @@ theorem Sorted.merge {l l' : List α} (h : Sorted r l) (h' : Sorted r l') :
     Sorted r (merge l l' (r · ·)) := by
   simpa using sorted_merge (le := (r · ·))
     (fun a b c h₁ h₂ => by simpa using _root_.trans (by simpa using h₁) (by simpa using h₂))
-    (fun a b => by simpa using or_iff_not_imp_left.mp (IsTotal.total a b))
+    (fun a b => by simpa using (IsTotal.total a b))
     l l' (by simpa using h) (by simpa using h')
 
 variable (r)
@@ -508,7 +508,7 @@ theorem sorted_mergeSort' [Preorder α] [DecidableRel ((· : α) ≤ ·)] [IsTot
     (l : List α) : Sorted (· ≤ ·) (mergeSort l) := by
   simpa using sorted_mergeSort (le := fun a b => a ≤ b)
     (fun a b c h₁ h₂ => by simpa using le_trans (by simpa using h₁) (by simpa using h₂))
-    (fun a b => by simpa using or_iff_not_imp_left.mp (IsTotal.total (r := (· ≤ ·)) a b))
+    (fun a b => by simpa using (IsTotal.total a b))
     l
 
 theorem mergeSort_eq_self [LinearOrder α] {l : List α} : Sorted (· ≤ ·) l → mergeSort l = l :=
@@ -522,43 +522,6 @@ theorem mergeSort_eq_insertionSort [LinearOrder α] (l : List α) :
 end TotalAndTransitive
 
 end Correctness
-
-theorem map_merge {f : α → β} {r : α → α → Bool} {s : β → β → Bool} {l l' : List α}
-    (hl : ∀ a ∈ l, ∀ b ∈ l', r a b = s (f a) (f b)) :
-    (l.merge l' r).map f = (l.map f).merge (l'.map f) s := by
-  match l, l' with
-  | [], x' => simp
-  | x, [] => simp
-  | x :: xs, x' :: xs' =>
-    simp only [List.forall_mem_cons] at hl
-    simp only [forall_and] at hl
-    simp only [List.map, List.cons_merge_cons]
-    rw [← hl.1.1]
-    split
-    · rw [List.map, map_merge, List.map]
-      simp only [List.forall_mem_cons, forall_and]
-      exact ⟨hl.2.1, hl.2.2⟩
-    · rw [List.map, map_merge, List.map]
-      simp only [List.forall_mem_cons]
-      exact ⟨hl.1.2, hl.2.2⟩
-
-theorem map_mergeSort {r : α → α → Bool} {s : β → β → Bool} {f : α → β} {l : List α}
-    (hl : ∀ a ∈ l, ∀ b ∈ l, r a b = s (f a) (f b)) :
-    (l.mergeSort r).map f = (l.map f).mergeSort s :=
-  match l with
-  | [] => by simp
-  | [x] => by simp
-  | a :: b :: l => by
-    simp only [mergeSort, splitInTwo_fst, splitInTwo_snd, map_cons]
-    rw [map_merge (fun a am b bm => hl a (mem_of_mem_take (by simpa using am))
-      b (mem_of_mem_drop (by simpa using bm)))]
-    rw [map_mergeSort (s := s) (fun a am b bm => hl a (mem_of_mem_take (by simpa using am))
-      b (mem_of_mem_take (by simpa using bm)))]
-    rw [map_mergeSort (s := s) (fun a am b bm => hl a (mem_of_mem_drop (by simpa using am))
-      b (mem_of_mem_drop (by simpa using bm)))]
-    rw [map_take, map_drop]
-    simp
-  termination_by length l
 
 end MergeSort
 
