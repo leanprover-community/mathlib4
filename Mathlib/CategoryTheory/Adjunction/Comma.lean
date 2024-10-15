@@ -125,6 +125,8 @@ section
 
 variable {F : C ⥤ D}
 
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
+
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/
 def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
