@@ -927,6 +927,15 @@ theorem Filter.EventuallyEq.fderivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : 
     fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x := by
   simp only [fderivWithin, hs.hasFDerivWithinAt_iff hx]
 
+theorem Filter.EventuallyEq.fderivWithin_eq_of_mem (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
+    fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x :=
+  hs.fderivWithin_eq (mem_of_mem_nhdsWithin hx hs :)
+
+theorem Filter.EventuallyEq.fderivWithin_eq_of_insert (hs : f₁ =ᶠ[𝓝[insert x s] x] f) :
+    fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x := by
+  apply Filter.EventuallyEq.fderivWithin_eq (nhdsWithin_mono _ (subset_insert x s) hs)
+  exact (mem_of_mem_nhdsWithin (mem_insert x s) hs :)
+
 theorem Filter.EventuallyEq.fderivWithin' (hs : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) :
     fderivWithin 𝕜 f₁ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 f t :=
   (eventually_eventually_nhdsWithin.2 hs).mp <|
