@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Data.ENat.Basic
@@ -268,7 +268,7 @@ lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injO
 @[simp] lemma ofENat_add_aleph0 (m : ℕ∞) : m + ℵ₀ = ℵ₀ := by rw [add_comm, aleph0_add_ofENat]
 
 @[simp] lemma ofENat_mul_aleph0 {m : ℕ∞} (hm : m ≠ 0) : ↑m * ℵ₀ = ℵ₀ := by
-  induction m using ENat.recTopCoe with
+  induction m with
   | top => exact aleph0_mul_aleph0
   | coe m => rw [ofENat_nat, nat_mul_aleph0 (mod_cast hm)]
 

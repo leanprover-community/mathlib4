@@ -39,9 +39,8 @@ def Booleanisation (α : Type*) := α ⊕ α
 
 namespace Booleanisation
 
-instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) := Sum.instDecidableEqSum
-
-variable [GeneralizedBooleanAlgebra α] {x y : Booleanisation α} {a b : α}
+instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) :=
+  inferInstanceAs <| DecidableEq (α ⊕ α)
 
 /-- The natural inclusion `a ↦ a` from a generalized Boolean algebra to its generated Boolean
 algebra. -/
@@ -49,6 +48,17 @@ algebra. -/
 
 /-- The inclusion `a ↦ aᶜ from a generalized Boolean algebra to its generated Boolean algebra. -/
 @[match_pattern] def comp : α → Booleanisation α := Sum.inr
+
+/-- The complement operator on `Booleanisation α` sends `a` to `aᶜ` and `aᶜ` to `a`, for `a : α`. -/
+instance instCompl : HasCompl (Booleanisation α) where
+  compl x := match x with
+    | lift a => comp a
+    | comp a => lift a
+
+@[simp] lemma compl_lift (a : α) : (lift a)ᶜ = comp a := rfl
+@[simp] lemma compl_comp (a : α) : (comp a)ᶜ = lift a := rfl
+
+variable [GeneralizedBooleanAlgebra α] {a b : α}
 
 /-- The order on `Booleanisation α` is as follows: For `a b : α`,
 * `a ≤ b` iff `a ≤ b` in `α`
@@ -110,12 +120,6 @@ instance instBot : Bot (Booleanisation α) where
 instance instTop : Top (Booleanisation α) where
   top := comp ⊥
 
-/-- The complement operator on `Booleanisation α` sends `a` to `aᶜ` and `aᶜ` to `a`, for `a : α`. -/
-instance instCompl : HasCompl (Booleanisation α) where
-  compl x := match x with
-    | lift a => comp a
-    | comp a => lift a
-
 /-- The difference operator on `Booleanisation α` is as follows: For `a b : α`,
 * `a \ b` is `a \ b`
 * `a \ bᶜ` is `a ⊓ b`
@@ -151,9 +155,6 @@ instance instSDiff : SDiff (Booleanisation α) where
 @[simp] lemma lift_bot : lift (⊥ : α) = ⊥ := rfl
 @[simp] lemma comp_bot : comp (⊥ : α) = ⊤ := rfl
 
-@[simp] lemma compl_lift (a : α) : (lift a)ᶜ = comp a := rfl
-@[simp] lemma compl_comp (a : α) : (comp a)ᶜ = lift a := rfl
-
 @[simp] lemma lift_sdiff_lift (a b : α) : lift a \ lift b = lift (a \ b) := rfl
 @[simp] lemma lift_sdiff_comp (a b : α) : lift a \ comp b = lift (a ⊓ b) := rfl
 @[simp] lemma comp_sdiff_lift (a b : α) : comp a \ lift b = comp (a ⊔ b) := rfl
@@ -167,13 +168,13 @@ instance instPreorder : Preorder (Booleanisation α) where
     | comp a, lift b => by simp
     | comp a, comp b => by simp [lt_iff_le_not_le]
   le_refl x := match x with
-    | lift a => LE.lift le_rfl
-    | comp a => LE.comp le_rfl
+    | lift _ => LE.lift le_rfl
+    | comp _ => LE.comp le_rfl
   le_trans x y z hxy hyz := match x, y, z, hxy, hyz with
-    | lift a, lift b, lift c, LE.lift hab, LE.lift hbc => LE.lift <| hab.trans hbc
-    | lift a, lift b, comp c, LE.lift hab, LE.sep hbc => LE.sep <| hbc.mono_left hab
-    | lift a, comp b, comp c, LE.sep hab, LE.comp hcb => LE.sep <| hab.mono_right hcb
-    | comp a, comp b, comp c, LE.comp hba, LE.comp hcb => LE.comp <| hcb.trans hba
+    | lift _, lift _, lift _, LE.lift hab, LE.lift hbc => LE.lift <| hab.trans hbc
+    | lift _, lift _, comp _, LE.lift hab, LE.sep hbc => LE.sep <| hbc.mono_left hab
+    | lift _, comp _, comp _, LE.sep hab, LE.comp hcb => LE.sep <| hab.mono_right hcb
+    | comp _, comp _, comp _, LE.comp hba, LE.comp hcb => LE.comp <| hcb.trans hba
 
 instance instPartialOrder : PartialOrder (Booleanisation α) where
   le_antisymm x y hxy hyx := match x, y, hxy, hyx with
@@ -225,7 +226,7 @@ instance instDistribLattice : DistribLattice (Booleanisation α) where
   inf_le_right _ _ := inf_le_right
   le_inf _ _ _ := le_inf
   le_sup_inf x y z := match x, y, z with
-    | lift a, lift b, lift c => LE.lift le_sup_inf
+    | lift _, lift _, lift _ => LE.lift le_sup_inf
     | lift a, lift b, comp c => LE.lift <| by simp [sup_left_comm, sup_comm]
     | lift a, comp b, lift c => LE.lift <| by
       simp [sup_left_comm (a := b \ a), sup_comm (a := b \ a)]
@@ -233,7 +234,7 @@ instance instDistribLattice : DistribLattice (Booleanisation α) where
     | comp a, lift b, lift c => LE.comp <| by rw [sdiff_inf]
     | comp a, lift b, comp c => LE.comp <| by rw [sdiff_sdiff_right']
     | comp a, comp b, lift c => LE.comp <| by rw [sdiff_sdiff_right', sup_comm]
-    | comp a, comp b, comp c => LE.comp (inf_sup_left _ _ _).le
+    | comp _, comp _, comp _ => LE.comp (inf_sup_left _ _ _).le
 
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in

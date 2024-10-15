@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.Embeddings
-
-#align_import number_theory.number_field.units from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # Units of a number field
@@ -41,7 +40,6 @@ theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 
   simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
     RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
     Subtype.coe_injective.eq_iff]; rfl
-#align rat.ring_of_integers.is_unit_iff Rat.RingOfIntegers.isUnit_iff
 
 end Rat
 
@@ -55,7 +53,6 @@ theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
-#align is_unit_iff_norm NumberField.isUnit_iff_norm
 
 end IsUnit
 
@@ -63,15 +60,20 @@ namespace NumberField.Units
 
 section coe
 
+instance : CoeHTC (𝓞 K)ˣ K :=
+  ⟨fun x => algebraMap _ K (Units.val x)⟩
+
 theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
-  fun _ _ h => by rwa [SetLike.coe_eq_coe, Units.eq_iff] at h
+  RingOfIntegers.coe_injective.comp Units.ext
 
 variable {K}
 
+theorem coe_coe (u : (𝓞 K)ˣ) : ((u : 𝓞 K) : K) = (u : K) := rfl
+
 theorem coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
 
-theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (↑(x ^ n) : K) = (x : K) ^ n := by
-  rw [← SubmonoidClass.coe_pow, ← val_pow_eq_pow_val]
+theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : ((x ^ n : (𝓞 K)ˣ) : K) = (x : K) ^ n := by
+  rw [← map_pow, ← val_pow_eq_pow_val]
 
 theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (↑(x ^ n) : K) = (x : K) ^ n := by
   change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
@@ -88,6 +90,11 @@ end coe
 
 open NumberField.InfinitePlace
 
+@[simp]
+protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
+    |Algebra.norm ℚ (x : K)| = 1 := by
+  rw [← RingOfIntegers.coe_norm, isUnit_iff_norm.mp x.isUnit]
+
 section torsion
 
 /-- The torsion subgroup of the group of units. -/
@@ -96,18 +103,16 @@ def torsion : Subgroup (𝓞 K)ˣ := CommGroup.torsion (𝓞 K)ˣ
 theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
     x ∈ torsion K ↔ ∀ w : InfinitePlace K, w x = 1 := by
   rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion]
-  refine ⟨fun hx φ ↦ (((φ.comp $ algebraMap (𝓞 K) K).toMonoidHom.comp $
+  refine ⟨fun hx φ ↦ (((φ.comp <| algebraMap (𝓞 K) K).toMonoidHom.comp <|
     Units.coeHom _).isOfFinOrder hx).norm_eq_one, fun h ↦ isOfFinOrder_iff_pow_eq_one.2 ?_⟩
-  obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.prop h
-  exact ⟨n, hn, by ext; rw [coe_pow, hx, coe_one]⟩
-
-/-- Shortcut instance because Lean tends to time out before finding the general instance. -/
-instance : Nonempty (torsion K) := One.instNonempty
+  obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.isIntegral_coe h
+  exact ⟨n, hn, by ext; rw [NumberField.RingOfIntegers.coe_eq_algebraMap, coe_pow, hx,
+    NumberField.RingOfIntegers.coe_eq_algebraMap, coe_one]⟩
 
 /-- The torsion subgroup is finite. -/
 instance [NumberField K] : Fintype (torsion K) := by
   refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr ?_)
-  refine Set.Finite.of_finite_image ?_ ((coe_injective K).injOn _)
+  refine Set.Finite.of_finite_image ?_ (coe_injective K).injOn
   refine (Embeddings.finite_of_norm_le K ℂ 1).subset
     (fun a ⟨u, ⟨h_tors, h_ua⟩⟩ => ⟨?_, fun φ => ?_⟩)
   · rw [← h_ua]
@@ -115,10 +120,9 @@ instance [NumberField K] : Fintype (torsion K) := by
   · rw [← h_ua]
     exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
 
--- a shortcut instance to stop the next instance from timing out
-instance [NumberField K] : Finite (torsion K) := inferInstance
+instance : Nonempty (torsion K) := One.instNonempty
 
-/-- The torsion subgroup is cylic. -/
+/-- The torsion subgroup is cyclic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
 /-- The order of the torsion subgroup as a positive integer. -/
@@ -150,3 +154,7 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
   · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)
 
 end torsion
+
+end Units
+
+end NumberField

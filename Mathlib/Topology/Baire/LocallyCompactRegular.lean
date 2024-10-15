@@ -5,8 +5,6 @@ Authors: Damien Thomine
 -/
 import Mathlib.Topology.Sets.Compacts
 
-#align_import topology.metric_space.baire from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
-
 /-!
 # Second Baire theorem
 
@@ -38,9 +36,11 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace {X : Type*}
       rw [inter_comm]
       exact (hd n).inter_open_nonempty _ isOpen_interior K.interior_nonempty
     choose K_next hK_next using this
-    refine ⟨Nat.rec K₀ K_next, fun n ↦ ?_, fun n ↦ (hK_next n _).trans (inter_subset_left _ _), hK₀⟩
+    -- The next two lines are faster than a single `refine`.
+    use Nat.rec K₀ K_next
+    refine ⟨fun n ↦ ?_, fun n ↦ (hK_next n _).trans inter_subset_left, hK₀⟩
     exact subset_closure.trans <| (hK_next _ _).trans <|
-      (inter_subset_right _ _).trans interior_subset
+      inter_subset_right.trans interior_subset
   -- Prove that ̀`⋂ n : ℕ, closure (K n)` is inside `U ∩ ⋂ n : ℕ, f n`.
   have hK_subset : (⋂ n, closure (K n) : Set X) ⊆ U ∩ ⋂ n, f n := fun x hx ↦ by
     simp only [mem_iInter, mem_inter_iff] at hx ⊢
@@ -52,4 +52,3 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace {X : Type*}
       (fun n => closure_mono <| hK_anti n) (fun n => (K n).nonempty.closure)
       (K 0).isCompact.closure fun n => isClosed_closure
   exact hK_nonempty.mono hK_subset
-#align baire_category_theorem_locally_compact BaireSpace.of_t2Space_locallyCompactSpace

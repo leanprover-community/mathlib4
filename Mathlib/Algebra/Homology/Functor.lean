@@ -5,8 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
 
-#align_import algebra.homology.functor from "leanprover-community/mathlib"@"8e25bb6c1645bb80670e13848b79a54aa45cb84f"
-
 /-!
 # Complexes in functor categories
 
@@ -47,7 +45,7 @@ def asFunctor {T : Type*} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
         exact this t }
   map h :=
     { f := fun i => (C.X i).map h
-      comm' := fun i j _ => NatTrans.naturality _ _ }
+      comm' := fun _ _ _ => NatTrans.naturality _ _ }
   map_id t := by
     ext i
     dsimp
@@ -56,7 +54,6 @@ def asFunctor {T : Type*} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
     ext i
     dsimp
     rw [Functor.map_comp]
-#align homological_complex.as_functor HomologicalComplex.asFunctor
 
 -- TODO in fact, this is an equivalence of categories.
 /-- The functorial version of `HomologicalComplex.asFunctor`. -/
@@ -71,6 +68,5 @@ def complexOfFunctorsToFunctorToComplex {T : Type*} [Category T] :
       naturality := fun t t' g => by
         ext i
         exact (f.f i).naturality g }
-#align homological_complex.complex_of_functors_to_functor_to_complex HomologicalComplex.complexOfFunctorsToFunctorToComplex
 
 end HomologicalComplex

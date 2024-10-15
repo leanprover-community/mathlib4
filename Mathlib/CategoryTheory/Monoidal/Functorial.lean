@@ -1,12 +1,10 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Functor.Functorial
-
-#align_import category_theory.monoidal.functorial from "leanprover-community/mathlib"@"73dd4b5411ec8fafb18a9d77c9c826907730af80"
 
 /-!
 # Unbundled lax monoidal functors
@@ -70,12 +68,11 @@ class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] where
         (α_ (F X) (F Y) (F Z)).hom ≫ F X ◁ μ Y Z ≫ μ X (Y ⊗ Z) := by
     aesop_cat
   /-- left unitality -/
-  left_unitality : ∀ X : C, (λ_ (F X)).hom = ε ▷ F X ≫ μ (𝟙_ C) X ≫ map F (λ_ X).hom :=
-    by aesop_cat
+  left_unitality : ∀ X : C, (λ_ (F X)).hom = ε ▷ F X ≫ μ (𝟙_ C) X ≫ map F (λ_ X).hom := by
+    aesop_cat
   /-- right unitality -/
-  right_unitality : ∀ X : C, (ρ_ (F X)).hom = F X ◁ ε ≫ μ X (𝟙_ C) ≫ map F (ρ_ X).hom :=
-    by aesop_cat
-#align category_theory.lax_monoidal CategoryTheory.LaxMonoidal
+  right_unitality : ∀ X : C, (ρ_ (F X)).hom = F X ◁ ε ≫ μ X (𝟙_ C) ≫ map F (ρ_ X).hom := by
+    aesop_cat
 
 /-- An unbundled description of lax monoidal functors. -/
 abbrev LaxMonoidal.ofTensorHom (F : C → D) [Functorial.{v₁, v₂} F]
@@ -125,7 +122,6 @@ and `Functorial` and `LaxMonoidal` typeclasses.
 def of (F : C → D) [I₁ : Functorial.{v₁, v₂} F] [I₂ : LaxMonoidal.{v₁, v₂} F] :
     LaxMonoidalFunctor.{v₁, v₂} C D :=
   { I₁, I₂ with obj := F }
-#align category_theory.lax_monoidal_functor.of CategoryTheory.LaxMonoidalFunctor.of
 
 end LaxMonoidalFunctor
 
@@ -134,11 +130,9 @@ instance (F : LaxMonoidalFunctor.{v₁, v₂} C D) : LaxMonoidal.{v₁, v₂} F.
 
 section
 
-instance laxMonoidalId : LaxMonoidal.{v₁, v₁} (id : C → C)
-    where
+instance laxMonoidalId : LaxMonoidal.{v₁, v₁} (id : C → C) where
   ε := 𝟙 _
-  μ X Y := 𝟙 _
-#align category_theory.lax_monoidal_id CategoryTheory.laxMonoidalId
+  μ _ _ := 𝟙 _
 
 end
 

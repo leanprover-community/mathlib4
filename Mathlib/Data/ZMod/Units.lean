@@ -3,10 +3,10 @@ Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
 -/
+import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Nat.PrimeFin
-import Mathlib.Algebra.BigOperators.Associated
-
+import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Lemmas about units in `ZMod`.
@@ -42,7 +42,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     have ⟨k, hk⟩ := this x.val.val (val_coe_unit_coprime x)
     refine ⟨unitOfCoprime _ hk, Units.ext ?_⟩
     have : NeZero n := ⟨fun hn ↦ hm.out (eq_zero_of_zero_dvd (hn ▸ h))⟩
-    simp [unitsMap_def]
+    simp [unitsMap_def, - castHom_apply]
   intro x hx
   let ps := m.primeFactors.filter (fun p ↦ ¬p ∣ x)
   use ps.prod id

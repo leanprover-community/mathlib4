@@ -32,14 +32,14 @@ namespace LieAlgebra
 section CommRing
 
 variable {K R L M : Type*}
-variable [Field K] [CommRing R] [Nontrivial R]
+variable [Field K] [CommRing R]
 variable [LieRing L] [LieAlgebra K L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [Module.Finite K L]
 variable [Module.Finite R L] [Module.Free R L]
 variable [Module.Finite R M] [Module.Free R M]
 
-open FiniteDimensional LieSubalgebra Module.Free Polynomial
+open Module LieSubalgebra Module.Free Polynomial
 
 variable (K)
 
@@ -66,7 +66,7 @@ variable (x y : L)
 
 open LieModule LinearMap
 
-local notation "φ" => LieModule.toEndomorphism R L M
+local notation "φ" => LieModule.toEnd R L M
 
 /-- Let `x` and `y` be elements of a Lie `R`-algebra `L`, and `M` a Lie module over `M`.
 Then the characteristic polynomials of the family of endomorphisms `⁅r • y + x, _⁆` of `M`
@@ -83,7 +83,7 @@ def lieCharpoly : Polynomial R[X] :=
 lemma lieCharpoly_monic : (lieCharpoly R M x y).Monic :=
   (polyCharpoly_monic _ _).map _
 
-lemma lieCharpoly_natDegree : (lieCharpoly R M x y).natDegree = finrank R M := by
+lemma lieCharpoly_natDegree [Nontrivial R] : (lieCharpoly R M x y).natDegree = finrank R M := by
   rw [lieCharpoly, (polyCharpoly_monic _ _).natDegree_map, polyCharpoly_natDegree]
 
 variable {R} in
@@ -97,7 +97,7 @@ lemma lieCharpoly_map_eval (r : R) :
     map_add, map_mul, aeval_C, Algebra.id.map_eq_id, RingHom.id_apply, aeval_X, aux,
     MvPolynomial.coe_aeval_eq_eval, polyCharpoly_map_eq_charpoly, LieHom.coe_toLinearMap]
 
-lemma lieCharpoly_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
+lemma lieCharpoly_coeff_natDegree [Nontrivial R] (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly R M x y).coeff i).natDegree ≤ j := by
   classical
   rw [← mul_one j, lieCharpoly, coeff_map]
@@ -117,8 +117,10 @@ section Field
 
 variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 
-open FiniteDimensional LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
+open Module LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
+#adaptation_note /-- otherwise there is a spurious warning on `contrapose!` below. -/
+set_option linter.unusedVariables false in
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
 Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` for `y ∈ U`.
@@ -172,7 +174,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     simp_rw [Polynomial.map_pow, map_X, χ, lieCharpoly_map_eval, one_smul, u, sub_add_cancel,
       -- and therefore the endomorphism `⁅y, _⁆` acts nilpotently on `E`.
       r, LinearMap.charpoly_eq_X_pow_iff,
-      Subtype.ext_iff, coe_toEndomorphism_pow, ZeroMemClass.coe_zero] at this
+      Subtype.ext_iff, coe_toEnd_pow _ _ _ E, ZeroMemClass.coe_zero] at this
     -- We ultimately want to show `engel K x ≤ engel K y`
     intro z hz
     -- which holds by definition of Engel subalgebra and the nilpotency that we just established.
@@ -208,7 +210,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     obtain hz₀|hz₀ := eq_or_ne z 0
     · -- If `z = 0`, then `⁅α • u + x, x⁆` vanishes and we use our assumption `x ≠ 0`.
       refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
-      · simpa [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
+      · exact Subtype.coe_ne_coe.mp hx₀
       · dsimp only [z] at hz₀
         simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
@@ -233,7 +235,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
       apply_fun (evalRingHom 0) at H
       rw [constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
         ← constantCoeff_apply, map_zero, LinearMap.charpoly_constantCoeff_eq_zero_iff] at H
-      simpa only [coe_bracket_of_module, ne_eq, zero_smul, zero_add, toEndomorphism_apply_apply]
+      simpa only [coe_bracket_of_module, ne_eq, zero_smul, zero_add, toEnd_apply_apply]
         using H
     -- It suffices to show `z = 0` (in `Q`) to obtain a contradiction.
     apply hz0
@@ -299,7 +301,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     replace this : engel K x ≤ engel K (v : L) := (hmin ⟨_, v, v.2, rfl⟩ this).ge
     intro z
     -- And so we are done, by the definition of Engel subalgebra.
-    simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEndomorphism_pow] using this z.2
+    simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEnd_pow _ _ _ E] using this z.2
   -- Now we are in good shape.
   -- Fix an element `z` in the Engel subalgebra of `y`.
   intro z hz
@@ -309,7 +311,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- We denote the image of `z` in `Q` by `z'`.
   set z' : Q := LieSubmodule.Quotient.mk' E z
   -- First we observe that `z'` is killed by a power of `⁅v, _⁆`.
-  have hz' : ∃ n : ℕ, (toEndomorphism K U Q v ^ n) z' = 0 := by
+  have hz' : ∃ n : ℕ, (toEnd K U Q v ^ n) z' = 0 := by
     rw [mem_engel_iff] at hz
     obtain ⟨n, hn⟩ := hz
     use n
@@ -318,12 +320,12 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     rw [← hn]
     clear hn
     induction n with
-    | zero => simp only [Nat.zero_eq, pow_zero, LinearMap.one_apply]
+    | zero => simp only [pow_zero, LinearMap.one_apply]
     | succ n ih => rw [pow_succ', pow_succ', LinearMap.mul_apply, ih]; rfl
   classical
   -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.
   set n := Nat.find hz' with _hn
-  have hn : (toEndomorphism K U Q v ^ n) z' = 0 := Nat.find_spec hz'
+  have hn : (toEnd K U Q v ^ n) z' = 0 := Nat.find_spec hz'
   -- If `n = 0`, then we are done.
   obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
   · simpa only [hn₀, pow_zero, LinearMap.one_apply] using hn
@@ -336,7 +338,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- We deduce from this that `z' = 0`, arguing by contraposition.
   contrapose! hsψ
   -- Indeed `⁅v, _⁆` kills `⁅v, _⁆ ^ k` applied to `z'`.
-  use (toEndomorphism K U Q v ^ k) z'
+  use (toEnd K U Q v ^ k) z'
   refine ⟨?_, ?_⟩
   · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
     apply Nat.find_min hz'; omega
@@ -358,7 +360,7 @@ lemma exists_isCartanSubalgebra_engel_of_finrank_le_card (h : finrank K L ≤ #K
   suffices finrank K (engel K x) ≤ finrank K (engel K y) by
     suffices engel K y = engel K x from this.ge
     apply LieSubalgebra.to_submodule_injective
-    exact eq_of_le_of_finrank_le hyx this
+    exact Submodule.eq_of_le_of_finrank_le hyx this
   rw [(isRegular_iff_finrank_engel_eq_rank K x).mp hx]
   apply rank_le_finrank_engel
 

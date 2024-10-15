@@ -19,11 +19,11 @@ homomorphism.
 
 ## Notations
 
-* `A →ₗc[R] B` : `R`-algebra homomorphism from `A` to `B`.
+* `A →ₗc[R] B` : `R`-coalgebra homomorphism from `A` to `B`.
 
 -/
 
-open TensorProduct Coalgebra BigOperators
+open TensorProduct Coalgebra
 
 universe u v w
 
@@ -43,7 +43,7 @@ infixr:25 " →ₗc " => CoalgHom _
 notation:25 A " →ₗc[" R "] " B => CoalgHom R A B
 
 /-- `CoalgHomClass F R A B` asserts `F` is a type of bundled coalgebra homomorphisms
-from `A` to `B`.  -/
+from `A` to `B`. -/
 class CoalgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
@@ -167,9 +167,6 @@ protected theorem congr_arg (φ : A →ₗc[R] B) {x y : A} (h : x = y) : φ x =
 theorem ext {φ₁ φ₂ : A →ₗc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
   DFunLike.ext _ _ H
 
-theorem ext_iff {φ₁ φ₂ : A →ₗc[R] B} : φ₁ = φ₂ ↔ ∀ x, φ₁ x = φ₂ x :=
-  DFunLike.ext_iff
-
 @[ext high]
 theorem ext_of_ring {f g : R →ₗc[R] A} (h : f 1 = g 1) : f = g :=
   coe_linearMap_injective (by ext; assumption)
@@ -177,6 +174,21 @@ theorem ext_of_ring {f g : R →ₗc[R] A} (h : f 1 = g 1) : f = g :=
 @[simp]
 theorem mk_coe {f : A →ₗc[R] B} (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
   ext fun _ => rfl
+
+/-- Copy of a `CoalgHom` with a new `toFun` equal to the old one. Useful to fix definitional
+equalities. -/
+protected def copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₗc[R] B :=
+  { toLinearMap := (f : A →ₗ[R] B).copy f' h
+    counit_comp := by ext; simp_all
+    map_comp_comul := by simp only [(f : A →ₗ[R] B).copy_eq f' h,
+      CoalgHomClass.map_comp_comul] }
+
+@[simp]
+theorem coe_copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
+  rfl
+
+theorem copy_eq (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : f.copy f' h = f :=
+  DFunLike.ext' h
 
 variable (R A)
 
@@ -229,10 +241,10 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
 @[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₗc[R] A) where
   mul := comp
-  mul_assoc ϕ ψ χ := rfl
+  mul_assoc _ _ _ := rfl
   one := CoalgHom.id R A
-  one_mul ϕ := ext fun x => rfl
-  mul_one ϕ := ext fun x => rfl
+  one_mul _ := ext fun _ => rfl
+  mul_one _ := ext fun _ => rfl
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₗc[R] A) x = x :=
@@ -248,9 +260,10 @@ end CoalgHom
 
 namespace Coalgebra
 
-variable (R : Type u) (A : Type v)
+variable (R : Type u) (A : Type v) (B : Type w)
 
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
+variable [Coalgebra R A] [Coalgebra R B]
 
 /-- The counit of a coalgebra as a `CoalgHom`. -/
 def counitCoalgHom : A →ₗc[R] R :=
@@ -280,5 +293,19 @@ instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
 
 @[ext high]
 theorem ext_to_ring (f g : A →ₗc[R] R) : f = g := Subsingleton.elim _ _
+
+variable {A B}
+/--
+If `φ : A → B` is a coalgebra map and `a = ∑ xᵢ ⊗ yᵢ`, then `φ a = ∑ φ xᵢ ⊗ φ yᵢ`
+-/
+@[simps]
+def Repr.induced {a : A} (repr : Repr R a)
+    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B]
+    (φ : F) : Repr R (φ a) where
+  index := repr.index
+  left := φ ∘ repr.left
+  right := φ ∘ repr.right
+  eq := (congr($((CoalgHomClass.map_comp_comul φ).symm) a).trans <|
+      by rw [LinearMap.comp_apply, ← repr.eq, map_sum]; rfl).symm
 
 end Coalgebra

@@ -5,9 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.Analysis.Normed.Field.Basic
-
-#align_import number_theory.zsqrtd.quadratic_reciprocity from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
+import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
 # Facts about the gaussian integers relying on quadratic reciprocity.
@@ -52,7 +50,7 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
         exact ⟨k.val, k.val_lt, ZMod.natCast_zmod_val k⟩
       have hpk : p ∣ k ^ 2 + 1 := by
         rw [pow_two, ← CharP.cast_eq_zero_iff (ZMod p) p, Nat.cast_add, Nat.cast_mul, Nat.cast_one,
-          ← hk, add_left_neg]
+          ← hk, neg_add_cancel]
       have hkmul : (k ^ 2 + 1 : ℤ[i]) = ⟨k, 1⟩ * ⟨k, -1⟩ := by ext <;> simp [sq]
       have hkltp : 1 + k * k < p * p :=
         calc
@@ -81,22 +79,19 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
       have := hpi.2.2 ⟨k, 1⟩ ⟨k, -1⟩ ⟨y, by rw [← hkmul, ← Nat.cast_mul p, ← hy]; simp⟩
       clear_aux_decl
       tauto
-#align gaussian_int.mod_four_eq_three_of_nat_prime_of_prime GaussianInt.mod_four_eq_three_of_nat_prime_of_prime
 
-theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [hp : Fact p.Prime] (hp3 : p % 4 = 3) :
+theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [Fact p.Prime] (hp3 : p % 4 = 3) :
     Prime (p : ℤ[i]) :=
   irreducible_iff_prime.1 <|
     by_contradiction fun hpi =>
       let ⟨a, b, hab⟩ := sq_add_sq_of_nat_prime_of_not_irreducible p hpi
-      have : ∀ a b : ZMod 4, a ^ 2 + b ^ 2 ≠ ↑p := by
-        erw [← ZMod.natCast_mod p 4, hp3]; decide
+      have : ∀ a b : ZMod 4, a ^ 2 + b ^ 2 ≠ (p : ZMod 4) := by
+        rw [← ZMod.natCast_mod p 4, hp3]; decide
       this a b (hab ▸ by simp)
-#align gaussian_int.prime_of_nat_prime_of_mod_four_eq_three GaussianInt.prime_of_nat_prime_of_mod_four_eq_three
 
 /-- A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4` -/
 theorem prime_iff_mod_four_eq_three_of_nat_prime (p : ℕ) [Fact p.Prime] :
     Prime (p : ℤ[i]) ↔ p % 4 = 3 :=
   ⟨mod_four_eq_three_of_nat_prime_of_prime p, prime_of_nat_prime_of_mod_four_eq_three p⟩
-#align gaussian_int.prime_iff_mod_four_eq_three_of_nat_prime GaussianInt.prime_iff_mod_four_eq_three_of_nat_prime
 
 end GaussianInt

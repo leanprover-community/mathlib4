@@ -21,8 +21,7 @@ This file defines a constructor to define a `Module` structure on a Type with an
 universe u v
 
 /-- Define a `Module` structure on a Type by proving a minimized set of axioms. -/
-@[reducible]
-def Module.ofMinimalAxioms {R : Type u} {M : Type v} [Semiring R] [AddCommGroup M] [SMul R M]
+abbrev Module.ofMinimalAxioms {R : Type u} {M : Type v} [Semiring R] [AddCommGroup M] [SMul R M]
     -- Scalar multiplication distributes over addition from the left.
     (smul_add : ∀ (r : R) (x y : M), r • (x + y) = r • x + r • y)
     -- Scalar multiplication distributes over addition from the right.
@@ -38,4 +37,3 @@ def Module.ofMinimalAxioms {R : Type u} {M : Type v} [Semiring R] [AddCommGroup 
     zero_smul := fun x =>
       (AddMonoidHom.mk' (· • x) fun r s => add_smul r s x).map_zero
     smul_zero := fun r => (AddMonoidHom.mk' (r • ·) (smul_add r)).map_zero }
-#align module.of_core Module.ofMinimalAxioms
