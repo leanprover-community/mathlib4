@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Batteries.Data.String.Lemmas
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
 import Mathlib.Tactic.AdaptationNote
@@ -138,7 +139,7 @@ theorem head_empty : "".data.head! = default :=
   rfl
 
 instance : LinearOrder String where
-  le_refl a := le_iff_toList_le.mpr le_rfl
+  le_refl _ := le_iff_toList_le.mpr le_rfl
   le_trans a b c := by
     simp only [le_iff_toList_le]
     apply le_trans

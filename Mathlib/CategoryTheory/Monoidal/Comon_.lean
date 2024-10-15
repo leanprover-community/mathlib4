@@ -59,9 +59,9 @@ def trivial : Comon_ C where
   X := 𝟙_ C
   counit := 𝟙 _
   comul := (λ_ _).inv
-  comul_assoc := by coherence
-  counit_comul := by coherence
-  comul_counit := by coherence
+  comul_assoc := by monoidal_coherence
+  counit_comul := by monoidal_coherence
+  comul_counit := by monoidal_coherence
 
 instance : Inhabited (Comon_ C) :=
   ⟨trivial C⟩
@@ -243,7 +243,8 @@ Comonoid objects in a braided category form a monoidal category.
 
 This definition is via transporting back and forth to monoids in the opposite category,
 -/
-instance [BraidedCategory C] : MonoidalCategory (Comon_ C) :=
+@[simps!]
+instance monoidal [BraidedCategory C] : MonoidalCategory (Comon_ C) :=
   Monoidal.transport (Comon_EquivMon_OpOp C).symm
 
 variable [BraidedCategory C]
@@ -281,7 +282,7 @@ theorem tensorObj_comul (A B : Comon_ C) :
 def forgetMonoidal : MonoidalFunctor (Comon_ C) C :=
   { forget C with
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 @[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
 @[simp] theorem forgetMonoidal_ε : (forgetMonoidal C).ε = 𝟙 (𝟙_ C) := rfl

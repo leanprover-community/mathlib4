@@ -144,7 +144,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
     simp only [dist_le_zero] at this
     rw [this]
   have If' : (0 : ℝ) < f'symm.nnnorm := by rw [← inv_pos]; exact (NNReal.coe_nonneg _).trans_lt hc
-  have Icf' : (c : ℝ) * f'symm.nnnorm < 1 := by rwa [inv_eq_one_div, lt_div_iff If'] at hc
+  have Icf' : (c : ℝ) * f'symm.nnnorm < 1 := by rwa [inv_eq_one_div, lt_div_iff₀ If'] at hc
   have Jf' : (f'symm.nnnorm : ℝ) ≠ 0 := ne_of_gt If'
   have Jcf' : (1 : ℝ) - c * f'symm.nnnorm ≠ 0 := by apply ne_of_gt; linarith
   /- We have to show that `y` can be written as `f x` for some `x ∈ closedBall b ε`.

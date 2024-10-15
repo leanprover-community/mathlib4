@@ -78,14 +78,14 @@ def product {J : Type v} (f : J → ωCPO.{v}) : Fan f :=
 def isProduct (J : Type v) (f : J → ωCPO) : IsLimit (product f) where
   lift s :=
     -- Porting note: Original proof didn't have `.toFun`
-    ⟨⟨fun t j => (s.π.app ⟨j⟩).toFun t, fun x y h j => (s.π.app ⟨j⟩).monotone h⟩,
+    ⟨⟨fun t j => (s.π.app ⟨j⟩).toFun t, fun _ _ h j => (s.π.app ⟨j⟩).monotone h⟩,
       fun x => funext fun j => (s.π.app ⟨j⟩).continuous x⟩
   uniq s m w := by
     ext t; funext j -- Porting note: Originally `ext t j`
     change m.toFun t j = (s.π.app ⟨j⟩).toFun t
     rw [← w ⟨j⟩]
     rfl
-  fac s j := rfl
+  fac _ _ := rfl
 
 instance (J : Type v) (f : J → ωCPO.{v}) : HasProduct f :=
   HasLimit.mk ⟨_, isProduct _ f⟩
@@ -119,7 +119,7 @@ def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
   Fork.IsLimit.mk' _ fun s =>
     -- Porting note: Changed `s.ι x` to `s.ι.toFun x`
     ⟨{  toFun := fun x => ⟨s.ι.toFun x, by apply ContinuousHom.congr_fun s.condition⟩
-        monotone' := fun x y h => s.ι.monotone h
+        monotone' := fun _ _ h => s.ι.monotone h
         map_ωSup' := fun x => Subtype.ext (s.ι.continuous x)
       }, by ext; rfl, fun hm => by
       apply ContinuousHom.ext _ _ fun x => Subtype.ext ?_ -- Porting note: Originally `ext`

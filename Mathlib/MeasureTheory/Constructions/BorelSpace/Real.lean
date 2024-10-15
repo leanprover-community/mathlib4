@@ -115,7 +115,7 @@ def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
     -- TODO: norm_cast fails here?
     push_cast
     exact neg_lt_self n.cast_add_one_pos
-  finite n := measure_Ioo_lt_top
+  finite _ := measure_Ioo_lt_top
   spanning :=
     iUnion_eq_univ_iff.2 fun x =>
       ⟨⌊|x|⌋₊, neg_lt.1 ((neg_le_abs x).trans_lt (Nat.lt_floor_add_one _)),
@@ -505,7 +505,7 @@ variable (μ : Measure ℝ) [IsFiniteMeasureOnCompacts μ]
 lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[>] (0 : ℝ)) (𝓝 (μ {b})) := by
   rw [Real.singleton_eq_inter_Icc]
-  apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc.nullMeasurableSet)
+  apply tendsto_measure_biInter_gt (fun r hr ↦ nullMeasurableSet_Icc)
   · intro r s _rpos hrs
     exact Icc_subset_Icc (by linarith) (by linarith)
   · exact ⟨1, zero_lt_one, isCompact_Icc.measure_ne_top⟩

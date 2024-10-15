@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Commelin
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.BigOperators
@@ -548,6 +548,26 @@ theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
 theorem Monic.comp_X_sub_C {p : R[X]} (hp : p.Monic) (r : R) : (p.comp (X - C r)).Monic := by
   simpa using hp.comp_X_add_C (-r)
 
+@[simp]
+theorem comp_neg_X_leadingCoeff_eq (p : R[X]) :
+    (p.comp (-X)).leadingCoeff = (-1) ^ p.natDegree * p.leadingCoeff := by
+  nontriviality R
+  by_cases h : p = 0
+  · simp [h]
+  rw [Polynomial.leadingCoeff, natDegree_comp_eq_of_mul_ne_zero, coeff_comp_degree_mul_degree] <;>
+  simp [mul_comm, h]
+
+theorem Monic.neg_one_pow_natDegree_mul_comp_neg_X {p : R[X]} (hp : p.Monic) :
+    ((-1) ^ p.natDegree * p.comp (-X)).Monic := by
+  simp only [Monic]
+  calc
+    ((-1) ^ p.natDegree * p.comp (-X)).leadingCoeff =
+        (p.comp (-X) * C ((-1) ^ p.natDegree)).leadingCoeff := by
+      simp [mul_comm]
+    _ = 1 := by
+      apply monic_mul_C_of_leadingCoeff_mul_eq_one
+      simp [← pow_add, hp]
+
 variable [IsDomain R] {p q : R[X]}
 
 @[simp]
@@ -721,6 +741,7 @@ theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
     multiplicity.mul' (prime_X_sub_C x)]
 
 open Multiset in
+set_option linter.unusedVariables false in
 theorem exists_multiset_roots [DecidableEq R] :
     ∀ {p : R[X]} (_ : p ≠ 0), ∃ s : Multiset R,
       (Multiset.card s : WithBot ℕ) ≤ degree p ∧ ∀ a, s.count a = rootMultiplicity a p
@@ -731,6 +752,11 @@ theorem exists_multiset_roots [DecidableEq R] :
       have hpd : 0 < degree p := degree_pos_of_root hp hx
       have hd0 : p /ₘ (X - C x) ≠ 0 := fun h => by
         rw [← mul_divByMonic_eq_iff_isRoot.2 hx, h, mul_zero] at hp; exact hp rfl
+      #adaptation_note
+      /--
+      Since https://github.com/leanprover/lean4/pull/5338, this is considered unused,
+      because it is only used in the decreasing_by clause.
+      -/
       have wf : degree (p /ₘ (X - C x)) < degree p :=
         degree_divByMonic_lt _ (monic_X_sub_C x) hp ((degree_X_sub_C x).symm ▸ by decide)
       let ⟨t, htd, htr⟩ := @exists_multiset_roots _ (p /ₘ (X - C x)) hd0

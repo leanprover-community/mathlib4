@@ -418,7 +418,7 @@ theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormu
   | rel =>
     intros
     simp only [castLE, eq_self_iff_true, heq_iff_eq]
-    rw [← Function.comp.assoc, Term.relabel_comp_relabel]
+    rw [← Function.comp_assoc, Term.relabel_comp_relabel]
     simp
   | imp _ _ ih1 ih2 => simp [ih1, ih2]
   | all _ ih3 => intros; simp only [castLE, ih3]
@@ -472,8 +472,8 @@ def mapTermRel {g : ℕ → ℕ} (ft : ∀ n, L.Term (α ⊕ (Fin n)) → L'.Ter
 
 /-- Raises all of the `Fin`-indexed variables of a formula greater than or equal to `m` by `n'`. -/
 def liftAt : ∀ {n : ℕ} (n' _m : ℕ), L.BoundedFormula α n → L.BoundedFormula α (n + n') :=
-  fun {n} n' m φ =>
-  φ.mapTermRel (fun k t => t.liftAt n' m) (fun _ => id) fun _ =>
+  fun {_} n' m φ =>
+  φ.mapTermRel (fun _ t => t.liftAt n' m) (fun _ => id) fun _ =>
     castLE (by rw [add_assoc, add_comm 1, add_assoc])
 
 @[simp]
@@ -576,8 +576,8 @@ theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
   | falsum => rfl
   | equal => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]
   | rel => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]; rfl
-  | imp _ _ ih1 ih2 => simp [mapTermRel, ih1, ih2]
-  | all _ ih3 => simp [mapTermRel, ih3, castLE]
+  | imp _ _ ih1 ih2 => simp_all [mapTermRel]
+  | all _ ih3 => simp_all [mapTermRel]
 
 /-- Substitutes the variables in a given formula with terms. -/
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=

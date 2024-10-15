@@ -117,6 +117,6 @@ def unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
 
 theorem left_node_right_eq_self : ∀ {x : Tree Unit} (_hx : x ≠ nil), x.left △ x.right = x
   | nil, h => by trivial
-  | node a l r, _ => rfl  -- Porting note: `a △ b` no longer works in pattern matching
+  | node _ _ _, _ => rfl  -- Porting note: `a △ b` no longer works in pattern matching
 
 end Tree

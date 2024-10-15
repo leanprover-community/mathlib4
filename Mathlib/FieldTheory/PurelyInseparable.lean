@@ -127,7 +127,7 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
-open FiniteDimensional Polynomial IntermediateField Field Finsupp
+open Module Polynomial IntermediateField Field Finsupp
 
 noncomputable section
 
@@ -166,7 +166,7 @@ variable {F K}
 
 theorem isPurelyInseparable_iff : IsPurelyInseparable F E ↔ ∀ x : E,
     IsIntegral F x ∧ (IsSeparable F x → x ∈ (algebraMap F E).range) :=
-  ⟨fun h x ↦ ⟨h.isIntegral' x, h.inseparable' x⟩, fun h ↦ ⟨⟨fun x ↦ (h x).1⟩, fun x ↦ (h x).2⟩⟩
+  ⟨fun h x ↦ ⟨h.isIntegral' _ x, h.inseparable' x⟩, fun h ↦ ⟨⟨fun x ↦ (h x).1⟩, fun x ↦ (h x).2⟩⟩
 
 /-- Transfer `IsPurelyInseparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.isPurelyInseparable (e : K ≃ₐ[F] E) [IsPurelyInseparable F K] :
@@ -604,7 +604,7 @@ if `E` is purely inseparable over it. -/
 theorem separableClosure_le (L : IntermediateField F E)
     [h : IsPurelyInseparable L E] : separableClosure F E ≤ L := fun x hx ↦ by
   obtain ⟨y, rfl⟩ := h.inseparable' _ <|
-    IsSeparable.of_isScalarTower L (mem_separableClosure_iff.1 hx)
+    IsSeparable.tower_top L (mem_separableClosure_iff.1 hx)
   exact y.2
 
 /-- If `E / F` is algebraic, then an intermediate field of `E / F` contains the
@@ -756,7 +756,7 @@ private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
   have h' := h.coe_range
   let ι' := h'.extend (Set.range v).subset_univ
   let b : Basis ι' F E := Basis.extend h'
-  letI : Fintype ι' := fintypeBasisIndex b
+  letI : Fintype ι' := FiniteDimensional.fintypeBasisIndex b
   have H := linearIndependent_of_top_le_span_of_card_eq_finrank
     (span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
     (finrank_eq_card_basis b).symm
@@ -811,8 +811,8 @@ end
 purely inseparable. -/
 theorem isSepClosed_iff_isPurelyInseparable_algebraicClosure [IsAlgClosure F E] :
     IsSepClosed F ↔ IsPurelyInseparable F E :=
-  ⟨fun _ ↦ IsAlgClosure.algebraic.isPurelyInseparable_of_isSepClosed, fun H ↦ by
-    haveI := IsAlgClosure.alg_closed F (K := E)
+  ⟨fun _ ↦ IsAlgClosure.isAlgebraic.isPurelyInseparable_of_isSepClosed, fun H ↦ by
+    haveI := IsAlgClosure.isAlgClosed F (K := E)
     rwa [← separableClosure.eq_bot_iff, IsSepClosed.separableClosure_eq_bot_iff] at H⟩
 
 variable {F E} in
@@ -845,7 +845,7 @@ theorem perfectField_of_isSeparable_of_perfectField_top [Algebra.IsSeparable F E
 separable. -/
 theorem perfectField_iff_isSeparable_algebraicClosure [IsAlgClosure F E] :
     PerfectField F ↔ Algebra.IsSeparable F E :=
-  ⟨fun _ ↦ IsSepClosure.separable, fun _ ↦ haveI : IsAlgClosed E := IsAlgClosure.alg_closed F
+  ⟨fun _ ↦ IsSepClosure.separable, fun _ ↦ haveI : IsAlgClosed E := IsAlgClosure.isAlgClosed F
     perfectField_of_isSeparable_of_perfectField_top F E⟩
 
 namespace Field
@@ -1071,7 +1071,7 @@ theorem minpoly.map_eq_of_isSeparable_of_isPurelyInseparable (x : K)
   have hi' : IsIntegral E x := IsIntegral.tower_top hi
   refine eq_of_monic_of_dvd_of_natDegree_le (monic hi') ((monic hi).map (algebraMap F E))
     (dvd_map_of_isScalarTower F E x) (le_of_eq ?_)
-  have hsep' := IsSeparable.of_isScalarTower E hsep
+  have hsep' := IsSeparable.tower_top E hsep
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep'
   have := Algebra.IsSeparable.isAlgebraic F F⟮x⟯

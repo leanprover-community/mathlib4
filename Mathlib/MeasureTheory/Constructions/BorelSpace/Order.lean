@@ -99,19 +99,28 @@ variable [MeasurableSpace δ]
 
 section Preorder
 
-variable [Preorder α] [OrderClosedTopology α] {a b x : α}
+variable [Preorder α] [OrderClosedTopology α] {a b x : α} {μ : Measure α}
 
 @[simp, measurability]
 theorem measurableSet_Ici : MeasurableSet (Ici a) :=
   isClosed_Ici.measurableSet
 
+theorem nullMeasurableSet_Ici : NullMeasurableSet (Ici a) μ :=
+  measurableSet_Ici.nullMeasurableSet
+
 @[simp, measurability]
 theorem measurableSet_Iic : MeasurableSet (Iic a) :=
   isClosed_Iic.measurableSet
 
+theorem nullMeasurableSet_Iic : NullMeasurableSet (Iic a) μ :=
+  measurableSet_Iic.nullMeasurableSet
+
 @[simp, measurability]
 theorem measurableSet_Icc : MeasurableSet (Icc a b) :=
   isClosed_Icc.measurableSet
+
+theorem nullMeasurableSet_Icc : NullMeasurableSet (Icc a b) μ :=
+  measurableSet_Icc.nullMeasurableSet
 
 instance nhdsWithin_Ici_isMeasurablyGenerated : (𝓝[Ici b] a).IsMeasurablyGenerated :=
   measurableSet_Ici.nhdsWithin_isMeasurablyGenerated _
@@ -157,7 +166,7 @@ end PartialOrder
 
 section LinearOrder
 
-variable [LinearOrder α] [OrderClosedTopology α] {a b x : α}
+variable [LinearOrder α] [OrderClosedTopology α] {a b x : α} {μ : Measure α}
 
 -- we open this locale only here to avoid issues with list being treated as intervals above
 open Interval
@@ -166,21 +175,36 @@ open Interval
 theorem measurableSet_Iio : MeasurableSet (Iio a) :=
   isOpen_Iio.measurableSet
 
+theorem nullMeasurableSet_Iio : NullMeasurableSet (Iio a) μ :=
+  measurableSet_Iio.nullMeasurableSet
+
 @[simp, measurability]
 theorem measurableSet_Ioi : MeasurableSet (Ioi a) :=
   isOpen_Ioi.measurableSet
+
+theorem nullMeasurableSet_Ioi : NullMeasurableSet (Ioi a) μ :=
+  measurableSet_Ioi.nullMeasurableSet
 
 @[simp, measurability]
 theorem measurableSet_Ioo : MeasurableSet (Ioo a b) :=
   isOpen_Ioo.measurableSet
 
+theorem nullMeasurableSet_Ioo : NullMeasurableSet (Ioo a b) μ :=
+  measurableSet_Ioo.nullMeasurableSet
+
 @[simp, measurability]
 theorem measurableSet_Ioc : MeasurableSet (Ioc a b) :=
   measurableSet_Ioi.inter measurableSet_Iic
 
+theorem nullMeasurableSet_Ioc : NullMeasurableSet (Ioc a b) μ :=
+  measurableSet_Ioc.nullMeasurableSet
+
 @[simp, measurability]
 theorem measurableSet_Ico : MeasurableSet (Ico a b) :=
   measurableSet_Ici.inter measurableSet_Iio
+
+theorem nullMeasurableSet_Ico : NullMeasurableSet (Ico a b) μ :=
+  measurableSet_Ico.nullMeasurableSet
 
 instance nhdsWithin_Ioi_isMeasurablyGenerated : (𝓝[Ioi b] a).IsMeasurablyGenerated :=
   measurableSet_Ioi.nhdsWithin_isMeasurablyGenerated _
@@ -275,7 +299,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem {α : Type*} [TopologicalSpace α] [
     [OrderTopology α] [SecondCountableTopology α] [DenselyOrdered α] [NoMinOrder α] {s : Set α}
     (hd : Dense s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S } :=
-  hd.borel_eq_generateFrom_Ico_mem_aux (by simp) fun x y hxy H =>
+  hd.borel_eq_generateFrom_Ico_mem_aux (by simp) fun _ _ hxy H =>
     ((nonempty_Ioo.2 hxy).ne_empty H).elim
 
 theorem borel_eq_generateFrom_Ico (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
@@ -301,7 +325,7 @@ theorem Dense.borel_eq_generateFrom_Ioc_mem {α : Type*} [TopologicalSpace α] [
     [OrderTopology α] [SecondCountableTopology α] [DenselyOrdered α] [NoMaxOrder α] {s : Set α}
     (hd : Dense s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ioc l u = S } :=
-  hd.borel_eq_generateFrom_Ioc_mem_aux (by simp) fun x y hxy H =>
+  hd.borel_eq_generateFrom_Ioc_mem_aux (by simp) fun _ _ hxy H =>
     ((nonempty_Ioo.2 hxy).ne_empty H).elim
 
 theorem borel_eq_generateFrom_Ioc (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
@@ -398,15 +422,15 @@ theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   · rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, -, hst⟩
     have : DirectedOn (· ≤ ·) s := directedOn_iff_directed.2 (Subtype.mono_coe _).directed_le
     simp only [← biSup_measure_Iic hsc (hsd.exists_ge' hst) this, h]
-  rw [← Iic_diff_Iic, measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic.nullMeasurableSet,
-    measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic.nullMeasurableSet, h a, h b]
+  rw [← Iic_diff_Iic, measure_diff (Iic_subset_Iic.2 hlt.le) nullMeasurableSet_Iic,
+    measure_diff (Iic_subset_Iic.2 hlt.le) nullMeasurableSet_Iic, h a, h b]
   · rw [← h a]
-    exact (measure_lt_top μ _).ne
-  · exact (measure_lt_top μ _).ne
+    exact measure_ne_top μ _
+  · exact measure_ne_top μ _
 
 /-- Two finite measures on a Borel space are equal if they agree on all left-closed right-infinite
 intervals. -/
-theorem ext_of_Ici {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
+theorem ext_of_Ici {α : Type*} [TopologicalSpace α] {_ : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] (μ ν : Measure α)
     [IsFiniteMeasure μ] (h : ∀ a, μ (Ici a) = ν (Ici a)) : μ = ν :=
   @ext_of_Iic αᵒᵈ _ _ _ _ _ ‹_› _ _ _ h
@@ -544,7 +568,8 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
         · simp [hb, hg' hb]
       rw [this]
       exact Measurable.piecewise hs measurable_const g'_meas
-  · let f' : ι → δ → α := fun i ↦ s.piecewise (f i) g'
+  · have : Nonempty ι := ⟨i⟩
+    let f' : ι → δ → α := fun i ↦ s.piecewise (f i) g'
     suffices ∀ b, IsLUB { a | ∃ i, f' i b = a } (g b) from
       Measurable.isLUB (fun i ↦ Measurable.piecewise hs (hf i) g'_meas) this
     intro b
@@ -552,14 +577,7 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
     · have A : ∀ i, f' i b = f i b := fun i ↦ by simp [f', hb]
       simpa [A] using hg b hb
     · have A : ∀ i, f' i b = g' b := fun i ↦ by simp [f', hb]
-      have : {a | ∃ (_i : ι), g' b = a} = {g' b} := by
-        apply Subset.antisymm
-        · rintro - ⟨_j, rfl⟩
-          simp only [mem_singleton_iff]
-        · rintro - rfl
-          exact ⟨i, rfl⟩
-      simp only [exists_prop'] at this
-      simp [A, this, hg' hb, isLUB_singleton]
+      simp [A, hg' hb, isLUB_singleton]
 
 theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsLUB { a | ∃ i, f i b = a } (g b)) :

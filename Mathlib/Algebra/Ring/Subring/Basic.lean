@@ -72,7 +72,7 @@ section SubringClass
 
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class SubringClass (S : Type*) (R : Type u) [Ring R] [SetLike S R] extends
+class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] extends
   SubsemiringClass S R, NegMemClass S R : Prop
 
 -- See note [lower instance priority]
@@ -662,15 +662,15 @@ variable {K : Type u} [DivisionRing K]
 
 instance instField : Field (center K) where
   inv a := ⟨a⁻¹, Set.inv_mem_center a.prop⟩
-  mul_inv_cancel a ha := Subtype.ext <| mul_inv_cancel₀ <| Subtype.coe_injective.ne ha
+  mul_inv_cancel _ ha := Subtype.ext <| mul_inv_cancel₀ <| Subtype.coe_injective.ne ha
   div a b := ⟨a / b, Set.div_mem_center a.prop b.prop⟩
-  div_eq_mul_inv a b := Subtype.ext <| div_eq_mul_inv _ _
+  div_eq_mul_inv _ _ := Subtype.ext <| div_eq_mul_inv _ _
   inv_zero := Subtype.ext inv_zero
   -- TODO: use a nicer defeq
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q x => rfl
+  qsmul_def := fun _ _ => rfl
 
 @[simp]
 theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=
@@ -796,15 +796,15 @@ theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {a b : R} (ha : 
 theorem mem_closure_iff {s : Set R} {x} :
     x ∈ closure s ↔ x ∈ AddSubgroup.closure (Submonoid.closure s : Set R) :=
   ⟨fun h =>
-    closure_induction h (fun x hx => AddSubgroup.subset_closure <| Submonoid.subset_closure hx)
+    closure_induction h (fun _ hx => AddSubgroup.subset_closure <| Submonoid.subset_closure hx)
       (AddSubgroup.zero_mem _)
       (AddSubgroup.subset_closure (Submonoid.one_mem (Submonoid.closure s)))
-      (fun x y hx hy => AddSubgroup.add_mem _ hx hy) (fun x hx => AddSubgroup.neg_mem _ hx)
-      fun x y hx hy =>
+      (fun _ _ hx hy => AddSubgroup.add_mem _ hx hy) (fun _ hx => AddSubgroup.neg_mem _ hx)
+      fun x _ hx hy =>
       AddSubgroup.closure_induction hy
         (fun q hq =>
           AddSubgroup.closure_induction hx
-            (fun p hp => AddSubgroup.subset_closure ((Submonoid.closure s).mul_mem hp hq))
+            (fun _ hp => AddSubgroup.subset_closure ((Submonoid.closure s).mul_mem hp hq))
             (by rw [zero_mul q]; apply AddSubgroup.zero_mem _)
             (fun p₁ p₂ ihp₁ ihp₂ => by rw [add_mul p₁ p₂ q]; apply AddSubgroup.add_mem _ ihp₁ ihp₂)
             fun x hx => by
@@ -817,10 +817,10 @@ theorem mem_closure_iff {s : Set R} {x} :
         rw [f]; apply AddSubgroup.neg_mem _ hz,
     fun h =>
     AddSubgroup.closure_induction (p := (· ∈ closure s)) h
-      (fun x hx =>
-        Submonoid.closure_induction hx (fun x hx => subset_closure hx) (one_mem _) fun x y hx hy =>
+      (fun _ hx =>
+        Submonoid.closure_induction hx (fun _ hx => subset_closure hx) (one_mem _) fun _ _ hx hy =>
           mul_mem hx hy)
-      (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx⟩
+      (zero_mem _) (fun _ _ hx hy => add_mem hx hy) fun _ hx => neg_mem hx⟩
 
 /-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
 def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
@@ -851,7 +851,7 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (h : x ∈ closure s) :
     ⟨[], by simp⟩
     (fun x y ⟨l, hl1, hl2⟩ ⟨m, hm1, hm2⟩ =>
       ⟨l ++ m, fun t ht => (List.mem_append.1 ht).elim (hl1 t) (hm1 t), by simp [hl2, hm2]⟩)
-    fun x ⟨L, hL⟩ =>
+    fun _ ⟨L, hL⟩ =>
     ⟨L.map (List.cons (-1)),
       List.forall_mem_map.2 fun j hj => List.forall_mem_cons.2 ⟨Or.inr rfl, hL.1 j hj⟩,
       hL.2 ▸
@@ -896,6 +896,14 @@ theorem map_sup (s t : Subring R) (f : R →+* S) : (s ⊔ t).map f = s.map f �
 theorem map_iSup {ι : Sort*} (f : R →+* S) (s : ι → Subring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
+
+theorem map_inf (s t : Subring R) (f : R →+* S) (hf : Function.Injective f) :
+    (s ⊓ t).map f = s.map f ⊓ t.map f := SetLike.coe_injective (Set.image_inter hf)
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : R →+* S) (hf : Function.Injective f)
+    (s : ι → Subring R) : (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem comap_inf (s t : Subring S) (f : R →+* S) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.Discrete
@@ -57,8 +57,8 @@ def trivial : Mon_ C where
   X := 𝟙_ C
   one := 𝟙 _
   mul := (λ_ _).hom
-  mul_assoc := by coherence
-  mul_one := by coherence
+  mul_assoc := by monoidal_coherence
+  mul_one := by monoidal_coherence
 
 instance : Inhabited (Mon_ C) :=
   ⟨trivial C⟩
@@ -503,7 +503,7 @@ variable (C)
 def forgetMonoidal : MonoidalFunctor (Mon_ C) C :=
   { forget C with
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 @[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
 @[simp] theorem forgetMonoidal_ε : (forgetMonoidal C).ε = 𝟙 (𝟙_ C) := rfl
@@ -514,7 +514,7 @@ variable {C}
 theorem one_braiding {X Y : Mon_ C} : (X ⊗ Y).one ≫ (β_ X.X Y.X).hom = (Y ⊗ X).one := by
   simp only [monMonoidalStruct_tensorObj_X, tensor_one, Category.assoc,
     BraidedCategory.braiding_naturality, braiding_tensorUnit_right, Iso.cancel_iso_inv_left]
-  coherence
+  monoidal
 
 end BraidedCategory
 
