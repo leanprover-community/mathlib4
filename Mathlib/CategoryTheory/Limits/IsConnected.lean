@@ -6,7 +6,7 @@ Authors: Paul Reichert
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Colimits of connected index categories
@@ -50,7 +50,7 @@ def constPUnitFunctor : C ⥤ Type w := (Functor.const C).obj PUnit.{w + 1}
 @[simps]
 def pUnitCocone : Cocone (constPUnitFunctor.{w} C) where
   pt := PUnit
-  ι := { app := fun X => id }
+  ι := { app := fun _ => id }
 
 /-- If `C` is connected, the cocone on `constPUnitFunctor` with cone point `PUnit` is a colimit
     cocone. -/
@@ -85,7 +85,7 @@ noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] :
 /-- Let `F` be a `Type`-valued functor. If two elements `a : F c` and `b : F d` represent the same
 element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
 theorem zigzag_of_eqvGen_quot_rel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
-    (h : EqvGen (Quot.Rel F) c d) : Zigzag c.1 d.1 := by
+    (h : Relation.EqvGen (Quot.Rel F) c d) : Zigzag c.1 d.1 := by
   induction h with
   | rel _ _ h => exact Zigzag.of_hom <| Exists.choose h
   | refl _ => exact Zigzag.refl _

@@ -73,7 +73,7 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
     rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
     · erw [Subtype.range_coe_subtype]
       exact (X.local_affine x).choose.2
-    erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
+    rw [← TopCat.epi_iff_surjective]
     change Epi ((SheafedSpace.forget _).map (LocallyRingedSpace.forgetToSheafedSpace.map _))
     infer_instance
 
@@ -92,7 +92,7 @@ theorem OpenCover.iSup_opensRange {X : Scheme.{u}} (𝒰 : X.OpenCover) :
   Opens.ext <| by rw [Opens.coe_iSup]; exact 𝒰.iUnion_range
 
 /-- Given an open cover `{ Uᵢ }` of `X`, and for each `Uᵢ` an open cover, we may combine these
-open covers to form an open cover of `X`.  -/
+open covers to form an open cover of `X`. -/
 @[simps! J obj map]
 def OpenCover.bind (f : ∀ x : 𝒰.J, OpenCover (𝒰.obj x)) : OpenCover X where
   J := Σ i : 𝒰.J, (f i).J
@@ -106,10 +106,10 @@ def OpenCover.bind (f : ∀ x : 𝒰.J, OpenCover (𝒰.obj x)) : OpenCover X wh
     change x ∈ Set.range ((f (𝒰.f x)).map ((f (𝒰.f x)).f y) ≫ 𝒰.map (𝒰.f x)).1.base
     use z
     erw [comp_apply]
-    erw [hz, hy] -- now `erw` after #13170
+    rw [hz, hy]
   -- Porting note: weirdly, even though no input is needed, `inferInstance` does not work
   -- `PresheafedSpace.IsOpenImmersion.comp` is marked as `instance`
-  IsOpen x := PresheafedSpace.IsOpenImmersion.comp _ _
+  IsOpen _ := PresheafedSpace.IsOpenImmersion.comp _ _
 
 /-- An isomorphism `X ⟶ Y` is an open cover of `Y`. -/
 @[simps J obj map]
@@ -136,7 +136,7 @@ def OpenCover.copy {X : Scheme.{u}} (𝒰 : OpenCover X) (J : Type*) (obj : J �
       rw [e₂, Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr,
         Set.image_univ, e₁.rightInverse_symm]
       · exact 𝒰.covers x
-      · erw [← TopCat.epi_iff_surjective]; infer_instance -- now `erw` after #13170
+      · rw [← TopCat.epi_iff_surjective]; infer_instance
     -- Porting note: weirdly, even though no input is needed, `inferInstance` does not work
     -- `PresheafedSpace.IsOpenImmersion.comp` is marked as `instance`
     IsOpen := fun i => by rw [e₂]; exact PresheafedSpace.IsOpenImmersion.comp _ _ }
@@ -168,7 +168,7 @@ def OpenCover.pullbackCover {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X
     W.OpenCover where
   J := 𝒰.J
   obj x := pullback f (𝒰.map x)
-  map x := pullback.fst _ _
+  map _ := pullback.fst _ _
   f x := 𝒰.f (f.1.base x)
   covers x := by
     rw [←
@@ -198,7 +198,7 @@ def OpenCover.pullbackCover' {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ 
     W.OpenCover where
   J := 𝒰.J
   obj x := pullback (𝒰.map x) f
-  map x := pullback.snd _ _
+  map _ := pullback.snd _ _
   f x := 𝒰.f (f.1.base x)
   covers x := by
     rw [←
@@ -261,22 +261,7 @@ def OpenCover.inter {X : Scheme.{u}} (𝒰₁ : Scheme.OpenCover.{v₁} X)
   covers x := by
     rw [IsOpenImmersion.range_pullback_to_base_of_left]
     exact ⟨𝒰₁.covers x, 𝒰₂.covers x⟩
-  IsOpen x := inferInstance
-
-/-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
-@[simps! J obj map]
-def openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → Opens X)
-    (hU : ⨆ i, U i = ⊤) : X.OpenCover where
-  J := s
-  obj i := X.restrict (U i).openEmbedding
-  map i := X.ofRestrict (U i).openEmbedding
-  f x :=
-    haveI : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : Opens X) by trivial
-    (Opens.mem_iSup.mp this).choose
-  covers x := by
-    erw [Subtype.range_coe]
-    have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : Opens X) by trivial
-    exact (Opens.mem_iSup.mp this).choose_spec
+  IsOpen _ := inferInstance
 
 /--
 An affine open cover of `X` consists of a family of open immersions into `X` from
@@ -387,13 +372,13 @@ attribute [instance] OpenCover.Hom.isOpen
 /-- The identity morphism in the category of open covers of a scheme. -/
 def OpenCover.Hom.id {X : Scheme.{u}} (𝓤 : OpenCover.{v} X) : 𝓤.Hom 𝓤 where
   idx j := j
-  app j := 𝟙 _
+  app _ := 𝟙 _
 
 /-- The composition of two morphisms in the category of open covers of a scheme. -/
 def OpenCover.Hom.comp {X : Scheme.{u}} {𝓤 𝓥 𝓦 : OpenCover.{v} X}
     (f : 𝓤.Hom 𝓥) (g : 𝓥.Hom 𝓦) : 𝓤.Hom 𝓦 where
   idx j := g.idx <| f.idx j
-  app j := f.app _ ≫ g.app _
+  app _ := f.app _ ≫ g.app _
 
 instance OpenCover.category {X : Scheme.{u}} : Category (OpenCover.{v} X) where
   Hom 𝓤 𝓥 := 𝓤.Hom 𝓥
@@ -428,7 +413,7 @@ def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
 
 /-- If two global sections agree after restriction to each member of an open cover, then
 they agree globally. -/
-lemma OpenCover.ext_elem {X : Scheme.{u}} {U : Opens X} (f g : Γ(X, U)) (𝒰 : X.OpenCover)
+lemma OpenCover.ext_elem {X : Scheme.{u}} {U : X.Opens} (f g : Γ(X, U)) (𝒰 : X.OpenCover)
     (h : ∀ i : 𝒰.J, (𝒰.map i).app U f = (𝒰.map i).app U g) : f = g := by
   fapply TopCat.Sheaf.eq_of_locally_eq' X.sheaf
     (fun i ↦ (𝒰.map (𝒰.f i)).opensRange ⊓ U) _ (fun _ ↦ homOfLE inf_le_right)
@@ -444,13 +429,13 @@ lemma OpenCover.ext_elem {X : Scheme.{u}} {U : Opens X} (f g : Γ(X, U)) (𝒰 :
 
 /-- If the restriction of a global section to each member of an open cover is zero, then it is
 globally zero. -/
-lemma zero_of_zero_cover {X : Scheme.{u}} {U : Opens X} (s : Γ(X, U)) (𝒰 : X.OpenCover)
+lemma zero_of_zero_cover {X : Scheme.{u}} {U : X.Opens} (s : Γ(X, U)) (𝒰 : X.OpenCover)
     (h : ∀ i : 𝒰.J, (𝒰.map i).app U s = 0) : s = 0 :=
   𝒰.ext_elem s 0 (fun i ↦ by rw [map_zero]; exact h i)
 
 /-- If a global section is nilpotent on each member of a finite open cover, then `f` is
 nilpotent. -/
-lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : Opens X} (s : Γ(X, U))
+lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : X.Opens} (s : Γ(X, U))
     (𝒰 : X.OpenCover) [Finite 𝒰.J] (h : ∀ i : 𝒰.J, IsNilpotent ((𝒰.map i).app U s)) :
     IsNilpotent s := by
   choose fn hfn using h
@@ -459,7 +444,7 @@ lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : Opens X} (s : Γ(X,
   let N : ℕ := Finset.sup Finset.univ fn
   have hfnleN (i : 𝒰.J) : fn i ≤ N := Finset.le_sup (Finset.mem_univ i)
   use N
-  apply zero_of_zero_cover
+  apply zero_of_zero_cover (𝒰 := 𝒰)
   on_goal 1 => intro i; simp only [map_pow]
   -- This closes both remaining goals at once.
   exact pow_eq_zero_of_le (hfnleN i) (hfn i)
@@ -518,7 +503,7 @@ theorem affineBasisCover_is_basis (X : Scheme.{u}) :
         ((X.affineCover.map (X.affineCover.f a)).1.base.continuous_toFun.isOpen_preimage _
           hU) with
       ⟨_, ⟨_, ⟨s, rfl⟩, rfl⟩, hxV, hVU⟩
-    refine ⟨_, ⟨⟨_, s⟩, rfl⟩, ?_, ?_⟩ <;> erw [affineBasisCover_map_range]
+    refine ⟨_, ⟨⟨_, s⟩, rfl⟩, ?_, ?_⟩ <;> rw [affineBasisCover_map_range]
     · exact ⟨x, hxV, e⟩
     · rw [Set.image_subset_iff]; exact hVU
 

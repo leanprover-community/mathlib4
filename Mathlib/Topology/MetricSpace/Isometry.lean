@@ -28,7 +28,7 @@ open Function Set
 open scoped Topology ENNReal
 
 /-- An isometry (also known as isometric embedding) is a map preserving the edistance
-between pseudoemetric spaces, or equivalently the distance between pseudometric space.  -/
+between pseudoemetric spaces, or equivalently the distance between pseudometric space. -/
 def Isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] (f : α → β) : Prop :=
   ∀ x1 x2 : α, edist (f x1) (f x2) = edist x1 x2
 
@@ -84,10 +84,12 @@ theorem prod_map {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (h
     (hg : Isometry g) : Isometry (Prod.map f g) := fun x y => by
   simp only [Prod.edist_eq, Prod.map_fst, hf.edist_eq, Prod.map_snd, hg.edist_eq]
 
-theorem _root_.isometry_dcomp {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
+protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
-    Isometry (fun g : (i : ι) → α i => fun i => f i (g i)) := fun x y => by
-  simp only [edist_pi_def, (hf _).edist_eq]
+    Isometry (Pi.map f) := fun x y => by
+  simp only [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
+
+@[deprecated (since := "2024-10-06")] alias _root_.isometry_dcomp := Isometry.piMap
 
 /-- The composition of isometries is an isometry. -/
 theorem comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f) : Isometry (g ∘ f) :=
@@ -98,12 +100,15 @@ protected theorem uniformContinuous (hf : Isometry f) : UniformContinuous f :=
   hf.lipschitz.uniformContinuous
 
 /-- An isometry from a metric space is a uniform inducing map -/
-protected theorem uniformInducing (hf : Isometry f) : UniformInducing f :=
-  hf.antilipschitz.uniformInducing hf.uniformContinuous
+theorem isUniformInducing (hf : Isometry f) : IsUniformInducing f :=
+  hf.antilipschitz.isUniformInducing hf.uniformContinuous
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing := isUniformInducing
 
 theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
     (hf : Isometry f) : Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto (f ∘ g) a (𝓝 (f b)) :=
-  hf.uniformInducing.inducing.tendsto_nhds_iff
+  hf.isUniformInducing.inducing.tendsto_nhds_iff
 
 /-- An isometry is continuous. -/
 protected theorem continuous (hf : Isometry f) : Continuous f :=
@@ -144,11 +149,11 @@ theorem _root_.isometry_subtype_coe {s : Set α} : Isometry ((↑) : s → α) :
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} {s : Set γ} :
     ContinuousOn (f ∘ g) s ↔ ContinuousOn g s :=
-  hf.uniformInducing.inducing.continuousOn_iff.symm
+  hf.isUniformInducing.inducing.continuousOn_iff.symm
 
 theorem comp_continuous_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} :
     Continuous (f ∘ g) ↔ Continuous g :=
-  hf.uniformInducing.inducing.continuous_iff.symm
+  hf.isUniformInducing.inducing.continuous_iff.symm
 
 end PseudoEmetricIsometry
 
@@ -162,12 +167,14 @@ protected theorem injective (h : Isometry f) : Injective f :=
   h.antilipschitz.injective
 
 /-- An isometry from an emetric space is a uniform embedding -/
-protected theorem uniformEmbedding (hf : Isometry f) : UniformEmbedding f :=
-  hf.antilipschitz.uniformEmbedding hf.lipschitz.uniformContinuous
+lemma isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
+  hf.antilipschitz.isUniformEmbedding hf.lipschitz.uniformContinuous
+
+@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 /-- An isometry from an emetric space is an embedding -/
 protected theorem embedding (hf : Isometry f) : Embedding f :=
-  hf.uniformEmbedding.embedding
+  hf.isUniformEmbedding.embedding
 
 /-- An isometry from a complete emetric space is a closed embedding -/
 theorem closedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
@@ -226,10 +233,13 @@ end Isometry
 -- namespace
 /-- A uniform embedding from a uniform space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
-theorem UniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β] {f : α → β}
-    (h : UniformEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
+theorem IsUniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β] {f : α → β}
+    (h : IsUniformEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
+
+@[deprecated (since := "2024-10-01")]
+alias UniformEmbedding.to_isometry := IsUniformEmbedding.to_isometry
 
 /-- An embedding from a topological space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
@@ -448,10 +458,10 @@ instance : Group (α ≃ᵢ α) where
   one := IsometryEquiv.refl _
   mul e₁ e₂ := e₂.trans e₁
   inv := IsometryEquiv.symm
-  mul_assoc e₁ e₂ e₃ := rfl
-  one_mul e := ext fun _ => rfl
-  mul_one e := ext fun _ => rfl
-  mul_left_inv e := ext e.symm_apply_apply
+  mul_assoc _ _ _ := rfl
+  one_mul _ := ext fun _ => rfl
+  mul_one _ := ext fun _ => rfl
+  inv_mul_cancel e := ext e.symm_apply_apply
 
 @[simp] theorem coe_one : ⇑(1 : α ≃ᵢ α) = id := rfl
 
@@ -465,7 +475,7 @@ theorem mul_apply (e₁ e₂ : α ≃ᵢ α) (x : α) : (e₁ * e₂) x = e₁ (
 
 theorem completeSpace_iff (e : α ≃ᵢ β) : CompleteSpace α ↔ CompleteSpace β := by
   simp only [completeSpace_iff_isComplete_univ, ← e.range_eq_univ, ← image_univ,
-    isComplete_image_iff e.isometry.uniformInducing]
+    isComplete_image_iff e.isometry.isUniformInducing]
 
 protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : CompleteSpace α :=
   e.completeSpace_iff.2 ‹_›
@@ -498,6 +508,7 @@ theorem diam_image (s : Set α) : Metric.diam (h '' s) = Metric.diam s :=
 theorem diam_preimage (s : Set β) : Metric.diam (h ⁻¹' s) = Metric.diam s := by
   rw [← image_symm, diam_image]
 
+include h in
 theorem diam_univ : Metric.diam (univ : Set α) = Metric.diam (univ : Set β) :=
   congr_arg ENNReal.toReal h.ediam_univ
 

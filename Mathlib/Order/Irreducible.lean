@@ -185,7 +185,7 @@ variable [WellFoundedGT α]
 elements. This is the order-theoretic analogue of prime factorisation. -/
 theorem exists_infIrred_decomposition (a : α) :
     ∃ s : Finset α, s.inf id = a ∧ ∀ ⦃b⦄, b ∈ s → InfIrred b :=
-  @exists_supIrred_decomposition αᵒᵈ _ _ _ _
+  exists_supIrred_decomposition (α := αᵒᵈ) _
 
 end SemilatticeInf
 
@@ -251,7 +251,7 @@ end SemilatticeInf
 
 section DistribLattice
 
-variable [DistribLattice α] {a b c : α}
+variable [DistribLattice α] {a : α}
 
 @[simp]
 theorem supPrime_iff_supIrred : SupPrime a ↔ SupIrred a :=

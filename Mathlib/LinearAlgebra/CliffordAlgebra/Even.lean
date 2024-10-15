@@ -125,7 +125,7 @@ variable {Q}
 namespace even.lift
 
 /-- An auxiliary submodule used to store the half-applied values of `f`.
-This is the span of elements `f'` such that `∃ x m₂, ∀ m₁, f' m₁ = f m₁ m₂ * x`.  -/
+This is the span of elements `f'` such that `∃ x m₂, ∀ m₁, f' m₁ = f m₁ m₂ * x`. -/
 private def S : Submodule R (M →ₗ[R] A) :=
   Submodule.span R
     {f' | ∃ x m₂, f' = LinearMap.lcomp R _ (f.bilin.flip m₂) (LinearMap.mulRight R x)}
@@ -157,8 +157,8 @@ private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
           LinearMap.ext fun m₃ =>
             show f.bilin m₃ (c • m) * a.1 = c • (f.bilin m₃ m * a.1) by
               rw [LinearMap.map_smul, smul_mul_assoc]))
-    (fun m a₁ a₂ => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun m₃ => mul_add _ _ _))
-    fun c m a => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun m₃ => mul_smul_comm _ _ _)
+    (fun _ _ _ => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun _ => mul_add _ _ _))
+    fun _ _ _ => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun _ => mul_smul_comm _ _ _)
 
 @[simp]
 private theorem fst_fFold_fFold (m₁ m₂ : M) (x : A × S f) :
@@ -245,8 +245,8 @@ multiplication. -/
 def even.lift : EvenHom Q A ≃ (CliffordAlgebra.even Q →ₐ[R] A) where
   toFun f := AlgHom.ofLinearMap (aux f) (aux_one f) (aux_mul f)
   invFun F := (even.ι Q).compr₂ F
-  left_inv f := EvenHom.ext _ _ <| LinearMap.ext₂ <| even.lift.aux_ι f
-  right_inv _ := even.algHom_ext Q <| EvenHom.ext _ _ <| LinearMap.ext₂ <| even.lift.aux_ι _
+  left_inv f := EvenHom.ext <| LinearMap.ext₂ <| even.lift.aux_ι f
+  right_inv _ := even.algHom_ext Q <| EvenHom.ext <| LinearMap.ext₂ <| even.lift.aux_ι _
 
 -- @[simp] -- Porting note: simpNF linter times out on this one
 theorem even.lift_ι (f : EvenHom Q A) (m₁ m₂ : M) :

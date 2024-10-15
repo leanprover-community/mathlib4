@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.NormedSpace.FiniteDimension
-
-
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Higher differentiability in finite dimensions.
@@ -26,7 +24,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddC
 
 section FiniteDimensional
 
-open Function FiniteDimensional
+open Function Module
 
 variable [CompleteSpace 𝕜]
 

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Exact
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.RingTheory.Localization.Defs
 
 /-!
 # Localized Module
@@ -59,7 +60,7 @@ theorem r.isEquiv : IsEquiv _ (r S M) :=
       have hu2' := congr_arg ((u1 * s1) • ·) hu2.symm
       simp only [← mul_smul, smul_assoc, mul_assoc, mul_comm, mul_left_comm] at hu1' hu2' ⊢
       rw [hu2', hu1']
-    symm := fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => ⟨u, hu.symm⟩ }
+    symm := fun ⟨_, _⟩ ⟨_, _⟩ ⟨u, hu⟩ => ⟨u, hu.symm⟩ }
 
 instance r.setoid : Setoid (M × S) where
   r := r S M
@@ -208,7 +209,7 @@ instance {M : Type*} [AddCommGroup M] [Module R M] : Neg (LocalizedModule S M) w
 
 instance {M : Type*} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModule S M) :=
   { show AddCommMonoid (LocalizedModule S M) by infer_instance with
-    add_left_neg := by
+    neg_add_cancel := by
       rintro ⟨m, s⟩
       change
         (liftOn (mk m s) (fun x => mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by
@@ -402,6 +403,29 @@ noncomputable instance isModule' : Module R (LocalizedModule S M) :=
 theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
   erw [mk_smul_mk r m 1 s, one_mul]
 
+lemma smul_eq_iff_of_mem
+    (r : R) (hr : r ∈ S) (x y : LocalizedModule S M) :
+    r • x = y ↔ x = Localization.mk 1 ⟨r, hr⟩ • y := by
+  induction x using induction_on with
+  | h m s =>
+    induction y using induction_on with
+    | h n t =>
+      rw [smul'_mk, mk_smul_mk, one_smul, mk_eq, mk_eq]
+      simp only [Subtype.exists, Submonoid.mk_smul, exists_prop]
+      fconstructor
+      · rintro ⟨a, ha, eq1⟩
+        refine ⟨a, ha, ?_⟩
+        rw [mul_smul, ← eq1, Submonoid.mk_smul, smul_comm r t]
+      · rintro ⟨a, ha, eq1⟩
+        refine ⟨a, ha, ?_⟩
+        rw [← eq1, mul_comm, mul_smul, Submonoid.mk_smul]
+        rfl
+
+lemma eq_zero_of_smul_eq_zero
+    (r : R) (hr : r ∈ S) (x : LocalizedModule S M) (hx : r • x = 0) : x = 0 := by
+  rw [smul_eq_iff_of_mem (hr := hr)] at hx
+  rw [hx, smul_zero]
+
 theorem smul'_mul {A : Type*} [Semiring A] [Algebra R A] (x : T) (p₁ p₂ : LocalizedModule S A) :
     x • p₁ * p₂ = x • (p₁ * p₂) := by
   induction p₁, p₂ using induction_on₂ with | _ a₁ s₁ a₂ s₂ => _
@@ -461,7 +485,7 @@ variable (S M)
 def mkLinearMap : M →ₗ[R] LocalizedModule S M where
   toFun m := mk m 1
   map_add' x y := by simp [mk_add_mk]
-  map_smul' r x := (smul'_mk _ _ _).symm
+  map_smul' _ _ := (smul'_mk _ _ _).symm
 
 end
 
@@ -605,7 +629,7 @@ noncomputable def lift' (g : M →ₗ[R] M'')
       simp only [Submonoid.smul_def, ← g.map_smul, eq1]
     have : Function.Injective (h c).unit.inv := ((Module.End_isUnit_iff _).1 (by simp)).1
     apply_fun (h c).unit.inv
-    erw [Units.inv_eq_val_inv, Module.End_algebraMap_isUnit_inv_apply_eq_iff, ←
+    rw [Units.inv_eq_val_inv, Module.End_algebraMap_isUnit_inv_apply_eq_iff, ←
       (h c).unit⁻¹.val.map_smul]
     symm
     rw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, ← g.map_smul, ← g.map_smul, ← g.map_smul, ←
@@ -625,13 +649,13 @@ theorem lift'_add (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (M
       intro a a' b b'
       erw [LocalizedModule.lift'_mk, LocalizedModule.lift'_mk, LocalizedModule.lift'_mk]
       -- Porting note: We remove `generalize_proofs h1 h2 h3`. This only generalize `h1`.
-      erw [map_add, Module.End_algebraMap_isUnit_inv_apply_eq_iff, smul_add, ← map_smul,
+      rw [map_add, Module.End_algebraMap_isUnit_inv_apply_eq_iff, smul_add, ← map_smul,
         ← map_smul, ← map_smul]
       congr 1 <;> symm
       · erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, mul_smul, ← map_smul]
         rfl
       · dsimp
-        erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, mul_comm, mul_smul, ← map_smul]
+        rw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, mul_comm, mul_smul, ← map_smul]
         rfl)
     x y
 
@@ -884,9 +908,11 @@ noncomputable def linearEquiv [IsLocalizedModule S g] : M' ≃ₗ[R] M'' :=
 
 variable {S}
 
+include f in
 theorem smul_injective (s : S) : Function.Injective fun m : M' => s • m :=
   ((Module.End_isUnit_iff _).mp (IsLocalizedModule.map_units f s)).injective
 
+include f in
 theorem smul_inj (s : S) (m₁ m₂ : M') : s • m₁ = s • m₂ ↔ m₁ = m₂ :=
   (smul_injective f s).eq_iff
 
@@ -1155,3 +1181,33 @@ end Algebra
 end IsLocalizedModule
 
 end IsLocalizedModule
+
+section Subsingleton
+
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+
+lemma LocalizedModule.mem_ker_mkLinearMap_iff {S : Submonoid R} {m} :
+    m ∈ LinearMap.ker (LocalizedModule.mkLinearMap S M) ↔ ∃ r ∈ S, r • m = 0 := by
+  constructor
+  · intro H
+    obtain ⟨r, hr⟩ := (@LocalizedModule.mk_eq _ _ S M _ _ m 0 1 1).mp (by simpa using H)
+    exact ⟨r, r.2, by simpa using hr⟩
+  · rintro ⟨r, hr, e⟩
+    apply ((Module.End_isUnit_iff _).mp
+      (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap S M) ⟨r, hr⟩)).injective
+    simp [← IsLocalizedModule.mk_eq_mk', LocalizedModule.smul'_mk, e]
+
+lemma LocalizedModule.subsingleton_iff_ker_eq_top {S : Submonoid R} :
+    Subsingleton (LocalizedModule S M) ↔
+      LinearMap.ker (LocalizedModule.mkLinearMap S M) = ⊤ := by
+  rw [← top_le_iff]
+  refine ⟨fun H m _ ↦ Subsingleton.elim _ _, fun H ↦ (subsingleton_iff_forall_eq 0).mpr fun x ↦ ?_⟩
+  obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M) x
+  simpa using @H x trivial
+
+lemma LocalizedModule.subsingleton_iff {S : Submonoid R} :
+    Subsingleton (LocalizedModule S M) ↔ ∀ m : M, ∃ r ∈ S, r • m = 0 := by
+  simp_rw [subsingleton_iff_ker_eq_top, ← top_le_iff, SetLike.le_def,
+    mem_ker_mkLinearMap_iff, Submodule.mem_top, true_implies]
+
+end Subsingleton

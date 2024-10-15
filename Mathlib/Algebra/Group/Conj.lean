@@ -12,8 +12,7 @@ import Mathlib.Algebra.Group.Semiconj.Units
 See also `MulAut.conj` and `Quandle.conj`.
 -/
 
--- TODO: After #13027,
--- assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero
 assert_not_exists Multiset
 
 universe u v
@@ -63,7 +62,7 @@ variable [CancelMonoid α]
 -- not generalised.
 @[simp]
 theorem isConj_one_right {a : α} : IsConj 1 a ↔ a = 1 :=
-  ⟨fun ⟨c, hc⟩ => mul_right_cancel (hc.symm.trans ((mul_one _).trans (one_mul _).symm)), fun h => by
+  ⟨fun ⟨_, hc⟩ => mul_right_cancel (hc.symm.trans ((mul_one _).trans (one_mul _).symm)), fun h => by
     rw [h]⟩
 
 @[simp]
@@ -81,16 +80,16 @@ variable [Group α]
 @[simp]
 theorem isConj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
   ⟨fun ⟨c, hc⟩ => ⟨c, mul_inv_eq_iff_eq_mul.2 hc⟩, fun ⟨c, hc⟩ =>
-    ⟨⟨c, c⁻¹, mul_inv_self c, inv_mul_self c⟩, mul_inv_eq_iff_eq_mul.1 hc⟩⟩
+    ⟨⟨c, c⁻¹, mul_inv_cancel c, inv_mul_cancel c⟩, mul_inv_eq_iff_eq_mul.1 hc⟩⟩
 
 -- Porting note: not in simp NF.
 -- @[simp]
 theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ :=
-  ((MulAut.conj b).map_inv a).symm
+  (map_inv (MulAut.conj b) a).symm
 
 @[simp]
 theorem conj_mul {a b c : α} : b * a * b⁻¹ * (b * c * b⁻¹) = b * (a * c) * b⁻¹ :=
-  ((MulAut.conj b).map_mul a c).symm
+  (map_mul (MulAut.conj b) a c).symm
 
 @[simp]
 theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
@@ -100,7 +99,7 @@ theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻�
 
 @[simp]
 theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
-  induction' i
+  induction i
   · change (a * b * a⁻¹) ^ (_ : ℤ) = a * b ^ (_ : ℤ) * a⁻¹
     simp [zpow_natCast]
   · simp only [zpow_negSucc, conj_pow, mul_inv_rev, inv_inv]
@@ -223,7 +222,7 @@ theorem mk_bijective : Function.Bijective (@ConjClasses.mk α _) :=
 
 /-- The bijection between a `CommGroup` and its `ConjClasses`. -/
 def mkEquiv : α ≃ ConjClasses α :=
-  ⟨ConjClasses.mk, Quotient.lift id fun (a : α) b => isConj_iff_eq.1, Quotient.lift_mk _ _, by
+  ⟨ConjClasses.mk, Quotient.lift id fun (_ : α) _ => isConj_iff_eq.1, Quotient.lift_mk _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_isConj]
     intro x
     rw [← quotient_mk_eq_mk, ← quotient_mk_eq_mk, Quotient.lift_mk, id]⟩

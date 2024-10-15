@@ -39,10 +39,10 @@ variable (X : LocallyRingedSpace.{u}) {U : Opens X}
 /-- The residue field of `X` at a point `x` is the residue field of the stalk of `X`
 at `x`. -/
 def residueField (x : X) : CommRingCat :=
-  CommRingCat.of <| LocalRing.ResidueField (X.stalk x)
+  CommRingCat.of <| LocalRing.ResidueField (X.presheaf.stalk x)
 
 instance (x : X) : Field (X.residueField x) :=
-  inferInstanceAs <| Field (LocalRing.ResidueField (X.stalk x))
+  inferInstanceAs <| Field (LocalRing.ResidueField (X.presheaf.stalk x))
 
 /--
 If `U` is an open of `X` containing `x`, we have a canonical ring map from the sections
@@ -52,7 +52,7 @@ If we interpret sections over `U` as functions of `X` defined on `U`, then this 
 corresponds to evaluation at `x`.
 -/
 def evaluation (x : U) : X.presheaf.obj (op U) ⟶ X.residueField x :=
-  X.presheaf.germ x ≫ LocalRing.residue _
+  X.presheaf.germ U x.1 x.2 ≫ LocalRing.residue _
 
 /-- The global evaluation map from `Γ(X, ⊤)` to the residue field at `x`. -/
 def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
@@ -61,7 +61,7 @@ def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
 @[simp]
 lemma evaluation_eq_zero_iff_not_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f = 0 ↔ x.val ∉ X.toRingedSpace.basicOpen f := by
-  rw [X.toRingedSpace.mem_basicOpen f x, ← not_iff_not, not_not]
+  rw [X.toRingedSpace.mem_basicOpen f x.1 x.2, ← not_iff_not, not_not]
   exact (LocalRing.residue_ne_zero_iff_isUnit _)
 
 lemma evaluation_ne_zero_iff_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
@@ -77,36 +77,41 @@ lemma Γevaluation_ne_zero_iff_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤
     X.Γevaluation x f ≠ 0 ↔ x ∈ X.toRingedSpace.basicOpen f :=
   evaluation_ne_zero_iff_mem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f
 
-variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y)
+variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X)
+
+-- TODO: This instance is found before #6045.
+-- We need this strange instance for `residueFieldMap`, the type of `F` must be fixed
+-- like this. The instance `IsLocalRingHom (f.stalkMap x)` already exists, but does not work for
+-- `residueFieldMap`.
+instance : IsLocalRingHom (F := Y.presheaf.stalk (f.val.base x) →+* X.presheaf.stalk x)
+    (f.stalkMap x) :=
+  f.2 x
 
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
 def residueFieldMap (x : X) : Y.residueField (f.val.base x) ⟶ X.residueField x :=
-  LocalRing.ResidueField.map (LocallyRingedSpace.stalkMap f x)
+  LocalRing.ResidueField.map (f.stalkMap x)
 
 lemma residue_comp_residueFieldMap_eq_stalkMap_comp_residue (x : X) :
-    LocalRing.residue _ ≫ residueFieldMap f x = stalkMap f x ≫ LocalRing.residue _ := by
+    LocalRing.residue _ ≫ residueFieldMap f x = f.stalkMap x ≫ LocalRing.residue _ := by
   simp [residueFieldMap]
   rfl
 
 @[simp]
 lemma residueFieldMap_id (x : X) :
     residueFieldMap (𝟙 X) x = 𝟙 (X.residueField x) := by
-  simp only [id_val', SheafedSpace.id_base, TopCat.coe_id, id_eq, residueFieldMap, stalkMap]
-  have : PresheafedSpace.stalkMap (𝟙 X.toSheafedSpace) x = 𝟙 (X.stalk x) :=
-    PresheafedSpace.stalkMap.id _ _
-  simp_rw [this]
+  simp only [id_val', SheafedSpace.id_base, TopCat.coe_id, id_eq, residueFieldMap, stalkMap_id]
   apply LocalRing.ResidueField.map_id
 
 @[simp]
 lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
     residueFieldMap (f ≫ g) x = residueFieldMap g (f.val.base x) ≫ residueFieldMap f x := by
-  simp only [comp_val, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap, stalkMap]
-  convert_to LocalRing.ResidueField.map
-      (PresheafedSpace.stalkMap g.val (f.val.base x) ≫ PresheafedSpace.stalkMap f.val x) = _
-  · congr
-    apply PresheafedSpace.stalkMap.comp
-  · apply LocalRing.ResidueField.map_comp
+  simp only [comp_val, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap]
+  simp_rw [stalkMap_comp]
+  haveI : IsLocalRingHom (g.stalkMap (f.val.base x)) := inferInstance
+  -- TODO: This instance is found before #6045.
+  haveI : IsLocalRingHom (f.stalkMap x) := inferInstance
+  apply LocalRing.ResidueField.map_comp
 
 @[reassoc]
 lemma evaluation_naturality {V : Opens Y} (x : (Opens.map f.1.base).obj V) :
@@ -117,7 +122,7 @@ lemma evaluation_naturality {V : Opens Y} (x : (Opens.map f.1.base).obj V) :
   rw [Category.assoc]
   ext a
   simp only [comp_apply]
-  erw [LocalRing.ResidueField.map_residue, PresheafedSpace.stalkMap_germ'_apply]
+  erw [LocalRing.ResidueField.map_residue, PresheafedSpace.stalkMap_germ_apply]
   rfl
 
 lemma evaluation_naturality_apply {V : Opens Y} (x : (Opens.map f.1.base).obj V)

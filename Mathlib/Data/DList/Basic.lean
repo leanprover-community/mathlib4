@@ -6,7 +6,6 @@ Authors: Simon Hudon
 import Mathlib.Data.DList.Defs
 import Mathlib.Tactic.TypeStar
 
-
 /-!
 # Difference list
 

@@ -3,7 +3,6 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Tactic
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
@@ -13,7 +12,7 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 open MeasureTheory TopologicalSpace
 
-variable {α β : Type _} [MeasurableSpace α] [MeasurableSpace β]
+variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
   {f g : α → β} {s₁ s₂ : Set α} {t₁ t₂ : Set β} {μ ν : MeasureTheory.Measure α}
 
 set_option linter.unusedVariables false
@@ -83,7 +82,7 @@ example [Div β] [MeasurableDiv₂ β] (hf : Measurable f) (hg : Measurable g)
 
 example [AddCommMonoid β] [MeasurableAdd₂ β] {s : Finset ℕ} {F : ℕ → α → β}
     (hF : ∀ i, Measurable (F i)) : Measurable (∑ i ∈ s, (fun x => F (i+1) x + F i x)) := by
-  measurability
+  fun_prop
 
 example [AddCommMonoid β] [MeasurableAdd₂ β] {s : Finset ℕ} {F : ℕ → α → β}
     (hF : ∀ i, AEMeasurable (F i) μ) : AEMeasurable (∑ i ∈ s, (fun x => F (i+1) x + F i x)) μ := by

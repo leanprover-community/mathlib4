@@ -121,7 +121,7 @@ noncomputable def invRotateInvRotateInvRotateIso :
       (by aesop_cat)
       (by
         dsimp [shiftFunctorCompIsoId]
-        simp [shiftFunctorComm_eq C _ _ _ (add_neg_self (1 : ℤ))]))
+        simp [shiftFunctorComm_eq C _ _ _ (add_neg_cancel (1 : ℤ))]))
     (by aesop_cat)
 
 /-- The inverse of the rotation of triangles can be expressed using a double
@@ -133,7 +133,7 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
     _ ≅ invRotate C ⋙ Triangle.shiftFunctor C 0 :=
           isoWhiskerLeft _ (Triangle.shiftFunctorZero C).symm
     _ ≅ invRotate C ⋙ Triangle.shiftFunctor C 1 ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerLeft _ (Triangle.shiftFunctorAdd' C 1 (-1) 0 (add_neg_self 1))
+          isoWhiskerLeft _ (Triangle.shiftFunctorAdd' C 1 (-1) 0 (add_neg_cancel 1))
     _ ≅ invRotate C ⋙ (rotate C ⋙ rotate C ⋙ rotate C) ⋙ Triangle.shiftFunctor C (-1) :=
           isoWhiskerLeft _ (isoWhiskerRight (rotateRotateRotateIso C).symm _)
     _ ≅ (invRotate C ⋙ rotate C) ⋙ rotate C ⋙ rotate C ⋙ Triangle.shiftFunctor C (-1) :=

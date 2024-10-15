@@ -38,16 +38,14 @@ variable {C : Type*} [Category C] [Preadditive C]
 section Pushout
 
 variable {f : X₁ ⟶ X₂} {g : X₁ ⟶ X₃} {inl : X₂ ⟶ X₄} {inr : X₃ ⟶ X₄}
-  (sq : CommSq f g inl inr)
-
 /-- The cokernel cofork attached to a commutative square in a preadditive category. -/
-noncomputable abbrev CommSq.cokernelCofork  :
+noncomputable abbrev CommSq.cokernelCofork (sq : CommSq f g inl inr) :
     CokernelCofork (biprod.lift f (-g)) :=
   CokernelCofork.ofπ (biprod.desc inl inr) (by simp [sq.w])
 
 /-- A commutative square in a preadditive category is a pushout square iff
 the corresponding diagram `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₄` a cokernel. -/
-noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork :
+noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g inl inr) :
     IsColimit (PushoutCocone.mk _ _ sq.w) ≃ IsColimit sq.cokernelCofork where
   toFun h :=
     Cofork.IsColimit.mk _
@@ -104,16 +102,15 @@ end Pushout
 section Pullback
 
 variable {fst : X₁ ⟶ X₂} {snd : X₁ ⟶ X₃} {f : X₂ ⟶ X₄} {g : X₃ ⟶ X₄}
-  (sq : CommSq fst snd f g)
 
 /-- The kernel fork attached to a commutative square in a preadditive category. -/
-noncomputable abbrev CommSq.kernelFork  :
+noncomputable abbrev CommSq.kernelFork (sq : CommSq fst snd f g) :
     KernelFork (biprod.desc f (-g)) :=
   KernelFork.ofι (biprod.lift fst snd) (by simp [sq.w])
 
 /-- A commutative square in a preadditive category is a pullback square iff
 the corresponding diagram `0 ⟶ X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₁` a kernel. -/
-noncomputable def CommSq.isLimitEquivIsLimitKernelFork :
+noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g) :
     IsLimit (PullbackCone.mk _ _ sq.w) ≃ IsLimit sq.kernelFork where
   toFun h :=
     Fork.IsLimit.mk _

@@ -329,7 +329,7 @@ theorem indefiniteDiagonal_assoc :
       Sum.elim_inl, if_true, eq_self_iff_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,
       DMatrix.zero_apply, Equiv.sumAssoc_apply_inl_inr, if_false, Matrix.fromBlocks_apply₁₂,
       Matrix.fromBlocks_apply₂₁, Matrix.fromBlocks_apply₂₂, Equiv.sumAssoc_apply_inr,
-      Sum.elim_inr, Sum.inl_injective.eq_iff, Sum.inr_injective.eq_iff] <;>
+      Sum.elim_inr, Sum.inl_injective.eq_iff, Sum.inr_injective.eq_iff, reduceCtorEq] <;>
     congr 1
 
 /-- An equivalence between two possible definitions of the classical Lie algebra of type B. -/
@@ -337,8 +337,9 @@ noncomputable def typeBEquivSo' [Invertible (2 : R)] : typeB l R ≃ₗ⁅R⁆ s
   apply (skewAdjointMatricesLieSubalgebraEquiv (JB l R) (PB l R) (by infer_instance)).trans
   symm
   apply
-    (skewAdjointMatricesLieSubalgebraEquivTranspose (indefiniteDiagonal (Unit ⊕ l) l R)
-        (Matrix.reindexAlgEquiv _ (Equiv.sumAssoc PUnit l l)) (Matrix.transpose_reindex _ _)).trans
+    (skewAdjointMatricesLieSubalgebraEquivTranspose (indefiniteDiagonal (Sum Unit l) l R)
+        (Matrix.reindexAlgEquiv _ _ (Equiv.sumAssoc PUnit l l))
+        (Matrix.transpose_reindex _ _)).trans
   apply LieEquiv.ofEq
   ext A
   rw [jb_transform, ← val_unitOfInvertible (2 : R), ← Units.smul_def, LieSubalgebra.mem_coe,

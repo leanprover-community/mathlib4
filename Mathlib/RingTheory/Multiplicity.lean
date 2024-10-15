@@ -199,7 +199,7 @@ theorem exists_eq_pow_mul_and_not_dvd {a b : α} (hfin : Finite a b) :
 
 theorem multiplicity_le_multiplicity_iff {a b : α} {c d : β} :
     multiplicity a b ≤ multiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b → c ^ n ∣ d :=
-  ⟨fun h n hab => pow_dvd_of_le_multiplicity (le_trans (le_multiplicity_of_pow_dvd hab) h), fun h =>
+  ⟨fun h _ hab => pow_dvd_of_le_multiplicity (le_trans (le_multiplicity_of_pow_dvd hab) h), fun h =>
     letI := Classical.dec (Finite a b)
     if hab : Finite a b then by
       rw [← PartENat.natCast_get (finite_iff_dom.1 hab)]
@@ -506,7 +506,7 @@ protected theorem mul' {p a b : α} (hp : Prime p) (h : (multiplicity p (a * b))
             1) ∣
         a * b :=
     fun h =>
-    not_or_of_not (is_greatest' _ (lt_succ_self _)) (is_greatest' _ (lt_succ_self _))
+    not_or_intro (is_greatest' _ (lt_succ_self _)) (is_greatest' _ (lt_succ_self _))
       (_root_.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul hp hdiva hdivb h)
   rw [← PartENat.natCast_inj, PartENat.natCast_get, eq_coe_iff]; exact ⟨hdiv, hsucc⟩
 
@@ -529,8 +529,7 @@ theorem Finset.prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β
     induction' s using Finset.induction with a s has ih h
     · simp only [Finset.sum_empty, Finset.prod_empty]
       convert one_right hp.not_unit
-    · simp [has, ← ih]
-      convert multiplicity.mul hp
+    · simpa [has, ← ih] using multiplicity.mul hp
 
 -- Porting note: with protected could not use pow' k in the succ branch
 protected theorem pow' {p a : α} (hp : Prime p) (ha : Finite p a) :

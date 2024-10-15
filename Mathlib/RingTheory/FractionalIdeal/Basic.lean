@@ -84,7 +84,7 @@ namespace FractionalIdeal
 open Set Submodule
 
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
-variable [Algebra R P] [loc : IsLocalization S P]
+variable [Algebra R P]
 
 /-- Map a fractional ideal `I` to a submodule by forgetting that `∃ a, a I ⊆ R`.
 
@@ -289,14 +289,14 @@ theorem coe_zero : ↑(0 : FractionalIdeal S P) = (⊥ : Submodule R P) :=
 theorem coeIdeal_bot : ((⊥ : Ideal R) : FractionalIdeal S P) = 0 :=
   rfl
 
-variable (P)
+section
+variable [loc : IsLocalization S P]
 
+variable (P) in
 @[simp]
 theorem exists_mem_algebraMap_eq {x : R} {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
     (∃ x', x' ∈ I ∧ algebraMap R P x' = algebraMap R P x) ↔ x ∈ I :=
   ⟨fun ⟨_, hx', Eq⟩ => IsLocalization.injective _ h Eq ▸ hx', fun h => ⟨x, h, rfl⟩⟩
-
-variable {P}
 
 theorem coeIdeal_injective' (h : S ≤ nonZeroDivisors R) :
     Function.Injective (fun (I : Ideal R) ↦ (I : FractionalIdeal S P)) := fun _ _ h' =>
@@ -315,6 +315,8 @@ theorem coeIdeal_eq_zero' {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
 theorem coeIdeal_ne_zero' {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
     (I : FractionalIdeal S P) ≠ 0 ↔ I ≠ (⊥ : Ideal R) :=
   not_iff_not.mpr <| coeIdeal_eq_zero' h
+
+end
 
 theorem coeToSubmodule_eq_bot {I : FractionalIdeal S P} : (I : Submodule R P) = ⊥ ↔ I = 0 :=
   ⟨fun h => coeToSubmodule_injective (by simp [h]), fun h => by simp [h]⟩
@@ -459,6 +461,10 @@ theorem sup_eq_add (I J : FractionalIdeal S P) : I ⊔ J = I + J :=
 @[simp, norm_cast]
 theorem coe_add (I J : FractionalIdeal S P) : (↑(I + J) : Submodule R P) = I + J :=
   rfl
+
+theorem mem_add (I J : FractionalIdeal S P) (x : P) :
+    x ∈ I + J ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = x := by
+  rw [← mem_coe, coe_add, Submodule.add_eq_sup]; exact Submodule.mem_sup
 
 @[simp, norm_cast]
 theorem coeIdeal_sup (I J : Ideal R) : ↑(I ⊔ J) = (I + J : FractionalIdeal S P) :=

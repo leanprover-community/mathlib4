@@ -129,7 +129,7 @@ theorem le_of_tendsto {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
 
 theorem le_of_tendsto' {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ c, f c ≤ b) : a ≤ b :=
-  le_of_tendsto lim (eventually_of_forall h)
+  le_of_tendsto lim (Eventually.of_forall h)
 
 @[simp] lemma upperBounds_closure (s : Set α) : upperBounds (closure s : Set α) = upperBounds s :=
   ext fun a ↦ by simp_rw [mem_upperBounds_iff_subset_Iic, isClosed_Iic.closure_subset_iff]
@@ -352,7 +352,7 @@ theorem ge_of_tendsto {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
 
 theorem ge_of_tendsto' {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ c, b ≤ f c) : b ≤ a :=
-  ge_of_tendsto lim (eventually_of_forall h)
+  ge_of_tendsto lim (Eventually.of_forall h)
 
 @[simp] lemma lowerBounds_closure (s : Set α) : lowerBounds (closure s : Set α) = lowerBounds s :=
   ext fun a ↦ by simp_rw [mem_lowerBounds_iff_subset_Ici, isClosed_Ici.closure_subset_iff]
@@ -543,7 +543,7 @@ namespace Subtype
 -- todo: add `OrderEmbedding.orderClosedTopology`
 instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
   have this : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
-    continuous_subtype_val.prod_map continuous_subtype_val
+    continuous_subtype_val.prodMap continuous_subtype_val
   OrderClosedTopology.mk (t.isClosed_le'.preimage this)
 
 end Subtype
@@ -580,7 +580,7 @@ alias tendsto_le_of_eventuallyLE := le_of_tendsto_of_tendsto
 
 theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∀ x, f x ≤ g x) : a₁ ≤ a₂ :=
-  le_of_tendsto_of_tendsto hf hg (eventually_of_forall h)
+  le_of_tendsto_of_tendsto hf hg (Eventually.of_forall h)
 
 @[simp]
 theorem closure_le_eq [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :

@@ -23,9 +23,9 @@ However many of the results here really belong in `Algebra.BigOperators.Group.Fi
 and should be moved at some point.
 -/
 
-open Mathlib
-
 assert_not_exists MulAction
+
+open Mathlib
 
 universe u v
 
@@ -101,21 +101,34 @@ end
 open Finset
 
 section Pi
-variable {ι κ : Type*} {α : ι → Type*} [DecidableEq ι] [DecidableEq κ] [Fintype ι]
-  [∀ i, DecidableEq (α i)]
+variable {ι κ : Type*} {α : ι → Type*} [DecidableEq ι] [DecidableEq κ]
 
 @[simp] lemma Finset.card_pi (s : Finset ι) (t : ∀ i, Finset (α i)) :
     (s.pi t).card = ∏ i ∈ s, card (t i) := Multiset.card_pi _ _
 
 namespace Fintype
 
+variable [Fintype ι]
+
 @[simp] lemma card_piFinset (s : ∀ i, Finset (α i)) :
     (piFinset s).card = ∏ i, (s i).card := by simp [piFinset, card_map]
 
-@[simp] lemma card_pi [DecidableEq ι] [∀ i, Fintype (α i)] : card (∀ i, α i) = ∏ i, card (α i) :=
+/-- This lemma is specifically designed to be used backwards, whence the specialisation to `Fin n`
+as the indexing type doesn't matter in practice. The more general forward direction lemma here is
+`Fintype.card_piFinset`. -/
+lemma card_piFinset_const {α : Type*} (s : Finset α) (n : ℕ) :
+    (piFinset fun _ : Fin n ↦ s).card = s.card ^ n := by simp
+
+@[simp] lemma card_pi [∀ i, Fintype (α i)] : card (∀ i, α i) = ∏ i, card (α i) :=
   card_piFinset _
 
-@[simp] nonrec lemma card_sigma [Fintype ι] [∀ i, Fintype (α i)] :
+/-- This lemma is specifically designed to be used backwards, whence the specialisation to `Fin n`
+as the indexing type doesn't matter in practice. The more general forward direction lemma here is
+`Fintype.card_pi`. -/
+lemma card_pi_const (α : Type*) [Fintype α] (n : ℕ) : card (Fin n → α) = card α ^ n :=
+  card_piFinset_const _ _
+
+@[simp] nonrec lemma card_sigma {ι} {α : ι → Type*} [Fintype ι] [∀ i, Fintype (α i)] :
     card (Sigma α) = ∑ i, card (α i) := card_sigma _ _
 
 /-- The number of dependent maps `f : Π j, s j` for which the `i` component is `a` is the product
@@ -123,7 +136,8 @@ over all `j ≠ i` of `(s j).card`.
 
 Note that this is just a composition of easier lemmas, but there's some glue missing to make that
 smooth enough not to need this lemma. -/
-lemma card_filter_piFinset_eq_of_mem (s : ∀ i, Finset (α i)) (i : ι) {a : α i} (ha : a ∈ s i) :
+lemma card_filter_piFinset_eq_of_mem [∀ i, DecidableEq (α i)]
+    (s : ∀ i, Finset (α i)) (i : ι) {a : α i} (ha : a ∈ s i) :
     ((piFinset s).filter fun f ↦ f i = a).card = ∏ j ∈ univ.erase i, (s j).card := by
   calc
     _ = ∏ j, (Function.update s i {a} j).card := by
@@ -134,10 +148,10 @@ lemma card_filter_piFinset_eq_of_mem (s : ∀ i, Finset (α i)) (i : ι) {a : α
 
 lemma card_filter_piFinset_const_eq_of_mem (s : Finset κ) (i : ι) {x : κ} (hx : x ∈ s) :
     ((piFinset fun _ ↦ s).filter fun f ↦ f i = x).card = s.card ^ (card ι - 1) :=
-  (card_filter_piFinset_eq_of_mem _ _ hx).trans $ by
+  (card_filter_piFinset_eq_of_mem _ _ hx).trans <| by
     rw [prod_const s.card, card_erase_of_mem (mem_univ _), card_univ]
 
-lemma card_filter_piFinset_eq (s : ∀ i, Finset (α i)) (i : ι) (a : α i) :
+lemma card_filter_piFinset_eq [∀ i, DecidableEq (α i)] (s : ∀ i, Finset (α i)) (i : ι) (a : α i) :
     ((piFinset s).filter fun f ↦ f i = a).card =
       if a ∈ s i then ∏ b ∈ univ.erase i, (s b).card else 0 := by
   split_ifs with h
@@ -147,13 +161,13 @@ lemma card_filter_piFinset_eq (s : ∀ i, Finset (α i)) (i : ι) (a : α i) :
 lemma card_filter_piFinset_const (s : Finset κ) (i : ι) (j : κ) :
     ((piFinset fun _ ↦ s).filter fun f ↦ f i = j).card =
       if j ∈ s then s.card ^ (card ι - 1) else 0 :=
-  (card_filter_piFinset_eq _ _ _).trans $ by
+  (card_filter_piFinset_eq _ _ _).trans <| by
     rw [prod_const s.card, card_erase_of_mem (mem_univ _), card_univ]
 
 end Fintype
 end Pi
 
--- TODO: this is a basic thereom about `Fintype.card`,
+-- TODO: this is a basic theorem about `Fintype.card`,
 -- and ideally could be moved to `Mathlib.Data.Fintype.Card`.
 theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
     Fintype.card (α → β) = Fintype.card β ^ Fintype.card α := by
@@ -210,26 +224,31 @@ theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :
     ∏ x, f x = (∏ a₁, f (Sum.inl a₁)) * ∏ a₂, f (Sum.inr a₂) :=
   prod_disj_sum _ _ _
 
-@[to_additive (attr := simp) Fintype.sum_prod_type]
-theorem Fintype.prod_prod_type [CommMonoid γ] {f : α₁ × α₂ → γ} :
+/-- The product over a product type equals the product of the fiberwise products. For rewriting
+in the reverse direction, use `Fintype.prod_prod_type'`. -/
+@[to_additive Fintype.sum_prod_type "The sum over a product type equals the sum of fiberwise sums.
+For rewriting in the reverse direction, use `Fintype.sum_prod_type'`."]
+theorem Fintype.prod_prod_type [CommMonoid γ] (f : α₁ × α₂ → γ) :
     ∏ x, f x = ∏ x, ∏ y, f (x, y) :=
-  Finset.prod_product
+  Finset.prod_product ..
 
-/-- An uncurried version of `Finset.prod_prod_type`. -/
-@[to_additive Fintype.sum_prod_type' "An uncurried version of `Finset.sum_prod_type`"]
-theorem Fintype.prod_prod_type' [CommMonoid γ] {f : α₁ → α₂ → γ} :
+/-- The product over a product type equals the product of the fiberwise products. For rewriting
+in the reverse direction, use `Fintype.prod_prod_type`. -/
+@[to_additive Fintype.sum_prod_type' "The sum over a product type equals the sum of fiberwise sums.
+For rewriting in the reverse direction, use `Fintype.sum_prod_type`."]
+theorem Fintype.prod_prod_type' [CommMonoid γ] (f : α₁ → α₂ → γ) :
     ∏ x : α₁ × α₂, f x.1 x.2 = ∏ x, ∏ y, f x y :=
-  Finset.prod_product'
+  Finset.prod_product' ..
 
 @[to_additive Fintype.sum_prod_type_right]
-theorem Fintype.prod_prod_type_right [CommMonoid γ] {f : α₁ × α₂ → γ} :
+theorem Fintype.prod_prod_type_right [CommMonoid γ] (f : α₁ × α₂ → γ) :
     ∏ x, f x = ∏ y, ∏ x, f (x, y) :=
-  Finset.prod_product_right
+  Finset.prod_product_right ..
 
 /-- An uncurried version of `Finset.prod_prod_type_right`. -/
 @[to_additive Fintype.sum_prod_type_right' "An uncurried version of `Finset.sum_prod_type_right`"]
-theorem Fintype.prod_prod_type_right' [CommMonoid γ] {f : α₁ → α₂ → γ} :
+theorem Fintype.prod_prod_type_right' [CommMonoid γ] (f : α₁ → α₂ → γ) :
     ∏ x : α₁ × α₂, f x.1 x.2 = ∏ y, ∏ x, f x y :=
-  Finset.prod_product_right'
+  Finset.prod_product_right' ..
 
 end

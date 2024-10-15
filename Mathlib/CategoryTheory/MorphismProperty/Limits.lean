@@ -52,6 +52,19 @@ theorem StableUnderBaseChange.mk {P : MorphismProperty C} [HasPullbacks C] [Resp
   rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
   exact hP₂ _ _ _ f g hg
 
+variable (C) in
+lemma StableUnderBaseChange.monomorphisms :
+    (monomorphisms C).StableUnderBaseChange := by
+  intro X Y Y' S f g f' g' h hg
+  have : Mono g := hg
+  constructor
+  intro Z f₁ f₂ h₁₂
+  apply PullbackCone.IsLimit.hom_ext h.isLimit
+  · rw [← cancel_mono g]
+    dsimp
+    simp only [Category.assoc, h.w, reassoc_of% h₁₂]
+  · exact h₁₂
+
 theorem StableUnderBaseChange.respectsIso {P : MorphismProperty C} (hP : StableUnderBaseChange P) :
     RespectsIso P := by
   apply RespectsIso.of_respects_arrow_iso
@@ -112,6 +125,19 @@ theorem StableUnderCobaseChange.mk {P : MorphismProperty C} [HasPushouts C] [Res
   rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
   exact hP₂ _ _ _ f g hf
 
+variable (C) in
+lemma StableUnderCobaseChange.epimorphisms :
+    (epimorphisms C).StableUnderCobaseChange := by
+  intro X Y Y' S f g f' g' h hf
+  have : Epi f := hf
+  constructor
+  intro Z f₁ f₂ h₁₂
+  apply PushoutCocone.IsColimit.hom_ext h.isColimit
+  · exact h₁₂
+  · rw [← cancel_epi f]
+    dsimp
+    simp only [← reassoc_of% h.w, h₁₂]
+
 theorem StableUnderCobaseChange.respectsIso {P : MorphismProperty C}
     (hP : StableUnderCobaseChange P) : RespectsIso P :=
   RespectsIso.of_respects_arrow_iso _ fun _ _ e => hP (IsPushout.of_horiz_isIso (CommSq.mk e.hom.w))
@@ -164,7 +190,7 @@ abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape 
 lemma IsStableUnderProductsOfShape.mk (J : Type*)
     [W.RespectsIso] [HasProductsOfShape J C]
     (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
-      W (Pi.map f)) : W.IsStableUnderProductsOfShape J := by
+      W (Limits.Pi.map f)) : W.IsStableUnderProductsOfShape J := by
   intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
   let φ := fun j => f.app (Discrete.mk j)
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
@@ -177,7 +203,7 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
   simp
 
 /-- The condition that a property of morphisms is stable by finite products. -/
-class IsStableUnderFiniteProducts : Prop :=
+class IsStableUnderFiniteProducts : Prop where
   isStableUnderProductsOfShape (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
 
 lemma isStableUnderProductsOfShape_of_isStableUnderFiniteProducts
@@ -199,7 +225,7 @@ theorem diagonal_iff {X Y : C} {f : X ⟶ Y} : P.diagonal f ↔ P (pullback.diag
   Iff.rfl
 
 instance RespectsIso.diagonal [P.RespectsIso] : P.diagonal.RespectsIso := by
-  constructor
+  apply RespectsIso.mk
   · introv H
     rwa [diagonal_iff, pullback.diagonal_comp, P.cancel_left_of_respectsIso,
       P.cancel_left_of_respectsIso, ← P.cancel_right_of_respectsIso _
@@ -234,7 +260,7 @@ def universally (P : MorphismProperty C) : MorphismProperty C := fun X Y f =>
   ∀ ⦃X' Y' : C⦄ (i₁ : X' ⟶ X) (i₂ : Y' ⟶ Y) (f' : X' ⟶ Y') (_ : IsPullback f' i₁ i₂ f), P f'
 
 instance universally_respectsIso (P : MorphismProperty C) : P.universally.RespectsIso := by
-  constructor
+  apply RespectsIso.mk
   · intro X Y Z e f hf X' Z' i₁ i₂ f' H
     have : IsPullback (𝟙 _) (i₁ ≫ e.hom) i₁ e.inv :=
       IsPullback.of_horiz_isIso

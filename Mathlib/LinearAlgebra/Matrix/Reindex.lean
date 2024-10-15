@@ -103,32 +103,34 @@ end Semiring
 section Algebra
 
 variable [CommSemiring R] [Fintype n] [Fintype m] [DecidableEq m] [DecidableEq n]
+  [Semiring A] [Algebra R A]
 
-/-- For square matrices with coefficients in commutative semirings, the natural map that reindexes
-a matrix's rows and columns with equivalent types, `Matrix.reindex`, is an equivalence of algebras.
--/
-def reindexAlgEquiv (e : m ≃ n) : Matrix m m R ≃ₐ[R] Matrix n n R :=
-  { reindexLinearEquiv R R e e with
+/-- For square matrices with coefficients in an algebra over a commutative semiring, the natural
+    map that reindexes a matrix's rows and columns with equivalent types,
+    `Matrix.reindex`, is an equivalence of algebras. -/
+def reindexAlgEquiv (e : m ≃ n) : Matrix m m A ≃ₐ[R] Matrix n n A :=
+  { reindexLinearEquiv A A e e with
     toFun := reindex e e
-    map_mul' := fun a b => (reindexLinearEquiv_mul R R e e e a b).symm
+    map_mul' := fun a b => (reindexLinearEquiv_mul A A e e e a b).symm
     -- Porting note: `submatrix_smul` needed help
     commutes' := fun r => by simp [algebraMap, Algebra.toRingHom, submatrix_smul _ 1] }
 
 @[simp]
-theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m R) :
-    reindexAlgEquiv R e M = reindex e e M :=
+theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :
+    reindexAlgEquiv R A e M = reindex e e M :=
   rfl
 
 @[simp]
-theorem reindexAlgEquiv_symm (e : m ≃ n) : (reindexAlgEquiv R e).symm = reindexAlgEquiv R e.symm :=
+theorem reindexAlgEquiv_symm (e : m ≃ n) : (reindexAlgEquiv R A e).symm =
+    reindexAlgEquiv R A e.symm :=
   rfl
 
 @[simp]
-theorem reindexAlgEquiv_refl : reindexAlgEquiv R (Equiv.refl m) = AlgEquiv.refl :=
+theorem reindexAlgEquiv_refl : reindexAlgEquiv R A (Equiv.refl m) = AlgEquiv.refl :=
   AlgEquiv.ext fun _ => rfl
 
-theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m R) (N : Matrix m m R) :
-    reindexAlgEquiv R e (M * N) = reindexAlgEquiv R e M * reindexAlgEquiv R e N :=
+theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m A) (N : Matrix m m A) :
+    reindexAlgEquiv R A e (M * N) = reindexAlgEquiv R A e M * reindexAlgEquiv R A e N :=
   _root_.map_mul ..
 
 end Algebra
@@ -145,8 +147,9 @@ theorem det_reindexLinearEquiv_self [CommRing R] [Fintype m] [DecidableEq m] [Fi
 
 For the `simp` version of this lemma, see `det_submatrix_equiv_self`.
 -/
-theorem det_reindexAlgEquiv [CommRing R] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
-    (e : m ≃ n) (A : Matrix m m R) : det (reindexAlgEquiv R e A) = det A :=
+theorem det_reindexAlgEquiv (B : Type*) [CommRing R] [CommRing B] [Algebra R B] [Fintype m]
+    [DecidableEq m] [Fintype n] [DecidableEq n] (e : m ≃ n) (A : Matrix m m B) :
+    det (reindexAlgEquiv R B e A) = det A :=
   det_reindex_self e A
 
 end Matrix

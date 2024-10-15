@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Separably Closed Field
@@ -49,8 +49,6 @@ separable closure, separably closed
 -/
 
 universe u v w
-
-open scoped Classical Polynomial
 
 open Polynomial
 
@@ -216,8 +214,8 @@ instance (priority := 100) IsSepClosure.isAlgClosure_of_perfectField
 then it is also a separable closure of `k`. -/
 instance (priority := 100) IsSepClosure.of_isAlgClosure_of_perfectField
     [Algebra k K] [IsAlgClosure k K] [PerfectField k] : IsSepClosure k K :=
-  ⟨haveI := IsAlgClosure.alg_closed (R := k) (K := K); inferInstance,
-    (IsAlgClosure.algebraic (R := k) (K := K)).isSeparable_of_perfectField⟩
+  ⟨haveI := IsAlgClosure.isAlgClosed (R := k) (K := K); inferInstance,
+    (IsAlgClosure.isAlgebraic (R := k) (K := K)).isSeparable_of_perfectField⟩
 
 variable {k} {K}
 

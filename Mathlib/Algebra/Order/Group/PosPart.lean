@@ -3,8 +3,7 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Group.Lattice
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 /-!
 # Positive & negative parts
@@ -44,14 +43,13 @@ positive part, negative part
 
 open Function
 
-variable {α β : Type*}
+variable {α : Type*}
 
 section Lattice
 variable [Lattice α]
 
 section Group
-variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)]
-  [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α}
+variable [Group α] {a b : α}
 
 /-- The *positive part* of an element `a` in a lattice ordered group is `a ⊔ 1`, denoted `a⁺ᵐ`. -/
 @[to_additive
@@ -71,9 +69,6 @@ def leOnePart (a : α) : α := a⁻¹ ⊔ 1
 
 @[to_additive] lemma oneLePart_mono : Monotone (oneLePart : α → α) :=
   fun _a _b hab ↦ sup_le_sup_right hab _
-
-@[to_additive] lemma leOnePart_anti : Antitone (leOnePart : α → α) :=
-  fun _a _b hab ↦ sup_le_sup_right (inv_le_inv_iff.2 hab) _
 
 @[to_additive (attr := simp)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem _
 
@@ -96,14 +91,9 @@ def leOnePart (a : α) : α := a⁻¹ ⊔ 1
 @[to_additive "See also `negPart_eq_neg`."]
 lemma leOnePart_eq_inv' : a⁻ᵐ = a⁻¹ ↔ 1 ≤ a⁻¹ := sup_eq_left
 
-@[to_additive (attr := simp)] lemma leOnePart_eq_inv : a⁻ᵐ = a⁻¹ ↔ a ≤ 1 := by simp [leOnePart]
-
 /-- See also `leOnePart_eq_one`. -/
 @[to_additive "See also `negPart_eq_zero`."]
 lemma leOnePart_eq_one' : a⁻ᵐ = 1 ↔ a⁻¹ ≤ 1 := sup_eq_right
-
-@[to_additive (attr := simp)]
-lemma leOnePart_eq_one : a⁻ᵐ = 1 ↔ 1 ≤ a := by simp [leOnePart_eq_one']
 
 @[to_additive] lemma oneLePart_le_one : a⁺ᵐ ≤ 1 ↔ a ≤ 1 := by simp [oneLePart]
 
@@ -116,13 +106,45 @@ lemma leOnePart_le_one' : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
 @[to_additive (attr := simp) posPart_pos] lemma one_lt_oneLePart (ha : 1 < a) : 1 < a⁺ᵐ := by
   rwa [oneLePart_eq_self.2 ha.le]
 
-@[to_additive (attr := simp) negPart_pos] lemma one_lt_ltOnePart (ha : a < 1) : 1 < a⁻ᵐ := by
-  rwa [leOnePart_eq_inv.2 ha.le, one_lt_inv']
-
 @[to_additive (attr := simp)] lemma oneLePart_inv (a : α) : a⁻¹⁺ᵐ = a⁻ᵐ := rfl
 
 @[to_additive (attr := simp)] lemma leOnePart_inv (a : α) : a⁻¹⁻ᵐ = a⁺ᵐ := by
   simp [oneLePart, leOnePart]
+
+section covariantmul
+variable [CovariantClass α α (· * ·) (· ≤ ·)]
+
+@[to_additive (attr := simp)] lemma leOnePart_eq_inv : a⁻ᵐ = a⁻¹ ↔ a ≤ 1 := by simp [leOnePart]
+
+@[to_additive (attr := simp)]
+lemma leOnePart_eq_one : a⁻ᵐ = 1 ↔ 1 ≤ a := by simp [leOnePart_eq_one']
+
+@[to_additive (attr := simp) negPart_pos] lemma one_lt_ltOnePart (ha : a < 1) : 1 < a⁻ᵐ := by
+  rwa [leOnePart_eq_inv.2 ha.le, one_lt_inv']
+
+-- Bourbaki A.VI.12 Prop 9 a)
+@[to_additive (attr := simp)] lemma oneLePart_div_leOnePart (a : α) : a⁺ᵐ / a⁻ᵐ = a := by
+  rw [div_eq_mul_inv, mul_inv_eq_iff_eq_mul, leOnePart, mul_sup, mul_one, mul_inv_cancel, sup_comm,
+    oneLePart]
+
+@[to_additive (attr := simp)] lemma leOnePart_div_oneLePart (a : α) : a⁻ᵐ / a⁺ᵐ = a⁻¹ := by
+  rw [← inv_div, oneLePart_div_leOnePart]
+
+@[to_additive]
+lemma oneLePart_leOnePart_injective : Injective fun a : α ↦ (a⁺ᵐ, a⁻ᵐ) := by
+  simp only [Injective, Prod.mk.injEq, and_imp]
+  rintro a b hpos hneg
+  rw [← oneLePart_div_leOnePart a, ← oneLePart_div_leOnePart b, hpos, hneg]
+
+@[to_additive]
+lemma oneLePart_leOnePart_inj : a⁺ᵐ = b⁺ᵐ ∧ a⁻ᵐ = b⁻ᵐ ↔ a = b :=
+  Prod.mk.inj_iff.symm.trans oneLePart_leOnePart_injective.eq_iff
+
+section covariantmulop
+variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+
+@[to_additive] lemma leOnePart_anti : Antitone (leOnePart : α → α) :=
+  fun _a _b hab ↦ sup_le_sup_right (inv_le_inv_iff.2 hab) _
 
 @[to_additive]
 lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
@@ -130,33 +152,29 @@ lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
 
 -- Bourbaki A.VI.12 Prop 9 d)
 @[to_additive] lemma oneLePart_mul_leOnePart (a : α) : a⁺ᵐ * a⁻ᵐ = |a|ₘ := by
-  rw [oneLePart, sup_mul, one_mul, leOnePart, mul_sup, mul_one, mul_inv_self, sup_assoc,
+  rw [oneLePart, sup_mul, one_mul, leOnePart, mul_sup, mul_one, mul_inv_cancel, sup_assoc,
     ← sup_assoc a, sup_eq_right.2 le_sup_right]
   exact sup_eq_left.2 <| one_le_mabs a
 
 @[to_additive] lemma leOnePart_mul_oneLePart (a : α) : a⁻ᵐ * a⁺ᵐ = |a|ₘ := by
-  rw [oneLePart, mul_sup, mul_one, leOnePart, sup_mul, one_mul, inv_mul_self, sup_assoc,
+  rw [oneLePart, mul_sup, mul_one, leOnePart, sup_mul, one_mul, inv_mul_cancel, sup_assoc,
     ← @sup_assoc _ _ a, sup_eq_right.2 le_sup_right]
   exact sup_eq_left.2 <| one_le_mabs a
 
 -- Bourbaki A.VI.12 Prop 9 a)
-@[to_additive (attr := simp)] lemma oneLePart_div_leOnePart (a : α) : a⁺ᵐ / a⁻ᵐ = a := by
-  rw [div_eq_mul_inv, mul_inv_eq_iff_eq_mul, leOnePart, mul_sup, mul_one, mul_right_inv, sup_comm,
-    oneLePart]
-
-@[to_additive (attr := simp)] lemma leOnePart_div_oneLePart (a : α) : a⁻ᵐ / a⁺ᵐ = a⁻¹ := by
-  rw [← inv_div, oneLePart_div_leOnePart]
-
--- Bourbaki A.VI.12 Prop 9 a)
 -- a⁺ᵐ ⊓ a⁻ᵐ = 0 (`a⁺` and `a⁻` are co-prime, and, since they are positive, disjoint)
 @[to_additive] lemma oneLePart_inf_leOnePart_eq_one (a : α) : a⁺ᵐ ⊓ a⁻ᵐ = 1 := by
-  rw [← mul_left_inj a⁻ᵐ⁻¹, inf_mul, one_mul, mul_right_inv, ← div_eq_mul_inv,
+  rw [← mul_left_inj a⁻ᵐ⁻¹, inf_mul, one_mul, mul_inv_cancel, ← div_eq_mul_inv,
     oneLePart_div_leOnePart, leOnePart_eq_inv_inf_one, inv_inv]
+
+end covariantmulop
+
+end covariantmul
 
 end Group
 
 section CommGroup
-variable [Lattice α] [CommGroup α] [CovariantClass α α (· * ·) (· ≤ ·)]
+variable [CommGroup α] [CovariantClass α α (· * ·) (· ≤ ·)]
 
 -- Bourbaki A.VI.12 (with a and b swapped)
 @[to_additive] lemma sup_eq_mul_oneLePart_div (a b : α) : a ⊔ b = b * (a / b)⁺ᵐ := by
@@ -192,33 +210,44 @@ end CommGroup
 end Lattice
 
 section LinearOrder
-variable [LinearOrder α] [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] {a : α}
+variable [LinearOrder α] [Group α] {a b : α}
 
 @[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = if 1 ≤ a then a else 1 := by
   rw [oneLePart, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
-@[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = if a ≤ 1 then a⁻¹ else 1 := by
-  simp_rw [← one_le_inv']; rw [leOnePart, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
-
 @[to_additive (attr := simp) posPart_pos_iff] lemma one_lt_oneLePart_iff : 1 < a⁺ᵐ ↔ 1 < a :=
-  lt_iff_lt_of_le_iff_le $ (one_le_oneLePart _).le_iff_eq.trans oneLePart_eq_one
-
-@[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_ltOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
-  lt_iff_lt_of_le_iff_le $ (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
+  lt_iff_lt_of_le_iff_le <| (one_le_oneLePart _).le_iff_eq.trans oneLePart_eq_one
 
 @[to_additive posPart_eq_of_posPart_pos]
 lemma oneLePart_of_one_lt_oneLePart (ha : 1 < a⁺ᵐ) : a⁺ᵐ = a := by
   rw [oneLePart, right_lt_sup, not_le] at ha; exact oneLePart_eq_self.2 ha.le
 
+@[to_additive (attr := simp)] lemma oneLePart_lt : a⁺ᵐ < b ↔ a < b ∧ 1 < b := sup_lt_iff
+
+section covariantmul
+variable [CovariantClass α α (· * ·) (· ≤ ·)]
+
+@[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = if a ≤ 1 then a⁻¹ else 1 := by
+  simp_rw [← one_le_inv']; rw [leOnePart, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
+
+@[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_ltOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
+  lt_iff_lt_of_le_iff_le <| (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
+
+variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+
+@[to_additive (attr := simp)] lemma leOnePart_lt : a⁻ᵐ < b ↔ b⁻¹ < a ∧ 1 < b :=
+  sup_lt_iff.trans <| by rw [inv_lt']
+
+end covariantmul
 end LinearOrder
 
 namespace Pi
-variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] [∀ i, AddCommGroup (α i)]
+variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] [∀ i, Group (α i)]
 
-@[to_additive (attr := simp)] lemma oneLePart_apply (f : ∀ i, α i) (i : ι) : f⁺ i = (f i)⁺ := rfl
-@[to_additive (attr := simp)] lemma leOnePart_apply (f : ∀ i, α i) (i : ι) : f⁻ i = (f i)⁻ := rfl
+@[to_additive (attr := simp)] lemma oneLePart_apply (f : ∀ i, α i) (i : ι) : f⁺ᵐ i = (f i)⁺ᵐ := rfl
+@[to_additive (attr := simp)] lemma leOnePart_apply (f : ∀ i, α i) (i : ι) : f⁻ᵐ i = (f i)⁻ᵐ := rfl
 
-@[to_additive] lemma oneLePart_def (f : ∀ i, α i) : f⁺ = fun i ↦ (f i)⁺ := rfl
-@[to_additive] lemma leOnePart_def (f : ∀ i, α i) : f⁻ = fun i ↦ (f i)⁻ := rfl
+@[to_additive] lemma oneLePart_def (f : ∀ i, α i) : f⁺ᵐ = fun i ↦ (f i)⁺ᵐ := rfl
+@[to_additive] lemma leOnePart_def (f : ∀ i, α i) : f⁻ᵐ = fun i ↦ (f i)⁻ᵐ := rfl
 
 end Pi

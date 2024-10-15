@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Simon Hudon
+Authors: Kim Morrison, Simon Hudon
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
@@ -46,13 +46,13 @@ section
 def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C :=
   letI : MonoidalCategoryStruct C := {
     tensorObj := fun X Y ↦ X ⨯ Y
-    whiskerLeft := fun X _ _ g ↦ Limits.prod.map (𝟙 _) g
-    whiskerRight := fun {_ _} f Y ↦ Limits.prod.map f (𝟙 _)
+    whiskerLeft := fun _ _ _ g ↦ Limits.prod.map (𝟙 _) g
+    whiskerRight := fun {_ _} f _ ↦ Limits.prod.map f (𝟙 _)
     tensorHom := fun f g ↦ Limits.prod.map f g
     tensorUnit := ⊤_ C
     associator := prod.associator
-    leftUnitor := fun P ↦ prod.leftUnitor P
-    rightUnitor := fun P ↦ prod.rightUnitor P
+    leftUnitor := fun P ↦ Limits.prod.leftUnitor P
+    rightUnitor := fun P ↦ Limits.prod.rightUnitor P
   }
   .ofTensorHom
     (pentagon := prod.pentagon)
@@ -168,8 +168,8 @@ section
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=
   letI : MonoidalCategoryStruct C := {
     tensorObj := fun X Y ↦ X ⨿ Y
-    whiskerLeft := fun X _ _ g ↦ Limits.coprod.map (𝟙 _) g
-    whiskerRight := fun {_ _} f Y ↦ Limits.coprod.map f (𝟙 _)
+    whiskerLeft := fun _ _ _ g ↦ Limits.coprod.map (𝟙 _) g
+    whiskerRight := fun {_ _} f _ ↦ Limits.coprod.map f (𝟙 _)
     tensorHom := fun f g ↦ Limits.coprod.map f g
     tensorUnit := ⊥_ C
     associator := coprod.associator
@@ -297,13 +297,13 @@ def Functor.toMonoidalFunctorOfHasFiniteProducts : MonoidalFunctor C D where
     dsimp
     simp only [prod.map_map_assoc, IsIso.hom_inv_id, Category.comp_id, prod.map_id_id,
       Category.id_comp, IsIso.eq_inv_comp]
-    erw [prod.map_snd, Category.comp_id, prodComparison_snd]
+    rw [prod.map_snd, Category.comp_id, prodComparison_snd]
   right_unitality X := by
     rw [← cancel_epi (prod.map (𝟙 (F.obj X)) (terminalComparison F))]
     dsimp
     simp only [prod.map_map_assoc, Category.comp_id, IsIso.hom_inv_id, prod.map_id_id,
       Category.id_comp, IsIso.eq_inv_comp]
-    erw [prod.map_fst, Category.comp_id, prodComparison_fst]
+    rw [prod.map_fst, Category.comp_id, prodComparison_fst]
 
 instance [F.IsEquivalence] : F.toMonoidalFunctorOfHasFiniteProducts.IsEquivalence := by assumption
 

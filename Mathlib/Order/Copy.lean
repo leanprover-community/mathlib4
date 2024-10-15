@@ -188,12 +188,16 @@ def Frame.copy (c : Frame α) (le : α → α → Prop) (eq_le : le = (by infer_
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (himp : α → α → α) (eq_himp : himp = (by infer_instance : HImp α).himp)
+    (compl : α → α) (eq_compl : compl = (by infer_instance : HasCompl α).compl)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
     (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) : Frame α where
   toCompleteLattice := CompleteLattice.copy (@Frame.toCompleteLattice α c)
     le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf
   inf_sSup_le_iSup_inf := fun a s => by
     simp [eq_le, eq_sup, eq_inf, eq_sSup, @Order.Frame.inf_sSup_le_iSup_inf α _ a s]
+  __ := HeytingAlgebra.copy (@Frame.toHeytingAlgebra α c)
+    le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf himp eq_himp compl eq_compl
 
 /-- A function to create a provable equal copy of a coframe with possibly different definitional
 equalities. -/
@@ -202,12 +206,16 @@ def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = (by in
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (sdiff : α → α → α) (eq_sdiff : sdiff = (by infer_instance : SDiff α).sdiff)
+    (hnot : α → α) (eq_hnot : hnot = (by infer_instance : HNot α).hnot)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
     (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) : Coframe α where
   toCompleteLattice := CompleteLattice.copy (@Coframe.toCompleteLattice α c)
     le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf
   iInf_sup_le_sup_sInf := fun a s => by
     simp [eq_le, eq_sup, eq_inf, eq_sInf, @Order.Coframe.iInf_sup_le_sup_sInf α _ a s]
+  __ := CoheytingAlgebra.copy (@Coframe.toCoheytingAlgebra α c)
+    le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf sdiff eq_sdiff hnot eq_hnot
 
 /-- A function to create a provable equal copy of a complete distributive lattice
 with possibly different definitional equalities. -/
@@ -217,13 +225,17 @@ def CompleteDistribLattice.copy (c : CompleteDistribLattice α)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (sdiff : α → α → α) (eq_sdiff : sdiff = (by infer_instance : SDiff α).sdiff)
+    (hnot : α → α) (eq_hnot : hnot = (by infer_instance : HNot α).hnot)
+    (himp : α → α → α) (eq_himp : himp = (by infer_instance : HImp α).himp)
+    (compl : α → α) (eq_compl : compl = (by infer_instance : HasCompl α).compl)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
     (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) :
     CompleteDistribLattice α where
-  toFrame := Frame.copy (@CompleteDistribLattice.toFrame α c)
-    le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf
-  __ := Coframe.copy (@CompleteDistribLattice.toCoframe α c)
-    le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf
+  toFrame := Frame.copy (@CompleteDistribLattice.toFrame α c) le eq_le top eq_top bot eq_bot sup
+    eq_sup inf eq_inf himp eq_himp compl eq_compl sSup eq_sSup sInf eq_sInf
+  __ := Coframe.copy (@CompleteDistribLattice.toCoframe α c) le eq_le top eq_top bot eq_bot sup
+    eq_sup inf eq_inf sdiff eq_sdiff hnot eq_hnot sSup eq_sSup sInf eq_sInf
 
 /-- A function to create a provable equal copy of a conditionally complete lattice
 with possibly different definitional equalities. -/

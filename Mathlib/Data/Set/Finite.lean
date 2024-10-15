@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finite.Basic
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Lattice
 
@@ -280,6 +280,9 @@ section FintypeInstances
 instance fintypeUniv [Fintype α] : Fintype (@univ α) :=
   Fintype.ofEquiv α (Equiv.Set.univ α).symm
 
+-- Redeclared with appropriate keys
+instance fintypeTop [Fintype α] : Fintype (⊤ : Set α) := inferInstanceAs (Fintype (univ : Set α))
+
 /-- If `(Set.univ : Set α)` is finite then `α` is a finite type. -/
 noncomputable def fintypeOfFiniteUniv (H : (univ (α := α)).Finite) : Fintype α :=
   @Fintype.ofEquiv _ (univ : Set α) H.fintype (Equiv.Set.univ _)
@@ -339,6 +342,13 @@ def fintypeBiUnion [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : �
 instance fintypeBiUnion' [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
     [∀ i, Fintype (t i)] : Fintype (⋃ x ∈ s, t x) :=
   Fintype.ofFinset (s.toFinset.biUnion fun x => (t x).toFinset) <| by simp
+
+lemma toFinset_iUnion [Fintype β] [DecidableEq α] (f : β → Set α)
+    [∀ w, Fintype (f w)] :
+    Set.toFinset (⋃ (x : β), f x) =
+    Finset.biUnion (Finset.univ : Finset β) (fun x => (f x).toFinset) := by
+  ext v
+  simp only [mem_toFinset, mem_iUnion, Finset.mem_biUnion, Finset.mem_univ, true_and]
 
 section monad
 attribute [local instance] Set.monad
@@ -761,6 +771,11 @@ theorem Finite.of_preimage (h : (f ⁻¹' s).Finite) (hf : Surjective f) : s.Fin
 theorem Finite.preimage (I : Set.InjOn f (f ⁻¹' s)) (h : s.Finite) : (f ⁻¹' s).Finite :=
   (h.subset (image_preimage_subset f s)).of_finite_image I
 
+theorem Finite.preimage' (h : s.Finite) (hf : ∀ b ∈ s, (f ⁻¹' {b}).Finite) :
+    (f ⁻¹' s).Finite := by
+  rw [← Set.biUnion_preimage_singleton]
+  exact Set.Finite.biUnion h hf
+
 protected lemma Infinite.preimage (hs : s.Infinite) (hf : s ⊆ range f) : (f ⁻¹' s).Infinite :=
   fun h ↦ hs <| finite_of_finite_preimage h hf
 
@@ -780,14 +795,16 @@ theorem finite_le_nat (n : ℕ) : Set.Finite { i | i ≤ n } :=
 
 section MapsTo
 
-variable {s : Set α} {f : α → α} (hs : s.Finite) (hm : MapsTo f s s)
+variable {s : Set α} {f : α → α}
 
-theorem Finite.surjOn_iff_bijOn_of_mapsTo : SurjOn f s s ↔ BijOn f s s := by
+theorem Finite.surjOn_iff_bijOn_of_mapsTo (hs : s.Finite) (hm : MapsTo f s s) :
+    SurjOn f s s ↔ BijOn f s s := by
   refine ⟨fun h ↦ ⟨hm, ?_, h⟩, BijOn.surjOn⟩
   have : Finite s := finite_coe_iff.mpr hs
   exact hm.restrict_inj.mp (Finite.injective_iff_surjective.mpr <| hm.restrict_surjective_iff.mpr h)
 
-theorem Finite.injOn_iff_bijOn_of_mapsTo : InjOn f s ↔ BijOn f s s := by
+theorem Finite.injOn_iff_bijOn_of_mapsTo (hs : s.Finite) (hm : MapsTo f s s) :
+    InjOn f s ↔ BijOn f s s := by
   refine ⟨fun h ↦ ⟨hm, h, ?_⟩, BijOn.injOn⟩
   have : Finite s := finite_coe_iff.mpr hs
   exact hm.restrict_surjective_iff.mp (Finite.injective_iff_surjective.mp <| hm.restrict_inj.mpr h)
@@ -880,7 +897,7 @@ theorem exists_subset_image_finite_and {f : α → β} {s : Set α} {p : Set β 
     (∃ t ⊆ f '' s, t.Finite ∧ p t) ↔ ∃ t ⊆ s, t.Finite ∧ p (f '' t) := by
   classical
   simp_rw [@and_comm (_ ⊆ _), and_assoc, exists_finite_iff_finset, @and_comm (p _),
-    Finset.subset_image_iff]
+    Finset.subset_set_image_iff]
   aesop
 
 section Pi
@@ -992,7 +1009,7 @@ theorem eq_finite_iUnion_of_finite_subset_iUnion {ι} {s : ι → Set α} {t : S
       I.Finite ∧
         ∃ σ : { i | i ∈ I } → Set α, (∀ i, (σ i).Finite) ∧ (∀ i, σ i ⊆ s i) ∧ t = ⋃ i, σ i :=
   let ⟨I, Ifin, hI⟩ := finite_subset_iUnion tfin h
-  ⟨I, Ifin, fun x => s x ∩ t, fun i => tfin.subset inter_subset_right, fun i =>
+  ⟨I, Ifin, fun x => s x ∩ t, fun _ => tfin.subset inter_subset_right, fun _ =>
     inter_subset_left, by
     ext x
     rw [mem_iUnion]
@@ -1094,7 +1111,7 @@ theorem card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (
     _ = s.toFinset.card :=
       Finset.card_image_of_injOn fun x hx y hy hxy =>
         H x (mem_toFinset.1 hx) y (mem_toFinset.1 hy) hxy
-    _ = Fintype.card s := (Fintype.card_of_finset' _ fun a => mem_toFinset).symm
+    _ = Fintype.card s := (Fintype.card_of_finset' _ fun _ => mem_toFinset).symm
 
 theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintype (f '' s)]
     (H : Function.Injective f) : Fintype.card (f '' s) = Fintype.card s :=
@@ -1172,10 +1189,10 @@ theorem Infinite.exists_subset_card_eq {s : Set α} (hs : s.Infinite) (n : ℕ) 
   ⟨((Finset.range n).map (hs.natEmbedding _)).map (Embedding.subtype _), by simp⟩
 
 theorem infinite_of_finite_compl [Infinite α] {s : Set α} (hs : sᶜ.Finite) : s.Infinite := fun h =>
-  Set.infinite_univ (by simpa using hs.union h)
+  Set.infinite_univ (α := α) (by simpa using hs.union h)
 
 theorem Finite.infinite_compl [Infinite α] {s : Set α} (hs : s.Finite) : sᶜ.Infinite := fun h =>
-  Set.infinite_univ (by simpa using hs.union h)
+  Set.infinite_univ (α := α) (by simpa using hs.union h)
 
 theorem Infinite.diff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) : (s \ t).Infinite := fun h =>
   hs <| h.of_diff ht
@@ -1257,6 +1274,22 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
   contrapose! h
   rwa [injective_codRestrict, ← injOn_iff_injective]
 
+theorem infinite_iUnion {ι : Type*} [Infinite ι] {s : ι → Set α} (hs : Function.Injective s) :
+    (⋃ i, s i).Infinite :=
+  fun hfin ↦ @not_injective_infinite_finite ι _ _ hfin.finite_subsets.to_subtype
+    (fun i ↦ ⟨s i, subset_iUnion _ _⟩) fun i j h_eq ↦ hs (by simpa using h_eq)
+
+theorem Infinite.biUnion {ι : Type*} {s : ι → Set α} {a : Set ι} (ha : a.Infinite)
+    (hs : a.InjOn s) : (⋃ i ∈ a, s i).Infinite := by
+  rw [biUnion_eq_iUnion]
+  have _ := ha.to_subtype
+  exact infinite_iUnion fun ⟨i,hi⟩ ⟨j,hj⟩ hij ↦ by simp [hs hi hj hij]
+
+theorem Infinite.sUnion {s : Set (Set α)} (hs : s.Infinite) : (⋃₀ s).Infinite := by
+  rw [sUnion_eq_iUnion]
+  have _ := hs.to_subtype
+  exact infinite_iUnion Subtype.coe_injective
+
 /-! ### Order properties -/
 
 section Preorder
@@ -1271,7 +1304,7 @@ theorem infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinit
     (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
 
 theorem infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite :=
-  @infinite_of_forall_exists_gt αᵒᵈ _ _ _ h
+  infinite_of_forall_exists_gt (α := αᵒᵈ) h
 
 end Preorder
 
@@ -1318,9 +1351,10 @@ theorem exists_upper_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f 
 theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j := by
-  induction' s, hs using Set.Finite.dinduction_on with a s _ _ ihs hf
-  · simp [iSup_const]
-  · rw [forall_mem_insert] at hf
+  induction s, hs using Set.Finite.dinduction_on with
+  | H0 => simp [iSup_const]
+  | H1 _ _ ihs =>
+    rw [forall_mem_insert] at hf
     simp only [iInf_insert, ← ihs hf.2]
     exact iSup_inf_of_monotone hf.1 fun j₁ j₂ hj => iInf₂_mono fun i hi => hf.2 i hi hj
 
@@ -1461,12 +1495,12 @@ variable [Preorder α] [IsDirected α (· ≥ ·)] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded below. -/
 protected theorem Finite.bddBelow (hs : s.Finite) : BddBelow s :=
-  @Finite.bddAbove αᵒᵈ _ _ _ _ hs
+  Finite.bddAbove (α := αᵒᵈ) hs
 
 /-- A finite union of sets which are all bounded below is still bounded below. -/
 theorem Finite.bddBelow_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddBelow (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddBelow (S i) :=
-  @Finite.bddAbove_biUnion αᵒᵈ _ _ _ _ _ _ H
+  Finite.bddAbove_biUnion (α := αᵒᵈ) H
 
 theorem infinite_of_not_bddBelow : ¬BddBelow s → s.Infinite := mt Finite.bddBelow
 
@@ -1494,6 +1528,7 @@ protected theorem bddBelow [SemilatticeInf α] [Nonempty α] (s : Finset α) : B
 
 end Finset
 
+section LinearOrder
 variable [LinearOrder α] {s : Set α}
 
 /-- If a linear order does not contain any triple of elements `x < y < z`, then this type
@@ -1533,3 +1568,20 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+
+end LinearOrder
+
+namespace List
+variable (α) [Finite α] (n : ℕ)
+
+lemma finite_length_eq : {l : List α | l.length = n}.Finite := Vector.finite
+
+lemma finite_length_lt : {l : List α | l.length < n}.Finite := by
+  convert (Finset.range n).finite_toSet.biUnion fun i _ ↦ finite_length_eq α i; ext; simp
+
+lemma finite_length_le : {l : List α | l.length ≤ n}.Finite := by
+  simpa [Nat.lt_succ_iff] using finite_length_lt α (n + 1)
+
+end List
+
+set_option linter.style.longFile 1700

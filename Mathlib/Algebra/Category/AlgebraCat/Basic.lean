@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.FreeAlgebra
@@ -17,9 +17,7 @@ associating to a type the free `R`-algebra on that type is left adjoint to the f
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe v u
 
@@ -79,7 +77,7 @@ instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v} where
 instance hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => ModuleCat.ofHom f.toLinearMap }
+      map := fun f => ModuleCat.asHom f.toLinearMap }
 
 @[simp]
 lemma forget₂_module_obj (X : AlgebraCat.{v} R) :
@@ -88,7 +86,7 @@ lemma forget₂_module_obj (X : AlgebraCat.{v} R) :
 
 @[simp]
 lemma forget₂_module_map {X Y : AlgebraCat.{v} R} (f : X ⟶ Y) :
-    (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).map f = ModuleCat.ofHom f.toLinearMap :=
+    (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).map f = ModuleCat.asHom f.toLinearMap :=
   rfl
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
@@ -156,7 +154,7 @@ def free : Type u ⥤ AlgebraCat.{u} R where
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X A => (FreeAlgebra.lift _).symm
+    { homEquiv := fun _ _ => (FreeAlgebra.lift _).symm
       -- Relying on `obviously` to fill out these proofs is very slow :(
       homEquiv_naturality_left_symm := by
         -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
