@@ -26,7 +26,7 @@ variable {I : Type u}
 variable {f : I → Type v}
 
 -- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i : I)
+variable (i : I)
 
 instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
   { add := (· + ·)
