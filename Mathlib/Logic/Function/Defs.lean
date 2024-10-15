@@ -21,8 +21,6 @@ namespace Function
 -- Porting note: fix the universe of `ζ`, it used to be `u₁`
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
-attribute [eqns comp_def] comp
-
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
 #adaptation_note /-- nightly-2024-03-16
