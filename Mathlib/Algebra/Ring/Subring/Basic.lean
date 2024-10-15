@@ -6,6 +6,7 @@ Authors: Ashvni Narayanan
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.RingTheory.NonUnitalSubring.Basic
 
 /-!
 # Subrings
@@ -79,6 +80,9 @@ class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] ex
 instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
     [SetLike S R] [Ring R] [h : SubringClass S R] : AddSubgroupClass S R :=
   { h with }
+
+instance (priority := 100) SubringClass.nonUnitalSubringClass (S : Type*) (R : Type u)
+    [SetLike S R] [Ring R] [SubringClass S R] : NonUnitalSubringClass S R where
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
