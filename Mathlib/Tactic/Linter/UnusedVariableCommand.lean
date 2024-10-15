@@ -387,8 +387,21 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx â†
     let mut filt2 := []
     for s in usedVarNames do
       filt2 := filt2 ++ left2.filter fun (_a, b) =>
-        let comp := if _a.eraseMacroScopes.isAnonymous then b.prettyPrint.pretty else _a.toString
-        (s.isPrefixOf comp)
+        let new :=
+          if _a.eraseMacroScopes.isAnonymous then
+            --dbg_trace "pp: {b.prettyPrint.pretty} -- s: {s}"
+            (s.isPrefixOf b.prettyPrint.pretty)
+          else
+            --dbg_trace "ems: {_a.eraseMacroScopes.toString} -- s: {s}"
+            s == _a.eraseMacroScopes.toString
+        --let comp := if _a.eraseMacroScopes.isAnonymous then b.prettyPrint.pretty else _a.toString
+        --dbg_trace "{comp} -- {s.isPrefixOf comp}\nnew: {new}\n"
+        new
+        --(s.isPrefixOf comp)
+
+/-
+
+-/
 
       filt := filt ++ left.filter (s.isPrefixOf Â·.toString)
     for (s, _) in filt2 do
