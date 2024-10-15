@@ -470,13 +470,13 @@ variable [Group α] {s : Subgroup α}
 @[to_additive "The natural bijection between the cosets `g + s` and `s`."]
 def leftCosetEquivSubgroup (g : α) : (g • s : Set α) ≃ s :=
   ⟨fun x => ⟨g⁻¹ * x.1, (mem_leftCoset_iff _).1 x.2⟩, fun x => ⟨g * x.1, x.1, x.2, rfl⟩,
-    fun ⟨x, hx⟩ => Subtype.eq <| by simp, fun ⟨g, hg⟩ => Subtype.eq <| by simp⟩
+    fun ⟨x, _⟩ => Subtype.eq <| by simp, fun ⟨g, _⟩ => Subtype.eq <| by simp⟩
 
 /-- The natural bijection between a right coset `s * g` and `s`. -/
 @[to_additive "The natural bijection between the cosets `s + g` and `s`."]
 def rightCosetEquivSubgroup (g : α) : (op g • s : Set α) ≃ s :=
   ⟨fun x => ⟨x.1 * g⁻¹, (mem_rightCoset_iff _).1 x.2⟩, fun x => ⟨x.1 * g, x.1, x.2, rfl⟩,
-    fun ⟨x, hx⟩ => Subtype.eq <| by simp, fun ⟨g, hg⟩ => Subtype.eq <| by simp⟩
+    fun ⟨x, _⟩ => Subtype.eq <| by simp, fun ⟨g, _⟩ => Subtype.eq <| by simp⟩
 
 /-- A (non-canonical) bijection between a group `α` and the product `(α/s) × s` -/
 @[to_additive addGroupEquivQuotientProdAddSubgroup
@@ -492,7 +492,7 @@ noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
             _root_.Subtype fun x : α => Quotient.mk'' x = Quotient.mk'' _
         simp [-Quotient.eq'']
         rfl
-    _ ≃ Σ _L : α ⧸ s, s := Equiv.sigmaCongrRight fun L => leftCosetEquivSubgroup _
+    _ ≃ Σ _L : α ⧸ s, s := Equiv.sigmaCongrRight fun _ => leftCosetEquivSubgroup _
     _ ≃ (α ⧸ s) × s := Equiv.sigmaEquivProd _ _
 
 variable {t : Subgroup α}
@@ -517,7 +517,7 @@ of the quotient map `G → G/K`. The classical version is `Subgroup.quotientEqui
 def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
     (hf : Function.RightInverse f QuotientGroup.mk) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t where
   toFun a :=
-    ⟨a.map' id fun b c h => leftRel_apply.mpr (h_le (leftRel_apply.mp h)),
+    ⟨a.map' id fun _ _ h => leftRel_apply.mpr (h_le (leftRel_apply.mp h)),
       a.map' (fun g : α => ⟨(f (Quotient.mk'' g))⁻¹ * g, leftRel_apply.mp (Quotient.exact' (hf g))⟩)
         fun b c h => by
         rw [leftRel_apply]
@@ -703,7 +703,7 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
       show QuotientGroup.mk _ ∈ t by
         rw [mk_mul_of_mem _ a.1.2, out_eq']
         exact a.2.2⟩
-  left_inv := fun ⟨a, ha⟩ => Subtype.eq <| show _ * _ = a by simp
+  left_inv := fun ⟨a, _⟩ => Subtype.eq <| show _ * _ = a by simp
   right_inv := fun ⟨⟨a, ha⟩, ⟨x, hx⟩⟩ => by ext <;> simp [ha]
 
 end QuotientGroup

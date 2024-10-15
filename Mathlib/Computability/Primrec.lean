@@ -619,7 +619,7 @@ protected theorem beq [DecidableEq α] : Primrec₂ (@BEq.beq α _) :=
   have : PrimrecRel fun a b : ℕ => a = b :=
     (PrimrecPred.and nat_le nat_le.swap).of_eq fun a => by simp [le_antisymm_iff]
   (this.comp₂ (Primrec.encode.comp₂ Primrec₂.left) (Primrec.encode.comp₂ Primrec₂.right)).of_eq
-    fun a b => encode_injective.eq_iff
+    fun _ _ => encode_injective.eq_iff
 
 protected theorem eq [DecidableEq α] : PrimrecRel (@Eq α) := Primrec.beq
 
@@ -1097,7 +1097,7 @@ def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodab
   ⟨have : Primrec fun n => (@decode α _ n).bind fun a => Option.guard p a :=
     option_bind .decode (option_guard (hp.comp snd).to₂ snd)
   nat_iff.1 <| (encode_iff.2 this).of_eq fun n =>
-    show _ = encode ((@decode α _ n).bind fun a => _) by
+    show _ = encode ((@decode α _ n).bind fun _ => _) by
       cases' @decode α _ n with a; · rfl
       dsimp [Option.guard]
       by_cases h : p a <;> simp [h]; rfl⟩
@@ -1355,8 +1355,8 @@ theorem natPair : @Primrec' 2 fun v => v.head.pair v.tail.head :=
 
 protected theorem encode : ∀ {n}, @Primrec' n encode
   | 0 => (const 0).of_eq fun v => by rw [v.eq_nil]; rfl
-  | n + 1 =>
-    (succ.comp₁ _ (natPair.comp₂ _ head (tail Primrec'.encode))).of_eq fun ⟨a :: l, e⟩ => rfl
+  | _ + 1 =>
+    (succ.comp₁ _ (natPair.comp₂ _ head (tail Primrec'.encode))).of_eq fun ⟨_ :: _, _⟩ => rfl
 
 theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
   suffices H : ∀ n : ℕ, n.sqrt =

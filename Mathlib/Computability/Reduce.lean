@@ -325,7 +325,7 @@ protected theorem liftOn_eq {φ} (p : Set ℕ) (f : Set ℕ → φ)
 @[reducible, simp]
 protected def liftOn₂ {φ} (d₁ d₂ : ManyOneDegree) (f : Set ℕ → Set ℕ → φ)
     (h : ∀ p₁ p₂ q₁ q₂, ManyOneEquiv p₁ p₂ → ManyOneEquiv q₁ q₂ → f p₁ q₁ = f p₂ q₂) : φ :=
-  d₁.liftOn (fun p => d₂.liftOn (f p) fun q₁ q₂ hq => h _ _ _ _ (by rfl) hq)
+  d₁.liftOn (fun p => d₂.liftOn (f p) fun _ _ hq => h _ _ _ _ (by rfl) hq)
     (by
       intro p₁ p₂ hp
       induction d₂ using ManyOneDegree.ind_on

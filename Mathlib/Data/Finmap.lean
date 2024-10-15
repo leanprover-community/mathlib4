@@ -110,7 +110,7 @@ theorem liftOn_toFinmap {γ} (s : AList β) (f : AList β → γ) (H) : liftOn �
 def liftOn₂ {γ} (s₁ s₂ : Finmap β) (f : AList β → AList β → γ)
     (H : ∀ a₁ b₁ a₂ b₂ : AList β,
       a₁.entries ~ a₂.entries → b₁.entries ~ b₂.entries → f a₁ b₁ = f a₂ b₂) : γ :=
-  liftOn s₁ (fun l₁ => liftOn s₂ (f l₁) fun b₁ b₂ p => H _ _ _ _ (Perm.refl _) p) fun a₁ a₂ p => by
+  liftOn s₁ (fun l₁ => liftOn s₂ (f l₁) fun _ _ p => H _ _ _ _ (Perm.refl _) p) fun a₁ a₂ p => by
     have H' : f a₁ = f a₂ := funext fun _ => H _ _ _ _ p (Perm.refl _)
     simp only [H']
 
