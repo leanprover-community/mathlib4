@@ -108,9 +108,6 @@ theorem isNormal_opow {a : Ordinal} (h : 1 < a) : IsNormal (a ^ ·) :=
 @[deprecated isNormal_opow (since := "2024-10-11")]
 alias opow_isNormal := isNormal_opow
 
-@[deprecated isNormal_opow (since := "2024-10-11")]
-alias opow_isNormal := isNormal_opow
-
 theorem opow_lt_opow_iff_right {a b c : Ordinal} (a1 : 1 < a) : a ^ b < a ^ c ↔ b < c :=
   (isNormal_opow a1).lt_iff
 
