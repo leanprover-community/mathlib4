@@ -12,18 +12,6 @@ import Mathlib.Data.Multiset.Basic
 
 variable {α β : Type*}
 
-instance (r : α → α → Prop) [DecidableRel r] [IsAntisymm α r] :
-    IsAntisymm α (fun a b => decide (r a b) = true) where
-  antisymm a b := by simpa using IsAntisymm.antisymm a b
-
-instance (r : α → α → Prop) [DecidableRel r] [IsTrans α r] :
-    IsTrans α (fun a b => decide (r a b) = true) where
-  trans a b c := by simpa using IsTrans.trans a b c
-
-instance (r : α → α → Prop) [DecidableRel r] [IsTotal α r] :
-    IsTotal α (fun a b => decide (r a b) = true) where
-  total a b := by simpa using IsTotal.total a b
-
 namespace Multiset
 
 open List
