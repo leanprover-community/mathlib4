@@ -4,11 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Init
-import Lean.Meta.Tactic.Rewrite
 import Batteries.Data.Rat.Basic
-import Batteries.Lean.Expr
 import Batteries.Tactic.Alias
-import Lean.Elab.Binders
 
 /-!
 # Additional operations on Expr and rational numbers
