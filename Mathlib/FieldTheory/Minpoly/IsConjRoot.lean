@@ -22,11 +22,15 @@ means that the two elements have the same minimal polynomial over `K`.
 * `IsConjRoot.iff_eq_algEquiv`: Let `L / K` be a normal field extension. For any two elements `x`
 and `y` in `L`, `IsConjRoot K x y` is equivalent to the existence of an algebra equivalence
 `σ : L ≃ₐ[K] L` such that `y = σ x`.
-* `not_mem_iff_exist_ne`: Let `L / K` be a normal field extension. For any element `x` in `L`,
-
+* `not_mem_iff_exist_ne`: Let `L / K` be a normal field extension. For any element `x` in `L`, if
+the minimal polynomial of `x` splits in `L`, then `x` is not in the `K` iff there exists a different
+conjugate root of `x` over `K`.
 ## TODO
 Add `IsConjRoot.smul` stating that if `x` and `y` are conjugate roots, then so are `r • x` and
 `r • y`.
+
+## Tags
+conjugate root, minimal polynomial
 -/
 
 
