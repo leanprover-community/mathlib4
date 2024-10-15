@@ -123,7 +123,7 @@ theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaInteg
 
 theorem GammaIntegral_ofReal (s : ℝ) :
     GammaIntegral ↑s = ↑(∫ x : ℝ in Ioi 0, Real.exp (-x) * x ^ (s - 1)) := by
-  have : ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
+  have : ∀ r : ℝ, Complex.ofReal r = @RCLike.ofReal ℂ _ r := fun r => rfl
   rw [GammaIntegral]
   conv_rhs => rw [this, ← _root_.integral_ofReal]
   refine setIntegral_congr_fun measurableSet_Ioi ?_
@@ -484,7 +484,7 @@ theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :
   simp_rw [← Complex.ofReal_one, ← Complex.ofReal_sub]
   suffices ∫ x : ℝ in Ioi 0, ↑(exp (-x)) * (x : ℂ) ^ ((s - 1 : ℝ) : ℂ) =
       ∫ x : ℝ in Ioi 0, ((exp (-x) * x ^ (s - 1) : ℝ) : ℂ) by
-    have cc : ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
+    have cc : ∀ r : ℝ, Complex.ofReal r = @RCLike.ofReal ℂ _ r := fun r => rfl
     conv_lhs => rw [this]; enter [1, 2, x]; rw [cc]
     rw [_root_.integral_ofReal, ← cc, Complex.ofReal_re]
   refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_

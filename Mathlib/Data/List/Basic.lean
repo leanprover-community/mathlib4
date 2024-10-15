@@ -287,10 +287,6 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
     map f (reverseAux l₁ l₂) = reverseAux (map f l₁) (map f l₂) := by
   simp only [reverseAux_eq, map_append, map_reverse]
 
-/-! ### empty -/
-
-@[deprecated (since := "2024-08-15")] alias isEmpty_iff_eq_nil := isEmpty_iff
-
 /-! ### getLast -/
 
 attribute [simp] getLast_cons
@@ -508,9 +504,6 @@ theorem get_cons {l : List α} {a : α} {n} (hl) :
     (a :: l).get ⟨n, hl⟩ = if hn : n = 0 then a else
       l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ :=
   getElem_cons hl
-
-theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
-    (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp
 
 /-! ### Induction from the right -/
 
