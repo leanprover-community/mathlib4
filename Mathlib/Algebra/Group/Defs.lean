@@ -560,7 +560,7 @@ def npowRec' {M : Type*} [One M] [Mul M] : ℕ → M → M
   | k + 2, m => npowRec' (k + 1) m * m
 
 /--
-A variant of `nsmulRec` which a semigroup homomorphisms from `ℕ₊` to `M`.
+A variant of `nsmulRec` which is a semigroup homomorphisms from `ℕ₊` to `M`.
 -/
 def nsmulRec' {M : Type*} [Zero M] [Add M] : ℕ → M → M
   | 0, _ => 0
