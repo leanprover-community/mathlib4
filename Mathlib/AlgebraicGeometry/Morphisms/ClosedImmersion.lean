@@ -54,12 +54,12 @@ lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
   rfl
 
 lemma iff_isPreimmersion {X Y : Scheme} {f : X ⟶ Y} :
-    IsClosedImmersion f ↔ IsPreimmersion f ∧ IsClosed (Set.range f.1.base) := by
+    IsClosedImmersion f ↔ IsPreimmersion f ∧ IsClosed (Set.range f.base) := by
   rw [and_comm, isClosedImmersion_iff, isPreimmersion_iff, ← and_assoc, closedEmbedding_iff,
     @and_comm (Embedding _)]
 
 lemma of_isPreimmersion {X Y : Scheme} (f : X ⟶ Y) [IsPreimmersion f]
-    (hf : IsClosed (Set.range f.1.base)) : IsClosedImmersion f :=
+    (hf : IsClosed (Set.range f.base)) : IsClosedImmersion f :=
   iff_isPreimmersion.mpr ⟨‹_›, hf⟩
 
 instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : IsPreimmersion f :=

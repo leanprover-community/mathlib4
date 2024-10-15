@@ -549,7 +549,7 @@ lemma map_resLE (i : V' ⟶ V) :
 @[reassoc (attr := simp)]
 lemma resLE_map (i : U ⟶ U') :
     f.resLE U V e ≫ (Y.restrictFunctor.map i).left =
-      f.resLE U' V (e.trans ((Opens.map f.1.base).map i).le) := by
+      f.resLE U' V (e.trans ((Opens.map f.base).map i).le) := by
   simp_rw [← resLE_id, resLE_comp_resLE, Category.comp_id]
 
 lemma resLE_congr (e₁ : U = U') (e₂ : V = V') (P : MorphismProperty Scheme.{u}) :

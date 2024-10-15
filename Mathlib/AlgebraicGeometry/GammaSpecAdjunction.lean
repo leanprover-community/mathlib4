@@ -239,7 +239,7 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f 
     (h :
       ∀ r : R,
         f ≫ X.presheaf.map (homOfLE le_top : (Opens.map β.base).obj (basicOpen r) ⟶ _).op =
-          toOpen R (basicOpen r) ≫ β.1.c.app (op (basicOpen r))) :
+          toOpen R (basicOpen r) ≫ β.c.app (op (basicOpen r))) :
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
   ext1
   -- Porting note: was `apply Spec.basicOpen_hom_ext`
@@ -252,7 +252,7 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f 
   exact h r
 
 /-- `toSpecΓ _` is an isomorphism so these are mutually two-sided inverses. -/
-theorem Γ_Spec_left_triangle : toSpecΓ (Γ.obj (op X)) ≫ X.toΓSpec.1.c.app (op ⊤) = 𝟙 _ := by
+theorem Γ_Spec_left_triangle : toSpecΓ (Γ.obj (op X)) ≫ X.toΓSpec.c.app (op ⊤) = 𝟙 _ := by
   unfold toSpecΓ
   rw [← toOpen_res _ (basicOpen (1 : Γ.obj (op X))) ⊤ (eqToHom basicOpen_one.symm),
     Category.assoc, NatTrans.naturality, ← Category.assoc]
@@ -279,7 +279,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       exact (PresheafedSpace.stalkMap_germ f.1 ⊤ x trivial).symm
     · intro r
       rw [LocallyRingedSpace.comp_c_app, ← Category.assoc]
-      erw [Y.toΓSpecSheafedSpace_app_spec, f.1.c.naturality]
+      erw [Y.toΓSpecSheafedSpace_app_spec, f.c.naturality]
       rfl
 
 namespace ΓSpec
@@ -352,7 +352,7 @@ lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
     {X : LocallyRingedSpace} {R : Type u} [CommRing R]
     (f : Γ.rightOp.obj X ⟶ op (CommRingCat.of R)) (U) :
     StructureSheaf.toOpen R U.unop ≫
-      (locallyRingedSpaceAdjunction.homEquiv X (op <| CommRingCat.of R) f).1.c.app U =
+      (locallyRingedSpaceAdjunction.homEquiv X (op <| CommRingCat.of R) f).c.app U =
     f.unop ≫ X.presheaf.map (homOfLE le_top).op := by
   rw [← StructureSheaf.toOpen_res _ _ _ (homOfLE le_top), Category.assoc,
     NatTrans.naturality _ (homOfLE (le_top (a := U.unop))).op,
@@ -413,7 +413,7 @@ end ΓSpec
 
 theorem Scheme.toSpecΓ_base (X : Scheme.{u}) (x) :
     (Scheme.toSpecΓ X).base x =
-      (Spec.map (X.presheaf.germ ⊤ x trivial)).1.base (LocalRing.closedPoint _) := rfl
+      (Spec.map (X.presheaf.germ ⊤ x trivial)).base (LocalRing.closedPoint _) := rfl
 
 @[reassoc (attr := simp)]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :

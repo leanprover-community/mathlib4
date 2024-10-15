@@ -323,8 +323,8 @@ instance : IsOpenImmersion (coprod.inr : Y ⟶ X ⨿ Y) := by
   rw [← ι_right_coprodIsoSigma_inv]; infer_instance
 
 lemma isCompl_range_inl_inr :
-    IsCompl (Set.range (coprod.inl : X ⟶ X ⨿ Y).1.base)
-      (Set.range (coprod.inr : Y ⟶ X ⨿ Y).1.base) :=
+    IsCompl (Set.range (coprod.inl : X ⟶ X ⨿ Y).base)
+      (Set.range (coprod.inr : Y ⟶ X ⨿ Y).base) :=
   ((TopCat.binaryCofan_isColimit_iff _).mp
     ⟨mapIsColimitOfPreservesOfIsColimit Scheme.forgetToTop _ _ (coprodIsCoprod X Y)⟩).2.2
 
@@ -342,7 +342,7 @@ def coprodMk : X ⊕ Y ≃ₜ (X ⨿ Y : Scheme.{u}) :=
 
 @[simp]
 lemma coprodMk_inl (x : X) :
-    coprodMk X Y (.inl x) = (coprod.inl : X ⟶ X ⨿ Y).1.base x := by
+    coprodMk X Y (.inl x) = (coprod.inl : X ⟶ X ⨿ Y).base x := by
   show ((TopCat.binaryCofan X Y).inl ≫
     (colimit.isoColimitCocone ⟨_, TopCat.binaryCofanIsColimit _ _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map coprod.inl x
@@ -352,7 +352,7 @@ lemma coprodMk_inl (x : X) :
 
 @[simp]
 lemma coprodMk_inr (x : Y) :
-    coprodMk X Y (.inr x) = (coprod.inr : Y ⟶ X ⨿ Y).1.base x := by
+    coprodMk X Y (.inr x) = (coprod.inr : Y ⟶ X ⨿ Y).base x := by
   show ((TopCat.binaryCofan X Y).inr ≫
     (colimit.isoColimitCocone ⟨_, TopCat.binaryCofanIsColimit _ _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map coprod.inr x
@@ -396,7 +396,7 @@ lemma coprodSpec_inr : coprod.inr ≫ coprodSpec R S =
   coprod.inr_desc _ _
 
 lemma coprodSpec_coprodMk (x) :
-    (coprodSpec R S).1.base (coprodMk _ _ x) = (PrimeSpectrum.primeSpectrumProd R S).symm x := by
+    (coprodSpec R S).base (coprodMk _ _ x) = (PrimeSpectrum.primeSpectrumProd R S).symm x := by
   apply PrimeSpectrum.ext
   obtain (x | x) := x <;>
     simp only [coprodMk_inl, coprodMk_inr, ← Scheme.comp_base_apply,
@@ -407,7 +407,7 @@ lemma coprodSpec_coprodMk (x) :
     ext; simp [Ideal.prod, CommRingCat.ofHom]
 
 lemma coprodSpec_apply (x) :
-    (coprodSpec R S).1.base x = (PrimeSpectrum.primeSpectrumProd R S).symm
+    (coprodSpec R S).base x = (PrimeSpectrum.primeSpectrumProd R S).symm
       ((coprodMk (Spec (.of R)) (Spec (.of S))).symm x) := by
   rw [← coprodSpec_coprodMk, Homeomorph.apply_symm_apply]
 
@@ -466,7 +466,7 @@ noncomputable
 instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec := by
   have : IsEmpty (Scheme.Spec.obj (⊥_ CommRingCatᵒᵖ)) :=
     @Function.isEmpty _ _ spec_punit_isEmpty (Scheme.Spec.mapIso
-      (initialIsoIsInitial (initialOpOfTerminal CommRingCat.punitIsTerminal))).hom.1.base
+      (initialIsoIsInitial (initialOpOfTerminal CommRingCat.punitIsTerminal))).hom.base
   have := preservesInitialOfIso Scheme.Spec (asIso (initial.to _))
   exact preservesColimitsOfShapePemptyOfPreservesInitial _
 

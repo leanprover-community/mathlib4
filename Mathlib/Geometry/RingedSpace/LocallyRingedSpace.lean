@@ -405,30 +405,30 @@ lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
   DFunLike.congr_fun (stalkMap_inv_hom e x) y
 
 @[reassoc (attr := simp)]
-lemma stalkMap_germ (U : Opens Y) (x : X) (hx : f.toShHom.base x ∈ U) :
-    Y.presheaf.germ U (f.toShHom.base x) hx ≫ f.stalkMap x =
-      f.toShHom.c.app (op U) ≫ X.presheaf.germ ((Opens.map f.1.base).obj U) x hx :=
+lemma stalkMap_germ (U : Opens Y) (x : X) (hx : f.base x ∈ U) :
+    Y.presheaf.germ U (f.base x) hx ≫ f.stalkMap x =
+      f.c.app (op U) ≫ X.presheaf.germ ((Opens.map f.base).obj U) x hx :=
   PresheafedSpace.stalkMap_germ f.toShHom U x hx
 
-lemma stalkMap_germ_apply (U : Opens Y) (x : X) (hx : f.toShHom.base x ∈ U) (y) :
-    f.stalkMap x (Y.presheaf.germ U (f.toShHom.base x) hx y) =
-      X.presheaf.germ ((Opens.map f.1.base).obj U) x hx (f.toShHom.c.app (op U) y) :=
+lemma stalkMap_germ_apply (U : Opens Y) (x : X) (hx : f.base x ∈ U) (y) :
+    f.stalkMap x (Y.presheaf.germ U (f.base x) hx y) =
+      X.presheaf.germ ((Opens.map f.base).obj U) x hx (f.c.app (op U) y) :=
   PresheafedSpace.stalkMap_germ_apply f.toShHom U x hx y
 
 theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Opens Y}
     (s : Y.presheaf.obj (op U)) :
-    (Opens.map f.1.base).obj (Y.toRingedSpace.basicOpen s) =
-      @RingedSpace.basicOpen X.toRingedSpace ((Opens.map f.1.base).obj U) (f.c.app _ s) := by
+    (Opens.map f.base).obj (Y.toRingedSpace.basicOpen s) =
+      @RingedSpace.basicOpen X.toRingedSpace ((Opens.map f.base).obj U) (f.c.app _ s) := by
   ext x
   constructor
   · rintro ⟨hxU, hx⟩
     rw [SetLike.mem_coe, X.toRingedSpace.mem_basicOpen _ _ hxU]
     delta toRingedSpace
     rw [← stalkMap_germ_apply]
-    exact (f.toShHom.stalkMap _).isUnit_map hx
+    exact (f.stalkMap _).isUnit_map hx
   · rintro ⟨hxU, hx⟩
     simp only [Opens.map_coe, Set.mem_preimage, SetLike.mem_coe, toRingedSpace] at hx ⊢
-    rw [RingedSpace.mem_basicOpen _ s (f.1.base x) hxU]
+    rw [RingedSpace.mem_basicOpen _ s (f.base x) hxU]
     rw [← stalkMap_germ_apply] at hx
     exact (isUnit_map_iff (f.toShHom.stalkMap _) _).mp hx
 

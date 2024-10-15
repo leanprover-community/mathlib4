@@ -519,7 +519,7 @@ this is the canonical map `Γ(𝒪ₓ, D(f)) ⟶ Γ(Spec 𝒪ₓ(U), D(f))`
 This is an isomorphism, as witnessed by an `IsIso` instance. -/
 def basicOpenSectionsToAffine :
     Γ(X, X.basicOpen f) ⟶ Γ(Spec Γ(X, U), PrimeSpectrum.basicOpen f) :=
-  hU.fromSpec.1.c.app (op <| X.basicOpen f) ≫
+  hU.fromSpec.c.app (op <| X.basicOpen f) ≫
     (Spec Γ(X, U)).presheaf.map (eqToHom <| (hU.fromSpec_preimage_basicOpen f).symm).op
 
 instance basicOpenSectionsToAffine_isIso :
