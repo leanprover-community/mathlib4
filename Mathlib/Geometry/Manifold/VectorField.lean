@@ -1400,8 +1400,9 @@ lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) (s : 
   rw [this, ← mpullbackWithin_apply]
   -- second rewrite, the Lie bracket of the pullback as the Lie bracket of the pullback of the
   -- vector fields `V'` and `W'` in `E'`.
+  sorry
 
-εₑ εₑ'
+#exit
 
 
 
