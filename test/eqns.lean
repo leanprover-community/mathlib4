@@ -1,6 +1,4 @@
 import Mathlib.Tactic.Eqns
-import Std.Tactic.GuardMsgs
-
 def transpose {m n} (A : m → n → Nat) : n → m → Nat
   | i, j => A j i
 
@@ -22,7 +20,7 @@ theorem t_def : t = 1 := rfl
 theorem t_def' : t = 1 := by rw [t]
 
 /--
-error: There already exist stored eqns for 't' registering new equations
+error: There already exist stored eqns for 't'; registering new equations
 will not have the desired effect.
 -/
 #guard_msgs(error) in

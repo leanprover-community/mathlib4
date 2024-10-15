@@ -1,8 +1,5 @@
 import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Algebra.Order.Compact
-import Mathlib.Tactic.LibrarySearch
-
-set_option pp.unicode.fun true
 
 -- TODO: uses sorry, but is hidden behind the `apply?`
 /-- warning: declaration uses 'sorry' -/

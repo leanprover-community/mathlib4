@@ -2,10 +2,9 @@
 Tests for norm_cast
 -/
 
-import Std.Tactic.NormCast
 import Mathlib.Tactic.Ring
-import Mathlib.Data.Option.Defs
 import Mathlib.Data.Complex.Basic
+import Mathlib.Data.ENNReal.Inv
 
 -- set_option trace.Tactic.norm_cast true
 -- set_option trace.Meta.Tactic.simp true
@@ -50,10 +49,10 @@ example (h : ((an * bn : ℕ) : ℤ) = (an : ℤ) * (bn : ℤ)) : True := by
   guard_hyp h : (an : ℤ) * (bn : ℤ) = (an : ℤ) * (bn : ℤ)
   trivial
 
-example : (((((an : ℚ) : ℝ) * bq) + (cq : ℝ) ^ dn) : ℂ) = (an : ℂ) * (bq : ℝ) + cq ^ dn :=
-by norm_cast
-example : ((an : ℤ) : ℝ) < bq ∧ (cr : ℂ) ^ 2 = dz ↔ (an : ℚ) < bq ∧ ((cr ^ 2) : ℂ) = dz :=
-by norm_cast
+example : (((((an : ℚ) : ℝ) * bq) + (cq : ℝ) ^ dn) : ℂ) = (an : ℂ) * (bq : ℝ) + cq ^ dn := by
+  norm_cast
+example : ((an : ℤ) : ℝ) < bq ∧ (cr : ℂ) ^ 2 = dz ↔ (an : ℚ) < bq ∧ ((cr ^ 2) : ℂ) = dz := by
+  norm_cast
 
 --testing numerals
 example : ((42 : ℕ) : ℤ) = 42 := by norm_cast
@@ -125,20 +124,18 @@ example (a b : ℕ) (h2 : ((a + b + 0 : ℕ) : ℤ) = 10) :
 
 -- example {x : ℚ} : ((x + 42 : ℚ) : ℝ) = x + 42 := by push_cast
 
-namespace ennreal
+namespace ENNReal
 
--- --TODO: debug
--- lemma half_lt_self_bis {a : ℝ≥0∞} (hz : a ≠ 0) (ht : a ≠ ⊤) : a / 2 < a :=
--- begin
---   lift a to nnreal using ht,
---   have h : (2 : ℝ≥0∞) = ((2 : nnreal) : ℝ≥0∞), from rfl,
---   have h' : (2 : nnreal) ≠ 0, from _root_.two_ne_zero',
---   rw [h, ← coe_div h', coe_lt_coe], -- `norm_cast` fails to apply `coe_div`
---   norm_cast at hz,
---   exact nnreal.half_lt_self hz
--- end
+open ENNReal
+lemma half_lt_self_bis {a : ℝ≥0∞} (hz : a ≠ 0) (ht : a ≠ ⊤) : a / 2 < a := by
+  lift a to NNReal using ht
+  have h : (2 : ℝ≥0∞) = ((2 : NNReal) : ℝ≥0∞) := rfl
+  have h' : (2 : NNReal) ≠ 0 := two_ne_zero
+  rw [h, ← coe_div h', coe_lt_coe] -- `norm_cast` fails to apply `coe_div`
+  norm_cast at hz
+  exact NNReal.half_lt_self hz
 
-end ennreal
+end ENNReal
 
 lemma b (_h g : true) : true ∧ true := by
   constructor
