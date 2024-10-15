@@ -301,9 +301,9 @@ theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMon
   Eq.symm <|
     calc
       FreeMonoid.toList (foldMap FreeMonoid.of xs) =
-          FreeMonoid.toList (foldMap FreeMonoid.of xs).reverse.reverse := by
+          (foldMap FreeMonoid.of xs).toList.reverse.reverse := by
           simp only [List.reverse_reverse]
-      _ = FreeMonoid.toList (List.foldr cons [] (foldMap FreeMonoid.of xs).reverse).reverse := by
+      _ = (List.foldr cons [] (foldMap FreeMonoid.of xs).toList.reverse).reverse := by
           simp only [List.foldr_eta]
       _ = (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs)) []).reverse := by
             #adaptation_note /-- nightly-2024-03-16: simp was
