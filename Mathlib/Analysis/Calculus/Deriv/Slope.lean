@@ -27,7 +27,9 @@ derivative, slope
 
 universe u v
 
-open Topology Filter TopologicalSpace Set
+open scoped Topology
+
+open Filter TopologicalSpace Set
 
 section NormedField
 
