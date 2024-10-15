@@ -178,9 +178,8 @@ def coeAddMonoidHom : { x : α // 0 ≤ x } →+ α :=
     map_add' := Nonneg.coe_add }
 
 @[norm_cast]
-theorem nsmul_coe (n : ℕ) (r : { x : α // 0 ≤ x }) :
-    ↑(n • r) = n • (r : α) :=
-  Nonneg.coeAddMonoidHom.map_nsmul _ _
+theorem nsmul_coe (n : ℕ) (r : { x : α // 0 ≤ x }) : ↑(n • r) = n • (r : α) :=
+  Nonneg.coeAddMonoidHom.map_nsmul r n
 
 end AddMonoid
 

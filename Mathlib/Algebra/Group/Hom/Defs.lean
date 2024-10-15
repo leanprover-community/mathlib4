@@ -129,7 +129,7 @@ you should parametrize over `(F : Type*) [AddMonoidHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `AddMonoidHomClass`.
 -/
-structure AddMonoidHom (M : Type*) (N : Type*) [AddZeroClass M] [AddZeroClass N] extends
+structure AddMonoidHom (M : Type*) (N : Type*) [Add M] [Zero M] [Add N] [Zero N] extends
   ZeroHom M N, AddHom M N
 
 attribute [nolint docBlame] AddMonoidHom.toAddHom
@@ -144,7 +144,7 @@ homomorphisms.
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
 class AddMonoidHomClass (F : Type*) (M N : outParam Type*)
-    [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
+    [Add M] [Zero M] [Add N] [Zero N] [FunLike F M N]
     extends AddHomClass F M N, ZeroHomClass F M N : Prop
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
@@ -329,7 +329,7 @@ end Mul
 
 section mul_one
 
-variable [MulOneClass M] [MulOneClass N]
+variable [Mul M] [One M] [Mul N] [One N]
 
 /-- `M →* N` is the type of functions `M → N` that preserve the `Monoid` structure.
 `MonoidHom` is also used for group homomorphisms.
@@ -340,7 +340,7 @@ you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
 When you extend this structure, make sure to extend `MonoidHomClass`.
 -/
 @[to_additive]
-structure MonoidHom (M : Type*) (N : Type*) [MulOneClass M] [MulOneClass N] extends
+structure MonoidHom (M : Type*) (N : Type*) [Mul M] [One M] [Mul N] [One N] extends
   OneHom M N, M →ₙ* N
 -- Porting note: remove once `to_additive` is updated
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
@@ -355,7 +355,7 @@ infixr:25 " →* " => MonoidHom
 /-- `MonoidHomClass F M N` states that `F` is a type of `Monoid`-preserving homomorphisms.
 You should also extend this typeclass when you extend `MonoidHom`. -/
 @[to_additive]
-class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOneClass M] [MulOneClass N]
+class MonoidHomClass (F : Type*) (M N : outParam Type*) [Mul M] [One M] [Mul N] [One N]
   [FunLike F M N]
   extends MulHomClass F M N, OneHomClass F M N : Prop
 
@@ -551,8 +551,7 @@ theorem MonoidHom.ext [MulOneClass M] [MulOneClass N] ⦃f g : M →* N⦄ (h : 
 
 namespace MonoidHom
 
-variable [Group G]
-variable [MulOneClass M]
+variable [Group G] [MulOneClass M]
 
 /-- Makes a group homomorphism from a proof that the map preserves multiplication. -/
 @[to_additive (attr := simps (config := .asFn))
@@ -627,17 +626,17 @@ definitional equalities. -/
 @[to_additive
   "Copy of an `AddMonoidHom` with a new `toFun` equal to the old one. Useful to fix
   definitional equalities."]
-protected def MonoidHom.copy [MulOneClass M] [MulOneClass N] (f : M →* N) (f' : M → N)
+protected def MonoidHom.copy [One M] [Mul M] [One N] [Mul N] (f : M →* N) (f' : M → N)
     (h : f' = f) : M →* N :=
   { f.toOneHom.copy f' h, f.toMulHom.copy f' h with }
 
 @[to_additive (attr := simp)]
-theorem MonoidHom.coe_copy {_ : MulOneClass M} {_ : MulOneClass N} (f : M →* N) (f' : M → N)
+theorem MonoidHom.coe_copy {_ : One M} {_ : Mul M} {_ : One N} {_ : Mul N} (f : M →* N) (f' : M → N)
     (h : f' = f) : (f.copy f' h) = f' :=
   rfl
 
 @[to_additive]
-theorem MonoidHom.copy_eq {_ : MulOneClass M} {_ : MulOneClass N} (f : M →* N) (f' : M → N)
+theorem MonoidHom.copy_eq {_ : One M} {_ : Mul M} {_ : One N} {_ : Mul N} (f : M →* N) (f' : M → N)
     (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 
@@ -698,7 +697,7 @@ def MulHom.id (M : Type*) [Mul M] : M →ₙ* M where
 
 /-- The identity map from a monoid to itself. -/
 @[to_additive (attr := simps) "The identity map from an additive monoid to itself."]
-def MonoidHom.id (M : Type*) [MulOneClass M] : M →* M where
+def MonoidHom.id (M : Type*) [Mul M] [One M] : M →* M where
   toFun x := x
   map_one' := rfl
   map_mul' _ _ := rfl

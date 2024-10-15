@@ -58,8 +58,8 @@ When possible, instead of parametrizing results over `(f : α →ₙ+* β)`,
 you should parametrize over `(F : Type*) [NonUnitalRingHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `NonUnitalRingHomClass`. -/
-structure NonUnitalRingHom (α β : Type*) [NonUnitalNonAssocSemiring α]
-  [NonUnitalNonAssocSemiring β] extends α →ₙ* β, α →+ β
+structure NonUnitalRingHom (α β : Type*) [Zero α] [Add α] [Mul α] [Zero β] [Add β] [Mul β]
+  extends α →ₙ* β, α →+ β
 
 /-- `α →ₙ+* β` denotes the type of non-unital ring homomorphisms from `α` to `β`. -/
 infixr:25 " →ₙ+* " => NonUnitalRingHom
@@ -76,11 +76,11 @@ section NonUnitalRingHomClass
 
 /-- `NonUnitalRingHomClass F α β` states that `F` is a type of non-unital (semi)ring
 homomorphisms. You should extend this class when you extend `NonUnitalRingHom`. -/
-class NonUnitalRingHomClass (F : Type*) (α β : outParam Type*) [NonUnitalNonAssocSemiring α]
-  [NonUnitalNonAssocSemiring β] [FunLike F α β]
+class NonUnitalRingHomClass (F : Type*) (α β : outParam Type*)
+    [Zero α] [Add α] [Mul α] [Zero β] [Add β] [Mul β] [FunLike F α β]
   extends MulHomClass F α β, AddMonoidHomClass F α β : Prop
 
-variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [FunLike F α β]
+variable [Zero α] [Add α] [Mul α] [Zero β] [Add β] [Mul β] [FunLike F α β]
 variable [NonUnitalRingHomClass F α β]
 
 /-- Turn an element of a type `F` satisfying `NonUnitalRingHomClass F α β` into an actual
@@ -100,7 +100,7 @@ namespace NonUnitalRingHom
 
 section coe
 
-variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
+variable [Zero α] [Add α] [Mul α] [Zero β] [Add β] [Mul β]
 
 instance : FunLike (α →ₙ+* β) α β where
   coe f := f.toFun
@@ -152,7 +152,7 @@ end coe
 
 section
 
-variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
+variable [Zero α] [Add α] [Mul α] [Zero β] [Add β] [Mul β]
 
 @[ext]
 theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
@@ -170,10 +170,12 @@ theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β => (f : α →�
 
 end
 
-variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
+section
+
+variable [Zero α] [Add α] [Mul α] [NonUnitalNonAssocSemiring β]
 
 /-- The identity non-unital ring homomorphism from a non-unital semiring to itself. -/
-protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α where
+protected def id (α : Type*) [Zero α] [Add α] [Mul α] : α →ₙ+* α where
   toFun := id
   map_mul' _ _ := rfl
   map_zero' := rfl
@@ -206,7 +208,9 @@ theorem coe_addMonoidHom_id : (NonUnitalRingHom.id α : α →+ α) = AddMonoidH
 theorem coe_mulHom_id : (NonUnitalRingHom.id α : α →ₙ* α) = MulHom.id α :=
   rfl
 
-variable [NonUnitalNonAssocSemiring γ]
+end
+
+variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalNonAssocSemiring γ]
 
 /-- Composition of non-unital ring homomorphisms is a non-unital ring homomorphism. -/
 def comp (g : β →ₙ+* γ) (f : α →ₙ+* β) : α →ₙ+* γ :=
@@ -293,7 +297,8 @@ end NonUnitalRingHom
 
 This extends from both `MonoidHom` and `MonoidWithZeroHom` in order to put the fields in a
 sensible order, even though `MonoidWithZeroHom` already extends `MonoidHom`. -/
-structure RingHom (α : Type*) (β : Type*) [NonAssocSemiring α] [NonAssocSemiring β] extends
+structure RingHom (α : Type*) (β : Type*)
+    [Zero α] [One α] [Add α] [Mul α] [One β] [Zero β] [Add β] [Mul β] extends
   α →* β, α →+ β, α →ₙ+* β, α →*₀ β
 
 /-- `α →+* β` denotes the type of ring homomorphisms from `α` to `β`. -/
@@ -324,13 +329,14 @@ This extends from both `MonoidHomClass` and `MonoidWithZeroHomClass` in
 order to put the fields in a sensible order, even though
 `MonoidWithZeroHomClass` already extends `MonoidHomClass`. -/
 class RingHomClass (F : Type*) (α β : outParam Type*)
-    [NonAssocSemiring α] [NonAssocSemiring β] [FunLike F α β]
+    [Zero α] [One α] [Add α] [Mul α] [One β] [Zero β] [Add β] [Mul β] [FunLike F α β]
   extends MonoidHomClass F α β, AddMonoidHomClass F α β, MonoidWithZeroHomClass F α β : Prop
 
 variable [FunLike F α β]
 
 -- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
-variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
+variable {_ : Zero α} {_ : One α} {_ : Add α} {_ : Mul α}
+  {_ : Zero β} {_ : One β} {_ : Add β} {_ : Mul β} [RingHomClass F α β]
 
 /-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
 `RingHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
@@ -356,7 +362,8 @@ Throughout this section, some `Semiring` arguments are specified with `{}` inste
 See note [implicit instance arguments].
 -/
 
-variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
+variable {_ : Zero α} {_ : One α} {_ : Add α} {_ : Mul α}
+  {_ : Zero β} {_ : One β} {_ : Add β} {_ : Mul β}
 
 instance instFunLike : FunLike (α →+* β) α β where
   coe f := f.toFun
@@ -394,7 +401,8 @@ theorem coe_coe {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F) :
 
 attribute [coe] RingHom.toMonoidHom
 
-instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
+instance coeToMonoidHom [Zero α] [One α] [Add α] [Mul α] [One β] [Zero β] [Add β] [Mul β] :
+    Coe (α →+* β) (α →* β) :=
   ⟨RingHom.toMonoidHom⟩
 
 -- Porting note: `dsimp only` can prove this
@@ -439,7 +447,8 @@ end coe
 
 section
 
-variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β)
+variable {_ : Zero α} {_ : One α} {_ : Add α} {_ : Mul α}
+  {_ : Zero β} {_ : One β} {_ : Add β} {_ : Mul β} (f : α →+* β)
 
 protected theorem congr_fun {f g : α →+* β} (h : f = g) (x : α) : f x = g x :=
   DFunLike.congr_fun h x
@@ -495,6 +504,35 @@ theorem map_ite_one_zero {F : Type*} [FunLike F α β] [RingHomClass F α β] (f
 /-- `f : α →+* β` has a trivial codomain iff `f 1 = 0`. -/
 theorem codomain_trivial_iff_map_one_eq_zero : (0 : β) = 1 ↔ f 1 = 0 := by rw [map_one, eq_comm]
 
+/-- The identity ring homomorphism from a semiring to itself. -/
+def id (α : Type*) [Zero α] [One α] [Add α] [Mul α] : α →+* α where
+  toFun := _root_.id
+  map_zero' := rfl
+  map_one' := rfl
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
+
+instance : Inhabited (α →+* α) :=
+  ⟨id α⟩
+
+@[simp]
+theorem id_apply (x : α) : RingHom.id α x = x :=
+  rfl
+
+@[simp]
+theorem coe_addMonoidHom_id : (id α : α →+ α) = AddMonoidHom.id α :=
+  rfl
+
+@[simp]
+theorem coe_monoidHom_id : (id α : α →* α) = MonoidHom.id α :=
+  rfl
+
+end
+
+section
+
+variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β)
+
 /-- `f : α →+* β` has a trivial codomain iff it has a trivial range. -/
 theorem codomain_trivial_iff_range_trivial : (0 : β) = 1 ↔ ∀ x, f x = 0 :=
   f.codomain_trivial_iff_map_one_eq_zero.trans
@@ -529,32 +567,7 @@ def mk' [NonAssocSemiring α] [NonAssocRing β] (f : α →* β)
     (map_add : ∀ a b, f (a + b) = f a + f b) : α →+* β :=
   { AddMonoidHom.mk' f map_add, f with }
 
-variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
-
-/-- The identity ring homomorphism from a semiring to itself. -/
-def id (α : Type*) [NonAssocSemiring α] : α →+* α where
-  toFun := _root_.id
-  map_zero' := rfl
-  map_one' := rfl
-  map_add' _ _ := rfl
-  map_mul' _ _ := rfl
-
-instance : Inhabited (α →+* α) :=
-  ⟨id α⟩
-
-@[simp]
-theorem id_apply (x : α) : RingHom.id α x = x :=
-  rfl
-
-@[simp]
-theorem coe_addMonoidHom_id : (id α : α →+ α) = AddMonoidHom.id α :=
-  rfl
-
-@[simp]
-theorem coe_monoidHom_id : (id α : α →* α) = MonoidHom.id α :=
-  rfl
-
-variable {_ : NonAssocSemiring γ}
+variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} {_ : NonAssocSemiring γ}
 
 /-- Composition of ring homomorphisms is a ring homomorphism. -/
 def comp (g : β →+* γ) (f : α →+* β) : α →+* γ :=
