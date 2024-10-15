@@ -7,6 +7,12 @@ import Mathlib.RingTheory.SurjectiveOnStalks
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace LocalRing
 
+/-
+
+THIS IS PRed in #17768
+
+-/
+
 noncomputable section
 
 namespace AlgebraicGeometry

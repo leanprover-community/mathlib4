@@ -3,6 +3,10 @@ import Mathlib.AlgebraicGeometry.Stalk
 set_option linter.longLine false
 open CategoryTheory CategoryTheory.Limits TopologicalSpace LocalRing
 
+/-!
+This file is covered by Andrew Yang's PR #15240
+-/
+
 namespace AlgebraicGeometry
 
 universe u
