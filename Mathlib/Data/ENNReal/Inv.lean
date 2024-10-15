@@ -465,7 +465,7 @@ def orderIsoIicCoe (a : ℝ≥0) : Iic (a : ℝ≥0∞) ≃o Iic a :=
   OrderIso.symm
     { toFun := fun x => ⟨x, coe_le_coe.2 x.2⟩
       invFun := fun x => ⟨ENNReal.toNNReal x, coe_le_coe.1 <| coe_toNNReal_le_self.trans x.2⟩
-      left_inv := fun x => Subtype.ext <| toNNReal_coe _
+      left_inv := fun _ => Subtype.ext <| toNNReal_coe _
       right_inv := fun x => Subtype.ext <| coe_toNNReal (ne_top_of_le_ne_top coe_ne_top x.2)
       map_rel_iff' := fun {_ _} => by
         simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, coe_le_coe, Subtype.coe_le_coe] }

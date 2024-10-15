@@ -119,7 +119,7 @@ theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a
   ⟨fun h => by
     rcases f.mem_range_of_rel h with ⟨a', rfl⟩
     exact ⟨a', rfl, f.map_rel_iff.1 h⟩,
-    fun ⟨a', e, h⟩ => e ▸ f.map_rel_iff.2 h⟩
+    fun ⟨_, e, h⟩ => e ▸ f.map_rel_iff.2 h⟩
 
 @[deprecated exists_eq_iff_rel (since := "2024-09-21")]
 alias init_iff := exists_eq_iff_rel
@@ -547,7 +547,7 @@ theorem collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
 to fill the gaps. -/
 noncomputable def collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
   haveI := RelEmbedding.isWellOrder f
-  ⟨RelEmbedding.ofMonotone (fun a => (collapseF f a).1) fun a b => collapseF.lt f, fun a b =>
+  ⟨RelEmbedding.ofMonotone (fun a => (collapseF f a).1) fun _ _ => collapseF.lt f, fun a b =>
     Acc.recOn (IsWellFounded.wf.apply b : Acc s b)
       (fun b _ _ a h => by
         rcases (@IsWellFounded.wf _ r).has_min { a | ¬s (collapseF f a).1 b }

@@ -564,7 +564,7 @@ section
 variable [SemilatticeSup γ] [DenselyOrdered γ]
 
 theorem isGLB_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
-  ⟨fun x hx => hx.1.le, fun x hx => by
+  ⟨fun _ hx => hx.1.le, fun x hx => by
     rcases eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ | h₂
     · exact h₁.symm ▸ le_sup_left
     obtain ⟨y, lty, ylt⟩ := exists_between h₂
