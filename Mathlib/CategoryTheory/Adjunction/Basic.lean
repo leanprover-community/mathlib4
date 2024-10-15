@@ -166,7 +166,16 @@ def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
 alias homEquiv_unit := homEquiv_apply
 alias homEquiv_counit := homEquiv_symm_apply
 
-attribute [local simp] homEquiv_unit homEquiv_counit
+end Adjunction
+
+-- These lemmas are not global simp lemmas because certain adjunctions
+-- are constructed using `Adjunction.mkOfHomEquiv`, and we certainly
+-- do not want `dsimp` to apply `homEquiv_unit` or `homEquiv_counit`
+-- in that case. However, when proving general API results about adjunctions,
+-- it may be advisable to add a local simp attribute to these lemmas.
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
+
+namespace Adjunction
 
 section
 
@@ -271,8 +280,6 @@ theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B
 end
 
 end Adjunction
-
-attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
 namespace Adjunction
 

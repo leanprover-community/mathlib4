@@ -171,7 +171,7 @@ def pullbackHomeoPreimage
     apply hg.inj
     convert x.prop
     exact Exists.choose_spec (p := fun y ↦ g y = f (↑x : X × Y).1) _
-  right_inv := fun x ↦ rfl
+  right_inv := fun _ ↦ rfl
   continuous_toFun := by
     apply Continuous.subtype_mk
     exact continuous_fst.comp continuous_subtype_val

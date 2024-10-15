@@ -260,7 +260,7 @@ theorem compactOpen_eq_iInf_induced :
 alias compactOpen_eq_sInf_induced := compactOpen_eq_iInf_induced
 
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
-    𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
+    𝓝 f = ⨅ (s) (_ : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
   rw [compactOpen_eq_iInf_induced]
   simp only [nhds_iInf, nhds_induced]
 

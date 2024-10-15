@@ -102,8 +102,8 @@ attribute [local instance] SMulCommClass.symm
 /-- Given a linear map from `M` to linear maps from `N` to `P`, i.e., a bilinear map from `M × N` to
 `P`, change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
 def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P :=
-  mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun n₁ n₂ m => (f m).map_add _ _)
-    (fun c n  m  => (f m).map_smulₛₗ _ _)
+  mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun _ _ m => (f m).map_add _ _)
+    (fun _ _  m  => (f m).map_smulₛₗ _ _)
     (fun n m₁ m₂ => by simp only [map_add, add_apply])
     -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`.
     -- It looks like we now run out of assignable metavariables.

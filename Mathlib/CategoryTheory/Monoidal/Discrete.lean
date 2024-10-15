@@ -32,7 +32,7 @@ instance Discrete.monoidal : MonoidalCategory (Discrete M) where
   tensorHom f g := eqToHom (by dsimp; rw [eq_of_hom f, eq_of_hom g])
   leftUnitor X := Discrete.eqToIso (one_mul X.as)
   rightUnitor X := Discrete.eqToIso (mul_one X.as)
-  associator X Y Z := Discrete.eqToIso (mul_assoc _ _ _)
+  associator _ _ _ := Discrete.eqToIso (mul_assoc _ _ _)
 
 @[to_additive (attr := simp) Discrete.addMonoidal_tensorUnit_as]
 lemma Discrete.monoidal_tensorUnit_as : (𝟙_ (Discrete M)).as = 1 := rfl

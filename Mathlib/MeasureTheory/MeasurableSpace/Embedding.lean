@@ -509,7 +509,7 @@ Measurable version of `Fin.insertNthEquiv`. -/
 def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpace (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃ᵐ α i × ∀ j, α (i.succAbove j) where
   toEquiv := (Fin.insertNthEquiv α i).symm
-  measurable_toFun := (measurable_pi_apply i).prod_mk <| measurable_pi_iff.2 fun j =>
+  measurable_toFun := (measurable_pi_apply i).prod_mk <| measurable_pi_iff.2 fun _ =>
     measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 <| i.forall_iff_succAbove.2
     ⟨by simp [measurable_fst], fun j => by simpa using (measurable_pi_apply _).comp measurable_snd⟩
