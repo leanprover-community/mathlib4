@@ -70,7 +70,7 @@ theorem lt_nfpFamily [Small.{u} ι] {a b} : a < nfpFamily f b ↔ ∃ l, a < Lis
 theorem nfpFamily_le_iff [Small.{u} ι] {a b} : nfpFamily f a ≤ b ↔ ∀ l, List.foldr f a l ≤ b :=
   Ordinal.iSup_le_iff
 
-theorem nfpFamily_le [Small.{u} ι] {a b} : (∀ l, List.foldr f a l ≤ b) → nfpFamily f a ≤ b :=
+theorem nfpFamily_le {a b} : (∀ l, List.foldr f a l ≤ b) → nfpFamily f a ≤ b :=
   Ordinal.iSup_le
 
 theorem monotone_nfpFamily [Small.{u} ι] (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily f) :=
