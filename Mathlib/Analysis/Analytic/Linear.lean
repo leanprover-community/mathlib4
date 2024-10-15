@@ -93,12 +93,6 @@ theorem fpowerSeriesBilinear_apply_add_three (f : E →L[𝕜] F →L[𝕜] G) (
     fpowerSeriesBilinear f x (n + 3) = 0 :=
   rfl
 
-attribute
-  [eqns
-    fpowerSeriesBilinear_apply_zero
-    fpowerSeriesBilinear_apply_one
-    fpowerSeriesBilinear_apply_two
-    fpowerSeriesBilinear_apply_add_three] fpowerSeriesBilinear
 attribute [simp] fpowerSeriesBilinear
 
 @[simp]

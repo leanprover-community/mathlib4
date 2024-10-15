@@ -66,7 +66,6 @@ theorem objX_add_one (n) :
     objX X (n + 1) = Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ) :=
   rfl
 
-attribute [eqns objX_zero objX_add_one] objX
 attribute [simp] objX
 
 /-- The differentials in the normalized Moore complex.

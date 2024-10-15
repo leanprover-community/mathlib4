@@ -371,8 +371,6 @@ theorem fpowerSeries_apply_one (f : E →L[𝕜] F) (x : E) :
 theorem fpowerSeries_apply_add_two (f : E →L[𝕜] F) (x : E) (n : ℕ) : f.fpowerSeries x (n + 2) = 0 :=
   rfl
 
-attribute
-  [eqns fpowerSeries_apply_zero fpowerSeries_apply_one fpowerSeries_apply_add_two] fpowerSeries
 attribute [simp] fpowerSeries
 
 end ContinuousLinearMap

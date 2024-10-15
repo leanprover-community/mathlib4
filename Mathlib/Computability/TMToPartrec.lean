@@ -1043,9 +1043,6 @@ theorem tr_ret_fix (f k) : tr (Λ'.ret (Cont'.fix f k)) = pop' main (goto fun s 
 
 theorem tr_ret_halt : tr (Λ'.ret Cont'.halt) = (load fun _ => none) halt := rfl
 
-attribute
-  [eqns tr_move tr_push tr_read tr_clear tr_copy tr_succ tr_pred tr_ret_cons₁
-    tr_ret_cons₂ tr_ret_comp tr_ret_fix tr_ret_halt] tr
 attribute [simp] tr
 
 /-- Translating a `Cont` continuation to a `Cont'` continuation simply entails dropping all the
