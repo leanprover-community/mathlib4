@@ -83,14 +83,11 @@ noncomputable def divSlope [DivisionRing K] (p : ℙ K (Fin 2 → K)) : OnePoint
 We establish the equivalence between `OnePoint K` and `ℙ K (Fin 2 → K)` for a division ring `K`.
 -/
 
-/-- In a division ring, if `a₁ ≠ 0 ≠ b₁` then `(a₁ b₁⁻¹) (b₁ a₁⁻¹) = 1`. -/
-lemma rev_div_assoc {K : Type*} [DivisionRing K] {a b : { v : Fin 2 → K // v ≠ 0 }}
-    (ga : ¬a.1 1 = 0) (gb : ¬b.1 1 = 0) : a.1 1 * (b.1 1)⁻¹ * (b.1 1 * (a.1 1)⁻¹) = 1 := by
-  nth_rewrite 1 [mul_assoc]
-  nth_rewrite 2 [← mul_assoc]
-  rw [inv_mul_cancel gb]
-  simp only [ne_eq, Fin.isValue, one_mul]
-  exact GroupWithZero.mul_inv_cancel (a.1 1) ga
+
+/-- In a division ring, if `a ≠ 0 ≠ b` then `(a b⁻¹) (b a⁻¹) = 1`. -/
+lemma rev_div_assoc {K : Type*} [DivisionRing K] {a b : K}
+    (ga : a ≠ 0) (gb : b ≠ 0) : a * b⁻¹ * (b * a⁻¹) = 1 :=
+  (IsUnit.mul_eq_one_iff_inv_eq (by simp_all)).mpr (by simp_all)
 
 /-- `divSlope` respects projective equivalence. -/
 lemma divSlope_inj_lifted [DivisionRing K] (a b : {v : Fin 2 → K // v ≠ 0})
