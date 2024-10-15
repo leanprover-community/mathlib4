@@ -935,6 +935,7 @@ import Mathlib.Analysis.Analytic.Inverse
 import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Analytic.Meromorphic
+import Mathlib.Analysis.Analytic.OfScalars
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Analysis.Analytic.Uniqueness
