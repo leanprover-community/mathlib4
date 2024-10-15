@@ -956,6 +956,7 @@ def trNormal : Code → Cont' → Λ'
   | Code.fix f, k => trNormal f (Cont'.fix f k)
 
 /-- The main program. See the section documentation for details. -/
+@[simp]
 def tr : Λ' → Stmt'
   | Λ'.move p k₁ k₂ q =>
     pop' k₁ <|
@@ -996,9 +997,6 @@ def tr : Λ' → Stmt'
       goto fun s =>
         cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
   | Λ'.ret Cont'.halt => (load fun _ => none) <| halt
-
-/- Porting note: The equation lemma of `tr` simplifies to `match` structures. To prevent this,
-we replace equation lemmas of `tr`. -/
 
 theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
     pop' k₁ (branch (fun s => s.elim true p) (goto fun _ => q)
@@ -1042,11 +1040,6 @@ theorem tr_ret_fix (f k) : tr (Λ'.ret (Cont'.fix f k)) = pop' main (goto fun s 
     cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)) := rfl
 
 theorem tr_ret_halt : tr (Λ'.ret Cont'.halt) = (load fun _ => none) halt := rfl
-
-attribute
-  [eqns tr_move tr_push tr_read tr_clear tr_copy tr_succ tr_pred tr_ret_cons₁
-    tr_ret_cons₂ tr_ret_comp tr_ret_fix tr_ret_halt] tr
-attribute [simp] tr
 
 /-- Translating a `Cont` continuation to a `Cont'` continuation simply entails dropping all the
 data. This data is instead encoded in `trContStack` in the configuration. -/
