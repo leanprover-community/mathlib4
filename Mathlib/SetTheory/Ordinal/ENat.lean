@@ -3,8 +3,7 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Data.ENat.Basic
+import Mathlib.SetTheory.Cardinal.ENat
 import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
@@ -154,14 +153,16 @@ instance : CanLift Ordinal ℕ∞ (↑) (· ≤ ω) where
   prf x := (Set.ext_iff.1 range_ofENat x).2
 
 /-- Unbundled version of `Ordinal.toENat`. -/
-noncomputable def toENatAux : Ordinal.{u} → ℕ∞ := extend Nat.cast Nat.cast fun _ ↦ ⊤
+noncomputable def toENatAux (o : Ordinal.{u}) : ℕ∞ := Cardinal.toENat o.card
 
-lemma toENatAux_nat (n : ℕ) : toENatAux n = n := Nat.cast_injective.extend_apply ..
+lemma toENatAux_nat (n : ℕ) : toENatAux n = n := by
+  rw [toENatAux, card_nat, Cardinal.toENat_nat]
 lemma toENatAux_zero : toENatAux 0 = 0 := toENatAux_nat 0
 lemma toENatAux_one : toENatAux 1 = 1 := by exact_mod_cast toENatAux_nat 1
 
-lemma toENatAux_eq_top {a : Ordinal} (ha : ω ≤ a) : toENatAux a = ⊤ :=
-  extend_apply' _ _ _ fun ⟨n, hn⟩ ↦ ha.not_lt <| hn ▸ nat_lt_omega0 n
+lemma toENatAux_eq_top {a : Ordinal} (ha : ω ≤ a) : toENatAux a = ⊤ := by
+  rw [toENatAux, Cardinal.toENat_eq_top]
+  exact card_le_card ha
 
 lemma toENatAux_ofENat : ∀ n : ℕ∞, toENatAux n = n
   | (n : ℕ) => toENatAux_nat n
@@ -191,40 +192,13 @@ preserves addition, but `→+*o` requires commutativity of addition, which we do
 noncomputable def toENat : Ordinal.{u} →*₀o ℕ∞ where
   toFun := toENatAux
   map_one' := toENatAux_one
-  map_mul' x y := by
-    obtain ⟨m, rfl⟩ | hx := eq_nat_or_omega0_le x <;>
-    obtain ⟨n, rfl⟩ | hy := eq_nat_or_omega0_le y <;>
-    dsimp only
-    · simp [← Ordinal.natCast_mul]
-    · obtain rfl | hm := Nat.eq_zero_or_pos m
-      · simp
-      · rw [toENatAux_nat, toENatAux_eq_top hy, toENatAux_eq_top, ENat.mul_top]
-        · exact_mod_cast hm.ne'
-        · apply hy.trans (le_mul_right _ _)
-          exact_mod_cast hm
-    · obtain rfl | hn := Nat.eq_zero_or_pos n
-      · simp
-      · rw [toENatAux_nat, toENatAux_eq_top hx, toENatAux_eq_top, ENat.top_mul]
-        · exact_mod_cast hn.ne'
-        · apply hx.trans (le_mul_left _ _)
-          exact_mod_cast hn
-    · rw [toENatAux_eq_top, toENatAux_eq_top hx, toENatAux_eq_top hy, ENat.top_mul_top]
-      exact hx.trans (le_mul_left _ (omega0_pos.trans_le hy))
+  map_mul' x y := by simp [toENatAux]
   map_zero' := toENatAux_zero
   monotone' := toENatAux_gc.monotone_u
 
 @[simp]
 theorem toENat_add (x y : Ordinal) : toENat (x + y) = toENat x + toENat y := by
-  dsimp [toENat]
-  obtain ⟨m, rfl⟩ | hx := eq_nat_or_omega0_le x <;>
-  obtain ⟨n, rfl⟩ | hy := eq_nat_or_omega0_le y
-  · simp [toENat, ← Nat.cast_add]
-  · rw [toENatAux_nat, toENatAux_eq_top, toENatAux_eq_top hy, add_top]
-    exact hy.trans (le_add_left _ _)
-  · rw [toENatAux_nat, toENatAux_eq_top, toENatAux_eq_top hx, top_add]
-    exact hx.trans (le_add_right _ _)
-  · rw [toENatAux_eq_top hx, toENatAux_eq_top hy, toENatAux_eq_top, top_add]
-    exact hx.trans (le_add_right _ _)
+  simp [toENat, toENatAux]
 
 /-- The coercion `Ordinal.ofENat` and the projection `Ordinal.toENat` form a Galois connection.
 See also `Ordinal.gciENat`. -/
@@ -283,3 +257,11 @@ def ofENatHom : ℕ∞ →o Ordinal where
   monotone' := ofENat_mono
 
 end Ordinal
+
+@[simp]
+theorem Cardinal.toENat_card (o : Ordinal) : Cardinal.toENat o.card = Ordinal.toENat o :=
+  rfl
+
+@[simp]
+theorem Ordinal.toENat_ord (c : Cardinal) : Ordinal.toENat c.ord = Cardinal.toENat c := by
+  rw [← c.card_ord, Cardinal.toENat_card, c.card_ord]
