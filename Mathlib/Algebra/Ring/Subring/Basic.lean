@@ -662,15 +662,15 @@ variable {K : Type u} [DivisionRing K]
 
 instance instField : Field (center K) where
   inv a := ⟨a⁻¹, Set.inv_mem_center a.prop⟩
-  mul_inv_cancel a ha := Subtype.ext <| mul_inv_cancel₀ <| Subtype.coe_injective.ne ha
+  mul_inv_cancel _ ha := Subtype.ext <| mul_inv_cancel₀ <| Subtype.coe_injective.ne ha
   div a b := ⟨a / b, Set.div_mem_center a.prop b.prop⟩
-  div_eq_mul_inv a b := Subtype.ext <| div_eq_mul_inv _ _
+  div_eq_mul_inv _ _ := Subtype.ext <| div_eq_mul_inv _ _
   inv_zero := Subtype.ext inv_zero
   -- TODO: use a nicer defeq
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q x => rfl
+  qsmul_def := fun _ _ => rfl
 
 @[simp]
 theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=
@@ -805,15 +805,15 @@ theorem mem_closure_iff {s : Set R} {x} :
     x ∈ closure s ↔ x ∈ AddSubgroup.closure (Submonoid.closure s : Set R) :=
   ⟨fun h => by
     induction h using closure_induction with
-    | mem x hx => exact AddSubgroup.subset_closure (Submonoid.subset_closure hx)
+    | mem _ hx => exact AddSubgroup.subset_closure (Submonoid.subset_closure hx)
     | zero => exact zero_mem _
     | one => exact AddSubgroup.subset_closure (one_mem _)
-    | add x y _ _ hx hy => exact add_mem hx hy
-    | neg x _ hx => exact neg_mem hx
-    | mul x y _hx _hy hx hy =>
+    | add _ _ _ _ hx hy => exact add_mem hx hy
+    | neg _ _ hx => exact neg_mem hx
+    | mul _ _ _hx _hy hx hy =>
       clear _hx _hy
       induction hx, hy using AddSubgroup.closure_induction₂ with
-      | mem x y hx hy => exact AddSubgroup.subset_closure (mul_mem hx hy)
+      | mem _ _ hx hy => exact AddSubgroup.subset_closure (mul_mem hx hy)
       | one_left => simpa using zero_mem _
       | one_right => simpa using zero_mem _
       | mul_left _ _ _ _ _ _ h₁ h₂ => simpa [add_mul] using add_mem h₁ h₂
@@ -855,15 +855,15 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x := by
   rw [mem_closure_iff] at hx
   induction hx using AddSubgroup.closure_induction with
-  | mem x hx =>
+  | mem _ hx =>
     obtain ⟨l, hl, h⟩ := Submonoid.exists_list_of_mem_closure hx
     exact ⟨[l], by simp [h]; clear_aux_decl; tauto⟩
   | one => exact ⟨[], List.forall_mem_nil _, rfl⟩
-  | mul x y _ _ hL hM =>
+  | mul _ _ _ _ hL hM =>
     obtain ⟨⟨L, HL1, HL2⟩, ⟨M, HM1, HM2⟩⟩ := And.intro hL hM
     exact ⟨L ++ M, List.forall_mem_append.2 ⟨HL1, HM1⟩, by
       rw [List.map_append, List.sum_append, HL2, HM2]⟩
-  | inv x _ hL =>
+  | inv _ _ hL =>
     obtain ⟨L, hL⟩ := hL
     exact ⟨L.map (List.cons (-1)),
       List.forall_mem_map.2 fun j hj => List.forall_mem_cons.2 ⟨Or.inr rfl, hL.1 j hj⟩,

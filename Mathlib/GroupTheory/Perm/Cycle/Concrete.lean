@@ -325,7 +325,7 @@ theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn :
   rw [formPerm_eq_of_isRotated hn hr]
   rw [get_eq_get_rotate l k k]
   simp only [Nat.mod_eq_of_lt k.2, tsub_add_cancel_of_le (le_of_lt k.2), Nat.mod_self]
-  erw [toList_formPerm_nontrivial]
+  rw [toList_formPerm_nontrivial]
   · simp
   · simpa using hl
   · simpa using hn

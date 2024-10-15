@@ -63,7 +63,7 @@ taking a colimit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
 noncomputable def colimitPresheafOfModules : PresheafOfModules R where
   obj X := colimit (F ⋙ evaluation R X)
-  map {X Y} f := colimMap (whiskerLeft F (restriction R f)) ≫
+  map {_ Y} f := colimMap (whiskerLeft F (restriction R f)) ≫
     (preservesColimitIso (ModuleCat.restrictScalars (R.map f)) (F ⋙ evaluation R Y)).inv
   map_id X := colimit.hom_ext (fun j => by
     dsimp

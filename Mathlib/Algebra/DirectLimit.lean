@@ -203,7 +203,7 @@ def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j 
   lift_of _ _ _
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
-    map (fun i ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (R := R) (M := DirectLimit G f) :=
+    map (fun _ ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (R := R) (M := DirectLimit G f) :=
   DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (by subsingleton) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
@@ -313,7 +313,7 @@ theorem of.zero_exact_aux [∀ i (k : G i), Decidable (k ≠ 0)] [Nonempty ι] [
       ⟨ind, fun _ h => (Finset.not_mem_empty _ h).elim, LinearMap.map_zero _⟩
       (fun x y _ _ ⟨i, hi, hxi⟩ ⟨j, hj, hyj⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
-        ⟨k, fun l hl =>
+        ⟨k, fun _ hl =>
           (Finset.mem_union.1 (DFinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
             fun hl => le_trans (hj _ hl) hjk, by
           simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,
@@ -458,7 +458,7 @@ def map (g : (i : ι) → G i →+ G' i)
   lift_of _ _ _ _ _
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
-    map (fun i ↦ AddMonoidHom.id _) (fun _ _ _ ↦ rfl) = AddMonoidHom.id (DirectLimit G f) :=
+    map (fun _ ↦ AddMonoidHom.id _) (fun _ _ _ ↦ rfl) = AddMonoidHom.id (DirectLimit G f) :=
   DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (by subsingleton) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
@@ -859,7 +859,7 @@ def map (g : (i : ι) → G i →+* G' i)
 variable [Nonempty ι]
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
-    map (fun i ↦ RingHom.id _) (fun _ _ _ ↦ rfl) =
+    map (fun _ ↦ RingHom.id _) (fun _ _ _ ↦ rfl) =
     RingHom.id (DirectLimit G fun _ _ h ↦ f _ _ h) :=
   DFunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ by simp
 
@@ -936,7 +936,7 @@ instance nontrivial [DirectedSystem G fun i j h => f' i j h] :
 theorem exists_inv {p : Ring.DirectLimit G f} : p ≠ 0 → ∃ y, p * y = 1 :=
   Ring.DirectLimit.induction_on p fun i x H =>
     ⟨Ring.DirectLimit.of G f i x⁻¹, by
-      erw [← (Ring.DirectLimit.of _ _ _).map_mul,
+      rw [← (Ring.DirectLimit.of _ _ _).map_mul,
         mul_inv_cancel₀ fun h : x = 0 => H <| by rw [h, (Ring.DirectLimit.of _ _ _).map_zero],
         (Ring.DirectLimit.of _ _ _).map_one]⟩
 
@@ -961,12 +961,12 @@ protected noncomputable abbrev field [DirectedSystem G fun i j h => f' i j h] :
   -- This used to include the parent CommRing and Nontrivial instances,
   -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
   inv := inv G fun i j h => f' i j h
-  mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
+  mul_inv_cancel := fun _ => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
   inv_zero := dif_pos rfl
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 end
 

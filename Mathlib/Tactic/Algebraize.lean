@@ -256,7 +256,7 @@ so in other words it only adds `Algebra` and `IsScalarTower` instances. -/
 syntax "algebraize" (ppSpace config)? (ppSpace algebraizeTermSeq)? : tactic
 
 elab_rules : tactic
-  | `(tactic| algebraize $[$config]? $args) => do
+  | `(tactic| algebraize $[$config]? $args) => withMainContext do
     let cfg ← elabAlgebraizeConfig (mkOptionalNode config)
     let t ← match args with
     | `(algebraizeTermSeq| [$rs,*]) => rs.getElems.mapM fun i => Term.elabTerm i none

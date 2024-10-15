@@ -115,6 +115,20 @@ lemma image_preimage_eq_opensRange_inter (U : Y.Opens) : f ''ᵁ f ⁻¹ᵁ U = 
   apply Opens.ext
   simp [Set.image_preimage_eq_range_inter]
 
+lemma image_injective : Function.Injective (f ''ᵁ ·) := by
+  intro U V hUV
+  simpa using congrArg (f ⁻¹ᵁ ·) hUV
+
+lemma image_iSup {ι : Sort*} (s : ι → X.Opens) :
+    (f ''ᵁ ⨆ (i : ι), s i) = ⨆ (i : ι), f ''ᵁ s i := by
+  ext : 1
+  simp [Set.image_iUnion]
+
+lemma image_iSup₂ {ι : Sort*} {κ : ι → Sort*} (s : (i : ι) → κ i → X.Opens) :
+    (f ''ᵁ ⨆ (i : ι), ⨆ (j : κ i), s i j) = ⨆ (i : ι), ⨆ (j : κ i), f ''ᵁ s i j := by
+  ext : 1
+  simp [Set.image_iUnion₂]
+
 /-- The isomorphism `Γ(Y, f(U)) ≅ Γ(X, U)` induced by an open immersion `f : X ⟶ Y`. -/
 def appIso (U) : Γ(Y, f ''ᵁ U) ≅ Γ(X, U) :=
   (asIso <| LocallyRingedSpace.IsOpenImmersion.invApp f U).symm
@@ -347,6 +361,16 @@ theorem of_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : OpenEmbedding f.1.ba
 instance stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
     IsIso (f.stalkMap x) :=
   inferInstanceAs <| IsIso (f.val.stalkMap x)
+
+lemma of_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion g]
+    [IsOpenImmersion (f ≫ g)] : IsOpenImmersion f :=
+  haveI (x : X) : IsIso (f.stalkMap x) :=
+    haveI : IsIso (g.stalkMap (f.val.base x) ≫ f.stalkMap x) := by
+      rw [← Scheme.stalkMap_comp]
+      infer_instance
+    IsIso.of_isIso_comp_left (f := g.stalkMap (f.val.base x)) _
+  IsOpenImmersion.of_stalk_iso _ <|
+    OpenEmbedding.of_comp _ (Scheme.Hom.openEmbedding g) (Scheme.Hom.openEmbedding (f ≫ g))
 
 theorem iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsOpenImmersion f ↔ OpenEmbedding f.1.base ∧ ∀ x, IsIso (f.stalkMap x) :=
@@ -599,6 +623,12 @@ noncomputable
 def ΓIsoTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
     Γ(X, ⊤) ≅ Γ(Y, f.opensRange) :=
   (f.appIso ⊤).symm ≪≫ Y.presheaf.mapIso (eqToIso f.image_top_eq_opensRange.symm).op
+
+instance {Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [IsOpenImmersion f]
+    (H' : Set.range g.val.base ⊆ Set.range f.val.base) [IsOpenImmersion g] :
+    IsOpenImmersion (IsOpenImmersion.lift f g H') :=
+  haveI : IsOpenImmersion (IsOpenImmersion.lift f g H' ≫ f) := by simpa
+  IsOpenImmersion.of_comp _ f
 
 end IsOpenImmersion
 

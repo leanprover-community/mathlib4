@@ -727,16 +727,17 @@ theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → 
 
 theorem mem_closure_iff {s : Set R} {x} :
     x ∈ closure s ↔ x ∈ AddSubgroup.closure (Subsemigroup.closure s : Set R) :=
+<<<<<<< HEAD
   ⟨fun h => by
     induction h using closure_induction with
-    | mem x hx => exact AddSubgroup.subset_closure (Subsemigroup.subset_closure hx)
+    | mem _ hx => exact AddSubgroup.subset_closure (Subsemigroup.subset_closure hx)
     | zero => exact zero_mem _
-    | add x y _ _ hx hy => exact add_mem hx hy
+    | add _ _ _ _ hx hy => exact add_mem hx hy
     | neg x _ hx => exact neg_mem hx
-    | mul x y _hx _hy hx hy =>
+    | mul _ _ _hx _hy hx hy =>
       clear _hx _hy
       induction hx, hy using AddSubgroup.closure_induction₂ with
-      | mem x y hx hy => exact AddSubgroup.subset_closure (mul_mem hx hy)
+      | mem _ _ hx hy => exact AddSubgroup.subset_closure (mul_mem hx hy)
       | one_left => simpa using zero_mem _
       | one_right => simpa using zero_mem _
       | mul_left _ _ _ _ _ _ h₁ h₂ => simpa [add_mul] using add_mem h₁ h₂
@@ -745,7 +746,7 @@ theorem mem_closure_iff {s : Set R} {x} :
       | inv_right _ _ _ _ h => simpa [mul_neg] using neg_mem h,
   fun h => by
     induction h using AddSubgroup.closure_induction with
-    | mem x hx => induction hx using Subsemigroup.closure_induction with
+    | mem _ hx => induction hx using Subsemigroup.closure_induction with
       | mem _ h => exact subset_closure h
       | mul _ _ _ _ h₁ h₂ => exact mul_mem h₁ h₂
     | one => exact zero_mem _
