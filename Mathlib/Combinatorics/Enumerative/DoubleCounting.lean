@@ -68,8 +68,7 @@ theorem mem_bipartiteAbove {b : β} : b ∈ t.bipartiteAbove r a ↔ b ∈ t ∧
 
 theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (r a b)] :
     (∑ a ∈ s, (t.bipartiteAbove r a).card) = ∑ b ∈ t, (s.bipartiteBelow r b).card := by
-  simp_rw [card_eq_sum_ones, bipartiteAbove, bipartiteBelow, sum_filter]
-  exact sum_comm
+   simp_rw [card_eq_sum_ones, sum_sum_bipartiteAbove_eq_sum_sum_bipartiteBelow]
 
 theorem sum_sum_bipartiteAbove_eq_sum_sum_bipartiteBelow
     [AddCommMonoid R] (f : α → β → R) [∀ a b, Decidable (r a b)] :
