@@ -257,7 +257,7 @@ def toSchemeHom : toScheme Y f ⟶ Y :=
   ⟨toLocallyRingedSpaceHom _ f⟩
 
 @[simp]
-theorem toSchemeHom_toHom : (toSchemeHom Y f)q = f :=
+theorem toSchemeHom_toHom : (toSchemeHom Y f).toPshHom = f :=
   rfl
 
 instance toSchemeHom_isOpenImmersion : AlgebraicGeometry.IsOpenImmersion (toSchemeHom Y f) :=
