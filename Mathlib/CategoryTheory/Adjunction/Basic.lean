@@ -299,12 +299,6 @@ structure CoreHomEquivUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   /-- The relationship between the counit and hom set equivalence of an adjunction -/
   homEquiv_counit : ∀ {X Y g}, (homEquiv X Y).symm g = F.map g ≫ counit.app Y := by aesop_cat
 
-namespace CoreHomEquivUnitCounit
-
-attribute [simp] homEquiv_unit homEquiv_counit
-
-end CoreHomEquivUnitCounit
-
 /-- This is an auxiliary data structure useful for constructing adjunctions.
 See `Adjunction.mkOfHomEquiv`.
 This structure won't typically be used anywhere else.
@@ -372,6 +366,8 @@ attribute [simp] left_triangle right_triangle
 end CoreUnitCounit
 
 variable {F : C ⥤ D} {G : D ⥤ C}
+
+attribute [local simp] CoreHomEquivUnitCounit.homEquiv_unit CoreHomEquivUnitCounit.homEquiv_counit
 
 /--
 Construct an adjunction from the data of a `CoreHomEquivUnitCounit`, i.e. a hom set
