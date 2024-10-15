@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.Invertible.Basic
-import Mathlib.Algebra.Order.Group.Action
 import Mathlib.GroupTheory.Perm.Basic
 
 /-!
@@ -147,19 +146,3 @@ variable [Group α] [Monoid β] [MulAction α β] [SMulCommClass α β β] [IsSc
   ⟨fun h => inv_smul_smul g m ▸ h.smul g⁻¹, IsUnit.smul g⟩
 
 end SMul
-
-lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
-    (h : a ≤ g • a) (n : ℕ) : a ≤ g ^ n • a := by
-  induction' n with n hn
-  · rw [pow_zero, one_smul]
-  · rw [pow_succ', mul_smul]
-    exact h.trans (smul_mono_right g hn)
-
-lemma pow_smul_le {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
-    (h : g • a ≤ a) (n : ℕ) : g ^ n • a ≤ a := by
-  induction' n with n hn
-  · rw [pow_zero, one_smul]
-  · rw [pow_succ', mul_smul]
-    exact (smul_mono_right g hn).trans h
