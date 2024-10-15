@@ -11,7 +11,7 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 # Conversion between `Ordinal` and `ℕ∞`
 
 In this file we define a coercion `Ordinal.ofENat : ℕ∞ → Ordinal`
-and a projection `Ordinal.toENat : Ordinal →+*o ℕ∞`.
+and a projection `Ordinal.toENat : Ordinal →*₀o ℕ∞`.
 We also prove basic theorems about these definitions.
 
 ## Implementation notes
