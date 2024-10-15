@@ -208,7 +208,7 @@ instance (priority := 100) : Limits.HasFiniteProducts C :=
   letI : ∀ (X Y : C), Limits.HasLimit (Limits.pair X Y) := fun _ _ =>
     .mk <| ChosenFiniteProducts.product _ _
   letI : Limits.HasBinaryProducts C := Limits.hasBinaryProducts_of_hasLimit_pair _
-  letI : Limits.HasTerminal C := Limits.hasTerminal_of_unique (𝟙_ _)
+  letI : Limits.HasTerminal C := Limits.hasTerminal_of_unique (𝟙_ C)
   hasFiniteProducts_of_has_binary_and_terminal
 
 end ChosenFiniteProducts
