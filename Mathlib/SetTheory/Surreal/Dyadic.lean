@@ -10,6 +10,7 @@ import Mathlib.RingTheory.Localization.Defs
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Surreal.Multiplication
 import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Dyadic numbers
