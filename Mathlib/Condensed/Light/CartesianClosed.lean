@@ -17,4 +17,10 @@ noncomputable section
 
 open CategoryTheory
 
+variable {C : Type u} [SmallCategory C]
+
+#adaptation_note /-- Added instance. -/
+instance : ChosenFiniteProducts (LightCondSet.{u}) :=
+  inferInstanceAs (ChosenFiniteProducts (Sheaf _ _))
+
 instance : CartesianClosed (LightCondSet.{u}) := inferInstanceAs (CartesianClosed (Sheaf _ _))
