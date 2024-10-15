@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Violeta Hernández Palacios
+Authors: Violeta Hernández Palacios, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Data.ENat.Basic
@@ -215,13 +215,17 @@ noncomputable def toENat : Ordinal.{u} →*₀o ℕ∞ where
 
 @[simp]
 theorem toENat_add (x y : Ordinal) : toENat (x + y) = toENat x + toENat y := by
+  dsimp [toENat]
   obtain ⟨m, rfl⟩ | hx := eq_nat_or_omega0_le x <;>
   obtain ⟨n, rfl⟩ | hy := eq_nat_or_omega0_le y
   · simp [toENat, ← Nat.cast_add]
-  · 
+  · rw [toENatAux_nat, toENatAux_eq_top, toENatAux_eq_top hy, add_top]
+    exact hy.trans (le_add_left _ _)
+  · rw [toENatAux_nat, toENatAux_eq_top, toENatAux_eq_top hx, top_add]
+    exact hx.trans (le_add_right _ _)
+  · rw [toENatAux_eq_top hx, toENatAux_eq_top hy, toENatAux_eq_top, top_add]
+    exact hx.trans (le_add_right _ _)
 
-
-#exit
 /-- The coercion `Ordinal.ofENat` and the projection `Ordinal.toENat` form a Galois connection.
 See also `Ordinal.gciENat`. -/
 lemma enat_gc : GaloisConnection (↑) toENat := toENatAux_gc
@@ -249,13 +253,15 @@ lemma ofENat_toENat_eq_self {a : Ordinal} : toENat a = a ↔ a ≤ ω := by
 
 @[simp] alias ⟨_, ofENat_toENat⟩ := ofENat_toENat_eq_self
 
-lemma toENat_nat (n : ℕ) : toENat n = n := map_natCast _ n
+@[simp] lemma toENat_nat (n : ℕ) : toENat n = n := toENatAux_nat n
 
 @[simp] lemma toENat_le_nat {a : Ordinal} {n : ℕ} : toENat a ≤ n ↔ a ≤ n := toENatAux_le_nat
 @[simp] lemma toENat_eq_nat {a : Ordinal} {n : ℕ} : toENat a = n ↔ a = n := toENatAux_eq_nat
 @[simp] lemma toENat_eq_zero {a : Ordinal} : toENat a = 0 ↔ a = 0 := toENatAux_eq_zero
-@[simp] lemma toENat_le_one {a : Ordinal} : toENat a ≤ 1 ↔ a ≤ 1 := toENat_le_nat
-@[simp] lemma toENat_eq_one {a : Ordinal} : toENat a = 1 ↔ a = 1 := toENat_eq_nat
+@[simp] lemma toENat_le_one {a : Ordinal} : toENat a ≤ 1 ↔ a ≤ 1 := by
+  rw [← Nat.cast_one, toENat_le_nat, Nat.cast_one]
+@[simp] lemma toENat_eq_one {a : Ordinal} : toENat a = 1 ↔ a = 1 := by
+  rw [← Nat.cast_one, toENat_eq_nat, Nat.cast_one]
 
 @[simp] lemma toENat_le_ofNat {a : Ordinal} {n : ℕ} [n.AtLeastTwo] :
     toENat a ≤ no_index (OfNat.ofNat n) ↔ a ≤ OfNat.ofNat n := toENat_le_nat
@@ -271,32 +277,9 @@ theorem toENat_lift {a : Ordinal.{v}} : toENat (lift.{u} a) = toENat a := by
   | inl ha => lift a to ℕ∞ using ha; simp
   | inr ha => simp [toENat_eq_top.2, ha]
 
-@[simp, norm_cast]
-lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injOn <;> simp
-
-@[simp] lemma omega0_add_ofENat (m : ℕ∞) : ω + m = ω := (ofENat_add ⊤ m).symm
-
-@[simp] lemma ofENat_add_omega0 (m : ℕ∞) : m + ω = ω := by rw [add_comm, omega0_add_ofENat]
-
-@[simp] lemma ofENat_mul_omega0 {m : ℕ∞} (hm : m ≠ 0) : ↑m * ω = ω := by
-  induction m with
-  | top => exact omega0_mul_omega0
-  | coe m => rw [ofENat_nat, nat_mul_omega0 (mod_cast hm)]
-
-@[simp] lemma omega0_mul_ofENat {m : ℕ∞} (hm : m ≠ 0) : ω * m = ω := by
-  rw [mul_comm, ofENat_mul_omega0 hm]
-
-@[simp] lemma ofENat_mul (m n : ℕ∞) : ofENat (m * n) = m * n :=
-  toENat_injOn (by simp)
-    (omega0_mul_omega0 ▸ mul_le_mul' (ofENat_le_omega0 _) (ofENat_le_omega0 _)) (by simp)
-
 /-- The coercion `Ordinal.ofENat` as a bundled homomorphism. -/
-def ofENatHom : ℕ∞ →+*o Ordinal where
+def ofENatHom : ℕ∞ →o Ordinal where
   toFun := (↑)
-  map_one' := ofENat_one
-  map_mul' := ofENat_mul
-  map_zero' := ofENat_zero
-  map_add' := ofENat_add
   monotone' := ofENat_mono
 
 end Ordinal
