@@ -7,20 +7,13 @@ import Mathlib.CategoryTheory.Limits.Final
 /-!
 # Sifted categories
 
-A category `C` is Sifted if `C` is nonempty and the diagonal functor `C ⥤ C × C` is final.
+A category `C` is sifted if `C` is nonempty and the diagonal functor `C ⥤ C × C` is final.
 Sifted categories can be caracterized as those such that the colimit functor `(C ⥤ Type) ⥤ Type `
-preserves finite products. We achieve this characterization in this file, as well as providing some
-API to produce `IsSifted` instances.
+preserves finite products.
 
 ## Main results
-- `colimPreservesFiniteProductsOfIsSifted`: The `Type`-valued colimit functor for sifted diagrams
-  preserves finite products.
-- `IsSiftedOfColimitPreservesFiniteProducts`: The converse: if the `Type`-valued colimit functor
-  preserves finite producs, the category is sifted.
-- `IsSiftedOfFinalFunctorFromSifted`: A category admitting a final functor from a sifted category is
-  itself sifted.
-- `IsSiftedOfIsFiltered`: A filtered category is sifted.
-- `IsSiftedOfHasBinaryCoproductsAndNonempty`: A nonempty category with binary copreducts is sifted.
+- `isSifted_of_hasBinaryCoproducts_and_nonempty`: A nonempty category with binary coproducts is
+  sifted.
 
 ## References
 - [nLab, *Sifted category*](https://ncatlab.org/nlab/show/sifted+category)
@@ -53,7 +46,7 @@ namespace IsSifted
 variable {C}
 
 /-- Being sifted is preserved by equivalences of categories -/
-lemma IsSiftedOfEquiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D ≌ C) : IsSifted D :=
+lemma isSifted_of_equiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D ≌ C) : IsSifted D :=
   letI : Final (diag D) := by
     letI : D × D ≌ C × C:= Equivalence.prod e e
     have sq : (e.inverse ⋙ diag D ⋙ this.functor ≅ diag C) :=
@@ -65,9 +58,9 @@ lemma IsSiftedOfEquiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D �
   ⟨⟩
 
 /-- In particular a category is sifted iff and only if it is so when viewed as a small category -/
-lemma IsSifted_iff_asSmallIsSifted : IsSifted C ↔ IsSifted (AsSmall.{w} C) where
-  mp _ := IsSiftedOfEquiv AsSmall.equiv.symm
-  mpr _ := IsSiftedOfEquiv AsSmall.equiv
+lemma isSifted_iff_asSmallIsSifted : IsSifted C ↔ IsSifted (AsSmall.{w} C) where
+  mp _ := isSifted_of_equiv AsSmall.equiv.symm
+  mpr _ := isSifted_of_equiv AsSmall.equiv
 
 /-- A sifted category is connected. -/
 instance [IsSifted C]: IsConnected C :=
@@ -101,7 +94,7 @@ instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C := by
       Zag.of_hom <| StructuredArrow.homMk <| coprod.desc g.fst g.snd⟩, rfl⟩
 
 /-- A nonempty category with binary coproducts is sifted. -/
-instance IsSiftedOfHasBinaryCoproductsAndNonempty [_root_.Nonempty C] [HasBinaryCoproducts C] :
+instance isSifted_of_hasBinaryCoproducts_and_nonempty [_root_.Nonempty C] [HasBinaryCoproducts C] :
     IsSifted C where
 
 end IsSifted
