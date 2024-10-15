@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Yunzhou Xie
+Authors: Kevin Buzzard, Jujian Zhang, Yunzhou Xie
 -/
 
 import Mathlib.Algebra.Central.Defs
@@ -61,7 +61,8 @@ section MatrixAlgebra
 variable (K : Type u) [Field K]
 
 open Matrix in
-instance MatrixRing.isCentral (ι : Type) [Fintype ι] [Nonempty ι] [DecidableEq ι] :
+/-- Matrix Algebra is central -/
+instance MatrixRing.isCentral (ι : Type*) [Fintype ι] [Nonempty ι] [DecidableEq ι] :
     Algebra.IsCentral K (Matrix ι ι K) where
   out := fun _ h => mem_range_scalar_of_commute_stdBasisMatrix fun _ _ _ =>
     Subalgebra.mem_center_iff.mp h _
