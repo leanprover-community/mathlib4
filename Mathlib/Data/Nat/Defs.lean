@@ -745,7 +745,7 @@ lemma leRec_trans {n m k} {motive : (m : ℕ) → n ≤ m → Sort*} (refl le_su
 lemma leRec_succ_left {motive : (m : ℕ) → n ≤ m → Sort*}
     (refl le_succ_of_le) {m} (h1 : n ≤ m) (h2 : n + 1 ≤ m) :
     -- the `@` is needed for this to elaborate, even though we only provide explicit arguments!
-    @leRec _ _ (le_succ_of_le le_rfl refl) (fun k h ih => le_succ_of_le (le_of_succ_le h) ih) _ h2 =
+    @leRec _ _ (le_succ_of_le le_rfl refl) (fun _ h ih => le_succ_of_le (le_of_succ_le h) ih) _ h2 =
       leRec (motive := motive) refl le_succ_of_le h1 := by
   rw [leRec_trans _ _ (le_succ n) h2, leRec_succ']
 
@@ -875,7 +875,7 @@ lemma decreasingInduction_succ {n} {motive : (m : ℕ) → m ≤ n + 1 → Sort*
     (mn : m ≤ n) (msn : m ≤ n + 1) :
     (decreasingInduction (motive := motive) of_succ self msn : motive m msn) =
       decreasingInduction (motive := fun m h => motive m (le_succ_of_le h))
-        (fun i hi => of_succ _ _) (of_succ _ _ self) mn := by
+        (fun _ _ => of_succ _ _) (of_succ _ _ self) mn := by
   dsimp only [decreasingInduction]; rw [leRec_succ]
 
 @[simp]
@@ -886,7 +886,7 @@ lemma decreasingInduction_succ' {n} {motive : (m : ℕ) → m ≤ n + 1 → Sort
 lemma decreasingInduction_trans {motive : (m : ℕ) → m ≤ k → Sort*} (hmn : m ≤ n) (hnk : n ≤ k)
     (of_succ self) :
     (decreasingInduction (motive := motive) of_succ self (Nat.le_trans hmn hnk) : motive m _) =
-    decreasingInduction (fun n ih => of_succ _ _) (decreasingInduction of_succ self hnk) hmn := by
+    decreasingInduction (fun _ _ => of_succ _ _) (decreasingInduction of_succ self hnk) hmn := by
   induction hnk with
   | refl => rw [decreasingInduction_self]
   | step hnk ih =>
@@ -919,7 +919,7 @@ def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ m : ℕ, P m 0) (H0b 
     (H : ∀ x y : ℕ, P x y.succ → P x.succ y → P x.succ y.succ) : ∀ n m : ℕ, P n m
   | m, 0 => Ha0 m
   | 0, n => H0b n
-  | Nat.succ m, Nat.succ n => H _ _ (pincerRecursion Ha0 H0b H _ _) (pincerRecursion Ha0 H0b H _ _)
+  | Nat.succ _, Nat.succ _ => H _ _ (pincerRecursion Ha0 H0b H _ _) (pincerRecursion Ha0 H0b H _ _)
 
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `m ≤ k < n`, then `P n` implies `P m`.
 Also works for functions to `Sort*`.
@@ -939,7 +939,7 @@ def decreasingInduction' {P : ℕ → Sort*} (h : ∀ k < n, m ≤ k → P (k + 
 @[elab_as_elim]
 theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)) (hb : ∀ b, P 0 (b + 1))
     (hd : ∀ a b, a < b → P (a + 1) b → P a (b + 1) → P (a + 1) (b + 1)) : ∀ a b, a < b → P a b
-  | 0, b + 1, _ => hb _
+  | 0, _ + 1, _ => hb _
   | a + 1, b + 1, h => by
     apply hd _ _ (Nat.add_lt_add_iff_right.1 h)
     · have this : a + 1 = b ∨ a + 1 < b := by omega
@@ -1305,7 +1305,7 @@ lemma div_lt_div_of_lt_of_dvd {a b d : ℕ} (hdb : d ∣ b) (h : a < b) : a / d 
 
 /-! ### Decidability of predicates -/
 
-instance decidableLoHi (lo hi : ℕ) (P : ℕ → Prop) [H : DecidablePred P] :
+instance decidableLoHi (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x < hi → P x) :=
   decidable_of_iff (∀ x < hi - lo, P (lo + x)) <| by
     refine ⟨fun al x hl hh ↦ ?_,

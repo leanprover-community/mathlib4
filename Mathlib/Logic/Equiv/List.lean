@@ -259,11 +259,11 @@ def raise : List ℕ → ℕ → List ℕ
   | m :: l, n => (m + n) :: raise l (m + n)
 
 theorem lower_raise : ∀ l n, lower (raise l n) n = l
-  | [], n => rfl
+  | [], _ => rfl
   | m :: l, n => by rw [raise, lower, Nat.add_sub_cancel_right, lower_raise l]
 
 theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
-  | [], n, _ => rfl
+  | [], _, _ => rfl
   | m :: l, n, h => by
     have : n ≤ m := List.rel_of_sorted_cons h _ (l.mem_cons_self _)
     simp [raise, lower, Nat.sub_add_cancel this, raise_lower h.of_cons]
@@ -309,11 +309,11 @@ def raise' : List ℕ → ℕ → List ℕ
   | m :: l, n => (m + n) :: raise' l (m + n + 1)
 
 theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
-  | [], n => rfl
+  | [], _ => rfl
   | m :: l, n => by simp [raise', lower', add_tsub_cancel_right, lower_raise']
 
 theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
-  | [], n, _, _ => rfl
+  | [], _, _, _ => rfl
   | m :: l, n, h₁, h₂ => by
     have : n ≤ m := h₁ _ (l.mem_cons_self _)
     simp [raise', lower', Nat.sub_add_cancel this,

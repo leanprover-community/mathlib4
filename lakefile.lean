@@ -35,8 +35,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.longLine, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
   ⟨`linter.style.missingEnd, true⟩,
-  ⟨`linter.style.setOption, true⟩,
-  ⟨`aesop.warn.applyIff, false⟩ -- This became a problem after https://github.com/leanprover-community/aesop/commit/29cf094e84ae9852f0011b47b6ddc684ffe4be5f
+  ⟨`linter.style.setOption, true⟩
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
