@@ -172,7 +172,7 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
   rw [mem_vanishingIdeal_singleton_iff, eval_eq'] at hp
   simpa only [map_sum ϕ, ϕ.map_mul, map_prod ϕ, ϕ.map_pow, ϕ.map_zero, hx] using congr_arg ϕ hp
 
-set_option synthInstance.maxHeartbeats 100000 in
+set_option synthInstance.maxHeartbeats 200000 in
 
 /-- Main statement of the Nullstellensatz -/
 @[simp]
