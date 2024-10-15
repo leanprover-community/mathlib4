@@ -164,6 +164,13 @@ def boundary (n : ℕ) : SSet.{u} where
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
 scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
+#adaptation_note
+/--
+The new unused variable linter in
+https://github.com/leanprover/lean4/pull/5338
+flags `{ α : Δ[n].obj m // _ }`.
+-/
+set_option linter.unusedVariables false in
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
 def boundaryInclusion (n : ℕ) : ∂Δ[n] ⟶ Δ[n] where app m (α : { α : Δ[n].obj m // _ }) := α
 
@@ -184,6 +191,13 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
 /-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
 scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
+#adaptation_note
+/--
+The new unused variable linter in
+https://github.com/leanprover/lean4/pull/5338
+flags `{ α : Δ[n].obj m // _ }`.
+-/
+set_option linter.unusedVariables false in
 /-- The inclusion of the `i`-th horn of the `n`-th standard simplex into that standard simplex. -/
 def hornInclusion (n : ℕ) (i : Fin (n + 1)) : Λ[n, i] ⟶ Δ[n] where
   app m (α : { α : Δ[n].obj m // _ }) := α
@@ -437,7 +451,7 @@ noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
   obj Δ :=
     { left := SSet.standardSimplex.obj Δ
       right := terminal _
-      hom := { app := fun Δ' => terminal.from _ } }
+      hom := { app := fun _ => terminal.from _ } }
   map θ :=
     { left := SSet.standardSimplex.map θ
       right := terminal.from _ }

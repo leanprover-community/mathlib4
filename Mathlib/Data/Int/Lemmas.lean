@@ -108,7 +108,7 @@ end Intervals
 theorem toNat_of_nonpos : ∀ {z : ℤ}, z ≤ 0 → z.toNat = 0
   | 0, _ => rfl
   | (n + 1 : ℕ), h => (h.not_lt (by simp)).elim
-  | -[n+1], _ => rfl
+  | -[_+1], _ => rfl
 
 /-! ### bitwise ops
 
