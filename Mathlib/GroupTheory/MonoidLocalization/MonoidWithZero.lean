@@ -5,6 +5,7 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids with zeroes
