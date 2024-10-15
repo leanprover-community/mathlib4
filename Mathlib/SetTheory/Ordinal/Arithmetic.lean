@@ -2481,7 +2481,7 @@ noncomputable def rank (a : α) : Ordinal.{u} :=
 
 @[deprecated IsWellFounded.rank_eq (since := "2024-09-07")]
 theorem rank_eq :
-    hwf.rank a = Ordinal.sup.{u, u} fun b : { b // r b a } => Order.succ <| hwf.rank b := by
+    hwf.rank a = ⨆ b : { b // r b a }, Order.succ (hwf.rank b) := b := by
   rw [rank, Acc.rank_eq]
   rfl
 

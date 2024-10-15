@@ -1009,9 +1009,6 @@ theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
     propext ((@Mem.congr_left a c hx).trans (@Mem.congr_right b d hy _)))).mpr PSet.mem_wf
 
-instance : IsWellFounded ZFSet (· ∈ ·) :=
-  ⟨mem_wf⟩
-
 /-- Induction on the `∈` relation. -/
 @[elab_as_elim]
 theorem inductionOn {p : ZFSet → Prop} (x) (h : ∀ x, (∀ y ∈ x, p y) → p x) : p x :=
