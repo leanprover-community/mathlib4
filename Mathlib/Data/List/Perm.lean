@@ -51,25 +51,6 @@ theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l�
 theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₃ ⊆ l₁ ↔ l₃ ⊆ l₂ :=
   ⟨fun h' => h'.trans h.subset, fun h' => h'.trans h.symm.subset⟩
 
-/-- Variant of `Perm.foldr_eq` with explicit commutativity argument. -/
-theorem Perm.foldr_eq' {f : α → β → β} {l₁ l₂ : List α} (p : l₁ ~ l₂)
-    (comm : ∀ x ∈ l₁, ∀ y ∈ l₁, ∀ z, f y (f x z) = f x (f y z))
-    (init : β) : foldr f init l₁ = foldr f init l₂ := by
-  induction p using recOnSwap' generalizing init with
-  | nil => simp
-  | cons x _p IH =>
-    simp only [foldr]
-    congr 1
-    apply IH; intros; apply comm <;> exact .tail _ ‹_›
-  | swap' x y _p IH =>
-    simp only [foldr]
-    rw [comm x (.tail _ <| .head _) y (.head _)]
-    congr 2
-    apply IH; intros; apply comm <;> exact .tail _ (.tail _ ‹_›)
-  | trans p₁ _p₂ IH₁ IH₂ =>
-    refine (IH₁ comm init).trans (IH₂ ?_ _)
-    intros; apply comm <;> apply p₁.symm.subset <;> assumption
-
 section Rel
 
 open Relator
@@ -116,7 +97,7 @@ theorem rel_perm_imp (hr : RightUnique r) : (Forall₂ r ⇒ Forall₂ r ⇒ (·
   have : (flip (Forall₂ r) ∘r Perm ∘r Forall₂ r) b d := ⟨a, h₁, c, h, h₂⟩
   have : ((flip (Forall₂ r) ∘r Forall₂ r) ∘r Perm) b d := by
     rwa [← forall₂_comp_perm_eq_perm_comp_forall₂, ← Relation.comp_assoc] at this
-  let ⟨b', ⟨c', hbc, hcb⟩, hbd⟩ := this
+  let ⟨b', ⟨_, hbc, hcb⟩, hbd⟩ := this
   have : b' = b := right_unique_forall₂' hr hcb hbc
   this ▸ hbd
 
@@ -149,12 +130,6 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
     rwa [perm_singleton.mp hla, sublist_singleton] at h
   · rintro (rfl | rfl)
     exacts [nil_subperm, Subperm.refl _]
-
-attribute [simp] nil_subperm
-
-@[simp]
-theorem subperm_nil : List.Subperm l [] ↔ l = [] :=
-  ⟨fun h ↦ length_eq_zero.1 <| Nat.le_zero.1 h.length_le, by rintro rfl; rfl⟩
 
 lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons_self _ _⟩
 
@@ -606,7 +581,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       convert hk' using 1
       exact get_insertNth_add_succ _ _ _ 0 _
     · obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt H'
-      erw [length_insertNth _ _ hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
+      rw [length_insertNth _ _ hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
       rw [get_insertNth_add_succ]
       · convert get_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
         · simp [Nat.add_assoc, Nat.add_left_comm]

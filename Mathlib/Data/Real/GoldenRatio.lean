@@ -109,7 +109,7 @@ theorem goldConj_ne_zero : ψ ≠ 0 :=
 
 theorem neg_one_lt_goldConj : -1 < ψ := by
   rw [neg_lt, ← inv_gold]
-  exact inv_lt_one one_lt_gold
+  exact inv_lt_one_of_one_lt₀ one_lt_gold
 
 /-!
 ## Irrationality

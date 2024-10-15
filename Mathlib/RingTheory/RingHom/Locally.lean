@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.RingTheory.Localization.Away.Lemmas
 
 /-!
 # Target local closure of ring homomorphism properties
@@ -122,43 +123,12 @@ lemma locally_of (hP : RespectsIso P) (f : R →+* S) (hf : P f) : Locally P f :
   exact hP.left f e hf
 
 /-- If `P` is local on the target, then `Locally P` coincides with `P`. -/
-lemma locally_eq_of_localizationSpanTarget (hPi : RespectsIso P)
+lemma locally_iff_of_localizationSpanTarget (hPi : RespectsIso P)
     (hPs : OfLocalizationSpanTarget P) {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
     Locally P f ↔ P f :=
   ⟨fun ⟨s, hsone, hs⟩ ↦ hPs f s hsone (fun a ↦ hs a.val a.property), locally_of hPi f⟩
 
 section OfLocalizationSpanTarget
-
-private noncomputable abbrev locallyAuxFun (s : Set S) (t : (r : s) → Set (Localization.Away r.val))
-    (p : (a : s) × t a) : S :=
-  p.1 * (IsLocalization.Away.sec p.1.1 p.2.1).1
-
-private lemma span_range_locallyAuxFun_eq_top {s : Set S} (hsone : Ideal.span s = ⊤)
-    {t : (r : s) → Set (Localization.Away r.val)} (htone : ∀ (r : s), Ideal.span (t r) = ⊤) :
-    Ideal.span (Set.range (locallyAuxFun s t)) = ⊤ := by
-  rw [← Ideal.radical_eq_top, eq_top_iff, ← hsone, Ideal.span_le]
-  intro a ha
-  have h₁ : Ideal.span (t ⟨a, ha⟩) ≤ Ideal.span
-      (algebraMap S (Localization.Away a) '' Set.range (locallyAuxFun s t)) := by
-    rw [Ideal.span_le]
-    intro x hx
-    rw [SetLike.mem_coe, IsLocalization.mem_span_map (Submonoid.powers a)]
-    refine ⟨a * (IsLocalization.Away.sec a x).1, Ideal.subset_span ⟨⟨⟨a, ha⟩, ⟨x, hx⟩⟩, rfl⟩, ?_⟩
-    use ⟨a ^ ((IsLocalization.Away.sec a x).2 + 1), _, rfl⟩
-    rw [IsLocalization.eq_mk'_iff_mul_eq, map_pow, map_mul, ← map_pow, pow_add, map_mul,
-      ← mul_assoc, IsLocalization.Away.sec_spec a x, mul_comm, pow_one]
-  have h₂ : IsLocalization.mk' (Localization.Away a) 1 (1 : Submonoid.powers a) ∈ Ideal.span
-      (algebraMap S (Localization.Away a) '' (Set.range <| locallyAuxFun s t)) := by
-    rw [IsLocalization.mk'_one]
-    apply h₁
-    simp [htone]
-  rw [IsLocalization.mem_span_map (Submonoid.powers a)] at h₂
-  obtain ⟨y, hy, ⟨-, m, rfl⟩, hyz⟩ := h₂
-  rw [IsLocalization.eq] at hyz
-  obtain ⟨⟨-, n, rfl⟩, hc⟩ := hyz
-  simp only [← mul_assoc, OneMemClass.coe_one, one_mul, mul_one] at hc
-  use n + m
-  simpa [pow_add, hc] using Ideal.mul_mem_left _ _ hy
 
 /-- `Locally P` is local on the target. -/
 lemma locally_ofLocalizationSpanTarget (hP : RespectsIso P) :
@@ -166,7 +136,8 @@ lemma locally_ofLocalizationSpanTarget (hP : RespectsIso P) :
   intro R S _ _ f s hsone hs
   choose t htone ht using hs
   rw [locally_iff_exists hP]
-  refine ⟨(a : s) × t a, locallyAuxFun s t, span_range_locallyAuxFun_eq_top hsone htone,
+  refine ⟨(a : s) × t a, IsLocalization.Away.mulNumerator s t,
+      IsLocalization.Away.span_range_mulNumerator_eq_top hsone htone,
       fun ⟨a, b⟩ ↦ Localization.Away b.val, inferInstance, inferInstance, fun ⟨a, b⟩ ↦ ?_, ?_⟩
   · haveI : IsLocalization.Away ((algebraMap S (Localization.Away a.val))
         (IsLocalization.Away.sec a.val b.val).1) (Localization.Away b.val) := by
