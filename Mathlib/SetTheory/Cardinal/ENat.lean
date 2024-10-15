@@ -23,6 +23,8 @@ We define `Cardinal.toENat` as a bundled homomorphism
 so that we can use all the theorems about homomorphisms without specializing them to this function.
 Since it is not registered as a coercion, the argument about delaboration does not apply.
 
+This file is very similar to SetTheory/Ordinal/ENat. Please keep them in sync.
+
 ## Keywords
 
 set theory, cardinals, extended natural numbers

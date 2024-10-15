@@ -2247,6 +2247,11 @@ theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
 @[deprecated (since := "2024-09-30")]
 alias nat_lt_omega := nat_lt_omega0
 
+theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
+  obtain ho | ho := lt_or_le o ω
+  · exact Or.inl <| lt_omega0.1 ho
+  · exact Or.inr ho
+
 theorem omega0_pos : 0 < ω :=
   nat_lt_omega0 0
 
@@ -2281,6 +2286,11 @@ theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
 
 @[deprecated (since := "2024-09-30")]
 alias omega_le := omega0_le
+
+instance canLiftOrdinalNat : CanLift Ordinal ℕ (↑) fun x => x < ω :=
+  ⟨fun _ hx =>
+    let ⟨n, hn⟩ := lt_omega0.mp hx
+    ⟨n, hn.symm⟩⟩
 
 @[simp]
 theorem iSup_natCast : iSup Nat.cast = ω :=
