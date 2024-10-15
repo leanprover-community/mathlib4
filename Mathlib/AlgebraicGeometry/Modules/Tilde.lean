@@ -186,11 +186,6 @@ lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
     (s : (tildeInModuleCat M).1.obj (op U)) (x : U) :
     (r • s).1 x = r • (s.1 x) := rfl
 
-private lemma smul_germ (r : R) (U : Opens (PrimeSpectrum.Top R)) (x) (hx : x ∈ U)
-    (s : (tildeInModuleCat M).1.obj (op U)) :
-    r • (tildeInModuleCat M).germ U x hx s =
-    (tildeInModuleCat M).germ U x hx (r • s) := by rw [map_smul]
-
 lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
     (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
     st = 0 := by
@@ -311,13 +306,6 @@ theorem stalkToFiberLinearMap_germ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeS
       (TopCat.Presheaf.germ (tildeInModuleCat M) U x hx s) = (s.1 ⟨x, hx⟩ : _) :=
   DFunLike.ext_iff.1 (germ_comp_stalkToFiberLinearMap M U x hx) s
 
--- @[simp]
--- theorem stalkToFiberLinearMap_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
---     (s : (tildeInModuleCat M).1.obj (op U)) :
---     stalkToFiberLinearMap M x (TopCat.Presheaf.germ (tildeInModuleCat M) x s) =
---     s.1 x := by
---   cases x; exact stalkToFiberLinearMap_germ' M U _ _ _
-
 @[simp]
 theorem toOpen_germ (U : Opens (PrimeSpectrum.Top R)) (x) (hx : x ∈ U) :
     toOpen M U ≫ TopCat.Presheaf.germ (tildeInModuleCat M) U x hx = toStalk M x := by
@@ -358,12 +346,6 @@ theorem const_apply (m : M) (r : R) (U : Opens (PrimeSpectrum.Top R))
     (const M m r U hu).1 x = LocalizedModule.mk m ⟨r, hu x x.2⟩ :=
   rfl
 
--- theorem const_apply' (m : M) (r : R) (U : Opens (PrimeSpectrum.Top R))
---     (hu : ∀ x ∈ U, r ∈ (x : PrimeSpectrum.Top R).asIdeal.primeCompl) (x : U)
---     (hx : r ∈ (x : PrimeSpectrum.Top R).asIdeal.primeCompl) :
---     (const M m r U hu).1 x = LocalizedModule.mk m ⟨r, hx⟩ :=
---   rfl
-
 theorem exists_const (U) (s : (tildeInModuleCat M).obj (op U)) (x : PrimeSpectrum.Top R)
     (hx : x ∈ U) :
     ∃ (V : Opens (PrimeSpectrum.Top R)) (_ : x ∈ V) (i : V ⟶ U) (f : M) (g : R) (hg : _),
@@ -390,11 +372,6 @@ theorem exists_const (U) (s : (tildeInModuleCat M).obj (op U)) (x : PrimeSpectru
 theorem res_const (f : M) (g : R) (U hu V hv i) :
     (tildeInModuleCat M).map i (const M f g U hu) = const M f g V hv :=
   rfl
-
--- theorem res_const' (f : M) (g : R) (V hv) : (tildeInModuleCat M).map (homOfLE hv).op
---     (const M f g (PrimeSpectrum.basicOpen g) fun _ => id) =
---       const M f g V hv :=
---   rfl
 
 @[simp]
 theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.primeCompl) :
