@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.RingTheory.OreLocalization.Basic
+import Mathlib.GroupTheory.Congruence.Hom
+import Mathlib.GroupTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids
