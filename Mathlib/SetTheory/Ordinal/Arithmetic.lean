@@ -2433,8 +2433,8 @@ theorem rank_eq (h : Acc r a) :
 theorem rank_lt_of_rel (hb : Acc r b) (h : r a b) : (hb.inv h).rank < hb.rank :=
   (Order.lt_succ _).trans_le <| by
     rw [hb.rank_eq]
-    refine le_trans ?_ (Ordinal.le_iSup _ ⟨a, h⟩)
-    rfl
+    let x : {a // r a b} := ⟨a, h⟩
+    exact Ordinal.le_iSup _ x
 
 end Acc
 
@@ -2448,9 +2448,8 @@ smallest ordinal greater than the ranks of all elements below it (i.e. elements 
 noncomputable def rank (a : α) : Ordinal.{u} :=
   (hwf.apply r a).rank
 
-theorem rank_eq (a : α) : rank r a = ⨆ b : { b // r b a }, succ (rank r b) := by
-  rw [rank, Acc.rank_eq]
-  rfl
+theorem rank_eq (a : α) : rank r a = ⨆ b : { b // r b a }, succ (rank r b) :=
+  (hwf.apply r a).rank_eq
 
 variable {r} in
 theorem rank_lt_of_rel (h : r a b) : rank r a < rank r b :=
@@ -2480,10 +2479,8 @@ noncomputable def rank (a : α) : Ordinal.{u} :=
   (hwf.apply a).rank
 
 @[deprecated IsWellFounded.rank_eq (since := "2024-09-07")]
-theorem rank_eq :
-    hwf.rank a = ⨆ b : { b // r b a }, Order.succ (hwf.rank b) := b := by
-  rw [rank, Acc.rank_eq]
-  rfl
+theorem rank_eq : hwf.rank a = ⨆ b : { b // r b a }, Order.succ (hwf.rank b) :=
+  (hwf.apply a).rank_eq
 
 @[deprecated IsWellFounded.rank_lt_of_rel (since := "2024-09-07")]
 theorem rank_lt_of_rel (h : r a b) : hwf.rank a < hwf.rank b :=
