@@ -92,7 +92,7 @@ theorem isIntegral {x x' : A} (hx : IsIntegral R x) (h : IsConjRoot R x x') :
 
 /--
 A general form of `IsConjRoot.eq_of_isConjRoot_algebraMap`, only assuming `Nontrivial R`,
-`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`
+`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`.
 -/
 theorem eq_of_isConjRoot_algebraMap' [Nontrivial R] {A} [CommRing A] [IsDomain A] [Algebra R A]
     [NoZeroSMulDivisors R A] {r : R} {x : A} (h : IsConjRoot R x (algebraMap R A r))
@@ -108,8 +108,8 @@ theorem eq_of_isConjRoot_algebraMap {A} [CommRing A] [IsDomain A] [Nontrivial A]
   eq_of_isConjRoot_algebraMap' h (algebraMap K A).injective
 
 /--
-A general form of `IsConj.eq_zero`, only assuming `Nontrivial R`,
-`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`
+A general form of `IsConjRoot.eq_zero`, only assuming `Nontrivial R`,
+`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`.
 -/
 theorem eq_zero' [Nontrivial R] {A} [CommRing A] [IsDomain A] [Algebra R A]
     [NoZeroSMulDivisors R A] {x : A} (h : IsConjRoot R x 0)
@@ -121,8 +121,8 @@ theorem eq_zero {A} [CommRing A] [IsDomain A] [Algebra K A] {x : A}
   eq_zero' h (algebraMap K A).injective
 
 /--
-A general form of `IsConj.iff_eq_zero'`, only assuming `Nontrivial R`,
-`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`
+A general form of `IsConjRoot.iff_eq_zero'`, only assuming `Nontrivial R`,
+`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`.
 -/
 theorem iff_eq_zero' {A} [Nontrivial R] [CommRing A] [IsDomain A] [Algebra R A]
     [NoZeroSMulDivisors R A] {x : A} (hf : Function.Injective (algebraMap R A)) :
@@ -135,8 +135,8 @@ theorem iff_eq_zero {A} [CommRing A] [IsDomain A] [Algebra K A]
   iff_eq_zero' (algebraMap K A).injective
 
 /--
-A general form of `IsConj.ne_zero'`, only assuming `Nontrivial R`,
-`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`
+A general form of `IsConjRoot.ne_zero'`, only assuming `Nontrivial R`,
+`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`.
 -/
 theorem ne_zero' {A} [Nontrivial R] [CommRing A] [IsDomain A] [Algebra R A]
     [NoZeroSMulDivisors R A] {x x' : A} (hx : x ≠ 0) (h : IsConjRoot R x x')
