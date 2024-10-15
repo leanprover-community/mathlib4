@@ -1206,7 +1206,7 @@ attribute [elementwise] invApp_app
 
 @[reassoc (attr := simp)]
 theorem app_invApp (U : Opens Y) :
-    f.c.app (op U) ≫ H.invApp _ ((Opens.map f.1.base).obj U) =
+    f.c.app (op U) ≫ H.invApp _ ((Opens.map f.base).obj U) =
       Y.presheaf.map
         ((homOfLE (Set.image_preimage_subset f.base U.1)).op :
           op U ⟶ op (opensFunctor f |>.obj ((Opens.map f.base).obj U))) :=
@@ -1214,8 +1214,8 @@ theorem app_invApp (U : Opens Y) :
 
 /-- A variant of `app_inv_app` that gives an `eqToHom` instead of `homOfLe`. -/
 @[reassoc]
-theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.1.base) :
-    f.c.app (op U) ≫ H.invApp _ ((Opens.map f.1.base).obj U) =
+theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
+    f.c.app (op U) ≫ H.invApp _ ((Opens.map f.base).obj U) =
       Y.presheaf.map
         (eqToHom <|
             le_antisymm (Set.image_preimage_subset f.base U.1) <|
