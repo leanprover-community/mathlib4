@@ -4199,6 +4199,7 @@ import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Algebraize
+import Mathlib.Tactic.Analogy
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
