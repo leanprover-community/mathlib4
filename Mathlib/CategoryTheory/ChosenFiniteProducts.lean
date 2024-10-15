@@ -118,6 +118,7 @@ lemma hom_ext {T X Y : C} (f g : T ⟶ X ⊗ Y)
     f = g :=
   (product X Y).isLimit.hom_ext fun ⟨j⟩ => j.recOn h_fst h_snd
 
+-- Similarly to `CategoryTheory.Limits.prod.comp_lift`, we do not make the `assoc` version a simp lemma
 @[reassoc, simp]
 lemma comp_lift {V W X Y : C} (f : V ⟶ W) (g : W ⟶ X) (h : W ⟶ Y) :
     f ≫ lift g h = lift (f ≫ g) (f ≫ h) := by ext <;> simp
