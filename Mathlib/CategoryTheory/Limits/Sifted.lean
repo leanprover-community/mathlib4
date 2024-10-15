@@ -7,20 +7,13 @@ import Mathlib.CategoryTheory.Limits.Final
 /-!
 # Sifted categories
 
-A category `C` is Sifted if `C` is nonempty and the diagonal functor `C ⥤ C × C` is final.
+A category `C` is sifted if `C` is nonempty and the diagonal functor `C ⥤ C × C` is final.
 Sifted categories can be caracterized as those such that the colimit functor `(C ⥤ Type) ⥤ Type `
-preserves finite products. We achieve this characterization in this file, as well as providing some
-API to produce `IsSifted` instances.
+preserves finite products.
 
 ## Main results
-- `colimPreservesFiniteProductsOfIsSifted`: The `Type`-valued colimit functor for sifted diagrams
-  preserves finite products.
-- `IsSiftedOfColimitPreservesFiniteProducts`: The converse: if the `Type`-valued colimit functor
-  preserves finite producs, the category is sifted.
-- `IsSiftedOfFinalFunctorFromSifted`: A category admitting a final functor from a sifted category is
-  itself sifted.
-- `IsSiftedOfIsFiltered`: A filtered category is sifted.
-- `IsSiftedOfHasBinaryCoproductsAndNonempty`: A nonempty category with binary copreducts is sifted.
+- `isSifted_of_hasBinaryCoproducts_and_nonempty`: A nonempty category with binary coproducts is
+  sifted.
 
 ## References
 - [nLab, *Sifted category*](https://ncatlab.org/nlab/show/sifted+category)
