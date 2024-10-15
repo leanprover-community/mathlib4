@@ -113,16 +113,15 @@ lemma ConvexOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : Convex
     ∃ x₀ ∈ C, (𝓝 x₀).IsBoundedUnder (· ≤ ·) f,
     ∀ ⦃x₀⦄, x₀ ∈ C → (𝓝 x₀).IsBoundedUnder (· ≤ ·) f,
     ∀ ⦃x₀⦄, x₀ ∈ C → (𝓝 x₀).IsBoundedUnder (· ≤ ·) |f|] := by
-  tfae_have 1 → 2
-  · exact LocallyLipschitzOn.continuousOn
-  tfae_have 2 → 3
-  · obtain ⟨x₀, hx₀⟩ := hC'
+  tfae_have 1 → 2 := LocallyLipschitzOn.continuousOn
+  tfae_have 2 → 3 := by
+    obtain ⟨x₀, hx₀⟩ := hC'
     exact fun h ↦ ⟨x₀, hx₀, h.continuousAt <| hC.mem_nhds hx₀⟩
   tfae_have 3 → 4
-  · rintro ⟨x₀, hx₀, h⟩
-    exact ⟨x₀, hx₀, f x₀ + 1, by simpa using h.eventually (eventually_le_nhds (by simp))⟩
+  | ⟨x₀, hx₀, h⟩ =>
+    ⟨x₀, hx₀, f x₀ + 1, by simpa using h.eventually (eventually_le_nhds (by simp))⟩
   tfae_have 4 → 5
-  · rintro ⟨x₀, hx₀, r, hr⟩ x hx
+  | ⟨x₀, hx₀, r, hr⟩, x, hx => by
     have : ∀ᶠ δ in 𝓝 (0 : ℝ), (1 - δ)⁻¹ • x - (δ / (1 - δ)) • x₀ ∈ C := by
       have h : ContinuousAt (fun δ : ℝ ↦ (1 - δ)⁻¹ • x - (δ / (1 - δ)) • x₀) 0 := by
         fun_prop (disch := norm_num)
@@ -144,10 +143,9 @@ lemma ConvexOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : Convex
       f z ≤ max (f w) (f y) :=
         hf.le_max_of_mem_segment (hr hw).2 hy ⟨_, _, hδ₀.le, sub_nonneg.2 hδ₁.le, by simp, hwyz⟩
       _ ≤ max r (f y) := by gcongr; exact (hr hw).1
-  tfae_have 6 ↔ 5
-  · exact forall₂_congr fun x₀ hx₀ ↦ hf.isBoundedUnder_abs (hC.mem_nhds hx₀)
+  tfae_have 6 ↔ 5 := forall₂_congr fun x₀ hx₀ ↦ hf.isBoundedUnder_abs (hC.mem_nhds hx₀)
   tfae_have 6 → 1
-  · rintro h x hx
+  | h, x, hx => by
     obtain ⟨r, hr⟩ := h hx
     obtain ⟨ε, hε, hεD⟩ := Metric.mem_nhds_iff.1 <| Filter.inter_mem (hC.mem_nhds hx) hr
     simp only [preimage_setOf_eq, Pi.abs_apply, subset_inter_iff, hC.nhdsWithin_eq hx] at hεD ⊢
