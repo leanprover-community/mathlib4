@@ -15,7 +15,7 @@ The main results are the following:
 - `List.nil_not_mem_groupBy`: the empty list is not contained in `List.groupBy`.
 - `List.chain'_of_mem_groupBy`: any two adjacent elements in a list in `List.groupBy` are related by
   the specified relation.
-- `List.chain'_getLast_head_groupByBy`: the last element of each list in `List.groupBy` is not
+- `List.chain'_getLast_head_groupBy`: the last element of each list in `List.groupBy` is not
   related to the first element of the next list.
 -/
 
@@ -107,7 +107,7 @@ theorem chain'_of_mem_groupBy {r : α → α → Bool} {l : List α} (h : m ∈ 
     · rintro _ ⟨⟩
     · exact chain'_nil
 
-private theorem chain'_getLast_head_groupByByLoop {r : α → α → Bool} (l : List α) {a : α}
+private theorem chain'_getLast_head_groupByLoop {r : α → α → Bool} (l : List α) {a : α}
     {g : List α} {gs : List (List α)} (hgs' : [] ∉ gs)
     (hgs : gs.Chain' fun b a ↦ ∃ ha hb, r (a.getLast ha) (b.head hb) = false)
     (hga : ∀ m ∈ gs.head?, ∃ ha hb, r (m.getLast ha) ((g.reverse ++ [a]).head hb) = false) :
@@ -131,12 +131,12 @@ private theorem chain'_getLast_head_groupByByLoop {r : α → α → Bool} (l : 
         apply chain'_cons'.2 ⟨hga, hgs⟩
       · simpa
 
-theorem chain'_getLast_head_groupByBy (r : α → α → Bool) (l : List α) :
+theorem chain'_getLast_head_groupBy (r : α → α → Bool) (l : List α) :
     (l.groupBy r).Chain' fun a b ↦ ∃ ha hb, r (a.getLast ha) (b.head hb) = false := by
   cases l with
   | nil => exact chain'_nil
   | cons _ _ =>
-    apply chain'_getLast_head_groupByByLoop _ (not_mem_nil _) chain'_nil
+    apply chain'_getLast_head_groupByLoop _ (not_mem_nil _) chain'_nil
     rintro _ ⟨⟩
 
 end List
