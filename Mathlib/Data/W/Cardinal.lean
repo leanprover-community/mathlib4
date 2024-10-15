@@ -67,7 +67,7 @@ theorem cardinal_mk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
         _ ≤ m * ⨆ a, m ^ lift.{u} #(β a) := mul_le_mul' (le_max_left _ _) le_rfl
         _ = m :=
           mul_eq_left (le_max_right _ _)
-              (ciSup_le' fun i => pow_le (le_max_right _ _) (lt_aleph0_of_finite _)) <|
+              (ciSup_le' fun _ => pow_le (le_max_right _ _) (lt_aleph0_of_finite _)) <|
             pos_iff_ne_zero.1 <|
               Order.succ_le_iff.1
                 (by

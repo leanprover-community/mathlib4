@@ -298,8 +298,8 @@ variable {C}
 -/
 @[simps]
 def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M.X i) where
-  hom := biproduct.lift fun i j k => if h : j = i then eqToHom (congr_arg M.X h) else 0
-  inv := biproduct.desc fun i j k => if h : i = k then eqToHom (congr_arg M.X h) else 0
+  hom := biproduct.lift fun i j _ => if h : j = i then eqToHom (congr_arg M.X h) else 0
+  inv := biproduct.desc fun i _ k => if h : i = k then eqToHom (congr_arg M.X h) else 0
   hom_inv_id := by
     simp only [biproduct.lift_desc]
     funext i j

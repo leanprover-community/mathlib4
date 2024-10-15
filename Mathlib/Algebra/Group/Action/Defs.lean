@@ -645,11 +645,11 @@ protected def Function.End := α → α
 instance : Monoid (Function.End α) where
   one := id
   mul := (· ∘ ·)
-  mul_assoc f g h := rfl
-  mul_one f := rfl
-  one_mul f := rfl
+  mul_assoc _ _ _ := rfl
+  mul_one _ := rfl
+  one_mul _ := rfl
   npow n f := f^[n]
-  npow_succ n f := Function.iterate_succ _ _
+  npow_succ _ _ := Function.iterate_succ _ _
 
 instance : Inhabited (Function.End α) := ⟨1⟩
 

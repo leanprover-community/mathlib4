@@ -293,8 +293,8 @@ representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
 noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶ A) ≃ₗ[k] A where
   toFun f := f.hom (Finsupp.single 1 1)
-  map_add' x y := rfl
-  map_smul' r x := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
   invFun x := leftRegularHom A x
   left_inv f := by
     refine Action.Hom.ext (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring ?_)
@@ -373,7 +373,7 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
         dsimp
         rw [ρ_inv_self_apply]
         rfl}
-  left_inv f := Action.Hom.ext (TensorProduct.ext' fun _ _ => rfl)
+  left_inv _ := Action.Hom.ext (TensorProduct.ext' fun _ _ => rfl)
   right_inv f := by ext; rfl
 
 variable {A B C}

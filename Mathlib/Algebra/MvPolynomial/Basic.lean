@@ -373,7 +373,7 @@ theorem induction_on' {P : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
   Finsupp.induction p
     (suffices P (monomial 0 0) by rwa [monomial_zero] at this
     show P (monomial 0 0) from h1 0 0)
-    fun a b f _ha _hb hPf => h2 _ _ (h1 _ _) hPf
+    fun _ _ _ _ha _hb hPf => h2 _ _ (h1 _ _) hPf
 
 /-- Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is required. -/
 theorem induction_on''' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
