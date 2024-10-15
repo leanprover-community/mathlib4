@@ -150,8 +150,7 @@ variable {𝕂 : Type*} (𝔸 : Type*) [RCLike 𝕂] [NormedDivisionRing 𝔸] [
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₁ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 (-(k : 𝕂)) b c).radius = ⊤ := by
   refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
-  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat (-(k : 𝕂)) b c
-    (Or.inl (neg_neg _).symm) (by omega)
+  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat (-(k : 𝕂)) b c (by aesop) (by omega)
 
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 a (-(k : 𝕂)) c).radius = ⊤ := by
@@ -161,13 +160,12 @@ theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {k : ℕ} :
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₃ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 a b (-(k : 𝕂))).radius = ⊤ := by
   refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
-  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b (-(k : 𝕂))
-    (Or.inr <| Or.inr (neg_neg _).symm) (by omega)
+  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b (-(k : 𝕂)) (by aesop) (by omega)
 
 /-- An iff variation on `ordinaryHypergeometricSeries_eq_zero_of_nonpos_int` for `[RCLike 𝕂]`. -/
 lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :
     ordinaryHypergeometricSeries 𝔸 a b c n = 0 ↔
-      ∃ k < n, (k = -a ∨ k = -b ∨ k = -c) := by
+      ∃ k < n, k = -a ∨ k = -b ∨ k = -c := by
   refine ⟨fun h ↦ ?_, fun zero ↦ ?_⟩
   · rw [ordinaryHypergeometricSeries,
       smul_eq_zero (c:=(_ * (Polynomial.eval c (ascPochhammer 𝕂 n))⁻¹))
@@ -175,15 +173,15 @@ lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :
     cases' h with h hm
     · simp only [_root_.mul_eq_zero, inv_eq_zero] at h
       rcases h with ((hn | h) | h) | h
-      · exact False.elim <| Nat.cast_ne_zero.2 (Nat.factorial_ne_zero n) hn
+      · simp [Nat.factorial_ne_zero] at hn
       all_goals
-        let ⟨kn, hkn, hn⟩ := (ascPochhammer_eval_eq_zero_iff _ _).1 h
+        obtain ⟨kn, hkn, hn⟩ := (ascPochhammer_eval_eq_zero_iff _ _).1 h
         exact ⟨kn, hkn, by tauto⟩
     · rw [ContinuousMultilinearMap.ext_iff] at hm
       absurd hm
       push_neg
       exact ⟨fun _ ↦ 1, by simp⟩
-  · have ⟨_, h, hn⟩ := zero
+  · obtain ⟨_, h, hn⟩ := zero
     exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b c hn h
 
 theorem ordinaryHypergeometricSeries_succ_norm_div_norm (n : ℕ)
@@ -214,33 +212,17 @@ theorem ordinaryHypergeometricSeries_succ_norm_div_norm (n : ℕ)
     exact fun kn hkn ↦ by simp [habc kn hkn]
   exact cast_ne_zero.2 (factorial_ne_zero n)
 
-private theorem linear_div_tendsto_one_atTop :
-    Tendsto (fun (k:ℕ) ↦ (a + k) / (b + k)) atTop (𝓝 1) := by
-  apply Filter.Tendsto.congr'
-  case f₁ => exact fun k ↦ (a * (↑k)⁻¹ + 1) / (b * (↑k)⁻¹ + 1)
-  refine ((eventually_ne_atTop 0).mp (Eventually.of_forall ?_))
-  · intro h hx
-    simp only []
-    have hx' := (Nat.cast_ne_zero (R:=𝕂)).2 hx
-    rw [← mul_div_mul_right _ _ hx', add_mul, add_mul, inv_mul_cancel_right₀ hx',
-      inv_mul_cancel_right₀ hx', one_mul]
-  · apply (div_self (G₀ := 𝕂) one_ne_zero) ▸ Filter.Tendsto.div _ _ one_ne_zero
-    all_goals
-      apply zero_add (1:𝕂) ▸ Filter.Tendsto.add_const 1 _
-      apply mul_zero (_:𝕂) ▸ Filter.Tendsto.const_mul _ _
-      exact RCLike.tendsto_inverse_atTop_nhds_zero_nat 𝕂
-
 /-- The ratio of successive terms of `ordinaryHypergeometricSeries` tends to one. This theorem
 is used in the proof `ordinaryHypergeometric_ratio_tendsto_nhds_atTop`. -/
 theorem ordinaryHypergeometricSeries_ratio_tendsto_one_atTop :
-    Tendsto (fun (k:ℕ) ↦ (a + k) * (b + k) * (c + k)⁻¹ * ((1 : 𝕂) + k)⁻¹) atTop (𝓝 1) := by
+    Tendsto (fun k : ℕ ↦ (a + k) * (b + k) * (c + k)⁻¹ * ((1 : 𝕂) + k)⁻¹) atTop (𝓝 1) := by
   conv =>
     enter [1, n]
     rw [mul_assoc, ← mul_inv, ← div_eq_mul_inv, mul_div_mul_comm]
-  apply (mul_one (1:𝕂)) ▸ Filter.Tendsto.mul
-  all_goals apply linear_div_tendsto_one_atTop
+  apply (mul_one (1 : 𝕂)) ▸ Filter.Tendsto.mul <;>
+  convert RCLike.tendsto_add_div_add_atTop_nhds _ _ (1 : 𝕂) one_ne_zero <;> simp
 
-/-- The ratio of successive terms of the sum `ordinaryHypergeometric a b c r` is `r`. This theroem
+/-- The ratio of successive terms of the sum `ordinaryHypergeometric a b c r` is `r`. This theorem
 is used for the ratio test in `ordinaryHypergeometricSeries_radius_eq_one`. -/
 theorem ordinaryHypergeometric_ratio_tendsto_nhds_atTop {r : ℝ} (hr : 0 < r)
     (habc : ∀ kn : ℕ, ↑kn ≠ -a ∧ ↑kn ≠ -b ∧ ↑kn ≠ -c) : Tendsto (fun n ↦

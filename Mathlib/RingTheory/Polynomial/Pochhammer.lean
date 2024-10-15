@@ -372,7 +372,7 @@ theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
   rw [← Nat.cast_add, descPochhammer_eval_eq_descFactorial ℤ (a + b) b,
     Nat.add_descFactorial_eq_ascFactorial]
 
-variable {R : Type u} [Ring R]
+variable {R}
 
 /- The Pochhammer polynomial of degree `n` has roots at `0`, `-1`, ..., `-(n - 1)`. -/
 theorem ascPochhammer_eval_neg_coe_nat_of_lt {n k : ℕ} (h : k < n) :
@@ -396,7 +396,7 @@ theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
       rw [ascPochhammer_succ_eval, mul_eq_zero] at zero'
       cases zero' with
       | inl h =>
-        have ⟨rn, hrn, rrn⟩ := ih h
+        obtain ⟨rn, hrn, rrn⟩ := ih h
         exact ⟨rn, by omega, rrn⟩
       | inr h =>
         exact ⟨n, lt_add_one n, eq_neg_of_add_eq_zero_right h⟩
