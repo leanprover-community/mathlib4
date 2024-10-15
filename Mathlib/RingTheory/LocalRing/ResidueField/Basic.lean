@@ -50,22 +50,22 @@ variable {R}
 namespace ResidueField
 
 /-- A local ring homomorphism into a field can be descended onto the residue field. -/
-def lift {R S : Type*} [CommRing R] [LocalRing R] [Field S] (f : R →+* S) [IsLocalRingHom f] :
+def lift {R S : Type*} [CommRing R] [LocalRing R] [Field S] (f : R →+* S) [IsLocalHom f] :
     LocalRing.ResidueField R →+* S :=
   Ideal.Quotient.lift _ f fun a ha =>
     by_contradiction fun h => ha (isUnit_of_map_unit f a (isUnit_iff_ne_zero.mpr h))
 
 theorem lift_comp_residue {R S : Type*} [CommRing R] [LocalRing R] [Field S] (f : R →+* S)
-    [IsLocalRingHom f] : (lift f).comp (residue R) = f :=
+    [IsLocalHom f] : (lift f).comp (residue R) = f :=
   RingHom.ext fun _ => rfl
 
 @[simp]
 theorem lift_residue_apply {R S : Type*} [CommRing R] [LocalRing R] [Field S] (f : R →+* S)
-    [IsLocalRingHom f] (x) : lift f (residue R x) = f x :=
+    [IsLocalHom f] (x) : lift f (residue R x) = f x :=
   rfl
 
 /-- The map on residue fields induced by a local homomorphism between local rings -/
-def map (f : R →+* S) [IsLocalRingHom f] : ResidueField R →+* ResidueField S :=
+def map (f : R →+* S) [IsLocalHom f] : ResidueField R →+* ResidueField S :=
   Ideal.Quotient.lift (maximalIdeal R) ((Ideal.Quotient.mk _).comp f) fun a ha => by
     erw [Ideal.Quotient.eq_zero_iff_mem]
     exact map_nonunit f a ha
@@ -84,11 +84,11 @@ theorem map_comp (f : T →+* R) (g : R →+* S) [IsLocalHom f] [IsLocalHom g] :
       (LocalRing.ResidueField.map g).comp (LocalRing.ResidueField.map f) :=
   Ideal.Quotient.ringHom_ext <| RingHom.ext fun _ => rfl
 
-theorem map_comp_residue (f : R →+* S) [IsLocalRingHom f] :
+theorem map_comp_residue (f : R →+* S) [IsLocalHom f] :
     (ResidueField.map f).comp (residue R) = (residue S).comp f :=
   rfl
 
-theorem map_residue (f : R →+* S) [IsLocalRingHom f] (r : R) :
+theorem map_residue (f : R →+* S) [IsLocalHom f] (r : R) :
     ResidueField.map f (residue R r) = residue S (f r) :=
   rfl
 

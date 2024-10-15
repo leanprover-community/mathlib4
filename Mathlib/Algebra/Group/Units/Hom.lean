@@ -222,6 +222,9 @@ class IsLocalHom (f : F) : Prop where
   /-- A local homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
 
+@[deprecated (since := "2024-10-10")]
+alias IsLocalRingHom := IsLocalHom
+
 @[simp]
 theorem IsUnit.of_map (f : F) [IsLocalHom f] (a : R) (h : IsUnit (f a)) : IsUnit a :=
   IsLocalHom.map_nonunit a h
@@ -261,7 +264,7 @@ alias isLocalRingHom_toMonoidHom := isLocalHom_toMonoidHom
 
 theorem MonoidHom.isLocalHom_of_comp (f : R →* S) (g : S →* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=
-  ⟨fun _ h => (isUnit_map_iff (g.comp f) _).mp (h.map g)⟩
+  ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (ha.map g)⟩
 
 @[deprecated (since := "2024-10-10")]
 alias MonoidHom.isLocalRingHom_of_comp := MonoidHom.isLocalHom_of_comp

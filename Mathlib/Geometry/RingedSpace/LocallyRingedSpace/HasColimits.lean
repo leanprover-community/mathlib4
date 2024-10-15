@@ -255,6 +255,8 @@ noncomputable def coequalizer : LocallyRingedSpace where
   localRing x := by
     obtain ⟨y, rfl⟩ :=
       (TopCat.epi_iff_surjective (coequalizer.π f.val g.val).base).mp inferInstance x
+    -- TODO: this instance was found automatically before #6045
+    have _ : IsLocalHom ((coequalizer.π f.val g.val).stalkMap y) := inferInstance
     exact ((coequalizer.π f.val g.val : _).stalkMap y).domain_localRing
 
 /-- The explicit coequalizer cofork of locally ringed spaces. -/
@@ -284,7 +286,7 @@ noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g)
     set h := _
     change IsLocalHom h
     suffices _ : IsLocalHom (((coequalizerCofork f g).π.1.stalkMap _).comp h) by
-      apply isLocalRingHom_of_comp _ ((coequalizerCofork f g).π.1.stalkMap _)
+      apply isLocalHom_of_comp _ ((coequalizerCofork f g).π.1.stalkMap _)
     -- note to reviewers: this `change` is now more brittle because it now has to fully resolve
     -- the type to be able to search for `MonoidHomClass`, even though of course all homs in
     -- `CommRingCat` are clearly such

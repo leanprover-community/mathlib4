@@ -79,6 +79,15 @@ lemma evaluation_ne_zero_iff_mem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U))
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
+
+-- TODO: This instance is found before #6045.
+-- We need this strange instance for `residueFieldMap`, the type of `F` must be fixed
+-- like this. The instance `IsLocalHom (f.stalkMap x)` already exists, but does not work for
+-- `residueFieldMap`.
+instance (x): IsLocalHom (F := Y.presheaf.stalk (f.val.base x) →+* X.presheaf.stalk x)
+    (f.stalkMap x) :=
+  f.2 x
+
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
 def Hom.residueFieldMap (f : X.Hom Y) (x : X) :

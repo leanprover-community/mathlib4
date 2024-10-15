@@ -682,9 +682,6 @@ lemma stalkMap_germ_apply (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) (y) :
       X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
   PresheafedSpace.stalkMap_germ_apply f.val U x hx y
 
-instance isLcalRingHomStalkMap (x : X) : IsLocalRingHom (f.stalkMap x) :=
-  f.2 x
-
 end Scheme
 
 end Stalks
