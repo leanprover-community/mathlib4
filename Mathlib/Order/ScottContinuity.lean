@@ -214,8 +214,6 @@ end Products
 
 section SemilatticeSup
 
-variable [SemilatticeSup β]
-
 variable [Preorder α]
 
 lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
