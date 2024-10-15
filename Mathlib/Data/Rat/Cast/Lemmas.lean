@@ -75,67 +75,24 @@ theorem cast_zpow_of_ne_zero {K} [DivisionSemiring K] (q : ℚ≥0) (z : ℤ) (h
     congr
     rw [cast_inv_of_ne_zero hq]
 
-namespace NNRat
-
-@[simp, norm_cast]
-theorem cast_pow {K} [DivisionSemiring K] (q : ℚ≥0) (n : ℕ) :
-    NNRat.cast (q ^ n) = (NNRat.cast q : K) ^ n := by
-  rw [cast_def, cast_def, den_pow, num_pow, Nat.cast_pow, Nat.cast_pow, div_eq_mul_inv, ← inv_pow,
-    ← (Nat.cast_commute _ _).mul_pow, ← div_eq_mul_inv]
-
-theorem cast_zpow_of_ne_zero {K} [DivisionSemiring K] (q : ℚ≥0) (z : ℤ) (hq : (q.num : K) ≠ 0) :
-    NNRat.cast (q ^ z) = (NNRat.cast q : K) ^ z := by
-  obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
-  · simp
-  · simp_rw [zpow_neg, zpow_natCast, ← inv_pow, NNRat.cast_pow]
-    congr
-    rw [cast_inv_of_ne_zero hq]
+theorem divNat_eq_div (a b : ℕ) : divNat a b = a / b := by
+  ext
+  simp [Rat.mkRat_eq_div]
 
 open OfNat in
-theorem _root_.ofScientific_def {K} [DivisionSemiring K] (m : ℕ) (s : Bool) (e : ℕ) :
-    (OfScientific.ofScientific m s e : K)
-      = (ofNat m : ℕ) * (10 : K) ^ (cond s (-(ofNat e)) (ofNat e) : ℤ) := by
-  rw [← NNRat.cast_ofScientific, ← NNRat.cast_natCast]
-  change NNRat.cast ⟨Rat.ofScientific (ofNat m) s (ofNat e), _⟩ = _
-  generalize_proofs h _
-  revert h
-  generalize hq : Rat.ofScientific (ofNat m) s (ofNat e) = q
-  intro hq'
-  lift q to ℚ≥0 using hq' with q''
+theorem ofScientific_def (m : ℕ) (s : Bool) (e : ℕ) :
+    (OfScientific.ofScientific m s e : ℚ≥0)
+      = (ofNat m : ℕ) * 10 ^ (cond s (-(ofNat e)) (ofNat e) : ℤ) := by
+  ext
+  refine Rat.ofScientific_def.trans ?_
   cases s
-  · rw [Rat.ofScientific_false_def] at hq
-  by_cases h : (10 : K) = 0
-  · obtain rfl | he := eq_or_ne (ofNat e) 0
-    · simp only [neg_zero, Bool.cond_self, zpow_zero, mul_one]
-      congr
-      cases s
-      · rw [Rat.ofScientific_false_def, pow_zero, mul_one]
-      · rw [Rat.ofScientific_true_def, pow_zero, Rat.mkRat_one, Int.cast_natCast]
-    · rw [h]
-      congr
-      cases s
-      · rw [cond_false, zpow_ofNat, zero_pow_eq, if_neg he, mul_zero]
-      · rw [Rat.ofScientific_true_def, pow_zero, Rat.mkRat_one, Int.cast_natCast]
-        rfl
-
-    simp [h]
-  rw [←NNRat.cast_ofNat 10, ← NNRat.cast_zpow_of_ne_zero, ← NNRat.cast_mul_of_ne_zero]
-  · congr
-    cases s
-    · rw [Rat.ofScientific_false_def]
-      simp [zpow_ofNat]
-      rfl
-    · rw [Rat.ofScientific_true_def]
-      simp [Rat.mkRat_eq_div, div_eq_mul_inv, zpow_ofNat]
-      rfl
-  · simp
-  · cases s
-    · simp [zpow_ofNat, NNRat.den_ofNat]
-    · simp [zpow_ofNat, -inv_pow]
-      rw [← inv_pow, den_pow, Nat.cast_pow, pow_eq_zero_iff', den_inv_of_ne_zero, num_ofNat]
-      simp?
-      sorry
-  · sorry
+  · simp [zpow_ofNat]
+    rfl
+  · rw [Rat.mkRat_eq_divInt, if_pos rfl]
+    rw [← NNRat.coe_divNat, divNat_eq_div, Nat.cast_pow, div_eq_mul_inv, cond,
+      zpow_neg, coe_mul, coe_mul, coe_inv, coe_inv, cast_natCast, cast_natCast, cast_pow,
+      zpow_ofNat]
+    rfl
 
 open OfScientific in
 theorem Nonneg.coe_ofScientific {K} [LinearOrderedField K] (m : ℕ) (s : Bool) (e : ℕ) :
