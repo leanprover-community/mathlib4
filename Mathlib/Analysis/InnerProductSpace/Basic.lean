@@ -470,7 +470,7 @@ def toNormedAddCommGroup : NormedAddCommGroup F :=
           simp only [← inner_self_eq_norm_mul_norm, inner_add_add_self, mul_add, mul_comm, map_add]
           linarith
         exact nonneg_le_nonneg_of_sq_le_sq (add_nonneg (sqrt_nonneg _) (sqrt_nonneg _)) this
-      eq_zero_of_map_eq_zero' := fun x hx =>
+      eq_zero_of_map_eq_zero' := fun _ hx =>
         normSq_eq_zero.1 <| (sqrt_eq_zero inner_self_nonneg).1 hx }
 
 attribute [local instance] toNormedAddCommGroup
@@ -2040,7 +2040,7 @@ theorem OrthogonalFamily.inner_right_dfinsupp
     ⟪V i v, l.sum fun j => V j⟫ = l.sum fun j => fun w => ⟪V i v, V j w⟫ :=
       DFinsupp.inner_sum (fun j => V j) l (V i v)
     _ = l.sum fun j => fun w => ite (i = j) ⟪V i v, V j w⟫ 0 :=
-      (congr_arg l.sum <| funext fun j => funext <| hV.eq_ite v)
+      (congr_arg l.sum <| funext fun _ => funext <| hV.eq_ite v)
     _ = ⟪v, l i⟫ := by
       simp only [DFinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
         DFinsupp.mem_support_toFun]
@@ -2240,7 +2240,7 @@ def InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
     NormedSpace.restrictScalars ℝ 𝕜
       E with
     norm_sq_eq_inner := norm_sq_eq_inner
-    conj_symm := fun x y => inner_re_symm _ _
+    conj_symm := fun _ _ => inner_re_symm _ _
     add_left := fun x y z => by
       change re ⟪x + y, z⟫ = re ⟪x, z⟫ + re ⟪y, z⟫
       simp only [inner_add_left, map_add]
@@ -2367,6 +2367,33 @@ theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {
     Algebra.smul_def (‖c‖ ^ 2) ⟪T x, x⟫, algebraMap_eq_ofReal]
 
 end ReApplyInnerSelf_Seminormed
+
+section SeparationQuotient
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+theorem Inseparable.inner_eq_inner {x₁ x₂ y₁ y₂ : E}
+    (hx : Inseparable x₁ x₂) (hy : Inseparable y₁ y₂) :
+    inner x₁ y₁ = (inner x₂ y₂ : 𝕜) :=
+  ((hx.prod hy).map continuous_inner).eq
+
+namespace SeparationQuotient
+
+instance : Inner 𝕜 (SeparationQuotient E) where
+  inner := SeparationQuotient.lift₂ Inner.inner fun _ _ _ _ => Inseparable.inner_eq_inner
+
+@[simp]
+theorem inner_mk_mk (x y : E) :
+    inner (mk x) (mk y) = (inner x y : 𝕜) := rfl
+
+instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
+  norm_sq_eq_inner := Quotient.ind norm_sq_eq_inner
+  conj_symm := Quotient.ind₂ inner_conj_symm
+  add_left := Quotient.ind fun x => Quotient.ind₂ <| inner_add_left x
+  smul_left := Quotient.ind₂ inner_smul_left
+
+end SeparationQuotient
+
+end SeparationQuotient
 
 section UniformSpace.Completion
 

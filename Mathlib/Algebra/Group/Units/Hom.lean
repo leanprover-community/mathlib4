@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 -/
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 
 /-!
 # Monoid homomorphisms and units
@@ -164,7 +164,7 @@ end MonoidHom
 
 namespace IsUnit
 
-variable {F G α M N : Type*} [FunLike F M N] [FunLike G N M]
+variable {F G M N : Type*} [FunLike F M N] [FunLike G N M]
 
 section Monoid
 

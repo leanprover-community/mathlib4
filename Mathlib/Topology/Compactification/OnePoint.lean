@@ -187,7 +187,7 @@ instance : TopologicalSpace (OnePoint X) where
     rw [preimage_sUnion]
     exact isOpen_biUnion fun s hs => (ho s hs).2
 
-variable {s : Set (OnePoint X)} {t : Set X}
+variable {s : Set (OnePoint X)}
 
 theorem isOpen_def :
     IsOpen s ↔ (∞ ∈ s → IsCompact ((↑) ⁻¹' s : Set X)ᶜ) ∧ IsOpen ((↑) ⁻¹' s : Set X) :=
@@ -393,7 +393,7 @@ noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [T
         ⟨fun x ↦ f x, ⟨f ∞, continuous_iff_from_discrete f |>.mp <| map_continuous f⟩⟩
       exact Classical.choose_spec f'.property
     · simp
-  right_inv f := rfl
+  right_inv _ := rfl
 
 lemma continuous_iff_from_nat {Y : Type*} [TopologicalSpace Y] (f : OnePoint ℕ → Y) :
     Continuous f ↔ Tendsto (fun x : ℕ ↦ f x) atTop (𝓝 (f ∞)) := by
