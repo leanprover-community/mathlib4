@@ -399,7 +399,7 @@ instance : IsIso 𝒰.fromGlued :=
   let F := Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToSheafedSpace ⋙
     SheafedSpace.forgetToPresheafedSpace
   have : IsIso (F.map (fromGlued 𝒰)) := by
-    change @IsIso (PresheafedSpace _) _ _ _ 𝒰.fromGlued.toHom
+    change IsIso 𝒰.fromGlued.toPshHom
     apply PresheafedSpace.IsOpenImmersion.to_iso
   isIso_of_reflects_iso _ F
 

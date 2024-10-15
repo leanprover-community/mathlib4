@@ -128,7 +128,7 @@ theorem appIso_inv_naturality {U V : X.Opens} (i : op U ⟶ op V) :
 theorem appIso_hom (U) :
     (f.appIso U).hom = f.app (f ''ᵁ U) ≫ X.presheaf.map
       (eqToHom (preimage_image_eq f U).symm).op :=
-  (PresheafedSpace.IsOpenImmersion.inv_invApp f.toHom U).trans (by rw [eqToHom_op])
+  (PresheafedSpace.IsOpenImmersion.inv_invApp f.toPshHom U).trans (by rw [eqToHom_op])
 
 theorem appIso_hom' (U) :
     (f.appIso U).hom = f.appLE (f ''ᵁ U) U (preimage_image_eq f U).ge :=
@@ -257,7 +257,7 @@ def toSchemeHom : toScheme Y f ⟶ Y :=
   ⟨toLocallyRingedSpaceHom _ f⟩
 
 @[simp]
-theorem toSchemeHom_toHom : (toSchemeHom Y f).toHom = f :=
+theorem toSchemeHom_toHom : (toSchemeHom Y f)q = f :=
   rfl
 
 instance toSchemeHom_isOpenImmersion : AlgebraicGeometry.IsOpenImmersion (toSchemeHom Y f) :=
@@ -268,7 +268,7 @@ theorem scheme_eq_of_locallyRingedSpace_eq {X Y : Scheme.{u}}
   cases X; cases Y; congr
 
 theorem scheme_toScheme {X Y : Scheme.{u}} (f : X ⟶ Y) [AlgebraicGeometry.IsOpenImmersion f] :
-    toScheme Y f.toHom = X := by
+    toScheme Y f.toPshHom = X := by
   apply scheme_eq_of_locallyRingedSpace_eq
   exact locallyRingedSpace_toLocallyRingedSpace f.toLRSHom
 
@@ -335,12 +335,12 @@ theorem to_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsOpenImmersion f] [Epi f.b
   @isIso_of_reflects_iso _ _ _ _ _ _ f
     (Scheme.forgetToLocallyRingedSpace ⋙
       LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace)
-    (@PresheafedSpace.IsOpenImmersion.to_iso _ _ _ _ f.toHom h _) _
+    (@PresheafedSpace.IsOpenImmersion.to_iso _ _ _ _ f.toPshHom h _) _
 
 theorem of_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : OpenEmbedding f.base)
     [∀ x, IsIso (f.stalkMap x)] : IsOpenImmersion f :=
-  haveI (x : X) : IsIso (f.toHom.stalkMap x) := inferInstanceAs <| IsIso (f.stalkMap x)
-  SheafedSpace.IsOpenImmersion.of_stalk_iso f.toHom hf
+  haveI (x : X) : IsIso (f.toShHom.stalkMap x) := inferInstanceAs <| IsIso (f.stalkMap x)
+  SheafedSpace.IsOpenImmersion.of_stalk_iso f.toShHom hf
 
 instance stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
     IsIso (f.stalkMap x) :=
@@ -348,7 +348,7 @@ instance stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (x : X) 
 
 theorem iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsOpenImmersion f ↔ OpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) :=
-  ⟨fun H => ⟨H.1, fun x ↦ inferInstanceAs <| IsIso (f.toHom.stalkMap x)⟩,
+  ⟨fun H => ⟨H.1, fun x ↦ inferInstanceAs <| IsIso (f.toPshHom.stalkMap x)⟩,
     fun ⟨h₁, h₂⟩ => @IsOpenImmersion.of_stalk_iso _ _ f h₁ h₂⟩
 
 theorem _root_.AlgebraicGeometry.isIso_iff_isOpenImmersion {X Y : Scheme.{u}} (f : X ⟶ Y) :

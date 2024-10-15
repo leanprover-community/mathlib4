@@ -306,11 +306,11 @@ instance base_isIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
 
 -- Porting note: need an extra instance here.
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.c.app U) :=
-  haveI := PresheafedSpace.c_isIso_of_iso f.toHom
+  haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
   NatIso.isIso_app_of_isIso f.c _
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.app U) :=
-  haveI := PresheafedSpace.c_isIso_of_iso f.toHom
+  haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
   NatIso.isIso_app_of_isIso f.c _
 
 @[simp]
@@ -637,13 +637,13 @@ lemma stalkMap_id (X : Scheme.{u}) (x : X) :
 
 lemma stalkMap_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X ⟶ Z).stalkMap x = g.stalkMap (f.base x) ≫ f.stalkMap x :=
-  PresheafedSpace.stalkMap.comp f.toHom g.toHom x
+  PresheafedSpace.stalkMap.comp f.toPshHom g.toPshHom x
 
 @[reassoc]
 lemma stalkSpecializes_stalkMap (x x' : X)
     (h : x ⤳ x') : Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ f.stalkMap x =
       f.stalkMap x' ≫ X.presheaf.stalkSpecializes h :=
-  PresheafedSpace.stalkMap.stalkSpecializes_stalkMap f.toHom h
+  PresheafedSpace.stalkMap.stalkSpecializes_stalkMap f.toPshHom h
 
 lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
     f.stalkMap x (Y.presheaf.stalkSpecializes (f.base.map_specializes h) y) =
@@ -695,13 +695,13 @@ lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
 lemma stalkMap_germ (U : Y.Opens) (x : X) (hx : f.base x ∈ U) :
     Y.presheaf.germ U (f.base x) hx ≫ f.stalkMap x =
       f.app U ≫ X.presheaf.germ (f ⁻¹ᵁ U) x hx :=
-  PresheafedSpace.stalkMap_germ f.toHom U x hx
+  PresheafedSpace.stalkMap_germ f.toPshHom U x hx
 
 @[simp]
 lemma stalkMap_germ_apply (U : Y.Opens) (x : X) (hx : f.base x ∈ U) (y) :
     f.stalkMap x (Y.presheaf.germ _ (f.base x) hx y) =
       X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
-  PresheafedSpace.stalkMap_germ_apply f.toHom U x hx y
+  PresheafedSpace.stalkMap_germ_apply f.toPshHom U x hx y
 
 end Scheme
 
