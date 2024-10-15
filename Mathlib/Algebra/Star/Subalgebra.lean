@@ -490,8 +490,8 @@ theorem adjoin_induction₂ {s : Set A} {p : (x y : A) → x ∈ adjoin R s → 
   | star _ _ h => exact star_right _ _ _ _ h
 
 /-- The difference with `StarSubalgebra.adjoin_induction` is that this acts on the subtype. -/
-@[elab_as_elim, deprecated adjoin_induction (since := "2024-10-11")]
-theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
+@[elab_as_elim]
+theorem adjoin_induction_subtype {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (mem : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin R s h⟩) (algebraMap : ∀ r, p (algebraMap R _ r))
     (add : ∀ x y, p x → p y → p (x + y)) (mul : ∀ x y, p x → p y → p (x * y))
     (star : ∀ x, p x → p (star x)) : p a :=
@@ -680,7 +680,7 @@ theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
     [AlgHomClass F R (adjoin R s) B] [StarHomClass F (adjoin R s) B] {f g : F}
     (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
   refine DFunLike.ext f g fun a =>
-    adjoin_induction' (p := fun y => f y = g y) a (fun x hx => ?_) (fun r => ?_)
+    adjoin_induction_subtype (p := fun y => f y = g y) a (fun x hx => ?_) (fun r => ?_)
     (fun x y hx hy => ?_) (fun x y hx hy => ?_) fun x hx => ?_
   · exact h ⟨x, subset_adjoin R s hx⟩ hx
   · simp only [AlgHomClass.commutes]

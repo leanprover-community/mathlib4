@@ -387,11 +387,11 @@ theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ+}
       rw [Set.mem_singleton_iff] at hi
       refine ⟨⟨ζ, subset_adjoin <| Set.mem_singleton ζ⟩, ?_⟩
       rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk, hi]
-    adjoin_roots := fun x => by
+    adjoin_roots := fun ⟨x, hx⟩ => by
       refine
-        adjoin_induction'
-          (x := x) (fun b hb => ?_) (fun a => ?_) (fun b₁ b₂ hb₁ hb₂ => ?_)
-          (fun b₁ b₂ hb₁ hb₂ => ?_)
+        adjoin_induction
+          (hx := hx) (fun b hb => ?_) (fun a => ?_) (fun b₁ b₂ _ _ hb₁ hb₂ => ?_)
+          (fun b₁ b₂ _ _ hb₁ hb₂ => ?_)
       · rw [Set.mem_singleton_iff] at hb
         refine subset_adjoin ?_
         simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq, hb]
@@ -615,8 +615,10 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
       rwa [← isRoot_cyclotomic_iff] at hμ
     · rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk]
   adjoin_roots x := by
+    obtain ⟨x, hx⟩ := x
     refine
-      adjoin_induction' (fun y hy => ?_) (fun a => ?_) (fun y z hy hz => ?_) (fun y z hy hz => ?_) x
+      adjoin_induction (fun y hy => ?_) (fun a => ?_) (fun y z _ _ hy hz => ?_)
+        (fun y z  _ _ hy hz => ?_) hx
     · refine subset_adjoin ?_
       simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq]
       rwa [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, Subtype.coe_mk]

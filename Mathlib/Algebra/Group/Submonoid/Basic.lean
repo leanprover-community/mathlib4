@@ -379,7 +379,7 @@ theorem closure_induction {s : Set M} {p : (x : M) → x ∈ closure s → Prop}
   let S : Submonoid M :=
     { carrier := { x | ∃ hx, p x hx }
       one_mem' := ⟨_, one⟩
-      mul_mem' := fun ⟨hx, hpx⟩ ⟨hy, hpy⟩ ↦ ⟨_, mul _ hx _ hy hpx hpy⟩ }
+      mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩ }
   closure_le (S := S) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 @[deprecated closure_induction (since := "2024-10-10")]
@@ -389,14 +389,14 @@ alias closure_induction' := closure_induction
 @[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership for predicates with two arguments."]
 theorem closure_induction₂ {p : (x y : M) → x ∈ closure s → y ∈ closure s → Prop}
-    (mem : ∀ (x) (hx : x ∈ s) (y) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
+    (mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
     (one_left : ∀ x hx, p 1 x (one_mem _) hx) (one_right : ∀ x hx, p x 1 hx (one_mem _))
     (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
     (mul_right : ∀ x y z hx hy hz, p z x hz hx → p z y hz hy → p z (x * y) hz (mul_mem hx hy))
     {x y : M} (hx : x ∈ closure s) (hy : y ∈ closure s) : p x y hx hy := by
   induction hy using closure_induction with
   | mem z hz => induction hx using closure_induction with
-    | mem _ h => exact mem _ h _ hz
+    | mem _ h => exact mem _ _ h hz
     | one => exact one_left _ (subset_closure hz)
     | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
   | one => exact one_right x hx

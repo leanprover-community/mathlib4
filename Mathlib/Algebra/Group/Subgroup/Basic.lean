@@ -907,7 +907,7 @@ alias closure_induction' := closure_induction
       "An induction principle for additive closure membership, for
       predicates with two arguments."]
 theorem closure_induction₂ {p : (x y : G) → x ∈ closure k → y ∈ closure k → Prop}
-    (mem : ∀ (x) (hx : x ∈ k) (y) (hy : y ∈ k), p x y (subset_closure hx) (subset_closure hy))
+    (mem : ∀ (x) (y) (hx : x ∈ k) (hy : y ∈ k), p x y (subset_closure hx) (subset_closure hy))
     (one_left : ∀ x hx, p 1 x (one_mem _) hx) (one_right : ∀ x hx, p x 1 hx (one_mem _))
     (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
     (mul_right : ∀ y z x hy hz hx, p x y hx hy → p x z hx hz → p x (y * z) hx (mul_mem hy hz))
@@ -916,7 +916,7 @@ theorem closure_induction₂ {p : (x y : G) → x ∈ closure k → y ∈ closur
     {x y : G} (hx : x ∈ closure k) (hy : y ∈ closure k) : p x y hx hy := by
   induction hy using closure_induction with
   | mem z hz => induction hx using closure_induction with
-    | mem _ h => exact mem _ h _ hz
+    | mem _ h => exact mem _ _ h hz
     | one => exact one_left _ (subset_closure hz)
     | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
     | inv _ _ h => exact inv_left _ _ _ _ h
@@ -941,7 +941,7 @@ def closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y 
       ext
       simp only [Subgroup.coe_mul]
       induction hx, hy using closure_induction₂ with
-      | mem x hx y hy => exact hcomm x hx y hy
+      | mem x y hx hy => exact hcomm x hx y hy
       | one_left x _ => exact Commute.one_left x
       | one_right x _ => exact Commute.one_right x
       | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂

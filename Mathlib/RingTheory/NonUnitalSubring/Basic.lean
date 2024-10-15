@@ -715,7 +715,7 @@ theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → 
     p x y hx hy := by
   induction hy using closure_induction with
   | mem z hz => induction hx using closure_induction with
-    | mem _ h => exact mem_mem _ h _ hz
+    | mem _ h => exact mem_mem _ _ h hz
     | zero => exact zero_left _ _
     | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
     | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
@@ -731,7 +731,7 @@ theorem mem_closure_iff {s : Set R} {x} :
     induction h using closure_induction with
     | mem x hx => exact AddSubgroup.subset_closure (Subsemigroup.subset_closure hx)
     | zero => exact zero_mem _
-    | add x _ y _ hx hy => exact add_mem hx hy
+    | add x y _ _ hx hy => exact add_mem hx hy
     | neg x _ hx => exact neg_mem hx
     | mul x y _hx _hy hx hy =>
       clear _hx _hy
@@ -760,7 +760,7 @@ def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
       ext
       simp only [MulMemClass.mk_mul_mk]
       induction hx, hy using closure_induction₂ with
-      | mem_mem x hx y hy => exact hcomm x hx y hy
+      | mem_mem x y hx hy => exact hcomm x hx y hy
       | zero_left x _ => exact Commute.zero_left x
       | zero_right x _ => exact Commute.zero_right x
       | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂

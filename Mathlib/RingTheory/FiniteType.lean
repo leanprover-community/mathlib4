@@ -719,7 +719,7 @@ instance (priority := 100) CommRing.orzechProperty
     obtain ⟨j, rfl⟩ := hx
     exact ⟨⟨nj j, subset_span (by simp)⟩, hnj j⟩
   | zero => exact zero_mem _
-  | add x _ y _ hx hy => exact add_mem hx hy
+  | add x y _ _ hx hy => exact add_mem hx hy
   | smul a x _ hx => exact smul_mem _ a hx
 
 end Orzech

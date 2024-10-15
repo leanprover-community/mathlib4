@@ -77,8 +77,8 @@ theorem adjoin_induction {p : (x : A) → x ∈ adjoin R s → Prop}
     {x : A} (hx : x ∈ adjoin R s) : p x hx :=
   let S : Subalgebra R A :=
     { carrier := { x | ∃ hx, p x hx }
-      mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩
-      add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
+      mul_mem' := by rintro _ _ ⟨_, hpx⟩ ⟨_, hpy⟩; exact ⟨_, mul _ _ _ _ hpx hpy⟩
+      add_mem' := by rintro _ _ ⟨_, hpx⟩ ⟨_, hpy⟩; exact ⟨_, add _ _ _ _ hpx hpy⟩
       algebraMap_mem' := fun r ↦ ⟨_, algebraMap r⟩ }
   adjoin_le (S := S) (fun y hy ↦ ⟨subset_adjoin hy, mem y hy⟩) hx |>.elim fun _ ↦ _root_.id
 
@@ -105,7 +105,7 @@ theorem adjoin_induction₂ {s : Set A} {p : (x y : A) → x ∈ adjoin R s → 
     p x y hx hy := by
   induction hy using adjoin_induction with
   | mem z hz => induction hx using adjoin_induction with
-    | mem _ h => exact mem_mem _ h _ hz
+    | mem _ h => exact mem_mem _ _ h hz
     | algebraMap _ => exact algebraMap_left _ _ hz
     | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
     | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
@@ -132,8 +132,8 @@ theorem adjoin_induction' {p : adjoin R s → Prop} (mem : ∀ (x) (h : x ∈ s)
 
 @[simp]
 theorem adjoin_adjoin_coe_preimage {s : Set A} : adjoin R (((↑) : adjoin R s → A) ⁻¹' s) = ⊤ := by
-  refine eq_top_iff.2 fun x ↦
-      adjoin_induction' (fun a ha ↦ ?_) (fun r ↦ ?_) (fun _ _ ↦ ?_) (fun _ _ ↦ ?_) x
+  refine eq_top_iff.2 fun ⟨x, hx⟩ ↦
+      adjoin_induction (fun a ha ↦ ?_) (fun r ↦ ?_) (fun _ _ _ _ ↦ ?_) (fun _ _ _ _ ↦ ?_) hx
   · exact subset_adjoin ha
   · exact Subalgebra.algebraMap_mem _ r
   · exact Subalgebra.add_mem _
@@ -264,7 +264,7 @@ def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * 
       ext
       simp only [MulMemClass.mk_mul_mk]
       induction hx, hy using adjoin_induction₂ with
-      | mem_mem x hx y hy => exact hcomm x hx y hy
+      | mem_mem x y hx hy => exact hcomm x hx y hy
       | algebraMap_both r₁ r₂ => exact commutes r₁ <| algebraMap R A r₂
       | algebraMap_left r x _ => exact commutes r x
       | algebraMap_right r x _ => exact commutes r x |>.symm

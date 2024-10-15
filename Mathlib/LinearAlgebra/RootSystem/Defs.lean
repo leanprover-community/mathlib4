@@ -506,7 +506,7 @@ lemma reflection_perm_eq_reflection_perm_iff_of_span :
       obtain ⟨k, rfl⟩ := hx
       simp only [← root_reflection_perm, h]
     | zero => simp
-    | add x _ y _ hx hy => simp [hx, hy]
+    | add x y _ _ hx hy => simp [hx, hy]
     | smul t x _ hx => simp [hx]
   · ext k
     apply P.root.injective

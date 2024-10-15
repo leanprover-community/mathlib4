@@ -505,7 +505,7 @@ instance CStarAlgebra.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
     | one =>
       nontriviality A
       simp
-    | mul x x_mem y y_mem hx hy =>
+    | mul x y x_mem y_mem hx hy =>
       rw [← SpectrumRestricts.nnreal_iff] at hx hy ⊢
       rw [← StarOrderedRing.nonneg_iff] at x_mem y_mem
       exact hx.nnreal_add (.of_nonneg x_mem) (.of_nonneg y_mem) hy
@@ -567,7 +567,7 @@ lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spec
           rw [SpectrumRestricts.nnreal_iff]
           nontriviality A
           simp
-        | mul x _ y _ hx hy =>
+        | mul x y _ _ hx hy =>
           exact ⟨hx.1.add hy.1, hx.2.nnreal_add hx.1 hy.1 hy.2⟩ }
 
 end SpectralOrder

@@ -68,7 +68,7 @@ lemma instStarOrderedRingRCLike
         obtain ⟨f, rfl⟩ := hf
         simpa using ContinuousLinearMap.IsPositive.adjoint_conj isPositive_one f
       | one => exact isPositive_zero
-      | mul f _ g _ hf hg => exact hf.add hg
+      | mul f g _ _ hf hg => exact hf.add hg
 
 instance instStarOrderedRing {H : Type*} [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H] : StarOrderedRing (H →L[ℂ] H) :=

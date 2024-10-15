@@ -789,7 +789,7 @@ theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → 
     p x y hx hy := by
   induction hy using closure_induction with
   | mem z hz => induction hx using closure_induction with
-    | mem _ h => exact mem_mem _ h _ hz
+    | mem _ h => exact mem_mem _ _ h hz
     | zero => exact zero_left _ _
     | one => exact one_left _ _
     | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
@@ -839,7 +839,7 @@ def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b =
       ext
       simp only [MulMemClass.mk_mul_mk]
       induction hx, hy using closure_induction₂ with
-      | mem_mem x hx y hy => exact hcomm x hx y hy
+      | mem_mem x y hx hy => exact hcomm x hx y hy
       | zero_left x _ => exact Commute.zero_left x
       | zero_right x _ => exact Commute.zero_right x
       | one_left x _ => exact Commute.one_left x

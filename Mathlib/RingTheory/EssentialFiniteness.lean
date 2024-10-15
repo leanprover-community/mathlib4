@@ -212,12 +212,12 @@ lemma EssFiniteType.algHom_ext [EssFiniteType R S]
     ext; exact AlgHom.congr_fun this _
   apply AlgHom.ext_of_adjoin_eq_top (s := { x | x.1 ∈ finset R S })
   · rw [← top_le_iff]
-    rintro x _
-    refine Algebra.adjoin_induction' ?_ ?_ ?_ ?_ x
+    rintro ⟨x, hx⟩ _
+    refine Algebra.adjoin_induction ?_ ?_ ?_ ?_ hx
     · intro x hx; exact Algebra.subset_adjoin hx
     · intro r; exact Subalgebra.algebraMap_mem _ _
-    · intro x y hx hy; exact add_mem hx hy
-    · intro x y hx hy; exact mul_mem hx hy
+    · intro x y _ _ hx hy; exact add_mem hx hy
+    · intro x y _ _ hx hy; exact mul_mem hx hy
   · rintro ⟨x, hx⟩ hx'; exact H x hx'
 
 end Algebra

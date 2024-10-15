@@ -300,7 +300,7 @@ theorem closure_induction {p : (x : M) → x ∈ closure s → Prop}
     p x hx :=
   let S : Subsemigroup M :=
     { carrier := { x | ∃ hx, p x hx }
-      mul_mem' := fun ⟨hx, hpx⟩ ⟨hy, hpy⟩ ↦ ⟨_, mul _ hx _ hy hpx hpy⟩ }
+      mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩ }
   closure_le (S := S) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 @[deprecated closure_induction (since := "2024-10-09")]
@@ -316,7 +316,7 @@ theorem closure_induction₂ {p : (x y : M) → x ∈ closure s → y ∈ closur
     {x y : M} (hx : x ∈ closure s) (hy : y ∈ closure s) : p x y hx hy := by
   induction hx using closure_induction with
   | mem z hz => induction hy using closure_induction with
-    | mem _ h => exact mem _ hz _ h
+    | mem _ h => exact mem _ _ hz h
     | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
   | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ hy h₁ h₂
 

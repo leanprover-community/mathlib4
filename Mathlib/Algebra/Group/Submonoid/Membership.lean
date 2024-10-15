@@ -504,8 +504,9 @@ def closureCommMonoidOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b
     mul_comm := fun x y => by
       ext
       simp only [Submonoid.coe_mul]
-      exact closure_induction₂ hcomm (fun _ _ ↦ Commute.one_left _) (fun _ _ ↦ Commute.one_right _)
-        (fun _ _ _ _ _ _ ↦ Commute.mul_left) (fun _ _ _ _ _ _ ↦ Commute.mul_right) x.prop y.prop }
+      exact closure_induction₂ (fun _ _ h₁ h₂ ↦ hcomm _ h₁ _ h₂) (fun _ _ ↦ Commute.one_left _)
+        (fun _ _ ↦ Commute.one_right _) (fun _ _ _ _ _ _ ↦ Commute.mul_left)
+        (fun _ _ _ _ _ _ ↦ Commute.mul_right) x.prop y.prop }
 
 end Submonoid
 

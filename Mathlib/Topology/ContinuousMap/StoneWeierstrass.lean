@@ -492,9 +492,9 @@ lemma nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom {s : Set 𝕜} (h0
   | mem f hf =>
     obtain rfl := Set.mem_singleton_iff.mp hf
     rfl
-  | add f _ g _ hf hg => exact add_mem hf hg
+  | add f g _ _ hf hg => exact add_mem hf hg
   | zero => exact zero_mem _
-  | mul f _ g _ _ hg => exact Ideal.mul_mem_left _ f hg
+  | mul f g _ _ _ hg => exact Ideal.mul_mem_left _ f hg
   | smul r f _ hf =>
     rw [SetLike.mem_coe, RingHom.mem_ker] at hf ⊢
     rw [map_smul, hf, smul_zero]

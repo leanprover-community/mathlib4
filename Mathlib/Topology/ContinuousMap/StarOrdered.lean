@@ -97,7 +97,7 @@ instance instStarOrderedRing {R : Type*}
         obtain ⟨s, rfl⟩ := s_mem
         exact fun x ↦ le_add_of_nonneg_right (star_mul_self_nonneg (s x))
       | one => simp
-      | mul g₁ _ g₂ _ h₁ h₂ => calc
+      | mul g₁ g₂ _ _ h₁ h₂ => calc
           f ≤ f + g₁ := h₁ f
           _ ≤ (f + g₁) + g₂ := h₂ (f + g₁)
           _ = f + (g₁ + g₂) := add_assoc _ _ _

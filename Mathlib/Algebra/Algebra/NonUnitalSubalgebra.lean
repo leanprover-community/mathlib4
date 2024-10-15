@@ -612,7 +612,7 @@ theorem adjoin_induction₂ {s : Set A} {p : ∀ x y, x ∈ adjoin R s → y ∈
   induction hy using adjoin_induction with
   | mem z hz =>
     induction hx using adjoin_induction with
-    | mem _ h => exact mem_mem _ h _ hz
+    | mem _ h => exact mem_mem _ _ h hz
     | zero => exact zero_left _ _
     | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
     | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
@@ -642,11 +642,11 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
   · intro x hx
     induction hx using adjoin_induction with
     | mem x hx => exact subset_span <| Subsemigroup.subset_closure hx
-    | add x _ y _ hpx hpy => exact add_mem hpx hpy
+    | add x y _ _ hpx hpy => exact add_mem hpx hpy
     | zero => exact zero_mem _
-    | mul x _ y _ hpx hpy =>
+    | mul x y _ _ hpx hpy =>
       apply span_induction₂ ?Hs (by simp) (by simp) ?Hadd_l ?Hadd_r ?Hsmul_l ?Hsmul_r hpx hpy
-      case Hs => exact fun x hx y hy ↦ subset_span <| mul_mem hx hy
+      case Hs => exact fun x y hx hy ↦ subset_span <| mul_mem hx hy
       case Hadd_l => exact fun x y z _ _ _ hxz hyz ↦ by simpa [add_mul] using add_mem hxz hyz
       case Hadd_r => exact fun x y z _ _ _ hxz hyz ↦ by simpa [mul_add] using add_mem hxz hyz
       case Hsmul_l => exact fun r x y _ _ hxy ↦ by simpa [smul_mul_assoc] using smul_mem _ _ hxy

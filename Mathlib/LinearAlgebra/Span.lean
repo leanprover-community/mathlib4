@@ -167,7 +167,7 @@ theorem span_induction {p : (x : M) → x ∈ span R s → Prop}
     { carrier := { x | ∃ hx, p x hx }
       add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
       zero_mem' := ⟨_, zero⟩
-      smul_mem' := fun r ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩ }
+      smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩ }
   exact span_le (p := p) |>.mpr (fun y hy ↦ ⟨subset_span hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 @[deprecated span_induction (since := "2024-10-10")]
@@ -186,7 +186,7 @@ theorem span_induction₂ {p : (x y : M) → x ∈ span R s → y ∈ span R s �
     (hb : b ∈ Submodule.span R s) : p a b ha hb := by
   induction hb using span_induction with
   | mem z hz => induction ha using span_induction with
-    | mem _ h => exact mem_mem _ h _ hz
+    | mem _ h => exact mem_mem _ _ h hz
     | zero => exact zero_left _ _
     | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
     | smul _ _ _ h => exact smul_left _ _ _ _ _ h
