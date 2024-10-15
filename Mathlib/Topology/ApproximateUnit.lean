@@ -49,7 +49,8 @@ variable {α ι : Type*} [TopologicalSpace α] [Mul α]
 namespace Filter
 
 /-- The largest filter `l` such that `Tendsto (· * m) l (𝓝 m)` and `Tendsto (m * ·) l (𝓝 m)` -/
-@[to_additive]
+@[to_additive "The largest filter `l` such that `Tendsto (· + m) l (𝓝 m)` and
+`Tendsto (m + ·) l (𝓝 m)`"]
 def mulLeftRightTendsto : Filter α :=
   sSup { l : Filter α | ∀ (m : α), Tendsto (· * m) l (𝓝 m) ∧ Tendsto (m * ·) l (𝓝 m) }
 
