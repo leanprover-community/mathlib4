@@ -45,18 +45,12 @@ theorem mem_matricesOver (I : Ideal R) (M : Matrix n n R) :
 theorem matricesOver_monotone : Monotone (matricesOver (R := R) n) :=
   fun _ _ IJ _ MI i j => IJ (MI i j)
 
-theorem matricesOver_strictMono_of_nonempty [h : Nonempty n] :
+theorem matricesOver_strictMono_of_nonempty [Nonempty n] :
     StrictMono (matricesOver (R := R) n) :=
-  fun I J IJ => by
-    refine lt_of_le_of_ne (matricesOver_monotone n IJ.le) fun eq => ?_
-    have ⟨x, xJ, xI⟩ : ∃ x ∈ J, x ∉ I := Set.exists_of_ssubset IJ
-    simp only [SetLike.mem_coe] at xI xJ
-    let M : Matrix n n R := fun _ _ => x
-    have : M ∈ J.matricesOver n := by simp [M, xJ]
-    have : M ∉ I.matricesOver n := by
-      simp only [mem_matricesOver, not_forall]
-      use h.some, h.some
-    simp [*] at *
+  matricesOver_monotone n |>.strictMono_of_injective <| fun I J eq => by
+    ext x
+    have : (∀ _ _, x ∈ I) ↔ (∀ _ _, x ∈ J) := congr((Matrix.of fun _ _ => x) ∈ $eq)
+    simpa only [forall_const] using this
 
 @[simp]
 theorem matricesOver_bot : (⊥ : Ideal R).matricesOver n = ⊥ := by
