@@ -234,6 +234,11 @@ lemma comp {UX : Scheme.{u}} (H : P f) (i : UX ⟶ X) [IsOpenImmersion i] :
     P (i ≫ f) :=
   (iff_of_openCover' f (X.affineCover.add i)).mp H .none
 
+/-- If `P` is local at the source, then it respects composition on the left with open immersions. -/
+instance respectsLeft_isOpenImmersion {P : MorphismProperty Scheme}
+    [IsLocalAtSource P] : P.RespectsLeft @IsOpenImmersion where
+  precomp i _ _ hf := IsLocalAtSource.comp hf i
+
 lemma of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤)
     (H : ∀ i, P ((U i).ι ≫ f)) : P f := by
   refine (iff_of_openCover' f
@@ -269,6 +274,32 @@ lemma isLocalAtTarget [P.IsMultiplicative]
     constructor
     · exact hP _ _
     · exact fun H ↦ P.comp_mem _ _ H (of_isOpenImmersion _)
+
+section IsLocalAtSourceAndTarget
+
+/-- If `P` is local at the source and the target, then restriction on both source and target
+preserves `P`. -/
+lemma resLE [IsLocalAtTarget P] {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
+    (hf : P f) : P (f.resLE U V e) :=
+  IsLocalAtSource.comp (IsLocalAtTarget.restrict hf U) _
+
+/-- If `P` is local at the source, local at the target and is stable under post-composition with
+open immersions, then `P` can be checked locally around points. -/
+lemma iff_exists_resLE [IsLocalAtTarget P] [P.RespectsRight @IsOpenImmersion] :
+    P f ↔ ∀ x : X, ∃ (U : Y.Opens) (V : X.Opens) (_ : x ∈ V.1) (e : V ≤ f ⁻¹ᵁ U),
+      P (f.resLE U V e) := by
+  refine ⟨fun hf x ↦ ⟨⊤, ⊤, trivial, by simp, resLE _ hf⟩, fun hf ↦ ?_⟩
+  choose U V hxU e hf using hf
+  rw [IsLocalAtSource.iff_of_iSup_eq_top (fun x : X ↦ V x) (P := P)]
+  · intro x
+    rw [← Scheme.Hom.resLE_comp_ι _ (e x)]
+    exact MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance _ (hf x)
+  · rw [eq_top_iff]
+    rintro x -
+    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
+    use x, hxU x
+
+end IsLocalAtSourceAndTarget
 
 end IsLocalAtSource
 
