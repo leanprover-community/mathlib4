@@ -55,7 +55,7 @@ section Rel
 
 open Relator
 
-variable {γ : Type*} {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
+variable {r : α → β → Prop}
 
 local infixr:80 " ∘r " => Relation.Comp
 
