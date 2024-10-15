@@ -1176,8 +1176,26 @@ theorem union_distrib_iInter₂_right (s : ∀ i, κ i → Set α) (t : Set α) 
 lemma biUnion_lt_eq_iUnion [LT α] [NoMaxOrder α] {s : α → Set β} :
     ⋃ (n) (m < n), s m  = ⋃ n, s n := biSup_lt_eq_iSup
 
+lemma biUnion_le_eq_iUnion [Preorder α] {s : α → Set β} :
+    ⋃ (n) (m ≤ n), s m  = ⋃ n, s n := biSup_le_eq_iSup
+
 lemma biInter_lt_eq_iInter [LT α] [NoMaxOrder α] {s : α → Set β} :
     ⋂ (n) (m < n), s m  = ⋂ (n), s n := biInf_lt_eq_iInf
+
+lemma biInter_le_eq_iInter [Preorder α] {s : α → Set β} :
+    ⋂ (n) (m ≤ n), s m  = ⋂ (n), s n := biInf_le_eq_iInf
+
+lemma biUnion_gt_eq_iUnion [LT α] [NoMinOrder α] {s : α → Set β} :
+    ⋃ (n) (m > n), s m  = ⋃ n, s n := biSup_gt_eq_iSup
+
+lemma biUnion_ge_eq_iUnion [Preorder α] {s : α → Set β} :
+    ⋃ (n) (m ≥ n), s m  = ⋃ n, s n := biSup_ge_eq_iSup
+
+lemma biInter_gt_eq_iInf [LT α] [NoMinOrder α] {s : α → Set β} :
+    ⋂ (n) (m > n), s m  = ⋂ n, s n := biInf_gt_eq_iInf
+
+lemma biInter_ge_eq_iInf [Preorder α] {s : α → Set β} :
+    ⋂ (n) (m ≥ n), s m  = ⋂ n, s n := biInf_ge_eq_iInf
 
 section Function
 
