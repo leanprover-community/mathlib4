@@ -953,12 +953,14 @@ theorem list_range : Primrec List.range :=
   (nat_rec' .id (const []) ((list_concat.comp snd fst).comp snd).to₂).of_eq fun n => by
     simp; induction n <;> simp [*, List.range_succ]
 
-theorem list_join : Primrec (@List.join α) :=
+theorem list_flatten : Primrec (@List.flatten α) :=
   (list_foldr .id (const []) <| to₂ <| comp (@list_append α _) snd).of_eq fun l => by
     dsimp; induction l <;> simp [*]
 
+@[deprecated (since := "2024-10-15")] alias list_join := list_flatten
+
 theorem list_bind {f : α → List β} {g : α → β → List σ} (hf : Primrec f) (hg : Primrec₂ g) :
-    Primrec (fun a => (f a).bind (g a)) := list_join.comp (list_map hf hg)
+    Primrec (fun a => (f a).bind (g a)) := list_flatten.comp (list_map hf hg)
 
 theorem optionToList : Primrec (Option.toList : Option α → List α) :=
   (option_casesOn Primrec.id (const [])
