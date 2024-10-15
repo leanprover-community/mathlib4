@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 
@@ -82,9 +83,6 @@ variable (L : A ⥤ T) (R : B ⥤ T)
 noncomputable def bla (F : Comma L R ⥤ C) [HasColimits C] : B ⥤ C :=
   (lan (Comma.snd L R)).obj F
 
-noncomputable def blubb [HasColimits C] (F : Comma L R ⥤ C) : B ⥤ C :=
-  R ⋙ (lan L).obj (_ ⋙ F)
-
 theorem innerFunctor_aux {C : Type*} [Category C] {D : Type*} [Category D] {I : Type*} [Category I]
   {G : I ⥤ C} {F : C ⥤ D} {X Y : I} (f : G.obj X ⟶ G.obj Y) {Z : D} (h : ∀ X, F.obj (G.obj X) ⟶ Z)
   (he : X = Y) (hf : f ≫ G.map (eqToHom he.symm) = 𝟙 _) : F.map f ≫ h _ = h _ := by
@@ -118,17 +116,35 @@ noncomputable def innerFunctor (F : Comma L R ⥤ C) [HasColimits C] : B ⥤ C w
 
 noncomputable def colimitComparison (F : Comma L R ⥤ C) [HasColimits C] :
     colimit F ≅ colimit (innerFunctor L R F) :=
-  (lanCompColimIso (Comma.snd L R)).symm.app F ≪≫
-    HasColimit.isoOfNatIso (NatIso.ofComponents (fun b₀ => by { sorry  })
-      _)
-#check L
+  sorry
+
+/-- `CostructuredArrow L` induces a strict functor `T ⥤ Cat`. -/
+@[simps]
+def CostructuredArrow.functor : T ⥤ Cat where
+  obj t := .of <| CostructuredArrow L t
+  map f := CostructuredArrow.map f
+  map_id t := by
+    apply Functor.ext
+    intro
+    simp [CostructuredArrow.map, Comma.mapRight]
+    simp
+  map_comp f g := by
+    apply Functor.ext
+    intro
+    simp [CostructuredArrow.map, Comma.mapRight]
+    simp
+
+/-- This is not an equivalence, is it? -/
+def CostructuredArrow.grothendieckCommaFunctor :
+    Grothendieck (R ⋙ CostructuredArrow.functor L) ⥤ Comma L R where
+  obj := fun P => ⟨P.fiber.left, P.base, P.fiber.hom⟩
+  map := fun f => ⟨f.fiber.left, f.base, by simp at *⟩
+
+/-- Fully pointless phrasing of 3.4.3 -/
+def colimThm [HasColimits C] :
+    colim (J := Comma L R) (C := C) ≅
+    (whiskeringLeft _ _ _).obj (CostructuredArrow.grothendieckCommaFunctor L R) ⋙ colim := _
 
 end SmallCategory
-
--- instance final_fst (L : A ⥤ T) (R : B ⥤ T) [Functor.Final R] : Functor.Final (Comma.fst L R) := by
---   constructor
---   intro X
-
---   sorry
 
 end CategoryTheory
