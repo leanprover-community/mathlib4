@@ -84,6 +84,9 @@ variable {R : Type u} [Ring R] {M : Type*} [AddCommGroup M] [Module R M] (S : Su
 instance : Mono (ModuleCat.ofHom S.subtype) :=
   (ModuleCat.mono_iff_injective _).2 fun _ _ h => Subtype.ext_iff.2 h
 
+instance : Epi (ModuleCat.ofHom S.mkQ) :=
+  (ModuleCat.epi_iff_surjective _).2 S.mkQ_surjective
+
 end ModuleCat
 namespace groupCohomology
 
