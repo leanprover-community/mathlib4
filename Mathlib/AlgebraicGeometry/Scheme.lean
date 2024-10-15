@@ -214,10 +214,12 @@ def forgetToTop : Scheme ⥤ TopCat :=
 noncomputable def homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) : X ≃ₜ Y :=
   TopCat.homeoOfIso (forgetToTop.mapIso e)
 
+alias _root_.CategoryTheory.Iso.schemeIsoToHomeo := homeoOfIso
+
 /-- An isomorphism of schemes induces a homeomorphism of the underlying topological spaces. -/
 noncomputable def Hom.homeomorph {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C := Scheme) f] :
     X ≃ₜ Y :=
-  homeoOfIso (asIso f)
+  (asIso f).schemeIsoToHomeo
 
 -- Porting note: Lean seems not able to find this coercion any more
 instance hasCoeToTopCat : CoeOut Scheme TopCat where

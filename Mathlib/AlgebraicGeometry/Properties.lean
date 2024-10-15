@@ -29,12 +29,10 @@ namespace AlgebraicGeometry
 
 variable (X : Scheme)
 
-instance : T0Space X := by
-  refine T0Space.of_open_cover fun x => ?_
-  obtain ⟨U, R, ⟨e⟩⟩ := X.local_affine x
-  let e' : U.1 ≃ₜ PrimeSpectrum R :=
-    homeoOfIso ((LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).mapIso e)
-  exact ⟨U.1.1, U.2, U.1.2, e'.embedding.t0Space⟩
+instance : T0Space X :=
+  T0Space.of_open_cover fun x => ⟨_, X.affineCover.covers x,
+    (X.affineCover.map x).opensRange.2, Embedding.t0Space (Y := PrimeSpectrum _)
+    (isAffineOpen_opensRange (X.affineCover.map x)).isoSpec.schemeIsoToHomeo.embedding⟩
 
 instance : QuasiSober X := by
   apply (config := { allowSynthFailures := true })
