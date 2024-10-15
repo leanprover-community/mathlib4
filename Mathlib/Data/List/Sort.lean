@@ -152,6 +152,14 @@ theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {
   rw [length_take] at hix
   exact h.rel_get_of_lt (Nat.lt_add_right _ (Nat.lt_min.mp hix).left)
 
+/--
+If a list is sorted with respect to a decidable relation,
+then it is sorted with respect to the corresponding Bool-valued relation.
+-/
+theorem Sorted.decide [DecidableRel r] (l : List α) (h : Sorted r l) :
+    Sorted (fun a b => decide (r a b) = true) l := by
+  refine h.imp fun {a b} h => by simpa using h
+
 end Sorted
 
 section Monotone
@@ -498,7 +506,7 @@ theorem Sorted.merge {l l' : List α} (h : Sorted r l) (h' : Sorted r l') :
     Sorted r (merge l l' (r · ·)) := by
   simpa using sorted_merge (le := (r · ·))
     (fun a b c h₁ h₂ => by simpa using _root_.trans (by simpa using h₁) (by simpa using h₂))
-    (fun a b => by simpa using (IsTotal.total a b))
+    (fun a b => by simpa using IsTotal.total a b)
     l l' (by simpa using h) (by simpa using h')
 
 variable (r)
@@ -508,16 +516,20 @@ theorem sorted_mergeSort' [Preorder α] [DecidableRel ((· : α) ≤ ·)] [IsTot
     (l : List α) : Sorted (· ≤ ·) (mergeSort l) := by
   simpa using sorted_mergeSort (le := fun a b => a ≤ b)
     (fun a b c h₁ h₂ => by simpa using le_trans (by simpa using h₁) (by simpa using h₂))
-    (fun a b => by simpa using (IsTotal.total a b))
+    (fun a b => by simpa using IsTotal.total a b)
     l
 
 theorem mergeSort_eq_self [LinearOrder α] {l : List α} : Sorted (· ≤ ·) l → mergeSort l = l :=
   eq_of_perm_of_sorted (mergeSort_perm _ _) (sorted_mergeSort' l)
 
-theorem mergeSort_eq_insertionSort [LinearOrder α] (l : List α) :
-    mergeSort l = insertionSort (· ≤ ·) l :=
-  eq_of_perm_of_sorted ((mergeSort_perm l _).trans (perm_insertionSort (· ≤ ·) l).symm)
-    (sorted_mergeSort' l) (sorted_insertionSort (· ≤ ·) l)
+theorem mergeSort_eq_insertionSort [IsAntisymm α r] (l : List α) :
+    mergeSort l (r · ·) = insertionSort r l :=
+  eq_of_perm_of_sorted ((mergeSort_perm l _).trans (perm_insertionSort r l).symm)
+    (sorted_mergeSort (le := (r · ·))
+      (fun a b c h₁ h₂ => by simpa using _root_.trans (by simpa using h₁) (by simpa using h₂))
+      (fun a b => by simpa using IsTotal.total a b)
+      l)
+    (sorted_insertionSort r l).decide
 
 end TotalAndTransitive
 

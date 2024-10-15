@@ -39,9 +39,9 @@ def sort (s : Multiset α) : List α :=
   Quot.liftOn s (mergeSort · (r · ·)) fun _ _ h =>
     eq_of_perm_of_sorted ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm)
       (sorted_mergeSort IsTrans.trans
-        (fun a b => by simpa using or_iff_not_imp_left.mp (IsTotal.total a b)) _)
+        (fun a b => by simpa using IsTotal.total a b) _)
       (sorted_mergeSort IsTrans.trans
-        (fun a b => by simpa using or_iff_not_imp_left.mp (IsTotal.total a b)) _)
+        (fun a b => by simpa using IsTotal.total a b) _)
 
 @[simp]
 theorem coe_sort (l : List α) : sort r l = mergeSort l (r · ·) :=
@@ -51,7 +51,7 @@ theorem coe_sort (l : List α) : sort r l = mergeSort l (r · ·) :=
 theorem sort_sorted (s : Multiset α) : Sorted r (sort r s) :=
   Quot.inductionOn s fun l => by
     simpa using sorted_mergeSort (le := (r · ·)) IsTrans.trans
-      (fun a b => by simpa using or_iff_not_imp_left.mp (IsTotal.total a b)) l
+      (fun a b => by simpa using IsTotal.total a b) l
 
 @[simp]
 theorem sort_eq (s : Multiset α) : ↑(sort r s) = s :=
@@ -62,7 +62,7 @@ theorem mem_sort {s : Multiset α} {a : α} : a ∈ sort r s ↔ a ∈ s := by r
 
 @[simp]
 theorem length_sort {s : Multiset α} : (sort r s).length = card s :=
-  Quot.inductionOn s <| mergeSort_length
+  Quot.inductionOn s <| length_mergeSort
 
 @[simp]
 theorem sort_zero : sort r 0 = [] :=
@@ -81,7 +81,7 @@ theorem map_sort (f : α → β) (s : Multiset α)
 theorem sort_cons (a : α) (s : Multiset α) :
     (∀ b ∈ s, r a b) → sort r (a ::ₘ s) = a :: sort r s := by
   refine Quot.inductionOn s fun l => ?_
-  simpa [mergeSort'_eq_insertionSort] using insertionSort_cons r
+  simpa [mergeSort_eq_insertionSort] using insertionSort_cons r (a := a) (l := l)
 
 end sort
 
