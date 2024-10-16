@@ -351,7 +351,7 @@ partial def withGeneralizedProofs {α : Type} [Inhabited α] (e : Expr) (ty? : O
     post-abstracted{indentD e}\nnew generalizations: {generalizations}"
   let rec
     /-- Core loop for `withGeneralizedProofs`, adds generalizations one at a time. -/
-    go [Nonempty α] (i : Nat) (fvars pfs : Array Expr)
+    go [Inhabited α] (i : Nat) (fvars pfs : Array Expr)
         (proofToFVar propToFVar : ExprMap Expr) : MGen α := do
       if h : i < generalizations.size then
         let (ty, pf) := generalizations[i]
