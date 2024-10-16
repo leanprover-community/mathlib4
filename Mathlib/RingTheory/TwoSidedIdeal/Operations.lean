@@ -141,10 +141,10 @@ lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
   induction principle for `AddSubgroup`, we must also have `z ∈ J`. -/
   case mem_ideal_of_subset =>
     simp only [I, SetLike.mem_coe, mem_mk'] at hz
-    induction hz using closure_induction' with
+    induction hz using closure_induction with
     | mem x hx => exact hJ hx
     | one => exact zero_mem _
-    | mul x _ y _ hx hy => exact J.add_mem hx hy
+    | mul x y _ _ hx hy => exact J.add_mem hx hy
     | inv x _ hx => exact J.neg_mem hx
 
 open Pointwise Set
