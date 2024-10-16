@@ -84,19 +84,19 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 -- We need this strange instance for `residueFieldMap`, the type of `F` must be fixed
 -- like this. The instance `IsLocalRingHom (f.stalkMap x)` already exists, but does not work for
 -- `residueFieldMap`.
-instance (x): IsLocalRingHom (F := Y.presheaf.stalk (f.val.base x) →+* X.presheaf.stalk x)
+instance (x): IsLocalRingHom (F := Y.presheaf.stalk (f.base x) →+* X.presheaf.stalk x)
     (f.stalkMap x) :=
-  f.2 x
+  f.1.2 x
 
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
 def Hom.residueFieldMap (f : X.Hom Y) (x : X) :
-    Y.residueField (f.val.base x) ⟶ X.residueField x :=
+    Y.residueField (f.base x) ⟶ X.residueField x :=
   LocalRing.ResidueField.map (f.stalkMap x)
 
 @[reassoc]
 lemma residue_residueFieldMap (x : X) :
-    Y.residue (f.val.base x) ≫ f.residueFieldMap x = f.stalkMap x ≫ X.residue x := by
+    Y.residue (f.base x) ≫ f.residueFieldMap x = f.stalkMap x ≫ X.residue x := by
   simp [Hom.residueFieldMap]
   rfl
 
@@ -107,19 +107,19 @@ lemma residueFieldMap_id (x : X) :
 
 @[simp]
 lemma residueFieldMap_comp {Z : Scheme.{u}} (g : Y ⟶ Z) (x : X) :
-    (f ≫ g).residueFieldMap x = g.residueFieldMap (f.val.base x) ≫ f.residueFieldMap x :=
+    (f ≫ g).residueFieldMap x = g.residueFieldMap (f.base x) ≫ f.residueFieldMap x :=
   LocallyRingedSpace.residueFieldMap_comp _ _ _
 
 @[reassoc]
-lemma evaluation_naturality {V : Opens Y} (x : X) (hx : f.val.base x ∈ V) :
-    Y.evaluation V (f.val.base x) hx ≫ f.residueFieldMap x =
+lemma evaluation_naturality {V : Opens Y} (x : X) (hx : f.base x ∈ V) :
+    Y.evaluation V (f.base x) hx ≫ f.residueFieldMap x =
       f.app V ≫ X.evaluation (f ⁻¹ᵁ V) x hx :=
-  LocallyRingedSpace.evaluation_naturality f ⟨x, hx⟩
+  LocallyRingedSpace.evaluation_naturality f.1 ⟨x, hx⟩
 
-lemma evaluation_naturality_apply {V : Opens Y} (x : X) (hx : f.val.base x ∈ V) (s) :
-    f.residueFieldMap x (Y.evaluation V (f.val.base x) hx s) =
+lemma evaluation_naturality_apply {V : Opens Y} (x : X) (hx : f.base x ∈ V) (s) :
+    f.residueFieldMap x (Y.evaluation V (f.base x) hx s) =
       X.evaluation (f ⁻¹ᵁ V) x hx (f.app V s) :=
-  LocallyRingedSpace.evaluation_naturality_apply f ⟨x, hx⟩ s
+  LocallyRingedSpace.evaluation_naturality_apply f.1 ⟨x, hx⟩ s
 
 instance [IsOpenImmersion f] (x) : IsIso (f.residueFieldMap x) :=
   (LocalRing.ResidueField.mapEquiv

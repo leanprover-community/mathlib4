@@ -122,6 +122,14 @@ theorem Measure.isFiniteMeasure_map {m : MeasurableSpace α} (μ : Measure α) [
   · rw [map_of_not_aemeasurable hf]
     exact MeasureTheory.isFiniteMeasureZero
 
+instance IsFiniteMeasure_comap (f : β → α) [IsFiniteMeasure μ] : IsFiniteMeasure (μ.comap f) where
+  measure_univ_lt_top := by
+    by_cases hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ
+    · rw [Measure.comap_apply₀ _ _ hf.1 hf.2 MeasurableSet.univ.nullMeasurableSet]
+      exact measure_lt_top μ _
+    · rw [Measure.comap, dif_neg hf]
+      exact zero_lt_top
+
 @[simp]
 theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 0 ↔ μ = 0 := by
   rw [← MeasureTheory.Measure.measure_univ_eq_zero, ← coe_measureUnivNNReal]
@@ -276,6 +284,9 @@ variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 theorem isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=
   ⟨by simp [map_apply_of_aemeasurable, hf]⟩
+
+instance IsProbabilityMeasure_comap_equiv (f : β ≃ᵐ α) : IsProbabilityMeasure (μ.comap f) := by
+  rw [← MeasurableEquiv.map_symm]; exact isProbabilityMeasure_map f.symm.measurable.aemeasurable
 
 /-- Note that this is not quite as useful as it looks because the measure takes values in `ℝ≥0∞`.
 Thus the subtraction appearing is the truncated subtraction of `ℝ≥0∞`, rather than the
@@ -657,6 +668,10 @@ def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
 theorem monotone_spanningSets (μ : Measure α) [SigmaFinite μ] : Monotone (spanningSets μ) :=
   monotone_accumulate
 
+@[gcongr]
+lemma spanningSets_mono [SigmaFinite μ] {m n : ℕ} (hmn : m ≤ n) :
+    spanningSets μ m ⊆ spanningSets μ n := monotone_spanningSets _ hmn
+
 theorem measurable_spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
     MeasurableSet (spanningSets μ i) :=
   MeasurableSet.iUnion fun j => MeasurableSet.iUnion fun _ => μ.toFiniteSpanningSetsIn.set_mem j
@@ -665,6 +680,7 @@ theorem measure_spanningSets_lt_top (μ : Measure α) [SigmaFinite μ] (i : ℕ)
     μ (spanningSets μ i) < ∞ :=
   measure_biUnion_lt_top (finite_le_nat i) fun j _ => μ.toFiniteSpanningSetsIn.finite j
 
+@[simp]
 theorem iUnion_spanningSets (μ : Measure α) [SigmaFinite μ] : ⋃ i : ℕ, spanningSets μ i = univ := by
   simp_rw [spanningSets, iUnion_accumulate, μ.toFiniteSpanningSetsIn.spanning]
 

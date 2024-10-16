@@ -351,7 +351,7 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsCom
 This is known as the **Qcqs lemma** in [R. Vakil, *The rising sea*][RisingSea]. -/
 theorem isIso_ΓSpec_adjunction_unit_app_basicOpen {X : Scheme} [CompactSpace X]
     [QuasiSeparatedSpace X] (f : X.presheaf.obj (op ⊤)) :
-    IsIso ((ΓSpec.adjunction.unit.app X).val.c.app (op (PrimeSpectrum.basicOpen f))) := by
+    IsIso ((ΓSpec.adjunction.unit.app X).c.app (op (PrimeSpectrum.basicOpen f))) := by
   refine @IsIso.of_isIso_comp_right _ _ _ _ _ _ (X.presheaf.map
     (eqToHom (Scheme.toSpecΓ_preimage_basicOpen _ _).symm).op) _ ?_
   rw [ConcreteCategory.isIso_iff_bijective, CommRingCat.forget_map]
