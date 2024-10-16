@@ -1432,6 +1432,25 @@ theorem sInf_compl_lt_ord_succ {ι : Type u} (f : ι → Ordinal.{u}) :
     sInf (range f)ᶜ < (succ #ι).ord :=
   lift_id (succ #ι).ord ▸ sInf_compl_lt_lift_ord_succ f
 
+theorem card_sInf_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :
+    (⨆ i, f i).card ≤ Cardinal.sum (fun i ↦ (f i).card) := by
+  have : Cardinal.sum (fun i ↦ (f i).card) = Cardinal.sum (fun i ↦ #(f i).toType) := by simp
+  rw [this, ← card_toType, ← mk_sigma]
+  let g : (⨆ i, f i).toType → Σ i, (f i).toType := fun x ↦
+    let a := (enumIsoToType _).symm x
+    have H := (Ordinal.lt_iSup (f := f) (a := a.1)).1 a.2
+    let b := Classical.choose H
+    ⟨b, enumIsoToType (f b) ⟨a.1, Classical.choose_spec H⟩⟩
+  apply mk_le_of_injective (f := g)
+  intro a b h
+  simp_rw [g, Sigma.mk.inj_iff] at h
+  obtain ⟨h₁, h₂⟩ := h
+  suffices ∀ {x y z a b hx hy}, x = y → HEq (enumIsoToType x ⟨↑((enumIsoToType z).symm a), hx⟩)
+    (enumIsoToType y ⟨↑((enumIsoToType z).symm b), hy⟩) → a = b from this (congr_arg f h₁) h₂
+  intro _ _ _ _ _ _ _ h
+  subst h
+  simp [← Subtype.eq_iff]
+
 -- TODO: remove `bsup` in favor of `iSup` in a future refactor.
 
 section bsup

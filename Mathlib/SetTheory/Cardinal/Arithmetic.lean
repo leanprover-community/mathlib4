@@ -820,6 +820,35 @@ end extend
 
 end Cardinal
 
+/-! ### Cardinality of ordinals -/
+
+namespace Ordinal
+
+theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) {b : Ordinal} :
+    (a ^ b).card ≤ max a.card b.card := by
+  refine limitRecOn b ?_ ?_ ?_
+  · simpa using one_lt_omega0.le.trans ha
+  · intro b IH
+    rw [opow_succ, card_mul, card_succ, Cardinal.mul_eq_max]
+    · rw [max_comm]
+      apply (max_le_max_left _ IH).trans
+      rw [← max_assoc, max_self]
+      apply max_le_max_left
+      apply le_self_add
+    · rw [← card_omega0]
+      apply card_le_card
+      sorry
+    · rw [← card_omega0]
+      apply card_le_card ha
+  · intro b hb IH
+    rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isLimit hb, sSup_image']
+    apply (card_sInf_le_sum_card _).trans
+
+
+  #exit
+
+end Ordinal
+
 /-!
 ### Cardinal operations with ordinal indices
 

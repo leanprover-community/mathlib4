@@ -515,6 +515,10 @@ theorem card_type (r : α → α → Prop) [IsWellOrder α r] : card (type r) = 
   rfl
 
 @[simp]
+theorem card_toType (o : Ordinal) : #o.toType = o.card := by
+  conv_rhs => rw [← type_lt o, card_type]
+
+@[simp]
 theorem card_typein {r : α → α → Prop} [IsWellOrder α r] (x : α) :
     #{ y // r y x } = (typein r x).card :=
   rfl
