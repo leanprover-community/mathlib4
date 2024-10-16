@@ -205,22 +205,6 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
     output := output.push (toSyntax copyright "-/", s!"Copyright too short!")
   return output
 
-/-- Check the `Syntax` `imports` for broad imports: either `Mathlib.Tactic` or any import
-starting with `Lake`. -/
-def broadImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id.run do
-  let mut output := #[]
-  for i in imports do
-    match i.getId with
-    | `Mathlib.Tactic =>
-      output := output.push (i, s!"Files in mathlib cannot import the whole tactic folder.")
-    | modName =>
-      if modName.getRoot == `Lake then
-      output := output.push (i,
-        s!"In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
-          (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
-          make sure to benchmark it. If this is fine, feel free to allow this linter.")
-  return output
-
 /--
 The "header" style linter checks that a file starts with
 ```
@@ -248,6 +232,20 @@ register_option linter.style.header : Bool := {
 }
 
 namespace Style.header
+
+/-- Check the `Syntax` `imports` for broad imports: either `Mathlib.Tactic` or any import
+starting with `Lake`. -/
+def broadImportsCheck (imports : Array Syntax)  : CommandElabM Unit := do
+  for i in imports do
+    match i.getId with
+    | `Mathlib.Tactic =>
+      Linter.logLint linter.style.header i m!"Files in mathlib cannot import the whole tactic folder."
+    | modName =>
+      if modName.getRoot == `Lake then
+        Linter.logLint linter.style.header i s!"\
+          In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
+          (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
+          make sure to benchmark it. If this is fine, feel free to allow this linter."
 
 /-- Check the syntax `imports` for syntactically duplicate imports.
 The output is an array of `Syntax` atoms whose ranges are the import statements,
@@ -288,9 +286,9 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     parseUpToHere (stx.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
   -- Report on broad or duplicate imports.
-  for (imp, msg) in broadImportsCheck importIds do
-    Linter.logLint linter.style.header imp msg
+  broadImportsCheck importIds
   duplicateImportsCheck importIds
+
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
   let copyright := match upToStx.getHeadInfo with
