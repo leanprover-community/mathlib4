@@ -230,7 +230,7 @@ def duplicateImportsCheck (imports : Array Syntax)  : Array Syntax := Id.run do
   let mut importsSoFar := #[]
   for i in imports do
     if importsSoFar.contains i then
-      output := output.push (mkAtomFrom i s!"Duplicate imports: {i} already imported")
+      output := output.push (mkAtomFrom i s!"Duplicate imports: '{i}' already imported")
     else importsSoFar := importsSoFar.push i
   return output
 
@@ -296,7 +296,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let .atom _ errorMessage := out
      -- By definition of `duplicateImportsCheck, this arm is unreachable.
      | continue
-    Linter.logLint linter.style.header out errorMessage
+    Linter.logLint linter.style.header out out
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
   let copyright := match upToStx.getHeadInfo with
