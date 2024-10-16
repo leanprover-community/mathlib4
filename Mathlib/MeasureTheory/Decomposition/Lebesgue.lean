@@ -846,7 +846,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
       · refine Filter.Eventually.of_forall fun a ↦ ?_
         simp [tendsto_atTop_iSup (iSup_monotone' f a)]
     have hξm : Measurable ξ := by
-      convert .iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
+      convert Measurable.iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
       simp [hξ]
     -- `ξ` is the `f` in the theorem statement and we set `μ₁` to be `μ - ν.withDensity ξ`
     -- since we need `μ₁ + ν.withDensity ξ = μ`
