@@ -230,8 +230,7 @@ theorem Scheme.restrictFunctor_map_ofRestrict {U V : X.Opens} (i : U ⟶ V) :
 
 theorem Scheme.restrictFunctor_map_base {U V : X.Opens} (i : U ⟶ V) :
     (X.restrictFunctor.map i).1.val.base = (Opens.toTopCat _).map i := by
-  ext a
-  ext a; refine Subtype.ext ?_ -- Porting note (#11041): `ext` did not pick up `Subtype.ext`
+  ext a; refine Subtype.ext ?_ -- Porting note: `ext` did not pick up `Subtype.ext`
   exact (congr_arg (fun f : X.restrict U.openEmbedding ⟶ X => f.val.base a)
         (X.restrictFunctor_map_ofRestrict i))
 
