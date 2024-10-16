@@ -46,7 +46,7 @@ variable {f : Ordinal.{u} → Ordinal.{u}} {o a b c d : Ordinal.{u}}
 defined so that
 
 - `veblenWith f 0 = f`.
-- `veblenWith f a` enumerates the fixed points of `veblenWith f b` for `b < a`.
+- `veblenWith f a` enumerates the fixed points of `veblenWith f b` for `b < a` when `a ≠ 0`.
 -/
 @[pp_nodot]
 def veblenWith (f : Ordinal.{u} → Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} → Ordinal.{u} :=
@@ -224,7 +224,7 @@ private theorem omega0_opow_zero_pos : 0 < ω ^ (0 : Ordinal) := by simp
 /-- `veblen o` is the `o`-th function in the Veblen hierarchy starting with `ω ^ ·`. That is:
 
 - `veblen 0 a = ω ^ a`.
-- `veblen a` enumerates the fixed points of `veblen b` for `b < a`.
+- `veblen a` enumerates the fixed points of `veblen b` for `b < a` when `a ≠ 0`.
 -/
 @[pp_nodot]
 def veblen : Ordinal.{u} → Ordinal.{u} → Ordinal.{u} :=
