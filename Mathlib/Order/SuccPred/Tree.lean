@@ -198,7 +198,7 @@ lemma subtrees_inf_eq_bot_iff {t₁ t₂ : SubRootedTree t}
     rw [le_inf_iff] at oh
     ext
     simpa only [ht₂.le_iff_eq ht₁.1, ht₁.le_iff_eq ht₂.1, eq_comm, or_self] using
-      le_total_of_le oh.2 h₂
+      le_total_of_directed oh.2 h₂
 
 lemma subtrees_disjoint : t.subtrees.PairwiseDisjoint ((↑) : _ → Set t) := by
   intro t₁ ht₁ t₂ ht₂ h
