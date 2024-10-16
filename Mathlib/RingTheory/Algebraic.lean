@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -47,11 +48,11 @@ def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
 variable (R A)
 
 /-- An algebra is algebraic if all its elements are algebraic. -/
-protected class Algebra.IsAlgebraic : Prop :=
+protected class Algebra.IsAlgebraic : Prop where
   isAlgebraic : ∀ x : A, IsAlgebraic R x
 
 /-- An algebra is transcendental if some element is transcendental. -/
-protected class Algebra.Transcendental : Prop :=
+protected class Algebra.Transcendental : Prop where
   transcendental : ∃ x : A, Transcendental R x
 
 variable {R A}
@@ -79,7 +80,7 @@ theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
 /-- An algebra is algebraic if and only if it is algebraic as a subalgebra. -/
 theorem Algebra.isAlgebraic_iff : Algebra.IsAlgebraic R A ↔ (⊤ : Subalgebra R A).IsAlgebraic := by
   delta Subalgebra.IsAlgebraic
-  simp only [Algebra.isAlgebraic_def, Algebra.mem_top, forall_prop_of_true, iff_self_iff]
+  simp only [Algebra.isAlgebraic_def, Algebra.mem_top, forall_prop_of_true]
 
 theorem isAlgebraic_iff_not_injective {x : A} :
     IsAlgebraic R x ↔ ¬Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) := by

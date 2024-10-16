@@ -68,7 +68,7 @@ def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f
 
 @[to_additive]
 theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
-    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun x y h =>
+    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun _ _ h =>
   let ⟨i⟩ := ‹Nonempty I›
   hg i ((Function.funext_iff.mp h : _) i)
 
@@ -248,6 +248,15 @@ theorem Pi.mulSingle_div [∀ i, Group <| f i] (i : I) (x y : f i) :
     mulSingle i (x / y) = mulSingle i x / mulSingle i y :=
   (MonoidHom.mulSingle f i).map_div x y
 
+@[to_additive]
+theorem Pi.mulSingle_pow [∀ i, Monoid (f i)] (i : I) (x : f i) (n : ℕ) :
+    mulSingle i (x ^ n) = mulSingle i x ^ n :=
+  (MonoidHom.mulSingle f i).map_pow x n
+
+@[to_additive]
+theorem Pi.mulSingle_zpow [∀ i, Group (f i)] (i : I) (x : f i) (n : ℤ) :
+    mulSingle i (x ^ n) = mulSingle i x ^ n :=
+  (MonoidHom.mulSingle f i).map_zpow x n
 
 /-- The injection into a pi group at different indices commutes.
 

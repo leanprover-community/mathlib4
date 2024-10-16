@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johannes Hölzl
+Authors: Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.MvPolynomial.CommRing
@@ -47,7 +47,7 @@ theorem free_map_coe {α β : Type u} {f : α → β} : ⇑(free.map f) = ⇑(re
 -/
 def adj : free ⊣ forget CommRingCat.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X R => homEquiv
+    { homEquiv := fun _ _ => homEquiv
       homEquiv_naturality_left_symm := fun {_ _ Y} f g =>
         RingHom.ext fun x => eval₂_cast_comp f (Int.castRingHom Y) g x }
 

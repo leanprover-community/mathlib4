@@ -7,11 +7,11 @@ import Mathlib.Analysis.CStarAlgebra.Spectrum
 import Mathlib.Analysis.CStarAlgebra.ContinuousMap
 import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.Analysis.Normed.Algebra.Basic
-import Mathlib.Topology.ContinuousFunction.Units
-import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.ContinuousMap.Units
+import Mathlib.Topology.ContinuousMap.Compact
 import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.ContinuousFunction.Ideals
-import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
+import Mathlib.Topology.ContinuousMap.Ideals
+import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
 # Gelfand Duality

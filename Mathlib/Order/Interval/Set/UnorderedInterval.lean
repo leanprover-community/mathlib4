@@ -44,7 +44,7 @@ namespace Set
 
 section Lattice
 
-variable [Lattice α] [Lattice β] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [Lattice α] [Lattice β] {a a₁ a₂ b b₁ b₂ x : α}
 
 /-- `uIcc a b` is the set of elements lying between `a` and `b`, with `a` and `b` included.
 Note that we define it more generally in a lattice as `Set.Icc (a ⊓ b) (a ⊔ b)`. In a product type,
@@ -134,7 +134,7 @@ open Interval
 
 section DistribLattice
 
-variable [DistribLattice α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [DistribLattice α] {a b c : α}
 
 lemma eq_of_mem_uIcc_of_mem_uIcc (ha : a ∈ [[b, c]]) (hb : b ∈ [[a, c]]) : a = b :=
   eq_of_inf_eq_sup_eq (inf_congr_right ha.1 hb.1) <| sup_congr_right ha.2 hb.2
@@ -155,7 +155,7 @@ section LinearOrder
 variable [LinearOrder α]
 
 section Lattice
-variable [Lattice β] {f : α → β} {s : Set α} {a b : α}
+variable [Lattice β] {f : α → β} {a b : α}
 
 lemma _root_.MonotoneOn.mapsTo_uIcc (hf : MonotoneOn f (uIcc a b)) :
     MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
@@ -187,7 +187,7 @@ lemma _root_.Antitone.image_uIcc_subset (hf : Antitone f) : f '' uIcc a b ⊆ uI
 
 end Lattice
 
-variable [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c d x : α}
+variable [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c : α}
 
 theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
@@ -294,8 +294,8 @@ lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   rw [Set.ext_iff] at h
   obtain ha | ha := le_or_lt b a
   · have hb := (h b).not
-    simp only [ha, left_mem_uIoc, not_lt, true_iff_iff, not_mem_uIoc, ← not_le,
-      and_true_iff, not_true, false_and_iff, not_false_iff, true_iff_iff, or_false_iff] at hb
+    simp only [ha, left_mem_uIoc, not_lt, true_iff, not_mem_uIoc, ← not_le,
+      and_true, not_true, false_and, not_false_iff, or_false] at hb
     refine hb.eq_of_not_lt fun hc => ?_
     simpa [ha, and_iff_right hc, ← @not_le _ _ _ a, iff_not_self, -not_le] using h c
   · refine

@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Periodic
-import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
+import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 
 /-!
@@ -196,9 +196,9 @@ theorem fourierSubalgebra_coe :
   apply adjoin_eq_span_of_subset
   refine Subset.trans ?_ Submodule.subset_span
   intro x hx
-  refine Submonoid.closure_induction hx (fun _ => id) ⟨0, ?_⟩ ?_
+  refine Submonoid.closure_induction (fun _ => id) ⟨0, ?_⟩ ?_ hx
   · ext1 z; exact fourier_zero
-  · rintro _ _ ⟨m, rfl⟩ ⟨n, rfl⟩
+  · rintro - - - - ⟨m, rfl⟩ ⟨n, rfl⟩
     refine ⟨m + n, ?_⟩
     ext1 z
     exact fourier_add
@@ -315,7 +315,7 @@ theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : 
   rw [fourierCoeffOn, fourierCoeff_eq_intervalIntegral _ _ a, add_sub, add_sub_cancel_left]
   congr 1
   simp_rw [intervalIntegral.integral_of_le hab.le]
-  refine setIntegral_congr measurableSet_Ioc fun x hx => ?_
+  refine setIntegral_congr_fun measurableSet_Ioc fun x hx => ?_
   rw [liftIoc_coe_apply]
   rwa [add_sub, add_sub_cancel_left]
 
@@ -344,7 +344,7 @@ theorem fourierCoeff_liftIco_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
   congr 1
   simp_rw [intervalIntegral.integral_of_le (lt_add_of_pos_right a hT.out).le]
   iterate 2 rw [integral_Ioc_eq_integral_Ioo]
-  refine setIntegral_congr measurableSet_Ioo fun x hx => ?_
+  refine setIntegral_congr_fun measurableSet_Ioo fun x hx => ?_
   rw [liftIco_coe_apply (Ioo_subset_Ico_self hx)]
 
 end fourierCoeff

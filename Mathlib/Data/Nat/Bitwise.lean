@@ -9,6 +9,7 @@ import Mathlib.Algebra.Ring.Nat
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.NeZero
 
 /-!
 # Bitwise operations on natural numbers
@@ -272,9 +273,6 @@ theorem lor_comm (n m : ℕ) : n ||| m = m ||| n :=
 theorem land_comm (n m : ℕ) : n &&& m = m &&& n :=
   bitwise_comm Bool.and_comm n m
 
-protected lemma xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
-  bitwise_comm (Bool.bne_eq_xor ▸ Bool.xor_comm) n m
-
 lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
   refine eq_of_testBit_eq fun j => ?_
   obtain rfl | hij := Decidable.eq_or_ne i j <;> cases' h : n.testBit i
@@ -285,13 +283,6 @@ lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
 
 lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit i).toNat := by
   rw [mul_comm, land_comm, and_two_pow]
-
-@[simp]
-theorem zero_xor (n : ℕ) : 0 ^^^ n = n := by simp [HXor.hXor, Xor.xor, xor]
-
-@[simp]
-theorem xor_zero (n : ℕ) : n ^^^ 0 = n := by simp [HXor.hXor, Xor.xor, xor]
-
 
 /-- Proving associativity of bitwise operations in general essentially boils down to a huge case
     distinction, so it is shorter to use this tactic instead of proving it in the general case. -/
@@ -305,22 +296,16 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   -- This is necessary because these are simp lemmas in mathlib
   <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
 
-protected lemma xor_assoc (n m k : ℕ) : (n ^^^ m) ^^^ k = n ^^^ (m ^^^ k) := by bitwise_assoc_tac
-
 theorem land_assoc (n m k : ℕ) : (n &&& m) &&& k = n &&& (m &&& k) := by bitwise_assoc_tac
 
 theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwise_assoc_tac
 
-@[simp]
-theorem xor_self (n : ℕ) : n ^^^ n = 0 :=
-  zero_of_testBit_eq_false fun i => by simp
-
 -- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
 theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := by
-  rw [Nat.xor_assoc, xor_self, xor_zero]
+  rw [Nat.xor_assoc, Nat.xor_self, xor_zero]
 
 theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := by
-  rw [← Nat.xor_assoc, xor_self, zero_xor]
+  rw [← Nat.xor_assoc, Nat.xor_self, zero_xor]
 
 theorem xor_right_injective {n : ℕ} : Function.Injective (HXor.hXor n : ℕ → ℕ) := fun m m' h => by
   rw [← xor_cancel_left n m, ← xor_cancel_left n m', h]
@@ -339,45 +324,44 @@ theorem xor_left_inj {n m m' : ℕ} : m ^^^ n = m' ^^^ n ↔ m = m' :=
 
 @[simp]
 theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := by
-  rw [← xor_self n, xor_right_inj, eq_comm]
+  rw [← Nat.xor_self n, xor_right_inj, eq_comm]
 
 theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m :=
   xor_eq_zero.not
 
-theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
-    b ^^^ c < a ∨ a ^^^ c < b ∨ a ^^^ b < c := by
-  set v := a ^^^ (b ^^^ c) with hv
+theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
+    b ^^^ c < a ∨ c ^^^ a < b ∨ a ^^^ b < c := by
+  set v := a ^^^ b ^^^ c with hv
   -- The xor of any two of `a`, `b`, `c` is the xor of `v` and the third.
   have hab : a ^^^ b = c ^^^ v := by
-    rw [hv]
-    conv_rhs =>
-      rw [Nat.xor_comm]
-      simp [Nat.xor_assoc]
-  have hac : a ^^^ c = b ^^^ v := by
-    rw [hv]
-    conv_rhs =>
-      right
-      rw [← Nat.xor_comm]
-    rw [← Nat.xor_assoc, ← Nat.xor_assoc, xor_self, zero_xor, Nat.xor_comm]
-  have hbc : b ^^^ c = a ^^^ v := by simp [hv, ← Nat.xor_assoc]
+    rw [Nat.xor_comm c, xor_cancel_right]
+  have hbc : b ^^^ c = a ^^^ v := by
+    rw [← Nat.xor_assoc, xor_cancel_left]
+  have hca : c ^^^ a = b ^^^ v := by
+    rw [hv, Nat.xor_assoc, Nat.xor_comm a, ← Nat.xor_assoc, xor_cancel_left]
   -- If `i` is the position of the most significant bit of `v`, then at least one of `a`, `b`, `c`
   -- has a one bit at position `i`.
-  obtain ⟨i, ⟨hi, hi'⟩⟩ := exists_most_significant_bit (xor_ne_zero.2 h)
-  have : testBit a i = true ∨ testBit b i = true ∨ testBit c i = true := by
+  obtain ⟨i, ⟨hi, hi'⟩⟩ := exists_most_significant_bit h
+  have : testBit a i ∨ testBit b i ∨ testBit c i := by
     contrapose! hi
-    simp only [Bool.eq_false_eq_not_eq_true, Ne, testBit_xor, Bool.bne_eq_xor] at hi ⊢
-    rw [hi.1, hi.2.1, hi.2.2, Bool.xor_false, Bool.xor_false]
+    simp_rw [Bool.eq_false_eq_not_eq_true] at hi ⊢
+    rw [testBit_xor, testBit_xor, hi.1, hi.2.1, hi.2.2]
+    rfl
   -- If, say, `a` has a one bit at position `i`, then `a xor v` has a zero bit at position `i`, but
   -- the same bits as `a` in positions greater than `j`, so `a xor v < a`.
-  rcases this with (h | h | h)
+  obtain h | h | h := this
   on_goal 1 => left; rw [hbc]
-  on_goal 2 => right; left; rw [hac]
+  on_goal 2 => right; left; rw [hca]
   on_goal 3 => right; right; rw [hab]
   all_goals
-    exact lt_of_testBit i (by simp [h, hi]) h fun j hj => by simp [hi' _ hj]
+    refine lt_of_testBit i ?_ h fun j hj => ?_
+    · rw [testBit_xor, h, hi]
+      rfl
+    · simp only [testBit_xor, hi' _ hj, Bool.bne_false]
 
-theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c :=
-  (or_iff_right fun h' => (h.asymm h').elim).1 <| xor_trichotomy h.ne
+theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c := by
+  obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero.2 h.ne
+  exacts [(h.asymm ha).elim, Or.inl <| Nat.xor_comm _ _ ▸ hb, Or.inr hc]
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega

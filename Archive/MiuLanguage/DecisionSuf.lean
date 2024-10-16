@@ -265,7 +265,7 @@ theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Deri
   rcases h with ⟨⟨mhead, nmtail⟩, hi⟩
   have : en ≠ nil := by
     intro k
-    simp only [k, count, countP, countP.go, if_false, zero_mod, zero_ne_one, false_or_iff,
+    simp only [k, count, countP, countP.go, if_false, zero_mod, zero_ne_one, false_or,
       reduceCtorEq] at hi
   rcases exists_cons_of_ne_nil this with ⟨y, ys, rfl⟩
   rcases mhead

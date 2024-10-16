@@ -306,7 +306,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · exact ⟨[], [], by tauto⟩
         · cases' t' with b t
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
-            simp only [eq_self_iff_true, not_true, Ne, false_and_iff] at helem
+            simp only [eq_self_iff_true, not_true, Ne, false_and] at helem
           simp only [List.join, List.cons_append, List.cons_eq_cons] at hsum
           refine ⟨t, U.join, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
@@ -373,7 +373,7 @@ protected theorem map_pow (f : α → β) (P : RegularExpression α) :
 theorem map_id : ∀ P : RegularExpression α, P.map id = P
   | 0 => rfl
   | 1 => rfl
-  | char a => rfl
+  | char _ => rfl
   | R + S => by simp_rw [map, map_id]
   | comp R S => by simp_rw [map, map_id]; rfl
   | star R => by simp_rw [map, map_id]
@@ -384,7 +384,7 @@ theorem map_id : ∀ P : RegularExpression α, P.map id = P
 theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, (P.map f).map g = P.map (g ∘ f)
   | 0 => rfl
   | 1 => rfl
-  | char a => rfl
+  | char _ => rfl
   | R + S => by simp only [map, Function.comp_apply, map_map]
   | comp R S => by simp only [map, Function.comp_apply, map_map]
   | star R => by simp only [map, Function.comp_apply, map_map]

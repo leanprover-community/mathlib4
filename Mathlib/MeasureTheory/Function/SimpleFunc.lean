@@ -161,7 +161,7 @@ theorem measurableSet_preimage (f : α →ₛ β) (s) : MeasurableSet (f ⁻¹' 
   measurableSet_cut (fun _ b => b ∈ s) f fun b => MeasurableSet.const (b ∈ s)
 
 /-- A simple function is measurable -/
-@[measurability]
+@[measurability, fun_prop]
 protected theorem measurable [MeasurableSpace β] (f : α →ₛ β) : Measurable f := fun s _ =>
   measurableSet_preimage f s
 
@@ -553,8 +553,8 @@ theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k 
 
 instance instPreorder [Preorder β] : Preorder (α →ₛ β) :=
   { SimpleFunc.instLE with
-    le_refl := fun f a => le_rfl
-    le_trans := fun f g h hfg hgh a => le_trans (hfg _) (hgh a) }
+    le_refl := fun _ _ => le_rfl
+    le_trans := fun _ _ _ hfg hgh a => le_trans (hfg _) (hgh a) }
 
 instance instPartialOrder [PartialOrder β] : PartialOrder (α →ₛ β) :=
   { SimpleFunc.instPreorder with
@@ -773,7 +773,7 @@ theorem sum_eapproxDiff (f : α → ℝ≥0∞) (n : ℕ) (a : α) :
   induction' n with n IH
   · simp only [Nat.zero_add, Finset.sum_singleton, Finset.range_one]
     rfl
-  · erw [Finset.sum_range_succ, IH, eapproxDiff, coe_map, Function.comp_apply,
+  · rw [Finset.sum_range_succ, IH, eapproxDiff, coe_map, Function.comp_apply,
       coe_sub, Pi.sub_apply, ENNReal.coe_toNNReal,
       add_tsub_cancel_of_le (monotone_eapprox f (Nat.le_succ _) _)]
     apply (lt_of_le_of_lt _ (eapprox_lt_top f (n + 1) a)).ne
@@ -855,8 +855,8 @@ def lintegralₗ {m : MeasurableSpace α} : (α →ₛ ℝ≥0∞) →ₗ[ℝ≥
       map_add' := by simp [lintegral, mul_add, Finset.sum_add_distrib]
       map_smul' := fun c μ => by
         simp [lintegral, mul_left_comm _ c, Finset.mul_sum, Measure.smul_apply c] }
-  map_add' f g := LinearMap.ext fun μ => add_lintegral f g
-  map_smul' c f := LinearMap.ext fun μ => const_mul_lintegral f c
+  map_add' f g := LinearMap.ext fun _ => add_lintegral f g
+  map_smul' c f := LinearMap.ext fun _ => const_mul_lintegral f c
 
 @[simp]
 theorem zero_lintegral : (0 : α →ₛ ℝ≥0∞).lintegral μ = 0 :=
@@ -987,7 +987,7 @@ open Finset Function
 theorem support_eq [MeasurableSpace α] [Zero β] (f : α →ₛ β) :
     support f = ⋃ y ∈ f.range.filter fun y => y ≠ 0, f ⁻¹' {y} :=
   Set.ext fun x => by
-    simp only [mem_support, Set.mem_preimage, mem_filter, mem_range_self, true_and_iff, exists_prop,
+    simp only [mem_support, Set.mem_preimage, mem_filter, mem_range_self, true_and, exists_prop,
       mem_iUnion, Set.mem_range, mem_singleton_iff, exists_eq_right']
 
 variable {m : MeasurableSpace α} [Zero β] [Zero γ] {μ : Measure α} {f : α →ₛ β}

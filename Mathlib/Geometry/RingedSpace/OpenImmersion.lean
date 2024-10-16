@@ -118,7 +118,7 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
       dsimp
       simp only [NatTrans.naturality_assoc, TopCat.Presheaf.pushforward_obj_obj,
         TopCat.Presheaf.pushforward_obj_map, Quiver.Hom.unop_op, Category.assoc]
-      erw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
+      rw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
       congr 1
 
 @[reassoc (attr := simp)]
@@ -167,7 +167,7 @@ noncomputable def invApp (U : Opens X) :
 
 @[simp, reassoc]
 theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
-    X.presheaf.map i ≫ H.invApp (unop V) =
+    X.presheaf.map i ≫ H.invApp _ (unop V) =
       invApp f (unop U) ≫ Y.presheaf.map (opensFunctor f |>.op.map i) := by
   simp only [invApp, ← Category.assoc]
   rw [IsIso.comp_inv_eq]
@@ -179,11 +179,11 @@ theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
 instance (U : Opens X) : IsIso (invApp f U) := by delta invApp; infer_instance
 
 theorem inv_invApp (U : Opens X) :
-    inv (H.invApp U) =
+    inv (H.invApp _ U) =
       f.c.app (op (opensFunctor f |>.obj U)) ≫
         X.presheaf.map
           (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) := by
-  rw [← cancel_epi (H.invApp U), IsIso.hom_inv_id]
+  rw [← cancel_epi (H.invApp _ U), IsIso.hom_inv_id]
   delta invApp
   simp [← Functor.map_comp]
 
@@ -195,7 +195,7 @@ theorem invApp_app (U : Opens X) :
 
 @[simp, reassoc]
 theorem app_invApp (U : Opens Y) :
-    f.c.app (op U) ≫ H.invApp ((Opens.map f.base).obj U) =
+    f.c.app (op U) ≫ H.invApp _ ((Opens.map f.base).obj U) =
       Y.presheaf.map
         ((homOfLE (Set.image_preimage_subset f.base U.1)).op :
           op U ⟶ op (opensFunctor f |>.obj ((Opens.map f.base).obj U))) := by
@@ -244,7 +244,7 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
 @[elementwise, simp]
 theorem ofRestrict_invApp {C : Type*} [Category C] (X : PresheafedSpace C) {Y : TopCat}
     {f : Y ⟶ TopCat.of X.carrier} (h : OpenEmbedding f) (U : Opens (X.restrict h).carrier) :
-    (PresheafedSpace.IsOpenImmersion.ofRestrict X h).invApp U = 𝟙 _ := by
+    (PresheafedSpace.IsOpenImmersion.ofRestrict X h).invApp _ U = 𝟙 _ := by
   delta invApp
   rw [IsIso.comp_inv_eq, Category.id_comp]
   change X.presheaf.map _ = X.presheaf.map _
@@ -290,7 +290,7 @@ def pullbackConeOfLeftFst :
   base := pullback.fst _ _
   c :=
     { app := fun U =>
-        hf.invApp (unop U) ≫
+        hf.invApp _ (unop U) ≫
           g.c.app (op (hf.base_open.isOpenMap.functor.obj (unop U))) ≫
             Y.presheaf.map
               (eqToHom
@@ -772,21 +772,21 @@ noncomputable def invApp (U : Opens X) :
 
 @[reassoc (attr := simp)]
 theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
-    X.presheaf.map i ≫ H.invApp (unop V) =
-      H.invApp (unop U) ≫ Y.presheaf.map (opensFunctor f |>.op.map i) :=
+    X.presheaf.map i ≫ H.invApp _ (unop V) =
+      H.invApp _ (unop U) ≫ Y.presheaf.map (opensFunctor f |>.op.map i) :=
   PresheafedSpace.IsOpenImmersion.inv_naturality f i
 
-instance (U : Opens X) : IsIso (H.invApp U) := by delta invApp; infer_instance
+instance (U : Opens X) : IsIso (H.invApp _ U) := by delta invApp; infer_instance
 
 theorem inv_invApp (U : Opens X) :
-    inv (H.invApp U) =
+    inv (H.invApp _ U) =
       f.c.app (op (opensFunctor f |>.obj U)) ≫
         X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) :=
   PresheafedSpace.IsOpenImmersion.inv_invApp f U
 
 @[reassoc (attr := simp)]
 theorem invApp_app (U : Opens X) :
-    H.invApp U ≫ f.c.app (op (opensFunctor f |>.obj U)) =
+    H.invApp _ U ≫ f.c.app (op (opensFunctor f |>.obj U)) =
       X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) :=
   PresheafedSpace.IsOpenImmersion.invApp_app f U
 
@@ -794,7 +794,7 @@ attribute [elementwise] invApp_app
 
 @[reassoc (attr := simp)]
 theorem app_invApp (U : Opens Y) :
-    f.c.app (op U) ≫ H.invApp ((Opens.map f.base).obj U) =
+    f.c.app (op U) ≫ H.invApp _ ((Opens.map f.base).obj U) =
       Y.presheaf.map
         ((homOfLE (Set.image_preimage_subset f.base U.1)).op :
           op U ⟶ op (opensFunctor f |>.obj ((Opens.map f.base).obj U))) :=
@@ -818,7 +818,7 @@ instance ofRestrict {X : TopCat} (Y : SheafedSpace C) {f : X ⟶ Y.carrier}
 @[elementwise, simp]
 theorem ofRestrict_invApp {C : Type*} [Category C] (X : SheafedSpace C) {Y : TopCat}
     {f : Y ⟶ TopCat.of X.carrier} (h : OpenEmbedding f) (U : Opens (X.restrict h).carrier) :
-    (SheafedSpace.IsOpenImmersion.ofRestrict X h).invApp U = 𝟙 _ :=
+    (SheafedSpace.IsOpenImmersion.ofRestrict X h).invApp _ U = 𝟙 _ :=
   PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ h U
 
 /-- An open immersion is an iso if the underlying continuous map is epi. -/
@@ -946,6 +946,8 @@ instance mono : Mono f :=
 instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace.map f) :=
   H
 
+-- note to reviewers: is there a `count_heartbeats` for this?
+set_option synthInstance.maxHeartbeats 30000 in
 /-- An explicit pullback cone over `cospan f g` if `f` is an open immersion. -/
 def pullbackConeOfLeft : PullbackCone f g := by
   refine PullbackCone.mk ?_
@@ -964,6 +966,7 @@ def pullbackConeOfLeft : PullbackCone f g := by
 instance : LocallyRingedSpace.IsOpenImmersion (pullbackConeOfLeft f g).snd :=
   show PresheafedSpace.IsOpenImmersion (Y.toPresheafedSpace.ofRestrict _) by infer_instance
 
+set_option synthInstance.maxHeartbeats 80000 in
 /-- The constructed `pullbackConeOfLeft` is indeed limiting. -/
 def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
   PullbackCone.isLimitAux' _ fun s => by
@@ -982,7 +985,8 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
       change _ = _ ≫ s.snd.1.stalkMap x at this
       rw [PresheafedSpace.stalkMap.comp, ← IsIso.eq_inv_comp] at this
       rw [this]
-      infer_instance
+      -- TODO: This instance is found by `infer_instance` before #6045.
+      apply CommRingCat.isLocalRingHom_comp
     · intro m _ h₂
       rw [← cancel_mono (pullbackConeOfLeft f g).snd]
       exact h₂.trans <| LocallyRingedSpace.Hom.ext
@@ -1115,17 +1119,15 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
   have : _ = (pullback.fst f g).val.base :=
     PreservesPullback.iso_hom_fst
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
-  erw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
-   -- now `erw` after #13170
-  rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
+  rw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp,
+      Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   -- Porting note (#11224): change `rw` to `erw` on this lemma
   · erw [TopCat.pullback_fst_range]
     ext
     constructor
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
-  · erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
-    rw [show (inv (pullback.snd f g)).val.base = _ from
+  · rw [← TopCat.epi_iff_surjective, show (inv (pullback.snd f g)).val.base = _ from
         (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).map_inv _]
     infer_instance
 
@@ -1154,7 +1156,7 @@ is an open immersion iff every stalk map is an iso.
 theorem of_stalk_iso {X Y : LocallyRingedSpace} (f : X ⟶ Y) (hf : OpenEmbedding f.1.base)
     [stalk_iso : ∀ x : X.1, IsIso (f.stalkMap x)] :
     LocallyRingedSpace.IsOpenImmersion f :=
-  SheafedSpace.IsOpenImmersion.of_stalk_iso hf (H := stalk_iso)
+  SheafedSpace.IsOpenImmersion.of_stalk_iso _ hf (H := stalk_iso)
 
 end OfStalkIso
 
@@ -1180,21 +1182,21 @@ noncomputable def invApp (U : Opens X) :
 
 @[reassoc (attr := simp)]
 theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
-    X.presheaf.map i ≫ H.invApp (unop V) =
-      H.invApp (unop U) ≫ Y.presheaf.map (opensFunctor f |>.op.map i) :=
+    X.presheaf.map i ≫ H.invApp _ (unop V) =
+      H.invApp _ (unop U) ≫ Y.presheaf.map (opensFunctor f |>.op.map i) :=
   PresheafedSpace.IsOpenImmersion.inv_naturality f.1 i
 
-instance (U : Opens X) : IsIso (H.invApp U) := by delta invApp; infer_instance
+instance (U : Opens X) : IsIso (H.invApp _ U) := by delta invApp; infer_instance
 
 theorem inv_invApp (U : Opens X) :
-    inv (H.invApp U) =
+    inv (H.invApp _ U) =
       f.1.c.app (op (opensFunctor f |>.obj U)) ≫
         X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) :=
   PresheafedSpace.IsOpenImmersion.inv_invApp f.1 U
 
 @[reassoc (attr := simp)]
 theorem invApp_app (U : Opens X) :
-    H.invApp U ≫ f.1.c.app (op (opensFunctor f |>.obj U)) =
+    H.invApp _ U ≫ f.1.c.app (op (opensFunctor f |>.obj U)) =
       X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) :=
   PresheafedSpace.IsOpenImmersion.invApp_app f.1 U
 
@@ -1202,7 +1204,7 @@ attribute [elementwise] invApp_app
 
 @[reassoc (attr := simp)]
 theorem app_invApp (U : Opens Y) :
-    f.1.c.app (op U) ≫ H.invApp ((Opens.map f.1.base).obj U) =
+    f.1.c.app (op U) ≫ H.invApp _ ((Opens.map f.1.base).obj U) =
       Y.presheaf.map
         ((homOfLE (Set.image_preimage_subset f.1.base U.1)).op :
           op U ⟶ op (opensFunctor f |>.obj ((Opens.map f.1.base).obj U))) :=
@@ -1211,7 +1213,7 @@ theorem app_invApp (U : Opens Y) :
 /-- A variant of `app_inv_app` that gives an `eqToHom` instead of `homOfLe`. -/
 @[reassoc]
 theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.1.base) :
-    f.1.c.app (op U) ≫ H.invApp ((Opens.map f.1.base).obj U) =
+    f.1.c.app (op U) ≫ H.invApp _ ((Opens.map f.1.base).obj U) =
       Y.presheaf.map
         (eqToHom <|
             le_antisymm (Set.image_preimage_subset f.1.base U.1) <|
@@ -1226,7 +1228,7 @@ instance ofRestrict {X : TopCat} (Y : LocallyRingedSpace) {f : X ⟶ Y.carrier}
 @[elementwise, simp]
 theorem ofRestrict_invApp (X : LocallyRingedSpace) {Y : TopCat}
     {f : Y ⟶ TopCat.of X.carrier} (h : OpenEmbedding f) (U : Opens (X.restrict h).carrier) :
-    (LocallyRingedSpace.IsOpenImmersion.ofRestrict X h).invApp U = 𝟙 _ :=
+    (LocallyRingedSpace.IsOpenImmersion.ofRestrict X h).invApp _ U = 𝟙 _ :=
   PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ h U
 
 instance stalk_iso (x : X) : IsIso (f.stalkMap x) :=
