@@ -12,9 +12,27 @@ import Mathlib.Algebra.Polynomial.RingDivision
 /-!
 # Sum of iterated derivatives
 
-## Main definitions
+This file introduces `Polynomial.sumIDeriv`, the sum of the iterated derivatives of a polynomial,
+as a linear map. This is used in particular in the proof of the Lindemann-Weierstrass theorem
+(see #6718).
+
+## Main results
 
 * `Polynomial.sumIDeriv`: Sum of iterated derivatives of a polynomial, as a linear map
+* `Polynomial.sumIDeriv_apply`, `Polynomial.sumIDeriv_apply_of_lt`,
+  `Polynomial.sumIDeriv_apply_of_le`: `Polynomial.sumIDeriv` expressed as a sum
+* `Polynomial.sumIDeriv_C`, `Polynomial.sumIDeriv_X`: `Polynomial.sumIDeriv` applied to simple
+  polynomials
+* `Polynomial.sumIDeriv_map`: `Polynomial.sumIDeriv` commutes with `Polynomial.map`
+* `Polynomial.sumIDeriv_derivative`: `Polynomial.sumIDeriv` commutes with `Polynomial.derivative`
+* `Polynomial.sumIDeriv_eq_self_add`: `sumIDeriv p = p + sumIDeriv (derivative p)`
+* `Polynomial.exists_iterate_derivative_eq_factorial_smul`: the `k`'th iterated derivative of a
+  polynomial has a common factor `k!`
+* `Polynomial.aeval_iterate_derivative_of_lt`, `Polynomial.aeval_iterate_derivative_self`,
+  `Polynomial.aeval_iterate_derivative_of_ge`: applying `Polynomial.aeval` to iterated derivatives
+* `Polynomial.aeval_sumIDeriv`, `Polynomial.aeval_sumIDeriv_of_pos`: applying `Polynomial.aeval` to
+   `Polynomial.sumIDeriv`
+
 -/
 
 open Finset
@@ -57,6 +75,10 @@ theorem sumIDeriv_apply_of_le {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
 
 theorem sumIDeriv_C (a : R) : sumIDeriv (C a) = C a := by
   rw [sumIDeriv_apply, natDegree_C, zero_add, sum_range_one, Function.iterate_zero_apply]
+
+theorem sumIDeriv_X : sumIDeriv X = X + C 1 := by
+  rw [sumIDeriv_apply, natDegree_X, sum_range_succ, sum_range_one, Function.iterate_zero_apply,
+    Function.iterate_one, derivative_X, eq_natCast, Nat.cast_one]
 
 @[simp]
 theorem sumIDeriv_map (p : R[X]) (f : R →+* S) :
