@@ -12,7 +12,7 @@ import Mathlib.AlgebraicGeometry.AffineScheme
 
 - `AlgebraicGeometry.Scheme.fromSpecStalk`: The canonical morphism `Spec 𝒪_{X, x} ⟶ X`.
 - `AlgebraicGeometry.Scheme.range_fromSpecStalk`: The range of the map `Spec 𝒪_{X, x} ⟶ X` is
-  exactly the `y` that specializes to `x`.
+  exactly the `y`s that specialize to `x`.
 - `AlgebraicGeometry.SpecToEquivOfLocalRing`:
   Given a local ring `R` and scheme `X`, morphisms `Spec R ⟶ X` corresponds to pairs
   `(x, f)` where `x : X` and `f : 𝒪_{X, x} ⟶ R` is a local ring homomorphism.
