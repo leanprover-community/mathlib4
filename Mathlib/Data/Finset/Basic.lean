@@ -3145,10 +3145,4 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
 
 end Mathlib.Meta
 
-<<<<<<< HEAD
 set_option linter.style.longFile 3300
-||||||| 809c3fb3b5c
-set_option linter.style.longFile 3100
-=======
-set_option linter.style.longFile 3200
->>>>>>> origin/master
