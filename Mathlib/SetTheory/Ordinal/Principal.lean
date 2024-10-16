@@ -13,7 +13,7 @@ We define principal or indecomposable ordinals, and we prove the standard proper
 ## Main definitions and results
 * `Principal`: A principal or indecomposable ordinal under some binary operation. We include 0 and
   any other typically excluded edge cases for simplicity.
-* `unbounded_principal`: Principal ordinals are unbounded.
+* `not_bddAbove_principal`: Principal ordinals (under any operation) are unbounded.
 * `principal_add_iff_zero_or_omega0_opow`: The main characterization theorem for additive principal
   ordinals.
 * `principal_mul_iff_le_two_or_omega0_opow_opow`: The main characterization theorem for
@@ -87,6 +87,7 @@ end Arbitrary
 
 /-! ### Principal ordinals are unbounded -/
 
+/-- We give an explicit construction for a principal ordinal larger or equal than `o`. -/
 private theorem principal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     Principal op (nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2)) o) := by
   intro a b ha hb
