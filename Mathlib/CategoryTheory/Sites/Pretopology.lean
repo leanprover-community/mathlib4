@@ -183,7 +183,7 @@ def trivial : Pretopology C where
     rcases hS g (singleton_self g) with ⟨Y, f, i, hTi⟩
     refine ⟨_, f ≫ g, ?_, ?_⟩
     · infer_instance
-    -- Porting note: the next four lines were just "ext (W k)"
+    -- Porting note (#11041): the next four lines were just "ext (W k)"
     apply funext
     rintro W
     apply Set.ext
