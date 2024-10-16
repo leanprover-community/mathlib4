@@ -59,23 +59,23 @@ instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
 --   inferInstance
 
 @[instance]
-theorem xxx {R S : CommRingCat} (f : .of R ⟶ S) [IsLocalHom f] :
-    IsLocalHom (f : (R ⟶ S)) :=
+theorem xxx {R : Type*} [CommRing R] {S : CommRingCat} (f : CommRingCat.of R ⟶ S)
+[IsLocalHom (R := CommRingCat.of R) f] : IsLocalHom f :=
   inferInstance
 
--- @[instance]
--- theorem zzz {R S : CommRingCat} (f : R ⟶ S) [IsLocalHom (f : R →+* S)] :
---     IsLocalHom f :=
---   inferInstance
+@[instance]
+theorem yyy {R : CommRingCat} {S : Type*} [CommRing S] (f : R ⟶ CommRingCat.of S)
+    [IsLocalHom (S := CommRingCat.of S) f] : IsLocalHom f :=
+  inferInstance
+
+@[instance]
+theorem zzz {R S : Type u} [CommRing R] [CommRing S] (f : CommRingCat.of R ⟶ CommRingCat.of S)
+    [IsLocalHom (R := CommRingCat.of R) (S := CommRingCat.of S) f] : IsLocalHom f :=
+  inferInstance
 
 @[instance]
 theorem zzzz {R S : CommRingCat} (f : R ⟶ S) [IsLocalHom f] :
     IsLocalHom (F := R →+* S) f :=
-  inferInstance
-
-@[instance]
-theorem yyy {R S : CommRingCat} (f : R ⟶ .of S) [IsLocalHom f] :
-    IsLocalHom (f : R ⟶ S) :=
   inferInstance
 
 @[instance]
