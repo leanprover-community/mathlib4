@@ -114,6 +114,9 @@ theorem mem_bot {x : E} : x ∈ (⊥ : IntermediateField F E) ↔ x ∈ Set.rang
 @[simp]
 theorem bot_toSubalgebra : (⊥ : IntermediateField F E).toSubalgebra = ⊥ := rfl
 
+theorem bot_toSubfield : (⊥ : IntermediateField F E).toSubfield = (algebraMap F E).fieldRange :=
+  rfl
+
 @[simp]
 theorem coe_top : ↑(⊤ : IntermediateField F E) = (Set.univ : Set E) :=
   rfl
@@ -283,10 +286,9 @@ theorem restrictScalars_top : (⊤ : IntermediateField F E).restrictScalars K = 
 variable (K)
 variable (L L' : IntermediateField F E)
 
--- TODO: need #15088
--- theorem restrictScalars_sup :
---     L.restrictScalars K ⊔ L'.restrictScalars K = (L ⊔ L').restrictScalars K :=
---   toSubfield_injective (by simp)
+theorem restrictScalars_sup :
+    L.restrictScalars K ⊔ L'.restrictScalars K = (L ⊔ L').restrictScalars K :=
+  toSubfield_injective (by simp)
 
 theorem restrictScalars_inf :
     L.restrictScalars K ⊓ L'.restrictScalars K = (L ⊓ L').restrictScalars K := rfl
