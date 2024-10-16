@@ -58,22 +58,20 @@ lemma pred_findAtom (r : α) : Order.pred (findAtom r) = ⊥ := by
     rw [← h]
     apply Nat.find_spec (bot_le (a := r)).exists_pred_iterate
 
-lemma findAtom_ne_bot {r : α} (hr : r ≠ ⊥) :
-    findAtom r ≠ ⊥ := by
-  unfold findAtom
-  intro nh
-  have := Nat.find_min' (bot_le (a := r)).exists_pred_iterate nh
-  replace : Nat.find (bot_le (a := r)).exists_pred_iterate = 0 := by omega
-  simp [this, hr] at nh
-
 @[simp]
-lemma findAtom_eq_bot_iff {r : α} :
+lemma findAtom_eq_bot {r : α} :
     findAtom r = ⊥ ↔ r = ⊥ where
-  mp h := by_contra fun nh ↦ findAtom_ne_bot nh h
+  mp h := by
+    unfold findAtom at h
+    have := Nat.find_min' (bot_le (a := r)).exists_pred_iterate h
+    replace : Nat.find (bot_le (a := r)).exists_pred_iterate = 0 := by omega
+    simpa [this] using h
   mpr h := by simp [h]
 
-@[simp]
-lemma isAtom_findAtom (r : α) (hr : r ≠ ⊥) :
+lemma findAtom_ne_bot {r : α} :
+    findAtom r ≠ ⊥ ↔ r ≠ ⊥ := findAtom_eq_bot.not
+
+lemma isAtom_findAtom {r : α} (hr : r ≠ ⊥) :
     IsAtom (findAtom r) := by
   constructor
   · simp [hr]
@@ -81,13 +79,19 @@ lemma isAtom_findAtom (r : α) (hr : r ≠ ⊥) :
     apply Order.le_pred_of_lt at hb
     simpa using hb
 
+@[simp]
+lemma isAtom_findAtom_iff {r : α} :
+    IsAtom (findAtom r) ↔ r ≠ ⊥ where
+  mpr := isAtom_findAtom
+  mp h nh := by simp only [nh, findAtom_bot] at h; exact h.1 rfl
+
 end DecidableEq
 
 instance instIsAtomic : IsAtomic α where
   eq_bot_or_exists_atom_le b := by classical
     rw [or_iff_not_imp_left]
     intro hb
-    use findAtom b, isAtom_findAtom b hb, findAtom_le b
+    use findAtom b, isAtom_findAtom hb, findAtom_le b
 
 end IsPredArchimedean
 
@@ -138,7 +142,7 @@ lemma RootedTree.root_subtree (t : RootedTree) (r : t) : (t.subtree r).root = r 
 lemma RootedTree.subtree_root (t : RootedTree) (v : SubRootedTree t) : t.subtree v.root = v := rfl
 
 @[ext]
-lemma SubRootedTree.ext {t : RootedTree} (v₁ v₂ : SubRootedTree t)
+lemma SubRootedTree.ext {t : RootedTree} {v₁ v₂ : SubRootedTree t}
     (h : v₁.root = v₂.root) : v₁ = v₂ := h
 
 instance (t : RootedTree) : SetLike (SubRootedTree t) t where
@@ -211,16 +215,16 @@ lemma subtrees_disjoint : t.subtrees.PairwiseDisjoint ((↑) : _ → Set t) := b
   exact root_ne_bot_of_mem_subtrees t₁ ht₁ ha
 
 /--
-The subtree of `t` containing `r`, or all of `t` if `r` is the root.
+The immediate subtree of `t` containing `v`, or all of `t` if `v` is the root.
 -/
-def RootedTree.subtreeOf (t : RootedTree) [DecidableEq t] (r : t) : SubRootedTree t :=
-  t.subtree (IsPredArchimedean.findAtom r)
+def RootedTree.subtreeOf (t : RootedTree) [DecidableEq t] (v : t) : SubRootedTree t :=
+  t.subtree (IsPredArchimedean.findAtom v)
 
 @[simp]
-lemma RootedTree.mem_subtreeOf [DecidableEq t] {r : t} :
-    r ∈ t.subtreeOf r := by
+lemma RootedTree.mem_subtreeOf [DecidableEq t] {v : t} :
+    v ∈ t.subtreeOf v := by
   simp [mem_iff, RootedTree.subtreeOf]
 
-lemma RootedTree.subtreeOf_mem_subtrees [DecidableEq t] {r : t} (hr : r ≠ ⊥) :
-    t.subtreeOf r ∈ t.subtrees := by
-  simp [RootedTree.subtrees, RootedTree.subtreeOf, IsPredArchimedean.isAtom_findAtom r hr]
+lemma RootedTree.subtreeOf_mem_subtrees [DecidableEq t] {v : t} (hr : v ≠ ⊥) :
+    t.subtreeOf v ∈ t.subtrees := by
+  simpa [RootedTree.subtrees, RootedTree.subtreeOf]
