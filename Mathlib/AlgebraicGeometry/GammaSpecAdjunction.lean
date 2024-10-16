@@ -272,7 +272,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       show PrimeSpectrum.comap (f.val.c.app (op ⊤)) (X.toΓSpecFun x) = Y.toΓSpecFun (f.val.base x)
       dsimp [toΓSpecFun]
       -- TODO: this instance was found automatically before #6045
-      have := @AlgebraicGeometry.LocallyRingedSpace.isLocalRingHomStalkMap X Y
+      have := @AlgebraicGeometry.LocallyRingedSpace.isLocalHomStalkMap X Y
       rw [← LocalRing.comap_closedPoint (f.stalkMap x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
       congr 2
