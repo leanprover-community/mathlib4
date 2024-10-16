@@ -369,7 +369,7 @@ theorem rnDeriv_lt_top (μ ν : Measure α) [SigmaFinite μ] : ∀ᵐ x ∂ν, �
   suffices ∀ n, ∀ᵐ x ∂ν, x ∈ spanningSets μ n → μ.rnDeriv ν x < ∞ by
     filter_upwards [ae_all_iff.2 this] with _ hx using hx _ (mem_spanningSetsIndex _ _)
   intro n
-  rw [← ae_restrict_iff' (measurable_spanningSets _ _)]
+  rw [← ae_restrict_iff' (measurableSet_spanningSets _ _)]
   apply ae_lt_top (measurable_rnDeriv _ _)
   refine (lintegral_rnDeriv_lt_top_of_measure_ne_top _ ?_).ne
   exact (measure_spanningSets_lt_top _ _).ne
@@ -938,7 +938,7 @@ nonrec instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite
   · exact .sfinite_of_isFiniteMeasure fun μ _ ↦ this μ ‹_›
   -- Take a disjoint cover that consists of sets of finite measure `ν`.
   set s : ℕ → Set α := disjointed (spanningSets ν)
-  have hsm : ∀ n, MeasurableSet (s n) := .disjointed <| measurable_spanningSets _
+  have hsm : ∀ n, MeasurableSet (s n) := .disjointed <| measurableSet_spanningSets _
   have hs : ∀ n, Fact (ν (s n) < ⊤) := fun n ↦
     ⟨lt_of_le_of_lt (measure_mono <| disjointed_le ..) (measure_spanningSets_lt_top ν n)⟩
   -- Note that the restrictions of `μ` and `ν` to `s n` are finite measures.

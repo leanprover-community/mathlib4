@@ -306,8 +306,10 @@ variable {C}
 
 /-- We can more explicitly show that a category has a terminal object by specifying the object,
 and showing there is a unique morphism to it from any other object. -/
-theorem hasTerminal_of_unique (X : C) [h : ∀ Y : C, Unique (Y ⟶ X)] : HasTerminal C :=
-  { has_limit := fun F => HasLimit.mk ⟨_, (isTerminalEquivUnique F X).invFun h⟩ }
+theorem hasTerminal_of_unique (X : C) [∀ Y, Nonempty (Y ⟶ X)] [∀ Y, Subsingleton (Y ⟶ X)] :
+    HasTerminal C where
+  has_limit F := .mk ⟨_, (isTerminalEquivUnique F X).invFun fun _ ↦
+    ⟨Classical.inhabited_of_nonempty', (Subsingleton.elim · _)⟩⟩
 
 theorem IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
   { has_limit := fun F => HasLimit.mk ⟨⟨X, by aesop_cat, by aesop_cat⟩,
@@ -315,8 +317,10 @@ theorem IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
 
 /-- We can more explicitly show that a category has an initial object by specifying the object,
 and showing there is a unique morphism from it to any other object. -/
-theorem hasInitial_of_unique (X : C) [h : ∀ Y : C, Unique (X ⟶ Y)] : HasInitial C :=
-  { has_colimit := fun F => HasColimit.mk ⟨_, (isInitialEquivUnique F X).invFun h⟩ }
+theorem hasInitial_of_unique (X : C) [∀ Y, Nonempty (X ⟶ Y)] [∀ Y, Subsingleton (X ⟶ Y)] :
+    HasInitial C where
+  has_colimit F := .mk ⟨_, (isInitialEquivUnique F X).invFun fun _ ↦
+    ⟨Classical.inhabited_of_nonempty', (Subsingleton.elim · _)⟩⟩
 
 theorem IsInitial.hasInitial {X : C} (h : IsInitial X) : HasInitial C where
   has_colimit F :=

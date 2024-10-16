@@ -498,10 +498,8 @@ theorem coe_equivMapOfInjective_apply (f : M →ₙ* N) (hf : Function.Injective
 @[to_additive (attr := simp)]
 theorem closure_closure_coe_preimage {s : Set M} :
     closure ((Subtype.val : closure s → M) ⁻¹' s) = ⊤ :=
-  eq_top_iff.2 fun x =>
-    Subtype.recOn x fun _ hx' _ => closure_induction'
-      (p := fun y hy ↦ (⟨y, hy⟩ : closure s) ∈ closure (((↑) : closure s → M) ⁻¹' s))
-        _ (fun _ hg => subset_closure hg) (fun _ _ _ _ => Subsemigroup.mul_mem _) hx'
+  eq_top_iff.2 fun x _ ↦ Subtype.recOn x fun _ hx' ↦
+    closure_induction (fun _ h ↦ subset_closure h) (fun _ _ _ _ ↦ mul_mem) hx'
 
 /-- Given `Subsemigroup`s `s`, `t` of semigroups `M`, `N` respectively, `s × t` as a subsemigroup
 of `M × N`. -/
