@@ -209,10 +209,10 @@ instance nonUnitalSemiring : NonUnitalSemiring (MonoidAlgebra k G) :=
     mul_assoc := fun f g h => by
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [mul_def]
-      rw [sum_sum_index]; congr; ext a₁ b₁
-      rw [sum_sum_index, sum_sum_index]; congr; ext a₂ b₂
-      rw [sum_sum_index, sum_single_index]; congr; ext a₃ b₃
-      rw [sum_single_index, mul_assoc, mul_assoc]
+      rw [sum_sum_index] <;> congr; on_goal 1 => ext a₁ b₁
+      rw [sum_sum_index, sum_sum_index] <;> congr; on_goal 1 => ext a₂ b₂
+      rw [sum_sum_index, sum_single_index] <;> congr; on_goal 1 => ext a₃ b₃
+      on_goal 1 => rw [sum_single_index, mul_assoc, mul_assoc]
       all_goals simp only [single_zero, single_add, forall_true_iff, add_mul,
         mul_add, zero_mul, mul_zero, sum_zero, sum_add] }
 
@@ -563,7 +563,7 @@ theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g 
   suffices (liftNC (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
       (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g) from
     DFunLike.congr_fun this φ
-  -- Porting note: `ext` couldn't a find appropriate theorem.
+  -- Porting note (#11041): `ext` couldn't a find appropriate theorem.
   refine addHom_ext' fun a => AddMonoidHom.ext fun b => ?_
   -- Porting note: `reducible` cannot be `local` so the proof gets more complex.
   unfold MonoidAlgebra
@@ -584,7 +584,7 @@ variable (k) [Semiring k] [DistribSMul R k] [Mul G]
 instance isScalarTower_self [IsScalarTower R k k] :
     IsScalarTower R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
   ⟨fun t a b => by
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
+    -- Porting note (#11041): `ext` → `refine Finsupp.ext fun _ => ?_`
     refine Finsupp.ext fun m => ?_
     -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
     classical
@@ -600,7 +600,7 @@ also commute with the algebra multiplication. -/
 instance smulCommClass_self [SMulCommClass R k k] :
     SMulCommClass R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
   ⟨fun t a b => by
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
+    -- Porting note (#11041): `ext` → `refine Finsupp.ext fun _ => ?_`
     refine Finsupp.ext fun m => ?_
     -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
     classical
@@ -742,7 +742,7 @@ protected noncomputable def opRingEquiv [Monoid G] :
       rw [← AddEquiv.coe_toAddMonoidHom]
       refine Iff.mpr (AddMonoidHom.map_mul_iff (R := (MonoidAlgebra k G)ᵐᵒᵖ)
         (S := MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ) _) ?_
-      -- Porting note: Was `ext`.
+      -- Porting note (#11041): Was `ext`.
       refine AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₁ => AddMonoidHom.ext fun r₁ =>
         AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₂ => AddMonoidHom.ext fun r₂ => ?_
       -- Porting note: `reducible` cannot be `local` so proof gets long.
@@ -924,7 +924,7 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=
       simp only [mul_def]
       exact Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_zero_index)) sum_zero
     nsmul := fun n f => n • f
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
+    -- Porting note (#11041): `ext` → `refine Finsupp.ext fun _ => ?_`
     nsmul_zero := by
       intros
       refine Finsupp.ext fun _ => ?_
@@ -974,10 +974,10 @@ instance nonUnitalSemiring : NonUnitalSemiring k[G] :=
     mul_assoc := fun f g h => by
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [mul_def]
-      rw [sum_sum_index]; congr; ext a₁ b₁
-      rw [sum_sum_index, sum_sum_index]; congr; ext a₂ b₂
-      rw [sum_sum_index, sum_single_index]; congr; ext a₃ b₃
-      rw [sum_single_index, mul_assoc, add_assoc]
+      rw [sum_sum_index] <;> congr; on_goal 1 => ext a₁ b₁
+      rw [sum_sum_index, sum_sum_index] <;> congr; on_goal 1 => ext a₂ b₂
+      rw [sum_sum_index, sum_single_index] <;> congr; on_goal 1 => ext a₃ b₃
+      on_goal 1 => rw [sum_single_index, mul_assoc, add_assoc]
       all_goals simp only [single_zero, single_add, forall_true_iff, add_mul,
         mul_add, zero_mul, mul_zero, sum_zero, sum_add] }
 
@@ -1399,7 +1399,7 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
       rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe]; erw [AddEquiv.coe_toEquiv]
       rw [← AddEquiv.coe_toAddMonoidHom]
       refine Iff.mpr (AddMonoidHom.map_mul_iff (R := k[G]ᵐᵒᵖ) (S := kᵐᵒᵖ[G]) _) ?_
-      -- Porting note: Was `ext`.
+      -- Porting note (#11041): Was `ext`.
       refine AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₁ => AddMonoidHom.ext fun r₁ =>
         AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₂ => AddMonoidHom.ext fun r₂ => ?_
       -- Porting note: `reducible` cannot be `local` so proof gets long.

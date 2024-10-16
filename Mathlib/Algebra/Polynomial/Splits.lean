@@ -370,7 +370,7 @@ theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
 theorem splits_of_splits_id {f : K[X]} : Splits (RingHom.id K) f → Splits i f :=
   UniqueFactorizationMonoid.induction_on_prime f (fun _ => splits_zero _)
     (fun _ hu _ => splits_of_degree_le_one _ ((isUnit_iff_degree_eq_zero.1 hu).symm ▸ by decide))
-    fun a p ha0 hp ih hfi =>
+    fun _ p ha0 hp ih hfi =>
     splits_mul _
       (splits_of_degree_eq_one _
         ((splits_of_splits_mul _ (mul_ne_zero hp.1 ha0) hfi).1.def.resolve_left hp.1 hp.irreducible
@@ -437,7 +437,7 @@ theorem aeval_root_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]}
   rw [eval_multiset_prod_X_sub_C_derivative hr]
 
 /-- If `P` is a monic polynomial that splits, then `coeff P 0` equals the product of the roots. -/
-theorem prod_roots_eq_coeff_zero_of_monic_of_split {P : K[X]} (hmo : P.Monic)
+theorem prod_roots_eq_coeff_zero_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
     (hP : P.Splits (RingHom.id K)) : coeff P 0 = (-1) ^ P.natDegree * P.roots.prod := by
   nth_rw 1 [eq_prod_roots_of_monic_of_splits_id hmo hP]
   rw [coeff_zero_eq_eval_zero, eval_multiset_prod, Multiset.map_map]
@@ -448,6 +448,9 @@ theorem prod_roots_eq_coeff_zero_of_monic_of_split {P : K[X]} (hmo : P.Monic)
     ext
     rw [neg_eq_neg_one_mul]
   simp only [splits_iff_card_roots.1 hP, neg_mul, one_mul, Multiset.prod_map_neg]
+
+@[deprecated (since := "2024-10-01")]
+alias prod_roots_eq_coeff_zero_of_monic_of_split := prod_roots_eq_coeff_zero_of_monic_of_splits
 
 /-- If `P` is a monic polynomial that splits, then `P.nextCoeff` equals the sum of the roots. -/
 theorem sum_roots_eq_nextCoeff_of_monic_of_split {P : K[X]} (hmo : P.Monic)
