@@ -227,6 +227,27 @@ theorem ran.lift.arrow_tgt {X : SSet.{u}} {n} {i : Fin n}
   rw [← this]
   rfl
 
+/-- An object `j : StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op`, corresponding to a
+map `[jlen] ⟶ [n]` in the simplex category where jlen := j.right.unop.obj.len, defines a morphism
+`Fin (jlen+1) -> Fin(n+1)`. This calculates the image of `i : Fin(jlen+1)`.
+We might think of this as j(i). -/
+private
+def strArr.homEv {n} (j : StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op)
+    (i : Fin (j.right.unop.obj.len + 1)) :
+    Fin (n + 1) := (SimplexCategory.Hom.toOrderHom j.hom.unop) i
+
+/-- This is the unique arrow in `StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op` from
+`j` to `j ⟶ (pt (strArr.homEv j i))`. This is used to prove that ran.lift defines a factorization
+on objects.-/
+private
+def fact.obj.arr {n}
+    (j : StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op)
+    (i : Fin (j.right.unop.obj.len + 1)) : j ⟶ (pt (strArr.homEv j i)) :=
+  StructuredArrow.homMk (.op (SimplexCategory.const _ _ i)) <| by
+    apply Quiver.Hom.unop_inj
+    ext z; revert z; intro | 0 => rfl
+
+
 noncomputable def rightExtensionInclusion₂IsPointwiseRightKanExtensionAt
     (X : SSet.{u}) (hX : ∀ (n : ℕ), Function.Bijective (X.spine (n := n))) (n : ℕ) :
     (rightExtensionInclusion X 2).IsPointwiseRightKanExtensionAt ⟨[n]⟩ := by
@@ -252,26 +273,38 @@ noncomputable def rightExtensionInclusion₂IsPointwiseRightKanExtensionAt
       simp only [comp_obj, StructuredArrow.proj_obj, op_obj, fullSubcategoryInclusion.obj,
         const_obj_obj, RightExtension.mk_left, whiskeringLeft_obj_obj, RightExtension.mk_hom,
         NatTrans.id_app, const_obj_map, Functor.comp_map, StructuredArrow.proj_map, op_map,
-        fullSubcategoryInclusion.map, StrictSegal.spineToSimplex, Equiv.invFun_as_coe, id_eq,
+        fullSubcategoryInclusion.map, Equiv.invFun_as_coe, id_eq,
         types_comp_apply]
-      unfold Equiv.ofBijective
-      simp only [Equiv.coe_fn_symm_mk]
-      unfold Function.surjInv
-      sorry
+      apply (hX (unop j.right).1.len).injective
+      ext i
+      · simp only [spine_vertex]
+        have : [0].const (unop j.2).obj i = [0].const [(unop j.right).obj.len] i := sorry
+        rw [← this]
+        have eq := congr_fun (s.π.naturality (fact.obj.arr j i)) x
+        unfold pt fact.obj.arr strArr.homEv at eq
+        simp at eq
+        rw [← eq]
+        simp only [StrictSegal.spineToSimplex] --, Equiv.invFun_as_coe]
+        have := s.π.app j x
+        sorry
+      · sorry
     uniq := by
       intro s lift' fact'
       ext x
       apply (hX n).injective
+      simp only [const_obj_obj, comp_obj, StructuredArrow.proj_obj, op_obj,
+        fullSubcategoryInclusion.obj, RightExtension.mk_left, whiskeringLeft_obj_obj,
+        RightExtension.mk_hom, NatTrans.id_app, const_obj_map, Functor.comp_map,
+        StructuredArrow.proj_map, op_map, fullSubcategoryInclusion.map,
+        Equiv.invFun_as_coe, id_eq]
+      rw [StrictSegal.spineToSimplex_spine]
       ext i
-      · have := congr_fun (fact' (StructuredArrow.mk (Y := op [0]₂) ([0].const [n] i).op)) x
-        simp at this
-        simp
-        rw [this]
-
-        --(congrArg (·.obj 0) <| congr_fun (fact'
-        --  (StructuredArrow.mk (Y := op [0]₂) ([0].const [n] i).op)) x)
-        sorry
-      · sorry
+      · simp only [spine_vertex]
+        unfold pt
+        exact (congr_fun (fact' (StructuredArrow.mk (Y := op [0]₂) ([0].const [n] i).op)) x)
+      · simp only [spine_arrow]
+        unfold ar
+        exact (congr_fun (fact' (ar i)) x)
   }
 
 end
