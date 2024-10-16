@@ -103,22 +103,22 @@ structure RootedTree where
   α : Type*
   /-- The type should be a `SemilatticeInf`,
     where `inf` is the least common ancestor in the tree. -/
-  [order : SemilatticeInf α]
+  [semilatticeInf : SemilatticeInf α]
   /-- The type should have a bottom, the root. -/
-  [bot : OrderBot α]
+  [orderBot : OrderBot α]
   /-- The type should have a predecessor for every element, its parent. -/
-  [pred : PredOrder α]
+  [predOrder : PredOrder α]
   /-- The predecessor relationship should be archimedean. -/
-  [pred_archimedean : IsPredArchimedean α]
+  [isPredArchimedean : IsPredArchimedean α]
 
 attribute [coe] RootedTree.α
 
 instance coeSort : CoeSort RootedTree Type* := ⟨RootedTree.α⟩
 
-instance (t : RootedTree) : SemilatticeInf t := t.order
-instance (t : RootedTree) : PredOrder t := t.pred
-instance (t : RootedTree) : OrderBot t := t.bot
-instance (t : RootedTree) : IsPredArchimedean t := t.pred_archimedean
+instance (t : RootedTree) : SemilatticeInf t := t.semilatticeInf
+instance (t : RootedTree) : PredOrder t := t.predOrder
+instance (t : RootedTree) : OrderBot t := t.orderBot
+instance (t : RootedTree) : IsPredArchimedean t := t.isPredArchimedean
 
 /--
 A subtree is represented by its root, therefore this is a type synonym.
