@@ -58,8 +58,7 @@ theorem IsInitial.card_le_card {a b : Ordinal} (ha : IsInitial a) : a.card ≤ b
   rw [← ord_le_ord, ha.ord_card] at h
   exact h.trans (ord_card_le b)
 
-theorem IsInitial.card_lt_card {a b : Ordinal} (hb : IsInitial b) :
-    a.card < b.card ↔ a < b :=
+theorem IsInitial.card_lt_card {a b : Ordinal} (hb : IsInitial b) : a.card < b.card ↔ a < b :=
   lt_iff_lt_of_le_iff_le hb.card_le_card
 
 theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
