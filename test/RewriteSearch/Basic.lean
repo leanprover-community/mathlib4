@@ -56,7 +56,7 @@ example {a b c : Int} : a + b = c + b + (a - c) := by
 /-- info: ["(", "[", "5", ",", "3", "]", ",", "4", "+", "(", "2", "*", "1", ")", ")"] -/
 #guard_msgs in
 open Mathlib.Tactic.RewriteSearch in
-#eval ("([5, 3], 4 + (2 * 1))".splitOn.map splitDelimiters).join
+#eval ("([5, 3], 4 + (2 * 1))".splitOn.map splitDelimiters).flatten
 
 -- Function that always constructs `[0]`. Used in the following example.
 def makeSingleton : Nat → List Nat
