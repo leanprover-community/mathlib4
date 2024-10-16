@@ -119,20 +119,21 @@ variable (A B : Subalgebra R S)
 
 /-- If `A` and `B` are subalgebras of `S / R`,
 then `A` and `B` are linearly disjoint, if they are linearly disjoint as submodules of `S`. -/
-@[mk_iff]
-protected structure LinearDisjoint : Prop where
-  submodule : (toSubmodule A).LinearDisjoint (toSubmodule B)
+protected abbrev LinearDisjoint : Prop := (toSubmodule A).LinearDisjoint (toSubmodule B)
+
+theorem linearDisjoint_iff : A.LinearDisjoint B ↔ (toSubmodule A).LinearDisjoint (toSubmodule B) :=
+  Iff.rfl
 
 variable {A B}
 
 @[nontriviality]
 theorem LinearDisjoint.of_subsingleton [Subsingleton R] : A.LinearDisjoint B :=
-  ⟨.of_subsingleton⟩
+  Submodule.LinearDisjoint.of_subsingleton
 
 /-- Linearly disjoint is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : A.LinearDisjoint B)
     (hc : ∀ (a : A) (b : B), Commute a.1 b.1) : B.LinearDisjoint A :=
-  ⟨H.1.symm_of_commute hc⟩
+  Submodule.LinearDisjoint.symm_of_commute H hc
 
 /-- Linearly disjoint is symmetric if elements in the module commute. -/
 theorem linearDisjoint_symm_of_commute
@@ -144,10 +145,12 @@ namespace LinearDisjoint
 variable (A B)
 
 /-- The image of `R` in `S` is linearly disjoint with any other subalgebras. -/
-theorem bot_left : (⊥ : Subalgebra R S).LinearDisjoint B := ⟨.one_left _⟩
+theorem bot_left : (⊥ : Subalgebra R S).LinearDisjoint B :=
+  Submodule.LinearDisjoint.one_left _
 
 /-- The image of `R` in `S` is linearly disjoint with any other subalgebras. -/
-theorem bot_right : A.LinearDisjoint ⊥ := ⟨.one_right _⟩
+theorem bot_right : A.LinearDisjoint ⊥ :=
+  Submodule.LinearDisjoint.one_right _
 
 end LinearDisjoint
 
@@ -176,7 +179,7 @@ include H
 linearly disjoint, then there is the natural isomorphism
 `A ⊗[R] B ≃ₐ[R] A ⊔ B` induced by multiplication in `S`. -/
 protected def mulMap :=
-  (AlgEquiv.ofInjective (A.mulMap B) H.1.1).trans (equivOfEq _ _ (mulMap_range A B))
+  (AlgEquiv.ofInjective (A.mulMap B) H.injective).trans (equivOfEq _ _ (mulMap_range A B))
 
 @[simp]
 theorem val_mulMap_tmul (a : A) (b : B) : (H.mulMap (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
@@ -229,7 +232,7 @@ in the opposite ring. -/
 theorem linearIndependent_left_op_of_flat (H : A.LinearDisjoint B) [Module.Flat R B]
     {ι : Type*} {a : ι → A} (ha : LinearIndependent R a) :
     LinearIndependent B.op (MulOpposite.op ∘ A.val ∘ a) := by
-  have h := H.1.linearIndependent_left_of_flat ha
+  have h := Submodule.LinearDisjoint.linearIndependent_left_of_flat H ha
   rwa [mulLeftMap_ker_eq_bot_iff_linearIndependent_op] at h
 
 /-- If a basis of `A` is also `B`-linearly independent in the opposite ring,
@@ -238,7 +241,7 @@ theorem of_basis_left_op {ι : Type*} (a : Basis ι R A)
     (H : LinearIndependent B.op (MulOpposite.op ∘ A.val ∘ a)) :
     A.LinearDisjoint B := by
   rw [← mulLeftMap_ker_eq_bot_iff_linearIndependent_op] at H
-  exact ⟨.of_basis_left _ _ a H⟩
+  exact Submodule.LinearDisjoint.of_basis_left _ _ a H
 
 lemma mulRightMap_ker_eq_bot_iff_linearIndependent {ι : Type*} (b : ι → B) :
     LinearMap.ker (Submodule.mulRightMap (toSubmodule A) (N := toSubmodule B) b) = ⊥ ↔
@@ -260,14 +263,14 @@ variable {A B} in
 theorem linearIndependent_right_of_flat (H : A.LinearDisjoint B) [Module.Flat R A]
     {ι : Type*} {b : ι → B} (hb : LinearIndependent R b) :
     LinearIndependent A (B.val ∘ b) := by
-  have h := H.1.linearIndependent_right_of_flat hb
+  have h := Submodule.LinearDisjoint.linearIndependent_right_of_flat H hb
   rwa [mulRightMap_ker_eq_bot_iff_linearIndependent] at h
 
 /-- If a basis of `B` is also `A`-linearly independent, then `A` and `B` are linearly disjoint. -/
 theorem of_basis_right {ι : Type*} (b : Basis ι R B)
     (H : LinearIndependent A (B.val ∘ b)) : A.LinearDisjoint B := by
   rw [← mulRightMap_ker_eq_bot_iff_linearIndependent] at H
-  exact ⟨.of_basis_right _ _ b H⟩
+  exact Submodule.LinearDisjoint.of_basis_right _ _ b H
 
 variable {A B} in
 /-- If `A` and `B` are linearly disjoint and their elements commute, if `B` is a flat `R`-module,
@@ -293,7 +296,7 @@ also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_left (H : A.LinearDisjoint B) [Module.Flat R A]
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
     (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 :=
-  H.1.linearIndependent_mul_of_flat_left ha hb
+  Submodule.LinearDisjoint.linearIndependent_mul_of_flat_left H ha hb
 
 variable {A B} in
 /-- If `A` and `B` are linearly disjoint, if `B` is flat, then for any family of
@@ -303,7 +306,7 @@ also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_right (H : A.LinearDisjoint B) [Module.Flat R B]
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
     (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 :=
-  H.1.linearIndependent_mul_of_flat_right ha hb
+  Submodule.LinearDisjoint.linearIndependent_mul_of_flat_right H ha hb
 
 variable {A B} in
 /-- If `A` and `B` are linearly disjoint, if one of `A` and `B` is flat, then for any family of
@@ -314,14 +317,14 @@ theorem linearIndependent_mul_of_flat (H : A.LinearDisjoint B)
     (hf : Module.Flat R A ∨ Module.Flat R B)
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
     (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 :=
-  H.1.linearIndependent_mul_of_flat hf ha hb
+  Submodule.LinearDisjoint.linearIndependent_mul_of_flat H hf ha hb
 
 /-- If `{ a_i }` is an `R`-basis of `A`, if `{ b_j }` is an `R`-basis of `B`,
 such that the family `{ a_i * b_j }` in `S` is `R`-linearly independent,
 then `A` and `B` are linearly disjoint. -/
 theorem of_basis_mul {κ ι : Type*} (a : Basis κ R A) (b : Basis ι R B)
     (H : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1) : A.LinearDisjoint B :=
-  ⟨.of_basis_mul _ _ a b H⟩
+  Submodule.LinearDisjoint.of_basis_mul _ _ a b H
 
 variable {A B}
 
@@ -332,11 +335,11 @@ include H
 
 theorem of_le_left_of_flat {A' : Subalgebra R S}
     (h : A' ≤ A) [Module.Flat R B] : A'.LinearDisjoint B :=
-  ⟨H.1.of_le_left_of_flat h⟩
+  Submodule.LinearDisjoint.of_le_left_of_flat H h
 
 theorem of_le_right_of_flat {B' : Subalgebra R S}
     (h : B' ≤ B) [Module.Flat R A] : A.LinearDisjoint B' :=
-  ⟨H.1.of_le_right_of_flat h⟩
+  Submodule.LinearDisjoint.of_le_right_of_flat H h
 
 theorem of_le_of_flat_right {A' B' : Subalgebra R S}
     (ha : A' ≤ A) (hb : B' ≤ B) [Module.Flat R B] [Module.Flat R A'] :
@@ -350,7 +353,7 @@ theorem rank_inf_eq_one_of_commute_of_flat_of_inj (hf : Module.Flat R A ∨ Modu
     (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.1 b.1)
     (hinj : Function.Injective (algebraMap R S)) : Module.rank R ↥(A ⊓ B) = 1 := by
   nontriviality R
-  refine le_antisymm (H.1.rank_inf_le_one_of_commute_of_flat hf hc) ?_
+  refine le_antisymm (Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat H hf hc) ?_
   have : Cardinal.lift.{u} (Module.rank R (⊥ : Subalgebra R S)) =
       Cardinal.lift.{v} (Module.rank R R) :=
     lift_rank_range_of_injective (Algebra.linearMap R S) hinj
@@ -534,7 +537,7 @@ theorem of_linearDisjoint_finite_left [Algebra.IsIntegral R A]
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
   rw [← hx', ← hy']; congr
-  exact (H A' hA).1.1 (by simp [← Submodule.mulMap_comp_rTensor _ hA, hx', hy', hxy])
+  exact (H A' hA).injective (by simp [← Submodule.mulMap_comp_rTensor _ hA, hx', hy', hxy])
 
 /-- If `B/R` is integral, such that `A` and `B'` are linearly disjoint for all subalgebras `B'`
 of `B` which are finitely generated `R`-modules, then `A` and `B` are linearly disjoint. -/
@@ -569,7 +572,7 @@ variable {A B : Subalgebra R S}
 
 theorem inf_eq_bot_of_commute (H : A.LinearDisjoint B)
     (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.1 b.1) : A ⊓ B = ⊥ :=
-  eq_bot_of_rank_le_one (H.1.rank_inf_le_one_of_commute_of_flat_left hc)
+  eq_bot_of_rank_le_one (Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat_left H hc)
 
 theorem eq_bot_of_commute_of_self (H : A.LinearDisjoint A)
     (hc : ∀ (a b : A), Commute a.1 b.1) : A = ⊥ := by
