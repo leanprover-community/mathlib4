@@ -1275,11 +1275,12 @@ theorem union_empty (s : Finset α) : s ∪ ∅ = s :=
 theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
   ext fun x => mem_union.trans <| by simp
 
-/-- We put the priority of this lemma lower than `singleton_union` by putting it first.
+/- Todo: make these two lemmas `simp`. If so, make sure to formulate `union_singleton` first,
+so that it has lower `simp`-priority.
 The reason is that together with `Finset.mem_insert` we don't break the natural order of the
 disjunctions. -/
-@[simp] lemma union_singleton : s ∪ {a} = insert a s := by ext; simp [or_comm]
-@[simp] lemma singleton_union : {a} ∪ s = insert a s := by ext; simp
+lemma union_singleton : s ∪ {a} = insert a s := by ext; simp [or_comm]
+lemma singleton_union : {a} ∪ s = insert a s := by ext; simp
 
 @[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=

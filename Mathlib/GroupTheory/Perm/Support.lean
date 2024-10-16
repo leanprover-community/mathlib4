@@ -427,18 +427,18 @@ theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y :=
 
 theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     support (swap x y * swap y z) = {x, y, z} := by
-  simp only [List.nodup_cons, List.mem_cons, List.not_mem_nil, or_false, not_false_iff,
-    List.nodup_nil, and_self_iff, and_true] at h
+  simp only [List.not_mem_nil, and_true, List.mem_cons, not_false_iff, List.nodup_cons,
+    List.mem_singleton, and_self_iff, List.nodup_nil] at h
   push_neg at h
   apply le_antisymm
   · convert support_mul_le (swap x y) (swap y z) using 1
-    rw [support_swap h.1.1, support_swap h.2]
+    rw [support_swap h.left.left, support_swap h.right.left]
     simp [Finset.ext_iff]
   · intro
     simp only [mem_insert, mem_singleton]
     rintro (rfl | rfl | rfl | _) <;>
-      simp [swap_apply_of_ne_of_ne, h.1.1, h.1.1.symm, h.1.2.symm,
-        h.1.2.symm, h.2.symm]
+      simp [swap_apply_of_ne_of_ne, h.left.left, h.left.left.symm, h.left.right.symm,
+        h.left.right.left.symm, h.right.left.symm]
 
 theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :
     f.support \ {x, y} ≤ (swap x y * f).support := by
