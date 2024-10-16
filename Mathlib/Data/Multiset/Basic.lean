@@ -864,6 +864,10 @@ theorem nsmul_singleton (a : α) (n) : n • ({a} : Multiset α) = replicate n a
 theorem replicate_le_replicate (a : α) {k n : ℕ} : replicate k a ≤ replicate n a ↔ k ≤ n :=
   _root_.trans (by rw [← replicate_le_coe, coe_replicate]) (List.replicate_sublist_replicate a)
 
+@[gcongr]
+theorem replicate_mono (a : α) {k n : ℕ} (h : k ≤ n) : replicate k a ≤ replicate n a :=
+  (replicate_le_replicate a).2 h
+
 theorem le_replicate_iff {m : Multiset α} {a : α} {n : ℕ} :
     m ≤ replicate n a ↔ ∃ k ≤ n, m = replicate k a :=
   ⟨fun h => ⟨card m, (card_mono h).trans_eq (card_replicate _ _),
@@ -972,6 +976,7 @@ theorem erase_comm (s : Multiset α) (a b : α) : (s.erase a).erase b = (s.erase
 
 instance : RightCommutative erase (α := α) := ⟨erase_comm⟩
 
+@[gcongr]
 theorem erase_le_erase {s t : Multiset α} (a : α) (h : s ≤ t) : s.erase a ≤ t.erase a :=
   leInductionOn h fun h => (h.erase _).subperm
 
@@ -1151,11 +1156,11 @@ theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (Fu
     b₁ = b₂ :=
   eq_of_mem_replicate (n := card (l : Multiset α)) <| by rwa [map_const] at h
 
-@[simp]
+@[simp, gcongr]
 theorem map_le_map {f : α → β} {s t : Multiset α} (h : s ≤ t) : map f s ≤ map f t :=
   leInductionOn h fun h => (h.map f).subperm
 
-@[simp]
+@[simp, gcongr]
 theorem map_lt_map {f : α → β} {s t : Multiset α} (h : s < t) : s.map f < t.map f := by
   refine (map_le_map h.le).lt_of_not_le fun H => h.ne <| eq_of_le_of_card_le h.le ?_
   rw [← s.card_map f, ← t.card_map f]
@@ -1165,7 +1170,7 @@ theorem map_mono (f : α → β) : Monotone (map f) := fun _ _ => map_le_map
 
 theorem map_strictMono (f : α → β) : StrictMono (map f) := fun _ _ => map_lt_map
 
-@[simp]
+@[simp, gcongr]
 theorem map_subset_map {f : α → β} {s t : Multiset α} (H : s ⊆ t) : map f s ⊆ map f t := fun _b m =>
   let ⟨a, h, e⟩ := mem_map.1 m
   mem_map.2 ⟨a, H h, e⟩
@@ -1521,6 +1526,7 @@ theorem le_union_right (s t : Multiset α) : t ≤ s ∪ t :=
 theorem eq_union_left : t ≤ s → s ∪ t = s :=
   tsub_add_cancel_of_le
 
+@[gcongr]
 theorem union_le_union_right (h : s ≤ t) (u) : s ∪ u ≤ t ∪ u :=
   add_le_add_right (tsub_le_tsub_right h _) u
 
@@ -1626,6 +1632,7 @@ theorem inter_comm (s t : Multiset α) : s ∩ t = t ∩ s := inf_comm _ _
 
 theorem eq_union_right (h : s ≤ t) : s ∪ t = t := by rw [union_comm, eq_union_left h]
 
+@[gcongr]
 theorem union_le_union_left (h : s ≤ t) (u) : u ∪ s ≤ u ∪ t :=
   sup_le_sup_left h _
 
@@ -1710,6 +1717,7 @@ theorem filter_zero : filter p 0 = 0 :=
 Please re-enable the linter once we moved to `nightly-2024-06-22` or later.
 -/
 set_option linter.deprecated false in
+@[congr]
 theorem filter_congr {p q : α → Prop} [DecidablePred p] [DecidablePred q] {s : Multiset α} :
     (∀ x ∈ s, p x ↔ q x) → filter p s = filter q s :=
   Quot.inductionOn s fun _l h => congr_arg ofList <| filter_congr' <| by simpa using h
@@ -1726,6 +1734,7 @@ theorem filter_le (s : Multiset α) : filter p s ≤ s :=
 theorem filter_subset (s : Multiset α) : filter p s ⊆ s :=
   subset_of_le <| filter_le _ _
 
+@[gcongr]
 theorem filter_le_filter {s t} (h : s ≤ t) : filter p s ≤ filter p t :=
   leInductionOn h fun h => (h.filter (p ·)).subperm
 
@@ -1938,6 +1947,7 @@ theorem map_filterMap_of_inv (f : α → Option β) (g : β → α) (H : ∀ x :
     (s : Multiset α) : map g (filterMap f s) = s :=
   Quot.inductionOn s fun l => congr_arg ofList <| List.map_filterMap_of_inv f g H l
 
+@[gcongr]
 theorem filterMap_le_filterMap (f : α → Option β) {s t : Multiset α} (h : s ≤ t) :
     filterMap f s ≤ filterMap f t :=
   leInductionOn h fun h => (h.filterMap _).subperm
@@ -2006,6 +2016,7 @@ theorem countP_sub [DecidableEq α] {s t : Multiset α} (h : t ≤ s) :
     countP p (s - t) = countP p s - countP p t := by
   simp [countP_eq_card_filter, h, filter_le_filter]
 
+@[gcongr]
 theorem countP_le_of_le {s t} (h : s ≤ t) : countP p s ≤ countP p t := by
   simpa [countP_eq_card_filter] using card_le_card (filter_le_filter p h)
 
@@ -2065,6 +2076,7 @@ theorem countP_eq_card {s} : countP p s = card s ↔ ∀ a ∈ s, p a :=
 theorem countP_pos_of_mem {s a} (h : a ∈ s) (pa : p a) : 0 < countP p s :=
   countP_pos.2 ⟨_, h, pa⟩
 
+@[congr]
 theorem countP_congr {s s' : Multiset α} (hs : s = s')
     {p p' : α → Prop} [DecidablePred p] [DecidablePred p']
     (hp : ∀ x ∈ s, p x = p' x) : s.countP p = s'.countP p' := by
@@ -2108,6 +2120,7 @@ theorem count_cons_of_ne {a b : α} (h : a ≠ b) (s : Multiset α) : count a (b
 theorem count_le_card (a : α) (s) : count a s ≤ card s :=
   countP_le_card _ _
 
+@[gcongr]
 theorem count_le_of_le (a : α) {s t} : s ≤ t → count a s ≤ count a t :=
   countP_le_of_le _
 

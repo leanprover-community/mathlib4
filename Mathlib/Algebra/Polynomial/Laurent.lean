@@ -6,7 +6,7 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Defs
 
 /-!  # Laurent polynomials
 
