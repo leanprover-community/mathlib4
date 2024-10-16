@@ -105,6 +105,11 @@ class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLik
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 
+@[to_additive]
+lemma MulEquiv.toEquiv_injective {α β : Type*} [Mul α] [Mul β] :
+    Function.Injective (toEquiv : (α ≃* β) → (α ≃ β))
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+
 namespace MulEquivClass
 
 variable (F)

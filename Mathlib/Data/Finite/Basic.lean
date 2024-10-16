@@ -136,3 +136,11 @@ instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
 instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
   haveI := Fintype.ofFinite α
   infer_instance
+
+@[to_additive]
+instance MulEquiv.finite_left {α β : Type*} [Mul α] [Mul β] [Finite α] : Finite (α ≃* β) :=
+  Finite.of_injective toEquiv toEquiv_injective
+
+@[to_additive]
+instance MulEquiv.finite_right {α β : Type*} [Mul α] [Mul β] [Finite β] : Finite (α ≃* β) :=
+  Finite.of_injective toEquiv toEquiv_injective
