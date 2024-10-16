@@ -148,6 +148,7 @@ lemma ranges_flatten' : ∀ l : List ℕ, l.ranges.flatten = range (Nat.sum l)
 
 @[deprecated (since := "2024-10-15")] alias ranges_join' := ranges_flatten'
 
+set_option linter.deprecated false in
 /-- Any entry of any member of `l.ranges` is strictly smaller than `Nat.sum l`.
 See `List.mem_mem_ranges_iff_lt_sum` for the version about `List.sum`. -/
 lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :

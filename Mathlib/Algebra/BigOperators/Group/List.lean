@@ -32,8 +32,13 @@ section Defs
 
 /-- Product of a list.
 
+<<<<<<< HEAD
 `List.prod [a, b, c] = a * (b * (c * 1))` -/
 @[to_additive "Sum of a list.\n\n`List.sum [a, b, c] = a + (b + (c + 0))`"]
+=======
+`List.prod [a, b, c] = ((1 * a) * b) * c` -/
+@[to_additive existing]
+>>>>>>> origin/lean-pr-testing-5703
 def prod {α} [Mul α] [One α] : List α → α :=
   foldr (· * ·) 1
 
@@ -56,7 +61,7 @@ section Mul
 
 variable [Mul M] [One M] {l : List M} {a : M}
 
-@[to_additive (attr := simp)]
+@[to_additive existing, simp]
 theorem prod_nil : ([] : List M).prod = 1 :=
   rfl
 
