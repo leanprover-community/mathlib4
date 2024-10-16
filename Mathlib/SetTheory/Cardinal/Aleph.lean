@@ -22,16 +22,15 @@ import Mathlib.SetTheory.Ordinal.Enum
 
 ## Notation
 
-The following notation is scoped to the `Ordinal` namespace.
+The following notations are scoped to the `Ordinal` namespace.
 
-- `ω_ o` is notation for `Ordinal.omega o`. `ω₁` is notation for `ω_ 1`. These are scoped notations
-  in `Ordinal`.
+- `ω_ o` is notation for `Ordinal.omega o`. `ω₁` is notation for `ω_ 1`.
 
 The following notations are scoped to the `Cardinal` namespace.
 
 - `ℵ_ o` is notation for `aleph o`. `ℵ₁` is notation for `ℵ_ 1`.
 - `ℶ_ o` is notation for `beth o`. The value `ℶ_ 1` equals the continuum `𝔠`, which is defined in
-  SetTheory/Cardinal/Continuum.
+  `Mathlib.SetTheory.Cardinal.Continuum`.
 -/
 
 assert_not_exists Module
@@ -43,6 +42,9 @@ noncomputable section
 open Function Set Cardinal Equiv Order Ordinal
 
 universe u v w
+
+-- This shouldn't fire for theorems ending in `omega'` or `aleph'`.
+set_option linter.docPrime false
 
 /-! ### Omega ordinals -/
 
@@ -101,10 +103,7 @@ For the more common omega function skipping over finite ordinals, see `Ordinal.o
 def omega' : Ordinal.{u} ↪o Ordinal.{u} where
   toFun := enumOrd {x | IsInitial x}
   inj' _ _ h := enumOrd_injective not_bddAbove_isInitial h
-  map_rel_iff' := enumOrd_le_iff not_bddAbove_isInitial
-
--- This shouldn't fire for theorems ending in `omega'`.
-set_option linter.docPrime false
+  map_rel_iff' := enumOrd_le_enumOrd not_bddAbove_isInitial
 
 theorem coe_omega' : omega' = enumOrd {x | IsInitial x} :=
   rfl
@@ -124,20 +123,20 @@ theorem omega'_max (o₁ o₂ : Ordinal) : omega' (max o₁ o₂) = max (omega' 
 theorem isInitial_omega' (o : Ordinal) : IsInitial (omega' o) :=
   enumOrd_mem not_bddAbove_isInitial o
 
-theorem le_omega'_apply (o : Ordinal) : o ≤ omega' o :=
-  le_enumOrd_apply not_bddAbove_isInitial
+theorem le_omega'_self (o : Ordinal) : o ≤ omega' o :=
+  le_enumOrd_self not_bddAbove_isInitial
 
 @[simp]
 theorem omega'_zero : omega' 0 = 0 := by
-  rw [coe_omega', enumOrd_eq_zero]
-  exact isInitial_zero
+  rw [coe_omega', enumOrd_zero]
+  exact csInf_eq_bot_of_bot_mem isInitial_zero
 
 @[simp]
 theorem omega'_natCast (n : ℕ) : omega' n = n := by
   induction n with
   | zero => exact omega'_zero
   | succ n IH =>
-    apply (le_omega'_apply _).antisymm'
+    apply (le_omega'_self _).antisymm'
     apply enumOrd_succ_le not_bddAbove_isInitial (isInitial_natCast _) (IH.trans_lt _)
     rw [Nat.cast_lt]
     exact lt_succ n
@@ -150,14 +149,31 @@ theorem isNormal_omega' : IsNormal omega' := by
   rw [isNormal_iff_strictMono_limit]
   refine ⟨strictMono_omega', fun o ho a ha ↦
     (omega'_le_of_forall_lt (isInitial_ord _) fun b hb ↦ ?_).trans (ord_card_le a)⟩
-  rw [← (isInitial_omega' _).card_lt_card (isInitial_ord _), card_ord]
+  rw [← (isInitial_ord _).card_lt_card, card_ord]
   apply lt_of_lt_of_le _ (card_le_card <| ha _ (ho.succ_lt hb))
-  rw [(isInitial_omega' _).card_lt_card (isInitial_omega' _), omega'_lt]
+  rw [(isInitial_omega' _).card_lt_card, omega'_lt]
   exact lt_succ b
+
+@[simp]
+theorem range_omega' : Set.range omega' = {x | IsInitial x} :=
+  range_enumOrd not_bddAbove_isInitial
+
+theorem mem_range_omega'_iff {x : Ordinal} : x ∈ Set.range omega' ↔ IsInitial x := by
+  rw [range_omega', mem_setOf]
+
+alias ⟨_, IsInitial.mem_range_omega'⟩ := mem_range_omega'_iff
 
 @[simp]
 theorem omega'_omega0 : omega' ω = ω := by
   simp_rw [← isNormal_omega'.apply_omega0, omega'_natCast, iSup_natCast]
+
+@[simp]
+theorem omega0_le_omega'_iff {x : Ordinal} : ω ≤ omega' x ↔ ω ≤ x := by
+  conv_lhs => rw [← omega'_omega0, omega'_le]
+
+@[simp]
+theorem omega0_lt_omega'_iff {x : Ordinal} : ω < omega' x ↔ ω < x := by
+  conv_lhs => rw [← omega'_omega0, omega'_lt]
 
 /-- The `omega` function gives the infinite initial ordinals listed by their ordinal index.
 `omega 0 = ω`, `omega 1 = ω₁` is the first uncountable ordinal, and so on.
@@ -176,9 +192,6 @@ scoped notation "ω₁" => ω_ 1
 theorem omega'_omega0_add (o : Ordinal) : omega' (ω + o) = ω_ o :=
   rfl
 
-theorem isInitial_omega (o : Ordinal) : IsInitial (ω_ o) :=
-  isInitial_omega' _
-
 theorem strictMono_omega : StrictMono omega :=
   omega.strictMono
 
@@ -190,6 +203,12 @@ theorem omega_le {o₁ o₂ : Ordinal} : ω_ o₁ ≤ ω_ o₂ ↔ o₁ ≤ o₂
 
 theorem omega_max (o₁ o₂ : Ordinal) : ω_ (max o₁ o₂) = max (ω_ o₁) (ω_ o₂) :=
   omega.monotone.map_max
+
+theorem isInitial_omega (o : Ordinal) : IsInitial (omega o) :=
+  isInitial_omega' _
+
+theorem le_omega_self (o : Ordinal) : o ≤ omega o :=
+  strictMono_omega.le_apply
 
 @[simp]
 theorem omega_zero : ω_ 0 = ω := by
@@ -208,6 +227,21 @@ alias omega_lt_omega1 := omega0_lt_omega1
 
 theorem isNormal_omega : IsNormal omega :=
   isNormal_omega'.trans (isNormal_add_right _)
+
+@[simp]
+theorem range_omega : Set.range omega = {x | ω ≤ x ∧ IsInitial x} := by
+  ext x
+  constructor
+  · rintro ⟨a, rfl⟩
+    exact ⟨omega0_le_omega a, isInitial_omega a⟩
+  · rintro ⟨ha', ha⟩
+    obtain ⟨a, rfl⟩ := ha.mem_range_omega'
+    use a - ω
+    rw [omega0_le_omega'_iff] at ha'
+    rw [← omega'_omega0_add, Ordinal.add_sub_cancel_of_le ha']
+
+theorem mem_range_omega_iff {x : Ordinal} : x ∈ Set.range omega ↔ ω ≤ x ∧ IsInitial x := by
+  rw [range_omega, mem_setOf]
 
 end Ordinal
 
