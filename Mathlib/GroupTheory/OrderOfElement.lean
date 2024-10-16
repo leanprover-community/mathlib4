@@ -82,8 +82,11 @@ theorem not_isOfFinOrder_of_injective_pow {x : G} (h : Injective fun n : ℕ => 
 
 /-- 1 is of finite order in any monoid. -/
 @[to_additive (attr := simp) "0 is of finite order in any additive monoid."]
-theorem isOfFinOrder_one : IsOfFinOrder (1 : G) :=
+theorem IsOfFinOrder.one : IsOfFinOrder (1 : G) :=
   isOfFinOrder_iff_pow_eq_one.mpr ⟨1, Nat.one_pos, one_pow 1⟩
+
+@[to_additive (attr := deprecated (since := "2024-10-11"))]
+alias isOfFinOrder_one := IsOfFinOrder.one
 
 @[to_additive]
 lemma IsOfFinOrder.pow {n : ℕ} : IsOfFinOrder a → IsOfFinOrder (a ^ n) := by

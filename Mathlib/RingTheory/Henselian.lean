@@ -229,13 +229,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         clear hmn
         induction' k with k ih
         · rw [add_zero]
-        rw [← add_assoc]
-        #adaptation_note /-- nightly-2024-03-11
-        I'm not sure why the `erw` is now needed here. It looks like it should work.
-        It looks like a diamond between `instHAdd` on `Nat` and `AddSemigroup.toAdd` which is
-        used by `instHAdd` -/
-        rw [hc]
-        rw [← add_zero (c m), sub_eq_add_neg]
+        rw [← add_assoc, hc, ← add_zero (c m), sub_eq_add_neg]
         refine ih.add ?_
         symm
         rw [SModEq.zero, Ideal.neg_mem_iff]

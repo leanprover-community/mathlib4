@@ -131,7 +131,7 @@ end Hom
 
 instance smallCategory : SmallCategory.{0} SimplexCategory where
   Hom n m := SimplexCategory.Hom n m
-  id m := SimplexCategory.Hom.id _
+  id _ := SimplexCategory.Hom.id _
   comp f g := SimplexCategory.Hom.comp g f
 
 @[simp]
@@ -802,7 +802,6 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
     simp only [len_mk, Category.assoc, comp_toOrderHom, OrderHom.comp_coe, Function.comp_apply]
     by_cases h' : θ.toOrderHom x ≤ i
     · simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       rw [Fin.predAbove_of_le_castSucc _ _ (by rwa [Fin.castSucc_castPred])]
       dsimp [δ]
       rw [Fin.succAbove_of_castSucc_lt i]
