@@ -448,11 +448,11 @@ theorem iterate_veblen_lt_gamma0 (n : ℕ) : (fun a ↦ veblen a 0)^[n] 0 < Γ�
   | succ n _ => rwa [Function.iterate_succ_apply', Function.iterate_succ_apply', veblen_zero_lt_iff]
 
 /-- `veblen (veblen … (veblen ε₀ 0) … 0) 0 < Γ₀` -/
-theorem iterate_veblen_lt_fefermanSchutte' (n : ℕ) : (fun a ↦ veblen a 0)^[n] ε₀ < Γ₀ := by
+theorem iterate_veblen_lt_gamma0' (n : ℕ) : (fun a ↦ veblen a 0)^[n] ε₀ < Γ₀ := by
   simpa using iterate_veblen_lt_gamma0 (n + 2)
 
 theorem epsilon0_lt_gamma (o : Ordinal) : ε₀ < Γ_ o :=
-  (iterate_veblen_lt_fefermanSchutte' 0).trans_le (gamma_le_gamma.2 (Ordinal.zero_le _))
+  (iterate_veblen_lt_gamma0' 0).trans_le (gamma_le_gamma.2 (Ordinal.zero_le _))
 
 theorem omega0_lt_gamma (o : Ordinal) : ω < Γ_ o :=
   (omega0_lt_epsilon 0).trans (epsilon0_lt_gamma o)
