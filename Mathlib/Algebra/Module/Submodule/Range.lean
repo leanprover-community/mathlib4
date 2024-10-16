@@ -28,7 +28,7 @@ linear algebra, vector space, module, range
 open Function
 
 variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {K : Type*} {K₂ : Type*}
+variable {K : Type*}
 variable {M : Type*} {M₂ : Type*} {M₃ : Type*}
 variable {V : Type*} {V₂ : Type*}
 
@@ -38,13 +38,11 @@ section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 
 open Submodule
 
-variable {σ₂₁ : R₂ →+* R} {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
+variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
 
 section
@@ -190,11 +188,10 @@ end AddCommMonoid
 
 section Ring
 
-variable [Ring R] [Ring R₂] [Ring R₃]
-variable [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
-variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
-variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
+variable [Ring R] [Ring R₂]
+variable [AddCommGroup M] [AddCommGroup M₂]
+variable [Module R M] [Module R₂ M₂]
+variable {τ₁₂ : R →+* R₂}
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 variable {f : F}
 
@@ -228,7 +225,7 @@ end Ring
 
 section Semifield
 
-variable [Semifield K] [Semifield K₂]
+variable [Semifield K]
 variable [AddCommMonoid V] [Module K V]
 variable [AddCommMonoid V₂] [Module K V₂]
 
@@ -249,7 +246,7 @@ section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R₂ M₂]
-variable (p p' : Submodule R M) (q : Submodule R₂ M₂)
+variable (p : Submodule R M)
 variable {τ₁₂ : R →+* R₂}
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
