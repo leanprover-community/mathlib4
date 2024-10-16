@@ -366,7 +366,7 @@ theorem finite_of_discr_bdd_of_isReal :
       · simp only [IntermediateField.lift_top]
       · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
   have := one_le_convexBodyLTFactor K
-  convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
+  convert lt_of_le_of_lt (mul_right_mono (mod_cast this))
     (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
   simp_rw [ENNReal.coe_one, one_mul]
 
@@ -415,7 +415,7 @@ theorem finite_of_discr_bdd_of_isComplex :
       · simp only [IntermediateField.lift_top]
       · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
   have := one_le_convexBodyLT'Factor K
-  convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
+  convert lt_of_le_of_lt (mul_right_mono (mod_cast this))
     (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
   simp_rw [ENNReal.coe_one, one_mul]
 
