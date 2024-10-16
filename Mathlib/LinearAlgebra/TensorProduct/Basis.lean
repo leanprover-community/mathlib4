@@ -49,7 +49,7 @@ theorem Basis.tensorProduct_repr_tmul_apply (b : Basis ι S M) (c : Basis κ R N
     (Basis.tensorProduct b c).repr (m ⊗ₜ n) (i, j) = c.repr n j • b.repr m i := by
   simp [Basis.tensorProduct, mul_comm]
 
-variable (S)
+variable (S : Type*) [Semiring S] [Algebra R S]
 
 /-- The lift of an `R`-basis of `M` to an `S`-basis of the base change `S ⊗[R] M`. -/
 noncomputable

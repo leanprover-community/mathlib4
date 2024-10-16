@@ -20,8 +20,7 @@ Add appropriate instances for all `Set.Ixx`. This requires a refactor that will 
 default values for `sSup` and `sInf`.
 -/
 
-
-open scoped Classical
+assert_not_exists Multiset
 
 open Set
 
@@ -31,6 +30,7 @@ section SupSet
 
 variable [Preorder α] [SupSet α]
 
+open Classical in
 /-- `SupSet` structure on a nonempty subset `s` of a preorder with `SupSet`. This definition is
 non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
@@ -42,6 +42,7 @@ noncomputable def subsetSupSet [Inhabited s] : SupSet s where
 
 attribute [local instance] subsetSupSet
 
+open Classical in
 @[simp]
 theorem subset_sSup_def [Inhabited s] :
     @sSup s _ = fun t =>
@@ -51,7 +52,7 @@ theorem subset_sSup_def [Inhabited s] :
   rfl
 
 theorem subset_sSup_of_within [Inhabited s] {t : Set s}
-    (h' : t.Nonempty) (h'' : BddAbove t)  (h : sSup ((↑) '' t : Set α) ∈ s) :
+    (h' : t.Nonempty) (h'' : BddAbove t) (h : sSup ((↑) '' t : Set α) ∈ s) :
     sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [dif_pos, h, h', h'']
 
 theorem subset_sSup_emptyset [Inhabited s] :
@@ -68,6 +69,7 @@ section InfSet
 
 variable [Preorder α] [InfSet α]
 
+open Classical in
 /-- `InfSet` structure on a nonempty subset `s` of a preorder with `InfSet`. This definition is
 non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
@@ -79,6 +81,7 @@ noncomputable def subsetInfSet [Inhabited s] : InfSet s where
 
 attribute [local instance] subsetInfSet
 
+open Classical in
 @[simp]
 theorem subset_sInf_def [Inhabited s] :
     @sInf s _ = fun t =>
@@ -169,6 +172,7 @@ end OrdConnected
 
 section Icc
 
+open Classical in
 /-- Complete lattice structure on `Set.Icc` -/
 noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     {a b : α} (h : a ≤ b) : CompleteLattice (Set.Icc a b) where
@@ -237,10 +241,10 @@ variable [CompleteLattice α] {a : α}
 instance instCompleteLattice : CompleteLattice (Iic a) where
   sSup S := ⟨sSup ((↑) '' S), by simpa using fun b hb _ ↦ hb⟩
   sInf S := ⟨a ⊓ sInf ((↑) '' S), by simp⟩
-  le_sSup S b hb := le_sSup <| mem_image_of_mem Subtype.val hb
-  sSup_le S b hb := sSup_le <| fun c' ⟨c, hc, hc'⟩ ↦ hc' ▸ hb c hc
-  sInf_le S b hb := inf_le_of_right_le <| sInf_le <| mem_image_of_mem Subtype.val hb
-  le_sInf S b hb := le_inf_iff.mpr ⟨b.property, le_sInf fun d' ⟨d, hd, hd'⟩  ↦ hd' ▸ hb d hd⟩
+  le_sSup _ _ hb := le_sSup <| mem_image_of_mem Subtype.val hb
+  sSup_le _ _ hb := sSup_le <| fun _ ⟨c, hc, hc'⟩ ↦ hc' ▸ hb c hc
+  sInf_le _ _ hb := inf_le_of_right_le <| sInf_le <| mem_image_of_mem Subtype.val hb
+  le_sInf _ b hb := le_inf_iff.mpr ⟨b.property, le_sInf fun _ ⟨d, hd, hd'⟩  ↦ hd' ▸ hb d hd⟩
   le_top := by simp
   bot_le := by simp
 
@@ -265,5 +269,3 @@ theorem coe_biInf : (↑(⨅ i, ⨅ (_ : p i), f i) : α) = a ⊓ ⨅ i, ⨅ (_ 
 
 
 end Set.Iic
-
-assert_not_exists Multiset

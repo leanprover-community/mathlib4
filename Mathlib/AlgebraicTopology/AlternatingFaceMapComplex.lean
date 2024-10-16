@@ -80,7 +80,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   apply Finset.sum_bij φ
   · -- φ(S) is contained in Sᶜ
     intro ij hij
-    simp only [S, Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and_iff,
+    simp only [S, Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and,
       Fin.val_succ, Fin.coe_castLT] at hij ⊢
     linarith
   · -- φ : S → Sᶜ is injective
@@ -214,7 +214,7 @@ def ε [Limits.HasZeroObject C] :
     rw [alternatingFaceMapComplex_obj_d, objD, Fin.sum_univ_two, Fin.val_zero,
       pow_zero, one_smul, Fin.val_one, pow_one, neg_smul, one_smul, add_comp,
       neg_comp, SimplicialObject.δ_naturality, SimplicialObject.δ_naturality]
-    apply add_right_neg
+    apply add_neg_cancel
   naturality X Y f := by
     apply HomologicalComplex.to_single_hom_ext
     dsimp
@@ -255,7 +255,7 @@ def inclusionOfMooreComplexMap (X : SimplicialObject A) :
   rw [Fin.sum_univ_succ, Fintype.sum_eq_zero]
   swap
   · intro j
-    rw [NormalizedMooreComplex.objX, comp_zsmul,
+    rw [NormalizedMooreComplex.objX_add_one, comp_zsmul,
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ _ (Finset.mem_univ j)),
       Category.assoc, kernelSubobject_arrow_comp, comp_zero, smul_zero]
   -- finally, we study the remaining term which is induced by X.δ 0

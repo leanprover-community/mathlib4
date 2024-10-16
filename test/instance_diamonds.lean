@@ -141,7 +141,7 @@ example : @Monoid.toMulOneClass (Multiplicative ℕ) CommMonoid.toMonoid =
 
 end Multiplicative
 
-/-! ## `Finsupp` instances-/
+/-! ## `Finsupp` instances -/
 
 
 section Finsupp
@@ -208,13 +208,13 @@ example [CommSemiring R] [Nontrivial R] :
   rfl
 
 -- fails `with_reducible_and_instances` #10906
-/-- `Polynomial.algebraOfAlgebra` is consistent with `algebraNat`. -/
-example [Semiring R] : (Polynomial.algebraOfAlgebra : Algebra ℕ R[X]) = algebraNat :=
+/-- `Polynomial.algebraOfAlgebra` is consistent with `Semiring.toNatAlgebra`. -/
+example [Semiring R] : (Polynomial.algebraOfAlgebra : Algebra ℕ R[X]) = Semiring.toNatAlgebra :=
   rfl
 
 -- fails `with_reducible_and_instances` #10906
-/-- `Polynomial.algebraOfAlgebra` is consistent with `algebraInt`. -/
-example [Ring R] : (Polynomial.algebraOfAlgebra : Algebra ℤ R[X]) = algebraInt _ :=
+/-- `Polynomial.algebraOfAlgebra` is consistent with `Ring.toIntAlgebra`. -/
+example [Ring R] : (Polynomial.algebraOfAlgebra : Algebra ℤ R[X]) = Ring.toIntAlgebra _ :=
   rfl
 
 end Polynomial

@@ -50,8 +50,8 @@ noncomputable instance : NormedAddCommGroup ℍ :=
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
       conj_symm := fun x y => by simp [inner_def, mul_comm]
-      nonneg_re := fun x => normSq_nonneg
-      definite := fun x => normSq_eq_zero.1
+      nonneg_re := fun _ => normSq_nonneg
+      definite := fun _ => normSq_eq_zero.1
       add_left := fun x y z => by simp only [inner_def, add_mul, add_re]
       smul_left := fun x y r => by simp [inner_def] }
 
@@ -90,7 +90,7 @@ noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
   toAlgebra := Quaternion.algebra
 
-instance : CstarRing ℍ where
+instance : CStarRing ℍ where
   norm_mul_self_le x :=
     le_of_eq <| Eq.symm <| (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
 
@@ -195,9 +195,9 @@ theorem continuous_im : Continuous fun q : ℍ => q.im := by
   simpa only [← sub_self_re] using continuous_id.sub (continuous_coe.comp continuous_re)
 
 instance : CompleteSpace ℍ :=
-  haveI : UniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
-    linearIsometryEquivTuple.toContinuousLinearEquiv.symm.uniformEmbedding
-  (completeSpace_congr this).1 (by infer_instance)
+  haveI : IsUniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
+    linearIsometryEquivTuple.toContinuousLinearEquiv.symm.isUniformEmbedding
+  (completeSpace_congr this).1 inferInstance
 
 section infinite_sum
 

@@ -64,7 +64,7 @@ notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom (MonoidHom.id R) A B
 attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `NonUnitalAlgSemiHomClass F φ A B` asserts `F` is a type of bundled algebra homomorphisms
-from `A` to `B` which are equivariant with respect to `φ`.  -/
+from `A` to `B` which are equivariant with respect to `φ`. -/
 class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Monoid S]
     (φ : outParam (R →* S)) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
@@ -197,11 +197,6 @@ instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B where
 @[ext]
 theorem ext {f g : A →ₛₙₐ[φ] B} (h : ∀ x, f x = g x) : f = g :=
   coe_injective <| funext h
-
-theorem ext_iff {f g : A →ₛₙₐ[φ] B} : f = g ↔ ∀ x, f x = g x :=
-  ⟨by
-    rintro rfl x
-    rfl, ext⟩
 
 theorem congr_fun {f g : A →ₛₙₐ[φ] B} (h : f = g) (x : A) : f x = g x :=
   h ▸ rfl
@@ -388,7 +383,7 @@ variable [DistribMulAction R C]
 @[simps]
 def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C where
   toFun := Pi.prod f g
-  map_zero' := by simp only [Pi.prod, Prod.zero_eq_mk, map_zero]
+  map_zero' := by simp only [Pi.prod, Prod.mk_zero_zero, map_zero]
   map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
   map_mul' x y := by simp only [Pi.prod, Prod.mk_mul_mk, map_mul]
   map_smul' c x := by simp only [Pi.prod, map_smul, MonoidHom.id_apply, id_eq, Prod.smul_mk]
@@ -488,7 +483,7 @@ variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S]
     [IsScalarTower R S A] [IsScalarTower R S B]
 
 /-- If a monoid `R` acts on another monoid `S`, then a non-unital algebra homomorphism
-over `S` can be viewed as a non-unital algebra homomorphism over `R`.  -/
+over `S` can be viewed as a non-unital algebra homomorphism over `R`. -/
 def restrictScalars (f : A →ₙₐ[S] B) : A →ₙₐ[R] B :=
   { (f : A →ₙ+* B) with
     map_smul' := fun r x ↦ by have := map_smul f (r • 1) x; simpa }

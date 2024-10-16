@@ -249,7 +249,7 @@ instance : MulDistribMulAction (ConjAct G) G where
   smul_mul := by
     simp only [smul_def]
     simp only [mul_assoc, inv_mul_cancel_left, forall_const, «forall»]
-  smul_one := by simp only [smul_def, mul_one, mul_right_inv, «forall», forall_const]
+  smul_one := by simp only [smul_def, mul_one, mul_inv_cancel, «forall», forall_const]
   one_smul := by simp only [smul_def, ofConjAct_one, one_mul, inv_one, mul_one, forall_const]
   mul_smul := by
     simp only [smul_def]
@@ -352,7 +352,7 @@ def unitsCentralizerEquiv (x : Mˣ) :
           have : (u : ConjAct Mˣ) • x = x := u.2
           rwa [ConjAct.smul_def, mul_inv_eq_iff_eq_mul, Units.ext_iff, eq_comm] at this⟩,
         map_one' := rfl,
-        map_mul' := fun a b ↦ rfl }
+        map_mul' := fun _ _ ↦ rfl }
     invFun := fun u ↦
       ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
       change _ • _ = _

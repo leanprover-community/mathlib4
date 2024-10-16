@@ -191,7 +191,7 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
     f x ≤ S.bind f := by
   classical
   refine le_iff_count.2 fun a ↦ ?_
-  obtain ⟨m', hm'⟩ := exists_cons_of_mem $ mem_map_of_mem (fun b ↦ count a (f b)) hx
+  obtain ⟨m', hm'⟩ := exists_cons_of_mem <| mem_map_of_mem (fun b ↦ count a (f b)) hx
   rw [count_bind, hm', sum_cons]
   exact Nat.le_add_right _ _
 
@@ -267,7 +267,7 @@ theorem add_product (s t : Multiset α) (u : Multiset β) : (s + t) ×ˢ u = s �
 
 @[simp]
 theorem product_add (s : Multiset α) : ∀ t u : Multiset β, s ×ˢ (t + u) = s ×ˢ t + s ×ˢ u :=
-  Multiset.induction_on s (fun t u => rfl) fun a s IH t u => by
+  Multiset.induction_on s (fun _ _ => rfl) fun a s IH t u => by
     rw [cons_product, IH]
     simp [add_comm, add_left_comm, add_assoc]
 
@@ -322,7 +322,7 @@ theorem add_sigma (s t : Multiset α) (u : ∀ a, Multiset (σ a)) :
 @[simp]
 theorem sigma_add :
     ∀ t u : ∀ a, Multiset (σ a), (s.sigma fun a => t a + u a) = s.sigma t + s.sigma u :=
-  Multiset.induction_on s (fun t u => rfl) fun a s IH t u => by
+  Multiset.induction_on s (fun _ _ => rfl) fun a s IH t u => by
     rw [cons_sigma, IH]
     simp [add_comm, add_left_comm, add_assoc]
 

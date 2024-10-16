@@ -36,14 +36,14 @@ abbrev diagram : ℕᵒᵖ ⥤ LightProfinite := S.fintypeDiagram ⋙ FintypeCat
 
 /--
 A cone over `S.diagram` whose cone point is isomorphic to `S`.
-(Auxiliary definition, use `S.asLimitCone` instead.)
+(Auxiliary definition, use `S.asLimitCone` instead.)
 -/
 def asLimitConeAux : Cone S.diagram :=
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   liftLimit hc
 
-/-- An auxiliary isomorphism of cones used to prove that `S.asLimitConeAux` is a limit cone. -/
+/-- An auxiliary isomorphism of cones used to prove that `S.asLimitConeAux` is a limit cone. -/
 def isoMapCone : lightToProfinite.mapCone S.asLimitConeAux ≅ S.toLightDiagram.cone :=
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
@@ -51,7 +51,7 @@ def isoMapCone : lightToProfinite.mapCone S.asLimitConeAux ≅ S.toLightDiagram.
 
 /--
 `S.asLimitConeAux` is indeed a limit cone.
-(Auxiliary definition, use `S.asLimit` instead.)
+(Auxiliary definition, use `S.asLimit` instead.)
 -/
 def asLimitAux : IsLimit S.asLimitConeAux :=
   let hc : IsLimit (lightToProfinite.mapCone S.asLimitConeAux) :=
@@ -77,21 +77,13 @@ def lim : Limits.LimitCone S.diagram := ⟨S.asLimitCone, S.asLimit⟩
 /-- The projection from `S` to the `n`th component of `S.diagram`. -/
 abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n⟩
 
-lemma map_liftedLimit {C D J : Type*} [Category C] [Category D] [Category J] {K : J ⥤ C}
-    {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (n : J) :
-    (liftedLimitMapsToOriginal t).inv.hom ≫ F.map ((liftLimit t).π.app n) = c.π.app n := by
-  have : (liftedLimitMapsToOriginal t).hom.hom ≫ c.π.app n = F.map ((liftLimit t).π.app n) := by
-    simp
-  rw [← this, ← Category.assoc, ← Cone.category_comp_hom]
-  simp
-
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
   simp? says simp only [toCompHausLike_obj, Functor.comp_obj,
       FintypeCat.toLightProfinite_obj_toTop_α, toCompHausLike_map, coe_of]
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
-  exact map_liftedLimit hc _
+  exact liftedLimitMapsToOriginal_inv_map_π hc _
 
 lemma proj_surjective (n : ℕ) : Function.Surjective (S.proj n) := by
   change Function.Surjective (lightToProfinite.map (S.proj n))

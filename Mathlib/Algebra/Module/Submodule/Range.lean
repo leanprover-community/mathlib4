@@ -175,7 +175,7 @@ theorem range_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : range f = ⊥ ↔ f = 0 
 
 theorem range_le_ker_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ₂₃] M₃} :
     range f ≤ ker g ↔ (g.comp f : M →ₛₗ[τ₁₃] M₃) = 0 :=
-  ⟨fun h => ker_eq_top.1 <| eq_top_iff'.2 fun x => h <| ⟨_, rfl⟩, fun h x hx =>
+  ⟨fun h => ker_eq_top.1 <| eq_top_iff'.2 fun _ => h <| ⟨_, rfl⟩, fun h x hx =>
     mem_ker.2 <| Exists.elim hx fun y hy => by rw [← hy, ← comp_apply, h, zero_apply]⟩
 
 theorem comap_le_comap_iff {f : F} (hf : range f = ⊤) {p p'} : comap f p ≤ comap f p' ↔ p ≤ p' :=
@@ -310,11 +310,11 @@ theorem map_subtype_embedding_eq (p' : Submodule R p) :
   rfl
 
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`. -/
-def mapIic [Semiring R] [AddCommMonoid M] [Module R M] (p : Submodule R M) :
+def mapIic (p : Submodule R M) :
     Submodule R p ≃o Set.Iic p :=
   Submodule.MapSubtype.relIso p
 
-@[simp] lemma coe_mapIic_apply [Semiring R] [AddCommMonoid M] [Module R M]
+@[simp] lemma coe_mapIic_apply
     (p : Submodule R M) (q : Submodule R p) :
     (p.mapIic q : Submodule R M) = q.map p.subtype :=
   rfl

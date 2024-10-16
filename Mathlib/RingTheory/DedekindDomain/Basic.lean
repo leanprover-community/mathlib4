@@ -49,7 +49,7 @@ variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
 open scoped nonZeroDivisors Polynomial
 
 /-- A ring `R` has Krull dimension at most one if all nonzero prime ideals are maximal. -/
-class Ring.DimensionLEOne : Prop :=
+class Ring.DimensionLEOne : Prop where
   (maximalOfPrime : ∀ {p : Ideal R}, p ≠ ⊥ → p.IsPrime → p.IsMaximal)
 
 open Ideal Ring
@@ -121,8 +121,7 @@ The integral closure condition is independent of the choice of field of fraction
 use `isDedekindDomain_iff` to prove `IsDedekindDomain` for a given `fraction_map`.
 
 This is the default implementation, but there are equivalent definitions,
-`is_dedekind_domain_dvr` and `is_dedekind_domain_inv`.
-TODO: Prove that these are actually equivalent definitions.
+`IsDedekindDomainDvr` and `IsDedekindDomainInv`.
 -/
 class IsDedekindDomain
   extends IsDomain A, IsDedekindRing A : Prop

@@ -172,8 +172,6 @@ instance Cauchy.commRing : CommRing (Cauchy abv) :=
 
 end
 
-open scoped Classical
-
 section
 
 variable {α : Type*} [LinearOrderedField α]
@@ -185,6 +183,7 @@ instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 @[simp, norm_cast] lemma ofRat_nnratCast (q : ℚ≥0) : ofRat (q : β) = (q : Cauchy abv) := rfl
 @[simp, norm_cast] lemma ofRat_ratCast (q : ℚ) : ofRat (q : β) = (q : Cauchy abv) := rfl
 
+open Classical in
 noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>
     (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
@@ -240,13 +239,13 @@ lemma ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) :=
 noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   inv_zero := inv_zero
-  mul_inv_cancel x := CauSeq.Completion.mul_inv_cancel
+  mul_inv_cancel _ := CauSeq.Completion.mul_inv_cancel
   nnqsmul := (· • ·)
   qsmul := (· • ·)
   nnratCast_def q := by simp_rw [← ofRat_nnratCast, NNRat.cast_def, ofRat_div, ofRat_natCast]
   ratCast_def q := by rw [← ofRat_ratCast, Rat.cast_def, ofRat_div, ofRat_natCast, ofRat_intCast]
-  nnqsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mk <| ext fun i ↦ NNRat.smul_def _ _
-  qsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mk <| ext fun i ↦ Rat.smul_def _ _
+  nnqsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr_arg mk <| ext fun _ ↦ NNRat.smul_def _ _
+  qsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr_arg mk <| ext fun _ ↦ Rat.smul_def _ _
 
 /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
 

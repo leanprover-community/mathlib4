@@ -63,7 +63,7 @@ lemma tilted_const' (μ : Measure α) (c : ℝ) :
     · simp only [h_univ, ENNReal.top_toReal, zero_mul, log_zero, div_zero, ENNReal.ofReal_zero,
         zero_smul, ENNReal.inv_top]
     congr
-    rw [div_eq_mul_inv, mul_inv, mul_comm, mul_assoc, inv_mul_cancel (exp_pos _).ne', mul_one,
+    rw [div_eq_mul_inv, mul_inv, mul_comm, mul_assoc, inv_mul_cancel₀ (exp_pos _).ne', mul_one,
       ← ENNReal.toReal_inv, ENNReal.ofReal_toReal]
     simp [h0.out]
 
@@ -235,7 +235,7 @@ alias set_integral_tilted := setIntegral_tilted
 
 lemma integral_tilted (f : α → ℝ) (g : α → E) :
     ∫ x, g x ∂(μ.tilted f) = ∫ x, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
-  rw [← integral_univ, setIntegral_tilted' f g MeasurableSet.univ, integral_univ]
+  rw [← setIntegral_univ, setIntegral_tilted' f g MeasurableSet.univ, setIntegral_univ]
 
 end integral
 
@@ -269,7 +269,7 @@ lemma tilted_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → ℝ) 
     field_simp
     ring_nf
     congr 1
-    rw [mul_assoc, mul_inv_cancel, mul_one]
+    rw [mul_assoc, mul_inv_cancel₀, mul_one]
     exact (integral_exp_pos hf).ne'
 
 lemma tilted_comm (hf : Integrable (fun x ↦ exp (f x)) μ) {g : α → ℝ}

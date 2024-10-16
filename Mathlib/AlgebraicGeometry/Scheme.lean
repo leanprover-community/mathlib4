@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.Algebra.Category.Ring.Constructions
@@ -18,7 +18,7 @@ A morphism of schemes is just a morphism of the underlying locally ringed spaces
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 
 universe u
@@ -152,11 +152,11 @@ to `X.presheaf.stalk x` for any `x : X`. -/
 def stalkMap (x : X) : Y.presheaf.stalk (f.val.base x) ⟶ X.presheaf.stalk x :=
   f.val.stalkMap x
 
-@[ext]
+@[ext (iff := false)]
 protected lemma ext {f g : X ⟶ Y} (h_base : f.1.base = g.1.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g :=
-  LocallyRingedSpace.Hom.ext _ _ <| SheafedSpace.ext h_base
+  LocallyRingedSpace.Hom.ext <| SheafedSpace.ext _ _ h_base
     (TopCat.Presheaf.ext fun U ↦ by simpa using h_app U)
 
 lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻¹ᵁ U i :=
@@ -164,6 +164,10 @@ lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻
 
 lemma preimage_iSup_eq_top {ι} {U : ι → Opens Y} (hU : iSup U = ⊤) :
     ⨆ i, f ⁻¹ᵁ U i = ⊤ := f.preimage_iSup U ▸ hU ▸ rfl
+
+lemma preimage_le_preimage_of_le {U U' : Y.Opens} (hUU' : U ≤ U') :
+    f ⁻¹ᵁ U ≤ f ⁻¹ᵁ U' :=
+  fun _ ha ↦ hUU' ha
 
 end Hom
 
@@ -446,22 +450,24 @@ variable (X : Scheme) {V U : X.Opens} (f g : Γ(X, U))
 def basicOpen : X.Opens :=
   X.toLocallyRingedSpace.toRingedSpace.basicOpen f
 
-@[simp]
-theorem mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ x f) :=
-  RingedSpace.mem_basicOpen _ _ _
+theorem mem_basicOpen (x : X) (hx : x ∈ U) :
+    x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x hx f) :=
+  RingedSpace.mem_basicOpen _ _ _ _
 
-theorem mem_basicOpen_top' {U : X.Opens} (f : Γ(X, U)) (x : X) :
-    x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ (⟨x, m⟩ : U) f) := by
-  fconstructor
-  · rintro ⟨y, hy1, rfl⟩
-    exact ⟨y.2, hy1⟩
-  · rintro ⟨m, hm⟩
-    exact ⟨⟨x, m⟩, hm, rfl⟩
+/-- A variant of `mem_basicOpen` for bundled `x : U`. -/
+@[simp]
+theorem mem_basicOpen' (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x x.2 f) :=
+  RingedSpace.mem_basicOpen _ _ _ _
+
+/-- A variant of `mem_basicOpen` without the `x ∈ U` assumption. -/
+theorem mem_basicOpen'' {U : X.Opens} (f : Γ(X, U)) (x : X) :
+    x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ U x m f) :=
+  Iff.rfl
 
 @[simp]
 theorem mem_basicOpen_top (f : Γ(X, ⊤)) (x : X) :
-    x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ (⟨x, trivial⟩ : (⊤ : Opens _)) f) :=
-  RingedSpace.mem_basicOpen _ f ⟨x, trivial⟩
+    x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ ⊤ x trivial f) :=
+  RingedSpace.mem_top_basicOpen _ f x
 
 @[simp]
 theorem basicOpen_res (i : op U ⟶ op V) : X.basicOpen (X.presheaf.map i f) = V ⊓ X.basicOpen f :=
@@ -554,7 +560,7 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
   ext x
   simp only [SetLike.mem_coe, Scheme.mem_basicOpen_top, Opens.coe_top]
   suffices IsUnit (StructureSheaf.toStalk R x f) ↔ f ∉ PrimeSpectrum.asIdeal x by exact this
-  erw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x),
+  rw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x),
     StructureSheaf.stalkToFiberRingHom_toStalk]
   exact
     (IsLocalization.AtPrime.isUnit_to_map_iff (Localization.AtPrime (PrimeSpectrum.asIdeal x))
@@ -625,68 +631,56 @@ lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
 
 @[reassoc]
 lemma stalkMap_congr (f g : X ⟶ Y) (hfg : f = g) (x x' : X)
-    (hxx' : x = x') : f.stalkMap x ≫ X.presheaf.stalkSpecializes (specializes_of_eq hxx'.symm) =
-      Y.presheaf.stalkSpecializes (specializes_of_eq <| hfg ▸ hxx' ▸ rfl) ≫ g.stalkMap x' :=
+    (hxx' : x = x') : f.stalkMap x ≫ (X.presheaf.stalkCongr (.of_eq hxx')).hom =
+      (Y.presheaf.stalkCongr (.of_eq <| hfg ▸ hxx' ▸ rfl)).hom ≫ g.stalkMap x' :=
   LocallyRingedSpace.stalkMap_congr f g hfg x x' hxx'
 
 @[reassoc]
 lemma stalkMap_congr_hom (f g : X ⟶ Y) (hfg : f = g) (x : X) :
-    f.stalkMap x = Y.presheaf.stalkSpecializes (specializes_of_eq <| hfg ▸ rfl) ≫
-      g.stalkMap x :=
+    f.stalkMap x = (Y.presheaf.stalkCongr (.of_eq <| hfg ▸ rfl)).hom ≫ g.stalkMap x :=
   LocallyRingedSpace.stalkMap_congr_hom f g hfg x
 
 @[reassoc]
 lemma stalkMap_congr_point (x x' : X) (hxx' : x = x') :
-    f.stalkMap x ≫ X.presheaf.stalkSpecializes (specializes_of_eq hxx'.symm) =
-      Y.presheaf.stalkSpecializes (specializes_of_eq <| hxx' ▸ rfl) ≫ f.stalkMap x' :=
+    f.stalkMap x ≫ (X.presheaf.stalkCongr (.of_eq hxx')).hom =
+      (Y.presheaf.stalkCongr (.of_eq <| hxx' ▸ rfl)).hom ≫ f.stalkMap x' :=
   LocallyRingedSpace.stalkMap_congr_point f x x' hxx'
 
 @[reassoc (attr := simp)]
 lemma stalkMap_hom_inv (e : X ≅ Y) (y : Y) :
     e.hom.stalkMap (e.inv.val.base y) ≫ e.inv.stalkMap y =
-      Y.presheaf.stalkSpecializes (specializes_of_eq <| by simp) :=
+      (Y.presheaf.stalkCongr (.of_eq (by simp))).hom :=
   LocallyRingedSpace.stalkMap_hom_inv (forgetToLocallyRingedSpace.mapIso e) y
 
 @[simp]
 lemma stalkMap_hom_inv_apply (e : X ≅ Y) (y : Y) (z) :
     e.inv.stalkMap y (e.hom.stalkMap (e.inv.val.base y) z) =
-      Y.presheaf.stalkSpecializes (specializes_of_eq <| by simp) z :=
+      (Y.presheaf.stalkCongr (.of_eq (by simp))).hom z :=
   DFunLike.congr_fun (stalkMap_hom_inv e y) z
 
 @[reassoc (attr := simp)]
 lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
     e.inv.stalkMap (e.hom.val.base x) ≫ e.hom.stalkMap x =
-      X.presheaf.stalkSpecializes (specializes_of_eq <| by simp) :=
+      (X.presheaf.stalkCongr (.of_eq (by simp))).hom :=
   LocallyRingedSpace.stalkMap_inv_hom (forgetToLocallyRingedSpace.mapIso e) x
 
 @[simp]
 lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
     e.hom.stalkMap x (e.inv.stalkMap (e.hom.val.base x) y) =
-      X.presheaf.stalkSpecializes (specializes_of_eq <| by simp) y :=
+      (X.presheaf.stalkCongr (.of_eq (by simp))).hom y :=
   DFunLike.congr_fun (stalkMap_inv_hom e x) y
 
-@[reassoc]
-lemma stalkMap_germ (U : Y.Opens) (x : f ⁻¹ᵁ U) :
-    Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ ≫ f.stalkMap x =
-      f.app U ≫ X.presheaf.germ x :=
-  PresheafedSpace.stalkMap_germ f.val U x
-
-lemma stalkMap_germ_apply (U : Y.Opens) (x : f ⁻¹ᵁ U) (y) :
-    f.stalkMap x.val (Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ y) =
-      X.presheaf.germ x (f.val.c.app (op U) y) :=
-  PresheafedSpace.stalkMap_germ_apply f.val U x y
-
 @[reassoc (attr := simp)]
-lemma stalkMap_germ' (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) :
-    Y.presheaf.germ ⟨f.val.base x, hx⟩ ≫ f.stalkMap x =
-      f.app U ≫ X.presheaf.germ (U := f⁻¹ᵁ U) ⟨x, hx⟩ :=
-  PresheafedSpace.stalkMap_germ' f.val U x hx
+lemma stalkMap_germ (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) :
+    Y.presheaf.germ U (f.val.base x) hx ≫ f.stalkMap x =
+      f.app U ≫ X.presheaf.germ (f ⁻¹ᵁ U) x hx :=
+  PresheafedSpace.stalkMap_germ f.val U x hx
 
 @[simp]
-lemma stalkMap_germ'_apply (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) (y) :
-    f.stalkMap x (Y.presheaf.germ ⟨f.val.base x, hx⟩ y) =
-      X.presheaf.germ (U := (Opens.map f.val.base).obj U) ⟨x, hx⟩ (f.val.c.app (op U) y) :=
-  PresheafedSpace.stalkMap_germ_apply f.val U ⟨x, hx⟩ y
+lemma stalkMap_germ_apply (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) (y) :
+    f.stalkMap x (Y.presheaf.germ _ (f.val.base x) hx y) =
+      X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
+  PresheafedSpace.stalkMap_germ_apply f.val U x hx y
 
 end Scheme
 

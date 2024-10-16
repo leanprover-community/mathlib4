@@ -6,7 +6,7 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Defs
 
 /-!  # Laurent polynomials
 
@@ -226,8 +226,8 @@ theorem _root_.Polynomial.toLaurent_C_mul_X_pow (n : ℕ) (r : R) :
 
 instance invertibleT (n : ℤ) : Invertible (T n : R[T;T⁻¹]) where
   invOf := T (-n)
-  invOf_mul_self := by rw [← T_add, add_left_neg, T_zero]
-  mul_invOf_self := by rw [← T_add, add_right_neg, T_zero]
+  invOf_mul_self := by rw [← T_add, neg_add_cancel, T_zero]
+  mul_invOf_self := by rw [← T_add, add_neg_cancel, T_zero]
 
 @[simp]
 theorem invOf_T (n : ℤ) : ⅟ (T n : R[T;T⁻¹]) = T (-n) :=
@@ -278,7 +278,7 @@ protected theorem induction_on' {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
   exact (mul_one _).symm
 
 theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
-  f.induction_on' (fun p q Tp Tq => Commute.add_right Tp Tq) fun m a =>
+  f.induction_on' (fun _ _ Tp Tq => Commute.add_right Tp Tq) fun m a =>
     show T n * _ = _ by
       rw [T, T, ← single_eq_C, single_mul_single, single_mul_single, single_mul_single]
       simp [add_comm]
@@ -346,8 +346,8 @@ theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f'
   · cases' n with n n
     · exact ⟨0, Polynomial.C a * X ^ n, by simp⟩
     · refine ⟨n + 1, Polynomial.C a, ?_⟩
-      simp only [Int.negSucc_eq, Polynomial.toLaurent_C, Int.ofNat_succ, mul_T_assoc, add_left_neg,
-        T_zero, mul_one]
+      simp only [Int.negSucc_eq, Polynomial.toLaurent_C, Int.ofNat_succ, mul_T_assoc,
+        neg_add_cancel, T_zero, mul_one]
 
 /-- This is a version of `exists_T_pow` stated as an induction principle. -/
 @[elab_as_elim]
@@ -365,10 +365,9 @@ it follow that `Q` is true on all Laurent polynomials. -/
 theorem reduce_to_polynomial_of_mul_T (f : R[T;T⁻¹]) {Q : R[T;T⁻¹] → Prop}
     (Qf : ∀ f : R[X], Q (toLaurent f)) (QT : ∀ f, Q (f * T 1) → Q f) : Q f := by
   induction' f using LaurentPolynomial.induction_on_mul_T with f n
-  induction' n with n hn
-  · simpa only [Nat.zero_eq, Nat.cast_zero, neg_zero, T_zero, mul_one] using Qf _
-  · convert QT _ _
-    simpa using hn
+  induction n with
+  | zero => simpa only [Nat.cast_zero, neg_zero, T_zero, mul_one] using Qf _
+  | succ n hn => convert QT _ _; simpa using hn
 
 section Support
 
@@ -493,7 +492,7 @@ variable [CommSemiring R]
 instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] :=
   { Polynomial.toLaurent with
     commutes' := fun f l => by simp [mul_comm]
-    smul_def' := fun f l => rfl }
+    smul_def' := fun _ _ => rfl }
 
 theorem algebraMap_X_pow (n : ℕ) : algebraMap R[X] R[T;T⁻¹] (X ^ n) = T n :=
   Polynomial.toLaurent_X_pow n
@@ -512,7 +511,7 @@ theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T
       have := (Submonoid.closure ({X} : Set R[X])).pow_mem Submonoid.mem_closure_singleton_self n
       refine ⟨(f, ⟨_, this⟩), ?_⟩
       simp only [algebraMap_eq_toLaurent, Polynomial.toLaurent_X_pow, mul_T_assoc,
-        add_left_neg, T_zero, mul_one]
+        neg_add_cancel, T_zero, mul_one]
     exists_of_eq := fun {f g} => by
       rw [algebraMap_eq_toLaurent, algebraMap_eq_toLaurent, Polynomial.toLaurent_inj]
       rintro rfl
@@ -543,10 +542,10 @@ lemma involutive_invert : Involutive (invert (R := R)) := fun _ ↦ by ext; simp
 lemma toLaurent_reverse (p : R[X]) :
     toLaurent p.reverse = invert (toLaurent p) * (T p.natDegree) := by
   nontriviality R
-  induction' p using Polynomial.recOnHorner with p t _ _ ih p hp ih
-  · simp
-  · simp [add_mul, ← ih]
-  · simpa [natDegree_mul_X hp]
+  induction p using Polynomial.recOnHorner with
+  | M0 => simp
+  | MC _ _ _ _ ih => simp [add_mul, ← ih]
+  | MX _ hp => simpa [natDegree_mul_X hp]
 
 end Inversion
 

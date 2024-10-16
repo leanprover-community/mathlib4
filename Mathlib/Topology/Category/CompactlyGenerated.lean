@@ -3,13 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.CompHaus.Basic
+import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 import Mathlib.CategoryTheory.Elementwise
 /-!
 
 # Compactly generated topological spaces
 
-This file defines the category of compactly generated topological spaces. These are spaces `X` such
+This file defines the category of compactly generated topological spaces. These are spaces `X` such
 that a map `f : X → Y` is continuous whenever the composition `S → X → Y` is continuous for all
 compact Hausdorff spaces `S` mapping continuously to `X`.
 
@@ -26,70 +26,8 @@ universe u w
 
 open CategoryTheory Topology TopologicalSpace
 
-/--
-The compactly generated topology on a topological space `X`. This is the finest topology
-which makes all maps from compact Hausdorff spaces to `X`, which are continuous for the original
-topology, continuous.
-
-Note: this definition should be used with an explicit universe parameter `u` for the size of the
-compact Hausdorff spaces mapping to `X`.
--/
-def TopologicalSpace.compactlyGenerated (X : Type w) [TopologicalSpace X] : TopologicalSpace X :=
-  let f : (Σ (i : (S : CompHaus.{u}) × C(S, X)), i.fst) → X := fun ⟨⟨_, i⟩, s⟩ ↦ i s
-  coinduced f inferInstance
-
-lemma continuous_from_compactlyGenerated {X : Type w} [TopologicalSpace X]
-    {Y : Type*} [t : TopologicalSpace Y] (f : X → Y)
-      (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) :
-        Continuous[compactlyGenerated.{u} X, t] f := by
-  rw [continuous_coinduced_dom]
-  continuity
-
-/--
-A topological space `X` is compactly generated if its topology is finer than (and thus equal to)
-the compactly generated topology, i.e. it is coinduced by the continuous maps from compact
-Hausdorff spaces to `X`.
--/
-class UCompactlyGeneratedSpace (X : Type w) [t : TopologicalSpace X] : Prop where
-  /-- The topology of `X` is finer than the compactly generated topology. -/
-  le_compactlyGenerated : t ≤ compactlyGenerated.{u} X
-
-lemma eq_compactlyGenerated {X : Type w} [t : TopologicalSpace X] [UCompactlyGeneratedSpace.{u} X] :
-    t = compactlyGenerated.{u} X := by
-  apply le_antisymm
-  · exact UCompactlyGeneratedSpace.le_compactlyGenerated
-  · simp only [compactlyGenerated, ← continuous_iff_coinduced_le, continuous_sigma_iff,
-      Sigma.forall]
-    exact fun S f ↦ f.2
-
-instance (X : Type w) [t : TopologicalSpace X] [DiscreteTopology X] :
-    UCompactlyGeneratedSpace.{u} X where
-  le_compactlyGenerated := by
-    rw [DiscreteTopology.eq_bot (t := t)]
-    exact bot_le
-
-lemma continuous_from_uCompactlyGeneratedSpace {X : Type w} [TopologicalSpace X]
-    [UCompactlyGeneratedSpace.{u} X] {Y : Type*} [TopologicalSpace Y] (f : X → Y)
-      (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) : Continuous f := by
-  apply continuous_le_dom UCompactlyGeneratedSpace.le_compactlyGenerated
-  exact continuous_from_compactlyGenerated f h
-
-lemma uCompactlyGeneratedSpace_of_continuous_maps {X : Type w} [t : TopologicalSpace X]
-    (h : ∀ {Y : Type w} [tY : TopologicalSpace Y] (f : X → Y),
-      (∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) → Continuous f) :
-        UCompactlyGeneratedSpace.{u} X where
-  le_compactlyGenerated := by
-    suffices Continuous[t, compactlyGenerated.{u} X] (id : X → X) by
-      rwa [← continuous_id_iff_le]
-    apply h (tY := compactlyGenerated.{u} X)
-    intro S g
-    let f : (Σ (i : (T : CompHaus.{u}) × C(T, X)), i.fst) → X := fun ⟨⟨_, i⟩, s⟩ ↦ i s
-    suffices ∀ (i : (T : CompHaus.{u}) × C(T, X)),
-      Continuous[inferInstance, compactlyGenerated X] (fun (a : i.fst) ↦ f ⟨i, a⟩) from this ⟨S, g⟩
-    rw [← @continuous_sigma_iff]
-    apply continuous_coinduced_rng
-
-/-- The type of `u`-compactly generated `w`-small topological spaces. -/
+/-- `CompactlyGenerated.{u, w}` is the type of `u`-compactly generated `w`-small topological spaces.
+This should always be used with explicit universe parameters. -/
 structure CompactlyGenerated where
   /-- The underlying topological space of an object of `CompactlyGenerated`. -/
   toTop : TopCat.{w}

@@ -353,11 +353,11 @@ noncomputable instance instField [Fact (Irreducible f)] : Field (AdjoinRoot f) w
   ratCast_def q := by
     rw [← map_natCast (of f), ← map_intCast (of f), ← map_div₀, ← Rat.cast_def]; rfl
   nnqsmul_def q x :=
-    AdjoinRoot.induction_on (C := fun y ↦ q • y = (of f) q * y) x fun p ↦ by
+    AdjoinRoot.induction_on f (C := fun y ↦ q • y = (of f) q * y) x fun p ↦ by
       simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.nnqsmul_eq_C_mul]
   qsmul_def q x :=
     -- Porting note: I gave the explicit motive and changed `rw` to `simp`.
-    AdjoinRoot.induction_on (C := fun y ↦ q • y = (of f) q * y) x fun p ↦ by
+    AdjoinRoot.induction_on f (C := fun y ↦ q • y = (of f) q * y) x fun p ↦ by
       simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.qsmul_eq_C_mul]
 
 theorem coe_injective (h : degree f ≠ 0) : Function.Injective ((↑) : K → AdjoinRoot f) :=
@@ -465,10 +465,9 @@ def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
   basis_eq_pow i := by
     simp only [powerBasisAux', Basis.coe_ofEquivFun, LinearEquiv.coe_symm_mk]
     rw [Finset.sum_eq_single i]
-    · rw [Function.update_same, monomial_one_right_eq_X_pow, (mk g).map_pow, mk_X]
+    · rw [Pi.single_eq_same, monomial_one_right_eq_X_pow, (mk g).map_pow, mk_X]
     · intro j _ hj
-      rw [← monomial_zero_right _]
-      convert congr_arg _ (Function.update_noteq hj _ _)
+      rw [← monomial_zero_right _, Pi.single_eq_of_ne hj]
     -- Fix `DecidableEq` mismatch
     · intros
       have := Finset.mem_univ i
@@ -737,7 +736,7 @@ theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
     quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk,
     quotMapOfEquivQuotMapCMapSpanMk_symm_mk]
 
-/-- Promote `AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot` to an alg_equiv.  -/
+/-- Promote `AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot` to an alg_equiv. -/
 @[simps!]
 noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
     (AdjoinRoot f ⧸ Ideal.map (of f) I) ≃ₐ[R]
