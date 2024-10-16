@@ -164,8 +164,12 @@ theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 
 theorem algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 
-instance isLocalRingHom_algebraMap : IsLocalRingHom (algebraMap R (ExteriorAlgebra R M)) :=
-  isLocalRingHom_of_leftInverse _ (algebraMap_leftInverse M)
+@[instance]
+theorem isLocalHom_algebraMap : IsLocalHom (algebraMap R (ExteriorAlgebra R M)) :=
+  isLocalHom_of_leftInverse _ (algebraMap_leftInverse M)
+
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_algebraMap := isLocalHom_algebraMap
 
 theorem isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r) ↔ IsUnit r :=
   isUnit_map_of_leftInverse _ (algebraMap_leftInverse M)
