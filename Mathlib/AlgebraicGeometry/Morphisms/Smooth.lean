@@ -146,7 +146,7 @@ instance isSmoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
       (isStandardSmoothOfRelativeDimension_localizationPreserves n)
       x V₂ U₁' V₁' V₁' hx₁' hx₁' e₁' hf₁' hfx₂
     have e : X.basicOpen s ≤ (f ≫ g) ⁻¹ᵁ U₂ :=
-      le_trans e₁ <| f.preimage_le <| le_trans (Y.basicOpen_le r) e₂
+      le_trans e₁ <| f.preimage_le_preimage_of_le <| le_trans (Y.basicOpen_le r) e₂
     have heq : (f ≫ g).appLE U₂ (X.basicOpen s) e = g.appLE U₂ V₂ e₂ ≫
         algebraMap Γ(Y, V₂) Γ(Y, Y.basicOpen r) ≫ f.appLE (Y.basicOpen r) (X.basicOpen s) e₁ := by
       rw [RingHom.algebraMap_toAlgebra, g.appLE_map_assoc, Scheme.appLE_comp_appLE]
