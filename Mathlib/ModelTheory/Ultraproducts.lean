@@ -46,8 +46,8 @@ namespace Ultraproduct
 instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :=
   { (u : Filter α).productSetoid M with
     toStructure :=
-      { funMap := fun {n} f x a => funMap f fun i => x i a
-        RelMap := fun {n} r x => ∀ᶠ a : α in u, RelMap r fun i => x i a }
+      { funMap := fun {_} f x a => funMap f fun i => x i a
+        RelMap := fun {_} r x => ∀ᶠ a : α in u, RelMap r fun i => x i a }
     fun_equiv := fun {n} f x y xy => by
       refine mem_of_superset (iInter_mem.2 xy) fun a ha => ?_
       simp only [Set.mem_iInter, Set.mem_setOf_eq] at ha

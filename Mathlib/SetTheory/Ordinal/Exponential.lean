@@ -103,7 +103,7 @@ theorem opow_natCast (a : Ordinal) (n : ℕ) : a ^ (n : Ordinal) = a ^ n := by
 theorem isNormal_opow {a : Ordinal} (h : 1 < a) : IsNormal (a ^ ·) :=
   have a0 : 0 < a := zero_lt_one.trans h
   ⟨fun b => by simpa only [mul_one, opow_succ] using (mul_lt_mul_iff_left (opow_pos b a0)).2 h,
-    fun b l c => opow_le_of_limit (ne_of_gt a0) l⟩
+    fun _ l _ => opow_le_of_limit (ne_of_gt a0) l⟩
 
 @[deprecated isNormal_opow (since := "2024-10-11")]
 alias opow_isNormal := isNormal_opow
@@ -493,8 +493,7 @@ theorem iSup_pow {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ ω := by
   · exact (isNormal_opow ho₁).apply_omega0
   · rw [one_opow]
     refine le_antisymm (Ordinal.iSup_le fun n => by rw [one_opow]) ?_
-    convert Ordinal.le_iSup _ 0
-    rw [Nat.cast_zero, opow_zero]
+    exact_mod_cast Ordinal.le_iSup _ 0
 
 set_option linter.deprecated false in
 @[deprecated iSup_pow (since := "2024-08-27")]
