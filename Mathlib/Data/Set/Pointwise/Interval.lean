@@ -509,12 +509,12 @@ variable [LinearOrderedField α] {a : α}
 @[simp]
 theorem preimage_mul_const_Iio (a : α) {c : α} (h : 0 < c) :
     (fun x => x * c) ⁻¹' Iio a = Iio (a / c) :=
-  ext fun _x => (lt_div_iff h).symm
+  ext fun _x => (lt_div_iff₀ h).symm
 
 @[simp]
 theorem preimage_mul_const_Ioi (a : α) {c : α} (h : 0 < c) :
     (fun x => x * c) ⁻¹' Ioi a = Ioi (a / c) :=
-  ext fun _x => (div_lt_iff h).symm
+  ext fun _x => (div_lt_iff₀ h).symm
 
 @[simp]
 theorem preimage_mul_const_Iic (a : α) {c : α} (h : 0 < c) :
@@ -582,11 +582,11 @@ theorem preimage_mul_const_Icc_of_neg (a b : α) {c : α} (h : c < 0) :
 
 @[simp]
 theorem preimage_const_mul_Iio (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Iio a = Iio (a / c) :=
-  ext fun _x => (lt_div_iff' h).symm
+  ext fun _x => (lt_div_iff₀' h).symm
 
 @[simp]
 theorem preimage_const_mul_Ioi (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Ioi a = Ioi (a / c) :=
-  ext fun _x => (div_lt_iff' h).symm
+  ext fun _x => (div_lt_iff₀' h).symm
 
 @[simp]
 theorem preimage_const_mul_Iic (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Iic a = Iic (a / c) :=
@@ -730,9 +730,9 @@ theorem image_mul_left_Ioo {a : α} (h : 0 < a) (b c : α) :
 theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
   ext x
   exact
-    ⟨fun h => inv_inv x ▸ (inv_lt_inv ha h.1).2 h.2, fun h =>
+    ⟨fun h => inv_inv x ▸ (inv_lt_inv₀ ha h.1).2 h.2, fun h =>
       ⟨inv_pos.2 <| (inv_pos.2 ha).trans h,
-        inv_inv a ▸ (inv_lt_inv ((inv_pos.2 ha).trans h)
+        inv_inv a ▸ (inv_lt_inv₀ ((inv_pos.2 ha).trans h)
           (inv_pos.2 ha)).2 h⟩⟩
 
 theorem inv_Ioi {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
