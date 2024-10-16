@@ -73,12 +73,6 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 
 @[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.2
 
--- Porting note: not used in mathlib and coercions done differently in Lean 4
--- @[simp]
--- theorem length_coe (v : Vector α n) :
---     ((coe : { l : List α // l.length = n } → List α) v).length = n :=
---   v.2
-
 @[simp]
 theorem toList_map {β : Type*} (v : Vector α n) (f : α → β) :
     (v.map f).toList = v.toList.map f := by cases v; rfl

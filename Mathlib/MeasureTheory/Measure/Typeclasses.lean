@@ -668,6 +668,10 @@ def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
 theorem monotone_spanningSets (μ : Measure α) [SigmaFinite μ] : Monotone (spanningSets μ) :=
   monotone_accumulate
 
+@[gcongr]
+lemma spanningSets_mono [SigmaFinite μ] {m n : ℕ} (hmn : m ≤ n) :
+    spanningSets μ m ⊆ spanningSets μ n := monotone_spanningSets _ hmn
+
 theorem measurable_spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
     MeasurableSet (spanningSets μ i) :=
   MeasurableSet.iUnion fun j => MeasurableSet.iUnion fun _ => μ.toFiniteSpanningSetsIn.set_mem j
@@ -676,6 +680,7 @@ theorem measure_spanningSets_lt_top (μ : Measure α) [SigmaFinite μ] (i : ℕ)
     μ (spanningSets μ i) < ∞ :=
   measure_biUnion_lt_top (finite_le_nat i) fun j _ => μ.toFiniteSpanningSetsIn.finite j
 
+@[simp]
 theorem iUnion_spanningSets (μ : Measure α) [SigmaFinite μ] : ⋃ i : ℕ, spanningSets μ i = univ := by
   simp_rw [spanningSets, iUnion_accumulate, μ.toFiniteSpanningSetsIn.spanning]
 

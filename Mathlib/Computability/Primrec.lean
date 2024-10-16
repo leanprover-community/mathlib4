@@ -706,19 +706,11 @@ theorem nat_bodd : Primrec Nat.bodd :=
 theorem nat_div2 : Primrec Nat.div2 :=
   (nat_div.comp .id (const 2)).of_eq fun n => n.div2_val.symm
 
--- Porting note: this is no longer used
--- theorem nat_boddDiv2 : Primrec Nat.boddDiv2 := pair nat_bodd nat_div2
-
--- Porting note: bit0 is deprecated
 theorem nat_double : Primrec (fun n : ℕ => 2 * n) :=
   nat_mul.comp (const _) Primrec.id
 
--- Porting note: bit1 is deprecated
 theorem nat_double_succ : Primrec (fun n : ℕ => 2 * n + 1) :=
   nat_double |> Primrec.succ.comp
-
--- Porting note: this is no longer used
--- theorem nat_div_mod : Primrec₂ fun n k : ℕ => (n / k, n % k) := pair nat_div nat_mod
 
 end Primrec
 
