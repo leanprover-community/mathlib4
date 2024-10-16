@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
 
 /-! # Right-exactness properties of tensor product
 
