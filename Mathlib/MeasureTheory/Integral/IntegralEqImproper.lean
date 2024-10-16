@@ -642,7 +642,7 @@ open scoped Interval
 
 section IoiFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a l : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- If the derivative of a function defined on the real line is integrable close to `+∞`, then
@@ -864,7 +864,7 @@ end IoiFTC
 
 section IicFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {a : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- If the derivative of a function defined on the real line is integrable close to `-∞`, then
@@ -983,7 +983,7 @@ end IicFTC
 
 section UnivFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m n : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {m n : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- **Fundamental theorem of calculus-2**, on the whole real line
@@ -1025,7 +1025,7 @@ open Real
 
 open scoped Interval
 
-variable {E : Type*} {f : ℝ → E} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Change-of-variables formula for `Ioi` integrals of vector-valued functions, proved by taking
 limits from the result for finite intervals. -/
@@ -1224,7 +1224,7 @@ end IntegrationByPartsBilinear
 section IntegrationByPartsAlgebra
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
-  {a b : ℝ} {a' b' : A} {u : ℝ → A} {v : ℝ → A} {u' : ℝ → A} {v' : ℝ → A}
+  {a : ℝ} {a' b' : A} {u : ℝ → A} {v : ℝ → A} {u' : ℝ → A} {v' : ℝ → A}
 
 /-- For finite intervals, see: `intervalIntegral.integral_deriv_mul_eq_sub`. -/
 theorem integral_deriv_mul_eq_sub [CompleteSpace A]

@@ -65,7 +65,7 @@ set, sets, subset, subsets, union, intersection, insert, singleton, complement, 
 
 open Function
 
-universe u v w x
+universe u v
 
 namespace Set
 
@@ -182,7 +182,7 @@ theorem Eq.subset {α} {s t : Set α} : s = t → s ⊆ t :=
 
 namespace Set
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
+variable {α : Type u} {β : Type v} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
 
 instance : Inhabited (Set α) :=
   ⟨∅⟩
