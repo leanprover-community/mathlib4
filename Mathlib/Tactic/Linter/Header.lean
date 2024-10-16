@@ -293,9 +293,6 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   for (imp, msg) in broadImportsCheck importIds do
     Linter.logLint linter.style.header imp msg
   for out in duplicateImportsCheck importIds do
-    let .atom _ errorMessage := out
-     -- By definition of `duplicateImportsCheck, this arm is unreachable.
-     | continue
     Linter.logLint linter.style.header out out
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
