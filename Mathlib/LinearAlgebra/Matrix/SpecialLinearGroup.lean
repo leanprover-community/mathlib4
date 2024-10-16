@@ -124,6 +124,9 @@ instance : Pow (SpecialLinearGroup n R) ℕ where
 instance : Inhabited (SpecialLinearGroup n R) :=
   ⟨1⟩
 
+instance [Fintype R] [DecidableEq R] : Fintype (SpecialLinearGroup n R) := Subtype.fintype _
+instance [Finite R] : Finite (SpecialLinearGroup n R) := Subtype.finite
+
 /-- The transpose of a matrix in `SL(n, R)` -/
 def transpose (A : SpecialLinearGroup n R) : SpecialLinearGroup n R :=
   ⟨A.1.transpose, A.1.det_transpose ▸ A.2⟩
@@ -299,7 +302,7 @@ noncomputable def center_equiv_rootsOfUnity :
   (fun hn ↦ by
     rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, Nat.toPNat'_zero, rootsOfUnity_one]
     exact MulEquiv.mulEquivOfUnique)
-  (fun hn ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
+  (fun _ ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
 
 end center
 

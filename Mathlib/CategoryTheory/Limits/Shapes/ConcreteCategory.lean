@@ -263,7 +263,7 @@ def multiequalizerEquivAux (I : MulticospanIndex C) :
     (I.multicospan ⋙ forget C).sections ≃
     { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } where
   toFun x :=
-    ⟨fun i => x.1 (WalkingMulticospan.left _), fun i => by
+    ⟨fun _ => x.1 (WalkingMulticospan.left _), fun i => by
       have a := x.2 (WalkingMulticospan.Hom.fst i)
       have b := x.2 (WalkingMulticospan.Hom.snd i)
       rw [← b] at a
@@ -271,7 +271,7 @@ def multiequalizerEquivAux (I : MulticospanIndex C) :
   invFun x :=
     { val := fun j =>
         match j with
-        | WalkingMulticospan.left a => x.1 _
+        | WalkingMulticospan.left _ => x.1 _
         | WalkingMulticospan.right b => I.fst b (x.1 _)
       property := by
         rintro (a | b) (a' | b') (f | f | f)

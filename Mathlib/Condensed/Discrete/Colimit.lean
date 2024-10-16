@@ -34,13 +34,11 @@ variable {I : Type u} [Category.{u} I] [IsCofiltered I] {F : I ⥤ FintypeCat.{u
 abbrev locallyConstantPresheaf : Profinite.{u}ᵒᵖ ⥤ Type (u+1) :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u+1}.obj X
 
-namespace LocallyConstant
-
 /--
 The functor `locallyConstantPresheaf` takes cofiltered limits of finite sets with surjective
 projection maps to colimits.
 -/
-noncomputable def isColimitAux (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
+noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
     IsColimit <| (locallyConstantPresheaf X).mapCocone c.op := by
   refine Types.FilteredColimit.isColimitOf _ _ ?_ ?_
   · intro (f : LocallyConstant c.pt X)
@@ -50,7 +48,10 @@ noncomputable def isColimitAux (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
       (h : fi.comap (c.π.app i) = fj.comap (c.π.app j))
     obtain ⟨k, ki, kj, _⟩ := IsCofilteredOrEmpty.cone_objs i j
     refine ⟨⟨k⟩, ki.op, kj.op, ?_⟩
-    dsimp
+    dsimp only [comp_obj, op_obj, functorToPresheaves_obj_obj, CompHausLike.coe_of,
+      Functor.comp_map, op_map, Quiver.Hom.unop_op, functorToPresheaves_obj_map]
+    -- Note: we might want to remove the `simps` attribute from `FintypeCat.toProfinite`; keeping
+    -- `toProfinite_obj` in the `dsimp` block above causes the following `ext` to fail.
     ext x
     obtain ⟨x, hx⟩ := ((Profinite.epi_iff_surjective (c.π.app k)).mp inferInstance) x
     rw [← hx]
@@ -59,19 +60,29 @@ noncomputable def isColimitAux (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
     have h := LocallyConstant.congr_fun h x
     rwa [c.w, c.w]
 
-/--
-The functor `locallyConstantPresheaf` takes a profinite set written as the cofiltered limit of its
-discrete quotients (`S.asLimit`) to the corresponding colimit.
--/
-noncomputable def isColimit (S : Profinite) :
-    IsColimit <| (locallyConstantPresheaf X).mapCocone S.asLimitCone.op :=
-  isColimitAux _ _ S.asLimit
+@[simp]
+lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
+    (s : Cocone ((F ⋙ toProfinite).op ⋙ locallyConstantPresheaf X))
+    (i : I) (f : LocallyConstant (toProfinite.obj (F.obj i)) X) :
+    (isColimitLocallyConstantPresheaf c X hc).desc s (f.comap (c.π.app i)) = s.ι.app ⟨i⟩ f := by
+  change ((((locallyConstantPresheaf X).mapCocone c.op).ι.app ⟨i⟩) ≫
+    (isColimitLocallyConstantPresheaf c X hc).desc s) _ = _
+  rw [(isColimitLocallyConstantPresheaf c X hc).fac]
 
-end LocallyConstant
+/-- `isColimitLocallyConstantPresheaf` in the case of `S.asLimit`. -/
+noncomputable def isColimitLocallyConstantPresheafDiagram (S : Profinite) :
+    IsColimit <| (locallyConstantPresheaf X).mapCocone S.asLimitCone.op :=
+  isColimitLocallyConstantPresheaf _ _ S.asLimit
+
+@[simp]
+lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : Profinite)
+    (s : Cocone (S.diagram.op ⋙ locallyConstantPresheaf X))
+    (i : DiscreteQuotient S) (f : LocallyConstant (S.diagram.obj i) X) :
+    (isColimitLocallyConstantPresheafDiagram X S).desc s (f.comap (S.asLimitCone.π.app i)) =
+      s.ι.app ⟨i⟩ f :=
+  isColimitLocallyConstantPresheaf_desc_apply S.asLimitCone X S.asLimit s i f
 
 end LocallyConstantAsColimit
-
-open Condensed.LocallyConstant Profinite
 
 /--
 Given a presheaf `F` on `Profinite`, `lanPresheaf F` is the left Kan extension of its
@@ -84,10 +95,28 @@ abbrev lanPresheaf (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) : Profinite.{u}ᵒ�
 To presheaves on `Profinite` whose restrictions to finite sets are isomorphic have isomorphic left
 Kan extensions.
 -/
-abbrev lanPresheafExt {F G : Profinite.{u}ᵒᵖ ⥤ Type (u+1)}
+def lanPresheafExt {F G : Profinite.{u}ᵒᵖ ⥤ Type (u+1)}
     (i : toProfinite.op ⋙ F ≅ toProfinite.op ⋙ G) : lanPresheaf F ≅ lanPresheaf G :=
   leftKanExtensionUniqueOfIso _ (pointwiseLeftKanExtensionUnit _ _) i _
     (pointwiseLeftKanExtensionUnit _ _)
+
+@[simp]
+lemma lanPresheafExt_hom {F G : Profinite.{u}ᵒᵖ ⥤ Type (u+1)} (S : Profinite.{u}ᵒᵖ)
+    (i : toProfinite.op ⋙ F ≅ toProfinite.op ⋙ G) : (lanPresheafExt i).hom.app S =
+      colimMap (whiskerLeft (CostructuredArrow.proj toProfinite.op S) i.hom) := by
+  simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,
+    leftKanExtensionUniqueOfIso_hom, pointwiseLeftKanExtension_desc_app]
+  apply colimit.hom_ext
+  aesop
+
+@[simp]
+lemma lanPresheafExt_inv {F G : Profinite.{u}ᵒᵖ ⥤ Type (u+1)} (S : Profinite.{u}ᵒᵖ)
+    (i : toProfinite.op ⋙ F ≅ toProfinite.op ⋙ G) : (lanPresheafExt i).inv.app S =
+      colimMap (whiskerLeft (CostructuredArrow.proj toProfinite.op S) i.inv) := by
+  simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,
+    leftKanExtensionUniqueOfIso_inv, pointwiseLeftKanExtension_desc_app]
+  apply colimit.hom_ext
+  aesop
 
 variable {S : Profinite.{u}} {F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)}
 
@@ -115,14 +144,22 @@ def lanPresheafNatIso (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimi
   NatIso.ofComponents (fun ⟨S⟩ ↦ (lanPresheafIso (hF S)))
     fun _ ↦ (by simpa using colimit.hom_ext fun _ ↦ (by simp))
 
+@[simp]
+lemma lanPresheafNatIso_hom_app (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimitCone.op)
+    (S : Profiniteᵒᵖ) : (lanPresheafNatIso hF).hom.app S =
+      colimit.desc _ (Profinite.Extend.cocone _ _) := by
+  simp [lanPresheafNatIso]
+
 /--
 `lanPresheaf (locallyConstantPresheaf X)` is a sheaf for the coherent topology on `Profinite`.
 -/
 def lanSheafProfinite (X : Type (u+1)) : Sheaf (coherentTopology Profinite.{u}) (Type (u+1)) where
   val := lanPresheaf (locallyConstantPresheaf X)
   cond := by
-    rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso fun _ ↦ isColimit _ _)]
-    exact ((functor.{u, u+1} (hs := fun _ _ _ ↦ ((effectiveEpi_tfae _).out 0 2).mp)).obj X).cond
+    rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
+      fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _)]
+    exact ((CompHausLike.LocallyConstant.functor.{u, u+1}
+      (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 0 2).mp)).obj X).cond
 
 /-- `lanPresheaf (locallyConstantPresheaf X)` as a condensed set. -/
 def lanCondensedSet (X : Type (u+1)) : CondensedSet.{u} :=
@@ -140,6 +177,7 @@ def finYoneda : FintypeCat.{u}ᵒᵖ ⥤ Type (u+1) where
   map f g := g ∘ f.unop
 
 /-- `locallyConstantPresheaf` restricted to finite sets is isomorphic to `finYoneda F`. -/
+@[simps! hom_app]
 def locallyConstantIsoFinYoneda :
     toProfinite.op ⋙ (locallyConstantPresheaf (F.obj (toProfinite.op.obj ⟨of PUnit.{u+1}⟩))) ≅
     finYoneda F :=
@@ -148,35 +186,59 @@ def locallyConstantIsoFinYoneda :
     inv := fun f ↦ ⟨f, @IsLocallyConstant.of_discrete _ _ _ ⟨rfl⟩ _⟩ }
 
 /-- A finite set as a coproduct cocone in `Profinite` over itself. -/
-def fintypeCatAsCofan (X : FintypeCat) : Cofan (fun (_ : X) ↦ toProfinite.obj (of (PUnit.{u+1}))) :=
-  Cofan.mk (toProfinite.obj X) (fun x ↦ toProfinite.map (fun _ ↦ x))
+def fintypeCatAsCofan (X : Profinite) :
+    Cofan (fun (_ : X) ↦ (Profinite.of (PUnit.{u+1}))) :=
+  Cofan.mk X (fun x ↦ (ContinuousMap.const _ x))
 
 /-- A finite set is the coproduct of its points in `Profinite`. -/
-def fintypeCatAsCofanIsColimit (X : FintypeCat.{u}) : IsColimit (fintypeCatAsCofan X) :=
-  mkCofanColimit _ (fun t ↦ ⟨fun x ↦ t.inj x PUnit.unit, continuous_bot⟩) (by aesop)
+def fintypeCatAsCofanIsColimit (X : Profinite) [Fintype X] :
+    IsColimit (fintypeCatAsCofan X) := by
+  refine mkCofanColimit _ (fun t ↦ ⟨fun x ↦ t.inj x PUnit.unit, ?_⟩) ?_
     (fun _ _ h ↦ by ext x; exact ContinuousMap.congr_fun (h x) _)
+  · convert continuous_bot
+    exact (inferInstanceAs (DiscreteTopology X)).1
+  · aesop
 
 variable [PreservesFiniteProducts F]
 
+noncomputable instance (X : Profinite) [Fintype X] :
+    PreservesLimitsOfShape (Discrete X) F :=
+  let X' := (Countable.toSmall.{0} X).equiv_small.choose
+  let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
+  have : Fintype X' := Fintype.ofEquiv X e
+  preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F
+
 /-- Auxiliary definition for `isoFinYoneda`. -/
-@[simps!]
-def isoFinYonedaComponents (X : FintypeCat.{u}) :
-    F.obj ((toProfinite.{u}.op.obj ⟨X⟩)) ≅ (X → F.obj (toProfinite.op.obj ⟨of PUnit.{u+1}⟩)) :=
+def isoFinYonedaComponents (X : Profinite.{u}) [Fintype X] :
+    F.obj ⟨X⟩ ≅ (X → F.obj ⟨Profinite.of PUnit.{u+1}⟩) :=
   (isLimitFanMkObjOfIsLimit F _ _
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
-      (Types.productLimitCone.{u, u+1} fun _ ↦ F.obj (toProfinite.op.obj ⟨of PUnit.{u+1}⟩)).2
+      (Types.productLimitCone.{u, u+1} fun _ ↦ F.obj ⟨Profinite.of PUnit.{u+1}⟩).2
+
+lemma isoFinYonedaComponents_hom_apply (X : Profinite.{u}) [Fintype X] (y : F.obj ⟨X⟩) (x : X) :
+    (isoFinYonedaComponents F X).hom y x = F.map ((Profinite.of PUnit.{u+1}).const x).op y := rfl
+
+lemma isoFinYonedaComponents_inv_comp {X Y : Profinite.{u}} [Fintype X] [Fintype Y]
+    (f : Y → F.obj ⟨Profinite.of PUnit⟩) (g : X ⟶ Y) :
+    (isoFinYonedaComponents F X).inv (f ∘ g) = F.map g.op ((isoFinYonedaComponents F Y).inv f) := by
+  apply injective_of_mono (isoFinYonedaComponents F X).hom
+  simp only [CategoryTheory.inv_hom_id_apply]
+  ext x
+  rw [isoFinYonedaComponents_hom_apply]
+  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, CompHausLike.const_comp,
+    ← isoFinYonedaComponents_hom_apply, CategoryTheory.inv_hom_id_apply, Function.comp_apply]
 
 /--
 The restriction of a finite product preserving presheaf `F` on `Profinite` to the category of
 finite sets is isomorphic to `finYoneda F`.
 -/
+@[simps!]
 def isoFinYoneda : toProfinite.op ⋙ F ≅ finYoneda F :=
-  NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F X.unop) fun _ ↦ by
+  NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F (toProfinite.obj X.unop)) fun _ ↦ by
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
-    simp only [types_comp_apply, isoFinYonedaComponents_hom, finYoneda_map, op_obj,
-      Function.comp_apply, Types.productLimitCone, const_obj_obj, fintypeCatAsCofan, Cofan.mk_pt,
-      cofan_mk_inj, Fan.mk_pt, Fan.mk_π_app, ← FunctorToTypes.map_comp_apply]
+    simp only [toProfinite_obj, types_comp_apply, isoFinYonedaComponents_hom_apply, finYoneda_map,
+      op_obj, Function.comp_apply, ← FunctorToTypes.map_comp_apply]
     rfl
 
 /--
@@ -186,9 +248,48 @@ colimit, is isomorphic to the presheaf `LocallyConstant - F(*)`.
 def isoLocallyConstantOfIsColimit
     (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimitCone.op) :
     F ≅ (locallyConstantPresheaf (F.obj (toProfinite.op.obj ⟨of PUnit.{u+1}⟩))) :=
-  (lanPresheafNatIso hF).symm ≪≫ lanPresheafExt
-    (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
-      lanPresheafNatIso fun _ ↦ isColimit _ _
+  (lanPresheafNatIso hF).symm ≪≫
+    lanPresheafExt (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
+      lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _
+
+lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u+1))
+    [PreservesFiniteProducts X]
+    (hX : ∀ S : Profinite.{u}, (IsColimit <| X.mapCocone S.asLimitCone.op)) :
+    (isoLocallyConstantOfIsColimit X hX).inv =
+      (CompHausLike.LocallyConstant.counitApp.{u, u+1} X) := by
+  dsimp [isoLocallyConstantOfIsColimit]
+  simp only [Category.assoc]
+  rw [Iso.inv_comp_eq]
+  ext S : 2
+  apply colimit.hom_ext
+  intro ⟨Y, _, g⟩
+  simp? [locallyConstantIsoFinYoneda, isoFinYoneda, counitApp] says
+    simp only [comp_obj, CostructuredArrow.proj_obj, op_obj, toProfinite_obj,
+      functorToPresheaves_obj_obj, CompHausLike.coe_of, isoFinYoneda, locallyConstantIsoFinYoneda,
+      finYoneda_obj, LocallyConstant.toFun_eq_coe, NatTrans.comp_app, pointwiseLeftKanExtension_obj,
+      lanPresheafExt_inv, Iso.trans_inv, Iso.symm_inv, whiskerLeft_comp, lanPresheafNatIso_hom_app,
+      Opposite.op_unop, colimit.map_desc, id_eq, Functor.comp_map, op_map, colimit.ι_desc,
+      Cocones.precompose_obj_pt, Profinite.Extend.cocone_pt, Cocones.precompose_obj_ι,
+      Category.assoc, const_obj_obj, whiskerLeft_app, NatIso.ofComponents_hom_app,
+      NatIso.ofComponents_inv_app, Profinite.Extend.cocone_ι_app, counitApp, colimit.ι_desc_assoc]
+  erw [(counitApp.{u, u+1} X).naturality]
+  simp only [← Category.assoc]
+  congr
+  ext f
+  simp only [types_comp_apply, isoFinYoneda_inv_app, counitApp_app]
+  apply presheaf_ext.{u, u+1} (X := X) (Y := X) (f := f)
+  intro x
+  erw [incl_of_counitAppApp]
+  simp only [counitAppAppImage, CompHausLike.coe_of]
+  letI : Fintype (fiber.{u, u+1} f x) :=
+    Fintype.ofInjective (sigmaIncl.{u, u+1} f x).1 Subtype.val_injective
+  apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u+1} f x)).hom
+  ext y
+  simp only [isoFinYonedaComponents_hom_apply, ← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [show (Profinite.of PUnit.{u+1}).const y ≫ IsTerminal.from _ (fiber f x) = 𝟙 _ from rfl]
+  simp only [op_comp, FunctorToTypes.map_comp_apply, op_id, FunctorToTypes.map_id_apply]
+  rw [← isoFinYonedaComponents_inv_comp X _ (sigmaIncl.{u, u+1} f x)]
+  simpa [← isoFinYonedaComponents_hom_apply] using x.map_eq_image f y
 
 end Condensed
 
@@ -202,13 +303,11 @@ variable {F : ℕᵒᵖ ⥤ FintypeCat.{u}} (c : Cone <| F ⋙ toLightProfinite)
 abbrev locallyConstantPresheaf : LightProfiniteᵒᵖ ⥤ Type u :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u}.obj X
 
-namespace LocallyConstant
-
 /--
 The functor `locallyConstantPresheaf` takes sequential limits of finite sets with surjective
 projection maps to colimits.
 -/
-noncomputable def isColimitAux (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
+noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
     IsColimit <| (locallyConstantPresheaf X).mapCocone c.op := by
   refine Types.FilteredColimit.isColimitOf _ _ ?_ ?_
   · intro (f : LocallyConstant c.pt X)
@@ -229,20 +328,32 @@ noncomputable def isColimitAux (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
     have h := LocallyConstant.congr_fun h x
     rwa [c.w, c.w]
 
-/--
-The functor `locallyConstantPresheaf` takes a light profinite set written as a sequential limit of
-its discrete quotients (`S.asLimit`) to the corresponding colimit.
--/
-noncomputable def isColimit (S : LightProfinite) :
+@[simp]
+lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
+    (s : Cocone ((F ⋙ toLightProfinite).op ⋙ locallyConstantPresheaf X))
+    (n : ℕᵒᵖ) (f : LocallyConstant (toLightProfinite.obj (F.obj n)) X) :
+    (isColimitLocallyConstantPresheaf c X hc).desc s (f.comap (c.π.app n)) = s.ι.app ⟨n⟩ f := by
+  change ((((locallyConstantPresheaf X).mapCocone c.op).ι.app ⟨n⟩) ≫
+    (isColimitLocallyConstantPresheaf c X hc).desc s) _ = _
+  rw [(isColimitLocallyConstantPresheaf c X hc).fac]
+
+/-- `isColimitLocallyConstantPresheaf` in the case of `S.asLimit`. -/
+noncomputable def isColimitLocallyConstantPresheafDiagram (S : LightProfinite) :
     IsColimit <| (locallyConstantPresheaf X).mapCocone (coconeRightOpOfCone S.asLimitCone) :=
   (Functor.Final.isColimitWhiskerEquiv (opOpEquivalence ℕ).inverse _).symm
-    (isColimitAux _ _ S.asLimit)
+    (isColimitLocallyConstantPresheaf _ _ S.asLimit)
 
-end LocallyConstant
+@[simp]
+lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : LightProfinite)
+    (s : Cocone (S.diagram.rightOp ⋙ locallyConstantPresheaf X))
+    (n : ℕ) (f : LocallyConstant (S.diagram.obj ⟨n⟩) X) :
+    (isColimitLocallyConstantPresheafDiagram X S).desc s (f.comap (S.asLimitCone.π.app ⟨n⟩)) =
+      s.ι.app n f := by
+  change ((((locallyConstantPresheaf X).mapCocone (coconeRightOpOfCone S.asLimitCone)).ι.app n) ≫
+    (isColimitLocallyConstantPresheafDiagram X S).desc s) _ = _
+  rw [(isColimitLocallyConstantPresheafDiagram X S).fac]
 
 end LocallyConstantAsColimit
-
-open LightCondensed.LocallyConstant LightProfinite
 
 instance (S : LightProfinite.{u}ᵒᵖ) :
     HasColimitsOfShape (CostructuredArrow toLightProfinite.op S) (Type u) :=
@@ -259,10 +370,28 @@ abbrev lanPresheaf (F : LightProfinite.{u}ᵒᵖ ⥤ Type u) : LightProfinite.{u
 To presheaves on `LightProfinite` whose restrictions to finite sets are isomorphic have isomorphic
 left Kan extensions.
 -/
-abbrev lanPresheafExt {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u}
+def lanPresheafExt {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u}
     (i : toLightProfinite.op ⋙ F ≅ toLightProfinite.op ⋙ G) : lanPresheaf F ≅ lanPresheaf G :=
   leftKanExtensionUniqueOfIso _ (pointwiseLeftKanExtensionUnit _ _) i _
     (pointwiseLeftKanExtensionUnit _ _)
+
+@[simp]
+lemma lanPresheafExt_hom {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightProfinite.{u}ᵒᵖ)
+    (i : toLightProfinite.op ⋙ F ≅ toLightProfinite.op ⋙ G) : (lanPresheafExt i).hom.app S =
+      colimMap (whiskerLeft (CostructuredArrow.proj toLightProfinite.op S) i.hom) := by
+  simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,
+    leftKanExtensionUniqueOfIso_hom, pointwiseLeftKanExtension_desc_app]
+  apply colimit.hom_ext
+  aesop
+
+@[simp]
+lemma lanPresheafExt_inv  {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightProfinite.{u}ᵒᵖ)
+    (i : toLightProfinite.op ⋙ F ≅ toLightProfinite.op ⋙ G) : (lanPresheafExt i).inv.app S =
+      colimMap (whiskerLeft (CostructuredArrow.proj toLightProfinite.op S) i.inv) := by
+  simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,
+    leftKanExtensionUniqueOfIso_inv, pointwiseLeftKanExtension_desc_app]
+  apply colimit.hom_ext
+  aesop
 
 variable {S : LightProfinite.{u}} {F : LightProfinite.{u}ᵒᵖ ⥤ Type u}
 
@@ -294,14 +423,23 @@ def lanPresheafNatIso
     lanPresheafIso_hom, Opposite.op_unop]
   exact colimit.hom_ext fun _ ↦ (by simp)
 
+@[simp]
+lemma lanPresheafNatIso_hom_app
+    (hF : ∀ S : LightProfinite, IsColimit <| F.mapCocone (coconeRightOpOfCone S.asLimitCone))
+    (S : LightProfiniteᵒᵖ) : (lanPresheafNatIso hF).hom.app S =
+      colimit.desc _ (LightProfinite.Extend.cocone _ _) := by
+  simp [lanPresheafNatIso]
+
 /--
 `lanPresheaf (locallyConstantPresheaf X)` as a light condensed set.
 -/
 def lanLightCondSet (X : Type u) : LightCondSet.{u} where
   val := lanPresheaf (locallyConstantPresheaf X)
   cond := by
-    rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso fun _ ↦ isColimit _ _)]
-    exact (functor.{u, u} (hs := fun _ _ _ ↦ ((effectiveEpi_iff_surjective _).mp)).obj X).cond
+    rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
+      fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _)]
+    exact (CompHausLike.LocallyConstant.functor.{u, u}
+      (hs := fun _ _ _ ↦ ((LightProfinite.effectiveEpi_iff_surjective _).mp)).obj X).cond
 
 variable (F : LightProfinite.{u}ᵒᵖ ⥤ Type u)
 
@@ -322,35 +460,58 @@ def locallyConstantIsoFinYoneda : toLightProfinite.op ⋙
     inv := fun f ↦ ⟨f, @IsLocallyConstant.of_discrete _ _ _ ⟨rfl⟩ _⟩ }
 
 /-- A finite set as a coproduct cocone in `LightProfinite` over itself. -/
-def fintypeCatAsCofan (X : FintypeCat) :
-    Cofan (fun (_ : X) ↦ toLightProfinite.obj (of (PUnit.{u+1}))) :=
-  Cofan.mk (toLightProfinite.obj X) (fun x ↦ toProfinite.map (fun _ ↦ x))
+def fintypeCatAsCofan (X : LightProfinite) :
+    Cofan (fun (_ : X) ↦ (LightProfinite.of (PUnit.{u+1}))) :=
+  Cofan.mk X (fun x ↦ (ContinuousMap.const _ x))
 
 /-- A finite set is the coproduct of its points in `LightProfinite`. -/
-def fintypeCatAsCofanIsColimit (X : FintypeCat.{u}) : IsColimit (fintypeCatAsCofan X) :=
-  mkCofanColimit _ (fun t ↦ ⟨fun x ↦ t.inj x PUnit.unit, continuous_bot⟩) (by aesop)
+def fintypeCatAsCofanIsColimit (X : LightProfinite) [Fintype X] :
+    IsColimit (fintypeCatAsCofan X) := by
+  refine mkCofanColimit _ (fun t ↦ ⟨fun x ↦ t.inj x PUnit.unit, ?_⟩) ?_
     (fun _ _ h ↦ by ext x; exact ContinuousMap.congr_fun (h x) _)
+  · convert continuous_bot
+    exact (inferInstanceAs (DiscreteTopology X)).1
+  · aesop
 
 variable [PreservesFiniteProducts F]
 
+noncomputable instance (X : FintypeCat.{u}) : PreservesLimitsOfShape (Discrete X) F :=
+  let X' := (Countable.toSmall.{0} X).equiv_small.choose
+  let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
+  have : Fintype X' := Fintype.ofEquiv X e
+  preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F
+
 /-- Auxiliary definition for `isoFinYoneda`. -/
-@[simps!]
-def isoFinYonedaComponents (X : FintypeCat.{u}) :
-    F.obj ((toLightProfinite.{u}.op.obj ⟨X⟩)) ≅
-      (X → F.obj (toLightProfinite.op.obj ⟨of PUnit.{u+1}⟩)) :=
+def isoFinYonedaComponents (X : LightProfinite.{u}) [Fintype X] :
+    F.obj ⟨X⟩ ≅ (X → F.obj ⟨LightProfinite.of PUnit.{u+1}⟩) :=
   (isLimitFanMkObjOfIsLimit F _ _
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
-    (Types.productLimitCone.{u, u} fun _ ↦ F.obj (toLightProfinite.op.obj ⟨of PUnit.{u+1}⟩)).2
+      (Types.productLimitCone.{u, u} fun _ ↦ F.obj ⟨LightProfinite.of PUnit.{u+1}⟩).2
+
+lemma isoFinYonedaComponents_hom_apply (X : LightProfinite.{u}) [Fintype X] (y : F.obj ⟨X⟩)
+    (x : X) : (isoFinYonedaComponents F X).hom y x =
+      F.map ((LightProfinite.of PUnit.{u+1}).const x).op y := rfl
+
+lemma isoFinYonedaComponents_inv_comp {X Y : LightProfinite.{u}} [Fintype X] [Fintype Y]
+    (f : Y → F.obj ⟨LightProfinite.of PUnit⟩) (g : X ⟶ Y) :
+    (isoFinYonedaComponents F X).inv (f ∘ g) = F.map g.op ((isoFinYonedaComponents F Y).inv f) := by
+  apply injective_of_mono (isoFinYonedaComponents F X).hom
+  simp only [CategoryTheory.inv_hom_id_apply]
+  ext x
+  rw [isoFinYonedaComponents_hom_apply]
+  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, CompHausLike.const_comp,
+    ← isoFinYonedaComponents_hom_apply, CategoryTheory.inv_hom_id_apply, Function.comp_apply]
 
 /--
 The restriction of a finite product preserving presheaf `F` on `Profinite` to the category of
 finite sets is isomorphic to `finYoneda F`.
 -/
+@[simps!]
 def isoFinYoneda : toLightProfinite.op ⋙ F ≅ finYoneda F :=
-  NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F X.unop) fun _ ↦ by
+  NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F (toLightProfinite.obj X.unop)) fun _ ↦ by
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
-    simp only [types_comp_apply, isoFinYonedaComponents_hom, finYoneda_map, op_obj,
+    simp only [types_comp_apply, isoFinYonedaComponents_hom_apply, finYoneda_map, op_obj,
       Function.comp_apply, Types.productLimitCone, const_obj_obj, fintypeCatAsCofan, Cofan.mk_pt,
       cofan_mk_inj, Fan.mk_pt, Fan.mk_π_app, ← FunctorToTypes.map_comp_apply]
     rfl
@@ -365,6 +526,46 @@ def isoLocallyConstantOfIsColimit (hF : ∀ S : LightProfinite, IsColimit <|
         (F.obj (toLightProfinite.op.obj ⟨of PUnit.{u+1}⟩))) :=
   (lanPresheafNatIso hF).symm ≪≫
     lanPresheafExt (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
-      lanPresheafNatIso fun _ ↦ isColimit _ _
+      lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _
+
+lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u)
+    [PreservesFiniteProducts X] (hX : ∀ S : LightProfinite.{u}, (IsColimit <|
+      X.mapCocone (coconeRightOpOfCone S.asLimitCone))) :
+    (isoLocallyConstantOfIsColimit X hX).inv =
+      (CompHausLike.LocallyConstant.counitApp.{u, u} X) := by
+  dsimp [isoLocallyConstantOfIsColimit]
+  simp only [Category.assoc]
+  rw [Iso.inv_comp_eq]
+  ext S : 2
+  apply colimit.hom_ext
+  intro ⟨Y, _, g⟩
+  simp? [locallyConstantIsoFinYoneda, isoFinYoneda, counitApp] says
+    simp only [comp_obj, CostructuredArrow.proj_obj, op_obj, functorToPresheaves_obj_obj,
+      toLightProfinite_obj_toTop_α, isoFinYoneda, locallyConstantIsoFinYoneda, finYoneda_obj,
+      LocallyConstant.toFun_eq_coe, NatTrans.comp_app, pointwiseLeftKanExtension_obj,
+      lanPresheafExt_inv, Iso.trans_inv, Iso.symm_inv, whiskerLeft_comp, lanPresheafNatIso_hom_app,
+      Opposite.op_unop, colimit.map_desc, id_eq, Functor.comp_map, op_map, colimit.ι_desc,
+      Cocones.precompose_obj_pt, LightProfinite.Extend.cocone_pt, Cocones.precompose_obj_ι,
+      Category.assoc, const_obj_obj, whiskerLeft_app, NatIso.ofComponents_hom_app,
+      NatIso.ofComponents_inv_app, LightProfinite.Extend.cocone_ι_app, counitApp,
+      colimit.ι_desc_assoc]
+  erw [(counitApp.{u, u} X).naturality]
+  simp only [← Category.assoc]
+  congr
+  ext f
+  simp only [types_comp_apply, isoFinYoneda_inv_app, counitApp_app]
+  apply presheaf_ext.{u, u} (X := X) (Y := X) (f := f)
+  intro x
+  erw [incl_of_counitAppApp]
+  simp only [counitAppAppImage, CompHausLike.coe_of]
+  letI : Fintype (fiber.{u, u} f x) :=
+    Fintype.ofInjective (sigmaIncl.{u, u} f x).1 Subtype.val_injective
+  apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u} f x)).hom
+  ext y
+  simp only [isoFinYonedaComponents_hom_apply, ← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [show (LightProfinite.of PUnit.{u+1}).const y ≫ IsTerminal.from _ (fiber f x) = 𝟙 _ from rfl]
+  simp only [op_comp, FunctorToTypes.map_comp_apply, op_id, FunctorToTypes.map_id_apply]
+  rw [← isoFinYonedaComponents_inv_comp X _ (sigmaIncl.{u, u} f x)]
+  simpa [← isoFinYonedaComponents_hom_apply] using x.map_eq_image f y
 
 end LightCondensed
