@@ -263,6 +263,12 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
     if h : ∃ a, o = succ a then Or.inr (Or.inl h)
     else Or.inr <| Or.inr ⟨o0, fun _a => (succ_lt_of_not_succ h).2⟩
 
+theorem IsLimit.sSup_Iio {o : Ordinal} (h : IsLimit o) : sSup (Iio o) = o := by
+  apply (csSup_le' (fun a ha ↦ le_of_lt ha)).antisymm
+  apply le_of_forall_lt
+  intro a ha
+  exact (lt_succ a).trans_le (le_csSup bddAbove_Iio (h.succ_lt ha))
+
 /-- Main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
 @[elab_as_elim]
@@ -1382,6 +1388,11 @@ theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal
     (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
   H.map_iSup g
 
+theorem IsNormal.map_isLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {o : Ordinal}
+    (ho : IsLimit o) : f o = sSup (f '' Iio o) := by
+  have : (Iio o).Nonempty := ⟨0, ho.pos⟩
+  rw [← H.map_sSup this, ho.sSup_Iio]
+
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]
 theorem sup_eq_sSup {s : Set Ordinal.{u}} (hs : Small.{u} s) :
@@ -2483,4 +2494,4 @@ theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
 
 end WellFounded
 
-set_option linter.style.longFile 2700
+set_option linter.style.longFile 2600
