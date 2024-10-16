@@ -420,6 +420,8 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx â†
     let _leftPretty := (left2.map Prod.snd).map fun l => l.prettyPrint.pretty
     let mut filt := []
     let mut filt2 := []
+    -- used to test when the `for` loop below can be simplified
+    let cond := â† match stx with | `(variable $_* in $_) => return false | _ => return true
     for s in usedVarNames do
       filt2 := filt2 ++ left2.filter fun (_a, b) =>
         let new :=
@@ -427,6 +429,8 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx â†
             s == b.prettyPrint.pretty
           else
             s == _a.eraseMacroScopes.toString
+        if cond && new != (s == b.prettyPrint.pretty) then dbg_trace "error!\n{stx}"; new else
+        if (!cond) && new == (s == b.prettyPrint.pretty) then dbg_trace "other error!\n{stx}"; new else
         new
 
       filt := filt ++ left.filter (s.isPrefixOf Â·.toString)
