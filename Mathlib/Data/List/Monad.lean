@@ -16,7 +16,7 @@ namespace List
 variable {α : Type u}
 
 instance instMonad : Monad List.{u} where
-  pure := @List.pure
+  pure := @List.singleton
   bind := @List.bind
   map := @List.map
 
