@@ -986,7 +986,7 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
       rw [PresheafedSpace.stalkMap.comp, ← IsIso.eq_inv_comp] at this
       rw [this]
       -- TODO: This instance is found by `infer_instance` before #6045.
-      apply CommRingCat.isLocalRingHom_comp
+      apply CommRingCat.isLocalHom_comp
     · intro m _ h₂
       rw [← cancel_mono (pullbackConeOfLeft f g).snd]
       exact h₂.trans <| LocallyRingedSpace.Hom.ext
