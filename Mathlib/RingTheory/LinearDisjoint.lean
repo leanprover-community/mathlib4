@@ -17,6 +17,8 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 # Linearly disjoint subalgebras
 
 This file contains basics about linearly disjoint subalgebras.
+We adapt the definitions in <https://en.wikipedia.org/wiki/Linearly_disjoint>.
+See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
 
 ## Main definitions
 
