@@ -833,11 +833,10 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
     · apply (max_le_max_left _ IH).trans
       rw [← max_assoc, max_self]
       exact max_le_max_left _ le_self_add
-    · rw [ne_eq, card_eq_zero, opow_eq_zero, not_and]
-      rintro rfl
+    · rw [ne_eq, card_eq_zero, opow_eq_zero]
+      rintro ⟨rfl, -⟩
       cases omega0_pos.not_le ha
-    · rw [← card_omega0]
-      exact card_le_card ha
+    · rwa [aleph0_le_card]
   · intro b hb IH
     rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isLimit hb]
     apply (card_iSup_Iio_le_card_mul_iSup _).trans
@@ -848,7 +847,7 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
       exact (IH c.1 c.2).trans (max_le_max_left _ (card_le_card c.2.le))
     · simpa using hb.pos.ne'
     · refine le_ciSup_of_le ?_ ⟨1, one_lt_omega0.trans_le <| omega0_le_of_isLimit hb⟩ ?_
-      · apply Cardinal.bddAbove_of_small
+      · exact Cardinal.bddAbove_of_small _
       · simpa
 
 theorem card_opow_le_of_omega0_le_right (a : Ordinal) {b : Ordinal} (hb : ω ≤ b) :
