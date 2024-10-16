@@ -415,29 +415,26 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
       (Nat.digits_len m n hm (not_eq_zero_of_lt hn)).symm]
     _ ≤ m * ((f m ^ (d + 1))/(f m - 1)) := by
       gcongr
-      linarith only [one_lt_of_not_bounded notbdd hm]
-      simp only [tsub_le_iff_right, le_add_iff_nonneg_right, zero_le_one]
+      · linarith only [one_lt_of_not_bounded notbdd hm]
+      · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, zero_le_one]
     _ = ↑m * f ↑m / (f ↑m - 1) * f ↑m ^ d := by ring
     _ ≤ ↑m * f ↑m / (f ↑m - 1) * f ↑m ^ logb ↑m ↑n := by
       gcongr
-      exact le_of_lt (expr_pos hm notbdd)
-      rw [← Real.rpow_natCast, Real.rpow_le_rpow_left_iff (one_lt_of_not_bounded notbdd hm)]
-      exact natLog_le_logb n m
-  have h_ineq2 (k : ℕ) (hk : k ≠ 0) :
-      (f n) ^ k ≤ (m * f m / (f m - 1)) * (f m) ^ (k * logb m n) := by
-    calc
-    (f n) ^ k = f ↑(n ^ k) := by simp only [Nat.cast_pow, map_pow]
-    _ ≤ (m * f m / (f m - 1)) * (f m) ^ (logb m ↑(n ^ k)) := h_ineq1 hm (Nat.one_lt_pow hk hn)
-    _ = (m * f m / (f m - 1)) * (f m) ^ (k * logb m n) := by
-      rw [Nat.cast_pow, Real.logb_pow]
-      exact_mod_cast zero_lt_of_lt hn
+      · exact le_of_lt (expr_pos hm notbdd)
+      · rw [← Real.rpow_natCast, Real.rpow_le_rpow_left_iff (one_lt_of_not_bounded notbdd hm)]
+        exact natLog_le_logb n m
   apply le_of_pow_le_pow_left hk (mul_nonneg (rpow_nonneg
     (le_of_lt (expr_pos hm notbdd)) (k : ℝ)⁻¹) (rpow_nonneg (apply_nonneg f ↑m) (logb m n)))
   nth_rw 2 [← Real.rpow_natCast]
   rw [mul_rpow (rpow_nonneg (le_of_lt (expr_pos hm notbdd)) (k : ℝ)⁻¹)
     (rpow_nonneg (apply_nonneg f ↑m) (logb ↑m ↑n)), ← rpow_mul (le_of_lt (expr_pos hm notbdd)),
     ← rpow_mul (apply_nonneg f ↑m), inv_mul_cancel₀ (mod_cast hk), rpow_one, mul_comm (logb ↑m ↑n)]
-  exact h_ineq2 k hk
+  calc
+    (f n) ^ k = f ↑(n ^ k) := by simp only [Nat.cast_pow, map_pow]
+    _ ≤ (m * f m / (f m - 1)) * (f m) ^ (logb m ↑(n ^ k)) := h_ineq1 hm (Nat.one_lt_pow hk hn)
+    _ = (m * f m / (f m - 1)) * (f m) ^ (k * logb m n) := by
+      rw [Nat.cast_pow, Real.logb_pow]
+      exact_mod_cast zero_lt_of_lt hn
 
 include hm hn notbdd in
 /-- Given two natural numbers `n, m` greater than 1 we have `f n ≤ f m ^ logb m n`. -/
@@ -485,7 +482,7 @@ theorem mulRingNorm_equiv_standard_of_unbounded : MulRingNorm.equiv f mulRingNor
   intro n
   by_cases h1 : n ≤ 1
   · by_cases h2 : n = 1
-    · simp only [h2, Nat.cast_one, map_one, one_rpow, mul_ring_norm_eq_abs, abs_one, cast_one]
+    · simp only [h2, Nat.cast_one, map_one, one_rpow, abs_one, cast_one]
     · have : n = 0 := by omega
       rw [this, hs]
       simp only [CharP.cast_eq_zero, map_zero]
