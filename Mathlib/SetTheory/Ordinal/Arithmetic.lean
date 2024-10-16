@@ -2220,14 +2220,6 @@ namespace Cardinal
 open Ordinal
 
 @[simp]
-theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
-  le_antisymm (ord_le.2 <| le_rfl) <|
-    le_of_forall_lt fun o h => by
-      rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
-      rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
-      exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
-
-@[simp]
 theorem add_one_of_aleph0_le {c} (h : ℵ₀ ≤ c) : c + 1 = c := by
   rw [add_comm, ← card_ord c, ← card_one, ← card_add, one_add_of_omega0_le]
   rwa [← ord_aleph0, ord_le_ord]
