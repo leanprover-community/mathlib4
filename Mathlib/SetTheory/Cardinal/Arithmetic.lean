@@ -840,7 +840,7 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
       exact card_le_card ha
   · intro b hb IH
     rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isLimit hb]
-    apply (card_sSup_Iio_le_card_mul_iSup _).trans
+    apply (card_iSup_Iio_le_card_mul_iSup _).trans
     rw [Cardinal.lift_id, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
     · apply max_le _ (le_max_right _ _)
       apply ciSup_le'

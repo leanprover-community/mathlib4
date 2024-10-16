@@ -1460,17 +1460,17 @@ theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :
   subst h
   simp [← Subtype.eq_iff]
 
-theorem card_sSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Ordinal.{u} → Ordinal.{max u v}) :
-    (sSup (f '' Iio o)).card ≤
+theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Ordinal.{u} → Ordinal.{max u v}) :
+    (⨆ a : Iio o, f a).card ≤
     Cardinal.sum (fun i : o.toType ↦ (f ((enumIsoToType _).symm i)).card) := by
-  convert (card_iSup_le_sum_card _)
+  apply le_of_eq_of_le _ (card_iSup_le_sum_card _)
   have := (enumIsoToType o).symm.iSup_comp (g := fun x ↦ f x.1)
   rw [RelIso.coe_fn_toEquiv] at this
-  rw [this, sSup_image']
+  rw [this]
 
-theorem card_sSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Ordinal.{u} → Ordinal.{max u v}) :
-    (sSup (f '' Iio o)).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
-  apply (card_sSup_Iio_le_sum_card f).trans
+theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Ordinal.{u} → Ordinal.{max u v}) :
+    (⨆ a : Iio o, f a).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
+  apply (card_iSup_Iio_le_sum_card f).trans
   convert ← sum_le_iSup_lift _
   · exact mk_toType o
   · exact (enumIsoToType o).symm.iSup_comp (g := fun x ↦ (f x.1).card)
