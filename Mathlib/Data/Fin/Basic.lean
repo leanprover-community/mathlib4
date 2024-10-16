@@ -420,13 +420,6 @@ instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
 theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
   rfl
 
-section from_ad_hoc
-
-@[simp] lemma ofNat'_zero [NeZero n] : (Fin.ofNat' n 0) = 0 := rfl
-@[simp] lemma ofNat'_one [NeZero n] : (Fin.ofNat' n 1) = 1 := rfl
-
-end from_ad_hoc
-
 instance instNatCast [NeZero n] : NatCast (Fin n) where
   natCast i := Fin.ofNat' n i
 
