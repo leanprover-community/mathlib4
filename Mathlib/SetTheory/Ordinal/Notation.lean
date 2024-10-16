@@ -1004,13 +1004,6 @@ theorem fundamentalSequenceProp_inr (o f) :
         ∀ a, a < o.repr → ∃ i, a < (f i).repr :=
   Iff.rfl
 
-attribute
-  [eqns
-    fundamentalSequenceProp_inl_none
-    fundamentalSequenceProp_inl_some
-    fundamentalSequenceProp_inr]
-  FundamentalSequenceProp
-
 theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamentalSequence o) := by
   induction' o with a m b iha ihb; · exact rfl
   rw [fundamentalSequence]

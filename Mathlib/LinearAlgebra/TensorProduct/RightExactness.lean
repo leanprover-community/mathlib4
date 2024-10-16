@@ -445,7 +445,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
       Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem, LinearMap.mem_range]
     intro hx
     rw [Ideal.map, ← submodule_span_eq] at hx
-    refine Submodule.span_induction hx ?_ ?_ ?_ ?_
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ hx
     · intro x
       simp only [includeLeft_apply, Set.mem_image, SetLike.mem_coe]
       rintro ⟨y, hy, rfl⟩
@@ -453,10 +453,10 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
       rfl
     · use 0
       simp only [map_zero]
-    · rintro x y ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
+    · rintro x y - - ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
       use x + y
       simp only [map_add]
-    · rintro a x ⟨x, hx, rfl⟩
+    · rintro a x - ⟨x, hx, rfl⟩
       induction a with
       | zero =>
         use 0
@@ -513,7 +513,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
       Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem, LinearMap.mem_range]
     intro hx
     rw [Ideal.map, ← submodule_span_eq] at hx
-    refine Submodule.span_induction hx ?_ ?_ ?_ ?_
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ hx
     · intro x
       simp only [includeRight_apply, Set.mem_image, SetLike.mem_coe]
       rintro ⟨y, hy, rfl⟩
@@ -521,10 +521,10 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
       rfl
     · use 0
       simp only [map_zero]
-    · rintro x y ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
+    · rintro x y - - ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
       use x + y
       simp only [map_add]
-    · rintro a x ⟨x, hx, rfl⟩
+    · rintro a x - ⟨x, hx, rfl⟩
       induction a with
       | zero =>
         use 0

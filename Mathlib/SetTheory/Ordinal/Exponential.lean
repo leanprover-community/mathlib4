@@ -493,8 +493,7 @@ theorem iSup_pow {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ ω := by
   · exact (isNormal_opow ho₁).apply_omega0
   · rw [one_opow]
     refine le_antisymm (Ordinal.iSup_le fun n => by rw [one_opow]) ?_
-    convert Ordinal.le_iSup _ 0
-    rw [Nat.cast_zero, opow_zero]
+    exact_mod_cast Ordinal.le_iSup _ 0
 
 set_option linter.deprecated false in
 @[deprecated iSup_pow (since := "2024-08-27")]
