@@ -6,6 +6,7 @@ Authors: David Wärn
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Shrink
+import Mathlib.Data.Fintype.Sum
 
 /-!
 # The Hales-Jewett theorem
