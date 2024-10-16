@@ -527,13 +527,7 @@ end NormedSpace
 section CStarRing
 
 variable {α : Type*} {β : Type*}
-<<<<<<< HEAD:Mathlib/Topology/ContinuousFunction/Compact.lean
 variable [TopologicalSpace α] [CompactSpace α]
-||||||| 0e1a0b8dd06:Mathlib/Topology/ContinuousFunction/Compact.lean
-variable [TopologicalSpace α] [NormedRing β] [StarRing β]
-=======
-variable [TopologicalSpace α] [NonUnitalNormedRing β] [StarRing β]
->>>>>>> master:Mathlib/Topology/ContinuousMap/Compact.lean
 
 instance [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C(α, β) where
   norm_mul_self_le f := by
