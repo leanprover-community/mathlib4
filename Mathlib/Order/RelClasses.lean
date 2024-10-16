@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Nat.Defs
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.IsEmpty
 import Mathlib.Order.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
@@ -89,10 +88,6 @@ theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) 
 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
-
-@[deprecated (since := "2024-07-30")]
-theorem IsTotalPreorder.swap (r) [IsTotalPreorder α r] : IsTotalPreorder α (swap r) :=
-  { @IsPreorder.swap α r _, @IsTotal.swap α r _ with }
 
 @[deprecated (since := "2024-07-30")]
 theorem IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) :=
@@ -777,9 +772,6 @@ instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
 instance [LinearOrder α] : IsTotal α (· ≥ ·) :=
   IsTotal.swap _
 
-@[deprecated (since := "2024-08-22")] instance [LinearOrder α] : IsTotalPreorder α (· ≤ ·) where
-@[deprecated (since := "2024-08-22")] instance [LinearOrder α] : IsTotalPreorder α (· ≥ ·) where
-
 instance [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
 
 instance [LinearOrder α] : IsLinearOrder α (· ≥ ·) where
@@ -799,9 +791,6 @@ instance [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
 instance [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
-
-@[deprecated (since := "2024-07-30")]
-instance [LinearOrder α] : IsIncompTrans α (· < ·) := by infer_instance
 
 @[deprecated (since := "2024-07-30")]
 instance [LinearOrder α] : IsStrictWeakOrder α (· < ·) := by infer_instance
