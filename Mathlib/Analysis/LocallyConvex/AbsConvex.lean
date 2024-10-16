@@ -255,20 +255,23 @@ lemma add_self_eq_smul_two {V : Set E} (h : Convex ℝ V) : V + V = (2 : ℝ) �
 variable (E 𝕜) {s : Set E}
 variable [NontriviallyNormedField 𝕜]  [Module 𝕜 E]
 variable [SMulCommClass ℝ 𝕜 E]
-variable [TopologicalSpace E] [TopologicalAddGroup E]  [lcs : LocallyConvexSpace ℝ E]
-  [ContinuousSMul ℝ E]
+variable [TopologicalSpace E]
+variable [tag : TopologicalAddGroup E]
+variable [lcs : LocallyConvexSpace ℝ E]
+variable [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3
-theorem totallyBounded_absConvexHull
-    (hs : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E) s) :
-    TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E) (absConvexHull ℝ s) := by
+theorem totallyBounded_absConvexHull [U : UniformSpace E] [UniformAddGroup E]
+    (h : U = TopologicalAddGroup.toUniformSpace E) (hs : TotallyBounded s) :
+    TotallyBounded (absConvexHull ℝ s) := by
   intro d' hd'
-  letI := TopologicalAddGroup.toUniformSpace E
-  obtain ⟨d,⟨⟨N,⟨hN₁,hN₂⟩⟩, hd₂⟩⟩ := comp_mem_uniformity_sets hd'
+  obtain ⟨d,⟨hU, hd₂⟩⟩ := comp_mem_uniformity_sets hd'
+  rw [h] at hU
+  obtain ⟨N,⟨hN₁,hN₂⟩⟩ := hU
   obtain ⟨V,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs N hN₁
   let d₂ := {(x,y) | y-x ∈ V}
   obtain ⟨t,⟨htf,hts⟩⟩ := hs d₂ (by
-    rw [uniformity_eq_comap_nhds_zero' E] -- d₂ is a uniformity
+    simp only [h, uniformity_eq_comap_nhds_zero', Filter.mem_comap] -- d₂ is a uniformity
     aesop)
   have s1 : SymmetricRel d₂ := by
     ext ⟨x,y⟩
@@ -291,11 +294,14 @@ theorem totallyBounded_absConvexHull
   have e4 : (absConvexHull ℝ) s ⊆ (convexHull ℝ) (t ∪ -t) + V := by
     rw [convexHull_union_neg_eq_absConvexHull (s := t), ← AbsConvex.absConvexHull_eq hS₂]
     exact le_trans (absConvexHull_mono hts) (absConvexHull_add_subset ℝ)
-  have e6 : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E)
-      ((convexHull ℝ) (t ∪ -t)) := IsCompact.totallyBounded
-        (Set.Finite.isCompact_convexHull (finite_union.mpr ⟨htf,Finite.neg htf⟩))
+  have e6 : TotallyBounded ((convexHull ℝ) (t ∪ -t)) := by
+    apply IsCompact.totallyBounded
+    convert Set.Finite.isCompact_convexHull _
+    aesop
+    aesop
+    exact (finite_union.mpr ⟨htf,Finite.neg htf⟩)
   obtain ⟨t',⟨htf',hts'⟩⟩ := e6 d₂ (by
-    rw [uniformity_eq_comap_nhds_zero']
+    simp only [h, uniformity_eq_comap_nhds_zero', Filter.mem_comap]
     aesop
   )
   rw [e2] at hts'
@@ -331,6 +337,7 @@ theorem totallyBounded_absConvexHull
   · exact htf'
   · apply subset_trans e7
     aesop
+
 end
 
 section AbsolutelyConvexSets
