@@ -25,31 +25,21 @@ class NonUnitalCStarAlgebra (A : Type*) extends NonUnitalNormedRing A, StarRing 
     CStarRing A, NormedSpace ℂ A, IsScalarTower ℂ A A, SMulCommClass ℂ A A, StarModule ℂ A where
 
 /-- The class of non-unital commutative (complex) C⋆-algebras. -/
-class NonUnitalCommCStarAlgebra (A : Type*) extends NonUnitalCStarAlgebra A where
-  mul_comm : ∀ (a b : A), a * b = b * a
+class NonUnitalCommCStarAlgebra (A : Type*) extends
+    NonUnitalNormedCommRing A, NonUnitalCStarAlgebra A
 
 /-- The class of unital (complex) C⋆-algebras. -/
 class CStarAlgebra (A : Type*) extends NormedRing A, StarRing A, CompleteSpace A, CStarRing A,
     NormedAlgebra ℂ A, StarModule ℂ A where
 
 /-- The class of unital commutative (complex) C⋆-algebras. -/
-class CommCStarAlgebra (A : Type*) extends CStarAlgebra A where
-  mul_comm : ∀ (a b : A), a * b = b * a
+class CommCStarAlgebra (A : Type*) extends NormedCommRing A, CStarAlgebra A
 
 instance (priority := 100) CStarAlgebra.toNonUnitalCStarAlgebra (A : Type*) [CStarAlgebra A] :
     NonUnitalCStarAlgebra A where
 
-instance (priority := 100) CommCStarAlgebra.toNonUnitalCommCStarAlgebra
-    (A : Type*) [CommCStarAlgebra A] : NonUnitalCommCStarAlgebra A where
-  mul_comm := mul_comm
-
-instance (priority := 100) CommCStarAlgebra.toNormedCommRing
-    (A : Type*) [CommCStarAlgebra A] : NormedCommRing A where
-  mul_comm := mul_comm
-
-instance (priority := 100) NonUnitalCommCStarAlgebra.toNonUnitalNormedCommRing
-    (A : Type*) [NonUnitalCommCStarAlgebra A] : NonUnitalNormedCommRing A where
-  mul_comm := mul_comm
+instance (priority := 100) CommCStarAlgebra.toNonUnitalCommCStarAlgebra (A : Type*)
+    [CommCStarAlgebra A] : NonUnitalCommCStarAlgebra A where
 
 noncomputable instance StarSubalgebra.cstarAlgebra {S A : Type*} [CStarAlgebra A]
     [SetLike S A] [SubringClass S A] [SMulMemClass S ℂ A] [StarMemClass S A]
