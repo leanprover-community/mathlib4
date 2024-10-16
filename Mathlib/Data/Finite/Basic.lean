@@ -39,6 +39,18 @@ finiteness, finite types
 open Mathlib
 
 variable {α β : Type*}
+namespace Finite
+
+-- see Note [lower instance priority]
+instance (priority := 100) of_subsingleton {α : Sort*} [Subsingleton α] : Finite α :=
+  of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
+
+-- Higher priority for `Prop`s
+-- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
+instance prop (p : Prop) : Finite p :=
+  Finite.of_subsingleton
+
+end Finite
 
 instance Quot.finite {α : Sort*} [Finite α] (r : α → α → Prop) : Finite (Quot r) :=
   Finite.of_surjective _ (surjective_quot_mk r)

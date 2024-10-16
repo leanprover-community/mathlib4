@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Data.Finite.Basic
+import Mathlib.Data.Finite.Sigma
 
 /-!
 # (Co)limits in the category of finite types

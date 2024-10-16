@@ -16,10 +16,6 @@ variable {α β : Type*}
 
 namespace Finite
 
--- see Note [lower instance priority]
-instance (priority := 100) of_subsingleton {α : Sort*} [Subsingleton α] : Finite α :=
-  of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
-
 instance [Finite α] [Finite β] : Finite (α × β) := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
