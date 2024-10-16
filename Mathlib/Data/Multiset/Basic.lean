@@ -1780,7 +1780,7 @@ theorem filter_cons {a : α} (s : Multiset α) :
 
 theorem filter_singleton {a : α} (p : α → Prop) [DecidablePred p] :
     filter p {a} = if p a then {a} else ∅ := by
-  simp only [singleton, filter_cons, filter_zero, add_zero, empty_eq_zero]
+  simp only [Singleton.singleton, filter_cons, filter_zero, add_zero, empty_eq_zero]
 
 theorem filter_nsmul (s : Multiset α) (n : ℕ) : filter p (n • s) = n • filter p s := by
   refine s.induction_on ?_ ?_
