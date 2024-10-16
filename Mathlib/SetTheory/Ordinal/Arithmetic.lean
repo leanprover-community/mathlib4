@@ -263,6 +263,15 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
     if h : ∃ a, o = succ a then Or.inr (Or.inl h)
     else Or.inr <| Or.inr ⟨o0, fun _a => (succ_lt_of_not_succ h).2⟩
 
+theorem IsLimit.sSup_Iio {o : Ordinal} (h : IsLimit o) : sSup (Iio o) = o := by
+  apply (csSup_le' (fun a ha ↦ le_of_lt ha)).antisymm
+  apply le_of_forall_lt
+  intro a ha
+  exact (lt_succ a).trans_le (le_csSup bddAbove_Iio (h.succ_lt ha))
+
+theorem IsLimit.iSup_Iio {o : Ordinal} (h : IsLimit o) : ⨆ a : Iio o, a.1 = o := by
+  rw [← sSup_eq_iSup', h.sSup_Iio]
+
 /-- Main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
 @[elab_as_elim]
@@ -865,6 +874,12 @@ theorem zero_div (a : Ordinal) : 0 / a = 0 :=
 theorem mul_div_le (a b : Ordinal) : b * (a / b) ≤ a :=
   if b0 : b = 0 then by simp only [b0, zero_mul, Ordinal.zero_le] else (le_div b0).1 le_rfl
 
+theorem div_le_left {a b : Ordinal} (h : a ≤ b) (c : Ordinal) : a / c ≤ b / c := by
+  obtain rfl | hc := eq_or_ne c 0
+  · rw [div_zero, div_zero]
+  · rw [le_div hc]
+    exact (mul_div_le a c).trans h
+
 theorem mul_add_div (a) {b : Ordinal} (b0 : b ≠ 0) (c) : (b * a + c) / b = a + c / b := by
   apply le_antisymm
   · apply (div_le b0).2
@@ -1382,6 +1397,11 @@ theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal
     (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
   H.map_iSup g
 
+theorem IsNormal.apply_of_isLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {o : Ordinal}
+    (ho : IsLimit o) : f o = ⨆ a : Iio o, f a := by
+  have : Nonempty (Iio o) := ⟨0, ho.pos⟩
+  rw [← H.map_iSup, ho.iSup_Iio]
+
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]
 theorem sup_eq_sSup {s : Set Ordinal.{u}} (hs : Small.{u} s) :
@@ -1420,6 +1440,40 @@ theorem sInf_compl_lt_lift_ord_succ {ι : Type u} (f : ι → Ordinal.{max u v})
 theorem sInf_compl_lt_ord_succ {ι : Type u} (f : ι → Ordinal.{u}) :
     sInf (range f)ᶜ < (succ #ι).ord :=
   lift_id (succ #ι).ord ▸ sInf_compl_lt_lift_ord_succ f
+
+theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :
+    (⨆ i, f i).card ≤ Cardinal.sum (fun i ↦ (f i).card) := by
+  have : Cardinal.sum (fun i ↦ (f i).card) = Cardinal.sum (fun i ↦ #(f i).toType) := by simp
+  rw [this, ← mk_toType, ← mk_sigma]
+  let g : (⨆ i, f i).toType → Σ i, (f i).toType := fun x ↦
+    let a := (enumIsoToType _).symm x
+    have H := (Ordinal.lt_iSup (f := f) (a := a.1)).1 a.2
+    let b := Classical.choose H
+    ⟨b, enumIsoToType (f b) ⟨a.1, Classical.choose_spec H⟩⟩
+  apply mk_le_of_injective (f := g)
+  intro a b h
+  simp_rw [g, Sigma.mk.inj_iff] at h
+  obtain ⟨h₁, h₂⟩ := h
+  suffices ∀ {x y z a b hx hy}, x = y → HEq (enumIsoToType x ⟨↑((enumIsoToType z).symm a), hx⟩)
+    (enumIsoToType y ⟨↑((enumIsoToType z).symm b), hy⟩) → a = b from this (congr_arg f h₁) h₂
+  intro _ _ _ _ _ _ _ h
+  subst h
+  simp [← Subtype.eq_iff]
+
+theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Ordinal.{u} → Ordinal.{max u v}) :
+    (⨆ a : Iio o, f a).card ≤
+    Cardinal.sum (fun i : o.toType ↦ (f ((enumIsoToType _).symm i)).card) := by
+  apply le_of_eq_of_le _ (card_iSup_le_sum_card _)
+  have := (enumIsoToType o).symm.iSup_comp (g := fun x ↦ f x.1)
+  rw [RelIso.coe_fn_toEquiv] at this
+  rw [this]
+
+theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Ordinal.{u} → Ordinal.{max u v}) :
+    (⨆ a : Iio o, f a).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
+  apply (card_iSup_Iio_le_sum_card f).trans
+  convert ← sum_le_iSup_lift _
+  · exact mk_toType o
+  · exact (enumIsoToType o).symm.iSup_comp (g := fun x ↦ (f x.1).card)
 
 -- TODO: remove `bsup` in favor of `iSup` in a future refactor.
 
@@ -2238,14 +2292,6 @@ namespace Cardinal
 open Ordinal
 
 @[simp]
-theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
-  le_antisymm (ord_le.2 <| le_rfl) <|
-    le_of_forall_lt fun o h => by
-      rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
-      rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
-      exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
-
-@[simp]
 theorem add_one_of_aleph0_le {c} (h : ℵ₀ ≤ c) : c + 1 = c := by
   rw [add_comm, ← card_ord c, ← card_one, ← card_add, one_add_of_omega0_le]
   rwa [← ord_aleph0, ord_le_ord]
@@ -2270,6 +2316,11 @@ theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
 
 @[deprecated (since := "2024-09-30")]
 alias nat_lt_omega := nat_lt_omega0
+
+theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
+  obtain ho | ho := lt_or_le o ω
+  · exact Or.inl <| lt_omega0.1 ho
+  · exact Or.inr ho
 
 theorem omega0_pos : 0 < ω :=
   nat_lt_omega0 0
@@ -2486,4 +2537,4 @@ theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
 
 end WellFounded
 
-set_option linter.style.longFile 2700
+set_option linter.style.longFile 2600

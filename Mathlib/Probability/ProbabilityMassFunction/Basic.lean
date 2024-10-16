@@ -32,7 +32,7 @@ probability mass function, discrete probability measure
 
 noncomputable section
 
-variable {α β γ : Type*}
+variable {α : Type*}
 
 open scoped Classical
 open NNReal ENNReal MeasureTheory
@@ -132,7 +132,7 @@ open MeasureTheory MeasureTheory.OuterMeasure
 def toOuterMeasure (p : PMF α) : OuterMeasure α :=
   OuterMeasure.sum fun x : α => p x • dirac x
 
-variable (p : PMF α) (s t : Set α)
+variable (p : PMF α) (s : Set α)
 
 theorem toOuterMeasure_apply : p.toOuterMeasure s = ∑' x, s.indicator p x :=
   tsum_congr fun x => smul_dirac_apply (p x) x s
@@ -210,7 +210,7 @@ open MeasureTheory
 def toMeasure [MeasurableSpace α] (p : PMF α) : Measure α :=
   p.toOuterMeasure.toMeasure ((toOuterMeasure_caratheodory p).symm ▸ le_top)
 
-variable [MeasurableSpace α] (p : PMF α) (s t : Set α)
+variable [MeasurableSpace α] (p : PMF α) (s : Set α)
 
 theorem toOuterMeasure_apply_le_toMeasure_apply : p.toOuterMeasure s ≤ p.toMeasure s :=
   le_toMeasure_apply p.toOuterMeasure _ s
@@ -333,8 +333,7 @@ instance toMeasure.isProbabilityMeasure [MeasurableSpace α] (p : PMF α) :
     simpa only [MeasurableSet.univ, toMeasure_apply_eq_toOuterMeasure_apply, Set.indicator_univ,
       toOuterMeasure_apply, ENNReal.coe_eq_one] using tsum_coe p⟩
 
-variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : PMF α) (μ : Measure α)
-  [IsProbabilityMeasure μ]
+variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : PMF α)
 
 @[simp]
 theorem toMeasure_toPMF : p.toMeasure.toPMF = p :=

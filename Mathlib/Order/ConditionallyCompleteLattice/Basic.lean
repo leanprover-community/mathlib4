@@ -1106,6 +1106,18 @@ theorem cbiInf_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
     ⨅ (i) (h : p i), f ⟨i, h⟩ = iInf f ⊓ sInf ∅ :=
   cbiSup_eq_of_not_forall (α := αᵒᵈ) hp
 
+theorem csInf_eq_bot_of_bot_mem [OrderBot α] {s : Set α} (hs : ⊥ ∈ s) : sInf s = ⊥ :=
+  eq_bot_iff.2 <| csInf_le (OrderBot.bddBelow s) hs
+
+theorem ciInf_eq_bot_of_bot_mem [OrderBot α] {f : ι → α} (hs : ⊥ ∈ range f) : iInf f = ⊥ :=
+  csInf_eq_bot_of_bot_mem hs
+
+theorem csSup_eq_top_of_top_mem [OrderTop α] {s : Set α} (hs : ⊤ ∈ s) : sSup s = ⊤ :=
+  csInf_eq_bot_of_bot_mem (α := αᵒᵈ) hs
+
+theorem ciInf_eq_top_of_top_mem [OrderTop α] {f : ι → α} (hs : ⊤ ∈ range f) : iSup f = ⊤ :=
+  csSup_eq_top_of_top_mem hs
+
 open Function
 
 variable [WellFoundedLT α]

@@ -449,7 +449,7 @@ the elements of `α`. -/
 -- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply_coe]
 def enum (r : α → α → Prop) [IsWellOrder α r] :
-    @RelIso (Subtype fun o => o < type r) α (Subrel (· < · ) _) r :=
+    @RelIso { o // o < type r } α (Subrel (· < ·) { o | o < type r }) r :=
   (typein.principalSeg r).subrelIso
 
 @[simp]
@@ -1215,6 +1215,14 @@ theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord (no_index (OfNat.ofNat n)) = Of
   ord_nat n
 
 @[simp]
+theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
+  le_antisymm (ord_le.2 le_rfl) <|
+    le_of_forall_lt fun o h => by
+      rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
+      rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
+      exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
+
+@[simp]
 theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
   refine le_antisymm (le_of_forall_lt fun a ha => ?_) ?_
   · rcases Ordinal.lt_lift_iff.1 ha with ⟨a, rfl, _⟩
@@ -1396,6 +1404,10 @@ theorem card_le_one {o} : card o ≤ 1 ↔ o ≤ 1 := by
 theorem card_le_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
     card o ≤ (no_index (OfNat.ofNat n)) ↔ o ≤ OfNat.ofNat n :=
   card_le_nat
+
+@[simp]
+theorem aleph0_le_card (o : Ordinal) : ℵ₀ ≤ o.card ↔ ω ≤ o := by
+  rw [← ord_le, ord_aleph0]
 
 @[simp]
 theorem card_eq_nat {o} {n : ℕ} : card o = n ↔ o = n := by

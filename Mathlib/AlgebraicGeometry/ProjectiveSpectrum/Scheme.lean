@@ -635,7 +635,7 @@ def toSpec (f) : (Proj| pbo f) ⟶ Spec (A⁰_ f) :=
 open HomogeneousLocalization LocalRing
 
 lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
-    (toSpec 𝒜 f).1.base x = PrimeSpectrum.comap (mapId 𝒜 (Submonoid.powers_le.mpr x.2))
+    (toSpec 𝒜 f).base x = PrimeSpectrum.comap (mapId 𝒜 (Submonoid.powers_le.mpr x.2))
       (closedPoint (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)) := by
   show PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x)
         (LocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
@@ -645,7 +645,7 @@ lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
     ((Proj| pbo f).presheaf.stalk x) _ _ _ (isLocalRingHom_of_isIso _)))
 
 lemma toSpec_base_apply_eq {f} (x : Proj| pbo f) :
-    (toSpec 𝒜 f).1.base x = ProjIsoSpecTopComponent.toSpec 𝒜 f x :=
+    (toSpec 𝒜 f).base x = ProjIsoSpecTopComponent.toSpec 𝒜 f x :=
   toSpec_base_apply_eq_comap 𝒜 x |>.trans <| PrimeSpectrum.ext <| Ideal.ext fun z =>
   show ¬ IsUnit _ ↔ z ∈ ProjIsoSpecTopComponent.ToSpec.carrier _ by
   obtain ⟨z, rfl⟩ := z.mk_surjective
@@ -656,19 +656,19 @@ lemma toSpec_base_apply_eq {f} (x : Proj| pbo f) :
   exact not_not
 
 lemma toSpec_base_isIso {f} {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
-    IsIso (toSpec 𝒜 f).1.base := by
+    IsIso (toSpec 𝒜 f).base := by
   convert (projIsoSpecTopComponent f_deg hm).isIso_hom
   exact DFunLike.ext _ _ <| toSpec_base_apply_eq 𝒜
 
 lemma mk_mem_toSpec_base_apply {f} (x : Proj| pbo f)
     (z : NumDenSameDeg 𝒜 (.powers f)) :
-    HomogeneousLocalization.mk z ∈ ((toSpec 𝒜 f).1.base x).asIdeal ↔
+    HomogeneousLocalization.mk z ∈ ((toSpec 𝒜 f).base x).asIdeal ↔
       z.num.1 ∈ x.1.asHomogeneousIdeal :=
   (toSpec_base_apply_eq 𝒜 x).symm ▸ ProjIsoSpecTopComponent.ToSpec.mk_mem_carrier _ _
 
 lemma toSpec_preimage_basicOpen {f}
     (t : NumDenSameDeg 𝒜 (.powers f)) :
-    (Opens.map (toSpec 𝒜 f).1.base).obj (sbo (.mk t)) =
+    (Opens.map (toSpec 𝒜 f).base).obj (sbo (.mk t)) =
       Opens.comap ⟨_, continuous_subtype_val⟩ (pbo t.num.1) :=
   Opens.ext <| Opens.map_coe _ _ ▸ by
   convert (ProjIsoSpecTopComponent.ToSpec.preimage_basicOpen f t)
@@ -676,7 +676,7 @@ lemma toSpec_preimage_basicOpen {f}
 
 @[reassoc]
 lemma toOpen_toSpec_val_c_app (f) (U) :
-    StructureSheaf.toOpen (A⁰_ f) U.unop ≫ (toSpec 𝒜 f).val.c.app U =
+    StructureSheaf.toOpen (A⁰_ f) U.unop ≫ (toSpec 𝒜 f).c.app U =
       awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.map (homOfLE le_top).op :=
   Eq.trans (by congr) <| ΓSpec.toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app _ U
 
@@ -697,7 +697,7 @@ of `A⁰_f` at `φ(x)` where `φ : Proj|D(f) ⟶ Spec A⁰_f` is the morphism of
 constructed as above.
 -/
 lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
-    @IsLocalization (Away 𝒜 f) _ ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl
+    @IsLocalization (Away 𝒜 f) _ ((toSpec 𝒜 f).base x).asIdeal.primeCompl
       (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _
       (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra := by
   letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
@@ -755,46 +755,46 @@ stalk of `Spec A⁰_ f` at `y` is isomorphic to `A⁰ₓ` where `y` is the point
 to `x`.
 -/
 def specStalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
-    (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x) ≅
+    (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).base x) ≅
       CommRingCat.of (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
   letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
     (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
   haveI := isLocalization_atPrime 𝒜 f x f_deg hm
   (IsLocalization.algEquiv
     (R := A⁰_ f)
-    (M := ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl)
-    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x))
+    (M := ((toSpec 𝒜 f).base x).asIdeal.primeCompl)
+    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).base x))
     (Q := AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)).toRingEquiv.toCommRingCatIso
 
 lemma toStalk_specStalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
-    StructureSheaf.toStalk (A⁰_ f) ((toSpec 𝒜 f).1.base x) ≫ (specStalkEquiv 𝒜 f x f_deg hm).hom =
+    StructureSheaf.toStalk (A⁰_ f) ((toSpec 𝒜 f).base x) ≫ (specStalkEquiv 𝒜 f x f_deg hm).hom =
       (mapId _ <| Submonoid.powers_le.mpr x.2 : (A⁰_ f) →+* AtPrime 𝒜 x.1.1.toIdeal) :=
   letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
     (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
   letI := isLocalization_atPrime 𝒜 f x f_deg hm
   (IsLocalization.algEquiv
     (R := A⁰_ f)
-    (M := ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl)
-    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x))
+    (M := ((toSpec 𝒜 f).base x).asIdeal.primeCompl)
+    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).base x))
     (Q := AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)).toAlgHom.comp_algebraMap
 
 lemma stalkMap_toSpec (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (toSpec 𝒜 f).stalkMap x =
       (specStalkEquiv 𝒜 f x f_deg hm).hom ≫ (Proj.stalkIso' 𝒜 x.1).toCommRingCatIso.inv ≫
       ((Proj.toLocallyRingedSpace 𝒜).restrictStalkIso (Opens.openEmbedding _) x).inv :=
-  IsLocalization.ringHom_ext (R := A⁰_ f) ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl
-    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x)) <|
+  IsLocalization.ringHom_ext (R := A⁰_ f) ((toSpec 𝒜 f).base x).asIdeal.primeCompl
+    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).base x)) <|
     (toStalk_stalkMap_toSpec _ _ _).trans <| by
     rw [awayToΓ_ΓToStalk, ← toStalk_specStalkEquiv, Category.assoc]; rfl
 
 lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     IsIso (toSpec 𝒜 f) := by
-  haveI : IsIso (toSpec 𝒜 f).1.base := toSpec_base_isIso 𝒜 f_deg hm
+  haveI : IsIso (toSpec 𝒜 f).base := toSpec_base_isIso 𝒜 f_deg hm
   haveI (x) : IsIso ((toSpec 𝒜 f).stalkMap x) := by
     rw [stalkMap_toSpec 𝒜 f x f_deg hm]; infer_instance
   haveI : LocallyRingedSpace.IsOpenImmersion (toSpec 𝒜 f) :=
     LocallyRingedSpace.IsOpenImmersion.of_stalk_iso (toSpec 𝒜 f)
-      (TopCat.homeoOfIso (asIso <| (toSpec 𝒜 f).1.base)).openEmbedding
+      (TopCat.homeoOfIso (asIso <| (toSpec 𝒜 f).base)).openEmbedding
   exact LocallyRingedSpace.IsOpenImmersion.to_iso _
 
 end ProjectiveSpectrum.Proj

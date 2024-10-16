@@ -175,7 +175,7 @@ theorem left_lt_opow {a b : Ordinal} (ha : 1 < a) (hb : 1 < b) : a < a ^ b := by
   rwa [opow_lt_opow_iff_right ha]
 
 theorem right_le_opow {a : Ordinal} (b : Ordinal) (a1 : 1 < a) : b ≤ a ^ b :=
-  (isNormal_opow a1).id_le _
+  (isNormal_opow a1).le_apply
 
 theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : a ^ succ c < b ^ succ c := by
   rw [opow_succ, opow_succ]
@@ -485,6 +485,26 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
   · rw [← opow_le_iff_le_log hb (mul_ne_zero hx hy), opow_add]
     exact mul_le_mul' (opow_log_le_self b hx) (opow_log_le_self b hy)
   · simpa only [log_of_left_le_one hb, zero_add] using le_rfl
+
+theorem omega0_opow_mul_nat_lt {a b : Ordinal} (h : a < b) (n : ℕ) : ω ^ a * n < ω ^ b := by
+  apply lt_of_lt_of_le _ (opow_le_opow_right omega0_pos (succ_le_of_lt h))
+  rw [opow_succ]
+  exact mul_lt_mul_of_pos_left (nat_lt_omega0 n) (opow_pos a omega0_pos)
+
+theorem lt_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
+    a < ω ^ b ↔ ∃ c < b, ∃ n : ℕ, a < ω ^ c * n := by
+  refine ⟨fun ha ↦ ⟨_, lt_log_of_lt_opow hb ha, ?_⟩,
+    fun ⟨c, hc, n, hn⟩ ↦ hn.trans (omega0_opow_mul_nat_lt hc n)⟩
+  obtain ⟨n, hn⟩ := lt_omega0.1 (div_opow_log_lt a one_lt_omega0)
+  use n.succ
+  rw [natCast_succ, ← hn]
+  exact lt_mul_succ_div a (opow_ne_zero _ omega0_ne_zero)
+
+theorem lt_omega0_opow_succ {a b : Ordinal} : a < ω ^ succ b ↔ ∃ n : ℕ, a < ω ^ b * n := by
+  refine ⟨fun ha ↦ ?_, fun ⟨n, hn⟩ ↦ hn.trans (omega0_opow_mul_nat_lt (lt_succ b) n)⟩
+  obtain ⟨c, hc, n, hn⟩ := (lt_omega0_opow (succ_ne_zero b)).1 ha
+  refine ⟨n, hn.trans_le (mul_le_mul_right' ?_ _)⟩
+  rwa [opow_le_opow_iff_right one_lt_omega0, ← lt_succ_iff]
 
 /-! ### Interaction with `Nat.cast` -/
 
