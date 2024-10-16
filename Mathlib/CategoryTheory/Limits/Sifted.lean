@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Final
 # Sifted categories
 
 A category `C` is sifted if `C` is nonempty and the diagonal functor `C ⥤ C × C` is final.
-Sifted categories can be caracterized as those such that the colimit functor `(C ⥤ Type) ⥤ Type `
+Sifted categories can be characterized as those such that the colimit functor `(C ⥤ Type) ⥤ Type `
 preserves finite products.
 
 ## Main results
@@ -37,7 +37,7 @@ abbrev IsSiftedOrEmpty : Prop := Final (diag C)
 1. the diagonal functor `C ⥤ C × C` is final.
 2. there exists some object. -/
 class IsSifted extends IsSiftedOrEmpty C : Prop where
-  [Nonempty : Nonempty C]
+  [nonempty : Nonempty C]
 
 attribute [instance] IsSifted.Nonempty
 
@@ -63,7 +63,7 @@ lemma isSifted_iff_asSmallIsSifted : IsSifted C ↔ IsSifted (AsSmall.{w} C) whe
   mpr _ := isSifted_of_equiv AsSmall.equiv
 
 /-- A sifted category is connected. -/
-instance [IsSifted C]: IsConnected C :=
+instance [IsSifted C] : IsConnected C :=
   isConnected_of_zigzag
     (by intro c₁ c₂
         have X : StructuredArrow (c₁, c₂) (diag C) :=
