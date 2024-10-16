@@ -86,10 +86,10 @@ then the eigenspaces of the restriction of B to any eigenspace of A exhaust that
 theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric) (hAB : Commute A B) :
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
   conv_rhs => rw [← (eigenspace A α).map_subtype_top]
-  simp only [← eigenspace_eq_genEigenspace_one (f := B), ← Submodule.map_iSup,
+  simp only [← genEigenspace_one_eq_eigenspace (f := B), ← Submodule.map_iSup,
     (eigenspace A α).inf_genEigenspace _ (mapsTo_genEigenspace_of_comm hAB α 1)]
   congr 1
-  simpa only [eigenspace_eq_genEigenspace_one, Submodule.orthogonal_eq_bot_iff]
+  simpa only [genEigenspace_one_eq_eigenspace, Submodule.orthogonal_eq_bot_iff]
     using orthogonalComplement_iSup_eigenspaces_eq_bot <|
       hB.restrict_invariant <| mapsTo_genEigenspace_of_comm hAB α 1
 
