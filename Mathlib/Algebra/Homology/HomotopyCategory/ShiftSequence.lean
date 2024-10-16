@@ -29,7 +29,7 @@ open HomologicalComplex
 
 attribute [local simp] XIsoOfEq_hom_naturality smul_smul
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
+--set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- The natural isomorphism `(K⟦n⟧).sc' i j k ≅ K.sc' i' j' k'` when `n + i = i'`,
 `n + j = j'` and `n + k = k'`. -/
 @[simps!]
@@ -42,6 +42,7 @@ def shiftShortComplexFunctor' (n i j k i' j' k' : ℤ)
     exact ShortComplex.isoMk
       (n.negOnePow • ((shiftEval C n i i' hi).app K))
       ((shiftEval C n j j' hj).app K) (n.negOnePow • ((shiftEval C n k k' hk).app K)))
+    (fun f ↦ by ext <;> dsimp <;> simp)
 
 /-- The natural isomorphism `(K⟦n⟧).sc i ≅ K.sc i'` when `n + i = i'`. -/
 @[simps!]

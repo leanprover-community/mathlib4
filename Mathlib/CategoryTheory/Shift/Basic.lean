@@ -346,9 +346,9 @@ section AddMonoid
 
 variable [AddMonoid A] [HasShift C A] (X Y : C) (f : X ⟶ Y)
 
-@[simp]
-theorem HasShift.shift_obj_obj (n : A) (X : C) : (HasShift.shift.obj ⟨n⟩).obj X = X⟦n⟧ :=
-  rfl
+--@[simp]
+--theorem HasShift.shift_obj_obj (n : A) (X : C) : (HasShift.shift.obj ⟨n⟩).obj X = X⟦n⟧ :=
+--  rfl
 
 /-- Shifting by `i + j` is the same as shifting by `i` and then shifting by `j`. -/
 abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
