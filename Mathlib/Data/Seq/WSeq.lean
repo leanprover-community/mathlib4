@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Logic.Relation
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Seq.Seq
-import Batteries.Data.DList
+import Batteries.Data.DList.Basic
 
 /-!
 # Partially defined possibly infinite lists
