@@ -225,11 +225,11 @@ def preservesTerminalIso [h : PreservesLimit (Functor.empty.{0} C) F] : F.obj (�
 
 @[simp]
 lemma preservesTerminalIso_hom [PreservesLimit (Functor.empty.{0} C) F] :
-    (PreservesTerminalIso F).hom = terminalComparison F := toUnit_unique _ _
+    (preservesTerminalIso F).hom = terminalComparison F := toUnit_unique _ _
 
 instance terminalComparison_isIso_of_preservesLimits [PreservesLimit (Functor.empty.{0} C) F] :
     IsIso (terminalComparison F) := by
-  rw [← PreservesTerminalIso_hom]
+  rw [← preservesTerminalIso_hom]
   infer_instance
 
 end terminalComparison
@@ -251,11 +251,11 @@ theorem prodComparison_fst : prodComparison F A B ≫ fst _ _ = F.map (fst A B) 
 theorem prodComparison_snd : prodComparison F A B ≫ snd _ _ = F.map (snd A B) :=
   lift_snd _ _
 
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem inv_prodComparison_map_fst [IsIso (prodComparison F A B)] :
     inv (prodComparison F A B) ≫ F.map (fst _ _) = fst _ _ := by simp [IsIso.inv_comp_eq]
 
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem inv_prodComparison_map_snd [IsIso (prodComparison F A B)] :
     inv (prodComparison F A B) ≫ F.map (snd _ _) = snd _ _ := by simp [IsIso.inv_comp_eq]
 
@@ -340,24 +340,40 @@ def prodComparisonBifunctorNatTrans :
       prodComparison_fst, whiskeringLeft_obj_map, whiskerLeft_app, whiskerRight_fst,
       prodComparison_fst_assoc, prodComparison_snd, whiskerRight_snd, ← F.map_comp]
 
+
+instance (A : C) [∀ B, IsIso (prodComparison F A B)] : IsIso (prodComparisonNatTrans F A) := by
+  letI : ∀ X, IsIso ((prodComparisonNatTrans F A).app X) := by assumption
+  apply NatIso.isIso_of_isIso_app
+
+instance [h : ∀ A B, IsIso (prodComparison F A B)] : IsIso (prodComparisonBifunctorNatTrans F) := by
+  letI : ∀ X, IsIso ((prodComparisonBifunctorNatTrans F).app X) :=
+    fun _ ↦ (by dsimp; apply NatIso.isIso_of_isIso_app)
+  apply NatIso.isIso_of_isIso_app
+
 /-- The natural isomorphism `F(A ⊗ -) ≅ FA ⊗ F-`, provided each `prodComparison F A B` is an
 isomorphism (as `B` changes). -/
-@[simps]
+@[simps!]
 noncomputable def prodComparisonNatIso (A : C)
     [∀ B, IsIso (prodComparison F A B)] :
-    (curriedTensor C).obj A ⋙ F ≅ F ⋙ (curriedTensor D).obj (F.obj A) := by
-  refine { @asIso _ _ _ _ _ (?_) with hom := prodComparisonNatTrans F A }
-  apply NatIso.isIso_of_isIso_app
+    (curriedTensor C).obj A ⋙ F ≅ F ⋙ (curriedTensor D).obj (F.obj A) :=
+  asIso (prodComparisonNatTrans F A)
+
+@[simp]
+lemma prodComparisonNatIso_hom (A : C) [∀ B, IsIso (prodComparison F A B)] :
+    (prodComparisonNatIso F A).hom = prodComparisonNatTrans F A := rfl
 
 /-- The natural isomorphism of bifunctors `F(- ⊗ -) ≅ F- ⊗ F-`, provided each
 `prodComparison F A B` is an isomorphism. -/
-@[simps]
+@[simps!]
 noncomputable def prodComparisonBifunctorsNatIso
     [∀ A B, IsIso (prodComparison F A B)] :
     curriedTensor C ⋙ (whiskeringRight _ _ _).obj F ≅
-      F ⋙ curriedTensor D ⋙ (whiskeringLeft _ _ _).obj F := by
-  refine { @asIso _ _ _ _ _ ?_ with hom := prodComparisonBifunctorNatTrans F }
-  exact @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ (fun A ↦ Iso.isIso_hom (prodComparisonNatIso F A))
+      F ⋙ curriedTensor D ⋙ (whiskeringLeft _ _ _).obj F :=
+  asIso (prodComparisonBifunctorNatTrans F)
+
+@[simp]
+lemma prodComparisonBifunctorsNatIso_hom [∀ A B, IsIso (prodComparison F A B)] :
+    (prodComparisonBifunctorsNatIso F).hom = prodComparisonBifunctorNatTrans F := rfl
 
 theorem prodComparison_comp {E : Type u₂} [Category.{v₂} E] [ChosenFiniteProducts E] (G : D ⥤ E) :
     prodComparison (F ⋙ G) A B =
