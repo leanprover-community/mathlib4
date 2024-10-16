@@ -837,39 +837,13 @@ end Prod'
 
 end Functor
 
-section
-
--- to be moved
-
-variable {J : Type*} [Category J]
-  {F G F' G' : J ⥤ D} (α : F ⟶ F') (β : G ⟶ G')
-
-@[reassoc]
-lemma NatTrans.tensor_naturality {X Y X' Y' : J} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    (F.map f ⊗ G.map g) ≫ (α.app Y ⊗ β.app Y') =
-      (α.app X ⊗ β.app X') ≫ (F'.map f ⊗ G'.map g) := by
-  simp only [← tensor_comp, naturality]
-
-@[reassoc]
-lemma NatTrans.whiskerRight_app_tensor_app {X Y : J} (f : X ⟶ Y) (X' : J) :
-    F.map f ▷ G.obj X' ≫ (α.app Y ⊗ β.app X') =
-      (α.app X ⊗ β.app X') ≫ F'.map f ▷ (G'.obj X') := by
-  simpa using tensor_naturality α β f (𝟙 X')
-
-@[reassoc]
-lemma NatTrans.whiskerLeft_app_tensor_app {X' Y' : J} (f : X' ⟶ Y') (X : J) :
-    F.obj X ◁ G.map f ≫ (α.app X ⊗ β.app Y') =
-      (α.app X ⊗ β.app X') ≫ F'.obj X ◁ G'.map f := by
-  simpa using tensor_naturality α β (𝟙 X) f
-
-end
-
 namespace Adjunction
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.OplaxMonoidal]
 
 open Functor.OplaxMonoidal Functor.LaxMonoidal
 
+/-- The right adjoint of an oplax monoidal functor is lax monoidal. -/
 def rightAdjointLaxMonoidal : G.LaxMonoidal where
   ε' := adj.homEquiv _ _ (η F)
   μ' X Y := adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ adj.counit.app Y))
@@ -937,6 +911,9 @@ lemma rightAdjointLaxMonoidal_μ (X Y : D) :
     letI := adj.rightAdjointLaxMonoidal
     μ G X Y = adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ adj.counit.app Y)) := rfl
 
+/-- When `adj : F ⊣ G` is an adjunction, with `F` oplax monoidal and `G` monoidal,
+this typeclass expresses compatibilities between the adjunction and the (op)lax
+monoidal structures. -/
 class IsMonoidal [G.LaxMonoidal] : Prop where
   leftAdjoint_ε : ε G = adj.homEquiv _ _ (η F) := by aesop_cat
   leftAdjoint_μ (X Y : D) :
@@ -951,6 +928,32 @@ instance :
   · intro _ _
     rfl
 
+variable [G.LaxMonoidal] [adj.IsMonoidal]
+
+@[reassoc]
+lemma unit_app_unit_comp_map_η : adj.unit.app (𝟙_ C) ≫ G.map (η F) = ε G :=
+  Adjunction.IsMonoidal.leftAdjoint_ε.symm
+
+@[reassoc]
+lemma unit_app_tensor_comp_map_δ (X Y : C) :
+    adj.unit.app (X ⊗ Y) ≫ G.map (δ F X Y) = (adj.unit.app X ⊗ adj.unit.app Y) ≫ μ G _ _ := by
+  rw [IsMonoidal.leftAdjoint_μ (adj := adj), homEquiv_unit]
+  dsimp
+  simp only [← adj.unit_naturality_assoc, ← Functor.map_comp, ← δ_natural_assoc,
+    ← tensor_comp, left_triangle_components, tensorHom_id, id_whiskerRight, comp_id]
+
+@[reassoc]
+lemma map_ε_comp_counit_app_unit : F.map (ε G) ≫ adj.counit.app (𝟙_ D) = η F := by
+  rw [IsMonoidal.leftAdjoint_ε (adj := adj), homEquiv_unit, map_comp,
+    assoc, counit_naturality, left_triangle_components_assoc]
+
+@[reassoc]
+lemma map_μ_comp_counit_app_tensor (X Y : D) :
+    F.map (μ G X Y) ≫ adj.counit.app (X ⊗ Y) =
+      δ F _ _ ≫ (adj.counit.app X ⊗ adj.counit.app Y) := by
+  rw [IsMonoidal.leftAdjoint_μ (adj := adj), homEquiv_unit]
+  simp
+
 end Adjunction
 
 namespace Equivalence
@@ -961,10 +964,10 @@ variable (e : C ≌ D) [e.functor.Monoidal]
 noncomputable def inverseMonoidal : e.inverse.Monoidal := by
   letI := e.toAdjunction.rightAdjointLaxMonoidal
   have : IsIso (LaxMonoidal.ε e.inverse) := by
-    dsimp [Adjunction.rightAdjointLaxMonoidal_ε, Adjunction.homEquiv_apply]
+    simp only [Adjunction.rightAdjointLaxMonoidal_ε, Adjunction.homEquiv_unit]
     infer_instance
   have : ∀ (X Y : D), IsIso (LaxMonoidal.μ e.inverse X Y) := fun X Y ↦ by
-    dsimp [Adjunction.rightAdjointLaxMonoidal_μ, Adjunction.homEquiv_apply]
+    simp only [Adjunction.rightAdjointLaxMonoidal_μ, Adjunction.homEquiv_unit]
     infer_instance
   apply Monoidal.ofLaxMonoidal
 
