@@ -61,39 +61,6 @@ theorem isOpen_dayKelly_setOf_isCompact_subset {K : Set X} (hK : IsCompact K) :
 
 end TopologicalSpace
 
-structure IsOpenQuotientMap (f : X → Y) : Prop where
-  surjective : Surjective f
-  continuous : Continuous f
-  isOpenMap : IsOpenMap f
-
-namespace IsOpenQuotientMap
-
-theorem prodMap {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
-    {f : X → Y} {g : X' → Y'} (hf : IsOpenQuotientMap f) (hg : IsOpenQuotientMap g) :
-    IsOpenQuotientMap (Prod.map f g) where
-  surjective := hf.surjective.prodMap hg.surjective
-  continuous := hf.continuous.prod_map hg.continuous
-  isOpenMap := hf.isOpenMap.prod hg.isOpenMap
-
-theorem piMap {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
-    [∀ i, TopologicalSpace (Y i)] {f : ∀ i, X i → Y i} (hf : ∀ i, IsOpenQuotientMap (f i)) :
-    IsOpenQuotientMap (fun (x : ∀ i, X i) (i : ι) ↦ f i (x i)) where
-  surjective := surjective_pi_map fun i ↦ (hf i).surjective
-  continuous := continuous_dcomp fun i ↦ (hf i).continuous
-  isOpenMap := IsOpenMap.dcomp (fun i ↦ (hf i).isOpenMap)
-    (eventually_of_forall fun i ↦ (hf i).surjective)
-
-protected theorem comp {Z : Type*} [TopologicalSpace Z] {f : Y → Z} {g : X → Y}
-    (hf : IsOpenQuotientMap f) (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (f ∘ g) where
-  surjective := hf.surjective.comp hg.surjective
-  continuous := hf.continuous.comp hg.continuous
-  isOpenMap := hf.isOpenMap.comp hg.isOpenMap
-
-protected theorem id : IsOpenQuotientMap (id : X → X) :=
-  ⟨surjective_id, continuous_id, IsOpenMap.id⟩
-
-end IsOpenQuotientMap  
-
 theorem Homeomorph.isOpenQuotientMap (f : X ≃ₜ Y) : IsOpenQuotientMap f where
   surjective := f.surjective
   continuous := f.continuous
@@ -333,7 +300,7 @@ theorem Homeomorph.isProdQuotientMap (f : X ≃ₜ Y) : IsProdQuotientMap f :=
   f.isPullbackQuotientMap.isProdQuotientMap
 
 namespace IsProdQuotientMap
-  
+
 protected theorem continuous {f : X → Y} (hf : IsProdQuotientMap f) : Continuous f :=
   hf.toQuotientMap.continuous
 
