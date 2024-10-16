@@ -239,7 +239,6 @@ theorem foldl.unop_ofFreeMonoid (f : β → α → β) (xs : FreeMonoid α) (a :
     unop (Foldl.ofFreeMonoid f xs) a = List.foldl f a (FreeMonoid.toList xs) :=
   rfl
 
-variable (m : Type u → Type u) [Monad m] [LawfulMonad m]
 variable {t : Type u → Type u} [Traversable t] [LawfulTraversable t]
 
 open LawfulTraversable

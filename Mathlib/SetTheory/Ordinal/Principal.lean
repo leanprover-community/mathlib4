@@ -11,6 +11,7 @@ import Mathlib.SetTheory.Ordinal.FixedPoint
 We define principal or indecomposable ordinals, and we prove the standard properties about them.
 
 ## Main definitions and results
+
 * `Principal`: A principal or indecomposable ordinal under some binary operation. We include 0 and
   any other typically excluded edge cases for simplicity.
 * `unbounded_principal`: Principal ordinals are unbounded.
@@ -20,6 +21,7 @@ We define principal or indecomposable ordinals, and we prove the standard proper
   multiplicative principal ordinals.
 
 ## TODO
+
 * Prove that exponential principal ordinals are 0, 1, 2, ω, or epsilon numbers, i.e. fixed points
   of `fun x ↦ ω ^ x`.
 -/
@@ -55,6 +57,15 @@ theorem principal_iff_principal_swap {o : Ordinal} :
 
 theorem not_principal_iff {o : Ordinal} : ¬ Principal op o ↔ ∃ a < o, ∃ b < o, o ≤ op a b := by
   simp [Principal]
+
+theorem principal_iff_of_monotone {o : Ordinal}
+    (h₁ : ∀ a, Monotone (op a)) (h₂ : ∀ a, Monotone (Function.swap op a)):
+    Principal op o ↔ ∀ a < o, op a a < o := by
+  use fun h a ha => h ha ha
+  intro H a b ha hb
+  obtain hab | hba := le_or_lt a b
+  · exact (h₂ b hab).trans_lt <| H b hb
+  · exact (h₁ a hba.le).trans_lt <| H a ha
 
 theorem principal_zero : Principal op 0 := fun a _ h =>
   (Ordinal.not_lt_zero a h).elim
@@ -114,7 +125,6 @@ theorem unbounded_principal (op : Ordinal → Ordinal → Ordinal) :
   ⟨_, principal_nfp_blsub₂ op o, (le_nfp _ o).not_lt⟩
 
 /-! #### Additive principal ordinals -/
-
 
 theorem principal_add_one : Principal (· + ·) 1 :=
   principal_one_iff.2 <| zero_add 0
@@ -264,7 +274,6 @@ theorem mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (
       exact Left.add_lt_add hx' hy'
 
 /-! #### Multiplicative principal ordinals -/
-
 
 theorem principal_mul_one : Principal (· * ·) 1 := by
   rw [principal_one_iff]
@@ -422,7 +431,6 @@ theorem mul_eq_opow_log_succ {a b : Ordinal.{u}} (ha : a ≠ 0) (hb : Principal 
     exact mul_le_mul_right' (opow_log_le_self b ha) b
 
 /-! #### Exponential principal ordinals -/
-
 
 theorem principal_opow_omega0 : Principal (· ^ ·) ω := fun a b ha hb =>
   match a, b, lt_omega0.1 ha, lt_omega0.1 hb with

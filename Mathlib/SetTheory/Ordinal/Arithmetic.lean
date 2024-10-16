@@ -871,6 +871,12 @@ theorem zero_div (a : Ordinal) : 0 / a = 0 :=
 theorem mul_div_le (a b : Ordinal) : b * (a / b) ≤ a :=
   if b0 : b = 0 then by simp only [b0, zero_mul, Ordinal.zero_le] else (le_div b0).1 le_rfl
 
+theorem div_le_left {a b : Ordinal} (h : a ≤ b) (c : Ordinal) : a / c ≤ b / c := by
+  obtain rfl | hc := eq_or_ne c 0
+  · rw [div_zero, div_zero]
+  · rw [le_div hc]
+    exact (mul_div_le a c).trans h
+
 theorem mul_add_div (a) {b : Ordinal} (b0 : b ≠ 0) (c) : (b * a + c) / b = a + c / b := by
   apply le_antisymm
   · apply (div_le b0).2
@@ -2244,14 +2250,6 @@ end Ordinal
 namespace Cardinal
 
 open Ordinal
-
-@[simp]
-theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
-  le_antisymm (ord_le.2 <| le_rfl) <|
-    le_of_forall_lt fun o h => by
-      rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
-      rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
-      exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
 
 @[simp]
 theorem add_one_of_aleph0_le {c} (h : ℵ₀ ≤ c) : c + 1 = c := by

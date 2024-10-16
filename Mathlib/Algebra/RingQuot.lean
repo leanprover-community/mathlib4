@@ -495,15 +495,15 @@ theorem ringQuotToIdealQuotient_apply (r : B → B → Prop) (x : B) :
 def idealQuotientToRingQuot (r : B → B → Prop) : B ⧸ Ideal.ofRel r →+* RingQuot r :=
   Ideal.Quotient.lift (Ideal.ofRel r) (mkRingHom r)
     (by
-      refine fun x h ↦ Submodule.span_induction h ?_ ?_ ?_ ?_
+      refine fun x h ↦ Submodule.span_induction ?_ ?_ ?_ ?_ h
       · rintro y ⟨a, b, h, su⟩
         symm at su
         rw [← sub_eq_iff_eq_add] at su
         rw [← su, RingHom.map_sub, mkRingHom_rel h, sub_self]
       · simp
-      · intro a b ha hb
+      · intro a b _ _ ha hb
         simp [ha, hb]
-      · intro a x hx
+      · intro a x _ hx
         simp [hx])
 
 @[simp]

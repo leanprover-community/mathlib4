@@ -89,9 +89,6 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
 
--- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
---attribute [nolint dangerous_instance] Valued.toUniformSpace
-
 namespace Valued
 
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
