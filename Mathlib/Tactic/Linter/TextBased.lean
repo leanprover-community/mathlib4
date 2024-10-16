@@ -142,8 +142,7 @@ def compare (existing new : ErrorContext) : ComparisonResult :=
   -- NB: keep the following in sync with `parse?_errorContext` below.
   -- Generally, comparable errors must have equal `StyleError`s, but there are some exceptions.
   else match (existing.error, new.error) with
-  -- We do *not* care about the *kind* of wrong copyright,
-  -- nor about the kind or line number of a duplicate import.
+  -- We do *not* care about the *kind* of wrong copyright.
   | (StyleError.copyright _, StyleError.copyright _) => ComparisonResult.Comparable true
   -- In all other cases, `StyleErrors` must compare equal.
   | (a, b) => if a == b then ComparisonResult.Comparable true else ComparisonResult.Different
