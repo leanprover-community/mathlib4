@@ -359,8 +359,7 @@ theorem AEMeasurable.ennreal_toReal {f : α → ℝ≥0∞} {μ : Measure α} (h
 theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable fun x => ∑' i, f i x := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  apply .iSup
-  exact fun s => s.measurable_sum fun i _ => h i
+  exact .iSup fun s ↦ s.measurable_sum fun i _ => h i
 
 @[measurability, fun_prop]
 theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
@@ -378,8 +377,7 @@ theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (
 theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
     (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  apply .iSup
-  exact fun s => Finset.aemeasurable_sum s fun i _ => h i
+  exact .iSup fun s ↦ Finset.aemeasurable_sum s fun i _ => h i
 
 @[measurability, fun_prop]
 theorem AEMeasurable.nnreal_tsum {α : Type*} [MeasurableSpace α] {ι : Type*} [Countable ι]

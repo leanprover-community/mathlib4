@@ -762,13 +762,22 @@ protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf
     apply csSup_of_not_bddAbove
     exact hb
 
+-- TODO: Why does this error?
+-- /-- Compositional version of `Measurable.iSup` for use by `fun_prop`. -/
+-- @[fun_prop]
+-- protected lemma Measurable.iSup'' {_ : MeasurableSpace γ} {ι : Sort*} [Countable ι]
+--     {f : ι → γ → δ → α} {h : γ → δ} (hf : ∀ i, Measurable ↿(f i)) (hh : Measurable h) :
+--     Measurable fun a ↦ (⨆ i, f i a) (h a) := by
+--   simp_rw [iSup_apply]
+--   exact .iSup fun i ↦ by fun_prop
+
 @[measurability]
 protected theorem AEMeasurable.iSup {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i, f i b) μ := by
   refine ⟨fun b ↦ ⨆ i, (hf i).mk (f i) b, .iSup (fun i ↦ (hf i).measurable_mk), ?_⟩
   filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with b hb using by simp [hb]
 
-@[measurability]
+@[measurability, fun_prop]
 protected theorem Measurable.iInf {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable fun b => ⨅ i, f i b :=
   .iSup (α := αᵒᵈ) hf
