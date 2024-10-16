@@ -78,7 +78,7 @@ theorem Spec.topMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
 @[simps! obj map]
 def Spec.toTop : CommRingCat.{u}ᵒᵖ ⥤ TopCat where
   obj R := Spec.topObj (unop R)
-  map {R S} f := Spec.topMap f.unop
+  map {_ _} f := Spec.topMap f.unop
 
 /-- The spectrum of a commutative ring, as a `SheafedSpace`.
 -/
@@ -226,7 +226,7 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
 /--
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
 -/
-@[simps]
+@[simps toShHom]
 def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
     Spec.locallyRingedSpaceObj S ⟶ Spec.locallyRingedSpaceObj R :=
   LocallyRingedSpace.Hom.mk (Spec.sheafedSpaceMap f) fun p =>
@@ -251,14 +251,14 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
 @[simp]
 theorem Spec.locallyRingedSpaceMap_id (R : CommRingCat.{u}) :
     Spec.locallyRingedSpaceMap (𝟙 R) = 𝟙 (Spec.locallyRingedSpaceObj R) :=
-  LocallyRingedSpace.Hom.ext <| by
-    rw [Spec.locallyRingedSpaceMap_val, Spec.sheafedSpaceMap_id]; rfl
+  LocallyRingedSpace.Hom.ext' <| by
+    rw [Spec.locallyRingedSpaceMap_toShHom, Spec.sheafedSpaceMap_id]; rfl
 
 theorem Spec.locallyRingedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.locallyRingedSpaceMap (f ≫ g) =
       Spec.locallyRingedSpaceMap g ≫ Spec.locallyRingedSpaceMap f :=
-  LocallyRingedSpace.Hom.ext <| by
-    rw [Spec.locallyRingedSpaceMap_val, Spec.sheafedSpaceMap_comp]; rfl
+  LocallyRingedSpace.Hom.ext' <| by
+    rw [Spec.locallyRingedSpaceMap_toShHom, Spec.sheafedSpaceMap_comp]; rfl
 
 /-- Spec, as a contravariant functor from commutative rings to locally ringed spaces.
 -/

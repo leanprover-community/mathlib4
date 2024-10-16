@@ -160,7 +160,7 @@ attribute [local simp] transportStruct in
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   letI : MonoidalCategoryStruct.{v₂} D := transportStruct e
   induced e.inverse
-    { μIso := fun X Y => e.unitIso.app _
+    { μIso := fun _ _ => e.unitIso.app _
       εIso := e.unitIso.app _ }
 
 /-- A type synonym for `D`, which will carry the transported monoidal structure. -/

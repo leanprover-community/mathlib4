@@ -213,9 +213,9 @@ space. The instance is recorded on the type synonym
 noncomputable instance levyProkhorovDist_pseudoMetricSpace_finiteMeasure :
     PseudoMetricSpace (LevyProkhorov (FiniteMeasure Ω)) where
   dist μ ν := levyProkhorovDist μ.toMeasure ν.toMeasure
-  dist_self μ := levyProkhorovDist_self _
-  dist_comm μ ν := levyProkhorovDist_comm _ _
-  dist_triangle μ ν κ := levyProkhorovDist_triangle _ _ _
+  dist_self _ := levyProkhorovDist_self _
+  dist_comm _ _ := levyProkhorovDist_comm _ _
+  dist_triangle _ _ _ := levyProkhorovDist_triangle _ _ _
   edist_dist μ ν := by simp [← ENNReal.ofReal_coe_nnreal]
 
 lemma measure_le_measure_closure_of_levyProkhorovEDist_eq_zero {μ ν : Measure Ω}
@@ -258,9 +258,9 @@ furthermore assume that `Ω` is separable. -/
 noncomputable instance levyProkhorovDist_pseudoMetricSpace_probabilityMeasure :
     PseudoMetricSpace (LevyProkhorov (ProbabilityMeasure Ω)) where
   dist μ ν := levyProkhorovDist μ.toMeasure ν.toMeasure
-  dist_self μ := levyProkhorovDist_self _
-  dist_comm μ ν := levyProkhorovDist_comm _ _
-  dist_triangle μ ν κ := levyProkhorovDist_triangle _ _ _
+  dist_self _ := levyProkhorovDist_self _
+  dist_comm _ _ := levyProkhorovDist_comm _ _
+  dist_triangle _ _ _ := levyProkhorovDist_triangle _ _ _
   edist_dist μ ν := by simp [← ENNReal.ofReal_coe_nnreal]
 
 lemma LevyProkhorov.dist_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω)) :
