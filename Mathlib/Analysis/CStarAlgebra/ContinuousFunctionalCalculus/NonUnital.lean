@@ -73,11 +73,16 @@ class NonUnitalContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outPara
     [ContinuousStar R] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
   predicate_zero : p 0
+  [compactSpace_quasispectrum : ∀ a : A, CompactSpace (σₙ R a)]
   exists_cfc_of_predicate : ∀ a, p a → ∃ φ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A,
     ClosedEmbedding φ ∧ φ ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a ∧
       (∀ f, σₙ R (φ f) = Set.range f) ∧ ∀ f, p (φ f)
 
--- TODO: try to unify with the unital version. The `ℝ≥0` case makes it tricky.
+-- this instance should not be activated everywhere but it is useful when developing generic API
+-- for the continuous functional calculus
+scoped[NonUnitalContinuousFunctionalCalculus]
+attribute [instance] NonUnitalContinuousFunctionalCalculus.compactSpace_quasispectrum
+
 /-- A class guaranteeing that the non-unital continuous functional calculus is uniquely determined
 by the properties that it is a continuous non-unital star algebra homomorphism mapping the
 (restriction of) the identity to `a`. This is the necessary tool used to establish `cfcₙHom_comp`
@@ -709,6 +714,9 @@ lemma closedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
 
 instance ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctionalCalculus R p where
   predicate_zero := cfc_predicate_zero R
+  compactSpace_quasispectrum a := by
+    simp only [← isCompact_iff_compactSpace, quasispectrum_eq_spectrum_union_zero] at h_cpct ⊢
+    exact h_cpct a |>.union isCompact_singleton
   exists_cfc_of_predicate _ ha :=
     ⟨cfcₙHom_of_cfcHom R ha,
       closedEmbedding_cfcₙHom_of_cfcHom ha,

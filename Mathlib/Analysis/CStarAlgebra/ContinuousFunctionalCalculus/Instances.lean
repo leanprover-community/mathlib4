@@ -155,6 +155,7 @@ instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [NormedRing A
     [CStarRing A] [CompleteSpace A] [NormedAlgebra ℂ A] [StarModule ℂ A] :
     ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) where
   predicate_zero := isStarNormal_zero
+  spectrum_nonempty a _ := spectrum.nonempty a
   exists_cfc_of_predicate a ha := by
     refine ⟨(elementalStarAlgebra ℂ a).subtype.comp <| continuousFunctionalCalculus a,
       ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
