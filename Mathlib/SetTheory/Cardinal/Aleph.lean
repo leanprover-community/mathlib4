@@ -41,9 +41,64 @@ open Function Set Cardinal Equiv Order Ordinal
 
 universe u v w
 
-namespace Cardinal
+/-! ### Omega ordinals -/
+
+namespace Ordinal
+
+/-- An ordinal is initial when it is the first ordinal with a given cardinality.
+
+This is written as `o.card.ord = o`, i.e. `o` is the smallest ordinal with cardinality `o.card`. -/
+def IsInitial (o : Ordinal) : Prop :=
+  o.card.ord = o
+
+theorem IsInitial.ord_card {o : Ordinal} (h : IsInitial o) : o.card.ord = o := h
+
+theorem IsInitial.card_le_card {a b : Ordinal} (ha : IsInitial a) : a.card ≤ b.card ↔ a ≤ b := by
+  refine ⟨fun h ↦ ?_, Ordinal.card_le_card⟩
+  rw [← ord_le_ord, ha.ord_card] at h
+  exact h.trans (ord_card_le b)
+
+theorem IsInitial.card_lt_card {a b : Ordinal} (hb : IsInitial b) : a.card < b.card ↔ a < b :=
+  lt_iff_lt_of_le_iff_le hb.card_le_card
+
+theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
+  rw [IsInitial, card_ord]
+
+theorem isInitial_natCast (n : ℕ) : IsInitial n := by
+  rw [IsInitial, card_nat, ord_nat]
+
+theorem isInitial_zero : IsInitial 0 := by
+  exact_mod_cast isInitial_natCast 0
+
+theorem isInitial_one : IsInitial 1 := by
+  exact_mod_cast isInitial_natCast 1
+
+theorem isInitial_omega0 : IsInitial ω := by
+  rw [IsInitial, card_omega0, ord_aleph0]
+
+theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
+  rintro ⟨a, ha⟩
+  have := ha (isInitial_ord (succ a.card))
+  rw [ord_le] at this
+  exact (lt_succ _).not_le this
+
+/-- Initial ordinals are order-isomorphic to the cardinals. -/
+@[simps!]
+def isInitialIso : {x // IsInitial x} ≃o Cardinal where
+  toFun x := x.1.card
+  invFun x := ⟨x.ord, isInitial_ord _⟩
+  left_inv x := Subtype.ext x.2.ord_card
+  right_inv x := card_ord x
+  map_rel_iff' {a _} := a.2.card_le_card
+
+-- TODO: define `omega` as the enumerator function of `IsInitial`, and redefine
+-- `aleph x = (omega x).card`.
+
+end Ordinal
 
 /-! ### Aleph cardinals -/
+
+namespace Cardinal
 
 /-- The `aleph'` function gives the cardinals listed by their ordinal index. `aleph' n = n`,
 `aleph' ω = ℵ₀`, `aleph' (ω + 1) = succ ℵ₀`, etc.
