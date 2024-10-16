@@ -68,19 +68,19 @@ theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
       (pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2)
 
 theorem commProb_le_one : commProb M ≤ 1 := by
-  refine div_le_one_of_le ?_ (sq_nonneg (Nat.card M : ℚ))
+  refine div_le_one_of_le₀ ?_ (sq_nonneg (Nat.card M : ℚ))
   rw [← Nat.cast_pow, Nat.cast_le, sq, ← Nat.card_prod]
   apply Finite.card_subtype_le
 
 variable {M}
 
 theorem commProb_eq_one_iff [h : Nonempty M] :
-    commProb M = 1 ↔ Commutative ((· * ·) : M → M → M) := by
+    commProb M = 1 ↔ Std.Commutative ((· * ·) : M → M → M) := by
   haveI := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,
     set_fintype_card_eq_univ_iff, Set.eq_univ_iff_forall]
-  · exact ⟨fun h x y ↦ h (x, y), fun h x ↦ h x.1 x.2⟩
+  · exact ⟨fun h ↦ ⟨fun x y ↦ h (x, y)⟩, fun h x ↦ h.comm x.1 x.2⟩
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
 
 variable (G : Type*) [Group G]
@@ -118,8 +118,8 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
 variable (G)
 
 theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ ≤ commProb G :=
-  (inv_pos_le_iff_one_le_mul (Nat.cast_pos.mpr Finite.card_pos)).mpr
-    (le_trans (ge_of_eq (commProb_eq_one_iff.mpr (Abelianization.commGroup G).mul_comm))
+  (inv_le_iff_one_le_mul₀ (Nat.cast_pos.mpr Finite.card_pos)).mpr
+    (le_trans (ge_of_eq (commProb_eq_one_iff.mpr ⟨(Abelianization.commGroup G).mul_comm⟩))
       (commutator G).commProb_quotient_le)
 
 -- Construction of group with commuting probability 1/n
@@ -131,6 +131,7 @@ lemma commProb_odd {n : ℕ} (hn : Odd n) :
   qify [show 2 ∣ n + 3 by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, Nat.odd_iff.mp hn]]
   rw [div_div, ← mul_assoc]
   congr
+  norm_num
 
 private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
   Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
@@ -141,8 +142,8 @@ private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → 
 
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
-  if h0 : n = 0 then [0]
-  else if h1 : n = 1 then []
+  if _ : n = 0 then [0]
+  else if _ : n = 1 then []
   else if Even n then
     3 :: reciprocalFactors (n / 2)
   else

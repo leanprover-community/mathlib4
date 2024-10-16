@@ -96,7 +96,7 @@ namespace FinMeasAdditive
 
 variable {β : Type*} [AddCommMonoid β] {T T' : Set α → β}
 
-theorem zero : FinMeasAdditive μ (0 : Set α → β) := fun s t _ _ _ _ _ => by simp
+theorem zero : FinMeasAdditive μ (0 : Set α → β) := fun _ _ _ _ _ _ _ => by simp
 
 theorem add (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive μ T') :
     FinMeasAdditive μ (T + T') := by
@@ -116,14 +116,14 @@ theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : FinMeasAd
     FinMeasAdditive μ T := by
   refine of_eq_top_imp_eq_top (fun s _ hμs => ?_) hT
   rw [Measure.smul_apply, smul_eq_mul, ENNReal.mul_eq_top] at hμs
-  simp only [hc_ne_top, or_false_iff, Ne, false_and_iff] at hμs
+  simp only [hc_ne_top, or_false, Ne, false_and] at hμs
   exact hμs.2
 
 theorem smul_measure (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hT : FinMeasAdditive μ T) :
     FinMeasAdditive (c • μ) T := by
   refine of_eq_top_imp_eq_top (fun s _ hμs => ?_) hT
   rw [Measure.smul_apply, smul_eq_mul, ENNReal.mul_eq_top]
-  simp only [hc_ne_zero, true_and_iff, Ne, not_false_iff]
+  simp only [hc_ne_zero, true_and, Ne, not_false_iff]
   exact Or.inl hμs
 
 theorem smul_measure_iff (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hc_ne_top : c ≠ ∞) :
@@ -192,7 +192,7 @@ theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α
   refine ((hT.2 s hs (by simp [hs_zero])).trans (le_of_eq ?_)).antisymm (norm_nonneg _)
   rw [hs_zero, ENNReal.zero_toReal, mul_zero]
 
-theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {m : MeasurableSpace α}
+theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
     (hT : DominatedFinMeasAdditive (0 : Measure α) T C) {s : Set α} (hs : MeasurableSet s) :
     T s = 0 :=
   eq_zero_of_measure_zero hT hs (by simp only [Measure.coe_zero, Pi.zero_apply])
@@ -231,8 +231,8 @@ theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : Dominated
     DominatedFinMeasAdditive μ T (c.toReal * C) := by
   have h : ∀ s, MeasurableSet s → c • μ s = ∞ → μ s = ∞ := by
     intro s _ hcμs
-    simp only [hc_ne_top, Algebra.id.smul_eq_mul, ENNReal.mul_eq_top, or_false_iff, Ne,
-      false_and_iff] at hcμs
+    simp only [hc_ne_top, Algebra.id.smul_eq_mul, ENNReal.mul_eq_top, or_false, Ne,
+      false_and] at hcμs
     exact hcμs.2
   refine ⟨hT.1.of_eq_top_imp_eq_top (μ := c • μ) h, fun s hs hμs => ?_⟩
   have hcμs : c • μ s ≠ ∞ := mt (h s hs) hμs.ne
@@ -421,7 +421,7 @@ theorem setToSimpleFunc_add (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
     setToSimpleFunc T (f + g) = ∑ x ∈ (pair f g).range, T (pair f g ⁻¹' {x}) (x.fst + x.snd) := by
       rw [add_eq_map₂, map_setToSimpleFunc T h_add hp_pair]; simp
     _ = ∑ x ∈ (pair f g).range, (T (pair f g ⁻¹' {x}) x.fst + T (pair f g ⁻¹' {x}) x.snd) :=
-      (Finset.sum_congr rfl fun a _ => ContinuousLinearMap.map_add _ _ _)
+      (Finset.sum_congr rfl fun _ _ => ContinuousLinearMap.map_add _ _ _)
     _ = (∑ x ∈ (pair f g).range, T (pair f g ⁻¹' {x}) x.fst) +
           ∑ x ∈ (pair f g).range, T (pair f g ⁻¹' {x}) x.snd := by
       rw [Finset.sum_add_distrib]
@@ -920,18 +920,18 @@ variable (𝕜) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace
 def setToL1' (hT : DominatedFinMeasAdditive μ T C)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) : (α →₁[μ] E) →L[𝕜] F :=
   (setToL1SCLM' α E 𝕜 μ hT h_smul).extend (coeToLp α E 𝕜) (simpleFunc.denseRange one_ne_top)
-    simpleFunc.uniformInducing
+    simpleFunc.isUniformInducing
 
 variable {𝕜}
 
 /-- Extend `Set α → E →L[ℝ] F` to `(α →₁[μ] E) →L[ℝ] F`. -/
 def setToL1 (hT : DominatedFinMeasAdditive μ T C) : (α →₁[μ] E) →L[ℝ] F :=
   (setToL1SCLM α E μ hT).extend (coeToLp α E ℝ) (simpleFunc.denseRange one_ne_top)
-    simpleFunc.uniformInducing
+    simpleFunc.isUniformInducing
 
 theorem setToL1_eq_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C) (f : α →₁ₛ[μ] E) :
     setToL1 hT f = setToL1SCLM α E μ hT f :=
-  uniformly_extend_of_ind simpleFunc.uniformInducing (simpleFunc.denseRange one_ne_top)
+  uniformly_extend_of_ind simpleFunc.isUniformInducing (simpleFunc.denseRange one_ne_top)
     (setToL1SCLM α E μ hT).uniformContinuous _
 
 theorem setToL1_eq_setToL1' (hT : DominatedFinMeasAdditive μ T C)
@@ -1502,7 +1502,7 @@ theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T 
     setToFun (∞ • μ) T hT f = 0 := by
   refine setToFun_measure_zero' hT fun s _ hμs => ?_
   rw [lt_top_iff_ne_top] at hμs
-  simp only [true_and_iff, Measure.smul_apply, ENNReal.mul_eq_top, eq_self_iff_true,
+  simp only [true_and, Measure.smul_apply, ENNReal.mul_eq_top, eq_self_iff_true,
     top_ne_zero, Ne, not_false_iff, not_or, Classical.not_not, smul_eq_mul] at hμs
   simp only [hμs.right, Measure.smul_apply, mul_zero, smul_eq_mul]
 
@@ -1637,7 +1637,7 @@ theorem continuous_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) 
     {bound : α → ℝ} (hfs_meas : ∀ x, AEStronglyMeasurable (fs x) μ)
     (h_bound : ∀ x, ∀ᵐ a ∂μ, ‖fs x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
     (h_cont : ∀ᵐ a ∂μ, Continuous fun x => fs x a) : Continuous fun x => setToFun μ T hT (fs x) :=
-  continuous_iff_continuousAt.mpr fun x₀ =>
+  continuous_iff_continuousAt.mpr fun _ =>
     continuousAt_setToFun_of_dominated hT (Eventually.of_forall hfs_meas)
         (Eventually.of_forall h_bound) ‹_› <|
       h_cont.mono fun _ => Continuous.continuousAt

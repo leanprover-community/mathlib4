@@ -197,7 +197,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
     simp only [g, hx, piecewise_eq_of_not_mem, not_false_iff]
     contrapose! hx
     apply subset_toMeasurable
-    simp only [hx, mem_compl_iff, mem_setOf_eq, false_and_iff, not_false_iff]
+    simp only [hx, mem_compl_iff, mem_setOf_eq, false_and, not_false_iff]
 
 theorem exists_measurable_nonneg {β} [Preorder β] [Zero β] {mβ : MeasurableSpace β} {f : α → β}
     (hf : AEMeasurable f μ) (f_nn : ∀ᵐ t ∂μ, 0 ≤ f t) : ∃ g, Measurable g ∧ 0 ≤ g ∧ f =ᵐ[μ] g := by
@@ -413,7 +413,7 @@ lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β} (hf : AEMeasu
 
 instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := by
   by_cases H : AEMeasurable f μ
-  · rw [← sum_sFiniteSeq μ] at H ⊢
+  · rw [← sum_sfiniteSeq μ] at H ⊢
     rw [map_sum H]
     infer_instance
   · rw [map_of_not_aemeasurable H]
