@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
 -/
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Zip
+import Mathlib.Data.List.Basic
 
 /-!
 # Lemmas about List.*Idx functions.
