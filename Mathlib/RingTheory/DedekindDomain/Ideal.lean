@@ -562,7 +562,7 @@ noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal A�
   div_eq_mul_inv := FractionalIdeal.div_eq_mul_inv
   mul_inv_cancel _ := FractionalIdeal.mul_inv_cancel
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
 
 /-- Fractional ideals have cancellative multiplication in a Dedekind domain.
 
@@ -763,11 +763,11 @@ theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι
     · contrapose! hpI
       -- And if all `a`-multiples of `I` are an element of `J`,
       -- then `a` is actually an element of `J / I`, contradiction.
-      refine (mem_div_iff_of_nonzero hI0).mpr fun y hy => Submodule.span_induction hy ?_ ?_ ?_ ?_
+      refine (mem_div_iff_of_nonzero hI0).mpr fun y hy => Submodule.span_induction ?_ ?_ ?_ ?_ hy
       · rintro _ ⟨i, hi, rfl⟩; exact hpI i hi
       · rw [mul_zero]; exact Submodule.zero_mem _
-      · intro x y hx hy; rw [mul_add]; exact Submodule.add_mem _ hx hy
-      · intro b x hx; rw [mul_smul_comm]; exact Submodule.smul_mem _ b hx
+      · intro x y _ _ hx hy; rw [mul_add]; exact Submodule.add_mem _ hx hy
+      · intro b x _ hx; rw [mul_smul_comm]; exact Submodule.smul_mem _ b hx
   -- To show the inclusion of `J / I` into `I⁻¹ = 1 / I`, note that `J < I`.
   calc
     ↑J / I = ↑J * I⁻¹ := div_eq_mul_inv (↑J) I
@@ -1191,26 +1191,6 @@ theorem Ideal.le_mul_of_no_prime_factors {I J K : Ideal R}
     (UniqueFactorizationMonoid.dvd_of_dvd_mul_right_of_no_prime_factors (b := K) hJ0 ?_ hJ)
   exact fun hPJ hPK => mt Ideal.isPrime_of_prime (coprime _ hPJ hPK)
 
-theorem Ideal.le_of_pow_le_prime {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (h : I ^ n ≤ P) :
-    I ≤ P := by
-  by_cases hP0 : P = ⊥
-  · simp only [hP0, le_bot_iff] at h ⊢
-    exact pow_eq_zero h
-  rw [← Ideal.dvd_iff_le] at h ⊢
-  exact ((Ideal.prime_iff_isPrime hP0).mpr hP).dvd_of_dvd_pow h
-
-theorem Ideal.pow_le_prime_iff {I P : Ideal R} [_hP : P.IsPrime] {n : ℕ} (hn : n ≠ 0) :
-    I ^ n ≤ P ↔ I ≤ P :=
-  ⟨Ideal.le_of_pow_le_prime, fun h => _root_.trans (Ideal.pow_le_self hn) h⟩
-
-theorem Ideal.prod_le_prime {ι : Type*} {s : Finset ι} {f : ι → Ideal R} {P : Ideal R}
-    [hP : P.IsPrime] : ∏ i ∈ s, f i ≤ P ↔ ∃ i ∈ s, f i ≤ P := by
-  by_cases hP0 : P = ⊥
-  · simp only [hP0, le_bot_iff]
-    rw [← Ideal.zero_eq_bot, Finset.prod_eq_zero_iff]
-  simp only [← Ideal.dvd_iff_le]
-  exact ((Ideal.prime_iff_isPrime hP0).mpr hP).dvd_finset_prod_iff _
-
 /-- The intersection of distinct prime powers in a Dedekind domain is the product of these
 prime powers. -/
 theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f : ι → Ideal R)
@@ -1228,15 +1208,13 @@ theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f :
   rw [Finset.inf_insert, Finset.prod_insert ha, ih]
   refine le_antisymm (Ideal.le_mul_of_no_prime_factors ?_ inf_le_left inf_le_right) Ideal.mul_le_inf
   intro P hPa hPs hPp
-  obtain ⟨b, hb, hPb⟩ := Ideal.prod_le_prime.mp hPs
+  obtain ⟨b, hb, hPb⟩ := hPp.prod_le.mp hPs
   haveI := Ideal.isPrime_of_prime (prime a (Finset.mem_insert_self a s))
   haveI := Ideal.isPrime_of_prime (prime b (Finset.mem_insert_of_mem hb))
   refine coprime a (Finset.mem_insert_self a s) b (Finset.mem_insert_of_mem hb) ?_ ?_
   · exact (ne_of_mem_of_not_mem hb ha).symm
-  · refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-      (Ideal.le_of_pow_le_prime hPa)).trans
-      ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-      (Ideal.le_of_pow_le_prime hPb)).symm
+  · refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp (hPp.le_of_pow_le hPa)).trans
+      ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp (hPp.le_of_pow_le hPb)).symm
     · exact (prime a (Finset.mem_insert_self a s)).ne_zero
     · exact (prime b (Finset.mem_insert_of_mem hb)).ne_zero
 
@@ -1251,17 +1229,13 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype
       simp only [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ, ciInf_pos,
         ← IsDedekindDomain.inf_prime_pow_eq_prod _ _ _ (fun i _ => prime i)
         (coprime.set_pairwise _)])).trans <|
-    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => Ideal.coprime_of_no_prime_ge (by
+    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => Ideal.coprime_of_no_prime_ge <| by
       intro P hPi hPj hPp
       haveI := Ideal.isPrime_of_prime (prime i)
       haveI := Ideal.isPrime_of_prime (prime j)
-      refine coprime hij ?_
-      refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-        (Ideal.le_of_pow_le_prime hPi)).trans
-        ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-          (Ideal.le_of_pow_le_prime hPj)).symm
-      · exact (prime i).ne_zero
-      · exact (prime j).ne_zero)
+      exact coprime hij <| ((Ring.DimensionLeOne.prime_le_prime_iff_eq (prime i).ne_zero).mp
+        (hPp.le_of_pow_le hPi)).trans <| Eq.symm <|
+          (Ring.DimensionLeOne.prime_le_prime_iff_eq (prime j).ne_zero).mp (hPp.le_of_pow_le hPj)
 
 open scoped Classical
 
@@ -1271,7 +1245,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I 
     R ⧸ I ≃+* ∀ P : (factors I).toFinset, R ⧸ (P : Ideal R) ^ (Multiset.count ↑P (factors I)) :=
   IsDedekindDomain.quotientEquivPiOfProdEq _ _ _
     (fun P : (factors I).toFinset => prime_of_factor _ (Multiset.mem_toFinset.mp P.prop))
-    (fun i j hij => Subtype.coe_injective.ne hij)
+    (fun _ _ hij => Subtype.coe_injective.ne hij)
     (calc
       (∏ P : (factors I).toFinset, (P : Ideal R) ^ (factors I).count (P : Ideal R)) =
           ∏ P ∈ (factors I).toFinset, P ^ (factors I).count P :=

@@ -543,25 +543,27 @@ theorem measure_iInter_eq_iInf' {α ι : Type*} [MeasurableSpace α] {μ : Measu
 
 /-- Continuity from below: the measure of the union of an increasing sequence of (not necessarily
 measurable) sets is the limit of the measures. -/
-theorem tendsto_measure_iUnion_atTop [Preorder ι] [IsDirected ι (· ≤ ·)]
-    [IsCountablyGenerated (atTop : Filter ι)] {s : ι → Set α} (hm : Monotone s) :
-    Tendsto (μ ∘ s) atTop (𝓝 (μ (⋃ n, s n))) := by
+theorem tendsto_measure_iUnion_atTop [Preorder ι] [IsCountablyGenerated (atTop : Filter ι)]
+    {s : ι → Set α} (hm : Monotone s) : Tendsto (μ ∘ s) atTop (𝓝 (μ (⋃ n, s n))) := by
+  refine .of_neBot_imp fun h ↦ ?_
+  have := (atTop_neBot_iff.1 h).2
   rw [hm.measure_iUnion]
   exact tendsto_atTop_iSup fun n m hnm => measure_mono <| hm hnm
 
 @[deprecated (since := "2024-09-01")] alias tendsto_measure_iUnion := tendsto_measure_iUnion_atTop
 
-theorem tendsto_measure_iUnion_atBot [Preorder ι] [IsDirected ι (· ≥ ·)]
-    [IsCountablyGenerated (atBot : Filter ι)] {s : ι → Set α} (hm : Antitone s) :
-    Tendsto (μ ∘ s) atBot (𝓝 (μ (⋃ n, s n))) :=
+theorem tendsto_measure_iUnion_atBot [Preorder ι] [IsCountablyGenerated (atBot : Filter ι)]
+    {s : ι → Set α} (hm : Antitone s) : Tendsto (μ ∘ s) atBot (𝓝 (μ (⋃ n, s n))) :=
   tendsto_measure_iUnion_atTop (ι := ιᵒᵈ) hm.dual_left
 
 /-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
 sets is the limit of the measures of the partial unions. -/
 theorem tendsto_measure_iUnion_accumulate {α ι : Type*}
-    [Preorder ι] [IsDirected ι (· ≤ ·)] [IsCountablyGenerated (atTop : Filter ι)]
+    [Preorder ι] [IsCountablyGenerated (atTop : Filter ι)]
     [MeasurableSpace α] {μ : Measure α} {f : ι → Set α} :
     Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
+  refine .of_neBot_imp fun h ↦ ?_
+  have := (atTop_neBot_iff.1 h).2
   rw [measure_iUnion_eq_iSup_accumulate]
   exact tendsto_atTop_iSup fun i j hij ↦ by gcongr
 
@@ -570,9 +572,11 @@ alias tendsto_measure_iUnion' := tendsto_measure_iUnion_accumulate
 
 /-- Continuity from above: the measure of the intersection of a decreasing sequence of measurable
 sets is the limit of the measures. -/
-theorem tendsto_measure_iInter [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] {s : ι → Set α}
+theorem tendsto_measure_iInter [Countable ι] [Preorder ι] {s : ι → Set α}
     (hs : ∀ n, NullMeasurableSet (s n) μ) (hm : Antitone s) (hf : ∃ i, μ (s i) ≠ ∞) :
     Tendsto (μ ∘ s) atTop (𝓝 (μ (⋂ n, s n))) := by
+  refine .of_neBot_imp fun h ↦ ?_
+  have := (atTop_neBot_iff.1 h).2
   rw [measure_iInter_eq_iInf hs hm.directed_ge hf]
   exact tendsto_atTop_iInf fun n m hnm => measure_mono <| hm hnm
 
@@ -900,9 +904,9 @@ theorem measure_toMeasurable_add_inter_right {s t : Set α} (hs : MeasurableSet 
 /-- Measures are partially ordered. -/
 instance instPartialOrder [MeasurableSpace α] : PartialOrder (Measure α) where
   le m₁ m₂ := ∀ s, m₁ s ≤ m₂ s
-  le_refl m s := le_rfl
-  le_trans m₁ m₂ m₃ h₁ h₂ s := le_trans (h₁ s) (h₂ s)
-  le_antisymm m₁ m₂ h₁ h₂ := ext fun s _ => le_antisymm (h₁ s) (h₂ s)
+  le_refl _ _ := le_rfl
+  le_trans _ _ _ h₁ h₂ s := le_trans (h₁ s) (h₂ s)
+  le_antisymm _ _ h₁ h₂ := ext fun s _ => le_antisymm (h₁ s) (h₂ s)
 
 theorem toOuterMeasure_le : μ₁.toOuterMeasure ≤ μ₂.toOuterMeasure ↔ μ₁ ≤ μ₂ := .rfl
 
@@ -958,7 +962,7 @@ private theorem measure_sInf_le (h : μ ∈ m) : sInf m ≤ μ :=
 
 private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m :=
   have : μ.toOuterMeasure ≤ sInf (toOuterMeasure '' m) :=
-    le_sInf <| forall_mem_image.2 fun μ hμ ↦ toOuterMeasure_le.2 <| h _ hμ
+    le_sInf <| forall_mem_image.2 fun _ hμ ↦ toOuterMeasure_le.2 <| h _ hμ
   le_iff.2 fun s hs => by rw [sInf_apply hs]; exact this s
 
 instance instCompleteSemilatticeInf [MeasurableSpace α] : CompleteSemilatticeInf (Measure α) :=
@@ -980,7 +984,7 @@ instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α)
           else
             simp_all [Set.not_nonempty_iff_eq_empty]
         trim_le := le_top },
-    le_top := fun μ => toOuterMeasure_le.mp le_top
+    le_top := fun _ => toOuterMeasure_le.mp le_top
     bot := 0
     bot_le := fun _a _s => bot_le }
 
@@ -1479,7 +1483,7 @@ instance instIsRefl [MeasurableSpace α] : IsRefl (Measure α) (· ≪ ·) :=
   ⟨fun _ => AbsolutelyContinuous.rfl⟩
 
 @[simp]
-protected lemma zero (μ : Measure α) : 0 ≪ μ := fun s _ ↦ by simp
+protected lemma zero (μ : Measure α) : 0 ≪ μ := fun _ _ ↦ by simp
 
 @[trans]
 protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ ≪ μ₃ := fun _s hs => h1 <| h2 hs
@@ -1545,7 +1549,7 @@ lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • �
 theorem ae_le_iff_absolutelyContinuous : ae μ ≤ ae ν ↔ μ ≪ ν :=
   ⟨fun h s => by
     rw [measure_zero_iff_ae_nmem, measure_zero_iff_ae_nmem]
-    exact fun hs => h hs, fun h s hs => h hs⟩
+    exact fun hs => h hs, fun h _ hs => h hs⟩
 
 alias ⟨_root_.LE.le.absolutelyContinuous_of_ae, AbsolutelyContinuous.ae_le⟩ :=
   ae_le_iff_absolutelyContinuous
@@ -1733,7 +1737,7 @@ end Pointwise
 
 /-- The filter of sets `s` such that `sᶜ` has finite measure. -/
 def cofinite {m0 : MeasurableSpace α} (μ : Measure α) : Filter α :=
-  comk (μ · < ∞) (by simp) (fun t ht s hs ↦ (measure_mono hs).trans_lt ht) fun s hs t ht ↦
+  comk (μ · < ∞) (by simp) (fun _ ht _ hs ↦ (measure_mono hs).trans_lt ht) fun s hs t ht ↦
     (measure_union_le s t).trans_lt <| ENNReal.add_lt_top.2 ⟨hs, ht⟩
 
 theorem mem_cofinite : s ∈ μ.cofinite ↔ μ sᶜ < ∞ :=
@@ -1830,27 +1834,25 @@ theorem biSup_measure_Iic [Preorder α] {s : Set α} (hsc : s.Countable)
     exact iUnion₂_eq_univ_iff.2 hst
   · exact directedOn_iff_directed.2 (hdir.directed_val.mono_comp _ fun x y => Iic_subset_Iic.2)
 
-theorem tendsto_measure_Ico_atTop [Preorder α] [IsDirected α (· ≤ ·)] [NoMaxOrder α]
+theorem tendsto_measure_Ico_atTop [Preorder α] [NoMaxOrder α]
     [(atTop : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :
     Tendsto (fun x => μ (Ico a x)) atTop (𝓝 (μ (Ici a))) := by
   rw [← iUnion_Ico_right]
   exact tendsto_measure_iUnion_atTop (antitone_const.Ico monotone_id)
 
-theorem tendsto_measure_Ioc_atBot [Preorder α] [IsDirected α (· ≥ ·)] [NoMinOrder α]
+theorem tendsto_measure_Ioc_atBot [Preorder α] [NoMinOrder α]
     [(atBot : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :
     Tendsto (fun x => μ (Ioc x a)) atBot (𝓝 (μ (Iic a))) := by
   rw [← iUnion_Ioc_left]
   exact tendsto_measure_iUnion_atBot (monotone_id.Ioc antitone_const)
 
-theorem tendsto_measure_Iic_atTop [Preorder α] [IsDirected α (· ≤ ·)]
-    [(atTop : Filter α).IsCountablyGenerated] (μ : Measure α) :
-    Tendsto (fun x => μ (Iic x)) atTop (𝓝 (μ univ)) := by
+theorem tendsto_measure_Iic_atTop [Preorder α] [(atTop : Filter α).IsCountablyGenerated]
+    (μ : Measure α) : Tendsto (fun x => μ (Iic x)) atTop (𝓝 (μ univ)) := by
   rw [← iUnion_Iic]
   exact tendsto_measure_iUnion_atTop monotone_Iic
 
-theorem tendsto_measure_Ici_atBot [Preorder α] [IsDirected α (· ≥ ·)]
-    [(atBot : Filter α).IsCountablyGenerated] (μ : Measure α) :
-    Tendsto (fun x => μ (Ici x)) atBot (𝓝 (μ univ)) :=
+theorem tendsto_measure_Ici_atBot [Preorder α] [(atBot : Filter α).IsCountablyGenerated]
+    (μ : Measure α) : Tendsto (fun x => μ (Ici x)) atBot (𝓝 (μ univ)) :=
   tendsto_measure_Iic_atTop (α := αᵒᵈ) μ
 
 variable [PartialOrder α] {a b : α}

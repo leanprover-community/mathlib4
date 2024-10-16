@@ -66,13 +66,13 @@ section UniformAddGroup
 
 variable [UniformSpace F] [UniformAddGroup F]
 
-lemma uniformInducing_toUniformOnFun :
-    UniformInducing (toUniformOnFun :
+lemma isUniformInducing_toUniformOnFun :
+    IsUniformInducing (toUniformOnFun :
       ContinuousMultilinearMap 𝕜 E F → ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) := ⟨rfl⟩
 
 lemma isUniformEmbedding_toUniformOnFun :
     IsUniformEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
-  ⟨uniformInducing_toUniformOnFun, DFunLike.coe_injective⟩
+  ⟨isUniformInducing_toUniformOnFun, DFunLike.coe_injective⟩
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_toUniformOnFun := isUniformEmbedding_toUniformOnFun
@@ -128,7 +128,7 @@ theorem completeSpace (h : RestrictGenTopology {s : Set (Π i, E i) | IsVonNBoun
   have H : ∀ {m : Π i, E i},
       Continuous fun f : (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F ↦ toFun _ f m :=
     (uniformContinuous_eval (isVonNBounded_covers) _).continuous
-  rw [completeSpace_iff_isComplete_range uniformInducing_toUniformOnFun, range_toUniformOnFun]
+  rw [completeSpace_iff_isComplete_range isUniformInducing_toUniformOnFun, range_toUniformOnFun]
   simp only [setOf_and, setOf_forall]
   apply_rules [IsClosed.isComplete, IsClosed.inter]
   · exact UniformOnFun.isClosed_setOf_continuous h

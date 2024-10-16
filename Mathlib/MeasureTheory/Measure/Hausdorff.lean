@@ -268,7 +268,7 @@ theorem mono_pre (m : Set X → ℝ≥0∞) {r r' : ℝ≥0∞} (h : r ≤ r') :
   le_pre.2 fun _ hs => pre_le (hs.trans h)
 
 theorem mono_pre_nat (m : Set X → ℝ≥0∞) : Monotone fun k : ℕ => pre m k⁻¹ :=
-  fun k l h => le_pre.2 fun s hs => pre_le (hs.trans <| by simpa)
+  fun k l h => le_pre.2 fun _ hs => pre_le (hs.trans <| by simpa)
 
 theorem tendsto_pre (m : Set X → ℝ≥0∞) (s : Set X) :
     Tendsto (fun r => pre m r s) (𝓝[>] 0) (𝓝 <| mkMetric' m s) := by
@@ -470,7 +470,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
   simp only [← OuterMeasure.coe_mkMetric, OuterMeasure.mkMetric, OuterMeasure.mkMetric',
     OuterMeasure.iSup_apply, OuterMeasure.mkMetric'.pre, OuterMeasure.boundedBy_apply, extend]
   refine
-    surjective_id.iSup_congr (fun r => r) fun r =>
+    surjective_id.iSup_congr (id) fun r =>
       iSup_congr_Prop Iff.rfl fun _ =>
         surjective_id.iInf_congr _ fun t => iInf_congr_Prop Iff.rfl fun ht => ?_
   dsimp

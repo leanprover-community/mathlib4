@@ -101,7 +101,7 @@ theorem completeSpace (h : RestrictGenTopology {s : Set (ι → E) | IsVonNBound
       simp
   have := ContinuousMultilinearMap.completeSpace (F := F) h
   rw [completeSpace_iff_isComplete_range
-    isUniformEmbedding_toContinuousMultilinearMap.toUniformInducing]
+    isUniformEmbedding_toContinuousMultilinearMap.isUniformInducing]
   apply isClosed_range_toContinuousMultilinearMap.isComplete
 
 instance instCompleteSpace [TopologicalAddGroup E] [SequentialSpace (ι → E)] :
