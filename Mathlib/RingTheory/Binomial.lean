@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Floor
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Data.List.Permutation
 
 /-!
 # Binomial rings

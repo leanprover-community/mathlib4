@@ -3,10 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.List.Count
 import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Duplicate
-import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Lattice
 import Batteries.Data.List.Perm
 
