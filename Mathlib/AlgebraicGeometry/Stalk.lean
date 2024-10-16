@@ -130,7 +130,7 @@ lemma Spec_fromSpecStalk' (R : CommRingCat) (x) :
     (Spec R).fromSpecStalk x = Spec.map (StructureSheaf.toStalk R _) :=
   Spec_fromSpecStalk _ _
 
-/-- https://stacks.math.columbia.edu/tag/01J7 -/
+@[stacks 01J7]
 lemma range_fromSpecStalk {x : X} :
     Set.range (X.fromSpecStalk x).1.base = { y | y ⤳ x } := by
   ext y
