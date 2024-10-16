@@ -430,10 +430,7 @@ theorem Module.finrank_zero_iff [NoZeroSMulDivisors R M] :
 /-- Similar to `rank_quotient_add_rank_le` but for `finrank` and a finite `M`. -/
 lemma Module.finrank_quotient_add_finrank_le (N : Submodule R M) :
     finrank R (M ⧸ N) + finrank R N ≤ finrank R M := by
-  by_cases h : Subsingleton R
-  · rw [finrank_zero_iff.2 (Module.subsingleton R _), finrank_zero_iff.2 (Module.subsingleton R _),
-      finrank_zero_iff.2 (Module.subsingleton R _)]
-  rw [not_subsingleton_iff_nontrivial] at h
+  haveI := nontrivial_of_invariantBasisNumber R
   have := rank_quotient_add_rank_le N
   rw [← finrank_eq_rank R M, ← finrank_eq_rank R, ← N.finrank_eq_rank] at this
   exact mod_cast this
