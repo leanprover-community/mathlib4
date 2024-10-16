@@ -278,7 +278,7 @@ theorem isCycle_iff_sameCycle (hx : f x ≠ x) : IsCycle f ↔ ∀ {y}, SameCycl
         rw [← zpow_apply_eq_self_of_apply_eq_self hy i, (f ^ i).injective.eq_iff] at hi
         rw [hi, hy],
       hf.exists_zpow_eq hx⟩,
-    fun h => ⟨x, hx, fun y hy => h.2 hy⟩⟩
+    fun h => ⟨x, hx, fun _ hy => h.2 hy⟩⟩
 
 section Finite
 
@@ -790,7 +790,7 @@ theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ 
 
 theorem IsCycleOn.zpow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
     ∀ {n : ℤ}, (f ^ n) a = a ↔ (s.card : ℤ) ∣ n
-  | Int.ofNat n => (hf.pow_apply_eq ha).trans Int.natCast_dvd_natCast.symm
+  | Int.ofNat _ => (hf.pow_apply_eq ha).trans Int.natCast_dvd_natCast.symm
   | Int.negSucc n => by
     rw [zpow_negSucc, ← inv_pow]
     exact (hf.inv.pow_apply_eq ha).trans (dvd_neg.trans Int.natCast_dvd_natCast).symm
@@ -932,7 +932,7 @@ variable {f : Perm α} {s : Finset α}
 
 theorem product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
     (range s.card : Set ℕ).PairwiseDisjoint fun k =>
-      s.map ⟨fun i => (i, (f ^ k) i), fun i j => congr_arg Prod.fst⟩ := by
+      s.map ⟨fun i => (i, (f ^ k) i), fun _ _ => congr_arg Prod.fst⟩ := by
   obtain hs | _ := (s : Set α).subsingleton_or_nontrivial
   · refine Set.Subsingleton.pairwise ?_ _
     simp_rw [Set.Subsingleton, mem_coe, ← card_le_one] at hs ⊢
@@ -960,7 +960,7 @@ The diagonals are given by the cycle `f`.
 theorem product_self_eq_disjiUnion_perm (hf : f.IsCycleOn s) :
     s ×ˢ s =
       (range s.card).disjiUnion
-        (fun k => s.map ⟨fun i => (i, (f ^ k) i), fun i j => congr_arg Prod.fst⟩)
+        (fun k => s.map ⟨fun i => (i, (f ^ k) i), fun _ _ => congr_arg Prod.fst⟩)
         (product_self_eq_disjiUnion_perm_aux hf) := by
   ext ⟨a, b⟩
   simp only [mem_product, Equiv.Perm.coe_pow, mem_disjiUnion, mem_range, mem_map,

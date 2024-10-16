@@ -373,7 +373,7 @@ theorem induction_on' {P : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
   Finsupp.induction p
     (suffices P (monomial 0 0) by rwa [monomial_zero] at this
     show P (monomial 0 0) from h1 0 0)
-    fun a b f _ha _hb hPf => h2 _ _ (h1 _ _) hPf
+    fun _ _ _ _ha _hb hPf => h2 _ _ (h1 _ _) hPf
 
 /-- Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is required. -/
 theorem induction_on''' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
@@ -404,12 +404,12 @@ theorem induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h
 theorem ringHom_ext {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
     (hC : ∀ r, f (C r) = g (C r)) (hX : ∀ i, f (X i) = g (X i)) : f = g := by
   refine AddMonoidAlgebra.ringHom_ext' ?_ ?_
-  -- Porting note: this has high priority, but Lean still chooses `RingHom.ext`, why?
+  -- Porting note (#11041): this has high priority, but Lean still chooses `RingHom.ext`, why?
   -- probably because of the type synonym
   · ext x
     exact hC _
   · apply Finsupp.mulHom_ext'; intros x
-    -- Porting note: `Finsupp.mulHom_ext'` needs to have increased priority
+    -- Porting note (#11041): `Finsupp.mulHom_ext'` needs to have increased priority
     apply MonoidHom.ext_mnat
     exact hX _
 

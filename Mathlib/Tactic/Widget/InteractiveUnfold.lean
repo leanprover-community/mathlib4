@@ -225,7 +225,7 @@ elab stx:"unfold?" : tactic => do
 
 /-- `#unfold? e` gives all unfolds of `e`.
 In tactic mode, use `unfold?` instead. -/
-syntax (name := unfoldCommand) "#unfold?" term : command
+syntax (name := unfoldCommand) "#unfold? " term : command
 
 open Elab
 /-- Elaborate a `#unfold?` command. -/
