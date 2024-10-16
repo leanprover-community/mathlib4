@@ -50,7 +50,7 @@ theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullbac
   have h₂ : ∀ y, G.map (pullback.snd _ _) ((PreservesPullback.iso G π π).inv y) =
       pullback.snd (G.map π) (G.map π) y := by
     simp only [← PreservesPullback.iso_inv_snd]; intro y; rfl
-  erw [h₁, h₂, TopCat.pullbackIsoProdSubtype_inv_fst_apply,
+  rw [h₁, h₂, TopCat.pullbackIsoProdSubtype_inv_fst_apply,
     TopCat.pullbackIsoProdSubtype_inv_snd_apply] at ha'
   simpa using ha'
 
