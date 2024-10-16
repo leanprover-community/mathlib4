@@ -19,6 +19,12 @@ import Mathlib.NumberTheory.Padics.PadicNorm
 Ostrowski's Theorem for the field `ℚ`: every absolute value on `ℚ` is equivalent to either a
 `p`-adic absolute value or to the standard Archimedean (Euclidean) absolute value.
 
+## Main results
+
+- `mulRingNorm_equiv_standard_or_padic`: given an absolute value on `ℚ`, it is equivalent to the
+standard Archimedean (Euclidean) absolute value or to a `p`-adic absolute value for some prime
+number `p`.
+
 ## TODO
 
 Extend to arbitrary number fields.
@@ -441,7 +447,7 @@ lemma mulRingNorm_le_mulRingNorm_pow_log : f n ≤ f m ^ logb m n := by
     nth_rw 2 [← one_mul (f ↑m ^ logb ↑m ↑n)]
     exact Tendsto.mul_const _ (tendsto_root_atTop_nhds_one (expr_pos hm notbdd))
   exact le_of_tendsto_of_tendsto (tendsto_const_nhds (x:= f ↑n)) this ((eventually_atTop.2 ⟨2,
-    fun b hb ↦ param_upperbound hm hn notbdd b (not_eq_zero_of_lt hb)⟩))
+    fun b hb ↦ param_upperbound hm hn notbdd (not_eq_zero_of_lt hb)⟩))
 
 include hm hn notbdd in
 /-- Given m,n ≥ 2 and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
