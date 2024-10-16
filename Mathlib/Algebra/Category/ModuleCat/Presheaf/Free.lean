@@ -39,7 +39,7 @@ noncomputable def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModules.{u} R whe
   map {X Y} f := ModuleCat.freeDesc (fun x ↦ ModuleCat.freeMk (F.map f x))
   map_id := by aesop
 
-/-- The free presheaf of modules functors `(Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`. -/
+/-- The free presheaf of modules functor `(Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`. -/
 @[simps]
 noncomputable def free : (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R where
   obj := freeObj
