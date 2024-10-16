@@ -62,6 +62,12 @@ lemma iff_flat_and_proper_ideal :
   obtain ⟨m, hm, le⟩ := I.exists_le_maximal hI
   exact h hm <| eq_top_iff.2 <| show ⊤ ≤ m • ⊤ from r ▸ Submodule.smul_mono le (by simp [r])
 
+lemma iff_flat_and_ideal_smul_eq_top :
+    FaithfullyFlat R M ↔
+    (Flat R M ∧ ∀ (I : Ideal R), I • (⊤ : Submodule R M) = ⊤ → I = ⊤) :=
+  iff_flat_and_proper_ideal R M |>.trans <| and_congr_right_iff.2 fun _ => iff_of_eq <|
+    forall_congr fun I => eq_iff_iff.2 <| by tauto
+
 end proper_ideal
 
 section faithful
