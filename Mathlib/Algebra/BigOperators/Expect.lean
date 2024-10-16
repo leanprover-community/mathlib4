@@ -111,7 +111,7 @@ open scoped BigOperators
 namespace Finset
 section AddCommMonoid
 variable [AddCommMonoid M] [Module ℚ≥0 M] [AddCommMonoid N] [Module ℚ≥0 N] {s t : Finset ι}
-  {f g : ι → M} {m : N → M} {p q : ι → Prop} [DecidablePred p] [DecidablePred q]
+  {f g : ι → M} {p q : ι → Prop} [DecidablePred p] [DecidablePred q]
 
 lemma expect_univ [Fintype ι] : 𝔼 i, f i = (∑ i, f i) /ℚ Fintype.card ι := by
   rw [expect, card_univ]
@@ -299,7 +299,7 @@ lemma smul_expect {G : Type*} [DistribSMul G M] [SMulCommClass G ℚ≥0 M] (a :
 end AddCommMonoid
 
 section AddCommGroup
-variable [AddCommGroup M] [Module ℚ≥0 M] [Field N] [Module ℚ≥0 N] {s : Finset ι}
+variable [AddCommGroup M] [Module ℚ≥0 M]
 
 lemma expect_sub_distrib (s : Finset ι) (f g : ι → M) :
     𝔼 i ∈ s, (f i - g i) = 𝔼 i ∈ s, f i - 𝔼 i ∈ s, g i := by
@@ -312,7 +312,7 @@ lemma expect_neg_distrib (s : Finset ι) (f : ι → M) : 𝔼 i ∈ s, -f i = -
 end AddCommGroup
 
 section Semiring
-variable [Semiring M] [Module ℚ≥0 M] {s : Finset ι} {f g : ι → M} {m : N → M}
+variable [Semiring M] [Module ℚ≥0 M]
 
 @[simp] lemma card_mul_expect (s : Finset ι) (f : ι → M) :
     s.card * 𝔼 i ∈ s, f i = ∑ i ∈ s, f i := by rw [← nsmul_eq_mul, card_smul_expect]
@@ -344,7 +344,7 @@ lemma expect_pow (s : Finset ι) (f : ι → M) (n : ℕ) :
 end CommSemiring
 
 section Semifield
-variable [Semifield M] [CharZero M] {s : Finset ι} {f g : ι → M} {m : N → M}
+variable [Semifield M] [CharZero M]
 
 lemma expect_boole_mul [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → M) (i : ι) :
     𝔼 j, ite (i = j) (Fintype.card ι : M) 0 * f j = f i := by
@@ -387,7 +387,7 @@ namespace Fintype
 variable [Fintype ι] [Fintype κ]
 
 section AddCommMonoid
-variable [AddCommMonoid M] [Module ℚ≥0 M] {f : ι → M}
+variable [AddCommMonoid M] [Module ℚ≥0 M]
 
 /-- `Fintype.expect_bijective` is a variant of `Finset.expect_bij` that accepts
 `Function.Bijective`.
