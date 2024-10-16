@@ -363,7 +363,7 @@ end
 
 section
 
-variable {C : Type u₄} [Category.{v₄} C] {D : Type u₅} [Category.{v₅} D]
+variable {C : Type u₄} [Category.{v₄} C]
 
 /-- The functor `(F ⋙ L, R) ⥤ (L, R)` -/
 @[simps]
