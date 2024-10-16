@@ -203,7 +203,6 @@ theorem IsInvariantBlock.isFixedBlock {B : Set X} (hfB : IsInvariantBlock G B) :
 theorem IsInvariantBlock.isBlock {B : Set X} (hfB : IsInvariantBlock G B) :
     IsBlock G B :=
   hfB.isFixedBlock.isBlock
-@[deprecated (since := "2024-09-14")] alias isFixedBlock_top := IsInvariantBlock.isBlock
 
 /-- An orbit is a block -/
 theorem isFixedBlock_orbit (a : X) : IsFixedBlock G (orbit G a) :=
@@ -218,6 +217,7 @@ variable (X)
 /-- The full set is a (trivial) block -/
 theorem isFixedBlock_univ : IsFixedBlock G (Set.univ : Set X) :=
   fun _ ↦ by simp only [Set.smul_set_univ]
+@[deprecated (since := "2024-09-14")] alias isFixedBlock_top := isFixedBlock_univ
 
 /-- The full set is a (trivial) block -/
 theorem isBlock_univ : IsBlock G (Set.univ : Set X) :=
@@ -498,8 +498,7 @@ theorem ncard_block_eq_relindex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
     ext; rfl
   rw [Subgroup.relindex, key, index_stabilizer, hB.orbit_stabilizer_eq hx]
 
-/-- The cardinality of the ambient is the product of
-  of the cardinality of a block
+/-- The cardinality of the ambient is the product of of the cardinality of a block
   by the cardinality of the set of translates of that block -/
 theorem ncard_block_mul_ncard_orbit_eq (hB : IsBlock G B) (hB_ne : B.Nonempty) :
     Set.ncard B * Set.ncard (orbit G B) = Nat.card X := by
