@@ -253,6 +253,26 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
       simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ',
         Nat.sub_add_cancel (show 1 ≤ n from hpos), sub_add_cancel]
 
+/-- If `n = 0` in `R` and `b` is a unit, then `a * X ^ n + b * X + c` is separable. -/
+theorem separable_C_mul_X_pow_add_C_mul_X_add_C
+    {n : ℕ} (a b c : R) (hn : (n : R) = 0) (hb : IsUnit b) :
+    (C a * X ^ n + C b * X + C c).Separable := by
+  set f := C a * X ^ n + C b * X + C c
+  have hderiv : derivative f = C b := by
+    simp_rw [f, map_add derivative, derivative_C]
+    simp [hn]
+  obtain ⟨e, hb⟩ := hb.exists_left_inv
+  refine ⟨-derivative f, f + C e, ?_⟩
+  rw [hderiv, right_distrib, ← add_assoc, neg_mul, mul_comm, neg_add_cancel, zero_add,
+    ← map_mul, hb, map_one]
+
+/-- If `R` is of characteristic `p`, `p ∣ n` and `b` is a unit,
+then `a * X ^ n + b * X + c` is separable. -/
+theorem separable_C_mul_X_pow_add_C_mul_X_add_C'
+    (p n : ℕ) (a b c : R) [CharP R p] (hn : p ∣ n) (hb : IsUnit b) :
+    (C a * X ^ n + C b * X + C c).Separable :=
+  separable_C_mul_X_pow_add_C_mul_X_add_C a b c ((CharP.cast_eq_zero_iff R p n).2 hn) hb
+
 theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : Separable p)
     (x : R) : rootMultiplicity x p ≤ 1 := by
   classical
@@ -402,6 +422,11 @@ end CharP
 theorem separable_X_pow_sub_C {n : ℕ} (a : F) (hn : (n : F) ≠ 0) (ha : a ≠ 0) :
     Separable (X ^ n - C a) :=
   separable_X_pow_sub_C_unit (Units.mk0 a ha) (IsUnit.mk0 (n : F) hn)
+
+/-- If `F` is of characteristic `p` and `p ∤ n`, then `X ^ n - a` is separable for any `a ≠ 0`. -/
+theorem separable_X_pow_sub_C' (p n : ℕ) (a : F) [CharP F p] (hn : ¬p ∣ n) (ha : a ≠ 0) :
+    Separable (X ^ n - C a) :=
+  separable_X_pow_sub_C a (by rwa [← CharP.cast_eq_zero_iff F p n] at hn) ha
 
 -- this can possibly be strengthened to making `separable_X_pow_sub_C_unit` a
 -- bi-implication, but it is nontrivial!
