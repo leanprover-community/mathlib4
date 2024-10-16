@@ -87,7 +87,7 @@ scoped[LaurentPolynomial] notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
 
 open LaurentPolynomial
 
--- Porting note: `ext` no longer applies `Finsupp.ext` automatically
+-- Porting note (#5229): `ext` no longer applies `Finsupp.ext` automatically
 @[ext]
 theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
   Finsupp.ext h

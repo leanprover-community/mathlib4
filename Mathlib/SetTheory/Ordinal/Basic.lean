@@ -449,7 +449,7 @@ the elements of `α`. -/
 -- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply_coe]
 def enum (r : α → α → Prop) [IsWellOrder α r] :
-    @RelIso (Subtype fun o => o < type r) α (Subrel (· < · ) _) r :=
+    @RelIso { o // o < type r } α (Subrel (· < ·) { o | o < type r }) r :=
   (typein.principalSeg r).subrelIso
 
 @[simp]

@@ -37,7 +37,7 @@ open Function Set
 
 namespace Set
 
-variable {α β γ : Type*} {ι ι' : Sort*}
+variable {α β γ : Type*} {ι : Sort*}
 
 /-! ### Inverse image -/
 
