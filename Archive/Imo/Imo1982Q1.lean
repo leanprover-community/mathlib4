@@ -10,40 +10,40 @@ import Mathlib.Data.PNat.Basic
 /-!
 # IMO 1982 Q1
 
-The function $f(n)$ is defined for all postive integers $n$ and takes on
-non-negative integer values. Also, for all $m$, $n$
+The function `f` is defined for all positive integers `n` and takes on
+non-negative integer values. Also, for all `m`, `n`
 
-$f (m + n) - f(m) - f(n) = 0 \text{ or } 1$
-$f(2) = 0, f(3) > 0, and f(9999) = 3333.$
+`f (m + n) - f(m) - f(n) = 0` or `1`
+`f 2 = 0`, `f 3 > 0`, and `f 9999 = 3333`.
 
-Determine $f(1982)$.
+Determine `f 1982`.
 
 The solution is based on the one at the
 [Art of Problem Solving](https://artofproblemsolving.com/wiki/index.php/1982_IMO_Problems/Problem_1)
 website.
 
 We prove the helper lemmas:
-1. $nf(m) \leq f(mn)$ `superhomogeneous`.
-2. $f(m) + f(n) \leq f(m + n)$ `superadditive`.
-3. $a f(a) + c f(d) \leq f(a \cdot b + c \cdot d)$ `superlinear`, (derived from 1. and 2.).
+1. `f m + f n ≤ f(m + n)` `superadditive`.
+2. `n * f(m) ≤ f(m * n)` `superhomogeneous`.
+3. `a * f a  + c * f d ≤ f (a * b + c * d)` `superlinear`, (derived from 1. and 2.).
 
-So we can establish on the one hand that $f(1980) \leq 660$,
-by observing that $660\cdot 1 = 660 f(3) \leq f(1980) = f(660\cdot 3)$.
+So we can establish on the one hand that `f 1980 ≤ 660`,
+by observing that `660 * 1 = 660 * f3 ≤ f 1980 = f (660 * 3)`.
 
-On the other hand, we establish that $f(1980) \geq 660$
-from $5 \cdot f(1980) + 33\cdot f(3) \leq f(5\cdot 1980 + 33\cdot 1) = f(9999) = 3333$.
+On the other hand, we establish that `f 1980 ≥ 660`
+from `5 * f 1980 + 33 * f 3 ≤ f (5 * 1980 + 33 * 1) = f 9999 = 3333`.
 
-We then conclude $f(1980) = 660$ and then eventually determine that either
-$f(1982) = 660$ or $f(1982) = 661$.
+We then conclude `f 1980 = 660` and then eventually determine that either
+`f 1982 = 660` or `f 1982 = 661`.
 
-In the latter case we derive a contradiction, because if $f(1982) = 661$ then
-$3334 = 5\cdot f(1982) + 29\cdot f(3) + f(2) \leq f(5\cdot 1982 + 29\cdot 3 + 2) = f(9999) = 3333$.
+In the latter case we derive a contradiction, because if `f 1982 = 661` then
+`3334 = 5 * f 1982 + 29 * f(3) + f(2) ≤ f (5 * 1982 + 29 * 3 + 2) = f 9999 = 3333`.
 -/
 
 namespace Imo1982Q1
 
 structure IsGood (f : ℕ+ → ℕ) : Prop where
-  /-- Satisfies the functional relation-/
+  /-- The function satisfies the functional relation-/
   rel: ∀ m n : ℕ+, f (m + n) = f m + f n ∨ f (m + n) = f m + f n + 1
   f₂ : f 2 = 0
   hf₃ : 0 < f 3
@@ -69,32 +69,31 @@ lemma f₃ : f 3 = 1 := by
     rw [or_iff_right (not_left)] at h
     exact h
 
-lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
-  induction n using PNat.recOn
-  case p1 => simp
-  case hp n' ih =>
-    have rel : f (n' * m + m) = f (n' * m) + f (m) ∨
-               f (n' * m + m) = f (n' * m) + f (m) + 1 := hf.rel (n' * m) m
-    calc
-    ↑(n' + 1) * f m = ↑n' * f m + f m := by rw [PNat.add_coe, add_mul, PNat.val_ofNat, one_mul];
-    _ ≤ f (n' * m) + f m := add_le_add_right ih (f m)
-    _ ≤ f (n' * m + m) := by
-      rcases rel with ( hl | hr)
-      · rw [hl]
-      · rw [hr]; nth_rewrite 1 [← add_zero (f m), ← add_assoc]; apply add_le_add_left (by norm_num)
-    _ = f ((n' + 1) * m) := by congr; rw [add_mul, one_mul]
-
 lemma superadditive {m n : ℕ+} : f m + f n ≤ f (m + n) := by
   have h := hf.rel m n
   rcases h with ( hl | hr )
   · rw [hl]
   · rw [hr]; nth_rewrite 1 [← add_zero (f n), ← add_assoc]; apply add_le_add_right (by norm_num)
 
+lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
+  induction n using PNat.recOn
+  case p1 => simp
+  case hp n' ih =>
+    calc
+    ↑(n' + 1) * f m = ↑n' * f m + f m := by rw [PNat.add_coe, add_mul, PNat.val_ofNat, one_mul]
+    _ ≤ f (n' * m) + f m := add_le_add_right ih (f m)
+    _ ≤ f (n' * m + m) := hf.superadditive
+    _ = f ((n' + 1) * m) := by congr; rw [add_mul, one_mul]
+
 lemma superlinear {a b c d : ℕ+} : a * f b + c * f d ≤ f (a * b + c * d) :=
   (add_le_add hf.superhomogeneous hf.superhomogeneous).trans hf.superadditive
 
+lemma le_mul_three_apply (n : ℕ+) : n ≤ f (3 * n) := by
+  rw [← mul_one (n : ℕ), ← hf.f₃, mul_comm 3]
+  exact hf.superhomogeneous
+
 lemma part_1 : 660 ≤ f (1980) := by
-  rw [← mul_one (660), ← PNat.val_ofNat 660, ← hf.f₃]; apply hf.superhomogeneous
+  exact hf.le_mul_three_apply 660
 
 lemma part_2 : f 1980 ≤ 660 := by
   have h : 5 * f 1980 + 33 * f 3 ≤ 5 * 660 + 33 := by
@@ -107,19 +106,20 @@ lemma part_2 : f 1980 ≤ 660 := by
 
 end IsGood
 
+end Imo1982Q1
+
+open Imo1982Q1
+
 lemma imo1982_q1 {f : ℕ+ → ℕ} (hf : IsGood f) : f 1982 = 660 := by
   have f_1980 := hf.part_2.antisymm hf.part_1
   have h : f 1982 = f 1980 + f 2 ∨ f 1982 = f 1980 + f 2 + 1 := hf.rel 1980 2
   rw [f_1980, hf.f₂, add_zero] at h
   apply h.resolve_right
   intro hr
-  have h : 3334 ≤ 3333 := by -- a contradiction
-    calc
-      3334 = 5 * f 1982 + 29 * f 3 + f 2 := by rw [hf.f₃, hf.f₂, hr, add_zero, mul_one]
-      (5 : ℕ+) * f 1982 + (29 : ℕ+) * f 3 + f 2 ≤ f (5 * 1982 + 29 * 3) + f 2 :=
-        add_le_add_right hf.superlinear _
-      _ ≤ f (5 * 1982 + 29 * 3 + 2) := hf.superadditive
-      _ = 3333 := hf.f_9999
-  norm_num at h
-
-end Imo1982Q1
+  suffices h : 3334 ≤ 3333 by norm_num at h
+  calc
+    3334 = 5 * f 1982 + 29 * f 3 + f 2 := by rw [hf.f₃, hf.f₂, hr, add_zero, mul_one]
+    (5 : ℕ+) * f 1982 + (29 : ℕ+) * f 3 + f 2 ≤ f (5 * 1982 + 29 * 3) + f 2 :=
+      add_le_add_right hf.superlinear _
+    _ ≤ f (5 * 1982 + 29 * 3 + 2) := hf.superadditive
+    _ = 3333 := hf.f_9999
