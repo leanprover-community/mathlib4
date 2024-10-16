@@ -54,11 +54,11 @@ theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
 instance : EquivLike (X ≃ₜ Y) X Y where
-  coe := fun h => h.toEquiv
-  inv := fun h => h.toEquiv.symm
-  left_inv := fun h => h.left_inv
-  right_inv := fun h => h.right_inv
-  coe_injective' := fun _ _ H _ => toEquiv_injective <| DFunLike.ext' H
+  coe h := h.toEquiv
+  inv h := h.toEquiv.symm
+  left_inv h := h.left_inv
+  right_inv h := h.right_inv
+  coe_injective' _ _ H _ := toEquiv_injective <| DFunLike.ext' H
 
 instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨DFunLike.coe⟩
 
@@ -498,8 +498,6 @@ def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y
 
 /-- Product of two homeomorphisms. -/
 def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
-  continuous_toFun := h₁.continuous.prod_map h₂.continuous
-  continuous_invFun := h₁.symm.continuous.prod_map h₂.symm.continuous
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
 
 @[simp]
@@ -696,9 +694,9 @@ section Distrib
 def sumProdDistrib : (X ⊕ Y) × Z ≃ₜ (X × Z) ⊕ (Y × Z) :=
   Homeomorph.symm <|
     homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
-        ((continuous_inl.prod_map continuous_id).sum_elim
-          (continuous_inr.prod_map continuous_id)) <|
-      (isOpenMap_inl.prod IsOpenMap.id).sum_elim (isOpenMap_inr.prod IsOpenMap.id)
+        ((continuous_inl.prodMap continuous_id).sum_elim
+          (continuous_inr.prodMap continuous_id)) <|
+      (isOpenMap_inl.prodMap IsOpenMap.id).sum_elim (isOpenMap_inr.prodMap IsOpenMap.id)
 
 /-- `X × (Y ⊕ Z)` is homeomorphic to `X × Y ⊕ X × Z`. -/
 def prodSumDistrib : X × (Y ⊕ Z) ≃ₜ (X × Y) ⊕ (X × Z) :=
@@ -712,7 +710,7 @@ def sigmaProdDistrib : (Σ i, X i) × Y ≃ₜ Σ i, X i × Y :=
   Homeomorph.symm <|
     homeomorphOfContinuousOpen (Equiv.sigmaProdDistrib X Y).symm
       (continuous_sigma fun _ => continuous_sigmaMk.fst'.prod_mk continuous_snd)
-      (isOpenMap_sigma.2 fun _ => isOpenMap_sigmaMk.prod IsOpenMap.id)
+      (isOpenMap_sigma.2 fun _ => isOpenMap_sigmaMk.prodMap IsOpenMap.id)
 
 end Distrib
 
@@ -813,7 +811,7 @@ variable {Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace
 @[simps toEquiv]
 def toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : X ≃ₜ Y where
   toEquiv := e
-  continuous_toFun := continuous_def.2 fun s ↦ (he _).2
+  continuous_toFun := continuous_def.2 fun _ ↦ (he _).2
   continuous_invFun := continuous_def.2 fun s ↦ by convert (he _).1; simp
 
 @[simp] lemma coe_toHomeomorph (e : X ≃ Y) (he) : ⇑(e.toHomeomorph he) = e := rfl
@@ -952,7 +950,7 @@ lemma IsHomeomorph.sumMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph
     IsHomeomorph (Sum.map f g) := ⟨hf.1.sum_map hg.1, hf.2.sumMap hg.2, hf.3.sum_map hg.3⟩
 
 lemma IsHomeomorph.prodMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
-    IsHomeomorph (Prod.map f g) := ⟨hf.1.prod_map hg.1, hf.2.prod hg.2, hf.3.prodMap hg.3⟩
+    IsHomeomorph (Prod.map f g) := ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2, hf.3.prodMap hg.3⟩
 
 lemma IsHomeomorph.sigmaMap {ι κ : Type*} {X : ι → Type*} {Y : κ → Type*}
     [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)] {f : ι → κ}

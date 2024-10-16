@@ -7,7 +7,6 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.UniformGroup
-import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.LinearAlgebra.Projection
@@ -245,10 +244,6 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring 
     (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] [FunLike F M M₂]
     extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂ : Prop
-
--- `σ`, `R` and `S` become metavariables, but they are all outparams so it's OK
--- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
--- attribute [nolint dangerous_instance] ContinuousSemilinearMapClass.toContinuousMapClass
 
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
@@ -1817,8 +1812,8 @@ theorem trans_toLinearEquiv (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃S
 def prod [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂) (e' : M₃ ≃L[R₁] M₄) :
     (M₁ × M₃) ≃L[R₁] M₂ × M₄ :=
   { e.toLinearEquiv.prod e'.toLinearEquiv with
-    continuous_toFun := e.continuous_toFun.prod_map e'.continuous_toFun
-    continuous_invFun := e.continuous_invFun.prod_map e'.continuous_invFun }
+    continuous_toFun := e.continuous_toFun.prodMap e'.continuous_toFun
+    continuous_invFun := e.continuous_invFun.prodMap e'.continuous_invFun }
 
 @[simp, norm_cast]
 theorem prod_apply [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂)

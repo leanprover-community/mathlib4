@@ -69,7 +69,7 @@ variable [Add R] [Mul R] (c : RingCon R)
 
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 instance : FunLike (RingCon R) R (R → Prop) where
-  coe := fun c => c.r
+  coe c := c.r
   coe_injective' x y h := by
     rcases x with ⟨⟨x, _⟩, _⟩
     rcases y with ⟨⟨y, _⟩, _⟩

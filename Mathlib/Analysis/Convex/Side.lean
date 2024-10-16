@@ -588,7 +588,7 @@ theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
       exact s.smul_vsub_vadd_mem (r₂ / (r₁ + r₂)) hp₂ hp₁ hp₁
     · exact Set.mem_image_of_mem _
         ⟨by positivity,
-          div_le_one_of_le (le_add_of_nonneg_left hr₁.le) (Left.add_pos hr₁ hr₂).le⟩
+          div_le_one_of_le₀ (le_add_of_nonneg_left hr₁.le) (Left.add_pos hr₁ hr₂).le⟩
 
 theorem SOppSide.exists_sbtw {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) :
     ∃ p ∈ s, Sbtw R x p y := by
