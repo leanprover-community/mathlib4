@@ -181,7 +181,8 @@ with `set_option says.verify true` (e.g. during CI).
 
 section Rotate
 
-set_option maxHeartbeats 400000 in
+-- the increase in heart bearts is necessary only for CI because of the `simp? ... says`
+set_option maxHeartbeats 800000 in
 /-- Given `φ : K ⟶ L`, `K⟦(1 : ℤ)⟧` is homotopy equivalent to
 the mapping cone of `inr φ : L ⟶ mappingCone φ`. -/
 noncomputable def rotateHomotopyEquiv :
