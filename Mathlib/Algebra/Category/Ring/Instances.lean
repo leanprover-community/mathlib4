@@ -11,7 +11,6 @@ import Mathlib.RingTheory.LocalRing.RingHom.Basic
 # Ring-theoretic results in terms of categorical languages
 -/
 
-universe u
 
 open CategoryTheory
 
@@ -36,42 +35,6 @@ instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
     @Epi CommRingCat _ R _ (CommRingCat.ofHom <| algebraMap R <| Localization M : _) := by
   rcases R with ⟨α, str⟩
   exact IsLocalization.epi M _
-
-@[instance]
-theorem xxx {R S : CommRingCat} (f : R ⟶ S) [IsLocalHom f] :
-    IsLocalHom (f : .of R ⟶ S) :=
-  inferInstance
-
-@[instance]
-theorem zzz {R S : CommRingCat} (f : R ⟶ S) [IsLocalHom (f : R →+* S)] :
-    IsLocalHom f :=
-  inferInstance
-
-@[instance]
-theorem yyy {R S : CommRingCat} (f : R ⟶ S) [IsLocalHom f] :
-    IsLocalHom (f : R ⟶ .of S) :=
-  inferInstance
-
--- @[instance]
--- theorem foo1 {R S: Type u} [CommRing R] [CommRing S]
---   (f : R →+* S) [IsLocalHom f] :
---     IsLocalHom (f : CommRingCat.of R →+* S) := inferInstance
-
--- @[instance]
--- theorem bar1 {R: Type*} {S : CommRingCat} [CommRing R]
---   (f : .of R ⟶ S) [IsLocalHom f] :
---     IsLocalHom (f : R →+* S) := inferInstance
-
--- @[instance]
--- theorem foo2 {R S: Type*} [CommRing R] [CommRing S]
---   (f : R →+* S) [IsLocalHom f] :
---     IsLocalHom (f : R →+* CommRingCat.of S) := inferInstance
-
--- @[instance]
--- theorem bar2 {S: Type*} {R : CommRingCat} [CommRing S]
---   (f : R ⟶ .of S) [IsLocalHom f] :
---     IsLocalHom (f : R →+* S) := inferInstance
-
 
 @[instance]
 theorem CommRingCat.isLocalHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
