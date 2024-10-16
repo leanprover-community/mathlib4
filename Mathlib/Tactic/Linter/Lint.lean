@@ -311,7 +311,7 @@ The "longFile" linter emits a warning on files which are longer than a certain n
 
 /--
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
-(1500 by default on mathlib, no limit for downstream projects).
+(`linter.style.longFileDefValue` by default on mathlib, no limit for downstream projects).
 If this option is set to `N` lines, the linter warns once a file has more than `N` lines.
 A value of `0` silences the linter entirely.
 -/
@@ -354,6 +354,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if let some init := stx.getTailPos? then
     -- the last line: we subtract 1, since the last line is expected to be empty
     let lastLine := ((← getFileMap).toPosition init).line
+    -- In this case, the file has an allowed length, and the linter option is unnecessarily set.
     if lastLine ≤ defValue && defValue < linterBound then
       logWarningAt stx <| .tagged linter.style.longFile.name
         m!"The default value of the `longFile` linter is {defValue}.\n\
@@ -365,12 +366,23 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- `candidate` is necessarily bigger than `lastLine` and hence bigger than `defValue`
     let candidate := (lastLine / 100) * 100 + 200
     let candidate := max candidate defValue
-    if linterBound < lastLine then
+    -- In this case, the file is longer than the default and also than what the option says.
+    if defValue ≤ linterBound && linterBound < lastLine then
       logWarningAt stx <| .tagged linter.style.longFile.name
         m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
           You can extend the allowed length of the file using \
           `set_option linter.style.longFile {candidate}`.\n\
           You can completely disable this linter by setting the length limit to `0`."
+    else
+    -- Finally, the file exceeds the default value, but not the option: we only allow the value
+    -- of the option to be `candidate` or `candidate + 100`.
+    -- In particular, this flags any option that is set to an unnecessarily high value.
+    if linterBound == candidate || linterBound + 100 == candidate then return
+    else
+      logWarningAt stx <| .tagged linter.style.longFile.name
+        m!"This file is {lastLine} lines long. \
+          The current limit is {linterBound}, but it is expected to be {candidate}:\n\
+          `set_option linter.style.longFile {candidate}`."
 
 initialize addLinter longFileLinter
 
