@@ -438,7 +438,7 @@ lemma iff_exists_appLE_locally (hQi : RespectsIso Q) [HasRingHomProperty P (Loca
       Q (f.appLE U V e) := by
   refine ⟨fun hf x ↦ ?_, fun hf ↦ (IsLocalAtSource.iff_exists_resLE (P := P)).mpr <| fun x ↦ ?_⟩
   · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open Y)
-      (Opens.mem_top <| f.val.base x)
+      (Opens.mem_top <| f.base x)
     obtain ⟨V, hV, hx, e⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open X)
       (show x ∈ f ⁻¹ᵁ U from hfx)
     simp_rw [HasRingHomProperty.iff_appLE (P := P), locally_iff_isLocalization hQi] at hf
