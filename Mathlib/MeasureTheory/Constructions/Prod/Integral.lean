@@ -153,8 +153,7 @@ theorem integrable_measure_prod_mk_left {s : Set (α × β)} (hs : MeasurableSet
   refine ⟨(measurable_measure_prod_mk_left hs).ennreal_toReal.aemeasurable.aestronglyMeasurable, ?_⟩
   simp_rw [HasFiniteIntegral, ennnorm_eq_ofReal toReal_nonneg]
   convert h2s.lt_top using 1
-  -- Porting note: was `simp_rw`
-  rw [prod_apply hs]
+  simp_rw [prod_apply hs]
   apply lintegral_congr_ae
   filter_upwards [ae_measure_lt_top hs h2s] with x hx
   rw [lt_top_iff_ne_top] at hx; simp [ofReal_toReal, hx]
@@ -426,8 +425,7 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
       integral_indicator (measurable_prod_mk_left hs), setIntegral_const, integral_smul_const,
       integral_toReal (measurable_measure_prod_mk_left hs).aemeasurable
         (ae_measure_lt_top hs h2s.ne)]
-    -- Porting note: was `simp_rw`
-    rw [prod_apply hs]
+    simp_rw [prod_apply hs]
   · rintro f g - i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral continuous_integral_integral
