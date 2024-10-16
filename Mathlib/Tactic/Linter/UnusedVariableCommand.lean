@@ -155,12 +155,8 @@ def usedVarsRef.addTemp (scope : Scope) : IO Unit := do
   let pairs := scope.varUIds.zip (scope.varDecls.map getBracketedBinderIds).flatten
   for (uniq, stx) in pairs do
     usedVarsRef.modify fun varTrack =>
-      if varTrack.dict.contains uniq then
-        --dbg_trace "not adding {uniq} ↔ {stx}"
-        varTrack
-      else
-        --dbg_trace "adding {uniq.eraseMacroScopes} ↔ {stx} (from {uniq})"
-        {varTrack with temp := varTrack.temp.insert uniq.eraseMacroScopes stx}
+      if varTrack.dict.contains uniq then varTrack
+      else {varTrack with temp := varTrack.temp.insert uniq.eraseMacroScopes stx}
 
 /-- Add the assignment `a → ref` to `varsTracker.dict`, where
 * `a` is the *unique name* (not the username) of a variable and
@@ -169,18 +165,16 @@ def usedVarsRef.addTemp (scope : Scope) : IO Unit := do
 def usedVarsRef.addDict (a : Name) (ref : Syntax) : IO Unit := do
   usedVarsRef.modify fun varTrack =>
     -- The unique name is already present: do nothing.
-    if varTrack.dict.contains a then
-      --dbg_trace "do nothing"
-      varTrack
+    if varTrack.dict.contains a then dbg_trace "do nothing with {a}"; varTrack
     -- The username is staged in `temp`: update `dict` and remove from `temp`
     else
       let am := a.eraseMacroScopes
       if let some stx := varTrack.temp.find? am then
-        --dbg_trace "unstage and add {a} {stx} (from {am})"
+        dbg_trace "insert {a} {stx} (some {am})"
         {varTrack with dict := varTrack.dict.insert a stx}
     -- Finally, the unique name is not present and the username is not staged: extend `dict`
     else
-      --dbg_trace "simple addition {a} {ref} ({a.eraseMacroScopes}, {varTrack.temp.toList})"
+      dbg_trace "insert {a} {ref} (no macros)"
       {varTrack with dict := varTrack.dict.insert a ref}
 
 def usedVarsRef.clearTemp : IO Unit :=
@@ -195,26 +189,18 @@ from the local context.
 Finally, the `Bool`ean `plumb` decides whether or not `includedVariables` also extends the
 `NameSet` of variables that have been used in some declaration.
 -/
-def includedVariables (c : Term.Context) (lctx : LocalContext) (plumb : Bool) :
-    TermElabM (Array (Name × Name × Expr)) := do
-  --let c ← read
+def includedVariables (plumb : Bool) : TermElabM (Array (Name × Name × Expr)) := do
+  let c ← read
   let fvs := c.sectionFVars
   let mut varIds := #[]
-  --let lctx ← getLCtx
+  let lctx ← getLCtx
   for (a, b) in fvs do
     let ref ← getRef
-
-    --let scope ← getScope
-    --let pairs := ←
-    --  return scope.varUIds.zip (← scope.varDecls.mapM getBracketedBinderIds).flatten
-    --let x := pairs.find? (·.1 == a)
-    --dbg_trace "I found '{x}' in \n{pairs}"
     match (lctx.findFVar? b) with
       | none =>
-        --dbg_trace "\nnot found {b}"
+        dbg_trace "adding {a} {ref}\n"
         usedVarsRef.addDict a ref
       | some _d =>
-        --dbg_trace "\nfound username {d.userName}"
         let mut fd := .anonymous
         for (x, y) in c.sectionVars do
           if y == a then fd := x
@@ -230,12 +216,8 @@ The variant `included_variables plumb` is intended only for the internal use of 
 unused variable command linter: besides printing the message, `plumb` also adds records that
 the variables included in the current declaration really are included.
 -/
-elab "included_variables" plumb:(ppSpace &"plumb")? : tactic => Tactic.withMainContext do
-    let c ← readThe Term.Context
-    let lctx ← getLCtx
-    --let ref := (← usedVarsRef.get).dict
-    --dbg_trace ref.toList
-    let (_plb, usedUserIds) := (← includedVariables c lctx plumb.isSome).unzip
+elab "included_variables" plumb:(ppSpace &"plumb")? : tactic => do
+    let (_plb, usedUserIds) := (← includedVariables plumb.isSome).unzip
     let msgs ← usedUserIds.mapM fun (userName, expr) =>
       return m!"'{userName}' of type '{← Meta.inferType expr}'"
     if ! msgs.isEmpty then
@@ -462,16 +444,14 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
           | x          => Linter.logLint linter.unusedVariableCommand user m!"'{x}' is unused"
   -- if there is a `variable` command in `stx`, then we update `usedVarsRef` with all the
   -- information that is available
-  if let some vars := (stx.find? (·.isOfKind ``Lean.Parser.Command.variable)) then
-    --logInfo m!"variable found {vars}"
-    elabCommand vars
-    --dbg_trace "* updating temps"
+  if let some vars := (stx.find? (fun s => match s with
+          | `(variable $_* in $_) => true
+          | _ => false
+          )) then
+    -- If there is a `variable ... in` command, we elaborate the variables
+    elabCommand vars[0]
+    -- and we store them in the `temp` field of `varsTracker`
     usedVarsRef.addTemp (← getScope)
-    --let scope ← getScope
-    --let pairs := scope.varUIds.zip (scope.varDecls.map getBracketedBinderIds).flatten
-    --for (uniq, user) in pairs do
-    --  usedVarsRef.addDict uniq user
-    --dbg_trace "* temp updated\n"
   -- On all declarations that are not examples, we "rename" them, so that we can elaborate
   -- their syntax again, and we replace `:= proof-term` by `:= by included_variables plumb: sorry`
   -- in order to update the `usedVarsRef` counter.
