@@ -343,11 +343,11 @@ theorem isArtinian_of_submodule_of_artinian (R M) [Ring R] [AddCommGroup M] [Mod
     (N : Submodule R M) (_ : IsArtinian R M) : IsArtinian R N := inferInstance
 
 /-- If `M / S / R` is a scalar tower, and `M / R` is Artinian, then `M / S` is also Artinian. -/
-theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Algebra R S]
+theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M] [SMul R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M :=
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
-instance (R) [CommRing R] [IsArtinianRing R] (I : Ideal R) : IsArtinianRing (R ⧸ I) :=
+instance (R) [Ring R] [IsArtinianRing R] (I : Ideal R) [I.IsTwoSided] : IsArtinianRing (R ⧸ I) :=
   isArtinian_of_tower R inferInstance
 
 theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M]
@@ -474,13 +474,9 @@ lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
 
 variable (R) in
 lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
-  set Spec := {I : Ideal R | I.IsPrime}
-  obtain ⟨_, ⟨s, rfl⟩, H⟩ := set_has_minimal
-    (range (Finset.inf · Subtype.val : Finset Spec → Ideal R)) ⟨⊤, ∅, by simp⟩
+  have ⟨s, H⟩ := Finset.exists_inf_le (Subtype.val (p := fun I : Ideal R ↦ I.IsPrime))
   refine Set.finite_def.2 ⟨s, fun p ↦ ?_⟩
-  classical
-  obtain ⟨q, hq1, hq2⟩ := p.2.inf_le'.mp <| inf_eq_right.mp <|
-    inf_le_right.eq_of_not_lt (H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩)
+  have ⟨q, hq1, hq2⟩ := p.2.inf_le'.mp (H p)
   rwa [← Subtype.ext <| (@isMaximal_of_isPrime _ _ _ _ q.2).eq_of_le p.2.1 hq2]
 
 variable (R)

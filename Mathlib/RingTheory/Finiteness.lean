@@ -517,6 +517,9 @@ namespace Finite
 
 open Submodule Set
 
+instance [Module.Finite R M] : IsCoatomic (Submodule R M) :=
+  CompleteLattice.coatomic_of_top_compact <| by rwa [← fg_iff_compact, ← finite_def]
+
 theorem iff_addMonoid_fg {M : Type*} [AddCommMonoid M] : Module.Finite ℕ M ↔ AddMonoid.FG M :=
   ⟨fun h => AddMonoid.fg_def.2 <| (Submodule.fg_iff_addSubmonoid_fg ⊤).1 (finite_def.1 h), fun h =>
     finite_def.2 <| (Submodule.fg_iff_addSubmonoid_fg ⊤).2 (AddMonoid.fg_def.1 h)⟩

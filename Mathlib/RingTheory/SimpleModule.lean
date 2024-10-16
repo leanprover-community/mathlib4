@@ -209,13 +209,19 @@ open LinearMap
 theorem congr (e : N ≃ₗ[R] M) : IsSemisimpleModule R N :=
   (Submodule.orderIsoMapComap e.symm).complementedLattice
 
+theorem of_injective (f : N →ₗ[R] M) (hf : Function.Injective f) : IsSemisimpleModule R N :=
+  congr (Submodule.topEquiv.symm.trans <| Submodule.equivMapOfInjective f hf _)
+
 instance quotient : IsSemisimpleModule R (M ⧸ m) :=
   have ⟨P, compl⟩ := exists_isCompl m
   .congr (m.quotientEquivOfIsCompl P compl)
 
 -- does not work as an instance, not sure why
 protected theorem range (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
-  .congr (quotKerEquivRange _).symm
+  congr (quotKerEquivRange _).symm
+
+theorem of_surjective (f : M →ₗ[R] N) (hf : Function.Surjective f) : IsSemisimpleModule R N :=
+  congr (f.quotKerEquivOfSurjective hf).symm
 
 section
 
@@ -275,6 +281,13 @@ lemma isSemisimpleModule_of_isSemisimpleModule_submodule' {p : ι → Submodule 
     IsSemisimpleModule R M :=
   isSemisimpleModule_of_isSemisimpleModule_submodule (s := Set.univ) (fun i _ ↦ hp i) (by simpa)
 
+open LinearMap in
+instance {ι} [Finite ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+    [∀ i, IsSemisimpleModule R (M i)] : IsSemisimpleModule R (∀ i, M i) := by
+  classical
+  exact isSemisimpleModule_of_isSemisimpleModule_submodule' (p := (range <| single _ _ ·))
+    (fun i ↦ .range _) (by simp_rw [range_eq_map, Submodule.iSup_map_single, Submodule.pi_top])
+
 theorem IsSemisimpleModule.sup {p q : Submodule R M}
     (_ : IsSemisimpleModule R p) (_ : IsSemisimpleModule R q) :
     IsSemisimpleModule R ↥(p ⊔ q) := by
@@ -287,7 +300,8 @@ instance IsSemisimpleRing.isSemisimpleModule [IsSemisimpleRing R] : IsSemisimple
     (fun _ ↦ .congr (LinearMap.quotKerEquivRange _).symm) Finsupp.iSup_lsingle_range
   .congr (LinearMap.quotKerEquivOfSurjective _ <| Finsupp.linearCombination_id_surjective R M).symm
 
-instance IsSemisimpleRing.isCoatomic_submodule [IsSemisimpleRing R] : IsCoatomic (Submodule R M) :=
+instance IsSemisimpleModule.isCoatomic_submodule [IsSemisimpleModule R M] :
+    IsCoatomic (Submodule R M) :=
   isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
 
 open LinearMap in
@@ -299,9 +313,7 @@ instance {ι} [Finite ι] (R : ι → Type*) [∀ i, Ring (R i)] [∀ i, IsSemis
     { AddMonoidHom.id (R i) with map_smul' := fun _ _ ↦ rfl }
   have (i) : IsSemisimpleModule (∀ i, R i) (R i) :=
     ((e i).isSemisimpleModule_iff_of_bijective Function.bijective_id).mpr inferInstance
-  classical
-  exact isSemisimpleModule_of_isSemisimpleModule_submodule' (p := (range <| single _ _ ·))
-    (fun i ↦ .range _) (by simp_rw [range_eq_map, Submodule.iSup_map_single, Submodule.pi_top])
+  infer_instance
 
 /-- A binary product of semisimple rings is semisimple. -/
 instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing (R × S) := by

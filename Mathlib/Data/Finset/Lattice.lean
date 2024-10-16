@@ -269,6 +269,21 @@ theorem sup_eq_sSup_image [CompleteLattice β] (s : Finset α) (f : α → β) :
     s.sup f = sSup (f '' s) := by
   classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.id_comp]
 
+theorem exists_sup_ge [SemilatticeSup β] [OrderBot β] [WellFoundedGT β] (f : α → β) :
+    ∃ t : Finset α, ∀ a, f a ≤ t.sup f := by
+  cases isEmpty_or_nonempty α
+  · exact ⟨⊥, isEmptyElim⟩
+  obtain ⟨_, ⟨t, rfl⟩, ht⟩ := wellFounded_gt.has_min (Set.range (sup · f)) (Set.range_nonempty _)
+  refine ⟨t, fun a ↦ ?_⟩
+  classical
+  have := ht (f a ⊔ t.sup f) ⟨insert a t, by simp⟩
+  rwa [GT.gt, right_lt_sup, not_not] at this
+
+theorem exists_sup_eq_iSup [CompleteLattice β] [WellFoundedGT β] (f : α → β) :
+    ∃ t : Finset α, t.sup f = ⨆ a, f a :=
+  have ⟨t, ht⟩ := exists_sup_ge f
+  ⟨t, le_antisymm (Finset.sup_le fun _ _ ↦ le_iSup _ _) <| iSup_le ht⟩
+
 /-! ### inf -/
 
 
@@ -683,6 +698,14 @@ theorem inf_set_eq_iInter (s : Finset α) (f : α → Set β) : s.inf f = ⋂ x 
 theorem inf_eq_sInf_image [CompleteLattice β] (s : Finset α) (f : α → β) :
     s.inf f = sInf (f '' s) :=
   @sup_eq_sSup_image _ βᵒᵈ _ _ _
+
+theorem exists_inf_le [SemilatticeInf β] [OrderTop β] [WellFoundedLT β] (f : α → β) :
+    ∃ t : Finset α, ∀ a, t.inf f ≤ f a :=
+  @exists_sup_ge _ βᵒᵈ _ _ _ _
+
+theorem exists_inf_eq_iInf [CompleteLattice β] [WellFoundedLT β] (f : α → β) :
+    ∃ t : Finset α, t.inf f = ⨅ a, f a :=
+  @exists_sup_eq_iSup _ βᵒᵈ _ _ _
 
 section Sup'
 
