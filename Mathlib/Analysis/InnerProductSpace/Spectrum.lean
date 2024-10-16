@@ -183,7 +183,7 @@ theorem isSemisimple {T : Module.End 𝕜 E} (hT : T.IsSymmetric) :
   · rw [disjoint_iff]
     exact Submodule.inf_orthogonal_eq_bot p
   · rw [codisjoint_iff]
-    apply Submodule.sup_orthogonal_of_completeSpace
+    exact Submodule.sup_orthogonal_of_completeSpace
 
 variable (hT : T.IsSymmetric)
 
