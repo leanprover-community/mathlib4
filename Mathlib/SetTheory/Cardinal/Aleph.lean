@@ -124,7 +124,7 @@ theorem isInitial_omega' (o : Ordinal) : IsInitial (omega' o) :=
   enumOrd_mem not_bddAbove_isInitial o
 
 theorem le_omega'_self (o : Ordinal) : o ≤ omega' o :=
-  le_enumOrd_self not_bddAbove_isInitial
+  strictMono_omega'.le_apply
 
 @[simp]
 theorem omega'_zero : omega' 0 = 0 := by
@@ -155,10 +155,10 @@ theorem isNormal_omega' : IsNormal omega' := by
   exact lt_succ b
 
 @[simp]
-theorem range_omega' : Set.range omega' = {x | IsInitial x} :=
+theorem range_omega' : range omega' = {x | IsInitial x} :=
   range_enumOrd not_bddAbove_isInitial
 
-theorem mem_range_omega'_iff {x : Ordinal} : x ∈ Set.range omega' ↔ IsInitial x := by
+theorem mem_range_omega'_iff {x : Ordinal} : x ∈ range omega' ↔ IsInitial x := by
   rw [range_omega', mem_setOf]
 
 alias ⟨_, IsInitial.mem_range_omega'⟩ := mem_range_omega'_iff
@@ -229,7 +229,7 @@ theorem isNormal_omega : IsNormal omega :=
   isNormal_omega'.trans (isNormal_add_right _)
 
 @[simp]
-theorem range_omega : Set.range omega = {x | ω ≤ x ∧ IsInitial x} := by
+theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
   ext x
   constructor
   · rintro ⟨a, rfl⟩
@@ -240,7 +240,7 @@ theorem range_omega : Set.range omega = {x | ω ≤ x ∧ IsInitial x} := by
     rw [omega0_le_omega'_iff] at ha'
     rw [← omega'_omega0_add, Ordinal.add_sub_cancel_of_le ha']
 
-theorem mem_range_omega_iff {x : Ordinal} : x ∈ Set.range omega ↔ ω ≤ x ∧ IsInitial x := by
+theorem mem_range_omega_iff {x : Ordinal} : x ∈ range omega ↔ ω ≤ x ∧ IsInitial x := by
   rw [range_omega, mem_setOf]
 
 end Ordinal
