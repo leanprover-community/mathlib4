@@ -101,7 +101,7 @@ theorem hom_ext_iff {P Q : Karoubi C} {f g : P ⟶ Q} : f = g ↔ f.f = g.f := b
     rw [h]
   · apply Hom.ext
 
--- Porting note: added because `Hom.ext` is not triggered automatically
+-- Porting note (#5229): added because `Hom.ext` is not triggered automatically
 @[ext]
 theorem hom_ext {P Q : Karoubi C} (f g : P ⟶ Q) (h : f.f = g.f) : f = g := by
   simpa [hom_ext_iff] using h
