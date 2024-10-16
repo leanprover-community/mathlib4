@@ -30,15 +30,14 @@ namespace Multiset
 
 /-! ### Join -/
 
-
 /-- `join S`, where `S` is a multiset of multisets, is the lift of the list join
   operation, that is, the union of all the sets.
      join {{1, 2}, {1, 2}, {0, 1}} = {0, 1, 1, 1, 2, 2} -/
 def join : Multiset (Multiset α) → Multiset α :=
   sum
 
-theorem coe_join :
-    ∀ L : List (List α), join (L.map ((↑) : List α → Multiset α) : Multiset (Multiset α)) = L.join
+theorem coe_join : ∀ L : List (List α), join (L.map ((↑) : List α → Multiset α) :
+    Multiset (Multiset α)) = L.flatten
   | [] => rfl
   | l :: L => by
       exact congr_arg (fun s : Multiset α => ↑l + s) (coe_join L)

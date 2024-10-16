@@ -136,7 +136,7 @@ theorem sublists_append (l₁ l₂ : List α) :
   | nil => simp
   | cons a l₁ ih =>
     rw [foldr_cons, ih]
-    simp [List.bind, join_join, Function.comp_def]
+    simp [List.bind, flatten_flatten, Function.comp_def]
 
 theorem sublists_cons (a : α) (l : List α) :
     sublists (a :: l) = sublists l >>= (fun x => [x, a :: x]) :=

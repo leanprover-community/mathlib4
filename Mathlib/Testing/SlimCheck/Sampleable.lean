@@ -159,7 +159,7 @@ instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
 
 /-- `Int.shrinkable` operates like `Nat.shrinkable` but also includes the negative variants. -/
 instance Int.shrinkable : Shrinkable Int where
-  shrink n := Nat.shrink n.natAbs |>.map (fun x ↦ ([x, -x] : List ℤ)) |>.join
+  shrink n := Nat.shrink n.natAbs |>.map (fun x ↦ ([x, -x] : List ℤ)) |>.flatten
 
 instance Rat.shrinkable : Shrinkable Rat where
   shrink r :=
@@ -188,7 +188,7 @@ open Shrinkable
 instance List.shrinkable [Shrinkable α] : Shrinkable (List α) where
   shrink := fun L =>
     (L.mapIdx fun i _ => L.eraseIdx i) ++
-    (L.mapIdx fun i a => (shrink a).map fun a' => L.modifyNth (fun _ => a') i).join
+    (L.mapIdx fun i a => (shrink a).map fun a' => L.modifyNth (fun _ => a') i).flatten
 
 end Shrinkers
 
