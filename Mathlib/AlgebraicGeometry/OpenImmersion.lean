@@ -363,10 +363,10 @@ instance stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (x : X) 
 lemma of_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion g]
     [IsOpenImmersion (f ≫ g)] : IsOpenImmersion f :=
   haveI (x : X) : IsIso (f.stalkMap x) :=
-    haveI : IsIso (g.stalkMap (f.val.base x) ≫ f.stalkMap x) := by
+    haveI : IsIso (g.stalkMap (f.base x) ≫ f.stalkMap x) := by
       rw [← Scheme.stalkMap_comp]
       infer_instance
-    IsIso.of_isIso_comp_left (f := g.stalkMap (f.val.base x)) _
+    IsIso.of_isIso_comp_left (f := g.stalkMap (f.base x)) _
   IsOpenImmersion.of_stalk_iso _ <|
     OpenEmbedding.of_comp _ (Scheme.Hom.openEmbedding g) (Scheme.Hom.openEmbedding (f ≫ g))
 
@@ -626,7 +626,7 @@ def ΓIsoTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
   (f.appIso ⊤).symm ≪≫ Y.presheaf.mapIso (eqToIso f.image_top_eq_opensRange.symm).op
 
 instance {Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [IsOpenImmersion f]
-    (H' : Set.range g.val.base ⊆ Set.range f.val.base) [IsOpenImmersion g] :
+    (H' : Set.range g.base ⊆ Set.range f.base) [IsOpenImmersion g] :
     IsOpenImmersion (IsOpenImmersion.lift f g H') :=
   haveI : IsOpenImmersion (IsOpenImmersion.lift f g H' ≫ f) := by simpa
   IsOpenImmersion.of_comp _ f
