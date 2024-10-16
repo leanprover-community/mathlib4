@@ -35,9 +35,8 @@ variable {R} in
 of modules over `R` which sends `X : Cᵒᵖ` to the free `R.obj X`-module on `F.obj X`. -/
 @[simps]
 noncomputable def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModules.{u} R where
-  obj := fun X ↦ (ModuleCat.free (R.obj X)).obj (F.obj X)
-  map := fun {X Y} f ↦ ModuleCat.freeDesc
-      (fun x ↦ ModuleCat.freeMk (F.map f x))
+  obj X := (ModuleCat.free (R.obj X)).obj (F.obj X)
+  map {X Y} f := ModuleCat.freeDesc (fun x ↦ ModuleCat.freeMk (F.map f x))
   map_id := by aesop
 
 /-- The free presheaf of modules functors `(Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`. -/
