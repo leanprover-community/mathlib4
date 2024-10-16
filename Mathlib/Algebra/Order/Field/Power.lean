@@ -24,80 +24,68 @@ variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 
 /-! ### Integer powers -/
 
-@[gcongr]
-theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := by
-  have ha₀ : 0 < a := one_pos.trans_le ha
-  lift n - m to ℕ using sub_nonneg.2 h with k hk
-  calc
-    a ^ m = a ^ m * 1 := (mul_one _).symm
-    _ ≤ a ^ m * a ^ k :=
-      mul_le_mul_of_nonneg_left (one_le_pow_of_one_le ha _) (zpow_nonneg ha₀.le _)
-    _ = a ^ n := by rw [← zpow_natCast, ← zpow_add₀ ha₀.ne', hk, add_sub_cancel]
+@[deprecated zpow_le_zpow_right₀ (since := "2024-10-08")]
+theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_le_zpow_right₀ ha h
 
+@[deprecated zpow_le_one_of_nonpos₀ (since := "2024-10-08")]
 theorem zpow_le_one_of_nonpos (ha : 1 ≤ a) (hn : n ≤ 0) : a ^ n ≤ 1 :=
-  (zpow_le_of_le ha hn).trans_eq <| zpow_zero _
+  zpow_le_one_of_nonpos₀ ha hn
 
+@[deprecated one_le_zpow₀ (since := "2024-10-08")]
 theorem one_le_zpow_of_nonneg (ha : 1 ≤ a) (hn : 0 ≤ n) : 1 ≤ a ^ n :=
-  (zpow_zero _).symm.trans_le <| zpow_le_of_le ha hn
+  one_le_zpow₀ ha hn
 
-protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a : α) ^ n := by
-  apply zpow_pos_of_pos
-  exact mod_cast h
+@[deprecated zpow_pos (since := "2024-10-08")]
+protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a : α) ^ n :=
+  zpow_pos (mod_cast h) _
 
+@[deprecated zpow_ne_zero (since := "2024-10-08")]
 theorem Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n ≠ 0 :=
-  (Nat.zpow_pos_of_pos h n).ne'
+  zpow_ne_zero _ (mod_cast h.ne')
 
-theorem one_lt_zpow (ha : 1 < a) : ∀ n : ℤ, 0 < n → 1 < a ^ n
-  | (n : ℕ), h => (zpow_natCast _ _).symm.subst (one_lt_pow ha <| Int.natCast_ne_zero.mp h.ne')
-  | -[_+1], h => ((Int.negSucc_not_pos _).mp h).elim
+@[deprecated one_lt_zpow₀ (since := "2024-10-08")]
+theorem one_lt_zpow (ha : 1 < a) (n : ℤ) (hn : 0 < n) : 1 < a ^ n := one_lt_zpow₀ ha hn
 
+@[deprecated zpow_right_strictMono₀ (since := "2024-10-08")]
 theorem zpow_strictMono (hx : 1 < a) : StrictMono (a ^ · : ℤ → α) :=
-  strictMono_int_of_lt_succ fun n =>
-    have xpos : 0 < a := zero_lt_one.trans hx
-    calc
-      a ^ n < a ^ n * a := lt_mul_of_one_lt_right (zpow_pos_of_pos xpos _) hx
-      _ = a ^ (n + 1) := (zpow_add_one₀ xpos.ne' _).symm
+  zpow_right_strictMono₀ hx
 
+@[deprecated zpow_right_strictAnti₀ (since := "2024-10-08")]
 theorem zpow_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ · : ℤ → α) :=
-  strictAnti_int_of_succ_lt fun n =>
-    calc
-      a ^ (n + 1) = a ^ n * a := zpow_add_one₀ h₀.ne' _
-      _ < a ^ n * 1 := (mul_lt_mul_left <| zpow_pos_of_pos h₀ _).2 h₁
-      _ = a ^ n := mul_one _
+  zpow_right_strictAnti₀ h₀ h₁
 
-@[simp]
+@[deprecated zpow_lt_zpow_iff_right₀ (since := "2024-10-08")]
 theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n :=
-  (zpow_strictMono hx).lt_iff_lt
+  zpow_lt_zpow_iff_right₀ hx
 
-@[gcongr] alias ⟨_, GCongr.zpow_lt_of_lt⟩ := zpow_lt_iff_lt
+@[deprecated (since := "2024-02-10")] alias ⟨_, zpow_lt_of_lt⟩ := zpow_lt_iff_lt
 
-@[deprecated (since := "2024-02-10")] alias zpow_lt_of_lt := GCongr.zpow_lt_of_lt
-
-@[simp]
+@[deprecated zpow_le_zpow_iff_right₀ (since := "2024-10-08")]
 theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
-  (zpow_strictMono hx).le_iff_le
+  zpow_le_zpow_iff_right₀ hx
 
-@[simp]
+@[deprecated div_le_self (since := "2024-10-08")]
 theorem div_pow_le (ha : 0 ≤ a) (hb : 1 ≤ b) (k : ℕ) : a / b ^ k ≤ a :=
-  div_le_self ha <| one_le_pow_of_one_le hb _
+  div_le_self ha <| one_le_pow₀ hb
 
-theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective (a ^ · : ℤ → α) := by
-  rcases h₁.lt_or_lt with (H | H)
-  · exact (zpow_strictAnti h₀ H).injective
-  · exact (zpow_strictMono H).injective
+@[deprecated zpow_right_injective₀ (since := "2024-10-08")]
+theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective (a ^ · : ℤ → α) :=
+  zpow_right_injective₀ h₀ h₁
 
-@[simp]
+@[deprecated zpow_right_inj₀ (since := "2024-10-08")]
 theorem zpow_inj (h₀ : 0 < a) (h₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n :=
-  (zpow_injective h₀ h₁).eq_iff
+  zpow_right_inj₀ h₀ h₁
 
+@[deprecated (since := "2024-10-08")]
 theorem zpow_le_max_of_min_le {x : α} (hx : 1 ≤ x) {a b c : ℤ} (h : min a b ≤ c) :
     x ^ (-c) ≤ max (x ^ (-a)) (x ^ (-b)) :=
-  have : Antitone fun n : ℤ => x ^ (-n) := fun _ _ h => zpow_le_of_le hx (neg_le_neg h)
+  have : Antitone fun n : ℤ => x ^ (-n) := fun _ _ h => zpow_le_zpow_right₀ hx (neg_le_neg h)
   (this h).trans_eq this.map_min
 
+@[deprecated (since := "2024-10-08")]
 theorem zpow_le_max_iff_min_le {x : α} (hx : 1 < x) {a b c : ℤ} :
     x ^ (-c) ≤ max (x ^ (-a)) (x ^ (-b)) ↔ min a b ≤ c := by
-  simp_rw [le_max_iff, min_le_iff, zpow_le_iff_le hx, neg_le_neg_iff]
+  simp_rw [le_max_iff, min_le_iff, zpow_le_zpow_iff_right₀ hx, neg_le_neg_iff]
 
 end LinearOrderedSemifield
 
@@ -205,7 +193,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
         let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
         haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
-        pure (.positive q(zpow_pos_of_pos $pa $b))
+        pure (.positive q(zpow_pos $pa $b))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
         let oα ← synthInstanceQ q(LinearOrderedSemifield $α)

@@ -176,7 +176,7 @@ end One
 
 section Inv
 
-variable [DecidableEq α] [Inv α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
+variable [DecidableEq α] [Inv α] {s t : Finset α} {a : α}
 
 /-- The pointwise inversion of finset `s⁻¹` is defined as `{x⁻¹ | x ∈ s}` in locale `Pointwise`. -/
 @[to_additive
@@ -210,17 +210,18 @@ theorem card_inv_le : s⁻¹.card ≤ s.card :=
 theorem inv_empty : (∅ : Finset α)⁻¹ = ∅ :=
   image_empty _
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty := image_nonempty
 
 alias ⟨Nonempty.of_inv, Nonempty.inv⟩ := inv_nonempty_iff
 
 attribute [to_additive] Nonempty.inv Nonempty.of_inv
+attribute [aesop safe apply (rule_sets := [finsetNonempty])] Nonempty.inv Nonempty.neg
 
 @[to_additive (attr := simp)]
 theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := image_eq_empty
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 theorem inv_subset_inv (h : s ⊆ t) : s⁻¹ ⊆ t⁻¹ :=
   image_subset_image h
 
@@ -270,6 +271,9 @@ theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.tra
 
 @[to_additive (attr := simp)]
 theorem card_inv (s : Finset α) : s⁻¹.card = s.card := card_image_of_injective _ inv_injective
+
+@[to_additive (attr := simp)]
+lemma dens_inv [Fintype α] (s : Finset α) : s⁻¹.dens = s.dens := by simp [dens]
 
 @[to_additive (attr := simp)]
 theorem preimage_inv (s : Finset α) : s.preimage (·⁻¹) inv_injective.injOn = s⁻¹ :=
@@ -341,11 +345,11 @@ theorem mul_empty (s : Finset α) : s * ∅ = ∅ :=
 theorem mul_eq_empty : s * t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem mul_nonempty : (s * t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem Nonempty.mul : s.Nonempty → t.Nonempty → (s * t).Nonempty :=
   Nonempty.image₂
 
@@ -369,7 +373,7 @@ theorem singleton_mul (a : α) : {a} * s = s.image (a * ·) :=
 theorem singleton_mul_singleton (a b : α) : ({a} : Finset α) * {b} = {a * b} :=
   image₂_singleton
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 theorem mul_subset_mul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ * t₁ ⊆ s₂ * t₂ :=
   image₂_subset
 
@@ -416,7 +420,7 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
       `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' + t'`."]
 theorem subset_mul {s t : Set α} :
     ↑u ⊆ s * t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' * t' :=
-  subset_image₂
+  subset_set_image₂
 
 @[to_additive]
 theorem image_mul [DecidableEq β] : (s * t).image (f : α → β) = s.image f * t.image f :=
@@ -525,11 +529,11 @@ theorem div_empty (s : Finset α) : s / ∅ = ∅ :=
 theorem div_eq_empty : s / t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem div_nonempty : (s / t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem Nonempty.div : s.Nonempty → t.Nonempty → (s / t).Nonempty :=
   Nonempty.image₂
 
@@ -555,7 +559,7 @@ theorem singleton_div (a : α) : {a} / s = s.image (a / ·) :=
 theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
   image₂_singleton
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 theorem div_subset_div : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ / t₁ ⊆ s₂ / t₂ :=
   image₂_subset
 
@@ -602,7 +606,7 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
       `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' - t'`."]
 theorem subset_div {s t : Set α} :
     ↑u ⊆ s / t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' / t' :=
-  subset_image₂
+  subset_set_image₂
 
 @[to_additive (attr := simp (default + 1))]
 lemma sup_div_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
@@ -862,7 +866,7 @@ variable [DivisionMonoid α] {s t : Finset α}
 
 @[to_additive (attr := simp)]
 theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
-  | Int.ofNat n => coe_pow _ _
+  | Int.ofNat _ => coe_pow _ _
   | Int.negSucc n => by
     refine (coe_inv _).trans ?_
     exact congr_arg Inv.inv (coe_pow _ _)
@@ -896,6 +900,12 @@ theorem isUnit_coe : IsUnit (s : Set α) ↔ IsUnit s := by
 
 @[to_additive (attr := simp)]
 lemma univ_div_univ [Fintype α] : (univ / univ : Finset α) = univ := by simp [div_eq_mul_inv]
+
+@[to_additive] lemma subset_div_left (ht : 1 ∈ t) : s ⊆ s / t := by
+  rw [div_eq_mul_inv]; exact subset_mul_left _ <| by simpa
+
+@[to_additive] lemma inv_subset_div_right (hs : 1 ∈ s) : t⁻¹ ⊆ s / t := by
+  rw [div_eq_mul_inv]; exact subset_mul_right _ hs
 
 end DivisionMonoid
 
@@ -940,7 +950,7 @@ end Distrib
 
 section MulZeroClass
 
-variable [MulZeroClass α] {s t : Finset α}
+variable [MulZeroClass α] {s : Finset α}
 
 /-! Note that `Finset` is not a `MulZeroClass` because `0 * ∅ ≠ 0`. -/
 
@@ -1021,7 +1031,7 @@ end Group
 
 section GroupWithZero
 
-variable [GroupWithZero α] {s t : Finset α}
+variable [GroupWithZero α] {s : Finset α}
 
 theorem div_zero_subset (s : Finset α) : s / 0 ⊆ 0 := by simp [subset_iff, mem_div]
 
@@ -1039,7 +1049,7 @@ end Instances
 
 section Group
 
-variable [Group α] {s t : Finset α} {a b : α}
+variable [Group α] {a b : α}
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_singleton :
@@ -1119,11 +1129,11 @@ theorem smul_empty (s : Finset α) : s • (∅ : Finset β) = ∅ :=
 theorem smul_eq_empty : s • t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem smul_nonempty_iff : (s • t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem Nonempty.smul : s.Nonempty → t.Nonempty → (s • t).Nonempty :=
   Nonempty.image₂
 
@@ -1143,7 +1153,7 @@ theorem smul_singleton (b : β) : s • ({b} : Finset β) = s.image (· • b) :
 theorem singleton_smul_singleton (a : α) (b : β) : ({a} : Finset α) • ({b} : Finset β) = {a • b} :=
   image₂_singleton
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 theorem smul_subset_smul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ • t₁ ⊆ s₂ • t₂ :=
   image₂_subset
 
@@ -1190,7 +1200,7 @@ theorem union_smul_inter_subset_union [DecidableEq α] : (s₁ ∪ s₂) • (t�
       finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
 theorem subset_smul {s : Set α} {t : Set β} :
     ↑u ⊆ s • t → ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
-  subset_image₂
+  subset_set_image₂
 
 end SMul
 
@@ -1240,10 +1250,11 @@ theorem vsub_empty (s : Finset β) : s -ᵥ (∅ : Finset β) = ∅ :=
 theorem vsub_eq_empty : s -ᵥ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem vsub_nonempty : (s -ᵥ t : Finset α).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.vsub : s.Nonempty → t.Nonempty → (s -ᵥ t : Finset α).Nonempty :=
   Nonempty.image₂
 
@@ -1264,7 +1275,7 @@ theorem singleton_vsub (a : β) : ({a} : Finset β) -ᵥ t = t.image (a -ᵥ ·)
 theorem singleton_vsub_singleton (a b : β) : ({a} : Finset β) -ᵥ {b} = {a -ᵥ b} :=
   image₂_singleton
 
-@[mono]
+@[mono, gcongr]
 theorem vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ :=
   image₂_subset
 
@@ -1299,7 +1310,7 @@ end
 finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' -ᵥ t'`. -/
 theorem subset_vsub {s t : Set β} :
     ↑u ⊆ s -ᵥ t → ∃ s' t' : Finset β, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' -ᵥ t' :=
-  subset_image₂
+  subset_set_image₂
 
 end VSub
 
@@ -1310,7 +1321,7 @@ open Pointwise
 
 section SMul
 
-variable [DecidableEq β] [SMul α β] {s s₁ s₂ t u : Finset β} {a : α} {b : β}
+variable [DecidableEq β] [SMul α β] {s s₁ s₂ t : Finset β} {a : α} {b : β}
 
 /-- The scaling of a finset `s` by a scalar `a`: `a • s = {a • x | x ∈ s}`. -/
 @[to_additive "The translation of a finset `s` by a vector `a`: `a +ᵥ s = {a +ᵥ x | x ∈ s}`."]
@@ -1351,11 +1362,11 @@ theorem smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ :=
 theorem smul_finset_eq_empty : a • s = ∅ ↔ s = ∅ :=
   image_eq_empty
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem smul_finset_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
   image_nonempty
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem Nonempty.smul_finset (hs : s.Nonempty) : (a • s).Nonempty :=
   hs.image _
 
@@ -1363,7 +1374,7 @@ theorem Nonempty.smul_finset (hs : s.Nonempty) : (a • s).Nonempty :=
 theorem singleton_smul (a : α) : ({a} : Finset α) • t = a • t :=
   image₂_singleton_left
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 theorem smul_finset_subset_smul_finset : s ⊆ t → a • s ⊆ a • t :=
   image_subset_image
 
@@ -1374,6 +1385,10 @@ theorem smul_finset_singleton (b : β) : a • ({b} : Finset β) = {a • b} :=
 @[to_additive]
 theorem smul_finset_union : a • (s₁ ∪ s₂) = a • s₁ ∪ a • s₂ :=
   image_union _ _
+
+@[to_additive]
+lemma smul_finset_insert (a : α) (b : β) (s : Finset β) : a • insert b s = insert (a • b) (a • s) :=
+  image_insert ..
 
 @[to_additive]
 theorem smul_finset_inter_subset : a • (s₁ ∩ s₂) ⊆ a • s₁ ∩ a • s₂ :=
@@ -1778,7 +1793,7 @@ lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Finset α) • t = 0 :=
 lemma zero_smul_finset_subset (s : Finset β) : (0 : α) • s ⊆ 0 :=
   image_subset_iff.2 fun x _ ↦ mem_zero.2 <| zero_smul α x
 
-variable [NoZeroSMulDivisors α β] {a : α}
+variable [NoZeroSMulDivisors α β]
 
 lemma zero_mem_smul_iff :
     (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by
@@ -1975,7 +1990,7 @@ end Mul
 
 section SMul
 
-variable [SMul α β] [DecidableEq β] {a : α} {s : Set α} {t : Set β}
+variable [SMul α β] [DecidableEq β] {s : Set α} {t : Set β}
 
 @[to_additive (attr := simp)]
 theorem toFinset_smul (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype ↑(s • t)] :

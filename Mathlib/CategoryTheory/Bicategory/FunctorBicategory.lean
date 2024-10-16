@@ -72,11 +72,11 @@ variable (B C)
 -- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
 instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
-  whiskerLeft {F G H} η _ _ Γ := OplaxNatTrans.whiskerLeft η Γ
-  whiskerRight {F G H} _ _ Γ η := OplaxNatTrans.whiskerRight Γ η
-  associator {F G H} I := OplaxNatTrans.associator
-  leftUnitor {F G} := OplaxNatTrans.leftUnitor
-  rightUnitor {F G} := OplaxNatTrans.rightUnitor
+  whiskerLeft {_ _ _} η _ _ Γ := OplaxNatTrans.whiskerLeft η Γ
+  whiskerRight {_ _ _} _ _ Γ η := OplaxNatTrans.whiskerRight Γ η
+  associator {_ _ _} _ := OplaxNatTrans.associator
+  leftUnitor {_ _} := OplaxNatTrans.leftUnitor
+  rightUnitor {_ _} := OplaxNatTrans.rightUnitor
   whisker_exchange {a b c f g h i} η θ := by
     ext
     exact whisker_exchange _ _

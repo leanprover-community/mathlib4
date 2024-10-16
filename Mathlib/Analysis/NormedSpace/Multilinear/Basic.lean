@@ -74,18 +74,47 @@ We use the following type variables in this file:
 
 universe u v v' wE wE₁ wE' wG wG'
 
-/-- Applying a multilinear map to a vector is continuous in both coordinates. -/
-theorem ContinuousMultilinearMap.continuous_eval {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
+section continuous_eval
+
+variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
     [NormedField 𝕜] [Finite ι] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-    [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F] :
+    [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F]
+
+/-- Applying a multilinear map to a vector is continuous in both coordinates. -/
+theorem ContinuousMultilinearMap.continuous_eval :
     Continuous fun p : ContinuousMultilinearMap 𝕜 E F × ∀ i, E i => p.1 p.2 := by
   cases nonempty_fintype ι
   let _ := TopologicalAddGroup.toUniformSpace F
   have := comm_topologicalAddGroup_is_uniform (G := F)
   refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
-    (embedding_toUniformOnFun.continuous.prod_map continuous_id) fun (f, x) ↦ f.cont.continuousAt
+    (embedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
   exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
     ball_mem_nhds _ one_pos⟩
+
+namespace ContinuousLinearMap
+
+variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [ContinuousConstSMul 𝕜 F]
+  (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F)
+
+lemma continuous_uncurry_of_multilinear :
+    Continuous (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) :=
+  ContinuousMultilinearMap.continuous_eval.comp <| .prodMap (map_continuous f) continuous_id
+
+lemma continuousOn_uncurry_of_multilinear {s} :
+    ContinuousOn (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) s :=
+  f.continuous_uncurry_of_multilinear.continuousOn
+
+lemma continuousAt_uncurry_of_multilinear {x} :
+    ContinuousAt (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) x :=
+  f.continuous_uncurry_of_multilinear.continuousAt
+
+lemma continuousWithinAt_uncurry_of_multilinear {s x} :
+    ContinuousWithinAt (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) s x :=
+  f.continuous_uncurry_of_multilinear.continuousWithinAt
+
+end ContinuousLinearMap
+
+end continuous_eval
 
 section Seminorm
 
@@ -339,7 +368,7 @@ theorem isLeast_opNorm : IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c *
 @[deprecated (since := "2024-02-02")] alias isLeast_op_norm := isLeast_opNorm
 
 theorem opNorm_nonneg : 0 ≤ ‖f‖ :=
-  Real.sInf_nonneg _ fun _ ⟨hx, _⟩ => hx
+  Real.sInf_nonneg fun _ ⟨hx, _⟩ => hx
 
 @[deprecated (since := "2024-02-02")] alias op_norm_nonneg := opNorm_nonneg
 
@@ -390,7 +419,7 @@ theorem le_of_opNorm_le {C : ℝ} (h : ‖f‖ ≤ C) : ‖f m‖ ≤ C * ∏ i,
 variable (f)
 
 theorem ratio_le_opNorm : (‖f m‖ / ∏ i, ‖m i‖) ≤ ‖f‖ :=
-  div_le_of_nonneg_of_le_mul (by positivity) (opNorm_nonneg _) (f.le_opNorm m)
+  div_le_of_le_mul₀ (by positivity) (opNorm_nonneg _) (f.le_opNorm m)
 
 @[deprecated (since := "2024-02-02")] alias ratio_le_op_norm := ratio_le_opNorm
 
@@ -619,8 +648,8 @@ def prodL :
   invFun f :=
     ((ContinuousLinearMap.fst 𝕜 G G').compContinuousMultilinearMap f,
       (ContinuousLinearMap.snd 𝕜 G G').compContinuousMultilinearMap f)
-  map_add' f g := rfl
-  map_smul' c f := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
   left_inv f := by ext <;> rfl
   right_inv f := by ext <;> rfl
   norm_map' f := opNorm_prod f.1 f.2
@@ -747,7 +776,7 @@ theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin
   simp only [ContinuousMultilinearMap.mkPiAlgebraFin_apply, one_mul, List.ofFn_eq_map,
     Fin.prod_univ_def, Multiset.map_coe, Multiset.prod_coe]
   refine (List.norm_prod_le' ?_).trans_eq ?_
-  · rw [Ne, List.map_eq_nil, List.finRange_eq_nil]
+  · rw [Ne, List.map_eq_nil_iff, List.finRange_eq_nil]
     exact Nat.succ_ne_zero _
   rw [List.map_map, Function.comp_def]
 
@@ -762,6 +791,12 @@ theorem norm_mkPiAlgebraFin_zero : ‖ContinuousMultilinearMap.mkPiAlgebraFin �
     simp
   · convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 0 A) fun _ => (1 : A)
     simp
+
+theorem norm_mkPiAlgebraFin_le :
+    ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n A‖ ≤ max 1 ‖(1 : A)‖ := by
+  cases n
+  · exact norm_mkPiAlgebraFin_zero.le.trans (le_max_right _ _)
+  · exact (norm_mkPiAlgebraFin_le_of_pos (Nat.zero_lt_succ _)).trans (le_max_left _ _)
 
 @[simp]
 theorem norm_mkPiAlgebraFin [NormOneClass A] :
@@ -838,7 +873,7 @@ ones. We register this bijection as a linear isometry in
 `ContinuousMultilinearMap.piFieldEquiv`. -/
 protected def piFieldEquiv : G ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι => 𝕜) G where
   toFun z := ContinuousMultilinearMap.mkPiRing 𝕜 ι z
-  invFun f := f fun i => 1
+  invFun f := f fun _ => 1
   map_add' z z' := by
     ext m
     simp [smul_add]
@@ -867,7 +902,7 @@ variable (𝕜 E G G')
 def compContinuousMultilinearMapL :
     (G →L[𝕜] G') →L[𝕜] ContinuousMultilinearMap 𝕜 E G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
   LinearMap.mkContinuous₂
-    (LinearMap.mk₂ 𝕜 compContinuousMultilinearMap (fun f₁ f₂ g => rfl) (fun c f g => rfl)
+    (LinearMap.mk₂ 𝕜 compContinuousMultilinearMap (fun _ _ _ => rfl) (fun _ _ _ => rfl)
       (fun f g₁ g₂ => by ext1; apply f.map_add)
       (fun c f g => by ext1; simp))
     1

@@ -214,6 +214,8 @@ lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, mod_two_ne_one]
 @[simp] lemma not_odd_iff_even : ¬Odd n ↔ Even n := by rw [not_odd_iff, even_iff]
 @[simp] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by rw [not_even_iff, odd_iff]
 
+@[simp] lemma not_odd_zero : ¬Odd 0 := not_odd_iff.mpr rfl
+
 @[deprecated not_odd_iff_even (since := "2024-08-21")]
 lemma even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
 
@@ -324,7 +326,6 @@ namespace Involutive
 
 variable {α : Type*} {f : α → α} {n : ℕ}
 
-set_option linter.deprecated false in
 section
 
 lemma iterate_bit0 (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by

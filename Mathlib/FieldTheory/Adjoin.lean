@@ -28,7 +28,7 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
  - `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
 -/
 
-open FiniteDimensional Polynomial
+open Module Polynomial
 
 namespace IntermediateField
 
@@ -251,6 +251,14 @@ theorem map_sup (s t : IntermediateField F E) (f : E →ₐ[F] K) : (s ⊔ t).ma
 theorem map_iSup {ι : Sort*} (f : E →ₐ[F] K) (s : ι → IntermediateField F E) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
+
+theorem map_inf (s t : IntermediateField F E) (f : E →ₐ[F] K) :
+    (s ⊓ t).map f = s.map f ⊓ t.map f := SetLike.coe_injective (Set.image_inter f.injective)
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : E →ₐ[F] K) (s : ι → IntermediateField F E) :
+    (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective f.injective).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem _root_.AlgHom.fieldRange_eq_map (f : E →ₐ[F] K) :
     f.fieldRange = IntermediateField.map f ⊤ :=
@@ -864,7 +872,7 @@ theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
 
 section AdjoinRank
 
-open FiniteDimensional Module
+open Module Module
 
 variable {K L : IntermediateField F E}
 
@@ -1035,7 +1043,7 @@ theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlge
   have := adjoin.finiteDimensional hx; Algebra.IsAlgebraic.of_finite K K⟮x⟯
 
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
-    FiniteDimensional.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
+    Module.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
   rw [PowerBasis.finrank (adjoin.powerBasis hx : _)]
   rfl
 
@@ -1106,6 +1114,14 @@ theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).degree ≤ finrank K L :=
   degree_le_of_natDegree_le (minpoly.natDegree_le x)
 
+/-- If `x : L` is an integral element in a field extension `L` over `K`, then the degree of the
+  minimal polynomial of `x` over `K` divides `[L : K]`.-/
+theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
+    (minpoly K x).natDegree ∣ finrank K L := by
+  rw [dvd_iff_exists_eq_mul_left, ← IntermediateField.adjoin.finrank hx]
+  use finrank K⟮x⟯ L
+  rw [mul_comm, finrank_mul_finrank]
+
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
 theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
@@ -1161,12 +1177,12 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F
   exact h_sep
 
 -- Apparently `K⟮root f⟯ →+* K⟮root f⟯` is expensive to unify during instance synthesis.
-open FiniteDimensional AdjoinRoot in
+open Module AdjoinRoot in
 /-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible
 in `K⟮α⟯` with `α` a root of `f`, then `f(g(x))` is irreducible. -/
 theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g.Monic)
     (hf : Irreducible f)
-    (hg : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (hx : minpoly K x = f),
+    (hg : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (_ : minpoly K x = f),
       Irreducible (g.map (algebraMap _ _) - C (AdjoinSimple.gen K x))) :
     Irreducible (f.comp g) := by
   have hf' : natDegree f ≠ 0 :=
@@ -1209,7 +1225,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
       rw [← finrank_top', ← this, adjoin.finrank]
       exact IsIntegral.of_finite _ _
     · simp [← key₂]
-  have := FiniteDimensional.finrank_mul_finrank K K⟮aeval (root p) g⟯ Kx
+  have := Module.finrank_mul_finrank K K⟮aeval (root p) g⟯ Kx
   rwa [key₁', key₂', (AdjoinRoot.powerBasis hp₁.ne_zero).finrank, powerBasis_dim, eq_comm] at this
 
 end AdjoinIntegralElement
