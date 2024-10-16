@@ -193,7 +193,7 @@ lemma subtrees_inf_eq_bot_iff {t₁ t₂ : SubRootedTree t}
     rw [mem_iff] at h₁ h₂
     contrapose! h
     rw [← bot_lt_iff_ne_bot] at h
-    rcases lt_or_le_of_le (by simp : v₁ ⊓ v₂ ≤ v₁) h₁ with oh | oh
+    rcases lt_or_le_of_directed (by simp : v₁ ⊓ v₂ ≤ v₁) h₁ with oh | oh
     · simp_all [RootedTree.subtrees, IsAtom.lt_iff]
     rw [le_inf_iff] at oh
     ext
