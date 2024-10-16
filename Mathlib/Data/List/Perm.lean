@@ -275,31 +275,37 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
 
 end
 
-theorem Perm.bind_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l, f a ~ g a) :
-    l.bind f ~ l.bind g :=
+theorem Perm.flatMap_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l, f a ~ g a) :
+    l.flatMap f ~ l.flatMap g :=
   Perm.flatten_congr <| by
     rwa [List.forall₂_map_right_iff, List.forall₂_map_left_iff, List.forall₂_same]
 
-theorem bind_append_perm (l : List α) (f g : α → List β) :
-    l.bind f ++ l.bind g ~ l.bind fun x => f x ++ g x := by
+@[deprecated (since := "2024-10-16")] alias Perm.bind_left := Perm.flatMap_left
+
+theorem flatMap_append_perm (l : List α) (f g : α → List β) :
+    l.flatMap f ++ l.flatMap g ~ l.flatMap fun x => f x ++ g x := by
   induction' l with a l IH
   · simp
-  simp only [bind_cons, append_assoc]
+  simp only [flatMap_cons, append_assoc]
   refine (Perm.trans ?_ (IH.append_left _)).append_left _
   rw [← append_assoc, ← append_assoc]
   exact perm_append_comm.append_right _
 
-theorem map_append_bind_perm (l : List α) (f : α → β) (g : α → List β) :
-    l.map f ++ l.bind g ~ l.bind fun x => f x :: g x := by
-  simpa [← map_eq_bind] using bind_append_perm l (fun x => [f x]) g
+@[deprecated (since := "2024-10-16")] alias bind_append_perm := flatMap_append_perm
+
+theorem map_append_flatMap_perm (l : List α) (f : α → β) (g : α → List β) :
+    l.map f ++ l.flatMap g ~ l.flatMap fun x => f x :: g x := by
+  simpa [← map_eq_flatMap] using flatMap_append_perm l (fun x => [f x]) g
+
+@[deprecated (since := "2024-10-16")] alias map_append_bind_perm := map_append_flatMap_perm
 
 theorem Perm.product_right {l₁ l₂ : List α} (t₁ : List β) (p : l₁ ~ l₂) :
     product l₁ t₁ ~ product l₂ t₁ :=
-  p.bind_right _
+  p.flatMap_right _
 
 theorem Perm.product_left (l : List α) {t₁ t₂ : List β} (p : t₁ ~ t₂) :
     product l t₁ ~ product l t₂ :=
-  (Perm.bind_left _) fun _ _ => p.map _
+  (Perm.flatMap_left _) fun _ _ => p.map _
 
 theorem Perm.product {l₁ l₂ : List α} {t₁ t₂ : List β} (p₁ : l₁ ~ l₂) (p₂ : t₁ ~ t₂) :
     product l₁ t₁ ~ product l₂ t₂ :=
@@ -429,23 +435,23 @@ private theorem DecEq_eq [DecidableEq α] :
     rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
 
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
-    (permutations'Aux a l).bind (permutations'Aux b) ~
-      (permutations'Aux b l).bind (permutations'Aux a) := by
+    (permutations'Aux a l).flatMap (permutations'Aux b) ~
+      (permutations'Aux b l).flatMap (permutations'Aux a) := by
   induction' l with c l ih
   · simp [swap]
-  simp only [permutations'Aux, bind_cons, map_cons, map_map, cons_append]
+  simp only [permutations'Aux, flatMap_cons, map_cons, map_map, cons_append]
   apply Perm.swap'
   have :
     ∀ a b,
-      (map (cons c) (permutations'Aux a l)).bind (permutations'Aux b) ~
+      (map (cons c) (permutations'Aux a l)).flatMap (permutations'Aux b) ~
         map (cons b ∘ cons c) (permutations'Aux a l) ++
-          map (cons c) ((permutations'Aux a l).bind (permutations'Aux b)) := by
+          map (cons c) ((permutations'Aux a l).flatMap (permutations'Aux b)) := by
     intros a' b'
-    simp only [bind_map, permutations'Aux]
-    show List.bind (permutations'Aux _ l) (fun a => ([b' :: c :: a] ++
+    simp only [flatMap_map, permutations'Aux]
+    show List.flatMap (permutations'Aux _ l) (fun a => ([b' :: c :: a] ++
       map (cons c) (permutations'Aux _ a))) ~ _
-    refine (bind_append_perm _ (fun x => [b' :: c :: x]) _).symm.trans ?_
-    rw [← map_eq_bind, ← map_bind]
+    refine (flatMap_append_perm _ (fun x => [b' :: c :: x]) _).symm.trans ?_
+    rw [← map_eq_flatMap, ← map_flatMap]
     exact Perm.refl _
   refine (((this _ _).append_left _).trans ?_).trans ((this _ _).append_left _).symm
   rw [← append_assoc, ← append_assoc]
@@ -454,11 +460,11 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
 theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permutations' t := by
   induction p with
   | nil => simp
-  | cons _ _ IH => exact IH.bind_right _
+  | cons _ _ IH => exact IH.flatMap_right _
   | swap =>
     dsimp
-    rw [bind_assoc, bind_assoc]
-    apply Perm.bind_left
+    rw [flatMap_assoc, flatMap_assoc]
+    apply Perm.flatMap_left
     intro l' _
     apply perm_permutations'Aux_comm
   | trans _ _ IH₁ IH₂ => exact IH₁.trans IH₂
@@ -472,10 +478,10 @@ theorem permutations_perm_permutations' (ts : List α) : ts.permutations ~ ts.pe
   simp only [permutations_append, foldr_permutationsAux2, permutationsAux_nil,
     permutationsAux_cons, append_nil]
   refine
-    (perm_append_comm.trans ((IH₂.bind_right _).append ((IH _ h).map _))).trans
+    (perm_append_comm.trans ((IH₂.flatMap_right _).append ((IH _ h).map _))).trans
       (Perm.trans ?_ perm_append_comm.permutations')
-  rw [map_eq_bind, singleton_append, permutations']
-  refine (bind_append_perm _ _ _).trans ?_
+  rw [map_eq_flatMap, singleton_append, permutations']
+  refine (flatMap_append_perm _ _ _).trans ?_
   refine Perm.of_eq ?_
   congr
   funext _
@@ -591,7 +597,7 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
   induction' hs with x l h h' IH
   · simp
   · rw [permutations']
-    rw [nodup_bind]
+    rw [nodup_flatMap]
     constructor
     · intro ys hy
       rw [mem_permutations'] at hy

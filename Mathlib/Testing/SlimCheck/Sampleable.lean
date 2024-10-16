@@ -163,7 +163,7 @@ instance Int.shrinkable : Shrinkable Int where
 
 instance Rat.shrinkable : Shrinkable Rat where
   shrink r :=
-    (Shrinkable.shrink r.num).bind fun d => Nat.shrink r.den |>.map fun n => Rat.divInt d n
+    (Shrinkable.shrink r.num).flatMap fun d => Nat.shrink r.den |>.map fun n => Rat.divInt d n
 
 instance Bool.shrinkable : Shrinkable Bool := {}
 instance Char.shrinkable : Shrinkable Char := {}

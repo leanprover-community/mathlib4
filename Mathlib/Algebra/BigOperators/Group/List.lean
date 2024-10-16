@@ -651,17 +651,23 @@ lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by simp [mem_mem_ranges_iff_lt_natSum]
 
 @[simp]
-theorem length_bind (l : List α) (f : α → List β) :
-    length (List.bind l f) = sum (map (length ∘ f) l) := by
-  rw [List.bind, length_flatten, map_map, Nat.sum_eq_listSum]
+theorem length_flatMap (l : List α) (f : α → List β) :
+    length (List.flatMap l f) = sum (map (length ∘ f) l) := by
+  rw [List.flatMap, length_flatten, map_map, Nat.sum_eq_listSum]
 
-lemma countP_bind (p : β → Bool) (l : List α) (f : α → List β) :
-    countP p (l.bind f) = sum (map (countP p ∘ f) l) := by
-  rw [List.bind, countP_flatten, map_map]
+@[deprecated (since := "2024-10-16")] alias length_bind := length_flatMap
+
+lemma countP_flatMap (p : β → Bool) (l : List α) (f : α → List β) :
+    countP p (l.flatMap f) = sum (map (countP p ∘ f) l) := by
+  rw [List.flatMap, countP_flatten, map_map]
   simp
 
-lemma count_bind [BEq β] (l : List α) (f : α → List β) (x : β) :
-    count x (l.bind f) = sum (map (count x ∘ f) l) := countP_bind _ _ _
+@[deprecated (since := "2024-10-16")] alias countP_bind := countP_flatMap
+
+lemma count_flatMap [BEq β] (l : List α) (f : α → List β) (x : β) :
+    count x (l.flatMap f) = sum (map (count x ∘ f) l) := countP_flatMap _ _ _
+
+@[deprecated (since := "2024-10-16")] alias count_bind := count_flatMap
 
 /-- In a flatten, taking the first elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the flatten of the first `i` sublists. -/

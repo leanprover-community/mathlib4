@@ -1153,7 +1153,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
       \n  `initialize_simps_projections? {str}`.\n\
       Note: these projection names might be customly defined for `simps`, \
       and could differ from the projection names of the structure."
-  let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
+  let nms ← projInfo.flatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs
     let newTodo := todo.filterMap
       fun (x, stx) ↦ (dropPrefixIfNotNumber? x (proj.lastComponentAsString ++ "_")).map
