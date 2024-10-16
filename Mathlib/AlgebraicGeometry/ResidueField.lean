@@ -50,7 +50,7 @@ def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
 
 @[simp]
 lemma Spec_map_residue_apply {X : Scheme.{u}} (x : X) (s : Spec (X.residueField x)) :
-    (Spec.map (X.residue x)).val.base s = closedPoint (X.presheaf.stalk x) :=
+    (Spec.map (X.residue x)).base s = closedPoint (X.presheaf.stalk x) :=
   LocalRing.PrimeSpectrum.comap_residue _ s
 
 lemma residue_surjective (X : Scheme.{u}) (x) : Function.Surjective (X.residue x) :=
@@ -220,16 +220,17 @@ lemma Hom.residueFieldMap_fromSpecResidueField (x : X) :
     Spec.map (f.residueFieldMap x) ≫ Y.fromSpecResidueField _ =
       X.fromSpecResidueField x ≫ f := by
   dsimp only [fromSpecResidueField]
-  rw [Category.assoc, ← Scheme.stalkMap_fromSpecStalk, ← Spec.map_comp_assoc, ← Spec.map_comp_assoc]
+  rw [Category.assoc, ← Spec_map_stalkMap_fromSpecStalk, ← Spec.map_comp_assoc,
+    ← Spec.map_comp_assoc]
   rfl
 
 @[simp]
 lemma fromSpecResidueField_apply (x : X.carrier) (s : Spec (X.residueField x)) :
-    (X.fromSpecResidueField x).val.base s = x := by
+    (X.fromSpecResidueField x).base s = x := by
   simp [fromSpecResidueField]
 
 lemma range_fromSpecResidueField  (x : X.carrier) :
-    Set.range (X.fromSpecResidueField x).val.base = {x} := by
+    Set.range (X.fromSpecResidueField x).base = {x} := by
   ext s
   simp only [Set.mem_range, fromSpecResidueField_apply, Set.mem_singleton_iff, eq_comm (a := s)]
   constructor
@@ -251,7 +252,7 @@ instance {R : CommRingCat} [LocalRing R] (f : Spec R ⟶ X) :
 lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
     (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec (.of K) ⟶ X) :
     Spec.map (X.descResidueField (Scheme.stalkClosedPointTo f)) ≫
-      X.fromSpecResidueField (f.val.base (closedPoint K)) = f := by
+      X.fromSpecResidueField (f.base (closedPoint K)) = f := by
   erw [X.descResidueField_fromSpecResidueField]
   rw [Scheme.Spec_stalkClosedPointTo_fromSpecStalk]
 
