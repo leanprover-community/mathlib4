@@ -38,6 +38,26 @@ an example. -/
 def RingHom.testProperty3 {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) : Prop :=
   f.testProperty1
 
+/-- Test property for when the `RingHom` porperty corresponds to a `Algebra` property that is not
+definitionally the same, and needs to be created through a lemma. See e.g. `Algebra.IsIntegral` for
+an example. -/
+class Algebra.testProperty4 (n : ℕ) (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] : Prop where
+  out : ∀ m, n = m
+
+/- Test property for when the `RingHom` (and `Algebra`) property have an extra explicit argument,
+and hence needs to be created through a lemma. See e.g.
+`Algebra.IsStandardSmoothOfRelativeDimension` for an example. -/
+@[algebraize testProperty4.toAlgebra]
+def RingHom.testProperty4 (n : ℕ) {A B : Type*} [CommRing A] [CommRing B] (_ : A →+* B) : Prop :=
+  ∀ m, n = m
+
+lemma testProperty4.toAlgebra (n : ℕ) {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
+    (hf : f.testProperty4 n) :
+    letI : Algebra A B := f.toAlgebra
+    Algebra.testProperty4 n A B :=
+      letI : Algebra A B := f.toAlgebra
+      { out := hf }
+
 end example_definitions
 
 set_option tactic.hygienic false
@@ -90,6 +110,12 @@ example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProp
 example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty3) : True := by
   algebraize [f]
   guard_hyp algebraizeInst : Algebra.testProperty3 A B
+  trivial
+
+example (n : ℕ) (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty4 n) :
+    True := by
+  algebraize [f]
+  guard_hyp algebraizeInst : Algebra.testProperty4 n A B
   trivial
 
 /-- Synthesize from morphism property of a composition (and check that tower is also synthesized). -/
