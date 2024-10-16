@@ -109,7 +109,8 @@ theorem isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) 
     IsLocalHom (f.stalkMap x) :=
   f.2 x
 
-instance isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+@[instance]
+theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalHom (f.toShHom.stalkMap x) :=
   f.2 x
 

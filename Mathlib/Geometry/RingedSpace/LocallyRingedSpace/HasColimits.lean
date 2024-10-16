@@ -131,7 +131,8 @@ variable {X Y : LocallyRingedSpace.{v}} (f g : X ⟶ Y)
 
 namespace HasCoequalizer
 
-instance coequalizer_π_app_isLocalHom
+@[instance]
+theorem coequalizer_π_app_isLocalHom
     (U : TopologicalSpace.Opens (coequalizer f.toShHom g.toShHom).carrier) :
     IsLocalHom ((coequalizer.π f.toShHom g.toShHom : _).c.app (op U)) := by
   have := ι_comp_coequalizerComparison f.toShHom g.toShHom SheafedSpace.forgetToPresheafedSpace
@@ -213,7 +214,8 @@ theorem imageBasicOpen_image_open :
   erw [imageBasicOpen_image_preimage]
   exact (imageBasicOpen f g U s).2
 
-instance coequalizer_π_stalk_isLocalHom (x : Y) :
+@[instance]
+theorem coequalizer_π_stalk_isLocalHom (x : Y) :
     IsLocalHom ((coequalizer.π f.toShHom g.toShHom : _).stalkMap x) := by
   constructor
   rintro a ha
