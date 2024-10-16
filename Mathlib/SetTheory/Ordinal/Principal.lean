@@ -441,4 +441,8 @@ theorem opow_omega0 {a : Ordinal} (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
 @[deprecated (since := "2024-09-30")]
 alias opow_omega := opow_omega0
 
+theorem nat_opow_omega0 {n : ℕ} (hn : 1 < n) : n ^ ω = ω := by
+  apply opow_omega0 _ (nat_lt_omega0 n)
+  exact_mod_cast hn
+
 end Ordinal

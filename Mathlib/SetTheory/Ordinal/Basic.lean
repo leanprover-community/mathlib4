@@ -515,10 +515,6 @@ theorem card_type (r : α → α → Prop) [IsWellOrder α r] : card (type r) = 
   rfl
 
 @[simp]
-theorem card_toType (o : Ordinal) : #o.toType = o.card := by
-  conv_rhs => rw [← type_lt o, card_type]
-
-@[simp]
 theorem card_typein {r : α → α → Prop} [IsWellOrder α r] (x : α) :
     #{ y // r y x } = (typein r x).card :=
   rfl
@@ -1159,6 +1155,14 @@ theorem card_ord (c) : (ord c).card = c :=
 theorem card_surjective : Function.Surjective card :=
   fun c ↦ ⟨_, card_ord c⟩
 
+@[simp]
+theorem _root_.Cardinal.ord_aleph0 : ord.{u} ℵ₀ = ω :=
+  le_antisymm (ord_le.2 <| le_rfl) <|
+    le_of_forall_lt fun o h => by
+      rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
+      rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
+      exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
+
 /-- Galois coinsertion between `Cardinal.ord` and `Ordinal.card`. -/
 def gciOrdCard : GaloisCoinsertion ord card :=
   gc_ord_card.toGaloisCoinsertion fun c => c.card_ord.le
@@ -1181,6 +1185,10 @@ The converse, however, is false (for instance, `o = ω+1` and `c = ℵ₀`).
 lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) :
     o.card ≤ c := by
   rw [← card_ord c]; exact Ordinal.card_le_card ho
+
+@[simp]
+theorem aleph0_le_card_iff (o : Ordinal) : ℵ₀ ≤ o.card ↔ ω ≤ o := by
+  rw [← ord_le, ord_aleph0]
 
 @[mono]
 theorem ord_strictMono : StrictMono ord :=

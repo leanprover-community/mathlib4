@@ -824,28 +824,52 @@ end Cardinal
 
 namespace Ordinal
 
-theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) {b : Ordinal} :
+theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordinal) :
     (a ^ b).card ≤ max a.card b.card := by
   refine limitRecOn b ?_ ?_ ?_
   · simpa using one_lt_omega0.le.trans ha
   · intro b IH
-    rw [opow_succ, card_mul, card_succ, Cardinal.mul_eq_max]
-    · rw [max_comm]
-      apply (max_le_max_left _ IH).trans
+    rw [opow_succ, card_mul, card_succ, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
+    · apply (max_le_max_left _ IH).trans
       rw [← max_assoc, max_self]
-      apply max_le_max_left
-      apply le_self_add
+      exact max_le_max_left _ le_self_add
+    · rw [ne_eq, card_eq_zero, opow_eq_zero, not_and]
+      rintro rfl
+      cases omega0_pos.not_le ha
     · rw [← card_omega0]
-      apply card_le_card
-      sorry
-    · rw [← card_omega0]
-      apply card_le_card ha
+      exact card_le_card ha
   · intro b hb IH
-    rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isLimit hb, sSup_image']
-    apply (card_sInf_le_sum_card _).trans
+    rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isLimit hb]
+    apply (card_sSup_Iio_le_card_mul_iSup _).trans
+    rw [Cardinal.lift_id, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
+    · apply max_le _ (le_max_right _ _)
+      apply ciSup_le'
+      intro c
+      exact (IH c.1 c.2).trans (max_le_max_left _ (card_le_card c.2.le))
+    · simpa using hb.pos.ne'
+    · refine le_ciSup_of_le ?_ ⟨1, one_lt_omega0.trans_le <| omega0_le_of_isLimit hb⟩ ?_
+      · apply Cardinal.bddAbove_of_small
+      · simpa
 
+theorem card_opow_le_of_omega0_le_right (a : Ordinal) {b : Ordinal} (hb : ω ≤ b) :
+    (a ^ b).card ≤ max a.card b.card := by
+  obtain ⟨n, rfl⟩ | ha := eq_nat_or_omega0_le a
+  · apply (card_le_card <| opow_le_opow_left b (nat_lt_omega0 n).le).trans <|
+      (card_opow_le_of_omega0_le_left le_rfl _).trans _
+    simp [hb]
+  · exact card_opow_le_of_omega0_le_left ha b
 
-  #exit
+theorem card_opow_eq_of_omega0_le_left {a b : Ordinal} (ha : ω ≤ a) (hb : 0 < b) :
+    (a ^ b).card = max a.card b.card := by
+  apply (card_opow_le_of_omega0_le_left ha b).antisymm (max_le _ _) <;> apply card_le_card
+  · exact left_le_opow a hb
+  · exact right_le_opow b (one_lt_omega0.trans_le ha)
+
+theorem card_opow_eq_of_omega0_le_right {a b : Ordinal} (ha : 1 < a) (hb : ω ≤ b) :
+    (a ^ b).card = max a.card b.card := by
+  apply (card_opow_le_of_omega0_le_right a hb).antisymm (max_le _ _) <;> apply card_le_card
+  · exact left_le_opow a (omega0_pos.trans_le hb)
+  · exact right_le_opow b ha
 
 end Ordinal
 
