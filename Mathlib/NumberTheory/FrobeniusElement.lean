@@ -1,7 +1,26 @@
+/-
+Copyright (c) 2024 Thomas Browning. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas Browning
+-/
 import Mathlib.Algebra.Order.Group.Action.Synonym
 import Mathlib.FieldTheory.Fixed
 import Mathlib.NumberTheory.RamificationInertia
 import Mathlib.RingTheory.Ideal.Pointwise
+
+/-!
+# Frobenius Elements
+
+
+
+## Main statements
+
+
+
+## Implementation notes
+
+
+-/
 
 open scoped Pointwise
 
@@ -196,46 +215,31 @@ end MulSemiringAction
 section fixedfield
 
 /-- `MulSemiringAction.toAlgHom` is bijective. -/
-theorem toAlgHom_bijective' (G F : Type*) [Field F] [Group G] [Finite G]
-    [MulSemiringAction G F] [FaithfulSMul G F] :
-    Function.Bijective
+theorem toAlgHom_bijective' (G F : Type*) [Field F] [Group G] [Finite G] [MulSemiringAction G F]
+    [FaithfulSMul G F] : Function.Bijective
       (MulSemiringAction.toAlgEquivHom _ _ : G →* F ≃ₐ[FixedPoints.subfield G F] F) := by
-  constructor
-  · intro f g h
-    apply (FixedPoints.toAlgHom_bijective G F).injective
-    convert h
-    simp [DFunLike.ext_iff]
-  · intro f
-    obtain ⟨g, h⟩ := (FixedPoints.toAlgHom_bijective G F).surjective f
-    use g
-    convert h
-    simp [DFunLike.ext_iff]
+  refine ⟨fun _ _ h ↦ (FixedPoints.toAlgHom_bijective G F).injective ?_,
+    fun f ↦ ((FixedPoints.toAlgHom_bijective G F).surjective f).imp (fun _ h ↦ ?_)⟩
+      <;> rwa [DFunLike.ext_iff] at h ⊢
 
 /-- `MulSemiringAction.toAlgHom` is surjective. -/
-theorem toAlgHom_surjective (G F : Type*) [Field F] [Group G] [Finite G]
-    [MulSemiringAction G F] :
+theorem toAlgHom_surjective (G F : Type*) [Field F] [Group G] [Finite G] [MulSemiringAction G F] :
     Function.Surjective
       (MulSemiringAction.toAlgEquivHom _ _ : G →* F ≃ₐ[FixedPoints.subfield G F] F) := by
-  let f : G →* F ≃ₐ[FixedPoints.subfield G F] F := MulSemiringAction.toAlgEquivHom _ _
-  let H := f.ker
-  let Q := G ⧸ H
-  let h : Q →* F ≃ₐ[FixedPoints.subfield G F] F := QuotientGroup.kerLift f
-  let action : MulSemiringAction Q F := MulSemiringAction.ofAlgEquivHom _ _ h
+  let f : G →* F ≃ₐ[FixedPoints.subfield G F] F :=
+    MulSemiringAction.toAlgEquivHom (FixedPoints.subfield G F) F
+  let Q := G ⧸ f.ker
+  let _ : MulSemiringAction Q F := MulSemiringAction.ofAlgEquivHom _ _ (QuotientGroup.kerLift f)
   have : FaithfulSMul Q F := ⟨by
     intro q₁ q₂
-    refine Quotient.inductionOn₂' q₁ q₂ ?_
-    intro g₁ g₂ h
-    apply QuotientGroup.eq.mpr
+    refine Quotient.inductionOn₂' q₁ q₂ (fun g₁ g₂ h ↦ QuotientGroup.eq.mpr ?_)
     rwa [MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
-  have key' : FixedPoints.subfield Q F ≤ FixedPoints.subfield G F := fun x h g ↦ h g
   intro f
   obtain ⟨q, hq⟩ := (toAlgHom_bijective' Q F).surjective
-    (AlgEquiv.ofRingEquiv (f := f) (fun ⟨g, hg⟩ ↦ f.commutes' ⟨g, key' hg⟩))
+    (AlgEquiv.ofRingEquiv (f := f) (fun ⟨x, hx⟩ ↦ f.commutes' ⟨x, fun g ↦ hx g⟩))
   revert hq
-  refine Quotient.inductionOn' q ?_
-  intro g hg
-  simp only [AlgEquiv.ext_iff] at hg ⊢
-  exact ⟨g, hg⟩
+  refine Quotient.inductionOn' q (fun g hg ↦ ⟨g, ?_⟩)
+  rwa [AlgEquiv.ext_iff] at hg ⊢
 
 end fixedfield
 
