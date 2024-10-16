@@ -54,12 +54,13 @@ def IsInitial (o : Ordinal) : Prop :=
 theorem IsInitial.ord_card {o : Ordinal} (h : IsInitial o) : o.card.ord = o := h
 
 theorem IsInitial.card_le_card {a b : Ordinal} (ha : IsInitial a) : a.card ≤ b.card ↔ a ≤ b := by
-  rw [← ha.ord_card]
-  exact (ord_mono hb).trans (ord_card_le b)
+  refine ⟨fun h ↦ ?_, Ordinal.card_le_card⟩
+  rw [← ord_le_ord, ha.ord_card] at h
+  exact h.trans (ord_card_le b)
 
 theorem IsInitial.card_lt_card {a b : Ordinal} (hb : IsInitial b) :
     a.card < b.card ↔ a < b :=
-  lt_iff_lt_of_le_iff_le (hb.card_le_card)
+  lt_iff_lt_of_le_iff_le hb.card_le_card
 
 theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
   rw [IsInitial, card_ord]
@@ -89,7 +90,7 @@ def isInitialIso : {x // IsInitial x} ≃o Cardinal where
   invFun x := ⟨x.ord, isInitial_ord _⟩
   left_inv x := Subtype.ext x.2.ord_card
   right_inv x := card_ord x
-  map_rel_iff' {a b} := a.2.card_le_card b.2
+  map_rel_iff' {a _} := a.2.card_le_card
 
 -- TODO: define `omega` as the enumerator function of `IsInitial`, and redefine
 -- `aleph x = (omega x).card`.
