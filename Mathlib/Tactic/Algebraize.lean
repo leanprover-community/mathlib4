@@ -38,10 +38,12 @@ specified declaration should be one of the following:
 
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
 `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
-`Algebra` property by giving the `RingHom` property as a term.
-2. A constructor for the `Algebra` property. In this case it is assumed that the `RingHom` property
-is the last argument of the constructor, and that no other explicit argument is needed. The tactic
-then constructs the `Algebra` property by applying the constructor to the `RingHom` property.
+`Algebra` property by giving the `RingHom` property as a term. Due to how this is peformed, we also
+need to assume that the `Algebra` property can be constructed only from the homomorphism, so it can
+not have any other explicit arguments.
+2. A lemma (or constructor) proving the `Algebra` property from the `RingHom` property. In this case
+it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
+is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
 
 Here are three examples of properties tagged with the `algebraize` attribute:
 ```
@@ -98,9 +100,9 @@ There are two cases for what declaration corresponding to this `Name` can be.
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
 `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
 `Algebra` property by giving the `RingHom` property as a term.
-2. A constructor for the `Algebra` property. In this case it is assumed that the `RingHom` property
-is the last argument of the constructor, and that no other explicit argument is needed. The tactic
-then constructs the `Algebra` property by applying the constructor to the `RingHom` property.
+2. A lemma (or constructor) proving the `Algebra` property from the `RingHom` property. In this case
+it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
+is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
 
 Finally, if no argument is provided to the `algebraize` attribute, it is assumed that the tagged
 declaration has name `RingHom.Property` and that the corresponding `Algebra` property has name
@@ -171,7 +173,8 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
     let (nm, args) := decl.type.getAppFnArgs
     -- Check if the type of the current hypothesis has been tagged with the `algebraize` attribute
     match Attr.algebraizeAttr.getParam? (← getEnv) nm with
-    -- If it has, `p` will be the name of the corresponding `Algebra` property (or a constructor)
+    -- If it has, `p` will either be the name of the corresponding `Algebra` property, or a
+    -- lemma/constructor.
     | some p =>
       -- The last argument of the `RingHom` property is assumed to be `f`
       let f := args[args.size - 1]!
