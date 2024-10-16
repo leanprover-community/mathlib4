@@ -148,9 +148,9 @@ open IsClosedImmersion LocallyRingedSpace
 has a closed image and `f` induces an injection on global sections, then
 `f` is surjective. -/
 lemma surjective_of_isClosed_range_of_injective [CompactSpace X]
-    (hfcl : IsClosed (Set.range f.val.base)) (hfinj : Function.Injective (f.app ⊤)) :
-    Function.Surjective f.val.base := by
-  obtain ⟨I, hI⟩ := (Scheme.eq_zeroLocus_of_isClosed_of_isAffine Y (Set.range f.val.base)).mp hfcl
+    (hfcl : IsClosed (Set.range f.base)) (hfinj : Function.Injective (f.app ⊤)) :
+    Function.Surjective f.base := by
+  obtain ⟨I, hI⟩ := (Scheme.eq_zeroLocus_of_isClosed_of_isAffine Y (Set.range f.base)).mp hfcl
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
   haveI (i : 𝒰.J) : IsAffine (𝒰.obj i) := Scheme.isAffine_affineCover X _
   apply Set.range_iff_surjective.mp
@@ -162,17 +162,17 @@ lemma surjective_of_isClosed_range_of_injective [CompactSpace X]
   rw [Scheme.isNilpotent_iff_basicOpen_eq_bot]
   rw [Scheme.basicOpen_eq_bot_iff_forall_evaluation_eq_zero]
   intro x
-  suffices h : f.val.base ((𝒰.map i).val.base x.val) ∉ Y.basicOpen s by
+  suffices h : f.base ((𝒰.map i).base x.val) ∉ Y.basicOpen s by
     erw [← Scheme.Γevaluation_naturality_apply (𝒰.map i ≫ f)]
-    simpa only [Scheme.comp_val_base, TopCat.coe_comp, Function.comp_apply,
+    simpa only [Scheme.comp_base, TopCat.coe_comp, Function.comp_apply,
       Scheme.residueFieldMap_comp, CommRingCat.comp_apply, map_eq_zero,
       Scheme.evaluation_eq_zero_iff_not_mem_basicOpen]
-  exact (Y.mem_zeroLocus_iff I _).mp (hI ▸ Set.mem_range_self ((𝒰.map i).val.base x.val)) s hs
+  exact (Y.mem_zeroLocus_iff I _).mp (hI ▸ Set.mem_range_self ((𝒰.map i).base x.val)) s hs
 
 /-- If `f : X ⟶ Y` is open, injective, `X` is quasi-compact and `Y` is affine, then `f` is stalkwise
 injective if it is injective on global sections. -/
 lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
-    (hfopen : IsOpenMap f.val.base) (hfinj₁ : Function.Injective f.val.base)
+    (hfopen : IsOpenMap f.base) (hfinj₁ : Function.Injective f.base)
     (hfinj₂ : Function.Injective (f.app ⊤)) (x : X) :
     Function.Injective (f.stalkMap x) := by
   let φ : Γ(Y, ⊤) ⟶ Γ(X, ⊤) := f.app ⊤
@@ -184,7 +184,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
   obtain ⟨U, w, (hx : x ∈ U), hg⟩ :=
     X.toRingedSpace.exists_res_eq_zero_of_germ_eq_zero ⊤ (φ g) ⟨x, trivial⟩ h
   obtain ⟨_, ⟨s, rfl⟩, hyv, bsle⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_basicOpen Y)
-    (show f.val.base x ∈ ⟨f.val.base '' U.carrier, hfopen U.carrier U.is_open'⟩ from ⟨x, by simpa⟩)
+    (show f.base x ∈ ⟨f.base '' U.carrier, hfopen U.carrier U.is_open'⟩ from ⟨x, by simpa⟩)
   let W (i : 𝒰.J) : TopologicalSpace.Opens (𝒰.obj i) := (𝒰.obj i).basicOpen ((res i) (φ s))
   have hwle (i : 𝒰.J) : W i ≤ (𝒰.map i)⁻¹ᵁ U := by
     show ((𝒰.obj i).basicOpen ((𝒰.map i ≫ f).app ⊤ s)) ≤ _
@@ -206,7 +206,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
     simp only [map_mul, map_pow, map_mul, map_pow] at hfn
     apply pow_mul_eq_zero_of_le (Finset.le_sup (Finset.mem_univ i)) (hfn i)
   obtain ⟨n, hn⟩ := h2
-  apply germ_eq_zero_of_pow_mul_eq_zero (U := ⊤) ⟨f.val.base x, trivial⟩ hyv
+  apply germ_eq_zero_of_pow_mul_eq_zero (U := ⊤) ⟨f.base x, trivial⟩ hyv
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at hfinj₂
   exact hfinj₂ _ (Scheme.zero_of_zero_cover _ _ hn)
 
@@ -217,12 +217,12 @@ sections is injective, `f` is an isomorphism. -/
 theorem isIso_of_injective_of_isAffine [IsClosedImmersion f]
     (hf : Function.Injective (f.app ⊤)) : IsIso f := (isIso_iff_stalk_iso f).mpr <|
   have : CompactSpace X := (closedEmbedding f).compactSpace
-  have hiso : IsIso f.val.base := TopCat.isIso_of_bijective_of_isClosedMap _
+  have hiso : IsIso f.base := TopCat.isIso_of_bijective_of_isClosedMap _
     ⟨(closedEmbedding f).inj,
      surjective_of_isClosed_range_of_injective ((closedEmbedding f).isClosed_range) hf⟩
     ((closedEmbedding f).isClosedMap)
   ⟨hiso, fun x ↦ (ConcreteCategory.isIso_iff_bijective _).mpr
-    ⟨stalkMap_injective_of_isOpenMap_of_injective ((TopCat.homeoOfIso (asIso f.val.base)).isOpenMap)
+    ⟨stalkMap_injective_of_isOpenMap_of_injective ((TopCat.homeoOfIso (asIso f.base)).isOpenMap)
     (closedEmbedding f).inj hf _, f.stalkMap_surjective x⟩⟩
 
 variable (f)

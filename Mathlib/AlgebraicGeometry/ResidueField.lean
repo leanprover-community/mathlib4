@@ -127,15 +127,14 @@ lemma evaluation_naturality_apply {V : Opens Y} (x : X) (hx : f.base x ∈ V) (s
 
 @[reassoc]
 lemma Γevaluation_naturality (x : X) :
-    Y.Γevaluation (f.val.base x) ≫ f.residueFieldMap x =
-      f.val.c.app (op ⊤) ≫ X.Γevaluation x :=
-  LocallyRingedSpace.Γevaluation_naturality f x
+    Y.Γevaluation (f.base x) ≫ f.residueFieldMap x =
+      f.c.app (op ⊤) ≫ X.Γevaluation x :=
+  LocallyRingedSpace.Γevaluation_naturality f.toLRSHom x
 
 lemma Γevaluation_naturality_apply (x : X) (a : Y.presheaf.obj (op ⊤)) :
-    f.residueFieldMap x (Y.Γevaluation (f.val.base x) a) =
-      X.Γevaluation x (f.val.c.app (op ⊤) a) :=
-  LocallyRingedSpace.Γevaluation_naturality_apply f x a
-
+    f.residueFieldMap x (Y.Γevaluation (f.base x) a) =
+      X.Γevaluation x (f.c.app (op ⊤) a) :=
+  LocallyRingedSpace.Γevaluation_naturality_apply f.toLRSHom x a
 
 instance [IsOpenImmersion f] (x) : IsIso (f.residueFieldMap x) :=
   (LocalRing.ResidueField.mapEquiv

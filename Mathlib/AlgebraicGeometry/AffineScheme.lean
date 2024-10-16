@@ -652,12 +652,12 @@ theorem isLocalization_stalk (x : U) :
   exact hU.isLocalization_stalk' y hx
 
 lemma stalkMap_injective (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U) (x : X)
-    (hx : f.val.base x ∈ U)
-    (h : ∀ g, f.stalkMap x (Y.presheaf.germ U (f.val.base x) hx g) = 0 →
-      Y.presheaf.germ U (f.val.base x) hx g = 0) :
+    (hx : f.base x ∈ U)
+    (h : ∀ g, f.stalkMap x (Y.presheaf.germ U (f.base x) hx g) = 0 →
+      Y.presheaf.germ U (f.base x) hx g = 0) :
     Function.Injective (f.stalkMap x) := by
-  letI := Y.presheaf.algebra_section_stalk ⟨f.val.base x, hx⟩
-  apply (hU.isLocalization_stalk ⟨f.val.base x, hx⟩).injective_of_map_algebraMap_zero
+  letI := Y.presheaf.algebra_section_stalk ⟨f.base x, hx⟩
+  apply (hU.isLocalization_stalk ⟨f.base x, hx⟩).injective_of_map_algebraMap_zero
   exact h
 
 /-- The basic open set of a section `f` on an affine open as an `X.affineOpens`. -/
@@ -711,8 +711,8 @@ theorem self_le_basicOpen_union_iff (s : Set Γ(X, U)) :
 end IsAffineOpen
 
 lemma stalkMap_injective_of_isAffine {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] (x : X)
-    (h : ∀ g, f.stalkMap x (Y.presheaf.Γgerm (f.val.base x) g) = 0 →
-      Y.presheaf.Γgerm (f.val.base x) g = 0) :
+    (h : ∀ g, f.stalkMap x (Y.presheaf.Γgerm (f.base x) g) = 0 →
+      Y.presheaf.Γgerm (f.base x) g = 0) :
     Function.Injective (f.stalkMap x) :=
   (isAffineOpen_top Y).stalkMap_injective f x trivial h
 
