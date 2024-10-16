@@ -433,6 +433,10 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
 --- Porting note: syntactically the same as the above
 
+lemma intCast_val_sub_eq_sub_add_ite {n : ℕ} (a b : Fin n) :
+    ((a - b).val : ℤ) = a.val - b.val + if b ≤ a then 0 else n := by
+  split <;> fin_omega
+
 section OfNatCoe
 
 @[simp]
