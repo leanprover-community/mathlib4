@@ -457,10 +457,17 @@ structure Path (n : ℕ) where
   arrow_src (i : Fin n) : X.δ 1 (arrow i) = vertex i.castSucc
   arrow_tgt (i : Fin n) : X.δ 0 (arrow i) = vertex i.succ
 
+-- def Path.map {m n : ℕ} (α : ([m] : SimplexCategory) ⟶ [n]) : X.Path n ⟶ X.Path m := fun σ ↦
+--   { vertex := fun i ↦ σ.vertex (Hom.toOrderHom α i)
+--     arrow := fun i ↦ by sorry
+--     arrow_src := sorry
+--     arrow_tgt := sorry}
+
+
 /-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed by
 traversing through its vertices in order.-/
 @[simps]
-def spine {n : ℕ} (Δ : X _[n]) : X.Path n where
+def spine (n : ℕ) (Δ : X _[n]) : X.Path n where
   vertex i := X.map (SimplexCategory.const [0] [n] i).op Δ
   arrow i := X.map (SimplexCategory.mkOfSucc i).op Δ
     -- X.map (SimplexCategory.mkOfLe _ _ i.castSucc_le_succ).op Δ
@@ -480,6 +487,19 @@ def spine {n : ℕ} (Δ : X _[n]) : X.Path n where
     ext j
     fin_cases j
     rfl
+
+-- variable {X} in
+-- theorem spine_naturality {m n : ℕ} (α : ([m] : SimplexCategory) ⟶ [n]) :
+--     spine X n ≫ Path.map X α = X.map α.op ≫ spine X m := by
+--   ext Δ i
+--   · dsimp
+--     rw [← FunctorToTypes.map_comp_apply]
+--     rfl
+--   · dsimp
+--     rw [← FunctorToTypes.map_comp_apply]
+--     have := X.map (α.op ≫ (mkOfSucc i).op)
+--     sorry
+
 
 end Spine
 
