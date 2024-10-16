@@ -34,9 +34,7 @@ namespace FirstOrder
 
 namespace Language
 
-variable {L : Language.{u, v}}
-variable {M : Type w} [L.Structure M]
-variable {α : Type u'} {β : Type v'}
+variable {L : Language.{u, v}} {M : Type w} [L.Structure M] {α : Type u'} {β : Type v'}
 variable {n l : ℕ} {φ : L.BoundedFormula α l}
 
 open FirstOrder Structure Fin
