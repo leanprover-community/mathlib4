@@ -267,6 +267,7 @@ theorem totallyBounded_absConvexHull (h : U = TopologicalAddGroup.toUniformSpace
   rw [h] at hU
   obtain ⟨N,⟨hN₁,hN₂⟩⟩ := hU
   obtain ⟨V,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs N hN₁
+  /-
   let d₂ := {(x,y) | y-x ∈ V}
   obtain ⟨t,⟨htf,hts⟩⟩ := hs d₂ (by
     simp only [h, uniformity_eq_comap_nhds_zero', Filter.mem_comap] -- d₂ is a uniformity
@@ -286,19 +287,30 @@ theorem totallyBounded_absConvexHull (h : U = TopologicalAddGroup.toUniformSpace
   have e1 (y : E) : {x | (x, y) ∈ d₂} = y +ᵥ V := by
     rw [← UniformSpace.ball_eq_of_symmetry s1, ← uniform_space_ball_eq_vadd]
     rfl
-  have e2 {t₁ : Set E} : ⋃ y ∈ t₁, {x | (x, y) ∈ d₂} = t₁ + V := by
+  -/
+  rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
+  obtain ⟨t,⟨htf,hts⟩⟩ := hs _ hS₁
+
+  /-have e2 {t₁ : Set E} : ⋃ y ∈ t₁, {x | (x, y) ∈ d₂} = t₁ + V := by
     aesop
-  rw [e2] at hts
+  rw [e2] at hts-/
+  have en {t₁ : Set E} : (⋃ y ∈ t₁, y +ᵥ V) = t₁ + V := by
+    aesop
   have e4 : (absConvexHull ℝ) s ⊆ (convexHull ℝ) (t ∪ -t) + V := by
     rw [convexHull_union_neg_eq_absConvexHull (s := t), ← AbsConvex.absConvexHull_eq hS₂]
-    exact le_trans (absConvexHull_mono hts) (absConvexHull_add_subset ℝ)
+    apply le_trans (absConvexHull_mono hts)
+    rw [en]
+    apply (absConvexHull_add_subset ℝ)
   have e6 : TotallyBounded ((convexHull ℝ) (t ∪ -t)) := IsCompact.totallyBounded
     (Set.Finite.isCompact_convexHull (finite_union.mpr ⟨htf,Finite.neg htf⟩))
-  obtain ⟨t',⟨htf',hts'⟩⟩ := e6 d₂ (by
+  /-obtain ⟨t',⟨htf',hts'⟩⟩ := e6 d₂ (by
     simp [h, uniformity_eq_comap_nhds_zero', Filter.mem_comap]
     aesop
-  )
-  rw [e2] at hts'
+  )-/
+
+  rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at e6
+  obtain ⟨t',⟨htf',hts'⟩⟩ := e6 _ hS₁
+  rw [en] at hts'
   have e7: (absConvexHull ℝ) s ⊆ t' + (V + V) := by
     rw [← add_assoc]
     exact le_trans e4 (Set.add_subset_add_right hts')
@@ -331,6 +343,9 @@ theorem totallyBounded_absConvexHull (h : U = TopologicalAddGroup.toUniformSpace
   · exact htf'
   · apply subset_trans e7
     aesop
+
+
+
 
 end
 
