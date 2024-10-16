@@ -73,7 +73,6 @@
   "Mathlib.Tactic.CategoryTheory.Elementwise",
   "Mathlib.Tactic.CategoryTheory.Slice",
   "Mathlib.Tactic.Choose",
-  "Mathlib.Tactic.Classical",
   "Mathlib.Tactic.Clean",
   "Mathlib.Tactic.ClearExcept",
   "Mathlib.Tactic.ClearExclamation",
