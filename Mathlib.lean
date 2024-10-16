@@ -2184,7 +2184,12 @@ import Mathlib.Data.FinEnum
 import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finite.Powerset
+import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Finite.Set
+import Mathlib.Data.Finite.Sigma
+import Mathlib.Data.Finite.Sum
+import Mathlib.Data.Finite.Vector
 import Mathlib.Data.Finmap
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Basic
