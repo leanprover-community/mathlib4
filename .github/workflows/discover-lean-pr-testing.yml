@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: Checkout mathlib repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: leanprover-community/mathlib
         ref: nightly-testing
@@ -42,7 +42,7 @@ jobs:
         NIGHTLY_URL="https://github.com/leanprover/lean4-nightly.git"
         
         # Create a temporary directory for cloning
-        cd "$(mktemp -d)"
+        cd "$(mktemp -d)" || exit 1
         
         # Clone the repository with a depth of 30 (adjust as needed)
         git clone --depth 30 "$NIGHTLY_URL"
@@ -81,7 +81,7 @@ jobs:
         done
 
         # Output the relevant branches
-        echo "$RELEVANT_BRANCHES"
+        echo "'$RELEVANT_BRANCHES'"
         echo "branches=$RELEVANT_BRANCHES" >> "$GITHUB_OUTPUT"
 
     - name: Send message on Zulip
