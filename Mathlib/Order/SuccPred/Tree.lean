@@ -113,7 +113,7 @@ structure RootedTree where
 
 attribute [coe] RootedTree.α
 
-instance coeSort : CoeSort RootedTree Type* := ⟨RootedTree.α⟩
+instance : CoeSort RootedTree Type* := ⟨RootedTree.α⟩
 
 instance (t : RootedTree) : SemilatticeInf t := t.semilatticeInf
 instance (t : RootedTree) : PredOrder t := t.predOrder
@@ -157,11 +157,11 @@ lemma SubRootedTree.mem_iff {t : RootedTree} {r : SubRootedTree t} {v : t} :
 The coercion from a `SubRootedTree` to a `RootedTree`.
 -/
 @[coe, reducible]
-noncomputable def coeTree {t : RootedTree} (r : SubRootedTree t) : RootedTree where
+noncomputable def SubRootedTree.coeTree {t : RootedTree} (r : SubRootedTree t) : RootedTree where
   α := Set.Ici r.root
 
 noncomputable instance (t : RootedTree) : CoeOut (SubRootedTree t) RootedTree :=
-  ⟨coeTree⟩
+  ⟨SubRootedTree.coeTree⟩
 
 @[simp]
 lemma SubRootedTree.bot_mem_iff {t : RootedTree} (r : SubRootedTree t) :
