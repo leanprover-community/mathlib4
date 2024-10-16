@@ -429,8 +429,8 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx â†
             s == b.prettyPrint.pretty
           else
             s == _a.eraseMacroScopes.toString
-        if cond && new != (s == b.prettyPrint.pretty) then dbg_trace "error!\n{stx}"; new else
-        if (!cond) && new == (s == b.prettyPrint.pretty) then dbg_trace "other error!\n{stx}"; new else
+        if cond && new != (s == b.prettyPrint.pretty) then dbg_trace "error (variable in)!"; new else
+        if (!cond) && new == (s == b.prettyPrint.pretty) then dbg_trace "error (not variable in)!"; new else
         new
 
       filt := filt ++ left.filter (s.isPrefixOf Â·.toString)
