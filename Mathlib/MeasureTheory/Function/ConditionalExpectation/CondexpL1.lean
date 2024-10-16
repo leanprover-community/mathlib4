@@ -176,11 +176,11 @@ theorem condexpIndL1_of_measurableSet_of_measure_ne_top (hs : MeasurableSet s) (
 
 theorem condexpIndL1_of_measure_eq_top (hμs : μ s = ∞) (x : G) : condexpIndL1 hm μ s x = 0 := by
   simp only [condexpIndL1, hμs, eq_self_iff_true, not_true, Ne, dif_neg, not_false_iff,
-    and_false_iff]
+    and_false]
 
 theorem condexpIndL1_of_not_measurableSet (hs : ¬MeasurableSet s) (x : G) :
     condexpIndL1 hm μ s x = 0 := by
-  simp only [condexpIndL1, hs, dif_neg, not_false_iff, false_and_iff]
+  simp only [condexpIndL1, hs, dif_neg, not_false_iff, false_and]
 
 theorem condexpIndL1_add (x y : G) :
     condexpIndL1 hm μ s (x + y) = condexpIndL1 hm μ s x + condexpIndL1 hm μ s y := by
@@ -395,7 +395,7 @@ to the integral of `f` on that set. See also `setIntegral_condexp`, the similar 
 theorem setIntegral_condexpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s) :
     ∫ x in s, condexpL1CLM F' hm μ f x ∂μ = ∫ x in s, f x ∂μ := by
   let S := spanningSets (μ.trim hm)
-  have hS_meas : ∀ i, MeasurableSet[m] (S i) := measurable_spanningSets (μ.trim hm)
+  have hS_meas : ∀ i, MeasurableSet[m] (S i) := measurableSet_spanningSets (μ.trim hm)
   have hS_meas0 : ∀ i, MeasurableSet (S i) := fun i => hm _ (hS_meas i)
   have hs_eq : s = ⋃ i, S i ∩ s := by
     simp_rw [Set.inter_comm]

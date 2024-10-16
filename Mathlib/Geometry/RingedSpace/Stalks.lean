@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Geometry.RingedSpace.PresheafedSpace
 import Mathlib.CategoryTheory.Limits.Final
@@ -43,16 +43,13 @@ def Hom.stalkMap {X Y : PresheafedSpace.{_, _, v} C} (α : Hom X Y) (x : X) :
 
 @[elementwise, reassoc]
 theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Opens Y)
-    (x : (Opens.map α.base).obj U) :
-    Y.presheaf.germ ⟨α.base x.1, x.2⟩ ≫ α.stalkMap ↑x = α.c.app (op U) ≫ X.presheaf.germ x := by
+    (x : X) (hx : α x ∈ U) :
+    Y.presheaf.germ U (α x) hx ≫ α.stalkMap x = α.c.app (op U) ≫
+      X.presheaf.germ ((Opens.map α.base).obj U) x hx := by
   rw [Hom.stalkMap, stalkFunctor_map_germ_assoc, stalkPushforward_germ]
 
-@[simp, elementwise, reassoc]
-theorem stalkMap_germ' {X Y : PresheafedSpace.{_, _, v} C}
-    (α : X ⟶ Y) (U : Opens Y) (x : X) (hx : α.base x ∈ U) :
-    Y.presheaf.germ ⟨α.base x, hx⟩ ≫ α.stalkMap x = α.c.app (op U) ≫
-      X.presheaf.germ (U := (Opens.map α.base).obj U) ⟨x, hx⟩ :=
-  stalkMap_germ α U ⟨x, hx⟩
+@[deprecated (since := "2024-07-30")] alias stalkMap_germ' := stalkMap_germ
+@[deprecated (since := "2024-07-30")] alias stalkMap_germ'_assoc := stalkMap_germ
 
 section Restrict
 
@@ -71,8 +68,8 @@ def restrictStalkIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C) {f : U ⟶ (
 @[elementwise, reassoc]
 theorem restrictStalkIso_hom_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
-    (X.restrict h).presheaf.germ ⟨x, hx⟩ ≫ (restrictStalkIso X h x).hom =
-    X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ :=
+    (X.restrict h).presheaf.germ _ x hx ≫ (restrictStalkIso X h x).hom =
+    X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ :=
   colimit.ι_pre ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf) (h.isOpenMap.functorNhds x).op
     (op ⟨V, hx⟩)
 
@@ -81,9 +78,9 @@ theorem restrictStalkIso_hom_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v}
 @[simp, elementwise, reassoc]
 theorem restrictStalkIso_inv_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
-    X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ ≫
+    X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ ≫
         (restrictStalkIso X h x).inv =
-      (X.restrict h).presheaf.germ ⟨x, hx⟩ := by
+      (X.restrict h).presheaf.germ _ x hx := by
   rw [← restrictStalkIso_hom_eq_germ, Category.assoc, Iso.hom_inv_id, Category.comp_id]
 
 theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
@@ -115,7 +112,7 @@ theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
     (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) := by
   dsimp [Hom.stalkMap]
   simp only [stalkPushforward.id]
-  erw [← map_comp]
+  rw [← map_comp]
   convert (stalkFunctor C x).map_id X.presheaf
   ext
   simp only [id_c, id_comp, Pushforward.id_hom_app, op_obj, eqToHom_refl, map_id]

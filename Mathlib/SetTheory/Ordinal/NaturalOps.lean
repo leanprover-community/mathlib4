@@ -106,19 +106,19 @@ theorem toOrdinal_one : toOrdinal 1 = 1 :=
   rfl
 
 @[simp]
-theorem toOrdinal_eq_zero (a) : toOrdinal a = 0 ↔ a = 0 :=
+theorem toOrdinal_eq_zero {a} : toOrdinal a = 0 ↔ a = 0 :=
   Iff.rfl
 
 @[simp]
-theorem toOrdinal_eq_one (a) : toOrdinal a = 1 ↔ a = 1 :=
+theorem toOrdinal_eq_one {a} : toOrdinal a = 1 ↔ a = 1 :=
   Iff.rfl
 
 @[simp]
-theorem toOrdinal_max {a b : NatOrdinal} : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_max (a b : NatOrdinal) : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
   rfl
 
 @[simp]
-theorem toOrdinal_min {a b : NatOrdinal} : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_min (a b : NatOrdinal) : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
   rfl
 
 theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
@@ -192,7 +192,7 @@ scoped[NaturalOps] infixl:65 " ♯ " => Ordinal.nadd
 open NaturalOps
 
 /-- Natural multiplication on ordinals `a ⨳ b`, also known as the Hessenberg product, is recursively
-defined as the least ordinal such that `a ⨳ b + a' ⨳ b'` is greater than `a' ⨳ b + a ⨳ b'` for all
+defined as the least ordinal such that `a ⨳ b ♯ a' ⨳ b'` is greater than `a' ⨳ b ♯ a ⨳ b'` for all
 `a' < a` and `b < b'`. In contrast to normal ordinal multiplication, it is commutative and
 distributive (over natural addition).
 
@@ -307,7 +307,7 @@ theorem add_le_nadd : a + b ≤ a ♯ b := by
   | H₂ c h =>
     rwa [add_succ, nadd_succ, succ_le_succ_iff]
   | H₃ c hc H =>
-    simp_rw [← IsNormal.blsub_eq.{u, u} (add_isNormal a) hc, blsub_le_iff]
+    simp_rw [← IsNormal.blsub_eq.{u, u} (isNormal_add_right a) hc, blsub_le_iff]
     exact fun i hi => (H i hi).trans_lt (nadd_lt_nadd_left hi a)
 
 end Ordinal
@@ -335,8 +335,8 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
   { NatOrdinal.linearOrder with
     add := (· + ·)
     add_assoc := nadd_assoc
-    add_le_add_left := fun a b => add_le_add_left
-    le_of_add_le_add_left := fun a b c => le_of_add_le_add_left
+    add_le_add_left := fun _ _ => add_le_add_left
+    le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left
     zero := 0
     zero_add := zero_nadd
     add_zero := nadd_zero
@@ -446,7 +446,7 @@ theorem nmul_def (a b : Ordinal) :
     a ⨳ b = sInf {c | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'} := by rw [nmul]
 
 /-- The set in the definition of `nmul` is nonempty. -/
-theorem nmul_nonempty (a b : Ordinal.{u}) :
+private theorem nmul_nonempty (a b : Ordinal.{u}) :
     {c : Ordinal.{u} | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'}.Nonempty :=
   ⟨_, fun _ ha _ hb => (lt_blsub₂.{u, u, u} _ ha hb).trans_le le_self_nadd⟩
 
@@ -688,8 +688,8 @@ instance : OrderedCommSemiring NatOrdinal.{u} :=
     mul_one := nmul_one
     mul_comm := nmul_comm
     zero_le_one := @zero_le_one Ordinal _ _ _ _
-    mul_le_mul_of_nonneg_left := fun a b c h _ => nmul_le_nmul_left h c
-    mul_le_mul_of_nonneg_right := fun a b c h _ => nmul_le_nmul_right h c }
+    mul_le_mul_of_nonneg_left := fun _ _ c h _ => nmul_le_nmul_left h c
+    mul_le_mul_of_nonneg_right := fun _ _ c h _ => nmul_le_nmul_right h c }
 
 namespace Ordinal
 
@@ -721,7 +721,7 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
   · intro c hc H
     rcases eq_zero_or_pos a with (rfl | ha)
     · simp
-    · rw [← IsNormal.blsub_eq.{u, u} (mul_isNormal ha) hc, blsub_le_iff]
+    · rw [← IsNormal.blsub_eq.{u, u} (isNormal_mul_right ha) hc, blsub_le_iff]
       exact fun i hi => (H i hi).trans_lt (nmul_lt_nmul_of_pos_left hi ha)
 
 @[deprecated mul_le_nmul (since := "2024-08-20")]

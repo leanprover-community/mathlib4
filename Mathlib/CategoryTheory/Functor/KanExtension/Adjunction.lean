@@ -168,7 +168,7 @@ precomposition by `L`. -/
 noncomputable def ranAdjunction : (whiskeringLeft C D H).obj L ⊣ L.ran :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F G =>
-        (homEquivOfIsRightKanExtension (α := L.ranCounit.app G) F).symm
+        (homEquivOfIsRightKanExtension (α := L.ranCounit.app G) _ F).symm
       homEquiv_naturality_right := fun {F G₁ G₂} β f ↦
         hom_ext_of_isRightKanExtension _ (L.ranCounit.app G₂) _ _ (by
         ext X

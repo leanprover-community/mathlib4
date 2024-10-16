@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
@@ -131,11 +131,11 @@ namespace Homotopy
 def equivSubZero : Homotopy f g ≃ Homotopy (f - g) 0 where
   toFun h :=
     { hom := fun i j => h.hom i j
-      zero := fun i j w => h.zero _ _ w
+      zero := fun _ _ w => h.zero _ _ w
       comm := fun i => by simp [h.comm] }
   invFun h :=
     { hom := fun i j => h.hom i j
-      zero := fun i j w => h.zero _ _ w
+      zero := fun _ _ w => h.zero _ _ w
       comm := fun i => by simpa [sub_eq_iff_eq_add] using h.comm i }
   left_inv := by aesop_cat
   right_inv := by aesop_cat

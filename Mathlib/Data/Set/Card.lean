@@ -616,6 +616,15 @@ theorem ncard_exchange' {a b : α} (ha : a ∉ s) (hb : b ∈ s) :
   rw [← ncard_exchange ha hb, ← singleton_union, ← singleton_union, union_diff_distrib,
     @diff_singleton_eq_self _ b {a} fun h ↦ ha (by rwa [← mem_singleton_iff.mp h])]
 
+lemma odd_card_insert_iff {a : α} (hs : s.Finite := by toFinite_tac) (ha : a ∉ s) :
+    Odd (insert a s).ncard ↔ Even s.ncard := by
+  rw [ncard_insert_of_not_mem ha hs, Nat.odd_add]
+  simp only [Nat.odd_add, ← Nat.not_even_iff_odd, Nat.not_even_one, iff_false, Decidable.not_not]
+
+lemma even_card_insert_iff {a : α} (hs : s.Finite := by toFinite_tac) (ha : a ∉ s) :
+    Even (insert a s).ncard ↔ Odd s.ncard := by
+  rw [ncard_insert_of_not_mem ha hs, Nat.even_add_one, Nat.not_even_iff_odd]
+
 end InsertErase
 
 variable {f : α → β}
@@ -992,6 +1001,12 @@ theorem one_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
   rw [one_lt_ncard hs]
   simp only [exists_prop, exists_and_left]
 
+lemma one_lt_ncard_of_nonempty_of_even (hs : Set.Finite s) (hn : Set.Nonempty s := by toFinite_tac)
+    (he : Even (s.ncard)) : 1 < s.ncard := by
+  rw [← Set.ncard_pos hs] at hn
+  have : s.ncard ≠ 1 := fun h ↦ by simp [h] at he
+  omega
+
 theorem two_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
     2 < s.ncard ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
   simp_rw [ncard_eq_toFinset_card _ hs, Finset.two_lt_card_iff, Finite.mem_toFinset]
@@ -1035,7 +1050,4 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
   simp [h]
 
 end ncard
-
-@[deprecated (since := "2023-12-27")] alias ncard_le_of_subset := ncard_le_ncard
-
 end Set

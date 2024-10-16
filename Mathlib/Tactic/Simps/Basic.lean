@@ -8,7 +8,6 @@ import Lean.Elab.App
 import Mathlib.Tactic.Simps.NotationClass
 import Batteries.Data.String.Basic
 import Mathlib.Lean.Expr.Basic
-import Batteries.Data.List.Basic
 
 /-!
 # Simps attribute
@@ -1180,7 +1179,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   let env ← getEnv
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
-  let todo := todo.pwFilter (·.1 ≠ ·.1) |>.map fun (proj, stx) ↦ (proj ++ "_", stx)
+  let todo := todo.eraseDups |>.map fun (proj, stx) ↦ (proj ++ "_", stx)
   let mut cfg := cfg
   MetaM.run' <| addProjections ref d.levelParams
     nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []
