@@ -61,7 +61,6 @@ section MatrixAlgebra
 variable (K : Type u) [Field K]
 
 open Matrix in
-/-- Matrix Algebra is central -/
 instance MatrixRing.isCentral (ι : Type*) [Fintype ι] [DecidableEq ι] :
     Algebra.IsCentral K (Matrix ι ι K) where
   out := fun _ h => mem_range_scalar_of_commute_stdBasisMatrix fun _ _ _ =>
