@@ -11,9 +11,9 @@ import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
-# Linearly disjoint of submodules
+# Linearly disjoint submodules
 
-This file contains basics about the linearly disjoint of submodules.
+This file contains basics about linearly disjoint submodules.
 
 ## Mathematical background
 
@@ -115,7 +115,7 @@ The following is the second equivalent characterization of linearly disjointness
   if `M` and itself are linearly disjoint, if `M` is flat, if any two elements in `M`
   are commutative, then the rank of `M` is at most one.
 
-The results with name containing "of_commute" also have corresponding specified versions
+The results with name containing "of_commute" also have corresponding specialized versions
 assuming `S` is commutative.
 
 ## Tags

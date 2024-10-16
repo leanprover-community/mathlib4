@@ -14,9 +14,9 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
 
-# Linearly disjoint of subalgebras
+# Linearly disjoint subalgebras
 
-This file contains basics about the linearly disjoint of subalgebras.
+This file contains basics about linearly disjoint subalgebras.
 
 ## Main definitions
 
@@ -30,18 +30,13 @@ This file contains basics about the linearly disjoint of subalgebras.
 
 ### Equivalent characterization of linearly disjointness
 
-- `Subalgebra.LinearDisjoint.linearIndependent_left_op_of_flat`:
-  `Subalgebra.LinearDisjoint.linearIndependent_left_of_flat_of_commute`:
-  `Subalgebra.LinearDisjoint.linearIndependent_left_of_flat`:
+- `Subalgebra.LinearDisjoint.linearIndependent_left_of_flat`:
   if `A` and `B` are linearly disjoint, if `B` is a flat `R`-module, then for any family of
-  `R`-linearly independent elements of `A`, they are also `B`-linearly independent
-  (in the opposite ring for the first one).
+  `R`-linearly independent elements of `A`, they are also `B`-linearly independent.
 
 - `Subalgebra.LinearDisjoint.of_basis_left_op`:
-  `Subalgebra.LinearDisjoint.of_basis_left_of_commute`:
-  `Subalgebra.LinearDisjoint.of_basis_left`:
-  conversely, if a basis of `A` is also `B`-linearly independent (in the opposite ring
-  for the first one), then `A` and `B` are linearly disjoint.
+  conversely, if a basis of `A` is also `B`-linearly independent, then `A` and `B` are
+  linearly disjoint.
 
 - `Subalgebra.LinearDisjoint.linearIndependent_right_of_flat`:
   if `A` and `B` are linearly disjoint, if `A` is a flat `R`-module, then for any family of
@@ -96,7 +91,7 @@ This file contains basics about the linearly disjoint of subalgebras.
 - `Subalgebra.LinearDisjoint.inf_eq_bot_of_commute`, `Subalgebra.LinearDisjoint.inf_eq_bot`:
   if `A` and `B` are linearly disjoint, under suitable technical conditions, they are disjoint.
 
-The results with name containing "of_commute" also have corresponding specified versions
+The results with name containing "of_commute" also have corresponding specialized versions
 assuming `S` is commutative.
 
 ## Tags
