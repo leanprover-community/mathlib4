@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Logic.UnivLE
+import Mathlib.SetTheory.Cardinal.UnivLE
 
 /-!
 # Ordinal arithmetic
@@ -262,6 +262,12 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
   else
     if h : ∃ a, o = succ a then Or.inr (Or.inl h)
     else Or.inr <| Or.inr ⟨o0, fun _a => (succ_lt_of_not_succ h).2⟩
+
+theorem IsLimit.sSup_Iio {o : Ordinal} (h : IsLimit o) : sSup (Iio o) = o := by
+  apply (csSup_le' (fun a ha ↦ le_of_lt ha)).antisymm
+  apply le_of_forall_lt
+  intro a ha
+  exact (lt_succ a).trans_le (le_csSup bddAbove_Iio (h.succ_lt ha))
 
 /-- Main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
@@ -1178,6 +1184,12 @@ theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
   ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
     bddAbove_of_small _⟩
 
+theorem bddAbove_range_comp {ι : Type u} {f : ι → Ordinal.{v}} (hf : BddAbove (range f))
+    (g : Ordinal.{v} → Ordinal.{max v w}) : BddAbove (range (g ∘ f)) := by
+  rw [range_comp, bddAbove_iff_small]
+  rw [bddAbove_iff_small] at hf
+  exact small_lift _
+
 /-- `le_ciSup` whenever the input type is small in the output universe. This lemma sometimes
 fails to infer `f` in simple cases and needs it to be given explicitly. -/
 protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] : ∀ i, f i ≤ iSup f :=
@@ -1264,24 +1276,6 @@ theorem sup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
   rw [← Ordinal.le_zero, ← h]
   exact le_sup f i
 
--- TODO: generalize universes, make sSup version.
-theorem IsNormal.map_iSup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
-    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := by
-  apply eq_of_forall_ge_iff
-  intro a
-  rw [H.le_set' Set.univ Set.univ_nonempty g]
-  · rw [Ordinal.iSup_le_iff]
-    simp
-  · intro o
-    rw [Ordinal.iSup_le_iff]
-    simp
-
-set_option linter.deprecated false in
-@[deprecated IsNormal.map_iSup (since := "2024-08-27")]
-theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
-    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
-  H.map_iSup g
-
 set_option linter.deprecated false in
 @[deprecated ciSup_of_empty (since := "2024-08-27")]
 theorem sup_empty {ι} [IsEmpty ι] (f : ι → Ordinal) : sup f = 0 :=
@@ -1360,6 +1354,44 @@ theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a
     a ≤ sup.{u, u} fun x => ((@equivShrink s hs).symm x).val := by
   convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
   rw [symm_apply_apply]
+
+theorem IsNormal.map_iSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
+    {ι : Type*} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
+    [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
+  have := bddAbove_iff_small.mp hg
+  have := univLE_of_injective H.strictMono.injective
+  have := Small.trans_univLE.{u, v} (range g)
+  have hfg : BddAbove (range (f ∘ g)) := bddAbove_iff_small.mpr <| by
+    rw [range_comp]
+    exact small_image f (range g)
+  change _ ↔ ⨆ i, (f ∘ g) i ≤ a
+  rw [ciSup_le_iff hfg, H.le_set' _ Set.univ_nonempty g] <;> simp [ciSup_le_iff hg]
+
+theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
+    {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
+    f (⨆ i, g i) = ⨆ i, f (g i) :=
+  H.map_iSup_of_bddAbove g (bddAbove_of_small _)
+
+theorem IsNormal.map_sSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
+    {s : Set Ordinal.{u}} (hs : BddAbove s) (hn : s.Nonempty) : f (sSup s) = sSup (f '' s) := by
+  have := hn.to_subtype
+  rw [sSup_eq_iSup', sSup_image', H.map_iSup_of_bddAbove]
+  rwa [Subtype.range_coe_subtype, setOf_mem_eq]
+
+theorem IsNormal.map_sSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
+    {s : Set Ordinal.{u}} (hn : s.Nonempty) [Small.{u} s] : f (sSup s) = sSup (f '' s) :=
+  H.map_sSup_of_bddAbove (bddAbove_of_small s) hn
+
+set_option linter.deprecated false in
+@[deprecated IsNormal.map_iSup (since := "2024-08-27")]
+theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
+    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
+  H.map_iSup g
+
+theorem IsNormal.apply_of_isLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {o : Ordinal}
+    (ho : IsLimit o) : f o = sSup (f '' Iio o) := by
+  have : (Iio o).Nonempty := ⟨0, ho.pos⟩
+  rw [← H.map_sSup this, ho.sSup_Iio]
 
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]
