@@ -689,15 +689,6 @@ theorem Quot.eqvGen_sound (H : EqvGen r a b) : Quot.mk r a = Quot.mk r b :=
     (fun _ _ _ _ _ IH₁ IH₂ ↦ Eq.trans IH₁ IH₂)
     H
 
-instance Quotient.decidableEq {α : Sort*} {s : Setoid α} [d : ∀ a b : α, Decidable (a ≈ b)] :
-    DecidableEq (Quotient s) :=
-  fun q₁ q₂ : Quotient s ↦
-    Quotient.recOnSubsingleton₂ q₁ q₂
-      (fun a₁ a₂ ↦
-        match (d a₁ a₂) with
-        | (isTrue h₁)  => isTrue (Quotient.sound h₁)
-        | (isFalse h₂) => isFalse (fun h ↦ absurd (Quotient.exact h) h₂))
-
 theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
   Iff.intro
     (by
