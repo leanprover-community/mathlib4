@@ -395,7 +395,7 @@ private lemma expr_pos : 0 < m * f m / (f m - 1) := by
   linarith only [one_lt_of_not_bounded notbdd hm]
 
 include hn hm notbdd in
-private lemma param_upperbound (k : ℕ) (hk : k ≠ 0) :
+private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     f n ≤ (m * f m / (f m - 1)) ^ (k : ℝ)⁻¹ * (f m) ^ (logb m n) := by
   have h_ineq1 {m n : ℕ} (hm : 1 < m) (hn : 1 < n) :
       f n ≤ (m * f m / (f m - 1)) * (f m) ^ (logb m n) := by
