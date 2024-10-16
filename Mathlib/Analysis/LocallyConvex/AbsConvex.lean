@@ -253,16 +253,15 @@ lemma add_self_eq_smul_two {V : Set E} (h : Convex ℝ V) : V + V = (2 : ℝ) �
   rw [← one_add_one_eq_two, Convex.add_smul h (zero_le_one' ℝ) (zero_le_one' ℝ), MulAction.one_smul]
 
 variable (E 𝕜) {s : Set E}
-variable [NontriviallyNormedField 𝕜]  [Module 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [Module 𝕜 E]
 variable [SMulCommClass ℝ 𝕜 E]
 variable [U : UniformSpace E] [UniformAddGroup E]
 variable [lcs : LocallyConvexSpace ℝ E]
 variable [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3
-theorem totallyBounded_absConvexHull
-    (h : U = TopologicalAddGroup.toUniformSpace E) (hs : TotallyBounded s) :
-    TotallyBounded (absConvexHull ℝ s) := by
+theorem totallyBounded_absConvexHull (h : U = TopologicalAddGroup.toUniformSpace E)
+    (hs : TotallyBounded s) : TotallyBounded (absConvexHull ℝ s) := by
   intro d' hd'
   obtain ⟨d,⟨hU, hd₂⟩⟩ := comp_mem_uniformity_sets hd'
   rw [h] at hU
