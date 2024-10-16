@@ -388,55 +388,33 @@ theorem comp [Module.FaithfullyFlat R S] [Module.FaithfullyFlat S M] :
     FaithfullyFlat R M := by
   rw [iff_zero_iff_lTensor_zero]
   refine ⟨Module.Flat.comp R S M, fun N N' _ _ _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
-    -- where
-    -- flat := Module.Flat.comp R S M
-    -- zero_if_lTensor_zero := by
-
-    --  intro aux
-  letI e1 : M ⊗[S] (S ⊗[R] N') →ₗ[S] (M ⊗[R] N') :=
-  AlgebraTensorModule.cancelBaseChange R S S M N'
-  letI e1.symm := (AlgebraTensorModule.cancelBaseChange R S S M N').symm
-  letI e2 : (M ⊗[R] N) →ₗ[S] M ⊗[S] (S ⊗[R] N) :=
-  (AlgebraTensorModule.cancelBaseChange R S S M N).symm
-  letI e2.symm := (AlgebraTensorModule.cancelBaseChange R S S M N)
-  letI fS :  M ⊗[S] (S ⊗[R] N) →ₗ[S] M ⊗[S] (S ⊗[R] N') :=
-  lTensor M (TensorProduct.AlgebraTensorModule.map LinearMap.id f)
+  let e1 : M ⊗[S] (S ⊗[R] N') →ₗ[S] (M ⊗[R] N') := AlgebraTensorModule.cancelBaseChange R S S M N'
+  let e1.symm := (AlgebraTensorModule.cancelBaseChange R S S M N').symm
+  let e2 : (M ⊗[R] N) →ₗ[S] M ⊗[S] (S ⊗[R] N) :=
+    (AlgebraTensorModule.cancelBaseChange R S S M N).symm
+  let e2.symm := (AlgebraTensorModule.cancelBaseChange R S S M N)
+  let fS :  M ⊗[S] (S ⊗[R] N) →ₗ[S] M ⊗[S] (S ⊗[R] N') :=
+    lTensor M (AlgebraTensorModule.map LinearMap.id f)
   have h : restrictScalars (R:= R) (S:= S) (e1 ∘ₗ fS ∘ₗ e2) = lTensor M f := by
-    ext n
-    simp [e1, e2, fS]
+    ext; simp [e1, e2, fS]
   have h1 : fS = e1.symm ∘ₗ (e1 ∘ₗ fS ∘ₗ e2) ∘ₗ e2.symm := by
-    ext m n
-    simp [e1, e1.symm, e2, e2.symm]
+    ext; simp [e1, e1.symm, e2, e2.symm]
   have g : e1 ∘ₗ fS ∘ₗ e2 = 0 := by
-    rw [aux] at h
-    rwa [← DFunLike.coe_fn_eq] at h ⊢
+    rw [aux] at h; rwa [← DFunLike.coe_fn_eq] at h ⊢
   have g1: fS = 0 := by
-    rw [aux] at h
-    rw [g] at h1
-    simp only [h1, zero_comp, comp_zero]
+    simp only [g.symm ▸ h1, zero_comp, comp_zero]
   rw [implies_zero_iff_lTensor_zero (R:= R) (M := S) f]
   have h3: lTensor S f = 0 ↔
-  TensorProduct.AlgebraTensorModule.map (R:= R) (A:= S) (M:= S) LinearMap.id f = 0 := by
-    have res : restrictScalars (R:= R) (S:= S) (TensorProduct.AlgebraTensorModule.map
-    (R:= R) (A:= S) (M:= S) LinearMap.id f) = LinearMap.lTensor S f := by
-        ext s n
-        simp only [AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars,
-          AlgebraTensorModule.map_tmul, id_coe, id_eq, lTensor_tmul]
-    constructor
-    · rw [← res]
-      intro h
-      ext n
-      simp only [AlgebraTensorModule.curry_apply, h, curry_apply, zero_apply,
-        coe_restrictScalars]
-    · intro h
-      rw [← res]
+      TensorProduct.AlgebraTensorModule.map (R:= R) (A:= S) (M:= S) LinearMap.id f = 0 := by
+    have res : restrictScalars (R:= R) (S:= S)
+        (AlgebraTensorModule.map (R:= R) (A:= S) (M:= S) LinearMap.id f) =
+        LinearMap.lTensor S f := by
       ext s n
-      simp only [h, AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars,
-      zero_apply, restrictScalars_zero]
-  rw [h3]
-  rw [implies_zero_iff_lTensor_zero (R:= S) (M := M) (N:= S ⊗ N) (N':= S ⊗ N')
+      simp only [AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars,
+        AlgebraTensorModule.map_tmul, id_coe, id_eq, lTensor_tmul]
+    exact ⟨res ▸ fun h => by ext; simp [h], res ▸ fun h => by ext; simp [h]⟩
+  rwa [h3, implies_zero_iff_lTensor_zero (R:= S) (M := M) (N:= S ⊗ N) (N':= S ⊗ N')
     (AlgebraTensorModule.map LinearMap.id f)]
-  exact g1
 
 end FaithfullyFlat
 

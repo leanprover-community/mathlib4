@@ -43,6 +43,11 @@ variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 attribute [local ext high] ext LinearMap.prod_ext
 
+/--
+Let `M, N` be `R`-modules, `m ≤ M` and `n ≤ N` be an `R`-submodules. Then we have a linear
+isomorphism between tensor products of the quotients and the quotient of the tensor product:
+`(M ⧸ m) ⊗[R] (N ⧸ n) ≃ₗ[R] (M ⊗[R] N) ⧸ (m ⊗ N ⊔ M ⊗ n)`.
+-/
 noncomputable def quotientTensorQuotientEquiv (m : Submodule R M) (n : Submodule R N) :
     (M ⧸ (m : Submodule R M)) ⊗[R] (N ⧸ (n : Submodule R N)) ≃ₗ[R]
     (M ⊗[R] N) ⧸
@@ -87,6 +92,11 @@ lemma quotientTensorQuotientEquiv_symm_apply_mk_tmul
       Submodule.Quotient.mk x ⊗ₜ[R] Submodule.Quotient.mk y := rfl
 
 variable (N) in
+/--
+Let `M, N` be `R`-modules, `m ≤ M` be an `R`-submodule. Then we have a linear isomorphism between
+tensor products of the quotient and the quotient of the tensor product:
+`(M ⧸ m) ⊗[R] N ≃ₗ[R] (M ⊗[R] N) ⧸ (m ⊗ N)`.
+-/
 noncomputable def quotientTensorEquiv (m : Submodule R M) :
     (M ⧸ (m : Submodule R M)) ⊗[R] N ≃ₗ[R]
     (M ⊗[R] N) ⧸ (LinearMap.range (map m.subtype (LinearMap.id : N →ₗ[R] N))) :=
@@ -112,6 +122,11 @@ lemma quotientTensorEquiv_symm_apply_mk_tmul (m : Submodule R M) (x : M) (y : N)
   rfl
 
 variable (M) in
+/--
+Let `M, N` be `R`-modules, `n ≤ N` be an `R`-submodule. Then we have a linear isomorphism between
+tensor products of the quotient and the quotient of the tensor product:
+`M ⊗[R] (N ⧸ n) ≃ₗ[R] (M ⊗[R] N) ⧸ (M ⊗ n)`.
+-/
 noncomputable def tensorQuotientEquiv (n : Submodule R N) :
     M ⊗[R] (N ⧸ (n : Submodule R N)) ≃ₗ[R]
     (M ⊗[R] N) ⧸ (LinearMap.range (map (LinearMap.id : M →ₗ[R] M) n.subtype)) :=
@@ -156,18 +171,6 @@ noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
       refine Submodule.subset_span ?_
       simp only [Set.mem_image, Set.mem_setOf_eq]
       exact ⟨r ⊗ₜ m, ⟨r, hr, m, rfl⟩, rfl⟩)
-
-@[simp]
-lemma quotientRingTensorEquiv_apply_mk_tmul (I : Ideal R) (r : R) (m : M) :
-    quotTensorEquivQuotSMul M I (Submodule.Quotient.mk r ⊗ₜ[R] m) =
-    Submodule.Quotient.mk (r • m) :=
-  rfl
-
-@[simp]
-lemma quotientRingTensorEquiv_symm_apply_mk (I : Ideal R) (m : M) :
-    (quotTensorEquivQuotSMul M I).symm (Submodule.Quotient.mk m) =
-    Submodule.Quotient.mk 1 ⊗ₜ[R] m :=
-  rfl
 
 variable (M) in
 /-- Right tensoring a module with a quotient of the ring is the same as
