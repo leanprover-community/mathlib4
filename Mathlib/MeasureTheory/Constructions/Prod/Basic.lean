@@ -267,7 +267,7 @@ theorem Measurable.lintegral_prod_right' [SFinite ν] :
     conv => enter [1, x]; erw [lintegral_add_left (hf.comp m)]
     exact h2f.add h2g
   · intro f hf h2f h3f
-    have := measurable_iSup h3f
+    have := .iSup h3f
     have : ∀ x, Monotone fun n y => f n (x, y) := fun x i j hij y => h2f hij (x, y)
     conv => enter [1, x]; erw [lintegral_iSup (fun n => (hf n).comp m) (this x)]
     assumption
