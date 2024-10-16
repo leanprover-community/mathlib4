@@ -873,6 +873,9 @@ theorem card_opow_eq_of_omega0_le_right {a b : Ordinal} (ha : 1 < a) (hb : ω �
 theorem card_omega0_opow {a : Ordinal} (h : a ≠ 0) : card (ω ^ a) = max ℵ₀ a.card := by
   rw [card_opow_eq_of_omega0_le_left le_rfl h.bot_lt, card_omega0]
 
+theorem card_opow_omega0 {a : Ordinal} (h : 1 < a) : card (a ^ ω) = max ℵ₀ a.card := by
+  rw [card_opow_eq_of_omega0_le_right h le_rfl, card_omega0, max_comm]
+
 end Ordinal
 
 /-!
