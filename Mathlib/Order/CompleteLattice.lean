@@ -362,7 +362,7 @@ theorem ofDual_iInf [SupSet α] (f : ι → αᵒᵈ) : ofDual (⨅ i, f i) = �
 
 end OrderDual
 
-variable [CompleteLattice α] {s t : Set α} {a b : α}
+variable [CompleteLattice α] {s t : Set α} {b : α}
 
 theorem sInf_le_sSup (hs : s.Nonempty) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_sInf s) (isLUB_sSup s) hs
@@ -468,7 +468,7 @@ end
 
 section CompleteLinearOrder
 
-variable [CompleteLinearOrder α] {s t : Set α} {a b : α}
+variable [CompleteLinearOrder α] {s : Set α} {a b : α}
 
 theorem lt_sSup_iff : b < sSup s ↔ ∃ a ∈ s, b < a :=
   lt_isLUB_iff <| isLUB_sSup s
@@ -616,7 +616,7 @@ end InfSet
 
 section
 
-variable [CompleteLattice α] {f g s t : ι → α} {a b : α}
+variable [CompleteLattice α] {f g s : ι → α} {a b : α}
 
 theorem le_iSup (f : ι → α) (i : ι) : f i ≤ iSup f :=
   le_sSup ⟨i, rfl⟩
@@ -1548,7 +1548,7 @@ theorem binary_relation_sInf_iff {α β : Type*} (s : Set (α → β → Prop)) 
 
 section CompleteLattice
 
-variable {ι : Sort*} [Preorder α] [CompleteLattice β] {s : Set (α → β)} {f : ι → α → β}
+variable [Preorder α] [CompleteLattice β] {s : Set (α → β)} {f : ι → α → β}
 
 protected lemma Monotone.sSup (hs : ∀ f ∈ s, Monotone f) : Monotone (sSup s) :=
   fun _ _ h ↦ iSup_mono fun f ↦ hs f f.2 h
