@@ -114,7 +114,7 @@ theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
   induction' x using mem_wf.induction with x ih
   rw [mem_wf.rank_eq]
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
-  apply (le_of_forall_lt _).antisymm (ciSup_le' _) <;> intro h
+  refine (le_of_forall_lt ?_).antisymm (ciSup_le' ?_) <;> intro h
   · rw [lt_lift_iff]
     rintro ⟨o, rfl, h⟩
     simpa [Ordinal.lt_iSup] using lt_rank_iff.1 h
@@ -200,7 +200,7 @@ theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
   induction' x using inductionOn with x ih
   rw [mem_wf.rank_eq]
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
-  apply (le_of_forall_lt _).antisymm (ciSup_le' _) <;> intro h
+  refine (le_of_forall_lt ?_).antisymm (ciSup_le' ?_) <;> intro h
   · rw [lt_lift_iff]
     rintro ⟨o, rfl, h⟩
     simpa [Ordinal.lt_iSup] using lt_rank_iff.1 h
