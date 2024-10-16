@@ -421,9 +421,9 @@ theorem polynomialFunctions.starClosure_topologicalClosure {𝕜 : Type*} [RCLik
   ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints _
     (Subalgebra.separatesPoints_monotone le_sup_left (polynomialFunctions_separatesPoints s))
 
-/-- An induction principle for `C(s, 𝕜)` where `s` is a compact subset of `𝕜`, which is `RCLike`. -/
+/-- An induction principle for `C(s, 𝕜)`. -/
 @[elab_as_elim]
-theorem ContinuousMap.induction_on {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜} [CompactSpace s]
+theorem ContinuousMap.induction_on {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜}
     {p : C(s, 𝕜) → Prop} (const : ∀ r, p (.const s r)) (id : p (.restrict s <| .id 𝕜))
     (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
     (star : ∀ f, p f → p (star f))
@@ -589,7 +589,7 @@ lemma ContinuousMapZero.adjoin_id_dense {s : Set 𝕜} [Zero s] (h0 : ((0 : s) :
 /-- An induction principle for `C(s, 𝕜)₀`. -/
 @[elab_as_elim]
 lemma ContinuousMapZero.induction_on {s : Set 𝕜} [Zero s] (h0 : ((0 : s) : 𝕜) = 0)
-    [CompactSpace s] {p : C(s, 𝕜)₀ → Prop} (zero : p 0) (id : p (.id h0))
+    {p : C(s, 𝕜)₀ → Prop} (zero : p 0) (id : p (.id h0))
     (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
     (smul : ∀ (r : 𝕜) f, p f → p (r • f)) (star : ∀ f, p f → p (star f))
     (closure : (∀ f ∈ adjoin 𝕜 {(.id h0 : C(s, 𝕜)₀)}, p f) → ∀ f, p f) (f : C(s, 𝕜)₀) :
