@@ -95,10 +95,10 @@ lemma iff_flat_and_rTensor_faithful :
     have ne_top := iff_flat_and_proper_ideal R M |>.1 fl |>.2 I I_ne_top
     refine subsingleton_or_nontrivial _ |>.resolve_left fun rid => ?_
     have : Function.Injective
-      (LinearMap.rTensor M inc ∘ₗ (TensorProduct.quotientRingTensorEquiv M I).symm.toLinearMap) :=
+      (LinearMap.rTensor M inc ∘ₗ (quotTensorEquivQuotSMul M I).symm.toLinearMap) :=
       Function.Injective.comp
         (g := LinearMap.rTensor M inc)
-        (f := (TensorProduct.quotientRingTensorEquiv M I).symm.toLinearMap)
+        (f := (quotTensorEquivQuotSMul M I).symm.toLinearMap)
         (Module.Flat.rTensor_preserves_injective_linearMap (h := fl.flat) inc injective_inc)
         (LinearEquiv.injective _)
     have := this.subsingleton
@@ -106,7 +106,7 @@ lemma iff_flat_and_rTensor_faithful :
     contradiction
   · intro m hm rid
     specialize faithful (R ⧸ m) inferInstance
-    have := (TensorProduct.quotientRingTensorEquiv M m).toEquiv.symm.nontrivial
+    have := (quotTensorEquivQuotSMul M m).toEquiv.symm.nontrivial
     haveI H : Subsingleton (M ⧸ m • (⊤ : Submodule R M)) := by
       rwa [Submodule.subsingleton_quotient_iff_eq_top]
     rw [← not_nontrivial_iff_subsingleton] at H
