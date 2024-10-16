@@ -175,9 +175,9 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
-  refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) ?_ ?_
+  refine closure_induction (fun _ ↦ mem_iUnion.1) ?_ ?_
   · exact hι.elim fun i ↦ ⟨i, (S i).one_mem⟩
-  · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
+  · rintro x y - - ⟨i, hi⟩ ⟨j, hj⟩
     rcases hS i j with ⟨k, hki, hkj⟩
     exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
 
@@ -233,7 +233,7 @@ then it holds for all elements of the supremum of `S`. -/
 theorem iSup_induction {ι : Sort*} (S : ι → Submonoid M) {C : M → Prop} {x : M} (hx : x ∈ ⨆ i, S i)
     (mem : ∀ (i), ∀ x ∈ S i, C x) (one : C 1) (mul : ∀ x y, C x → C y → C (x * y)) : C x := by
   rw [iSup_eq_closure] at hx
-  refine closure_induction hx (fun x hx => ?_) one mul
+  refine closure_induction (fun x hx => ?_) one (fun _ _ _ _ ↦ mul _ _) hx
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
   exact mem _ _ hi
 
@@ -504,9 +504,9 @@ def closureCommMonoidOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b
     mul_comm := fun x y => by
       ext
       simp only [Submonoid.coe_mul]
-      exact
-        closure_induction₂ x.prop y.prop hcomm Commute.one_left Commute.one_right
-          (fun x y z => Commute.mul_left) fun x y z => Commute.mul_right }
+      exact closure_induction₂ (fun _ _ h₁ h₂ ↦ hcomm _ h₁ _ h₂) (fun _ _ ↦ Commute.one_left _)
+        (fun _ _ ↦ Commute.one_right _) (fun _ _ _ _ _ _ ↦ Commute.mul_left)
+        (fun _ _ _ _ _ _ ↦ Commute.mul_right) x.prop y.prop }
 
 end Submonoid
 
@@ -609,26 +609,19 @@ variable {R : Type*} [NonUnitalNonAssocSemiring R] [SetLike M R] [MulMemClass M 
 and an element of `M` is contained in the additive closure of `M`. -/
 theorem mul_right_mem_add_closure (ha : a ∈ AddSubmonoid.closure (S : Set R)) (hb : b ∈ S) :
     a * b ∈ AddSubmonoid.closure (S : Set R) := by
-  revert b
-  apply @AddSubmonoid.closure_induction _ _ _
-    (fun z => ∀ (b : R), b ∈ S → z * b ∈ AddSubmonoid.closure S) _ ha <;> clear ha a
-  · exact fun r hr b hb => AddSubmonoid.mem_closure.mpr fun y hy => hy (mul_mem hr hb)
-  · exact fun b _ => by simp only [zero_mul, (AddSubmonoid.closure (S : Set R)).zero_mem]
-  · simp_rw [add_mul]
-    exact fun r s hr hs b hb => (AddSubmonoid.closure (S : Set R)).add_mem (hr _ hb) (hs _ hb)
+  induction ha using AddSubmonoid.closure_induction with
+  | mem r hr => exact AddSubmonoid.mem_closure.mpr fun y hy => hy (mul_mem hr hb)
+  | one => simp only [zero_mul, zero_mem _]
+  | mul r s _ _ hr hs => simpa only [add_mul] using add_mem hr hs
 
 /-- The product of two elements of the additive closure of a submonoid `M` is an element of the
 additive closure of `M`. -/
 theorem mul_mem_add_closure (ha : a ∈ AddSubmonoid.closure (S : Set R))
     (hb : b ∈ AddSubmonoid.closure (S : Set R)) : a * b ∈ AddSubmonoid.closure (S : Set R) := by
-  revert a
-  apply @AddSubmonoid.closure_induction _ _ _
-    (fun z => ∀ {a : R}, a ∈ AddSubmonoid.closure ↑S → a * z ∈ AddSubmonoid.closure ↑S)
-      _ hb <;> clear hb b
-  · exact fun r hr b hb => MulMemClass.mul_right_mem_add_closure hb hr
-  · exact fun _ => by simp only [mul_zero, (AddSubmonoid.closure (S : Set R)).zero_mem]
-  · simp_rw [mul_add]
-    exact fun r s hr hs b hb => (AddSubmonoid.closure (S : Set R)).add_mem (hr hb) (hs hb)
+  induction hb using AddSubmonoid.closure_induction with
+  | mem r hr => exact MulMemClass.mul_right_mem_add_closure ha hr
+  | one => simp only [mul_zero, zero_mem _]
+  | mul r s _ _ hr hs => simpa only [mul_add] using add_mem hr hs
 
 /-- The product of an element of `S` and an element of the additive closure of a multiplicative
 submonoid `S` is contained in the additive closure of `S`. -/

@@ -147,8 +147,10 @@ def compare (existing new : ErrorContext) : ComparisonResult :=
   -- Generally, comparable errors must have equal `StyleError`s, but there are some exceptions.
   else match (existing.error, new.error) with
   -- We do *not* care about the *kind* of wrong copyright,
-  -- nor about the particular length of a too long line.
+  -- nor about the kind or line number of a duplicate import.
   | (StyleError.copyright _, StyleError.copyright _) => ComparisonResult.Comparable true
+  | (StyleError.duplicateImport _ _, StyleError.duplicateImport _ _) =>
+    ComparisonResult.Comparable true
   -- In all other cases, `StyleErrors` must compare equal.
   | (a, b) => if a == b then ComparisonResult.Comparable true else ComparisonResult.Different
 

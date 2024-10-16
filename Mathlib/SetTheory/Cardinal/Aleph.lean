@@ -48,27 +48,24 @@ universe u v w
 
 namespace Ordinal
 
-/-- An ordinal is initial when it is the first ordinal with a given cardinality. -/
+/-- An ordinal is initial when it is the first ordinal with a given cardinality.
+
+This is written as `o.card.ord = o`, i.e. `o` is the smallest ordinal with cardinality `o.card`. -/
 def IsInitial (o : Ordinal) : Prop :=
   o.card.ord = o
 
 theorem IsInitial.ord_card {o : Ordinal} (h : IsInitial o) : o.card.ord = o := h
 
-theorem IsInitial.le_of_card_le {a b : Ordinal} (ha : IsInitial a)
-    (hb : a.card ≤ b.card) : a ≤ b := by
-  rw [← ha.ord_card]
-  exact (ord_mono hb).trans (ord_card_le b)
+theorem IsInitial.card_le_card {a b : Ordinal} (ha : IsInitial a) : a.card ≤ b.card ↔ a ≤ b := by
+  refine ⟨fun h ↦ ?_, Ordinal.card_le_card⟩
+  rw [← ord_le_ord, ha.ord_card] at h
+  exact h.trans (ord_card_le b)
+
+theorem IsInitial.card_lt_card {a b : Ordinal} (hb : IsInitial b) : a.card < b.card ↔ a < b :=
+  lt_iff_lt_of_le_iff_le hb.card_le_card
 
 theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
   rw [IsInitial, card_ord]
-
-theorem IsInitial.card_le_card {a b : Ordinal} (ha : IsInitial a) (hb : IsInitial b) :
-    a.card ≤ b.card ↔ a ≤ b := by
-  rw [← ord_le_ord, ha.ord_card, hb.ord_card]
-
-theorem IsInitial.card_lt_card {a b : Ordinal} (ha : IsInitial a) (hb : IsInitial b) :
-    a.card < b.card ↔ a < b :=
-  lt_iff_lt_of_le_iff_le (hb.card_le_card ha)
 
 theorem isInitial_natCast (n : ℕ) : IsInitial n := by
   rw [IsInitial, card_nat, ord_nat]
