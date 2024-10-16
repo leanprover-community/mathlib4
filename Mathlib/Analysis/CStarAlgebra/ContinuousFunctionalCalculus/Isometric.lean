@@ -5,9 +5,6 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
-local notation "σ" => spectrum
-local notation "σₙ" => quasispectrum
-
 /-! # Isometric continuous functional calculus
 
 This file adds a class for an *isometric* continuous functional calculus. This is separate from the
@@ -19,6 +16,9 @@ algebra must *be* a C⋆-algebra already. As such, it may seem like this class i
 the main purpose is to allow for the continuous functional calculus to be a isometric for the other
 scalar rings `ℝ` and `ℝ≥0` too.
 -/
+
+local notation "σ" => spectrum
+local notation "σₙ" => quasispectrum
 
 /-! ### Isometric continuous functional calculus for unital algebras -/
 section Unital
