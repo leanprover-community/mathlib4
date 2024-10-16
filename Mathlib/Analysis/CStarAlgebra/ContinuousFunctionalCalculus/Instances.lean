@@ -174,11 +174,39 @@ instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [NormedRing A
         AlgEquiv.spectrum_eq (continuousFunctionalCalculus a), ContinuousMap.spectrum_eq_range]
     case predicate_hom => exact fun f ↦ ⟨by rw [← map_star]; exact Commute.all (star f) f |>.map _⟩
 
+lemma cfcHom_eq_of_isStarNormal {A : Type*} [NormedRing A] [StarRing A] [CStarRing A]
+    [CompleteSpace A] [NormedAlgebra ℂ A] [StarModule ℂ A](a : A) [ha : IsStarNormal a] :
+    cfcHom ha = (elementalStarAlgebra ℂ a).subtype.comp (continuousFunctionalCalculus a) := by
+  refine cfcHom_eq_of_continuous_of_map_id ha _ ?_ ?_
+  · -- note: Lean should find these for `StarAlgEquiv.isometry`, but it doesn't and so we
+    -- provide them manually. Hopefully this is fixed after #16953
+    have : SMulCommClass ℂ C(σ ℂ a, ℂ) C(σ ℂ a, ℂ) := Algebra.to_smulCommClass (A := C(σ ℂ a, ℂ))
+    have : IsScalarTower ℂ C(σ ℂ a, ℂ) C(σ ℂ a, ℂ) := IsScalarTower.right (A := C(σ ℂ a, ℂ))
+    exact continuous_subtype_val.comp <|
+      (StarAlgEquiv.isometry (continuousFunctionalCalculus a)).continuous
+  · simp [continuousFunctionalCalculus_map_id a]
+
 instance IsStarNormal.instNonUnitalContinuousFunctionalCalculus {A : Type*} [NonUnitalNormedRing A]
     [StarRing A] [CStarRing A] [CompleteSpace A] [NormedSpace ℂ A] [IsScalarTower ℂ A A]
     [SMulCommClass ℂ A A] [StarModule ℂ A] :
     NonUnitalContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) :=
   RCLike.nonUnitalContinuousFunctionalCalculus Unitization.isStarNormal_inr
+
+set_option maxSynthPendingDepth 2 in
+lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalNormedRing A]
+    [StarRing A] [CStarRing A] [CompleteSpace A] [NormedSpace ℂ A] [IsScalarTower ℂ A A]
+    [SMulCommClass ℂ A A] [StarModule ℂ A](a : A) [ha : IsStarNormal a] :
+    (inrNonUnitalStarAlgHom ℂ A).comp (cfcₙHom ha) =
+      cfcₙAux (isStarNormal_inr (R := ℂ) (A := A)) a ha := by
+  have h (a : A) := isStarNormal_inr (R := ℂ) (A := A) (a := a)
+  --- why?!?!?! This is so annoying
+  refine @UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id
+    _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ rfl _ _ ?_ ?_ ?_
+  · show Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
+  · exact closedEmbedding_cfcₙAux @(h) a ha |>.continuous
+  · trans (a : A⁺¹)
+    · congrm(inr $(cfcₙHom_id ha))
+    · exact cfcₙAux_id @(h) a ha |>.symm
 
 end Normal
 

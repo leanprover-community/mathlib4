@@ -207,6 +207,10 @@ lemma StarAlgHom.ext_continuousMap [UniqueContinuousFunctionalCalculus R A]
   have := UniqueContinuousFunctionalCalculus.compactSpace_spectrum (R := R) a
   UniqueContinuousFunctionalCalculus.eq_of_continuous_of_map_id (spectrum R a) φ ψ hφ hψ h
 
+include instCFC in
+lemma ContinuousFunctionalCalculus.isCompact_spectrum (a : A): IsCompact (spectrum R a) :=
+  isCompact_iff_compactSpace.mpr <| inferInstance
+
 section cfcHom
 
 variable {a : A} (ha : p a)

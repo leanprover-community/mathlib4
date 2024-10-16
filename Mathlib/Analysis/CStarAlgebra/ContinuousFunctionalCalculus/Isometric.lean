@@ -8,10 +8,21 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 local notation "σ" => spectrum
 local notation "σₙ" => quasispectrum
 
-/-! ### Isometric continuous functional calculus -/
+/-! ### Isometric continuous functional calculus
+
+This file adds a class for an *isometric* continuous functional calculus. This is separate from the
+usual `ContinuousFunctionalCalculus` class because we prefer not to require a metric (or a norm) on
+the algebra for reasons discussed in the module documentation for that file.
+
+Of courrse, with a metric on the algebra and an isometric continuous functional calculus, the
+algebra must *be* a C⋆-algebra already. As such, it may seem like this class is not useful. However,
+the main purpose is to allow for the continuous functional calculus to be a isometric for the other
+scalar rings `ℝ` and `ℝ≥0` too.
+-/
 
 section Unital
 
+/-- An extension of the `ContinuousFunctionalCalculus` requiring that `cfcHom` is an isometry. -/
 class IsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
     [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [MetricSpace A] [Algebra R A]
@@ -19,13 +30,6 @@ class IsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → P
   isometric (a : A) (ha : p a) : Isometry (cfcHom ha (R := R))
 
 section MetricSpace
-
--- move me!
-lemma ContinuousFunctionalCalculus.isCompact_spectrum {R A : Type*} {p : outParam (A → Prop)}
-    [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-    [Ring A] [StarRing A] [MetricSpace A] [Algebra R A] [ContinuousFunctionalCalculus R p]
-    (a : A) : IsCompact (spectrum R a) :=
-  isCompact_iff_compactSpace.mpr <| inferInstance
 
 open scoped ContinuousFunctionalCalculus
 
@@ -132,6 +136,8 @@ end Unital
 
 section NonUnital
 
+/-- An extension of the `NonUnitalContinuousFunctionalCalculus` requiring that `cfcₙHom` is an
+isometry. -/
 class NonUnitalIsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
     [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [TopologicalSemiring R]
     [ContinuousStar R] [NonUnitalRing A] [StarRing A] [MetricSpace A] [Module R A]
@@ -146,12 +152,6 @@ variable [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [Topologic
 variable [ContinuousStar R]
 variable [NonUnitalRing A] [StarRing A] [MetricSpace A] [Module R A]
 variable [IsScalarTower R A A] [SMulCommClass R A A]
-
--- move me!
-lemma NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum
-    [NonUnitalContinuousFunctionalCalculus R p] (a : A) :
-    IsCompact (σₙ R a) :=
-  isCompact_iff_compactSpace.mpr <| inferInstance
 
 open scoped NonUnitalContinuousFunctionalCalculus
 
@@ -268,25 +268,13 @@ section Complex
 variable {A : Type*} [NormedRing A] [StarRing A] [CStarRing A]
     [CompleteSpace A] [NormedAlgebra ℂ A] [StarModule ℂ A]
 
--- belongs in the `Instances` file.
-lemma cfcHom_eq_of_isStarNormal (a : A) [ha : IsStarNormal a] :
-    cfcHom ha = (elementalStarAlgebra ℂ a).subtype.comp (continuousFunctionalCalculus a) := by
-  refine cfcHom_eq_of_continuous_of_map_id ha _ ?_ ?_
-  · -- note: Lean should find these for `StarAlgEquiv.isometry`, but it doesn't and so we
-    -- provide them manually.
-    have : SMulCommClass ℂ C(σ ℂ a, ℂ) C(σ ℂ a, ℂ) := Algebra.to_smulCommClass (A := C(σ ℂ a, ℂ))
-    have : IsScalarTower ℂ C(σ ℂ a, ℂ) C(σ ℂ a, ℂ) := IsScalarTower.right (A := C(σ ℂ a, ℂ))
-    exact continuous_subtype_val.comp <|
-      (StarAlgEquiv.isometry (continuousFunctionalCalculus a)).continuous
-  · simp [continuousFunctionalCalculus_map_id a]
-
 instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℂ A IsStarNormal where
   isometric a ha := by
     rw [cfcHom_eq_of_isStarNormal]
     refine isometry_subtype_coe.comp ?_
     -- note: Lean should find these for `StarAlgEquiv.isometry`, but it doesn't and so we
-    -- provide them manually.
+    -- provide them manually. Hopefully this is fixed after #16953
     have : SMulCommClass ℂ C(σ ℂ a, ℂ) C(σ ℂ a, ℂ) := Algebra.to_smulCommClass (A := C(σ ℂ a, ℂ))
     have : IsScalarTower ℂ C(σ ℂ a, ℂ) C(σ ℂ a, ℂ) := IsScalarTower.right (A := C(σ ℂ a, ℂ))
     exact StarAlgEquiv.isometry (continuousFunctionalCalculus a)
@@ -325,25 +313,6 @@ local postfix:max "⁺¹" => Unitization ℂ
 
 open Unitization
 
-@[fun_prop]
-theorem Unitization.continuous_inr {𝕜 A : Type*}  [NontriviallyNormedField 𝕜]
-    [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
-    [RegularNormedAlgebra 𝕜 A] : Continuous (inr : A → Unitization 𝕜 A) :=
-  isometry_inr.continuous
-
-set_option maxSynthPendingDepth 2 in
-lemma foo (a : A) [ha : IsStarNormal a] :
-    (inrNonUnitalStarAlgHom ℂ A).comp (cfcₙHom ha) =
-      cfcₙAux (isStarNormal_inr (R := ℂ) (A := A)) a ha := by
-  have h (a : A) := isStarNormal_inr (R := ℂ) (A := A) (a := a)
-  --- why?!?!?! This is so annoying
-  refine @UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id
-    _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ rfl _ _ ?_ ?_ ?_
-  · show Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
-  · exact closedEmbedding_cfcₙAux @(h) a ha |>.continuous
-  · trans (a : A⁺¹)
-    · congrm(inr $(cfcₙHom_id ha))
-    · exact cfcₙAux_id @(h) a ha |>.symm
 
 open ContinuousMapZero in
 instance IsStarNormal.instNonUnitalIsometricContinuousFunctionalCalculus :
@@ -351,7 +320,7 @@ instance IsStarNormal.instNonUnitalIsometricContinuousFunctionalCalculus :
   isometric a ha := by
     refine AddMonoidHomClass.isometry_of_norm _ fun f ↦ ?_
     rw [← norm_inr (𝕜 := ℂ), ← inrNonUnitalStarAlgHom_apply, ← NonUnitalStarAlgHom.comp_apply,
-      foo a, cfcₙAux]
+      inr_comp_cfcₙHom_eq_cfcₙAux a, cfcₙAux]
     simp only [NonUnitalStarAlgHom.comp_assoc, NonUnitalStarAlgHom.comp_apply,
       toContinuousMapHom_apply, NonUnitalStarAlgHom.coe_coe]
     rw [norm_cfcHom (a : A⁺¹), StarAlgEquiv.norm_map]
@@ -415,20 +384,3 @@ lemma apply_le_nnnorm_cfc_nnreal (f : ℝ≥0 → ℝ≥0) (a : A) ⦃x : ℝ≥
   exact (IsGreatest.nnnorm_cfc_nnreal f a hf ha |>.2 ⟨x, ·, rfl⟩)
 
 end NNReal
-
-section spectrum
-
-open NNReal
-
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [NormOneClass A]
-
-theorem spectrum.le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
-    r ≤ ‖a‖₊ := calc
-  r ≤ ‖(r : ℝ)‖ := Real.le_norm_self _
-  _ ≤ ‖a‖       := norm_le_norm_of_mem hr
-
-theorem spectrum.coe_le_norm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
-    r ≤ ‖a‖ :=
-  coe_mono <| le_nnnorm_of_mem hr
-
-end spectrum

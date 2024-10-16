@@ -158,6 +158,23 @@ instance _root_.quasispectrum.instCompactSpaceNNReal [NormedSpace ℝ B] [IsScal
 
 end QuasispectrumCompact
 
+section NNReal
+
+open NNReal
+
+variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [NormOneClass A]
+
+theorem le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
+    r ≤ ‖a‖₊ := calc
+  r ≤ ‖(r : ℝ)‖ := Real.le_norm_self _
+  _ ≤ ‖a‖       := norm_le_norm_of_mem hr
+
+theorem coe_le_norm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
+    r ≤ ‖a‖ :=
+  coe_mono <| le_nnnorm_of_mem hr
+
+end NNReal
+
 theorem spectralRadius_le_nnnorm [NormOneClass A] (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
   refine iSup₂_le fun k hk => ?_
   exact mod_cast norm_le_norm_of_mem hk
