@@ -477,9 +477,13 @@ def of [MulOneClass G] : G →* MonoidAlgebra k G :=
 
 end
 
+/-- Copy of `Finsupp.smul_single'` that avoids the `MonoidAlgebra = Finsupp` defeq abuse. -/
+@[simp]
+theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
+  Finsupp.smul_single' c a b
+
 theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r := by
-  -- porting note (#10745): was `simp`.
-  rw [of_apply, smul_single', mul_one]
+  simp
 
 theorem of_injective [MulOneClass G] [Nontrivial k] :
     Function.Injective (of k G) := fun a b h => by
@@ -671,8 +675,7 @@ theorem induction_on [Semiring k] [Monoid G] {p : MonoidAlgebra k G → Prop} (f
   refine Finsupp.induction_linear f ?_ (fun f g hf hg => hadd f g hf hg) fun g r => ?_
   · simpa using hsmul 0 (of k G 1) (hM 1)
   · convert hsmul r (of k G g) (hM g)
-    -- Porting note: Was `simp only`.
-    rw [of_apply, smul_single', mul_one]
+    simp
 
 section
 
@@ -1223,6 +1226,11 @@ def singleHom [AddZeroClass G] : k × Multiplicative G →* k[G] where
   map_one' := rfl
   map_mul' _a _b := single_mul_single.symm
 
+/-- Copy of `Finsupp.smul_single'` that avoids the `AddMonoidAlgebra = Finsupp` defeq abuse. -/
+@[simp]
+theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
+  Finsupp.smul_single' c a b
+
 theorem mul_single_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
     (H : ∀ a, a + x = z ↔ a = y) : (f * single x r) z = f y * r :=
   @MonoidAlgebra.mul_single_apply_aux k (Multiplicative G) _ _ _ _ _ _ _ H
@@ -1267,8 +1275,7 @@ theorem induction_on [AddMonoid G] {p : k[G] → Prop} (f : k[G])
   refine Finsupp.induction_linear f ?_ (fun f g hf hg => hadd f g hf hg) fun g r => ?_
   · simpa using hsmul 0 (of k G (Multiplicative.ofAdd 0)) (hM 0)
   · convert hsmul r (of k G (Multiplicative.ofAdd g)) (hM g)
-    -- Porting note: Was `simp only`.
-    rw [of_apply, toAdd_ofAdd, smul_single', mul_one]
+    simp
 
 /-- If `f : G → H` is an additive homomorphism between two additive monoids, then
 `Finsupp.mapDomain f` is a ring homomorphism between their add monoid algebras. -/
