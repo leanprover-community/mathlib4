@@ -84,7 +84,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 -- We need this strange instance for `residueFieldMap`, the type of `F` must be fixed
 -- like this. The instance `IsLocalHom (f.stalkMap x)` already exists, but does not work for
 -- `residueFieldMap`.
-instance (x): IsLocalRingHom (F := Y.presheaf.stalk (f.base x) →+* X.presheaf.stalk x)
+instance (x): IsLocalHom (F := Y.presheaf.stalk (f.base x) →+* X.presheaf.stalk x)
     (f.stalkMap x) :=
   f.1.2 x
 

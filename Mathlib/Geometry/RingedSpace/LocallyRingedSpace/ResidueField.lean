@@ -83,7 +83,7 @@ variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X)
 -- We need this strange instance for `residueFieldMap`, the type of `F` must be fixed
 -- like this. The instance `IsLocalHom (f.stalkMap x)` already exists, but does not work for
 -- `residueFieldMap`.
-instance : IsLocalRingHom (F := Y.presheaf.stalk (f.base x) →+* X.presheaf.stalk x)
+instance : IsLocalHom (F := Y.presheaf.stalk (f.base x) →+* X.presheaf.stalk x)
     (f.stalkMap x) :=
   f.2 x
 
@@ -108,7 +108,7 @@ lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
     residueFieldMap (f ≫ g) x = residueFieldMap g (f.base x) ≫ residueFieldMap f x := by
   simp only [comp_toShHom, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap]
   simp_rw [stalkMap_comp]
-  haveI : IsLocalRingHom (g.stalkMap (f.base x)) := inferInstance
+  haveI : IsLocalHom (g.stalkMap (f.base x)) := inferInstance
   -- TODO: This instance is found before #6045.
   haveI : IsLocalHom (f.stalkMap x) := inferInstance
   apply LocalRing.ResidueField.map_comp

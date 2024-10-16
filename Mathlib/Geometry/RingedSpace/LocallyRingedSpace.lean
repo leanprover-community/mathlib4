@@ -73,7 +73,7 @@ def 𝒪 : Sheaf CommRingCat X.toTopCat :=
 structure Hom (X Y : LocallyRingedSpace.{u})
     extends X.toPresheafedSpace.Hom Y.toPresheafedSpace : Type _ where
   /-- the underlying morphism induces a local ring homomorphism on stalks -/
-  prop : ∀ x, IsLocalRingHom (toHom.stalkMap x)
+  prop : ∀ x, IsLocalHom (toHom.stalkMap x)
 
 /-- A morphism of locally ringed spaces as a morphism of sheafed spaces. -/
 abbrev Hom.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
@@ -109,8 +109,8 @@ theorem isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) 
     IsLocalHom (f.stalkMap x) :=
   f.2 x
 
-instance isLocalRingHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    IsLocalRingHom (f.toShHom.stalkMap x) :=
+instance isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+    IsLocalHom (f.toShHom.stalkMap x) :=
   f.2 x
 
 @[deprecated (since := "2024-10-10")]
@@ -119,7 +119,7 @@ alias isLocalRingHomValStalkMap := isLocalHomValStalkMap
 /-- The identity morphism on a locally ringed space. -/
 @[simps! toShHom]
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
-  ⟨𝟙 X.toSheafedSpace, fun x => by erw [PresheafedSpace.stalkMap.id]; apply isLocalRingHom_id⟩
+  ⟨𝟙 X.toSheafedSpace, fun x => by erw [PresheafedSpace.stalkMap.id]; apply isLocalHom_id⟩
 
 instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
   ⟨id X⟩
