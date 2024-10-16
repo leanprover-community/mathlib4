@@ -43,9 +43,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace Sheaf
 
-variable {P : Cᵒᵖ ⥤ Type v}
-variable {X Y : C} {S : Sieve X} {R : Presieve X}
-variable (J J₂ : GrothendieckTopology C)
+variable {P : Cᵒᵖ ⥤ Type v} {X : C} (J : GrothendieckTopology C)
 
 /--
 To show `P` is a sheaf for the binding of `U` with `B`, it suffices to show that `P` is a sheaf for

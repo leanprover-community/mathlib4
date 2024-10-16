@@ -49,7 +49,7 @@ theorem comp_apply {X Y Z : ∀ i, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (i) :
     (f ≫ g : ∀ i, X i ⟶ Z i) i = f i ≫ g i :=
   rfl
 
--- Porting note: need to add an additional `ext` lemma.
+-- Porting note (#5229): need to add an additional `ext` lemma.
 @[ext]
 lemma ext {X Y : ∀ i, C i} {f g : X ⟶ Y} (w : ∀ i, f i = g i) : f = g :=
   funext (w ·)

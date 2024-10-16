@@ -369,7 +369,7 @@ def embeddingLiftIso (F : C ⥤ D) : embedding R C ⋙ lift R F ≅ F :=
 /-- Two `R`-linear functors out of the `R`-linear completion are isomorphic iff their
 compositions with the embedding functor are isomorphic.
 -/
--- Porting note: used to be @[ext]
+-- Porting note (#11182): used to be @[ext]
 def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear R]
     (α : embedding R C ⋙ F ≅ embedding R C ⋙ G) : F ≅ G :=
   NatIso.ofComponents (fun X => α.app X)
