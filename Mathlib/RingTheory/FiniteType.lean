@@ -403,10 +403,10 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine AddSubmonoid.closure_induction this (fun m hm => ?_) ?_ ?_
+    refine AddSubmonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, map_one _⟩
-    · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
+    · rintro m₁ m₂ _ _ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
       exact
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
@@ -428,10 +428,10 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine AddSubmonoid.closure_induction this (fun m hm => ?_) ?_ ?_
+    refine AddSubmonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, map_one _⟩
-    · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
+    · rintro m₁ m₂ _ _ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
       exact
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
@@ -571,10 +571,10 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine Submonoid.closure_induction this (fun m hm => ?_) ?_ ?_
+    refine Submonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, map_one _⟩
-    · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
+    · rintro m₁ m₂ _ _ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
       exact
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
@@ -595,10 +595,10 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine Submonoid.closure_induction this (fun m hm => ?_) ?_ ?_
+    refine Submonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, map_one _⟩
-    · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
+    · rintro m₁ m₂ _ _ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
       exact
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
@@ -682,7 +682,7 @@ instance (priority := 100) CommRing.orzechProperty
       ((f.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
       (fun _ _ h ↦ injective_subtype _ (hi congr(($h).1)))
       fun ⟨x, hx⟩ ↦ ?_) ⟨n, (subset_span (by simp))⟩ (Subtype.val_injective hn)).1)
-  · induction hx using span_induction' with
+  · induction hx using span_induction with
     | mem x hx =>
       change i x ∈ M'
       simp only [Set.singleton_union, Set.mem_insert_iff, Set.mem_range] at hx
@@ -701,7 +701,7 @@ instance (priority := 100) CommRing.orzechProperty
     | zero => simp
     | add x _ y _ hx hy => rw [map_add]; exact add_mem hx hy
     | smul a x _ hx => rw [map_smul]; exact smul_mem _ _ hx
-  · induction hx using span_induction' with
+  · induction hx using span_induction with
     | mem x hx =>
       change f x ∈ M'
       simp only [Set.singleton_union, Set.mem_insert_iff, Set.mem_range] at hx
@@ -714,12 +714,12 @@ instance (priority := 100) CommRing.orzechProperty
   suffices x ∈ LinearMap.range ((f.restrictScalars A).domRestrict N') by
     obtain ⟨a, ha⟩ := this
     exact ⟨a, Subtype.val_injective ha⟩
-  induction hx using span_induction' with
+  induction hx using span_induction with
   | mem x hx =>
     obtain ⟨j, rfl⟩ := hx
     exact ⟨⟨nj j, subset_span (by simp)⟩, hnj j⟩
   | zero => exact zero_mem _
-  | add x _ y _ hx hy => exact add_mem hx hy
+  | add x y _ _ hx hy => exact add_mem hx hy
   | smul a x _ hx => exact smul_mem _ a hx
 
 end Orzech
