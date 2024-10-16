@@ -150,7 +150,7 @@ instance (t : RootedTree) : SetLike (SubRootedTree t) t where
   coe_injective' a₁ a₂ h := by
     simpa only [Set.Ici_inj, ← SubRootedTree.ext_iff] using h
 
-lemma mem_iff {t : RootedTree} {r : SubRootedTree t} {v : t} :
+lemma SubRootedTree.mem_iff {t : RootedTree} {r : SubRootedTree t} {v : t} :
     v ∈ r ↔ r.root ≤ v := Iff.rfl
 
 /--
@@ -164,7 +164,7 @@ noncomputable instance (t : RootedTree) : CoeOut (SubRootedTree t) RootedTree :=
   ⟨coeTree⟩
 
 @[simp]
-lemma bot_mem_iff {t : RootedTree} (r : SubRootedTree t) :
+lemma SubRootedTree.bot_mem_iff {t : RootedTree} (r : SubRootedTree t) :
     ⊥ ∈ r ↔ r.root = ⊥ := by
   simp [mem_iff]
 
@@ -176,12 +176,12 @@ def RootedTree.subtrees (t : RootedTree) : Set (SubRootedTree t) :=
 
 variable {t : RootedTree}
 
-lemma root_ne_bot_of_mem_subtrees (r : SubRootedTree t) (hr : r ∈ t.subtrees) :
+lemma SubRootedTree.root_ne_bot_of_mem_subtrees (r : SubRootedTree t) (hr : r ∈ t.subtrees) :
     r.root ≠ ⊥ := by
   simp only [RootedTree.subtrees, Set.mem_setOf_eq] at hr
   exact hr.1
 
-lemma subtrees_inf_eq_bot_iff {t₁ t₂ : SubRootedTree t}
+lemma RootedTree.subtrees_inf_eq_bot_iff {t₁ t₂ : SubRootedTree t}
     (ht₁ : t₁ ∈ t.subtrees) (ht₂ : t₂ ∈ t.subtrees) (v₁ v₂ : t) (h₁ : v₁ ∈ t₁)
     (h₂ : v₂ ∈ t₂) :
     v₁ ⊓ v₂ = ⊥ ↔ t₁ ≠ t₂ where
@@ -192,9 +192,9 @@ lemma subtrees_inf_eq_bot_iff {t₁ t₂ : SubRootedTree t}
       exact ⟨h₁, nh ▸ h₂⟩
     rw [h] at this
     simp only [le_bot_iff] at this
-    exact root_ne_bot_of_mem_subtrees t₁ ht₁ this
+    exact t₁.root_ne_bot_of_mem_subtrees ht₁ this
   mpr h := by
-    rw [mem_iff] at h₁ h₂
+    rw [SubRootedTree.mem_iff] at h₁ h₂
     contrapose! h
     rw [← bot_lt_iff_ne_bot] at h
     rcases lt_or_le_of_directed (by simp : v₁ ⊓ v₂ ≤ v₁) h₁ with oh | oh
@@ -204,15 +204,15 @@ lemma subtrees_inf_eq_bot_iff {t₁ t₂ : SubRootedTree t}
     simpa only [ht₂.le_iff_eq ht₁.1, ht₁.le_iff_eq ht₂.1, eq_comm, or_self] using
       le_total_of_directed oh.2 h₂
 
-lemma subtrees_disjoint : t.subtrees.PairwiseDisjoint ((↑) : _ → Set t) := by
+lemma RootedTree.subtrees_disjoint : t.subtrees.PairwiseDisjoint ((↑) : _ → Set t) := by
   intro t₁ ht₁ t₂ ht₂ h
   rw [Function.onFun_apply, Set.disjoint_left]
   intro a ha hb
   rw [← subtrees_inf_eq_bot_iff ht₁ ht₂ a a ha hb] at h
   simp only [le_refl, inf_of_le_left] at h
   subst h
-  simp only [SetLike.mem_coe, bot_mem_iff] at ha
-  exact root_ne_bot_of_mem_subtrees t₁ ht₁ ha
+  simp only [SetLike.mem_coe, SubRootedTree.bot_mem_iff] at ha
+  exact t₁.root_ne_bot_of_mem_subtrees ht₁ ha
 
 /--
 The immediate subtree of `t` containing `v`, or all of `t` if `v` is the root.
@@ -223,7 +223,7 @@ def RootedTree.subtreeOf (t : RootedTree) [DecidableEq t] (v : t) : SubRootedTre
 @[simp]
 lemma RootedTree.mem_subtreeOf [DecidableEq t] {v : t} :
     v ∈ t.subtreeOf v := by
-  simp [mem_iff, RootedTree.subtreeOf]
+  simp [SubRootedTree.mem_iff, RootedTree.subtreeOf]
 
 lemma RootedTree.subtreeOf_mem_subtrees [DecidableEq t] {v : t} (hr : v ≠ ⊥) :
     t.subtreeOf v ∈ t.subtrees := by
