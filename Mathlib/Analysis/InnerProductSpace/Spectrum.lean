@@ -76,7 +76,7 @@ theorem conj_eigenvalue_eq_self (hT : T.IsSymmetric) {μ : 𝕜} (hμ : HasEigen
   simpa [hv₂, inner_smul_left, inner_smul_right, hv₁] using hT v v
 
 /-- The generalized eigenspaces of a symmetric operator coincide with the eigenspace. NB: In
-finite dimensions, this follows from `Orthogonal.isSemisimple`. -/
+finite dimensions, this follows from `Orthogonal.IsSymmetric.isSemisimple`. -/
 theorem genEigenspace_eq_eigenspace
     {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {n : ℕ} {μ : 𝕜} (hn : 1 ≤ n) :
     genEigenspace T μ n = genEigenspace T μ 1 := by
@@ -94,7 +94,7 @@ theorem genEigenspace_eq_eigenspace
     simp [mem_genEigenspace .. |>.mp <| (genEigenspace T μ).mono (show k + 1 ≤ k + k by gcongr) hx]
 
 /-- The maximal generalized eigenspaces of a symmetric operator coincide with the eigenspace. NB: In
-finite dimensions, this follows from `Orthogonal.isSemisimple`. -/
+finite dimensions, this follows from `Orthogonal.IsSymmetric.isSemisimple`. -/
 lemma maxGenEigenspace_eq_eigenspace {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric)
     {μ : 𝕜} : maxGenEigenspace T μ = eigenspace T μ := calc
   _ = ⨆ n, genEigenspace T μ (n + 1) := by
