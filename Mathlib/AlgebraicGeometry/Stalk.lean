@@ -89,10 +89,8 @@ lemma fromSpecStalk_app {x : X} (hxU : x ∈ U) :
   obtain ⟨_, ⟨V : X.Opens, hV, rfl⟩, hxV, hVU⟩ := (isBasis_affine_open X).exists_subset_of_mem_open
     hxU U.2
   rw [← hV.fromSpecStalk_eq_fromSpecStalk hxV, IsAffineOpen.fromSpecStalk, Scheme.comp_app,
-    hV.fromSpec_app_of_le _ hVU, ←  X.presheaf.germ_res (homOfLE hVU) x hxV]
-  simp only [Category.assoc]
-  rw [Hom.naturality, ← ΓSpecIso_inv_naturality_assoc]
-  rfl
+    hV.fromSpec_app_of_le _ hVU, ← X.presheaf.germ_res (homOfLE hVU) x hxV]
+  simp [Category.assoc, ← ΓSpecIso_inv_naturality_assoc]
 
 @[reassoc]
 lemma Spec_map_stalkSpecializes_fromSpecStalk {x y : X} (h : x ⤳ y) :
