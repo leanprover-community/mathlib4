@@ -128,6 +128,7 @@ noncomputable def nilradmaxlocalizationIsSelf [h : (nilradical R).IsMaximal] (h'
     [IsLocalization M S] : R ≃ₐ[R] S := by
   have : ∀ m ∈ M, IsUnit m := by
     intro m hm
+    haveI := LocalRing.of_nilradical_isMaximal (h := h)
     apply (LocalRing.not_mem_maximalIdeal m).mp
     rw [← LocalRing.eq_maximalIdeal h]
     intro hm'
