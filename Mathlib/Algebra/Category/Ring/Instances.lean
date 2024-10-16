@@ -36,33 +36,27 @@ instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
   rcases R with ⟨α, str⟩
   exact IsLocalization.epi M _
 
-/-
-TODO: This abbrev is added in #17403, together with the following instance
-`CommRingCat.isLocalHom_ofIsLocalRingHom`.
-This is a local revert to the state before #6045 in the algebraic geomertry part of Mathlib.
-
-Although this instance itself can be find only using
-`inferInstance`, the instance `IsLocalHom (f ≫ g)` cannnot be inferred from `IsLocalRingHom (f ≫ g)`
-without this instance.
--/
-abbrev IsLocalRingHom {R S} [Semiring R] [Semiring S] (f : R →+* S) := IsLocalHom (F := R →+* S) f
-
-instance CommRingCat.isLocalHom_ofIsLocalRingHom {R S : CommRingCat} (f : R ⟶ S)
-    [IsLocalRingHom f] : IsLocalHom f :=
-  inferInstance
-
 @[instance]
-theorem CommRingCat.isLocalRingHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
-    [IsLocalRingHom g] [IsLocalRingHom f] : IsLocalRingHom (f ≫ g) :=
+theorem CommRingCat.isLocalHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
+    [IsLocalHom g] [IsLocalHom f] : IsLocalHom (f ≫ g) :=
   RingHom.isLocalHom_comp _ _
 
-theorem isLocalRingHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalRingHom f.hom :=
+@[deprecated (since := "2024-10-10")]
+alias CommRingCat.isLocalRingHom_comp := CommRingCat.isLocalHom_comp
+
+theorem isLocalHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalHom f.hom :=
   { map_nonunit := fun a ha => by
       convert f.inv.isUnit_map ha
       exact (RingHom.congr_fun f.hom_inv_id _).symm }
 
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_of_iso := isLocalHom_of_iso
+
 -- see Note [lower instance priority]
 @[instance 100]
-theorem isLocalRingHom_of_isIso {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
-    IsLocalRingHom f :=
-  isLocalRingHom_of_iso (asIso f)
+theorem isLocalHom_of_isIso {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
+    IsLocalHom f :=
+  isLocalHom_of_iso (asIso f)
+
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_of_isIso := isLocalHom_of_isIso

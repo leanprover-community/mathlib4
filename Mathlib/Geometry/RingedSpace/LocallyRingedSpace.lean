@@ -11,7 +11,7 @@ import Mathlib.Geometry.RingedSpace.Stalks
 
 We define (bundled) locally ringed spaces (as `SheafedSpace CommRing` along with the fact that the
 stalks are local rings), and morphisms between these (morphisms in `SheafedSpace` with
-`IsLocalRingHom` on the stalk maps).
+`IsLocalHom` on the stalk maps).
 -/
 
 -- Explicit universe annotations were used in this file to improve performance #12737
@@ -105,18 +105,21 @@ noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x :
   f.toShHom.stalkMap x
 
 @[instance]
-theorem isLocalRingHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    IsLocalRingHom (f.stalkMap x) :=
+theorem isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+    IsLocalHom (f.stalkMap x) :=
   f.2 x
 
 instance isLocalRingHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalRingHom (f.toShHom.stalkMap x) :=
   f.2 x
 
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHomValStalkMap := isLocalHomValStalkMap
+
 /-- The identity morphism on a locally ringed space. -/
 @[simps! toShHom]
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
-  ⟨𝟙 X.toSheafedSpace, fun x => by erw [PresheafedSpace.stalkMap.id]; apply isLocalHom_id⟩
+  ⟨𝟙 X.toSheafedSpace, fun x => by erw [PresheafedSpace.stalkMap.id]; apply isLocalRingHom_id⟩
 
 instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
   ⟨id X⟩
@@ -185,7 +188,7 @@ def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
     -- Here we need to see that the stalk maps are really local ring homomorphisms.
     -- This can be solved by type class inference, because stalk maps of isomorphisms
     -- are isomorphisms and isomorphisms are local ring homomorphisms.
-    show IsLocalRingHom ((SheafedSpace.forgetToPresheafedSpace.map f).stalkMap x) by
+    show IsLocalHom ((SheafedSpace.forgetToPresheafedSpace.map f).stalkMap x) by
       infer_instance
 
 /-- Given two locally ringed spaces `X` and `Y`, an isomorphism between `X` and `Y` as _sheafed_

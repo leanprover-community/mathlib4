@@ -219,8 +219,11 @@ variable [Monoid R] [Monoid S] [Monoid T] [FunLike F R S]
   definitions in the local ring case - from where this concept originates, but it is useful in
   other contexts, so we allow this generalisation in mathlib. -/
 class IsLocalHom (f : F) : Prop where
-  /-- A local homomorphism `f : R → S` will send nonunits of `R` to nonunits of `S`. -/
+  /-- A local homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
+
+@[deprecated (since := "2024-10-10")]
+alias IsLocalRingHom := IsLocalHom
 
 @[simp]
 theorem IsUnit.of_map (f : F) [IsLocalHom f] (a : R) (h : IsUnit (f a)) : IsUnit a :=
