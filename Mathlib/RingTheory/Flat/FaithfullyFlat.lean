@@ -66,51 +66,59 @@ end proper_ideal
 
 section faithful
 
+instance rTensor_nontrivial
+    [fl: FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
+    Nontrivial (N ⊗[R] M) := by
+  obtain ⟨n, hn⟩ := nontrivial_iff_exists_ne (0 : N) |>.1 inferInstance
+  let I := (Submodule.span R {n}).annihilator
+  by_cases I_ne_top : I = ⊤
+  · rw [Ideal.eq_top_iff_one, Submodule.mem_annihilator_span_singleton, one_smul] at I_ne_top
+    contradiction
+  let inc : R ⧸ I →ₗ[R] N := Submodule.liftQ _ ((LinearMap.lsmul R N).flip n) <| fun r hr => by
+    simpa only [LinearMap.mem_ker, LinearMap.flip_apply, LinearMap.lsmul_apply,
+      Submodule.mem_annihilator_span_singleton, I] using hr
+  have injective_inc : Function.Injective inc := by
+    rw [← LinearMap.ker_eq_bot, eq_bot_iff]
+    intro r hr
+    induction r using Quotient.inductionOn' with | h r =>
+    simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.mem_bot, Submodule.Quotient.mk_eq_zero,
+      Submodule.mem_annihilator_span_singleton, LinearMap.mem_ker, Submodule.liftQ_apply,
+      LinearMap.flip_apply, LinearMap.lsmul_apply, I, inc] using hr
+  have ne_top := iff_flat_and_proper_ideal R M |>.1 fl |>.2 I I_ne_top
+  refine subsingleton_or_nontrivial _ |>.resolve_left fun rid => ?_
+  have : Function.Injective
+    (LinearMap.rTensor M inc ∘ₗ (quotTensorEquivQuotSMul M I).symm.toLinearMap) :=
+    Function.Injective.comp
+      (g := LinearMap.rTensor M inc)
+      (f := (quotTensorEquivQuotSMul M I).symm.toLinearMap)
+      (Module.Flat.rTensor_preserves_injective_linearMap (h := fl.toFlat) inc injective_inc)
+      (LinearEquiv.injective _)
+  have := this.subsingleton
+  rw [Submodule.subsingleton_quotient_iff_eq_top] at this
+  contradiction
+
+instance lTensor_nontrivial
+    [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
+    Nontrivial (M ⊗[R] N) :=
+  TensorProduct.comm R M N |>.toEquiv.nontrivial
+
 attribute [-simp] Ideal.Quotient.mk_eq_mk in
 lemma iff_flat_and_rTensor_faithful :
     FaithfullyFlat R M ↔
     (Flat R M ∧
       ∀ (N : Type max u v) [AddCommGroup N] [Module R N],
         Nontrivial N → Nontrivial (N ⊗[R] M)) := by
-  refine ⟨fun fl => ⟨inferInstance, ?_⟩, fun ⟨flat, faithful⟩ => ⟨?_⟩⟩
-  · intro N _ _ _
-    obtain ⟨n, hn⟩ := nontrivial_iff_exists_ne (0 : N) |>.1 inferInstance
-    let I := (Submodule.span R {n}).annihilator
-    by_cases I_ne_top : I = ⊤
-    · rw [Ideal.eq_top_iff_one, Submodule.mem_annihilator_span_singleton, one_smul] at I_ne_top
-      contradiction
-    let inc : R ⧸ I →ₗ[R] N := Submodule.liftQ _ ((LinearMap.lsmul R N).flip n) <| fun r hr => by
-      simpa only [LinearMap.mem_ker, LinearMap.flip_apply, LinearMap.lsmul_apply,
-        Submodule.mem_annihilator_span_singleton, I] using hr
-    have injective_inc : Function.Injective inc := by
-      rw [← LinearMap.ker_eq_bot, eq_bot_iff]
-      intro r hr
-      induction r using Quotient.inductionOn' with | h r =>
-      simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.mem_bot, Submodule.Quotient.mk_eq_zero,
-        Submodule.mem_annihilator_span_singleton, LinearMap.mem_ker, Submodule.liftQ_apply,
-        LinearMap.flip_apply, LinearMap.lsmul_apply, I, inc] using hr
-    have ne_top := iff_flat_and_proper_ideal R M |>.1 fl |>.2 I I_ne_top
-    refine subsingleton_or_nontrivial _ |>.resolve_left fun rid => ?_
-    have : Function.Injective
-      (LinearMap.rTensor M inc ∘ₗ (quotTensorEquivQuotSMul M I).symm.toLinearMap) :=
-      Function.Injective.comp
-        (g := LinearMap.rTensor M inc)
-        (f := (quotTensorEquivQuotSMul M I).symm.toLinearMap)
-        (Module.Flat.rTensor_preserves_injective_linearMap (h := fl.toFlat) inc injective_inc)
-        (LinearEquiv.injective _)
-    have := this.subsingleton
-    rw [Submodule.subsingleton_quotient_iff_eq_top] at this
-    contradiction
-  · intro m hm rid
-    specialize faithful (ULift (R ⧸ m)) inferInstance
-    haveI : Nontrivial ((R ⧸ m) ⊗[R] M) :=
-      (congr (ULift.moduleEquiv : ULift (R ⧸ m) ≃ₗ[R] R ⧸ m)
-        (LinearEquiv.refl R M)).symm.toEquiv.nontrivial
-    have := (quotTensorEquivQuotSMul M m).toEquiv.symm.nontrivial
-    haveI H : Subsingleton (M ⧸ m • (⊤ : Submodule R M)) := by
-      rwa [Submodule.subsingleton_quotient_iff_eq_top]
-    rw [← not_nontrivial_iff_subsingleton] at H
-    contradiction
+  refine ⟨fun fl => ⟨inferInstance, rTensor_nontrivial R M⟩, fun ⟨flat, faithful⟩ => ⟨?_⟩⟩
+  intro m hm rid
+  specialize faithful (ULift (R ⧸ m)) inferInstance
+  haveI : Nontrivial ((R ⧸ m) ⊗[R] M) :=
+    (congr (ULift.moduleEquiv : ULift (R ⧸ m) ≃ₗ[R] R ⧸ m)
+      (LinearEquiv.refl R M)).symm.toEquiv.nontrivial
+  have := (quotTensorEquivQuotSMul M m).toEquiv.symm.nontrivial
+  haveI H : Subsingleton (M ⧸ m • (⊤ : Submodule R M)) := by
+    rwa [Submodule.subsingleton_quotient_iff_eq_top]
+  rw [← not_nontrivial_iff_subsingleton] at H
+  contradiction
 
 lemma iff_flat_and_rTensor_reflects_triviality :
     FaithfullyFlat R M ↔
