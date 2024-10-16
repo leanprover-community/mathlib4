@@ -109,7 +109,7 @@ variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i
 -- Porting note: Replaced CoeFun with FunLike instance
 instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
-  coe_injective' := fun f g h ↦ by cases f; cases g; cases h; rfl
+  coe_injective' f g h := by cases f; cases g; cases h; rfl
 
 initialize_simps_projections MultilinearMap (toFun → apply)
 
@@ -176,7 +176,7 @@ theorem add_apply (m : ∀ i, M₁ i) : (f + f') m = f m + f' m :=
   rfl
 
 instance : Zero (MultilinearMap R M₁ M₂) :=
-  ⟨⟨fun _ => 0, fun _ i _ _ => by simp, fun _ i c _ => by simp⟩⟩
+  ⟨⟨fun _ => 0, fun _ _ _ _ => by simp, fun _ _ c _ => by simp⟩⟩
 
 instance : Inhabited (MultilinearMap R M₁ M₂) :=
   ⟨0⟩
@@ -260,7 +260,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
     { toFun := fun x ↦ f fun _ ↦ x
       map_add' := fun x y ↦ by simpa [update_eq_const_of_subsingleton] using f.map_add 0 i x y
       map_smul' := fun c x ↦ by simpa [update_eq_const_of_subsingleton] using f.map_smul 0 i c x }
-  left_inv f := rfl
+  left_inv _ := rfl
   right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
 
 variable (M₁) {M₂}
@@ -453,14 +453,9 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   induction' n using Nat.strong_induction_on with n IH generalizing A
   -- If one of the sets is empty, then all the sums are zero
   by_cases Ai_empty : ∃ i, A i = ∅
-  · rcases Ai_empty with ⟨i, hi⟩
-    have : ∑ j ∈ A i, g i j = 0 := by rw [hi, Finset.sum_empty]
-    rw [f.map_coord_zero i this]
-    have : piFinset A = ∅ := by
-      refine Finset.eq_empty_of_forall_not_mem fun r hr => ?_
-      have : r i ∈ A i := mem_piFinset.mp hr i
-      simp [hi] at this
-    rw [this, Finset.sum_empty]
+  · obtain ⟨i, hi⟩ : ∃ i, ∑ j ∈ A i, g i j = 0 := Ai_empty.imp fun i hi ↦ by simp [hi]
+    have hpi : piFinset A = ∅ := by simpa
+    rw [f.map_coord_zero i hi, hpi, Finset.sum_empty]
   push_neg at Ai_empty
   -- Otherwise, if all sets are at most singletons, then they are exactly singletons and the result
   -- is again straightforward
@@ -1009,7 +1004,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
 @[simps] def compLinearMapMultilinear :
   @MultilinearMap R ι (fun i ↦ M₁ i →ₗ[R] M₁' i)
     ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _
-      (fun i ↦ LinearMap.module) _ where
+      (fun _ ↦ LinearMap.module) _ where
   toFun := MultilinearMap.compLinearMapₗ
   map_add' := by
     intro _ f i f₁ f₂
@@ -1213,16 +1208,16 @@ theorem sub_apply (m : ∀ i, M₁ i) : (f - g) m = f m - g m :=
 
 instance : AddCommGroup (MultilinearMap R M₁ M₂) :=
   { MultilinearMap.addCommMonoid with
-    neg_add_cancel := fun a => MultilinearMap.ext fun v => neg_add_cancel _
-    sub_eq_add_neg := fun a b => MultilinearMap.ext fun v => sub_eq_add_neg _ _
+    neg_add_cancel := fun _ => MultilinearMap.ext fun _ => neg_add_cancel _
+    sub_eq_add_neg := fun _ _ => MultilinearMap.ext fun _ => sub_eq_add_neg _ _
     zsmul := fun n f =>
       { toFun := fun m => n • f m
         map_add' := fun m i x y => by simp [smul_add]
         map_smul' := fun l i x d => by simp [← smul_comm x n (_ : M₂)] }
     -- Porting note: changed from `AddCommGroup` to `SubNegMonoid`
-    zsmul_zero' := fun a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_zero' _
-    zsmul_succ' := fun z a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_succ' _ _
-    zsmul_neg' := fun z a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_neg' _ _ }
+    zsmul_zero' := fun _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_zero' _
+    zsmul_succ' := fun _ _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_succ' _ _
+    zsmul_neg' := fun _ _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_neg' _ _ }
 
 end RangeAddCommGroup
 

@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.LocalRing.RingHom.Defs
+import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Logic.Equiv.TransferInstance
@@ -24,34 +24,14 @@ variable [Semiring R] [Semiring S] [Semiring T]
 instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R) where
   map_nonunit _ := id
 
-@[simp]
-theorem isUnit_map_iff (f : R →+* S) [IsLocalRingHom f] (a) : IsUnit (f a) ↔ IsUnit a :=
-  ⟨IsLocalRingHom.map_nonunit a, f.isUnit_map⟩
+-- see note [lower instance priority]
+instance (priority := 100)  isLocalRingHom_toRingHom {F : Type*} [FunLike F R S]
+   [RingHomClass F R S] (f : F) [IsLocalRingHom f] : IsLocalRingHom (f : R →+* S) :=
+  ⟨IsLocalRingHom.map_nonunit (f := f)⟩
 
--- Porting note: as this can be proved by other `simp` lemmas, this is marked as high priority.
-@[simp (high)]
-theorem map_mem_nonunits_iff (f : R →+* S) [IsLocalRingHom f] (a) :
-    f a ∈ nonunits S ↔ a ∈ nonunits R :=
-  ⟨fun h ha => h <| (isUnit_map_iff f a).mpr ha, fun h ha => h <| (isUnit_map_iff f a).mp ha⟩
-
-instance isLocalRingHom_comp (g : S →+* T) (f : R →+* S) [IsLocalRingHom g] [IsLocalRingHom f] :
-    IsLocalRingHom (g.comp f) where
-  map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f a)
-
-instance isLocalRingHom_equiv (f : R ≃+* S) : IsLocalRingHom (f : R →+* S) where
-  map_nonunit a ha := by
-    convert RingHom.isUnit_map (f.symm : S →+* R) ha
-    exact (RingEquiv.symm_apply_apply f a).symm
-
-@[simp]
-theorem isUnit_of_map_unit (f : R →+* S) [IsLocalRingHom f] (a) (h : IsUnit (f a)) : IsUnit a :=
-  IsLocalRingHom.map_nonunit a h
-
-theorem of_irreducible_map (f : R →+* S) [h : IsLocalRingHom f] {x} (hfx : Irreducible (f x)) :
-    Irreducible x :=
-  ⟨fun h => hfx.not_unit <| IsUnit.map f h, fun p q hx =>
-    let ⟨H⟩ := h
-    Or.imp (H p) (H q) <| hfx.isUnit_or_isUnit <| f.map_mul p q ▸ congr_arg f hx⟩
+instance RingHom.isLocalRingHom_comp (g : S →+* T) (f : R →+* S) [IsLocalRingHom g]
+    [IsLocalRingHom f] : IsLocalRingHom (g.comp f) where
+  map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f := g) (f a)
 
 theorem isLocalRingHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalRingHom (g.comp f)] :
     IsLocalRingHom f :=

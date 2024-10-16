@@ -167,16 +167,13 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
     ring
   exact IsCoprime.of_mul_right_left (IsCoprime.of_mul_left_left this)
 
-theorem multiplicity_le_one_of_separable [DecidableRel fun (x : R[X]) x_1 ↦ x ∣ x_1]
-    {p q : R[X]} (hq : ¬IsUnit q) (hsep : Separable p) :
-    multiplicity q p ≤ 1 := by
+theorem emultiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep : Separable p) :
+    emultiplicity q p ≤ 1 := by
   contrapose! hq
   apply isUnit_of_self_mul_dvd_separable hsep
   rw [← sq]
-  apply multiplicity.pow_dvd_of_le_multiplicity
-  have h : ⟨Part.Dom 1 ∧ Part.Dom 1, fun _ ↦ 2⟩ ≤ multiplicity q p := PartENat.add_one_le_of_lt hq
-  rw [and_self] at h
-  exact h
+  apply pow_dvd_of_le_emultiplicity
+  exact Order.add_one_le_of_lt hq
 
 /-- A separable polynomial is square-free.
 
@@ -184,8 +181,8 @@ See `PerfectField.separable_iff_squarefree` for the converse when the coefficien
 field. -/
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
   classical
-  rw [multiplicity.squarefree_iff_multiplicity_le_one p]
-  exact fun f => or_iff_not_imp_right.mpr fun hunit => multiplicity_le_one_of_separable hunit hsep
+  rw [multiplicity.squarefree_iff_emultiplicity_le_one p]
+  exact fun f => or_iff_not_imp_right.mpr fun hunit => emultiplicity_le_one_of_separable hunit hsep
 
 end CommSemiring
 
@@ -256,14 +253,34 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
       simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ',
         Nat.sub_add_cancel (show 1 ≤ n from hpos), sub_add_cancel]
 
+/-- If `n = 0` in `R` and `b` is a unit, then `a * X ^ n + b * X + c` is separable. -/
+theorem separable_C_mul_X_pow_add_C_mul_X_add_C
+    {n : ℕ} (a b c : R) (hn : (n : R) = 0) (hb : IsUnit b) :
+    (C a * X ^ n + C b * X + C c).Separable := by
+  set f := C a * X ^ n + C b * X + C c
+  have hderiv : derivative f = C b := by
+    simp_rw [f, map_add derivative, derivative_C]
+    simp [hn]
+  obtain ⟨e, hb⟩ := hb.exists_left_inv
+  refine ⟨-derivative f, f + C e, ?_⟩
+  rw [hderiv, right_distrib, ← add_assoc, neg_mul, mul_comm, neg_add_cancel, zero_add,
+    ← map_mul, hb, map_one]
+
+/-- If `R` is of characteristic `p`, `p ∣ n` and `b` is a unit,
+then `a * X ^ n + b * X + c` is separable. -/
+theorem separable_C_mul_X_pow_add_C_mul_X_add_C'
+    (p n : ℕ) (a b c : R) [CharP R p] (hn : p ∣ n) (hb : IsUnit b) :
+    (C a * X ^ n + C b * X + C c).Separable :=
+  separable_C_mul_X_pow_add_C_mul_X_add_C a b c ((CharP.cast_eq_zero_iff R p n).2 hn) hb
+
 theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : Separable p)
     (x : R) : rootMultiplicity x p ≤ 1 := by
   classical
   by_cases hp : p = 0
   · simp [hp]
-  rw [rootMultiplicity_eq_multiplicity, dif_neg hp, ← PartENat.coe_le_coe, PartENat.natCast_get,
-    Nat.cast_one]
-  exact multiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
+  rw [rootMultiplicity_eq_multiplicity, if_neg hp, ← Nat.cast_le (α := ℕ∞),
+    Nat.cast_one, ← (multiplicity_X_sub_C_finite x hp).emultiplicity_eq_multiplicity]
+  apply emultiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
 
 end CommRing
 
@@ -307,7 +324,7 @@ theorem separable_map {S} [CommRing S] [Nontrivial S] (f : F →+* S) {p : F[X]}
 
 theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι} :
     (∏ i ∈ s, (X - C (f i))).Separable ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
-  ⟨fun hfs x hx y hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
+  ⟨fun hfs _ hx _ hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
     rw [← prod_attach]
     exact
       separable_prod'
@@ -337,8 +354,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
     exact
       Or.inr
         ⟨by rw [separable_iff_derivative_ne_zero hf, Classical.not_not, H], contract p f,
-          of_irreducible_map (expand F p : F[X] →+* F[X])
-            (by rwa [← expand_contract p H hp.ne'] at hf),
+          Irreducible.of_map (by rwa [← expand_contract p H hp.ne'] at hf),
           expand_contract p H hp.ne'⟩
   else Or.inl <| (separable_iff_derivative_ne_zero hf).2 H
 
@@ -406,6 +422,11 @@ end CharP
 theorem separable_X_pow_sub_C {n : ℕ} (a : F) (hn : (n : F) ≠ 0) (ha : a ≠ 0) :
     Separable (X ^ n - C a) :=
   separable_X_pow_sub_C_unit (Units.mk0 a ha) (IsUnit.mk0 (n : F) hn)
+
+/-- If `F` is of characteristic `p` and `p ∤ n`, then `X ^ n - a` is separable for any `a ≠ 0`. -/
+theorem separable_X_pow_sub_C' (p n : ℕ) (a : F) [CharP F p] (hn : ¬p ∣ n) (ha : a ≠ 0) :
+    Separable (X ^ n - C a) :=
+  separable_X_pow_sub_C a (by rwa [← CharP.cast_eq_zero_iff F p n] at hn) ha
 
 -- this can possibly be strengthened to making `separable_X_pow_sub_C_unit` a
 -- bi-implication, but it is nontrivial!
@@ -652,7 +673,7 @@ theorem IsSeparable.tower_bot {x : K} (h : IsSeparable F (algebraMap K E x)) : I
 variable (K E) in
 theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F E] :
     Algebra.IsSeparable F K :=
-  ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _)⟩
+  ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _ _)⟩
 
 end IsScalarTower
 

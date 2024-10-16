@@ -27,7 +27,7 @@ variable {K : Type u} {V : Type v}
 
 namespace Submodule
 
-open IsNoetherian FiniteDimensional
+open IsNoetherian Module
 
 section DivisionRing
 
@@ -116,7 +116,7 @@ end FiniteDimensional
 
 namespace LinearMap
 
-open FiniteDimensional
+open Module
 
 section DivisionRing
 
@@ -142,7 +142,7 @@ end DivisionRing
 
 end LinearMap
 
-open FiniteDimensional
+open Module
 
 namespace LinearMap
 

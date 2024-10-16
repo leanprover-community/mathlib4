@@ -58,7 +58,7 @@ attribute [coe] PresheafedSpace.carrier
 
 -- Porting note: we add this instance, as Lean does not reliably use the `CoeOut` instance above
 -- in downstream files.
-instance : CoeSort (PresheafedSpace C) Type* where coe := fun X => X.carrier
+instance : CoeSort (PresheafedSpace C) Type* where coe X := X.carrier
 
 -- Porting note: the following lemma is removed because it is a syntactic tauto
 /-@[simp]
@@ -156,6 +156,9 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
       erw [comp_id, comp_id]
 
 variable {C}
+
+/-- Cast `Hom X Y` as an arrow `X ⟶ Y` of presheaves. -/
+abbrev Hom.toPshHom {X Y : PresheafedSpace C} (f : Hom X Y) : X ⟶ Y := f
 
 -- Porting note (#5229): adding an `ext` lemma.
 @[ext (iff := false)]

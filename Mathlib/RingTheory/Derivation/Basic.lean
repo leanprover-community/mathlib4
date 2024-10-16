@@ -151,9 +151,10 @@ theorem map_aeval (P : R[X]) (x : A) :
   · simp [add_smul, *]
   · simp [mul_smul, ← Nat.cast_smul_eq_nsmul A]
 
-theorem eqOn_adjoin {s : Set A} (h : Set.EqOn D1 D2 s) : Set.EqOn D1 D2 (adjoin R s) := fun x hx =>
-  Algebra.adjoin_induction hx h (fun r => (D1.map_algebraMap r).trans (D2.map_algebraMap r).symm)
-    (fun x y hx hy => by simp only [map_add, *]) fun x y hx hy => by simp only [leibniz, *]
+theorem eqOn_adjoin {s : Set A} (h : Set.EqOn D1 D2 s) : Set.EqOn D1 D2 (adjoin R s) := fun _ hx =>
+  Algebra.adjoin_induction (hx := hx) h
+    (fun r => (D1.map_algebraMap r).trans (D2.map_algebraMap r).symm)
+    (fun x y _ _ hx hy => by simp only [map_add, *]) fun x y _ _ hx hy => by simp only [leibniz, *]
 
 /-- If adjoin of a set is the whole algebra, then any two derivations equal on this set are equal
 on the whole algebra. -/

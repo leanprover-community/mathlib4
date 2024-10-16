@@ -503,8 +503,8 @@ theorem length_thinkN (s : Computation α) [_h : Terminates s] (n) :
 
 theorem eq_thinkN {s : Computation α} {a n} (h : Results s a n) : s = thinkN (pure a) n := by
   revert s
-  induction n with | zero => _ | succ n IH => _
-  all_goals intro s; apply recOn s (fun a' => _) fun s => _ <;> intro a h
+  induction n with | zero => _ | succ n IH => _ <;>
+  (intro s; apply recOn s (fun a' => _) fun s => _) <;> intro a h
   · rw [← eq_of_pure_mem h.mem]
     rfl
   · cases' of_results_think h with n h
@@ -695,7 +695,7 @@ theorem length_bind (s : Computation α) (f : α → Computation β) [_T1 : Term
 theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
     Results (bind s f) b k → ∃ a m n, Results s a m ∧ Results (f a) b n ∧ k = n + m := by
   induction k generalizing s with | zero => _ | succ n IH => _
-  all_goals apply recOn s (fun a => _) fun s' => _ <;> intro e h
+    <;> apply recOn s (fun a => _) fun s' => _ <;> intro e h
   · simp only [ret_bind] at h
     exact ⟨e, _, _, results_pure _, h, rfl⟩
   · have := congr_arg head (eq_thinkN h)
@@ -960,10 +960,10 @@ theorem liftRel_def {R : α → β → Prop} {ca cb} :
       let ⟨b', mb', ab⟩ := h.left ma
       rwa [mem_unique mb mb']⟩,
     fun ⟨l, r⟩ =>
-    ⟨fun {a} ma =>
+    ⟨fun {_} ma =>
       let ⟨⟨b, mb⟩⟩ := l.1 ⟨⟨_, ma⟩⟩
       ⟨b, mb, r ma mb⟩,
-      fun {b} mb =>
+      fun {_} mb =>
       let ⟨⟨a, ma⟩⟩ := l.2 ⟨⟨_, mb⟩⟩
       ⟨a, ma, r ma mb⟩⟩⟩
 

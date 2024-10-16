@@ -88,7 +88,7 @@ theorem corners_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε �
     rwa [mul_le_iff_le_one_left] at this
     positivity
   have := noAccidental hA
-  rw [Nat.floor_lt' (by positivity), inv_pos_lt_iff_one_lt_mul'] at hG
+  rw [Nat.floor_lt' (by positivity), inv_lt_iff_one_lt_mul₀'] at hG
   swap
   · have : ε / 9 ≤ 1 := by linarith
     positivity
