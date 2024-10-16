@@ -6,7 +6,7 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Defs
 
 /-!  # Laurent polynomials
 
@@ -278,7 +278,7 @@ protected theorem induction_on' {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
   exact (mul_one _).symm
 
 theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
-  f.induction_on' (fun p q Tp Tq => Commute.add_right Tp Tq) fun m a =>
+  f.induction_on' (fun _ _ Tp Tq => Commute.add_right Tp Tq) fun m a =>
     show T n * _ = _ by
       rw [T, T, ← single_eq_C, single_mul_single, single_mul_single, single_mul_single]
       simp [add_comm]
@@ -492,7 +492,7 @@ variable [CommSemiring R]
 instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] :=
   { Polynomial.toLaurent with
     commutes' := fun f l => by simp [mul_comm]
-    smul_def' := fun f l => rfl }
+    smul_def' := fun _ _ => rfl }
 
 theorem algebraMap_X_pow (n : ℕ) : algebraMap R[X] R[T;T⁻¹] (X ^ n) = T n :=
   Polynomial.toLaurent_X_pow n
@@ -542,10 +542,10 @@ lemma involutive_invert : Involutive (invert (R := R)) := fun _ ↦ by ext; simp
 lemma toLaurent_reverse (p : R[X]) :
     toLaurent p.reverse = invert (toLaurent p) * (T p.natDegree) := by
   nontriviality R
-  induction' p using Polynomial.recOnHorner with p t _ _ ih p hp ih
-  · simp
-  · simp [add_mul, ← ih]
-  · simpa [natDegree_mul_X hp]
+  induction p using Polynomial.recOnHorner with
+  | M0 => simp
+  | MC _ _ _ _ ih => simp [add_mul, ← ih]
+  | MX _ hp => simpa [natDegree_mul_X hp]
 
 end Inversion
 

@@ -197,8 +197,8 @@ def gluing : Scheme.GlueData.{u} where
   U i := pullback (𝒰.map i ≫ f) g
   V := fun ⟨i, j⟩ => v 𝒰 f g i j
   -- `p⁻¹(Uᵢ ∩ Uⱼ)` where `p : Uᵢ ×[Z] Y ⟶ Uᵢ ⟶ X`.
-  f i j := pullback.fst _ _
-  f_id i := inferInstance
+  f _ _ := pullback.fst _ _
+  f_id _ := inferInstance
   f_open := inferInstance
   t i j := t 𝒰 f g i j
   t_id i := t_id 𝒰 f g i
@@ -453,8 +453,8 @@ instance isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}
     IsAffine (pullback f g) :=
   isAffine_of_isIso
     (pullback.map f g (Spec.map (Γ.map f.op)) (Spec.map (Γ.map g.op))
-        (ΓSpec.adjunction.unit.app X) (ΓSpec.adjunction.unit.app Y) (ΓSpec.adjunction.unit.app Z)
-        (ΓSpec.adjunction.unit.naturality f) (ΓSpec.adjunction.unit.naturality g) ≫
+        X.toSpecΓ Y.toSpecΓ Z.toSpecΓ
+        (Scheme.toSpecΓ_naturality f) (Scheme.toSpecΓ_naturality g) ≫
       (PreservesPullback.iso Scheme.Spec _ _).inv)
 
 /-- Given an open cover `{ Xᵢ }` of `X`, then `X ×[Z] Y` is covered by `Xᵢ ×[Z] Y`. -/
@@ -507,7 +507,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
     pasteVertIsPullback rfl (pullbackIsPullback g (𝒰.map i))
       (pullbackIsPullback (pullback.snd g (𝒰.map i)) (pullback.snd f (𝒰.map i)))
   refine
-    @openCoverOfIsIso
+    @openCoverOfIsIso _ _
       (f := (pullbackSymmetry _ _).hom ≫ (limit.isoLimitCone ⟨_, this⟩).inv ≫
         pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_) inferInstance
   · simp [← pullback.condition]
@@ -583,7 +583,8 @@ the morphism `Spec (S ⊗[R] T) ⟶ Spec T` obtained by applying `Spec.map` to t
 -/
 @[reassoc (attr := simp)]
 lemma pullbackSpecIso_inv_snd :
-    (pullbackSpecIso R S T).inv ≫ pullback.snd _ _ = Spec.map (ofHom (toRingHom includeRight)) :=
+    (pullbackSpecIso R S T).inv ≫ pullback.snd _ _ =
+      Spec.map (ofHom (R := T) (S := S ⊗[R] T) (toRingHom includeRight)) :=
   limit.isoLimitCone_inv_π _ _
 /--
 The composition of the isomorphism `pullbackSepcIso R S T` (from the pullback of

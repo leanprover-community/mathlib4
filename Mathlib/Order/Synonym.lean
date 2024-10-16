@@ -34,7 +34,7 @@ This file is similar to `Algebra.Group.TypeTags`.
 -/
 
 
-variable {α β γ : Type*}
+variable {α : Type*}
 
 /-! ### Order dual -/
 
@@ -169,6 +169,18 @@ theorem toLex_inj {a b : α} : toLex a = toLex b ↔ a = b :=
 -- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
 theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
   Iff.rfl
+
+instance (α : Type*) [BEq α] : BEq (Lex α) where
+  beq a b := ofLex a == ofLex b
+
+instance (α : Type*) [BEq α] [LawfulBEq α] : LawfulBEq (Lex α) :=
+  inferInstanceAs (LawfulBEq α)
+
+instance (α : Type*) [DecidableEq α] : DecidableEq (Lex α) :=
+  inferInstanceAs (DecidableEq α)
+
+instance (α : Type*) [Inhabited α] : Inhabited (Lex α) :=
+  inferInstanceAs (Inhabited α)
 
 /-- A recursor for `Lex`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]

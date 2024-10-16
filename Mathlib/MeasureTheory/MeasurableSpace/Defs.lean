@@ -418,9 +418,9 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
     { MeasurableSet' := fun s => s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
       measurableSet_compl := by simp (config := { contextual := true }) [or_imp]
-      measurableSet_iUnion := fun f hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
+      measurableSet_iUnion := fun _ hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
-    bot_unique fun s hs =>
+    bot_unique fun _ hs =>
       hs.elim (fun s => s.symm ▸ @measurableSet_empty _ ⊥) fun s =>
         s.symm ▸ @MeasurableSet.univ _ ⊥
   this ▸ Iff.rfl
@@ -534,12 +534,12 @@ variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] 
 @[measurability] lemma MeasurableSet.of_discrete : MeasurableSet s :=
   DiscreteMeasurableSpace.forall_measurableSet _
 
-@[measurability] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
+@[measurability, fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
 
 @[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
 lemma measurableSet_discrete (s : Set α) : MeasurableSet s := .of_discrete
 
-@[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
+@[deprecated Measurable.of_discrete (since := "2024-08-25")]
 lemma measurable_discrete (f : α → β) : Measurable f := .of_discrete
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.

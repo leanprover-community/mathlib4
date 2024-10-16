@@ -221,8 +221,8 @@ instance : LE (Finpartition a) :=
 
 instance : PartialOrder (Finpartition a) :=
   { (inferInstance : LE (Finpartition a)) with
-    le_refl := fun P b hb ↦ ⟨b, hb, le_rfl⟩
-    le_trans := fun P Q R hPQ hQR b hb ↦ by
+    le_refl := fun _ b hb ↦ ⟨b, hb, le_rfl⟩
+    le_trans := fun _ Q R hPQ hQR b hb ↦ by
       obtain ⟨c, hc, hbc⟩ := hPQ hb
       obtain ⟨d, hd, hcd⟩ := hQR hc
       exact ⟨d, hd, hbc.trans hcd⟩
@@ -256,6 +256,15 @@ theorem parts_top_subset (a : α) [Decidable (a = ⊥)] : (⊤ : Finpartition a)
 theorem parts_top_subsingleton (a : α) [Decidable (a = ⊥)] :
     ((⊤ : Finpartition a).parts : Set α).Subsingleton :=
   Set.subsingleton_of_subset_singleton fun _ hb ↦ mem_singleton.1 <| parts_top_subset _ hb
+
+-- TODO: this instance takes double-exponential time to generate all partitions, find a faster way
+instance [DecidableEq α] {s : Finset α} : Fintype (Finpartition s) where
+  elems := s.powerset.powerset.image
+    fun ps ↦ if h : ps.sup id = s ∧ ⊥ ∉ ps ∧ ps.SupIndep id then ⟨ps, h.2.2, h.1, h.2.1⟩ else ⊤
+  complete P := by
+    refine mem_image.mpr ⟨P.parts, ?_, ?_⟩
+    · rw [mem_powerset]; intro p hp; rw [mem_powerset]; exact P.le hp
+    · simp only [P.supIndep, P.sup_parts, P.not_bot_mem]; rfl
 
 end Order
 
@@ -419,7 +428,7 @@ variable [GeneralizedBooleanAlgebra α] [DecidableEq α] {a b c : α} (P : Finpa
 def avoid (b : α) : Finpartition (a \ b) :=
   ofErase
     (P.parts.image (· \ b))
-    (P.disjoint.image_finset_of_le fun a ↦ sdiff_le).supIndep
+    (P.disjoint.image_finset_of_le fun _ ↦ sdiff_le).supIndep
     (by rw [sup_image, id_comp, Finset.sup_sdiff_right, ← Function.id_def, P.sup_parts])
 
 @[simp]
@@ -548,6 +557,8 @@ lemma card_mod_card_parts_le : s.card % P.parts.card ≤ P.parts.card := by
     rw [h, h']
   · exact (Nat.mod_lt _ h).le
 
+section Setoid
+
 variable [Fintype α]
 
 /-- A setoid over a finite type induces a finpartition of the type's elements,
@@ -586,6 +597,8 @@ theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
   obtain ⟨⟨_, hc⟩, this⟩ := this
   simp only [← hc, mem_univ, mem_filter, true_and] at this ⊢
   exact ⟨s.trans (s.symm this), s.trans this⟩
+
+end Setoid
 
 section Atomise
 

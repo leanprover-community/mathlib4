@@ -119,7 +119,7 @@ theorem diff_mem_iff (f : Ultrafilter α) : s \ t ∈ f ↔ s ∈ f ∧ t ∉ f 
 def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultrafilter α where
   toFilter := f
   neBot' := ⟨fun hf => by simp [hf] at h⟩
-  le_of_le g hg hgf s hs := (h s).1 fun hsc => compl_not_mem hs (hgf hsc)
+  le_of_le _ _ hgf s hs := (h s).1 fun hsc => compl_not_mem hs (hgf hsc)
 
 /-- If `f : Filter α` is an atom, then it is an ultrafilter. -/
 def ofAtom (f : Filter α) (hf : IsAtom f) : Ultrafilter α where
@@ -464,5 +464,9 @@ theorem ofComapInfPrincipal_eq_of_map (h : m '' s ∈ g) : (ofComapInfPrincipal 
     _ = (Filter.map m <| Filter.comap m g) ⊓ (𝓟 <| m '' s) := by rw [map_principal]
     _ ≤ ↑g ⊓ (𝓟 <| m '' s) := inf_le_inf_right _ map_comap_le
     _ = ↑g := inf_of_le_left (le_principal_iff.mpr h)
+
+theorem eq_of_le_pure {X : Type _} {α : Filter X} (hα : α.NeBot) {x y : X}
+    (hx : α ≤ pure x) (hy : α ≤ pure y) : x = y :=
+  Filter.pure_injective (hα.le_pure_iff.mp hx ▸ hα.le_pure_iff.mp hy)
 
 end Ultrafilter

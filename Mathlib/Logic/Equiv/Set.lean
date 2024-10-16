@@ -149,8 +149,8 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
     s ≃ Σx : α, { y : β | (x, y) ∈ s } where
   toFun x := ⟨x.1.1, x.1.2, by simp⟩
   invFun x := ⟨(x.1, x.2.1), x.2.2⟩
-  left_inv := fun ⟨⟨x, y⟩, h⟩ => rfl
-  right_inv := fun ⟨x, y, h⟩ => rfl
+  left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
+  right_inv := fun ⟨_, _, _⟩ => rfl
 
 /-- The subtypes corresponding to equal sets are equivalent. -/
 @[simps! apply]
@@ -238,6 +238,9 @@ TODO: this is the same as `Equiv.setCongr`! -/
 @[simps! apply symm_apply]
 protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
   Equiv.setCongr h
+
+lemma Equiv.strictMono_setCongr {α : Type*} [PartialOrder α] {S T : Set α} (h : S = T) :
+    StrictMono (setCongr h) := fun _ _ ↦ id
 
 /-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
 protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :
@@ -361,7 +364,7 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
     [DecidablePred (· ∈ t)] (e₀ : s ≃ t) :
     { e : α ≃ β // ∀ x : s, e x = e₀ x } ≃ ((sᶜ : Set α) ≃ (tᶜ : Set β)) where
   toFun e :=
-    subtypeEquiv e fun a =>
+    subtypeEquiv e fun _ =>
       not_congr <|
         Iff.symm <|
           MapsTo.mem_iff (mapsTo_iff_exists_map_subtype.2 ⟨e₀, e.2⟩)
@@ -475,7 +478,7 @@ def rangeInl (α β : Type*) : Set.range (Sum.inl : α → α ⊕ β) ≃ α whe
   | ⟨.inr _, h⟩ => False.elim <| by rcases h with ⟨x, h'⟩; cases h'
   invFun x := ⟨.inl x, mem_range_self _⟩
   left_inv := fun ⟨_, _, rfl⟩ => rfl
-  right_inv x := rfl
+  right_inv _ := rfl
 
 @[simp] lemma rangeInl_apply_inl {α : Type*} (β : Type*) (x : α) :
     (rangeInl α β) ⟨.inl x, mem_range_self _⟩ = x :=
@@ -489,7 +492,7 @@ def rangeInr (α β : Type*) : Set.range (Sum.inr : β → α ⊕ β) ≃ β whe
   | ⟨.inr x, _⟩ => x
   invFun x := ⟨.inr x, mem_range_self _⟩
   left_inv := fun ⟨_, _, rfl⟩ => rfl
-  right_inv x := rfl
+  right_inv _ := rfl
 
 @[simp] lemma rangeInr_apply_inr (α : Type*) {β : Type*} (x : β) :
     (rangeInr α β) ⟨.inr x, mem_range_self _⟩ = x :=
@@ -551,7 +554,7 @@ theorem self_comp_ofInjective_symm {α β} {f : α → β} (hf : Injective f) :
 theorem ofLeftInverse_eq_ofInjective {α β : Type*} (f : α → β) (f_inv : Nonempty α → β → α)
     (hf : ∀ h : Nonempty α, LeftInverse (f_inv h) f) :
     ofLeftInverse f f_inv hf =
-      ofInjective f ((isEmpty_or_nonempty α).elim (fun h _ _ _ => Subsingleton.elim _ _)
+      ofInjective f ((isEmpty_or_nonempty α).elim (fun _ _ _ _ => Subsingleton.elim _ _)
         (fun h => (hf h).injective)) := by
   ext
   simp

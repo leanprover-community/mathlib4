@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
@@ -109,13 +109,13 @@ variable [NoZeroDivisors R]
 /-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
 theorem dotProduct_star_self_eq_zero {v : n → R} : dotProduct (star v) v = 0 ↔ v = 0 :=
-  (Fintype.sum_eq_zero_iff_of_nonneg fun i => star_mul_self_nonneg _).trans <|
+  (Fintype.sum_eq_zero_iff_of_nonneg fun _ => star_mul_self_nonneg _).trans <|
     by simp [Function.funext_iff, mul_eq_zero]
 
 /-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
 theorem dotProduct_self_star_eq_zero {v : n → R} : dotProduct v (star v) = 0 ↔ v = 0 :=
-  (Fintype.sum_eq_zero_iff_of_nonneg fun i => mul_star_self_nonneg _).trans <|
+  (Fintype.sum_eq_zero_iff_of_nonneg fun _ => mul_star_self_nonneg _).trans <|
     by simp [Function.funext_iff, mul_eq_zero]
 
 @[simp]
