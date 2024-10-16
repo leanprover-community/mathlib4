@@ -79,17 +79,17 @@ example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (
 
 example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty1) : True := by
   algebraize [f]
-  guard_hyp algebraizeInst : Algebra.testProperty1 A B := hf
+  guard_hyp algebraizeInst : Algebra.testProperty1 A B
   trivial
 
 example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty2) : True := by
   algebraize [f]
-  guard_hyp algebraizeInst : Module.testProperty2 A B := hf
+  guard_hyp algebraizeInst : Module.testProperty2 A B
   trivial
 
 example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty3) : True := by
   algebraize [f]
-  guard_hyp algebraizeInst : Algebra.testProperty3 A B := ⟨hf⟩
+  guard_hyp algebraizeInst : Algebra.testProperty3 A B
   trivial
 
 /-- Synthesize from morphism property of a composition (and check that tower is also synthesized). -/
@@ -100,6 +100,6 @@ example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (
   fail_if_success
     have h : IsScalarTower A B C := inferInstance
   algebraize [f, g, g.comp f]
-  guard_hyp algebraizeInst : Algebra.testProperty1 A C := hfg
+  guard_hyp algebraizeInst : Algebra.testProperty1 A C
   guard_hyp scalarTowerInst := IsScalarTower.of_algebraMap_eq' rfl
   trivial
