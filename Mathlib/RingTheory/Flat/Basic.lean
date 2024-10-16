@@ -151,13 +151,13 @@ lemma equiv_iff (e : M ≃ₗ[R] N) : Flat R M ↔ Flat R N :=
 instance ulift [Module.Flat R M] : Module.Flat R (ULift.{v'} M) :=
   of_linearEquiv R M (ULift.{v'} M) ULift.moduleEquiv
 
-instance (priority := 100) of_ulift [Module.Flat R (ULift.{v'} M)] : Module.Flat R M :=
+lemma of_ulift [Module.Flat R (ULift.{v'} M)] : Module.Flat R M :=
   of_linearEquiv R (ULift.{v'} M) M ULift.moduleEquiv.symm
 
 instance shrink [Small.{v'} M] [Module.Flat R M] : Module.Flat R (Shrink.{v'} M) :=
   of_linearEquiv R M (Shrink.{v'} M) (Shrink.linearEquiv M R)
 
-instance (priority := 100) of_shrink [Small.{v'} M] [Module.Flat R (Shrink.{v'} M)] :
+lemma of_shrink [Small.{v'} M] [Module.Flat R (Shrink.{v'} M)] :
     Module.Flat R M :=
   of_linearEquiv R (Shrink.{v'} M) M (Shrink.linearEquiv M R).symm
 
