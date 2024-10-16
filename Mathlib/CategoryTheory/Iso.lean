@@ -419,7 +419,7 @@ open IsIso
 
 theorem eq_of_inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] (p : inv f = inv g) : f = g := by
   apply (cancel_epi (inv f)).1
-  erw [inv_hom_id, p, inv_hom_id]
+  rw [inv_hom_id, p, inv_hom_id]
 
 theorem IsIso.inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] : inv f = inv g ↔ f = g :=
   Iso.inv_eq_inv (asIso f) (asIso g)

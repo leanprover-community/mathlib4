@@ -402,7 +402,7 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
             HomogeneousLocalization.val_mul, HomogeneousLocalization.val_mk,
             HomogeneousLocalization.val_mk]
           · simp_rw [mul_pow]; rw [Localization.mk_mul]
-            · congr; erw [← pow_add, Nat.add_sub_of_le h]
+            · congr; rw [← pow_add, Nat.add_sub_of_le h]
         · apply Ideal.mul_mem_left (α := A⁰_ f) _ _ (hx _)
           rw [(_ : m • n = _)]
           · mem_tac
@@ -454,7 +454,7 @@ theorem carrier.asIdeal.ne_top : carrier.asIdeal f_deg hm q ≠ ⊤ := fun rid =
 theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
   (carrier.asIdeal.homogeneous f_deg hm q).isPrime_of_homogeneous_mem_or_mem
     (carrier.asIdeal.ne_top f_deg hm q) fun {x y} ⟨nx, hnx⟩ ⟨ny, hny⟩ hxy =>
-    show (∀ i, _ ∈ _) ∨ ∀ i, _ ∈ _ by
+    show (∀ _, _ ∈ _) ∨ ∀ _, _ ∈ _ by
       rw [← and_forall_ne nx, and_iff_left, ← and_forall_ne ny, and_iff_left]
       · apply q.2.mem_or_mem; convert hxy (nx + ny) using 1
         dsimp

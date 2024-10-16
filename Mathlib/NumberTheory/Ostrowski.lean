@@ -36,6 +36,7 @@ ring norm, ostrowski
 
 /- ## Preliminary lemmas on limits and lists -/
 
+
 open Filter Nat Real Topology
 
 -- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`
@@ -242,7 +243,7 @@ lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) 
 include hf_nontriv bdd in
 /-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
 theorem mulRingNorm_equiv_padic_of_bounded :
-    ∃! p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
+    ∃! p, ∃ (_ : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
   obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_mulRingNorm_lt_one hf_nontriv bdd
   have hprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hfp.1 hfp.2 hmin
   have hprime_fact : Fact (p.Prime) := ⟨hprime⟩

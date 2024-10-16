@@ -99,7 +99,7 @@ abbrev OrderedRing.toStrictOrderedRing (α : Type*)
     [OrderedRing α] [NoZeroDivisors α] [Nontrivial α] : StrictOrderedRing α where
   __ := ‹OrderedRing α›
   __ := ‹NoZeroDivisors α›
-  mul_pos a b ap bp := (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
+  mul_pos _ _ ap bp := (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
 
 section StrictOrderedSemiring
 

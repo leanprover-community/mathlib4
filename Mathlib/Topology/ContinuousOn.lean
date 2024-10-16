@@ -720,7 +720,7 @@ theorem continuousWithinAt_update_same [DecidableEq α] {f : α → β} {s : Set
     { rw [← continuousWithinAt_diff_self, ContinuousWithinAt, update_same] }
     _ ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
       tendsto_congr' <| eventually_nhdsWithin_iff.2 <| Eventually.of_forall
-        fun z hz => update_noteq hz.2 _ _
+        fun _ hz => update_noteq hz.2 _ _
 
 @[simp]
 theorem continuousAt_update_same [DecidableEq α] {f : α → β} {x : α} {y : β} :
