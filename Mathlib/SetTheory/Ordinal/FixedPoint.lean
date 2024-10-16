@@ -69,13 +69,10 @@ theorem nfpFamily_le_iff {a b} : nfpFamily.{u, v} f a ≤ b ↔ ∀ l, List.fold
   Ordinal.iSup_le_iff
 
 theorem nfpFamily_le {a b} : (∀ l, List.foldr f a l ≤ b) → nfpFamily.{u, v} f a ≤ b :=
-  Ordinal.iSup_le
+  ciSup_le'
 
-theorem nfpFamily_monotone (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily.{u, v} f) := by
-  intro _ _ h
-  apply Ordinal.iSup_le
-  intro l
-  exact (List.foldr_monotone hf l h).trans (Ordinal.le_iSup _ l)
+theorem nfpFamily_monotone (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily.{u, v} f) :=
+  fun _ _ h ↦ ciSup_le' fun l ↦ (List.foldr_monotone hf l h).trans (Ordinal.le_iSup _ l)
 
 theorem apply_lt_nfpFamily (H : ∀ i, IsNormal (f i)) {a b} (hb : b < nfpFamily.{u, v} f a) (i) :
     f i b < nfpFamily.{u, v} f a :=
@@ -99,7 +96,7 @@ theorem nfpFamily_le_apply [Nonempty ι] (H : ∀ i, IsNormal (f i)) {a b} :
 
 theorem nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : ∀ i, f i b ≤ b) :
     nfpFamily.{u, v} f a ≤ b := by
-  apply Ordinal.iSup_le
+  apply ciSup_le'
   intro l
   induction' l with i l IH generalizing a
   · exact ab
@@ -108,7 +105,7 @@ theorem nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : �
 theorem nfpFamily_fp {i} (H : IsNormal (f i)) (a) :
     f i (nfpFamily.{u, v} f a) = nfpFamily.{u, v} f a := by
   rw [nfpFamily, H.map_iSup]
-  apply le_antisymm <;> refine Ordinal.iSup_le fun l => ?_
+  apply le_antisymm <;> refine ciSup_le' fun l => ?_
   · exact Ordinal.le_iSup _ (i::l)
   · exact H.le_apply.trans (Ordinal.le_iSup _ _)
 
@@ -122,8 +119,7 @@ theorem apply_le_nfpFamily [hι : Nonempty ι] {f : ι → Ordinal → Ordinal} 
 
 theorem nfpFamily_eq_self {f : ι → Ordinal → Ordinal} {a} (h : ∀ i, f i a = a) :
     nfpFamily f a = a := by
-  apply (Ordinal.iSup_le ?_).antisymm (le_nfpFamily f a)
-  intro l
+  refine (ciSup_le' fun l ↦ ?_).antisymm (le_nfpFamily f a)
   rw [List.foldr_fixed' h l]
 
 -- Todo: This is actually a special case of the fact the intersection of club sets is a club set.
@@ -265,7 +261,7 @@ theorem nfpBFamily_le_iff {o : Ordinal} {f : ∀ b < o, Ordinal → Ordinal} {a 
 
 theorem nfpBFamily_le {o : Ordinal} {f : ∀ b < o, Ordinal → Ordinal} {a b} :
     (∀ l, List.foldr (familyOfBFamily o f) a l ≤ b) → nfpBFamily.{u, v} o f a ≤ b :=
-  Ordinal.iSup_le
+  ciSup_le'
 
 theorem nfpBFamily_monotone (hf : ∀ i hi, Monotone (f i hi)) : Monotone (nfpBFamily.{u, v} o f) :=
   nfpFamily_monotone fun _ => hf _ _
@@ -403,7 +399,7 @@ theorem iSup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) 
     intro n
     rw [← List.length_replicate n Unit.unit, ← List.foldr_const f a]
     exact Ordinal.le_iSup _ _
-  · apply Ordinal.iSup_le
+  · apply ciSup_le'
     intro l
     rw [List.foldr_const f a l]
     exact Ordinal.le_iSup _ _
@@ -531,8 +527,7 @@ theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : de
 
 theorem nfp_zero_left (a) : nfp 0 a = a := by
   rw [← iSup_iterate_eq_nfp]
-  apply (Ordinal.iSup_le ?_).antisymm (Ordinal.le_iSup _ 0)
-  intro n
+  refine (ciSup_le' fun n ↦ ?_).antisymm (Ordinal.le_iSup _ 0)
   induction' n with n _
   · rfl
   · rw [Function.iterate_succ']

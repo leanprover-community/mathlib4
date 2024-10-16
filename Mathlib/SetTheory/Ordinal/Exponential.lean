@@ -492,7 +492,7 @@ theorem iSup_pow {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ ω := by
   rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl
   · exact (isNormal_opow ho₁).apply_omega0
   · rw [one_opow]
-    refine le_antisymm (Ordinal.iSup_le fun n => by rw [one_opow]) ?_
+    refine le_antisymm (ciSup_le' fun n => by rw [one_opow]) ?_
     exact_mod_cast Ordinal.le_iSup _ 0
 
 set_option linter.deprecated false in
