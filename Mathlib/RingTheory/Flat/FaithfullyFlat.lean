@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Judith Ludwig, Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Judith Ludwig, Florent Schaffhauser
+Authors: Jujian Zhang, Judith Ludwig, Florent Schaffhauser
 -/
 
 import Mathlib.RingTheory.Flat.Stability
@@ -15,11 +15,8 @@ import Mathlib.Algebra.Module.Defs
 /-!
 # Faithfully flat modules
 
-A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and,
-for all `R`-module homomorphism `f : N → N'` such that `id ⊗ f = 0`, we have `f = 0`.
-
-In the Stacks project, the definition of faithfully flat is different but tag
-<https://stacks.math.columbia.edu/tag/00TN> proves that their definition is equivalent to this.
+A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and `IM ≠ M` whenever
+`I` is a maximal ideal of `R`.
 
 ## Main declaration
 
@@ -27,8 +24,31 @@ In the Stacks project, the definition of faithfully flat is different but tag
 
 ## Main theorems
 
+- `Module.FaithfullyFlat.iff_flat_and_proper_ideal`: an `R`-module `M` is faithfully flat iff it is
+  flat and for all proper ideals `I` of `R`, `I • M ≠ M`.
+- `Module.FaithfullyFlat.iff_flat_and_rTensor_faithful`: an `R`-module `M` is faithfully flat iff it
+  is flat and tensoring with `M` is faithful, i.e. `N ≠ 0` implies `N ⊗ M ≠ 0`.
+- `Module.FaithfullyFlat.iff_flat_and_lTensor_faithful`: an `R`-module `M` is faithfully flat iff it
+  is flat and tensoring with `M` is faithful, i.e. `N ≠ 0` implies `M ⊗ N ≠ 0`.
+- `Module.FaithfullyFlat.iff_iff_rTensor_exact`: an `R`-module `M` is faithfully flat iff tensoring
+  with `M` preserves and reflects exact sequences, i.e. the sequence `N₁ → N₂ → N₃` is exact *iff*
+  the sequence `N₁ ⊗ M → N₂ ⊗ M → N₃ ⊗ M` is exact.
+- `Module.FaithfullyFlat.iff_iff_lTensor_exact`: an `R`-module `M` is faithfully flat iff tensoring
+  with `M` preserves and reflects exact sequences, i.e. the sequence `N₁ → N₂ → N₃` is exact *iff*
+  the sequence `M ⊗ N₁ → M ⊗ N₂ → M ⊗ N₃` is exact.
+- `Module.FaithfullyFlat.iff_zero_iff_lTensor_zero`: an `R`-module `M` is faithfully flat iff for
+  all linear maps `f : N → N'`, `f = 0` iff `M ⊗ f = 0`.
+- `Module.FaithfullyFlat.iff_zero_iff_rTensor_zero`: an `R`-module `M` is faithfully flat iff for
+  all linear maps `f : N → N'`, `f = 0` iff `f ⊗ M = 0`.
 - `Module.FaithfullyFlat.of_linearEquiv`: modules linearly equivalent to a flat modules are flat
-- `Module.FaithfullyFlat.comp`: https://stacks.math.columbia.edu/tag/00HC
+- `Module.FaithfullyFlat.comp`: if `S` is `R`-faithfully flat and `M` is `S`-faithfully flat, then
+  `M` is `R`-faithfully flat.
+
+- `Module.FaithfullyFlat.self`: the `R`-module `R` is faithfully flat.
+
+[TODO) Currently the universe of the ring and the module must be the same. This should be relaxed
+similardoc to #17484.
+
 -/
 
 universe u
@@ -376,6 +396,8 @@ lemma of_linearEquiv [f : FaithfullyFlat R M]
   ext m n
   simpa using congr(e.toLinearMap.rTensor _ ($h (e.symm m ⊗ₜ[R] n)))
 
+section comp
+
 open TensorProduct LinearMap
 
 variable (R : Type u) (S : Type u) (M : Type u)
@@ -384,7 +406,7 @@ variable (R : Type u) (S : Type u) (M : Type u)
 
 /-- If `S` is a faithfully flat `R`-algebra, then any faithfully flat `S`-Module is faithfully flat
 as an `R`-module. -/
-theorem comp [Module.FaithfullyFlat R S] [Module.FaithfullyFlat S M] :
+theorem comp [FaithfullyFlat R S] [FaithfullyFlat S M] :
     FaithfullyFlat R M := by
   rw [iff_zero_iff_lTensor_zero]
   refine ⟨Module.Flat.comp R S M, fun N N' _ _ _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
@@ -415,6 +437,8 @@ theorem comp [Module.FaithfullyFlat R S] [Module.FaithfullyFlat S M] :
     exact ⟨res ▸ fun h => by ext; simp [h], res ▸ fun h => by ext; simp [h]⟩
   rwa [h3, implies_zero_iff_lTensor_zero (R:= S) (M := M) (N:= S ⊗ N) (N':= S ⊗ N')
     (AlgebraTensorModule.map LinearMap.id f)]
+
+end comp
 
 end FaithfullyFlat
 
