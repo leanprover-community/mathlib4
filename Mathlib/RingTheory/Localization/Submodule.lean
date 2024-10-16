@@ -120,11 +120,11 @@ theorem mem_span_iff {N : Type*} [AddCommGroup N] [Module R N] [Module S N] [IsS
     x ∈ Submodule.span S a ↔ ∃ y ∈ Submodule.span R a, ∃ z : M, x = mk' S 1 z • y := by
   constructor
   · intro h
-    refine Submodule.span_induction h ?_ ?_ ?_ ?_
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ h
     · rintro x hx
       exact ⟨x, Submodule.subset_span hx, 1, by rw [mk'_one, map_one, one_smul]⟩
     · exact ⟨0, Submodule.zero_mem _, 1, by rw [mk'_one, map_one, one_smul]⟩
-    · rintro _ _ ⟨y, hy, z, rfl⟩ ⟨y', hy', z', rfl⟩
+    · rintro _ _ _ _ ⟨y, hy, z, rfl⟩ ⟨y', hy', z', rfl⟩
       refine
         ⟨(z' : R) • y + (z : R) • y',
           Submodule.add_mem _ (Submodule.smul_mem _ _ hy) (Submodule.smul_mem _ _ hy'), z * z', ?_⟩
@@ -133,7 +133,7 @@ theorem mem_span_iff {N : Type*} [AddCommGroup N] [Module R N] [Module S N] [IsS
       congr 1
       · rw [← mul_one (1 : R), mk'_mul, mul_assoc, mk'_spec, map_one, mul_one, mul_one]
       · rw [← mul_one (1 : R), mk'_mul, mul_right_comm, mk'_spec, map_one, mul_one, one_mul]
-    · rintro a _ ⟨y, hy, z, rfl⟩
+    · rintro a _ _ ⟨y, hy, z, rfl⟩
       obtain ⟨y', z', rfl⟩ := mk'_surjective M a
       refine ⟨y' • y, Submodule.smul_mem _ _ hy, z' * z, ?_⟩
       rw [← IsScalarTower.algebraMap_smul S y', smul_smul, ← mk'_mul, smul_smul,

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.RingHomProperties
 
@@ -261,10 +262,10 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
     AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,
     RingHom.comp_id]
 
-lemma RingHom.StableUnderBaseChange.localizationPreserves (hP : StableUnderBaseChange P) :
+lemma RingHom.StableUnderBaseChange.localizationPreserves (hP : RingHom.StableUnderBaseChange @P) :
     LocalizationPreserves P := by
   introv R hf
-  exact hP.isLocalization_map _ _ _ hf
+  exact hP.isLocalization_map _ _ f hf
 
 end RingHom
 

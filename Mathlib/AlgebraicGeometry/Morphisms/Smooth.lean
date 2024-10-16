@@ -12,7 +12,7 @@ import Mathlib.RingTheory.RingHom.StandardSmooth
 
 A morphism of schemes `f : X ⟶ Y` is smooth (of relative dimension `n`) if for each `x : X` there
 exists an affine open neighborhood `V` of `x` and an affine open neighborhood `U` of
-`f.val.base x` with `V ≤ f ⁻¹ᵁ U` such that the induced map `Γ(Y, U) ⟶ Γ(X, V)` is
+`f.base x` with `V ≤ f ⁻¹ᵁ U` such that the induced map `Γ(Y, U) ⟶ Γ(X, V)` is
 standard smooth (of relative dimension `n`).
 
 In other words, smooth (resp. smooth of relative dimension `n`) for scheme morphisms is associated
@@ -55,7 +55,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 /--
 A morphism of schemes `f : X ⟶ Y` is smooth if for each `x : X` there
 exists an affine open neighborhood `V` of `x` and an affine open neighborhood `U` of
-`f.val.base x` with `V ≤ f ⁻¹ᵁ U` such that the induced map `Γ(Y, U) ⟶ Γ(X, V)` is
+`f.base x` with `V ≤ f ⁻¹ᵁ U` such that the induced map `Γ(Y, U) ⟶ Γ(X, V)` is
 standard smooth.
 -/
 @[mk_iff]
@@ -91,7 +91,7 @@ lemma isSmooth_stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @I
 /--
 A morphism of schemes `f : X ⟶ Y` is smooth of relative dimension `n` if for each `x : X` there
 exists an affine open neighborhood `V` of `x` and an affine open neighborhood `U` of
-`f.val.base x` with `V ≤ f ⁻¹ᵁ U` such that the induced map `Γ(Y, U) ⟶ Γ(X, V)` is
+`f.base x` with `V ≤ f ⁻¹ᵁ U` such that the induced map `Γ(Y, U) ⟶ Γ(X, V)` is
 standard smooth of relative dimension `n`.
 -/
 @[mk_iff]
@@ -139,7 +139,7 @@ instance isSmoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
     [hf : IsSmoothOfRelativeDimension n f] [hg : IsSmoothOfRelativeDimension m g] :
     IsSmoothOfRelativeDimension (n + m) (f ≫ g) where
   exists_isStandardSmoothOfRelativeDimension x := by
-    obtain ⟨U₂, V₂, hfx₂, e₂, hf₂⟩ := hg.exists_isStandardSmoothOfRelativeDimension (f.val.base x)
+    obtain ⟨U₂, V₂, hfx₂, e₂, hf₂⟩ := hg.exists_isStandardSmoothOfRelativeDimension (f.base x)
     obtain ⟨U₁', V₁', hx₁', e₁', hf₁'⟩ := hf.exists_isStandardSmoothOfRelativeDimension x
     obtain ⟨r, s, hx₁, e₁, hf₁⟩ := exists_basicOpen_le_appLE_of_appLE_of_isAffine
       (isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n)

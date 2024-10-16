@@ -89,8 +89,7 @@ variable (n m : ℕ)
 
 namespace Algebra
 
-variable (R : Type u) [CommRing R]
-variable (S : Type v) [CommRing S] [Algebra R S]
+variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
 /--
 A `PreSubmersivePresentation` of an `R`-algebra `S` is a `Presentation`
