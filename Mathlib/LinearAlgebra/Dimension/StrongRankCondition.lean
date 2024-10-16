@@ -444,7 +444,7 @@ theorem finrank_eq_rank [Module.Finite R M] : ↑(finrank R M) = Module.rank R M
   rw [Module.finrank, cast_toNat_of_lt_aleph0 (rank_lt_aleph0 R M)]
 
 /-- If `M` is finite, then `finrank N = rank N` for all `N : Submodule M`. Note that
-such an `N` can be not finitely generated. -/
+such an `N` need not be finitely generated. -/
 protected theorem _root_.Submodule.finrank_eq_rank [Module.Finite R M] (N : Submodule R M) :
     finrank R N = Module.rank R N := by
   rw [finrank, Cardinal.cast_toNat_of_lt_aleph0]
