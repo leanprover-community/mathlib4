@@ -25,10 +25,10 @@ This is the main logic underlying the linters below. -/
 def checkUnusedAssumptionInType (declInfo : ConstantInfo) (typesToAvoid : Array Name) :
     MetaM (Option MessageData) := do
   -- We omit inductive types and their constructors, to reduce false positives.
-  -- We also omit partial declarations and recursive definitions: these are less useful for theorem
-  -- proving, hence the linter is less useful there.
+  -- We also omit partial declarations (via the `opaque` definitions they generate):
+  -- these are less useful for theorem proving, hence the linter is less useful there.
   if declInfo.isInductive || declInfo.isCtor ||
-      declInfo.isPartial || (declInfo matches .recInfo _) then return none
+      (declInfo matches .opaqueInfo ..) then return none
   let type := declInfo.type
   -- Compute an array of pairs (argument index, error message) for each superfluous argument:
   -- the first component is the index of the superfluous argument, the second component
