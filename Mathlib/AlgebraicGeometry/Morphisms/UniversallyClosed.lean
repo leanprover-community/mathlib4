@@ -48,7 +48,7 @@ theorem universallyClosed_stableUnderBaseChange : StableUnderBaseChange @Univers
 
 instance isClosedMap_isStableUnderComposition :
     IsStableUnderComposition (topologically @IsClosedMap) where
-  comp_mem f g hf hg := IsClosedMap.comp (f := f.1.base) (g := g.1.base) hg hf
+  comp_mem f g hf hg := IsClosedMap.comp (f := f.base) (g := g.base) hg hf
 
 instance universallyClosed_isStableUnderComposition :
     IsStableUnderComposition @UniversallyClosed := by
@@ -71,7 +71,7 @@ instance universallyClosed_isLocalAtTarget : IsLocalAtTarget @UniversallyClosed 
   rw [universallyClosed_eq]
   apply universally_isLocalAtTarget
   intro X Y f ι U hU H
-  simp_rw [topologically, morphismRestrict_val_base] at H
+  simp_rw [topologically, morphismRestrict_base] at H
   exact (isClosedMap_iff_isClosedMap_of_iSup_eq_top hU).mpr H
 
 end AlgebraicGeometry

@@ -922,7 +922,7 @@ then the same is true for any s-finite measure. -/
 theorem HaveLebesgueDecomposition.sfinite_of_isFiniteMeasure [SFinite μ]
     (_h : ∀ (μ : Measure α) [IsFiniteMeasure μ], HaveLebesgueDecomposition μ ν) :
     HaveLebesgueDecomposition μ ν :=
-  sum_sFiniteSeq μ ▸ sum_left _
+  sum_sfiniteSeq μ ▸ sum_left _
 
 attribute [local instance] haveLebesgueDecomposition_of_finiteMeasure
 

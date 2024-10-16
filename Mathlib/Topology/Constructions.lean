@@ -628,7 +628,7 @@ theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : S
       generateFrom (image2 (·  ×ˢ ·) s t) :=
   let G := generateFrom (image2  (·  ×ˢ ·) s t)
   le_antisymm
-    (le_generateFrom fun g ⟨u, hu, v, hv, g_eq⟩ =>
+    (le_generateFrom fun _ ⟨_, hu, _, hv, g_eq⟩ =>
       g_eq.symm ▸
         @IsOpen.prod _ _ (generateFrom s) (generateFrom t) _ _ (GenerateOpen.basic _ hu)
           (GenerateOpen.basic _ hv))
@@ -656,7 +656,7 @@ theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : S
 theorem prod_eq_generateFrom :
     instTopologicalSpaceProd =
       generateFrom { g | ∃ (s : Set X) (t : Set Y), IsOpen s ∧ IsOpen t ∧ g = s ×ˢ t } :=
-  le_antisymm (le_generateFrom fun g ⟨s, t, hs, ht, g_eq⟩ => g_eq.symm ▸ hs.prod ht)
+  le_antisymm (le_generateFrom fun _ ⟨_, _, hs, ht, g_eq⟩ => g_eq.symm ▸ hs.prod ht)
     (le_inf
       (forall_mem_image.2 fun t ht =>
         GenerateOpen.basic _ ⟨t, univ, by simpa [Set.prod_eq] using ht⟩)
@@ -1436,7 +1436,7 @@ theorem pi_eq_generateFrom :
       generateFrom
         { g | ∃ (s : ∀ a, Set (π a)) (i : Finset ι), (∀ a ∈ i, IsOpen (s a)) ∧ g = pi (↑i) s } :=
   calc Pi.topologicalSpace
-  _ = @Pi.topologicalSpace ι π fun a => generateFrom { s | IsOpen s } := by
+  _ = @Pi.topologicalSpace ι π fun _ => generateFrom { s | IsOpen s } := by
     simp only [generateFrom_setOf_isOpen]
   _ = _ := pi_generateFrom_eq
 
