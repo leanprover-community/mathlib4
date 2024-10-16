@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.RingHom.Locally
 
 /-!
 
@@ -181,6 +182,17 @@ namespace HasRingHomProperty
 
 variable (P : MorphismProperty Scheme.{u}) {Q} [HasRingHomProperty P Q]
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
+
+lemma copy {P' : MorphismProperty Scheme.{u}}
+    {Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    (e : P = P') (e' : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S), Q f ↔ Q' f) :
+    HasRingHomProperty P' Q' := by
+  subst e
+  have heq : @Q = @Q' := by
+    ext R S _ _ f
+    exact (e' f)
+  rw [← heq]
+  infer_instance
 
 lemma eq_affineLocally : P = affineLocally Q := eq_affineLocally'
 
@@ -416,25 +428,52 @@ instance respects_isOpenImmersion : P.Respects @IsOpenImmersion where
     rw [show f ≫ i = f ≫ e.hom ≫ i.opensRange.ι by simp [e], ← Category.assoc]
     exact respects_isOpenImmersion_aux _ (by rwa [P.cancel_right_of_respectsIso])
 
-open RingHom in
-/-- `P` can be checked locally around points of the source. -/
-lemma iff_exists_appLE : P f ↔
-    ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.1) (e : V.1 ≤ f ⁻¹ᵁ U.1),
+open RingHom
+
+omit [HasRingHomProperty P Q] in
+/-- If `P` is induced by `Locally Q`, it suffices to check `Q` on affine open sets locally around
+points of the source. -/
+lemma iff_exists_appLE_locally (hQi : RespectsIso Q) [HasRingHomProperty P (Locally Q)] :
+    P f ↔ ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.1) (e : V.1 ≤ f ⁻¹ᵁ U.1),
       Q (f.appLE U V e) := by
   refine ⟨fun hf x ↦ ?_, fun hf ↦ (IsLocalAtSource.iff_exists_resLE (P := P)).mpr <| fun x ↦ ?_⟩
   · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open Y)
       (Opens.mem_top <| f.val.base x)
     obtain ⟨V, hV, hx, e⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open X)
       (show x ∈ f ⁻¹ᵁ U from hfx)
-    use ⟨U, hU⟩, ⟨V, hV⟩, hx, e
-    apply appLE P f hf
+    simp_rw [HasRingHomProperty.iff_appLE (P := P), locally_iff_isLocalization hQi] at hf
+    obtain ⟨s, hs, hfs⟩ := hf ⟨U, hU⟩ ⟨V, hV⟩ e
+    apply iSup_basicOpen_of_span_eq_top at hs
+    have : x ∈ (⨆ i ∈ s, X.basicOpen i) := hs.symm ▸ hx
+    have : ∃ r ∈ s, x ∈ X.basicOpen r := by simpa using this
+    obtain ⟨r, hr, hrs⟩ := this
+    refine ⟨⟨U, hU⟩, ⟨X.basicOpen r, hV.basicOpen r⟩, hrs, (X.basicOpen_le r).trans e, ?_⟩
+    rw [← f.appLE_map e (homOfLE (X.basicOpen_le r)).op]
+    haveI : IsLocalization.Away r Γ(X, X.basicOpen r) := hV.isLocalization_basicOpen r
+    exact hfs r hr _
   · obtain ⟨U, V, hxV, e, hf⟩ := hf x
     use U, V, hxV, e
     simp only [iff_of_isAffine (P := P), Scheme.Hom.appLE, homOfLE_leOfHom] at hf ⊢
-    haveI : (toMorphismProperty Q).RespectsIso := toMorphismProperty_respectsIso_iff.mp <|
+    haveI : (toMorphismProperty (Locally Q)).RespectsIso := toMorphismProperty_respectsIso_iff.mp <|
       (isLocal_ringHomProperty P).respectsIso
-    exact (MorphismProperty.arrow_mk_iso_iff (toMorphismProperty Q) (arrowResLEAppIso f U V e)).mpr
-      hf
+    exact (MorphismProperty.arrow_mk_iso_iff (toMorphismProperty (Locally Q))
+      (arrowResLEAppIso f U V e)).mpr (locally_of hQi _ hf)
+
+/-- `P` can be checked locally around points of the source. -/
+lemma iff_exists_appLE : P f ↔
+    ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.1) (e : V.1 ≤ f ⁻¹ᵁ U.1),
+      Q (f.appLE U V e) := by
+  haveI inst : HasRingHomProperty P Q := inferInstance
+  haveI : HasRingHomProperty P (Locally Q) := by
+    apply @copy (P' := P) (Q := Q) (Q' := Locally Q)
+    · infer_instance
+    · rfl
+    · intro R S _ _ f
+      exact (locally_iff_of_localizationSpanTarget (isLocal_ringHomProperty P).respectsIso
+        (isLocal_ringHomProperty P).OfLocalizationSpanTarget _).symm
+  rw [iff_exists_appLE_locally (P := P) ]
+  haveI : HasRingHomProperty P Q := inst
+  apply (isLocal_ringHomProperty P (Q := Q)).respectsIso
 
 end HasRingHomProperty
 

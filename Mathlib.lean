@@ -843,6 +843,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
+import Mathlib.AlgebraicGeometry.EllipticCurve.J
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
 import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
@@ -2075,6 +2076,7 @@ import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.CartesianClosed
 import Mathlib.Condensed.Discrete.Basic
+import Mathlib.Condensed.Discrete.Colimit
 import Mathlib.Condensed.Discrete.LocallyConstant
 import Mathlib.Condensed.Discrete.Module
 import Mathlib.Condensed.Epi
@@ -2182,7 +2184,12 @@ import Mathlib.Data.FinEnum
 import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finite.Powerset
+import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Finite.Set
+import Mathlib.Data.Finite.Sigma
+import Mathlib.Data.Finite.Sum
+import Mathlib.Data.Finite.Vector
 import Mathlib.Data.Finmap
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Basic
@@ -4351,6 +4358,7 @@ import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.HaveLetLinter
+import Mathlib.Tactic.Linter.Header
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic.Linter.OldObtain

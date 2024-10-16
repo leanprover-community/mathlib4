@@ -42,6 +42,10 @@ def adjoin : IntermediateField F E :=
   { Subfield.closure (Set.range (algebraMap F E) ∪ S) with
     algebraMap_mem' := fun x => Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
 
+@[simp]
+theorem adjoin_toSubfield :
+    (adjoin F S).toSubfield = Subfield.closure (Set.range (algebraMap F E) ∪ S) := rfl
+
 variable {S}
 
 theorem mem_adjoin_iff (x : E) :
@@ -89,6 +93,11 @@ instance : CompleteLattice (IntermediateField F E) where
     { toSubalgebra := ⊥
       inv_mem' := by rintro x ⟨r, rfl⟩; exact ⟨r⁻¹, map_inv₀ _ _⟩ }
   bot_le x := (bot_le : ⊥ ≤ x.toSubalgebra)
+
+theorem sup_def (S T : IntermediateField F E) : S ⊔ T = adjoin F (S ∪ T : Set E) := rfl
+
+theorem sSup_def (S : Set (IntermediateField F E)) :
+    sSup S = adjoin F (⋃₀ (SetLike.coe '' S)) := rfl
 
 instance : Inhabited (IntermediateField F E) :=
   ⟨⊤⟩
@@ -139,6 +148,16 @@ theorem inf_toSubfield (S T : IntermediateField F E) :
     (S ⊓ T).toSubfield = S.toSubfield ⊓ T.toSubfield :=
   rfl
 
+@[simp]
+theorem sup_toSubfield (S T : IntermediateField F E) :
+    (S ⊔ T).toSubfield = S.toSubfield ⊔ T.toSubfield := by
+  rw [← S.toSubfield.closure_eq, ← T.toSubfield.closure_eq, ← Subfield.closure_union]
+  simp_rw [sup_def, adjoin_toSubfield, coe_toSubfield]
+  congr 1
+  rw [Set.union_eq_right]
+  rintro _ ⟨x, rfl⟩
+  exact Set.mem_union_left _ (algebraMap_mem S x)
+
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) =
     sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) :=
@@ -154,6 +173,21 @@ theorem sInf_toSubfield (S : Set (IntermediateField F E)) :
     (sInf S).toSubfield = sInf (toSubfield '' S) :=
   SetLike.coe_injective <| by simp [Set.sUnion_image]
 
+@[simp]
+theorem sSup_toSubfield (S : Set (IntermediateField F E)) (hS : S.Nonempty) :
+    (sSup S).toSubfield = sSup (toSubfield '' S) := by
+  have h : toSubfield '' S = Subfield.closure '' (SetLike.coe '' S) := by
+    rw [Set.image_image]
+    congr! with x
+    exact x.toSubfield.closure_eq.symm
+  rw [h, sSup_image, ← Subfield.closure_sUnion, sSup_def, adjoin_toSubfield]
+  congr 1
+  rw [Set.union_eq_right]
+  rintro _ ⟨x, rfl⟩
+  obtain ⟨y, hy⟩ := hS
+  simp only [Set.mem_sUnion, Set.mem_image, exists_exists_and_eq_and, SetLike.mem_coe]
+  exact ⟨y, hy, algebraMap_mem y x⟩
+
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} (S : ι → IntermediateField F E) : (↑(iInf S) : Set E) = ⋂ i, S i := by
   simp [iInf]
@@ -167,6 +201,11 @@ theorem iInf_toSubalgebra {ι : Sort*} (S : ι → IntermediateField F E) :
 theorem iInf_toSubfield {ι : Sort*} (S : ι → IntermediateField F E) :
     (iInf S).toSubfield = ⨅ i, (S i).toSubfield :=
   SetLike.coe_injective <| by simp [iInf]
+
+@[simp]
+theorem iSup_toSubfield {ι : Sort*} [Nonempty ι] (S : ι → IntermediateField F E) :
+    (iSup S).toSubfield = ⨆ i, (S i).toSubfield := by
+  simp only [iSup, Set.range_nonempty, sSup_toSubfield, ← Set.range_comp, Function.comp_def]
 
 /-- Construct an algebra isomorphism from an equality of intermediate fields -/
 @[simps! apply]
