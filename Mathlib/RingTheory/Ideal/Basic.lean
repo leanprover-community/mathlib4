@@ -52,6 +52,13 @@ namespace Ideal
 
 variable [Semiring α] (I : Ideal α) {a b : α}
 
+class IsTwoSided : Prop where
+  mul_mem_of_left {a : α} (b : α) : a ∈ I → a * b ∈ I
+
+instance : IsTwoSided (⊥ : Ideal α) := ⟨fun _ h ↦ by rw [h, zero_mul]; exact zero_mem _⟩
+
+instance : IsTwoSided (⊤ : Ideal α) := ⟨fun _ _ ↦ trivial⟩
+
 protected theorem zero_mem : (0 : α) ∈ I :=
   Submodule.zero_mem I
 
@@ -62,6 +69,10 @@ variable (a)
 
 theorem mul_mem_left : b ∈ I → a * b ∈ I :=
   Submodule.smul_mem I a
+
+theorem mul_mem_right {α} {a : α} (b : α) [Semiring α] (I : Ideal α) [I.IsTwoSided]
+    (h : a ∈ I) : a * b ∈ I :=
+  IsTwoSided.mul_mem_of_left b h
 
 variable {a}
 
@@ -274,10 +285,7 @@ theorem isMaximal_iff {I : Ideal α} :
 theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=
   eq_iff_le_not_lt.2 ⟨IJ, fun h => hJ (hI.1.2 _ h)⟩
 
-instance : IsCoatomic (Ideal α) := by
-  apply CompleteLattice.coatomic_of_top_compact
-  rw [← span_singleton_one]
-  exact Submodule.singleton_span_isCompactElement 1
+instance : IsCoatomic (Ideal α) := CompleteLattice.coatomic_of_top_compact isCompactElement_top
 
 theorem IsMaximal.coprime_of_ne {M M' : Ideal α} (hM : M.IsMaximal) (hM' : M'.IsMaximal)
     (hne : M ≠ M') : M ⊔ M' = ⊤ := by
@@ -300,7 +308,7 @@ theorem exists_maximal [Nontrivial α] : ∃ M : Ideal α, M.IsMaximal :=
 variable {α}
 
 instance [Nontrivial α] : Nontrivial (Ideal α) := by
-  rcases@exists_maximal α _ _ with ⟨M, hM, _⟩
+  rcases @exists_maximal α _ _ with ⟨M, hM, _⟩
   exact nontrivial_of_ne M ⊤ hM
 
 /-- If P is not properly contained in any maximal ideal then it is not properly contained
@@ -396,6 +404,9 @@ def pi : Ideal (ι → α) where
 theorem mem_pi (x : ι → α) : x ∈ I.pi ι ↔ ∀ i, x i ∈ I :=
   Iff.rfl
 
+instance [I.IsTwoSided] : (I.pi ι).IsTwoSided :=
+  ⟨fun _b hb i ↦ mul_mem_right _ _ (hb i)⟩
+
 end Pi
 
 theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : IsChain (· ≤ ·) s)
@@ -426,6 +437,8 @@ variable {a b : α}
 namespace Ideal
 
 variable [CommSemiring α] (I : Ideal α)
+
+instance : I.IsTwoSided := ⟨fun b ha ↦ mul_comm b _ ▸ I.smul_mem _ ha⟩
 
 @[simp]
 theorem mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ I :=
@@ -482,13 +495,6 @@ theorem factors_decreasing [IsDomain α] (b₁ b₂ : α) (h₁ : b₁ ≠ 0) (h
     (Ideal.span_le.2 <| singleton_subset_iff.2 <| Ideal.mem_span_singleton.2 ⟨b₂, rfl⟩) fun h =>
     h₂ <| isUnit_of_dvd_one <|
         (mul_dvd_mul_iff_left h₁).1 <| by rwa [mul_one, ← Ideal.span_singleton_le_span_singleton]
-
-variable (b)
-
-theorem mul_mem_right (h : a ∈ I) : a * b ∈ I :=
-  mul_comm b a ▸ I.mul_mem_left b h
-
-variable {b}
 
 lemma mem_of_dvd (hab : a ∣ b) (ha : a ∈ I) : b ∈ I := by
   obtain ⟨c, rfl⟩ := hab; exact I.mul_mem_right _ ha
@@ -692,18 +698,18 @@ end Ideal
 
 end DivisionSemiring
 
-section CommRing
+section Ring
 
 namespace Ideal
 
-theorem mul_sub_mul_mem {R : Type*} [CommRing R] (I : Ideal R) {a b c d : R} (h1 : a - b ∈ I)
-    (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
+theorem mul_sub_mul_mem {R : Type*} [Ring R] (I : Ideal R) [I.IsTwoSided] {a b c d : R}
+    (h1 : a - b ∈ I) (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
   rw [show a * c - b * d = (a - b) * c + b * (c - d) by rw [sub_mul, mul_sub]; abel]
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
 
 end Ideal
 
-end CommRing
+end Ring
 
 -- TODO: consider moving the lemmas below out of the `Ring` namespace since they are
 -- about `CommSemiring`s.
