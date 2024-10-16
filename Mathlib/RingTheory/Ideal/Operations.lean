@@ -379,14 +379,24 @@ theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
     I ^ n ≤ I ^ 1 := pow_le_pow_right (Nat.pos_of_ne_zero hn)
     _ = I := Submodule.pow_one _
 
-theorem pow_right_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
+theorem pow_right_mono (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
   induction' n with _ hn
   · rw [Submodule.pow_zero, Submodule.pow_zero]
   · rw [Submodule.pow_succ, Submodule.pow_succ]
     exact Ideal.mul_mono hn e
 
+instance [J.IsTwoSided] : (I * J).IsTwoSided :=
+  ⟨fun b ha ↦ Submodule.mul_induction_on ha
+    (fun i hi j hj ↦ by rw [mul_assoc]; exact mul_mem_mul hi (mul_mem_right _ _ hj))
+    fun x y hx hy ↦ by rw [right_distrib]; exact add_mem hx hy⟩
+
+instance [I.IsTwoSided] (n : ℕ) : (I ^ n).IsTwoSided :=
+  n.rec
+    (by rw [Submodule.pow_zero, one_eq_top]; infer_instance)
+    (fun _ _ ↦ by rw [Submodule.pow_succ]; infer_instance)
+
 @[simp]
-theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal R} :
+theorem mul_eq_bot [NoZeroDivisors R] :
     I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
   ⟨fun hij =>
     or_iff_not_imp_left.mpr fun I_ne_bot =>
@@ -395,10 +405,10 @@ theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal 
         Or.resolve_left (mul_eq_zero.mp ((I * J).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
     fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
 
-instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
+instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
-instance {R : Type*} [CommSemiring R] {S : Type*} [CommRing S] [Algebra R S]
+instance {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
     [NoZeroSMulDivisors R S] {I : Ideal S} : NoZeroSMulDivisors R I :=
   Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 
