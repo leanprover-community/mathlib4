@@ -148,9 +148,11 @@ theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l�
 
 theorem ofList_subset {l₁ l₂ : List (Lists α)} (h : l₁ ⊆ l₂) :
     Lists'.ofList l₁ ⊆ Lists'.ofList l₂ := by
-  induction' l₁ with _ _ l₁_ih; · exact Subset.nil
-  refine Subset.cons (Lists.Equiv.refl _) ?_ (l₁_ih (List.subset_of_cons_subset h))
-  simp only [List.cons_subset] at h; simp [h]
+  induction l₁ with
+  | nil => exact Subset.nil
+  | cons _ _ l₁_ih =>
+    refine Subset.cons (Lists.Equiv.refl _) ?_ (l₁_ih (List.subset_of_cons_subset h))
+    simp only [List.cons_subset] at h; simp [h]
 
 @[refl]
 theorem Subset.refl {l : Lists' α true} : l ⊆ l := by
@@ -172,7 +174,7 @@ theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂
     · exact mem_of_subset' s h
 
 theorem subset_def {l₁ l₂ : Lists' α true} : l₁ ⊆ l₂ ↔ ∀ a ∈ l₁.toList, a ∈ l₂ :=
-  ⟨fun H a => mem_of_subset' H, fun H => by
+  ⟨fun H _ => mem_of_subset' H, fun H => by
     rw [← of_toList l₁]
     revert H; induction' toList l₁ with h t t_ih <;> intro H
     · exact Subset.nil
@@ -334,7 +336,7 @@ mutual
       exact decidable_of_iff' _ Equiv.antisymm_iff
   termination_by x y => sizeOf x + sizeOf y
   instance Subset.decidable : ∀ l₁ l₂ : Lists' α true, Decidable (l₁ ⊆ l₂)
-    | Lists'.nil, l₂ => isTrue Lists'.Subset.nil
+    | Lists'.nil, _ => isTrue Lists'.Subset.nil
     | @Lists'.cons' _ b a l₁, l₂ => by
       haveI :=
         have : sizeOf (⟨b, a⟩ : Lists α) < 1 + 1 + sizeOf a + sizeOf l₁ := by simp [sizeof_pos]

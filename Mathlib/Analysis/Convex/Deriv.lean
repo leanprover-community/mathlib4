@@ -95,7 +95,7 @@ theorem StrictMonoOn.exists_slope_lt_deriv {x y : ℝ} {f : ℝ → ℝ} (hf : C
         apply ne_of_gt
         exact hf'_mono ⟨hxw, hwy⟩ ⟨hxw.trans hz.1, hz.2⟩ hz.1
     refine ⟨b, ⟨hxw.trans hwb, hby⟩, ?_⟩
-    simp only [div_lt_iff, hxy, hxw, hwy, sub_pos] at ha hb ⊢
+    simp only [div_lt_iff₀, hxy, hxw, hwy, sub_pos] at ha hb ⊢
     have : deriv f a * (w - x) < deriv f b * (w - x) := by
       apply mul_lt_mul _ le_rfl (sub_pos.2 hxw) _
       · exact hf'_mono ⟨hxa, haw.trans hwy⟩ ⟨hxw.trans hwb, hby⟩ (haw.trans hwb)
@@ -139,7 +139,7 @@ theorem StrictMonoOn.exists_deriv_lt_slope {x y : ℝ} {f : ℝ → ℝ} (hf : C
         apply ne_of_gt
         exact hf'_mono ⟨hxw, hwy⟩ ⟨hxw.trans hz.1, hz.2⟩ hz.1
     refine ⟨a, ⟨hxa, haw.trans hwy⟩, ?_⟩
-    simp only [lt_div_iff, hxy, hxw, hwy, sub_pos] at ha hb ⊢
+    simp only [lt_div_iff₀, hxy, hxw, hwy, sub_pos] at ha hb ⊢
     have : deriv f a * (y - w) < deriv f b * (y - w) := by
       apply mul_lt_mul _ le_rfl (sub_pos.2 hwy) _
       · exact hf'_mono ⟨hxa, haw.trans hwy⟩ ⟨hxw.trans hwb, hby⟩ (haw.trans hwb)

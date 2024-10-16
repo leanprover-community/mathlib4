@@ -254,7 +254,7 @@ theorem fiber_card_ne_zero_iff_mem_image (s : Finset α) (f : α → β) [Decida
 lemma card_filter_le_iff (s : Finset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
     (s.filter P).card ≤ n ↔ ∀ s' ⊆ s, n < s'.card → ∃ a ∈ s', ¬ P a :=
   (s.1.card_filter_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.1 (by aesop) h,
-    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.2⟩ (fun x hx ↦ subset_of_le hs' hx) h⟩
+    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.2⟩ (fun _ hx ↦ subset_of_le hs' hx) h⟩
 
 @[simp]
 theorem card_map (f : α ↪ β) : (s.map f).card = s.card :=
@@ -296,7 +296,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
   have : s = (range n).attach.image fun i => f i.1 (mem_range.1 i.2) := by
     ext a
     suffices _ : a ∈ s ↔ ∃ (i : _) (hi : i ∈ range n), f i (mem_range.1 hi) = a by
-      simpa only [mem_image, mem_attach, true_and_iff, Subtype.exists]
+      simpa only [mem_image, mem_attach, true_and, Subtype.exists]
     constructor
     · intro ha; obtain ⟨i, hi, rfl⟩ := hf a ha; use i, mem_range.2 hi
     · rintro ⟨i, hi, rfl⟩; apply hf'
@@ -443,7 +443,7 @@ theorem inj_on_of_surj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a h
   have hsg : Surjective g := fun x =>
     let ⟨y, hy⟩ :=
       surj_on_of_inj_on_of_card_le (fun (x : { x // x ∈ t }) (_ : x ∈ t.attach) => g x)
-        (fun x _ => show g x ∈ s.attach from mem_attach _ _) (fun x y _ _ hxy => hg hxy) (by simpa)
+        (fun x _ => show g x ∈ s.attach from mem_attach _ _) (fun _ _ _ _ hxy => hg hxy) (by simpa)
         x (mem_attach _ _)
     ⟨y, hy.snd.symm⟩
   have hif : Injective f' :=
@@ -683,6 +683,11 @@ lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, Decidabl
   obtain rfl | hne := eq_or_ne (a2 i) ai
   exacts [⟨a1, h1, hne⟩, ⟨a2, h2, hne⟩]
 
+theorem card_eq_succ_iff_cons :
+    s.card = n + 1 ↔ ∃ a t, ∃ (h : a ∉ t), cons a t h = s ∧ t.card = n :=
+  ⟨cons_induction_on s (by simp) fun a s _ _ _ => ⟨a, s, by simp_all⟩,
+   fun ⟨a, t, _, hs, _⟩ => by simpa [← hs]⟩
+
 section DecidableEq
 variable [DecidableEq α]
 
@@ -691,7 +696,7 @@ theorem card_eq_succ : s.card = n + 1 ↔ ∃ a t, a ∉ t ∧ insert a t = s �
     let ⟨a, has⟩ := card_pos.mp (h.symm ▸ Nat.zero_lt_succ _ : 0 < s.card)
     ⟨a, s.erase a, s.not_mem_erase a, insert_erase has, by
       simp only [h, card_erase_of_mem has, Nat.add_sub_cancel_right]⟩,
-    fun ⟨a, t, hat, s_eq, n_eq⟩ => s_eq ▸ n_eq ▸ card_insert_of_not_mem hat⟩
+    fun ⟨_, _, hat, s_eq, n_eq⟩ => s_eq ▸ n_eq ▸ card_insert_of_not_mem hat⟩
 
 theorem card_eq_two : s.card = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
   constructor
@@ -825,7 +830,5 @@ theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   have H : Subrelation (@LT.lt (Finset α) _) (InvImage (· < ·) card) := fun {_ _} hxy =>
     card_lt_card hxy
   Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
-
-@[deprecated (since := "2023-12-27")] alias card_le_of_subset := card_le_card
 
 end Finset

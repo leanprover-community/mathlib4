@@ -59,7 +59,7 @@ instance decidableForallMem {p : α → Prop} [DecidablePred p] :
     ∀ o : Option α, Decidable (∀ a ∈ o, p a)
   | none => isTrue (by simp [false_imp_iff])
   | some a =>
-      if h : p a then isTrue fun o e ↦ some_inj.1 e ▸ h
+      if h : p a then isTrue fun _ e ↦ some_inj.1 e ▸ h
       else isFalse <| mt (fun H ↦ H _ rfl) h
 
 instance decidableExistsMem {p : α → Prop} [DecidablePred p] :
@@ -74,10 +74,6 @@ abbrev iget [Inhabited α] : Option α → α
 
 theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
-
-@[simp]
-theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
-  cases o <;> simp [toList, eq_comm]
 
 instance liftOrGet_isCommutative (f : α → α → α) [Std.Commutative f] :
     Std.Commutative (liftOrGet f) :=

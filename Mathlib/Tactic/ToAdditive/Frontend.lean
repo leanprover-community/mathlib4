@@ -965,6 +965,7 @@ def nameDict : String → List String
   | "zpowers"     => ["zmultiples"]
   | "powers"      => ["multiples"]
   | "multipliable"=> ["summable"]
+  | "gpfree"      => ["apfree"]
   | x             => [x]
 
 /--
@@ -1047,10 +1048,10 @@ def fixAbbreviation : List String → List String
                                       => "function" :: "_" :: "semiconj" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Commute" :: s
                                       => "function" :: "_" :: "commute" :: fixAbbreviation s
+  | "Zero" :: "Le" :: "Part" :: s         => "PosPart" :: fixAbbreviation s
+  | "Le" :: "Zero" :: "Part" :: s         => "NegPart" :: fixAbbreviation s
   | "zero" :: "Le" :: "Part" :: s         => "posPart" :: fixAbbreviation s
   | "le" :: "Zero" :: "Part" :: s         => "negPart" :: fixAbbreviation s
-  | "three" :: "GPFree" :: s         => "three" :: "APFree" :: fixAbbreviation s
-  | "Three" :: "GPFree" :: s         => "Three" :: "APFree" :: fixAbbreviation s
   | "Division" :: "Add" :: "Monoid" :: s => "SubtractionMonoid" :: fixAbbreviation s
   | "division" :: "Add" :: "Monoid" :: s => "subtractionMonoid" :: fixAbbreviation s
   | "Sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "SubNegZeroMonoid" :: fixAbbreviation s

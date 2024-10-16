@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johan Commelin, Bhavik Mehta
+Authors: Kim Morrison, Johan Commelin, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Functor.Category
@@ -363,7 +363,7 @@ end
 
 section
 
-variable {C : Type u₄} [Category.{v₄} C] {D : Type u₅} [Category.{v₅} D]
+variable {C : Type u₄} [Category.{v₄} C]
 
 /-- The functor `(F ⋙ L, R) ⥤ (L, R)` -/
 @[simps]

@@ -67,7 +67,7 @@ variable {m m₁ m₂ : MeasurableSpace α} {m' : MeasurableSpace β} {f : α �
 protected def map (f : α → β) (m : MeasurableSpace α) : MeasurableSpace β where
   MeasurableSet' s := MeasurableSet[m] <| f ⁻¹' s
   measurableSet_empty := m.measurableSet_empty
-  measurableSet_compl s hs := m.measurableSet_compl _ hs
+  measurableSet_compl _ hs := m.measurableSet_compl _ hs
   measurableSet_iUnion f hf := by simpa only [preimage_iUnion] using m.measurableSet_iUnion _ hf
 
 lemma map_def {s : Set β} : MeasurableSet[m.map f] s ↔ MeasurableSet[m] (f ⁻¹' s) := Iff.rfl
@@ -85,7 +85,7 @@ theorem map_comp {f : α → β} {g : β → γ} : (m.map f).map g = m.map (g �
 protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace α where
   MeasurableSet' s := ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s
   measurableSet_empty := ⟨∅, m.measurableSet_empty, rfl⟩
-  measurableSet_compl := fun s ⟨s', h₁, h₂⟩ => ⟨s'ᶜ, m.measurableSet_compl _ h₁, h₂ ▸ rfl⟩
+  measurableSet_compl := fun _ ⟨s', h₁, h₂⟩ => ⟨s'ᶜ, m.measurableSet_compl _ h₁, h₂ ▸ rfl⟩
   measurableSet_iUnion s hs :=
     let ⟨s', hs'⟩ := Classical.axiom_of_choice hs
     ⟨⋃ i, s' i, m.measurableSet_iUnion _ fun i => (hs' i).left, by simp [hs']⟩
@@ -231,7 +231,7 @@ theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
 theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : Measurable f :=
   fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 
-@[to_additive (attr := measurability)]
+@[to_additive (attr := measurability, fun_prop)]
 theorem measurable_one [One α] : Measurable (1 : β → α) :=
   @measurable_const _ _ _ _ 1
 
@@ -671,6 +671,7 @@ theorem Measurable.prod_mk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace
     {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
   Measurable.prod hf hg
 
+@[fun_prop]
 theorem Measurable.prod_map [MeasurableSpace δ] {f : α → β} {g : γ → δ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Prod.map f g) :=
   (hf.comp measurable_fst).prod_mk (hg.comp measurable_snd)
@@ -863,6 +864,42 @@ theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Mea
 theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
     Measurable (update · a x) :=
   measurable_update'.comp measurable_prod_mk_right
+
+@[measurability, fun_prop]
+theorem Set.measurable_restrict (s : Set δ) : Measurable (s.restrict (π := π)) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem Set.measurable_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
+    Measurable (restrict₂ (π := π) hst) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (π := π)) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem Finset.measurable_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
+    Measurable (Finset.restrict₂ (π := π) hst) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem Set.measurable_restrict_apply (s : Set α) {f : α → γ} (hf : Measurable f) :
+    Measurable (s.restrict f) := hf.comp measurable_subtype_coe
+
+@[measurability, fun_prop]
+theorem Set.measurable_restrict₂_apply {s t : Set α} (hst : s ⊆ t)
+    {f : t → γ} (hf : Measurable f) :
+    Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
+
+@[measurability, fun_prop]
+theorem Finset.measurable_restrict_apply (s : Finset α) {f : α → γ} (hf : Measurable f) :
+    Measurable (s.restrict f) := hf.comp measurable_subtype_coe
+
+@[measurability, fun_prop]
+theorem Finset.measurable_restrict₂_apply {s t : Finset α} (hst : s ⊆ t)
+    {f : t → γ} (hf : Measurable f) :
+    Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
 variable (π) in
 theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg π h).mp := by

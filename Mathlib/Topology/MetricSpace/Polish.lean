@@ -3,11 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Topology.Instances.Nat
 import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.Sets.Opens
-import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Polish spaces
@@ -145,7 +146,7 @@ theorem _root_.ClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpa
   letI : MetricSpace α := hf.toEmbedding.comapMetricSpace f
   haveI : SecondCountableTopology α := hf.toEmbedding.secondCountableTopology
   have : CompleteSpace α := by
-    rw [completeSpace_iff_isComplete_range hf.toEmbedding.to_isometry.uniformInducing]
+    rw [completeSpace_iff_isComplete_range hf.toEmbedding.to_isometry.isUniformInducing]
     exact hf.isClosed_range.isComplete
   infer_instance
 
@@ -255,6 +256,8 @@ theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
   le_add_of_nonneg_right (abs_nonneg _)
 
 instance : TopologicalSpace (CompleteCopy s) := inferInstanceAs (TopologicalSpace s)
+instance [SecondCountableTopology α] : SecondCountableTopology (CompleteCopy s) :=
+  inferInstanceAs (SecondCountableTopology s)
 instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
 
 /-- A metric space structure on a subset `s` of a metric space, designed to make it complete
@@ -328,10 +331,6 @@ theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpac
     (hs : IsOpen s) : PolishSpace s := by
   letI := upgradePolishSpace α
   lift s to Opens α using hs
-  #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
-  longer found. -/
-  have : SecondCountableTopology s.CompleteCopy :=
-    TopologicalSpace.Subtype.secondCountableTopology _
   exact inferInstanceAs (PolishSpace s.CompleteCopy)
 
 end CompleteCopy
