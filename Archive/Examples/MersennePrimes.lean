@@ -95,7 +95,7 @@ locally it works fine, but in CI it fails with `(kernel) deep recursion detected
 --   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
 /-
-`mersenne 9941` fails with `(kernel) deep recursion detected` locally as well.
+`mersenne 11213` fails with `(kernel) deep recursion detected` locally as well.
 -/
 -- example : (mersenne 11213).Prime :=
 --   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
