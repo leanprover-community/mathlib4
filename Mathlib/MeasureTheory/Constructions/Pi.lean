@@ -62,6 +62,18 @@ variable {ι ι' : Type*} {α : ι → Type*}
 
 /-! We start with some measurability properties -/
 
+lemma MeasurableSpace.pi_eq_generateFrom_projections {mα : ∀ i, MeasurableSpace (α i)} :
+    pi = generateFrom {B | ∃ (i : ι) (A : Set (α i)), MeasurableSet A ∧ eval i ⁻¹' A = B} := by
+  refine le_antisymm ?_ <| generateFrom_mono ?_
+  · refine generateFrom_le ?_
+    simp only [sSup_eq_sUnion, sUnion_image, mem_range, iUnion_exists, iUnion_iUnion_eq',
+      mem_iUnion, mem_setOf_eq, exists_prop, forall_exists_index]
+    rintro _ i ⟨A, hA, rfl⟩
+    exact measurableSet_generateFrom ⟨i, A, hA, rfl⟩
+  · rintro _ ⟨i, A, hA, rfl⟩
+    simp only [sSup_eq_sUnion, sUnion_image, mem_range, iUnion_exists, iUnion_iUnion_eq',
+      mem_iUnion, mem_setOf_eq]
+    exact ⟨i, A, hA, rfl⟩
 
 /-- Boxes formed by π-systems form a π-system. -/
 theorem IsPiSystem.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i)) :
