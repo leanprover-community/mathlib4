@@ -145,8 +145,21 @@ lemma of_linearEquiv [f : Flat R M] (e : N ≃ₗ[R] M) : Flat R N := by
 
 /-- If an `R`-module `M` is linearly equivalent to another `R`-module `N`, then `M` is flat
   if and only if `N` is flat. -/
-protected lemma congr (e : M ≃ₗ[R] N) : Flat R M ↔ Flat R N :=
+lemma equiv_iff (e : M ≃ₗ[R] N) : Flat R M ↔ Flat R N :=
   ⟨fun _ => of_linearEquiv R M N e.symm, fun _ => of_linearEquiv R N M e⟩
+
+instance ulift [Module.Flat R M] : Module.Flat R (ULift.{v'} M) :=
+  of_linearEquiv R M (ULift.{v'} M) ULift.moduleEquiv
+
+instance (priority := 100) of_ulift [Module.Flat R (ULift.{v'} M)] : Module.Flat R M :=
+  of_linearEquiv R (ULift.{v'} M) M ULift.moduleEquiv.symm
+
+instance shrink [Small.{v'} M] [Module.Flat R M] : Module.Flat R (Shrink.{v'} M) :=
+  of_linearEquiv R M (Shrink.{v'} M) (Shrink.linearEquiv M R)
+
+instance (priority := 100) of_shrink [Small.{v'} M] [Module.Flat R (Shrink.{v'} M)] :
+    Module.Flat R M :=
+  of_linearEquiv R (Shrink.{v'} M) M (Shrink.linearEquiv M R).symm
 
 /-- A direct sum of flat `R`-modules is flat. -/
 instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup (M i)]
@@ -260,7 +273,7 @@ variable (R M) in
 lemma iff_rTensor_preserves_injective_linearMap' [Small.{v'} R] [Small.{v'} M] : Flat R M ↔
     ∀ ⦃N N' : Type v'⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N') (_ : Function.Injective f), Function.Injective (f.rTensor M) :=
-  (Module.Flat.congr R M (Shrink.{v'} M) (Shrink.linearEquiv M R).symm).trans <|
+  (Module.Flat.equiv_iff R M (Shrink.{v'} M) (Shrink.linearEquiv M R).symm).trans <|
     iff_characterModule_injective.trans <|
       (injective_characterModule_iff_rTensor_preserves_injective_linearMap R (Shrink.{v'} M)).trans
         <| forall₅_congr <| fun N N' _ _ _ => forall₃_congr <| fun _ f _ =>
