@@ -224,7 +224,7 @@ def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   · intro m hm
     exact RingHom.ext fun x => Subtype.ext <| ConcreteCategory.congr_hom hm x
 
-instance : IsLocalHom (equalizerFork f g).ι := by
+instance : IsLocalRingHom (equalizerFork f g).ι := by
   constructor
   rintro ⟨a, h₁ : _ = _⟩ (⟨⟨x, y, h₃, h₄⟩, rfl : x = _⟩ : IsUnit a)
   have : y ∈ RingHom.eqLocus f g := by
@@ -236,7 +236,7 @@ instance : IsLocalHom (equalizerFork f g).ι := by
 
 @[instance]
 theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
-    IsLocalHom (limit.π F WalkingParallelPair.zero) := by
+    IsLocalRingHom (limit.π F WalkingParallelPair.zero) := by
   have := limMap_π (diagramIsoParallelPair F).hom WalkingParallelPair.zero
   rw [← IsIso.comp_inv_eq] at this
   rw [← this]
@@ -245,7 +245,7 @@ theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
         equalizerForkIsLimit (F.map WalkingParallelPairHom.left)
           (F.map WalkingParallelPairHom.right)⟩
       WalkingParallelPair.zero]
-  change IsLocalHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _)
+  change IsLocalRingHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _)
   infer_instance
 
 @[deprecated (since := "2024-10-10")]
@@ -256,7 +256,7 @@ open CategoryTheory.Limits.WalkingParallelPair Opposite
 open CategoryTheory.Limits.WalkingParallelPairHom
 
 instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
-    IsLocalHom (limit.π F (Opposite.op WalkingParallelPair.one)) := by
+    IsLocalRingHom (limit.π F (Opposite.op WalkingParallelPair.one)) := by
   have : _ = limit.π F (walkingParallelPairOpEquiv.functor.obj _) :=
     (limit.isoLimitCone_inv_π
         ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩

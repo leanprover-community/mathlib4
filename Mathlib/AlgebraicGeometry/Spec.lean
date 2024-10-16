@@ -223,6 +223,13 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
         erw [comp_apply, comp_apply, localizationToStalk_of, stalkMap_toStalk_apply f p x,
             stalkToFiberRingHom_toStalk]
 
+variable {R S: Type} [Semiring R] [Semiring S] {f : R →+* S} (p : Ideal S)
+
+def IsLocalRingHom.mk (map_nonunit : ∀ (a : R), IsUnit (f a) → IsUnit a) : IsLocalRingHom f :=
+  ⟨map_nonunit⟩
+
+def IsLocalRingHom.map_nonunit (a : R) : IsUnit (f a) → IsUnit a := sorry
+
 /--
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
 -/
@@ -237,13 +244,14 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
 
       #adaptation_note /-- nightly-2024-04-01
       It's this `erw` that is blowing up. The implicit arguments differ significantly. -/
+      haveI inst: IsLocalHom (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f rfl) := inferInstance
+      #check (localizationToStalk (↑S) p)
       erw [← localRingHom_comp_stalkIso_apply] at ha
-      -- TODO: this instance was found automatically before #6045
-      haveI : IsLocalHom (stalkIso (↑S) p).inv := isLocalHom_of_isIso _
-      replace ha := (isUnit_map_iff (stalkIso S p).inv _).mp ha
       -- Porting note: `f` had to be made explicit
-      replace ha := IsLocalHom.map_nonunit
-        (f := (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f _)) _ ha
+      replace ha := IsLocalRingHom.map_nonunit
+        (f := fun v => (localizationToStalk (↑S) p) ((Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f rfl) v)) (stalkToFiberRingHom (↑R) ((PrimeSpectrum.comap f) p)) ha
+        -- replace ha := IsLocalHom.map_nonunit (self := inst)
+        -- (f := (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f rfl)) ((stalkToFiberRingHom (↑R) ((PrimeSpectrum.comap f) p)) a) ha
       convert RingHom.isUnit_map (stalkIso R (PrimeSpectrum.comap f p)).inv ha
       erw [← comp_apply, show stalkToFiberRingHom R _ = (stalkIso _ _).hom from rfl,
         Iso.hom_inv_id, id_apply]
