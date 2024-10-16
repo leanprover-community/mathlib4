@@ -103,8 +103,6 @@ namespace Hom
 
 variable {X Y : Scheme.{u}} (f : Hom X Y) {U U' : Y.Opens} {V V' : X.Opens}
 
-lemma preimage_le (hUU' : U ≤ U') : f⁻¹ᵁ U ≤ f⁻¹ᵁ U' := fun _ ha ↦ hUU' ha
-
 /-- Given a morphism of schemes `f : X ⟶ Y`, and open `U ⊆ Y`,
 this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`. -/
 abbrev app (U : Y.Opens) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=

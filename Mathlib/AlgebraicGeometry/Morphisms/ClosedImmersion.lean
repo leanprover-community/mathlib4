@@ -189,7 +189,8 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
   have hwle (i : 𝒰.J) : W i ≤ (𝒰.map i)⁻¹ᵁ U := by
     show ((𝒰.obj i).basicOpen ((𝒰.map i ≫ f).app ⊤ s)) ≤ _
     rw [← Scheme.preimage_basicOpen, Scheme.comp_coeBase, Opens.map_comp_obj]
-    refine Scheme.Hom.preimage_le _ (le_trans (f.preimage_le bsle) (le_of_eq ?_))
+    refine Scheme.Hom.preimage_le_preimage_of_le _
+      (le_trans (f.preimage_le_preimage_of_le bsle) (le_of_eq ?_))
     simp [Set.preimage_image_eq _ hfinj₁]
   have h0 (i : 𝒰.J) : (𝒰.map i).appLE _ (W i) (by simp) (φ g) = 0 := by
     rw [← Scheme.Hom.appLE_map _ _ (homOfLE <| hwle i).op, ← Scheme.Hom.map_appLE _ le_rfl w.op]
