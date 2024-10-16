@@ -325,7 +325,6 @@
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
-  "Mathlib.Order.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.NumberTheory.Harmonic.Defs":
   ["Mathlib.Algebra.Order.BigOperators.Ring.Finset",
    "Mathlib.Algebra.Order.Field.Basic"],
@@ -361,7 +360,6 @@
   ["Batteries.Tactic.Init", "Mathlib.Logic.Function.Defs"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
-  "Mathlib.Data.List.TFAE": ["Batteries.Tactic.Classical"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
   "Mathlib.Data.List.ProdSigma":
   ["Batteries.Data.Nat.Lemmas", "Mathlib.Data.List.Basic"],
@@ -422,7 +420,6 @@
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.Group.Units.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
-  "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.Algebra.Group.Defs": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":

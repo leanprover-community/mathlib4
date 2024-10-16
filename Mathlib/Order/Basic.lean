@@ -11,7 +11,6 @@ import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SimpRw
 import Batteries.Data.Sum.Lemmas
-import Batteries.Tactic.Classical
 
 /-!
 # Basic definitions about `≤` and `<`
