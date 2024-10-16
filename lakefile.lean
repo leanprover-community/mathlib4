@@ -14,6 +14,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.43-pre"
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
   from git "https://github.com/leanprover-community/LeanSearchClient" @ "main"
+require "simplc" from git "https://github.com/leanprover/lean4" @ "simplc" / "tests/simplc"
 
 /-!
 ## Options for building mathlib

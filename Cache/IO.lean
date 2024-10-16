@@ -138,7 +138,8 @@ private def CacheM.getContext : IO CacheM.Context := do
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
     ("Qq", LAKEPACKAGESDIR / "Qq"),
     ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
-    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient")
+    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
+    ("simplc", LAKEPACKAGESDIR / "simplc" / "tests" / "simplc")
   ]⟩
 
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
