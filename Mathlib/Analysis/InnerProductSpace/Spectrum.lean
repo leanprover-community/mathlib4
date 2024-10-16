@@ -7,8 +7,6 @@ import Mathlib.Analysis.InnerProductSpace.Rayleigh
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.LinearAlgebra.Semisimple
-import Mathlib.Analysis.InnerProductSpace.Projection
 
 /-! # Spectral theory of self-adjoint operators
 
@@ -175,15 +173,6 @@ theorem direct_sum_isInternal (hT : T.IsSymmetric) :
     DirectSum.IsInternal fun μ : Eigenvalues T => eigenspace T μ :=
   hT.orthogonalFamily_eigenspaces'.isInternal_iff.mpr
     hT.orthogonalComplement_iSup_eigenspaces_eq_bot'
-
-theorem isSemisimple {T : Module.End 𝕜 E} (hT : T.IsSymmetric) :
-    T.IsSemisimple := by
-  refine Module.End.isSemisimple_iff.mpr fun p hp ↦ ⟨pᗮ, fun x hx ↦ ?_, IsCompl.mk ?_ ?_⟩
-  · exact invariant_perp_comap hT hp hx
-  · rw [disjoint_iff]
-    exact Submodule.inf_orthogonal_eq_bot p
-  · rw [codisjoint_iff]
-    apply Submodule.sup_orthogonal_of_completeSpace
 
 variable (hT : T.IsSymmetric)
 
