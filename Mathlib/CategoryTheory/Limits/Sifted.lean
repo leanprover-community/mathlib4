@@ -39,7 +39,7 @@ abbrev IsSiftedOrEmpty : Prop := Final (diag C)
 class IsSifted extends IsSiftedOrEmpty C : Prop where
   [nonempty : Nonempty C]
 
-attribute [instance] IsSifted.Nonempty
+attribute [instance] IsSifted.nonempty
 
 namespace IsSifted
 
@@ -54,7 +54,7 @@ lemma isSifted_of_equiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D 
                                         exact Iso.prod (e.counitIso.app c) (e.counitIso.app c))
     apply_rules [final_iff_comp_equivalence _ this.functor|>.mpr,
       final_iff_final_comp e.inverse _ |>.mpr, final_of_natIso sq.symm]
-  letI : _root_.Nonempty D := ⟨e.inverse.obj (_root_.Nonempty.some IsSifted.Nonempty)⟩
+  letI : _root_.Nonempty D := ⟨e.inverse.obj (_root_.Nonempty.some IsSifted.nonempty)⟩
   ⟨⟩
 
 /-- In particular a category is sifted iff and only if it is so when viewed as a small category -/
