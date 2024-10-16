@@ -47,7 +47,7 @@ lemma mem_locallyContant_essImage_of_isColimit_mapCocone (X : CondensedSet.{u})
   exact ⟨_, ⟨e.functor.preimageIso ((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
 
 /--
-`CondensedSet.LocallyConstant.functor` is left adjoint to the forgetful functor from light condensed
+`CondensedSet.LocallyConstant.functor` is left adjoint to the forgetful functor from condensed
 sets to sets.
 -/
 noncomputable abbrev LocallyConstant.adjunction :
