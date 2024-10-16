@@ -267,33 +267,9 @@ theorem totallyBounded_absConvexHull (h : U = TopologicalAddGroup.toUniformSpace
   rw [h] at hU
   obtain ⟨N,⟨hN₁,hN₂⟩⟩ := hU
   obtain ⟨V,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs N hN₁
-  /-
-  let d₂ := {(x,y) | y-x ∈ V}
-  obtain ⟨t,⟨htf,hts⟩⟩ := hs d₂ (by
-    simp only [h, uniformity_eq_comap_nhds_zero', Filter.mem_comap] -- d₂ is a uniformity
-    aesop)
-  have s1 : SymmetricRel d₂ := by
-    ext ⟨x,y⟩
-    simp only [mem_preimage, Prod.swap_prod_mk]
-    constructor
-    · intro h
-      simp only [mem_setOf_eq, d₂] at h
-      rw [← Balanced.neg_mem_iff hS₂.1, neg_sub] at h
-      exact h
-    · intro h
-      simp only [mem_setOf_eq, d₂] at h
-      rw [← Balanced.neg_mem_iff hS₂.1, neg_sub] at h
-      exact h
-  have e1 (y : E) : {x | (x, y) ∈ d₂} = y +ᵥ V := by
-    rw [← UniformSpace.ball_eq_of_symmetry s1, ← uniform_space_ball_eq_vadd]
-    rfl
-  -/
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
   obtain ⟨t,⟨htf,hts⟩⟩ := hs _ hS₁
 
-  /-have e2 {t₁ : Set E} : ⋃ y ∈ t₁, {x | (x, y) ∈ d₂} = t₁ + V := by
-    aesop
-  rw [e2] at hts-/
   have en {t₁ : Set E} : (⋃ y ∈ t₁, y +ᵥ V) = t₁ + V := by
     aesop
   have e4 : (absConvexHull ℝ) s ⊆ (convexHull ℝ) (t ∪ -t) + V := by
@@ -303,10 +279,6 @@ theorem totallyBounded_absConvexHull (h : U = TopologicalAddGroup.toUniformSpace
     apply (absConvexHull_add_subset ℝ)
   have e6 : TotallyBounded ((convexHull ℝ) (t ∪ -t)) := IsCompact.totallyBounded
     (Set.Finite.isCompact_convexHull (finite_union.mpr ⟨htf,Finite.neg htf⟩))
-  /-obtain ⟨t',⟨htf',hts'⟩⟩ := e6 d₂ (by
-    simp [h, uniformity_eq_comap_nhds_zero', Filter.mem_comap]
-    aesop
-  )-/
 
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at e6
   obtain ⟨t',⟨htf',hts'⟩⟩ := e6 _ hS₁
