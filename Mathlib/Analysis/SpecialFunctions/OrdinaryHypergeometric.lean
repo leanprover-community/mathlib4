@@ -176,8 +176,8 @@ theorem ordinaryHypergeometricSeries_norm_div_succ_norm (n : ℕ)
     _ = ‖Polynomial.eval a (ascPochhammer 𝕂 n)‖ * ‖Polynomial.eval a (ascPochhammer 𝕂 n)‖⁻¹ *
         ‖Polynomial.eval b (ascPochhammer 𝕂 n)‖ * ‖Polynomial.eval b (ascPochhammer 𝕂 n)‖⁻¹ *
         ‖Polynomial.eval c (ascPochhammer 𝕂 n)‖⁻¹⁻¹ * ‖Polynomial.eval c (ascPochhammer 𝕂 n)‖⁻¹ *
-        ‖(n ! : 𝕂)‖⁻¹⁻¹ * ‖(n ! : 𝕂)‖⁻¹ * ‖a + n‖⁻¹ * ‖b + n‖⁻¹ * ‖c + n‖⁻¹⁻¹ * ‖1 + (n : 𝕂)‖⁻¹⁻¹
-          := by ring_nf
+        ‖(n ! : 𝕂)‖⁻¹⁻¹ * ‖(n ! : 𝕂)‖⁻¹ * ‖a + n‖⁻¹ * ‖b + n‖⁻¹ * ‖c + n‖⁻¹⁻¹ *
+        ‖1 + (n : 𝕂)‖⁻¹⁻¹ := by ring_nf
     _ = _ := by
       simp only [inv_inv]
       repeat rw [DivisionRing.mul_inv_cancel, one_mul]
