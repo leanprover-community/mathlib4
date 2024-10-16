@@ -218,6 +218,10 @@ normal-form for the induced morphism `U.toScheme ⟶ V.toScheme`. -/
 lemma Scheme.restrictFunctor_map_left {U V : X.Opens} (i : U ⟶ V) :
     (X.restrictFunctor.map i).left = IsOpenImmersion.lift (V.ι) U.ι (by simpa using i.le) := rfl
 
+instance {U V : X.Opens} (i : U ⟶ V) : IsOpenImmersion (X.restrictFunctor.map i).left := by
+  rw [X.restrictFunctor_map_left]
+  infer_instance
+
 -- Porting note: the `by ...` used to be automatically done by unification magic
 @[reassoc]
 theorem Scheme.restrictFunctor_map_ofRestrict {U V : X.Opens} (i : U ⟶ V) :
