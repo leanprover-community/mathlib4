@@ -41,13 +41,12 @@ variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
 A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and,
 for all `R`-module homomorphism `f : N → N'` such that `id ⊗ f = 0`, we have `f = 0`.
 -/
-@[mk_iff] class FaithfullyFlat : Prop where
-  flat : Module.Flat R M := by infer_instance
+@[mk_iff] class FaithfullyFlat extends Module.Flat R M : Prop where
   submodule_ne_top :  ∀ ⦃m : Ideal R⦄ (_ : Ideal.IsMaximal m), m • (⊤ : Submodule R M) ≠ ⊤
 
 namespace FaithfullyFlat
 
-attribute [instance] FaithfullyFlat.flat
+attribute [instance] FaithfullyFlat.toFlat
 
 instance self (R : Type u) [CommRing R] : FaithfullyFlat R R where
   submodule_ne_top m h r := Ideal.eq_top_iff_one _ |>.not.1 h.ne_top <| by
@@ -73,7 +72,7 @@ lemma iff_flat_and_rTensor_faithful :
     (Flat R M ∧
       ∀ (N : Type max u v) [AddCommGroup N] [Module R N],
         Nontrivial N → Nontrivial (N ⊗[R] M)) := by
-  refine ⟨fun fl => ⟨inferInstance, ?_⟩, fun ⟨flat, faithful⟩ => ⟨flat, ?_⟩⟩
+  refine ⟨fun fl => ⟨inferInstance, ?_⟩, fun ⟨flat, faithful⟩ => ⟨?_⟩⟩
   · intro N _ _ _
     obtain ⟨n, hn⟩ := nontrivial_iff_exists_ne (0 : N) |>.1 inferInstance
     let I := (Submodule.span R {n}).annihilator
@@ -97,7 +96,7 @@ lemma iff_flat_and_rTensor_faithful :
       Function.Injective.comp
         (g := LinearMap.rTensor M inc)
         (f := (quotTensorEquivQuotSMul M I).symm.toLinearMap)
-        (Module.Flat.rTensor_preserves_injective_linearMap (h := fl.flat) inc injective_inc)
+        (Module.Flat.rTensor_preserves_injective_linearMap (h := fl.toFlat) inc injective_inc)
         (LinearEquiv.injective _)
     have := this.subsingleton
     rw [Submodule.subsingleton_quotient_iff_eq_top] at this
