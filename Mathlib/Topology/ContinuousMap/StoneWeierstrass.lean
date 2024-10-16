@@ -421,6 +421,42 @@ theorem polynomialFunctions.starClosure_topologicalClosure {𝕜 : Type*} [RCLik
   ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints _
     (Subalgebra.separatesPoints_monotone le_sup_left (polynomialFunctions_separatesPoints s))
 
+/-- An induction principle for `C(s, ℝ)` where `s` is a compact subset of `ℝ`. -/
+@[elab_as_elim]
+theorem ContinuousMap.induction_on_of_real {s : Set ℝ} [CompactSpace s]
+    {p : C(s, ℝ) → Prop} (const : ∀ r, p (.const s r)) (id : p (.restrict s <| .id ℝ))
+    (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
+    (closure : (∀ f ∈ polynomialFunctions s, p f) → ∀ f, p f) (f : C(s, ℝ)) :
+    p f := by
+  refine closure (fun f hf => ?_) f
+  rw [polynomialFunctions.eq_adjoin_X] at hf
+  induction hf using Algebra.adjoin_induction with
+  | mem f hf =>
+    simp only [toContinuousMapOnAlgHom_apply, Set.mem_singleton_iff] at hf
+    rwa [hf, toContinuousMapOn_X_eq_restrict_id]
+  | algebraMap r => exact const r
+  | add _ _ _ _ hf hg => exact add _ _ hf hg
+  | mul _ _ _ _ hf hg => exact mul _ _ hf hg
+
+/-- An induction principle for `C(s, 𝕜)` where `s` is a compact subset of `𝕜`, which is `RCLike`. -/
+@[elab_as_elim]
+theorem ContinuousMap.induction_on {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜} [CompactSpace s]
+    {p : C(s, 𝕜) → Prop} (const : ∀ r, p (.const s r)) (id : p (.restrict s <| .id 𝕜))
+    (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
+    (star : ∀ f, p f → p (star f))
+    (closure : (∀ f ∈ (polynomialFunctions s).starClosure, p f) → ∀ f, p f) (f : C(s, 𝕜)) :
+    p f := by
+  refine closure (fun f hf => ?_) f
+  rw [polynomialFunctions.starClosure_eq_adjoin_X] at hf
+  induction hf using StarAlgebra.adjoin_induction with
+  | mem f hf =>
+    simp only [toContinuousMapOnAlgHom_apply, Set.mem_singleton_iff] at hf
+    rwa [hf, toContinuousMapOn_X_eq_restrict_id]
+  | algebraMap r => exact const r
+  | add _ _ _ _ hf hg => exact add _ _ hf hg
+  | mul _ _ _ _ hf hg => exact mul _ _ hf hg
+  | star _ _ hf => exact star _ hf
+
 /-- Continuous algebra homomorphisms from `C(s, ℝ)` into an `ℝ`-algebra `A` which agree
 at `X : 𝕜[X]` (interpreted as a continuous map) are, in fact, equal. -/
 @[ext (iff := false)]
@@ -565,5 +601,10 @@ lemma ContinuousMapZero.adjoin_id_dense {s : Set 𝕜} [Zero s] (h0 : ((0 : s) :
   simp only [Set.mem_preimage, toContinuousMapHom_apply, SetLike.mem_coe, RingHom.mem_ker,
     ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
   rw [show ⟨0, h0'⟩ = (0 : s) by ext; exact h0.symm, _root_.map_zero f]
+
+open ContinuousMapZero in
+/-- An induction principle for `C(s, 𝕜)₀`. -/
+lemma ContinuousMapZero.induction_on {s : Set 𝕜} [Zero s] (h0 : ((0 : s) : 𝕜) = 0)
+    [CompactSpace s]
 
 end ContinuousMapZero
