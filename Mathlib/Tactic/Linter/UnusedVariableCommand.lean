@@ -59,6 +59,19 @@ end Lean.Syntax
 
 namespace Mathlib.Linter
 
+open Lean.Parser.Term in
+/--
+Like `Lean.Elab.Command.getBracketedBinderIds`, but returns the identifier `Syntax`,
+rather than the `Name`, in the given bracketed binder.
+-/
+def getBracketedBinderIds : Syntax → (Array Syntax)
+  | `(bracketedBinderF|($ids* $[: $ty?]? $(_annot?)?)) => ids
+  | `(bracketedBinderF|{$ids* $[: $ty?]?})             => ids
+  | `(bracketedBinderF|⦃$ids* : $_⦄)                   => ids
+  | `(bracketedBinderF|[$id : $_])                     => #[id]
+  | `(bracketedBinderF|[$f])                           => #[f]
+  | _                                                  => #[]
+
 /--
 The "unusedVariableCommand" linter emits a warning when a variable declared in `variable ...`
 is globally unused.
@@ -76,6 +89,29 @@ register_option showDefs : Bool := {
   descr := "shows which variables are introduced in a definition"
 }
 
+/-- `varsTracker` is the main tool to keep track of used variables.
+* `seen` are the variables that have been used by some declaration.
+* `dict` is the assignment of each unique variable name to the syntax that generated it.
+* `temp` is the assignment of each username of variables declared in `variable ... in`
+  that is non-empty only within the scope of the `variable ... in`.
+  This field is flushed by `usedVarsRef.clearTemp` at the end of each declaration.
+
+The intended updates to `varsTracker` should go via
+* `usedVarsRef.addUsedVarName` to add a used variable;
+* `usedVarsRef.addDict` to add a correspondence `unique name <--> syntax`;
+* `usedVarsRef.addTemp` to extend the temporary storage of information from `variable ... in`.
+-/
+structure varsTracker where
+  /-- The unique names of the variables that have been used. -/
+  seen : NameSet := {}
+  /-- The map from unique names of variables to the corresponding syntax node. -/
+  dict : NameMap Syntax := {}
+  /-- The map of the temporary "new" username to the corresponding syntax.
+  The entries of this map are temporary and help to update the remaining fields in the presence
+  of `variable ... in` -/
+  temp : NameMap Syntax := {}
+  deriving Inhabited
+
 namespace UnusedVariableCommand
 
 /--
@@ -87,7 +123,7 @@ namespace UnusedVariableCommand
 There is an exception: for variables introduced with `variable ... in`, the `Syntax`
 node is the whole `variable` command.
 -/
-initialize usedVarsRef : IO.Ref (NameSet × NameMap Syntax) ← IO.mkRef ({}, {})
+initialize usedVarsRef : IO.Ref varsTracker ← IO.mkRef {}
 
 /--
 `#show_used` is a convenience function that prints a summary of the variables that have been
@@ -106,14 +142,49 @@ elab "#show_used" : command => do
   msg := msg.push "" |>.push m!"{checkEmoji}: used" |>.push m!"{crossEmoji}: unused"
   logInfo <| .joinSep msg.toList "\n"
 
-/-- Add the (unique) name `a` to the `NameSet` of variable names that some declaration used. -/
+/-- Add the (unique) name `a` to `varsTracker.seen`: these are the variable names that some
+declaration used. -/
 def usedVarsRef.addUsedVarName (a : Name) : IO Unit := do
-  usedVarsRef.modify fun (used, varsDict) => (used.insert a, varsDict)
+  usedVarsRef.modify fun varTrack => {varTrack with seen := varTrack.seen.insert a}
 
-/-- Add the assignment `a → ref` to the `NameMap Syntax` of unique variable names. -/
+/-- Add the assignment `a → ref` to `varsTracker.temp`, where
+* `a` is the *username* (not the unique name) of a variable and
+* `ref` is the syntax node that introduces the variable called `a`.
+-/
+def usedVarsRef.addTemp (scope : Scope) : IO Unit := do
+  let pairs := scope.varUIds.zip (scope.varDecls.map getBracketedBinderIds).flatten
+  for (uniq, stx) in pairs do
+    usedVarsRef.modify fun varTrack =>
+      if varTrack.dict.contains uniq then
+        --dbg_trace "not adding {uniq} ↔ {stx}"
+        varTrack
+      else
+        --dbg_trace "adding {uniq.eraseMacroScopes} ↔ {stx} (from {uniq})"
+        {varTrack with temp := varTrack.temp.insert uniq.eraseMacroScopes stx}
+
+/-- Add the assignment `a → ref` to `varsTracker.dict`, where
+* `a` is the *unique name* (not the username) of a variable and
+* `ref` is the syntax node that introduces the variable with unique name `a`.
+-/
 def usedVarsRef.addDict (a : Name) (ref : Syntax) : IO Unit := do
-  usedVarsRef.modify fun (used, varsDict) =>
-    (used, if varsDict.contains a then varsDict else varsDict.insert a ref)
+  usedVarsRef.modify fun varTrack =>
+    -- The unique name is already present: do nothing.
+    if varTrack.dict.contains a then
+      --dbg_trace "do nothing"
+      varTrack
+    -- The username is staged in `temp`: update `dict` and remove from `temp`
+    else
+      let am := a.eraseMacroScopes
+      if let some stx := varTrack.temp.find? am then
+        --dbg_trace "unstage and add {a} {stx} (from {am})"
+        {varTrack with dict := varTrack.dict.insert a stx}
+    -- Finally, the unique name is not present and the username is not staged: extend `dict`
+    else
+      --dbg_trace "simple addition {a} {ref} ({a.eraseMacroScopes}, {varTrack.temp.toList})"
+      {varTrack with dict := varTrack.dict.insert a ref}
+
+def usedVarsRef.clearTemp : IO Unit :=
+  usedVarsRef.modify ({· with temp := {}})
 
 /--
 `includedVariables plumb` returns the unique `Name`, the user `Name` and the `Expr` of
@@ -124,22 +195,32 @@ from the local context.
 Finally, the `Bool`ean `plumb` decides whether or not `includedVariables` also extends the
 `NameSet` of variables that have been used in some declaration.
 -/
-def includedVariables (plumb : Bool) : TermElabM (Array (Name × Name × Expr)) := do
-  let c ← read
+def includedVariables (c : Term.Context) (lctx : LocalContext) (plumb : Bool) :
+    TermElabM (Array (Name × Name × Expr)) := do
+  --let c ← read
   let fvs := c.sectionFVars
   let mut varIds := #[]
-  let lctx ← getLCtx
+  --let lctx ← getLCtx
   for (a, b) in fvs do
     let ref ← getRef
-    if (lctx.findFVar? b).isNone then
-      usedVarsRef.addDict a ref
-    if (lctx.findFVar? b).isSome then
-      let mut fd := .anonymous
-      for (x, y) in c.sectionVars do
-        if y == a then fd := x
-      varIds := varIds.push (a, fd, b)
-      if plumb then
-        usedVarsRef.addUsedVarName a
+
+    --let scope ← getScope
+    --let pairs := ←
+    --  return scope.varUIds.zip (← scope.varDecls.mapM getBracketedBinderIds).flatten
+    --let x := pairs.find? (·.1 == a)
+    --dbg_trace "I found '{x}' in \n{pairs}"
+    match (lctx.findFVar? b) with
+      | none =>
+        --dbg_trace "\nnot found {b}"
+        usedVarsRef.addDict a ref
+      | some _d =>
+        --dbg_trace "\nfound username {d.userName}"
+        let mut fd := .anonymous
+        for (x, y) in c.sectionVars do
+          if y == a then fd := x
+        varIds := varIds.push (a, fd, b)
+        if plumb then
+          usedVarsRef.addUsedVarName a
   return varIds
 
 /--
@@ -149,8 +230,12 @@ The variant `included_variables plumb` is intended only for the internal use of 
 unused variable command linter: besides printing the message, `plumb` also adds records that
 the variables included in the current declaration really are included.
 -/
-elab "included_variables" plumb:(ppSpace &"plumb")? : tactic => do
-    let (_plb, usedUserIds) := (← includedVariables plumb.isSome).unzip
+elab "included_variables" plumb:(ppSpace &"plumb")? : tactic => Tactic.withMainContext do
+    let c ← readThe Term.Context
+    let lctx ← getLCtx
+    --let ref := (← usedVarsRef.get).dict
+    --dbg_trace ref.toList
+    let (_plb, usedUserIds) := (← includedVariables c lctx plumb.isSome).unzip
     let msgs ← usedUserIds.mapM fun (userName, expr) =>
       return m!"'{userName}' of type '{← Meta.inferType expr}'"
     if ! msgs.isEmpty then
@@ -259,19 +344,6 @@ def mkThm' (cmd : Syntax) (typeSorry : Bool := false) : CommandElabM Syntax := d
   let typ ← if typeSorry then do return (← `($(mkIdent `toFalse) sorry)).raw else getPropValue cmd
   mkThmCore (mkIdent `helr) ((findBinders cmd ++ exts).map (⟨·⟩)) typ
 
-open Lean.Parser.Term in
-/--
-Like `Lean.Elab.Command.getBracketedBinderIds`, but returns the identifier `Syntax`,
-rather than the `Name`, in the given bracketed binder.
--/
-def getBracketedBinderIds : Syntax → CommandElabM (Array Syntax)
-  | `(bracketedBinderF|($ids* $[: $ty?]? $(_annot?)?)) => return ids
-  | `(bracketedBinderF|{$ids* $[: $ty?]?})             => return ids
-  | `(bracketedBinderF|⦃$ids* : $_⦄)                   => return ids
-  | `(bracketedBinderF|[$id : $_])                     => return #[id]
-  | `(bracketedBinderF|[$f])                           => return #[f]
-  | _                                                  => throwUnsupportedSyntax
-
 /--
 `getNamelessVars exp` takes as input an expression, assumes that it is an iterated
 `forallE`/`lam` and reports whether or not each such constructor has macro-scoped name or not.
@@ -359,6 +431,17 @@ def exampleToDef (stx : Syntax) (nm : Name) : Syntax :=
       | _ => return none
   toDecl
 
+def eraseUniverseAnnotations {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) :
+    m Syntax := do
+  stx.replaceM fun s => do
+    match s.getKind with
+      | ``Parser.Command.declId =>
+        `(declId| $(mkIdentFrom s s[0].getId))
+      | ``Parser.Term.explicitUniv =>
+        let id ← `($(⟨s[0]⟩))
+        return mkAtomFrom id id.raw.getId.toString
+      | _ => return none
+
 @[inherit_doc Mathlib.Linter.linter.unusedVariableCommand]
 def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.unusedVariableCommand (← getOptions) do
@@ -369,7 +452,8 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
   -- we look inside `stx` to find a terminal command.
   -- This simplifies testing: writing `open Nat in #exit` prints the current linter output
   if (stx.find? (Parser.isTerminalCommand ·)).isSome then
-      let (used, all) ← usedVarsRef.get
+      let varTrack ← usedVarsRef.get
+      let (used, all) := (varTrack.seen, varTrack.dict)
       let sorted := used.toArray.qsort (·.toString < ·.toString)
       let unused := all.toList.filter (!sorted.contains ·.1)
       for (uniq, user) in unused do
@@ -378,11 +462,16 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
           | x          => Linter.logLint linter.unusedVariableCommand user m!"'{x}' is unused"
   -- if there is a `variable` command in `stx`, then we update `usedVarsRef` with all the
   -- information that is available
-  if (stx.find? (·.isOfKind ``Lean.Parser.Command.variable)).isSome then
-    let scope ← getScope
-    let pairs := scope.varUIds.zip (← scope.varDecls.mapM getBracketedBinderIds).flatten
-    for (uniq, user) in pairs do
-      usedVarsRef.addDict uniq user
+  if let some vars := (stx.find? (·.isOfKind ``Lean.Parser.Command.variable)) then
+    --logInfo m!"variable found {vars}"
+    elabCommand vars
+    --dbg_trace "* updating temps"
+    usedVarsRef.addTemp (← getScope)
+    --let scope ← getScope
+    --let pairs := scope.varUIds.zip (scope.varDecls.map getBracketedBinderIds).flatten
+    --for (uniq, user) in pairs do
+    --  usedVarsRef.addDict uniq user
+    --dbg_trace "* temp updated\n"
   -- On all declarations that are not examples, we "rename" them, so that we can elaborate
   -- their syntax again, and we replace `:= proof-term` by `:= by included_variables plumb: sorry`
   -- in order to update the `usedVarsRef` counter.
@@ -421,21 +510,20 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     let mut filt := []
     let mut filt2 := []
     -- used to test when the `for` loop below can be simplified
-    let cond := ← match stx with | `(variable $_* in $_) => return false | _ => return true
+    --let cond := ← match stx with | `(variable $_* in $_) => return false | _ => return true
+    --dbg_trace "usedVarNames: {usedVarNames}"
     for s in usedVarNames do
-      filt2 := filt2 ++ left2.filter fun (_a, b) =>
-        let new :=
-          if _a.eraseMacroScopes.isAnonymous then
-            s == b.prettyPrint.pretty
-          else
-            s == _a.eraseMacroScopes.toString
-        if cond && new != (s == b.prettyPrint.pretty) then dbg_trace "error (variable in)!"; new else
-        if (!cond) && new == (s == b.prettyPrint.pretty) then dbg_trace "error (not variable in)!"; new else
-        new
+      let newL := ← left2.filterM fun (_a, b) => do
+        --dbg_trace "s: {s}\npp: '{(← eraseUniverseAnnotations b).prettyPrint.pretty.trim}'\n"
+        return s == (← eraseUniverseAnnotations b).prettyPrint.pretty.trim
+      --dbg_trace "newL: {newL}"
+      filt2 := filt2 ++ newL
 
       filt := filt ++ left.filter (s.isPrefixOf ·.toString)
     for (s, _) in filt2 do
       usedVarsRef.addUsedVarName s
+    -- Clean up the temporary annotations due to `variable ... in`
+    usedVarsRef.clearTemp
 
 initialize addLinter unusedVariableCommandLinter
 
