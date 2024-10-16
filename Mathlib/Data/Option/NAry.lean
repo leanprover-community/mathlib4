@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Batteries.Tactic.Init
-import Batteries.Logic
+import Mathlib.Logic.Function.Defs
 
 /-!
 # Binary map of options
