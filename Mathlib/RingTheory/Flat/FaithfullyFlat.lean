@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Judith Ludwig, Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Judith Ludwig, Florent Schaffhauser
+Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
 
 import Mathlib.RingTheory.Flat.Stability
