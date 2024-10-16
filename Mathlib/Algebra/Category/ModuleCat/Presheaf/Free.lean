@@ -48,10 +48,7 @@ noncomputable def free : (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R where
       naturality := fun {X Y} f ↦ by
         dsimp
         ext x
-        simp only [ModuleCat.coe_comp, Function.comp_apply, ModuleCat.freeDesc_apply,
-          ModuleCat.restrictScalars.map_apply, ModuleCat.free_map_apply]
-        congr 1
-        exact NatTrans.naturality_apply φ f x }
+        simp [FunctorToTypes.naturality] }
 
 section
 
