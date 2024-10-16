@@ -392,12 +392,6 @@ def mapₗ (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y]
   map_add' := by aesop
   map_smul' := by aesop
 
-@[simp]
-lemma mapₗ_comp (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y]
-    [AddCommMonoid Z] [Module R Z] {W : Type*} [AddCommMonoid W] [Module R W]
-    (f : Y →ₗ[R] Z) (g : Z →ₗ[R] W) : @mapₗ X _ _ _ R _ _ _ _ _ g ∘ₗ mapₗ R f = mapₗ R (g ∘ₗ f) :=
-  rfl
-
 /-- `LocallyConstant.map` as a `RingHom`. -/
 @[simps!]
 def mapRingHom [Semiring Y] [Semiring Z] (f : Y →+* Z) :
