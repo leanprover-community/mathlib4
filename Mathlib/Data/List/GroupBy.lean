@@ -37,8 +37,8 @@ private theorem groupByLoop_eq_append {r : α → α → Bool} {l : List α} {a 
     conv_rhs => rw [IH]
     simp
 
-private theorem join_groupByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
-    (groupBy.loop r l a g []).join = g.reverse ++ a :: l := by
+private theorem flatten_groupByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
+    (groupBy.loop r l a g []).flatten = g.reverse ++ a :: l := by
   induction l generalizing a g with
   | nil => simp [groupBy.loop]
   | cons b l IH =>
@@ -46,10 +46,12 @@ private theorem join_groupByLoop {r : α → α → Bool} {l : List α} {a : α}
     split <;> simp [IH]
 
 @[simp]
-theorem join_groupBy (r : α → α → Bool) (l : List α) : (l.groupBy r).join = l :=
+theorem flatten_groupBy (r : α → α → Bool) (l : List α) : (l.groupBy r).flatten = l :=
   match l with
   | nil => rfl
-  | cons _ _ => join_groupByLoop
+  | cons _ _ => flatten_groupByLoop
+
+@[deprecated (since := "2024-10-15")] alias join_groupBy := flatten_groupBy
 
 private theorem nil_not_mem_groupByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
     [] ∉ groupBy.loop r l a g [] := by

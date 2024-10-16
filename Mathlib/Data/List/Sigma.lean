@@ -118,12 +118,14 @@ protected theorem NodupKeys.nodup {l : List (Sigma β)} : NodupKeys l → Nodup 
 theorem perm_nodupKeys {l₁ l₂ : List (Sigma β)} (h : l₁ ~ l₂) : NodupKeys l₁ ↔ NodupKeys l₂ :=
   (h.map _).nodup_iff
 
-theorem nodupKeys_join {L : List (List (Sigma β))} :
-    NodupKeys (join L) ↔ (∀ l ∈ L, NodupKeys l) ∧ Pairwise Disjoint (L.map keys) := by
-  rw [nodupKeys_iff_pairwise, pairwise_join, pairwise_map]
+theorem nodupKeys_flatten {L : List (List (Sigma β))} :
+    NodupKeys (flatten L) ↔ (∀ l ∈ L, NodupKeys l) ∧ Pairwise Disjoint (L.map keys) := by
+  rw [nodupKeys_iff_pairwise, pairwise_flatten, pairwise_map]
   refine and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) ?_
   apply iff_of_eq; congr with (l₁ l₂)
   simp [keys, disjoint_iff_ne, Sigma.forall]
+
+@[deprecated (since := "2024-10-15")] alias nodupKeys_join := nodupKeys_flatten
 
 theorem nodup_enum_map_fst (l : List α) : (l.enum.map Prod.fst).Nodup := by simp [List.nodup_range]
 
