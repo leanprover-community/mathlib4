@@ -192,6 +192,7 @@ instance IsStarNormal.instNonUnitalContinuousFunctionalCalculus {A : Type*} [Non
     NonUnitalContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) :=
   RCLike.nonUnitalContinuousFunctionalCalculus Unitization.isStarNormal_inr
 
+open Unitization in
 set_option maxSynthPendingDepth 2 in
 lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalNormedRing A]
     [StarRing A] [CStarRing A] [CompleteSpace A] [NormedSpace ℂ A] [IsScalarTower ℂ A A]
@@ -199,12 +200,12 @@ lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalNormedRing A]
     (inrNonUnitalStarAlgHom ℂ A).comp (cfcₙHom ha) =
       cfcₙAux (isStarNormal_inr (R := ℂ) (A := A)) a ha := by
   have h (a : A) := isStarNormal_inr (R := ℂ) (A := A) (a := a)
-  --- why?!?!?! This is so annoying
+  --- why?!?!?! This is so annoying; hopefully fixed by #16953
   refine @UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id
     _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ rfl _ _ ?_ ?_ ?_
-  · show Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
+  · show Continuous (fun f ↦ (cfcₙHom ha f : Unitization ℂ A)); fun_prop
   · exact closedEmbedding_cfcₙAux @(h) a ha |>.continuous
-  · trans (a : A⁺¹)
+  · trans (a : Unitization ℂ A)
     · congrm(inr $(cfcₙHom_id ha))
     · exact cfcₙAux_id @(h) a ha |>.symm
 

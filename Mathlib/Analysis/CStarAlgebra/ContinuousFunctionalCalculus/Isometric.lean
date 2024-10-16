@@ -8,7 +8,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 local notation "σ" => spectrum
 local notation "σₙ" => quasispectrum
 
-/-! ### Isometric continuous functional calculus
+/-! # Isometric continuous functional calculus
 
 This file adds a class for an *isometric* continuous functional calculus. This is separate from the
 usual `ContinuousFunctionalCalculus` class because we prefer not to require a metric (or a norm) on
@@ -20,6 +20,7 @@ the main purpose is to allow for the continuous functional calculus to be a isom
 scalar rings `ℝ` and `ℝ≥0` too.
 -/
 
+/-! ### Isometric continuous functional calculus for unital algebras -/
 section Unital
 
 /-- An extension of the `ContinuousFunctionalCalculus` requiring that `cfcHom` is an isometry. -/
@@ -309,8 +310,6 @@ section Complex
 variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [CompleteSpace A]
   [NormedSpace ℂ A] [StarModule ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
 
-local postfix:max "⁺¹" => Unitization ℂ
-
 open Unitization
 
 
@@ -323,7 +322,7 @@ instance IsStarNormal.instNonUnitalIsometricContinuousFunctionalCalculus :
       inr_comp_cfcₙHom_eq_cfcₙAux a, cfcₙAux]
     simp only [NonUnitalStarAlgHom.comp_assoc, NonUnitalStarAlgHom.comp_apply,
       toContinuousMapHom_apply, NonUnitalStarAlgHom.coe_coe]
-    rw [norm_cfcHom (a : A⁺¹), StarAlgEquiv.norm_map]
+    rw [norm_cfcHom (a : Unitization ℂ A), StarAlgEquiv.norm_map]
     rfl
 
 instance IsSelfAdjoint.instNonUnitalIsometricContinuousFunctionalCalculus :
