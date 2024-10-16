@@ -287,7 +287,7 @@ instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) := by
 @[reassoc]
 theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     f ≫ toSpecΓ S = toSpecΓ R ≫ Γ.map (Spec.toLocallyRingedSpace.map f.op).op := by
-  -- Porting note: `ext` failed to pick up one of the three lemmas
+  -- Porting note (#11041): `ext` failed to pick up one of the three lemmas
   refine RingHom.ext fun x => Subtype.ext <| funext fun x' => ?_; symm
   apply Localization.localRingHom_to_map
 

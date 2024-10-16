@@ -230,7 +230,8 @@ theorem Scheme.restrictFunctor_map_ofRestrict {U V : X.Opens} (i : U ⟶ V) :
 
 theorem Scheme.restrictFunctor_map_base {U V : X.Opens} (i : U ⟶ V) :
     (X.restrictFunctor.map i).1.val.base = (Opens.toTopCat _).map i := by
-  ext a; refine Subtype.ext ?_ -- Porting note: `ext` did not pick up `Subtype.ext`
+  ext a
+  ext a; refine Subtype.ext ?_ -- Porting note (#11041): `ext` did not pick up `Subtype.ext`
   exact (congr_arg (fun f : X.restrict U.openEmbedding ⟶ X => f.val.base a)
         (X.restrictFunctor_map_ofRestrict i))
 
@@ -392,13 +393,13 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.
     -- Porting note: this rewrite was not necessary
     rw [SetLike.mem_coe]
     convert hx'
-    -- Porting note: `ext1` is not compiling
+    -- Porting note (#11041): `ext1` is not compiling
     refine Subtype.ext ?_
     exact (morphismRestrict_base_coe f U ⟨x, hx⟩).symm
   · rintro ⟨⟨x, hx⟩, hx' : _ ∈ V.1, rfl : x = _⟩
     refine ⟨⟨_, hx⟩, (?_ : (f ∣_ U).val.base ⟨x, hx⟩ ∈ V.1), rfl⟩
     convert hx'
-    -- Porting note: `ext1` is compiling
+    -- Porting note (#11041): `ext1` is compiling
     refine Subtype.ext ?_
     exact morphismRestrict_base_coe f U ⟨x, hx⟩
 
