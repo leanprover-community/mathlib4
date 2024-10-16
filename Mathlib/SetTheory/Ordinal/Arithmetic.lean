@@ -865,6 +865,12 @@ theorem zero_div (a : Ordinal) : 0 / a = 0 :=
 theorem mul_div_le (a b : Ordinal) : b * (a / b) ≤ a :=
   if b0 : b = 0 then by simp only [b0, zero_mul, Ordinal.zero_le] else (le_div b0).1 le_rfl
 
+theorem div_le_left {a b : Ordinal} (h : a ≤ b) (c : Ordinal) : a / c ≤ b / c := by
+  obtain rfl | hc := eq_or_ne c 0
+  · rw [div_zero, div_zero]
+  · rw [le_div hc]
+    exact (mul_div_le a c).trans h
+
 theorem mul_add_div (a) {b : Ordinal} (b0 : b ≠ 0) (c) : (b * a + c) / b = a + c / b := by
   apply le_antisymm
   · apply (div_le b0).2
