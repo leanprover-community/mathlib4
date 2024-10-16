@@ -271,7 +271,7 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr_arg (Quot.mk _) <| by
           simp only [iterate_map_zero, iterate_zero_apply, add_zero]
-    sub_eq_add_neg := fun a b => rfl
+    sub_eq_add_neg := fun _ _ => rfl
     neg_add_cancel := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ => by
         simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, iterate_map_neg, neg_add_cancel, mk_zero_right]
@@ -495,9 +495,9 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) where
     rw [mul_inv_cancel₀ this, iterate_map_one]
   inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
   nnqsmul := _
-  nnqsmul_def := fun q a  => rfl
+  nnqsmul_def := fun _ _  => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 instance instField : Field (PerfectClosure K p) :=
   { (inferInstance : DivisionRing (PerfectClosure K p)),

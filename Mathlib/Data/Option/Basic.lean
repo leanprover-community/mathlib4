@@ -149,7 +149,7 @@ theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) �
   rfl
 
 theorem pmap_map (g : γ → α) (x : Option γ) (H) :
-    pmap f (x.map g) H = pmap (fun a h ↦ f (g a) h) x fun a h ↦ H _ (mem_map_of_mem _ h) := by
+    pmap f (x.map g) H = pmap (fun a h ↦ f (g a) h) x fun _ h ↦ H _ (mem_map_of_mem _ h) := by
   cases x <;> simp only [map_none', map_some', pmap]
 
 theorem map_pmap (g : β → γ) (f : ∀ a, p a → β) (x H) :
@@ -164,7 +164,7 @@ theorem pmap_eq_map (p : α → Prop) (f : α → β) (x H) :
 
 theorem pmap_bind {α β γ} {x : Option α} {g : α → Option β} {p : β → Prop} {f : ∀ b, p b → γ} (H)
     (H' : ∀ (a : α), ∀ b ∈ g a, b ∈ x >>= g) :
-    pmap f (x >>= g) H = x >>= fun a ↦ pmap f (g a) fun b h ↦ H _ (H' a _ h) := by
+    pmap f (x >>= g) H = x >>= fun a ↦ pmap f (g a) fun _ h ↦ H _ (H' a _ h) := by
   cases x <;> simp only [pmap, bind_eq_bind, none_bind, some_bind]
 
 theorem bind_pmap {α β γ} {p : α → Prop} (f : ∀ a, p a → β) (x : Option α) (g : β → Option γ) (H) :
@@ -233,8 +233,8 @@ theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u �
 theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a b = b) :
     ∀ o₁ o₂, liftOrGet f o₁ o₂ = o₁ ∨ liftOrGet f o₁ o₂ = o₂
   | none, none => Or.inl rfl
-  | some a, none => Or.inl rfl
-  | none, some b => Or.inr rfl
+  | some _, none => Or.inl rfl
+  | none, some _ => Or.inr rfl
   | some a, some b => by simpa [liftOrGet] using h a b
 
 /-- Given an element of `a : Option α`, a default element `b : β` and a function `α → β`, apply this

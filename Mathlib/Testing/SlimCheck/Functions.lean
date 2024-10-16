@@ -423,7 +423,7 @@ one is a permutation of the other.
 -/
 protected def shrink {α : Type} [DecidableEq α] :
     InjectiveFunction α → List (InjectiveFunction α)
-  | ⟨xs, h₀, h₁⟩ => do
+  | ⟨_, h₀, h₁⟩ => do
     let ⟨xs', ys', h₀, h₁⟩ ← InjectiveFunction.shrinkPerm ⟨_, _, h₀, h₁⟩
     have h₃ : xs'.length ≤ ys'.length := le_of_eq (List.Perm.length_eq h₀)
     have h₄ : ys'.length ≤ xs'.length := le_of_eq (List.Perm.length_eq h₀.symm)

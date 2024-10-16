@@ -57,7 +57,7 @@ def isFraction {U : Opens (PrimeSpectrum R)} (f : ∀ 𝔭 : U, Localizations M 
 The property of a function `f : ∏_{x ∈ U}, Mₓ` being a fraction is stable under restriction.
 -/
 def isFractionPrelocal : PrelocalPredicate (Localizations M) where
-  pred {U} f := isFraction M f
+  pred {_} f := isFraction M f
   res := by rintro V U i f ⟨m, s, w⟩; exact ⟨m, s, fun x => w (i x)⟩
 
 /--

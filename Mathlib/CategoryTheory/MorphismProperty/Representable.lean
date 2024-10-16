@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 In this file we define and develop basic results about relatively representable morphisms.
 
-Classically, a morphism `f : X ⟶ Y` of presheaves is said to be representable if for any morphism
+Classically, a morphism `f : F ⟶ G` of presheaves is said to be representable if for any morphism
 `g : yoneda.obj X ⟶ G`, there exists a pullback square of the following form
 ```
   yoneda.obj Y --yoneda.map snd--> yoneda.obj X
@@ -25,16 +25,14 @@ Classically, a morphism `f : X ⟶ Y` of presheaves is said to be representable 
 
 In this file, we define a notion of relative representability which works with respect to any
 functor, and not just `yoneda`. The fact that a morphism `f : F ⟶ G` between presheaves is
-representable in the classical case will then be given by `yoneda.relativelyRepresentable f`.
-
-
-
+representable in the classical case will then be given by `F.relativelyRepresentable f`.
+`
 ## Main definitions
 Throughout this file, `F : C ⥤ D` is a functor between categories `C` and `D`.
 
-* We define `relativelyRepresentable` as a `MorphismProperty`. A morphism `f : X ⟶ Y` in `D` is
-  said to be relatively representable with respect to `F`, if for any `g : F.obj a ⟶ Y`, there
-  exists a pullback square of the following form
+* `Functor.relativelyRepresentable`: A morphism `f : X ⟶ Y` in `D` is said to be relatively
+  representable with respect to `F`, if for any `g : F.obj a ⟶ Y`, there exists a pullback square
+  of the following form
 ```
   F.obj b --F.map snd--> F.obj a
       |                     |
@@ -43,6 +41,10 @@ Throughout this file, `F : C ⥤ D` is a functor between categories `C` and `D`.
       v                     v
       X ------- f --------> Y
 ```
+
+* `MorphismProperty.relative`: Given a morphism property `P` in `C`, a morphism `f : X ⟶ Y` in `D`
+  satisfies `P.relative F` if it is relatively representable and for any `g : F.obj a ⟶ Y`, the
+  property `P` holds for any represented pullback of `f` by `g`.
 
 ## API
 
@@ -259,7 +261,8 @@ end
 
 /-- When `C` has pullbacks, then `F.map f` is representable with respect to `F` for any
 `f : a ⟶ b` in `C`. -/
-lemma map [Full F] [PreservesLimitsOfShape WalkingCospan F] [HasPullbacks C] {a b : C} (f : a ⟶ b) :
+lemma map [Full F] [HasPullbacks C] {a b : C} (f : a ⟶ b)
+    [∀ c (g : c ⟶ b), PreservesLimit (cospan f g) F] :
     F.relativelyRepresentable (F.map f) := fun c g ↦ by
   obtain ⟨g, rfl⟩ := F.map_surjective g
   refine ⟨Limits.pullback f g, Limits.pullback.snd f g, F.map (Limits.pullback.fst f g), ?_⟩
@@ -287,5 +290,88 @@ instance respectsIso : RespectsIso F.relativelyRepresentable :=
   (stableUnderBaseChange F).respectsIso
 
 end Functor.relativelyRepresentable
+
+namespace MorphismProperty
+
+open Functor.relativelyRepresentable
+
+variable {X Y : D} (P : MorphismProperty C)
+
+/-- Given a morphism property `P` in a category `C`, a functor `F : C ⥤ D` and a morphism
+`f : X ⟶ Y` in `D`. Then `f` satisfies the morphism property `P.relative` with respect to `F` iff:
+* The morphism is representable with respect to `F`
+* For any morphism `g : F.obj a ⟶ Y`, the property `P` holds for any represented pullback of
+  `f` by `g`. -/
+def relative : MorphismProperty D :=
+  fun X Y f ↦ F.relativelyRepresentable f ∧
+    ∀ ⦃a b : C⦄ (g : F.obj a ⟶ Y) (fst : F.obj b ⟶ X) (snd : b ⟶ a)
+      (_ : IsPullback fst (F.map snd) f g), P snd
+
+/-- Given a morphism property `P` in a category `C`, a morphism `f : F ⟶ G` of presheaves in the
+category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
+* The morphism is representable.
+* For any morphism `g : F.obj a ⟶ G`, the property `P` holds for any represented pullback of
+  `f` by `g`.
+
+This is implemented as a special case of the more general notion of `P.relative`, to the case when
+the functor `F` is `yoneda`. -/
+abbrev presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v₁) := P.relative yoneda
+
+variable {P} {F}
+
+/-- A morphism satisfying `P.relative` is representable. -/
+lemma relative.rep {f : X ⟶ Y} (hf : P.relative F f) : F.relativelyRepresentable f :=
+  hf.1
+
+lemma relative.property {f : X ⟶ Y} (hf : P.relative F f) :
+    ∀ ⦃a b : C⦄ (g : F.obj a ⟶ Y) (fst : F.obj b ⟶ X) (snd : b ⟶ a)
+    (_ : IsPullback fst (F.map snd) f g), P snd :=
+  hf.2
+
+lemma relative.property_snd {f : X ⟶ Y} (hf : P.relative F f) {a : C} (g : F.obj a ⟶ Y) :
+    P (hf.rep.snd g) :=
+  hf.property g _ _ (hf.rep.isPullback g)
+
+/-- Given a morphism property `P` which respects isomorphisms, then to show that a morphism
+`f : X ⟶ Y` satisfies `P.relative` it suffices to show that:
+* The morphism is representable.
+* For any morphism `g : F.obj a ⟶ G`, the property `P` holds for *some* represented pullback
+of `f` by `g`. -/
+lemma relative.of_exists [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
+    (h₀ : ∀ ⦃a : C⦄ (g : F.obj a ⟶ Y), ∃ (b : C) (fst : F.obj b ⟶ X) (snd : b ⟶ a)
+      (_ : IsPullback fst (F.map snd) f g), P snd) : P.relative F f := by
+  refine ⟨fun a g ↦ ?_, fun a b g fst snd h ↦ ?_⟩
+  all_goals obtain ⟨c, g_fst, g_snd, BC, H⟩ := h₀ g
+  · refine ⟨c, g_snd, g_fst, BC⟩
+  · refine (P.arrow_mk_iso_iff ?_).2 H
+    exact Arrow.isoMk (F.preimageIso (h.isoIsPullback X (F.obj a) BC)) (Iso.refl _)
+      (F.map_injective (by simp))
+
+lemma relative_of_snd [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
+    (hf : F.relativelyRepresentable f) (h : ∀ ⦃a : C⦄ (g : F.obj a ⟶ Y), P (hf.snd g)) :
+    P.relative F f :=
+  relative.of_exists (fun _ g ↦ ⟨hf.pullback g, hf.fst g, hf.snd g, hf.isPullback g, h g⟩)
+
+/-- If `P : MorphismProperty C` is stable under base change, `F` is fully faithful and preserves
+pullbacks, and `C` has all pullbacks, then for any `f : a ⟶ b` in `C`, `F.map f` satisfies
+`P.relative` if `f` satisfies `P`. -/
+lemma relative_map [F.Faithful] [F.Full] [HasPullbacks C] (hP : StableUnderBaseChange P)
+    {a b : C} {f : a ⟶ b} [∀ c (g : c ⟶ b), PreservesLimit (cospan f g) F]
+    (hf : P f) : P.relative F (F.map f) := by
+  have := StableUnderBaseChange.respectsIso hP
+  apply relative.of_exists
+  intro Y' g
+  obtain ⟨g, rfl⟩ := F.map_surjective g
+  exact ⟨_, _, _, (IsPullback.of_hasPullback f g).map F, hP.snd _ _ hf⟩
+
+lemma of_relative_map {a b : C} {f : a ⟶ b} (hf : P.relative F (F.map f)) : P f :=
+  hf.property (𝟙 _) (𝟙 _) f (IsPullback.id_horiz (F.map f))
+
+lemma relative_map_iff [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCospan F]
+    [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : X ⟶ Y} :
+    P.relative F (F.map f) ↔ P f :=
+  ⟨fun hf ↦ of_relative_map hf, fun hf ↦ relative_map hP hf⟩
+
+end MorphismProperty
 
 end CategoryTheory
