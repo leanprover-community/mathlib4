@@ -698,7 +698,7 @@ instance instPartialOrder : PartialOrder (VectorMeasure α M) where
   le_trans _ _ _ h₁ h₂ i hi := le_trans (h₁ i hi) (h₂ i hi)
   le_antisymm _ _ h₁ h₂ := ext fun i hi => le_antisymm (h₁ i hi) (h₂ i hi)
 
-variable {u v w : VectorMeasure α M}
+variable {v w : VectorMeasure α M}
 
 theorem le_iff : v ≤ w ↔ ∀ i, MeasurableSet i → v i ≤ w i := Iff.rfl
 

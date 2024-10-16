@@ -258,7 +258,7 @@ theorem zero_morphism_ext {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0) → f = 0 :
 theorem zero_morphism_ext' {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0) → 0 = f :=
   Eq.symm ∘ zero_morphism_ext f
 
--- Porting note: these are no longer valid as `ext` lemmas.
+-- Porting note (#11182): these are no longer valid as `ext` lemmas.
 -- scoped[Pseudoelement]
 --   attribute [ext]
 --     CategoryTheory.Abelian.Pseudoelement.zero_morphism_ext

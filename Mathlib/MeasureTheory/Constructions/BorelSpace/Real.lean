@@ -484,7 +484,7 @@ theorem exists_spanning_measurableSet_le {f : α → ℝ≥0} (hf : Measurable f
   let sets n := sigma_finite_sets n ∩ norm_sets n
   have h_meas : ∀ n, MeasurableSet (sets n) := by
     refine fun n => MeasurableSet.inter ?_ ?_
-    · exact measurable_spanningSets μ n
+    · exact measurableSet_spanningSets μ n
     · exact hf measurableSet_Iic
   have h_finite : ∀ n, μ (sets n) < ∞ := by
     refine fun n => (measure_mono Set.inter_subset_left).trans_lt ?_

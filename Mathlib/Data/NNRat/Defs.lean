@@ -61,7 +61,7 @@ deriving instance Inhabited for NNRat
 
 namespace NNRat
 
-variable {α : Type*} {p q : ℚ≥0}
+variable {p q : ℚ≥0}
 
 @[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
 
@@ -345,7 +345,7 @@ See also `Rat.divInt` and `mkRat`. -/
 def divNat (n d : ℕ) : ℚ≥0 :=
   ⟨.divInt n d, Rat.divInt_nonneg (Int.ofNat_zero_le n) (Int.ofNat_zero_le d)⟩
 
-variable {n₁ n₂ d₁ d₂ d : ℕ}
+variable {n₁ n₂ d₁ d₂ : ℕ}
 
 @[simp, norm_cast] lemma coe_divNat (n d : ℕ) : (divNat n d : ℚ) = .divInt n d := rfl
 
