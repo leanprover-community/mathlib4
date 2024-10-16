@@ -1388,7 +1388,7 @@ theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal
     (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
   H.map_iSup g
 
-theorem IsNormal.map_isLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {o : Ordinal}
+theorem IsNormal.apply_of_isLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {o : Ordinal}
     (ho : IsLimit o) : f o = sSup (f '' Iio o) := by
   have : (Iio o).Nonempty := ⟨0, ho.pos⟩
   rw [← H.map_sSup this, ho.sSup_Iio]
