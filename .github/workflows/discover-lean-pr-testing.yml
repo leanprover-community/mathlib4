@@ -48,7 +48,7 @@ jobs:
         git clone --depth 30 "$NIGHTLY_URL"
         
         # Navigate to the cloned repository
-        cd lean4-nightly
+        cd lean4-nightly || exit 1
         YESTERDAY="${{ steps.set-yesterday.outputs.yesterday }}"
         TODAY="${{ steps.fetch-date.outputs.today }}"
         PRS=$(git log --oneline "nightly-$YESTERDAY..nightly-$TODAY" | sed 's/.*(#\([0-9]\+\))$/\1/')
@@ -84,7 +84,17 @@ jobs:
         echo "'$RELEVANT_BRANCHES'"
         echo "branches=$RELEVANT_BRANCHES" >> "$GITHUB_OUTPUT"
 
+    - name: Check if there are relevant branches
+      id: check-branches
+      run: |
+        if [ -z "${{ steps.find-branches.outputs.branches }}" ]; then
+          echo "no_branches=true" >> "$GITHUB_ENV"
+        else
+          echo "no_branches=false" >> "$GITHUB_ENV"
+        fi
+
     - name: Send message on Zulip
+      if: env.no_branches == 'false'
       uses: zulip/github-actions-zulip/send-message@v1
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
