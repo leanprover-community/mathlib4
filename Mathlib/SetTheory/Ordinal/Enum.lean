@@ -58,15 +58,18 @@ private theorem enumOrd_mem_aux (hs : ¬ BddAbove s) (o : Ordinal) :
 theorem enumOrd_mem (hs : ¬ BddAbove s) (o : Ordinal) : enumOrd s o ∈ s :=
   (enumOrd_mem_aux hs o).1
 
-theorem enumOrd_strictMono (hs : ¬ BddAbove s) : StrictMono (enumOrd s) :=
+theorem strictMono_enumOrd (hs : ¬ BddAbove s) : StrictMono (enumOrd s) :=
   fun a b ↦ (enumOrd_mem_aux hs b).2 a
+
+@[deprecated (since := "2024-10-15")]
+alias enumOrd_strictMono := strictMono_enumOrd
 
 theorem enumOrd_succ_le (hs : ¬ BddAbove s) (ha : a ∈ s) (hb : enumOrd s b < a) :
     enumOrd s (succ b) ≤ a := by
   apply enumOrd_le_of_forall_lt ha
   intro c hc
   rw [lt_succ_iff] at hc
-  exact ((enumOrd_strictMono hs).monotone hc).trans_lt hb
+  exact ((strictMono_enumOrd hs).monotone hc).trans_lt hb
 
 theorem range_enumOrd (hs : ¬ BddAbove s) : range (enumOrd s) = s := by
   ext a
@@ -79,7 +82,7 @@ theorem range_enumOrd (hs : ¬ BddAbove s) : range (enumOrd s) = s := by
     · intro b hb
       by_contra! hb'
       exact hb.not_le (csInf_le' hb')
-    · exact csInf_mem (s := t) ⟨a, (enumOrd_strictMono hs).id_le a⟩
+    · exact csInf_mem (s := t) ⟨a, (strictMono_enumOrd hs).id_le a⟩
 
 theorem enumOrd_surjective (hs : ¬ BddAbove s) {b : Ordinal} (hb : b ∈ s) :
     ∃ a, enumOrd s a = b := by
@@ -99,9 +102,9 @@ theorem eq_enumOrd (f : Ordinal → Ordinal) (hs : ¬ BddAbove s) :
     enumOrd s = f ↔ StrictMono f ∧ range f = s := by
   constructor
   · rintro rfl
-    exact ⟨enumOrd_strictMono hs, range_enumOrd hs⟩
+    exact ⟨strictMono_enumOrd hs, range_enumOrd hs⟩
   · rintro ⟨h₁, h₂⟩
-    rwa [← (enumOrd_strictMono hs).range_inj h₁, range_enumOrd hs, eq_comm]
+    rwa [← (strictMono_enumOrd hs).range_inj h₁, range_enumOrd hs, eq_comm]
 
 theorem enumOrd_range {f : Ordinal → Ordinal} (hf : StrictMono f) : enumOrd (range f) = f :=
   (eq_enumOrd _ hf.not_bddAbove_range_of_wellFoundedLT).2 ⟨hf, rfl⟩
@@ -118,7 +121,7 @@ theorem enumOrd_zero : enumOrd s 0 = sInf s := by
 
 /-- An order isomorphism between an unbounded set of ordinals and the ordinals. -/
 noncomputable def enumOrdOrderIso (s : Set Ordinal) (hs : ¬ BddAbove s) : Ordinal ≃o s :=
-  StrictMono.orderIsoOfSurjective (fun o => ⟨_, enumOrd_mem hs o⟩) (enumOrd_strictMono hs) fun s =>
+  StrictMono.orderIsoOfSurjective (fun o => ⟨_, enumOrd_mem hs o⟩) (strictMono_enumOrd hs) fun s =>
     let ⟨a, ha⟩ := enumOrd_surjective hs s.prop
     ⟨a, Subtype.eq ha⟩
 
