@@ -174,15 +174,14 @@ lemma iff_flat_and_lTensor_reflects_triviality :
 
 end faithful
 
-lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
-    ⦃N1 N2 N3 : Type max u v⦄
+private lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
+    ⦃N1 N2 N3 : Type*⦄
     [AddCommGroup N1] [Module R N1]
     [AddCommGroup N2] [Module R N2]
     [AddCommGroup N3] [Module R N3]
     (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3)
     (ex : Function.Exact (l12.rTensor M) (l23.rTensor M)) :
     LinearMap.range l12 ≤ LinearMap.ker l23 := by
-  have faithful := iff_flat_and_rTensor_faithful R M |>.1 fl |>.2
   intro x hx
   simp only [LinearMap.mem_ker]
   obtain ⟨y, hy⟩ := hx
@@ -194,7 +193,6 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
   let E : Submodule R N3 := Submodule.span R {l23 x}
   have hE : Nontrivial E := ⟨0, ⟨⟨l23 x, Submodule.mem_span_singleton_self _⟩,
     Subtype.coe_ne_coe.1 hxx.symm⟩⟩
-  haveI : Nontrivial (E ⊗[R] M) := faithful E hE
   rw [hy] at eq1
   have eq0: (⊤ : Submodule R (E ⊗[R] M)) = 0 := by
     ext xx
@@ -232,18 +230,14 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
 
 section complex
 
-lemma implies_iff_exact [fl : FaithfullyFlat R M] :
-    ∀ (N1 N2 N3 : Type max u v)
-        [AddCommGroup N1] [Module R N1]
-        [AddCommGroup N2] [Module R N2]
-        [AddCommGroup N3] [Module R N3]
-        (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
-        Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M) := by
-  classical
-  intro N1 N2 N3 _ _ _ _ _ _ l12 l23
-  refine ⟨fun e => Module.Flat.iff_rTensor_exact.1 fl.flat e,
-    fun ex => LinearMap.exact_iff.2 <| ?_⟩
-  have faithful := iff_flat_and_rTensor_faithful R M |>.1 fl |>.2
+lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
+    (N1 N2 N3 : Type*)
+    [AddCommGroup N1] [Module R N1]
+    [AddCommGroup N2] [Module R N2]
+    [AddCommGroup N3] [Module R N3]
+    (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3)
+    (ex : Function.Exact (l12.rTensor M) (l23.rTensor M)) :
+    Function.Exact l12 l23 := LinearMap.exact_iff.2 <| by
   have complex : LinearMap.range l12 ≤ LinearMap.ker l23 := range_le_ker_of_exact_rTensor R M _ _ ex
 
   refine le_antisymm ?_ complex
@@ -289,9 +283,31 @@ lemma implies_iff_exact [fl : FaithfullyFlat R M] :
     exact e.injective.subsingleton
 
   refine subsingleton_or_nontrivial H |>.resolve_right fun h => ?_
-  have := faithful H inferInstance
+  haveI : Nontrivial (H ⊗[R] M) := inferInstance
   rw [← not_subsingleton_iff_nontrivial] at this
   contradiction
+
+lemma lTensor_reflects_exact [fl : FaithfullyFlat R M]
+    (N1 N2 N3 : Type*)
+    [AddCommGroup N1] [Module R N1]
+    [AddCommGroup N2] [Module R N2]
+    [AddCommGroup N3] [Module R N3]
+    (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3)
+    (ex : Function.Exact (l12.lTensor M) (l23.lTensor M)) :
+    Function.Exact l12 l23 :=
+  rTensor_reflects_exact R M _ _ _ _ _ <| ex.of_ladder_linearEquiv_of_exact
+    (e₁ := TensorProduct.comm _ _ _) (e₂ := TensorProduct.comm _ _ _)
+    (e₃ := TensorProduct.comm _ _ _) (by ext; rfl) (by ext; rfl)
+
+lemma implies_iff_exact [fl : FaithfullyFlat R M]
+    (N1 N2 N3 : Type max u v)
+    [AddCommGroup N1] [Module R N1]
+    [AddCommGroup N2] [Module R N2]
+    [AddCommGroup N3] [Module R N3]
+    (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3) :
+    Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M) :=
+  ⟨fun e => Module.Flat.iff_rTensor_exact.1 fl.toFlat e,
+    fun ex => rTensor_reflects_exact R M N1 N2 N3 l12 l23 ex⟩
 
 lemma iff_iff_rTensor_exact :
     FaithfullyFlat R M ↔
