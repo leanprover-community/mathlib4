@@ -260,11 +260,11 @@ variable [lcs : LocallyConvexSpace ℝ E]
 variable [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3
-theorem totallyBounded_absConvexHull (h : U = TopologicalAddGroup.toUniformSpace E)
-    (hs : TotallyBounded s) : TotallyBounded (absConvexHull ℝ s) := by
+theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
+    TotallyBounded (absConvexHull ℝ s) := by
   intro d' hd'
   obtain ⟨d,⟨hU, hd₂⟩⟩ := comp_mem_uniformity_sets hd'
-  rw [h] at hU
+  rw [← UniformAddGroup.toUniformSpace_eq (G :=E)] at hU
   obtain ⟨N,⟨hN₁,hN₂⟩⟩ := hU
   obtain ⟨V,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs N hN₁
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
