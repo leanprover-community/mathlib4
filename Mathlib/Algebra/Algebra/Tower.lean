@@ -240,7 +240,7 @@ variable [Module R M] [Module A M] [IsScalarTower R A M]
 theorem restrictScalars_span (hsur : Function.Surjective (algebraMap R A)) (X : Set M) :
     restrictScalars R (span A X) = span R X := by
   refine ((span_le_restrictScalars R A X).antisymm fun m hm => ?_).symm
-  refine span_induction hm subset_span (zero_mem _) (fun _ _ => add_mem) fun a m hm => ?_
+  refine span_induction subset_span (zero_mem _) (fun _ _ _ _ => add_mem) (fun a m _ hm => ?_) hm
   obtain ⟨r, rfl⟩ := hsur a
   simpa [algebraMap_smul] using smul_mem _ r hm
 
@@ -265,21 +265,21 @@ open IsScalarTower
 
 theorem smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ span R s) {x : A}
     (hx : x ∈ t) : k • x ∈ span R (s • t) :=
-  span_induction hks (fun c hc => subset_span <| Set.smul_mem_smul hc hx)
+  span_induction (fun _ hc => subset_span <| Set.smul_mem_smul hc hx)
     (by rw [zero_smul]; exact zero_mem _)
-    (fun c₁ c₂ ih₁ ih₂ => by rw [add_smul]; exact add_mem ih₁ ih₂)
-    fun b c hc => by rw [IsScalarTower.smul_assoc]; exact smul_mem _ _ hc
+    (fun c₁ c₂ _ _ ih₁ ih₂ => by rw [add_smul]; exact add_mem ih₁ ih₂)
+    (fun b c _ hc => by rw [IsScalarTower.smul_assoc]; exact smul_mem _ _ hc) hks
 
 theorem span_smul_of_span_eq_top {s : Set S} (hs : span R s = ⊤) (t : Set A) :
     span R (s • t) = (span S t).restrictScalars R :=
   le_antisymm
     (span_le.2 fun _x ⟨p, _hps, _q, hqt, hpqx⟩ ↦ hpqx ▸ (span S t).smul_mem p (subset_span hqt))
-    fun p hp ↦ closure_induction hp (zero_mem _) (fun _ _ ↦ add_mem) fun s0 y hy ↦ by
-      refine span_induction (hs ▸ mem_top : s0 ∈ span R s)
-        (fun x hx ↦ subset_span ⟨x, hx, y, hy, rfl⟩) ?_ ?_ ?_
+    fun _ hp ↦ closure_induction (hx := hp) (zero_mem _) (fun _ _ _ _ ↦ add_mem) fun s0 y hy ↦ by
+      refine span_induction (fun x hx ↦ subset_span <| by exact ⟨x, hx, y, hy, rfl⟩) ?_ ?_ ?_
+        (hs ▸ mem_top : s0 ∈ span R s)
       · rw [zero_smul]; apply zero_mem
-      · intro _ _; rw [add_smul]; apply add_mem
-      · intro r s0 hy; rw [IsScalarTower.smul_assoc]; exact smul_mem _ r hy
+      · intro _ _ _ _; rw [add_smul]; apply add_mem
+      · intro r s0 _ hy; rw [IsScalarTower.smul_assoc]; exact smul_mem _ r hy
 
 -- The following two lemmas were originally used to prove `span_smul_of_span_eq_top`
 -- but are now not needed.

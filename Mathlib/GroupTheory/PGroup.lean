@@ -28,7 +28,7 @@ namespace IsPGroup
 
 theorem iff_orderOf [hp : Fact p.Prime] : IsPGroup p G ↔ ∀ g : G, ∃ k : ℕ, orderOf g = p ^ k :=
   forall_congr' fun g =>
-    ⟨fun ⟨k, hk⟩ =>
+    ⟨fun ⟨_, hk⟩ =>
       Exists.imp (fun _ h => h.right)
         ((Nat.dvd_prime_pow hp.out).mp (orderOf_dvd_of_pow_eq_one hk)),
       Exists.imp fun k hk => by rw [← hk, pow_orderOf_eq_one]⟩
@@ -134,7 +134,7 @@ theorem nontrivial_iff_card [Finite G] : Nontrivial G ↔ ∃ n > 0, Nat.card G 
       Nat.pos_of_ne_zero fun hk0 => by
         rw [hk0, pow_zero] at hk; exact Finite.one_lt_card.ne' hk,
       hk⟩,
-    fun ⟨k, hk0, hk⟩ =>
+    fun ⟨_, hk0, hk⟩ =>
     Finite.one_lt_card_iff_nontrivial.1 <|
       hk.symm ▸ one_lt_pow₀ (Fact.out (p := p.Prime)).one_lt (ne_of_gt hk0)⟩
 
