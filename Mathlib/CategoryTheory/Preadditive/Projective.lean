@@ -1,14 +1,13 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Scott Morrison
+Authors: Markus Himmel, Kim Morrison
 -/
-import Mathlib.Algebra.Homology.Exact
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
-
-#align_import category_theory.preadditive.projective from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
 # Projective objects and categories with enough projectives
@@ -44,7 +43,6 @@ An object `P` is called *projective* if every morphism out of `P` factors throug
 -/
 class Projective (P : C) : Prop where
   factors : ∀ {E X : C} (f : P ⟶ X) (e : E ⟶ X) [Epi e], ∃ f', f' ≫ e = f
-#align category_theory.projective CategoryTheory.Projective
 
 lemma Limits.IsZero.projective {X : C} (h : IsZero X) : Projective X where
   factors _ _ _ := ⟨h.to_ _, h.eq_of_src _ _⟩
@@ -60,7 +58,6 @@ structure ProjectivePresentation (X : C) where
   [projective : Projective p]
   f : p ⟶ X
   [epi : Epi f]
-#align category_theory.projective_presentation CategoryTheory.ProjectivePresentation
 
 attribute [instance] ProjectivePresentation.projective ProjectivePresentation.epi
 
@@ -70,7 +67,6 @@ variable (C)
     an epimorphism `P ↠ X`. -/
 class EnoughProjectives : Prop where
   presentation : ∀ X : C, Nonempty (ProjectivePresentation X)
-#align category_theory.enough_projectives CategoryTheory.EnoughProjectives
 
 end
 
@@ -81,13 +77,11 @@ An arbitrarily chosen factorisation of a morphism out of a projective object thr
 -/
 def factorThru {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] : P ⟶ E :=
   (Projective.factors f e).choose
-#align category_theory.projective.factor_thru CategoryTheory.Projective.factorThru
 
 @[reassoc (attr := simp)]
 theorem factorThru_comp {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] :
     factorThru f e ≫ e = f :=
   (Projective.factors f e).choose_spec
-#align category_theory.projective.factor_thru_comp CategoryTheory.Projective.factorThru_comp
 
 section
 
@@ -95,19 +89,16 @@ open ZeroObject
 
 instance zero_projective [HasZeroObject C] : Projective (0 : C) :=
   (isZero_zero C).projective
-#align category_theory.projective.zero_projective CategoryTheory.Projective.zero_projective
 
 end
 
-theorem of_iso {P Q : C} (i : P ≅ Q) (hP : Projective P) : Projective Q where
-  factors f e e_epi :=
+theorem of_iso {P Q : C} (i : P ≅ Q) (_ : Projective P) : Projective Q where
+  factors f e _ :=
     let ⟨f', hf'⟩ := Projective.factors (i.hom ≫ f) e
     ⟨i.inv ≫ f', by simp [hf']⟩
-#align category_theory.projective.of_iso CategoryTheory.Projective.of_iso
 
 theorem iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
   ⟨of_iso i, of_iso i.symm⟩
-#align category_theory.projective.iso_iff CategoryTheory.Projective.iso_iff
 
 /-- The axiom of choice says that every type is a projective object in `Type`. -/
 instance (X : Type u) : Projective X where
@@ -117,7 +108,6 @@ instance (X : Type u) : Projective X where
 
 instance Type.enoughProjectives : EnoughProjectives (Type u) where
   presentation X := ⟨⟨X, 𝟙 X⟩⟩
-#align category_theory.projective.Type.enough_projectives CategoryTheory.Projective.Type.enoughProjectives
 
 instance {P Q : C} [HasBinaryCoproduct P Q] [Projective P] [Projective Q] : Projective (P ⨿ Q) where
   factors f e epi := ⟨coprod.desc (factorThru (coprod.inl ≫ f) e) (factorThru (coprod.inr ≫ f) e),
@@ -145,7 +135,6 @@ theorem projective_iff_preservesEpimorphisms_coyoneda_obj (P : C) :
     fun _ =>
     ⟨fun f e _ =>
       (epi_iff_surjective _).1 (inferInstance : Epi ((coyoneda.obj (op P)).map e)) f⟩⟩
-#align category_theory.projective.projective_iff_preserves_epimorphisms_coyoneda_obj CategoryTheory.Projective.projective_iff_preservesEpimorphisms_coyoneda_obj
 
 section EnoughProjectives
 
@@ -156,22 +145,18 @@ an epimorphism `Projective.π : Projective.over X ⟶ X`.
 -/
 def over (X : C) : C :=
   (EnoughProjectives.presentation X).some.p
-#align category_theory.projective.over CategoryTheory.Projective.over
 
 instance projective_over (X : C) : Projective (over X) :=
   (EnoughProjectives.presentation X).some.projective
-#align category_theory.projective.projective_over CategoryTheory.Projective.projective_over
 
 /-- The epimorphism `projective.π : projective.over X ⟶ X`
 from the arbitrarily chosen projective object over `X`.
 -/
 def π (X : C) : over X ⟶ X :=
   (EnoughProjectives.presentation X).some.f
-#align category_theory.projective.π CategoryTheory.Projective.π
 
 instance π_epi (X : C) : Epi (π X) :=
   (EnoughProjectives.presentation X).some.epi
-#align category_theory.projective.π_epi CategoryTheory.Projective.π_epi
 
 section
 
@@ -181,7 +166,6 @@ variable [HasZeroMorphisms C] {X Y : C} (f : X ⟶ Y) [HasKernel f]
 an arbitrarily chosen projective object over `kernel f`.
 -/
 def syzygies : C := over (kernel f)
-#align category_theory.projective.syzygies CategoryTheory.Projective.syzygies
 
 instance : Projective (syzygies f) := inferInstanceAs (Projective (over _))
 
@@ -193,7 +177,6 @@ instance : Projective (syzygies f) := inferInstanceAs (Projective (over _))
 -/
 abbrev d : syzygies f ⟶ X :=
   π (kernel f) ≫ kernel.ι f
-#align category_theory.projective.d CategoryTheory.Projective.d
 
 end
 
@@ -212,7 +195,6 @@ theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : P
     use F.map f' ≫ adj.counit.app _
     rw [Category.assoc, ← Adjunction.counit_naturality, ← Category.assoc, ← F.map_comp, hf']
     simp
-#align category_theory.adjunction.map_projective CategoryTheory.Adjunction.map_projective
 
 theorem projective_of_map_projective (adj : F ⊣ G) [F.Full] [F.Faithful] (P : C)
     (hP : Projective (F.obj P)) : Projective P where
@@ -221,7 +203,6 @@ theorem projective_of_map_projective (adj : F ⊣ G) [F.Full] [F.Faithful] (P : 
     rcases (@hP).1 (F.map f) (F.map g) with ⟨f', hf'⟩
     use adj.unit.app _ ≫ G.map f' ≫ (inv <| adj.unit.app _)
     exact F.map_injective (by simpa)
-#align category_theory.adjunction.projective_of_map_projective CategoryTheory.Adjunction.projective_of_map_projective
 
 /-- Given an adjunction `F ⊣ G` such that `G` preserves epis, `F` maps a projective presentation of
 `X` to a projective presentation of `F(X)`. -/
@@ -231,7 +212,6 @@ def mapProjectivePresentation (adj : F ⊣ G) [G.PreservesEpimorphisms] (X : C)
   projective := adj.map_projective _ Y.projective
   f := F.map Y.f
   epi := have := Adjunction.leftAdjointPreservesColimits.{0, 0} adj; inferInstance
-#align category_theory.adjunction.map_projective_presentation CategoryTheory.Adjunction.mapProjectivePresentation
 
 end Adjunction
 
@@ -250,7 +230,6 @@ def projectivePresentationOfMapProjectivePresentation (X : C)
   projective := Adjunction.map_projective F.symm.toAdjunction Y.p Y.projective
   f := F.inverse.map Y.f ≫ F.unitInv.app _
   epi := epi_comp _ _
-#align category_theory.equivalence.projective_presentation_of_map_projective_presentation CategoryTheory.Equivalence.projectivePresentationOfMapProjectivePresentation
 
 theorem enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProjectives D := by
   constructor
@@ -259,42 +238,7 @@ theorem enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProj
       (Nonempty.some (H.presentation (F.inverse.obj X)))
   · exact F.projectivePresentationOfMapProjectivePresentation X
       (Nonempty.some (H.presentation (F.functor.obj X)))
-#align category_theory.equivalence.enough_projectives_iff CategoryTheory.Equivalence.enoughProjectives_iff
 
 end Equivalence
-
-open Projective
-
-section
-
-variable [HasZeroMorphisms C] [HasEqualizers C] [HasImages C]
-
-/-- Given a projective object `P` mapping via `h` into
-the middle object `R` of a pair of exact morphisms `f : Q ⟶ R` and `g : R ⟶ S`,
-such that `h ≫ g = 0`, there is a lift of `h` to `Q`.
--/
-def Exact.lift {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R ⟶ S) (hfg : Exact f g)
-    (w : h ≫ g = 0) : P ⟶ Q :=
-  -- See the porting note on `Exact.epi`.
-  haveI := hfg.epi
-  factorThru (factorThru (factorThruKernelSubobject g h w) (imageToKernel f g hfg.w))
-    (factorThruImageSubobject f)
-#align category_theory.exact.lift CategoryTheory.Exact.lift
-
-@[simp]
-theorem Exact.lift_comp {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R ⟶ S)
-    (hfg : Exact f g) (w : h ≫ g = 0) : Exact.lift h f g hfg w ≫ f = h := by
-  simp only [Exact.lift]
-  conv_lhs =>
-    congr
-    rfl
-    rw [← imageSubobject_arrow_comp f]
-  -- See the porting note on `Exact.epi`.
-  haveI := hfg.epi
-  rw [← Category.assoc, factorThru_comp, ← imageToKernel_arrow f g, ← Category.assoc,
-    CategoryTheory.Projective.factorThru_comp, factorThruKernelSubobject_comp_arrow]
-#align category_theory.exact.lift_comp CategoryTheory.Exact.lift_comp
-
-end
 
 end CategoryTheory

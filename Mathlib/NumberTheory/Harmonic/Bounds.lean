@@ -16,8 +16,8 @@ This file proves $\log(n+1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$
 
 theorem log_add_one_le_harmonic (n : ℕ) :
     Real.log ↑(n+1) ≤ harmonic n := by
-  calc _ = ∫ x in (1:ℕ)..↑(n+1), x⁻¹ := ?_
-       _ ≤ ∑ d ∈ Finset.Icc 1 n, (d:ℝ)⁻¹ := ?_
+  calc _ = ∫ x in (1 : ℕ)..↑(n+1), x⁻¹ := ?_
+       _ ≤ ∑ d ∈ Finset.Icc 1 n, (d : ℝ)⁻¹ := ?_
        _ = harmonic n := ?_
   · rw [Nat.cast_one, integral_inv (by simp [(show ¬ (1 : ℝ) ≤ 0 by norm_num)]), div_one]
   · exact (inv_antitoneOn_Icc_right <| by norm_num).integral_le_sum_Ico (Nat.le_add_left 1 n)

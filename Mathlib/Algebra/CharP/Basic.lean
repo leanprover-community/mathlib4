@@ -7,8 +7,6 @@ import Mathlib.Algebra.CharP.Defs
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Choose.Sum
 
-#align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
-
 /-!
 # Characteristic of semirings
 -/
@@ -23,9 +21,10 @@ variable {R : Type*}
 
 namespace Commute
 
-variable [Semiring R] {p : ℕ} {x y : R}
+variable [Semiring R] {p : ℕ} (hp : p.Prime) {x y : R}
+include hp
 
-protected theorem add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :
+protected theorem add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
         p * ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) := by
@@ -38,119 +37,111 @@ protected theorem add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ
     refine Finset.sum_congr rfl fun i hi => ?_
     rw [mem_Ioo] at hi
     rw [Nat.div_mul_cancel (hp.dvd_choose_pow hi.1.ne' hi.2.ne)]
-#align commute.add_pow_prime_pow_eq Commute.add_pow_prime_pow_eq
 
-protected theorem add_pow_prime_eq (hp : p.Prime) (h : Commute x y) :
+protected theorem add_pow_prime_eq (h : Commute x y) :
     (x + y) ^ p =
       x ^ p + y ^ p + p * ∑ k ∈ Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) := by
   simpa using h.add_pow_prime_pow_eq hp 1
-#align commute.add_pow_prime_eq Commute.add_pow_prime_eq
 
-protected theorem exists_add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :
+protected theorem exists_add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
     ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * r :=
   ⟨_, h.add_pow_prime_pow_eq hp n⟩
-#align commute.exists_add_pow_prime_pow_eq Commute.exists_add_pow_prime_pow_eq
 
-protected theorem exists_add_pow_prime_eq (hp : p.Prime) (h : Commute x y) :
+protected theorem exists_add_pow_prime_eq (h : Commute x y) :
     ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * r :=
   ⟨_, h.add_pow_prime_eq hp⟩
-#align commute.exists_add_pow_prime_eq Commute.exists_add_pow_prime_eq
 
 end Commute
 
 section CommSemiring
 
-variable [CommSemiring R] {p : ℕ} {x y : R}
+variable [CommSemiring R] {p : ℕ} (hp : p.Prime) (x y : R) (n : ℕ)
+include hp
 
-theorem add_pow_prime_pow_eq (hp : p.Prime) (x y : R) (n : ℕ) :
+theorem add_pow_prime_pow_eq :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
         p * ∑ k ∈ Finset.Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) :=
   (Commute.all x y).add_pow_prime_pow_eq hp n
-#align add_pow_prime_pow_eq add_pow_prime_pow_eq
 
-theorem add_pow_prime_eq (hp : p.Prime) (x y : R) :
+theorem add_pow_prime_eq :
     (x + y) ^ p =
       x ^ p + y ^ p + p * ∑ k ∈ Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
   (Commute.all x y).add_pow_prime_eq hp
-#align add_pow_prime_eq add_pow_prime_eq
 
-theorem exists_add_pow_prime_pow_eq (hp : p.Prime) (x y : R) (n : ℕ) :
+theorem exists_add_pow_prime_pow_eq :
     ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * r :=
   (Commute.all x y).exists_add_pow_prime_pow_eq hp n
-#align exists_add_pow_prime_pow_eq exists_add_pow_prime_pow_eq
 
-theorem exists_add_pow_prime_eq (hp : p.Prime) (x y : R) :
+theorem exists_add_pow_prime_eq :
     ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * r :=
   (Commute.all x y).exists_add_pow_prime_eq hp
-#align exists_add_pow_prime_eq exists_add_pow_prime_eq
 
 end CommSemiring
 
-variable (R)
+variable (R) (x y : R) (n : ℕ)
 
-theorem add_pow_char_of_commute [Semiring R] {p : ℕ} [hp : Fact p.Prime] [CharP R p] (x y : R)
+theorem add_pow_char_of_commute [Semiring R] {p : ℕ} [hp : Fact p.Prime] [CharP R p]
     (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p := by
   let ⟨r, hr⟩ := h.exists_add_pow_prime_eq hp.out
   simp [hr]
-#align add_pow_char_of_commute add_pow_char_of_commute
 
-theorem add_pow_char_pow_of_commute [Semiring R] {p n : ℕ} [hp : Fact p.Prime] [CharP R p]
-    (x y : R) (h : Commute x y) : (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n := by
+theorem add_pow_char_pow_of_commute [Semiring R] {p : ℕ} [hp : Fact p.Prime] [CharP R p]
+    (h : Commute x y) : (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n := by
   let ⟨r, hr⟩ := h.exists_add_pow_prime_pow_eq hp.out n
   simp [hr]
-#align add_pow_char_pow_of_commute add_pow_char_pow_of_commute
 
-theorem sub_pow_char_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p] (x y : R)
-    (h : Commute x y) : (x - y) ^ p = x ^ p - y ^ p := by
+theorem sub_pow_char_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p] (h : Commute x y) :
+    (x - y) ^ p = x ^ p - y ^ p := by
   rw [eq_sub_iff_add_eq, ← add_pow_char_of_commute _ _ _ (Commute.sub_left h rfl)]
   simp
-#align sub_pow_char_of_commute sub_pow_char_of_commute
 
-theorem sub_pow_char_pow_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ} (x y : R)
-    (h : Commute x y) : (x - y) ^ p ^ n = x ^ p ^ n - y ^ p ^ n := by
+theorem sub_pow_char_pow_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p] (h : Commute x y) :
+    (x - y) ^ p ^ n = x ^ p ^ n - y ^ p ^ n := by
   induction n with
   | zero => simp
   | succ n n_ih =>
       rw [pow_succ, pow_mul, pow_mul, pow_mul, n_ih]
       apply sub_pow_char_of_commute; apply Commute.pow_pow h
-#align sub_pow_char_pow_of_commute sub_pow_char_pow_of_commute
 
-theorem add_pow_char [CommSemiring R] {p : ℕ} [Fact p.Prime] [CharP R p] (x y : R) :
+theorem add_pow_char [CommSemiring R] {p : ℕ} [Fact p.Prime] [CharP R p] :
     (x + y) ^ p = x ^ p + y ^ p :=
   add_pow_char_of_commute _ _ _ (Commute.all _ _)
-#align add_pow_char add_pow_char
 
-theorem add_pow_char_pow [CommSemiring R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ} (x y : R) :
+theorem add_pow_char_pow [CommSemiring R] {p : ℕ} [Fact p.Prime] [CharP R p] :
     (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n :=
-  add_pow_char_pow_of_commute _ _ _ (Commute.all _ _)
-#align add_pow_char_pow add_pow_char_pow
+  add_pow_char_pow_of_commute _ _ _ _ (Commute.all _ _)
 
-theorem sub_pow_char [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p] (x y : R) :
+theorem add_pow_eq_add_pow_mod_mul_pow_add_pow_div
+    [CommSemiring R] {p : ℕ} [Fact p.Prime] [CharP R p] (x y : R) :
+    (x + y) ^ n = (x + y) ^ (n % p) * (x ^ p + y ^ p) ^ (n / p) := by
+  rw [← add_pow_char, ← pow_mul, ← pow_add, Nat.mod_add_div]
+
+theorem sub_pow_char [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p] :
     (x - y) ^ p = x ^ p - y ^ p :=
   sub_pow_char_of_commute _ _ _ (Commute.all _ _)
-#align sub_pow_char sub_pow_char
 
-theorem sub_pow_char_pow [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ} (x y : R) :
+theorem sub_pow_char_pow [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p] :
     (x - y) ^ p ^ n = x ^ p ^ n - y ^ p ^ n :=
-  sub_pow_char_pow_of_commute _ _ _ (Commute.all _ _)
-#align sub_pow_char_pow sub_pow_char_pow
+  sub_pow_char_pow_of_commute _ _ _ _ (Commute.all _ _)
 
-theorem CharP.neg_one_pow_char [Ring R] (p : ℕ) [CharP R p] [Fact p.Prime] :
+theorem sub_pow_eq_sub_pow_mod_mul_pow_sub_pow_div [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p] :
+    (x - y) ^ n = (x - y) ^ (n % p) * (x ^ p - y ^ p) ^ (n / p) := by
+  rw [← sub_pow_char, ← pow_mul, ← pow_add, Nat.mod_add_div]
+
+theorem CharP.neg_one_pow_char [Ring R] (p : ℕ) [Fact p.Prime] [CharP R p] :
     (-1 : R) ^ p = -1 := by
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow p]
-  rw [← add_pow_char_of_commute R _ _ (Commute.one_right _), add_left_neg,
+  rw [← add_pow_char_of_commute R _ _ (Commute.one_right _), neg_add_cancel,
     zero_pow (Fact.out (p := Nat.Prime p)).ne_zero]
-#align char_p.neg_one_pow_char CharP.neg_one_pow_char
 
-theorem CharP.neg_one_pow_char_pow [Ring R] (p n : ℕ) [CharP R p] [Fact p.Prime] :
+theorem CharP.neg_one_pow_char_pow [Ring R] (p : ℕ) [CharP R p] [Fact p.Prime] :
     (-1 : R) ^ p ^ n = -1 := by
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow (p ^ n)]
-  rw [← add_pow_char_pow_of_commute R _ _ (Commute.one_right _), add_left_neg,
+  rw [← add_pow_char_pow_of_commute R _ _ _ (Commute.one_right _), neg_add_cancel,
     zero_pow (pow_ne_zero _ (Fact.out (p := Nat.Prime p)).ne_zero)]
-#align char_p.neg_one_pow_char_pow CharP.neg_one_pow_char_pow
 
 namespace CharP
 
@@ -164,11 +155,9 @@ theorem char_ne_zero_of_finite (p : ℕ) [CharP R p] [Finite R] : p ≠ 0 := by
   haveI : CharZero R := charP_to_charZero R
   cases nonempty_fintype R
   exact absurd Nat.cast_injective (not_injective_infinite_finite ((↑) : ℕ → R))
-#align char_p.char_ne_zero_of_finite CharP.char_ne_zero_of_finite
 
 theorem ringChar_ne_zero_of_finite [Finite R] : ringChar R ≠ 0 :=
   char_ne_zero_of_finite R (ringChar R)
-#align char_p.ring_char_ne_zero_of_finite CharP.ringChar_ne_zero_of_finite
 
 end
 
@@ -178,7 +167,6 @@ variable [Ring R] [NoZeroDivisors R] [Nontrivial R] [Finite R]
 
 theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
   Or.resolve_right (char_is_prime_or_zero R p) (char_ne_zero_of_finite R p)
-#align char_p.char_is_prime CharP.char_is_prime
 
 end Ring
 end CharP

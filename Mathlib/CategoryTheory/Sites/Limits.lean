@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
-#align_import category_theory.sites.limits from "leanprover-community/mathlib"@"95e83ced9542828815f53a1096a4d373c1b08a77"
-
 /-!
 
 # Limits and colimits of sheaves
@@ -84,8 +82,6 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
         dsimp [Multifork.ofι]
         erw [Category.assoc, ← E.w f]
         aesop_cat }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.multifork_evaluation_cone CategoryTheory.Sheaf.multiforkEvaluationCone
 
 variable [HasLimitsOfShape K D]
 
@@ -111,7 +107,7 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       erw [(isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac
         (multiforkEvaluationCone F E X W S)]
       dsimp [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
-      erw [Presheaf.IsSheaf.amalgamate_map]
+      rw [Presheaf.IsSheaf.amalgamate_map]
       rfl)
     (by
       intro S m hm
@@ -127,8 +123,6 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       change _ = S.ι i ≫ _
       erw [← hm, Category.assoc, ← (E.π.app k).naturality, Category.assoc]
       rfl)
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.is_limit_multifork_of_is_limit CategoryTheory.Sheaf.isLimitMultiforkOfIsLimit
 
 /-- If `E` is a cone which is a limit on the level of presheaves,
 then the limit presheaf is again a sheaf.
@@ -140,13 +134,11 @@ theorem isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshea
   rw [Presheaf.isSheaf_iff_multifork]
   intro X S
   exact ⟨isLimitMultiforkOfIsLimit _ _ hE _ _⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.is_sheaf_of_is_limit CategoryTheory.Sheaf.isSheaf_of_isLimit
 
 instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
   createsLimitOfReflectsIso fun E hE =>
     { liftedCone := ⟨⟨E.pt, isSheaf_of_isLimit _ _ hE⟩,
-        ⟨fun t => ⟨E.π.app _⟩, fun u v e => Sheaf.Hom.ext _ _ <| E.π.naturality _⟩⟩
+        ⟨fun _ => ⟨E.π.app _⟩, fun _ _ _ => Sheaf.Hom.ext <| E.π.naturality _⟩⟩
       validLift := Cones.ext (eqToIso rfl) fun j => by
         dsimp
         simp
@@ -200,8 +192,6 @@ noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
   (Cocones.precompose
     (isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
     ((presheafToSheaf J D).mapCocone E)
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.sheafify_cocone CategoryTheory.Sheaf.sheafifyCocone
 
 /-- If `E` is a colimit cocone of presheaves, over a diagram factoring through sheaves,
 then `sheafifyCocone E` is a colimit cocone. -/
@@ -209,8 +199,6 @@ noncomputable def isColimitSheafifyCocone {F : K ⥤ Sheaf J D}
     (E : Cocone (F ⋙ sheafToPresheaf J D)) (hE : IsColimit E) : IsColimit (sheafifyCocone E) :=
   (IsColimit.precomposeHomEquiv _ ((presheafToSheaf J D).mapCocone E)).symm
     (isColimitOfPreserves _ hE)
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.is_colimit_sheafify_cocone CategoryTheory.Sheaf.isColimitSheafifyCocone
 
 instance [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
   ⟨fun _ => HasColimit.mk

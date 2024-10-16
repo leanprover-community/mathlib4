@@ -3,7 +3,7 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-
+import Lean.Meta.Tactic.TryThis
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Lemma
 
@@ -107,7 +107,7 @@ Technically, the command also take an optional `String` argument to fill in the 
 However, its use is mostly intended for debugging purposes, where having a variable date would
 make tests time-dependent.
 -/
-elab tk:"deprecate to " id:ident* dat:(str)? ppLine cmd:command : command => do
+elab tk:"deprecate to " id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command : command => do
   let oldEnv ← getEnv
   try
     elabCommand cmd

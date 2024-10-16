@@ -151,10 +151,8 @@ lemma isContinuous_comp' {F₁ : C ⥤ D} {F₂ : D ⥤ E} {F₁₂ : C ⥤ E}
 
 section
 
-variable [PreservesOneHypercovers.{w} F J K]
-  [GrothendieckTopology.IsGeneratedByOneHypercovers.{w} J]
-
 lemma op_comp_isSheaf_of_preservesOneHypercovers
+    [PreservesOneHypercovers.{w} F J K] [GrothendieckTopology.IsGeneratedByOneHypercovers.{w} J]
     (P : Dᵒᵖ ⥤ A) (hP : Presheaf.IsSheaf K P) :
     Presheaf.IsSheaf J (F.op ⋙ P) := by
   rw [Presheaf.isSheaf_iff_of_isGeneratedByOneHypercovers.{w}]
@@ -162,7 +160,8 @@ lemma op_comp_isSheaf_of_preservesOneHypercovers
   exact ⟨(E.toPreOneHypercover.isLimitMapMultiforkEquiv F P)
     ((E.map F K).isLimitMultifork ⟨P, hP⟩)⟩
 
-lemma isContinuous_of_preservesOneHypercovers :
+lemma isContinuous_of_preservesOneHypercovers
+    [PreservesOneHypercovers.{w} F J K] [GrothendieckTopology.IsGeneratedByOneHypercovers.{w} J] :
     IsContinuous.{t} F J K where
   op_comp_isSheafOfTypes := by
     rintro ⟨P, hP⟩
@@ -185,7 +184,6 @@ if `F` is a continuous functor.
 def sheafPushforwardContinuous : Sheaf K A ⥤ Sheaf J A where
   obj ℱ := ⟨F.op ⋙ ℱ.val, F.op_comp_isSheaf J K ℱ⟩
   map f := ⟨((whiskeringLeft _ _ _).obj F.op).map f.val⟩
-#align category_theory.sites.pullback CategoryTheory.Functor.sheafPushforwardContinuous
 
 /-- The functor `F.sheafPushforwardContinuous A J K : Sheaf K A ⥤ Sheaf J A`
 is induced by the precomposition with `F.op`. -/

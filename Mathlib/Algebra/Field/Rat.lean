@@ -6,8 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.NNRat.Defs
 
-#align_import data.rat.basic from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
-
 /-!
 # The rational numbers form a field
 
@@ -31,10 +29,12 @@ instance instField : Field ℚ where
   __ := commRing
   __ := commGroupWithZero
   nnqsmul := _
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
+  qsmul_def := fun _ _ => rfl
   nnratCast_def q := by
     rw [← NNRat.den_coe, ← Int.cast_natCast q.num, ← NNRat.num_coe]; exact(num_div_den _).symm
-  ratCast_def q := (num_div_den _).symm
+  ratCast_def _ := (num_div_den _).symm
 
 /-!
 ### Extra instances to short-circuit type class resolution

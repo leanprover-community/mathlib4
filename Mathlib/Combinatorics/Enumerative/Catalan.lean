@@ -13,8 +13,6 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 
-#align_import combinatorics.catalan from "leanprover-community/mathlib"@"26b40791e4a5772a4e53d0e28e4df092119dc7da"
-
 /-!
 # Catalan numbers
 
@@ -59,25 +57,20 @@ def catalan : ℕ → ℕ
   | n + 1 =>
     ∑ i : Fin n.succ,
       catalan i * catalan (n - i)
-#align catalan catalan
 
 @[simp]
 theorem catalan_zero : catalan 0 = 1 := by rw [catalan]
-#align catalan_zero catalan_zero
 
 theorem catalan_succ (n : ℕ) : catalan (n + 1) = ∑ i : Fin n.succ, catalan i * catalan (n - i) := by
   rw [catalan]
-#align catalan_succ catalan_succ
 
 theorem catalan_succ' (n : ℕ) :
     catalan (n + 1) = ∑ ij ∈ antidiagonal n, catalan ij.1 * catalan ij.2 := by
   rw [catalan_succ, Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => catalan x * catalan y) n,
     sum_range]
-#align catalan_succ' catalan_succ'
 
 @[simp]
 theorem catalan_one : catalan 1 = 1 := by simp [catalan_succ]
-#align catalan_one catalan_one
 
 /-- A helper sequence that can be used to prove the equality of the recursive and the explicit
 definition using a telescoping sum argument. -/
@@ -135,19 +128,15 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
             sum_range_sub, Nat.succ_eq_add_one]
         rw [gosper_catalan_sub_eq_central_binom_div d]
         norm_cast
-#align catalan_eq_central_binom_div catalan_eq_centralBinom_div
 
 theorem succ_mul_catalan_eq_centralBinom (n : ℕ) : (n + 1) * catalan n = n.centralBinom :=
   (Nat.eq_mul_of_div_eq_right n.succ_dvd_centralBinom (catalan_eq_centralBinom_div n).symm).symm
-#align succ_mul_catalan_eq_central_binom succ_mul_catalan_eq_centralBinom
 
 theorem catalan_two : catalan 2 = 2 := by
   norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-#align catalan_two catalan_two
 
 theorem catalan_three : catalan 3 = 5 := by
   norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
-#align catalan_three catalan_three
 
 namespace Tree
 
@@ -157,7 +146,6 @@ open Tree
   left child in `a` and right child in `b` -/
 abbrev pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
   (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
-#align tree.pairwise_node Tree.pairwiseNode
 
 /-- A Finset of all trees with `n` nodes. See `mem_treesOfNodesEq` -/
 def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
@@ -172,11 +160,9 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   decreasing_by
     · simp_wf; have := fst_le ijh.2; omega
     · simp_wf; have := snd_le ijh.2; omega
-#align tree.trees_of_num_nodes_eq Tree.treesOfNumNodesEq
 
 @[simp]
 theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]
-#align tree.trees_of_nodes_eq_zero Tree.treesOfNumNodesEq_zero
 
 theorem treesOfNumNodesEq_succ (n : ℕ) :
     treesOfNumNodesEq (n + 1) =
@@ -185,24 +171,20 @@ theorem treesOfNumNodesEq_succ (n : ℕ) :
   rw [treesOfNumNodesEq]
   ext
   simp
-#align tree.trees_of_nodes_eq_succ Tree.treesOfNumNodesEq_succ
 
 @[simp]
 theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
     x ∈ treesOfNumNodesEq n ↔ x.numNodes = n := by
   induction x using Tree.unitRecOn generalizing n <;> cases n <;>
     simp [treesOfNumNodesEq_succ, *]
-#align tree.mem_trees_of_nodes_eq Tree.mem_treesOfNumNodesEq
 
 theorem mem_treesOfNumNodesEq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=
   mem_treesOfNumNodesEq.mpr rfl
-#align tree.mem_trees_of_nodes_eq_num_nodes Tree.mem_treesOfNumNodesEq_numNodes
 
 @[simp, norm_cast]
 theorem coe_treesOfNumNodesEq (n : ℕ) :
     ↑(treesOfNumNodesEq n) = { x : Tree Unit | x.numNodes = n } :=
   Set.ext (by simp)
-#align tree.coe_trees_of_nodes_eq Tree.coe_treesOfNumNodesEq
 
 theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = catalan n := by
   induction' n using Nat.case_strong_induction_on with n ih
@@ -222,6 +204,5 @@ theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card
       trans (numNodes l, numNodes r)
       · simp at h1; simp [h1]
       · simp at h2; simp [h2]
-#align tree.trees_of_nodes_eq_card_eq_catalan Tree.treesOfNumNodesEq_card_eq_catalan
 
 end Tree

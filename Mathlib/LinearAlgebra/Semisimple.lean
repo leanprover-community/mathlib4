@@ -80,7 +80,7 @@ lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisim
   have ⟨n, h0⟩ := hn
   rw [← aeval_X (R := R) f]; rw [← aeval_X_pow (R := R) f] at h0
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
-  exact hs.annihilator_isRadical ⟨n, h0⟩
+  exact hs.annihilator_isRadical _ _ ⟨n, h0⟩
 
 @[simp]
 lemma isSemisimple_sub_algebraMap_iff {μ : R} :
@@ -136,6 +136,7 @@ variable [FiniteDimensional K M]
 section
 
 variable (hf : f.IsSemisimple)
+include hf
 
 /-- The minimal polynomial of a semisimple endomorphism is square free -/
 theorem IsSemisimple.minpoly_squarefree : Squarefree (minpoly K f) :=
@@ -144,7 +145,7 @@ theorem IsSemisimple.minpoly_squarefree : Squarefree (minpoly K f) :=
 
 protected theorem IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
   let R := K[X] ⧸ Ideal.span {minpoly K f}
-  have : Finite K R :=
+  have : Module.Finite K R :=
     (AdjoinRoot.powerBasis' <| minpoly.monic <| Algebra.IsIntegral.isIntegral f).finite
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
     span_minpoly_eq_annihilator K f ▸ hf.annihilator_isRadical
@@ -166,14 +167,16 @@ end
 section PerfectField
 
 variable [PerfectField K] (comm : Commute f g) (hf : f.IsSemisimple) (hg : g.IsSemisimple)
+include comm hf hg
 
+attribute [local simp] Submodule.Quotient.quot_mk_eq_mk in
 theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin K {f, g}) :
     a.IsSemisimple := by
   let R := K[X] ⧸ Ideal.span {minpoly K f}
   let S := AdjoinRoot ((minpoly K g).map <| algebraMap K R)
-  have : Finite K R :=
+  have : Module.Finite K R :=
     (AdjoinRoot.powerBasis' <| minpoly.monic <| Algebra.IsIntegral.isIntegral f).finite
-  have : Finite R S :=
+  have : Module.Finite R S :=
     (AdjoinRoot.powerBasis' <| (minpoly.monic <| Algebra.IsIntegral.isIntegral g).map _).finite
   #adaptation_note
   /--
@@ -184,7 +187,7 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   -/
   set_option maxSynthPendingDepth 2 in
   have : IsScalarTower K R S := .of_algebraMap_eq fun _ ↦ rfl
-  have : Finite K S := .trans R S
+  have : Module.Finite K S := .trans R S
   have : IsArtinianRing R := .of_finite K R
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
     span_minpoly_eq_annihilator K f ▸ hf.annihilator_isRadical
@@ -207,7 +210,7 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   obtain ⟨p, rfl⟩ := (AlgHom.mem_range _).mp (this ha)
   refine isSemisimple_of_squarefree_aeval_eq_zero
     ((minpoly.isRadical K p).squarefree <| minpoly.ne_zero <| .of_finite K p) ?_
-  rw [aeval_algHom, φ.comp_apply, minpoly.aeval, φ.map_zero]
+  rw [aeval_algHom, φ.comp_apply, minpoly.aeval, map_zero]
 
 theorem IsSemisimple.add_of_commute : (f + g).IsSemisimple := .of_mem_adjoin_pair
   comm hf hg <| add_mem (Algebra.subset_adjoin <| .inl rfl) (Algebra.subset_adjoin <| .inr rfl)

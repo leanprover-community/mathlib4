@@ -39,6 +39,7 @@ theorem inversion_mem_perpBisector_inversion_iff (hR : R ≠ 0) (hx : x ≠ c) (
   rw [mem_perpBisector_iff_dist_eq, dist_inversion_inversion hx hy, dist_inversion_center]
   have hx' := dist_ne_zero.2 hx
   have hy' := dist_ne_zero.2 hy
+  -- takes 300ms, but the "equivalent" simp call fails -> hard to speed up
   field_simp [mul_assoc, mul_comm, hx, hx.symm, eq_comm]
 
 /-- The inversion with center `c` and radius `R` maps a sphere passing through the center to a
@@ -84,3 +85,5 @@ theorem image_inversion_affineSubspace_of_mem {p : AffineSubspace ℝ P} (hR : R
     inversion c R '' p = p :=
   (mapsTo_inversion_affineSubspace_of_mem hp).image_subset.antisymm fun x hx ↦
     ⟨inversion c R x, mapsTo_inversion_affineSubspace_of_mem hp hx, inversion_inversion _ hR _⟩
+
+end EuclideanGeometry

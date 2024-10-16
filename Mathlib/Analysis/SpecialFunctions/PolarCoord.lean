@@ -7,8 +7,6 @@ import Mathlib.MeasureTheory.Function.Jacobian
 import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
-#align_import analysis.special_functions.polar_coord from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
-
 /-!
 # Polar coordinates
 
@@ -41,12 +39,12 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · simpa using hr
     · right
       simp at hr
-      simpa only [ne_of_gt hr, Ne, mem_setOf_eq, mul_eq_zero, false_or_iff,
+      simpa only [ne_of_gt hr, Ne, mem_setOf_eq, mul_eq_zero, false_or,
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using h'θ
   map_source' := by
     rintro ⟨x, y⟩ hxy
     simp only [prod_mk_mem_set_prod_eq, mem_Ioi, sqrt_pos, mem_Ioo, Complex.neg_pi_lt_arg,
-      true_and_iff, Complex.arg_lt_pi_iff]
+      true_and, Complex.arg_lt_pi_iff]
     constructor
     · cases' hxy with hxy hxy
       · dsimp at hxy; linarith [sq_pos_of_ne_zero hxy.ne', sq_nonneg y]
@@ -90,7 +88,6 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       (g := Complex.arg) (fun z hz => ?_) ?_ A
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
-#align polar_coord polarCoord
 
 theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm
@@ -101,7 +98,6 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     (hasFDerivAt_fst.mul ((hasDerivAt_cos p.2).comp_hasFDerivAt p hasFDerivAt_snd))
     (hasFDerivAt_fst.mul ((hasDerivAt_sin p.2).comp_hasFDerivAt p hasFDerivAt_snd)) using 2 <;>
   simp [smul_smul, add_comm, neg_mul, smul_neg, neg_smul _ (ContinuousLinearMap.snd ℝ ℝ ℝ)]
-#align has_fderiv_at_polar_coord_symm hasFDerivAt_polarCoord_symm
 
 -- Porting note: this instance is needed but not automatically synthesised
 instance : Measure.IsAddHaarMeasure volume (G := ℝ × ℝ) :=
@@ -121,7 +117,6 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
     simp at this
   simp only [ae_eq_univ]
   exact le_antisymm ((measure_mono A).trans (le_of_eq B)) bot_le
-#align polar_coord_source_ae_eq_univ polarCoord_source_ae_eq_univ
 
 theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : ℝ × ℝ → E) :
@@ -140,16 +135,15 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
   symm
   calc
     ∫ p, f p = ∫ p in polarCoord.source, f p := by
-      rw [← integral_univ]
-      apply setIntegral_congr_set_ae
+      rw [← setIntegral_univ]
+      apply setIntegral_congr_set
       exact polarCoord_source_ae_eq_univ.symm
     _ = ∫ p in polarCoord.target, abs (B p).det • f (polarCoord.symm p) := by
       apply integral_target_eq_integral_abs_det_fderiv_smul volume A
     _ = ∫ p in polarCoord.target, p.1 • f (polarCoord.symm p) := by
-      apply setIntegral_congr polarCoord.open_target.measurableSet fun x hx => ?_
+      apply setIntegral_congr_fun polarCoord.open_target.measurableSet fun x hx => ?_
       rw [B_det, abs_of_pos]
       exact hx.1
-#align integral_comp_polar_coord_symm integral_comp_polarCoord_symm
 
 end Real
 
@@ -179,8 +173,10 @@ protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
     Complex.polarCoord.symm p = p.1 * (Real.cos p.2 + Real.sin p.2 * Complex.I) := by
   simp [Complex.polarCoord, equivRealProdCLM_symm_apply, mul_add, mul_assoc]
 
-theorem polardCoord_symm_abs (p : ℝ × ℝ) :
+theorem polarCoord_symm_abs (p : ℝ × ℝ) :
     Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
+
+@[deprecated (since := "2024-07-15")] alias polardCoord_symm_abs := polarCoord_symm_abs
 
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :

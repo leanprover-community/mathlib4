@@ -3,8 +3,9 @@ Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom
 -/
-import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.Data.ENNReal.Real
 import Mathlib.Order.WellFoundedSet
+import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
 # Oscillation
@@ -72,7 +73,7 @@ namespace OscillationWithin
 
 /-- The oscillation within `D` of `f` at `x ∈ D` is 0 if and only if `ContinuousWithinAt f D x`. -/
 theorem eq_zero_iff_continuousWithinAt [TopologicalSpace E] (f : E → F) {D : Set E}
-    {x : E} (xD : x ∈ D): oscillationWithin f D x = 0 ↔ ContinuousWithinAt f D x := by
+    {x : E} (xD : x ∈ D) : oscillationWithin f D x = 0 ↔ ContinuousWithinAt f D x := by
   refine ⟨fun hf ↦ EMetric.tendsto_nhds.mpr (fun ε ε0 ↦ ?_), fun hf ↦ hf.oscillationWithin_eq_zero⟩
   simp_rw [← hf, oscillationWithin, iInf_lt_iff] at ε0
   obtain ⟨S, hS, Sε⟩ := ε0
@@ -93,12 +94,12 @@ end Oscillation
 
 namespace IsCompact
 
-variable [PseudoEMetricSpace E] {K : Set E} (comp : IsCompact K)
+variable [PseudoEMetricSpace E] {K : Set E}
 variable {f : E → F} {D : Set E} {ε : ENNReal}
 
 /-- If `oscillationWithin f D x < ε` at every `x` in a compact set `K`, then there exists `δ > 0`
 such that the oscillation of `f` on `ball x δ ∩ D` is less than `ε` for every `x` in `K`. -/
-theorem uniform_oscillationWithin (hK : ∀ x ∈ K, oscillationWithin f D x < ε) :
+theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscillationWithin f D x < ε) :
     ∃ δ > 0, ∀ x ∈ K, diam (f '' (ball x (ENNReal.ofReal δ) ∩ D)) ≤ ε := by
   let S := fun r ↦ { x : E | ∃ (a : ℝ), (a > r ∧ diam (f '' (ball x (ENNReal.ofReal a) ∩ D)) ≤ ε) }
   have S_open : ∀ r > 0, IsOpen (S r) := by
@@ -144,7 +145,7 @@ theorem uniform_oscillationWithin (hK : ∀ x ∈ K, oscillationWithin f D x < �
 
 /-- If `oscillation f x < ε` at every `x` in a compact set `K`, then there exists `δ > 0` such
 that the oscillation of `f` on `ball x δ` is less than `ε` for every `x` in `K`. -/
-theorem uniform_oscillation [PseudoEMetricSpace E] {K : Set E} (comp : IsCompact K)
+theorem uniform_oscillation {K : Set E} (comp : IsCompact K)
     {f : E → F} {ε : ENNReal} (hK : ∀ x ∈ K, oscillation f x < ε) :
     ∃ δ > 0, ∀ x ∈ K, diam (f '' (ball x (ENNReal.ofReal δ))) ≤ ε := by
   simp only [← oscillationWithin_univ_eq_oscillation] at hK

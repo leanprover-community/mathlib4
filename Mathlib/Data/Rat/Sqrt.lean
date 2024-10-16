@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Int.Sqrt
 
-#align_import data.rat.sqrt from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
-
 /-!
 # Square root on rational numbers
 
@@ -25,18 +23,14 @@ namespace Rat
 numerator and the square root (on natural numbers) of the denominator. -/
 @[pp_nodot]
 def sqrt (q : ℚ) : ℚ := mkRat (Int.sqrt q.num) (Nat.sqrt q.den)
-#align rat.sqrt Rat.sqrt
 
 theorem sqrt_eq (q : ℚ) : Rat.sqrt (q * q) = |q| := by
   rw [sqrt, mul_self_num, mul_self_den, Int.sqrt_eq, Nat.sqrt_eq, abs_def, divInt_ofNat]
-#align rat.sqrt_eq Rat.sqrt_eq
 
 theorem exists_mul_self (x : ℚ) : (∃ q, q * q = x) ↔ Rat.sqrt x * Rat.sqrt x = x :=
   ⟨fun ⟨n, hn⟩ => by rw [← hn, sqrt_eq, abs_mul_abs_self], fun h => ⟨Rat.sqrt x, h⟩⟩
-#align rat.exists_mul_self Rat.exists_mul_self
 
 lemma sqrt_nonneg (q : ℚ) : 0 ≤ Rat.sqrt q := mkRat_nonneg (Int.sqrt_nonneg _) _
-#align rat.sqrt_nonneg Rat.sqrt_nonneg
 
 /-- `IsSquare` can be decided on `ℚ` by checking against the square root. -/
 instance : DecidablePred (IsSquare : ℚ → Prop) :=

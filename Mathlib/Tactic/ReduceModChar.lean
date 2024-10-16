@@ -36,13 +36,13 @@ open Lean.Elab
 open Tactic
 open Qq
 
-set_option autoImplicit true
-
 namespace Tactic
 
 namespace ReduceModChar
 
 open Mathlib.Meta.NormNum
+
+variable {u : Level}
 
 lemma CharP.intCast_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ) :
     (k : R) = (k % p : ℤ) := by
@@ -50,7 +50,7 @@ lemma CharP.intCast_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ)
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Int.emod_add_ediv]
     _ = ↑(k % p) := by simp [CharP.cast_eq_zero R]
 
-lemma CharP.isInt_of_mod {α : Type _} [Ring α] {n n' : ℕ} (inst : CharP α n) {e : α}
+lemma CharP.isInt_of_mod {e' r : ℤ} {α : Type _} [Ring α] {n n' : ℕ} (inst : CharP α n) {e : α}
     (he : IsInt e e') (hn : IsNat n n') (h₂ : IsInt (e' % n') r) : IsInt e r :=
   ⟨by rw [he.out, CharP.intCast_eq_mod α n, show n = n' from hn.out, h₂.out, Int.cast_id]⟩
 
@@ -127,7 +127,7 @@ inductive TypeToCharPResult (α : Q(Type u))
   | intLike (n : Q(ℕ)) (instRing : Q(Ring $α)) (instCharP : Q(CharP $α $n))
   | failure
 
-instance : Inhabited (TypeToCharPResult α) := ⟨.failure⟩
+instance {α : Q(Type u)} : Inhabited (TypeToCharPResult α) := ⟨.failure⟩
 
 /-- Determine the characteristic of a ring from the type.
 This should be fast, so this pattern-matches on the type, rather than searching for a
