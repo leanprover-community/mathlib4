@@ -35,7 +35,7 @@ attribute [local instance] endofunctorMonoidalCategory
 /-- The shift on `PullbackShift C φ` is obtained by precomposing the shift on `C` with
 the monoidal functor `Discrete.addMonoidalFunctor φ : Discrete A ⥤ Discrete B`. -/
 noncomputable instance : HasShift (PullbackShift C φ) A where
-  shift := (Discrete.addMonoidalFunctor φ).comp (@HasShift.shift C B _ _ _)
+  shift := Discrete.addMonoidalFunctor φ ⋙ shiftMonoidalFunctor C B
 
 instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) := by
   dsimp [PullbackShift]

@@ -140,4 +140,56 @@ end IsMonoidal
 
 end Adjunction
 
+namespace LaxMonoidalFunctor
+
+/-- The type of monoidal natural transformations between (bundled) lax monoidal functors. -/
+structure Hom (F G : LaxMonoidalFunctor C D) where
+  hom : F.toFunctor ⟶ G.toFunctor
+  isMonoidal : NatTrans.IsMonoidal hom := by infer_instance
+
+attribute [instance] Hom.isMonoidal
+
+instance : Category (LaxMonoidalFunctor C D) where
+  Hom := Hom
+  comp α β := ⟨α.1 ≫ β.1, by have := α.2; have := β.2; infer_instance⟩
+  id _ := ⟨𝟙 _, inferInstance⟩
+
+@[simp]
+lemma id_hom (F : LaxMonoidalFunctor C D) : Hom.hom (𝟙 F) = 𝟙 _ := rfl
+
+@[reassoc, simp]
+lemma comp_hom {F G H : LaxMonoidalFunctor C D} (α : F ⟶ G) (β : G ⟶ H) :
+    (α ≫ β).hom = α.hom ≫ β.hom := rfl
+
+@[ext]
+lemma hom_ext {F G : LaxMonoidalFunctor C D} {α β : F ⟶ G} (h : α.hom = β.hom) : α = β := by
+  cases α; cases β; subst h; rfl
+
+/-- Constructor for morphisms in the category `LaxMonoidalFunctor C D`. -/
+@[simps]
+def homMk {F G : LaxMonoidalFunctor C D} (f : F.toFunctor ⟶ G.toFunctor) [NatTrans.IsMonoidal f] :
+    F ⟶ G := ⟨f, inferInstance⟩
+
+/-- Constructor for isomorphisms in the category `LaxMonoidalFunctor C D`. -/
+@[simps]
+def isoMk {F G : LaxMonoidalFunctor C D} (e : F.toFunctor ≅ G.toFunctor)
+    [NatTrans.IsMonoidal e.hom] :
+    F ≅ G where
+  hom := homMk e.hom
+  inv := homMk e.inv
+
+open Functor.LaxMonoidal
+
+@[simps!]
+def isoOfComponents {F G : LaxMonoidalFunctor C D} (e : ∀ X, F.obj X ≅ G.obj X)
+    (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (e Y).hom = (e X).hom ≫ G.map f :=
+      by aesop_cat)
+    (unit : ε F.toFunctor ≫ (e (𝟙_ C)).hom = ε G.toFunctor := by aesop_cat)
+    (tensor : ∀ X Y, μ F.toFunctor X Y ≫ (e (X ⊗ Y)).hom =
+      ((e X).hom ⊗ (e Y).hom) ≫ μ G.toFunctor X Y := by aesop_cat) :
+    F ≅ G :=
+  @isoMk _ _ _ _ _ _ _ _ (NatIso.ofComponents e naturality) (by constructor <;> assumption)
+
+end LaxMonoidalFunctor
+
 end CategoryTheory

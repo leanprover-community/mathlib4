@@ -975,4 +975,24 @@ abbrev IsMonoidal [e.inverse.Monoidal] : Prop := e.toAdjunction.IsMonoidal
 
 end Equivalence
 
+variable (C D)
+
+/-- Bundled version of lax monoidal functors. This type is equipped with a category
+structure in `CategoryTheory.Monoidal.NaturalTransformation`. -/
+structure LaxMonoidalFunctor extends C ⥤ D where
+  laxMonoidal : toFunctor.LaxMonoidal := by infer_instance
+
+namespace LaxMonoidalFunctor
+
+attribute [instance] laxMonoidal
+
+variable {C D}
+
+/-- Constructor for `LaxMonoidalFunctor C D`. -/
+@[simps toFunctor]
+def of (F : C ⥤ D) [F.LaxMonoidal] : LaxMonoidalFunctor C D where
+  toFunctor := F
+
+end LaxMonoidalFunctor
+
 end CategoryTheory
