@@ -313,7 +313,6 @@ instance : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-@[simp]
 lemma apply_coe{i : ι} : f i = f.toFun i := rfl
 
 protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
@@ -577,78 +576,78 @@ theorem exists_isSubordinate [NormalSpace X] [ParacompactSpace X] (hs : IsClosed
   let ⟨f, hf⟩ := BumpCovering.exists_isSubordinate hs U ho hU
   ⟨f.toPartitionOfUnity, hf.toPartitionOfUnity⟩
 
-/-- If `X` is a locally compact `R2Space` and `U` is an open covering of a compact set `s`, then
-there exists a `PartitionOfUnity ι X s` that is subordinate to `U`. -/
-theorem exists_isSubordinate_of_isCompact [R1Space X] [LocallyCompactSpace X] (hs : IsCompact s)
-    (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hU : s ⊆ ⋃ i, U i) :
-    ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U ∧ ∀ ι, HasCompactSupport (f ι) := by
-  have : ∃ Uc : ι → Set X, (∀ (i : ι), IsOpen (Uc i)) ∧ (∀ (i : ι), IsCompact
-      (closure (Uc i))) ∧ s ⊆ ⋃ i, Uc i ∧ (∀ (i : ι), Uc i ⊆ U i) := by
-    set Uc := fun (i : ι) => Classical.choose (exists_isOpen_superset_and_isCompact_closure
-      hs) ∩ U i
-    set spUc := Classical.choose_spec (exists_isOpen_superset_and_isCompact_closure hs)
-    use Uc
-    refine ⟨fun i => IsOpen.inter spUc.1 (ho i), ?_, ?_, ?_⟩
-    · intro i
-      apply IsCompact.of_isClosed_subset spUc.2.2 isClosed_closure
-      exact closure_mono inter_subset_left
-    · rw [← inter_iUnion _ U]
-      exact subset_inter spUc.2.1 hU
-    · exact fun i => inter_subset_right
-  obtain ⟨Uc, hUcopen, hUcccompact, hssubUc, hUsubUc⟩ := this
-  obtain ⟨t, ht⟩ := IsCompact.elim_finite_subcover hs Uc hUcopen hssubUc
-  by_cases htcard : t.card = 0
-  · have tempty : t = ∅ := Finset.card_eq_zero.mp htcard
-    have : s = ∅ := by
-      rw [tempty] at ht
-      simp only [Finset.not_mem_empty, iUnion_of_empty, iUnion_empty, subset_empty_iff] at ht
-      exact ht
-    set g := fun i => (0 : C(X, ℝ)) with hg
-    set f : BumpCovering ι X s :=
-      ⟨g,
-      by
-      intro x
-      use univ
-      simp only [univ_mem, inter_univ, support_nonempty_iff, ne_eq, true_and]
-      have h : {i | ¬⇑(g i) = 0} = ∅ := by
-       rw [hg]
-       simp only [ContinuousMap.coe_zero, not_true_eq_false, setOf_false]
-      rw [h]
-      exact finite_empty,
-      by
-      intro i
-      simp only [Pi.zero_apply, le_refl],
-      by
-      intro x
-      rw [hg]
-      simp only [Pi.one_apply]
-      intro x
-      simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.zero_apply, ContinuousMap.one_apply,
-        zero_le_one],
-      by
-      intro x
-      rw [this]
-      exact fun a ↦ False.elim a
-      ⟩ with hf
-    use BumpCovering.toPartitionOfUnity f
-    have : ∀ i, f.toPartitionOfUnity i = 0 := by
-      intro i
-      ext x
-      rw [BumpCovering.toPartitionOfUnity_apply]
-      simp only [BumpCovering.apply_coe, ContinuousMap.zero_apply, mul_eq_zero]
-      exact mul_eq_mul_left_iff.mp rfl
-    constructor
-    · intro i
-      rw [this]
-      simp only [ContinuousMap.coe_zero]
-      rw [tsupport, support_zero']
-      simp only [closure_empty, empty_subset]
-    · intro i
-      rw [this]
-      simp only [ContinuousMap.coe_zero]
-      rw [HasCompactSupport, tsupport, support_zero']
-      simp only [closure_empty, isCompact_empty]
-  · sorry
+-- /-- If `X` is a locally compact `R2Space` and `U` is an open covering of a compact set `s`, then
+-- there exists a `PartitionOfUnity ι X s` that is subordinate to `U`. -/
+-- theorem exists_isSubordinate_of_isCompact [R1Space X] [LocallyCompactSpace X] (hs : IsCompact s)
+--     (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hU : s ⊆ ⋃ i, U i) :
+--     ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U ∧ ∀ ι, HasCompactSupport (f ι) := by
+--   have : ∃ Uc : ι → Set X, (∀ (i : ι), IsOpen (Uc i)) ∧ (∀ (i : ι), IsCompact
+--       (closure (Uc i))) ∧ s ⊆ ⋃ i, Uc i ∧ (∀ (i : ι), Uc i ⊆ U i) := by
+--     set Uc := fun (i : ι) => Classical.choose (exists_isOpen_superset_and_isCompact_closure
+--       hs) ∩ U i
+--     set spUc := Classical.choose_spec (exists_isOpen_superset_and_isCompact_closure hs)
+--     use Uc
+--     refine ⟨fun i => IsOpen.inter spUc.1 (ho i), ?_, ?_, ?_⟩
+--     · intro i
+--       apply IsCompact.of_isClosed_subset spUc.2.2 isClosed_closure
+--       exact closure_mono inter_subset_left
+--     · rw [← inter_iUnion _ U]
+--       exact subset_inter spUc.2.1 hU
+--     · exact fun i => inter_subset_right
+--   obtain ⟨Uc, hUcopen, hUcccompact, hssubUc, hUsubUc⟩ := this
+--   obtain ⟨t, ht⟩ := IsCompact.elim_finite_subcover hs Uc hUcopen hssubUc
+--   by_cases htcard : t.card = 0
+--   · have tempty : t = ∅ := Finset.card_eq_zero.mp htcard
+--     have : s = ∅ := by
+--       rw [tempty] at ht
+--       simp only [Finset.not_mem_empty, iUnion_of_empty, iUnion_empty, subset_empty_iff] at ht
+--       exact ht
+--     set g := fun i => (0 : C(X, ℝ)) with hg
+--     set f : BumpCovering ι X s :=
+--       ⟨g,
+--       by
+--       intro x
+--       use univ
+--       simp only [univ_mem, inter_univ, support_nonempty_iff, ne_eq, true_and]
+--       have h : {i | ¬⇑(g i) = 0} = ∅ := by
+--        rw [hg]
+--        simp only [ContinuousMap.coe_zero, not_true_eq_false, setOf_false]
+--       rw [h]
+--       exact finite_empty,
+--       by
+--       intro i
+--       simp only [Pi.zero_apply, le_refl],
+--       by
+--       intro x
+--       rw [hg]
+--       simp only [Pi.one_apply]
+--       intro x
+--       simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.zero_apply, ContinuousMap.one_apply,
+--         zero_le_one],
+--       by
+--       intro x
+--       rw [this]
+--       exact fun a ↦ False.elim a
+--       ⟩ with hf
+--     use BumpCovering.toPartitionOfUnity f
+--     have : ∀ i, f.toPartitionOfUnity i = 0 := by
+--       intro i
+--       ext x
+--       rw [BumpCovering.toPartitionOfUnity_apply]
+--       simp only [BumpCovering.apply_coe, ContinuousMap.zero_apply, mul_eq_zero]
+--       exact mul_eq_mul_left_iff.mp rfl
+--     constructor
+--     · intro i
+--       rw [this]
+--       simp only [ContinuousMap.coe_zero]
+--       rw [tsupport, support_zero']
+--       simp only [closure_empty, empty_subset]
+--     · intro i
+--       rw [this]
+--       simp only [ContinuousMap.coe_zero]
+--       rw [HasCompactSupport, tsupport, support_zero']
+--       simp only [closure_empty, isCompact_empty]
+--   · sorry
   -- · have htW : ∀ (x : X), x ∈ t → ∃ (Wx : Set X), x ∈ Wx ∧ IsOpen Wx ∧ IsCompact (closure Wx)
   --       ∧ ∃ (i : Fin (Nat.succ n)), (closure Wx) ⊆ sc i := by
   --     intro x hx

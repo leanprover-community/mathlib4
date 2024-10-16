@@ -192,6 +192,8 @@ end PartialRefinement
 
 end ShrinkingLemma
 
+section NormalSpace
+
 open ShrinkingLemma
 
 variable {u : ι → Set X} {s : Set X} [NormalSpace X]
@@ -240,3 +242,38 @@ theorem exists_iUnion_eq_closed_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, {
     ∃ v : ι → Set X, iUnion v = univ ∧ (∀ i, IsClosed (v i)) ∧ ∀ i, v i ⊆ u i :=
   let ⟨v, vU, hv⟩ := exists_subset_iUnion_closed_subset isClosed_univ uo (fun x _ => uf x) uU.ge
   ⟨v, univ_subset_iff.1 vU, hv⟩
+
+end NormalSpace
+
+section T2LocallyCompactSpace
+
+variable {u : ι → Set X} {s : Set X} [T2Space X] [LocallyCompactSpace X]
+
+lemma exists_subset_closure_subset_t2space (hs : IsCompact s) (U : Set X) (Uo : IsOpen U)
+    (Us : s ⊆ U) : ∃ V : Set X, s ⊆ V ∧ IsOpen V ∧ IsCompact (closure V) ∧ closure V ⊆ U := by
+  obtain ⟨t, hct, hst⟩ := exists_compact_superset hs
+  -- `s` and `(interior t ∩ U)ᶜ` are closed and disjoint, `closure (interior t ∩ U)` is compact
+  have : IsCompact (closure (interior t ∩ U)ᶜᶜ) := by
+    rw [compl_compl]
+    apply IsCompact.of_isClosed_subset hct isClosed_closure
+    nth_rw 2 [← IsClosed.closure_eq (IsCompact.isClosed hct)]
+    apply closure_mono
+    exact subset_trans inter_subset_left interior_subset
+  obtain ⟨W, V, Wopen, Vopen, itinterUcomplsubW, ssubV, disjointWV⟩ :=
+    SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed
+    (IsOpen.isClosed_compl (IsOpen.inter isOpen_interior Uo)) this (IsCompact.isClosed hs)
+    (HasSubset.Subset.disjoint_compl_left (Set.subset_inter hst Us))
+  use V
+  refine ⟨ssubV, Vopen, ?_, ?_⟩
+  · apply IsCompact.of_isClosed_subset hct isClosed_closure
+    rw [← IsClosed.closure_eq (IsCompact.isClosed hct)]
+    apply closure_mono
+    apply subset_trans (Disjoint.subset_compl_left disjointWV)
+    apply subset_trans (Set.compl_subset_comm.mp itinterUcomplsubW)
+    exact subset_trans (Set.inter_subset_left) interior_subset
+  apply subset_trans (closure_mono (Disjoint.subset_compl_left disjointWV))
+  rw [IsClosed.closure_eq (IsOpen.isClosed_compl Wopen)]
+  apply subset_trans (Set.compl_subset_comm.mp itinterUcomplsubW)
+  exact inter_subset_right
+
+end T2LocallyCompactSpace
