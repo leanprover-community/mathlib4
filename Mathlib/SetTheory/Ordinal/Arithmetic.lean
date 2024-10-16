@@ -269,6 +269,9 @@ theorem IsLimit.sSup_Iio {o : Ordinal} (h : IsLimit o) : sSup (Iio o) = o := by
   intro a ha
   exact (lt_succ a).trans_le (le_csSup bddAbove_Iio (h.succ_lt ha))
 
+theorem IsLimit.iSup_Iio {o : Ordinal} (h : IsLimit o) : ⨆ a : Iio o, a.1 = o := by
+  rw [← sSup_eq_iSup', h.sSup_Iio]
+
 /-- Main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
 @[elab_as_elim]
@@ -1396,8 +1399,8 @@ theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal
 
 theorem IsNormal.apply_of_isLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {o : Ordinal}
     (ho : IsLimit o) : f o = ⨆ a : Iio o, f a := by
-  have : (Iio o).Nonempty := ⟨0, ho.pos⟩
-  rw [← H.map_sSup this, ho.sSup_Iio]
+  have : Nonempty (Iio o) := ⟨0, ho.pos⟩
+  rw [← H.map_iSup, ho.iSup_Iio]
 
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]
