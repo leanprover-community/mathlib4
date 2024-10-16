@@ -38,26 +38,26 @@ of quasi-compact open sets are quasi-compact.
 @[mk_iff]
 class QuasiCompact (f : X ⟶ Y) : Prop where
   /-- Preimage of compact open set under a quasi-compact morphism between schemes is compact. -/
-  isCompact_preimage : ∀ U : Set Y, IsOpen U → IsCompact U → IsCompact (f.1.base ⁻¹' U)
+  isCompact_preimage : ∀ U : Set Y, IsOpen U → IsCompact U → IsCompact (f.base ⁻¹' U)
 
-theorem quasiCompact_iff_spectral : QuasiCompact f ↔ IsSpectralMap f.1.base :=
+theorem quasiCompact_iff_spectral : QuasiCompact f ↔ IsSpectralMap f.base :=
   ⟨fun ⟨h⟩ => ⟨by fun_prop, h⟩, fun h => ⟨h.2⟩⟩
 
 instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     QuasiCompact f := by
   constructor
   intro U _ hU'
-  convert hU'.image (inv f.1.base).continuous_toFun using 1
+  convert hU'.image (inv f.base).continuous_toFun using 1
   rw [Set.image_eq_preimage_of_inverse]
   · delta Function.LeftInverse
-    exact IsIso.inv_hom_id_apply f.1.base
-  · exact IsIso.hom_inv_id_apply f.1.base
+    exact IsIso.inv_hom_id_apply f.base
+  · exact IsIso.hom_inv_id_apply f.base
 
 instance quasiCompact_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCompact f]
     [QuasiCompact g] : QuasiCompact (f ≫ g) := by
   constructor
   intro U hU hU'
-  rw [Scheme.comp_val_base, TopCat.coe_comp, Set.preimage_comp]
+  rw [Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp]
   apply QuasiCompact.isCompact_preimage
   · exact Continuous.isOpen_preimage (by fun_prop) _ hU
   apply QuasiCompact.isCompact_preimage <;> assumption
@@ -126,9 +126,9 @@ instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) wher
   isLocal_affineProperty := by
     constructor
     · apply AffineTargetMorphismProperty.respectsIso_mk <;> rintro X Y Z e _ _ H
-      exacts [@Homeomorph.compactSpace _ _ _ _ H (TopCat.homeoOfIso (asIso e.inv.1.base)), H]
+      exacts [@Homeomorph.compactSpace _ _ _ _ H (TopCat.homeoOfIso (asIso e.inv.base)), H]
     · introv _ H
-      change CompactSpace ((Opens.map f.val.base).obj (Y.basicOpen r))
+      change CompactSpace ((Opens.map f.base).obj (Y.basicOpen r))
       rw [Scheme.preimage_basicOpen f r]
       erw [← isCompact_iff_compactSpace]
       rw [← isCompact_univ_iff] at H
@@ -137,7 +137,7 @@ instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) wher
     · rintro X Y H f S hS hS'
       rw [← IsAffineOpen.basicOpen_union_eq_self_iff] at hS
       · rw [← isCompact_univ_iff]
-        change IsCompact ((Opens.map f.val.base).obj ⊤).1
+        change IsCompact ((Opens.map f.base).obj ⊤).1
         rw [← hS]
         dsimp [Opens.map]
         simp only [Opens.iSup_mk, Opens.coe_mk, Set.preimage_iUnion]
