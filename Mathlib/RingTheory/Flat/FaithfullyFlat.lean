@@ -94,11 +94,9 @@ instance rTensor_nontrivial
   refine subsingleton_or_nontrivial _ |>.resolve_left fun rid => ?_
   have : Function.Injective
     (LinearMap.rTensor M inc ∘ₗ (quotTensorEquivQuotSMul M I).symm.toLinearMap) :=
-    Function.Injective.comp
-      (g := LinearMap.rTensor M inc)
-      (f := (quotTensorEquivQuotSMul M I).symm.toLinearMap)
+    Function.Injective.comp (g := LinearMap.rTensor M inc)
       (Module.Flat.rTensor_preserves_injective_linearMap (h := fl.toFlat) inc injective_inc)
-      (LinearEquiv.injective _)
+      ((quotTensorEquivQuotSMul M I).symm.injective)
   have := this.subsingleton
   rw [Submodule.subsingleton_quotient_iff_eq_top] at this
   contradiction
