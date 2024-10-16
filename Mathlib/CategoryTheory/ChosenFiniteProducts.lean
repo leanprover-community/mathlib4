@@ -205,7 +205,7 @@ section terminalComparison
 `terminalComparison F` is the unique map `F (𝟙_ C) ⟶ 𝟙_ D`. -/
 abbrev terminalComparison : F.obj (𝟙_ C) ⟶ 𝟙_ D := toUnit _
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma map_toUnit_comp_terminalCompariso (A : C) :
     F.map (toUnit A) ≫ terminalComparison F = toUnit _ := toUnit_unique _ _
 
@@ -219,12 +219,12 @@ noncomputable def preservesLimitEmptyOfIsIsoTerminalComparison [IsIso (terminalC
   exact asIso (terminalComparison F)|>.symm
 
 /-- If `F` preserves terminal objects, then `terminalComparison F` is an isomorphism. -/
-def PreservesTerminalIso [h : PreservesLimit (Functor.empty.{0} C) F] : F.obj (𝟙_ C) ≅ 𝟙_ D :=
+def preservesTerminalIso [h : PreservesLimit (Functor.empty.{0} C) F] : F.obj (𝟙_ C) ≅ 𝟙_ D :=
   (isLimitChangeEmptyCone D (h.preserves terminal.isLimit) (asEmptyCone (F.obj (𝟙_ C)))
     (Iso.refl _)).conePointUniqueUpToIso terminal.isLimit
 
 @[simp]
-lemma PreservesTerminalIso_hom [PreservesLimit (Functor.empty.{0} C) F] :
+lemma preservesTerminalIso_hom [PreservesLimit (Functor.empty.{0} C) F] :
     (PreservesTerminalIso F).hom = terminalComparison F := toUnit_unique _ _
 
 instance terminalComparison_isIso_of_preservesLimits [PreservesLimit (Functor.empty.{0} C) F] :
