@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.LinearDisjoint
 import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
 import Mathlib.Algebra.Algebra.Subalgebra.Rank
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
@@ -101,8 +102,6 @@ linearly disjoint, linearly independent, tensor product
 -/
 
 open scoped Classical TensorProduct
-
-open FiniteDimensional
 
 noncomputable section
 
@@ -355,10 +354,11 @@ theorem rank_inf_eq_one_of_commute_of_flat_of_inj (hf : Module.Flat R A ∨ Modu
   have : Cardinal.lift.{u} (Module.rank R (⊥ : Subalgebra R S)) =
       Cardinal.lift.{v} (Module.rank R R) :=
     lift_rank_range_of_injective (Algebra.linearMap R S) hinj
-  rw [rank_self, Cardinal.lift_one, Cardinal.lift_eq_one] at this
+  rw [Module.rank_self, Cardinal.lift_one, Cardinal.lift_eq_one] at this
   rw [← this]
-  exact rank_le_of_submodule (toSubmodule (⊥ : Subalgebra R S)) (toSubmodule (A ⊓ B))
-    (bot_le : (⊥ : Subalgebra R S) ≤ A ⊓ B)
+  change Module.rank R (toSubmodule (⊥ : Subalgebra R S)) ≤
+    Module.rank R (toSubmodule (A ⊓ B))
+  exact Submodule.rank_mono (bot_le : (⊥ : Subalgebra R S) ≤ A ⊓ B)
 
 theorem rank_inf_eq_one_of_commute_of_flat_left_of_inj [Module.Flat R A]
     (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.1 b.1)
@@ -439,7 +439,7 @@ include H in
 /-- In a commutative ring, if subalgebras `A` and `B` are linearly disjoint and they are
 free modules, then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`. -/
 theorem finrank_sup_of_free [Module.Free R A] [Module.Free R B] :
-    finrank R ↥(A ⊔ B) = finrank R A * finrank R B := by
+    Module.finrank R ↥(A ⊔ B) = Module.finrank R A * Module.finrank R B := by
   simpa only [map_mul] using congr(Cardinal.toNat $(H.rank_sup_of_free))
 
 /-- In a commutative ring, if `A` and `B` are subalgebras which are free modules of finite rank,
@@ -447,9 +447,10 @@ such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
 then `A` and `B` are linearly disjoint. -/
 theorem of_finrank_sup_of_free [Module.Free R A] [Module.Free R B]
     [Module.Finite R A] [Module.Finite R B]
-    (H : finrank R ↥(A ⊔ B) = finrank R A * finrank R B) : A.LinearDisjoint B := by
+    (H : Module.finrank R ↥(A ⊔ B) = Module.finrank R A * Module.finrank R B) :
+    A.LinearDisjoint B := by
   nontriviality R
-  rw [← finrank_tensorProduct] at H
+  rw [← Module.finrank_tensorProduct] at H
   obtain ⟨j, hj⟩ := exists_linearIndependent_of_le_finrank H.ge
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hj
   let j' := Finsupp.linearCombination R j ∘ₗ
@@ -484,21 +485,22 @@ theorem adjoin_rank_eq_rank_right [Module.Free R B] [Module.Flat R A]
 then `A` and `B` are linearly disjoint. -/
 theorem of_finrank_coprime_of_free [Module.Free R A] [Module.Free R B]
     [Module.Free A (Algebra.adjoin A (B : Set S))] [Module.Free B (Algebra.adjoin B (A : Set S))]
-    (H : (finrank R A).Coprime (finrank R B)) : A.LinearDisjoint B := by
+    (H : (Module.finrank R A).Coprime (Module.finrank R B)) : A.LinearDisjoint B := by
   nontriviality R
-  by_cases h1 : finrank R A = 0
+  by_cases h1 : Module.finrank R A = 0
   · rw [h1, Nat.coprime_zero_left] at H
     rw [eq_bot_of_finrank_one H]
     exact bot_right _
-  by_cases h2 : finrank R B = 0
+  by_cases h2 : Module.finrank R B = 0
   · rw [h2, Nat.coprime_zero_right] at H
     rw [eq_bot_of_finrank_one H]
     exact bot_left _
   haveI := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h1)
   haveI := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h2)
   haveI := finite_sup A B
-  have : finrank R A ≤ finrank R ↥(A ⊔ B) := LinearMap.finrank_le_finrank_of_injective <|
-    Submodule.inclusion_injective (show toSubmodule A ≤ toSubmodule (A ⊔ B) by simp)
+  have : Module.finrank R A ≤ Module.finrank R ↥(A ⊔ B) :=
+    LinearMap.finrank_le_finrank_of_injective <|
+      Submodule.inclusion_injective (show toSubmodule A ≤ toSubmodule (A ⊔ B) by simp)
   exact of_finrank_sup_of_free <| (finrank_sup_le_of_free A B).antisymm <|
     Nat.le_of_dvd (lt_of_lt_of_le (Nat.pos_of_ne_zero h1) this) <| H.mul_dvd_of_dvd_of_dvd
       (finrank_left_dvd_finrank_sup_of_free A B) (finrank_right_dvd_finrank_sup_of_free A B)
