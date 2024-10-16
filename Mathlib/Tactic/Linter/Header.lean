@@ -217,7 +217,7 @@ def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : Array (Synt
       s!"Mathlib.Tactic.Replace defines a deprecated form of the 'replace' tactic; \
       please do not use it in mathlib.")
     | `Mathlib.Tactic.Have =>
-      if mainModule != `Mathlib.Tactic.Replace then
+      if ![`Mathlib.Tactic, `Mathlib.Tactic.Replace].contains mainModule then
         output := output.push (i,
           s!"Mathlib.Tactic.Have defines a deprecated form of the 'have' tactic; \
           please do not use it in mathlib.")
