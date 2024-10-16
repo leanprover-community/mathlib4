@@ -10,6 +10,7 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Set.Card
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Tactic.Linter.UnusedAssumptionInType
 
 /-!  Subgroup of `Equiv.Perm α` preserving a function
 
@@ -106,6 +107,7 @@ theorem stabilizer_card [DecidableEq α] [DecidableEq ι] [Fintype ι] :
   · rfl
 
 /-- The cardinality of the set of permutations preserving a function -/
+@[nolint finiteFintype]
 theorem stabilizer_ncard [Fintype ι] :
     Set.ncard {g : Perm α | f ∘ g = f} = ∏ i, (Set.ncard {a | f a = i})! := by
   classical

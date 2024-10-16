@@ -115,8 +115,8 @@ theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R}
   · simp [eq]
   · simp [eq, h]
 
-lemma pderiv_rename {τ : Type*} {f : σ → τ} (hf : Function.Injective f)
-    (x : σ) (p : MvPolynomial σ R) :
+lemma pderiv_rename {τ : Type*} {f : σ → τ}
+    (hf : Function.Injective f) (x : σ) (p : MvPolynomial σ R) :
     pderiv (f x) (rename f p) = rename f (pderiv x p) := by
   classical
   induction' p using MvPolynomial.induction_on with a p q hp hq p a h
