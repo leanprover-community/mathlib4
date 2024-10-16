@@ -48,7 +48,7 @@ instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
 
 namespace NatTrans
 
--- Porting note: the behaviour of `ext` has changed here.
+-- Porting note (#5229): the behaviour of `ext` has changed here.
 -- We need to provide a copy of the `NatTrans.ext` lemma,
 -- written in terms of `F ⟶ G` rather than `NatTrans F G`,
 -- or `ext` will not retrieve it from the cache.

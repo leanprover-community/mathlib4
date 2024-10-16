@@ -142,8 +142,8 @@ theorem RingHom.IsIntegralElem.of_mul_unit (x y : S) (r : R) (hr : f r * y = 1)
 /-- Generalization of `IsIntegral.of_mem_closure` bootstrapped up from that lemma -/
 theorem IsIntegral.of_mem_closure' (G : Set A) (hG : ∀ x ∈ G, IsIntegral R x) :
     ∀ x ∈ Subring.closure G, IsIntegral R x := fun _ hx ↦
-  Subring.closure_induction hx hG isIntegral_zero isIntegral_one (fun _ _ ↦ IsIntegral.add)
-    (fun _ ↦ IsIntegral.neg) fun _ _ ↦ IsIntegral.mul
+  Subring.closure_induction hG isIntegral_zero isIntegral_one (fun _ _ _ _ ↦ IsIntegral.add)
+    (fun _ _ ↦ IsIntegral.neg) (fun _ _ _ _ ↦ IsIntegral.mul) hx
 
 theorem IsIntegral.of_mem_closure'' {S : Type*} [CommRing S] {f : R →+* S} (G : Set S)
     (hG : ∀ x ∈ G, f.IsIntegralElem x) : ∀ x ∈ Subring.closure G, f.IsIntegralElem x := fun x hx =>

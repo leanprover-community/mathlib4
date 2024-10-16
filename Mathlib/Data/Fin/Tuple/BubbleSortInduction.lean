@@ -6,6 +6,7 @@ Authors: Michael Stoll
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Order.WellFounded
 import Mathlib.Order.PiLex
+import Mathlib.Data.Finite.Basic
 
 /-!
 # "Bubble sort" induction

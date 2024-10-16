@@ -2639,4 +2639,4 @@ lemma compl_mem_comk {p : Set α → Prop} {he hmono hunion s} :
 
 end Filter
 
-set_option linter.style.longFile 3000
+set_option linter.style.longFile 2800

@@ -6,7 +6,7 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Defs
 
 /-!  # Laurent polynomials
 
@@ -87,7 +87,7 @@ scoped[LaurentPolynomial] notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
 
 open LaurentPolynomial
 
--- Porting note: `ext` no longer applies `Finsupp.ext` automatically
+-- Porting note (#5229): `ext` no longer applies `Finsupp.ext` automatically
 @[ext]
 theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
   Finsupp.ext h

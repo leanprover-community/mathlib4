@@ -33,10 +33,10 @@ namespace AlgebraicGeometry
 topological spaces is an embedding and the induced morphisms of stalks are all surjective. -/
 @[mk_iff]
 class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
-  base_embedding : Embedding f.1.base
+  base_embedding : Embedding f.base
   surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
-lemma Scheme.Hom.embedding {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] : Embedding f.1.base :=
+lemma Scheme.Hom.embedding {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] : Embedding f.base :=
   IsPreimmersion.base_embedding
 
 lemma Scheme.Hom.stalkMap_surjective {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] (x) :
@@ -68,7 +68,7 @@ instance : MorphismProperty.IsMultiplicative @IsPreimmersion where
   comp_mem {X Y Z} f g hf hg := by
     refine ⟨hg.base_embedding.comp hf.base_embedding, fun x ↦ ?_⟩
     rw [Scheme.stalkMap_comp]
-    exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.1.1 x))
+    exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.base x))
 
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion f]
     [IsPreimmersion g] : IsPreimmersion (f ≫ g) :=
