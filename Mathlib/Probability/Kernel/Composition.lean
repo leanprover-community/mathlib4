@@ -663,6 +663,9 @@ def comap (κ : Kernel α β) (g : γ → α) (hg : Measurable g) : Kernel γ β
   toFun a := κ (g a)
   measurable' := κ.measurable.comp hg
 
+@[simp, norm_cast]
+lemma coe_comap (κ : Kernel α β) (g : γ → α) (hg : Measurable g) : κ.comap g hg = κ ∘ g := rfl
+
 theorem comap_apply (κ : Kernel α β) (hg : Measurable g) (c : γ) : comap κ g hg c = κ (g c) :=
   rfl
 

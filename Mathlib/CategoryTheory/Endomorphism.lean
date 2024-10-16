@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Kim Morrison, Simon Hudon
 -/
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Opposites
@@ -114,7 +114,7 @@ def Aut (X : C) := X ≅ X
 
 namespace Aut
 
--- Porting note: added because `Iso.ext` is not triggered automatically
+-- Porting note (#5229): added because `Iso.ext` is not triggered automatically
 @[ext]
 lemma ext {X : C} {φ₁ φ₂ : Aut X} (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Iso.ext h

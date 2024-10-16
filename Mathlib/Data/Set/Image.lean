@@ -168,6 +168,12 @@ theorem preimage_subtype_coe_eq_compl {s u v : Set α} (hsuv : s ⊆ u ∪ v)
   · intro hx
     exact Or.elim (hsuv x_in_s) id fun hx' => hx.elim hx'
 
+lemma preimage_subset {s t} (hs : s ⊆ f '' t) (hf : Set.InjOn f (f ⁻¹' s)) : f ⁻¹' s ⊆ t := by
+  rintro a ha
+  obtain ⟨b, hb, hba⟩ := hs ha
+  rwa [hf ha _ hba.symm]
+  simpa [hba]
+
 end Preimage
 
 /-! ### Image of a set under a function -/
