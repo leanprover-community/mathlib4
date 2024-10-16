@@ -57,7 +57,7 @@ variable {𝕂 : Type*} (𝔸 : Type*) [Field 𝕂] [Ring 𝔸] [Algebra 𝕂 �
   [TopologicalRing 𝔸]
 
 /-- The coefficients in the ordinary hypergeometric sum. -/
-noncomputable abbrev ordinaryHypergeometricCoefficient (a b c : 𝕂) := fun n => ((n !⁻¹ : 𝕂) *
+noncomputable abbrev ordinaryHypergeometricCoefficient (a b c : 𝕂) (n : ℕ) := ((n !⁻¹ : 𝕂) *
     (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b * ((ascPochhammer 𝕂 n).eval c)⁻¹)
 
 /-- `ordinaryHypergeometricSeries 𝔸 (a b c : 𝕂)` is a `FormalMultilinearSeries`.
@@ -166,56 +166,44 @@ lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :
   · obtain ⟨_, h, hn⟩ := zero
     exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b c hn h
 
-theorem ordinaryHypergeometricSeries_succ_norm_div_norm (n : ℕ)
+theorem ordinaryHypergeometricSeries_norm_div_succ_norm (n : ℕ)
     (habc : ∀ kn < n, (↑kn ≠ -a ∧ ↑kn ≠ -b ∧ ↑kn ≠ -c)) :
-      ‖ordinaryHypergeometricCoefficient a b c n.succ‖ / ‖ordinaryHypergeometricCoefficient a b c n‖
-      = ‖a + n‖ * ‖b + n‖ * ‖c + n‖⁻¹ * ‖1 + (n : 𝕂)‖⁻¹ := by
+      ‖ordinaryHypergeometricCoefficient a b c n‖ / ‖ordinaryHypergeometricCoefficient a b c n.succ‖
+      = ‖a + n‖⁻¹ * ‖b + n‖⁻¹ * ‖c + n‖ * ‖1 + (n : 𝕂)‖ := by
   simp only [mul_inv_rev, factorial_succ, cast_mul, cast_add,
     cast_one, ascPochhammer_succ_eval, norm_mul, norm_inv]
-  have : ‖(n ! : 𝕂)‖⁻¹ * ‖(n : 𝕂) + 1‖⁻¹ * (‖Polynomial.eval a (ascPochhammer 𝕂 n)‖ * ‖a + n‖) *
-    (‖Polynomial.eval b (ascPochhammer 𝕂 n)‖ * ‖b + n‖) *
-    (‖c + n‖⁻¹ * ‖Polynomial.eval c (ascPochhammer 𝕂 n)‖⁻¹) /
-    (‖(n ! : 𝕂)‖⁻¹ * ‖Polynomial.eval a (ascPochhammer 𝕂 n)‖ *
-    ‖Polynomial.eval b (ascPochhammer 𝕂 n)‖ * ‖Polynomial.eval c (ascPochhammer 𝕂 n)‖⁻¹) =
-    ‖(n ! : 𝕂)‖⁻¹⁻¹ * ‖(n ! : 𝕂)‖⁻¹ * ‖Polynomial.eval a (ascPochhammer 𝕂 n)‖ *
-    ‖Polynomial.eval a (ascPochhammer 𝕂 n)‖⁻¹ * ‖Polynomial.eval b (ascPochhammer 𝕂 n)‖ *
-    ‖Polynomial.eval b (ascPochhammer 𝕂 n)‖⁻¹ * ‖Polynomial.eval c (ascPochhammer 𝕂 n)‖⁻¹⁻¹ *
-    ‖Polynomial.eval c (ascPochhammer 𝕂 n)‖⁻¹ * ‖a + n‖ * ‖b + n‖ * ‖c + n‖⁻¹ * ‖1 + (n : 𝕂)‖⁻¹ :=
-    by ring_nf
-  rw [this, inv_inv, inv_inv]
-  repeat rw [DivisionRing.mul_inv_cancel, one_mul]
-  all_goals
-    rw [norm_ne_zero_iff]
-  any_goals
-    apply (ascPochhammer_eval_eq_zero_iff n _).not.2
-    push_neg
-    exact fun kn hkn ↦ by simp [habc kn hkn]
-  exact cast_ne_zero.2 (factorial_ne_zero n)
-
-/-- The ratio of successive terms of `ordinaryHypergeometricSeries` tends to one. This theorem
-is used in the proof `ordinaryHypergeometric_ratio_tendsto_nhds_atTop`. -/
-theorem ordinaryHypergeometricSeries_ratio_tendsto_one_atTop :
-    Tendsto (fun k : ℕ ↦ (a + k) * (b + k) * (c + k)⁻¹ * ((1 : 𝕂) + k)⁻¹) atTop (𝓝 1) := by
-  conv =>
-    enter [1, n]
-    rw [mul_assoc, ← mul_inv, ← div_eq_mul_inv, mul_div_mul_comm]
-  apply (mul_one (1 : 𝕂)) ▸ Filter.Tendsto.mul <;>
-  convert RCLike.tendsto_add_div_add_atTop_nhds _ _ (1 : 𝕂) one_ne_zero <;> simp
+  calc
+    _ = ‖Polynomial.eval a (ascPochhammer 𝕂 n)‖ * ‖Polynomial.eval a (ascPochhammer 𝕂 n)‖⁻¹ *
+        ‖Polynomial.eval b (ascPochhammer 𝕂 n)‖ * ‖Polynomial.eval b (ascPochhammer 𝕂 n)‖⁻¹ *
+        ‖Polynomial.eval c (ascPochhammer 𝕂 n)‖⁻¹⁻¹ * ‖Polynomial.eval c (ascPochhammer 𝕂 n)‖⁻¹ *
+        ‖(n ! : 𝕂)‖⁻¹⁻¹ * ‖(n ! : 𝕂)‖⁻¹ * ‖a + n‖⁻¹ * ‖b + n‖⁻¹ * ‖c + n‖⁻¹⁻¹ * ‖1 + (n : 𝕂)‖⁻¹⁻¹
+          := by ring_nf
+    _ = _ := by
+      simp only [inv_inv]
+      repeat rw [DivisionRing.mul_inv_cancel, one_mul]
+      all_goals
+        rw [norm_ne_zero_iff]
+      any_goals
+        apply (ascPochhammer_eval_eq_zero_iff n _).not.2
+        push_neg
+        exact fun kn hkn ↦ by simp [habc kn hkn]
+      exact cast_ne_zero.2 (factorial_ne_zero n)
 
 /-- The radius of convergence of `ordinaryHypergeometricSeries` is unity if none of the parameters
 are non-positive integers. -/
 theorem ordinaryHypergeometricSeries_radius_eq_one
     (habc : ∀ kn : ℕ, ↑kn ≠ -a ∧ ↑kn ≠ -b ∧ ↑kn ≠ -c) :
       (ordinaryHypergeometricSeries 𝔸 a b c).radius = 1 := by
-  convert ofScalars_radius_of_tendsto 𝔸 _ one_ne_zero ?_
-  · simp
-  · conv =>
-      enter [1, n]
-      rw [ordinaryHypergeometricSeries_succ_norm_div_norm,
-        ← norm_mul, ← norm_inv, ← norm_mul, ← norm_inv, ← norm_mul]
-      rfl
-      tactic => aesop
-    convert Filter.Tendsto.norm (ordinaryHypergeometricSeries_ratio_tendsto_one_atTop a b c)
-    simp
+  convert ofScalars_radius_eq_of_tendsto 𝔸 _ one_ne_zero ?_
+  suffices Tendsto (fun k : ℕ ↦ (a + k)⁻¹ * (b + k)⁻¹ * (c + k) * ((1 : 𝕂) + k)) atTop (𝓝 1) by
+    simp_rw [ordinaryHypergeometricSeries_norm_div_succ_norm a b c _ (fun n _ ↦ habc n)]
+    simp [← norm_mul, ← norm_inv]
+    convert Filter.Tendsto.norm this
+    exact norm_one.symm
+  have (k : ℕ) : (a + k)⁻¹ * (b + k)⁻¹ * (c + k) * ((1 : 𝕂) + k) =
+        (c + k) / (a + k) * ((1 + k) / (b + k)) := by field_simp
+  simp_rw [this]
+  apply (mul_one (1 : 𝕂)) ▸ Filter.Tendsto.mul <;>
+  convert RCLike.tendsto_add_mul_div_add_mul_atTop_nhds _ _ (1 : 𝕂) one_ne_zero <;> simp
 
 end RCLike

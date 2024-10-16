@@ -374,7 +374,7 @@ theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
 
 variable {R}
 
-/- The Pochhammer polynomial of degree `n` has roots at `0`, `-1`, ..., `-(n - 1)`. -/
+/-- The Pochhammer polynomial of degree `n` has roots at `0`, `-1`, ..., `-(n - 1)`. -/
 theorem ascPochhammer_eval_neg_coe_nat_of_lt {n k : ℕ} (h : k < n) :
     (ascPochhammer R n).eval (-(k : R)) = 0 := by
   induction n with
@@ -386,7 +386,9 @@ theorem ascPochhammer_eval_neg_coe_nat_of_lt {n k : ℕ} (h : k < n) :
     · simp
     · omega
 
-/-- The iff variation of `ascPochhammer_eval_neg_coe_nat_of_lt` for an integral domain. -/
+/-- Over an integral domain, the Pochhammer polynomial of degree `n` has roots *only* at
+`0`, `-1`, ..., `-(n - 1)`. -/
+@[simp]
 theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
     (n : ℕ) (r : R) : (ascPochhammer R n).eval r = 0 ↔ ∃ k < n, k = -r := by
   refine ⟨fun zero' ↦ ?_, fun hrn ↦ ?_⟩
@@ -400,7 +402,7 @@ theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
         exact ⟨rn, by omega, rrn⟩
       | inr h =>
         exact ⟨n, lt_add_one n, eq_neg_of_add_eq_zero_right h⟩
-  · have ⟨rn, hrn, rnn⟩ := hrn
+  · obtain ⟨rn, hrn, rnn⟩ := hrn
     convert ascPochhammer_eval_neg_coe_nat_of_lt hrn
     simp [rnn]
 

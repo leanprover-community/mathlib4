@@ -9,11 +9,12 @@ import Mathlib.Analysis.Analytic.Basic
 /-!
 # Scalar series
 
-This file defines an API for `FormalMultilinearSeries.ofScalars`, which is a
-formal power series `∑ cᵢ • xⁱ`. It contains several convenience theorems, which are especially
-useful because Lean fails to recognise the scalar multiplication automatically. The main result of
-this file is `FormalMultilinearSeries.ofScalars_radius_of_tendsto`, which asserts the radius of
-convergence is equal to $\lim_{n \to \infty} \|c_{n+1}\|\cdot\|c_n\|^{-1}$ as long as it is not `0`.
+This file contains API for analytic functions `∑ cᵢ • xⁱ` defined in terms of scalars
+`c₀, c₁, c₂, …`.
+## Main definitions / results:
+ * `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
+ * `FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto`: the ratio test for an analytic function
+   defined in terms of a formal power series `∑ cᵢ • xⁱ`.
 -/
 
 namespace FormalMultilinearSeries
@@ -89,7 +90,7 @@ theorem ofScalars_norm [NormOneClass E] : ‖ofScalars E c n‖ = ‖c n‖ := b
 
 /-- The radius of convergence of a scalar series is the inverse of the ratio of the norms of the
 coefficients. -/
-theorem ofScalars_radius_of_tendsto [NormOneClass E] {r : NNReal} (hr : r ≠ 0)
+theorem ofScalars_radius_eq_inv_of_tendsto [NormOneClass E] {r : NNReal} (hr : r ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
       (ofScalars E c).radius = ENNReal.ofNNReal r⁻¹ := by
   have hc' {r' : NNReal} (hr' : (r' : ℝ) ≠ 0) :
@@ -98,7 +99,6 @@ theorem ofScalars_radius_of_tendsto [NormOneClass E] {r : NNReal} (hr : r ≠ 0)
     simp_rw [norm_mul, norm_norm, ofScalars_norm, mul_div_mul_comm, ← norm_div, pow_succ,
       mul_div_right_comm, div_self (pow_ne_zero _ hr'), one_mul, norm_div, NNReal.norm_eq]
     exact mul_comm r' r ▸ Filter.Tendsto.mul hc tendsto_const_nhds
-
   apply le_antisymm <;> refine ENNReal.le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
   · rw [ENNReal.coe_le_coe, NNReal.le_inv_iff_mul_le hr]
     have := FormalMultilinearSeries.summable_norm_mul_pow _ hr'
@@ -114,6 +114,17 @@ theorem ofScalars_radius_of_tendsto [NormOneClass E] {r : NNReal} (hr : r ≠ 0)
       refine (Tendsto.eventually_ne hc (NNReal.coe_ne_zero.2 hr)).mp (Eventually.of_forall ?_)
       simp_rw [div_ne_zero_iff, ofScalars_norm, mul_ne_zero_iff]
       aesop
+
+/-- A convenience lemma restating the result of `ofScalars_radius_eq_inv_of_tendsto` under
+the inverse ratio. -/
+theorem ofScalars_radius_eq_of_tendsto [NormOneClass E] {r : NNReal} (hr : r ≠ 0)
+    (hc : Tendsto (fun n ↦ ‖c n‖ / ‖c n.succ‖) atTop (𝓝 r)) :
+      (ofScalars E c).radius = ENNReal.ofNNReal r := by
+  suffices Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r⁻¹) by
+    convert ofScalars_radius_eq_inv_of_tendsto E c (inv_ne_zero hr) this
+    simp
+  convert (continuousAt_inv₀ <| NNReal.coe_ne_zero.mpr hr).tendsto.comp hc
+  simp
 
 end Normed
 

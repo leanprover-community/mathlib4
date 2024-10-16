@@ -25,14 +25,12 @@ alias RCLike.tendsto_inverse_atTop_nhds_0_nat := RCLike.tendsto_inverse_atTop_nh
 
 variable {𝕜}
 
-theorem RCLike.tendsto_add_div_add_atTop_nhds (a b c : 𝕜) {d : 𝕜} (hd : d ≠ 0) :
-    Tendsto (fun k : ℕ ↦ (a + c * k) / (b + d * k)) atTop (𝓝 (c/d)) := by
+theorem RCLike.tendsto_add_mul_div_add_mul_atTop_nhds (a b c : 𝕜) {d : 𝕜} (hd : d ≠ 0) :
+    Tendsto (fun k : ℕ ↦ (a + c * k) / (b + d * k)) atTop (𝓝 (c / d)) := by
   apply Filter.Tendsto.congr'
   case f₁ => exact fun k ↦ (a * (↑k)⁻¹ + c) / (b * (↑k)⁻¹ + d)
   refine (eventually_ne_atTop 0).mp (Eventually.of_forall ?_)
   · intro h hx
-    simp only []
-    have hx' := (Nat.cast_ne_zero (R:=𝕜)).2 hx
     field_simp [hx]
   · apply Filter.Tendsto.div _ _ hd
     all_goals
