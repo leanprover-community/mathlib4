@@ -475,7 +475,7 @@ lemma genEigenspace_def (f : End R M) (μ : R) (k : ℕ) :
     f.genEigenspace μ k = LinearMap.ker ((f - μ • 1) ^ k) := by
   rw [genEigenspace, OrderHom.coe_mk, unifEigenspace_nat]
 
-theorem eigenspace_eq_genEigenspace_one {f : End R M} {μ : R} :
+theorem genEigenspace_one_eq_eigenspace {f : End R M} {μ : R} :
     genEigenspace f μ 1 = eigenspace f μ := by rw [genEigenspace_def, eigenspace_def, pow_one]
 
 @[simp]
