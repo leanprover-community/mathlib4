@@ -34,10 +34,12 @@ noncomputable def minOrder : ℕ∞ := ⨅ (a : α) (_ha : a ≠ 1) (_ha' : IsOf
 
 variable {α} {a : α}
 
-@[to_additive (attr := simp)]
-lemma minOrder_eq_top : minOrder α = ⊤ ↔ IsTorsionFree α := by simp [minOrder, IsTorsionFree]
+@[to_additive]
+lemma minOrder_eq_top_iff : minOrder α = ⊤ ↔ IsMulTorsionFree α := by
+  simp [minOrder, not_isMulTorsionFree_iff.not_right]
 
-@[to_additive (attr := simp)] protected alias ⟨_, IsTorsionFree.minOrder⟩ := minOrder_eq_top
+@[to_additive (attr := simp)]
+protected alias ⟨_, minOrder_eq_top⟩ := minOrder_eq_top_iff
 
 @[to_additive (attr := simp)]
 lemma le_minOrder {n : ℕ∞} :
