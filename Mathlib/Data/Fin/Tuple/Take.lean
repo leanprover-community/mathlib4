@@ -60,7 +60,6 @@ theorem take_init {α : Fin (n + 1) → Sort*} (m : ℕ) (h : m ≤ n) (v : (i :
   simp only [take, init]
   congr
 
-@[simp]
 theorem take_repeat {α : Type*} {n' : ℕ} (m : ℕ) (h : m ≤ n) (a : Fin n' → α) :
     take (m * n') (Nat.mul_le_mul_right n' h) (Fin.repeat n a) = Fin.repeat m a := by
   ext i
