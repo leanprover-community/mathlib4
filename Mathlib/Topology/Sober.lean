@@ -266,10 +266,12 @@ lemma isGenericPoint_ofComponent [QuasiSober α] (x : irreducibleComponents α) 
     IsGenericPoint (ofComponent x).1 x :=
     x.2.1.isGenericPoint_genericPoint (isClosed_of_mem_irreducibleComponents x.1 x.2)
 
+@[simp]
 lemma component_ofComponent [QuasiSober α] (x : irreducibleComponents α) :
     component (ofComponent x) = x :=
   Subtype.ext (isGenericPoint_ofComponent x)
 
+@[simp]
 lemma ofComponent_component [T0Space α] [QuasiSober α] (x : genericPoints α) :
     ofComponent (component x) = x :=
   component_injective (component_ofComponent _)
