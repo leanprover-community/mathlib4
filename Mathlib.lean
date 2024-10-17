@@ -2163,6 +2163,7 @@ import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.DFinsupp.Encodable
 import Mathlib.Data.DFinsupp.Interval
 import Mathlib.Data.DFinsupp.Lex
+import Mathlib.Data.DFinsupp.Multilinear
 import Mathlib.Data.DFinsupp.Multiset
 import Mathlib.Data.DFinsupp.NeLocus
 import Mathlib.Data.DFinsupp.Notation
