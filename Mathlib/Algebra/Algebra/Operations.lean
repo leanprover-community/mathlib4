@@ -196,7 +196,7 @@ protected theorem mul_one : M * 1 = M := by
 
 variable {M N P Q}
 
-@[mono]
+@[gcongr, mono]
 theorem mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
   map₂_le_map₂ hmp hnq
 
