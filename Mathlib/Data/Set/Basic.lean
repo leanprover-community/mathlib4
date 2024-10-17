@@ -1497,6 +1497,10 @@ theorem diff_subset_diff_left {s₁ s₂ t : Set α} (h : s₁ ⊆ s₂) : s₁ 
 theorem diff_subset_diff_right {s t u : Set α} (h : t ⊆ u) : s \ u ⊆ s \ t :=
   sdiff_le_sdiff_left ‹t ≤ u›
 
+theorem diff_subset_diff_iff_subset {r : Set α} (hs : s ⊆ r) (ht : t ⊆ r) :
+    r \ s ⊆ r \ t ↔ t ⊆ s :=
+  sdiff_le_sdiff_iff_le hs ht
+
 theorem compl_eq_univ_diff (s : Set α) : sᶜ = univ \ s :=
   top_sdiff.symm
 
