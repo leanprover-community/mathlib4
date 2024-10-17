@@ -1954,7 +1954,7 @@ theorem mk_union_le {α : Type u} (S T : Set α) : #(S ∪ T : Set α) ≤ #S + 
 theorem mk_union_of_disjoint {α : Type u} {S T : Set α} (H : Disjoint S T) :
     #(S ∪ T : Set α) = #S + #T := by
   classical
-  exact Quot.sound ⟨Equiv.Set.union H.le_bot⟩
+  exact Quot.sound ⟨Equiv.Set.union H⟩
 
 theorem mk_insert {α : Type u} {s : Set α} {a : α} (h : a ∉ s) :
     #(insert a s : Set α) = #s + 1 := by

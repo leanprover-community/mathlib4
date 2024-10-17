@@ -174,8 +174,8 @@ def image {α β : Type*} (e : α ≃ β) (s : Set α) :
 
 namespace Set
 
--- Porting note: Removed attribute @[simps apply symm_apply]
 /-- `univ α` is equivalent to `α`. -/
+@[simps apply symm_apply]
 protected def univ (α) : @univ α ≃ α :=
   ⟨Subtype.val, fun a => ⟨a, trivial⟩, fun ⟨_, _⟩ => rfl, fun _ => rfl⟩
 
@@ -203,25 +203,25 @@ protected def union' {α} {s t : Set α} (p : α → Prop) [DecidablePred p] (hs
     rcases o with (⟨x, h⟩ | ⟨x, h⟩) <;> [simp [hs _ h]; simp [ht _ h]]
 
 /-- If sets `s` and `t` are disjoint, then `s ∪ t` is equivalent to `s ⊕ t`. -/
-protected def union {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : s ∩ t ⊆ ∅) :
+protected def union {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t) :
     (s ∪ t : Set α) ≃ s ⊕ t :=
-  Set.union' (fun x => x ∈ s) (fun _ => id) fun _ xt xs => H ⟨xs, xt⟩
+  Set.union' (fun x => x ∈ s) (fun _ => id) fun _ xt xs => Set.disjoint_left.mp H xs xt
 
-theorem union_apply_left {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : s ∩ t ⊆ ∅)
+theorem union_apply_left {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
     {a : (s ∪ t : Set α)} (ha : ↑a ∈ s) : Equiv.Set.union H a = Sum.inl ⟨a, ha⟩ :=
   dif_pos ha
 
-theorem union_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : s ∩ t ⊆ ∅)
+theorem union_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
     {a : (s ∪ t : Set α)} (ha : ↑a ∈ t) : Equiv.Set.union H a = Sum.inr ⟨a, ha⟩ :=
-  dif_neg fun h => H ⟨h, ha⟩
+  dif_neg fun h => Set.disjoint_left.mp H h ha
 
 @[simp]
-theorem union_symm_apply_left {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : s ∩ t ⊆ ∅)
+theorem union_symm_apply_left {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
     (a : s) : (Equiv.Set.union H).symm (Sum.inl a) = ⟨a, by simp⟩ :=
   rfl
 
 @[simp]
-theorem union_symm_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : s ∩ t ⊆ ∅)
+theorem union_symm_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
     (a : t) : (Equiv.Set.union H).symm (Sum.inr a) = ⟨a, by simp⟩ :=
   rfl
 
@@ -247,7 +247,7 @@ protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (
     (insert a s : Set α) ≃ s ⊕ PUnit.{u + 1} :=
   calc
     (insert a s : Set α) ≃ ↥(s ∪ {a}) := Equiv.Set.ofEq (by simp)
-    _ ≃ s ⊕ ({a} : Set α) := Equiv.Set.union fun x ⟨hx, _⟩ => by simp_all
+    _ ≃ s ⊕ ({a} : Set α) := Equiv.Set.union <| by simpa
     _ ≃ s ⊕ PUnit.{u + 1} := sumCongr (Equiv.refl _) (Equiv.Set.singleton _)
 
 @[simp]
@@ -273,7 +273,7 @@ theorem insert_apply_right {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a :
 /-- If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`. -/
 protected def sumCompl {α} (s : Set α) [DecidablePred (· ∈ s)] : s ⊕ (sᶜ : Set α) ≃ α :=
   calc
-    s ⊕ (sᶜ : Set α) ≃ ↥(s ∪ sᶜ) := (Equiv.Set.union (by simp [Set.ext_iff])).symm
+    s ⊕ (sᶜ : Set α) ≃ ↥(s ∪ sᶜ) := (Equiv.Set.union disjoint_compl_right).symm
     _ ≃ @univ α := Equiv.Set.ofEq (by simp)
     _ ≃ α := Equiv.Set.univ _
 
@@ -289,15 +289,11 @@ theorem sumCompl_apply_inr {α : Type u} (s : Set α) [DecidablePred (· ∈ s)]
 
 theorem sumCompl_symm_apply_of_mem {α : Type u} {s : Set α} [DecidablePred (· ∈ s)] {x : α}
     (hx : x ∈ s) : (Equiv.Set.sumCompl s).symm x = Sum.inl ⟨x, hx⟩ := by
-  have : ((⟨x, Or.inl hx⟩ : (s ∪ sᶜ : Set α)) : α) ∈ s := hx
-  rw [Equiv.Set.sumCompl]
-  simpa using Set.union_apply_left (by simp) this
+  simp [Equiv.Set.sumCompl, Equiv.Set.univ, union_apply_left, hx]
 
 theorem sumCompl_symm_apply_of_not_mem {α : Type u} {s : Set α} [DecidablePred (· ∈ s)] {x : α}
     (hx : x ∉ s) : (Equiv.Set.sumCompl s).symm x = Sum.inr ⟨x, hx⟩ := by
-  have : ((⟨x, Or.inr hx⟩ : (s ∪ sᶜ : Set α)) : α) ∈ sᶜ := hx
-  rw [Equiv.Set.sumCompl]
-  simpa using Set.union_apply_right (by simp) this
+  simp [Equiv.Set.sumCompl, Equiv.Set.univ, union_apply_right, hx]
 
 @[simp]
 theorem sumCompl_symm_apply {α : Type*} {s : Set α} [DecidablePred (· ∈ s)] {x : s} :
@@ -315,7 +311,7 @@ protected def sumDiffSubset {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (·
     s ⊕ (t \ s : Set α) ≃ t :=
   calc
     s ⊕ (t \ s : Set α) ≃ (s ∪ t \ s : Set α) :=
-      (Equiv.Set.union (by simp [inter_diff_self])).symm
+      (Equiv.Set.union disjoint_sdiff_self_right).symm
     _ ≃ t := Equiv.Set.ofEq (by simp [union_diff_self, union_eq_self_of_subset_left h])
 
 @[simp]
@@ -346,7 +342,7 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
     (s ∪ t : Set α) ⊕ (s ∩ t : Set α)
       ≃ (s ∪ t \ s : Set α) ⊕ (s ∩ t : Set α) := by rw [union_diff_self]
     _ ≃ (s ⊕ (t \ s : Set α)) ⊕ (s ∩ t : Set α) :=
-      sumCongr (Set.union <| subset_empty_iff.2 (inter_diff_self _ _)) (Equiv.refl _)
+      sumCongr (Set.union disjoint_sdiff_self_right) (Equiv.refl _)
     _ ≃ s ⊕ ((t \ s : Set α) ⊕ (s ∩ t : Set α)) := sumAssoc _ _ _
     _ ≃ s ⊕ (t \ s ∪ s ∩ t : Set α) :=
       sumCongr (Equiv.refl _)
