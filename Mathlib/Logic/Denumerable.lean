@@ -184,22 +184,19 @@ open Function Encodable
 
 /-! ### Subsets of `ℕ` -/
 
-
 variable {s : Set ℕ} [Infinite s]
 
 section Classical
 
-open scoped Classical
-
-theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s :=
-  _root_.by_contradiction fun h =>
-    have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
-      lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, Nat.add_sub_cancel' hax]⟩
-    Fintype.false
-      ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap
-            (fun (y : ℕ) (hy : y ∈ s) => Subtype.mk y hy)
-            (by simp [-Multiset.range_succ])).toFinset,
-        by simpa [Subtype.ext_iff_val, Multiset.mem_filter, -Multiset.range_succ] ⟩
+theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s := by
+  by_contra h
+  have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
+    lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, Nat.add_sub_cancel' hax]⟩
+  classical
+  exact Fintype.false
+    ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap
+      (fun (y : ℕ) (hy : y ∈ s) => Subtype.mk y hy) (by simp [-Multiset.range_succ])).toFinset,
+      by simpa [Subtype.ext_iff_val, Multiset.mem_filter, -Multiset.range_succ] ⟩
 
 end Classical
 
@@ -297,7 +294,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
       simp only [Finset.ext_iff, mem_insert, mem_range, mem_filter]
       exact fun m =>
         ⟨fun h => by
-          simp only [h.2, and_true_iff]
+          simp only [h.2, and_true]
           exact Or.symm (lt_or_eq_of_le ((@lt_succ_iff_le _ _ _ ⟨m, h.2⟩ _).1 h.1)),
          fun h =>
           h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>

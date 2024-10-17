@@ -125,19 +125,18 @@ theorem strongMono_of_strongMono [StrongMono (f ≫ g)] : StrongMono f :=
 /-- An isomorphism is in particular a strong epimorphism. -/
 instance (priority := 100) strongEpi_of_isIso [IsIso f] : StrongEpi f where
   epi := by infer_instance
-  llp {X Y} z := HasLiftingProperty.of_left_iso _ _
+  llp {_ _} _ := HasLiftingProperty.of_left_iso _ _
 
 /-- An isomorphism is in particular a strong monomorphism. -/
 instance (priority := 100) strongMono_of_isIso [IsIso f] : StrongMono f where
   mono := by infer_instance
-  rlp {X Y} z := HasLiftingProperty.of_right_iso _ _
+  rlp {_ _} _ := HasLiftingProperty.of_right_iso _ _
 
 theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongEpi f] : StrongEpi g :=
   { epi := by
       rw [Arrow.iso_w' e]
-      haveI := epi_comp f e.hom.right
-      apply epi_comp
+      infer_instance
     llp := fun {X Y} z => by
       intro
       apply HasLiftingProperty.of_arrow_iso_left e z }
@@ -146,8 +145,7 @@ theorem StrongMono.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongMono f] : StrongMono g :=
   { mono := by
       rw [Arrow.iso_w' e]
-      haveI := mono_comp f e.hom.right
-      apply mono_comp
+      infer_instance
     rlp := fun {X Y} z => by
       intro
       apply HasLiftingProperty.of_arrow_iso_right z e }

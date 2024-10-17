@@ -45,7 +45,7 @@ variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 2. `val : vars → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[X] → S`. -/
 structure Algebra.Generators where
-  /-- The type of variables.  -/
+  /-- The type of variables. -/
   vars : Type w
   /-- The assignment of each variable to a value in `S`. -/
   val : vars → S
@@ -106,6 +106,18 @@ def ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R :=
   σ' x := (h x).choose
   aeval_val_σ' x := (h x).choose_spec
 
+/-- If `algebraMap R S` is surjective, the empty type generates `S`. -/
+noncomputable def ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R S)) :
+    Generators.{w} R S :=
+  ofSurjective PEmpty.elim <| fun s ↦ by
+    use C (h s).choose
+    simp [(h s).choose_spec]
+
+/-- The canonical generators for `R` as an `R`-algebra. -/
+noncomputable def id : Generators.{w} R R := ofSurjectiveAlgebraMap <| by
+  rw [id.map_eq_id]
+  exact RingHomSurjective.is_surjective
+
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
 noncomputable
 def ofAlgHom {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) :
@@ -145,7 +157,7 @@ def localizationAway : Generators R S where
     letI n : ℕ := (IsLocalization.Away.sec r s).2
     C a * X () ^ n
   aeval_val_σ' s := by
-    rw [_root_.map_mul, algHom_C, map_pow, aeval_X]
+    rw [map_mul, algHom_C, map_pow, aeval_X]
     simp only [← IsLocalization.Away.sec_spec, map_pow, IsLocalization.Away.invSelf]
     rw [← IsLocalization.mk'_pow, one_pow, ← IsLocalization.mk'_one (M := Submonoid.powers r) S r]
     rw [← IsLocalization.mk'_pow, one_pow, mul_assoc, ← IsLocalization.mk'_mul]
@@ -157,7 +169,7 @@ end Localization
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
-we may constuct the family of generators `R[X, Y] → T`. -/
+we may construct the family of generators `R[X, Y] → T`. -/
 @[simps val, simps (config := .lemmasOnly) vars σ]
 noncomputable
 def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
@@ -166,11 +178,11 @@ def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
   σ' x := (Q.σ x).sum (fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1)
   aeval_val_σ' s := by
     have (x : P.Ring) : aeval (algebraMap S T ∘ P.val) x = algebraMap S T (aeval P.val x) := by
-      rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp]
+      rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp_def]
     conv_rhs => rw [← Q.aeval_val_σ s, ← (Q.σ s).sum_single]
-    simp only [map_finsupp_sum, _root_.map_mul, aeval_rename, Sum.elim_comp_inr, this, aeval_val_σ,
-      aeval_monomial, _root_.map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
-      Sum.elim_inl, one_mul, single_eq_monomial]
+    simp only [map_finsupp_sum, map_mul, aeval_rename, Sum.elim_comp_inr, this, aeval_val_σ,
+      aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective, Sum.elim_inl,
+      one_mul, single_eq_monomial]
 
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
@@ -310,7 +322,7 @@ noncomputable def Hom.comp [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
     induction g.val x using MvPolynomial.induction_on with
     | h_C r => simp [← IsScalarTower.algebraMap_apply]
     | h_add x y hx hy => simp only [map_add, hx, hy]
-    | h_X p i hp => simp only [_root_.map_mul, hp, aeval_X, aeval_val]
+    | h_X p i hp => simp only [map_mul, hp, aeval_X, aeval_val]
 
 @[simp]
 lemma Hom.comp_id [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] (f : Hom P P') :
@@ -334,7 +346,7 @@ lemma Hom.toAlgHom_comp_apply
   induction x using MvPolynomial.induction_on with
   | h_C r => simp only [← MvPolynomial.algebraMap_eq, AlgHom.map_algebraMap]
   | h_add x y hx hy => simp only [map_add, hx, hy]
-  | h_X p i hp => simp only [_root_.map_mul, hp, toAlgHom_X, comp_val]; rfl
+  | h_X p i hp => simp only [map_mul, hp, toAlgHom_X, comp_val]; rfl
 
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
@@ -381,10 +393,10 @@ instance : AddCommGroup P.Cotangent := inferInstanceAs (AddCommGroup P.ker.Cotan
 
 variable {P}
 
-/-- The identity map `P.ker.Cotangent → P.Cotangent` into the type synonym.  -/
+/-- The identity map `P.ker.Cotangent → P.Cotangent` into the type synonym. -/
 def Cotangent.of (x : P.ker.Cotangent) : P.Cotangent := x
 
-/-- The identity map `P.Cotangent → P.ker.Cotangent` from the type synonym.  -/
+/-- The identity map `P.Cotangent → P.ker.Cotangent` from the type synonym. -/
 def Cotangent.val (x : P.Cotangent) : P.ker.Cotangent := x
 
 @[ext]
@@ -438,7 +450,7 @@ instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ S] [Algebra R
   constructor
   intros r s m
   show algebraMap R₂ S (r • s) • m = (algebraMap _ S r) • (algebraMap _ S s) • m
-  rw [Algebra.smul_def, _root_.map_mul, mul_smul, ← IsScalarTower.algebraMap_apply]
+  rw [Algebra.smul_def, map_mul, mul_smul, ← IsScalarTower.algebraMap_apply]
 
 lemma Cotangent.val_smul''' {R₀} [CommRing R₀] [Algebra R₀ S] (r : R₀) (x : P.Cotangent) :
     (r • x).val = P.σ (algebraMap R₀ S r) • x.val := rfl
@@ -488,7 +500,7 @@ def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
       ← algebraMap_apply, algebraMap_smul, val_smul', val_of, ← (Ideal.toCotangent _).map_smul]
     congr 1
     ext1
-    simp only [SetLike.val_smul, smul_eq_mul, _root_.map_mul]
+    simp only [SetLike.val_smul, smul_eq_mul, map_mul]
 
 @[simp]
 lemma Cotangent.map_mk (f : Hom P P') (x) :

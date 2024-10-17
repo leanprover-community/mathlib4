@@ -238,7 +238,7 @@ variable (F F')
 protected def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
   carrier := { f | ∀ i, f i ∈ F.N i }
   add_mem' hf hg i := Submodule.add_mem _ (hf i) (hg i)
-  zero_mem' i := Submodule.zero_mem _
+  zero_mem' _ := Submodule.zero_mem _
   smul_mem' r f hf i := by
     rw [Subalgebra.smul_def, PolynomialModule.smul_apply]
     apply Submodule.sum_mem
@@ -294,11 +294,11 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
   · intro H n hn
     refine (F.smul_le n).antisymm ?_
     intro x hx
-    obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_total _ _ _).mp (H _ ⟨x, hx, rfl⟩)
+    obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp (H _ ⟨x, hx, rfl⟩)
     replace hl := congr_arg (fun f : ℕ →₀ M => f (n + 1)) hl
     dsimp only at hl
     erw [Finsupp.single_eq_same] at hl
-    rw [← hl, Finsupp.total_apply, Finsupp.sum_apply]
+    rw [← hl, Finsupp.linearCombination_apply, Finsupp.sum_apply]
     apply Submodule.sum_mem _ _
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]

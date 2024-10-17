@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Michael Howes
 -/
-import Mathlib.GroupTheory.Commutator
+import Mathlib.Data.Finite.Card
 import Mathlib.GroupTheory.Finiteness
+import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.Data.Finite.Basic
 
 /-!
 # The abelianization of a group
@@ -124,7 +126,7 @@ theorem commutator_subset_ker : commutator G ≤ f.ker := by
 /-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
   from the abelianization of a `G` to `A` that factors through `f`. -/
 def lift : (G →* A) ≃ (Abelianization G →* A) where
-  toFun f := QuotientGroup.lift _ f fun _ h => f.mem_ker.2 <| commutator_subset_ker _ h
+  toFun f := QuotientGroup.lift _ f fun _ h => MonoidHom.mem_ker.2 <| commutator_subset_ker _ h
   invFun F := F.comp of
   left_inv _ := MonoidHom.ext fun _ => rfl
   right_inv _ := MonoidHom.ext fun x => QuotientGroup.induction_on x fun _ => rfl
@@ -230,7 +232,7 @@ def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization
   { Abelianization.of with
     toFun := Abelianization.of
     invFun := Abelianization.lift (MonoidHom.id H)
-    left_inv := fun a => rfl
+    left_inv := fun _ => rfl
     right_inv := by
       rintro ⟨a⟩
       rfl }

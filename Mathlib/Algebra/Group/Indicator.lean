@@ -41,7 +41,7 @@ section One
 
 variable [One M] [One N] {s t : Set α} {f g : α → M} {a : α}
 
-/-- `Set.mulIndicator s f a` is `f a` if `a ∈ s`, `1` otherwise.  -/
+/-- `Set.mulIndicator s f a` is `f a` if `a ∈ s`, `1` otherwise. -/
 @[to_additive "`Set.indicator s f a` is `f a` if `a ∈ s`, `0` otherwise."]
 noncomputable def mulIndicator (s : Set α) (f : α → M) (x : α) : M :=
   haveI := Classical.decPred (· ∈ s)
@@ -94,7 +94,7 @@ theorem mulIndicator_apply_eq_one : mulIndicator s f a = 1 ↔ a ∈ s → f a =
   ite_eq_right_iff
 
 @[to_additive (attr := simp)]
-theorem mulIndicator_eq_one : (mulIndicator s f = fun x => 1) ↔ Disjoint (mulSupport f) s := by
+theorem mulIndicator_eq_one : (mulIndicator s f = fun _ => 1) ↔ Disjoint (mulSupport f) s := by
   simp only [funext_iff, mulIndicator_apply_eq_one, Set.disjoint_left, mem_mulSupport,
     not_imp_not]
 

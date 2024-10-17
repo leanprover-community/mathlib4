@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -47,11 +48,11 @@ def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
 variable (R A)
 
 /-- An algebra is algebraic if all its elements are algebraic. -/
-protected class Algebra.IsAlgebraic : Prop :=
+protected class Algebra.IsAlgebraic : Prop where
   isAlgebraic : ∀ x : A, IsAlgebraic R x
 
 /-- An algebra is transcendental if some element is transcendental. -/
-protected class Algebra.Transcendental : Prop :=
+protected class Algebra.Transcendental : Prop where
   transcendental : ∃ x : A, Transcendental R x
 
 variable {R A}
@@ -68,7 +69,7 @@ theorem Algebra.transcendental_iff_not_isAlgebraic :
 
 /-- A subalgebra is algebraic if and only if it is algebraic as an algebra. -/
 theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
-    S.IsAlgebraic ↔ @Algebra.IsAlgebraic R S _ _ S.algebra := by
+    S.IsAlgebraic ↔ Algebra.IsAlgebraic R S := by
   delta Subalgebra.IsAlgebraic
   rw [Subtype.forall', Algebra.isAlgebraic_def]
   refine forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl ?_
@@ -79,7 +80,7 @@ theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
 /-- An algebra is algebraic if and only if it is algebraic as a subalgebra. -/
 theorem Algebra.isAlgebraic_iff : Algebra.IsAlgebraic R A ↔ (⊤ : Subalgebra R A).IsAlgebraic := by
   delta Subalgebra.IsAlgebraic
-  simp only [Algebra.isAlgebraic_def, Algebra.mem_top, forall_prop_of_true, iff_self_iff]
+  simp only [Algebra.isAlgebraic_def, Algebra.mem_top, forall_prop_of_true]
 
 theorem isAlgebraic_iff_not_injective {x : A} :
     IsAlgebraic R x ↔ ¬Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) := by
@@ -109,10 +110,10 @@ theorem isAlgebraic_zero [Nontrivial R] : IsAlgebraic R (0 : A) :=
 
 /-- An element of `R` is algebraic, when viewed as an element of the `R`-algebra `A`. -/
 theorem isAlgebraic_algebraMap [Nontrivial R] (x : R) : IsAlgebraic R (algebraMap R A x) :=
-  ⟨_, X_sub_C_ne_zero x, by rw [_root_.map_sub, aeval_X, aeval_C, sub_self]⟩
+  ⟨_, X_sub_C_ne_zero x, by rw [map_sub, aeval_X, aeval_C, sub_self]⟩
 
 theorem isAlgebraic_one [Nontrivial R] : IsAlgebraic R (1 : A) := by
-  rw [← _root_.map_one (algebraMap R A)]
+  rw [← map_one (algebraMap R A)]
   exact isAlgebraic_algebraMap 1
 
 theorem isAlgebraic_nat [Nontrivial R] (n : ℕ) : IsAlgebraic R (n : A) := by
@@ -120,7 +121,7 @@ theorem isAlgebraic_nat [Nontrivial R] (n : ℕ) : IsAlgebraic R (n : A) := by
   exact isAlgebraic_algebraMap (Nat.cast n)
 
 theorem isAlgebraic_int [Nontrivial R] (n : ℤ) : IsAlgebraic R (n : A) := by
-  rw [← _root_.map_intCast (algebraMap R A)]
+  rw [← map_intCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Int.cast n)
 
 theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Algebra R A] (n : ℚ) :
@@ -454,7 +455,7 @@ theorem Subalgebra.isField_of_algebraic [Algebra.IsAlgebraic K L] : IsField A :=
   { show Nontrivial A by infer_instance, Subalgebra.toCommRing A with
     mul_inv_cancel := fun {a} ha =>
       ⟨⟨a⁻¹, A.inv_mem_of_algebraic (Algebra.IsAlgebraic.isAlgebraic (a : L))⟩,
-        Subtype.ext (mul_inv_cancel (mt (Subalgebra.coe_eq_zero _).mp ha))⟩ }
+        Subtype.ext (mul_inv_cancel₀ (mt (Subalgebra.coe_eq_zero _).mp ha))⟩ }
 
 end Field
 

@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Direct sum of modules
@@ -28,7 +28,7 @@ universe u v w u₁
 
 namespace DirectSum
 
-open DirectSum
+open DirectSum Finsupp
 
 section General
 
@@ -223,7 +223,7 @@ variable {α : ι → Type*} {δ : ∀ i, α i → Type w}
 variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
-def sigmaLcurry : (⨁ i : Σi, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
+def sigmaLcurry : (⨁ i : Σ_, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
   { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
 
 @[simp]
@@ -279,7 +279,7 @@ theorem coeLinearMap_eq_dfinsupp_sum [DecidableEq M] (x : DirectSum ι fun i => 
   simp only [coeLinearMap, toModule, DFinsupp.lsum, LinearEquiv.coe_mk, LinearMap.coe_mk,
     AddHom.coe_mk]
   rw [DFinsupp.sumAddHom_apply]
-  simp only [LinearMap.toAddMonoidHom_coe, Submodule.coeSubtype]
+  simp only [LinearMap.toAddMonoidHom_coe, Submodule.coe_subtype]
 
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
@@ -335,7 +335,7 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
   -- Porting note: was
   -- simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_ofRepr,
   --   Basis.repr_symm_apply, DFinsupp.lsum_apply_apply, DFinsupp.mapRange.linearEquiv_apply,
-  --   DFinsupp.mapRange.linearEquiv_symm, DFinsupp.mapRange_single, Finsupp.total_single,
+  --   DFinsupp.mapRange.linearEquiv_symm, DFinsupp.mapRange_single, linearCombination_single,
   --   LinearEquiv.ofBijective_apply, LinearEquiv.symm_symm, LinearEquiv.symm_trans_apply, one_smul,
   --   sigmaFinsuppAddEquivDFinsupp_apply, sigmaFinsuppEquivDFinsupp_single,
   --   sigmaFinsuppLequivDFinsupp_apply]
@@ -346,10 +346,10 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
     sigmaFinsuppAddEquivDFinsupp_apply]
   rw [DFinsupp.mapRange.linearEquiv_symm]
   erw [DFinsupp.mapRange.linearEquiv_apply]
-  simp only [DFinsupp.mapRange_single, Basis.repr_symm_apply, Finsupp.total_single, one_smul,
+  simp only [DFinsupp.mapRange_single, Basis.repr_symm_apply, linearCombination_single, one_smul,
     toModule]
   erw [DFinsupp.lsum_single]
-  simp only [Submodule.coeSubtype]
+  simp only [Submodule.coe_subtype]
 
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σi, α i) : h.collectedBasis v a ∈ A a.1 := by simp

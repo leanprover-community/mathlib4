@@ -125,7 +125,7 @@ def proofFor (ccs : CCState) (e : Expr) : MetaM Expr := do
 def refutationFor (ccs : CCState) (e : Expr) : MetaM Expr := do
   let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``False [])) { ccs with }
     | throwError "CCState.refutationFor failed to build proof"
-  mkAppM ``not_of_eq_false #[r]
+  mkAppM ``of_eq_false #[r]
 
 /-- If the given state is inconsistent, return a proof for `False`. Otherwise fail. -/
 def proofForFalse (ccs : CCState) : MetaM Expr := do

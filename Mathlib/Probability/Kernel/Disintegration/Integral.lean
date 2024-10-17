@@ -53,7 +53,7 @@ lemma setLIntegral_condKernel_eq_measure_prod (a : α) {s : Set β} (hs : Measur
     intro b
     by_cases hb : b ∈ s <;> simp [hb]
   simp_rw [this]
-  rw [lintegral_indicator _ hs]
+  rw [lintegral_indicator hs]
 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_condKernel_eq_measure_prod := setLIntegral_condKernel_eq_measure_prod
@@ -146,12 +146,12 @@ end ProbabilityTheory
 
 namespace MeasureTheory.Measure
 
-variable {α β Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {β Ω : Type*} {mβ : MeasurableSpace β}
   [MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
 
 section Lintegral
 
-variable [CountableOrCountablyGenerated α β] {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
+variable {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
   {f : β × Ω → ℝ≥0∞}
 
 lemma lintegral_condKernel_mem {s : Set (β × Ω)} (hs : MeasurableSet s) :
@@ -172,7 +172,7 @@ lemma setLIntegral_condKernel_eq_measure_prod {s : Set β} (hs : MeasurableSet s
     intro b
     by_cases hb : b ∈ s <;> simp [hb]
   simp_rw [this]
-  rw [lintegral_indicator _ hs]
+  rw [lintegral_indicator hs]
 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_condKernel_eq_measure_prod := setLIntegral_condKernel_eq_measure_prod
@@ -187,7 +187,7 @@ lemma setLIntegral_condKernel (hf : Measurable f) {s : Set β}
     ∫⁻ b in s, ∫⁻ ω in t, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst
       = ∫⁻ x in s ×ˢ t, f x ∂ρ := by
   conv_rhs => rw [← ρ.disintegrate ρ.condKernel]
-  rw [setLIntegral_compProd  hf hs ht]
+  rw [setLIntegral_compProd hf hs ht]
 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_condKernel := setLIntegral_condKernel
@@ -294,10 +294,10 @@ theorem Integrable.integral_norm_condKernel {f : α × Ω → F} (hf_int : Integ
 theorem Integrable.norm_integral_condKernel {f : α × Ω → E} (hf_int : Integrable f ρ) :
     Integrable (fun x ↦ ‖∫ y, f (x, y) ∂ρ.condKernel x‖) ρ.fst := by
   refine hf_int.integral_norm_condKernel.mono hf_int.1.integral_condKernel.norm ?_
-  refine Filter.eventually_of_forall fun x ↦ ?_
+  refine Filter.Eventually.of_forall fun x ↦ ?_
   rw [norm_norm]
   refine (norm_integral_le_integral_norm _).trans_eq (Real.norm_of_nonneg ?_).symm
-  exact integral_nonneg_of_ae (Filter.eventually_of_forall fun y ↦ norm_nonneg _)
+  exact integral_nonneg_of_ae (Filter.Eventually.of_forall fun y ↦ norm_nonneg _)
 
 theorem Integrable.integral_condKernel {f : α × Ω → E} (hf_int : Integrable f ρ) :
     Integrable (fun x ↦ ∫ y, f (x, y) ∂ρ.condKernel x) ρ.fst :=

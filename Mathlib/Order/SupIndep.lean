@@ -131,14 +131,14 @@ theorem supIndep_pair [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
       have : ({i, k} : Finset ι).erase k = {i} := by
         ext
         rw [mem_erase, mem_insert, mem_singleton, mem_singleton, and_or_left, Ne,
-          not_and_self_iff, or_false_iff, and_iff_right_of_imp]
+          not_and_self_iff, or_false, and_iff_right_of_imp]
         rintro rfl
         exact hij
       rw [this, Finset.sup_singleton]⟩
 
 theorem supIndep_univ_bool (f : Bool → α) :
     (Finset.univ : Finset Bool).SupIndep f ↔ Disjoint (f false) (f true) :=
-  haveI : true ≠ false := by simp only [Ne, not_false_iff]
+  haveI : true ≠ false := by simp only [Ne, not_false_iff, reduceCtorEq]
   (supIndep_pair this).trans disjoint_comm
 
 @[simp]
@@ -174,7 +174,7 @@ theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := b
   convert h (filter_subset (fun (i : { x // x ∈ s }) => (i : ι) ∈ t) _) (mem_attach _ ⟨i, ‹_›⟩)
     fun hi => hit <| by simpa using hi using 1
   refine eq_of_forall_ge_iff ?_
-  simp only [Finset.sup_le_iff, mem_filter, mem_attach, true_and_iff, Function.comp_apply,
+  simp only [Finset.sup_le_iff, mem_filter, mem_attach, true_and, Function.comp_apply,
     Subtype.forall, Subtype.coe_mk]
   exact fun a => forall_congr' fun j => ⟨fun h _ => h, fun h hj => h (ht hj) hj⟩
 
@@ -274,9 +274,11 @@ variable {s : Set α} (hs : SetIndependent s)
 theorem setIndependent_empty : SetIndependent (∅ : Set α) := fun x hx =>
   (Set.not_mem_empty x hx).elim
 
+include hs in
 theorem SetIndependent.mono {t : Set α} (hst : t ⊆ s) : SetIndependent t := fun _ ha =>
   (hs (hst ha)).mono_right (sSup_le_sSup (diff_subset_diff_left hst))
 
+include hs in
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
 theorem SetIndependent.pairwiseDisjoint : s.PairwiseDisjoint id := fun _ hx y hy h =>
   disjoint_sSup_right (hs hx) ((mem_diff y).mpr ⟨hy, h.symm⟩)
@@ -295,6 +297,7 @@ theorem setIndependent_pair {a b : α} (hab : a ≠ b) :
     · convert h.symm using 1
       simp [hab, sSup_singleton]
 
+include hs in
 /-- If the elements of a set are independent, then any element is disjoint from the `sSup` of some
 subset of the rest. -/
 theorem SetIndependent.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : y ⊆ s) (hxy : x ∉ y) :
@@ -343,6 +346,7 @@ theorem independent_empty (t : Empty → α) : Independent t :=
 theorem independent_pempty (t : PEmpty → α) : Independent t :=
   nofun
 
+include ht in
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
 theorem Independent.pairwiseDisjoint : Pairwise (Disjoint on t) := fun x y h =>
   disjoint_sSup_right (ht x) ⟨y, iSup_pos h.symm⟩

@@ -6,12 +6,8 @@ Authors: Bhavik Mehta, Joël Riou
 import Mathlib.CategoryTheory.Comma.Presheaf
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Over
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Types
 
 /-!
 # Colimit of representables
@@ -78,7 +74,7 @@ def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
       (Functor.const (CostructuredArrow yoneda P)).obj E) ≃
       (P ⟶ (restrictedYoneda A).obj E) where
   toFun f :=
-    { app := fun X x => f.app (CostructuredArrow.mk (yonedaEquiv.symm x))
+    { app := fun _ x => f.app (CostructuredArrow.mk (yonedaEquiv.symm x))
       naturality := fun {X₁ X₂} φ => by
         ext x
         let ψ : CostructuredArrow.mk (yonedaEquiv.symm (P.toPrefunctor.map φ x)) ⟶
@@ -206,8 +202,7 @@ noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
     { app := fun x => yonedaEquiv.symm x.unop.2
       naturality := fun {x₁ x₂} f => by
         dsimp
-        rw [comp_id]
-        erw [← yonedaEquiv_symm_map]
+        rw [comp_id, ← yonedaEquiv_symm_map]
         congr 1
         rw [f.unop.2] }
 

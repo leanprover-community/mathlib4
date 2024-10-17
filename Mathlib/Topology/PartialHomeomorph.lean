@@ -210,11 +210,6 @@ theorem replaceEquiv_eq_self (e' : PartialEquiv X Y)
 theorem source_preimage_target : e.source ⊆ e ⁻¹' e.target :=
   e.mapsTo
 
-@[deprecated toPartialEquiv_injective (since := "2023-02-18")]
-theorem eq_of_partialEquiv_eq {e e' : PartialHomeomorph X Y}
-    (h : e.toPartialEquiv = e'.toPartialEquiv) : e = e' :=
-  toPartialEquiv_injective h
-
 theorem eventually_left_inverse {x} (hx : x ∈ e.source) :
     ∀ᶠ y in 𝓝 x, e.symm (e y) = y :=
   (e.open_source.eventually_mem hx).mono e.left_inv'
@@ -366,7 +361,7 @@ theorem eventually_nhdsWithin' {x : X} (p : X → Prop) {s : Set X}
 
 /-- This lemma is useful in the manifold library in the case that `e` is a chart. It states that
   locally around `e x` the set `e.symm ⁻¹' s` is the same as the set intersected with the target
-  of `e` and some other neighborhood of `f x` (which will be the source of a chart on `Z`).  -/
+  of `e` and some other neighborhood of `f x` (which will be the source of a chart on `Z`). -/
 theorem preimage_eventuallyEq_target_inter_preimage_inter {e : PartialHomeomorph X Y} {s : Set X}
     {t : Set Z} {x : X} {f : X → Z} (hf : ContinuousWithinAt f s x) (hxe : x ∈ e.source)
     (ht : t ∈ 𝓝 (f x)) :
@@ -375,7 +370,7 @@ theorem preimage_eventuallyEq_target_inter_preimage_inter {e : PartialHomeomorph
   filter_upwards [e.open_source.mem_nhds hxe,
     mem_nhdsWithin_iff_eventually.mp (hf.preimage_mem_nhdsWithin ht)]
   intro y hy hyu
-  simp_rw [mem_inter_iff, mem_preimage, mem_inter_iff, e.mapsTo hy, true_and_iff, iff_self_and,
+  simp_rw [mem_inter_iff, mem_preimage, mem_inter_iff, e.mapsTo hy, true_and, iff_self_and,
     e.left_inv hy, iff_true_intro hyu]
 
 theorem isOpen_inter_preimage {s : Set Y} (hs : IsOpen s) : IsOpen (e.source ∩ e ⁻¹' s) :=
@@ -766,7 +761,7 @@ theorem trans_of_set' {s : Set Y} (hs : IsOpen s) :
     e.trans (ofSet s hs) = e.restr (e.source ∩ e ⁻¹' s) := by rw [trans_ofSet, restr_source_inter]
 
 theorem ofSet_trans {s : Set X} (hs : IsOpen s) : (ofSet s hs).trans e = e.restr s :=
-  PartialHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) <| by simp [hs.interior_eq, inter_comm]
+  PartialHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) <| by simp [hs.interior_eq, inter_comm]
 
 theorem ofSet_trans' {s : Set X} (hs : IsOpen s) :
     (ofSet s hs).trans e = e.restr (e.source ∩ s) := by
@@ -1007,7 +1002,7 @@ theorem continuousOn_iff_continuousOn_comp_right {f : Y → Z} {s : Set Y} (h : 
 
 /-- Continuity within a set at a point can be read under left composition with a local
 homeomorphism if a neighborhood of the initial point is sent to the source of the local
-homeomorphism-/
+homeomorphism -/
 theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : Z → X} {s : Set Z} {x : Z}
     (hx : f x ∈ e.source) (h : f ⁻¹' e.source ∈ 𝓝[s] x) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt (e ∘ f) s x := by
@@ -1020,7 +1015,7 @@ theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : Z → X} {s : S
   exact this.congr (fun y hy => by simp [e.left_inv hy.2]) (by simp [e.left_inv hx])
 
 /-- Continuity at a point can be read under left composition with a partial homeomorphism if a
-neighborhood of the initial point is sent to the source of the partial homeomorphism-/
+neighborhood of the initial point is sent to the source of the partial homeomorphism -/
 theorem continuousAt_iff_continuousAt_comp_left {f : Z → X} {x : Z} (h : f ⁻¹' e.source ∈ 𝓝 x) :
     ContinuousAt f x ↔ ContinuousAt (e ∘ f) x := by
   have hx : f x ∈ e.source := (mem_of_mem_nhds h : _)
@@ -1074,7 +1069,7 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
   lift x to e.source using hx
   rw [← e.open_source.nhdsWithin_eq x.2, ← map_nhds_subtype_val, ← map_comap_setCoe_val,
     e.toHomeomorphSourceTarget.nhds_eq_comap, nhds_subtype_eq_comap]
-  simp only [(· ∘ ·), toHomeomorphSourceTarget_apply_coe, comap_comap]
+  simp only [Function.comp_def, toHomeomorphSourceTarget_apply_coe, comap_comap]
 
 /-- If a partial homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/

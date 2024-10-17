@@ -58,6 +58,7 @@ section localizationProps
 variable {R : Type u} [CommRing R] (S : Finset R) (hS : Ideal.span (α := R) S = ⊤)
   (hN : ∀ s : S, IsNoetherianRing (Away (M := R) s))
 
+include hS hN in
 /-- Let `R` be a ring, and `f i` a finite collection of elements of `R` generating the unit ideal.
 If the localization of `R` at each `f i` is noetherian, so is `R`.
 
@@ -273,7 +274,7 @@ instance (priority := 100) IsNoetherian.noetherianSpace [IsNoetherian X] :
   apply TopologicalSpace.noetherian_univ_iff.mp
   let 𝒰 := X.affineCover.finiteSubcover
   rw [← 𝒰.iUnion_range]
-  suffices ∀ i : 𝒰.J, NoetherianSpace (Set.range <| (𝒰.map i).val.base) by
+  suffices ∀ i : 𝒰.J, NoetherianSpace (Set.range <| (𝒰.map i).base) by
     apply NoetherianSpace.iUnion
   intro i
   have : IsAffine (𝒰.obj i) := by

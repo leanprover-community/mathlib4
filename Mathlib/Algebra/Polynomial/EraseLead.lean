@@ -150,28 +150,39 @@ theorem eraseLead_C_mul_X_pow (r : R) (n : ℕ) : eraseLead (C r * X ^ n) = 0 :=
 @[simp] lemma eraseLead_C_mul_X (r : R) : eraseLead (C r * X) = 0 := by
   simpa using eraseLead_C_mul_X_pow _ 1
 
-theorem eraseLead_add_of_natDegree_lt_left {p q : R[X]} (pq : q.natDegree < p.natDegree) :
+theorem eraseLead_add_of_degree_lt_left {p q : R[X]} (pq : q.degree < p.degree) :
     (p + q).eraseLead = p.eraseLead + q := by
   ext n
   by_cases nd : n = p.natDegree
-  · rw [nd, eraseLead_coeff, if_pos (natDegree_add_eq_left_of_natDegree_lt pq).symm]
-    simpa using (coeff_eq_zero_of_natDegree_lt pq).symm
+  · rw [nd, eraseLead_coeff, if_pos (natDegree_add_eq_left_of_degree_lt pq).symm]
+    simpa using (coeff_eq_zero_of_degree_lt (lt_of_lt_of_le pq degree_le_natDegree)).symm
   · rw [eraseLead_coeff, coeff_add, coeff_add, eraseLead_coeff, if_neg, if_neg nd]
     rintro rfl
-    exact nd (natDegree_add_eq_left_of_natDegree_lt pq)
+    exact nd (natDegree_add_eq_left_of_degree_lt pq)
 
-theorem eraseLead_add_of_natDegree_lt_right {p q : R[X]} (pq : p.natDegree < q.natDegree) :
+theorem eraseLead_add_of_natDegree_lt_left {p q : R[X]} (pq : q.natDegree < p.natDegree) :
+    (p + q).eraseLead = p.eraseLead + q :=
+  eraseLead_add_of_degree_lt_left (degree_lt_degree pq)
+
+theorem eraseLead_add_of_degree_lt_right {p q : R[X]} (pq : p.degree < q.degree) :
     (p + q).eraseLead = p + q.eraseLead := by
   ext n
   by_cases nd : n = q.natDegree
-  · rw [nd, eraseLead_coeff, if_pos (natDegree_add_eq_right_of_natDegree_lt pq).symm]
-    simpa using (coeff_eq_zero_of_natDegree_lt pq).symm
+  · rw [nd, eraseLead_coeff, if_pos (natDegree_add_eq_right_of_degree_lt pq).symm]
+    simpa using (coeff_eq_zero_of_degree_lt (lt_of_lt_of_le pq degree_le_natDegree)).symm
   · rw [eraseLead_coeff, coeff_add, coeff_add, eraseLead_coeff, if_neg, if_neg nd]
     rintro rfl
-    exact nd (natDegree_add_eq_right_of_natDegree_lt pq)
+    exact nd (natDegree_add_eq_right_of_degree_lt pq)
+
+theorem eraseLead_add_of_natDegree_lt_right {p q : R[X]} (pq : p.natDegree < q.natDegree) :
+    (p + q).eraseLead = p + q.eraseLead :=
+  eraseLead_add_of_degree_lt_right (degree_lt_degree pq)
 
 theorem eraseLead_degree_le : (eraseLead f).degree ≤ f.degree :=
   f.degree_erase_le _
+
+theorem degree_eraseLead_lt (hf : f ≠ 0) : (eraseLead f).degree < f.degree :=
+  f.degree_erase_lt hf
 
 theorem eraseLead_natDegree_le_aux : (eraseLead f).natDegree ≤ f.natDegree :=
   natDegree_le_natDegree eraseLead_degree_le
@@ -202,7 +213,7 @@ theorem eraseLead_natDegree_le (f : R[X]) : (eraseLead f).natDegree ≤ f.natDeg
 
 lemma natDegree_eraseLead (h : f.nextCoeff ≠ 0) : f.eraseLead.natDegree = f.natDegree - 1 := by
   have := natDegree_pos_of_nextCoeff_ne_zero h
-  refine f.eraseLead_natDegree_le.antisymm $ le_natDegree_of_ne_zero ?_
+  refine f.eraseLead_natDegree_le.antisymm <| le_natDegree_of_ne_zero ?_
   rwa [eraseLead_coeff_of_ne _ (tsub_lt_self _ _).ne, ← nextCoeff_of_natDegree_pos]
   all_goals positivity
 
@@ -220,8 +231,8 @@ theorem natDegree_eraseLead_le_of_nextCoeff_eq_zero (h : f.nextCoeff = 0) :
   rw [eraseLead_coeff_of_ne _ (tsub_lt_self hf zero_lt_one).ne, ← nextCoeff_of_natDegree_pos hf]
   simp [nextCoeff_eq_zero, h, eq_zero_or_pos]
 
-lemma two_le_natDegree_of_nextCoeff_eraseLead (hlead : f.eraseLead ≠ 0) (hnext : f.nextCoeff = 0) :
-    2 ≤ f.natDegree := by
+lemma two_le_natDegree_of_nextCoeff_eraseLead (hlead : f.eraseLead ≠ 0)
+    (hnext : f.nextCoeff = 0) : 2 ≤ f.natDegree := by
   contrapose! hlead
   rw [Nat.lt_succ_iff, Nat.le_one_iff_eq_zero_or_eq_one, natDegree_eq_zero, natDegree_eq_one]
     at hlead
@@ -310,14 +321,14 @@ theorem map_natDegree_eq_sub {S F : Type*} [Semiring S]
     (φ_mon : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n - k) :
     (φ p).natDegree = p.natDegree - k :=
   mono_map_natDegree_eq k (fun j => j - k) (by simp_all)
-    (@fun m n h => (tsub_lt_tsub_iff_right h).mpr)
+    (@fun _ _ h => (tsub_lt_tsub_iff_right h).mpr)
     (φ_k _) φ_mon
 
 theorem map_natDegree_eq_natDegree {S F : Type*} [Semiring S]
     [FunLike F R[X] S[X]] [AddMonoidHomClass F R[X] S[X]]
     {φ : F} (p) (φ_mon_nat : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n) :
     (φ p).natDegree = p.natDegree :=
-  (map_natDegree_eq_sub (fun f h => (Nat.not_lt_zero _ h).elim) (by simpa)).trans
+  (map_natDegree_eq_sub (fun _ h => (Nat.not_lt_zero _ h).elim) (by simpa)).trans
     p.natDegree.sub_zero
 
 theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : Function.Injective k)
@@ -336,12 +347,13 @@ theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : F
 
 theorem card_support_eq {n : ℕ} :
     f.support.card = n ↔
-      ∃ (k : Fin n → ℕ) (x : Fin n → R) (hk : StrictMono k) (hx : ∀ i, x i ≠ 0),
+      ∃ (k : Fin n → ℕ) (x : Fin n → R) (_ : StrictMono k) (_ : ∀ i, x i ≠ 0),
         f = ∑ i, C (x i) * X ^ k i := by
   refine ⟨?_, fun ⟨k, x, hk, hx, hf⟩ => hf.symm ▸ card_support_eq' k x hk.injective hx⟩
-  induction' n with n hn generalizing f
-  · exact fun hf => ⟨0, 0, fun x => x.elim0, fun x => x.elim0, card_support_eq_zero.mp hf⟩
-  · intro h
+  induction n generalizing f with
+  | zero => exact fun hf => ⟨0, 0, fun x => x.elim0, fun x => x.elim0, card_support_eq_zero.mp hf⟩
+  | succ n hn =>
+    intro h
     obtain ⟨k, x, hk, hx, hf⟩ := hn (card_support_eraseLead' h)
     have H : ¬∃ k : Fin n, Fin.castSucc k = Fin.last n := by
       rintro ⟨i, hi⟩
@@ -380,7 +392,7 @@ theorem card_support_eq {n : ℕ} :
       all_goals exact H
 
 theorem card_support_eq_one : f.support.card = 1 ↔
-    ∃ (k : ℕ) (x : R) (hx : x ≠ 0), f = C x * X ^ k := by
+    ∃ (k : ℕ) (x : R) (_ : x ≠ 0), f = C x * X ^ k := by
   refine ⟨fun h => ?_, ?_⟩
   · obtain ⟨k, x, _, hx, rfl⟩ := card_support_eq.mp h
     exact ⟨k 0, x 0, hx 0, Fin.sum_univ_one _⟩
@@ -389,7 +401,7 @@ theorem card_support_eq_one : f.support.card = 1 ↔
 
 theorem card_support_eq_two :
     f.support.card = 2 ↔
-      ∃ (k m : ℕ) (hkm : k < m) (x y : R) (hx : x ≠ 0) (hy : y ≠ 0),
+      ∃ (k m : ℕ) (_ : k < m) (x y : R) (_ : x ≠ 0) (_ : y ≠ 0),
         f = C x * X ^ k + C y * X ^ m := by
   refine ⟨fun h => ?_, ?_⟩
   · obtain ⟨k, x, hk, hx, rfl⟩ := card_support_eq.mp h
@@ -401,7 +413,7 @@ theorem card_support_eq_two :
 
 theorem card_support_eq_three :
     f.support.card = 3 ↔
-      ∃ (k m n : ℕ) (hkm : k < m) (hmn : m < n) (x y z : R) (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0),
+      ∃ (k m n : ℕ) (_ : k < m) (_ : m < n) (x y z : R) (_ : x ≠ 0) (_ : y ≠ 0) (_ : z ≠ 0),
         f = C x * X ^ k + C y * X ^ m + C z * X ^ n := by
   refine ⟨fun h => ?_, ?_⟩
   · obtain ⟨k, x, hk, hx, rfl⟩ := card_support_eq.mp h

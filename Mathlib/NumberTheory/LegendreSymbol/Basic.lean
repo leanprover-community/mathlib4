@@ -212,7 +212,7 @@ theorem eq_one_of_sq_sub_mul_sq_eq_zero {p : ℕ} [Fact p.Prime] {a : ℤ} (ha :
   apply_fun (· * y⁻¹ ^ 2) at hxy
   simp only [zero_mul] at hxy
   rw [(by ring : (x ^ 2 - ↑a * y ^ 2) * y⁻¹ ^ 2 = (x * y⁻¹) ^ 2 - a * (y * y⁻¹) ^ 2),
-    mul_inv_cancel hy, one_pow, mul_one, sub_eq_zero, pow_two] at hxy
+    mul_inv_cancel₀ hy, one_pow, mul_one, sub_eq_zero, pow_two] at hxy
   exact (eq_one_iff p ha).mpr ⟨x * y⁻¹, hxy.symm⟩
 
 /-- The Legendre symbol `legendreSym p a = 1` if there is a solution in `ℤ/pℤ`
@@ -235,9 +235,9 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
     simp at h
   by_contra hf
   cases' imp_iff_or_not.mp (not_and'.mp hf) with hx hy
-  · rw [eq_one_of_sq_sub_mul_sq_eq_zero' ha hx hxy, eq_neg_self_iff] at h
+  · rw [eq_one_of_sq_sub_mul_sq_eq_zero' ha hx hxy, CharZero.eq_neg_self_iff] at h
     exact one_ne_zero h
-  · rw [eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy, eq_neg_self_iff] at h
+  · rw [eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy, CharZero.eq_neg_self_iff] at h
     exact one_ne_zero h
 
 /-- If `legendreSym p a = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide `x` and `y`. -/
