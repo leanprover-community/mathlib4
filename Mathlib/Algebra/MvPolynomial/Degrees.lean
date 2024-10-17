@@ -282,7 +282,7 @@ theorem degreeOf_mul_X_eq (j : σ) (f : MvPolynomial σ R) :
   rw [Multiset.count_singleton_self]
 
 theorem degreeOf_mul_X_eq_degreeOf_add_one_iff (j : σ) (f : MvPolynomial σ R) :
-    degreeOf j (f * X j) = degreeOf j f + 1 ↔ f ≠ 0:= by
+    degreeOf j (f * X j) = degreeOf j f + 1 ↔ f ≠ 0 := by
   refine ⟨fun h => by by_contra ha; simp [ha] at h, fun h => ?_⟩
   apply Nat.le_antisymm (degreeOf_mul_X_eq j f)
   have : (f.support.sup fun m ↦ m j) + 1 = (f.support.sup fun m ↦ (m j + 1)) := by
