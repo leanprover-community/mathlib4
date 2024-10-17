@@ -108,7 +108,7 @@ def omega' : Ordinal.{u} ↪o Ordinal.{u} where
 theorem coe_omega' : omega' = enumOrd {x | IsInitial x} :=
   rfl
 
-theorem strictMono_omega' : StrictMono omega' :=
+theorem omega_strictMono' : StrictMono omega' :=
   omega'.strictMono
 
 theorem omega'_lt {o₁ o₂ : Ordinal} : omega' o₁ < omega' o₂ ↔ o₁ < o₂ :=
@@ -124,7 +124,7 @@ theorem isInitial_omega' (o : Ordinal) : IsInitial (omega' o) :=
   enumOrd_mem not_bddAbove_isInitial o
 
 theorem le_omega'_self (o : Ordinal) : o ≤ omega' o :=
-  strictMono_omega'.le_apply
+  omega_strictMono'.le_apply
 
 @[simp]
 theorem omega'_zero : omega' 0 = 0 := by
@@ -147,7 +147,7 @@ theorem omega'_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b < o
 
 theorem isNormal_omega' : IsNormal omega' := by
   rw [isNormal_iff_strictMono_limit]
-  refine ⟨strictMono_omega', fun o ho a ha ↦
+  refine ⟨omega_strictMono', fun o ho a ha ↦
     (omega'_le_of_forall_lt (isInitial_ord _) fun b hb ↦ ?_).trans (ord_card_le a)⟩
   rw [← (isInitial_ord _).card_lt_card, card_ord]
   apply lt_of_lt_of_le _ (card_le_card <| ha _ (ho.succ_lt hb))
@@ -192,7 +192,7 @@ scoped notation "ω₁" => ω_ 1
 theorem omega'_omega0_add (o : Ordinal) : omega' (ω + o) = ω_ o :=
   rfl
 
-theorem strictMono_omega : StrictMono omega :=
+theorem omega_strictMono : StrictMono omega :=
   omega.strictMono
 
 theorem omega_lt {o₁ o₂ : Ordinal} : ω_ o₁ < ω_ o₂ ↔ o₁ < o₂ :=
@@ -208,7 +208,7 @@ theorem isInitial_omega (o : Ordinal) : IsInitial (omega o) :=
   isInitial_omega' _
 
 theorem le_omega_self (o : Ordinal) : o ≤ omega o :=
-  strictMono_omega.le_apply
+  omega_strictMono.le_apply
 
 @[simp]
 theorem omega_zero : ω_ 0 = ω := by
