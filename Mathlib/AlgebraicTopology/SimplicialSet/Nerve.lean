@@ -291,6 +291,24 @@ def fact.map.arr {n}
     | 0 => rfl
     | 1 => rfl
 
+-- TODO: State and prove the analog of this.
+-- theorem ran.lift.map {C : Cat} {n}
+--     (s : Cone (StructuredArrow.proj (op [n])
+--       (Truncated.inclusion (n := 2)).op ⋙ nerveFunctor₂.obj C))
+--     (x : s.pt) {i j} (k : i ⟶ j) :
+--     (ran.lift s x).map k =
+--       eqToHom (ran.lift.eq ..) ≫
+--       ((s.π.app (ar' k) x).map' 0 1) ≫
+--       eqToHom (ran.lift.eq₂ ..).symm := by
+--   have : ran.lift s x = ran.lift' s x := by
+--     fapply ComposableArrows.ext
+--     · intro; rfl
+--     · intro i hi
+--       dsimp only [CategoryTheory.Nerve.ran.lift]
+--       rw [ComposableArrows.mkOfObjOfMapSucc_map_succ _ _ i hi]
+--       rw [eqToHom_refl, eqToHom_refl, id_comp, comp_id]; rfl
+--   exact eq_of_heq (congr_arg_heq (·.map k) this)
+
 noncomputable def rightExtensionInclusion₂IsPointwiseRightKanExtensionAt
     (X : SSet.{u}) (hX : ∀ (n : ℕ), Function.Bijective (X.spine (n := n))) (n : ℕ) :
     (rightExtensionInclusion X 2).IsPointwiseRightKanExtensionAt ⟨[n]⟩ := by
