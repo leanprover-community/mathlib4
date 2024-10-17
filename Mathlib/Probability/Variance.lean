@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel, Kexing Ying
 -/
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Integration
+import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
@@ -30,6 +31,8 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
   random variables is the sum of the variances.
 * `ProbabilityTheory.IndepFun.variance_sum`: the variance of a finite sum of pairwise
   independent random variables is the sum of the variances.
+* `Probability.variance_square_bounded`: Variance is bounded by `((b - a) / 2) ^ 2`
+  if almost everywhere real-valued measurable function `X` satisfies `a ≤ X ≤ b` almost everywhere.
 -/
 
 
@@ -340,5 +343,61 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
     _ = variance (X k) μ + ∑ i ∈ s, variance (X i) μ := by
       rw [IH (fun i hi => hs i (mem_insert_of_mem hi))
           (h.mono (by simp only [coe_insert, Set.subset_insert]))]
+
+theorem abs_le_max_abs_abs_ae {a b : ℝ} {X : Ω → ℝ}
+    (ha : ∀ᵐ (ω : Ω) ∂μ, a ≤ X ω) (hb : ∀ᵐ (ω : Ω) ∂μ, X ω ≤ b) :
+    ∀ᵐ (ω : Ω) ∂μ, |X ω| ≤ max |a| |b| := by
+  filter_upwards [ha, hb] with ω ha hb
+  exact abs_le_max_abs_abs ha hb
+
+theorem memℒp_of_bounded [IsFiniteMeasure μ]
+    {a b : ℝ} {X : Ω → ℝ} (ha : ∀ᵐ (ω : Ω) ∂μ, a ≤ X ω) (hb : ∀ᵐ (ω : Ω) ∂μ, X ω ≤ b)
+    (hX : AEMeasurable X μ) (p : ENNReal) : Memℒp X p μ :=
+  let c := max |a| |b|
+  (memℒp_const c).mono' hX.aestronglyMeasurable (abs_le_max_abs_abs_ae ha hb)
+
+/-! ### Popvinciu's inequality on variances -/
+/--Variance is bounded by `((b - a) / 2) ^ 2`
+if almost everywhere real-valued measurable function `X` satisfies `a ≤ X ≤ b` almost everywhere.-/
+
+lemma variance_square_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
+    (ha : ∀ᵐ ω ∂μ, a ≤ X ω) (hb : ∀ᵐ ω ∂μ, X ω ≤ b) (hX : AEMeasurable X μ) :
+    variance X μ ≤ ((b - a) / 2) ^ 2 :=
+  let c := max |a| |b|
+  have hX_int₁ : Integrable (fun ω ↦ -X ω ^ 2) μ :=
+    ((memℒp_of_bounded ha hb hX 2).integrable_sq).neg
+  have hX_int₂ : Integrable (fun ω ↦ (a + b) * X ω) μ :=
+    ((integrable_const c).mono' hX.aestronglyMeasurable
+      (abs_le_max_abs_abs_ae ha hb)).const_mul (a + b)
+  have h0 : 0 ≤ - ∫ (ω : Ω), (X ω ^ 2) ∂μ + (a + b) * ∫ (ω : Ω), (X ω) ∂μ - a * b :=
+    calc
+      _ ≤ ∫ (ω : Ω), (b - X ω) * (X ω - a) ∂μ := by
+        apply integral_nonneg_of_ae
+        filter_upwards [ha, hb] with ω ha' hb'
+        exact mul_nonneg (by linarith : 0 ≤ b - X ω) (by linarith : 0 ≤ X ω - a)
+      _ = ∫ (ω : Ω), - X ω ^ 2 + (a + b) * X ω - (a * b) ∂μ :=
+        integral_congr_ae <| ae_of_all μ fun ω ↦ by ring
+      _ = ∫ (ω : Ω), - X ω ^ 2 + (a + b) * X ω ∂μ - ∫ (_ : Ω), (a * b) ∂μ :=
+        integral_sub (hX_int₁.add hX_int₂) (integrable_const (a * b))
+      _ = ∫ (ω : Ω), - X ω ^ 2 + (a + b) * X ω ∂μ - (a * b) := by simp
+      _ = - ∫ (ω : Ω), X ω ^ 2 ∂μ + (a + b) * ∫ (ω : Ω), X ω ∂μ - a * b := by
+        simp only [sub_left_inj]
+        rw [← integral_neg, ← integral_mul_left]
+        apply integral_add hX_int₁ hX_int₂
+  calc
+    _ ≤ (a + b) * ∫ (ω : Ω), X ω ∂μ - a * b - (∫ (ω : Ω), X ω ∂μ) ^ 2 := by
+      rw [variance_def' (memℒp_of_bounded ha hb hX 2)]
+      simp only [Pi.pow_apply, tsub_le_iff_right, sub_add_cancel, ge_iff_le]
+      linarith
+    _ = (b - ∫ (ω : Ω), X ω ∂μ) * (∫ (ω : Ω), X ω ∂μ - a) := by ring
+    _ ≤ ((b - a) / 2) ^ 2 :=
+      have : ∀ x, (b - x) * (x - a) ≤ ((b - a) / 2) ^ 2 := by
+        intro x
+        set y : ℝ := x - ((b + a) / 2)
+        rw [(by ring : x = y + ((b + a) / 2))]
+        calc
+          _ = ((b - a) / 2) ^ 2 - y ^ 2 := by ring
+          _ ≤ ((b - a) / 2) ^ 2 := sub_le_self (((b - a) / 2) ^ 2) (sq_nonneg y)
+      this (∫ (ω : Ω), X ω ∂μ)
 
 end ProbabilityTheory
