@@ -100,7 +100,6 @@ lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
     residueFieldMap (f ≫ g) x = residueFieldMap g (f.base x) ≫ residueFieldMap f x := by
   simp only [comp_toShHom, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap]
   simp_rw [stalkMap_comp]
-  haveI : IsLocalHom (g.stalkMap (f.base x)) := inferInstance
   apply LocalRing.ResidueField.map_comp
 
 @[reassoc]

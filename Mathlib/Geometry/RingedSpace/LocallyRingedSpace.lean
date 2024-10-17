@@ -120,7 +120,7 @@ alias isLocalRingHomValStalkMap := isLocalHomValStalkMap
 /-- The identity morphism on a locally ringed space. -/
 @[simps! toShHom]
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
-  ⟨𝟙 X.toSheafedSpace, fun x => by erw [PresheafedSpace.stalkMap.id]; apply isLocalHom_id⟩
+  ⟨𝟙 X.toSheafedSpace, fun x => by erw [PresheafedSpace.stalkMap.id]; infer_instance⟩
 
 instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
   ⟨id X⟩
@@ -129,7 +129,7 @@ instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
 def comp {X Y Z : LocallyRingedSpace.{u}} (f : Hom X Y) (g : Hom Y Z) : Hom X Z :=
   ⟨f.toShHom ≫ g.toShHom, fun x => by
     erw [PresheafedSpace.stalkMap.comp]
-    exact @RingHom.isLocalHom_comp _ _ _ _ _ _ _ _ (f.2 _) (g.2 _)⟩
+    infer_instance⟩
 
 /-- The category of locally ringed spaces. -/
 instance : Category LocallyRingedSpace.{u} where
@@ -185,12 +185,11 @@ See also `isoOfSheafedSpaceIso`.
 @[simps! toShHom]
 def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
     (f : X.toSheafedSpace ⟶ Y.toSheafedSpace) [IsIso f] : X ⟶ Y :=
-  Hom.mk f fun x =>
+  Hom.mk f fun _ =>
     -- Here we need to see that the stalk maps are really local ring homomorphisms.
     -- This can be solved by type class inference, because stalk maps of isomorphisms
     -- are isomorphisms and isomorphisms are local ring homomorphisms.
-    show IsLocalHom ((SheafedSpace.forgetToPresheafedSpace.map f).stalkMap x) by
-      infer_instance
+    inferInstance
 
 /-- Given two locally ringed spaces `X` and `Y`, an isomorphism between `X` and `Y` as _sheafed_
 spaces can be lifted to an isomorphism `X ⟶ Y` as locally ringed spaces.
