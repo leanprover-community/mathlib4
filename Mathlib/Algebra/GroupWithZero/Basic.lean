@@ -156,7 +156,7 @@ lemma eq_zero_of_zero_pow_eq_one₀ [Nontrivial M₀] : (0 : M₀) ^ n = 1 ↔ n
   rw[zero_pow_eq]
   exact if_pos h0
 
-lemma pow_eq_zero_of_le : ∀ {m n} (hmn : m ≤ n) (ha : a ^ m = 0), a ^ n = 0
+lemma pow_eq_zero_of_le : ∀ {m n} (_ : m ≤ n) (_ : a ^ m = 0), a ^ n = 0
   | _, _, Nat.le.refl, ha => ha
   | _, _, Nat.le.step hmn, ha => by rw [pow_succ, pow_eq_zero_of_le hmn ha, zero_mul]
 
@@ -165,6 +165,11 @@ lemma ne_zero_pow (hn : n ≠ 0) (ha : a ^ n ≠ 0) : a ≠ 0 := by rintro rfl; 
 @[simp]
 lemma zero_pow_eq_zero [Nontrivial M₀] : (0 : M₀) ^ n = 0 ↔ n ≠ 0 :=
   ⟨by rintro h rfl; simp at h, zero_pow⟩
+
+lemma pow_mul_eq_zero_of_le {a b : M₀} {m n : ℕ} (hmn : m ≤ n)
+    (h : a ^ m * b = 0) : a ^ n * b = 0 := by
+  rw [show n = n - m + m by omega, pow_add, mul_assoc, h]
+  simp
 
 variable [NoZeroDivisors M₀]
 
