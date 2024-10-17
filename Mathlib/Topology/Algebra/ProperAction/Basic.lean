@@ -113,7 +113,7 @@ theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
   let π : X → Quotient R := Quotient.mk'
   have : IsOpenQuotientMap (Prod.map π π) :=
     MulAction.isOpenQuotientMap_quotientMk.prodMap MulAction.isOpenQuotientMap_quotientMk
-  rw [← this.quotientMap.isClosed_preimage]
+  rw [← this.isQuotientMap.isClosed_preimage]
   convert ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
   · ext ⟨x₁, x₂⟩
     simp only [mem_preimage, map_apply, mem_diagonal_iff, mem_range, Prod.mk.injEq, Prod.exists,
@@ -127,12 +127,12 @@ then this topological space is T2."]
 theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G] : T2Space X := by
   let f := fun x : X ↦ ((1 : G), x)
   have proper_f : IsProperMap f := by
-    apply isProperMap_of_closedEmbedding
-    rw [closedEmbedding_iff]
+    apply isProperMap_of_isClosedEmbedding
+    rw [isClosedEmbedding_iff]
     constructor
     · let g := fun gx : G × X ↦ gx.2
       have : Function.LeftInverse g f := fun x ↦ by simp
-      exact this.embedding (by fun_prop) (by fun_prop)
+      exact this.isEmbedding (by fun_prop) (by fun_prop)
     · have : range f = ({1} ×ˢ univ) := by simp
       rw [this]
       exact isClosed_singleton.prod isClosed_univ
@@ -150,8 +150,8 @@ then `H` also acts properly on `X`. -/
 @[to_additive "If two groups `H` and `G` act on a topological space `X` such that `G` acts properly
 and there exists a group homomorphims `H → G` which is a closed embedding compatible with the
 actions, then `H` also acts properly on `X`."]
-theorem properSMul_of_closedEmbedding {H : Type*} [Group H] [MulAction H X] [TopologicalSpace H]
-    [ProperSMul G X] (f : H →* G) (f_clemb : ClosedEmbedding f)
+theorem properSMul_of_isClosedEmbedding {H : Type*} [Group H] [MulAction H X] [TopologicalSpace H]
+    [ProperSMul G X] (f : H →* G) (f_clemb : IsClosedEmbedding f)
     (f_compat : ∀ (h : H) (x : X), f h • x = h • x) : ProperSMul H X where
   isProperMap_smul_pair := by
     have := isProperMap_of_closedEmbedding f_clemb

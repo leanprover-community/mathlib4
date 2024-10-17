@@ -50,8 +50,8 @@ needed.
 
 noncomputable section
 
-open Function Set Bornology
-open scoped Topology ENNReal NNReal
+open Bornology Function Set Topology
+open scoped ENNReal NNReal
 
 section Defs
 
@@ -378,7 +378,7 @@ alias uniformInducing := isUniformInducing
 
 theorem tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α} :
     Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto ((f : α → β) ∘ g) a (𝓝 (f b)) :=
-  (Dilation.isUniformInducing f).inducing.tendsto_nhds_iff
+  (Dilation.isUniformInducing f).isInducing.tendsto_nhds_iff
 
 /-- A dilation is continuous. -/
 theorem toContinuous : Continuous (f : α → β) :=
@@ -409,11 +409,11 @@ theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
     ContinuousOn ((f : α → β) ∘ g) s ↔ ContinuousOn g s :=
-  (Dilation.isUniformInducing f).inducing.continuousOn_iff.symm
+  (Dilation.isUniformInducing f).isInducing.continuousOn_iff.symm
 
 theorem comp_continuous_iff {γ} [TopologicalSpace γ] {g : γ → α} :
     Continuous ((f : α → β) ∘ g) ↔ Continuous g :=
-  (Dilation.isUniformInducing f).inducing.continuous_iff.symm
+  (Dilation.isUniformInducing f).isInducing.continuous_iff.symm
 
 end PseudoEmetricDilation
 
@@ -430,14 +430,14 @@ lemma isUniformEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F)
 @[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 /-- A dilation from a metric space is an embedding -/
-protected theorem embedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
-    Embedding (f : α → β) :=
-  (Dilation.isUniformEmbedding f).embedding
+protected theorem isEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
+    IsEmbedding (f : α → β) :=
+  (Dilation.isUniformEmbedding f).isEmbedding
 
 /-- A dilation from a complete emetric space is a closed embedding -/
-protected theorem closedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :
-    ClosedEmbedding f :=
-  (antilipschitz f).closedEmbedding (lipschitz f).uniformContinuous
+protected lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :
+    IsClosedEmbedding f :=
+  (antilipschitz f).isClosedEmbedding (lipschitz f).uniformContinuous
 
 end EmetricDilation
 

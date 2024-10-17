@@ -22,11 +22,10 @@ coercions both to `ℝ` and `ℝ≥0∞`. We do not require `0 < K` in the defin
 we do not have a `posreal` type.
 -/
 
+open Bornology Filter Set Topology
+open scoped NNReal ENNReal Uniformity
 
 variable {α β γ : Type*}
-
-open scoped NNReal ENNReal Uniformity Topology
-open Set Filter Bornology
 
 /-- We say that `f : α → β` is `AntilipschitzWith K` if for any two points `x`, `y` we have
 `edist x y ≤ K * edist (f x) (f y)`. -/
@@ -165,10 +164,10 @@ theorem isClosed_range {α β : Type*} [PseudoEMetricSpace α] [EMetricSpace β]
     IsClosed (range f) :=
   (hf.isComplete_range hfc).isClosed
 
-theorem closedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
+theorem isClosedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
     {f : α → β} [CompleteSpace α] (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
-    ClosedEmbedding f :=
-  { (hf.isUniformEmbedding hfc).embedding with isClosed_range := hf.isClosed_range hfc }
+    IsClosedEmbedding f :=
+  { (hf.isUniformEmbedding hfc).isEmbedding with isClosed_range := hf.isClosed_range hfc }
 
 theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.restrict s

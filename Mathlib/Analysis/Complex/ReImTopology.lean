@@ -31,8 +31,7 @@ Each statement about `Complex.re` listed below has a counterpart about `Complex.
 complex, real part, imaginary part, closure, interior, frontier
 -/
 
-
-open Set
+open Set Topology
 
 noncomputable section
 
@@ -52,10 +51,10 @@ theorem isOpenMap_re : IsOpenMap re :=
 theorem isOpenMap_im : IsOpenMap im :=
   isHomeomorphicTrivialFiberBundle_im.isOpenMap_proj
 
-theorem quotientMap_re : QuotientMap re :=
+theorem isQuotientMap_re : IsQuotientMap re :=
   isHomeomorphicTrivialFiberBundle_re.quotientMap_proj
 
-theorem quotientMap_im : QuotientMap im :=
+theorem isQuotientMap_im : IsQuotientMap im :=
   isHomeomorphicTrivialFiberBundle_im.quotientMap_proj
 
 theorem interior_preimage_re (s : Set ℝ) : interior (re ⁻¹' s) = re ⁻¹' interior s :=
