@@ -2121,16 +2121,15 @@ theorem natCast_mul (m : ℕ) : ∀ n : ℕ, ((m * n : ℕ) : Ordinal) = m * n
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_mul := natCast_mul
 
-/-- Alias of `Nat.cast_le`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_le (since := "2024-10-17")]
 theorem natCast_le {m n : ℕ} : (m : Ordinal) ≤ n ↔ m ≤ n := by
   rw [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_le_ord, Cardinal.natCast_le]
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_le := natCast_le
 
-/-- Alias of `Nat.cast_inj`, specialized to `Ordinal` --/
-theorem natCast_inj {m n : ℕ} : (m : Ordinal) = n ↔ m = n := by
-  simp only [le_antisymm_iff, natCast_le]
+@[deprecated Nat.cast_inj (since := "2024-10-17")]
+theorem natCast_inj {m n : ℕ} : (m : Ordinal) = n ↔ m = n := Nat.cast_inj
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_inj := natCast_inj
@@ -2138,25 +2137,25 @@ alias nat_cast_inj := natCast_inj
 instance charZero : CharZero Ordinal where
   cast_injective _ _ := natCast_inj.mp
 
-/-- Alias of `Nat.cast_lt`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_lt (since := "2024-10-17")]
 theorem natCast_lt {m n : ℕ} : (m : Ordinal) < n ↔ m < n := Nat.cast_lt
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_lt := natCast_lt
 
-/-- Alias of `Nat.cast_eq_zero`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_eq_zero (since := "2024-10-17")]
 theorem natCast_eq_zero {n : ℕ} : (n : Ordinal) = 0 ↔ n = 0 := Nat.cast_eq_zero
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_eq_zero := natCast_eq_zero
 
-/-- Alias of `Nat.cast_eq_zero`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_ne_zero (since := "2024-10-17")]
 theorem natCast_ne_zero {n : ℕ} : (n : Ordinal) ≠ 0 ↔ n ≠ 0 := Nat.cast_ne_zero
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_ne_zero := natCast_ne_zero
 
-/-- Alias of `Nat.cast_pos'`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_pos' (since := "2024-10-17")]
 theorem natCast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n := Nat.cast_pos'
 
 @[deprecated (since := "2024-04-17")]
