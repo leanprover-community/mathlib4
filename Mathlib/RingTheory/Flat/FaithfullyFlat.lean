@@ -100,6 +100,24 @@ instance rTensor_nontrivial
   rw [Submodule.subsingleton_quotient_iff_eq_top] at this
   contradiction
 
+lemma rTensor_reflects_triviality
+    [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
+    [h : Subsingleton (N ⊗[R] M)] : Subsingleton N := by
+  revert h
+  change _ → _
+  intro h
+  contrapose h
+  simp only [not_subsingleton_iff_nontrivial] at h ⊢
+  infer_instance
+
+lemma lTensor_reflects_triviality
+    [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
+    [Subsingleton (M ⊗[R] N)]:
+    Subsingleton N := by
+  haveI : Subsingleton (N ⊗[R] M) := (TensorProduct.comm R N M).toEquiv.injective.subsingleton
+  apply rTensor_reflects_triviality R M
+
+
 instance lTensor_nontrivial
     [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
     Nontrivial (M ⊗[R] N) :=
