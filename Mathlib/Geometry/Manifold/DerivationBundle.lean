@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Derivation.Basic
 
 # Derivation bundle
 
-In this file we define the derivations at a point of a manifold on the algebra of smooth fuctions.
+In this file we define the derivations at a point of a manifold on the algebra of smooth functions.
 Moreover, we define the differential of a function in terms of derivations.
 
 The content of this file is not meant to be regarded as an alternative definition to the current
@@ -135,8 +135,8 @@ def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) 
           PointedSmoothMap.smul_def, ContMDiffMap.comp_apply,
           PointedSmoothMap.smul_def, ContMDiffMap.comp_apply, h]
         norm_cast
-  map_smul' k v := rfl
-  map_add' v w := rfl
+  map_smul' _ _ := rfl
+  map_add' _ _ := rfl
 
 /-- The homogeneous differential as a linear map. -/
 def fdifferential (f : C^∞⟮I, M; I', M'⟯) (x : M) :

@@ -14,7 +14,7 @@ This typeclass is primarily for use by embeddings such as `RelEmbedding`.
 
 A typical type of embeddings should be declared as:
 ```
-structure MyEmbedding (A B : Type*) [MyClass A] [MyClass B] :=
+structure MyEmbedding (A B : Type*) [MyClass A] [MyClass B] where
   (toFun : A → B)
   (injective' : Function.Injective toFun)
   (map_op' : ∀ (x y : A), toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
@@ -58,8 +58,8 @@ Continuing the example above:
 You should extend this class when you extend `MyEmbedding`. -/
 class MyEmbeddingClass (F : Type*) (A B : outParam Type*) [MyClass A] [MyClass B]
     [FunLike F A B]
-    extends EmbeddingLike F A B :=
-  (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
+    extends EmbeddingLike F A B where
+  map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y)
 
 @[simp]
 lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [FunLike F A B] [MyEmbeddingClass F A B]
@@ -84,12 +84,12 @@ The second step is to add instances of your new `MyEmbeddingClass` for all types
 Typically, you can just declare a new class analogous to `MyEmbeddingClass`:
 
 ```
-structure CoolerEmbedding (A B : Type*) [CoolClass A] [CoolClass B] extends MyEmbedding A B :=
+structure CoolerEmbedding (A B : Type*) [CoolClass A] [CoolClass B] extends MyEmbedding A B where
   (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 class CoolerEmbeddingClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass B]
     [FunLike F A B]
-    extends MyEmbeddingClass F A B :=
+    extends MyEmbeddingClass F A B where
   (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 @[simp]

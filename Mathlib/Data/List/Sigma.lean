@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
 -/
-import Mathlib.Data.List.Range
 import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Pairwise
 
 /-!
 # Utilities for lists of sigmas
@@ -26,11 +26,11 @@ If `α : Type*` and `β : α → Type*`, then we regard `s : Sigma β` as having
 - `List.kextract` returns a value with a given key and the rest of the values.
 -/
 
-universe u v
+universe u u' v v'
 
 namespace List
 
-variable {α : Type u} {β : α → Type v} {l l₁ l₂ : List (Sigma β)}
+variable {α : Type u} {α' : Type u'} {β : α → Type v} {β' : α' → Type v'} {l l₁ l₂ : List (Sigma β)}
 
 /-! ### `keys` -/
 
@@ -63,7 +63,7 @@ theorem not_mem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, 
 
 theorem not_eq_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 :=
   Iff.intro (fun h₁ s h₂ e => absurd (mem_keys_of_mem h₂) (by rwa [e] at h₁)) fun f h₁ =>
-    let ⟨b, h₂⟩ := exists_of_mem_keys h₁
+    let ⟨_, h₂⟩ := exists_of_mem_keys h₁
     f _ h₂ rfl
 
 /-! ### `NodupKeys` -/
@@ -123,7 +123,7 @@ theorem nodupKeys_join {L : List (List (Sigma β))} :
   rw [nodupKeys_iff_pairwise, pairwise_join, pairwise_map]
   refine and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) ?_
   apply iff_of_eq; congr with (l₁ l₂)
-  simp [keys, disjoint_iff_ne]
+  simp [keys, disjoint_iff_ne, Sigma.forall]
 
 theorem nodup_enum_map_fst (l : List α) : (l.enum.map Prod.fst).Nodup := by simp [List.nodup_range]
 
@@ -131,7 +131,7 @@ theorem mem_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.Nodup) (nd₁ : l₁
     (h : ∀ x, x ∈ l₀ ↔ x ∈ l₁) : l₀ ~ l₁ :=
   (perm_ext_iff_of_nodup nd₀ nd₁).2 h
 
-variable [DecidableEq α]
+variable [DecidableEq α] [DecidableEq α']
 
 /-! ### `dlookup` -/
 
@@ -204,6 +204,25 @@ theorem lookup_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.NodupKeys) (nd₁
   mem_ext nd₀.nodup nd₁.nodup fun ⟨a, b⟩ => by
     rw [← mem_dlookup_iff, ← mem_dlookup_iff, h] <;> assumption
 
+theorem dlookup_map (l : List (Sigma β))
+    {f : α → α'} (hf : Function.Injective f) (g : ∀ a, β a → β' (f a)) (a : α) :
+    (l.map fun x => ⟨f x.1, g _ x.2⟩).dlookup (f a) = (l.dlookup a).map (g a) := by
+  induction' l with b l IH
+  · rw [map_nil, dlookup_nil, dlookup_nil, Option.map_none']
+  · rw [map_cons]
+    obtain rfl | h := eq_or_ne a b.1
+    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.map_some']
+    · rw [dlookup_cons_ne _ _ h, dlookup_cons_ne _ _ (fun he => h <| hf he), IH]
+
+theorem dlookup_map₁ {β : Type v} (l : List (Σ _ : α, β))
+    {f : α → α'} (hf : Function.Injective f) (a : α) :
+    (l.map fun x => ⟨f x.1, x.2⟩ : List (Σ _ : α', β)).dlookup (f a) = l.dlookup a := by
+  rw [dlookup_map (β' := fun _ => β) l hf (fun _ x => x) a, Option.map_id']
+
+theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a, γ a → δ a} (a : α) :
+    (l.map fun x => ⟨x.1, f _ x.2⟩ : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
+  dlookup_map l Function.injective_id _ _
+
 /-! ### `lookupAll` -/
 
 
@@ -231,7 +250,7 @@ theorem lookupAll_eq_nil {a : α} :
     by_cases h : a = a'
     · subst a'
       simp only [lookupAll_cons_eq, mem_cons, Sigma.mk.inj_iff, heq_eq_eq, true_and, not_or,
-        false_iff, not_forall, not_and, not_not]
+        false_iff, not_forall, not_and, not_not, reduceCtorEq]
       use b
       simp
     · simp [h, lookupAll_eq_nil]
@@ -281,6 +300,16 @@ theorem lookupAll_nodup (a : α) {l : List (Sigma β)} (h : l.NodupKeys) : (look
 theorem perm_lookupAll (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.NodupKeys) (nd₂ : l₂.NodupKeys)
     (p : l₁ ~ l₂) : lookupAll a l₁ = lookupAll a l₂ := by
   simp [lookupAll_eq_dlookup, nd₁, nd₂, perm_dlookup a nd₁ nd₂ p]
+
+theorem dlookup_append (l₁ l₂ : List (Sigma β)) (a : α) :
+    (l₁ ++ l₂).dlookup a = (l₁.dlookup a).or (l₂.dlookup a) := by
+  induction l₁ with
+  | nil => rfl
+  | cons x l₁ IH =>
+    rw [cons_append]
+    obtain rfl | hb := Decidable.eq_or_ne a x.1
+    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.or]
+    · rw [dlookup_cons_ne _ _ hb, dlookup_cons_ne _ _ hb, IH]
 
 /-! ### `kreplace` -/
 
@@ -350,7 +379,9 @@ theorem kerase_cons_ne {a} {s : Sigma β} {l : List (Sigma β)} (h : a ≠ s.1) 
 
 @[simp]
 theorem kerase_of_not_mem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : kerase a l = l := by
-  induction' l with _ _ ih <;> [rfl; (simp [not_or] at h; simp [h.1, ih h.2])]
+  induction l with
+  | nil => rfl
+  | cons _ _ ih => simp [not_or] at h; simp [h.1, ih h.2]
 
 theorem kerase_sublist (a : α) (l : List (Sigma β)) : kerase a l <+ l :=
   eraseP_sublist _
@@ -388,7 +419,7 @@ theorem mem_keys_kerase_of_ne {a₁ a₂} {l : List (Sigma β)} (h : a₁ ≠ a�
     else by simp [q, p]
 
 theorem keys_kerase {a} {l : List (Sigma β)} : (kerase a l).keys = l.keys.erase a := by
-  rw [keys, kerase, erase_eq_eraseP, eraseP_map, Function.comp]
+  rw [keys, kerase, erase_eq_eraseP, eraseP_map, Function.comp_def]
   simp only [beq_eq_decide]
   congr
   funext
@@ -481,7 +512,7 @@ theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
       else by simp [ha₂, mt mem_keys_of_mem_keys_kerase ha₂]
     else by simp [ha₁, mt mem_keys_of_mem_keys_kerase ha₁]
 
-theorem sizeOf_kerase [DecidableEq α] [SizeOf (Sigma β)] (x : α)
+theorem sizeOf_kerase [SizeOf (Sigma β)] (x : α)
     (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs := by
   simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with y ys
@@ -578,7 +609,7 @@ theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys 
   · rw [dedupKeys_cons, dlookup_kinsert_ne h, l_ih, dlookup_cons_ne]
     exact h
 
-theorem sizeOf_dedupKeys [DecidableEq α] [SizeOf (Sigma β)]
+theorem sizeOf_dedupKeys [SizeOf (Sigma β)]
     (xs : List (Sigma β)) : SizeOf.sizeOf (dedupKeys xs) ≤ SizeOf.sizeOf xs := by
   simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with x xs

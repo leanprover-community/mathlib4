@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
@@ -58,7 +58,7 @@ attribute [coe] PresheafedSpace.carrier
 
 -- Porting note: we add this instance, as Lean does not reliably use the `CoeOut` instance above
 -- in downstream files.
-instance : CoeSort (PresheafedSpace C) Type* where coe := fun X => X.carrier
+instance : CoeSort (PresheafedSpace C) Type* where coe X := X.carrier
 
 -- Porting note: the following lemma is removed because it is a syntactic tauto
 /-@[simp]
@@ -94,7 +94,7 @@ structure Hom (X Y : PresheafedSpace C) where
 -- rather than `Hom X Y`, this one was renamed `Hom.ext` instead of `ext`,
 -- and the more practical lemma `ext` is defined just after the definition
 -- of the `Category` instance
-@[ext]
+@[ext (iff := false)]
 theorem Hom.ext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β := by
   rcases α with ⟨base, c⟩
@@ -157,8 +157,10 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
 
 variable {C}
 
--- Porting note (#5229): adding an `ext` lemma.
-@[ext]
+/-- Cast `Hom X Y` as an arrow `X ⟶ Y` of presheaves. -/
+abbrev Hom.toPshHom {X Y : PresheafedSpace C} (f : Hom X Y) : X ⟶ Y := f
+
+@[ext (iff := false)]
 theorem ext {X Y : PresheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
   Hom.ext α β w h
@@ -340,7 +342,7 @@ theorem restrict_top_presheaf (X : PresheafedSpace C) :
     (X.restrict (Opens.openEmbedding ⊤)).presheaf =
       (Opens.inclusionTopIso X.carrier).inv _* X.presheaf := by
   dsimp
-  rw [Opens.inclusion_top_functor X.carrier]
+  rw [Opens.inclusion'_top_functor X.carrier]
   rfl
 
 theorem ofRestrict_top_c (X : PresheafedSpace C) :

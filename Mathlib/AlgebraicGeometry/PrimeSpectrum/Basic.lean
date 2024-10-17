@@ -3,14 +3,14 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.PrimeSpectrum
-import Mathlib.Topology.Irreducible
-import Mathlib.Topology.Sets.Closeds
+import Mathlib.RingTheory.KrullDimension.Basic
+import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Sober
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
@@ -29,8 +29,6 @@ and Chris Hughes (on an earlier repository).
 
 
 noncomputable section
-
-open scoped Classical
 
 universe u v
 
@@ -101,7 +99,7 @@ theorem isClosed_singleton_iff_isMaximal (x : PrimeSpectrum R) :
   constructor <;> intro H
   · rcases x.asIdeal.exists_le_maximal x.2.1 with ⟨m, hm, hxm⟩
     exact (congr_arg asIdeal (@H ⟨m, hm.isPrime⟩ hxm)) ▸ hm
-  · exact fun p hp ↦ PrimeSpectrum.ext _ _ (H.eq_of_le p.2.1 hp).symm
+  · exact fun p hp ↦ PrimeSpectrum.ext (H.eq_of_le p.2.1 hp).symm
 
 theorem isRadical_vanishingIdeal (s : Set (PrimeSpectrum R)) : (vanishingIdeal s).IsRadical := by
   rw [← vanishingIdeal_closure, ← zeroLocus_vanishingIdeal_eq_closure,
@@ -209,21 +207,14 @@ section Comap
 
 variable {S' : Type*} [CommSemiring S']
 
-theorem preimage_comap_zeroLocus_aux (f : R →+* S) (s : Set R) :
-    (fun y => ⟨Ideal.comap f y.asIdeal, inferInstance⟩ : PrimeSpectrum S → PrimeSpectrum R) ⁻¹'
-        zeroLocus s =
-      zeroLocus (f '' s) := by
-  ext x
-  simp only [mem_zeroLocus, Set.image_subset_iff, Set.mem_preimage, mem_zeroLocus, Ideal.coe_comap]
-
-/-- The function between prime spectra of commutative (semi)rings induced by a ring homomorphism.
-This function is continuous. -/
+/-- The continuous function between prime spectra of commutative (semi)rings induced by a ring
+homomorphism. -/
 def comap (f : R →+* S) : C(PrimeSpectrum S, PrimeSpectrum R) where
-  toFun y := ⟨Ideal.comap f y.asIdeal, inferInstance⟩
+  toFun := f.specComap
   continuous_toFun := by
     simp only [continuous_iff_isClosed, isClosed_iff_zeroLocus]
     rintro _ ⟨s, rfl⟩
-    exact ⟨_, preimage_comap_zeroLocus_aux f s⟩
+    exact ⟨_, preimage_specComap_zeroLocus_aux f s⟩
 
 variable (f : R →+* S)
 
@@ -246,13 +237,10 @@ theorem comap_comp_apply (f : R →+* S) (g : S →+* S') (x : PrimeSpectrum S')
 
 @[simp]
 theorem preimage_comap_zeroLocus (s : Set R) : comap f ⁻¹' zeroLocus s = zeroLocus (f '' s) :=
-  preimage_comap_zeroLocus_aux f s
+  preimage_specComap_zeroLocus_aux f s
 
 theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
-    Function.Injective (comap f) := fun x y h =>
-  PrimeSpectrum.ext _ _
-    (Ideal.comap_injective_of_surjective f hf
-      (congr_arg PrimeSpectrum.asIdeal h : (comap f x).asIdeal = (comap f y).asIdeal))
+    Function.Injective (comap f) := fun _ _ h => specComap_injective_of_surjective _ hf h
 
 variable (S)
 
@@ -269,29 +257,16 @@ theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalizat
     exact ⟨_, rfl⟩
 
 theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
-    Function.Injective (comap (algebraMap R S)) := by
-  intro p q h
-  replace h := congr_arg (fun x : PrimeSpectrum R => Ideal.map (algebraMap R S) x.asIdeal) h
-  dsimp only [comap, ContinuousMap.coe_mk] at h
-  rw [IsLocalization.map_comap M S, IsLocalization.map_comap M S] at h
-  ext1
-  exact h
+    Function.Injective (comap (algebraMap R S)) :=
+  fun _ _ h => localization_specComap_injective S M h
 
 theorem localization_comap_embedding [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Embedding (comap (algebraMap R S)) :=
   ⟨localization_comap_inducing S M, localization_comap_injective S M⟩
 
 theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
-    Set.range (comap (algebraMap R S)) = { p | Disjoint (M : Set R) p.asIdeal } := by
-  ext x
-  constructor
-  · simp_rw [disjoint_iff_inf_le]
-    rintro ⟨p, rfl⟩ x ⟨hx₁, hx₂⟩
-    exact (p.2.1 : ¬_) (p.asIdeal.eq_top_of_isUnit_mem hx₂ (IsLocalization.map_units S ⟨x, hx₁⟩))
-  · intro h
-    use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
-    ext1
-    exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
+    Set.range (comap (algebraMap R S)) = { p | Disjoint (M : Set R) p.asIdeal } :=
+  localization_specComap_range ..
 
 open Function RingHom
 
@@ -339,28 +314,12 @@ theorem comap_singleton_isClosed_of_isIntegral (f : R →+* S) (hf : f.IsIntegra
     (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal' f hf x.asIdeal)
 
 theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
-    comap f '' zeroLocus I = zeroLocus (I.comap f) := by
-  simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, SetLike.coe_subset_coe]
-  refine fun p => ⟨?_, fun h_I_p => ?_⟩
-  · rintro ⟨p, hp, rfl⟩ a ha
-    exact hp ha
-  · have hp : ker f ≤ p.asIdeal := (Ideal.comap_mono bot_le).trans h_I_p
-    refine ⟨⟨p.asIdeal.map f, Ideal.map_isPrime_of_surjective hf hp⟩, fun x hx => ?_, ?_⟩
-    · obtain ⟨x', rfl⟩ := hf x
-      exact Ideal.mem_map_of_mem f (h_I_p hx)
-    · ext x
-      rw [comap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective f hf]
-      refine ⟨?_, fun hx => ⟨x, hx, rfl⟩⟩
-      rintro ⟨x', hx', heq⟩
-      rw [← sub_sub_cancel x' x]
-      refine p.asIdeal.sub_mem hx' (hp ?_)
-      rwa [mem_ker, map_sub, sub_eq_zero]
+    comap f '' zeroLocus I = zeroLocus (I.comap f) :=
+  image_specComap_zeroLocus_eq_zeroLocus_comap _ f hf I
 
 theorem range_comap_of_surjective (hf : Surjective f) :
-    Set.range (comap f) = zeroLocus (ker f) := by
-  rw [← Set.image_univ]
-  convert image_comap_zeroLocus_eq_zeroLocus_comap _ _ hf _
-  rw [zeroLocus_bot]
+    Set.range (comap f) = zeroLocus (ker f) :=
+  range_specComap_of_surjective _ f hf
 
 theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
     IsClosed (Set.range (comap f)) := by
@@ -394,7 +353,7 @@ def primeSpectrumProdHomeo :
   refine ((primeSpectrumProd R S).symm.toHomeomorphOfInducing ?_).symm
   refine (closedEmbedding_of_continuous_injective_closed ?_ (Equiv.injective _) ?_).toInducing
   · rw [continuous_sum_dom]
-    simp only [Function.comp, primeSpectrumProd_symm_inl, primeSpectrumProd_symm_inr]
+    simp only [Function.comp_def, primeSpectrumProd_symm_inl, primeSpectrumProd_symm_inr]
     exact ⟨(comap _).2, (comap _).2⟩
   · rw [isClosedMap_sum]
     constructor
@@ -513,6 +472,20 @@ lemma comap_basicOpen (f : R →+* S) (x : R) :
     TopologicalSpace.Opens.comap (comap f) (basicOpen x) = basicOpen (f x) :=
   rfl
 
+open TopologicalSpace in
+lemma iSup_basicOpen_eq_top_iff {ι : Type*} {f : ι → R} :
+    (⨆ i : ι, PrimeSpectrum.basicOpen (f i)) = ⊤ ↔ Ideal.span (Set.range f) = ⊤ := by
+  rw [SetLike.ext'_iff, Opens.coe_iSup]
+  simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Opens.coe_top, ← Set.compl_iInter,
+    ← PrimeSpectrum.zeroLocus_iUnion]
+  rw [← PrimeSpectrum.zeroLocus_empty_iff_eq_top, compl_involutive.eq_iff]
+  simp only [Set.iUnion_singleton_eq_range,  Set.compl_univ, PrimeSpectrum.zeroLocus_span]
+
+lemma iSup_basicOpen_eq_top_iff' {s : Set R} :
+    (⨆ i ∈ s, PrimeSpectrum.basicOpen i) = ⊤ ↔ Ideal.span s = ⊤ := by
+  conv_rhs => rw [← Subtype.range_val (s := s), ← iSup_basicOpen_eq_top_iff]
+  simp
+
 end BasicOpen
 
 section Order
@@ -522,18 +495,6 @@ section Order
 
 We endow `PrimeSpectrum R` with a partial order, where `x ≤ y` if and only if `y ∈ closure {x}`.
 -/
-
-
-instance : PartialOrder (PrimeSpectrum R) :=
-  PartialOrder.lift asIdeal (PrimeSpectrum.ext)
-
-@[simp]
-theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
-  Iff.rfl
-
-@[simp]
-theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
-  Iff.rfl
 
 theorem le_iff_mem_closure (x y : PrimeSpectrum R) :
     x ≤ y ↔ y ∈ closure ({x} : Set (PrimeSpectrum R)) := by
@@ -550,14 +511,6 @@ def nhdsOrderEmbedding : PrimeSpectrum R ↪o Filter (PrimeSpectrum R) :=
 
 instance : T0Space (PrimeSpectrum R) :=
   ⟨nhdsOrderEmbedding.inj'⟩
-
-instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
-  bot := ⟨⊥, Ideal.bot_prime⟩
-  bot_le I := @bot_le _ _ _ I.asIdeal
-
-instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
-  default := ⊥
-  uniq x := PrimeSpectrum.ext _ _ ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
 
 end Order
 
@@ -597,7 +550,7 @@ def primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) 
   default :=
     ⟨LocalRing.maximalIdeal (Localization I.primeCompl),
     (LocalRing.maximalIdeal.isMaximal _).isPrime⟩
-  uniq x := PrimeSpectrum.ext _ _ (Localization.AtPrime.prime_unique_of_minimal h x.asIdeal)
+  uniq x := PrimeSpectrum.ext (Localization.AtPrime.prime_unique_of_minimal h x.asIdeal)
 
 end LocalizationAtMinimal
 
@@ -619,7 +572,8 @@ protected def minimalPrimes.equivIrreducibleComponents :
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
     ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
-  exact OrderIso.minimalsIsoMaximals (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
+  exact OrderIso.setOfMinimalIsoSetOfMaximal
+    (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
     (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (PrimeSpectrum R)).dual))
 
 namespace PrimeSpectrum
@@ -628,8 +582,9 @@ lemma vanishingIdeal_irreducibleComponents :
     vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) =
     minimalPrimes R := by
   rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals,
-    ← minimals_swap, ← vanishingIdeal_isClosed_isIrreducible, image_minimals_of_rel_iff_rel]
-  exact fun s t hs _ ↦ vanishingIdeal_anti_mono_iff hs.1
+    image_antitone_setOf_maximal (fun s t hs _ ↦ (vanishingIdeal_anti_mono_iff hs.1).symm),
+    ← funext (@Set.mem_setOf_eq _ · Ideal.IsPrime), ← vanishingIdeal_isClosed_isIrreducible]
+  rfl
 
 lemma zeroLocus_minimalPrimes :
     zeroLocus ∘ (↑) '' minimalPrimes R =
@@ -692,6 +647,10 @@ theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
   · rintro rfl
     trivial
 
+lemma closed_point_mem_iff {U : TopologicalSpace.Opens (PrimeSpectrum R)} :
+    closedPoint R ∈ U ↔ U = ⊤ :=
+  ⟨(eq_top_iff.mpr fun x _ ↦ (specializes_closedPoint x).mem_open U.2 ·), (· ▸ trivial)⟩
+
 @[simp]
 theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [LocalRing T]
     (x : PrimeSpectrum (ResidueField T)) : PrimeSpectrum.comap (residue T) x = closedPoint T := by
@@ -700,3 +659,12 @@ theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [LocalRing T]
   exact Ideal.mk_ker
 
 end LocalRing
+
+section KrullDimension
+
+theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [CommRing R] :
+    topologicalKrullDim (PrimeSpectrum R) = ringKrullDim R :=
+  Order.krullDim_orderDual.symm.trans <| Order.krullDim_eq_of_orderIso
+  (PrimeSpectrum.pointsEquivIrreducibleCloseds R).symm
+
+end KrullDimension

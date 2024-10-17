@@ -33,7 +33,7 @@ Then there are corresponding relative notions for `F : Set X`.
 * `LocPathConnectedSpace X` is a predicate class asserting that `X` is locally path-connected:
   each point has a basis of path-connected neighborhoods (we do *not* ask these to be open).
 
-## Main theorems
+## Main theorems
 
 * `Joined` and `JoinedIn F` are transitive relations.
 
@@ -58,10 +58,8 @@ This is used to define `Path.extend` that turns `γ : Path x y` into a continuou
 on `(-∞, 0]` and to `y` on `[1, +∞)`.
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Topology Filter unitInterval Set Function
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
@@ -77,8 +75,8 @@ structure Path (x y : X) extends C(I, X) where
   target' : toFun 1 = y
 
 instance Path.funLike : FunLike (Path x y) I X where
-  coe := fun γ ↦ ⇑γ.toContinuousMap
-  coe_injective' := fun γ₁ γ₂ h => by
+  coe γ := ⇑γ.toContinuousMap
+  coe_injective' γ₁ γ₂ h := by
     simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
 
@@ -202,7 +200,7 @@ instance topologicalSpace : TopologicalSpace (Path x y) :=
 
 theorem continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
   ContinuousMap.continuous_eval.comp <|
-    (continuous_induced_dom (α := Path x y)).prod_map continuous_id
+    (continuous_induced_dom (α := Path x y)).prodMap continuous_id
 
 @[continuity]
 theorem _root_.Continuous.path_eval {Y} [TopologicalSpace Y] {f : Y → Path x y} {g : Y → I}
@@ -249,7 +247,6 @@ theorem extend_zero : γ.extend 0 = x := by simp
 
 theorem extend_one : γ.extend 1 = y := by simp
 
-@[simp]
 theorem extend_extends' {a b : X} (γ : Path a b) (t : (Icc 0 1 : Set ℝ)) : γ.extend t = γ t :=
   IccExtend_val _ γ t
 
@@ -426,7 +423,7 @@ theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast 
 theorem symm_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
     Continuous ↿fun t => (γ t).symm :=
-  h.comp (continuous_id.prod_map continuous_symm)
+  h.comp (continuous_id.prodMap continuous_symm)
 
 @[continuity]
 theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
@@ -436,7 +433,7 @@ theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
 theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
     Continuous ↿fun t => (γ t).extend := by
-  apply h.comp (continuous_id.prod_map continuous_projIcc)
+  apply h.comp (continuous_id.prodMap continuous_projIcc)
   exact zero_le_one
 
 @[continuity]
@@ -450,15 +447,15 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
   refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) continuous_const ?_
   · change
       Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))
-    exact h₁'.comp (continuous_id.prod_map <| continuous_const.mul continuous_subtype_val)
+    exact h₁'.comp (continuous_id.prodMap <| continuous_const.mul continuous_subtype_val)
   · change
       Continuous ((fun p : ι × ℝ => (γ₂ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x - 1 : I → ℝ))
     exact
       h₂'.comp
-        (continuous_id.prod_map <|
+        (continuous_id.prodMap <|
           (continuous_const.mul continuous_subtype_val).sub continuous_const)
   · rintro st hst
-    simp [hst, mul_inv_cancel (two_ne_zero' ℝ)]
+    simp [hst, mul_inv_cancel₀ (two_ne_zero' ℝ)]
 
 @[continuity]
 theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
@@ -769,13 +766,13 @@ theorem JoinedIn.refl (h : x ∈ F) : JoinedIn F x x :=
 @[symm]
 theorem JoinedIn.symm (h : JoinedIn F x y) : JoinedIn F y x := by
   cases' h.mem with hx hy
-  simp_all [joinedIn_iff_joined]
+  simp_all only [joinedIn_iff_joined]
   exact h.symm
 
 theorem JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn F x z := by
   cases' hxy.mem with hx hy
   cases' hyz.mem with hx hy
-  simp_all [joinedIn_iff_joined]
+  simp_all only [joinedIn_iff_joined]
   exact hxy.trans hyz
 
 theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y := by

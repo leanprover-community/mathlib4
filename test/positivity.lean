@@ -23,6 +23,9 @@ example : 0 ≤ 3 := by positivity
 
 example : 0 < 3 := by positivity
 
+example : (0 : ℝ≥0∞) < 1 := by positivity
+example : (0 : ℝ≥0∞) < 2 := by positivity
+
 /- ## Goals working directly from a hypothesis -/
 -- set_option trace.Meta.debug true
 -- sudo set_option trace.Tactic.positivity true
@@ -95,7 +98,8 @@ end
 -- example [Nonempty ι] [Zero α] {a : α} (ha : a ≠ 0) : const ι a ≠ 0 := by positivity
 -- example [Zero α] [PartialOrder α] {a : α} (ha : 0 < a) : 0 ≤ const ι a := by positivity
 -- example [Zero α] [PartialOrder α] {a : α} (ha : 0 ≤ a) : 0 ≤ const ι a := by positivity
--- example [Nonempty ι] [Zero α] [PartialOrder α] {a : α} (ha : 0 < a) : 0 < const ι a := by positivity
+-- example [Nonempty ι] [Zero α] [PartialOrder α] {a : α} (ha : 0 < a) : 0 < const ι a := by
+--  positivity
 
 section ite
 variable {p : Prop} [Decidable p] {a b : ℤ}
@@ -260,8 +264,8 @@ example {a : ℝ} (ha : 0 ≤ a) : 0 < Real.sqrt (a + 3) := by positivity
 
 example {a b : ℤ} (ha : 3 < a) : 0 ≤ min a (b ^ 2) := by positivity
 
--- -- test that the tactic can ignore arithmetic operations whose associated extension tactic requires
--- -- more typeclass assumptions than are available
+-- -- test that the tactic can ignore arithmetic operations whose associated extension tactic
+-- -- requires more typeclass assumptions than are available
 -- example {R : Type _} [Zero R] [Div R] [LinearOrder R] {a b c : R} (h1 : 0 < a) (h2 : 0 < b)
 --   (h3 : 0 < c) :
 --   0 < max (a / b) c :=

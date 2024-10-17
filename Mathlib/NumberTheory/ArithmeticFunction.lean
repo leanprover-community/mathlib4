@@ -92,7 +92,6 @@ section Zero
 
 variable [Zero R]
 
---  porting note: used to be `CoeFun`
 instance : FunLike (ArithmeticFunction R) ℕ R :=
   inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ R)
 
@@ -117,9 +116,6 @@ theorem zero_apply {x : ℕ} : (0 : ArithmeticFunction R) x = 0 :=
 @[ext]
 theorem ext ⦃f g : ArithmeticFunction R⦄ (h : ∀ x, f x = g x) : f = g :=
   ZeroHom.ext h
-
-theorem ext_iff {f g : ArithmeticFunction R} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 section One
 
@@ -234,7 +230,7 @@ instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
 
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) :=
   { ArithmeticFunction.instAddMonoid with
-    add_left_neg := fun _ => ext fun _ => add_left_neg _
+    neg_add_cancel := fun _ => ext fun _ => neg_add_cancel _
     zsmul := zsmulRec }
 
 instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) :=
@@ -370,7 +366,7 @@ instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) :=
 
 instance [CommRing R] : CommRing (ArithmeticFunction R) :=
   { ArithmeticFunction.instSemiring with
-    add_left_neg := add_left_neg
+    neg_add_cancel := neg_add_cancel
     mul_comm := mul_comm
     zsmul := (· • ·) }
 
@@ -393,7 +389,7 @@ instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
 
 section Zeta
 
-/-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`.  -/
+/-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`. -/
 def zeta : ArithmeticFunction ℕ :=
   ⟨fun x => ite (x = 0) 0 1, rfl⟩
 
@@ -628,7 +624,7 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
     constructor
     · ring
     rw [Nat.mul_eq_zero] at *
-    apply not_or_of_not ha hb
+    apply not_or_intro ha hb
   · simp only [Set.InjOn, mem_coe, mem_divisorsAntidiagonal, Ne, mem_product, Prod.mk.inj_iff]
     rintro ⟨⟨a1, a2⟩, ⟨b1, b2⟩⟩ ⟨⟨rfl, ha⟩, ⟨rfl, hb⟩⟩ ⟨⟨c1, c2⟩, ⟨d1, d2⟩⟩ hcd h
     simp only [Prod.mk.inj_iff] at h
@@ -779,7 +775,7 @@ end IsMultiplicative
 
 section SpecialFunctions
 
-/-- The identity on `ℕ` as an `ArithmeticFunction`.  -/
+/-- The identity on `ℕ` as an `ArithmeticFunction`. -/
 nonrec  -- Porting note (#11445): added
 def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
@@ -1079,7 +1075,7 @@ theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
     rw [coe_mul_zeta_apply, sum_divisors_prime_pow hp, sum_range_succ']
     simp_rw [Nat.pow_zero, moebius_apply_one,
       moebius_apply_prime_pow hp (Nat.succ_ne_zero _), Nat.succ_inj', sum_ite_eq', mem_range,
-      if_pos hn, add_left_neg]
+      if_pos hn, neg_add_cancel]
     rw [one_apply_ne]
     rw [Ne, pow_eq_one_iff]
     · exact hp.ne_one
@@ -1133,7 +1129,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
   let f' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else f x, if_pos rfl⟩
   let g' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else g x, if_pos rfl⟩
   trans (ζ : ArithmeticFunction ℤ) • f' = g'
-  · rw [ext_iff]
+  · rw [ArithmeticFunction.ext_iff]
     apply forall_congr'
     intro n
     cases n with
@@ -1148,7 +1144,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
   · constructor <;> intro h
     · rw [← h, ← mul_smul, moebius_mul_coe_zeta, one_smul]
     · rw [← h, ← mul_smul, coe_zeta_mul_moebius, one_smul]
-  · rw [ext_iff]
+  · rw [ArithmeticFunction.ext_iff]
     apply forall_congr'
     intro n
     cases n with

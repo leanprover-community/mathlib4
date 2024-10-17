@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Dagur Asgeirsson
+Authors: Kim Morrison, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Basic
@@ -128,7 +128,7 @@ lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full 
 
 /-- If the unit is an isomorphism, then the left adjoint is fully faithful. -/
 noncomputable def fullyFaithfulLOfIsIsoUnit [IsIso h.unit] : L.FullyFaithful where
-  preimage {X Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
+  preimage {_ Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
 
 /-- If each component of the counit is an epimorphism, then the right adjoint is faithful. -/
 lemma faithful_R_of_epi_counit_app [∀ X, Epi (h.counit.app X)] : R.Faithful where
@@ -236,10 +236,10 @@ instance [L.IsEquivalence] : IsIso h.counit := by
   have := fun X => isIso_counit_app_of_iso h (L.objObjPreimageIso X).symm
   apply NatIso.isIso_of_isIso_app
 
-lemma isEquivalence_left_of_isEquivalence_right [R.IsEquivalence] : L.IsEquivalence :=
+lemma isEquivalence_left_of_isEquivalence_right (h : L ⊣ R) [R.IsEquivalence] : L.IsEquivalence :=
   h.toEquivalence.isEquivalence_functor
 
-lemma isEquivalence_right_of_isEquivalence_left [L.IsEquivalence] : R.IsEquivalence :=
+lemma isEquivalence_right_of_isEquivalence_left (h : L ⊣ R) [L.IsEquivalence] : R.IsEquivalence :=
   h.toEquivalence.isEquivalence_inverse
 
 instance [L.IsEquivalence] : IsIso h.unit := by

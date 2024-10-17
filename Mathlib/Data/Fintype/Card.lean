@@ -48,8 +48,6 @@ assert_not_exists MulAction
 
 open Function
 
-open Nat
-
 universe u v
 
 variable {α β γ : Type*}
@@ -77,7 +75,7 @@ See `Fintype.truncFinBijection` for a version without `[DecidableEq α]`.
 def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card α)) := by
   unfold card Finset.card
   exact
-    Quot.recOnSubsingleton'
+    Quot.recOnSubsingleton
       (motive := fun s : Multiset α =>
         (∀ x : α, x ∈ s) → s.Nodup → Trunc (α ≃ Fin (Multiset.card s)))
       univ.val
@@ -106,7 +104,7 @@ given `[DecidableEq α]`.
 def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bijective f } := by
   unfold card Finset.card
   refine
-    Quot.recOnSubsingleton'
+    Quot.recOnSubsingleton
       (motive := fun s : Multiset α =>
         (∀ x : α, x ∈ s) → s.Nodup → Trunc {f : Fin (Multiset.card s) → α // Bijective f})
       univ.val
@@ -295,6 +293,10 @@ equality of types, using it should be avoided if possible. -/
 theorem fin_injective : Function.Injective Fin := fun m n h =>
   (Fintype.card_fin m).symm.trans <| (Fintype.card_congr <| Equiv.cast h).trans (Fintype.card_fin n)
 
+theorem Fin.val_eq_val_of_heq {k l : ℕ} {i : Fin k} {j : Fin l} (h : HEq i j) :
+    (i : ℕ) = (j : ℕ) :=
+  (Fin.heq_ext_iff (fin_injective (type_eq_of_heq h))).1 h
+
 /-- A reversed version of `Fin.cast_eq_cast` that is easier to rewrite with. -/
 theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
     _root_.cast h = Fin.cast (fin_injective h) := by
@@ -431,7 +433,8 @@ theorem card_lt_of_injective_of_not_mem (f : α → β) (h : Function.Injective 
   calc
     card α = (univ.map ⟨f, h⟩).card := (card_map _).symm
     _ < card β :=
-      Finset.card_lt_univ_of_not_mem <| by rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
+      Finset.card_lt_univ_of_not_mem (x := b) <| by
+        rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
@@ -541,7 +544,7 @@ theorem one_lt_card_iff : 1 < card α ↔ ∃ a b : α, a ≠ b :=
   one_lt_card_iff_nontrivial.trans nontrivial_iff
 
 nonrec theorem two_lt_card_iff : 2 < card α ↔ ∃ a b c : α, a ≠ b ∧ a ≠ c ∧ b ≠ c := by
-  simp_rw [← Finset.card_univ, two_lt_card_iff, mem_univ, true_and_iff]
+  simp_rw [← Finset.card_univ, two_lt_card_iff, mem_univ, true_and]
 
 theorem card_of_bijective {f : α → β} (hf : Bijective f) : card α = card β :=
   card_congr (Equiv.ofBijective f hf)
@@ -755,7 +758,7 @@ theorem Fintype.card_subtype_le [Fintype α] (p : α → Prop) [DecidablePred p]
 
 theorem Fintype.card_subtype_lt [Fintype α] {p : α → Prop} [DecidablePred p] {x : α} (hx : ¬p x) :
     Fintype.card { x // p x } < Fintype.card α :=
-  Fintype.card_lt_of_injective_of_not_mem (↑) Subtype.coe_injective <| by
+  Fintype.card_lt_of_injective_of_not_mem (b := x) (↑) Subtype.coe_injective <| by
     rwa [Subtype.range_coe_subtype]
 
 theorem Fintype.card_subtype [Fintype α] (p : α → Prop) [DecidablePred p] :
@@ -814,7 +817,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
     fun x y hxy =>
     Finset.card_lt_card <| by
       simp only [Finset.lt_iff_ssubset.symm, lt_iff_le_not_le, Finset.le_iff_subset,
-          Finset.subset_iff, mem_filter, true_and_iff, mem_univ, hxy]
+          Finset.subset_iff, mem_filter, true_and, mem_univ, hxy]
       exact
         ⟨fun z hzx => _root_.trans hzx hxy,
           not_forall_of_exists_not ⟨x, Classical.not_imp.2 ⟨hxy, irrefl x⟩⟩⟩
@@ -896,7 +899,7 @@ theorem exists_not_mem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
   not_forall.1 fun h => Fintype.false ⟨s, h⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) (α : Type*) [H : Infinite α] : Nontrivial α :=
+instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=
   ⟨let ⟨x, _hx⟩ := exists_not_mem_finset (∅ : Finset α)
     let ⟨y, hy⟩ := exists_not_mem_finset ({x} : Finset α)
     ⟨y, x, by simpa only [mem_singleton] using hy⟩⟩
@@ -908,6 +911,16 @@ theorem of_injective {α β} [Infinite β] (f : β → α) (hf : Injective f) : 
 
 theorem of_surjective {α β} [Infinite β] (f : α → β) (hf : Surjective f) : Infinite α :=
   ⟨fun _I => (Finite.of_surjective f hf).false⟩
+
+instance {β : α → Type*} [Infinite α] [∀ a, Nonempty (β a)] : Infinite ((a : α) × β a) :=
+  Infinite.of_surjective Sigma.fst Sigma.fst_surjective
+
+theorem sigma_of_right {β : α → Type*} {a : α} [Infinite (β a)] :
+    Infinite ((a : α) × β a) :=
+  Infinite.of_injective (f := fun x ↦ ⟨a,x⟩) fun _ _ ↦ by simp
+
+instance {β : α → Type*} [Nonempty α] [∀ a, Infinite (β a)] : Infinite ((a : α) × β a) :=
+  Infinite.sigma_of_right (a := Classical.arbitrary α)
 
 end Infinite
 
@@ -964,7 +977,7 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
     letI := Classical.decEq α
     Classical.choose
       (exists_not_mem_finset
-        ((Multiset.range n).pmap (fun m (hm : m < n) => natEmbeddingAux _ m) fun _ =>
+        ((Multiset.range n).pmap (fun m (_ : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :

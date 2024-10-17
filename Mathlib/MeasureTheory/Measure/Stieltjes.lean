@@ -24,7 +24,6 @@ a Borel measure `f.measure`.
 
 noncomputable section
 
-open scoped Classical
 open Set Filter Function ENNReal NNReal Topology MeasureTheory
 
 open ENNReal (ofReal)
@@ -137,7 +136,7 @@ at `x` is a Stieltjes function, i.e., it is monotone and right-continuous. -/
 noncomputable def _root_.Monotone.stieltjesFunction {f : ℝ → ℝ} (hf : Monotone f) :
     StieltjesFunction where
   toFun := rightLim f
-  mono' x y hxy := hf.rightLim hxy
+  mono' _ _ hxy := hf.rightLim hxy
   right_continuous' := by
     intro x s hs
     obtain ⟨l, u, hlu, lus⟩ : ∃ l u : ℝ, rightLim f x ∈ Ioo l u ∧ Ioo l u ⊆ s :=
@@ -211,8 +210,8 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
         (fun (i : ℕ) (_ : i ∈ univ) => @isOpen_Ioo _ _ _ _ (c i) (d i)) (by simpa using ss) with
       ⟨s, _, hf, hs⟩
     have e : ⋃ i ∈ (hf.toFinset : Set ℕ), Ioo (c i) (d i) = ⋃ i ∈ s, Ioo (c i) (d i) := by
-      simp only [ext_iff, exists_prop, Finset.set_biUnion_coe, mem_iUnion, forall_const,
-        iff_self_iff, Finite.mem_toFinset]
+      simp only [Set.ext_iff, exists_prop, Finset.set_biUnion_coe, mem_iUnion, forall_const,
+        Finite.mem_toFinset]
     rw [ENNReal.tsum_eq_iSup_sum]
     refine le_trans ?_ (le_iSup _ hf.toFinset)
     exact this hf.toFinset _ (by simpa only [e] )
@@ -313,7 +312,7 @@ theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c
       sub_add_sub_cancel, le_refl,
       max_eq_right]
   · simp only [hbc, le_refl, Ioc_eq_empty, Ioc_inter_Ioi, min_eq_left, Ioc_diff_Ioi, f.length_empty,
-      zero_add, or_true_iff, le_sup_iff, f.length_Ioc, not_lt]
+      zero_add, or_true, le_sup_iff, f.length_Ioc, not_lt]
   · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_diff_Ioi, f.length_Ioc, min_eq_right, _root_.sup_eq_max,
       le_refl, Ioc_eq_empty, add_zero, max_eq_left, f.length_empty, not_lt]
 
@@ -374,8 +373,9 @@ theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a)
     simp [le_antisymm this (hx 0).2]
   have L1 : Tendsto (fun n => f.measure (Ioc (u n) a)) atTop (𝓝 (f.measure {a})) := by
     rw [A]
-    refine tendsto_measure_iInter (fun n => measurableSet_Ioc) (fun m n hmn => ?_) ?_
-    · exact Ioc_subset_Ioc (u_mono.monotone hmn) le_rfl
+    refine tendsto_measure_iInter (fun n => nullMeasurableSet_Ioc)
+      (fun m n hmn => ?_) ?_
+    · exact Ioc_subset_Ioc_left (u_mono.monotone hmn)
     · exact ⟨0, by simpa only [measure_Ioc] using ENNReal.ofReal_ne_top⟩
   have L2 :
       Tendsto (fun n => f.measure (Ioc (u n) a)) atTop (𝓝 (ofReal (f a - leftLim f a))) := by
@@ -384,7 +384,7 @@ theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a)
       apply (f.mono.tendsto_leftLim a).comp
       exact
         tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ u_lim
-          (eventually_of_forall fun n => u_lt_a n)
+          (Eventually.of_forall fun n => u_lt_a n)
     exact ENNReal.continuous_ofReal.continuousAt.tendsto.comp (tendsto_const_nhds.sub this)
   exact tendsto_nhds_unique L1 L2
 

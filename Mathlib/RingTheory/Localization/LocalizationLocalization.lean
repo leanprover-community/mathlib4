@@ -111,6 +111,7 @@ theorem localization_localization_isLocalization [IsLocalization N T] :
     surj' := localization_localization_surj M N T
     exists_of_eq := localization_localization_exists_of_eq M N T _ _ }
 
+include M in
 /-- Given submodules `M ⊆ R` and `N ⊆ S = M⁻¹R`, with `f : R →+* S` the localization map, if
 `N` contains all the units of `S`, then `N ⁻¹ S = T = (f⁻¹ N) ⁻¹ R`. I.e., the localization of a
 localization is a localization.
@@ -125,6 +126,7 @@ theorem localization_localization_isLocalization_of_has_all_units [IsLocalizatio
   rintro _ ⟨x, hx, rfl⟩
   exact H _ (IsLocalization.map_units _ ⟨x, hx⟩)
 
+include M in
 /--
 Given a submodule `M ⊆ R` and a prime ideal `p` of `S = M⁻¹R`, with `f : R →+* S` the localization
 map, then `T = Sₚ` is the localization of `R` at `f⁻¹(p)`.
@@ -181,6 +183,11 @@ noncomputable instance (x : Ideal R) [H : x.IsPrime] [IsDomain R] :
       rw [mem_nonZeroDivisors_iff_ne_zero]
       exact fun h => ha (h.symm ▸ x.zero_mem))
 
+instance {R : Type*} [CommRing R] [IsDomain R] (p : Ideal R) [p.IsPrime] :
+    IsScalarTower R (Localization.AtPrime p) (FractionRing R) :=
+  localization_isScalarTower_of_submonoid_le (Localization.AtPrime p) (FractionRing R)
+    p.primeCompl (nonZeroDivisors R) p.primeCompl_le_nonZeroDivisors
+
 /-- If `M ≤ N` are submonoids of `R`, then `N⁻¹S` is also the localization of `M⁻¹S` at `N`. -/
 theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLocalization M S]
     [IsLocalization N T] [Algebra S T] [IsScalarTower R S T] :
@@ -224,7 +231,7 @@ theorem isLocalization_of_is_exists_mul_mem (M N : Submonoid R) [IsLocalization 
   { map_units' := fun y => by
       obtain ⟨m, hm⟩ := h' y
       have := IsLocalization.map_units S ⟨_, hm⟩
-      erw [map_mul] at this
+      rw [map_mul] at this
       exact (IsUnit.mul_iff.mp this).2
     surj' := fun z => by
       obtain ⟨⟨y, s⟩, e⟩ := IsLocalization.surj M z
@@ -232,6 +239,11 @@ theorem isLocalization_of_is_exists_mul_mem (M N : Submonoid R) [IsLocalization 
     exists_of_eq := fun {_ _} => by
       rw [IsLocalization.eq_iff_exists M]
       exact fun ⟨x, hx⟩ => ⟨⟨_, h x.prop⟩, hx⟩ }
+
+theorem mk'_eq_algebraMap_mk'_of_submonoid_le {M N : Submonoid R} (h : M ≤ N) [IsLocalization M S]
+    [IsLocalization N T] [Algebra S T] [IsScalarTower R S T] (x : R) (y : {a : R // a ∈ M}) :
+    mk' T x ⟨y.1, h y.2⟩ = algebraMap S T (mk' S x y) :=
+  mk'_eq_iff_eq_mul.mpr (by simp only [IsScalarTower.algebraMap_apply R S T, ← map_mul, mk'_spec])
 
 end LocalizationLocalization
 
@@ -273,5 +285,10 @@ theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) 
   apply @zero_ne_one S
   rw [← (algebraMap R S).map_one, ← @mk'_one R _ M, @comm _ Eq, mk'_eq_zero_iff]
   exact ⟨⟨x, hx⟩, by simp [hx']⟩
+
+instance {R : Type*} [CommRing R] [IsDomain R] (p : Ideal R) [p.IsPrime] :
+    IsFractionRing (Localization.AtPrime p) (FractionRing R) :=
+  IsFractionRing.isFractionRing_of_isDomain_of_isLocalization p.primeCompl
+    (Localization.AtPrime p) (FractionRing R)
 
 end IsFractionRing

@@ -44,7 +44,7 @@ variable [Semiring R] [AddCommMonoid M] [AddCommGroup N₁] [Module R M] [Module
 
 instance : One (Module.End R M) := ⟨LinearMap.id⟩
 
-instance : Mul (Module.End R M) := ⟨LinearMap.comp⟩
+instance : Mul (Module.End R M) := ⟨fun f g => LinearMap.comp f g⟩
 
 theorem one_eq_id : (1 : Module.End R M) = id := rfl
 
@@ -67,7 +67,7 @@ instance _root_.Module.End.instNontrivial [Nontrivial M] : Nontrivial (Module.En
 instance _root_.Module.End.monoid : Monoid (Module.End R M) where
   mul := (· * ·)
   one := (1 : M →ₗ[R] M)
-  mul_assoc f g h := LinearMap.ext fun x ↦ rfl
+  mul_assoc _ _ _ := LinearMap.ext fun _ ↦ rfl
   mul_one := comp_id
   one_mul := id_comp
 
@@ -138,9 +138,9 @@ theorem commute_pow_left_of_commute
     [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {σ₁₂ : R →+* R₂}
     {f : M →ₛₗ[σ₁₂] M₂} {g : Module.End R M} {g₂ : Module.End R₂ M₂}
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
-  induction' k with k ih
-  · simp only [Nat.zero_eq, pow_zero, one_eq_id, id_comp, comp_id]
-  · rw [pow_succ', pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih,
+  induction k with
+  | zero => simp only [pow_zero, one_eq_id, id_comp, comp_id]
+  | succ k ih => rw [pow_succ', pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih,
     ← LinearMap.comp_assoc, h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
 
 @[simp]
@@ -204,14 +204,16 @@ protected theorem smul_def (f : Module.End R M) (a : M) : f • a = f a :=
 instance apply_faithfulSMul : FaithfulSMul (Module.End R M) M :=
   ⟨LinearMap.ext⟩
 
-instance apply_smulCommClass : SMulCommClass R (Module.End R M) M where
-  smul_comm r e m := (e.map_smul r m).symm
+instance apply_smulCommClass [SMul S R] [SMul S M] [IsScalarTower S R M] :
+    SMulCommClass S (Module.End R M) M where
+  smul_comm r e m := (e.map_smul_of_tower r m).symm
 
-instance apply_smulCommClass' : SMulCommClass (Module.End R M) R M where
-  smul_comm := LinearMap.map_smul
+instance apply_smulCommClass' [SMul S R] [SMul S M] [IsScalarTower S R M] :
+    SMulCommClass (Module.End R M) S M :=
+  SMulCommClass.symm _ _ _
 
-instance apply_isScalarTower {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] :
-    IsScalarTower R (Module.End R M) M :=
+instance apply_isScalarTower [Monoid S] [DistribMulAction S M] [SMulCommClass R S M] :
+    IsScalarTower S (Module.End R M) M :=
   ⟨fun _ _ _ ↦ rfl⟩
 
 end Endomorphisms
@@ -364,7 +366,7 @@ variable (f g : M →ₗ[R] M₂)
 /-- Composition by `f : M₂ → M₃` is a linear map from the space of linear maps `M → M₂`
 to the space of linear maps `M → M₃`. -/
 def compRight (f : M₂ →ₗ[R] M₃) : (M →ₗ[R] M₂) →ₗ[R] M →ₗ[R] M₃ where
-  toFun := f.comp
+  toFun g := f.comp g
   map_add' _ _ := LinearMap.ext fun _ => map_add f _ _
   map_smul' _ _ := LinearMap.ext fun _ => map_smul f _ _
 

@@ -55,7 +55,7 @@ remember to force recompilation of any files that call `polyrith`.
 * See the book [*Ideals, Varieties, and Algorithms*][coxlittleOshea1997] by David Cox, John Little,
   and Donal O'Shea for the background theory on Groebner bases
 * This code was heavily inspired by the code for the tactic `linarith`, which was written by
-  Robert Lewis, who advised me on this project as part of a Computer Science independent study
+  Robert Y. Lewis, who advised me on this project as part of a Computer Science independent study
   at Brown University.
 
 -/
@@ -392,7 +392,6 @@ Notes:
   Many thanks to the Sage team and organization for allowing this use.
 * This tactic assumes that the user has `python3` installed and available on the path.
   (Test by opening a terminal and executing `python3 --version`.)
-  It also assumes that the `requests` library is installed: `python3 -m pip install requests`.
 
 Examples:
 
@@ -426,8 +425,4 @@ elab_rules : tactic
       if !traceMe then Lean.Meta.Tactic.TryThis.addSuggestion tk stx
     | .error g => replaceMainGoal [g]
 
-end Polyrith
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.Polyrith

@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Scott Morrison, Simon Hudon
+Authors: Yury Kudryashov, Kim Morrison, Simon Hudon
 -/
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Opposites
@@ -93,7 +93,7 @@ end MulAction
 
 /-- In a groupoid, endomorphisms form a group -/
 instance group {C : Type u} [Groupoid.{v} C] (X : C) : Group (End X) where
-  mul_left_inv := Groupoid.comp_inv
+  inv_mul_cancel := Groupoid.comp_inv
   inv := Groupoid.inv
 
 end End
@@ -114,7 +114,6 @@ def Aut (X : C) := X ≅ X
 
 namespace Aut
 
--- Porting note: added because `Iso.ext` is not triggered automatically
 @[ext]
 lemma ext {X : C} {φ₁ φ₂ : Aut X} (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Iso.ext h
@@ -128,7 +127,7 @@ instance : Group (Aut X) where
   mul_assoc _ _ _ := (Iso.trans_assoc _ _ _).symm
   one_mul := Iso.trans_refl
   mul_one := Iso.refl_trans
-  mul_left_inv := Iso.self_symm_id
+  inv_mul_cancel := Iso.self_symm_id
 
 theorem Aut_mul_def (f g : Aut X) : f * g = g.trans f := rfl
 
@@ -140,8 +139,8 @@ are (multiplicatively) equivalent to automorphisms of that object.
 def unitsEndEquivAut : (End X)ˣ ≃* Aut X where
   toFun f := ⟨f.1, f.2, f.4, f.3⟩
   invFun f := ⟨f.1, f.2, f.4, f.3⟩
-  left_inv := fun ⟨f₁, f₂, f₃, f₄⟩ => rfl
-  right_inv := fun ⟨f₁, f₂, f₃, f₄⟩ => rfl
+  left_inv := fun ⟨_, _, _, _⟩ => rfl
+  right_inv := fun ⟨_, _, _, _⟩ => rfl
   map_mul' f g := by cases f; cases g; rfl
 
 /-- The inclusion of `Aut X` to `End X` as a monoid homomorphism. -/
@@ -150,8 +149,8 @@ def toEnd (X : C) : Aut X →* End X := (Units.coeHom (End X)).comp (Aut.unitsEn
 
 /-- Isomorphisms induce isomorphisms of the automorphism group -/
 def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where
-  toFun x := ⟨h.inv ≫ x.hom ≫ h.hom, h.inv ≫ x.inv ≫ h.hom, _, _⟩
-  invFun y := ⟨h.hom ≫ y.hom ≫ h.inv, h.hom ≫ y.inv ≫ h.inv, _, _⟩
+  toFun x := { hom := h.inv ≫ x.hom ≫ h.hom, inv := h.inv ≫ x.inv ≫ h.hom }
+  invFun y := { hom := h.hom ≫ y.hom ≫ h.inv, inv := h.hom ≫ y.inv ≫ h.inv }
   left_inv _ := by aesop_cat
   right_inv _ := by aesop_cat
   map_mul' := by simp [Aut_mul_def]

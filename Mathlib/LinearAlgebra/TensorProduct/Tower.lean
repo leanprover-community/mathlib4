@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johan Commelin, Eric Wieser
+Authors: Kim Morrison, Johan Commelin, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.LinearAlgebra.TensorProduct.Basic
@@ -59,11 +59,11 @@ open Algebra (lsmul)
 section Semiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
-variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
+variable [AddCommMonoid M] [Module R M] [Module A M]
+variable [IsScalarTower R A M]
 variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P] [Module A P] [Module B P]
-variable [IsScalarTower R A P] [IsScalarTower R B P] [SMulCommClass A B P]
+variable [AddCommMonoid P] [Module R P] [Module A P]
+variable [IsScalarTower R A P]
 variable [AddCommMonoid Q] [Module R Q]
 variable [AddCommMonoid P'] [Module R P'] [Module A P'] [Module B P']
 variable [IsScalarTower R A P'] [IsScalarTower R B P'] [SMulCommClass A B P']
@@ -112,7 +112,7 @@ nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
           (lift (f.restrictScalars R)).comp (lsmul R R _ c) x =
             (lsmul R R _ c).comp (lift (f.restrictScalars R)) x
         from
-        ext_iff.1 <|
+        LinearMap.ext_iff.1 <|
           TensorProduct.ext' fun x y => by
             simp only [comp_apply, Algebra.lsmul_coe, smul_tmul', lift.tmul,
               coe_restrictScalars, f.map_smul, smul_apply] }
@@ -128,6 +128,9 @@ theorem lift_tmul (f : M →ₗ[A] N →ₗ[R] P) (x : M) (y : N) : lift f (x �
   rfl
 
 variable (R A B M N P Q)
+
+section
+variable [Module B P] [IsScalarTower R B P] [SMulCommClass A B P]
 
 /-- Heterobasic version of `TensorProduct.uncurry`:
 
@@ -292,6 +295,8 @@ variable {M} in
 @[simp]
 theorem rid_symm_apply (m : M) : (AlgebraTensorModule.rid R A M).symm m = m ⊗ₜ 1 := rfl
 
+end
+
 end Semiring
 
 section CommSemiring
@@ -300,14 +305,14 @@ variable [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R
 variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P] [Module A P] [Module B P]
-variable [IsScalarTower R A P] [IsScalarTower R B P] [SMulCommClass A B P]
+variable [AddCommMonoid P] [Module A P]
 variable [AddCommMonoid Q] [Module R Q]
 variable (R A B M N P Q)
 
 attribute [local ext high] TensorProduct.ext
 
 section assoc
+variable [Module R P] [IsScalarTower R A P]
 variable [Algebra A B] [IsScalarTower A B M]
 
 /-- Heterobasic version of `TensorProduct.assoc`:
@@ -362,6 +367,7 @@ theorem cancelBaseChange_symm_tmul (m : M) (n : N) :
 end cancelBaseChange
 
 section leftComm
+variable [Module R P] [IsScalarTower R A P]
 
 /-- Heterobasic version of `TensorProduct.leftComm` -/
 def leftComm : M ⊗[A] (P ⊗[R] Q) ≃ₗ[A] P ⊗[A] (M ⊗[R] Q) :=
@@ -416,6 +422,7 @@ theorem rightComm_symm_tmul (m : M) (p : P) (q : Q) :
 end rightComm
 
 section tensorTensorTensorComm
+variable [Module R P] [IsScalarTower R A P]
 
 /-- Heterobasic version of `tensorTensorTensorComm`. -/
 def tensorTensorTensorComm :
@@ -482,14 +489,15 @@ lemma baseChange_span (s : Set M) :
   simp only [baseChange, map_coe]
   refine le_antisymm (span_le.mpr ?_) (span_mono <| Set.image_subset _ subset_span)
   rintro - ⟨m : M, hm : m ∈ span R s, rfl⟩
-  apply span_induction (p := fun m' ↦ (1 : A) ⊗ₜ[R] m' ∈ span A (TensorProduct.mk R A M 1 '' s)) hm
+  apply span_induction (p := fun m' _ ↦ (1 : A) ⊗ₜ[R] m' ∈ span A (TensorProduct.mk R A M 1 '' s))
+    (hx := hm)
   · intro m hm
     exact subset_span ⟨m, hm, rfl⟩
   · simp
-  · intro m₁ m₂ hm₁ hm₂
+  · intro m₁ m₂ _ _ hm₁ hm₂
     rw [tmul_add]
     exact Submodule.add_mem _ hm₁ hm₂
-  · intro r m' hm'
+  · intro r m' _ hm'
     rw [tmul_smul, ← one_smul A ((1 : A) ⊗ₜ[R] m'), ← smul_assoc]
     exact smul_mem _ (r • 1) hm'
 

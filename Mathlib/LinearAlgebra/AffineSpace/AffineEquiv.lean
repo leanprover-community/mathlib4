@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.GeneralLinearGroup
@@ -323,10 +323,10 @@ instance group : Group (P₁ ≃ᵃ[k] P₁) where
   one := refl k P₁
   mul e e' := e'.trans e
   inv := symm
-  mul_assoc e₁ e₂ e₃ := trans_assoc _ _ _
+  mul_assoc _ _ _ := trans_assoc _ _ _
   one_mul := trans_refl
   mul_one := refl_trans
-  mul_left_inv := self_trans_symm
+  inv_mul_cancel := self_trans_symm
 
 theorem one_def : (1 : P₁ ≃ᵃ[k] P₁) = refl k P₁ :=
   rfl
@@ -497,7 +497,8 @@ theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P₁} (h : Injective 
   Equiv.pointReflection_fixed_iff_of_injective_bit0 h
 
 set_option linter.deprecated false in
-theorem injective_pointReflection_left_of_injective_bit0 (h : Injective (2 • · : V₁ → V₁)) (y : P₁) :
+theorem injective_pointReflection_left_of_injective_bit0
+    (h : Injective (2 • · : V₁ → V₁)) (y : P₁) :
     Injective fun x : P₁ => pointReflection k x y :=
   Equiv.injective_pointReflection_left_of_injective_bit0 h y
 

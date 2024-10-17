@@ -93,7 +93,8 @@ theorem subset_of_mem_nhdsSet (h : t ∈ 𝓝ˢ s) : s ⊆ t := principal_le_nhd
 theorem Filter.Eventually.self_of_nhdsSet {p : X → Prop} (h : ∀ᶠ x in 𝓝ˢ s, p x) : ∀ x ∈ s, p x :=
   principal_le_nhdsSet h
 
-nonrec theorem Filter.EventuallyEq.self_of_nhdsSet {f g : X → Y} (h : f =ᶠ[𝓝ˢ s] g) : EqOn f g s :=
+nonrec theorem Filter.EventuallyEq.self_of_nhdsSet {Y} {f g : X → Y} (h : f =ᶠ[𝓝ˢ s] g) :
+    EqOn f g s :=
   h.self_of_nhdsSet
 
 @[simp]
@@ -143,7 +144,7 @@ theorem nhdsSet_insert (x : X) (s : Set X) : 𝓝ˢ (insert x s) = 𝓝 x ⊔ �
   rw [insert_eq, nhdsSet_union, nhdsSet_singleton]
 
 /-- Preimage of a set neighborhood of `t` under a continuous map `f` is a set neighborhood of `s`
-provided that `f` maps `s` to `t`.  -/
+provided that `f` maps `s` to `t`. -/
 theorem Continuous.tendsto_nhdsSet {f : X → Y} {t : Set Y} (hf : Continuous f)
     (hst : MapsTo f s t) : Tendsto f (𝓝ˢ s) (𝓝ˢ t) :=
   ((hasBasis_nhdsSet s).tendsto_iff (hasBasis_nhdsSet t)).mpr fun U hU =>
@@ -160,6 +161,12 @@ if `X` has two elements and the coarse topology and `s` and `t` are distinct sin
 `𝓝ˢ (s ∩ t) = ⊥` while `𝓝ˢ s ⊓ 𝓝ˢ t = ⊤` and those are different. -/
 theorem nhdsSet_inter_le (s t : Set X) : 𝓝ˢ (s ∩ t) ≤ 𝓝ˢ s ⊓ 𝓝ˢ t :=
   (monotone_nhdsSet (X := X)).map_inf_le s t
+
+theorem nhdsSet_iInter_le {ι : Sort*} (s : ι → Set X) : 𝓝ˢ (⋂ i, s i) ≤ ⨅ i, 𝓝ˢ (s i) :=
+  (monotone_nhdsSet (X := X)).map_iInf_le
+
+theorem nhdsSet_sInter_le (s : Set (Set X)) : 𝓝ˢ (⋂₀ s) ≤ ⨅ x ∈ s, 𝓝ˢ x :=
+  (monotone_nhdsSet (X := X)).map_sInf_le
 
 variable (s) in
 theorem IsClosed.nhdsSet_le_sup (h : IsClosed t) : 𝓝ˢ s ≤ 𝓝ˢ (s ∩ t) ⊔ 𝓟 (tᶜ) :=

@@ -51,7 +51,7 @@ variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 section LE
 
-variable [LE α] [LE β] {s t : Set α} {a : α}
+variable [LE α] {s t : Set α} {a : α}
 
 /-- An upper set in an order `α` is a set such that any element greater than one of its members is
 also a member. Also called up-set, upward-closed set. -/
@@ -531,9 +531,14 @@ instance : SupSet (UpperSet α) :=
 instance : InfSet (UpperSet α) :=
   ⟨fun S => ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ => s.upper⟩⟩
 
-instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
-  (toDual.injective.comp SetLike.coe_injective).completelyDistribLattice _ (fun _ _ => rfl)
+instance completeLattice : CompleteLattice (UpperSet α) :=
+  (toDual.injective.comp SetLike.coe_injective).completeLattice _ (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
+
+instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
+  .ofMinimalAxioms <|
+    (toDual.injective.comp SetLike.coe_injective).completelyDistribLatticeMinimalAxioms .of _
+      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
 instance : Inhabited (UpperSet α) :=
   ⟨⊥⟩
@@ -661,9 +666,13 @@ instance : SupSet (LowerSet α) :=
 instance : InfSet (LowerSet α) :=
   ⟨fun S => ⟨⋂ s ∈ S, ↑s, isLowerSet_iInter₂ fun s _ => s.lower⟩⟩
 
-instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
-  SetLike.coe_injective.completelyDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+instance completeLattice : CompleteLattice (LowerSet α) :=
+  SetLike.coe_injective.completeLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ => rfl) rfl rfl
+
+instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
+  .ofMinimalAxioms <| SetLike.coe_injective.completelyDistribLatticeMinimalAxioms .of _
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
 instance : Inhabited (LowerSet α) :=
   ⟨⊥⟩
@@ -920,10 +929,10 @@ noncomputable instance LowerSet.instLinearOrder : LinearOrder (LowerSet α) := b
   classical exact Lattice.toLinearOrder _
 
 noncomputable instance UpperSet.instCompleteLinearOrder : CompleteLinearOrder (UpperSet α) :=
-  { completelyDistribLattice, instLinearOrder, LinearOrder.toBiheytingAlgebra with }
+  { completelyDistribLattice, instLinearOrder with }
 
 noncomputable instance LowerSet.instCompleteLinearOrder : CompleteLinearOrder (LowerSet α) :=
-  { completelyDistribLattice, instLinearOrder, LinearOrder.toBiheytingAlgebra with }
+  { completelyDistribLattice, instLinearOrder with }
 
 end LinearOrder
 
@@ -975,7 +984,7 @@ end UpperSet
 
 namespace LowerSet
 
-variable {f : α ≃o β} {s t : LowerSet α} {a : α} {b : β}
+variable {f : α ≃o β} {s t : LowerSet α} {a : α}
 
 /-- An order isomorphism of Preorders induces an order isomorphism of their lower sets. -/
 def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
@@ -1593,7 +1602,7 @@ variable [Preorder α] [Preorder β]
 
 section
 
-variable {s : Set α} {t : Set β} {x : α × β}
+variable {s : Set α} {t : Set β}
 
 theorem IsUpperSet.prod (hs : IsUpperSet s) (ht : IsUpperSet t) : IsUpperSet (s ×ˢ t) :=
   fun _ _ h ha => ⟨hs h.1 ha.1, ht h.2 ha.2⟩
@@ -1793,3 +1802,5 @@ theorem lowerClosure_prod (s : Set α) (t : Set β) :
   simp [Prod.le_def, @and_and_and_comm _ (_ ∈ t)]
 
 end Preorder
+
+set_option linter.style.longFile 1900

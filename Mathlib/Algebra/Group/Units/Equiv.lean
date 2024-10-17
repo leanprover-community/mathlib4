@@ -13,13 +13,13 @@ import Mathlib.Algebra.Group.Units.Hom
 assert_not_exists MonoidWithZero
 assert_not_exists DenselyOrdered
 
-variable {F α β A B M N P Q G H : Type*}
+variable {F α M N G : Type*}
 
 /-- A group is isomorphic to its group of units. -/
 @[to_additive (attr := simps apply_val symm_apply)
 "An additive group is isomorphic to its group of additive units"]
 def toUnits [Group G] : G ≃* Gˣ where
-  toFun x := ⟨x, x⁻¹, mul_inv_self _, inv_mul_self _⟩
+  toFun x := ⟨x, x⁻¹, mul_inv_cancel _, inv_mul_cancel _⟩
   invFun x := x
   left_inv _ := rfl
   right_inv _ := Units.ext rfl
@@ -31,7 +31,7 @@ lemma toUnits_val_apply {G : Type*} [Group G] (x : Gˣ) : toUnits (x : G) = x :=
 
 namespace Units
 
-variable [Monoid M] [Monoid N] [Monoid P]
+variable [Monoid M] [Monoid N]
 
 /-- A multiplicative equivalence of monoids defines a multiplicative equivalence
 of their groups of units. -/
@@ -192,11 +192,10 @@ def MulEquiv.inv (G : Type*) [DivisionCommMonoid G] : G ≃* G :=
 theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
--- Porting note: no `add_equiv.neg_symm` in `mathlib3`
 
-@[to_additive]
-protected
-theorem MulEquiv.map_isUnit_iff {M N} [Monoid M] [Monoid N] [EquivLike F M N] [MonoidHomClass F M N]
-    (f : F) {m : M} : IsUnit (f m) ↔ IsUnit m :=
-  isUnit_map_of_leftInverse (MonoidHom.inverse (f : M →* N) (EquivLike.inv f)
-    (EquivLike.left_inv f) <| EquivLike.right_inv f) (EquivLike.left_inv f)
+instance isLocalRingHom_equiv [Monoid M] [Monoid N] [EquivLike F M N]
+    [MulEquivClass F M N] (f : F) : IsLocalRingHom f where
+  map_nonunit a ha := by
+    convert ha.map (f : M ≃* N).symm
+    rw [MulEquiv.eq_symm_apply]
+    rfl -- note to reviewers: ugly `rfl`

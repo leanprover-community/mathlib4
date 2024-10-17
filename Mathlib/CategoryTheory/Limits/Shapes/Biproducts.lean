@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Jakob von Raumer
+Authors: Kim Morrison, Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
@@ -122,7 +122,6 @@ namespace Bicones
 /-- To give an isomorphism between cocones, it suffices to give an
   isomorphism between their vertices which commutes with the cocone
   maps. -/
--- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
     (wι : ∀ j, c.ι j ≫ φ.hom = c'.ι j := by aesop_cat)
@@ -176,7 +175,7 @@ attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 /-- Extract the cone from a bicone. -/
 def toConeFunctor : Bicone F ⥤ Cone (Discrete.functor F) where
   obj B := { pt := B.pt, π := { app := fun j => B.π j.as } }
-  map {X Y} F := { hom := F.hom, w := fun _ => F.wπ _ }
+  map {_ _} F := { hom := F.hom, w := fun _ => F.wπ _ }
 
 /-- A shorthand for `toConeFunctor.obj` -/
 abbrev toCone (B : Bicone F) : Cone (Discrete.functor F) := toConeFunctor.obj B
@@ -197,7 +196,7 @@ theorem toCone_proj (B : Bicone F) (j : J) : Fan.proj B.toCone j = B.π j := rfl
 /-- Extract the cocone from a bicone. -/
 def toCoconeFunctor : Bicone F ⥤ Cocone (Discrete.functor F) where
   obj B := { pt := B.pt, ι := { app := fun j => B.ι j.as } }
-  map {X Y} F := { hom := F.hom, w := fun _ => F.wι _ }
+  map {_ _} F := { hom := F.hom, w := fun _ => F.wι _ }
 
 /-- A shorthand for `toCoconeFunctor.obj` -/
 abbrev toCocone (B : Bicone F) : Cocone (Discrete.functor F) := toCoconeFunctor.obj B
@@ -257,7 +256,7 @@ attribute [-simp, nolint simpNF] IsBilimit.mk.injEq
 attribute [local ext] Bicone.IsBilimit
 
 instance subsingleton_isBilimit {f : J → C} {c : Bicone f} : Subsingleton c.IsBilimit :=
-  ⟨fun _ _ => Bicone.IsBilimit.ext _ _ (Subsingleton.elim _ _) (Subsingleton.elim _ _)⟩
+  ⟨fun _ _ => Bicone.IsBilimit.ext (Subsingleton.elim _ _) (Subsingleton.elim _ _)⟩
 
 section Whisker
 
@@ -386,7 +385,7 @@ theorem hasBiproductsOfShape_of_equiv {K : Type w'} [HasBiproductsOfShape K C] (
     let ⟨⟨h⟩⟩ := HasBiproductsOfShape.has_biproduct (F ∘ e.symm)
     let ⟨c, hc⟩ := h
     HasBiproduct.mk <| by
-      simpa only [(· ∘ ·), e.symm_apply_apply] using
+      simpa only [Function.comp_def, e.symm_apply_apply] using
         LimitBicone.mk (c.whisker e) ((c.whiskerIsBilimitIff _).2 hc)⟩
 
 instance (priority := 100) hasBiproductsOfShape_finite [HasFiniteBiproducts C] [Finite J] :
@@ -402,6 +401,14 @@ instance (priority := 100) hasFiniteProducts_of_hasFiniteBiproducts [HasFiniteBi
 instance (priority := 100) hasFiniteCoproducts_of_hasFiniteBiproducts [HasFiniteBiproducts C] :
     HasFiniteCoproducts C where
   out _ := ⟨fun _ => hasColimitOfIso Discrete.natIsoFunctor⟩
+
+instance (priority := 100) hasProductsOfShape_of_hasBiproductsOfShape [HasBiproductsOfShape J C] :
+    HasProductsOfShape J C where
+  has_limit _ := hasLimitOfIso Discrete.natIsoFunctor.symm
+
+instance (priority := 100) hasCoproductsOfShape_of_hasBiproductsOfShape [HasBiproductsOfShape J C] :
+    HasCoproductsOfShape J C where
+  has_colimit _ := hasColimitOfIso Discrete.natIsoFunctor
 
 variable {C}
 
@@ -547,6 +554,17 @@ theorem biproduct.isoCoproduct_hom {f : J → C} [HasBiproduct f] :
     (biproduct.isoCoproduct f).hom = biproduct.desc (Sigma.ι f) :=
   biproduct.hom_ext' _ _ fun j => by simp [← Iso.eq_comp_inv]
 
+/-- If a category has biproducts of a shape `J`, its `colim` and `lim` functor on diagrams over `J`
+are isomorphic. -/
+@[simps!]
+def HasBiproductsOfShape.colimIsoLim [HasBiproductsOfShape J C] :
+    colim (J := Discrete J) (C := C) ≅ lim :=
+  NatIso.ofComponents (fun F => (Sigma.isoColimit F).symm ≪≫
+      (biproduct.isoCoproduct _).symm ≪≫ biproduct.isoProduct _ ≪≫ Pi.isoLimit F)
+    fun η => colimit.hom_ext fun ⟨i⟩ => limit.hom_ext fun ⟨j⟩ => by
+      by_cases h : i = j <;>
+       simp_all [h, Sigma.isoColimit, Pi.isoLimit, biproduct.ι_π, biproduct.ι_π_assoc]
+
 theorem biproduct.map_eq_map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ b, f b ⟶ g b) :
     biproduct.map p = biproduct.map' p := by
   ext
@@ -640,6 +658,7 @@ lemma biproduct.whiskerEquiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ 
     · rintro rfl
       simp at h
 
+attribute [local simp] Sigma.forall in
 instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     HasBiproduct fun p : Σ i, f i => g p.1 p.2 where
@@ -839,10 +858,10 @@ def kernelForkBiproductToSubtype (p : Set K) :
         ext j k
         simp only [Category.assoc, biproduct.ι_fromSubtype_assoc, biproduct.ι_toSubtype_assoc,
           comp_zero, zero_comp]
-        erw [dif_neg k.2]
+        rw [dif_neg k.2]
         simp only [zero_comp])
   isLimit :=
-    KernelFork.IsLimit.ofι _ _ (fun {W} g _ => g ≫ biproduct.toSubtype f pᶜ)
+    KernelFork.IsLimit.ofι _ _ (fun {_} g _ => g ≫ biproduct.toSubtype f pᶜ)
       (by
         intro W' g' w
         ext j
@@ -878,7 +897,7 @@ def cokernelCoforkBiproductFromSubtype (p : Set K) :
         · simp only [zero_comp]
         · exact not_not.mpr k.2)
   isColimit :=
-    CokernelCofork.IsColimit.ofπ _ _ (fun {W} g _ => biproduct.fromSubtype f pᶜ ≫ g)
+    CokernelCofork.IsColimit.ofπ _ _ (fun {_} g _ => biproduct.fromSubtype f pᶜ ≫ g)
       (by
         intro W g' w
         ext j
@@ -961,10 +980,10 @@ variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
 
 instance biproduct.ι_mono (f : J → C) [HasBiproduct f] (b : J) : IsSplitMono (biproduct.ι f b) :=
-  IsSplitMono.mk' { retraction := biproduct.desc <| Pi.single b _ }
+  IsSplitMono.mk' { retraction := biproduct.desc <| Pi.single b (𝟙 (f b)) }
 
 instance biproduct.π_epi (f : J → C) [HasBiproduct f] (b : J) : IsSplitEpi (biproduct.π f b) :=
-  IsSplitEpi.mk' { section_ := biproduct.lift <| Pi.single b _ }
+  IsSplitEpi.mk' { section_ := biproduct.lift <| Pi.single b (𝟙 (f b)) }
 
 /-- Auxiliary lemma for `biproduct.uniqueUpToIso`. -/
 theorem biproduct.conePointUniqueUpToIso_hom (f : J → C) [HasBiproduct f] {b : Bicone f}
@@ -1008,12 +1027,12 @@ instance (priority := 100) hasZeroObject_of_hasFiniteBiproducts [HasFiniteBiprod
 
 section
 
-variable {C} [Unique J] (f : J → C)
+variable {C}
 
 attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The limit bicone for the biproduct over an index type with exactly one term. -/
 @[simps]
-def limitBiconeOfUnique : LimitBicone f where
+def limitBiconeOfUnique [Unique J] (f : J → C) : LimitBicone f where
   bicone :=
     { pt := f default
       π := fun j => eqToHom (by congr; rw [← Unique.uniq] )
@@ -1022,12 +1041,13 @@ def limitBiconeOfUnique : LimitBicone f where
     { isLimit := (limitConeOfUnique f).isLimit
       isColimit := (colimitCoconeOfUnique f).isColimit }
 
-instance (priority := 100) hasBiproduct_unique : HasBiproduct f :=
-  HasBiproduct.mk (limitBiconeOfUnique f)
+instance (priority := 100) hasBiproduct_unique [Subsingleton J] [Nonempty J] (f : J → C) :
+    HasBiproduct f :=
+  let ⟨_⟩ := nonempty_unique J; .mk (limitBiconeOfUnique f)
 
 /-- A biproduct over an index type with exactly one term is just the object over that term. -/
 @[simps!]
-def biproductUniqueIso : ⨁ f ≅ f default :=
+def biproductUniqueIso [Unique J] (f : J → C) : ⨁ f ≅ f default :=
   (biproduct.uniqueUpToIso _ (limitBiconeOfUnique f).isBilimit).symm
 
 end
@@ -1098,7 +1118,6 @@ namespace BinaryBicones
 /-- To give an isomorphism between cocones, it suffices to give an
   isomorphism between their vertices which commutes with the cocone
   maps. -/
--- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {P Q : C} {c c' : BinaryBicone P Q} (φ : c.pt ≅ c'.pt)
     (winl : c.inl ≫ φ.hom = c'.inl := by aesop_cat)
@@ -1275,7 +1294,7 @@ abbrev toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X
   toBinaryBiconeFunctor.obj b
 
 /-- A bicone over a pair is a limit cone if and only if the corresponding binary bicone is a limit
-    cone.  -/
+    cone. -/
 def toBinaryBiconeIsLimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     IsLimit b.toBinaryBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <| Cones.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
@@ -1761,7 +1780,7 @@ def biprod.fstKernelFork : KernelFork (biprod.fst : X ⊞ Y ⟶ X) :=
 theorem biprod.fstKernelFork_ι : Fork.ι (biprod.fstKernelFork X Y) = (biprod.inr : Y ⟶ X ⊞ Y) :=
   rfl
 
-/-- The fork `biprod.fstKernelFork` is indeed a limit.  -/
+/-- The fork `biprod.fstKernelFork` is indeed a limit. -/
 def biprod.isKernelFstKernelFork : IsLimit (biprod.fstKernelFork X Y) :=
   BinaryBicone.isLimitFstKernelFork (BinaryBiproduct.isLimit _ _)
 
@@ -1774,7 +1793,7 @@ def biprod.sndKernelFork : KernelFork (biprod.snd : X ⊞ Y ⟶ Y) :=
 theorem biprod.sndKernelFork_ι : Fork.ι (biprod.sndKernelFork X Y) = (biprod.inl : X ⟶ X ⊞ Y) :=
   rfl
 
-/-- The fork `biprod.sndKernelFork` is indeed a limit.  -/
+/-- The fork `biprod.sndKernelFork` is indeed a limit. -/
 def biprod.isKernelSndKernelFork : IsLimit (biprod.sndKernelFork X Y) :=
   BinaryBicone.isLimitSndKernelFork (BinaryBiproduct.isLimit _ _)
 
@@ -1787,7 +1806,7 @@ def biprod.inlCokernelCofork : CokernelCofork (biprod.inl : X ⟶ X ⊞ Y) :=
 theorem biprod.inlCokernelCofork_π : Cofork.π (biprod.inlCokernelCofork X Y) = biprod.snd :=
   rfl
 
-/-- The cofork `biprod.inlCokernelFork` is indeed a colimit.  -/
+/-- The cofork `biprod.inlCokernelFork` is indeed a colimit. -/
 def biprod.isCokernelInlCokernelFork : IsColimit (biprod.inlCokernelCofork X Y) :=
   BinaryBicone.isColimitInlCokernelCofork (BinaryBiproduct.isColimit _ _)
 
@@ -1800,7 +1819,7 @@ def biprod.inrCokernelCofork : CokernelCofork (biprod.inr : Y ⟶ X ⊞ Y) :=
 theorem biprod.inrCokernelCofork_π : Cofork.π (biprod.inrCokernelCofork X Y) = biprod.fst :=
   rfl
 
-/-- The cofork `biprod.inrCokernelFork` is indeed a colimit.  -/
+/-- The cofork `biprod.inrCokernelFork` is indeed a colimit. -/
 def biprod.isCokernelInrCokernelFork : IsColimit (biprod.inrCokernelCofork X Y) :=
   BinaryBicone.isColimitInrCokernelCofork (BinaryBiproduct.isColimit _ _)
 
@@ -1996,3 +2015,5 @@ theorem isIso_right_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z
   isIso_left_of_isIso_biprod_map g f
 
 end CategoryTheory
+
+set_option linter.style.longFile 2100

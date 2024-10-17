@@ -26,7 +26,7 @@ suppress_compilation
 
 universe u u'
 
-open CategoryTheory CategoryTheory.Limits TensorProduct
+open CategoryTheory Limits TensorProduct
 
 namespace CommRingCat
 
@@ -111,7 +111,7 @@ section Terminal
 def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
   refine IsTerminal.ofUnique (h := fun X => ⟨⟨⟨⟨1, rfl⟩, fun _ _ => rfl⟩, ?_, ?_⟩, ?_⟩)
   · rfl
-  · intros; simp; ext
+  · intros; simp only [coe_of, Pi.one_apply, self_eq_add_right]; ext
   · intros f; ext; rfl
 
 instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by
@@ -183,7 +183,7 @@ The categorical product of rings is the cartesian product of rings.
 def piFanIsLimit : IsLimit (piFan R) where
   lift s := Pi.ringHom fun i ↦ s.π.1 ⟨i⟩
   fac s i := by rfl
-  uniq s g h := DFunLike.ext _ _ fun x ↦ funext fun i ↦ DFunLike.congr_fun (h ⟨i⟩) x
+  uniq _ _ h := DFunLike.ext _ _ fun x ↦ funext fun i ↦ DFunLike.congr_fun (h ⟨i⟩) x
 
 /--
 The categorical product and the usual product agrees

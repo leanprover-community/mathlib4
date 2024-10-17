@@ -122,6 +122,7 @@ theorem of_subsingleton [Subsingleton α] : NullMeasurableSet s μ :=
 protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ :=
   EventuallyMeasurableSet.congr hs h.symm
 
+@[measurability]
 protected theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
     (h : ∀ i, NullMeasurableSet (s i) μ) : NullMeasurableSet (⋃ i, s i) μ :=
   MeasurableSet.iUnion h
@@ -135,6 +136,7 @@ protected theorem sUnion {s : Set (Set α)} (hs : s.Countable) (h : ∀ t ∈ s,
   rw [sUnion_eq_biUnion]
   exact MeasurableSet.biUnion hs h
 
+@[measurability]
 protected theorem iInter {ι : Sort*} [Countable ι] {f : ι → Set α}
     (h : ∀ i, NullMeasurableSet (f i) μ) : NullMeasurableSet (⋂ i, f i) μ :=
   MeasurableSet.iInter h
@@ -278,6 +280,9 @@ theorem measure_union₀' (hs : NullMeasurableSet s μ) (hd : AEDisjoint μ s t)
 theorem measure_add_measure_compl₀ {s : Set α} (hs : NullMeasurableSet s μ) :
     μ s + μ sᶜ = μ univ := by rw [← measure_union₀' hs aedisjoint_compl_right, union_compl_self]
 
+lemma measure_of_measure_compl_eq_zero (hs : μ sᶜ = 0) : μ s = μ Set.univ := by
+  simpa [hs] using measure_add_measure_compl₀ <| .of_compl <| .of_null hs
+
 section MeasurableSingletonClass
 
 variable [MeasurableSingletonClass (NullMeasurableSpace α μ)]
@@ -392,13 +397,11 @@ theorem _root_.Measurable.congr_ae {α β} [MeasurableSpace α] [MeasurableSpace
 
 namespace Measure
 
-/-- Given a measure we can complete it to a (complete) measure on all null measurable sets.
-
-TODO: generalize to any larger σ-algebra. -/
+/-- Given a measure we can complete it to a (complete) measure on all null measurable sets. -/
 def completion {_ : MeasurableSpace α} (μ : Measure α) :
     MeasureTheory.Measure (NullMeasurableSpace α μ) where
   toOuterMeasure := μ.toOuterMeasure
-  m_iUnion s hs hd := measure_iUnion₀ (hd.mono fun i j h => h.aedisjoint) hs
+  m_iUnion _ hs hd := measure_iUnion₀ (hd.mono fun _ _ h => h.aedisjoint) hs
   trim_le := by
     nth_rewrite 2 [← μ.trimmed]
     exact OuterMeasure.trim_anti_measurableSpace _ fun _ ↦ MeasurableSet.nullMeasurableSet

@@ -49,12 +49,12 @@ theorem _root_.Squarefree.natFactorization_le_one {n : ℕ} (p : ℕ) (hn : Squa
     n.factorization p ≤ 1 := by
   rcases eq_or_ne n 0 with (rfl | hn')
   · simp
-  rw [multiplicity.squarefree_iff_multiplicity_le_one] at hn
+  rw [multiplicity.squarefree_iff_emultiplicity_le_one] at hn
   by_cases hp : p.Prime
   · have := hn p
-    simp only [multiplicity_eq_factorization hp hn', Nat.isUnit_iff, hp.ne_one, or_false_iff]
-      at this
-    exact mod_cast this
+    rw [← multiplicity_eq_factorization hp hn']
+    simp only [Nat.isUnit_iff, hp.ne_one, or_false] at this
+    exact multiplicity_le_of_emultiplicity_le this
   · rw [factorization_eq_zero_of_non_prime _ hp]
     exact zero_le_one
 
@@ -87,7 +87,7 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
     · rwa [h₂, eq_comm, ← h₁]
     · rw [h₂, h₃.resolve_left]
       rw [← h₁, h₂]
-      simp only [Nat.one_ne_zero, not_false_iff]
+      simp only [Nat.one_ne_zero, not_false_iff, reduceCtorEq]
   rw [factorization_eq_zero_of_non_prime _ hp, factorization_eq_zero_of_non_prime _ hp]
 
 theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
@@ -157,7 +157,7 @@ theorem minSqFacProp_div (n) {k} (pk : Prime k) (dk : k ∣ n) (dkk : ¬k * k �
 theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
     (ih : ∀ m, Prime m → m ∣ n → k ≤ m) : MinSqFacProp n (minSqFacAux n k) := by
   rw [minSqFacAux]
-  by_cases h : n < k * k <;> simp [h]
+  by_cases h : n < k * k <;> simp only [h, ↓reduceDIte]
   · refine squarefree_iff_prime_squarefree.2 fun p pp d => ?_
     have := ih p pp (dvd_trans ⟨_, rfl⟩ d)
     have := Nat.mul_le_mul this this
@@ -422,7 +422,7 @@ namespace Tactic
 
 namespace NormNum
 
-/-- A predicate representing partial progress in a proof of `squarefree`. -/
+/-- A predicate representing partial progress in a proof of `Squarefree`. -/
 def SquarefreeHelper (n k : ℕ) : Prop :=
   0 < k → (∀ m, Nat.Prime m → m ∣ bit1 n → bit1 k ≤ m) → Squarefree (bit1 n)
 
@@ -507,7 +507,7 @@ theorem not_squarefree_mul (a aa b n : ℕ) (ha : a * a = aa) (hb : aa * b = n) 
   rw [← hb, ← ha]
   exact fun H => ne_of_gt h₁ (Nat.isUnit_iff.1 <| H _ ⟨_, rfl⟩)
 
-/-- Given `e` a natural numeral and `a : nat` with `a^2 ∣ n`, return `⊢ ¬ squarefree e`. -/
+/-- Given `e` a natural numeral and `a : ℕ` with `a^2 ∣ n`, return `⊢ ¬ Squarefree e`. -/
 unsafe def prove_non_squarefree (e : expr) (n a : ℕ) : tactic expr := do
   let ea := reflect a
   let eaa := reflect (a * a)
@@ -554,7 +554,7 @@ unsafe def prove_squarefree_aux :
             let p₂ ← prove_squarefree_aux ic en en1 n1 ek' k'
             pure <| q(squarefreeHelper_2).mk_app [en, ek, ek', ec, p₁, pc, p₀, p₂]
 
-/-- Given `n > 0` a squarefree natural numeral, returns `⊢ squarefree n`. -/
+/-- Given `n > 0` a squarefree natural numeral, returns `⊢ Squarefree n`. -/
 unsafe def prove_squarefree (en : expr) (n : ℕ) : tactic expr :=
   match match_numeral en with
   | match_numeral_result.one => pure q(@squarefree_one ℕ _)
@@ -572,7 +572,7 @@ unsafe def prove_squarefree (en : expr) (n : ℕ) : tactic expr :=
     pure <| q(squarefree_bit1).mk_app [en', p]
   | _ => failed
 
-/-- Evaluates the `squarefree` predicate on naturals. -/
+/-- Evaluates the `Squarefree` predicate on naturals. -/
 @[norm_num]
 unsafe def eval_squarefree : expr → tactic (expr × expr)
   | q(@Squarefree ℕ $(inst) $(e)) => do

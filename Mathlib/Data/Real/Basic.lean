@@ -189,7 +189,7 @@ instance commRing : CommRing ℝ where
   mul_assoc a b c := by apply ext_cauchy; simp only [cauchy_mul, mul_assoc]
   left_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, mul_add]
   right_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, add_mul]
-  add_left_neg a := by apply ext_cauchy; simp [cauchy_add, cauchy_neg, cauchy_zero]
+  neg_add_cancel a := by apply ext_cauchy; simp [cauchy_add, cauchy_neg, cauchy_zero]
   natCast_zero := by apply ext_cauchy; simp [cauchy_zero]
   natCast_succ n := by apply ext_cauchy; simp [cauchy_one, cauchy_add]
   intCast_negSucc z := by apply ext_cauchy; simp [cauchy_neg, cauchy_natCast]
@@ -343,22 +343,25 @@ protected theorem zero_lt_one : (0 : ℝ) < 1 := by
 protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
   ⟨Real.zero_lt_one⟩
 
+@[deprecated mul_pos (since := "2024-08-15")]
 protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
   induction' a using Real.ind_mk with a
   induction' b using Real.ind_mk with b
   simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
-instance : StrictOrderedCommRing ℝ :=
-  { Real.commRing, Real.partialOrder,
-    Real.semiring with
-    exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
-    add_le_add_left := by
-      simp only [le_iff_eq_or_lt]
-      rintro a b ⟨rfl, h⟩
-      · simp only [lt_self_iff_false, or_false, forall_const]
-      · exact fun c => Or.inr ((add_lt_add_iff_left c).2 ‹_›)
-    zero_le_one := le_of_lt Real.zero_lt_one
-    mul_pos := @Real.mul_pos }
+instance instStrictOrderedCommRing : StrictOrderedCommRing ℝ where
+  __ := Real.commRing
+  exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
+  add_le_add_left := by
+    simp only [le_iff_eq_or_lt]
+    rintro a b ⟨rfl, h⟩
+    · simp only [lt_self_iff_false, or_false, forall_const]
+    · exact fun c => Or.inr ((add_lt_add_iff_left c).2 ‹_›)
+  zero_le_one := le_of_lt Real.zero_lt_one
+  mul_pos a b :=  by
+    induction' a using Real.ind_mk with a
+    induction' b using Real.ind_mk with b
+    simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
 instance strictOrderedRing : StrictOrderedRing ℝ :=
   inferInstance
@@ -517,7 +520,9 @@ noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
     exact CauSeq.Completion.inv_mul_cancel h
   inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
   nnqsmul := _
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
+  qsmul_def := fun _ _ => rfl
   nnratCast_def q := by
     rw [← ofCauchy_nnratCast, NNRat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_natCast]
   ratCast_def q := by
@@ -571,9 +576,34 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
       sub_le_comm.1 <|
         le_mk_of_forall_le <| H.imp fun _ h j ij => sub_le_comm.1 (abs_sub_le_iff.1 <| h j ij).2⟩
 
+lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 ≤ (a + 1) ^ b := by
+  rcases ha.eq_or_lt with rfl|ha'
+  · simp
+  clear ha
+  induction b generalizing a with
+  | zero => simp
+  | succ b hb =>
+    rw [Nat.cast_add_one, mul_add, mul_one, add_right_comm, pow_succ, mul_add, mul_one, add_comm]
+    gcongr
+    · rw [le_mul_iff_one_le_left ha']
+      exact (pow_le_pow_left zero_le_one (by simpa using ha'.le) b).trans' (by simp)
+    · exact hb ha'
+
 end Real
 
 /-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
   `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
-def IsNonarchimedean {A : Type _} [Add A] (f : A → ℝ) : Prop :=
+def IsNonarchimedean {A : Type*} [Add A] (f : A → ℝ) : Prop :=
   ∀ r s, f (r + s) ≤ max (f r) (f s)
+
+/-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
+`f (r ^ n) = (f r) ^ n`. -/
+def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
+  ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
+
+/-- A ring homomorphism `f : α →+* β` is bounded with respect to the functions `nα : α → ℝ` and
+  `nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,
+  `nβ (f x) ≤ C * nα x`. -/
+def RingHom.IsBoundedWrt {α : Type*} [Ring α] {β : Type*} [Ring β] (nα : α → ℝ) (nβ : β → ℝ)
+    (f : α →+* β) : Prop :=
+  ∃ C : ℝ, 0 < C ∧ ∀ x : α, nβ (f x) ≤ C * nα x

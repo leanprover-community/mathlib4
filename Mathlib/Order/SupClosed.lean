@@ -315,8 +315,8 @@ protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite :=
 
 @[simp] lemma supClosure_prod (s : Set α) (t : Set β) :
     supClosure (s ×ˢ t) = supClosure s ×ˢ supClosure t :=
-  le_antisymm (supClosure_min (Set.prod_mono subset_supClosure subset_supClosure) $
-    supClosed_supClosure.prod supClosed_supClosure) $ by
+  le_antisymm (supClosure_min (Set.prod_mono subset_supClosure subset_supClosure) <|
+    supClosed_supClosure.prod supClosed_supClosure) <| by
       rintro ⟨_, _⟩ ⟨⟨u, hu, hus, rfl⟩, v, hv, hvt, rfl⟩
       refine ⟨u ×ˢ v, hu.product hv, ?_, ?_⟩
       · simpa only [coe_product] using Set.prod_mono hus hvt
@@ -387,8 +387,8 @@ protected lemma Set.Finite.infClosure (hs : s.Finite) : (infClosure s).Finite :=
 
 @[simp] lemma infClosure_prod (s : Set α) (t : Set β) :
     infClosure (s ×ˢ t) = infClosure s ×ˢ infClosure t :=
-  le_antisymm (infClosure_min (Set.prod_mono subset_infClosure subset_infClosure) $
-    infClosed_infClosure.prod infClosed_infClosure) $ by
+  le_antisymm (infClosure_min (Set.prod_mono subset_infClosure subset_infClosure) <|
+    infClosed_infClosure.prod infClosed_infClosure) <| by
       rintro ⟨_, _⟩ ⟨⟨u, hu, hus, rfl⟩, v, hv, hvt, rfl⟩
       refine ⟨u ×ˢ v, hu.product hv, ?_, ?_⟩
       · simpa only [coe_product] using Set.prod_mono hus hvt
@@ -469,7 +469,7 @@ end DistribLattice
 def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α → α)
     (h : ∀ s, SupClosed s → IsLUB s (sSup s)) : CompleteSemilatticeSup α where
   sSup := fun s => sSup (supClosure s)
-  le_sSup s a ha := (h _ supClosed_supClosure).1 <| subset_supClosure ha
+  le_sSup _ _ ha := (h _ supClosed_supClosure).1 <| subset_supClosure ha
   sSup_le s a ha := (isLUB_le_iff <| h _ supClosed_supClosure).2 <| by rwa [upperBounds_supClosure]
 
 /-- A meet-semilattice where every inf-closed set has a greatest lower bound is automatically
@@ -477,5 +477,5 @@ complete. -/
 def SemilatticeInf.toCompleteSemilatticeInf [SemilatticeInf α] (sInf : Set α → α)
     (h : ∀ s, InfClosed s → IsGLB s (sInf s)) : CompleteSemilatticeInf α where
   sInf := fun s => sInf (infClosure s)
-  sInf_le s a ha := (h _ infClosed_infClosure).1 <| subset_infClosure ha
+  sInf_le _ _ ha := (h _ infClosed_infClosure).1 <| subset_infClosure ha
   le_sInf s a ha := (le_isGLB_iff <| h _ infClosed_infClosure).2 <| by rwa [lowerBounds_infClosure]

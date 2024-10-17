@@ -29,7 +29,7 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R] (M
 
 /-- `NonUnitalSubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both an additive submonoid and also a multiplicative subsemigroup. -/
-class NonUnitalSubsemiringClass (S : Type*) (R : Type u) [NonUnitalNonAssocSemiring R]
+class NonUnitalSubsemiringClass (S : Type*) (R : outParam (Type u)) [NonUnitalNonAssocSemiring R]
   [SetLike S R] extends AddSubmonoidClass S R : Prop where
   mul_mem : ∀ {s : S} {a b : R}, a ∈ s → b ∈ s → a * b ∈ s
 
@@ -78,8 +78,6 @@ instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
 
 
 end NonUnitalSubsemiringClass
-
-variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
 
 /-- A non-unital subsemiring of a non-unital semiring `R` is a subset `s` that is both an additive
 submonoid and a semigroup. -/
@@ -182,6 +180,7 @@ end NonUnitalSubsemiring
 
 namespace NonUnitalSubsemiring
 
+variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
 variable {F G : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
   [FunLike G S T] [NonUnitalRingHomClass G S T]
   (s : NonUnitalSubsemiring R)
@@ -301,6 +300,7 @@ namespace NonUnitalRingHom
 
 open NonUnitalSubsemiring
 
+variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
 variable {F G : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 variable [FunLike G S T] [NonUnitalRingHomClass G S T] (f : F) (g : G)
 
@@ -379,6 +379,15 @@ theorem coe_sInf (S : Set (NonUnitalSubsemiring R)) :
 theorem mem_sInf {S : Set (NonUnitalSubsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
+@[simp, norm_cast]
+theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} :
+    (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
+  simp only [iInf, coe_sInf, Set.biInter_range]
+
+theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} {x : R} :
+    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
+
 @[simp]
 theorem sInf_toSubsemigroup (s : Set (NonUnitalSubsemiring R)) :
     (sInf s).toSubsemigroup = ⨅ t ∈ s, NonUnitalSubsemiring.toSubsemigroup t :=
@@ -407,7 +416,7 @@ theorem eq_top_iff' (A : NonUnitalSubsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ 
 
 section NonUnitalNonAssocSemiring
 
-variable (R) [NonUnitalNonAssocSemiring R]
+variable (R)
 
 /-- The center of a semiring `R` is the set of elements that commute and associate with everything
 in `R` -/
@@ -533,6 +542,8 @@ theorem closure_eq_of_le {s : Set R} {t : NonUnitalSubsemiring R} (h₁ : s ⊆ 
     (h₂ : t ≤ closure s) : closure s = t :=
   le_antisymm (closure_le.2 h₁) h₂
 
+variable [NonUnitalNonAssocSemiring S]
+
 theorem mem_map_equiv {f : R ≃+* S} {K : NonUnitalSubsemiring R} {x : S} :
     x ∈ K.map (f : R →ₙ+* S) ↔ f.symm x ∈ K := by
   convert @Set.mem_image_equiv _ _ (↑K) f.toEquiv x
@@ -610,21 +621,38 @@ theorem closure_addSubmonoid_closure {s : Set R} :
 of `s`, and is preserved under addition and multiplication, then `p` holds for all elements
 of the closure of `s`. -/
 @[elab_as_elim]
-theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
-    (zero : p 0) (add : ∀ x y, p x → p y → p (x + y)) (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨p, fun {a b} => add a b⟩, zero⟩, fun {a b} => mul a b⟩).2 mem h
+theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
+    (mem : ∀ (x) (hx : x ∈ s), p x (subset_closure hx)) (zero : p 0 (zero_mem _))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    {x} (hx : x ∈ closure s)  : p x hx :=
+  let K : NonUnitalSubsemiring R :=
+    { carrier := { x | ∃ hx, p x hx }
+      mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩
+      add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
+      zero_mem' := ⟨_, zero⟩ }
+  closure_le (t := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[elab_as_elim]
-theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {x} {y : R} (hx : x ∈ closure s)
-    (hy : y ∈ closure s) (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (H0_left : ∀ x, p 0 x)
-    (H0_right : ∀ x, p x 0) (Hadd_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
-    (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
-    (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
-    (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p x y :=
-  closure_induction hx
-    (fun x₁ x₁s => closure_induction hy (Hs x₁ x₁s) (H0_right x₁) (Hadd_right x₁) (Hmul_right x₁))
-    (H0_left y) (fun z z' => Hadd_left z z' y) fun z z' => Hmul_left z z' y
+theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → y ∈ closure s → Prop}
+    (mem_mem : ∀ (x) (hx : x ∈ s) (y) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
+    (zero_left : ∀ x hx, p 0 x (zero_mem _) hx) (zero_right : ∀ x hx, p x 0 hx (zero_mem _))
+    (add_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
+    (add_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y + z) hx (add_mem hy hz))
+    (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y * z) hx (mul_mem hy hz))
+    {x y : R} (hx : x ∈ closure s) (hy : y ∈ closure s) :
+    p x y hx hy := by
+  induction hy using closure_induction with
+  | mem z hz => induction hx using closure_induction with
+    | mem _ h => exact mem_mem _ h _ hz
+    | zero => exact zero_left _ _
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+    | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
+  | zero => exact zero_right x hx
+  | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
+  | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
 
 variable (R)
 
@@ -636,6 +664,7 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice_eq _ _ := rfl
 
 variable {R}
+variable [NonUnitalNonAssocSemiring S]
 variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Closure of a non-unital subsemiring `S` equals `S`. -/
@@ -666,6 +695,16 @@ theorem map_sup (s t : NonUnitalSubsemiring R) (f : F) :
 theorem map_iSup {ι : Sort*} (f : F) (s : ι → NonUnitalSubsemiring R) :
     (map f (iSup s) : NonUnitalSubsemiring S) = ⨆ i, map f (s i) :=
   @GaloisConnection.l_iSup _ _ _ _ _ _ _ (gc_map_comap f) s
+
+theorem map_inf (s t : NonUnitalSubsemiring R) (f : F) (hf : Function.Injective f) :
+    (map f (s ⊓ t) : NonUnitalSubsemiring S) = map f s ⊓ map f t :=
+  SetLike.coe_injective (Set.image_inter hf)
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : F) (hf : Function.Injective f)
+    (s : ι → NonUnitalSubsemiring R) :
+    (map f (iInf s) : NonUnitalSubsemiring S) = ⨅ i, map f (s i) := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem comap_inf (s t : NonUnitalSubsemiring S) (f : F) :
     (comap f (s ⊓ t) : NonUnitalSubsemiring R) = comap f s ⊓ comap f t :=
@@ -756,7 +795,14 @@ end NonUnitalSubsemiring
 
 namespace NonUnitalRingHom
 
-variable {F : Type*} [NonUnitalNonAssocSemiring T] [FunLike F R S] [NonUnitalRingHomClass F R S]
+variable {F : Type*} [FunLike F R S]
+
+theorem eq_of_eqOn_stop {f g : F}
+    (h : Set.EqOn (f : R → S) (g : R → S) (⊤ : NonUnitalSubsemiring R)) : f = g :=
+  DFunLike.ext _ _ fun _ => h trivial
+
+variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
+  [NonUnitalRingHomClass F R S]
   {S' : Type*} [SetLike S' S] [NonUnitalSubsemiringClass S' S]
   {s : NonUnitalSubsemiring R}
 
@@ -807,10 +853,6 @@ theorem eqOn_sclosure {f g : F} {s : Set R} (h : Set.EqOn (f : R → S) (g : R �
     Set.EqOn f g (closure s) :=
   show closure s ≤ eqSlocus f g from closure_le.2 h
 
-theorem eq_of_eqOn_stop {f g : F}
-    (h : Set.EqOn (f : R → S) (g : R → S) (⊤ : NonUnitalSubsemiring R)) : f = g :=
-  DFunLike.ext _ _ fun _ => h trivial
-
 theorem eq_of_eqOn_sdense {s : Set R} (hs : closure s = ⊤) {f g : F}
     (h : s.EqOn (f : R → S) (g : R → S)) : f = g :=
   eq_of_eqOn_stop <| hs ▸ eqOn_sclosure h
@@ -842,6 +884,8 @@ def inclusion {S T : NonUnitalSubsemiring R} (h : S ≤ T) : S →ₙ+* T :=
 theorem srange_subtype (s : NonUnitalSubsemiring R) : NonUnitalRingHom.srange (subtype s) = s :=
   SetLike.coe_injective <| (coe_srange _).trans Subtype.range_coe
 
+variable [NonUnitalNonAssocSemiring S]
+
 @[simp]
 theorem range_fst : NonUnitalRingHom.srange (fst R S) = ⊤ :=
   NonUnitalRingHom.srange_top_of_surjective (fst R S) Prod.fst_surjective
@@ -857,7 +901,7 @@ namespace RingEquiv
 open NonUnitalRingHom NonUnitalSubsemiringClass
 
 variable {s t : NonUnitalSubsemiring R}
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+variable [NonUnitalNonAssocSemiring S]  {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Makes the identity isomorphism from a proof two non-unital subsemirings of a multiplicative
 monoid are equal. -/

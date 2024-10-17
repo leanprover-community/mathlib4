@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Monoidal.Functor
@@ -81,10 +81,9 @@ theorem comp_toNatTrans_lax {F G H : LaxMonoidalFunctor C D} {α : F ⟶ G} {β 
 instance categoryMonoidalFunctor : Category (MonoidalFunctor C D) :=
   InducedCategory.category MonoidalFunctor.toLaxMonoidalFunctor
 
--- Porting note: added, as `MonoidalNatTrans.ext` does not apply to morphisms.
 @[ext]
 lemma ext' {F G : LaxMonoidalFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.app X = β.app X) : α = β :=
-  MonoidalNatTrans.ext _ _ (funext w)
+  MonoidalNatTrans.ext (funext w)
 
 @[simp]
 theorem comp_toNatTrans {F G H : MonoidalFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
@@ -189,9 +188,8 @@ def monoidalCounit :
   unit := by
     have eq := h.counit.naturality F.ε
     dsimp at eq ⊢
-    rw [Adjunction.homEquiv_unit, map_inv, map_comp, assoc, assoc, map_inv,
-      ← cancel_mono F.ε, assoc, assoc, assoc, ← eq, IsIso.inv_hom_id_assoc,
-      Adjunction.left_triangle_components, comp_id, id_comp]
+    rw [map_inv, map_comp, assoc, assoc, map_inv, ← cancel_mono F.ε, assoc, assoc, assoc, ← eq,
+      IsIso.inv_hom_id_assoc, Adjunction.left_triangle_components, comp_id, id_comp]
 
 instance [F.IsEquivalence] : IsIso (monoidalUnit F h) := by
   dsimp [monoidalUnit]

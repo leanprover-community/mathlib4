@@ -6,6 +6,7 @@ Authors: Eric Wieser, Zhangir Azerbayev
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Data.Fintype.Perm
 import Mathlib.LinearAlgebra.Multilinear.Basis
+import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
 # Alternating Maps
@@ -87,7 +88,7 @@ section Coercions
 
 instance instFunLike : FunLike (M [⋀^ι]→ₗ[R] N) (ι → M) N where
   coe f := f.toFun
-  coe_injective' := fun f g h ↦ by
+  coe_injective' f g h := by
     rcases f with ⟨⟨_, _, _⟩, _⟩
     rcases g with ⟨⟨_, _, _⟩, _⟩
     congr
@@ -108,11 +109,11 @@ theorem coe_mk (f : MultilinearMap R (fun _ : ι => M) N) (h) :
     ⇑(⟨f, h⟩ : M [⋀^ι]→ₗ[R] N) = f :=
   rfl
 
-theorem congr_fun {f g : M [⋀^ι]→ₗ[R] N} (h : f = g) (x : ι → M) : f x = g x :=
+protected theorem congr_fun {f g : M [⋀^ι]→ₗ[R] N} (h : f = g) (x : ι → M) : f x = g x :=
   congr_arg (fun h : M [⋀^ι]→ₗ[R] N => h x) h
 
-theorem congr_arg (f : M [⋀^ι]→ₗ[R] N) {x y : ι → M} (h : x = y) : f x = f y :=
-  _root_.congr_arg (fun x : ι → M => f x) h
+protected theorem congr_arg (f : M [⋀^ι]→ₗ[R] N) {x y : ι → M} (h : x = y) : f x = f y :=
+  congr_arg (fun x : ι → M => f x) h
 
 theorem coe_injective : Injective ((↑) : M [⋀^ι]→ₗ[R] N → (ι → M) → N) :=
   DFunLike.coe_injective
@@ -124,9 +125,6 @@ theorem coe_inj {f g : M [⋀^ι]→ₗ[R] N} : (f : (ι → M) → N) = g ↔ f
 @[ext]
 theorem ext {f f' : M [⋀^ι]→ₗ[R] N} (H : ∀ x, f x = f' x) : f = f' :=
   DFunLike.ext _ _ H
-
-theorem ext_iff {f g : M [⋀^ι]→ₗ[R] N} : f = g ↔ ∀ x, f x = g x :=
-  ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 
 attribute [coe] AlternatingMap.toMultilinearMap
 
@@ -288,7 +286,7 @@ theorem coe_add : (↑(f + f') : MultilinearMap R (fun _ : ι => M) N) = f + f' 
 
 instance zero : Zero (M [⋀^ι]→ₗ[R] N) :=
   ⟨{ (0 : MultilinearMap R (fun _ : ι => M) N) with
-      map_eq_zero_of_eq' := fun v i j _ _ => by simp }⟩
+      map_eq_zero_of_eq' := fun _ _ _ _ _ => by simp }⟩
 
 @[simp]
 theorem zero_apply : (0 : M [⋀^ι]→ₗ[R] N) v = 0 :=
@@ -493,9 +491,7 @@ theorem add_compLinearMap (f₁ f₂ : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R
 theorem compLinearMap_zero [Nonempty ι] (f : M [⋀^ι]→ₗ[R] N) :
     f.compLinearMap (0 : M₂ →ₗ[R] M) = 0 := by
   ext
-  -- Porting note: Was `simp_rw [.., ← Pi.zero_def, map_zero, zero_apply]`.
-  simp_rw [compLinearMap_apply, LinearMap.zero_apply, ← Pi.zero_def, zero_apply]
-  exact map_zero f
+  simp_rw [compLinearMap_apply, LinearMap.zero_apply, ← Pi.zero_def, map_zero, zero_apply]
 
 /-- Composing an alternating map with the identity linear map in each argument. -/
 @[simp]
@@ -505,7 +501,8 @@ theorem compLinearMap_id (f : M [⋀^ι]→ₗ[R] N) : f.compLinearMap LinearMap
 /-- Composing with a surjective linear map is injective. -/
 theorem compLinearMap_injective (f : M₂ →ₗ[R] M) (hf : Function.Surjective f) :
     Function.Injective fun g : M [⋀^ι]→ₗ[R] N => g.compLinearMap f := fun g₁ g₂ h =>
-  ext fun x => by simpa [Function.surjInv_eq hf] using ext_iff.mp h (Function.surjInv hf ∘ x)
+  ext fun x => by
+    simpa [Function.surjInv_eq hf] using AlternatingMap.ext_iff.mp h (Function.surjInv hf ∘ x)
 
 theorem compLinearMap_inj (f : M₂ →ₗ[R] M) (hf : Function.Surjective f)
     (g₁ g₂ : M [⋀^ι]→ₗ[R] N) : g₁.compLinearMap f = g₂.compLinearMap f ↔ g₁ = g₂ :=
@@ -604,8 +601,8 @@ theorem map_perm [DecidableEq ι] [Fintype ι] (v : ι → M) (σ : Equiv.Perm �
   -- Porting note: `apply` → `induction'`
   induction' σ using Equiv.Perm.swap_induction_on' with s x y hxy hI
   · simp
-  · -- Porting note: `← Function.comp.assoc` & `-Equiv.Perm.sign_swap'` are required.
-    simpa [← Function.comp.assoc, g.map_swap (v ∘ s) hxy,
+  · -- Porting note: `← Function.comp_assoc` & `-Equiv.Perm.sign_swap'` are required.
+    simpa [← Function.comp_assoc, g.map_swap (v ∘ s) hxy,
       Equiv.Perm.sign_swap hxy, -Equiv.Perm.sign_swap'] using hI
 
 theorem map_congr_perm [DecidableEq ι] [Fintype ι] (σ : Equiv.Perm ι) :
@@ -657,10 +654,10 @@ def domDomCongrEquiv (σ : ι ≃ ι') : M [⋀^ι]→ₗ[R] N ≃+ M [⋀^ι']�
   invFun := domDomCongr σ.symm
   left_inv f := by
     ext
-    simp [Function.comp]
+    simp [Function.comp_def]
   right_inv m := by
     ext
-    simp [Function.comp]
+    simp [Function.comp_def]
   map_add' := domDomCongr_add σ
 
 section DomDomLcongr
@@ -672,8 +669,8 @@ variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 def domDomCongrₗ (σ : ι ≃ ι') : M [⋀^ι]→ₗ[R] N ≃ₗ[S] M [⋀^ι']→ₗ[R] N where
   toFun := domDomCongr σ
   invFun := domDomCongr σ.symm
-  left_inv f := by ext; simp [Function.comp]
-  right_inv m := by ext; simp [Function.comp]
+  left_inv f := by ext; simp [Function.comp_def]
+  right_inv m := by ext; simp [Function.comp_def]
   map_add' := domDomCongr_add σ
   map_smul' := domDomCongr_smul σ
 
@@ -874,8 +871,8 @@ def curryLeft {n : ℕ} (f : M'' [⋀^Fin n.succ]→ₗ[R'] N'') :
       map_eq_zero_of_eq' := fun v i j hv hij =>
         f.map_eq_zero_of_eq _ (by
           rwa [Matrix.cons_val_succ, Matrix.cons_val_succ]) ((Fin.succ_injective _).ne hij) }
-  map_add' m₁ m₂ := ext fun v => f.map_vecCons_add _ _ _
-  map_smul' r m := ext fun v => f.map_vecCons_smul _ _ _
+  map_add' _ _ := ext fun _ => f.map_vecCons_add _ _ _
+  map_smul' _ _ := ext fun _ => f.map_vecCons_smul _ _ _
 
 @[simp]
 theorem curryLeft_zero {n : ℕ} : curryLeft (0 : M'' [⋀^Fin n.succ]→ₗ[R'] N'') = 0 :=
@@ -904,7 +901,7 @@ def curryLeftLinearMap {n : ℕ} :
 @[simp]
 theorem curryLeft_same {n : ℕ} (f : M'' [⋀^Fin n.succ.succ]→ₗ[R'] N'') (m : M'') :
     (f.curryLeft m).curryLeft m = 0 :=
-  ext fun x => f.map_eq_zero_of_eq _ (by simp) Fin.zero_ne_one
+  ext fun _ => f.map_eq_zero_of_eq _ (by simp) Fin.zero_ne_one
 
 @[simp]
 theorem curryLeft_compAlternatingMap {n : ℕ} (g : N'' →ₗ[R'] N₂'')
