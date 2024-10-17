@@ -352,26 +352,23 @@ section linearMap
 /--
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `id ⊗ f = 0`, if and only
 if  `f = 0`. -/
-lemma implies_zero_iff_lTensor_zero {N N' : Type max u v}
+lemma implies_zero_iff_lTensor_zero {N N' : Type*}
     [AddCommGroup N] [Module R N]
     [AddCommGroup N'] [Module R N']
     [h: FaithfullyFlat R M] (f : N →ₗ[R] N') :
     f = 0 ↔  LinearMap.lTensor M f = 0 :=
   ⟨fun hf => hf.symm ▸ LinearMap.lTensor_zero M, fun hf => by
-    rw [iff_iff_lTensor_exact] at h
-    have := h.1
-    have := hf.symm ▸ h.2 N N' N' f LinearMap.id |>.2 (by
-      rw [LinearMap.exact_iff, LinearMap.range_zero, LinearMap.ker_eq_bot]
+    have := lTensor_reflects_exact R M N N' N' f LinearMap.id (by
+      rw [LinearMap.exact_iff, hf, LinearMap.range_zero, LinearMap.ker_eq_bot]
       apply Module.Flat.lTensor_preserves_injective_linearMap
       exact fun _ _ h => h)
-    ext x
-    simpa using this (f x)⟩
+    ext x; simpa using this (f x)⟩
 
 
 /--
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `f ⊗ id = 0`, if and only
 if  `f = 0`. -/
-lemma implies_zero_iff_rTensor_zero {N N' : Type max u v}
+lemma implies_zero_iff_rTensor_zero {N N' : Type*}
     [AddCommGroup N] [Module R N]
     [AddCommGroup N'] [Module R N']
     [h: FaithfullyFlat R M] (f : N →ₗ[R] N') :
@@ -414,31 +411,38 @@ end linearMap
 
 
 /-- An `R`-module linearly equivalent to a faithfully flat `R`-module is faithfully flat. -/
-lemma of_linearEquiv [f : FaithfullyFlat R M]
-    (M' : Type max u v) [AddCommGroup M'] [Module R M'] (e : M' ≃ₗ[R] M) :
+lemma of_linearEquiv [fl : FaithfullyFlat R M]
+    (M' : Type*) [AddCommGroup M'] [Module R M'] (e : M' ≃ₗ[R] M) :
     FaithfullyFlat R M' := by
-  rw [iff_zero_iff_lTensor_zero] at f ⊢
-  refine ⟨f.1.of_linearEquiv _ _ _ e, fun N N' _ _ _ _ g => f.2 g |>.symm.trans ?_ |>.symm⟩
-  have eq : LinearMap.lTensor M' g =
-      e.symm.toLinearMap.rTensor _ ∘ₗ LinearMap.lTensor M g ∘ₗ
-      e.toLinearMap.rTensor _ := by ext; simp
+  classical
+  haveI : Module.Flat R M' := Module.Flat.of_linearEquiv _ _ _ e
+  refine ⟨fun m hm rid => fl.2 hm ?_⟩
+  rw [eq_top_iff] at rid ⊢
+  rintro x -
+  specialize @rid (e.symm x) ⟨⟩
+  rw [← Submodule.coe_set_smul, Submodule.mem_set_smul] at rid
+  obtain ⟨c, hc, eq⟩ := rid
+  simp only [Finsupp.sum] at eq
+  change _ = (Submodule.subtype _) _ at eq
+  simp only [map_sum, map_smul, Submodule.coe_subtype] at eq
+  apply_fun e at eq
+  simp only [LinearEquiv.apply_symm_apply, map_sum, map_smul] at eq
   rw [eq]
-
-  refine ⟨fun h => h ▸ by simp, fun h => ?_⟩
-  ext m n
-  simpa using congr(e.toLinearMap.rTensor _ ($h (e.symm m ⊗ₜ[R] n)))
+  refine Submodule.sum_mem _ fun i hi => ?_
+  apply Submodule.apply_mem_map₂ (hm := hc hi)
+  trivial
 
 section comp
 
 open TensorProduct LinearMap
-
-variable (R : Type u) (S : Type u) (M : Type u)
-  [CommRing R] [CommRing S] [Algebra R S]
-  [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable (R : Type u) (S M : Type*)
+variable [CommRing R] [CommRing S] [Algebra R S]
+variable [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable [FaithfullyFlat R S] [FaithfullyFlat S M]
 
 /-- If `S` is a faithfully flat `R`-algebra, then any faithfully flat `S`-Module is faithfully flat
 as an `R`-module. -/
-theorem comp [FaithfullyFlat R S] [FaithfullyFlat S M] :
+theorem comp  :
     FaithfullyFlat R M := by
   rw [iff_zero_iff_lTensor_zero]
   refine ⟨Module.Flat.comp R S M, fun N N' _ _ _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
