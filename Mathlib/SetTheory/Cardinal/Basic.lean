@@ -1380,7 +1380,7 @@ theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α :
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 
--- Porting note: was `simp`. LHS is not normal form.
+-- Porting note (#11119): was `simp`. LHS is not normal form.
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
