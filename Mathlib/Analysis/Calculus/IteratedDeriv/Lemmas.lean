@@ -126,15 +126,15 @@ lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
       deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_const_smul',
       neg_smul]
 
-lemma Filter.EventuallyEq.iteratedDeriv_eq (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} (hfg : f =ᶠ[nhds x] g) :
+open Topology in
+lemma Filter.EventuallyEq.iteratedDeriv_eq (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} (hfg : f =ᶠ[𝓝 x] g) :
     iteratedDeriv n f x = iteratedDeriv n g x := by
   simp only [← iteratedDerivWithin_univ, iteratedDerivWithin_eq_iteratedFDerivWithin]
   rw [(hfg.filter_mono nhdsWithin_le_nhds).iteratedFDerivWithin_eq hfg.eq_of_nhds n]
 
-lemma iteratedDeriv_eq_on_open (n : ℕ) {f g : 𝕜 → F} {s : Set 𝕜} (hs : IsOpen s) {x : 𝕜}
-    (hx : x ∈ s) (hfg : Set.EqOn f g s) :
-    iteratedDeriv n f x = iteratedDeriv n g x := by
-  apply Filter.EventuallyEq.iteratedDeriv_eq
+lemma Set.EqOn.iteratedDeriv_of_isOpen (hfg : Set.EqOn f g s) (hs : IsOpen s) (n : ℕ) :
+    Set.EqOn (iteratedDeriv n f) (iteratedDeriv n g) s := by
+  refine fun x hx ↦ Filter.EventuallyEq.iteratedDeriv_eq n ?_
   filter_upwards [IsOpen.mem_nhds hs hx] with a ha
   exact hfg ha
 
