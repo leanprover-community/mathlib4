@@ -535,3 +535,42 @@ lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
       exact hγ.periodic_of_eq hv heq
 
 end ExistUnique
+
+section Naturality
+
+variable
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners ℝ E' H'}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
+  {v' : (x : M') → TangentSpace I' x}
+
+/-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
+  differentiable map. If `v` and `v'` are `f`-related, then `f` maps integral curves of `v` to
+  integral curves of `v'`. -/
+lemma IsIntegralCurveAt.of_mdifferentiable_related (h : IsIntegralCurveAt γ v t₀)
+    {f : M → M'} (hf : MDifferentiable I I' f) (hv : ∀ x : M, v' (f x) = mfderiv I I' f x (v x)) :
+    IsIntegralCurveAt (f ∘ γ) v' t₀ := by
+  apply h.mono
+  intros t ht
+  apply (HasMFDerivAt.comp t (hf (γ t)).hasMFDerivAt ht).congr_mfderiv
+  rw [Function.comp_apply, hv, ContinuousLinearMap.comp_smulRight]
+
+/-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
+  differentiable map. If `f` maps integral curves of `v` to integral curves of `v'`, then `v` and
+  `v'` are `f`-related. -/
+lemma mdifferentiable_related_of_isIntegralCurveAt [BoundarylessManifold I M] [CompleteSpace E]
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
+    {f : M → M'} (hf : MDifferentiable I I' f)
+    (h : ∀ (γ : ℝ → M) (t₀ : ℝ), IsIntegralCurveAt γ v t₀ → IsIntegralCurveAt (f ∘ γ) v' t₀)
+    (x : M) : v' (f x) = mfderiv I I' f x (v x) := by
+  obtain ⟨γ, h0, hγ⟩ : ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurveAt γ v 0 :=
+    exists_isIntegralCurveAt_of_contMDiffAt_boundaryless 0 hv.contMDiffAt
+  have hγ' := (h γ 0 hγ).hasMFDerivAt
+  have hγ := hγ.hasMFDerivAt
+  rw [Function.comp_apply, h0] at hγ'
+  rw [h0] at hγ
+  have := hasMFDerivAt_unique hγ' <| (hf (γ 0)).hasMFDerivAt.comp 0 hγ
+  rw [ContinuousLinearMap.comp_smulRight, ContinuousLinearMap.smulRight_one_eq_iff, h0] at this
+  exact this
+
+end Naturality
