@@ -54,6 +54,13 @@ theorem take_all (v : (i : Fin n) → α i) : take n (le_refl n) v = v := by
   simp [take]
 
 @[simp]
+theorem take_take {m n' : ℕ} (h : m ≤ n') (h' : n' ≤ n) (v : (i : Fin n) → α i) :
+    take m h (take n' h' v) = take m (Nat.le_trans h h') v := by
+  ext i
+  simp only [take]
+  congr
+
+@[simp]
 theorem take_init {α : Fin (n + 1) → Sort*} (m : ℕ) (h : m ≤ n) (v : (i : Fin (n + 1)) → α i) :
     take m h (init v) = take m (Nat.le_succ_of_le h) v := by
   ext i
