@@ -68,8 +68,7 @@ theorem fermatNumber_eq_prod_add_two (n : ℕ) :
   exact le_of_lt <| two_lt_fermatNumber _
 
 theorem fermatNumber_succ (n : ℕ) : fermatNumber (n + 1) = (fermatNumber n - 1) ^ 2 + 1 := by
-  rw [fermatNumber, pow_succ, mul_comm, pow_mul']
-  rfl
+  rw [fermatNumber, pow_succ, mul_comm, pow_mul', fermatNumber, add_tsub_cancel_right]
 
 theorem two_mul_fermatNumber_sub_one_sq_le_fermatNumber_sq (n : ℕ) :
     2 * (fermatNumber n - 1) ^ 2 ≤ (fermatNumber (n + 1)) ^ 2 := by
