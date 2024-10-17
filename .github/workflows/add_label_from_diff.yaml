@@ -24,6 +24,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: debug
+        run: |
+          echo "$XY"
+          echo "$GITHUB_BASE_REF"
+        env:
+          XY: ${{ github.base_ref }}
       - name: install elan
         run: |
           set -o pipefail
