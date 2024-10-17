@@ -17,6 +17,10 @@ definitions.
 
 Some useful results that relate the topology of the normed field to the discrete topology include:
 * `norm_eq_one_iff_ne_zero_of_discrete`
+
+A method for constructing a normed field instance from a given real absolute value on a field is
+given in:
+* `AbsoluteValue.toNormedField`
 -/
 
 -- Guard against import creep.
@@ -1054,3 +1058,18 @@ instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : Normed
   { SubringClass.toNormedRing s with mul_comm := mul_comm }
 
 end SubringClass
+
+namespace AbsoluteValue
+
+/-- A real absolute value on a field determines a `NormedField` structure. -/
+def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
+  norm := v
+  dist_eq _ _ := rfl
+  dist_self := by simp only [sub_self, MulHom.toFun_eq_coe, coe_toMulHom, map_zero, implies_true]
+  dist_comm := v.map_sub
+  dist_triangle := v.sub_le
+  eq_of_dist_eq_zero := by simp only [MulHom.toFun_eq_coe, coe_toMulHom, map_sub_eq_zero_iff,
+    imp_self, implies_true]
+  norm_mul' := v.map_mul
+
+end AbsoluteValue
