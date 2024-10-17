@@ -10,9 +10,8 @@ import Mathlib.FieldTheory.Normal
 /-!
 # Conjugate roots
 
-This file specialize to the property of conjugate roots. Given two elements over some ring `K`,
-these two elements are conjuagte roots over some `K` if they have the same minimal polynomial over
-`K`.
+Given two elements `x` and `y` of some `K`-algebra, these two elements are *conjugate roots* over `K`
+if they have the same minimal polynomial over `K`.
 
 ## Main definitions
 
