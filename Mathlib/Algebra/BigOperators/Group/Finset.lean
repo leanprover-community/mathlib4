@@ -1618,7 +1618,7 @@ theorem prod_partition (R : Setoid α) [DecidableRel R.r] :
 /-- If we can partition a product into subsets that cancel out, then the whole product cancels. -/
 @[to_additive "If we can partition a sum into subsets that cancel out, then the whole sum cancels."]
 theorem prod_cancels_of_partition_cancels (R : Setoid α) [DecidableRel R.r]
-    (h : ∀ x ∈ s, ∏ a ∈ s.filter fun y => y ≈ x, f a = 1) : ∏ x ∈ s, f x = 1 := by
+    (h : ∀ x ∈ s, ∏ a ∈ s.filter fun y => R y x, f a = 1) : ∏ x ∈ s, f x = 1 := by
   rw [prod_partition R, ← Finset.prod_eq_one]
   intro xbar xbar_in_s
   obtain ⟨x, x_in_s, rfl⟩ := mem_image.mp xbar_in_s

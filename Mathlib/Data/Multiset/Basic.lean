@@ -69,7 +69,7 @@ instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) :=
 
 -- Porting note: `Quotient.recOnSubsingleton₂ s₁ s₂` was in parens which broke elaboration
 instance decidableEq [DecidableEq α] : DecidableEq (Multiset α)
-  | s₁, s₂ => Quotient.recOnSubsingleton₂ s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq
+  | s₁, s₂ => Quotient.recOnSubsingleton₂ s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq_iff_equiv
 
 /-- defines a size for a multiset by referring to the size of the underlying list -/
 protected
