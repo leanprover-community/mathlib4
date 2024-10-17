@@ -119,7 +119,7 @@ example : 1 + 2 = 2 + 1 := by
 
 example (m n : Nat) : (m == n) = true := by
   unfold_projs
-  guard_target =ₛ Nat.beq m n = true
+  guard_target =ₛ decide (m = n) = true
   exact test_sorry
 
 example {α : Type u} (f : α → α) (a : α) :

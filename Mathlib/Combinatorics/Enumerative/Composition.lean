@@ -636,7 +636,7 @@ theorem getElem_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ}
     simp
   · simp only [splitWrtCompositionAux, getElem_cons_succ, IH, take,
         sum_cons, Nat.add_eq, add_zero, splitAt_eq, drop_take, drop_drop]
-    rw [add_comm (sum _) n, Nat.add_sub_add_left]
+    rw [Nat.add_sub_add_left]
 
 /-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`
 between the indices `c.sizeUpTo i` and `c.sizeUpTo (i+1)`, i.e., the indices in the `i`-th

@@ -144,7 +144,7 @@ theorem ranges_length (l : List ℕ) :
 /-- See `List.ranges_flatten` for the version about `List.sum`. -/
 lemma ranges_flatten' : ∀ l : List ℕ, l.ranges.flatten = range (Nat.sum l)
   | [] => rfl
-  | a :: l => by simp only [sum_cons, flatten, ← map_flatten, ranges_flatten', range_add]
+  | a :: l => by simp only [Nat.sum_cons, flatten, ← map_flatten, ranges_flatten', range_add]
 
 @[deprecated (since := "2024-10-15")] alias ranges_join' := ranges_flatten'
 

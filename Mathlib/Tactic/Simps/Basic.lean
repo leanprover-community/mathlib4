@@ -5,8 +5,8 @@ Authors: Floris van Doorn
 -/
 import Lean.Elab.Tactic.Simp
 import Lean.Elab.App
-import Mathlib.Tactic.Simps.NotationClass
 import Batteries.Data.String.Basic
+import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Lean.Expr.Basic
 
 /-!
