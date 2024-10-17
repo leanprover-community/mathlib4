@@ -61,7 +61,6 @@ theorem fermatNumber_eq_prod_add_two (n : ℕ) :
 theorem fermatNumber_succ (n : ℕ) : fermatNumber (n + 1) = (fermatNumber n - 1) ^ 2 + 1 := by
   rw [fermatNumber, pow_succ, mul_comm, Nat.pow_mul']
   rfl
-  
 theorem fermat_succ_succ (n : ℕ) :
     fermatNumber (n + 2) = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
   simp only [fermatNumber, add_sub_self_right]
