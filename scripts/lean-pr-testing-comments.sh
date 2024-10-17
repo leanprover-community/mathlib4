@@ -92,7 +92,7 @@ if [[ "$branch_name" =~ ^$branch_prefix-([0-9]+)$ ]]; then
   existing_comment=$(curl -L -s -H "Authorization: token $TOKEN" \
                           -H "Accept: application/vnd.github.v3+json" \
                           "$repo_url/issues/$pr_number/comments" \
-                          | jq 'first(.[] | select(.body | test("^- . Mathlib") or startswith("Mathlib CI status")) | select(.user.login == "leanprover-community-mathlib4-bot"))')
+                          | jq 'first(.[] | select(.body | test("^- . Mathlib") or startswith("Mathlib CI status")) | select(.user.login == "leanprover-community-bot"))')
   existing_comment_id=$(echo "$existing_comment" | jq -r .id)
   existing_comment_body=$(echo "$existing_comment" | jq -r .body)
 

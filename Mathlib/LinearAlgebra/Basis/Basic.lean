@@ -24,18 +24,15 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
-variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
+variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
 section Module
 
-variable [Semiring R]
-variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
-
+variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 
 namespace Basis
 
-variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
+variable (b : Basis ι R M)
 
 section Coord
 
@@ -187,9 +184,9 @@ section Module
 open LinearMap
 
 variable {v : ι → M}
-variable [Ring R] [CommRing R₂] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M'']
-variable [Module R M] [Module R₂ M] [Module R M'] [Module R M'']
-variable {c d : R} {x y : M}
+variable [Ring R] [CommRing R₂] [AddCommGroup M]
+variable [Module R M] [Module R₂ M]
+variable {x y : M}
 variable (b : Basis ι R M)
 
 namespace Basis
@@ -280,7 +277,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       rfl
     have h₂ : map (Submodule.subtype (span R (range v))) (span R (range fun i => ⟨v i, this i⟩)) =
         span R (range v) := by
-      rw [← span_image, Submodule.coeSubtype]
+      rw [← span_image, Submodule.coe_subtype]
       -- Porting note: why doesn't `rw [h₁]` work here?
       exact congr_arg _ h₁
     have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
