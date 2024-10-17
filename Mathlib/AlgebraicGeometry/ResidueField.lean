@@ -216,7 +216,7 @@ lemma residueFieldCongr_fromSpecResidueField {x y : X} (h : x = y) :
   subst h; simp
 
 @[reassoc]
-lemma Hom.residueFieldMap_fromSpecResidueField (x : X) :
+lemma Hom.Spec_map_residueFieldMap_fromSpecResidueField (x : X) :
     Spec.map (f.residueFieldMap x) ≫ Y.fromSpecResidueField _ =
       X.fromSpecResidueField x ≫ f := by
   dsimp only [fromSpecResidueField]
