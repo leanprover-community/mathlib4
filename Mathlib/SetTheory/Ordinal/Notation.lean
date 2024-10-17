@@ -1026,13 +1026,13 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
       refine
         ⟨isLimit_mul this isLimit_omega0, fun i =>
           ⟨this, ?_, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega0'⟩
-      rw [← mul_succ, ← Ordinal.natCast_succ, Ordinal.mul_lt_mul_iff_left this]
+      rw [← mul_succ, ← natCast_succ, Ordinal.mul_lt_mul_iff_left this]
       apply nat_lt_omega0
-    · have := opow_pos (repr a') omega_pos
+    · have := opow_pos (repr a') omega0_pos
       refine
         ⟨isLimit_add _ (isLimit_mul this isLimit_omega0), fun i => ⟨this, ?_, ?_⟩,
           exists_lt_add exists_lt_mul_omega0'⟩
-      · rw [← mul_succ, ← Ordinal.natCast_succ, Ordinal.mul_lt_mul_iff_left this]
+      · rw [← mul_succ, ← natCast_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega0
       · refine fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (iha.2 H.fst)))
         rw [repr, ← zero_def, repr, add_zero, iha.1, opow_succ, Ordinal.mul_lt_mul_iff_left this]
@@ -1220,7 +1220,7 @@ instance : IsWellOrder NONote (· < ·) where
 def below (a b : NONote) : Prop :=
   NFBelow a.1 (repr b)
 
-/-- The `oadd` pseudo-constructor for `NONote`. -/
+/-- The `oadd` pseudo-constructor for `NONote` -/
 def oadd (e : NONote) (n : ℕ+) (a : NONote) (h : below a e) : NONote :=
   ⟨_, NF.oadd e.2 n h⟩
 
@@ -1233,28 +1233,28 @@ def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
   · exact H0
   · exact H1 ⟨e, h.fst⟩ n ⟨a, h.snd⟩ h.snd' (IHe _) (IHa _)
 
-/-- Addition of ordinal notations. -/
+/-- Addition of ordinal notations -/
 instance : Add NONote :=
   ⟨fun x y => mk (x.1 + y.1)⟩
 
 theorem repr_add (a b) : repr (a + b) = repr a + repr b :=
   ONote.repr_add a.1 b.1
 
-/-- Subtraction of ordinal notations. -/
+/-- Subtraction of ordinal notations -/
 instance : Sub NONote :=
   ⟨fun x y => mk (x.1 - y.1)⟩
 
 theorem repr_sub (a b) : repr (a - b) = repr a - repr b :=
   ONote.repr_sub a.1 b.1
 
-/-- Multiplication of ordinal notations. -/
+/-- Multiplication of ordinal notations -/
 instance : Mul NONote :=
   ⟨fun x y => mk (x.1 * y.1)⟩
 
 theorem repr_mul (a b) : repr (a * b) = repr a * repr b :=
   ONote.repr_mul a.1 b.1
 
-/-- Exponentiation of ordinal notations. -/
+/-- Exponentiation of ordinal notations -/
 instance : Pow NONote NONote :=
   ⟨fun x y => mk (x.1 ^ y.1)⟩
 
