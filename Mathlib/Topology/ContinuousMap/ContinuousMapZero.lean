@@ -85,15 +85,25 @@ lemma embedding_toContinuousMap : Embedding ((↑) : C(X, R)₀ → C(X, R)) whe
   inj _ _ h := ext fun x ↦ congr($(h) x)
 
 instance [T0Space R] : T0Space C(X, R)₀ := embedding_toContinuousMap.t0Space
+instance [R0Space R] : R0Space C(X, R)₀ := embedding_toContinuousMap.r0Space
 instance [T1Space R] : T1Space C(X, R)₀ := embedding_toContinuousMap.t1Space
+instance [R1Space R] : R1Space C(X, R)₀ := embedding_toContinuousMap.r1Space
 instance [T2Space R] : T2Space C(X, R)₀ := embedding_toContinuousMap.t2Space
+instance [RegularSpace R] : RegularSpace C(X, R)₀ := embedding_toContinuousMap.regularSpace
+instance [T3Space R] : T3Space C(X, R)₀ := embedding_toContinuousMap.t3Space
+
+instance instContinuousEvalConst : ContinuousEvalConst C(X, R)₀ X R :=
+  .of_continuous_forget embedding_toContinuousMap.continuous
+
+instance instContinuousEval [LocallyCompactPair X R] : ContinuousEval C(X, R)₀ X R :=
+  .of_continuous_forget embedding_toContinuousMap.continuous
 
 lemma closedEmbedding_toContinuousMap [T1Space R] :
     ClosedEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
   toEmbedding := embedding_toContinuousMap
   isClosed_range := by
     rw [range_toContinuousMap]
-    exact isClosed_singleton.preimage <| ContinuousMap.continuous_eval_const 0
+    exact isClosed_singleton.preimage <| continuous_eval_const 0
 
 @[fun_prop]
 lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]

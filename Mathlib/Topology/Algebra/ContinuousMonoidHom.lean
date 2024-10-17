@@ -241,6 +241,15 @@ theorem embedding_toContinuousMap :
   ⟨inducing_toContinuousMap A B, toContinuousMap_injective⟩
 
 @[to_additive]
+instance instContinuousEvalConst : ContinuousEvalConst (ContinuousMonoidHom A B) A B :=
+  .of_continuous_forget (inducing_toContinuousMap A B).continuous
+
+@[to_additive]
+instance instContinuousEval [LocallyCompactPair A B] :
+    ContinuousEval (ContinuousMonoidHom A B) A B :=
+  .of_continuous_forget (inducing_toContinuousMap A B).continuous
+
+@[to_additive]
 lemma range_toContinuousMap :
     Set.range (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) =
       {f : C(A, B) | f 1 = 1 ∧ ∀ x y, f (x * y) = f x * f y} := by
@@ -254,10 +263,10 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
   toEmbedding := embedding_toContinuousMap A B
   isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
-    refine .inter (isClosed_singleton.preimage (ContinuousMap.continuous_eval_const 1)) <|
+    refine .inter (isClosed_singleton.preimage (continuous_eval_const 1)) <|
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ ?_
-    exact isClosed_eq (ContinuousMap.continuous_eval_const (x * y)) <|
-      .mul (ContinuousMap.continuous_eval_const x) (ContinuousMap.continuous_eval_const y)
+    exact isClosed_eq (continuous_eval_const (x * y)) <|
+      .mul (continuous_eval_const x) (continuous_eval_const y)
 
 variable {A B C D E}
 
