@@ -289,3 +289,90 @@ lemma map_top (f : LatticeHom α β) (h : Surjective f) : Sublattice.map f ⊤ =
   SetLike.coe_injective <| by simp [h.range_eq]
 
 end Sublattice
+
+namespace Sublattice
+variable {L M : Sublattice α} {f : LatticeHom α β} {s t : Set α} {a : α}
+
+/-- Binary product of sublattices as a sublattice. -/
+def prod (L : Sublattice α) (M : Sublattice β) : Sublattice (α × β) where
+  carrier := L ×ˢ M
+  supClosed' := L.supClosed.prod M.supClosed
+  infClosed' := L.infClosed.prod M.infClosed
+
+@[simp, norm_cast] lemma coe_prod (L : Sublattice α) (M : Sublattice β) :
+    L.prod M = (L ×ˢ M : Set (α × β)) := rfl
+
+@[simp] lemma mem_prod {M : Sublattice β} {p : α × β} : p ∈ L.prod M ↔ p.1 ∈ L ∧ p.2 ∈ M := Iff.rfl
+
+lemma prod_mono {L₁ L₂ : Sublattice α} {M₁ M₂ : Sublattice β} (hL : L₁ ≤ L₂) (hM : M₁ ≤ M₂) :
+    L₁.prod M₁ ≤ L₂.prod M₂ := Set.prod_mono hL hM
+
+lemma prod_mono_right {M₁ M₂ : Sublattice β} (hM : M₁ ≤ M₂) : L.prod M₁ ≤ L.prod M₂ :=
+  prod_mono le_rfl hM
+
+lemma prod_mono_left {L₁ L₂ : Sublattice α} {M : Sublattice β} (hL : L₁ ≤ L₂) :
+    L₁.prod M ≤ L₂.prod M := prod_mono hL le_rfl
+
+lemma prod_top (L : Sublattice α) : L.prod (⊤ : Sublattice β) = L.comap LatticeHom.fst :=
+  ext fun a ↦ by simp [mem_prod, LatticeHom.coe_fst]
+
+lemma top_prod (L : Sublattice β) : (⊤ : Sublattice α).prod L = L.comap LatticeHom.snd :=
+  ext fun a ↦ by simp [mem_prod, LatticeHom.coe_snd]
+
+@[simp] lemma top_prod_top : (⊤ : Sublattice α).prod (⊤ : Sublattice β) = ⊤ :=
+  (top_prod _).trans <| comap_top _
+
+@[simp] lemma prod_bot (L : Sublattice α) : L.prod (⊥ : Sublattice β) = ⊥ :=
+  SetLike.coe_injective prod_empty
+
+@[simp] lemma bot_prod (M : Sublattice β) : (⊥ : Sublattice α).prod M = ⊥ :=
+  SetLike.coe_injective empty_prod
+
+lemma le_prod_iff {M : Sublattice β} {N : Sublattice (α × β)} :
+    N ≤ L.prod M ↔ N ≤ comap LatticeHom.fst L ∧ N ≤ comap LatticeHom.snd M := by
+  simp [SetLike.le_def, forall_and]
+
+@[simp] lemma prod_eq_bot {M : Sublattice β} : L.prod M = ⊥ ↔ L = ⊥ ∨ M = ⊥ := by
+  simpa only [← coe_inj] using Set.prod_eq_empty_iff
+
+@[simp] lemma prod_eq_top [Nonempty α] [Nonempty β] {M : Sublattice β} :
+    L.prod M = ⊤ ↔ L = ⊤ ∧ M = ⊤ := by simpa only [← coe_inj] using Set.prod_eq_univ
+
+/-- The product of sublattices is isomorphic to their product as lattices. -/
+def prodEquiv (L : Sublattice α) (M : Sublattice β) : L.prod M ≃o L × M where
+  toEquiv := Equiv.Set.prod _ _
+  map_rel_iff' := Iff.rfl
+
+section Pi
+variable {κ : Type*} {π : κ → Type*} [∀ i, Lattice (π i)]
+
+/-- Arbitrary product of sublattices. Given an index set `s` and a family of sublattices
+`L : Π i, Sublattice (α i)`, `pi s L` is the sublattice of dependent functions `f : Π i, α i` such
+that `f i` belongs to `L i` whenever `i ∈ s`. -/
+def pi (s : Set κ) (L : ∀ i, Sublattice (π i)) : Sublattice (∀ i, π i) where
+  carrier := s.pi fun i ↦ L i
+  supClosed' := supClosed_pi fun i _ ↦ (L i).supClosed
+  infClosed' := infClosed_pi fun i _ ↦ (L i).infClosed
+
+@[simp, norm_cast] lemma coe_pi (s : Set κ) (L : ∀ i, Sublattice (π i)) :
+    (pi s L : Set (∀ i, π i)) = Set.pi s fun i ↦ L i := rfl
+
+@[simp] lemma mem_pi {s : Set κ} {L : ∀ i, Sublattice (π i)} {x : ∀ i, π i} :
+    x ∈ pi s L ↔ ∀ i, i ∈ s → x i ∈ L i := Iff.rfl
+
+@[simp] lemma pi_empty (L : ∀ i, Sublattice (π i)) : pi ∅ L = ⊤ := ext fun a ↦ by simp [mem_pi]
+
+@[simp] lemma pi_top (s : Set κ) : (pi s fun i ↦ ⊤ : Sublattice (∀ i, π i)) = ⊤ :=
+  ext fun a ↦ by simp [mem_pi]
+
+@[simp] lemma pi_bot [Nonempty κ] : (pi univ fun i ↦ ⊥ : Sublattice (∀ i, π i)) = ⊥ :=
+  ext fun a ↦ by simp [mem_pi]
+
+lemma le_pi {s : Set κ} {L : ∀ i, Sublattice (π i)} {M : Sublattice (∀ i, π i)} :
+    M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) := by simp [SetLike.le_def]; aesop
+
+@[simp] lemma pi_univ_eq_bot {L : ∀ i, Sublattice (π i)} : pi univ L = ⊥ ↔ ∃ i, L i = ⊥ := by
+  simp_rw [← coe_inj]; simp
+
+end Pi
+end Sublattice
