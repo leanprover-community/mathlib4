@@ -56,7 +56,7 @@ instance (priority := 50) {R S : Type u} [CommRing R] [CommRing S]
     [IsLocalHom (R := CommRingCat.of R) (S := CommRingCat.of S) f] : IsLocalHom f :=
   inferInstance
 
--- This instance if for the case when a morphism is coerced into a real RingHom.
+-- This instance is for the case when a morphism is coerced into a real RingHom.
 instance {R S : CommRingCat} (f : R ⟶ S) [IsLocalHom f] :
     IsLocalHom (F := R →+* S) f :=
   inferInstance
