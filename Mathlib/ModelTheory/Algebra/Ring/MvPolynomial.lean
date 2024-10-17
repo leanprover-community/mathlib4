@@ -30,7 +30,7 @@ namespace Ring
 
 open MvPolynomial FreeCommRing
 
-/-- Given a finite set of monomials `monoms ι → Finset (κ →₀ ℕ)`, the
+/-- Given a finite set of monomials `monoms : ι → Finset (κ →₀ ℕ)`, the
 `genericPolyMap monoms` is an indexed collection of elements of the `FreeCommRing`,
 that can be evaluated to any collection `p : ι → MvPolynomial κ R` of
 polynomials such that `∀ i, (p i).support ⊆ monoms i`. -/
@@ -72,11 +72,11 @@ theorem MvPolynomialSupportLEEquiv_symm_apply_coeff [DecidableEq κ] [CommRing R
 
 @[simp]
 theorem lift_genericPolyMap [DecidableEq κ] [CommRing R]
-    [DecidableEq R] (mons : ι → Finset (κ →₀ ℕ))
-    (f : (i : ι) × { x // x ∈ mons i } ⊕ κ → R) (i : ι) :
-    FreeCommRing.lift f (genericPolyMap mons i) =
+    [DecidableEq R] (monoms : ι → Finset (κ →₀ ℕ))
+    (f : (i : ι) × { x // x ∈ monoms i } ⊕ κ → R) (i : ι) :
+    FreeCommRing.lift f (genericPolyMap monoms i) =
       MvPolynomial.eval (f ∘ Sum.inr)
-        (((mvPolynomialSupportLEEquiv mons).symm
+        (((mvPolynomialSupportLEEquiv monoms).symm
           (f ∘ Sum.inl)).1 i) := by
   simp only [genericPolyMap, Finsupp.prod_pow, map_sum, map_mul, lift_of, support,
     mvPolynomialSupportLEEquiv, coeff, map_prod, Finset.sum_filter, MvPolynomial.eval_eq,
