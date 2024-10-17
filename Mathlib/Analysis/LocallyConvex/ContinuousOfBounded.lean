@@ -99,7 +99,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     refine bE.1.to_hasBasis ?_ ?_
     · intro n _
       use n + 1
-      simp only [Ne, Nat.succ_ne_zero, not_false_iff, Nat.cast_add, Nat.cast_one, true_and_iff]
+      simp only [Ne, Nat.succ_ne_zero, not_false_iff, Nat.cast_add, Nat.cast_one, true_and]
       -- `b (n + 1) ⊆ b n` follows from `Antitone`.
       have h : b (n + 1) ⊆ b n := bE.2 (by simp)
       refine _root_.trans ?_ h
@@ -109,7 +109,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
       refine (bE1 (n + 1)).2.smul_mem ?_ hx
       have h' : 0 < (n : ℝ) + 1 := n.cast_add_one_pos
       rw [norm_inv, ← Nat.cast_one, ← Nat.cast_add, RCLike.norm_natCast, Nat.cast_add,
-        Nat.cast_one, inv_le h' zero_lt_one]
+        Nat.cast_one, inv_le_comm₀ h' zero_lt_one]
       simp
     intro n hn
     -- The converse direction follows from continuity of the scalar multiplication
@@ -136,7 +136,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     rcases hu n h with ⟨y, hy, hu1⟩
     convert hy
     rw [← hu1, ← mul_smul]
-    simp only [h, mul_inv_cancel, Ne, Nat.cast_eq_zero, not_false_iff, one_smul]
+    simp only [h, mul_inv_cancel₀, Ne, Nat.cast_eq_zero, not_false_iff, one_smul]
   -- The image `(fun n ↦ n • u n)` is von Neumann bounded:
   have h_bounded : IsVonNBounded 𝕜 (Set.range fun n : ℕ => (n : 𝕜) • u n) :=
     h_tendsto.cauchySeq.totallyBounded_range.isVonNBounded 𝕜

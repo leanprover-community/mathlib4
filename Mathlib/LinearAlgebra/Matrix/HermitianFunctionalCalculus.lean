@@ -7,7 +7,7 @@ Authors: Jon Bannon, Jireh Loreaux
 import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Topology.ContinuousFunction.Units
+import Mathlib.Topology.ContinuousMap.Units
 
 /-!
 # Continuous Functional Calculus for Hermitian Matrices
@@ -76,7 +76,7 @@ noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n �
     congr! with i
     simp
   commutes' r := by
-    simp only [Function.comp, algebraMap_apply, smul_eq_mul, mul_one]
+    simp only [Function.comp_def, algebraMap_apply, smul_eq_mul, mul_one]
     rw [← mul_one (algebraMap _ _ _), ← unitary.coe_mul_star_self hA.eigenvectorUnitary,
       ← Algebra.left_comm, unitary.coe_star, mul_assoc]
     congr!
@@ -134,7 +134,7 @@ instance instContinuousFunctionalCalculus :
       simp only [isSelfAdjoint_iff, cfcAux_apply, mul_assoc, star_mul, star_star]
       rw [star_eq_conjTranspose, diagonal_conjTranspose]
       congr!
-      simp [Pi.star_def, Function.comp]
+      simp [Pi.star_def, Function.comp_def]
   predicate_zero := .zero _
 
 instance instUniqueContinuousFunctionalCalculus :
@@ -157,7 +157,8 @@ lemma cfc_eq (f : ℝ → ℝ) : cfc f A = hA.cfc f := by
   have := cfcHom_eq_of_continuous_of_map_id hA' hA.cfcAux hA.closedEmbedding_cfcAux.continuous
     hA.cfcAux_id
   rw [cfc_apply f A hA' (by rw [continuousOn_iff_continuous_restrict]; fun_prop), this]
-  simp only [cfcAux_apply, ContinuousMap.coe_mk, Function.comp, Set.restrict_apply, IsHermitian.cfc]
+  simp only [cfcAux_apply, ContinuousMap.coe_mk, Function.comp_def, Set.restrict_apply,
+    IsHermitian.cfc]
 
 end IsHermitian
 end Matrix

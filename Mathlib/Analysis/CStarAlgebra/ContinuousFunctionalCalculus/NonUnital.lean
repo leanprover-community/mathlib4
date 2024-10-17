@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Quasispectrum
-import Mathlib.Topology.ContinuousFunction.Compact
-import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
+import Mathlib.Topology.ContinuousMap.Compact
+import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
@@ -127,6 +127,10 @@ lemma cfcₙHom_closedEmbedding :
     ClosedEmbedding <| (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
 
+@[fun_prop]
+lemma cfcₙHom_continuous : Continuous (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
+  cfcₙHom_closedEmbedding ha |>.continuous
+
 lemma cfcₙHom_id :
     cfcₙHom ha ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
@@ -170,6 +174,17 @@ theorem cfcₙHom_comp [UniqueNonUnitalContinuousFunctionalCalculus R A] (f : C(
 
 end cfcₙHom
 
+section cfcₙL
+
+/-- `cfcₙHom` bundled as a continuous linear map. -/
+@[simps apply]
+noncomputable def cfcₙL {a : A} (ha : p a) : C(σₙ R a, R)₀ →L[R] A :=
+  { cfcₙHom ha with
+    toFun := cfcₙHom ha
+    map_smul' := map_smul _
+    cont := (cfcₙHom_closedEmbedding ha).continuous }
+
+end cfcₙL
 
 section CFCn
 
@@ -245,17 +260,21 @@ lemma cfcₙ_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     · rwa [cfcₙ_apply_of_not_predicate _ h]
 
 variable (R) in
+include ha in
 lemma cfcₙ_id : cfcₙ (id : R → R) a = a :=
   cfcₙ_apply (id : R → R) a ▸ cfcₙHom_id (p := p) ha
 
 variable (R) in
+include ha in
 lemma cfcₙ_id' : cfcₙ (fun x : R ↦ x) a = a := cfcₙ_id R a
 
+include ha hf hf0 in
 /-- The **spectral mapping theorem** for the non-unital continuous functional calculus. -/
 lemma cfcₙ_map_quasispectrum : σₙ R (cfcₙ f a) = f '' σₙ R a := by
   simp [cfcₙ_apply f a, cfcₙHom_map_quasispectrum (p := p)]
 
 variable (R) in
+include R in
 lemma cfcₙ_predicate_zero : p 0 :=
   NonUnitalContinuousFunctionalCalculus.predicate_zero (R := R)
 
@@ -305,12 +324,14 @@ lemma cfcₙ_const_zero : cfcₙ (fun _ : R ↦ 0) a = 0 := cfcₙ_zero R a
 
 variable {R}
 
+include hf hf0 hg hg0 in
 lemma cfcₙ_mul : cfcₙ (fun x ↦ f x * g x) a = cfcₙ f a * cfcₙ g a := by
   by_cases ha : p a
   · rw [cfcₙ_apply f a, cfcₙ_apply g a, ← map_mul, cfcₙ_apply _ a]
     congr
   · simp [cfcₙ_apply_of_not_predicate a ha]
 
+include hf hf0 hg hg0 in
 lemma cfcₙ_add : cfcₙ (fun x ↦ f x + g x) a = cfcₙ f a + cfcₙ g a := by
   by_cases ha : p a
   · rw [cfcₙ_apply f a, cfcₙ_apply g a, cfcₙ_apply _ a]
@@ -380,6 +401,7 @@ lemma cfcₙ_smul_id {S : Type*} [SMulZeroClass S R] [ContinuousConstSMul S R]
 lemma cfcₙ_const_mul_id (r : R) (a : A) (ha : p a := by cfc_tac) : cfcₙ (r * ·) a = r • a :=
   cfcₙ_smul_id r a
 
+include ha in
 lemma cfcₙ_star_id : cfcₙ (star · : R → R) a = star a := by
   rw [cfcₙ_star _ a, cfcₙ_id' R a]
 
@@ -399,7 +421,7 @@ lemma cfcₙ_comp (g f : R → R) (a : A)
     ext
     simp
   rw [cfcₙ_apply .., cfcₙ_apply f a,
-    cfcₙ_apply _ (by convert hg) (ha := cfcₙHom_predicate (show p a from ha) _) ,
+    cfcₙ_apply _ _ (by convert hg) (ha := cfcₙHom_predicate (show p a from ha) _),
     ← cfcₙHom_comp _ _]
   swap
   · exact ⟨.mk _ <| hf.restrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp, Subtype.ext hf0⟩
@@ -437,6 +459,7 @@ lemma CFC.eq_zero_of_quasispectrum_eq_zero (h_spec : σₙ R a ⊆ {0}) (ha : p 
     a = 0 := by
   simpa [cfcₙ_id R a] using cfcₙ_congr (a := a) (f := id) (g := fun _ : R ↦ 0) fun x ↦ by simp_all
 
+include instCFCₙ in
 lemma CFC.quasispectrum_zero_eq : σₙ R (0 : A) = {0} := by
   refine Set.eq_singleton_iff_unique_mem.mpr ⟨quasispectrum.zero_mem R 0, fun x hx ↦ ?_⟩
   rw [← cfcₙ_zero R (0 : A),
@@ -450,6 +473,7 @@ lemma CFC.quasispectrum_zero_eq : σₙ R (0 : A) = {0} := by
     simpa [CFC.quasispectrum_zero_eq]
   · exact cfcₙ_apply_of_not_map_zero _ hf0
 
+@[simp]
 instance IsStarNormal.cfcₙ_map (f : R → R) (a : A) : IsStarNormal (cfcₙ f a) where
   star_comm_self := by
     refine cfcₙ_cases (fun x ↦ Commute (star x) x) _ _ (Commute.zero_right _) fun _ _ _ ↦ ?_
@@ -457,6 +481,19 @@ instance IsStarNormal.cfcₙ_map (f : R → R) (a : A) : IsStarNormal (cfcₙ f 
     rw [← cfcₙ_apply f a, ← cfcₙ_star, ← cfcₙ_mul .., ← cfcₙ_mul ..]
     congr! 2
     exact mul_comm _ _
+
+-- The following two lemmas are just `cfcₙ_predicate`, but specific enough for the `@[simp]` tag.
+@[simp]
+protected lemma IsSelfAdjoint.cfcₙ
+    [NonUnitalContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)] {f : R → R} {a : A} :
+    IsSelfAdjoint (cfcₙ f a) :=
+  cfcₙ_predicate _ _
+
+@[simp]
+lemma cfcₙ_nonneg_of_predicate [PartialOrder A]
+    [NonUnitalContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} :
+    0 ≤ cfcₙ f a :=
+  cfcₙ_predicate _ _
 
 end CFCn
 
@@ -472,6 +509,7 @@ variable (f g : R → R) (a : A)
 variable (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
 variable (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac)
 
+include hf hf0 hg hg0 in
 lemma cfcₙ_sub : cfcₙ (fun x ↦ f x - g x) a = cfcₙ f a - cfcₙ g a := by
   by_cases ha : p a
   · rw [cfcₙ_apply f a, cfcₙ_apply g a, ← map_sub, cfcₙ_apply ..]
@@ -653,12 +691,8 @@ lemma closedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
     ClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
   let f : C(spectrum R a, σₙ R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
-  have h_cpct' : CompactSpace (σₙ R a) := by
-    specialize h_cpct a
-    simp_rw [← isCompact_iff_compactSpace, quasispectrum_eq_spectrum_union_zero] at h_cpct ⊢
-    exact h_cpct.union isCompact_singleton
   refine (cfcHom_closedEmbedding ha).comp <|
-    (UniformInducing.uniformEmbedding ⟨?_⟩).toClosedEmbedding
+    (IsUniformInducing.isUniformEmbedding ⟨?_⟩).toClosedEmbedding
   have := uniformSpace_eq_inf_precomp_of_cover (β := R) f (0 : C(Unit, σₙ R a))
     (map_continuous f).isProperMap (map_continuous 0).isProperMap <| by
       simp only [← Subtype.val_injective.image_injective.eq_iff, f, ContinuousMap.coe_mk,

@@ -163,7 +163,7 @@ theorem isSimpleModule_self_iff_isUnit :
     exact ⟨⟨x, y, left_inv_eq_right_inv hzy hyx ▸ hzy, hyx⟩, rfl⟩
 
 theorem isSimpleModule_iff_finrank_eq_one {R} [DivisionRing R] [Module R M] :
-    IsSimpleModule R M ↔ FiniteDimensional.finrank R M = 1 :=
+    IsSimpleModule R M ↔ Module.finrank R M = 1 :=
   ⟨fun h ↦ have := h.nontrivial; have ⟨v, hv⟩ := exists_ne (0 : M)
     (finrank_eq_one_iff_of_nonzero' v hv).mpr (IsSimpleModule.toSpanSingleton_surjective R hv),
   is_simple_module_of_finrank_eq_one⟩
@@ -285,7 +285,7 @@ theorem IsSemisimpleModule.sup {p q : Submodule R M}
 instance IsSemisimpleRing.isSemisimpleModule [IsSemisimpleRing R] : IsSemisimpleModule R M :=
   have : IsSemisimpleModule R (M →₀ R) := isSemisimpleModule_of_isSemisimpleModule_submodule'
     (fun _ ↦ .congr (LinearMap.quotKerEquivRange _).symm) Finsupp.iSup_lsingle_range
-  .congr (LinearMap.quotKerEquivOfSurjective _ <| Finsupp.total_id_surjective R M).symm
+  .congr (LinearMap.quotKerEquivOfSurjective _ <| Finsupp.linearCombination_id_surjective R M).symm
 
 instance IsSemisimpleRing.isCoatomic_submodule [IsSemisimpleRing R] : IsCoatomic (Submodule R M) :=
   isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
@@ -300,7 +300,7 @@ instance {ι} [Finite ι] (R : ι → Type*) [∀ i, Ring (R i)] [∀ i, IsSemis
   have (i) : IsSemisimpleModule (∀ i, R i) (R i) :=
     ((e i).isSemisimpleModule_iff_of_bijective Function.bijective_id).mpr inferInstance
   classical
-  exact isSemisimpleModule_of_isSemisimpleModule_submodule' (p := (range <| single ·))
+  exact isSemisimpleModule_of_isSemisimpleModule_submodule' (p := (range <| single _ _ ·))
     (fun i ↦ .range _) (by simp_rw [range_eq_map, Submodule.iSup_map_single, Submodule.pi_top])
 
 /-- A binary product of semisimple rings is semisimple. -/
@@ -338,7 +338,7 @@ variable (ι R)
 
 proof_wanted IsSemisimpleRing.mulOpposite [IsSemisimpleRing R] : IsSemisimpleRing Rᵐᵒᵖ
 
-proof_wanted IsSemisimpleRing.module_end [IsSemisimpleRing R] [Module.Finite R M] :
+proof_wanted IsSemisimpleRing.module_end [IsSemisimpleModule R M] [Module.Finite R M] :
     IsSemisimpleRing (Module.End R M)
 
 proof_wanted IsSemisimpleRing.matrix [Fintype ι] [DecidableEq ι] [IsSemisimpleRing R] :
@@ -398,7 +398,9 @@ noncomputable instance _root_.Module.End.divisionRing
     exact (LinearEquiv.ofBijective _ <| bijective_of_ne_zero a0).right_inv _
   inv_zero := dif_pos rfl
   nnqsmul := _
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
+  qsmul_def := fun _ _ => rfl
 
 end LinearMap
 

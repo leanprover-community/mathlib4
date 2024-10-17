@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Alex Kontorovich
+Authors: Yury Kudryashov, Alex Kontorovich
 -/
 import Mathlib.Order.Filter.Bases
 
@@ -100,7 +100,7 @@ theorem Eventually.eval_pi {i : ι} (hf : ∀ᶠ x : α i in f i, p i x) :
 theorem eventually_pi [Finite ι] (hf : ∀ i, ∀ᶠ x in f i, p i x) :
     ∀ᶠ x : ∀ i, α i in pi f, ∀ i, p i (x i) := eventually_all.2 fun _i => (hf _).eval_pi
 
-theorem hasBasis_pi {ι' : ι → Type} {s : ∀ i, ι' i → Set (α i)} {p : ∀ i, ι' i → Prop}
+theorem hasBasis_pi {ι' : ι → Type*} {s : ∀ i, ι' i → Set (α i)} {p : ∀ i, ι' i → Prop}
     (h : ∀ i, (f i).HasBasis (p i) (s i)) :
     (pi f).HasBasis (fun If : Set ι × ∀ i, ι' i => If.1.Finite ∧ ∀ i ∈ If.1, p i (If.2 i))
       fun If : Set ι × ∀ i, ι' i => If.1.pi fun i => s i <| If.2 i := by
@@ -152,7 +152,7 @@ theorem pi_inf_principal_pi_neBot [∀ i, NeBot (f i)] {I : Set ι} :
 instance PiInfPrincipalPi.neBot [h : ∀ i, NeBot (f i ⊓ 𝓟 (s i))] {I : Set ι} :
     NeBot (pi f ⊓ 𝓟 (I.pi s)) :=
   (pi_inf_principal_univ_pi_neBot.2 ‹_›).mono <|
-    inf_le_inf_left _ <| principal_mono.2 fun x hx i _ => hx i trivial
+    inf_le_inf_left _ <| principal_mono.2 fun _ hx i _ => hx i trivial
 
 @[simp]
 theorem pi_eq_bot : pi f = ⊥ ↔ ∃ i, f i = ⊥ := by

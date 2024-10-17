@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Scott Carnahan
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.SMulAntidiagonal
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
@@ -228,10 +229,10 @@ theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : HahnSeries Γ R}
   ext a
   have hwf := x.isPWO_support.union y.isPWO_support
   rw [smul_coeff_left hwf, HahnSeries.add_coeff', of_symm_add]
-  simp_all only [Pi.add_apply, HahnSeries.add_coeff']
-  rw [smul_coeff_left hwf Set.subset_union_right,
-    smul_coeff_left hwf Set.subset_union_left]
-  · simp only [HahnSeries.add_coeff, h, sum_add_distrib]
+  · simp_all only [Pi.add_apply, HahnSeries.add_coeff']
+    rw [smul_coeff_left hwf Set.subset_union_right,
+      smul_coeff_left hwf Set.subset_union_left]
+    simp only [HahnSeries.add_coeff, h, sum_add_distrib]
   · intro b
     simp_all only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, HahnSeries.mem_support,
       HahnSeries.add_coeff, ne_eq, Set.mem_union, Set.mem_setOf_eq, mem_support]
@@ -252,7 +253,7 @@ theorem single_smul_coeff_add [MulZeroClass R] [SMulWithZero R V] {r : R} {x : H
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
     simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
-      mem_vaddAntidiagonal, Set.mem_setOf_eq, iff_false_iff]
+      mem_vaddAntidiagonal, Set.mem_setOf_eq, iff_false]
     rintro rfl h2 h1
     rw [IsCancelVAdd.left_cancel a1 a2 a h1] at h2
     exact h2 hx
@@ -386,7 +387,7 @@ theorem mul_single_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
     simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
-      mem_addAntidiagonal, Set.mem_setOf_eq, iff_false_iff]
+      mem_addAntidiagonal, Set.mem_setOf_eq, iff_false]
     rintro h2 rfl h1
     rw [← add_right_cancel h1] at hx
     exact h2 hx
@@ -534,7 +535,7 @@ instance instNoZeroSMulDivisors {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero
   eq_zero_or_eq_zero_of_smul_eq_zero {x y} hxy := by
     contrapose! hxy
     simp only [ne_eq]
-    rw [HahnModule.ext_iff, Function.funext_iff, not_forall]
+    rw [HahnModule.ext_iff, funext_iff, not_forall]
     refine ⟨x.order + ((of R).symm y).order, ?_⟩
     rw [smul_coeff_order_add_order x y, of_symm_zero, HahnSeries.zero_coeff, smul_eq_zero, not_or]
     constructor
@@ -643,7 +644,7 @@ theorem C_one : C (1 : R) = (1 : HahnSeries Γ R) :=
 
 theorem C_injective : Function.Injective (C : R → HahnSeries Γ R) := by
   intro r s rs
-  rw [HahnSeries.ext_iff, Function.funext_iff] at rs
+  rw [HahnSeries.ext_iff, funext_iff] at rs
   have h := rs 0
   rwa [C_apply, single_coeff_same, C_apply, single_coeff_same] at h
 
@@ -753,9 +754,9 @@ instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries �
       rw [Ne, SetLike.ext_iff, not_forall]
       obtain ⟨a, ha⟩ := exists_ne (0 : Γ)
       refine ⟨single a 1, ?_⟩
-      simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
+      simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true, Algebra.mem_top]
       intro x
-      rw [HahnSeries.ext_iff, Function.funext_iff, not_forall]
+      rw [HahnSeries.ext_iff, funext_iff, not_forall]
       refine ⟨a, ?_⟩
       rw [single_coeff_same, algebraMap_apply, C_apply, single_coeff_of_ne ha]
       exact zero_ne_one⟩⟩

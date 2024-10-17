@@ -120,10 +120,10 @@ theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
 @[simp]
 theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] := by
   simp_rw [antidiagonalTuple, antidiagonal, List.range_succ, List.map_append, List.map_singleton,
-    tsub_self, List.bind_append, List.bind_singleton, List.bind_map]
+    Nat.sub_self, List.bind_append, List.bind_singleton, List.bind_map]
   conv_rhs => rw [← List.nil_append [![n]]]
   congr 1
-  simp_rw [List.bind_eq_nil, List.mem_range, List.map_eq_nil]
+  simp_rw [List.bind_eq_nil_iff, List.mem_range, List.map_eq_nil_iff]
   intro x hx
   obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt hx
   rw [add_assoc, add_tsub_cancel_left, antidiagonalTuple_zero_succ]
@@ -143,8 +143,8 @@ theorem antidiagonalTuple_pairwise_pi_lex :
     simp_rw [antidiagonalTuple, List.pairwise_bind, List.pairwise_map, List.mem_map,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     simp only [mem_antidiagonal, Prod.forall, and_imp, forall_apply_eq_imp_iff₂]
-    simp only [Fin.pi_lex_lt_cons_cons, eq_self_iff_true, true_and_iff, lt_self_iff_false,
-      false_or_iff]
+    simp only [Fin.pi_lex_lt_cons_cons, eq_self_iff_true, true_and, lt_self_iff_false,
+      false_or]
     refine ⟨fun _ _ _ => antidiagonalTuple_pairwise_pi_lex k _, ?_⟩
     induction' n with n n_ih
     · rw [antidiagonal_zero]

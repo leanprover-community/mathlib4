@@ -34,7 +34,7 @@ open Function Module
 variable (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 /-- A perfect pairing of two (left) modules over a commutative ring. -/
-structure PerfectPairing :=
+structure PerfectPairing where
   toLin : M →ₗ[R] N →ₗ[R] R
   bijectiveLeft : Bijective toLin
   bijectiveRight : Bijective toLin.flip
@@ -49,6 +49,10 @@ instance instFunLike : FunLike (PerfectPairing R M N) M (N →ₗ[R] R) where
   coe f := f.toLin
   coe_injective' x y h := by cases x; cases y; simpa using h
 
+@[simp]
+lemma toLin_apply (p : PerfectPairing R M N) {x : M} : p.toLin x = p x := by
+  rfl
+
 variable (p : PerfectPairing R M N)
 
 /-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
@@ -57,7 +61,13 @@ protected def flip : PerfectPairing R N M where
   bijectiveLeft := p.bijectiveRight
   bijectiveRight := p.bijectiveLeft
 
-@[simp] lemma flip_flip : p.flip.flip = p := rfl
+@[simp]
+lemma flip_apply_apply {x : M} {y : N} : p.flip y x = p x y :=
+  rfl
+
+@[simp]
+lemma flip_flip : p.flip.flip = p :=
+  rfl
 
 /-- The linear equivalence from `M` to `Dual R N` induced by a perfect pairing. -/
 noncomputable def toDualLeft : M ≃ₗ[R] Dual R N :=
@@ -109,11 +119,13 @@ theorem bijective_toDualRight_symm_toDualLeft :
   Bijective.comp (LinearEquiv.bijective p.toDualRight.symm.dualMap)
     (LinearEquiv.bijective p.toDualLeft)
 
+include p in
 theorem reflexive_left : IsReflexive R M where
   bijective_dual_eval' := by
     rw [← p.toDualRight_symm_comp_toDualLeft]
     exact p.bijective_toDualRight_symm_toDualLeft
 
+include p in
 theorem reflexive_right : IsReflexive R N :=
   p.flip.reflexive_left
 
@@ -127,6 +139,11 @@ def IsReflexive.toPerfectPairingDual : PerfectPairing R (Dual R M) M where
   toLin := LinearMap.id
   bijectiveLeft := bijective_id
   bijectiveRight := bijective_dual_eval R M
+
+@[simp]
+lemma IsReflexive.toPerfectPairingDual_apply {f : Dual R M} {x : M} :
+    IsReflexive.toPerfectPairingDual (R := R) f x = f x :=
+  rfl
 
 variable (e : N ≃ₗ[R] Dual R M)
 
@@ -146,6 +163,7 @@ lemma symm_flip : e.flip.symm = e.symm.dualMap.trans (evalEquiv R M).symm := rfl
 lemma trans_dualMap_symm_flip : e.trans e.flip.symm.dualMap = Dual.eval R N := by
   ext; simp [symm_flip]
 
+include e in
 /-- If `N` is in perfect pairing with `M`, then it is reflexive. -/
 lemma isReflexive_of_equiv_dual_of_isReflexive : IsReflexive R N := by
   constructor

@@ -3,9 +3,10 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
+import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.Topology.ContinuousMap.Basic
+import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # Smooth sections
@@ -32,9 +33,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   (n : ℕ∞)
   (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
   -- `V` vector bundle
-
   [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
-
 
 /-- Bundled `n` times continuously differentiable sections of a vector bundle. -/
 structure ContMDiffSection where

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon, E.W.Ayers
+Authors: Simon Hudon, Edward Ayers
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Equiv.Defs
@@ -57,7 +57,7 @@ protected def runThe (ω : Type u) (cmd : WriterT ω M α) : M (α × ω) := cmd
 @[ext]
 protected theorem ext {ω : Type u} (x x' : WriterT ω M α) (h : x.run = x'.run) : x = x' := h
 
-variable {ω : Type u} {α β : Type u} [Monad M]
+variable [Monad M]
 
 /-- Creates an instance of `Monad`, with explicitly given `empty` and `append` operations.
 

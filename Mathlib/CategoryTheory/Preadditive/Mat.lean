@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.BigOperators.Pi
@@ -184,11 +184,11 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               ext x y
               dsimp
               simp_rw [dite_comp, comp_dite]
-              simp only [ite_self, dite_eq_ite, dif_ctx_congr, Limits.comp_zero, Limits.zero_comp,
+              simp only [ite_self, dite_eq_ite, Limits.comp_zero, Limits.zero_comp,
                 eqToHom_trans, Finset.sum_congr]
               erw [Finset.sum_sigma]
               dsimp
-              simp only [if_congr, if_true, dif_ctx_congr, Finset.sum_dite_irrel, Finset.mem_univ,
+              simp only [if_true, Finset.sum_dite_irrel, Finset.mem_univ,
                 Finset.sum_const_zero, Finset.sum_congr, Finset.sum_dite_eq']
               split_ifs with h h'
               · substs h h'
@@ -298,8 +298,8 @@ variable {C}
 -/
 @[simps]
 def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M.X i) where
-  hom := biproduct.lift fun i j k => if h : j = i then eqToHom (congr_arg M.X h) else 0
-  inv := biproduct.desc fun i j k => if h : i = k then eqToHom (congr_arg M.X h) else 0
+  hom := biproduct.lift fun i j _ => if h : j = i then eqToHom (congr_arg M.X h) else 0
+  inv := biproduct.desc fun i _ k => if h : i = k then eqToHom (congr_arg M.X h) else 0
   hom_inv_id := by
     simp only [biproduct.lift_desc]
     funext i j

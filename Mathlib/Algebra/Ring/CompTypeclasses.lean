@@ -122,7 +122,7 @@ theorem of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R
 
 /--
 Swap the direction of a `RingHomInvPair`. This is not an instance as it would loop, and better
-instances are often available and may often be preferrable to using this one. Indeed, this
+instances are often available and may often be preferable to using this one. Indeed, this
 declaration is not currently used in mathlib.
 -/
 theorem symm (σ₁₂ : R₁ →+* R₂) (σ₂₁ : R₂ →+* R₁) [RingHomInvPair σ₁₂ σ₂₁] :
@@ -156,9 +156,6 @@ theorem RingHom.surjective (σ : R₁ →+* R₂) [t : RingHomSurjective σ] : F
 
 namespace RingHomSurjective
 
--- The linter gives a false positive, since `σ₂` is an out_param
--- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
--- @[nolint dangerous_instance]
 instance (priority := 100) invPair {σ₁ : R₁ →+* R₂} {σ₂ : R₂ →+* R₁} [RingHomInvPair σ₁ σ₂] :
     RingHomSurjective σ₁ :=
   ⟨fun x => ⟨σ₂ x, RingHomInvPair.comp_apply_eq₂⟩⟩
