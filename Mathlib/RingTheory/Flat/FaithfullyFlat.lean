@@ -187,12 +187,12 @@ private lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
   have eq1 := this y
   by_contra! hxx
   let E : Submodule R N3 := Submodule.span R {l23 (l12 y)}
-  have hE : Nontrivial E := ⟨0, ⟨⟨l23 (l12 y), Submodule.mem_span_singleton_self _⟩,
-    Subtype.coe_ne_coe.1 hxx.symm⟩⟩
-  have eq0: (⊤ : Submodule R (E ⊗[R] M)) = 0 := by
-    ext xx
-    simp only [Submodule.mem_top, Submodule.zero_eq_bot, Submodule.mem_bot, true_iff]
-    have mem : xx ∈ (⊤ : Submodule R _) := ⟨⟩
+  have hE : Nontrivial E :=
+    ⟨0, ⟨⟨l23 (l12 y), Submodule.mem_span_singleton_self _⟩, Subtype.coe_ne_coe.1 hxx.symm⟩⟩
+  have eq0: (⊤ : Submodule R (E ⊗[R] M)) = ⊥ := by
+    ext x
+    simp only [Submodule.mem_top, Submodule.mem_bot, true_iff]
+    have mem : x ∈ (⊤ : Submodule R _) := ⟨⟩
     rw [← TensorProduct.span_tmul_eq_top, mem_span_set] at mem
     obtain ⟨c, hc, rfl⟩ := mem
     choose b a hy using hc
@@ -220,8 +220,7 @@ private lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
           simp only [SetLike.mk_smul_mk, LinearMap.rTensor_tmul, Submodule.coe_subtype, map_zero,
             ← smul_tmul', eq1, smul_zero]
     exact Finset.sum_const_zero
-  have hEEE : (⊤ : Submodule R (E ⊗[R] M)) ≠ 0 := Submodule.nontrivial_iff_ne_bot.1 (by aesop)
-  tauto
+  exact Submodule.nontrivial_iff_ne_bot.1 (by aesop) eq0
 
 lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     (N1 N2 N3 : Type*)
@@ -246,9 +245,9 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     let e : H ⊗[R] M ≃ₗ[R] ((LinearMap.ker l23 ⊗[R] M) ⧸ _) :=
       TensorProduct.quotientTensorEquiv _ _
     haveI : Subsingleton
-      ((LinearMap.ker l23 ⊗[R] M) ⧸
-        LinearMap.range (map (LinearMap.range (Submodule.inclusion complex)).subtype
-          (LinearMap.id : M →ₗ[R] M))) := by
+        ((LinearMap.ker l23 ⊗[R] M) ⧸
+          LinearMap.range (map (LinearMap.range (Submodule.inclusion complex)).subtype
+            (LinearMap.id : M →ₗ[R] M))) := by
       rw [Submodule.subsingleton_quotient_iff_eq_top, eq_top_iff]
       let ι : (LinearMap.ker l23) ⊗[R] M →ₗ[R] N2 ⊗[R] M := (Submodule.subtype _).rTensor M
       rw [← Submodule.map_le_map_iff_of_injective (f := ι)
