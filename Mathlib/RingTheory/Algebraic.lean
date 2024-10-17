@@ -47,18 +47,6 @@ theorem transcendental_iff {x : A} :
   rw [Transcendental, IsAlgebraic, not_exists]
   congr! 1; tauto
 
-/-- An element `x` is transcendental over `R` if and only if the map `Polynomial.aeval x`
-is injective. This is similar to `algebraicIndependent_iff_injective_aeval`. -/
-theorem transcendental_iff_injective_aeval {x : A} :
-    Transcendental R x ↔ Function.Injective (aeval (R := R) x) := by
-  rw [transcendental_iff, injective_iff_map_eq_zero]
-
-/-- An element `x` is transcendental over `R` if and only if the kernel of the ring homomorphism
-`Polynomial.aeval x` is the zero ideal. This is similar to `algebraicIndependent_iff_ker_eq_bot`. -/
-theorem transcendental_iff_ker_eq_bot {x : A} :
-    Transcendental R x ↔ RingHom.ker (aeval (R := R) x) = ⊥ := by
-  rw [transcendental_iff_injective_aeval, RingHom.injective_iff_ker_eq_bot]
-
 variable (R) in
 theorem Polynomial.transcendental_X : Transcendental R (X (R := R)) := by
   simp [transcendental_iff]
@@ -155,9 +143,17 @@ theorem isAlgebraic_iff_not_injective {x : A} :
     IsAlgebraic R x ↔ ¬Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) := by
   simp only [IsAlgebraic, injective_iff_map_eq_zero, not_forall, and_comm, exists_prop]
 
+/-- An element `x` is transcendental over `R` if and only if the map `Polynomial.aeval x`
+is injective. This is similar to `algebraicIndependent_iff_injective_aeval`. -/
 theorem transcendental_iff_injective {x : A} :
     Transcendental R x ↔ Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) :=
   isAlgebraic_iff_not_injective.not_left
+
+/-- An element `x` is transcendental over `R` if and only if the kernel of the ring homomorphism
+`Polynomial.aeval x` is the zero ideal. This is similar to `algebraicIndependent_iff_ker_eq_bot`. -/
+theorem transcendental_iff_ker_eq_bot {x : A} :
+    Transcendental R x ↔ RingHom.ker (aeval (R := R) x) = ⊥ := by
+  rw [transcendental_iff_injective, RingHom.injective_iff_ker_eq_bot]
 
 end
 
