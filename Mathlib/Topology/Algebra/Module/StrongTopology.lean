@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Topology.Algebra.Module.UniformConvergence
+import Mathlib.Tactic.Peel
 
 /-!
 # Strong topologies on the space of continuous linear maps
@@ -445,6 +446,27 @@ def postcomp [TopologicalAddGroup F] [TopologicalAddGroup G] [ContinuousConstSMu
     exact
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
         (UniformConvergenceCLM.embedding_coeFn _ _ _).continuous
+
+variable (F G σ τ)
+
+/-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
+def compSL [TopologicalAddGroup F] [TopologicalAddGroup G]
+    [ContinuousConstSMul 𝕜₂ F] [ContinuousConstSMul 𝕜₃ G] :
+    (F →SL[τ] G) →L[𝕜₃] (E →SL[σ] F) →SL[τ] E →SL[ρ] G where
+  toFun := postcomp E
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := by
+    rw [LinearMap.toFun_eq_coe]
+    apply continuous_of_continuousAt_zero
+    rw [ContinuousAt, map_zero,
+      (ContinuousLinearMap.hasBasis_nhds_zero_of_basis
+        ContinuousLinearMap.hasBasis_nhds_zero).tendsto_right_iff]
+    rintro ⟨S, s, U⟩ ⟨hS, hs, hU⟩
+    filter_upwards [UniformConvergenceCLM.gen_mem_nhds_zero τ
+      (𝔖 := {s : Set F | Bornology.IsVonNBounded 𝕜₂ s})
+      (UniformConvergenceCLM.isVonNBounded_image2_apply hS hs) hU] with g hg f hf x hx
+    exact hg <| mem_image2_of_mem hf hx
 
 end BoundedSets
 
