@@ -632,9 +632,9 @@ instance : HasImageMaps (Type u) where
         have p := st.w
         replace p := congr_fun p (Classical.choose x.2)
         simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
-        erw [p, Classical.choose_spec x.2]⟩⟩) rfl
+        rw [p, Classical.choose_spec x.2]⟩⟩) rfl
 
-variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F} (hc : IsLimit c)
+variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
   (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op))
 
 private noncomputable def limitOfSurjectionsSurjective.preimage
