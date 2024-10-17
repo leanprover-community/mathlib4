@@ -3,7 +3,6 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Integral
 
@@ -454,6 +453,10 @@ instance over_under : P.LiesOver (P.under A) where over := rfl
 
 theorem over_def [P.LiesOver p] : p = P.under A := LiesOver.over
 
+theorem mem_of_liesOver [P.LiesOver p] (x : A) : x ∈ p ↔ algebraMap A B x ∈ P := by
+  rw [P.over_def p]
+  rfl
+
 end Semiring
 
 section CommSemiring
@@ -481,6 +484,50 @@ end CommSemiring
 
 section CommRing
 
+variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] [Algebra A B]
+  (P : Ideal B) (p : Ideal A) [P.LiesOver p]
+
+/-- If `P` lies over `p`, then canonically `B ⧸ P` is a `A ⧸ p`-algebra. -/
+instance algebraQuotientOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
+  Ideal.Quotient.algebraQuotientOfLEComap (le_of_eq (P.over_def p))
+
+instance : IsScalarTower A (A ⧸ p) (B ⧸ P) :=
+  IsScalarTower.of_algebraMap_eq' rfl
+
+/-- `B ⧸ P` is a finite `A ⧸ p`-module if `B` is a finite `A`-module. -/
+instance _root_.Module.Finite.algebra_quotient [Module.Finite A B] :
+    Module.Finite (A ⧸ p) (B ⧸ P) :=
+  Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ P)
+
+example [Module.Finite A B] : Module.Finite (A ⧸ P.under A) (B ⧸ P) := inferInstance
+
+instance (R : Type*) {S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] (I : Ideal S)
+    [h : Algebra.FiniteType R S] : Algebra.FiniteType R (S ⧸ I) :=
+  Algebra.FiniteType.trans (S := S) h inferInstance
+
+/-- `B ⧸ P` is a finitely generated `A ⧸ p`-algebra if `B` is a finitely generated `A`-algebra. -/
+instance _root_.Algebra.FiniteType.quotient [Algebra.FiniteType A B] :
+    Algebra.FiniteType (A ⧸ p) (B ⧸ P) :=
+  Algebra.FiniteType.of_restrictScalars_finiteType A (A ⧸ p) (B ⧸ P)
+
+/-- `B ⧸ P` is a Noetherian `A ⧸ p`-module if `B` is a Noetherian `A`-module. -/
+instance _root_.IsNoetherian.algebra_quotient [IsNoetherian A B] : IsNoetherian (A ⧸ p) (B ⧸ P) :=
+  isNoetherian_of_tower A inferInstance
+
+theorem algebraMap_quotient_injective_of_liesOver :
+    Function.Injective (algebraMap (A ⧸ p) (B ⧸ P)) := by
+  rintro ⟨a⟩ ⟨b⟩ hab
+  apply Quotient.eq.mpr ((mem_of_liesOver P p (a - b)).mpr _)
+  rw [RingHom.map_sub]
+  exact Quotient.eq.mp hab
+
+instance [P.IsPrime] : NoZeroSMulDivisors (A ⧸ p) (B ⧸ P) :=
+  NoZeroSMulDivisors.of_algebraMap_injective (algebraMap_quotient_injective_of_liesOver P p)
+
+end CommRing
+
+section IsIntegral
+
 variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] [Algebra A B] [Algebra.IsIntegral A B]
   (P : Ideal B) (p : Ideal A) [P.LiesOver p]
 
@@ -498,20 +545,11 @@ theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
   rw [P.over_def p]
   exact isMaximal_comap_of_isIntegral_of_isMaximal P
 
-/-- If `P` lies over `p`, then canonically `B ⧸ P` is a `A ⧸ p`-algebra. -/
-instance algebraQuotientOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
-  Ideal.Quotient.algebraQuotientOfLEComap (le_of_eq (P.over_def p))
+/-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is a integral `A`-algebra. -/
+instance _root_.Algebra.IsIntegral.quotient_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
+  Algebra.IsIntegral.tower_top A
 
-instance : IsScalarTower A (A ⧸ p) (B ⧸ P) :=
-  IsScalarTower.of_algebraMap_eq' rfl
-
-/-- `B ⧸ P` is a finite `A ⧸ p`-module if `B` is a finite `A`-module. -/
-instance module_finite_of_liesOver [Module.Finite A B] : Module.Finite (A ⧸ p) (B ⧸ P) :=
-  Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ P)
-
-example [Module.Finite A B] : Module.Finite (A ⧸ comap (algebraMap A B) P) (B ⧸ P) := inferInstance
-
-end CommRing
+end IsIntegral
 
 end ideal_liesOver
 
