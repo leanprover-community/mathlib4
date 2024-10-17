@@ -259,7 +259,7 @@ noncomputable def localizationToStalk (x : PrimeSpectrum.Top R) :
 implemented as a subtype of dependent functions to localizations at prime ideals, and evaluates
 the section on the point corresponding to a given prime ideal. -/
 def openToLocalization (U : Opens (PrimeSpectrum R)) (x : PrimeSpectrum R) (hx : x ∈ U) :
-    (tildeInModuleCat M).1.obj (op U) ⟶
+    (tildeInModuleCat M).presheaf.obj (op U) ⟶
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) where
   toFun s := (s.1 ⟨x, hx⟩ : _)
   map_add' _ _ := rfl
@@ -270,7 +270,7 @@ The morphism of `R`-modules from the stalk of `M^~` at `x` to the localization o
 prime ideal of `R` corresponding to `x`.
 -/
 noncomputable def stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
-    TopCat.Presheaf.stalk (tildeInModuleCat M) x ⟶
+    (tildeInModuleCat M).stalk  x ⟶
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) :=
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (tildeInModuleCat M))
     { pt := _
@@ -279,7 +279,7 @@ noncomputable def stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
 
 @[simp]
 theorem germ_comp_stalkToFiberLinearMap (U : Opens (PrimeSpectrum.Top R)) (x) (hx : x ∈ U) :
-    TopCat.Presheaf.germ (tildeInModuleCat M) U x hx ≫ stalkToFiberLinearMap M x =
+    (tildeInModuleCat M).germ U x hx ≫ stalkToFiberLinearMap M x =
     openToLocalization M U x hx :=
   Limits.colimit.ι_desc _ _
 
@@ -290,23 +290,23 @@ theorem stalkToFiberLinearMap_germ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeS
       (TopCat.Presheaf.germ (tildeInModuleCat M) U x hx s) = (s.1 ⟨x, hx⟩ : _) :=
   DFunLike.ext_iff.1 (germ_comp_stalkToFiberLinearMap M U x hx) s
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem toOpen_germ (U : Opens (PrimeSpectrum.Top R)) (x) (hx : x ∈ U) :
-    toOpen M U ≫ TopCat.Presheaf.germ (tildeInModuleCat M) U x hx = toStalk M x := by
+    toOpen M U ≫ M.tildeInModuleCat.germ U x hx = toStalk M x := by
   rw [← toOpen_res M ⊤ U (homOfLE le_top : U ⟶ ⊤), Category.assoc, Presheaf.germ_res]; rfl
 
 theorem germ_toOpen (U : Opens (PrimeSpectrum.Top R)) (x) (hx : x ∈ U) (f : M) :
-    (M.tildeInModuleCat.germ U x hx) ((ModuleCat.Tilde.toOpen M U) f) = toStalk M x f := by
+    M.tildeInModuleCat.germ U x hx (ModuleCat.Tilde.toOpen M U f) = toStalk M x f := by
   rw [← toOpen_germ]; rfl
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem toStalk_comp_stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
     toStalk M x ≫ stalkToFiberLinearMap M x =
     LocalizedModule.mkLinearMap x.asIdeal.primeCompl M := by
   rw [toStalk, Category.assoc, germ_comp_stalkToFiberLinearMap]; rfl
 
 theorem stalkToFiberLinearMap_toStalk (x : PrimeSpectrum.Top R) (m : M) :
-    (stalkToFiberLinearMap M x) ((toStalk M x) m) =
+    (stalkToFiberLinearMap M x) (toStalk M x m) =
     LocalizedModule.mk m 1 :=
   LinearMap.ext_iff.1 (toStalk_comp_stalkToFiberLinearMap M x) _
 
