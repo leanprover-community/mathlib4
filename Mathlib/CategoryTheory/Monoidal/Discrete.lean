@@ -57,6 +57,24 @@ instance Discrete.monoidalFunctorMonoidal (F : M →* N) :
       { εIso := Discrete.eqToIso F.map_one.symm
         μIso := fun m₁ m₂ ↦ Discrete.eqToIso (F.map_mul _ _).symm }
 
+open Functor.LaxMonoidal Functor.OplaxMonoidal
+
+@[to_additive Discrete.addMonoidalFunctor_ε]
+lemma Discrete.monoidalFunctor_ε (F : M →* N) :
+    ε (monoidalFunctor F) = Discrete.eqToHom F.map_one.symm := rfl
+
+@[to_additive Discrete.addMonoidalFunctor_η]
+lemma Discrete.monoidalFunctor_η (F : M →* N) :
+    η (monoidalFunctor F) = Discrete.eqToHom F.map_one := rfl
+
+@[to_additive Discrete.addMonoidalFunctor_μ]
+lemma Discrete.monoidalFunctor_μ (F : M →* N) (m₁ m₂ : Discrete M) :
+    μ (monoidalFunctor F) m₁ m₂ = Discrete.eqToHom (F.map_mul _ _).symm := rfl
+
+@[to_additive Discrete.addMonoidalFunctor_δ]
+lemma Discrete.monoidalFunctor_δ (F : M →* N) (m₁ m₂ : Discrete M) :
+    δ (monoidalFunctor F) m₁ m₂ = Discrete.eqToHom (F.map_mul _ _) := rfl
+
 /-- An additive morphism between add_monoids gives a
 monoidal functor between the corresponding discrete monoidal categories. -/
 add_decl_doc Discrete.addMonoidalFunctor
@@ -74,5 +92,11 @@ def Discrete.monoidalFunctorComp (F : M →* N) (G : N →* K) :
 @[to_additive Discrete.addMonoidalFunctorComp_isMonoidal]
 instance Discrete.monoidalFunctorComp_isMonoidal (F : M →* N) (G : N →* K) :
     NatTrans.IsMonoidal (Discrete.monoidalFunctorComp F G).hom where
+  unit := by
+    dsimp only [comp_ε, monoidalFunctorComp, Iso.refl, Discrete.monoidalFunctor_ε]
+    simp [eqToHom_map]
+  tensor _ _ := by
+    dsimp only [comp_μ, monoidalFunctorComp, Iso.refl, Discrete.monoidalFunctor_μ]
+    simp [eqToHom_map]
 
 end CategoryTheory

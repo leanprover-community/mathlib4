@@ -577,12 +577,10 @@ def toLaxMonoidal : F.LaxMonoidal where
   left_unitality' := h.left_unitality
   right_unitality' := h.right_unitality
 
-@[simp]
 lemma toLaxMonoidal_ε :
     letI := h.toLaxMonoidal
     LaxMonoidal.ε F = h.εIso.hom := rfl
 
-@[simp]
 lemma toLaxMonoidal_μ (X Y : C) :
     letI := h.toLaxMonoidal
     LaxMonoidal.μ F X Y = (h.μIso X Y).hom := rfl
@@ -609,16 +607,15 @@ def toOplaxMonoidal : F.OplaxMonoidal where
     rw [← cancel_epi (ρ_ _).hom, Iso.hom_inv_id, h.right_unitality, assoc, assoc,
       Iso.map_hom_inv_id_assoc, Iso.hom_inv_id_assoc, whiskerLeft_hom_inv]
 
-@[simp]
 lemma toOplaxMonoidal_η :
     letI := h.toOplaxMonoidal
     OplaxMonoidal.η F = h.εIso.inv := rfl
 
-@[simp]
 lemma toOplaxMonoidal_δ  (X Y : C) :
     letI := h.toOplaxMonoidal
     OplaxMonoidal.δ F X Y = (h.μIso X Y).inv := rfl
 
+attribute [local simp] toLaxMonoidal_ε toLaxMonoidal_μ toOplaxMonoidal_η toOplaxMonoidal_δ in
 @[simps! toLaxMonoidal toOplaxMonoidal]
 def toMonoidal : F.Monoidal where
   toLaxMonoidal := h.toLaxMonoidal
