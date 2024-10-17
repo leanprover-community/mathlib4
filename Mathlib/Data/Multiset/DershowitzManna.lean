@@ -67,9 +67,7 @@ theorem dmLT_of_redLT [DecidableEq α] [Preorder α] (M N : Multiset α) (h : Mu
   · simpa
   · simp
 
-/- Some useful lemmas about Multisets and the defined relations, some of which should be added to
-   'mathlib4/Mathlib/Data/Multiset/Basic.lean': -/
-
+/- Some useful lemmas. -/
 lemma not_redLT_zero [DecidableEq α] [LT α] (M: Multiset α) : ¬ MultisetRedLT M 0 := by
   intro h
   cases h with
@@ -91,7 +89,7 @@ lemma red_insert [DecidableEq α] [LT α] {a : α} {M N : Multiset α} (h : Mult
     · simp_all
   · exists (Y + (M - {a0}))
     left
-    constructor --; apply And.intro
+    constructor
     · rw [h1]
       have : X = (M - {a0} + {a}) := by
         rw [add_comm, Multiset.singleton_add] at *
@@ -118,7 +116,7 @@ lemma red_insert [DecidableEq α] [LT α] {a : α} {M N : Multiset α} (h : Mult
           rw [Multiset.mem_add, Multiset.mem_singleton]
           · apply Or.inr
             rfl
-          · exact fun h ↦ hyp (Eq.symm h) -- Yes! construct a function of 'λ (a0 = a). False' here
+          · exact fun h ↦ hyp (Eq.symm h)
         rw [add_comm]
         simp_all [Multiset.singleton_add]
       exact h2
@@ -135,7 +133,7 @@ lemma acc_cons [DecidableEq α] [Preorder α] (a : α) (M0 : Multiset α)
   case h.intro.inr h =>
     rcases h with ⟨H, h0⟩
     rw [H]
-    clear H -- Needed to make simp_all below safe.
+    clear H
     induction x using Multiset.induction with
     | empty =>
       simpa
@@ -272,7 +270,6 @@ lemma dmlt_trans {α} [pre : Preorder α] [dec : DecidableEq α]:
 lemma transLT_of_dmLT [dec : DecidableEq α] [Preorder α]
     [DecidableRel (fun (x : α) (y: α) => x < y)] (M N : Multiset α) (DMLTMN : MultisetDMLT M N) :
     MultisetTransLT M N := by
-  -- intros M N LTXY
   cases DMLTMN
   case DMLT X Y Z Y_not_empty MZX NZY h =>
     unfold MultisetTransLT
