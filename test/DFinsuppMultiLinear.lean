@@ -15,9 +15,8 @@ fun₀
   (M := fun _ _ => ℤ)
   (N := fun _ => ℤ)
   (R := ℤ)
-  (f := fun _ => MultilinearMap.mkPiAlgebra ℤ (Fin 3) ℤ)
-  (x :=
+  (f := fun _ => MultilinearMap.mkPiAlgebra ℤ (Fin 3) ℤ) <|
     Fin.cons (fun₀ | "hello" => 3 | "goodbye" => 5) <|
     Fin.cons (fun₀ | "complicated" => 7) <|
     Fin.cons (fun₀ | "world" => 11 | "test file" => 13) <|
-    IsEmpty.elim inferInstance)
+    IsEmpty.elim inferInstance
