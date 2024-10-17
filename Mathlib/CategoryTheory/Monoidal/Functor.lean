@@ -314,21 +314,21 @@ unitors are isomorphisms -/
 @[simps]
 noncomputable def MonoidalFunctor.fromOplaxMonoidalFunctor (F : OplaxMonoidalFunctor C D)
     [IsIso F.η] [∀ (X Y : C), IsIso (F.δ X Y)] : MonoidalFunctor C D :=
-    { F with
-      ε := inv F.η
-      μ := fun X Y => inv (F.δ X Y)
-      associativity := by
-        intro X Y Z
-        rw [← inv_whiskerRight, IsIso.inv_comp_eq, IsIso.inv_comp_eq]
-        simp
-      left_unitality := by
-        intro X
-        rw [← inv_whiskerRight, ← IsIso.inv_comp_eq]
-        simp
-      right_unitality := by
-        intro X
-        rw [← inv_whiskerLeft, ← IsIso.inv_comp_eq]
-        simp }
+  { F with
+    ε := inv F.η
+    μ := fun X Y => inv (F.δ X Y)
+    associativity := by
+      intro X Y Z
+      rw [← inv_whiskerRight, IsIso.inv_comp_eq, IsIso.inv_comp_eq]
+      simp
+    left_unitality := by
+      intro X
+      rw [← inv_whiskerRight, ← IsIso.inv_comp_eq]
+      simp
+    right_unitality := by
+      intro X
+      rw [← inv_whiskerLeft, ← IsIso.inv_comp_eq]
+      simp }
 
 end
 
@@ -615,9 +615,7 @@ variable (F : MonoidalFunctor.{v₁, v₂} C D) (G : MonoidalFunctor.{v₂, v₃
 /-- The composition of two monoidal functors is again monoidal. -/
 @[simps]
 def comp : MonoidalFunctor.{v₁, v₃} C E :=
-  {
-    F.toLaxMonoidalFunctor.comp
-      G.toLaxMonoidalFunctor with
+  { F.toLaxMonoidalFunctor.comp G.toLaxMonoidalFunctor with
     ε_isIso := by
       dsimp
       infer_instance
@@ -642,9 +640,7 @@ variable (F : MonoidalFunctor.{v₀, v₁} B C) (G : MonoidalFunctor.{v₂, v₃
 /-- The cartesian product of two monoidal functors is monoidal. -/
 @[simps]
 def prod : MonoidalFunctor (B × D) (C × E) :=
-  {
-    F.toLaxMonoidalFunctor.prod
-      G.toLaxMonoidalFunctor with
+  { F.toLaxMonoidalFunctor.prod G.toLaxMonoidalFunctor with
     ε_isIso := (isIso_prod_iff C E).mpr ⟨ε_isIso F, ε_isIso G⟩
     μ_isIso := fun X Y => (isIso_prod_iff C E).mpr ⟨μ_isIso F X.1 Y.1, μ_isIso G X.2 Y.2⟩ }
 
@@ -681,11 +677,10 @@ variable (F : MonoidalFunctor C D) {G : D ⥤ C} (h : F.toFunctor ⊣ G)
 structure as well.
 -/
 @[simp]
-noncomputable def monoidalAdjoint :
-    LaxMonoidalFunctor D C where
+noncomputable def monoidalAdjoint : LaxMonoidalFunctor D C where
   toFunctor := G
   ε := h.homEquiv _ _ (inv F.ε)
-  μ := fun X Y =>
+  μ X Y :=
     h.homEquiv _ _ (inv (F.μ (G.obj X) (G.obj Y)) ≫ (h.counit.app X ⊗ h.counit.app Y))
   μ_natural_left {X Y} f X' := by
     rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_right, Equiv.apply_eq_iff_eq,
