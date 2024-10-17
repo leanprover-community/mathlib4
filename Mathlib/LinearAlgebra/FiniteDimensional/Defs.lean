@@ -107,11 +107,6 @@ instance finiteDimensional_pi' {ι : Type*} [Finite ι] (M : ι → Type*) [∀ 
 noncomputable def fintypeOfFintype [Fintype K] [FiniteDimensional K V] : Fintype V :=
   Module.fintypeOfFintype (@finsetBasis K V _ _ _ (iff_fg.2 inferInstance))
 
-theorem finite_of_finite [Finite K] [FiniteDimensional K V] : Finite V := by
-  cases nonempty_fintype K
-  haveI := fintypeOfFintype K V
-  infer_instance
-
 variable {K V}
 
 /-- If a vector space has a finite basis, then it is finite-dimensional. -/
