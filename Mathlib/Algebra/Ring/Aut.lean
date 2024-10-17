@@ -107,6 +107,17 @@ def _root_.MulSemiringAction.toRingAut [MulSemiringAction G R] :
   map_mul' g h := RingEquiv.ext <| mul_smul g h
   map_one' := RingEquiv.ext <| one_smul _
 
+/-- Construct a `MulSemiringAction` from a homomorphism `G →* RingAut R`. -/
+@[simps]
+def _root_.MulSemiringAction.ofRingAut (h : G →* RingAut R) : MulSemiringAction G R where
+  smul := fun g r ↦ h g r
+  one_smul := DFunLike.ext_iff.mp (map_one h)
+  mul_smul := fun g g' ↦ DFunLike.ext_iff.mp (map_mul h g g')
+  smul_zero := fun g ↦ map_zero (h g)
+  smul_add := fun g ↦ map_add (h g)
+  smul_one := fun g ↦ map_one (h g)
+  smul_mul := fun g ↦ map_mul (h g)
+
 end Semiring
 
 end RingAut
