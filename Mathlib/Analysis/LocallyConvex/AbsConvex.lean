@@ -155,7 +155,7 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
-theorem nhds_hasBasis_absConvex [LocallyConvexSpace ℝ E] :
+theorem nhds_hasBasis_absConvex :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex 𝕜 s) id := by
   refine
     (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => ?_) fun s hs =>
@@ -167,7 +167,7 @@ theorem nhds_hasBasis_absConvex [LocallyConvexSpace ℝ E] :
 
 variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
 
-theorem nhds_hasBasis_absConvex_open [LocallyConvexSpace ℝ E] :
+theorem nhds_hasBasis_absConvex_open :
     (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
   refine (nhds_hasBasis_absConvex 𝕜 E).to_hasBasis ?_ ?_
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩

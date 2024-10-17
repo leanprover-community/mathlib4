@@ -113,7 +113,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       rw [dif_pos he, ← Set.preimage_comp]
       apply congrFun
       apply congrArg
-      rw [← coe_comp, D.w] -- now `erw` after #13170
+      rw [← coe_comp, D.w]
       rfl
 
 end CofilteredLimit

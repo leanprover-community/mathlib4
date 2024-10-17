@@ -30,8 +30,8 @@ $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken i
 `Rep k G`.
 
 To talk about cohomology in low degree, please see the file
-`RepresentationTheory.GroupCohomology.LowDegree`, which gives simpler expressions for `H⁰, H¹, H²`
-than the definition `groupCohomology` in this file.
+`Mathlib.RepresentationTheory.GroupCohomology.LowDegree`, which gives simpler expressions for
+`H⁰`, `H¹`, `H²` than the definition `groupCohomology` in this file.
 
 ## Main definitions
 
@@ -146,7 +146,6 @@ and the homogeneous `linearYonedaObjResolution`. -/
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   change d n A f g = diagonalHomEquiv (n + 1) A
     ((resolution k G).d (n + 1) n ≫ (diagonalHomEquiv n A).symm f) g
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   rw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply,
     resolution.d_eq]
   erw [resolution.d_of (Fin.partialProd g)]

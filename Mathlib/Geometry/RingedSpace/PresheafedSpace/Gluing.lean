@@ -190,20 +190,18 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     replace this := (congr_arg ((PresheafedSpace.Hom.base ·)) this).symm
     replace this := congr_arg (ContinuousMap.toFun ·) this
     dsimp at this
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [coe_comp, coe_comp] at this
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
+    rw [coe_comp, coe_comp] at this
+    rw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
     · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
-      erw [← comp_apply, ← comp_base, D.t_inv, id_base, id_apply] -- now `erw` after #13170
+      rw [← comp_apply, ← comp_base, D.t_inv, id_base, id_apply]
     refine congr_arg (_ '' ·) ?_
     refine congr_fun ?_ _
     refine Set.image_eq_preimage_of_inverse ?_ ?_
     · intro x
-      erw [← comp_apply, ← comp_base, IsIso.inv_hom_id, id_base, id_apply] -- now `erw` after #13170
+      rw [← comp_apply, ← comp_base, IsIso.inv_hom_id, id_base, id_apply]
     · intro x
-      erw [← comp_apply, ← comp_base, IsIso.hom_inv_id, id_base, id_apply] -- now `erw` after #13170
+      rw [← comp_apply, ← comp_base, IsIso.hom_inv_id, id_base, id_apply]
   · rw [← IsIso.eq_inv_comp, IsOpenImmersion.inv_invApp, Category.assoc,
       (D.t' k i j).c.naturality_assoc]
     simp_rw [← Category.assoc]
@@ -260,7 +258,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
     change (D.t i j ≫ D.t j i).base '' _ = _
     rw [𝖣.t_inv]
     simp
-  · erw [← coe_comp, ← TopCat.mono_iff_injective] -- now `erw` after #13170
+  · rw [← coe_comp, ← TopCat.mono_iff_injective]
     infer_instance
 
 /-- (Implementation). The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, 𝖣.ι j ⁻¹' (𝖣.ι i '' U))` -/
@@ -369,9 +367,9 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
                   ((D.f k j).c.app _ ≫ (D.t j k).c.app _) ≫ (D.V (j, k)).presheaf.map (eqToHom _)
             rw [opensImagePreimageMap_app_assoc]
             simp_rw [Category.assoc]
-            rw [opensImagePreimageMap_app_assoc, (D.t j k).c.naturality_assoc]
-            rw [snd_invApp_t_app_assoc]
-            rw [← PresheafedSpace.comp_c_app_assoc]
+            rw [opensImagePreimageMap_app_assoc, (D.t j k).c.naturality_assoc,
+                snd_invApp_t_app_assoc,
+                ← PresheafedSpace.comp_c_app_assoc]
             -- light-blue = green is relatively easy since the part that differs does not involve
             -- partial inverses.
             have :
@@ -379,19 +377,21 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
                 (pullbackSymmetry _ _).hom ≫ (π₁ j, i, k) ≫ D.t j i ≫ D.f i j := by
               rw [← 𝖣.t_fac_assoc, 𝖣.t'_comp_eq_pullbackSymmetry_assoc,
                 pullbackSymmetry_hom_comp_snd_assoc, pullback.condition, 𝖣.t_fac_assoc]
-            rw [congr_app this]
-            rw [PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom]
+            rw [congr_app this,
+                PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom]
             simp_rw [Category.assoc]
             congr 1
-            rw [← IsIso.eq_inv_comp]
-            rw [IsOpenImmersion.inv_invApp]
+            rw [← IsIso.eq_inv_comp,
+                IsOpenImmersion.inv_invApp]
             simp_rw [Category.assoc]
             erw [NatTrans.naturality_assoc, ← PresheafedSpace.comp_c_app_assoc,
               congr_app (pullbackSymmetry_hom_comp_snd _ _)]
             simp_rw [Category.assoc]
             erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.inv_naturality_assoc,
               IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc]
-            repeat' erw [← (D.V (j, k)).presheaf.map_comp]
+            rw [← (D.V (j, k)).presheaf.map_comp]
+            erw [← (D.V (j, k)).presheaf.map_comp]
+            repeat rw [← (D.V (j, k)).presheaf.map_comp]
             -- Porting note: was just `congr`
             exact congr_arg ((D.V (j, k)).presheaf.map ·) rfl } }
 
@@ -410,9 +410,9 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     · exact h2.symm
     · have := D.ι_gluedIso_inv (PresheafedSpace.forget _) i
       dsimp at this
-      erw [← this, coe_comp] -- now `erw` after #13170
+      rw [← this, coe_comp]
       refine Function.Injective.comp ?_ (TopCat.GlueData.ι_injective D.toTopGlueData i)
-      erw [← TopCat.mono_iff_injective] -- now `erw` after #13170
+      rw [← TopCat.mono_iff_injective]
       infer_instance
   delta ιInvApp
   rw [limit.lift_π]
@@ -660,7 +660,7 @@ instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
 instance (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forgetToSheafedSpace :=
   inferInstance
 
-theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).1.base y = x :=
+theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
   𝖣.ι_jointly_surjective
     ((LocallyRingedSpace.forgetToSheafedSpace.{u} ⋙ SheafedSpace.forget CommRingCatMax.{u, u}) ⋙
       forget TopCat.{u}) x
