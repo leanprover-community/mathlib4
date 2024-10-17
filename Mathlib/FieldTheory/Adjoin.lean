@@ -1559,3 +1559,5 @@ theorem extendScalars_inf : extendScalars h ⊓ extendScalars h' = extendScalars
 end IntermediateField
 
 end ExtendScalars
+
+set_option linter.style.longFile 1700
