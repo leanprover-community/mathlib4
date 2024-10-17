@@ -65,10 +65,12 @@ def eval [Add M] [Zero M] [SMul R M] (l : NF R M) : M := (l.map (fun (⟨r, x⟩
   rw [List.map_cons]
   rw [List.sum_cons]
 
-theorem atom_eq_eval [AddMonoid M] (x : M) : x = NF.eval [(1, x)] := by simp [eval]
+theorem atom_eq_eval [Monoid R] [AddMonoid M] [MulAction R M] (x : M) :
+    x = NF.eval [((1:R), x)] := by
+  simp [eval]
 
 variable (M) in
-theorem zero_eq_eval [AddMonoid M] : (0:M) = NF.eval (R := ℕ) (M := M) [] := rfl
+theorem zero_eq_eval [AddMonoid M] [SMul R M] : (0:M) = NF.eval (R := R) (M := M) [] := rfl
 
 theorem add_eq_eval₁ [AddMonoid M] [SMul R M] (a₁ : R × M) {a₂ : R × M} {l₁ l₂ l : NF R M}
     (h : l₁.eval + (a₂ ::ᵣ l₂).eval = l.eval) :
@@ -343,6 +345,21 @@ variable {iM : Q(AddCommMonoid $M)}
   {u₁ : Level} {R₁ : Q(Type u₁)} {iR₁ : Q(Semiring $R₁)} (iRM₁ : Q(@Module $R₁ $M $iR₁ $iM))
   {u₂ : Level} {R₂ : Q(Type u₂)} (iR₂ : Q(Semiring $R₂)) (iRM₂ : Q(@Module $R₂ $M $iR₂ $iM))
 
+def liftRing (r : Q($R₁)) (x : Q($M)) : MetaM <| Σ r' : Q($R₂), Q($r' • $x = $r • $x) := do
+  if ← withReducible <| isDefEq R₁ R₂ then
+  -- the case when `R₁ = R₂` is handled separately, so as not to require commutativity of that ring
+    pure ⟨r, (q(@rfl _ ($r • $x)):)⟩
+  -- otherwise try to exhibit `R₂` as an `R₁`-algebra (this will require that `R₁` be commutative)
+  else try
+    let _i₁ ← synthInstanceQ q(CommSemiring $R₁)
+    let _i₃ ← synthInstanceQ q(Algebra $R₁ $R₂)
+    let _i₄ ← synthInstanceQ q(IsScalarTower $R₁ $R₂ $M)
+    assumeInstancesCommute
+    let r' : Q($R₂) := q(algebraMap $R₁ $R₂ $r)
+    pure ⟨r', (q(IsScalarTower.algebraMap_smul $R₂ $r $x):)⟩
+  catch _ =>
+    throwError "match_scalars {R₂} failed: {R₁} is not a subring of {R₂}"
+
 /-- Given an expression `M` representing a type which is an `AddCommMonoid` and a module over *two*
 semirings `R₁` and `R₂`, find the "bigger" of the two semirings.  That is, we assume that it will
 turn out to be the case that either (1) `R₁` is an `R₂`-algebra and the `R₂` scalar action on `M` is
@@ -468,6 +485,53 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x), k)],
       q(NF.atom_eq_eval $x)⟩
 
+partial def parseEnsuringType (iM : Q(AddCommMonoid $M)) (x : Q($M)) {u : Level} {R : Q(Type u)}
+    (iR : Q(Semiring $R)) (iRM : Q(@Module $R $M $iR $iM)) :
+    AtomM (Σ l : qNF R M, Q($x = NF.eval $(l.toNF))) := do
+  match x with
+  /- parse an addition: `x₁ + x₂` -/
+  | ~q($x₁ + $x₂) =>
+    let ⟨l₁', pf₁'⟩ ← parseEnsuringType iM x₁ iR iRM
+    let ⟨l₂', pf₂'⟩ ← parseEnsuringType iM x₂ iR iRM
+    -- build the new list and proof
+    let pf := qNF.mkAddProof iRM l₁' l₂'
+    pure ⟨qNF.add iR l₁' l₂', (q(NF.add_eq_eval $pf₁' $pf₂' rfl rfl $pf):)⟩
+  /- parse a subtraction: `x₁ - x₂` -/
+  | ~q(@HSub.hSub _ _ _ (@instHSub _ $iM') $x₁ $x₂) =>
+    let ⟨l₁'', pf₁''⟩ ← parseEnsuringType iM x₁ iR iRM
+    let ⟨l₂'', pf₂''⟩ ← parseEnsuringType iM x₂ iR iRM
+    let iR' ← synthInstanceQ q(Ring $R)
+    let iM' ← synthInstanceQ q(AddCommGroup $M)
+    assumeInstancesCommute
+    -- build the new list and proof
+    let pf := qNF.mkSubProof iR' iM' iRM l₁'' l₂''
+    pure ⟨qNF.sub iR' l₁'' l₂'', q(NF.sub_eq_eval $pf₁'' $pf₂'' rfl rfl rfl rfl $pf)⟩
+  /- parse a negation: `-y` -/
+  | ~q(@Neg.neg _ $iM' $y) =>
+    let ⟨l₀, pf₀⟩ ← parseEnsuringType iM y iR iRM
+    -- lift from original semiring of scalars (say `R₀`) to `R₀ ⊗ ℤ`
+    let _i ← synthInstanceQ q(AddCommGroup $M)
+    let _i' ← synthInstanceQ q(Ring $R)
+    assumeInstancesCommute
+    -- build the new list and proof
+    pure ⟨l₀.onScalar q(Neg.neg), (q(NF.neg_eq_eval rfl $pf₀):)⟩
+  /- parse a scalar multiplication: `(s₀ : S) • y` -/
+  | ~q(@HSMul.hSMul _ _ _ (@instHSMul $S _ $iS) $s₀ $y) =>
+    let ⟨l₀, pf₀⟩ ← parseEnsuringType iM y iR iRM
+    let _i ← synthInstanceQ q(Semiring $S)
+    let i₂ ← synthInstanceQ q(Module $S $M)
+    assumeInstancesCommute
+    -- lift from parsed semiring `S` of scalars to `R`
+    let ⟨s, pf_r⟩ ← qNF.liftRing i₂ iR iRM s₀ y
+    -- build the new list and proof
+    pure ⟨l₀.onScalar q(HMul.hMul $s), (q(NF.smul_eq_eval $pf₀ rfl $pf_r):)⟩
+  /- parse a `(0:M)` -/
+  | ~q(0) => pure ⟨[], q(NF.zero_eq_eval $M)⟩
+  /- anything else should be treated as an atom -/
+  | _ =>
+    let k : ℕ ← AtomM.addAtom x
+    pure ⟨[((q(1), x), k)], q(NF.atom_eq_eval $x)⟩
+
 /-- Given expressions `R` and `M` representing types such that `M`'s is a module over `R`'s, and
 given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), construct a list of new goals: that the `R`-coefficient of an `M`-atom which
@@ -516,7 +580,7 @@ the respective equalities of the `R`-coefficients of each atom.
 
 This is an auxiliary function which produces slightly awkward goals in `R`; they are later cleaned
 up by the function `Mathlib.Tactic.Module.postprocess`. -/
-def matchScalarsAux (g : MVarId) : AtomM (List MVarId) := do
+def matchScalarsAux (R : Option Expr) (g : MVarId) : AtomM (List MVarId) := do
   /- Parse the goal as an equality in a type `M` of two expressions `lhs` and `rhs`, with `M`
   carrying an `AddCommMonoid` instance. -/
   let eqData ← do
@@ -527,38 +591,63 @@ def matchScalarsAux (g : MVarId) : AtomM (List MVarId) := do
   let some v := v₀.dec | unreachable!
   let ((M : Q(Type v)), (lhs : Q($M)), (rhs :Q($M))) := eqData
   let iM ← synthInstanceQ q(AddCommMonoid.{v} $M)
-  /- Construct from the `lhs` expression a term `l₁` of type `qNF R₁ M` for some semiring `R₁` --
-  that is, a list of `(Q($R₁) × Q($M)) × ℕ`s (two `Expr`s and a natural number) -- together with a
-  proof that `lhs` is equal to the `R₁`-linear combination in `M` this represents. -/
-  let e₁ ← parse iM lhs
-  have u₁ : Level := e₁.fst
-  have R₁ : Q(Type u₁) := e₁.snd.fst
-  have _iR₁ : Q(Semiring.{u₁} $R₁) := e₁.snd.snd.fst
-  let iRM₁ ← synthInstanceQ q(Module $R₁ $M)
-  assumeInstancesCommute
-  have l₁ : qNF R₁ M := e₁.snd.snd.snd.snd.fst
-  let pf₁ : Q($lhs = NF.eval $(l₁.toNF)) := e₁.snd.snd.snd.snd.snd
-  /- Do the same for the `rhs` expression, obtaining a term `l₂` of type `qNF R₂ M` for some
-  semiring `R₂`. -/
-  let e₂ ← parse iM rhs
-  have u₂ : Level := e₂.fst
-  have R₂ : Q(Type u₂) := e₂.snd.fst
-  have _iR₂ : Q(Semiring.{u₂} $R₂) := e₂.snd.snd.fst
-  let iRM₂ ← synthInstanceQ q(Module $R₂ $M)
-  have l₂ : qNF R₂ M := e₂.snd.snd.snd.snd.fst
-  let pf₂ : Q($rhs = NF.eval $(l₂.toNF)) := e₂.snd.snd.snd.snd.snd
-  /- Lift everything to the same scalar ring, `R`. -/
-  let ⟨_, _, _, iRM, ⟨l₁', pf₁'⟩, ⟨l₂', pf₂'⟩, _⟩ ← qNF.matchRings iRM₁ _ iRM₂ l₁ l₂ q(0) q(0)
+  match R with
+  | some R =>
+    let .sort u₀ ← whnf (← inferType R) | unreachable!
+    let some u := u₀.dec | unreachable!
+    let (R : Q(Type u)) := R
+    let iR ← synthInstanceQ q(Semiring.{u} $R)
+    let iRM ← synthInstanceQ q(Module $R $M)
+    assumeInstancesCommute
+    /- Construct from the `lhs` expression a term `l₁` of type `qNF R M` --
+    that is, a list of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s and a natural number) -- together with a
+    proof that `lhs` is equal to the `R`-linear combination in `M` this represents. -/
+    let e₁ ← parseEnsuringType iM lhs iR iRM
+    have l₁ : qNF R M := e₁.fst
+    let pf₁ : Q($lhs = NF.eval $(l₁.toNF)) := e₁.snd
+    /- Do the same for the `rhs` expression, obtaining a term `l₂` of type `qNF R M`. -/
+    let e₂ ← parseEnsuringType iM rhs iR iRM
+    have l₂ : qNF R M := e₂.fst
+    let pf₂ : Q($rhs = NF.eval $(l₂.toNF)) := e₂.snd
+    let (mvars, pf) ← reduceCoefficientwise iRM l₁ l₂
   /- Construct a list of goals for the coefficientwise equality of these formal linear combinations,
   and resolve our original goal (modulo these new goals). -/
-  let (mvars, pf) ← reduceCoefficientwise iRM l₁' l₂'
-  g.assign q(NF.eq_of_eval_eq_eval $pf₁ $pf₂ $pf₁' $pf₂' $pf)
-  return mvars
+    g.assign q(NF.eq_of_eval_eq_eval $pf₁ $pf₂ rfl rfl $pf)
+    return mvars
+  | none =>
+    /- Construct from the `lhs` expression a term `l₁` of type `qNF R₁ M` for some semiring `R₁` --
+    that is, a list of `(Q($R₁) × Q($M)) × ℕ`s (two `Expr`s and a natural number) -- together with a
+    proof that `lhs` is equal to the `R₁`-linear combination in `M` this represents. -/
+    let e₁ ← parse iM lhs
+    have u₁ : Level := e₁.fst
+    have R₁ : Q(Type u₁) := e₁.snd.fst
+    have _iR₁ : Q(Semiring.{u₁} $R₁) := e₁.snd.snd.fst
+    let iRM₁ ← synthInstanceQ q(Module $R₁ $M)
+    assumeInstancesCommute
+    have l₁ : qNF R₁ M := e₁.snd.snd.snd.snd.fst
+    let pf₁ : Q($lhs = NF.eval $(l₁.toNF)) := e₁.snd.snd.snd.snd.snd
+    /- Do the same for the `rhs` expression, obtaining a term `l₂` of type `qNF R₂ M` for some
+    semiring `R₂`. -/
+    let e₂ ← parse iM rhs
+    have u₂ : Level := e₂.fst
+    have R₂ : Q(Type u₂) := e₂.snd.fst
+    have _iR₂ : Q(Semiring.{u₂} $R₂) := e₂.snd.snd.fst
+    let iRM₂ ← synthInstanceQ q(Module $R₂ $M)
+    assumeInstancesCommute
+    have l₂ : qNF R₂ M := e₂.snd.snd.snd.snd.fst
+    let pf₂ : Q($rhs = NF.eval $(l₂.toNF)) := e₂.snd.snd.snd.snd.snd
+    /- Lift everything to the same scalar ring, `R`. -/
+    let ⟨_, _, _, iRM, ⟨l₁', pf₁'⟩, ⟨l₂', pf₂'⟩, _⟩ ← qNF.matchRings iRM₁ _ iRM₂ l₁ l₂ q(0) q(0)
+  /- Construct a list of goals for the coefficientwise equality of these formal linear combinations,
+  and resolve our original goal (modulo these new goals). -/
+    let (mvars, pf) ← reduceCoefficientwise iRM l₁' l₂'
+    g.assign q(NF.eq_of_eval_eq_eval $pf₁ $pf₂ $pf₁' $pf₂' $pf)
+    return mvars
 
 /-- Lemmas used to post-process the result of the `match_scalars` and `module` tactics by converting
 the `algebraMap` operations which (which proliferate in the constructed scalar goals) to more
 familiar forms: `ℕ`, `ℤ` and `ℚ` casts. -/
-def algebraMapThms : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
+def algebraMapThms : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast, ``eq_nnratCast]
 
 /-- Postprocessing for the scalar goals constructed in the `match_scalars` and `module` tactics.
 These goals feature a proliferation of `algebraMap` operations (because the scalars start in `ℕ` and
@@ -584,8 +673,8 @@ def postprocess (mvarId : MVarId) : MetaM MVarId := do
 /-- Given a goal which is an equality in a type `M` (with `M` an `AddCommMonoid`), parse the LHS and
 RHS of the goal as linear combinations of `M`-atoms over some semiring `R`, and reduce the goal to
 the respective equalities of the `R`-coefficients of each atom. -/
-def matchScalars (g : MVarId) : MetaM (List MVarId) := do
-  let mvars ← AtomM.run .instances (matchScalarsAux g)
+def matchScalars (R : Option Expr) (g : MVarId) : MetaM (List MVarId) := do
+  let mvars ← AtomM.run .instances (matchScalarsAux R g)
   mvars.mapM postprocess
 
 /-- Given a goal which is an equality in a type `M` (with `M` an `AddCommMonoid`), parse the LHS and
@@ -620,7 +709,9 @@ If the set of scalar types encountered is not totally ordered (in the sense that
 `S` encountered, it holds that either `Algebra R S` or `Algebra S R`), then the `match_scalars`
 tactic fails.
 -/
-elab "match_scalars" : tactic => Tactic.liftMetaTactic matchScalars
+elab "match_scalars" t:(ppSpace colGt term)? : tactic => do
+  let e ← t.mapM (Term.elabTerm · none)
+  Tactic.withMainContext <| Tactic.liftMetaTactic <| matchScalars e
 
 /-- Given a goal which is an equality in a type `M` (with `M` an `AddCommMonoid`), parse the LHS and
 RHS of the goal as linear combinations of `M`-atoms over some commutative semiring `R`, and prove
@@ -650,8 +741,10 @@ example [AddCommGroup M] [CommRing R] [Module R M] (a b μ ν : R) (x y : M) :
   module
 ```
 -/
-elab "module" : tactic => Tactic.liftMetaFinishingTactic fun g ↦ do
-  let l ← matchScalars g
-  discard <| l.mapM fun mvar ↦ AtomM.run .instances (Ring.proveEq mvar)
+elab "module" t:(ppSpace colGt term)? : tactic => do
+  let e ← t.mapM (Term.elabTerm · none)
+  Tactic.withMainContext <| Tactic.liftMetaFinishingTactic fun g ↦ do
+    let l ← matchScalars e g
+    discard <| l.mapM fun mvar ↦ AtomM.run .instances (Ring.proveEq mvar)
 
 end Mathlib.Tactic.Module
