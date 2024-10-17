@@ -68,7 +68,7 @@ theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).
     rw [← List.foldr_max_of_ne_nil]
     · congr
     contrapose! h
-    rw [List.map_eq_nil] at h
+    rw [List.map_eq_nil_iff] at h
     simp [h]
 
 theorem natDegree_list_prod_le (l : List S[X]) : natDegree l.prod ≤ (l.map natDegree).sum := by
@@ -193,9 +193,20 @@ theorem natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
     assumption
   · simp
 
+theorem degree_multiset_prod_of_monic [Nontrivial R] (h : ∀ f ∈ t, Monic f) :
+    t.prod.degree = (t.map degree).sum := by
+  have : t.prod ≠ 0 := Monic.ne_zero <| by simpa using monic_multiset_prod_of_monic _ _ h
+  rw [degree_eq_natDegree this, natDegree_multiset_prod_of_monic _ h, Nat.cast_multiset_sum,
+    Multiset.map_map, Function.comp_def,
+    Multiset.map_congr rfl (fun f hf => (degree_eq_natDegree (h f hf).ne_zero).symm)]
+
 theorem natDegree_prod_of_monic (h : ∀ i ∈ s, (f i).Monic) :
     (∏ i ∈ s, f i).natDegree = ∑ i ∈ s, (f i).natDegree := by
   simpa using natDegree_multiset_prod_of_monic (s.1.map f) (by simpa using h)
+
+theorem degree_prod_of_monic [Nontrivial R] (h : ∀ i ∈ s, (f i).Monic) :
+    (∏ i ∈ s, f i).degree = ∑ i ∈ s, (f i).degree := by
+  simpa using degree_multiset_prod_of_monic (s.1.map f) (by simpa using h)
 
 theorem coeff_multiset_prod_of_natDegree_le (n : ℕ) (hl : ∀ p ∈ t, natDegree p ≤ n) :
     coeff t.prod ((Multiset.card t) * n) = (t.map fun p => coeff p n).prod := by

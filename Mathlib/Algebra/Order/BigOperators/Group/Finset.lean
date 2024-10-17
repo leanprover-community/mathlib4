@@ -210,6 +210,16 @@ theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι �
 
 end OrderedCommMonoid
 
+@[to_additive]
+lemma max_prod_le [LinearOrderedCommMonoid M] {f g : ι → M} {s : Finset ι} :
+    max (s.prod f) (s.prod g) ≤ s.prod (fun i ↦ max (f i) (g i)) :=
+  Multiset.max_prod_le
+
+@[to_additive]
+lemma prod_min_le [LinearOrderedCommMonoid M] {f g : ι → M} {s : Finset ι} :
+    s.prod (fun i ↦ min (f i) (g i)) ≤ min (s.prod f) (s.prod g) :=
+  Multiset.prod_min_le
+
 theorem abs_sum_le_sum_abs {G : Type*} [LinearOrderedAddCommGroup G] (f : ι → G) (s : Finset ι) :
     |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero abs_add s f
 
@@ -220,6 +230,16 @@ theorem abs_sum_of_nonneg {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → 
 theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
     (hf : ∀ i, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg' hf)]
+
+section CommMonoid
+variable [CommMonoid α] [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] {s : Finset ι} {f : ι → α}
+
+@[to_additive (attr := simp)]
+lemma mulLECancellable_prod :
+    MulLECancellable (∏ i ∈ s, f i) ↔ ∀ ⦃i⦄, i ∈ s → MulLECancellable (f i) := by
+  induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
+
+end CommMonoid
 
 section Pigeonhole
 
@@ -499,11 +519,11 @@ lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' fun _
 
 @[to_additive]
 lemma prod_eq_one_iff_of_one_le (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
-  (Finset.prod_eq_one_iff_of_one_le' fun i _ ↦ hf i).trans <| by simp [Function.funext_iff]
+  (Finset.prod_eq_one_iff_of_one_le' fun i _ ↦ hf i).trans <| by simp [funext_iff]
 
 @[to_additive]
 lemma prod_eq_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 :=
-  (Finset.prod_eq_one_iff_of_le_one' fun i _ ↦ hf i).trans <| by simp [Function.funext_iff]
+  (Finset.prod_eq_one_iff_of_le_one' fun i _ ↦ hf i).trans <| by simp [funext_iff]
 
 end OrderedCommMonoid
 

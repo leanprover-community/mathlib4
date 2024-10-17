@@ -37,7 +37,7 @@ assert_not_exists DenselyOrdered
 
 open Function
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+variable {M₀ G₀ : Type*}
 
 section
 
@@ -136,7 +136,7 @@ theorem right_ne_zero_of_mul_eq_one (h : a * b = 1) : b ≠ 0 :=
 end
 
 section MonoidWithZero
-variable [MonoidWithZero M₀] {a : M₀} {m n : ℕ}
+variable [MonoidWithZero M₀] {a : M₀} {n : ℕ}
 
 @[simp] lemma zero_pow : ∀ {n : ℕ}, n ≠ 0 → (0 : M₀) ^ n = 0
   | n + 1, _ => by rw [pow_succ, mul_zero]
@@ -146,7 +146,7 @@ lemma zero_pow_eq (n : ℕ) : (0 : M₀) ^ n = if n = 0 then 1 else 0 := by
   · rw [h, pow_zero]
   · rw [zero_pow h]
 
-lemma pow_eq_zero_of_le : ∀ {m n} (hmn : m ≤ n) (ha : a ^ m = 0), a ^ n = 0
+lemma pow_eq_zero_of_le : ∀ {m n} (_ : m ≤ n) (_ : a ^ m = 0), a ^ n = 0
   | _, _, Nat.le.refl, ha => ha
   | _, _, Nat.le.step hmn, ha => by rw [pow_succ, pow_eq_zero_of_le hmn ha, zero_mul]
 
@@ -155,6 +155,11 @@ lemma ne_zero_pow (hn : n ≠ 0) (ha : a ^ n ≠ 0) : a ≠ 0 := by rintro rfl; 
 @[simp]
 lemma zero_pow_eq_zero [Nontrivial M₀] : (0 : M₀) ^ n = 0 ↔ n ≠ 0 :=
   ⟨by rintro h rfl; simp at h, zero_pow⟩
+
+lemma pow_mul_eq_zero_of_le {a b : M₀} {m n : ℕ} (hmn : m ≤ n)
+    (h : a ^ m * b = 0) : a ^ n * b = 0 := by
+  rw [show n = n - m + m by omega, pow_add, mul_assoc, h]
+  simp
 
 variable [NoZeroDivisors M₀]
 
@@ -234,7 +239,7 @@ end CancelMonoidWithZero
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c g h x : G₀}
+variable [GroupWithZero G₀] {a b x : G₀}
 
 theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
     Function.Injective fun y => x * y := fun y y' w => by
@@ -291,7 +296,7 @@ end GroupWithZero
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c : G₀}
+variable [GroupWithZero G₀] {a : G₀}
 
 @[simp]
 theorem zero_div (a : G₀) : 0 / a = 0 := by rw [div_eq_mul_inv, zero_mul]
@@ -421,7 +426,7 @@ end GroupWithZero
 
 section CommGroupWithZero
 
-variable [CommGroupWithZero G₀] {a b c d : G₀}
+variable [CommGroupWithZero G₀]
 
 theorem div_mul_eq_mul_div₀ (a b c : G₀) : a / c * b = a * b / c := by
   simp_rw [div_eq_mul_inv, mul_assoc, mul_comm c⁻¹]

@@ -93,7 +93,7 @@ theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
 theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by
   rw [← coe_nonempty, coe_univ, Set.nonempty_iff_univ_nonempty]
 
-@[aesop unsafe apply (rule_sets := [finsetNonempty])]
+@[simp, aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem univ_nonempty [Nonempty α] : (univ : Finset α).Nonempty :=
   univ_nonempty_iff.2 ‹_›
 
@@ -376,7 +376,7 @@ namespace Fintype
 instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
   decidable_of_iff (∀ a ∈ @Fintype.elems α _, f a = g a)
-    (by simp [Function.funext_iff, Fintype.complete])
+    (by simp [funext_iff, Fintype.complete])
 
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=

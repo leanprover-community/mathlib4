@@ -178,13 +178,13 @@ variable [HasZeroObject D] [HasZeroMorphisms D]
 
 /-- A zero functor preserves limits. -/
 def preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G where
-  preservesLimit {K} := ⟨fun hc => by
+  preservesLimit {K} := ⟨fun _ => by
     rw [Functor.isZero_iff] at hG
     exact IsLimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
 
 /-- A zero functor preserves colimits. -/
 def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G where
-  preservesColimit {K} := ⟨fun hc => by
+  preservesColimit {K} := ⟨fun _ => by
     rw [Functor.isZero_iff] at hG
     exact IsColimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
 
