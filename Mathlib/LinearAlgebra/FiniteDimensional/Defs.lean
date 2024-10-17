@@ -162,8 +162,7 @@ end FiniteDimensional
 namespace Module
 
 variable (K V)
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
-  [Module K V₂]
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- In a finite-dimensional space, its dimension (seen as a cardinal) coincides with its
 `finrank`. This is a copy of `finrank_eq_rank _ _` which creates easier typeclass searches. -/
@@ -426,9 +425,6 @@ protected theorem finiteDimensional (f : V ≃ₗ[K] V₂) [FiniteDimensional K 
     FiniteDimensional K V₂ :=
   Module.Finite.equiv f
 
-variable {R M M₂ : Type*} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
-variable [Module R M] [Module R M₂]
-
 end LinearEquiv
 
 section
@@ -442,8 +438,7 @@ instance finiteDimensional_finsupp {ι : Type*} [Finite ι] [FiniteDimensional K
 end
 
 namespace Submodule
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
-  [Module K V₂]
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- If a submodule is contained in a finite-dimensional
 submodule with the same or smaller dimension, they are equal. -/
