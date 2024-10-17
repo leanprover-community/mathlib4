@@ -162,9 +162,16 @@ class ContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outParam (A → 
     [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] : Prop where
   predicate_zero : p 0
+  [compactSpace_spectrum (a : A) : CompactSpace (spectrum R a)]
+  spectrum_nonempty [Nontrivial A] (a : A) (ha : p a) : (spectrum R a).Nonempty
   exists_cfc_of_predicate : ∀ a, p a → ∃ φ : C(spectrum R a, R) →⋆ₐ[R] A,
     ClosedEmbedding φ ∧ φ ((ContinuousMap.id R).restrict <| spectrum R a) = a ∧
       (∀ f, spectrum R (φ f) = Set.range f) ∧ ∀ f, p (φ f)
+
+-- this instance should not be activated everywhere but it is useful when developing generic API
+-- for the continuous functional calculus
+scoped[ContinuousFunctionalCalculus]
+attribute [instance] ContinuousFunctionalCalculus.compactSpace_spectrum
 
 /-- A class guaranteeing that the continuous functional calculus is uniquely determined by the
 properties that it is a continuous star algebra homomorphism mapping the (restriction of) the
@@ -199,6 +206,10 @@ lemma StarAlgHom.ext_continuousMap [UniqueContinuousFunctionalCalculus R A]
     φ = ψ :=
   have := UniqueContinuousFunctionalCalculus.compactSpace_spectrum (R := R) a
   UniqueContinuousFunctionalCalculus.eq_of_continuous_of_map_id (spectrum R a) φ ψ hφ hψ h
+
+include instCFC in
+lemma ContinuousFunctionalCalculus.isCompact_spectrum (a : A): IsCompact (spectrum R a) :=
+  isCompact_iff_compactSpace.mpr <| inferInstance
 
 section cfcHom
 
