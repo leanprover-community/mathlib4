@@ -7,20 +7,23 @@ example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4 : Π₀ i, Fin (i + 10)) 1 = 3 := by
 example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4 : Π₀ i, Fin (i + 10)) 2 = 3 := by simp
 example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4 : Π₀ i, Fin (i + 10)) 3 = 4 := by simp
 
-/--
-info:
--/
+/-- info: (DFinsupp.single 1 3).update 2 3 : Π₀ (i : ℕ), Fin (i + 10) -/
 #guard_msgs in
-#eval show Lean.MetaM Unit from
-  guard <|
-    reprStr (fun₀ | 1 => 3 | 2 => 3 : Π₀ i, Fin (i + 10))
-      = "fun₀ | 1 => 3 | 2 => 3"
+#check (fun₀ | 1 => 3 | 2 => 3 : Π₀ i, Fin (i + 10))
+
+/-- info: fun₀ | 2 => 7 -/
+#guard_msgs in
+#eval ((fun₀ | 1 => 3 | 2 => 3) + (fun₀ | 1 => -3 | 2 => 4) : Π₀ _, ℤ)
 
 /--
 info:
+fun₀
+| ["there are five words here", "and five more words here"] => 5
+| ["there are seven words but only here"] => 7
+| ["just two"] => 2
 -/
 #guard_msgs in
-#eval show Lean.MetaM Unit from
-  guard <|
-    reprStr ((fun₀ | 1 => 3 | 2 => 3) + (fun₀ | 1 => -3 | 2 => 4) : Π₀ _, ℤ)
-      = "fun₀ | 2 => 7"
+#eval (fun₀
+    | ["there are five words here", "and five more words here"] => 5
+    | ["there are seven words but only here"] => 7
+    | ["just two"] => 2 : Π₀ _ : List String, ℕ)
