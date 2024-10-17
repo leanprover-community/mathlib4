@@ -213,7 +213,8 @@ def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : Array (Synt
     match i.getId with
     | `Mathlib.Tactic =>
       output := output.push (i, s!"Files in mathlib cannot import the whole tactic folder.")
-    | `Mathlib.Tactic.Replace => output := output.push (i,
+    | `Mathlib.Tactic.Replace =>
+      if mainModule != `Mathlib.Tactic then output := output.push (i,
       s!"Mathlib.Tactic.Replace defines a deprecated form of the 'replace' tactic; \
       please do not use it in mathlib.")
     | `Mathlib.Tactic.Have =>
