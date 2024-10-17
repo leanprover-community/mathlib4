@@ -467,7 +467,7 @@ open scoped Pointwise
 variable {G : Type*} [Group G]
 
 /-- Define the largest symmetric (self inverse) subset of a set. -/
-@[to_additive]
+@[to_additive "Define the largest symmetric (self inverse) subset of a set."]
 def symmCore (V : Set G) : Set G := V ∩ V⁻¹
 
 @[to_additive]
