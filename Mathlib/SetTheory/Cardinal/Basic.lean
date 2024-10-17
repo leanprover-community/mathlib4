@@ -569,8 +569,11 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
   exact inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.curry γ β α
 
 @[simp]
-theorem pow_cast_right (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
+theorem power_natCast (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
+
+@[deprecated (since := "2024-10-16")]
+alias power_cast_right := power_natCast
 
 @[simp]
 theorem lift_one : lift 1 = 1 := mk_eq_one _
@@ -1380,42 +1383,35 @@ theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α :
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 
--- Porting note: was `simp`. LHS is not normal form.
--- @[simp, norm_cast]
-@[norm_cast]
-theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
-  induction n <;> simp [pow_succ, power_add, *, Pow.pow]
+instance : CharZero Cardinal := by
+  refine ⟨StrictMono.injective fun a b h ↦ ?_⟩
+  rwa [← lift_mk_fin, ← lift_mk_fin, lift_lt, ← not_le, le_def,
+    Function.Embedding.nonempty_iff_card_le, Fintype.card_fin, Fintype.card_fin, not_le]
 
--- porting note (#10618): simp can prove this
--- @[simp, norm_cast]
-@[norm_cast]
-theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := by
-  rw [← lift_mk_fin, ← lift_mk_fin, lift_le, le_def, Function.Embedding.nonempty_iff_card_le,
-    Fintype.card_fin, Fintype.card_fin]
+@[deprecated Nat.cast_le (since := "2024-10-16")]
+theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := Nat.cast_le
 
--- porting note (#10618): simp can prove this
--- @[simp, norm_cast]
-@[norm_cast]
-theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := by
-  rw [lt_iff_le_not_le, ← not_le]
-  simp only [natCast_le, not_le, and_iff_right_iff_imp]
-  exact fun h ↦ le_of_lt h
+@[deprecated Nat.cast_le (since := "2024-10-16")]
+theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := Nat.cast_lt
 
-instance : CharZero Cardinal :=
-  ⟨StrictMono.injective fun _ _ => natCast_lt.2⟩
-
+@[deprecated Nat.cast_inj (since := "2024-10-16")]
 theorem natCast_inj {m n : ℕ} : (m : Cardinal) = n ↔ m = n :=
   Nat.cast_inj
 
+@[deprecated Nat.cast_injective (since := "2024-10-16")]
 theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) :=
   Nat.cast_injective
+
+@[deprecated Nat.cast_pow (since := "2024-10-16")]
+theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) :=
+  Nat.cast_pow m n
 
 @[norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   rw [Nat.cast_succ]
   refine (add_one_le_succ _).antisymm (succ_le_of_lt ?_)
   rw [← Nat.cast_succ]
-  exact natCast_lt.2 (Nat.lt_succ_self _)
+  exact Nat.cast_lt.2 (Nat.lt_succ_self _)
 
 lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
   rw [← Cardinal.nat_succ]
@@ -1495,7 +1491,7 @@ theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c :=
   ⟨fun h _ => (nat_lt_aleph0 _).le.trans h, fun h =>
     le_of_not_lt fun hn => by
       rcases lt_aleph0.1 hn with ⟨n, rfl⟩
-      exact (Nat.lt_succ_self _).not_le (natCast_le.1 (h (n + 1)))⟩
+      exact (Nat.lt_succ_self _).not_le (Nat.cast_le.1 (h (n + 1)))⟩
 
 theorem isSuccPrelimit_aleph0 : IsSuccPrelimit ℵ₀ :=
   isSuccPrelimit_of_succ_lt fun a ha => by
@@ -1655,7 +1651,7 @@ theorem mul_lt_aleph0_iff_of_ne_zero {a b : Cardinal} (ha : a ≠ 0) (hb : b ≠
 
 theorem power_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a ^ b < ℵ₀ :=
   match a, b, lt_aleph0.1 ha, lt_aleph0.1 hb with
-  | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [← natCast_pow]; apply nat_lt_aleph0
+  | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [power_natCast, ← Nat.cast_pow]; apply nat_lt_aleph0
 
 theorem eq_one_iff_unique {α : Type*} : #α = 1 ↔ Subsingleton α ∧ Nonempty α :=
   calc
@@ -1702,7 +1698,7 @@ theorem aleph0_mul_aleph0 : ℵ₀ * ℵ₀ = ℵ₀ :=
 theorem nat_mul_aleph0 {n : ℕ} (hn : n ≠ 0) : ↑n * ℵ₀ = ℵ₀ :=
   le_antisymm (lift_mk_fin n ▸ mk_le_aleph0) <|
     le_mul_of_one_le_left (zero_le _) <| by
-      rwa [← Nat.cast_one, natCast_le, Nat.one_le_iff_ne_zero]
+      rwa [← Nat.cast_one, Nat.cast_le, Nat.one_le_iff_ne_zero]
 
 @[simp]
 theorem aleph0_mul_nat {n : ℕ} (hn : n ≠ 0) : ℵ₀ * n = ℵ₀ := by rw [mul_comm, nat_mul_aleph0 hn]
@@ -2089,7 +2085,7 @@ theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length 
     #α = #(Set.univ : Set α) := mk_univ.symm
     _ ≤ #l.toFinset := mk_le_mk_of_subset fun x _ => List.mem_toFinset.mpr (h x)
     _ = l.toFinset.card := Cardinal.mk_coe_finset
-    _ ≤ l.length := Cardinal.natCast_le.mpr (List.toFinset_card_le l)
+    _ ≤ l.length := Nat.cast_le.mpr (List.toFinset_card_le l)
 
 theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
   have : ↑(3 : ℕ) ≤ #α := by simpa using h
