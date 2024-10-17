@@ -52,7 +52,7 @@ namespace Term
 def listEncode : L.Term α → List (α ⊕ (Σi, L.Functions i))
   | var i => [Sum.inl i]
   | func f ts =>
-    Sum.inr (⟨_, f⟩ : Σi, L.Functions i)::(List.finRange _).bind fun i => (ts i).listEncode
+    Sum.inr (⟨_, f⟩ : Σi, L.Functions i)::(List.finRange _).flatMap fun i => (ts i).listEncode
 
 /-- Decodes a list of variables and function symbols as a list of terms. -/
 def listDecode : List (α ⊕ (Σi, L.Functions i)) → List (L.Term α)
@@ -64,21 +64,21 @@ def listDecode : List (α ⊕ (Σi, L.Functions i)) → List (L.Term α)
     else []
 
 theorem listDecode_encode_list (l : List (L.Term α)) :
-    listDecode (l.bind listEncode) = l := by
+    listDecode (l.flatMap listEncode) = l := by
   suffices h : ∀ (t : L.Term α) (l : List (α ⊕ (Σi, L.Functions i))),
       listDecode (t.listEncode ++ l) = t::listDecode l by
     induction' l with t l lih
     · rfl
-    · rw [bind_cons, h t (l.bind listEncode), lih]
+    · rw [flatMap_cons, h t (l.flatMap listEncode), lih]
   intro t
   induction' t with a n f ts ih <;> intro l
   · rw [listEncode, singleton_append, listDecode]
   · rw [listEncode, cons_append, listDecode]
-    have h : listDecode (((finRange n).bind fun i : Fin n => (ts i).listEncode) ++ l) =
+    have h : listDecode (((finRange n).flatMap fun i : Fin n => (ts i).listEncode) ++ l) =
         (finRange n).map ts ++ listDecode l := by
       induction' finRange n with i l' l'ih
       · rfl
-      · rw [bind_cons, List.append_assoc, ih, map_cons, l'ih, cons_append]
+      · rw [flatMap_cons, List.append_assoc, ih, map_cons, l'ih, cons_append]
     simp only [h, length_append, length_map, length_finRange, le_add_iff_nonneg_right,
       _root_.zero_le, ↓reduceDIte, getElem_fin, cons.injEq, func.injEq, heq_eq_eq, true_and]
     refine ⟨funext (fun i => ?_), ?_⟩
@@ -94,7 +94,7 @@ protected def encoding : Encoding (L.Term α) where
   decode l := (listDecode l).head?.join
   decode_encode t := by
     have h := listDecode_encode_list [t]
-    rw [bind_singleton] at h
+    rw [flatMap_singleton] at h
     simp only [Option.join, h, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
       id_eq]
 
@@ -139,7 +139,7 @@ theorem card_sigma : #(Σn, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σi,
 instance [Encodable α] [Encodable (Σi, L.Functions i)] : Encodable (L.Term α) :=
   Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head?.join) fun t => by
     simp only
-    rw [← bind_singleton listEncode, listDecode_encode_list]
+    rw [← flatMap_singleton listEncode, listDecode_encode_list]
     simp only [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
       id_eq]
 
@@ -217,14 +217,14 @@ def listDecode :
 
 @[simp]
 theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
-    listDecode (l.bind (fun φ => φ.2.listEncode)) = l := by
+    listDecode (l.flatMap (fun φ => φ.2.listEncode)) = l := by
   suffices h : ∀ (φ : Σn, L.BoundedFormula α n)
       (l' : List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σn, L.Relations n) ⊕ ℕ))),
       (listDecode (listEncode φ.2 ++ l')) = φ::(listDecode l') by
     induction' l with φ l ih
-    · rw [List.bind_nil]
+    · rw [List.flatMap_nil]
       simp [listDecode]
-    · rw [bind_cons, h φ _, ih]
+    · rw [flatMap_cons, h φ _, ih]
   rintro ⟨n, φ⟩
   induction φ with
   | falsum => intro l; rw [listEncode, singleton_append, listDecode]
@@ -284,7 +284,7 @@ protected def encoding : Encoding (Σn, L.BoundedFormula α n) where
   decode l := (listDecode l)[0]?
   decode_encode φ := by
     have h := listDecode_encode_list [φ]
-    rw [bind_singleton] at h
+    rw [flatMap_singleton] at h
     simp only
     rw [h]
     rfl

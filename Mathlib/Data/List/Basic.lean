@@ -248,8 +248,10 @@ theorem mem_pure (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
 /-! ### bind -/
 
 @[simp]
-theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bind f :=
+theorem bind_eq_flatMap {α β} (f : α → List β) (l : List α) : l >>= f = l.flatMap f :=
   rfl
+
+@[deprecated (since := "2024-10-16")] alias bind_eq_bind := bind_eq_flatMap
 
 /-! ### concat -/
 
@@ -887,21 +889,27 @@ attribute [simp] map_const'
 
 @[deprecated (since := "2024-06-21")] alias map_congr := map_congr_left
 
-theorem bind_pure_eq_map (f : α → β) (l : List α) : l.bind (pure ∘ f) = map f l :=
-  .symm <| map_eq_bind ..
+theorem flatMap_pure_eq_map (f : α → β) (l : List α) : l.flatMap (pure ∘ f) = map f l :=
+  .symm <| map_eq_flatMap ..
+
+@[deprecated (since := "2024-10-16")] alias bind_pure_eq_map := flatMap_pure_eq_map
 
 set_option linter.deprecated false in
-@[deprecated bind_pure_eq_map (since := "2024-03-24")]
+@[deprecated flatMap_pure_eq_map (since := "2024-03-24")]
 theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l :=
   bind_pure_eq_map f l
 
-theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
-    List.bind l f = List.bind l g :=
+theorem flatMap_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
+    List.flatMap l f = List.flatMap l g :=
   (congr_arg List.flatten <| map_congr_left h : _)
 
-theorem infix_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
-    f a <:+: as.bind f :=
+@[deprecated (since := "2024-10-16")] alias bind_congr := flatMap_congr
+
+theorem infix_flatMap_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
+    f a <:+: as.flatMap f :=
   List.infix_of_mem_flatten (List.mem_map_of_mem f h)
+
+@[deprecated (since := "2024-10-16")] alias infix_bind_of_mem := infix_flatMap_of_mem
 
 @[simp]
 theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
@@ -1625,10 +1633,12 @@ attribute [simp 1100] filterMap_cons_none
 -- removing attribute `nolint simpNF`
 attribute [simp 1100] filterMap_cons_some
 
-theorem filterMap_eq_bind_toList (f : α → Option β) (l : List α) :
-    l.filterMap f = l.bind fun a ↦ (f a).toList := by
+theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
+    l.filterMap f = l.flatMap fun a ↦ (f a).toList := by
   induction' l with a l ih <;> simp [filterMap_cons]
   rcases f a <;> simp [ih]
+
+@[deprecated (since := "2024-10-16")] alias filterMap_eq_bind_toList := filterMap_eq_flatMap_toList
 
 theorem filterMap_congr {f g : α → Option β} {l : List α}
     (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by

@@ -39,18 +39,25 @@ lemma count_flatten' [BEq α] (L : List (List α)) (a : α) :
 
 @[deprecated (since := "2024-10-25")] alias count_join' := count_flatten'
 
-/-- See `List.length_bind` for the corresponding statement using `List.sum`. -/
-lemma length_bind' (l : List α) (f : α → List β) :
-    length (l.bind f) = Nat.sum (map (length ∘ f) l) := by rw [List.bind, length_flatten', map_map]
+/-- See `List.length_flatMap` for the corresponding statement using `List.sum`. -/
+lemma length_flatMap' (l : List α) (f : α → List β) :
+    length (l.flatMap f) = Nat.sum (map (length ∘ f) l) := by
+  rw [List.flatMap, length_flatten', map_map]
 
-/-- See `List.countP_bind` for the corresponding statement using `List.sum`. -/
-lemma countP_bind' (p : β → Bool) (l : List α) (f : α → List β) :
-    countP p (l.bind f) = Nat.sum (map (countP p ∘ f) l) := by
-  rw [List.bind, countP_flatten', map_map]
+@[deprecated (since := "2024-10-25")] alias length_bind' := length_flatMap'
 
-/-- See `List.count_bind` for the corresponding statement using `List.sum`. -/
-lemma count_bind' [BEq β] (l : List α) (f : α → List β) (x : β) :
-    count x (l.bind f) = Nat.sum (map (count x ∘ f) l) := countP_bind' _ _ _
+/-- See `List.countP_flatMap` for the corresponding statement using `List.sum`. -/
+lemma countP_flatMap' (p : β → Bool) (l : List α) (f : α → List β) :
+    countP p (l.flatMap f) = Nat.sum (map (countP p ∘ f) l) := by
+  rw [List.flatMap, countP_flatten', map_map]
+
+@[deprecated (since := "2024-10-16")] alias countP_bind' := countP_flatMap'
+
+/-- See `List.count_flatMap` for the corresponding statement using `List.sum`. -/
+lemma count_flatMap' [BEq β] (l : List α) (f : α → List β) (x : β) :
+    count x (l.flatMap f) = Nat.sum (map (count x ∘ f) l) := countP_flatMap' _ _ _
+
+@[deprecated (since := "2024-10-16")] alias count_bind' := count_flatMap'
 
 /-- In a join, taking the first elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the join of the first `i` sublists.
