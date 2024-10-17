@@ -168,15 +168,6 @@ instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   left_inv := LinearEquiv.left_inv
   right_inv := LinearEquiv.right_inv
 
-/-- Helper instance for when inference gets stuck on following the normal chain
-`EquivLike → FunLike`.
-
-TODO: this instance doesn't appear to be necessary: remove it (after benchmarking?)
--/
-instance : FunLike (M ≃ₛₗ[σ] M₂) M M₂ where
-  coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective
-
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   map_add := (·.map_add') --map_add' Porting note (#11215): TODO why did I need to change this?
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note (#11215): TODO why did I need to change this?
