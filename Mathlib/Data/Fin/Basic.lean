@@ -171,7 +171,7 @@ then they coincide (in the heq sense). -/
 protected theorem heq_fun_iff {α : Sort*} {k l : ℕ} (h : k = l) {f : Fin k → α} {g : Fin l → α} :
     HEq f g ↔ ∀ i : Fin k, f i = g ⟨(i : ℕ), h ▸ i.2⟩ := by
   subst h
-  simp [Function.funext_iff]
+  simp [funext_iff]
 
 /-- Assume `k = l` and `k' = l'`.
 If two functions `Fin k → Fin k' → α` and `Fin l → Fin l' → α` are equal on each pair,
@@ -181,7 +181,7 @@ protected theorem heq_fun₂_iff {α : Sort*} {k l k' l' : ℕ} (h : k = l) (h' 
     HEq f g ↔ ∀ (i : Fin k) (j : Fin k'), f i j = g ⟨(i : ℕ), h ▸ i.2⟩ ⟨(j : ℕ), h' ▸ j.2⟩ := by
   subst h
   subst h'
-  simp [Function.funext_iff]
+  simp [funext_iff]
 
 /-- Two elements of `Fin k` and `Fin l` are heq iff their values in `ℕ` coincide. This requires
 `k = l`. For the left implication without this assumption, see `val_eq_val_of_heq`. -/
@@ -242,13 +242,11 @@ instance {n : ℕ} : WellFoundedRelation (Fin n) :=
   measure (val : Fin n → ℕ)
 
 /-- Given a positive `n`, `Fin.ofNat' i` is `i % n` as an element of `Fin n`. -/
+@[deprecated Fin.ofNat' (since := "2024-10-15")]
 def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
   ⟨i % n, mod_lt _ n.pos_of_neZero⟩
 -- Porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
 -- so for now we make this double-prime `''`. This is also the reason for the dubious translation.
-
-instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
-instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
 /--
 The `Fin.val_zero` in `Lean` only applies in `Fin (n+1)`.
@@ -422,15 +420,8 @@ instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
 theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
   rfl
 
-section from_ad_hoc
-
-@[simp] lemma ofNat'_zero [NeZero n] : (Fin.ofNat' n 0) = 0 := rfl
-@[simp] lemma ofNat'_one [NeZero n] : (Fin.ofNat' n 1) = 1 := rfl
-
-end from_ad_hoc
-
 instance instNatCast [NeZero n] : NatCast (Fin n) where
-  natCast n := Fin.ofNat'' n
+  natCast i := Fin.ofNat' n i
 
 lemma natCast_def [NeZero n] (a : ℕ) : (a : Fin n) = ⟨a % n, mod_lt _ n.pos_of_neZero⟩ := rfl
 
@@ -442,10 +433,14 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
 --- Porting note: syntactically the same as the above
 
+lemma intCast_val_sub_eq_sub_add_ite {n : ℕ} (a b : Fin n) :
+    ((a - b).val : ℤ) = a.val - b.val + if b ≤ a then 0 else n := by
+  split <;> fin_omega
+
 section OfNatCoe
 
 @[simp]
-theorem ofNat''_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : (Fin.ofNat'' a : Fin n) = a :=
+theorem ofNat'_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat' n a = a :=
   rfl
 
 @[simp] lemma val_natCast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
