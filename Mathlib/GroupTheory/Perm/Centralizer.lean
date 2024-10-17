@@ -15,8 +15,8 @@ import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
 import Mathlib.GroupTheory.Perm.DomMulAct
 import Mathlib.GroupTheory.Perm.Finite
 
-/-! # Centralizer of a permutation and cardinality of conjugacy classes
-  # in the symmetric groups
+/-!
+# Centralizer of a permutation and cardinality of conjugacy classes in the symmetric groups
 
 Let `α : Type` with `Fintype α` (and `DecidableEq α`).
 The main goal of this file is to compute the cardinality of
@@ -124,7 +124,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
   conv_lhs => rw [this]
   simp only [Finset.coe_smul_finset]
 
-/-- The action by conjugation of `Subgroup.centraliser {g}`
+/-- The action by conjugation of `Subgroup.centralizer {g}`
   on the cycles of a given permutation -/
 def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
     MulAction (centralizer {g}) g.cycleFactorsFinset where
@@ -633,12 +633,8 @@ theorem card_of_cycleType (m : Multiset ℕ) :
   · -- nonempty case
     apply symm
     apply Nat.div_eq_of_eq_mul_left
-    · apply Nat.mul_pos
-      · apply Nat.mul_pos
-        · apply Nat.factorial_pos
-        · apply Multiset.prod_pos
-          exact fun a ha ↦ lt_of_lt_of_le (zero_lt_two) (hm.2 a ha)
-      · exact Finset.prod_pos (fun _ _ ↦ Nat.factorial_pos _)
+    · have : 0 < m.prod := Multiset.prod_pos <| fun a ha => zero_lt_two.trans_le (hm.2 a ha)
+      positivity
     rw [card_of_cycleType_mul_eq, if_pos hm]
   · -- empty case
     exact (card_of_cycleType_eq_zero_iff α).mpr hm
