@@ -133,7 +133,7 @@ theorem smeval.linearMap_apply : smeval.linearMap R x p = p.smeval x := rfl
 
 theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
     ⇑(leval r) = fun p => p.smeval r := by
-  rw [Function.funext_iff]
+  rw [funext_iff]
   intro
   rw [leval_apply, smeval_def, eval_eq_sum]
   rfl
