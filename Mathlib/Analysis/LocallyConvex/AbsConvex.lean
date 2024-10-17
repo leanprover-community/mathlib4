@@ -153,9 +153,9 @@ section NontriviallyNormedField
 variable (𝕜 E) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
-variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
+variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
-theorem nhds_hasBasis_absConvex :
+theorem nhds_hasBasis_absConvex [LocallyConvexSpace ℝ E] :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex 𝕜 s) id := by
   refine
     (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => ?_) fun s hs =>
@@ -167,7 +167,7 @@ theorem nhds_hasBasis_absConvex :
 
 variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
 
-theorem nhds_hasBasis_absConvex_open :
+theorem nhds_hasBasis_absConvex_open [LocallyConvexSpace ℝ E] :
     (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
   refine (nhds_hasBasis_absConvex 𝕜 E).to_hasBasis ?_ ?_
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
@@ -177,6 +177,16 @@ theorem nhds_hasBasis_absConvex_open :
         hs_balanced.interior (mem_interior_iff_mem_nhds.mpr hs_nhds), hs_convex.interior⟩
   rintro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
   exact ⟨s, ⟨hs_open.mem_nhds hs_zero, hs_balanced, hs_convex⟩, rfl.subset⟩
+
+theorem locallyConvexSpace_iff_zero_abs : LocallyConvexSpace ℝ E ↔
+    (𝓝 0 : Filter E).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex ℝ s) id :=
+  ⟨fun _ => nhds_hasBasis_absConvex ℝ _,
+   fun h => LocallyConvexSpace.ofBasisZero ℝ E _ _ h fun _ ⟨_,⟨_,hN₂⟩⟩ => hN₂⟩
+
+theorem locallyConvexSpace_iff_exists_absconvex_subset_zero :
+    LocallyConvexSpace ℝ E ↔
+    ∀ U ∈ (𝓝 0 : Filter E), ∃ S ∈ (𝓝 0 : Filter E), AbsConvex ℝ S ∧ S ⊆ U :=
+  (locallyConvexSpace_iff_zero_abs E).trans Filter.hasBasis_self
 
 end NontriviallyNormedField
 
@@ -237,6 +247,37 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
     (by
       rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s))]
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)
+
+variable (E 𝕜) {s : Set E}
+variable [NontriviallyNormedField 𝕜] [Module 𝕜 E]
+variable [SMulCommClass ℝ 𝕜 E]
+variable [UniformSpace E] [UniformAddGroup E]
+variable [lcs : LocallyConvexSpace ℝ E]
+variable [ContinuousSMul ℝ E]
+
+-- TVS II.25 Prop3
+theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
+    TotallyBounded (absConvexHull ℝ s) := by
+  rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
+  intro U hU
+  obtain ⟨W, hW₁, _, _, hW₄⟩  := exists_closed_nhds_zero_neg_eq_add_subset hU
+  obtain ⟨V,⟨hV₁,hV₂,hV₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs W hW₁
+  obtain ⟨t,⟨htf,hts⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hs) _ hV₁
+  obtain ⟨t',⟨htf',hts'⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp
+    (IsCompact.totallyBounded (Set.Finite.isCompact_convexHull
+      (finite_union.mpr ⟨htf,Finite.neg htf⟩)))) _ hV₁
+  use t'
+  have en {t₁ V₁ : Set E} : (⋃ y ∈ t₁, y +ᵥ V₁) = t₁ + V₁ := iUnion_add_left_image
+  rw [en] at hts'
+  rw [en] at hts
+  simp_rw [en]
+  exact ⟨htf',
+    subset_trans (by
+      rw [← add_assoc]
+      apply le_trans _ (Set.add_subset_add_right hts')
+      rw [convexHull_union_neg_eq_absConvexHull, ← AbsConvex.absConvexHull_eq hV₂]
+      exact le_trans (absConvexHull_mono hts) (absConvexHull_add_subset ℝ))
+    (Set.add_subset_add_left (subset_trans (add_subset_add hV₃ hV₃) hW₄))⟩
 
 end
 
