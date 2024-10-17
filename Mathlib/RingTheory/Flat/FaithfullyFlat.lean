@@ -5,6 +5,7 @@ Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
 
 import Mathlib.RingTheory.Flat.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Quotient
 
 /-!
 # Faithfully flat modules
