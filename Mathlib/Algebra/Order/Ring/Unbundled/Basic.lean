@@ -761,6 +761,19 @@ lemma two_mul_le_add_sq [ExistsAddOfLE α] [MulPosStrictMono α]
 
 alias two_mul_le_add_pow_two := two_mul_le_add_sq
 
+lemma four_mul_le_add_sq [ExistsAddOfLE α] [MulPosStrictMono α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· ≤ ·)]
+    (a b : α) : 4 * a * b ≤ (a + b) ^ 2 := by
+  calc 4 * a * b
+    _ = (2 + 2) * (a * b) := by rw [NonUnitalSemiring.mul_assoc, two_add_two_eq_four]
+    _ = 2 * (a * b) + 2 * (a * b) := by rw [RightDistribClass.right_distrib]
+    _ = 2 * a * b + 2 * a * b := by rw [NonUnitalSemiring.mul_assoc]
+    _ ≤ (a ^ 2 + b ^ 2) + 2 * a * b :=  by simp [add_le_add_right, two_mul_le_add_sq]
+    _ = a ^ 2 + 2 * a * b + b ^ 2 := by rw [add_right_comm]
+    _ = (a + b) ^ 2 := (add_sq a b).symm
+
+alias four_mul_le_add_pow_two := four_mul_le_add_sq
+
 end LinearOrderedCommSemiring
 
 section LinearOrderedRing
