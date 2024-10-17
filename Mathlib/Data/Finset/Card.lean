@@ -400,7 +400,7 @@ lemma card_le_card_of_injOn (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj
   classical
   calc
     #s = #(s.image f) := (card_image_of_injOn f_inj).symm
-    _      ≤ #t           := card_le_card <| image_subset_iff.2 hf
+    _  ≤ #t           := card_le_card <| image_subset_iff.2 hf
 @[deprecated (since := "2024-06-01")] alias card_le_card_of_inj_on := card_le_card_of_injOn
 
 lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : #t ≤ #s := by
