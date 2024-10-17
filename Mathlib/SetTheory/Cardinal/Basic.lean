@@ -568,7 +568,7 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
   rw [mul_comm b c]
   exact inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.curry γ β α
 
-@[simp]
+@[simp, norm_cast]
 theorem power_natCast (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
 
