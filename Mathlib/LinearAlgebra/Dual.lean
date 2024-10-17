@@ -694,10 +694,9 @@ theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p))
 `f ∈ s` such that `f z ≠ 0`, then `s` spans the whole dual space. -/
 theorem span_eq_top_of_ne_zero [IsReflexive R M]
     {s : Set (M →ₗ[R] R)} [Free R ((M →ₗ[R] R) ⧸ (span R s))]
-    (h : ∀ z ≠ 0, ∃ f ∈ s, f z ≠ 0) : ⊤ ≤ span R s := by
-  by_contra hn
-  replace hn := (ne_of_not_le hn).symm.lt_top
-  obtain ⟨φ, φne, hφ⟩ := exists_dual_map_eq_bot_of_lt_top hn inferInstance
+    (h : ∀ z ≠ 0, ∃ f ∈ s, f z ≠ 0) : span R s = ⊤ := by
+  by_contra! hn
+  obtain ⟨φ, φne, hφ⟩ := exists_dual_map_eq_bot_of_lt_top hn.lt_top inferInstance
   let φs := (evalEquiv R M).symm φ
   have this f (hf : f ∈ s) : f φs = 0 := by
     rw [← mem_bot R, ← hφ, mem_map]
