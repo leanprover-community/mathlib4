@@ -16,7 +16,9 @@ that come from core Lean 4 that do not handle universe polymorphism.
 In addition, we provide some additional `ToExpr` instances for core definitions.
 -/
 
-section override -- Note: this section uses `autoImplicit` pervasively
+-- Note: this section uses `autoImplicit` intentionally,
+-- as the ToExpr instances become much longer otherwise.
+section override
 namespace Lean
 
 attribute [-instance] Lean.instToExprOption
