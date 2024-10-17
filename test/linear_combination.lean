@@ -179,7 +179,8 @@ example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
   linear_combination (norm := ring_nf) 1 / 6 * ha + 1 / 3 * hab
 
 example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
-  linear_combination (norm := simp) h1
+  linear_combination (norm := skip) h1
+  ring1
 
 /-! ### Cases that have linear_combination skip normalization -/
 
@@ -189,7 +190,7 @@ example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
 
 example (x y : ℤ) (h1 : x = -3) (_h2 : y = 10) : 2 * x = -6 := by
   linear_combination (norm := skip) 2 * h1
-  simp (config := {decide := true})
+  ring1
 
 /-! ### Cases without any arguments provided -/
 
@@ -202,7 +203,7 @@ example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination
 -- this interacts as expected with options
 example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w = w + z := by
   linear_combination (norm := skip)
-  guard_target = z + w - (w + z) - (0 - 0) = 0
+  guard_target = z + w + 0 - (w + z + 0) = 0
   simp [add_comm]
 
 example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w = w + z := by
@@ -253,7 +254,7 @@ example (a : ℚ) (ha : a = 1) : a = 2 := by linear_combination ha
 --   this behavior.
 /--
 error: application type mismatch
-  Mathlib.Tactic.LinearCombination.c_mul_pf h2 0
+  Mathlib.Tactic.LinearCombination.mul_const_eq h2 0
 argument
   0
 has type
@@ -311,6 +312,85 @@ example (K : Type)
   linear_combination (exp := 6) 2 * y * z ^ 2 * h₂ / 7 + (x ^ 3  - y ^ 2 * z / 7) * h₁ -
     x * y * z * h₀ + y * z * h / 7
 
+/-! ### Linear inequalities -/
+
+example : (3:ℤ) ≤ 4 := by linear_combination
+
+example (x : ℚ) (hx : x ≤ 3) : x - 1 ≤ 5 := by linear_combination hx
+example (x : ℝ) (hx : x ≤ 3) : x - 1 ≤ 5 := by linear_combination hx
+
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≤ 1) : a + b ≤ 2 := by linear_combination h1 + h2
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : a + b < 3 := by linear_combination h1 + h2
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 2) : a ≤ b := by linear_combination h1 + h2
+
+example (a : ℚ) (ha : 0 ≤ a) : 0 ≤ 2 * a := by linear_combination 2 * ha
+
+example {x y : ℚ} (h : x + 1 < y) : x < y := by linear_combination h
+example {x y : ℚ} (h : x < y) : x < y := by linear_combination h
+
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : (a + b) / 2 ≤ 1 := by linear_combination (h1 + h2) / 2
+
+example {x y : ℤ} (hx : x + 3 ≤ 2) (hy : y + 2 * x ≥ 3) : y > 3 := by linear_combination hy + 2 * hx
+example {x y : ℕ} (hx : x + 3 ≤ 2) (hy : y + 2 * x ≥ 3) : y > 3 := by linear_combination hy + 2 * hx
+
+example {x y : ℤ} (h : x + 1 ≤ y) : x < y := by linear_combination h
+
+example {x y z : ℚ} (h1 : 4 * x + y + 3 * z ≤ 25) (h2 : -x + 2 * y + z = 3)
+    (h3 : 5 * x + 7 * z = 43) :
+    x ≤ 4 := by
+  linear_combination (14 * h1 - 7 * h2 - 5 * h3) / 38
+
+example {a b c d e : ℚ}
+    (h1 : 3 * a + 4 * b - 2 * c + d = 15)
+    (h2 : a + 2 * b + c - 2 * d + 2 * e ≤ 3)
+    (h3 : 5 * a + 5 * b - c + d + 4 * e = 31)
+    (h4 : 8 * a + b - c - 2 * d + 2 * e = 8)
+    (h5 : 1 - 2 * b + 3 * c - 4 * d + 5 * e = -4) :
+    a ≤ 1 := by
+  linear_combination (-155 * h1 + 68 * h2 + 49 * h3 + 59 * h4 - 90 * h5) / 320
+
+example {a b c d e : ℚ}
+    (h1 : 3 * a + 4 * b - 2 * c + d = 15)
+    (h2 : a + 2 * b + c - 2 * d + 2 * e ≤ 3)
+    (h3 : 5 * a + 5 * b - c + d + 4 * e = 31)
+    (h4 : 8 * a + b - c - 2 * d + 2 * e = 8)
+    (h5 : 1 - 2 * b + 3 * c - 4 * d + 5 * e > -4) :
+    a < 1 := by
+  linear_combination (-155 * h1 + 68 * h2 + 49 * h3 + 59 * h4 + 90 * h5) / 320
+
+/--
+error: comparison failed, LHS is larger
+a b : ℚ
+h1 : a ≤ 1
+h2 : b ≥ 0
+⊢ 1 ≤ 0
+-/
+#guard_msgs in
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 0) : a ≤ b := by linear_combination h1 + h2
+
+/--
+error: ring failed, ring expressions not equal up to an additive constant
+a b : ℚ
+h1 : a ≤ 1
+h2 : b ≥ 0
+⊢ 1 - b ≤ 0
+-/
+#guard_msgs in
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 0) : a ≤ b := by linear_combination h1
+
+/-! ### Nonlinear inequalities -/
+
+-- FIXME should permit writing just `hb`, not `hb.le`
+example {a b : ℝ} (ha : 0 ≤ a) (hb : b < 1) : a * b ≤ a := by linear_combination a * hb.le
+
+example {u v x y A B : ℝ} (_ : 0 ≤ u) (_ : 0 ≤ v) (h2 : A ≤ 1) (h3 : 1 ≤ B) (h4 : x ≤ B)
+    (h5 : y ≤ B) (h8 : u < A) (h9 : v < A) :
+    u * y + v * x + u * v < 3 * A * B := by
+  linear_combination v * h2 + v * h3 + v * h4 + u * h5 + (v + B) * h8 + 2 * B * h9
+
+example {t : ℚ} (ht : t ≥ 10) : t ^ 2 - 3 * t - 17 ≥ 5 := by linear_combination (t + 7) * ht
+
+example {n : ℤ} (hn : n ≥ 5) : n ^ 2 > 2 * n + 11 := by linear_combination (n + 3) * hn
 
 /-! ### Regression tests -/
 
@@ -326,7 +406,7 @@ example {r s a b : ℕ} (h₁ : (r : ℤ) = a + 1) (h₂ : (s : ℤ) = b + 1) :
 
 -- Implementation at the time of the port (Nov 2022) was 110,000 heartbeats.
 -- Eagerly elaborating leaf nodes brings this to 7,540 heartbeats.
-set_option maxHeartbeats 8000 in
+set_option maxHeartbeats 10000 in
 example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
     (h₀ : 3 * x ^ 2 + z ^ 2 * p = 0)
     (h₁ : z * (2 * y) = 0)
@@ -359,4 +439,14 @@ example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
               13122 * q ^ 6 * p ^ 3 * x * z -
             59049 * q ^ 7 * p * x ^ 2) *
           h₂
+  exact test_sorry
+
+/- When `linear_combination` is used to prove inequalities, its speed is very sensitive to how much
+typeclass inference is demanded by the lemmas it orchestrates.  This example took 2146 heartbeats
+(and 73 ms on a good laptop) on an implementation with "minimal" typeclasses everywhere, e.g. lots of
+`CovariantClass`/`ContravariantClass`, and takes 206 heartbeats (10 ms on a good laptop) on the
+implementation at the time of joining Mathlib (October 2024). -/
+set_option maxHeartbeats 1000 in
+example {a b : ℝ} (h : a < b) : 0 < b - a := by
+  linear_combination (norm := skip) h
   exact test_sorry
