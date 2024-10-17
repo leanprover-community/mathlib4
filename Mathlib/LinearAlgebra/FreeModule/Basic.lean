@@ -180,7 +180,6 @@ instance tensor : Module.Free S (M ⊗[R] N) :=
 
 end CommSemiring
 
-
 section
 
 variable [CommSemiring R]
