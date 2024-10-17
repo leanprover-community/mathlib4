@@ -135,8 +135,8 @@ def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) 
           PointedSmoothMap.smul_def, ContMDiffMap.comp_apply,
           PointedSmoothMap.smul_def, ContMDiffMap.comp_apply, h]
         norm_cast
-  map_smul' k v := rfl
-  map_add' v w := rfl
+  map_smul' _ _ := rfl
+  map_add' _ _ := rfl
 
 /-- The homogeneous differential as a linear map. -/
 def fdifferential (f : C^∞⟮I, M; I', M'⟯) (x : M) :

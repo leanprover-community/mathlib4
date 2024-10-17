@@ -142,8 +142,8 @@ theorem RingHom.IsIntegralElem.of_mul_unit (x y : S) (r : R) (hr : f r * y = 1)
 /-- Generalization of `IsIntegral.of_mem_closure` bootstrapped up from that lemma -/
 theorem IsIntegral.of_mem_closure' (G : Set A) (hG : ∀ x ∈ G, IsIntegral R x) :
     ∀ x ∈ Subring.closure G, IsIntegral R x := fun _ hx ↦
-  Subring.closure_induction hx hG isIntegral_zero isIntegral_one (fun _ _ ↦ IsIntegral.add)
-    (fun _ ↦ IsIntegral.neg) fun _ _ ↦ IsIntegral.mul
+  Subring.closure_induction hG isIntegral_zero isIntegral_one (fun _ _ _ _ ↦ IsIntegral.add)
+    (fun _ _ ↦ IsIntegral.neg) (fun _ _ _ _ ↦ IsIntegral.mul) hx
 
 theorem IsIntegral.of_mem_closure'' {S : Type*} [CommRing S] {f : R →+* S} (G : Set S)
     (hG : ∀ x ∈ G, f.IsIntegralElem x) : ∀ x ∈ Subring.closure G, f.IsIntegralElem x := fun x hx =>
@@ -395,14 +395,14 @@ variable [Algebra R A] [Algebra R A'] [IsScalarTower R A B] [IsScalarTower R A' 
 /-- Integral closures are all isomorphic to each other. -/
 noncomputable def equiv : A ≃ₐ[R] A' :=
   AlgEquiv.ofAlgHom
-    (lift _ B (isIntegral := isIntegral_algebra R B))
-    (lift _ B (isIntegral := isIntegral_algebra R B))
+    (lift R A' B (isIntegral := isIntegral_algebra R B))
+    (lift R A B (isIntegral := isIntegral_algebra R B))
     (by ext x; apply algebraMap_injective A' R B; simp)
     (by ext x; apply algebraMap_injective A R B; simp)
 
 @[simp]
 theorem algebraMap_equiv (x : A) : algebraMap A' B (equiv R A B A' x) = algebraMap A B x :=
-  algebraMap_lift A' B (isIntegral := isIntegral_algebra R B) x
+  algebraMap_lift R A' B (isIntegral := isIntegral_algebra R B) x
 
 end Equiv
 

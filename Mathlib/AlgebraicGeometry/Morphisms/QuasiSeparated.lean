@@ -247,7 +247,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     use 0, f
     refine @Subsingleton.elim _
       (CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty ?_)) _ _
-    erw [eq_bot_iff]
+    rw [eq_bot_iff]
     exact X.basicOpen_le f
   · -- Given `f : 𝒪(S ∪ U), x : 𝒪(X_f)`, we need to show that `f ^ n * x` is the restriction of
     -- some `y : 𝒪(S ∪ U)` for some `n : ℕ`.
@@ -275,13 +275,13 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     have hs₁ : ∀ i : s, i.1.1 ≤ S := by
       intro i; change (i : X.Opens) ≤ S
       refine le_trans ?_ (inf_le_left (b := U.1))
-      erw [hs]
+      rw [hs]
       -- Porting note: have to add argument explicitly
       exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
     have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
       intro i; change (i : X.Opens) ≤ U
       refine le_trans ?_ (inf_le_right (a := S))
-      erw [hs]
+      rw [hs]
       -- Porting note: have to add argument explicitly
       exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
     -- On each affine open in the intersection, we have `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`
@@ -297,7 +297,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
         X.presheaf.map (homOfLE <| inf_le_right).op
           (X.presheaf.map (homOfLE le_sup_right).op f ^ (Finset.univ.sup n + n₁) * y₂) := by
       fapply X.sheaf.eq_of_locally_eq' fun i : s => i.1.1
-      · refine fun i => homOfLE ?_; erw [hs]
+      · refine fun i => homOfLE ?_; rw [hs]
         -- Porting note: have to add argument explicitly
         exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
       · exact le_of_eq hs
@@ -351,9 +351,9 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsCom
 This is known as the **Qcqs lemma** in [R. Vakil, *The rising sea*][RisingSea]. -/
 theorem isIso_ΓSpec_adjunction_unit_app_basicOpen {X : Scheme} [CompactSpace X]
     [QuasiSeparatedSpace X] (f : X.presheaf.obj (op ⊤)) :
-    IsIso ((ΓSpec.adjunction.unit.app X).val.c.app (op (PrimeSpectrum.basicOpen f))) := by
+    IsIso ((ΓSpec.adjunction.unit.app X).c.app (op (PrimeSpectrum.basicOpen f))) := by
   refine @IsIso.of_isIso_comp_right _ _ _ _ _ _ (X.presheaf.map
-    (eqToHom (ΓSpec.adjunction_unit_map_basicOpen _ _).symm).op) _ ?_
+    (eqToHom (Scheme.toSpecΓ_preimage_basicOpen _ _).symm).op) _ ?_
   rw [ConcreteCategory.isIso_iff_bijective, CommRingCat.forget_map]
   apply (config := { allowSynthFailures := true }) IsLocalization.bijective
   · exact StructureSheaf.IsLocalization.to_basicOpen _ _
@@ -361,8 +361,6 @@ theorem isIso_ΓSpec_adjunction_unit_app_basicOpen {X : Scheme} [CompactSpace X]
     · exact isCompact_univ
     · exact isQuasiSeparated_univ
   · rw [← CommRingCat.comp_eq_ring_hom_comp]
-    simp [RingHom.algebraMap_toAlgebra]
-    rw [ΓSpec.toOpen_unit_app_val_c_app'_assoc, ← Functor.map_comp]
-    rfl
+    simp [RingHom.algebraMap_toAlgebra, ← Functor.map_comp]
 
 end AlgebraicGeometry

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Topology.Category.TopCat.Basic
@@ -54,7 +54,7 @@ instance : ConcreteCategory TopCommRingCat.{u} where
       map := fun f => f.val }
   -- Porting note: Old proof was `forget_faithful := { }`
   forget_faithful :=
-    { map_injective := fun {_ _ a b} h => Subtype.ext <| RingHom.coe_inj h }
+    { map_injective := fun {_ _ _ _} h => Subtype.ext <| RingHom.coe_inj h }
 
 /-- Construct a bundled `TopCommRingCat` from the underlying type and the appropriate typeclasses.
 -/
