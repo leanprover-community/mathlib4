@@ -1,9 +1,13 @@
 ## Create comments and labels on a Lean 4 or Batteries PR after CI has finished on a `*-pr-testing-NNNN` branch.
 ##
 ## See https://leanprover-community.github.io/contribute/tags_and_branches.html
-set -e
 
-# Ensure first argument is either 'lean' or 'batteries'.
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
+# Ensure the first argument is either 'lean' or 'batteries'.
 if [ -z "$1" ]; then
   echo "The first argument must be either 'lean' or 'batteries'"
   exit 1
