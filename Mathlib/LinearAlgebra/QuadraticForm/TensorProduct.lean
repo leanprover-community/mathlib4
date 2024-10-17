@@ -16,9 +16,9 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 -/
 
-universe uR uA uM₁ uM₂
+universe uR uA uM₁ uM₂ uN₁ uN₂
 
-variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
+variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂} {N₁ : Type uN₁} {N₂ : Type uN₂}
 
 open LinearMap (BilinMap BilinForm)
 open TensorProduct QuadraticMap
@@ -27,13 +27,45 @@ namespace QuadraticForm
 
 section CommRing
 variable [CommRing R] [CommRing A]
-variable [AddCommGroup M₁] [AddCommGroup M₂]
-variable [Algebra R A] [Module R M₁] [Module A M₁]
-variable [SMulCommClass R A M₁] [IsScalarTower R A M₁]
-variable [Module R M₂]
+variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N₁] [AddCommGroup N₂]
+variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
+variable [SMulCommClass R A M₁] [IsScalarTower R A M₁] [SMulCommClass R A N₁] [IsScalarTower R A N₁]
+variable [Module R M₂] [Module R N₂]
 
 section InvertibleTwo
 variable [Invertible (2 : R)]
+
+variable (R A) in
+/-- The tensor product of two quadratic maps injects into quadratic maps on tensor products.
+
+Note this is heterobasic; the quadratic map on the left can take values in a module over a larger
+ring than the one on the right. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
+noncomputable def tensorDistrib' :
+    QuadraticMap A M₁ N₁ ⊗[R] QuadraticMap R M₂ N₂ →ₗ[A] QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
+  letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+  -- while `letI`s would produce a better term than `let`, they would make this already-slow
+  -- definition even slower.
+  let toQ := BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂)
+  let tmulB := BilinMap.tensorDistrib' R A (M₁ := M₁) (M₂ := M₂)
+  let toB := AlgebraTensorModule.map
+      (QuadraticMap.associated : QuadraticMap A M₁ N₁ →ₗ[A] BilinMap A M₁ N₁)
+      (QuadraticMap.associated : QuadraticMap R M₂ N₂ →ₗ[R] BilinMap R M₂ N₂)
+  toQ ∘ₗ tmulB ∘ₗ toB
+
+/-- The name `tensorDistrib_tmul` is taken by the `QuadraticForm` version of this result -/
+@[simp]
+theorem tensorDistrib_tmul' (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂) (m₁ : M₁)
+    (m₂ : M₂) : tensorDistrib' R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₁ m₁ ⊗ₜ Q₂ m₂   :=
+  letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+  (BilinMap.tensorDistrib_tmul' _ _ _ _ _ _).trans <| congr_arg₂ _
+    (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
+
+/-- The tensor product of two quadratic maps, a shorthand for dot notation. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
+protected noncomputable abbrev _root_.QuadraticMap.tmul' (Q₁ : QuadraticMap A M₁ N₁)
+    (Q₂ : QuadraticMap R M₂ N₂) : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
+  tensorDistrib' R A (Q₁ ⊗ₜ[R] Q₂)
 
 variable (R A) in
 /-- The tensor product of two quadratic forms injects into quadratic forms on tensor products.
@@ -41,6 +73,8 @@ variable (R A) in
 Note this is heterobasic; the quadratic form on the left can take values in a larger ring than
 the one on the right. -/
 -- `noncomputable` is a performance workaround for mathlib4#7103
+-- Should be `(congr₂ (AlgebraTensorModule.rid R A A)).toLinearMap ∘ₗ (tensorDistrib' R A)` but then
+-- `associated_tmul` breaks
 noncomputable def tensorDistrib :
     QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
@@ -59,7 +93,7 @@ noncomputable def tensorDistrib :
 theorem tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) (m₁ : M₁) (m₂ : M₂) :
     tensorDistrib R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₂ m₂ • Q₁ m₁ :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
-  (BilinMap.tensorDistrib_tmul _ _ _ _ _ _).trans <| congr_arg₂ _
+  (BilinMap.tensorDistrib_tmul _ _ _ _ _ _ _ _).trans <| congr_arg₂ _
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 
 /-- The tensor product of two quadratic forms, a shorthand for dot notation. -/
