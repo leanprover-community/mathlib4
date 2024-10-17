@@ -12,15 +12,17 @@ import Mathlib.Data.DFinsupp.Basic
 This file provides `DFinsupp.piMultilinear`.
 -/
 
-universe uι uκ uR uM uN
+universe uι uκ uS uR uM uN
 variable {ι : Type uι} {κ : ι → Type uκ}
-variable {R : Type uR} {M : ∀ i, κ i → Type uM} {N : (Π i, κ i) → Type uN}
-
-variable [DecidableEq ι] [Fintype ι] [Semiring R]
-variable [∀ i k, AddCommMonoid (M i k)] [∀ i k, Module R (M i k)]
-variable [∀ p, AddCommMonoid (N p)] [∀ p, Module R (N p)]
+variable {S : Type uS} {R : Type uR} {M : ∀ i, κ i → Type uM} {N : (Π i, κ i) → Type uN}
 
 namespace DFinsupp
+
+section Semiring
+
+variable [DecidableEq ι] [Fintype ι] [Semiring R]
+variable [∀ i k, AddCommMonoid (M i k)] [∀ p, AddCommMonoid (N p)]
+variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 
 omit [Fintype ι] in
 /-- This lemma is sufficiently impossible to name that it's easier to just keep it private. -/
@@ -93,5 +95,41 @@ theorem piMultilinear_single
     obtain ⟨i, hpqi⟩ := hpq
     apply (f q).map_coord_zero i
     simp_rw [single_eq_of_ne hpqi]
+
+@[simp]
+theorem piMultilinear_zero :
+    piMultilinear (0 : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) = 0 := by
+  ext; simp
+
+@[simp]
+theorem piMultilinear_add (f g : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+    piMultilinear (f + g) = piMultilinear f + piMultilinear g := by
+  ext; simp
+
+@[simp]
+theorem piMultilinear_smul
+    {S : Type*} [Monoid S] [∀ p, DistribMulAction S (N p)] [∀ p, SMulCommClass R S (N p)]
+    (s : S) (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+    piMultilinear (s • f) = s • piMultilinear f := by
+  ext; simp
+
+end Semiring
+
+section CommSemiring
+
+variable [DecidableEq ι] [Fintype ι] [CommSemiring R]
+variable [∀ i k, AddCommMonoid (M i k)] [∀ i k, Module R (M i k)]
+variable [∀ p, AddCommMonoid (N p)] [∀ p, Module R (N p)]
+
+/-- `DFinsupp.piMultilinear` as a linear map. -/
+@[simps]
+def piMultilinearₗ :
+    (Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p))
+      →ₗ[R] MultilinearMap R (fun i => Π₀ j : κ i, M i j) (Π₀ t : Π i, κ i, N t) where
+  toFun := piMultilinear
+  map_add' := piMultilinear_add
+  map_smul' := piMultilinear_smul
+
+end CommSemiring
 
 end DFinsupp
