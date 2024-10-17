@@ -84,7 +84,7 @@ lemma measurableSet_isRatStieltjesPoint [MeasurableSpace α] (hf : Measurable f)
   have h4 : MeasurableSet {a | ∀ t : ℚ, ⨅ r : Ioi t, f a r = f a t} := by
     rw [Set.setOf_forall]
     refine MeasurableSet.iInter (fun q ↦ ?_)
-    exact measurableSet_eq_fun (measurable_iInf fun _ ↦ hf.eval) hf.eval
+    exact measurableSet_eq_fun (.iInf fun _ ↦ hf.eval) hf.eval
   suffices {a | IsRatStieltjesPoint f a}
       = ({a | Monotone (f a)} ∩ {a | Tendsto (f a) atTop (𝓝 1)} ∩ {a | Tendsto (f a) atBot (𝓝 0)}
         ∩ {a | ∀ t : ℚ, ⨅ r : Ioi t, f a r = f a t}) by
@@ -388,7 +388,7 @@ lemma IsMeasurableRatCDF.measurable_stieltjesFunction (x : ℝ) :
     congr with q
     rw [stieltjesFunction_eq]
   rw [this]
-  exact measurable_iInf (fun q ↦ hf.measurable.eval)
+  exact .iInf (fun q ↦ hf.measurable.eval)
 
 lemma IsMeasurableRatCDF.stronglyMeasurable_stieltjesFunction (x : ℝ) :
     StronglyMeasurable fun a ↦ hf.stieltjesFunction a x :=
