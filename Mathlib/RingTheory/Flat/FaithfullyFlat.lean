@@ -25,6 +25,19 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
   is flat and tensoring with `M` is faithful, i.e. `N ≠ 0` implies `N ⊗ M ≠ 0`.
 - `Module.FaithfullyFlat.iff_flat_and_lTensor_faithful`: an `R`-module `M` is faithfully flat iff it
   is flat and tensoring with `M` is faithful, i.e. `N ≠ 0` implies `M ⊗ N ≠ 0`.
+- `Module.FaithfullyFlat.iff_iff_rTensor_exact`: an `R`-module `M` is faithfully flat iff tensoring
+  with `M` preserves and reflects exact sequences, i.e. the sequence `N₁ → N₂ → N₃` is exact *iff*
+  the sequence `N₁ ⊗ M → N₂ ⊗ M → N₃ ⊗ M` is exact.
+- `Module.FaithfullyFlat.iff_iff_lTensor_exact`: an `R`-module `M` is faithfully flat iff tensoring
+  with `M` preserves and reflects exact sequences, i.e. the sequence `N₁ → N₂ → N₃` is exact *iff*
+  the sequence `M ⊗ N₁ → M ⊗ N₂ → M ⊗ N₃` is exact.
+- `Module.FaithfullyFlat.iff_zero_iff_lTensor_zero`: an `R`-module `M` is faithfully flat iff for
+  all linear maps `f : N → N'`, `f = 0` iff `M ⊗ f = 0`.
+- `Module.FaithfullyFlat.iff_zero_iff_rTensor_zero`: an `R`-module `M` is faithfully flat iff for
+  all linear maps `f : N → N'`, `f = 0` iff `f ⊗ M = 0`.
+- `Module.FaithfullyFlat.of_linearEquiv`: modules linearly equivalent to a flat modules are flat
+- `Module.FaithfullyFlat.comp`: if `S` is `R`-faithfully flat and `M` is `S`-faithfully flat, then
+  `M` is `R`-faithfully flat.
 
 - `Module.FaithfullyFlat.self`: the `R`-module `R` is faithfully flat.
 
