@@ -744,6 +744,7 @@ import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.Algebra.Polynomial.SpecificDegree
 import Mathlib.Algebra.Polynomial.Splits
+import Mathlib.Algebra.Polynomial.SumIteratedDerivative
 import Mathlib.Algebra.Polynomial.Taylor
 import Mathlib.Algebra.Polynomial.UnitTrinomial
 import Mathlib.Algebra.QuadraticDiscriminant
