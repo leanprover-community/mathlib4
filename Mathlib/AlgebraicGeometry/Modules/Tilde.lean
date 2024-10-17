@@ -384,11 +384,15 @@ noncomputable def stalkIso (x : PrimeSpectrum.Top R) :
     exact (tildeInModuleCat M).germ_ext V hxV (homOfLE hg) iVU <| hs ▸ rfl
   inv_hom_id := by ext x; exact x.induction_on (fun _ _ => by simp)
 
-instance (x : PrimeSpectrum.Top R) : IsLocalizedModule x.asIdeal.primeCompl (stalkIso M x).hom :=
-  IsLocalizedModule.of_linearEquiv' x.asIdeal.primeCompl
-    (hf := isLocalizedModule_id x.asIdeal.primeCompl
-      (LocalizedModule x.asIdeal.primeCompl M) (Localization x.asIdeal.primeCompl))
-    (e := (stalkIso M x).toLinearEquiv)
+instance (x : PrimeSpectrum.Top R) :
+    IsLocalizedModule x.asIdeal.primeCompl
+      (toOpen _ _ ≫ M.tildeInModuleCat.germ ⊤ x ⟨⟩  : M ⟶ M.tildeInModuleCat.stalk x) := by
+  convert IsLocalizedModule.of_linearEquiv
+    (hf := localizedModuleIsLocalizedModule (M := M) x.asIdeal.primeCompl)
+    (e := (stalkIso M x).symm.toLinearEquiv)
+  simp only [toOpen_germ, stalkIso_inv,
+    show (stalkIso M x).symm.toLinearEquiv.toLinearMap = (stalkIso M x).inv by rfl]
+  erw [LocalizedModule.lift_comp]
 
 end Tilde
 
