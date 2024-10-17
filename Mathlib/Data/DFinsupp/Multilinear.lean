@@ -9,7 +9,15 @@ import Mathlib.Data.DFinsupp.Basic
 /-!
 # Interactions between finitely-supported functions and multilinear maps
 
-This file provides `DFinsupp.piMultilinear`.
+This file provides `DFinsupp.piMultilinear`, which satisfies
+`piMultilinear f x p = f p (fun i => x i (p i))`.
+
+This is useful because all the intermediate results are bundled:
+
+* `piMultilinear f x` is a `DFinsupp` supported by families of indices `p`.
+* `piMultilinear f` is a `MultilinearMap` operating on finitely-supported functions `x`.
+* `piMultilinearₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
+
 -/
 
 universe uι uκ uS uR uM uN
@@ -46,7 +54,7 @@ def piMultilinear
     (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
     MultilinearMap R (fun i => Π₀ j : κ i, M i j) (Π₀ t : Π i, κ i, N t) where
   toFun x :=
-  { toFun := fun p => f p (fun i => x _ _)
+  { toFun := fun p => f p (fun i => x i (p i))
     support' := (Quotient.finChoice (S := _) fun i => (x i).support').recOnSubsingleton fun s =>
       Trunc.mk ⟨
         Finset.univ.val.pi (fun i ↦ (s i).val) |>.map fun f i => f i (Finset.mem_univ _),
