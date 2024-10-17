@@ -121,10 +121,10 @@ theorem subsingleton (h : IsAdjoinRoot S f) [Subsingleton R] : Subsingleton S :=
 theorem algebraMap_apply (h : IsAdjoinRoot S f) (x : R) :
     algebraMap R S x = h.map (Polynomial.C x) := by rw [h.algebraMap_eq, RingHom.comp_apply]
 
-@[simp]
 theorem mem_ker_map (h : IsAdjoinRoot S f) {p} : p ∈ RingHom.ker h.map ↔ f ∣ p := by
   rw [h.ker_map, Ideal.mem_span_singleton]
 
+@[simp]
 theorem map_eq_zero_iff (h : IsAdjoinRoot S f) {p} : h.map p = 0 ↔ f ∣ p := by
   rw [← h.mem_ker_map, RingHom.mem_ker]
 
@@ -393,12 +393,10 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         ext i
         simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
         rw [(Polynomial.modByMonic_eq_self_iff h.Monic).mpr, Polynomial.coeff]
-        · dsimp only -- Porting note (#10752): added `dsimp only`
-          rw [Finsupp.mapDomain_apply Fin.val_injective]
+        · rw [Finsupp.mapDomain_apply Fin.val_injective]
         rw [degree_eq_natDegree h.Monic.ne_zero, degree_lt_iff_coeff_zero]
         intro m hm
         rw [Polynomial.coeff]
-        dsimp only -- Porting note (#10752): added `dsimp only`
         rw [Finsupp.mapDomain_notin_range]
         rw [Set.mem_range, not_exists]
         rintro i rfl

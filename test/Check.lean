@@ -6,6 +6,8 @@ open Lean PrettyPrinter Delaborator in @[delab mvar] def delabMVar : Delab := do
   unless kind.isNatural do failure
   `(?m)
 
+set_option linter.unusedTactic false
+
 /-!
 Basic check of `#check`
 -/

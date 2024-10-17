@@ -65,7 +65,7 @@ namespace Finset
 /-- Type synonym of `Finset α` equipped with the colexicographic order rather than the inclusion
 order. -/
 @[ext]
-structure Colex (α) :=
+structure Colex (α) where
   /-- `toColex` is the "identity" function between `Finset α` and `Finset.Colex α`. -/
   toColex ::
   /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
@@ -120,8 +120,8 @@ private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ 
   exact hb₂ hb₁
 
 instance instPartialOrder : PartialOrder (Colex α) where
-  le_refl s a ha ha' := (ha' ha).elim
-  le_antisymm s t hst hts := Colex.ext <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
+  le_refl _ _ ha ha' := (ha' ha).elim
+  le_antisymm _ _ hst hts := Colex.ext <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
@@ -197,7 +197,7 @@ lemma toColex_lt_singleton : toColex s < toColex {a} ↔ ∀ b ∈ s, b < a := b
   · refine h.2 <| eq_singleton_iff_unique_mem.2 ⟨hb, fun c hc ↦ (h.1 _ hc).2 hb⟩
   · simp at h
 
-/-- `{a} ≤ s` in colex iff `s` contains an element greated than or equal to `a`. -/
+/-- `{a} ≤ s` in colex iff `s` contains an element greater than or equal to `a`. -/
 lemma singleton_le_toColex : (toColex {a} : Colex α) ≤ toColex s ↔ ∃ x ∈ s, a ≤ x := by
   simp [toColex_le_toColex]; by_cases a ∈ s <;> aesop
 
