@@ -1183,7 +1183,7 @@ end Module
 
 section Nontrivial
 
-variable [Ring R] [Nontrivial R] [AddCommGroup M] [AddCommGroup M']
+variable [Semiring R] [Nontrivial R] [AddCommGroup M] [AddCommGroup M']
 variable [Module R M] [NoZeroSMulDivisors R M] [Module R M']
 variable {s t : Set M}
 
