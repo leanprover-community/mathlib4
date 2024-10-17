@@ -81,10 +81,7 @@ theorem radical_mul_unit {u : Mˣ} {a : M} : radical (a * (↑u : M)) = radical 
   radical_eq_of_associated (associated_mul_unit_left _ _ u.isUnit)
 
 theorem primeFactors_pow (a : M) {n : ℕ} (hn : 0 < n) : primeFactors (a ^ n) = primeFactors a := by
-  simp_rw [primeFactors]
-  simp only [normalizedFactors_pow]
-  rw [Multiset.toFinset_nsmul]
-  exact ne_of_gt hn
+  simp_rw [primeFactors, normalizedFactors_pow, Multiset.toFinset_nsmul _ _ hn.ne']
 
 theorem radical_pow (a : M) {n : Nat} (hn : 0 < n) : radical (a ^ n) = radical a := by
   simp_rw [radical, primeFactors_pow a hn]
