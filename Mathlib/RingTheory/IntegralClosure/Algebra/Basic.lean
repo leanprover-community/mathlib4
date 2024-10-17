@@ -28,14 +28,21 @@ variable {R A B S : Type*}
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
+theorem Subalgebra.isIntegral_iff (S : Subalgebra R A) :
+    Algebra.IsIntegral R S ↔ ∀ x ∈ S, IsIntegral R x :=
+  Algebra.isIntegral_def.trans <| .trans
+    (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm) Subtype.forall
+
 section
 
 variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
-variable (f : A →ₐ[R] B) (hf : Function.Injective f)
 
-theorem Algebra.IsIntegral.of_injective (hf : Function.Injective f) [Algebra.IsIntegral R B] :
-    Algebra.IsIntegral R A :=
+theorem Algebra.IsIntegral.of_injective (f : A →ₐ[R] B) (hf : Function.Injective f)
+    [Algebra.IsIntegral R B] : Algebra.IsIntegral R A :=
   ⟨fun _ ↦ (isIntegral_algHom_iff f hf).mp (isIntegral _)⟩
+
+theorem AlgEquiv.isIntegral_iff (e : A ≃ₐ[R] B) : Algebra.IsIntegral R A ↔ Algebra.IsIntegral R B :=
+  ⟨fun h ↦ h.of_injective e.symm e.symm.injective, fun h ↦ h.of_injective e e.injective⟩
 
 end
 
@@ -57,8 +64,8 @@ instance Algebra.IsIntegral.of_finite [Module.Finite R B] : Algebra.IsIntegral R
 
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
   then all elements of `S` are integral over `R`. -/
-theorem IsIntegral.of_mem_of_fg {A} [Ring A] [Algebra R A] (S : Subalgebra R A)
-    (HS : S.toSubmodule.FG) (x : A) (hx : x ∈ S) : IsIntegral R x :=
+theorem IsIntegral.of_mem_of_fg (S : Subalgebra R B)
+    (HS : S.toSubmodule.FG) (x : B) (hx : x ∈ S) : IsIntegral R x :=
   have : Module.Finite R S := ⟨(fg_top _).mpr HS⟩
   (isIntegral_algHom_iff S.val Subtype.val_injective).mpr (.of_finite R (⟨x, hx⟩ : S))
 

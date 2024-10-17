@@ -69,7 +69,7 @@ theorem Algebra.transcendental_iff_not_isAlgebraic :
 
 /-- A subalgebra is algebraic if and only if it is algebraic as an algebra. -/
 theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
-    S.IsAlgebraic ↔ @Algebra.IsAlgebraic R S _ _ S.algebra := by
+    S.IsAlgebraic ↔ Algebra.IsAlgebraic R S := by
   delta Subalgebra.IsAlgebraic
   rw [Subtype.forall', Algebra.isAlgebraic_def]
   refine forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl ?_
@@ -226,6 +226,12 @@ alias ⟨IsAlgebraic.isIntegral, _⟩ := isAlgebraic_iff_isIntegral
 `Algebra.IsAlgebraic K A` an explicit parameter instead of instance implicit. -/
 protected instance Algebra.IsAlgebraic.isIntegral [Algebra.IsAlgebraic K A] :
     Algebra.IsIntegral K A := Algebra.isAlgebraic_iff_isIntegral.mp ‹_›
+
+variable (K) in
+theorem Algebra.IsAlgebraic.of_isIntegralClosure (B C : Type*)
+    [CommRing B] [CommRing C] [Algebra K B] [Algebra K C] [Algebra B C]
+    [IsScalarTower K B C] [IsIntegralClosure B K C] : Algebra.IsAlgebraic K B :=
+  Algebra.isAlgebraic_iff_isIntegral.mpr (IsIntegralClosure.isIntegral_algebra K C)
 
 end Field
 
