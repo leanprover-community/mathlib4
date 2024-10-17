@@ -44,8 +44,7 @@ variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [
 
 instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by
-    -- porting note (#10745): was `simp [NormedAddTorsor.dist_eq_norm']`
-    rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', vadd_vsub_vadd_cancel_left]⟩
+    simp [NormedAddTorsor.dist_eq_norm']⟩
 
 /-- A `SeminormedAddCommGroup` is a `NormedAddTorsor` over itself. -/
 instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddTorsor V V where
@@ -99,8 +98,7 @@ theorem nndist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nndist (v₁ +ᵥ x) 
 
 @[simp]
 theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
-  -- porting note (#10745): was `simp [dist_eq_norm_vsub V _ x]`
-  rw [dist_eq_norm_vsub V _ x, vadd_vsub]
+  simp [dist_eq_norm_vsub V _ x]
 
 @[simp]
 theorem nndist_vadd_left (v : V) (x : P) : nndist (v +ᵥ x) x = ‖v‖₊ :=
@@ -283,7 +281,7 @@ theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed 
   choose! a ha v hv hav using husv
   rcases ht.isSeqCompact hv with ⟨q, hqt, φ, φ_mono, hφq⟩
   refine ⟨p -ᵥ q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
-    (eventually_of_forall fun n ↦ ?_), q, hqt, vsub_vadd _ _⟩
+    (Eventually.of_forall fun n ↦ ?_), q, hqt, vsub_vadd _ _⟩
   convert ha (φ n) using 1
   exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).symm
 

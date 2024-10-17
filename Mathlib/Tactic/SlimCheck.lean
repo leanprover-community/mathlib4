@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon, Scott Morrison
+Authors: Simon Hudon, Kim Morrison
 -/
 
 import Mathlib.Testing.SlimCheck.Testable
@@ -181,7 +181,7 @@ elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
       Failed to create a `testable` instance for `{tgt}`.\
     \nWhat to do:\
     \n1. make sure that the types you are using have `SlimCheck.SampleableExt` instances\
-    \n  (you can use `#sample my_type` if you are unsure);\
+    \n (you can use `#sample my_type` if you are unsure);\
     \n2. make sure that the relations and predicates that your proposition use are decidable;\
     \n3. make sure that instances of `SlimCheck.Testable` exist that, when combined,\
     \n  apply to your decorated proposition:\

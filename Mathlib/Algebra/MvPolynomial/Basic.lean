@@ -10,6 +10,7 @@ import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Order.SymmDiff
 import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Multivariate polynomials
@@ -372,7 +373,7 @@ theorem induction_on' {P : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
   Finsupp.induction p
     (suffices P (monomial 0 0) by rwa [monomial_zero] at this
     show P (monomial 0 0) from h1 0 0)
-    fun a b f _ha _hb hPf => h2 _ _ (h1 _ _) hPf
+    fun _ _ _ _ha _hb hPf => h2 _ _ (h1 _ _) hPf
 
 /-- Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is required. -/
 theorem induction_on''' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
@@ -403,12 +404,12 @@ theorem induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h
 theorem ringHom_ext {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
     (hC : ∀ r, f (C r) = g (C r)) (hX : ∀ i, f (X i) = g (X i)) : f = g := by
   refine AddMonoidAlgebra.ringHom_ext' ?_ ?_
-  -- Porting note: this has high priority, but Lean still chooses `RingHom.ext`, why?
+  -- Porting note (#11041): this has high priority, but Lean still chooses `RingHom.ext`, why?
   -- probably because of the type synonym
   · ext x
     exact hC _
   · apply Finsupp.mulHom_ext'; intros x
-    -- Porting note: `Finsupp.mulHom_ext'` needs to have increased priority
+    -- Porting note (#11041): `Finsupp.mulHom_ext'` needs to have increased priority
     apply MonoidHom.ext_mnat
     exact hX _
 
@@ -461,7 +462,7 @@ theorem linearMap_ext {M : Type*} [AddCommMonoid M] [Module R M] {f g : MvPolyno
 
 section Support
 
-/-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a non-zero coefficient.  -/
+/-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a non-zero coefficient. -/
 def support (p : MvPolynomial σ R) : Finset (σ →₀ ℕ) :=
   Finsupp.support p
 
@@ -1356,6 +1357,11 @@ theorem comp_aeval {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[
   ext i
   simp
 
+lemma comp_aeval_apply {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[R] B)
+    (p : MvPolynomial σ R) :
+    φ (aeval f p) = aeval (fun i ↦ φ (f i)) p := by
+  rw [← comp_aeval, AlgHom.coe_comp, comp_apply]
+
 @[simp]
 theorem map_aeval {B : Type*} [CommSemiring B] (g : σ → S₁) (φ : S₁ →+* B) (p : MvPolynomial σ R) :
     φ (aeval g p) = eval₂Hom (φ.comp (algebraMap R S₁)) (fun i => φ (g i)) p := by
@@ -1437,7 +1443,7 @@ variable (R)
 theorem _root_.Algebra.adjoin_range_eq_range_aeval :
     Algebra.adjoin R (Set.range f) = (MvPolynomial.aeval f).range := by
   simp only [← Algebra.map_top, ← MvPolynomial.adjoin_range_X, AlgHom.map_adjoin, ← Set.range_comp,
-    (· ∘ ·), MvPolynomial.aeval_X]
+    Function.comp_def, MvPolynomial.aeval_X]
 
 theorem _root_.Algebra.adjoin_eq_range (s : Set S₁) :
     Algebra.adjoin R s = (MvPolynomial.aeval ((↑) : s → S₁)).range := by
@@ -1536,6 +1542,19 @@ theorem eval_mem {p : MvPolynomial σ S} {s : subS} (hs : ∀ i ∈ p.support, p
 
 end EvalMem
 
+variable {S T : Type*} [CommSemiring S] [Algebra R S] [CommSemiring T] [Algebra R T] [Algebra S T]
+  [IsScalarTower R S T]
+
+lemma aeval_sum_elim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (g : σ → T) :
+    (aeval (Sum.elim g (algebraMap S T ∘ f))) p =
+      (aeval g) ((aeval (Sum.elim X (C ∘ f))) p) := by
+  induction' p using MvPolynomial.induction_on with r p q hp hq p i h
+  · simp [← IsScalarTower.algebraMap_apply]
+  · simp [hp, hq]
+  · cases i <;> simp [h]
+
 end CommSemiring
 
 end MvPolynomial
+
+set_option linter.style.longFile 1700

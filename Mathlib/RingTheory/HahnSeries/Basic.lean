@@ -321,7 +321,7 @@ theorem coeff_order_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : x.coeff x.ord
   rw [order_of_ne hx]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
 
-theorem order_le_of_coeff_ne_zero {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x : HahnSeries Γ R}
+theorem order_le_of_coeff_ne_zero {Γ} [AddMonoid Γ] [LinearOrder Γ] {x : HahnSeries Γ R}
     {g : Γ} (h : x.coeff g ≠ 0) : x.order ≤ g :=
   le_trans (le_of_eq (order_of_ne (ne_zero_of_coeff_ne_zero h)))
     (Set.IsWF.min_le _ _ ((mem_support _ _).2 h))
@@ -427,7 +427,7 @@ theorem embDomain_single {f : Γ ↪o Γ'} {g : Γ} {r : R} :
 theorem embDomain_injective {f : Γ ↪o Γ'} :
     Function.Injective (embDomain f : HahnSeries Γ R → HahnSeries Γ' R) := fun x y xy => by
   ext g
-  rw [HahnSeries.ext_iff, Function.funext_iff] at xy
+  rw [HahnSeries.ext_iff, funext_iff] at xy
   have xyg := xy (f g)
   rwa [embDomain_coeff, embDomain_coeff] at xyg
 

@@ -128,7 +128,7 @@ the multiplicities of the elements of `s`. -/
 def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
   toFun s := ⟨s.toFinset, fun a => s.count a, fun a => by simp⟩
   invFun f := Finsupp.toMultiset f
-  map_add' s t := Finsupp.ext fun _ => count_add _ _ _
+  map_add' _ _ := Finsupp.ext fun _ => count_add _ _ _
   right_inv f :=
     Finsupp.ext fun a => by
       simp only [Finsupp.toMultiset_apply, Finsupp.sum, Multiset.count_sum',
@@ -147,7 +147,7 @@ theorem toFinsupp_apply (s : Multiset α) (a : α) : toFinsupp s a = s.count a :
 theorem toFinsupp_zero : toFinsupp (0 : Multiset α) = 0 := _root_.map_zero _
 
 theorem toFinsupp_add (s t : Multiset α) : toFinsupp (s + t) = toFinsupp s + toFinsupp t :=
-  toFinsupp.map_add s t
+  _root_.map_add toFinsupp s t
 
 @[simp]
 theorem toFinsupp_singleton (a : α) : toFinsupp ({a} : Multiset α) = Finsupp.single a 1 := by

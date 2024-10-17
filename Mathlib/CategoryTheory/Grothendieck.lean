@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Sina Hazratpour
+Authors: Kim Morrison, Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Elements
@@ -105,7 +105,7 @@ attribute [local simp] eqToHom_map
 instance : Category (Grothendieck F) where
   Hom X Y := Grothendieck.Hom X Y
   id X := Grothendieck.id X
-  comp := @fun X Y Z f g => Grothendieck.comp f g
+  comp := @fun _ _ _ f g => Grothendieck.comp f g
   comp_id := @fun X Y f => by
     dsimp; ext
     · simp
@@ -147,7 +147,7 @@ variable (F)
 @[simps!]
 def forget : Grothendieck F ⥤ C where
   obj X := X.1
-  map := @fun X Y f => f.1
+  map := @fun _ _ f => f.1
 
 end
 
@@ -166,18 +166,13 @@ def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
   map {X Y} f :=
   { base := f.base
     fiber := (eqToHom (α.naturality f.base).symm).app X.fiber ≫ (α.app Y.base).map f.fiber }
-  map_id X := by
-    simp only [Cat.comp_obj, id_fiber', eqToHom_map]
-    congr 1
-    rw [eqToHom_app, eqToHom_trans]
+  map_id X := by simp only [Cat.eqToHom_app, id_fiber', eqToHom_map, eqToHom_trans]; rfl
   map_comp {X Y Z} f g := by
     dsimp
     congr 1
     simp only [comp_fiber' f g, ← Category.assoc, Functor.map_comp, eqToHom_map]
     congr 1
-    simp only [Cat.comp_obj, eqToHom_trans, eqToHom_map, Cat.comp_map, eqToHom_trans_assoc,
-      Category.assoc]
-    rw [eqToHom_app, eqToHom_app, eqToHom_app]
+    simp only [Cat.eqToHom_app, Cat.comp_obj, eqToHom_trans, eqToHom_map, Category.assoc]
     erw [Functor.congr_hom (α.naturality g.base).symm f.fiber]
     simp
 
@@ -198,9 +193,7 @@ theorem map_id_eq : map (𝟙 F) = 𝟙 (Cat.of <| Grothendieck <| F) := by
     rfl
   · intro X Y f
     simp [map_map]
-    congr
-    rw [NatTrans.id_app]
-    simp
+    rfl
 
 /-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
 if possible, and we should prefer `map_id_iso` to `map_id_eq` whenever we can. -/
@@ -218,9 +211,7 @@ theorem map_comp_eq (α : F ⟶ G) (β : G ⟶ H) :
       eqToHom_refl, Functor.comp_map, Functor.map_comp, Category.comp_id, Category.id_comp]
     fapply Grothendieck.ext
     · rfl
-    · simp only [eqToHom_refl, Category.id_comp]
-      erw [eqToHom_app, eqToHom_app, eqToHom_app, eqToHom_map]
-      simp only [Cat.comp_obj, eqToHom_trans_assoc]
+    · simp
 
 /-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
 if possible, and we should prefer `map_comp_iso` to `map_comp_eq` whenever we can. -/
@@ -234,7 +225,7 @@ universe v
 over category `Over E`. -/
 def functor {E : Cat.{v,u}} : (E ⥤ Cat.{v,u}) ⥤ Over (T := Cat.{v,u}) E where
   obj F := Over.mk (X := E) (Y := Cat.of (Grothendieck F)) (Grothendieck.forget F)
-  map {F G} α := Over.homMk (X:= E) (Grothendieck.map α) Grothendieck.functor_comp_forget
+  map {_ _} α := Over.homMk (X:= E) (Grothendieck.map α) Grothendieck.functor_comp_forget
   map_id F := by
     ext
     exact Grothendieck.map_id_eq (F := F)

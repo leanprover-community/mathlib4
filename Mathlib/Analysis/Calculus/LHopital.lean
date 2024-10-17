@@ -143,7 +143,7 @@ theorem lhopital_zero_atTop_on_Ioi (hff' : ∀ x ∈ Ioi a, HasDerivAt f (f' x) 
     ⟨lt_of_le_of_lt (le_max_left a 0) (lt_one_add _),
       lt_of_le_of_lt (le_max_right a 0) (lt_one_add _)⟩⟩
   have fact1 : ∀ x : ℝ, x ∈ Ioo 0 a'⁻¹ → x ≠ 0 := fun _ hx => (ne_of_lt hx.1).symm
-  have fact2 : ∀ x ∈ Ioo 0 a'⁻¹, a < x⁻¹ := fun _ hx => lt_trans haa' ((lt_inv ha' hx.1).mpr hx.2)
+  have fact2 (x) (hx : x ∈ Ioo 0 a'⁻¹) : a < x⁻¹ := lt_trans haa' ((lt_inv_comm₀ ha' hx.1).mpr hx.2)
   have hdnf : ∀ x ∈ Ioo 0 a'⁻¹, HasDerivAt (f ∘ Inv.inv) (f' x⁻¹ * -(x ^ 2)⁻¹) x := fun x hx =>
     comp x (hff' x⁻¹ <| fact2 x hx) (hasDerivAt_inv <| fact1 x hx)
   have hdng : ∀ x ∈ Ioo 0 a'⁻¹, HasDerivAt (g ∘ Inv.inv) (g' x⁻¹ * -(x ^ 2)⁻¹) x := fun x hx =>
@@ -161,7 +161,7 @@ theorem lhopital_zero_atTop_on_Ioi (hff' : ∀ x ∈ Ioi a, HasDerivAt f (f' x) 
       intro x hx
       unfold Function.comp
       simp only
-      erw [mul_div_mul_right]
+      rw [mul_div_mul_right]
       exact neg_ne_zero.mpr (inv_ne_zero <| pow_ne_zero _ <| ne_of_gt hx))
   have := this.comp tendsto_inv_atTop_zero'
   unfold Function.comp at this
@@ -364,12 +364,12 @@ theorem lhopital_zero_nhds_right (hdf : ∀ᶠ x in 𝓝[>] a, DifferentiableAt 
     (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) (𝓝[>] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[>] a) l := by
   have hdg : ∀ᶠ x in 𝓝[>] a, DifferentiableAt ℝ g x :=
-    hg'.mp (eventually_of_forall fun _ hg' =>
+    hg'.mp (Eventually.of_forall fun _ hg' =>
       by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h))
   have hdf' : ∀ᶠ x in 𝓝[>] a, HasDerivAt f (deriv f x) x :=
-    hdf.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdf.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   have hdg' : ∀ᶠ x in 𝓝[>] a, HasDerivAt g (deriv g x) x :=
-    hdg.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdg.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   exact HasDerivAt.lhopital_zero_nhds_right hdf' hdg' hg' hfa hga hdiv
 
 /-- **L'Hôpital's rule** for approaching a real from the left, `deriv` version -/
@@ -379,12 +379,12 @@ theorem lhopital_zero_nhds_left (hdf : ∀ᶠ x in 𝓝[<] a, DifferentiableAt �
     (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) (𝓝[<] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[<] a) l := by
   have hdg : ∀ᶠ x in 𝓝[<] a, DifferentiableAt ℝ g x :=
-    hg'.mp (eventually_of_forall fun _ hg' =>
+    hg'.mp (Eventually.of_forall fun _ hg' =>
       by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h))
   have hdf' : ∀ᶠ x in 𝓝[<] a, HasDerivAt f (deriv f x) x :=
-    hdf.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdf.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   have hdg' : ∀ᶠ x in 𝓝[<] a, HasDerivAt g (deriv g x) x :=
-    hdg.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdg.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   exact HasDerivAt.lhopital_zero_nhds_left hdf' hdg' hg' hfa hga hdiv
 
 /-- **L'Hôpital's rule** for approaching a real, `deriv` version. This
@@ -413,12 +413,12 @@ theorem lhopital_zero_atTop (hdf : ∀ᶠ x : ℝ in atTop, DifferentiableAt ℝ
     (hgtop : Tendsto g atTop (𝓝 0)) (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) atTop l) :
     Tendsto (fun x => f x / g x) atTop l := by
   have hdg : ∀ᶠ x in atTop, DifferentiableAt ℝ g x := hg'.mp
-    (eventually_of_forall fun _ hg' =>
+    (Eventually.of_forall fun _ hg' =>
       by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h))
   have hdf' : ∀ᶠ x in atTop, HasDerivAt f (deriv f x) x :=
-    hdf.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdf.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   have hdg' : ∀ᶠ x in atTop, HasDerivAt g (deriv g x) x :=
-    hdg.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdg.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   exact HasDerivAt.lhopital_zero_atTop hdf' hdg' hg' hftop hgtop hdiv
 
 /-- **L'Hôpital's rule** for approaching -∞, `deriv` version -/
@@ -427,12 +427,12 @@ theorem lhopital_zero_atBot (hdf : ∀ᶠ x : ℝ in atBot, DifferentiableAt ℝ
     (hgbot : Tendsto g atBot (𝓝 0)) (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) atBot l) :
     Tendsto (fun x => f x / g x) atBot l := by
   have hdg : ∀ᶠ x in atBot, DifferentiableAt ℝ g x :=
-    hg'.mp (eventually_of_forall fun _ hg' =>
+    hg'.mp (Eventually.of_forall fun _ hg' =>
       by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h))
   have hdf' : ∀ᶠ x in atBot, HasDerivAt f (deriv f x) x :=
-    hdf.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdf.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   have hdg' : ∀ᶠ x in atBot, HasDerivAt g (deriv g x) x :=
-    hdg.mp (eventually_of_forall fun _ => DifferentiableAt.hasDerivAt)
+    hdg.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   exact HasDerivAt.lhopital_zero_atBot hdf' hdg' hg' hfbot hgbot hdiv
 
 end deriv

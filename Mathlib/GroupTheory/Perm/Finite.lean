@@ -8,12 +8,13 @@ import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fintype
+import Mathlib.Data.Finite.Sum
 
 /-!
 # Permutations on `Fintype`s
 
 This file contains miscellaneous lemmas about `Equiv.Perm` and `Equiv.swap`, building on top
-of those in `Data/Equiv/Basic` and other files in `GroupTheory/Perm/*`.
+of those in `Logic/Equiv/Basic.lean` and other files in `GroupTheory/Perm/*`.
 -/
 
 universe u v

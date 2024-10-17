@@ -3,8 +3,9 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Topology.MetricSpace.Algebra
+import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Lemmas for `BoundedSMul` over normed additive groups
@@ -85,7 +86,7 @@ theorem norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖ := by
     calc
       ‖r‖ * ‖x‖ = ‖r‖ * ‖r⁻¹ • r • x‖ := by rw [inv_smul_smul₀ h]
       _ ≤ ‖r‖ * (‖r⁻¹‖ * ‖r • x‖) := by gcongr; apply norm_smul_le
-      _ = ‖r • x‖ := by rw [norm_inv, ← mul_assoc, mul_inv_cancel (mt norm_eq_zero.1 h), one_mul]
+      _ = ‖r • x‖ := by rw [norm_inv, ← mul_assoc, mul_inv_cancel₀ (mt norm_eq_zero.1 h), one_mul]
 
 theorem nnnorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊ :=
   NNReal.eq <| norm_smul r x

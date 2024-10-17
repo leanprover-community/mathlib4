@@ -138,25 +138,19 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
         dsimp
         simp }
 
-/-
-Porting note:
-`simps!` alone generated lemmas of the form `_ = _` where `_` are proofs of some proposition.
-This caused the simpNF linter to complain.
-We therefore explicitly tell simps! to avoid applying projections for `PLift` and `ULift`.
-Similarly for `Cocone.equivStructuredArrow`.
--/
 /-- The category of cones on `F` is just the comma category `(Δ ↓ F)`, where `Δ` is the constant
     functor. -/
-@[simps! (config := { notRecursive := [`PLift, `ULift] })]
-def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (const J) F :=
-  Equivalence.mk (Cone.toCostructuredArrow F) (Cone.fromCostructuredArrow F)
-    (NatIso.ofComponents Cones.eta)
-    (NatIso.ofComponents fun c => (CostructuredArrow.eta _).symm)
+@[simps]
+def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (const J) F where
+  functor := Cone.toCostructuredArrow F
+  inverse := Cone.fromCostructuredArrow F
+  unitIso := NatIso.ofComponents Cones.eta
+  counitIso := NatIso.ofComponents fun _ => (CostructuredArrow.eta _).symm
 
 /-- A cone is a limit cone iff it is terminal. -/
 def Cone.isLimitEquivIsTerminal {F : J ⥤ C} (c : Cone F) : IsLimit c ≃ IsTerminal c :=
   IsLimit.isoUniqueConeMorphism.toEquiv.trans
-    { toFun := fun h => IsTerminal.ofUnique _
+    { toFun := fun _ => IsTerminal.ofUnique _
       invFun := fun h s => ⟨⟨IsTerminal.from h s⟩, fun a => IsTerminal.hom_ext h a _⟩
       left_inv := by aesop_cat
       right_inv := by aesop_cat }
@@ -305,16 +299,17 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
 
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
     functor. -/
-@[simps! (config := { notRecursive := [`PLift, `ULift] })]
-def Cocone.equivStructuredArrow (F : J ⥤ C) : Cocone F ≌ StructuredArrow F (const J) :=
-  Equivalence.mk (Cocone.toStructuredArrow F) (Cocone.fromStructuredArrow F)
-    (NatIso.ofComponents Cocones.eta)
-    (NatIso.ofComponents fun c => (StructuredArrow.eta _).symm)
+@[simps]
+def Cocone.equivStructuredArrow (F : J ⥤ C) : Cocone F ≌ StructuredArrow F (const J) where
+  functor := Cocone.toStructuredArrow F
+  inverse := Cocone.fromStructuredArrow F
+  unitIso := NatIso.ofComponents Cocones.eta
+  counitIso := NatIso.ofComponents fun _ => (StructuredArrow.eta _).symm
 
 /-- A cocone is a colimit cocone iff it is initial. -/
 def Cocone.isColimitEquivIsInitial {F : J ⥤ C} (c : Cocone F) : IsColimit c ≃ IsInitial c :=
   IsColimit.isoUniqueCoconeMorphism.toEquiv.trans
-    { toFun := fun h => IsInitial.ofUnique _
+    { toFun := fun _ => IsInitial.ofUnique _
       invFun := fun h s => ⟨⟨IsInitial.to h s⟩, fun a => IsInitial.hom_ext h a _⟩
       left_inv := by aesop_cat
       right_inv := by aesop_cat }

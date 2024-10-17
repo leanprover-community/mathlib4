@@ -48,6 +48,7 @@ namespace Condition
 variable {a b : ℕ} (h : Condition a b)
 
 section
+include h
 
 lemma a_pos : 0 < a := h.1
 
@@ -136,7 +137,7 @@ lemma ab_add_one_dvd_a_pow_large_n_add_b : a * b + 1 ∣ a ^ h.large_n + b := by
       (IsUnit.mul_right_eq_zero (ZMod.unitOfCoprime _ a_coprime_ab_add_one).isUnit).1 this
   rw [mul_add]
   norm_cast
-  simp only [mul_right_inv, Units.val_one, ZMod.coe_unitOfCoprime]
+  simp only [mul_inv_cancel, Units.val_one, ZMod.coe_unitOfCoprime]
   norm_cast
   convert ZMod.natCast_self (a * b + 1) using 2
   exact add_comm _ _
@@ -154,6 +155,8 @@ lemma ab_add_one_dvd_a_pow_large_n_0_add_b : a * b + 1 ∣ a ^ h.large_n_0 + b :
   refine h.ab_add_one_dvd_g.trans ?_
   rw [← h.gcd_eq_g h.N_le_large_n_0]
   exact Nat.gcd_dvd_left _ _
+
+include h
 
 lemma ab_add_one_dvd_b_add_one : a * b + 1 ∣ b + 1 := by
   rw [add_comm b]

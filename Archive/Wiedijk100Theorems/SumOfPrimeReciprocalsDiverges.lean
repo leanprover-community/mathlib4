@@ -38,10 +38,6 @@ The formalization follows Erdős's proof by upper and lower estimates.
 https://en.wikipedia.org/wiki/Divergence_of_the_sum_of_the_reciprocals_of_the_primes
 -/
 
-
-
-open scoped Classical
-
 open Filter Finset
 
 namespace Theorems100
@@ -57,6 +53,7 @@ of `p`, i.e., those `e < x` for which there is a prime `p ∈ (k, x]` that divid
 def U (x k : ℕ) :=
   Finset.biUnion (P x k) (fun p => Finset.filter (fun e => p ∣ e + 1) (range x))
 
+open Classical in
 /-- Those `e < x` for which `e + 1` is a product of powers of primes smaller than or equal to `k`.
 -/
 noncomputable def M (x k : ℕ) :=
@@ -157,7 +154,7 @@ theorem card_le_two_pow {x k : ℕ} :
     card M₁ ≤ card (image f K) := card_le_card h
     _ ≤ card K := card_image_le
     _ ≤ 2 ^ card (image Nat.succ (range k)) := by simp only [K, card_powerset]; rfl
-    _ ≤ 2 ^ card (range k) := pow_le_pow_right one_le_two card_image_le
+    _ ≤ 2 ^ card (range k) := pow_right_mono₀ one_le_two card_image_le
     _ = 2 ^ k := by rw [card_range k]
 
 /--
@@ -217,6 +214,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
   -- This is indeed a partition, so `|U| + |M| = |range x| = x`.
   have h2 : x = card U' + card M' := by
     rw [← card_range x, hU', hM', ← range_sdiff_eq_biUnion]
+    classical
     exact (card_sdiff_add_card_eq_card (Finset.filter_subset _ _)).symm
   -- But for the `x` we have chosen above, both `|U|` and `|M|` are less than or equal to `x / 2`,
   -- and for U, the inequality is strict.

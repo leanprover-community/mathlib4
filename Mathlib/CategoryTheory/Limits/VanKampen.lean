@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 
 /-!
@@ -701,7 +701,7 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     rotate_left
     · ext ⟨j⟩
       dsimp
-      erw [colimit.ι_desc] -- Why?
+      rw [colimit.ι_desc]
       rfl
     simpa [Functor.const_obj_obj, Discrete.functor_obj, extendCofan_pt, extendCofan_ι_app,
       Fin.cases_succ, BinaryCofan.mk_pt, colimit.cocone_x, Cofan.mk_pt, Cofan.mk_ι_app,

@@ -31,14 +31,14 @@ instance instPowNat : Pow (Perm α) ℕ where
   pow f n := ⟨f^[n], f.symm^[n], f.left_inv.iterate _, f.right_inv.iterate _⟩
 
 instance permGroup : Group (Perm α) where
-  mul_assoc f g h := (trans_assoc _ _ _).symm
+  mul_assoc _ _ _ := (trans_assoc _ _ _).symm
   one_mul := trans_refl
   mul_one := refl_trans
-  mul_left_inv := self_trans_symm
+  inv_mul_cancel := self_trans_symm
   npow n f := f ^ n
-  npow_succ n f := coe_fn_injective $ Function.iterate_succ _ _
+  npow_succ _ _ := coe_fn_injective <| Function.iterate_succ _ _
   zpow := zpowRec fun n f ↦ f ^ n
-  zpow_succ' n f := coe_fn_injective $ Function.iterate_succ _ _
+  zpow_succ' _ _ := coe_fn_injective <| Function.iterate_succ _ _
 
 @[simp]
 theorem default_eq : (default : Perm α) = 1 :=
@@ -346,12 +346,12 @@ private theorem pow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℕ} (x), p x �
 @[simp]
 theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
     (f.subtypePerm hf : Perm { x // p x }) ^ n = (f ^ n).subtypePerm (pow_aux hf) := by
-  induction' n with n ih
-  · simp
-  · simp_rw [pow_succ', ih, subtypePerm_mul]
+  induction n with
+  | zero => simp
+  | succ n ih => simp_rw [pow_succ', ih, subtypePerm_mul]
 
 private theorem zpow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℤ} (x), p x ↔ p ((f ^ n) x)
-  | Int.ofNat n => pow_aux hf
+  | Int.ofNat _ => pow_aux hf
   | Int.negSucc n => by
     rw [zpow_negSucc]
     exact inv_aux.1 (pow_aux hf)
@@ -359,9 +359,9 @@ private theorem zpow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℤ} (x), p x 
 @[simp]
 theorem subtypePerm_zpow (f : Perm α) (n : ℤ) (hf) :
     (f.subtypePerm hf ^ n : Perm { x // p x }) = (f ^ n).subtypePerm (zpow_aux hf) := by
-  induction' n with n ih
-  · exact subtypePerm_pow _ _ _
-  · simp only [zpow_negSucc, subtypePerm_pow, subtypePerm_inv]
+  induction n with
+  | ofNat n => exact subtypePerm_pow _ _ _
+  | negSucc n => simp only [zpow_negSucc, subtypePerm_pow, subtypePerm_inv]
 
 variable [DecidablePred p] {a : α}
 
@@ -396,13 +396,23 @@ theorem ofSubtype_apply_of_not_mem (f : Perm (Subtype p)) (ha : ¬p a) : ofSubty
 theorem mem_iff_ofSubtype_apply_mem (f : Perm (Subtype p)) (x : α) :
     p x ↔ p ((ofSubtype f : α → α) x) :=
   if h : p x then by
-    simpa only [h, true_iff_iff, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
+    simpa only [h, true_iff, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
   else by simp [h, ofSubtype_apply_of_not_mem f h]
 
 @[simp]
 theorem subtypePerm_ofSubtype (f : Perm (Subtype p)) :
     subtypePerm (ofSubtype f) (mem_iff_ofSubtype_apply_mem f) = f :=
   Equiv.ext fun x => Subtype.coe_injective (ofSubtype_apply_coe f x)
+
+theorem ofSubtype_subtypePerm_of_mem {p : α → Prop} [DecidablePred p]
+    {g : Perm α} (hg : ∀ (x : α), p x ↔ p (g x))
+    {a : α} (ha : p a) : (ofSubtype (g.subtypePerm hg)) a = g a :=
+  ofSubtype_apply_of_mem (g.subtypePerm hg) ha
+
+theorem ofSubtype_subtypePerm_of_not_mem {p : α → Prop} [DecidablePred p]
+    {g : Perm α} (hg : ∀ (x : α), p x ↔ p (g x))
+    {a : α} (ha : ¬ p a) : (ofSubtype (g.subtypePerm hg)) a = a :=
+  ofSubtype_apply_of_not_mem (g.subtypePerm hg) ha
 
 /-- Permutations on a subtype are equivalent to permutations on the original type that fix pointwise
 the rest. -/
