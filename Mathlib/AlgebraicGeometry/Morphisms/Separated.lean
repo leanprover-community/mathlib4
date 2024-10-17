@@ -64,6 +64,9 @@ instance stableUnderComposition : MorphismProperty.IsStableUnderComposition @IsS
 instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsSeparated f] [IsSeparated g] : IsSeparated (f ≫ g) :=
   stableUnderComposition.comp_mem f g inferInstance inferInstance
 
+instance : MorphismProperty.IsMultiplicative @IsSeparated where
+  id_mem _ := inferInstance
+
 lemma stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   exact MorphismProperty.StableUnderBaseChange.diagonal IsClosedImmersion.stableUnderBaseChange
