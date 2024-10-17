@@ -32,8 +32,8 @@ section Defs
 
 /-- Product of a list.
 
-`List.prod [a, b, c] = a * (b * (c * 1))` -/
-@[to_additive "Sum of a list.\n\n`List.sum [a, b, c] = a + (b + (c + 0))`"]
+`List.prod [a, b, c] = ((1 * a) * b) * c` -/
+@[to_additive existing]
 def prod {α} [Mul α] [One α] : List α → α :=
   foldr (· * ·) 1
 
@@ -56,12 +56,12 @@ section Mul
 
 variable [Mul M] [One M] {l : List M} {a : M}
 
-@[to_additive (attr := simp)]
+@[to_additive existing, simp]
 theorem prod_nil : ([] : List M).prod = 1 :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem prod_cons : (a :: l).prod = a * l.prod := rfl
+@[to_additive existing, simp]
+theorem prod_cons {a} {l : List M} : (a :: l).prod = a * l.prod := rfl
 
 @[to_additive]
 lemma prod_induction
@@ -654,12 +654,11 @@ lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
 @[simp]
 theorem length_bind (l : List α) (f : α → List β) :
     length (List.bind l f) = sum (map (length ∘ f) l) := by
-  rw [List.bind, length_flatten, map_map, Nat.sum_eq_listSum]
+  rw [List.bind, length_flatten, map_map]
 
 lemma countP_bind (p : β → Bool) (l : List α) (f : α → List β) :
     countP p (l.bind f) = sum (map (countP p ∘ f) l) := by
   rw [List.bind, countP_flatten, map_map]
-  simp
 
 lemma count_bind [BEq β] (l : List α) (f : α → List β) (x : β) :
     count x (l.bind f) = sum (map (count x ∘ f) l) := countP_bind _ _ _
