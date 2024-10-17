@@ -72,15 +72,16 @@ theorem cofinal_canonicalFunctor (b₀ : B) : Functor.Final (canonicalFunctor L 
 end ArbitraryUniverses
 
 section SmallCategory
-variable {C : Type (max u₁ v₁)} [Category.{v₁} C]
+variable {C : Type (max v₁ u₂)} [Category.{max v₁ v₂} C]
 variable {A : Type v₁} [Category.{v₁} A]
 variable {B : Type v₁} [Category.{v₁} B]
 variable {T : Type v₁} [Category.{v₁} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
--- noncomputable def bleb : B ⥤
+variable [HasColimitsOfSize.{v₁} C]
 
-noncomputable def bla (F : Comma L R ⥤ C) [HasColimits C] : B ⥤ C :=
+
+noncomputable def bla (F : Comma L R ⥤ C) : B ⥤ C :=
   (lan (Comma.snd L R)).obj F
 
 theorem innerFunctor_aux {C : Type*} [Category C] {D : Type*} [Category D] {I : Type*} [Category I]
@@ -135,15 +136,63 @@ def CostructuredArrow.functor : T ⥤ Cat where
     simp
 
 /-- This is not an equivalence, is it? -/
+@[simps]
 def CostructuredArrow.grothendieckCommaFunctor :
     Grothendieck (R ⋙ CostructuredArrow.functor L) ⥤ Comma L R where
   obj := fun P => ⟨P.fiber.left, P.base, P.fiber.hom⟩
-  map := fun f => ⟨f.fiber.left, f.base, by simp at *⟩
+  map := fun f => ⟨f.fiber.left, f.base, by simp⟩
 
-/-- Fully pointless phrasing of 3.4.3 -/
+@[simps]
+def Comma.toCostructuredArrowGrothendieck :
+    Comma L R ⥤ Grothendieck (R ⋙ CostructuredArrow.functor L) where
+  obj := fun X => ⟨X.right, CostructuredArrow.mk X.hom⟩
+  map := fun f => ⟨f.right, CostructuredArrow.homMk f.left⟩
+  map_id X := by
+    apply Grothendieck.ext
+    · simp
+    · rfl
+  map_comp f g := by
+    apply Grothendieck.ext
+    · simp
+    · rfl
+
+example : Grothendieck (R ⋙ CostructuredArrow.functor L) ≌ Comma L R where
+  functor := CostructuredArrow.grothendieckCommaFunctor _ _
+  inverse := Comma.toCostructuredArrowGrothendieck _ _
+  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+
+/-- Kan-free phrasing of 2.3.4, to be proven by a pointfree version of #17531 -/
+def thm234 [HasColimits C] :
+  colim (J := A) (C := C) ≅
+  (whiskeringLeft _ _ _).obj (CostructuredArrow.grothendieckCommaFunctor L R ⋙ Comma.fst L R) ⋙
+    colim (J := _) (C := C) :=
+  sorry
+
+variable (C) [HasColimits C]
+
+/-- Fully pointfree phrasing of 3.4.3 (i) -/
 def colimThm [HasColimits C] :
     colim (J := Comma L R) (C := C) ≅
-    (whiskeringLeft _ _ _).obj (CostructuredArrow.grothendieckCommaFunctor L R) ⋙ colim := _
+    (whiskeringLeft _ _ _).obj (CostructuredArrow.grothendieckCommaFunctor L R) ⋙ colim := by
+  sorry
+
+/-- This is still missing somehow -/
+def final_of_colimit_iso_colimit {C : Type*}  [Category C] {D : Type*} [Category D]
+    {E : Type*} [Category E] (F : C ⥤ D)
+    [∀ (G : D ⥤ E), HasColimit G]
+    [∀ (G : D ⥤ E), HasColimit (F ⋙ G)]
+    (h : ∀ (G : D ⥤ E), colimit (F ⋙ G) ≅ colimit G) :
+    Final F := sorry
+
+/-- 3.4.3 (ii)-/
+example [R.Final] : (Comma.fst L R).Final := by
+  apply final_of_colimit_iso_colimit (E := Type v₁)
+  intro α
+  let β := (Comma.fst L R) ⋙ α
+  symm
+  exact (thm234.{v₁, v₁, v₁ + 1} L R).app α ≪≫
+    ((colimThm.{v₁, v₁, v₁ + 1} (Type v₁) L R).symm).app β
 
 end SmallCategory
 
