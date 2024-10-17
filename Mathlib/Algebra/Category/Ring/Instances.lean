@@ -37,12 +37,14 @@ instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
   rcases R with ⟨α, str⟩
   exact IsLocalization.epi M _
 
--- These three instances solves the issue where the `FunLike` instances provided by
--- `CommRingCat.instFunLike'`, `CommRingCat.instFunLike''`, and `CommRingCat.instFunLike'''`
--- are not syntactically equal to `CommRingCat.instFunLike` when applied to
--- objects of the form `CommRingCat.of R`.
--- To prevent infinite loops, the priority of these three instances must be set lower
--- than that of other instances.
+/-
+These three instances solve the issue where the `FunLike` instances provided by
+`CommRingCat.instFunLike'`, `CommRingCat.instFunLike''`, and `CommRingCat.instFunLike'''`
+are not syntactically equal to `CommRingCat.instFunLike` when applied to
+objects of the form `CommRingCat.of R`.
+To prevent infinite loops, the priority of these three instances must be set lower
+than that of other instances.
+-/
 instance (priority := 50) {R : Type*} [CommRing R] {S : CommRingCat} (f : CommRingCat.of R ⟶ S)
     [IsLocalHom (R := CommRingCat.of R) f] : IsLocalHom f :=
   inferInstance
