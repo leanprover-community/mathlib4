@@ -1104,6 +1104,7 @@ end PathConnectedSpace
 
 /-! ### Locally path connected spaces -/
 
+section LocPathConnectedSpace
 
 /-- A topological space is locally path connected, at every point, path connected
 neighborhoods form a neighborhood basis. -/
@@ -1124,8 +1125,6 @@ theorem LocPathConnectedSpace.of_bases {p : X → ι → Prop} {s : X → ι →
 
 @[deprecated (since := "2024-10-16")]
 alias locPathConnected_of_bases := LocPathConnectedSpace.of_bases
-
-section LocPathConnectedSpace
 
 variable [LocPathConnectedSpace X]
 
