@@ -6,11 +6,12 @@ Authors: Johan Commelin, Joel Riou
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 
-/-! The free presheaf of modules on a presheaf of sets
+/-! 
+# The free presheaf of modules on a presheaf of sets
 
 In this file, given a presheaf of rings `R` on a category `C`,
 we construct the functor
-`PresheafOfModules.free (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`
+`PresheafOfModules.free : (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`
 which sends a presheaf of types to the corresponding presheaf of free modules.
 `PresheafOfModules.freeAdjunction` shows that this functor is the left
 adjoint to the forget functor.
