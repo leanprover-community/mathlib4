@@ -1,10 +1,13 @@
 /-
 Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yakov Pechersky
+Authors: Yakov Pechersky, David Loeffler
 -/
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Uniform
+import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.MetricSpace.Ultra.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Group
+import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # Ultrametric norms
@@ -15,6 +18,9 @@ This file contains results on the behavior of norms in ultrametric groups.
 
 * `IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm`:
   a normed additive group has an ultrametric iff the norm is nonarchimedean
+* `IsUltrametricDist.nonarchimedeanGroup` and its additive version: instance showing that a
+  commutative group with a nonarchimedean seminorm is a nonarchimedean topological group (i.e.
+  there is a neighbourhood basis of the identity consisting of open subgroups).
 
 ## Implementation details
 
@@ -26,6 +32,8 @@ in `NNReal` is 0, so easier to make statements about maxima of empty sets.
 ultrametric, nonarchimedean
 -/
 open Metric NNReal
+
+open scoped BigOperators
 
 namespace IsUltrametricDist
 
@@ -123,11 +131,52 @@ lemma norm_zpow_le (x : S) (z : ℤ) :
     ‖x ^ z‖ ≤ ‖x‖ :=
   nnnorm_zpow_le x z
 
+section nonarch
+
+variable (S)
+/--
+In a group with an ultrametric norm, open balls around 1 of positive radius are open subgroups.
+-/
+@[to_additive "In an additive group with an ultrametric norm, open balls around 0 of
+positive radius are open subgroups."]
+def ball_openSubgroup {r : ℝ} (hr : 0 < r) : OpenSubgroup S where
+  carrier := Metric.ball (1 : S) r
+  mul_mem' {x} {y} hx hy := by
+    simp only [Metric.mem_ball, dist_eq_norm_div, div_one] at hx hy ⊢
+    exact (norm_mul_le_max x y).trans_lt (max_lt hx hy)
+  one_mem' := Metric.mem_ball_self hr
+  inv_mem' := by simp only [Metric.mem_ball, dist_one_right, norm_inv', imp_self, implies_true]
+  isOpen' := Metric.isOpen_ball
+
+/--
+In a group with an ultrametric norm, closed balls around 1 of positive radius are open subgroups.
+-/
+@[to_additive "In an additive group with an ultrametric norm, closed balls around 0 of positive
+radius are open subgroups."]
+def closedBall_openSubgroup {r : ℝ} (hr : 0 < r) : OpenSubgroup S where
+  carrier := Metric.closedBall (1 : S) r
+  mul_mem' {x} {y} hx hy := by
+    simp only [Metric.mem_closedBall, dist_eq_norm_div, div_one] at hx hy ⊢
+    exact (norm_mul_le_max x y).trans (max_le hx hy)
+  one_mem' := Metric.mem_closedBall_self hr.le
+  inv_mem' := by simp only [mem_closedBall, dist_one_right, norm_inv', imp_self, implies_true]
+  isOpen' := IsUltrametricDist.isOpen_closedBall _ hr.ne'
+
+end nonarch
+
 end Group
 
 section CommGroup
 
 variable {M ι : Type*} [SeminormedCommGroup M] [IsUltrametricDist M]
+
+/-- A commutative group with an ultrametric group seminorm is nonarchimedean (as a topological
+group, i.e. every neighborhood of 1 contains an open subgroup). -/
+@[to_additive "A commutative additive group with an ultrametric group seminorm is nonarchimedean
+(as a topological group, i.e. every neighborhood of 0 contains an open subgroup)."]
+instance nonarchimedeanGroup : NonarchimedeanGroup M where
+  is_nonarchimedean := by simpa only [Metric.mem_nhds_iff]
+    using fun U ⟨ε, hεp, hεU⟩ ↦ ⟨ball_openSubgroup M hεp, hεU⟩
 
 /-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product.
 This version is phrased using `Finset.sup'` and `Finset.Nonempty` due to `Finset.sup`
@@ -189,6 +238,44 @@ lemma norm_prod_le_of_forall_le_of_nonneg {s : Finset ι} {f : ι → M} {C : �
     (h_nonneg : 0 ≤ C) (hC : ∀ i ∈ s, ‖f i‖ ≤ C) : ‖∏ i ∈ s, f i‖ ≤ C := by
   lift C to NNReal using h_nonneg
   exact nnnorm_prod_le_of_forall_le hC
+
+@[to_additive]
+lemma norm_tprod_le (f : ι → M) : ‖∏' i, f i‖ ≤ ⨆ i, ‖f i‖ := by
+  rcases isEmpty_or_nonempty ι with hι | hι
+  · -- Silly case #1 : the index type is empty
+    simp only [tprod_empty, norm_one', Real.iSup_of_isEmpty, le_refl]
+  by_cases h : Multipliable f; swap
+  · -- Silly case #2 : the product is divergent
+    rw [tprod_eq_one_of_not_multipliable h, norm_one']
+    by_cases h_bd : BddAbove (Set.range fun i ↦ ‖f i‖)
+    · exact le_ciSup_of_le h_bd hι.some (norm_nonneg' _)
+    · rw [Real.iSup_of_not_bddAbove h_bd]
+  -- now the interesting case
+  have h_bd : BddAbove (Set.range fun i ↦ ‖f i‖) :=
+    h.tendsto_cofinite_one.norm'.bddAbove_range_of_cofinite
+  refine le_of_tendsto' h.hasProd.norm' (fun s ↦ norm_prod_le_of_forall_le_of_nonneg ?_ ?_)
+  · exact le_ciSup_of_le h_bd hι.some (norm_nonneg' _)
+  · exact fun i _ ↦ le_ciSup h_bd i
+
+@[to_additive]
+lemma nnnorm_tprod_le (f : ι → M) : ‖∏' i, f i‖₊ ≤ ⨆ i, ‖f i‖₊ := by
+  simpa only [← NNReal.coe_le_coe, coe_nnnorm', coe_iSup] using norm_tprod_le f
+
+@[to_additive]
+lemma norm_tprod_le_of_forall_le [Nonempty ι] {f : ι → M} {C : ℝ} (h : ∀ i, ‖f i‖ ≤ C) :
+    ‖∏' i, f i‖ ≤ C :=
+  (norm_tprod_le f).trans (ciSup_le h)
+
+@[to_additive]
+lemma norm_tprod_le_of_forall_le_of_nonneg {f : ι → M} {C : ℝ} (hC : 0 ≤ C) (h : ∀ i, ‖f i‖ ≤ C) :
+    ‖∏' i, f i‖ ≤ C := by
+  rcases isEmpty_or_nonempty ι
+  · simpa only [tprod_empty, norm_one'] using hC
+  · exact norm_tprod_le_of_forall_le h
+
+@[to_additive]
+lemma nnnorm_tprod_le_of_forall_le {f : ι → M} {C : ℝ≥0} (h : ∀ i, ‖f i‖₊ ≤ C) : ‖∏' i, f i‖₊ ≤ C :=
+  (nnnorm_tprod_le f).trans (ciSup_le' h)
 
 end CommGroup
 

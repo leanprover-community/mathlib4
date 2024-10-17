@@ -35,7 +35,7 @@ compression, down-compression
 -/
 
 
-variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}
+variable {α : Type*} [DecidableEq α] {𝒜 : Finset (Finset α)} {s : Finset α} {a : α}
 
 namespace Finset
 

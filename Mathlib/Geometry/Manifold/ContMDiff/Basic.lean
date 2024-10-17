@@ -324,7 +324,7 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f 
     (supp.mulTSupport_extend_one_subset continuous_subtype_val h)
   rw [← contMdiffAt_subtype_iff]
   simp_rw [← comp_def]
-  erw [extend_comp Subtype.val_injective]
+  rw [extend_comp Subtype.val_injective]
   exact diff.contMDiffAt
 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :

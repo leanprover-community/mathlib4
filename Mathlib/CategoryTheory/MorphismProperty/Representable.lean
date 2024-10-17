@@ -25,7 +25,7 @@ Classically, a morphism `f : F ⟶ G` of presheaves is said to be representable 
 
 In this file, we define a notion of relative representability which works with respect to any
 functor, and not just `yoneda`. The fact that a morphism `f : F ⟶ G` between presheaves is
-representable in the classical case will then be given by `F.relativelyRepresentable f`.
+representable in the classical case will then be given by `yoneda.relativelyRepresentable f`.
 
 ## Main definitions
 
@@ -313,10 +313,9 @@ category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
 * The morphism is representable.
 * For any morphism `g : F.obj a ⟶ G`, the property `P` holds for any represented pullback of
   `f` by `g`.
-
 This is implemented as a special case of the more general notion of `P.relative`, to the case when
 the functor `F` is `yoneda`. -/
-abbrev presheaf := P.relative yoneda
+abbrev presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v₁) := P.relative yoneda
 
 variable {P} {F}
 
@@ -339,19 +338,19 @@ lemma relative.property_snd {f : X ⟶ Y} (hf : P.relative F f) {a : C} (g : F.o
 * For any morphism `g : F.obj a ⟶ G`, the property `P` holds for *some* represented pullback
 of `f` by `g`. -/
 lemma relative.of_exists [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
-    (hf : F.relativelyRepresentable f) (h₀ : ∀ ⦃a : C⦄ (g : F.obj a ⟶ Y),
-    ∃ (b : C) (fst : F.obj b ⟶ X) (snd : b ⟶ a) (_ : IsPullback fst (F.map snd) f g), P snd) :
-    P.relative F f := by
-  refine ⟨hf, fun a b g fst snd h ↦ ?_⟩
-  obtain ⟨c, g_fst, g_snd, BC, H⟩ := h₀ g
-  refine (P.arrow_mk_iso_iff ?_).2 H
-  exact Arrow.isoMk (F.preimageIso (h.isoIsPullback BC)) (Iso.refl _)
-    (F.map_injective (by simp))
+    (h₀ : ∀ ⦃a : C⦄ (g : F.obj a ⟶ Y), ∃ (b : C) (fst : F.obj b ⟶ X) (snd : b ⟶ a)
+      (_ : IsPullback fst (F.map snd) f g), P snd) : P.relative F f := by
+  refine ⟨fun a g ↦ ?_, fun a b g fst snd h ↦ ?_⟩
+  all_goals obtain ⟨c, g_fst, g_snd, BC, H⟩ := h₀ g
+  · refine ⟨c, g_snd, g_fst, BC⟩
+  · refine (P.arrow_mk_iso_iff ?_).2 H
+    exact Arrow.isoMk (F.preimageIso (h.isoIsPullback X (F.obj a) BC)) (Iso.refl _)
+      (F.map_injective (by simp))
 
 lemma relative_of_snd [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
     (hf : F.relativelyRepresentable f) (h : ∀ ⦃a : C⦄ (g : F.obj a ⟶ Y), P (hf.snd g)) :
     P.relative F f :=
-  relative.of_exists hf (fun _ g ↦ ⟨hf.pullback g, hf.fst g, hf.snd g, hf.isPullback g, h g⟩)
+  relative.of_exists (fun _ g ↦ ⟨hf.pullback g, hf.fst g, hf.snd g, hf.isPullback g, h g⟩)
 
 /-- If `P : MorphismProperty C` is stable under base change, `F` is fully faithful and preserves
 pullbacks, and `C` has all pullbacks, then for any `f : a ⟶ b` in `C`, `F.map f` satisfies
@@ -360,7 +359,7 @@ lemma relative_map [F.Faithful] [F.Full] [HasPullbacks C] (hP : StableUnderBaseC
     {a b : C} {f : a ⟶ b} [∀ c (g : c ⟶ b), PreservesLimit (cospan f g) F]
     (hf : P f) : P.relative F (F.map f) := by
   have := StableUnderBaseChange.respectsIso hP
-  apply relative.of_exists (Functor.relativelyRepresentable.map F f)
+  apply relative.of_exists
   intro Y' g
   obtain ⟨g, rfl⟩ := F.map_surjective g
   exact ⟨_, _, _, (IsPullback.of_hasPullback f g).map F, hP.snd _ _ hf⟩
@@ -405,7 +404,7 @@ instance relative_respectsIso : RespectsIso (P.relative F) :=
 
 instance relative_isMultiplicative [F.Faithful] [F.Full] [P.IsMultiplicative] [P.RespectsIso] :
     IsMultiplicative (P.relative F) where
-  id_mem X := relative.of_exists (id_mem _ _)
+  id_mem X := relative.of_exists
     (fun Y g ↦ ⟨Y, g, 𝟙 Y, by simpa using IsPullback.of_id_snd, id_mem _ _⟩)
 
 end
