@@ -29,7 +29,46 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
+
+open scoped Mon_Class Comon_Class
+
+/--
+A bimonoid object in a braided category `C` is a object that is simultaneously monoid and comonoid
+objects, and structure morphisms of them satisfy appropriate consistency conditions.
+-/
+class Bimon_Class (M : C) extends Mon_Class M, Comon_Class M where
+  /- For the names of the conditions below, the unprimed names are reserved for the version where
+  the argument `M` is explicit. -/
+  mul_comul' : μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ[M] ⊗ μ[M]) := by aesop_cat
+  one_comul' : η[M] ≫ Δ[M] = η[M ⊗ M] := by aesop_cat
+  mul_counit' : μ[M] ≫ ε[M] = ε[M ⊗ M] := by aesop_cat
+  one_counit' : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by aesop_cat
+
+namespace Bimon_Class
+
+/- The simp attribute is reserved for the unprimed versions. -/
+attribute [reassoc] mul_comul' one_comul' mul_counit' one_counit'
+
+variable (M : C) [Bimon_Class M]
+
+@[reassoc (attr := simp)]
+theorem mul_comul (M : C) [Bimon_Class M] :
+    μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ[M] ⊗ μ[M]) :=
+  mul_comul'
+
+@[reassoc (attr := simp)]
+theorem one_comul (M : C) [Bimon_Class M] : η[M] ≫ Δ[M] = η[M ⊗ M] := one_comul'
+
+@[reassoc (attr := simp)]
+theorem mul_counit (M : C) [Bimon_Class M] : μ[M] ≫ ε[M] = ε[M ⊗ M] := mul_counit'
+
+@[reassoc (attr := simp)]
+theorem one_counit (M : C) [Bimon_Class M] : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := one_counit'
+
+end Bimon_Class
+
+variable (C)
 
 /--
 A bimonoid object in a braided category `C` is a comonoid object in the (monoidal)
