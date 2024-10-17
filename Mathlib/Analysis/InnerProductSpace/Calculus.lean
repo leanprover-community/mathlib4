@@ -262,7 +262,106 @@ end
 
 end DerivInner
 
+
+section PiLp
+
+/-! ### Results for `PiLp` -/
+
+open ContinuousLinearMap
+
+variable {𝕜 ι : Type*} {E : ι → Type*} {H : Type*}
+variable [RCLike 𝕜] [NormedAddCommGroup H] [∀ i, NormedAddCommGroup (E i)]
+  [∀ i, NormedSpace 𝕜 (E i)] [NormedSpace 𝕜 H] [Fintype ι] (p) [Fact (1 ≤ p)]
+  {f : H → PiLp p E} {f' : H →L[𝕜] PiLp p E} {t : Set H} {y : H}
+
+theorem differentiableWithinAt_piLp :
+    DifferentiableWithinAt 𝕜 f t y ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x => f x i) t y := by
+  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_differentiableWithinAt_iff,
+    differentiableWithinAt_pi]
+  rfl
+
+theorem differentiableAt_piLp :
+    DifferentiableAt 𝕜 f y ↔ ∀ i, DifferentiableAt 𝕜 (fun x => f x i) y := by
+  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_differentiableAt_iff, differentiableAt_pi]
+  rfl
+
+theorem differentiableOn_piLp :
+    DifferentiableOn 𝕜 f t ↔ ∀ i, DifferentiableOn 𝕜 (fun x => f x i) t := by
+  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_differentiableOn_iff, differentiableOn_pi]
+  rfl
+
+theorem differentiable_piLp : Differentiable 𝕜 f ↔ ∀ i, Differentiable 𝕜 fun x => f x i := by
+  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_differentiable_iff, differentiable_pi]
+  rfl
+
+theorem hasStrictFDerivAt_piLp :
+    HasStrictFDerivAt f f' y ↔
+      ∀ i, HasStrictFDerivAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') y := by
+  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_hasStrictFDerivAt_iff, hasStrictFDerivAt_pi']
+  rfl
+
+theorem hasFDerivWithinAt_piLp :
+    HasFDerivWithinAt f f' t y ↔
+      ∀ i, HasFDerivWithinAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') t y := by
+  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_hasFDerivWithinAt_iff, hasFDerivWithinAt_pi']
+  rfl
+
+theorem contDiffWithinAt_piLp {n : ℕ∞} :
+    ContDiffWithinAt 𝕜 n f t y ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => f x i) t y := by
+  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_contDiffWithinAt_iff, contDiffWithinAt_pi]
+  rfl
+
+theorem contDiffAt_piLp {n : ℕ∞} :
+    ContDiffAt 𝕜 n f y ↔ ∀ i, ContDiffAt 𝕜 n (fun x => f x i) y := by
+  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_contDiffAt_iff, contDiffAt_pi]
+  rfl
+
+theorem contDiffOn_piLp {n : ℕ∞} :
+    ContDiffOn 𝕜 n f t ↔ ∀ i, ContDiffOn 𝕜 n (fun x => f x i) t := by
+  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_contDiffOn_iff, contDiffOn_pi]
+  rfl
+
+theorem contDiff_piLp {n : ℕ∞} : ContDiff 𝕜 n f ↔ ∀ i, ContDiff 𝕜 n fun x => f x i := by
+  rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_contDiff_iff, contDiff_pi]
+  rfl
+
+namespace PiLp
+
+theorem hasStrictFDerivAt_equiv (f : PiLp p E) :
+    HasStrictFDerivAt (WithLp.equiv p (∀ i, E i))
+      (PiLp.continuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
+  (Asymptotics.isLittleO_zero _ _).congr_left fun _ => (sub_self _).symm
+
+theorem hasStrictFDerivAt_equiv_symm (f : PiLp p E) :
+    HasStrictFDerivAt (WithLp.equiv p (∀ i, E i)).symm
+      (PiLp.continuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
+  (Asymptotics.isLittleO_zero _ _).congr_left fun _ => (sub_self _).symm
+
+nonrec theorem hasStrictFDerivAt_apply (f : PiLp p E) (i : ι) :
+    HasStrictFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=
+  (hasStrictFDerivAt_apply i f).comp f (hasStrictFDerivAt_equiv p f)
+
+theorem hasFDerivAt_equiv (f : PiLp p E) :
+    HasFDerivAt (WithLp.equiv p (∀ i, E i))
+      (PiLp.continuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
+  (hasStrictFDerivAt_equiv p f).hasFDerivAt
+
+theorem hasFDerivAt_equiv_symm (f : PiLp p E) :
+    HasFDerivAt (WithLp.equiv p (∀ i, E i)).symm
+      (PiLp.continuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
+  (hasStrictFDerivAt_equiv_symm p f).hasFDerivAt
+
+nonrec theorem hasFDerivAt_apply (f : PiLp p E) (i : ι) :
+    HasFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=
+  (hasStrictFDerivAt_apply p f i).hasFDerivAt
+
+end PiLp
+
+end PiLp
+
 section PiLike
+
+/-! ### Convenience aliases of `PiLp` lemmas for `EuclideanSpace` -/
 
 open ContinuousLinearMap
 
@@ -270,54 +369,44 @@ variable {𝕜 ι H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [NormedSpace �
   {f : H → EuclideanSpace 𝕜 ι} {f' : H →L[𝕜] EuclideanSpace 𝕜 ι} {t : Set H} {y : H}
 
 theorem differentiableWithinAt_euclidean :
-    DifferentiableWithinAt 𝕜 f t y ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x => f x i) t y := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_differentiableWithinAt_iff, differentiableWithinAt_pi]
-  rfl
+    DifferentiableWithinAt 𝕜 f t y ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x => f x i) t y :=
+  differentiableWithinAt_piLp _
 
 theorem differentiableAt_euclidean :
-    DifferentiableAt 𝕜 f y ↔ ∀ i, DifferentiableAt 𝕜 (fun x => f x i) y := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_differentiableAt_iff, differentiableAt_pi]
-  rfl
+    DifferentiableAt 𝕜 f y ↔ ∀ i, DifferentiableAt 𝕜 (fun x => f x i) y :=
+  differentiableAt_piLp _
 
 theorem differentiableOn_euclidean :
-    DifferentiableOn 𝕜 f t ↔ ∀ i, DifferentiableOn 𝕜 (fun x => f x i) t := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_differentiableOn_iff, differentiableOn_pi]
-  rfl
+    DifferentiableOn 𝕜 f t ↔ ∀ i, DifferentiableOn 𝕜 (fun x => f x i) t :=
+  differentiableOn_piLp _
 
-theorem differentiable_euclidean : Differentiable 𝕜 f ↔ ∀ i, Differentiable 𝕜 fun x => f x i := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_differentiable_iff, differentiable_pi]
-  rfl
+theorem differentiable_euclidean : Differentiable 𝕜 f ↔ ∀ i, Differentiable 𝕜 fun x => f x i :=
+  differentiable_piLp _
 
 theorem hasStrictFDerivAt_euclidean :
     HasStrictFDerivAt f f' y ↔
-      ∀ i, HasStrictFDerivAt (fun x => f x i) (EuclideanSpace.proj i ∘L f') y := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_hasStrictFDerivAt_iff, hasStrictFDerivAt_pi']
-  rfl
+      ∀ i, HasStrictFDerivAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') y :=
+  hasStrictFDerivAt_piLp _
 
 theorem hasFDerivWithinAt_euclidean :
     HasFDerivWithinAt f f' t y ↔
-      ∀ i, HasFDerivWithinAt (fun x => f x i) (EuclideanSpace.proj i ∘L f') t y := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_hasFDerivWithinAt_iff, hasFDerivWithinAt_pi']
-  rfl
+      ∀ i, HasFDerivWithinAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') t y :=
+  hasFDerivWithinAt_piLp _
 
 theorem contDiffWithinAt_euclidean {n : ℕ∞} :
-    ContDiffWithinAt 𝕜 n f t y ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => f x i) t y := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_contDiffWithinAt_iff, contDiffWithinAt_pi]
-  rfl
+    ContDiffWithinAt 𝕜 n f t y ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => f x i) t y :=
+  contDiffWithinAt_piLp _
 
 theorem contDiffAt_euclidean {n : ℕ∞} :
-    ContDiffAt 𝕜 n f y ↔ ∀ i, ContDiffAt 𝕜 n (fun x => f x i) y := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_contDiffAt_iff, contDiffAt_pi]
-  rfl
+    ContDiffAt 𝕜 n f y ↔ ∀ i, ContDiffAt 𝕜 n (fun x => f x i) y :=
+  contDiffAt_piLp _
 
 theorem contDiffOn_euclidean {n : ℕ∞} :
-    ContDiffOn 𝕜 n f t ↔ ∀ i, ContDiffOn 𝕜 n (fun x => f x i) t := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_contDiffOn_iff, contDiffOn_pi]
-  rfl
+    ContDiffOn 𝕜 n f t ↔ ∀ i, ContDiffOn 𝕜 n (fun x => f x i) t :=
+  contDiffOn_piLp _
 
-theorem contDiff_euclidean {n : ℕ∞} : ContDiff 𝕜 n f ↔ ∀ i, ContDiff 𝕜 n fun x => f x i := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_contDiff_iff, contDiff_pi]
-  rfl
+theorem contDiff_euclidean {n : ℕ∞} : ContDiff 𝕜 n f ↔ ∀ i, ContDiff 𝕜 n fun x => f x i :=
+  contDiff_piLp _
 
 end PiLike
 
