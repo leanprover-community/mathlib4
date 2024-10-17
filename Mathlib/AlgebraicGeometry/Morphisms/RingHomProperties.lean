@@ -169,7 +169,7 @@ variable {P} {X Y : Scheme.{u}} {f : X ⟶ Y}
 
 /-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
 open affine neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f`
-over basic opens of `U₁` resp. `V₁`. -/
+over some basic open of `U₁` (resp. `V₁`). -/
 lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
     (hPa : StableUnderCompositionWithLocalizationAway P) (hPl : LocalizationPreserves P)
     (x : X) (U₁ : Y.affineOpens) (U₂ : Y.affineOpens) (V₁ : X.affineOpens) (V₂ : X.affineOpens)
@@ -203,8 +203,8 @@ lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
     exact hPl.away _ h₂
 
 /-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
-open neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f` over affine opens
-`U'` of `Y` and `V'` of `X` that are contained in `U₁` resp. `V₁`. -/
+open neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f` over some affine open
+`U'` of `Y` (resp. `V'` of `X`) that is contained in `U₁` (resp. `V₁`). -/
 lemma exists_affineOpens_le_appLE_of_appLE
     (hPa : StableUnderCompositionWithLocalizationAway P) (hPl : LocalizationPreserves P)
     (x : X) (U₁ : Y.Opens) (U₂ : Y.affineOpens) (V₁ : X.Opens) (V₂ : X.affineOpens)

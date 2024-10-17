@@ -49,8 +49,7 @@ namespace AlgebraicGeometry
 
 open RingHom
 
-variable (n m : ℕ)
-variable {X Y : Scheme.{u}} (f : X ⟶ Y)
+variable (n m : ℕ) {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 /--
 A morphism of schemes `f : X ⟶ Y` is smooth if for each `x : X` there
