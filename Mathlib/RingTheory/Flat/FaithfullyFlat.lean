@@ -82,8 +82,7 @@ instance rTensor_nontrivial
   let inc : R ⧸ I →ₗ[R] N := Submodule.liftQ _ ((LinearMap.lsmul R N).flip n) <| fun r hr => by
     simpa only [LinearMap.mem_ker, LinearMap.flip_apply, LinearMap.lsmul_apply,
       Submodule.mem_annihilator_span_singleton, I] using hr
-  have injective_inc : Function.Injective inc := by
-    rw [← LinearMap.ker_eq_bot, eq_bot_iff]
+  have injective_inc : Function.Injective inc := LinearMap.ker_eq_bot.1 <| eq_bot_iff.2 <| by
     intro r hr
     induction r using Quotient.inductionOn' with | h r =>
     simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.mem_bot, Submodule.Quotient.mk_eq_zero,
@@ -91,23 +90,17 @@ instance rTensor_nontrivial
       LinearMap.flip_apply, LinearMap.lsmul_apply, I, inc] using hr
   have ne_top := iff_flat_and_proper_ideal R M |>.1 fl |>.2 I I_ne_top
   refine subsingleton_or_nontrivial _ |>.resolve_left fun rid => ?_
-  have : Function.Injective
-    (LinearMap.rTensor M inc ∘ₗ (quotTensorEquivQuotSMul M I).symm.toLinearMap) :=
+  exact False.elim <| ne_top <| Submodule.subsingleton_quotient_iff_eq_top.1 <|
     Function.Injective.comp (g := LinearMap.rTensor M inc)
-      (Module.Flat.rTensor_preserves_injective_linearMap (h := fl.toFlat) inc injective_inc)
-      ((quotTensorEquivQuotSMul M I).symm.injective)
-  have := this.subsingleton
-  rw [Submodule.subsingleton_quotient_iff_eq_top] at this
-  contradiction
+      (fl.toFlat.rTensor_preserves_injective_linearMap inc injective_inc)
+      ((quotTensorEquivQuotSMul M I).symm.injective) |>.subsingleton
 
 lemma rTensor_reflects_triviality
     [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
     [h : Subsingleton (N ⊗[R] M)] : Subsingleton N := by
-  revert h
-  change _ → _
+  revert h; change _ → _; contrapose
+  simp only [not_subsingleton_iff_nontrivial]
   intro h
-  contrapose h
-  simp only [not_subsingleton_iff_nontrivial] at h ⊢
   infer_instance
 
 lemma lTensor_reflects_triviality
@@ -116,7 +109,6 @@ lemma lTensor_reflects_triviality
     Subsingleton N := by
   haveI : Subsingleton (N ⊗[R] M) := (TensorProduct.comm R N M).toEquiv.injective.subsingleton
   apply rTensor_reflects_triviality R M
-
 
 instance lTensor_nontrivial
     [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
