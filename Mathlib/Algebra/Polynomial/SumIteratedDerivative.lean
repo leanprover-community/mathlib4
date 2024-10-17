@@ -73,9 +73,11 @@ theorem sumIDeriv_apply_of_le {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
   dsimp [sumIDeriv]
   exact Finsupp.sum_of_support_subset _ (by simp [Nat.lt_succ, hn]) _ (by simp)
 
+@[simp]
 theorem sumIDeriv_C (a : R) : sumIDeriv (C a) = C a := by
   rw [sumIDeriv_apply, natDegree_C, zero_add, sum_range_one, Function.iterate_zero_apply]
 
+@[simp]
 theorem sumIDeriv_X : sumIDeriv X = X + C 1 := by
   rw [sumIDeriv_apply, natDegree_X, sum_range_succ, sum_range_one, Function.iterate_zero_apply,
     Function.iterate_one, derivative_X, eq_natCast, Nat.cast_one]
