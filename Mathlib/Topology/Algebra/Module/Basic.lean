@@ -1186,11 +1186,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
   continuous_invFun :=
     Continuous.subtype_mk
       (continuous_pi fun i => by
-        -- Porting note: Was `dsimp`.
-        change
-          Continuous (⇑(if h : i ∈ I then LinearMap.proj (R := R) (ι := ↥I)
-            (φ := fun i : ↥I => φ i) ⟨i, h⟩ else
-            (0 : ((i : I) → φ i) →ₗ[R] φ i)))
+        dsimp
         split_ifs <;> [apply continuous_apply; exact continuous_zero])
       _
 
