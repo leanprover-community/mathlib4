@@ -171,7 +171,9 @@ to control the specific definitions for some special cases of `K` (in particular
 See also note [forgetful inheritance].
 
 If the field has positive characteristic `p`, our division by zero convention forces
-`ratCast (1 / p) = 1 / 0 = 0`. -/
+`ratCast (1 / p) = 1 / 0 = 0`.
+
+[Stacks: Definition 09FD, first part](https://stacks.math.columbia.edu/tag/09FD) -/
 class Field (K : Type u) extends CommRing K, DivisionRing K
 
 -- see Note [lower instance priority]
