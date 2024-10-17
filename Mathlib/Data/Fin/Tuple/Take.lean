@@ -101,36 +101,38 @@ theorem take_update_of_ge (m : ℕ) (h : m ≤ n) (v : (i : Fin n) → α i) (i 
     exact Nat.ne_of_lt (lt_of_lt_of_le j.isLt hi)
   simp only [take, update_noteq this]
 
-/-- Taking the first `m ≤ n` elements of an `append u v`, where `u` is a `n`-tuple, is the same as
+/-- Taking the first `m ≤ n` elements of an `addCases u v`, where `u` is a `n`-tuple, is the same as
 taking the first `m` elements of `u`. -/
-theorem take_append_left {n' : ℕ} {α : Sort*} (m : ℕ) (h : m ≤ n) (u : (i : Fin n) → α)
-    (v : (i : Fin n') → α) : take m (Nat.le_add_right_of_le h) (append u v) = take m h u := by
+theorem take_addCases_left {n' : ℕ} {motive : Fin (n + n') → Sort*} (m : ℕ) (h : m ≤ n)
+    (u : (i : Fin n) → motive (castAdd n' i)) (v : (i : Fin n') → motive (natAdd n i)) :
+      take m (Nat.le_add_right_of_le h) (addCases u v) = take m h u := by
   ext i
-  have : castLE (Nat.le_add_right_of_le h) i = castAdd n' (castLE h i) := rfl
-  simp only [take, append_left, this]
+  have : i < n := Nat.lt_of_lt_of_le i.isLt h
+  simp only [take, addCases, this, coe_castLE, ↓reduceDIte]
+  congr
 
-/-- Taking the first `n + m` elements of an `append u v`, where `v` is a `n'`-tuple and `m ≤ n'`,
+/-- Version of `take_addCases_left` that specializes `addCases` to `append`. -/
+theorem take_append_left {n' : ℕ} {α : Sort*} (m : ℕ) (h : m ≤ n) (u : (i : Fin n) → α)
+    (v : (i : Fin n') → α) : take m (Nat.le_add_right_of_le h) (append u v) = take m h u :=
+  take_addCases_left m h _ _
+
+/-- Taking the first `n + m` elements of an `addCases u v`, where `v` is a `n'`-tuple and `m ≤ n'`,
 is the same as appending `u` with the first `m` elements of `v`. -/
+theorem take_addCases_right {n' : ℕ} {motive : Fin (n + n') → Sort*} (m : ℕ) (h : m ≤ n')
+    (u : (i : Fin n) → motive (castAdd n' i)) (v : (i : Fin n') → motive (natAdd n i)) :
+      take (n + m) (Nat.add_le_add_left h n) (addCases u v) = addCases u (take m h v) := by
+  ext i
+  simp only [take, addCases, coe_castLE]
+  by_cases h' : i < n
+  · simp only [h', ↓reduceDIte]
+    congr
+  · simp only [h', ↓reduceDIte, subNat, castLE, cast, eqRec_eq_cast]
+
+/-- Version of `take_addCases_right` that specializes `addCases` to `append`. -/
 theorem take_append_right {n' : ℕ} {α : Sort*} (m : ℕ) (h : m ≤ n') (u : (i : Fin n) → α)
     (v : (i : Fin n') → α) : take (n + m) (Nat.add_le_add_left h n) (append u v)
-        = append u (take m h v) := by
-  ext i
-  by_cases h' : i < n
-  · have : castLE (Nat.add_le_add_left h n) i = castAdd n' ⟨i.val, h'⟩ := by
-      simp only [castAdd_mk]
-      rfl
-    rw [take, this, append_left]
-    have : i = castAdd m ⟨i.val, h'⟩ := by simp only [castAdd_mk]
-    conv_rhs => rw [this, append_left]
-  · simp only [not_lt] at h'
-    let j := subNat n (cast (Nat.add_comm _ _) i) h'
-    have : i = natAdd n j := by simp [j]
-    conv_rhs => rw [this, append_right, take]
-    have : castLE (Nat.add_le_add_left h n) i = natAdd n (castLE h j) := by
-      simp_all only [natAdd_subNat_cast, j]
-      ext : 1
-      simp_all only [coe_castLE, coe_natAdd, coe_subNat, coe_cast, Nat.add_sub_cancel']
-    rw [take, this, append_right]
+        = append u (take m h v) :=
+  take_addCases_right m h _ _
 
 /-- `Fin.take` intertwines with `List.take` via `List.ofFn`. -/
 theorem list_ofFn_take {α : Type*} {m : ℕ} (h : m ≤ n) (v : Fin n → α) :
