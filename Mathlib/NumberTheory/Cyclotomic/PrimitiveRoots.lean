@@ -153,8 +153,8 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
         rwa [aeval_def, eval₂_eq_eval_map, hζ.powerBasis_gen K, ←
           hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_cyclotomic, ← IsRoot.def,
           isRoot_cyclotomic_iff, ← mem_primitiveRoots n.pos]
-      left_inv := fun x => Subtype.ext rfl
-      right_inv := fun x => Subtype.ext rfl }
+      left_inv := fun _ => Subtype.ext rfl
+      right_inv := fun _ => Subtype.ext rfl }
 
 -- Porting note: renamed argument `φ`: "expected '_' or identifier"
 @[simp]

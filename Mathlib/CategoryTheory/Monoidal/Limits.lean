@@ -49,7 +49,7 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorH
   (ε :=
     limit.lift _
       { pt := _
-        π := { app := fun j => 𝟙 _ } })
+        π := { app := fun _ => 𝟙 _ } })
   (μ := fun F G =>
     limit.lift (F ⊗ G)
       { pt := limit F ⊗ limit G
@@ -122,7 +122,7 @@ theorem limLax_ε :
     (@limLax J _ C _ _ _).ε =
       limit.lift _
         { pt := _
-          π := { app := fun j => 𝟙 _ } } :=
+          π := { app := fun _ => 𝟙 _ } } :=
   rfl
 
 @[simp]

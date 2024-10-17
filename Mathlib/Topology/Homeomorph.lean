@@ -811,7 +811,7 @@ variable {Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace
 @[simps toEquiv]
 def toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : X ≃ₜ Y where
   toEquiv := e
-  continuous_toFun := continuous_def.2 fun s ↦ (he _).2
+  continuous_toFun := continuous_def.2 fun _ ↦ (he _).2
   continuous_invFun := continuous_def.2 fun s ↦ by convert (he _).1; simp
 
 @[simp] lemma coe_toHomeomorph (e : X ≃ Y) (he) : ⇑(e.toHomeomorph he) = e := rfl

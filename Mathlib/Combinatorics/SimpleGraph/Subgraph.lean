@@ -434,20 +434,20 @@ def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxio
     inf := (· ⊓ ·)
     top := ⊤
     bot := ⊥
-    le_top := fun G' => ⟨Set.subset_univ _, fun a b => G'.adj_sub⟩
-    bot_le := fun G' => ⟨Set.empty_subset _, fun a b => False.elim⟩
+    le_top := fun G' => ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩
+    bot_le := fun _ => ⟨Set.empty_subset _, fun _ _ => False.elim⟩
     sSup := sSup
     -- Porting note: needed `apply` here to modify elaboration; previously the term itself was fine.
-    le_sSup := fun s G' hG' => ⟨by apply Set.subset_iUnion₂ G' hG', fun a b hab => ⟨G', hG', hab⟩⟩
+    le_sSup := fun s G' hG' => ⟨by apply Set.subset_iUnion₂ G' hG', fun _ _ hab => ⟨G', hG', hab⟩⟩
     sSup_le := fun s G' hG' =>
-      ⟨Set.iUnion₂_subset fun H hH => (hG' _ hH).1, by
+      ⟨Set.iUnion₂_subset fun _ hH => (hG' _ hH).1, by
         rintro a b ⟨H, hH, hab⟩
         exact (hG' _ hH).2 hab⟩
     sInf := sInf
-    sInf_le := fun s G' hG' => ⟨Set.iInter₂_subset G' hG', fun a b hab => hab.1 hG'⟩
-    le_sInf := fun s G' hG' =>
-      ⟨Set.subset_iInter₂ fun H hH => (hG' _ hH).1, fun a b hab =>
-        ⟨fun H hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
+    sInf_le := fun _ G' hG' => ⟨Set.iInter₂_subset G' hG', fun _ _ hab => hab.1 hG'⟩
+    le_sInf := fun _ G' hG' =>
+      ⟨Set.subset_iInter₂ fun _ hH => (hG' _ hH).1, fun _ _ hab =>
+        ⟨fun _ hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
     iInf_iSup_eq := fun f => Subgraph.ext (by simpa using iInf_iSup_eq)
       (by ext; simp [Classical.skolem]) }
 

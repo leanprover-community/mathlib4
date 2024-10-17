@@ -194,7 +194,7 @@ variable {f}
 theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
   let ⟨t, ht⟩ := hfn
-  ⟨t.preimage f fun x _ y _ h => hf h,
+  ⟨t.preimage f fun _ _ _ _ h => hf h,
     Submodule.map_injective_of_injective hf <| by
       rw [map_span, Finset.coe_preimage, Set.image_preimage_eq_inter_range,
         Set.inter_eq_self_of_subset_left, ht]
@@ -630,7 +630,7 @@ theorem Module.End.isNilpotent_iff_of_finite {R M : Type*} [CommSemiring R] [Add
   use Finset.sup S g
   ext m
   have hm : m ∈ Submodule.span R S := by simp [hS]
-  induction hm using Submodule.span_induction' with
+  induction hm using Submodule.span_induction with
   | mem x hx => exact LinearMap.pow_map_zero_of_le (Finset.le_sup hx) (hg x)
   | zero => simp
   | add => simp_all

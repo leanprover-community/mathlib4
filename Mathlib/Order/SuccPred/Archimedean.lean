@@ -68,6 +68,19 @@ theorem Succ.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) {a b 
   obtain ⟨n, rfl⟩ := h.exists_succ_iterate
   exact Iterate.rec (fun b => p a ↔ p b) (fun c hc => hc.trans (hsucc _)) Iff.rfl n
 
+lemma le_total_of_codirected {r v₁ v₂ : α} (h₁ : r ≤ v₁) (h₂ : r ≤ v₂) : v₁ ≤ v₂ ∨ v₂ ≤ v₁ := by
+  obtain ⟨n, rfl⟩ := h₁.exists_succ_iterate
+  obtain ⟨m, rfl⟩ := h₂.exists_succ_iterate
+  clear h₁ h₂
+  wlog h : n ≤ m
+  · rw [Or.comm]
+    apply this
+    exact Nat.le_of_not_ge h
+  left
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
+  rw [Nat.add_comm, Function.iterate_add, Function.comp_apply]
+  apply Order.le_succ_iterate
+
 end SuccOrder
 
 section PredOrder
@@ -93,9 +106,58 @@ theorem Pred.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (pred a)) {a b 
     p a ↔ p b :=
   (Succ.rec_iff (α := αᵒᵈ) hsucc h).symm
 
+lemma le_total_of_directed {r v₁ v₂ : α} (h₁ : v₁ ≤ r) (h₂ : v₂ ≤ r) : v₁ ≤ v₂ ∨ v₂ ≤ v₁ :=
+  Or.symm (le_total_of_codirected (α := αᵒᵈ) h₁ h₂)
+
 end PredOrder
 
 end Preorder
+
+section PartialOrder
+
+variable [PartialOrder α]
+
+lemma lt_or_le_of_codirected [SuccOrder α] [IsSuccArchimedean α] {r v₁ v₂ : α} (h₁ : r ≤ v₁)
+    (h₂ : r ≤ v₂) : v₁ < v₂ ∨ v₂ ≤ v₁ := by
+  rw [Classical.or_iff_not_imp_right]
+  intro nh
+  rcases le_total_of_codirected h₁ h₂ with h | h
+  · apply lt_of_le_of_ne h (ne_of_not_le nh).symm
+  · contradiction
+
+/--
+This isn't an instance due to a loop with `LinearOrder`.
+-/
+-- See note [reducible non instances]
+abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
+     [DecidableEq α] [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsDirected α (· ≥ ·)] :
+     LinearOrder α where
+  le_total a b :=
+    have ⟨c, ha, hb⟩ := directed_of (· ≥ ·) a b
+    le_total_of_codirected ha hb
+  decidableEq := inferInstance
+  decidableLE := inferInstance
+  decidableLT := inferInstance
+
+lemma lt_or_le_of_directed [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : α} (h₁ : v₁ ≤ r)
+    (h₂ : v₂ ≤ r) : v₁ < v₂ ∨ v₂ ≤ v₁ := by
+  rw [Classical.or_iff_not_imp_right]
+  intro nh
+  rcases le_total_of_directed h₁ h₂ with h | h
+  · apply lt_of_le_of_ne h (ne_of_not_le nh).symm
+  · contradiction
+
+/--
+This isn't an instance due to a loop with `LinearOrder`.
+-/
+-- See note [reducible non instances]
+abbrev IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
+     [DecidableEq α] [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsDirected α (· ≤ ·)] :
+     LinearOrder α :=
+  letI : LinearOrder αᵒᵈ := IsSuccArchimedean.linearOrder
+  inferInstanceAs (LinearOrder αᵒᵈᵒᵈ)
+
+end PartialOrder
 
 section LinearOrder
 
@@ -298,3 +360,39 @@ protected lemma IsPredArchimedean.of_orderIso [PredOrder X] [IsPredArchimedean X
     | succ n IH => simp only [Function.iterate_succ', Function.comp_apply, IH, f.map_pred]
 
 end OrderIso
+
+section OrdConnected
+
+variable [PartialOrder α]
+
+instance Set.OrdConnected.isPredArchimedean [PredOrder α] [IsPredArchimedean α]
+    (s : Set α) [s.OrdConnected] : IsPredArchimedean s where
+  exists_pred_iterate_of_le := @fun ⟨b, hb⟩ ⟨c, hc⟩ hbc ↦ by classical
+    simp only [Subtype.mk_le_mk] at hbc
+    obtain ⟨n, hn⟩ := hbc.exists_pred_iterate
+    use n
+    induction n generalizing c with
+    | zero => simp_all
+    | succ n hi =>
+      simp_all only [Function.iterate_succ, Function.comp_apply]
+      change Order.pred^[n] (dite ..) = _
+      split_ifs with h
+      · dsimp only at h ⊢
+        apply hi _ _ _ hn
+        · rw [← hn]
+          apply Order.pred_iterate_le
+      · have : Order.pred (⟨c, hc⟩ : s) = ⟨c, hc⟩ := by
+          change dite .. = _
+          simp [h]
+        rw [Function.iterate_fixed]
+        · simp only [Order.pred_eq_iff_isMin] at this
+          apply (this.eq_of_le _).symm
+          exact hbc
+        · exact this
+
+instance Set.OrdConnected.isSuccArchimedean [SuccOrder α] [IsSuccArchimedean α]
+    (s : Set α) [s.OrdConnected] : IsSuccArchimedean s :=
+  letI : IsPredArchimedean sᵒᵈ := inferInstanceAs (IsPredArchimedean (OrderDual.ofDual ⁻¹' s))
+  inferInstanceAs (IsSuccArchimedean sᵒᵈᵒᵈ)
+
+end OrdConnected

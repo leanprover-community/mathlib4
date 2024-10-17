@@ -228,10 +228,10 @@ theorem den_add (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 + c2).den : A) = c1.den * 
 instance : CommMonoid (NumDenSameDeg 𝒜 x) where
   one := 1
   mul := (· * ·)
-  mul_assoc c1 c2 c3 := ext _ (add_assoc _ _ _) (mul_assoc _ _ _) (mul_assoc _ _ _)
-  one_mul c := ext _ (zero_add _) (one_mul _) (one_mul _)
-  mul_one c := ext _ (add_zero _) (mul_one _) (mul_one _)
-  mul_comm c1 c2 := ext _ (add_comm _ _) (mul_comm _ _) (mul_comm _ _)
+  mul_assoc _ _ _ := ext _ (add_assoc _ _ _) (mul_assoc _ _ _) (mul_assoc _ _ _)
+  one_mul _ := ext _ (zero_add _) (one_mul _) (one_mul _)
+  mul_one _ := ext _ (add_zero _) (mul_one _) (mul_one _)
+  mul_comm _ _ := ext _ (add_comm _ _) (mul_comm _ _) (mul_comm _ _)
 
 instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
   pow c n :=

@@ -88,6 +88,18 @@ theorem Sorted.tail {r : α → α → Prop} {l : List α} (h : Sorted r l) : So
 theorem rel_of_sorted_cons {a : α} {l : List α} : Sorted r (a :: l) → ∀ b ∈ l, r a b :=
   rel_of_pairwise_cons
 
+nonrec theorem Sorted.cons {r : α → α → Prop} [IsTrans α r] {l : List α} {a b : α}
+    (hab : r a b) (h : Sorted r (b :: l)) : Sorted r (a :: b :: l) :=
+  h.cons <| forall_mem_cons.2 ⟨hab, fun _ hx => _root_.trans hab <| rel_of_sorted_cons h _ hx⟩
+
+theorem sorted_cons_cons {r : α → α → Prop} [IsTrans α r] {l : List α} {a b : α} :
+    Sorted r (b :: a :: l) ↔ r b a ∧ Sorted r (a :: l) := by
+  constructor
+  · intro h
+    exact ⟨rel_of_sorted_cons h _ (mem_cons_self a _), h.of_cons⟩
+  · rintro ⟨h, ha⟩
+    exact ha.cons h
+
 theorem Sorted.head!_le [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· < ·) l)
     (ha : a ∈ l) : l.head! ≤ a := by
   rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
@@ -213,7 +225,7 @@ theorem orderedInsert_nil (a : α) : [].orderedInsert r a = [a] :=
   rfl
 
 theorem orderedInsert_length : ∀ (L : List α) (a : α), (L.orderedInsert r a).length = L.length + 1
-  | [], a => rfl
+  | [], _ => rfl
   | hd :: tl, a => by
     dsimp [orderedInsert]
     split_ifs <;> simp [orderedInsert_length tl]
@@ -313,7 +325,7 @@ variable {r}
 it. -/
 theorem Sorted.insertionSort_eq : ∀ {l : List α}, Sorted r l → insertionSort r l = l
   | [], _ => rfl
-  | [a], _ => rfl
+  | [_], _ => rfl
   | a :: b :: l, h => by
     rw [insertionSort, Sorted.insertionSort_eq, orderedInsert, if_pos]
     exacts [rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
