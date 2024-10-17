@@ -4544,12 +4544,12 @@ import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Algebra.Order.Compact
+import Mathlib.Topology.Order.Compact
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.Order.Floor
 import Mathlib.Topology.Algebra.Order.Group
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.Order.Rolle
+import Mathlib.Topology.Order.Rolle
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.Algebra.PontryaginDual
