@@ -163,6 +163,63 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     rwa [IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2,
       ← h₁.is_localization_away_iff] at this
 
+open RingHom
+
+variable {P} {X Y : Scheme.{u}} {f : X ⟶ Y}
+
+/-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
+open affine neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f`
+over some basic open of `U₁` (resp. `V₁`). -/
+lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
+    (hPa : StableUnderCompositionWithLocalizationAway P) (hPl : LocalizationPreserves P)
+    (x : X) (U₁ : Y.affineOpens) (U₂ : Y.affineOpens) (V₁ : X.affineOpens) (V₂ : X.affineOpens)
+    (hx₁ : x ∈ V₁.1) (hx₂ : x ∈ V₂.1) (e₂ : V₂.1 ≤ f ⁻¹ᵁ U₂.1) (h₂ : P (f.appLE U₂ V₂ e₂))
+    (hfx₁ : f.base x ∈ U₁.1) :
+    ∃ (r : Γ(Y, U₁)) (s : Γ(X, V₁)) (_ : x ∈ X.basicOpen s)
+      (e : X.basicOpen s ≤ f ⁻¹ᵁ Y.basicOpen r), P (f.appLE (Y.basicOpen r) (X.basicOpen s) e) := by
+  obtain ⟨r, r', hBrr', hBfx⟩ := exists_basicOpen_le_affine_inter U₁.2 U₂.2 (f.base x)
+    ⟨hfx₁, e₂ hx₂⟩
+  have ha : IsAffineOpen (X.basicOpen (f.appLE U₂ V₂ e₂ r')) := V₂.2.basicOpen _
+  have hxa : x ∈ X.basicOpen (f.appLE U₂ V₂ e₂ r') := by
+    simpa [Scheme.Hom.appLE, ← Scheme.preimage_basicOpen] using And.intro hx₂ (hBrr' ▸ hBfx)
+  obtain ⟨s, s', hBss', hBx⟩ := exists_basicOpen_le_affine_inter V₁.2 ha x ⟨hx₁, hxa⟩
+  haveI := V₂.2.isLocalization_basicOpen (f.appLE U₂ V₂ e₂ r')
+  haveI := U₂.2.isLocalization_basicOpen r'
+  haveI := ha.isLocalization_basicOpen s'
+  have ers : X.basicOpen s ≤ f ⁻¹ᵁ Y.basicOpen r := by
+    rw [hBss', hBrr']
+    apply le_trans (X.basicOpen_le _)
+    simp [Scheme.Hom.appLE]
+  have heq : f.appLE (Y.basicOpen r') (X.basicOpen s') (hBrr' ▸ hBss' ▸ ers) =
+      f.appLE (Y.basicOpen r') (X.basicOpen (f.appLE U₂ V₂ e₂ r')) (by simp [Scheme.Hom.appLE]) ≫
+        algebraMap _ _ := by
+    simp only [Scheme.Hom.appLE, homOfLE_leOfHom, CommRingCat.comp_apply, Category.assoc]
+    congr
+    apply X.presheaf.map_comp
+  refine ⟨r, s, hBx, ers, ?_⟩
+  · rw [f.appLE_congr _ hBrr' hBss' P, heq]
+    apply hPa.left _ s' _
+    rw [U₂.2.appLE_eq_away_map f V₂.2]
+    exact hPl.away _ h₂
+
+/-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
+open neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f` over some affine open
+`U'` of `Y` (resp. `V'` of `X`) that is contained in `U₁` (resp. `V₁`). -/
+lemma exists_affineOpens_le_appLE_of_appLE
+    (hPa : StableUnderCompositionWithLocalizationAway P) (hPl : LocalizationPreserves P)
+    (x : X) (U₁ : Y.Opens) (U₂ : Y.affineOpens) (V₁ : X.Opens) (V₂ : X.affineOpens)
+    (hx₁ : x ∈ V₁) (hx₂ : x ∈ V₂.1) (e₂ : V₂.1 ≤ f ⁻¹ᵁ U₂.1) (h₂ : P (f.appLE U₂ V₂ e₂))
+    (hfx₁ : f.base x ∈ U₁.1) :
+    ∃ (U' : Y.affineOpens) (V' : X.affineOpens) (_ : U'.1 ≤ U₁) (_ : V'.1 ≤ V₁) (_ : x ∈ V'.1)
+      (e : V'.1 ≤ f⁻¹ᵁ U'.1), P (f.appLE U' V' e) := by
+  obtain ⟨r, hBr, hBfx⟩ := U₂.2.exists_basicOpen_le ⟨f.base x, hfx₁⟩ (e₂ hx₂)
+  obtain ⟨s, hBs, hBx⟩ := V₂.2.exists_basicOpen_le ⟨x, hx₁⟩ hx₂
+  obtain ⟨r', s', hBx', e', hf'⟩ := exists_basicOpen_le_appLE_of_appLE_of_isAffine hPa hPl x
+    ⟨Y.basicOpen r, U₂.2.basicOpen _⟩ U₂ ⟨X.basicOpen s, V₂.2.basicOpen _⟩ V₂ hBx hx₂ e₂ h₂ hBfx
+  exact ⟨⟨Y.basicOpen r', (U₂.2.basicOpen _).basicOpen _⟩,
+    ⟨X.basicOpen s', (V₂.2.basicOpen _).basicOpen _⟩, le_trans (Y.basicOpen_le _) hBr,
+    le_trans (X.basicOpen_le _) hBs, hBx', e', hf'⟩
+
 end affineLocally
 
 /--
@@ -474,6 +531,19 @@ lemma iff_exists_appLE : P f ↔
   rw [iff_exists_appLE_locally (P := P) ]
   haveI : HasRingHomProperty P Q := inst
   apply (isLocal_ringHomProperty P (Q := Q)).respectsIso
+
+omit [HasRingHomProperty P Q] in
+lemma locally_of_iff (hQl : LocalizationPreserves Q)
+    (hQa : StableUnderCompositionWithLocalizationAway Q)
+    (h : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y), P f ↔
+      ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.1) (e : V.1 ≤ f ⁻¹ᵁ U.1),
+      Q (f.appLE U V e)) : HasRingHomProperty P (Locally Q) where
+  isLocal_ringHomProperty := locally_propertyIsLocal hQl hQa
+  eq_affineLocally' := by
+    haveI : HasRingHomProperty (affineLocally (Locally Q)) (Locally Q) :=
+      ⟨locally_propertyIsLocal hQl hQa, rfl⟩
+    ext X Y f
+    rw [h, iff_exists_appLE_locally (P := affineLocally (Locally Q)) hQa.respectsIso]
 
 end HasRingHomProperty
 
