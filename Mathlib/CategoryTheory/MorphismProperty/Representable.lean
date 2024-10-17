@@ -409,6 +409,8 @@ instance relative_isMultiplicative [F.Faithful] [F.Full] [P.IsMultiplicative] [P
 
 end
 
+section
+
 /-- Morphisms satisfying `(monomorphism C).presheaf` are in particular monomorphisms. -/
 lemma presheaf_monomorphisms_le_monomorphisms :
     (monomorphisms C).presheaf ≤ monomorphisms _ := fun F G f hf ↦ by
@@ -424,6 +426,124 @@ lemma presheaf_monomorphisms_le_monomorphisms :
   have : Mono (hf.rep.snd (a ≫ f)) := hf.property_snd (a ≫ f)
   simp only [← cancel_mono (hf.rep.snd (a ≫ f)), lift_snd]
 
+variable {G : Cᵒᵖ ⥤ Type v₁}
+
+lemma presheaf_mono_of_le (hP : P ≤ MorphismProperty.monomorphisms C)
+    {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : Mono f :=
+  MorphismProperty.presheaf_monomorphisms_le_monomorphisms _
+    (MorphismProperty.relative_monotone hP _ hf)
+
+lemma fst'_self_eq_snd (hP : P ≤ MorphismProperty.monomorphisms C)
+    {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : hf.rep.fst' f = hf.rep.snd f := by
+  have := P.presheaf_mono_of_le hP hf
+  apply yoneda.map_injective
+  rw [← cancel_mono f, (hf.rep.isPullback' f).w]
+
+lemma isIso_fst'_self (hP : P ≤ MorphismProperty.monomorphisms C)
+    {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : IsIso (hf.rep.fst' f) :=
+  have := P.presheaf_mono_of_le hP hf
+  have := (hf.rep.isPullback' f).isIso_fst_of_mono
+  Yoneda.fullyFaithful.isIso_of_isIso_map _
+
+end
+
 end MorphismProperty
+
+namespace Functor.relativelyRepresentable
+
+section Pullbacks₃
+/-
+In this section we develop some basic API that help deal with pullbacks of pullbacks obtained
+from a relatively representable morphism `f₁ : X₁ ⟶ F`. This will be helpful when showing that
+representability is a local property in various settings.
+
+More precisely, given two objects `X₂` and `X₃` in `C`, and two morphisms `f₂ : X₂ ⟶ F` and
+`f₃ : X₃ ⟶ F`, we can consider the pullbacks `(X₁ ×_F X₂)` and `(X₁ ×_F X₃)` as objects in `C`.
+We can then consider the pullback, in `C`!, of these two pullbacks. This is the object
+`(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃)`. In this section we develop some basic API for dealing with this
+pullback.
+-/
+variable {X₁ X₂ X₃ : C} {F : Cᵒᵖ ⥤ Type v₁}
+  {f₁ : yoneda.obj X₁ ⟶ F} (hf₁ : yoneda.relativelyRepresentable f₁)
+  (f₂ : yoneda.obj X₂ ⟶ F) (f₃ : yoneda.obj X₃ ⟶ F)
+  [HasPullback (hf₁.fst' f₂) (hf₁.fst' f₃)]
+
+/-- The pullback `(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃)`. -/
+noncomputable def pullback₃ := Limits.pullback (hf₁.fst' f₂) (hf₁.fst' f₃)
+/-- The morphism `(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃) ⟶ X₁`. -/
+noncomputable def pullback₃.p₁ : pullback₃ hf₁ f₂ f₃ ⟶ X₁ := pullback.fst _ _ ≫ hf₁.fst' f₂
+/-- The morphism `(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃) ⟶ X₂`. -/
+noncomputable def pullback₃.p₂ : pullback₃ hf₁ f₂ f₃ ⟶ X₂ := pullback.fst _ _ ≫ hf₁.snd f₂
+/-- The morphism `(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃) ⟶ X₃`. -/
+noncomputable def pullback₃.p₃ : pullback₃ hf₁ f₂ f₃ ⟶ X₃ := pullback.snd _ _ ≫ hf₁.snd f₃
+
+/-- The morphism `(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃) ⟶ F` when the domain is treated as a presheaf. -/
+noncomputable def pullback₃.π : yoneda.obj (pullback₃ hf₁ f₂ f₃) ⟶ F :=
+  yoneda.map (p₁ hf₁ f₂ f₃) ≫ f₁
+
+@[reassoc (attr := simp)]
+lemma pullback₃.yoneda_map_p₁_comp : yoneda.map (p₁ hf₁ f₂ f₃) ≫ f₁ = π _ _ _ :=
+  rfl
+
+@[reassoc (attr := simp)]
+lemma pullback₃.yoneda_map_p₂_comp : yoneda.map (p₂ hf₁ f₂ f₃) ≫ f₂ = π _ _ _ := by
+  simp [π, p₁, p₂, ← hf₁.w f₂]
+
+@[reassoc (attr := simp)]
+lemma pullback₃.yoneda_map_p₃_comp : yoneda.map (p₃ hf₁ f₂ f₃) ≫ f₃ = π _ _ _ := by
+  simp [π, p₁, p₃, ← hf₁.w f₃, pullback.condition]
+
+section
+
+variable {Z : C} (x₁ : Z ⟶ X₁) (x₂ : Z ⟶ X₂) (x₃ : Z ⟶ X₃)
+  (h₁₂ : yoneda.map x₁ ≫ f₁ = yoneda.map x₂ ≫ f₂)
+  (h₁₃ : yoneda.map x₁ ≫ f₁ = yoneda.map x₃ ≫ f₃)
+
+/-- The lift obtained from the universal property of `(X₁ ×_F X₂) ×_{X₁} (X₁ ×_F X₃)`. -/
+noncomputable def lift₃ : Z ⟶ pullback₃ hf₁ f₂ f₃ :=
+  pullback.lift (hf₁.lift' x₁ x₂ h₁₂)
+    (hf₁.lift' x₁ x₃ h₁₃) (by simp)
+
+@[reassoc (attr := simp)]
+lemma lift₃_p₁ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ pullback₃.p₁ hf₁ f₂ f₃ = x₁ := by
+  simp [lift₃, pullback₃.p₁]
+
+@[reassoc (attr := simp)]
+lemma lift₃_p₂ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ pullback₃.p₂ hf₁ f₂ f₃ = x₂ := by
+  simp [lift₃, pullback₃.p₂]
+
+@[reassoc (attr := simp)]
+lemma lift₃_p₃ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ pullback₃.p₃ hf₁ f₂ f₃ = x₃ := by
+  simp [lift₃, pullback₃.p₃]
+
+end
+
+/-- Temporary comment since this has a `'` in the name -/
+@[reassoc (attr := simp)]
+lemma pullback₃.fst_fst' : pullback.fst _ _ ≫ hf₁.fst' f₂ = pullback₃.p₁ hf₁ f₂ f₃ := rfl
+
+@[reassoc (attr := simp)]
+lemma pullback₃.fst_snd : pullback.fst _ _ ≫ hf₁.snd f₂ = pullback₃.p₂ hf₁ f₂ f₃ := rfl
+
+@[reassoc (attr := simp)]
+lemma pullback₃.snd_snd : pullback.snd _ _ ≫ hf₁.snd f₃ = pullback₃.p₃ hf₁ f₂ f₃ := rfl
+
+/-- Temporary comment since this has a `'` in the name -/
+@[reassoc (attr := simp)]
+lemma pullback₃.snd_fst' :
+    pullback.snd (hf₁.fst' f₂) (hf₁.fst' f₃) ≫ hf₁.fst' f₃ = pullback₃.p₁ hf₁ f₂ f₃ :=
+  pullback.condition.symm
+
+variable {hf₁ f₂ f₃} in
+@[ext]
+lemma pullback₃.hom_ext {Z : C} {φ φ' : Z ⟶ pullback₃ hf₁ f₂ f₃}
+    (h₁ : φ ≫ pullback₃.p₁ hf₁ f₂ f₃ = φ' ≫ pullback₃.p₁ hf₁ f₂ f₃)
+    (h₂ : φ ≫ pullback₃.p₂ hf₁ f₂ f₃ = φ' ≫ pullback₃.p₂ hf₁ f₂ f₃)
+    (h₃ : φ ≫ pullback₃.p₃ hf₁ f₂ f₃ = φ' ≫ pullback₃.p₃ hf₁ f₂ f₃) : φ = φ' := by
+  apply pullback.hom_ext <;> ext <;> simpa
+
+end Pullbacks₃
+
+end Functor.relativelyRepresentable
 
 end CategoryTheory
