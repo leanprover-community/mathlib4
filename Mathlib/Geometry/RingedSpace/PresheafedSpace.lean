@@ -157,7 +157,9 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
 
 variable {C}
 
--- Porting note (#5229): adding an `ext` lemma.
+/-- Cast `Hom X Y` as an arrow `X ⟶ Y` of presheaves. -/
+abbrev Hom.toPshHom {X Y : PresheafedSpace C} (f : Hom X Y) : X ⟶ Y := f
+
 @[ext (iff := false)]
 theorem ext {X Y : PresheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=

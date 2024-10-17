@@ -1228,7 +1228,7 @@ instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
   coe_injective' φ ψ h := by
     ext
-    simp only [Function.funext_iff] at h
+    simp only [funext_iff] at h
     exact h _
 
 @[simp]

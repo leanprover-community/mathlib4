@@ -61,7 +61,7 @@ deriving instance Inhabited for NNRat
 
 namespace NNRat
 
-variable {α : Type*} {p q : ℚ≥0}
+variable {p q : ℚ≥0}
 
 @[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
 
@@ -106,8 +106,12 @@ theorem coe_nonneg (q : ℚ≥0) : (0 : ℚ) ≤ q :=
   q.2
 
 @[simp, norm_cast] lemma coe_zero : ((0 : ℚ≥0) : ℚ) = 0 := rfl
+@[simp] lemma num_zero : num 0 = 0 := rfl
+@[simp] lemma den_zero : den 0 = 1 := rfl
 
 @[simp, norm_cast] lemma coe_one : ((1 : ℚ≥0) : ℚ) = 1 := rfl
+@[simp] lemma num_one : num 1 = 1 := rfl
+@[simp] lemma den_one : den 1 = 1 := rfl
 
 @[simp, norm_cast]
 theorem coe_add (p q : ℚ≥0) : ((p + q : ℚ≥0) : ℚ) = p + q :=
@@ -122,8 +126,6 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
 
 @[simp] lemma num_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).num = q.num ^ n := by simp [num, Int.natAbs_pow]
 @[simp] lemma den_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).den = q.den ^ n := rfl
-
--- Porting note: `bit0` `bit1` are deprecated, so remove these theorems.
 
 @[simp, norm_cast]
 theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
@@ -283,8 +285,6 @@ theorem toNNRat_lt_iff_lt_coe {p : ℚ≥0} (hq : 0 ≤ q) : toNNRat q < p ↔ q
 theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
   NNRat.gi.gc.lt_iff_lt
 
--- Porting note: `bit0` `bit1` are deprecated, so remove these theorems.
-
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
   rcases le_total 0 q with hq | hq
   · ext; simp [toNNRat, hp, hq, max_eq_left, mul_nonneg]
@@ -345,7 +345,7 @@ See also `Rat.divInt` and `mkRat`. -/
 def divNat (n d : ℕ) : ℚ≥0 :=
   ⟨.divInt n d, Rat.divInt_nonneg (Int.ofNat_zero_le n) (Int.ofNat_zero_le d)⟩
 
-variable {n₁ n₂ d₁ d₂ d : ℕ}
+variable {n₁ n₂ d₁ d₂ : ℕ}
 
 @[simp, norm_cast] lemma coe_divNat (n d : ℕ) : (divNat n d : ℚ) = .divInt n d := rfl
 

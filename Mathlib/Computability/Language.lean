@@ -248,7 +248,7 @@ theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ 
 instance : KleeneAlgebra (Language α) :=
   { Language.instSemiring, Set.completeAtomicBooleanAlgebra with
     kstar := fun L ↦ L∗,
-    one_le_kstar := fun a l hl ↦ ⟨[], hl, by simp⟩,
+    one_le_kstar := fun a _ hl ↦ ⟨[], hl, by simp⟩,
     mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,
     kstar_mul_le_kstar := fun a ↦ (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right,
     kstar_mul_le_self := fun l m h ↦ by
