@@ -67,7 +67,8 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
 
 -- see Note [lower instance priority]
 /-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
-instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=
+instance (priority := 100) Module.toMulActionWithZero
+  {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MulActionWithZero R M :=
   { (inferInstance : MulAction R M) with
     smul_zero := smul_zero
     zero_smul := Module.zero_smul }
@@ -571,7 +572,7 @@ theorem NoZeroSMulDivisors.int_of_charZero
     NoZeroSMulDivisors ℤ M :=
   ⟨fun {z x} h ↦ by simpa [← smul_one_smul R z x] using h⟩
 
-/-- Only a ring of characteristic zero can can have a non-trivial module without additive or
+/-- Only a ring of characteristic zero can have a non-trivial module without additive or
 scalar torsion. -/
 theorem CharZero.of_noZeroSMulDivisors [Nontrivial M] [NoZeroSMulDivisors ℤ M] : CharZero R := by
   refine ⟨fun {n m h} ↦ ?_⟩

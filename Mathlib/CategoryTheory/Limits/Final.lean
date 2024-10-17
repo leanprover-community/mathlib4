@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.IsConnected
@@ -238,6 +238,17 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
             · rw [← Functor.map_comp_assoc] } }
   map f := { hom := f.hom }
 
+/-- Alternative equational lemma for `(extendCocone c).ι.app` in case a lift of the object
+is given explicitly. -/
+lemma extendCocone_obj_ι_app' (c : Cocone (F ⋙ G)) {X : D} {Y : C} (f : X ⟶ F.obj Y) :
+    (extendCocone.obj c).ι.app X = G.map f ≫ c.ι.app Y := by
+  apply induction (k₀ := f) (z := rfl) F fun Z g =>
+    G.map g ≫ c.ι.app Z = G.map f ≫ c.ι.app Y
+  · intro _ _ _ _ _ h₁ h₂
+    simp [← h₁, ← Functor.comp_map, c.ι.naturality, h₂]
+  · intro _ _ _ _ _ h₁ h₂
+    simp [← h₂, ← h₁, ← Functor.comp_map, c.ι.naturality]
+
 @[simp]
 theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
     G.map (homToLift F (F.obj j)) ≫ s.ι.app (lift F (F.obj j)) = s.ι.app j := by
@@ -358,7 +369,7 @@ variable {C : Type v} [Category.{v} C] {D : Type u₁} [Category.{v} D] (F : C �
 namespace Final
 
 theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ F.obj X}
-    (t : EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
+    (t : Relation.EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
     Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) := by
   induction t with
   | rel x y r =>
@@ -510,6 +521,17 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
                 c.w, z, Category.assoc]
             · rw [← Functor.map_comp] } }
   map f := { hom := f.hom }
+
+/-- Alternative equational lemma for `(extendCone c).π.app` in case a lift of the object
+is given explicitly. -/
+lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X ⟶ Y) :
+    (extendCone.obj c).π.app Y = c.π.app X ≫ G.map f := by
+  apply induction (k₀ := f) (z := rfl) F fun Z g =>
+    c.π.app Z ≫ G.map g = c.π.app X ≫ G.map f
+  · intro _ _ _ _ _ h₁ h₂
+    simp [← h₂, ← h₁, ← Functor.comp_map, c.π.naturality]
+  · intro _ _ _ _ _ h₁ h₂
+    simp [← h₁, ← Functor.comp_map, c.π.naturality, h₂]
 
 @[simp]
 theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
@@ -812,5 +834,29 @@ theorem IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsC
   isCofiltered_of_isFiltered_op _
 
 end Filtered
+
+section
+
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable {E : Type u₃} [Category.{v₃} E]
+
+open Functor
+
+/-- The functor `StructuredArrow.pre X T S` is final if `T` is final. -/
+instance StructuredArrow.final_pre (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E) :
+    Final (pre X T S) := by
+  refine ⟨fun f => ?_⟩
+  rw [isConnected_iff_of_equivalence (StructuredArrow.preEquivalence T f)]
+  exact Final.out f.right
+
+/-- The functor `CostructuredArrow.pre X T S` is initial if `T` is initial. -/
+instance CostructuredArrow.initial_pre (T : C ⥤ D) [Initial T] (S : D ⥤ E) (X : E) :
+    Initial (CostructuredArrow.pre T S X) := by
+  refine ⟨fun f => ?_⟩
+  rw [isConnected_iff_of_equivalence (CostructuredArrow.preEquivalence T f)]
+  exact Initial.out f.left
+
+end
 
 end CategoryTheory

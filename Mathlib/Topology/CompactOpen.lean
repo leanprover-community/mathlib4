@@ -3,7 +3,7 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # The compact-open topology
@@ -93,6 +93,7 @@ theorem embedding_comp (g : C(Y, Z)) (hg : Embedding g) : Embedding (g.comp : C(
   ⟨inducing_comp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
 /-- `C(·, Z)` is a functor. -/
+@[fun_prop]
 theorem continuous_comp_left (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
   continuous_compactOpen.2 fun K hK U hU ↦ by
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
@@ -165,8 +166,6 @@ theorem continuous_eval [LocallyCompactPair X Y] : Continuous fun p : C(X, Y) ×
   rintro ⟨f, x⟩ U ⟨hx : f x ∈ U, hU : IsOpen U⟩
   rcases exists_mem_nhds_isCompact_mapsTo f.continuous (hU.mem_nhds hx) with ⟨K, hxK, hK, hKU⟩
   filter_upwards [prod_mem_nhds (eventually_mapsTo hK hU hKU) hxK] using fun _ h ↦ h.1 h.2
-
-@[deprecated (since := "2023-12-26")] alias continuous_eval' := continuous_eval
 
 /-- Evaluation of a continuous map `f` at a point `x` is continuous in `f`.
 
@@ -261,7 +260,7 @@ theorem compactOpen_eq_iInf_induced :
 alias compactOpen_eq_sInf_induced := compactOpen_eq_iInf_induced
 
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
-    𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
+    𝓝 f = ⨅ (s) (_ : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
   rw [compactOpen_eq_iInf_induced]
   simp only [nhds_iInf, nhds_induced]
 
@@ -277,7 +276,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → 
     Tendsto F l (𝓝 f) ↔
       ∀ K, IsCompact K → Tendsto (fun i => (F i).restrict K) l (𝓝 (f.restrict K)) := by
   rw [compactOpen_eq_iInf_induced]
-  simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp]
+  simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp_def]
 
 /-- A family `F` of functions in `C(X, Y)` converges in the compact-open topology, if and only if
 it converges in the compact-open topology on each compact subset of `X`. -/
@@ -375,7 +374,7 @@ theorem continuous_curry [LocallyCompactSpace (X × Y)] :
 /-- The uncurried form of a continuous map `X → C(Y, Z)` is a continuous map `X × Y → Z`. -/
 theorem continuous_uncurry_of_continuous [LocallyCompactSpace Y] (f : C(X, C(Y, Z))) :
     Continuous (Function.uncurry fun x y => f x y) :=
-  continuous_eval.comp <| f.continuous.prod_map continuous_id
+  continuous_eval.comp <| f.continuous.prodMap continuous_id
 
 /-- The uncurried form of a continuous map `X → C(Y, Z)` as a continuous map `X × Y → Z` (if `Y` is
     locally compact). If `X` is also locally compact, then this is a homeomorphism between the two
@@ -389,7 +388,7 @@ theorem continuous_uncurry [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     Continuous (uncurry : C(X, C(Y, Z)) → C(X × Y, Z)) := by
   apply continuous_of_continuous_uncurry
   rw [← (Homeomorph.prodAssoc _ _ _).comp_continuous_iff']
-  apply continuous_eval.comp (continuous_eval.prod_map continuous_id)
+  apply continuous_eval.comp (continuous_eval.prodMap continuous_id)
 
 /-- The family of constant maps: `Y → C(X, Y)` as a continuous map. -/
 def const' : C(Y, C(X, Y)) :=

@@ -6,15 +6,15 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Ring.Rat
-import Mathlib.Init.Data.Int.Order
+import Mathlib.Data.Int.Order.Basic
 
 /-!
 # The rational numbers possess a linear order
 
 This file constructs the order on `ℚ` and proves various facts relating the order to
-ring structure on `ℚ`. This only used unbundled type classes relating the order structure
-and algebra structure on `ℚ`. For the bundled `LinearOrderedCommRing` instance on `Q`,
-see `Algebra.Order.Ring.Rat`.
+ring structure on `ℚ`. This only uses unbundled type classes, eg `CovariantClass`,
+relating the order structure and algebra structure on `ℚ`.
+For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ring.Rat`.
 
 ## Tags
 
@@ -29,7 +29,7 @@ assert_not_exists GaloisConnection
 
 namespace Rat
 
-variable {a b c p q : ℚ}
+variable {a b p q : ℚ}
 
 @[simp] lemma divInt_nonneg_iff_of_pos_right {a b : ℤ} (hb : 0 < b) : 0 ≤ a /. b ↔ 0 ≤ a := by
   cases' hab : a /. b with n d hd hnd
@@ -95,7 +95,7 @@ protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
         decide_eq_false_iff_not, not_lt, ite_eq_left_iff, not_and, not_le, ← num_nonneg]
       split_ifs with h h'
       · rw [Rat.sub_def]
-        simp only [false_iff, not_le]
+        simp only [false_iff, not_le, reduceCtorEq]
         simp only [normalize_eq]
         apply Int.ediv_neg'
         · rw [sub_neg]

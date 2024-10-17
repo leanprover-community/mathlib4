@@ -158,7 +158,7 @@ theorem Inducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X → Y} (hf :
   rcases hx with ⟨u, hus, hu⟩
   choose v hv hvu using hus
   refine ⟨v, hv, ?_⟩
-  simpa only [hf.tendsto_nhds_iff, (· ∘ ·), hvu]
+  simpa only [hf.tendsto_nhds_iff, Function.comp_def, hvu]
 
 /-- Subtype of a Fréchet-Urysohn space is a Fréchet-Urysohn space. -/
 instance Subtype.instFrechetUrysohnSpace [FrechetUrysohnSpace X] {p : X → Prop} :
@@ -192,7 +192,7 @@ theorem continuous_iff_seqContinuous [SequentialSpace X] {f : X → Y} :
 theorem SequentialSpace.coinduced [SequentialSpace X] {Y} (f : X → Y) :
     @SequentialSpace Y (.coinduced f ‹_›) :=
   letI : TopologicalSpace Y := .coinduced f ‹_›
-  ⟨fun s hs ↦ isClosed_coinduced.2 (hs.preimage continuous_coinduced_rng.seqContinuous).isClosed⟩
+  ⟨fun _ hs ↦ isClosed_coinduced.2 (hs.preimage continuous_coinduced_rng.seqContinuous).isClosed⟩
 
 protected theorem SequentialSpace.iSup {X} {ι : Sort*} {t : ι → TopologicalSpace X}
     (h : ∀ i, @SequentialSpace X (t i)) : @SequentialSpace X (⨆ i, t i) := by
@@ -328,7 +328,7 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
   refine ⟨u, u_in, fun x _ φ hφ huφ => ?_⟩
   obtain ⟨N, hN⟩ : ∃ N, ∀ p q, p ≥ N → q ≥ N → (u (φ p), u (φ q)) ∈ V :=
     huφ.cauchySeq.mem_entourage V_in
-  exact hu (φ <| N + 1) (φ N) (hφ <| lt_add_one N) (hN (N + 1) N N.le_succ le_rfl)
+  exact hu (φ <| N + 1) (φ N) (hφ <| Nat.lt_add_one N) (hN (N + 1) N N.le_succ le_rfl)
 
 variable [IsCountablyGenerated (𝓤 X)]
 

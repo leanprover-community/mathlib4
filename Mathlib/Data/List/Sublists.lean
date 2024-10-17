@@ -44,7 +44,7 @@ theorem sublists'Aux_eq_array_foldl (a : α) : ∀ (r₁ r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = ((r₁.toArray).foldl (init := r₂.toArray)
       (fun r l => r.push (a :: l))).toList := by
   intro r₁ r₂
-  rw [sublists'Aux, Array.foldl_eq_foldl_data]
+  rw [sublists'Aux, Array.foldl_eq_foldl_toList]
   have := List.foldl_hom Array.toList (fun r l => r.push (a :: l))
     (fun r l => r ++ [a :: l]) r₁ r₂.toArray (by simp)
   simpa using this
@@ -53,8 +53,7 @@ theorem sublists'_eq_sublists'Aux (l : List α) :
     sublists' l = l.foldr (fun a r => sublists'Aux a r r) [[]] := by
   simp only [sublists', sublists'Aux_eq_array_foldl]
   rw [← List.foldr_hom Array.toList]
-  · rfl
-  · intros _ _; congr <;> simp
+  · intros _ _; congr
 
 theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = r₂ ++ map (cons a) r₁ :=
@@ -107,7 +106,7 @@ theorem sublistsAux_eq_array_foldl :
       (r.toArray.foldl (init := #[])
         fun r l => (r.push l).push (a :: l)).toList := by
   funext a r
-  simp only [sublistsAux, Array.foldl_eq_foldl_data, Array.mkEmpty]
+  simp only [sublistsAux, Array.foldl_eq_foldl_toList, Array.mkEmpty]
   have := foldl_hom Array.toList (fun r l => (r.push l).push (a :: l))
     (fun (r : List (List α)) l => r ++ [l, a :: l]) r #[]
     (by simp)
@@ -126,10 +125,9 @@ theorem sublistsAux_eq_bind :
   ext α l : 2
   trans l.foldr sublistsAux [[]]
   · rw [sublistsAux_eq_bind, sublists]
-  · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_data]
+  · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_toList]
     rw [← foldr_hom Array.toList]
-    · rfl
-    · intros _ _; congr <;> simp
+    · intros _ _; congr
 
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
@@ -138,7 +136,7 @@ theorem sublists_append (l₁ l₂ : List α) :
   | nil => simp
   | cons a l₁ ih =>
     rw [foldr_cons, ih]
-    simp [List.bind, join_join, Function.comp]
+    simp [List.bind, join_join, Function.comp_def]
 
 theorem sublists_cons (a : α) (l : List α) :
     sublists (a :: l) = sublists l >>= (fun x => [x, a :: x]) :=
@@ -155,13 +153,13 @@ theorem sublists_concat (l : List α) (a : α) :
 theorem sublists_reverse (l : List α) : sublists (reverse l) = map reverse (sublists' l) := by
   induction' l with hd tl ih <;> [rfl;
     simp only [reverse_cons, sublists_append, sublists'_cons, map_append, ih, sublists_singleton,
-      map_eq_map, bind_eq_bind, map_map, bind_cons, append_nil, bind_nil, (· ∘ ·)]]
+      map_eq_map, bind_eq_bind, map_map, bind_cons, append_nil, bind_nil, Function.comp_def]]
 
 theorem sublists_eq_sublists' (l : List α) : sublists l = map reverse (sublists' (reverse l)) := by
   rw [← sublists_reverse, reverse_reverse]
 
 theorem sublists'_reverse (l : List α) : sublists' (reverse l) = map reverse (sublists l) := by
-  simp only [sublists_eq_sublists', map_map, map_id'' reverse_reverse, Function.comp]
+  simp only [sublists_eq_sublists', map_map, map_id'' reverse_reverse, Function.comp_def]
 
 theorem sublists'_eq_sublists (l : List α) : sublists' l = map reverse (sublists (reverse l)) := by
   rw [← sublists'_reverse, reverse_reverse]
@@ -207,7 +205,7 @@ theorem sublistsLenAux_append :
     ∀ (n : ℕ) (l : List α) (f : List α → β) (g : β → γ) (r : List β) (s : List γ),
       sublistsLenAux n l (g ∘ f) (r.map g ++ s) = (sublistsLenAux n l f r).map g ++ s
   | 0, l, f, g, r, s => by unfold sublistsLenAux; simp
-  | n + 1, [], f, g, r, s => rfl
+  | _ + 1, [], _, _, _, _ => rfl
   | n + 1, a :: l, f, g, r, s => by
     unfold sublistsLenAux
     simp only [show (g ∘ f) ∘ List.cons a = g ∘ f ∘ List.cons a by rfl, sublistsLenAux_append,

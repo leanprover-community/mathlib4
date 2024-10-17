@@ -1,12 +1,10 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kenny Lau, Scott Morrison
+Authors: Mario Carneiro, Kenny Lau, Kim Morrison
 -/
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Pairwise
-import Batteries.Data.Nat.Lemmas
 
 /-!
 # Ranges of naturals as lists
@@ -36,8 +34,7 @@ theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
   induction' n with n hn
   · simp
   · rw [range_succ]
-    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton,
-      and_true_iff]
+    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton, and_true]
     rw [hn, forall_lt_succ]
 
 theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
@@ -80,7 +77,7 @@ theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) :=
 @[simp]
 theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n)[i] = ⟨i, length_finRange n ▸ h⟩ := by
-  simp only [finRange, getElem_range, getElem_pmap]
+  simp [finRange, getElem_range, getElem_pmap]
 
 -- Porting note (#10756): new theorem
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :

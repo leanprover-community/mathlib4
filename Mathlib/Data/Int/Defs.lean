@@ -30,7 +30,6 @@ namespace Int
 variable {a b c d m n : ℤ}
 
 section Order
-variable {a b c : ℤ}
 
 protected lemma le_rfl : a ≤ a := a.le_refl
 protected lemma lt_or_lt_of_ne : a ≠ b → a < b ∨ b < a := Int.lt_or_gt_of_ne
@@ -43,6 +42,7 @@ protected lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun h ↦ ⟨Int.le_of_eq h, Int.ge_of_eq h⟩, fun h ↦ Int.le_antisymm h.1 h.2⟩
 protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by
   rw [Int.le_antisymm_iff, Int.lt_iff_le_not_le, ← and_or_left]; simp [em]
+
 protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_iff_eq_or_lt, or_comm]
 
 end Order
@@ -234,7 +234,7 @@ where
     conv => rhs; exact b.add_zero.symm
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
 
-variable (b) {z b b H0 Hs Hp}
+variable {z b H0 Hs Hp}
 
 lemma inductionOn'_self : b.inductionOn' b H0 Hs Hp = H0 :=
   cast_eq_iff_heq.mpr <| .symm <| by rw [b.sub_self, ← cast_eq_iff_heq]; rfl
@@ -333,9 +333,9 @@ lemma natAbs_add_of_nonpos {a b : Int} (ha : a ≤ 0) (hb : b ≤ 0) :
 lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
 
 lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
-  induction' k with k ih
-  · rfl
-  · rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
+  induction k with
+  | zero => rfl
+  | succ k ih => rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
 
 lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
   refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
@@ -562,13 +562,12 @@ lemma lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
   (toNat_lt_toNat <| lt_toNat.1 <| Nat.lt_of_le_of_lt (Nat.zero_le _) h).1 h
 
 @[simp] lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
-  simp [h, Int.le_of_lt h, push_cast]
+  simp only [lt_toNat, Nat.cast_ofNat_Int, h, natCast_pred_of_pos, Int.le_of_lt h, toNat_of_nonneg]
 
 @[simp] lemma toNat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
   | (n : ℕ) => by simp
   | -[n+1] => by simpa [toNat] using Int.le_of_lt (negSucc_lt_zero n)
 
-@[simp]
 theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - b :=
   Int.toNat_of_nonneg (Int.sub_nonneg_of_le h)
 
