@@ -2123,7 +2123,7 @@ alias nat_cast_mul := natCast_mul
 
 /-- Alias of `Nat.cast_le`, specialized to `Ordinal` --/
 theorem natCast_le {m n : ℕ} : (m : Ordinal) ≤ n ↔ m ≤ n := by
-  rw [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_le_ord, Cardinal.natCast_le]
+  rw [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_le_ord, Nat.cast_le]
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_le := natCast_le
