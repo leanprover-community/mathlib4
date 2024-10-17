@@ -74,6 +74,9 @@ theorem mul_mem_right {α} {a : α} (b : α) [Semiring α] (I : Ideal α) [I.IsT
     (h : a ∈ I) : a * b ∈ I :=
   IsTwoSided.mul_mem_of_left b h
 
+instance {ι} (I : ι → Ideal α) [∀ i, (I i).IsTwoSided] : (⨅ i, I i).IsTwoSided :=
+  ⟨fun _ h ↦ (Submodule.mem_iInf _).mpr (mul_mem_right _ _ <| (Submodule.mem_iInf _).mp h ·)⟩
+
 variable {a}
 
 @[ext]
