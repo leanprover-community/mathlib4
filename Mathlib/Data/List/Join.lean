@@ -60,7 +60,7 @@ theorem take_sum_flatten' (L : List (List α)) (i : ℕ) :
     L.flatten.take (Nat.sum ((L.map length).take i)) = (L.take i).flatten := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [take_append, *, Nat.sum_nil, Nat.sum_cons]
+  · cases i <;> simp [take_append, *]
 
 @[deprecated (since := "2024-10-25")] alias take_sum_join' := take_sum_flatten'
 
@@ -72,7 +72,7 @@ theorem drop_sum_flatten' (L : List (List α)) (i : ℕ) :
     L.flatten.drop (Nat.sum ((L.map length).take i)) = (L.drop i).flatten := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [drop_append, *, Nat.sum_nil, Nat.sum_cons]
+  · cases i <;> simp [drop_append, *]
 
 @[deprecated (since := "2024-10-25")] alias drop_sum_join' := drop_sum_flatten'
 
