@@ -37,12 +37,12 @@ instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
   rcases R with ⟨α, str⟩
   exact IsLocalization.epi M _
 
--- These three instances solves the problem of instance of `FunLike` provided by
--- `CommRingCat.instFunLike'`, `CommRingCat.instFunLike''` and `CommRingCat.instFunLike'''`
+-- These three instances solves the issue where the `FunLike` instances provided by
+-- `CommRingCat.instFunLike'`, `CommRingCat.instFunLike''`, and `CommRingCat.instFunLike'''`
 -- are not syntactically equal to `CommRingCat.instFunLike` when applied to
 -- objects of the form `CommRingCat.of R`.
--- the priority of these three instances have to be set lower than other instance
--- in order to avoid infinite loops
+-- To prevent infinite loops, the priority of these three instances must be set lower
+-- than that of other instances.
 instance (priority := 50) {R : Type*} [CommRing R] {S : CommRingCat} (f : CommRingCat.of R ⟶ S)
     [IsLocalHom (R := CommRingCat.of R) f] : IsLocalHom f :=
   inferInstance
@@ -56,7 +56,7 @@ instance (priority := 50) {R S : Type u} [CommRing R] [CommRing S]
     [IsLocalHom (R := CommRingCat.of R) (S := CommRingCat.of S) f] : IsLocalHom f :=
   inferInstance
 
--- This instance is for the case when a morphism is coerced into a real RingHom.
+-- This instance handles the coercion of a morphism into a real `RingHom`.
 instance {R S : CommRingCat} (f : R ⟶ S) [IsLocalHom f] :
     IsLocalHom (F := R →+* S) f :=
   inferInstance
