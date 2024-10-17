@@ -78,7 +78,6 @@ lemma evaluation_ne_zero_iff_mem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U))
   simp
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y) (x : X)
-#synth IsLocalHom (f.stalkMap x)
 
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
