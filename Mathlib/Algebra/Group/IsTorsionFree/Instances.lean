@@ -1,7 +1,18 @@
+/-
+Copyright (c) 2024 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.IsTorsionFree.Defs
 import Mathlib.Algebra.Group.Pi.Basic
+
+/-!
+# Instances about `IsMulTorsionFree`
+
+Prove that (indexed) product of torsion free monoids is torsion free.
+-/
 
 @[to_additive]
 instance Prod.instIsMulTorsionFree {M N : Type*} [Monoid M] [Monoid N] [IsMulTorsionFree M]

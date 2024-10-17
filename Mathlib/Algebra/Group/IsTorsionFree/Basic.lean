@@ -1,6 +1,21 @@
+/-
+Copyright (c) 2024 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Algebra.Group.IsTorsionFree.Defs
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Order.Monotone.Basic
+
+/-!
+# Basic properties of torsion free monoids
+
+In this file we prove that in a torsion free left cancellative monoid,
+`x^n` is injective in `n : ℕ`.
+
+We also prove that in a torsion free group,
+`x^n` is injective in `n : ℤ` for all `x` and is injective in `x` for all `n ≠ 0`.
+-/
 
 section LeftCancelMonoid
 
