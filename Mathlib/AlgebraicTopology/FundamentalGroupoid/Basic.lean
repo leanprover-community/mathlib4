@@ -199,32 +199,10 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
   -- TODO: why does split_ifs not reduce the ifs??????
   split_ifs with h₁ h₂ h₃ h₄ h₅
   · rfl
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
+  iterate 6 exfalso; linarith
   · have h : 2 * (2 * (x : ℝ)) - 1 = 2 * (2 * (↑x + 1 / 4) - 1) := by linarith
     simp [h₂, h₁, h, dif_neg (show ¬False from id), dif_pos True.intro, if_false, if_true]
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
+  iterate 6 exfalso; linarith
   · congr
     ring
 
@@ -390,3 +368,34 @@ abbrev fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x
     FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
 
 end FundamentalGroupoid
+
+/- def ContinuousMap.interval_restrict (f : C(I, X)) {a b : I} (hab : a ≤ b) : Path (f a) (f b) where
+  toFun := Set.IccExtend zero_le_one f ∘ fun t ↦ (b - a) * t + a
+  continuous_toFun := by continuity
+  source' := by simp
+  target' := by simp
+
+open FundamentalGroupoid -/
+
+/- No need of using interval_restrict (should be intervalRestrict by naming convention),
+  just compose I ⥤ FundamentalGroupoid I with FundamentalGroupoid I ⥤ FundamentalGroupoid X.
+  The first functor is defined because I is simply connected so all Hom-types are singletons. -/
+/- def ContinuousMap.unitInterval_functor {X : TopCat} (f : C(I, X)) : I ⥤ FundamentalGroupoid X where
+  obj t := fromTop (f t)
+  map hab := ⟦f.interval_restrict <| by
+    dsimp [Quiver.Hom] at hab ⟧ -/
+
+
+/-
+ by
+    change (a : ℝ) ≤ b at hab
+    rw [← sub_nonneg] at hab
+    refine ⟨add_nonneg (mul_nonneg hab t.2.1) a.2.1, le_trans ?_ b.2.2⟩
+
+def Path.ofContinuousOn {f : I → X} {a b : I} (hst : a ≤ b) (hf : ContinuousOn f (Set.Icc a b)) :
+    Path (f a) (f b) where
+  toFun := f ∘ fun u ↦ (t - s) * u + s
+  continuous_to_fun := hf.comp_continuous (by continuity) (λ u, affine_maps_to_I hst u.2)
+  source' := by simp only [comp_app, Icc.coe_zero, mul_zero, zero_add]
+  target' := by simp only [comp_app, Icc.coe_one, mul_one, sub_add_cancel]
+-/
