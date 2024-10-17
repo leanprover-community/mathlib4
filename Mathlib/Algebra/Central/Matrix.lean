@@ -5,6 +5,7 @@ Authors: Jujian Zhang, Yunzhou Xie
 -/
 
 import Mathlib.Algebra.Central.Basic
+import Mathlib.Data.Matrix.Basis
 
 /-!
 
