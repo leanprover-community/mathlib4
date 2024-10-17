@@ -22,7 +22,7 @@ right Kan extension along `L`.
 
 namespace CategoryTheory
 
-open Category
+open Category Limits
 
 namespace Functor
 
@@ -99,6 +99,54 @@ lemma lanUnit_app_app_lanAdjunction_counit_app_app (G : D ⥤ H) (X : C) :
 lemma isIso_lanAdjunction_counit_app_iff (G : D ⥤ H) :
     IsIso ((L.lanAdjunction H).counit.app G) ↔ G.IsLeftKanExtension (𝟙 (L ⋙ G)) :=
   (isLeftKanExtension_iff_isIso _ (L.lanUnit.app (L ⋙ G)) _ (by simp)).symm
+
+section Colim
+
+variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') [F'.IsLeftKanExtension α]
+
+/-- Construct a cocone for a left Kan extension of `F` given a cocone for `F`. -/
+@[simps]
+noncomputable def coconeOfIsLeftKanExtension (c : Cocone F) : Cocone F' where
+  pt := c.pt
+  ι := F'.descOfIsLeftKanExtension α _ c.ι
+
+/-- If `c` is a colimit cocone, then `coconeOfIsLeftKanExtension α c` is a colimit cocone, too. -/
+@[simps]
+def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsColimit c) :
+    IsColimit (F'.coconeOfIsLeftKanExtension α c) where
+  desc s := hc.desc (Cocone.mk _ (α ≫ whiskerLeft L s.ι))
+  fac s := by
+    have : F'.descOfIsLeftKanExtension α ((const D).obj c.pt) c.ι ≫
+        (Functor.const _).map (hc.desc (Cocone.mk _ (α ≫ whiskerLeft L s.ι))) = s.ι :=
+      F'.hom_ext_of_isLeftKanExtension α _ _ (by aesop_cat)
+    exact congr_app this
+  uniq s m hm := hc.hom_ext (fun j ↦ by
+    have := hm (L.obj j)
+    nth_rw 1 [← F'.descOfIsLeftKanExtension_fac_app α ((const D).obj c.pt)]
+    dsimp at this ⊢
+    rw [assoc, this, IsColimit.fac, NatTrans.comp_app, whiskerLeft_app])
+
+/-- Composing the left Kan extension of `L : C ⥤ D` with `colim` on shapes `D` is isomorphic
+to `colim` on shapes `C`. -/
+@[simps!]
+noncomputable def lanCompColimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
+    [HasColimitsOfShape C H] [HasColimitsOfShape D H] : L.lan ⋙ colim ≅ colim (C := H) :=
+  NatIso.ofComponents (fun F => IsColimit.coconePointUniqueUpToIso
+    (colimit.isColimit (L.leftKanExtension F))
+    (isColimitCoconeOfIsLeftKanExtension _ (leftKanExtensionUnit _ _) (colimit.isColimit F)))
+    (fun _ => by
+      simp only [colim_obj, colim_map, ← Iso.inv_comp_eq, ← assoc, ← Iso.eq_comp_inv]
+      ext
+      rw [ι_colimMap_assoc]
+      simp only [comp_map, colim, colimMap, IsColimit.map, lan]
+      rw [IsColimit.coconePointUniqueUpToIso_inv_desc]
+      simp only [isColimitCoconeOfIsLeftKanExtension_desc, Cocones.precompose_obj_pt,
+        colimit.cocone_x, Cocones.precompose_obj_ι, whiskerLeft_comp, colimit.isColimit_desc,
+        colimit.ι_desc, NatTrans.comp_app, comp_obj, const_obj_obj, whiskerLeft_app,
+        colimit.cocone_ι, ← assoc, Iso.eq_comp_inv]
+      simp [colimit.ι, colimit.cocone, lan])
+
+end Colim
 
 end
 
@@ -206,6 +254,54 @@ lemma ranCounit_app_app_ranAdjunction_unit_app_app (G : D ⥤ H) (X : C) :
 lemma isIso_ranAdjunction_unit_app_iff (G : D ⥤ H) :
     IsIso ((L.ranAdjunction H).unit.app G) ↔ G.IsRightKanExtension (𝟙 (L ⋙ G)) :=
   (isRightKanExtension_iff_isIso _ (L.ranCounit.app (L ⋙ G)) _ (by simp)).symm
+
+section Lim
+
+variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : L ⋙ F' ⟶ F) [F'.IsRightKanExtension α]
+
+/-- Construct a cone for a right Kan extension of `F` given a cone for `F`. -/
+@[simps]
+noncomputable def coneOfIsRightKanExtension (c : Cone F) : Cone F' where
+  pt := c.pt
+  π := F'.liftOfIsRightKanExtension α _ c.π
+
+/-- If `c` is a limit cone, then `coneOfIsRightKanExtension α c` is a limit cone, too. -/
+@[simps]
+def isLimitConeOfIsRightKanExtension {c : Cone F} (hc : IsLimit c) :
+    IsLimit (F'.coneOfIsRightKanExtension α c) where
+  lift s := hc.lift (Cone.mk _ (whiskerLeft L s.π ≫ α))
+  fac s := by
+    have : (Functor.const _).map (hc.lift (Cone.mk _ (whiskerLeft L s.π ≫ α))) ≫
+        F'.liftOfIsRightKanExtension α ((const D).obj c.pt) c.π = s.π :=
+      F'.hom_ext_of_isRightKanExtension α _ _ (by aesop_cat)
+    exact congr_app this
+  uniq s m hm := hc.hom_ext (fun j ↦ by
+    have := hm (L.obj j)
+    nth_rw 1 [← F'.liftOfIsRightKanExtension_fac_app α ((const D).obj c.pt)]
+    dsimp at this ⊢
+    rw [← assoc, this, IsLimit.fac, NatTrans.comp_app, whiskerLeft_app])
+
+/-- Composing the right Kan extension of `L : C ⥤ D` with `lim` on shapes `D` is isomorphic
+to `lim` on shapes `C`. -/
+@[simps!]
+noncomputable def ranCompLimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasRightKanExtension G]
+    [HasLimitsOfShape C H] [HasLimitsOfShape D H] : L.ran ⋙ lim ≅ lim (C := H) :=
+  NatIso.ofComponents (fun F => IsLimit.conePointUniqueUpToIso
+    (limit.isLimit (L.rightKanExtension F))
+    (isLimitConeOfIsRightKanExtension _ (rightKanExtensionCounit _ _) (limit.isLimit F)))
+    (fun _ => by
+      simp only [lim_obj, lim_map]
+      ext c
+      conv_rhs => rw [assoc, limMap_π]
+      simp only [comp_map, lim, limMap, IsLimit.map, ran]
+      rw [IsLimit.lift_comp_conePointUniqueUpToIso_hom]
+      simp only [limit.isLimit_lift, comp_obj, isLimitConeOfIsRightKanExtension_lift,
+        Cones.postcompose_obj_pt, limit.cone_x, Cones.postcompose_obj_π, whiskerLeft_comp,
+        limit.lift_π, assoc, liftOfIsRightKanExtension_fac, NatTrans.comp_app, const_obj_obj,
+        whiskerLeft_app, limit.cone_π]
+      simp [limit.π, limit.cone, ← Iso.inv_comp_eq])
+
+end Lim
 
 end
 
