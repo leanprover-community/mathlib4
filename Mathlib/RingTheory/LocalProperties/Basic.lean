@@ -262,10 +262,42 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
     AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,
     RingHom.comp_id]
 
-lemma RingHom.StableUnderBaseChange.localizationPreserves (hP : RingHom.StableUnderBaseChange @P) :
-    LocalizationPreserves P := by
+section
+
+variable (hP : RingHom.StableUnderBaseChange @P)
+variable {R S Rᵣ Sᵣ : Type u} [CommRing R] [CommRing S] [CommRing Rᵣ] [CommRing Sᵣ] [Algebra R Rᵣ]
+  [Algebra S Sᵣ]
+
+include hP
+
+/-- Let `S` be an `R`-algebra and `Sᵣ` and `Rᵣ` be the respective localizations at a submonoid
+`M` of `R`. If `P` is stable under base change and `P` holds for `algebraMap R S`, then
+`P` holds for `algebraMap Rᵣ Sᵣ`. -/
+lemma RingHom.StableUnderBaseChange.of_isLocalization [Algebra R S] [Algebra R Sᵣ] [Algebra Rᵣ Sᵣ]
+    [IsScalarTower R S Sᵣ] [IsScalarTower R Rᵣ Sᵣ]
+    (M : Submonoid R) [IsLocalization M Rᵣ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sᵣ]
+    (h : P (algebraMap R S)) : P (algebraMap Rᵣ Sᵣ) :=
+  letI : Algebra.IsPushout R S Rᵣ Sᵣ := Algebra.isPushout_of_isLocalization M Rᵣ S Sᵣ
+  hP R S Rᵣ Sᵣ h
+
+/-- If `P` is stable under base change and holds for `f`, then `P` holds for `f` localized
+at any submonoid `M` of `R`. -/
+lemma RingHom.StableUnderBaseChange.isLocalization_map (M : Submonoid R) [IsLocalization M Rᵣ]
+    (f : R →+* S) [IsLocalization (M.map f) Sᵣ] (hf : P f) :
+    P (IsLocalization.map Sᵣ f M.le_comap_map : Rᵣ →+* Sᵣ) := by
+  algebraize [f, IsLocalization.map (S := Rᵣ) Sᵣ f M.le_comap_map,
+    (IsLocalization.map (S := Rᵣ) Sᵣ f M.le_comap_map).comp (algebraMap R Rᵣ)]
+  haveI : IsScalarTower R S Sᵣ := IsScalarTower.of_algebraMap_eq'
+    (IsLocalization.map_comp M.le_comap_map)
+  haveI : IsLocalization (Algebra.algebraMapSubmonoid S M) Sᵣ :=
+    inferInstanceAs <| IsLocalization (M.map f) Sᵣ
+  apply hP.of_isLocalization M hf
+
+lemma RingHom.StableUnderBaseChange.localizationPreserves : LocalizationPreserves P := by
   introv R hf
-  exact hP.isLocalization_map _ _ f hf
+  exact hP.isLocalization_map _ _ hf
+
+end
 
 end RingHom
 

@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.CategoryTheory.Iso
+import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Properties of ring homomorphisms
@@ -22,7 +24,7 @@ The following meta-properties of predicates on ring homomorphisms are defined
 -/
 
 
-universe u v
+universe u
 
 open CategoryTheory Opposite CategoryTheory.Limits
 
@@ -164,45 +166,6 @@ theorem StableUnderBaseChange.pushout_inl (hP : RingHom.StableUnderBaseChange @P
   dsimp only [CommRingCat.pushoutCocone_inl, PushoutCocone.ι_app_left]
   apply hP R T S (TensorProduct R S T)
   exact H
-
-variable (hP : RingHom.StableUnderBaseChange @P)
-
-section
-
-variable {R S Rᵣ Sᵣ : Type u} [CommRing R] [CommRing S] [CommRing Rᵣ] [CommRing Sᵣ] [Algebra R Rᵣ]
-  [Algebra R S] [Algebra S Sᵣ] [Algebra R Sᵣ] [Algebra Rᵣ Sᵣ] [IsScalarTower R S Sᵣ]
-  [IsScalarTower R Rᵣ Sᵣ]
-
-include hP in
-/-- Let `S` be an `R`-algebra and `Sᵣ` and `Rᵣ` be the respective localizations at a submonoid
-`M` of `R`. If `P` is stable under base change and `P` holds for `algebraMap R S`, then
-`P` holds for `algebraMap Rᵣ Sᵣ`. -/
-lemma StableUnderBaseChange.of_isLocalization
-    (M : Submonoid R) [IsLocalization M Rᵣ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sᵣ]
-    (h : P (algebraMap R S)) : P (algebraMap Rᵣ Sᵣ) :=
-  letI : Algebra.IsPushout R S Rᵣ Sᵣ := Algebra.isPushout_of_isLocalization M Rᵣ S Sᵣ
-  hP R S Rᵣ Sᵣ h
-
-end
-
-variable {R S Rᵣ Sᵣ : Type u} [CommRing R] [CommRing S] [CommRing Rᵣ] [CommRing Sᵣ] [Algebra R Rᵣ]
-  [Algebra S Sᵣ]
-
-include hP in
-/-- If `P` is stable under base change and holds for `f`, then `P` holds for `f` localized
-at any submonoid `M` of `R`. -/
-lemma StableUnderBaseChange.isLocalization_map (M : Submonoid R) [IsLocalization M Rᵣ]
-    (f : R →+* S) [IsLocalization (M.map f) Sᵣ] (hf : P f) :
-    P (IsLocalization.map Sᵣ f M.le_comap_map : Rᵣ →+* Sᵣ) := by
-  letI : Algebra Rᵣ Sᵣ := (IsLocalization.map Sᵣ f M.le_comap_map).toAlgebra
-  letI : Algebra R S := f.toAlgebra
-  letI : Algebra R Sᵣ := ((algebraMap Rᵣ Sᵣ).comp (algebraMap R Rᵣ)).toAlgebra
-  haveI : IsScalarTower R S Sᵣ := IsScalarTower.of_algebraMap_eq'
-    (IsLocalization.map_comp M.le_comap_map)
-  haveI : IsScalarTower R Rᵣ Sᵣ := IsScalarTower.of_algebraMap_eq' rfl
-  haveI : IsLocalization (Algebra.algebraMapSubmonoid S M) Sᵣ :=
-    inferInstanceAs <| IsLocalization (M.map f) Sᵣ
-  apply hP.of_isLocalization P M hf
 
 end StableUnderBaseChange
 
