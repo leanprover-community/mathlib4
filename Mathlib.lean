@@ -4839,6 +4839,7 @@ import Mathlib.Topology.PartitionOfUnity
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.PreorderRestrict
 import Mathlib.Topology.QuasiSeparated
+import Mathlib.Topology.Relative
 import Mathlib.Topology.RestrictGen
 import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.SeparatedMap
