@@ -729,7 +729,7 @@ theorem dvd_iff_normalizedFactors_le_normalizedFactors {x y : α} (hx : x ≠ 0)
       (normalizedFactors_prod hy).dvd_iff_dvd_right]
     apply Multiset.prod_dvd_prod_of_le
 
-theorem normalizedFactors_eq_of_associated {a b : α} (h : Associated a b) :
+theorem _root_.Associated.normalizedFactors_eq {a b : α} (h : Associated a b) :
     normalizedFactors a = normalizedFactors b := by
   unfold normalizedFactors
   have h2 : ⇑(normalize (α := α)) = Associates.out ∘ Associates.mk := funext Associates.out_mk
@@ -738,7 +738,7 @@ theorem normalizedFactors_eq_of_associated {a b : α} (h : Associated a b) :
 
 theorem associated_iff_normalizedFactors_eq_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     x ~ᵤ y ↔ normalizedFactors x = normalizedFactors y :=
-  ⟨normalizedFactors_eq_of_associated, fun h =>
+  ⟨Associated.normalizedFactors_eq, fun h =>
     (normalizedFactors_prod hx).symm.trans (_root_.trans (by rw [h]) (normalizedFactors_prod hy))⟩
 
 theorem normalizedFactors_of_irreducible_pow {p : α} (hp : Irreducible p) (k : ℕ) :

@@ -46,10 +46,10 @@ variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
 def primeFactors (a : M) : Finset M :=
   (normalizedFactors a).toFinset
 
-theorem primeFactors_eq_of_associated {a b : M} (h : Associated a b) :
+theorem _root_.Associated.primeFactors_eq {a b : M} (h : Associated a b) :
     primeFactors a = primeFactors b := by
   unfold primeFactors
-  rw [normalizedFactors_eq_of_associated h]
+  rw [h.normalizedFactors_eq]
 
 
 /--
@@ -69,7 +69,7 @@ theorem radical_one_eq : radical (1 : M) = 1 := by
 
 theorem radical_eq_of_associated {a b : M} (h : Associated a b) : radical a = radical b := by
   unfold radical
-  rw [primeFactors_eq_of_associated h]
+  rw [h.primeFactors_eq]
 
 theorem radical_unit_eq_one {a : M} (h : IsUnit a) : radical a = 1 :=
   (radical_eq_of_associated (associated_one_iff_isUnit.mpr h)).trans radical_one_eq
