@@ -237,10 +237,14 @@ instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [M
       f 0 = f 0 * f (EquivLike.inv f 0) := by rw [← map_mul, zero_mul]
         _ = 0 := by simp
 
+set_synth_order MulEquivClass.toZeroHomClass #[3, 6, 4, 5]
+
 -- See note [lower instance priority]
 instance (priority := 100) toMonoidWithZeroHomClass
     [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
     MonoidWithZeroHomClass F α β :=
   { MulEquivClass.instMonoidHomClass F, MulEquivClass.toZeroHomClass with }
+
+set_synth_order MulEquivClass.toMonoidWithZeroHomClass #[3, 6, 4, 5]
 
 end MulEquivClass

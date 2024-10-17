@@ -91,6 +91,8 @@ instance (priority := 100) toAddEquivClass [Mul R] [Add R]
     [Mul S] [Add S] [h : RingEquivClass F R S] : AddEquivClass F R S :=
   { h with }
 
+set_synth_order RingEquivClass.toAddEquivClass #[3, 8, 4, 5, 6, 7]
+
 -- See note [lower instance priority]
 instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring S]
     [h : RingEquivClass F R S] : RingHomClass F R S :=
@@ -98,11 +100,15 @@ instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring
     map_zero := map_zero
     map_one := map_one }
 
+set_synth_order RingEquivClass.toRingHomClass #[3, 6, 4, 5]
+
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] [h : RingEquivClass F R S] : NonUnitalRingHomClass F R S :=
   { h with
     map_zero := map_zero }
+
+set_synth_order RingEquivClass.toNonUnitalRingHomClass #[3, 6, 4, 5]
 
 /-- Turn an element of a type `F` satisfying `RingEquivClass F α β` into an actual
 `RingEquiv`. This is declared as the default coercion from `F` to `α ≃+* β`. -/

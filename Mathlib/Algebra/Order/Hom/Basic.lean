@@ -219,6 +219,8 @@ instance (priority := 100) AddGroupSeminormClass.toZeroHomClass [AddGroup α]
     [OrderedAddCommMonoid β] [AddGroupSeminormClass F α β] : ZeroHomClass F α β :=
   { ‹AddGroupSeminormClass F α β› with }
 
+set_synth_order AddGroupSeminormClass.toZeroHomClass #[3, 6, 4, 5]
+
 section GroupSeminormClass
 
 variable [Group α] [OrderedAddCommMonoid β] [GroupSeminormClass F α β] (f : F) (x y : α)
@@ -294,6 +296,8 @@ class RingNormClass (F : Type*) (α β : outParam Type*)
     [NonUnitalNonAssocRing α] [OrderedSemiring β] [FunLike F α β]
   extends RingSeminormClass F α β, AddGroupNormClass F α β : Prop
 
+set_synth_order RingNormClass.toAddGroupNormClass #[5, 6, 3, 4]
+
 /-- `MulRingSeminormClass F α` states that `F` is a type of `β`-valued multiplicative seminorms
 on the ring `α`.
 
@@ -306,6 +310,8 @@ class MulRingSeminormClass (F : Type*) (α β : outParam Type*)
 attribute [instance 50]
   MulRingSeminormClass.toMonoidHomClass MulRingSeminormClass.toMonoidWithZeroHomClass
 
+set_synth_order MulRingSeminormClass.toMonoidWithZeroHomClass #[5, 6, 3, 4]
+
 /-- `MulRingNormClass F α` states that `F` is a type of `β`-valued multiplicative norms on the
 ring `α`.
 
@@ -314,18 +320,26 @@ class MulRingNormClass (F : Type*) (α β : outParam Type*)
     [NonAssocRing α] [OrderedSemiring β] [FunLike F α β]
   extends MulRingSeminormClass F α β, AddGroupNormClass F α β : Prop
 
+set_synth_order MulRingNormClass.toAddGroupNormClass #[5, 6, 3, 4]
+
 -- See note [out-param inheritance]
 -- See note [lower instance priority]
 instance (priority := 100) RingSeminormClass.toNonnegHomClass [NonUnitalNonAssocRing α]
     [LinearOrderedSemiring β] [RingSeminormClass F α β] : NonnegHomClass F α β :=
   AddGroupSeminormClass.toNonnegHomClass
 
+set_synth_order RingSeminormClass.toNonnegHomClass #[3, 6, 4, 5]
+
 -- See note [lower instance priority]
 instance (priority := 100) MulRingSeminormClass.toRingSeminormClass [NonAssocRing α]
     [OrderedSemiring β] [MulRingSeminormClass F α β] : RingSeminormClass F α β :=
   { ‹MulRingSeminormClass F α β› with map_mul_le_mul := fun _ _ _ => (map_mul _ _ _).le }
 
+set_synth_order MulRingSeminormClass.toRingSeminormClass #[3, 6, 4, 5]
+
 -- See note [lower instance priority]
 instance (priority := 100) MulRingNormClass.toRingNormClass [NonAssocRing α]
     [OrderedSemiring β] [MulRingNormClass F α β] : RingNormClass F α β :=
   { ‹MulRingNormClass F α β›, MulRingSeminormClass.toRingSeminormClass with }
+
+set_synth_order MulRingNormClass.toRingNormClass #[3, 6, 4, 5]
