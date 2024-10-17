@@ -260,17 +260,19 @@ theorem nodup_flatten {L : List (List α)} :
 
 @[deprecated (since := "2025-10-15")] alias nodup_join := nodup_flatten
 
-theorem nodup_bind {l₁ : List α} {f : α → List β} :
-    Nodup (l₁.bind f) ↔
+theorem nodup_flatMap {l₁ : List α} {f : α → List β} :
+    Nodup (l₁.flatMap f) ↔
       (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (fun a b : α => Disjoint (f a) (f b)) l₁ := by
-  simp only [List.bind, nodup_flatten, pairwise_map, and_comm, and_left_comm, mem_map,
+  simp only [List.flatMap, nodup_flatten, pairwise_map, and_comm, and_left_comm, mem_map,
     exists_imp, and_imp]
   rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
       from forall_swap.trans <| forall_congr' fun _ => forall_eq']
 
+@[deprecated (since := "2025-10-16")] alias nodup_bind := nodup_flatMap
+
 protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l₂.Nodup) :
     (l₁ ×ˢ l₂).Nodup :=
-  nodup_bind.2
+  nodup_flatMap.2
     ⟨fun a _ => d₂.map <| LeftInverse.injective fun b => (rfl : (a, b).2 = b),
       d₁.imp fun {a₁ a₂} n x h₁ h₂ => by
         rcases mem_map.1 h₁ with ⟨b₁, _, rfl⟩
@@ -279,7 +281,7 @@ protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l�
 
 theorem Nodup.sigma {σ : α → Type*} {l₂ : ∀ a , List (σ a)} (d₁ : Nodup l₁)
     (d₂ : ∀ a , Nodup (l₂ a)) : (l₁.sigma l₂).Nodup :=
-  nodup_bind.2
+  nodup_flatMap.2
     ⟨fun a _ => (d₂ a).map fun b b' h => by injection h with _ h,
       d₁.imp fun {a₁ a₂} n x h₁ h₂ => by
         rcases mem_map.1 h₁ with ⟨b₁, _, rfl⟩

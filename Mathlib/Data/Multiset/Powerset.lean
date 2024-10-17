@@ -269,8 +269,8 @@ theorem pairwise_disjoint_powersetCard (s : Multiset α) :
 theorem bind_powerset_len {α : Type*} (S : Multiset α) :
     (bind (Multiset.range (card S + 1)) fun k => S.powersetCard k) = S.powerset := by
   induction S using Quotient.inductionOn
-  simp_rw [quot_mk_to_coe, powerset_coe', powersetCard_coe, ← coe_range, coe_bind, ← List.map_bind,
-    coe_card]
+  simp_rw [quot_mk_to_coe, powerset_coe', powersetCard_coe, ← coe_range, coe_bind,
+    ← List.map_flatMap, coe_card]
   exact coe_eq_coe.mpr ((List.range_bind_sublistsLen_perm _).map _)
 
 @[simp]
