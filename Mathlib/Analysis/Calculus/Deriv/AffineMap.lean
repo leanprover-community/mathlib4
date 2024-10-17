@@ -15,8 +15,7 @@ from dimension 1 to a domain in higher dimension.
 
 ## TODO
 
-Add theorems about `deriv`s and `fderiv`s of `ContinuousAffineMap`s once they will be ported to
-Mathlib 4.
+Add theorems about `deriv`s and `fderiv`s of `ContinuousAffineMap`s.
 
 ## Keywords
 
