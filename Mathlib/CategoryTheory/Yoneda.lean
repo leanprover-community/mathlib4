@@ -582,6 +582,19 @@ lemma isIso_of_yoneda_map_bijective {X Y : C} (f : X ⟶ Y)
   obtain ⟨g, hg : g ≫ f = 𝟙 Y⟩ := (hf Y).2 (𝟙 Y)
   exact ⟨g, (hf _).1 (by aesop_cat), hg⟩
 
+lemma isIso_iff_yoneda_map_bijective {X Y : C} (f : X ⟶ Y) :
+    IsIso f ↔ (∀ (T : C), Function.Bijective (fun (x : T ⟶ X) => x ≫ f)) := by
+  refine ⟨fun _ ↦ ?_, fun hf ↦ isIso_of_yoneda_map_bijective f hf⟩
+  have : IsIso (yoneda.map f) := inferInstance
+  intro T
+  rw [← isIso_iff_bijective]
+  exact inferInstanceAs (IsIso ((yoneda.map f).app _))
+
+lemma isIso_iff_isIso_yoneda_map {X Y : C} (f : X ⟶ Y) :
+    IsIso f ↔ ∀ c : C, IsIso ((yoneda.map f).app ⟨c⟩) := by
+  rw [isIso_iff_yoneda_map_bijective]
+  exact forall_congr' fun _ ↦ (isIso_iff_bijective _).symm
+
 end YonedaLemma
 
 section CoyonedaLemma
@@ -748,6 +761,19 @@ lemma isIso_of_coyoneda_map_bijective {X Y : C} (f : X ⟶ Y)
   obtain ⟨g, hg : f ≫ g = 𝟙 X⟩ := (hf X).2 (𝟙 X)
   refine ⟨g, hg, (hf _).1 ?_⟩
   simp only [Category.comp_id, ← Category.assoc, hg, Category.id_comp]
+
+lemma isIso_iff_coyoneda_map_bijective {X Y : C} (f : X ⟶ Y) :
+    IsIso f ↔ (∀ (T : C), Function.Bijective (fun (x : Y ⟶ T) => f ≫ x)) := by
+  refine ⟨fun _ ↦ ?_, fun hf ↦ isIso_of_coyoneda_map_bijective f hf⟩
+  have : IsIso (coyoneda.map f.op) := inferInstance
+  intro T
+  rw [← isIso_iff_bijective]
+  exact inferInstanceAs (IsIso ((coyoneda.map f.op).app _))
+
+lemma isIso_iff_isIso_coyoneda_map {X Y : C} (f : X ⟶ Y) :
+    IsIso f ↔ ∀ c : C, IsIso ((coyoneda.map f.op).app c) := by
+  rw [isIso_iff_coyoneda_map_bijective]
+  exact forall_congr' fun _ ↦ (isIso_iff_bijective _).symm
 
 end CoyonedaLemma
 
