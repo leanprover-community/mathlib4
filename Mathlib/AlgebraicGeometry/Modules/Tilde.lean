@@ -290,14 +290,10 @@ theorem stalkToFiberLinearMap_germ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeS
       (TopCat.Presheaf.germ (tildeInModuleCat M) U x hx s) = (s.1 ⟨x, hx⟩ : _) :=
   DFunLike.ext_iff.1 (germ_comp_stalkToFiberLinearMap M U x hx) s
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem toOpen_germ (U : Opens (PrimeSpectrum.Top R)) (x) (hx : x ∈ U) :
     toOpen M U ≫ M.tildeInModuleCat.germ U x hx = toStalk M x := by
   rw [← toOpen_res M ⊤ U (homOfLE le_top : U ⟶ ⊤), Category.assoc, Presheaf.germ_res]; rfl
-
-theorem germ_toOpen (U : Opens (PrimeSpectrum.Top R)) (x) (hx : x ∈ U) (f : M) :
-    M.tildeInModuleCat.germ U x hx (ModuleCat.Tilde.toOpen M U f) = toStalk M x f := by
-  rw [← toOpen_germ]; rfl
 
 @[reassoc (attr := simp)]
 theorem toStalk_comp_stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
@@ -387,6 +383,12 @@ noncomputable def stalkIso (x : PrimeSpectrum.Top R) :
     rw [← res_apply M U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk]
     exact (tildeInModuleCat M).germ_ext V hxV (homOfLE hg) iVU <| hs ▸ rfl
   inv_hom_id := by ext x; exact x.induction_on (fun _ _ => by simp)
+
+instance (x : PrimeSpectrum.Top R) : IsLocalizedModule x.asIdeal.primeCompl (stalkIso M x).hom :=
+  IsLocalizedModule.of_linearEquiv' x.asIdeal.primeCompl
+    (hf := isLocalizedModule_id x.asIdeal.primeCompl
+      (LocalizedModule x.asIdeal.primeCompl M) (Localization x.asIdeal.primeCompl))
+    (e := (stalkIso M x).toLinearEquiv)
 
 end Tilde
 
