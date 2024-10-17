@@ -95,6 +95,11 @@ instance rTensor_nontrivial
       (fl.toFlat.rTensor_preserves_injective_linearMap inc injective_inc)
       ((quotTensorEquivQuotSMul M I).symm.injective) |>.subsingleton
 
+instance lTensor_nontrivial
+    [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
+    Nontrivial (M ⊗[R] N) :=
+  TensorProduct.comm R M N |>.toEquiv.nontrivial
+
 lemma rTensor_reflects_triviality
     [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
     [h : Subsingleton (N ⊗[R] M)] : Subsingleton N := by
@@ -109,11 +114,6 @@ lemma lTensor_reflects_triviality
     Subsingleton N := by
   haveI : Subsingleton (N ⊗[R] M) := (TensorProduct.comm R N M).toEquiv.injective.subsingleton
   apply rTensor_reflects_triviality R M
-
-instance lTensor_nontrivial
-    [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
-    Nontrivial (M ⊗[R] N) :=
-  TensorProduct.comm R M N |>.toEquiv.nontrivial
 
 attribute [-simp] Ideal.Quotient.mk_eq_mk in
 lemma iff_flat_and_rTensor_faithful :
