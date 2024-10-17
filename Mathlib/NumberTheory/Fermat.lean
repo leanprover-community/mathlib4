@@ -85,8 +85,7 @@ theorem Int.fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq 
     (fermatNumber (n + 2) : ℤ)  = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
   rw [Nat.fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq,
     Nat.cast_sub <| two_mul_fermatNumber_sub_one_sq_le_fermatNumber_sq n]
-  simp only [fermatNumber]
-  aesop
+  simp only [fermatNumber, push_cast, add_tsub_cancel_right]
 
 namespace Nat
 
