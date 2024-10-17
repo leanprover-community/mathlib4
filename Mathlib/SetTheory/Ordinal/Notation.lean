@@ -41,7 +41,7 @@ compile_inductive% ONote
 
 namespace ONote
 
-/-- Notation for 0. -/
+/-- Notation for 0 -/
 instance : Zero ONote :=
   ⟨zero⟩
 
@@ -52,11 +52,11 @@ theorem zero_def : zero = 0 :=
 instance : Inhabited ONote :=
   ⟨0⟩
 
-/-- Notation for 1. -/
+/-- Notation for 1 -/
 instance : One ONote :=
   ⟨oadd 0 1 0⟩
 
-/-- Notation for ω. -/
+/-- Notation for `ω` -/
 def omega : ONote :=
   oadd 1 1 0
 
@@ -71,14 +71,14 @@ private def toString_aux (e : ONote) (n : ℕ) (s : String) : String :=
   if e = 0 then toString n
   else (if e = 1 then "ω" else "ω^(" ++ s ++ ")") ++ if n = 1 then "" else "*" ++ toString n
 
-/-- Print an ordinal notation. -/
+/-- Print an ordinal notation -/
 def toString : ONote → String
   | zero => "0"
   | oadd e n 0 => toString_aux e n (toString e)
   | oadd e n a => toString_aux e n (toString e) ++ " + " ++ toString a
 
 open Lean in
-/-- Print an ordinal notation. -/
+/-- Print an ordinal notation -/
 def repr' (prec : ℕ) : ONote → Format
   | zero => "0"
   | oadd e n a =>
@@ -867,8 +867,8 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
   · have αd : ω ∣ α' :=
       dvd_add (dvd_mul_of_dvd_left (by simpa using opow_dvd_opow ω (one_le_iff_ne_zero.2 e0)) _) d
     rw [mul_add (ω0 ^ (k : Ordinal)), add_assoc, ← mul_assoc, ← opow_succ,
-      add_mul_limit _ (isLimit_iff_omega_dvd.2 ⟨ne_of_gt α0, αd⟩), mul_assoc,
-      @mul_omega0_dvd n (natCast_pos.2 n.pos) (nat_lt_omega _) _ αd]
+      add_mul_limit _ (isLimit_iff_omega0_dvd.2 ⟨ne_of_gt α0, αd⟩), mul_assoc,
+      @mul_omega0_dvd n (natCast_pos.2 n.pos) (nat_lt_omega0 _) _ αd]
     apply add_absorp
     · refine principal_add_omega0_opow _ ?_ Rl
       rw [opow_mul, opow_succ, Ordinal.mul_lt_mul_iff_left ω00]
@@ -1027,7 +1027,7 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
         ⟨isLimit_mul this isLimit_omega0, fun i =>
           ⟨this, ?_, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega0'⟩
       rw [← mul_succ, ← Ordinal.natCast_succ, Ordinal.mul_lt_mul_iff_left this]
-      apply nat_lt_omega
+      apply nat_lt_omega0
     · have := opow_pos (repr a') omega_pos
       refine
         ⟨isLimit_add _ (isLimit_mul this isLimit_omega0), fun i => ⟨this, ?_, ?_⟩,
