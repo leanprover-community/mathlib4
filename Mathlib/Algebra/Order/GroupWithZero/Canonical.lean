@@ -257,18 +257,13 @@ lemma le_of_zpow_le_zpow_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) {m n : ℤ
   contrapose! hmn
   exact zpow_lt_zpow_of_lt_one₀ ha₀ ha₁ hmn
 
-lemma eq_zero_of_zero_pow_eq_one₀ (ha : (0 : α) ^ n = 1) : n = 0 := by
-  induction n with
-  | zero => rfl
-  | succ n _ => simp at ha
-
 lemma eq_zero_of_zero_zpow_eq_one₀ {n : ℤ} (ha : (0 : α) ^ n = 1) : n = 0 := by
   wlog hn : 0 ≤ n
   · rw [← Int.neg_eq_zero]
     apply this (α := α)
     · simpa
     · omega
-  have : n.toNat = 0 := eq_zero_of_zero_pow_eq_one₀ (α := α) <| by
+  have : n.toNat = 0 := eq_zero_of_zero_pow_eq_one₀ (M₀ := α).mp <| by
     rwa [← zpow_natCast, Int.toNat_of_nonneg hn]
   omega
 
