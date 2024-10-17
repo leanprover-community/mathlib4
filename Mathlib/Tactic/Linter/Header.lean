@@ -207,18 +207,32 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
 
 /-- Check the `Syntax` `imports` for broad imports: either `Mathlib.Tactic` or any import
 starting with `Lake`. -/
-def broadImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id.run do
+def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : Array (Syntax × String) := Id.run do
   let mut output := #[]
   for i in imports do
     match i.getId with
     | `Mathlib.Tactic =>
       output := output.push (i, s!"Files in mathlib cannot import the whole tactic folder.")
+    | `Mathlib.Tactic.Replace =>
+      if mainModule != `Mathlib.Tactic then output := output.push (i,
+      s!"Mathlib.Tactic.Replace defines a deprecated form of the 'replace' tactic; \
+      please do not use it in mathlib.")
+    | `Mathlib.Tactic.Have =>
+      if ![`Mathlib.Tactic, `Mathlib.Tactic.Replace].contains mainModule then
+        output := output.push (i,
+          s!"Mathlib.Tactic.Have defines a deprecated form of the 'have' tactic; \
+          please do not use it in mathlib.")
     | modName =>
       if modName.getRoot == `Lake then
       output := output.push (i,
         s!"In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
           (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
           make sure to benchmark it. If this is fine, feel free to allow this linter.")
+      else if (`Mathlib.Deprecated).isPrefixOf modName &&
+          !(`Mathlib.Deprecated).isPrefixOf mainModule then
+        -- We do not complain about files in the `Deprecated` directory importing one another.
+        output := output.push (i, s!"Files in the `Deprecated` directory are not supposed to be imported.")
+
   return output
 
 /--
@@ -277,7 +291,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     parseUpToHere (stx.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
   -- Report on broad imports.
-  for (imp, msg) in broadImportsCheck importIds do
+  for (imp, msg) in broadImportsCheck importIds mainModule do
     Linter.logLint linter.style.header imp msg
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
