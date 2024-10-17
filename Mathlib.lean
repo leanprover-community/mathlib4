@@ -2171,6 +2171,7 @@ import Mathlib.Data.DFinsupp.Notation
 import Mathlib.Data.DFinsupp.Order
 import Mathlib.Data.DFinsupp.WellFounded
 import Mathlib.Data.DList.Instances
+import Mathlib.Data.DigitExpansion.Defs
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.ENNReal.Operations
