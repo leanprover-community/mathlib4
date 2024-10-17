@@ -85,12 +85,6 @@ instance Path.funLike : FunLike (Path x y) I X where
 instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
   map_continuous γ := show Continuous γ.toContinuousMap by fun_prop
 
--- Porting note: not necessary in light of the instance above
-/-
-instance : CoeFun (Path x y) fun _ => I → X :=
-  ⟨fun p => p.toFun⟩
--/
-
 @[ext]
 protected theorem Path.ext : ∀ {γ₁ γ₂ : Path x y}, (γ₁ : I → X) = γ₂ → γ₁ = γ₂ := by
   rintro ⟨⟨x, h11⟩, h12, h13⟩ ⟨⟨x, h21⟩, h22, h23⟩ rfl
