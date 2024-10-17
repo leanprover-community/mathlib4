@@ -1391,7 +1391,7 @@ instance : CharZero Cardinal := by
 @[deprecated Nat.cast_le (since := "2024-10-16")]
 theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := Nat.cast_le
 
-@[deprecated Nat.cast_le (since := "2024-10-16")]
+@[deprecated Nat.cast_lt (since := "2024-10-16")]
 theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := Nat.cast_lt
 
 @[deprecated Nat.cast_inj (since := "2024-10-16")]
