@@ -186,22 +186,16 @@ def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
     · exact Nat.leRecOn_self 1
     · simp [toStepOfLE'.succ k m a h, ih]
   map_mul' x y := by
--- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
---                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_mul]`
     simp only
     induction' h with a h ih
     · simp_rw [toStepOfLE', Nat.leRecOn_self]
     · simp [toStepOfLE'.succ k m a h, ih]
--- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 0`
---                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_zero]`
   map_zero' := by
     simp only
     induction' h with a h ih
     · exact Nat.leRecOn_self 0
     · simp [toStepOfLE'.succ k m a h, ih]
   map_add' x y := by
--- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
---                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_add]`
     simp only
     induction' h with a h ih
     · simp_rw [toStepOfLE', Nat.leRecOn_self]
