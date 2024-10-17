@@ -334,11 +334,11 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
       ↔ ∃ S : Finset (Set α), ↑S ⊆ memPartition t n ∧ s = ⋃₀ S := by
   refine ⟨fun h ↦ ?_, fun ⟨S, hS_subset, hS_eq⟩ ↦ ?_⟩
   · refine MeasurableSpace.generateFrom_induction
-      (p := fun u ↦ ∃ S : Finset (Set α), ↑S ⊆ memPartition t n ∧ u = ⋃₀ ↑S)
-      (C := memPartition t n) ?_ ?_ ?_ ?_ h
-    · exact fun u hu ↦ ⟨{u}, by simp [hu], by simp⟩
+      (p := fun u _ ↦ ∃ S : Finset (Set α), ↑S ⊆ memPartition t n ∧ u = ⋃₀ ↑S)
+      (C := memPartition t n) ?_ ?_ ?_ ?_ _ h
+    · exact fun u hu _ ↦ ⟨{u}, by simp [hu], by simp⟩
     · exact ⟨∅, by simp, by simp⟩
-    · rintro u ⟨S, hS_subset, rfl⟩
+    · rintro u _ ⟨S, hS_subset, rfl⟩
       classical
       refine ⟨(memPartition t n).toFinset \ S, ?_, ?_⟩
       · simp only [Finset.coe_sdiff, coe_toFinset]
@@ -352,7 +352,7 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
         · rw [codisjoint_iff]
           simp only [sup_eq_union, top_eq_univ]
           rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_diff_cancel hS_subset]
-    · intro f h
+    · intro f _ h
       choose S hS_subset hS_eq using h
       have : Fintype (⋃ n, (S n : Set (Set α))) := by
         refine (Finite.subset (finite_memPartition t n) ?_).fintype
