@@ -10,6 +10,7 @@ import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.Algebra.Group.Subgroup.Actions
+import Mathlib.Data.Finite.Basic
 
 /-!
 # Properties of group actions involving quotient groups

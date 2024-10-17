@@ -113,7 +113,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolyn
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
   ext1 n
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  rw [← Function.funext_iff] at h
+  rw [← funext_iff] at h
   replace h :=
     congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
   simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
@@ -123,7 +123,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolyno
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
   ext1 n
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  rw [← Function.funext_iff] at h
+  rw [← funext_iff] at h
   replace h :=
     congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
   simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,

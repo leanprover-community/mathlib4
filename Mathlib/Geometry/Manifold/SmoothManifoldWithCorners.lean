@@ -417,9 +417,9 @@ abbrev ModelWithCorners.tangent {𝕜 : Type u} [NontriviallyNormedField 𝕜] {
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] {G : Type*}
-  [TopologicalSpace G] {G' : Type*} [TopologicalSpace G'] {I : ModelWithCorners 𝕜 E H}
+  [TopologicalSpace G] {I : ModelWithCorners 𝕜 E H}
   {J : ModelWithCorners 𝕜 F G}
 
 @[simp, mfld_simps]

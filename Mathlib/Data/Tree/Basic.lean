@@ -3,7 +3,6 @@ Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
-import Batteries.Data.RBMap.Basic
 import Mathlib.Data.Nat.Notation
 import Mathlib.Tactic.TypeStar
 import Mathlib.Util.CompileInductive
@@ -45,13 +44,6 @@ variable {α : Type u}
 
 instance : Inhabited (Tree α) :=
   ⟨nil⟩
-
-open Batteries (RBNode)
-
-/-- Makes a `Tree α` out of a red-black tree. -/
-def ofRBNode : RBNode α → Tree α
-  | RBNode.nil => nil
-  | RBNode.node _color l key r => node key (ofRBNode l) (ofRBNode r)
 
 /-- Apply a function to each value in the tree.  This is the `map` function for the `Tree` functor.
 -/

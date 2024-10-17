@@ -121,7 +121,6 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
     rcases IsFreeGroup.unique_lift f' with ⟨F', hF', uF'⟩
     refine ⟨uncurry F' ?_, ?_, ?_⟩
     · suffices SemidirectProduct.rightHom.comp F' = MonoidHom.id _ by
-        -- Porting note: `MonoidHom.ext_iff` has been deprecated.
         exact DFunLike.ext_iff.mp this
       apply IsFreeGroup.ext_hom (fun x ↦ ?_)
       rw [MonoidHom.comp_apply, hF']
