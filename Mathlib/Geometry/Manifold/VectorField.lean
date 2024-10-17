@@ -586,6 +586,49 @@ lemma lieBracketWithin_pullbackWithin {f : E → F} {V W : F → F} {x : E} {t :
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
+completeness but requiring that `f` is a local diffeo. Variant where unique differentiability and
+the invariance property are only required in a smaller set `u`. -/
+lemma lieBracketWithin_pullbackWithin_of_eventuallyEq
+    {f : E → F} {V W : F → F} {x : E} {t : Set F} {u : Set E}
+    (hf : ∀ v w, fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v w =
+      fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x w v)
+    (h'f : ContDiffWithinAt 𝕜 2 f s x)
+    (hV : DifferentiableWithinAt 𝕜 V t (f x)) (hW : DifferentiableWithinAt 𝕜 W t (f x))
+    (hu : UniqueDiffOn 𝕜 u) (hx : x ∈ u) (hst : MapsTo f u t) (hus : u =ᶠ[𝓝 x] s) :
+    lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V s) (pullbackWithin 𝕜 f W s) s x =
+      pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) s x := calc
+  lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V s) (pullbackWithin 𝕜 f W s) s x =
+      lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V s) (pullbackWithin 𝕜 f W s) u x :=
+    lieBracketWithin_congr_set hus.symm
+  _ = lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V u) (pullbackWithin 𝕜 f W u) u x := by
+    apply Filter.EventuallyEq.lieBracketWithin_vectorField_eq_of_mem _ _ hx
+    · apply nhdsWithin_le_nhds
+      simp only [pullbackWithin]
+      filter_upwards [fderivWithin_eventually_congr_set (𝕜 := 𝕜) (f := f) hus] with y hy
+      simp [hy]
+    · apply nhdsWithin_le_nhds
+      simp only [pullbackWithin]
+      filter_upwards [fderivWithin_eventually_congr_set (𝕜 := 𝕜) (f := f) hus] with y hy
+      simp [hy]
+  _ = pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) u x := by
+    apply lieBracketWithin_pullbackWithin _ _
+      hV hW hu hx hst
+    · have B : fderivWithin 𝕜 (fderivWithin 𝕜 f u) u x
+          = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x := calc
+        fderivWithin 𝕜 (fderivWithin 𝕜 f u) u x
+          = fderivWithin 𝕜 (fderivWithin 𝕜 f s) u x :=
+            (fderivWithin_eventually_congr_set hus).fderivWithin_eq_nhds
+        _ = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x := fderivWithin_congr_set hus
+      simp [B, hf]
+    · apply h'f.mono_of_mem
+      exact nhdsWithin_le_iff.1 ((nhdsWithin_eq_iff_eventuallyEq.2 hus).le)
+  _ = pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) s x := by
+    simp only [pullbackWithin]
+    congr 2
+    exact fderivWithin_congr_set hus
+
+/-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
+second derivative. Version in a complete space. One could also give a version avoiding
 completeness but requiring that `f` is a local diffeo. -/
 lemma lieBracket_pullback (f : E → F) (V W : F → F) (x : E)
     (hf : ∀ v w, fderiv 𝕜 (fderiv 𝕜 f) x v w = fderiv 𝕜 (fderiv 𝕜 f) x w v)
@@ -1395,35 +1438,31 @@ end
 
 variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] [CompleteSpace E]
 
+
+-- TODO: we have no fderivWithin_comp !!!
+-- because it's called fderivWithin.comp...
+
 /- The Lie bracket of vector fields on manifolds is well defined, i.e., it is invariant under
-diffeomorphisms.
-TODO: write a version localized to sets. -/
-lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) (s : Set M) (t : Set M')
+diffeomorphisms. Auxiliary version where one assumes that all relevant sets are contained
+in chart domains. -/
+lemma key_aux [CompleteSpace E']
+    {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : Set M} {t : Set M'}
     (hV : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) t (f x₀))
     (hW : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (W x : TangentBundle I' M')) t (f x₀))
-    (hu : UniqueMDiffOn I s)
-    (hf : ContMDiffWithinAt I I' 2 f s x₀) (hx₀ : x₀ ∈ s) :
+    (hu : UniqueMDiffOn I s) (hf : ContMDiffOn I I' 2 f s) (hx₀ : x₀ ∈ s)
+    (ht : t ⊆ (extChartAt I' (f x₀)).source) (hst : MapsTo f s t)
+    (hsymm : ∀ (v w : E),
+      fderivWithin 𝕜 (fderivWithin 𝕜 (((extChartAt I' (f x₀)) ∘ f) ∘ ↑(extChartAt I x₀).symm)
+          ((extChartAt I x₀).symm ⁻¹' s ∩ range I))
+          ((extChartAt I x₀).symm ⁻¹' s ∩ range I) (extChartAt I x₀ x₀) v w =
+      fderivWithin 𝕜 (fderivWithin 𝕜 (((extChartAt I' (f x₀)) ∘ f) ∘ ↑(extChartAt I x₀).symm)
+          ((extChartAt I x₀).symm ⁻¹' s ∩ range I))
+          ((extChartAt I x₀).symm ⁻¹' s ∩ range I) (extChartAt I x₀ x₀) w v) :
     mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
       mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
   have A : (extChartAt I x₀).symm (extChartAt I x₀ x₀) = x₀ := by simp
   have A' : x₀ = (extChartAt I x₀).symm (extChartAt I x₀ x₀) := by simp
-  /-
-  by_cases hfi : (mfderivWithin I I' f s x₀).IsInvertible; swap
-  · simp only [mlieBracketWithin_apply, mpullbackWithin_apply,
-      ContinuousLinearMap.inverse_of_not_isInvertible hfi, ContinuousLinearMap.zero_apply]
-    rw [lieBracketWithin_eq_zero_of_eq_zero]
-    · simp [-extChartAt]
-    · simp only [mpullbackWithin_apply]
-      rw [A, ContinuousLinearMap.inverse_of_not_isInvertible hfi]
-      simp [-extChartAt]
-    · simp only [mpullbackWithin_apply]
-      rw [A, ContinuousLinearMap.inverse_of_not_isInvertible hfi]
-      simp [-extChartAt]
-  -/
-  -- Now, interesting case where the derivative of `f` is invertible
-  have : CompleteSpace E' := sorry -- use invertibility of derivative of `f` to get
-  -- a linear equiv between `E` and `E'`.
-  have h'f : MDifferentiableWithinAt I I' f s x₀ := hf.mdifferentiableWithinAt one_le_two
+  have h'f : MDifferentiableWithinAt I I' f s x₀ := (hf x₀ hx₀).mdifferentiableWithinAt one_le_two
   simp only [mlieBracketWithin_apply, mpullbackWithin_apply]
   -- first, rewrite the pullback of the Lie bracket as a pullback in `E` under the map
   -- `F = extChartAt I' (f x₀) ∘ f ∘ (extChartAt I x₀).symm` of a Lie bracket computed in `E'`,
@@ -1461,23 +1500,65 @@ lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) (s : 
   rw [hFx₀, ← mpullbackWithin_apply]
   -- second rewrite, the Lie bracket of the pullback as the Lie bracket of the pullback of the
   -- vector fields `V'` and `W'` in `E'`.
-  have P1 : (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm (mpullbackWithin I I' f V s)
-    (range I)) =ᶠ[𝓝[(extChartAt I x₀).symm ⁻¹' s ∩ range I]
-      (extChartAt I x₀ x₀)] mpullbackWithin 𝓘(𝕜, E) 𝓘(𝕜, E') F V'
-        ((extChartAt I x₀).symm ⁻¹' s ∩ range I) := sorry
-  have P2 : (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm (mpullbackWithin I I' f W s)
-    (range I)) =ᶠ[𝓝[(extChartAt I x₀).symm ⁻¹' s ∩ range I]
-      (extChartAt I x₀ x₀)] mpullbackWithin 𝓘(𝕜, E) 𝓘(𝕜, E') F W'
-        ((extChartAt I x₀).symm ⁻¹' s ∩ range I) := sorry
-  rw [Filter.EventuallyEq.lieBracketWithin_vectorField_eq_of_mem P1 P2 (by simp [hx₀])]
+  have P (Y : (x : M') → TangentSpace I' x) :
+      (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm (mpullbackWithin I I' f Y s)
+      (range I)) =ᶠ[𝓝[(extChartAt I x₀).symm ⁻¹' s ∩ range I] (extChartAt I x₀ x₀)]
+        mpullbackWithin 𝓘(𝕜, E) 𝓘(𝕜, E') F
+          (mpullbackWithin 𝓘(𝕜, E') I' ((extChartAt I' (f x₀)).symm) Y (range I'))
+          ((extChartAt I x₀).symm ⁻¹' s ∩ range I) := by
+    have : (extChartAt I x₀).target
+        ∈ 𝓝[(extChartAt I x₀).symm ⁻¹' s ∩ range I] (extChartAt I x₀ x₀) :=
+      nhdsWithin_mono _ inter_subset_right (extChartAt_target_mem_nhdsWithin I x₀)
+    filter_upwards [self_mem_nhdsWithin, this] with y hy h'''y
+    have h'y : f ((extChartAt I x₀).symm y) ∈ (extChartAt I' (f x₀)).source := ht (hst hy.1)
+    have h''y : f ((extChartAt I x₀).symm y) ∈ (chartAt H' (f x₀)).source := by simpa using h'y
+    have huy : UniqueMDiffWithinAt 𝓘(𝕜, E) ((extChartAt I x₀).symm ⁻¹' s ∩ range I) y := by
+      apply UniqueDiffWithinAt.uniqueMDiffWithinAt
+      rw [inter_comm]
+      apply hu.uniqueDiffWithinAt_range_inter
+      exact ⟨h'''y, hy.1⟩
+    simp only [mpullbackWithin_apply, hF, comp_apply, ← mfderivWithin_eq_fderivWithin]
+    rw [mfderivWithin_comp (I' := I) (u := s)]; rotate_left
+    · apply (mdifferentiableAt_extChartAt h''y).comp_mdifferentiableWithinAt (I' := I')
+      exact (hf _ hy.1).mdifferentiableWithinAt one_le_two
+    · exact (mdifferentiableWithinAt_extChartAt_symm h'''y).mono inter_subset_right
+    · exact inter_subset_left
+    · exact huy
+    rw [mfderiv_comp_mfderivWithin (I' := I')]; rotate_left
+    · exact mdifferentiableAt_extChartAt h''y
+    · exact (hf _ hy.1).mdifferentiableWithinAt one_le_two
+    · exact hu _ hy.1
+    rw [← ContinuousLinearMap.IsInvertible.inverse_comp_apply_of_right]; swap
+    · exact isInvertible_mfderivWithin_extChartAt_symm h'''y
+    rw [← ContinuousLinearMap.IsInvertible.inverse_comp_apply_of_left]; swap
+    · exact isInvertible_mfderivWithin_extChartAt_symm (PartialEquiv.map_source _ h'y)
+    have : f ((extChartAt I x₀).symm y)
+        = (extChartAt I' (f x₀)).symm ((extChartAt I' (f x₀)) (f ((extChartAt I x₀).symm y))) :=
+      (PartialEquiv.left_inv (extChartAt I' (f x₀)) h'y).symm
+    congr 2
+    have : (mfderivWithin 𝓘(𝕜, E') I' ((extChartAt I' (f x₀)).symm) (range I')
+        (extChartAt I' (f x₀) (f ((extChartAt I x₀).symm y)))) ∘L
+        (mfderiv I' 𝓘(𝕜, E') (↑(extChartAt I' (f x₀))) (f ((extChartAt I x₀).symm y))) =
+        ContinuousLinearMap.id _ _ := by
+      convert mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
+        ((PartialEquiv.map_source _ h'y))
+    simp only [← ContinuousLinearMap.comp_assoc, this, ContinuousLinearMap.id_comp]
+    congr 1
+    exact ((mdifferentiableWithinAt_extChartAt_symm h'''y).mfderivWithin_mono huy
+      inter_subset_right).symm
+  rw [Filter.EventuallyEq.lieBracketWithin_vectorField_eq_of_mem (P V) (P W) (by simp [hx₀]),
+    ← hV', ← hW']
   simp only [mpullbackWithin_eq_pullbackWithin]
-  rw [lieBracketWithin_pullbackWithin]
-  · sorry -- second derivative is symmetric
+  -- finally, use the fact that for `C^2` maps between vector spaces with symmetric second
+  -- derivative, the pullback and the Lie bracket commute.
+  rw [lieBracketWithin_pullbackWithin_of_eventuallyEq
+      (u := (extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target)]
+  · exact hsymm
   · rw [hF, comp_assoc]
     apply ContMDiffWithinAt.contDiffWithinAt
     apply ContMDiffAt.comp_contMDiffWithinAt (I' := I')
     · exact contMDiffAt_extChartAt' (by simp)
-    apply ContMDiffWithinAt.comp_of_eq (I' := I) hf _ _ A
+    apply ContMDiffWithinAt.comp_of_eq (I' := I) (hf _ hx₀) _ _ A
     · exact (contMDiffWithinAt_extChartAt_symm_range _ (mem_extChartAt_target I x₀)).mono
         inter_subset_right
     · exact (mapsTo_preimage _ _).mono_left inter_subset_left
@@ -1485,23 +1566,57 @@ lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) (s : 
     exact hV.differentiableWithinAt_mpullbackWithin_vectorField
   · rw [← hFx₀]
     exact hW.differentiableWithinAt_mpullbackWithin_vectorField
-  · sorry -- uniqueDiffOn on relevant set. Not true, need to adapt lemma to require this only on
-    -- a neighborhood of the base point
+  · rw [inter_comm]
+    exact UniqueMDiffOn.uniqueDiffOn_target_inter hu x₀
   · simp [hx₀]
-  · sorry -- mapsTo property, not true, instead require that the preimage is a neighborhood within
-    -- of the original point
+  · intro z hz
+    simp only [comp_apply, mem_inter_iff, mem_preimage, mem_range, F]
+    refine ⟨?_, mem_range_self _⟩
+    convert hst hz.1
+    exact PartialEquiv.left_inv (extChartAt I' (f x₀)) (ht (hst hz.1))
+  · rw [← nhdsWithin_eq_iff_eventuallyEq]
+    apply le_antisymm
+    · exact nhdsWithin_mono _ (inter_subset_inter_right _ (extChartAt_target_subset_range I x₀))
+    · rw [nhdsWithin_le_iff, nhdsWithin_inter]
+      exact Filter.inter_mem_inf self_mem_nhdsWithin (extChartAt_target_mem_nhdsWithin I x₀)
 
+/- The Lie bracket of vector fields on manifolds is well defined, i.e., it is invariant under
+diffeomorphisms. -/
+lemma key {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : Set M} {t : Set M'}
+    (hV : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) t (f x₀))
+    (hW : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (W x : TangentBundle I' M')) t (f x₀))
+    (hu : UniqueMDiffOn I s) (hf : ContMDiffWithinAt I I' 2 f s x₀) (hx₀ : x₀ ∈ s)
+    (hst : MapsTo f s t)
+    (hsymm : ∀ (v w : E),
+      fderivWithin 𝕜 (fderivWithin 𝕜 (((extChartAt I' (f x₀)) ∘ f) ∘ ↑(extChartAt I x₀).symm)
+          ((extChartAt I x₀).symm ⁻¹' s ∩ range I))
+          ((extChartAt I x₀).symm ⁻¹' s ∩ range I) (extChartAt I x₀ x₀) v w =
+      fderivWithin 𝕜 (fderivWithin 𝕜 (((extChartAt I' (f x₀)) ∘ f) ∘ ↑(extChartAt I x₀).symm)
+          ((extChartAt I x₀).symm ⁻¹' s ∩ range I))
+          ((extChartAt I x₀).symm ⁻¹' s ∩ range I) (extChartAt I x₀ x₀) w v) :
+    mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
+      mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
+  have A : (extChartAt I x₀).symm (extChartAt I x₀ x₀) = x₀ := by simp
+  have A' : x₀ = (extChartAt I x₀).symm (extChartAt I x₀ x₀) := by simp
+  by_cases hfi : (mfderivWithin I I' f s x₀).IsInvertible; swap
+  · simp only [mlieBracketWithin_apply, mpullbackWithin_apply,
+      ContinuousLinearMap.inverse_of_not_isInvertible hfi, ContinuousLinearMap.zero_apply]
+    rw [lieBracketWithin_eq_zero_of_eq_zero]
+    · simp [-extChartAt]
+    · simp only [mpullbackWithin_apply]
+      rw [A, ContinuousLinearMap.inverse_of_not_isInvertible hfi]
+      simp [-extChartAt]
+    · simp only [mpullbackWithin_apply]
+      rw [A, ContinuousLinearMap.inverse_of_not_isInvertible hfi]
+      simp [-extChartAt]
+  -- Now, interesting case where the derivative of `f` is invertible
+  have : CompleteSpace E' := by
+    rcases hfi with ⟨M, hM⟩
+    let M' : E ≃L[𝕜] E' := M
+    apply (completeSpace_congr (e := M') _).1
 
-
-
-
-
-
-#exit
-
-
-
-
+   -- use invertibility of derivative of `f` to get
+  -- a linear equiv between `E` and `E'`.
 
 
 
