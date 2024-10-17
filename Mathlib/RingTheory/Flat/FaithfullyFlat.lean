@@ -238,24 +238,14 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
       intro i hi
       ext
       exact Submodule.mem_span_singleton.1 (b hi).2 |>.choose_spec.symm
-    -- Since `x ∈ E ⊗ M`, we write `x = ∑ μᵢ • (l23 (l12 n1)) ⊗ mᵢ = ∑ μᵢ • 0 = 0`
-    -- (remember `E = span {l23 (l12 n1)}`)
-    simp only [Finsupp.sum]
-    calc ∑ x ∈ c.support, c x • x
-      _ = ∑ i ∈ c.support.attach, c i.1 • i.1 := by rw [← Finset.sum_attach]
-      _ = ∑ i ∈ c.support.attach, c i.1 • (b i.2 ⊗ₜ a i.2) :=
-        Finset.sum_congr rfl fun i _ => by rw [hy i.2]
-      _ = ∑ i ∈ c.support.attach,
-          (c i.1 • ((r i.2) • ⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩)) ⊗ₜ a i.2 :=
-        Finset.sum_congr rfl fun i _ => by simp only [smul_tmul, tmul_smul, ← hr]
-      _ = ∑ i ∈ c.support.attach, 0 :=
-        Finset.sum_congr rfl fun r _ => by
-          apply_fun (LinearMap.rTensor (M := M) E.subtype) using
-            (Module.Flat.rTensor_preserves_injective_linearMap (M := M) E.subtype <|
-              Submodule.injective_subtype E)
-          simp only [SetLike.mk_smul_mk, LinearMap.rTensor_tmul, Submodule.coe_subtype, map_zero,
-            ← smul_tmul', eq1, smul_zero]
-    exact Finset.sum_const_zero
+    -- Since `x ∈ E ⊗ M`, since `M` is flat and `E -> N1` is injective, we only need to check the
+    -- equality in `N1 ⊗ M`. we write `x = ∑ μᵢ • (l23 (l12 n1)) ⊗ mᵢ = ∑ μᵢ • 0 = 0`
+    -- (remember `E = span {l23 (l12 n1)}` and `eq1`)
+    refine Finset.sum_eq_zero fun i hi => show c i • i = 0 from
+      (Module.Flat.rTensor_preserves_injective_linearMap (M := M) E.subtype <|
+              Submodule.injective_subtype E) ?_
+    rw [← hy hi, hr hi, smul_tmul, map_smul, LinearMap.rTensor_tmul, Submodule.subtype_apply, eq1,
+      smul_zero, map_zero]
   have : Subsingleton (E ⊗[R] M) := subsingleton_iff_forall_eq 0 |>.2 fun x =>
     show x ∈ (⊥ : Submodule R _) from eq0 ▸ ⟨⟩
 
