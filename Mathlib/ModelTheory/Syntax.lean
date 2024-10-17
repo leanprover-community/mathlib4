@@ -365,11 +365,21 @@ protected def ex (φ : L.BoundedFormula α (n + 1)) : L.BoundedFormula α n :=
 instance : Top (L.BoundedFormula α n) :=
   ⟨BoundedFormula.not ⊥⟩
 
+/-- The conjunction of two bounded formulas is also a bounded formula. -/
+@[match_pattern]
+protected def inf (φ ψ : L.BoundedFormula α n) : L.BoundedFormula α n :=
+  (φ.imp ψ.not).not
+
 instance : Inf (L.BoundedFormula α n) :=
-  ⟨fun f g => (f.imp g.not).not⟩
+  ⟨fun f g => f.inf g⟩
+
+/-- The disjunction of two bounded formulas is also a bounded formula. -/
+@[match_pattern]
+protected def sup (φ ψ : L.BoundedFormula α n) : L.BoundedFormula α n :=
+  φ.not.imp ψ
 
 instance : Sup (L.BoundedFormula α n) :=
-  ⟨fun f g => f.not.imp g⟩
+  ⟨fun f g => f.sup g⟩
 
 /-- The biimplication between two bounded formulas. -/
 protected def iff (φ ψ : L.BoundedFormula α n) :=

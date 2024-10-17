@@ -236,6 +236,10 @@ theorem realize_bot : (⊥ : L.BoundedFormula α l).Realize v xs ↔ False :=
   Iff.rfl
 
 @[simp]
+theorem realize_falsum : (falsum : L.BoundedFormula α l).Realize v xs ↔ False :=
+  Iff.rfl
+
+@[simp]
 theorem realize_not : φ.not.Realize v xs ↔ ¬φ.Realize v xs :=
   Iff.rfl
 
