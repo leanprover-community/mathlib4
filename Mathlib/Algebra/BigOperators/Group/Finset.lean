@@ -539,15 +539,18 @@ theorem prod_biUnion [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
     (hs : Set.PairwiseDisjoint (↑s) t) : ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
   rw [← disjiUnion_eq_biUnion _ _ hs, prod_disjiUnion]
 
-/-- Product over a sigma type equals the product of fiberwise products. For rewriting
+/-- The product over a sigma type equals the product of the fiberwise products. For rewriting
 in the reverse direction, use `Finset.prod_sigma'`. -/
-@[to_additive "Sum over a sigma type equals the sum of fiberwise sums. For rewriting
+@[to_additive "The sum over a sigma type equals the sum of the fiberwise sums. For rewriting
 in the reverse direction, use `Finset.sum_sigma'`"]
 theorem prod_sigma {σ : α → Type*} (s : Finset α) (t : ∀ a, Finset (σ a)) (f : Sigma σ → β) :
     ∏ x ∈ s.sigma t, f x = ∏ a ∈ s, ∏ s ∈ t a, f ⟨a, s⟩ := by
   simp_rw [← disjiUnion_map_sigma_mk, prod_disjiUnion, prod_map, Function.Embedding.sigmaMk_apply]
 
-@[to_additive]
+/-- The product over a sigma type equals the product of the fiberwise products. For rewriting
+in the reverse direction, use `Finset.prod_sigma`. -/
+@[to_additive "The sum over a sigma type equals the sum of the fiberwise sums. For rewriting
+in the reverse direction, use `Finset.sum_sigma`"]
 theorem prod_sigma' {σ : α → Type*} (s : Finset α) (t : ∀ a, Finset (σ a)) (f : ∀ a, σ a → β) :
     (∏ a ∈ s, ∏ s ∈ t a, f a s) = ∏ x ∈ s.sigma t, f x.1 x.2 :=
   Eq.symm <| prod_sigma s t fun x => f x.1 x.2
@@ -775,13 +778,18 @@ lemma prod_mul_prod_comm (f g h i : α → β) :
     (∏ a ∈ s, f a * g a) * ∏ a ∈ s, h a * i a = (∏ a ∈ s, f a * h a) * ∏ a ∈ s, g a * i a := by
   simp_rw [prod_mul_distrib, mul_mul_mul_comm]
 
-@[to_additive]
+/-- The product over a product set equals the product of the fiberwise products. For rewriting
+in the reverse direction, use `Finset.prod_product'`. -/
+@[to_additive "The sum over a product set equals the sum of the fiberwise sums. For rewriting
+in the reverse direction, use `Finset.sum_product'`"]
 theorem prod_product (s : Finset γ) (t : Finset α) (f : γ × α → β) :
     ∏ x ∈ s ×ˢ t, f x = ∏ x ∈ s, ∏ y ∈ t, f (x, y) :=
   prod_finset_product (s ×ˢ t) s (fun _a => t) fun _p => mem_product
 
-/-- An uncurried version of `Finset.prod_product`. -/
-@[to_additive "An uncurried version of `Finset.sum_product`"]
+/-- The product over a product set equals the product of the fiberwise products. For rewriting
+in the reverse direction, use `Finset.prod_product`. -/
+@[to_additive "The sum over a product set equals the sum of the fiberwise sums. For rewriting
+in the reverse direction, use `Finset.sum_product`"]
 theorem prod_product' (s : Finset γ) (t : Finset α) (f : γ → α → β) :
     ∏ x ∈ s ×ˢ t, f x.1 x.2 = ∏ x ∈ s, ∏ y ∈ t, f x y :=
   prod_product ..
@@ -1470,6 +1478,11 @@ theorem sum_range_tsub [AddCommMonoid α] [PartialOrder α] [Sub α] [OrderedSub
     have h₂ : f 0 ≤ f n := h (Nat.zero_le _)
     rw [tsub_add_eq_add_tsub h₂, add_tsub_cancel_of_le h₁]
 
+theorem sum_tsub_distrib [AddCommMonoid α] [PartialOrder α] [ExistsAddOfLE α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] [Sub α]
+    [OrderedSub α] (s : Finset ι) {f g : ι → α} (hfg : ∀ x ∈ s, g x ≤ f x) :
+    ∑ x ∈ s, (f x - g x) = ∑ x ∈ s, f x - ∑ x ∈ s, g x := sum_map_tsub _ hfg
+
 @[to_additive (attr := simp)]
 theorem prod_const (b : β) : ∏ _x ∈ s, b = b ^ s.card :=
   (congr_arg _ <| s.val.map_const b).trans <| Multiset.prod_replicate s.card b
@@ -1768,7 +1781,7 @@ lemma prod_sdiff_ne_prod_sdiff_iff :
 
 end CancelCommMonoid
 
-theorem card_eq_sum_ones (s : Finset α) : s.card = ∑ x ∈ s, 1 := by simp
+theorem card_eq_sum_ones (s : Finset α) : s.card = ∑ _ ∈ s, 1 := by simp
 
 theorem sum_const_nat {m : ℕ} {f : α → ℕ} (h₁ : ∀ x ∈ s, f x = m) :
     ∑ x ∈ s, f x = card s * m := by
@@ -1852,7 +1865,7 @@ theorem card_biUnion [DecidableEq β] {s : Finset α} {t : α → Finset β}
     (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → Disjoint (t x) (t y)) :
     (s.biUnion t).card = ∑ u ∈ s, card (t u) :=
   calc
-    (s.biUnion t).card = ∑ i ∈ s.biUnion t, 1 := card_eq_sum_ones _
+    (s.biUnion t).card = ∑ _ ∈ s.biUnion t, 1 := card_eq_sum_ones _
     _ = ∑ a ∈ s, ∑ _i ∈ t a, 1 := Finset.sum_biUnion h
     _ = ∑ u ∈ s, card (t u) := by simp_rw [card_eq_sum_ones]
 
@@ -1999,6 +2012,10 @@ lemma prod_ite_eq_ite_exists (p : ι → Prop) [DecidablePred p] (h : ∀ i j, p
   simp [prod_ite_one univ p (by simpa using h)]
 
 variable [DecidableEq ι]
+
+@[to_additive]
+lemma prod_ite_mem (s : Finset ι) (f : ι → α) : ∏ i, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i := by
+  simp
 
 /-- See also `Finset.prod_dite_eq`. -/
 @[to_additive "See also `Finset.sum_dite_eq`."] lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → α) :
@@ -2245,9 +2262,6 @@ theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
   rfl
 
 end AddCommMonoid
-
-@[deprecated (since := "2023-12-23")] alias Equiv.prod_comp' := Fintype.prod_equiv
-@[deprecated (since := "2023-12-23")] alias Equiv.sum_comp' := Fintype.sum_equiv
 
 theorem Finset.sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
     (s : Finset ι) (p : Sym2 ι → α) :

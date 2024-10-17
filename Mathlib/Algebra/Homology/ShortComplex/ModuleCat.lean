@@ -33,7 +33,7 @@ linear maps `f` and `g` and the vanishing of their composition. -/
 def moduleCatMk {X₁ X₂ X₃ : Type v} [AddCommGroup X₁] [AddCommGroup X₂] [AddCommGroup X₃]
     [Module R X₁] [Module R X₂] [Module R X₃] (f : X₁ →ₗ[R] X₂) (g : X₂ →ₗ[R] X₃)
     (hfg : g.comp f = 0) : ShortComplex (ModuleCat.{v} R) :=
-  ShortComplex.mk (ModuleCat.ofHom f) (ModuleCat.ofHom g) hfg
+  ShortComplex.mk (ModuleCat.asHom f) (ModuleCat.asHom g) hfg
 
 variable (S : ShortComplex (ModuleCat.{v} R))
 
@@ -138,7 +138,7 @@ def moduleCatLeftHomologyData : S.LeftHomologyData where
     erw [Submodule.Quotient.mk_eq_zero]
     rw [LinearMap.mem_range]
     apply exists_apply_eq_apply
-  hπ := ModuleCat.cokernelIsColimit (ModuleCat.ofHom S.moduleCatToCycles)
+  hπ := ModuleCat.cokernelIsColimit (ModuleCat.asHom S.moduleCatToCycles)
 
 @[simp]
 lemma moduleCatLeftHomologyData_f' :
