@@ -4,13 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
 
-import Mathlib.RingTheory.Flat.Stability
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.RingTheory.Flat.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Quotient
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.RingTheory.Finiteness
-import Mathlib.Algebra.Module.Defs
 
 /-!
 # Faithfully flat modules
@@ -30,19 +25,6 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
   is flat and tensoring with `M` is faithful, i.e. `N ≠ 0` implies `N ⊗ M ≠ 0`.
 - `Module.FaithfullyFlat.iff_flat_and_lTensor_faithful`: an `R`-module `M` is faithfully flat iff it
   is flat and tensoring with `M` is faithful, i.e. `N ≠ 0` implies `M ⊗ N ≠ 0`.
-- `Module.FaithfullyFlat.iff_iff_rTensor_exact`: an `R`-module `M` is faithfully flat iff tensoring
-  with `M` preserves and reflects exact sequences, i.e. the sequence `N₁ → N₂ → N₃` is exact *iff*
-  the sequence `N₁ ⊗ M → N₂ ⊗ M → N₃ ⊗ M` is exact.
-- `Module.FaithfullyFlat.iff_iff_lTensor_exact`: an `R`-module `M` is faithfully flat iff tensoring
-  with `M` preserves and reflects exact sequences, i.e. the sequence `N₁ → N₂ → N₃` is exact *iff*
-  the sequence `M ⊗ N₁ → M ⊗ N₂ → M ⊗ N₃` is exact.
-- `Module.FaithfullyFlat.iff_zero_iff_lTensor_zero`: an `R`-module `M` is faithfully flat iff for
-  all linear maps `f : N → N'`, `f = 0` iff `M ⊗ f = 0`.
-- `Module.FaithfullyFlat.iff_zero_iff_rTensor_zero`: an `R`-module `M` is faithfully flat iff for
-  all linear maps `f : N → N'`, `f = 0` iff `f ⊗ M = 0`.
-- `Module.FaithfullyFlat.of_linearEquiv`: modules linearly equivalent to a flat modules are flat
-- `Module.FaithfullyFlat.comp`: if `S` is `R`-faithfully flat and `M` is `S`-faithfully flat, then
-  `M` is `R`-faithfully flat.
 
 - `Module.FaithfullyFlat.self`: the `R`-module `R` is faithfully flat.
 
@@ -61,12 +43,9 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and,
 for all `R`-module homomorphism `f : N → N'` such that `id ⊗ f = 0`, we have `f = 0`.
 -/
 @[mk_iff] class FaithfullyFlat extends Module.Flat R M : Prop where
-  submodule_ne_top :  ∀ ⦃m : Ideal R⦄ (_ : Ideal.IsMaximal m), m • (⊤ : Submodule R M) ≠ ⊤
+  submodule_ne_top : ∀ ⦃m : Ideal R⦄ (_ : Ideal.IsMaximal m), m • (⊤ : Submodule R M) ≠ ⊤
 
 namespace FaithfullyFlat
-
-attribute [instance] FaithfullyFlat.toFlat
-
 instance self : FaithfullyFlat R R where
   submodule_ne_top m h r := Ideal.eq_top_iff_one _ |>.not.1 h.ne_top <| by
     simpa using show 1 ∈ (m • ⊤ : Ideal R) from r.symm ▸ ⟨⟩
@@ -102,8 +81,7 @@ instance rTensor_nontrivial
   let inc : R ⧸ I →ₗ[R] N := Submodule.liftQ _ ((LinearMap.lsmul R N).flip n) <| fun r hr => by
     simpa only [LinearMap.mem_ker, LinearMap.flip_apply, LinearMap.lsmul_apply,
       Submodule.mem_annihilator_span_singleton, I] using hr
-  have injective_inc : Function.Injective inc := by
-    rw [← LinearMap.ker_eq_bot, eq_bot_iff]
+  have injective_inc : Function.Injective inc := LinearMap.ker_eq_bot.1 <| eq_bot_iff.2 <| by
     intro r hr
     induction r using Quotient.inductionOn' with | h r =>
     simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.mem_bot, Submodule.Quotient.mk_eq_zero,
@@ -111,19 +89,30 @@ instance rTensor_nontrivial
       LinearMap.flip_apply, LinearMap.lsmul_apply, I, inc] using hr
   have ne_top := iff_flat_and_proper_ideal R M |>.1 fl |>.2 I I_ne_top
   refine subsingleton_or_nontrivial _ |>.resolve_left fun rid => ?_
-  have : Function.Injective
-    (LinearMap.rTensor M inc ∘ₗ (quotTensorEquivQuotSMul M I).symm.toLinearMap) :=
+  exact False.elim <| ne_top <| Submodule.subsingleton_quotient_iff_eq_top.1 <|
     Function.Injective.comp (g := LinearMap.rTensor M inc)
-      (Module.Flat.rTensor_preserves_injective_linearMap (h := fl.toFlat) inc injective_inc)
-      ((quotTensorEquivQuotSMul M I).symm.injective)
-  have := this.subsingleton
-  rw [Submodule.subsingleton_quotient_iff_eq_top] at this
-  contradiction
+      (fl.toFlat.rTensor_preserves_injective_linearMap inc injective_inc)
+      ((quotTensorEquivQuotSMul M I).symm.injective) |>.subsingleton
 
 instance lTensor_nontrivial
     [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
     Nontrivial (M ⊗[R] N) :=
   TensorProduct.comm R M N |>.toEquiv.nontrivial
+
+lemma rTensor_reflects_triviality
+    [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
+    [h : Subsingleton (N ⊗[R] M)] : Subsingleton N := by
+  revert h; change _ → _; contrapose
+  simp only [not_subsingleton_iff_nontrivial]
+  intro h
+  infer_instance
+
+lemma lTensor_reflects_triviality
+    [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
+    [Subsingleton (M ⊗[R] N)] :
+    Subsingleton N := by
+  haveI : Subsingleton (N ⊗[R] M) := (TensorProduct.comm R N M).toEquiv.injective.subsingleton
+  apply rTensor_reflects_triviality R M
 
 attribute [-simp] Ideal.Quotient.mk_eq_mk in
 lemma iff_flat_and_rTensor_faithful :
@@ -343,7 +332,6 @@ lemma iff_iff_lTensor_exact :
     iff_iff_eq.1 <| iff_congr (by rfl) (Function.Exact.iff_of_ladder_linearEquiv
       (e₁ := TensorProduct.comm _ _ _) (e₂ := TensorProduct.comm _ _ _)
       (e₃ := TensorProduct.comm _ _ _) (by ext; simp) (by ext; simp))
-
 
 end complex
 
