@@ -132,6 +132,11 @@ protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
 
 instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
+@[simp] lemma mk_id {α} : mk id injective_id = .refl α := rfl
+
+@[simp] lemma mk_trans_mk {α β γ} (f : α → β) (g : β → γ) (hf hg) :
+    (mk f hf).trans (mk g hg) = mk (g ∘ f) (hg.comp hf) := rfl
+
 @[simp]
 theorem equiv_toEmbedding_trans_symm_toEmbedding {α β : Sort*} (e : α ≃ β) :
     e.toEmbedding.trans e.symm.toEmbedding = Embedding.refl _ := by
