@@ -466,6 +466,105 @@ _root_.measurable_of_tendsto_nnreal := NNReal.measurable_of_tendsto
 
 end NNReal
 
+namespace EReal
+
+lemma lowerSemicontinuous_add : LowerSemicontinuous fun (p : EReal × EReal) ↦ p.1 + p.2 := by
+  intro x
+  by_cases hx1_bot : x.1 = ⊥
+  · intro y
+    simp [hx1_bot]
+  by_cases hx2_bot : x.2 = ⊥
+  · intro y
+    simp [hx2_bot]
+  exact EReal.continuousAt_add (Or.inr hx2_bot) (Or.inl hx1_bot) |>.lowerSemicontinuousAt
+
+instance : MeasurableAdd₂ EReal := ⟨EReal.lowerSemicontinuous_add.measurable⟩
+
+section MeasurableMul
+
+variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+
+lemma measurable_of_measurable_real_prod {f : EReal × β → γ}
+    (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))
+    (h_bot : Measurable fun x ↦ f (⊥, x)) (h_top : Measurable fun x ↦ f (⊤, x)) :
+    Measurable f := by
+  have : (univ : Set (EReal × β)) = ({⊥, ⊤} ×ˢ univ) ∪ ({⊥, ⊤}ᶜ ×ˢ univ) := by
+    ext x
+    simp only [mem_univ, mem_union, mem_prod, mem_insert_iff, mem_singleton_iff, and_true,
+      mem_compl_iff, not_or, true_iff]
+    tauto
+  refine measurable_of_measurable_union_cover ({⊥, ⊤} ×ˢ univ)
+    ({⊥, ⊤}ᶜ ×ˢ univ) ?_ ?_ ?_ ?_ ?_
+  · refine MeasurableSet.prod ?_ MeasurableSet.univ
+    simp only [measurableSet_insert, MeasurableSet.singleton]
+  · exact (measurableSet_insert.mpr (measurableSet_singleton ⊤)).compl.prod MeasurableSet.univ
+  · rw [this]
+  · let e : ({⊥, ⊤} ×ˢ univ : Set (EReal × β)) ≃ᵐ ({⊥, ⊤} : Set EReal) × β :=
+      (MeasurableEquiv.Set.prod ({⊥, ⊤} : Set EReal) (univ : Set β)).trans
+        ((MeasurableEquiv.refl _).prodCongr (MeasurableEquiv.Set.univ β))
+    have : ((fun (a : ({⊥, ⊤} : Set EReal) × β) ↦ f (a.1, a.2)) ∘ e)
+        = fun (a : ({⊥, ⊤} ×ˢ univ : Set (EReal × β))) ↦ f a := rfl
+    refine this ▸ (measurable_from_prod_countable'' fun y ↦ ?_).comp e.measurable
+    dsimp only
+    have h' := y.2
+    simp only [mem_insert_iff, mem_singleton_iff, bot_ne_top, or_false, top_ne_bot, or_true] at h'
+    cases h' with
+    | inl h => rwa [h]
+    | inr h => rwa [h]
+  · let e : ({⊥, ⊤}ᶜ ×ˢ univ : Set (EReal × β)) ≃ᵐ ℝ × β :=
+      (MeasurableEquiv.Set.prod ({⊥, ⊤}ᶜ : Set EReal) (univ : Set β)).trans
+        (MeasurableEquiv.prodCongr MeasurableEquiv.erealEquivReal (MeasurableEquiv.Set.univ β))
+    rwa [← MeasurableEquiv.measurable_comp_iff e.symm]
+
+lemma measurable_of_measurable_real_real {f : EReal × EReal → β}
+    (h_real : Measurable fun p : ℝ × ℝ ↦ f (p.1, p.2))
+    (h_bot_left : Measurable fun r : ℝ ↦ f (⊥, r))
+    (h_top_left : Measurable fun r : ℝ ↦ f (⊤, r))
+    (h_bot_right : Measurable fun r : ℝ ↦ f (r, ⊥))
+    (h_top_right : Measurable fun r : ℝ ↦ f (r, ⊤)) :
+    Measurable f := by
+  refine measurable_of_measurable_real_prod ?_ ?_ ?_
+  · refine measurable_swap_iff.mp <| measurable_of_measurable_real_prod ?_ h_bot_right h_top_right
+    exact h_real.comp measurable_swap
+  · exact measurable_of_measurable_real h_bot_left
+  · exact measurable_of_measurable_real h_top_left
+
+private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ c * x := by
+  refine measurable_of_measurable_real ?_
+  have h1 : (fun (p : ℝ) ↦ (⊥ : EReal) * p)
+      = fun p ↦ if p = 0 then (0 : EReal) else (if p < 0 then ⊤ else ⊥) := by
+    ext p
+    split_ifs with h1 h2
+    · simp [h1]
+    · rw [bot_mul_coe_of_neg h2]
+    · rw [bot_mul_coe_of_pos]
+      exact lt_of_le_of_ne (not_lt.mp h2) (Ne.symm h1)
+  have h2 : Measurable fun (p : ℝ) ↦ if p = 0 then (0 : EReal) else if p < 0 then ⊤ else ⊥ := by
+    refine Measurable.piecewise (measurableSet_singleton _) measurable_const ?_
+    exact Measurable.piecewise measurableSet_Iio measurable_const measurable_const
+  induction c with
+  | h_bot => rwa [h1]
+  | h_real c => exact (measurable_id.const_mul _).coe_real_ereal
+  | h_top =>
+    simp_rw [← neg_bot, neg_mul]
+    apply Measurable.neg
+    rwa [h1]
+
+instance : MeasurableMul₂ EReal := by
+  refine ⟨measurable_of_measurable_real_real ?_ ?_ ?_ ?_ ?_⟩
+  · exact (measurable_fst.mul measurable_snd).coe_real_ereal
+  · exact (measurable_const_mul _).comp measurable_coe_real_ereal
+  · exact (measurable_const_mul _).comp measurable_coe_real_ereal
+  · simp_rw [mul_comm _ ⊥]
+    exact (measurable_const_mul _).comp measurable_coe_real_ereal
+  · simp_rw [mul_comm _ ⊤]
+    exact (measurable_const_mul _).comp measurable_coe_real_ereal
+
+end MeasurableMul
+
+
+end EReal
+
 /-- If a function `f : α → ℝ≥0` is measurable and the measure is σ-finite, then there exists
 spanning measurable sets with finite measure on which `f` is bounded.
 See also `StronglyMeasurable.exists_spanning_measurableSet_norm_le` for functions into normed
