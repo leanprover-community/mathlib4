@@ -432,8 +432,8 @@ instance : One Cardinal.{u} :=
 instance : Nontrivial Cardinal.{u} :=
   ⟨⟨1, 0, mk_ne_zero _⟩⟩
 
-theorem mk_eq_one (α : Type u) [Unique α] : #α = 1 :=
-  (Equiv.equivOfUnique α (ULift (Fin 1))).cardinal_eq
+theorem mk_eq_one (α : Type u) [Subsingleton α] [Nonempty α] : #α = 1 :=
+  let ⟨_⟩ := nonempty_unique α; (Equiv.equivOfUnique α (ULift (Fin 1))).cardinal_eq
 
 theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
   ⟨fun ⟨f⟩ => ⟨fun _ _ => f.injective (Subsingleton.elim _ _)⟩, fun ⟨h⟩ =>
@@ -520,8 +520,8 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
   add_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumAssoc α β γ
   add_comm a b := inductionOn₂ a b fun α β => mk_congr <| Equiv.sumComm α β
-  zero_mul a := inductionOn a fun α => mk_eq_zero _
-  mul_zero a := inductionOn a fun α => mk_eq_zero _
+  zero_mul a := inductionOn a fun _ => mk_eq_zero _
+  mul_zero a := inductionOn a fun _ => mk_eq_zero _
   one_mul a := inductionOn a fun α => mk_congr <| Equiv.uniqueProd α _
   mul_one a := inductionOn a fun α => mk_congr <| Equiv.prodUnique α _
   mul_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodAssoc α β γ
@@ -623,7 +623,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
     Cardinal.partialOrder with
     bot := 0
     bot_le := Cardinal.zero_le
-    add_le_add_left := fun a b => add_le_add_left
+    add_le_add_left := fun _ _ => add_le_add_left
     exists_add_of_le := fun {a b} =>
       inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
         have : α ⊕ ((range f)ᶜ : Set β) ≃ β := by
@@ -631,7 +631,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
           exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
             Equiv.Set.sumCompl (range f)
         ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-    le_self_add := fun a b => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
+    le_self_add := fun a _ => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
     eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
       inductionOn₂ a b fun α β => by
         simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
@@ -852,6 +852,34 @@ theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
 theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
   mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
 
+theorem mk_sigma_congr_lift {ι : Type v} {ι' : Type v'} {f : ι → Type w} {g : ι' → Type w'}
+    (e : ι ≃ ι') (h : ∀ i, lift.{w'} #(f i) = lift.{w} #(g (e i))) :
+    lift.{max v' w'} #(Σ i, f i) = lift.{max v w} #(Σ i, g i) :=
+  Cardinal.lift_mk_eq'.2 ⟨.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.lift_mk_eq'.1 (h i)⟩
+
+theorem mk_sigma_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
+  mk_congr <| Equiv.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+/-- Similar to `mk_sigma_congr` with indexing types in different universes. This is not a strict
+generalization. -/
+theorem mk_sigma_congr' {ι : Type u} {ι' : Type v} {f : ι → Type max w (max u v)}
+    {g : ι' → Type max w (max u v)} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
+  mk_congr <| Equiv.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_sigma_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Σ i, f i) = #(Σ i, g i) :=
+  mk_sigma_congr (Equiv.refl ι) h
+
+theorem mk_psigma_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Σ' i, f i) = #(Σ' i, g i) :=
+  mk_congr <| .psigmaCongrRight fun i => Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_psigma_congrRight_prop {ι : Prop} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Σ' i, f i) = #(Σ' i, g i) :=
+  mk_congr <| .psigmaCongrRight fun i => Classical.choice <| Cardinal.eq.mp (h i)
+
 theorem mk_sigma_arrow {ι} (α : Type*) (f : ι → Type*) :
     #(Sigma f → α) = #(Π i, f i → α) := mk_congr <| Equiv.piCurry fun _ _ ↦ α
 
@@ -970,7 +998,7 @@ instance small_Ioo (a b : Cardinal.{u}) : Small.{u} (Ioo a b) := small_subset Io
 
 /-- A set of cardinals is bounded above iff it's small, i.e. it corresponds to a usual ZFC set. -/
 theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :=
-  ⟨fun ⟨a, ha⟩ => @small_subset _ (Iic a) s (fun x h => ha h) _, by
+  ⟨fun ⟨a, ha⟩ => @small_subset _ (Iic a) s (fun _ h => ha h) _, by
     rintro ⟨ι, ⟨e⟩⟩
     suffices (range fun x : ι => (e.symm x).1) = s by
       rw [← this]
@@ -1097,6 +1125,34 @@ def prod {ι : Type u} (f : ι → Cardinal) : Cardinal :=
 @[simp]
 theorem mk_pi {ι : Type u} (α : ι → Type v) : #(Π i, α i) = prod fun i => #(α i) :=
   mk_congr <| Equiv.piCongrRight fun _ => outMkEquiv.symm
+
+theorem mk_pi_congr_lift {ι : Type v} {ι' : Type v'} {f : ι → Type w} {g : ι' → Type w'}
+    (e : ι ≃ ι') (h : ∀ i, lift.{w'} #(f i) = lift.{w} #(g (e i))) :
+    lift.{max v' w'} #(Π i, f i) = lift.{max v w} #(Π i, g i) :=
+  Cardinal.lift_mk_eq'.2 ⟨.piCongr e fun i ↦ Classical.choice <| Cardinal.lift_mk_eq'.1 (h i)⟩
+
+theorem mk_pi_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
+  mk_congr <| Equiv.piCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_pi_congr_prop {ι ι' : Prop} {f : ι → Type v} {g : ι' → Type v} (e : ι ↔ ι')
+    (h : ∀ i, #(f i) = #(g (e.mp i))) : #(Π i, f i) = #(Π i, g i) :=
+  mk_congr <| Equiv.piCongr (.ofIff e) fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+/-- Similar to `mk_pi_congr` with indexing types in different universes. This is not a strict
+generalization. -/
+theorem mk_pi_congr' {ι : Type u} {ι' : Type v} {f : ι → Type max w (max u v)}
+    {g : ι' → Type max w (max u v)} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
+  mk_congr <| Equiv.piCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_pi_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Π i, f i) = #(Π i, g i) :=
+  mk_pi_congr (Equiv.refl ι) h
+
+theorem mk_pi_congrRight_prop {ι : Prop} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Π i, f i) = #(Π i, g i) :=
+  mk_pi_congr_prop Iff.rfl h
 
 @[simp]
 theorem prod_const (ι : Type u) (a : Cardinal.{v}) :
@@ -1324,7 +1380,7 @@ theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α :
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 
--- Porting note: was `simp`. LHS is not normal form.
+-- Porting note (#11119): was `simp`. LHS is not normal form.
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
@@ -1429,14 +1485,14 @@ theorem lt_aleph0 {c : Cardinal} : c < ℵ₀ ↔ ∃ n : ℕ, c = n :=
       simp
     contrapose! h'
     haveI := Infinite.to_subtype h'
-    exact ⟨Infinite.natEmbedding S⟩, fun ⟨n, e⟩ => e.symm ▸ nat_lt_aleph0 _⟩
+    exact ⟨Infinite.natEmbedding S⟩, fun ⟨_, e⟩ => e.symm ▸ nat_lt_aleph0 _⟩
 
 lemma succ_eq_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : Order.succ c = c + 1 := by
   obtain ⟨n, hn⟩ := Cardinal.lt_aleph0.mp h
   rw [hn, succ_natCast]
 
 theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c :=
-  ⟨fun h n => (nat_lt_aleph0 _).le.trans h, fun h =>
+  ⟨fun h _ => (nat_lt_aleph0 _).le.trans h, fun h =>
     le_of_not_lt fun hn => by
       rcases lt_aleph0.1 hn with ⟨n, rfl⟩
       exact (Nat.lt_succ_self _).not_le (natCast_le.1 (h (n + 1)))⟩

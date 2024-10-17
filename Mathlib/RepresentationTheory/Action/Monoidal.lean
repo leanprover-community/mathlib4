@@ -71,7 +71,7 @@ variable (V G)
 def forgetMonoidal : MonoidalFunctor (Action V G) V :=
   { toFunctor := Action.forget _ _
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 instance forgetMonoidal_faithful : (forgetMonoidal V G).Faithful := by
   change (forget V G).Faithful; infer_instance
