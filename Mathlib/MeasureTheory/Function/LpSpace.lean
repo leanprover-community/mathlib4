@@ -616,7 +616,7 @@ theorem eLpNorm_indicator_eq_eLpNorm_restrict {f : α → F} (hs : MeasurableSet
   simp_rw [eLpNorm_eq_lintegral_rpow_nnnorm hp_zero hp_top]
   suffices (∫⁻ x, (‖s.indicator f x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) =
       ∫⁻ x in s, (‖f x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ by rw [this]
-  rw [← lintegral_indicator _ hs]
+  rw [← lintegral_indicator hs]
   congr
   simp_rw [nnnorm_indicator_eq_indicator_nnnorm, ENNReal.coe_indicator]
   have h_zero : (fun x => x ^ p.toReal) (0 : ℝ≥0∞) = 0 := by
