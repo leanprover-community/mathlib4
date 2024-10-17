@@ -27,7 +27,7 @@ namespace AlgebraicGeometry
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
-/-- A morphism is separated if the diagonal map is a closed immersion. -/
+/-- A morphism is proper if it is separated, universally closed and locally of finite type. -/
 @[mk_iff]
 class IsProper extends IsSeparated f, UniversallyClosed f, LocallyOfFiniteType f : Prop where
 
