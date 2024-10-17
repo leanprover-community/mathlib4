@@ -77,6 +77,20 @@ theorem fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq (n :
   rw [← add_sub_self_right (2 ^ 2 ^ (n + 2) + 1) <| 2 * 2 ^ 2 ^ (n + 1)]
   ring_nf
 
+end Nat
+
+open Nat
+
+theorem Int.fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq (n : ℕ) :
+  (fermatNumber (n + 2) : ℤ)  = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
+  rw [Nat.fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq,
+    Nat.cast_sub <| two_mul_fermatNumber_sub_one_sq_le_fermatNumber_sq n]
+  simp only [fermatNumber]
+  aesop
+
+namespace Nat
+
+open Finset
 /--
 **Goldbach's theorem** : no two distinct Fermat numbers share a common factor greater than one.
 
@@ -93,4 +107,4 @@ theorem coprime_fermatNumber_fermatNumber {k n : ℕ} (h : k ≠ n) :
   refine ((dvd_prime prime_two).mp h_m).elim id (fun h_two ↦ ?_)
   exact ((odd_fermatNumber _).not_two_dvd_nat (h_two ▸ h_n)).elim
 
-  end Nat
+end Nat
