@@ -77,7 +77,7 @@ lemma evaluation_ne_zero_iff_mem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U))
     X.evaluation U x hx f ≠ 0 ↔ x ∈ X.basicOpen f := by
   simp
 
-variable {X Y : Scheme.{u}} (f : X ⟶ Y) (x : X)
+variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
