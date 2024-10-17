@@ -130,9 +130,8 @@ end Submodule
 
 section closure
 
-variable {R R' : Type u} {M M' : Type v} [Semiring R] [Ring R']
-  [TopologicalSpace M] [AddCommMonoid M] [TopologicalSpace M'] [AddCommGroup M'] [Module R M]
-  [ContinuousConstSMul R M] [Module R' M'] [ContinuousConstSMul R' M']
+variable {R : Type u} {M : Type v} [Semiring R] [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+  [ContinuousConstSMul R M]
 
 theorem Submodule.mapsTo_smul_closure (s : Submodule R M) (c : R) :
     Set.MapsTo (c • ·) (closure s : Set M) (closure s) :=
@@ -1418,7 +1417,7 @@ variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R�
   [SMulCommClass R₃ S₃ M₃] [ContinuousConstSMul S₃ M₃] [Module S N₂] [ContinuousConstSMul S N₂]
   [SMulCommClass R S N₂] [Module S N₃] [SMulCommClass R S N₃] [ContinuousConstSMul S N₃]
   {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (c : S)
-  (h : M₂ →SL[σ₂₃] M₃) (f g : M →SL[σ₁₂] M₂) (x y z : M)
+  (h : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂)
 
 /-- `ContinuousLinearMap.prod` as an `Equiv`. -/
 @[simps apply]
@@ -1505,7 +1504,7 @@ section CommRing
 
 variable {R : Type*} [CommRing R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] {M₂ : Type*}
   [TopologicalSpace M₂] [AddCommGroup M₂] {M₃ : Type*} [TopologicalSpace M₃] [AddCommGroup M₃]
-  [Module R M] [Module R M₂] [Module R M₃] [ContinuousConstSMul R M₃]
+  [Module R M] [Module R M₂] [Module R M₃]
 
 variable [TopologicalAddGroup M₂] [ContinuousConstSMul R M₂]
 
@@ -1596,10 +1595,10 @@ variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} [Semiring R₁] [Semiring 
   {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
   {σ₁₃ : R₁ →+* R₃} {σ₃₁ : R₃ →+* R₁} [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
   [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁] {M₁ : Type*}
-  [TopologicalSpace M₁] [AddCommMonoid M₁] {M'₁ : Type*} [TopologicalSpace M'₁] [AddCommMonoid M'₁]
+  [TopologicalSpace M₁] [AddCommMonoid M₁]
   {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] {M₃ : Type*} [TopologicalSpace M₃]
   [AddCommMonoid M₃] {M₄ : Type*} [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R₁ M₁]
-  [Module R₁ M'₁] [Module R₂ M₂] [Module R₃ M₃]
+  [Module R₂ M₂] [Module R₃ M₃]
 
 /-- A continuous linear equivalence induces a continuous linear map. -/
 @[coe]
@@ -2302,7 +2301,6 @@ end ContinuousLinearMap
 namespace Submodule
 
 variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
-  {M₂ : Type*} [TopologicalSpace M₂] [AddCommGroup M₂] [Module R M₂]
 
 open ContinuousLinearMap
 
