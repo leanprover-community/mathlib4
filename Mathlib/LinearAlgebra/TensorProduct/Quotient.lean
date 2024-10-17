@@ -30,7 +30,7 @@ the following isomorphisms:
 - `TensorProduct.tensorQuotEquivQuotSMul`:
   `M ⊗[R] (R ⧸ I) ≃ₗ[R] M ⧸ (I • M)`
 
-# Tags
+## Tags
 
 Quotient, Tensor Product
 
