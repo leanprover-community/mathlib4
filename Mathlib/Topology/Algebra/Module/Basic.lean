@@ -245,10 +245,6 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring 
     [Module S M₂] [FunLike F M M₂]
     extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂ : Prop
 
--- `σ`, `R` and `S` become metavariables, but they are all outparams so it's OK
--- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
--- attribute [nolint dangerous_instance] ContinuousSemilinearMapClass.toContinuousMapClass
-
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
 `ContinuousSemilinearMapClass F (RingHom.id R) M M₂`. -/
@@ -2397,7 +2393,7 @@ instance continuousSMul_quotient [TopologicalSpace R] [TopologicalAddGroup M] [C
 instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] :
     T3Space (M ⧸ S) :=
   letI : IsClosed (S.toAddSubgroup : Set M) := ‹_›
-  S.toAddSubgroup.t3_quotient_of_isClosed
+  QuotientAddGroup.instT3Space S.toAddSubgroup
 
 end Submodule
 

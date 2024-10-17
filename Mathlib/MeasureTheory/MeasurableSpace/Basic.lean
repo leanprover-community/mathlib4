@@ -472,6 +472,15 @@ nonrec theorem QuotientGroup.measurable_from_quotient {G} [Group G] [MeasurableS
     {S : Subgroup G} {f : G ⧸ S → α} : Measurable f ↔ Measurable (f ∘ ((↑) : G → G ⧸ S)) :=
   measurable_from_quotient
 
+instance Quotient.instDiscreteMeasurableSpace {α} {s : Setoid α} [MeasurableSpace α]
+    [DiscreteMeasurableSpace α] : DiscreteMeasurableSpace (Quotient s) where
+  forall_measurableSet _ := measurableSet_quotient.2 .of_discrete
+
+@[to_additive]
+instance QuotientGroup.instDiscreteMeasurableSpace {G} [Group G] [MeasurableSpace G]
+    [DiscreteMeasurableSpace G] (S : Subgroup G) : DiscreteMeasurableSpace (G ⧸ S) :=
+  Quotient.instDiscreteMeasurableSpace
+
 end Quotient
 
 section Subtype

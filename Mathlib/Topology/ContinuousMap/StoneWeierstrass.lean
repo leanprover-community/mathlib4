@@ -453,7 +453,7 @@ end PolynomialFunctions
 
 section ContinuousMapZero
 
-variable {X : Type*} [TopologicalSpace X] {𝕜 : Type*} [RCLike 𝕜]
+variable {𝕜 : Type*} [RCLike 𝕜]
 open NonUnitalStarAlgebra Submodule
 
 namespace ContinuousMap

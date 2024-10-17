@@ -75,9 +75,9 @@ theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : X.Opens) [Nonem
 
 theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
     [hX : IrreducibleSpace X] [IrreducibleSpace Y] :
-    f.1.base (genericPoint X) = genericPoint Y := by
+    f.base (genericPoint X) = genericPoint Y := by
   apply ((genericPoint_spec Y).eq _).symm
-  convert (genericPoint_spec X).image (show Continuous f.1.base by fun_prop)
+  convert (genericPoint_spec X).image (show Continuous f.base by fun_prop)
   symm
   rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
   convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _

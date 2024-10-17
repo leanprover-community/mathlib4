@@ -669,7 +669,7 @@ variable [MeasurableSpace X] [BorelSpace X] [MeasurableSpace Y] [BorelSpace Y]
 
 namespace HolderOnWith
 
-variable {C r : ℝ≥0} {f : X → Y} {s t : Set X}
+variable {C r : ℝ≥0} {f : X → Y} {s : Set X}
 
 /-- If `f : X → Y` is Hölder continuous on `s` with a positive exponent `r`, then
 `μH[d] (f '' s) ≤ C ^ d * μH[r * d] s`. -/
@@ -715,7 +715,7 @@ end HolderOnWith
 
 namespace LipschitzOnWith
 
-variable {K : ℝ≥0} {f : X → Y} {s t : Set X}
+variable {K : ℝ≥0} {f : X → Y} {s : Set X}
 
 /-- If `f : X → Y` is `K`-Lipschitz on `s`, then `μH[d] (f '' s) ≤ K ^ d * μH[d] s`. -/
 theorem hausdorffMeasure_image_le (h : LipschitzOnWith K f s) {d : ℝ} (hd : 0 ≤ d) :
