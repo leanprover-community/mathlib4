@@ -15,7 +15,7 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 - `Algebra.FormallyEtale.of_isSeparable`:
     If `L` is separable over `K`, then `L` is formally etale over `K`.
-- `Algebra.FormallyUnramified.iff_isSeparable`:
+- `Algebra.FormallyEtale.iff_isSeparable`:
     If `L` is (essentially) of finite type over `K`, then `L/K` is etale iff `L/K` is separable.
 
 ## References
