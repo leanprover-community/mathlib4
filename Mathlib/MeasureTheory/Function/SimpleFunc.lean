@@ -800,37 +800,6 @@ theorem tsum_eapproxDiff (f : α → ℝ≥0∞) (hf : Measurable f) (a : α) :
 
 end EApprox
 
-section eapproxSigmaFinite
-variable {μ : Measure α} [SigmaFinite μ] {f : α → ℝ≥0∞} {n : ℕ} {a : α}
-
-variable (μ) in
-/-- Approximate a function `f : α → ℝ≥0∞` by a sequence of simple functions of finite support, where
-`α` is equipped with a σ-finite measure `μ`. -/
-noncomputable def eapproxSigmaFinite (f : α → ℝ≥0∞) (n : ℕ) : α →ₛ ℝ≥0∞ :=
-  (eapprox f n).piecewise (spanningSets μ n) (measurable_spanningSets ..) 0
-
-lemma eapproxSigmaFinite_le_eapprox : eapproxSigmaFinite μ f n ≤ eapprox f n :=
-  fun a ↦ by by_cases ha : a ∈ spanningSets μ n <;> simp [eapproxSigmaFinite, *]
-
-lemma eapproxSigmaFinite_lt_top : eapproxSigmaFinite μ f n a < ∞ :=
-  (eapproxSigmaFinite_le_eapprox _).trans_lt (eapprox_lt_top ..)
-
-@[mono]
-lemma monotone_eapproxSigmaFinite (f : α → ℝ≥0∞) : Monotone (eapproxSigmaFinite μ f) := by
-  rintro m n hmn
-  unfold eapproxSigmaFinite SimpleFunc.piecewise
-  simp only [coe_zero, piecewise_eq_indicator, mk_le_mk]
-  exact (indicator_mono (by gcongr)).trans (indicator_le_indicator_of_subset (by gcongr) (by simp))
-
-lemma iSup_coe_eapproxSigmaFinite (hf : Measurable f) : ⨆ n, ⇑(eapproxSigmaFinite μ f n) = f := by
-  simp [eapproxSigmaFinite, coe_piecewise, coe_zero, piecewise_eq_indicator,  iSup_coe_eapprox hf,
-    iSup_indicator ENNReal.bot_eq_zero (monotone_eapprox _) (monotone_spanningSets _)]
-
-lemma iSup_eapproxSigmaFinite_apply (hf : Measurable f) (a : α) :
-    ⨆ n, eapproxSigmaFinite μ f n a = f a := by
-  simpa using congr_fun (iSup_coe_eapproxSigmaFinite hf) a
-
-end eapproxSigmaFinite
 end Measurable
 
 section Measure
