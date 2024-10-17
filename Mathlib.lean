@@ -262,6 +262,7 @@ import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.Algebra.Group.Invertible.Defs
+import Mathlib.Algebra.Group.IsIdem
 import Mathlib.Algebra.Group.MinimalAxioms
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Group.NatPowAssoc
@@ -3768,6 +3769,7 @@ import Mathlib.Order.PiLex
 import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.PrimeSeparator
 import Mathlib.Order.PropInstances
+import Mathlib.Order.Quantale
 import Mathlib.Order.Radical
 import Mathlib.Order.Rel.GaloisConnection
 import Mathlib.Order.RelClasses
