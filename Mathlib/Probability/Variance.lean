@@ -379,7 +379,8 @@ lemma variance_square_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
         integral_congr_ae <| ae_of_all μ fun ω ↦ by ring
       _ = ∫ (ω : Ω), - X ω ^ 2 + (a + b) * X ω ∂μ - ∫ (_ : Ω), (a * b) ∂μ :=
         integral_sub (hX_int₁.add hX_int₂) (integrable_const (a * b))
-      _ = ∫ (ω : Ω), - X ω ^ 2 + (a + b) * X ω ∂μ - (a * b) := by simp
+      _ = ∫ (ω : Ω), - X ω ^ 2 + (a + b) * X ω ∂μ - (a * b) := by simp only [integral_const,
+        measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul]
       _ = - ∫ (ω : Ω), X ω ^ 2 ∂μ + (a + b) * ∫ (ω : Ω), X ω ∂μ - a * b := by
         simp only [sub_left_inj]
         rw [← integral_neg, ← integral_mul_left]
