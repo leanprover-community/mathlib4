@@ -365,6 +365,29 @@ instance (priority := 100) SeminormedCommGroup.to_uniformGroup : UniformGroup E 
 instance (priority := 100) SeminormedCommGroup.toTopologicalGroup : TopologicalGroup E :=
   inferInstance
 
+/-! ### SeparationQuotient -/
+
+namespace SeparationQuotient
+
+@[to_additive instNorm]
+instance instMulNorm : Norm (SeparationQuotient E) where
+  norm := lift Norm.norm fun _ _ h => h.norm_eq_norm'
+
+set_option linter.docPrime false in
+@[to_additive (attr := simp) norm_mk]
+theorem norm_mk' (p : E) : ‖mk p‖ = ‖p‖ := rfl
+
+@[to_additive]
+instance : NormedCommGroup (SeparationQuotient E) where
+  __ : CommGroup (SeparationQuotient E) := instCommGroup
+  dist_eq := Quotient.ind₂ dist_eq_norm_div
+
+set_option linter.docPrime false in
+@[to_additive (attr := simp) nnnorm_mk]
+theorem nnnorm_mk' (p : E) : ‖mk p‖₊ = ‖p‖₊ := rfl
+
+end SeparationQuotient
+
 @[to_additive]
 theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n ≥ N, u n = v n)
     (hv : CauchySeq fun n => ∏ k ∈ range (n + 1), v k) :
@@ -378,5 +401,18 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
   rw [eventually_constant_prod _ (add_le_add_right hn 1)]
   intro m hm
   simp [huv m (le_of_lt hm)]
+
+@[to_additive CauchySeq.norm_bddAbove]
+lemma CauchySeq.mul_norm_bddAbove {G : Type*} [SeminormedGroup G] {u : ℕ → G}
+    (hu : CauchySeq u) : BddAbove (Set.range (fun n ↦ ‖u n‖)) := by
+  obtain ⟨C, -, hC⟩ := cauchySeq_bdd hu
+  simp_rw [SeminormedGroup.dist_eq] at hC
+  have : ∀ n, ‖u n‖ ≤ C + ‖u 0‖ := by
+    intro n
+    rw [add_comm]
+    refine (norm_le_norm_add_norm_div' (u n) (u 0)).trans ?_
+    simp [(hC _ _).le]
+  rw [bddAbove_def]
+  exact ⟨C + ‖u 0‖, by simpa using this⟩
 
 end SeminormedCommGroup
