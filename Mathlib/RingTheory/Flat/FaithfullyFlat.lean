@@ -342,13 +342,9 @@ lemma iff_iff_rTensor_exact :
         Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M)) :=
   ⟨fun fl => implies_iff_exact R M, fun iff_exact =>
     iff_flat_and_rTensor_reflects_triviality _ _ |>.2 ⟨Flat.iff_rTensor_exact.2 <| by aesop,
-    fun N _ _ h => by
-    have ex := iff_exact PUnit N PUnit 0 0 |>.2 fun x => by
-      simpa using Subsingleton.elim _ _
-    rw [subsingleton_iff_forall_eq 0]
-    intro y
-    specialize ex y
-    simpa [eq_comm] using ex⟩⟩
+    fun N _ _ h => subsingleton_iff_forall_eq 0 |>.2 <| fun y => by
+      simpa [eq_comm] using (iff_exact PUnit N PUnit 0 0 |>.2 fun x => by
+        simpa using Subsingleton.elim _ _) y⟩⟩
 
 lemma iff_iff_lTensor_exact :
     FaithfullyFlat R M ↔
