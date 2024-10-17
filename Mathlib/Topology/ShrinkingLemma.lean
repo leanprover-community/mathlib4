@@ -276,4 +276,13 @@ lemma exists_subset_closure_subset_t2space (hs : IsCompact s) (U : Set X) (Uo : 
   apply subset_trans (Set.compl_subset_comm.mp itinterUcomplsubW)
   exact inter_subset_right
 
+/-- **Shrinking lemma** for `T2Space` `LocallyCompactSpace`. -/
+theorem exists_subset_iUnion_compact_subset_t2space (hs : IsCompact s) (uo : ∀ i, IsOpen (u i))
+    (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
+    ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsOpen (v i)) ∧ (∀ i, IsCompact (closure (v i)))
+    ∧ ∀ i, (closure (v i)) ⊆ u i:= by
+  sorry
+  -- extract a finite cover, shrink one by one using
+  -- exists_subset_closure_subset_t2space applied to
+  -- `s ∩ (⋃ i ≠ j, u i)ᶜ ⊆ u i
 end T2LocallyCompactSpace
