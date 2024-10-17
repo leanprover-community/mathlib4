@@ -57,7 +57,7 @@ instance instFunLike : FunLike (PolynomialModule R M) ℕ M :=
   Finsupp.instFunLike
 
 instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=
-  Finsupp.instCoeFun
+  inferInstanceAs <| CoeFun (_ →₀ _) _
 
 theorem zero_apply (i : ℕ) : (0 : PolynomialModule R M) i = 0 :=
   Finsupp.zero_apply

@@ -85,8 +85,6 @@ section Semiring
 variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
--- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
-
 instance funLike : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
