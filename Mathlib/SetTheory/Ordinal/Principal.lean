@@ -133,6 +133,7 @@ theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordin
     exact lt_blsub₂ (@fun a _ b _ => op a b) hm (hn.trans_le h)
 
 set_option linter.deprecated false in
+@[deprecated (since := "2024-10-11")]
 theorem unbounded_principal (op : Ordinal → Ordinal → Ordinal) :
     Set.Unbounded (· < ·) { o | Principal op o } := fun o =>
   ⟨_, principal_nfp_blsub₂ op o, (le_nfp _ o).not_lt⟩
