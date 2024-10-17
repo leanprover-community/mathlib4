@@ -78,7 +78,7 @@ variable (G)
 
 theorem dart_edge_fiber_card [DecidableEq V] (e : Sym2 V) (h : e ∈ G.edgeSet) :
     (univ.filter fun d : G.Dart => d.edge = e).card = 2 := by
-  induction' e with v w
+  obtain ⟨v, w⟩ := e
   let d : G.Dart := ⟨(v, w), h⟩
   convert congr_arg card d.edge_fiber
   rw [card_insert_of_not_mem, card_singleton]

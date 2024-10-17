@@ -285,9 +285,10 @@ theorem kruskal_katona (h𝒜r : (𝒜 : Set (Finset (Fin n))).Sized r) (h𝒞�
 shadow size is attained by initial segments. -/
 theorem iterated_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : 𝒞.card ≤ 𝒜.card)
     (h₃ : IsInitSeg 𝒞 r) : (∂^[k] 𝒞).card ≤ (∂^[k] 𝒜).card := by
-  induction' k with _k ih generalizing r 𝒜 𝒞
-  · simpa
-  · refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_
+  induction k generalizing r 𝒜 𝒞 with
+  | zero => simpa
+  | succ _ ih =>
+    refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_
     convert h₃.shadow
 
 end KK

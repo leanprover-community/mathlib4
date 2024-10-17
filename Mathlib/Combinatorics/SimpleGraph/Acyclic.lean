@@ -94,7 +94,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
     rw [isBridge_iff_adj_and_forall_walk_mem_edges] at h
     replace h := h.2 (q.append p.reverse)
     simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse] at h
-    cases' h with h h
+    rcases h with h | h
     · cases q with
       | nil => simp [Walk.isPath_def] at hp
       | cons _ q =>
