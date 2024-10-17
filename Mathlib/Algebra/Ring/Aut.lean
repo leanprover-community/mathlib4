@@ -96,17 +96,6 @@ instance apply_faithfulSMul : FaithfulSMul (RingAut R) R :=
 
 variable (G R)
 
-/-- Each element of the group defines a ring automorphism.
-
-This is a stronger version of `DistribMulAction.toAddAut` and
-`MulDistribMulAction.toMulAut`. -/
-@[simps]
-def _root_.MulSemiringAction.toRingAut [MulSemiringAction G R] :
-    G →* RingAut R where
-  toFun := MulSemiringAction.toRingEquiv G R
-  map_mul' g h := RingEquiv.ext <| mul_smul g h
-  map_one' := RingEquiv.ext <| one_smul _
-
 /-- Construct a `MulSemiringAction` from a homomorphism `G →* RingAut R`. -/
 @[simps]
 def _root_.MulSemiringAction.ofRingAut (h : G →* RingAut R) : MulSemiringAction G R where
@@ -117,6 +106,17 @@ def _root_.MulSemiringAction.ofRingAut (h : G →* RingAut R) : MulSemiringActio
   smul_add := fun g ↦ map_add (h g)
   smul_one := fun g ↦ map_one (h g)
   smul_mul := fun g ↦ map_mul (h g)
+
+/-- Each element of the group defines a ring automorphism.
+
+This is a stronger version of `DistribMulAction.toAddAut` and
+`MulDistribMulAction.toMulAut`. -/
+@[simps]
+def _root_.MulSemiringAction.toRingAut [MulSemiringAction G R] :
+    G →* RingAut R where
+  toFun := MulSemiringAction.toRingEquiv G R
+  map_mul' g h := RingEquiv.ext <| mul_smul g h
+  map_one' := RingEquiv.ext <| one_smul _
 
 end Semiring
 
