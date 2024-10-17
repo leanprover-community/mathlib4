@@ -336,7 +336,8 @@
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Data.Bool.Basic"],
-  "Mathlib.Logic.Basic": ["Mathlib.Data.Int.Notation"],
+  "Mathlib.Logic.Basic":
+  ["Mathlib.Data.Int.Notation", "Mathlib.Tactic.Linter.UnusedAssumptionInType"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.Basic": ["Mathlib.Algebra.BigOperators.Group.Finset"],
   "Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional": ["Mathlib.Init.Core"],
