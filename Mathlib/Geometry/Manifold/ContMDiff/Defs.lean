@@ -585,6 +585,44 @@ theorem smooth_iff_target :
         ∀ y : M', SmoothOn I 𝓘(𝕜, E') (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) :=
   contMDiff_iff_target
 
+/-- If a function is `C^m` within a set at a point, for some finite `m`, then it is `C^m` within
+this set on an open set around the basepoint. -/
+theorem ContMDiffWithinAt.contMDiffOn' {m : ℕ} (hm : (m : ℕ∞) ≤ n)
+    (h : ContMDiffWithinAt I I' n f s x) :
+    ∃ u, IsOpen u ∧ x ∈ u ∧ ContMDiffOn I I' m f (insert x s ∩ u) := by
+  obtain ⟨u, u_open, xu, hu⟩ : ∃ u, IsOpen u ∧
+     extChartAt I x x ∈ u ∧
+      ContDiffOn 𝕜 m ((extChartAt I' (f x)) ∘ f ∘ ↑(extChartAt I x).symm)
+        (insert (extChartAt I x x) (↑(extChartAt I x).symm ⁻¹' s ∩ range ↑I) ∩ u) :=
+    (contMDiffWithinAt_iff.1 h).2.contDiffOn' hm
+  obtain ⟨v, v_open, xv, hv⟩ :
+      ∃ v, IsOpen v ∧ x ∈ v ∧ v ∩ insert x s ⊆ f ⁻¹' (extChartAt I' (f x)).source := by
+    apply mem_nhdsWithin.1
+    exact (contMDiffWithinAt_iff.1 h).1.insert_self.preimage_mem_nhdsWithin
+      (extChartAt_source_mem_nhds I' (f x))
+  refine ⟨(extChartAt I x).source ∩ (extChartAt I x) ⁻¹' u ∩ v,
+    (isOpen_extChartAt_preimage' _ _ u_open).inter v_open, by simpa [xv] using xu, ?_⟩
+  apply (contMDiffOn_iff_of_subset_source' (x := x) (y := f x) _ _).2
+  · apply hu.mono
+    simp only [image_subset_iff]
+    rintro y ⟨hy, ⟨h'y, h''y⟩, -⟩
+    rcases mem_insert_iff.1 hy with rfl | Hy
+    · simp [-extChartAt, h''y]
+    · simp only [preimage_inter, mem_inter_iff, mem_preimage, mem_insert_iff, h'y,
+        PartialEquiv.left_inv, Hy, true_and, h''y, and_true]
+      exact Or.inr (mem_range_self _)
+  · exact inter_subset_right.trans (inter_subset_left.trans inter_subset_left)
+  · apply MapsTo.mono_left hv
+    mfld_set_tac
+
+/-- If a function is `C^m` within a set at a point, for some finite `m`, then it is `C^m` within
+this set on a neighborhood of the basepoint. -/
+theorem ContMDiffWithinAt.contMDiffOn {m : ℕ} (hm : (m : ℕ∞) ≤ n)
+    (h : ContMDiffWithinAt I I' n f s x) :
+    ∃ u ∈ 𝓝[insert x s] x, u ⊆ insert x s ∧ ContMDiffOn I I' m f u := by
+  let ⟨_u, uo, xu, h⟩ := h.contMDiffOn' hm
+  exact ⟨_, inter_mem_nhdsWithin _ (uo.mem_nhds xu), inter_subset_left, h⟩
+
 end SmoothManifoldWithCorners
 
 /-! ### Deducing smoothness from smoothness one step beyond -/

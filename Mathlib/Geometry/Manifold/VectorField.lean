@@ -1613,11 +1613,11 @@ lemma key {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : 
   have : CompleteSpace E' := by
     rcases hfi with ⟨M, hM⟩
     let M' : E ≃L[𝕜] E' := M
-    apply (completeSpace_congr (e := M') _).1
+    exact (completeSpace_congr (e := M'.toEquiv) M'.isUniformEmbedding).1 (by assumption)
+  rcases hf.contMDiffOn'
 
-   -- use invertibility of derivative of `f` to get
-  -- a linear equiv between `E` and `E'`.
 
+#exit
 
 
 
