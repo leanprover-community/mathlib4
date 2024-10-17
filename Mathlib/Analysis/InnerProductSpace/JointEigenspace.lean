@@ -9,6 +9,7 @@ import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Order.CompleteLattice
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 
 /-! # Joint eigenspaces of commuting symmetric operators
 
@@ -110,6 +111,8 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
   apply (orthogonalFamily_eigenspace_inf_eigenspace hA hB).isInternal_iff.mpr
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_iSup_eigenspace_inf_eigenspace_eq_top hA hB hAB
+
+open IsSemisimple in
 
 /-- In finite dimensions, the indexed supremum of the joint eigenspaces of a commuting family
 of symmetric linear operators equals `⊤`. -/
