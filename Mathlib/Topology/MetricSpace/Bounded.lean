@@ -443,7 +443,7 @@ theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
   simp only [diam, dist_edist]
   refine (ENNReal.toReal_le_add' (EMetric.diam_union xs yt) ?_ ?_).trans
     (add_le_add_right ENNReal.toReal_add_le _)
-  · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
+  · simp only [add_eq_top, edist_ne_top, or_false]
     exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_left
   · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_right
 
