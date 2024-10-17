@@ -260,18 +260,18 @@ variable [lcs : LocallyConvexSpace ℝ E]
 variable [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3
-theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
-    TotallyBounded (absConvexHull ℝ s) := by
-  intro d' hd'
-  obtain ⟨d,⟨hU, hd₂⟩⟩ := comp_mem_uniformity_sets hd'
-  rw [← UniformAddGroup.toUniformSpace_eq (G :=E)] at hU
-  obtain ⟨N,⟨hN₁,hN₂⟩⟩ := hU
-  obtain ⟨V,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs N hN₁
+theorem totallyBounded_absConvexHull (h : U = TopologicalAddGroup.toUniformSpace E)
+    (hs : TotallyBounded s) : TotallyBounded (absConvexHull ℝ s) := by
+  rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
+  intro U' hU
+  obtain ⟨W, hW, hW₂, hW₃, hW₄⟩  := exists_closed_nhds_zero_neg_eq_add_subset (G := E) hU
+  rw [h] at hU
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
+  obtain ⟨V,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs W hW
   obtain ⟨t,⟨htf,hts⟩⟩ := hs _ hS₁
 
-  have en {t₁ : Set E} : (⋃ y ∈ t₁, y +ᵥ V) = t₁ + V := by
-    aesop
+  have en {t₁ V₁ : Set E} : (⋃ y ∈ t₁, y +ᵥ V₁) = t₁ + V₁ := by
+    simp_all only [iUnion_vadd_set, vadd_eq_add]
   have e4 : (absConvexHull ℝ) s ⊆ (convexHull ℝ) (t ∪ -t) + V := by
     rw [convexHull_union_neg_eq_absConvexHull (s := t), ← AbsConvex.absConvexHull_eq hS₂]
     apply le_trans (absConvexHull_mono hts)
@@ -279,45 +279,20 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
     apply (absConvexHull_add_subset ℝ)
   have e6 : TotallyBounded ((convexHull ℝ) (t ∪ -t)) := IsCompact.totallyBounded
     (Set.Finite.isCompact_convexHull (finite_union.mpr ⟨htf,Finite.neg htf⟩))
-
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at e6
   obtain ⟨t',⟨htf',hts'⟩⟩ := e6 _ hS₁
   rw [en] at hts'
   have e7: (absConvexHull ℝ) s ⊆ t' + (V + V) := by
     rw [← add_assoc]
     exact le_trans e4 (Set.add_subset_add_right hts')
-  have e8 (y : E): y +ᵥ (V + V) ⊆ {x | (x, y) ∈ d'} := by
-    rw [← uniform_space_ball_eq_vadd]
-    apply subset_trans ball_add_ball_subset_ball_comp
-    intro x hx
-    rw [mem_setOf_eq]
-    apply hd₂
-    rw [mem_compRel]
-    rw [UniformSpace.ball] at hx
-    simp at hx
-    obtain ⟨z,hz⟩ := hx
-    use z
-    constructor
-    · apply hN₂
-      apply hS₃
-      simp only
-      rw [← neg_sub, Balanced.neg_mem_iff hS₂.1]
-      exact hz.2
-    · apply hN₂
-      apply hS₃
-      simp only
-      rw [← neg_sub, Balanced.neg_mem_iff hS₂.1]
-      exact hz.1
-  have e9 : ⋃ y ∈ t', y +ᵥ (V+V) ⊆ ⋃ y ∈ t', {x | (x, y) ∈ d'} :=
-    biUnion_mono (fun ⦃a⦄ a ↦ a) (fun y _ ↦ e8 y)
   use t'
   constructor
   · exact htf'
   · apply subset_trans e7
-    aesop
-
-
-
+    rw [en]
+    apply Set.add_subset_add_left
+    apply subset_trans _ hW₄
+    exact add_subset_add hS₃ hS₃
 
 end
 
