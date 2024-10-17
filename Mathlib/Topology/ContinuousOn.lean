@@ -91,6 +91,18 @@ theorem mem_nhdsWithin_iff_exists_mem_nhds_inter {t : Set α} {a : α} {s : Set 
     t ∈ 𝓝[s] a ↔ ∃ u ∈ 𝓝 a, u ∩ s ⊆ t :=
   (nhdsWithin_hasBasis (𝓝 a).basis_sets s).mem_iff
 
+/-- If `L` and `R` are neighborhoods of `b` within sets whose union is `Set.univ`, then
+`L ∪ R` is a neighborhood of `b`. -/
+theorem union_mem_nhds_of_mem_nhdsWithin {b : α}
+    {I₁ I₂ : Set α} (h : ∀ x, x ∈ I₁ ∪ I₂)
+    {L : Set α} (hL : L ∈ nhdsWithin b I₁)
+    {R : Set α} (hR : R ∈ nhdsWithin b I₂) : L ∪ R ∈ nhds b := by
+  rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 hL with ⟨s, s_in, sL⟩
+  rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 hR with ⟨t, t_in, tR⟩
+  apply mem_of_superset (inter_mem s_in t_in)
+  refine fun ⦃x⦄ hx ↦ (h x).elim ?_ ?_ <;> aesop
+
+
 theorem diff_mem_nhdsWithin_compl {x : α} {s : Set α} (hs : s ∈ 𝓝 x) (t : Set α) :
     s \ t ∈ 𝓝[tᶜ] x :=
   diff_mem_inf_principal_compl hs t
@@ -199,6 +211,20 @@ theorem nhdsWithin_empty (a : α) : 𝓝[∅] a = ⊥ := by rw [nhdsWithin, prin
 theorem nhdsWithin_union (a : α) (s t : Set α) : 𝓝[s ∪ t] a = 𝓝[s] a ⊔ 𝓝[t] a := by
   delta nhdsWithin
   rw [← inf_sup_left, sup_principal]
+
+/-- If a set `P` contains left and right neighborhoods of a point `x` in a linearly ordered
+topological space then `P` contains a punctured neighborhood. -/
+lemma nhdsWithin_punctured_of_Iio_Ioi [LinearOrder α]
+    {P : Set α} {x : α} (hl : P ∈ 𝓝[<] x) (hr : P ∈ 𝓝[>] x) : P ∈ 𝓝[≠] x := by
+  rw [← Iio_union_Ioi, nhdsWithin_union]
+  exact Filter.mem_sup.mpr ⟨hl, hr⟩
+
+/-- Obtain a "predictably-sided" neighborhood of `b` from two one-sided neighborhoods. -/
+theorem nhds_of_Ici_Iic [LinearOrder α] {b : α}
+    {L : Set α} (hL : L ∈ 𝓝[≤] b)
+    {R : Set α} (hR : R ∈ 𝓝[≥] b) : L ∩ Iic b ∪ R ∩ Ici b ∈ 𝓝 b :=
+  union_mem_nhds_of_mem_nhdsWithin (fun x => le_total x b)
+    (inter_mem hL self_mem_nhdsWithin) (inter_mem hR self_mem_nhdsWithin)
 
 theorem nhdsWithin_biUnion {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
     𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a :=
@@ -1222,3 +1248,14 @@ theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} 
   ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
 
 end Pi
+
+/-- If `f` is continuous on an open set `s` and continuous at each point of another
+set `t` then `f` is continuous on `s ∪ t`. -/
+lemma ContinuousOn.union_continuousAt
+    {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {s t : Set X} {f : X → Y} (s_op : IsOpen s)
+    (hs : ContinuousOn f s) (ht : ∀ x ∈ t, ContinuousAt f x) :
+    ContinuousOn f (s ∪ t) :=
+  ContinuousAt.continuousOn <| fun _ hx => hx.elim
+  (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
+  (ht _)
