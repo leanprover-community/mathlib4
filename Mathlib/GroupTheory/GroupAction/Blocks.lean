@@ -498,7 +498,7 @@ theorem ncard_block_eq_relindex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
     ext; rfl
   rw [Subgroup.relindex, key, index_stabilizer, hB.orbit_stabilizer_eq hx]
 
-/-- The cardinality of the ambient is the product of of the cardinality of a block
+/-- The cardinality of the ambient space is the product of the cardinality of a block
   by the cardinality of the set of translates of that block -/
 theorem ncard_block_mul_ncard_orbit_eq (hB : IsBlock G B) (hB_ne : B.Nonempty) :
     Set.ncard B * Set.ncard (orbit G B) = Nat.card X := by
