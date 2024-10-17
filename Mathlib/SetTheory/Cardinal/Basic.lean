@@ -1384,9 +1384,9 @@ theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 
 instance : CharZero Cardinal := by
-  refine ⟨StrictMono.injective fun a b h ↦ ?_⟩
-  rwa [← lift_mk_fin, ← lift_mk_fin, lift_lt, ← not_le, le_def,
-    Function.Embedding.nonempty_iff_card_le, Fintype.card_fin, Fintype.card_fin, not_le]
+  refine ⟨fun a b h ↦ ?_⟩
+  rwa [← lift_mk_fin, ← lift_mk_fin, lift_inj, Cardinal.eq, ← Fintype.card_eq,
+    Fintype.card_fin, Fintype.card_fin] at h
 
 @[deprecated Nat.cast_le (since := "2024-10-16")]
 theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := Nat.cast_le
