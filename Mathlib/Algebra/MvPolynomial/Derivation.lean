@@ -45,7 +45,7 @@ theorem mkDerivationₗ_C (f : σ → A) (r : R) : mkDerivationₗ R f (C r) = 0
   (mkDerivationₗ_monomial f _ _).trans (smul_zero _)
 
 theorem mkDerivationₗ_X (f : σ → A) (i : σ) : mkDerivationₗ R f (X i) = f i :=
-  (mkDerivationₗ_monomial f _ _).trans <| by simp
+  (mkDerivationₗ_monomial f _ _).trans <| by simp [tsub_self]
 
 @[simp]
 theorem derivation_C (D : Derivation R (MvPolynomial σ R) A) (a : R) : D (C a) = 0 :=
