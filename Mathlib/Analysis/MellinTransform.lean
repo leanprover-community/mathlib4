@@ -96,7 +96,7 @@ def mellinInv (σ : ℝ) (f : ℂ → E) (x : ℝ) : E :=
 -- next few lemmas don't require convergence of the Mellin transform (they are just 0 = 0 otherwise)
 theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
     mellin (fun t => (t : ℂ) ^ a • f t) s = mellin f (s + a) := by
-  refine setIntegral_congr measurableSet_Ioi fun t ht => ?_
+  refine setIntegral_congr_fun measurableSet_Ioi fun t ht => ?_
   simp_rw [← sub_add_eq_add_sub, cpow_add _ _ (ofReal_ne_zero.2 <| ne_of_gt ht), mul_smul]
 
 theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -116,7 +116,7 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     · simp [integral, mellin, hE]
   simp_rw [mellin]
   conv_rhs => rw [← integral_comp_rpow_Ioi _ ha, ← integral_smul]
-  refine setIntegral_congr measurableSet_Ioi fun t ht => ?_
+  refine setIntegral_congr_fun measurableSet_Ioi fun t ht => ?_
   dsimp only
   rw [← mul_smul, ← mul_assoc, inv_mul_cancel₀ (mt abs_eq_zero.1 ha), one_mul, ← smul_assoc,
     real_smul]
@@ -135,7 +135,7 @@ theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
       (by ring : 1 - s = -(s - 1)), cpow_neg, inv_mul_cancel_left₀]
     rw [Ne, cpow_eq_zero_iff, ofReal_eq_zero, not_and_or]
     exact Or.inl ha.ne'
-  rw [setIntegral_congr measurableSet_Ioi this, integral_smul,
+  rw [setIntegral_congr_fun measurableSet_Ioi this, integral_smul,
     integral_comp_mul_left_Ioi (fun u ↦ (u : ℂ) ^ (s - 1) • f u) _ ha,
     mul_zero, ← Complex.coe_smul, ← mul_smul, sub_eq_add_neg,
     cpow_add _ _ (ofReal_ne_zero.mpr ha.ne'), cpow_one, ofReal_inv,
@@ -256,7 +256,7 @@ theorem mellin_convergent_of_isBigO_scalar {a b : ℝ} {f : ℝ → ℝ} {s : �
   rw [this, integrableOn_union, integrableOn_union]
   refine ⟨⟨hc2', integrableOn_Icc_iff_integrableOn_Ioc.mp ?_⟩, hc1'⟩
   refine
-    (hfc.continuousOn_mul ?_ isOpen_Ioi).integrableOn_compact_subset
+    (hfc.continuousOn_mul ?_ isOpen_Ioi.isLocallyClosed).integrableOn_compact_subset
       (fun t ht => (hc2.trans_le ht.1 : 0 < t)) isCompact_Icc
   exact ContinuousAt.continuousOn fun t ht => continuousAt_rpow_const _ _ <| Or.inl <| ne_of_gt ht
 
@@ -327,7 +327,8 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     exact mellinConvergent_of_isBigO_rpow hfc hf_top hs_top hf_bot hs_bot
   have h3 : AEStronglyMeasurable (F' s) (volume.restrict <| Ioi 0) := by
     apply LocallyIntegrableOn.aestronglyMeasurable
-    refine hfc.continuousOn_smul isOpen_Ioi ((ContinuousAt.continuousOn fun t ht => ?_).mul ?_)
+    refine hfc.continuousOn_smul isOpen_Ioi.isLocallyClosed
+      ((ContinuousAt.continuousOn fun t ht => ?_).mul ?_)
     · exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
     · refine continuous_ofReal.comp_continuousOn ?_
       exact continuousOn_log.mono (subset_compl_singleton_iff.mpr not_mem_Ioi_self)
@@ -362,7 +363,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
       obtain ⟨w', hw1', hw2'⟩ := exists_between hj'
       refine mellin_convergent_of_isBigO_scalar ?_ ?_ hw1' ?_ hw2
       · simp_rw [mul_comm]
-        refine hfc.norm.mul_continuousOn ?_ isOpen_Ioi
+        refine hfc.norm.mul_continuousOn ?_ isOpen_Ioi.isLocallyClosed
         refine Continuous.comp_continuousOn _root_.continuous_abs (continuousOn_log.mono ?_)
         exact subset_compl_singleton_iff.mpr not_mem_Ioi_self
       · refine (isBigO_rpow_top_log_smul hw2' hf_top).norm_left.congr_left fun t ↦ ?_

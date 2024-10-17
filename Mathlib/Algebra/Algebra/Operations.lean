@@ -6,12 +6,12 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Opposite
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Opposites
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Order.Kleene
-import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
@@ -359,12 +359,12 @@ theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M
   · rintro ⟨_, hx, rfl⟩
     rw [DistribMulAction.toLinearMap_apply]
     refine Submodule.mul_induction_on hx (fun m hm n hn ↦ ?_) (fun _ _ hn hm ↦ ?_)
-    · rw [← smul_mul_smul x y m n]
+    · rw [mul_smul_mul_comm]
       exact mul_mem_mul (smul_mem_pointwise_smul m x M hm) (smul_mem_pointwise_smul n y N hn)
     · rw [smul_add]
       exact Submodule.add_mem _ hn hm
   · rintro _ ⟨m, hm, rfl⟩ _ ⟨n, hn, rfl⟩
-    erw [smul_mul_smul x y m n]
+    simp_rw [DistribMulAction.toLinearMap_apply, smul_mul_smul_comm]
     exact smul_mem_pointwise_smul _ _ _ (mul_mem_mul hm hn)
 
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
@@ -490,10 +490,10 @@ submodules. -/
 def equivOpposite : Submodule R Aᵐᵒᵖ ≃+* (Submodule R A)ᵐᵒᵖ where
   toFun p := op <| p.comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ)
   invFun p := p.unop.comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A)
-  left_inv p := SetLike.coe_injective <| rfl
-  right_inv p := unop_injective <| SetLike.coe_injective rfl
+  left_inv _ := SetLike.coe_injective <| rfl
+  right_inv _ := unop_injective <| SetLike.coe_injective rfl
   map_add' p q := by simp [comap_equiv_eq_map_symm, ← op_add]
-  map_mul' p q := congr_arg op <| comap_op_mul _ _
+  map_mul' _ _ := congr_arg op <| comap_op_mul _ _
 
 protected theorem map_pow {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') (n : ℕ) :
     map f.toLinearMap (M ^ n) = map f.toLinearMap M ^ n :=
@@ -647,7 +647,7 @@ theorem mem_div_iff_smul_subset {x : A} {I J : Submodule R A} : x ∈ I / J ↔ 
   ⟨fun h y ⟨y', hy', xy'_eq_y⟩ => by
     rw [← xy'_eq_y]
     apply h
-    assumption, fun h y hy => h (Set.smul_mem_smul_set hy)⟩
+    assumption, fun h _ hy => h (Set.smul_mem_smul_set hy)⟩
 
 theorem le_div_iff {I J K : Submodule R A} : I ≤ J / K ↔ ∀ x ∈ I, ∀ z ∈ K, x * z ∈ J :=
   Iff.refl _

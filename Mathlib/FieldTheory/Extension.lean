@@ -144,7 +144,7 @@ end
 
 variable (hK : ∀ s ∈ S, IsIntegral F s ∧ (minpoly F s).Splits (algebraMap F K))
   (hK' : ∀ s : E, IsIntegral F s ∧ (minpoly F s).Splits (algebraMap F K))
-  {L : IntermediateField F E}  (f : L →ₐ[F] K) (hL : L ≤ adjoin F S) {x : E} {y : K}
+  {L : IntermediateField F E} (f : L →ₐ[F] K) (hL : L ≤ adjoin F S) {x : E} {y : K}
 
 section
 include hK

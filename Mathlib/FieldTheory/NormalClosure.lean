@@ -6,6 +6,7 @@ Authors: Thomas Browning
 
 import Mathlib.FieldTheory.Normal
 import Mathlib.Order.Closure
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 /-!
 # Normal closures
 
@@ -173,7 +174,7 @@ variable [Algebra K L] [IsScalarTower F K L]
 
 noncomputable instance algebra :
     Algebra K (normalClosure F K L) :=
-  IntermediateField.algebra
+  IntermediateField.algebra'
     { ⨆ f : K →ₐ[F] L, f.fieldRange with
       algebraMap_mem' := fun r ↦ (toAlgHom F K L).fieldRange_le_normalClosure ⟨r, rfl⟩ }
 

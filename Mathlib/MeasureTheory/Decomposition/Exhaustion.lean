@@ -252,9 +252,9 @@ section SFinite
 lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT [SFinite ν]
     (hs_subset : s ⊆ (μ.sigmaFiniteSetWRT ν)ᶜ) (hνs : ν s ≠ 0) :
     μ s = ∞ := by
-  have ⟨ν', hν', hνν'⟩ := exists_absolutelyContinuous_isFiniteMeasure ν
+  have ⟨ν', hν', hνν', _⟩ := exists_isFiniteMeasure_absolutelyContinuous ν
   have h : ∃ s : Set α, MeasurableSet s ∧ SigmaFinite (μ.restrict s)
-      ∧ (∀ t (_ : t ⊆ sᶜ) (_ : ν t ≠ 0), μ t = ∞) := by
+      ∧ (∀ t ⊆ sᶜ, ν t ≠ 0 → μ t = ∞) := by
     refine ⟨μ.sigmaFiniteSetWRT' ν', measurableSet_sigmaFiniteSetWRT',
       sigmaFinite_restrict_sigmaFiniteSetWRT' _ _,
       fun t ht_subset hνt ↦ measure_eq_top_of_subset_compl_sigmaFiniteSetWRT' ht_subset ?_⟩
@@ -284,7 +284,7 @@ lemma measure_compl_sigmaFiniteSetWRT (hμν : μ ≪ ν) [SigmaFinite μ] [SFin
   by_contra h0
   refine ENNReal.top_ne_zero ?_
   rw [← h h0, ← Measure.iSup_restrict_spanningSets]
-  simp_rw [Measure.restrict_apply' (measurable_spanningSets μ _), ENNReal.iSup_eq_zero]
+  simp_rw [Measure.restrict_apply' (measurableSet_spanningSets μ _), ENNReal.iSup_eq_zero]
   intro i
   by_contra h_ne_zero
   have h_zero_top := measure_eq_top_of_subset_compl_sigmaFiniteSetWRT
@@ -306,9 +306,8 @@ lemma measurableSet_sigmaFiniteSet : MeasurableSet μ.sigmaFiniteSet :=
 lemma measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet [SFinite μ]
     (ht_subset : t ⊆ μ.sigmaFiniteSetᶜ) :
     μ t = 0 ∨ μ t = ∞ := by
-  by_cases h0 : μ t = 0
-  · exact Or.inl h0
-  · exact Or.inr <| measure_eq_top_of_subset_compl_sigmaFiniteSetWRT ht_subset h0
+  rw [or_iff_not_imp_left]
+  exact measure_eq_top_of_subset_compl_sigmaFiniteSetWRT ht_subset
 
 /-- The measure `μ.restrict μ.sigmaFiniteSetᶜ` takes only two values: 0 and ∞ . -/
 lemma restrict_compl_sigmaFiniteSet_eq_zero_or_top (μ : Measure α) [SFinite μ] (s : Set α) :

@@ -12,7 +12,7 @@ import Batteries.WF
 /-!
 # Unbundled relation classes
 
-In this file we prove some properties of `Is*` classes defined in `Init.Algebra.Classes`. The main
+In this file we prove some properties of `Is*` classes defined in `Order.Defs`. The main
 difference between these classes and the usual order classes (`Preorder` etc) is that usual classes
 extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
 
@@ -41,21 +41,21 @@ theorem antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b 
 
 /-- A version of `antisymm` with `r` explicit.
 
-This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there.  -/
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
 @[elab_without_expected_type]
 theorem antisymm_of (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → a = b :=
   antisymm
 
 /-- A version of `antisymm'` with `r` explicit.
 
-This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there.  -/
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
 @[elab_without_expected_type]
 theorem antisymm_of' (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → b = a :=
   antisymm'
 
 /-- A version of `comm` with `r` explicit.
 
-This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there.  -/
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
 theorem comm_of (r : α → α → Prop) [IsSymm α r] {a b : α} : r a b ↔ r b a :=
   comm
 
@@ -88,10 +88,6 @@ theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) 
 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
-
-@[deprecated (since := "2024-07-30")]
-theorem IsTotalPreorder.swap (r) [IsTotalPreorder α r] : IsTotalPreorder α (swap r) :=
-  { @IsPreorder.swap α r _, @IsTotal.swap α r _ with }
 
 @[deprecated (since := "2024-07-30")]
 theorem IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) :=
@@ -158,7 +154,7 @@ See note [reducible non-instances]. -/
 abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
   le x y := x = y ∨ r x y
   lt := r
-  le_refl x := Or.inl rfl
+  le_refl _ := Or.inl rfl
   le_trans x y z h₁ h₂ :=
     match y, z, h₁, h₂ with
     | _, _, Or.inl rfl, h₂ => h₂
@@ -170,7 +166,7 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
     | _, _, Or.inl rfl => rfl
     | _, Or.inr h₁, Or.inr h₂ => (asymm h₁ h₂).elim
   lt_iff_le_not_le x y :=
-    ⟨fun h => ⟨Or.inr h, not_or_of_not (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
+    ⟨fun h => ⟨Or.inr h, not_or_intro (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_left fun e => h₂ <| e ▸ Or.inl rfl⟩
 
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
@@ -184,7 +180,7 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x 
   { __ := partialOrderOfSO r
     le_total := fun x y =>
       match y, trichotomous_of r x y with
-      | y, Or.inl h => Or.inl (Or.inr h)
+      | _, Or.inl h => Or.inl (Or.inr h)
       | _, Or.inr (Or.inl rfl) => Or.inl (Or.inl rfl)
       | _, Or.inr (Or.inr h) => Or.inr (Or.inr h),
     toMin := minOfLe,
@@ -199,7 +195,7 @@ theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrd
 /-- A connected order is one satisfying the condition `a < c → a < b ∨ b < c`.
   This is recognizable as an intuitionistic substitute for `a ≤ b ∨ b ≤ a` on
   the constructive reals, and is also known as negative transitivity,
-  since the contrapositive asserts transitivity of the relation `¬ a < b`.  -/
+  since the contrapositive asserts transitivity of the relation `¬ a < b`. -/
 class IsOrderConnected (α : Type u) (lt : α → α → Prop) : Prop where
   /-- A connected order is one satisfying the condition `a < c → a < b ∨ b < c`. -/
   conn : ∀ a b c, lt a c → lt a b ∨ lt b c
@@ -461,7 +457,7 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
         | Or.inr (Or.inr h) => Or.inr <| Or.inr <| Prod.Lex.right _ h
         | Or.inr (Or.inl (.refl _)) => Or.inr <| Or.inl rfl
   trans a b c h₁ h₂ := by
-    cases' h₁ with a₁ a₂ b₁ b₂ ab a₁ b₁ b₂ ab <;> cases' h₂ with _ _ c₁ c₂ bc _ _ c₂ bc
+    rcases h₁ with ⟨a₂, b₂, ab⟩ | ⟨a₁, ab⟩ <;> rcases h₂ with ⟨c₁, c₂, bc⟩ | ⟨c₂, bc⟩
     exacts [.left _ _ (_root_.trans ab bc), .left _ _ ab, .left _ _ bc,
       .right _ (_root_.trans ab bc)]
 
@@ -776,11 +772,6 @@ instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
 instance [LinearOrder α] : IsTotal α (· ≥ ·) :=
   IsTotal.swap _
 
--- Porting note: this was `by infer_instance` before
-instance [LinearOrder α] : IsTotalPreorder α (· ≤ ·) where
-
-instance [LinearOrder α] : IsTotalPreorder α (· ≥ ·) where
-
 instance [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
 
 instance [LinearOrder α] : IsLinearOrder α (· ≥ ·) where
@@ -800,9 +791,6 @@ instance [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
 instance [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
-
-@[deprecated (since := "2024-07-30")]
-instance [LinearOrder α] : IsIncompTrans α (· < ·) := by infer_instance
 
 @[deprecated (since := "2024-07-30")]
 instance [LinearOrder α] : IsStrictWeakOrder α (· < ·) := by infer_instance

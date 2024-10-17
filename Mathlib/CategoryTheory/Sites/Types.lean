@@ -20,8 +20,6 @@ universe u
 
 namespace CategoryTheory
 
---open scoped CategoryTheory.Type -- Porting note: unknown namespace
-
 /-- A Grothendieck topology associated to the category of all types.
 A sieve is a covering iff it is jointly surjective. -/
 def typesGrothendieckTopology : GrothendieckTopology (Type u) where
@@ -50,7 +48,7 @@ theorem generate_discretePresieve_mem (α : Type u) :
 open Presieve
 
 theorem isSheaf_yoneda' {α : Type u} : IsSheaf typesGrothendieckTopology (yoneda.obj α) :=
-  fun β S hs x hx =>
+  fun β _ hs x hx =>
   ⟨fun y => x _ (hs y) PUnit.unit, fun γ f h =>
     funext fun z => by
       convert congr_fun (hx (𝟙 _) (fun _ => z) (hs <| f z) h rfl) PUnit.unit using 1,
@@ -78,7 +76,7 @@ def eval (P : Type uᵒᵖ ⥤ Type u) (α : Type u) (s : P.obj (op α)) (x : α
 noncomputable def typesGlue (S : Type uᵒᵖ ⥤ Type u) (hs : IsSheaf typesGrothendieckTopology S)
     (α : Type u) (f : α → S.obj (op PUnit)) : S.obj (op α) :=
   (hs.isSheafFor _ _ (generate_discretePresieve_mem α)).amalgamate
-    (fun β g hg => S.map (↾fun _ => PUnit.unit).op <| f <| g <| Classical.choose hg)
+    (fun _ g hg => S.map (↾fun _ => PUnit.unit).op <| f <| g <| Classical.choose hg)
     fun β γ δ g₁ g₂ f₁ f₂ hf₁ hf₂ h =>
     (hs.isSheafFor _ _ (generate_discretePresieve_mem δ)).isSeparatedFor.ext fun ε g ⟨x, _⟩ => by
       have : f₁ (Classical.choose hf₁) = f₂ (Classical.choose hf₂) :=
@@ -174,6 +172,6 @@ theorem typesGrothendieckTopology_eq_canonical :
   have : (fun _ => ULift.up true) = fun _ => ULift.up false :=
     (hs PUnit fun _ => x).isSeparatedFor.ext
       fun β f hf => funext fun y => hsx.elim <| S.2 hf fun _ => y
-  simp [Function.funext_iff] at this
+  simp [funext_iff] at this
 
 end CategoryTheory
