@@ -29,7 +29,7 @@ can be found on the Mathlib 3 branch `von_neumann_v2`.
 
 universe u
 
-variable {x y z w : ZFSet.{u}}
+variable {x y z : ZFSet.{u}}
 
 namespace ZFSet
 
