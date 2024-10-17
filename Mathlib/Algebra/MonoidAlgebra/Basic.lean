@@ -320,7 +320,7 @@ lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R
     [Algebra k S] [Semiring T] [Algebra k T] [Monoid G] (f : R →ₐ[k] S) (g : S →ₐ[k] T) :
     mapRangeAlgHom (G := G) (g.comp f) =
       (mapRangeAlgHom (G := G) g).comp (mapRangeAlgHom (G := G) f) := by
-  ext; simp [mapRange_comp]
+  ext; simp
 
 /-- If `f : R ≃ₐ[k] S` is an algebra equivalence between two `k`-algebras, then
 `Finsupp.mapRange f` is an algebra equivalence between their additive monoid algebras. -/
