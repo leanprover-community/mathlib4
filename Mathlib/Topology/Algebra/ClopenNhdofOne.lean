@@ -7,11 +7,11 @@ import Mathlib.GroupTheory.Index
 import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.OpenSubgroup
 /-!
-## The Open Normal Subgroup in a Clopen Neighborhood of One
-This file define `OpenNormalSubgroupSubClopenNhdsOfOne` , which strengthen the existing result of
-`OpenSubgroupSubClopenNhdsOfOne` into open normal subgroup.
+# Open normal subgroup in a clopen neighborhood of One
+This file defines `OpenNormalSubgroupSubClopenNhdsOfOne`, which strengthens the result of
+`OpenSubgroupSubClopenNhdsOfOne` into open *normal* subgroups.
 
-This file is split out because the need of more imports.
+This file is split out from the file `OpenSubgroup` because the need of more imports.
 -/
 
 namespace TopologicalGroup

@@ -467,13 +467,16 @@ open scoped Pointwise
 variable {G : Type*} [Group G]
 
 /-- Define the largest symmetric (self inverse) subset of a set. -/
+@[to_additive]
 def symmCore (V : Set G) : Set G := V ∩ V⁻¹
 
+@[to_additive]
 lemma symmCore_spec (V : Set G) : (symmCore V) = (symmCore V)⁻¹ := by
   ext
   simp only [symmCore, Set.mem_inter_iff, Set.mem_inv, Set.inter_inv, inv_inv, and_comm]
 
-lemma inter_symmCore_symm {α : Type*}
+@[to_additive]
+lemma iInter_symmCore_symm {α : Type*}
     (S : Set α) (V : α → Set G) : ⋂ a ∈ S, symmCore (V a) = (⋂ a ∈ S, symmCore (V a))⁻¹ := by
   ext x
   constructor <;>
@@ -622,7 +625,7 @@ lemma isopen [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W
 lemma symm [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
     (openSymmSubClopenNhdsOfOne WClopen einW) = (openSymmSubClopenNhdsOfOne WClopen einW)⁻¹ := by
   simp only [openSymmSubClopenNhdsOfOne, nhdProdSideOneCore]
-  apply inter_symmCore_symm
+  apply iInter_symmCore_symm
 
 lemma one_mem [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
     1 ∈ (openSymmSubClopenNhdsOfOne WClopen einW) := by
