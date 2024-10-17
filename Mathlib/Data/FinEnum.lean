@@ -56,6 +56,54 @@ def ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) : FinEnum 
 def toList (α) [FinEnum α] : List α :=
   (List.finRange (card α)).map (equiv).symm
 
+/-- Any two enumerations of the same type have the same length. -/
+theorem card_eq_card (α : Type u) (e₁ e₂ : FinEnum α) : e₁.card = e₂.card :=
+  Fin.equiv_iff_eq.mp ⟨e₁.equiv.symm.trans e₂.equiv⟩
+
+/-- Any enumeration of an empty type has length 0. -/
+theorem card_eq_zero_of_IsEmpty (α : Type u) [FinEnum α] [IsEmpty α] : card α = 0 :=
+  match h : card α with
+  | 0 => rfl
+  | _ + 1 => ‹IsEmpty α›.elim ((h ▸ equiv).symm 0)
+
+/-- Any enumeration of a non-empty type has a length with an actual predecessor. -/
+def card_eq_succ_of_Nonempty (α : Type u) [FinEnum α] [Nonempty α] : { n : ℕ // card α = n + 1 } :=
+  match h : card α with
+  | 0 => False.elim <| ‹Nonempty α›.elim ((h ▸ equiv) · |>.elim0)
+  | n + 1 => ⟨n, rfl⟩
+
+/-- Any enumeration of a type with unique inhabitant has length 1. -/
+theorem card_eq_one_of_Unique (α : Type u) [FinEnum α] [Unique α] : card α = 1 :=
+  match card_eq_succ_of_Nonempty α with
+  | ⟨0, h⟩ => h
+  | ⟨n + 1, h⟩ =>
+    let α₀ : α := equiv.symm ⟨0, h ▸ (n + 1).succ_pos⟩
+    let α₁ : α := equiv.symm ⟨1, h ▸ Nat.succ_lt_succ (n.succ_pos)⟩
+    Nat.noConfusion <| Fin.mk.inj <| equiv.symm.injective <| Subsingleton.allEq α₀ α₁
+
+instance [IsEmpty α] : Unique (FinEnum α) where
+  default := ⟨0, Equiv.equivOfIsEmpty α (Fin 0)⟩
+  uniq e := by
+    show FinEnum.mk e.1 e.2 = _
+    congr 1
+    · exact card_eq_zero_of_IsEmpty α
+    · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
+      exact congrArg (α ≃ Fin ·) <| card_eq_zero_of_IsEmpty α
+    · funext x
+      exact ‹IsEmpty α›.elim x
+
+instance [Unique α] : Unique (FinEnum α) where
+  default := ⟨1, Equiv.equivOfUnique α (Fin 1)⟩
+  uniq e := by
+    show FinEnum.mk e.1 e.2 = _
+    congr 1
+    · exact card_eq_one_of_Unique α
+    · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
+      exact congrArg (α ≃ Fin ·) <| card_eq_one_of_Unique α
+    · funext x y
+      cases decEq x y <;> cases decidableEq_of_subsingleton x y <;>
+      first | rfl | contradiction
+
 open Function
 
 @[simp]
@@ -80,11 +128,24 @@ noncomputable def ofInjective {α β} (f : α → β) [DecidableEq α] [FinEnum 
       use f x
       simp only [h, Function.partialInv_left])
 
+instance uliftId [FinEnum α] : FinEnum (ULift α) :=
+  ⟨card α, Equiv.ulift.trans equiv⟩
+
+theorem card_ulift [FinEnum α] [FinEnum (ULift α)] : card (ULift α) = card α :=
+  Fin.equiv_iff_eq.mp ⟨equiv.symm.trans Equiv.ulift |>.trans equiv⟩
+
+theorem uliftId_equiv [FinEnum α] (i : Fin (card α)) :
+    equiv.symm i = (uliftId.equiv.symm i).down := rfl
+
+instance [IsEmpty α] : FinEnum α := default
+
 instance pempty : FinEnum PEmpty :=
   ofList [] fun x => PEmpty.elim x
 
 instance empty : FinEnum Empty :=
   ofList [] fun x => Empty.elim x
+
+instance [Unique α] : FinEnum α := default
 
 instance punit : FinEnum PUnit :=
   ofList [PUnit.unit] fun x => by cases x; simp
@@ -97,6 +158,8 @@ instance sum {β} [FinEnum α] [FinEnum β] : FinEnum (α ⊕ β) :=
 
 instance fin {n} : FinEnum (Fin n) :=
   ofList (List.finRange _) (by simp)
+
+theorem card_fin {n} [FinEnum (Fin n)] : card (Fin n) = n := Fin.equiv_iff_eq.mp ⟨equiv.symm⟩
 
 instance Quotient.enum [FinEnum α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     FinEnum (Quotient s) :=
