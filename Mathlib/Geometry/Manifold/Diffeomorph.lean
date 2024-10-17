@@ -497,14 +497,14 @@ def toTransDiffeomorph (e : E ≃ₘ[𝕜] F) : M ≃ₘ⟮I, I.transDiffeomorph
     · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transDiffeomorph,
         (extChartAt I x).right_inv hy.1]
     · exact
-      ⟨(extChartAt I x).map_source (mem_extChartAt_source I x), trivial, by simp only [mfld_simps]⟩
+      ⟨(extChartAt I x).map_source (mem_extChartAt_source x), trivial, by simp only [mfld_simps]⟩
   contMDiff_invFun x := by
     refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
     refine e.symm.contDiff.contDiffWithinAt.congr' (fun y hy => ?_) ?_
     · simp only [mem_inter_iff, I.extChartAt_transDiffeomorph_target] at hy
       simp only [Equiv.coe_refl, Equiv.refl_symm, id, (· ∘ ·),
         I.coe_extChartAt_transDiffeomorph_symm, (extChartAt I x).right_inv hy.1]
-    exact ⟨(extChartAt _ x).map_source (mem_extChartAt_source _ x), trivial, by
+    exact ⟨(extChartAt _ x).map_source (mem_extChartAt_source x), trivial, by
       simp only [e.symm_apply_apply, Equiv.refl_symm, Equiv.coe_refl, mfld_simps]⟩
 
 variable {I M}
