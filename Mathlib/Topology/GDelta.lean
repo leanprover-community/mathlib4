@@ -266,6 +266,17 @@ lemma isMeagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagr
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
+theorem isMeagre_sUnion {S : Set (Set X)} (hct : S.Countable)
+    (hS : ∀ s ∈ S, IsMeagre s) : IsMeagre (⋃₀ S) := by
+  rw [IsMeagre, compl_sUnion, countable_sInter_mem (hct.image _)]
+  rintro _ ⟨_, hs, rfl⟩
+  exact hS _ hs
+
+theorem exists_of_not_isMeagre_sUnion {S : Set (Set X)} (hct : S.Countable)
+    (h : ¬ IsMeagre (⋃₀ S)) : ∃ s ∈ S, ¬ IsMeagre s := by
+  contrapose! h
+  exact isMeagre_sUnion hct h
+
 /-- A set is meagre iff it is contained in a countable union of nowhere dense sets. -/
 lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
     IsMeagre s ↔ ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
