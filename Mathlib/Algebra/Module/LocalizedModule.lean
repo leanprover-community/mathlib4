@@ -577,20 +577,6 @@ theorem IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalize
       EmbeddingLike.apply_eq_iff_eq] at h
     exact hf.exists_of_eq h
 
-/--
-if `f : M → Mₛ` makes `Mₛ` the localized module of `M` at `S` and `e : M' ≅ M` then
-`f ∘ e : M' → Mₛ` makes `Mₛ` the localized module of `M'` at `S`.
--/
-theorem IsLocalizedModule.of_linearEquiv' (e : M'' ≃ₗ[R] M) [hf : IsLocalizedModule S f] :
-    IsLocalizedModule S (f ∘ₗ e : M'' →ₗ[R] M') where
-  map_units s := hf.map_units s
-  surj' x := by
-    obtain ⟨p, h⟩ := hf.surj' x
-    refine ⟨⟨e.symm p.1, p.2⟩, by simp [h]⟩
-  exists_of_eq {x y} h := by
-    obtain ⟨⟨c, hc⟩, eq⟩ := hf.exists_of_eq h
-    refine ⟨⟨c, hc⟩, e.injective (by simpa using eq)⟩
-
 variable (M) in
 lemma isLocalizedModule_id (R') [CommSemiring R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
     [IsScalarTower R R' M] : IsLocalizedModule S (.id : M →ₗ[R] M) where
