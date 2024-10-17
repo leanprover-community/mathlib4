@@ -10,8 +10,8 @@ import Mathlib.FieldTheory.Normal
 /-!
 # Conjugate roots
 
-Given two elements `x` and `y` of some `K`-algebra, these two elements are *conjugate roots* over `K`
-if they have the same minimal polynomial over `K`.
+Given two elements `x` and `y` of some `K`-algebra, these two elements are *conjugate roots*
+over `K` if they have the same minimal polynomial over `K`.
 
 ## Main definitions
 
@@ -42,15 +42,15 @@ variable [Algebra K S] [Algebra K L] [Algebra K A] [Algebra L S]
 
 variable (R) in
 /--
-We say that `x'` is a conjugate root of `x` over `K` if the minimal polynomial of `x` is the
-same as the minimal polynomial of `x'`.
+We say that `y` is a conjugate root of `x` over `K` if the minimal polynomial of `x` is the
+same as the minimal polynomial of `y`.
 -/
-def IsConjRoot (x x' : A) : Prop := (minpoly R x) = (minpoly R x')
+def IsConjRoot (x y : A) : Prop := (minpoly R x) = (minpoly R y)
 
 /--
 The definition of conjugate roots.
 -/
-theorem isConjRoot_def {x x' : A} : IsConjRoot R x x' ↔ minpoly R x = minpoly R x' := Iff.rfl
+theorem isConjRoot_def {x y : A} : IsConjRoot R x y ↔ minpoly R x = minpoly R y := Iff.rfl
 
 namespace IsConjRoot
 
@@ -60,45 +60,45 @@ Every element is a conjugate root of itself.
 theorem refl {x : A} : IsConjRoot R x x := rfl
 
 /--
-If `x'` is a conjugate root of `x`, then `x` is also a conjugate root of `x'`.
+If `y` is a conjugate root of `x`, then `x` is also a conjugate root of `y`.
 -/
-theorem symm {x x' : A} (h : IsConjRoot R x x') : IsConjRoot R x' x := Eq.symm h
+theorem symm {x y : A} (h : IsConjRoot R x y) : IsConjRoot R y x := Eq.symm h
 
 /--
-If `x'` is a conjugate root of `x` and `x''` is a conjugate root of `x'`, then `x''` is a conjugate
+If `y` is a conjugate root of `x` and `z` is a conjugate root of `y`, then `z` is a conjugate
 root of `x`.
 -/
-theorem trans {x x' x'': A} (h₁ : IsConjRoot R x x') (h₂ : IsConjRoot R x' x'') :
-    IsConjRoot R x x'' := Eq.trans h₁ h₂
+theorem trans {x y y': A} (h₁ : IsConjRoot R x y) (h₂ : IsConjRoot R y y') :
+    IsConjRoot R x y' := Eq.trans h₁ h₂
 
 /--
-Let `p` be the minimal polynomial of `x`. If `x'` is a conjugate root of `x`, then `p x' = 0`.
+Let `p` be the minimal polynomial of `x`. If `y` is a conjugate root of `x`, then `p y = 0`.
 -/
-theorem aeval_eq_zero {x x' : A} (h : IsConjRoot R x x') : aeval x' (minpoly R x) = 0 :=
-  h ▸ minpoly.aeval R x'
+theorem aeval_eq_zero {x y : A} (h : IsConjRoot R x y) : aeval y (minpoly R x) = 0 :=
+  h ▸ minpoly.aeval R y
 
 /--
-Let `r` be an element of the base ring. If `x'` is a conjugate root of `x`, then `x' + r` is a
+Let `r` be an element of the base ring. If `y` is a conjugate root of `x`, then `y + r` is a
 conjugate root of `x + r`.
 -/
-theorem add_algebraMap {x x' : S} (r : K) (h : IsConjRoot K x x') :
-    IsConjRoot K (x + algebraMap K S r) (x' + algebraMap K S r) := by
-  rw [isConjRoot_def, minpoly.add_algebraMap x r, minpoly.add_algebraMap x' r, h]
+theorem add_algebraMap {x y : S} (r : K) (h : IsConjRoot K x y) :
+    IsConjRoot K (x + algebraMap K S r) (y + algebraMap K S r) := by
+  rw [isConjRoot_def, minpoly.add_algebraMap x r, minpoly.add_algebraMap y r, h]
 
 /--
-Let `r` be an element of the base ring. If `x'` is a conjugate root of `x`, then `x' - r` is a
+Let `r` be an element of the base ring. If `y` is a conjugate root of `x`, then `y - r` is a
 conjugate root of `x - r`.
 -/
-theorem sub_algebraMap {x x' : S} (r : K) (h : IsConjRoot K x x') :
-    IsConjRoot K (x - algebraMap K S r) (x' - algebraMap K S r) := by
+theorem sub_algebraMap {x y : S} (r : K) (h : IsConjRoot K x y) :
+    IsConjRoot K (x - algebraMap K S r) (y - algebraMap K S r) := by
   simpa only [sub_eq_add_neg, map_neg] using add_algebraMap (-r) h
 
 /--
-If `x'` is a conjugate root of `x`, then `-x'` is a conjugate root of `-x`.
+If `y` is a conjugate root of `x`, then `-y` is a conjugate root of `-x`.
 -/
-theorem neg {x x' : S} (h : IsConjRoot K x x') :
-    IsConjRoot K (-x) (-x') := by
-  rw [isConjRoot_def, minpoly.neg x, minpoly.neg x', h]
+theorem neg {x y : S} (h : IsConjRoot K x y) :
+    IsConjRoot K (-x) (-y) := by
+  rw [isConjRoot_def, minpoly.neg x, minpoly.neg y, h]
 
 end IsConjRoot
 
@@ -109,35 +109,35 @@ variable [IsDomain S]
 /--
 A variant of `isConjRoot_algHom_iff`, only assuming `Function.Injective f`,
 instead of `DivisionRing A`.
-If `x'` is a conjugate root of `x` and `f` is an injective `R`-algebra homomorphism, then `f x'` is
+If `y` is a conjugate root of `x` and `f` is an injective `R`-algebra homomorphism, then `f y` is
 a conjugate root of `f x`.
 -/
-theorem isConjRoot_algHom_iff' {x x' : A} {f : A →ₐ[R] B}
-    (hf : Function.Injective f) : IsConjRoot R (f x) (f x') ↔ IsConjRoot R x x' := by
+theorem isConjRoot_algHom_iff' {x y : A} {f : A →ₐ[R] B}
+    (hf : Function.Injective f) : IsConjRoot R (f x) (f y) ↔ IsConjRoot R x y := by
   rw [isConjRoot_def, isConjRoot_def, algHom_eq f hf, algHom_eq f hf]
 
 /--
-If `x'` is a conjugate root of `x` in some division ring and `f` is a `R`-algebra homomorphism, then
-`f x'` is a conjugate root of `f x`.
+If `y` is a conjugate root of `x` in some division ring and `f` is a `R`-algebra homomorphism, then
+`f y` is a conjugate root of `f x`.
 -/
 theorem isConjRoot_algHom_iff {A} [DivisionRing A] [Algebra R A]
-    [Nontrivial B] {x x' : A} (f : A →ₐ[R] B) : IsConjRoot R (f x) (f x') ↔ IsConjRoot R x x' :=
+    [Nontrivial B] {x y : A} (f : A →ₐ[R] B) : IsConjRoot R (f x) (f y) ↔ IsConjRoot R x y :=
   isConjRoot_algHom_iff' f.injective
 
 /--
-Let `p` be the minimal polynomial of an integral element `x`. If `p x'` = 0, then `x'` is a
+Let `p` be the minimal polynomial of an integral element `x`. If `p y` = 0, then `y` is a
 conjugate root of `x`.
 -/
-theorem isConjRoot_of_aeval_eq_zero [IsDomain A] {x x' : A} (hx : IsIntegral K x)
-    (h : aeval x' (minpoly K x) = 0) : IsConjRoot K x x' :=
+theorem isConjRoot_of_aeval_eq_zero [IsDomain A] {x y : A} (hx : IsIntegral K x)
+    (h : aeval y (minpoly K x) = 0) : IsConjRoot K x y :=
   minpoly.eq_of_irreducible_of_monic (minpoly.irreducible hx) h (minpoly.monic hx)
 
 /--
-Let `p` be the minimal polynomial of an integral element `x`. Then `x'` is a conjugate root of `x`
-if and only if `p x' = 0`.
+Let `p` be the minimal polynomial of an integral element `x`. Then `y` is a conjugate root of `x`
+if and only if `p y = 0`.
 -/
-theorem isConjRoot_iff_aeval_eq_zero [IsDomain A] {x x' : A}
-    (h : IsIntegral K x) : IsConjRoot K x x' ↔ aeval x' (minpoly K x) = 0 :=
+theorem isConjRoot_iff_aeval_eq_zero [IsDomain A] {x y : A}
+    (h : IsIntegral K x) : IsConjRoot K x y ↔ aeval y (minpoly K x) = 0 :=
   ⟨IsConjRoot.aeval_eq_zero, isConjRoot_of_aeval_eq_zero h⟩
 
 /--
@@ -155,61 +155,61 @@ theorem isConjRoot_of_algEquiv₂ (x : A) (s₁ s₂ : A ≃ₐ[R] A) : IsConjRo
   isConjRoot_def.mpr <| (minpoly.algEquiv_eq s₂ x) ▸ (minpoly.algEquiv_eq s₁ x)
 
 /--
-Let `L / K` be a normal field extension. For any two elements `x` and `x'` in `L`, if `x'` is a
+Let `L / K` be a normal field extension. For any two elements `x` and `y` in `L`, if `y` is a
 conjugate root of `x`, then there exists an `K`-automorphism `σ : L ≃ₐ[K] L` such
-that `x' = σ x`.
+that `y = σ x`.
 -/
-theorem IsConjRoot.exists_algEquiv [Normal K L] {x x': L} (h : IsConjRoot K x x') :
-    ∃ σ : L ≃ₐ[K] L, σ x = x' := by
+theorem IsConjRoot.exists_algEquiv [Normal K L] {x y: L} (h : IsConjRoot K x y) :
+    ∃ σ : L ≃ₐ[K] L, σ x = y := by
   obtain ⟨σ, hσ⟩ :=
-    exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K x')
+    exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K y)
   exact ⟨AlgEquiv.ofBijective σ (σ.normal_bijective _ _ _), hσ⟩
 
 /--
-Let `L / K` be a normal field extension. For any two elements `x` and `x'` in `L`, `x'` is a
+Let `L / K` be a normal field extension. For any two elements `x` and `y` in `L`, `y` is a
 conjugate root of `x` if and only if there exists an `K`-automorphism `σ : L ≃ₐ[K] L` such
-that `x' = σ x`.
+that `y = σ x`.
 -/
-theorem isConjRoot_iff_exists_algEquiv [Normal K L] {x x' : L} :
-    IsConjRoot K x x' ↔ ∃ σ : L ≃ₐ[K] L, σ x = x' :=
+theorem isConjRoot_iff_exists_algEquiv [Normal K L] {x y : L} :
+    IsConjRoot K x y ↔ ∃ σ : L ≃ₐ[K] L, σ x = y :=
   ⟨exists_algEquiv, fun ⟨_, h⟩ => h ▸ isConjRoot_of_algEquiv _ _⟩
 
 /--
-Let `S / L / K` be a tower of extensions. For any two elements `x'` and `x` in `S`, if `x'` is a
-conjugate root of `x` over `L`, then `x'` is also a conjugate root of `x` over
+Let `S / L / K` be a tower of extensions. For any two elements `y` and `x` in `S`, if `y` is a
+conjugate root of `x` over `L`, then `y` is also a conjugate root of `x` over
 `K`.
 -/
-theorem IsConjRoot.of_isScalarTower [IsScalarTower K L S] {x x' : S} (hx : IsIntegral K x)
-    (h : IsConjRoot L x x') : IsConjRoot K x x' :=
-  isConjRoot_of_aeval_eq_zero hx <| minpoly.aeval_of_isScalarTower K x x' (aeval_eq_zero h)
+theorem IsConjRoot.of_isScalarTower [IsScalarTower K L S] {x y : S} (hx : IsIntegral K x)
+    (h : IsConjRoot L x y) : IsConjRoot K x y :=
+  isConjRoot_of_aeval_eq_zero hx <| minpoly.aeval_of_isScalarTower K x y (aeval_eq_zero h)
 
 /--
-`x'` is a conjugate root of `x` over `K` if and only if `x'` is a root of the minimal polynomial of
+`y` is a conjugate root of `x` over `K` if and only if `y` is a root of the minimal polynomial of
 `x`. This is variant of `isConjRoot_iff_aeval_eq_zero`.
 -/
-theorem isConjRoot_iff_mem_aroots {x x' : S} (h : IsIntegral K x) :
-    IsConjRoot K x x' ↔ x' ∈ (minpoly K x).aroots S := by
+theorem isConjRoot_iff_mem_aroots {x y : S} (h : IsIntegral K x) :
+    IsConjRoot K x y ↔ y ∈ (minpoly K x).aroots S := by
   rw [Polynomial.mem_aroots, isConjRoot_iff_aeval_eq_zero h]
   simp only [iff_and_self]
   exact fun _ => minpoly.ne_zero h
 
 /--
-`x'` is a conjugate root of `x` over `K` if and only if `x'` is a root of the minimal polynomial of
+`y` is a conjugate root of `x` over `K` if and only if `y` is a root of the minimal polynomial of
 `x`. This is variant of `isConjRoot_iff_aeval_eq_zero`.
 -/
-theorem isConjRoot_iff_mem_minpoly_rootSet {x x' : S}
-    (h : IsIntegral K x) : IsConjRoot K x x' ↔ x' ∈ (minpoly K x).rootSet S :=
+theorem isConjRoot_iff_mem_minpoly_rootSet {x y : S}
+    (h : IsIntegral K x) : IsConjRoot K x y ↔ y ∈ (minpoly K x).rootSet S :=
   (isConjRoot_iff_mem_aroots h).trans (by simp [rootSet])
 
 namespace IsConjRoot
 
 /--
-If `x'` is a conjugate root of an integral element `x` over `R`, then `x'` is also integral
+If `y` is a conjugate root of an integral element `x` over `R`, then `y` is also integral
 over `R`.
 -/
-theorem isIntegral {x x' : A} (hx : IsIntegral R x) (h : IsConjRoot R x x') :
-    IsIntegral R x' :=
-  ⟨minpoly R x, minpoly.monic hx, h ▸ minpoly.aeval R x'⟩
+theorem isIntegral {x y : A} (hx : IsIntegral R x) (h : IsConjRoot R x y) :
+    IsIntegral R y :=
+  ⟨minpoly R x, minpoly.monic hx, h ▸ minpoly.aeval R y⟩
 
 /--
 A variant of `IsConjRoot.eq_of_isConjRoot_algebraMap`, only assuming `Nontrivial R`,
@@ -271,17 +271,17 @@ namespace IsConjRoot
 
 /--
 A variant of `IsConjRoot.ne_zero'`, only assuming `Nontrivial R`,
-`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. If `x'` is
-a conjugate root of a nonzero element `x`, then `x'` is not zero.
+`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. If `y` is
+a conjugate root of a nonzero element `x`, then `y` is not zero.
 -/
-theorem ne_zero' [Nontrivial R] [NoZeroSMulDivisors R S] {x x' : S} (hx : x ≠ 0)
-    (h : IsConjRoot R x x') (hf : Function.Injective (algebraMap R S)) : x' ≠ 0 :=
+theorem ne_zero' [Nontrivial R] [NoZeroSMulDivisors R S] {x y : S} (hx : x ≠ 0)
+    (h : IsConjRoot R x y) (hf : Function.Injective (algebraMap R S)) : y ≠ 0 :=
   fun h' => hx (eq_zero' (h' ▸ h.symm) hf)
 
 /--
-If `x'` is a conjugate root of a nonzero element `x`, then `x'` is not zero.
+If `y` is a conjugate root of a nonzero element `x`, then `y` is not zero.
 -/
-theorem ne_zero {x x' : S} (hx : x ≠ 0) (h : IsConjRoot K x x') : x' ≠ 0 :=
+theorem ne_zero {x y : S} (hx : x ≠ 0) (h : IsConjRoot K x y) : y ≠ 0 :=
   ne_zero' hx h (algebraMap K S).injective
 
 end IsConjRoot
@@ -293,18 +293,18 @@ root of `x` over `K` in `L` which is not equal to `x` itself.
 -/
 theorem not_mem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
     (sp : (minpoly K x).Splits (algebraMap K L)) :
-    x ∉ (⊥ : Subalgebra K L) ↔ ∃ x' : L, x ≠ x' ∧ IsConjRoot K x x' := by
+    x ∉ (⊥ : Subalgebra K L) ↔ ∃ y : L, x ≠ y ∧ IsConjRoot K x y := by
   calc
     _ ↔ 2 ≤ (minpoly K x).natDegree := (minpoly.two_le_natDegree_iff h.isIntegral).symm
     _ ↔ 2 ≤ Fintype.card ((minpoly K x).rootSet L) :=
       (Polynomial.card_rootSet_eq_natDegree h sp) ▸ Iff.rfl
     _ ↔ Nontrivial ((minpoly K x).rootSet L) := Fintype.one_lt_card_iff_nontrivial
-    _ ↔ ∃ x' : ((minpoly K x).rootSet L), ↑x' ≠ x :=
+    _ ↔ ∃ y : ((minpoly K x).rootSet L), ↑y ≠ x :=
       (nontrivial_iff_exists_ne ⟨x, mem_rootSet.mpr ⟨minpoly.ne_zero h.isIntegral,
-          minpoly.aeval K x⟩⟩).trans ⟨fun ⟨x', hx'⟩ => ⟨x', Subtype.coe_ne_coe.mpr hx'⟩,
-          fun ⟨x', hx'⟩ => ⟨x', Subtype.coe_ne_coe.mp hx'⟩⟩
+          minpoly.aeval K x⟩⟩).trans ⟨fun ⟨y, hy⟩ => ⟨y, Subtype.coe_ne_coe.mpr hy⟩,
+          fun ⟨y, hy⟩ => ⟨y, Subtype.coe_ne_coe.mp hy⟩⟩
     _ ↔ _ :=
-      ⟨fun ⟨⟨x', hx'⟩, hne⟩ => ⟨x', ⟨hne.symm,
-          (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mpr hx'⟩⟩,
-          fun ⟨x', hne, hx'⟩ => ⟨⟨x',
-          (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mp hx'⟩, hne.symm⟩⟩
+      ⟨fun ⟨⟨y, hy⟩, hne⟩ => ⟨y, ⟨hne.symm,
+          (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mpr hy⟩⟩,
+          fun ⟨y, hne, hy⟩ => ⟨⟨y,
+          (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mp hy⟩, hne.symm⟩⟩
