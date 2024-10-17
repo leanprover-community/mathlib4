@@ -313,7 +313,8 @@ instance : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-lemma apply_coe{i : ι} : f i = f.toFun i := rfl
+@[simp]
+lemma apply_coe{i : ι} : f.toFun i = f i := rfl
 
 protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
   f.locallyFinite'
