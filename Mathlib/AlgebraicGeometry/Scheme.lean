@@ -726,7 +726,7 @@ open LocalRing
 
 @[simp]
 lemma Spec_closedPoint {R S : CommRingCat} [LocalRing R] [LocalRing S]
-    {f : R ⟶ S} [IsLocalRingHom f] : (Spec.map f).base (closedPoint S) = closedPoint R :=
+    {f : R ⟶ S} [IsLocalHom f] : (Spec.map f).base (closedPoint S) = closedPoint R :=
   LocalRing.comap_closedPoint f
 
 end LocalRing
