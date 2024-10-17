@@ -185,7 +185,7 @@ theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
   rw [← Action.forget_map, Functor.map_inv]
   apply IsIso.inv_eq_of_hom_inv_id
-  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _
+  exact LinearMap.ext fun x ↦ LinearEquiv.symm_apply_apply _ _
 
 @[simp]
 theorem linearization_ε_hom : (linearization k G).ε.hom = Finsupp.lsingle PUnit.unit :=

@@ -82,7 +82,7 @@ noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
 @[simp]
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
-  -- Porting note (#10959): The whole proof was just `simp [toKernelSubobject]`.
+  -- Porting note (#10959): the whole proof was just `simp [toKernelSubobject]`.
   suffices ((arrow ((kernelSubobject f))) ∘ (kernelSubobjectIso f ≪≫ kernelIsoKer f).inv) x = x by
     convert this
   rw [Iso.trans_inv, ← coe_comp, Category.assoc]
