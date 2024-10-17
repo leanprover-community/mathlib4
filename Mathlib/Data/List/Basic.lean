@@ -1010,13 +1010,6 @@ theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 :=
   (drop_eq_getElem_cons n.2).symm
 
-@[simp]
-theorem take_length_of_le {l : List α} {m : ℕ} (h : m ≤ l.length) :
-    (take m l).length = m := by
-  induction l with
-  | nil => simp_all only [length_nil, le_zero_eq, take_nil]
-  | cons a l _ => simp_all only [length_take, Nat.min_eq_left, implies_true, length_cons]
-
 section TakeI
 
 variable [Inhabited α]

@@ -3,14 +3,13 @@ Copyright (c) 2024 Quang Dao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
+import Batteries.Data.List.OfFn
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.DropRight
 
 /-!
 # Take operations on tuples
 
-We define the `take` operation on `n`-tuples, which restricts a tuple to its first `m` elements.
+We define the `take` operations on `n`-tuples, which restrict a tuple to its first `m` elements.
 
 * `Fin.take`: Given `h : m ≤ n`, `Fin.take m h v` for a `n`-tuple `v = (v 0, ..., v (n - 1))` is the
   `m`-tuple `(v 0, ..., v (m - 1))`.
@@ -20,9 +19,9 @@ namespace Fin
 
 open Function
 
-section Take
-
 variable {n : ℕ} {α : Fin n → Sort*}
+
+section Take
 
 /-- Take the first `m` elements of an `n`-tuple where `m ≤ n`, returning an `m`-tuple. -/
 def take (m : ℕ) (h : m ≤ n) (v : (i : Fin n) → α i) : (i : Fin m) → α (castLE h i) :=
@@ -37,14 +36,20 @@ theorem take_zero (v : (i : Fin n) → α i) : take 0 n.zero_le v = fun i ↦ el
   ext i; exact elim0 i
 
 @[simp]
-theorem take_succ {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) :
+theorem take_one {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) :
+    take 1 (Nat.le_add_left 1 n) v = (fun i => v (castLE (Nat.le_add_left 1 n) i)) := by
+  ext i
+  simp only [take]
+
+@[simp]
+theorem take_of_succ {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) :
     take n n.le_succ v = init v := by
   ext i
   simp only [Nat.succ_eq_add_one, take, init]
   congr
 
 @[simp]
-theorem take_eq_self (v : (i : Fin n) → α i) : take n (le_refl n) v = v := by
+theorem take_all (v : (i : Fin n) → α i) : take n (le_refl n) v = v := by
   ext i
   simp [take]
 
@@ -54,6 +59,12 @@ theorem take_init {α : Fin (n + 1) → Sort*} (m : ℕ) (h : m ≤ n) (v : (i :
   ext i
   simp only [take, init]
   congr
+
+@[simp]
+theorem take_repeat {α : Type*} {n' : ℕ} (m : ℕ) (h : m ≤ n) (a : Fin n' → α) :
+    take (m * n') (Nat.mul_le_mul_right n' h) (Fin.repeat n a) = Fin.repeat m a := by
+  ext i
+  simp only [take, repeat_apply, modNat, coe_castLE]
 
 /-- Taking `m + 1` elements is equal to taking `m` elements and adding the `(m + 1)`th one. -/
 theorem take_succ_eq_snoc (m : ℕ) (h : m < n) (v : (i : Fin n) → α i) :
@@ -122,15 +133,25 @@ theorem take_append_right {n' : ℕ} {α : Sort*} (m : ℕ) (h : m ≤ n') (u : 
       simp_all only [coe_castLE, coe_natAdd, coe_subNat, coe_cast, Nat.add_sub_cancel']
     rw [take, this, append_right]
 
+/-- `Fin.take` intertwines with `List.take` via `List.ofFn`. -/
 theorem list_ofFn_take {α : Type*} {m : ℕ} (h : m ≤ n) (v : Fin n → α) :
     List.ofFn (take m h v) = (List.ofFn v).take m :=
   List.ext_get (by simp [h]) (fun n h1 h2 => by simp)
 
 /-- Alternative version of `list_ofFn_take` with `l : List α` instead of `v : Fin n → α`. -/
-theorem list_ofFn_take' {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :
-    List.ofFn (take m h l.get) = l.take m := by
-  conv_rhs => rw [←List.ofFn_get l]
-  exact list_ofFn_take h l.get
+theorem list_ofFn_take_get {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :
+    List.ofFn (take m h l.get) = l.take m :=
+  List.ext_get (by simp [h]) (fun n h1 h2 => by simp)
+
+/-- `Fin.take` intertwines with `List.take` via `List.get`. -/
+theorem list_take_get_heq {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :
+    HEq (l.take m).get (take m h l.get) :=
+  (Fin.heq_fun_iff (List.length_take_of_le h)).mpr (by simp)
+
+/-- Alternative version of `list_take_get_heq` with `v : Fin n → α` instead of `l : List α`. -/
+theorem list_ofFn_take_get_heq {α : Type*} {m : ℕ} (v : Fin n → α) (h : m ≤ n) :
+    HEq ((List.ofFn v).take m).get (take m h v) :=
+  (Fin.heq_fun_iff (by simp [h])).mpr (by simp)
 
 end Take
 

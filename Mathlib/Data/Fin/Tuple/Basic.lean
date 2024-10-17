@@ -72,7 +72,6 @@ For a **pivot** `p : Fin (n + 1)`,
   satisfied.
 * `Fin.append a b` : append two tuples.
 * `Fin.repeat n a` : repeat a tuple `n` times.
-* `Fin.take m h` : take the first `h : m ≤ n` elements of a tuple.
 
 -/
 
