@@ -77,6 +77,10 @@ lemma evaluation_ne_zero_iff_mem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U))
     X.evaluation U x hx f ≠ 0 ↔ x ∈ X.basicOpen f := by
   simp
 
+lemma basicOpen_eq_bot_iff_forall_evaluation_eq_zero (f : X.presheaf.obj (op U)) :
+    X.basicOpen f = ⊥ ↔ ∀ (x : U), X.evaluation U x x.property f = 0 :=
+  X.toLocallyRingedSpace.basicOpen_eq_bot_iff_forall_evaluation_eq_zero f
+
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 
@@ -120,6 +124,17 @@ lemma evaluation_naturality_apply {V : Opens Y} (x : X) (hx : f.base x ∈ V) (s
     f.residueFieldMap x (Y.evaluation V (f.base x) hx s) =
       X.evaluation (f ⁻¹ᵁ V) x hx (f.app V s) :=
   LocallyRingedSpace.evaluation_naturality_apply f.1 ⟨x, hx⟩ s
+
+@[reassoc]
+lemma Γevaluation_naturality (x : X) :
+    Y.Γevaluation (f.base x) ≫ f.residueFieldMap x =
+      f.c.app (op ⊤) ≫ X.Γevaluation x :=
+  LocallyRingedSpace.Γevaluation_naturality f.toLRSHom x
+
+lemma Γevaluation_naturality_apply (x : X) (a : Y.presheaf.obj (op ⊤)) :
+    f.residueFieldMap x (Y.Γevaluation (f.base x) a) =
+      X.Γevaluation x (f.c.app (op ⊤) a) :=
+  LocallyRingedSpace.Γevaluation_naturality_apply f.toLRSHom x a
 
 instance [IsOpenImmersion f] (x) : IsIso (f.residueFieldMap x) :=
   (LocalRing.ResidueField.mapEquiv

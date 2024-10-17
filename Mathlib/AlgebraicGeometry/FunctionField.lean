@@ -51,7 +51,7 @@ noncomputable instance [IsIntegral X] : Field X.functionField := by
   intro ha
   replace ha := ne_of_apply_ne _ ha
   have hs : genericPoint X ∈ RingedSpace.basicOpen _ s := by
-    rw [← SetLike.mem_coe, (genericPoint_spec X).mem_open_set_iff, Set.top_eq_univ,
+    rw [← SetLike.mem_coe, (genericPoint_spec X).mem_open_set_iff,
       Set.univ_inter, Set.nonempty_iff_ne_empty, Ne, ← Opens.coe_bot, ← SetLike.ext'_iff]
     · erw [basicOpen_eq_bot_iff]
       exact ha
@@ -79,7 +79,7 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
   apply ((genericPoint_spec Y).eq _).symm
   convert (genericPoint_spec X).image (show Continuous f.base by fun_prop)
   symm
-  rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
+  rw [← Set.univ_subset_iff]
   convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
   · rw [Set.univ_inter, Set.image_univ]
   · apply PreirreducibleSpace.isPreirreducible_univ (X := Y)
@@ -107,7 +107,7 @@ theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
   apply (genericPoint_spec (Spec R)).eq
   rw [isGenericPoint_def]
   rw [← PrimeSpectrum.zeroLocus_vanishingIdeal_eq_closure, PrimeSpectrum.vanishingIdeal_singleton]
-  rw [Set.top_eq_univ, ← PrimeSpectrum.zeroLocus_singleton_zero]
+  rw [← PrimeSpectrum.zeroLocus_singleton_zero]
   rfl
 
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :

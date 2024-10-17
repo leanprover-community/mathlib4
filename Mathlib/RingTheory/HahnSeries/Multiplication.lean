@@ -535,7 +535,7 @@ instance instNoZeroSMulDivisors {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero
   eq_zero_or_eq_zero_of_smul_eq_zero {x y} hxy := by
     contrapose! hxy
     simp only [ne_eq]
-    rw [HahnModule.ext_iff, Function.funext_iff, not_forall]
+    rw [HahnModule.ext_iff, funext_iff, not_forall]
     refine ⟨x.order + ((of R).symm y).order, ?_⟩
     rw [smul_coeff_order_add_order x y, of_symm_zero, HahnSeries.zero_coeff, smul_eq_zero, not_or]
     constructor
@@ -644,7 +644,7 @@ theorem C_one : C (1 : R) = (1 : HahnSeries Γ R) :=
 
 theorem C_injective : Function.Injective (C : R → HahnSeries Γ R) := by
   intro r s rs
-  rw [HahnSeries.ext_iff, Function.funext_iff] at rs
+  rw [HahnSeries.ext_iff, funext_iff] at rs
   have h := rs 0
   rwa [C_apply, single_coeff_same, C_apply, single_coeff_same] at h
 
@@ -756,7 +756,7 @@ instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries �
       refine ⟨single a 1, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true, Algebra.mem_top]
       intro x
-      rw [HahnSeries.ext_iff, Function.funext_iff, not_forall]
+      rw [HahnSeries.ext_iff, funext_iff, not_forall]
       refine ⟨a, ?_⟩
       rw [single_coeff_same, algebraMap_apply, C_apply, single_coeff_of_ne ha]
       exact zero_ne_one⟩⟩
