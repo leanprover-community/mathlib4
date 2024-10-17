@@ -248,10 +248,6 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
       rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s))]
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)
 
-
-lemma add_self_eq_smul_two {V : Set E} (h : Convex ℝ V) : V + V = (2 : ℝ) • V := by
-  rw [← one_add_one_eq_two, Convex.add_smul h (zero_le_one' ℝ) (zero_le_one' ℝ), MulAction.one_smul]
-
 variable (E 𝕜) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [Module 𝕜 E]
 variable [SMulCommClass ℝ 𝕜 E]
