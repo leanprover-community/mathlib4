@@ -55,7 +55,7 @@ instance one (I : Ideal R) : One (R ⧸ I) :=
 protected def ringCon (I : Ideal R) : RingCon R :=
   { QuotientAddGroup.con I.toAddSubgroup with
     mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ => by
-      rw [Submodule.quotientRel_r_def] at h₁ h₂ ⊢
+      rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
       have F := I.add_mem (I.mul_mem_left a₂ h₁) (I.mul_mem_right b₁ h₂)
       have : a₁ * a₂ - b₁ * b₂ = a₂ * (a₁ - b₁) + (a₂ - b₂) * b₁ := by
         rw [mul_sub, sub_mul, sub_add_sub_cancel, mul_comm, mul_comm b₁]
@@ -177,7 +177,7 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
   rcases hI.exists_inv (mt eq_zero_iff_mem.2 h) with ⟨b, c, hc, abc⟩
   rw [mul_comm] at abc
   refine ⟨mk _ b, Quot.sound ?_⟩
-  simp only [Submodule.quotientRel_r_def]
+  simp only [Submodule.quotientRel_def]
   rw [← eq_sub_iff_add_eq'] at abc
   rwa [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
 
@@ -197,13 +197,13 @@ protected noncomputable abbrev groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
 will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
 See note [reducible non-instances]. -/
-protected noncomputable abbrev field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) where
+protected noncomputable abbrev field (I : Ideal R) [I.IsMaximal] : Field (R ⧸ I) where
   __ := commRing _
   __ := Quotient.groupWithZero _
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q x => rfl
+  qsmul_def := fun _ _ => rfl
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
 theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal := by
@@ -291,7 +291,7 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
     Quotient.liftOn₂' c m (fun r m => Submodule.Quotient.mk <| r • m) <| by
       intro c₁ m₁ c₂ m₂ hc hm
       apply Ideal.Quotient.eq.2
-      rw [Submodule.quotientRel_r_def] at hc hm
+      rw [Submodule.quotientRel_def] at hc hm
       intro i
       exact I.mul_sub_mul_mem hc (hm i)
   one_smul := by
@@ -322,7 +322,7 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
 /-- `R^n/I^n` is isomorphic to `(R/I)^n` as an `R/I`-module. -/
 noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) where
   toFun := fun x ↦
-      Quotient.liftOn' x (fun f i => Ideal.Quotient.mk I (f i)) fun a b hab =>
+      Quotient.liftOn' x (fun f i => Ideal.Quotient.mk I (f i)) fun _ _ hab =>
         funext fun i => (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i)
   map_add' := by rintro ⟨_⟩ ⟨_⟩; rfl
   map_smul' := by rintro ⟨_⟩ ⟨_⟩; rfl

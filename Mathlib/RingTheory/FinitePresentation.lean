@@ -261,7 +261,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       (Ideal.span s₀).toAddSubmonoid := by
       have : x ∈ (⊤ : Subalgebra R AX) := trivial
       rw [← ht''] at this
-      refine adjoin_induction this ?_ ?_ ?_ ?_
+      refine adjoin_induction ?_ ?_ ?_ ?_ this
       · rintro _ (⟨x, hx, rfl⟩ | ⟨i, rfl⟩)
         · rw [MvPolynomial.algebraMap_eq, ← sub_add_cancel (MvPolynomial.C x)
             (map (algebraMap R A) (t' ⟨x, hx⟩)), add_comm]
@@ -275,9 +275,9 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       · intro r
         apply AddSubmonoid.mem_sup_left
         exact ⟨C r, map_C _ _⟩
-      · intro _ _ h₁ h₂
+      · intro _ _ _ _ h₁ h₂
         exact add_mem h₁ h₂
-      · intro x₁ x₂ h₁ h₂
+      · intro x₁ x₂ _ _ h₁ h₂
         obtain ⟨_, ⟨p₁, rfl⟩, q₁, hq₁, rfl⟩ := AddSubmonoid.mem_sup.mp h₁
         obtain ⟨_, ⟨p₂, rfl⟩, q₂, hq₂, rfl⟩ := AddSubmonoid.mem_sup.mp h₂
         rw [add_mul, mul_add, add_assoc, ← map_mul]
@@ -340,7 +340,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
       have : x ∈ adjoin R (Set.range X : Set RXn) := by
         rw [adjoin_range_X]
         trivial
-      refine adjoin_induction this ?_ ?_ ?_ ?_
+      refine adjoin_induction ?_ ?_ ?_ ?_ this
       · rintro _ ⟨i, rfl⟩
         rw [← sub_add_cancel (X i) (aeval h (g i)), add_comm]
         apply AddSubmonoid.add_mem_sup
@@ -351,9 +351,9 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
       · intro r
         apply AddSubmonoid.mem_sup_left
         exact ⟨C r, aeval_C _ _⟩
-      · intro _ _ h₁ h₂
+      · intro _ _ _ _ h₁ h₂
         exact add_mem h₁ h₂
-      · intro p₁ p₂ h₁ h₂
+      · intro p₁ p₂ _ _ h₁ h₂
         obtain ⟨_, ⟨x₁, rfl⟩, y₁, hy₁, rfl⟩ := AddSubmonoid.mem_sup.mp h₁
         obtain ⟨_, ⟨x₂, rfl⟩, y₂, hy₂, rfl⟩ := AddSubmonoid.mem_sup.mp h₂
         rw [mul_add, add_mul, add_assoc, ← map_mul]

@@ -379,7 +379,7 @@ instance funLike : FunLike (M ↪[L] N) M N where
     cases g
     congr
     ext x
-    exact Function.funext_iff.1 h x
+    exact funext_iff.1 h x
 
 instance embeddingLike : EmbeddingLike (M ↪[L] N) M N where
   injective' f := f.toEmbedding.injective
@@ -416,7 +416,7 @@ theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
     cases g
     congr
     ext x
-    exact Function.funext_iff.1 h x
+    exact funext_iff.1 h x
 
 @[ext]
 theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
@@ -537,7 +537,7 @@ instance : EquivLike (M ≃[L] N) M N where
     cases g
     simp only [mk.injEq]
     ext x
-    exact Function.funext_iff.1 h₁ x
+    exact funext_iff.1 h₁ x
 
 instance : StrongHomClass L (M ≃[L] N) M N where
   map_fun := map_fun'

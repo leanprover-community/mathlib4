@@ -423,7 +423,7 @@ set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of th
 def logEmbeddingEquiv :
     Additive ((𝓞 K)ˣ ⧸ (torsion K)) ≃ₗ[ℤ] (unitLattice K) :=
   LinearEquiv.ofBijective ((logEmbeddingQuot K).codRestrict (unitLattice K)
-    (Quotient.ind fun x ↦ logEmbeddingQuot_apply K _ ▸
+    (Quotient.ind fun _ ↦ logEmbeddingQuot_apply K _ ▸
       Submodule.mem_map_of_mem trivial)).toIntLinearMap
     ⟨fun _ _ ↦ by
       rw [AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.codRestrict_apply,
