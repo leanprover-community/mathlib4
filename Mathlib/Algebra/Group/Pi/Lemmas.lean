@@ -26,7 +26,6 @@ variable {I : Type u}
 -- The indexing type
 variable {f : I → Type v}
 
--- The family of types already equipped with instances
 variable (i : I)
 
 @[to_additive (attr := simp)]
