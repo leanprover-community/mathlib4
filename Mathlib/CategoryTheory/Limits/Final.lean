@@ -116,6 +116,8 @@ theorem initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
       @isConnected_of_isConnected_op _ _
         (isConnected_of_equivalent (costructuredArrowOpEquivalence F d).symm) }
 
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
+
 /-- If a functor `R : D ⥤ C` is a right adjoint, it is final. -/
 theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final R :=
   { out := fun c =>
