@@ -346,7 +346,7 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
 theorem abs_le_max_abs_abs_ae {a b : ℝ} {X : Ω → ℝ}
     (ha : ∀ᵐ (ω : Ω) ∂μ, a ≤ X ω) (hb : ∀ᵐ (ω : Ω) ∂μ, X ω ≤ b) :
     ∀ᵐ (ω : Ω) ∂μ, |X ω| ≤ max |a| |b| := by
-  filter_upwards [ha, hb] with ω using abs_le_max_abs_abs 
+  filter_upwards [ha, hb] with ω using abs_le_max_abs_abs
 
 theorem memℒp_of_bounded [IsFiniteMeasure μ]
     {a b : ℝ} {X : Ω → ℝ} (ha : ∀ᵐ (ω : Ω) ∂μ, a ≤ X ω) (hb : ∀ᵐ (ω : Ω) ∂μ, X ω ≤ b)
