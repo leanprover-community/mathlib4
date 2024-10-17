@@ -46,6 +46,17 @@ abbrev IsClique (s : Set α) : Prop :=
 theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
   Iff.rfl
 
+/-- An independent set in a graph is a set of vertices that are pairwise not adjacent. -/
+abbrev IsIndependentSet (s : Set α) : Prop :=
+  s.Pairwise (fun v w ↦ ¬G.Adj v w)
+
+theorem isIndependentSet_iff : G.IsIndependentSet s ↔ s.Pairwise (fun v w ↦ ¬G.Adj v w) :=
+  Iff.rfl
+
+/-- An independent set is a clique in the complement graph and vice versa. -/
+theorem isIndependentSet_iff_isClique_of_complement : G.IsIndependentSet s ↔ Gᶜ.IsClique s := by
+  sorry
+
 /-- A clique is a set of vertices whose induced graph is complete. -/
 theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   rw [isClique_iff]
@@ -59,6 +70,10 @@ theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
     conv_lhs at h2 => rw [h]
     simp only [top_adj, ne_eq, Subtype.mk.injEq, eq_iff_iff] at h2
     exact h2.1 hne
+
+theorem isIndependentSet_iff_induce_eq : G.IsIndependentSet s ↔ G.induce s = ⊥ := by
+  -- use isIndependentSet_iff_isClique_of_complement
+  sorry
 
 instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsClique s) :=
   decidable_of_iff' _ G.isClique_iff
