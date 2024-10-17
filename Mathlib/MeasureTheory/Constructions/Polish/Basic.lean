@@ -631,10 +631,7 @@ instance CosetSpace.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] 
 instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
     [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
     [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
-  -- Porting note: 1st and 3rd `haveI`s were not needed in Lean 3
-  haveI := Subgroup.t3_quotient_of_isClosed N
-  haveI := QuotientGroup.secondCountableTopology (Γ := N)
-  Quotient.borelSpace
+  ⟨continuous_mk.map_eq_borel mk_surjective⟩
 
 namespace MeasureTheory
 

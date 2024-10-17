@@ -61,7 +61,7 @@ lemma compProd_apply [SFinite μ] [IsSFiniteKernel κ] {s : Set (α × β)} (hs 
 lemma compProd_apply_prod [SFinite μ] [IsSFiniteKernel κ]
     {s : Set α} {t : Set β} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     (μ ⊗ₘ κ) (s ×ˢ t) = ∫⁻ a in s, κ a t ∂μ := by
-  rw [compProd_apply (hs.prod ht), ← lintegral_indicator _ hs]
+  rw [compProd_apply (hs.prod ht), ← lintegral_indicator hs]
   congr with a
   classical
   rw [Set.indicator_apply]
