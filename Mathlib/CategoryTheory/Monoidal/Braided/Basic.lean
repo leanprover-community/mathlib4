@@ -373,6 +373,8 @@ class Functor.LaxBraided (F : C ⥤ D) extends F.LaxMonoidal where
 
 namespace Functor.LaxBraided
 
+attribute [reassoc] braided
+
 instance id : (𝟭 C).LaxBraided where
 
 instance (F : C ⥤ D) (G : D ⥤ E) [F.LaxBraided] [G.LaxBraided] :
@@ -385,6 +387,94 @@ instance (F : C ⥤ D) (G : D ⥤ E) [F.LaxBraided] [G.LaxBraided] :
     simp only [Category.assoc]
 
 end Functor.LaxBraided
+
+section
+
+variable (C D)
+
+/-- Bundled version of lax braided functors. -/
+structure LaxBraidedFunctor extends C ⥤ D where
+  laxBraided : toFunctor.LaxBraided := by infer_instance
+
+namespace LaxBraidedFunctor
+
+variable {C D}
+
+attribute [instance] laxBraided
+
+/-- Constructor for `LaxBraidedFunctor C D`. -/
+@[simps toFunctor]
+def of (F : C ⥤ D) [F.LaxBraided] : LaxBraidedFunctor C D where
+  toFunctor := F
+
+@[simps toFunctor]
+def toLaxMonoidalFunctor (F : LaxBraidedFunctor C D) : LaxMonoidalFunctor C D where
+  toFunctor := F.toFunctor
+
+instance : Category (LaxBraidedFunctor C D) :=
+  InducedCategory.category (toLaxMonoidalFunctor)
+
+@[simp]
+lemma id_hom (F : LaxBraidedFunctor C D) : LaxMonoidalFunctor.Hom.hom (𝟙 F) = 𝟙 _ := rfl
+
+@[reassoc, simp]
+lemma comp_hom {F G H : LaxBraidedFunctor C D} (α : F ⟶ G) (β : G ⟶ H) :
+    (α ≫ β).hom = α.hom ≫ β.hom := rfl
+
+@[ext]
+lemma hom_ext {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (h : α.hom = β.hom) : α = β :=
+  LaxMonoidalFunctor.hom_ext h
+
+/-- Constructor for morphisms in the category `LaxBraiededFunctor C D`. -/
+@[simps]
+def homMk {F G : LaxBraidedFunctor C D} (f : F.toFunctor ⟶ G.toFunctor) [NatTrans.IsMonoidal f] :
+    F ⟶ G := ⟨f, inferInstance⟩
+
+/-- Constructor for isomorphisms in the category `LaxBraidedFunctor C D`. -/
+@[simps]
+def isoMk {F G : LaxBraidedFunctor C D} (e : F.toFunctor ≅ G.toFunctor)
+    [NatTrans.IsMonoidal e.hom] :
+    F ≅ G where
+  hom := homMk e.hom
+  inv := homMk e.inv
+
+/-- The forgetful functor from lax braided functors to lax monoidal functors. -/
+@[simps! obj map]
+def forget : LaxBraidedFunctor C D ⥤ LaxMonoidalFunctor C D :=
+  inducedFunctor _
+
+/-- The forgetful functor from lax braided functors to lax monoidal functors
+is fully faithful. -/
+def fullyFaithfulForget : (forget (C := C) (D := D)).FullyFaithful :=
+  fullyFaithfulInducedFunctor _
+
+section
+
+variable {F G : LaxBraidedFunctor C D} (e : ∀ X, F.obj X ≅ G.obj X)
+    (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (e Y).hom = (e X).hom ≫ G.map f :=
+      by aesop_cat)
+    (unit : ε F.toFunctor ≫ (e (𝟙_ C)).hom = ε G.toFunctor := by aesop_cat)
+    (tensor : ∀ X Y, μ F.toFunctor X Y ≫ (e (X ⊗ Y)).hom =
+      ((e X).hom ⊗ (e Y).hom) ≫ μ G.toFunctor X Y := by aesop_cat)
+
+def isoOfComponents :
+    F ≅ G :=
+  fullyFaithfulForget.preimageIso
+    (LaxMonoidalFunctor.isoOfComponents e naturality unit tensor)
+
+@[simp]
+lemma isoOfComponents_hom_hom_app (X : C) :
+    (isoOfComponents e naturality unit tensor).hom.hom.app X = (e X).hom := rfl
+
+@[simp]
+lemma isoOfComponents_inv_hom_app (X : C) :
+    (isoOfComponents e naturality unit tensor).inv.hom.app X = (e X).inv := rfl
+
+end
+
+end LaxBraidedFunctor
+
+end
 
 /-- A braided functor between braided monoidal categories is a monoidal functor
 which preserves the braiding.
