@@ -198,14 +198,14 @@ compact-open topology on the space `C(I,X)` of continuous maps from `I` to `X`.
 instance topologicalSpace : TopologicalSpace (Path x y) :=
   TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
 
-theorem continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
-  ContinuousMap.continuous_eval.comp <|
-    (continuous_induced_dom (α := Path x y)).prodMap continuous_id
+instance : ContinuousEval (Path x y) I X := .of_continuous_forget continuous_induced_dom
 
-@[continuity]
+@[deprecated (since := "2024-10-04")] protected alias continuous_eval := continuous_eval
+
+@[deprecated Continuous.eval (since := "2024-10-04")]
 theorem _root_.Continuous.path_eval {Y} [TopologicalSpace Y] {f : Y → Path x y} {g : Y → I}
-    (hf : Continuous f) (hg : Continuous g) : Continuous fun y => f y (g y) :=
-  Continuous.comp continuous_eval (hf.prod_mk hg)
+    (hf : Continuous f) (hg : Continuous g) : Continuous fun y => f y (g y) := by
+  continuity
 
 theorem continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
     Continuous ↿g ↔ Continuous g :=
@@ -427,7 +427,7 @@ theorem symm_continuous_family {ι : Type*} [TopologicalSpace ι]
 
 @[continuity]
 theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
-  continuous_uncurry_iff.mp <| symm_continuous_family _ (continuous_fst.path_eval continuous_snd)
+  continuous_uncurry_iff.mp <| symm_continuous_family _ (continuous_fst.eval continuous_snd)
 
 @[continuity]
 theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [TopologicalSpace ι]

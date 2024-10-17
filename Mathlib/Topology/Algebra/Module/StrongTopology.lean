@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Topology.Algebra.Module.UniformConvergence
+import Mathlib.Topology.ContinuousEvalConst
 
 /-!
 # Strong topologies on the space of continuous linear maps
@@ -151,12 +152,19 @@ instance instTopologicalAddGroup [TopologicalSpace F] [TopologicalAddGroup F]
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
   infer_instance
 
+theorem continuousEvalConst [TopologicalSpace F] [TopologicalAddGroup F]
+    (𝔖 : Set (Set E)) (h𝔖 : ⋃₀ 𝔖 = Set.univ) :
+    ContinuousEvalConst (UniformConvergenceCLM σ F 𝔖) E F where
+  continuous_eval_const x := by
+    letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
+    haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+    exact (UniformOnFun.uniformContinuous_eval h𝔖 x).continuous.comp
+      (embedding_coeFn σ F 𝔖).continuous
+
 theorem t2Space [TopologicalSpace F] [TopologicalAddGroup F] [T2Space F]
-    (𝔖 : Set (Set E)) (h𝔖 : ⋃₀ 𝔖 = univ) : T2Space (UniformConvergenceCLM σ F 𝔖) := by
-  letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  haveI : T2Space (E →ᵤ[𝔖] F) := UniformOnFun.t2Space_of_covering h𝔖
-  exact (embedding_coeFn σ F 𝔖).t2Space
+    (𝔖 : Set (Set E)) (h𝔖 : ⋃₀ 𝔖 = univ) : T2Space (UniformConvergenceCLM σ F 𝔖) :=
+  have := continuousEvalConst σ F 𝔖 h𝔖
+  .of_injective_continuous DFunLike.coe_injective continuous_coeFun
 
 instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
@@ -321,11 +329,13 @@ instance uniformSpace [UniformSpace F] [UniformAddGroup F] : UniformSpace (E →
 instance uniformAddGroup [UniformSpace F] [UniformAddGroup F] : UniformAddGroup (E →SL[σ] F) :=
   UniformConvergenceCLM.instUniformAddGroup σ F _
 
-instance [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₁ E] [T2Space F] :
-    T2Space (E →SL[σ] F) :=
-  UniformConvergenceCLM.t2Space σ F _
-    (Set.eq_univ_of_forall fun x =>
-      Set.mem_sUnion_of_mem (Set.mem_singleton x) (isVonNBounded_singleton x))
+instance instContinuousEvalConst [TopologicalSpace F] [TopologicalAddGroup F]
+    [ContinuousSMul 𝕜₁ E] : ContinuousEvalConst (E →SL[σ] F) E F :=
+  UniformConvergenceCLM.continuousEvalConst σ F _ Bornology.isVonNBounded_covers
+
+instance instT2Space [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₁ E]
+    [T2Space F] : T2Space (E →SL[σ] F) :=
+  UniformConvergenceCLM.t2Space σ F _ Bornology.isVonNBounded_covers
 
 protected theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [TopologicalAddGroup F]
     {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
