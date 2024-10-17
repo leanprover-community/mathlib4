@@ -282,7 +282,7 @@ instance : FiniteDimensional (subfield G F) F := by
 end Finite
 
 theorem finrank_le_card [Fintype G] : finrank (subfield G F) F ≤ Fintype.card G := by
-  rw [← Nat.cast_le, finrank_eq_rank]
+  rw [← @Nat.cast_le Cardinal, finrank_eq_rank]
   apply rank_le_card
 
 end FixedPoints
