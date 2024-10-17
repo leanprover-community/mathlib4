@@ -636,14 +636,25 @@ end MonoidHom
 
 end MonoidHom
 
-@[simp] lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
+set_option linter.deprecated false in
+@[simp, deprecated (since := "2024-10-17")]
+lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
 
 namespace List
 
 lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
-    length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by simp [length_sigma']
+    length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by
+  induction' l₁ with x l₁ IH
+  · rfl
+  · simp only [sigma_cons, length_append, length_map, IH, map, sum_cons]
 
-lemma ranges_flatten (l : List ℕ) : l.ranges.flatten = range l.sum := by simp [ranges_flatten']
+lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
+  | [] => rfl
+  | a :: l => by simp only [flatten, ← map_flatten, ranges_flatten, sum_cons, range_add]
+
+/-- The members of `l.ranges` have no duplicate -/
+theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
+  (List.pairwise_flatten.mp <| by rw [ranges_flatten]; exact nodup_range _).1 s hs
 
 @[deprecated (since := "2024-10-15")] alias ranges_join := ranges_flatten
 
@@ -667,7 +678,9 @@ lemma count_bind [BEq β] (l : List α) (f : α → List β) (x : β) :
 first `i` sublists, is the same as taking the flatten of the first `i` sublists. -/
 lemma take_sum_flatten (L : List (List α)) (i : ℕ) :
     L.flatten.take ((L.map length).take i).sum = (L.take i).flatten := by
-  simpa using take_sum_flatten' _ _
+  induction L generalizing i
+  · simp
+  · cases i <;> simp [take_append, *]
 
 @[deprecated (since := "2024-10-15")] alias take_sum_join := take_sum_flatten
 
@@ -675,7 +688,9 @@ lemma take_sum_flatten (L : List (List α)) (i : ℕ) :
 first `i` sublists, is the same as taking the join after dropping the first `i` sublists. -/
 lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
     L.flatten.drop ((L.map length).take i).sum = (L.drop i).flatten := by
-  simpa using drop_sum_flatten' _ _
+  induction L generalizing i
+  · simp
+  · cases i <;> simp [take_append, *]
 
 @[deprecated (since := "2024-10-15")] alias drop_sum_join := drop_sum_flatten
 
@@ -684,7 +699,10 @@ original sublist of index `i` if `A` is the sum of the lengths of sublists of in
 `B` is the sum of the lengths of sublists of index `≤ i`. -/
 lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < L.length) :
     (L.flatten.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = L[i] := by
-  simpa using drop_take_succ_flatten_eq_getElem' _ _ _
+  have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
+    simp [map_take, take_take, Nat.min_eq_left]
+  simp only [this, length_map, take_sum_flatten, drop_sum_flatten,
+    drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
 
 @[deprecated (since := "2024-06-11")]
 alias drop_take_succ_join_eq_getElem := drop_take_succ_flatten_eq_getElem
