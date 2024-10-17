@@ -578,8 +578,8 @@ theorem iterate_derivative_X_sub_pow_self (n : ℕ) (c : R) :
   rw [iterate_derivative_X_sub_pow, n.sub_self, pow_zero, nsmul_one, n.descFactorial_self]
 
 theorem iterate_derivative_finset_sum (k : ℕ) (h : ℕ → ℕ) :
-    derivative^[k] (∑ m in Finset.range (k + 1), (h m * (-1 : R) ^ m) • X ^ (k + m)) =
-    ∑ m in Finset.range (k + 1), ((h m * (-1 : R) ^ m) • (derivative^[k] (X ^ (k + m))) : R[X]):= by
+    derivative^[k] (∑ m in range (k + 1), (h m * (-1 : R) ^ m) • X ^ (k + m)) =
+    ∑ m in range (k + 1), ((h m * (-1 : R) ^ m) • (derivative^[k] (X ^ (k + m))) : R[X]) := by
   simp only [nsmul_eq_mul, ← LinearMap.pow_apply, map_sum]
   congr! 1 with i _
   rw [← smul_eq_mul, map_smul]
