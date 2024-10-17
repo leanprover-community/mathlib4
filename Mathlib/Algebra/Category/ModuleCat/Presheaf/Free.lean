@@ -6,7 +6,7 @@ Authors: Johan Commelin, Joel Riou
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 
-/-! 
+/-!
 # The free presheaf of modules on a presheaf of sets
 
 In this file, given a presheaf of rings `R` on a category `C`,
