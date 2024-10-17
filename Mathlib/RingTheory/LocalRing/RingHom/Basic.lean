@@ -21,25 +21,40 @@ section
 
 variable [Semiring R] [Semiring S] [Semiring T]
 
-instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R) where
+@[instance]
+theorem isLocalHom_id (R : Type*) [Semiring R] : IsLocalHom (RingHom.id R) where
   map_nonunit _ := id
 
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_id := isLocalHom_id
+
 -- see note [lower instance priority]
-instance (priority := 100)  isLocalRingHom_toRingHom {F : Type*} [FunLike F R S]
-   [RingHomClass F R S] (f : F) [IsLocalRingHom f] : IsLocalRingHom (f : R →+* S) :=
-  ⟨IsLocalRingHom.map_nonunit (f := f)⟩
+@[instance 100]
+theorem isLocalHom_toRingHom {F : Type*} [FunLike F R S]
+    [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=
+  ⟨IsLocalHom.map_nonunit (f := f)⟩
 
-instance RingHom.isLocalRingHom_comp (g : S →+* T) (f : R →+* S) [IsLocalRingHom g]
-    [IsLocalRingHom f] : IsLocalRingHom (g.comp f) where
-  map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f := g) (f a)
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_toRingHom := isLocalHom_toRingHom
 
-theorem isLocalRingHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalRingHom (g.comp f)] :
-    IsLocalRingHom f :=
+@[instance]
+theorem RingHom.isLocalHom_comp (g : S →+* T) (f : R →+* S) [IsLocalHom g]
+    [IsLocalHom f] : IsLocalHom (g.comp f) where
+  map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
+
+@[deprecated (since := "2024-10-10")]
+alias RingHom.isLocalRingHom_comp := RingHom.isLocalHom_comp
+
+theorem isLocalHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalHom (g.comp f)] :
+    IsLocalHom f :=
   ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (g.isUnit_map ha)⟩
+
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_of_comp := isLocalHom_of_comp
 
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
 theorem RingHom.domain_localRing {R S : Type*} [CommSemiring R] [CommSemiring S] [H : LocalRing S]
-    (f : R →+* S) [IsLocalRingHom f] : LocalRing R := by
+    (f : R →+* S) [IsLocalHom f] : LocalRing R := by
   haveI : Nontrivial R := pullback_nonzero f f.map_zero f.map_one
   apply LocalRing.of_nonunits_add
   intro a b
@@ -57,7 +72,7 @@ variable [CommSemiring R] [LocalRing R] [CommSemiring S] [LocalRing S]
 /--
 The image of the maximal ideal of the source is contained within the maximal ideal of the target.
 -/
-theorem map_nonunit (f : R →+* S) [IsLocalRingHom f] (a : R) (h : a ∈ maximalIdeal R) :
+theorem map_nonunit (f : R →+* S) [IsLocalHom f] (a : R) (h : a ∈ maximalIdeal R) :
     f a ∈ maximalIdeal S := fun H => h <| isUnit_of_map_unit f a H
 
 end
@@ -73,7 +88,7 @@ i.e. any preimage of a unit is still a unit. https://stacks.math.columbia.edu/ta
 -/
 theorem local_hom_TFAE (f : R →+* S) :
     List.TFAE
-      [IsLocalRingHom f, f '' (maximalIdeal R).1 ⊆ maximalIdeal S,
+      [IsLocalHom f, f '' (maximalIdeal R).1 ⊆ maximalIdeal S,
         (maximalIdeal R).map f ≤ maximalIdeal S, maximalIdeal R ≤ (maximalIdeal S).comap f,
         (maximalIdeal S).comap f = maximalIdeal R] := by
   tfae_have 1 → 2
@@ -89,19 +104,19 @@ theorem local_hom_TFAE (f : R →+* S) :
 end
 
 theorem of_surjective [CommSemiring R] [LocalRing R] [CommSemiring S] [Nontrivial S] (f : R →+* S)
-    [IsLocalRingHom f] (hf : Function.Surjective f) : LocalRing S :=
+    [IsLocalHom f] (hf : Function.Surjective f) : LocalRing S :=
   of_isUnit_or_isUnit_of_isUnit_add (by
     intro a b hab
     obtain ⟨a, rfl⟩ := hf a
     obtain ⟨b, rfl⟩ := hf b
     rw [← map_add] at hab
     exact
-      (isUnit_or_isUnit_of_isUnit_add <| IsLocalRingHom.map_nonunit _ hab).imp f.isUnit_map
+      (isUnit_or_isUnit_of_isUnit_add <| IsLocalHom.map_nonunit _ hab).imp f.isUnit_map
         f.isUnit_map)
 
 /-- If `f : R →+* S` is a surjective local ring hom, then the induced units map is surjective. -/
 theorem surjective_units_map_of_local_ringHom [CommRing R] [CommRing S] (f : R →+* S)
-    (hf : Function.Surjective f) (h : IsLocalRingHom f) :
+    (hf : Function.Surjective f) (h : IsLocalHom f) :
     Function.Surjective (Units.map <| f.toMonoidHom) := by
   intro a
   obtain ⟨b, hb⟩ := hf (a : S)
@@ -113,7 +128,7 @@ theorem surjective_units_map_of_local_ringHom [CommRing R] [CommRing S] (f : R �
 /-- Every ring hom `f : K →+* R` from a division ring `K` to a nontrivial ring `R` is a
 local ring hom. -/
 instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
-    (f : K →+* R) : IsLocalRingHom f where
+    (f : K →+* R) : IsLocalHom f where
   map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
 
 end LocalRing

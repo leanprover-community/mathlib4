@@ -288,7 +288,6 @@ lemma isoSpec_hom_base_apply (x : U) :
     (Iso.eq_comp_inv _).mpr (Scheme.Opens.germ_stalkIso_hom U (V := ⊤) x trivial),
     X.presheaf.germ_res_assoc, Spec.map_comp, Scheme.comp_base_apply]
   congr 1
-  have := isLocalRingHom_of_isIso (U.stalkIso x).inv
   exact LocalRing.comap_closedPoint (U.stalkIso x).inv
 
 lemma isoSpec_inv_app_top :

@@ -640,6 +640,9 @@ namespace Scheme
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
+instance (x) : IsLocalHom (f.stalkMap x) :=
+  f.prop x
+
 @[simp]
 lemma stalkMap_id (X : Scheme.{u}) (x : X) :
     (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) :=
@@ -723,7 +726,7 @@ open LocalRing
 
 @[simp]
 lemma Spec_closedPoint {R S : CommRingCat} [LocalRing R] [LocalRing S]
-    {f : R ⟶ S} [IsLocalRingHom f] : (Spec.map f).base (closedPoint S) = closedPoint R :=
+    {f : R ⟶ S} [IsLocalHom f] : (Spec.map f).base (closedPoint S) = closedPoint R :=
   LocalRing.comap_closedPoint f
 
 end LocalRing

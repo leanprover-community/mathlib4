@@ -947,7 +947,7 @@ instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace
   H
 
 -- note to reviewers: is there a `count_heartbeats` for this?
-set_option synthInstance.maxHeartbeats 30000 in
+set_option synthInstance.maxHeartbeats 40000 in
 /-- An explicit pullback cone over `cospan f g` if `f` is an open immersion. -/
 def pullbackConeOfLeft : PullbackCone f g := by
   refine PullbackCone.mk ?_
@@ -966,7 +966,7 @@ def pullbackConeOfLeft : PullbackCone f g := by
 instance : LocallyRingedSpace.IsOpenImmersion (pullbackConeOfLeft f g).snd :=
   show PresheafedSpace.IsOpenImmersion (Y.toPresheafedSpace.ofRestrict _) by infer_instance
 
-set_option synthInstance.maxHeartbeats 80000 in
+set_option synthInstance.maxHeartbeats 40000 in
 /-- The constructed `pullbackConeOfLeft` is indeed limiting. -/
 def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
   PullbackCone.isLimitAux' _ fun s => by
@@ -986,8 +986,7 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
       change _ = _ ≫ s.snd.1.stalkMap x at this
       rw [PresheafedSpace.stalkMap.comp, ← IsIso.eq_inv_comp] at this
       rw [this]
-      -- TODO: This instance is found by `infer_instance` before #6045.
-      apply CommRingCat.isLocalRingHom_comp
+      infer_instance
     · intro m _ h₂
       rw [← cancel_mono (pullbackConeOfLeft f g).snd]
       exact h₂.trans <| LocallyRingedSpace.Hom.ext'
