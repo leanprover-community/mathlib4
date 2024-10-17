@@ -464,6 +464,20 @@ inductively from `Fin n` starting from the left, not from the right. This implie
 more help to realize that elements belong to the right types, i.e., we need to insert casts at
 several places. -/
 
+@[simp]
+theorem succ_rev {n : ℕ} (k : Fin n) : succ (rev k) = rev (castSucc k) := by
+  ext
+  simp only [val_succ, val_rev, coe_castSucc, Nat.succ_sub_succ_eq_sub]
+  zify [show k + 1 ≤ n from k.is_lt, show k ≤ n from is_le']
+  ring
+
+theorem rev_succ_rev {n : ℕ} (k : Fin n) : rev (succ (rev k)) = castSucc k := by
+  simp
+
+/-- Reverses a tuple, turning the 0th entry into the n-1st, and so forth. -/
+def reverse {α : Fin n → Type u} (q : ∀ i, α i) : ∀ i : Fin n, α (rev i) :=
+  fun i => q (rev i)
+
 -- Porting note: `i.castSucc` does not work like it did in Lean 3;
 -- `(castSucc i)` must be used.
 variable {α : Fin (n + 1) → Sort*} (x : α (last n)) (q : ∀ i, α i)
@@ -477,11 +491,29 @@ theorem init_def {q : ∀ i, α i} :
     (init fun k : Fin (n + 1) ↦ q k) = fun k : Fin n ↦ q (castSucc k) :=
   rfl
 
+theorem init_eq_reverse_tail_reverse (q : ∀ i, α i) (i) :
+    init q i = _root_.cast (by rw [castSucc_eq_rev_succ_rev]) (reverse (tail (reverse (q))) i) := by
+  rw [init, reverse, tail, eq_comm, cast_eq_iff_heq, castSucc_eq_rev_succ_rev]
+  exact congr_arg_heq q (Eq.refl (rev (succ (rev i))))
+
 /-- Adding an element at the end of an `n`-tuple, to get an `n+1`-tuple. The name `snoc` comes from
 `cons` (i.e., adding an element to the left of a tuple) read in reverse order. -/
 def snoc (p : ∀ i : Fin n, α (castSucc i)) (x : α (last n)) (i : Fin (n + 1)) : α i :=
   if h : i.val < n then _root_.cast (by rw [Fin.castSucc_castLT i h]) (p (castLT i h))
   else _root_.cast (by rw [eq_last_of_not_lt h]) x
+
+theorem snoc_eq_reverse_cons_reverse (p : ∀ i : Fin n, α (castSucc i)) (x : α (last n)) :
+    snoc p x = _root_.cast (_) (reverse (cons (_root_.cast _ x) (_root_.cast _ (reverse p)))) := by
+  sorry
+  --   snoc p x = _root_.cast (by rw [castSucc_eq_rev_succ_rev]) (reverse (cons x (reverse p))) := by
+  -- sorry
+  -- ext i
+  -- rw [snoc, reverse, cons, cast_eq_iff_heq, castSucc_eq_rev_succ_rev]
+  -- byCases h : i.val < n
+  -- · rw [dif_pos h]
+  --   exact congr_arg_heq p (Eq.refl (rev (succ (rev (castLT i h)))))
+  -- · rw [dif_neg h]
+  --   exact Eq.refl (rev (succ (rev (castLT i h))))
 
 @[simp]
 theorem init_snoc : init (snoc p x) = p := by
