@@ -4133,6 +4133,8 @@ import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.RingTheory.SimpleRing.Defs
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Smooth.Kaehler
+import Mathlib.RingTheory.Smooth.Local
+import Mathlib.RingTheory.Smooth.Projective
 import Mathlib.RingTheory.Smooth.StandardSmooth
 import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.SurjectiveOnStalks
