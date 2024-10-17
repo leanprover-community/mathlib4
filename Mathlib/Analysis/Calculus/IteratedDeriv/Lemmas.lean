@@ -15,6 +15,8 @@ This file contains a number of further results on `iteratedDerivWithin` that nee
 than are available in `Mathlib/Analysis/Calculus/IteratedDeriv/Defs.lean`.
 -/
 
+section one_dimensional
+
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -123,3 +125,43 @@ lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ', neg_mul, one_mul,
       deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_const_smul',
       neg_smul]
+
+lemma iteratedDeriv_eq_on_open (n : ℕ) {f g : 𝕜 → F} {s : Set 𝕜} (hs : IsOpen s) (x : s)
+    (hfg : Set.EqOn f g s) : iteratedDeriv n f x = iteratedDeriv n g x := by
+  induction' n with n IH generalizing f g
+  · simpa only [iteratedDeriv_zero] using hfg x.2
+  · simp only [iteratedDeriv_succ']
+    exact IH fun y hy ↦ Filter.EventuallyEq.deriv_eq <|
+      Filter.eventuallyEq_iff_exists_mem.mpr ⟨s, IsOpen.mem_nhds hs hy, hfg⟩
+
+end one_dimensional
+
+/-!
+### Invariance of iterated derivatives under translation
+-/
+
+section shift_invariance
+
+variable {𝕜 F} [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+/-- The iterated derivative commutes with shifting the function by a constant on the left. -/
+lemma iteratedDeriv_comp_const_add (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
+    iteratedDeriv n (fun z ↦ f (s + z)) = fun t ↦ iteratedDeriv n f (s + t) := by
+  induction n with
+  | zero => simp only [iteratedDeriv_zero]
+  | succ n IH =>
+      simp only [iteratedDeriv_succ, IH]
+      ext1 z
+      exact deriv_comp_const_add (iteratedDeriv n f) s z
+
+/-- The iterated derivative commutes with shifting the function by a constant on the right. -/
+lemma iteratedDeriv_comp_add_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
+    iteratedDeriv n (fun z ↦ f (z + s)) = fun t ↦ iteratedDeriv n f (t + s) := by
+  induction n with
+  | zero => simp only [iteratedDeriv_zero]
+  | succ n IH =>
+      simp only [iteratedDeriv_succ, IH]
+      ext1 z
+      exact deriv_comp_add_const (iteratedDeriv n f) s z
+
+end shift_invariance
