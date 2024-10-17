@@ -88,7 +88,7 @@ variable [Fintype m] [Fintype n] [Fintype p]
 @[simp]
 theorem dotProduct_self_eq_zero [LinearOrderedRing R] {v : n → R} : dotProduct v v = 0 ↔ v = 0 :=
   (Finset.sum_eq_zero_iff_of_nonneg fun i _ => mul_self_nonneg (v i)).trans <| by
-    simp [Function.funext_iff]
+    simp [funext_iff]
 
 section StarOrderedRing
 
@@ -110,13 +110,13 @@ variable [NoZeroDivisors R]
 @[simp]
 theorem dotProduct_star_self_eq_zero {v : n → R} : dotProduct (star v) v = 0 ↔ v = 0 :=
   (Fintype.sum_eq_zero_iff_of_nonneg fun _ => star_mul_self_nonneg _).trans <|
-    by simp [Function.funext_iff, mul_eq_zero]
+    by simp [funext_iff, mul_eq_zero]
 
 /-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
 theorem dotProduct_self_star_eq_zero {v : n → R} : dotProduct v (star v) = 0 ↔ v = 0 :=
   (Fintype.sum_eq_zero_iff_of_nonneg fun _ => mul_star_self_nonneg _).trans <|
-    by simp [Function.funext_iff, mul_eq_zero]
+    by simp [funext_iff, mul_eq_zero]
 
 @[simp]
 lemma conjTranspose_mul_self_eq_zero {n} {A : Matrix m n R} : Aᴴ * A = 0 ↔ A = 0 :=

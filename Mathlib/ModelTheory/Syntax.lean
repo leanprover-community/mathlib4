@@ -61,8 +61,7 @@ namespace FirstOrder
 namespace Language
 
 variable (L : Language.{u, v}) {L' : Language}
-variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
-variable {α : Type u'} {β : Type v'} {γ : Type*}
+variable {M : Type w} {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder
 
@@ -86,7 +85,7 @@ instance instDecidableEq [DecidableEq α] [∀ n, DecidableEq (L.Functions n)] :
         letI : DecidableEq (L.Term α) := instDecidableEq
         decidable_of_iff (f = h ▸ g ∧ ∀ i : Fin m, xs i = ys (Fin.cast h i)) <| by
           subst h
-          simp [Function.funext_iff]
+          simp [funext_iff]
       else
         .isFalse <| by simp [h]
   | .var _, .func _ _ | .func _ _, .var _ => .isFalse <| by simp

@@ -317,9 +317,7 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
   map_id := by dsimp [CategoryTheory.categoryFree]; simp
   map_comp {X Y Z} f g := by
     apply Finsupp.induction_linear f
-    · -- Porting note (#10959): simp used to be able to close this goal
-      dsimp
-      rw [Limits.zero_comp, sum_zero_index, Limits.zero_comp]
+    · simp
     · intro f₁ f₂ w₁ w₂
       rw [add_comp]
       dsimp at *
@@ -331,9 +329,7 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
       · intros; simp only [add_smul]
     · intro f' r
       apply Finsupp.induction_linear g
-      · -- Porting note (#10959): simp used to be able to close this goal
-        dsimp
-        rw [Limits.comp_zero, sum_zero_index, Limits.comp_zero]
+      · simp
       · intro f₁ f₂ w₁ w₂
         rw [comp_add]
         dsimp at *
@@ -369,15 +365,14 @@ def embeddingLiftIso (F : C ⥤ D) : embedding R C ⋙ lift R F ≅ F :=
 /-- Two `R`-linear functors out of the `R`-linear completion are isomorphic iff their
 compositions with the embedding functor are isomorphic.
 -/
--- Porting note: used to be @[ext]
+-- Porting note (#11182): used to be @[ext]
 def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear R]
     (α : embedding R C ⋙ F ≅ embedding R C ⋙ G) : F ≅ G :=
   NatIso.ofComponents (fun X => α.app X)
     (by
       intro X Y f
       apply Finsupp.induction_linear f
-      · -- Porting note (#10959): simp used to be able to close this goal
-        rw [Functor.map_zero, Limits.zero_comp, Functor.map_zero, Limits.comp_zero]
+      · simp
       · intro f₁ f₂ w₁ w₂
         -- Porting note: Using rw instead of simp
         rw [Functor.map_add, add_comp, w₁, w₂, Functor.map_add, comp_add]

@@ -216,7 +216,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
       intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₁.2 0 a))
     · rw [← mul_left_inj' hi]
-      rw [Function.funext_iff] at h
+      rw [funext_iff] at h
       exact h.2 i
   · simp only [φ, mem_filter, mem_finsuppAntidiag, mem_univ, exists_prop, true_and, and_assoc]
     rintro f ⟨hf, hf₃, hf₄⟩
