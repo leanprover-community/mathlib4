@@ -883,7 +883,7 @@ instance Λ'.instInhabited : Inhabited Λ' :=
 instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
   induction a generalizing b <;> cases b <;> first
     | apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
-    | exact decidable_of_iff' _ (by simp [Function.funext_iff]; rfl)
+    | exact decidable_of_iff' _ (by simp [funext_iff]; rfl)
 
 /-- The type of TM2 statements used by this machine. -/
 def Stmt' :=

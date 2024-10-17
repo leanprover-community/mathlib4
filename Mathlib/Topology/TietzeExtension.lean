@@ -321,7 +321,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   rcases hle.eq_or_lt with (rfl | hlt)
   · have : ∀ x, f x = a := by simpa using hmem
     use const Y a
-    simp [this, Function.funext_iff]
+    simp [this, funext_iff]
   -- Put `c = (a + b) / 2`. Then `a < c < b` and `c - a = b - c`.
   set c := (a + b) / 2
   have hac : a < c := left_lt_add_div_two.2 hlt

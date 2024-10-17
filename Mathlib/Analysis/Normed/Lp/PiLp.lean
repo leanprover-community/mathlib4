@@ -825,7 +825,6 @@ theorem edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
       edist b₁ b₂ := by
-  -- Porting note: was `simpa using`
   simp only [edist_nndist, nndist_equiv_symm_single_same p β i b₁ b₂]
 
 end Single
