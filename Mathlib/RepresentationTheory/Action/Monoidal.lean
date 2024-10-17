@@ -66,36 +66,38 @@ def tensorUnitIso {X : V} (f : 𝟙_ V ≅ X) : 𝟙_ (Action V G) ≅ Action.mk
 
 variable (V G)
 
-/-- When `V` is monoidal the forgetful functor `Action V G` to `V` is monoidal. -/
-@[simps]
-def forgetMonoidal : MonoidalFunctor (Action V G) V :=
-  { toFunctor := Action.forget _ _
-    ε := 𝟙 _
-    μ := fun _ _ => 𝟙 _ }
+instance : (Action.forget V G).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso := fun _ _ ↦ Iso.refl _ }
 
-instance forgetMonoidal_faithful : (forgetMonoidal V G).Faithful := by
-  change (forget V G).Faithful; infer_instance
+open Functor.LaxMonoidal Functor.OplaxMonoidal
+
+@[simp] lemma forget_ε : ε (Action.forget V G) = 𝟙 _ := rfl
+@[simp] lemma forget_η : ε (Action.forget V G) = 𝟙 _ := rfl
+
+variable {V G}
+
+@[simp] lemma forget_μ (X Y : Action V G) : μ (Action.forget V G) X Y = 𝟙 _ := rfl
+@[simp] lemma forget_δ (X Y : Action V G) : δ (Action.forget V G) X Y = 𝟙 _ := rfl
+
+variable (V G)
 
 section
 
 variable [BraidedCategory V]
 
 instance : BraidedCategory (Action V G) :=
-  braidedCategoryOfFaithful (forgetMonoidal V G) (fun X Y => mkIso (β_ _ _)
+  braidedCategoryOfFaithful (Action.forget V G) (fun X Y => mkIso (β_ _ _)
     (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by aesop_cat)
 
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
-@[simps!]
-def forgetBraided : BraidedFunctor (Action V G) V :=
-  { forgetMonoidal _ _ with }
-
-instance forgetBraided_faithful : (forgetBraided V G).Faithful := by
-  change (forget V G).Faithful; infer_instance
+instance : (Action.forget V G).Braided where
 
 end
 
 instance [SymmetricCategory V] : SymmetricCategory (Action V G) :=
-  symmetricCategoryOfFaithful (forgetBraided V G)
+  symmetricCategoryOfFaithful (Action.forget V G)
 
 section
 

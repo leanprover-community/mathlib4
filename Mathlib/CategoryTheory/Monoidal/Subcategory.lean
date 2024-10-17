@@ -70,7 +70,7 @@ instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
 ("forgetting" the condition).
 -/
-instance : (fullSubcategoryInclusion P).Monoidal :=
+instance fullSubcategoryInclusionMonoidal : (fullSubcategoryInclusion P).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _ }
