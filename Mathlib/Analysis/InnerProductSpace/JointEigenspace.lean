@@ -112,18 +112,19 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_iSup_eigenspace_inf_eigenspace_eq_top hA hB hAB
 
-open IsSemisimple in
-
 /-- In finite dimensions, the indexed supremum of the joint eigenspaces of a commuting family
 of symmetric linear operators equals `⊤`. -/
 theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
     (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise fun i j ↦ Commute (T i) (T j)):
-    ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ := calc
+    ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ :=
+  calc
   _ = ⨆ χ : ι → 𝕜, ⨅ i, maxGenEigenspace (T i) (χ i) :=
-    congr(⨆ χ : ι → 𝕜, ⨅ i, $((hT i).maxGenEigenspace_eq_eigenspace.symm))
+    congr(⨆ χ : ι → 𝕜, ⨅ i,
+      $(IsSemisimple.maxGenEigenspace_eq_eigenspace (IsSymmetric.isSemisimple (hT i)) (χ i))).symm
   _ = ⊤ :=
     iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute T h fun i ↦ by
-    rw [← orthogonal_eq_bot_iff, congr(⨆ μ, $((hT i).maxGenEigenspace_eq_eigenspace)),
+    rw [← orthogonal_eq_bot_iff, congr(⨆ μ,
+      $(IsSemisimple.maxGenEigenspace_eq_eigenspace (IsSymmetric.isSemisimple (hT i)) μ)),
       (hT i).orthogonalComplement_iSup_eigenspaces_eq_bot]
 
 /-- In finite dimensions, given a commuting family of symmetric linear operators, the inner
