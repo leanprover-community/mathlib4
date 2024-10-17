@@ -1134,7 +1134,7 @@ theorem pi_apply (f : ∀ i, M →L[R] φ i) (c : M) (i : ι) : pi f c i = f i c
   rfl
 
 theorem pi_eq_zero (f : ∀ i, M →L[R] φ i) : pi f = 0 ↔ ∀ i, f i = 0 := by
-  simp only [ContinuousLinearMap.ext_iff, pi_apply, Function.funext_iff]
+  simp only [ContinuousLinearMap.ext_iff, pi_apply, funext_iff]
   exact forall_swap
 
 theorem pi_zero : pi (fun _ => 0 : ∀ i, M →L[R] φ i) = 0 :=
@@ -1186,11 +1186,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
   continuous_invFun :=
     Continuous.subtype_mk
       (continuous_pi fun i => by
-        -- Porting note: Was `dsimp`.
-        change
-          Continuous (⇑(if h : i ∈ I then LinearMap.proj (R := R) (ι := ↥I)
-            (φ := fun i : ↥I => φ i) ⟨i, h⟩ else
-            (0 : ((i : I) → φ i) →ₗ[R] φ i)))
+        dsimp
         split_ifs <;> [apply continuous_apply; exact continuous_zero])
       _
 
