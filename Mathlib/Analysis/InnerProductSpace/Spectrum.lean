@@ -46,7 +46,6 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 
 -/
 
-
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -75,6 +74,34 @@ theorem conj_eigenvalue_eq_self (hT : T.IsSymmetric) {μ : 𝕜} (hμ : HasEigen
   obtain ⟨v, hv₁, hv₂⟩ := hμ.exists_hasEigenvector
   rw [mem_eigenspace_iff] at hv₁
   simpa [hv₂, inner_smul_left, inner_smul_right, hv₁] using hT v v
+
+/-- The generalized eigenspaces of a symmetric operator coincide with the eigenspace. NB: In
+finite dimensions, this follows from `Orthogonal.IsSymmetric.isSemisimple`. -/
+theorem genEigenspace_eq_eigenspace
+    {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {n : ℕ} {μ : 𝕜} (hn : 1 ≤ n) :
+    genEigenspace T μ n = genEigenspace T μ 1 := by
+  refine Nat.le_induction rfl (fun k hk ih ↦ ?_) n hn
+  refine ih ▸ le_antisymm (fun x hx ↦ ?_) ((genEigenspace T μ).mono k.le_succ)
+  obtain (rfl | hx_ne) := eq_or_ne x 0
+  · exact zero_mem _
+  · have hμ : starRingEnd 𝕜 μ = μ := hT.conj_eigenvalue_eq_self <|
+    hasEigenvalue_of_hasGenEigenvalue (k := k + 1) <|
+    (genEigenspace T μ (k + 1)).ne_bot_iff.mpr ⟨x, hx, hx_ne⟩
+    have hTμ : ((T - μ • 1) ^ k).IsSymmetric := by
+      aesop (add simp LinearMap.one_eq_id)
+    rw [mem_genEigenspace, ← norm_eq_zero, ← sq_eq_zero_iff, norm_sq_eq_inner (𝕜 := 𝕜),
+      hTμ, ← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, ← pow_add]
+    simp [mem_genEigenspace .. |>.mp <| (genEigenspace T μ).mono (show k + 1 ≤ k + k by gcongr) hx]
+
+/-- The maximal generalized eigenspaces of a symmetric operator coincide with the eigenspace. NB: In
+finite dimensions, this follows from `Orthogonal.IsSymmetric.isSemisimple`. -/
+lemma maxGenEigenspace_eq_eigenspace {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric)
+    {μ : 𝕜} : maxGenEigenspace T μ = eigenspace T μ := calc
+  _ = ⨆ n, genEigenspace T μ (n + 1) := by
+    rw [maxGenEigenspace_def, ← sup_iSup_nat_succ, genEigenspace_def]; simp [LinearMap.one_eq_id]
+  _ = ⨆ _ : ℕ, genEigenspace T μ 1 := by
+    congr! 2 with n; exact genEigenspace_eq_eigenspace hT n.succ_pos
+  _ = eigenspace T μ := by simp [genEigenspace_def, eigenspace_def]
 
 /-- The eigenspaces of a self-adjoint operator are mutually orthogonal. -/
 theorem orthogonalFamily_eigenspaces (hT : T.IsSymmetric) :
@@ -109,7 +136,6 @@ theorem orthogonalComplement_iSup_eigenspaces (hT : T.IsSymmetric) (μ : 𝕜) :
   exact H₂.disjoint
 
 /-! ### Finite-dimensional theory -/
-
 
 variable [FiniteDimensional 𝕜 E]
 
