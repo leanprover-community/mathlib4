@@ -26,8 +26,8 @@ variable (F E E' : Type*) [Field F] [Field E] [Algebra F E]
   [Field E'] [Algebra F E'] [Algebra E E'] [IsScalarTower F E E']
 
 instance [Algebra.IsAlgebraic F E] : IsAlgClosure F (AlgebraicClosure E) where
-  algebraic := .trans (L := E)
-  alg_closed := inferInstance
+  isAlgebraic := .trans (L := E)
+  isAlgClosed := inferInstance
 
 noncomputable abbrev NormalClosure : Type _ := normalClosure F E (AlgebraicClosure E)
 
