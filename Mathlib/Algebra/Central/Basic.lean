@@ -55,15 +55,3 @@ lemma baseField_essentially_unique
   exact ⟨x', (algebraMap K D).injective <| by simp [← H, algebraMap_eq_smul_one]⟩
 
 end Algebra.IsCentral
-
-section MatrixAlgebra
-
-variable (K : Type u) [Field K]
-
-open Matrix in
-instance MatrixRing.isCentral (ι : Type*) [Fintype ι] [DecidableEq ι] :
-    Algebra.IsCentral K (Matrix ι ι K) where
-  out := fun _ h => mem_range_scalar_of_commute_stdBasisMatrix fun _ _ _ =>
-    Subalgebra.mem_center_iff.mp h _
-
-end MatrixAlgebra
