@@ -248,8 +248,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
 
 open Set Filter
 
-/- TODO: prove these 2 definitions are equivalent to being an accumulation point and a closed set
-in the appropriate topologies. -/
+/- TODO: define `IsAcc` and `IsClosedBelow` topologically. -/
 
 /-- An ordinal is an accumulation point of a set of ordinals if it is positive and there
 are elements in the set arbitrarily close to the ordinal from below. -/
@@ -258,7 +257,7 @@ def IsAcc (o : Ordinal) (S : Set Ordinal) : Prop :=
 
 /-- A set of ordinals is closed below an ordinal if it contains all of
 its accumulation points below the ordinal. -/
-def IsClosed (S : Set Ordinal) (o : Ordinal) : Prop :=
+def IsClosedBelow (S : Set Ordinal) (o : Ordinal) : Prop :=
   ∀ p < o, IsAcc p S → p ∈ S
 
 theorem IsAcc.subset {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
@@ -272,15 +271,15 @@ theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsLimit 
 theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
     {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.2 p hp
 
-theorem isClosed_zero (S : Set Ordinal) : IsClosed S 0 := fun _ h ↦
+theorem isClosedBelow_zero (S : Set Ordinal) : IsClosedBelow S 0 := fun _ h ↦
   False.elim <| (Ordinal.zero_le _).not_lt h
 
-theorem IsClosed.sInter {o : Ordinal} {S : Set (Set Ordinal)} (h : ∀ C ∈ S, IsClosed C o) :
-    IsClosed (⋂₀ S) o :=
+theorem IsClosedBelow.sInter {o : Ordinal} {S : Set (Set Ordinal)}
+    (h : ∀ C ∈ S, IsClosedBelow C o) : IsClosedBelow (⋂₀ S) o :=
   fun p plto pAcc C CmemS ↦ (h C CmemS) p plto (pAcc.subset (sInter_subset_of_mem CmemS))
 
-theorem IsClosed.iInter {ι : Type u} {f : ι → Set Ordinal} {o : Ordinal}
-    (h : ∀ i, IsClosed (f i) o) : IsClosed (⋂ i, f i) o :=
-  IsClosed.sInter fun _ ⟨i, hi⟩ ↦ hi ▸ (h i)
+theorem IsClosedBelow.iInter {ι : Type u} {f : ι → Set Ordinal} {o : Ordinal}
+    (h : ∀ i, IsClosedBelow (f i) o) : IsClosedBelow (⋂ i, f i) o :=
+  IsClosedBelow.sInter fun _ ⟨i, hi⟩ ↦ hi ▸ (h i)
 
 end Ordinal
