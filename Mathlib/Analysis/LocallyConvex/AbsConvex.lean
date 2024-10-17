@@ -255,21 +255,19 @@ lemma add_self_eq_smul_two {V : Set E} (h : Convex ℝ V) : V + V = (2 : ℝ) �
 variable (E 𝕜) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [Module 𝕜 E]
 variable [SMulCommClass ℝ 𝕜 E]
-variable [U : UniformSpace E] [UniformAddGroup E]
+variable [UniformSpace E] [UniformAddGroup E]
 variable [lcs : LocallyConvexSpace ℝ E]
 variable [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3
-theorem totallyBounded_absConvexHull (h : U = TopologicalAddGroup.toUniformSpace E)
-    (hs : TotallyBounded s) : TotallyBounded (absConvexHull ℝ s) := by
+theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
+    TotallyBounded (absConvexHull ℝ s) := by
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
-  intro U' hU
+  intro U hU
   obtain ⟨W, hW, hW₂, hW₃, hW₄⟩  := exists_closed_nhds_zero_neg_eq_add_subset (G := E) hU
-  rw [h] at hU
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
   obtain ⟨V,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs W hW
   obtain ⟨t,⟨htf,hts⟩⟩ := hs _ hS₁
-
   have en {t₁ V₁ : Set E} : (⋃ y ∈ t₁, y +ᵥ V₁) = t₁ + V₁ := by
     simp_all only [iUnion_vadd_set, vadd_eq_add]
   have e4 : (absConvexHull ℝ) s ⊆ (convexHull ℝ) (t ∪ -t) + V := by
