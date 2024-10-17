@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.NumberTheory.Liouville.Residual
-import Mathlib.NumberTheory.Liouville.LiouvilleWith
+import Mathlib.NumberTheory.Transcendental.Liouville.Residual
+import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
 import Mathlib.Analysis.PSeries
 
 /-!
