@@ -116,11 +116,6 @@ instance instFunLike : FunLike (α →₀ M) α M :=
     ext a
     exact (hf _).trans (hg _).symm⟩
 
-/-- Helper instance for when there are too many metavariables to apply the `DFunLike` instance
-directly. -/
-instance instCoeFun : CoeFun (α →₀ M) fun _ => α → M :=
-  inferInstance
-
 @[ext]
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
