@@ -1183,8 +1183,8 @@ end Module
 
 section Nontrivial
 
-variable [Ring R] [Nontrivial R] [AddCommGroup M] [AddCommGroup M']
-variable [Module R M] [NoZeroSMulDivisors R M] [Module R M']
+variable [Semiring R] [Nontrivial R] [AddCommMonoid M]
+variable [Module R M] [NoZeroSMulDivisors R M]
 variable {s t : Set M}
 
 theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :

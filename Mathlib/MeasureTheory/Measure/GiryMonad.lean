@@ -182,7 +182,7 @@ theorem dirac_bind {f : α → Measure β} (hf : Measurable f) (a : α) : bind (
 @[simp]
 theorem bind_dirac {m : Measure α} : bind m dirac = m := by
   ext1 s hs
-  simp only [bind_apply hs measurable_dirac, dirac_apply' _ hs, lintegral_indicator 1 hs,
+  simp only [bind_apply hs measurable_dirac, dirac_apply' _ hs, lintegral_indicator hs,
     Pi.one_apply, lintegral_one, restrict_apply, MeasurableSet.univ, univ_inter]
 
 @[simp]

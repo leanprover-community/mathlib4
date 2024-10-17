@@ -260,7 +260,7 @@ theorem Measurable.lintegral_prod_right' [SFinite ν] :
     ?_ ?_ ?_
   · intro c s hs
     simp only [← indicator_comp_right]
-    suffices Measurable fun x => c * ν (Prod.mk x ⁻¹' s) by simpa [lintegral_indicator _ (m hs)]
+    suffices Measurable fun x => c * ν (Prod.mk x ⁻¹' s) by simpa [lintegral_indicator (m hs)]
     exact (measurable_measure_prod_mk_left hs).const_mul _
   · rintro f g - hf - h2f h2g
     simp only [Pi.add_apply]
@@ -333,7 +333,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
       _ = μ S * ν T := by
         rw [prod_apply hSTm]
         simp_rw [mk_preimage_prod_right_eq_if, measure_if,
-          lintegral_indicator _ (measurableSet_toMeasurable _ _), lintegral_const,
+          lintegral_indicator (measurableSet_toMeasurable _ _), lintegral_const,
           restrict_apply_univ, mul_comm]
       _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
   · -- Formalization is based on https://mathoverflow.net/a/254134/136589
@@ -899,7 +899,7 @@ theorem lintegral_prod_of_measurable :
       rw [← indicator_comp_right, const_def, const_comp, ← const_def]
     conv_rhs =>
       enter [2, x]
-      rw [lintegral_indicator _ (m (x := x) hs), lintegral_const,
+      rw [lintegral_indicator (m (x := x) hs), lintegral_const,
         Measure.restrict_apply MeasurableSet.univ, univ_inter]
     simp [hs, lintegral_const_mul, measurable_measure_prod_mk_left (ν := ν) hs, prod_apply]
   · rintro f g - hf _ h2f h2g
