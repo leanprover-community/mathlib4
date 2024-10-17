@@ -321,15 +321,26 @@ theorem mul_le : I * J ≤ K ↔ ∀ r ∈ I, ∀ s ∈ J, r * s ∈ K :=
   Submodule.smul_le
 
 theorem mul_le_left : I * J ≤ J :=
-  Ideal.mul_le.2 fun _ _ _ => J.mul_mem_left _
+  mul_le.2 fun _ _ _ => J.mul_mem_left _
 
 @[simp]
 theorem sup_mul_left_self : I ⊔ J * I = I :=
-  sup_eq_left.2 Ideal.mul_le_left
+  sup_eq_left.2 mul_le_left
 
 @[simp]
 theorem mul_left_self_sup : J * I ⊔ I = I :=
-  sup_eq_right.2 Ideal.mul_le_left
+  sup_eq_right.2 mul_le_left
+
+theorem mul_le_right [I.IsTwoSided] : I * J ≤ I :=
+  mul_le.2 fun _ hr _ _ ↦ I.mul_mem_right _ hr
+
+@[simp]
+theorem sup_mul_right_self [I.IsTwoSided] : I ⊔ I * J = I :=
+  sup_eq_left.2 mul_le_right
+
+@[simp]
+theorem mul_right_self_sup [I.IsTwoSided] : I * J ⊔ I = I :=
+  sup_eq_right.2 mul_le_right
 
 protected theorem mul_assoc : I * J * K = I * (J * K) :=
   Submodule.smul_assoc I J K
@@ -385,15 +396,32 @@ theorem pow_right_mono (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
   · rw [Submodule.pow_succ, Submodule.pow_succ]
     exact Ideal.mul_mono hn e
 
+namespace IsTwoSided
+
 instance [J.IsTwoSided] : (I * J).IsTwoSided :=
   ⟨fun b ha ↦ Submodule.mul_induction_on ha
     (fun i hi j hj ↦ by rw [mul_assoc]; exact mul_mem_mul hi (mul_mem_right _ _ hj))
     fun x y hx hy ↦ by rw [right_distrib]; exact add_mem hx hy⟩
 
-instance [I.IsTwoSided] (n : ℕ) : (I ^ n).IsTwoSided :=
+variable [I.IsTwoSided] (m n : ℕ)
+
+instance : (I ^ n).IsTwoSided :=
   n.rec
     (by rw [Submodule.pow_zero, one_eq_top]; infer_instance)
     (fun _ _ ↦ by rw [Submodule.pow_succ]; infer_instance)
+
+protected theorem mul_one : I * 1 = I :=
+  mul_le_right.antisymm fun i hi ↦ mul_one i ▸ mul_mem_mul hi (one_eq_top (R := R) ▸ trivial)
+
+theorem pow_add : I ^ (m + n) = I ^ m * I ^ n := by
+  obtain rfl | h := eq_or_ne n 0
+  · rw [add_zero, Submodule.pow_zero, IsTwoSided.mul_one]
+  · exact Submodule.pow_add _ h
+
+theorem pow_succ : I ^ (n + 1) = I * I ^ n := by
+  rw [add_comm, pow_add, Submodule.pow_one]
+
+end IsTwoSided
 
 @[simp]
 theorem mul_eq_bot [NoZeroDivisors R] :
@@ -434,17 +462,6 @@ theorem prod_mem_prod {ι : Type*} {s : Finset ι} {I : ι → Ideal R} {x : ι 
       exact
         mul_mem_mul (h a <| Finset.mem_insert_self a s)
           (IH fun i hi => h i <| Finset.mem_insert_of_mem hi)
-
-theorem mul_le_right : I * J ≤ I :=
-  Ideal.mul_le.2 fun _ hr _ _ => I.mul_mem_right _ hr
-
-@[simp]
-theorem sup_mul_right_self : I ⊔ I * J = I :=
-  sup_eq_left.2 Ideal.mul_le_right
-
-@[simp]
-theorem mul_right_self_sup : I * J ⊔ I = I :=
-  sup_eq_right.2 Ideal.mul_le_right
 
 variable (I J K)
 
