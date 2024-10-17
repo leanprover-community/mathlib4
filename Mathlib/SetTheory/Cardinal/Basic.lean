@@ -1395,12 +1395,10 @@ theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := Nat.cast_le
 theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := Nat.cast_lt
 
 @[deprecated Nat.cast_inj (since := "2024-10-16")]
-theorem natCast_inj {m n : ℕ} : (m : Cardinal) = n ↔ m = n :=
-  Nat.cast_inj
+theorem natCast_inj {m n : ℕ} : (m : Cardinal) = n ↔ m = n := Nat.cast_inj
 
 @[deprecated Nat.cast_injective (since := "2024-10-16")]
-theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) :=
-  Nat.cast_injective
+theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) := Nat.cast_injective
 
 @[deprecated Nat.cast_pow (since := "2024-10-16")]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) :=
