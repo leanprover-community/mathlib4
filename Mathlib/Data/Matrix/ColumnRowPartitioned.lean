@@ -108,12 +108,12 @@ lemma fromRows_toRows (A : Matrix (m₁ ⊕ m₂) n R) : fromRows A.toRows₁ A.
 
 lemma fromRows_inj : Function.Injective2 (@fromRows R m₁ m₂ n) := by
   intros x1 x2 y1 y2
-  simp only [Function.funext_iff, ← Matrix.ext_iff]
+  simp only [funext_iff, ← Matrix.ext_iff]
   aesop
 
 lemma fromColumns_inj : Function.Injective2 (@fromColumns R m n₁ n₂) := by
   intros x1 x2 y1 y2
-  simp only [Function.funext_iff, ← Matrix.ext_iff]
+  simp only [funext_iff, ← Matrix.ext_iff]
   aesop
 
 lemma fromColumns_ext_iff (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) (B₁ : Matrix m n₁ R)

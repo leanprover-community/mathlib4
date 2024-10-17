@@ -590,8 +590,8 @@ variable (R M N N')
 /-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled bilinear map. -/
 def _root_.ContinuousLinearMap.compContinuousAlternatingMapₗ :
     (N →L[R] N') →ₗ[R] (M [⋀^ι]→L[R] N) →ₗ[R] (M [⋀^ι]→L[R] N') :=
-  LinearMap.mk₂ R ContinuousLinearMap.compContinuousAlternatingMap (fun f₁ f₂ g => rfl)
-    (fun c f g => rfl) (fun f g₁ g₂ => by ext1; apply f.map_add) fun c f g => by ext1; simp
+  LinearMap.mk₂ R ContinuousLinearMap.compContinuousAlternatingMap (fun _ _ _ => rfl)
+    (fun _ _ _ => rfl) (fun f g₁ g₂ => by ext1; apply f.map_add) fun c f g => by ext1; simp
 
 end Semiring
 

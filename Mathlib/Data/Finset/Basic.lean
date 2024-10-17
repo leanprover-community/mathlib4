@@ -273,9 +273,9 @@ instance : HasSSubset (Finset α) :=
 instance partialOrder : PartialOrder (Finset α) where
   le := (· ⊆ ·)
   lt := (· ⊂ ·)
-  le_refl s a := id
-  le_trans s t u hst htu a ha := htu <| hst ha
-  le_antisymm s t hst hts := ext fun a => ⟨@hst _, @hts _⟩
+  le_refl _ _ := id
+  le_trans _ _ _ hst htu _ ha := htu <| hst ha
+  le_antisymm _ _ hst hts := ext fun _ => ⟨@hst _, @hts _⟩
 
 instance : IsRefl (Finset α) (· ⊆ ·) :=
   show IsRefl (Finset α) (· ≤ ·) by infer_instance
@@ -1828,6 +1828,10 @@ theorem sdiff_empty : s \ ∅ = s :=
 theorem sdiff_subset_sdiff (hst : s ⊆ t) (hvu : v ⊆ u) : s \ u ⊆ t \ v :=
   sdiff_le_sdiff hst hvu
 
+theorem sdiff_subset_sdiff_iff_subset {r : Finset α} (hs : s ⊆ r) (ht : t ⊆ r) :
+    r \ s ⊆ r \ t ↔ t ⊆ s :=
+  sdiff_le_sdiff_iff_le hs ht
+
 @[simp, norm_cast]
 theorem coe_sdiff (s₁ s₂ : Finset α) : ↑(s₁ \ s₂) = (s₁ \ s₂ : Set α) :=
   Set.ext fun _ => mem_sdiff
@@ -2603,7 +2607,7 @@ lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := b
 
 theorem exists_nat_subset_range (s : Finset ℕ) : ∃ n : ℕ, s ⊆ range n :=
   s.induction_on (by simp)
-    fun a s _ ⟨n, hn⟩ => ⟨max (a + 1) n, insert_subset (by simp) (hn.trans (by simp))⟩
+    fun a _ _ ⟨n, hn⟩ => ⟨max (a + 1) n, insert_subset (by simp) (hn.trans (by simp))⟩
 
 end Range
 
@@ -2637,7 +2641,7 @@ def notMemRangeEquiv (k : ℕ) : { n // n ∉ range k } ≃ ℕ where
     rw [Subtype.ext_iff_val]
     apply Nat.sub_add_cancel
     simpa using j.2
-  right_inv j := Nat.add_sub_cancel_right _ _
+  right_inv _ := Nat.add_sub_cancel_right _ _
 
 @[simp]
 theorem coe_notMemRangeEquiv (k : ℕ) :
