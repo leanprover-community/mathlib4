@@ -37,47 +37,27 @@ instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
   rcases R with ⟨α, str⟩
   exact IsLocalization.epi M _
 
--- instance instFunLike' {X : Type*} [CommRing X] {Y : CommRingCat} :
---     FunLike (CommRingCat.of X ⟶ Y) X Y :=
---   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
---   ConcreteCategory.instFunLike
-
--- instance instFunLike'' {X : CommRingCat} {Y : Type*} [CommRing Y] :
---     FunLike (X ⟶ CommRingCat.of Y) X Y :=
---   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
---   ConcreteCategory.instFunLike
-
--- instance instFunLike''' {X Y : Type _} [CommRing X] [CommRing Y] :
---     FunLike (CommRingCat.of X ⟶ CommRingCat.of Y) X Y :=
---   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
---   ConcreteCategory.instFunLike
--- `CommRingCat.instFunLike'`
-
--- @[instance]
--- theorem xxx {R S : CommRingCat} (f : R ⟶ S) [IsLocalHom f] :
---     IsLocalHom (f : (.of R ⟶ S)) :=
---   inferInstance
--- set_option trace.Meta.synthInstance true
-
--- the priority of these three instances have to be set lower than any other instance
--- in order to avoid a infinite path of xxx
-@[instance 50]
-theorem xxx {R : Type*} [CommRing R] {S : CommRingCat} (f : CommRingCat.of R ⟶ S)
-[IsLocalHom (R := CommRingCat.of R) f] : IsLocalHom f :=
+-- These three instances solves the problem of instance of `FunLike` provided by
+-- `CommRingCat.instFunLike'`, `CommRingCat.instFunLike''` and `CommRingCat.instFunLike'''`
+-- are not syntactically equal to `CommRingCat.instFunLike` when applied to
+-- objects of the form `CommRingCat.of R`.
+-- the priority of these three instances have to be set lower than other instance
+-- in order to avoid infinite loops
+instance (priority := 50) {R : Type*} [CommRing R] {S : CommRingCat} (f : CommRingCat.of R ⟶ S)
+    [IsLocalHom (R := CommRingCat.of R) f] : IsLocalHom f :=
   inferInstance
 
-@[instance 50]
-theorem yyy {R : CommRingCat} {S : Type*} [CommRing S] (f : R ⟶ CommRingCat.of S)
+instance (priority := 50) {R : CommRingCat} {S : Type*} [CommRing S] (f : R ⟶ CommRingCat.of S)
     [IsLocalHom (S := CommRingCat.of S) f] : IsLocalHom f :=
   inferInstance
 
-@[instance 50]
-theorem zzz {R S : Type u} [CommRing R] [CommRing S] (f : CommRingCat.of R ⟶ CommRingCat.of S)
+instance (priority := 50) {R S : Type u} [CommRing R] [CommRing S]
+    (f : CommRingCat.of R ⟶ CommRingCat.of S)
     [IsLocalHom (R := CommRingCat.of R) (S := CommRingCat.of S) f] : IsLocalHom f :=
   inferInstance
 
-@[instance]
-theorem zzzz {R S : CommRingCat} (f : R ⟶ S) [IsLocalHom f] :
+-- This instance if for the case when a morphism is coerced into a real RingHom.
+instance {R S : CommRingCat} (f : R ⟶ S) [IsLocalHom f] :
     IsLocalHom (F := R →+* S) f :=
   inferInstance
 
