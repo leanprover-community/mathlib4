@@ -10,6 +10,9 @@ set -x
 # Install elan using the official script
 curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
 
+# Import the new elan PATH
+source ~/.profile
+
 # Set the default Lean version to the latest stable release
 elan toolchain install stable
 elan default stable
@@ -27,4 +30,5 @@ export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/
 EOF
 
 # Install the Lean4 VS Code extension
+export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 code --install-extension leanprover.lean4
