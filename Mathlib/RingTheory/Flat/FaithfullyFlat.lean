@@ -222,7 +222,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
   -- since `N1 ⊗ M -> N2 ⊗ M -> N3 ⊗ M` is exact, we have `l23 (l12 n1) ⊗ₜ[R] m = 0` for all `m : M`
   have eq1 : ∀ (m : M), l23 (l12 n1) ⊗ₜ[R] m = 0 := fun m ↦
     ex.apply_apply_eq_zero (n1 ⊗ₜ[R] m)
-  -- but `E ⊗ M = 0` becase:
+  -- Then `E ⊗ M = 0` becase:
   have eq0 : (⊤ : Submodule R (E ⊗[R] M)) = ⊥ := by
     -- suppose `x ∈ E ⊗ M`, we aim to show `x = 0`
     ext x
@@ -250,8 +250,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     show x ∈ (⊥ : Submodule R _) from eq0 ▸ ⟨⟩
 
   -- but `E ⊗ M = 0` implies `E = 0` because `M` is faithfully flat and this is a contradiction.
-  exact not_subsingleton_iff_nontrivial (α := E) |>.2 inferInstance <|
-    fl.rTensor_reflects_triviality R M E
+  exact not_subsingleton_iff_nontrivial.2 inferInstance <| fl.rTensor_reflects_triviality R M E
 
 lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3)
@@ -268,45 +267,34 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     have eq0 : (Submodule.mkQ _ ⟨x, hx⟩ : H) = 0 := triv_coh.elim _ _
     obtain ⟨⟨y, hy⟩, eq0⟩ := Submodule.Quotient.mk_eq_zero _ |>.1 eq0
     simp only [Subtype.ext_iff, Submodule.coe_inclusion] at eq0
-    subst eq0
-    assumption
+    exact eq0 ▸ hy
 
   -- Since `M` is faithfully flat, we need only to show that `H ⊗ M` is trivial.
   suffices Subsingleton (H ⊗[R] M) from rTensor_reflects_triviality R M H
-
-  let e : H ⊗[R] M ≃ₗ[R] ((LinearMap.ker l23 ⊗[R] M) ⧸ _) := TensorProduct.quotientTensorEquiv _ _
-  haveI : Subsingleton
-      ((LinearMap.ker l23 ⊗[R] M) ⧸
-        LinearMap.range (map (LinearMap.range (Submodule.inclusion complex)).subtype
-          (LinearMap.id : M →ₗ[R] M))) := by
-    -- note that `H ⊗ M ≅ (ker l23 ⊗ M) ⧸ (range l12 ⊗ M)`, so we only need to show that
-    -- `ker l23 ⊗ M = range l12 ⊗ M`
-    rw [Submodule.subsingleton_quotient_iff_eq_top, eq_top_iff]
-    let ι : (LinearMap.ker l23) ⊗[R] M →ₗ[R] N2 ⊗[R] M := (Submodule.subtype _).rTensor M
-    rw [← Submodule.map_le_map_iff_of_injective (f := ι)
-      (hf := Module.Flat.rTensor_preserves_injective_linearMap _ Subtype.val_injective),
-      Submodule.map_top]
-
-    rintro _ ⟨z, rfl⟩
-    have mem : ι z ∈ LinearMap.ker (LinearMap.rTensor M l23) := by
-      simp only [LinearMap.mem_ker, ι]
-      rw [← LinearMap.comp_apply, LinearMap.rTensor, LinearMap.rTensor, ← map_comp,
-        show l23 ∘ₗ (LinearMap.ker l23).subtype = 0 by ext; simp]
-      simp only [LinearMap.comp_id, map_zero_left, LinearMap.zero_apply]
-    rw [LinearMap.exact_iff.1 ex] at mem
-    obtain ⟨W, hW⟩ := mem
-    rw [← hW]
-    clear hW z
-    -- let `x ⊗ y ∈ ker l23 ⊗ M`, we need `l12 x ⊗ y ∈ range l12 ⊗ M`, but this is clear
-    induction W using TensorProduct.induction_on with
-    | zero => exact Submodule.zero_mem _
-    | tmul x y =>
-      simp only [LinearMap.rTensor_tmul, Submodule.mem_map, LinearMap.mem_range,
-        exists_exists_eq_and, ι]
-      refine ⟨⟨⟨l12 x, complex <| by simp⟩, ⟨⟨_, ⟨x, rfl⟩⟩, rfl⟩⟩ ⊗ₜ y, ?_⟩
-      simp only [map_tmul, Submodule.coe_subtype, LinearMap.id_coe, id_eq, LinearMap.rTensor_tmul]
-    | add x y hx hy => simpa only [map_add] using Submodule.add_mem _ hx hy
-  exact e.injective.subsingleton
+  let e : H ⊗[R] M ≃ₗ[R] _ := TensorProduct.quotientTensorEquiv _ _
+  rw [e.toEquiv.subsingleton_congr, Submodule.subsingleton_quotient_iff_eq_top, eq_top_iff]
+  -- note that `H ⊗ M ≅ (ker l23 ⊗ M) ⧸ (range l12 ⊗ M)`, so we only need to show that
+  -- `ker l23 ⊗ M ≤ range l12 ⊗ M` as submodules of `ker l23 ⊗ M`.
+  set ι : (LinearMap.ker l23) ⊗[R] M →ₗ[R] N2 ⊗[R] M := (Submodule.subtype _).rTensor M with ι_def
+  -- Since `M` is flat and `ker l23 -> N2` is injective, we can compare them as submodules `N2 ⊗ M`.
+  rw [← Submodule.map_le_map_iff_of_injective (f := ι)
+    (hf := Module.Flat.rTensor_preserves_injective_linearMap _ Subtype.val_injective),
+    Submodule.map_top, show LinearMap.range ι = LinearMap.range (LinearMap.rTensor M l12) by
+      rw [← LinearMap.exact_iff.1 ex, ι_def]
+      ext x; constructor
+      · rintro ⟨x, rfl⟩
+        induction x using TensorProduct.induction_on <;> aesop
+      · rw [LinearMap.exact_iff.1 ex]
+        rintro ⟨x, rfl⟩
+        induction x using TensorProduct.induction_on with
+        | zero => simp
+        | tmul a b =>
+          exact ⟨⟨l12 a, complex (by simp)⟩ ⊗ₜ b, rfl⟩
+        | add x y hx hy => rw [map_add]; exact Submodule.add_mem _ hx hy,
+    LinearMap.rTensor, TensorProduct.map_range_eq_span_tmul, Submodule.span_le]
+  rintro _ ⟨x, y, rfl⟩
+  exact ⟨⟨l12 x, complex (by simp)⟩ ⊗ₜ y,
+    ⟨⟨⟨⟨l12 x, complex (by simp)⟩, ⟨⟨l12 x, by simp⟩, rfl⟩⟩ ⊗ₜ y, rfl⟩, rfl⟩⟩
 
 lemma lTensor_reflects_exact [fl : FaithfullyFlat R M]
     (N1 N2 N3 : Type*)
