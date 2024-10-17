@@ -20,7 +20,7 @@ def Vector (α : Type u) (n : ℕ) :=
 
 namespace Vector
 
-variable {α β σ φ : Type*} {n : ℕ}
+variable {α β σ φ : Type*} {n : ℕ} {p : α → Prop}
 
 instance [DecidableEq α] : DecidableEq (Vector α n) :=
   inferInstanceAs (DecidableEq {l : List α // l.length = n})
@@ -100,6 +100,15 @@ theorem map_nil (f : α → β) : map f nil = nil :=
 @[simp]
 theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v) = cons (f a) (map f v)
   | ⟨_, _⟩ => rfl
+
+/-- Map a vector under a partial function. -/
+def pmap (f : (a : α) → p a → β) :
+    (v : Vector α n) → (∀ x ∈ v.toList, p x) → Vector β n
+  | ⟨l, h⟩, hp => ⟨List.pmap f l hp, by simp [h]⟩
+
+@[simp]
+theorem pmap_nil (f : (a : α) → p a → β) (hp : ∀ x ∈ nil.toList, p x) :
+    nil.pmap f hp = nil := rfl
 
 /-- Mapping two vectors under a curried function of two variables. -/
 def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
@@ -224,6 +233,12 @@ theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.tak
 
 instance : GetElem (Vector α n) Nat α fun _ i => i < n where
   getElem := fun x i h => get x ⟨i, h⟩
+
+lemma getElem_def (v : Vector α n) (i : ℕ) {hi : i < n} :
+    v[i] = v.toList[i]'(by simpa) := rfl
+
+lemma toList_getElem (v : Vector α n) (i : ℕ) {hi : i < v.toList.length} :
+    v.toList[i] = v[i]'(by simp_all) := rfl
 
 end Vector
 
