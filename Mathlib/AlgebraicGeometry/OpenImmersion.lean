@@ -32,14 +32,14 @@ variable {C : Type u} [Category.{v} C]
 of LocallyRingedSpaces
 -/
 abbrev IsOpenImmersion : MorphismProperty (Scheme.{u}) :=
-  fun _ _ f ↦ LocallyRingedSpace.IsOpenImmersion f
+  fun X Y f ↦ LocallyRingedSpace.IsOpenImmersion f.toLRSHom
 
 instance : IsOpenImmersion.IsStableUnderComposition where
-  comp_mem f g := fun _ _ ↦ LocallyRingedSpace.IsOpenImmersion.comp f g
+  comp_mem f g := fun _ _ ↦ LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
 
 instance IsOpenImmersion.comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
     [IsOpenImmersion f] [IsOpenImmersion g] : IsOpenImmersion (f ≫ g) :=
-  LocallyRingedSpace.IsOpenImmersion.comp f g
+  LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
 
 namespace LocallyRingedSpace.IsOpenImmersion
 

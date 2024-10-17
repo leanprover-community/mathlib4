@@ -442,7 +442,7 @@ lemma fst'_self_eq_snd (hP : P ≤ MorphismProperty.monomorphisms C)
 lemma isIso_fst'_self (hP : P ≤ MorphismProperty.monomorphisms C)
     {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : IsIso (hf.rep.fst' f) :=
   have := P.presheaf_mono_of_le hP hf
-  have := (hf.rep.isPullback' f).fst_iso_of_mono_eq
+  have := (hf.rep.isPullback' f).isIso_fst_of_mono
   Yoneda.fullyFaithful.isIso_of_isIso_map _
 
 end

@@ -161,9 +161,8 @@ end Representability
 include hf in
 open Representability in
 theorem representability [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
-    F.1.Representable where
-  has_representation := ⟨(glueData hf).glued,
-    ⟨(sheafToPresheaf _ _).mapIso (yonedaIsoSheaf hf)⟩⟩
+    F.1.IsRepresentable :=
+  Functor.IsRepresentable.mk' ((sheafToPresheaf _ _).mapIso (yonedaIsoSheaf hf))
 
 end Scheme
 
