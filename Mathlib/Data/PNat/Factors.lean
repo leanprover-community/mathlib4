@@ -56,7 +56,7 @@ theorem card_ofPrime (p : Nat.Primes) : Multiset.card (ofPrime p) = 1 :=
  as a multiset of primes.  The next block of results records
  obvious properties of these coercions.
 -/
-def toNatMultiset : PrimeMultiset → Multiset ℕ := fun v => v.map Coe.coe
+def toNatMultiset : PrimeMultiset → Multiset ℕ := fun v => v.map Coe.coe -- TODO remove Coe.coe
 
 instance coeNat : Coe PrimeMultiset (Multiset ℕ) :=
   ⟨toNatMultiset⟩
