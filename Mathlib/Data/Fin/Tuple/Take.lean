@@ -9,7 +9,7 @@ import Mathlib.Data.Fin.Tuple.Basic
 /-!
 # Take operations on tuples
 
-We define the `take` operations on `n`-tuples, which restrict a tuple to its first `m` elements.
+We define the `take` operation on `n`-tuples, which restricts a tuple to its first `m` elements.
 
 * `Fin.take`: Given `h : m ≤ n`, `Fin.take m h v` for a `n`-tuple `v = (v 0, ..., v (n - 1))` is the
   `m`-tuple `(v 0, ..., v (m - 1))`.
