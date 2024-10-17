@@ -66,4 +66,18 @@ theorem dense_or_cyclic (S : AddSubgroup G) : Dense (S : Set G) ∨ ∃ a : G, S
   rcases h with ⟨ε, ε0, hε⟩
   exact cyclic_of_isolated_zero ε0 (disjoint_left.2 hε)
 
+theorem dense_xor'_cyclic (s : AddSubgroup G) :
+    Xor' (Dense (s : Set G)) (∃ a, s = .zmultiples a) := by
+  if hd : Dense (s : Set G) then
+    simp only [hd, xor_true]
+    rintro ⟨a, rfl⟩
+    exact not_denseRange_zsmul a hd
+  else
+    simp only [hd, xor_false, id, zmultiples_eq_closure]
+    exact s.dense_or_cyclic.resolve_left hd
+
+theorem dense_iff_ne_zmultiples {s : AddSubgroup G} :
+    Dense (s : Set G) ↔ ∀ a, s ≠ .zmultiples a := by
+  simp [xor_iff_iff_not.1 s.dense_xor'_cyclic]
+
 end AddSubgroup
