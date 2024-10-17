@@ -136,7 +136,7 @@ lemma LFunction_one_eq_mul_riemannZeta {s : ℂ} (hs : s ≠ 1) :
 /-- The L function of the trivial Dirichlet character mod `N` has a simple pole with
 residue `∏ p ∈ N.primeFactors, (1 - p⁻¹)` at `s = 1`. -/
 lemma LFunction_one_residue_one :
-  Filter.Tendsto (fun s ↦ (s - 1) * LFunction_one N s) (𝓝[≠] 1)
+    Filter.Tendsto (fun s ↦ (s - 1) * LFunction_one N s) (𝓝[≠] 1)
     (𝓝 <| ∏ p ∈ N.primeFactors, (1 - (p : ℂ)⁻¹)) := by
   have H : (fun s ↦ (s - 1) * LFunction_one N s) =ᶠ[𝓝[≠] 1]
         fun s ↦ (∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))) * ((s - 1) * riemannZeta s) := by
