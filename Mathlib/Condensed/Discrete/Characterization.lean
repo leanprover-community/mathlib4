@@ -76,8 +76,8 @@ theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
     [ X.IsDiscrete
     , IsIso ((Condensed.discreteUnderlyingAdj _).counit.app X)
     , X ∈ (Condensed.discrete _).essImage
-    , X ∈ functor.essImage
-    , IsIso (adjunction.counit.app X)
+    , X ∈ CondensedSet.LocallyConstant.functor.essImage
+    , IsIso (CondensedSet.LocallyConstant.adjunction.counit.app X)
     , Sheaf.IsConstant (coherentTopology Profinite)
         ((Condensed.ProfiniteCompHaus.equivalence _).inverse.obj X)
     , ∀ S : Profinite.{u}, Nonempty
@@ -123,8 +123,8 @@ theorem isDiscrete_tfae  (M : CondensedMod.{u} R) :
     [ M.IsDiscrete
     , IsIso ((Condensed.discreteUnderlyingAdj _).counit.app M)
     , M ∈ (Condensed.discrete _).essImage
-    , M ∈ (functor R).essImage
-    , IsIso ((adjunction R).counit.app M)
+    , M ∈ (CondensedMod.LocallyConstant.functor R).essImage
+    , IsIso ((CondensedMod.LocallyConstant.adjunction R).counit.app M)
     , Sheaf.IsConstant (coherentTopology Profinite)
         ((Condensed.ProfiniteCompHaus.equivalence _).inverse.obj M)
     , ∀ S : Profinite.{u}, Nonempty
@@ -195,8 +195,8 @@ theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
     [ X.IsDiscrete
     , IsIso ((LightCondensed.discreteUnderlyingAdj _).counit.app X)
     , X ∈ (LightCondensed.discrete _).essImage
-    , X ∈ functor.essImage
-    , IsIso (adjunction.counit.app X)
+    , X ∈ LightCondSet.LocallyConstant.functor.essImage
+    , IsIso (LightCondSet.LocallyConstant.adjunction.counit.app X)
     , ∀ S : LightProfinite.{u}, Nonempty
         (IsColimit <| X.val.mapCocone (coconeRightOpOfCone S.asLimitCone))
     ] := by
@@ -232,8 +232,8 @@ theorem isDiscrete_tfae  (M : LightCondMod.{u} R) :
     [ M.IsDiscrete
     , IsIso ((LightCondensed.discreteUnderlyingAdj _).counit.app M)
     , M ∈ (LightCondensed.discrete _).essImage
-    , M ∈ (functor R).essImage
-    , IsIso ((adjunction R).counit.app M)
+    , M ∈ (LightCondMod.LocallyConstant.functor R).essImage
+    , IsIso ((LightCondMod.LocallyConstant.adjunction R).counit.app M)
     , ∀ S : LightProfinite.{u}, Nonempty
         (IsColimit <| M.val.mapCocone (coconeRightOpOfCone S.asLimitCone))
     ] := by
