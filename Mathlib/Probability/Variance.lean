@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel, Kexing Ying
 -/
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Integration
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
