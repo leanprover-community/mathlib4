@@ -57,7 +57,6 @@ def Scheme.emptyTo (X : Scheme.{u}) : ∅ ⟶ X :=
 
 @[ext]
 theorem Scheme.empty_ext {X : Scheme.{u}} (f g : ∅ ⟶ X) : f = g :=
-  -- Porting note (#11041): `ext` regression
   Scheme.Hom.ext' (Subsingleton.elim (α := ∅ ⟶ _) _ _)
 
 theorem Scheme.eq_emptyTo {X : Scheme.{u}} (f : ∅ ⟶ X) : f = Scheme.emptyTo X :=
