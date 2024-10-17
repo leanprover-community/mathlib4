@@ -260,33 +260,25 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
     TotallyBounded (absConvexHull ℝ s) := by
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
   intro U hU
-  obtain ⟨W, hW, hW₂, hW₃, hW₄⟩  := exists_closed_nhds_zero_neg_eq_add_subset (G := E) hU
+  obtain ⟨W, hW₁, _, _, hW₄⟩  := exists_closed_nhds_zero_neg_eq_add_subset hU
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
-  obtain ⟨V,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs W hW
-  obtain ⟨t,⟨htf,hts⟩⟩ := hs _ hS₁
-  have en {t₁ V₁ : Set E} : (⋃ y ∈ t₁, y +ᵥ V₁) = t₁ + V₁ := by
-    simp_all only [iUnion_vadd_set, vadd_eq_add]
-  have e4 : (absConvexHull ℝ) s ⊆ (convexHull ℝ) (t ∪ -t) + V := by
-    rw [convexHull_union_neg_eq_absConvexHull (s := t), ← AbsConvex.absConvexHull_eq hS₂]
-    apply le_trans (absConvexHull_mono hts)
-    rw [en]
-    apply (absConvexHull_add_subset ℝ)
-  have e6 : TotallyBounded ((convexHull ℝ) (t ∪ -t)) := IsCompact.totallyBounded
-    (Set.Finite.isCompact_convexHull (finite_union.mpr ⟨htf,Finite.neg htf⟩))
-  rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at e6
-  obtain ⟨t',⟨htf',hts'⟩⟩ := e6 _ hS₁
-  rw [en] at hts'
-  have e7: (absConvexHull ℝ) s ⊆ t' + (V + V) := by
-    rw [← add_assoc]
-    exact le_trans e4 (Set.add_subset_add_right hts')
+  obtain ⟨V,⟨hV₁,hV₂,hV₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs W hW₁
+  obtain ⟨t,⟨htf,hts⟩⟩ := hs _ hV₁
+  obtain ⟨t',⟨htf',hts'⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp
+    (IsCompact.totallyBounded (Set.Finite.isCompact_convexHull
+      (finite_union.mpr ⟨htf,Finite.neg htf⟩)))) _ hV₁
   use t'
-  constructor
-  · exact htf'
-  · apply subset_trans e7
-    rw [en]
-    apply Set.add_subset_add_left
-    apply subset_trans _ hW₄
-    exact add_subset_add hS₃ hS₃
+  have en {t₁ V₁ : Set E} : (⋃ y ∈ t₁, y +ᵥ V₁) = t₁ + V₁ := iUnion_add_left_image
+  rw [en] at hts'
+  rw [en] at hts
+  simp_rw [en]
+  exact ⟨htf',
+    subset_trans (by
+      rw [← add_assoc]
+      apply le_trans _ (Set.add_subset_add_right hts')
+      rw [convexHull_union_neg_eq_absConvexHull, ← AbsConvex.absConvexHull_eq hV₂]
+      exact le_trans (absConvexHull_mono hts) (absConvexHull_add_subset ℝ))
+    (Set.add_subset_add_left (subset_trans (add_subset_add hV₃ hV₃) hW₄))⟩
 
 end
 
