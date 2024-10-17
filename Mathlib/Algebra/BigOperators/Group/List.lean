@@ -654,14 +654,13 @@ lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
 @[simp]
 theorem length_flatMap (l : List α) (f : α → List β) :
     length (List.flatMap l f) = sum (map (length ∘ f) l) := by
-  rw [List.flatMap, length_flatten, map_map, Nat.sum_eq_listSum]
+  rw [List.flatMap, length_flatten, map_map]
 
 @[deprecated (since := "2024-10-16")] alias length_bind := length_flatMap
 
 lemma countP_flatMap (p : β → Bool) (l : List α) (f : α → List β) :
     countP p (l.flatMap f) = sum (map (countP p ∘ f) l) := by
   rw [List.flatMap, countP_flatten, map_map]
-  simp
 
 @[deprecated (since := "2024-10-16")] alias countP_bind := countP_flatMap
 
