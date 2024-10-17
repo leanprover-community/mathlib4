@@ -326,7 +326,7 @@ instance : Monoid (α →ᵈ α) where
   mul := comp
   mul_one := comp_id
   one_mul := id_comp
-  mul_assoc f g h := comp_assoc _ _ _
+  mul_assoc _ _ _ := comp_assoc _ _ _
 
 theorem one_def : (1 : α →ᵈ α) = Dilation.id α :=
   rfl

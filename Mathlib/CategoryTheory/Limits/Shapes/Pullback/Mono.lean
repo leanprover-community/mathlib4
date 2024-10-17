@@ -62,7 +62,7 @@ The pullback cone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a limit if `f` is 
 shown in `mono_of_pullback_is_id`.
 -/
 def isLimitMkIdId (f : X ⟶ Y) [Mono f] : IsLimit (mk (𝟙 X) (𝟙 X) rfl : PullbackCone f f) :=
-  IsLimit.mk _ (fun s => s.fst) (fun s => Category.comp_id _)
+  IsLimit.mk _ (fun s => s.fst) (fun _ => Category.comp_id _)
     (fun s => by rw [← cancel_mono f, Category.comp_id, s.condition]) fun s m m₁ _ => by
     simpa using m₁
 
@@ -191,30 +191,42 @@ section
 
 open WalkingCospan
 
-variable (f : X ⟶ Y)
+variable (f : X ⟶ Y) [Mono f]
 
-instance has_kernel_pair_of_mono [Mono f] : HasPullback f f :=
+instance has_kernel_pair_of_mono : HasPullback f f :=
   ⟨⟨⟨_, PullbackCone.isLimitMkIdId f⟩⟩⟩
 
-theorem fst_eq_snd_of_mono_eq [Mono f] : pullback.fst f f = pullback.snd f f :=
-  ((PullbackCone.isLimitMkIdId f).fac (getLimitCone (cospan f f)).cone left).symm.trans
-    ((PullbackCone.isLimitMkIdId f).fac (getLimitCone (cospan f f)).cone right : _)
+theorem PullbackCone.fst_eq_snd_of_mono_eq {f : X ⟶ Y} [Mono f] (t : PullbackCone f f) :
+    t.fst = t.snd :=
+  (cancel_mono f).1 t.condition
+
+theorem fst_eq_snd_of_mono_eq : pullback.fst f f = pullback.snd f f :=
+  PullbackCone.fst_eq_snd_of_mono_eq (getLimitCone (cospan f f)).cone
 
 @[simp]
-theorem pullbackSymmetry_hom_of_mono_eq [Mono f] : (pullbackSymmetry f f).hom = 𝟙 _ := by
+theorem pullbackSymmetry_hom_of_mono_eq : (pullbackSymmetry f f).hom = 𝟙 _ := by
   ext
   · simp [fst_eq_snd_of_mono_eq]
   · simp [fst_eq_snd_of_mono_eq]
 
-instance fst_iso_of_mono_eq [Mono f] : IsIso (pullback.fst f f) := by
-  refine ⟨⟨pullback.lift (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩⟩
-  ext
+variable {f} in
+lemma PullbackCone.isIso_fst_of_mono_of_isLimit {t : PullbackCone f f} (ht : IsLimit t) :
+    IsIso t.fst := by
+  refine ⟨⟨PullbackCone.IsLimit.lift ht (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩⟩
+  apply PullbackCone.IsLimit.hom_ext ht
   · simp
   · simp [fst_eq_snd_of_mono_eq]
 
-instance snd_iso_of_mono_eq [Mono f] : IsIso (pullback.snd f f) :=
-  fst_eq_snd_of_mono_eq f ▸ fst_iso_of_mono_eq f
+variable {f} in
+lemma PullbackCone.isIso_snd_of_mono_of_isLimit {t : PullbackCone f f} (ht : IsLimit t) :
+    IsIso t.snd :=
+  t.fst_eq_snd_of_mono_eq ▸ t.isIso_fst_of_mono_of_isLimit ht
 
+instance isIso_fst_of_mono : IsIso (pullback.fst f f) :=
+  PullbackCone.isIso_fst_of_mono_of_isLimit (getLimitCone (cospan f f)).isLimit
+
+instance isIso_snd_of_mono : IsIso (pullback.snd f f) :=
+  PullbackCone.isIso_snd_of_mono_of_isLimit (getLimitCone (cospan f f)).isLimit
 end
 
 namespace PushoutCocone
@@ -234,7 +246,7 @@ The pushout cocone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a colimit if `f` 
 shown in `epi_of_isColimit_mk_id_id`.
 -/
 def isColimitMkIdId (f : X ⟶ Y) [Epi f] : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f) :=
-  IsColimit.mk _ (fun s => s.inl) (fun s => Category.id_comp _)
+  IsColimit.mk _ (fun s => s.inl) (fun _ => Category.id_comp _)
     (fun s => by rw [← cancel_epi f, Category.id_comp, s.condition]) fun s m m₁ _ => by
     simpa using m₁
 
@@ -357,27 +369,40 @@ section
 
 open WalkingSpan
 
-variable (f : X ⟶ Y)
+variable (f : X ⟶ Y) [Epi f]
 
-instance has_cokernel_pair_of_epi [Epi f] : HasPushout f f :=
+instance has_cokernel_pair_of_epi : HasPushout f f :=
   ⟨⟨⟨_, PushoutCocone.isColimitMkIdId f⟩⟩⟩
 
-theorem inl_eq_inr_of_epi_eq [Epi f] : (pushout.inl _ _ : _ ⟶ pushout f f) = pushout.inr _ _ :=
-  ((PushoutCocone.isColimitMkIdId f).fac (getColimitCocone (span f f)).cocone left).symm.trans
-    ((PushoutCocone.isColimitMkIdId f).fac (getColimitCocone (span f f)).cocone right : _)
+theorem PushoutCocone.inl_eq_inr_of_epi_eq {f : X ⟶ Y} [Epi f] (t : PushoutCocone f f) :
+    t.inl = t.inr :=
+  (cancel_epi f).1 t.condition
+
+theorem inl_eq_inr_of_epi_eq : pushout.inl f f = pushout.inr f f :=
+  PushoutCocone.inl_eq_inr_of_epi_eq (getColimitCocone (span f f)).cocone
 
 @[simp]
-theorem pullback_symmetry_hom_of_epi_eq [Epi f] : (pushoutSymmetry f f).hom = 𝟙 _ := by
+theorem pullback_symmetry_hom_of_epi_eq : (pushoutSymmetry f f).hom = 𝟙 _ := by
   ext <;> simp [inl_eq_inr_of_epi_eq]
 
-instance inl_iso_of_epi_eq [Epi f] : IsIso (pushout.inl _ _ : _ ⟶ pushout f f) := by
-  refine ⟨⟨pushout.desc (𝟙 _) (𝟙 _) (by simp), by simp, ?_⟩⟩
-  apply pushout.hom_ext
+variable {f} in
+lemma PushoutCocone.isIso_inl_of_epi_of_isColimit {t : PushoutCocone f f} (ht : IsColimit t) :
+    IsIso t.inl := by
+  refine ⟨⟨PushoutCocone.IsColimit.desc ht (𝟙 _) (𝟙 _) (by simp), by simp, ?_⟩⟩
+  apply PushoutCocone.IsColimit.hom_ext ht
   · simp
   · simp [inl_eq_inr_of_epi_eq]
 
-instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr f f) :=
-  inl_eq_inr_of_epi_eq f ▸ inl_iso_of_epi_eq f
+variable {f} in
+lemma PushoutCocone.isIso_inr_of_epi_of_isColimit {t : PushoutCocone f f} (ht : IsColimit t) :
+    IsIso t.inr :=
+  t.inl_eq_inr_of_epi_eq ▸ t.isIso_inl_of_epi_of_isColimit ht
+
+instance isIso_inl_of_epi : IsIso (pushout.inl f f) :=
+  PushoutCocone.isIso_inl_of_epi_of_isColimit (getColimitCocone (span f f)).isColimit
+
+instance isIso_inr_of_epi : IsIso (pushout.inr f f) :=
+  PushoutCocone.isIso_inr_of_epi_of_isColimit (getColimitCocone (span f f)).isColimit
 
 end
 
