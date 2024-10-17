@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
 
-import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Flat.Stability
 import Mathlib.LinearAlgebra.TensorProduct.Quotient
 
 /-!
@@ -173,16 +173,14 @@ private lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     LinearMap.range l12 ≤ LinearMap.ker l23 := by
   intro x hx
   simp only [LinearMap.mem_ker]
-  obtain ⟨y, hy⟩ := hx
-  have : ∀ (n1 : N1) (m : M), l23.rTensor M (l12.rTensor M (n1 ⊗ₜ m)) = 0 := fun n1 m ↦ by
-    exact Function.Exact.apply_apply_eq_zero ex (n1 ⊗ₜ[R] m)
-  simp only [LinearMap.rTensor_tmul] at this
+  obtain ⟨y, rfl⟩ := hx
+  have : ∀ (n1 : N1) (m : M), l23 (l12 n1) ⊗ₜ[R] m = 0 := fun n1 m ↦
+    ex.apply_apply_eq_zero (n1 ⊗ₜ[R] m)
   have eq1 := this y
   by_contra! hxx
-  let E : Submodule R N3 := Submodule.span R {l23 x}
-  have hE : Nontrivial E := ⟨0, ⟨⟨l23 x, Submodule.mem_span_singleton_self _⟩,
+  let E : Submodule R N3 := Submodule.span R {l23 (l12 y)}
+  have hE : Nontrivial E := ⟨0, ⟨⟨l23 (l12 y), Submodule.mem_span_singleton_self _⟩,
     Subtype.coe_ne_coe.1 hxx.symm⟩⟩
-  rw [hy] at eq1
   have eq0: (⊤ : Submodule R (E ⊗[R] M)) = 0 := by
     ext xx
     simp only [Submodule.mem_top, Submodule.zero_eq_bot, Submodule.mem_bot, true_iff]
@@ -193,7 +191,7 @@ private lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     let r :  ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha =>
       Submodule.mem_span_singleton.1 (b ha).2 |>.choose
     have hr : ∀ ⦃i : E ⊗[R] M⦄ (hi : i ∈ c.support), b hi =
-        r hi • ⟨l23 x, Submodule.mem_span_singleton_self _⟩ := by
+        r hi • ⟨l23 (l12 y), Submodule.mem_span_singleton_self _⟩ := by
       intro i hi
       ext
       exact Submodule.mem_span_singleton.1 (b hi).2 |>.choose_spec.symm
@@ -204,7 +202,7 @@ private lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
       _ = ∑ i ∈ c.support.attach, c i.1 • (b i.2 ⊗ₜ a i.2) :=
         Finset.sum_congr rfl fun i _ => by rw [hy i.2]
       _ = ∑ i ∈ c.support.attach,
-          (c i.1 • ((r i.2) • ⟨l23 x, Submodule.mem_span_singleton_self _⟩)) ⊗ₜ a i.2 :=
+          (c i.1 • ((r i.2) • ⟨l23 (l12 y), Submodule.mem_span_singleton_self _⟩)) ⊗ₜ a i.2 :=
         Finset.sum_congr rfl fun i _ => by simp only [smul_tmul, tmul_smul, ← hr]
       _ = ∑ i ∈ c.support.attach, 0 :=
         Finset.sum_congr rfl fun r _ => by
@@ -428,6 +426,7 @@ variable [CommRing R] [CommRing S] [Algebra R S]
 variable [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 variable [FaithfullyFlat R S] [FaithfullyFlat S M]
 
+include S in
 /-- If `S` is a faithfully flat `R`-algebra, then any faithfully flat `S`-Module is faithfully flat
 as an `R`-module. -/
 theorem comp  :
