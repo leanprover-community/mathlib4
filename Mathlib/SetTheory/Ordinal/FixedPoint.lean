@@ -166,7 +166,7 @@ theorem derivFamily_limit (f : ι → Ordinal → Ordinal) {o} :
   limitRecOn_limit _ _ _ _
 
 theorem isNormal_derivFamily (f : ι → Ordinal → Ordinal) : IsNormal (derivFamily f) :=
-  ⟨fun o => by rw [derivFamily_succ, ← succ_le_iff]; apply le_nfpFamily, fun o l a => by
+  ⟨fun o => by rw [derivFamily_succ, ← succ_le_iff]; apply le_nfpFamily, fun l a => by
     rw [derivFamily_limit _ l, bsup_le_iff]⟩
 
 @[deprecated isNormal_derivFamily (since := "2024-10-11")]
