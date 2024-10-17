@@ -371,7 +371,6 @@ theorem omega0_lt_epsilon (o : Ordinal) : ω < ε_ o :=
 theorem nat_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
   (nat_lt_omega0 n).trans <| omega0_lt_epsilon o
 
-@[simp]
 theorem epsilon_pos (o : Ordinal) : 0 < ε_ o :=
   nat_lt_epsilon 0 o
 
