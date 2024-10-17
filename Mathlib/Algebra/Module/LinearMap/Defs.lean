@@ -216,8 +216,6 @@ lemma coe_coe {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f
     ⇑(f : M →ₛₗ[σ] M₃) = f :=
   rfl
 
--- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
-
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
 def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ.toMonoidHom M M₃ :=
   { f with map_zero' := show f 0 = 0 from map_zero f }

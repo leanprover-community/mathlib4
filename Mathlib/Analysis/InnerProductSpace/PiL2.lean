@@ -306,7 +306,6 @@ theorem repr_injective :
   cases g
   congr
 
--- Porting note: `CoeFun` → `FunLike`
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
