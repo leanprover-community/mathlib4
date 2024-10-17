@@ -3,12 +3,12 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Order.Defs
 import Mathlib.Order.Notation
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.SimpRw
 
 /-!
