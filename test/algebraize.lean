@@ -38,9 +38,9 @@ an example. -/
 def RingHom.testProperty3 {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) : Prop :=
   f.testProperty1
 
-/-- Test property for when the `RingHom` porperty corresponds to a `Algebra` property that is not
-definitionally the same, and needs to be created through a lemma. See e.g. `Algebra.IsIntegral` for
-an example. -/
+/- Test property for when the `RingHom` (and `Algebra`) property have an extra explicit argument,
+and hence needs to be created through a lemma. See e.g.
+`Algebra.IsStandardSmoothOfRelativeDimension` for an example. -/
 class Algebra.testProperty4 (n : ℕ) (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] : Prop where
   out : ∀ m, n = m
 
