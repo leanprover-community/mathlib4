@@ -178,7 +178,7 @@ Given an ideal $J ≤ Mₙ(R)$, we send it to $\{Nᵢⱼ ∣ ∃ N ∈ J\}$.
 def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n R) where
   toFun I := I.matricesOver n
   invFun J := TwoSidedIdeal.mk'
-    { x : R | ∃ N ∈ J, x = N i j }
+    { N i j | N ∈ J }
     ⟨0, J.zero_mem, rfl⟩
     (by rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩; exact ⟨x + y, J.add_mem hx hy, rfl⟩)
     (by rintro _ ⟨x, hx, rfl⟩; exact ⟨-x, J.neg_mem hx, rfl⟩)
@@ -206,7 +206,7 @@ def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n 
         subst ha hb
         simp only [stdBasisMatrix, and_self, ↓reduceIte, StdBasisMatrix.mul_right_apply_same,
           StdBasisMatrix.mul_left_apply_same, one_mul, mul_one]
-        exact hy2 a b
+        rw [hy2 a b]
       · conv_lhs =>
           dsimp [stdBasisMatrix]
           rw [if_neg (by tauto)]

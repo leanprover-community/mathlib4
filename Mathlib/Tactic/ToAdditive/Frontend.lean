@@ -1048,6 +1048,8 @@ def fixAbbreviation : List String → List String
                                       => "function" :: "_" :: "semiconj" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Commute" :: s
                                       => "function" :: "_" :: "commute" :: fixAbbreviation s
+  | "Zero" :: "Le" :: "Part" :: s         => "PosPart" :: fixAbbreviation s
+  | "Le" :: "Zero" :: "Part" :: s         => "NegPart" :: fixAbbreviation s
   | "zero" :: "Le" :: "Part" :: s         => "posPart" :: fixAbbreviation s
   | "le" :: "Zero" :: "Part" :: s         => "negPart" :: fixAbbreviation s
   | "Division" :: "Add" :: "Monoid" :: s => "SubtractionMonoid" :: fixAbbreviation s

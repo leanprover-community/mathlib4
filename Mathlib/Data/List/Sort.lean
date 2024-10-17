@@ -49,7 +49,7 @@ namespace List
 
 section Sorted
 
-variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β → Prop} {a : α} {l : List α}
+variable {α : Type u} {r : α → α → Prop} {a : α} {l : List α}
 
 /-- `Sorted r l` is the same as `List.Pairwise r l`, preferred in the case that `r`
   is a `<` or `≤`-like relation (transitive and antisymmetric or asymmetric) -/
@@ -87,6 +87,18 @@ theorem Sorted.tail {r : α → α → Prop} {l : List α} (h : Sorted r l) : So
 
 theorem rel_of_sorted_cons {a : α} {l : List α} : Sorted r (a :: l) → ∀ b ∈ l, r a b :=
   rel_of_pairwise_cons
+
+nonrec theorem Sorted.cons {r : α → α → Prop} [IsTrans α r] {l : List α} {a b : α}
+    (hab : r a b) (h : Sorted r (b :: l)) : Sorted r (a :: b :: l) :=
+  h.cons <| forall_mem_cons.2 ⟨hab, fun _ hx => _root_.trans hab <| rel_of_sorted_cons h _ hx⟩
+
+theorem sorted_cons_cons {r : α → α → Prop} [IsTrans α r] {l : List α} {a b : α} :
+    Sorted r (b :: a :: l) ↔ r b a ∧ Sorted r (a :: l) := by
+  constructor
+  · intro h
+    exact ⟨rel_of_sorted_cons h _ (mem_cons_self a _), h.of_cons⟩
+  · rintro ⟨h, ha⟩
+    exact ha.cons h
 
 theorem Sorted.head!_le [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· < ·) l)
     (ha : a ∈ l) : l.head! ≤ a := by

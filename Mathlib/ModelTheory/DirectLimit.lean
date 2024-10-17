@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.Order
 import Mathlib.Algebra.DirectLimit
 import Mathlib.ModelTheory.Quotients
 import Mathlib.ModelTheory.FinitelyGenerated
+import Mathlib.Data.Finite.Sum
 
 /-!
 # Direct Limits of First-Order Structures

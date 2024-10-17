@@ -200,14 +200,8 @@ def ofFnRec {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofF
 
 @[simp]
 theorem ofFnRec_ofFn {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) {n : ℕ}
-    (f : Fin n → α) : @ofFnRec _ C h (List.ofFn f) = h _ f := by
-  -- Porting note: Old proof was
-  -- equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
-  have := (@equivSigmaTuple α).rightInverse_symm
-  dsimp [equivSigmaTuple] at this
-  have := this.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
-  dsimp only at this
-  rw [ofFnRec, ← this]
+    (f : Fin n → α) : @ofFnRec _ C h (List.ofFn f) = h _ f :=
+  equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
 
 theorem exists_iff_exists_tuple {P : List α → Prop} :
     (∃ l : List α, P l) ↔ ∃ (n : _) (f : Fin n → α), P (List.ofFn f) :=
