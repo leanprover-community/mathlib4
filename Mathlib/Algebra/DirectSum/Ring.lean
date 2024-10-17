@@ -222,7 +222,6 @@ private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
   rw [mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (one_mul <| GradedMonoid.mk i xi)
 
--- Porting note (#11083): `suffices` is very slow here.
 private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
   apply addHom_ext; intro i xi
@@ -230,17 +229,13 @@ private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   rw [flip_apply, mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (mul_one <| GradedMonoid.mk i xi)
 
-/- Porting note: Some auxiliary statements were needed in the proof of the `suffices`,
-otherwise would timeout -/
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
   suffices (mulHom A).compHom.comp (mulHom A) =
       (AddMonoidHom.compHom flipHom <| (mulHom A).flip.compHom.comp (mulHom A)).flip by
-      have sol := DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
-      have aux : ∀ a b, (mulHom A) a b = a * b := fun _ _ ↦ rfl
-      simp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, aux, flip_apply,
-        AddMonoidHom.flipHom_apply] at sol
-      exact sol
+      simpa only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
+        AddMonoidHom.flipHom_apply]
+        using DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
   ext ai ax bi bx ci cx
   dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
     AddMonoidHom.flipHom_apply]

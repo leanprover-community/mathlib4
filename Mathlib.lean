@@ -1708,6 +1708,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+import Mathlib.CategoryTheory.Limits.Sifted
 import Mathlib.CategoryTheory.Limits.SmallComplete
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.TypesFiltered
@@ -3240,6 +3241,7 @@ import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Constructions.Projective
+import Mathlib.MeasureTheory.Constructions.SubmoduleQuotient
 import Mathlib.MeasureTheory.Constructions.UnitInterval
 import Mathlib.MeasureTheory.Covering.Besicovitch
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
@@ -4109,6 +4111,7 @@ import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.RingHom.FiniteType
 import Mathlib.RingTheory.RingHom.Integral
 import Mathlib.RingTheory.RingHom.Locally
+import Mathlib.RingTheory.RingHom.StandardSmooth
 import Mathlib.RingTheory.RingHom.Surjective
 import Mathlib.RingTheory.RingHomProperties
 import Mathlib.RingTheory.RingInvo
