@@ -443,6 +443,13 @@ noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R
 theorem finrank_eq_rank [Module.Finite R M] : ↑(finrank R M) = Module.rank R M := by
   rw [Module.finrank, cast_toNat_of_lt_aleph0 (rank_lt_aleph0 R M)]
 
+/-- If `M` is finite, then `finrank N = rank N` for all `N : Submodule M`. Note that
+such an `N` need not be finitely generated. -/
+protected theorem _root_.Submodule.finrank_eq_rank [Module.Finite R M] (N : Submodule R M) :
+    finrank R N = Module.rank R N := by
+  rw [finrank, Cardinal.cast_toNat_of_lt_aleph0]
+  exact lt_of_le_of_lt (Submodule.rank_le N) (rank_lt_aleph0 R M)
+
 end Module
 
 open Module
