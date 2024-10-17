@@ -138,6 +138,20 @@ instance : NatTrans.IsMonoidal adj.counit where
 
 end IsMonoidal
 
+namespace Equivalence
+
+variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal]
+
+instance : NatTrans.IsMonoidal e.unit :=
+  inferInstanceAs (NatTrans.IsMonoidal e.toAdjunction.unit)
+
+instance : NatTrans.IsMonoidal e.counit :=
+  inferInstanceAs (NatTrans.IsMonoidal e.toAdjunction.counit)
+
+-- TODO: deduce `e.symm.IsMonoidal`
+
+end Equivalence
+
 end Adjunction
 
 namespace LaxMonoidalFunctor
