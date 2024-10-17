@@ -27,7 +27,7 @@ omit [Fintype ι] in
 private theorem update_aux (m : (i : ι) → Π₀ (j : κ i), M i j)
     (i : ι) (p : (i : ι) → κ i) (x : Π₀ (j : κ i), M i j) :
     (fun k ↦ Function.update m i x k (p k)) =
-      Function.update (fun i ↦ (m i) (p i)) i (x (p i)) := by
+      Function.update (fun i ↦ m i (p i)) i (x (p i)) := by
   ext j
   obtain rfl | hij := eq_or_ne j i <;> simp [*]
 
@@ -56,14 +56,12 @@ def piMultilinear
           push_neg at h
           refine ⟨fun i _ => p i, fun i => (s i).prop _ |>.resolve_right ?_, rfl⟩
           exact mt ((f p).map_coord_zero (m := fun i => x i _) i) h⟩}
-  map_add' {inst} m i x y := by
-    cases Subsingleton.elim inst (by clear inst; assumption)
-    ext p
+  map_add' {dec} m i x y := ext fun p => by
+    cases Subsingleton.elim dec (by infer_instance)
     dsimp
     simp_rw [update_aux, DFinsupp.add_apply, (f p).map_add]
-  map_smul' {inst} m i c x := by
-    cases Subsingleton.elim inst (by clear inst; assumption)
-    ext p
+  map_smul' {dec} m i c x := ext fun p => by
+    cases Subsingleton.elim dec (by infer_instance)
     dsimp
     simp_rw [update_aux, DFinsupp.smul_apply, (f p).map_smul]
 
