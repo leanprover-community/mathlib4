@@ -57,18 +57,21 @@ instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
 -- theorem xxx {R S : CommRingCat} (f : R ⟶ S) [IsLocalHom f] :
 --     IsLocalHom (f : (.of R ⟶ S)) :=
 --   inferInstance
+-- set_option trace.Meta.synthInstance true
 
-@[instance]
+-- the priority of these three instances have to be set lower than any other instance
+-- in order to avoid a infinite path of xxx
+@[instance 50]
 theorem xxx {R : Type*} [CommRing R] {S : CommRingCat} (f : CommRingCat.of R ⟶ S)
 [IsLocalHom (R := CommRingCat.of R) f] : IsLocalHom f :=
   inferInstance
 
-@[instance]
+@[instance 50]
 theorem yyy {R : CommRingCat} {S : Type*} [CommRing S] (f : R ⟶ CommRingCat.of S)
     [IsLocalHom (S := CommRingCat.of S) f] : IsLocalHom f :=
   inferInstance
 
-@[instance]
+@[instance 50]
 theorem zzz {R S : Type u} [CommRing R] [CommRing S] (f : CommRingCat.of R ⟶ CommRingCat.of S)
     [IsLocalHom (R := CommRingCat.of R) (S := CommRingCat.of S) f] : IsLocalHom f :=
   inferInstance
