@@ -100,6 +100,9 @@ theorem range_neg {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semirin
   change range ((-LinearMap.id : M₂ →ₗ[R₂] M₂).comp f) = _
   rw [range_comp, Submodule.map_neg, Submodule.map_id]
 
+@[simp] lemma range_domRestrict [Module R M₂] (K : Submodule R M) (f : M →ₗ[R] M₂) :
+    range (domRestrict f K) = K.map f := by ext; simp
+
 lemma range_domRestrict_le_range [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (S : Submodule R M) :
     LinearMap.range (f.domRestrict S) ≤ LinearMap.range f := by
   rintro x ⟨⟨y, hy⟩, rfl⟩
