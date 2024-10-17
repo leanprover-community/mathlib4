@@ -20,19 +20,5 @@
   "files.readonlyInclude": {
     "**/.elan/**": true,
     "**/.lake/**": true
-  },
-  "spellright.language": [],
-  "spellright.documentTypes": [
-    "markdown",
-    "latex",
-    "plaintext"
-  ],
-  "spellright.parserByClass": {
-    "lean4": {
-      "parser": "code",
-      "comment_start": "/-",
-      "comment_end": "-/",
-      "comment_line": "--"
-    }
   }
 }
