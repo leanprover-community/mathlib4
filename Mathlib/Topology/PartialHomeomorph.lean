@@ -971,6 +971,40 @@ def disjointUnion (e e' : PartialHomeomorph X Y) [∀ x, Decidable (x ∈ e.sour
     (e.toPartialEquiv.disjointUnion e'.toPartialEquiv Hs Ht)
     (PartialEquiv.disjointUnion_eq_piecewise _ _ _ _).symm
 
+/-- Combine a family of local homeomorphisms with disjoint sources/targets -/
+@[simps! source target]
+noncomputable def disjoint_iUnion {I : Type _} [Nonempty I]
+    (h : I → PartialHomeomorph α β)
+    (disj₁ : Pairwise (Disjoint on fun i : I => (h i).source))
+    (disj₂ : Pairwise (Disjoint on fun i : I => (h i).target)) : PartialHomeomorph α β := by
+  have opn_src : IsOpen (⋃ i, (h i).source) := isOpen_iUnion fun i => (h i).open_source
+  have opn_tgt : IsOpen (⋃ i, (h i).target) := isOpen_iUnion fun i => (h i).open_target
+  refine
+    ⟨PartialEquiv.disjoint_iUnion (fun i => (h i).toPartialEquiv) disj₁ disj₂,
+      opn_src, opn_tgt, ?_, ?_⟩
+  · simp only [PartialEquiv.disjoint_iUnion, opn_src.continuousOn_iff, Set.mem_iUnion]
+    rintro x ⟨i, hx⟩
+    refine ((h i).continuousAt hx).congr
+      (Filter.eventuallyEq_of_mem ((h i).open_source.mem_nhds hx) ?_)
+    intro x' hx'
+    simp [disj₁.disjoint_inv_iUnion_eq hx']
+  · simp only [PartialEquiv.disjoint_iUnion, opn_tgt.continuousOn_iff, Set.mem_iUnion]
+    rintro y ⟨i, hy⟩
+    refine ((h i).symm.continuousAt hy).congr
+      (Filter.eventuallyEq_of_mem ((h i).open_target.mem_nhds hy) ?_)
+    intro y' hy'
+    simp [disj₂.disjoint_inv_iUnion_eq hy']
+
+theorem disjoint_iUnion_apply' {I : Type _} [Nonempty I]
+    (h : I → PartialHomeomorph α β) (i : I) (disj₁ disj₂)
+    (x : α) (hx : x ∈ (h i).source) : disjoint_iUnion h disj₁ disj₂ x = h i x :=
+  PartialEquiv.disjoint_iUnion_apply' (fun i => (h i).toPartialEquiv) i disj₁ disj₂ x hx
+
+theorem disjoint_iUnion_symm_apply' {I : Type _} [Nonempty I]
+    (h : I → PartialHomeomorph α β) (i : I) (disj₁ disj₂)
+    (y : β) (hy : y ∈ (h i).target) : (disjoint_iUnion h disj₁ disj₂).symm y = (h i).symm y :=
+  PartialEquiv.disjoint_iUnion_symm_apply' (fun i => (h i).toPartialEquiv) i disj₁ disj₂ y hy
+
 end Piecewise
 
 section Continuity
@@ -1178,6 +1212,18 @@ lemma toPartialHomeomorph_right_inv {x : Y} (hx : x ∈ Set.range f) :
   rw [← congr_fun (h.toPartialHomeomorph_apply f), PartialHomeomorph.right_inv]
   rwa [toPartialHomeomorph_target]
 
+/-- An open embedding of `α` into `β` interpreted as a local homeomorphism on the set `s`.
+  This is equivalent to `(toPartialHomeomorph e h).restrOpen s hs` but with better
+  definitional equalities -/
+@[simps! (config := mfld_cfg) apply source target]
+noncomputable def toPartialHomeomorphOn [Nonempty α] (s : Set α) (hs : IsOpen s) :
+    PartialHomeomorph α β :=
+  PartialHomeomorph.ofContinuousOpen ((h.toEmbedding.inj.injOn s).toPartialEquiv _ _)
+    h.continuous.continuousOn h.isOpenMap hs
+
+@[simp] lemma toPartialHomeomorphOn_univ [Nonempty α] :
+    toPartialHomeomorphOn f h univ isOpen_univ = toPartialHomeomorph f h := rfl
+
 end OpenEmbedding
 
 /-! inclusion of an open set in a topological space -/
@@ -1317,5 +1363,21 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
     rw [(U.partialHomeomorphSubtypeCoe hU).right_inv hy.2]
 
 end subtypeRestr
+
+section Discrete
+
+theorem OpenEmbedding.prodMkRight [DiscreteTopology β] (b : β) :
+    OpenEmbedding ((·, b) : α → α × β) where
+  open_range := by convert isOpen_univ.prod (isOpen_discrete {b}); ext; simp
+  toEmbedding := Function.LeftInverse.embedding (f := Prod.fst) (by simp [LeftInverse])
+    continuous_fst (by continuity)
+
+theorem OpenEmbedding.prodMkLeft [DiscreteTopology β] (b : β) :
+    OpenEmbedding ((b, ·) : α → β × α) where
+  open_range := by convert (isOpen_discrete {b}).prod isOpen_univ; ext; simp
+  toEmbedding := Function.LeftInverse.embedding (f := Prod.snd) (by simp [LeftInverse])
+    continuous_snd (by continuity)
+
+end Discrete
 
 end PartialHomeomorph
