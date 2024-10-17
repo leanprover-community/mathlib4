@@ -45,8 +45,6 @@ for all `R`-module homomorphism `f : N → N'` such that `id ⊗ f = 0`, we have
   submodule_ne_top : ∀ ⦃m : Ideal R⦄ (_ : Ideal.IsMaximal m), m • (⊤ : Submodule R M) ≠ ⊤
 
 namespace FaithfullyFlat
-
-
 instance self : FaithfullyFlat R R where
   submodule_ne_top m h r := Ideal.eq_top_iff_one _ |>.not.1 h.ne_top <| by
     simpa using show 1 ∈ (m • ⊤ : Ideal R) from r.symm ▸ ⟨⟩
