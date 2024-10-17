@@ -42,7 +42,7 @@ open Pointwise
 
 noncomputable section
 
-variable {Γ : Type*} {R : Type*}
+variable {Γ Γ' R V α β : Type*}
 
 namespace HahnSeries
 
@@ -61,13 +61,11 @@ theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring 
 
 section
 
-variable (Γ) (R) [PartialOrder Γ] [AddCommMonoid R]
-
 /-- A family of Hahn series whose formal coefficient-wise sum is a Hahn series.  For each
 coefficient of the sum to be well-defined, we require that only finitely many series are nonzero at
 any given coefficient.  For the formal sum to be a Hahn series, we require that the union of the
 supports of the constituent series is partially well-ordered. -/
-structure SummableFamily (α : Type*) where
+structure SummableFamily (Γ) (R) [PartialOrder Γ] [AddCommMonoid R] (α : Type*) where
   /-- A parametrized family of Hahn series. -/
   toFun : α → HahnSeries Γ R
   isPWO_iUnion_support' : Set.IsPWO (⋃ a : α, (toFun a).support)
@@ -79,7 +77,7 @@ namespace SummableFamily
 
 section AddCommMonoid
 
-variable [PartialOrder Γ] [AddCommMonoid R] {α : Type*}
+variable [PartialOrder Γ] [AddCommMonoid R]
 
 instance : FunLike (SummableFamily Γ R α) α (HahnSeries Γ R) where
   coe := toFun
@@ -179,6 +177,23 @@ theorem hsum_add {s t : SummableFamily Γ R α} : (s + t).hsum = s.hsum + t.hsum
   ext g
   simp only [hsum_coeff, add_coeff, add_apply]
   exact finsum_add_distrib (s.finite_co_support _) (t.finite_co_support _)
+
+/-- A summable family induced by an equivalence of the parametrizing type. -/
+@[simps]
+def Equiv (e : α ≃ β) (s : SummableFamily Γ R α) : SummableFamily Γ R β where
+  toFun b := s (e.symm b)
+  isPWO_iUnion_support' := by
+    refine Set.IsPWO.mono s.isPWO_iUnion_support fun g => ?_
+    simp only [Set.mem_iUnion, mem_support, ne_eq, forall_exists_index]
+    exact fun b hg => Exists.intro (e.symm b) hg
+  finite_co_support' g :=
+    (Equiv.set_finite_iff e.subtypeEquivOfSubtype').mp <| s.finite_co_support' g
+
+@[simp]
+theorem hsum_equiv (e : α ≃ β) (s : SummableFamily Γ R α) : (Equiv e s).hsum = s.hsum := by
+  ext g
+  simp only [hsum_coeff, Equiv_toFun]
+  exact finsum_eq_of_bijective e.symm (Equiv.bijective e.symm) fun x => rfl
 
 end AddCommMonoid
 
