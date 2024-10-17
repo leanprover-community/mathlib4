@@ -843,6 +843,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
+import Mathlib.AlgebraicGeometry.EllipticCurve.J
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
 import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
@@ -1346,6 +1347,7 @@ import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
+import Mathlib.Analysis.SpecialFunctions.Gamma.Deriv
 import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
@@ -1707,6 +1709,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+import Mathlib.CategoryTheory.Limits.Sifted
 import Mathlib.CategoryTheory.Limits.SmallComplete
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.TypesFiltered
@@ -2075,6 +2078,7 @@ import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.CartesianClosed
 import Mathlib.Condensed.Discrete.Basic
+import Mathlib.Condensed.Discrete.Colimit
 import Mathlib.Condensed.Discrete.LocallyConstant
 import Mathlib.Condensed.Discrete.Module
 import Mathlib.Condensed.Epi
@@ -2182,7 +2186,12 @@ import Mathlib.Data.FinEnum
 import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finite.Powerset
+import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Finite.Set
+import Mathlib.Data.Finite.Sigma
+import Mathlib.Data.Finite.Sum
+import Mathlib.Data.Finite.Vector
 import Mathlib.Data.Finmap
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Basic
@@ -3233,6 +3242,7 @@ import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Constructions.Projective
+import Mathlib.MeasureTheory.Constructions.SubmoduleQuotient
 import Mathlib.MeasureTheory.Constructions.UnitInterval
 import Mathlib.MeasureTheory.Covering.Besicovitch
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
@@ -4101,6 +4111,7 @@ import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.RingHom.FiniteType
 import Mathlib.RingTheory.RingHom.Integral
 import Mathlib.RingTheory.RingHom.Locally
+import Mathlib.RingTheory.RingHom.StandardSmooth
 import Mathlib.RingTheory.RingHom.Surjective
 import Mathlib.RingTheory.RingHomProperties
 import Mathlib.RingTheory.RingInvo
@@ -4489,6 +4500,7 @@ import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.Compact
 import Mathlib.Topology.Algebra.Group.OpenMapping
+import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.Algebra.Group.SubmonoidClosure
 import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 import Mathlib.Topology.Algebra.GroupCompletion

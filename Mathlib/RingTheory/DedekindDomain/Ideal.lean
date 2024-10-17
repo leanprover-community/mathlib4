@@ -897,24 +897,27 @@ theorem irreducible_pow_sup [DecidableEq (Ideal T)] (hI : I ≠ ⊥) (hJ : Irred
   rw [sup_eq_prod_inf_factors (pow_ne_zero n hJ.ne_zero) hI, min_comm,
     normalizedFactors_of_irreducible_pow hJ, normalize_eq J, replicate_inter, prod_replicate]
 
-theorem irreducible_pow_sup_of_le [DecidableRel fun (x : Ideal T) x_1 ↦ x ∣ x_1]
-    (hJ : Irreducible J) (n : ℕ) (hn : ↑n ≤ multiplicity J I) :
+theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : n ≤ emultiplicity J I) :
     J ^ n ⊔ I = J ^ n := by
   classical
   by_cases hI : I = ⊥
   · simp_all
   rw [irreducible_pow_sup hI hJ, min_eq_right]
-  rwa [multiplicity_eq_count_normalizedFactors hJ hI, PartENat.coe_le_coe, normalize_eq J] at hn
+  rw [emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J] at hn
+  exact_mod_cast hn
 
-theorem irreducible_pow_sup_of_ge [DecidableRel fun (x : Ideal T) x_1 ↦ x ∣ x_1]
-    (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) (hn : multiplicity J I ≤ n) :
-    J ^ n ⊔ I = J ^ (multiplicity J I).get (PartENat.dom_of_le_natCast hn) := by
+theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ)
+    (hn : emultiplicity J I ≤ n) : J ^ n ⊔ I = J ^ multiplicity J I := by
   classical
   rw [irreducible_pow_sup hI hJ, min_eq_left]
   · congr
-    rw [← PartENat.natCast_inj, PartENat.natCast_get,
-      multiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J]
-  · rwa [multiplicity_eq_count_normalizedFactors hJ hI, PartENat.coe_le_coe, normalize_eq J] at hn
+    rw [← Nat.cast_inj (R := ℕ∞), ← multiplicity.Finite.emultiplicity_eq_multiplicity,
+      emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J]
+    rw [← emultiplicity_lt_top]
+    apply hn.trans_lt
+    simp
+  · rw [emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J] at hn
+    exact_mod_cast hn
 
 theorem Ideal.eq_prime_pow_mul_coprime [DecidableEq (Ideal T)] {I : Ideal T} (hI : I ≠ ⊥)
     (P : Ideal T) [hpm : P.IsMaximal] :
@@ -1119,15 +1122,12 @@ theorem normalizedFactorsEquivOfQuotEquiv_symm (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
     (normalizedFactorsEquivOfQuotEquiv f hI hJ).symm =
       normalizedFactorsEquivOfQuotEquiv f.symm hJ hI := rfl
 
-variable [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)]
-variable [DecidableRel ((· ∣ ·) : Ideal A → Ideal A → Prop)]
-
 /-- The map `normalizedFactorsEquivOfQuotEquiv` preserves multiplicities. -/
-theorem normalizedFactorsEquivOfQuotEquiv_multiplicity_eq_multiplicity (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
+theorem normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
     (L : Ideal R) (hL : L ∈ normalizedFactors I) :
-    multiplicity (↑(normalizedFactorsEquivOfQuotEquiv f hI hJ ⟨L, hL⟩)) J = multiplicity L I := by
+    emultiplicity (↑(normalizedFactorsEquivOfQuotEquiv f hI hJ ⟨L, hL⟩)) J = emultiplicity L I := by
   rw [normalizedFactorsEquivOfQuotEquiv, Equiv.coe_fn_mk, Subtype.coe_mk]
-  refine multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalizedFactors hI hJ hL
+  refine emultiplicity_factor_dvd_iso_eq_emultiplicity_of_mem_normalizedFactors hI hJ hL
     (d := (idealFactorsEquivOfQuotEquiv f).toEquiv) ?_
   exact fun ⟨l, hl⟩ ⟨l', hl'⟩ => idealFactorsEquivOfQuotEquiv_is_dvd_iso f hl hl'
 
@@ -1341,23 +1341,20 @@ theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [Normaliza
     · by_contra h
       exact (prime_of_normalized_factor a ha).ne_zero (span_singleton_eq_bot.mp h)
 
-theorem multiplicity_eq_multiplicity_span [DecidableRel ((· ∣ ·) : R → R → Prop)]
-    [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)] {a b : R} :
-    multiplicity (Ideal.span {a}) (Ideal.span ({b} : Set R)) = multiplicity a b := by
+theorem emultiplicity_eq_emultiplicity_span {a b : R} :
+    emultiplicity (Ideal.span {a}) (Ideal.span ({b} : Set R)) = emultiplicity a b := by
   by_cases h : Finite a b
-  · rw [← PartENat.natCast_get (finite_iff_dom.mp h)]
-    refine (multiplicity.unique
-      (show Ideal.span {a} ^ (multiplicity a b).get h ∣ Ideal.span {b} from ?_) ?_).symm <;>
+  · rw [h.emultiplicity_eq_multiplicity]
+    apply emultiplicity_eq_of_dvd_of_not_dvd <;>
       rw [Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
-    · exact pow_multiplicity_dvd h
-    · exact multiplicity.is_greatest
-        ((PartENat.lt_coe_iff _ _).mpr (Exists.intro (finite_iff_dom.mp h) (Nat.lt_succ_self _)))
+    · exact pow_multiplicity_dvd a b
+    · apply h.not_pow_dvd_of_multiplicity_lt
+      apply lt_add_one
   · suffices ¬Finite (Ideal.span ({a} : Set R)) (Ideal.span ({b} : Set R)) by
-      rw [finite_iff_dom, PartENat.not_dom_iff_eq_top] at h this
-      rw [h, this]
-    exact not_finite_iff_forall.mpr fun n => by
+      rw [emultiplicity_eq_top.2 h, emultiplicity_eq_top.2 this]
+    exact Finite.not_iff_forall.mpr fun n => by
       rw [Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
-      exact not_finite_iff_forall.mp h n
+      exact Finite.not_iff_forall.mp h n
 
 section NormalizationMonoid
 variable [NormalizationMonoid R]
@@ -1389,29 +1386,27 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
           ((show Ideal.span {r} ≤ i from dvd_iff_le.mp (dvd_of_mem_normalizedFactors hi))
             (mem_span_singleton.mpr (dvd_refl r)))
 
-variable [DecidableRel ((· ∣ ·) : R → R → Prop)] [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)]
-
 /-- The bijection `normalizedFactorsEquivSpanNormalizedFactors` between the set of prime
     factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. See
     `count_normalizedFactorsSpan_eq_count` for the version stated in terms of multisets `count`.-/
-theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity {r d : R}
+theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplicity {r d : R}
     (hr : r ≠ 0) (hd : d ∈ normalizedFactors r) :
-    multiplicity d r =
-      multiplicity (normalizedFactorsEquivSpanNormalizedFactors hr ⟨d, hd⟩ : Ideal R)
+    emultiplicity d r =
+      emultiplicity (normalizedFactorsEquivSpanNormalizedFactors hr ⟨d, hd⟩ : Ideal R)
         (Ideal.span {r}) := by
-  simp only [normalizedFactorsEquivSpanNormalizedFactors, multiplicity_eq_multiplicity_span,
+  simp only [normalizedFactorsEquivSpanNormalizedFactors, emultiplicity_eq_emultiplicity_span,
     Subtype.coe_mk, Equiv.ofBijective_apply]
 
 /-- The bijection `normalized_factors_equiv_span_normalized_factors.symm` between the set of prime
     factors of the ideal `⟨r⟩` and the set of prime factors of `r` preserves multiplicities. -/
-theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multiplicity {r : R}
+theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity {r : R}
     (hr : r ≠ 0) (I : { I : Ideal R | I ∈ normalizedFactors (Ideal.span ({r} : Set R)) }) :
-    multiplicity ((normalizedFactorsEquivSpanNormalizedFactors hr).symm I : R) r =
-      multiplicity (I : Ideal R) (Ideal.span {r}) := by
+    emultiplicity ((normalizedFactorsEquivSpanNormalizedFactors hr).symm I : R) r =
+      emultiplicity (I : Ideal R) (Ideal.span {r}) := by
   obtain ⟨x, hx⟩ := (normalizedFactorsEquivSpanNormalizedFactors hr).surjective I
   obtain ⟨a, ha⟩ := x
   rw [hx.symm, Equiv.symm_apply_apply, Subtype.coe_mk,
-    multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity hr ha]
+    emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplicity hr ha]
 
 variable [DecidableEq R] [DecidableEq (Ideal R)]
 
@@ -1422,9 +1417,9 @@ variable [DecidableEq R] [DecidableEq (Ideal R)]
 theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) :
     Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r}))  =
         Multiset.count (normalize X) (normalizedFactors r) := by
-  have := multiplicity_eq_multiplicity_span (R := R) (a := X) (b := r)
-  rw [multiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
-    multiplicity_eq_count_normalizedFactors (Prime.irreducible ?_), normalize_apply,
+  have := emultiplicity_eq_emultiplicity_span (R := R) (a := X) (b := r)
+  rw [emultiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
+    emultiplicity_eq_count_normalizedFactors (Prime.irreducible ?_), normalize_apply,
     normUnit_eq_one, Units.val_one, one_eq_top, mul_top, Nat.cast_inj] at this
   · simp only [normalize_apply, this]
   · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
