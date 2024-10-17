@@ -142,6 +142,9 @@ theorem of_equiv [FormallySmooth R A] (e : A ≃ₐ[R] B) : FormallySmooth R B :
   rw [← AlgHom.comp_assoc, FormallySmooth.comp_lift, AlgHom.comp_assoc, AlgEquiv.comp_symm,
     AlgHom.comp_id]
 
+theorem iff_of_equiv (e : A ≃ₐ[R] B) : FormallySmooth R A ↔ FormallySmooth R B :=
+  ⟨fun _ ↦ of_equiv e, fun _ ↦ of_equiv e.symm⟩
+
 end OfEquiv
 
 section Polynomial
