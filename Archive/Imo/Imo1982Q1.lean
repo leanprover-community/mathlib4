@@ -5,6 +5,7 @@ Authors: Alex Brodbelt, Violeta Hernández
 -/
 
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Linarith
 import Mathlib.Data.PNat.Basic
 
 /-!
@@ -102,7 +103,7 @@ lemma part_2 : f 1980 ≤ 660 := by
     _ = 5 * 660 + 33 := by rw [hf.f_9999]
   rw [hf.f₃, mul_one] at h
   -- from 5 * f 1980 + 33 ≤ 5 * 660 + 33 we show f 1980 ≤ 660
-  exact le_of_mul_le_mul_left (le_of_add_le_add_right h) (Nat.succ_pos 4)
+  linarith
 
 end IsGood
 
