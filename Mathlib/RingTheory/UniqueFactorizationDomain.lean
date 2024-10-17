@@ -732,8 +732,8 @@ theorem dvd_iff_normalizedFactors_le_normalizedFactors {x y : α} (hx : x ≠ 0)
 theorem _root_.Associated.normalizedFactors_eq {a b : α} (h : Associated a b) :
     normalizedFactors a = normalizedFactors b := by
   unfold normalizedFactors
-  have h2 : ⇑(normalize (α := α)) = Associates.out ∘ Associates.mk := funext Associates.out_mk
-  rw [h2, ← Multiset.map_map, ← Multiset.map_map,
+  have h' : ⇑(normalize (α := α)) = Associates.out ∘ Associates.mk := funext Associates.out_mk
+  rw [h', ← Multiset.map_map, ← Multiset.map_map,
     Associates.rel_associated_iff_map_eq_map.mp (factors_rel_of_associated h)]
 
 theorem associated_iff_normalizedFactors_eq_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
