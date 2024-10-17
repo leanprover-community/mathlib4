@@ -789,16 +789,16 @@ section
 
 variable [Group G]
 
-/-- Construct a `MulSemiringAction` from a homomorphism `G →* A ≃ₐ[R] A`. -/
+/-- Construct a `MulSemiringAction` from a homomorphism `G →* (A ≃ₐ[R] A)`. -/
 @[simps]
-def ofAlgEquivHom (h : G →* A ≃ₐ[R] A) : MulSemiringAction G A where
-  smul := fun g r ↦ h g r
+def ofAlgEquivHom (h : G →* (A ≃ₐ[R] A)) : MulSemiringAction G A where
+  smul g r := h g r
   one_smul := DFunLike.ext_iff.mp (map_one h)
-  mul_smul := fun g g' ↦ DFunLike.ext_iff.mp (map_mul h g g')
-  smul_zero := fun g ↦ map_zero (h g)
-  smul_add := fun g ↦ map_add (h g)
-  smul_one := fun g ↦ map_one (h g)
-  smul_mul := fun g ↦ map_mul (h g)
+  mul_smul g g' := DFunLike.ext_iff.mp (map_mul h g g')
+  smul_zero g := map_zero (h g)
+  smul_add g := map_add (h g)
+  smul_one g := map_one (h g)
+  smul_mul g := map_mul (h g)
 
 variable [MulSemiringAction G A] [SMulCommClass G R A]
 
