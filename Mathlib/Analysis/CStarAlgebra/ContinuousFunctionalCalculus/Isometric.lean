@@ -167,7 +167,8 @@ end MetricSpace
 section NormedRing
 
 variable {𝕜 A : Type*} {p : outParam (A → Prop)}
-variable [RCLike 𝕜] [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
+variable [RCLike 𝕜] [NonUnitalNormedRing A] [StarRing A] [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A]
+variable [SMulCommClass 𝕜 A A]
 variable [NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p]
 
 open NonUnitalIsometricContinuousFunctionalCalculus
@@ -357,6 +358,8 @@ section NNReal
 
 open NNReal
 
+section Unital
+
 variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A] [PartialOrder A]
 variable [StarOrderedRing A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 variable [NonnegSpectrumClass ℝ A] [UniqueContinuousFunctionalCalculus ℝ A]
@@ -381,5 +384,36 @@ lemma apply_le_nnnorm_cfc_nnreal (f : ℝ≥0 → ℝ≥0) (a : A) ⦃x : ℝ≥
   revert hx
   nontriviality A
   exact (IsGreatest.nnnorm_cfc_nnreal f a hf ha |>.2 ⟨x, ·, rfl⟩)
+
+end Unital
+
+section NonUnital
+
+variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A]
+variable [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [PartialOrder A]
+variable [StarOrderedRing A] [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+variable [NonnegSpectrumClass ℝ A] [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
+
+lemma IsGreatest.nnnorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A)
+    (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
+    (ha : 0 ≤ a := by cfc_tac) : IsGreatest (f '' σₙ ℝ≥0 a) ‖cfcₙ f a‖₊ := by
+  rw [cfcₙ_nnreal_eq_real]
+  obtain ⟨-, ha'⟩ := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mp ha
+  convert IsGreatest.nnnorm_cfcₙ (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont (by simpa)
+  case hf_cont => exact continuous_subtype_val.comp_continuousOn <|
+    ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
+  ext x
+  constructor
+  all_goals rintro ⟨x, hx, rfl⟩
+  · exact ⟨x, quasispectrum.algebraMap_mem ℝ hx, by simp⟩
+  · exact ⟨x.toNNReal, ha'.apply_mem hx, by simp⟩
+
+lemma apply_le_nnnorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σₙ ℝ≥0 a)
+    (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
+    (ha : 0 ≤ a := by cfc_tac) : f x ≤ ‖cfcₙ f a‖₊ := by
+  revert hx
+  exact (IsGreatest.nnnorm_cfcₙ_nnreal f a hf hf0 ha |>.2 ⟨x, ·, rfl⟩)
+
+end NonUnital
 
 end NNReal
