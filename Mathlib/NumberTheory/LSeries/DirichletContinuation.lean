@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.NumberTheory.LSeries.ZMod
 import Mathlib.NumberTheory.DirichletCharacter.Basic
+import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 
 /-!
 # Analytic continuation of Dirichlet L-functions
@@ -25,7 +26,9 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
   everywhere.
 -/
 
-open Complex
+open Complex Filter
+
+open scoped Topology
 
 namespace DirichletCharacter
 
@@ -66,5 +69,85 @@ lemma differentiableAt_LFunction (χ : DirichletCharacter ℂ N) (s : ℂ) (hs :
 lemma differentiable_LFunction {χ : DirichletCharacter ℂ N} (hχ : χ ≠ 1) :
     Differentiable ℂ (LFunction χ) :=
   (differentiableAt_LFunction _ · <| Or.inr hχ)
+
+/-!
+## Results on changing levels
+-/
+
+lemma continuous_cpow_natCast_neg (n : ℕ) [NeZero n] : Continuous fun s : ℂ ↦ (n : ℂ) ^ (-s) :=
+  Continuous.const_cpow continuous_neg (.inl <| NeZero.ne (n : ℂ))
+
+lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
+    (χ : DirichletCharacter ℂ M) {s : ℂ} (hs : s ≠ 1) :
+    LFunction (changeLevel hMN χ) s =
+      LFunction χ s * ∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s)) := by
+  have hpc : IsPreconnected ({1}ᶜ : Set ℂ) := by
+    refine (isConnected_compl_singleton_of_one_lt_rank ?_ _).isPreconnected
+    simp only [rank_real_complex, Nat.one_lt_ofNat]
+  have hne : 2 ∈ ({1}ᶜ : Set ℂ) := by norm_num
+  refine AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq (𝕜 := ℂ)
+    (g := fun s ↦ LFunction χ s * ∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s))) ?_ ?_ hpc hne ?_ hs
+  · refine DifferentiableOn.analyticOnNhd (fun s hs ↦ ?_) isOpen_compl_singleton
+    exact (differentiableAt_LFunction ((changeLevel hMN) χ) s (.inl hs)).differentiableWithinAt
+  · refine DifferentiableOn.analyticOnNhd (fun s hs ↦ ?_) isOpen_compl_singleton
+    refine ((differentiableAt_LFunction _ _ (.inl hs)).mul ?_).differentiableWithinAt
+    refine .finset_prod fun i hi ↦ ?_
+    refine (differentiableAt_const _).sub ((differentiableAt_const _).mul ?_)
+    apply differentiableAt_id.neg.const_cpow
+    exact .inl (mod_cast (Nat.pos_of_mem_primeFactors hi).ne')
+  · refine eventually_of_mem ?_  (fun t (ht : 1 < t.re) ↦ ?_)
+    · exact (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds (by norm_num : 1 < (2 : ℂ).re)
+    · simpa only [LFunction_eq_LSeries _ ht] using LSeries_changeLevel hMN χ ht
+
+/-- If `χ` is a Dirichlet character and its level `M` divides `N`, then we obtain the L function
+of `χ` considered as a Dirichlet character of level `N` from the L function of `χ` by multiplying
+with `∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s))`. -/
+lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
+    (χ : DirichletCharacter ℂ M) {s : ℂ} (h : χ ≠ 1 ∨ s ≠ 1) :
+    (changeLevel hMN χ).LFunction s =
+       χ.LFunction s * ∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s)) := by
+  rcases h with h | h
+  · have hχ : changeLevel hMN χ ≠ 1 := fun H ↦ h <| (changeLevel_eq_one_iff hMN).mp H
+    have h' : Continuous fun s ↦ χ.LFunction s * ∏ p ∈ N.primeFactors, (1 - χ p * ↑p ^ (-s)) :=
+      (differentiable_LFunction h).continuous.mul <|
+        continuous_finset_prod _ fun p hp ↦ continuous_const.sub <| continuous_const.mul <|
+          @continuous_cpow_natCast_neg p ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
+    have H s (hs : s ≠ 1) := LFunction_changeLevel_aux hMN χ hs
+    revert s
+    rw [← funext_iff]
+    exact (differentiable_LFunction hχ).continuous.ext_on (dense_compl_singleton 1) h' H
+  · exact LFunction_changeLevel_aux hMN χ h
+
+/-!
+## The `L`-series of the trivial character mod `N`
+-/
+
+noncomputable
+abbrev LFunction_one (N : ℕ) [NeZero N] := (1 : DirichletCharacter ℂ N).LFunction
+
+/-- The L function of the trivial Dirichlet character mod `N` is obtained from the Riemann
+zeta function by multiplying with `∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))`. -/
+lemma LFunction_one_eq_mul_riemannZeta {s : ℂ} (hs : s ≠ 1) :
+    LFunction_one N s = (∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))) * riemannZeta s := by
+  rw [← LFunction_modOne_eq (χ := 1), LFunction_one, ← changeLevel_one N.one_dvd, mul_comm]
+  convert LFunction_changeLevel N.one_dvd 1 (.inr hs) using 4 with p
+  rw [MulChar.one_apply <| isUnit_of_subsingleton _, one_mul]
+
+/-- The L function of the trivial Dirichlet character mod `N` has a simple pole with
+residue `∏ p ∈ N.primeFactors, (1 - p⁻¹)` at `s = 1`. -/
+lemma LFunction_one_residue_one :
+  Filter.Tendsto (fun s ↦ (s - 1) * LFunction_one N s) (𝓝[≠] 1)
+    (𝓝 <| ∏ p ∈ N.primeFactors, (1 - (p : ℂ)⁻¹)) := by
+  have H : (fun s ↦ (s - 1) * LFunction_one N s) =ᶠ[𝓝[≠] 1]
+        fun s ↦ (∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))) * ((s - 1) * riemannZeta s) := by
+    refine Set.EqOn.eventuallyEq_nhdsWithin fun s hs ↦ ?_
+    rw [mul_left_comm, LFunction_one_eq_mul_riemannZeta hs]
+  rw [tendsto_congr' H]
+  conv => enter [3, 1]; rw [← mul_one <| Finset.prod ..]; enter [1, 2, p]; rw [← cpow_neg_one]
+  convert Tendsto.mul (f := fun s ↦ ∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s)))
+    ?_ riemannZeta_residue_one
+  refine tendsto_nhdsWithin_of_tendsto_nhds <| Continuous.tendsto ?_ 1
+  exact continuous_finset_prod _ fun p hp ↦ Continuous.sub continuous_const <|
+    @continuous_cpow_natCast_neg p ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
 
 end DirichletCharacter
