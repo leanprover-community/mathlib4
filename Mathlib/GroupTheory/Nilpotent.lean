@@ -185,7 +185,7 @@ lemma isNilpotent_congr {H : Type*} [Group H] (e : G ≃* H) : IsNilpotent G ↔
 
 variable (G) in
 /-- A group `G` is virtually nilpotent if it has a nilpotent cofinite subgroup `N`. -/
-def IsVirtuallyNilpotent : Prop := ∃ N : Subgroup G, IsNilpotent N ∧ Finite (G ⧸ N)
+def IsVirtuallyNilpotent : Prop := ∃ N : Subgroup G, IsNilpotent N ∧ FiniteIndex N
 
 lemma IsNilpotent.isVirtuallyNilpotent (hG : IsNilpotent G) : IsVirtuallyNilpotent G :=
   ⟨⊤, by simpa, inferInstance⟩
