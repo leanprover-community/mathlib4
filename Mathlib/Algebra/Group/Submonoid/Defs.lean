@@ -47,7 +47,6 @@ submonoid, submonoids
 assert_not_exists CompleteLattice
 assert_not_exists MonoidWithZero
 
--- Only needed for notation
 variable {M : Type*} {N : Type*}
 
 section NonAssoc

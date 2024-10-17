@@ -107,11 +107,6 @@ instance finiteDimensional_pi' {ι : Type*} [Finite ι] (M : ι → Type*) [∀ 
 noncomputable def fintypeOfFintype [Fintype K] [FiniteDimensional K V] : Fintype V :=
   Module.fintypeOfFintype (@finsetBasis K V _ _ _ (iff_fg.2 inferInstance))
 
-theorem finite_of_finite [Finite K] [FiniteDimensional K V] : Finite V := by
-  cases nonempty_fintype K
-  haveI := fintypeOfFintype K V
-  infer_instance
-
 variable {K V}
 
 /-- If a vector space has a finite basis, then it is finite-dimensional. -/
@@ -666,18 +661,23 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring 
     if H : x = 0 then 0 else Classical.choose <| FiniteDimensional.exists_mul_eq_one F H
   mul_inv_cancel x hx := show x * dite _ (h := _) _ _ = _ by
     rw [dif_neg hx]
-    exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx):)
+    exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
   inv_zero := dif_pos rfl
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
   qsmul_def := fun _ _ => rfl
 
+lemma FiniteDimensional.isUnit (F : Type*) {K : Type*} [Field F] [Ring K] [IsDomain K]
+    [Algebra F K] [FiniteDimensional F K] {x : K} (H : x ≠ 0) : IsUnit x :=
+  let _ := divisionRingOfFiniteDimensional F K; H.isUnit
+
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
 noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : CommRing K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : Field K :=
   { divisionRingOfFiniteDimensional F K with
     toCommRing := h }
+
 end
 section DivisionRing
 

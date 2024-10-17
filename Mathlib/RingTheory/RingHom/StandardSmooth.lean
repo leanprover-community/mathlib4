@@ -31,19 +31,29 @@ namespace RingHom
 variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
 
 /-- A ring homomorphism `R →+* S` is standard smooth if `S` is standard smooth as `R`-algebra. -/
+@[algebraize RingHom.IsStandardSmooth.toAlgebra]
 def IsStandardSmooth (f : R →+* S) : Prop :=
   @Algebra.IsStandardSmooth.{t, w} _ _ _ _ f.toAlgebra
 
+/-- Helper lemma for the `algebraize` tactic.-/
+lemma IsStandardSmooth.toAlgebra {f : R →+* S} (hf : IsStandardSmooth.{t, w} f) :
+    @Algebra.IsStandardSmooth.{t, w} R S _ _ f.toAlgebra := hf
+
 /-- A ring homomorphism `R →+* S` is standard smooth of relative dimension `n` if
 `S` is standard smooth of relative dimension `n` as `R`-algebra. -/
+@[algebraize RingHom.IsStandardSmoothOfRelativeDimension.toAlgebra]
 def IsStandardSmoothOfRelativeDimension (f : R →+* S) : Prop :=
   @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n _ _ _ _ f.toAlgebra
+
+/-- Helper lemma for the `algebraize` tactic.-/
+lemma IsStandardSmoothOfRelativeDimension.toAlgebra {f : R →+* S}
+    (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
+    @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n R S _ _ f.toAlgebra := hf
 
 lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth (f : R →+* S)
     (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
     IsStandardSmooth.{t, w} f := by
   algebraize [f]
-  letI : Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n R S := hf
   exact Algebra.IsStandardSmoothOfRelativeDimension.isStandardSmooth n
 
 variable {n m}
@@ -65,8 +75,6 @@ lemma IsStandardSmooth.comp {g : S →+* T} {f : R →+* S}
     IsStandardSmooth.{max t t', max w w'} (g.comp f) := by
   rw [IsStandardSmooth]
   algebraize [f, g, (g.comp f)]
-  letI : Algebra.IsStandardSmooth R S := hf
-  letI : Algebra.IsStandardSmooth S T := hg
   exact Algebra.IsStandardSmooth.trans.{t, t', w, w'} R S T
 
 lemma IsStandardSmoothOfRelativeDimension.comp {g : S →+* T} {f : R →+* S}
@@ -75,8 +83,6 @@ lemma IsStandardSmoothOfRelativeDimension.comp {g : S →+* T} {f : R →+* S}
     IsStandardSmoothOfRelativeDimension.{max t t', max w w'} (n + m) (g.comp f) := by
   rw [IsStandardSmoothOfRelativeDimension]
   algebraize [f, g, (g.comp f)]
-  letI : Algebra.IsStandardSmoothOfRelativeDimension m R S := hf
-  letI : Algebra.IsStandardSmoothOfRelativeDimension n S T := hg
   exact Algebra.IsStandardSmoothOfRelativeDimension.trans m n R S T
 
 lemma isStandardSmooth_stableUnderComposition :

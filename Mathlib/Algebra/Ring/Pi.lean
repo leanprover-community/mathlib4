@@ -25,7 +25,6 @@ variable {I : Type u}
 -- The indexing type
 variable {f : I → Type v}
 
--- The family of types already equipped with instances
 variable (i : I)
 
 instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
