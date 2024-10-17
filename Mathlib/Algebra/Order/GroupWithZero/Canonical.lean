@@ -246,11 +246,6 @@ lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
 lemma zpow_lt_zpow_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) {m n : ℤ} (hmn : m < n) : a ^ n < a ^ m :=
   zpow_right_strictAnti₀ ha₀ ha₁ hmn
 
-lemma le_of_zpow_le_zpow₀ (ha : 1 < a) {n m : ℤ} (hmn : a ^ m ≤ a ^ n) :
-    m ≤ n := by
-  contrapose! hmn
-  exact zpow_lt_zpow_right₀ ha hmn
-
 lemma le_of_zpow_le_zpow_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) {m n : ℤ}
     (hmn : a ^ m ≤ a ^ n) :
     n ≤ m := by
