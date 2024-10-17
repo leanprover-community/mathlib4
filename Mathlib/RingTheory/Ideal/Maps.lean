@@ -846,3 +846,19 @@ def idealMap (I : Ideal R) : I →ₗ[R] I.map (algebraMap R S) :=
     (fun _ ↦ Ideal.mem_map_of_mem _)
 
 end Algebra
+
+namespace NoZeroSMulDivisors
+
+theorem of_ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Semiring A] [Algebra R A]
+    [NoZeroDivisors A] (h : RingHom.ker (algebraMap R A) = ⊥) : NoZeroSMulDivisors R A :=
+  of_algebraMap_injective ((RingHom.injective_iff_ker_eq_bot _).mpr h)
+
+theorem ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
+    [NoZeroSMulDivisors R A] : RingHom.ker (algebraMap R A) = ⊥ :=
+  (RingHom.injective_iff_ker_eq_bot _).mp (algebraMap_injective R A)
+
+theorem iff_ker_algebraMap_eq_bot {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A] :
+    NoZeroSMulDivisors R A ↔ RingHom.ker (algebraMap R A) = ⊥ :=
+  iff_algebraMap_injective.trans (RingHom.injective_iff_ker_eq_bot (algebraMap R A))
+
+end NoZeroSMulDivisors
