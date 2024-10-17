@@ -174,8 +174,8 @@ section complex
 /-!
 ### Faithfully flat modules and exact sequences
 
-In this section we prove that an `R`-module `M` is faithfully flat iff `M` is falat and tensoring
-with `M` preserves and reflects exact sequences.
+In this section we prove that an `R`-module `M` is faithfully flat iff `M` is tensoring with `M`
+preserves and reflects exact sequences.
 
 Let `N₁ -l₁₂-> N₂ -l₂₃-> N₃` be two linear maps.
 - We first show that if `N₁ ⊗ M -> N₂ ⊗ M -> N₃ ⊗ M` is exact, then `N₁ -l₁₂-> N₂ -l₂₃-> N₃` is a
