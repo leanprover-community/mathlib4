@@ -976,6 +976,11 @@ lemma valuation_natCast (n : ℕ) : valuation (n : ℚ_[p]) = padicValNat p n :=
   rw [← Rat.cast_natCast, valuation_ratCast, padicValRat.of_nat]
 
 @[simp]
+lemma valuation_ofNat (n : ℕ) [n.AtLeastTwo] :
+    valuation (no_index (OfNat.ofNat n : ℚ_[p])) = padicValNat p n :=
+  valuation_natCast n
+
+@[simp]
 lemma valuation_one : valuation (1 : ℚ_[p]) = 0 := by
   rw [← Nat.cast_one, valuation_natCast, padicValNat.one, cast_zero]
 
