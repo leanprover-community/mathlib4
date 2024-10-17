@@ -11,7 +11,12 @@ import Mathlib.RingTheory.Ideal.Pointwise
 /-!
 # Frobenius Elements
 
+In algebraic number theory, if `L/K` is a finite Galois extension of number fields, with rings of
+integers `𝓞L/𝓞K`, and if `q` is prime ideal of `𝓞L` lying over a prime ideal `p` of `𝓞K`, then
+there exists unique a **Frobenius element** `Frob p` in `Gal(L/K)` with the property that
+`Frob p x ≃ x ^ #(𝓞K/p) (mod q)` for all `x ∈ 𝓞L`.
 
+This file proves the existence of Frobenius elements in a much more general setting.
 
 ## Main statements
 
@@ -170,6 +175,7 @@ section MulSemiringAction
 variable {G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 variable [Group G]
 
+-- PRed
 @[simps]
 def MulSemiringAction.ofAlgEquivHom (h : G →* A ≃ₐ[R] A) : MulSemiringAction G A where
   smul := fun g r ↦ h g r
@@ -182,6 +188,7 @@ def MulSemiringAction.ofAlgEquivHom (h : G →* A ≃ₐ[R] A) : MulSemiringActi
 
 variable [MulSemiringAction G A] [SMulCommClass G R A]
 
+-- PRed
 @[simps]
 def MulSemiringAction.toAlgEquivHom : G →* A ≃ₐ[R] A where
   toFun := MulSemiringAction.toAlgEquiv R A
@@ -194,6 +201,7 @@ section MulSemiringAction
 
 variable {G : Type*} (R : Type*) [Semiring R] [Group G]
 
+-- PRed
 def MulSemiringAction.ofHom (h : G →* R ≃+* R) : MulSemiringAction G R where
   smul := fun g r ↦ h g r
   one_smul := DFunLike.ext_iff.mp (map_one h)
@@ -205,6 +213,7 @@ def MulSemiringAction.ofHom (h : G →* R ≃+* R) : MulSemiringAction G R where
 
 variable [MulSemiringAction G R]
 
+-- PRed
 def MulSemiringAction.toHom : G →* R ≃+* R  where
   toFun := MulSemiringAction.toRingEquiv G R
   map_one' := by ext; rw [toRingEquiv_apply, one_smul]; rfl
