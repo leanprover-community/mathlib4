@@ -93,10 +93,6 @@ instance instFunLike : FunLike (M [⋀^ι]→ₗ[R] N) (ι → M) N where
     rcases g with ⟨⟨_, _, _⟩, _⟩
     congr
 
--- shortcut instance
-instance coeFun : CoeFun (M [⋀^ι]→ₗ[R] N) fun _ => (ι → M) → N :=
-  ⟨DFunLike.coe⟩
-
 initialize_simps_projections AlternatingMap (toFun → apply)
 
 @[simp]
