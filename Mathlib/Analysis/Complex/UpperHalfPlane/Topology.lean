@@ -55,8 +55,7 @@ instance : T4Space ℍ := inferInstance
 instance : ContractibleSpace ℍ :=
   (convex_halfspace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
 
-instance : LocPathConnectedSpace ℍ :=
-  locPathConnected_of_isOpen <| isOpen_lt continuous_const Complex.continuous_im
+instance : LocPathConnectedSpace ℍ := openEmbedding_coe.locPathConnectedSpace
 
 instance : NoncompactSpace ℍ := by
   refine ⟨fun h => ?_⟩
