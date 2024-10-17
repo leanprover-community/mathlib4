@@ -117,7 +117,7 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
 
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   rw [toEven, CliffordAlgebra.lift_ι_apply]
-  -- Porting note (#10691): was `rw`
+  -- Porting note (#11224): was `rw`
   erw [LinearMap.codRestrict_apply]
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.mulLeft_apply]
 

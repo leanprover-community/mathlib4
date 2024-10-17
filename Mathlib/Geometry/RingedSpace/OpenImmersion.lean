@@ -123,7 +123,7 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
 
 @[reassoc (attr := simp)]
 theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f := by
-  -- Porting note: `ext` did not pick up `NatTrans.ext`
+  -- Porting note (#11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ rfl <| NatTrans.ext <| funext fun x => ?_
   simp only [isoRestrict_hom_c_app, NatTrans.comp_app, eqToHom_refl,
     ofRestrict_c_app, Category.assoc, whiskerRight_id']
@@ -330,7 +330,7 @@ def pullbackConeOfLeftFst :
         rfl }
 
 theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.ofRestrict _ ≫ g := by
-  -- Porting note: `ext` did not pick up `NatTrans.ext`
+  -- Porting note (#11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext <| funext fun U => ?_
   · simpa using pullback.condition
   · induction U using Opposite.rec'
@@ -388,7 +388,7 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
 -- this lemma is not a `simp` lemma, because it is an implementation detail
 theorem pullbackConeOfLeftLift_fst :
     pullbackConeOfLeftLift f g s ≫ (pullbackConeOfLeft f g).fst = s.fst := by
-  -- Porting note: `ext` did not pick up `NatTrans.ext`
+  -- Porting note (#11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext <| funext fun x => ?_
   · change pullback.lift _ _ _ ≫ pullback.fst _ _ = _
     simp
@@ -407,7 +407,7 @@ theorem pullbackConeOfLeftLift_fst :
 -- this lemma is not a `simp` lemma, because it is an implementation detail
 theorem pullbackConeOfLeftLift_snd :
     pullbackConeOfLeftLift f g s ≫ (pullbackConeOfLeft f g).snd = s.snd := by
-  -- Porting note: `ext` did not pick up `NatTrans.ext`
+  -- Porting note (#11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext <| funext fun x => ?_
   · change pullback.lift _ _ _ ≫ pullback.snd _ _ = _
     simp

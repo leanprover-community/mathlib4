@@ -44,7 +44,7 @@ open SetLike DirectSum Set
 
 open Pointwise DirectSum
 
-variable {ι σ R A : Type*}
+variable {ι σ A : Type*}
 
 section HomogeneousDef
 

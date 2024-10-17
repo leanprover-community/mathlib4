@@ -604,6 +604,14 @@ theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U
   refine (Scheme.congr_app this _).trans ?_
   simp [eqToHom_map]
 
+lemma germ_eq_zero_of_pow_mul_eq_zero {X : Scheme.{u}} {U : Opens X} (x : U) {f s : Γ(X, U)}
+    (hx : x.val ∈ X.basicOpen s) {n : ℕ} (hf : s ^ n * f = 0) : X.presheaf.germ U x x.2 f = 0 := by
+  rw [Scheme.mem_basicOpen] at hx
+  have hu : IsUnit (X.presheaf.germ _ x x.2 (s ^ n)) := by
+    rw [map_pow]
+    exact IsUnit.pow n hx
+  rw [← hu.mul_right_eq_zero, ← map_mul, hf, map_zero]
+
 @[reassoc (attr := simp)]
 lemma Scheme.iso_hom_base_inv_base {X Y : Scheme.{u}} (e : X ≅ Y) :
     e.hom.base ≫ e.inv.base = 𝟙 _ :=
@@ -711,5 +719,16 @@ lemma stalkMap_germ_apply (U : Y.Opens) (x : X) (hx : f.base x ∈ U) (y) :
 end Scheme
 
 end Stalks
+
+section LocalRing
+
+open LocalRing
+
+@[simp]
+lemma Spec_closedPoint {R S : CommRingCat} [LocalRing R] [LocalRing S]
+    {f : R ⟶ S} [IsLocalRingHom f] : (Spec.map f).base (closedPoint S) = closedPoint R :=
+  LocalRing.comap_closedPoint f
+
+end LocalRing
 
 end AlgebraicGeometry

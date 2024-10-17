@@ -417,6 +417,16 @@ def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpe
     apply e.image_eq_preimage
   toEquiv := e
 
+/-- If a bijective map `e : X ≃ Y` is continuous and closed, then it is a homeomorphism. -/
+def homeomorphOfContinuousClosed (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsClosedMap e) : X ≃ₜ Y where
+  continuous_toFun := h₁
+  continuous_invFun := by
+    rw [continuous_iff_isClosed]
+    intro s hs
+    convert ← h₂ s hs using 1
+    apply e.image_eq_preimage
+  toEquiv := e
+
 @[simp]
 theorem homeomorphOfContinuousOpen_apply (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) :
     ⇑(homeomorphOfContinuousOpen e h₁ h₂) = e := rfl
