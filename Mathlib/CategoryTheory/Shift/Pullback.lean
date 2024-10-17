@@ -63,7 +63,7 @@ lemma pullbackShiftFunctorZero_inv_app :
     (shiftFunctorZero _ A).inv.app X =
       (shiftFunctorZero C B).inv.app X ≫ (pullbackShiftIso C φ 0 0 (by simp)).inv.app X := by
   change (shiftFunctorZero C B).inv.app X ≫ _ = _
-  dsimp [Discrete.eqToHom]
+  dsimp [Discrete.eqToHom, Discrete.addMonoidalFunctor_ε]
   congr 2
   apply eqToHom_map
 
@@ -86,6 +86,7 @@ lemma pullbackShiftFunctorAdd'_inv_app :
     shiftFunctorAdd'_eq_shiftFunctorAdd]
   change _ ≫ _ = _
   congr 1
+  rw [Discrete.addMonoidalFunctor_μ]
   dsimp [Discrete.eqToHom]
   congr 2
   apply eqToHom_map
