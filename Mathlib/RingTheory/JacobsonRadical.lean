@@ -3,7 +3,7 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.FiniteLength
 import Mathlib.RingTheory.JacobsonIdeal
 
 /-!
@@ -13,13 +13,14 @@ This file connects Jacobson radicals to finiteness conditions.
 
 We show that an Artinian module is semisimple iff its Jacobson radical is zero.
 
-Show that an Artinian ring `R` is semi-primary, i.e. `Ring.jacobson R` is nilpotent and
+Show that an Artinian ring `R` is semiprimary, i.e. `Ring.jacobson R` is nilpotent and
 `R ⧸ Ring.jacobson R` is semisimple.
 
 In particular, we prove the Hopkins–Levitzki theorem which says that for a module over a
-semi-primary ring (in particular, an Artinian ring), `Module.Finite`, `IsNoetherian`,
-`IsArtinian` and `IsFiniteLength` are all equivalent. In particular, a (left) Artinian ring
-is also (left) Noetherian.
+semiprimary ring (in particular, an Artinian ring), `IsNoetherian` is equivalent to `IsArtinian`
+(and therefore also to `IsFiniteLength`). In particular, for a module over an Artinian ring,
+`Module.Finite`, `IsNoetherian`, `IsArtinian`, `IsFiniteLength` are all equivalent, and
+a (left) Artinian ring is also (left) Noetherian.
 -/
 
 variable (R R₂ M M₂ : Type*) [Ring R] [Ring R₂]
@@ -60,25 +61,22 @@ theorem IsArtinianRing.isSemisimpleRing_iff_jacobson [IsArtinianRing R] :
     IsSemisimpleRing R ↔ Ring.jacobson R = ⊥ :=
   IsArtinian.isSemisimpleModule_iff_jacobson R R
 
-class IsSemiPrimaryRing : Prop where
+/-- A ring is semiprimary if its Jacobson radical is nilpotent and its quotient by the
+Jacobson radical is semisimple. -/
+@[mk_iff] class IsSemiprimaryRing : Prop where
   isSemisimpleRing : IsSemisimpleRing (R ⧸ Ring.jacobson R)
   isNilpotent : IsNilpotent (Ring.jacobson R)
 
-attribute [instance] IsSemiPrimaryRing.isSemisimpleRing
+attribute [instance] IsSemiprimaryRing.isSemisimpleRing
 
-instance [IsArtinianRing R] : IsSemiPrimaryRing R where
+instance [IsArtinianRing R] : IsSemiprimaryRing R where
   isSemisimpleRing :=
     (IsArtinianRing.isSemisimpleRing_iff_jacobson _).mpr (Ring.jacobson_quotient_jacobson R)
   isNilpotent := by
     let I := Ring.jacobson R
     have ⟨n, hn⟩ := IsArtinian.monotone_stabilizes ⟨(I ^ ·), @Ideal.pow_le_pow_right _ _ _⟩
+    have hn : I * I ^ n = I ^ n := by rw [← Ideal.IsTwoSided.pow_succ]; exact (hn _ n.le_succ).symm
     use n; by_contra ne
-    have : I ^ (n + 1) = I ^ n := (hn _ n.le_succ).symm
-    have hn : I * I ^ n = I ^ n := by
-      obtain rfl | hn := eq_or_ne n 0
-      · simp_rw [I.pow_zero, zero_add, I.pow_one] at this ⊢
-        rw [this, Submodule.one_mul]
-      · rwa [I.pow_succ' hn] at this
     have ⟨N, ⟨eq, ne⟩, min⟩ := wellFounded_lt.has_min {N | I * N = N ∧ N ≠ ⊥} ⟨_, hn, ne⟩
     have : I ^ n * N = N := n.rec (by rw [I.pow_zero, N.one_mul])
       fun n hn ↦ by rwa [I.pow_succ, mul_assoc, eq]
@@ -99,5 +97,24 @@ instance [IsArtinianRing R] : IsSemiPrimaryRing R where
     refine (this ▸ ne) ((Submodule.fg_span <| Set.finite_singleton x).eq_bot_of_le_jacobson_smul ?_)
     rw [← Ideal.span, this, smul_eq_mul, eq]
 
-theorem IsArtinianRing.isNilpotent_jacobson [IsArtinianRing R] : IsNilpotent (Ring.jacobson R) := by
+open Ideal in
+theorem IsSemiprimaryRing.isNoetherian_iff_isArtinian [IsSemiprimaryRing R] :
+    IsNoetherian R M ↔ IsArtinian R M := by
+  have ⟨ss, n, hn⟩ := (isSemiprimaryRing_iff R).mp ‹_›
+  induction' n with n ih generalizing M
+  · rw [Submodule.pow_zero, zero_eq_bot, one_eq_top, ← le_bot_iff] at hn
+    have : Subsingleton R := ⟨fun _ _ ↦ (hn trivial).trans (hn trivial).symm⟩
+    constructor <;> infer_instance
+  obtain _ | n := n
+  · rw [Submodule.pow_one, zero_eq_bot] at hn
+    have := ((Ideal.quotEquivOfEq hn).trans <| .quotientBot R).isSemisimpleRing
+
+theorem IsArtninanRing.tfae [IsArtinianRing R] :
+    List.TFAE [Module.Finite R M, IsNoetherian R M, IsArtinian R M, IsFiniteLength R M] := by
+  _
+
+/-- A finitely generated Artinian module over a commutative ring is Noetherian. This is not
+necessarily the case over a noncommutative ring, see https://mathoverflow.net/a/61700/3332. -/
+theorem isNoetherian_of_finite_isArtinian {R} [CommRing R] [Module R M]
+    [Module.Finite R M] [IsArtinian R M] : IsNoetherian R M := by
   _

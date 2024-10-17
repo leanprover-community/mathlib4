@@ -57,6 +57,7 @@ abbrev IsSemisimpleModule :=
 /-- A ring is semisimple if it is semisimple as a module over itself. -/
 abbrev IsSemisimpleRing := IsSemisimpleModule R R
 
+variable {R S} in
 theorem RingEquiv.isSemisimpleRing (e : R ≃+* S) [IsSemisimpleRing R] : IsSemisimpleRing S :=
   (Submodule.orderIsoMapComap e.toSemilinearEquiv).complementedLattice
 
