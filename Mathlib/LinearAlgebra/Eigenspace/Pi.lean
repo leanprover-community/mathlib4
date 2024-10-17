@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 # Simultaneous eigenvectors and eigenvalues for families of endomorphisms
 
 In finite dimensions, the theory of simultaneous eigenvalues for a family of linear endomorphisms
-`i ↦ f i` enjoys similar properties to that of a single endomorphism, provide the family obeys a
+`i ↦ f i` enjoys similar properties to that of a single endomorphism, provided the family obeys a
 compatibilty condition. This condition is that the maximum generalised eigenspaces of each
 endomorphism are invariant under the action of all members of the family. It is trivially satisfied
 for commuting endomorphisms but there are important more general situations where it also holds
