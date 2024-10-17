@@ -125,6 +125,8 @@ node is the whole `variable` command.
 -/
 initialize usedVarsRef : IO.Ref varsTracker ← IO.mkRef {}
 
+elab "#reset_vars" : command => usedVarsRef.modify fun _ => {}
+
 /--
 `#show_used` is a convenience function that prints a summary of the variables that have been
 defined so far and whether or not they have been used at the point where `#show_used` is called.
@@ -145,6 +147,7 @@ elab "#show_used" : command => do
 /-- Add the (unique) name `a` to `varsTracker.seen`: these are the variable names that some
 declaration used. -/
 def usedVarsRef.addUsedVarName (a : Name) : IO Unit := do
+  dbg_trace "used {a}"
   usedVarsRef.modify fun varTrack => {varTrack with seen := varTrack.seen.insert a}
 
 /-- Add the assignment `a → ref` to `varsTracker.temp`, where
@@ -152,6 +155,7 @@ def usedVarsRef.addUsedVarName (a : Name) : IO Unit := do
 * `ref` is the syntax node that introduces the variable called `a`.
 -/
 def usedVarsRef.addTemp (scope : Scope) : IO Unit := do
+  dbg_trace "temp here"
   let pairs := scope.varUIds.zip (scope.varDecls.map getBracketedBinderIds).flatten
   for (uniq, stx) in pairs do
     usedVarsRef.modify fun varTrack =>
@@ -163,6 +167,7 @@ def usedVarsRef.addTemp (scope : Scope) : IO Unit := do
 * `ref` is the syntax node that introduces the variable with unique name `a`.
 -/
 def usedVarsRef.addDict (a : Name) (ref : Syntax) : IO Unit := do
+  dbg_trace "add dictionary?"
   usedVarsRef.modify fun varTrack =>
     -- The unique name is already present: do nothing.
     if varTrack.dict.contains a then dbg_trace "do nothing with {a}"; varTrack
@@ -176,6 +181,12 @@ def usedVarsRef.addDict (a : Name) (ref : Syntax) : IO Unit := do
     else
       dbg_trace "insert {a} {ref} (no macros)"
       {varTrack with dict := varTrack.dict.insert a ref}
+
+def usedVarsRef.addAll (scope : Scope) : IO Unit := do
+  dbg_trace "addAll here"
+  let pairs := scope.varUIds.zip (scope.varDecls.map getBracketedBinderIds).flatten
+  for (uniq, stx) in pairs do
+    usedVarsRef.addDict uniq stx
 
 def usedVarsRef.clearTemp : IO Unit :=
   usedVarsRef.modify ({· with temp := {}})
@@ -198,7 +209,7 @@ def includedVariables (plumb : Bool) : TermElabM (Array (Name × Name × Expr)) 
     let ref ← getRef
     match (lctx.findFVar? b) with
       | none =>
-        dbg_trace "adding {a} {ref}\n"
+        dbg_trace "yes/not adding  {a} {ref}\n"
         usedVarsRef.addDict a ref
       | some _d =>
         let mut fd := .anonymous
@@ -373,10 +384,10 @@ def getUsedVariableNames (pos : String.Pos) : CommandElabM (Array String) := do
   let declRangeExt := declRangeExt.getState env
   let names := declRangeExt.toList.find? (·.2.selectionRange.pos == posit)
   let decl := (env.find? (names.getD default).1).getD default
-  let (d, _) ← liftCoreM do Meta.MetaM.run do getForallStrings decl.type
+  let strs ← liftCoreM do Meta.MetaM.run' do getForallStrings decl.type
   if Linter.getLinterValue showDefs (← getOptions) then
-    dbg_trace "getForallStrings: {d}"
-  return d
+    dbg_trace "getForallStrings: {strs}"
+  return strs
 
 /-- `lemmaToThm stx` assumes that `stx` is of kind `lemma` and converts it into `theorem`. -/
 def lemmaToThm (stx : Syntax) : Syntax :=
@@ -442,16 +453,18 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
         match uniq.eraseMacroScopes with
           | .anonymous => Linter.logLint linter.unusedVariableCommand user m!"'{user}' is unused"
           | x          => Linter.logLint linter.unusedVariableCommand user m!"'{x}' is unused"
-  -- if there is a `variable` command in `stx`, then we update `usedVarsRef` with all the
-  -- information that is available
+    -- If there is a `variable ... in` command, we elaborate the variables
+  -- then we update `usedVarsRef` with all the information that is available
   if let some vars := (stx.find? (fun s => match s with
           | `(variable $_* in $_) => true
           | _ => false
           )) then
-    -- If there is a `variable ... in` command, we elaborate the variables
     elabCommand vars[0]
     -- and we store them in the `temp` field of `varsTracker`
     usedVarsRef.addTemp (← getScope)
+    -- If we are parsing a `variable ...` command, we update the `dict`
+  if stx.isOfKind ``Command.variable then
+    usedVarsRef.addAll (← getScope)
   -- On all declarations that are not examples, we "rename" them, so that we can elaborate
   -- their syntax again, and we replace `:= proof-term` by `:= by included_variables plumb: sorry`
   -- in order to update the `usedVarsRef` counter.
@@ -500,6 +513,7 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
       filt2 := filt2 ++ newL
 
       filt := filt ++ left.filter (s.isPrefixOf ·.toString)
+    dbg_trace "\nvariables by name"
     for (s, _) in filt2 do
       usedVarsRef.addUsedVarName s
     -- Clean up the temporary annotations due to `variable ... in`
