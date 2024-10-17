@@ -10,7 +10,7 @@ import Mathlib.Probability.Process.Filtration
 # Family of kernels consistent with respect to a filtration
 -/
 
-open ProbabilityTheory Set MeasureTheory ENNReal NNReal
+open ProbabilityTheory
 
 namespace MeasureTheory.Filtration
 variable {X P E : Type*} {mX : MeasurableSpace X} {mE : MeasurableSpace E} [PartialOrder P]
