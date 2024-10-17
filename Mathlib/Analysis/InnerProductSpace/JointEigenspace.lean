@@ -120,12 +120,12 @@ theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
   calc
   _ = ⨆ χ : ι → 𝕜, ⨅ i, maxGenEigenspace (T i) (χ i) :=
     congr(⨆ χ : ι → 𝕜, ⨅ i,
-      $(IsSemisimple.maxGenEigenspace_eq_eigenspace (IsSymmetric.isSemisimple (hT i)) (χ i))).symm
+      $(IsSemisimple.maxGenEigenspace_eq_eigenspace (IsSymmetric.isSemisimple (hT _)) (χ _))).symm
   _ = ⊤ :=
-    iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute T h fun i ↦ by
+    iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute T h fun _ ↦ by
     rw [← orthogonal_eq_bot_iff, congr(⨆ μ,
-      $(IsSemisimple.maxGenEigenspace_eq_eigenspace (IsSymmetric.isSemisimple (hT i)) μ)),
-      (hT i).orthogonalComplement_iSup_eigenspaces_eq_bot]
+      $(IsSemisimple.maxGenEigenspace_eq_eigenspace (IsSymmetric.isSemisimple (hT _)) μ)),
+      (hT _).orthogonalComplement_iSup_eigenspaces_eq_bot]
 
 /-- In finite dimensions, given a commuting family of symmetric linear operators, the inner
 product space on which they act decomposes as an internal direct sum of joint eigenspaces. -/
