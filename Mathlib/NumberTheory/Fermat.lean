@@ -8,6 +8,8 @@ import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.Linarith
+
 
 /-!
 # Fermat numbers
@@ -61,7 +63,15 @@ theorem fermatNumber_eq_prod_add_two (n : ℕ) :
 theorem fermatNumber_succ (n : ℕ) : fermatNumber (n + 1) = (fermatNumber n - 1) ^ 2 + 1 := by
   rw [fermatNumber, pow_succ, mul_comm, Nat.pow_mul']
   rfl
-theorem fermat_succ_succ (n : ℕ) :
+
+theorem two_mul_fermatNumber_sub_one_sq_le_fermatNumber_sq (n : ℕ) :
+    2 * (fermatNumber n - 1) ^ 2 ≤ (fermatNumber (n + 1)) ^ 2 := by
+  simp only [fermatNumber, add_tsub_cancel_right]
+  have : 0 ≤ 1 + 2 ^ (2 ^ n * 4) := le_add_left 0 (Nat.add 1 _)
+  ring_nf
+  linarith
+
+theorem fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq (n : ℕ) :
     fermatNumber (n + 2) = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
   simp only [fermatNumber, add_sub_self_right]
   rw [← add_sub_self_right (2 ^ 2 ^ (n + 2) + 1) <| 2 * 2 ^ 2 ^ (n + 1)]
