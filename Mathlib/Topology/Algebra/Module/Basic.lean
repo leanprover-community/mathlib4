@@ -1134,7 +1134,7 @@ theorem pi_apply (f : ∀ i, M →L[R] φ i) (c : M) (i : ι) : pi f c i = f i c
   rfl
 
 theorem pi_eq_zero (f : ∀ i, M →L[R] φ i) : pi f = 0 ↔ ∀ i, f i = 0 := by
-  simp only [ContinuousLinearMap.ext_iff, pi_apply, Function.funext_iff]
+  simp only [ContinuousLinearMap.ext_iff, pi_apply, funext_iff]
   exact forall_swap
 
 theorem pi_zero : pi (fun _ => 0 : ∀ i, M →L[R] φ i) = 0 :=
@@ -2393,7 +2393,7 @@ instance continuousSMul_quotient [TopologicalSpace R] [TopologicalAddGroup M] [C
 instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] :
     T3Space (M ⧸ S) :=
   letI : IsClosed (S.toAddSubgroup : Set M) := ‹_›
-  S.toAddSubgroup.t3_quotient_of_isClosed
+  QuotientAddGroup.instT3Space S.toAddSubgroup
 
 end Submodule
 

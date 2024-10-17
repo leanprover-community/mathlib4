@@ -34,7 +34,7 @@ noncomputable section
 
 open scoped MeasureTheory ENNReal NNReal
 
-variable {α β : Type*} {m : MeasurableSpace α}
+variable {α : Type*} {m : MeasurableSpace α}
 
 namespace MeasureTheory
 

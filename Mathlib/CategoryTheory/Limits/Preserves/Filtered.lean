@@ -51,11 +51,12 @@ abbrev PreservesFilteredColimits (F : C ⥤ D) : Type max u₁ u₂ (v + 1) :=
 attribute [instance 100] PreservesFilteredColimitsOfSize.preserves_filtered_colimits
 
 instance (priority := 100) PreservesColimits.preservesFilteredColimits (F : C ⥤ D)
-    [PreservesColimits F] : PreservesFilteredColimits F where
+    [PreservesColimitsOfSize.{w, w'} F] : PreservesFilteredColimitsOfSize.{w, w'} F where
   preserves_filtered_colimits _ := inferInstance
 
-instance compPreservesFilteredColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFilteredColimits F]
-    [PreservesFilteredColimits G] : PreservesFilteredColimits (F ⋙ G) where
+instance compPreservesFilteredColimits (F : C ⥤ D) (G : D ⥤ E)
+    [PreservesFilteredColimitsOfSize.{w, w'} F] [PreservesFilteredColimitsOfSize.{w, w'} G] :
+      PreservesFilteredColimitsOfSize.{w, w'} (F ⋙ G) where
   preserves_filtered_colimits _ := inferInstance
 
 /-- A functor preserving larger filtered colimits also preserves smaller filtered colimits. -/
@@ -89,7 +90,7 @@ section Reflects
 
 -- This should be used with explicit universe variables.
 /-- `ReflectsFilteredColimitsOfSize.{w', w} F` means that whenever the image of a filtered cocone
-under `F` is a colimit cocone, the originial cocone was already a colimit. -/
+under `F` is a colimit cocone, the original cocone was already a colimit. -/
 @[nolint checkUnivs, pp_with_univ]
 class ReflectsFilteredColimitsOfSize (F : C ⥤ D) where
   reflects_filtered_colimits :
@@ -106,11 +107,12 @@ abbrev ReflectsFilteredColimits (F : C ⥤ D) : Type max u₁ u₂ (v + 1) :=
 attribute [instance 100] ReflectsFilteredColimitsOfSize.reflects_filtered_colimits
 
 instance (priority := 100) ReflectsColimits.reflectsFilteredColimits (F : C ⥤ D)
-    [ReflectsColimits F] : ReflectsFilteredColimits F where
+    [ReflectsColimitsOfSize.{w, w'} F] : ReflectsFilteredColimitsOfSize.{w, w'} F where
   reflects_filtered_colimits _ := inferInstance
 
-instance compReflectsFilteredColimits (F : C ⥤ D) (G : D ⥤ E) [ReflectsFilteredColimits F]
-    [ReflectsFilteredColimits G] : ReflectsFilteredColimits (F ⋙ G) where
+instance compReflectsFilteredColimits (F : C ⥤ D) (G : D ⥤ E)
+    [ReflectsFilteredColimitsOfSize.{w, w'} F] [ReflectsFilteredColimitsOfSize.{w, w'} G] :
+      ReflectsFilteredColimitsOfSize.{w, w'} (F ⋙ G) where
   reflects_filtered_colimits _ := inferInstance
 
 /-- A functor reflecting larger filtered colimits also reflects smaller filtered colimits. -/
@@ -165,11 +167,12 @@ abbrev PreservesCofilteredLimits (F : C ⥤ D) : Type max u₁ u₂ (v + 1) :=
 attribute [instance 100] PreservesCofilteredLimitsOfSize.preserves_cofiltered_limits
 
 instance (priority := 100) PreservesLimits.preservesCofilteredLimits (F : C ⥤ D)
-    [PreservesLimits F] : PreservesCofilteredLimits F where
+    [PreservesLimitsOfSize.{w, w'} F] : PreservesCofilteredLimitsOfSize.{w, w'} F where
   preserves_cofiltered_limits _ := inferInstance
 
-instance compPreservesCofilteredLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesCofilteredLimits F]
-    [PreservesCofilteredLimits G] : PreservesCofilteredLimits (F ⋙ G) where
+instance compPreservesCofilteredLimits (F : C ⥤ D) (G : D ⥤ E)
+    [PreservesCofilteredLimitsOfSize.{w, w'} F] [PreservesCofilteredLimitsOfSize.{w, w'} G] :
+      PreservesCofilteredLimitsOfSize.{w, w'} (F ⋙ G) where
   preserves_cofiltered_limits _ := inferInstance
 
 /-- A functor preserving larger cofiltered limits also preserves smaller cofiltered limits. -/
@@ -220,11 +223,12 @@ abbrev ReflectsCofilteredLimits (F : C ⥤ D) : Type max u₁ u₂ (v + 1) :=
 attribute [instance 100] ReflectsCofilteredLimitsOfSize.reflects_cofiltered_limits
 
 instance (priority := 100) ReflectsLimits.reflectsCofilteredLimits (F : C ⥤ D)
-    [ReflectsLimits F] : ReflectsCofilteredLimits F where
+    [ReflectsLimitsOfSize.{w, w'} F] : ReflectsCofilteredLimitsOfSize.{w, w'} F where
   reflects_cofiltered_limits _ := inferInstance
 
-instance compReflectsCofilteredLimits (F : C ⥤ D) (G : D ⥤ E) [ReflectsCofilteredLimits F]
-    [ReflectsCofilteredLimits G] : ReflectsCofilteredLimits (F ⋙ G) where
+instance compReflectsCofilteredLimits (F : C ⥤ D) (G : D ⥤ E)
+    [ReflectsCofilteredLimitsOfSize.{w, w'} F] [ReflectsCofilteredLimitsOfSize.{w, w'} G] :
+      ReflectsCofilteredLimitsOfSize.{w, w'} (F ⋙ G) where
   reflects_cofiltered_limits _ := inferInstance
 
 /-- A functor reflecting larger cofiltered limits also reflects smaller cofiltered limits. -/

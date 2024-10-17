@@ -532,7 +532,7 @@ namespace Set
 
 section OffDiag
 
-variable {α : Type*} {s t : Set α} {x : α × α} {a : α}
+variable {α : Type*} {s t : Set α} {a : α}
 
 theorem offDiag_mono : Monotone (offDiag : Set α → Set (α × α)) := fun _ _ h _ =>
   And.imp (@h _) <| And.imp_left <| @h _
