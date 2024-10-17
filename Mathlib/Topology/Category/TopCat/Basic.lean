@@ -47,16 +47,10 @@ instance : CoeSort TopCat Type* where
 instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
   X.str
 
--- We leave this temporarily as a reminder of the downstream instances #13170
--- -- Porting note: cannot find a coercion to function otherwise
--- -- attribute [instance] ConcreteCategory.instFunLike in
--- instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
---   coe (f : C(X, Y)) := f
-
 instance instFunLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y :=
   inferInstanceAs <| FunLike C(X, Y) X Y
 
-instance instMonoidHomClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
+instance instContinuousMapClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
   inferInstanceAs <| ContinuousMapClass C(X, Y) X Y
 
 -- Porting note (#10618): simp can prove this; removed simp
@@ -160,6 +154,18 @@ theorem of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso 
   dsimp [homeoOfIso, isoOfHomeo]
   ext
   rfl
+
+lemma isIso_of_bijective_of_isOpenMap {X Y : TopCat.{u}} (f : X ⟶ Y)
+    (hfbij : Function.Bijective f) (hfcl : IsOpenMap f) : IsIso f :=
+  let e : X ≃ₜ Y := Homeomorph.homeomorphOfContinuousOpen
+    (Equiv.ofBijective f hfbij) f.continuous hfcl
+  inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
+
+lemma isIso_of_bijective_of_isClosedMap {X Y : TopCat.{u}} (f : X ⟶ Y)
+    (hfbij : Function.Bijective f) (hfcl : IsClosedMap f) : IsIso f :=
+  let e : X ≃ₜ Y := Homeomorph.homeomorphOfContinuousClosed
+    (Equiv.ofBijective f hfbij) f.continuous hfcl
+  inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
 
 -- Porting note: simpNF requested partially simped version below
 theorem openEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :

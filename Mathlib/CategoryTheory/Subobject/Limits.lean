@@ -212,7 +212,7 @@ instance kernelSubobject_comp_mono_isIso (f : X ⟶ Y) [HasKernel f] {Z : C} (h 
 @[simps]
 def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op X))ᵒᵈ where
   toFun :=
-    Subobject.lift (fun A f _ => Subobject.mk (cokernel.π f).op)
+    Subobject.lift (fun _ f _ => Subobject.mk (cokernel.π f).op)
       (by
         rintro A B f g hf hg i rfl
         refine Subobject.mk_eq_mk_of_comm _ _ (Iso.op ?_) (Quiver.Hom.unop_inj ?_)
@@ -234,7 +234,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
 @[simps]
 def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobject X where
   toFun :=
-    Subobject.lift (fun A f _ => Subobject.mk (kernel.ι f.unop))
+    Subobject.lift (fun _ f _ => Subobject.mk (kernel.ι f.unop))
       (by
         rintro A B f g hf hg i rfl
         refine Subobject.mk_eq_mk_of_comm _ _ ?_ ?_

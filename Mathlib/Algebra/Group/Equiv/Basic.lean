@@ -28,7 +28,7 @@ Equiv, MulEquiv, AddEquiv
 
 open Function
 
-variable {F α β A B M N P Q G H : Type*}
+variable {F α β M N P G H : Type*}
 
 /-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
 @[to_additive (attr := simps)
@@ -168,7 +168,7 @@ theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α
 
 namespace MulEquiv
 section Mul
-variable [Mul M] [Mul N] [Mul P] [Mul Q]
+variable [Mul M] [Mul N] [Mul P]
 
 section coe
 

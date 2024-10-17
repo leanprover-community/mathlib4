@@ -390,7 +390,7 @@ theorem Set.Finite.convexHull_eq {s : Set E} (hs : s.Finite) : convexHull R s =
 
 /-- A weak version of Carathéodory's theorem. -/
 theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
-    convexHull R s = ⋃ (t : Finset E) (w : ↑t ⊆ s), convexHull R ↑t := by
+    convexHull R s = ⋃ (t : Finset E) (_ : ↑t ⊆ s), convexHull R ↑t := by
   refine Subset.antisymm ?_ ?_
   · rw [_root_.convexHull_eq]
     rintro x ⟨ι, t, w, z, hw₀, hw₁, hz, rfl⟩
