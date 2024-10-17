@@ -259,7 +259,7 @@ noncomputable def localizationToStalk (x : PrimeSpectrum.Top R) :
 implemented as a subtype of dependent functions to localizations at prime ideals, and evaluates
 the section on the point corresponding to a given prime ideal. -/
 def openToLocalization (U : Opens (PrimeSpectrum R)) (x : PrimeSpectrum R) (hx : x ∈ U) :
-    (tildeInModuleCat M).presheaf.obj (op U) ⟶
+    (tildeInModuleCat M).obj (op U) ⟶
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) where
   toFun s := (s.1 ⟨x, hx⟩ : _)
   map_add' _ _ := rfl
