@@ -632,6 +632,9 @@ namespace Scheme
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
+instance (x) : IsLocalHom (f.stalkMap x) :=
+  f.1.2 x
+
 @[simp]
 lemma stalkMap_id (X : Scheme.{u}) (x : X) :
     (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) :=
