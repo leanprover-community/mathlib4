@@ -54,7 +54,6 @@ lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth (f : R →+* S)
     (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
     IsStandardSmooth.{t, w} f := by
   algebraize [f]
-  letI : Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n R S := hf
   exact Algebra.IsStandardSmoothOfRelativeDimension.isStandardSmooth n
 
 variable {n m}
