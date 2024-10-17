@@ -634,7 +634,7 @@ theorem range_subset_iff : range f ⊆ s ↔ ∀ y, f y ∈ s :=
 
 theorem range_subset_range_iff_exists_comp {f : α → γ} {g : β → γ} :
     range f ⊆ range g ↔ ∃ h : α → β, f = g ∘ h := by
-  simp only [range_subset_iff, mem_range, Classical.skolem, Function.funext_iff, (· ∘ ·), eq_comm]
+  simp only [range_subset_iff, mem_range, Classical.skolem, funext_iff, (· ∘ ·), eq_comm]
 
 theorem range_eq_iff (f : α → β) (s : Set β) :
     range f = s ↔ (∀ a, f a ∈ s) ∧ ∀ b ∈ s, ∃ a, f a = b := by
