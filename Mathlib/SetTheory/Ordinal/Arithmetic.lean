@@ -2263,13 +2263,16 @@ theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omeg
 @[deprecated (since := "2024-09-30")]
 alias one_lt_omega := one_lt_omega0
 
-theorem omega0_isLimit : IsLimit ω :=
+theorem isLimit_omega0 : IsLimit ω :=
   ⟨omega0_ne_zero, fun o h => by
     let ⟨n, e⟩ := lt_omega0.1 h
     rw [e]; exact nat_lt_omega0 (n + 1)⟩
 
+@[deprecated (since := "2024-10-14")]
+alias omega0_isLimit := isLimit_omega0
+
 @[deprecated (since := "2024-09-30")]
-alias omega_isLimit := omega0_isLimit
+alias omega_isLimit := isLimit_omega0
 
 theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
   ⟨fun h n => (nat_lt_omega0 _).le.trans h, fun H =>
@@ -2306,14 +2309,14 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
   refine ⟨fun l => ⟨l.1, ⟨a / ω, le_antisymm ?_ (mul_div_le _ _)⟩⟩, fun h => ?_⟩
   · refine (limit_le l).2 fun x hx => le_of_lt ?_
     rw [← div_lt omega0_ne_zero, ← succ_le_iff, le_div omega0_ne_zero, mul_succ,
-      add_le_of_limit omega0_isLimit]
+      add_le_of_limit isLimit_omega0]
     intro b hb
     rcases lt_omega0.1 hb with ⟨n, rfl⟩
     exact
       (add_le_add_right (mul_div_le _ _) _).trans
         (lt_sub.1 <| nat_lt_limit (isLimit_sub l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
-    refine isLimit_mul_left omega0_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
+    refine isLimit_mul_left isLimit_omega0 (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
     intro e
     simp only [e, mul_zero]
 
@@ -2394,7 +2397,7 @@ namespace Cardinal
 
 open Ordinal
 
-theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
+theorem isLimit_ord {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
   refine ⟨fun h => aleph0_ne_zero ?_, fun a => lt_imp_lt_of_le_imp_le fun h => ?_⟩
   · rw [← Ordinal.le_zero, ord_le] at h
     simpa only [card_zero, nonpos_iff_eq_zero] using co.trans h
@@ -2403,10 +2406,13 @@ theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
     rw [← ord_le, ← le_succ_of_isLimit, ord_le]
     · exact co.trans h
     · rw [ord_aleph0]
-      exact Ordinal.omega0_isLimit
+      exact Ordinal.isLimit_omega0
+
+@[deprecated (since := "2024-10-14")]
+alias ord_isLimit := isLimit_ord
 
 theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
-  toType_noMax_of_succ_lt (ord_isLimit h).2
+  toType_noMax_of_succ_lt (isLimit_ord h).2
 
 end Cardinal
 
