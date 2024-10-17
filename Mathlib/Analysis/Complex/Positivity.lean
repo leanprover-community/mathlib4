@@ -29,18 +29,13 @@ theorem nonneg_of_iteratedDeriv_nonneg {f : ℂ → ℂ} {c : ℂ} {r : ℝ}
     0 ≤ f z := by
   have H := taylorSeries_eq_on_ball' hz₂ hf
   rw [← sub_nonneg] at hz₁
-  have hz' : z - c = (z - c).re := eq_re_of_ofReal_le hz₁
+  have hz' := eq_re_of_ofReal_le hz₁
   rw [hz'] at hz₁ H
-  obtain ⟨D, hD⟩ : ∃ D : ℕ → ℝ, ∀ n, 0 ≤ D n ∧ iteratedDeriv n f c = D n := by
-    refine ⟨fun n ↦ (iteratedDeriv n f c).re, fun n ↦ ⟨?_, ?_⟩⟩
-    · exact zero_le_real.mp <| eq_re_of_ofReal_le (h n) ▸ h n
-    · rw [eq_re_of_ofReal_le (h n)]
-  rewrite [← H]
-  simp_rw [hD, ← ofReal_natCast, ← ofReal_pow, ← ofReal_inv, ← ofReal_mul, ← ofReal_tsum]
-  norm_cast
-  refine tsum_nonneg fun n ↦ ?_
-  norm_cast at hz₁
-  have := (hD n).1
+  refine H ▸ tsum_nonneg fun n ↦ ?_
+  rw [← ofReal_natCast, ← ofReal_pow, ← ofReal_inv, eq_re_of_ofReal_le (h n), ← ofReal_mul,
+    ← ofReal_mul]
+  norm_cast at hz₁ ⊢
+  have := zero_re ▸ (Complex.le_def.mp (h n)).1
   positivity
 
 end DifferentiableOn
@@ -54,11 +49,9 @@ theorem nonneg_of_iteratedDeriv_nonneg {f : ℂ → ℂ} (hf : Differentiable �
     0 ≤ f z := by
   refine hf.differentiableOn.nonneg_of_iteratedDeriv_nonneg (r := (z - c).re + 1) h hz ?_
   rw [← sub_nonneg] at hz
-  have : (z - c) = (z - c).re := eq_re_of_ofReal_le hz
   simp only [Metric.mem_ball, dist_eq]
-  nth_rewrite 1 [this]
-  rewrite [abs_ofReal, _root_.abs_of_nonneg (nonneg_iff.mp hz).1]
-  exact lt_add_one _
+  nth_rewrite 1 [eq_re_of_ofReal_le hz]
+  simpa only [abs_ofReal, _root_.abs_of_nonneg (nonneg_iff.mp hz).1] using lt_add_one _
 
 /-- An entire function whose iterated derivatives at `c` are all nonnegative real (except
 possibly the value itself) has values of the form `f c + nonneg. real` on the set `c + ℝ≥0`. -/

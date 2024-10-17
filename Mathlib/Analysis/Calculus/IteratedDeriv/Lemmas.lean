@@ -126,13 +126,17 @@ lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
       deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_const_smul',
       neg_smul]
 
-lemma iteratedDeriv_eq_on_open (n : ℕ) {f g : 𝕜 → F} {s : Set 𝕜} (hs : IsOpen s) (x : s)
-    (hfg : Set.EqOn f g s) : iteratedDeriv n f x = iteratedDeriv n g x := by
-  induction' n with n IH generalizing f g
-  · simpa only [iteratedDeriv_zero] using hfg x.2
-  · simp only [iteratedDeriv_succ']
-    exact IH fun y hy ↦ Filter.EventuallyEq.deriv_eq <|
-      Filter.eventuallyEq_iff_exists_mem.mpr ⟨s, IsOpen.mem_nhds hs hy, hfg⟩
+lemma Filter.EventuallyEq.iteratedDeriv_eq (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} (hfg : f =ᶠ[nhds x] g) :
+    iteratedDeriv n f x = iteratedDeriv n g x := by
+  simp only [← iteratedDerivWithin_univ, iteratedDerivWithin_eq_iteratedFDerivWithin]
+  rw [(hfg.filter_mono nhdsWithin_le_nhds).iteratedFDerivWithin_eq hfg.eq_of_nhds n]
+
+lemma iteratedDeriv_eq_on_open (n : ℕ) {f g : 𝕜 → F} {s : Set 𝕜} (hs : IsOpen s) {x : 𝕜}
+    (hx : x ∈ s) (hfg : Set.EqOn f g s) :
+    iteratedDeriv n f x = iteratedDeriv n g x := by
+  apply Filter.EventuallyEq.iteratedDeriv_eq
+  filter_upwards [IsOpen.mem_nhds hs hx] with a ha
+  exact hfg ha
 
 end one_dimensional
 
@@ -150,9 +154,7 @@ lemma iteratedDeriv_comp_const_add (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
   induction n with
   | zero => simp only [iteratedDeriv_zero]
   | succ n IH =>
-      simp only [iteratedDeriv_succ, IH]
-      ext1 z
-      exact deriv_comp_const_add (iteratedDeriv n f) s z
+    simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_const_add _ s
 
 /-- The iterated derivative commutes with shifting the function by a constant on the right. -/
 lemma iteratedDeriv_comp_add_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
@@ -160,8 +162,6 @@ lemma iteratedDeriv_comp_add_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
   induction n with
   | zero => simp only [iteratedDeriv_zero]
   | succ n IH =>
-      simp only [iteratedDeriv_succ, IH]
-      ext1 z
-      exact deriv_comp_add_const (iteratedDeriv n f) s z
+    simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_add_const _ s
 
 end shift_invariance
