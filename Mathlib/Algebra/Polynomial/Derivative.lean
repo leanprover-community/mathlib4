@@ -578,19 +578,11 @@ theorem iterate_derivative_X_sub_pow_self (n : ℕ) (c : R) :
   rw [iterate_derivative_X_sub_pow, n.sub_self, pow_zero, nsmul_one, n.descFactorial_self]
 
 theorem iterate_derivative_finset_sum (k : ℕ) (h : ℕ → ℕ) :
-    derivative^[k] (∑ m in Finset.range (k + 1), (h m) • ((- 1) ^ m : R[X]) * X ^ (k + m)) =
-    ∑ m in Finset.range (k + 1), (h m) • (- 1) ^ m * derivative^[k] (X ^ (k + m)) := by
-  induction' k + 1 with n hn
-  · simp only [Nat.zero_eq, Finset.range_zero, Finset.sum_empty, iterate_map_zero]
-  · rw[Finset.sum_range, Finset.sum_range, Fin.sum_univ_castSucc, Fin.sum_univ_castSucc] at *
-    simp only [Fin.coe_castSucc, Fin.val_last, iterate_map_add, hn, add_right_inj]
-    rw [nsmul_eq_mul, mul_assoc, ← nsmul_eq_mul, Polynomial.iterate_derivative_smul, nsmul_eq_mul,
-      mul_assoc]
-    rcases n.even_or_odd with (hn1 | hn2)
-    · simp_all only [nsmul_eq_mul, Int.even_coe_nat, Even.neg_pow, one_pow, one_mul]
-    · rw [Odd.neg_one_pow]
-      simp only [neg_mul, one_mul, iterate_map_neg, mul_neg]
-      exact_mod_cast hn2
+    derivative^[k] (∑ m in Finset.range (k + 1), (h m * (-1 : R) ^ m) • X ^ (k + m)) =
+    ∑ m in Finset.range (k + 1), ((h m * (-1 : R) ^ m) • (derivative^[k] (X ^ (k + m))) : R[X]):= by
+  simp only [nsmul_eq_mul, ← LinearMap.pow_apply, map_sum]
+  congr! 1 with i _
+  rw [← smul_eq_mul, map_smul]
 
 end CommRing
 
