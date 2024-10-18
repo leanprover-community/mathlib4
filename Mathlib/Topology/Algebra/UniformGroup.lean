@@ -417,6 +417,11 @@ theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
   (𝓝 (1 : α)).basis_sets.uniformity_of_nhds_one_inv_mul_swapped.totallyBounded_iff.trans <| by
     simp [← preimage_smul_inv, preimage]
 
+@[to_additive]
+theorem totallyBounded_inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded (s⁻¹) := by
+  convert TotallyBounded.image hs uniformContinuous_inv
+  aesop
+
 section UniformConvergence
 
 variable {ι : Type*} {l : Filter ι} {l' : Filter β} {f f' : ι → β → α} {g g' : β → α} {s : Set β}
