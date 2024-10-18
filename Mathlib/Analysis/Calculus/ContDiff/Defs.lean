@@ -161,22 +161,31 @@ theorem ContDiffWithinAt.congr_of_eventuallyEq_insert (h : ContDiffWithinAt 𝕜
   h.congr_of_eventuallyEq (nhdsWithin_mono x (subset_insert x s) h₁)
     (mem_of_mem_nhdsWithin (mem_insert x s) h₁ : _)
 
-theorem ContDiffWithinAt.congr_of_eventually_eq_of_mem (h : ContDiffWithinAt 𝕜 n f s x)
+theorem ContDiffWithinAt.congr_of_eventuallyEq_of_mem (h : ContDiffWithinAt 𝕜 n f s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : ContDiffWithinAt 𝕜 n f₁ s x :=
   h.congr_of_eventuallyEq h₁ <| h₁.self_of_nhdsWithin hx
+
+@[deprecated (since := "2024-10-18")]
+alias ContDiffWithinAt.congr_of_eventually_eq' := ContDiffWithinAt.congr_of_eventuallyEq_of_mem
 
 theorem Filter.EventuallyEq.congr_contDiffWithinAt (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     ContDiffWithinAt 𝕜 n f₁ s x ↔ ContDiffWithinAt 𝕜 n f s x :=
   ⟨fun H => ContDiffWithinAt.congr_of_eventuallyEq H h₁.symm hx.symm, fun H =>
     H.congr_of_eventuallyEq h₁ hx⟩
 
+@[deprecated (since := "2024-10-18")]
+alias Filter.EventuallyEq.contDiffWithinAt_iff := Filter.EventuallyEq.congr_contDiffWithinAt
+
 theorem ContDiffWithinAt.congr (h : ContDiffWithinAt 𝕜 n f s x) (h₁ : ∀ y ∈ s, f₁ y = f y)
     (hx : f₁ x = f x) : ContDiffWithinAt 𝕜 n f₁ s x :=
   h.congr_of_eventuallyEq (Filter.eventuallyEq_of_mem self_mem_nhdsWithin h₁) hx
 
-theorem ContDiffWithinAt.congr' (h : ContDiffWithinAt 𝕜 n f s x) (h₁ : ∀ y ∈ s, f₁ y = f y)
+theorem ContDiffWithinAt.congr_of_mem (h : ContDiffWithinAt 𝕜 n f s x) (h₁ : ∀ y ∈ s, f₁ y = f y)
     (hx : x ∈ s) : ContDiffWithinAt 𝕜 n f₁ s x :=
   h.congr h₁ (h₁ _ hx)
+
+@[deprecated (since := "2024-10-18")]
+alias ContDiffWithinAt.congr' := ContDiffWithinAt.congr_of_mem
 
 theorem ContDiffWithinAt.mono_of_mem (h : ContDiffWithinAt 𝕜 n f s x) {t : Set E}
     (hst : s ∈ 𝓝[t] x) : ContDiffWithinAt 𝕜 n f t x := by
@@ -568,7 +577,7 @@ theorem contDiffOn_succ_iff_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
   rw [inter_comm, insert_eq_of_mem hx] at ho
   have := hf'.mono ho
   rw [contDiffWithinAt_inter' (mem_nhdsWithin_of_mem_nhds (IsOpen.mem_nhds o_open xo))] at this
-  apply this.congr_of_eventually_eq' _ hx
+  apply this.congr_of_eventuallyEq_of_mem _ hx
   have : o ∩ s ∈ 𝓝[s] x := mem_nhdsWithin.2 ⟨o, o_open, xo, Subset.refl _⟩
   rw [inter_comm] at this
   refine Filter.eventuallyEq_of_mem this fun y hy => ?_
@@ -668,7 +677,7 @@ theorem ContDiffOn.contDiffAt (h : ContDiffOn 𝕜 n f s) (hx : s ∈ 𝓝 x) :
 
 theorem ContDiffAt.congr_of_eventuallyEq (h : ContDiffAt 𝕜 n f x) (hg : f₁ =ᶠ[𝓝 x] f) :
     ContDiffAt 𝕜 n f₁ x :=
-  h.congr_of_eventually_eq' (by rwa [nhdsWithin_univ]) (mem_univ x)
+  h.congr_of_eventuallyEq_of_mem (by rwa [nhdsWithin_univ]) (mem_univ x)
 
 theorem ContDiffAt.of_le (h : ContDiffAt 𝕜 n f x) (hmn : m ≤ n) : ContDiffAt 𝕜 m f x :=
   ContDiffWithinAt.of_le h hmn

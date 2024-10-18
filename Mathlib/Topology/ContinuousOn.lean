@@ -30,7 +30,7 @@ equipped with the subspace topology.
 
 open Set Filter Function Topology Filter
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
+variable {α β γ δ : Type*}
 variable [TopologicalSpace α]
 
 /-!
@@ -456,10 +456,6 @@ variable [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 ### `ContinuousWithinAt`
 -/
 
-/-!
-### `ContinuousWithinAt`
--/
-
 /-- If a function is continuous within `s` at `x`, then it tends to `f x` within `s` by definition.
 We register this fact for use with the dot notation, especially to use `Filter.Tendsto.comp` as
 `ContinuousWithinAt.comp` will have a different meaning. -/
@@ -661,13 +657,22 @@ theorem ContinuousWithinAt.mono_of_mem (h : ContinuousWithinAt f t x) (hs : t �
     ContinuousWithinAt f s x :=
   h.mono_left (nhdsWithin_le_of_mem hs)
 
-theorem continuousWithinAt_congr_nhds (h : 𝓝[s] x = 𝓝[t] x) :
+/-- If two sets coincide around `x`, then being continuous within one or the other at `x` is
+equivalent. See also `continuousWithinAt_congr_set'` which requires that the sets coincide
+locally away from a point `y`, in a T1 space. -/
+theorem continuousWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
-  simp only [ContinuousWithinAt, h]
+  simp only [ContinuousWithinAt, nhdsWithin_eq_iff_eventuallyEq.mpr h]
 
-theorem ContinuousWithinAt.congr_nhds (hf : ContinuousWithinAt f s x) (h : 𝓝[s] x = 𝓝[t] x) :
+@[deprecated (since := "2024-10-18")]
+alias continuousWithinAt_congr_nhds := continuousWithinAt_congr_set
+
+theorem ContinuousWithinAt.congr_set (hf : ContinuousWithinAt f s x) (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f t x :=
-  (continuousWithinAt_congr_nhds h).1 hf
+  (continuousWithinAt_congr_set h).1 hf
+
+@[deprecated (since := "2024-10-18")]
+alias ContinuousWithinAt.congr_nhds := ContinuousWithinAt.congr_set
 
 theorem continuousWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     ContinuousWithinAt f (s ∩ t) x ↔ ContinuousWithinAt f s x := by
@@ -694,13 +699,22 @@ theorem continuousWithinAt_insert_self :
     ContinuousWithinAt f (insert x s) x ↔ ContinuousWithinAt f s x := by
   simp only [← singleton_union, continuousWithinAt_union, continuousWithinAt_singleton, true_and]
 
-alias ⟨_, ContinuousWithinAt.insert_self⟩ := continuousWithinAt_insert_self
+protected alias ⟨_, ContinuousWithinAt.insert⟩ := continuousWithinAt_insert_self
+
+@[deprecated (since := "2024-10-10")]
+protected alias ContinuousWithinAt.insert_self := ContinuousWithinAt.insert
+
+/- `continuousWithinAt_insert` gives the same equivalence but at a point `y` possibly different
+from `x`. As this requires the space to be T1, and this property is not available in this file,
+this is found in another file although it is part of the basic API for `continuousWithinAt`. -/
 
 theorem ContinuousWithinAt.diff_iff
     (ht : ContinuousWithinAt f t x) : ContinuousWithinAt f (s \ t) x ↔ ContinuousWithinAt f s x :=
   ⟨fun h => (h.union ht).mono <| by simp only [diff_union_self, subset_union_left], fun h =>
     h.mono diff_subset⟩
 
+/-- See also `continuousWithinAt_diff_singleton` for the case of `s \ {y}`, but
+requiring `T1Space α. -/
 @[simp]
 theorem continuousWithinAt_diff_self :
     ContinuousWithinAt f (s \ {x}) x ↔ ContinuousWithinAt f s x :=
@@ -835,42 +849,92 @@ theorem ContinuousWithinAt.congr_mono
     ContinuousWithinAt g s₁ x :=
   (h.mono h₁).congr h' hx
 
+theorem ContinuousAt.congr_of_eventuallyEq (h : ContinuousAt f x) (hg : g =ᶠ[𝓝 x] f) :
+    ContinuousAt g x := by
+  simp only [← continuousWithinAt_univ] at h ⊢
+  exact h.congr_of_eventuallyEq_of_mem (by rwa [nhdsWithin_univ]) (mem_univ x)
+
 /-!
 ### Composition
 -/
 
-theorem ContinuousWithinAt.comp {g : β → γ} {f : α → β} {s : Set α} {t : Set β} {x : α}
+theorem ContinuousWithinAt.comp {g : β → γ} {t : Set β}
     (hg : ContinuousWithinAt g t (f x)) (hf : ContinuousWithinAt f s x) (h : MapsTo f s t) :
     ContinuousWithinAt (g ∘ f) s x :=
   hg.tendsto.comp (hf.tendsto_nhdsWithin h)
 
-theorem ContinuousWithinAt.comp' {g : β → γ} {f : α → β} {s : Set α} {t : Set β} {x : α}
+theorem ContinuousWithinAt.comp_of_eq {g : β → γ} {t : Set β} {y : β}
+    (hg : ContinuousWithinAt g t y) (hf : ContinuousWithinAt f s x) (h : MapsTo f s t)
+    (hy : f x = y) : ContinuousWithinAt (g ∘ f) s x := by
+  subst hy; exact hg.comp hf h
+
+theorem ContinuousWithinAt.comp_inter {g : β → γ} {t : Set β}
     (hg : ContinuousWithinAt g t (f x)) (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (g ∘ f) (s ∩ f ⁻¹' t) x :=
   hg.comp (hf.mono inter_subset_left) inter_subset_right
 
-theorem ContinuousAt.comp_continuousWithinAt {g : β → γ} {f : α → β} {s : Set α} {x : α}
+@[deprecated (since := "2024-10-10")]
+protected alias ContinuousWithinAt.comp' := ContinuousWithinAt.comp_inter
+
+theorem ContinuousWithinAt.comp_inter_of_eq {g : β → γ} {t : Set β} {y : β}
+    (hg : ContinuousWithinAt g t y) (hf : ContinuousWithinAt f s x) (hy : f x = y) :
+    ContinuousWithinAt (g ∘ f) (s ∩ f ⁻¹' t) x := by
+  subst hy; exact hg.comp_inter hf
+
+theorem ContinuousWithinAt.comp_of_preimage_mem_nhdsWithin {g : β → γ} {t : Set β}
+    (hg : ContinuousWithinAt g t (f x)) (hf : ContinuousWithinAt f s x) (h : f ⁻¹' t ∈ 𝓝[s] x) :
+    ContinuousWithinAt (g ∘ f) s x :=
+  hg.tendsto.comp (tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within f hf h)
+
+theorem ContinuousWithinAt.comp_of_preimage_mem_nhdsWithin_of_eq {g : β → γ} {t : Set β} {y : β}
+    (hg : ContinuousWithinAt g t y) (hf : ContinuousWithinAt f s x) (h : f ⁻¹' t ∈ 𝓝[s] x)
+    (hy : f x = y) :
+    ContinuousWithinAt (g ∘ f) s x := by
+  subst hy; exact hg.comp_of_preimage_mem_nhdsWithin hf h
+
+theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_image {g : β → γ} {t : Set β}
+    (hg : ContinuousWithinAt g t (f x)) (hf : ContinuousWithinAt f s x)
+    (hs : t ∈ 𝓝[f '' s] f x) : ContinuousWithinAt (g ∘ f) s x :=
+  (hg.mono_of_mem hs).comp hf (subset_preimage_image f s)
+
+theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_image_of_eq {g : β → γ} {t : Set β} {y : β}
+    (hg : ContinuousWithinAt g t y) (hf : ContinuousWithinAt f s x)
+    (hs : t ∈ 𝓝[f '' s] y) (hy : f x = y) : ContinuousWithinAt (g ∘ f) s x := by
+  subst hy; exact hg.comp_of_mem_nhdsWithin_image hf hs
+
+theorem ContinuousAt.comp_continuousWithinAt {g : β → γ}
     (hg : ContinuousAt g (f x)) (hf : ContinuousWithinAt f s x) : ContinuousWithinAt (g ∘ f) s x :=
   hg.continuousWithinAt.comp hf (mapsTo_univ _ _)
 
-theorem ContinuousOn.comp {g : β → γ} {f : α → β} {s : Set α} {t : Set β} (hg : ContinuousOn g t)
+theorem ContinuousAt.comp_continuousWithinAt_of_eq {g : β → γ} {y : β}
+    (hg : ContinuousAt g y) (hf : ContinuousWithinAt f s x) (hy : f x = y) :
+    ContinuousWithinAt (g ∘ f) s x := by
+  subst hy; exact hg.comp_continuousWithinAt hf
+
+/-- See also `ContinuousOn.comp'` using the form `fun y ↦ g (f y)` instead of `g ∘ f`. -/
+theorem ContinuousOn.comp {g : β → γ} {t : Set β} (hg : ContinuousOn g t)
     (hf : ContinuousOn f s) (h : MapsTo f s t) : ContinuousOn (g ∘ f) s := fun x hx =>
   ContinuousWithinAt.comp (hg _ (h hx)) (hf x hx) h
 
+/-- Variant of `ContinuousOn.comp` using the form `fun y ↦ g (f y)` instead of `g ∘ f`. -/
 @[fun_prop]
-theorem ContinuousOn.comp'' {g : β → γ} {f : α → β} {s : Set α} {t : Set β} (hg : ContinuousOn g t)
+theorem ContinuousOn.comp' {g : β → γ} {f : α → β} {s : Set α} {t : Set β} (hg : ContinuousOn g t)
     (hf : ContinuousOn f s) (h : Set.MapsTo f s t) : ContinuousOn (fun x => g (f x)) s :=
   ContinuousOn.comp hg hf h
 
 @[fun_prop]
-theorem ContinuousOn.comp' {g : β → γ} {f : α → β} {s : Set α} {t : Set β} (hg : ContinuousOn g t)
+theorem ContinuousOn.comp_inter {g : β → γ} {t : Set β} (hg : ContinuousOn g t)
     (hf : ContinuousOn f s) : ContinuousOn (g ∘ f) (s ∩ f ⁻¹' t) :=
   hg.comp (hf.mono inter_subset_left) inter_subset_right
 
+/-- See also `Continuous.comp_continuousOn'` using the form `fun y ↦ g (f y)`
+instead of `g ∘ f`. -/
 theorem Continuous.comp_continuousOn {g : β → γ} {f : α → β} {s : Set α} (hg : Continuous g)
     (hf : ContinuousOn f s) : ContinuousOn (g ∘ f) s :=
   hg.continuousOn.comp hf (mapsTo_univ _ _)
 
+/-- Variant of `Continuous.comp_continuousOn` using the form `fun y ↦ g (f y)`
+instead of `g ∘ f`. -/
 @[fun_prop]
 theorem Continuous.comp_continuousOn'
     {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {g : β → γ}

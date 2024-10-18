@@ -745,6 +745,28 @@ theorem nhdsWithin_insert_of_ne [T1Space X] {x y : X} {s : Set X} (hxy : x ≠ y
   rw [inter_insert_of_not_mem <| not_mem_diff_of_mem (mem_singleton y)]
   exact (inter_subset_inter diff_subset Subset.rfl).trans host
 
+
+theorem continuousWithinAt_insert [T1Space X] {x y : X} {s : Set X} {f : X → Y} :
+    ContinuousWithinAt f (insert y s) x ↔ ContinuousWithinAt f s x := by
+  rcases eq_or_ne x y with (rfl | h)
+  · exact continuousWithinAt_insert_self
+  simp_rw [ContinuousWithinAt, nhdsWithin_insert_of_ne h]
+
+alias ⟨ContinuousWithinAt.of_insert, ContinuousWithinAt.insert'⟩ := continuousWithinAt_insert
+
+protected theorem ContinuousWithinAt.insert (h : ContDiffWithinAt 𝕜 n f s x) :
+    ContDiffWithinAt 𝕜 n f (insert x s) x :=
+  h.insert'
+
+/-- See also `continuousWithinAt_diff_self` for the case `y = x` but not requiring `T1Space`. -/
+theorem continuousWithinAt_diff_singleton (y : X) :
+    ContinuousWithinAt f f' (s \ {y}) x ↔ ContinuousWithinAt f f' s x := by
+  rw [← hasFDerivWithinAt_insert, insert_diff_singleton, hasFDerivWithinAt_insert]
+
+theorem continuousWithinAt_congr_set' (y : X) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x :=
+
+
 /-- If `t` is a subset of `s`, except for one point,
 then `insert x s` is a neighborhood of `x` within `t`. -/
 theorem insert_mem_nhdsWithin_of_subset_insert [T1Space X] {x y : X} {s t : Set X}
