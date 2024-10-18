@@ -3,6 +3,7 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Sophie Morel
 -/
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Multilinear.Basic
 import Mathlib.Data.DFinsupp.Basic
 
@@ -90,8 +91,7 @@ theorem support_piMultilinear_subset
 `piMultilinear` is itself supported on a single element, with value equal to the map `f` applied
 at that point. -/
 @[simp]
-theorem piMultilinear_single
-    [∀ i, DecidableEq (κ i)]
+theorem piMultilinear_single [∀ i, DecidableEq (κ i)]
     (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p))
     (p : ∀ i, κ i) (m : ∀ i, M i (p i)) :
     piMultilinear f (fun i => .single (p i) (m i)) = single p (f p m) := by
@@ -103,6 +103,13 @@ theorem piMultilinear_single
     obtain ⟨i, hpqi⟩ := hpq
     apply (f q).map_coord_zero i
     simp_rw [single_eq_of_ne hpqi]
+
+@[simp]
+theorem piMultilinear_comp_lsingle [∀ i, DecidableEq (κ i)]
+    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) (p : ∀ i, κ i) :
+    (piMultilinear f).compLinearMap (fun i => lsingle (p i))
+      = (lsingle p).compMultilinearMap (f p) :=
+  MultilinearMap.ext <| piMultilinear_single f p
 
 @[simp]
 theorem piMultilinear_zero :
