@@ -98,7 +98,7 @@ def μ (X Y : C) : F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y) := μ' X Y
 
 @[reassoc (attr := simp)]
 lemma μ_natural_left {X Y : C} (f : X ⟶ Y) (X' : C) :
-      F.map f ▷ F.obj X' ≫ μ F Y X' = μ F X X' ≫ F.map (f ▷ X') := by
+    F.map f ▷ F.obj X' ≫ μ F Y X' = μ F X X' ≫ F.map (f ▷ X') := by
   apply μ'_natural_left
 
 @[reassoc (attr := simp)]
