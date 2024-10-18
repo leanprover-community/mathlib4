@@ -422,7 +422,7 @@ theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ
 
 theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ => x - a := by
   by_cases a_infty : a = ∞
-  · simp [a_infty, continuous_const]
+  · simp [a_infty, continuous_const, tsub_eq_zero_of_le]
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
     apply ContinuousOn.comp_continuous continuousOn_sub (continuous_id'.prod_mk continuous_const)
     intro x
