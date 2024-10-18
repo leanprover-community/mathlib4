@@ -154,7 +154,7 @@ theorem eLpNorm_add_lt_top {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp 
       eLpNorm_add_le' hf.aestronglyMeasurable hg.aestronglyMeasurable p
     _ < ∞ := by
       apply ENNReal.mul_lt_top (LpAddConst_lt_top p)
-      exact ENNReal.add_lt_top.2 ⟨hf.2, hg.2⟩
+      exact add_lt_top.2 ⟨hf.2, hg.2⟩
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_add_lt_top := eLpNorm_add_lt_top
