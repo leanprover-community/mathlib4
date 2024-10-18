@@ -92,7 +92,7 @@ instance (M : ModuleCat R) : IsIso ((forget R).map
     ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M))) := by
   dsimp [Condensed.forget, discreteUnderlyingAdj]
   rw [← constantSheafAdj_counit_w]
-  refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
+  refine IsIso.comp_isIso' inferInstance ?_
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=
     inferInstanceAs (discrete _).Faithful
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Full :=
@@ -205,7 +205,7 @@ instance (M : ModuleCat R) :
       ((functor R).obj M))) := by
   dsimp [LightCondensed.forget, discreteUnderlyingAdj]
   rw [← constantSheafAdj_counit_w]
-  refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
+  refine IsIso.comp_isIso' inferInstance ?_
   have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
     inferInstanceAs (discrete _).Faithful
   have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=

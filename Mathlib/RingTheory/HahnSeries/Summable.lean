@@ -173,8 +173,7 @@ theorem hsum_coeff_sum {s : SummableFamily Γ R α} {g : Γ} :
 theorem hsum_coeff_subset_sum {s : SummableFamily Γ R α} {g : Γ} {t : Finset α}
     (h : { a | (s a).coeff g ≠ 0 } ⊆ t) : s.hsum.coeff g = ∑ i ∈ t, (s i).coeff g := by
   rw [hsum_coeff_sum]
-  refine sum_subset (Set.Finite.toFinset_subset.mpr h) ?_
-  simp
+  exact sum_subset (Set.Finite.toFinset_subset.mpr h) (by simp)
 
 /-- The summable family made of a single Hahn series. -/
 @[simps]

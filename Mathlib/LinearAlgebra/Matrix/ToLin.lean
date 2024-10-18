@@ -8,6 +8,7 @@ import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.Data.Finite.Sum
 
 /-!
 # Linear maps and matrices

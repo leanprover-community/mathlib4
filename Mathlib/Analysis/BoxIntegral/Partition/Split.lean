@@ -78,7 +78,7 @@ theorem splitLower_eq_self : I.splitLower i x = I ↔ I.upper i ≤ x := by
 theorem splitLower_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.upper i))
     (h' : ∀ j, I.lower j < update I.upper i x j :=
       (forall_update_iff I.upper fun j y => I.lower j < y).2
-        ⟨h.1, fun j _ => I.lower_lt_upper _⟩) :
+        ⟨h.1, fun _ _ => I.lower_lt_upper _⟩) :
     I.splitLower i x = (⟨I.lower, update I.upper i x, h'⟩ : Box ι) := by
   simp (config := { unfoldPartialApp := true }) only [splitLower, mk'_eq_coe, min_eq_left h.2.le,
     update, and_self]
@@ -114,7 +114,7 @@ theorem splitUpper_eq_self : I.splitUpper i x = I ↔ x ≤ I.lower i := by
 theorem splitUpper_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.upper i))
     (h' : ∀ j, update I.lower i x j < I.upper j :=
       (forall_update_iff I.lower fun j y => y < I.upper j).2
-        ⟨h.2, fun j _ => I.lower_lt_upper _⟩) :
+        ⟨h.2, fun _ _ => I.lower_lt_upper _⟩) :
     I.splitUpper i x = (⟨update I.lower i x, I.upper, h'⟩ : Box ι) := by
   simp (config := { unfoldPartialApp := true }) only [splitUpper, mk'_eq_coe, max_eq_left h.1.le,
     update, and_self]

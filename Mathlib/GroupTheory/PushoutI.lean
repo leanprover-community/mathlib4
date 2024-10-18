@@ -152,7 +152,7 @@ def homEquiv :
     invFun := fun f => lift f.1.1 f.1.2 f.2,
     left_inv := fun _ => hom_ext (by simp [DFunLike.ext_iff])
       (by simp [DFunLike.ext_iff])
-    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, Function.funext_iff] }
+    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, funext_iff] }
 
 /-- The map from the coproduct into the pushout -/
 def ofCoprodI : CoprodI G →* PushoutI φ :=
@@ -454,7 +454,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
 noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift
-      (fun i => MulAction.toEndHom)
+      (fun _ => MulAction.toEndHom)
       MulAction.toEndHom <| by
     intro i
     simp only [MulAction.toEndHom, DFunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
@@ -596,7 +596,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
-    by simp_all [Function.funext_iff, of_smul_eq_smul])
+    by simp_all [funext_iff, of_smul_eq_smul])
 
 theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
     Function.Injective (base φ) := by
@@ -607,7 +607,7 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
-    by simp_all [Function.funext_iff, base_smul_eq_smul])
+    by simp_all [funext_iff, base_smul_eq_smul])
 
 section Reduced
 
