@@ -335,7 +335,7 @@ theorem eLpNorm_indicator_eq_restrict {f : α → E} {s : Set α} (hs : Measurab
       ← ENNReal.essSup_indicator_eq_essSup_restrict hs, ENNReal.coe_indicator,
       nnnorm_indicator_eq_indicator_nnnorm]
   · rcases eq_or_ne p 0 with rfl | hp₀; · simp
-    simp only [eLpNorm_eq_lintegral_rpow_nnnorm hp₀ hp, ← lintegral_indicator _ hs,
+    simp only [eLpNorm_eq_lintegral_rpow_nnnorm hp₀ hp, ← lintegral_indicator hs,
       ENNReal.coe_indicator, nnnorm_indicator_eq_indicator_nnnorm]
     congr with x
     by_cases hx : x ∈ s <;> simp [ENNReal.toReal_pos, *]
@@ -1273,7 +1273,7 @@ theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (
     one_div, ENNReal.le_rpow_inv_iff (ENNReal.toReal_pos hp hp'),
     ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
     inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne.symm, ENNReal.rpow_one, ← setLIntegral_const,
-    ← lintegral_indicator _ hs]
+    ← lintegral_indicator hs]
   refine lintegral_mono_ae ?_
   filter_upwards [hf] with x hx
   by_cases hxs : x ∈ s
