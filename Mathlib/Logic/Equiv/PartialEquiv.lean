@@ -5,8 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Logic.Pairwise
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Attr.Core
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Partial equivalences
@@ -835,6 +837,68 @@ theorem disjointUnion_eq_piecewise (e e' : PartialEquiv α β) (hs : Disjoint e.
       e.piecewise e' e.source e.target e.isImage_source_target
         (e'.isImage_source_target_of_disjoint _ hs.symm ht.symm) :=
   copy_eq ..
+
+/-- Helper lemma to reduce `Classical.epsilon`
+  TODO: find a place to put this theorem (does it not already exist?) -/
+theorem _root_.Classical.epsilon_eq {α : Type _} [Nonempty α] {p : α → Prop} (x : α) (hx : p x)
+    (uniq : ∀ {y}, p y → y = x) : Classical.epsilon p = x :=
+  uniq (Classical.epsilon_spec ⟨x, hx⟩)
+
+/-- Given a family of sets `f : ι → Set α`, return the index of the set containing
+  some `x : α`
+  TODO: find a place to put this definition -/
+noncomputable def _root_.Set.inv_iUnion {ι α : Type _} [Nonempty ι] (f : ι → Set α) (x : α) : ι :=
+  Classical.epsilon fun i => x ∈ f i
+
+/-- Given a family of pairwise disjoint sets `f`, `Set.invUnion`
+  will return the set containing `x` -/
+theorem _root_.Pairwise.disjoint_inv_iUnion_eq {ι α : Type _} [Nonempty ι] {f : ι → Set α}
+    (hS : Pairwise (Disjoint on f)) {i : ι} {x : α} (hx : x ∈ f i) : Set.inv_iUnion f x = i := by
+  rw [Set.inv_iUnion, Classical.epsilon_eq i hx]
+  intro y hy
+  exact hS.eq (Set.not_disjoint_iff.mpr ⟨x, hy, hx⟩)
+
+/-- Combine a family of `PartialEquiv`'s with disjoint sources and disjoint targets -/
+@[simps (config := { isSimp := false })]
+noncomputable def disjoint_iUnion {I : Type _} [Nonempty I] (h : I → PartialEquiv α β)
+    (disj₁ : Pairwise (Disjoint on fun i : I => (h i).source))
+    (disj₂ : Pairwise (Disjoint on fun i : I => (h i).target)) : PartialEquiv α β
+    where
+  toFun x := h (Set.inv_iUnion (fun i : I => (h i).source) x) x
+  invFun y := (h (Set.inv_iUnion (fun i : I => (h i).target) y)).symm y
+  source := ⋃ i, (h i).source
+  target := ⋃ i, (h i).target
+  map_source' x := by
+    simp only [Set.mem_iUnion]
+    refine (Exists.imp fun i hx => ?_)
+    rw [disj₁.disjoint_inv_iUnion_eq hx]
+    exact (h i).map_source hx
+  map_target' y := by
+    simp only [Set.mem_iUnion]
+    refine (Exists.imp fun i hy => ?_)
+    rw [disj₂.disjoint_inv_iUnion_eq hy]
+    exact (h i).map_target hy
+  left_inv' x := by
+    simp only [Set.mem_iUnion]
+    rintro ⟨i, hx⟩
+    rw [disj₁.disjoint_inv_iUnion_eq hx, disj₂.disjoint_inv_iUnion_eq ((h i).map_source hx),
+      (h i).left_inv hx]
+  right_inv' y := by
+    simp only [Set.mem_iUnion]
+    rintro ⟨i, hy⟩
+    rw [disj₂.disjoint_inv_iUnion_eq hy, disj₁.disjoint_inv_iUnion_eq ((h i).map_target hy),
+      (h i).right_inv hy]
+
+attribute [simp] disjoint_iUnion_source disjoint_iUnion_target
+
+theorem disjoint_iUnion_apply' {I : Type _} [Nonempty I] (h : I → PartialEquiv α β) (i : I)
+    (disj₁ disj₂) (x : α) (hx : x ∈ (h i).source) : (disjoint_iUnion h disj₁ disj₂) x = h i x := by
+  rw [disjoint_iUnion_apply, disj₁.disjoint_inv_iUnion_eq hx]
+
+theorem disjoint_iUnion_symm_apply' {I : Type _} [Nonempty I] (h : I → PartialEquiv α β) (i : I)
+    (disj₁ disj₂) (y : β) (hy : y ∈ (h i).target) :
+    (disjoint_iUnion h disj₁ disj₂).symm y = (h i).symm y := by
+  rw [disjoint_iUnion_symm_apply, disj₂.disjoint_inv_iUnion_eq hy]
 
 section Pi
 
