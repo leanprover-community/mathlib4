@@ -720,13 +720,13 @@ theorem mem_annihilator_span (s : Set M) (r : R) :
   · intro h n
     exact h _ (Submodule.subset_span n.prop)
   · intro h n hn
-    refine Submodule.span_induction hn ?_ ?_ ?_ ?_
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ hn
     · intro x hx
       exact h ⟨x, hx⟩
     · exact smul_zero _
-    · intro x y hx hy
+    · intro x y _ _ hx hy
       rw [smul_add, hx, hy, zero_add]
-    · intro a x hx
+    · intro a x _ hx
       rw [smul_comm, hx, smul_zero]
 
 theorem mem_annihilator_span_singleton (g : M) (r : R) :
