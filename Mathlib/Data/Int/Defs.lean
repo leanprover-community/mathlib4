@@ -30,7 +30,6 @@ namespace Int
 variable {a b c d m n : ℤ}
 
 section Order
-variable {a b c : ℤ}
 
 protected lemma le_rfl : a ≤ a := a.le_refl
 protected lemma lt_or_lt_of_ne : a ≠ b → a < b ∨ b < a := Int.lt_or_gt_of_ne
@@ -43,6 +42,7 @@ protected lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun h ↦ ⟨Int.le_of_eq h, Int.ge_of_eq h⟩, fun h ↦ Int.le_antisymm h.1 h.2⟩
 protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by
   rw [Int.le_antisymm_iff, Int.lt_iff_le_not_le, ← and_or_left]; simp [em]
+
 protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_iff_eq_or_lt, or_comm]
 
 end Order

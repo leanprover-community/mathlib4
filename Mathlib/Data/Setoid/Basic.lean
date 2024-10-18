@@ -91,7 +91,7 @@ def ker (f : α → β) : Setoid α :=
 theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
   ext' fun _ _ => Quotient.eq
 
-theorem ker_apply_mk_out {f : α → β} (a : α) : f (haveI := Setoid.ker f; ⟦a⟧.out) = f a :=
+theorem ker_apply_mk_out {f : α → β} (a : α) : f (⟦a⟧ : Quotient (Setoid.ker f)).out = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
 
 theorem ker_apply_mk_out' {f : α → β} (a : α) :
@@ -110,6 +110,49 @@ protected def prod (r : Setoid α) (s : Setoid β) :
   iseqv :=
     ⟨fun x => ⟨r.refl' x.1, s.refl' x.2⟩, fun h => ⟨r.symm' h.1, s.symm' h.2⟩,
       fun h₁ h₂ => ⟨r.trans' h₁.1 h₂.1, s.trans' h₁.2 h₂.2⟩⟩
+
+lemma prod_apply {r : Setoid α} {s : Setoid β} {x₁ x₂ : α} {y₁ y₂ : β} :
+    @Setoid.r _ (r.prod s) (x₁, y₁) (x₂, y₂) ↔ (@Setoid.r _ r x₁ x₂ ∧ @Setoid.r _ s y₁ y₂) :=
+  Iff.rfl
+
+lemma piSetoid_apply {ι : Sort*} {α : ι → Sort*} {r : ∀ i, Setoid (α i)} {x y : ∀ i, α i} :
+    @Setoid.r _ (@piSetoid _ _ r) x y ↔ ∀ i, @Setoid.r _ (r i) (x i) (y i) :=
+  Iff.rfl
+
+/-- A bijection between the product of two quotients and the quotient by the product of the
+equivalence relations. -/
+@[simps]
+def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
+    Quotient r × Quotient s ≃ Quotient (r.prod s) where
+  toFun := fun (x, y) ↦ Quotient.map₂' Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
+  invFun := fun q ↦ Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
+    fun x y hxy ↦ Prod.ext (by simpa using hxy.1) (by simpa using hxy.2)
+  left_inv := fun q ↦ by
+    rcases q with ⟨qa, qb⟩
+    exact Quotient.inductionOn₂' qa qb fun _ _ ↦ rfl
+  right_inv := fun q ↦ by
+    simp only
+    refine Quotient.inductionOn' q fun _ ↦ rfl
+
+/-- A bijection between an indexed product of quotients and the quotient by the product of the
+equivalence relations. -/
+@[simps]
+noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, Setoid (α i)) :
+    (∀ i, Quotient (r i)) ≃ Quotient (@piSetoid _ _ r) where
+  toFun := fun x ↦ Quotient.mk'' fun i ↦ (x i).out'
+  invFun := fun q ↦ Quotient.liftOn' q (fun x i ↦ Quotient.mk'' (x i)) fun x y hxy ↦ by
+    ext i
+    simpa using hxy i
+  left_inv := fun q ↦ by
+    ext i
+    simp
+  right_inv := fun q ↦ by
+    refine Quotient.inductionOn' q fun _ ↦ ?_
+    simp only [Quotient.liftOn'_mk'', Quotient.eq'']
+    intro i
+    change Setoid.r _ _
+    rw [← Quotient.eq'']
+    simp
 
 /-- The infimum of two equivalence relations. -/
 instance : Inf (Setoid α) :=
@@ -282,8 +325,8 @@ theorem ker_iff_mem_preimage {f : α → β} {x y} : (ker f).Rel x y ↔ x ∈ f
 def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r → β) where
   toFun f := Quotient.lift (f : α → β) f.2
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
-  left_inv := fun ⟨f, hf⟩ => Subtype.eq <| funext fun x => rfl
-  right_inv f := funext fun x => Quotient.inductionOn' x fun x => rfl
+  left_inv := fun ⟨_, _⟩ => Subtype.eq <| funext fun _ => rfl
+  right_inv _ := funext fun x => Quotient.inductionOn' x fun _ => rfl
 
 /-- The uniqueness part of the universal property for quotients of an arbitrary type. -/
 theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quotient r → β)
@@ -315,7 +358,7 @@ noncomputable def quotientKerEquivRange : Quotient (ker f) ≃ Set.range f :=
     ((@Quotient.lift _ (Set.range f) (ker f) fun x => ⟨f x, Set.mem_range_self x⟩) fun _ _ h =>
       Subtype.ext_val h)
     ⟨fun x y h => ker_lift_injective f <| by rcases x with ⟨⟩; rcases y with ⟨⟩; injections,
-      fun ⟨w, z, hz⟩ =>
+      fun ⟨_, z, hz⟩ =>
       ⟨@Quotient.mk'' _ (ker f) z, Subtype.ext_iff_val.2 hz⟩⟩
 
 /-- If `f` has a computable right-inverse, then the quotient by its kernel is equivalent to its
@@ -387,11 +430,11 @@ def quotientQuotientEquivQuotient (s : Setoid α) (h : r ≤ s) :
     Quotient (ker (Quot.mapRight h)) ≃ Quotient s where
   toFun x :=
     (Quotient.liftOn' x fun w =>
-        (Quotient.liftOn' w (@Quotient.mk'' _ s)) fun x y H => Quotient.sound <| h H)
-      fun x y => Quotient.inductionOn₂' x y fun w z H => show @Quot.mk _ _ _ = @Quot.mk _ _ _ from H
+        (Quotient.liftOn' w (@Quotient.mk'' _ s)) fun _ _ H => Quotient.sound <| h H)
+      fun x y => Quotient.inductionOn₂' x y fun _ _ H => show @Quot.mk _ _ _ = @Quot.mk _ _ _ from H
   invFun x :=
     (Quotient.liftOn' x fun w => @Quotient.mk'' _ (ker <| Quot.mapRight h) <| @Quotient.mk'' _ r w)
-      fun x y H => Quotient.sound' <| show @Quot.mk _ _ _ = @Quot.mk _ _ _ from Quotient.sound H
+      fun _ _ H => Quotient.sound' <| show @Quot.mk _ _ _ = @Quot.mk _ _ _ from Quotient.sound H
   left_inv x :=
     Quotient.inductionOn' x fun y => Quotient.inductionOn' y fun w => by show ⟦_⟧ = _; rfl
   right_inv x := Quotient.inductionOn' x fun y => by show ⟦_⟧ = _; rfl
@@ -409,8 +452,8 @@ def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) w
     ⟨Quotient.ind s.1.2.1, @fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
       @fun x y z ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, eq_rel.2 h]⟩
-  left_inv s := rfl
-  right_inv s := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl
+  left_inv _ := rfl
+  right_inv _ := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl
   map_rel_iff' :=
     ⟨fun h x y hs ↦ @h ⟦x⟧ ⟦y⟧ hs, fun h x y ↦ Quotient.inductionOn₂ x y fun _ _ hs ↦ h hs⟩
 
@@ -420,7 +463,7 @@ def sigmaQuotientEquivOfLe {r s : Setoid α} (hle : r ≤ s) :
     (Σ q : Quotient s, Quotient (r.comap (Subtype.val : Quotient.mk s ⁻¹' {q} → α))) ≃
       Quotient r :=
   .trans (.symm <| .sigmaCongrRight fun _ ↦ .subtypeQuotientEquivQuotientSubtype
-      (s₁ := r) (s₂ := r.comap Subtype.val) _ (fun _ ↦ Iff.rfl) fun _ _ ↦ Iff.rfl)
+      (s₁ := r) (s₂ := r.comap Subtype.val) _ _ (fun _ ↦ Iff.rfl) fun _ _ ↦ Iff.rfl)
     (.sigmaFiberEquiv fun a ↦ a.lift (Quotient.mk s) fun _ _ h ↦ Quotient.sound <| hle h)
 
 end Setoid

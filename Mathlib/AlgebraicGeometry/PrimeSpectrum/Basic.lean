@@ -10,6 +10,7 @@ import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
@@ -645,6 +646,10 @@ theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
     exact fun h x _ => (specializes_closedPoint x).mem_open U.2 h
   · rintro rfl
     trivial
+
+lemma closed_point_mem_iff {U : TopologicalSpace.Opens (PrimeSpectrum R)} :
+    closedPoint R ∈ U ↔ U = ⊤ :=
+  ⟨(eq_top_iff.mpr fun x _ ↦ (specializes_closedPoint x).mem_open U.2 ·), (· ▸ trivial)⟩
 
 @[simp]
 theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [LocalRing T]

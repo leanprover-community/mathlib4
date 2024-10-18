@@ -31,7 +31,7 @@ assert_not_exists OrderedRing
 
 open MulOpposite
 
-variable {F α β R : Type*}
+variable {F α β : Type*}
 
 section Monoid
 variable [Monoid α] [HasDistribNeg α] {n : ℕ} {a : α}
@@ -156,7 +156,7 @@ lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
 end Semiring
 
 section Monoid
-variable [Monoid α] [HasDistribNeg α] {a : α} {n : ℕ}
+variable [Monoid α] [HasDistribNeg α] {n : ℕ}
 
 lemma Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
   rintro ⟨c, rfl⟩ a; simp_rw [pow_add, pow_mul, neg_sq, pow_one, mul_neg]
@@ -213,6 +213,8 @@ lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, mod_two_ne_one]
 
 @[simp] lemma not_odd_iff_even : ¬Odd n ↔ Even n := by rw [not_odd_iff, even_iff]
 @[simp] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by rw [not_even_iff, odd_iff]
+
+@[simp] lemma not_odd_zero : ¬Odd 0 := not_odd_iff.mpr rfl
 
 @[deprecated not_odd_iff_even (since := "2024-08-21")]
 lemma even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
