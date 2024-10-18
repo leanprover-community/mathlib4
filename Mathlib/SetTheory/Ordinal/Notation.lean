@@ -101,7 +101,7 @@ theorem lt_def {x y : ONote} : x < y ↔ repr x < repr y :=
 theorem le_def {x y : ONote} : x ≤ y ↔ repr x ≤ repr y :=
   Iff.rfl
 
-theorem lt_wf : @WellFounded NONote (· < ·) :=
+theorem lt_wf : @WellFounded ONote (· < ·) :=
   InvImage.wf repr Ordinal.lt_wf
 
 instance : WellFoundedLT ONote :=
