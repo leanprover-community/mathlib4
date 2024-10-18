@@ -25,9 +25,13 @@ def bit (b : Bool) : Nat → Nat := cond b (2 * · + 1) (2 * ·)
 
 theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
 
-theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) = n := by
-  simp only [bit, testBit_zero]
+@[simp]
+theorem bit_decide_mod_two_eq_one_shiftRight_one (n : Nat) : bit (n % 2 = 1) (n >>> 1) = n := by
+  simp only [bit, shiftRight_one]
   cases mod_two_eq_zero_or_one n with | _ h => simpa [h] using Nat.div_add_mod n 2
+
+theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) = n := by
+  simp
 
 theorem bit_eq_zero_iff {n : Nat} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
   cases n <;> cases b <;> simp [bit, Nat.shiftLeft_succ, Nat.two_mul, ← Nat.add_assoc]
