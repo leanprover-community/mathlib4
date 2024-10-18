@@ -366,7 +366,7 @@ is the identity map. -/
 @[simp]
 theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
     [Field F] [Field K] [Algebra F K] [Normal F K] :
-    AlgEquiv.restrictNormalHom (F := F) (K₁ := K) K = MonoidHom.id (K ≃ₐ[F] K) := by
+    AlgEquiv.restrictNormalHom K = MonoidHom.id (K ≃ₐ[F] K) := by
   ext f x
   dsimp only [restrictNormalHom, MonoidHom.mk'_apply, MonoidHom.id_apply]
   apply (algebraMap K K).injective
@@ -384,8 +384,8 @@ theorem AlgEquiv.restrictNormalHom_comp (F K₁ K₂ K₃ : Type*)
     [Algebra F K₁] [Algebra F K₂] [Algebra F K₃] [Algebra K₁ K₂] [Algebra K₁ K₃] [Algebra K₂ K₃]
     [IsScalarTower F K₁ K₃] [IsScalarTower F K₁ K₂] [IsScalarTower F K₂ K₃] [IsScalarTower K₁ K₂ K₃]
     [Normal F K₁] [Normal F K₂] :
-    AlgEquiv.restrictNormalHom (F := F) (K₁ := K₃) K₁ =
-    (AlgEquiv.restrictNormalHom (F := F) (K₁ := K₂) K₁).comp
+    AlgEquiv.restrictNormalHom K₁ =
+    (AlgEquiv.restrictNormalHom K₁).comp
     (AlgEquiv.restrictNormalHom (F := F) (K₁ := K₃) K₂) := by
   ext f x
   apply (algebraMap K₁ K₃).injective
