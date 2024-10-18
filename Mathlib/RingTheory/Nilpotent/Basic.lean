@@ -7,7 +7,7 @@ import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Lattice
