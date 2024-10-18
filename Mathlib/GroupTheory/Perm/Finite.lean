@@ -217,8 +217,25 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
         · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
             mem_coe, mem_support]
 
+theorem mem_fixedPoints_iff_apply_mem_of_mem_centralizer {g p : Perm α}
+    (hp : p ∈ Subgroup.centralizer {g}) {x : α} :
+    x ∈ Function.fixedPoints g ↔ p x ∈ Function.fixedPoints g :=  by
+  simp only [Subgroup.mem_centralizer_singleton_iff] at hp
+  simp only [Function.mem_fixedPoints_iff]
+  rw [← mul_apply, ← hp, mul_apply, EmbeddingLike.apply_eq_iff_eq]
+
+
 
 variable [DecidableEq α]
+
+lemma disjoint_ofSubtype_of_memFixedPoints_self {g : Perm α}
+    (u : Perm (Function.fixedPoints g)) :
+    Disjoint (ofSubtype u) g := by
+  rw [disjoint_iff_eq_or_eq]
+  intro x
+  by_cases hx : x ∈ Function.fixedPoints g
+  · right; exact hx
+  · left; rw [ofSubtype_apply_of_not_mem u hx]
 
 section Fintype
 
