@@ -215,9 +215,6 @@ theorem balancedHull_convexHull_subseteq_absConvexHull {s : Set E} :
   balanced_absConvexHull.balancedHull_subset_of_subset
     (convexHull_min subset_absConvexHull convex_absConvexHull)
 
-lemma convexHull_subset_absConvexHull {s : Set E} : (convexHull ℝ s) ⊆ (absConvexHull 𝕜 s) :=
-  convexHull_min subset_absConvexHull convex_absConvexHull
-
 end
 
 section
