@@ -183,7 +183,7 @@ Let `N₁ -l₁₂-> N₂ -l₂₃-> N₃` be two linear maps.
   This is `range_le_ker_of_exact_rTensor`.
 - Then in `rTensor_reflects_exact`, we show `ker l₂₃ ≤ range l₁₂` by considering the chohomology
   `ker l₂₃ ⧸ range l₁₂`.
-This shows that when `M` is faithfully flat, `- ⊗ M` relfects exact sequences. For details, see
+This shows that when `M` is faithfully flat, `- ⊗ M` reflects exact sequences. For details, see
 comments in the proof. Since `M` is flat, `- ⊗ M` preserves exact sequences.
 
 On the other hand, if `- ⊗ M` preserves and reflects exact sequences, then `M` is faithfully flat.
@@ -204,25 +204,25 @@ variable (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3)
 If `M` is faithfully flat, then exactness of `N₁ ⊗ M -> N₂ ⊗ M -> N₃ ⊗ M` implies that the
 composition `N₁ -> N₂ -> N₃` is `0`.
 
-Implementation details, please use `rTensor_reflects_exact` instead.
+Implementation detail, please use `rTensor_reflects_exact` instead.
 -/
 lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     (ex : Function.Exact (l12.rTensor M) (l23.rTensor M)) :
     LinearMap.range l12 ≤ LinearMap.ker l23 := by
-  -- let n1 ∈ N1, we need to show l23 (l12 n1) = 0, suppose this is not the case
+  -- let `n1 ∈ N1`. We need to show `l23 (l12 n1) = 0`. Suppose this is not the case.
   rintro _ ⟨n1, rfl⟩
   show l23 (l12 n1) = 0
   by_contra! hn1
-  -- denote `E` as the submodule spanned by `l23 (l12 n1)`, then by `l23 (l12 n1) ≠ 0`, we have
+  -- Let `E` be the submodule spanned by `l23 (l12 n1)`. Then because `l23 (l12 n1) ≠ 0`, we have
   -- `E ≠ 0`
   let E : Submodule R N3 := Submodule.span R {l23 (l12 n1)}
   have hE : Nontrivial E :=
     ⟨0, ⟨⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩, Subtype.coe_ne_coe.1 hn1.symm⟩⟩
 
-  -- since `N1 ⊗ M -> N2 ⊗ M -> N3 ⊗ M` is exact, we have `l23 (l12 n1) ⊗ₜ[R] m = 0` for all `m : M`
+  -- Since `N1 ⊗ M -> N2 ⊗ M -> N3 ⊗ M` is exact, we have `l23 (l12 n1) ⊗ₜ[R] m = 0` for all `m : M`.
   have eq1 : ∀ (m : M), l23 (l12 n1) ⊗ₜ[R] m = 0 := fun m ↦
     ex.apply_apply_eq_zero (n1 ⊗ₜ[R] m)
-  -- Then `E ⊗ M = 0` becase:
+  -- Then `E ⊗ M = 0` because:
   have eq0 : (⊤ : Submodule R (E ⊗[R] M)) = ⊥ := by
     -- suppose `x ∈ E ⊗ M`, we aim to show `x = 0`
     ext x
@@ -239,7 +239,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
       ext
       exact Submodule.mem_span_singleton.1 (b hi).2 |>.choose_spec.symm
     -- Since `x ∈ E ⊗ M`, since `M` is flat and `E -> N1` is injective, we only need to check the
-    -- equality in `N1 ⊗ M`. we write `x = ∑ μᵢ • (l23 (l12 n1)) ⊗ mᵢ = ∑ μᵢ • 0 = 0`
+    -- equality in `N1 ⊗ M`. We write `x = ∑ μᵢ • (l23 (l12 n1)) ⊗ mᵢ = ∑ μᵢ • 0 = 0`
     -- (remember `E = span {l23 (l12 n1)}` and `eq1`)
     refine Finset.sum_eq_zero fun i hi => show c i • i = 0 from
       (Module.Flat.rTensor_preserves_injective_linearMap (M := M) E.subtype <|
@@ -257,7 +257,7 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     (ex : Function.Exact (l12.rTensor M) (l23.rTensor M)) :
     Function.Exact l12 l23 := LinearMap.exact_iff.2 <| by
   have complex : LinearMap.range l12 ≤ LinearMap.ker l23 := range_le_ker_of_exact_rTensor R M _ _ ex
-  -- by previous lemma, we need only to show `ker l23 ≤ range l12`.
+  -- By the previous lemma, we need only to show `ker l23 ≤ range l12`.
   refine le_antisymm ?_ complex
   -- We consider the cohomology of `N1 -> N2 -> N3`, i.e. let `H := ker l23 ⧸ range l12`. It is
   -- enough to show `H = 0` because `H = 0` implies `x ∈ range l12`.
@@ -273,10 +273,10 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
   suffices Subsingleton (H ⊗[R] M) from rTensor_reflects_triviality R M H
   let e : H ⊗[R] M ≃ₗ[R] _ := TensorProduct.quotientTensorEquiv _ _
   rw [e.toEquiv.subsingleton_congr, Submodule.subsingleton_quotient_iff_eq_top, eq_top_iff]
-  -- note that `H ⊗ M ≅ (ker l23 ⊗ M) ⧸ (range l12 ⊗ M)`, so we only need to show that
+  -- Note that `H ⊗ M ≅ (ker l23 ⊗ M) ⧸ (range l12 ⊗ M)`, so we only need to show that
   -- `ker l23 ⊗ M ≤ range l12 ⊗ M` as submodules of `ker l23 ⊗ M`.
   set ι : (LinearMap.ker l23) ⊗[R] M →ₗ[R] N2 ⊗[R] M := (Submodule.subtype _).rTensor M with ι_def
-  -- Since `M` is flat and `ker l23 -> N2` is injective, we can compare them as submodules `N2 ⊗ M`.
+  -- Since `M` is flat and `ker l23 -> N2` is injective, we can compare them as submodules of `N2 ⊗ M`.
   rw [← Submodule.map_le_map_iff_of_injective (f := ι)
     (hf := Module.Flat.rTensor_preserves_injective_linearMap _ Subtype.val_injective),
     Submodule.map_top, show LinearMap.range ι = LinearMap.range (LinearMap.rTensor M l12) by
