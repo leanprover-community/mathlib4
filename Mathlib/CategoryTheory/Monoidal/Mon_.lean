@@ -559,12 +559,11 @@ variable [SymmetricCategory C]
 
 theorem mul_braiding {X Y : Mon_ C} :
     (X ⊗ Y).mul ≫ (β_ X.X Y.X).hom = ((β_ X.X Y.X).hom ⊗ (β_ X.X Y.X).hom) ≫ (Y ⊗ X).mul := by
-  sorry
-  /-simp only [monMonoidalStruct_tensorObj_X, tensor_mul, tensor_μ, Category.assoc,
-    BraidedCategory.braiding_naturality, BraidedCategory.braiding_tensor_right,
-    BraidedCategory.braiding_tensor_left, comp_whiskerRight, whisker_assoc,
-    MonoidalCategory.whiskerLeft_comp, pentagon_assoc, pentagon_inv_hom_hom_hom_inv_assoc,
-    Iso.inv_hom_id_assoc, whiskerLeft_hom_inv_assoc]
+  dsimp
+  simp only [tensorμ, Category.assoc, BraidedCategory.braiding_naturality,
+    BraidedCategory.braiding_tensor_right, BraidedCategory.braiding_tensor_left,
+    comp_whiskerRight, whisker_assoc, MonoidalCategory.whiskerLeft_comp, pentagon_assoc,
+    pentagon_inv_hom_hom_hom_inv_assoc, Iso.inv_hom_id_assoc, whiskerLeft_hom_inv_assoc]
   slice_lhs 3 4 =>
     -- We use symmetry here:
     rw [← MonoidalCategory.whiskerLeft_comp, ← comp_whiskerRight, SymmetricCategory.symmetry]
@@ -579,7 +578,7 @@ theorem mul_braiding {X Y : Mon_ C} :
     rw [← associator_naturality_right]
   slice_lhs 1 2 =>
     rw [← tensorHom_def]
-  simp only [Category.assoc]-/
+  simp only [Category.assoc]
 
 instance : SymmetricCategory (Mon_ C) where
   braiding := fun X Y => mkIso (β_ X.X Y.X) one_braiding mul_braiding
