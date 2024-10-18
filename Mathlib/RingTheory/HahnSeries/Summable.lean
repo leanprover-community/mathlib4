@@ -178,6 +178,19 @@ theorem hsum_add {s t : SummableFamily Γ R α} : (s + t).hsum = s.hsum + t.hsum
   simp only [hsum_coeff, add_coeff, add_apply]
   exact finsum_add_distrib (s.finite_co_support _) (t.finite_co_support _)
 
+/-- The summable family made of a single Hahn series. -/
+@[simps]
+def single (x : HahnSeries Γ R) : SummableFamily Γ R Unit where
+  toFun _ := x
+  isPWO_iUnion_support' :=
+    Eq.mpr (congrArg (fun s ↦ s.IsPWO) (Set.iUnion_const x.support)) x.isPWO_support
+  finite_co_support' g := Set.toFinite {a | ((fun _ ↦ x) a).coeff g ≠ 0}
+
+@[simp]
+theorem hsum_single (x : HahnSeries Γ R) : (single x).hsum = x := by
+  ext g
+  simp only [hsum_coeff, single_toFun, finsum_unique]
+
 /-- A summable family induced by an equivalence of the parametrizing type. -/
 @[simps]
 def Equiv (e : α ≃ β) (s : SummableFamily Γ R α) : SummableFamily Γ R β where
