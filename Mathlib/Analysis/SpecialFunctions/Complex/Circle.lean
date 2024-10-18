@@ -83,6 +83,9 @@ lemma exp_eq_one {r : ℝ} : exp r = 1 ↔ ∃ n : ℤ, r = n * (2 * π) := by
   simp [Circle.ext_iff, Complex.exp_eq_one_iff, ← mul_assoc, Complex.I_ne_zero,
     ← Complex.ofReal_inj]
 
+lemma exp_inj {r s : ℝ} : exp r = exp s ↔ r ≡ s [PMOD (2 * π)] := by
+  simp [AddCommGroup.ModEq, ← exp_eq_one, div_eq_one, eq_comm (a := exp r)]
+
 lemma exp_sub_two_pi (x : ℝ) : exp (x - 2 * π) = exp x := periodic_exp.sub_eq x
 lemma exp_add_two_pi (x : ℝ) : exp (x + 2 * π) = exp x := periodic_exp x
 
@@ -164,7 +167,7 @@ theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
   induction y using QuotientAddGroup.induction_on
   simp_rw [← coe_add, toCircle_apply_mk, mul_add, Circle.exp_add]
 
-lemma toCircle_zero : toCircle (0 : AddCircle T) = 1 := by
+@[simp] lemma toCircle_zero : toCircle (0 : AddCircle T) = 1 := by
   rw [← QuotientAddGroup.mk_zero, toCircle_apply_mk, mul_zero, Circle.exp_zero]
 
 theorem continuous_toCircle : Continuous (@toCircle T) :=
