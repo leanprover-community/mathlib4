@@ -14,10 +14,8 @@ import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 open Set Pointwise
 
-variable (E 𝕜 : Type*) {s : Set E}
---variable [NontriviallyNormedField 𝕜]
-variable [Semiring 𝕜] [ AddCommGroup E]
-variable [Module ℝ E] --[SMulCommClass ℝ 𝕜 E]
+variable (E : Type*) {s : Set E}
+variable [AddCommGroup E] [Module ℝ E]
 variable [UniformSpace E] [UniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
 theorem totallyBounded_convexHull (hs : TotallyBounded s) :
