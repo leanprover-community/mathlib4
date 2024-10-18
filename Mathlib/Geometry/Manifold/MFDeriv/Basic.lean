@@ -636,6 +636,12 @@ theorem MDifferentiableWithinAt.hasMFDerivWithinAt (h : MDifferentiableWithinAt 
   simp only [mfderivWithin, h, if_pos, mfld_simps]
   exact DifferentiableWithinAt.hasFDerivWithinAt h.2
 
+theorem mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt :
+    MDifferentiableWithinAt I I' f s x ↔ ∃ f', HasMFDerivWithinAt I I' f s x f' := by
+  refine ⟨fun h ↦ ⟨mfderivWithin I I' f s x, h.hasMFDerivWithinAt⟩, ?_⟩
+  rintro ⟨f', hf'⟩
+  exact hf'.mdifferentiableWithinAt
+
 theorem MDifferentiableWithinAt.mono_of_mem (h : MDifferentiableWithinAt I I' f s x) {t : Set M}
     (hst : s ∈ 𝓝[t] x) : MDifferentiableWithinAt I I' f t x :=
   (h.hasMFDerivWithinAt.mono_of_mem hst).mdifferentiableWithinAt
@@ -729,6 +735,10 @@ protected theorem HasMFDerivWithinAt.insert (h : HasMFDerivWithinAt I I' f s x f
     HasMFDerivWithinAt I I' f (insert x s) x f' :=
   h.insert'
 
+theorem hasMFDerivWithinAt_diff_singleton (y : M) :
+    HasMFDerivWithinAt I I' f (s \ {y}) x f' ↔ HasMFDerivWithinAt I I' f s x f' := by
+  rw [← hasMFDerivWithinAt_insert, insert_diff_singleton, hasMFDerivWithinAt_insert]
+
 theorem mfderivWithin_eq_mfderiv (hs : UniqueMDiffWithinAt I s x) (h : MDifferentiableAt I I' f x) :
     mfderivWithin I I' f s x = mfderiv I I' f x := by
   rw [← mfderivWithin_univ]
@@ -752,7 +762,6 @@ mdifferentiableWithinAt_insert
 protected theorem MDifferentiableWithinAt.insert (h : MDifferentiableWithinAt I I' f s x) :
     MDifferentiableWithinAt I I' f (insert x s) x :=
   h.insert'
-
 
 /-! ### Deriving continuity from differentiability on manifolds -/
 
@@ -789,6 +798,64 @@ theorem tangentMap_proj {p : TangentBundle I M} : (tangentMap I I' f p).proj = f
   rfl
 
 /-! ### Congruence lemmas for derivatives on manifolds -/
+
+theorem hasMFDerivWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    HasMFDerivWithinAt I I' f s x f' ↔ HasMFDerivWithinAt I I' f t x f' :=
+  calc
+    HasMFDerivWithinAt I I' f s x f' ↔ HasMFDerivWithinAt I I' f (s \ {y}) x f' :=
+      (hasMFDerivWithinAt_diff_singleton _).symm
+    _ ↔ HasMFDerivWithinAt I I' f (t \ {y}) x f' := by
+      suffices 𝓝[s \ {y}] x = 𝓝[t \ {y}] x by simp only [HasMFDerivWithinAt, this]
+      simpa only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', diff_eq,
+        inter_comm] using h
+    _ ↔ HasMFDerivWithinAt I I' f t x f' := hasMFDerivWithinAt_diff_singleton _
+
+theorem hasMFDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+    HasMFDerivWithinAt I I' f s x f' ↔ HasMFDerivWithinAt I I' f t x f' :=
+  hasMFDerivWithinAt_congr_set' x <| h.filter_mono inf_le_left
+
+/-- If two sets coincide around a point (except possibly at a single point `y`), then it is
+equivalent to be differentiable within one or the other set. -/
+theorem mdifferentiableWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x := by
+  simp only [mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt]
+  exact exists_congr fun _ => hasMFDerivWithinAt_congr_set' _ h
+
+theorem mdifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+    MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x := by
+  simp only [mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt]
+  exact exists_congr fun _ => hasMFDerivWithinAt_congr_set h
+
+theorem mfderivWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    mfderivWithin I I' f s x = mfderivWithin I I' f t x := by
+  by_cases hx : MDifferentiableWithinAt I I' f s x
+  · simp only [mfderivWithin, hx, (mdifferentiableWithinAt_congr_set' y h).1 hx, ↓reduceIte]
+    apply fderivWithin_congr_set' (extChartAt I x y)
+
+  · simp [mfderivWithin, hx, ← mdifferentiableWithinAt_congr_set' y h]
+
+
+#exit
+
+  have : T1Space M := I.t1Space M
+  have : s =ᶠ[𝓝[{x}ᶜ] x] t := nhdsWithin_compl_singleton_le x y h
+  have : 𝓝[s \ {x}] x = 𝓝[t \ {x}] x := by
+    simpa only [Filter.set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', diff_eq,
+      inter_comm] using this
+  simp only [mfderivWithin, hasMFDerivWithinAt_congr_set' y h, this]
+
+
+theorem mfderivWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
+    mfderivWithin I I' f s x = mfderivWithin I I' f t x :=
+  mfderivWithin_congr_set' x <| h.filter_mono inf_le_left
+
+theorem mfderivWithin_eventually_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    ∀ᶠ y in 𝓝 x, mfderivWithin I I' f s y = mfderivWithin I I' f t y :=
+  (eventually_nhds_nhdsWithin.2 h).mono fun _ => mfderivWithin_congr_set' y
+
+theorem mfderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
+    ∀ᶠ y in 𝓝 x, mfderivWithin I I' f s y = mfderivWithin I I' f t y :=
+  mfderivWithin_eventually_congr_set' x <| h.filter_mono inf_le_left
 
 theorem HasMFDerivAt.congr_mfderiv (h : HasMFDerivAt I I' f x f') (h' : f' = f₁') :
     HasMFDerivAt I I' f x f₁' :=

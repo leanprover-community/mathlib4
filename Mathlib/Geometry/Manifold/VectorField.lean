@@ -1614,7 +1614,49 @@ lemma key {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : 
     rcases hfi with ⟨M, hM⟩
     let M' : E ≃L[𝕜] E' := M
     exact (completeSpace_congr (e := M'.toEquiv) M'.isUniformEmbedding).1 (by assumption)
-  rcases hf.contMDiffOn'
+  -- choose a small open set `v` around `x₀` where `f` is `C^2`
+  obtain ⟨v, v_open, x₀v, v_source, maps_v, v_smooth⟩ :
+      ∃ v, IsOpen v ∧ x₀ ∈ v ∧ v ⊆ (extChartAt I x₀).source ∧
+        s ∩ v ⊆ f ⁻¹' (extChartAt I' (f x₀)).source ∧ ContMDiffOn I I' 2 f (s ∩ v) := by
+    obtain ⟨v, v_open, x₀v, hv⟩ :
+      ∃ v, IsOpen v ∧ x₀ ∈ v ∧ ContMDiffOn I I' 2 f (insert x₀ s ∩ v) := hf.contMDiffOn' le_rfl
+    have : f ⁻¹' (extChartAt I' (f x₀)).source ∈ 𝓝[s] x₀ :=
+      hf.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds I' (f x₀))
+    rcases mem_nhdsWithin.1 this with ⟨w, w_open, x₀w, hw⟩
+    refine ⟨v ∩ w ∩ (extChartAt I x₀).source, (v_open.inter w_open).inter
+      (isOpen_extChartAt_source I x₀), by simp [x₀v, x₀w], inter_subset_right, ?_, ?_⟩
+    · apply Subset.trans _ hw
+      exact fun y hy ↦ ⟨hy.2.1.2, hy.1⟩
+    · apply hv.mono
+      exact fun y hy ↦ ⟨subset_insert _ _ hy.1, hy.2.1.1⟩
+  have v_mem : v ∈ 𝓝 x₀ := v_open.mem_nhds x₀v
+  -- apply the auxiliary version to `s ∩ v`
+  set s' := s ∩ v with hs'
+  set t' := t ∩ (extChartAt I' (f x₀)).source with ht'
+  calc mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀
+  _ = mpullbackWithin I I' f (mlieBracketWithin I' V W t) s' x₀ := by
+    simp only [mpullbackWithin, hs', mfderivWithin_inter v_mem]
+  _ = mpullbackWithin I I' f (mlieBracketWithin I' V W t') s' x₀ := by
+    simp only [mpullbackWithin, ht', mlieBracketWithin_inter (extChartAt_source_mem_nhds I' (f x₀))]
+  _ = mlieBracketWithin I (mpullbackWithin I I' f V s') (mpullbackWithin I I' f W s') s' x₀ := by
+    apply key_aux (t := t') (hV.mono inter_subset_left) (hW.mono inter_subset_left)
+      (hu.inter v_open) v_smooth ⟨hx₀, x₀v⟩ inter_subset_right  (fun y hy ↦ ⟨hst hy.1, maps_v hy⟩)
+    sorry
+  _ = mlieBracketWithin I (mpullbackWithin I I' f V s') (mpullbackWithin I I' f W s') s x₀ := by
+    simp only [hs', mlieBracketWithin_inter v_mem]
+  _ = mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
+    apply Filter.EventuallyEq.mlieBracketWithin_vectorField_eq
+    · have : s' =ᶠ[𝓝 x₀] s := sorry
+      have Z := fderivWithin_congr_set
+
+
+
+
+
+
+
+
+
 
 
 #exit
