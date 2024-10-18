@@ -53,7 +53,7 @@ theorem hasFiniteIntegral_prod_mk_left (a : α) {s : Set (β × γ)} (h2s : (κ 
       filter_upwards [ae_kernel_lt_top a h2s] with b hb
       rw [ofReal_toReal hb.ne]
       exact measure_mono (preimage_mono (subset_toMeasurable _ _))
-    _ ≤ (κ ⊗ₖ η) a t := le_compProd_apply _ _ _ _
+    _ ≤ (κ ⊗ₖ η) a t := le_compProd_apply _
     _ = (κ ⊗ₖ η) a s := measure_toMeasurable s
     _ < ⊤ := h2s.lt_top
 
@@ -234,7 +234,7 @@ theorem integral_compProd :
     rotate_left
     · exact (Kernel.measurable_kernel_prod_mk_left' hs _).aemeasurable
     · exact ae_kernel_lt_top a h2s.ne
-    rw [Kernel.compProd_apply _ _ _ hs]
+    rw [Kernel.compProd_apply hs]
     rfl
   · intro f g _ i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, Kernel.integral_integral_add' i_f i_g, hf, hg]
