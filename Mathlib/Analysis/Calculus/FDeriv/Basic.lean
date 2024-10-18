@@ -741,6 +741,7 @@ end Continuous
 section congr
 
 /-! ### congr properties of the derivative -/
+
 theorem hasFDerivWithinAt_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' t x :=
   calc
