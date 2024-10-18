@@ -342,15 +342,7 @@ lemma iff_exact_iff_lTensor_exact :
         [AddCommGroup N3] [Module R N3]
         (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
         Function.Exact l12 l23 ↔ Function.Exact (l12.lTensor M) (l23.lTensor M)) := by
-    have H {N1 N2 N3 : Type (max u v)}  [AddCommGroup N1] [AddCommGroup N2] [AddCommGroup N3]
-        [AddCommGroup N3] [Module R N1] [Module R N2] [Module R N3]
-        (f : N1 →ₗ[R] N2) (g : N2 →ₗ[R] N3):
-        Function.Exact (f.rTensor M) (g.rTensor M) ↔
-        Function.Exact (f.lTensor M) (g.lTensor M) :=
-      Function.Exact.iff_of_ladder_linearEquiv (e₁ := TensorProduct.comm _ _ _)
-        (e₂ := TensorProduct.comm _ _ _) (e₃ := TensorProduct.comm _ _ _)
-        (by ext; simp) (by ext; simp)
-    simp only [iff_exact_iff_rTensor_exact, H]
+  simp only [iff_exact_iff_rTensor_exact, LinearMap.rTensor_exact_iff_lTensor_exact]
 
 end complex
 
