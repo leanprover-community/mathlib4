@@ -731,6 +731,10 @@ theorem IsOpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 : Type*} [Nont
     @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ h.singletonChartedSpace :=
   (h.toPartialHomeomorph f).singleton_smoothManifoldWithCorners I (by simp)
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.singleton_smoothManifoldWithCorners :=
+  IsOpenEmbedding.singleton_smoothManifoldWithCorners
+
 namespace TopologicalSpace.Opens
 
 open TopologicalSpace

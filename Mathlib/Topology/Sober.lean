@@ -205,6 +205,9 @@ theorem IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbedding f) [Qua
     exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono inter_subset_left h,
       fun h => subset_closure ⟨h, hy⟩⟩
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.quasiSober := IsOpenEmbedding.quasiSober
+
 /-- A space is quasi sober if it can be covered by open quasi sober subsets. -/
 theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s : Set α))
     [hS' : ∀ s : S, QuasiSober s] (hS'' : ⋃₀ S = ⊤) : QuasiSober α := by

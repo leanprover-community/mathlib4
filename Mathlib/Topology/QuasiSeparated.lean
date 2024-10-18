@@ -88,6 +88,9 @@ theorem IsOpenEmbedding.isQuasiSeparated_iff (h : IsOpenEmbedding f) {s : Set α
     H (f '' U) (f '' V) (Set.image_subset _ hU) (h.isOpenMap _ hU') (hU''.image h.continuous)
       (Set.image_subset _ hV) (h.isOpenMap _ hV') (hV''.image h.continuous)
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.isQuasiSeparated_iff := IsOpenEmbedding.isQuasiSeparated_iff
+
 theorem isQuasiSeparated_iff_quasiSeparatedSpace (s : Set α) (hs : IsOpen s) :
     IsQuasiSeparated s ↔ QuasiSeparatedSpace s := by
   rw [← isQuasiSeparated_univ_iff]
@@ -114,3 +117,6 @@ theorem QuasiSeparatedSpace.of_isOpenEmbedding (h : IsOpenEmbedding f) [QuasiSep
     QuasiSeparatedSpace α :=
   isQuasiSeparated_univ_iff.mp
     (h.isQuasiSeparated_iff.mpr <| IsQuasiSeparated.of_quasiSeparatedSpace _)
+
+@[deprecated (since := "2024-10-18")]
+alias QuasiSeparatedSpace.of_openEmbedding := QuasiSeparatedSpace.of_isOpenEmbedding

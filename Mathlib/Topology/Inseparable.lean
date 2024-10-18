@@ -372,6 +372,9 @@ lemma Inducing.generalizingMap (hf : Inducing f) (h : StableUnderGeneralization 
 lemma IsOpenEmbedding.generalizingMap (hf : IsOpenEmbedding f) : GeneralizingMap f :=
   hf.toInducing.generalizingMap hf.isOpen_range.stableUnderGeneralization
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.generalizingMap := IsOpenEmbedding.generalizingMap
+
 lemma SpecializingMap.stableUnderSpecialization_range (h : SpecializingMap f) :
     StableUnderSpecialization (range f) :=
   @image_univ _ _ f ▸ stableUnderSpecialization_univ.image h

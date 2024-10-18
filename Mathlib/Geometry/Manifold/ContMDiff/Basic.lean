@@ -385,6 +385,9 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
       h.toPartialHomeomorph_target] at this
     exact this
 
+@[deprecated (since := "2024-10-18")]
+alias contMDiff_openEmbedding := contMDiff_isOpenEmbedding
+
 variable {I I'}
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is smooth. -/
@@ -409,6 +412,9 @@ lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
     apply I.right_inv
     exact mem_of_subset_of_mem (extChartAt_target_subset_range _ _) hz.1
 
+@[deprecated (since := "2024-10-18")]
+alias contMDiffOn_openEmbedding_symm := contMDiffOn_isOpenEmbedding_symm
+
 variable [ChartedSpace H M]
 variable [Nonempty M'] {e' : M' → H'} (h' : IsOpenEmbedding e')
 
@@ -425,5 +431,8 @@ lemma ContMDiff.of_comp_isOpenEmbedding {f : M → M'} (hf : ContMDiff I I' n (e
   apply @ContMDiffOn.comp_contMDiff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
     h'.singletonChartedSpace _ _ (range e') _ (contMDiffOn_isOpenEmbedding_symm h') hf
   simp
+
+@[deprecated (since := "2024-10-18")]
+alias ContMDiff.of_comp_openEmbedding := ContMDiff.of_comp_isOpenEmbedding
 
 end

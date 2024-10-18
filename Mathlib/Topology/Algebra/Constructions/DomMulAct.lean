@@ -53,11 +53,17 @@ theorem coe_mkHomeomorph_symm : ⇑(mkHomeomorph : M ≃ₜ Mᵈᵐᵃ).symm = m
 @[to_additive] theorem closedEmbedding_mk : ClosedEmbedding (@mk M) := mkHomeomorph.closedEmbedding
 @[to_additive] theorem quotientMap_mk : QuotientMap (@mk M) := mkHomeomorph.quotientMap
 
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_mk := isOpenEmbedding_mk
+
 @[to_additive] theorem inducing_mk_symm : Inducing (@mk M).symm := mkHomeomorph.symm.inducing
 @[to_additive] theorem embedding_mk_symm : Embedding (@mk M).symm := mkHomeomorph.symm.embedding
 
 @[to_additive]
 theorem isOpenEmbedding_mk_symm : IsOpenEmbedding (@mk M).symm := mkHomeomorph.symm.isOpenEmbedding
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_mk_symm := isOpenEmbedding_mk_symm
 
 @[to_additive]
 theorem closedEmbedding_mk_symm : ClosedEmbedding (@mk M).symm := mkHomeomorph.symm.closedEmbedding

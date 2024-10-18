@@ -827,6 +827,9 @@ protected theorem IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsOp
     (hg : IsOpenEmbedding g) : IsOpenEmbedding (Prod.map f g) :=
   isOpenEmbedding_of_embedding_open (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.prodMap := IsOpenEmbedding.prodMap
+
 @[deprecated (since := "2024-10-05")] alias IsOpenEmbedding.prod := IsOpenEmbedding.prodMap
 
 theorem embedding_graph {f : X → Y} (hf : Continuous f) : Embedding fun x => (x, f x) :=
@@ -905,8 +908,14 @@ theorem isOpenMap_inr : IsOpenMap (@inr X Y) := fun u hu => by
 theorem isOpenEmbedding_inl : IsOpenEmbedding (@inl X Y) :=
   isOpenEmbedding_of_continuous_injective_open continuous_inl inl_injective isOpenMap_inl
 
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_inl := isOpenEmbedding_inl
+
 theorem isOpenEmbedding_inr : IsOpenEmbedding (@inr X Y) :=
   isOpenEmbedding_of_continuous_injective_open continuous_inr inr_injective isOpenMap_inr
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_inr := isOpenEmbedding_inr
 
 theorem embedding_inl : Embedding (@inl X Y) :=
   isOpenEmbedding_inl.1
@@ -1009,6 +1018,9 @@ theorem Continuous.subtype_val {f : Y → Subtype p} (hf : Continuous f) :
 theorem IsOpen.isOpenEmbedding_subtypeVal {s : Set X} (hs : IsOpen s) :
     IsOpenEmbedding ((↑) : s → X) :=
   ⟨embedding_subtype_val, (@Subtype.range_coe _ s).symm ▸ hs⟩
+
+@[deprecated (since := "2024-10-18")]
+alias IsOpen.openEmbedding_subtype_val := IsOpen.isOpenEmbedding_subtypeVal
 
 theorem IsOpen.isOpenMap_subtype_val {s : Set X} (hs : IsOpen s) : IsOpenMap ((↑) : s → X) :=
   hs.isOpenEmbedding_subtypeVal.isOpenMap
@@ -1532,6 +1544,9 @@ theorem isOpenEmbedding_sigmaMk {i : ι} : IsOpenEmbedding (@Sigma.mk ι σ i) :
   isOpenEmbedding_of_continuous_injective_open continuous_sigmaMk sigma_mk_injective
     isOpenMap_sigmaMk
 
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_sigmaMk := isOpenEmbedding_sigmaMk
+
 theorem closedEmbedding_sigmaMk {i : ι} : ClosedEmbedding (@Sigma.mk ι σ i) :=
   closedEmbedding_of_continuous_injective_closed continuous_sigmaMk sigma_mk_injective
     isClosedMap_sigmaMk
@@ -1616,6 +1631,9 @@ theorem isOpenEmbedding_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ 
   simp only [isOpenEmbedding_iff_embedding_open, isOpenMap_sigma_map, embedding_sigma_map h,
     forall_and]
 
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_sigma_map := isOpenEmbedding_sigma_map
+
 end Sigma
 
 section ULift
@@ -1688,4 +1706,4 @@ theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {px : X → Prop} {
 
 end NhdsSet
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900

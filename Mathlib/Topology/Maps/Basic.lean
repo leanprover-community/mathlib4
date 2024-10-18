@@ -477,9 +477,15 @@ variable [TopologicalSpace X] [TopologicalSpace Y]
 theorem IsOpenEmbedding.isOpenMap (hf : IsOpenEmbedding f) : IsOpenMap f :=
   hf.toEmbedding.toInducing.isOpenMap hf.isOpen_range
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.isOpenMap := IsOpenEmbedding.isOpenMap
+
 theorem IsOpenEmbedding.map_nhds_eq (hf : IsOpenEmbedding f) (x : X) :
     map f (𝓝 x) = 𝓝 (f x) :=
   hf.toEmbedding.map_nhds_of_mem _ <| hf.isOpen_range.mem_nhds <| mem_range_self _
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.map_nhds_eq := IsOpenEmbedding.map_nhds_eq
 
 theorem IsOpenEmbedding.open_iff_image_open (hf : IsOpenEmbedding f) {s : Set X} :
     IsOpen s ↔ IsOpen (f '' s) :=
@@ -487,37 +493,64 @@ theorem IsOpenEmbedding.open_iff_image_open (hf : IsOpenEmbedding f) {s : Set X}
     convert ← h.preimage hf.toEmbedding.continuous
     apply preimage_image_eq _ hf.inj⟩
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.open_iff_image_open := IsOpenEmbedding.open_iff_image_open
+
 theorem IsOpenEmbedding.tendsto_nhds_iff [TopologicalSpace Z] {f : ι → Y} {l : Filter ι} {y : Y}
     (hg : IsOpenEmbedding g) : Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) :=
   hg.toEmbedding.tendsto_nhds_iff
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.tendsto_nhds_iff := IsOpenEmbedding.tendsto_nhds_iff
 
 theorem IsOpenEmbedding.tendsto_nhds_iff' (hf : IsOpenEmbedding f) {l : Filter Z} {x : X} :
     Tendsto (g ∘ f) (𝓝 x) l ↔ Tendsto g (𝓝 (f x)) l := by
   rw [Tendsto, ← map_map, hf.map_nhds_eq]; rfl
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.tendsto_nhds_iff' := IsOpenEmbedding.tendsto_nhds_iff'
+
 theorem IsOpenEmbedding.continuousAt_iff [TopologicalSpace Z] (hf : IsOpenEmbedding f) {x : X} :
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) :=
   hf.tendsto_nhds_iff'
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.continuousAt_iff := IsOpenEmbedding.continuousAt_iff
+
 theorem IsOpenEmbedding.continuous (hf : IsOpenEmbedding f) : Continuous f :=
   hf.toEmbedding.continuous
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.continuous := IsOpenEmbedding.continuous
 
 theorem IsOpenEmbedding.open_iff_preimage_open (hf : IsOpenEmbedding f) {s : Set Y}
     (hs : s ⊆ range f) : IsOpen s ↔ IsOpen (f ⁻¹' s) := by
   rw [hf.open_iff_image_open, image_preimage_eq_inter_range, inter_eq_self_of_subset_left hs]
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.open_iff_preimage_open := IsOpenEmbedding.open_iff_preimage_open
+
 theorem isOpenEmbedding_of_embedding_open (h₁ : Embedding f) (h₂ : IsOpenMap f) :
     IsOpenEmbedding f :=
   ⟨h₁, h₂.isOpen_range⟩
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_of_embedding_open := isOpenEmbedding_of_embedding_open
 
 /-- A surjective embedding is an `IsOpenEmbedding`. -/
 theorem _root_.Embedding.toIsOpenEmbedding_of_surjective (hf : Embedding f) (hsurj : f.Surjective) :
     IsOpenEmbedding f :=
   ⟨hf, hsurj.range_eq ▸ isOpen_univ⟩
 
+@[deprecated (since := "2024-10-18")]
+alias _root_.Embedding.toOpenEmbedding_of_surjective := Embedding.toIsOpenEmbedding_of_surjective
+
 theorem isOpenEmbedding_iff_embedding_open :
     IsOpenEmbedding f ↔ Embedding f ∧ IsOpenMap f :=
   ⟨fun h => ⟨h.1, h.isOpenMap⟩, fun h => isOpenEmbedding_of_embedding_open h.1 h.2⟩
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_iff_embedding_open := isOpenEmbedding_iff_embedding_open
 
 theorem isOpenEmbedding_of_continuous_injective_open
     (h₁ : Continuous f) (h₂ : Injective f) (h₃ : IsOpenMap f) : IsOpenEmbedding f := by
@@ -530,8 +563,14 @@ theorem isOpenEmbedding_iff_continuous_injective_open :
   ⟨fun h => ⟨h.continuous, h.inj, h.isOpenMap⟩, fun h =>
     isOpenEmbedding_of_continuous_injective_open h.1 h.2.1 h.2.2⟩
 
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_iff_continuous_injective_open := isOpenEmbedding_iff_continuous_injective_open
+
 theorem isOpenEmbedding_id : IsOpenEmbedding (@id X) :=
   ⟨embedding_id, IsOpenMap.id.isOpen_range⟩
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_id := isOpenEmbedding_id
 
 namespace IsOpenEmbedding
 variable [TopologicalSpace Z]

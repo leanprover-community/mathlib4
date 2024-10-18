@@ -383,6 +383,9 @@ theorem fromGlued_isOpenEmbedding : IsOpenEmbedding 𝒰.fromGlued.base :=
   isOpenEmbedding_of_continuous_injective_open
     (by fun_prop) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
 
+@[deprecated (since := "2024-10-18")]
+alias fromGlued_openEmbedding := fromGlued_isOpenEmbedding
+
 instance : Epi 𝒰.fromGlued.base := by
   rw [TopCat.epi_iff_surjective]
   intro x

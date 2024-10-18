@@ -95,6 +95,9 @@ lemma IsOpenEmbedding.coborder_preimage (hf : IsOpenEmbedding f) (s : Set Y) :
     coborder (f ⁻¹' s) = f ⁻¹' (coborder s) :=
   coborder_preimage hf.isOpenMap hf.continuous s
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.coborder_preimage := IsOpenEmbedding.coborder_preimage
+
 lemma isClosed_preimage_val_coborder :
     IsClosed (coborder s ↓∩ s) := by
   rw [isClosed_preimage_val, inter_eq_right.mpr subset_coborder, coborder_inter_closure]

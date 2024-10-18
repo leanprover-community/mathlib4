@@ -234,6 +234,9 @@ theorem stalkPushforward_iso_of_isOpenEmbedding {f : X ⟶ Y} (hf : IsOpenEmbedd
     refine ((homOfLE ?_).op : op (unop U) ⟶ _)
     exact Set.image_preimage_subset _ _
 
+@[deprecated (since := "2024-10-18")]
+alias stalkPushforward_iso_of_openEmbedding := stalkPushforward_iso_of_isOpenEmbedding
+
 end stalkPushforward
 
 section stalkPullback

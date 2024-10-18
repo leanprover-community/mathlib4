@@ -45,7 +45,13 @@ theorem Set.restrictPreimage_isOpenEmbedding (s : Set β) (h : IsOpenEmbedding f
   ⟨h.1.restrictPreimage s,
     (s.range_restrictPreimage f).symm ▸ continuous_subtype_val.isOpen_preimage _ h.isOpen_range⟩
 
+@[deprecated (since := "2024-10-18")]
+alias Set.restrictPreimage_openEmbedding := Set.restrictPreimage_isOpenEmbedding
+
 alias IsOpenEmbedding.restrictPreimage := Set.restrictPreimage_isOpenEmbedding
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.restrictPreimage := IsOpenEmbedding.restrictPreimage
 
 theorem Set.restrictPreimage_closedEmbedding (s : Set β) (h : ClosedEmbedding f) :
     ClosedEmbedding (s.restrictPreimage f) :=
@@ -173,6 +179,10 @@ theorem isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top (h : Continuous f) :
   · apply embedding_iff_embedding_of_iSup_eq_top <;> assumption
   · simp_rw [Set.range_restrictPreimage]
     apply isOpen_iff_coe_preimage_of_iSup_eq_top hU
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_iff_openEmbedding_of_iSup_eq_top :=
+  isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top
 
 theorem closedEmbedding_iff_closedEmbedding_of_iSup_eq_top (h : Continuous f) :
     ClosedEmbedding f ↔ ∀ i, ClosedEmbedding ((U i).1.restrictPreimage f) := by

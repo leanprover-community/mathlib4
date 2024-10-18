@@ -335,6 +335,9 @@ protected theorem isClosedMap (h : X ≃ₜ Y) : IsClosedMap h := fun _ => h.isC
 theorem isOpenEmbedding (h : X ≃ₜ Y) : IsOpenEmbedding h :=
   isOpenEmbedding_of_embedding_open h.embedding h.isOpenMap
 
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding := isOpenEmbedding
+
 protected theorem closedEmbedding (h : X ≃ₜ Y) : ClosedEmbedding h :=
   closedEmbedding_of_embedding_closed h.embedding h.isClosedMap
 
@@ -908,9 +911,12 @@ protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
 protected lemma inducing : Inducing f := (hf.homeomorph f).inducing
 protected lemma quotientMap : QuotientMap f := (hf.homeomorph f).quotientMap
 protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
-protected lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
+lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
 protected lemma closedEmbedding : ClosedEmbedding f := (hf.homeomorph f).closedEmbedding
 lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding := isOpenEmbedding
 
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding := isDenseEmbedding

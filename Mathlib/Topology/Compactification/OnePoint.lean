@@ -244,6 +244,9 @@ theorem isOpenMap_coe : IsOpenMap ((↑) : X → OnePoint X) := fun _ => isOpen_
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : X → OnePoint X) :=
   isOpenEmbedding_of_continuous_injective_open continuous_coe coe_injective isOpenMap_coe
 
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_coe := isOpenEmbedding_coe
+
 theorem isOpen_range_coe : IsOpen (range ((↑) : X → OnePoint X)) :=
   isOpenEmbedding_coe.isOpen_range
 
