@@ -105,7 +105,7 @@ theorem piMultilinear_single [∀ i, DecidableEq (κ i)]
     simp_rw [single_eq_of_ne hpqi]
 
 @[simp]
-theorem piMultilinear_comp_lsingle [∀ i, DecidableEq (κ i)]
+theorem piMultilinear_compLinearMap_lsingle [∀ i, DecidableEq (κ i)]
     (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) (p : ∀ i, κ i) :
     (piMultilinear f).compLinearMap (fun i => lsingle (p i))
       = (lsingle p).compMultilinearMap (f p) :=
