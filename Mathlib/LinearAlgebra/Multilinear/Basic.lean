@@ -787,6 +787,36 @@ theorem compMultilinearMap_apply (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R
     g.compMultilinearMap f m = g (f m) :=
   rfl
 
+@[simp]
+theorem compMultilinearMap_zero (g : M₂ →ₗ[R] M₃) :
+    g.compMultilinearMap (0 : MultilinearMap R M₁ M₂) = 0 :=
+  MultilinearMap.ext fun _ => map_zero g
+
+@[simp]
+theorem zero_compMultilinearMap (f: MultilinearMap R M₁ M₂) :
+    (0 : M₂ →ₗ[R] M₃).compMultilinearMap f = 0 := rfl
+
+@[simp]
+theorem compMultilinearMap_add (g : M₂ →ₗ[R] M₃) (f₁ f₂ : MultilinearMap R M₁ M₂) :
+    g.compMultilinearMap (f₁ + f₂) = g.compMultilinearMap f₁ + g.compMultilinearMap f₂ :=
+  MultilinearMap.ext fun _ => map_add g _ _
+
+@[simp]
+theorem add_compMultilinearMap (g₁ g₂ : M₂ →ₗ[R] M₃) (f: MultilinearMap R M₁ M₂) :
+    (g₁ + g₂).compMultilinearMap f = g₁.compMultilinearMap f + g₂.compMultilinearMap f := rfl
+
+@[simp]
+theorem compMultilinearMap_smul [Monoid S] [DistribMulAction S M₂] [DistribMulAction S M₃]
+    [SMulCommClass R S M₂] [SMulCommClass R S M₃] [CompatibleSMul M₂ M₃ S R]
+    (g : M₂ →ₗ[R] M₃) (s : S) (f : MultilinearMap R M₁ M₂) :
+    g.compMultilinearMap (s • f) = s • g.compMultilinearMap f :=
+  MultilinearMap.ext fun _ => g.map_smul_of_tower _ _
+
+@[simp]
+theorem smul_compMultilinearMap [Monoid S] [DistribMulAction S M₃] [SMulCommClass R S M₃]
+    (g : M₂ →ₗ[R] M₃) (s : S) (f : MultilinearMap R M₁ M₂) :
+    (s • g).compMultilinearMap f = s • g.compMultilinearMap f := rfl
+
 /-- The multilinear version of `LinearMap.subtype_comp_codRestrict` -/
 @[simp]
 theorem subtype_compMultilinearMap_codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂)
