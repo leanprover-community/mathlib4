@@ -584,7 +584,7 @@ end
 
 section MulOneClass
 
-variable [MulOneClass M] [MulOneClass N] [MulOneClass P] (c : Con M)
+variable [MulOneClass M] (c : Con M)
 
 /-- The quotient of a monoid by a congruence relation is a monoid. -/
 @[to_additive "The quotient of an `AddMonoid` by an additive congruence relation is
@@ -709,7 +709,7 @@ end Monoids
 
 section Groups
 
-variable [Group M] [Group N] [Group P] (c : Con M)
+variable [Group M] (c : Con M)
 
 /-- Multiplicative congruence relations preserve inversion. -/
 @[to_additive "Additive congruence relations preserve negation."]

@@ -38,7 +38,6 @@ such that `f ≫ retraction f = 𝟙 X`.
 Every split monomorphism is a monomorphism.
 -/
 /- Porting note(#5171): removed @[nolint has_nonempty_instance] -/
-/- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule -/
 @[ext, aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitMono {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
@@ -64,7 +63,6 @@ such that `section_ f ≫ f = 𝟙 Y`.
 Every split epimorphism is an epimorphism.
 -/
 /- Porting note(#5171): removed @[nolint has_nonempty_instance] -/
-/- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule -/
 @[ext, aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/

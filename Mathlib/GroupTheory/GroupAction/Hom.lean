@@ -524,13 +524,10 @@ def inverse (f : A →+[M] B₁) (g : B₁ → A) (h₁ : Function.LeftInverse g
 section Semiring
 
 variable (R : Type*) [Semiring R] [MulSemiringAction M R]
-variable (R' : Type*) [Ring R'] [MulSemiringAction M R']
 variable (S : Type*) [Semiring S] [MulSemiringAction N S]
-variable (S' : Type*) [Ring S'] [MulSemiringAction N S']
 variable (T : Type*) [Semiring T] [MulSemiringAction P T]
 
-variable {R S M' N'}
-variable [AddMonoid M'] [DistribMulAction R M']
+variable {R S N'}
 variable [AddMonoid N'] [DistribMulAction S N']
 
 variable {σ : R →* S}

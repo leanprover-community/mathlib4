@@ -37,7 +37,7 @@ open Function Set
 
 namespace Set
 
-variable {α β γ : Type*} {ι ι' : Sort*}
+variable {α β γ : Type*} {ι : Sort*}
 
 /-! ### Inverse image -/
 
@@ -167,6 +167,12 @@ theorem preimage_subtype_coe_eq_compl {s u v : Set α} (hsuv : s ⊆ u ∪ v)
     exact eq_empty_iff_forall_not_mem.mp H x ⟨x_in_s, ⟨x_in_u, x_in_v⟩⟩
   · intro hx
     exact Or.elim (hsuv x_in_s) id fun hx' => hx.elim hx'
+
+lemma preimage_subset {s t} (hs : s ⊆ f '' t) (hf : Set.InjOn f (f ⁻¹' s)) : f ⁻¹' s ⊆ t := by
+  rintro a ha
+  obtain ⟨b, hb, hba⟩ := hs ha
+  rwa [hf ha _ hba.symm]
+  simpa [hba]
 
 end Preimage
 
@@ -628,7 +634,7 @@ theorem range_subset_iff : range f ⊆ s ↔ ∀ y, f y ∈ s :=
 
 theorem range_subset_range_iff_exists_comp {f : α → γ} {g : β → γ} :
     range f ⊆ range g ↔ ∃ h : α → β, f = g ∘ h := by
-  simp only [range_subset_iff, mem_range, Classical.skolem, Function.funext_iff, (· ∘ ·), eq_comm]
+  simp only [range_subset_iff, mem_range, Classical.skolem, funext_iff, (· ∘ ·), eq_comm]
 
 theorem range_eq_iff (f : α → β) (s : Set β) :
     range f = s ↔ (∀ a, f a ∈ s) ∧ ∀ b ∈ s, ∃ a, f a = b := by
@@ -944,7 +950,7 @@ theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α)
 -- When `f` is injective, see also `Equiv.ofInjective`.
 theorem leftInverse_rangeSplitting (f : α → β) :
     LeftInverse (rangeFactorization f) (rangeSplitting f) := fun x => by
-  apply Subtype.ext -- Porting note: why doesn't `ext` find this lemma?
+  ext
   simp only [rangeFactorization_coe]
   apply apply_rangeSplitting
 

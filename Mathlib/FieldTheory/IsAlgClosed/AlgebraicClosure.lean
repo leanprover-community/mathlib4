@@ -164,12 +164,8 @@ instance Step.algebraSucc (n) : Algebra (Step k n) (Step k (n + 1)) :=
   (toStepSucc k n).toAlgebra
 
 theorem toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
-    (hfi : Irreducible f) : ∃ x : Step k (n + 1), f.eval₂ (toStepSucc k n) x = 0 := by
--- Porting note: original proof was `@AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi`,
--- but it timeouts.
-  obtain ⟨x, hx⟩ := @AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi
--- Porting note: using `hx` instead of `by apply hx` timeouts.
-  exact ⟨x, by apply hx⟩
+    (hfi : Irreducible f) : ∃ x : Step k (n + 1), f.eval₂ (toStepSucc k n) x = 0 :=
+  @AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi
 
 -- Porting note: the following two declarations were added during the port to be used in the
 -- definition of toStepOfLE
@@ -186,29 +182,24 @@ private theorem toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
 def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
   toFun := toStepOfLE' k m n h
   map_one' := by
--- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 1`
---                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_one]`
     induction' h with a h ih
     · exact Nat.leRecOn_self 1
-    · rw [toStepOfLE'.succ k m a h]; simp [ih]
+    · simp [toStepOfLE'.succ k m a h, ih]
   map_mul' x y := by
--- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
---                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_mul]`
+    simp only
     induction' h with a h ih
-    · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
-    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
--- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 0`
---                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_zero]`
+    · simp_rw [toStepOfLE', Nat.leRecOn_self]
+    · simp [toStepOfLE'.succ k m a h, ih]
   map_zero' := by
+    simp only
     induction' h with a h ih
     · exact Nat.leRecOn_self 0
-    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
+    · simp [toStepOfLE'.succ k m a h, ih]
   map_add' x y := by
--- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
---                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_add]`
+    simp only
     induction' h with a h ih
-    · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
-    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
+    · simp_rw [toStepOfLE', Nat.leRecOn_self]
+    · simp [toStepOfLE'.succ k m a h, ih]
 
 @[simp]
 theorem coe_toStepOfLE (m n : ℕ) (h : m ≤ n) :

@@ -888,43 +888,47 @@ only require showing `p` is preserved by multiplication by elements in `k`. -/
 
       See also `AddSubgroup.closure_induction_left` and `AddSubgroup.closure_induction_left` for
       versions that only require showing `p` is preserved by addition by elements in `k`."]
-theorem closure_induction {p : G → Prop} {x} (h : x ∈ closure k) (mem : ∀ x ∈ k, p x) (one : p 1)
-    (mul : ∀ x y, p x → p y → p (x * y)) (inv : ∀ x, p x → p x⁻¹) : p x :=
-  (@closure_le _ _ ⟨⟨⟨setOf p, fun {x y} ↦ mul x y⟩, one⟩, fun {x} ↦ inv x⟩ k).2 mem h
+theorem closure_induction {p : (g : G) → g ∈ closure k → Prop}
+    (mem : ∀ x (hx : x ∈ k), p x (subset_closure hx)) (one : p 1 (one_mem _))
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx)) {x} (hx : x ∈ closure k) : p x hx :=
+  let K : Subgroup G :=
+    { carrier := { x | ∃ hx, p x hx }
+      mul_mem' := fun ⟨_, ha⟩ ⟨_, hb⟩ ↦ ⟨_, mul _ _ _ _ ha hb⟩
+      one_mem' := ⟨_, one⟩
+      inv_mem' := fun ⟨_, hb⟩ ↦ ⟨_, inv _ _ hb⟩ }
+  closure_le (K := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
-/-- A dependent version of `Subgroup.closure_induction`. -/
-@[to_additive (attr := elab_as_elim) "A dependent version of `AddSubgroup.closure_induction`. "]
-theorem closure_induction' {p : ∀ x, x ∈ closure k → Prop}
-    (mem : ∀ (x) (h : x ∈ k), p x (subset_closure h)) (one : p 1 (one_mem _))
-    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx)) {x} (hx : x ∈ closure k) : p x hx := by
-  refine Exists.elim ?_ fun (hx : x ∈ closure k) (hc : p x hx) => hc
-  exact
-    closure_induction hx (fun x hx => ⟨_, mem x hx⟩) ⟨_, one⟩
-      (fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ => ⟨_, mul _ _ _ _ hx hy⟩) fun x ⟨hx', hx⟩ => ⟨_, inv _ _ hx⟩
+@[deprecated closure_induction (since := "2024-10-10")]
+alias closure_induction' := closure_induction
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership, for
       predicates with two arguments."]
-theorem closure_induction₂ {p : G → G → Prop} {x} {y : G} (hx : x ∈ closure k) (hy : y ∈ closure k)
-    (Hk : ∀ x ∈ k, ∀ y ∈ k, p x y) (H1_left : ∀ x, p 1 x) (H1_right : ∀ x, p x 1)
-    (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
-    (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) (Hinv_left : ∀ x y, p x y → p x⁻¹ y)
-    (Hinv_right : ∀ x y, p x y → p x y⁻¹) : p x y :=
-  closure_induction hx
-    (fun x xk => closure_induction hy (Hk x xk) (H1_right x) (Hmul_right x) (Hinv_right x))
-    (H1_left y) (fun z z' => Hmul_left z z' y) fun z => Hinv_left z y
+theorem closure_induction₂ {p : (x y : G) → x ∈ closure k → y ∈ closure k → Prop}
+    (mem : ∀ (x) (y) (hx : x ∈ k) (hy : y ∈ k), p x y (subset_closure hx) (subset_closure hy))
+    (one_left : ∀ x hx, p 1 x (one_mem _) hx) (one_right : ∀ x hx, p x 1 hx (one_mem _))
+    (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ y z x hy hz hx, p x y hx hy → p x z hx hz → p x (y * z) hx (mul_mem hy hz))
+    (inv_left : ∀ x y hx hy, p x y hx hy → p x⁻¹ y (inv_mem hx) hy)
+    (inv_right : ∀ x y hx hy, p x y hx hy → p x y⁻¹ hx (inv_mem hy))
+    {x y : G} (hx : x ∈ closure k) (hy : y ∈ closure k) : p x y hx hy := by
+  induction hy using closure_induction with
+  | mem z hz => induction hx using closure_induction with
+    | mem _ h => exact mem _ _ h hz
+    | one => exact one_left _ (subset_closure hz)
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+    | inv _ _ h => exact inv_left _ _ _ _ h
+  | one => exact one_right x hx
+  | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ hx h₁ h₂
+  | inv _ _ h => exact inv_right _ _ _ _ h
 
 @[to_additive (attr := simp)]
 theorem closure_closure_coe_preimage {k : Set G} : closure (((↑) : closure k → G) ⁻¹' k) = ⊤ :=
-  eq_top_iff.2 fun x =>
-    Subtype.recOn x fun x hx _ => by
-      refine closure_induction' (fun g hg => ?_) ?_ (fun g₁ g₂ hg₁ hg₂ => ?_) (fun g hg => ?_) hx
-      · exact subset_closure hg
-      · exact one_mem _
-      · exact mul_mem
-      · exact inv_mem
+  eq_top_iff.2 fun x _ ↦ Subtype.recOn x fun _ hx' ↦
+    closure_induction (fun _ h ↦ subset_closure h) (one_mem _) (fun _ _ _ _ ↦ mul_mem)
+      (fun _ _ ↦ inv_mem) hx'
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
 @[to_additive
@@ -933,18 +937,19 @@ theorem closure_closure_coe_preimage {k : Set G} : closure (((↑) : closure k �
 def closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
     CommGroup (closure k) :=
   { (closure k).toGroup with
-    mul_comm := fun x y => by
+    mul_comm := fun ⟨x, hx⟩ ⟨y, hy⟩ => by
       ext
       simp only [Subgroup.coe_mul]
-      refine
-        closure_induction₂ x.prop y.prop hcomm (fun x => by simp only [mul_one, one_mul])
-          (fun x => by simp only [mul_one, one_mul])
-          (fun x y z h₁ h₂ => by rw [mul_assoc, h₂, ← mul_assoc, h₁, mul_assoc])
-          (fun x y z h₁ h₂ => by rw [← mul_assoc, h₁, mul_assoc, h₂, ← mul_assoc])
-          (fun x y h => by
-            rw [inv_mul_eq_iff_eq_mul, ← mul_assoc, h, mul_assoc, mul_inv_cancel, mul_one])
-          fun x y h => by
-          rw [mul_inv_eq_iff_eq_mul, mul_assoc, h, ← mul_assoc, inv_mul_cancel, one_mul] }
+      induction hx, hy using closure_induction₂ with
+      | mem x y hx hy => exact hcomm x hx y hy
+      | one_left x _ => exact Commute.one_left x
+      | one_right x _ => exact Commute.one_right x
+      | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
+      | mul_right _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_right h₁ h₂
+      | inv_left _ _ _ _ h => -- `Commute.inv_left` is not imported
+        rw [inv_mul_eq_iff_eq_mul, ← mul_assoc, h, mul_assoc, mul_inv_cancel, mul_one]
+      | inv_right _ _ _ _ h =>
+        rw [mul_inv_eq_iff_eq_mul, mul_assoc, h, ← mul_assoc, inv_mul_cancel, one_mul] }
 
 variable (G)
 
@@ -1005,15 +1010,15 @@ theorem iSup_eq_closure {ι : Sort*} (p : ι → Subgroup G) :
       natural number multiples of the element."]
 theorem mem_closure_singleton {x y : G} : y ∈ closure ({x} : Set G) ↔ ∃ n : ℤ, x ^ n = y := by
   refine
-    ⟨fun hy => closure_induction hy ?_ ?_ ?_ ?_, fun ⟨n, hn⟩ =>
+    ⟨fun hy => closure_induction ?_ ?_ ?_ ?_ hy, fun ⟨n, hn⟩ =>
       hn ▸ zpow_mem (subset_closure <| mem_singleton x) n⟩
   · intro y hy
     rw [eq_of_mem_singleton hy]
     exact ⟨1, zpow_one x⟩
   · exact ⟨0, zpow_zero x⟩
-  · rintro _ _ ⟨n, rfl⟩ ⟨m, rfl⟩
+  · rintro _ _ _ _ ⟨n, rfl⟩ ⟨m, rfl⟩
     exact ⟨n + m, zpow_add x n m⟩
-  rintro _ ⟨n, rfl⟩
+  rintro _ _ ⟨n, rfl⟩
   exact ⟨-n, zpow_neg x n⟩
 
 @[to_additive]
@@ -1039,12 +1044,12 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (h
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup K i hi⟩
   suffices x ∈ closure (⋃ i, (K i : Set G)) → ∃ i, x ∈ K i by
     simpa only [closure_iUnion, closure_eq (K _)] using this
-  refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) ?_ ?_ ?_
+  refine fun hx ↦ closure_induction (fun _ ↦ mem_iUnion.1) ?_ ?_ ?_ hx
   · exact hι.elim fun i ↦ ⟨i, (K i).one_mem⟩
-  · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
+  · rintro x y _ _ ⟨i, hi⟩ ⟨j, hj⟩
     rcases hK i j with ⟨k, hki, hkj⟩
     exact ⟨k, mul_mem (hki hi) (hkj hj)⟩
-  · rintro _ ⟨i, hi⟩
+  · rintro _ _ ⟨i, hi⟩
     exact ⟨i, inv_mem hi⟩
 
 @[to_additive]
@@ -1884,7 +1889,8 @@ theorem le_normalClosure {H : Subgroup G} : H ≤ normalClosure ↑H := fun _ h 
 /-- The normal closure of `s` is a normal subgroup. -/
 instance normalClosure_normal : (normalClosure s).Normal :=
   ⟨fun n h g => by
-    refine Subgroup.closure_induction h (fun x hx => ?_) ?_ (fun x y ihx ihy => ?_) fun x ihx => ?_
+    refine Subgroup.closure_induction (fun x hx => ?_) ?_ (fun x y _ _ ihx ihy => ?_)
+      (fun x _ ihx => ?_) h
     · exact conjugatesOfSet_subset_normalClosure (conj_mem_conjugatesOfSet hx)
     · simpa using (normalClosure s).one_mem
     · rw [← conj_mul]
@@ -1895,7 +1901,7 @@ instance normalClosure_normal : (normalClosure s).Normal :=
 /-- The normal closure of `s` is the smallest normal subgroup containing `s`. -/
 theorem normalClosure_le_normal {N : Subgroup G} [N.Normal] (h : s ⊆ N) : normalClosure s ≤ N := by
   intro a w
-  refine closure_induction w (fun x hx => ?_) ?_ (fun x y ihx ihy => ?_) fun x ihx => ?_
+  refine closure_induction (fun x hx => ?_) ?_ (fun x y _ _ ihx ihy => ?_) (fun x _ ihx => ?_) w
   · exact conjugatesOfSet_subset h hx
   · exact one_mem _
   · exact mul_mem ihx ihy
@@ -2758,14 +2764,14 @@ variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
 theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
   ⟨fun h => by
     rw [sup_eq_closure] at h
-    refine Subgroup.closure_induction h ?_ ?_ ?_ ?_
+    refine Subgroup.closure_induction ?_ ?_ ?_ ?_ h
     · rintro y (h | h)
       · exact ⟨y, h, 1, t.one_mem, by simp⟩
       · exact ⟨1, s.one_mem, y, h, by simp⟩
     · exact ⟨1, s.one_mem, 1, ⟨t.one_mem, mul_one 1⟩⟩
-    · rintro _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
+    · rintro _ _ _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
       exact ⟨_, mul_mem hy₁ hy₂, _, mul_mem hz₁ hz₂, by simp [mul_assoc, mul_left_comm]⟩
-    · rintro _ ⟨y, hy, z, hz, rfl⟩
+    · rintro _ _ ⟨y, hy, z, hz, rfl⟩
       exact ⟨_, inv_mem hy, _, inv_mem hz, mul_comm z y ▸ (mul_inv_rev z y).symm⟩, by
     rintro ⟨y, hy, z, hz, rfl⟩; exact mul_mem_sup hy hz⟩
 
