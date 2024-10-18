@@ -100,15 +100,15 @@ theorem multiset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ
       obtain ⟨M, hMs, hM⟩ := hM
       by_cases hMa : f (g M) ≤ f (g a)
       · refine ⟨a, by simp, ?_⟩
-        · rw [Multiset.map_cons, Multiset.sum_cons]
-          exact le_trans (hna _ _) (max_le (le_refl _) (le_trans hM hMa))
+        rw [Multiset.map_cons, Multiset.sum_cons]
+        exact le_trans (hna _ _) (max_le (le_refl _) (le_trans hM hMa))
       · rw [not_le] at hMa
         rcases eq_or_ne t 0 with rfl|ht
         · exact ⟨a, by simp, by simp⟩
         · refine ⟨M, ?_, ?_⟩
           · simp [hMs ht]
-          rw [Multiset.map_cons, Multiset.sum_cons]
-          exact le_trans (hna _ _) (max_le hMa.le hM)
+          · rw [Multiset.map_cons, Multiset.sum_cons]
+            exact le_trans (hna _ _) (max_le hMa.le hM)
 
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
   nonempty multiset `s : Multiset β`, we can always find `b : β` belonging to `s` such that

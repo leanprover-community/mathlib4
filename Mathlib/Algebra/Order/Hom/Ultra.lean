@@ -28,11 +28,8 @@ lemma AddGroupSeminormClass.isUltrametricDist [AddGroup α] [AddGroupSeminormCla
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
     (hd : inst = (AddGroupSeminormClass.toSeminormedAddGroup f).toDist := by rfl) :
     IsUltrametricDist α :=
-  ⟨fun x y z ↦ by
-    subst hd
-    simp_rw [dist_eq_norm, AddGroupSeminormClass.toSeminormedAddGroup_norm_eq]
-    rw [← sub_add_sub_cancel x y z]
-    exact hna _ _⟩
+  ⟨fun x y z ↦ by simpa only [hd, dist_eq_norm, AddGroupSeminormClass.toSeminormedAddGroup_norm_eq,
+      ← sub_add_sub_cancel x y z] using hna _ _⟩
 
 /-- Proves that when a `SeminormedAddCommGroup` structure is constructed from an
 `AddGroupSeminormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/

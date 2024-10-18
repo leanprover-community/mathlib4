@@ -28,9 +28,7 @@ abbrev GroupSeminormClass.toSeminormedGroup [Group α] [GroupSeminormClass F α 
   dist x y := f (x / y)
   dist_eq _ _ := rfl
   dist_self _ := by simp
-  dist_comm _ _ := by
-    dsimp
-    rw [← map_inv_eq_map, inv_div]
+  dist_comm x y := by simp only [← map_inv_eq_map f (x / y), inv_div]
   dist_triangle x y z := by simpa using map_mul_le_add f (x / y) (y / z)
 
 @[to_additive]
