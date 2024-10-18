@@ -56,17 +56,16 @@ def piMultilinear
     MultilinearMap R (fun i => Π₀ j : κ i, M i j) (Π₀ t : Π i, κ i, N t) where
   toFun x :=
   { toFun := fun p => f p (fun i => x i (p i))
-    support' := (Quotient.finChoice (S := _) fun i => (x i).support').recOnSubsingleton fun s =>
-      Trunc.mk ⟨
-        Finset.univ.val.pi (fun i ↦ (s i).val) |>.map fun f i => f i (Finset.mem_univ _),
-        fun p => by
-          simp only [Multiset.mem_map, Multiset.mem_pi, Finset.mem_val,
-            Finset.mem_univ, forall_true_left]
-          simp_rw [or_iff_not_imp_right]
-          intro h
-          push_neg at h
-          refine ⟨fun i _ => p i, fun i => (s i).prop _ |>.resolve_right ?_, rfl⟩
-          exact mt ((f p).map_coord_zero (m := fun i => x i _) i) h⟩}
+    support' := (Trunc.finChoice fun i => (x i).support').map fun s => ⟨
+      Finset.univ.val.pi (fun i ↦ (s i).val) |>.map fun f i => f i (Finset.mem_univ _),
+      fun p => by
+        simp only [Multiset.mem_map, Multiset.mem_pi, Finset.mem_val, Finset.mem_univ,
+          forall_true_left]
+        simp_rw [or_iff_not_imp_right]
+        intro h
+        push_neg at h
+        refine ⟨fun i _ => p i, fun i => (s i).prop _ |>.resolve_right ?_, rfl⟩
+        exact mt ((f p).map_coord_zero (m := fun i => x i _) i) h⟩}
   map_add' {dec} m i x y := ext fun p => by
     cases Subsingleton.elim dec (by infer_instance)
     dsimp
