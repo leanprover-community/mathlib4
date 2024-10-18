@@ -215,6 +215,9 @@ theorem balancedHull_convexHull_subseteq_absConvexHull {s : Set E} :
   balanced_absConvexHull.balancedHull_subset_of_subset
     (convexHull_min subset_absConvexHull convex_absConvexHull)
 
+lemma convexHull_subset_absConvexHull {s : Set E} : (convexHull ℝ s) ⊆ (absConvexHull 𝕜 s) :=
+  convexHull_min subset_absConvexHull convex_absConvexHull
+
 end
 
 section
@@ -276,6 +279,10 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
       rw [convexHull_union_neg_eq_absConvexHull, ← AbsConvex.absConvexHull_eq hV₂]
       exact le_trans (absConvexHull_mono hts) (absConvexHull_add_subset ℝ))
     (Set.add_subset_add_left (subset_trans (add_subset_add hV₃ hV₃) hW₄))⟩
+
+theorem totallyBounded_convexHull (hs : TotallyBounded s) :
+    TotallyBounded (convexHull ℝ s) :=
+  TotallyBounded.subset (convexHull_subset_absConvexHull ℝ) (totallyBounded_absConvexHull E hs)
 
 end
 
