@@ -196,8 +196,8 @@ open Functor.LaxMonoidal
 
 @[simps!]
 def isoOfComponents {F G : LaxMonoidalFunctor C D} (e : ∀ X, F.obj X ≅ G.obj X)
-    (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (e Y).hom = (e X).hom ≫ G.map f :=
-      by aesop_cat)
+    (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (e Y).hom = (e X).hom ≫ G.map f := by
+      aesop_cat)
     (unit : ε F.toFunctor ≫ (e (𝟙_ C)).hom = ε G.toFunctor := by aesop_cat)
     (tensor : ∀ X Y, μ F.toFunctor X Y ≫ (e (X ⊗ Y)).hom =
       ((e X).hom ⊗ (e Y).hom) ≫ μ G.toFunctor X Y := by aesop_cat) :
