@@ -347,6 +347,32 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsCom
     refine ⟨⟨_, n, rfl⟩, ?_⟩
     simpa [mul_comm z] using e
 
+lemma exists_of_res_eq_of_qcqs {X : Scheme.{u}} {U : TopologicalSpace.Opens X}
+    (hU : IsCompact U.carrier) (hU' : IsQuasiSeparated U.carrier)
+    {f g s : Γ(X, U)} (hfg : f |_ X.basicOpen s = g |_ X.basicOpen s) :
+    ∃ n, s ^ n * f = s ^ n * g := by
+  obtain ⟨n, hc⟩ := (is_localization_basicOpen_of_qcqs hU hU' s).exists_of_eq s hfg
+  use n
+
+lemma exists_of_res_eq_of_qcqs_of_top {X : Scheme.{u}} [CompactSpace X] [QuasiSeparatedSpace X]
+    {f g s : Γ(X, ⊤)} (hfg : f |_ X.basicOpen s = g |_ X.basicOpen s) :
+    ∃ n, s ^ n * f = s ^ n * g :=
+  exists_of_res_eq_of_qcqs (U := ⊤) CompactSpace.isCompact_univ isQuasiSeparated_univ hfg
+
+lemma exists_of_res_zero_of_qcqs {X : Scheme.{u}} {U : TopologicalSpace.Opens X}
+    (hU : IsCompact U.carrier) (hU' : IsQuasiSeparated U.carrier)
+    {f s : Γ(X, U)} (hf : f |_ X.basicOpen s = 0) :
+    ∃ n, s ^ n * f = 0 := by
+  suffices h : ∃ n, s ^ n * f = s ^ n * 0 by
+    simpa using h
+  apply exists_of_res_eq_of_qcqs hU hU'
+  simpa
+
+lemma exists_of_res_zero_of_qcqs_of_top {X : Scheme} [CompactSpace X] [QuasiSeparatedSpace X]
+    {f s : Γ(X, ⊤)} (hf : f |_ X.basicOpen s = 0) :
+    ∃ n, s ^ n * f = 0 :=
+  exists_of_res_zero_of_qcqs (U := ⊤) CompactSpace.isCompact_univ isQuasiSeparated_univ hf
+
 /-- If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
 This is known as the **Qcqs lemma** in [R. Vakil, *The rising sea*][RisingSea]. -/
 theorem isIso_ΓSpec_adjunction_unit_app_basicOpen {X : Scheme} [CompactSpace X]

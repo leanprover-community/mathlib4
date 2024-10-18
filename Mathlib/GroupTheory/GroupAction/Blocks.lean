@@ -4,11 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
+import Mathlib.Algebra.Group.Subgroup.Actions
+import Mathlib.Data.Set.Card
 import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Algebra.Group.Subgroup.Actions
+import Mathlib.GroupTheory.Index
+import Mathlib.Tactic.IntervalCases
 
 /-! # Blocks
 
@@ -22,9 +25,21 @@ Given `SMul G X`, an action of a type `G` on a type `X`, we define
 
 The non-existence of nontrivial blocks is the definition of primitive actions.
 
+## Results for actions on finite sets
+
+- `IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
+multiplied by the number of its translates is the cardinal of the ambient type
+
+- `IsBlock.is_univ_of_large_block` : a too large block is equal to `Set.univ`
+
+- `IsBlock.is_subsingleton` : a too small block is a subsingleton
+
+- `IsBlock.of_subset` : the intersections of the translates of a finite subset
+that contain a given point is a block
+
 ## References
 
-We follow [wieland1964].
+We follow [wielandt1964].
 
 -/
 
@@ -200,12 +215,13 @@ theorem isBlock_orbit (a : X) : IsBlock G (orbit G a) :=
 variable (X)
 
 /-- The full set is a (trivial) block -/
-theorem isFixedBlock_top : IsFixedBlock G (⊤ : Set X) :=
-  fun _ ↦ by simp only [Set.top_eq_univ, Set.smul_set_univ]
+theorem isFixedBlock_univ : IsFixedBlock G (Set.univ : Set X) :=
+  fun _ ↦ by simp only [Set.smul_set_univ]
+@[deprecated (since := "2024-09-14")] alias isFixedBlock_top := isFixedBlock_univ
 
 /-- The full set is a (trivial) block -/
-theorem isBlock_top : IsBlock G (⊤ : Set X) :=
-  (isFixedBlock_top _).isBlock
+theorem isBlock_univ : IsBlock G (Set.univ : Set X) :=
+  (isFixedBlock_univ _).isBlock
 
 variable {X}
 
@@ -282,9 +298,9 @@ theorem IsBlock.inter {B₁ B₂ : Set X} (h₁ : IsBlock G B₁) (h₂ : IsBloc
 theorem IsBlock.iInter {ι : Type*} {B : ι → Set X} (hB : ∀ i : ι, IsBlock G (B i)) :
     IsBlock G (⋂ i, B i) := by
   by_cases hι : (IsEmpty ι)
-  · -- ι = ∅, block = ⊤
-    suffices (⋂ i : ι, B i) = Set.univ by simpa only [this] using isBlock_top X
-    simpa only [Set.top_eq_univ, Set.iInter_eq_univ] using (hι.elim' ·)
+  · -- ι = ∅, block = univ
+    suffices (⋂ i : ι, B i) = Set.univ by simpa only [this] using isBlock_univ X
+    simpa only [Set.iInter_eq_univ] using (hι.elim' ·)
   rw [IsBlock.def_one]
   intro g
   rw [Set.smul_set_iInter]
@@ -469,6 +485,110 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
       exact hBB' <| hgB.symm ▸ (Set.smul_mem_smul_set ha)
 
 end Stabilizer
+
+section Finite
+
+namespace IsBlock
+
+variable [IsPretransitive G X] {B : Set X}
+
+theorem ncard_block_eq_relindex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
+    B.ncard = (stabilizer G x).relindex (stabilizer G B) := by
+  have key : (stabilizer G x).subgroupOf (stabilizer G B) = stabilizer (stabilizer G B) x := by
+    ext; rfl
+  rw [Subgroup.relindex, key, index_stabilizer, hB.orbit_stabilizer_eq hx]
+
+/-- The cardinality of the ambient space is the product of the cardinality of a block
+  by the cardinality of the set of translates of that block -/
+theorem ncard_block_mul_ncard_orbit_eq (hB : IsBlock G B) (hB_ne : B.Nonempty) :
+    Set.ncard B * Set.ncard (orbit G B) = Nat.card X := by
+  obtain ⟨x, hx⟩ := hB_ne
+  rw [ncard_block_eq_relindex hB hx, ← index_stabilizer,
+      Subgroup.relindex_mul_index (hB.stabilizer_le hx), index_stabilizer_of_transitive]
+
+/-- The cardinality of a block divides the cardinality of the ambient type -/
+theorem ncard_dvd_card (hB : IsBlock G B) (hB_ne : B.Nonempty) :
+    Set.ncard B ∣ Nat.card X :=
+  Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
+
+/-- A too large block is equal to `univ` -/
+theorem eq_univ_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
+    B = Set.univ := by
+  rcases Set.eq_empty_or_nonempty B with rfl | hB_ne
+  · simp only [Set.ncard_empty, zero_mul, not_lt_zero'] at hB'
+  have key := hB.ncard_block_mul_ncard_orbit_eq hB_ne
+  rw [← key, mul_lt_mul_iff_of_pos_left (by rwa [Set.ncard_pos])] at hB'
+  interval_cases (orbit G B).ncard
+  · rw [mul_zero, eq_comm, Nat.card_eq_zero, or_iff_left hX.not_infinite] at key
+    exact (IsEmpty.exists_iff.mp hB_ne).elim
+  · rw [mul_one, ← Set.ncard_univ] at key
+    rw [Set.eq_of_subset_of_ncard_le (Set.subset_univ B) key.ge]
+
+/-- If a block has too many translates, then it is a (sub)singleton  -/
+theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
+    (hB' : Nat.card X < 2 * Set.ncard (orbit G B)) :
+    B.Subsingleton := by
+  suffices Set.ncard B < 2 by
+    rw [Nat.lt_succ_iff, Set.ncard_le_one_iff_eq] at this
+    cases this with
+    | inl h => rw [h]; exact Set.subsingleton_empty
+    | inr h =>
+      obtain ⟨a, ha⟩ := h; rw [ha]; exact Set.subsingleton_singleton
+  cases Set.eq_empty_or_nonempty B with
+  | inl h => rw [h, Set.ncard_empty]; norm_num
+  | inr h =>
+    rw [← hB.ncard_block_mul_ncard_orbit_eq h, lt_iff_not_ge] at hB'
+    rw [← not_le]
+    exact fun hb ↦ hB' (Nat.mul_le_mul_right _ hb)
+
+/- The assumption `B.Finite` is necessary :
+   For G = ℤ acting on itself, a = 0 and B = ℕ, the translates `k • B` of the statement
+   are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
+   (Remark by Thomas Browning) -/
+-- Note : add {B} because otherwise Lean includes `hB : IsBlock G B`
+/-- The intersection of the translates of a *finite* subset which contain a given point
+is a block (Wielandt, th. 7.3 )-/
+theorem of_subset {B : Set X} (a : X) (hfB : B.Finite) :
+    IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
+  let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B
+  cases' Set.eq_empty_or_nonempty B with hfB_e hfB_ne
+  · simp [hfB_e, isBlock_univ]
+  have hB'₀ : ∀ (k : G) (_ : a ∈ k • B), B' ≤ k • B := by
+    intro k hk
+    exact Set.biInter_subset_of_mem hk
+  have hfB' : B'.Finite := by
+    obtain ⟨b, hb : b ∈ B⟩ := hfB_ne
+    obtain ⟨k, hk : k • b = a⟩ := exists_smul_eq G b a
+    apply Set.Finite.subset (Set.Finite.map _ hfB) (hB'₀ k ⟨b, hb, hk⟩)
+  have hag : ∀ g : G, a ∈ g • B' → B' ≤ g • B' :=  by
+    intro g hg x hx
+    -- a = g • b; b ∈ B'; a ∈ k • B → b ∈ k • B
+    simp only [B', Set.mem_iInter, Set.mem_smul_set_iff_inv_smul_mem,
+      smul_smul, ← mul_inv_rev] at hg hx ⊢
+    exact fun _ ↦ hx _ ∘ hg _
+  have hag' (g : G) (hg : a ∈ g • B') : B' = g • B' := by
+    rw [eq_comm, ← mem_stabilizer_iff, mem_stabilizer_of_finite_iff_le_smul _ hfB']
+    exact hag g hg
+  rw [mk_notempty_one]
+  intro g hg
+  rw [← Set.nonempty_iff_ne_empty] at hg
+  obtain ⟨b : X, hb' : b ∈ g • B', hb : b ∈ B'⟩ := Set.nonempty_def.mp hg
+  obtain ⟨k : G, hk : k • a = b⟩ := exists_smul_eq G a b
+  have hak : a ∈ k⁻¹ • B' := by
+    refine ⟨b, hb, ?_⟩
+    simp only [← hk, inv_smul_smul]
+  have hagk : a ∈ (k⁻¹ * g) • B' := by
+    rw [mul_smul, Set.mem_smul_set_iff_inv_smul_mem, inv_inv, hk]
+    exact hb'
+  have hkB' : B' = k⁻¹ • B' := hag' k⁻¹ hak
+  have hgkB' : B' = (k⁻¹ * g) • B' := hag' (k⁻¹ * g) hagk
+  rw [mul_smul] at hgkB'
+  rw [← smul_eq_iff_eq_inv_smul] at hkB' hgkB'
+  rw [← hgkB', hkB']
+
+end IsBlock
+
+end Finite
 
 end Group
 

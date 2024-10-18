@@ -153,7 +153,7 @@ example {k : Type _} [Semiring k] [Nontrivial k] :
     (Finsupp.comapSMul : SMul k (k →₀ k)) ≠ Finsupp.smulZeroClass.toSMul := by
   obtain ⟨u : k, hu⟩ := exists_ne (1 : k)
   intro h
-  simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, DFunLike.ext_iff] at h
+  simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
@@ -167,7 +167,7 @@ example {k : Type _} [Semiring k] [Nontrivial kˣ] :
   obtain ⟨u : kˣ, hu⟩ := exists_ne (1 : kˣ)
   haveI : Nontrivial k := ⟨⟨u, 1, Units.ext.ne hu⟩⟩
   intro h
-  simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, DFunLike.ext_iff] at h
+  simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
@@ -191,14 +191,14 @@ open Polynomial
 example [Semiring R] [Nontrivial R] :
     Polynomial.hasSMulPi _ _ ≠ (Pi.instSMul : SMul R[X] (R → R[X])) := by
   intro h
-  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, Polynomial.ext_iff] at h
+  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, Polynomial.ext_iff] at h
   simpa using h X 1 1 0
 
 /-- `Polynomial.hasSMulPi'` forms a diamond with `Pi.instSMul`. -/
 example [CommSemiring R] [Nontrivial R] :
     Polynomial.hasSMulPi' _ _ _ ≠ (Pi.instSMul : SMul R[X] (R → R[X])) := by
   intro h
-  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, Polynomial.ext_iff] at h
+  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, Polynomial.ext_iff] at h
   simpa using h X 1 1 0
 
 -- fails `with_reducible_and_instances` #10906
