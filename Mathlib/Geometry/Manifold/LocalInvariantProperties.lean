@@ -338,6 +338,13 @@ theorem liftPropWithinAt_inter (ht : t ∈ 𝓝 x) :
     LiftPropWithinAt P g (s ∩ t) x ↔ LiftPropWithinAt P g s x :=
   hG.liftPropWithinAt_inter' (mem_nhdsWithin_of_mem_nhds ht)
 
+theorem liftPropWithinAt_congr_set (hu : s =ᶠ[𝓝 x] t) :
+    LiftPropWithinAt P g s x ↔ LiftPropWithinAt P g t x := by
+  rw [← hG.liftPropWithinAt_inter (s := s) hu, ← hG.liftPropWithinAt_inter (s := t) hu,
+    ← eq_iff_iff]
+  congr 1
+  aesop
+
 theorem liftPropAt_of_liftPropWithinAt (h : LiftPropWithinAt P g s x) (hs : s ∈ 𝓝 x) :
     LiftPropAt P g x := by
   rwa [← univ_inter s, hG.liftPropWithinAt_inter hs] at h

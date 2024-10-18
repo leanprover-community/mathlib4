@@ -811,6 +811,18 @@ theorem contMDiffWithinAt_iff_contMDiffWithinAt_nhdsWithin
 
 /-! ### Congruence lemmas -/
 
+theorem contMDiffWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+    ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x :=
+  (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_congr_set h
+/-- Being `C^n` in a set only depends on the germ of the set. Version where one only requires
+the two sets to coincide locally in the complement of a point `y`. -/
+theorem contMDiffWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x := by
+  have : T1Space M := I.t1Space M
+  have : (insert x s : Set M) =ᶠ[𝓝 x] (insert x t : Set M) := by exact?
+  rw [← contMDiffWithinAt_insert_self (s := s), ← contMDiffWithinAt_insert_self (s := t)]
+  exact contMDiffWithinAt_congr_set this
+
 theorem ContMDiffWithinAt.congr (h : ContMDiffWithinAt I I' n f s x) (h₁ : ∀ y ∈ s, f₁ y = f y)
     (hx : f₁ x = f x) : ContMDiffWithinAt I I' n f₁ s x :=
   (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_congr h h₁ hx
