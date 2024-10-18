@@ -483,7 +483,7 @@ class Functor.Braided (F : C ⥤ D) extends F.Monoidal, F.LaxBraided where
 
 @[simp, reassoc]
 lemma Functor.map_braiding (F : C ⥤ D) (X Y : C) [F.Braided] :
-  F.map (β_ X Y).hom =
+    F.map (β_ X Y).hom =
     δ F X Y ≫ (β_ (F.obj X) (F.obj Y)).hom ≫ μ F Y X := by
   rw [← Functor.Braided.braided, δ_μ_assoc]
 
