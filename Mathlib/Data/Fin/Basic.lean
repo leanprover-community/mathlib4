@@ -626,6 +626,9 @@ theorem leftInverse_cast (eq : n = m) : LeftInverse (cast eq.symm) (cast eq) :=
 theorem rightInverse_cast (eq : n = m) : RightInverse (cast eq.symm) (cast eq) :=
   fun _ => rfl
 
+theorem cast_lt_cast (eq : n = m) {a b : Fin n} : cast eq a < cast eq b ↔ a < b :=
+  Iff.rfl
+
 theorem cast_le_cast (eq : n = m) {a b : Fin n} : cast eq a ≤ cast eq b ↔ a ≤ b :=
   Iff.rfl
 
