@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Group.IsTorsionFree.Basic
 
 /-!
 # Lemmas about the interaction of power operations with order

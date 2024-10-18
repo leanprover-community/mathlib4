@@ -3,10 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.IsTorsionFree.Defs
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Prod
 
 /-!
 # Instances about `IsMulTorsionFree`
