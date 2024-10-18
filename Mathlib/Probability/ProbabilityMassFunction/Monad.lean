@@ -156,7 +156,7 @@ theorem toOuterMeasure_bind_apply :
     _ = ∑' (b) (a), p a * if b ∈ s then f a b else 0 := tsum_congr fun b => by split_ifs <;> simp
     _ = ∑' (a) (b), p a * if b ∈ s then f a b else 0 :=
       (tsum_comm' ENNReal.summable (fun _ => ENNReal.summable) fun _ => ENNReal.summable)
-    _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 := tsum_congr fun a => ENNReal.tsum_mul_left
+    _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 := tsum_congr fun _ => ENNReal.tsum_mul_left
     _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 :=
       (tsum_congr fun a => (congr_arg fun x => p a * x) <| tsum_congr fun b => by split_ifs <;> rfl)
     _ = ∑' a, p a * (f a).toOuterMeasure s :=

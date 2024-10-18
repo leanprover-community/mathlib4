@@ -142,7 +142,7 @@ theorem isTopologicalBasis_of_isOpen_of_nhds {s : Set (Set α)} (h_open : ∀ u 
     IsTopologicalBasis s :=
   .of_hasBasis_nhds <| fun a ↦
     (nhds_basis_opens a).to_hasBasis' (by simpa [and_assoc] using h_nhds a)
-      fun t ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat
+      fun _ ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat
 
 /-- A set `s` is in the neighbourhood of `a` iff there is some basis set `t`, which
 contains `a` and is itself contained in `s`. -/

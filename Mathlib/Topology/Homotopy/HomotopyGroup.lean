@@ -111,6 +111,11 @@ theorem ext (f g : Ω^ N X x) (H : ∀ y, f y = g y) : f = g :=
 theorem mk_apply (f : C(I^N, X)) (H y) : (⟨f, H⟩ : Ω^ N X x) y = f y :=
   rfl
 
+instance instContinuousEval : ContinuousEval (Ω^ N X x) (I^N) X :=
+  .of_continuous_forget continuous_subtype_val
+
+instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := inferInstance
+
 /-- Copy of a `GenLoop` with a new map from the unit cube equal to the old one.
   Useful to fix definitional equalities. -/
 def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
@@ -184,7 +189,7 @@ def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const where
 theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
   Path.continuous_uncurry_iff.1 <|
     Continuous.subtype_mk
-      (ContinuousMap.continuous_eval.comp <|
+      (continuous_eval.comp <|
         Continuous.prodMap
           (ContinuousMap.continuous_curry.comp <|
             (ContinuousMap.continuous_comp_left _).comp continuous_subtype_val)
@@ -248,7 +253,7 @@ def homotopyTo (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 (Cube.boundary
   ((⟨_, ContinuousMap.continuous_curry⟩ : C(_, _)).comp <|
       (cCompInsert i).comp H.toContinuousMap.curry).uncurry
 
--- porting note (#11083): `@[simps]` no longer too slow in Lean 4 but does not generate this lemma.
+-- porting note: `@[simps]` generates this lemma but it's named `homotopyTo_apply_apply` instead
 theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| Cube.boundary N)
     (t : I × I) (tₙ : I^{ j // j ≠ i }) :
     homotopyTo i H t tₙ = H (t.fst, Cube.insertAt i (t.snd, tₙ)) :=
@@ -276,7 +281,6 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
   (ContinuousMap.comp ⟨_, ContinuousMap.continuous_uncurry⟩
           (ContinuousMap.comp ⟨Subtype.val, by continuity⟩ H.toContinuousMap).curry).uncurry.comp <|
     (ContinuousMap.id I).prodMap (Cube.splitAt i).toContinuousMap
--- porting note (#11083): @[simps!] no longer too slow in Lean 4.
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     (toLoop i p).Homotopic (toLoop i q) → Homotopic p q := by
@@ -373,7 +377,6 @@ def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
   invFun y := ⟨ContinuousMap.const _ y, fun _ ⟨i, _⟩ => isEmptyElim i⟩
   left_inv f := by ext; exact congr_arg f (Subsingleton.elim _ _)
   right_inv _ := rfl
-  continuous_toFun := (ContinuousMap.continuous_eval_const (0 : N → I)).comp continuous_induced_dom
   continuous_invFun := ContinuousMap.const'.2.subtype_mk _
 
 /-- The homotopy "group" indexed by an empty type is in bijection with

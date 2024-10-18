@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 -/
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.List.Count
 import Mathlib.Combinatorics.SimpleGraph.Path
 
 /-!
@@ -78,9 +79,7 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     (hp : p.IsHamiltonianCycle) : (p.map f).IsHamiltonianCycle where
   toIsCycle := hp.isCycle.map hf.injective
   isHamiltonian_tail := by
-    simp only [IsHamiltonian, support_tail, support_map, ne_eq, List.map_eq_nil_iff, support_ne_nil,
-      not_false_eq_true, List.count_tail, List.head_map, beq_iff_eq, hf.surjective.forall,
-      hf.injective, List.count_map_of_injective]
+    simp only [IsHamiltonian, hf.surjective.forall]
     intro x
     rcases p with (_ | ⟨y, p⟩)
     · cases hp.ne_nil rfl

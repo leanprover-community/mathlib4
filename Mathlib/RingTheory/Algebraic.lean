@@ -69,7 +69,7 @@ theorem Algebra.transcendental_iff_not_isAlgebraic :
 
 /-- A subalgebra is algebraic if and only if it is algebraic as an algebra. -/
 theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
-    S.IsAlgebraic ↔ @Algebra.IsAlgebraic R S _ _ S.algebra := by
+    S.IsAlgebraic ↔ Algebra.IsAlgebraic R S := by
   delta Subalgebra.IsAlgebraic
   rw [Subtype.forall', Algebra.isAlgebraic_def]
   refine forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl ?_

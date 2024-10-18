@@ -276,7 +276,7 @@ def supported (s : Set α) : Submodule R (α →₀ M) where
     simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
     intro h ha
     exact (ha rfl).elim
-  smul_mem' a p hp := Subset.trans (Finset.coe_subset.2 support_smul) hp
+  smul_mem' _ _ hp := Subset.trans (Finset.coe_subset.2 support_smul) hp
 
 variable {M}
 
@@ -1266,7 +1266,7 @@ theorem mem_span_finset {s : Finset M} {x : M} :
       (Finsupp.mem_span_image_iff_linearCombination _).1
         (show x ∈ span R (_root_.id '' (↑s : Set M)) by rwa [Set.image_id])
     ⟨v, hvx ▸ (linearCombination_apply_of_mem_supported _ hvs).symm⟩,
-    fun ⟨f, hf⟩ => hf ▸ sum_mem fun i hi => smul_mem _ _ <| subset_span hi⟩
+    fun ⟨_, hf⟩ => hf ▸ sum_mem fun _ hi => smul_mem _ _ <| subset_span hi⟩
 
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
 `m` can be written as a finite `R`-linear combination of elements of `s`.
@@ -1331,8 +1331,7 @@ def splittingOfFinsuppSurjective (f : M →ₗ[R] α →₀ R) (s : Surjective f
 
 theorem splittingOfFinsuppSurjective_splits (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     f.comp (splittingOfFinsuppSurjective f s) = LinearMap.id := by
-  -- Porting note: `ext` can't find appropriate theorems.
-  refine lhom_ext' fun x => ext_ring <| Finsupp.ext fun y => ?_
+  ext x
   dsimp [splittingOfFinsuppSurjective]
   congr
   rw [sum_single_index, one_smul]
@@ -1357,8 +1356,7 @@ def splittingOfFunOnFintypeSurjective [Finite α] (f : M →ₗ[R] α → R) (s 
 theorem splittingOfFunOnFintypeSurjective_splits [Finite α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : f.comp (splittingOfFunOnFintypeSurjective f s) = LinearMap.id := by
   classical
-  -- Porting note: `ext` can't find appropriate theorems.
-  refine pi_ext' fun x => ext_ring <| funext fun y => ?_
+  ext x y
   dsimp [splittingOfFunOnFintypeSurjective]
   rw [linearEquivFunOnFinite_symm_single, Finsupp.sum_single_index, one_smul,
     (s (Finsupp.single x 1)).choose_spec, Finsupp.single_eq_pi_single]

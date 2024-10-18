@@ -126,7 +126,7 @@ variable (p) in
 /-- The projection on the `i`-th coordinate of `WithLp p (∀ i, α i)`, as a linear map. -/
 @[simps!]
 def projₗ (i : ι) : PiLp p β →ₗ[𝕜] β i :=
-  (LinearMap.proj i : (∀ i, β i) →ₗ[𝕜] β i) ∘ₗ (WithLp.linearEquiv 2 𝕜 (∀ i, β i)).toLinearMap
+  (LinearMap.proj i : (∀ i, β i) →ₗ[𝕜] β i) ∘ₗ (WithLp.linearEquiv p 𝕜 (∀ i, β i)).toLinearMap
 
 end
 
@@ -747,7 +747,7 @@ def _root_.LinearIsometryEquiv.piLpCurry :
   toLinearEquiv :=
     WithLp.linearEquiv _ _ _
       ≪≫ₗ LinearEquiv.piCurry 𝕜 α
-      ≪≫ₗ (LinearEquiv.piCongrRight fun i => (WithLp.linearEquiv _ _ _).symm)
+      ≪≫ₗ (LinearEquiv.piCongrRight fun _ => (WithLp.linearEquiv _ _ _).symm)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
   norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
     simp_rw [← coe_nnnorm, NNReal.coe_inj]
@@ -832,7 +832,6 @@ theorem edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
       edist b₁ b₂ := by
-  -- Porting note: was `simpa using`
   simp only [edist_nndist, nndist_equiv_symm_single_same p β i b₁ b₂]
 
 end Single
