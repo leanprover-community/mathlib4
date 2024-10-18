@@ -317,7 +317,7 @@ lemma right_unitality (X : C) :
 
 @[reassoc (attr := simp)]
 theorem δ_natural {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
-      δ F X X' ≫ (F.map f ⊗ F.map g) = F.map (f ⊗ g) ≫ δ F Y Y' := by
+    δ F X X' ≫ (F.map f ⊗ F.map g) = F.map (f ⊗ g) ≫ δ F Y Y' := by
   simp [tensorHom_def]
 
 @[reassoc (attr := simp)]
