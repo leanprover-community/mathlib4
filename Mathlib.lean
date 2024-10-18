@@ -653,6 +653,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.WithTop
@@ -867,6 +868,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
+import Mathlib.AlgebraicGeometry.Morphisms.Proper
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
