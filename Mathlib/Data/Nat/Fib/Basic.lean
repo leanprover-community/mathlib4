@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
