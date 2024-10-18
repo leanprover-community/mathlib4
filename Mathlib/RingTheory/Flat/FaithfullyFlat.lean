@@ -189,8 +189,8 @@ comments in the proof. Since `M` is flat, `- ⊗ M` preserves exact sequences.
 On the other hand, if `- ⊗ M` preserves and reflects exact sequences, then `M` is faithfully flat.
 - `M` is flat because `- ⊗ M` preserves exact sequences.
 - We need to show that if `N ⊗ M = 0` then `N = 0`. Consider the sequence `N -0-> N -0-> 0`. After
-  tensoring with `M`, we get `N ⊗ M -0-> N ⊗ M -0-> 0` which is exact because `N ⊗ M = 0`. Since `- ⊗ M`
-  reflects exact sequences, `N = 0`.
+  tensoring with `M`, we get `N ⊗ M -0-> N ⊗ M -0-> 0` which is exact because `N ⊗ M = 0`.
+  Since `- ⊗ M` reflects exact sequences, `N = 0`.
 -/
 
 section arbitrary_universe
@@ -219,7 +219,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
   have hE : Nontrivial E :=
     ⟨0, ⟨⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩, Subtype.coe_ne_coe.1 hn1.symm⟩⟩
 
-  -- Since `N1 ⊗ M -> N2 ⊗ M -> N3 ⊗ M` is exact, we have `l23 (l12 n1) ⊗ₜ[R] m = 0` for all `m : M`.
+  -- Since `N1 ⊗ M -> N2 ⊗ M -> N3 ⊗ M` is exact, we have `l23 (l12 n1) ⊗ₜ m = 0` for all `m : M`.
   have eq1 : ∀ (m : M), l23 (l12 n1) ⊗ₜ[R] m = 0 := fun m ↦
     ex.apply_apply_eq_zero (n1 ⊗ₜ[R] m)
   -- Then `E ⊗ M = 0`. Indeed,
