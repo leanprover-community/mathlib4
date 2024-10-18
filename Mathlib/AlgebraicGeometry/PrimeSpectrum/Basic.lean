@@ -3,14 +3,14 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.PrimeSpectrum
-import Mathlib.Topology.Irreducible
-import Mathlib.Topology.Sets.Closeds
+import Mathlib.RingTheory.KrullDimension.Basic
+import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Sober
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
@@ -624,17 +624,20 @@ def closedPoint : PrimeSpectrum R :=
 
 variable {R}
 
-theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S]
-    (f : R →+* S) : IsLocalRingHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
+theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S]
+    (f : R →+* S) : IsLocalHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
   -- Porting note: inline `this` does **not** work
   have := (local_hom_TFAE f).out 0 4
   rw [this, PrimeSpectrum.ext_iff]
   rfl
 
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_iff_comap_closedPoint := isLocalHom_iff_comap_closedPoint
+
 @[simp]
 theorem comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S] (f : R →+* S)
-    [IsLocalRingHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
-  (isLocalRingHom_iff_comap_closedPoint f).mp inferInstance
+    [IsLocalHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
+  (isLocalHom_iff_comap_closedPoint f).mp inferInstance
 
 theorem specializes_closedPoint (x : PrimeSpectrum R) : x ⤳ closedPoint R :=
   (PrimeSpectrum.le_iff_specializes _ _).mp (LocalRing.le_maximalIdeal x.2.1)
@@ -647,6 +650,10 @@ theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
   · rintro rfl
     trivial
 
+lemma closed_point_mem_iff {U : TopologicalSpace.Opens (PrimeSpectrum R)} :
+    closedPoint R ∈ U ↔ U = ⊤ :=
+  ⟨(eq_top_iff.mpr fun x _ ↦ (specializes_closedPoint x).mem_open U.2 ·), (· ▸ trivial)⟩
+
 @[simp]
 theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [LocalRing T]
     (x : PrimeSpectrum (ResidueField T)) : PrimeSpectrum.comap (residue T) x = closedPoint T := by
@@ -655,3 +662,12 @@ theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [LocalRing T]
   exact Ideal.mk_ker
 
 end LocalRing
+
+section KrullDimension
+
+theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [CommRing R] :
+    topologicalKrullDim (PrimeSpectrum R) = ringKrullDim R :=
+  Order.krullDim_orderDual.symm.trans <| Order.krullDim_eq_of_orderIso
+  (PrimeSpectrum.pointsEquivIrreducibleCloseds R).symm
+
+end KrullDimension

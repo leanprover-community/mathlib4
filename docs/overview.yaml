@@ -209,7 +209,7 @@ Topology:
     cluster point: 'ClusterPt'
     Hausdorff space: 'T2Space'
     sequential space: 'SequentialSpace'
-    extension by continuity: 'DenseInducing.extend'
+    extension by continuity: 'IsDenseInducing.extend'
     compactness in terms of filters: 'IsCompact'
     compactness in terms of open covers (Borel-Lebesgue): 'isCompact_iff_finite_subcover'
     connectedness: 'ConnectedSpace'
@@ -468,7 +468,7 @@ Data structures:
   Maps:
     key-value map: 'AList'
     red-black map: 'Batteries.RBMap'
-    hash map: 'Batteries.HashMap'
+    hash map: 'Std.HashMap'
     finitely supported function: 'Finsupp'
     finite map: 'Finmap'
 

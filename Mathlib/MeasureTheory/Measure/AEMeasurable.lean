@@ -413,7 +413,7 @@ lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β} (hf : AEMeasu
 
 instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := by
   by_cases H : AEMeasurable f μ
-  · rw [← sum_sFiniteSeq μ] at H ⊢
+  · rw [← sum_sfiniteSeq μ] at H ⊢
     rw [map_sum H]
     infer_instance
   · rw [map_of_not_aemeasurable H]
