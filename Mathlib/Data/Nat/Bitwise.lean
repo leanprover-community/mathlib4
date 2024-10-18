@@ -3,13 +3,14 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
-import Mathlib.Algebra.Ring.Nat
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Common
-import Mathlib.Algebra.NeZero
 
 /-!
 # Bitwise operations on natural numbers
@@ -87,14 +88,6 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h2, h4] <;> split_ifs
     <;> simp_all (config := {decide := true}) [two_mul]
-
-lemma bit_mod_two (a : Bool) (x : ℕ) :
-    bit a x % 2 = if a then 1 else 0 := by
-  #adaptation_note /-- nightly-2024-03-16: simp was
-  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, ← mul_two,
-  --   Bool.cond_eq_ite] -/
-  simp only [bit, ite_apply, ← mul_two, Bool.cond_eq_ite]
-  split_ifs <;> simp [Nat.add_mod]
 
 @[simp]
 lemma bit_mod_two_eq_zero_iff (a x) :
