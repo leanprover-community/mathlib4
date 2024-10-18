@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
 import Mathlib.Algebra.Module.Submodule.Ker
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Basics on bilinear maps
