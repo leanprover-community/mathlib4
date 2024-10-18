@@ -20,7 +20,7 @@ This file defines instances for additive and multiplicative actions on the binar
 
 assert_not_exists MonoidWithZero
 
-variable {M N P α β γ : Type*}
+variable {M N α β : Type*}
 
 namespace Sum
 

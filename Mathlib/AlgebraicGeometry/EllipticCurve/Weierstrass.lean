@@ -3,6 +3,7 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, David Kurniadi Angdinata
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.CubicDiscriminant
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
@@ -33,8 +34,6 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
  * `WeierstrassCurve.ofJ0`: a Weierstrass curve whose j-invariant is 0.
  * `WeierstrassCurve.ofJ1728`: a Weierstrass curve whose j-invariant is 1728.
  * `WeierstrassCurve.ofJ`: a Weierstrass curve whose j-invariant is neither 0 nor 1728.
- * `WeierstrassCurve.VariableChange`: a change of variables of Weierstrass curves.
- * `WeierstrassCurve.variableChange`: the Weierstrass curve induced by a change of variables.
  * `WeierstrassCurve.map`: the Weierstrass curve mapped over a ring homomorphism.
  * `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
  * `EllipticCurve`: an elliptic curve over a commutative ring.
@@ -48,8 +47,6 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
 
  * `WeierstrassCurve.twoTorsionPolynomial_disc`: the discriminant of a Weierstrass curve is a
     constant factor of the cubic discriminant of its 2-torsion polynomial.
- * `EllipticCurve.variableChange_j`: the j-invariant of an elliptic curve is invariant under an
-    admissible linear change of variables.
  * `EllipticCurve.ofJ_j`: the j-invariant of `EllipticCurve.ofJ` is equal to j.
 
 ## Implementation notes
@@ -106,22 +103,18 @@ section Quantity
 
 /-! ### Standard quantities -/
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₂` coefficient of a Weierstrass curve. -/
 def b₂ : R :=
   W.a₁ ^ 2 + 4 * W.a₂
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₄` coefficient of a Weierstrass curve. -/
 def b₄ : R :=
   2 * W.a₄ + W.a₁ * W.a₃
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₆` coefficient of a Weierstrass curve. -/
 def b₆ : R :=
   W.a₃ ^ 2 + 4 * W.a₆
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₈` coefficient of a Weierstrass curve. -/
 def b₈ : R :=
   W.a₁ ^ 2 * W.a₆ + 4 * W.a₂ * W.a₆ - W.a₁ * W.a₃ * W.a₄ + W.a₂ * W.a₃ ^ 2 - W.a₄ ^ 2
@@ -130,17 +123,14 @@ lemma b_relation : 4 * W.b₈ = W.b₂ * W.b₆ - W.b₄ ^ 2 := by
   simp only [b₂, b₄, b₆, b₈]
   ring1
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `c₄` coefficient of a Weierstrass curve. -/
 def c₄ : R :=
   W.b₂ ^ 2 - 24 * W.b₄
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `c₆` coefficient of a Weierstrass curve. -/
 def c₆ : R :=
   -W.b₂ ^ 3 + 36 * W.b₂ * W.b₄ - 216 * W.b₆
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The discriminant `Δ` of a Weierstrass curve. If `R` is a field, then this polynomial vanishes
 if and only if the cubic curve cut out by this equation is singular. Sometimes only defined up to
 sign in the literature; we choose the sign used by the LMFDB. For more discussion, see
@@ -152,169 +142,89 @@ lemma c_relation : 1728 * W.Δ = W.c₄ ^ 3 - W.c₆ ^ 2 := by
   simp only [b₂, b₄, b₆, b₈, c₄, c₆, Δ]
   ring1
 
+section CharTwo
+
+variable [CharP R 2]
+
+lemma b₂_of_char_two : W.b₂ = W.a₁ ^ 2 := by
+  rw [b₂]
+  linear_combination 2 * W.a₂ * CharP.cast_eq_zero R 2
+
+lemma b₄_of_char_two : W.b₄ = W.a₁ * W.a₃ := by
+  rw [b₄]
+  linear_combination W.a₄ * CharP.cast_eq_zero R 2
+
+lemma b₆_of_char_two : W.b₆ = W.a₃ ^ 2 := by
+  rw [b₆]
+  linear_combination 2 * W.a₆ * CharP.cast_eq_zero R 2
+
+lemma b₈_of_char_two :
+    W.b₈ = W.a₁ ^ 2 * W.a₆ + W.a₁ * W.a₃ * W.a₄ + W.a₂ * W.a₃ ^ 2 + W.a₄ ^ 2 := by
+  rw [b₈]
+  linear_combination (2 * W.a₂ * W.a₆ - W.a₁ * W.a₃ * W.a₄ - W.a₄ ^ 2) * CharP.cast_eq_zero R 2
+
+lemma c₄_of_char_two : W.c₄ = W.a₁ ^ 4 := by
+  rw [c₄, b₂_of_char_two]
+  linear_combination -12 * W.b₄ * CharP.cast_eq_zero R 2
+
+lemma c₆_of_char_two : W.c₆ = W.a₁ ^ 6 := by
+  rw [c₆, b₂_of_char_two]
+  linear_combination (18 * W.a₁ ^ 2 * W.b₄ - 108 * W.b₆ - W.a₁ ^ 6) * CharP.cast_eq_zero R 2
+
+lemma Δ_of_char_two : W.Δ = W.a₁ ^ 4 * W.b₈ + W.a₃ ^ 4 + W.a₁ ^ 3 * W.a₃ ^ 3 := by
+  rw [Δ, b₂_of_char_two, b₄_of_char_two, b₆_of_char_two]
+  linear_combination (-W.a₁ ^ 4 * W.b₈ - 14 * W.a₃ ^ 4) * CharP.cast_eq_zero R 2
+
+lemma b_relation_of_char_two : W.b₂ * W.b₆ = W.b₄ ^ 2 := by
+  linear_combination -W.b_relation + 2 * W.b₈ * CharP.cast_eq_zero R 2
+
+lemma c_relation_of_char_two : W.c₄ ^ 3 = W.c₆ ^ 2 := by
+  linear_combination -W.c_relation + 864 * W.Δ * CharP.cast_eq_zero R 2
+
+end CharTwo
+
+section CharThree
+
+variable [CharP R 3]
+
+lemma b₂_of_char_three : W.b₂ = W.a₁ ^ 2 + W.a₂ := by
+  rw [b₂]
+  linear_combination W.a₂ * CharP.cast_eq_zero R 3
+
+lemma b₄_of_char_three : W.b₄ = -W.a₄ + W.a₁ * W.a₃ := by
+  rw [b₄]
+  linear_combination W.a₄ * CharP.cast_eq_zero R 3
+
+lemma b₆_of_char_three : W.b₆ = W.a₃ ^ 2 + W.a₆ := by
+  rw [b₆]
+  linear_combination W.a₆ * CharP.cast_eq_zero R 3
+
+lemma b₈_of_char_three :
+    W.b₈ = W.a₁ ^ 2 * W.a₆ + W.a₂ * W.a₆ - W.a₁ * W.a₃ * W.a₄ + W.a₂ * W.a₃ ^ 2 - W.a₄ ^ 2 := by
+  rw [b₈]
+  linear_combination W.a₂ * W.a₆ * CharP.cast_eq_zero R 3
+
+lemma c₄_of_char_three : W.c₄ = W.b₂ ^ 2 := by
+  rw [c₄]
+  linear_combination -8 * W.b₄ * CharP.cast_eq_zero R 3
+
+lemma c₆_of_char_three : W.c₆ = -W.b₂ ^ 3 := by
+  rw [c₆]
+  linear_combination (12 * W.b₂ * W.b₄ - 72 * W.b₆) * CharP.cast_eq_zero R 3
+
+lemma Δ_of_char_three : W.Δ = -W.b₂ ^ 2 * W.b₈ - 8 * W.b₄ ^ 3 := by
+  rw [Δ]
+  linear_combination (-9 * W.b₆ ^ 2 + 3 * W.b₂ * W.b₄ * W.b₆) * CharP.cast_eq_zero R 3
+
+lemma b_relation_of_char_three : W.b₈ = W.b₂ * W.b₆ - W.b₄ ^ 2 := by
+  linear_combination W.b_relation - W.b₈ * CharP.cast_eq_zero R 3
+
+lemma c_relation_of_char_three : W.c₄ ^ 3 = W.c₆ ^ 2 := by
+  linear_combination -W.c_relation + 576 * W.Δ * CharP.cast_eq_zero R 3
+
+end CharThree
+
 end Quantity
-
-section VariableChange
-
-/-! ### Variable changes -/
-
-/-- An admissible linear change of variables of Weierstrass curves defined over a ring `R` given by
-a tuple $(u, r, s, t)$ for some $u \in R^\times$ and some $r, s, t \in R$. As a matrix, it is
-$\begin{pmatrix} u^2 & 0 & r \cr u^2s & u^3 & t \cr 0 & 0 & 1 \end{pmatrix}$. -/
-@[ext]
-structure VariableChange (R : Type u) [CommRing R] where
-  /-- The `u` coefficient of an admissible linear change of variables, which must be a unit. -/
-  u : Rˣ
-  /-- The `r` coefficient of an admissible linear change of variables. -/
-  r : R
-  /-- The `s` coefficient of an admissible linear change of variables. -/
-  s : R
-  /-- The `t` coefficient of an admissible linear change of variables. -/
-  t : R
-
-namespace VariableChange
-
-variable (C C' C'' : VariableChange R)
-
-/-- The identity linear change of variables given by the identity matrix. -/
-def id : VariableChange R :=
-  ⟨1, 0, 0, 0⟩
-
-/-- The composition of two linear changes of variables given by matrix multiplication. -/
-def comp : VariableChange R where
-  u := C.u * C'.u
-  r := C.r * C'.u ^ 2 + C'.r
-  s := C'.u * C.s + C'.s
-  t := C.t * C'.u ^ 3 + C.r * C'.s * C'.u ^ 2 + C'.t
-
-/-- The inverse of a linear change of variables given by matrix inversion. -/
-def inv : VariableChange R where
-  u := C.u⁻¹
-  r := -C.r * C.u⁻¹ ^ 2
-  s := -C.s * C.u⁻¹
-  t := (C.r * C.s - C.t) * C.u⁻¹ ^ 3
-
-lemma id_comp (C : VariableChange R) : comp id C = C := by
-  simp only [comp, id, zero_add, zero_mul, mul_zero, one_mul]
-
-lemma comp_id (C : VariableChange R) : comp C id = C := by
-  simp only [comp, id, add_zero, mul_zero, one_mul, mul_one, one_pow, Units.val_one]
-
-lemma comp_left_inv (C : VariableChange R) : comp (inv C) C = id := by
-  rw [comp, id, inv]
-  ext <;> dsimp only
-  · exact C.u.inv_mul
-  · linear_combination (norm := ring1) -C.r * pow_mul_pow_eq_one 2 C.u.inv_mul
-  · linear_combination (norm := ring1) -C.s * C.u.inv_mul
-  · linear_combination (norm := ring1) (C.r * C.s - C.t) * pow_mul_pow_eq_one 3 C.u.inv_mul
-      + -C.r * C.s * pow_mul_pow_eq_one 2 C.u.inv_mul
-
-lemma comp_assoc (C C' C'' : VariableChange R) : comp (comp C C') C'' = comp C (comp C' C'') := by
-  ext <;> simp only [comp, Units.val_mul] <;> ring1
-
-instance instGroup : Group (VariableChange R) where
-  one := id
-  inv := inv
-  mul := comp
-  one_mul := id_comp
-  mul_one := comp_id
-  inv_mul_cancel := comp_left_inv
-  mul_assoc := comp_assoc
-
-end VariableChange
-
-variable (C : VariableChange R)
-
-/-- The Weierstrass curve over `R` induced by an admissible linear change of variables
-$(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$ for some $u \in R^\times$ and some $r, s, t \in R$. -/
-@[simps]
-def variableChange : WeierstrassCurve R where
-  a₁ := C.u⁻¹ * (W.a₁ + 2 * C.s)
-  a₂ := C.u⁻¹ ^ 2 * (W.a₂ - C.s * W.a₁ + 3 * C.r - C.s ^ 2)
-  a₃ := C.u⁻¹ ^ 3 * (W.a₃ + C.r * W.a₁ + 2 * C.t)
-  a₄ := C.u⁻¹ ^ 4 * (W.a₄ - C.s * W.a₃ + 2 * C.r * W.a₂ - (C.t + C.r * C.s) * W.a₁ + 3 * C.r ^ 2
-    - 2 * C.s * C.t)
-  a₆ := C.u⁻¹ ^ 6 * (W.a₆ + C.r * W.a₄ + C.r ^ 2 * W.a₂ + C.r ^ 3 - C.t * W.a₃ - C.t ^ 2
-    - C.r * C.t * W.a₁)
-
-lemma variableChange_id : W.variableChange VariableChange.id = W := by
-  rw [VariableChange.id, variableChange, inv_one, Units.val_one]
-  ext <;> (dsimp only; ring1)
-
-lemma variableChange_comp (C C' : VariableChange R) (W : WeierstrassCurve R) :
-    W.variableChange (C.comp C') = (W.variableChange C').variableChange C := by
-  simp only [VariableChange.comp, variableChange]
-  ext <;> simp only [mul_inv, Units.val_mul]
-  · linear_combination (norm := ring1) ↑C.u⁻¹ * C.s * 2 * C'.u.inv_mul
-  · linear_combination (norm := ring1)
-      C.s * (-C'.s * 2 - W.a₁) * C.u⁻¹ ^ 2 * ↑C'.u⁻¹ * C'.u.inv_mul
-        + (C.r * 3 - C.s ^ 2) * C.u⁻¹ ^ 2 * pow_mul_pow_eq_one 2 C'.u.inv_mul
-  · linear_combination (norm := ring1)
-      C.r * (C'.s * 2 + W.a₁) * C.u⁻¹ ^ 3 * ↑C'.u⁻¹ * pow_mul_pow_eq_one 2 C'.u.inv_mul
-        + C.t * 2 * C.u⁻¹ ^ 3 * pow_mul_pow_eq_one 3 C'.u.inv_mul
-  · linear_combination (norm := ring1)
-      C.s * (-W.a₃ - C'.r * W.a₁ - C'.t * 2) * C.u⁻¹ ^ 4 * C'.u⁻¹ ^ 3 * C'.u.inv_mul
-        + C.u⁻¹ ^ 4 * C'.u⁻¹ ^ 2 * (C.r * C'.r * 6 + C.r * W.a₂ * 2 - C'.s * C.r * W.a₁ * 2
-          - C'.s ^ 2 * C.r * 2) * pow_mul_pow_eq_one 2 C'.u.inv_mul
-        - C.u⁻¹ ^ 4 * ↑C'.u⁻¹ * (C.s * C'.s * C.r * 2 + C.s * C.r * W.a₁ + C'.s * C.t * 2
-          + C.t * W.a₁) * pow_mul_pow_eq_one 3 C'.u.inv_mul
-        + C.u⁻¹ ^ 4 * (C.r ^ 2 * 3 - C.s * C.t * 2) * pow_mul_pow_eq_one 4 C'.u.inv_mul
-  · linear_combination (norm := ring1)
-      C.r * C.u⁻¹ ^ 6 * C'.u⁻¹ ^ 4 * (C'.r * W.a₂ * 2 - C'.r * C'.s * W.a₁ + C'.r ^ 2 * 3 + W.a₄
-          - C'.s * C'.t * 2 - C'.s * W.a₃ - C'.t * W.a₁) * pow_mul_pow_eq_one 2 C'.u.inv_mul
-        - C.u⁻¹ ^ 6 * C'.u⁻¹ ^ 3 * C.t * (C'.r * W.a₁ + C'.t * 2 + W.a₃)
-          * pow_mul_pow_eq_one 3 C'.u.inv_mul
-        + C.r ^ 2 * C.u⁻¹ ^ 6 * C'.u⁻¹ ^ 2 * (C'.r * 3 + W.a₂ - C'.s * W.a₁ - C'.s ^ 2)
-          * pow_mul_pow_eq_one 4 C'.u.inv_mul
-        - C.r * C.t * C.u⁻¹ ^ 6 * ↑C'.u⁻¹ * (C'.s * 2 + W.a₁) * pow_mul_pow_eq_one 5 C'.u.inv_mul
-        + C.u⁻¹ ^ 6 * (C.r ^ 3 - C.t ^ 2) * pow_mul_pow_eq_one 6 C'.u.inv_mul
-
-instance instMulActionVariableChange : MulAction (VariableChange R) (WeierstrassCurve R) where
-  smul := fun C W => W.variableChange C
-  one_smul := variableChange_id
-  mul_smul := variableChange_comp
-
-@[simp]
-lemma variableChange_b₂ : (W.variableChange C).b₂ = C.u⁻¹ ^ 2 * (W.b₂ + 12 * C.r) := by
-  simp only [b₂, variableChange_a₁, variableChange_a₂]
-  ring1
-
-@[simp]
-lemma variableChange_b₄ :
-    (W.variableChange C).b₄ = C.u⁻¹ ^ 4 * (W.b₄ + C.r * W.b₂ + 6 * C.r ^ 2) := by
-  simp only [b₂, b₄, variableChange_a₁, variableChange_a₃, variableChange_a₄]
-  ring1
-
-@[simp]
-lemma variableChange_b₆ : (W.variableChange C).b₆ =
-    C.u⁻¹ ^ 6 * (W.b₆ + 2 * C.r * W.b₄ + C.r ^ 2 * W.b₂ + 4 * C.r ^ 3) := by
-  simp only [b₂, b₄, b₆, variableChange_a₃, variableChange_a₆]
-  ring1
-
-@[simp]
-lemma variableChange_b₈ : (W.variableChange C).b₈ = C.u⁻¹ ^ 8 *
-    (W.b₈ + 3 * C.r * W.b₆ + 3 * C.r ^ 2 * W.b₄ + C.r ^ 3 * W.b₂ + 3 * C.r ^ 4) := by
-  simp only [b₂, b₄, b₆, b₈, variableChange_a₁, variableChange_a₂, variableChange_a₃,
-    variableChange_a₄, variableChange_a₆]
-  ring1
-
-@[simp]
-lemma variableChange_c₄ : (W.variableChange C).c₄ = C.u⁻¹ ^ 4 * W.c₄ := by
-  simp only [c₄, variableChange_b₂, variableChange_b₄]
-  ring1
-
-@[simp]
-lemma variableChange_c₆ : (W.variableChange C).c₆ = C.u⁻¹ ^ 6 * W.c₆ := by
-  simp only [c₆, variableChange_b₂, variableChange_b₄, variableChange_b₆]
-  ring1
-
-@[simp]
-lemma variableChange_Δ : (W.variableChange C).Δ = C.u⁻¹ ^ 12 * W.Δ := by
-  simp only [b₂, b₄, b₆, b₈, Δ, variableChange_a₁, variableChange_a₂, variableChange_a₃,
-    variableChange_a₄, variableChange_a₆]
-  ring1
-
-end VariableChange
 
 section BaseChange
 
@@ -388,64 +298,6 @@ lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :
   rcases mk.inj h with ⟨_, _, _, _, _⟩
   ext <;> apply_fun _ using hφ <;> assumption
 
-namespace VariableChange
-
-variable (C : VariableChange R)
-
-/-- The change of variables mapped over a ring homomorphism `φ : R →+* A`. -/
-@[simps]
-def map : VariableChange A :=
-  ⟨Units.map φ C.u, φ C.r, φ C.s, φ C.t⟩
-
-variable (A)
-
-/-- The change of variables base changed to an algebra `A` over `R`. -/
-abbrev baseChange [Algebra R A] : VariableChange A :=
-  C.map <| algebraMap R A
-
-variable {A}
-
-@[simp]
-lemma map_id : C.map (RingHom.id R) = C :=
-  rfl
-
-lemma map_map {A : Type v} [CommRing A] (φ : R →+* A) {B : Type w} [CommRing B] (ψ : A →+* B) :
-    (C.map φ).map ψ = C.map (ψ.comp φ) :=
-  rfl
-
-@[simp]
-lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
-    [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
-    [IsScalarTower R S B] (ψ : A →ₐ[S] B) : (C.baseChange A).map ψ = C.baseChange B :=
-  congr_arg C.map <| ψ.comp_algebraMap_of_tower R
-
-lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :
-    Function.Injective <| map (φ := φ) := fun _ _ h => by
-  rcases mk.inj h with ⟨h, _, _, _⟩
-  replace h := (Units.mk.inj h).left
-  ext <;> apply_fun _ using hφ <;> assumption
-
-private lemma id_map : (id : VariableChange R).map φ = id := by
-  simp only [id, map]
-  ext <;> simp only [map_one, Units.val_one, map_zero]
-
-private lemma comp_map (C' : VariableChange R) : (C.comp C').map φ = (C.map φ).comp (C'.map φ) := by
-  simp only [comp, map]
-  ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
-
-/-- The map over a ring homomorphism of a change of variables is a group homomorphism. -/
-def mapHom : VariableChange R →* VariableChange A where
-  toFun := map φ
-  map_one' := id_map φ
-  map_mul' := comp_map φ
-
-end VariableChange
-
-lemma map_variableChange (C : VariableChange R) :
-    (W.map φ).variableChange (C.map φ) = (W.variableChange C).map φ := by
-  simp only [map, variableChange, VariableChange.map]
-  ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
-
 end BaseChange
 
 section TorsionPolynomial
@@ -461,6 +313,36 @@ def twoTorsionPolynomial : Cubic R :=
 lemma twoTorsionPolynomial_disc : W.twoTorsionPolynomial.disc = 16 * W.Δ := by
   simp only [b₂, b₄, b₆, b₈, Δ, twoTorsionPolynomial, Cubic.disc]
   ring1
+
+section CharTwo
+
+variable [CharP R 2]
+
+lemma twoTorsionPolynomial_of_char_two : W.twoTorsionPolynomial = ⟨0, W.b₂, 0, W.b₆⟩ := by
+  rw [twoTorsionPolynomial]
+  ext <;> dsimp
+  · linear_combination 2 * CharP.cast_eq_zero R 2
+  · linear_combination W.b₄ * CharP.cast_eq_zero R 2
+
+lemma twoTorsionPolynomial_disc_of_char_two : W.twoTorsionPolynomial.disc = 0 := by
+  linear_combination W.twoTorsionPolynomial_disc + 8 * W.Δ * CharP.cast_eq_zero R 2
+
+end CharTwo
+
+section CharThree
+
+variable [CharP R 3]
+
+lemma twoTorsionPolynomial_of_char_three : W.twoTorsionPolynomial = ⟨1, W.b₂, -W.b₄, W.b₆⟩ := by
+  rw [twoTorsionPolynomial]
+  ext <;> dsimp
+  · linear_combination CharP.cast_eq_zero R 3
+  · linear_combination W.b₄ * CharP.cast_eq_zero R 3
+
+lemma twoTorsionPolynomial_disc_of_char_three : W.twoTorsionPolynomial.disc = W.Δ := by
+  linear_combination W.twoTorsionPolynomial_disc + 5 * W.Δ * CharP.cast_eq_zero R 3
+
+end CharThree
 
 lemma twoTorsionPolynomial_disc_isUnit [Invertible (2 : R)] :
     IsUnit W.twoTorsionPolynomial.disc ↔ IsUnit W.Δ := by
@@ -549,59 +431,61 @@ theorem ext {x y : EllipticCurve R} (h₁ : x.a₁ = y.a₁) (h₂ : x.a₂ = y.
 
 variable (E : EllipticCurve R)
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`. -/
 def j : R :=
   E.Δ'⁻¹ * E.c₄ ^ 3
 
+/-- A variant of `EllipticCurve.j_eq_zero_iff` without assuming a reduced ring. -/
+lemma j_eq_zero_iff' : E.j = 0 ↔ E.c₄ ^ 3 = 0 := by
+  rw [j, Units.mul_right_eq_zero]
+
+lemma j_eq_zero (h : E.c₄ = 0) : E.j = 0 := by
+  rw [j_eq_zero_iff', h, zero_pow three_ne_zero]
+
+lemma j_eq_zero_iff [IsReduced R] : E.j = 0 ↔ E.c₄ = 0 := by
+  rw [j_eq_zero_iff', IsReduced.pow_eq_zero_iff three_ne_zero]
+
+section CharTwo
+
+variable [CharP R 2]
+
+lemma j_of_char_two : E.j = E.Δ'⁻¹ * E.a₁ ^ 12 := by
+  rw [j, E.c₄_of_char_two, ← pow_mul]
+
+/-- A variant of `EllipticCurve.j_eq_zero_iff_of_char_two` without assuming a reduced ring. -/
+lemma j_eq_zero_iff_of_char_two' : E.j = 0 ↔ E.a₁ ^ 12 = 0 := by
+  rw [j_of_char_two, Units.mul_right_eq_zero]
+
+lemma j_eq_zero_of_char_two (h : E.a₁ = 0) : E.j = 0 := by
+  rw [j_eq_zero_iff_of_char_two', h, zero_pow (Nat.succ_ne_zero _)]
+
+lemma j_eq_zero_iff_of_char_two [IsReduced R] : E.j = 0 ↔ E.a₁ = 0 := by
+  rw [j_eq_zero_iff_of_char_two', IsReduced.pow_eq_zero_iff (Nat.succ_ne_zero _)]
+
+end CharTwo
+
+section CharThree
+
+variable [CharP R 3]
+
+lemma j_of_char_three : E.j = E.Δ'⁻¹ * E.b₂ ^ 6 := by
+  rw [j, E.c₄_of_char_three, ← pow_mul]
+
+/-- A variant of `EllipticCurve.j_eq_zero_iff_of_char_three` without assuming a reduced ring. -/
+lemma j_eq_zero_iff_of_char_three' : E.j = 0 ↔ E.b₂ ^ 6 = 0 := by
+  rw [j_of_char_three, Units.mul_right_eq_zero]
+
+lemma j_eq_zero_of_char_three (h : E.b₂ = 0) : E.j = 0 := by
+  rw [j_eq_zero_iff_of_char_three', h, zero_pow (Nat.succ_ne_zero _)]
+
+lemma j_eq_zero_iff_of_char_three [IsReduced R] : E.j = 0 ↔ E.b₂ = 0 := by
+  rw [j_eq_zero_iff_of_char_three', IsReduced.pow_eq_zero_iff (Nat.succ_ne_zero _)]
+
+end CharThree
+
 lemma twoTorsionPolynomial_disc_ne_zero [Nontrivial R] [Invertible (2 : R)] :
     E.twoTorsionPolynomial.disc ≠ 0 :=
   E.toWeierstrassCurve.twoTorsionPolynomial_disc_ne_zero <| E.coe_Δ' ▸ E.Δ'.isUnit
-
-section VariableChange
-
-/-! ### Variable changes -/
-
-variable (C : WeierstrassCurve.VariableChange R)
-
--- Porting note: was just `@[simps]`
-/-- The elliptic curve over `R` induced by an admissible linear change of variables
-$(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$ for some $u \in R^\times$ and some $r, s, t \in R$.
-When `R` is a field, any two Weierstrass equations isomorphic to `E` are related by this. -/
-@[simps (config := { rhsMd := .default }) a₁ a₂ a₃ a₄ a₆ Δ' toWeierstrassCurve]
-def variableChange : EllipticCurve R :=
-  ⟨E.toWeierstrassCurve.variableChange C, C.u⁻¹ ^ 12 * E.Δ', by
-    rw [Units.val_mul, Units.val_pow_eq_pow_val, coe_Δ', E.variableChange_Δ]⟩
-
-lemma variableChange_id : E.variableChange WeierstrassCurve.VariableChange.id = E := by
-  simp only [variableChange, WeierstrassCurve.variableChange_id]
-  simp only [WeierstrassCurve.VariableChange.id, inv_one, one_pow, one_mul]
-
-lemma variableChange_comp (C C' : WeierstrassCurve.VariableChange R) (E : EllipticCurve R) :
-    E.variableChange (C.comp C') = (E.variableChange C').variableChange C := by
-  simp only [variableChange, WeierstrassCurve.variableChange_comp]
-  simp only [WeierstrassCurve.VariableChange.comp, mul_inv, mul_pow, ← mul_assoc]
-
-instance instMulActionVariableChange :
-    MulAction (WeierstrassCurve.VariableChange R) (EllipticCurve R) where
-  smul := fun C E => E.variableChange C
-  one_smul := variableChange_id
-  mul_smul := variableChange_comp
-
-lemma coe_variableChange_Δ' : (E.variableChange C).Δ' = C.u⁻¹ ^ 12 * E.Δ' :=
-  rfl
-
-lemma coe_inv_variableChange_Δ' : (E.variableChange C).Δ'⁻¹ = C.u ^ 12 * E.Δ'⁻¹ := by
-  rw [variableChange_Δ', mul_inv, inv_pow, inv_inv]
-
-@[simp]
-lemma variableChange_j : (E.variableChange C).j = E.j := by
-  rw [j, coe_inv_variableChange_Δ', Units.val_mul, Units.val_pow_eq_pow_val,
-    variableChange_toWeierstrassCurve, WeierstrassCurve.variableChange_c₄]
-  have hu : (C.u * C.u⁻¹ : R) ^ 12 = 1 := by rw [C.u.mul_inv, one_pow]
-  linear_combination (norm := (rw [j]; ring1)) E.j * hu
-
-end VariableChange
 
 section BaseChange
 

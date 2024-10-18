@@ -34,13 +34,15 @@ class Mon_Class (X : C) where
   one : 𝟙_ C ⟶ X
   /-- The multiplication morphism of a monoid object. -/
   mul : X ⊗ X ⟶ X
-  one_mul : (one ▷ X) ≫ mul = (λ_ X).hom := by aesop_cat
-  mul_one : (X ◁ one) ≫ mul = (ρ_ X).hom := by aesop_cat
+  /- For the names of the conditions below, the unprimed names are reserved for the version where
+  the argument `X` is explicit. -/
+  one_mul' : one ▷ X ≫ mul = (λ_ X).hom := by aesop_cat
+  mul_one' : X ◁ one ≫ mul = (ρ_ X).hom := by aesop_cat
   -- Obviously there is some flexibility stating this axiom.
   -- This one has left- and right-hand sides matching the statement of `Monoid.mul_assoc`,
   -- and chooses to place the associator on the right-hand side.
   -- The heuristic is that unitors and associators "don't have much weight".
-  mul_assoc : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by aesop_cat
+  mul_assoc' : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by aesop_cat
 
 namespace Mon_Class
 
@@ -49,16 +51,40 @@ namespace Mon_Class
 @[inherit_doc] scoped notation "η" => Mon_Class.one
 @[inherit_doc] scoped notation "η["M"]" => Mon_Class.one (X := M)
 
-attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
+/- The simp attribute is reserved for the unprimed versions. -/
+attribute [reassoc] one_mul' mul_one' mul_assoc'
 
-theorem one_mul' (X : C) [Mon_Class X] : (η ▷ X) ≫ μ = (λ_ X).hom := one_mul
+@[reassoc (attr := simp)]
+theorem one_mul (X : C) [Mon_Class X] : η ▷ X ≫ μ = (λ_ X).hom := one_mul'
 
-theorem mul_one' (X : C) [Mon_Class X] : (X ◁ η) ≫ μ = (ρ_ X).hom := mul_one
+@[reassoc (attr := simp)]
+theorem mul_one (X : C) [Mon_Class X] : X ◁ η ≫ μ = (ρ_ X).hom := mul_one'
 
--- We prove a more general `@[simp]` lemma below.
-theorem mul_assoc' (X : C) [Mon_Class X] : (μ ▷ X) ≫ μ = (α_ X X X).hom ≫ (X ◁ μ) ≫ μ := mul_assoc
+@[reassoc (attr := simp)]
+theorem mul_assoc (X : C) [Mon_Class X] : μ ▷ X ≫ μ = (α_ X X X).hom ≫ X ◁ μ ≫ μ := mul_assoc'
 
-variable (C) in
+end Mon_Class
+
+open scoped Mon_Class
+
+variable {C}
+
+/-- Construct an object of `Mon_ C` from an object `X : C` and `Mon_Class X` instance. -/
+@[simps]
+def mk' (X : C) [Mon_Class X] : Mon_ C where
+  X := X
+  one := η
+  mul := μ
+
+instance {M : Mon_ C} : Mon_Class M.X where
+  one := M.one
+  mul := M.mul
+  one_mul' := M.one_mul
+  mul_one' := M.mul_one
+  mul_assoc' := M.mul_assoc
+
+variable (C)
+
 /-- The trivial monoid object. We later show this is initial in `Mon_ C`.
 -/
 @[simps]
@@ -174,7 +200,6 @@ theorem mkHom_hom {X Y : C} [Mon_Class X] [Mon_Class Y] (f : Mon_Hom X Y) :
     (mkHom f).hom = f.hom :=
   rfl
 
--- Porting note: added, as `Hom.ext` does not apply to a morphism.
 @[ext]
 lemma ext {X Y : Mon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
   Mon_Hom.ext w
@@ -586,6 +611,10 @@ instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) where
 instance monMonoidal : MonoidalCategory (Mon_ C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
 
+@[simps!]
+instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) :=
+  inferInstanceAs <| Mon_Class (Mon_.mk' M ⊗ Mon_.mk' N).X
+
 variable (C)
 
 /-- The forgetful functor from `Mon_ C` to `C` is monoidal when `C` is braided monoidal. -/
@@ -593,7 +622,7 @@ variable (C)
 def forgetMonoidal : MonoidalFunctor (Mon_ C) C :=
   { forget C with
     ε := 𝟙 _
-    «μ» := fun X Y => 𝟙 _ }
+    «μ» := fun _ _ => 𝟙 _ }
 
 @[simp]
 theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl

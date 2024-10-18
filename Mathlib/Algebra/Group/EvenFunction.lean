@@ -18,8 +18,6 @@ conflicting with the root-level definitions `Even` and `Odd` (which, for functio
 function takes even resp. odd _values_, a wholly different concept).
 -/
 
-open scoped BigOperators
-
 namespace Function
 
 variable {α β : Type*} [Neg α]

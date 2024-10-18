@@ -7,7 +7,7 @@ import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
@@ -162,9 +162,16 @@ class ContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outParam (A → 
     [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] : Prop where
   predicate_zero : p 0
+  [compactSpace_spectrum (a : A) : CompactSpace (spectrum R a)]
+  spectrum_nonempty [Nontrivial A] (a : A) (ha : p a) : (spectrum R a).Nonempty
   exists_cfc_of_predicate : ∀ a, p a → ∃ φ : C(spectrum R a, R) →⋆ₐ[R] A,
     ClosedEmbedding φ ∧ φ ((ContinuousMap.id R).restrict <| spectrum R a) = a ∧
       (∀ f, spectrum R (φ f) = Set.range f) ∧ ∀ f, p (φ f)
+
+-- this instance should not be activated everywhere but it is useful when developing generic API
+-- for the continuous functional calculus
+scoped[ContinuousFunctionalCalculus]
+attribute [instance] ContinuousFunctionalCalculus.compactSpace_spectrum
 
 /-- A class guaranteeing that the continuous functional calculus is uniquely determined by the
 properties that it is a continuous star algebra homomorphism mapping the (restriction of) the
@@ -723,7 +730,7 @@ noncomputable def cfcUnits (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
 lemma cfcUnits_pow (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℕ)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
     (cfcUnits f a hf') ^ n =
-      cfcUnits (forall₂_imp (fun _ _ ↦ pow_ne_zero n) hf') (hf := hf.pow n) := by
+      cfcUnits _ _ (forall₂_imp (fun _ _ ↦ pow_ne_zero n) hf') (hf := hf.pow n) := by
   ext
   cases n with
   | zero => simp [cfc_const_one R a]
@@ -778,7 +785,7 @@ lemma cfcUnits_zpow (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℤ)
   | negSucc n =>
     simp only [zpow_negSucc, ← inv_pow]
     ext
-    exact cfc_pow (hf := hf.inv₀ hf') _ |>.symm
+    exact cfc_pow (hf := hf.inv₀ hf') .. |>.symm
 
 lemma cfc_zpow (a : Aˣ) (n : ℤ) (ha : p a := by cfc_tac) :
     cfc (fun x : R ↦ x ^ n) (a : A) = ↑(a ^ n) := by

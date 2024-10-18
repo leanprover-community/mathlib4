@@ -53,7 +53,7 @@ lemma setLIntegral_condKernel_eq_measure_prod (a : α) {s : Set β} (hs : Measur
     intro b
     by_cases hb : b ∈ s <;> simp [hb]
   simp_rw [this]
-  rw [lintegral_indicator _ hs]
+  rw [lintegral_indicator hs]
 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_condKernel_eq_measure_prod := setLIntegral_condKernel_eq_measure_prod
@@ -146,12 +146,12 @@ end ProbabilityTheory
 
 namespace MeasureTheory.Measure
 
-variable {α β Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {β Ω : Type*} {mβ : MeasurableSpace β}
   [MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
 
 section Lintegral
 
-variable [CountableOrCountablyGenerated α β] {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
+variable {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
   {f : β × Ω → ℝ≥0∞}
 
 lemma lintegral_condKernel_mem {s : Set (β × Ω)} (hs : MeasurableSet s) :
@@ -172,7 +172,7 @@ lemma setLIntegral_condKernel_eq_measure_prod {s : Set β} (hs : MeasurableSet s
     intro b
     by_cases hb : b ∈ s <;> simp [hb]
   simp_rw [this]
-  rw [lintegral_indicator _ hs]
+  rw [lintegral_indicator hs]
 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_condKernel_eq_measure_prod := setLIntegral_condKernel_eq_measure_prod
