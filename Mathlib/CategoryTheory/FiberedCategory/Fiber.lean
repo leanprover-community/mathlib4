@@ -115,6 +115,12 @@ def inducedFunctor : C ⥤ Fiber p S where
 lemma inducedFunctor_map {X Y : C} (f : X ⟶ Y) :
     fiberInclusion.map ((inducedFunctor hF).map f) = F.map f := rfl
 
+/-- Given a functor `F : C ⥤ 𝒳` such that `F ⋙ p` is constant at some `S : 𝒮`, then
+we get a natural isomorphism between `inducedFunctor _ ⋙ fiberInclusion` and `F`. -/
+def inducedFunctorCompIsoSelf : (inducedFunctor hF) ⋙ fiberInclusion ≅ F where
+  hom := { app := fun X ↦ 𝟙 _ }
+  inv := { app := fun X ↦ 𝟙 _ }
+
 lemma inducedFunctor_comp : (inducedFunctor hF) ⋙ fiberInclusion = F :=
   Functor.ext (fun x ↦ rfl) (by simp)
 
