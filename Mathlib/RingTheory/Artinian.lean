@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.JacobsonIdeal
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.Tactic.RSuffices
 
