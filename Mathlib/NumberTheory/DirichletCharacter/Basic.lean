@@ -3,6 +3,7 @@ Copyright (c) 2023 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 -/
+import Mathlib.Algebra.Group.EvenFunction
 import Mathlib.Data.ZMod.Units
 import Mathlib.NumberTheory.MulChar.Basic
 
@@ -159,6 +160,10 @@ instance : Subsingleton (DirichletCharacter R 1) := by
 
 noncomputable instance : Unique (DirichletCharacter R 1) := Unique.mk' (DirichletCharacter R 1)
 
+/-- A Dirichlet character of modulus `≠ 1` maps `0` to `0`. -/
+lemma map_zero' (hn : n ≠ 1) : χ 0 = 0 :=
+  have := ZMod.nontrivial_iff.mpr hn; χ.map_zero
+
 lemma changeLevel_one {d : ℕ} (h : d ∣ n) :
     changeLevel h (1 : DirichletCharacter R d) = 1 := by
   simp
@@ -287,7 +292,7 @@ lemma primitive_mul_isPrimitive {m : ℕ} (ψ : DirichletCharacter R m) :
 
 section CommRing
 
-variable {S : Type} [CommRing S] {m : ℕ} (ψ : DirichletCharacter S m)
+variable {S : Type*} [CommRing S] {m : ℕ} (ψ : DirichletCharacter S m)
 
 /-- A Dirichlet character is odd if its value at -1 is -1. -/
 def Odd : Prop := ψ (-1) = -1
@@ -298,6 +303,16 @@ def Even : Prop := ψ (-1) = 1
 lemma even_or_odd [NoZeroDivisors S] : ψ.Even ∨ ψ.Odd := by
   suffices ψ (-1) ^ 2 = 1 by convert sq_eq_one_iff.mp this
   rw [← map_pow _, neg_one_sq, map_one]
+
+lemma not_even_and_odd [NeZero (2 : S)] : ¬(ψ.Even ∧ ψ.Odd) := by
+  rintro ⟨(h : _ = 1), (h' : _ = -1)⟩
+  simp only [h', neg_eq_iff_add_eq_zero, one_add_one_eq_two, two_ne_zero] at h
+
+lemma Even.not_odd [NeZero (2 : S)] (hψ : Even ψ) : ¬Odd ψ :=
+  not_and.mp ψ.not_even_and_odd hψ
+
+lemma Odd.not_even [NeZero (2 : S)] (hψ : Odd ψ) : ¬Even ψ :=
+  not_and'.mp ψ.not_even_and_odd hψ
 
 lemma Odd.toUnitHom_eval_neg_one (hψ : ψ.Odd) : ψ.toUnitHom (-1) = -1 := by
   rw [← Units.eq_iff, MulChar.coe_toUnitHom]
@@ -316,6 +331,14 @@ lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (- x) = ψ x := by
   rw [Even] at hψ
   rw [← neg_one_mul, map_mul]
   simp [hψ]
+
+/-- An even Dirichlet character is an even function. -/
+lemma Even.to_fun {χ : DirichletCharacter S m} (hχ : Even χ) : Function.Even χ :=
+  fun _ ↦ by rw [← neg_one_mul, map_mul, hχ, one_mul]
+
+/-- An odd Dirichlet character is an odd function. -/
+lemma Odd.to_fun {χ : DirichletCharacter S m} (hχ : Odd χ) : Function.Odd χ :=
+  fun _ ↦ by rw [← neg_one_mul, map_mul, hχ, neg_one_mul]
 
 end CommRing
 
