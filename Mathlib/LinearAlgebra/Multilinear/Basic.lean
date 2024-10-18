@@ -882,8 +882,6 @@ variable (R S M₁ M₂ M₃)
 
 section OfSubsingleton
 
-variable [AddCommMonoid M₃] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
-
 /-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
 and one-multilinear maps `MultilinearMap R (fun _ : ι ↦ M₂) M₃`. -/
 @[simps (config := { simpRhs := true })]
@@ -946,8 +944,6 @@ def constLinearEquivOfIsEmpty [IsEmpty ι] : M₂ ≃ₗ[S] MultilinearMap R M�
   invFun f := f 0
   left_inv _ := rfl
   right_inv f := ext fun _ => MultilinearMap.congr_arg f <| Subsingleton.elim _ _
-
-variable [AddCommMonoid M₃] [Module R M₃] [Module S M₃] [SMulCommClass R S M₃]
 
 /-- `MultilinearMap.domDomCongr` as a `LinearEquiv`. -/
 @[simps apply symm_apply]
