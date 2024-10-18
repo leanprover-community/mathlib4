@@ -195,11 +195,6 @@ section
 variable (𝕜) [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]
 
-theorem convexHull_add_subset {s t : Set E} :
-    convexHull ℝ (s + t) ⊆ convexHull ℝ s + convexHull ℝ t :=
-  convexHull_min (add_subset_add (subset_convexHull _ _) (subset_convexHull _ _))
-    (Convex.add (convex_convexHull ℝ s) (convex_convexHull ℝ t))
-
 theorem absConvexHull_add_subset {s t : Set E} :
     absConvexHull 𝕜 (s + t) ⊆ absConvexHull 𝕜 s + absConvexHull 𝕜 t :=
   absConvexHull_min (add_subset_add subset_absConvexHull subset_absConvexHull)
