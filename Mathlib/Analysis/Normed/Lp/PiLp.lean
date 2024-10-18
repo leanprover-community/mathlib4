@@ -126,7 +126,7 @@ variable (p) in
 /-- The projection on the `i`-th coordinate of `WithLp p (∀ i, α i)`, as a linear map. -/
 @[simps!]
 def projₗ (i : ι) : PiLp p β →ₗ[𝕜] β i :=
-  (LinearMap.proj i : (∀ i, β i) →ₗ[𝕜] β i) ∘ₗ (WithLp.linearEquiv 2 𝕜 (∀ i, β i)).toLinearMap
+  (LinearMap.proj i : (∀ i, β i) →ₗ[𝕜] β i) ∘ₗ (WithLp.linearEquiv p 𝕜 (∀ i, β i)).toLinearMap
 
 end
 
