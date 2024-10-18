@@ -81,9 +81,9 @@ instance : Inhabited (PicardLindelof E) :=
   ⟨⟨0, 0, 0, ⟨0, le_rfl, le_rfl⟩, 0, 0, 0, 0,
       { ht₀ := by rw [Subtype.coe_mk, Icc_self]; exact mem_singleton _
         hR := le_rfl
-        lipschitz := fun t _ => (LipschitzWith.const 0).lipschitzOnWith
+        lipschitz := fun _ _ => (LipschitzWith.const 0).lipschitzOnWith
         cont := fun _ _ => by simpa only [Pi.zero_apply] using continuousOn_const
-        norm_le := fun t _ x _ => norm_zero.le
+        norm_le := fun _ _ _ _ => norm_zero.le
         C_mul_le_R := (zero_mul _).le }⟩⟩
 
 theorem tMin_le_tMax : v.tMin ≤ v.tMax :=

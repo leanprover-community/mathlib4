@@ -187,7 +187,7 @@ lemma inducing_inducingFn : Inducing (inducingFn 𝕜 E F) := ⟨rfl⟩
 lemma embedding_inducingFn [SeparatingDual 𝕜 F] : Embedding (inducingFn 𝕜 E F) := by
   refine Function.Injective.embedding_induced fun A B hAB => ?_
   rw [ContinuousLinearMapWOT.ext_dual_iff]
-  simpa [Function.funext_iff] using hAB
+  simpa [funext_iff] using hAB
 
 open Filter in
 /-- The defining property of the weak operator topology: a function `f` tends to

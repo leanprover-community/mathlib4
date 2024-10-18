@@ -86,14 +86,13 @@ open Cardinal
 universe u' u
 
 variable {ι : Type u'} {ι' : Type*} {R : Type*} {K : Type*}
-variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
+variable {M : Type*} {M' : Type*} {V : Type u}
 
 section Module
 
 variable {v : ι → M}
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M'']
-variable [Module R M] [Module R M'] [Module R M'']
-variable {a b : R} {x y : M}
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M']
+variable [Module R M] [Module R M']
 variable (R) (v)
 
 /-- `LinearIndependent R v` states the family of vectors `v` is linearly independent over `R`. -/
@@ -144,8 +143,8 @@ theorem linearIndependent_iff' :
               fun hnis => hnis.elim his
         _ = (∑ j ∈ s, Finsupp.single j (g j)) i := (map_sum ..).symm
         _ = 0 := DFunLike.ext_iff.1 h i,
-      fun hf l hl =>
-      Finsupp.ext fun i =>
+      fun hf _ hl =>
+      Finsupp.ext fun _ =>
         _root_.by_contradiction fun hni => hni <| hf _ _ hl _ <| Finsupp.mem_support_iff.2 hni⟩
 
 theorem linearIndependent_iff'' :
@@ -515,9 +514,8 @@ end Module
 section Module
 
 variable {v : ι → M}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M'']
-variable [Module R M] [Module R M'] [Module R M'']
-variable {a b : R} {x y : M}
+variable [Ring R] [AddCommGroup M] [AddCommGroup M']
+variable [Module R M] [Module R M']
 
 theorem linearIndependent_iff_injective_linearCombination :
     LinearIndependent R v ↔ Function.Injective (Finsupp.linearCombination R v) :=
@@ -933,9 +931,7 @@ theorem LinearIndependent.independent_span_singleton (hv : LinearIndependent R v
   obtain ⟨⟨r, rfl⟩, hm⟩ := hm
   suffices r = 0 by simp [this]
   apply linearIndependent_iff_not_smul_mem_span.mp hv i
-  -- Porting note: The original proof was using `convert hm`.
-  suffices v '' (univ \ {i}) = range fun j : { j // j ≠ i } => v j by
-    rwa [this]
+  convert hm
   ext
   simp
 
@@ -1185,9 +1181,9 @@ end Module
 
 section Nontrivial
 
-variable [Ring R] [Nontrivial R] [AddCommGroup M] [AddCommGroup M']
-variable [Module R M] [NoZeroSMulDivisors R M] [Module R M']
-variable {v : ι → M} {s t : Set M} {x y z : M}
+variable [Semiring R] [Nontrivial R] [AddCommMonoid M]
+variable [Module R M] [NoZeroSMulDivisors R M]
+variable {s t : Set M}
 
 theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :
     LinearIndependent R v ↔ v default ≠ 0 := by
@@ -1213,9 +1209,8 @@ These can be considered generalizations of properties of linear independence in 
 
 section Module
 
-variable [DivisionRing K] [AddCommGroup V] [AddCommGroup V']
-variable [Module K V] [Module K V']
-variable {v : ι → V} {s t : Set V} {x y z : V}
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable {v : ι → V} {s t : Set V} {x y : V}
 
 open Submodule
 
@@ -1252,7 +1247,7 @@ theorem linearIndependent_option' :
     LinearIndependent K (fun o => Option.casesOn' o x v : Option ι → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   -- Porting note: Explicit universe level is required in `Equiv.optionEquivSumPUnit`.
-  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{_, u'} ι).symm, linearIndependent_sum,
+  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{u', _} ι).symm, linearIndependent_sum,
     @range_unique _ PUnit, @linearIndependent_unique_iff PUnit, disjoint_span_singleton]
   dsimp [(· ∘ ·)]
   refine ⟨fun h => ⟨h.1, fun hx => h.2.1 <| h.2.2 hx⟩, fun h => ⟨h.1, ?_, fun hx => (h.2 hx).elim⟩⟩
