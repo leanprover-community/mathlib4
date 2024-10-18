@@ -2430,6 +2430,7 @@ import Mathlib.Data.NNRat.Floor
 import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.NNRat.Order
 import Mathlib.Data.NNReal.Basic
+import Mathlib.Data.NNReal.Defs
 import Mathlib.Data.NNReal.Star
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Data.Nat.Bits
