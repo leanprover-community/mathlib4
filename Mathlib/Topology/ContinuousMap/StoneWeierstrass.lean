@@ -440,6 +440,18 @@ theorem ContinuousMap.induction_on {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜}
   | mul _ _ _ _ hf hg => exact mul _ _ hf hg
   | star _ _ hf => exact star _ hf
 
+open Topology in
+@[elab_as_elim]
+theorem ContinuousMap.induction_on_of_compact {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜} [CompactSpace s]
+    {p : C(s, 𝕜) → Prop} (const : ∀ r, p (.const s r)) (id : p (.restrict s <| .id 𝕜))
+    (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
+    (star : ∀ f, p f → p (star f)) (frequently : ∀ f, (∃ᶠ g in 𝓝 f, p g) → p f) (f : C(s, 𝕜)) :
+    p f := by
+  refine f.induction_on const id add mul star fun h f ↦ frequently f ?_
+  have := polynomialFunctions.starClosure_topologicalClosure s ▸ mem_top (x := f)
+  rw [← SetLike.mem_coe, topologicalClosure_coe, mem_closure_iff_frequently] at this
+  exact this.mp <| .of_forall h
+
 /-- Continuous algebra homomorphisms from `C(s, ℝ)` into an `ℝ`-algebra `A` which agree
 at `X : 𝕜[X]` (interpreted as a continuous map) are, in fact, equal. -/
 @[ext (iff := false)]
@@ -605,5 +617,16 @@ lemma ContinuousMapZero.induction_on {s : Set 𝕜} [Zero s] (h0 : ((0 : s) : �
   | smul _ _ _ hf => exact smul _ _ hf
   | star _ _ hf => exact star _ hf
 
+open Topology in
+@[elab_as_elim]
+theorem ContinuousMapZero.induction_on_of_compact {s : Set 𝕜} [Zero s] (h0 : ((0 : s) : 𝕜) = 0)
+    [CompactSpace s] {p : C(s, 𝕜)₀ → Prop} (zero : p 0) (id : p (.id h0))
+    (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
+    (smul : ∀ (r : 𝕜) f, p f → p (r • f)) (star : ∀ f, p f → p (star f))
+    (frequently : ∀ f, (∃ᶠ g in 𝓝 f, p g) → p f) (f : C(s, 𝕜)₀) :
+    p f := by
+  refine f.induction_on h0 zero id add mul smul star fun h f ↦ frequently f ?_
+  have := (ContinuousMapZero.adjoin_id_dense h0).closure_eq ▸ Set.mem_univ (x := f)
+  exact mem_closure_iff_frequently.mp this |>.mp <| .of_forall h
 
 end ContinuousMapZero
