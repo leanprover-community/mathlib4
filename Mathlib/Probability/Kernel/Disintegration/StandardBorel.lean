@@ -259,7 +259,7 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
     congr
   rw [h_fst]
   ext a t ht : 2
-  simp_rw [compProd_apply _ _ _ ht]
+  simp_rw [compProd_apply ht]
   refine lintegral_congr_ae ?_
   have h_ae : ∀ᵐ t ∂(fst κ a), (a, t) ∈ {p : α × β | η p (range e)ᶜ = 0} := by
     rw [← h_fst]
