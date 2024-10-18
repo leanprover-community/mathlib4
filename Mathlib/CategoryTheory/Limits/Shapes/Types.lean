@@ -937,8 +937,7 @@ section Multiequalizer
 variable (I : MulticospanIndex (Type u))
 
 /-- Given a multiequalizer diagram `I : MulticospanIndex (Type u)` in the category
-of types, this is a type which identifies to the sections of the
-functor `I.multicospan.sections`. -/
+of types, this is a type which identifies to the sections of the functor `I.multicospan`. -/
 @[ext]
 structure MulticospanIndex.sections where
   /-- The data of an element in `I.left i` for each `i : I.L`. -/
