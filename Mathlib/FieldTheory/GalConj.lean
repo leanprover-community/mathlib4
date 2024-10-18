@@ -10,6 +10,7 @@ import Mathlib.FieldTheory.NormalClosure
 TODO
 -/
 
+-- #17893
 theorem Algebra.IsAlgebraic.tower_bot (K L A) [CommRing K] [Field L] [Ring A]
     [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
     [Nontrivial A] [Algebra.IsAlgebraic K A] :
@@ -18,13 +19,10 @@ theorem Algebra.IsAlgebraic.tower_bot (K L A) [CommRing K] [Field L] [Ring A]
     simpa [isAlgebraic_algebraMap_iff, (algebraMap L A).injective] using
       Algebra.IsAlgebraic.isAlgebraic (R := K) (A := A) (algebraMap _ _ x)⟩
 
-open Polynomial
-
-open scoped Polynomial BigOperators IntermediateField
-
 variable (F E E' : Type*) [Field F] [Field E] [Algebra F E]
   [Field E'] [Algebra F E'] [Algebra E E'] [IsScalarTower F E E']
 
+-- #17894
 instance [Algebra.IsAlgebraic F E] : IsAlgClosure F (AlgebraicClosure E) where
   isAlgebraic := .trans (L := E)
   isAlgClosed := inferInstance
@@ -228,6 +226,8 @@ theorem exist_mem_orbit_add_eq_zero (x y : GalConjClasses F E) :
   · rintro rfl
     refine ⟨-y.out, y.out, ?_⟩
     simp_rw [mk_neg, mk_out, neg_add_cancel, and_self]
+
+open Polynomial
 
 protected noncomputable def minpoly : GalConjClasses F E → F[X] :=
   Quotient.lift (minpoly F) fun _ b ⟨f, h⟩ => by

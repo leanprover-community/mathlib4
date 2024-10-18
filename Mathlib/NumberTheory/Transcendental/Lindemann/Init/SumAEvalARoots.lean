@@ -9,7 +9,6 @@ import Mathlib.RingTheory.MvPolynomial.Symmetric.Eval
 # The Lindemann-Weierstrass theorem
 -/
 
-open scoped BigOperators
 open Finset Polynomial
 
 theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algebra R S] (p : R[X])

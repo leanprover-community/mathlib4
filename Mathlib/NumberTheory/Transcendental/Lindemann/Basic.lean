@@ -13,9 +13,7 @@ import Mathlib.Topology.Algebra.Order.Floor
 # The Lindemann-Weierstrass theorem
 -/
 
-noncomputable section
-
-open scoped BigOperators Nat
+open scoped Nat
 
 open Complex Finset Polynomial
 

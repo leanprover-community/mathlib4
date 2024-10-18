@@ -10,8 +10,9 @@ import Mathlib.RingTheory.Polynomial.Vieta
 TODO
 -/
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 
+-- #17896
 namespace Multiset
 
 variable {R S : Type*}
