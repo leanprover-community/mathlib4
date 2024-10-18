@@ -330,7 +330,7 @@ theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
   image_inter <| MulAction.injective a
 
 @[to_additive]
-theorem smul_set_iInter {ι : Type*}
+theorem smul_set_iInter {ι : Sort*}
     (a : α) (t : ι → Set β) : (a • ⋂ i, t i) = ⋂ i, a • t i :=
   image_iInter (MulAction.bijective a) t
 
@@ -401,8 +401,19 @@ lemma inv_op_smul_set_distrib (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹
   ext; simp [mem_smul_set_iff_inv_smul_mem]
 
 @[to_additive (attr := simp)]
-lemma smul_set_disjoint_iff : Disjoint (a • s) (a • t) ↔ Disjoint s t := by
-  simp [disjoint_iff, ← smul_set_inter]
+lemma disjoint_smul_set : Disjoint (a • s) (a • t) ↔ Disjoint s t :=
+  disjoint_image_iff <| MulAction.injective _
+
+@[to_additive]
+lemma disjoint_smul_set_left : Disjoint (a • s) t ↔ Disjoint s (a⁻¹ • t) := by
+  simpa using disjoint_smul_set (a := a) (t := a⁻¹ • t)
+
+@[to_additive]
+lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s) t := by
+  simpa using disjoint_smul_set (a := a) (s := a⁻¹ • s)
+
+@[to_additive (attr := deprecated (since := "2024-10-18"))]
+alias smul_set_disjoint_iff := disjoint_smul_set
 
 end Group
 
