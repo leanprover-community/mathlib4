@@ -6,7 +6,6 @@ Authors: Anne Baanen
 import Mathlib.Algebra.Field.Subfield
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
 /-!
 # Intermediate fields
@@ -112,10 +111,8 @@ theorem mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield 
 definitional equalities. -/
 protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) :
     IntermediateField K L where
-  toSubalgebra := S.toSubalgebra.copy s (hs : s = S.toSubalgebra.carrier)
-  inv_mem' :=
-    have hs' : (S.toSubalgebra.copy s hs).carrier = S.toSubalgebra.carrier := hs
-    hs'.symm ▸ S.inv_mem'
+  toSubalgebra := S.toSubalgebra.copy s hs
+  inv_mem' := hs.symm ▸ S.inv_mem'
 
 @[simp]
 theorem coe_copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) :
@@ -252,7 +249,7 @@ theorem toSubalgebra_toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x �
 
 @[simp]
 theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
-    (S.toSubalgebra.toIntermediateField fun x => S.inv_mem) = S := by
+    (S.toSubalgebra.toIntermediateField fun _ => S.inv_mem) = S := by
   ext
   rfl
 
@@ -341,7 +338,7 @@ instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
 
 /-- Specialize `is_scalar_tower_mid` to the common case where the top field is `L` -/
 instance isScalarTower_mid' : IsScalarTower K S L :=
-  S.isScalarTower_mid
+  inferInstance
 
 instance {E} [Semiring E] [Algebra L E] : Algebra S E := inferInstanceAs (Algebra S.toSubalgebra E)
 
@@ -468,25 +465,8 @@ instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
   ⟨S.val⟩
 
 theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
-    (x : S) (P : R[X]) : aeval (x : L) P = aeval x P := by
-  refine Polynomial.induction_on' P (fun f g hf hg => ?_) fun n r => ?_
-  · rw [aeval_add, aeval_add, AddMemClass.coe_add, hf, hg]
-  · simp only [MulMemClass.coe_mul, aeval_monomial, SubmonoidClass.coe_pow, mul_eq_mul_right_iff]
-    left
-    rfl
-
-theorem coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
-    [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · obtain ⟨P, hPmo, hProot⟩ := h
-    refine ⟨P, hPmo, (injective_iff_map_eq_zero _).1 (algebraMap (↥S) L).injective _ ?_⟩
-    letI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq (congr_fun rfl)
-    rw [eval₂_eq_eval_map, ← eval₂_at_apply, eval₂_eq_eval_map, Polynomial.map_map, ←
-      IsScalarTower.algebraMap_eq, ← eval₂_eq_eval_map]
-    exact hProot
-  · obtain ⟨P, hPmo, hProot⟩ := h
-    refine ⟨P, hPmo, ?_⟩
-    rw [← aeval_def, aeval_coe, aeval_def, hProot, ZeroMemClass.coe_zero]
+    (x : S) (P : R[X]) : aeval (x : L) P = aeval x P :=
+  aeval_algHom_apply (S.val.restrictScalars R) x P
 
 /-- The map `E → F` when `E` is an intermediate field contained in the intermediate field `F`.
 
@@ -650,8 +630,8 @@ def extendScalars.orderIso :
     { E : Subfield L // F ≤ E } ≃o IntermediateField F L where
   toFun E := extendScalars E.2
   invFun E := ⟨E.toSubfield, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
-  left_inv E := rfl
-  right_inv E := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _
@@ -702,8 +682,8 @@ into an order isomorphism from
 def extendScalars.orderIso : { E : IntermediateField K L // F ≤ E } ≃o IntermediateField F L where
   toFun E := extendScalars E.2
   invFun E := ⟨E.restrictScalars K, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
-  left_inv E := rfl
-  right_inv E := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _

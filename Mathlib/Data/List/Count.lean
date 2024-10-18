@@ -10,8 +10,7 @@ import Mathlib.Tactic.Common
 # Counting in lists
 
 This file proves basic properties of `List.countP` and `List.count`, which count the number of
-elements of a list satisfying a predicate and equal to a given element respectively. Their
-definitions can be found in `Batteries.Data.List.Basic`.
+elements of a list satisfying a predicate and equal to a given element respectively.
 -/
 
 assert_not_exists Set.range

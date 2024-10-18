@@ -121,8 +121,7 @@ def Rel (a b : Σ i, ((D.U i : TopCat) : Type _)) : Prop :=
 theorem rel_equiv : Equivalence D.Rel :=
   ⟨fun x => Or.inl (refl x), by
     rintro a b (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
-    exacts [Or.inl rfl, Or.inr ⟨D.t _ _ x, e₂, by erw [← e₁, D.t_inv_apply]⟩], by
-     -- previous line now `erw` after #13170
+    exacts [Or.inl rfl, Or.inr ⟨D.t _ _ x, e₂, by rw [← e₁, D.t_inv_apply]⟩], by
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
     · exact id
     rintro (⟨⟨⟩⟩ | ⟨y, e₃, e₄⟩)
@@ -237,9 +236,7 @@ theorem image_inter (i j : D.J) :
     · exact ⟨inv (D.f i i) x₁, by
         -- porting note (#10745): was `simp [eq₁]`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
-        rw [TopCat.comp_app]
-        erw [CategoryTheory.IsIso.inv_hom_id_apply]
-        rw [eq₁]⟩
+        rw [TopCat.comp_app, CategoryTheory.IsIso.inv_hom_id_apply, eq₁]⟩
     · -- Porting note: was
       -- dsimp only at *; substs e₁ eq₁; exact ⟨y, by simp⟩
       dsimp only at *
@@ -247,7 +244,7 @@ theorem image_inter (i j : D.J) :
       exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
     refine ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), ?_⟩⟩
-    erw [D.glue_condition_apply] -- now `erw` after #13170
+    rw [D.glue_condition_apply]
     exact hx
 
 theorem preimage_range (i j : D.J) : 𝖣.ι j ⁻¹' Set.range (𝖣.ι i) = Set.range (D.f j i) := by
@@ -361,7 +358,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     exact (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
   f_open := fun i j : h.J => (h.V i j).openEmbedding
   t := h.t
-  t_id i := by ext; erw [h.t_id]; rfl  -- now `erw` after #13170
+  t_id i := by ext; rw [h.t_id]; rfl
   t' := h.t'
   t_fac i j k := by
     delta MkCore.t'
@@ -376,21 +373,13 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     simp only [Iso.inv_hom_id_assoc, Category.assoc, Category.id_comp]
     rw [← Iso.eq_inv_comp, Iso.inv_hom_id]
     ext1 ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
-    -- The next 6 tactics (up to `convert ...` were a single `rw` before leanprover/lean4#2644
-    -- rw [comp_app, ContinuousMap.coe_mk, comp_app, id_app, ContinuousMap.coe_mk, Subtype.mk_eq_mk,
-    --   Prod.mk.inj_iff, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
-    erw [comp_app] --, comp_app, id_app] -- now `erw` after #13170
-    -- erw [ContinuousMap.coe_mk]
-    conv_lhs => erw [ContinuousMap.coe_mk]
-    erw [id_app]
-    rw [ContinuousMap.coe_mk]
-    erw [Subtype.mk_eq_mk]
-    rw [Prod.mk.inj_iff, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
+    rw [comp_app, ContinuousMap.coe_mk, comp_app, id_app, ContinuousMap.coe_mk, Subtype.mk_eq_mk,
+      Prod.mk.inj_iff, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
     convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
     refine Subtype.ext ?_
     exact h.cocycle i j k ⟨x, hx⟩ hx'
   -- Porting note: was not necessary in mathlib3
-  f_mono i j := (TopCat.mono_iff_injective _).mpr fun x y h => Subtype.ext h
+  f_mono _ _ := (TopCat.mono_iff_injective _).mpr fun _ _ h => Subtype.ext h
 
 variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 
@@ -400,7 +389,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
   mk'.{u}
     { J
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
-      V := fun i j => (Opens.map <| Opens.inclusion' _).obj (U j)
+      V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
       t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
         -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
         refine Continuous.subtype_mk ?_ ?_
@@ -411,15 +400,15 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
         -- Porting note: no longer needed `cases U i`!
         simp
       t_id := fun i => by ext; rfl
-      t_inter := fun i j k x hx => hx
-      cocycle := fun i j k x h => rfl }
+      t_inter := fun _ _ _ _ hx => hx
+      cocycle := fun _ _ _ _ _ => rfl }
 
 /-- The canonical map from the glue of a family of open subsets `α` into `α`.
 This map is an open embedding (`fromOpenSubsetsGlue_openEmbedding`),
 and its range is `⋃ i, (U i : Set α)` (`range_fromOpenSubsetsGlue`).
 -/
 def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
-  Multicoequalizer.desc _ _ (fun x => Opens.inclusion' _) (by rintro ⟨i, j⟩; ext x; rfl)
+  Multicoequalizer.desc _ _ (fun _ => Opens.inclusion' _) (by rintro ⟨i, j⟩; ext x; rfl)
 
 -- Porting note: `elementwise` here produces a bad lemma,
 -- where too much has been simplified, despite the `nosimp`.
@@ -432,9 +421,8 @@ theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue 
   intro x y e
   obtain ⟨i, ⟨x, hx⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
   obtain ⟨j, ⟨y, hy⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective y
-  -- Porting note: now it is `erw`, it was `rw`
   -- see the porting note on `ι_fromOpenSubsetsGlue`
-  erw [ι_fromOpenSubsetsGlue_apply, ι_fromOpenSubsetsGlue_apply] at e
+  rw [ι_fromOpenSubsetsGlue_apply, ι_fromOpenSubsetsGlue_apply] at e
   change x = y at e
   subst e
   rw [(ofOpenSubsets U).ι_eq_iff_rel]
@@ -458,9 +446,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     apply congr_arg
     exact Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
   · refine ⟨Set.mem_image_of_mem _ hx, ?_⟩
-    -- Porting note: another `rw ↦ erw`
-    -- See above.
-    erw [ι_fromOpenSubsetsGlue_apply]
+    rw [ι_fromOpenSubsetsGlue_apply]
     exact Set.mem_range_self _
 
 theorem fromOpenSubsetsGlue_openEmbedding : OpenEmbedding (fromOpenSubsetsGlue U) :=
@@ -472,9 +458,7 @@ theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (
   constructor
   · rintro ⟨x, rfl⟩
     obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
-    -- Porting note: another `rw ↦ erw`
-    -- See above
-    erw [ι_fromOpenSubsetsGlue_apply]
+    rw [ι_fromOpenSubsetsGlue_apply]
     exact Set.subset_iUnion _ i hx'
   · rintro ⟨_, ⟨i, rfl⟩, hx⟩
     rename_i x

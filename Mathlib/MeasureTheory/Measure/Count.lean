@@ -34,7 +34,7 @@ theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
     _ ≤ ∑' i, dirac i s := ENNReal.tsum_le_tsum fun _ => le_dirac_apply
     _ ≤ count s := le_sum_apply _ _
 
-theorem count_apply (hs : MeasurableSet s) : count s = ∑' i : s, 1 := by
+theorem count_apply (hs : MeasurableSet s) : count s = ∑' _ : s, 1 := by
   simp only [count, sum_apply, hs, dirac_apply', ← tsum_subtype s (1 : α → ℝ≥0∞), Pi.one_apply]
 
 -- @[simp] -- Porting note (#10618): simp can prove this
@@ -44,8 +44,8 @@ theorem count_empty : count (∅ : Set α) = 0 := by rw [count_apply MeasurableS
 theorem count_apply_finset' {s : Finset α} (s_mble : MeasurableSet (s : Set α)) :
     count (↑s : Set α) = s.card :=
   calc
-    count (↑s : Set α) = ∑' i : (↑s : Set α), 1 := count_apply s_mble
-    _ = ∑ i ∈ s, 1 := s.tsum_subtype 1
+    count (↑s : Set α) = ∑' _ : (↑s : Set α), 1 := count_apply s_mble
+    _ = ∑ _ ∈ s, 1 := s.tsum_subtype 1
     _ = s.card := by simp
 
 @[simp]

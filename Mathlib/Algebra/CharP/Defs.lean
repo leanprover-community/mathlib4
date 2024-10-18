@@ -244,7 +244,7 @@ section NoZeroDivisors
 
 variable [NoZeroDivisors R]
 
-lemma char_is_prime_of_two_le (p : ℕ) [hc : CharP R p] (hp : 2 ≤ p) : Nat.Prime p :=
+lemma char_is_prime_of_two_le (p : ℕ) [CharP R p] (hp : 2 ≤ p) : Nat.Prime p :=
   suffices ∀ (d) (_ : d ∣ p), d = 1 ∨ d = p from Nat.prime_def_lt''.mpr ⟨hp, this⟩
   fun (d : ℕ) (hdvd : ∃ e, p = d * e) =>
   let ⟨e, hmul⟩ := hdvd
@@ -306,6 +306,17 @@ lemma CharOne.subsingleton [CharP R 1] : Subsingleton R :=
 lemma false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False := by
   have : Subsingleton R := CharOne.subsingleton
   exact false_of_nontrivial_of_subsingleton R
+
+variable (R) in
+/-- If a ring `R` is of characteristic `p`, then for any prime number `q` different from `p`,
+it is not zero in `R`. -/
+lemma cast_ne_zero_of_ne_of_prime [Nontrivial R]
+    {p q : ℕ} [CharP R p] (hq : q.Prime) (hneq : p ≠ q) : (q : R) ≠ 0 := fun h ↦ by
+  rw [cast_eq_zero_iff R p q] at h
+  rcases hq.eq_one_or_self_of_dvd _ h with h | h
+  · subst h
+    exact false_of_nontrivial_of_char_one (R := R)
+  · exact hneq h
 
 lemma ringChar_ne_one [Nontrivial R] : ringChar R ≠ 1 := by
   intro h
