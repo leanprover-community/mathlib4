@@ -10,13 +10,8 @@ import Mathlib.Order.Interval.Set.Basic
 /-!
 # Minimality and Maximality
 
-This file defines minimality and maximality of an element with respect to a predicate `P` on
-an ordered type `α`.
-
-## Main declarations
-
-* `Minimal P x`: `x` is minimal satisfying `P`.
-* `Maximal P x`: `x` is maximal satisfying `P`.
+This file proves basic facts about minimality and maximality
+of an element with respect to a predicate `P` on an ordered type `α`.
 
 ## Implementation Details
 
@@ -51,24 +46,6 @@ variable {α : Type*} {P Q : α → Prop} {a x y : α}
 section LE
 
 variable [LE α]
-
-/-- `Minimal P x` means that `x` is a minimal element satisfying `P`. -/
-def Minimal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → y ≤ x → x ≤ y
-
-/-- `Maximal P x` means that `x` is a maximal element satisfying `P`. -/
-def Maximal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → x ≤ y → y ≤ x
-
-lemma Minimal.prop (h : Minimal P x) : P x :=
-  h.1
-
-lemma Maximal.prop (h : Maximal P x) : P x :=
-  h.1
-
-lemma Minimal.le_of_le (h : Minimal P x) (hy : P y) (hle : y ≤ x) : x ≤ y :=
-  h.2 hy hle
-
-lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
-  h.2 hy hge
 
 @[simp] theorem minimal_toDual : Minimal (fun x ↦ P (ofDual x)) (toDual x) ↔ Maximal P x :=
   Iff.rfl

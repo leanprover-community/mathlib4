@@ -56,7 +56,7 @@ example (M N : ModuleCat.{v} A) : Module k (M ⟶ N) := LinearMap.module
 
 instance linearOverField : Linear k (ModuleCat.{v} A) where
   -- Porting note: used to be `by infer_instance` instead of `LinearMap.module`
-  homModule M N := LinearMap.module
+  homModule _ _ := LinearMap.module
   smul_comp := by
     -- Porting note: this was automatic by `aesop_cat`
     intros

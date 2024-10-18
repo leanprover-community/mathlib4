@@ -36,8 +36,7 @@ open Category Limits
 
 namespace Functor
 
-variable {C C' H H' D D' : Type*} [Category C] [Category C'] [Category H] [Category H']
-  [Category D] [Category D']
+variable {C C' H D D' : Type*} [Category C] [Category C'] [Category H] [Category D] [Category D']
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
 `F' : H ⥤ D` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
