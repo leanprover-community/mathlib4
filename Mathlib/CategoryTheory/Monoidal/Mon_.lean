@@ -21,11 +21,53 @@ the category of lax monoidal functors from the unit monoidal category to `C`.  W
 
 universe v₁ v₂ u₁ u₂ u
 
-open CategoryTheory MonoidalCategory
+open CategoryTheory MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal
 
-open Functor.LaxMonoidal Functor.OplaxMonoidal
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
+/-- A monoid object internal to a monoidal category.
+
+When the monoidal category is preadditive, this is also sometimes called an "algebra object".
+-/
+class Mon_Class (X : C) where
+  /-- The unit morphism of a monoid object. -/
+  one : 𝟙_ C ⟶ X
+  /-- The multiplication morphism of a monoid object. -/
+  mul : X ⊗ X ⟶ X
+  /- For the names of the conditions below, the unprimed names are reserved for the version where
+  the argument `X` is explicit. -/
+  one_mul' : one ▷ X ≫ mul = (λ_ X).hom := by aesop_cat
+  mul_one' : X ◁ one ≫ mul = (ρ_ X).hom := by aesop_cat
+  -- Obviously there is some flexibility stating this axiom.
+  -- This one has left- and right-hand sides matching the statement of `Monoid.mul_assoc`,
+  -- and chooses to place the associator on the right-hand side.
+  -- The heuristic is that unitors and associators "don't have much weight".
+  mul_assoc' : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by aesop_cat
+
+namespace Mon_Class
+
+@[inherit_doc] scoped notation "μ" => Mon_Class.mul
+@[inherit_doc] scoped notation "μ["M"]" => Mon_Class.mul (X := M)
+@[inherit_doc] scoped notation "η" => Mon_Class.one
+@[inherit_doc] scoped notation "η["M"]" => Mon_Class.one (X := M)
+
+/- The simp attribute is reserved for the unprimed versions. -/
+attribute [reassoc] one_mul' mul_one' mul_assoc'
+
+@[reassoc (attr := simp)]
+theorem one_mul (X : C) [Mon_Class X] : η ▷ X ≫ μ = (λ_ X).hom := one_mul'
+
+@[reassoc (attr := simp)]
+theorem mul_one (X : C) [Mon_Class X] : X ◁ η ≫ μ = (ρ_ X).hom := mul_one'
+
+@[reassoc (attr := simp)]
+theorem mul_assoc (X : C) [Mon_Class X] : μ ▷ X ≫ μ = (α_ X X X).hom ≫ X ◁ μ ≫ μ := mul_assoc'
+
+end Mon_Class
+
+open scoped Mon_Class
+
+variable (C)
 
 /-- A monoid object internal to a monoidal category.
 
@@ -51,6 +93,24 @@ attribute [simp] Mon_.one_mul Mon_.mul_one
 attribute [reassoc (attr := simp)] Mon_.mul_assoc
 
 namespace Mon_
+
+variable {C}
+
+/-- Construct an object of `Mon_ C` from an object `X : C` and `Mon_Class X` instance. -/
+@[simps]
+def mk' (X : C) [Mon_Class X] : Mon_ C where
+  X := X
+  one := η
+  mul := μ
+
+instance {M : Mon_ C} : Mon_Class M.X where
+  one := M.one
+  mul := M.mul
+  one_mul' := M.one_mul
+  mul_one' := M.mul_one
+  mul_assoc' := M.mul_assoc
+
+variable (C)
 
 /-- The trivial monoid object. We later show this is initial in `Mon_ C`.
 -/
@@ -187,7 +247,7 @@ def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
   obj A :=
     { X := F.obj A.X
       one := ε F ≫ F.map A.one
-      mul := μ F _ _ ≫ F.map A.mul
+      mul := «μ» F _ _ ≫ F.map A.mul
       one_mul := by
         simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
           LaxMonoidal.left_unitality]
@@ -255,7 +315,7 @@ lemma monToLaxMonoidalObj_ε (A : Mon_ C) :
 
 @[simp]
 lemma monToLaxMonoidalObj_μ (A : Mon_ C) (X Y) :
-    μ (monToLaxMonoidalObj A) X Y = A.mul := rfl
+    «μ» (monToLaxMonoidalObj A) X Y = A.mul := rfl
 
 variable (C)
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
@@ -521,6 +581,10 @@ theorem tensor_mul (M N : Mon_ C) : (M ⊗ N).mul =
 instance monMonoidal : MonoidalCategory (Mon_ C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
 
+@[simps!]
+instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) :=
+  inferInstanceAs <| Mon_Class (Mon_.mk' M ⊗ Mon_.mk' N).X
+
 variable (C)
 
 /-- The forgetful functor from `Mon_ C` to `C` is monoidal when `C` is monoidal. -/
@@ -530,8 +594,8 @@ instance : (forget C).Monoidal :=
       μIso := fun _ _ ↦ Iso.refl _ }
 
 @[simp] theorem forget_ε : ε (forget C) = 𝟙 (𝟙_ C) := rfl
-@[simp] theorem forget_η : η (forget C) = 𝟙 (𝟙_ C) := rfl
-@[simp] theorem forget_μ (X Y : Mon_ C) : μ (forget C) X Y = 𝟙 (X.X ⊗ Y.X) := rfl
+@[simp] theorem forget_η : «η» (forget C) = 𝟙 (𝟙_ C) := rfl
+@[simp] theorem forget_μ (X Y : Mon_ C) : «μ» (forget C) X Y = 𝟙 (X.X ⊗ Y.X) := rfl
 @[simp] theorem forget_δ (X Y : Mon_ C) : δ (forget C) X Y = 𝟙 (X.X ⊗ Y.X) := rfl
 
 variable {C}
