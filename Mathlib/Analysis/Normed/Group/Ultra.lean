@@ -33,8 +33,6 @@ ultrametric, nonarchimedean
 -/
 open Metric NNReal
 
-open scoped BigOperators
-
 namespace IsUltrametricDist
 
 section Group

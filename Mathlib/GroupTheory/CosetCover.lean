@@ -42,7 +42,7 @@ set of all minimal polynomials (not proved here).
 
 -/
 
-open scoped Pointwise BigOperators
+open scoped Pointwise
 
 namespace Subgroup
 
@@ -366,7 +366,7 @@ end Submodule
 
 section Subspace
 
-variable {k E ι : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k E]
+variable {k E : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k E]
     {s : Finset (Subspace k E)}
 
 /- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
