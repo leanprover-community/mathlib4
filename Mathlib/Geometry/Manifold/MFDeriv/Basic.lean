@@ -797,34 +797,6 @@ theorem tangentMapWithin_proj {p : TangentBundle I M} :
 theorem tangentMap_proj {p : TangentBundle I M} : (tangentMap I I' f p).proj = f p.proj :=
   rfl
 
-/-! ### Congruence lemmas for derivatives on manifolds -/
-
-theorem hasMFDerivWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    HasMFDerivWithinAt I I' f s x f' ↔ HasMFDerivWithinAt I I' f t x f' :=
-  calc
-    HasMFDerivWithinAt I I' f s x f' ↔ HasMFDerivWithinAt I I' f (s \ {y}) x f' :=
-      (hasMFDerivWithinAt_diff_singleton _).symm
-    _ ↔ HasMFDerivWithinAt I I' f (t \ {y}) x f' := by
-      suffices 𝓝[s \ {y}] x = 𝓝[t \ {y}] x by simp only [HasMFDerivWithinAt, this]
-      simpa only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', diff_eq,
-        inter_comm] using h
-    _ ↔ HasMFDerivWithinAt I I' f t x f' := hasMFDerivWithinAt_diff_singleton _
-
-theorem hasMFDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
-    HasMFDerivWithinAt I I' f s x f' ↔ HasMFDerivWithinAt I I' f t x f' :=
-  hasMFDerivWithinAt_congr_set' x <| h.filter_mono inf_le_left
-
-/-- If two sets coincide around a point (except possibly at a single point `y`), then it is
-equivalent to be differentiable within one or the other set. -/
-theorem mdifferentiableWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x := by
-  simp only [mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt]
-  exact exists_congr fun _ => hasMFDerivWithinAt_congr_set' _ h
-
-theorem mdifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
-    MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x := by
-  simp only [mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt]
-  exact exists_congr fun _ => hasMFDerivWithinAt_congr_set h
 
 /-- If two sets coincide locally around `x`, except maybe at a point `y`, then their
 preimage under `extChartAt x` coincide locally, except maybe at `extChartAt I x x`. -/
@@ -851,6 +823,35 @@ theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[�
     rw [(extChartAt I x).eq_symm_apply (by simp) hz.2]
     exact Ne.symm h'z
   · simp [hIz]
+
+/-! ### Congruence lemmas for derivatives on manifolds -/
+
+/-- If two sets coincide locally, except maybe at a point, then it is equivalent to have a manifold
+derivative within one or the other. -/
+theorem hasMFDerivWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    HasMFDerivWithinAt I I' f s x f' ↔ HasMFDerivWithinAt I I' f t x f' := by
+  simp only [HasMFDerivWithinAt]
+  refine and_congr ?_ ?_
+  · apply continuousWithinAt_congr_set'
+  · apply hasFDerivWithinAt_congr_set' (extChartAt I x x)
+    exact preimage_extChartAt_eventuallyEq_compl_singleton y h
+
+theorem hasMFDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+    HasMFDerivWithinAt I I' f s x f' ↔ HasMFDerivWithinAt I I' f t x f' :=
+  hasMFDerivWithinAt_congr_set' x <| h.filter_mono inf_le_left
+
+/-- If two sets coincide around a point (except possibly at a single point `y`), then it is
+equivalent to be differentiable within one or the other set. -/
+theorem mdifferentiableWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x := by
+  simp only [mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt]
+  exact exists_congr fun _ => hasMFDerivWithinAt_congr_set' _ h
+
+theorem mdifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+    MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x := by
+  simp only [mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt]
+  exact exists_congr fun _ => hasMFDerivWithinAt_congr_set h
+
 
 /-- If two sets coincide locally, except maybe at a point, then derivatives within these sets
 are the same. -/
