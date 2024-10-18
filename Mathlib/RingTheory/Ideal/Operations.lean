@@ -125,6 +125,9 @@ protected theorem smul_assoc : (I • J) • N = I • J • N :=
       (fun j hj n hn ↦ (smul_assoc r j n).symm ▸ smul_mem_smul (smul_mem_smul hr hj) hn)
       fun m₁ m₂ ↦ (smul_add r m₁ m₂) ▸ add_mem)
 
+protected theorem mul_smul : (I * J) • N = I • J • N :=
+  Submodule.smul_assoc _ _ _
+
 @[deprecated smul_inf_le (since := "2024-03-31")]
 protected theorem smul_inf_le (M₁ M₂ : Submodule R M) :
     I • (M₁ ⊓ M₂) ≤ I • M₁ ⊓ I • M₂ := smul_inf_le _ _ _
@@ -1255,7 +1258,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
   smul_add := smul_sup
   add_smul := sup_smul
-  mul_smul := Submodule.smul_assoc
+  mul_smul := Submodule.mul_smul
   one_smul := by simp
   zero_smul := bot_smul
   smul_zero := smul_bot
