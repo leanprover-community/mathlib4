@@ -324,6 +324,12 @@ theorem Algebra.IsAlgebraic.tower_top_of_injective (hinj : Function.Injective (a
     [Algebra.IsAlgebraic R A] : Algebra.IsAlgebraic S A :=
   ⟨fun _ ↦ _root_.IsAlgebraic.tower_top_of_injective hinj (Algebra.IsAlgebraic.isAlgebraic _)⟩
 
+theorem Algebra.IsAlgebraic.tower_bot_of_injective [Algebra.IsAlgebraic R A]
+    (hinj : Function.Injective (algebraMap S A)) :
+    Algebra.IsAlgebraic R S where
+  isAlgebraic x := by
+    simpa [isAlgebraic_algebraMap_iff hinj] using isAlgebraic (R := R) (A := A) (algebraMap _ _ x)
+
 end CommRing
 
 section Field
@@ -351,6 +357,12 @@ variable (A)
 /-- A field extension is algebraic if it is finite. -/
 instance Algebra.IsAlgebraic.of_finite [FiniteDimensional K A] : Algebra.IsAlgebraic K A :=
   (IsIntegral.of_finite K A).isAlgebraic
+
+theorem Algebra.IsAlgebraic.tower_bot (K L A : Type*) [CommRing K] [Field L] [Ring A]
+    [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
+    [Nontrivial A] [Algebra.IsAlgebraic K A] :
+    Algebra.IsAlgebraic K L :=
+  tower_bot_of_injective (algebraMap L A).injective
 
 end Field
 
