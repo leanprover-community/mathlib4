@@ -192,8 +192,7 @@ theorem hsum_add {s t : SummableFamily Γ R α} : (s + t).hsum = s.hsum + t.hsum
 theorem hsum_coeff_subset_sum {s : SummableFamily Γ R α} {g : Γ} {t : Finset α}
     (h : { a | (s a).coeff g ≠ 0 } ⊆ t) : s.hsum.coeff g = ∑ i ∈ t, (s i).coeff g := by
   simp only [hsum_coeff, finsum_eq_sum _ (s.finite_co_support _)]
-  refine sum_subset (Set.Finite.toFinset_subset.mpr h) ?_
-  simp
+  exact sum_subset (Set.Finite.toFinset_subset.mpr h) (by simp)
 
 theorem hsum_coeff_sum {s : SummableFamily Γ R α} {g : Γ} :
     s.hsum.coeff g = ∑ i ∈ (s.coeff g).support, (s i).coeff g := by
