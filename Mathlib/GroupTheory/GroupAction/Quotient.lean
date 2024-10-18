@@ -372,7 +372,7 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     orbitRel.Quotient H β ≃ α ⧸ H where
   toFun := fun q ↦ q.liftOn' (fun y ↦ (exists_smul_eq α y x).choose) (by
     intro y₁ y₂ h
-    rw [orbitRel_r_apply] at h
+    rw [orbitRel_apply] at h
     rw [Quotient.eq'', leftRel_eq]
     dsimp only
     rcases h with ⟨g, rfl⟩
@@ -388,12 +388,12 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     intro g₁ g₂ h
     rw [leftRel_eq] at h
     simp only
-    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_r_apply]
+    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     exact ⟨⟨_, h⟩, by simp [mul_smul]⟩)
   left_inv := fun y ↦ by
     induction' y using Quotient.inductionOn' with y
     simp only [Quotient.liftOn'_mk'']
-    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_r_apply]
+    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     convert mem_orbit_self _
     rw [inv_smul_eq_iff, (exists_smul_eq α y x).choose_spec]
   right_inv := fun g ↦ by

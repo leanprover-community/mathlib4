@@ -376,9 +376,8 @@ variable {G α}
 theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
   Iff.rfl
 
-@[to_additive]
-lemma orbitRel_r_apply {a b : α} : orbitRel G _ a b ↔ a ∈ orbit G b :=
-  Iff.rfl
+@[to_additive (attr := deprecated (since := "2024-10-18"))]
+alias orbitRel_r_apply := orbitRel_apply
 
 @[to_additive]
 lemma orbitRel_subgroup_le (H : Subgroup G) : orbitRel H α ≤ orbitRel G α :=
@@ -511,7 +510,7 @@ lemma orbitRel.Quotient.orbit_injective :
     Injective (orbitRel.Quotient.orbit : orbitRel.Quotient G α → Set α) := by
   intro x y h
   simp_rw [orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq', orbit_eq_iff,
-    ← orbitRel_r_apply] at h
+    ← orbitRel_apply] at h
   simpa [← Quotient.eq''] using h
 
 @[to_additive (attr := simp)]
@@ -596,7 +595,7 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Q
        at hb
     rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
     convert hb using 1
-    rw [orbit_eq_iff, ← orbitRel_r_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
+    rw [orbit_eq_iff, ← orbitRel_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
   rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
 
 variable (G) (α)
