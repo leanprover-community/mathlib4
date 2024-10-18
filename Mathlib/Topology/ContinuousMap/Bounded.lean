@@ -1276,9 +1276,6 @@ instance [IsScalarTower 𝕜 β β] : IsScalarTower 𝕜 (α →ᵇ β) (α →�
 instance [SMulCommClass 𝕜 β β] : SMulCommClass 𝕜 (α →ᵇ β) (α →ᵇ β) where
   smul_comm _ _ _ := ext fun _ ↦ (mul_smul_comm ..).symm
 
-example : instPseudoMetricSpace (α := α) (β := β) = NonUnitalSeminormedRing.toPseudoMetricSpace :=
-  rfl
-
 end NonUnitalAlgebra
 
 section NormedAlgebra
