@@ -49,7 +49,7 @@ Vitali relations there)
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 open scoped Topology
 
-variable {X : Type*} [MetricSpace X]
+variable {X : Type*} [PseudoMetricSpace X]
 
 /-- On a metric space `X` with a measure `μ`, consider for each `x : X` a family of measurable sets
 with nonempty interiors, called `setsAt x`. This family is a Vitali family if it satisfies the
@@ -103,6 +103,7 @@ def FineSubfamilyOn (v : VitaliFamily μ) (f : X → Set (Set X)) (s : Set X) : 
 namespace FineSubfamilyOn
 
 variable {v : VitaliFamily μ} {f : X → Set (Set X)} {s : Set X} (h : v.FineSubfamilyOn f s)
+include h
 
 theorem exists_disjoint_covering_ae :
     ∃ t : Set (X × Set X),

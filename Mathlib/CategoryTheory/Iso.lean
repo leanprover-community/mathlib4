@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
+Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.Tactic.CategoryTheory.Reassoc
 
@@ -100,7 +100,7 @@ theorem symm_mk {X Y : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_
   rfl
 
 @[simp]
-theorem symm_symm_eq {X Y : C} (α : X ≅ Y) : α.symm.symm = α := by cases α; rfl
+theorem symm_symm_eq {X Y : C} (α : X ≅ Y) : α.symm.symm = α := rfl
 
 @[simp]
 theorem symm_eq_iff {X Y : C} {α β : X ≅ Y} : α.symm = β.symm ↔ α = β :=
@@ -305,7 +305,6 @@ instance (priority := 100) mono_of_iso (f : X ⟶ Y) [IsIso f] : Mono f where
     rw [← Category.comp_id g, ← Category.comp_id h, ← IsIso.hom_inv_id f,
       ← Category.assoc, w, ← Category.assoc]
 
--- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_eq_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     inv f = g := by
@@ -317,7 +316,6 @@ theorem inv_eq_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id :
   apply (cancel_mono f).mp
   simp [inv_hom_id]
 
--- Porting note: `@[ext]` used to accept lemmas like this.
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem eq_inv_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     g = inv f :=
@@ -332,7 +330,7 @@ instance id (X : C) : IsIso (𝟙 X) := ⟨⟨𝟙 X, by simp⟩⟩
 @[deprecated (since := "2024-05-15")] alias of_iso := CategoryTheory.Iso.isIso_hom
 @[deprecated (since := "2024-05-15")] alias of_iso_inv := CategoryTheory.Iso.isIso_inv
 
-variable {f g : X ⟶ Y} {h : Y ⟶ Z}
+variable {f : X ⟶ Y} {h : Y ⟶ Z}
 
 instance inv_isIso [IsIso f] : IsIso (inv f) :=
   (asIso f).isIso_inv
@@ -344,12 +342,18 @@ because `f.hom` is defeq to `(fun x ↦ x) ≫ f.hom`, triggering a loop. -/
 instance (priority := 900) comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
   (asIso f ≪≫ asIso h).isIso_hom
 
+/--
+The composition of isomorphisms is an isomorphism. Here the arguments of type `IsIso` are
+explicit, to make this easier to use with the `refine` tactic, for instance.
+-/
+lemma comp_isIso' (_ : IsIso f) (_ : IsIso h) : IsIso (f ≫ h) := inferInstance
+
 @[simp]
 theorem inv_id : inv (𝟙 X) = 𝟙 X := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, reassoc]
 theorem inv_comp [IsIso f] [IsIso h] : inv (f ≫ h) = inv h ≫ inv f := by
   apply inv_eq_of_hom_inv_id
   simp
@@ -413,7 +417,7 @@ open IsIso
 
 theorem eq_of_inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] (p : inv f = inv g) : f = g := by
   apply (cancel_epi (inv f)).1
-  erw [inv_hom_id, p, inv_hom_id]
+  rw [inv_hom_id, p, inv_hom_id]
 
 theorem IsIso.inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] : inv f = inv g ↔ f = g :=
   Iso.inv_eq_inv (asIso f) (asIso g)
@@ -440,12 +444,10 @@ theorem isIso_of_comp_hom_eq_id (g : X ⟶ Y) [IsIso g] {f : Y ⟶ X} (h : f ≫
 
 namespace Iso
 
--- Porting note: `@[ext]` used to accept lemmas like this.
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_ext {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : f.inv = g :=
   ((hom_comp_eq_id f).1 hom_inv_id).symm
 
--- Porting note: `@[ext]` used to accept lemmas like this.
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_ext' {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : g = f.inv :=
   (hom_comp_eq_id f).1 hom_inv_id
@@ -503,7 +505,7 @@ theorem cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) 
 
 section
 
-variable {D E : Type*} [Category D] [Category E] {X Y : C} (e : X ≅ Y)
+variable {D : Type*} [Category D] {X Y : C} (e : X ≅ Y)
 
 @[reassoc (attr := simp)]
 lemma map_hom_inv_id (F : C ⥤ D) :

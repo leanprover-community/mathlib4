@@ -109,6 +109,12 @@ lemma preservesZeroMorphisms_of_iso {F₁ F₂ : C ⥤ D} [F₁.PreservesZeroMor
 instance preservesZeroMorphisms_evaluation_obj (j : D) :
     PreservesZeroMorphisms ((evaluation D C).obj j) where
 
+instance (F : C ⥤ D ⥤ E) [∀ X, (F.obj X).PreservesZeroMorphisms] :
+    F.flip.PreservesZeroMorphisms where
+
+instance (F : C ⥤ D ⥤ E) [F.PreservesZeroMorphisms] (Y : D) :
+    (F.flip.obj Y).PreservesZeroMorphisms where
+
 end ZeroMorphisms
 
 section ZeroObject
@@ -172,13 +178,13 @@ variable [HasZeroObject D] [HasZeroMorphisms D]
 
 /-- A zero functor preserves limits. -/
 def preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G where
-  preservesLimit {K} := ⟨fun hc => by
+  preservesLimit {K} := ⟨fun _ => by
     rw [Functor.isZero_iff] at hG
     exact IsLimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
 
 /-- A zero functor preserves colimits. -/
 def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G where
-  preservesColimit {K} := ⟨fun hc => by
+  preservesColimit {K} := ⟨fun _ => by
     rw [Functor.isZero_iff] at hG
     exact IsColimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
 

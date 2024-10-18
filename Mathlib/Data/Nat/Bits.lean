@@ -5,9 +5,10 @@ Authors: Praneeth Kolichala
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat
-import Mathlib.Data.Nat.BinaryRec
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Nat.Defs
-import Mathlib.Init.Data.List.Basic
+import Mathlib.Data.Nat.BinaryRec
+import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Says
@@ -26,7 +27,7 @@ and `Nat.digits`.
 
 -- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
-local notation "bxor" => _root_.xor
+local notation "bxor" => xor
 
 namespace Nat
 universe u
@@ -44,12 +45,12 @@ def boddDiv2 : ℕ → Bool × ℕ
 /-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2`-/
 def div2 (n : ℕ) : ℕ := (boddDiv2 n).2
 
-/-- `bodd n` returns `true` if `n` is odd-/
+/-- `bodd n` returns `true` if `n` is odd -/
 def bodd (n : ℕ) : Bool := (boddDiv2 n).1
 
 @[simp] lemma bodd_zero : bodd 0 = false := rfl
 
-lemma bodd_one : bodd 1 = true := rfl
+@[simp] lemma bodd_one : bodd 1 = true := rfl
 
 lemma bodd_two : bodd 2 = false := rfl
 
@@ -67,9 +68,10 @@ lemma bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
 
 @[simp]
 lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
-  induction' n with n IH
-  · simp
-  · simp only [mul_succ, bodd_add, IH, bodd_succ]
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    simp only [mul_succ, bodd_add, IH, bodd_succ]
     cases bodd m <;> cases bodd n <;> rfl
 
 lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
@@ -84,16 +86,16 @@ lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
     intro b
     cases b <;> rfl
   rw [← this]
-  cases' mod_two_eq_zero_or_one n with h h <;> rw [h] <;> rfl
+  rcases mod_two_eq_zero_or_one n with h | h <;> rw [h] <;> rfl
 
 @[simp] lemma div2_zero : div2 0 = 0 := rfl
 
-lemma div2_one : div2 1 = 0 := rfl
+@[simp] lemma div2_one : div2 1 = 0 := rfl
 
 lemma div2_two : div2 2 = 1 := rfl
 
 @[simp]
-lemma div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
+lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   simp only [bodd, boddDiv2, div2]
   rcases boddDiv2 n with ⟨_|_, _⟩ <;> simp
 
@@ -121,7 +123,7 @@ lemma bit_zero : bit false 0 = 0 :=
 
 /-- `shiftLeft' b m n` performs a left shift of `m` `n` times
  and adds the bit `b` as the least significant bit each time.
- Returns the corresponding natural number-/
+ Returns the corresponding natural number -/
 def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
   | 0 => m
   | n + 1 => bit b (shiftLeft' b m n)
@@ -179,7 +181,7 @@ lemma shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (shi
   | k + 1 => congr_arg (bit b) (shiftLeft'_add b m n k)
 
 lemma shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (shiftLeft' b m n) >>> k
-  | n, 0, _ => rfl
+  | _, 0, _ => rfl
   | n + 1, k + 1, h => by
     rw [succ_sub_succ_eq_sub, shiftLeft', Nat.add_comm, shiftRight_add]
     simp only [shiftLeft'_sub, Nat.le_of_succ_le_succ h, shiftRight_succ, shiftRight_zero]
@@ -277,17 +279,20 @@ theorem bit1_bits (n : ℕ) : (2 * n + 1).bits = true :: n.bits :=
 @[simp]
 theorem one_bits : Nat.bits 1 = [true] := by
   convert bit1_bits 0
+  simp
 
 -- TODO Find somewhere this can live.
 -- example : bits 3423 = [true, true, true, true, true, false, true, false, true, false, true, true]
 -- := by norm_num
 
 theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.headI := by
-  induction' n using Nat.binaryRec' with b n h _; · simp
-  simp [bodd_bit, bits_append_bit _ _ h]
+  induction n using Nat.binaryRec' with
+  | z => simp
+  | f _ _ h _ => simp [bodd_bit, bits_append_bit _ _ h]
 
 theorem div2_bits_eq_tail (n : ℕ) : n.div2.bits = n.bits.tail := by
-  induction' n using Nat.binaryRec' with b n h _; · simp
-  simp [div2_bit, bits_append_bit _ _ h]
+  induction n using Nat.binaryRec' with
+  | z => simp
+  | f _ _ h _ => simp [div2_bit, bits_append_bit _ _ h]
 
 end Nat

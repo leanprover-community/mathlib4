@@ -41,7 +41,7 @@ groups here are not necessarily finite dimensional.
 A priori, a Lie group here is a manifold with corners.
 
 The definition of Lie group cannot require `I : ModelWithCorners 𝕜 E E` with the same space as the
-model space and as the model vector space, as one might hope, beause in the product situation,
+model space and as the model vector space, as one might hope, because in the product situation,
 the model space is `ModelProd E E'` and the model vector space is `E × E'`, which are not the same,
 so the definition does not apply. Hence the definition should be more general, allowing
 `I : ModelWithCorners 𝕜 E H`.
@@ -79,13 +79,10 @@ class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topolo
 section PointwiseDivision
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {J : ModelWithCorners 𝕜 F F} {G : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [Group G] [LieGroup I G] {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
-  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
-  {I'' : ModelWithCorners 𝕜 E'' H''} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H'' M']
   {n : ℕ∞}
 
 section
@@ -97,6 +94,7 @@ variable (I)
 theorem smooth_inv : Smooth I I fun x : G => x⁻¹ :=
   LieGroup.smooth_inv
 
+include I in
 /-- A Lie group is a topological group. This is not an instance for technical reasons,
 see note [Design choices about smooth algebraic structures]. -/
 @[to_additive "An additive Lie group is an additive topological group. This is not an instance for
@@ -235,11 +233,12 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
   [TopologicalSpace G] [ChartedSpace H G] [Inv G] [Zero G] [SmoothInv₀ I G] {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
-  {n : ℕ∞} {f g : M → G}
+  {n : ℕ∞} {f : M → G}
 
 theorem smoothAt_inv₀ {x : G} (hx : x ≠ 0) : SmoothAt I I (fun y ↦ y⁻¹) x :=
   SmoothInv₀.smoothAt_inv₀ hx
 
+include I in
 /-- In a manifold with smooth inverse away from `0`, the inverse is continuous away from `0`.
 This is not an instance for technical reasons, see
 note [Design choices about smooth algebraic structures]. -/

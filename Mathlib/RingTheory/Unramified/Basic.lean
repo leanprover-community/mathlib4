@@ -70,7 +70,7 @@ theorem lift_unique {B : Type u} [CommRing B] [_RB : Algebra R B]
   revert g₁ g₂
   change Function.Injective (Ideal.Quotient.mkₐ R I).comp
   revert _RB
-  apply Ideal.IsNilpotent.induction_on (R := B) I hI
+  apply Ideal.IsNilpotent.induction_on (S := B) I hI
   · intro B _ I hI _; exact FormallyUnramified.comp_injective I hI
   · intro B _ I J hIJ h₁ h₂ _ g₁ g₂ e
     apply h₁
@@ -104,23 +104,12 @@ theorem lift_unique' [FormallyUnramified R A] {C : Type u} [CommRing C]
     (g₁ g₂ : A →ₐ[R] B) (h : f.comp g₁ = f.comp g₂) : g₁ = g₂ :=
   FormallyUnramified.ext' _ hf g₁ g₂ (AlgHom.congr_fun h)
 
-end
-
-section OfEquiv
-
-variable {R : Type u} [CommSemiring R]
-variable {A B : Type u} [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-
-theorem of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B) :
-    FormallyUnramified R B := by
+instance : FormallyUnramified R R := by
   constructor
-  intro C _ _ I hI f₁ f₂ e'
-  rw [← f₁.comp_id, ← f₂.comp_id, ← e.comp_symm, ← AlgHom.comp_assoc, ← AlgHom.comp_assoc]
-  congr 1
-  refine FormallyUnramified.comp_injective I hI ?_
-  rw [← AlgHom.comp_assoc, e', AlgHom.comp_assoc]
+  intros B _ _ _ _ f₁ f₂ _
+  exact Subsingleton.elim _ _
 
-end OfEquiv
+end
 
 section Comp
 
@@ -155,6 +144,33 @@ theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
 
 end Comp
 
+section of_surjective
+
+variable {R : Type u} [CommSemiring R]
+variable {A B : Type u} [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+
+/-- This holds in general for epimorphisms. -/
+theorem of_surjective [FormallyUnramified R A] (f : A →ₐ[R] B) (H : Function.Surjective f) :
+    FormallyUnramified R B := by
+  constructor
+  intro Q _ _ I hI f₁ f₂ e
+  ext x
+  obtain ⟨x, rfl⟩ := H x
+  rw [← AlgHom.comp_apply, ← AlgHom.comp_apply]
+  congr 1
+  apply FormallyUnramified.comp_injective I hI
+  ext x; exact DFunLike.congr_fun e (f x)
+
+instance quotient {A} [CommRing A] [Algebra R A] [FormallyUnramified R A] (I : Ideal A) :
+    FormallyUnramified R (A ⧸ I) :=
+    FormallyUnramified.of_surjective (IsScalarTower.toAlgHom _ _ _) Ideal.Quotient.mk_surjective
+
+theorem of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B) :
+    FormallyUnramified R B :=
+  of_surjective e.toAlgHom e.surjective
+
+end of_surjective
+
 section BaseChange
 
 open scoped TensorProduct
@@ -181,13 +197,14 @@ variable {R S Rₘ Sₘ : Type u} [CommRing R] [CommRing S] [CommRing Rₘ] [Com
 variable (M : Submonoid R)
 variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algebra Rₘ Sₘ]
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
-variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
+variable [IsLocalization (M.map (algebraMap R S)) Sₘ]
+include M
 
 -- Porting note: no longer supported
 -- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
 
 /-- This holds in general for epimorphisms. -/
-theorem of_isLocalization : FormallyUnramified R Rₘ := by
+theorem of_isLocalization [IsLocalization M Rₘ] : FormallyUnramified R Rₘ := by
   constructor
   intro Q _ _ I _ f₁ f₂ _
   apply AlgHom.coe_ringHom_injective

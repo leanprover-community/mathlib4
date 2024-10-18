@@ -3,8 +3,8 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Pointwise
-import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Stabilizer of a set under a pointwise action

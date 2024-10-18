@@ -189,7 +189,7 @@ instance commRing : CommRing ℝ where
   mul_assoc a b c := by apply ext_cauchy; simp only [cauchy_mul, mul_assoc]
   left_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, mul_add]
   right_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, add_mul]
-  add_left_neg a := by apply ext_cauchy; simp [cauchy_add, cauchy_neg, cauchy_zero]
+  neg_add_cancel a := by apply ext_cauchy; simp [cauchy_add, cauchy_neg, cauchy_zero]
   natCast_zero := by apply ext_cauchy; simp [cauchy_zero]
   natCast_succ n := by apply ext_cauchy; simp [cauchy_one, cauchy_add]
   intCast_negSucc z := by apply ext_cauchy; simp [cauchy_neg, cauchy_natCast]
@@ -343,22 +343,25 @@ protected theorem zero_lt_one : (0 : ℝ) < 1 := by
 protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
   ⟨Real.zero_lt_one⟩
 
+@[deprecated mul_pos (since := "2024-08-15")]
 protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
   induction' a using Real.ind_mk with a
   induction' b using Real.ind_mk with b
   simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
-instance : StrictOrderedCommRing ℝ :=
-  { Real.commRing, Real.partialOrder,
-    Real.semiring with
-    exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
-    add_le_add_left := by
-      simp only [le_iff_eq_or_lt]
-      rintro a b ⟨rfl, h⟩
-      · simp only [lt_self_iff_false, or_false, forall_const]
-      · exact fun c => Or.inr ((add_lt_add_iff_left c).2 ‹_›)
-    zero_le_one := le_of_lt Real.zero_lt_one
-    mul_pos := @Real.mul_pos }
+instance instStrictOrderedCommRing : StrictOrderedCommRing ℝ where
+  __ := Real.commRing
+  exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
+  add_le_add_left := by
+    simp only [le_iff_eq_or_lt]
+    rintro a b ⟨rfl, h⟩
+    · simp only [lt_self_iff_false, or_false, forall_const]
+    · exact fun c => Or.inr ((add_lt_add_iff_left c).2 ‹_›)
+  zero_le_one := le_of_lt Real.zero_lt_one
+  mul_pos a b :=  by
+    induction' a using Real.ind_mk with a
+    induction' b using Real.ind_mk with b
+    simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
 instance strictOrderedRing : StrictOrderedRing ℝ :=
   inferInstance
@@ -517,9 +520,9 @@ noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
     exact CauSeq.Completion.inv_mul_cancel h
   inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
   nnratCast_def q := by
     rw [← ofCauchy_nnratCast, NNRat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_natCast]
   ratCast_def q := by
@@ -597,3 +600,10 @@ def IsNonarchimedean {A : Type*} [Add A] (f : A → ℝ) : Prop :=
 `f (r ^ n) = (f r) ^ n`. -/
 def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
   ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
+
+/-- A ring homomorphism `f : α →+* β` is bounded with respect to the functions `nα : α → ℝ` and
+  `nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,
+  `nβ (f x) ≤ C * nα x`. -/
+def RingHom.IsBoundedWrt {α : Type*} [Ring α] {β : Type*} [Ring β] (nα : α → ℝ) (nβ : β → ℝ)
+    (f : α →+* β) : Prop :=
+  ∃ C : ℝ, 0 < C ∧ ∀ x : α, nβ (f x) ≤ C * nα x

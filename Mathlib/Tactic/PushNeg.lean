@@ -5,11 +5,10 @@ Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Lo
 -/
 
 import Lean.Elab.Tactic.Location
+import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Order.Defs
 import Mathlib.Tactic.Conv
-import Mathlib.Init.Set
-import Lean.Elab.Tactic.Location
 
 /-!
 # The `push_neg` tactic
@@ -235,3 +234,5 @@ elab "push_neg" loc:(location)? : tactic =>
     pushNegLocalDecl
     pushNegTarget
     (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
+
+end Mathlib.Tactic.PushNeg

@@ -234,13 +234,13 @@ theorem comm_trans_rTensorOne :
 
 variable {M} in
 theorem mulLeftMap_eq_mulMap_comp {ι : Type*} [DecidableEq ι] (m : ι → M) :
-    mulLeftMap N m = mulMap M N ∘ₗ LinearMap.rTensor N (Finsupp.total ι M R m) ∘ₗ
+    mulLeftMap N m = mulMap M N ∘ₗ LinearMap.rTensor N (Finsupp.linearCombination R m) ∘ₗ
       (TensorProduct.finsuppScalarLeft R N ι).symm.toLinearMap := by
   ext; simp
 
 variable {N} in
 theorem mulRightMap_eq_mulMap_comp {ι : Type*} [DecidableEq ι] (n : ι → N) :
-    mulRightMap M n = mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.total ι N R n) ∘ₗ
+    mulRightMap M n = mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.linearCombination R n) ∘ₗ
       (TensorProduct.finsuppScalarRight R M ι).symm.toLinearMap := by
   ext; simp
 
