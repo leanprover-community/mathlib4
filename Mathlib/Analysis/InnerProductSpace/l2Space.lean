@@ -249,7 +249,7 @@ protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
       rintro i x ⟨x, rfl⟩
       use lp.single 2 i x
       exact hV.linearIsometry_apply_single x
-    exact hV.linearIsometry.isometry.uniformInducing.isComplete_range.isClosed
+    exact hV.linearIsometry.isometry.isUniformInducing.isComplete_range.isClosed
 
 end OrthogonalFamily
 

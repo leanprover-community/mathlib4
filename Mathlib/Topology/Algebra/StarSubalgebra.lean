@@ -229,27 +229,24 @@ theorem induction_on {x y : A}
     P y hy := by
   apply closure (adjoin R {x} : Set A) subset_closure (fun y hy ↦ ?_) y hy
   rw [SetLike.mem_coe, ← mem_toSubalgebra, adjoin_toSubalgebra] at hy
-  induction hy using Algebra.adjoin_induction'' with
+  induction hy using Algebra.adjoin_induction with
   | mem u hu =>
     obtain ((rfl : u = x) | (hu : star u = x)) := by simpa using hu
     · exact self
     · simp_rw [← hu, star_star] at star_self
       exact star_self
   | algebraMap r => exact algebraMap r
-  | add u hu_mem v hv_mem hu hv =>
+  | add u v hu_mem hv_mem hu hv =>
     exact add u (subset_closure hu_mem) v (subset_closure hv_mem) (hu hu_mem) (hv hv_mem)
-  | mul u hu_mem v hv_mem hu hv =>
+  | mul u v hu_mem hv_mem hu hv =>
     exact mul u (subset_closure hu_mem) v (subset_closure hv_mem) (hu hu_mem) (hv hv_mem)
 
 theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
     [FunLike F (elementalStarAlgebra R a) B] [AlgHomClass F R _ B] [StarHomClass F _ B]
     {φ ψ : F} (hφ : Continuous φ)
     (hψ : Continuous ψ) (h : φ ⟨a, self_mem R a⟩ = ψ ⟨a, self_mem R a⟩) : φ = ψ := by
-  -- Note: help with unfolding `elementalStarAlgebra`
-  have : StarHomClass F (↥(topologicalClosure (adjoin R {a}))) B :=
-    inferInstanceAs (StarHomClass F (elementalStarAlgebra R a) B)
   refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => ?_
-  refine adjoin_induction' x ?_ ?_ ?_ ?_ ?_
+  refine adjoin_induction_subtype x ?_ ?_ ?_ ?_ ?_
   exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r => by
     simp only [AlgHomClass.commutes], fun x y hx hy => by simp only [map_add, hx, hy],
     fun x y hx hy => by simp only [map_mul, hx, hy], fun x hx => by simp only [map_star, hx]]

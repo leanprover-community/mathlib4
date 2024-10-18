@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -47,11 +48,11 @@ def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
 variable (R A)
 
 /-- An algebra is algebraic if all its elements are algebraic. -/
-protected class Algebra.IsAlgebraic : Prop :=
+protected class Algebra.IsAlgebraic : Prop where
   isAlgebraic : ∀ x : A, IsAlgebraic R x
 
 /-- An algebra is transcendental if some element is transcendental. -/
-protected class Algebra.Transcendental : Prop :=
+protected class Algebra.Transcendental : Prop where
   transcendental : ∃ x : A, Transcendental R x
 
 variable {R A}
@@ -68,7 +69,7 @@ theorem Algebra.transcendental_iff_not_isAlgebraic :
 
 /-- A subalgebra is algebraic if and only if it is algebraic as an algebra. -/
 theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
-    S.IsAlgebraic ↔ @Algebra.IsAlgebraic R S _ _ S.algebra := by
+    S.IsAlgebraic ↔ Algebra.IsAlgebraic R S := by
   delta Subalgebra.IsAlgebraic
   rw [Subtype.forall', Algebra.isAlgebraic_def]
   refine forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl ?_

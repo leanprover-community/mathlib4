@@ -12,7 +12,7 @@ import Mathlib.Data.Nat.Cast.Order.Basic
 
 -/
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Nat
 

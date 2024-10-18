@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Int.Sqrt
 
 /-!
@@ -47,7 +48,7 @@ instance instAddCommGroup : AddCommGroup ℤ where
   zsmul := (·*·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by
-    simp only [ofNat_eq_coe, ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+    simp only [ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   zsmul_neg' m n := by simp only [negSucc_coe, ofNat_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
 

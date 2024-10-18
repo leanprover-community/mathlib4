@@ -47,10 +47,6 @@ instance bundledHom : BundledHom AssocRingHom where
 --deriving instance LargeCategory, ConcreteCategory for SemiRingCat
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 
--- Porting note: Hinting to Lean that `forget R` and `R` are the same
-unif_hint forget_obj_eq_coe (R : SemiRingCat) where ⊢
-  (forget SemiRingCat).obj R ≟ R
-
 instance instSemiring (X : SemiRingCat) : Semiring X := X.str
 
 instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
@@ -176,10 +172,6 @@ instance : BundledHom.ParentProjection @Ring.toSemiring :=
 
 instance (X : RingCat) : Ring X := X.str
 
--- Porting note: Hinting to Lean that `forget R` and `R` are the same
-unif_hint forget_obj_eq_coe (R : RingCat) where ⊢
-  (forget RingCat).obj R ≟ R
-
 instance instRing (X : RingCat) : Ring X := X.str
 
 instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
@@ -273,7 +265,7 @@ instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
 end RingCat
 
 /-- The category of commutative semirings. -/
-def CommSemiRingCat : Type (u + 1) :=
+abbrev CommSemiRingCat : Type (u + 1) :=
   Bundled CommSemiring
 
 namespace CommSemiRingCat
@@ -293,10 +285,6 @@ instance : CoeSort CommSemiRingCat Type* where
   coe X := X.α
 
 instance (X : CommSemiRingCat) : CommSemiring X := X.str
-
--- Porting note: Hinting to Lean that `forget R` and `R` are the same
-unif_hint forget_obj_eq_coe (R : CommSemiRingCat) where ⊢
-  (forget CommSemiRingCat).obj R ≟ R
 
 instance instCommSemiring (X : CommSemiRingCat) : CommSemiring X := X.str
 
@@ -389,7 +377,7 @@ instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat :=
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
-  HasForget₂.mk' (fun R : CommSemiRingCat => CommMonCat.of R) (fun R => rfl)
+  HasForget₂.mk' (fun R : CommSemiRingCat => CommMonCat.of R) (fun _ => rfl)
     -- Porting note: `(_ := _)` trick
     (fun {R₁ R₂} f => RingHom.toMonoidHom (α := R₁) (β := R₂) f) (by rfl)
 
@@ -412,7 +400,7 @@ instance forgetReflectIsos : (forget CommSemiRingCat).ReflectsIsomorphisms where
 end CommSemiRingCat
 
 /-- The category of commutative rings. -/
-def CommRingCat : Type (u + 1) :=
+abbrev CommRingCat : Type (u + 1) :=
   Bundled CommRing
 
 namespace CommRingCat
@@ -423,17 +411,6 @@ instance : BundledHom.ParentProjection @CommRing.toRing :=
 -- Porting note: deriving fails for concrete category.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for CommRingCat
-
-instance : ConcreteCategory CommRingCat := by
-  dsimp [CommRingCat]
-  infer_instance
-
-instance : CoeSort CommRingCat Type* where
-  coe X := X.α
-
--- Porting note: Hinting to Lean that `forget R` and `R` are the same
-unif_hint forget_obj_eq_coe (R : CommRingCat) where ⊢
-  (forget CommRingCat).obj R ≟ R
 
 instance instCommRing (X : CommRingCat) : CommRing X := X.str
 
@@ -546,10 +523,16 @@ theorem coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat :=
   BundledHom.forget₂ _ _
 
+@[simp] lemma forgetToRingCat_obj (A : CommRingCat.{u}) :
+    ((forget₂ _ RingCat).obj A : Type _) = A := rfl
+
+@[simp] lemma forgetToRingCat_map_apply {A B : CommRingCat.{u}} (f : A ⟶ B) (a : A) :
+    DFunLike.coe (α := A) (β := fun _ ↦ B) ((forget₂ _ RingCat).map f) a = f a := rfl
+
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :=
-  HasForget₂.mk' (fun R : CommRingCat => CommSemiRingCat.of R) (fun R => rfl)
-    (fun {R₁ R₂} f => f) (by rfl)
+  HasForget₂.mk' (fun R : CommRingCat => CommSemiRingCat.of R) (fun _ => rfl)
+    (fun {_ _} f => f) (by rfl)
 
 instance : (forget₂ CommRingCat CommSemiRingCat).Full where map_surjective f := ⟨f, rfl⟩
 
@@ -599,6 +582,16 @@ theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
 theorem commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.symm.toRingHom = i.inv := by
   ext
+  rfl
+
+@[simp]
+lemma commRingIsoToRingEquiv_apply {X Y : CommRingCat} (i : X ≅ Y) (x : X) :
+    i.commRingCatIsoToRingEquiv x = i.hom x :=
+  rfl
+
+@[simp]
+lemma commRingIsoToRingEquiv_symm_apply {X Y : CommRingCat} (i : X ≅ Y) (y : Y) :
+    i.commRingCatIsoToRingEquiv.symm y = i.inv y :=
   rfl
 
 end CategoryTheory.Iso
