@@ -179,8 +179,17 @@ instance instSupSet : SupSet (Filter α) where
 
 @[simp] theorem mem_sSup {S : Set (Filter α)} : s ∈ sSup S ↔ ∀ f ∈ S, s ∈ f := .rfl
 
+/-- Infimum of a set of filters.
+This definition is marked as irreducible
+so that Lean doesn't try to unfold it when unifying expressions. -/
+@[irreducible]
+protected def sInf (s : Set (Filter α)) : Filter α := sSup (lowerBounds s)
+
 instance instInfSet : InfSet (Filter α) where
-  sInf S := sSup (lowerBounds S)
+  sInf := Filter.sInf
+
+protected theorem sSup_lowerBounds (s : Set (Filter α)) : sSup (lowerBounds s) = sInf s := by
+  simp [sInf, Filter.sInf]
 
 instance : Top (Filter α) where
   top := .copy (sSup (Set.range pure)) {s | ∀ x, x ∈ s} <| by simp

@@ -266,8 +266,8 @@ instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
   le_inf := fun _ _ _ h₁ h₂ _s ⟨_a, ha, _b, hb, hs⟩ => hs.symm ▸ inter_mem (h₁ ha) (h₂ hb)
   le_sSup _ _ h₁ _ h₂ := h₂ h₁
   sSup_le _ _ h₁ _ h₂ _ h₃ := h₁ _ h₃ h₂
-  sInf_le _ _ h₁ _ h₂ _ h₃ := h₃ h₁ h₂
-  le_sInf _ _ h₁ _ h₂ := h₂ h₁
+  sInf_le _ _ h₁ _ h₂ := by rw [← Filter.sSup_lowerBounds]; exact fun _ h₃ ↦ h₃ h₁ h₂
+  le_sInf _ _ h₁ _ h₂ := by rw [← Filter.sSup_lowerBounds] at h₂; exact h₂ h₁
   le_top _ _ := univ_mem'
   bot_le _ _ _ := trivial
 
