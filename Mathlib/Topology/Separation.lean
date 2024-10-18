@@ -1544,7 +1544,7 @@ Hausdorff spaces:
   `f x ≠ f y`. We use this lemma to prove that topological spaces defined using `induced` are
   Hausdorff spaces.
 
-* `separated_by_openEmbedding` says that for an open embedding `f : X → Y` of a Hausdorff space
+* `separated_by_isOpenEmbedding` says that for an open embedding `f : X → Y` of a Hausdorff space
   `X`, the images of two distinct points `x y : X`, `x ≠ y` can be separated by open neighborhoods.
   We use this lemma to prove that topological spaces defined using `coinduced` are Hausdorff spaces.
 -/
@@ -1560,12 +1560,15 @@ theorem separated_by_continuous [TopologicalSpace Y] [T2Space Y]
   let ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
   ⟨f ⁻¹' u, f ⁻¹' v, uo.preimage hf, vo.preimage hf, xu, yv, uv.preimage _⟩
 
-theorem separated_by_openEmbedding [TopologicalSpace Y] [T2Space X]
-    {f : X → Y} (hf : OpenEmbedding f) {x y : X} (h : x ≠ y) :
+theorem separated_by_isOpenEmbedding [TopologicalSpace Y] [T2Space X]
+    {f : X → Y} (hf : IsOpenEmbedding f) {x y : X} (h : x ≠ y) :
     ∃ u v : Set Y, IsOpen u ∧ IsOpen v ∧ f x ∈ u ∧ f y ∈ v ∧ Disjoint u v :=
   let ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
   ⟨f '' u, f '' v, hf.isOpenMap _ uo, hf.isOpenMap _ vo, mem_image_of_mem _ xu,
     mem_image_of_mem _ yv, disjoint_image_of_injective hf.inj uv⟩
+
+@[deprecated (since := "2024-10-18")]
+alias separated_by_openEmbedding := separated_by_isOpenEmbedding
 
 instance {p : X → Prop} [T2Space X] : T2Space (Subtype p) := inferInstance
 
@@ -1591,10 +1594,10 @@ instance [T2Space X] [TopologicalSpace Y] [T2Space Y] :
     T2Space (X ⊕ Y) := by
   constructor
   rintro (x | x) (y | y) h
-  · exact separated_by_openEmbedding openEmbedding_inl <| ne_of_apply_ne _ h
+  · exact separated_by_isOpenEmbedding isOpenEmbedding_inl <| ne_of_apply_ne _ h
   · exact separated_by_continuous continuous_isLeft <| by simp
   · exact separated_by_continuous continuous_isLeft <| by simp
-  · exact separated_by_openEmbedding openEmbedding_inr <| ne_of_apply_ne _ h
+  · exact separated_by_isOpenEmbedding isOpenEmbedding_inr <| ne_of_apply_ne _ h
 
 instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
     [∀ a, T2Space (Y a)] : T2Space (∀ a, Y a) :=
@@ -1606,7 +1609,7 @@ instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [
   rintro ⟨i, x⟩ ⟨j, y⟩ neq
   rcases eq_or_ne i j with (rfl | h)
   · replace neq : x ≠ y := ne_of_apply_ne _ neq
-    exact separated_by_openEmbedding openEmbedding_sigmaMk neq
+    exact separated_by_isOpenEmbedding isOpenEmbedding_sigmaMk neq
   · let _ := (⊥ : TopologicalSpace ι); have : DiscreteTopology ι := ⟨rfl⟩
     exact separated_by_continuous (continuous_def.2 fun u _ => isOpen_sigma_fst_preimage u) h
 
@@ -2597,7 +2600,7 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
     let v : Set u := ((↑) : u → s) ⁻¹' V
     have : ((↑) : u → H) = ((↑) : s → H) ∘ ((↑) : u → s) := rfl
     have f0 : Embedding ((↑) : u → H) := embedding_subtype_val.comp embedding_subtype_val
-    have f1 : OpenEmbedding ((↑) : u → H) := by
+    have f1 : IsOpenEmbedding ((↑) : u → H) := by
       refine ⟨f0, ?_⟩
       · have : Set.range ((↑) : u → H) = interior s := by
           rw [this, Set.range_comp, Subtype.range_coe, Subtype.image_preimage_coe]
