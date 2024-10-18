@@ -9,7 +9,7 @@ import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 # Extension of a linear function from indicators to L1
 
 Let `T : Set α → E →L[ℝ] F` be additive for measurable sets with finite measure, in the sense that
-for `s, t` two such sets, `s ∩ t = ∅ → T (s ∪ t) = T s + T t`. `T` is akin to a bilinear map on
+for `s, t` two such sets, `Disjoint s t → T (s ∪ t) = T s + T t`. `T` is akin to a bilinear map on
 `Set α × E`, or a linear map on indicator functions.
 
 This file constructs an extension of `T` to integrable simple functions, which are finite sums of
@@ -23,7 +23,7 @@ expectation of an integrable function in `MeasureTheory.Function.ConditionalExpe
 ## Main Definitions
 
 - `FinMeasAdditive μ T`: the property that `T` is additive on measurable sets with finite measure.
-  For two such sets, `s ∩ t = ∅ → T (s ∪ t) = T s + T t`.
+  For two such sets, `Disjoint s t → T (s ∪ t) = T s + T t`.
 - `DominatedFinMeasAdditive μ T C`: `FinMeasAdditive μ T ∧ ∀ s, ‖T s‖ ≤ C * (μ s).toReal`.
   This is the property needed to perform the extension from indicators to L1.
 - `setToL1 (hT : DominatedFinMeasAdditive μ T C) : (α →₁[μ] E) →L[ℝ] F`: the extension of `T`
@@ -90,13 +90,14 @@ section FinMeasAdditive
 sets with finite measure is the sum of its values on each set. -/
 def FinMeasAdditive {β} [AddMonoid β] {_ : MeasurableSpace α} (μ : Measure α) (T : Set α → β) :
     Prop :=
-  ∀ s t, MeasurableSet s → MeasurableSet t → μ s ≠ ∞ → μ t ≠ ∞ → s ∩ t = ∅ → T (s ∪ t) = T s + T t
+  ∀ s t, MeasurableSet s → MeasurableSet t → μ s ≠ ∞ → μ t ≠ ∞ → Disjoint s t →
+    T (s ∪ t) = T s + T t
 
 namespace FinMeasAdditive
 
 variable {β : Type*} [AddCommMonoid β] {T T' : Set α → β}
 
-theorem zero : FinMeasAdditive μ (0 : Set α → β) := fun s t _ _ _ _ _ => by simp
+theorem zero : FinMeasAdditive μ (0 : Set α → β) := fun _ _ _ _ _ _ _ => by simp
 
 theorem add (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive μ T') :
     FinMeasAdditive μ (T + T') := by
@@ -133,7 +134,7 @@ theorem smul_measure_iff (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hc_ne_top : c 
 theorem map_empty_eq_zero {β} [AddCancelMonoid β] {T : Set α → β} (hT : FinMeasAdditive μ T) :
     T ∅ = 0 := by
   have h_empty : μ ∅ ≠ ∞ := (measure_empty.le.trans_lt ENNReal.coe_lt_top).ne
-  specialize hT ∅ ∅ MeasurableSet.empty MeasurableSet.empty h_empty h_empty (Set.inter_empty ∅)
+  specialize hT ∅ ∅ MeasurableSet.empty MeasurableSet.empty h_empty h_empty (disjoint_empty _)
   rw [Set.union_empty] at hT
   nth_rw 1 [← add_zero (T ∅)] at hT
   exact (add_left_cancel hT).symm
@@ -160,10 +161,9 @@ theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
   · congr; convert Finset.iSup_insert a s S
   · exact (measure_biUnion_lt_top s.finite_toSet fun i hi ↦
       (hps i <| Finset.mem_insert_of_mem hi).lt_top).ne
-  · simp_rw [Set.inter_iUnion]
-    refine iUnion_eq_empty.mpr fun i => iUnion_eq_empty.mpr fun hi => ?_
-    rw [← Set.disjoint_iff_inter_eq_empty]
-    refine h_disj a (Finset.mem_insert_self a s) i (Finset.mem_insert_of_mem hi) fun hai => ?_
+  · simp_rw [Set.disjoint_iUnion_right]
+    intro i hi
+    refine h_disj a (Finset.mem_insert_self a s) i (Finset.mem_insert_of_mem hi) fun hai ↦ ?_
     rw [← hai] at hi
     exact has hi
 
@@ -192,7 +192,7 @@ theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α
   refine ((hT.2 s hs (by simp [hs_zero])).trans (le_of_eq ?_)).antisymm (norm_nonneg _)
   rw [hs_zero, ENNReal.zero_toReal, mul_zero]
 
-theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {m : MeasurableSpace α}
+theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
     (hT : DominatedFinMeasAdditive (0 : Measure α) T C) {s : Set α} (hs : MeasurableSet s) :
     T s = 0 :=
   eq_zero_of_measure_zero hT hs (by simp only [Measure.coe_zero, Pi.zero_apply])
@@ -421,7 +421,7 @@ theorem setToSimpleFunc_add (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
     setToSimpleFunc T (f + g) = ∑ x ∈ (pair f g).range, T (pair f g ⁻¹' {x}) (x.fst + x.snd) := by
       rw [add_eq_map₂, map_setToSimpleFunc T h_add hp_pair]; simp
     _ = ∑ x ∈ (pair f g).range, (T (pair f g ⁻¹' {x}) x.fst + T (pair f g ⁻¹' {x}) x.snd) :=
-      (Finset.sum_congr rfl fun a _ => ContinuousLinearMap.map_add _ _ _)
+      (Finset.sum_congr rfl fun _ _ => ContinuousLinearMap.map_add _ _ _)
     _ = (∑ x ∈ (pair f g).range, T (pair f g ⁻¹' {x}) x.fst) +
           ∑ x ∈ (pair f g).range, T (pair f g ⁻¹' {x}) x.snd := by
       rw [Finset.sum_add_distrib]
@@ -1637,7 +1637,7 @@ theorem continuous_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) 
     {bound : α → ℝ} (hfs_meas : ∀ x, AEStronglyMeasurable (fs x) μ)
     (h_bound : ∀ x, ∀ᵐ a ∂μ, ‖fs x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
     (h_cont : ∀ᵐ a ∂μ, Continuous fun x => fs x a) : Continuous fun x => setToFun μ T hT (fs x) :=
-  continuous_iff_continuousAt.mpr fun x₀ =>
+  continuous_iff_continuousAt.mpr fun _ =>
     continuousAt_setToFun_of_dominated hT (Eventually.of_forall hfs_meas)
         (Eventually.of_forall h_bound) ‹_› <|
       h_cont.mono fun _ => Continuous.continuousAt

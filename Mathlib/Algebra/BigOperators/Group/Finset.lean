@@ -1478,6 +1478,11 @@ theorem sum_range_tsub [AddCommMonoid α] [PartialOrder α] [Sub α] [OrderedSub
     have h₂ : f 0 ≤ f n := h (Nat.zero_le _)
     rw [tsub_add_eq_add_tsub h₂, add_tsub_cancel_of_le h₁]
 
+theorem sum_tsub_distrib [AddCommMonoid α] [PartialOrder α] [ExistsAddOfLE α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] [Sub α]
+    [OrderedSub α] (s : Finset ι) {f g : ι → α} (hfg : ∀ x ∈ s, g x ≤ f x) :
+    ∑ x ∈ s, (f x - g x) = ∑ x ∈ s, f x - ∑ x ∈ s, g x := sum_map_tsub _ hfg
+
 @[to_additive (attr := simp)]
 theorem prod_const (b : β) : ∏ _x ∈ s, b = b ^ s.card :=
   (congr_arg _ <| s.val.map_const b).trans <| Multiset.prod_replicate s.card b
@@ -1776,7 +1781,7 @@ lemma prod_sdiff_ne_prod_sdiff_iff :
 
 end CancelCommMonoid
 
-theorem card_eq_sum_ones (s : Finset α) : s.card = ∑ x ∈ s, 1 := by simp
+theorem card_eq_sum_ones (s : Finset α) : s.card = ∑ _ ∈ s, 1 := by simp
 
 theorem sum_const_nat {m : ℕ} {f : α → ℕ} (h₁ : ∀ x ∈ s, f x = m) :
     ∑ x ∈ s, f x = card s * m := by
@@ -1860,7 +1865,7 @@ theorem card_biUnion [DecidableEq β] {s : Finset α} {t : α → Finset β}
     (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → Disjoint (t x) (t y)) :
     (s.biUnion t).card = ∑ u ∈ s, card (t u) :=
   calc
-    (s.biUnion t).card = ∑ i ∈ s.biUnion t, 1 := card_eq_sum_ones _
+    (s.biUnion t).card = ∑ _ ∈ s.biUnion t, 1 := card_eq_sum_ones _
     _ = ∑ a ∈ s, ∑ _i ∈ t a, 1 := Finset.sum_biUnion h
     _ = ∑ u ∈ s, card (t u) := by simp_rw [card_eq_sum_ones]
 

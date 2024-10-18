@@ -96,12 +96,12 @@ instance concreteCategory : ConcreteCategory.{v} (HopfAlgebraCat.{v} R) where
     { obj := fun M => M
       map := fun f => f.toBialgHom }
   forget_faithful :=
-    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
+    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
 
 instance hasForgetToBialgebra : HasForget₂ (HopfAlgebraCat R) (BialgebraCat R) where
   forget₂ :=
     { obj := fun X => BialgebraCat.of R X
-      map := fun {X Y} f => BialgebraCat.ofHom f.toBialgHom }
+      map := fun {_ _} f => BialgebraCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_bialgebra_obj (X : HopfAlgebraCat R) :

@@ -414,7 +414,7 @@ end IsLocal
 theorem isPrimary_of_isMaximal_radical [CommRing R] {I : Ideal R} (hi : IsMaximal (radical I)) :
     IsPrimary I :=
   have : radical I = jacobson I :=
-    le_antisymm (le_sInf fun M ⟨him, hm⟩ => hm.isPrime.radical_le_iff.2 him)
+    le_antisymm (le_sInf fun _ ⟨him, hm⟩ => hm.isPrime.radical_le_iff.2 him)
       (sInf_le ⟨le_radical, hi⟩)
   ⟨ne_top_of_lt <| lt_of_le_of_lt le_radical (lt_top_iff_ne_top.2 hi.1.1), fun {x y} hxy =>
     ((isLocal_of_isMaximal_radical hi).mem_jacobson_or_exists_inv y).symm.imp

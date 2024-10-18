@@ -21,7 +21,7 @@ universe w v₁ v₂ v u u₂
 
 namespace CategoryTheory.Limits
 
-variable {C : Type u} [Category.{v} C] {W X Y Z : C}
+variable {C : Type u} [Category.{v} C]
 
 section PullbackAssoc
 

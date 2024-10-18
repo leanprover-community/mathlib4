@@ -42,7 +42,7 @@ noncomputable def coconePointSMul :
     R →+* End (colimit (F ⋙ forget₂ _ AddCommGrp)) where
   toFun r := colimMap
     { app := fun j => (F.obj j).smul r
-      naturality := fun X Y f => smul_naturality _ _ }
+      naturality := fun _ _ _ => smul_naturality _ _ }
   map_zero' := colimit.hom_ext (by simp)
   map_one' := colimit.hom_ext (by simp)
   map_add' r s := colimit.hom_ext (fun j => by

@@ -182,7 +182,7 @@ variable {A B C : DiscreteQuotient X}
 
 /-- The map induced by a refinement of a discrete quotient. -/
 def ofLE (h : A ≤ B) : A → B :=
-  Quotient.map' (fun x => x) h
+  Quotient.map' id h
 
 @[simp]
 theorem ofLE_refl : ofLE (le_refl A) = id := by

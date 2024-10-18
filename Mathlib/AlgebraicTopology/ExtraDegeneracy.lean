@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
-import Mathlib.AlgebraicTopology.SimplicialSet
+import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Tactic.FinCases
@@ -181,7 +181,7 @@ open SSet.standardSimplex in
 protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     SimplicialObject.Augmented.ExtraDegeneracy (standardSimplex.obj Δ) where
   s' _ := objMk (OrderHom.const _ 0)
-  s  n f := (objEquiv _ _).symm
+  s  _ f := (objEquiv _ _).symm
     (shift (objEquiv _ _ f))
   s'_comp_ε := by
     dsimp
