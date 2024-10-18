@@ -243,14 +243,11 @@ lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
 lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
 
-lemma zpow_lt_zpow_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) {m n : ℤ} (hmn : m < n) : a ^ n < a ^ m :=
-  zpow_right_strictAnti₀ ha₀ ha₁ hmn
-
 lemma le_of_zpow_le_zpow_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) {m n : ℤ}
     (hmn : a ^ m ≤ a ^ n) :
     n ≤ m := by
   contrapose! hmn
-  exact zpow_lt_zpow_of_lt_one₀ ha₀ ha₁ hmn
+  exact zpow_lt_zpow_right_of_lt_one₀ ha₀ ha₁ hmn
 
 lemma eq_zero_of_zero_zpow_eq_one₀ {n : ℤ} (ha : (0 : α) ^ n = 1) : n = 0 := by
   wlog hn : 0 ≤ n
