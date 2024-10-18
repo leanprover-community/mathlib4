@@ -131,6 +131,7 @@ theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) 
 /-- For a predicate `motive : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for any given natural number. -/
+@[elab_as_elim, inline]
 def bitCasesOn {motive : Nat → Sort u} (n) (h : ∀ b n, motive (bit b n)) : motive n :=
   -- `1 &&& n != 0` is faster than `n.testBit 0`. This may change when we have faster `testBit`.
   let x := h (1 &&& n != 0) (n >>> 1)
@@ -170,6 +171,7 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
   For a predicate `motive : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for all natural numbers. -/
+@[elab_as_elim, specialize]
 def binaryRec {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n → motive (bit b n))
     (n : Nat) : motive n :=
   if n0 : n = 0 then congrArg motive n0 ▸ z
@@ -357,7 +359,7 @@ theorem binaryRec_eq {motive : Nat → Sort u} {z : motive 0}
 
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
   the bit being appended is `true`-/
-@[elab_as_elim]
+@[elab_as_elim, specialize]
 def binaryRec' {motive : ℕ → Sort*} (z : motive 0)
     (f : ∀ b n, (n = 0 → b = true) → motive n → motive (bit b n)) :
     ∀ n, motive n :=
@@ -369,7 +371,7 @@ def binaryRec' {motive : ℕ → Sort*} (z : motive 0)
       simpa using h
 
 /-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
-@[elab_as_elim]
+@[elab_as_elim, specialize]
 def binaryRecFromOne {motive : ℕ → Sort*} (z₀ : motive 0) (z₁ : motive 1)
     (f : ∀ b n, n ≠ 0 → motive n → motive (bit b n)) :
     ∀ n, motive n :=
@@ -386,7 +388,8 @@ theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
   rw [Nat.bits, binaryRec_eq']
-  simpa
+  · rfl
+  · simpa
 
 @[simp]
 theorem bit0_bits (n : ℕ) (hn : n ≠ 0) : (2 * n).bits = false :: n.bits :=
