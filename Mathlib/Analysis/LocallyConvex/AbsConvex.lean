@@ -195,6 +195,16 @@ section
 variable (𝕜) [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]
 
+theorem convexHull_add_subset {s t : Set E} :
+    convexHull ℝ (s + t) ⊆ convexHull ℝ s + convexHull ℝ t := by
+  apply convexHull_min
+  apply add_subset_add
+  apply subset_convexHull
+  apply subset_convexHull
+  apply Convex.add
+  exact convex_convexHull ℝ s
+  exact convex_convexHull ℝ t
+
 theorem absConvexHull_add_subset {s t : Set E} :
     absConvexHull 𝕜 (s + t) ⊆ absConvexHull 𝕜 s + absConvexHull 𝕜 t :=
   absConvexHull_min (add_subset_add subset_absConvexHull subset_absConvexHull)
@@ -281,8 +291,39 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
     (Set.add_subset_add_left (subset_trans (add_subset_add hV₃ hV₃) hW₄))⟩
 
 theorem totallyBounded_convexHull (hs : TotallyBounded s) :
-    TotallyBounded (convexHull ℝ s) :=
-  TotallyBounded.subset (convexHull_subset_absConvexHull ℝ) (totallyBounded_absConvexHull E hs)
+    TotallyBounded (convexHull ℝ s) := by
+  rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
+  intro U hU
+  obtain ⟨W, hW₁, _, _, hW₄⟩ := exists_closed_nhds_zero_neg_eq_add_subset hU
+  obtain ⟨V, ⟨hV₁, hV₂, hV₃⟩⟩ :=
+    (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs W hW₁
+  obtain ⟨t, ⟨htf, hts⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hs) _ hV₁
+  have e6 : TotallyBounded ((convexHull ℝ) t) := by
+    apply IsCompact.totallyBounded
+    apply Set.Finite.isCompact_convexHull htf
+  rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at e6
+  obtain ⟨t',⟨htf',hts'⟩⟩ := e6 _ hV₁
+  use t'
+  have en {t₁ V₁ : Set E} : (⋃ y ∈ t₁, y +ᵥ V₁) = t₁ + V₁ := iUnion_add_left_image
+  simp_rw [en]
+  rw [en] at hts'
+  constructor
+  · exact htf'
+  · have e4 : (convexHull ℝ) s ⊆ (convexHull ℝ) t + V := by
+      rw [ ← Convex.convexHull_eq hV₂.2]
+      apply le_trans (convexHull_mono hts)
+      rw [en]
+      apply (convexHull_add_subset)
+    have e7: (convexHull ℝ) s ⊆ t' + (V + V) := by
+      rw [← add_assoc]
+      apply le_trans e4
+      apply Set.add_subset_add_right hts'
+    apply subset_trans e7
+    --rw [en]
+    apply Set.add_subset_add_left
+    apply subset_trans _ hW₄
+    exact add_subset_add hV₃ hV₃
+
 
 theorem totallyBounded_absConvexHull₂ (hs : TotallyBounded s) :
     TotallyBounded (absConvexHull ℝ s) := by
