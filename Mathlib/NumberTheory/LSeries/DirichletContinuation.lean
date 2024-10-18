@@ -81,7 +81,7 @@ lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N
     (χ : DirichletCharacter ℂ M) {s : ℂ} (hs : s ≠ 1) :
     LFunction (changeLevel hMN χ) s =
       LFunction χ s * ∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s)) := by
-  have hpc : IsPreconnected ({1}ᶜ : Set ℂ) := 
+  have hpc : IsPreconnected ({1}ᶜ : Set ℂ) :=
     (isConnected_compl_singleton_of_one_lt_rank (rank_real_complex ▸ Nat.one_lt_ofNat) _)
       |>.isPreconnected
   have hne : 2 ∈ ({1}ᶜ : Set ℂ) := by norm_num
@@ -114,13 +114,12 @@ lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
         continuous_finset_prod _ fun p hp ↦ continuous_const.sub <| continuous_const.mul <|
           @continuous_cpow_natCast_neg p ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
     have H s (hs : s ≠ 1) := LFunction_changeLevel_aux hMN χ hs
-    revert s
-    rw [← funext_iff]
-    exact (differentiable_LFunction hχ).continuous.ext_on (dense_compl_singleton 1) h' H
+    exact
+      congrFun ((differentiable_LFunction hχ).continuous.ext_on (dense_compl_singleton 1) h' H) s
   · exact LFunction_changeLevel_aux hMN χ h
 
 /-!
-## The `L`-series of the trivial character mod `N`
+## The `L`-function of the trivial character mod `N`
 -/
 
 /-- The `L`-function of the trivial character mod `N`. -/
@@ -139,7 +138,7 @@ lemma LFunction_one_eq_mul_riemannZeta {s : ℂ} (hs : s ≠ 1) :
 residue `∏ p ∈ N.primeFactors, (1 - p⁻¹)` at `s = 1`. -/
 lemma LFunction_one_residue_one :
     Filter.Tendsto (fun s ↦ (s - 1) * LFunction_one N s) (𝓝[≠] 1)
-    (𝓝 <| ∏ p ∈ N.primeFactors, (1 - (p : ℂ)⁻¹)) := by
+      (𝓝 <| ∏ p ∈ N.primeFactors, (1 - (p : ℂ)⁻¹)) := by
   have H : (fun s ↦ (s - 1) * LFunction_one N s) =ᶠ[𝓝[≠] 1]
         fun s ↦ (∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))) * ((s - 1) * riemannZeta s) := by
     refine Set.EqOn.eventuallyEq_nhdsWithin fun s hs ↦ ?_
