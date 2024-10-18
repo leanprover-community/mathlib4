@@ -7,6 +7,7 @@ Authors: Jujian Zhang, Junyan Xu
 import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
 import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.Algebra.Category.Grp.Injective
 
 /-!
 
@@ -17,8 +18,7 @@ injective presentation for `A`, hence category of abelian groups has enough inje
 
 ## Implementation notes
 
-This file is split from `Mathlib.Algebra.Grp.Injective` is to prevent import loop.
-This file's dependency imports `Mathlib.Algebra.Grp.Injective`.
+This file is split from `Mathlib.Algebra.Category.Grp.Injective` to prevent import loops.
 -/
 
 open CategoryTheory
