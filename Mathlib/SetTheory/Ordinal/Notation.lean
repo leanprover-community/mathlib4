@@ -15,15 +15,13 @@ Constructive ordinal arithmetic for ordinals below `ε₀`.
 
 We define a type `ONote`, with constructors `0 : ONote` and `ONote.oadd e n a` representing
 `ω ^ e * n + a`.
-We say that `o` is in Cantor normal form - `ONote.NF o` - if either `o = 0` or
+We say that `o` is in Cantor normal form `ONote.NF o` if either `o = 0` or
 `o = ω ^ e * n + a` with `a < ω ^ e` and `a` in Cantor normal form.
 
 The type `NONote` is the type of ordinals below `ε₀` in Cantor normal form.
 Various operations (addition, subtraction, multiplication, exponentiation)
 are defined on `ONote` and `NONote`.
 -/
-
-
 
 open Ordinal Order
 
@@ -93,12 +91,9 @@ instance : ToString ONote :=
 instance : Repr ONote where
   reprPrec o prec := repr' prec o
 
-instance : Preorder ONote where
-  le x y := repr x ≤ repr y
-  lt x y := repr x < repr y
-  le_refl _ := @le_refl Ordinal _ _
-  le_trans _ _ _ := @le_trans Ordinal _ _ _ _
-  lt_iff_le_not_le _ _ := @lt_iff_le_not_le Ordinal _ _ _
+-- TODO: make this instance computable
+instance : Preorder ONote :=
+  Preorder.lift repr
 
 theorem lt_def {x y : ONote} : x < y ↔ repr x < repr y :=
   Iff.rfl
@@ -106,8 +101,14 @@ theorem lt_def {x y : ONote} : x < y ↔ repr x < repr y :=
 theorem le_def {x y : ONote} : x ≤ y ↔ repr x ≤ repr y :=
   Iff.rfl
 
+theorem lt_wf : @WellFounded NONote (· < ·) :=
+  InvImage.wf repr Ordinal.lt_wf
+
+instance : WellFoundedLT ONote :=
+  ⟨lt_wf⟩
+
 instance : WellFoundedRelation ONote :=
-  ⟨(· < ·), InvImage.wf repr Ordinal.lt_wf⟩
+  ⟨_, lt_wf⟩
 
 /-- Convert a `Nat` into an ordinal -/
 @[coe]
@@ -569,7 +570,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
     · cases' Nat.exists_eq_succ_of_ne_zero n₂.ne_zero with x xe
       simp only [e0, repr, PNat.mul_coe, natCast_mul, opow_zero, one_mul]
       simp only [xe, h₂.zero_of_zero e0, repr, add_zero]
-      rw [natCast_succ x, add_mul_succ _ ao, mul_assoc]
+      rw [natCast_succ, add_mul_succ _ ao, mul_assoc]
     · simp only [repr]
       haveI := h₁.fst
       haveI := h₂.fst
@@ -870,7 +871,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     rw [mul_add (ω0 ^ (k : Ordinal)), add_assoc, ← mul_assoc, ← opow_succ,
       add_mul_limit _ (isLimit_iff_omega0_dvd.2 ⟨ne_of_gt α0, αd⟩), mul_assoc,
       @mul_omega0_dvd n (natCast_pos.2 n.pos) (nat_lt_omega0 _) _ αd]
-    apply @add_absorp _ (repr a0 * succ ↑k)
+    apply add_absorp
     · refine principal_add_omega0_opow _ ?_ Rl
       rw [opow_mul, opow_succ, Ordinal.mul_lt_mul_iff_left ω00]
       exact No.snd'.repr_lt
@@ -1179,12 +1180,9 @@ instance : ToString NONote :=
 instance : Repr NONote :=
   ⟨fun x prec => x.1.repr' prec⟩
 
-instance : Preorder NONote where
-  le x y := repr x ≤ repr y
-  lt x y := repr x < repr y
-  le_refl _ := @le_refl Ordinal _ _
-  le_trans _ _ _ := @le_trans Ordinal _ _ _ _
-  lt_iff_le_not_le _ _ := @lt_iff_le_not_le Ordinal _ _ _
+-- TODO: make this instance computable
+instance : Preorder NONote :=
+  Preorder.lift repr
 
 instance : Zero NONote :=
   ⟨⟨0, NF.zero⟩⟩
@@ -1199,7 +1197,7 @@ instance : WellFoundedLT NONote :=
   ⟨lt_wf⟩
 
 instance : WellFoundedRelation NONote :=
-  ⟨(· < ·), lt_wf⟩
+  ⟨_, lt_wf⟩
 
 /-- Convert a natural number to an ordinal notation -/
 def ofNat (n : ℕ) : NONote :=
@@ -1242,6 +1240,7 @@ def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
 instance : Add NONote :=
   ⟨fun x y => mk (x.1 + y.1)⟩
 
+@[simp]
 theorem repr_add (a b) : repr (a + b) = repr a + repr b :=
   ONote.repr_add a.1 b.1
 
@@ -1249,6 +1248,7 @@ theorem repr_add (a b) : repr (a + b) = repr a + repr b :=
 instance : Sub NONote :=
   ⟨fun x y => mk (x.1 - y.1)⟩
 
+@[simp]
 theorem repr_sub (a b) : repr (a - b) = repr a - repr b :=
   ONote.repr_sub a.1 b.1
 
@@ -1256,13 +1256,15 @@ theorem repr_sub (a b) : repr (a - b) = repr a - repr b :=
 instance : Mul NONote :=
   ⟨fun x y => mk (x.1 * y.1)⟩
 
+@[simp]
 theorem repr_mul (a b) : repr (a * b) = repr a * repr b :=
   ONote.repr_mul a.1 b.1
 
 /-- Exponentiation of ordinal notations -/
-def opow (x y : NONote) :=
-  mk (x.1 ^ y.1)
+instance : Pow NONote NONote :=
+  ⟨fun x y => mk (x.1 ^ y.1)⟩
 
+@[simp]
 theorem repr_opow (a b) : repr (opow a b) = repr a ^ repr b :=
   ONote.repr_opow a.1 b.1
 
