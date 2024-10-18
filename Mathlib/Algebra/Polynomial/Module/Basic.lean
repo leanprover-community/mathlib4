@@ -14,7 +14,7 @@ This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since th
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
 -/
 universe u v
-open Polynomial BigOperators
+open Polynomial
 
 /-- The `R[X]`-module `M[X]` for an `R`-module `M`.
 This is isomorphic (as an `R`-module) to `M[X]` when `M` is a ring.
