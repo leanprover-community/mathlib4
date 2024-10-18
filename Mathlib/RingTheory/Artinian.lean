@@ -494,6 +494,7 @@ instance [IsArtinianRing R] : IsSemiprimaryRing R where
     refine (this ▸ ne) ((Submodule.fg_span <| Set.finite_singleton x).eq_bot_of_le_jacobson_smul ?_)
     rw [← Ideal.span, this, smul_eq_mul, eq]
 
+variable {R} in
 theorem IsArtinianRing.isNilpotent_jacobson_bot [IsArtinianRing R] :
     IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) :=
   Ideal.jacobson_bot (R := R) ▸ IsSemiprimaryRing.isNilpotent
