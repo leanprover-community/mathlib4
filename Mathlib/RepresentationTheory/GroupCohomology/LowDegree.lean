@@ -223,6 +223,12 @@ def twoCocycles : Submodule k (G × G → A) := LinearMap.ker (dTwo A)
 
 variable {A}
 
+instance : FunLike (oneCocycles A) G A := ⟨(·.val), Subtype.val_injective⟩
+
+@[ext]
+theorem oneCocycles_ext {f₁ f₂ : oneCocycles A} (h : ∀ g : G, f₁ g = f₂ g) : f₁ = f₂ :=
+  DFunLike.ext f₁ f₂ h
+
 theorem mem_oneCocycles_def (f : G → A) :
     f ∈ oneCocycles A ↔ ∀ g h : G, A.ρ g (f h) - f (g * h) + f g = 0 :=
   LinearMap.mem_ker.trans <| by
@@ -272,6 +278,12 @@ group homs `G → A`. -/
   right_inv f := by ext; rfl
 
 variable {A}
+
+instance : FunLike (twoCocycles A) (G × G) A := ⟨(·.val), Subtype.val_injective⟩
+
+@[ext]
+theorem twoCocycles_ext {f₁ f₂ : twoCocycles A} (h : ∀ g h : G, f₁ (g, h) = f₂ (g, h)) : f₁ = f₂ :=
+  DFunLike.ext f₁ f₂ (Prod.forall.mpr h)
 
 theorem mem_twoCocycles_def (f : G × G → A) :
     f ∈ twoCocycles A ↔ ∀ g h j : G,
@@ -350,6 +362,11 @@ theorem oneCoboundaries_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
   simp_rw [oneCoboundaries, dZero_eq_zero]
   exact LinearMap.range_eq_bot.2 rfl
 
+theorem mem_oneCoboundaries_iff (f : oneCocycles A) : f ∈ oneCoboundaries A ↔
+    ∃ x : A, ∀ g : G, A.ρ g x - x = f g := exists_congr fun x ↦ by
+  simpa only [LinearMap.codRestrict, dZero, LinearMap.coe_mk, AddHom.coe_mk] using
+    groupCohomology.oneCocycles_ext_iff
+
 /-- Makes a 2-coboundary out of `f ∈ Im(d¹)`. -/
 def twoCoboundariesOfMemRange {f : G × G → A} (h : f ∈ LinearMap.range (dOne A)) :
     twoCoboundaries A :=
@@ -373,6 +390,11 @@ theorem twoCoboundariesOfEq_apply {f : G × G → A} {x : G → A}
 theorem mem_range_of_mem_twoCoboundaries {f : twoCocycles A} (h : f ∈ twoCoboundaries A) :
     (twoCocycles A).subtype f ∈ LinearMap.range (dOne A) := by
   rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
+
+theorem mem_twoCoboundaries_iff (f : twoCocycles A) : f ∈ twoCoboundaries A ↔
+    ∃ x : G → A, ∀ g h : G, A.ρ g (x h) - x (g * h) + x g = f (g, h) := exists_congr fun x ↦ by
+  simpa only [LinearMap.codRestrict, dOne, LinearMap.coe_mk, AddHom.coe_mk] using
+    groupCohomology.twoCocycles_ext_iff
 
 end Coboundaries
 
