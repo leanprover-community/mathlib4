@@ -148,6 +148,7 @@ variable (M : Type*) [AddCommGroup M] [Module R M]
 
 namespace Ring
 
+/-- The Jacobson radical of a ring `R` is the Jacobson radical of `R` as an `R`-module. -/
 abbrev jacobson : Ideal R := Module.jacobson R R
 
 instance : (jacobson R).IsTwoSided :=
