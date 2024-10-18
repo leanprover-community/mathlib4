@@ -116,7 +116,7 @@ theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (b
 
 @[simp]
 theorem binaryRec_one {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
-    binaryRec z f 1 = f true 0 z := by
+    binaryRec (motive := C) z f 1 = f true 0 z := by
   rw [binaryRec]
   simp only [add_one_ne_zero, ↓reduceDIte, Nat.reduceShiftRight, binaryRec_zero]
   rfl
