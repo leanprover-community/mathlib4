@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Yaël Dillies, Kin Yau James Wong. All rights reserved.
+Copyright (c) 2024 Yaël Dillies, Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Kin Yau James Wong
+Authors: Yaël Dillies, Kalle Kytölä
 -/
 import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Process.Filtration
