@@ -123,12 +123,12 @@ theorem mdifferentiableWithinAt_univ :
 theorem mdifferentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
     MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
   rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
-    (differentiableWithinAt_localInvariantProp I I').liftPropWithinAt_inter ht]
+    differentiableWithinAt_localInvariantProp.liftPropWithinAt_inter ht]
 
 theorem mdifferentiableWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
   rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
-    (differentiableWithinAt_localInvariantProp I I').liftPropWithinAt_inter' ht]
+    differentiableWithinAt_localInvariantProp.liftPropWithinAt_inter' ht]
 
 theorem MDifferentiableAt.mdifferentiableWithinAt (h : MDifferentiableAt I I' f x) :
     MDifferentiableWithinAt I I' f s x :=
@@ -169,7 +169,7 @@ theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n
   suffices h : MDifferentiableWithinAt I I' f (s ∩ f ⁻¹' (extChartAt I' (f x)).source) x by
     rwa [mdifferentiableWithinAt_inter'] at h
     apply hf.1.preimage_mem_nhdsWithin
-    exact extChartAt_source_mem_nhds I' (f x)
+    exact extChartAt_source_mem_nhds (f x)
   rw [mdifferentiableWithinAt_iff]
   exact ⟨hf.1.mono inter_subset_left, (hf.2.differentiableWithinAt hn).mono (by mfld_set_tac)⟩
 
@@ -255,8 +255,8 @@ theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
       𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x := by
   apply
     @Filter.mem_of_superset _ _ (f ∘ (extChartAt I x).symm ⁻¹' (extChartAt I' (f x)).source) _
-      (extChartAt_preimage_mem_nhdsWithin I
-        (h.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds _ _)))
+      (extChartAt_preimage_mem_nhdsWithin
+        (h.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds _)))
   mfld_set_tac
 
 variable {f' f₀' f₁' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)}
@@ -287,7 +287,7 @@ theorem mdifferentiableWithinAt_iff_of_mem_source {x' : M} {y : M'}
       ContinuousWithinAt f s x' ∧
         DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
           ((extChartAt I x).symm ⁻¹' s ∩ Set.range I) ((extChartAt I x) x') :=
-  (differentiableWithinAt_localInvariantProp I I').liftPropWithinAt_indep_chart
+  differentiableWithinAt_localInvariantProp.liftPropWithinAt_indep_chart
     (StructureGroupoid.chart_mem_maximalAtlas _ x) hx (StructureGroupoid.chart_mem_maximalAtlas _ y)
     hy
 
@@ -330,13 +330,13 @@ theorem hasMFDerivWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     HasMFDerivWithinAt I I' f (s ∩ t) x f' ↔ HasMFDerivWithinAt I I' f s x f' := by
   rw [HasMFDerivWithinAt, HasMFDerivWithinAt, extChartAt_preimage_inter_eq,
     hasFDerivWithinAt_inter', continuousWithinAt_inter' h]
-  exact extChartAt_preimage_mem_nhdsWithin I h
+  exact extChartAt_preimage_mem_nhdsWithin h
 
 theorem hasMFDerivWithinAt_inter (h : t ∈ 𝓝 x) :
     HasMFDerivWithinAt I I' f (s ∩ t) x f' ↔ HasMFDerivWithinAt I I' f s x f' := by
   rw [HasMFDerivWithinAt, HasMFDerivWithinAt, extChartAt_preimage_inter_eq, hasFDerivWithinAt_inter,
     continuousWithinAt_inter h]
-  exact extChartAt_preimage_mem_nhds I h
+  exact extChartAt_preimage_mem_nhds h
 
 theorem HasMFDerivWithinAt.union (hs : HasMFDerivWithinAt I I' f s x f')
     (ht : HasMFDerivWithinAt I I' f t x f') : HasMFDerivWithinAt I I' f (s ∪ t) x f' := by
@@ -403,7 +403,7 @@ theorem mfderivWithin_univ : mfderivWithin I I' f univ = mfderiv I I' f := by
 theorem mfderivWithin_inter (ht : t ∈ 𝓝 x) :
     mfderivWithin I I' f (s ∩ t) x = mfderivWithin I I' f s x := by
   rw [mfderivWithin, mfderivWithin, extChartAt_preimage_inter_eq, mdifferentiableWithinAt_inter ht,
-    fderivWithin_inter (extChartAt_preimage_mem_nhds I ht)]
+    fderivWithin_inter (extChartAt_preimage_mem_nhds ht)]
 
 theorem mfderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : mfderivWithin I I' f s x = mfderiv I I' f x := by
   rw [← mfderivWithin_univ, ← univ_inter s, mfderivWithin_inter h]
@@ -479,7 +479,7 @@ theorem HasMFDerivWithinAt.congr_of_eventuallyEq (h : HasMFDerivWithinAt I I' f 
   · have :
       (extChartAt I x).symm ⁻¹' {y | f₁ y = f y} ∈
         𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x :=
-      extChartAt_preimage_mem_nhdsWithin I h₁
+      extChartAt_preimage_mem_nhdsWithin h₁
     apply Filter.mem_of_superset this fun y => _
     simp (config := { contextual := true }) only [hx, mfld_simps]
   · simp only [hx, mfld_simps]
@@ -586,8 +586,8 @@ theorem HasMFDerivWithinAt.comp (hg : HasMFDerivWithinAt I' I'' g u (f x) g')
     have :
       (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' (f x)).source) ∈
         𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x :=
-      extChartAt_preimage_mem_nhdsWithin I
-        (hf.1.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds _ _))
+      extChartAt_preimage_mem_nhdsWithin
+        (hf.1.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds _))
     unfold HasMFDerivWithinAt at *
     rw [← hasFDerivWithinAt_inter' this, ← extChartAt_preimage_inter_eq] at hf ⊢
     have : writtenInExtChartAt I I' x f ((extChartAt I x) x) = (extChartAt I' (f x)) (f x) := by

@@ -28,11 +28,11 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare the prerequisites for a charted space `M` over the pair `(E, H)`.
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M]
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
   -- declare the prerequisites for a charted space `M'` over the pair `(E', H')`.
   {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M']
+  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M']
   -- declare the prerequisites for a charted space `M''` over the pair `(E'', H'')`.
   {E'' : Type*}
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
@@ -43,7 +43,6 @@ variable [ChartedSpace H M] [ChartedSpace H' M'] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
   {e : PartialHomeomorph M H}
   {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
-variable {I I'}
 
 /-! ### Smoothness of the composition of smooth functions between manifolds -/
 
@@ -61,8 +60,8 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
   rw [this] at hg
   have A : ∀ᶠ y in 𝓝[e.symm ⁻¹' s ∩ range I] e x, f (e.symm y) ∈ t ∧ f (e.symm y) ∈ e'.source := by
     simp only [e, ← map_extChartAt_nhdsWithin, eventually_map]
-    filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds I' (f x)),
-      inter_mem_nhdsWithin s (extChartAt_source_mem_nhds I x)]
+    filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds (I := I') (f x)),
+      inter_mem_nhdsWithin s (extChartAt_source_mem_nhds (I := I) x)]
     rintro x' (hfx' : f x' ∈ e'.source) ⟨hx's, hx'⟩
     simp only [e.map_source hx', true_and, e.left_inv hx', st hx's, *]
   refine ((hg.2.comp _ (hf.2.mono inter_subset_right) inter_subset_left).mono_of_mem
@@ -184,7 +183,7 @@ section id
 
 theorem contMDiff_id : ContMDiff I I n (id : M → M) :=
   ContMDiff.of_le
-    ((contDiffWithinAt_localInvariantProp I I ∞).liftProp_id (contDiffWithinAtProp_id I)) le_top
+    ((contDiffWithinAt_localInvariantProp ∞).liftProp_id contDiffWithinAtProp_id) le_top
 
 theorem smooth_id : Smooth I I (id : M → M) :=
   contMDiff_id
@@ -310,7 +309,7 @@ open TopologicalSpace
 
 theorem contMdiffAt_subtype_iff {n : ℕ∞} {U : Opens M} {f : M → M'} {x : U} :
     ContMDiffAt I I' n (fun x : U ↦ f x) x ↔ ContMDiffAt I I' n f x :=
-  ((contDiffWithinAt_localInvariantProp I I' n).liftPropAt_iff_comp_subtype_val _ _).symm
+  ((contDiffWithinAt_localInvariantProp n).liftPropAt_iff_comp_subtype_val _ _).symm
 
 theorem contMDiff_subtype_val {n : ℕ∞} {U : Opens M} : ContMDiff I I n (Subtype.val : U → M) :=
   fun _ ↦ contMdiffAt_subtype_iff.mpr contMDiffAt_id
@@ -330,7 +329,7 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
     ContMDiff I I n (Opens.inclusion h : U → V) := by
   rintro ⟨x, hx : x ∈ U⟩
-  apply (contDiffWithinAt_localInvariantProp I I n).liftProp_inclusion
+  apply (contDiffWithinAt_localInvariantProp n).liftProp_inclusion
   intro y
   dsimp only [ContDiffWithinAtProp, id_comp, preimage_univ]
   rw [Set.univ_inter]
@@ -364,7 +363,7 @@ variable {e : M → H} (h : OpenEmbedding e) {n : WithTop ℕ}
 then `e` is smooth. -/
 lemma contMDiff_openEmbedding [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiff I I n e := by
-  haveI := h.singleton_smoothManifoldWithCorners I
+  haveI := h.singleton_smoothManifoldWithCorners (I := I)
   rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   use h.continuous
   intros x y
@@ -376,7 +375,7 @@ lemma contMDiff_openEmbedding [Nonempty M] :
   rw [h.toPartialHomeomorph_right_inv]
   · rw [I.right_inv]
     apply mem_of_subset_of_mem _ hz.1
-    exact haveI := h.singletonChartedSpace; extChartAt_target_subset_range I x
+    exact haveI := h.singletonChartedSpace; extChartAt_target_subset_range (I := I) x
   · -- `hz` implies that `z ∈ range (I ∘ e)`
     have := hz.1
     rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this
@@ -385,13 +384,12 @@ lemma contMDiff_openEmbedding [Nonempty M] :
       h.toPartialHomeomorph_target] at this
     exact this
 
-variable {I I'}
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is smooth. -/
 lemma contMDiffOn_openEmbedding_symm [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiffOn I I
       n (OpenEmbedding.toPartialHomeomorph e h).symm (range e) := by
-  haveI := h.singleton_smoothManifoldWithCorners I
+  haveI := h.singleton_smoothManifoldWithCorners (I := I)
   rw [@contMDiffOn_iff]
   constructor
   · rw [← h.toPartialHomeomorph_target]
@@ -407,7 +405,7 @@ lemma contMDiffOn_openEmbedding_symm [Nonempty M] :
       exact hz.2.1
     rw [h.toPartialHomeomorph_right_inv e this]
     apply I.right_inv
-    exact mem_of_subset_of_mem (extChartAt_target_subset_range _ _) hz.1
+    exact mem_of_subset_of_mem (extChartAt_target_subset_range _) hz.1
 
 variable [ChartedSpace H M]
 variable [Nonempty M'] {e' : M' → H'} (h' : OpenEmbedding e')
