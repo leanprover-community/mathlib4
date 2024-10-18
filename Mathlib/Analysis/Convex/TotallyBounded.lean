@@ -10,6 +10,19 @@ import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
+# Totally Bounded sets and Convex Hulls
+
+## Main statements
+
+- `totallyBounded_convexHull` The convex hull of a totally bounded set is totally bounded.
+
+## References
+
+* [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
+
+## Tags
+
+convex, totally bounded
 -/
 
 open Set Pointwise
@@ -23,8 +36,7 @@ theorem totallyBounded_convexHull (hs : TotallyBounded s) :
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
   intro U hU
   obtain ⟨W, hW₁, hW₂⟩ := exists_nhds_zero_half hU
-  obtain ⟨V, ⟨hV₁, hV₂, hV₃⟩⟩ :=
-    (locallyConvexSpace_iff_exists_convex_subset_zero ℝ E).mp lcs W hW₁
+  obtain ⟨V, ⟨hV₁, hV₂, hV₃⟩⟩ := (locallyConvexSpace_iff_exists_convex_subset_zero ℝ E).mp lcs W hW₁
   obtain ⟨t, ⟨htf, hts⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hs) _ hV₁
   obtain ⟨t', ⟨htf', hts'⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp
     (IsCompact.totallyBounded (Finite.isCompact_convexHull htf)) _ hV₁)
@@ -34,9 +46,9 @@ theorem totallyBounded_convexHull (hs : TotallyBounded s) :
   rw [en] at hts'
   rw [en] at hts
   exact ⟨htf', subset_trans (by
-      rw [← add_assoc]
-      apply le_trans (by
-        rw [ ← Convex.convexHull_eq hV₂]
-        exact le_trans (convexHull_mono hts) (convexHull_add_subset)
-      ) (add_subset_add_right hts'))
-      (add_subset_add_left (subset_trans (add_subset_add hV₃ hV₃) (add_subset_iff.mpr hW₂) ))⟩
+    rw [← add_assoc]
+    apply le_trans (by
+      rw [ ← Convex.convexHull_eq hV₂]
+      exact le_trans (convexHull_mono hts) (convexHull_add_subset)
+    ) (add_subset_add_right hts'))
+    (add_subset_add_left (subset_trans (add_subset_add hV₃ hV₃) (add_subset_iff.mpr hW₂)))⟩
