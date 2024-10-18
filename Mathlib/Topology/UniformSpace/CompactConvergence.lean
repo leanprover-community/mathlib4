@@ -171,10 +171,13 @@ instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
       nhds_induced, tendsto_comap_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
     rfl
 
-theorem uniformEmbedding_toUniformOnFunIsCompact :
-    UniformEmbedding (toUniformOnFunIsCompact : C(α, β) → α →ᵤ[{K | IsCompact K}] β) where
+theorem isUniformEmbedding_toUniformOnFunIsCompact :
+    IsUniformEmbedding (toUniformOnFunIsCompact : C(α, β) → α →ᵤ[{K | IsCompact K}] β) where
   comap_uniformity := rfl
   inj := DFunLike.coe_injective
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_toUniformOnFunIsCompact := isUniformEmbedding_toUniformOnFunIsCompact
 
 -- The following definitions and theorems
 -- used to be a part of the construction of the `UniformSpace C(α, β)` structure
@@ -184,7 +187,7 @@ theorem _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type*} {pi : �
     {s : ι → Set (β × β)} (h : (𝓤 β).HasBasis pi s) :
     HasBasis (𝓤 C(α, β)) (fun p : Set α × ι => IsCompact p.1 ∧ pi p.2) fun p =>
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ s p.2 } := by
-  rw [← uniformEmbedding_toUniformOnFunIsCompact.comap_uniformity]
+  rw [← isUniformEmbedding_toUniformOnFunIsCompact.comap_uniformity]
   exact .comap _ <| UniformOnFun.hasBasis_uniformity_of_basis _ _ {K | IsCompact K}
     ⟨∅, isCompact_empty⟩ (directedOn_of_sup_mem fun _ _ ↦ IsCompact.union) h
 
@@ -249,38 +252,39 @@ theorem tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
   obtain ⟨n, hn₁, hn₂⟩ := exists_compact_mem_nhds x
   exact ⟨n, hn₂, h n hn₁ V hV⟩
 
-@[deprecated tendsto_iff_tendstoLocallyUniformly (since := "2023-09-03")]
-theorem tendstoLocallyUniformly_of_tendsto [WeaklyLocallyCompactSpace α] (h : Tendsto F p (𝓝 f)) :
-    TendstoLocallyUniformly (fun i a => F i a) f p :=
-  tendsto_iff_tendstoLocallyUniformly.1 h
-
 section Functorial
 
 variable {γ δ : Type*} [TopologicalSpace γ] [UniformSpace δ]
 
 theorem uniformContinuous_comp (g : C(β, δ)) (hg : UniformContinuous g) :
     UniformContinuous (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
-  uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
+  isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
     UniformOnFun.postcomp_uniformContinuous hg |>.comp
-      uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
+      isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
 
-theorem uniformInducing_comp (g : C(β, δ)) (hg : UniformInducing g) :
-    UniformInducing (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
-  uniformEmbedding_toUniformOnFunIsCompact.toUniformInducing.of_comp_iff.mp <|
-    UniformOnFun.postcomp_uniformInducing hg |>.comp
-      uniformEmbedding_toUniformOnFunIsCompact.toUniformInducing
+theorem isUniformInducing_comp (g : C(β, δ)) (hg : IsUniformInducing g) :
+    IsUniformInducing (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
+  isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing.of_comp_iff.mp <|
+    UniformOnFun.postcomp_isUniformInducing hg |>.comp
+      isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing
 
-theorem uniformEmbedding_comp (g : C(β, δ)) (hg : UniformEmbedding g) :
-    UniformEmbedding (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
-  uniformEmbedding_toUniformOnFunIsCompact.of_comp_iff.mp <|
-    UniformOnFun.postcomp_uniformEmbedding hg |>.comp
-      uniformEmbedding_toUniformOnFunIsCompact
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_comp := isUniformInducing_comp
+
+theorem isUniformEmbedding_comp (g : C(β, δ)) (hg : IsUniformEmbedding g) :
+    IsUniformEmbedding (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
+  isUniformEmbedding_toUniformOnFunIsCompact.of_comp_iff.mp <|
+    UniformOnFun.postcomp_isUniformEmbedding hg |>.comp
+      isUniformEmbedding_toUniformOnFunIsCompact
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_comp := isUniformEmbedding_comp
 
 theorem uniformContinuous_comp_left (g : C(α, γ)) :
     UniformContinuous (fun f ↦ f.comp g : C(γ, β) → C(α, β)) :=
-  uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
+  isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
     UniformOnFun.precomp_uniformContinuous (fun _ hK ↦ hK.image g.continuous) |>.comp
-      uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
+      isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
 
 /-- Any pair of a homeomorphism `X ≃ₜ Z` and an isomorphism `Y ≃ᵤ T` of uniform spaces gives rise
 to an isomorphism `C(X, Y) ≃ᵤ C(Z, T)`. -/
@@ -372,7 +376,8 @@ Sufficient conditions on `α` to satisfy this condition are (weak) local compact
 `ContinuousMap.instCompleteSpaceOfSequentialSpace`). -/
 lemma completeSpace_of_restrictGenTopology (h : RestrictGenTopology {K : Set α | IsCompact K}) :
     CompleteSpace C(α, β) := by
-  rw [completeSpace_iff_isComplete_range uniformEmbedding_toUniformOnFunIsCompact.toUniformInducing,
+  rw [completeSpace_iff_isComplete_range
+    isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing,
     range_toUniformOnFunIsCompact, ← completeSpace_coe_iff_isComplete]
   exact (UniformOnFun.isClosed_setOf_continuous h).completeSpace_coe
 

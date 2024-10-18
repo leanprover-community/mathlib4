@@ -197,7 +197,7 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
     exact h
 
 theorem Prime.dvd_factorial : ∀ {n p : ℕ} (_ : Prime p), p ∣ n ! ↔ p ≤ n
-  | 0, p, hp => iff_of_false hp.not_dvd_one (not_le_of_lt hp.pos)
+  | 0, _, hp => iff_of_false hp.not_dvd_one (not_le_of_lt hp.pos)
   | n + 1, p, hp => by
     rw [factorial_succ, hp.dvd_mul, Prime.dvd_factorial hp]
     exact
@@ -286,37 +286,6 @@ lemma Prime.pow_inj {p q m n : ℕ} (hp : p.Prime) (hq : q.Prime)
   have H := dvd_antisymm (Prime.dvd_of_dvd_pow hp <| h ▸ dvd_pow_self p (succ_ne_zero m))
     (Prime.dvd_of_dvd_pow hq <| h.symm ▸ dvd_pow_self q (succ_ne_zero n))
   exact ⟨H, succ_inj'.mp <| Nat.pow_right_injective hq.two_le (H ▸ h)⟩
-
-theorem exists_pow_lt_factorial (c : ℕ) : ∃ n0 > 1, ∀ n ≥ n0, c ^ n < (n - 1)! := by
-  refine ⟨2 * (c ^ 2 + 1), ?_, ?_⟩
-  · omega
-  intro n hn
-  obtain ⟨d, rfl⟩ := Nat.exists_eq_add_of_le hn
-  obtain (rfl | c0) := c.eq_zero_or_pos
-  · simp [Nat.factorial_pos]
-  refine (Nat.le_mul_of_pos_right _ (Nat.pow_pos (n := d) c0)).trans_lt ?_
-  convert_to (c ^ 2) ^ (c ^ 2 + d + 1) < (c ^ 2 + (c ^ 2 + d + 1))!
-  · rw [← pow_mul, ← pow_add]
-    congr 1
-    omega
-  · congr
-    omega
-  refine lt_of_lt_of_le ?_ Nat.factorial_mul_pow_le_factorial
-  rw [← one_mul (_ ^ _ : ℕ)]
-  exact Nat.mul_lt_mul_of_le_of_lt (Nat.one_le_of_lt (Nat.factorial_pos _))
-    (Nat.pow_lt_pow_left (Nat.lt_succ_self _) (Nat.succ_ne_zero _)) (Nat.factorial_pos _)
-
-theorem exists_mul_pow_lt_factorial (a : ℕ) (c : ℕ) : ∃ n0, ∀ n ≥ n0, a * c ^ n < (n - 1)! := by
-  obtain ⟨n0, hn, h⟩ := Nat.exists_pow_lt_factorial (a * c)
-  refine ⟨n0, fun n hn => lt_of_le_of_lt ?_ (h n hn)⟩
-  rw [mul_pow]
-  refine Nat.mul_le_mul_right _ (Nat.le_self_pow ?_ _)
-  omega
-
-theorem exists_prime_mul_pow_lt_factorial (n a c : ℕ) : ∃ p > n, p.Prime ∧ a * c ^ p < (p - 1)! :=
-  have ⟨n0, h⟩ := Nat.exists_mul_pow_lt_factorial a c
-  have ⟨p, hp, prime_p⟩ := (max (n + 1) n0).exists_infinite_primes
-  ⟨p, (le_max_left _ _).trans hp, prime_p, h _ <| le_of_max_le_right hp⟩
 
 end Nat
 

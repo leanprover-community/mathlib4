@@ -309,7 +309,7 @@ theorem inseparable_eq_eq [T0Space X] : Inseparable = @Eq X :=
 
 theorem TopologicalSpace.IsTopologicalBasis.inseparable_iff {b : Set (Set X)}
     (hb : IsTopologicalBasis b) {x y : X} : Inseparable x y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
-  ⟨fun h s hs ↦ inseparable_iff_forall_open.1 h _ (hb.isOpen hs),
+  ⟨fun h _ hs ↦ inseparable_iff_forall_open.1 h _ (hb.isOpen hs),
     fun h ↦ hb.nhds_hasBasis.eq_of_same_basis <| by
       convert hb.nhds_hasBasis using 2
       exact and_congr_right (h _)⟩
@@ -576,30 +576,28 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
       ∀ ⦃x y : X⦄, x ≠ y → Disjoint (𝓝 x) (pure y),
       ∀ ⦃x y : X⦄, x ≠ y → Disjoint (pure x) (𝓝 y),
       ∀ ⦃x y : X⦄, x ⤳ y → x = y] := by
-  tfae_have 1 ↔ 2
-  · exact ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  tfae_have 2 ↔ 3
-  · simp only [isOpen_compl_iff]
-  tfae_have 5 ↔ 3
-  · refine forall_swap.trans ?_
+  tfae_have 1 ↔ 2 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  tfae_have 2 ↔ 3 := by
+    simp only [isOpen_compl_iff]
+  tfae_have 5 ↔ 3 := by
+    refine forall_swap.trans ?_
     simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton_iff]
-  tfae_have 5 ↔ 6
-  · simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
-  tfae_have 5 ↔ 7
-  · simp only [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, exists_prop, and_assoc,
+  tfae_have 5 ↔ 6 := by
+    simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
+  tfae_have 5 ↔ 7 := by
+    simp only [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, exists_prop, and_assoc,
       and_left_comm]
-  tfae_have 5 ↔ 8
-  · simp only [← principal_singleton, disjoint_principal_right]
-  tfae_have 8 ↔ 9
-  · exact forall_swap.trans (by simp only [disjoint_comm, ne_comm])
-  tfae_have 1 → 4
-  · simp only [continuous_def, CofiniteTopology.isOpen_iff']
+  tfae_have 5 ↔ 8 := by
+    simp only [← principal_singleton, disjoint_principal_right]
+  tfae_have 8 ↔ 9 := forall_swap.trans (by simp only [disjoint_comm, ne_comm])
+  tfae_have 1 → 4 := by
+    simp only [continuous_def, CofiniteTopology.isOpen_iff']
     rintro H s (rfl | hs)
     exacts [isOpen_empty, compl_compl s ▸ (@Set.Finite.isClosed _ _ H _ hs).isOpen_compl]
-  tfae_have 4 → 2
-  · exact fun h x => (CofiniteTopology.isClosed_iff.2 <| Or.inr (finite_singleton _)).preimage h
-  tfae_have 2 ↔ 10
-  · simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
+  tfae_have 4 → 2 :=
+    fun h x => (CofiniteTopology.isClosed_iff.2 <| Or.inr (finite_singleton _)).preimage h
+  tfae_have 2 ↔ 10 := by
+    simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
       mem_singleton_iff, eq_comm]
   tfae_finish
 
@@ -1045,6 +1043,17 @@ theorem r1Space_iff_inseparable_or_disjoint_nhds {X : Type*} [TopologicalSpace X
   ⟨fun _h x y ↦ (specializes_or_disjoint_nhds x y).imp_left Specializes.inseparable, fun h ↦
     ⟨fun x y ↦ (h x y).imp_left Inseparable.specializes⟩⟩
 
+theorem Inseparable.of_nhds_neBot {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) :
+    Inseparable x y :=
+  (r1Space_iff_inseparable_or_disjoint_nhds.mp ‹_› _ _).resolve_right fun h' => h.ne h'.eq_bot
+
+/-- Limits are unique up to separability.
+
+A weaker version of `tendsto_nhds_unique` for `R1Space`. -/
+theorem tendsto_nhds_unique_inseparable {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
+    (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : Inseparable a b :=
+  .of_nhds_neBot <| neBot_of_le <| le_inf ha hb
+
 theorem isClosed_setOf_specializes : IsClosed { p : X × X | p.1 ⤳ p.2 } := by
   simp only [← isOpen_compl_iff, compl_setOf, ← disjoint_nhds_nhds_iff_not_specializes,
     isOpen_setOf_disjoint_nhds_nhds]
@@ -1382,11 +1391,11 @@ theorem isClosed_diagonal [T2Space X] : IsClosed (diagonal X) :=
 
 theorem tendsto_nhds_unique [T2Space X] {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : a = b :=
-  eq_of_nhds_neBot <| neBot_of_le <| le_inf ha hb
+  (tendsto_nhds_unique_inseparable ha hb).eq
 
 theorem tendsto_nhds_unique' [T2Space X] {f : Y → X} {l : Filter Y} {a b : X} (_ : NeBot l)
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : a = b :=
-  eq_of_nhds_neBot <| neBot_of_le <| le_inf ha hb
+  tendsto_nhds_unique ha hb
 
 theorem tendsto_nhds_unique_of_eventuallyEq [T2Space X] {f g : Y → X} {l : Filter Y} {a b : X}
     [NeBot l] (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) (hfg : f =ᶠ[l] g) : a = b :=
@@ -1442,7 +1451,7 @@ theorem Set.InjOn.exists_mem_nhdsSet {X Y : Type*} [TopologicalSpace X] [Topolog
     · rcases loc x hx with ⟨u, hu, hf⟩
       exact Filter.mem_of_superset (prod_mem_nhds hu hu) <| forall_prod_set.2 hf
     · suffices ∀ᶠ z in 𝓝 (x, y), f z.1 ≠ f z.2 from this.mono fun _ hne h ↦ absurd h hne
-      refine (fc x hx).prod_map' (fc y hy) <| isClosed_diagonal.isOpen_compl.mem_nhds ?_
+      refine (fc x hx).prodMap' (fc y hy) <| isClosed_diagonal.isOpen_compl.mem_nhds ?_
       exact inj.ne hx hy hne
   rw [← eventually_nhdsSet_iff_forall, sc.nhdsSet_prod_eq sc] at this
   exact eventually_prod_self_iff.1 this
@@ -1715,7 +1724,7 @@ theorem eqOn_closure₂' [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → 
     (hg₂ : ∀ y, Continuous fun x => g x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
   suffices closure s ⊆ ⋂ y ∈ closure t, { x | f x y = g x y } by simpa only [subset_def, mem_iInter]
   (closure_minimal fun x hx => mem_iInter₂.2 <| Set.EqOn.closure (h x hx) (hf₁ _) (hg₁ _)) <|
-    isClosed_biInter fun y _ => isClosed_eq (hf₂ _) (hg₂ _)
+    isClosed_biInter fun _ _ => isClosed_eq (hf₂ _) (hg₂ _)
 
 theorem eqOn_closure₂ [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → Z}
     (h : ∀ x ∈ s, ∀ y ∈ t, f x y = g x y) (hf : Continuous (uncurry f))
@@ -1890,30 +1899,28 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
       ∀ (x : X) (s : Set X), s ∈ 𝓝 x → ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s,
       ∀ x : X, (𝓝 x).lift' closure ≤ 𝓝 x,
       ∀ x : X , (𝓝 x).lift' closure = 𝓝 x] := by
-  tfae_have 1 ↔ 5
-  · rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_swap]
+  tfae_have 1 ↔ 5 := by
+    rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_swap]
     simp only [isClosed_compl_iff, mem_compl_iff, Classical.not_not, @and_comm (_ ∈ _),
       (nhds_basis_opens _).lift'_closure.le_basis_iff (nhds_basis_opens _), and_imp,
       (nhds_basis_opens _).disjoint_iff_right, exists_prop, ← subset_interior_iff_mem_nhdsSet,
       interior_compl, compl_subset_compl]
-  tfae_have 5 → 6
-  · exact fun h a => (h a).antisymm (𝓝 _).le_lift'_closure
+  tfae_have 5 → 6 := fun h a => (h a).antisymm (𝓝 _).le_lift'_closure
   tfae_have 6 → 4
-  · intro H a s hs
+  | H, a, s, hs => by
     rw [← H] at hs
     rcases (𝓝 a).basis_sets.lift'_closure.mem_iff.mp hs with ⟨U, hU, hUs⟩
     exact ⟨closure U, mem_of_superset hU subset_closure, isClosed_closure, hUs⟩
   tfae_have 4 → 2
-  · intro H s a ha
+  | H, s, a, ha => by
     have ha' : sᶜ ∈ 𝓝 a := by rwa [← mem_interior_iff_mem_nhds, interior_compl]
     rcases H _ _ ha' with ⟨U, hU, hUc, hUs⟩
     refine disjoint_of_disjoint_of_mem disjoint_compl_left ?_ hU
     rwa [← subset_interior_iff_mem_nhdsSet, hUc.isOpen_compl.interior_eq, subset_compl_comm]
-  tfae_have 2 → 3
-  · refine fun H a s => ⟨fun hd has => mem_closure_iff_nhds_ne_bot.mp has ?_, H s a⟩
+  tfae_have 2 → 3 := by
+    refine fun H a s => ⟨fun hd has => mem_closure_iff_nhds_ne_bot.mp has ?_, H s a⟩
     exact (hd.symm.mono_right <| @principal_le_nhdsSet _ _ s).eq_bot
-  tfae_have 3 → 1
-  · exact fun H => ⟨fun hs ha => (H _ _).mpr <| hs.closure_eq.symm ▸ ha⟩
+  tfae_have 3 → 1 := fun H => ⟨fun hs ha => (H _ _).mpr <| hs.closure_eq.symm ▸ ha⟩
   tfae_finish
 
 theorem RegularSpace.of_lift'_closure_le (h : ∀ x : X, (𝓝 x).lift' closure ≤ 𝓝 x) :
@@ -2114,11 +2121,6 @@ theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace X] [Regul
     apply (closure_mono interior_subset).trans (le_of_eq L_closed.closure_eq)
   refine ⟨interior L, isOpen_interior, KL, A.trans LU, ?_⟩
   exact L_compact.closure_of_subset interior_subset
-
-@[deprecated WeaklyLocallyCompactSpace.locallyCompactSpace (since := "2023-09-03")]
-theorem locally_compact_of_compact [T2Space X] [CompactSpace X] :
-    LocallyCompactSpace X :=
-  inferInstance
 
 end LocallyCompactRegularSpace
 
@@ -2553,7 +2555,7 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
         rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
         exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left, inter_subset_right⟩
       have h_nhd : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := fun y y_in => by
-        erw [hx, mem_singleton_iff] at y_in
+        rw [hx, mem_singleton_iff] at y_in
         rwa [y_in]
       exact exists_subset_nhds_of_compactSpace hdir hNcl h_nhd
     · rintro ⟨V, ⟨hxV, -, V_op⟩, hUV : V ⊆ U⟩
