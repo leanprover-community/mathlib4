@@ -212,7 +212,7 @@ def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := 
   have hpp' : p = p' := by
     by_contra hne
     have h2 := Nat.coprime_pow_primes n n' hp hp' hne
-    rw [(Eq.congr hK hK').mp hKK', Nat.coprime_self, pow_eq_one_iff (PNat.ne_zero n')] at h2
+    rw [(Eq.congr hK hK').mp hKK', Nat.coprime_self, pow_eq_one_iff_left (PNat.ne_zero n')] at h2
     exact Nat.Prime.ne_one hp' h2
   rw [← hpp'] at _char_p'_K'
   haveI := fact_iff.2 hp
