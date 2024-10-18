@@ -155,9 +155,16 @@ theorem adjoin_simple_map_algEquiv [IsGalois k K] (f : K ≃ₐ[k] K) (x : K) :
     adjoin k {f x} = adjoin k {x} :=
   adjoin_simple_map_algHom (f : K →ₐ[k] K) x
 
-/-- The (finite) Galois group `Gal(K / k)` associated to a
+end FiniteGaloisIntermediateField
+
+section Profinite
+
+variable {k K}
+
+/-- The (finite) Galois group `Gal(L / k)` associated to a
 `L : FiniteGaloisIntermediateField k K` `L`. -/
-def finGaloisGroup (L : FiniteGaloisIntermediateField k K) : FiniteGrp :=
+def FiniteGaloisIntermediateField.finGaloisGroup (L : FiniteGaloisIntermediateField k K) :
+    FiniteGrp :=
   letI := AlgEquiv.fintype k L
   FiniteGrp.of <| L ≃ₐ[k] L
 
@@ -204,4 +211,4 @@ noncomputable def finGaloisGroupFunctor : (FiniteGaloisIntermediateField k K)ᵒ
   map_id := finGaloisGroupMap.map_id
   map_comp := finGaloisGroupMap.map_comp
 
-end FiniteGaloisIntermediateField
+end Profinite
