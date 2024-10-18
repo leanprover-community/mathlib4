@@ -412,7 +412,7 @@ variable {S : Type*} {N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
 /-- Composing an alternating map with a linear map on the left gives again an alternating map. -/
 def compAlternatingMap (g : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N) : M [⋀^ι]→ₗ[R] N₂ where
   __ := g.compMultilinearMap (f : MultilinearMap R (fun _ : ι => M) N)
-  map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij]
+  map_eq_zero_of_eq' v i j h hij := by simp [f.map_eq_zero_of_eq v h hij]
 
 @[simp]
 theorem coe_compAlternatingMap (g : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N) :
