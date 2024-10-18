@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Logic.Unique
+import Mathlib.Tactic.WLOG
 
 /-!
 # Groups with an adjoined zero element
@@ -145,6 +146,16 @@ lemma zero_pow_eq (n : ℕ) : (0 : M₀) ^ n = if n = 0 then 1 else 0 := by
   split_ifs with h
   · rw [h, pow_zero]
   · rw [zero_pow h]
+
+lemma eq_zero_of_zero_pow_eq_one₀ [Nontrivial M₀] : (0 : M₀) ^ n = 1 ↔ n = 0 := by
+  constructor
+  · intro ha
+    induction n with
+    | zero => rfl
+    | succ n _ => simp at ha
+  intro h0
+  rw[zero_pow_eq]
+  exact if_pos h0
 
 lemma pow_eq_zero_of_le : ∀ {m n} (_ : m ≤ n) (_ : a ^ m = 0), a ^ n = 0
   | _, _, Nat.le.refl, ha => ha
@@ -388,6 +399,21 @@ lemma zero_zpow_eq (n : ℤ) : (0 : G₀) ^ n = if n = 0 then 1 else 0 := by
   split_ifs with h
   · rw [h, zpow_zero]
   · rw [zero_zpow _ h]
+
+lemma eq_zero_of_zero_zpow_eq_one₀ {n : ℤ} : (0 : G₀) ^ n = 1 ↔ n = 0 := by
+  constructor
+  · intro h
+    wlog hn : 0 ≤ n
+    rw [← Int.neg_eq_zero]
+    apply this (G₀ := G₀)
+    · simpa
+    · omega
+    have : n.toNat = 0 := eq_zero_of_zero_pow_eq_one₀ (M₀ := G₀).mp <| by
+      rwa [← zpow_natCast, Int.toNat_of_nonneg hn]
+    omega
+  · intro h
+    rw [h]
+    exact zpow_zero 0
 
 lemma zpow_add_one₀ (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
   | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
