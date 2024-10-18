@@ -123,10 +123,24 @@ lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
 
-/-- For a predicate `C : Nat → Sort*`, if instances can be
+theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
+
+@[simp]
+theorem bit_decide_mod_two_eq_one_shiftRight_one (n : Nat) : bit (n % 2 = 1) (n >>> 1) = n := by
+  simp only [bit, shiftRight_one]
+  cases mod_two_eq_zero_or_one n with | _ h => simpa [h] using Nat.div_add_mod n 2
+
+theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) = n := by
+  simp
+
+/-- For a predicate `motive : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for any given natural number. -/
-def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n := bit_decomp n ▸ h _ _
+def bitCasesOn {motive : Nat → Sort u} (n) (h : ∀ b n, motive (bit b n)) : motive n :=
+  -- `1 &&& n != 0` is faster than `n.testBit 0`. This may change when we have faster `testBit`.
+  let x := h (1 &&& n != 0) (n >>> 1)
+  -- `congrArg motive _ ▸ x` is defeq to `x` in non-dependent case
+  congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
 
 lemma bit_zero : bit false 0 = 0 :=
   rfl
@@ -158,21 +172,16 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
   rwa [Nat.mul_one] at this
 
 /-- A recursion principle for `bit` representations of natural numbers.
-  For a predicate `C : Nat → Sort*`, if instances can be
+  For a predicate `motive : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for all natural numbers. -/
-def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
-  fun n =>
-    if n0 : n = 0 then by
-      simp only [n0]
-      exact z
-    else by
-      let n' := div2 n
-      have _x : bit (bodd n) n' = n := by
-        apply bit_decomp n
-      rw [← _x]
-      exact f (bodd n) n' (binaryRec z f n')
-  decreasing_by exact binaryRec_decreasing n0
+def binaryRec {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n → motive (bit b n))
+    (n : Nat) : motive n :=
+  if n0 : n = 0 then congrArg motive n0 ▸ z
+  else
+    let x := f (1 &&& n != 0) (n >>> 1) (binaryRec z f (n >>> 1))
+    congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
+decreasing_by exact bitwise_rec_lemma n0
 
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
@@ -191,7 +200,8 @@ def ldiff : ℕ → ℕ → ℕ :=
   bitwise fun a b => a && not b
 
 @[simp]
-lemma binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
+lemma binaryRec_zero {motive : Nat → Sort u}
+    (z : motive 0) (f : ∀ b n, motive n → motive (bit b n)) :
     binaryRec z f 0 = z := by
   rw [binaryRec]
   rfl
@@ -200,7 +210,8 @@ lemma binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit
 lemma binaryRec_one {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
     binaryRec z f 1 = f true 0 z := by
   rw [binaryRec]
-  simp
+  simp only [succ_ne_self, ↓reduceDIte, reduceShiftRight, binaryRec_zero]
+  rfl
 
 /-! bitwise ops -/
 
@@ -249,25 +260,6 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   simp only [bodd_eq_one_and_ne_zero] at this
   exact this
 
-lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
-    (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
-  rw [binaryRec]
-  split_ifs with h'
-  · generalize binaryRec z f (bit b n) = e
-    revert e
-    have bf := bodd_bit b n
-    have n0 := div2_bit b n
-    rw [h'] at bf n0
-    simp only [bodd_zero, div2_zero] at bf n0
-    subst bf n0
-    rw [binaryRec_zero]
-    intros
-    rw [h, eq_mpr_eq_cast, cast_eq]
-  · simp only; generalize_proofs h
-    revert h
-    rw [bodd_bit, div2_bit]
-    intros; simp only [eq_mpr_eq_cast, cast_eq]
-
 /-! ### `boddDiv2_eq` and `bodd` -/
 
 
@@ -296,28 +288,41 @@ theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
   cases b <;> dsimp [bit] <;> omega
 
 @[simp]
-theorem bitCasesOn_bit {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (b : Bool) (n : ℕ) :
-    bitCasesOn (bit b n) H = H b n :=
-  eq_of_heq <| (eqRec_heq _ _).trans <| by rw [bodd_bit, div2_bit]
+theorem bit_div_two (b n) : bit b n / 2 = n := by
+  rw [bit_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
+  · cases b <;> decide
+  · decide
 
 @[simp]
-theorem bitCasesOn_bit0 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
+theorem bit_shiftRight_one (b n) : bit b n >>> 1 = n :=
+  bit_div_two b n
+
+@[simp]
+theorem bitCasesOn_bit {motive : ℕ → Sort u} (h : ∀ b n, motive (bit b n)) (b : Bool) (n : ℕ) :
+    bitCasesOn (bit b n) h = h b n := by
+  change congrArg motive (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
+  generalize congrArg motive (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
+  rw [testBit_bit_zero, bit_shiftRight_one]
+  intros; rfl
+
+@[simp]
+theorem bitCasesOn_bit0 {motive : ℕ → Sort u} (H : ∀ b n, motive (bit b n)) (n : ℕ) :
     bitCasesOn (2 * n) H = H false n :=
   bitCasesOn_bit H false n
 
 @[simp]
-theorem bitCasesOn_bit1 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
+theorem bitCasesOn_bit1 {motive : ℕ → Sort u} (H : ∀ b n, motive (bit b n)) (n : ℕ) :
     bitCasesOn (2 * n + 1) H = H true n :=
   bitCasesOn_bit H true n
 
-theorem bit_cases_on_injective {C : ℕ → Sort u} :
-    Function.Injective fun H : ∀ b n, C (bit b n) => fun n => bitCasesOn n H := by
+theorem bit_cases_on_injective {motive : ℕ → Sort u} :
+    Function.Injective fun H : ∀ b n, motive (bit b n) => fun n => bitCasesOn n H := by
   intro H₁ H₂ h
   ext b n
   simpa only [bitCasesOn_bit] using congr_fun h (bit b n)
 
 @[simp]
-theorem bit_cases_on_inj {C : ℕ → Sort u} (H₁ H₂ : ∀ b n, C (bit b n)) :
+theorem bit_cases_on_inj {motive : ℕ → Sort u} (H₁ H₂ : ∀ b n, motive (bit b n)) :
     ((fun n => bitCasesOn n H₁) = fun n => bitCasesOn n H₂) ↔ H₁ = H₂ :=
   bit_cases_on_injective.eq_iff
 
@@ -340,27 +345,34 @@ The same as `binaryRec_eq`,
 but that one unfortunately requires `f` to be the identity when appending `false` to `0`.
 Here, we allow you to explicitly say that that case is not happening,
 i.e. supplying `n = 0 → b = true`. -/
-theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
-    (h : f false 0 z = z ∨ (n = 0 → b = true)) :
+theorem binaryRec_eq' {motive : ℕ → Sort*} {z : motive 0} {f : ∀ b n, motive n → motive (bit b n)}
+    (b n) (h : f false 0 z = z ∨ (n = 0 → b = true)) :
     binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
-  rw [binaryRec]
-  split_ifs with h'
-  · rcases bit_eq_zero_iff.mp h' with ⟨rfl, rfl⟩
-    rw [binaryRec_zero]
+  by_cases h' : bit b n = 0
+  case pos =>
+    obtain ⟨rfl, rfl⟩ := bit_eq_zero_iff.mp h'
     simp only [imp_false, or_false, eq_self_iff_true, not_true, reduceCtorEq] at h
+    unfold binaryRec
     exact h.symm
-  · dsimp only []
-    generalize_proofs e
-    revert e
-    rw [bodd_bit, div2_bit]
-    intros
-    rfl
+  case neg =>
+    rw [binaryRec, dif_neg h']
+    change congrArg motive (bit b n).bit_testBit_zero_shiftRight_one ▸ f _ _ _ = _
+    generalize congrArg motive (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
+    rw [testBit_bit_zero, bit_shiftRight_one]
+    intros; rfl
+
+theorem binaryRec_eq {motive : Nat → Sort u} {z : motive 0}
+    {f : ∀ b n, motive n → motive (bit b n)}
+    (h : f false 0 z = z) (b n) :
+    binaryRec z f (bit b n) = f b n (binaryRec z f n) :=
+  binaryRec_eq' b n (.inl h)
 
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
   the bit being appended is `true`-/
 @[elab_as_elim]
-def binaryRec' {C : ℕ → Sort*} (z : C 0) (f : ∀ b n, (n = 0 → b = true) → C n → C (bit b n)) :
-    ∀ n, C n :=
+def binaryRec' {motive : ℕ → Sort*} (z : motive 0)
+    (f : ∀ b n, (n = 0 → b = true) → motive n → motive (bit b n)) :
+    ∀ n, motive n :=
   binaryRec z fun b n ih =>
     if h : n = 0 → b = true then f b n h ih
     else by
@@ -370,8 +382,9 @@ def binaryRec' {C : ℕ → Sort*} (z : C 0) (f : ∀ b n, (n = 0 → b = true) 
 
 /-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
 @[elab_as_elim]
-def binaryRecFromOne {C : ℕ → Sort*} (z₀ : C 0) (z₁ : C 1) (f : ∀ b n, n ≠ 0 → C n → C (bit b n)) :
-    ∀ n, C n :=
+def binaryRecFromOne {motive : ℕ → Sort*} (z₀ : motive 0) (z₁ : motive 1)
+    (f : ∀ b n, n ≠ 0 → motive n → motive (bit b n)) :
+    ∀ n, motive n :=
   binaryRec' z₀ fun b n h ih =>
     if h' : n = 0 then by
       rw [h', h h']
