@@ -100,9 +100,9 @@ class Shelf (α : Type u) where
 A *unital shelf* is a shelf equipped with an element `1` such that, for all elements `x`,
 we have both `x ◃ 1` and `1 ◃ x` equal `x`.
 -/
-class UnitalShelf (α : Type u) extends Shelf α, One α :=
-(one_act : ∀ a : α, act 1 a = a)
-(act_one : ∀ a : α, act a 1 = a)
+class UnitalShelf (α : Type u) extends Shelf α, One α where
+  one_act : ∀ a : α, act 1 a = a
+  act_one : ∀ a : α, act a 1 = a
 
 /-- The type of homomorphisms between shelves.
 This is also the notion of rack and quandle homomorphisms.

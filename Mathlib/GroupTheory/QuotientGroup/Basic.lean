@@ -167,6 +167,11 @@ theorem mk_prod {G ι : Type*} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f
 
 @[to_additive (attr := simp)] lemma map_mk'_self : N.map (mk' N) = ⊥ := by aesop
 
+@[to_additive QuotientAddGroup.strictMono_comap_prod_map]
+theorem strictMono_comap_prod_map :
+    StrictMono fun H : Subgroup G ↦ (H.comap N.subtype, H.map (mk' N)) :=
+  strictMono_comap_prod_image N
+
 /-- A group homomorphism `φ : G →* M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* M`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
