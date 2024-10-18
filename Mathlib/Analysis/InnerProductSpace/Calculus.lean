@@ -6,6 +6,8 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.NormedSpace.HomeomorphBall
+import Mathlib.Analysis.Calculus.ContDiff.WithLp
+import Mathlib.Analysis.Calculus.FDeriv.WithLp
 
 /-!
 # Calculus in inner product spaces
@@ -80,15 +82,18 @@ theorem HasFDerivWithinAt.inner (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') s
       x :=
-  (isBoundedBilinearMap_inner.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prod hg)
+  isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
+    |>.hasFDerivAt (f x, g x) |>.comp_hasFDerivWithinAt x (hf.prod hg)
 
 theorem HasStrictFDerivAt.inner (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
     HasStrictFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x :=
-  (isBoundedBilinearMap_inner.hasStrictFDerivAt (f x, g x)).comp x (hf.prod hg)
+  isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
+    |>.hasStrictFDerivAt (f x, g x) |>.comp x (hf.prod hg)
 
 theorem HasFDerivAt.inner (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
     HasFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x :=
-  (isBoundedBilinearMap_inner.hasFDerivAt (f x, g x)).comp x (hf.prod hg)
+  isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
+    |>.hasFDerivAt (f x, g x) |>.comp x (hf.prod hg)
 
 theorem HasDerivWithinAt.inner {f g : ℝ → E} {f' g' : E} {s : Set ℝ} {x : ℝ}
     (hf : HasDerivWithinAt f f' s x) (hg : HasDerivWithinAt g g' s x) :
@@ -261,60 +266,52 @@ end DerivInner
 
 section PiLike
 
+/-! ### Convenience aliases of `PiLp` lemmas for `EuclideanSpace` -/
+
 open ContinuousLinearMap
 
 variable {𝕜 ι H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [NormedSpace 𝕜 H] [Fintype ι]
   {f : H → EuclideanSpace 𝕜 ι} {f' : H →L[𝕜] EuclideanSpace 𝕜 ι} {t : Set H} {y : H}
 
 theorem differentiableWithinAt_euclidean :
-    DifferentiableWithinAt 𝕜 f t y ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x => f x i) t y := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_differentiableWithinAt_iff, differentiableWithinAt_pi]
-  rfl
+    DifferentiableWithinAt 𝕜 f t y ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x => f x i) t y :=
+  differentiableWithinAt_piLp _
 
 theorem differentiableAt_euclidean :
-    DifferentiableAt 𝕜 f y ↔ ∀ i, DifferentiableAt 𝕜 (fun x => f x i) y := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_differentiableAt_iff, differentiableAt_pi]
-  rfl
+    DifferentiableAt 𝕜 f y ↔ ∀ i, DifferentiableAt 𝕜 (fun x => f x i) y :=
+  differentiableAt_piLp _
 
 theorem differentiableOn_euclidean :
-    DifferentiableOn 𝕜 f t ↔ ∀ i, DifferentiableOn 𝕜 (fun x => f x i) t := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_differentiableOn_iff, differentiableOn_pi]
-  rfl
+    DifferentiableOn 𝕜 f t ↔ ∀ i, DifferentiableOn 𝕜 (fun x => f x i) t :=
+  differentiableOn_piLp _
 
-theorem differentiable_euclidean : Differentiable 𝕜 f ↔ ∀ i, Differentiable 𝕜 fun x => f x i := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_differentiable_iff, differentiable_pi]
-  rfl
+theorem differentiable_euclidean : Differentiable 𝕜 f ↔ ∀ i, Differentiable 𝕜 fun x => f x i :=
+  differentiable_piLp _
 
 theorem hasStrictFDerivAt_euclidean :
     HasStrictFDerivAt f f' y ↔
-      ∀ i, HasStrictFDerivAt (fun x => f x i) (EuclideanSpace.proj i ∘L f') y := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_hasStrictFDerivAt_iff, hasStrictFDerivAt_pi']
-  rfl
+      ∀ i, HasStrictFDerivAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') y :=
+  hasStrictFDerivAt_piLp _
 
 theorem hasFDerivWithinAt_euclidean :
     HasFDerivWithinAt f f' t y ↔
-      ∀ i, HasFDerivWithinAt (fun x => f x i) (EuclideanSpace.proj i ∘L f') t y := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_hasFDerivWithinAt_iff, hasFDerivWithinAt_pi']
-  rfl
+      ∀ i, HasFDerivWithinAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') t y :=
+  hasFDerivWithinAt_piLp _
 
 theorem contDiffWithinAt_euclidean {n : ℕ∞} :
-    ContDiffWithinAt 𝕜 n f t y ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => f x i) t y := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_contDiffWithinAt_iff, contDiffWithinAt_pi]
-  rfl
+    ContDiffWithinAt 𝕜 n f t y ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => f x i) t y :=
+  contDiffWithinAt_piLp _
 
 theorem contDiffAt_euclidean {n : ℕ∞} :
-    ContDiffAt 𝕜 n f y ↔ ∀ i, ContDiffAt 𝕜 n (fun x => f x i) y := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_contDiffAt_iff, contDiffAt_pi]
-  rfl
+    ContDiffAt 𝕜 n f y ↔ ∀ i, ContDiffAt 𝕜 n (fun x => f x i) y :=
+  contDiffAt_piLp _
 
 theorem contDiffOn_euclidean {n : ℕ∞} :
-    ContDiffOn 𝕜 n f t ↔ ∀ i, ContDiffOn 𝕜 n (fun x => f x i) t := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_contDiffOn_iff, contDiffOn_pi]
-  rfl
+    ContDiffOn 𝕜 n f t ↔ ∀ i, ContDiffOn 𝕜 n (fun x => f x i) t :=
+  contDiffOn_piLp _
 
-theorem contDiff_euclidean {n : ℕ∞} : ContDiff 𝕜 n f ↔ ∀ i, ContDiff 𝕜 n fun x => f x i := by
-  rw [← (EuclideanSpace.equiv ι 𝕜).comp_contDiff_iff, contDiff_pi]
-  rfl
+theorem contDiff_euclidean {n : ℕ∞} : ContDiff 𝕜 n f ↔ ∀ i, ContDiff 𝕜 n fun x => f x i :=
+  contDiff_piLp _
 
 end PiLike
 

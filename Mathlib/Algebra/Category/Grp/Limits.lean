@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
@@ -97,7 +97,7 @@ noncomputable instance Forget₂.createsLimit :
       validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
       makesLimit :=
         IsLimit.ofFaithful (forget₂ Grp MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
-          (fun s => _) fun s => rfl }
+          (fun _ => _) fun _ => rfl }
 
 /-- A choice of limit cone for a functor into `Grp`.
 (Generally, you'll just want to use `limit F`.)

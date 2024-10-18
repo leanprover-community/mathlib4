@@ -132,7 +132,7 @@ theorem geom_sum₂_self {α : Type*} [CommRing α] (x : α) (n : ℕ) :
         ∑ i ∈ Finset.range n, x ^ (i + (n - 1 - i)) := by
       simp_rw [← pow_add]
     _ = ∑ _i ∈ Finset.range n, x ^ (n - 1) :=
-      Finset.sum_congr rfl fun i hi =>
+      Finset.sum_congr rfl fun _ hi =>
         congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| Finset.mem_range.1 hi
     _ = (Finset.range n).card • x ^ (n - 1) := Finset.sum_const _
     _ = n * x ^ (n - 1) := by rw [Finset.card_range, nsmul_eq_mul]
@@ -422,7 +422,7 @@ variable {n : ℕ} {x : α}
 
 theorem geom_sum_pos [StrictOrderedSemiring α] (hx : 0 ≤ x) (hn : n ≠ 0) :
     0 < ∑ i ∈ range n, x ^ i :=
-  sum_pos' (fun k _ => pow_nonneg hx _) ⟨0, mem_range.2 hn.bot_lt, by simp⟩
+  sum_pos' (fun _ _ => pow_nonneg hx _) ⟨0, mem_range.2 hn.bot_lt, by simp⟩
 
 theorem geom_sum_pos_and_lt_one [StrictOrderedRing α] (hx : x < 0) (hx' : 0 < x + 1) (hn : 1 < n) :
     (0 < ∑ i ∈ range n, x ^ i) ∧ ∑ i ∈ range n, x ^ i < 1 := by
@@ -482,7 +482,7 @@ theorem geom_sum_pos' [LinearOrderedRing α] (hx : 0 < x + 1) (hn : n ≠ 0) :
 
 theorem Odd.geom_sum_pos [LinearOrderedRing α] (h : Odd n) : 0 < ∑ i ∈ range n, x ^ i := by
   rcases n with (_ | _ | k)
-  · exact ((show ¬Odd 0 by decide) h).elim
+  · exact (Nat.not_odd_zero h).elim
   · simp only [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
   rw [← Nat.not_even_iff_odd] at h
   rcases lt_trichotomy (x + 1) 0 with (hx | hx | hx)
@@ -547,7 +547,7 @@ lemma Nat.geomSum_eq (hm : 2 ≤ m) (n : ℕ) :
 `m ≥ 2` is less than `m ^ n`. -/
 lemma Nat.geomSum_lt (hm : 2 ≤ m) (hs : ∀ k ∈ s, k < n) : ∑ k ∈ s, m ^ k < m ^ n :=
   calc
-    ∑ k ∈ s, m ^ k ≤ ∑ k ∈ range n, m ^ k := sum_le_sum_of_subset fun k hk ↦
+    ∑ k ∈ s, m ^ k ≤ ∑ k ∈ range n, m ^ k := sum_le_sum_of_subset fun _ hk ↦
       mem_range.2 <| hs _ hk
     _ = (m ^ n - 1) / (m - 1) := Nat.geomSum_eq hm _
     _ ≤ m ^ n - 1 := Nat.div_le_self _ _

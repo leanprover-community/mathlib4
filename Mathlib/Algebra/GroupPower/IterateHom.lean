@@ -31,7 +31,7 @@ assert_not_exists DenselyOrdered
 
 open Function
 
-variable {M : Type*} {N : Type*} {G : Type*} {H : Type*}
+variable {M : Type*} {G : Type*} {H : Type*}
 
 /-- An auxiliary lemma that can be used to prove `⇑(f ^ n) = ⇑f^[n]`. -/
 theorem hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)

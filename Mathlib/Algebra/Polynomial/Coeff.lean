@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
@@ -104,7 +104,6 @@ lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) 
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
-  -- porting note (#10745): was `simp [Polynomial.sum, support, coeff]`.
   simp [Polynomial.sum, support_ofFinsupp, coeff_ofFinsupp]
 
 /-- Decomposes the coefficient of the product `p * q` as a sum

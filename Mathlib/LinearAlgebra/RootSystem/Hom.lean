@@ -74,11 +74,11 @@ def Hom.comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [Modu
   root_weightMap := by
     ext i
     simp only [LinearMap.coe_comp, Equiv.coe_trans]
-    rw [comp.assoc, f.root_weightMap, ← comp.assoc, g.root_weightMap, comp.assoc]
+    rw [comp_assoc, f.root_weightMap, ← comp_assoc, g.root_weightMap, comp_assoc]
   coroot_coweightMap := by
     ext i
     simp only [LinearMap.coe_comp, Equiv.symm_trans_apply]
-    rw [comp.assoc, g.coroot_coweightMap, ← comp.assoc, f.coroot_coweightMap, comp.assoc]
+    rw [comp_assoc, g.coroot_coweightMap, ← comp_assoc, f.coroot_coweightMap, comp_assoc]
     simp
 
 @[simp]
@@ -116,7 +116,9 @@ def Hom.reflection (P : RootPairing ι R M N) (i : ι) : Hom P P where
       PerfectPairing.toDualRight_apply, LinearMap.dualMap_apply, PerfectPairing.flip_apply_apply,
       LinearEquiv.comp_coe, LinearEquiv.trans_apply]
     rw [RootPairing.reflection_apply, RootPairing.coreflection_apply]
-    simp [map_sub, ← PerfectPairing.toLin_apply, mul_comm]
+    simp only [← PerfectPairing.toLin_apply, map_sub, map_smul, LinearMap.sub_apply,
+      toLin_toPerfectPairing, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
+    simp only [PerfectPairing.toLin_apply, PerfectPairing.flip_apply_apply, mul_comm]
   root_weightMap := by ext; simp
   coroot_coweightMap := by ext; simp
 

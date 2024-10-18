@@ -24,8 +24,6 @@ assert_not_exists DenselyOrdered
 
 open Function
 
-universe u
-
 variable {α β G M : Type*}
 
 section ite
@@ -117,7 +115,7 @@ instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (�
 
 section MulOneClass
 
-variable {M : Type u} [MulOneClass M]
+variable [MulOneClass M]
 
 @[to_additive]
 theorem ite_mul_one {P : Prop} [Decidable P] {a b : M} :
@@ -172,7 +170,7 @@ end CommSemigroup
 attribute [local simp] mul_assoc sub_eq_add_neg
 
 section Monoid
-variable [Monoid M] {a b c : M} {m n : ℕ}
+variable [Monoid M] {a b : M} {m n : ℕ}
 
 @[to_additive boole_nsmul]
 lemma pow_boole (P : Prop) [Decidable P] (a : M) :
@@ -226,7 +224,7 @@ end CommMonoid
 
 section LeftCancelMonoid
 
-variable {M : Type u} [LeftCancelMonoid M] {a b : M}
+variable [LeftCancelMonoid M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_right_eq_self : a * b = a ↔ b = 1 := calc
@@ -247,7 +245,7 @@ end LeftCancelMonoid
 
 section RightCancelMonoid
 
-variable {M : Type u} [RightCancelMonoid M] {a b : M}
+variable [RightCancelMonoid M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_left_eq_self : a * b = b ↔ a = 1 := calc
@@ -316,7 +314,7 @@ end InvolutiveInv
 
 section DivInvMonoid
 
-variable [DivInvMonoid G] {a b c : G}
+variable [DivInvMonoid G]
 
 @[to_additive, field_simps] -- The attributes are out of order on purpose
 theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
@@ -426,7 +424,7 @@ lemma one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
 
 @[to_additive (attr := simp) neg_zsmul]
 lemma zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
-  | (n + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
+  | (_ + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
   | 0 => by
     change a ^ (0 : ℤ) = (a ^ (0 : ℤ))⁻¹
     simp
@@ -586,13 +584,15 @@ theorem mul_div_mul_comm : a * b / (c * d) = a / c * (b / d) := by simp
   | (n : ℕ) => by simp_rw [zpow_natCast, mul_pow]
   | .negSucc n => by simp_rw [zpow_negSucc, ← inv_pow, mul_inv, mul_pow]
 
-@[to_additive (attr := simp) nsmul_sub]
+@[to_additive nsmul_sub]
 lemma div_pow (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_pow, inv_pow]
 
-@[to_additive (attr := simp) zsmul_sub]
+@[to_additive zsmul_sub]
 lemma div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
+
+attribute [field_simps] div_pow div_zpow
 
 end DivisionCommMonoid
 

@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.Order.JordanHoelder
+import Mathlib.Order.JordanHolder
 import Mathlib.Order.CompactlyGenerated.Intervals
 import Mathlib.LinearAlgebra.FiniteDimensional
 
@@ -163,7 +163,7 @@ theorem isSimpleModule_self_iff_isUnit :
     exact ⟨⟨x, y, left_inv_eq_right_inv hzy hyx ▸ hzy, hyx⟩, rfl⟩
 
 theorem isSimpleModule_iff_finrank_eq_one {R} [DivisionRing R] [Module R M] :
-    IsSimpleModule R M ↔ FiniteDimensional.finrank R M = 1 :=
+    IsSimpleModule R M ↔ Module.finrank R M = 1 :=
   ⟨fun h ↦ have := h.nontrivial; have ⟨v, hv⟩ := exists_ne (0 : M)
     (finrank_eq_one_iff_of_nonzero' v hv).mpr (IsSimpleModule.toSpanSingleton_surjective R hv),
   is_simple_module_of_finrank_eq_one⟩
@@ -338,7 +338,7 @@ variable (ι R)
 
 proof_wanted IsSemisimpleRing.mulOpposite [IsSemisimpleRing R] : IsSemisimpleRing Rᵐᵒᵖ
 
-proof_wanted IsSemisimpleRing.module_end [IsSemisimpleRing R] [Module.Finite R M] :
+proof_wanted IsSemisimpleRing.module_end [IsSemisimpleModule R M] [Module.Finite R M] :
     IsSemisimpleRing (Module.End R M)
 
 proof_wanted IsSemisimpleRing.matrix [Fintype ι] [DecidableEq ι] [IsSemisimpleRing R] :
@@ -398,16 +398,16 @@ noncomputable instance _root_.Module.End.divisionRing
     exact (LinearEquiv.ofBijective _ <| bijective_of_ne_zero a0).right_inv _
   inv_zero := dif_pos rfl
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 end LinearMap
 
 -- Porting note: adding a namespace with all the new statements; existing result is not used in ML3
-namespace JordanHoelderModule
+namespace JordanHolderModule
 
--- Porting note: jordanHoelderModule was timing out so outlining the fields
+-- Porting note: jordanHolderModule was timing out so outlining the fields
 
 /-- An isomorphism `X₂ / X₁ ∩ X₂ ≅ Y₂ / Y₁ ∩ Y₂` of modules for pairs
 `(X₁,X₂) (Y₁,Y₂) : Submodule R M` -/
@@ -428,7 +428,7 @@ theorem second_iso {X Y : Submodule R M} (_ : X ⋖ X ⊔ Y) :
   dsimp
   exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
 
-instance instJordanHoelderLattice : JordanHoelderLattice (Submodule R M) where
+instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := CovBy.lt
   sup_eq_of_isMaximal hxz hyz := WCovBy.sup_eq hxz.wcovBy hyz.wcovBy
@@ -438,4 +438,4 @@ instance instJordanHoelderLattice : JordanHoelderLattice (Submodule R M) where
   iso_trans := iso_trans
   second_iso := second_iso
 
-end JordanHoelderModule
+end JordanHolderModule

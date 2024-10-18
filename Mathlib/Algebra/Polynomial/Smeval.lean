@@ -133,7 +133,7 @@ theorem smeval.linearMap_apply : smeval.linearMap R x p = p.smeval x := rfl
 
 theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
     ⇑(leval r) = fun p => p.smeval r := by
-  rw [Function.funext_iff]
+  rw [funext_iff]
   intro
   rw [leval_apply, smeval_def, eval_eq_sum]
   rfl
@@ -180,7 +180,7 @@ the defining structures independently.  For non-associative power-associative al
 octonions), we replace the `[Semiring S]` with `[NonAssocSemiring S] [Pow S ℕ] [NatPowAssoc S]`.
 -/
 
-variable (R : Type*) [Semiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
+variable (R : Type*) [Semiring R] (r : R) (p q : R[X]) {S : Type*}
   [NonAssocSemiring S] [Module R S] [Pow S ℕ] (x : S)
 
 theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
