@@ -201,18 +201,17 @@ theorem weightedSMul_null {s : Set α} (h_zero : μ s = 0) : (weightedSMul μ s 
   ext1 x; rw [weightedSMul_apply, h_zero]; simp
 
 theorem weightedSMul_union' (s t : Set α) (ht : MeasurableSet t) (hs_finite : μ s ≠ ∞)
-    (ht_finite : μ t ≠ ∞) (h_inter : s ∩ t = ∅) :
+    (ht_finite : μ t ≠ ∞) (hdisj : Disjoint s t) :
     (weightedSMul μ (s ∪ t) : F →L[ℝ] F) = weightedSMul μ s + weightedSMul μ t := by
   ext1 x
-  simp_rw [add_apply, weightedSMul_apply,
-    measure_union (Set.disjoint_iff_inter_eq_empty.mpr h_inter) ht,
+  simp_rw [add_apply, weightedSMul_apply, measure_union hdisj ht,
     ENNReal.toReal_add hs_finite ht_finite, add_smul]
 
 @[nolint unusedArguments]
 theorem weightedSMul_union (s t : Set α) (_hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hs_finite : μ s ≠ ∞) (ht_finite : μ t ≠ ∞) (h_inter : s ∩ t = ∅) :
+    (hs_finite : μ s ≠ ∞) (ht_finite : μ t ≠ ∞) (hdisj : Disjoint s t) :
     (weightedSMul μ (s ∪ t) : F →L[ℝ] F) = weightedSMul μ s + weightedSMul μ t :=
-  weightedSMul_union' s t ht hs_finite ht_finite h_inter
+  weightedSMul_union' s t ht hs_finite ht_finite hdisj
 
 theorem weightedSMul_smul [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜)
     (s : Set α) (x : F) : weightedSMul μ s (c • x) = c • weightedSMul μ s x := by
