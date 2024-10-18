@@ -20,8 +20,6 @@ The following are in the `AlgebraicGeometry.Scheme` namespace:
 - `AlgebraicGeometry.Scheme.Hom.residueFieldMap`: A morphism of schemes induce a homomorphism of
   residue fields.
 - `AlgebraicGeometry.Scheme.fromSpecResidueField`: The canonical map `Spec κ(x) ⟶ X`.
-- `AlgebraicGeometry.Scheme.SpecToEquivOfField`: morphisms `Spec K ⟶ X` for a field `K` correspond
-  to pairs of `x : X` with embedding `κ(x) ⟶ K`.
 
 -/
 
@@ -61,14 +59,13 @@ instance (X : Scheme.{u}) (x) : Epi (X.residue x) :=
 /-- If `K` is a field and `f : 𝒪_{X, x} ⟶ K` is a ring map, then this is the induced
 map `κ(x) ⟶ K`. -/
 def descResidueField {K : Type u} [Field K] {X : Scheme.{u}} {x : X}
-    (f : X.presheaf.stalk x ⟶ .of K)
-    [IsLocalRingHom (F := X.presheaf.stalk x →+* CommRingCat.of K) f] :
+    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f] :
     X.residueField x ⟶ .of K :=
   LocalRing.ResidueField.lift (S := K) f
 
 @[reassoc (attr := simp)]
 lemma residue_descResidueField {K : Type u} [Field K] {X : Scheme.{u}} {x}
-    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalRingHom f] :
+    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f] :
     X.residue x ≫ X.descResidueField f = f :=
   RingHom.ext fun _ ↦ rfl
 
@@ -236,14 +233,14 @@ lemma range_fromSpecResidueField  (x : X.carrier) :
     exact ⟨closedPoint (X.residueField x), rfl⟩
 
 lemma descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Scheme) {x}
-    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalRingHom f] :
+    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f] :
     Spec.map (X.descResidueField f) ≫
       X.fromSpecResidueField x = Spec.map f ≫ X.fromSpecStalk x := by
   simp [fromSpecResidueField, ← Spec.map_comp_assoc]
 
 instance {R : CommRingCat} [LocalRing R] (f : Spec R ⟶ X) :
-    IsLocalRingHom (F := X.presheaf.stalk _ →+* R) (stalkClosedPointTo f) :=
-  isLocalRingHom_stalkClosedPointTo f
+    IsLocalHom (F := X.presheaf.stalk _ →+* R) (stalkClosedPointTo f) :=
+  isLocalHom_stalkClosedPointTo f
 
 lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
     (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec (.of K) ⟶ X) :

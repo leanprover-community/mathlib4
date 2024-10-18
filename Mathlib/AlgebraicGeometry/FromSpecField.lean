@@ -3,14 +3,16 @@ Copyright (c) 2024 Christian Merten, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.ResidueField
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 
 /-!
 
 # Morphisms from spectra of fields
 
-In this file we characterize morphisms `Spec K ⟶ X` for `K` a field.
+In this file we characterize morphisms `Spec K ⟶ X` for `K` a field, namely:
+
+- `AlgebraicGeometry.Scheme.SpecToEquivOfField`: morphisms `Spec K ⟶ X` for a field `K` correspond
+  to pairs of `x : X` with embedding `κ(x) ⟶ K`.
 
 -/
 
