@@ -19,8 +19,8 @@ theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) * 2 ^ n
   | 0 => by simp [shiftLeft', pow_zero, Nat.one_mul]
   | k + 1 => by
-    rw [shiftLeft', bit_val, cond_true, add_assoc, ← Nat.mul_add_one, shiftLeft'_tt_eq_mul_pow m k,
-      mul_left_comm, mul_comm 2, pow_succ]
+    rw [shiftLeft', bit_val, Bool.toNat_true, add_assoc, ← Nat.mul_add_one,
+      shiftLeft'_tt_eq_mul_pow m k, mul_left_comm, mul_comm 2, pow_succ]
 
 end
 
