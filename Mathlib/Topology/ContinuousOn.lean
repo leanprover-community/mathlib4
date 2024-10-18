@@ -456,6 +456,10 @@ variable [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 ### `ContinuousWithinAt`
 -/
 
+/-!
+### `ContinuousWithinAt`
+-/
+
 /-- If a function is continuous within `s` at `x`, then it tends to `f x` within `s` by definition.
 We register this fact for use with the dot notation, especially to use `Filter.Tendsto.comp` as
 `ContinuousWithinAt.comp` will have a different meaning. -/

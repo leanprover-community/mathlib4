@@ -461,20 +461,6 @@ protected theorem acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s
 
 end PrincipalSeg
 
-/-- A relation is well-founded iff every principal segment of it is well-founded.
-
-In this lemma we use `Subrel` to indicate its principal segments because it's usually more
-convenient to use.
--/
-theorem wellFounded_iff_wellFounded_subrel {β : Type*} {s : β → β → Prop} [IsTrans β s] :
-    WellFounded s ↔ ∀ b, WellFounded (Subrel s { b' | s b' b }) := by
-  refine
-    ⟨fun wf b => ⟨fun b' => ((PrincipalSeg.ofElement _ b).acc b').mpr (wf.apply b')⟩, fun wf =>
-      ⟨fun b => Acc.intro _ fun b' hb' => ?_⟩⟩
-  let f := PrincipalSeg.ofElement s b
-  obtain ⟨b', rfl⟩ := f.mem_range_of_rel_top ((PrincipalSeg.ofElement_top s b).symm ▸ hb')
-  exact (f.acc b').mp ((wf b).apply b')
-
 theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} [IsTrans β s] :
     WellFounded s ↔ ∀ (α : Type u) (r : α → α → Prop) (_ : r ≺i s), WellFounded r :=
   ⟨fun wf _ _ f => RelHomClass.wellFounded f.toRelEmbedding wf, fun h =>
