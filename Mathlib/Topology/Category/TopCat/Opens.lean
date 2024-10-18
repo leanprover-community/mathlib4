@@ -335,22 +335,22 @@ theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U :
     exact ⟨x, hx, rfl⟩
 
 -- Porting note: added to ease the proof of `functor_map_eq_inf`
-lemma set_range_forget_map_inclusion' {X : TopCat} (U : Opens X) :
-    Set.range ((forget TopCat).map (inclusion' U)) = (U : Set X) := by
+lemma set_range_inclusion' {X : TopCat} (U : Opens X) :
+    Set.range (inclusion' U) = (U : Set X) := by
   ext x
   constructor
   · rintro ⟨x, rfl⟩
     exact x.2
   · intro h
     exact ⟨⟨x, h⟩, rfl⟩
+@[deprecated (since := "2024-09-07")] alias set_range_forget_map_inclusion' := set_range_inclusion'
 
 @[simp]
 theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :
     U.openEmbedding.isOpenMap.functor.obj ((Opens.map U.inclusion').obj V) = V ⊓ U := by
   ext1
-  refine Set.image_preimage_eq_inter_range.trans ?_
-  erw [set_range_forget_map_inclusion' U]
-  rfl
+  simp only [IsOpenMap.functor_obj_coe, map_coe, coe_inf,
+    Set.image_preimage_eq_inter_range, set_range_inclusion' U]
 
 theorem map_functor_eq' {X U : TopCat} (f : U ⟶ X) (hf : OpenEmbedding f) (V) :
     ((Opens.map f).obj <| hf.isOpenMap.functor.obj V) = V :=

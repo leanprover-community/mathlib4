@@ -12,6 +12,7 @@ import Mathlib.GroupTheory.GroupAction.Ring
 
 ## Main definitions
  * `Polynomial.derivative`: The formal derivative of polynomials, expressed as a linear map.
+ * `Polynomial.derivativeFinsupp`: Iterated derivatives as a finite support function.
 
 -/
 
@@ -21,6 +22,8 @@ noncomputable section
 open Finset
 
 open Polynomial
+
+open scoped Nat
 
 namespace Polynomial
 
@@ -330,6 +333,21 @@ theorem coeff_iterate_derivative {k} (p : R[X]) (m : ℕ) :
         _ = Nat.descFactorial (m + k.succ) k.succ • p.coeff (m + k.succ) := by
           rw [Nat.succ_add_eq_add_succ]
 
+theorem iterate_derivative_eq_sum (p : R[X]) (k : ℕ) :
+    derivative^[k] p =
+      ∑ x ∈ (derivative^[k] p).support, C ((x + k).descFactorial k • p.coeff (x + k)) * X ^ x := by
+  conv_lhs => rw [(derivative^[k] p).as_sum_support_C_mul_X_pow]
+  refine sum_congr rfl fun i _ ↦ ?_
+  rw [coeff_iterate_derivative, Nat.descFactorial_eq_factorial_mul_choose]
+
+theorem iterate_derivative_eq_factorial_smul_sum (p : R[X]) (k : ℕ) :
+    derivative^[k] p = k ! •
+      ∑ x ∈ (derivative^[k] p).support, C ((x + k).choose k • p.coeff (x + k)) * X ^ x := by
+  conv_lhs => rw [iterate_derivative_eq_sum]
+  rw [smul_sum]
+  refine sum_congr rfl fun i _ ↦ ?_
+  rw [← smul_mul_assoc, smul_C, smul_smul, Nat.descFactorial_eq_factorial_mul_choose]
+
 theorem iterate_derivative_mul {n} (p q : R[X]) :
     derivative^[n] (p * q) =
       ∑ k ∈ range n.succ, (n.choose k • (derivative^[n - k] p * derivative^[k] q)) := by
@@ -373,6 +391,52 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
       congr
       omega
     · rw [Nat.choose_zero_right, tsub_zero]
+
+/--
+Iterated derivatives as a finite support function.
+-/
+@[simps! apply_toFun]
+noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
+  toFun p := .onFinset (range (p.natDegree + 1)) (derivative^[·] p) fun i ↦ by
+    contrapose; simp_all [iterate_derivative_eq_zero, Nat.succ_le]
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+@[simp]
+theorem support_derivativeFinsupp_subset_range {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
+    (derivativeFinsupp p).support ⊆ range n := by
+  dsimp [derivativeFinsupp]
+  exact Finsupp.support_onFinset_subset.trans (Finset.range_subset.mpr h)
+
+@[simp]
+theorem derivativeFinsupp_C (r : R) : derivativeFinsupp (C r : R[X]) = .single 0 (C r) := by
+  ext i : 1
+  match i with
+  | 0 => simp
+  | i + 1 => simp
+
+@[simp]
+theorem derivativeFinsupp_one : derivativeFinsupp (1 : R[X]) = .single 0 1 := by
+  simpa using derivativeFinsupp_C (1 : R)
+
+@[simp]
+theorem derivativeFinsupp_X : derivativeFinsupp (X : R[X]) = .single 0 X + .single 1 1 := by
+  ext i : 1
+  match i with
+  | 0 => simp
+  | 1 => simp
+  | (n + 2) => simp
+
+theorem derivativeFinsupp_map [Semiring S] (p : R[X]) (f : R →+* S) :
+    derivativeFinsupp (p.map f) = (derivativeFinsupp p).mapRange (·.map f) (by simp) := by
+  ext i : 1
+  simp
+
+theorem derivativeFinsupp_derivative (p : R[X]) :
+    derivativeFinsupp (derivative p) =
+      (derivativeFinsupp p).comapDomain Nat.succ Nat.succ_injective.injOn := by
+  ext i : 1
+  simp
 
 end Semiring
 

@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 import Mathlib.Topology.Algebra.Module.UniformConvergence
+import Mathlib.Topology.Hom.ContinuousEvalConst
 
 /-!
 # Topology on continuous multilinear maps
@@ -152,6 +153,11 @@ end UniformAddGroup
 
 variable [TopologicalSpace F] [TopologicalAddGroup F]
 
+instance instTopologicalAddGroup : TopologicalAddGroup (ContinuousMultilinearMap 𝕜 E F) :=
+  letI := TopologicalAddGroup.toUniformSpace F
+  haveI := comm_topologicalAddGroup_is_uniform (G := F)
+  inferInstance
+
 instance instContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F] [ContinuousConstSMul M F] :
     ContinuousConstSMul M (ContinuousMultilinearMap 𝕜 E F) := by
@@ -188,20 +194,21 @@ theorem hasBasis_nhds_zero :
 
 variable [∀ i, ContinuousSMul 𝕜 (E i)]
 
-theorem continuous_eval_const (x : Π i, E i) :
-    Continuous fun p : ContinuousMultilinearMap 𝕜 E F ↦ p x := by
-  letI := TopologicalAddGroup.toUniformSpace F
-  haveI := comm_topologicalAddGroup_is_uniform (G := F)
-  exact (uniformContinuous_eval_const x).continuous
+instance : ContinuousEvalConst (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
+  continuous_eval_const x :=
+    let _ := TopologicalAddGroup.toUniformSpace F
+    have _ := comm_topologicalAddGroup_is_uniform (G := F)
+    (uniformContinuous_eval_const x).continuous
 
+@[deprecated (since := "2024-10-05")] protected alias continuous_eval_const := continuous_eval_const
 @[deprecated (since := "2024-04-10")] alias continuous_eval_left := continuous_eval_const
-
-theorem continuous_coe_fun :
-    Continuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=
-  continuous_pi continuous_eval_const
+@[deprecated (since := "2024-10-05")] protected alias continuous_coe_fun := continuous_coeFun
 
 instance instT2Space [T2Space F] : T2Space (ContinuousMultilinearMap 𝕜 E F) :=
-  .of_injective_continuous DFunLike.coe_injective continuous_coe_fun
+  .of_injective_continuous DFunLike.coe_injective continuous_coeFun
+
+instance instT3Space [T2Space F] : T3Space (ContinuousMultilinearMap 𝕜 E F) :=
+  inferInstance
 
 section RestrictScalars
 

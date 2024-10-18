@@ -86,14 +86,13 @@ open Cardinal
 universe u' u
 
 variable {ι : Type u'} {ι' : Type*} {R : Type*} {K : Type*}
-variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
+variable {M : Type*} {M' : Type*} {V : Type u}
 
 section Module
 
 variable {v : ι → M}
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M'']
-variable [Module R M] [Module R M'] [Module R M'']
-variable {a b : R} {x y : M}
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M']
+variable [Module R M] [Module R M']
 variable (R) (v)
 
 /-- `LinearIndependent R v` states the family of vectors `v` is linearly independent over `R`. -/
@@ -515,9 +514,8 @@ end Module
 section Module
 
 variable {v : ι → M}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M'']
-variable [Module R M] [Module R M'] [Module R M'']
-variable {a b : R} {x y : M}
+variable [Ring R] [AddCommGroup M] [AddCommGroup M']
+variable [Module R M] [Module R M']
 
 theorem linearIndependent_iff_injective_linearCombination :
     LinearIndependent R v ↔ Function.Injective (Finsupp.linearCombination R v) :=
@@ -933,9 +931,7 @@ theorem LinearIndependent.independent_span_singleton (hv : LinearIndependent R v
   obtain ⟨⟨r, rfl⟩, hm⟩ := hm
   suffices r = 0 by simp [this]
   apply linearIndependent_iff_not_smul_mem_span.mp hv i
-  -- Porting note: The original proof was using `convert hm`.
-  suffices v '' (univ \ {i}) = range fun j : { j // j ≠ i } => v j by
-    rwa [this]
+  convert hm
   ext
   simp
 
@@ -1185,9 +1181,9 @@ end Module
 
 section Nontrivial
 
-variable [Ring R] [Nontrivial R] [AddCommGroup M] [AddCommGroup M']
-variable [Module R M] [NoZeroSMulDivisors R M] [Module R M']
-variable {v : ι → M} {s t : Set M} {x y z : M}
+variable [Semiring R] [Nontrivial R] [AddCommMonoid M]
+variable [Module R M] [NoZeroSMulDivisors R M]
+variable {s t : Set M}
 
 theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :
     LinearIndependent R v ↔ v default ≠ 0 := by
@@ -1213,9 +1209,8 @@ These can be considered generalizations of properties of linear independence in 
 
 section Module
 
-variable [DivisionRing K] [AddCommGroup V] [AddCommGroup V']
-variable [Module K V] [Module K V']
-variable {v : ι → V} {s t : Set V} {x y z : V}
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable {v : ι → V} {s t : Set V} {x y : V}
 
 open Submodule
 

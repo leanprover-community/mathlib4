@@ -491,9 +491,7 @@ theorem add_compLinearMap (f₁ f₂ : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R
 theorem compLinearMap_zero [Nonempty ι] (f : M [⋀^ι]→ₗ[R] N) :
     f.compLinearMap (0 : M₂ →ₗ[R] M) = 0 := by
   ext
-  -- Porting note: Was `simp_rw [.., ← Pi.zero_def, map_zero, zero_apply]`.
-  simp_rw [compLinearMap_apply, LinearMap.zero_apply, ← Pi.zero_def, zero_apply]
-  exact map_zero f
+  simp_rw [compLinearMap_apply, LinearMap.zero_apply, ← Pi.zero_def, map_zero, zero_apply]
 
 /-- Composing an alternating map with the identity linear map in each argument. -/
 @[simp]

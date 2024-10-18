@@ -23,9 +23,9 @@ This allows us to define a `k[G]`-basis on `k[Gⁿ⁺¹]`, by mapping the natura
 
 We then define the standard resolution of `k` as a trivial representation, by
 taking the alternating face map complex associated to an appropriate simplicial `k`-linear
-`G`-representation. This simplicial object is the `linearization` of the simplicial `G`-set given
-by the universal cover of the classifying space of `G`, `EG`. We prove this simplicial `G`-set `EG`
-is isomorphic to the Čech nerve of the natural arrow of `G`-sets `G ⟶ {pt}`.
+`G`-representation. This simplicial object is the `Rep.linearization` of the simplicial `G`-set
+given by the universal cover of the classifying space of `G`, `EG`. We prove this simplicial
+`G`-set `EG` is isomorphic to the Čech nerve of the natural arrow of `G`-sets `G ⟶ {pt}`.
 
 We then use this isomorphism to deduce that as a complex of `k`-modules, the standard resolution
 of `k` as a trivial `G`-representation is homotopy equivalent to the complex with `k` at 0 and 0
@@ -201,35 +201,20 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g r ⊗ₜ f) =
       Finsupp.lift (Gⁿ⁺¹ →₀ k) k Gⁿ (fun f => single (g • partialProd f) r) f := by
   refine f.induction ?_ ?_
-/- Porting note (#11039): broken proof was
   · simp only [TensorProduct.tmul_zero, map_zero]
-  · intro a b x ha hb hx
+  · intro a b x _ _ hx
     simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add,
       diagonalSucc_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
-      zero_mul, single_zero] -/
-  · rw [TensorProduct.tmul_zero, map_zero]
-    rw [map_zero]
-  · intro _ _ _ _ _ hx
-    rw [TensorProduct.tmul_add, map_add, map_add, hx]
-    simp_rw [lift_apply, smul_single, smul_eq_mul]
-    rw [diagonalSucc_inv_single_single, sum_single_index, mul_comm]
-    rw [zero_mul, single_zero]
+      zero_mul, single_zero]
 
 theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
     (diagonalSucc k G n).inv.hom (g ⊗ₜ Finsupp.single f r) =
       Finsupp.lift _ k G (fun a => single (a • partialProd f) r) g := by
   refine g.induction ?_ ?_
-/- Porting note (#11039): broken proof was
   · simp only [TensorProduct.zero_tmul, map_zero]
-  · intro a b x ha hb hx
+  · intro a b x _ _ hx
     simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
-      TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero] -/
-  · rw [TensorProduct.zero_tmul, map_zero, map_zero]
-  · intro _ _ _ _ _ hx
-    rw [TensorProduct.add_tmul, map_add, map_add, hx]
-    simp_rw [lift_apply, smul_single']
-    rw [diagonalSucc_inv_single_single, sum_single_index]
-    rw [zero_mul, single_zero]
+      TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero]
 
 end Rep
 
