@@ -108,7 +108,7 @@ lemma μ_natural_right {X Y : C} (X' : C) (f : X ⟶ Y) :
 
 @[reassoc (attr := simp)]
 lemma associativity (X Y Z : C) :
-      μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom =
+    μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom =
         (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫ F.obj X ◁ μ F Y Z ≫ μ F X (Y ⊗ Z) := by
   apply associativity'
 
