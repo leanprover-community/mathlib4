@@ -171,6 +171,7 @@ def monoidalUnit  :
       F.map_tensor, IsIso.hom_inv_id_assoc, ← tensor_comp_assoc,
       Adjunction.left_triangle_components, tensorHom_id, id_whiskerRight,
       IsIso.inv_hom_id, map_id]
+  unit := by simp [Adjunction.homEquiv_unit]
 
 /-- The unit of a adjunction can be upgraded to a monoidal natural transformation. -/
 @[simps]
@@ -188,7 +189,8 @@ def monoidalCounit :
   unit := by
     have eq := h.counit.naturality F.ε
     dsimp at eq ⊢
-    rw [map_inv, map_comp, assoc, assoc, map_inv, ← cancel_mono F.ε, assoc, assoc, assoc, ← eq,
+    rw [Adjunction.homEquiv_unit, map_inv, map_comp, assoc, assoc, map_inv,
+      ← cancel_mono F.ε, assoc, assoc, assoc, ← eq,
       IsIso.inv_hom_id_assoc, Adjunction.left_triangle_components, comp_id, id_comp]
 
 instance [F.IsEquivalence] : IsIso (monoidalUnit F h) := by
