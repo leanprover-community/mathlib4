@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morrison, Yaël Dillies
 -/
 import Mathlib.Algebra.SMulWithZero
-import Mathlib.Algebra.Ring.Defs
 
 /-!
 # `NoZeroSMulDivisors`

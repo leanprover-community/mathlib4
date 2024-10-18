@@ -3,8 +3,8 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Algebra.Group.Action.Pi
 
 /-!
 # Pi instances for NoZeroSMulDivisors
