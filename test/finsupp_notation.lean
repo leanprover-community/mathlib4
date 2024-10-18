@@ -19,11 +19,10 @@ section repr
 #eval (Finsupp.mk {1, 2} (fun | 1 | 2 => 3 | _ => 0) (fun x => by aesop))
 
 /--
-info:
-fun₀
-| ["there are five words here", "and five more words here"] => 5
-| ["there are seven words but only here"] => 7
-| ["just two"] => 2
+info: fun₀
+  | ["there are five words here", "and five more words here"] => 5
+  | ["there are seven words but only here"] => 7
+  | ["just two"] => 2
 -/
 #guard_msgs in
 #eval Finsupp.mk
