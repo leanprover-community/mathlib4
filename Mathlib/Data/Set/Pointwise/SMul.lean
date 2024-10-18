@@ -400,9 +400,22 @@ lemma inv_smul_set_distrib (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ �
 lemma inv_op_smul_set_distrib (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹ • s⁻¹ := by
   ext; simp [mem_smul_set_iff_inv_smul_mem]
 
+@[to_additive]
+lemma disjoint_smul_set_left : Disjoint (a • s) t ↔ Disjoint s (a⁻¹ • t) := by
+  simp_rw [disjoint_left]
+  exact (MulAction.surjective a).forall.trans (by simp [mem_inv_smul_set_iff])
+
+@[to_additive]
+lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s) t := by
+  simp_rw [disjoint_left]
+  exact (MulAction.surjective a).forall.trans (by simp [mem_inv_smul_set_iff])
+
 @[to_additive (attr := simp)]
-lemma smul_set_disjoint_iff : Disjoint (a • s) (a • t) ↔ Disjoint s t := by
-  simp [disjoint_iff, ← smul_set_inter]
+lemma disjoint_smul_set : Disjoint (a • s) (a • t) ↔ Disjoint s t := by
+  simp [disjoint_smul_set_left]
+
+@[to_additive (attr := deprecated (since := "2024-10-18"))]
+alias smul_set_disjoint_iff := disjoint_smul_set
 
 end Group
 
