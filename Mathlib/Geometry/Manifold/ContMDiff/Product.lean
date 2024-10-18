@@ -36,6 +36,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F' : Type*}
   [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
+  -- declare a few vector spaces
+  {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
   -- declare functions, sets, points and smoothness indices
   {f : M → M'} {s : Set M} {x : M} {n : ℕ∞}
 variable {I I'}

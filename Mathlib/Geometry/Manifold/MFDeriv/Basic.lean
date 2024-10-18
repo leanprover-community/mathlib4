@@ -826,33 +826,55 @@ theorem mdifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
   simp only [mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt]
   exact exists_congr fun _ => hasMFDerivWithinAt_congr_set h
 
+/-- If two sets coincide locally around `x`, except maybe at a point `y`, then their
+preimage under `extChartAt x` coincide locally, except maybe at `extChartAt I x x`. -/
+theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    ((extChartAt I x).symm ⁻¹' s ∩ range I : Set E) =ᶠ[𝓝[{extChartAt I x x}ᶜ] (extChartAt I x x)]
+    ((extChartAt I x).symm ⁻¹' t ∩ range I : Set E) := by
+  have : T1Space M := I.t1Space M
+  obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | (y ∈ s) = (y ∈ t)} :=
+    mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (nhdsWithin_compl_singleton_le x y h)
+  rw [← extChartAt_to_inv I x] at u_mem
+  have B : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 (extChartAt I x x) := by
+    rw [← nhdsWithin_univ, ← union_compl_self (range I), nhdsWithin_union]
+    apply Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin I x) self_mem_nhdsWithin
+  apply mem_nhdsWithin_iff_exists_mem_nhds_inter.2
+    ⟨_, Filter.inter_mem ((continuousAt_extChartAt_symm I x).preimage_mem_nhds u_mem) B, ?_⟩
+  rintro z ⟨hz, h'z⟩
+  simp only [eq_iff_iff, mem_setOf_eq]
+  change z ∈ (extChartAt I x).symm ⁻¹' s ∩ range I ↔ z ∈ (extChartAt I x).symm ⁻¹' t ∩ range I
+  by_cases hIz : z ∈ range I
+  · simp [-extChartAt, hIz] at hz ⊢
+    rw [← eq_iff_iff]
+    apply hu ⟨hz.1, ?_⟩
+    simp only [mem_compl_iff, mem_singleton_iff, ne_comm, ne_eq] at h'z ⊢
+    rw [(extChartAt I x).eq_symm_apply (by simp) hz.2]
+    exact Ne.symm h'z
+  · simp [hIz]
+
+/-- If two sets coincide locally, except maybe at a point, then derivatives within these sets
+are the same. -/
 theorem mfderivWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     mfderivWithin I I' f s x = mfderivWithin I I' f t x := by
   by_cases hx : MDifferentiableWithinAt I I' f s x
   · simp only [mfderivWithin, hx, (mdifferentiableWithinAt_congr_set' y h).1 hx, ↓reduceIte]
-    apply fderivWithin_congr_set' (extChartAt I x y)
-
+    apply fderivWithin_congr_set' (extChartAt I x x)
+    exact preimage_extChartAt_eventuallyEq_compl_singleton y h
   · simp [mfderivWithin, hx, ← mdifferentiableWithinAt_congr_set' y h]
 
-
-#exit
-
-  have : T1Space M := I.t1Space M
-  have : s =ᶠ[𝓝[{x}ᶜ] x] t := nhdsWithin_compl_singleton_le x y h
-  have : 𝓝[s \ {x}] x = 𝓝[t \ {x}] x := by
-    simpa only [Filter.set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', diff_eq,
-      inter_comm] using this
-  simp only [mfderivWithin, hasMFDerivWithinAt_congr_set' y h, this]
-
-
+/-- If two sets coincide locally, then derivatives within these sets
+are the same. -/
 theorem mfderivWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
     mfderivWithin I I' f s x = mfderivWithin I I' f t x :=
   mfderivWithin_congr_set' x <| h.filter_mono inf_le_left
 
+/-- If two sets coincide locally, except maybe at a point, then derivatives within these sets
+coincide locally. -/
 theorem mfderivWithin_eventually_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     ∀ᶠ y in 𝓝 x, mfderivWithin I I' f s y = mfderivWithin I I' f t y :=
   (eventually_nhds_nhdsWithin.2 h).mono fun _ => mfderivWithin_congr_set' y
 
+/-- If two sets coincide locally, then derivatives within these sets coincide locally. -/
 theorem mfderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
     ∀ᶠ y in 𝓝 x, mfderivWithin I I' f s y = mfderivWithin I I' f t y :=
   mfderivWithin_eventually_congr_set' x <| h.filter_mono inf_le_left
