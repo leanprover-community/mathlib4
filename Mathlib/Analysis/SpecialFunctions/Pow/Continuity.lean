@@ -136,6 +136,9 @@ theorem ContinuousOn.cpow_const {b : ℂ} (hf : ContinuousOn f s)
     (h : ∀ a : α, a ∈ s → f a ∈ slitPlane) : ContinuousOn (fun x => f x ^ b) s :=
   hf.cpow continuousOn_const h
 
+lemma continuous_const_cpow_neg (z : ℂ) [NeZero z] : Continuous fun s : ℂ ↦ z ^ (-s) :=
+  continuous_neg.const_cpow (.inl <| NeZero.ne z)
+
 end CpowLimits
 
 section RpowLimits
