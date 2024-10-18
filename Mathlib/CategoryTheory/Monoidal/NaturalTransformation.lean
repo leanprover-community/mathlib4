@@ -158,6 +158,7 @@ namespace LaxMonoidalFunctor
 
 /-- The type of monoidal natural transformations between (bundled) lax monoidal functors. -/
 structure Hom (F G : LaxMonoidalFunctor C D) where
+  /-- the natural transformation between the underlying functors -/
   hom : F.toFunctor ⟶ G.toFunctor
   isMonoidal : NatTrans.IsMonoidal hom := by infer_instance
 
@@ -194,6 +195,7 @@ def isoMk {F G : LaxMonoidalFunctor C D} (e : F.toFunctor ≅ G.toFunctor)
 
 open Functor.LaxMonoidal
 
+/-- Constructor for isomorphisms between lax monoidal functors. -/
 @[simps!]
 def isoOfComponents {F G : LaxMonoidalFunctor C D} (e : ∀ X, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (e Y).hom = (e X).hom ≫ G.map f := by

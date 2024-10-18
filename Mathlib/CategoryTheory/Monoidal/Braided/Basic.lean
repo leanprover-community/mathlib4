@@ -407,6 +407,7 @@ attribute [instance] laxBraided
 def of (F : C ⥤ D) [F.LaxBraided] : LaxBraidedFunctor C D where
   toFunctor := F
 
+/-- The lax monoidal functor induced by a lax braided functor. -/
 @[simps toFunctor]
 def toLaxMonoidalFunctor (F : LaxBraidedFunctor C D) : LaxMonoidalFunctor C D where
   toFunctor := F.toFunctor
@@ -457,6 +458,7 @@ variable {F G : LaxBraidedFunctor C D} (e : ∀ X, F.obj X ≅ G.obj X)
     (tensor : ∀ X Y, μ F.toFunctor X Y ≫ (e (X ⊗ Y)).hom =
       ((e X).hom ⊗ (e Y).hom) ≫ μ G.toFunctor X Y := by aesop_cat)
 
+/-- Constructor for isomorphisms between lax braided functors. -/
 def isoOfComponents :
     F ≅ G :=
   fullyFaithfulForget.preimageIso

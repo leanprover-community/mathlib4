@@ -240,6 +240,7 @@ def laxMonoidalToMon : LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C ⥤ Mon_ C 
 
 variable {C}
 
+/-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
 @[simps!]
 def monToLaxMonoidalObj (A : Mon_ C) :
     Discrete PUnit.{u + 1} ⥤ C := (Functor.const _).obj A.X

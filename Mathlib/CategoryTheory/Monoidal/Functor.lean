@@ -191,15 +191,13 @@ def ofTensorHom : F.LaxMonoidal where
   right_unitality' := fun X => by
     simp_rw [← id_tensorHom, right_unitality']
 
-@[simp]
 lemma ofTensorHom_ε :
     letI := (ofTensorHom ε' μ' μ'_natural associativity' left_unitality' right_unitality')
-  ε F = ε' := rfl
+    ε F = ε' := rfl
 
-@[simp]
 lemma ofTensorHom_μ :
     letI := (ofTensorHom ε' μ' μ'_natural associativity' left_unitality' right_unitality')
-  μ F = μ' := rfl
+    μ F = μ' := rfl
 
 end
 
@@ -228,14 +226,6 @@ instance comp : (F ⋙ G).LaxMonoidal where
     dsimp
     simp_rw [comp_whiskerRight, assoc, μ_natural_left_assoc, MonoidalCategory.whiskerLeft_comp,
       assoc, μ_natural_right_assoc, ← associativity_assoc, ← G.map_comp, associativity]
-  left_unitality' _ := by
-    simp only [comp_obj, left_unitality, μ_natural, implies_true, tensorHom_id, associativity,
-      id_tensorHom, right_unitality, ofTensorHom_ε, map_comp, comp_whiskerRight, comp_map, assoc,
-      μ_natural_left_assoc]
-  right_unitality' _ := by
-    simp only [comp_obj, right_unitality, μ_natural, implies_true, tensorHom_id, associativity,
-      id_tensorHom, left_unitality, ofTensorHom_ε, map_comp, MonoidalCategory.whiskerLeft_comp,
-      comp_map, assoc, μ_natural_right_assoc]
 
 @[simp]
 lemma comp_ε : ε (F ⋙ G) = ε G ≫ G.map (ε F) := rfl
@@ -382,6 +372,8 @@ end OplaxMonoidal
 
 open LaxMonoidal OplaxMonoidal
 
+/-- A functor between monoidal categories is monoidal if it is lax and oplax monoidals,
+and both data give inverse isomorphisms. -/
 class Monoidal extends F.LaxMonoidal, F.OplaxMonoidal where
   ε_η : ε F ≫ η F = 𝟙 _ := by aesop_cat
   η_ε : η F ≫ ε F = 𝟙 _ := by aesop_cat
@@ -396,11 +388,13 @@ section
 
 variable [F.Monoidal]
 
+/-- The isomorphism `𝟙_ D ≅ F.obj (𝟙_ C)` when `F` is a monoidal functor. -/
 @[simps]
 def εIso : 𝟙_ D ≅ F.obj (𝟙_ C) where
   hom := ε F
   inv := η F
 
+/-- The isomorphism `F.obj X ⊗ F.obj Y ≅ F.obj (X ⊗ Y)` when `F` is a monoidal functor. -/
 @[simps]
 def μIso (X Y : C) : F.obj X ⊗ F.obj Y ≅ F.obj (X ⊗ Y) where
   hom := μ F X Y
@@ -534,6 +528,9 @@ instance [F.Monoidal] [G.Monoidal] : (F ⋙ G).Monoidal where
 
 end Monoidal
 
+/-- Structure which is a helper in order to show that a functor is monoidal. It
+consists of isomorphisms `εIso` and `μIso` such that the morphisms `.hom` induced
+by these isomorphisms satisfy the axioms of lax monoidal functors. -/
 structure CoreMonoidal where
   /-- unit morphism -/
   εIso : 𝟙_ D ≅ F.obj (𝟙_ C)
@@ -571,6 +568,7 @@ attribute [reassoc] left_unitality right_unitality
 
 variable {F} (h : F.CoreMonoidal)
 
+/-- The lax monoidal functor structure induced by a `Functor.CoreMonoidal` structure. -/
 def toLaxMonoidal : F.LaxMonoidal where
   ε' := h.εIso.hom
   μ' X Y := (h.μIso X Y).hom
@@ -585,6 +583,7 @@ lemma toLaxMonoidal_μ (X Y : C) :
     letI := h.toLaxMonoidal
     LaxMonoidal.μ F X Y = (h.μIso X Y).hom := rfl
 
+/-- The oplax monoidal functor structure induced by a `Functor.CoreMonoidal` structure. -/
 def toOplaxMonoidal : F.OplaxMonoidal where
   η' := h.εIso.inv
   δ' X Y := (h.μIso X Y).inv
@@ -616,6 +615,7 @@ lemma toOplaxMonoidal_δ  (X Y : C) :
     OplaxMonoidal.δ F X Y = (h.μIso X Y).inv := rfl
 
 attribute [local simp] toLaxMonoidal_ε toLaxMonoidal_μ toOplaxMonoidal_η toOplaxMonoidal_δ in
+/-- The monoidal functor structure induced by a `Functor.CoreMonoidal` structure. -/
 @[simps! toLaxMonoidal toOplaxMonoidal]
 def toMonoidal : F.Monoidal where
   toLaxMonoidal := h.toLaxMonoidal
@@ -623,11 +623,15 @@ def toMonoidal : F.Monoidal where
 
 variable (F)
 
+/-- The `Functor.CoreMonoidal` structure given by a lax monoidal functor such
+that `ε` and `μ` are isomorphisms. -/
 noncomputable def ofLaxMonoidal [F.LaxMonoidal] [IsIso (ε F)] [∀ X Y, IsIso (μ F X Y)] :
     F.CoreMonoidal where
   εIso := asIso (ε F)
   μIso X Y := asIso (μ F X Y)
 
+/-- The `Functor.CoreMonoidal` structure given by an oplax monoidal functor such
+that `η` and `δ` are isomorphisms. -/
 noncomputable def ofOplaxMonoidal [F.OplaxMonoidal] [IsIso (η F)] [∀ X Y, IsIso (δ F X Y)] :
     F.CoreMonoidal where
   εIso := (asIso (η F)).symm
@@ -639,10 +643,14 @@ noncomputable def ofOplaxMonoidal [F.OplaxMonoidal] [IsIso (η F)] [∀ X Y, IsI
 
 end CoreMonoidal
 
+/-- The `Functor.Monoidal` structure given by a lax monoidal functor such
+that `ε` and `μ` are isomorphisms. -/
 noncomputable def Monoidal.ofLaxMonoidal
     [F.LaxMonoidal] [IsIso (ε F)] [∀ X Y, IsIso (μ F X Y)] :=
   (CoreMonoidal.ofLaxMonoidal F).toMonoidal
 
+/-- The `Functor.Monoidal` structure given by an oplax monoidal functor such
+that `η` and `δ` are isomorphisms. -/
 noncomputable def Monoidal.ofOplaxMonoidal
     [F.OplaxMonoidal] [IsIso (η F)] [∀ X Y, IsIso (δ F X Y)] :=
   (CoreMonoidal.ofOplaxMonoidal F).toMonoidal
@@ -968,6 +976,8 @@ noncomputable def inverseMonoidal : e.inverse.Monoidal := by
     infer_instance
   apply Monoidal.ofLaxMonoidal
 
+/-- An equivalence of categories involving monoidal functors is monoidal if the underlying
+adjunction satisfies certain compatibilities with respect to the monoidal funtor data. -/
 abbrev IsMonoidal [e.inverse.Monoidal] : Prop := e.toAdjunction.IsMonoidal
 
 end Equivalence
