@@ -581,6 +581,18 @@ instance [SMul R M] [ContinuousConstSMul R M] [SMul R₁ M] [ContinuousConstSMul
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousConstSMul R M] [IsCentralScalar R M] :
     IsCentralScalar R C(α, M) where op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
+instance [SMul R M] [ContinuousConstSMul R M] [Mul M] [ContinuousMul M] [IsScalarTower R M M] :
+    IsScalarTower R C(α, M) C(α, M) where
+  smul_assoc _ _ _ := ext fun _ => smul_mul_assoc ..
+
+instance [SMul R M] [ContinuousConstSMul R M] [Mul M] [ContinuousMul M] [SMulCommClass R M M] :
+    SMulCommClass R C(α, M) C(α, M) where
+  smul_comm _ _ _ := ext fun _ => (mul_smul_comm ..).symm
+
+instance [SMul R M] [ContinuousConstSMul R M] [Mul M] [ContinuousMul M] [SMulCommClass M R M] :
+    SMulCommClass C(α, M) R C(α, M) where
+  smul_comm _ _ _ := ext fun _ => smul_comm (_ : M) ..
+
 instance [Monoid R] [MulAction R M] [ContinuousConstSMul R M] : MulAction R C(α, M) :=
   Function.Injective.mulAction _ coe_injective coe_smul
 
