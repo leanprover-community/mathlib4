@@ -67,6 +67,15 @@ end Mon_Class
 
 open scoped Mon_Class
 
+variable {M N : C} [Mon_Class M] [Mon_Class N]
+
+/-- The property that a morphism between monoid objects is a monoid morphism. -/
+class IsMon_Hom (f : M ⟶ N) : Prop where
+  one_hom : η ≫ f = η := by aesop_cat
+  mul_hom : μ ≫ f = (f ⊗ f) ≫ μ := by aesop_cat
+
+attribute [reassoc (attr := simp)] IsMon_Hom.one_hom IsMon_Hom.mul_hom
+
 variable (C)
 
 /-- A monoid object internal to a monoidal category.
