@@ -256,7 +256,7 @@ theorem totallyBounded_convexHull (hs : TotallyBounded s) :
     TotallyBounded (convexHull ℝ s) := by
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
   intro U hU
-  obtain ⟨W, hW₁, _, _, hW₄⟩ := exists_closed_nhds_zero_neg_eq_add_subset hU
+  obtain ⟨W, hW₁, hW₂⟩ := exists_nhds_zero_half hU
   obtain ⟨V, ⟨hV₁, hV₂, hV₃⟩⟩ :=
     (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs W hW₁
   obtain ⟨t, ⟨htf, hts⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hs) _ hV₁
@@ -273,7 +273,7 @@ theorem totallyBounded_convexHull (hs : TotallyBounded s) :
         rw [ ← Convex.convexHull_eq hV₂.2]
         exact le_trans (convexHull_mono hts) (convexHull_add_subset)
       ) (Set.add_subset_add_right hts'))
-      (Set.add_subset_add_left (subset_trans (add_subset_add hV₃ hV₃) hW₄))⟩
+      (Set.add_subset_add_left (subset_trans (add_subset_add hV₃ hV₃) (add_subset_iff.mpr hW₂) ))⟩
 
 -- TVS II.25 Prop3
 theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
