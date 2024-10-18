@@ -338,19 +338,6 @@ theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
   · simp only [hf, neg_zero]
   simp only [order, support_neg, neg_eq_zero]
 
-@[simp]
-theorem sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
-  ext
-  simp [sub_eq_add_neg]
-
-theorem sub_coeff {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a - y.coeff a := by
-  simp
-
-@[simp]
-protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :
-    ((x - y).map f : HahnSeries Γ S) = x.map f - y.map f := by
-  ext; simp
-
 theorem min_orderTop_le_orderTop_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} :
     min x.orderTop y.orderTop ≤ (x - y).orderTop := by
   rw [sub_eq_add_neg, ← orderTop_neg (x := y)]

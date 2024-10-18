@@ -20,7 +20,10 @@ coefficients are in a commutative domain.
   formal power series.
   * `mvPowerSeriesFamily` : A summable family made of monomials with natural number exponents, where
   the variables are taken from finite set of positive order Hahn series.
-  *
+  * `PowerSeries.heval` : An `R`-algebra homomorphism from `PowerSeries R` to `HahnSeries Γ R` given
+  by sending the generator to a positive-order element.
+  * `MvPowerSeries.heval` : An `R`-algebra homomorphism from `MvPowerSeries σ R` to `HahnSeries Γ R`
+  for `σ` finite, given by sending each element of `σ` to a positive-order element.
 
 ## Main results
   * If `R` is a commutative domain, and `Γ` is a linearly ordered additive commutative group, then
