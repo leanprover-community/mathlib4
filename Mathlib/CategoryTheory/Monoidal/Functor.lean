@@ -124,7 +124,7 @@ lemma right_unitality (X : C) :
 
 @[reassoc (attr := simp)]
 theorem μ_natural {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
-      (F.map f ⊗ F.map g) ≫ μ F Y Y' = μ F X X' ≫ F.map (f ⊗ g) := by
+    (F.map f ⊗ F.map g) ≫ μ F Y Y' = μ F X X' ≫ F.map (f ⊗ g) := by
   simp [tensorHom_def]
 
 @[reassoc (attr := simp)]
