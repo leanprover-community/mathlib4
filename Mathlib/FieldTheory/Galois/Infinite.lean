@@ -36,6 +36,32 @@ In a field extension `K/k`
 * `finGaloisGroupFunctor` : Mapping `FiniteGaloisIntermediateField` ordered by inverse inclusion to
   its corresponding Galois Group as `FiniteGrp`.
 
+* `HomtoLimit` : Based on the canonical projection from `Gal(K/k)` to any `Gal(L/k)`
+  where `L` is a `FiniteGaloisIntermediateField`, it can be easily verified that
+  the projections are compatible with the morphisms on `FiniteGaloisIntermediateField`
+  (ordered by inverse inclusion)
+
+* `ContinuousMulEquiv` : A ContinuousMulEquiv from `Gal(K/k)` to `lim Gal(L/k)`
+  where `L` is `FiniteGaloisIntermediateField`, ordered by inverse inclusion.
+  The proof consists of three main parts:
+  1. Injectivity :
+    Notice that the coordinate at the normal closure of simple extension of `x`
+    is different for two element of `Gal(K/k)` mapping `x` differently.
+  2. Surjectivity :
+    A lemma is needed (lift): for an element `g` in `lim Gal(L/k)` and any two
+    `FiniteGaloisIntermediateField` `L₁ L₂` containing an element`x`,
+    `g` in the coordinate of `L₁` and `L₂` maps `x` to the same element of `K`.
+    Then by defining the image of `g` in `Gal(K/k)` pointwise in `K` and use the lemma repeatedly,
+    we can get an AlgHom. With the bijectivity of the AlgHom in an algebraic extension, it can be
+    made into an element of `Gal(K/k)`
+  3. Two-sided continuity : Notice that `Gal(K/k)` is `T2`,
+    `lim Gal(L/k)` ordered by inverse inclusion is Profinite thus compact, we only need
+    continuity from `lim Gal(L/k)` to `Gal(K/k)`, which only needs continuity at `1`.
+    It can be easily verified by checking the preimage of GroupFilterBasis is open.
+
+* `Profinite` ：`Gal(K/k)` is continuously isomorphic (as a topological group) to `lim Gal(L/k)`
+  where `L` is `FiniteGaloisIntermediateField`, ordered by inverse inclusion, thus `Profinite`
+
 # TODO
 
 * `FiniteGaloisIntermediateField` should be a `ConditionallyCompleteLattice` but isn't proved yet.
@@ -161,9 +187,16 @@ theorem adjoin_simple_map_algEquiv [IsGalois k K] (f : K ≃ₐ[k] K) (x : K) :
     adjoin k {f x} = adjoin k {x} :=
   adjoin_simple_map_algHom (f : K →ₐ[k] K) x
 
-/-- The (finite) Galois group `Gal(K / k)` associated to a
+end FiniteGaloisIntermediateField
+
+section Profinite
+
+variable {k K}
+
+/-- The (finite) Galois group `Gal(L / k)` associated to a
 `L : FiniteGaloisIntermediateField k K` `L`. -/
-def finGaloisGroup (L : FiniteGaloisIntermediateField k K) : FiniteGrp :=
+def FiniteGaloisIntermediateField.finGaloisGroup (L : FiniteGaloisIntermediateField k K) :
+    FiniteGrp :=
   letI := AlgEquiv.fintype k L
   FiniteGrp.of <| L ≃ₐ[k] L
 
@@ -209,41 +242,6 @@ noncomputable def finGaloisGroupFunctor : (FiniteGaloisIntermediateField k K)ᵒ
   map := finGaloisGroupMap
   map_id := finGaloisGroupMap.map_id
   map_comp := finGaloisGroupMap.map_comp
-
-end FiniteGaloisIntermediateField
-
-/-!
-
-* `union_eq_univ` : In `K/k`, the union of all the `FiniteGaloisIntermediateField` is equal to `K`,
-  Furthermore, there is also a `FiniteGaloisIntermediateField` containing any tuple `(x,y)`
-
-* `HomtoLimit` : Based on the canonical projection from `Gal(K/k)` to any `Gal(L/k)`
-  where `L` is a `FiniteGaloisIntermediateField`, it can be easily verified that
-  the projections are compatible with the morphisms on `FiniteGaloisIntermediateField`
-  (ordered by inverse inclusion)
-
-* `ContinuousMulEquiv` : A ContinuousMulEquiv from `Gal(K/k)` to `lim Gal(L/k)`
-  where `L` is `FiniteGaloisIntermediateField`, ordered by inverse inclusion.
-  The proof consists of three main parts:
-  1. Injectivity :
-    Notice that the coordinate at the normal closure of simple extension of `x`
-    is different for two element of `Gal(K/k)` mapping `x` differently.
-  2. Surjectivity :
-    A lemma is needed (lift): for an element `g` in `lim Gal(L/k)` and any two
-    `FiniteGaloisIntermediateField` `L₁ L₂` containing an element`x`,
-    `g` in the coordinate of `L₁` and `L₂` maps `x` to the same element of `K`.
-    Then by defining the image of `g` in `Gal(K/k)` pointwise in `K` and use the lemma repeatedly,
-    we can get an AlgHom. With the bijectivity of the AlgHom in an algebraic extension, it can be
-    made into an element of `Gal(K/k)`
-  3. Two-sided continuity : Notice that `Gal(K/k)` is `T2`,
-    `lim Gal(L/k)` ordered by inverse inclusion is Profinite thus compact, we only need
-    continuity from `lim Gal(L/k)` to `Gal(K/k)`, which only needs continuity at `1`.
-    It can be easily verified by checking the preimage of GroupFilterBasis is open.
-
-* `Profinite` ：`Gal(K/k)` is continuously isomorphic (as a topological group) to `lim Gal(L/k)`
-  where `L` is `FiniteGaloisIntermediateField`, ordered by inverse inclusion, thus `Profinite`
-
--/
 
 open FiniteGaloisIntermediateField
 
@@ -525,3 +523,4 @@ theorem restrictNormalHomContinuous (L : IntermediateField k K) [Normal k L] :
   · exact ⟨by apply IntermediateField.fixingSubgroup_isOpen, congrFun rfl⟩
 
 end InfiniteGalois
+end Profinite

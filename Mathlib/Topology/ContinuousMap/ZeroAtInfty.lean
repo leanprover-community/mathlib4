@@ -428,7 +428,7 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
 complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace C₀(α, β) :=
-  (completeSpace_iff_isComplete_range isometry_toBCF.uniformInducing).mpr
+  (completeSpace_iff_isComplete_range isometry_toBCF.isUniformInducing).mpr
     isClosed_range_toBCF.isComplete
 
 end Metric

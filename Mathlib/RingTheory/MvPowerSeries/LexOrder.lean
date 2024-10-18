@@ -34,8 +34,8 @@ noncomputable def lexOrder (φ : MvPowerSeries σ R) : (WithTop (Lex (σ →₀ 
       simp only [Set.image_nonempty, Function.support_nonempty_iff, ne_eq, h, not_false_eq_true]
     apply WithTop.some
     apply WellFounded.min _ (toLex '' φ.support) ne
-    exact Finsupp.instLTLex.lt
-    exact wellFounded_lt
+    · exact Finsupp.instLTLex.lt
+    · exact wellFounded_lt
 
 theorem lexOrder_def_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
     ∃ (ne : Set.Nonempty (toLex '' φ.support)),

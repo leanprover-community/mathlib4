@@ -166,10 +166,10 @@ instance finiteDimensional_of_noetherian [IsNoetherian R S] :
     (LinearMap.range_eq_top.mpr Ideal.Quotient.mk_surjective)
   exact Algebra.algebra_ext _ _ (fun r => rfl)
 
+-- We want to be able to refer to `hfin`
+set_option linter.unusedVariables false in
 lemma finite_of_finite [IsNoetherian R S] (hfin : Finite (ResidueField R)) :
-    Finite (ResidueField S) := by
-  have := @finiteDimensional_of_noetherian R S
-  exact FiniteDimensional.finite_of_finite (ResidueField R) (ResidueField S)
+    Finite (ResidueField S) := Module.finite_of_finite (ResidueField R)
 
 end FiniteDimensional
 
