@@ -125,6 +125,7 @@ lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
 
 theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
 
+@[simp]
 theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) = n := by
   simp only [bit, shiftRight_one, testBit_zero]
   cases mod_two_eq_zero_or_one n with | _ h => simpa [h] using Nat.div_add_mod n 2
@@ -206,7 +207,8 @@ lemma binaryRec_zero {motive : Nat → Sort u}
 lemma binaryRec_one {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
     binaryRec z f 1 = f true 0 z := by
   rw [binaryRec]
-  simp
+  simp only [succ_ne_self, ↓reduceDIte, reduceShiftRight, binaryRec_zero]
+  rfl
 
 /-! bitwise ops -/
 
