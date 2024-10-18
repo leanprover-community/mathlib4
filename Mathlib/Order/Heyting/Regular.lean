@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.GaloisConnection
+import Mathlib.Tactic.Linter.UnusedAssumptionInType
 
 /-!
 # Heyting regular elements
@@ -226,7 +227,7 @@ theorem isRegular_of_boolean : ∀ a : α, IsRegular a :=
   compl_compl
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
--- Porting note: removed @[nolint decidable_classical]
+@[nolint decidableClassical]
 theorem isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
   propext <| Decidable.not_not
 
