@@ -54,7 +54,7 @@ instance OrderedCommGroup.toMulLeftMono (α : Type u) [OrderedCommGroup α] :
 @[to_additive OrderedAddCommGroup.toOrderedCancelAddCommMonoid]
 instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCommGroup α] :
     OrderedCancelCommMonoid α :=
-{ ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun a b c ↦ le_of_mul_le_mul_left' }
+{ ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun _ _ _ ↦ le_of_mul_le_mul_left' }
 
 example (α : Type u) [OrderedAddCommGroup α] : AddRightStrictMono α :=
   inferInstance
@@ -109,7 +109,7 @@ class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOr
 
 section LinearOrderedCommGroup
 
-variable [LinearOrderedCommGroup α] {a b c : α}
+variable [LinearOrderedCommGroup α] {a : α}
 
 @[to_additive LinearOrderedAddCommGroup.add_lt_add_left]
 theorem LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=

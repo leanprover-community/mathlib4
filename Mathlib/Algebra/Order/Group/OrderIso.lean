@@ -24,8 +24,7 @@ variable [Group α]
 
 section TypeclassesLeftRightLE
 
-variable [LE α] [MulLeftMono α] [MulRightMono α]
-  {a b c d : α}
+variable [LE α] [MulLeftMono α] [MulRightMono α] {a b : α}
 
 section
 
@@ -71,7 +70,7 @@ variable [Group α] [LE α]
 
 section Right
 
-variable [MulRightMono α] {a b c d : α}
+variable [MulRightMono α] {a : α}
 
 /-- `Equiv.mulRight` as an `OrderIso`. See also `OrderEmbedding.mulRight`. -/
 @[to_additive (attr := simps! (config := { simpRhs := true }) toEquiv apply)

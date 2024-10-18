@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
 import Mathlib.Data.NNRat.Defs
@@ -246,7 +246,7 @@ theorem exists_mem_Ico_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ico (
       have hb : ∃ b : ℤ, ∀ m, y ^ m ≤ x → m ≤ b :=
         ⟨M, fun m hm =>
           le_of_not_lt fun hlt =>
-            not_lt_of_ge (zpow_le_of_le hy.le hlt.le)
+            not_lt_of_ge (zpow_le_zpow_right₀ hy.le hlt.le)
               (lt_of_le_of_lt hm (by rwa [← zpow_natCast] at hM))⟩
       let ⟨n, hn₁, hn₂⟩ := Int.exists_greatest_of_bdd hb he
       ⟨n, hn₁, lt_of_not_ge fun hge => not_le_of_gt (Int.lt_succ _) (hn₂ _ hge)⟩
@@ -257,8 +257,8 @@ but with ≤ and < the other way around. -/
 theorem exists_mem_Ioc_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ioc (y ^ n) (y ^ (n + 1)) :=
   let ⟨m, hle, hlt⟩ := exists_mem_Ico_zpow (inv_pos.2 hx) hy
   have hyp : 0 < y := lt_trans zero_lt_one hy
-  ⟨-(m + 1), by rwa [zpow_neg, inv_lt_comm₀ (zpow_pos_of_pos hyp _) hx], by
-    rwa [neg_add, neg_add_cancel_right, zpow_neg, le_inv_comm₀ hx (zpow_pos_of_pos hyp _)]⟩
+  ⟨-(m + 1), by rwa [zpow_neg, inv_lt_comm₀ (zpow_pos hyp _) hx], by
+    rwa [neg_add, neg_add_cancel_right, zpow_neg, le_inv_comm₀ hx (zpow_pos hyp _)]⟩
 
 /-- For any `y < 1` and any positive `x`, there exists `n : ℕ` with `y ^ n < x`. -/
 theorem exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n < x := by

@@ -102,7 +102,7 @@ variable [MulRightMono α]
 end Group
 
 section CommGroup
-variable [CommGroup α] [MulLeftMono α] {a b : α}
+variable [CommGroup α] [MulLeftMono α]
 
 -- Banasiak Proposition 2.12, Zaanen 2nd lecture
 /-- The absolute value satisfies the triangle inequality. -/
@@ -204,7 +204,7 @@ variable [Group α] [LinearOrder α] {a b : α}
 
 @[to_additive] lemma lt_of_mabs_lt : |a|ₘ < b → a < b := (le_mabs_self _).trans_lt
 
-variable [MulLeftMono α] {a b c : α}
+variable [MulLeftMono α] {a b : α}
 
 @[to_additive (attr := simp) abs_pos] lemma one_lt_mabs : 1 < |a|ₘ ↔ a ≠ 1 := by
   obtain ha | rfl | ha := lt_trichotomy a 1

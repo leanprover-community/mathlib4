@@ -29,7 +29,7 @@ assert_not_exists GaloisConnection
 
 namespace Rat
 
-variable {a b c p q : ℚ}
+variable {a b p q : ℚ}
 
 @[simp] lemma divInt_nonneg_iff_of_pos_right {a b : ℤ} (hb : 0 < b) : 0 ≤ a /. b ↔ 0 ≤ a := by
   cases' hab : a /. b with n d hd hnd

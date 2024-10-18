@@ -96,10 +96,10 @@ lemma of_le_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
       exact ⟨star p * p, AddSubmonoid.subset_closure ⟨p, rfl⟩, hp⟩
     · rintro ⟨p, hp, hpxy⟩
       revert x y hpxy
-      refine AddSubmonoid.closure_induction hp ?_ (fun x y h => add_zero x ▸ h.ge) ?_
+      refine AddSubmonoid.closure_induction ?_ (fun x y h => add_zero x ▸ h.ge) ?_ hp
       · rintro _ ⟨s, rfl⟩ x y rfl
         exact (h_le_iff _ _).mpr ⟨s, rfl⟩
-      · rintro a b ha hb x y rfl
+      · rintro _ _ _ _ ha hb x y rfl
         rw [← add_assoc]
         exact (ha _ _ rfl).trans (hb _ _ rfl)
 
@@ -160,8 +160,8 @@ theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
 @[aesop safe apply]
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   rw [StarOrderedRing.nonneg_iff] at ha
-  refine AddSubmonoid.closure_induction ha (fun x hx => ?_)
-    (by rw [mul_zero, zero_mul]) fun x y hx hy => ?_
+  refine AddSubmonoid.closure_induction (fun x hx => ?_)
+    (by rw [mul_zero, zero_mul]) (fun x y _ _ hx hy => ?_) ha
   · obtain ⟨x, rfl⟩ := hx
     convert star_mul_self_nonneg (x * c) using 1
     rw [star_mul, ← mul_assoc, mul_assoc _ _ c]
@@ -302,12 +302,12 @@ lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b) (hc : 0 < c
   case le =>
     have hab := le_of_lt hab
     rw [StarOrderedRing.nonneg_iff] at hab ⊢
-    refine AddSubmonoid.closure_induction hab ?mem ?zero ?add
+    refine AddSubmonoid.closure_induction ?mem ?zero ?add hab
     case mem =>
       intro x hx
       have hc := le_of_lt hc
       rw [StarOrderedRing.nonneg_iff] at hc
-      refine AddSubmonoid.closure_induction hc ?memc ?zeroc ?addc
+      refine AddSubmonoid.closure_induction ?memc ?zeroc ?addc hc
       case memc =>
         intro c' hc'
         obtain ⟨z, hz⟩ := hc'
@@ -316,9 +316,9 @@ lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b) (hc : 0 < c
         refine ⟨z • y, ?_⟩
         simp only [star_smul, smul_mul_smul_comm, hz, hy]
       case zeroc => simpa only [zero_smul] using zero_mem _
-      case addc => exact fun c' d ↦ by simpa only [add_smul] using add_mem
+      case addc => exact fun c' d _ _ ↦ by simpa only [add_smul] using add_mem
     case zero => simpa only [smul_zero] using zero_mem _
-    case add => exact fun x y ↦ by simpa only [smul_add] using add_mem
+    case add => exact fun x y _ _ ↦ by simpa only [smul_add] using add_mem
   case ne =>
     refine (smul_ne_zero ?_ ?_).symm
     · exact (ne_of_lt hc).symm
@@ -339,7 +339,7 @@ lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R
   obtain ⟨p, hp, rfl⟩ := hxy
   refine ⟨f p, ?_, map_add f _ _⟩
   have hf : ∀ r, f (star r) = star (f r) := map_star _
-  induction hp using AddSubmonoid.closure_induction'
+  induction hp using AddSubmonoid.closure_induction
   all_goals aesop
 
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]

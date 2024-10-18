@@ -49,7 +49,7 @@ instance (priority := 100) canonicallyOrderedAddCommMonoid.toZeroLeOneClass
   ⟨zero_le 1⟩
 
 section LinearOrderedCommMonoidWithZero
-variable [LinearOrderedCommMonoidWithZero α] {a b c d x y z : α} {n : ℕ}
+variable [LinearOrderedCommMonoidWithZero α] {a b : α} {n : ℕ}
 
 /-
 The following facts are true more generally in a (linearly) ordered commutative monoid.

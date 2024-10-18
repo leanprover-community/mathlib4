@@ -514,7 +514,7 @@ theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
       have : 0 ≤ (q : ℝ) := le_trans a.2 <| le_of_lt haq
       ⟨q, Rat.cast_nonneg.1 this, by
         simp [Real.coe_toNNReal _ this, NNReal.coe_lt_coe.symm, haq, hqb]⟩)
-    fun ⟨q, _, haq, hqb⟩ => lt_trans haq hqb
+    fun ⟨_, _, haq, hqb⟩ => lt_trans haq hqb
 
 theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl
 
@@ -550,7 +550,7 @@ theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
 instance instOrderedSMul {M : Type*} [OrderedAddCommMonoid M] [Module ℝ M] [OrderedSMul ℝ M] :
     OrderedSMul ℝ≥0 M where
   smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) : _)
-  lt_of_smul_lt_smul_of_pos {a b c} hab _ :=
+  lt_of_smul_lt_smul_of_pos {_ _ c} hab _ :=
     lt_of_smul_lt_smul_of_nonneg_left (by exact hab) (NNReal.coe_nonneg c)
 
 end NNReal
@@ -903,8 +903,8 @@ theorem _root_.Real.toNNReal_div' {x y : ℝ} (hy : 0 ≤ y) :
 theorem inv_lt_one_iff {x : ℝ≥0} (hx : x ≠ 0) : x⁻¹ < 1 ↔ 1 < x := by
   rw [← one_div, div_lt_iff₀ hx.bot_lt, one_mul]
 
-theorem zpow_pos {x : ℝ≥0} (hx : x ≠ 0) (n : ℤ) : 0 < x ^ n :=
-  zpow_pos_of_pos hx.bot_lt _
+@[deprecated zpow_pos (since := "2024-10-08")]
+protected theorem zpow_pos {x : ℝ≥0} (hx : x ≠ 0) (n : ℤ) : 0 < x ^ n := zpow_pos hx.bot_lt _
 
 theorem inv_lt_inv {x y : ℝ≥0} (hx : x ≠ 0) (h : x < y) : y⁻¹ < x⁻¹ :=
   inv_strictAnti₀ hx.bot_lt h
