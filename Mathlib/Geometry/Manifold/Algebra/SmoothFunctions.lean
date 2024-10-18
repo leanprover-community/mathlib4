@@ -159,7 +159,7 @@ end GroupStructure
 section RingStructure
 
 /-!
-### Ring stucture
+### Ring structure
 
 In this section we show that smooth functions valued in a smooth ring `R` inherit a ring structure
 under pointwise multiplication.
@@ -223,7 +223,7 @@ end RingStructure
 section ModuleStructure
 
 /-!
-### Semimodule stucture
+### Semimodule structure
 
 In this section we show that smooth functions valued in a vector space `M` over a normed
 field `𝕜` inherit a vector space structure.

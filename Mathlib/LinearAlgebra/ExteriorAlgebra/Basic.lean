@@ -132,7 +132,7 @@ theorem hom_ext {f g : ExteriorAlgebra R M →ₐ[R] A}
   CliffordAlgebra.hom_ext h
 
 /-- If `C` holds for the `algebraMap` of `r : R` into `ExteriorAlgebra R M`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `ExteriorAlgebra R M`.
+and is preserved under addition and multiplication, then it holds for all of `ExteriorAlgebra R M`.
 -/
 @[elab_as_elim]
 theorem induction {C : ExteriorAlgebra R M → Prop}
@@ -163,6 +163,13 @@ theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 
 @[simp]
 theorem algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
+
+@[instance]
+theorem isLocalHom_algebraMap : IsLocalHom (algebraMap R (ExteriorAlgebra R M)) :=
+  isLocalHom_of_leftInverse _ (algebraMap_leftInverse M)
+
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_algebraMap := isLocalHom_algebraMap
 
 theorem isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r) ↔ IsUnit r :=
   isUnit_map_of_leftInverse _ (algebraMap_leftInverse M)
@@ -244,9 +251,10 @@ theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
 
 theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
     (ι R <| f i) * (List.ofFn fun i => ι R <| f i).prod = 0 := by
-  induction' n with n hn
-  · exact i.elim0
-  · rw [List.ofFn_succ, List.prod_cons, ← mul_assoc]
+  induction n with
+  | zero => exact i.elim0
+  | succ n hn =>
+    rw [List.ofFn_succ, List.prod_cons, ← mul_assoc]
     by_cases h : i = 0
     · rw [h, ι_sq_zero, zero_mul]
     · replace hn :=
@@ -298,8 +306,8 @@ theorem ιMulti_apply {n : ℕ} (v : Fin n → M) : ιMulti R n v = (List.ofFn f
   rfl
 
 @[simp]
-theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 :=
-  rfl
+theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 := by
+  simp [ιMulti]
 
 @[simp]
 theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
@@ -371,7 +379,7 @@ theorem map_apply_ι (f : M →ₗ[R] N) (m : M) : map f (ι R m) = ι R (f m) :
 theorem map_apply_ιMulti {n : ℕ} (f : M →ₗ[R] N) (m : Fin n → M) :
     map f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
   rw [ιMulti_apply, ιMulti_apply, map_list_prod]
-  simp only [List.map_ofFn, Function.comp, map_apply_ι]
+  simp only [List.map_ofFn, Function.comp_def, map_apply_ι]
 
 @[simp]
 theorem map_comp_ιMulti {n : ℕ} (f : M →ₗ[R] N) :

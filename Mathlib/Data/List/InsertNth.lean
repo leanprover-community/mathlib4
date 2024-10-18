@@ -19,9 +19,9 @@ open Nat hiding one_pos
 
 namespace List
 
-universe u v w
+universe u
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
+variable {α : Type u}
 
 section InsertNth
 
@@ -56,7 +56,7 @@ theorem insertNth_eraseIdx_of_ge :
       n < length as → n ≤ m → insertNth m a (as.eraseIdx n) = (as.insertNth (m + 1) a).eraseIdx n
   | 0, 0, [], has, _ => (lt_irrefl _ has).elim
   | 0, 0, _ :: as, _, _ => by simp [eraseIdx, insertNth]
-  | 0, m + 1, a :: as, _, _ => rfl
+  | 0, _ + 1, _ :: _, _, _ => rfl
   | n + 1, m + 1, a :: as, has, hmn =>
     congr_arg (cons a) <|
       insertNth_eraseIdx_of_ge n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
@@ -77,19 +77,23 @@ theorem insertNth_comm (a b : α) :
     ∀ (i j : ℕ) (l : List α) (_ : i ≤ j) (_ : j ≤ length l),
       (l.insertNth i a).insertNth (j + 1) b = (l.insertNth j b).insertNth i a
   | 0, j, l => by simp [insertNth]
-  | i + 1, 0, l => fun h => (Nat.not_lt_zero _ h).elim
+  | _ + 1, 0, _ => fun h => (Nat.not_lt_zero _ h).elim
   | i + 1, j + 1, [] => by simp
   | i + 1, j + 1, c :: l => fun h₀ h₁ => by
     simp only [insertNth_succ_cons, cons.injEq, true_and]
     exact insertNth_comm a b i j l (Nat.le_of_succ_le_succ h₀) (Nat.le_of_succ_le_succ h₁)
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefixes below.
+-/
 theorem mem_insertNth {a b : α} :
     ∀ {n : ℕ} {l : List α} (_ : n ≤ l.length), a ∈ l.insertNth n b ↔ a = b ∨ a ∈ l
   | 0, as, _ => by simp
-  | n + 1, [], h => (Nat.not_succ_le_zero _ h).elim
+  | _ + 1, [], h => (Nat.not_succ_le_zero _ h).elim
   | n + 1, a' :: as, h => by
     rw [List.insertNth_succ_cons, mem_cons, mem_insertNth (Nat.le_of_succ_le_succ h),
-      ← or_assoc, @or_comm (a = a'), or_assoc, mem_cons]
+      ← _root_.or_assoc, @or_comm (a = a'), _root_.or_assoc, mem_cons]
 
 theorem insertNth_of_length_lt (l : List α) (x : α) (n : ℕ) (h : l.length < n) :
     insertNth n x l = l := by
@@ -139,12 +143,6 @@ theorem get_insertNth_of_lt (l : List α) (x : α) (n k : ℕ) (hn : k < n) (hk 
     (insertNth n x l).get ⟨k, hk'⟩ = l.get ⟨k, hk⟩ := by
   simp_all [getElem_insertNth_of_lt]
 
-set_option linter.deprecated false in
-@[deprecated get_insertNth_of_lt (since := "2023-01-05")]
-theorem nthLe_insertNth_of_lt : ∀ (l : List α) (x : α) (n k : ℕ), k < n → ∀ (hk : k < l.length)
-    (hk' : k < (insertNth n x l).length := hk.trans_le (length_le_length_insertNth _ _ _)),
-    (insertNth n x l).nthLe k hk' = l.nthLe k hk := @get_insertNth_of_lt _
-
 @[simp]
 theorem getElem_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
     (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
@@ -163,12 +161,6 @@ theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length
     (insertNth n x l).get ⟨n, hn'⟩ = x := by
   simp [hn, hn']
 
-set_option linter.deprecated false in
-@[simp, deprecated get_insertNth_self (since := "2023-01-05")]
-theorem nthLe_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
-    (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
-    (insertNth n x l).nthLe n hn' = x := get_insertNth_self _ _ _ hn
-
 theorem getElem_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (insertNth n x l).length := (by
       rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])) :
@@ -184,14 +176,6 @@ theorem get_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k <
       rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])) :
     (insertNth n x l).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
   simp [getElem_insertNth_add_succ, hk, hk']
-
-set_option linter.deprecated false in
-@[deprecated get_insertNth_add_succ (since := "2023-01-05")]
-theorem nthLe_insertNth_add_succ : ∀ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
-    (hk : n + k + 1 < (insertNth n x l).length := (by
-      rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])),
-    (insertNth n x l).nthLe (n + k + 1) hk = nthLe l (n + k) hk' :=
-  @get_insertNth_add_succ _
 
 set_option linter.unnecessarySimpa false in
 theorem insertNth_injective (n : ℕ) (x : α) : Function.Injective (insertNth n x) := by

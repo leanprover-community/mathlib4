@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Int.Cast.Defs
@@ -181,8 +181,8 @@ def mapDifferentialObject (F : C ⥤ D)
         slice_lhs 2 3 => rw [← Functor.comp_map F (shiftFunctor D (1 : S)), ← η.naturality f.f]
         slice_lhs 1 2 => rw [Functor.comp_map, ← F.map_comp, f.comm, F.map_comp]
         rw [Category.assoc] }
-  map_id := by intros; ext; simp [autoParam]
-  map_comp := by intros; ext; simp [autoParam]
+  map_id := by intros; ext; simp
+  map_comp := by intros; ext; simp
 
 end Functor
 
@@ -256,7 +256,7 @@ nonrec def shiftFunctorAdd (m n : S) :
   · dsimp
     rw [← cancel_epi ((shiftFunctorAdd C m n).inv.app X.obj)]
     simp only [Category.assoc, Iso.inv_hom_id_app_assoc]
-    erw [← NatTrans.naturality_assoc]
+    rw [← NatTrans.naturality_assoc]
     dsimp
     simp only [Functor.map_comp, Category.assoc,
       shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app 1 m n X.obj,

@@ -126,9 +126,9 @@ instance Prod.instTietzeExtension {Y : Type v} {Z : Type w} [TopologicalSpace Y]
     obtain ⟨g₂, hg₂⟩ := (ContinuousMap.snd.comp f).exists_restrict_eq hs
     exact ⟨g₁.prodMk g₂, by ext1 x; congrm(($(hg₁) x), $(hg₂) x)⟩
 
-instance Unique.instTietzeExtension {Y : Type v} [TopologicalSpace Y] [Unique Y] :
-    TietzeExtension.{u, v} Y where
-  exists_restrict_eq' _ _ f := ⟨.const _ default, by ext; subsingleton⟩
+instance Unique.instTietzeExtension {Y : Type v} [TopologicalSpace Y]
+    [Nonempty Y] [Subsingleton Y] : TietzeExtension.{u, v} Y where
+  exists_restrict_eq' _ _ f := ‹Nonempty Y›.elim fun y ↦ ⟨.const _ y, by ext; subsingleton⟩
 
 /-- Any retract of a `TietzeExtension` space is one itself. -/
 theorem TietzeExtension.of_retract {Y : Type v} {Z : Type w} [TopologicalSpace Y]
@@ -227,9 +227,10 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
     Function.iterate_succ_apply' _ _ _
   have hgf : ∀ n, dist ((g n).compContinuous e) f ≤ (2 / 3) ^ n * ‖f‖ := by
     intro n
-    induction' n with n ihn
-    · simp [g0]
-    · rw [g_succ n, add_compContinuous, ← dist_sub_right, add_sub_cancel_left, pow_succ', mul_assoc]
+    induction n with
+    | zero => simp [g0]
+    | succ n ihn =>
+      rw [g_succ n, add_compContinuous, ← dist_sub_right, add_sub_cancel_left, pow_succ', mul_assoc]
       refine (hF_dist _).trans (mul_le_mul_of_nonneg_left ?_ (by norm_num1))
       rwa [← dist_eq_norm']
   have hg_dist : ∀ n, dist (g n) (g (n + 1)) ≤ 1 / 3 * ‖f‖ * (2 / 3) ^ n := by
@@ -305,7 +306,7 @@ theorem exists_extension_forall_mem_Icc_of_closedEmbedding (f : X →ᵇ ℝ) {a
 embedding. Let `e` be a closed embedding of a nonempty topological space `X` into a normal
 topological space `Y`. Let `f` be a bounded continuous real-valued function on `X`. Then there
 exists a bounded continuous function `g : Y →ᵇ ℝ` such that `g ∘ e = f` and each value `g y` belongs
-to a closed interval `[f x₁, f x₂]` for some `x₁` and `x₂`.  -/
+to a closed interval `[f x₁, f x₂]` for some `x₁` and `x₂`. -/
 theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f : X →ᵇ ℝ)
     {e : X → Y} (he : ClosedEmbedding e) :
     ∃ g : Y →ᵇ ℝ, (∀ y, ∃ x₁ x₂, g y ∈ Icc (f x₁) (f x₂)) ∧ g ∘ e = f := by
@@ -320,7 +321,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   rcases hle.eq_or_lt with (rfl | hlt)
   · have : ∀ x, f x = a := by simpa using hmem
     use const Y a
-    simp [this, Function.funext_iff]
+    simp [this, funext_iff]
   -- Put `c = (a + b) / 2`. Then `a < c < b` and `c - a = b - c`.
   set c := (a + b) / 2
   have hac : a < c := left_lt_add_div_two.2 hlt
@@ -339,7 +340,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
     · exact ⟨g, fun y => ⟨x, hg_mem _⟩, hgf⟩
     /- Otherwise, `g ⁻¹' {a}` is disjoint with `range e ∪ g ⁻¹' (Ici c)`, hence there exists a
         function `dg : Y → ℝ` such that `dg ∘ e = 0`, `dg y = 0` whenever `c ≤ g y`, `dg y = c - a`
-        whenever `g y = a`, and `0 ≤ dg y ≤ c - a` for all `y`.  -/
+        whenever `g y = a`, and `0 ≤ dg y ≤ c - a` for all `y`. -/
     have hd : Disjoint (range e ∪ g ⁻¹' Ici c) (g ⁻¹' {a}) := by
       refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _ ?_⟩
       · rw [Set.disjoint_left]

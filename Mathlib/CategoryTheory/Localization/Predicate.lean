@@ -95,7 +95,7 @@ of the localization. -/
 @[simps]
 def strictUniversalPropertyFixedTargetId (hW : W ≤ MorphismProperty.isomorphisms C) :
     StrictUniversalPropertyFixedTarget (𝟭 C) W E where
-  inverts X Y f hf := hW f hf
+  inverts _ _ f hf := hW f hf
   lift F _ := F
   fac F hF := by
     cases F
@@ -369,7 +369,7 @@ lemma compLeft_iso (W) (F : D ⥤ E) : Localization.Lifting.iso L W (L ⋙ F) F 
 
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which
-is isomorphic to `F₁'` also lifts a functor `F₂` that is isomorphic to `F₁`.  -/
+is isomorphic to `F₁'` also lifts a functor `F₂` that is isomorphic to `F₁`. -/
 @[simps]
 def ofIsos {F₁ F₂ : C ⥤ E} {F₁' F₂' : D ⥤ E} (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') [Lifting L W F₁ F₁'] :
     Lifting L W F₂ F₂' :=

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Products
@@ -263,7 +263,7 @@ def coneEquivInverseObj (c : Limits.Cone (SheafConditionEqualizerProducts.diagra
         rintro rfl
         rcases x with (⟨i⟩ | ⟨⟩) <;> rcases y with (⟨⟩ | ⟨j, j⟩) <;> rcases f' with ⟨⟩
         · dsimp
-          erw [F.map_id]
+          rw [F.map_id]
           simp
         · dsimp
           simp only [Category.id_comp, Category.assoc]
@@ -284,7 +284,7 @@ def coneEquivInverseObj (c : Limits.Cone (SheafConditionEqualizerProducts.diagra
           simp
           rfl
         · dsimp
-          erw [F.map_id]
+          rw [F.map_id]
           simp }
 
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/

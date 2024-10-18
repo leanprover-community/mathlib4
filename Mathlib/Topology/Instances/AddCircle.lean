@@ -112,7 +112,6 @@ theorem continuousAt_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : Continu
 end Continuity
 
 /-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `Circle` and `Real.angle`. -/
-@[nolint unusedArguments]
 abbrev AddCircle [LinearOrderedAddCommGroup 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
 
@@ -462,7 +461,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
           obtain ⟨m, hm⟩ := h
           rw [← mul_div_right_comm, eq_div_iff, mul_comm, ← zsmul_eq_mul, mul_smul_comm, ←
             nsmul_eq_mul, ← natCast_zsmul, smul_smul,
-            (zsmul_strictMono_left hp.out).injective.eq_iff, mul_comm] at hm
+            zsmul_left_inj hp.out, mul_comm] at hm
           swap
           · exact Nat.cast_ne_zero.2 hn.ne'
           rw [← @Nat.cast_inj ℤ, ← sub_eq_zero]
@@ -592,9 +591,7 @@ homeomorphism of topological spaces. -/
 def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot (EndpointIdent p a) where
   toEquiv := equivIccQuot p a
   continuous_toFun := by
-    -- Porting note: was `simp_rw`
-    rw [quotientMap_quotient_mk'.continuous_iff]
-    simp_rw [continuous_iff_continuousAt,
+    simp_rw [quotientMap_quotient_mk'.continuous_iff, continuous_iff_continuousAt,
       continuousAt_iff_continuous_left_right]
     intro x; constructor
     on_goal 1 => erw [equivIccQuot_comp_mk_eq_toIocMod]

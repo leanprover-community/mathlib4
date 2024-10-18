@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.NeZero
@@ -58,7 +58,7 @@ instance (priority := 100) CanonicallyOrderedCommMonoid.existsMulOfLE (α : Type
 
 section CanonicallyOrderedCommMonoid
 
-variable [CanonicallyOrderedCommMonoid α] {a b c d : α}
+variable [CanonicallyOrderedCommMonoid α] {a b c : α}
 
 @[to_additive]
 theorem le_self_mul : a ≤ a * c :=
@@ -112,7 +112,7 @@ theorem bot_eq_one : (⊥ : α) = 1 :=
   le_antisymm bot_le (one_le ⊥)
 
 @[to_additive] instance CanonicallyOrderedCommMonoid.toUniqueUnits : Unique αˣ where
-  uniq a := Units.ext ((mul_eq_one_iff_of_one_le (α := α) (one_le _) $ one_le _).1 a.mul_inv).1
+  uniq a := Units.ext ((mul_eq_one_iff_of_one_le (α := α) (one_le _) <| one_le _).1 a.mul_inv).1
 
 @[deprecated (since := "2024-07-24")] alias mul_eq_one_iff := mul_eq_one
 @[deprecated (since := "2024-07-24")] alias add_eq_zero_iff := add_eq_zero
@@ -127,6 +127,10 @@ theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
 
 @[to_additive]
 theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
+
+@[to_additive]
+lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
+  bot_eq_one (α := α) ▸ bot_not_mem_iff
 
 @[to_additive (attr := simp) add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by

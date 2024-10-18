@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 
+import Mathlib.Init
 import Lean.Data.Json.FromToJson
 
 /-!
@@ -38,3 +39,5 @@ instance {α : Type u} [FromJson α] (p : α → Prop) [DecidablePred p] : FromJ
 
 instance {α : Type u} [ToJson α] (p : α → Prop) : ToJson (Subtype p) where
   toJson x := toJson x.val
+
+end Lean

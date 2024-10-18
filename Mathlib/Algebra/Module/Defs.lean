@@ -46,7 +46,7 @@ open Function Set
 
 universe u v
 
-variable {α R k S M M₂ M₃ ι : Type*}
+variable {R S M M₂ : Type*}
 
 /-- A module is a generalization of vector spaces to a scalar semiring.
   It consists of a scalar semiring `R` and an additive monoid of "vectors" `M`,
@@ -63,11 +63,12 @@ class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
+variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
 
 -- see Note [lower instance priority]
 /-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
-instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=
+instance (priority := 100) Module.toMulActionWithZero
+  {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MulActionWithZero R M :=
   { (inferInstance : MulAction R M) with
     smul_zero := smul_zero
     zero_smul := Module.zero_smul }
@@ -94,11 +95,6 @@ variable (R)
 
 -- Porting note: this is the letter of the mathlib3 version, but not really the spirit
 theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
-
-set_option linter.deprecated false in
-@[deprecated (since := "2022-12-31")]
-theorem two_smul' : (2 : R) • x = (2 : ℕ) • x := by
-  rw [two_smul, two_nsmul]
 
 @[simp]
 theorem invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
@@ -222,7 +218,7 @@ theorem Module.ext' {R : Type*} [Semiring R] {M : Type*} [AddCommMonoid M] (P Q 
 
 section Module
 
-variable [Ring R] [AddCommGroup M] [Module R M] (r s : R) (x y : M)
+variable [Ring R] [AddCommGroup M] [Module R M] (r : R) (x : M)
 
 @[simp]
 theorem neg_smul : -r • x = -(r • x) :=
@@ -355,15 +351,16 @@ def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 
 instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
-  smul_assoc n x y :=
-    Nat.recOn n (by simp only [Nat.zero_eq, zero_smul])
-    fun n ih => by simp only [Nat.succ_eq_add_one, add_smul, one_smul, ih]
+  smul_assoc n x y := by
+    induction n with
+    | zero => simp only [zero_smul]
+    | succ n ih => simp only [add_smul, one_smul, ih]
 
 end AddCommMonoid
 
 section AddCommGroup
 
-variable [Semiring S] [Ring R] [AddCommGroup M] [Module S M] [Module R M]
+variable [Ring R] [AddCommGroup M] [Module R M]
 
 section
 
@@ -486,7 +483,7 @@ theorem two_nsmul_eq_zero
 
 end Nat
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R]
 variable (R M)
 
 /-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
@@ -575,7 +572,7 @@ theorem NoZeroSMulDivisors.int_of_charZero
     NoZeroSMulDivisors ℤ M :=
   ⟨fun {z x} h ↦ by simpa [← smul_one_smul R z x] using h⟩
 
-/-- Only a ring of characteristic zero can can have a non-trivial module without additive or
+/-- Only a ring of characteristic zero can have a non-trivial module without additive or
 scalar torsion. -/
 theorem CharZero.of_noZeroSMulDivisors [Nontrivial M] [NoZeroSMulDivisors ℤ M] : CharZero R := by
   refine ⟨fun {n m h} ↦ ?_⟩

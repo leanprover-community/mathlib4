@@ -196,6 +196,17 @@ def isEmptyAlgEquiv [he : IsEmpty σ] : MvPolynomial σ R ≃ₐ[R] R :=
       ext i m
       exact IsEmpty.elim' he i)
 
+variable {R S₁ σ} in
+@[simp]
+lemma aeval_injective_iff_of_isEmpty [IsEmpty σ] [CommSemiring S₁] [Algebra R S₁] {f : σ → S₁} :
+    Function.Injective (aeval f : MvPolynomial σ R →ₐ[R] S₁) ↔
+      Function.Injective (algebraMap R S₁) := by
+  have : aeval f = (Algebra.ofId R S₁).comp (@isEmptyAlgEquiv R σ _ _).toAlgHom := by
+    ext i
+    exact IsEmpty.elim' ‹IsEmpty σ› i
+  rw [this, ← Injective.of_comp_iff' _ (@isEmptyAlgEquiv R σ _ _).bijective]
+  rfl
+
 /-- The ring isomorphism between multivariable polynomials in no variables
 and the ground ring. -/
 @[simps!]
@@ -243,6 +254,18 @@ def sumAlgEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃ₐ[R] MvPolynomial S₁ (Mv
       have B : algebraMap R (MvPolynomial (S₁ ⊕ S₂) R) r = C r := rfl
       simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
         Equiv.coe_fn_mk, B, sumToIter_C, A] }
+
+lemma sumAlgEquiv_comp_rename_inr :
+    (sumAlgEquiv R S₁ S₂).toAlgHom.comp (rename Sum.inr) = IsScalarTower.toAlgHom R
+        (MvPolynomial S₂ R) (MvPolynomial S₁ (MvPolynomial S₂ R)) := by
+  ext i
+  simp
+
+lemma sumAlgEquiv_comp_rename_inl :
+    (sumAlgEquiv R S₁ S₂).toAlgHom.comp (rename Sum.inl) =
+      MvPolynomial.mapAlgHom (Algebra.ofId _ _) := by
+  ext i
+  simp
 
 section
 
@@ -377,7 +400,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
       (Polynomial.aeval y).comp (φ.comp (finSuccEquiv R n).toAlgHom) f
   congr 2
   apply MvPolynomial.algHom_ext
-  rw [Fin.forall_fin_succ]
+  rw [Fin.forall_iff_succ]
   simp only [φ, aeval_X, Fin.cons_zero, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
     Polynomial.coe_aeval_eq_eval, Polynomial.map_C, AlgHom.coe_mk, RingHom.toFun_eq_coe,
     Polynomial.coe_mapRingHom, comp_apply, finSuccEquiv_apply, eval₂Hom_X',

@@ -39,7 +39,7 @@ def normalMono (hf : Mono f) : NormalMono f where
         calc
         M   ≃ₗ[R] f.ker.quotient  : (Submodule.quotEquivOfEqBot _ (ker_eq_bot_of_mono _)).symm
         ... ≃ₗ[R] f.range         : LinearMap.quotKerEquivRange f
-        ... ≃ₗ[R] r.range.mkq.ker : LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm
+        ... ≃ₗ[R] r.range.mkQ.ker : LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm
         ```
       -/
         IsKernel.isoKernel _ _ (kernelIsLimit _)
