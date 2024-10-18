@@ -40,7 +40,7 @@ objects, and structure morphisms of them satisfy appropriate consistency conditi
 class Bimon_Class (M : C) extends Mon_Class M, Comon_Class M where
   /- For the names of the conditions below, the unprimed names are reserved for the version where
   the argument `M` is explicit. -/
-  mul_comul' : μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ[M] ⊗ μ[M]) := by aesop_cat
+  mul_comul' : μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ μ[M]) := by aesop_cat
   one_comul' : η[M] ≫ Δ[M] = η[M ⊗ M] := by aesop_cat
   mul_counit' : μ[M] ≫ ε[M] = ε[M ⊗ M] := by aesop_cat
   one_counit' : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by aesop_cat
@@ -54,7 +54,7 @@ variable (M : C) [Bimon_Class M]
 
 @[reassoc (attr := simp)]
 theorem mul_comul (M : C) [Bimon_Class M] :
-    μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ[M] ⊗ μ[M]) :=
+    μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ μ[M]) :=
   mul_comul'
 
 @[reassoc (attr := simp)]
