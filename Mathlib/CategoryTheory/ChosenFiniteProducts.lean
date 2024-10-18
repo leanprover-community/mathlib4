@@ -396,10 +396,6 @@ theorem prodComparisonBifunctorNatTrans_comp {E : Type u₂} [Category.{v₂} E]
         whiskerLeft F (whiskerRight (prodComparisonBifunctorNatTrans G)
           ((whiskeringLeft _ _ _).obj F)) := by ext; simp [prodComparison_comp]
 
-@[simp]
-lemma prodComparisonBifunctorNatTrans_id :
-    prodComparisonNatTrans (𝟭 C) A = 𝟙 _ := by ext; simp
-
 instance (A : C) [∀ B, IsIso (prodComparison F A B)] : IsIso (prodComparisonNatTrans F A) := by
   letI : ∀ X, IsIso ((prodComparisonNatTrans F A).app X) := by assumption
   apply NatIso.isIso_of_isIso_app
