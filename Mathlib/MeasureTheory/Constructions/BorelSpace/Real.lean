@@ -115,7 +115,7 @@ def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
     -- TODO: norm_cast fails here?
     push_cast
     exact neg_lt_self n.cast_add_one_pos
-  finite n := measure_Ioo_lt_top
+  finite _ := measure_Ioo_lt_top
   spanning :=
     iUnion_eq_univ_iff.2 fun x =>
       ⟨⌊|x|⌋₊, neg_lt.1 ((neg_le_abs x).trans_lt (Nat.lt_floor_add_one _)),
@@ -130,7 +130,7 @@ theorem measure_ext_Ioo_rat {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ]
 
 end Real
 
-variable [MeasurableSpace α]
+variable {mα : MeasurableSpace α}
 
 @[measurability, fun_prop]
 theorem measurable_real_toNNReal : Measurable Real.toNNReal :=
@@ -217,7 +217,7 @@ def ennrealEquivSum : ℝ≥0∞ ≃ᵐ ℝ≥0 ⊕ Unit :=
 
 open Function (uncurry)
 
-theorem measurable_of_measurable_nnreal_prod [MeasurableSpace β] [MeasurableSpace γ]
+theorem measurable_of_measurable_nnreal_prod {_ : MeasurableSpace β} {_ : MeasurableSpace γ}
     {f : ℝ≥0∞ × β → γ} (H₁ : Measurable fun p : ℝ≥0 × β => f (p.1, p.2))
     (H₂ : Measurable fun x => f (∞, x)) : Measurable f :=
   let e : ℝ≥0∞ × β ≃ᵐ (ℝ≥0 × β) ⊕ (Unit × β) :=
@@ -225,7 +225,7 @@ theorem measurable_of_measurable_nnreal_prod [MeasurableSpace β] [MeasurableSpa
       (MeasurableEquiv.sumProdDistrib _ _ _)
   e.symm.measurable_comp_iff.1 <| measurable_sum H₁ (H₂.comp measurable_id.snd)
 
-theorem measurable_of_measurable_nnreal_nnreal [MeasurableSpace β] {f : ℝ≥0∞ × ℝ≥0∞ → β}
+theorem measurable_of_measurable_nnreal_nnreal {_ : MeasurableSpace β} {f : ℝ≥0∞ × ℝ≥0∞ → β}
     (h₁ : Measurable fun p : ℝ≥0 × ℝ≥0 => f (p.1, p.2)) (h₂ : Measurable fun r : ℝ≥0 => f (∞, r))
     (h₃ : Measurable fun r : ℝ≥0 => f (r, ∞)) : Measurable f :=
   measurable_of_measurable_nnreal_prod
@@ -382,8 +382,8 @@ theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0
   exact fun s => Finset.aemeasurable_sum s fun i _ => h i
 
 @[measurability, fun_prop]
-theorem AEMeasurable.nnreal_tsum {α : Type*} [MeasurableSpace α] {ι : Type*} [Countable ι]
-    {f : ι → α → NNReal} {μ : MeasureTheory.Measure α} (h : ∀ i : ι, AEMeasurable (f i) μ) :
+theorem AEMeasurable.nnreal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Type*} [Countable ι]
+    {f : ι → α → NNReal} {μ : Measure α} (h : ∀ i : ι, AEMeasurable (f i) μ) :
     AEMeasurable (fun x : α => ∑' i : ι, f i x) μ := by
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
   exact (AEMeasurable.ennreal_tsum fun i => (h i).coe_nnreal_ennreal).ennreal_toNNReal
@@ -470,9 +470,8 @@ end NNReal
 spanning measurable sets with finite measure on which `f` is bounded.
 See also `StronglyMeasurable.exists_spanning_measurableSet_norm_le` for functions into normed
 groups. -/
--- We redeclare `α` to temporarily avoid the `[MeasurableSpace α]` instance.
-theorem exists_spanning_measurableSet_le {α : Type*} {m : MeasurableSpace α} {f : α → ℝ≥0}
-    (hf : Measurable f) (μ : Measure α) [SigmaFinite μ] :
+theorem exists_spanning_measurableSet_le {f : α → ℝ≥0} (hf : Measurable f) (μ : Measure α)
+    [SigmaFinite μ] :
     ∃ s : ℕ → Set α,
       (∀ n, MeasurableSet (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, f x ≤ n) ∧
       ⋃ i, s i = Set.univ := by
@@ -485,7 +484,7 @@ theorem exists_spanning_measurableSet_le {α : Type*} {m : MeasurableSpace α} {
   let sets n := sigma_finite_sets n ∩ norm_sets n
   have h_meas : ∀ n, MeasurableSet (sets n) := by
     refine fun n => MeasurableSet.inter ?_ ?_
-    · exact measurable_spanningSets μ n
+    · exact measurableSet_spanningSets μ n
     · exact hf measurableSet_Iic
   have h_finite : ∀ n, μ (sets n) < ∞ := by
     refine fun n => (measure_mono Set.inter_subset_left).trans_lt ?_

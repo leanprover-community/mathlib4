@@ -65,7 +65,7 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
     cases g
     simp only [ElementaryEmbedding.mk.injEq]
     ext x
-    exact Function.funext_iff.1 h x
+    exact funext_iff.1 h x
 
 instance : CoeFun (M ↪ₑ[L] N) fun _ => M → N :=
   DFunLike.hasCoeToFun

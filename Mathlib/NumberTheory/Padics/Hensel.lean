@@ -131,7 +131,7 @@ private theorem T_lt_one : T < 1 := by
   have h := (div_lt_one (deriv_sq_norm_pos hnorm)).2 hnorm
   rw [T_def]; exact h
 
-private theorem T_pow {n : ℕ} (hn : n ≠ 0) : T ^ n < 1 := pow_lt_one T_nonneg (T_lt_one hnorm) hn
+private theorem T_pow {n : ℕ} (hn : n ≠ 0) : T ^ n < 1 := pow_lt_one₀ T_nonneg (T_lt_one hnorm) hn
 
 private theorem T_pow' (n : ℕ) : T ^ 2 ^ n < 1 := T_pow hnorm (pow_ne_zero _ two_ne_zero)
 
@@ -156,7 +156,7 @@ private theorem calc_norm_le_one {n : ℕ} {z : ℤ_[p]} (hz : ih n z) :
       gcongr
       apply hz.2
     _ = ‖F.derivative.eval a‖ * T ^ 2 ^ n := div_sq_cancel _ _
-    _ ≤ 1 := mul_le_one (PadicInt.norm_le_one _) (T_pow_nonneg _) (le_of_lt (T_pow' hnorm _))
+    _ ≤ 1 := mul_le_one₀ (PadicInt.norm_le_one _) (T_pow_nonneg _) (le_of_lt (T_pow' hnorm _))
 
 
 private theorem calc_deriv_dist {z z' z1 : ℤ_[p]} (hz' : z' = z - z1)
@@ -183,7 +183,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
   obtain ⟨q, hq⟩ := F.binomExpansion z (-z1)
   have : ‖(↑(F.derivative.eval z) * (↑(F.eval z) / ↑(F.derivative.eval z)) : ℚ_[p])‖ ≤ 1 := by
     rw [padicNormE.mul]
-    exact mul_le_one (PadicInt.norm_le_one _) (norm_nonneg _) h1
+    exact mul_le_one₀ (PadicInt.norm_le_one _) (norm_nonneg _) h1
   have : F.derivative.eval z * -z1 = -F.eval z := by
     calc
       F.derivative.eval z * -z1 =
@@ -227,7 +227,7 @@ private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n
       rw [sub_eq_add_neg, ← hz.1, ← norm_neg (F.derivative.eval z)] at hdist
       have := PadicInt.norm_eq_of_norm_add_lt_right hdist
       rwa [norm_neg, hz.1] at this
-    let ⟨q, heq⟩ := calc_eval_z' hnorm rfl hz h1 rfl
+    let ⟨_, heq⟩ := calc_eval_z' hnorm rfl hz h1 rfl
     have hnle : ‖F.eval z'‖ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ (n + 1) :=
       calc_eval_z'_norm hz heq h1 rfl
     ⟨hfeq, hnle⟩⟩
@@ -275,7 +275,7 @@ private theorem newton_seq_dist_aux (n : ℕ) :
   | 0 => by simp [T_pow_nonneg, mul_nonneg]
   | k + 1 =>
     have : 2 ^ n ≤ 2 ^ (n + k) := by
-      apply pow_le_pow_right
+      apply pow_right_mono₀
       · norm_num
       · apply Nat.le_add_right
     calc
@@ -356,7 +356,7 @@ private theorem T_pos : T > 0 := by
 private theorem newton_seq_succ_dist_weak (n : ℕ) :
     ‖newton_seq (n + 2) - newton_seq (n + 1)‖ < ‖F.eval a‖ / ‖F.derivative.eval a‖ :=
   have : 2 ≤ 2 ^ (n + 1) := by
-    have := pow_le_pow_right (by norm_num : 1 ≤ 2) (Nat.le_add_left _ _ : 1 ≤ n + 1)
+    have := pow_right_mono₀ (by norm_num : 1 ≤ 2) (Nat.le_add_left _ _ : 1 ≤ n + 1)
     simpa using this
   calc
     ‖newton_seq (n + 2) - newton_seq (n + 1)‖ ≤ ‖F.derivative.eval a‖ * T ^ 2 ^ (n + 1) :=
@@ -401,7 +401,7 @@ private theorem soln_dist_to_a : ‖soln - a‖ = ‖F.eval a‖ / ‖F.derivati
   tendsto_nhds_unique (newton_seq_dist_tendsto' hnorm) (newton_seq_dist_tendsto hnorm hnsol)
 
 private theorem soln_dist_to_a_lt_deriv : ‖soln - a‖ < ‖F.derivative.eval a‖ := by
-  rw [soln_dist_to_a, div_lt_iff (deriv_norm_pos _), ← sq] <;> assumption
+  rw [soln_dist_to_a, div_lt_iff₀ (deriv_norm_pos _), ← sq] <;> assumption
 
 private theorem soln_unique (z : ℤ_[p]) (hev : F.eval z = 0)
     (hnlt : ‖z - a‖ < ‖F.derivative.eval a‖) : z = soln :=

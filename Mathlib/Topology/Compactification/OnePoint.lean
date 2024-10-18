@@ -187,7 +187,7 @@ instance : TopologicalSpace (OnePoint X) where
     rw [preimage_sUnion]
     exact isOpen_biUnion fun s hs => (ho s hs).2
 
-variable {s : Set (OnePoint X)} {t : Set X}
+variable {s : Set (OnePoint X)}
 
 theorem isOpen_def :
     IsOpen s ↔ (∞ ∈ s → IsCompact ((↑) ⁻¹' s : Set X)ᶜ) ∧ IsOpen ((↑) ⁻¹' s : Set X) :=
@@ -393,7 +393,7 @@ noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [T
         ⟨fun x ↦ f x, ⟨f ∞, continuous_iff_from_discrete f |>.mp <| map_continuous f⟩⟩
       exact Classical.choose_spec f'.property
     · simp
-  right_inv f := rfl
+  right_inv _ := rfl
 
 lemma continuous_iff_from_nat {Y : Type*} [TopologicalSpace Y] (f : OnePoint ℕ → Y) :
     Continuous f ↔ Tendsto (fun x : ℕ ↦ f x) atTop (𝓝 (f ∞)) := by
@@ -426,8 +426,11 @@ theorem denseRange_coe [NoncompactSpace X] : DenseRange ((↑) : X → OnePoint 
   rw [DenseRange, ← compl_infty]
   exact dense_compl_singleton _
 
-theorem denseEmbedding_coe [NoncompactSpace X] : DenseEmbedding ((↑) : X → OnePoint X) :=
+theorem isDenseEmbedding_coe [NoncompactSpace X] : IsDenseEmbedding ((↑) : X → OnePoint X) :=
   { openEmbedding_coe with dense := denseRange_coe }
+
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding_coe := isDenseEmbedding_coe
 
 @[simp, norm_cast]
 theorem specializes_coe {x y : X} : (x : OnePoint X) ⤳ y ↔ x ⤳ y :=
@@ -507,7 +510,7 @@ example [WeaklyLocallyCompactSpace X] [T2Space X] : T4Space (OnePoint X) := infe
 
 /-- If `X` is not a compact space, then `OnePoint X` is a connected space. -/
 instance [PreconnectedSpace X] [NoncompactSpace X] : ConnectedSpace (OnePoint X) where
-  toPreconnectedSpace := denseEmbedding_coe.toIsDenseInducing.preconnectedSpace
+  toPreconnectedSpace := isDenseEmbedding_coe.toIsDenseInducing.preconnectedSpace
   toNonempty := inferInstance
 
 /-- If `X` is an infinite type with discrete topology (e.g., `ℕ`), then the identity map from
