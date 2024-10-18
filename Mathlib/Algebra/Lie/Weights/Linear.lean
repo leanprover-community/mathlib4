@@ -48,7 +48,7 @@ namespace LieModule
 
 /-- A typeclass encoding the fact that a given Lie module has linear weights, vanishing on the
 derived ideal. -/
-class LinearWeights [LieAlgebra.IsNilpotent R L] : Prop :=
+class LinearWeights [LieAlgebra.IsNilpotent R L] : Prop where
   map_add : ∀ χ : L → R, genWeightSpace M χ ≠ ⊥ → ∀ x y, χ (x + y) = χ x + χ y
   map_smul : ∀ χ : L → R, genWeightSpace M χ ≠ ⊥ → ∀ (t : R) x, χ (t • x) = t • χ x
   map_lie : ∀ χ : L → R, genWeightSpace M χ ≠ ⊥ → ∀ x y : L, χ ⁅x, y⁆ = 0
