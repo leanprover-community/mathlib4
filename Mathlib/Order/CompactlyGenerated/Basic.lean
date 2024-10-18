@@ -633,6 +633,12 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
     · exact s_atoms x hx
     · exact ha
 
+proof_wanted exists_setIndependent_isCompl_sSup_sub_atoms {α : Type*} [CompleteLattice α]
+[IsModularLattice α] [IsCompactlyGenerated α]
+(t : Set α) (ht : ∀ a ∈ t, IsAtom a) (hhh : sSup t = ⊤) (b : α) :
+  ∃ (s : Set α), CompleteLattice.SetIndependent s ∧
+  IsCompl b (sSup s) ∧ ∀ ⦃a : α⦄, a ∈ s → a ∈ t 
+
 theorem exists_setIndependent_of_sSup_atoms_eq_top (h : sSup { a : α | IsAtom a } = ⊤) :
     ∃ s : Set α, CompleteLattice.SetIndependent s ∧ sSup s = ⊤ ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a :=
   let ⟨s, s_ind, s_top, s_atoms⟩ := exists_setIndependent_isCompl_sSup_atoms h ⊥
