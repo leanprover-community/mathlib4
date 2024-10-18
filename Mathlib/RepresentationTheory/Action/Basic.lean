@@ -215,6 +215,12 @@ def functorCategoryEquivalence : Action V G ≌ SingleObj G ⥤ V where
   unitIso := unitIso
   counitIso := counitIso
 
+instance : (FunctorCategoryEquivalence.functor (V := V) (G := G)).IsEquivalence :=
+  (functorCategoryEquivalence V G).isEquivalence_functor
+
+instance : (FunctorCategoryEquivalence.inverse (V := V) (G := G)).IsEquivalence :=
+  (functorCategoryEquivalence V G).isEquivalence_inverse
+
 /-
 porting note: these two lemmas are redundant with the projections created by the @[simps]
 attribute above

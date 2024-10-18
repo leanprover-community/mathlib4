@@ -202,7 +202,7 @@ theorem bijection_symm_apply_id (A B : C) :
   -- Porting note: added
   dsimp only [Functor.comp_obj]
   rw [prod.comp_lift_assoc, prod.lift_snd, prod.lift_fst_assoc, prod.lift_fst_comp_snd_comp,
-    ← Adjunction.eq_unit_comp_map_iff, Iso.comp_inv_eq, assoc]
+    Adjunction.homEquiv_counit, ← Adjunction.eq_unit_comp_map_iff, Iso.comp_inv_eq, assoc]
   rw [PreservesLimitPair.iso_hom i ((reflector i).obj A) ((reflector i).obj B)]
   apply Limits.prod.hom_ext
   · rw [Limits.prod.map_fst, assoc, assoc, prodComparison_fst, ← i.map_comp, prodComparison_fst]
@@ -217,7 +217,8 @@ theorem bijection_natural (A B : C) (X X' : D) (f : (reflector i).obj (A ⨯ B) 
   erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq,
     homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
   apply i.map_injective
-  rw [Functor.FullyFaithful.map_preimage, i.map_comp]
+  rw [Functor.FullyFaithful.map_preimage, i.map_comp,
+    Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
   simp only [comp_id, Functor.map_comp, Functor.FullyFaithful.map_preimage, assoc]
   rw [← assoc, ← assoc, curry_natural_right _ (i.map g),
     unitCompPartialBijective_natural, uncurry_natural_right, ← assoc, curry_natural_right,

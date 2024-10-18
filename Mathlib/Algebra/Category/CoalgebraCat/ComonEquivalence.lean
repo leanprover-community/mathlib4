@@ -118,7 +118,7 @@ theorem tensorObj_comul (K L : CoalgebraCat R) :
   rw [ofComonObjCoalgebraStruct_comul]
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
   simp only [Comon_.monoidal_tensorObj_comul, toComonObj_X, ModuleCat.of_coe, toComonObj_comul,
-    tensor_μ_eq_tensorTensorTensorComm]
+    tensorμ_eq_tensorTensorTensorComm]
   rfl
 
 theorem tensorHom_toLinearMap (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
@@ -147,7 +147,7 @@ theorem comul_tensorObj :
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
     instCoalgebraStruct_comul]
   simp only [Comon_.monoidal_tensorObj_comul, toComonObj_X, of_carrier, of_isAddCommGroup,
-    of_isModule, toComonObj_comul, of_instCoalgebra, tensor_μ_eq_tensorTensorTensorComm]
+    of_isModule, toComonObj_comul, of_instCoalgebra, tensorμ_eq_tensorTensorTensorComm]
   rfl
 
 theorem comul_tensorObj_tensorObj_right :
@@ -163,7 +163,7 @@ theorem comul_tensorObj_tensorObj_right :
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
   simp only [instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
     ModuleCat.coe_of, Comon_.monoidal_tensorObj_comul, toComonObj_X, of_carrier, of_isAddCommGroup,
-    of_isModule, toComonObj_comul, of_instCoalgebra, tensor_μ_eq_tensorTensorTensorComm]
+    of_isModule, toComonObj_comul, of_instCoalgebra, tensorμ_eq_tensorTensorTensorComm]
   rfl
 
 theorem comul_tensorObj_tensorObj_left :
@@ -179,7 +179,7 @@ theorem comul_tensorObj_tensorObj_left :
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
   simp only [instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
     ModuleCat.coe_of, Comon_.monoidal_tensorObj_comul, toComonObj_X, of_carrier, of_isAddCommGroup,
-    of_isModule, toComonObj_comul, of_instCoalgebra, tensor_μ_eq_tensorTensorTensorComm]
+    of_isModule, toComonObj_comul, of_instCoalgebra, tensorμ_eq_tensorTensorTensorComm]
   rfl
 
 theorem counit_tensorObj :
