@@ -3,10 +3,10 @@ import Mathlib.Data.DFinsupp.Notation
 
 /--
 info: fun₀
-| !["hello", "complicated", "world"] => 20
-| !["hello", "complicated", "test file"] => 30
-| !["goodbye", "complicated", "world"] => -20
-| !["goodbye", "complicated", "test file"] => -30
+  | !["hello", "complicated", "world"] => 20
+  | !["hello", "complicated", "test file"] => 30
+  | !["goodbye", "complicated", "world"] => -20
+  | !["goodbye", "complicated", "test file"] => -30
 -/
 #guard_msgs in
 #eval DFinsupp.piMultilinear
