@@ -130,7 +130,7 @@ theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
   have hcq : ∀ {x : ℝ}, 0 ≤ max x 1 ^ q := fun {x} => pow_nonneg hc q
   have hcq' := pow_nonneg hc' q
   have le_max_one_pow : ∀ {x : ℝ}, x ≤ max x 1 ^ q := fun {x} =>
-    (max_cases x 1).elim (fun h => h.1.symm ▸ le_self_pow h.2 (zero_lt_one.trans_le hq).ne')
+    (max_cases x 1).elim (fun h => h.1.symm ▸ le_self_pow₀ h.2 (zero_lt_one.trans_le hq).ne')
       fun h => by rw [h.1, one_pow]; exact h.2.le
   refine mul_le_mul le_max_one_pow ?_ (mul_nonneg (mul_nonneg h₂ hcq') h₃) hcq
   refine mul_le_mul ?_ le_max_one_pow h₃ (mul_nonneg hcq hcq')
@@ -167,11 +167,11 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     simp_rw [norm_mul, Real.norm_eq_abs, Complex.abs_abs, mul_pow, abs_of_pos hx.1]
     refine mul_le_mul_of_nonneg_right ?_ (pow_nonneg (Complex.abs.nonneg _) _)
     rw [max_def]; split_ifs with hx1
-    · rw [_root_.abs_one, one_pow, ← mul_pow]
+    · rw [abs_one, one_pow, ← mul_pow]
       exact pow_le_one₀ (mul_nonneg hx.1.le (Complex.abs.nonneg _)) hx1
     · push_neg at hx1
-      rw [_root_.abs_mul, Complex.abs_abs, ← mul_pow, abs_of_pos hx.1]
-      exact pow_le_pow_right hx1.le (Nat.sub_le _ _)
+      rw [abs_mul, Complex.abs_abs, ← mul_pow, abs_of_pos hx.1]
+      exact pow_le_pow_right₀ hx1.le (Nat.sub_le _ _)
   choose c' c'0 Pp'_le using fun r ↦ P_le p' r (this r)
   let c :=
     if h : ((p.aroots ℂ).map c').toFinset.Nonempty then ((p.aroots ℂ).map c').toFinset.max' h else 0

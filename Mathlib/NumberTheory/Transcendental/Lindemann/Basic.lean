@@ -21,7 +21,7 @@ open Complex Finset Polynomial
 
 variable {ι : Type*} [Fintype ι]
 
-theorem linearIndependent_exp' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
+private theorem linearIndependent_exp' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i))
     (h : ∑ i, v i * exp (u i) = 0) : ∀ i, v i = 0 := by
   rw [funext_iff.symm, ← Pi.zero_def]

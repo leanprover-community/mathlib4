@@ -679,7 +679,7 @@ theorem linearIndependent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral �
     rw [dif_pos, u'_inj.right_inv_of_invOfMemRange]; · rfl
     exact mem_image_of_mem _ (mem_univ _)
   have f0 : f ≠ 0 := by
-    rw [Ne, Function.funext_iff] at v0; push_neg at v0
+    rw [Ne, funext_iff] at v0; push_neg at v0
     cases' v0 with i hi
     rw [Pi.zero_apply] at hi
     have h : f (u' i) ≠ 0 := by
