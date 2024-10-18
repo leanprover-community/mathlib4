@@ -106,7 +106,6 @@ variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i
   [AddCommMonoid M₃] [AddCommMonoid M'] [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)] [Module R M₂]
   [Module R M₃] [Module R M'] (f f' : MultilinearMap R M₁ M₂)
 
--- Porting note: Replaced CoeFun with FunLike instance
 instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; cases h; rfl

@@ -58,7 +58,7 @@ open Function OrderDual
 
 universe u v
 
-variable {α : Type u} {β : Type*} {w x y z : α}
+variable {α : Type u} {β : Type*} {x y z : α}
 
 /-!
 ### Generalized Boolean algebras
@@ -358,6 +358,11 @@ theorem sdiff_eq_comm (hy : y ≤ x) (hz : z ≤ x) : x \ y = z ↔ x \ z = y :=
 
 theorem eq_of_sdiff_eq_sdiff (hxz : x ≤ z) (hyz : y ≤ z) (h : z \ x = z \ y) : x = y := by
   rw [← sdiff_sdiff_eq_self hxz, h, sdiff_sdiff_eq_self hyz]
+
+theorem sdiff_le_sdiff_iff_le (hx : x ≤ z) (hy : y ≤ z) : z \ x ≤ z \ y ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, sdiff_le_sdiff_left⟩
+  rw [← sdiff_sdiff_eq_self hx, ← sdiff_sdiff_eq_self hy]
+  exact sdiff_le_sdiff_left h
 
 theorem sdiff_sdiff_left' : (x \ y) \ z = x \ y ⊓ x \ z := by rw [sdiff_sdiff_left, sdiff_sup]
 
@@ -779,7 +784,7 @@ instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit where
 
 namespace DistribLattice
 
-variable (α : Type*) [DistribLattice α]
+variable (α) [DistribLattice α]
 
 /--
 An alternative constructor for boolean algebras:

@@ -193,9 +193,13 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 
-instance isLocalRingHom_equiv [Monoid M] [Monoid N] [EquivLike F M N]
-    [MulEquivClass F M N] (f : F) : IsLocalRingHom f where
+@[instance]
+theorem isLocalHom_equiv [Monoid M] [Monoid N] [EquivLike F M N]
+    [MulEquivClass F M N] (f : F) : IsLocalHom f where
   map_nonunit a ha := by
     convert ha.map (f : M ≃* N).symm
     rw [MulEquiv.eq_symm_apply]
     rfl -- note to reviewers: ugly `rfl`
+
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_equiv := isLocalHom_equiv

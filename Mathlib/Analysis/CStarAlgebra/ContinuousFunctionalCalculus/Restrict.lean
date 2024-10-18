@@ -98,6 +98,12 @@ protected theorem cfc (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
     (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) :
     ContinuousFunctionalCalculus R p where
   predicate_zero := h0
+  spectrum_nonempty a ha := ((h a).mp ha).2.image ▸
+    (ContinuousFunctionalCalculus.spectrum_nonempty a ((h a).mp ha).1 |>.image f)
+  compactSpace_spectrum a := by
+    have := ContinuousFunctionalCalculus.compactSpace_spectrum (R := S) a
+    rw [← isCompact_iff_compactSpace] at this ⊢
+    simpa using halg.toClosedEmbedding.isCompact_preimage this
   exists_cfc_of_predicate a ha := by
     refine ⟨((h a).mp ha).2.starAlgHom (cfcHom ((h a).mp ha).1 (R := S)),
       ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
@@ -235,6 +241,10 @@ protected theorem cfc (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
     (h : ∀ a, p a ↔ q a ∧ QuasispectrumRestricts a f) :
     NonUnitalContinuousFunctionalCalculus R p where
   predicate_zero := h0
+  compactSpace_quasispectrum a := by
+    have := NonUnitalContinuousFunctionalCalculus.compactSpace_quasispectrum (R := S) a
+    rw [← isCompact_iff_compactSpace] at this ⊢
+    simpa using halg.toClosedEmbedding.isCompact_preimage this
   exists_cfc_of_predicate a ha := by
     refine ⟨((h a).mp ha).2.nonUnitalStarAlgHom (cfcₙHom ((h a).mp ha).1 (R := S)),
       ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩

@@ -102,7 +102,7 @@ quadrant. -/
 def sphere (n d k : ℕ) : Finset (Fin n → ℕ) :=
   (box n d).filter fun x => ∑ i, x i ^ 2 = k
 
-theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x => by simp [sphere, Function.funext_iff]
+theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x => by simp [sphere, funext_iff]
 
 @[simp]
 theorem sphere_zero_right (n k : ℕ) : sphere (n + 1) 0 k = ∅ := by simp [sphere]
