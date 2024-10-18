@@ -39,6 +39,7 @@ Bilinear form,
 -/
 
 open LinearMap (BilinForm)
+open LinearMap (BilinMap)
 
 universe u v w
 
@@ -261,15 +262,8 @@ variable [AddCommMonoid M'] [AddCommMonoid M''] [Module R M'] [Module R M'']
 section congr
 
 /-- Apply a linear equivalence on the arguments of a bilinear form. -/
-def congr (e : M ≃ₗ[R] M') : BilinForm R M ≃ₗ[R] BilinForm R M' where
-  toFun B := B.comp e.symm e.symm
-  invFun B := B.comp e e
-  left_inv B := ext₂ fun x => by
-    simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, forall_const]
-  right_inv B := ext₂ fun x => by
-    simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply, forall_const]
-  map_add' _ _ := ext₂ fun _ _ => rfl
-  map_smul' _ _ := ext₂ fun _ _ => rfl
+def congr (e : M ≃ₗ[R] M') : BilinForm R M ≃ₗ[R] BilinForm R M' :=
+  LinearEquiv.congrRight (LinearEquiv.congrLeft _ _ e) ≪≫ₗ LinearEquiv.congrLeft _ _ e
 
 @[simp]
 theorem congr_apply (e : M ≃ₗ[R] M') (B : BilinForm R M) (x y : M') :
@@ -305,7 +299,46 @@ theorem comp_congr (e : M' ≃ₗ[R] M'') (B : BilinForm R M) (l r : M' →ₗ[R
       B.comp (l.comp (e.symm : M'' →ₗ[R] M')) (r.comp (e.symm : M'' →ₗ[R] M')) :=
   rfl
 
+variable {N₁ N₂ : Type*}
+variable [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
+
+/-- When `N₁` and `N₂` are equivalent, bilinear maps on `M` into `N₁` are equivalent to bilinear
+maps into `N₂`. -/
+@[simps!]
+def _root_.LinearMap.BilinMap.congr₂ (e : N₁ ≃ₗ[R] N₂) : BilinMap R M N₁ ≃ₗ[R] BilinMap R M N₂ :=
+  LinearEquiv.congrRight (LinearEquiv.congrRight e)
+
 end congr
+
+section congr₂
+
+variable {N₁ N₂ N₃ : Type*}
+variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+variable [Module R N₁] [Module R N₂] [Module R N₃]
+
+/-- When `N₁` and `N₂` are equivalent, bilinear maps on `M` into `N₁` are equivalent to bilinear
+maps into `N₂`. -/
+def congr₂ (e : N₁ ≃ₗ[R] N₂) : BilinMap R M N₁ ≃ₗ[R] BilinMap R M N₂ :=
+  LinearEquiv.congrRight (LinearEquiv.congrRight e)
+
+@[simp]
+theorem congr₂_apply (e : N₁ ≃ₗ[R] N₂) (B : BilinMap R M N₁) :
+    congr₂ e B = compr₂ B e := rfl
+
+@[simp]
+theorem congr₂_refl :
+    congr₂ (.refl R N₁) = .refl R (BilinMap R M N₁) := rfl
+
+@[simp]
+theorem congr₂_symm (e : N₁ ≃ₗ[R] N₂) :
+    (congr₂ e (M := M)).symm = congr₂ e.symm :=
+  rfl
+
+theorem congr₂_trans (e₁₂ : N₁ ≃ₗ[R] N₂) (e₂₃ : N₂ ≃ₗ[R] N₃) :
+    congr₂ (M := M) (e₁₂ ≪≫ₗ e₂₃) = congr₂ e₁₂ ≪≫ₗ congr₂ e₂₃ :=
+  rfl
+
+end congr₂
 
 section LinMulLin
 
