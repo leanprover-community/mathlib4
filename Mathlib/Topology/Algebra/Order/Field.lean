@@ -8,6 +8,7 @@ import Mathlib.Order.Filter.AtTopBot.Field
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.Order.Group
 
+
 /-!
 # Topologies on linear ordered fields
 
@@ -140,6 +141,45 @@ theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻�
 
 theorem Filter.Tendsto.inv_tendsto_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
   tendsto_inv_zero_atTop.comp h
+
+/-- If `g` tends to zero and there exists a constant `C : 𝕜` such that eventually `|f x| ≤ C`,
+  then the product `f * g` tends to zero. -/
+theorem bdd_le_mul_tendsto_zero' {f g : α → 𝕜} (C : 𝕜) (hf : ∀ᶠ x in l, |f x| ≤ C)
+    (hg : Tendsto g l (𝓝 0)) : Tendsto (fun x ↦ f x * (g x)) l (𝓝 0) := by
+  rw [tendsto_zero_iff_abs_tendsto_zero]
+  have hC : Tendsto (fun x ↦ |C * (g x)|) l (𝓝 0) := by
+    erw [← tendsto_zero_iff_abs_tendsto_zero, ← mul_zero C]
+    exact Tendsto.const_mul C hg
+  have hC' : Tendsto (fun x ↦ - |C * (g x)|) l (𝓝 0) := by
+    rw [← neg_zero]
+    exact Filter.Tendsto.neg hC
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le' hC' hC
+  · filter_upwards [hf]
+    exact fun _ _ ↦ le_trans (neg_nonpos.mpr (abs_nonneg _)) (abs_nonneg _)
+  · filter_upwards [hf]
+    intro x hx
+    simp only [comp_apply, abs_mul]
+    exact mul_le_mul_of_nonneg_right (le_trans hx (le_abs_self C)) (abs_nonneg _)
+
+/-- If `g` tends to zero and there exist constants `b B : 𝕜` such that eventually `b ≤ f x| ≤ B`,
+  then the product `f * g` tends to zero. -/
+theorem bdd_le_mul_tendsto_zero {f g : α → 𝕜} {b B : 𝕜} (hb : ∀ᶠ x in l, b ≤ f x)
+    (hB : ∀ᶠ x in l, f x ≤ B) (hg : Tendsto g l (𝓝 0)) :
+    Tendsto (fun x ↦ f x * (g x)) l (𝓝 0) := by
+  set C := max |b| |B|
+  have hbC : -C ≤ b := neg_le.mpr (le_max_of_le_left (neg_le_abs b))
+  have hBC : B ≤ C := le_max_of_le_right (le_abs_self B)
+  apply bdd_le_mul_tendsto_zero' C _ hg
+  filter_upwards [hb, hB]
+  exact fun x hbx hBx ↦  abs_le.mpr ⟨le_trans hbC hbx, le_trans hBx hBC⟩
+
+/-- If `g` tends to `atTop` and there exist constants `b B : 𝕜` such that eventually
+  `b ≤ f x| ≤ B`, then the quotient `f / g` tends to zero. -/
+theorem tendsto_bdd_div_atTop_nhds_zero {f g : α → 𝕜} {b B : 𝕜}
+    (hb : ∀ᶠ x in l, b ≤ f x) (hB : ∀ᶠ x in l, f x ≤ B) (hg : Tendsto g l atTop) :
+    Tendsto (fun x => f x / g x) l (𝓝 0) := by
+  simp only [div_eq_mul_inv]
+  exact bdd_le_mul_tendsto_zero hb hB (Filter.Tendsto.inv_tendsto_atTop hg)
 
 /-- The function `x^(-n)` tends to `0` at `+∞` for any positive natural `n`.
 A version for positive real powers exists as `tendsto_rpow_neg_atTop`. -/

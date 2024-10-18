@@ -114,6 +114,53 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
     intros
     simp_all only [comp_apply, map_inv₀, map_natCast]
 
+/-- For any positive `m : ℕ`, `((n % m : ℕ) : ℝ) / (n : ℝ)` tends to `0` as `n` tends to `∞`. -/
+theorem tendsto_mod_div_atTop_nhds_zero_nat {m : ℕ} (hm : 0 < m) :
+    Tendsto (fun n : ℕ => ((n % m : ℕ) : ℝ) / (n : ℝ)) atTop (𝓝 0) := by
+  have h0 : ∀ᶠ n : ℕ in atTop, 0 ≤ (fun n : ℕ => ((n % m : ℕ) : ℝ)) n := by aesop
+  exact tendsto_bdd_div_atTop_nhds_zero h0
+    (.of_forall (fun n ↦  cast_le.mpr (mod_lt n hm).le)) tendsto_natCast_atTop_atTop
+
+theorem Filter.EventuallyEq.div_mul_cancel {α G : Type*} [GroupWithZero G] {f g : α → G}
+    {l : Filter α} (hg : Tendsto g l (𝓟 {0}ᶜ)) : (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x := by
+  filter_upwards [hg.le_comap <| preimage_mem_comap (m := g) (mem_principal_self {0}ᶜ)] with x hx
+  aesop
+
+/-- If `g` tends to `∞`, then eventually for all `x` we have `(f x / g x) * g x = f x`. -/
+theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*} [LinearOrderedSemifield K]
+    {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) :
+    (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x :=
+  div_mul_cancel <| hg.mono_right <| le_principal_iff.mpr <|
+    mem_of_superset (Ioi_mem_atTop 0) <| by aesop
+
+/-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
+  constant, then `f` tends to `∞`. -/
+theorem Tendsto.num {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [OrderTopology K]
+    {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
+    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+    Tendsto f l atTop :=
+  Tendsto.congr' (EventuallyEq.div_mul_cancel_atTop hg) (Tendsto.mul_atTop ha hlim hg)
+
+/-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
+  constant, then `f` tends to `∞`. -/
+theorem Tendsto.den {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [OrderTopology K]
+    [ContinuousInv K] {f g : α → K} {l : Filter α} (hf : Tendsto f l atTop) {a : K} (ha : 0 < a)
+    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+    Tendsto g l atTop := by
+  have hlim' : Tendsto (fun x => g x / f x) l (𝓝 a⁻¹) := by
+    simp_rw [← inv_div (f _)]
+    exact Filter.Tendsto.inv (f := fun x => f x / g x) hlim
+  apply Tendsto.congr' (EventuallyEq.div_mul_cancel_atTop hf)
+    (Tendsto.mul_atTop (inv_pos_of_pos ha) hlim' hf)
+
+/-- If when `x` tends to `∞`, `f x / g x` tends to a positive constant, then `f` tends to `∞` if
+  and only if `g` tends to `∞`. -/
+theorem Tendsto.num_atTop_iff_den_atTop {α K : Type*} [LinearOrderedField K] [TopologicalSpace K]
+    [OrderTopology K] [ContinuousInv K] {f g : α → K} {l : Filter α} {a : K} (ha : 0 < a)
+    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+    Tendsto f l atTop ↔ Tendsto g l atTop :=
+  ⟨fun hf ↦ Tendsto.den hf ha hlim, fun hg ↦ Tendsto.num hg ha hlim⟩
+
 /-! ### Powers -/
 
 
