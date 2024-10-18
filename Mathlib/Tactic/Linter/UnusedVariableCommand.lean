@@ -78,16 +78,32 @@ register_option showDefs : Bool := {
 
 namespace UnusedVariableCommand
 
-/--
-`usedVarsRef` collects
-* the unique names of the variables that have been used somewhere in its `NameSet` factor and
-* the mapping from unique names to the `Syntax` node of the corresponding variable in its second
-  factor.
-
-There is an exception: for variables introduced with `variable ... in`, the `Syntax`
-node is the whole `variable` command.
+/-- `varsTracker` is the main tool to keep track of used variables.
+* `seen` are the unique names of the variables that have been used by some declaration.
+* `dict` is the mapping from unique names to the `Syntax` node of the corresponding variable.
+  There is an exception: for variables introduced with `variable ... in`, the `Syntax`
+  node is the whole `variable` command.
 -/
-initialize usedVarsRef : IO.Ref (NameSet × NameMap Syntax) ← IO.mkRef ({}, {})
+structure varsTracker where
+  /-- The unique names of the variables that have been used. -/
+  seen : NameSet := {}
+  /-- The map from unique names of variables to the corresponding syntax node. -/
+  dict : NameMap Syntax := {}
+  deriving Inhabited
+
+/-- A `varsTracker` is empty if its constituents are empty. -/
+def varsTracker.isEmpty (v : varsTracker) : Bool :=
+  v.seen.isEmpty && v.dict.isEmpty
+
+/--
+`usedVarsRef` stores a `varsTracker`.
+
+The intended updates to `varsTracker` should go via
+* `usedVarsRef.addUsedVarName` to add a used variable;
+* `usedVarsRef.addDict` to add a correspondence `unique name <--> syntax`;
+* `usedVarsRef.addTemp` to extend the temporary storage of information from `variable ... in`.
+-/
+initialize usedVarsRef : IO.Ref varsTracker ← IO.mkRef {}
 
 /--
 `#show_used` is a convenience function that prints a summary of the variables that have been
@@ -95,10 +111,10 @@ defined so far and whether or not they have been used at the point where `#show_
 -/
 elab "#show_used" : command => do
   let varRef ← Mathlib.Linter.UnusedVariableCommand.usedVarsRef.get
-  if varRef.2.isEmpty then logInfo "No variables present." else
+  if varRef.dict.isEmpty then logInfo "No variables present." else
   let mut msg := #[m!"Dictionary\n"]
-  let sorted := varRef.2.toList.toArray.qsort (·.2.prettyPrint.pretty < ·.2.prettyPrint.pretty)
-  let (used, unused) := sorted.partition (varRef.1.contains ·.1)
+  let sorted := varRef.dict.toList.toArray.qsort (·.2.prettyPrint.pretty < ·.2.prettyPrint.pretty)
+  let (used, unused) := sorted.partition (varRef.seen.contains ·.1)
   for (a, b) in used do
     msg := msg.push (checkEmoji ++ m!" {b.prettyPrint.pretty} ↔ {a}")
   for (a, b) in unused do
@@ -108,12 +124,13 @@ elab "#show_used" : command => do
 
 /-- Add the (unique) name `a` to the `NameSet` of variable names that some declaration used. -/
 def usedVarsRef.addUsedVarName (a : Name) : IO Unit := do
-  usedVarsRef.modify fun (used, varsDict) => (used.insert a, varsDict)
+  usedVarsRef.modify fun varTrack => {varTrack with seen := varTrack.seen.insert a}
 
 /-- Add the assignment `a → ref` to the `NameMap Syntax` of unique variable names. -/
 def usedVarsRef.addDict (a : Name) (ref : Syntax) : IO Unit := do
-  usedVarsRef.modify fun (used, varsDict) =>
-    (used, if varsDict.contains a then varsDict else varsDict.insert a ref)
+  usedVarsRef.modify fun varTrack =>
+    if varTrack.dict.contains a then varTrack
+    else {varTrack with dict := varTrack.dict.insert a ref}
 
 /--
 `includedVariables plumb` returns the unique `Name`, the user `Name` and the `Expr` of
@@ -369,9 +386,9 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
   -- we look inside `stx` to find a terminal command.
   -- This simplifies testing: writing `open Nat in #exit` prints the current linter output
   if (stx.find? (Parser.isTerminalCommand ·)).isSome then
-      let (used, all) ← usedVarsRef.get
-      let sorted := used.toArray.qsort (·.toString < ·.toString)
-      let unused := all.toList.filter (!sorted.contains ·.1)
+      let varTrack ← usedVarsRef.get
+      let sorted := varTrack.seen.toArray.qsort (·.toString < ·.toString)
+      let unused := varTrack.dict.toList.filter (!sorted.contains ·.1)
       for (uniq, user) in unused do
         match uniq.eraseMacroScopes with
           | .anonymous => Linter.logLint linter.unusedVariableCommand user m!"'{user}' is unused"
@@ -415,13 +432,13 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     catch _ =>
       elabCommand (← mkThm' decl true)
     set s
-    let left2 := (← usedVarsRef.get).2.toList
+    let left2 := (← usedVarsRef.get).dict.toList
     let left := left2.map Prod.fst
     let _leftPretty := (left2.map Prod.snd).map fun l => l.prettyPrint.pretty
     let mut filt := []
     let mut filt2 := []
     -- used to test when the `for` loop below can be simplified
-    let cond := ← match stx with | `(variable $_* in $_) => return false | _ => return true
+    --let cond := ← match stx with | `(variable $_* in $_) => return false | _ => return true
     for s in usedVarNames do
       filt2 := filt2 ++ left2.filter fun (_a, b) =>
         let new :=
@@ -429,8 +446,8 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
             s == b.prettyPrint.pretty
           else
             s == _a.eraseMacroScopes.toString
-        if cond && new != (s == b.prettyPrint.pretty) then dbg_trace "error (variable in)!"; new else
-        if (!cond) && new == (s == b.prettyPrint.pretty) then dbg_trace "error (not variable in)!"; new else
+        --if cond && new != (s == b.prettyPrint.pretty) then dbg_trace "error (variable in)!"; new else
+        --if (!cond) && new == (s == b.prettyPrint.pretty) then dbg_trace "error (not variable in)!"; new else
         new
 
       filt := filt ++ left.filter (s.isPrefixOf ·.toString)

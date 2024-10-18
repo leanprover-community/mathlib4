@@ -31,37 +31,66 @@ structure D extends Add Nat, Mul Int where mk'::
 
 namespace A
 
+/-
+# a repeated variable name in theorem and def that is unused
+-/
+
+-- `good` unused!
 variable (n₁ : Nat)
 theorem X (n₁ : Nat) : n₁ = n₁ := rfl
-def X_def (n₁ : Nat) : n₁ = n₁ := rfl
+
+-- ideally, uncommenting this declaration would still flag the above `n₁` as unused
+--def X_def (n₁ : Nat) : n₁ = n₁ := rfl
 
 end A
 
 namespace B
 
 variable (n₂ : Nat)
+
+-- `good` unused!
 theorem X : n₂ = n₂ := rfl
 
--- `n₂` is not unused!!
+--  `good` unused!
 variable (n₂ : Int) in
 theorem X1 : n₂ = n₂ := rfl
 
 variable (n₂ : Int) in
+/--
+info: Included variables:
+* 'n₂' of type 'Int'
+* '[anonymous]' of type 'Nat'
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
 theorem X11 : ‹Nat› = n₂ := by included_variables; sorry
+
+/--
+info: Dictionary
+
+✅️ n₂ ↔ n₂._@.test.UnusedVariableCommand._hyg.290
+❌️ n₁ ↔ n₁._@.test.UnusedVariableCommand._hyg.275
+
+✅️: used
+❌️: unused
+-/
+#guard_msgs in
 #show_used
 end B
-#exit
+--#exit
 namespace C
 
-variable {R} [Add R] [Mul R] (r : R) in
-def X : r + r = r + r := rfl
+-- should error on `m` not being included!
+variable {R} [Add R] [m : Mul R] (r : R) in
+def X : r + r = r + r := by clear m; rfl
 
 --variable {R S} [Add R] [Mul R] (r : R) in
 --abbrev Y : r = r := by sorry
 
 end C
 
-set_option linter.unusedVariableCommand false
+--set_option linter.unusedVariableCommand false
 /-
 warning: using 'exit' to interrupt Lean
 ---
@@ -82,13 +111,52 @@ elab "GG " stx:command : command => do
 
 namespace GG_
 variable (n : Nat)
-#reset_vars
+--#reset_vars
+/--
+info: Dictionary
+
+✅️ n₂ ↔ n₂._@.test.UnusedVariableCommand._hyg.290
+❌️ n ↔ n._@.test.UnusedVariableCommand._hyg.568
+❌️ n₁ ↔ n₁._@.test.UnusedVariableCommand._hyg.275
+
+✅️: used
+❌️: unused
+-/
+#guard_msgs in
 #show_used
 
-#check toFalse
+/--
+info: theorem X.sfx : toFalse True := by included_variables plumb; sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
 GG
 theorem X : True := .intro
 
+/--
+info: Dictionary
+
+✅️ n₂ ↔ n₂._@.test.UnusedVariableCommand._hyg.290
+❌️ n ↔ n._@.test.UnusedVariableCommand._hyg.568
+❌️ n₁ ↔ n₁._@.test.UnusedVariableCommand._hyg.275
+
+✅️: used
+❌️: unused
+-/
+#guard_msgs in
 #show_used
 
 end GG_
+
+set_option linter.unusedVariableCommand false
+/--
+warning: using 'exit' to interrupt Lean
+---
+warning: 'n₁' is unused
+note: this linter can be disabled with `set_option linter.unusedVariableCommand false`
+---
+warning: 'n' is unused
+note: this linter can be disabled with `set_option linter.unusedVariableCommand false`
+-/
+#guard_msgs in set_option linter.unusedVariableCommand true in #exit
