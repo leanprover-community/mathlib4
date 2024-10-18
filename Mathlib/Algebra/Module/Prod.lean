@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Prod
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # Prod instances for module and multiplicative actions
@@ -35,8 +35,8 @@ instance instModule [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M
     add_smul := fun _ _ _ => mk.inj_iff.mpr ⟨add_smul _ _ _, add_smul _ _ _⟩
     zero_smul := fun _ => mk.inj_iff.mpr ⟨zero_smul _ _, zero_smul _ _⟩ }
 
-instance noZeroSMulDivisors {r : Semiring R} [AddCommMonoid M] [AddCommMonoid N]
-    [Module R M] [Module R N] [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N] :
+instance noZeroSMulDivisors [Zero R] [Zero M] [Zero N]
+    [SMulWithZero R M] [SMulWithZero R N] [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N] :
     NoZeroSMulDivisors R (M × N) :=
   { eq_zero_or_eq_zero_of_smul_eq_zero := by -- Porting note: in mathlib3 there is no need for `by`/
       -- `intro`/`exact`, i.e. the following works:
