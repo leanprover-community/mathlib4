@@ -83,6 +83,9 @@ instance inhabitedMem : Inhabited { s : Set α // s ∈ f } :=
 theorem filter_eq_iff : f = g ↔ f.sets = g.sets :=
   ⟨congr_arg _, filter_eq⟩
 
+@[simp] theorem sets_subset_sets : f.sets ⊆ g.sets ↔ g ≤ f := .rfl
+@[simp] theorem sets_ssubset_sets : f.sets ⊂ g.sets ↔ g < f := .rfl
+
 /-- An extensionality lemma that is useful for filters with good lemmas about `sᶜ ∈ f` (e.g.,
 `Filter.comap`, `Filter.coprod`, `Filter.Coprod`, `Filter.cofinite`). -/
 protected theorem coext (h : ∀ s, sᶜ ∈ f ↔ sᶜ ∈ g) : f = g :=
@@ -253,21 +256,20 @@ theorem mem_inf_iff_superset {f g : Filter α} {s : Set α} :
 
 section CompleteLattice
 
-/- We lift the complete lattice along the Galois connection `generate` / `sets`. Unfortunately,
-  we want to have different definitional equalities for some lattice operations. So we define them
-  upfront and change the lattice operations for the complete lattice instance. -/
-instance instCompleteLatticeFilter : CompleteLattice (Filter α) :=
-  { @OrderDual.instCompleteLattice _ (giGenerate α).liftCompleteLattice with
-    le := (· ≤ ·)
-    top := ⊤
-    le_top := fun _ _s hs => (mem_top.1 hs).symm ▸ univ_mem
-    inf := (· ⊓ ·)
-    inf_le_left := fun _ _ _ => mem_inf_of_left
-    inf_le_right := fun _ _ _ => mem_inf_of_right
-    le_inf := fun _ _ _ h₁ h₂ _s ⟨_a, ha, _b, hb, hs⟩ => hs.symm ▸ inter_mem (h₁ ha) (h₂ hb)
-    sSup := join ∘ 𝓟
-    le_sSup := fun _ _f hf _s hs => hs hf
-    sSup_le := fun _ _f hf _s hs _g hg => hf _ hg hs }
+/- Complete lattice structure on `Filter α`. -/
+instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
+  le_sup_left _ _ _ h := h.1
+  le_sup_right _ _ _ h := h.2
+  sup_le _ _ _ h₁ h₂ _ h := ⟨h₁ h, h₂ h⟩
+  inf_le_left _ _ _ := mem_inf_of_left
+  inf_le_right _ _ _ := mem_inf_of_right
+  le_inf := fun _ _ _ h₁ h₂ _s ⟨_a, ha, _b, hb, hs⟩ => hs.symm ▸ inter_mem (h₁ ha) (h₂ hb)
+  le_sSup _ _ h₁ _ h₂ := h₂ h₁
+  sSup_le _ _ h₁ _ h₂ _ h₃ := h₁ _ h₃ h₂
+  sInf_le _ _ h₁ _ h₂ := by rw [← Filter.sSup_lowerBounds]; exact fun _ h₃ ↦ h₃ h₁ h₂
+  le_sInf _ _ h₁ _ h₂ := by rw [← Filter.sSup_lowerBounds] at h₂; exact h₂ h₁
+  le_top _ _ := univ_mem'
+  bot_le _ _ _ := trivial
 
 instance : Inhabited (Filter α) := ⟨⊥⟩
 
@@ -325,10 +327,6 @@ theorem union_mem_sup {f g : Filter α} {s t : Set α} (hs : s ∈ f) (ht : t �
   ⟨mem_of_superset hs subset_union_left, mem_of_superset ht subset_union_right⟩
 
 @[simp]
-theorem mem_sSup {x : Set α} {s : Set (Filter α)} : x ∈ sSup s ↔ ∀ f ∈ s, x ∈ (f : Filter α) :=
-  Iff.rfl
-
-@[simp]
 theorem mem_iSup {x : Set α} {f : ι → Filter α} : x ∈ iSup f ↔ ∀ i, x ∈ f i := by
   simp only [← Filter.mem_sets, iSup_sets_eq, mem_iInter]
 
@@ -337,7 +335,7 @@ theorem iSup_neBot {f : ι → Filter α} : (⨆ i, f i).NeBot ↔ ∃ i, (f i).
   simp [neBot_iff]
 
 theorem iInf_eq_generate (s : ι → Filter α) : iInf s = generate (⋃ i, (s i).sets) :=
-  show generate _ = generate _ from congr_arg _ <| congr_arg sSup <| (range_comp _ _).symm
+  eq_of_forall_le_iff fun _ ↦ by simp [le_generate_iff]
 
 theorem mem_iInf_of_mem {f : ι → Filter α} (i : ι) {s} (hs : s ∈ f i) : s ∈ ⨅ i, f i :=
   iInf_le f i hs
@@ -598,7 +596,7 @@ abbrev coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
     iInf_sup_le_sup_sInf := fun f s t ⟨h₁, h₂⟩ => by
       classical
       rw [iInf_subtype']
-      rw [sInf_eq_iInf', iInf_sets_eq_finite, mem_iUnion] at h₂
+      rw [sInf_eq_iInf', ← Filter.mem_sets, iInf_sets_eq_finite, mem_iUnion] at h₂
       obtain ⟨u, hu⟩ := h₂
       rw [← Finset.inf_eq_iInf] at hu
       suffices ⨅ i : s, f ⊔ ↑i ≤ f ⊔ u.inf fun i => ↑i from this ⟨h₁, hu⟩
@@ -1571,10 +1569,6 @@ instance : LawfulFunctor (Filter : Type u → Type u) where
 
 theorem pure_sets (a : α) : (pure a : Filter α).sets = { s | a ∈ s } :=
   rfl
-
-@[simp]
-theorem mem_pure {a : α} {s : Set α} : s ∈ (pure a : Filter α) ↔ a ∈ s :=
-  Iff.rfl
 
 @[simp]
 theorem eventually_pure {a : α} {p : α → Prop} : (∀ᶠ x in pure a, p x) ↔ p a :=
