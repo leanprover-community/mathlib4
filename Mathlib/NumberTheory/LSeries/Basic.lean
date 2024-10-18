@@ -91,6 +91,11 @@ lemma term_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s : �
     term f s n = term g s n := by
   rcases eq_or_ne n 0 with hn | hn <;> simp [hn, h]
 
+theorem term_eq_coe (f : ℕ → ℝ) (s : ℝ) (n : ℕ) :
+    term (fun n ↦ f n) s n = ↑(if n = 0 then 0 else f n / (n : ℝ) ^ s) := by
+  rw [LSeries.term_def, apply_ite ofReal, ofReal_zero, ofReal_div, ofReal_cpow (Nat.cast_nonneg _),
+    ofReal_natCast]
+
 lemma norm_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     ‖term f s n‖ = if n = 0 then 0 else ‖f n‖ / n ^ s.re := by
   rcases eq_or_ne n 0 with rfl | hn

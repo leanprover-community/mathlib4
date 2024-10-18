@@ -76,9 +76,9 @@ variable (K)
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
 def _root_.NumberField.Units.logEmbedding :
     Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
-{ toFun := fun x w => mult w.val * Real.log (w.val ↑(Additive.toMul x))
+{ toFun := fun x w ↦ mult w.val * Real.log (w.val ↑(Additive.toMul x))
   map_zero' := by simp; rfl
-  map_add' := fun _ _ => by simp [Real.log_mul, mul_add]; rfl }
+  map_add' := fun _ _ ↦ by simp [Real.log_mul, mul_add]; rfl }
 
 variable {K}
 
@@ -95,10 +95,10 @@ theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
     rw [← insert_erase (mem_univ w₀), sum_insert (not_mem_erase w₀ univ), add_comm,
       add_eq_zero_iff_eq_neg] at h
     convert h using 1
-    · refine (sum_subtype _ (fun w => ?_) (fun w => (mult w) * (Real.log (w (x : K))))).symm
-      exact ⟨ne_of_mem_erase, fun h => mem_erase_of_ne_of_mem h (mem_univ w)⟩
+    · refine (sum_subtype _ (fun w ↦ ?_) (fun w ↦ (mult w) * (Real.log (w (x : K))))).symm
+      exact ⟨ne_of_mem_erase, fun h ↦ mem_erase_of_ne_of_mem h (mem_univ w)⟩
     · norm_num
-  · exact fun w _ => pow_ne_zero _ (AbsoluteValue.ne_zero _ (coe_ne_zero x))
+  · refine fun w _ ↦ pow_ne_zero _ (Units.pos_at_place _ _).ne'
 
 end NumberField
 
@@ -106,22 +106,21 @@ theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
     mult w * Real.log (w x) = 0 ↔ w x = 1 := by
   rw [mul_eq_zero, or_iff_right, Real.log_eq_zero, or_iff_right, or_iff_left]
   · linarith [(apply_nonneg _ _ : 0 ≤ w x)]
-  · simp only [ne_eq, map_eq_zero, coe_ne_zero x, not_false_eq_true]
-  · refine (ne_of_gt ?_)
-    rw [mult]; split_ifs <;> norm_num
+  · exact (Units.pos_at_place _ _).ne'
+  · exact mult_coe_ne_zero
 
 variable [NumberField K]
 
 theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
     logEmbedding K (Additive.ofMul x) = 0 ↔ x ∈ torsion K := by
   rw [mem_torsion]
-  refine ⟨fun h w => ?_, fun h => ?_⟩
+  refine ⟨fun h w ↦ ?_, fun h ↦ ?_⟩
   · by_cases hw : w = w₀
     · suffices -mult w₀ * Real.log (w₀ (x : K)) = 0 by
         rw [neg_mul, neg_eq_zero, ← hw] at this
         exact mult_log_place_eq_zero.mp this
       rw [← sum_logEmbedding_component, sum_eq_zero]
-      exact fun w _ => congrFun h w
+      exact fun w _ ↦ congrFun h w
     · exact mult_log_place_eq_zero.mp (congrFun h ⟨w, hw⟩)
   · ext w
     rw [logEmbedding_component, h w.val, Real.log_one, mul_zero, Pi.zero_apply]
@@ -147,7 +146,7 @@ theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
     · rw [← hw]
       exact tool _ (abs_nonneg _)
     · refine (sum_le_card_nsmul univ _ _
-        (fun w _ => logEmbedding_component_le hr h w)).trans ?_
+        (fun w _ ↦ logEmbedding_component_le hr h w)).trans ?_
       rw [nsmul_eq_mul]
       refine mul_le_mul ?_ le_rfl hr (Fintype.card (InfinitePlace K)).cast_nonneg
       simp [card_univ]
@@ -250,9 +249,9 @@ def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
 theorem seq_ne_zero (n : ℕ) : algebraMap (𝓞 K) K (seq K w₁ hB n) ≠ 0 :=
   RingOfIntegers.coe_ne_zero_iff.mpr (seq K w₁ hB n).prop
 
-/-- The terms of the sequence have nonzero norm. -/
-theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K) ≠ 0 :=
-  Algebra.norm_ne_zero_iff.mpr (Subtype.coe_ne_coe.1 (seq_ne_zero K w₁ hB n))
+-- /-- The terms of the sequence have nonzero norm. -/
+-- theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K) ≠ 0 :=
+--  Algebra.norm_ne_zero_iff.mpr (Subtype.coe_ne_coe.1 (seq_ne_zero K w₁ hB n))
 
 /-- The sequence is strictly decreasing at infinite places distinct from `w₁`. -/
 theorem seq_decreasing {n m : ℕ} (h : n < m) (w : InfinitePlace K) (hw : w ≠ w₁) :
@@ -295,26 +294,20 @@ theorem exists_unit (w₁ : InfinitePlace K) :
   rsuffices ⟨n, m, hnm, h⟩ : ∃ n m, n < m ∧
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
-    refine ⟨hu.choose, fun w hw => Real.log_neg ?_ ?_⟩
-    · exact pos_iff.mpr (coe_ne_zero _)
-    · calc
-        _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
-          rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
+    refine ⟨hu.choose, fun w hw => Real.log_neg (pos_at_place (Exists.choose hu) w) ?_⟩
+    calc
+      _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
+        rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
           ← mul_assoc, inv_mul_cancel₀ (seq_ne_zero K w₁ hB n), one_mul]
-        _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
-          _root_.map_mul _ _ _
-        _ < 1 := by
-          rw [map_inv₀, mul_inv_lt_iff₀ (pos_iff.mpr (seq_ne_zero K w₁ hB n)), one_mul]
-          exact seq_decreasing K w₁ hB hnm w hw
-  refine Set.Finite.exists_lt_map_eq_of_forall_mem
-    (t := { I : Ideal (𝓞 K) | 1 ≤ Ideal.absNorm I ∧ Ideal.absNorm I ≤ B })
-    (fun n => ?_) ?_
-  · rw [Set.mem_setOf_eq, Ideal.absNorm_span_singleton]
-    refine ⟨?_, seq_norm_le K w₁ hB n⟩
-    exact Nat.one_le_iff_ne_zero.mpr (Int.natAbs_ne_zero.mpr (seq_norm_ne_zero K w₁ hB n))
-  · rw [show { I : Ideal (𝓞 K) | 1 ≤ Ideal.absNorm I ∧ Ideal.absNorm I ≤ B } =
-          (⋃ n ∈ Set.Icc 1 B, { I : Ideal (𝓞 K) | Ideal.absNorm I = n }) by ext; simp]
-    exact Set.Finite.biUnion (Set.finite_Icc _ _) (fun n hn => Ideal.finite_setOf_absNorm_eq hn.1)
+      _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
+        _root_.map_mul _ _ _
+      _ < 1 := by
+        rw [map_inv₀, mul_inv_lt_iff₀' (pos_iff.mpr (seq_ne_zero K w₁ hB n)), mul_one]
+        exact seq_decreasing K w₁ hB hnm w hw
+  refine Set.Finite.exists_lt_map_eq_of_forall_mem (t := {I : Ideal (𝓞 K) | Ideal.absNorm I ≤ B})
+    (fun n ↦ ?_) (Ideal.finite_setOf_absNorm_le B)
+  rw [Set.mem_setOf_eq, Ideal.absNorm_span_singleton]
+  exact seq_norm_le K w₁ hB n
 
 theorem unitLattice_span_eq_top :
     Submodule.span ℝ (unitLattice K : Set ({w : InfinitePlace K // w ≠ w₀} → ℝ)) = ⊤ := by
@@ -366,7 +359,7 @@ instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
   · refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective)
     convert unitLattice_inter_ball_finite K 1
     ext x
-    refine ⟨?_, fun ⟨hx1, hx2⟩ => ⟨⟨x, hx1⟩, hx2, rfl⟩⟩
+    refine ⟨?_, fun ⟨hx1, hx2⟩ ↦ ⟨⟨x, hx1⟩, hx2, rfl⟩⟩
     rintro ⟨x, hx, rfl⟩
     exact ⟨Subtype.mem x, hx⟩
 
@@ -478,7 +471,7 @@ def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
 units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
-  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i):)
+  fun i ↦ Quotient.out' (Additive.toMul (basisModTorsion K i):)
 
 theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul (QuotientGroup.mk (fundSystem K i)) = (basisModTorsion K i) := by

@@ -964,6 +964,7 @@ import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+import Mathlib.Analysis.BoxIntegral.UnitPartition
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
@@ -3506,6 +3507,7 @@ import Mathlib.NumberTheory.LSeries.HurwitzZetaOdd
 import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
+import Mathlib.NumberTheory.LSeries.Residue
 import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.LSeries.ZMod
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
@@ -3546,12 +3548,15 @@ import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLessThanOne
 import Mathlib.NumberTheory.NumberField.ClassNumber
+import Mathlib.NumberTheory.NumberField.DedekindZeta
 import Mathlib.NumberTheory.NumberField.Discriminant
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.EquivReindex
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.House
+import Mathlib.NumberTheory.NumberField.Ideal
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.Units.Basic
 import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem

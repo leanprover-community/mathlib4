@@ -94,6 +94,10 @@ theorem _root_.Measurable.lmarginal [∀ i, SigmaFinite (μ i)] (hf : Measurable
   · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_snd _
   · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_fst _
 
+theorem _root_.Measurable.lmarginal_update [∀ i, SigmaFinite (μ i)] (hf : Measurable f) :
+    Measurable fun xᵢ ↦ (∫⋯∫⁻_s, f ∂μ) (Function.update x i xᵢ) :=
+  (Measurable.lmarginal _ hf).comp (measurable_update x)
+
 @[simp] theorem lmarginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫⁻_∅, f ∂μ = f := by
   ext1 x
   simp_rw [lmarginal, Measure.pi_of_empty fun i : (∅ : Finset δ) => μ i]
@@ -130,6 +134,18 @@ variable {μ} in
 @[gcongr]
 theorem lmarginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : ∫⋯∫⁻_s, f ∂μ ≤ ∫⋯∫⁻_s, g ∂μ :=
   fun _ => lintegral_mono fun _ => hfg _
+
+variable {μ} in
+theorem lmarginal_const_smul (hf : Measurable f) (r : ENNReal) :
+    (∫⋯∫⁻_s, r • f ∂μ) x = r * (∫⋯∫⁻_s, f ∂μ) x := by
+  simp_rw [lmarginal, Pi.smul_apply, smul_eq_mul]
+  rw [lintegral_const_mul _ (by convert hf.comp measurable_updateFinset)]
+
+variable {μ} in
+theorem lmarginal_const_smul' (r : ENNReal) (hr : r ≠ ⊤):
+    (∫⋯∫⁻_s, r • f ∂μ) x = r * (∫⋯∫⁻_s, f ∂μ) x := by
+  simp_rw [lmarginal, Pi.smul_apply, smul_eq_mul]
+  rw [lintegral_const_mul' _ _ hr]
 
 variable [∀ i, SigmaFinite (μ i)]
 

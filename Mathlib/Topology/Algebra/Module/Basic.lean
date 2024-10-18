@@ -1757,6 +1757,10 @@ protected def refl : M₁ ≃L[R₁] M₁ :=
 
 end
 
+@[simp]
+theorem refl_apply (x : M₁) :
+    ContinuousLinearEquiv.refl R₁ M₁ x = x := rfl
+
 @[simp, norm_cast]
 theorem coe_refl : ↑(ContinuousLinearEquiv.refl R₁ M₁) = ContinuousLinearMap.id R₁ M₁ :=
   rfl
@@ -2025,6 +2029,32 @@ def arrowCongrEquiv (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[
     ContinuousLinearMap.ext fun x => by
       simp only [ContinuousLinearMap.comp_apply, apply_symm_apply, coe_coe]
 
+/-- Combine a family of continuous linear equivalences into a continuous linear equivalence of
+pi-types. -/
+def piCongrRight {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)]
+    [∀ i, AddCommMonoid (M i)] [∀ i, Module R₁ (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)]
+    [∀ i, AddCommMonoid (N i)] [∀ i, Module R₁ (N i)] (f : (i : ι) → M i ≃L[R₁] N i) :
+    ((i : ι) → M i) ≃L[R₁] (i : ι) → N i :=
+  { LinearEquiv.piCongrRight fun i ↦ f i with
+    continuous_toFun := by
+      exact continuous_pi fun i ↦ (f i).continuous_toFun.comp (continuous_apply i)
+    continuous_invFun := by
+      exact continuous_pi fun i => (f i).continuous_invFun.comp (continuous_apply i) }
+
+@[simp]
+theorem piCongrRight_apply {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)]
+    [∀ i, AddCommMonoid (M i)] [∀ i, Module R₁ (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)]
+    [∀ i, AddCommMonoid (N i)] [∀ i, Module R₁ (N i)] (f : (i : ι) → M i ≃L[R₁] N i)
+    (m : (i : ι) → M i) (i : ι) :
+    ContinuousLinearEquiv.piCongrRight f m i = (f i) (m i) := rfl
+
+@[simp]
+theorem piCongrRight_symm_apply {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)]
+    [∀ i, AddCommMonoid (M i)] [∀ i, Module R₁ (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)]
+    [∀ i, AddCommMonoid (N i)] [∀ i, Module R₁ (N i)] (f : (i : ι) → M i ≃L[R₁] N i)
+    (n : (i : ι) → N i) (i : ι) :
+    (ContinuousLinearEquiv.piCongrRight f).symm n i = (f i).symm (n i) := rfl
+
 end AddCommMonoid
 
 section AddCommGroup
@@ -2059,6 +2089,26 @@ theorem skewProd_apply (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L
 theorem skewProd_symm_apply (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) (x) :
     (e.skewProd e' f).symm x = (e.symm x.1, e'.symm (x.2 - f (e.symm x.1))) :=
   rfl
+
+variable (R) in
+/-- The negation map as a continuous linear equivalence. -/
+def neg [ContinuousNeg M] :
+    M ≃L[R] M :=
+  { LinearEquiv.neg R with
+    continuous_toFun := continuous_neg
+    continuous_invFun := continuous_neg }
+
+@[simp]
+theorem coe_neg [ContinuousNeg M] :
+    (neg R : M → M) = -id := rfl
+
+@[simp]
+theorem neg_apply [ContinuousNeg M] (x : M) :
+    neg R x = -x := by simp
+
+@[simp]
+theorem symm_neg [ContinuousNeg M] :
+    (neg R : M ≃L[R] M).symm = neg R := rfl
 
 end AddCommGroup
 
