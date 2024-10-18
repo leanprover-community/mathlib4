@@ -156,6 +156,11 @@ lemma ne_zero_pow (hn : n ≠ 0) (ha : a ^ n ≠ 0) : a ≠ 0 := by rintro rfl; 
 lemma zero_pow_eq_zero [Nontrivial M₀] : (0 : M₀) ^ n = 0 ↔ n ≠ 0 :=
   ⟨by rintro h rfl; simp at h, zero_pow⟩
 
+lemma pow_mul_eq_zero_of_le {a b : M₀} {m n : ℕ} (hmn : m ≤ n)
+    (h : a ^ m * b = 0) : a ^ n * b = 0 := by
+  rw [show n = n - m + m by omega, pow_add, mul_assoc, h]
+  simp
+
 variable [NoZeroDivisors M₀]
 
 lemma pow_eq_zero : ∀ {n}, a ^ n = 0 → a = 0

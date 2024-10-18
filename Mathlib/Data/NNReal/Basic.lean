@@ -68,8 +68,8 @@ scoped notation "ℝ≥0" => NNReal
 noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
 instance : OrderBot ℝ≥0 := inferInstance
-instance : Archimedean ℝ≥0 := Nonneg.instArchimedean
-instance : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
+instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
+instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 noncomputable instance : Sub ℝ≥0 := Nonneg.sub
 noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
@@ -493,17 +493,13 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
   rw [← NNReal.coe_le_coe, NNReal.coe_add, coe_iInf, coe_iInf]
   exact le_ciInf_add_ciInf h
 
-example : Archimedean ℝ≥0 := by infer_instance
+-- Short-circuit instance search
+instance instCovariantClassAddLE : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
+instance instContravariantClassAddLT : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < ·) := inferInstance
+instance instCovariantClassMulLE : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
 
--- Porting note (#11215): TODO: remove?
-instance covariant_add : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
-
-instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < ·) := inferInstance
-
-instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
-
--- Porting note (#11215): TODO: delete?
-nonrec theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=
+@[deprecated le_of_forall_pos_le_add (since := "2024-10-17")]
+protected theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=
   le_of_forall_pos_le_add h
 
 theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :

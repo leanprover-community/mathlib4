@@ -59,7 +59,7 @@ lemma of_isLocalizedModule [Module.Finite R M] : Module.Finite Rₚ Mₚ := by
 
 end
 
-variable {R : Type u} [CommRing R] (S : Submonoid R) {M : Type w} [AddCommMonoid M] [Module R M]
+variable {R : Type u} [CommRing R] {M : Type w} [AddCommMonoid M] [Module R M]
 
 /--
 If there exists a finite set `{ r }` of `R` such that `Mᵣ` is `Rᵣ`-finite for each `r`,

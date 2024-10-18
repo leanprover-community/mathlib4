@@ -406,6 +406,32 @@ lemma smul_set_disjoint_iff : Disjoint (a • s) (a • t) ↔ Disjoint s t := b
 
 end Group
 
+section Group
+variable [Group α] [CommGroup β] [FunLike F α β] [MonoidHomClass F α β]
+
+@[to_additive]
+lemma smul_graphOn (x : α × β) (s : Set α) (f : F) :
+    x • s.graphOn f = (x.1 • s).graphOn fun a ↦ x.2 / f x.1 * f a := by
+  ext ⟨a, b⟩
+  simp [mem_smul_set_iff_inv_smul_mem, Prod.ext_iff, and_comm (a := _ = a), inv_mul_eq_iff_eq_mul,
+    mul_left_comm _ _⁻¹, eq_inv_mul_iff_mul_eq, ← mul_div_right_comm, div_eq_iff_eq_mul, mul_comm b]
+
+@[to_additive]
+lemma smul_graphOn_univ (x : α × β) (f : F) :
+    x • univ.graphOn f = univ.graphOn fun a ↦ x.2 / f x.1 * f a := by simp [smul_graphOn]
+
+end Group
+
+section CommGroup
+variable [CommGroup α]
+
+@[to_additive] lemma smul_div_smul_comm (a : α) (s : Set α) (b : α) (t : Set α) :
+    a • s / b • t = (a / b) • (s / t) := by
+  simp_rw [← image_smul, smul_eq_mul, ← singleton_mul, mul_div_mul_comm _ s,
+    singleton_div_singleton]
+
+end CommGroup
+
 section GroupWithZero
 
 variable [GroupWithZero α] [MulAction α β] {s t : Set β} {a : α}

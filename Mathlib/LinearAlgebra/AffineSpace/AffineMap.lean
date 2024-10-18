@@ -703,7 +703,7 @@ theorem pi_comp (g : P3 →ᵃ[k] P1) : (pi fp).comp g = pi (fun i => (fp i).com
   rfl
 
 theorem pi_eq_zero : pi fv = 0 ↔ ∀ i, fv i = 0 := by
-  simp only [AffineMap.ext_iff, Function.funext_iff, pi_apply]
+  simp only [AffineMap.ext_iff, funext_iff, pi_apply]
   exact forall_comm
 
 theorem pi_zero : pi (fun _ ↦ 0 : (i : ι) → P1 →ᵃ[k] φv i) = 0 := by
