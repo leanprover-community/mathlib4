@@ -62,7 +62,7 @@ instance categoryStruct : CategoryStruct (∫ F) where
   Hom X Y := Hom X Y
   id X := {
     base := 𝟙 X.base
-    fiber := (F.mapId ⟨op X.base⟩).inv.app X.fiber}
+    fiber := (F.mapId ⟨op X.base⟩).inv.app X.fiber }
   comp {_ _ Z} f g := {
     base := f.base ≫ g.base
     fiber := f.fiber ≫ (F.map f.base.op.toLoc).map g.fiber ≫
