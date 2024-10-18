@@ -44,7 +44,7 @@ def getRunResponse (hash : String) : IO RunResponse := do
     | .error e => match fromJson? j with
       | .ok (v : ErrorMessage) =>
         IO.eprintln s!"http://speed.lean-fro.org says: {v.message}"
-        IO.eprintln s!"Try moving to an older commit?"
+        IO.eprintln s!"If you are working on a Mathlib PR, you can comment !bench to make the bot run benchmarks."
         IO.Process.exit 1
       | .error _ => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
 
