@@ -109,7 +109,8 @@ lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
     have h' : Continuous fun s ↦ χ.LFunction s * ∏ p ∈ N.primeFactors, (1 - χ p * ↑p ^ (-s)) :=
       (differentiable_LFunction h).continuous.mul <|
         continuous_finset_prod _ fun p hp ↦ continuous_const.sub <| continuous_const.mul <|
-          @continuous_cpow_natCast_neg p ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
+          have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩;
+          continuous_const_cpow_neg _
     have H s (hs : s ≠ 1) := LFunction_changeLevel_aux hMN χ hs
     exact
       congrFun ((differentiable_LFunction hχ).continuous.ext_on (dense_compl_singleton 1) h' H) s
@@ -145,7 +146,8 @@ lemma LFunction_one_residue_one :
   convert Tendsto.mul (f := fun s ↦ ∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s)))
     ?_ riemannZeta_residue_one
   refine tendsto_nhdsWithin_of_tendsto_nhds <| Continuous.tendsto ?_ 1
-  have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
-  exact continuous_finset_prod _ fun p hp ↦ continuous_const.sub (continuous_const_cpow_neg _)
+  exact continuous_finset_prod _ fun p hp ↦
+    have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
+    continuous_const.sub (continuous_const_cpow_neg _)
 
 end DirichletCharacter
