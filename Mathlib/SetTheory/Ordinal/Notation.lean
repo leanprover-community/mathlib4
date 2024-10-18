@@ -1265,7 +1265,7 @@ instance : Pow NONote NONote :=
   ⟨fun x y => mk (x.1 ^ y.1)⟩
 
 @[simp]
-theorem repr_opow (a b) : repr (opow a b) = repr a ^ repr b :=
+theorem repr_opow (a b) : repr (a ^ b) = repr a ^ repr b :=
   ONote.repr_opow a.1 b.1
 
 end NONote
