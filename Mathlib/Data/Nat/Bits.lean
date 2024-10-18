@@ -132,7 +132,7 @@ theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) 
 /-- For a predicate `motive : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for any given natural number. -/
-@[elab_as_elim, inline]
+@[inline]
 def bitCasesOn {motive : Nat → Sort u} (n) (h : ∀ b n, motive (bit b n)) : motive n :=
   -- `1 &&& n != 0` is faster than `n.testBit 0`. This may change when we have faster `testBit`.
   let x := h (1 &&& n != 0) (n >>> 1)
@@ -206,9 +206,10 @@ lemma binaryRec_zero {motive : Nat → Sort u}
 
 @[simp]
 lemma binaryRec_one {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
-    binaryRec z f 1 = f true 0 z := by
+    binaryRec (motive := C) z f 1 = f true 0 z := by
   rw [binaryRec]
-  simp
+  simp only [succ_ne_self, ↓reduceDIte, reduceShiftRight, binaryRec_zero]
+  rfl
 
 /-! bitwise ops -/
 
