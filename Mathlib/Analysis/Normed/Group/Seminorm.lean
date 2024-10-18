@@ -181,12 +181,6 @@ instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ where
   map_mul_le_add f := f.mul_le'
   map_inv_eq_map f := f.inv'
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-@[to_additive "Helper instance for when there's too many metavariables to apply
-`DFunLike.hasCoeToFun`. "]
-instance : CoeFun (GroupSeminorm E) fun _ => E → ℝ :=
-  ⟨DFunLike.coe⟩
-
 @[to_additive (attr := simp)]
 theorem toFun_eq_coe : p.toFun = p :=
   rfl
@@ -447,10 +441,6 @@ instance nonarchAddGroupSeminormClass :
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-instance : CoeFun (NonarchAddGroupSeminorm E) fun _ => E → ℝ :=
-  ⟨DFunLike.coe⟩
-
 -- Porting note: `simpNF` said the left hand side simplified to this
 @[simp]
 theorem toZeroHom_eq_coe : ⇑p.toZeroHom = p := by
@@ -667,13 +657,6 @@ instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ where
   map_inv_eq_map f := f.inv'
   eq_one_of_map_eq_zero f := f.eq_one_of_map_eq_zero' _
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
-directly. -/
-@[to_additive "Helper instance for when there's too many metavariables to apply
-`DFunLike.hasCoeToFun` directly. "]
-instance : CoeFun (GroupNorm E) fun _ => E → ℝ :=
-  DFunLike.hasCoeToFun
-
 -- Porting note: `simpNF` told me the left-hand side simplified to this
 @[to_additive (attr := simp)]
 theorem toGroupSeminorm_eq_coe : ⇑p.toGroupSeminorm = p :=
@@ -798,10 +781,6 @@ instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNor
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
-
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-noncomputable instance : CoeFun (NonarchAddGroupNorm E) fun _ => E → ℝ :=
-  DFunLike.hasCoeToFun
 
 -- Porting note: `simpNF` told me the left-hand side simplified to this
 @[simp]
