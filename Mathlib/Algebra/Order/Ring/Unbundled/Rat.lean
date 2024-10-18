@@ -191,7 +191,7 @@ protected lemma lt_def : p < q ↔ p.num * q.den < q.num * p.den := by
 protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
   rw [Rat.le_iff_sub_nonneg, add_sub_add_left_eq_sub, ← Rat.le_iff_sub_nonneg]
 
-instance : CovariantClass ℚ ℚ (· + ·) (· ≤ ·) where
+instance : AddLeftMono ℚ where
   elim := fun _ _ _ h => Rat.add_le_add_left.2 h
 
 @[simp] lemma num_nonpos {a : ℚ} : a.num ≤ 0 ↔ a ≤ 0 := by

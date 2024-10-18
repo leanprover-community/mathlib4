@@ -106,8 +106,8 @@ lemma leOnePart_le_one' : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
 @[to_additive (attr := simp)] lemma leOnePart_inv (a : α) : a⁻¹⁻ᵐ = a⁺ᵐ := by
   simp [oneLePart, leOnePart]
 
-section covariantmul
-variable [CovariantClass α α (· * ·) (· ≤ ·)]
+section MulLeftMono
+variable [MulLeftMono α]
 
 @[to_additive (attr := simp)] lemma leOnePart_eq_inv : a⁻ᵐ = a⁻¹ ↔ a ≤ 1 := by simp [leOnePart]
 
@@ -135,8 +135,8 @@ lemma oneLePart_leOnePart_injective : Injective fun a : α ↦ (a⁺ᵐ, a⁻ᵐ
 lemma oneLePart_leOnePart_inj : a⁺ᵐ = b⁺ᵐ ∧ a⁻ᵐ = b⁻ᵐ ↔ a = b :=
   Prod.mk.inj_iff.symm.trans oneLePart_leOnePart_injective.eq_iff
 
-section covariantmulop
-variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+section MulRightMono
+variable [MulRightMono α]
 
 @[to_additive] lemma leOnePart_anti : Antitone (leOnePart : α → α) :=
   fun _a _b hab ↦ sup_le_sup_right (inv_le_inv_iff.2 hab) _
@@ -162,14 +162,14 @@ lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
   rw [← mul_left_inj a⁻ᵐ⁻¹, inf_mul, one_mul, mul_inv_cancel, ← div_eq_mul_inv,
     oneLePart_div_leOnePart, leOnePart_eq_inv_inf_one, inv_inv]
 
-end covariantmulop
+end MulRightMono
 
-end covariantmul
+end MulLeftMono
 
 end Group
 
 section CommGroup
-variable [CommGroup α] [CovariantClass α α (· * ·) (· ≤ ·)]
+variable [CommGroup α] [MulLeftMono α]
 
 -- Bourbaki A.VI.12 (with a and b swapped)
 @[to_additive] lemma sup_eq_mul_oneLePart_div (a b : α) : a ⊔ b = b * (a / b)⁺ᵐ := by
@@ -220,7 +220,7 @@ lemma oneLePart_of_one_lt_oneLePart (ha : 1 < a⁺ᵐ) : a⁺ᵐ = a := by
 @[to_additive (attr := simp)] lemma oneLePart_lt : a⁺ᵐ < b ↔ a < b ∧ 1 < b := sup_lt_iff
 
 section covariantmul
-variable [CovariantClass α α (· * ·) (· ≤ ·)]
+variable [MulLeftMono α]
 
 @[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = if a ≤ 1 then a⁻¹ else 1 := by
   simp_rw [← one_le_inv']; rw [leOnePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
@@ -228,7 +228,7 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 @[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_ltOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
   lt_iff_lt_of_le_iff_le <| (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
 
-variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [MulRightMono α]
 
 @[to_additive (attr := simp)] lemma leOnePart_lt : a⁻ᵐ < b ↔ b⁻¹ < a ∧ 1 < b :=
   sup_lt_iff.trans <| by rw [inv_lt']
