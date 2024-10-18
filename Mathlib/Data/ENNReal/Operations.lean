@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.ENNReal.Basic
 
 /-!
