@@ -705,16 +705,16 @@ theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasur
     (ht : MeasurableSet t) : NullMeasurableSet ((↑) '' t) μ := by
   rw [Subtype.instMeasurableSpace, comap_eq_generateFrom] at ht
   refine
-    generateFrom_induction (p := fun t : Set s => NullMeasurableSet ((↑) '' t) μ)
-      { t : Set s | ∃ s' : Set α, MeasurableSet s' ∧ (↑) ⁻¹' s' = t } ?_ ?_ ?_ ?_ ht
-  · rintro t' ⟨s', hs', rfl⟩
+    generateFrom_induction (p := fun t _ ↦ NullMeasurableSet ((↑) '' t) μ)
+      { t : Set s | ∃ s' : Set α, MeasurableSet s' ∧ (↑) ⁻¹' s' = t } ?_ ?_ ?_ ?_ _ ht
+  · rintro t' ⟨s', hs', rfl⟩ _
     rw [Subtype.image_preimage_coe]
     exact hs.inter (hs'.nullMeasurableSet)
   · simp only [image_empty, nullMeasurableSet_empty]
-  · intro t'
+  · intro t' _
     simp only [← range_diff_image Subtype.coe_injective, Subtype.range_coe_subtype, setOf_mem_eq]
     exact hs.diff
-  · intro f
+  · intro f _
     dsimp only []
     rw [image_iUnion]
     exact NullMeasurableSet.iUnion
