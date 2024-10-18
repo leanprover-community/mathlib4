@@ -235,7 +235,7 @@ def leftRel : Setoid α :=
 variable {s}
 
 @[to_additive]
-theorem leftRel_apply {x y : α} : @Setoid.r _ (leftRel s) x y ↔ x⁻¹ * y ∈ s :=
+theorem leftRel_apply {x y : α} : leftRel s x y ↔ x⁻¹ * y ∈ s :=
   calc
     (∃ a : s.op, y * MulOpposite.unop a = x) ↔ ∃ a : s, y * a = x :=
       s.equivOp.symm.exists_congr_left
@@ -246,13 +246,13 @@ theorem leftRel_apply {x y : α} : @Setoid.r _ (leftRel s) x y ↔ x⁻¹ * y �
 variable (s)
 
 @[to_additive]
-theorem leftRel_eq : @Setoid.r _ (leftRel s) = fun x y => x⁻¹ * y ∈ s :=
+theorem leftRel_eq : ⇑(leftRel s) = fun x y => x⁻¹ * y ∈ s :=
   funext₂ <| by
     simp only [eq_iff_iff]
     apply leftRel_apply
 
 theorem leftRel_r_eq_leftCosetEquivalence :
-    @Setoid.r _ (QuotientGroup.leftRel s) = LeftCosetEquivalence s := by
+    ⇑(QuotientGroup.leftRel s) = LeftCosetEquivalence s := by
   ext
   rw [leftRel_eq]
   exact (leftCoset_eq_iff s).symm
@@ -261,6 +261,20 @@ theorem leftRel_r_eq_leftCosetEquivalence :
 instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).r := fun x y => by
   rw [leftRel_eq]
   exact ‹DecidablePred (· ∈ s)› _
+
+@[to_additive]
+lemma leftRel_prod {β : Type*} [Group β] (s' : Subgroup β) :
+    leftRel (s.prod s') = (leftRel s).prod (leftRel s') := by
+  refine Setoid.ext fun x y ↦ ?_
+  rw [Setoid.prod_apply]
+  simp_rw [leftRel_apply]
+  rfl
+
+@[to_additive]
+lemma leftRel_pi {ι : Type*} {β : ι → Type*} [∀ i, Group (β i)] (s' : ∀ i, Subgroup (β i)) :
+    leftRel (Subgroup.pi Set.univ s') = @piSetoid _ _ fun i ↦ leftRel (s' i) := by
+  refine Setoid.ext fun x y ↦ ?_
+  simp [Setoid.piSetoid_apply, leftRel_apply, Subgroup.mem_pi]
 
 /-- `α ⧸ s` is the quotient type representing the left cosets of `s`.
   If `s` is a normal subgroup, `α ⧸ s` is a group -/
@@ -279,7 +293,7 @@ def rightRel : Setoid α :=
 variable {s}
 
 @[to_additive]
-theorem rightRel_apply {x y : α} : @Setoid.r _ (rightRel s) x y ↔ y * x⁻¹ ∈ s :=
+theorem rightRel_apply {x y : α} : rightRel s x y ↔ y * x⁻¹ ∈ s :=
   calc
     (∃ a : s, (a : α) * y = x) ↔ ∃ a : s, y * x⁻¹ = a⁻¹ := by
       simp only [mul_inv_eq_iff_eq_mul, Subgroup.coe_inv, eq_inv_mul_iff_mul_eq]
@@ -288,13 +302,13 @@ theorem rightRel_apply {x y : α} : @Setoid.r _ (rightRel s) x y ↔ y * x⁻¹ 
 variable (s)
 
 @[to_additive]
-theorem rightRel_eq : @Setoid.r _ (rightRel s) = fun x y => y * x⁻¹ ∈ s :=
+theorem rightRel_eq : ⇑(rightRel s) = fun x y => y * x⁻¹ ∈ s :=
   funext₂ <| by
     simp only [eq_iff_iff]
     apply rightRel_apply
 
 theorem rightRel_r_eq_rightCosetEquivalence :
-    @Setoid.r _ (QuotientGroup.rightRel s) = RightCosetEquivalence s := by
+    ⇑(QuotientGroup.rightRel s) = RightCosetEquivalence s := by
   ext
   rw [rightRel_eq]
   exact (rightCoset_eq_iff s).symm
@@ -303,6 +317,20 @@ theorem rightRel_r_eq_rightCosetEquivalence :
 instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s).r := fun x y => by
   rw [rightRel_eq]
   exact ‹DecidablePred (· ∈ s)› _
+
+@[to_additive]
+lemma rightRel_prod {β : Type*} [Group β] (s' : Subgroup β) :
+    rightRel (s.prod s') = (rightRel s).prod (rightRel s') := by
+  refine Setoid.ext fun x y ↦ ?_
+  rw [Setoid.prod_apply]
+  simp_rw [rightRel_apply]
+  rfl
+
+@[to_additive]
+lemma rightRel_pi {ι : Type*} {β : ι → Type*} [∀ i, Group (β i)] (s' : ∀ i, Subgroup (β i)) :
+    rightRel (Subgroup.pi Set.univ s') = @piSetoid _ _ fun i ↦ rightRel (s' i) := by
+  refine Setoid.ext fun x y ↦ ?_
+  simp [Setoid.piSetoid_apply, rightRel_apply, Subgroup.mem_pi]
 
 /-- Right cosets are in bijection with left cosets. -/
 @[to_additive "Right cosets are in bijection with left cosets."]
@@ -391,7 +419,7 @@ instance (s : Subgroup α) : Inhabited (α ⧸ s) :=
 @[to_additive]
 protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
   calc
-    _ ↔ @Setoid.r _ (leftRel s) a b := Quotient.eq''
+    _ ↔ leftRel s a b := Quotient.eq''
     _ ↔ _ := by rw [leftRel_apply]
 
 @[to_additive (attr := deprecated (since := "2024-08-04"))] alias eq' := QuotientGroup.eq
@@ -458,6 +486,18 @@ theorem preimage_image_mk_eq_mul (N : Subgroup α) (s : Set α) :
   rw [preimage_image_mk_eq_iUnion_image, iUnion_subtype, ← image2_mul, ← iUnion_image_right]
   simp only [SetLike.mem_coe]
 
+open MulAction in
+@[to_additive]
+lemma orbit_mk_eq_smul (x : α) : MulAction.orbitRel.Quotient.orbit (x : α ⧸ s) = x • s := by
+  ext
+  rw [orbitRel.Quotient.mem_orbit]
+  simpa [mem_smul_set_iff_inv_smul_mem, ← leftRel_apply] using Setoid.comm' _
+
+@[to_additive]
+lemma orbit_eq_out'_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x.out' • s := by
+  induction x using QuotientGroup.induction_on
+  simp only [orbit_mk_eq_smul, ← eq_class_eq_leftCoset, Quotient.out_eq']
+
 end QuotientGroup
 
 namespace Subgroup
@@ -470,13 +510,13 @@ variable [Group α] {s : Subgroup α}
 @[to_additive "The natural bijection between the cosets `g + s` and `s`."]
 def leftCosetEquivSubgroup (g : α) : (g • s : Set α) ≃ s :=
   ⟨fun x => ⟨g⁻¹ * x.1, (mem_leftCoset_iff _).1 x.2⟩, fun x => ⟨g * x.1, x.1, x.2, rfl⟩,
-    fun ⟨x, hx⟩ => Subtype.eq <| by simp, fun ⟨g, hg⟩ => Subtype.eq <| by simp⟩
+    fun ⟨x, _⟩ => Subtype.eq <| by simp, fun ⟨g, _⟩ => Subtype.eq <| by simp⟩
 
 /-- The natural bijection between a right coset `s * g` and `s`. -/
 @[to_additive "The natural bijection between the cosets `s + g` and `s`."]
 def rightCosetEquivSubgroup (g : α) : (op g • s : Set α) ≃ s :=
   ⟨fun x => ⟨x.1 * g⁻¹, (mem_rightCoset_iff _).1 x.2⟩, fun x => ⟨x.1 * g, x.1, x.2, rfl⟩,
-    fun ⟨x, hx⟩ => Subtype.eq <| by simp, fun ⟨g, hg⟩ => Subtype.eq <| by simp⟩
+    fun ⟨x, _⟩ => Subtype.eq <| by simp, fun ⟨g, _⟩ => Subtype.eq <| by simp⟩
 
 /-- A (non-canonical) bijection between a group `α` and the product `(α/s) × s` -/
 @[to_additive addGroupEquivQuotientProdAddSubgroup
@@ -492,7 +532,7 @@ noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
             _root_.Subtype fun x : α => Quotient.mk'' x = Quotient.mk'' _
         simp [-Quotient.eq'']
         rfl
-    _ ≃ Σ _L : α ⧸ s, s := Equiv.sigmaCongrRight fun L => leftCosetEquivSubgroup _
+    _ ≃ Σ _L : α ⧸ s, s := Equiv.sigmaCongrRight fun _ => leftCosetEquivSubgroup _
     _ ≃ (α ⧸ s) × s := Equiv.sigmaEquivProd _ _
 
 variable {t : Subgroup α}
@@ -517,7 +557,7 @@ of the quotient map `G → G/K`. The classical version is `Subgroup.quotientEqui
 def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
     (hf : Function.RightInverse f QuotientGroup.mk) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t where
   toFun a :=
-    ⟨a.map' id fun b c h => leftRel_apply.mpr (h_le (leftRel_apply.mp h)),
+    ⟨a.map' id fun _ _ h => leftRel_apply.mpr (h_le (leftRel_apply.mp h)),
       a.map' (fun g : α => ⟨(f (Quotient.mk'' g))⁻¹ * g, leftRel_apply.mp (Quotient.exact' (hf g))⟩)
         fun b c h => by
         rw [leftRel_apply]
@@ -703,7 +743,16 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
       show QuotientGroup.mk _ ∈ t by
         rw [mk_mul_of_mem _ a.1.2, out_eq']
         exact a.2.2⟩
-  left_inv := fun ⟨a, ha⟩ => Subtype.eq <| show _ * _ = a by simp
+  left_inv := fun ⟨a, _⟩ => Subtype.eq <| show _ * _ = a by simp
   right_inv := fun ⟨⟨a, ha⟩, ⟨x, hx⟩⟩ => by ext <;> simp [ha]
+
+open MulAction in
+/-- A group is made up of a disjoint union of cosets of a subgroup. -/
+@[to_additive "An additive group is made up of a disjoint union of cosets of an additive
+subgroup."]
+lemma univ_eq_iUnion_smul (H : Subgroup α) :
+    (Set.univ (α := α)) = ⋃ x : α ⧸ H, x.out' • (H : Set _) := by
+  simp_rw [univ_eq_iUnion_orbit H.op, orbit_eq_out'_smul]
+  rfl
 
 end QuotientGroup

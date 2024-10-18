@@ -6,6 +6,7 @@ Authors: Kenny Lau, Michael Howes
 import Mathlib.Data.Finite.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.Data.Finite.Basic
 
 /-!
 # The abelianization of a group
@@ -231,7 +232,7 @@ def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization
   { Abelianization.of with
     toFun := Abelianization.of
     invFun := Abelianization.lift (MonoidHom.id H)
-    left_inv := fun a => rfl
+    left_inv := fun _ => rfl
     right_inv := by
       rintro ⟨a⟩
       rfl }

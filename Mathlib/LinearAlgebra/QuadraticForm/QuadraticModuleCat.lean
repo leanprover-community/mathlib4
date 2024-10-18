@@ -84,7 +84,7 @@ instance concreteCategory : ConcreteCategory.{v} (QuadraticModuleCat.{v} R) wher
     { obj := fun M => M
       map := fun f => f.toIsometry }
   forget_faithful :=
-    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toIsometry_injective _ _ }
+    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toIsometry_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
   forget₂ :=

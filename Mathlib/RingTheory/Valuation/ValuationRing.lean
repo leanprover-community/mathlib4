@@ -335,8 +335,8 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
   intro x y
   rw [Ideal.span_insert]
   rcases le_total (Ideal.span {x} : Ideal R) (Ideal.span {y}) with h | h
-  · erw [sup_eq_right.mpr h]; exact ⟨⟨_, rfl⟩⟩
-  · erw [sup_eq_left.mpr h]; exact ⟨⟨_, rfl⟩⟩
+  · rw [sup_eq_right.mpr h]; exact ⟨⟨_, rfl⟩⟩
+  · rw [sup_eq_left.mpr h]; exact ⟨⟨_, rfl⟩⟩
 
 instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
   classical

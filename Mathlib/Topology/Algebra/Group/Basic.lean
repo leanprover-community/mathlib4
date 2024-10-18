@@ -3,13 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Maps.OpenQuotient
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.Topology.Algebra.Monoid
 
 /-!
 # Topological groups
@@ -847,87 +843,6 @@ theorem TopologicalGroup.exists_antitone_basis_nhds_one [FirstCountableTopology 
 
 end TopologicalGroup
 
-namespace QuotientGroup
-
-variable [TopologicalSpace G] [Group G]
-
-@[to_additive]
-instance instTopologicalSpace (N : Subgroup G) : TopologicalSpace (G ⧸ N) :=
-  instTopologicalSpaceQuotient
-
-@[to_additive]
-instance [CompactSpace G] (N : Subgroup G) : CompactSpace (G ⧸ N) :=
-  Quotient.compactSpace
-
-@[to_additive]
-theorem quotientMap_mk (N : Subgroup G) : QuotientMap (mk : G → G ⧸ N) :=
-  quotientMap_quot_mk
-
-@[to_additive]
-theorem continuous_mk {N : Subgroup G} : Continuous (mk : G → G ⧸ N) :=
-  continuous_quot_mk
-
-section ContinuousMul
-
-variable [ContinuousMul G] {N : Subgroup G}
-
-@[to_additive]
-theorem isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := isOpenMap_quotient_mk'_mul
-
-@[to_additive]
-theorem isOpenQuotientMap_mk : IsOpenQuotientMap (mk : G → G ⧸ N) :=
-  MulAction.isOpenQuotientMap_quotientMk
-
-@[to_additive (attr := simp)]
-theorem dense_preimage_mk {s : Set (G ⧸ N)} : Dense ((↑) ⁻¹' s : Set G) ↔ Dense s :=
-  isOpenQuotientMap_mk.dense_preimage_iff
-
-@[to_additive]
-theorem dense_image_mk {s : Set G} :
-    Dense (mk '' s : Set (G ⧸ N)) ↔ Dense (s * (N : Set G)) := by
-  rw [← dense_preimage_mk, preimage_image_mk_eq_mul]
-
-@[to_additive]
-instance instContinuousSMul : ContinuousSMul G (G ⧸ N) where
-  continuous_smul := by
-    rw [← (IsOpenQuotientMap.id.prodMap isOpenQuotientMap_mk).continuous_comp_iff]
-    exact continuous_mk.comp continuous_mul
-
-variable (N)
-
-/-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
-@[to_additive
-  "Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient."]
-theorem nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
-  (isOpenQuotientMap_mk.map_nhds_eq _).symm
-
-@[to_additive]
-instance instFirstCountableTopology [FirstCountableTopology G] :
-    FirstCountableTopology (G ⧸ N) where
-  nhds_generated_countable := mk_surjective.forall.2 fun x ↦ nhds_eq N x ▸ inferInstance
-
-@[to_additive (attr := deprecated (since := "2024-08-05"))]
-theorem nhds_one_isCountablyGenerated [FirstCountableTopology G] [N.Normal] :
-    (𝓝 (1 : G ⧸ N)).IsCountablyGenerated :=
-  inferInstance
-
-end ContinuousMul
-
-variable [TopologicalGroup G] (N : Subgroup G)
-
-@[to_additive]
-instance instTopologicalGroup [N.Normal] : TopologicalGroup (G ⧸ N) where
-  continuous_mul := by
-    rw [← (isOpenQuotientMap_mk.prodMap isOpenQuotientMap_mk).continuous_comp_iff]
-    exact continuous_mk.comp continuous_mul
-  continuous_inv := continuous_inv.quotient_map' _
-
-@[to_additive (attr := deprecated (since := "2024-08-05"))]
-theorem _root_.topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) :=
-  instTopologicalGroup N
-
-end QuotientGroup
-
 /-- A typeclass saying that `p : G × G ↦ p.1 - p.2` is a continuous function. This property
 automatically holds for topological additive groups but it also holds, e.g., for `ℝ≥0`. -/
 class ContinuousSub (G : Type*) [TopologicalSpace G] [Sub G] : Prop where
@@ -1251,13 +1166,6 @@ theorem IsClosed.mul_right_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
   exact IsClosed.smul_left_of_isCompact ht (hs.image continuous_op)
 
 @[to_additive]
-theorem QuotientGroup.isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
-    IsClosedMap ((↑) : G → G ⧸ H) := by
-  intro t ht
-  rw [← (quotientMap_mk H).isClosed_preimage, preimage_image_mk_eq_mul]
-  exact ht.mul_right_of_isCompact hH
-
-@[to_additive]
 lemma subset_mul_closure_one {G} [MulOneClass G] [TopologicalSpace G] (s : Set G) :
     s ⊆ s * (closure {1} : Set G) := by
   have : s ⊆ s * ({1} : Set G) := by simp
@@ -1381,13 +1289,6 @@ theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1)
   _ ⊆ U := hV
 
 variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
-
-@[to_additive]
-instance Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
-    [hS : IsClosed (S : Set G)] : T3Space (G ⧸ S) := by
-  rw [← QuotientGroup.ker_mk' S] at hS
-  haveI := TopologicalGroup.t1Space (G ⧸ S) (quotientMap_quotient_mk'.isClosed_preimage.mp hS)
-  infer_instance
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the left, if
 it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also
@@ -1618,18 +1519,6 @@ theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
   let ⟨K, hK₁, hKcomp, hKcl⟩ := exists_mem_nhds_isCompact_isClosed (1 : G)
   ⟨K, hKcomp, hKcl, hK₁⟩
 
-/-- A quotient of a locally compact group is locally compact. -/
-@[to_additive]
-instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N) := by
-  refine ⟨fun x n hn ↦ ?_⟩
-  let π := ((↑) : G → G ⧸ N)
-  have C : Continuous π := continuous_quotient_mk'
-  obtain ⟨y, rfl⟩ : ∃ y, π y = x := Quot.exists_rep x
-  have : π ⁻¹' n ∈ 𝓝 y := preimage_nhds_coinduced hn
-  rcases local_compact_nhds this with ⟨s, s_mem, hs, s_comp⟩
-  exact ⟨π '' s, QuotientGroup.isOpenMap_coe.image_mem_nhds s_mem, mapsTo'.mp hs,
-    s_comp.image C⟩
-
 end
 
 section
@@ -1664,30 +1553,6 @@ instance {G} [TopologicalSpace G] [Group G] [TopologicalGroup G] :
 instance {G} [TopologicalSpace G] [AddGroup G] [TopologicalAddGroup G] :
     TopologicalGroup (Multiplicative G) where
   continuous_inv := @continuous_neg G _ _ _
-
-section Quotient
-
-variable [Group G] [TopologicalSpace G] [ContinuousMul G] {Γ : Subgroup G}
-
-@[to_additive]
-instance QuotientGroup.continuousConstSMul : ContinuousConstSMul G (G ⧸ Γ) where
-  continuous_const_smul g := by
-     convert ((@continuous_const _ _ _ _ g).mul continuous_id).quotient_map' _
-
-@[to_additive]
-theorem QuotientGroup.continuous_smul₁ (x : G ⧸ Γ) : Continuous fun g : G => g • x := by
-  induction x using QuotientGroup.induction_on
-  exact continuous_quotient_mk'.comp (continuous_mul_right _)
-
-/-- The quotient of a second countable topological group by a subgroup is second countable. -/
-@[to_additive
-  "The quotient of a second countable additive topological group by a subgroup is second
-  countable."]
-instance QuotientGroup.secondCountableTopology [SecondCountableTopology G] :
-    SecondCountableTopology (G ⧸ Γ) :=
-  ContinuousConstSMul.secondCountableTopology
-
-end Quotient
 
 /-- If `G` is a group with topological `⁻¹`, then it is homeomorphic to its units. -/
 @[to_additive " If `G` is an additive group with topological negation, then it is homeomorphic to
@@ -1911,7 +1776,7 @@ topologies contained in the intersection of `s` and `t`. -/
 instance : CompleteSemilatticeInf (GroupTopology α) :=
   { inferInstanceAs (InfSet (GroupTopology α)),
     inferInstanceAs (PartialOrder (GroupTopology α)) with
-    sInf_le := fun S a haS => toTopologicalSpace_le.1 <| sInf_le ⟨a, haS, rfl⟩
+    sInf_le := fun _ a haS => toTopologicalSpace_le.1 <| sInf_le ⟨a, haS, rfl⟩
     le_sInf := by
       intro S a hab
       apply (inferInstanceAs (CompleteLattice (TopologicalSpace α))).le_sInf
@@ -1944,4 +1809,4 @@ theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β
 
 end GroupTopology
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 2000

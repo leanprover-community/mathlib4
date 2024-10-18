@@ -108,6 +108,10 @@ lemma snd_mem_orbit_of_mem_orbit {x y : α × β} (h : x ∈ MulAction.orbit M y
   rcases h with ⟨g, rfl⟩
   exact mem_orbit _ _
 
+@[to_additive]
+lemma _root_.Finite.finite_mulAction_orbit [Finite M] (a : α) : Set.Finite (orbit M a) :=
+  Set.finite_range _
+
 variable (M)
 
 @[to_additive]
@@ -624,6 +628,25 @@ def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out' :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
       Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
+
+/-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
+Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/
+@[to_additive "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
+action. Phrased as a set union. See `AddAction.selfEquivSigmaOrbits` for the type isomorphism."]
+lemma univ_eq_iUnion_orbit :
+    Set.univ (α := α) = ⋃ x : Ω, x.orbit := by
+  ext x
+  simp only [Set.mem_univ, Set.mem_iUnion, true_iff]
+  exact ⟨Quotient.mk'' x, by simp⟩
+
+@[to_additive]
+lemma _root_.Finite.of_finite_mulAction_orbitRel_quotient [Finite G] [Finite Ω] : Finite α := by
+  rw [(selfEquivSigmaOrbits' G _).finite_iff]
+  have : ∀ g : Ω, Finite g.orbit := by
+    intro g
+    induction g using Quotient.inductionOn'
+    simpa [Set.finite_coe_iff] using Finite.finite_mulAction_orbit _
+  exact Finite.instSigma
 
 variable (β)
 
