@@ -42,7 +42,7 @@ set of all minimal polynomials (not proved here).
 
 -/
 
-open scoped Pointwise BigOperators
+open scoped Pointwise
 
 namespace Subgroup
 
