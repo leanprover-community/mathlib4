@@ -161,11 +161,11 @@ theorem ContDiffWithinAt.congr_of_eventuallyEq_insert (h : ContDiffWithinAt 𝕜
   h.congr_of_eventuallyEq (nhdsWithin_mono x (subset_insert x s) h₁)
     (mem_of_mem_nhdsWithin (mem_insert x s) h₁ : _)
 
-theorem ContDiffWithinAt.congr_of_eventually_eq' (h : ContDiffWithinAt 𝕜 n f s x)
+theorem ContDiffWithinAt.congr_of_eventually_eq_of_mem (h : ContDiffWithinAt 𝕜 n f s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : ContDiffWithinAt 𝕜 n f₁ s x :=
   h.congr_of_eventuallyEq h₁ <| h₁.self_of_nhdsWithin hx
 
-theorem Filter.EventuallyEq.contDiffWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
+theorem Filter.EventuallyEq.congr_contDiffWithinAt (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     ContDiffWithinAt 𝕜 n f₁ s x ↔ ContDiffWithinAt 𝕜 n f s x :=
   ⟨fun H => ContDiffWithinAt.congr_of_eventuallyEq H h₁.symm hx.symm, fun H =>
     H.congr_of_eventuallyEq h₁ hx⟩
