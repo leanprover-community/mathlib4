@@ -170,20 +170,20 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
     -- the theorem `generateFrom_induction`.
     have : MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, (μ (s ∆ t)).toReal < ε := by
       apply generateFrom_induction
-        (p := fun s ↦ MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, (μ (s ∆ t)).toReal < ε)
+        (p := fun s _ ↦ MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, (μ (s ∆ t)).toReal < ε)
         (C := 𝒜) (hs := hgen ▸ ms)
       · -- If `t ∈ 𝒜`, then `μ (t ∆ t) = 0` which is less than any `ε > 0`.
-        exact fun t t_mem ↦ ⟨hgen ▸ measurableSet_generateFrom t_mem,
+        exact fun t t_mem _ ↦ ⟨hgen ▸ measurableSet_generateFrom t_mem,
           fun ε ε_pos ↦ ⟨t, t_mem, by simpa⟩⟩
       · -- `∅ ∈ 𝒜` and `μ (∅ ∆ ∅) = 0` which is less than any `ε > 0`.
         exact ⟨MeasurableSet.empty, fun ε ε_pos ↦ ⟨∅, h𝒜.empty_mem, by simpa⟩⟩
       · -- If `s` is measurable and `t ∈ 𝒜` such that `μ (s ∆ t) < ε`, then `tᶜ ∈ 𝒜` and
         -- `μ (sᶜ ∆ tᶜ) = μ (s ∆ t) < ε` so `sᶜ` can be approximated.
-        refine fun t ⟨mt, ht⟩ ↦ ⟨mt.compl, fun ε ε_pos ↦ ?_⟩
+        refine fun t _ ⟨mt, ht⟩ ↦ ⟨mt.compl, fun ε ε_pos ↦ ?_⟩
         rcases ht ε ε_pos with ⟨u, u_mem, hμtcu⟩
         exact ⟨uᶜ, h𝒜.compl_mem u_mem, by rwa [compl_symmDiff_compl]⟩
       · -- Let `(fₙ)` be a sequence of measurable sets and `ε > 0`.
-        refine fun f hf ↦ ⟨MeasurableSet.iUnion (fun n ↦ (hf n).1), fun ε ε_pos ↦ ?_⟩
+        refine fun f _ hf ↦ ⟨MeasurableSet.iUnion (fun n ↦ (hf n).1), fun ε ε_pos ↦ ?_⟩
         -- We have  `μ (⋃ n ≤ N, fₙ) ⟶ μ (⋃ n, fₙ)`.
         have := tendsto_measure_iUnion_accumulate (μ := μ) (f := f)
         rw [← tendsto_toReal_iff (fun _ ↦ measure_ne_top _ _) (measure_ne_top _ _)] at this
