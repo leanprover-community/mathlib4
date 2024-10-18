@@ -3,7 +3,6 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala, Yuyang Zhao
 -/
-import Mathlib.Data.Nat.Notation
 
 /-!
 # Binary recursion on `Nat`
@@ -22,7 +21,7 @@ universe u
 namespace Nat
 
 /-- `bit b` appends the digit `b` to the binary representation of its natural number input. -/
-def bit (b : Bool) : ℕ → ℕ := cond b (2 * · + 1) (2 * ·)
+def bit (b : Bool) : Nat → Nat := cond b (2 * · + 1) (2 * ·)
 
 theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
 
@@ -33,33 +32,35 @@ theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) 
 theorem bit_eq_zero_iff {n : Nat} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
   cases n <;> cases b <;> simp [bit, Nat.shiftLeft_succ, Nat.two_mul, ← Nat.add_assoc]
 
-/-- For a predicate `C : Nat → Sort u`, if instances can be
+/-- For a predicate `motive : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for any given natural number. -/
 @[inline]
-def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n :=
+def bitCasesOn {motive : Nat → Sort u} (n) (h : ∀ b n, motive (bit b n)) : motive n :=
   -- `1 &&& n != 0` is faster than `n.testBit 0`. This may change when we have faster `testBit`.
   let x := h (1 &&& n != 0) (n >>> 1)
-  -- `congrArg C _` is `rfl` in non-dependent case
-  congrArg C n.bit_testBit_zero_shiftRight_one ▸ x
+  -- `congrArg motive _ ▸ x` is defeq to `x` in non-dependent case
+  congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
 
 /-- A recursion principle for `bit` representations of natural numbers.
-  For a predicate `C : Nat → Sort u`, if instances can be
+  For a predicate `motive : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for all natural numbers. -/
 @[specialize]
-def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) (n : Nat) : C n :=
-  if n0 : n = 0 then congrArg C n0 ▸ z
+def binaryRec {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n → motive (bit b n))
+    (n : Nat) : motive n :=
+  if n0 : n = 0 then congrArg motive n0 ▸ z
   else
     let x := f (1 &&& n != 0) (n >>> 1) (binaryRec z f (n >>> 1))
-    congrArg C n.bit_testBit_zero_shiftRight_one ▸ x
+    congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
 decreasing_by exact bitwise_rec_lemma n0
 
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
   the bit being appended is `true`-/
 @[elab_as_elim, specialize]
-def binaryRec' {C : Nat → Sort u} (z : C 0)
-    (f : ∀ b n, (n = 0 → b = true) → C n → C (bit b n)) : ∀ n, C n :=
+def binaryRec' {motive : Nat → Sort u} (z : motive 0)
+    (f : ∀ b n, (n = 0 → b = true) → motive n → motive (bit b n)) :
+    ∀ n, motive n :=
   binaryRec z fun b n ih =>
     if h : n = 0 → b = true then f b n h ih
     else
@@ -70,8 +71,9 @@ def binaryRec' {C : Nat → Sort u} (z : C 0)
 
 /-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
 @[elab_as_elim, specialize]
-def binaryRecFromOne {C : Nat → Sort u} (z₀ : C 0) (z₁ : C 1)
-    (f : ∀ b n, n ≠ 0 → C n → C (bit b n)) : ∀ n, C n :=
+def binaryRecFromOne {motive : Nat → Sort u} (z₀ : motive 0) (z₁ : motive 1)
+    (f : ∀ b n, n ≠ 0 → motive n → motive (bit b n)) :
+    ∀ n, motive n :=
   binaryRec' z₀ fun b n h ih =>
     if h' : n = 0 then
       have : bit b n = bit true 0 := by
@@ -125,7 +127,7 @@ theorem binaryRec_eq' {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
   by_cases h' : bit b n = 0
   case pos =>
     obtain ⟨rfl, rfl⟩ := bit_eq_zero_iff.mp h'
-    simp only [forall_const, or_false] at h
+    simp only [Bool.false_eq_true, imp_false, not_true_eq_false, or_false] at h
     unfold binaryRec
     exact h.symm
   case neg =>
