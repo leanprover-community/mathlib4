@@ -26,8 +26,8 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``Setoid.r
     (some { numArgs := 2, coercee := 1, type := .coeFun })
 
--- No need to reference `Setoid.r` in the names of lemmas,
--- since it is already registered as a coercion.
+/-- When writing a lemma about `someSetoid x y` (which uses this instance),
+call it `someSetoid_apply` not `someSetoid_r`. -/
 instance : CoeFun (Setoid α) (fun _ ↦ α → α → Prop) where
   coe := @Setoid.r _
 
