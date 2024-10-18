@@ -4507,6 +4507,8 @@ import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.Algebra.Rat
 import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
+import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
+import Mathlib.Topology.Algebra.ClopenNhdofOne
 import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
