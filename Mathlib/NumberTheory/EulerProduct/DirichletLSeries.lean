@@ -142,15 +142,14 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
       LSeries ↗χ s * ∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s)) := by
   rw [prod_eq_tprod_mulIndicator, ← dirichletLSeries_eulerProduct_tprod _ hs,
     ← dirichletLSeries_eulerProduct_tprod _ hs]
-  -- not sure why the `show` is needed here, `tprod_subtype` doesn't bite otherwise
-  show ∏' p : ↑{p : ℕ | p.Prime}, _ = (∏' p : ↑{p : ℕ | p.Prime}, _) * _
-  rw [tprod_subtype ↑{p : ℕ | p.Prime} fun p ↦ (1 - (changeLevel hMN χ) p * p ^ (-s))⁻¹,
-    tprod_subtype ↑{p : ℕ | p.Prime} fun p ↦ (1 - χ p * p ^ (-s))⁻¹, ← tprod_mul]
+  -- convert to a form suitable for `tprod_subtype`
+  have (f : Primes → ℂ) : ∏' (p : Primes), f p = ∏' (p : ↑{p : ℕ | p.Prime}), f p := rfl
+  rw [this, tprod_subtype _ fun p : ℕ ↦ (1 - (changeLevel hMN χ) p * p ^ (-s))⁻¹,
+    this, tprod_subtype _ fun p : ℕ ↦ (1 - χ p * p ^ (-s))⁻¹, ← tprod_mul]
   rotate_left -- deal with convergence goals first
-  · rw [← multipliable_subtype_iff_mulIndicator]
-    exact (dirichletLSeries_eulerProduct_hasProd χ hs).multipliable
-  · rw [← multipliable_subtype_iff_mulIndicator]
-    exact Multipliable.of_finite
+  · exact multipliable_subtype_iff_mulIndicator.mp
+      (dirichletLSeries_eulerProduct_hasProd χ hs).multipliable
+  · exact multipliable_subtype_iff_mulIndicator.mp Multipliable.of_finite
   · congr 1 with p
     simp only [Set.mulIndicator_apply, Set.mem_setOf_eq, Finset.mem_coe, Nat.mem_primeFactors,
       ne_eq, mul_ite, ite_mul, one_mul, mul_one]
@@ -161,8 +160,8 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
     · simp only [hp', false_and, ↓reduceIte, inv_inj, sub_right_inj, mul_eq_mul_right_iff,
         cpow_eq_zero_iff, Nat.cast_eq_zero, h.ne_zero, ne_eq, neg_eq_zero, or_false]
       have hq : IsUnit (p : ZMod N) := (ZMod.isUnit_prime_iff_not_dvd h).mpr hp'
-      have := hq.unit_spec ▸ DirichletCharacter.changeLevel_eq_cast_of_dvd χ hMN hq.unit
-      simp only [this, ZMod.cast_natCast hMN]
+      simp only [hq.unit_spec ▸ DirichletCharacter.changeLevel_eq_cast_of_dvd χ hMN hq.unit,
+        ZMod.cast_natCast hMN]
     · simp only [hp', NeZero.ne N, not_false_eq_true, and_self, ↓reduceIte]
       have : ¬IsUnit (p : ZMod N) := by rwa [ZMod.isUnit_prime_iff_not_dvd h, not_not]
       rw [MulChar.map_nonunit _ this, zero_mul, sub_zero, inv_one]

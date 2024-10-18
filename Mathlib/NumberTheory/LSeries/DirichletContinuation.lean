@@ -81,14 +81,14 @@ lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N
     (χ : DirichletCharacter ℂ M) {s : ℂ} (hs : s ≠ 1) :
     LFunction (changeLevel hMN χ) s =
       LFunction χ s * ∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s)) := by
-  have hpc : IsPreconnected ({1}ᶜ : Set ℂ) := by
-    refine (isConnected_compl_singleton_of_one_lt_rank ?_ _).isPreconnected
-    simp only [rank_real_complex, Nat.one_lt_ofNat]
+  have hpc : IsPreconnected ({1}ᶜ : Set ℂ) := 
+    (isConnected_compl_singleton_of_one_lt_rank (rank_real_complex ▸ Nat.one_lt_ofNat) _)
+      |>.isPreconnected
   have hne : 2 ∈ ({1}ᶜ : Set ℂ) := by norm_num
   refine AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq (𝕜 := ℂ)
     (g := fun s ↦ LFunction χ s * ∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s))) ?_ ?_ hpc hne ?_ hs
   · refine DifferentiableOn.analyticOnNhd (fun s hs ↦ ?_) isOpen_compl_singleton
-    exact (differentiableAt_LFunction ((changeLevel hMN) χ) s (.inl hs)).differentiableWithinAt
+    exact (differentiableAt_LFunction _ _ (.inl hs)).differentiableWithinAt
   · refine DifferentiableOn.analyticOnNhd (fun s hs ↦ ?_) isOpen_compl_singleton
     refine ((differentiableAt_LFunction _ _ (.inl hs)).mul ?_).differentiableWithinAt
     refine .finset_prod fun i hi ↦ ?_
@@ -101,7 +101,8 @@ lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N
 
 /-- If `χ` is a Dirichlet character and its level `M` divides `N`, then we obtain the L function
 of `χ` considered as a Dirichlet character of level `N` from the L function of `χ` by multiplying
-with `∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s))`. -/
+with `∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s))`.
+(Note that `1 - χ p * p ^ (-s) = 1` when `p` divides `M`). -/
 lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
     (χ : DirichletCharacter ℂ M) {s : ℂ} (h : χ ≠ 1 ∨ s ≠ 1) :
     (changeLevel hMN χ).LFunction s =
