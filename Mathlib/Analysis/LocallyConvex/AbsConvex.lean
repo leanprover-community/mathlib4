@@ -265,31 +265,6 @@ variable (E 𝕜) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
 variable [UniformSpace E] [UniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
--- TVS II.25 Prop3
-theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
-    TotallyBounded (absConvexHull ℝ s) := by
-  rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
-  intro U hU
-  obtain ⟨W, hW₁, _, _, hW₄⟩ := exists_closed_nhds_zero_neg_eq_add_subset hU
-  obtain ⟨_, ⟨hV₁, hV₂, hV₃⟩⟩ :=
-    (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs W hW₁
-  obtain ⟨t, ⟨htf, hts⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hs) _ hV₁
-  obtain ⟨t', ⟨htf', hts'⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp
-    (IsCompact.totallyBounded (Set.Finite.isCompact_convexHull
-      (finite_union.mpr ⟨htf,Finite.neg htf⟩)))) _ hV₁
-  use t'
-  have en {t₁ V₁ : Set E} : (⋃ y ∈ t₁, y +ᵥ V₁) = t₁ + V₁ := iUnion_add_left_image
-  rw [en] at hts'
-  rw [en] at hts
-  simp_rw [en]
-  exact ⟨htf',
-    subset_trans (by
-      rw [← add_assoc]
-      apply le_trans _ (Set.add_subset_add_right hts')
-      rw [convexHull_union_neg_eq_absConvexHull, ← AbsConvex.absConvexHull_eq hV₂]
-      exact le_trans (absConvexHull_mono hts) (absConvexHull_add_subset ℝ))
-    (Set.add_subset_add_left (subset_trans (add_subset_add hV₃ hV₃) hW₄))⟩
-
 theorem totallyBounded_convexHull (hs : TotallyBounded s) :
     TotallyBounded (convexHull ℝ s) := by
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
@@ -313,7 +288,8 @@ theorem totallyBounded_convexHull (hs : TotallyBounded s) :
       ) (Set.add_subset_add_right hts'))
       (Set.add_subset_add_left (subset_trans (add_subset_add hV₃ hV₃) hW₄))⟩
 
-theorem totallyBounded_absConvexHull₂ (hs : TotallyBounded s) :
+-- TVS II.25 Prop3
+theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
     TotallyBounded (absConvexHull ℝ s) := by
   rw [← convexHull_union_neg_eq_absConvexHull]
   apply totallyBounded_convexHull
