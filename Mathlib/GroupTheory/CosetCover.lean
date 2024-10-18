@@ -42,7 +42,7 @@ set of all minimal polynomials (not proved here).
 
 -/
 
-open scoped Pointwise BigOperators
+open scoped Pointwise
 
 namespace Subgroup
 
@@ -343,7 +343,7 @@ theorem exists_index_le_card_of_leftCoset_cover :
     | inl hindex =>
       rwa [hindex, Nat.cast_zero, inv_zero, inv_pos, Nat.cast_pos]
     | inr hindex =>
-      exact inv_lt_inv_of_lt (by exact_mod_cast hs') (by exact_mod_cast h i hi ⟨hindex⟩)
+      exact inv_strictAnti₀ (by exact_mod_cast hs') (by exact_mod_cast h i hi ⟨hindex⟩)
   apply (Finset.sum_lt_sum_of_nonempty hs hlt).trans_eq
   rw [Finset.sum_const, nsmul_eq_mul, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr hs'.ne')]
 
@@ -366,7 +366,7 @@ end Submodule
 
 section Subspace
 
-variable {k E ι : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k E]
+variable {k E : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k E]
     {s : Finset (Subspace k E)}
 
 /- A vector space over an infinite field cannot be a finite union of proper subspaces. -/

@@ -7,7 +7,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
-import Mathlib.Topology.ContinuousFunction.StarOrdered
+import Mathlib.Topology.ContinuousMap.StarOrdered
 
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 
@@ -24,11 +24,11 @@ the spectral order.
   C⋆-algebra.
 * `mul_star_le_algebraMap_norm_sq` and `star_mul_le_algebraMap_norm_sq`, which give similar
   statements for `a * star a` and `star a * a`.
-* `CStarRing.norm_le_norm_of_nonneg_of_le`: in a non-unital C⋆-algebra, if `0 ≤ a ≤ b`, then
+* `CStarAlgebra.norm_le_norm_of_nonneg_of_le`: in a non-unital C⋆-algebra, if `0 ≤ a ≤ b`, then
   `‖a‖ ≤ ‖b‖`.
-* `CStarRing.conjugate_le_norm_smul`: in a non-unital C⋆-algebra, we have that
+* `CStarAlgebra.conjugate_le_norm_smul`: in a non-unital C⋆-algebra, we have that
   `star a * b * a ≤ ‖b‖ • (star a * a)` (and a primed version for the `a * b * star a` case).
-* `CStarRing.inv_le_inv_iff`: in a unital C⋆-algebra, `b⁻¹ ≤ a⁻¹` iff `a ≤ b`.
+* `CStarAlgebra.inv_le_inv_iff`: in a unital C⋆-algebra, `b⁻¹ ≤ a⁻¹` iff `a ≤ b`.
 
 ## Tags
 
@@ -43,9 +43,11 @@ variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A]
   [PartialOrder A] [StarRing A] [StarOrderedRing A] [CStarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
   [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
 
-instance instPartialOrder : PartialOrder (Unitization ℂ A) := CStarRing.spectralOrder _
+instance instPartialOrder : PartialOrder (Unitization ℂ A) :=
+    CStarAlgebra.spectralOrder _
 
-instance instStarOrderedRing : StarOrderedRing (Unitization ℂ A) := CStarRing.spectralOrderedRing _
+instance instStarOrderedRing : StarOrderedRing (Unitization ℂ A) :=
+    CStarAlgebra.spectralOrderedRing _
 
 lemma inr_le_iff (a b : A) (ha : IsSelfAdjoint a := by cfc_tac)
     (hb : IsSelfAdjoint b := by cfc_tac) :
@@ -83,20 +85,20 @@ lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [
   rw [cfc_nnreal_eq_real, cfc_nnreal_eq_real, cfc_le_iff ..]
   simp [NNReal.coe_le_coe, ← ha_spec.image]
 
+open ContinuousFunctionalCalculus in
 /-- In a unital `ℝ`-algebra `A` with a continuous functional calculus, an element `a : A` is larger
 than some `algebraMap ℝ A r` if and only if every element of the `ℝ`-spectrum is nonnegative. -/
 lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A]
-    [PartialOrder A] [StarOrderedRing A] [Algebra ℝ A] [NonnegSpectrumClass ℝ A]
+    [PartialOrder A] [StarOrderedRing A] [Algebra ℝ A] [NonnegSpectrumClass ℝ A] [Nontrivial A]
     [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-    {a : A} [CompactSpace (spectrum ℝ a)]
-    (h_non : (spectrum ℝ a).Nonempty) (ha : IsSelfAdjoint a := by cfc_tac) :
+    {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     (∃ r > 0, algebraMap ℝ A r ≤ a) ↔ (∀ x ∈ spectrum ℝ a, 0 < x) := by
   have h_cpct : IsCompact (spectrum ℝ a) := isCompact_iff_compactSpace.mpr inferInstance
   simp_rw [algebraMap_le_iff_le_spectrum (a := a)]
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨r, hr, hr_le⟩
     exact (hr.trans_le <| hr_le · ·)
-  · obtain ⟨r, hr, hr_min⟩ := h_cpct.exists_isMinOn h_non continuousOn_id
+  · obtain ⟨r, hr, hr_min⟩ := h_cpct.exists_isMinOn (spectrum_nonempty ℝ a ha) continuousOn_id
     exact ⟨r, h _ hr, hr_min⟩
 
 section CStar_unital
@@ -124,11 +126,13 @@ lemma IsSelfAdjoint.neg_algebraMap_norm_le_self {a : A} (ha : IsSelfAdjoint a :=
     exact IsSelfAdjoint.le_algebraMap_norm_self (neg ha)
   exact neg_le.mp this
 
-lemma CStarRing.mul_star_le_algebraMap_norm_sq {a : A} : a * star a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
+lemma CStarAlgebra.mul_star_le_algebraMap_norm_sq {a : A} :
+    a * star a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
   have : a * star a ≤ algebraMap ℝ A ‖a * star a‖ := IsSelfAdjoint.le_algebraMap_norm_self
   rwa [CStarRing.norm_self_mul_star, ← pow_two] at this
 
-lemma CStarRing.star_mul_le_algebraMap_norm_sq {a : A} : star a * a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
+lemma CStarAlgebra.star_mul_le_algebraMap_norm_sq {a : A} :
+    star a * a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
   have : star a * a ≤ algebraMap ℝ A ‖star a * a‖ := IsSelfAdjoint.le_algebraMap_norm_self
   rwa [CStarRing.norm_star_mul_self, ← pow_two] at this
 
@@ -138,7 +142,7 @@ lemma IsSelfAdjoint.toReal_spectralRadius_eq_norm {a : A} (ha : IsSelfAdjoint a)
     (spectralRadius ℝ a).toReal = ‖a‖ := by
   simp [ha.spectrumRestricts.spectralRadius_eq, ha.spectralRadius_eq_nnnorm]
 
-namespace CStarRing
+namespace CStarAlgebra
 
 lemma norm_or_neg_norm_mem_spectrum [Nontrivial A] {a : A}
     (ha : IsSelfAdjoint a := by cfc_tac) : ‖a‖ ∈ spectrum ℝ a ∨ -‖a‖ ∈ spectrum ℝ a := by
@@ -189,7 +193,7 @@ lemma nnnorm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_
     ‖a‖₊ ≤ n ↔ a ≤ n := by
   simpa using nnnorm_le_iff_of_nonneg a n
 
-end CStarRing
+end CStarAlgebra
 
 section Inv
 
@@ -209,15 +213,13 @@ lemma CFC.conjugate_rpow_neg_one_half {a : A} (h₀ : IsUnit a) (ha : 0 ≤ a :=
 
 /-- In a unital C⋆-algebra, if `a` is nonnegative and invertible, and `a ≤ b`, then `b` is
 invertible. -/
-lemma CStarRing.isUnit_of_le {a b : A} (h₀ : IsUnit a) (ha : 0 ≤ a := by cfc_tac)
+lemma CStarAlgebra.isUnit_of_le {a b : A} (h₀ : IsUnit a) (ha : 0 ≤ a := by cfc_tac)
     (hab : a ≤ b) : IsUnit b := by
   rw [← spectrum.zero_not_mem_iff ℝ≥0] at h₀ ⊢
   nontriviality A
   have hb := (show 0 ≤ a from ha).trans hab
-  have ha' := IsSelfAdjoint.of_nonneg ha |>.spectrum_nonempty
-  have hb' := IsSelfAdjoint.of_nonneg hb |>.spectrum_nonempty
   rw [zero_not_mem_iff, SpectrumRestricts.nnreal_lt_iff (.nnreal_of_nonneg ‹_›),
-    NNReal.coe_zero, ← CFC.exists_pos_algebraMap_le_iff ‹_›] at h₀ ⊢
+    NNReal.coe_zero, ← CFC.exists_pos_algebraMap_le_iff] at h₀ ⊢
   peel h₀ with r hr _
   exact this.trans hab
 
@@ -230,7 +232,7 @@ lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hbu : IsUnit b) (ha : 0 ≤ a) (hb : 
     rw [← sq_le_one_iff (norm_nonneg _), sq, ← CStarRing.norm_star_mul_self, star_mul,
       IsSelfAdjoint.of_nonneg sqrt_nonneg, IsSelfAdjoint.of_nonneg rpow_nonneg,
       ← mul_assoc, mul_assoc _ _ (sqrt a), sqrt_mul_sqrt_self a,
-      CStarRing.norm_le_one_iff_of_nonneg _ hbab]
+      CStarAlgebra.norm_le_one_iff_of_nonneg _ hbab]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · calc
       _ ≤ ↑b ^ (-(1 / 2) : ℝ) * (b : A) * ↑b ^ (-(1 / 2) : ℝ) :=
@@ -252,8 +254,10 @@ lemma le_iff_norm_sqrt_mul_sqrt_inv {a : A} {b : Aˣ} (ha : 0 ≤ a) (hb : 0 ≤
     CFC.rpow_rpow (b : A) _ _ (by simp) (by norm_num), le_iff_norm_sqrt_mul_rpow b.isUnit ha hb]
   norm_num
 
+namespace CStarAlgebra
+
 /-- In a unital C⋆-algebra, if `0 ≤ a ≤ b` and `a` and `b` are units, then `b⁻¹ ≤ a⁻¹`. -/
-protected lemma CStarRing.inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
+protected lemma inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
     (hab : (a : A) ≤ b) : (↑b⁻¹ : A) ≤ a⁻¹ := by
   have hb := ha.trans hab
   have hb_inv : (0 : A) ≤ b⁻¹ := inv_nonneg_of_nonneg b hb
@@ -267,43 +271,45 @@ protected lemma CStarRing.inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
 
 /-- In a unital C⋆-algebra, if `0 ≤ a` and `0 ≤ b` and `a` and `b` are units, then `a⁻¹ ≤ b⁻¹`
 if and only if `b ≤ a`. -/
-protected lemma CStarRing.inv_le_inv_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (b : A)) :
+protected lemma inv_le_inv_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (b : A)) :
     (↑a⁻¹ : A) ≤ b⁻¹ ↔ (b : A) ≤ a :=
-  ⟨CStarRing.inv_le_inv (inv_nonneg_of_nonneg a ha), CStarRing.inv_le_inv hb⟩
+  ⟨CStarAlgebra.inv_le_inv (inv_nonneg_of_nonneg a ha), CStarAlgebra.inv_le_inv hb⟩
 
-lemma CStarRing.inv_le_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (↑b : A)) :
+lemma inv_le_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (↑b : A)) :
     (↑a⁻¹ : A) ≤ b ↔ (↑b⁻¹ : A) ≤ a := by
-  simpa using CStarRing.inv_le_inv_iff ha (inv_nonneg_of_nonneg b hb)
+  simpa using CStarAlgebra.inv_le_inv_iff ha (inv_nonneg_of_nonneg b hb)
 
-lemma CStarRing.le_inv_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (↑b : A)) :
+lemma le_inv_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (↑b : A)) :
     a ≤ (↑b⁻¹ : A) ↔ b ≤ (↑a⁻¹ : A) := by
-  simpa using CStarRing.inv_le_inv_iff (inv_nonneg_of_nonneg a ha) hb
+  simpa using CStarAlgebra.inv_le_inv_iff (inv_nonneg_of_nonneg a ha) hb
 
-lemma CStarRing.one_le_inv_iff_le_one {a : Aˣ} (ha : 0 ≤ (a : A)) :
+lemma one_le_inv_iff_le_one {a : Aˣ} (ha : 0 ≤ (a : A)) :
     1 ≤ (↑a⁻¹ : A) ↔ a ≤ 1 := by
-  simpa using CStarRing.le_inv_iff (a := 1) (by simp) ha
+  simpa using CStarAlgebra.le_inv_iff (a := 1) (by simp) ha
 
-lemma CStarRing.inv_le_one_iff_one_le {a : Aˣ} (ha : 0 ≤ (a : A)) :
+lemma inv_le_one_iff_one_le {a : Aˣ} (ha : 0 ≤ (a : A)) :
     (↑a⁻¹ : A) ≤ 1 ↔ 1 ≤ a := by
-  simpa using CStarRing.inv_le_iff ha (b := 1) (by simp)
+  simpa using CStarAlgebra.inv_le_iff ha (b := 1) (by simp)
 
-lemma CStarRing.inv_le_one {a : Aˣ} (ha : 1 ≤ a) : (↑a⁻¹ : A) ≤ 1 :=
-  CStarRing.inv_le_one_iff_one_le (zero_le_one.trans ha) |>.mpr ha
+lemma inv_le_one {a : Aˣ} (ha : 1 ≤ a) : (↑a⁻¹ : A) ≤ 1 :=
+  CStarAlgebra.inv_le_one_iff_one_le (zero_le_one.trans ha) |>.mpr ha
 
-lemma CStarRing.le_one_of_one_le_inv {a : Aˣ} (ha : 1 ≤ (↑a⁻¹ : A)) : (a : A) ≤ 1 := by
-  simpa using CStarRing.inv_le_one ha
+lemma le_one_of_one_le_inv {a : Aˣ} (ha : 1 ≤ (↑a⁻¹ : A)) : (a : A) ≤ 1 := by
+  simpa using CStarAlgebra.inv_le_one ha
 
-lemma CStarRing.rpow_neg_one_le_rpow_neg_one {a b : A} (ha : 0 ≤ a) (hab : a ≤ b) (hau : IsUnit a) :
+lemma rpow_neg_one_le_rpow_neg_one {a b : A} (ha : 0 ≤ a) (hab : a ≤ b) (hau : IsUnit a) :
     b ^ (-1 : ℝ) ≤ a ^ (-1 : ℝ) := by
   lift b to Aˣ using isUnit_of_le hau ha hab
   lift a to Aˣ using hau
   rw [rpow_neg_one_eq_inv a ha, rpow_neg_one_eq_inv b (ha.trans hab)]
-  exact CStarRing.inv_le_inv ha hab
+  exact CStarAlgebra.inv_le_inv ha hab
 
-lemma CStarRing.rpow_neg_one_le_one {a : A} (ha : 1 ≤ a) : a ^ (-1 : ℝ) ≤ 1 := by
+lemma rpow_neg_one_le_one {a : A} (ha : 1 ≤ a) : a ^ (-1 : ℝ) ≤ 1 := by
   lift a to Aˣ using isUnit_of_le isUnit_one zero_le_one ha
   rw [rpow_neg_one_eq_inv a (zero_le_one.trans ha)]
   exact inv_le_one ha
+
+end CStarAlgebra
 
 end Inv
 
@@ -315,7 +321,7 @@ variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [PartialOrder A] 
   [StarOrderedRing A] [CStarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
   [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
 
-namespace CStarRing
+namespace CStarAlgebra
 
 open ComplexOrder in
 instance instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A where
@@ -375,6 +381,6 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
   refine isClosed_eq ?_ ?_ |>.inter <| isClosed_le ?_ ?_
   all_goals fun_prop
 
-end CStarRing
+end CStarAlgebra
 
 end CStar_nonunital

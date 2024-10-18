@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro
+Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Category instance for topological spaces
@@ -47,16 +47,10 @@ instance : CoeSort TopCat Type* where
 instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
   X.str
 
--- We leave this temporarily as a reminder of the downstream instances #13170
--- -- Porting note: cannot find a coercion to function otherwise
--- -- attribute [instance] ConcreteCategory.instFunLike in
--- instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
---   coe (f : C(X, Y)) := f
-
 instance instFunLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y :=
   inferInstanceAs <| FunLike C(X, Y) X Y
 
-instance instMonoidHomClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
+instance instContinuousMapClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
   inferInstanceAs <| ContinuousMapClass C(X, Y) X Y
 
 -- Porting note (#10618): simp can prove this; removed simp
@@ -132,8 +126,8 @@ def trivial : Type u ⥤ TopCat.{u} where
 @[simps]
 def isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : X ≅ Y where
   -- Porting note: previously ⟨f⟩ for hom (inv) and tidy closed proofs
-  hom := f.toContinuousMap
-  inv := f.symm.toContinuousMap
+  hom := (f : C(X, Y))
+  inv := (f.symm : C(Y, X))
   hom_inv_id := by ext; exact f.symm_apply_apply _
   inv_hom_id := by ext; exact f.apply_symm_apply _
 
@@ -160,6 +154,18 @@ theorem of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso 
   dsimp [homeoOfIso, isoOfHomeo]
   ext
   rfl
+
+lemma isIso_of_bijective_of_isOpenMap {X Y : TopCat.{u}} (f : X ⟶ Y)
+    (hfbij : Function.Bijective f) (hfcl : IsOpenMap f) : IsIso f :=
+  let e : X ≃ₜ Y := Homeomorph.homeomorphOfContinuousOpen
+    (Equiv.ofBijective f hfbij) f.continuous hfcl
+  inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
+
+lemma isIso_of_bijective_of_isClosedMap {X Y : TopCat.{u}} (f : X ⟶ Y)
+    (hfbij : Function.Bijective f) (hfcl : IsClosedMap f) : IsIso f :=
+  let e : X ≃ₜ Y := Homeomorph.homeomorphOfContinuousClosed
+    (Equiv.ofBijective f hfbij) f.continuous hfcl
+  inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
 
 -- Porting note: simpNF requested partially simped version below
 theorem openEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :

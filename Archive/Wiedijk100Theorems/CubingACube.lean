@@ -71,7 +71,7 @@ theorem univ_pi_side (c : Cube n) : pi univ (side c) = c.toSet :=
 
 theorem toSet_subset {c c' : Cube n} : c.toSet ⊆ c'.toSet ↔ ∀ j, c.side j ⊆ c'.side j := by
   simp only [← univ_pi_side, univ_pi_subset_univ_pi_iff, (c.side_nonempty _).ne_empty, exists_false,
-    or_false_iff]
+    or_false]
 
 theorem toSet_disjoint {c c' : Cube n} :
     Disjoint c.toSet c'.toSet ↔ ∃ j, Disjoint (c.side j) (c'.side j) := by
@@ -361,7 +361,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
     dsimp only [x]; rw [← bi, add_sub_assoc, add_lt_iff_neg_left, sub_lt_zero]
     apply mi_strict_minimal (Ne.symm h2i') hi'
   refine ⟨x, ⟨?_, ?_⟩, ?_⟩
-  · simp only [side, neg_lt_zero, hw, add_lt_iff_neg_left, and_true_iff, mem_Ico, sub_eq_add_neg, x]
+  · simp only [side, neg_lt_zero, hw, add_lt_iff_neg_left, and_true, mem_Ico, sub_eq_add_neg, x]
     rw [add_assoc, le_add_iff_nonneg_right, ← sub_eq_add_neg, sub_nonneg]
     apply le_of_lt (w_lt_w h v hi')
   · simp only [side, not_and_or, not_lt, not_le, mem_Ico]; left; exact hx
@@ -408,7 +408,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
   have i'_i'' : i' ≠ i'' := by
     rintro ⟨⟩
     have : (cs i).b ∈ (cs i').toSet := by
-      simp only [toSet, forall_iff_succ, hi.1, bottom_mem_side h2i', true_and_iff, mem_setOf_eq]
+      simp only [toSet, forall_iff_succ, hi.1, bottom_mem_side h2i', true_and, mem_setOf_eq]
       intro j₂; by_cases hj₂ : j₂ = j
       · simpa [p', side_tail, hj'.symm, hj₂] using hi''.2 j
       · simpa [p, hj₂] using hi'.2 j₂

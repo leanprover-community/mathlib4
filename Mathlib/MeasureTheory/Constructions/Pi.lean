@@ -211,8 +211,7 @@ variable {δ : Type*} {π : δ → Type*} [∀ x, MeasurableSpace (π x)]
 protected def tprod (l : List δ) (μ : ∀ i, Measure (π i)) : Measure (TProd π l) := by
   induction' l with i l ih
   · exact dirac PUnit.unit
-  · have := (μ i).prod (α := π i) ih
-    exact this
+  · exact (μ i).prod (α := π i) ih
 
 @[simp]
 theorem tprod_nil (μ : ∀ i, Measure (π i)) : Measure.tprod [] μ = dirac PUnit.unit :=
@@ -837,7 +836,7 @@ theorem volume_preserving_piFinTwo (α : Fin 2 → Type u) [∀ i, MeasureSpace 
     MeasurePreserving (MeasurableEquiv.piFinTwo α) volume volume :=
   measurePreserving_piFinTwo _
 
-theorem measurePreserving_finTwoArrow_vec {α : Type u} {m : MeasurableSpace α} (μ ν : Measure α)
+theorem measurePreserving_finTwoArrow_vec {α : Type u} {_ : MeasurableSpace α} (μ ν : Measure α)
     [SigmaFinite μ] [SigmaFinite ν] :
     MeasurePreserving MeasurableEquiv.finTwoArrow (Measure.pi ![μ, ν]) (μ.prod ν) :=
   haveI : ∀ i, SigmaFinite (![μ, ν] i) := Fin.forall_fin_two.2 ⟨‹_›, ‹_›⟩

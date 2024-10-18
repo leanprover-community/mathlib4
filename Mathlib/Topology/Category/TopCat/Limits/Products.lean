@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
+Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Category.TopCat.Limits.Basic
@@ -51,7 +51,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan �
     dsimp
     rw [ContinuousMap.coe_mk, ← h ⟨i⟩]
     rfl
-  fac s j := rfl
+  fac _ _ := rfl
 
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
@@ -161,7 +161,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
     rintro S (_ | _) <;> {dsimp; ext; rfl}
   uniq := by
     intro S m h
-    -- Porting note: used to be `ext x`
+    -- Porting note (#11041): used to be `ext x`
     refine ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext ?_ ?_)
     · specialize h ⟨WalkingPair.left⟩
       apply_fun fun e => e x at h
@@ -224,7 +224,7 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
   · rintro ⟨y, rfl⟩
     simp_rw [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
     -- sizable changes in this proof after #13170
-    erw  [← comp_apply, ← comp_apply]
+    rw [← comp_apply, ← comp_apply]
     simp_rw [Limits.prod.map_fst,
       Limits.prod.map_snd, comp_apply]
     exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩
@@ -236,12 +236,12 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
     · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
       erw [← comp_apply, Limits.prod.map_fst]
       change (_ ≫ _ ≫ f) _ = _
-      erw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
+      rw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
       exact hx₁
     · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
       erw [← comp_apply, Limits.prod.map_snd]
       change (_ ≫ _ ≫ g) _ = _
-      erw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
+      rw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
       exact hx₂
 
 theorem inducing_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Inducing f)
@@ -346,8 +346,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         refine (dif_pos ?_).trans ?_
         · exact ⟨x, rfl⟩
         · dsimp
-          conv_lhs => erw [Equiv.ofInjective_symm_apply]
-          rfl -- `rfl` was not needed here before #13170
+          conv_lhs => rw [Equiv.ofInjective_symm_apply]
       · intro T f g
         ext x
         refine (dif_neg ?_).trans ?_
