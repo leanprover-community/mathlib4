@@ -45,6 +45,11 @@ Note that most computational proofs follow from their analogous proofs for affin
  * `WeierstrassCurve.Projective.negMap`: the negation operation on a point class.
  * `WeierstrassCurve.Projective.add`: the addition operation on a point representative.
  * `WeierstrassCurve.Projective.addMap`: the addition operation on a point class.
+ * `WeierstrassCurve.Projective.Point`: a nonsingular rational point.
+ * `WeierstrassCurve.Projective.Point.neg`: the negation operation on a nonsingular rational point.
+ * `WeierstrassCurve.Projective.Point.add`: the addition operation on a nonsingular rational point.
+ * `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the nonsingular
+    rational points on a projective Weierstrass curve with those on an affine Weierstrass curve.
 
 ## Main statements
 
@@ -1443,4 +1448,235 @@ lemma nonsingularLift_addMap {P Q : PointClass F} (hP : W.NonsingularLift P)
 
 end Addition
 
+/-! ### Nonsingular rational points -/
+
+variable (W') in
+/-- A nonsingular rational point on `W'`. -/
+@[ext]
+structure Point where
+  /-- The point class underlying a nonsingular rational point on `W'`. -/
+  {point : PointClass R}
+  /-- The nonsingular condition underlying a nonsingular rational point on `W'`. -/
+  (nonsingular : W'.NonsingularLift point)
+
+namespace Point
+
+lemma mk_point {P : PointClass R} (h : W'.NonsingularLift P) : (mk h).point = P :=
+  rfl
+
+instance instZeroPoint [Nontrivial R] : Zero W'.Point :=
+  ⟨⟨nonsingularLift_zero⟩⟩
+
+lemma zero_def [Nontrivial R] : (0 : W'.Point) = ⟨nonsingularLift_zero⟩ :=
+  rfl
+
+lemma zero_point [Nontrivial R] : (0 : W'.Point).point = ⟦![0, 1, 0]⟧ :=
+  rfl
+
+/-- The map from a nonsingular rational point on a Weierstrass curve `W'` in affine coordinates
+to the corresponding nonsingular rational point on `W'` in projective coordinates. -/
+def fromAffine [Nontrivial R] : W'.toAffine.Point → W'.Point
+  | 0 => 0
+  | .some h => ⟨(nonsingularLift_some ..).mpr h⟩
+
+lemma fromAffine_zero [Nontrivial R] : fromAffine 0 = (0 : W'.Point) :=
+  rfl
+
+lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
+    fromAffine (.some h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
+  rfl
+
+lemma fromAffine_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
+    fromAffine (.some h) ≠ 0 := fun h0 ↦ by
+  obtain ⟨u, eq⟩ := Quotient.eq.mp <| (Point.ext_iff ..).mp h0
+  simpa [Units.smul_def, smul_fin3] using congr_fun eq z
+
+/-- The negation of a nonsingular rational point on `W`.
+Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
+def neg (P : W.Point) : W.Point :=
+  ⟨nonsingularLift_negMap P.nonsingular⟩
+
+instance instNegPoint : Neg W.Point :=
+  ⟨neg⟩
+
+lemma neg_def (P : W.Point) : -P = P.neg :=
+  rfl
+
+lemma neg_point (P : W.Point) : (-P).point = W.negMap P.point :=
+  rfl
+
+/-- The addition of two nonsingular rational points on `W`.
+Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
+noncomputable def add (P Q : W.Point) : W.Point :=
+  ⟨nonsingularLift_addMap P.nonsingular Q.nonsingular⟩
+
+noncomputable instance instAddPoint : Add W.Point :=
+  ⟨add⟩
+
+lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
+  rfl
+
+lemma add_point (P Q : W.Point) : (P + Q).point = W.addMap P.point Q.point :=
+  rfl
+
+end Point
+
+section Affine
+
+/-! ### Equivalence with affine coordinates -/
+
+namespace Point
+
+open Classical in
+variable (W) in
+/-- The map from a point representative that is nonsingular on a Weierstrass curve `W` in projective
+coordinates to the corresponding nonsingular rational point on `W` in affine coordinates. -/
+noncomputable def toAffine (P : Fin 3 → F) : W.toAffine.Point :=
+  if hP : W.Nonsingular P ∧ P z ≠ 0 then .some <| (nonsingular_of_Z_ne_zero hP.2).mp hP.1 else 0
+
+lemma toAffine_of_singular {P : Fin 3 → F} (hP : ¬W.Nonsingular P) : toAffine W P = 0 := by
+  rw [toAffine, dif_neg <| not_and_of_not_left _ hP]
+
+lemma toAffine_of_Z_eq_zero {P : Fin 3 → F} (hPz : P z = 0) : toAffine W P = 0 := by
+  rw [toAffine, dif_neg <| not_and_not_right.mpr fun _ => hPz]
+
+lemma toAffine_zero : toAffine W ![0, 1, 0] = 0 :=
+  toAffine_of_Z_eq_zero rfl
+
+lemma toAffine_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
+    toAffine W P = .some ((nonsingular_of_Z_ne_zero hPz).mp hP) := by
+  rw [toAffine, dif_pos ⟨hP, hPz⟩]
+
+lemma toAffine_some {X Y : F} (h : W.Nonsingular ![X, Y, 1]) :
+    toAffine W ![X, Y, 1] = .some ((nonsingular_some ..).mp h) := by
+  simp only [toAffine_of_Z_ne_zero h one_ne_zero, fin3_def_ext, one_pow, div_one]
+
+lemma toAffine_smul (P : Fin 3 → F) {u : F} (hu : IsUnit u) :
+    toAffine W (u • P) = toAffine W P := by
+  by_cases hP : W.Nonsingular P
+  · by_cases hPz : P z = 0
+    · rw [toAffine_of_Z_eq_zero <| mul_eq_zero_of_right u hPz, toAffine_of_Z_eq_zero hPz]
+    · rw [toAffine_of_Z_ne_zero ((nonsingular_smul P hu).mpr hP) <| mul_ne_zero hu.ne_zero hPz,
+        toAffine_of_Z_ne_zero hP hPz, Affine.Point.some.injEq]
+      simp only [smul_fin3_ext, mul_div_mul_left _ _ hu.ne_zero, and_self]
+  · rw [toAffine_of_singular <| hP.comp (nonsingular_smul P hu).mp, toAffine_of_singular hP]
+
+lemma toAffine_of_equiv {P Q : Fin 3 → F} (h : P ≈ Q) : toAffine W P = toAffine W Q := by
+  rcases h with ⟨u, rfl⟩
+  exact toAffine_smul Q u.isUnit
+
+lemma toAffine_neg {P : Fin 3 → F} (hP : W.Nonsingular P) :
+    toAffine W (W.neg P) = -toAffine W P := by
+  by_cases hPz : P z = 0
+  · rw [neg_of_Z_eq_zero hP.left hPz, toAffine_smul _ (isUnit_Y_of_Z_eq_zero hP hPz).neg,
+      toAffine_zero, toAffine_of_Z_eq_zero hPz, Affine.Point.neg_zero]
+  · rw [neg_of_Z_ne_zero hPz, toAffine_smul _ <| Ne.isUnit hPz, toAffine_some <|
+        (nonsingular_smul _ <| Ne.isUnit hPz).mp <| neg_of_Z_ne_zero hPz ▸ nonsingular_neg hP,
+      toAffine_of_Z_ne_zero hP hPz, Affine.Point.neg_some]
+
+private lemma toAffine_add_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P)
+    (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+    (hxy : P x * Q z = Q x * P z → P y * Q z ≠ W.negY Q * P z) : toAffine W
+      ![W.toAffine.addX (P x / P z) (Q x / Q z)
+          (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
+        W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
+          (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
+        1] = toAffine W P + toAffine W Q := by
+  rw [toAffine_some <| nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy, toAffine_of_Z_ne_zero hP hPz,
+    toAffine_of_Z_ne_zero hQ hQz,
+    Affine.Point.add_of_imp <| by rwa [← X_eq_iff hPz hQz, ne_eq, ← Y_eq_iff' hPz hQz]]
+
+lemma toAffine_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
+    toAffine W (W.add P Q) = toAffine W P + toAffine W Q := by
+  by_cases hPz : P z = 0
+  · rw [toAffine_of_Z_eq_zero hPz, zero_add]
+    by_cases hQz : Q z = 0
+    · rw [add_of_Z_eq_zero hP hQ hPz hQz, toAffine_smul _ <| (isUnit_Y_of_Z_eq_zero hP hPz).pow 4,
+        toAffine_zero, toAffine_of_Z_eq_zero hQz]
+    · rw [add_of_Z_eq_zero_left hP.left hPz hQz,
+        toAffine_smul _ <| ((isUnit_Y_of_Z_eq_zero hP hPz).pow 2).mul <| Ne.isUnit hQz]
+  · by_cases hQz : Q z = 0
+    · rw [add_of_Z_eq_zero_right hQ.left hPz hQz,
+        toAffine_smul _ (((isUnit_Y_of_Z_eq_zero hQ hQz).pow 2).mul <| Ne.isUnit hPz).neg,
+        toAffine_of_Z_eq_zero hQz, add_zero]
+    · by_cases hxy : P x * Q z = Q x * P z → P y * Q z ≠ W.negY Q * P z
+      · by_cases hx : P x * Q z = Q x * P z
+        · rw [add_of_Y_ne' hP.left hQ.left hPz hQz hx <| hxy hx,
+            toAffine_smul _ <| isUnit_dblZ_of_Y_ne' hP.left hQ.left hPz hQz hx <| hxy hx,
+            toAffine_add_of_Z_ne_zero hP hQ hPz hQz hxy]
+        · rw [add_of_X_ne hP.left hQ.left hPz hQz hx, toAffine_smul _ <|
+              isUnit_addZ_of_X_ne hP.left hQ.left hx, toAffine_add_of_Z_ne_zero hP hQ hPz hQz hxy]
+      · rw [_root_.not_imp, not_ne_iff] at hxy
+        rw [toAffine_of_Z_ne_zero hP hPz, toAffine_of_Z_ne_zero hQ hQz, Affine.Point.add_of_Y_eq
+            ((X_eq_iff hPz hQz).mp hxy.left) ((Y_eq_iff' hPz hQz).mp hxy.right)]
+        by_cases hy : P y * Q z = Q y * P z
+        · rw [add_of_Y_eq hP.left hPz hQz hxy.left hy hxy.right,
+            toAffine_smul _ <| isUnit_dblU_of_Y_eq hP hPz hQz hxy.left hy hxy.right, toAffine_zero]
+        · rw [add_of_Y_ne hP.left hQ.left hPz hQz hxy.left hy,
+            toAffine_smul _ <| isUnit_addU_of_Y_ne hPz hQz hy, toAffine_zero]
+
+/-- The map from a nonsingular rational point on a Weierstrass curve `W` in projective coordinates
+to the corresponding nonsingular rational point on `W` in affine coordinates. -/
+noncomputable def toAffineLift (P : W.Point) : W.toAffine.Point :=
+  P.point.lift _ fun _ _ => toAffine_of_equiv
+
+lemma toAffineLift_eq {P : Fin 3 → F} (hP : W.NonsingularLift ⟦P⟧) :
+    toAffineLift ⟨hP⟩ = toAffine W P :=
+  rfl
+
+lemma toAffineLift_of_Z_eq_zero {P : Fin 3 → F} (hP : W.NonsingularLift ⟦P⟧) (hPz : P z = 0) :
+    toAffineLift ⟨hP⟩ = 0 :=
+  toAffine_of_Z_eq_zero hPz
+
+lemma toAffineLift_zero : toAffineLift (0 : W.Point) = 0 :=
+  toAffine_zero
+
+lemma toAffineLift_of_Z_ne_zero {P : Fin 3 → F} {hP : W.NonsingularLift ⟦P⟧} (hPz : P z ≠ 0) :
+    toAffineLift ⟨hP⟩ = .some ((nonsingular_of_Z_ne_zero hPz).mp hP) :=
+  toAffine_of_Z_ne_zero hP hPz
+
+lemma toAffineLift_some {X Y : F} (h : W.NonsingularLift ⟦![X, Y, 1]⟧) :
+    toAffineLift ⟨h⟩ = .some ((nonsingular_some ..).mp h) :=
+  toAffine_some h
+
+lemma toAffineLift_neg (P : W.Point) : (-P).toAffineLift = -P.toAffineLift := by
+  rcases P with @⟨⟨_⟩, hP⟩
+  exact toAffine_neg hP
+
+lemma toAffineLift_add (P Q : W.Point) :
+    (P + Q).toAffineLift = P.toAffineLift + Q.toAffineLift := by
+  rcases P, Q with ⟨@⟨⟨_⟩, hP⟩, @⟨⟨_⟩, hQ⟩⟩
+  exact toAffine_add hP hQ
+
+variable (W) in
+/-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` in Projective
+coordinates with the nonsingular rational points on `W` in affine coordinates. -/
+@[simps]
+noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
+  toFun := toAffineLift
+  invFun := fromAffine
+  left_inv := by
+    rintro @⟨⟨P⟩, hP⟩
+    by_cases hPz : P z = 0
+    · rw [Point.ext_iff, toAffineLift_eq, toAffine_of_Z_eq_zero hPz]
+      exact Quotient.eq.mpr <| Setoid.symm <| equiv_zero_of_Z_eq_zero hP hPz
+    · rw [Point.ext_iff, toAffineLift_eq, toAffine_of_Z_ne_zero hP hPz]
+      exact Quotient.eq.mpr <| Setoid.symm <| equiv_some_of_Z_ne_zero hPz
+  right_inv := by
+    rintro (_ | _)
+    · erw [fromAffine_zero, toAffineLift_zero, Affine.Point.zero_def]
+    · rw [fromAffine_some, toAffineLift_some]
+  map_add' := toAffineLift_add
+
+end Point
+
+end Affine
+
 end WeierstrassCurve.Projective
+
+/-- An abbreviation for `WeierstrassCurve.Projective.Point.fromAffine` for dot notation. -/
+abbrev WeierstrassCurve.Affine.Point.toProjective {R : Type u} [CommRing R] [Nontrivial R]
+    {W : Affine R} (P : W.Point) : W.toProjective.Point :=
+  Projective.Point.fromAffine P
+
+set_option linter.style.longFile 1700
