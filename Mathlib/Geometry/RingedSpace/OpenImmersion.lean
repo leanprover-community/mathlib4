@@ -1120,8 +1120,8 @@ theorem lift_range (H' : Set.range g.base ⊆ Set.range f.base) :
   have : _ = (pullback.fst f g).base :=
     PreservesPullback.iso_hom_fst
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
-  rw [LocallyRingedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
-  rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
+  rw [LocallyRingedSpace.comp_base, ← this, ← Category.assoc, coe_comp, Set.range_comp,
+      Set.range_iff_surjective.mpr, Set.image_univ]
   -- Porting note (#11224): change `rw` to `erw` on this lemma
   · erw [TopCat.pullback_fst_range]
     ext

@@ -87,9 +87,6 @@ instance funLike : FunLike (α →ᵈ β) α β where
 instance toDilationClass : DilationClass (α →ᵈ β) α β where
   edist_eq' f := edist_eq' f
 
-instance : CoeFun (α →ᵈ β) fun _ => α → β :=
-  DFunLike.hasCoeToFun
-
 @[simp]
 theorem toFun_eq_coe {f : α →ᵈ β} : f.toFun = (f : α → β) :=
   rfl
