@@ -73,7 +73,7 @@ private def toString_aux (e : ONote) (n : ℕ) (s : String) : String :=
   else (if e = 1 then "ω" else "ω^(" ++ s ++ ")") ++ if n = 1 then "" else "*" ++ toString n
 
 /-- Print an ordinal notation -/
-private def toString : ONote → String
+def toString : ONote → String
   | zero => "0"
   | oadd e n 0 => toString_aux e n (toString e)
   | oadd e n a => toString_aux e n (toString e) ++ " + " ++ toString a
@@ -82,7 +82,7 @@ instance : ToString ONote := ⟨toString⟩
 
 open Lean in
 /-- Print an ordinal notation -/
-private def repr' (prec : ℕ) : ONote → Format
+def repr' (prec : ℕ) : ONote → Format
   | zero => "0"
   | oadd e n a =>
     Repr.addAppParen
@@ -112,9 +112,6 @@ instance : NatCast ONote :=
 /-- Convert a natural number to an ordinal notation -/
 @[deprecated (since := "2024-10-17")]
 def ofNat (n : ℕ) : ONote := n
-
--- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
--- to emulate the old Lean 3 behaviour.
 
 @[simp] theorem natCast_zero : (0 : ℕ) = (0 : ONote) := rfl
 @[simp] theorem natCast_succ (n) : Nat.succ n = oadd 0 n.succPNat 0 := rfl
@@ -257,9 +254,7 @@ theorem nfBelow_natCast : ∀ n : ℕ, NFBelow n 1
 @[deprecated (since := "2024-10-17")]
 alias nfBelow_ofNat := nfBelow_natCast
 
-instance nf_natCast (n : ℕ) : NF n :=
-  ⟨⟨_, nfBelow_natCast n⟩⟩
-
+instance nf_natCast (n : ℕ) : NF n := ⟨⟨_, nfBelow_natCast n⟩⟩
 instance nf_one : NF 1 := nf_natCast 1
 
 theorem oadd_lt_oadd_1 {e₁ n₁ o₁ e₂ n₂ o₂} (h₁ : NF (oadd e₁ n₁ o₁)) (h : e₁ < e₂) :
