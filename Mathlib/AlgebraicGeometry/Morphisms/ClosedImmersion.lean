@@ -6,6 +6,7 @@ Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.ResidueField
 import Mathlib.RingTheory.RingHom.Surjective
 
@@ -268,5 +269,18 @@ lemma IsClosedImmersion.stableUnderBaseChange :
   intro X Y S _ _ f g ⟨ha, hsurj⟩
   exact ⟨inferInstance, RingHom.surjective_stableUnderBaseChange.pullback_fst_app_top _
     RingHom.surjective_respectsIso f _ hsurj⟩
+
+/-- Closed immersions are locally of finite type. -/
+instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
+    LocallyOfFiniteType f := by
+  wlog hY : IsAffine Y
+  · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
+      (iSup_affineOpens_eq_top Y)]
+    intro U
+    have H : IsClosedImmersion (f ∣_ U) := IsLocalAtTarget.restrict h U
+    exact this _ U.2
+  obtain ⟨_, hf⟩ := h.isAffine_surjective_of_isAffine
+  rw [HasRingHomProperty.iff_of_isAffine (P := @LocallyOfFiniteType)]
+  exact RingHom.FiniteType.of_surjective (Scheme.Hom.app f ⊤) hf
 
 end AlgebraicGeometry

@@ -80,16 +80,19 @@ variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
     [NormedField 𝕜] [Finite ι] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F]
 
-/-- Applying a multilinear map to a vector is continuous in both coordinates. -/
-theorem ContinuousMultilinearMap.continuous_eval :
-    Continuous fun p : ContinuousMultilinearMap 𝕜 E F × ∀ i, E i => p.1 p.2 := by
-  cases nonempty_fintype ι
-  let _ := TopologicalAddGroup.toUniformSpace F
-  have := comm_topologicalAddGroup_is_uniform (G := F)
-  refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
-    (embedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
-  exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
-    ball_mem_nhds _ one_pos⟩
+instance ContinuousMultilinearMap.instContinuousEval :
+    ContinuousEval (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
+  continuous_eval := by
+    cases nonempty_fintype ι
+    let _ := TopologicalAddGroup.toUniformSpace F
+    have := comm_topologicalAddGroup_is_uniform (G := F)
+    refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
+      (embedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
+    exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
+      ball_mem_nhds _ one_pos⟩
+
+@[deprecated (since := "2024-10-05")]
+protected alias ContinuousMultilinearMap.continuous_eval := continuous_eval
 
 namespace ContinuousLinearMap
 
@@ -97,8 +100,8 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [Cont
   (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F)
 
 lemma continuous_uncurry_of_multilinear :
-    Continuous (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) :=
-  ContinuousMultilinearMap.continuous_eval.comp <| .prodMap (map_continuous f) continuous_id
+    Continuous (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) := by
+  fun_prop
 
 lemma continuousOn_uncurry_of_multilinear {s} :
     ContinuousOn (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) s :=
