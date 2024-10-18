@@ -46,7 +46,7 @@ def bitCasesOn {motive : Nat → Sort u} (n) (h : ∀ b n, motive (bit b n)) : m
   For a predicate `motive : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for all natural numbers. -/
-@[specialize]
+@[elab_as_elim, specialize]
 def binaryRec {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n → motive (bit b n))
     (n : Nat) : motive n :=
   if n0 : n = 0 then congrArg motive n0 ▸ z
