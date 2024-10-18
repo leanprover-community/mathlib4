@@ -642,7 +642,7 @@ lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
   rw [awayToΓ_ΓToStalk, CommRingCat.comp_eq_ring_hom_comp, PrimeSpectrum.comap_comp]
   exact congr(PrimeSpectrum.comap _ $(@LocalRing.comap_closedPoint
     (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _ _
-    ((Proj| pbo f).presheaf.stalk x) _ _ _ (isLocalRingHom_of_isIso _)))
+    ((Proj| pbo f).presheaf.stalk x) _ _ _ (isLocalHom_of_isIso _)))
 
 lemma toSpec_base_apply_eq {f} (x : Proj| pbo f) :
     (toSpec 𝒜 f).base x = ProjIsoSpecTopComponent.toSpec 𝒜 f x :=

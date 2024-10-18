@@ -124,6 +124,7 @@ lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
 
 theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
 
+@[simp]
 theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) = n := by
   simp only [bit, shiftRight_one, testBit_zero]
   cases mod_two_eq_zero_or_one n with | _ h => simpa [h] using Nat.div_add_mod n 2
