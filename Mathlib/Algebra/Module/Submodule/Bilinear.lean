@@ -55,10 +55,10 @@ theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N)
     map₂ f (span R s) (span R t) = span R (Set.image2 (fun m n => f m n) s t) := by
   apply le_antisymm
   · rw [map₂_le]
-    apply @span_induction' R M _ _ _ s
+    apply @span_induction R M _ _ _ s
     on_goal 1 =>
       intro a ha
-      apply @span_induction' R N _ _ _ t
+      apply @span_induction R N _ _ _ t
       · intro b hb
         exact subset_span ⟨_, ‹_›, _, ‹_›, rfl⟩
     all_goals
@@ -80,7 +80,7 @@ theorem map₂_bot_right (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) : m
 @[simp]
 theorem map₂_bot_left (f : M →ₗ[R] N →ₗ[R] P) (q : Submodule R N) : map₂ f ⊥ q = ⊥ :=
   eq_bot_iff.2 <|
-    map₂_le.2 fun m hm n hn => by
+    map₂_le.2 fun m hm n _ => by
       rw [Submodule.mem_bot] at hm ⊢
       rw [hm, LinearMap.map_zero₂]
 

@@ -295,7 +295,7 @@ def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
     map_smul' := fun c f => by
       ext
       norm_cast
-    norm_map' := fun f => rfl }
+    norm_map' := fun _ => rfl }
 
 variable {α E}
 
@@ -455,8 +455,8 @@ theorem compRightContinuousMap_apply {X Y : Type*} (T : Type*) [TopologicalSpace
 def compRightHomeomorph {X Y : Type*} (T : Type*) [TopologicalSpace X] [CompactSpace X]
     [TopologicalSpace Y] [CompactSpace Y] [PseudoMetricSpace T] (f : X ≃ₜ Y) :
     C(Y, T) ≃ₜ C(X, T) where
-  toFun := compRightContinuousMap T f.toContinuousMap
-  invFun := compRightContinuousMap T f.symm.toContinuousMap
+  toFun := compRightContinuousMap T f
+  invFun := compRightContinuousMap T f.symm
   left_inv g := ext fun _ => congr_arg g (f.apply_symm_apply _)
   right_inv g := ext fun _ => congr_arg g (f.symm_apply_apply _)
 

@@ -104,6 +104,14 @@ theorem Balanced.balancedHull_subset_of_subset (ht : Balanced 𝕜 t) (h : s ⊆
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 hx
   exact ht.smul_mem hr (h hy)
 
+@[mono, gcongr]
+theorem balancedHull_mono (hst : s ⊆ t) : balancedHull 𝕜 s ⊆ balancedHull 𝕜 t := by
+  intro x hx
+  rw [mem_balancedHull_iff] at *
+  obtain ⟨r, hr₁, hr₂⟩ := hx
+  use r
+  exact ⟨hr₁, smul_set_mono hst hr₂⟩
+
 end SMul
 
 section Module
@@ -132,6 +140,12 @@ theorem balancedHull.balanced (s : Set E) : Balanced 𝕜 (balancedHull 𝕜 s) 
   rintro x ⟨r, hr, hx⟩
   rw [← smul_assoc] at hx
   exact ⟨a • r, (SeminormedRing.norm_mul _ _).trans (mul_le_one₀ ha (norm_nonneg r) hr), hx⟩
+
+open Balanced in
+theorem balancedHull_add_subset [NormOneClass 𝕜] {t : Set E} :
+    balancedHull 𝕜 (s + t) ⊆ balancedHull 𝕜 s + balancedHull 𝕜 t :=
+  balancedHull_subset_of_subset (add (balancedHull.balanced _) (balancedHull.balanced _))
+    (add_subset_add (subset_balancedHull _) (subset_balancedHull _))
 
 end Module
 
