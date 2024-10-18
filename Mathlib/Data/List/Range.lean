@@ -141,7 +141,9 @@ theorem ranges_length (l : List ℕ) :
     intro s _
     simp only [Function.comp_apply, length_map]
 
+set_option linter.deprecated false in
 /-- See `List.ranges_flatten` for the version about `List.sum`. -/
+@[deprecated "Use `List.ranges_flatten`." (since := "2024-10-17")]
 lemma ranges_flatten' : ∀ l : List ℕ, l.ranges.flatten = range (Nat.sum l)
   | [] => rfl
   | a :: l => by simp only [Nat.sum_cons, flatten, ← map_flatten, ranges_flatten', range_add]
@@ -153,10 +155,6 @@ See `List.mem_mem_ranges_iff_lt_sum` for the version about `List.sum`. -/
 lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < Nat.sum l := by
   rw [← mem_range, ← ranges_flatten', mem_flatten]
-
-/-- The members of `l.ranges` have no duplicate -/
-theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
-  (List.pairwise_flatten.mp <| by rw [ranges_flatten']; exact nodup_range _).1 s hs
 
 end Ranges
 
