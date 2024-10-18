@@ -183,13 +183,9 @@ theorem linearization_μ_hom (X Y : Action (Type u) (MonCat.of G)) :
 @[simp]
 theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
--- Porting note (#11039): broken proof was
-/- simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
-  apply IsIso.inv_eq_of_hom_inv_id _
-  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
   rw [← Action.forget_map, Functor.map_inv]
   apply IsIso.inv_eq_of_hom_inv_id
-  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply (finsuppTensorFinsupp' k X.V Y.V) x
+  exact LinearMap.ext fun x ↦ LinearEquiv.symm_apply_apply _ _
 
 @[simp]
 theorem linearization_ε_hom : (linearization k G).ε.hom = Finsupp.lsingle PUnit.unit :=
@@ -293,8 +289,8 @@ representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
 noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶ A) ≃ₗ[k] A where
   toFun f := f.hom (Finsupp.single 1 1)
-  map_add' x y := rfl
-  map_smul' r x := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
   invFun x := leftRegularHom A x
   left_inv f := by
     refine Action.Hom.ext (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring ?_)
@@ -373,7 +369,7 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
         dsimp
         rw [ρ_inv_self_apply]
         rfl}
-  left_inv f := Action.Hom.ext (TensorProduct.ext' fun _ _ => rfl)
+  left_inv _ := Action.Hom.ext (TensorProduct.ext' fun _ _ => rfl)
   right_inv f := by ext; rfl
 
 variable {A B C}

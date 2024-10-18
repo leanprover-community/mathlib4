@@ -1618,7 +1618,7 @@ theorem prod_partition (R : Setoid α) [DecidableRel R.r] :
 /-- If we can partition a product into subsets that cancel out, then the whole product cancels. -/
 @[to_additive "If we can partition a sum into subsets that cancel out, then the whole sum cancels."]
 theorem prod_cancels_of_partition_cancels (R : Setoid α) [DecidableRel R.r]
-    (h : ∀ x ∈ s, ∏ a ∈ s.filter fun y => y ≈ x, f a = 1) : ∏ x ∈ s, f x = 1 := by
+    (h : ∀ x ∈ s, ∏ a ∈ s.filter fun y => R y x, f a = 1) : ∏ x ∈ s, f x = 1 := by
   rw [prod_partition R, ← Finset.prod_eq_one]
   intro xbar xbar_in_s
   obtain ⟨x, x_in_s, rfl⟩ := mem_image.mp xbar_in_s
@@ -1781,7 +1781,7 @@ lemma prod_sdiff_ne_prod_sdiff_iff :
 
 end CancelCommMonoid
 
-theorem card_eq_sum_ones (s : Finset α) : s.card = ∑ x ∈ s, 1 := by simp
+theorem card_eq_sum_ones (s : Finset α) : s.card = ∑ _ ∈ s, 1 := by simp
 
 theorem sum_const_nat {m : ℕ} {f : α → ℕ} (h₁ : ∀ x ∈ s, f x = m) :
     ∑ x ∈ s, f x = card s * m := by
@@ -1865,7 +1865,7 @@ theorem card_biUnion [DecidableEq β] {s : Finset α} {t : α → Finset β}
     (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → Disjoint (t x) (t y)) :
     (s.biUnion t).card = ∑ u ∈ s, card (t u) :=
   calc
-    (s.biUnion t).card = ∑ i ∈ s.biUnion t, 1 := card_eq_sum_ones _
+    (s.biUnion t).card = ∑ _ ∈ s.biUnion t, 1 := card_eq_sum_ones _
     _ = ∑ a ∈ s, ∑ _i ∈ t a, 1 := Finset.sum_biUnion h
     _ = ∑ u ∈ s, card (t u) := by simp_rw [card_eq_sum_ones]
 

@@ -54,7 +54,6 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
         -a *
           ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   rw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
   simp only [Finsupp.single_eq_zero]
   split_ifs; · rfl
@@ -267,10 +266,14 @@ end Field
 
 section LocalRing
 
-variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
+variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
 
-instance map.isLocalRingHom : IsLocalRingHom (map f) :=
-  MvPowerSeries.map.isLocalRingHom f
+@[instance]
+theorem map.isLocalHom : IsLocalHom (map f) :=
+  MvPowerSeries.map.isLocalHom f
+
+@[deprecated (since := "2024-10-10")]
+alias map.isLocalRingHom := map.isLocalHom
 
 variable [LocalRing R] [LocalRing S]
 
@@ -353,10 +356,10 @@ theorem normalized_count_X_eq_of_coe {P : k[X]} (hP : P ≠ 0) :
     Multiset.count PowerSeries.X (normalizedFactors (P : k⟦X⟧)) =
       Multiset.count Polynomial.X (normalizedFactors P) := by
   apply eq_of_forall_le_iff
-  simp only [← PartENat.coe_le_coe]
-  rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← multiplicity_eq_count_normalizedFactors
-    irreducible_X hP, ← multiplicity_eq_count_normalizedFactors X_irreducible] <;>
-  simp only [← multiplicity.pow_dvd_iff_le_multiplicity, Polynomial.X_pow_dvd_iff,
+  simp only [← Nat.cast_le (α := ℕ∞)]
+  rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← emultiplicity_eq_count_normalizedFactors
+    irreducible_X hP, ← emultiplicity_eq_count_normalizedFactors X_irreducible] <;>
+  simp only [← pow_dvd_iff_le_emultiplicity, Polynomial.X_pow_dvd_iff,
     PowerSeries.X_pow_dvd_iff, Polynomial.coeff_coe P, implies_true, ne_eq, coe_eq_zero_iff, hP,
     not_false_eq_true]
 
