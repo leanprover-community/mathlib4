@@ -166,7 +166,7 @@ variable {C}
 def commMonToLaxBraidedObj (A : CommMon_ C) :
     Discrete PUnit.{u + 1} ⥤ C := (Functor.const _).obj A.X
 
-instance (A : CommMon_ C) : (commMonToLaxBraidedObj A).LaxBraided where
+instance (A : CommMon_ C) : (commMonToLaxBraidedObj A).LaxMonoidal where
   ε' := A.one
   μ' := fun _ _ => A.mul
 
@@ -180,6 +180,8 @@ lemma commMonToLaxBraidedObj_ε (A : CommMon_ C) :
 lemma commMonToLaxBraidedObj_μ (A : CommMon_ C) (X Y) :
     μ (commMonToLaxBraidedObj A) X Y = A.mul := rfl
 
+instance (A : CommMon_ C) : (commMonToLaxBraidedObj A).LaxBraided where
+
 variable (C)
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps]
@@ -189,7 +191,6 @@ def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 
     { hom := { app := fun _ => f.hom }
       isMonoidal := { } }
 
-set_option maxHeartbeats 600000 in
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
 def unitIso :
@@ -197,10 +198,7 @@ def unitIso :
         laxBraidedToCommMon C ⋙ commMonToLaxBraided C :=
   NatIso.ofComponents
     (fun F ↦ LaxBraidedFunctor.isoOfComponents (fun _ ↦ F.mapIso (eqToIso (by ext))))
-    (fun f ↦ by
-      ext ⟨⟨⟩⟩
-      dsimp
-      simp only [Discrete.functor_map_id, Category.comp_id, Category.id_comp])
+    (fun f ↦ by ext ⟨⟨⟩⟩; dsimp; simp)
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
