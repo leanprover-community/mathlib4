@@ -181,15 +181,15 @@ Let `N₁ -l₁₂-> N₂ -l₂₃-> N₃` be two linear maps.
 - We first show that if `N₁ ⊗ M -> N₂ ⊗ M -> N₃ ⊗ M` is exact, then `N₁ -l₁₂-> N₂ -l₂₃-> N₃` is a
   complex, i.e. `range l₁₂ ≤ ker l₂₃`.
   This is `range_le_ker_of_exact_rTensor`.
-- Then in `rTensor_reflects_exact`, we show `ker l₂₃ ≤ range l₁₂` by considering the chohomology
+- Then in `rTensor_reflects_exact`, we show `ker l₂₃ = range l₁₂` by considering the cohomology
   `ker l₂₃ ⧸ range l₁₂`.
 This shows that when `M` is faithfully flat, `- ⊗ M` reflects exact sequences. For details, see
 comments in the proof. Since `M` is flat, `- ⊗ M` preserves exact sequences.
 
 On the other hand, if `- ⊗ M` preserves and reflects exact sequences, then `M` is faithfully flat.
 - `M` is flat because `- ⊗ M` preserves exact sequences.
-- We need to show that if `N ⊗ M = 0` then `N = 0`. Consider the sequence `N -0-> N -0-> 0`, after
-  tensoring with `M`, we get `N ⊗ M -0-> N ⊗ M -0-> 0` is exact because `N ⊗ M = 0`. Since `- ⊗ M`
+- We need to show that if `N ⊗ M = 0` then `N = 0`. Consider the sequence `N -0-> N -0-> 0`. After
+  tensoring with `M`, we get `N ⊗ M -0-> N ⊗ M -0-> 0` which is exact because `N ⊗ M = 0`. Since `- ⊗ M`
   reflects exact sequences, `N = 0`.
 -/
 
@@ -214,17 +214,17 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
   show l23 (l12 n1) = 0
   by_contra! hn1
   -- Let `E` be the submodule spanned by `l23 (l12 n1)`. Then because `l23 (l12 n1) ≠ 0`, we have
-  -- `E ≠ 0`
+  -- `E ≠ 0`.
   let E : Submodule R N3 := Submodule.span R {l23 (l12 n1)}
   have hE : Nontrivial E :=
     ⟨0, ⟨⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩, Subtype.coe_ne_coe.1 hn1.symm⟩⟩
 
-  -- Since `N1 ⊗ M -> N2 ⊗ M -> N3 ⊗ M` is exact, we have `l23 (l12 n1) ⊗ₜ[R] m = 0` for all `m : M`
+  -- Since `N1 ⊗ M -> N2 ⊗ M -> N3 ⊗ M` is exact, we have `l23 (l12 n1) ⊗ₜ[R] m = 0` for all `m : M`.
   have eq1 : ∀ (m : M), l23 (l12 n1) ⊗ₜ[R] m = 0 := fun m ↦
     ex.apply_apply_eq_zero (n1 ⊗ₜ[R] m)
-  -- Then `E ⊗ M = 0` because:
+  -- Then `E ⊗ M = 0`. Indeed,
   have eq0 : (⊤ : Submodule R (E ⊗[R] M)) = ⊥ := by
-    -- suppose `x ∈ E ⊗ M`, we aim to show `x = 0`
+    -- suppose `x ∈ E ⊗ M`. We will show `x = 0`.
     ext x
     simp only [Submodule.mem_top, Submodule.mem_bot, true_iff]
     have mem : x ∈ (⊤ : Submodule R _) := ⟨⟩
@@ -238,8 +238,8 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
       intro i hi
       ext
       exact Submodule.mem_span_singleton.1 (b hi).2 |>.choose_spec.symm
-    -- Since `x ∈ E ⊗ M`, since `M` is flat and `E -> N1` is injective, we only need to check the
-    -- equality in `N1 ⊗ M`. We write `x = ∑ μᵢ • (l23 (l12 n1)) ⊗ mᵢ = ∑ μᵢ • 0 = 0`
+    -- Since `M` is flat and `E -> N1` is injective, we only need to check that x = 0
+    -- in `N1 ⊗ M`. We write `x = ∑ μᵢ • (l23 (l12 n1)) ⊗ mᵢ = ∑ μᵢ • 0 = 0`
     -- (remember `E = span {l23 (l12 n1)}` and `eq1`)
     refine Finset.sum_eq_zero fun i hi => show c i • i = 0 from
       (Module.Flat.rTensor_preserves_injective_linearMap (M := M) E.subtype <|
@@ -259,7 +259,7 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
   have complex : LinearMap.range l12 ≤ LinearMap.ker l23 := range_le_ker_of_exact_rTensor R M _ _ ex
   -- By the previous lemma we have that range l12 ≤ ker l23 and hence the quotient
   -- H := ker l23 ⧸ range l12 makes sense.
-  -- Hence our goal ker l23 = range l12 follows from the claim that H = 0
+  -- Hence our goal ker l23 = range l12 follows from the claim that H = 0.
   let H := LinearMap.ker l23 ⧸ LinearMap.range (Submodule.inclusion complex)
   suffices triv_coh : Subsingleton H by
     rw [Submodule.subsingleton_quotient_iff_eq_top, Submodule.range_inclusion,
@@ -269,15 +269,15 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
   -- Since `M` is faithfully flat, we need only to show that `H ⊗ M` is trivial.
   suffices Subsingleton (H ⊗[R] M) from rTensor_reflects_triviality R M H
   let e : H ⊗[R] M ≃ₗ[R] _ := TensorProduct.quotientTensorEquiv _ _
-  -- Note that `H ⊗ M` is isomorphic to `ker l12 ⊗ M ⧸ range ((range l12 ⊗ M) -> (ker l23 ⊗ M))`
-  -- So the problem is reduced to proving surjectivity of `range l12 ⊗ M → ker l23 ⊗ M`
+  -- Note that `H ⊗ M` is isomorphic to `ker l12 ⊗ M ⧸ range ((range l12 ⊗ M) -> (ker l23 ⊗ M))`.
+  -- So the problem is reduced to proving surjectivity of `range l12 ⊗ M → ker l23 ⊗ M`.
   rw [e.toEquiv.subsingleton_congr, Submodule.subsingleton_quotient_iff_eq_top,
     LinearMap.range_eq_top]
   intro x
   induction x using TensorProduct.induction_on with
   | zero => exact ⟨0, by simp⟩
-  -- let `x ⊗ m` be an element in `ker l23 ⊗ M`, then `x ⊗ m` is in the kernel of `l23 ⊗ 𝟙M`
-  -- since `N1 ⊗ M -l12 ⊗ M-> N2 ⊗ M -l23 ⊗ M-> N3 ⊗ M` is exact, we have that `x ⊗ m` is in
+  -- let `x ⊗ m` be an element in `ker l23 ⊗ M`, then `x ⊗ m` is in the kernel of `l23 ⊗ 𝟙M`.
+  -- Since `N1 ⊗ M -l12 ⊗ M-> N2 ⊗ M -l23 ⊗ M-> N3 ⊗ M` is exact, we have that `x ⊗ m` is in
   -- the range of `l12 ⊗ 𝟙M`, i.e. `x ⊗ m = (l12 ⊗ 𝟙M) y` for some `y ∈ N1 ⊗ M` as elements of
   -- `N2 ⊗ M`. We need to prove that `x ⊗ m = (l12 ⊗ 𝟙M) y` still holds in `(ker l23) ⊗ M`.
   -- This is okay because `M` is flat and `ker l23 -> N2` is injective.
