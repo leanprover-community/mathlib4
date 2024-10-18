@@ -755,3 +755,13 @@ lemma Equivalence.quot_mk_eq_iff {α : Type*} {r : α → α → Prop} (h : Equi
     | symm _ _ _ H => exact h.symm H
     | trans _ _ _ _ _ h₁₂ h₂₃ => exact h.trans h₁₂ h₂₃
   · exact Quot.sound
+
+lemma congr_liftFun {α β : Type} {R : α → α → Prop} {S : β → β → Prop} {f : α → β}
+    (h : ∀ x y, R x y → S (f x) (f y)) : ((R · ·) ⇒ (S · ·)) f f := h
+
+lemma congr_liftFun₂ {α β γ : Type} {R : α → α → Prop} {S : β → β → Prop}
+    {T : γ → γ → Prop} {f : α → β → γ}
+  (h : ∀ (x₁ x₂ : α) (y₁ y₂ : β), R x₁ x₂ → S y₁ y₂ → T (f x₁ y₁)  (f x₂ y₂)) :
+    ((R · ·) ⇒ (S · ·) ⇒ (T · ·)) f f := by
+  intro x₁ x₂ hx y₁ y₂ hy
+  exact h x₁ x₂ y₁ y₂ hx hy
