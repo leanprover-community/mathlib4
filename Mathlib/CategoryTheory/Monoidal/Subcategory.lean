@@ -64,7 +64,7 @@ When `P` is a monoidal predicate, the full subcategory for `P` inherits the mono
 -/
 instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
   Monoidal.induced (fullSubcategoryInclusion P)
-    { μIso := fun X Y => eqToIso rfl
+    { μIso := fun _ _ => eqToIso rfl
       εIso := eqToIso rfl }
 
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
@@ -74,7 +74,7 @@ instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
 def fullMonoidalSubcategoryInclusion : MonoidalFunctor (FullSubcategory P) C where
   toFunctor := fullSubcategoryInclusion P
   ε := 𝟙 _
-  μ X Y := 𝟙 _
+  μ _ _ := 𝟙 _
 
 instance fullMonoidalSubcategory.full : (fullMonoidalSubcategoryInclusion P).Full :=
   FullSubcategory.full P
@@ -116,7 +116,7 @@ def fullMonoidalSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
     MonoidalFunctor (FullSubcategory P) (FullSubcategory P') where
   toFunctor := FullSubcategory.map h
   ε := 𝟙 _
-  μ X Y := 𝟙 _
+  μ _ _ := 𝟙 _
 
 instance fullMonoidalSubcategory.map_full (h : ∀ ⦃X⦄, P X → P' X) :
     (fullMonoidalSubcategory.map h).Full where
@@ -200,10 +200,10 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
       adj :=
         { unit :=
           { app := fun Y => (ihom.coev X.1).app Y.1
-            naturality := fun Y Z f => ihom.coev_naturality X.1 f }
+            naturality := fun _ _ f => ihom.coev_naturality X.1 f }
           counit :=
           { app := fun Y => (ihom.ev X.1).app Y.1
-            naturality := fun Y Z f => ihom.ev_naturality X.1 f }
+            naturality := fun _ _ f => ihom.ev_naturality X.1 f }
           left_triangle_components := fun X ↦
             by simp [FullSubcategory.comp_def, FullSubcategory.id_def]
           right_triangle_components := fun Y ↦

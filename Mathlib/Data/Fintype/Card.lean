@@ -899,7 +899,7 @@ theorem exists_not_mem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
   not_forall.1 fun h => Fintype.false ⟨s, h⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) (α : Type*) [H : Infinite α] : Nontrivial α :=
+instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=
   ⟨let ⟨x, _hx⟩ := exists_not_mem_finset (∅ : Finset α)
     let ⟨y, hy⟩ := exists_not_mem_finset ({x} : Finset α)
     ⟨y, x, by simpa only [mem_singleton] using hy⟩⟩
@@ -977,7 +977,7 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
     letI := Classical.decEq α
     Classical.choose
       (exists_not_mem_finset
-        ((Multiset.range n).pmap (fun m (hm : m < n) => natEmbeddingAux _ m) fun _ =>
+        ((Multiset.range n).pmap (fun m (_ : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :

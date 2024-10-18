@@ -33,7 +33,7 @@ theorem eval_apply {β : α → Sort*} (x : α) (f : ∀ x, β x) : eval x f = f
 theorem const_def {y : β} : (fun _ : α ↦ y) = const α y :=
   rfl
 
-theorem const_injective [Nonempty α] : Injective (const α : β → α → β) := fun y₁ y₂ h ↦
+theorem const_injective [Nonempty α] : Injective (const α : β → α → β) := fun _ _ h ↦
   let ⟨x⟩ := ‹Nonempty α›
   congr_fun h x
 
@@ -364,7 +364,7 @@ end
 
 section InvFun
 
-variable {α β : Sort*} [Nonempty α] {f : α → β} {a : α} {b : β}
+variable {α β : Sort*} [Nonempty α] {f : α → β} {b : β}
 
 attribute [local instance] Classical.propDecidable
 
@@ -474,7 +474,7 @@ end SurjInv
 section Update
 
 variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α]
-  {f g : (a : α) → β a} {a : α} {b : β a}
+  {f : (a : α) → β a} {a : α} {b : β a}
 
 
 /-- Replacing the value of a function at a given point by a given value. -/
@@ -839,13 +839,13 @@ protected theorem uncurry {α β γ : Type*} {f : α → β → γ} (hf : Inject
   fun ⟨_, _⟩ ⟨_, _⟩ h ↦ (hf h).elim (congr_arg₂ _)
 
 /-- As a map from the left argument to a unary function, `f` is injective. -/
-theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun a₁ a₂ h ↦
+theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun _ _ h ↦
   let ⟨b⟩ := ‹Nonempty β›
   hf.left b <| (congr_fun h b : _)
 
 /-- As a map from the right argument to a unary function, `f` is injective. -/
 theorem right' (hf : Injective2 f) [Nonempty α] : Function.Injective fun b a ↦ f a b :=
-  fun b₁ b₂ h ↦
+  fun _ _ h ↦
     let ⟨a⟩ := ‹Nonempty α›
     hf.right a <| (congr_fun h a : _)
 
@@ -893,7 +893,7 @@ lemma forall_existsUnique_iff {r : α → β → Prop} :
 if and only if it is `(f · = ·)` for some function `f`. -/
 lemma forall_existsUnique_iff' {r : α → β → Prop} :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → β, r = (f · = ·) := by
-  simp [forall_existsUnique_iff, Function.funext_iff]
+  simp [forall_existsUnique_iff, funext_iff]
 
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)

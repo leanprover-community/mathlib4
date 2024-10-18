@@ -57,7 +57,7 @@ def isFraction {U : Opens (PrimeSpectrum R)} (f : ∀ 𝔭 : U, Localizations M 
 The property of a function `f : ∏_{x ∈ U}, Mₓ` being a fraction is stable under restriction.
 -/
 def isFractionPrelocal : PrelocalPredicate (Localizations M) where
-  pred {U} f := isFraction M f
+  pred {_} f := isFraction M f
   res := by rintro V U i f ⟨m, s, w⟩; exact ⟨m, s, fun x => w (i x)⟩
 
 /--
@@ -219,7 +219,7 @@ If `x` is a point of `Spec R`, this is the morphism of `R`-modules from `M` to t
 -/
 noncomputable def toStalk (x : PrimeSpectrum.Top R) :
     ModuleCat.of R M ⟶ TopCat.Presheaf.stalk (tildeInModuleCat M) x :=
-  (toOpen M ⊤ ≫ TopCat.Presheaf.germ (tildeInModuleCat M) ⟨x, by trivial⟩)
+  (toOpen M ⊤ ≫ TopCat.Presheaf.germ (tildeInModuleCat M) ⊤ x (by trivial))
 
 open LocalizedModule TopCat.Presheaf in
 lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
@@ -229,7 +229,7 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     smul_stalk_no_nonzero_divisor M r st h, fun st ↦ ?_⟩
   obtain ⟨U, mem, s, rfl⟩ := germ_exist (F := M.tildeInModuleCat) x st
   let O := U ⊓ (PrimeSpectrum.basicOpen r)
-  refine ⟨germ M.tildeInModuleCat (⟨x, ⟨mem, r.2⟩⟩ : O)
+  refine ⟨germ M.tildeInModuleCat O x ⟨mem, r.2⟩
     ⟨fun q ↦ (Localization.mk 1 ⟨r, q.2.2⟩ : Localization.AtPrime q.1.asIdeal) • s.1
       ⟨q.1, q.2.1⟩, fun q ↦ ?_⟩, by
         simpa only [Module.algebraMap_end_apply, ← map_smul] using

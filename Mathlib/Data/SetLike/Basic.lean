@@ -28,7 +28,7 @@ boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set, a
 
 A typical subobject should be declared as:
 ```
-structure MySubobject (X : Type*) [ObjectTypeclass X] :=
+structure MySubobject (X : Type*) [ObjectTypeclass X] where
   (carrier : Set X)
   (op_mem' : ∀ {x : X}, x ∈ carrier → sorry ∈ carrier)
 
@@ -60,7 +60,7 @@ end MySubobject
 
 An alternative to `SetLike` could have been an extensional `Membership` typeclass:
 ```
-class ExtMembership (α : out_param <| Type u) (β : Type v) extends Membership α β :=
+class ExtMembership (α : out_param <| Type u) (β : Type v) extends Membership α β where
   (ext_iff : ∀ {s t : β}, s = t ↔ ∀ (x : α), x ∈ s ↔ x ∈ t)
 ```
 While this is equivalent, `SetLike` conveniently uses a carrier set projection directly.

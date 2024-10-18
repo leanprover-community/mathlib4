@@ -68,8 +68,8 @@ variable [∀ i, Preorder (α i)] {f g : Π₀ i, α i}
 
 instance : Preorder (Π₀ i, α i) :=
   { (inferInstance : LE (DFinsupp α)) with
-    le_refl := fun f i ↦ le_rfl
-    le_trans := fun f g h hfg hgh i ↦ (hfg i).trans (hgh i) }
+    le_refl := fun _ _ ↦ le_rfl
+    le_trans := fun _ _ _ hfg hgh i ↦ (hfg i).trans (hgh i) }
 
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl

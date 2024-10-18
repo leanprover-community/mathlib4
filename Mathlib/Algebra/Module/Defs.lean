@@ -46,7 +46,7 @@ open Function Set
 
 universe u v
 
-variable {α R k S M M₂ M₃ ι : Type*}
+variable {R S M M₂ : Type*}
 
 /-- A module is a generalization of vector spaces to a scalar semiring.
   It consists of a scalar semiring `R` and an additive monoid of "vectors" `M`,
@@ -63,11 +63,12 @@ class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
+variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
 
 -- see Note [lower instance priority]
 /-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
-instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=
+instance (priority := 100) Module.toMulActionWithZero
+  {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MulActionWithZero R M :=
   { (inferInstance : MulAction R M) with
     smul_zero := smul_zero
     zero_smul := Module.zero_smul }
@@ -217,7 +218,7 @@ theorem Module.ext' {R : Type*} [Semiring R] {M : Type*} [AddCommMonoid M] (P Q 
 
 section Module
 
-variable [Ring R] [AddCommGroup M] [Module R M] (r s : R) (x y : M)
+variable [Ring R] [AddCommGroup M] [Module R M] (r : R) (x : M)
 
 @[simp]
 theorem neg_smul : -r • x = -(r • x) :=
@@ -359,7 +360,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Semiring S] [Ring R] [AddCommGroup M] [Module S M] [Module R M]
+variable [Ring R] [AddCommGroup M] [Module R M]
 
 section
 
@@ -482,7 +483,7 @@ theorem two_nsmul_eq_zero
 
 end Nat
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R]
 variable (R M)
 
 /-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
