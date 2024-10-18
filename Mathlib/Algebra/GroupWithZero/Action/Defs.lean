@@ -231,7 +231,9 @@ section
 variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 
 -- See note [lower instance priority]
-instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
+set_option synthInstance.checkSynthOrder false in
+instance (priority := 100) DistribMulAction.toDistribSMul
+  {M A} {_ : Monoid M} {_ : AddMonoid A} [DistribMulAction M A] : DistribSMul M A :=
   { ‹DistribMulAction M A› with }
 
 -- Porting note: this probably is no longer relevant.
