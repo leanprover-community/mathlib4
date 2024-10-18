@@ -712,7 +712,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
     rw [← top_le_iff, ← volume_Ici (a := b)]
     exact measure_mono hb
   rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.uniformEmbedding_coe E).embedding
+  exact (Completion.isUniformEmbedding_coe E).embedding
 
 variable [CompleteSpace E]
 
@@ -909,7 +909,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
     rw [← volume_Iic (a := b)]
     exact measure_mono hb
   rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.uniformEmbedding_coe E).embedding
+  exact (Completion.isUniformEmbedding_coe E).embedding
 
 variable [CompleteSpace E]
 

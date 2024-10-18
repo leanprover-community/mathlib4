@@ -374,7 +374,6 @@ instance [CountablyGenerated X] [SFinite μ] : IsSeparable μ where
           ne_top_of_le_ne_top hμs <| μ.restrict_le_self _
         rcases h𝒜.approx s ms this ε ε_pos with ⟨t, t_mem, ht⟩
         refine ⟨t ∩ μ.sigmaFiniteSet, ⟨t, t_mem, rfl⟩, ?_⟩
-        rw [← measure_inter_add_diff _ measurableSet_sigmaFiniteSet]
         have : μ (s ∆ (t ∩ μ.sigmaFiniteSet) \ μ.sigmaFiniteSet) = 0 := by
           rw [diff_eq_compl_inter, inter_symmDiff_distrib_left, ← ENNReal.bot_eq_zero, eq_bot_iff]
           calc
@@ -384,10 +383,11 @@ instance [CountablyGenerated X] [SFinite μ] : IsSeparable μ where
             _ ≤ μ (μ.sigmaFiniteSetᶜ ∩ s) + μ (μ.sigmaFiniteSetᶜ ∩ (t ∩ μ.sigmaFiniteSet)) :=
                 measure_union_le _ _
             _ = 0 := by
-                rw [inter_comm, ← μ.restrict_apply ms, hs, ← inter_assoc, inter_comm, ← inter_assoc,
-                  inter_compl_self, empty_inter, measure_empty, zero_add]
-        rwa [this, add_zero, inter_symmDiff_distrib_right, inter_assoc, inter_self,
-          ← inter_symmDiff_distrib_right, ← μ.restrict_apply' measurableSet_sigmaFiniteSet]
+                rw [inter_comm, ← μ.restrict_apply ms, hs, ← inter_assoc, inter_comm,
+                  ← inter_assoc, inter_compl_self, empty_inter, measure_empty, zero_add]
+        rwa [← measure_inter_add_diff _ measurableSet_sigmaFiniteSet, this, add_zero,
+          inter_symmDiff_distrib_right, inter_assoc, inter_self, ← inter_symmDiff_distrib_right,
+          ← μ.restrict_apply' measurableSet_sigmaFiniteSet]
       · refine False.elim <| hμs ?_
         rw [eq_top_iff, ← hs]
         exact μ.restrict_le_self _
