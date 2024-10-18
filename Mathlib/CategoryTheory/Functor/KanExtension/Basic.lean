@@ -545,6 +545,62 @@ lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : L ⋙ F
 
 end
 
+section Colimit
+
+variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') [F'.IsLeftKanExtension α]
+
+/-- Construct a cocone for a left Kan extension of `F` given a cocone for `F`. -/
+@[simps]
+noncomputable def coconeOfIsLeftKanExtension (c : Cocone F) : Cocone F' where
+  pt := c.pt
+  ι := F'.descOfIsLeftKanExtension α _ c.ι
+
+/-- If `c` is a colimit cocone, then `coconeOfIsLeftKanExtension α c` is a colimit cocone, too. -/
+@[simps]
+def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsColimit c) :
+    IsColimit (F'.coconeOfIsLeftKanExtension α c) where
+  desc s := hc.desc (Cocone.mk _ (α ≫ whiskerLeft L s.ι))
+  fac s := by
+    have : F'.descOfIsLeftKanExtension α ((const D).obj c.pt) c.ι ≫
+        (Functor.const _).map (hc.desc (Cocone.mk _ (α ≫ whiskerLeft L s.ι))) = s.ι :=
+      F'.hom_ext_of_isLeftKanExtension α _ _ (by aesop_cat)
+    exact congr_app this
+  uniq s m hm := hc.hom_ext (fun j ↦ by
+    have := hm (L.obj j)
+    nth_rw 1 [← F'.descOfIsLeftKanExtension_fac_app α ((const D).obj c.pt)]
+    dsimp at this ⊢
+    rw [assoc, this, IsColimit.fac, NatTrans.comp_app, whiskerLeft_app])
+
+end Colimit
+
+section Limit
+
+variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : L ⋙ F' ⟶ F) [F'.IsRightKanExtension α]
+
+/-- Construct a cone for a right Kan extension of `F` given a cone for `F`. -/
+@[simps]
+noncomputable def coneOfIsRightKanExtension (c : Cone F) : Cone F' where
+  pt := c.pt
+  π := F'.liftOfIsRightKanExtension α _ c.π
+
+/-- If `c` is a limit cone, then `coneOfIsRightKanExtension α c` is a limit cone, too. -/
+@[simps]
+def isLimitConeOfIsRightKanExtension {c : Cone F} (hc : IsLimit c) :
+    IsLimit (F'.coneOfIsRightKanExtension α c) where
+  lift s := hc.lift (Cone.mk _ (whiskerLeft L s.π ≫ α))
+  fac s := by
+    have : (Functor.const _).map (hc.lift (Cone.mk _ (whiskerLeft L s.π ≫ α))) ≫
+        F'.liftOfIsRightKanExtension α ((const D).obj c.pt) c.π = s.π :=
+      F'.hom_ext_of_isRightKanExtension α _ _ (by aesop_cat)
+    exact congr_app this
+  uniq s m hm := hc.hom_ext (fun j ↦ by
+    have := hm (L.obj j)
+    nth_rw 1 [← F'.liftOfIsRightKanExtension_fac_app α ((const D).obj c.pt)]
+    dsimp at this ⊢
+    rw [← assoc, this, IsLimit.fac, NatTrans.comp_app, whiskerLeft_app])
+
+end Limit
+
 end Functor
 
 end CategoryTheory
