@@ -180,7 +180,7 @@ variable [DecidableEq N]
 @[simps]
 def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const where
   toFun t :=
-    ⟨(p.val.comp (Cube.insertAt i).toContinuousMap).curry t, fun y yH =>
+    ⟨(p.val.comp (Cube.insertAt i)).curry t, fun y yH =>
       p.property (Cube.insertAt i (t, y)) (Cube.insertAt_boundary i <| Or.inr yH)⟩
   source' := by ext t; refine p.property (Cube.insertAt i (0, t)) ⟨i, Or.inl ?_⟩; simp
   target' := by ext t; refine p.property (Cube.insertAt i (1, t)) ⟨i, Or.inr ?_⟩; simp
@@ -200,10 +200,10 @@ theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
 @[simps]
 def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
   ⟨(ContinuousMap.comp ⟨Subtype.val, by fun_prop⟩ p.toContinuousMap).uncurry.comp
-    (Cube.splitAt i).toContinuousMap,
+    (Cube.splitAt i),
     by
     rintro y ⟨j, Hj⟩
-    simp only [ContinuousMap.comp_apply, toContinuousMap_apply,
+    simp only [ContinuousMap.comp_apply, ContinuousMap.coe_coe,
       funSplitAt_apply, ContinuousMap.uncurry_apply, ContinuousMap.coe_mk,
       Function.uncurry_apply_pair]
     obtain rfl | Hne := eq_or_ne j i
@@ -243,8 +243,8 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
 
 /-- Composition with `Cube.insertAt` as a continuous map. -/
 abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
-  ⟨fun f => f.comp (Cube.insertAt i).toContinuousMap,
-    (Cube.insertAt i).toContinuousMap.continuous_comp_left⟩
+  ⟨fun f => f.comp (Cube.insertAt i),
+    (toContinuousMap <| Cube.insertAt i).continuous_comp_left⟩
 
 /-- A homotopy between `n+1`-dimensional loops `p` and `q` constant on the boundary
   seen as a homotopy between two paths in the space of `n`-dimensional paths. -/
@@ -280,7 +280,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     C(I × I^N, X) :=
   (ContinuousMap.comp ⟨_, ContinuousMap.continuous_uncurry⟩
           (ContinuousMap.comp ⟨Subtype.val, by continuity⟩ H.toContinuousMap).curry).uncurry.comp <|
-    (ContinuousMap.id I).prodMap (Cube.splitAt i).toContinuousMap
+    (ContinuousMap.id I).prodMap (Cube.splitAt i)
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     (toLoop i p).Homotopic (toLoop i q) → Homotopic p q := by
@@ -289,15 +289,14 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
   · rintro t y ⟨j, jH⟩
     erw [homotopyFrom_apply]
     obtain rfl | h := eq_or_ne j i
-    · simp only [Prod.map_apply, id_eq, toContinuousMap_apply, funSplitAt_apply,
-        Function.uncurry_apply_pair]
+    · simp only [Prod.map_apply, id_eq, funSplitAt_apply, Function.uncurry_apply_pair]
       rw [H.eq_fst]
       exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
     · rw [p.2 _ ⟨j, jH⟩]; apply boundary; exact ⟨⟨j, h⟩, jH⟩
   all_goals
     intro
     apply (homotopyFrom_apply _ _ _).trans
-    simp only [Prod.map_apply, id_eq, toContinuousMap_apply, funSplitAt_apply,
+    simp only [Prod.map_apply, id_eq, funSplitAt_apply,
       Function.uncurry_apply_pair, ContinuousMap.HomotopyWith.apply_zero,
       ContinuousMap.HomotopyWith.apply_one, ne_eq, Path.coe_toContinuousMap, toLoop_apply_coe,
       ContinuousMap.curry_apply, ContinuousMap.comp_apply]
@@ -315,7 +314,7 @@ def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
     (by
       ext1; symm
       dsimp only [Path.trans, fromLoop, Path.coe_mk_mk, Function.comp_apply, mk_apply,
-        ContinuousMap.comp_apply, toContinuousMap_apply, funSplitAt_apply,
+        ContinuousMap.comp_apply, ContinuousMap.coe_coe, funSplitAt_apply,
         ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, Function.uncurry_apply_pair]
       split_ifs
       · show f _ = _; congr 1

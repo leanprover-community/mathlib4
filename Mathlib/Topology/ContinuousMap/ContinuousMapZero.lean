@@ -303,15 +303,15 @@ alias uniformEmbedding_comp := isUniformEmbedding_comp
 sending `0 : X` to `0 : Y`. -/
 def _root_.UniformEquiv.arrowCongrLeft₀ {Y : Type*} [TopologicalSpace Y] [Zero Y] (f : X ≃ₜ Y)
     (hf : f 0 = 0) : C(X, R)₀ ≃ᵤ C(Y, R)₀ where
-  toFun g := g.comp ⟨f.symm.toContinuousMap, (f.toEquiv.apply_eq_iff_eq_symm_apply.eq ▸ hf).symm⟩
-  invFun g := g.comp ⟨f.toContinuousMap, hf⟩
+  toFun g := g.comp ⟨f.symm, (f.toEquiv.apply_eq_iff_eq_symm_apply.eq ▸ hf).symm⟩
+  invFun g := g.comp ⟨f, hf⟩
   left_inv g := ext fun _ ↦ congrArg g <| f.left_inv _
   right_inv g := ext fun _ ↦ congrArg g <| f.right_inv _
   uniformContinuous_toFun := isUniformEmbedding_toContinuousMap.uniformContinuous_iff.mpr <|
-    ContinuousMap.uniformContinuous_comp_left f.symm.toContinuousMap |>.comp
+    ContinuousMap.uniformContinuous_comp_left (f.symm : C(Y, X)) |>.comp
     isUniformEmbedding_toContinuousMap.uniformContinuous
   uniformContinuous_invFun := isUniformEmbedding_toContinuousMap.uniformContinuous_iff.mpr <|
-    ContinuousMap.uniformContinuous_comp_left f.toContinuousMap |>.comp
+    ContinuousMap.uniformContinuous_comp_left (f : C(X, Y)) |>.comp
     isUniformEmbedding_toContinuousMap.uniformContinuous
 
 end UniformSpace
