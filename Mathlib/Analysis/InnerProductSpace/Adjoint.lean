@@ -52,6 +52,14 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 /-! ### Adjoint operator -/
 
+section
+-- FIXME: maybe the continuous multilinear maps are the slow bit?
+variable {R ι M₂ : Type*} {M₁ : ι → Type*} [Semiring R] [∀ i, AddCommMonoid (M₁ i)]
+variable [AddCommMonoid M₂] [∀ i, Module R (M₁ i)] [Module R M₂] [∀ i, TopologicalSpace (M₁ i)]
+variable [TopologicalSpace M₂]
+instance : CoeFun (ContinuousMultilinearMap R M₁ M₂) fun _ => (∀ i, M₁ i) → M₂ :=
+  ⟨fun f => f⟩
+end
 
 open InnerProductSpace
 
