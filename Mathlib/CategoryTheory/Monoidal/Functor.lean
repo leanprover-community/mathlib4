@@ -103,7 +103,7 @@ lemma μ_natural_left {X Y : C} (f : X ⟶ Y) (X' : C) :
 
 @[reassoc (attr := simp)]
 lemma μ_natural_right {X Y : C} (X' : C) (f : X ⟶ Y) :
-      F.obj X' ◁ F.map f ≫ μ F X' Y = μ F X' X ≫ F.map (X' ◁ f) := by
+    F.obj X' ◁ F.map f ≫ μ F X' Y = μ F X' X ≫ F.map (X' ◁ f) := by
   apply μ'_natural_right
 
 @[reassoc (attr := simp)]
