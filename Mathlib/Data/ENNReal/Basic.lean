@@ -3,12 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.NNReal.Defs
-import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # Extended non-negative reals
@@ -438,11 +435,6 @@ def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
 
 @[simp] theorem coe_ofNNRealHom : ⇑ofNNRealHom = some := rfl
 
-@[simp, norm_cast]
-theorem coe_indicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
-    ((s.indicator f a : ℝ≥0) : ℝ≥0∞) = s.indicator (fun x => ↑(f x)) a :=
-  (ofNNRealHom : ℝ≥0 →+ ℝ≥0∞).map_indicator _ _ _
-
 section Order
 
 theorem bot_eq_zero : (⊥ : ℝ≥0∞) = 0 := rfl
@@ -503,10 +495,6 @@ theorem lt_iff_exists_coe : a < b ↔ ∃ p : ℝ≥0, a = p ∧ ↑p < b :=
 theorem toReal_le_coe_of_le_coe {a : ℝ≥0∞} {b : ℝ≥0} (h : a ≤ b) : a.toReal ≤ b := by
   lift a to ℝ≥0 using ne_top_of_le_ne_top coe_ne_top h
   simpa using h
-
-@[simp, norm_cast]
-theorem coe_finset_sup {s : Finset α} {f : α → ℝ≥0} : ↑(s.sup f) = s.sup fun x => (f x : ℝ≥0∞) :=
-  Finset.comp_sup_eq_sup_comp_of_is_total _ coe_mono rfl
 
 @[simp] theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
 
