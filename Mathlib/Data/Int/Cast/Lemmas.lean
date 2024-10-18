@@ -77,7 +77,7 @@ lemma cast_ne_one : (n : α) ≠ 1 ↔ n ≠ 1 := cast_eq_one.not
 end AddGroupWithOne
 
 section NonAssocRing
-variable [NonAssocRing α] {a b : α} {n : ℤ}
+variable [NonAssocRing α]
 
 variable (α) in
 /-- `coe : ℤ → α` as a `RingHom`. -/
@@ -147,7 +147,7 @@ end SemiconjBy
 
 namespace Commute
 section NonAssocRing
-variable [NonAssocRing α] {a b : α} {n : ℤ}
+variable [NonAssocRing α] {a : α} {n : ℤ}
 
 @[simp] lemma intCast_left : Commute (n : α) a := Int.cast_commute _ _
 
@@ -159,7 +159,7 @@ variable [NonAssocRing α] {a b : α} {n : ℤ}
 end NonAssocRing
 
 section Ring
-variable [Ring α] {a b : α} {n : ℤ}
+variable [Ring α] {a b : α}
 
 @[simp] lemma intCast_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b) :=
   SemiconjBy.intCast_mul_right h m

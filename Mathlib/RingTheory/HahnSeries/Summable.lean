@@ -61,13 +61,11 @@ theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring 
 
 section
 
-variable (Γ) (R) [PartialOrder Γ] [AddCommMonoid R]
-
 /-- A family of Hahn series whose formal coefficient-wise sum is a Hahn series.  For each
 coefficient of the sum to be well-defined, we require that only finitely many series are nonzero at
 any given coefficient.  For the formal sum to be a Hahn series, we require that the union of the
 supports of the constituent series is partially well-ordered. -/
-structure SummableFamily (α : Type*) where
+structure SummableFamily (Γ) (R) [PartialOrder Γ] [AddCommMonoid R] (α : Type*) where
   /-- A parametrized family of Hahn series. -/
   toFun : α → HahnSeries Γ R
   isPWO_iUnion_support' : Set.IsPWO (⋃ a : α, (toFun a).support)
@@ -194,8 +192,7 @@ theorem hsum_add {s t : SummableFamily Γ R α} : (s + t).hsum = s.hsum + t.hsum
 theorem hsum_coeff_subset_sum {s : SummableFamily Γ R α} {g : Γ} {t : Finset α}
     (h : { a | (s a).coeff g ≠ 0 } ⊆ t) : s.hsum.coeff g = ∑ i ∈ t, (s i).coeff g := by
   simp only [hsum_coeff, finsum_eq_sum _ (s.finite_co_support _)]
-  refine sum_subset (Set.Finite.toFinset_subset.mpr h) ?_
-  simp
+  exact sum_subset (Set.Finite.toFinset_subset.mpr h) (by simp)
 
 theorem hsum_coeff_sum {s : SummableFamily Γ R α} {g : Γ} :
     s.hsum.coeff g = ∑ i ∈ (s.coeff g).support, (s i).coeff g := by
@@ -556,8 +553,8 @@ def powers (x : HahnSeries Γ R) (hx : 0 < x.orderTop) : SummableFamily Γ R ℕ
       · exact Set.mem_union_right _ (Set.mem_singleton 0)
       · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
         refine Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨?_, hi⟩⟩, rfl⟩
-        simp only [and_true_iff, Set.mem_iUnion, mem_addAntidiagonal, mem_coe, eq_self_iff_true,
-          Ne, mem_support, Set.mem_setOf_eq]
+        simp only [Set.mem_iUnion, mem_addAntidiagonal, mem_coe, eq_self_iff_true, Ne, mem_support,
+          Set.mem_setOf_eq]
         exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 
 variable {x : HahnSeries Γ R} (hx : 0 < x.orderTop)
@@ -650,9 +647,9 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
     rw [sub_sub_cancel] at h
     rw [← mul_assoc, mul_comm x, h]
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 end Inversion
 

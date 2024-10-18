@@ -17,7 +17,7 @@ and `Mathlib/LinearAlgebra/FiniteDimensional.lean`.
 
 -/
 
-open Cardinal Submodule Set FiniteDimensional
+open Cardinal Module Module Set Submodule
 
 universe u v
 
@@ -27,7 +27,7 @@ variable {K : Type u} {V : Type v} [Ring K] [StrongRankCondition K] [AddCommGrou
 
 /-- The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
 
-See also `FiniteDimensional.finBasis`.
+See also `Module.finBasis`.
 -/
 noncomputable def Basis.ofRankEqZero [Module.Free K V] {ι : Type*} [IsEmpty ι]
     (hV : Module.rank K V = 0) : Basis ι K V :=
@@ -186,7 +186,7 @@ theorem finrank_eq_one_iff [Module.Free K V] (ι : Type*) [Unique ι] :
     finrank K V = 1 ↔ Nonempty (Basis ι K V) := by
   constructor
   · intro h
-    exact ⟨basisUnique ι h⟩
+    exact ⟨Module.basisUnique ι h⟩
   · rintro ⟨b⟩
     simpa using finrank_eq_card_basis b
 

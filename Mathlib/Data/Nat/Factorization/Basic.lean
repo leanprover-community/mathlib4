@@ -13,7 +13,7 @@ import Mathlib.Tactic.IntervalCases
 # Basic lemmas on prime factorizations
 -/
 
-open Nat Finset List Finsupp
+open Finset List Finsupp
 
 namespace Nat
 variable {a b m n p : ℕ}
@@ -235,8 +235,7 @@ and `n'` such that `n'` is not divisible by `p` and `n = p^e * n'`. -/
 theorem exists_eq_pow_mul_and_not_dvd {n : ℕ} (hn : n ≠ 0) (p : ℕ) (hp : p ≠ 1) :
     ∃ e n' : ℕ, ¬p ∣ n' ∧ n = p ^ e * n' :=
   let ⟨a', h₁, h₂⟩ :=
-    multiplicity.exists_eq_pow_mul_and_not_dvd
-      (multiplicity.finite_nat_iff.mpr ⟨hp, Nat.pos_of_ne_zero hn⟩)
+    (Nat.multiplicity_finite_iff.mpr ⟨hp, Nat.pos_of_ne_zero hn⟩).exists_eq_pow_mul_and_not_dvd
   ⟨_, a', h₂, h₁⟩
 
 /-- Any nonzero natural number is the product of an odd part `m` and a power of
@@ -309,7 +308,7 @@ theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) :
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   rcases eq_or_ne d 0 with (rfl | hd)
-  · simp only [zero_dvd_iff, hn, false_iff_iff, not_forall]
+  · simp only [zero_dvd_iff, hn, false_iff, not_forall]
     exact ⟨2, n, prime_two, dvd_zero _, mt (le_of_dvd hn.bot_lt) (lt_two_pow n).not_le⟩
   refine ⟨fun h p k _ hpkd => dvd_trans hpkd h, ?_⟩
   rw [← factorization_prime_le_iff_dvd hd hn]

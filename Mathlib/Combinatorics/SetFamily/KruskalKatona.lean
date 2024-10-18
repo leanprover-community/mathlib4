@@ -86,7 +86,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   -- if j < k, k is our colex witness for t ∪ {j} < s
   · refine Or.inr ⟨k, mem_of_mem_erase ‹_›, fun hk ↦ hkt <| mem_of_mem_insert_of_ne hk hjk.ne',
       fun x hx ↦ ?_⟩
-    simpa only [mem_insert, z hx, (hjk.trans hx).ne', mem_erase, Ne, false_or_iff,
+    simpa only [mem_insert, z hx, (hjk.trans hx).ne', mem_erase, Ne, false_or,
       and_iff_right_iff_imp] using fun _ ↦ ((min'_le _ _ <| mem_of_mem_erase hks).trans_lt hx).ne'
   -- if j = k, all of range k is in t so by sizes t ∪ {j} = s
   refine Or.inl (eq_of_subset_of_card_le (fun a ha ↦ ?_) hcard.ge).symm
@@ -119,7 +119,7 @@ protected lemma IsInitSeg.shadow [Finite α] (h₁ : IsInitSeg 𝒜 r) : IsInitS
 end Colex
 
 open Finset Colex Nat UV
-open scoped BigOperators FinsetFamily
+open scoped FinsetFamily
 
 variable {α : Type*} [LinearOrder α] {s U V : Finset α} {n : ℕ}
 
@@ -142,7 +142,7 @@ private def UsefulCompression (U V : Finset α) : Prop :=
   Disjoint U V ∧ U.card = V.card ∧ ∃ (HU : U.Nonempty) (HV : V.Nonempty), max' U HU < max' V HV
 
 private instance UsefulCompression.instDecidableRel : @DecidableRel (Finset α) UsefulCompression :=
-  fun _U _V ↦ And.decidable
+  fun _ _ ↦ inferInstanceAs (Decidable (_ ∧ _))
 
 /-- Applying a good compression will decrease measure, keep cardinality, keep sizes and decrease
 shadow. In particular, 'good' means it's useful, and every smaller compression won't make a
