@@ -626,7 +626,7 @@ theorem ContDiffWithinAt.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F
     ⟨(mem_of_mem_nhdsWithin (mem_insert (f x) _) u_nhd : _),
       mem_of_mem_nhdsWithin (mem_insert x s) v_nhd⟩
   have : f ⁻¹' u ∈ 𝓝[insert x s] x := by
-    apply hf.continuousWithinAt.insert_self.preimage_mem_nhdsWithin'
+    apply hf.continuousWithinAt.insert.preimage_mem_nhdsWithin'
     apply nhdsWithin_mono _ _ u_nhd
     rw [image_insert_eq]
     exact insert_subset_insert (image_subset_iff.mpr st)
@@ -653,19 +653,19 @@ theorem ContDiffWithinAt.comp_of_mem_nhdsWithin_image
 @[deprecated (since := "2024-10-18")]
 alias ContDiffWithinAt.comp_of_mem := ContDiffWithinAt.comp_of_mem_nhdsWithin_image
 
+/-- The composition of `C^n` functions at points in domains is `C^n`. -/
+theorem ContDiffWithinAt.comp_inter {s : Set E} {t : Set F} {g : F → G} {f : E → F} (x : E)
+    (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x) :
+    ContDiffWithinAt 𝕜 n (g ∘ f) (s ∩ f ⁻¹' t) x :=
+  hg.comp x (hf.mono inter_subset_left) inter_subset_right
+
 /-- The composition of `C^n` functions at points in domains is `C^n`,
   with a weaker condition on `s` and `t`. -/
 theorem ContDiffWithinAt.comp_of_preimage_mem_nhdsWithin
     {s : Set E} {t : Set F} {g : F → G} {f : E → F} (x : E)
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)
     (hs : f ⁻¹' t ∈ 𝓝[s] x) : ContDiffWithinAt 𝕜 n (g ∘ f) s x :=
-  (hg.mono_of_mem hs).comp x hf (subset_preimage_image f s)
-
-/-- The composition of `C^n` functions at points in domains is `C^n`. -/
-theorem ContDiffWithinAt.comp_inter {s : Set E} {t : Set F} {g : F → G} {f : E → F} (x : E)
-    (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x) :
-    ContDiffWithinAt 𝕜 n (g ∘ f) (s ∩ f ⁻¹' t) x :=
-  hg.comp x (hf.mono inter_subset_left) inter_subset_right
+  (hg.comp_inter x hf).mono_of_mem (inter_mem self_mem_nhdsWithin hs)
 
 @[deprecated (since := "2024-10-18")]
 alias ContDiffWithinAt.comp' := ContDiffWithinAt.comp_inter
@@ -928,7 +928,8 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
     refine this.comp _ (hasFDerivAt_prod_mk_right _ _).hasFDerivWithinAt ?_
     exact mapsTo'.mpr (image_prod_mk_subset_prod_right hz.2)
   · exact (hf'.continuousLinearMap_comp <| (ContinuousLinearMap.compL 𝕜 F (E × F) G).flip
-      (ContinuousLinearMap.inr 𝕜 E F)).comp_of_mem x₀ (contDiffWithinAt_id.prod hg) hst
+      (ContinuousLinearMap.inr 𝕜 E F)).comp_of_mem_nhdsWithin_image x₀
+      (contDiffWithinAt_id.prod hg) hst
 
 /-- The most general lemma stating that `x ↦ fderivWithin 𝕜 (f x) t (g x)` is `C^n`
 at a point within a set.
