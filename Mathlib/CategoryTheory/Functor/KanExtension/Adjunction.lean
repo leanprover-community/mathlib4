@@ -22,7 +22,7 @@ right Kan extension along `L`.
 
 namespace CategoryTheory
 
-open Category
+open Category Limits
 
 namespace Functor
 
@@ -99,6 +99,26 @@ lemma lanUnit_app_app_lanAdjunction_counit_app_app (G : D ⥤ H) (X : C) :
 lemma isIso_lanAdjunction_counit_app_iff (G : D ⥤ H) :
     IsIso ((L.lanAdjunction H).counit.app G) ↔ G.IsLeftKanExtension (𝟙 (L ⋙ G)) :=
   (isLeftKanExtension_iff_isIso _ (L.lanUnit.app (L ⋙ G)) _ (by simp)).symm
+
+/-- Composing the left Kan extension of `L : C ⥤ D` with `colim` on shapes `D` is isomorphic
+to `colim` on shapes `C`. -/
+@[simps!]
+noncomputable def lanCompColimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
+    [HasColimitsOfShape C H] [HasColimitsOfShape D H] : L.lan ⋙ colim ≅ colim (C := H) :=
+  NatIso.ofComponents (fun F => IsColimit.coconePointUniqueUpToIso
+    (colimit.isColimit (L.leftKanExtension F))
+    (isColimitCoconeOfIsLeftKanExtension _ (leftKanExtensionUnit _ _) (colimit.isColimit F)))
+    (fun _ => by
+      simp only [colim_obj, colim_map, ← Iso.inv_comp_eq, ← assoc, ← Iso.eq_comp_inv]
+      ext
+      rw [ι_colimMap_assoc]
+      simp only [comp_map, colim, colimMap, IsColimit.map, lan]
+      rw [IsColimit.coconePointUniqueUpToIso_inv_desc]
+      simp only [isColimitCoconeOfIsLeftKanExtension_desc, Cocones.precompose_obj_pt,
+        colimit.cocone_x, Cocones.precompose_obj_ι, whiskerLeft_comp, colimit.isColimit_desc,
+        colimit.ι_desc, NatTrans.comp_app, comp_obj, const_obj_obj, whiskerLeft_app,
+        colimit.cocone_ι, ← assoc, Iso.eq_comp_inv]
+      simp [colimit.ι, colimit.cocone, lan])
 
 end
 
@@ -206,6 +226,26 @@ lemma ranCounit_app_app_ranAdjunction_unit_app_app (G : D ⥤ H) (X : C) :
 lemma isIso_ranAdjunction_unit_app_iff (G : D ⥤ H) :
     IsIso ((L.ranAdjunction H).unit.app G) ↔ G.IsRightKanExtension (𝟙 (L ⋙ G)) :=
   (isRightKanExtension_iff_isIso _ (L.ranCounit.app (L ⋙ G)) _ (by simp)).symm
+
+/-- Composing the right Kan extension of `L : C ⥤ D` with `lim` on shapes `D` is isomorphic
+to `lim` on shapes `C`. -/
+@[simps!]
+noncomputable def ranCompLimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasRightKanExtension G]
+    [HasLimitsOfShape C H] [HasLimitsOfShape D H] : L.ran ⋙ lim ≅ lim (C := H) :=
+  NatIso.ofComponents (fun F => IsLimit.conePointUniqueUpToIso
+    (limit.isLimit (L.rightKanExtension F))
+    (isLimitConeOfIsRightKanExtension _ (rightKanExtensionCounit _ _) (limit.isLimit F)))
+    (fun _ => by
+      simp only [lim_obj, lim_map]
+      ext c
+      conv_rhs => rw [assoc, limMap_π]
+      simp only [comp_map, lim, limMap, IsLimit.map, ran]
+      rw [IsLimit.lift_comp_conePointUniqueUpToIso_hom]
+      simp only [limit.isLimit_lift, comp_obj, isLimitConeOfIsRightKanExtension_lift,
+        Cones.postcompose_obj_pt, limit.cone_x, Cones.postcompose_obj_π, whiskerLeft_comp,
+        limit.lift_π, assoc, liftOfIsRightKanExtension_fac, NatTrans.comp_app, const_obj_obj,
+        whiskerLeft_app, limit.cone_π]
+      simp [limit.π, limit.cone, ← Iso.inv_comp_eq])
 
 end
 
