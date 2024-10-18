@@ -70,7 +70,7 @@ theorem nhds_coe {r : ℝ} : 𝓝 (r : EReal) = (𝓝 r).map (↑) :=
 
 theorem nhds_coe_coe {r p : ℝ} :
     𝓝 ((r : EReal), (p : EReal)) = (𝓝 (r, p)).map fun p : ℝ × ℝ => (↑p.1, ↑p.2) :=
-  ((openEmbedding_coe.prod openEmbedding_coe).map_nhds_eq (r, p)).symm
+  ((openEmbedding_coe.prodMap openEmbedding_coe).map_nhds_eq (r, p)).symm
 
 theorem tendsto_toReal {a : EReal} (ha : a ≠ ⊤) (h'a : a ≠ ⊥) :
     Tendsto EReal.toReal (𝓝 a) (𝓝 a.toReal) := by
@@ -145,26 +145,50 @@ theorem tendsto_nhds_bot_iff_real {α : Type*} {m : α → EReal} {f : Filter α
     Tendsto m f (𝓝 ⊥) ↔ ∀ x : ℝ, ∀ᶠ a in f, m a < x :=
   nhds_bot_basis.tendsto_right_iff.trans <| by simp only [true_implies, mem_Iio]
 
+lemma nhdsWithin_top : 𝓝[≠] (⊤ : EReal) = (atTop).map Real.toEReal := by
+  apply (nhdsWithin_hasBasis nhds_top_basis_Ici _).ext (atTop_basis.map Real.toEReal)
+  · simp only [EReal.image_coe_Ici, true_and]
+    intro x hx
+    by_cases hx_bot : x = ⊥
+    · simp [hx_bot]
+    lift x to ℝ using ⟨hx.ne_top, hx_bot⟩
+    refine ⟨x, fun x ⟨h1, h2⟩ ↦ ?_⟩
+    simp [h1, h2.ne_top]
+  · simp only [EReal.image_coe_Ici, true_implies]
+    refine fun x ↦ ⟨x, ⟨EReal.coe_lt_top x, fun x ⟨(h1 : _ ≤ x), h2⟩ ↦ ?_⟩⟩
+    simp [h1, Ne.lt_top' fun a ↦ h2 a.symm]
+
+lemma nhdsWithin_bot : 𝓝[≠] (⊥ : EReal) = (atBot).map Real.toEReal := by
+  apply (nhdsWithin_hasBasis nhds_bot_basis_Iic _).ext (atBot_basis.map Real.toEReal)
+  · simp only [EReal.image_coe_Iic, Set.subset_compl_singleton_iff, Set.mem_Ioc, lt_self_iff_false,
+      bot_le, and_true, not_false_eq_true, true_and]
+    intro x hx
+    by_cases hx_top : x = ⊤
+    · simp [hx_top]
+    lift x to ℝ using ⟨hx_top, hx.ne_bot⟩
+    refine ⟨x, fun x ⟨h1, h2⟩ ↦ ?_⟩
+    simp [h2, h1.ne_bot]
+  · simp only [EReal.image_coe_Iic, true_implies]
+    refine fun x ↦ ⟨x, ⟨EReal.bot_lt_coe x, fun x ⟨(h1 : x ≤ _), h2⟩ ↦ ?_⟩⟩
+    simp [h1, Ne.bot_lt' fun a ↦ h2 a.symm]
+
+lemma tendsto_toReal_atTop : Tendsto EReal.toReal (𝓝[≠] ⊤) atTop := by
+  rw [nhdsWithin_top, tendsto_map'_iff]
+  exact tendsto_id
+
+lemma tendsto_toReal_atBot : Tendsto EReal.toReal (𝓝[≠] ⊥) atBot := by
+  rw [nhdsWithin_bot, tendsto_map'_iff]
+  exact tendsto_id
+
 /-! ### Infs and Sups -/
 
 variable {α : Type*} {u v : α → EReal}
 
-lemma add_iInf_le_iInf_add : (⨅ x, u x) + (⨅ x, v x) ≤ ⨅ x, (u + v) x := by
-  refine add_le_of_forall_add_le fun a a_u b b_v ↦ ?_
-  rw [lt_iInf_iff] at a_u b_v
-  rcases a_u with ⟨c, a_c, c_u⟩
-  rcases b_v with ⟨d, b_d, d_v⟩
-  simp only [Pi.add_apply, le_iInf_iff]
-  exact fun x ↦ add_le_add (lt_of_lt_of_le a_c (c_u x)).le (lt_of_lt_of_le b_d (d_v x)).le
+lemma add_iInf_le_iInf_add : (⨅ x, u x) + ⨅ x, v x ≤ ⨅ x, (u + v) x :=
+  le_iInf fun i ↦ add_le_add (iInf_le u i) (iInf_le v i)
 
-lemma iSup_add_le_add_iSup (h : ⨆ x, u x ≠ ⊥ ∨ ⨆ x, v x ≠ ⊤) (h' : ⨆ x, u x ≠ ⊤ ∨ ⨆ x, v x ≠ ⊥) :
-    ⨆ x, (u + v) x ≤ (⨆ x, u x) + (⨆ x, v x) := by
-  refine le_add_of_forall_le_add h h' fun a a_u b b_v ↦ ?_
-  rw [gt_iff_lt, iSup_lt_iff] at a_u b_v
-  rcases a_u with ⟨c, a_c, c_u⟩
-  rcases b_v with ⟨d, b_d, d_v⟩
-  simp only [Pi.add_apply, iSup_le_iff]
-  exact fun x ↦ add_le_add (lt_of_le_of_lt (c_u x) a_c).le (lt_of_le_of_lt (d_v x) b_d).le
+lemma iSup_add_le_add_iSup : ⨆ x, (u + v) x ≤ (⨆ x, u x) + ⨆ x, v x :=
+  iSup_le fun i ↦ add_le_add (le_iSup u i) (le_iSup v i)
 
 /-! ### Liminfs and Limsups -/
 
@@ -191,14 +215,14 @@ lemma limsup_add_le_add_limsup (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤)
   exact (add_lt_add a_x b_x).trans c_ab
 
 lemma limsup_add_liminf_le_limsup_add : (limsup u f) + (liminf v f) ≤ limsup (u + v) f :=
-  add_le_of_forall_add_le fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
+  add_le_of_forall_add_le fun _ a_u _ b_v ↦ (le_limsup_iff).2 fun _ c_ab ↦
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
     ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (add_lt_add ab_x.1 ab_x.2)
 
 lemma liminf_add_le_limsup_add_liminf (h : limsup u f ≠ ⊥ ∨ liminf v f ≠ ⊤)
     (h' : limsup u f ≠ ⊤ ∨ liminf v f ≠ ⊥) :
     liminf (u + v) f ≤ (limsup u f) + (liminf v f) :=
-  le_add_of_forall_le_add h h' fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦
+  le_add_of_forall_le_add h h' fun _ a_u _ b_v ↦ (liminf_le_iff).2 fun _ c_ab ↦
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_liminf_lt) b_v)
     ((eventually_lt_of_limsup_lt) a_u)) fun _ ab_x ↦ (add_lt_add ab_x.2 ab_x.1).trans c_ab
 
@@ -323,7 +347,7 @@ private lemma continuousAt_mul_symm1 {a b : EReal}
     simp
   rw [this]
   apply ContinuousAt.comp (Continuous.continuousAt continuous_neg)
-    <| ContinuousAt.comp _ (ContinuousAt.prod_map (Continuous.continuousAt continuous_neg)
+    <| ContinuousAt.comp _ (ContinuousAt.prodMap (Continuous.continuousAt continuous_neg)
       (Continuous.continuousAt continuous_id))
   simp [h]
 

@@ -141,7 +141,7 @@ theorem _root_.Function.Commute.finset_map {f g : α ↪ α} (h : Function.Commu
 
 @[simp]
 theorem map_subset_map {s₁ s₂ : Finset α} : s₁.map f ⊆ s₂.map f ↔ s₁ ⊆ s₂ :=
-  ⟨fun h x xs => (mem_map' _).1 <| h <| (mem_map' f).2 xs,
+  ⟨fun h _ xs => (mem_map' _).1 <| h <| (mem_map' f).2 xs,
    fun h => by simp [subset_def, Multiset.map_subset_map h]⟩
 
 @[gcongr] alias ⟨_, _root_.GCongr.finsetMap_subset⟩ := map_subset_map
@@ -625,7 +625,7 @@ elements belong to `s`. -/
 protected def subtype {α} (p : α → Prop) [DecidablePred p] (s : Finset α) : Finset (Subtype p) :=
   (s.filter p).attach.map
     ⟨fun x => ⟨x.1, by simpa using (Finset.mem_filter.1 x.2).2⟩,
-     fun x y H => Subtype.eq <| Subtype.mk.inj H⟩
+     fun _ _ H => Subtype.eq <| Subtype.mk.inj H⟩
 
 @[simp]
 theorem mem_subtype {p : α → Prop} [DecidablePred p] {s : Finset α} :
@@ -697,9 +697,23 @@ theorem fin_mono {n} : Monotone (Finset.fin n) := fun s t h x => by simpa using 
 theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
   simp [Finset.fin, Finset.map_map]
 
+/--
+If a finset `t` is a subset of the image of another finset `s` under `f`, then it is equal to the
+image of a subset of `s`.
+
+For the version where `s` is a set, see `subset_set_image_iff`.
+-/
+theorem subset_image_iff [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β} :
+    t ⊆ s.image f ↔ ∃ s' : Finset α, s' ⊆ s ∧ s'.image f = t := by
+  refine ⟨fun ht => ?_, fun ⟨s', hs', h⟩ => h ▸ image_subset_image hs'⟩
+  refine ⟨s.filter (f · ∈ t), filter_subset _ _, le_antisymm (by simp [image_subset_iff]) ?_⟩
+  intro x hx
+  specialize ht hx
+  aesop
+
 /-- If a `Finset` is a subset of the image of a `Set` under `f`,
 then it is equal to the `Finset.image` of a `Finset` subset of that `Set`. -/
-theorem subset_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : α → β} :
+theorem subset_set_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : α → β} :
     ↑t ⊆ f '' s ↔ ∃ s' : Finset α, ↑s' ⊆ s ∧ s'.image f = t := by
   constructor; swap
   · rintro ⟨t, ht, rfl⟩
@@ -757,9 +771,3 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
   rfl
 
 end Equiv
-
-namespace Finset
-
-@[deprecated (since := "2023-12-27")] alias image_filter := filter_image
-
-end Finset

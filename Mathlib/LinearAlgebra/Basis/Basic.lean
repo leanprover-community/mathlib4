@@ -24,18 +24,15 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
-variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
+variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
 section Module
 
-variable [Semiring R]
-variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
-
+variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 
 namespace Basis
 
-variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
+variable (b : Basis ι R M)
 
 section Coord
 
@@ -187,9 +184,9 @@ section Module
 open LinearMap
 
 variable {v : ι → M}
-variable [Ring R] [CommRing R₂] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M'']
-variable [Module R M] [Module R₂ M] [Module R M'] [Module R M'']
-variable {c d : R} {x y : M}
+variable [Ring R] [CommRing R₂] [AddCommGroup M]
+variable [Module R M] [Module R₂ M]
+variable {x y : M}
 variable (b : Basis ι R M)
 
 namespace Basis
