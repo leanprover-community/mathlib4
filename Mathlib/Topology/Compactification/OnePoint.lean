@@ -241,28 +241,28 @@ theorem continuous_coe : Continuous ((↑) : X → OnePoint X) :=
 
 theorem isOpenMap_coe : IsOpenMap ((↑) : X → OnePoint X) := fun _ => isOpen_image_coe.2
 
-theorem openEmbedding_coe : OpenEmbedding ((↑) : X → OnePoint X) :=
-  openEmbedding_of_continuous_injective_open continuous_coe coe_injective isOpenMap_coe
+theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : X → OnePoint X) :=
+  IsOpenEmbedding.of_continuous_injective_isOpenMap continuous_coe coe_injective isOpenMap_coe
 
 theorem isOpen_range_coe : IsOpen (range ((↑) : X → OnePoint X)) :=
-  openEmbedding_coe.isOpen_range
+  isOpenEmbedding_coe.isOpen_range
 
 theorem isClosed_infty : IsClosed ({∞} : Set (OnePoint X)) := by
   rw [← compl_range_coe, isClosed_compl_iff]
   exact isOpen_range_coe
 
 theorem nhds_coe_eq (x : X) : 𝓝 ↑x = map ((↑) : X → OnePoint X) (𝓝 x) :=
-  (openEmbedding_coe.map_nhds_eq x).symm
+  (isOpenEmbedding_coe.map_nhds_eq x).symm
 
 theorem nhdsWithin_coe_image (s : Set X) (x : X) :
     𝓝[(↑) '' s] (x : OnePoint X) = map (↑) (𝓝[s] x) :=
-  (openEmbedding_coe.toEmbedding.map_nhdsWithin_eq _ _).symm
+  (isOpenEmbedding_coe.isEmbedding.map_nhdsWithin_eq _ _).symm
 
 theorem nhdsWithin_coe (s : Set (OnePoint X)) (x : X) : 𝓝[s] ↑x = map (↑) (𝓝[(↑) ⁻¹' s] x) :=
-  (openEmbedding_coe.map_nhdsWithin_preimage_eq _ _).symm
+  (isOpenEmbedding_coe.map_nhdsWithin_preimage_eq _ _).symm
 
 theorem comap_coe_nhds (x : X) : comap ((↑) : X → OnePoint X) (𝓝 x) = 𝓝 x :=
-  (openEmbedding_coe.toInducing.nhds_eq_comap x).symm
+  (isOpenEmbedding_coe.isInducing.nhds_eq_comap x).symm
 
 /-- If `x` is not an isolated point of `X`, then `x : OnePoint X` is not an isolated point
 of `OnePoint X`. -/
@@ -427,18 +427,18 @@ theorem denseRange_coe [NoncompactSpace X] : DenseRange ((↑) : X → OnePoint 
   exact dense_compl_singleton _
 
 theorem isDenseEmbedding_coe [NoncompactSpace X] : IsDenseEmbedding ((↑) : X → OnePoint X) :=
-  { openEmbedding_coe with dense := denseRange_coe }
+  { isOpenEmbedding_coe with dense := denseRange_coe }
 
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding_coe := isDenseEmbedding_coe
 
 @[simp, norm_cast]
 theorem specializes_coe {x y : X} : (x : OnePoint X) ⤳ y ↔ x ⤳ y :=
-  openEmbedding_coe.toInducing.specializes_iff
+  isOpenEmbedding_coe.isInducing.specializes_iff
 
 @[simp, norm_cast]
 theorem inseparable_coe {x y : X} : Inseparable (x : OnePoint X) y ↔ Inseparable x y :=
-  openEmbedding_coe.toInducing.inseparable_iff
+  isOpenEmbedding_coe.isInducing.inseparable_iff
 
 theorem not_specializes_infty_coe {x : X} : ¬Specializes ∞ (x : OnePoint X) :=
   isClosed_infty.not_specializes rfl (coe_ne_infty x)

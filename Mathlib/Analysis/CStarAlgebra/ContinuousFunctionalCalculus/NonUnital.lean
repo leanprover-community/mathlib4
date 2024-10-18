@@ -47,6 +47,7 @@ encoded in the `UniqueNonUnitalContinuousFunctionalCalculus` class.
 -/
 local notation "σₙ" => quasispectrum
 
+open Topology
 open scoped ContinuousMapZero
 
 /-- A non-unital star `R`-algebra `A` has a *continuous functional calculus* for elements
@@ -75,7 +76,7 @@ class NonUnitalContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outPara
   predicate_zero : p 0
   [compactSpace_quasispectrum : ∀ a : A, CompactSpace (σₙ R a)]
   exists_cfc_of_predicate : ∀ a, p a → ∃ φ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A,
-    ClosedEmbedding φ ∧ φ ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a ∧
+    IsClosedEmbedding φ ∧ φ ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a ∧
       (∀ f, σₙ R (φ f) = Set.range f) ∧ ∀ f, p (φ f)
 
 -- this instance should not be activated everywhere but it is useful when developing generic API
@@ -128,13 +129,13 @@ the user should instead prefer `cfcₙ` over `cfcₙHom`.
 noncomputable def cfcₙHom : C(σₙ R a, R)₀ →⋆ₙₐ[R] A :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose
 
-lemma cfcₙHom_closedEmbedding :
-    ClosedEmbedding <| (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
+lemma cfcₙHom_isClosedEmbedding :
+    IsClosedEmbedding <| (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
 
 @[fun_prop]
 lemma cfcₙHom_continuous : Continuous (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
-  cfcₙHom_closedEmbedding ha |>.continuous
+  cfcₙHom_isClosedEmbedding ha |>.continuous
 
 lemma cfcₙHom_id :
     cfcₙHom ha ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a :=
@@ -152,7 +153,7 @@ lemma cfcₙHom_predicate (f : C(σₙ R a, R)₀) :
 lemma cfcₙHom_eq_of_continuous_of_map_id [UniqueNonUnitalContinuousFunctionalCalculus R A]
     (φ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ₁ : Continuous φ)
     (hφ₂ : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = a) : cfcₙHom ha = φ :=
-  (cfcₙHom ha).ext_continuousMap a φ (cfcₙHom_closedEmbedding ha).continuous hφ₁ <| by
+  (cfcₙHom ha).ext_continuousMap a φ (cfcₙHom_isClosedEmbedding ha).continuous hφ₁ <| by
     rw [cfcₙHom_id ha, hφ₂]
 
 theorem cfcₙHom_comp [UniqueNonUnitalContinuousFunctionalCalculus R A] (f : C(σₙ R a, R)₀)
@@ -169,7 +170,7 @@ theorem cfcₙHom_comp [UniqueNonUnitalContinuousFunctionalCalculus R A] (f : C(
   let φ : C(σₙ R (cfcₙHom ha f), R)₀ →⋆ₙₐ[R] A := (cfcₙHom ha).comp ψ
   suffices cfcₙHom (cfcₙHom_predicate ha f) = φ from DFunLike.congr_fun this.symm g
   refine cfcₙHom_eq_of_continuous_of_map_id (cfcₙHom_predicate ha f) φ ?_ ?_
-  · refine (cfcₙHom_closedEmbedding ha).continuous.comp <| continuous_induced_rng.mpr ?_
+  · refine (cfcₙHom_isClosedEmbedding ha).continuous.comp <| continuous_induced_rng.mpr ?_
     exact f'.toContinuousMap.continuous_comp_left.comp continuous_induced_dom
   · simp only [φ, ψ, NonUnitalStarAlgHom.comp_apply, NonUnitalStarAlgHom.coe_mk',
       NonUnitalAlgHom.coe_mk]
@@ -187,7 +188,7 @@ noncomputable def cfcₙL {a : A} (ha : p a) : C(σₙ R a, R)₀ →L[R] A :=
   { cfcₙHom ha with
     toFun := cfcₙHom ha
     map_smul' := map_smul _
-    cont := (cfcₙHom_closedEmbedding ha).continuous }
+    cont := (cfcₙHom_isClosedEmbedding ha).continuous }
 
 end cfcₙL
 
@@ -306,7 +307,7 @@ lemma eqOn_of_cfcₙ_eq_cfcₙ {f g : R → R} {a : A} (h : cfcₙ f a = cfcₙ 
     (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac) :
     (σₙ R a).EqOn f g := by
   rw [cfcₙ_apply f a, cfcₙ_apply g a] at h
-  have := (cfcₙHom_closedEmbedding (show p a from ha) (R := R)).inj h
+  have := (cfcₙHom_isClosedEmbedding (show p a from ha) (R := R)).inj h
   intro x hx
   congrm($(this) ⟨x, hx⟩)
 
@@ -695,12 +696,12 @@ variable [CompleteSpace R]
 -- gives access to the `ContinuousFunctionalCalculus.compactSpace_spectrum` instance
 open scoped ContinuousFunctionalCalculus
 
-lemma closedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
-    ClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
+lemma isClosedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
+    IsClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
   let f : C(spectrum R a, σₙ R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
   refine (cfcHom_closedEmbedding ha).comp <|
-    (IsUniformInducing.isUniformEmbedding ⟨?_⟩).toClosedEmbedding
+    (IsUniformInducing.isUniformEmbedding ⟨?_⟩).isClosedEmbedding
   have := uniformSpace_eq_inf_precomp_of_cover (β := R) f (0 : C(Unit, σₙ R a))
     (map_continuous f).isProperMap (map_continuous 0).isProperMap <| by
       simp only [← Subtype.val_injective.image_injective.eq_iff, f, ContinuousMap.coe_mk,
@@ -723,7 +724,7 @@ instance ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctiona
     exact h_cpct |>.union isCompact_singleton
   exists_cfc_of_predicate _ ha :=
     ⟨cfcₙHom_of_cfcHom R ha,
-      closedEmbedding_cfcₙHom_of_cfcHom ha,
+      isClosedEmbedding_cfcₙHom_of_cfcHom ha,
       cfcHom_id ha,
       cfcₙHom_of_cfcHom_map_quasispectrum ha,
       fun _ ↦ cfcHom_predicate ha _⟩
@@ -734,8 +735,8 @@ lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [UniqueNonUnitalContinuousFunctionalCalcu
   refine UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id
       (σₙ R a) ?_ _ _ ?_ ?_ ?_
   · simp
-  · exact (cfcₙHom_closedEmbedding (R := R) ha).continuous
-  · exact (closedEmbedding_cfcₙHom_of_cfcHom ha).continuous
+  · exact (cfcₙHom_isClosedEmbedding (R := R) ha).continuous
+  · exact (isClosedEmbedding_cfcₙHom_of_cfcHom ha).continuous
   · simpa only [cfcₙHom_id (R := R) ha] using (cfcHom_id ha).symm
 
 /-- When `cfc` is applied to a function that maps zero to zero, it is equivalent to using

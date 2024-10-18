@@ -31,6 +31,8 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 continuous functional calculus, normal, selfadjoint
 -/
 
+open Topology
+
 noncomputable section
 
 local notation "σₙ" => quasispectrum
@@ -78,16 +80,16 @@ noncomputable def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹
 lemma cfcₙAux_id : cfcₙAux hp₁ a ha (ContinuousMapZero.id rfl) = a := cfcHom_id (hp₁.mpr ha)
 
 open Unitization in
-lemma closedEmbedding_cfcₙAux : ClosedEmbedding (cfcₙAux hp₁ a ha) := by
+lemma isClosedEmbedding_cfcₙAux : IsClosedEmbedding (cfcₙAux hp₁ a ha) := by
   simp only [cfcₙAux, NonUnitalStarAlgHom.coe_comp]
-  refine ((cfcHom_closedEmbedding (hp₁.mpr ha)).comp ?_).comp
-    ContinuousMapZero.closedEmbedding_toContinuousMap
+  refine ((cfcHom_isClosedEmbedding (hp₁.mpr ha)).comp ?_).comp
+    ContinuousMapZero.isClosedEmbedding_toContinuousMap
   let e : C(σₙ 𝕜 a, 𝕜) ≃ₜ C(σ 𝕜 (a : A⁺¹), 𝕜) :=
     { (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr <|
         (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm) with
       continuous_toFun := ContinuousMap.continuous_comp_left _
       continuous_invFun := ContinuousMap.continuous_comp_left _ }
-  exact e.closedEmbedding
+  exact e.isClosedEmbedding
 
 lemma spec_cfcₙAux (f : C(σₙ 𝕜 a, 𝕜)₀) : σ 𝕜 (cfcₙAux hp₁ a ha f) = Set.range f := by
   rw [cfcₙAux, NonUnitalStarAlgHom.comp_assoc, NonUnitalStarAlgHom.comp_apply]
@@ -103,7 +105,7 @@ variable [CompleteSpace A]
 
 lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
     cfcₙAux hp₁ a ha f ∈ NonUnitalStarAlgHom.range (Unitization.inrNonUnitalStarAlgHom 𝕜 A) := by
-  have h₁ := (closedEmbedding_cfcₙAux hp₁ a ha).continuous.range_subset_closure_image_dense
+  have h₁ := (isClosedEmbedding_cfcₙAux hp₁ a ha).continuous.range_subset_closure_image_dense
     (ContinuousMapZero.adjoin_id_dense (s := σₙ 𝕜 a) rfl) ⟨f, rfl⟩
   rw [← SetLike.mem_coe]
   refine closure_minimal ?_ ?_ h₁
@@ -133,11 +135,11 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculus :
     have coe_ψ (f : C(σₙ 𝕜 a, 𝕜)₀) : ψ f = cfcₙAux hp₁ a ha f :=
       congr_arg Subtype.val <| (inrRangeEquiv 𝕜 A).apply_symm_apply
         ⟨cfcₙAux hp₁ a ha f, cfcₙAux_mem_range_inr hp₁ a ha f⟩
-    refine ⟨ψ, ?closedEmbedding, ?map_id, fun f ↦ ?map_spec, fun f ↦ ?isStarNormal⟩
-    case closedEmbedding =>
-      apply isometry_inr (𝕜 := 𝕜) (A := A) |>.closedEmbedding |>.of_comp_iff.mp
+    refine ⟨ψ, ?isClosedEmbedding, ?map_id, fun f ↦ ?map_spec, fun f ↦ ?isStarNormal⟩
+    case isClosedEmbedding =>
+      apply isometry_inr (𝕜 := 𝕜) (A := A) |>.isClosedEmbedding |>.of_comp_iff.mp
       have : inr ∘ ψ = cfcₙAux hp₁ a ha := by ext1; rw [Function.comp_apply, coe_ψ]
-      exact this ▸ closedEmbedding_cfcₙAux hp₁ a ha
+      exact this ▸ isClosedEmbedding_cfcₙAux hp₁ a ha
     case map_id => exact inr_injective (R := 𝕜) <| coe_ψ _ ▸ cfcₙAux_id hp₁ a ha
     case map_spec =>
       exact quasispectrum_eq_spectrum_inr' 𝕜 𝕜 (ψ f) ▸ coe_ψ _ ▸ spec_cfcₙAux hp₁ a ha f
@@ -158,13 +160,13 @@ instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [NormedRing A
   spectrum_nonempty a _ := spectrum.nonempty a
   exists_cfc_of_predicate a ha := by
     refine ⟨(elementalStarAlgebra ℂ a).subtype.comp <| continuousFunctionalCalculus a,
-      ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
-    case hom_closedEmbedding =>
+      ?hom_isClosedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
+    case hom_isClosedEmbedding =>
       -- note: Lean should find these for `StarAlgEquiv.isometry`, but it doesn't and so we
       -- provide them manually.
       have : SMulCommClass ℂ C(σ ℂ a, ℂ) C(σ ℂ a, ℂ) := Algebra.to_smulCommClass (A := C(σ ℂ a, ℂ))
       have : IsScalarTower ℂ C(σ ℂ a, ℂ) C(σ ℂ a, ℂ) := IsScalarTower.right (A := C(σ ℂ a, ℂ))
-      exact Isometry.closedEmbedding <|
+      exact Isometry.isClosedEmbedding <|
         isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
     case hom_id => exact congr_arg Subtype.val <| continuousFunctionalCalculus_map_id a
     case hom_map_spectrum =>

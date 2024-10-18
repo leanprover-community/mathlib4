@@ -52,7 +52,7 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
 -/
 
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits
 
@@ -68,7 +68,7 @@ spaces, such that the sheaf map `Y(V) ⟶ f _* X(V)` is an iso for each `V ⊆ U
 class PresheafedSpace.IsOpenImmersion {X Y : PresheafedSpace C} (f : X ⟶ Y) : Prop where
   /-- the underlying continuous map of underlying spaces from the source to an open subset of the
     target. -/
-  base_open : OpenEmbedding f.base
+  base_open : IsOpenEmbedding f.base
   /-- the underlying sheaf morphism is an isomorphism on each open subset -/
   c_iso : ∀ U : Opens X, IsIso (f.c.app (op (base_open.isOpenMap.functor.obj U)))
 
@@ -214,7 +214,7 @@ theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
 
 /-- An isomorphism is an open immersion. -/
 instance ofIso {X Y : PresheafedSpace C} (H : X ≅ Y) : IsOpenImmersion H.hom where
-  base_open := (TopCat.homeoOfIso ((forget C).mapIso H)).openEmbedding
+  base_open := (TopCat.homeoOfIso ((forget C).mapIso H)).isOpenEmbedding
   -- Porting note: `inferInstance` will fail if Lean is not told that `H.hom.c` is iso
   c_iso _ := letI : IsIso H.hom.c := c_isIso_of_iso H.hom; inferInstance
 
@@ -223,7 +223,7 @@ instance (priority := 100) ofIsIso {X Y : PresheafedSpace C} (f : X ⟶ Y) [IsIs
   AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.ofIso (asIso f)
 
 instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
-    (hf : OpenEmbedding f) : IsOpenImmersion (Y.ofRestrict hf) where
+    (hf : IsOpenEmbedding f) : IsOpenImmersion (Y.ofRestrict hf) where
   base_open := hf
   c_iso U := by
     dsimp
@@ -243,7 +243,7 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
 
 @[elementwise, simp]
 theorem ofRestrict_invApp {C : Type*} [Category C] (X : PresheafedSpace C) {Y : TopCat}
-    {f : Y ⟶ TopCat.of X.carrier} (h : OpenEmbedding f) (U : Opens (X.restrict h).carrier) :
+    {f : Y ⟶ TopCat.of X.carrier} (h : IsOpenEmbedding f) (U : Opens (X.restrict h).carrier) :
     (PresheafedSpace.IsOpenImmersion.ofRestrict X h).invApp _ U = 𝟙 _ := by
   delta invApp
   rw [IsIso.comp_inv_eq, Category.id_comp]
@@ -265,7 +265,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
   have : IsIso f.c := NatIso.isIso_of_isIso_app _
 
   apply (config := { allowSynthFailures := true }) isIso_of_components
-  let t : X ≃ₜ Y := (Homeomorph.ofEmbedding _ H.base_open.toEmbedding).trans
+  let t : X ≃ₜ Y := (Homeomorph.ofEmbedding _ H.base_open.isEmbedding).trans
     { toFun := Subtype.val
       invFun := fun x =>
         ⟨x, by rw [Set.range_iff_surjective.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
@@ -286,7 +286,7 @@ variable {X Y Z : PresheafedSpace C} (f : X ⟶ Z) [hf : IsOpenImmersion f] (g :
 /-- (Implementation.) The projection map when constructing the pullback along an open immersion.
 -/
 def pullbackConeOfLeftFst :
-    Y.restrict (TopCat.snd_openEmbedding_of_left_openEmbedding hf.base_open g.base) ⟶ X where
+    Y.restrict (TopCat.snd_isOpenEmbedding_of_left hf.base_open g.base) ⟶ X where
   base := pullback.fst _ _
   c :=
     { app := fun U =>
@@ -377,7 +377,7 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
                   dsimp [s']
                   rw [Function.comp_def, ← Set.preimage_preimage]
                 rw [Set.preimage_image_eq _
-                    (TopCat.snd_openEmbedding_of_left_openEmbedding hf.base_open g.base).inj]
+                    (TopCat.snd_isOpenEmbedding_of_left hf.base_open g.base).inj]
                 rfl))
       naturality := fun U V i => by
         erw [s.snd.c.naturality_assoc]
@@ -476,7 +476,7 @@ instance forgetPreservesLimitsOfRight : PreservesLimit (cospan g f) (forget C) :
 
 theorem pullback_snd_isIso_of_range_subset (H : Set.range g.base ⊆ Set.range f.base) :
     IsIso (pullback.snd f g) := by
-  haveI := TopCat.snd_iso_of_left_embedding_range_subset hf.base_open.toEmbedding g.base H
+  haveI := TopCat.snd_iso_of_left_embedding_range_subset hf.base_open.isEmbedding g.base H
   have : IsIso (pullback.snd f g).base := by
     delta pullback.snd
     rw [← limit.isoLimitCone_hom_π ⟨_, pullbackConeOfLeftIsLimit f g⟩ WalkingCospan.right]
@@ -727,7 +727,7 @@ whose forgetful functor reflects isomorphisms, preserves limits and filtered col
 Then a morphism `X ⟶ Y` that is a topological open embedding
 is an open immersion iff every stalk map is an iso.
 -/
-theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : OpenEmbedding f.base)
+theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : IsOpenEmbedding f.base)
     [H : ∀ x : X.1, IsIso (f.stalkMap x)] : SheafedSpace.IsOpenImmersion f :=
   { base_open := hf
     c_iso := fun U => by
@@ -738,7 +738,7 @@ theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : OpenEmbedding f.
       specialize H y
       delta PresheafedSpace.Hom.stalkMap at H
       haveI H' :=
-        TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_openEmbedding C hf X.presheaf y
+        TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_isOpenEmbedding C hf X.presheaf y
       have := IsIso.comp_isIso' H (@IsIso.inv_isIso _ _ _ _ _ H')
       rwa [Category.assoc, IsIso.hom_inv_id, Category.comp_id] at this }
 
@@ -812,13 +812,13 @@ theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
   PresheafedSpace.IsOpenImmersion.app_invApp f U
 
 instance ofRestrict {X : TopCat} (Y : SheafedSpace C) {f : X ⟶ Y.carrier}
-    (hf : OpenEmbedding f) : IsOpenImmersion (Y.ofRestrict hf) :=
+    (hf : IsOpenEmbedding f) : IsOpenImmersion (Y.ofRestrict hf) :=
   PresheafedSpace.IsOpenImmersion.ofRestrict _ hf
 
 @[elementwise, simp]
 theorem ofRestrict_invApp {C : Type*} [Category C] (X : SheafedSpace C) {Y : TopCat}
-    {f : Y ⟶ TopCat.of X.carrier} (h : OpenEmbedding f) (U : Opens (X.restrict h).carrier) :
-    (SheafedSpace.IsOpenImmersion.ofRestrict X h).invApp _ U = 𝟙 _ :=
+    {f : Y ⟶ TopCat.of X.carrier} (h : IsOpenEmbedding f) (U : Opens (X.restrict h).carrier) :
+    (SheafedSpace.IsOpenImmersion.ofRestrict X h).invApp U = 𝟙 _ :=
   PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ h U
 
 /-- An open immersion is an iso if the underlying continuous map is epi. -/
@@ -839,7 +839,7 @@ section Prod
 variable [HasLimits C] {ι : Type v} (F : Discrete ι ⥤ SheafedSpace.{_, v, v} C) [HasColimit F]
   (i : Discrete ι)
 
-theorem sigma_ι_openEmbedding : OpenEmbedding (colimit.ι F i).base := by
+theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).base := by
   rw [← show _ = (colimit.ι F i).base from ι_preservesColimitsIso_inv (SheafedSpace.forget C) F i]
   have : _ = _ ≫ colimit.ι (Discrete.functor ((F ⋙ SheafedSpace.forget C).obj ∘ Discrete.mk)) i :=
     HasColimit.isoOfNatIso_ι_hom Discrete.natIsoFunctor i
@@ -850,17 +850,17 @@ theorem sigma_ι_openEmbedding : OpenEmbedding (colimit.ι F i).base := by
   rw [← Iso.eq_comp_inv] at this
   cases i
   rw [this, ← Category.assoc]
-  -- Porting note: `simp_rw` can't use `TopCat.openEmbedding_iff_comp_isIso` and
-  -- `TopCat.openEmbedding_iff_isIso_comp`.
+  -- Porting note: `simp_rw` can't use `TopCat.isOpenEmbedding_iff_comp_isIso` and
+  -- `TopCat.isOpenEmbedding_iff_isIso_comp`.
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  erw [TopCat.openEmbedding_iff_comp_isIso, TopCat.openEmbedding_iff_comp_isIso,
-    TopCat.openEmbedding_iff_comp_isIso, TopCat.openEmbedding_iff_isIso_comp]
-  exact openEmbedding_sigmaMk
+  erw [TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_comp_isIso,
+    TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_isIso_comp]
+  exact IsOpenEmbedding.sigmaMk
 
 theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.obj i)) :
     (Opens.map (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) j).base).obj
         ((Opens.map (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv.base).obj
-          ((sigma_ι_openEmbedding F i).isOpenMap.functor.obj U)) =
+          ((sigma_ι_isOpenEmbedding F i).isOpenMap.functor.obj U)) =
       ⊥ := by
   ext x
   apply iff_false_intro
@@ -880,15 +880,15 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
 
 instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
     SheafedSpace.IsOpenImmersion (colimit.ι F i) where
-  base_open := sigma_ι_openEmbedding F i
+  base_open := sigma_ι_isOpenEmbedding F i
   c_iso U := by
     have e : colimit.ι F i = _ :=
       (ι_preservesColimitsIso_inv SheafedSpace.forgetToPresheafedSpace F i).symm
     have H :
-      OpenEmbedding
+      IsOpenEmbedding
         (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
             (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).base :=
-      e ▸ sigma_ι_openEmbedding F i
+      e ▸ sigma_ι_isOpenEmbedding F i
     suffices IsIso <| (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).c.app <|
       op (H.isOpenMap.functor.obj U) by
@@ -921,7 +921,7 @@ end SheafedSpace.IsOpenImmersion
 
 namespace LocallyRingedSpace.IsOpenImmersion
 
-instance (X : LocallyRingedSpace) {U : TopCat} (f : U ⟶ X.toTopCat) (hf : OpenEmbedding f) :
+instance (X : LocallyRingedSpace) {U : TopCat} (f : U ⟶ X.toTopCat) (hf : IsOpenEmbedding f) :
     LocallyRingedSpace.IsOpenImmersion (X.ofRestrict hf) :=
   PresheafedSpace.IsOpenImmersion.ofRestrict X.toPresheafedSpace hf
 
@@ -951,7 +951,7 @@ set_option synthInstance.maxHeartbeats 40000 in
 /-- An explicit pullback cone over `cospan f g` if `f` is an open immersion. -/
 def pullbackConeOfLeft : PullbackCone f g := by
   refine PullbackCone.mk ?_
-      (Y.ofRestrict (TopCat.snd_openEmbedding_of_left_openEmbedding H.base_open g.base)) ?_
+      (Y.ofRestrict (TopCat.snd_isOpenEmbedding_of_left H.base_open g.base)) ?_
   · use PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftFst f.1 g.1
     intro x
     have := PresheafedSpace.stalkMap.congr_hom _ _
@@ -1223,13 +1223,13 @@ theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
   PresheafedSpace.IsOpenImmersion.app_invApp f.1 U
 
 instance ofRestrict {X : TopCat} (Y : LocallyRingedSpace) {f : X ⟶ Y.carrier}
-    (hf : OpenEmbedding f) : IsOpenImmersion (Y.ofRestrict hf) :=
+    (hf : IsOpenEmbedding f) : IsOpenImmersion (Y.ofRestrict hf) :=
   PresheafedSpace.IsOpenImmersion.ofRestrict _ hf
 
 @[elementwise, simp]
 theorem ofRestrict_invApp (X : LocallyRingedSpace) {Y : TopCat}
-    {f : Y ⟶ TopCat.of X.carrier} (h : OpenEmbedding f) (U : Opens (X.restrict h).carrier) :
-    (LocallyRingedSpace.IsOpenImmersion.ofRestrict X h).invApp _ U = 𝟙 _ :=
+    {f : Y ⟶ TopCat.of X.carrier} (h : IsOpenEmbedding f) (U : Opens (X.restrict h).carrier) :
+    (LocallyRingedSpace.IsOpenImmersion.ofRestrict X h).invApp U = 𝟙 _ :=
   PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ h U
 
 instance stalk_iso (x : X) : IsIso (f.stalkMap x) :=

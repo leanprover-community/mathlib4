@@ -152,7 +152,7 @@ alias UniformInducing.uniformContinuousOn_iff := IsUniformInducing.uniformContin
 
 theorem IsUniformInducing.inducing {f : α → β} (h : IsUniformInducing f) : Inducing f := by
   obtain rfl := h.comap_uniformSpace
-  exact inducing_induced f
+  exact .induced f
 
 @[deprecated (since := "2024-10-05")]
 alias UniformInducing.inducing := IsUniformInducing.inducing
@@ -182,7 +182,7 @@ alias SeparationQuotient.uniformInducing_mk := SeparationQuotient.isUniformInduc
 
 protected theorem IsUniformInducing.injective [T0Space α] {f : α → β} (h : IsUniformInducing f) :
     Injective f :=
-  h.inducing.injective
+  h.isInducing.injective
 
 @[deprecated (since := "2024-10-05")]
 alias UniformInducing.injective := IsUniformInducing.injective
@@ -330,16 +330,17 @@ theorem isUniformEmbedding_of_spaced_out {α} {f : α → β} {s : Set (β × β
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_of_spaced_out := isUniformEmbedding_of_spaced_out
 
-protected lemma IsUniformEmbedding.embedding {f : α → β} (h : IsUniformEmbedding f) : Embedding f :=
-  { toInducing := h.isUniformInducing.inducing
-    inj := h.inj }
+protected lemma IsUniformEmbedding.isEmbedding {f : α → β} (h : IsUniformEmbedding f) :
+    IsEmbedding f where
+  toIsInducing := h.toIsUniformInducing.isInducing
+  inj := h.inj
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.embedding := IsUniformEmbedding.embedding
 
 theorem IsUniformEmbedding.isDenseEmbedding {f : α → β} (h : IsUniformEmbedding f)
     (hd : DenseRange f) : IsDenseEmbedding f :=
-  { h.embedding with dense := hd }
+  { h.isEmbedding with dense := hd }
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.isDenseEmbedding := IsUniformEmbedding.isDenseEmbedding
@@ -347,12 +348,12 @@ alias UniformEmbedding.isDenseEmbedding := IsUniformEmbedding.isDenseEmbedding
 @[deprecated (since := "2024-09-30")]
 alias IsUniformEmbedding.denseEmbedding := IsUniformEmbedding.isDenseEmbedding
 
-theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
+theorem isClosedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
     [T0Space β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
-    (hf : Pairwise fun x y => (f x, f y) ∉ s) : ClosedEmbedding f := by
+    (hf : Pairwise fun x y => (f x, f y) ∉ s) : IsClosedEmbedding f := by
   rcases @DiscreteTopology.eq_bot α _ _ with rfl; let _ : UniformSpace α := ⊥
   exact
-    { (isUniformEmbedding_of_spaced_out hs hf).embedding with
+    { (isUniformEmbedding_of_spaced_out hs hf).isEmbedding with
       isClosed_range := isClosed_range_of_spaced_out hs hf }
 
 theorem closure_image_mem_nhds_of_isUniformInducing {s : Set (α × α)} {e : α → β} (b : β)
@@ -396,7 +397,7 @@ theorem isComplete_image_iff {m : α → β} {s : Set α} (hm : IsUniformInducin
   have fact1 : SurjOn (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 <| m '' s) := surjOn_image .. |>.filter_map_Iic
   have fact2 : MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 <| m '' s) := mapsTo_image .. |>.filter_map_Iic
   simp_rw [IsComplete, imp.swap (a := Cauchy _), ← mem_Iic (b := 𝓟 _), fact1.forall fact2,
-    hm.cauchy_map_iff, exists_mem_image, map_le_iff_le_comap, hm.inducing.nhds_eq_comap]
+    hm.cauchy_map_iff, exists_mem_image, map_le_iff_le_comap, hm.isInducing.nhds_eq_comap]
 
 /-- If `f : X → Y` is an `IsUniformInducing` map, the image `f '' s` of a set `s` is complete
   if and only if `s` is complete. -/
@@ -554,12 +555,12 @@ alias uniformEmbedding_comap := isUniformEmbedding_comap
 
 /-- Pull back a uniform space structure by an embedding, adjusting the new uniform structure to
 make sure that its topology is defeq to the original one. -/
-def Embedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β] (f : α → β)
-    (h : Embedding f) : UniformSpace α :=
-  (u.comap f).replaceTopology h.induced
+def Topology.IsEmbedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β]
+    (f : α → β) (h : IsEmbedding f) : UniformSpace α :=
+  (u.comap f).replaceTopology h.eq_induced
 
 theorem Embedding.to_isUniformEmbedding {α β} [TopologicalSpace α] [u : UniformSpace β] (f : α → β)
-    (h : Embedding f) : @IsUniformEmbedding α β (h.comapUniformSpace f) u f :=
+    (h : IsEmbedding f) : @IsUniformEmbedding α β (h.comapUniformSpace f) u f :=
   let _ := h.comapUniformSpace f
   { comap_uniformity := rfl
     inj := h.inj }
@@ -599,7 +600,7 @@ theorem uniform_extend_subtype [CompleteSpace γ] {p : α → Prop} {e : α → 
     simpa only [nhds_subtype_eq_comap, comap_comap, IsDenseEmbedding.subtypeEmb_coe] using hc
   refine ⟨c, (tendsto_comap'_iff ?_).1 hc⟩
   rw [Subtype.range_coe_subtype]
-  exact ⟨_, hb, by rwa [← de.toInducing.closure_eq_preimage_closure_image, hs.closure_eq]⟩
+  exact ⟨_, hb, by rwa [← de.isInducing.closure_eq_preimage_closure_image, hs.closure_eq]⟩
 
 include h_e h_f in
 theorem uniformly_extend_spec [CompleteSpace γ] (a : α) : Tendsto f (comap e (𝓝 a)) (𝓝 (ψ a)) := by
