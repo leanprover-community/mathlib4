@@ -306,8 +306,20 @@ variable (G)
 
 https://stacks.math.columbia.edu/tag/04E7
 -/
+@[simps!]
 def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
   asIso (colimit.pre G F)
+
+/-- A pointfree version of `colimitIso`, stating that whiskering by `F` followed by taking the
+colimit is isomorpic to taking the colimit on the codomain of `F`. -/
+def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
+    (whiskeringLeft _ _ _).obj F ⋙ colim ≅ colim (J := D) (C := E) :=
+  NatIso.ofComponents (fun G => colimitIso F G) fun f => by
+    simp only [comp_obj, whiskeringLeft_obj_obj, colim_obj, comp_map, whiskeringLeft_obj_map,
+      colim_map, colimitIso_hom]
+    ext
+    simp only [comp_obj, ι_colimMap_assoc, whiskerLeft_app, colimit.ι_pre, colimit.ι_pre_assoc,
+      ι_colimMap]
 
 end
 
@@ -578,8 +590,19 @@ variable (G)
 
 https://stacks.math.columbia.edu/tag/04E7
 -/
+@[simps!]
 def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
+
+/-- A pointfree version of `limitIso`, stating that whiskering by `F` followed by taking the
+limit is isomorpic to taking the limit on the codomain of `F`. -/
+def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
+    (whiskeringLeft _ _ _).obj F ⋙ lim ≅ lim (J := D) (C := E) :=
+  Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f => by
+    simp only [comp_obj, whiskeringLeft_obj_obj, lim_obj, comp_map, whiskeringLeft_obj_map, lim_map,
+      limitIso_hom]
+    ext
+    simp
 
 end
 
