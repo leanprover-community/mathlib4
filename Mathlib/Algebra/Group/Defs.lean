@@ -517,8 +517,8 @@ needed. These problems do not come up in practice, so most of the time we will n
 the `npow` field when defining multiplicative objects.
 -/
 
-/-- Auxiliary function for `npowBinRec`. -/
-@[to_additive nsmulBinRec.go "Auxiliary function for `nsmulBinRec`."]
+/-- Auxiliary tail-recursive implementation for `npowBinRec`. -/
+@[to_additive nsmulBinRec.go "Auxiliary tail-recursive implementation for `nsmulBinRec`."]
 abbrev npowBinRec.go {M : Type*} [Mul M] (k : ℕ) : M → M → M :=
   k.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (y * x) y) (x * x)
 
