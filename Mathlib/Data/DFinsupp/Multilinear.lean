@@ -122,7 +122,7 @@ theorem piMultilinear_add (f g : Π (p : Π i, κ i), MultilinearMap R (fun i �
 
 @[simp]
 theorem piMultilinear_smul
-    {S : Type*} [Monoid S] [∀ p, DistribMulAction S (N p)] [∀ p, SMulCommClass R S (N p)]
+    [Monoid S] [∀ p, DistribMulAction S (N p)] [∀ p, SMulCommClass R S (N p)]
     (s : S) (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
     piMultilinear (s • f) = s • piMultilinear f := by
   ext; simp
