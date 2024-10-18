@@ -25,12 +25,12 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
   is flat and tensoring with `M` is faithful, i.e. `N ≠ 0` implies `N ⊗ M ≠ 0`.
 - `Module.FaithfullyFlat.iff_flat_and_lTensor_faithful`: an `R`-module `M` is faithfully flat iff it
   is flat and tensoring with `M` is faithful, i.e. `N ≠ 0` implies `M ⊗ N ≠ 0`.
-- `Module.FaithfullyFlat.iff_iff_rTensor_exact`: an `R`-module `M` is faithfully flat iff tensoring
-  with `M` preserves and reflects exact sequences, i.e. the sequence `N₁ → N₂ → N₃` is exact *iff*
-  the sequence `N₁ ⊗ M → N₂ ⊗ M → N₃ ⊗ M` is exact.
-- `Module.FaithfullyFlat.iff_iff_lTensor_exact`: an `R`-module `M` is faithfully flat iff tensoring
-  with `M` preserves and reflects exact sequences, i.e. the sequence `N₁ → N₂ → N₃` is exact *iff*
-  the sequence `M ⊗ N₁ → M ⊗ N₂ → M ⊗ N₃` is exact.
+- `Module.FaithfullyFlat.iff_exact_iff_rTensor_exact`: an `R`-module `M` is faithfully flat iff
+  tensoring with `M` preserves and reflects exact sequences, i.e. the sequence `N₁ → N₂ → N₃` is
+  exact *iff* the sequence `N₁ ⊗ M → N₂ ⊗ M → N₃ ⊗ M` is exact.
+- `Module.FaithfullyFlat.iff_exact_iff_lTensor_exact`: an `R`-module `M` is faithfully flat iff
+  tensoring with `M` preserves and reflects exact sequences, i.e. the sequence `N₁ → N₂ → N₃` is
+  exact *iff* the sequence `M ⊗ N₁ → M ⊗ N₂ → M ⊗ N₃` is exact.
 
 - `Module.FaithfullyFlat.self`: the `R`-module `R` is faithfully flat.
 
@@ -310,7 +310,7 @@ lemma lTensor_reflects_exact [fl : FaithfullyFlat R M]
 
 end arbitrary_universe
 
-lemma implies_iff_exact [fl : FaithfullyFlat R M]
+lemma exact_iff_rTensor_exact [fl : FaithfullyFlat R M]
     (N1 N2 N3 : Type max u v)
     [AddCommGroup N1] [Module R N1]
     [AddCommGroup N2] [Module R N2]
@@ -320,7 +320,7 @@ lemma implies_iff_exact [fl : FaithfullyFlat R M]
   ⟨fun e => Module.Flat.iff_rTensor_exact.1 fl.toFlat e,
     fun ex => rTensor_reflects_exact R M l12 l23 ex⟩
 
-lemma iff_iff_rTensor_exact :
+lemma iff_exact_iff_rTensor_exact :
     FaithfullyFlat R M ↔
     (∀ (N1 N2 N3 : Type max u v)
         [AddCommGroup N1] [Module R N1]
@@ -328,27 +328,29 @@ lemma iff_iff_rTensor_exact :
         [AddCommGroup N3] [Module R N3]
         (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
         Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M)) :=
-  ⟨fun fl => implies_iff_exact R M, fun iff_exact =>
+  ⟨fun fl => exact_iff_rTensor_exact R M, fun iff_exact =>
     iff_flat_and_rTensor_reflects_triviality _ _ |>.2 ⟨Flat.iff_rTensor_exact.2 <| by aesop,
     fun N _ _ h => subsingleton_iff_forall_eq 0 |>.2 <| fun y => by
       simpa [eq_comm] using (iff_exact PUnit N PUnit 0 0 |>.2 fun x => by
         simpa using Subsingleton.elim _ _) y⟩⟩
 
-lemma iff_iff_lTensor_exact :
+lemma iff_exact_iff_lTensor_exact :
     FaithfullyFlat R M ↔
     (∀ (N1 N2 N3 : Type max u v)
         [AddCommGroup N1] [Module R N1]
         [AddCommGroup N2] [Module R N2]
         [AddCommGroup N3] [Module R N3]
         (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
-        Function.Exact l12 l23 ↔ Function.Exact (l12.lTensor M) (l23.lTensor M)) :=
-  iff_iff_rTensor_exact _ _ |>.trans <| iff_of_eq <|
-    forall_congr <| fun N1 => forall_congr fun N2 => forall_congr fun N3 =>
-    forall_congr fun _ => forall_congr fun _ => forall_congr fun _ => forall_congr fun _ =>
-    forall_congr fun _ => forall_congr fun _ => forall_congr fun l12 => forall_congr fun l23 =>
-    iff_iff_eq.1 <| iff_congr (by rfl) (Function.Exact.iff_of_ladder_linearEquiv
-      (e₁ := TensorProduct.comm _ _ _) (e₂ := TensorProduct.comm _ _ _)
-      (e₃ := TensorProduct.comm _ _ _) (by ext; simp) (by ext; simp))
+        Function.Exact l12 l23 ↔ Function.Exact (l12.lTensor M) (l23.lTensor M)) := by
+    have H {N1 N2 N3 : Type (max u v)}  [AddCommGroup N1] [AddCommGroup N2] [AddCommGroup N3]
+        [AddCommGroup N3] [Module R N1] [Module R N2] [Module R N3]
+        (f : N1 →ₗ[R] N2) (g : N2 →ₗ[R] N3):
+        Function.Exact (f.rTensor M) (g.rTensor M) ↔
+        Function.Exact (f.lTensor M) (g.lTensor M) :=
+      Function.Exact.iff_of_ladder_linearEquiv (e₁ := TensorProduct.comm _ _ _)
+        (e₂ := TensorProduct.comm _ _ _) (e₃ := TensorProduct.comm _ _ _)
+        (by ext; simp) (by ext; simp)
+    simp only [iff_exact_iff_rTensor_exact, H]
 
 end complex
 
