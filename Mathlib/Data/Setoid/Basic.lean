@@ -218,8 +218,7 @@ theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s.R
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
 
 lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
-    letI := sInf S
-    x ≈ y ↔ ∀ s ∈ S, s.Rel x y := Iff.rfl
+    sInf S x y ↔ ∀ s ∈ S, s.Rel x y := Iff.rfl
 
 lemma sInf_iff {S : Set (Setoid α)} {x y : α} :
     sInf S x y ↔ ∀ s ∈ S, s x y := Iff.rfl
