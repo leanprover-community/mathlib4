@@ -15,8 +15,8 @@ This file develops API on the relative versions
 * `ContinuousOn`        of `Continuous`
 * `ContinuousWithinAt`  of `ContinuousAt`
 
-which are defined in previous definition files. Their basic properties studied in this file
-include the relationships between
+related to continuity, which are defined in previous definition files.
+Their basic properties studied in this file include the relationships between
 these restricted notions and the corresponding notions for the subtype
 equipped with the subspace topology.
 
@@ -34,7 +34,7 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 variable [TopologicalSpace α]
 
 /-!
-## Properties of the neihborhood-within filter
+## Properties of the neighborhood-within filter
 -/
 
 @[simp]
