@@ -13,7 +13,7 @@ import Mathlib.Order.Hom.Basic
 Apply a function to an equality or inequality in either a local hypothesis or the goal.
 
 ## Porting notes
-When the `mono` tactic has been ported we can attempt to automatically discharge `Monotone f` goals.
+We can attempt to automatically discharge `Monotone f` goals using `mono`.
 -/
 
 namespace Mathlib.Tactic
@@ -52,8 +52,7 @@ def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
           | none => do
             let f ← elabTermForApply f
             let ng ← mkFreshExprMVar (← mkAppM ``Function.Injective #[f])
-            -- TODO attempt to solve this goal using `mono` when it has been ported,
-            -- via `synthesizeUsing`.
+            -- TODO attempt to solve this goal using `mono` via `synthesizeUsing`.
             pure (ng, [ng.mvarId!])
         pure (← mkAppM' (← mkAppM ``Function.Injective.ne #[injective_f]) #[d.toExpr], newGoals)
       | _ => throwError
@@ -66,8 +65,7 @@ def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
         | none => do
           let f ← elabTermForApply f
           let ng ← mkFreshExprMVar (← mkAppM ``StrictMono #[f])
-          -- TODO attempt to solve this goal using `mono` when it has been ported,
-          -- via `synthesizeUsing`.
+          -- TODO attempt to solve this goal using `mono`, via `synthesizeUsing`.
           pure (ng, [ng.mvarId!])
       pure (← mkAppM' strict_monotone_f #[d.toExpr], newGoals)
     | (``LE.le, _) =>
@@ -78,8 +76,7 @@ def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
         | none => do
           let f ← elabTermForApply f
           let ng ← mkFreshExprMVar (← mkAppM ``Monotone #[f])
-          -- TODO attempt to solve this goal using `mono` when it has been ported,
-          -- via `synthesizeUsing`.
+          -- TODO attempt to solve this goal using `mono`, via `synthesizeUsing`.
           pure (ng, [ng.mvarId!])
       pure (← mkAppM' monotone_f #[d.toExpr], newGoals)
     | _ => throwError
