@@ -1081,7 +1081,7 @@ theorem Embedding.map_nhdsWithin_eq {f : α → β} (hf : Embedding f) (s : Set 
   rw [nhdsWithin, Filter.map_inf hf.inj, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
     inter_eq_self_of_subset_right (image_subset_range _ _)]
 
-theorem OpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : OpenEmbedding f) (s : Set β)
+theorem IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : IsOpenEmbedding f) (s : Set β)
     (x : α) : map f (𝓝[f ⁻¹' s] x) = 𝓝[s] f x := by
   rw [hf.toEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
   apply nhdsWithin_eq_nhdsWithin (mem_range_self _) hf.isOpen_range

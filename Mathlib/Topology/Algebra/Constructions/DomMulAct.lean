@@ -49,7 +49,7 @@ theorem coe_mkHomeomorph_symm : ⇑(mkHomeomorph : M ≃ₜ Mᵈᵐᵃ).symm = m
 
 @[to_additive] theorem inducing_mk : Inducing (@mk M) := mkHomeomorph.inducing
 @[to_additive] theorem embedding_mk : Embedding (@mk M) := mkHomeomorph.embedding
-@[to_additive] theorem openEmbedding_mk : OpenEmbedding (@mk M) := mkHomeomorph.openEmbedding
+@[to_additive] theorem isOpenEmbedding_mk : IsOpenEmbedding (@mk M) := mkHomeomorph.isOpenEmbedding
 @[to_additive] theorem closedEmbedding_mk : ClosedEmbedding (@mk M) := mkHomeomorph.closedEmbedding
 @[to_additive] theorem quotientMap_mk : QuotientMap (@mk M) := mkHomeomorph.quotientMap
 
@@ -57,7 +57,7 @@ theorem coe_mkHomeomorph_symm : ⇑(mkHomeomorph : M ≃ₜ Mᵈᵐᵃ).symm = m
 @[to_additive] theorem embedding_mk_symm : Embedding (@mk M).symm := mkHomeomorph.symm.embedding
 
 @[to_additive]
-theorem openEmbedding_mk_symm : OpenEmbedding (@mk M).symm := mkHomeomorph.symm.openEmbedding
+theorem isOpenEmbedding_mk_symm : IsOpenEmbedding (@mk M).symm := mkHomeomorph.symm.isOpenEmbedding
 
 @[to_additive]
 theorem closedEmbedding_mk_symm : ClosedEmbedding (@mk M).symm := mkHomeomorph.symm.closedEmbedding
@@ -108,7 +108,7 @@ instance instCompactSpace [CompactSpace M] : CompactSpace Mᵈᵐᵃ :=
 
 @[to_additive]
 instance instLocallyCompactSpace [LocallyCompactSpace M] : LocallyCompactSpace Mᵈᵐᵃ :=
-  openEmbedding_mk_symm.locallyCompactSpace
+  isOpenEmbedding_mk_symm.locallyCompactSpace
 
 @[to_additive]
 instance instWeaklyLocallyCompactSpace [WeaklyLocallyCompactSpace M] :

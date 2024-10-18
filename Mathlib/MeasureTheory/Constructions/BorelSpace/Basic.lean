@@ -636,7 +636,7 @@ protected theorem ClosedEmbedding.measurableEmbedding {f : α → β} (h : Close
     MeasurableEmbedding f :=
   h.toEmbedding.measurableEmbedding h.isClosed_range.measurableSet
 
-protected theorem OpenEmbedding.measurableEmbedding {f : α → β} (h : OpenEmbedding f) :
+protected theorem IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
     MeasurableEmbedding f :=
   h.toEmbedding.measurableEmbedding h.isOpen_range.measurableSet
 

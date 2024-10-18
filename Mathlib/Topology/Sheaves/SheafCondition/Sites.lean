@@ -136,14 +136,14 @@ theorem coverDense_inducedFunctor {B : ι → Opens X} (h : Opens.IsBasis (Set.r
 
 end TopCat.Opens
 
-section OpenEmbedding
+section IsOpenEmbedding
 
 open TopCat.Presheaf Opposite
 
 variable {C : Type u} [Category.{v} C]
 variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
-theorem OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
+theorem IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
     CompatiblePreserving (Opens.grothendieckTopology Y) hf.isOpenMap.functor := by
   haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.inj
   apply compatiblePreservingOfDownwardsClosed
@@ -160,14 +160,14 @@ theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
   exact ⟨_, hf.functor.map i, ⟨_, i, 𝟙 _, hV, rfl⟩, Set.mem_image_of_mem f hxV⟩
 
 
-lemma OpenEmbedding.functor_isContinuous (h : OpenEmbedding f) :
+lemma IsOpenEmbedding.functor_isContinuous (h : IsOpenEmbedding f) :
     h.isOpenMap.functor.IsContinuous (Opens.grothendieckTopology X)
       (Opens.grothendieckTopology Y) := by
   apply Functor.isContinuous_of_coverPreserving
   · exact h.compatiblePreserving
   · exact h.isOpenMap.coverPreserving
 
-theorem TopCat.Presheaf.isSheaf_of_openEmbedding (h : OpenEmbedding f) (hF : F.IsSheaf) :
+theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF : F.IsSheaf) :
     IsSheaf (h.isOpenMap.functor.op ⋙ F) := by
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
@@ -203,7 +203,7 @@ instance : (Opens.map f).IsContinuous (Opens.grothendieckTopology Y)
   · exact compatiblePreserving_opens_map f
   · exact coverPreserving_opens_map f
 
-end OpenEmbedding
+end IsOpenEmbedding
 
 namespace TopCat.Sheaf
 

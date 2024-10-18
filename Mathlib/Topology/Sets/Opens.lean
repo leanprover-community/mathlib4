@@ -243,11 +243,11 @@ def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
 
 instance instFrame : Frame (Opens α) := .ofMinimalAxioms frameMinimalAxioms
 
-theorem openEmbedding' (U : Opens α) : OpenEmbedding (Subtype.val : U → α) :=
-  U.isOpen.openEmbedding_subtype_val
+theorem isOpenEmbedding' (U : Opens α) : IsOpenEmbedding (Subtype.val : U → α) :=
+  U.isOpen.isOpenEmbedding_subtypeVal
 
-theorem openEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
-    OpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) :=
+theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
+    IsOpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) :=
   { toEmbedding := embedding_inclusion i
     isOpen_range := by
       rw [Set.range_inclusion i]

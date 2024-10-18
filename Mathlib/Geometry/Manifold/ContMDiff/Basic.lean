@@ -13,7 +13,7 @@ In this file, we show that standard operations on smooth maps between smooth man
 * `contMDiff_id` gives the smoothness of the identity
 * `contMDiff_const` gives the smoothness of constant functions
 * `contMDiff_inclusion` shows that the inclusion between open sets of a topological space is smooth
-* `contMDiff_openEmbedding` shows that if `M` has a `ChartedSpace` structure induced by an open
+* `contMDiff_isOpenEmbedding` shows that if `M` has a `ChartedSpace` structure induced by an open
 embedding `e : M → H`, then `e` is smooth.
 
 ## Tags
@@ -358,11 +358,11 @@ end ChartedSpace
 
 section
 
-variable {e : M → H} (h : OpenEmbedding e) {n : WithTop ℕ}
+variable {e : M → H} (h : IsOpenEmbedding e) {n : WithTop ℕ}
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then `e` is smooth. -/
-lemma contMDiff_openEmbedding [Nonempty M] :
+lemma contMDiff_isOpenEmbedding [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiff I I n e := by
   haveI := h.singleton_smoothManifoldWithCorners I
   rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
@@ -388,9 +388,9 @@ lemma contMDiff_openEmbedding [Nonempty M] :
 variable {I I'}
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is smooth. -/
-lemma contMDiffOn_openEmbedding_symm [Nonempty M] :
+lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiffOn I I
-      n (OpenEmbedding.toPartialHomeomorph e h).symm (range e) := by
+      n (IsOpenEmbedding.toPartialHomeomorph e h).symm (range e) := by
   haveI := h.singleton_smoothManifoldWithCorners I
   rw [@contMDiffOn_iff]
   constructor
@@ -410,20 +410,20 @@ lemma contMDiffOn_openEmbedding_symm [Nonempty M] :
     exact mem_of_subset_of_mem (extChartAt_target_subset_range _ _) hz.1
 
 variable [ChartedSpace H M]
-variable [Nonempty M'] {e' : M' → H'} (h' : OpenEmbedding e')
+variable [Nonempty M'] {e' : M' → H'} (h' : IsOpenEmbedding e')
 
 /-- Let `M'` be a manifold whose chart structure is given by an open embedding `e'` into its model
 space `H'`. Then the smoothness of `e' ∘ f : M → H'` implies the smoothness of `f`.
 
 This is useful, for example, when `e' ∘ f = g ∘ e` for smooth maps `e : M → X` and `g : X → H'`. -/
-lemma ContMDiff.of_comp_openEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :
+lemma ContMDiff.of_comp_isOpenEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :
     haveI := h'.singletonChartedSpace; ContMDiff I I' n f := by
   have : f = (h'.toPartialHomeomorph e').symm ∘ e' ∘ f := by
     ext
-    rw [Function.comp_apply, Function.comp_apply, OpenEmbedding.toPartialHomeomorph_left_inv]
+    rw [Function.comp_apply, Function.comp_apply, IsOpenEmbedding.toPartialHomeomorph_left_inv]
   rw [this]
   apply @ContMDiffOn.comp_contMDiff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    h'.singletonChartedSpace _ _ (range e') _ (contMDiffOn_openEmbedding_symm h') hf
+    h'.singletonChartedSpace _ _ (range e') _ (contMDiffOn_isOpenEmbedding_symm h') hf
   simp
 
 end

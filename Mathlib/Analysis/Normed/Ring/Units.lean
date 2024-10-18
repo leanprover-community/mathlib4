@@ -200,7 +200,7 @@ open MulOpposite Filter NormedRing
 
 /-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
 induced topology from the embedding in `R × R`) to `R` is an open embedding. -/
-theorem openEmbedding_val : OpenEmbedding (val : Rˣ → R) where
+theorem isOpenEmbedding_val : IsOpenEmbedding (val : Rˣ → R) where
   toEmbedding := embedding_val_mk'
     (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
   isOpen_range := Units.isOpen
@@ -208,7 +208,7 @@ theorem openEmbedding_val : OpenEmbedding (val : Rˣ → R) where
 /-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
 induced topology from the embedding in `R × R`) to `R` is an open map. -/
 theorem isOpenMap_val : IsOpenMap (val : Rˣ → R) :=
-  openEmbedding_val.isOpenMap
+  isOpenEmbedding_val.isOpenMap
 
 end Units
 

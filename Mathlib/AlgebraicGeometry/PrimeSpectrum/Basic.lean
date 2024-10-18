@@ -457,8 +457,8 @@ theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S
   · rintro h₁ _ ⟨⟨n, rfl⟩, h₃⟩
     exact h₁ (x.2.mem_of_pow_mem _ h₃)
 
-theorem localization_away_openEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
-    [IsLocalization.Away r S] : OpenEmbedding (comap (algebraMap R S)) :=
+theorem localization_away_isOpenEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
+    [IsLocalization.Away r S] : IsOpenEmbedding (comap (algebraMap R S)) :=
   { toEmbedding := localization_comap_embedding S (Submonoid.powers r)
     isOpen_range := by
       rw [localization_away_comap_range S r]

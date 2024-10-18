@@ -91,7 +91,7 @@ lemma coborder_preimage (hf : IsOpenMap f) (hf' : Continuous f) (s : Set Y) :
   (hf.coborder_preimage_subset s).antisymm (hf'.preimage_coborder_subset s)
 
 protected
-lemma OpenEmbedding.coborder_preimage (hf : OpenEmbedding f) (s : Set Y) :
+lemma IsOpenEmbedding.coborder_preimage (hf : IsOpenEmbedding f) (s : Set Y) :
     coborder (f ⁻¹' s) = f ⁻¹' (coborder s) :=
   coborder_preimage hf.isOpenMap hf.continuous s
 

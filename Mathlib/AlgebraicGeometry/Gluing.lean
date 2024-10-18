@@ -379,8 +379,8 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.base := by
     exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.covers x⟩
 
-theorem fromGlued_openEmbedding : OpenEmbedding 𝒰.fromGlued.base :=
-  openEmbedding_of_continuous_injective_open
+theorem fromGlued_isOpenEmbedding : IsOpenEmbedding 𝒰.fromGlued.base :=
+  isOpenEmbedding_of_continuous_injective_open
     (by fun_prop) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
 
 instance : Epi 𝒰.fromGlued.base := by
@@ -393,7 +393,7 @@ instance : Epi 𝒰.fromGlued.base := by
   exact h
 
 instance fromGlued_open_immersion : IsOpenImmersion 𝒰.fromGlued :=
-  IsOpenImmersion.of_stalk_iso _ 𝒰.fromGlued_openEmbedding
+  IsOpenImmersion.of_stalk_iso _ 𝒰.fromGlued_isOpenEmbedding
 
 instance : IsIso 𝒰.fromGlued :=
   let F := Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToSheafedSpace ⋙
