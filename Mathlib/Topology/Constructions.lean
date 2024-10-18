@@ -1134,6 +1134,13 @@ lemma isClosed_preimage_val {s t : Set X} : IsClosed (s ↓∩ t) ↔ s ∩ clos
     Subtype.image_preimage_coe, subset_antisymm_iff, and_iff_left, Set.subset_inter_iff,
     and_iff_right]
   exacts [Set.inter_subset_left, Set.subset_inter Set.inter_subset_left subset_closure]
+
+theorem frontier_inter_open_inter {s t : Set X} (ht : IsOpen t) :
+    frontier (s ∩ t) ∩ t = frontier s ∩ t := by
+  simp only [Set.inter_comm _ t, ← Subtype.preimage_coe_eq_preimage_coe_iff,
+    ht.isOpenMap_subtype_val.preimage_frontier_eq_frontier_preimage continuous_subtype_val,
+    Subtype.preimage_coe_self_inter]
+
 end Subtype
 
 section Quotient
