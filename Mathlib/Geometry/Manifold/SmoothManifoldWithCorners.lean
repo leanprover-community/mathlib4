@@ -947,9 +947,10 @@ theorem continuousOn_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M �
     (hs : s ⊆ f.source) (hmaps : MapsTo g s f'.source) :
     ContinuousOn (f'.extend I' ∘ g ∘ (f.extend I).symm) (f.extend I '' s) ↔ ContinuousOn g s := by
   refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
-  refine (continuousWithinAt_congr_nhds ?_).trans
+  refine (continuousWithinAt_congr_set ?_).trans
     (continuousWithinAt_writtenInExtend_iff _ _ _ (hs hx) (hmaps hx) hmaps)
-  rw [← map_extend_nhdsWithin_eq_image_of_subset, ← map_extend_nhdsWithin]
+  rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin_eq_image_of_subset,
+    ← map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
