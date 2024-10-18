@@ -249,21 +249,19 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)
 
 variable (E 𝕜) {s : Set E}
-variable [NontriviallyNormedField 𝕜] [Module 𝕜 E]
-variable [SMulCommClass ℝ 𝕜 E]
-variable [UniformSpace E] [UniformAddGroup E]
-variable [lcs : LocallyConvexSpace ℝ E]
-variable [ContinuousSMul ℝ E]
+variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+variable [UniformSpace E] [UniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3
 theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
     TotallyBounded (absConvexHull ℝ s) := by
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
   intro U hU
-  obtain ⟨W, hW₁, _, _, hW₄⟩  := exists_closed_nhds_zero_neg_eq_add_subset hU
-  obtain ⟨V,⟨hV₁,hV₂,hV₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs W hW₁
-  obtain ⟨t,⟨htf,hts⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hs) _ hV₁
-  obtain ⟨t',⟨htf',hts'⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp
+  obtain ⟨W, hW₁, _, _, hW₄⟩ := exists_closed_nhds_zero_neg_eq_add_subset hU
+  obtain ⟨_, ⟨hV₁, hV₂, hV₃⟩⟩ :=
+    (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs W hW₁
+  obtain ⟨t, ⟨htf, hts⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hs) _ hV₁
+  obtain ⟨t', ⟨htf', hts'⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp
     (IsCompact.totallyBounded (Set.Finite.isCompact_convexHull
       (finite_union.mpr ⟨htf,Finite.neg htf⟩)))) _ hV₁
   use t'
