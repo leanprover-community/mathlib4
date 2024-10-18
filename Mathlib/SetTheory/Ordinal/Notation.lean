@@ -114,7 +114,7 @@ instance : NatCast ONote :=
 def ofNat (n : ℕ) : ONote := n
 
 @[simp] theorem natCast_zero : (0 : ℕ) = (0 : ONote) := rfl
-@[simp] theorem natCast_succ (n) : Nat.succ n = oadd 0 n.succPNat 0 := rfl
+@[simp] theorem natCast_succ (n : ℕ) : n.succ = oadd 0 n.succPNat 0 := rfl
 theorem natCast_one : (1 : ℕ) = (1 : ONote) := rfl
 
 @[deprecated (since := "2024-10-17")] alias ofNat_zero := natCast_zero
@@ -1259,4 +1259,3 @@ theorem repr_opow (a b) : repr (opow a b) = repr a ^ repr b :=
   ONote.repr_opow a.1 b.1
 
 end NONote
-#lint
