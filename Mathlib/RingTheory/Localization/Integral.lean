@@ -182,7 +182,7 @@ theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommR
     refine fun hfp => zero_ne_one
       (_root_.trans (zero_mul b).symm (hfp ▸ hb) : (0 : Rₘ) = 1)
   · refine eval₂_mul_eq_zero_of_left _ _ _ ?_
-    erw [eval₂_map, IsLocalization.map_comp, ← hom_eval₂ _ f (algebraMap S Sₘ) x]
+    rw [eval₂_map, IsLocalization.map_comp, ← hom_eval₂ _ f (algebraMap S Sₘ) x]
     exact _root_.trans (congr_arg (algebraMap S Sₘ) hf) (RingHom.map_zero _)
 
 /-- Given a particular witness to an element being algebraic over an algebra `R → S`,

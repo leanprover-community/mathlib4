@@ -46,7 +46,7 @@ instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
 @[to_additive "The `adjoinZero`-forgetful adjunction from `AddSemigrp` to `AddMonCat`"]
 def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun S M => WithOne.lift.symm
+    { homEquiv := fun _ _ => WithOne.lift.symm
       homEquiv_naturality_left_symm := by
         intro S T M f g
         ext x
@@ -67,7 +67,7 @@ def free : Type u ⥤ MonCat.{u} where
 /-- The free-forgetful adjunction for monoids. -/
 def adj : free ⊣ forget MonCat.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X G => FreeMonoid.lift.symm
+    { homEquiv := fun _ _ => FreeMonoid.lift.symm
       homEquiv_naturality_left_symm := fun _ _ => FreeMonoid.hom_eq (fun _ => rfl) }
 
 instance : (forget MonCat.{u}).IsRightAdjoint :=

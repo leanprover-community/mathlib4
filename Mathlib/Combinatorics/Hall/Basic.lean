@@ -86,7 +86,7 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
 def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) :
     (Finset ι)ᵒᵖ ⥤ Type max u v where
   obj ι' := hallMatchingsOn t ι'.unop
-  map {ι' ι''} g f := hallMatchingsOn.restrict t (CategoryTheory.leOfHom g.unop) f
+  map {_ _} g f := hallMatchingsOn.restrict t (CategoryTheory.leOfHom g.unop) f
 
 instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Finset ι) :
     Finite (hallMatchingsOn t ι') := by
@@ -100,7 +100,7 @@ instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset �
     apply Finite.of_injective g
     intro f f' h
     ext a
-    rw [Function.funext_iff] at h
+    rw [funext_iff] at h
     simpa [g] using h a
 
 /-- This is the version of **Hall's Marriage Theorem** in terms of indexed

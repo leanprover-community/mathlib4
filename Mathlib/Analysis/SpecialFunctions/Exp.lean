@@ -263,7 +263,7 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
     eventually_atTop.1
       ((tendsto_pow_const_div_const_pow_of_one_lt n (one_lt_exp_iff.2 zero_lt_one)).eventually
         (gt_mem_nhds this))
-  simp only [← exp_nat_mul, mul_one, div_lt_iff, exp_pos, ← div_eq_inv_mul] at hN
+  simp only [← exp_nat_mul, mul_one, div_lt_iff₀, exp_pos, ← div_eq_inv_mul] at hN
   refine ⟨N, trivial, fun x hx => ?_⟩
   rw [Set.mem_Ioi] at hx
   have hx₀ : 0 < x := (Nat.cast_nonneg N).trans_lt hx
@@ -387,7 +387,7 @@ theorem isLittleO_pow_exp_atTop {n : ℕ} : (fun x : ℝ => x ^ n) =o[atTop] Rea
 @[simp]
 theorem isBigO_exp_comp_exp_comp {f g : α → ℝ} :
     ((fun x => exp (f x)) =O[l] fun x => exp (g x)) ↔ IsBoundedUnder (· ≤ ·) l (f - g) :=
-  Iff.trans (isBigO_iff_isBoundedUnder_le_div <| Eventually.of_forall fun x => exp_ne_zero _) <| by
+  Iff.trans (isBigO_iff_isBoundedUnder_le_div <| Eventually.of_forall fun _ => exp_ne_zero _) <| by
     simp only [norm_eq_abs, abs_exp, ← exp_sub, isBoundedUnder_le_exp_comp, Pi.sub_def]
 
 @[simp]

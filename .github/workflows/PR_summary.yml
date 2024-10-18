@@ -55,11 +55,26 @@ jobs:
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
 
+        graphAndHighPercentReports=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
+
         ## Import count comment
         importCount=$(
-          python ./scripts/import-graph-report.py base.json head.json changed_files.txt
+          printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
           ./scripts/import_trans_difference.sh
         )
+
+        ## High percentage imports
+        high_percentages=$(
+          printf '%s\n' "${graphAndHighPercentReports}" | sed -n '/^Import changes exceeding/,$p'
+        )
+        # if there are files with large increase in transitive imports, then we add the `large-import` label
+        if [ -n "${high_percentages}" ]
+        then
+          high_percentages=$'\n\n'"${high_percentages}"
+          gh pr edit "${PR}" --add-label large-import
+        else # otherwise, we remove the label
+          gh pr edit "${PR}" --remove-label large-import
+        fi
 
         if [ "$(printf '%s' "${importCount}" | wc -l)" -gt 12 ]
         then
@@ -80,6 +95,6 @@ jobs:
         currentHash="$(git rev-parse HEAD)"
         hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
 
-        message="$(printf '%s [%s](%s)\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${importCount}" "${declDiff}")"
+        message="$(printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}")"
 
         ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
