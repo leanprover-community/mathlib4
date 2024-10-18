@@ -76,8 +76,6 @@ register_option showDefs : Bool := {
   descr := "shows which variables are introduced in a definition"
 }
 
-namespace UnusedVariableCommand
-
 /-- `varsTracker` is the main tool to keep track of used variables.
 * `seen` are the unique names of the variables that have been used by some declaration.
 * `dict` is the mapping from unique names to the `Syntax` node of the corresponding variable.
@@ -94,6 +92,8 @@ structure varsTracker where
 /-- A `varsTracker` is empty if its constituents are empty. -/
 def varsTracker.isEmpty (v : varsTracker) : Bool :=
   v.seen.isEmpty && v.dict.isEmpty
+
+namespace UnusedVariableCommand
 
 /--
 `usedVarsRef` stores a `varsTracker`.
@@ -122,11 +122,15 @@ elab "#show_used" : command => do
   msg := msg.push "" |>.push m!"{checkEmoji}: used" |>.push m!"{crossEmoji}: unused"
   logInfo <| .joinSep msg.toList "\n"
 
-/-- Add the (unique) name `a` to the `NameSet` of variable names that some declaration used. -/
+/-- Add the (unique) name `a` to `varsTracker.seen`: these are the variable names that some
+declaration used. -/
 def usedVarsRef.addUsedVarName (a : Name) : IO Unit := do
   usedVarsRef.modify fun varTrack => {varTrack with seen := varTrack.seen.insert a}
 
-/-- Add the assignment `a → ref` to the `NameMap Syntax` of unique variable names. -/
+/-- Add the assignment `a → ref` to `varsTracker.dict`, where
+* `a` is the *unique name* (not the username) of a variable and
+* `ref` is the syntax node that introduces the variable with unique name `a`.
+-/
 def usedVarsRef.addDict (a : Name) (ref : Syntax) : IO Unit := do
   usedVarsRef.modify fun varTrack =>
     if varTrack.dict.contains a then varTrack
