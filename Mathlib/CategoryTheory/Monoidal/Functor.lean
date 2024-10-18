@@ -198,7 +198,7 @@ lemma ofTensorHom_ε :
 
 @[simp]
 lemma ofTensorHom_μ :
-  letI := (ofTensorHom ε' μ' μ'_natural associativity' left_unitality' right_unitality')
+    letI := (ofTensorHom ε' μ' μ'_natural associativity' left_unitality' right_unitality')
   μ F = μ' := rfl
 
 end
