@@ -340,8 +340,6 @@ theorem conj_smul_subgroupOf {P H : Subgroup G} (hP : P ≤ H) (h : H) :
 
 end Monoid
 
-end Group
-
 section Group
 
 variable [Group α] [MulDistribMulAction α G]
