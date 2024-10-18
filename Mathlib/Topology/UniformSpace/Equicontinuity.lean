@@ -82,8 +82,8 @@ section
 
 open UniformSpace Filter Set Uniformity Topology UniformConvergence Function
 
-variable {ι κ X X' Y Z α α' β β' γ 𝓕 : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
-  [tZ : TopologicalSpace Z] [uα : UniformSpace α] [uβ : UniformSpace β] [uγ : UniformSpace γ]
+variable {ι κ X X' Y α α' β β' γ : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+  [uα : UniformSpace α] [uβ : UniformSpace β] [uγ : UniformSpace γ]
 
 /-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
 *equicontinuous at `x₀ : X`* if, for all entourages `U ∈ 𝓤 α`, there is a neighborhood `V` of `x₀`

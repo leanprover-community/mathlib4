@@ -6,6 +6,8 @@ Authors: Yakov Pechersky, David Loeffler
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.MetricSpace.Ultra.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Group
+import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # Ultrametric norms
@@ -30,6 +32,8 @@ in `NNReal` is 0, so easier to make statements about maxima of empty sets.
 ultrametric, nonarchimedean
 -/
 open Metric NNReal
+
+open scoped BigOperators
 
 namespace IsUltrametricDist
 
@@ -234,6 +238,44 @@ lemma norm_prod_le_of_forall_le_of_nonneg {s : Finset ι} {f : ι → M} {C : �
     (h_nonneg : 0 ≤ C) (hC : ∀ i ∈ s, ‖f i‖ ≤ C) : ‖∏ i ∈ s, f i‖ ≤ C := by
   lift C to NNReal using h_nonneg
   exact nnnorm_prod_le_of_forall_le hC
+
+@[to_additive]
+lemma norm_tprod_le (f : ι → M) : ‖∏' i, f i‖ ≤ ⨆ i, ‖f i‖ := by
+  rcases isEmpty_or_nonempty ι with hι | hι
+  · -- Silly case #1 : the index type is empty
+    simp only [tprod_empty, norm_one', Real.iSup_of_isEmpty, le_refl]
+  by_cases h : Multipliable f; swap
+  · -- Silly case #2 : the product is divergent
+    rw [tprod_eq_one_of_not_multipliable h, norm_one']
+    by_cases h_bd : BddAbove (Set.range fun i ↦ ‖f i‖)
+    · exact le_ciSup_of_le h_bd hι.some (norm_nonneg' _)
+    · rw [Real.iSup_of_not_bddAbove h_bd]
+  -- now the interesting case
+  have h_bd : BddAbove (Set.range fun i ↦ ‖f i‖) :=
+    h.tendsto_cofinite_one.norm'.bddAbove_range_of_cofinite
+  refine le_of_tendsto' h.hasProd.norm' (fun s ↦ norm_prod_le_of_forall_le_of_nonneg ?_ ?_)
+  · exact le_ciSup_of_le h_bd hι.some (norm_nonneg' _)
+  · exact fun i _ ↦ le_ciSup h_bd i
+
+@[to_additive]
+lemma nnnorm_tprod_le (f : ι → M) : ‖∏' i, f i‖₊ ≤ ⨆ i, ‖f i‖₊ := by
+  simpa only [← NNReal.coe_le_coe, coe_nnnorm', coe_iSup] using norm_tprod_le f
+
+@[to_additive]
+lemma norm_tprod_le_of_forall_le [Nonempty ι] {f : ι → M} {C : ℝ} (h : ∀ i, ‖f i‖ ≤ C) :
+    ‖∏' i, f i‖ ≤ C :=
+  (norm_tprod_le f).trans (ciSup_le h)
+
+@[to_additive]
+lemma norm_tprod_le_of_forall_le_of_nonneg {f : ι → M} {C : ℝ} (hC : 0 ≤ C) (h : ∀ i, ‖f i‖ ≤ C) :
+    ‖∏' i, f i‖ ≤ C := by
+  rcases isEmpty_or_nonempty ι
+  · simpa only [tprod_empty, norm_one'] using hC
+  · exact norm_tprod_le_of_forall_le h
+
+@[to_additive]
+lemma nnnorm_tprod_le_of_forall_le {f : ι → M} {C : ℝ≥0} (h : ∀ i, ‖f i‖₊ ≤ C) : ‖∏' i, f i‖₊ ≤ C :=
+  (nnnorm_tprod_le f).trans (ciSup_le' h)
 
 end CommGroup
 

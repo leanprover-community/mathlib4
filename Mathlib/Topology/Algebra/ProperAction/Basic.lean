@@ -5,6 +5,7 @@ Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guir
 -/
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Maps.Proper.Basic
+import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Proper group action

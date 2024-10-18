@@ -1380,7 +1380,7 @@ theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α :
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 
--- Porting note: was `simp`. LHS is not normal form.
+-- Porting note (#11119): was `simp`. LHS is not normal form.
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
@@ -1954,7 +1954,7 @@ theorem mk_union_le {α : Type u} (S T : Set α) : #(S ∪ T : Set α) ≤ #S + 
 theorem mk_union_of_disjoint {α : Type u} {S T : Set α} (H : Disjoint S T) :
     #(S ∪ T : Set α) = #S + #T := by
   classical
-  exact Quot.sound ⟨Equiv.Set.union H.le_bot⟩
+  exact Quot.sound ⟨Equiv.Set.union H⟩
 
 theorem mk_insert {α : Type u} {s : Set α} {a : α} (h : a ∉ s) :
     #(insert a s : Set α) = #s + 1 := by
