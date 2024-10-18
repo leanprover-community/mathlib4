@@ -628,7 +628,7 @@ theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : S
       generateFrom (image2 (·  ×ˢ ·) s t) :=
   let G := generateFrom (image2  (·  ×ˢ ·) s t)
   le_antisymm
-    (le_generateFrom fun g ⟨u, hu, v, hv, g_eq⟩ =>
+    (le_generateFrom fun _ ⟨_, hu, _, hv, g_eq⟩ =>
       g_eq.symm ▸
         @IsOpen.prod _ _ (generateFrom s) (generateFrom t) _ _ (GenerateOpen.basic _ hu)
           (GenerateOpen.basic _ hv))
@@ -656,7 +656,7 @@ theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : S
 theorem prod_eq_generateFrom :
     instTopologicalSpaceProd =
       generateFrom { g | ∃ (s : Set X) (t : Set Y), IsOpen s ∧ IsOpen t ∧ g = s ×ˢ t } :=
-  le_antisymm (le_generateFrom fun g ⟨s, t, hs, ht, g_eq⟩ => g_eq.symm ▸ hs.prod ht)
+  le_antisymm (le_generateFrom fun _ ⟨_, _, hs, ht, g_eq⟩ => g_eq.symm ▸ hs.prod ht)
     (le_inf
       (forall_mem_image.2 fun t ht =>
         GenerateOpen.basic _ ⟨t, univ, by simpa [Set.prod_eq] using ht⟩)
@@ -880,11 +880,9 @@ theorem continuous_isRight : Continuous (isRight : X ⊕ Y → Bool) :=
   continuous_sum_dom.2 ⟨continuous_const, continuous_const⟩
 
 @[continuity, fun_prop]
--- Porting note: the proof was `continuous_sup_rng_left continuous_coinduced_rng`
 theorem continuous_inl : Continuous (@inl X Y) := ⟨fun _ => And.left⟩
 
 @[continuity, fun_prop]
--- Porting note: the proof was `continuous_sup_rng_right continuous_coinduced_rng`
 theorem continuous_inr : Continuous (@inr X Y) := ⟨fun _ => And.right⟩
 
 @[fun_prop, continuity]
@@ -1136,6 +1134,13 @@ lemma isClosed_preimage_val {s t : Set X} : IsClosed (s ↓∩ t) ↔ s ∩ clos
     Subtype.image_preimage_coe, subset_antisymm_iff, and_iff_left, Set.subset_inter_iff,
     and_iff_right]
   exacts [Set.inter_subset_left, Set.subset_inter Set.inter_subset_left subset_closure]
+
+theorem frontier_inter_open_inter {s t : Set X} (ht : IsOpen t) :
+    frontier (s ∩ t) ∩ t = frontier s ∩ t := by
+  simp only [Set.inter_comm _ t, ← Subtype.preimage_coe_eq_preimage_coe_iff,
+    ht.isOpenMap_subtype_val.preimage_frontier_eq_frontier_preimage continuous_subtype_val,
+    Subtype.preimage_coe_self_inter]
+
 end Subtype
 
 section Quotient
@@ -1166,7 +1171,7 @@ theorem Continuous.quotient_lift {f : X → Y} (h : Continuous f) (hs : ∀ a b,
   continuous_coinduced_dom.2 h
 
 theorem Continuous.quotient_liftOn' {f : X → Y} (h : Continuous f)
-    (hs : ∀ a b, @Setoid.r _ s a b → f a = f b) :
+    (hs : ∀ a b, s a b → f a = f b) :
     Continuous (fun x => Quotient.liftOn' x f hs : Quotient s → Y) :=
   h.quotient_lift hs
 
@@ -1436,7 +1441,7 @@ theorem pi_eq_generateFrom :
       generateFrom
         { g | ∃ (s : ∀ a, Set (π a)) (i : Finset ι), (∀ a ∈ i, IsOpen (s a)) ∧ g = pi (↑i) s } :=
   calc Pi.topologicalSpace
-  _ = @Pi.topologicalSpace ι π fun a => generateFrom { s | IsOpen s } := by
+  _ = @Pi.topologicalSpace ι π fun _ => generateFrom { s | IsOpen s } := by
     simp only [generateFrom_setOf_isOpen]
   _ = _ := pi_generateFrom_eq
 

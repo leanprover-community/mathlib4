@@ -33,7 +33,7 @@ open Function OrderDual
 
 universe u v
 
-variable {α : Type u} {β : Type v} {γ δ : Type*}
+variable {α : Type u} {β : Type v}
 
 /-! ### Top, bottom element -/
 

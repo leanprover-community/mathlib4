@@ -80,7 +80,6 @@ instance : Category (SheafedSpace C) :=
   show Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace) by
     infer_instance
 
--- Porting note (#5229): adding an `ext` lemma.
 @[ext (iff := false)]
 theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
@@ -149,7 +148,7 @@ variable (C)
 /-- The forgetful functor from `SheafedSpace` to `Top`. -/
 def forget : SheafedSpace C ⥤ TopCat where
   obj X := (X : TopCat)
-  map {X Y} f := f.base
+  map {_ _} f := f.base
 
 end
 
@@ -226,7 +225,8 @@ lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
   obtain rfl : f = g := h
   congr
   ext U s
-  refine section_ext X.sheaf _ _ _ fun x ↦ show X.presheaf.germ x _ = X.presheaf.germ x _ from ?_
+  refine section_ext X.sheaf _ _ _ fun x hx ↦
+    show X.presheaf.germ _ x _ _ = X.presheaf.germ _ x _ _ from ?_
   erw [← PresheafedSpace.stalkMap_germ_apply ⟨f, fc⟩, ← PresheafedSpace.stalkMap_germ_apply ⟨f, gc⟩]
   simp [h']
 
