@@ -3,7 +3,8 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.ContinuousMap.ContinuousEval
+import Mathlib.Topology.Hom.ContinuousEval
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # The compact-open topology
@@ -385,7 +386,7 @@ theorem continuous_uncurry [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     Continuous (uncurry : C(X, C(Y, Z)) → C(X × Y, Z)) := by
   apply continuous_of_continuous_uncurry
   rw [← (Homeomorph.prodAssoc _ _ _).comp_continuous_iff']
-  dsimp
+  dsimp [Function.comp_def]
   exact (continuous_fst.fst.eval continuous_fst.snd).eval continuous_snd
 
 /-- The family of constant maps: `Y → C(X, Y)` as a continuous map. -/
