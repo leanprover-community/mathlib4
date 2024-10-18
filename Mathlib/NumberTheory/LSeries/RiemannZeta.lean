@@ -202,6 +202,18 @@ theorem zeta_nat_eq_tsum_of_gt_one {k : ℕ} (hk : 1 < k) :
 lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) := by
   exact hurwitzZetaEven_residue_one 0
 
+/-- The residue of `ζ(s)` at `s = 1` is equal to 1 expressed using `tsum`. -/
+theorem riemannZeta_residue_one' :
+    Tendsto (fun s : ℝ ↦ (s - 1) * ∑' (n : ℕ), 1 / (n : ℝ) ^ s) (𝓝[>] 1) (𝓝 1) := by
+  rw [← tendsto_ofReal_iff, ofReal_one]
+  have : Tendsto (fun s : ℝ ↦ (s : ℂ)) (𝓝[>] 1) (𝓝[≠] 1) :=
+    continuous_ofReal.continuousWithinAt.tendsto_nhdsWithin (fun _ _ ↦ by aesop)
+  refine Tendsto.congr' ?_ (riemannZeta_residue_one.comp this)
+  filter_upwards [eventually_mem_nhdsWithin] with _ _
+  simp_rw [Function.comp_apply, zeta_eq_tsum_one_div_nat_cpow (by rwa [ofReal_re]),
+    ofReal_mul, ofReal_tsum, ofReal_sub, ofReal_one, one_div, ofReal_inv,
+    ofReal_cpow ( Nat.cast_nonneg _), ofReal_natCast]
+
 /- naming scheme was changed from `riemannCompletedZeta` to `completedRiemannZeta`; add
 aliases for the old names -/
 section aliases

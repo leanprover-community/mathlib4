@@ -635,6 +635,25 @@ theorem frontier_union_subset (s t : Set X) :
     frontier (s ∪ t) ⊆ frontier s ∩ closure tᶜ ∪ closure sᶜ ∩ frontier t := by
   simpa only [frontier_compl, ← compl_union] using frontier_inter_subset sᶜ tᶜ
 
+/-- See `frontier_union_subset` for a stronger version. -/
+theorem frontier_union_subset' (s t : Set X) :
+    frontier (s ∪ t) ⊆ frontier s ∪ frontier t :=
+  (frontier_union_subset s t).trans <| union_subset_union inter_subset_left inter_subset_right
+
+theorem Finset.frontier_biUnion {ι : Type*} (s : Finset ι) (t : ι → Set X) :
+    frontier (⋃ i ∈ s, t i) ⊆ ⋃ i ∈ s, frontier (t i) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert _ h_ind =>
+      simp_rw [Finset.mem_insert, iUnion_iUnion_eq_or_left]
+      exact (frontier_union_subset' _ _).trans (Set.union_subset_union subset_rfl h_ind)
+
+theorem frontier_iUnion {ι : Type*} [Fintype ι] (t : ι → Set X) :
+    frontier (⋃ i, t i) ⊆ ⋃ i, frontier (t i) := by
+  have := Finset.frontier_biUnion Finset.univ t
+  simpa only [Finset.mem_univ, Set.iUnion_true] using this
+
 theorem IsClosed.frontier_eq (hs : IsClosed s) : frontier s = s \ interior s := by
   rw [frontier, hs.closure_eq]
 
