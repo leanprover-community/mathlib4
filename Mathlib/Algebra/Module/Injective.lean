@@ -32,6 +32,7 @@ import Mathlib.Logic.Small.Basic
 
 -/
 
+assert_not_exists ModuleCat
 
 noncomputable section
 
