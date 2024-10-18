@@ -40,7 +40,7 @@ one edge, and the edges of the subgraph represent the paired vertices.
 open Function
 
 namespace SimpleGraph
-variable {V : Type*} {G G': SimpleGraph V} {M M' : Subgraph G} {v w : V}
+variable {V W : Type*} {G G': SimpleGraph V} {M M' : Subgraph G} {v w : V}
 
 namespace Subgraph
 
@@ -132,6 +132,44 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
     exact ⟨hv.2 ▸ v.2, hw.1⟩
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
+
+protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g G')
+    (hf : Bijective f) (hM : M.IsMatching) : (M.map f).IsMatching := by
+  intro w hw
+  rw [@map_verts] at hw
+  obtain ⟨v, hv⟩ := hw
+  obtain ⟨v', hv'⟩ := hM hv.1
+  dsimp at *
+  use f v'
+  refine ⟨by
+    dsimp
+    rw [Relation.map_apply]
+    use v, v'
+    exact ⟨hv'.1, hv.2, rfl⟩, ?_⟩
+  intro y hy
+  obtain ⟨w', hw'⟩ := hf.existsUnique y
+  rw [← hv.2, ← hw'.1, Relation.map_apply_apply hf.injective hf.injective] at hy
+  rw [← hv'.2 w' hy]
+  exact hw'.1.symm
+
+lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : SimpleGraph.Iso G G') :
+    (M.map f.toHom).IsMatching ↔ M.IsMatching := by
+  constructor
+  · intro h
+    have hM := IsMatching.map f.symm.toHom (by
+      simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h
+
+    have : (M.map f.toHom).map f.symm.toHom = M := by
+      rw [← @Rel.inv_id]
+
+      rw [← SimpleGraph.Subgraph.map_comp]
+
+      sorry
+    rw [← this]
+    exact hM
+  · intro h
+    exact IsMatching.map f.toHom (by
+      simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
