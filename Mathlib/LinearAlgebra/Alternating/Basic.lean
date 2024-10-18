@@ -454,6 +454,17 @@ theorem smul_compAlternatingMap [Monoid S] [DistribMulAction S N₂] [SMulCommCl
     (g : N →ₗ[R] N₂) (s : S) (f : M [⋀^ι]→ₗ[R] N) :
     (s • g).compAlternatingMap f = s • g.compAlternatingMap f := rfl
 
+variable (S) in
+/-- `LinearMap.compAlternatingMap` as an `S`-linear map. -/
+@[simps]
+def compAlternatingMapₗ [Semiring S] [Module S N] [Module S N₂]
+    [SMulCommClass R S N] [SMulCommClass R S N₂] [LinearMap.CompatibleSMul N N₂ S R]
+    (g : N →ₗ[R] N₂) :
+    (M [⋀^ι]→ₗ[R] N) →ₗ[S] (M [⋀^ι]→ₗ[R] N₂) where
+  toFun := g.compAlternatingMap
+  map_add' := g.compAlternatingMap_add
+  map_smul' := g.compAlternatingMap_smul
+
 theorem smulRight_eq_comp {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁]
     [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (f : M₁ [⋀^ι]→ₗ[R] R) (z : M₂) :
     f.smulRight z = (LinearMap.id.smulRight z).compAlternatingMap f :=
