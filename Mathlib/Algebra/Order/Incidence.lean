@@ -615,7 +615,7 @@ lemma prod_mul_prod' [LocallyFiniteOrder α] [LocallyFiniteOrder β] [@Decidable
   ext x y; simp [Icc_prod_def, sum_mul_sum, h, sum_product]
 
 @[simp]
-lemma one_prod_one [DecidableEq α] [DecidableEq β] : 
+lemma one_prod_one [DecidableEq α] [DecidableEq β] :
     (.prod 1 1 : IncidenceAlgebra 𝕜 (α × β)) = 1 := by
   ext x y; simp [Prod.ext_iff, ← ite_and, and_comm]
 
