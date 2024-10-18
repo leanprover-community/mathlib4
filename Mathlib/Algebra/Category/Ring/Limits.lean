@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Category.Ring.Basic
@@ -340,7 +340,7 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
       validLift := by apply IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit _) t
       makesLimit :=
         IsLimit.ofFaithful (forget₂ RingCat SemiRingCat.{u})
-          (by apply SemiRingCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl }
+          (by apply SemiRingCat.HasLimits.limitConeIsLimit _) (fun _ => _) fun _ => rfl }
 
 /-- A choice of limit cone for a functor into `RingCat`.
 (Generally, you'll just want to use `limit F`.)
