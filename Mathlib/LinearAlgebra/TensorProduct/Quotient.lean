@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, Jujian Zhang
 -/
 
 import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.RingTheory.Ideal.Quotient
@@ -60,11 +60,11 @@ noncomputable def quotientTensorQuotientEquiv (m : Submodule R M) (n : Submodule
       simp only [LinearMap.compr₂_apply, LinearMap.flip_apply, mk_apply, Submodule.mkQ_apply,
         LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
       exact Submodule.mem_sup_right ⟨y ⊗ₜ ⟨x, hx⟩, rfl⟩) fun x hx => by
-      ext y
-      simp only [LinearMap.coe_comp, Function.comp_apply, Submodule.mkQ_apply, LinearMap.flip_apply,
-        Submodule.liftQ_apply, LinearMap.compr₂_apply, mk_apply, LinearMap.zero_comp,
-        LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
-      exact Submodule.mem_sup_left ⟨⟨x, hx⟩ ⊗ₜ y, rfl⟩)
+        ext y
+        simp only [LinearMap.coe_comp, Function.comp_apply, Submodule.mkQ_apply,
+          LinearMap.flip_apply, Submodule.liftQ_apply, LinearMap.compr₂_apply, mk_apply,
+          LinearMap.zero_comp, LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
+        exact Submodule.mem_sup_left ⟨⟨x, hx⟩ ⊗ₜ y, rfl⟩)
     (Submodule.liftQ _ (map (Submodule.mkQ _) (Submodule.mkQ _)) fun x hx => by
       rw [Submodule.mem_sup] at hx
       rcases hx with ⟨_, ⟨a, rfl⟩, _, ⟨b, rfl⟩, rfl⟩
@@ -156,21 +156,12 @@ variable (M) in
 quotienting that module by the corresponding submodule. -/
 noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
     ((R ⧸ I) ⊗[R] M) ≃ₗ[R] M ⧸ (I • (⊤ : Submodule R M)) :=
-  quotientTensorEquiv M I ≪≫ₗ
-  Submodule.Quotient.equiv (M := R ⊗[R] M) (N := M) (f := TensorProduct.lid R M) (hf := rfl) ≪≫ₗ
-  Submodule.Quotient.equiv _ _ (LinearEquiv.refl R M) (by
-    erw [Submodule.map_id]
-    rw [TensorProduct.map_range_eq_span_tmul, Submodule.map_span]
-    refine le_antisymm (Submodule.span_le.2 ?_) (Submodule.map₂_le.2 ?_)
-    · rintro _ ⟨_, ⟨r, m, rfl⟩, rfl⟩
-      simp only [Submodule.coe_subtype, LinearMap.id_coe, id_eq, lid_tmul, SetLike.mem_coe]
-      apply Submodule.apply_mem_map₂ <;> aesop
-    · rintro r hr m -
-      simp only [Submodule.coe_subtype, LinearMap.id_coe, id_eq, Subtype.exists, exists_prop,
-        LinearMap.lsmul_apply]
-      refine Submodule.subset_span ?_
-      simp only [Set.mem_image, Set.mem_setOf_eq]
-      exact ⟨r ⊗ₜ m, ⟨r, hr, m, rfl⟩, rfl⟩)
+  (rTensor.equiv M (LinearMap.exact_subtype_mkQ I) I.mkQ_surjective).symm.trans <|
+    Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <|
+      Eq.trans (LinearMap.range_comp _ _).symm <|
+        Eq.trans ((Submodule.topEquiv.lTensor I).range_comp _).symm <| Eq.symm <|
+          (Submodule.smul_eq_map₂.trans <| map₂_eq_range_lift_comp_mapIncl _ _ _).trans <|
+            congrArg _ (TensorProduct.ext' (fun _ _ => rfl))
 
 variable (M) in
 /-- Right tensoring a module with a quotient of the ring is the same as
