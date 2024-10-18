@@ -755,11 +755,10 @@ theorem mem_cons_self (a : α) (s : Finset α) {h} : a ∈ cons a s h :=
 theorem cons_val (h : a ∉ s) : (cons a s h).1 = a ::ₘ s.1 :=
   rfl
 
-theorem eq_of_not_mem_of_mem_cons {s : Finset α} {a : α} (has : a ∉ s) {i : α}
-    (hi : i ∈ cons a s has) (his : i ∉ s) : i = a :=
-  (mem_cons.1 hi).resolve_right his
+theorem eq_of_mem_cons_of_not_mem (has : a ∉ s) (h : b ∈ cons a s has) (hb : b ∉ s) : b = a :=
+  (mem_cons.1 h).resolve_right hb
 
-theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} (has : a ∉ s) {i : α}
+theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} {has} {i : α}
     (hi : i ∈ cons a s has) (hia : i ≠ a) : i ∈ s :=
   (mem_cons.1 hi).resolve_left hia
 
@@ -822,19 +821,17 @@ theorem cons_swap (hb : b ∉ s) (ha : a ∉ s.cons b hb) :
 
 /-- Split the added element of cons off a Pi type. -/
 @[simps!]
-def consPiProd {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s)
-    (x : Π i ∈ cons a s has, f i) : f a × Π i ∈ s, f i :=
+def consPiProd (f : α → Type*) (has : a ∉ s) (x : Π i ∈ cons a s has, f i) : f a × Π i ∈ s, f i :=
   (x a (mem_cons_self a s), fun i hi => x i (mem_cons_of_mem hi))
 
-open Classical in
 /-- Combine a product with a pi type to pi of cons. -/
-noncomputable def prodPiCons {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s)
-    (x : f a × Π i ∈ s, f i) : (Π i ∈ cons a s has, f i) :=
+def prodPiCons [DecidableEq α] (f : α → Type*) {a : α} (has : a ∉ s) (x : f a × Π i ∈ s, f i) :
+    (Π i ∈ cons a s has, f i) :=
   fun i hi =>
-    if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_cons_of_ne has hi h)
+    if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_cons_of_ne hi h)
 
 /-- The equivalence between pi types on cons and the product. -/
-noncomputable def consPiEquiv {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+def consPiEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
     (Π i ∈ cons a s has, f i) ≃ f a × Π i ∈ s, f i where
   toFun := consPiProd f has
   invFun := prodPiCons f has
@@ -849,7 +846,7 @@ noncomputable def consPiEquiv {s : Finset α} (f : α → Type*) {a : α} (has :
   right_inv _ := by
     ext _ hi
     · simp [prodPiCons]
-    · simp only [consPiProd_snd, prodPiCons]
+    · simp only [consPiProd_snd]
       exact dif_neg (ne_of_mem_of_not_mem hi has)
 
 end Cons
@@ -1184,6 +1181,35 @@ theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint 
 @[simp]
 theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t :=
   disjoint_comm.trans <| by rw [disjoint_insert_left, _root_.disjoint_comm]
+
+/-- Split the added element of insert off a Pi type. -/
+@[simps!]
+def insertPiProd (f : α → Type*) (x : Π i ∈ insert a s, f i) : f a × Π i ∈ s, f i :=
+  (x a (mem_insert_self a s), fun i hi => x i (mem_insert_of_mem hi))
+
+/-- Combine a product with a pi type to pi of insert. -/
+def prodPiInsert (f : α → Type*) {a : α} (x : f a × Π i ∈ s, f i) : (Π i ∈ insert a s, f i) :=
+  fun i hi =>
+    if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_insert_of_ne hi h)
+
+/-- The equivalence between pi types on insert and the product. -/
+def insertPiEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+    (Π i ∈ insert a s, f i) ≃ f a × Π i ∈ s, f i where
+  toFun := insertPiProd f
+  invFun := prodPiInsert f
+  left_inv _ := by
+    ext i _
+    dsimp only [prodPiInsert, insertPiProd]
+    by_cases h : i = a
+    · rw [dif_pos h]
+      subst h
+      simp_all only [cast_eq]
+    · rw [dif_neg h]
+  right_inv _ := by
+    ext _ hi
+    · simp [prodPiInsert]
+    · simp only [insertPiProd_snd]
+      exact dif_neg (ne_of_mem_of_not_mem hi has)
 
 end Insert
 
