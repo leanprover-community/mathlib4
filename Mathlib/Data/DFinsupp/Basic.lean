@@ -81,11 +81,6 @@ instance instDFunLike : DFunLike (Π₀ i, β i) ι β :=
     congr
     subsingleton ⟩
 
-/-- Helper instance for when there are too many metavariables to apply `DFunLike.coeFunForall`
-directly. -/
-instance : CoeFun (Π₀ i, β i) fun _ => ∀ i, β i :=
-  inferInstance
-
 @[simp]
 theorem toFun_eq_coe (f : Π₀ i, β i) : f.toFun = f :=
   rfl
