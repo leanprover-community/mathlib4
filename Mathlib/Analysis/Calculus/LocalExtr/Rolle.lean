@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anatole Dedecker
 -/
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
-import Mathlib.Topology.Algebra.Order.Rolle
-
-#align_import analysis.calculus.local_extr from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
+import Mathlib.Topology.Order.Rolle
 
 /-!
 # Rolle's Theorem
@@ -25,7 +23,7 @@ We prove four versions of this theorem.
   point $x ∈ (a, b)$ function $f$ has derivative $f'(x)$, then concludes that $f'(c)=0$ for some
   $c∈(a, b)$.
 * `exists_deriv_eq_zero` deals with `deriv f` instead of an arbitrary function `f'` and a predicate
-  `has_deriv_at`; since we use zero as the "junk" value for `deriv f c`, this version does not
+  `HasDerivAt`; since we use zero as the "junk" value for `deriv f c`, this version does not
   assume that `f` is differentiable on the open interval.
 * `exists_hasDerivAt_eq_zero'` is similar to `exists_hasDerivAt_eq_zero` but instead of assuming
   continuity on the closed interval $[a, b]$ it assumes that $f$ tends to the same limit as $x$
@@ -51,25 +49,22 @@ theorem exists_hasDerivAt_eq_zero (hab : a < b) (hfc : ContinuousOn f (Icc a b))
     (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x) : ∃ c ∈ Ioo a b, f' c = 0 :=
   let ⟨c, cmem, hc⟩ := exists_isLocalExtr_Ioo hab hfc hfI
   ⟨c, cmem, hc.hasDerivAt_eq_zero <| hff' c cmem⟩
-#align exists_has_deriv_at_eq_zero exists_hasDerivAt_eq_zero
 
 /-- **Rolle's Theorem** `deriv` version -/
 theorem exists_deriv_eq_zero (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI : f a = f b) :
     ∃ c ∈ Ioo a b, deriv f c = 0 :=
   let ⟨c, cmem, hc⟩ := exists_isLocalExtr_Ioo hab hfc hfI
   ⟨c, cmem, hc.deriv_eq_zero⟩
-#align exists_deriv_eq_zero exists_deriv_eq_zero
 
 /-- **Rolle's Theorem**, a version for a function on an open interval: if `f` has derivative `f'`
 on `(a, b)` and has the same limit `l` at `𝓝[>] a` and `𝓝[<] b`, then `f' c = 0`
-for some `c ∈ (a, b)`.  -/
+for some `c ∈ (a, b)`. -/
 theorem exists_hasDerivAt_eq_zero' (hab : a < b) (hfa : Tendsto f (𝓝[>] a) (𝓝 l))
     (hfb : Tendsto f (𝓝[<] b) (𝓝 l)) (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x) :
     ∃ c ∈ Ioo a b, f' c = 0 :=
   let ⟨c, cmem, hc⟩ := exists_isLocalExtr_Ioo_of_tendsto hab
     (fun x hx ↦ (hff' x hx).continuousAt.continuousWithinAt) hfa hfb
   ⟨c, cmem, hc.hasDerivAt_eq_zero <| hff' c cmem⟩
-#align exists_has_deriv_at_eq_zero' exists_hasDerivAt_eq_zero'
 
 /-- **Rolle's Theorem**, a version for a function on an open interval: if `f` has the same limit
 `l` at `𝓝[>] a` and `𝓝[<] b`, then `deriv f c = 0` for some `c ∈ (a, b)`. This version
@@ -79,7 +74,6 @@ theorem exists_deriv_eq_zero' (hab : a < b) (hfa : Tendsto f (𝓝[>] a) (𝓝 l
     (hfb : Tendsto f (𝓝[<] b) (𝓝 l)) : ∃ c ∈ Ioo a b, deriv f c = 0 := by
   by_cases h : ∀ x ∈ Ioo a b, DifferentiableAt ℝ f x
   · exact exists_hasDerivAt_eq_zero' hab hfa hfb fun x hx => (h x hx).hasDerivAt
-  · obtain ⟨c, hc, hcdiff⟩ : ∃ x ∈ Ioo a b, ¬DifferentiableAt ℝ f x
-    · push_neg at h; exact h
+  · obtain ⟨c, hc, hcdiff⟩ : ∃ x ∈ Ioo a b, ¬DifferentiableAt ℝ f x := by
+      push_neg at h; exact h
     exact ⟨c, hc, deriv_zero_of_not_differentiableAt hcdiff⟩
-#align exists_deriv_eq_zero' exists_deriv_eq_zero'

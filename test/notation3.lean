@@ -1,7 +1,7 @@
-import Std.Tactic.GuardMsgs
-import Mathlib.Mathport.Notation
-import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Util.Notation3
+import Mathlib.Data.Nat.Defs
 
+set_option linter.style.setOption false
 set_option pp.unicode.fun true
 set_option autoImplicit true
 
@@ -151,13 +151,15 @@ matcher from the expansion. (Use `set_option trace.notation3 true` to get some d
 end
 
 section
+set_option linter.unusedTactic false
 local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
 
 example : Fin 5 := #1
 
 /--
-error: failed to reduce to 'true'
-  false
+error: tactic 'decide' proved that the proposition
+  6 < 5
+is false
 -/
 #guard_msgs in example : Fin 5 := #6
 
@@ -176,3 +178,30 @@ open scoped MyNotation
 #guard_msgs in #check π
 
 end test_scoped
+
+/-!
+Verifying that delaborator does not match the exact `Inhabited` instance.
+Instead, it matches that it's an application of `Inhabited.default` whose first argument is `Nat`.
+-/
+/--
+info: [notation3] syntax declaration has name Test.termδNat
+[notation3] Generating matcher for pattern default
+[notation3] Matcher creation succeeded; assembling delaborator
+[notation3] matcher:
+      matchApp✝ (matchApp✝ (matchExpr✝ (Expr.isConstOf✝ · `Inhabited.default))
+(matchExpr✝ (Expr.isConstOf✝ · `Nat)))
+          pure✝ >=>
+        pure✝
+[notation3] Defined delaborator Test.termδNat.delab
+[notation3] Adding `delab` attribute for keys [app.Inhabited.default]
+-/
+#guard_msgs in
+set_option trace.notation3 true in
+notation3 "δNat" => (default : Nat)
+
+/-- info: δNat : ℕ -/
+#guard_msgs in #check (default : Nat)
+/-- info: δNat : ℕ -/
+#guard_msgs in #check @default Nat (Inhabited.mk 5)
+
+end Test
