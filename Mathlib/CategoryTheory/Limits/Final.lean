@@ -36,7 +36,7 @@ This readily implies 2., as `comp_hasColimit`, `hasColimit_of_comp`, and `colimi
 
 From 2. we can specialize to `G = coyoneda.obj (op d)` to obtain 3., as `colimitCompCoyonedaIso`.
 
-From 3., we prove 1. directly in `cofinal_of_colimit_comp_coyoneda_iso_pUnit`.
+From 3., we prove 1. directly in `final_of_colimit_comp_coyoneda_iso_pUnit`.
 
 Dually, we prove that if a functor `F : C ⥤ D` is initial, then any functor `G : D ⥤ E` has a
 limit if and only if `F ⋙ G` does, and these limits are isomorphic via `limit.pre G F`.
@@ -170,13 +170,13 @@ instance (d : D) : Nonempty (StructuredArrow d F) :=
 variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)
 
 /--
-When `F : C ⥤ D` is cofinal, we denote by `lift F d` an arbitrary choice of object in `C` such that
+When `F : C ⥤ D` is final, we denote by `lift F d` an arbitrary choice of object in `C` such that
 there exists a morphism `d ⟶ F.obj (lift F d)`.
 -/
 def lift (d : D) : C :=
   (Classical.arbitrary (StructuredArrow d F)).right
 
-/-- When `F : C ⥤ D` is cofinal, we denote by `homToLift` an arbitrary choice of morphism
+/-- When `F : C ⥤ D` is final, we denote by `homToLift` an arbitrary choice of morphism
 `d ⟶ F.obj (lift F d)`.
 -/
 def homToLift (d : D) : d ⟶ F.obj (lift F d) :=
@@ -267,7 +267,7 @@ theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
 
 variable (F G)
 
-/-- If `F` is cofinal,
+/-- If `F` is final,
 the category of cocones on `F ⋙ G` is equivalent to the category of cocones on `G`,
 for any `G : D ⥤ E`.
 -/
@@ -280,13 +280,13 @@ def coconesEquiv : Cocone (F ⋙ G) ≌ Cocone G where
 
 variable {G}
 
-/-- When `F : C ⥤ D` is cofinal, and `t : Cocone G` for some `G : D ⥤ E`,
+/-- When `F : C ⥤ D` is final, and `t : Cocone G` for some `G : D ⥤ E`,
 `t.whisker F` is a colimit cocone exactly when `t` is.
 -/
 def isColimitWhiskerEquiv (t : Cocone G) : IsColimit (t.whisker F) ≃ IsColimit t :=
   IsColimit.ofCoconeEquiv (coconesEquiv F G).symm
 
-/-- When `F` is cofinal, and `t : Cocone (F ⋙ G)`,
+/-- When `F` is final, and `t : Cocone (F ⋙ G)`,
 `extendCocone.obj t` is a colimit cocone exactly when `t` is.
 -/
 def isColimitExtendCoconeEquiv (t : Cocone (F ⋙ G)) :
@@ -312,7 +312,7 @@ section
 
 variable (G)
 
-/-- When `F : C ⥤ D` is cofinal, and `G : D ⥤ E` has a colimit, then `F ⋙ G` has a colimit also and
+/-- When `F : C ⥤ D` is final, and `G : D ⥤ E` has a colimit, then `F ⋙ G` has a colimit also and
 `colimit (F ⋙ G) ≅ colimit G`
 
 https://stacks.math.columbia.edu/tag/04E7
@@ -328,7 +328,7 @@ def colimitCoconeOfComp (t : ColimitCocone (F ⋙ G)) : ColimitCocone G where
   cocone := extendCocone.obj t.cocone
   isColimit := (isColimitExtendCoconeEquiv F _).symm t.isColimit
 
-/-- When `F` is cofinal, and `F ⋙ G` has a colimit, then `G` has a colimit also.
+/-- When `F` is final, and `F ⋙ G` has a colimit, then `G` has a colimit also.
 
 We can't make this an instance, because `F` is not determined by the goal.
 (Even if this weren't a problem, it would cause a loop with `comp_hasColimit`.)
@@ -345,7 +345,7 @@ section
 -- Porting note: this instance does not seem to be found automatically
 --attribute [local instance] hasColimit_of_comp
 
-/-- When `F` is cofinal, and `F ⋙ G` has a colimit, then `G` has a colimit also and
+/-- When `F` is final, and `F ⋙ G` has a colimit, then `G` has a colimit also and
 `colimit (F ⋙ G) ≅ colimit G`
 
 https://stacks.math.columbia.edu/tag/04E7
@@ -390,9 +390,9 @@ theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ 
 
 end Final
 
-/-- If `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit` for all `d : D`, then `F` is cofinal.
+/-- If `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit` for all `d : D`, then `F` is final.
 -/
-theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
+theorem final_of_colimit_comp_coyoneda_iso_pUnit
     (I : ∀ d, colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit) : Final F :=
   ⟨fun d => by
     have : Nonempty (StructuredArrow d F) := by
@@ -410,18 +410,18 @@ theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
     clear e y₁ y₂
     exact Final.zigzag_of_eqvGen_quot_rel t⟩
 
-/-- A variant of `cofinal_of_colimit_comp_coyoneda_iso_pUnit` where we bind the various claims
+/-- A variant of `final_of_colimit_comp_coyoneda_iso_pUnit` where we bind the various claims
     about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a single claim about
     the presheaf `colimit (F ⋙ yoneda)`. -/
-theorem cofinal_of_isTerminal_colimit_comp_yoneda
+theorem final_of_isTerminal_colimit_comp_yoneda
     (h : IsTerminal (colimit (F ⋙ yoneda))) : Final F := by
-  refine cofinal_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => ?_)
+  refine final_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => ?_)
   refine Types.isTerminalEquivIsoPUnit _ ?_
   let b := IsTerminal.isTerminalObj ((evaluation _ _).obj (Opposite.op d)) _ h
   exact b.ofIso <| preservesColimitIso ((evaluation _ _).obj (Opposite.op d)) (F ⋙ yoneda)
 
 /-- If the universal morphism `colimit (F ⋙ coyoneda.obj (op d)) ⟶ colimit (coyoneda.obj (op d))`
-is an isomorphism (as it always is when `F` is cofinal),
+is an isomorphism (as it always is when `F` is final),
 then `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit`
 (simply because `colimit (coyoneda.obj (op d)) ≅ PUnit`).
 -/
@@ -437,7 +437,7 @@ variable {C : Type v} [Category.{v} C] {D : Type v} [Category.{v} D] (F : C ⥤ 
 
 theorem final_iff_isIso_colimit_pre : Final F ↔ ∀ G : D ⥤ Type v, IsIso (colimit.pre G F) :=
   ⟨fun _ => inferInstance,
-   fun _ => cofinal_of_colimit_comp_coyoneda_iso_pUnit _ fun _ => Final.colimitCompCoyonedaIso _ _⟩
+   fun _ => final_of_colimit_comp_coyoneda_iso_pUnit _ fun _ => Final.colimitCompCoyonedaIso _ _⟩
 
 end SmallCategory
 

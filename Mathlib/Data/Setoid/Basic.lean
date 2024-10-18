@@ -221,9 +221,12 @@ lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
     letI := sInf S
     x ≈ y ↔ ∀ s ∈ S, s.Rel x y := Iff.rfl
 
+lemma sInf_iff {S : Set (Setoid α)} {x y : α} :
+    sInf S x y ↔ ∀ s ∈ S, s x y := Iff.rfl
+
 lemma quotient_mk_sInf_eq {S : Set (Setoid α)} {x y : α} :
-    Quotient.mk (sInf S) x = Quotient.mk (sInf S) y ↔ ∀ s ∈ S, s.Rel x y := by
-  simp [sInf_equiv]
+    Quotient.mk (sInf S) x = Quotient.mk (sInf S) y ↔ ∀ s ∈ S, s x y := by
+  simp [sInf_iff]
 
 /-- The map induced between quotients by a setoid inequality. -/
 def map_of_le {s t : Setoid α} (h : s ≤ t) : Quotient s → Quotient t :=
