@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
  : <<'BASH_MODULE_DOCS'
 `scripts/import_trans_difference.sh <opt all> <opt_commit1> <opt_commit2>` outputs a full diff
 of the change of transitive imports in all the files between `<opt_commit1>` and `<opt_commit2>`.
@@ -23,25 +28,15 @@ BASH_MODULE_DOCS
 
 # `all=1` is the flag to print all import changes, without cut-off
 all=0
-if [ "${1}" == "all" ]
+if [ "${1:-}" == "all" ]
 then
   all=1
   shift
 fi
 
-if [ -n "${1}" ]
-then
-  commit1="${1}"
-else
-  commit1="$(git rev-parse HEAD)"
-fi
+commit1="${1:-"$(git rev-parse HEAD)"}"
 
-if [ -n "${2}" ]
-then
-  commit2="${2}"
-else
-  commit2="$(git merge-base master ${commit1})"
-fi
+commit2="${2:-"$(git merge-base master ${commit1})"}"
 
 #printf 'commit1: %s\ncommit2: %s\n' "$commit1" "$commit2"
 
@@ -56,7 +51,7 @@ fi
 getTransImports () {
   python3 scripts/count-trans-deps.py Mathlib |
     # produce lines of the form `Mathlib.ModelTheory.Algebra.Ring.Basic,-582`
-    sed 's=\([0-9]*\)[},]=,'"${1}"'\1\n=g' |
+    sed 's=\([0-9]*\)[},]=,'"${1:-}"'\1\n=g' |
     tr -d ' "{}:'
 }
 
