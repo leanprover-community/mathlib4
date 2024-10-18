@@ -375,10 +375,11 @@ def binaryRec' {motive : ℕ → Sort*} (z : motive 0)
     ∀ n, motive n :=
   binaryRec z fun b n ih =>
     if h : n = 0 → b = true then f b n h ih
-    else by
-      convert z
-      rw [bit_eq_zero_iff]
-      simpa using h
+    else
+      have : bit b n = 0 := by
+        rw [bit_eq_zero_iff]
+        cases n <;> cases b <;> simp at h ⊢
+      congrArg motive this ▸ z
 
 /-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
 @[elab_as_elim]
@@ -386,9 +387,10 @@ def binaryRecFromOne {motive : ℕ → Sort*} (z₀ : motive 0) (z₁ : motive 1
     (f : ∀ b n, n ≠ 0 → motive n → motive (bit b n)) :
     ∀ n, motive n :=
   binaryRec' z₀ fun b n h ih =>
-    if h' : n = 0 then by
-      rw [h', h h']
-      exact z₁
+    if h' : n = 0 then
+      have : bit b n = bit true 0 := by
+        rw [h', h h']
+      congrArg motive this ▸ z₁
     else f b n h' ih
 
 @[simp]
