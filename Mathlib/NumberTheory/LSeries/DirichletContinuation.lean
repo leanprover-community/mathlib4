@@ -122,6 +122,7 @@ lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
 ## The `L`-series of the trivial character mod `N`
 -/
 
+/-- The `L`-function of the trivial character mod `N`. -/
 noncomputable
 abbrev LFunction_one (N : ℕ) [NeZero N] := (1 : DirichletCharacter ℂ N).LFunction
 
