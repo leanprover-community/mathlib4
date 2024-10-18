@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Init
 import Lean.Meta.Eqns
-import Mathlib.Lean.Expr
-import Std.Lean.NameMapAttribute
+import Batteries.Lean.NameMapAttribute
+import Lean.Elab.Exception
+import Lean.Elab.InfoTree.Main
 
 /-! # The `@[eqns]` attribute
 
@@ -38,9 +40,9 @@ initialize eqnsAttribute : NameMapExtension (Array Name) ←
     add   := fun
     | declName, `(attr| eqns $[$names]*) => do
       if let some _ := Meta.eqnsExt.getState (← getEnv) |>.map.find? declName then
-        throwError "There already exist stored eqns for '{declName}' registering new equations{
-            "\n"}will not have the desired effect."
-      names.mapM resolveGlobalConstNoOverloadWithInfo
+        throwError "There already exist stored eqns for '{declName}'; registering new equations \
+          will not have the desired effect."
+      names.mapM realizeGlobalConstNoOverloadWithInfo
     | _, _ => Lean.Elab.throwUnsupportedSyntax }
 
 initialize Lean.Meta.registerGetEqnsFn (fun name => do
