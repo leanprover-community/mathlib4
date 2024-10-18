@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 import Mathlib.Data.NNReal.Basic
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # Group seminorms
@@ -48,7 +48,7 @@ open Set
 
 open NNReal
 
-variable {ι R R' E F G : Type*}
+variable {R R' E F G : Type*}
 
 /-- A seminorm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
 subadditive and such that `f (-x) = f x` for all `x`. -/
@@ -145,7 +145,7 @@ end NonarchAddGroupSeminormClass
 instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass
     [FunLike F E ℝ] [AddGroup E] [NonarchAddGroupSeminormClass F E] : AddGroupSeminormClass F E ℝ :=
   { ‹NonarchAddGroupSeminormClass F E› with
-    map_add_le_add := fun f x y =>
+    map_add_le_add := fun f _ _ =>
       haveI h_nonneg : ∀ a, 0 ≤ f a := by
         intro a
         rw [← NonarchAddGroupSeminormClass.map_zero f, ← sub_self a]
@@ -325,7 +325,7 @@ end Group
 
 section CommGroup
 
-variable [CommGroup E] [CommGroup F] (p q : GroupSeminorm E) (x y : E)
+variable [CommGroup E] [CommGroup F] (p q : GroupSeminorm E) (x : E)
 
 @[to_additive]
 theorem comp_mul_le (f g : F →* E) : p.comp (f * g) ≤ p.comp f + p.comp g := fun _ =>
@@ -346,7 +346,7 @@ noncomputable instance : Inf (GroupSeminorm E) :=
       map_one' :=
         ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
           -- Porting note: replace `add_nonneg` with `positivity` once we have the extension
-          (fun x => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _)) fun r hr =>
+          (fun _ => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _)) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
         le_ciInf_add_ciInf fun u v => by
@@ -370,8 +370,8 @@ noncomputable instance : Lattice (GroupSeminorm E) :=
     inf_le_right := fun p q x =>
       ciInf_le_of_le mul_bddBelow_range_add (1 : E) <| by
         simpa only [div_one x, map_one_eq_zero p, zero_add (q x)] using le_rfl
-    le_inf := fun a b c hb hc x =>
-      le_ciInf fun u => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
+    le_inf := fun a _ _ hb hc _ =>
+      le_ciInf fun _ => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
 
 end CommGroup
 
@@ -381,7 +381,7 @@ end GroupSeminorm
 see that `SMul R ℝ` should be fixed because `ℝ` is fixed. -/
 namespace AddGroupSeminorm
 
-variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (p : AddGroupSeminorm E)
+variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
 instance toOne [DecidableEq E] : One (AddGroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else 1
@@ -427,7 +427,7 @@ theorem smul_sup (r : R) (p q : AddGroupSeminorm E) : r • (p ⊔ q) = r • p 
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
       mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
-  ext fun x => Real.smul_max _ _
+  ext fun _ => Real.smul_max _ _
 
 end AddGroupSeminorm
 
@@ -435,7 +435,7 @@ namespace NonarchAddGroupSeminorm
 
 section AddGroup
 
-variable [AddGroup E] [AddGroup F] [AddGroup G] {p q : NonarchAddGroupSeminorm E}
+variable [AddGroup E] {p q : NonarchAddGroupSeminorm E}
 
 instance funLike : FunLike (NonarchAddGroupSeminorm E) E ℝ where
   coe f := f.toFun
@@ -477,13 +477,13 @@ theorem coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
 theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 
-variable (p q) (f : F →+ E)
+variable (p q)
 
 instance : Zero (NonarchAddGroupSeminorm E) :=
   ⟨{  toFun := 0
       map_zero' := Pi.zero_apply _
       add_le_max' := fun r s => by simp only [Pi.zero_apply]; rw [max_eq_right]; rfl
-      neg' := fun x => rfl }⟩
+      neg' := fun _ => rfl }⟩
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : NonarchAddGroupSeminorm E) = 0 :=
@@ -522,7 +522,7 @@ end AddGroup
 
 section AddCommGroup
 
-variable [AddCommGroup E] [AddCommGroup F] (p q : NonarchAddGroupSeminorm E) (x y : E)
+variable [AddCommGroup E]
 
 theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
     BddBelow (range fun y => p y + q (x - y)) :=
@@ -588,7 +588,7 @@ theorem smul_sup (r : R) (p q : GroupSeminorm E) : r • (p ⊔ q) = r • p ⊔
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
       mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
-  ext fun x => Real.smul_max _ _
+  ext fun _ => Real.smul_max _ _
 
 end GroupSeminorm
 
@@ -642,7 +642,7 @@ theorem smul_sup (r : R) (p q : NonarchAddGroupSeminorm E) : r • (p ⊔ q) = r
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
       mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
-  ext fun x => Real.smul_max _ _
+  ext fun _ => Real.smul_max _ _
 
 end NonarchAddGroupSeminorm
 
@@ -653,7 +653,7 @@ namespace GroupNorm
 
 section Group
 
-variable [Group E] [Group F] [Group G] {p q : GroupNorm E}
+variable [Group E] {p q : GroupNorm E}
 
 @[to_additive]
 instance funLike : FunLike (GroupNorm E) E ℝ where
@@ -703,7 +703,7 @@ theorem coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
 theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 
-variable (p q) (f : F →* E)
+variable (p q)
 
 @[to_additive]
 instance : Add (GroupNorm E) :=
@@ -787,7 +787,7 @@ namespace NonarchAddGroupNorm
 
 section AddGroup
 
-variable [AddGroup E] [AddGroup F] {p q : NonarchAddGroupNorm E}
+variable [AddGroup E] {p q : NonarchAddGroupNorm E}
 
 instance funLike : FunLike (NonarchAddGroupNorm E) E ℝ where
   coe f := f.toFun
@@ -829,7 +829,7 @@ theorem coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
 theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 
-variable (p q) (f : F →+ E)
+variable (p q)
 
 instance : Sup (NonarchAddGroupNorm E) :=
   ⟨fun p q =>

@@ -9,6 +9,7 @@ import Mathlib.Algebra.Ring.Nat
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.NeZero
 
 /-!
 # Bitwise operations on natural numbers
@@ -68,10 +69,12 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
     (h : n ≠ 0) :
     binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
-  rw [Eq.rec_eq_cast]
-  rw [binaryRec]
-  dsimp only
-  rw [dif_neg h, eq_mpr_eq_cast]
+  cases n using bitCasesOn with
+  | h b n =>
+    rw [binaryRec_eq' _ _ (by right; simpa [bit_eq_zero_iff] using h)]
+    generalize_proofs h; revert h
+    rw [bodd_bit, div2_bit]
+    simp
 
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
@@ -272,9 +275,6 @@ theorem lor_comm (n m : ℕ) : n ||| m = m ||| n :=
 theorem land_comm (n m : ℕ) : n &&& m = m &&& n :=
   bitwise_comm Bool.and_comm n m
 
-protected lemma xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
-  bitwise_comm (Bool.bne_eq_xor ▸ Bool.xor_comm) n m
-
 lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
   refine eq_of_testBit_eq fun j => ?_
   obtain rfl | hij := Decidable.eq_or_ne i j <;> cases' h : n.testBit i
@@ -285,13 +285,6 @@ lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
 
 lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit i).toNat := by
   rw [mul_comm, land_comm, and_two_pow]
-
-@[simp]
-theorem zero_xor (n : ℕ) : 0 ^^^ n = n := by simp [HXor.hXor, Xor.xor, xor]
-
-@[simp]
-theorem xor_zero (n : ℕ) : n ^^^ 0 = n := by simp [HXor.hXor, Xor.xor, xor]
-
 
 /-- Proving associativity of bitwise operations in general essentially boils down to a huge case
     distinction, so it is shorter to use this tactic instead of proving it in the general case. -/
@@ -305,22 +298,16 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   -- This is necessary because these are simp lemmas in mathlib
   <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
 
-protected lemma xor_assoc (n m k : ℕ) : (n ^^^ m) ^^^ k = n ^^^ (m ^^^ k) := by bitwise_assoc_tac
-
 theorem land_assoc (n m k : ℕ) : (n &&& m) &&& k = n &&& (m &&& k) := by bitwise_assoc_tac
 
 theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwise_assoc_tac
 
-@[simp]
-theorem xor_self (n : ℕ) : n ^^^ n = 0 :=
-  zero_of_testBit_eq_false fun i => by simp
-
 -- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
 theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := by
-  rw [Nat.xor_assoc, xor_self, xor_zero]
+  rw [Nat.xor_assoc, Nat.xor_self, xor_zero]
 
 theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := by
-  rw [← Nat.xor_assoc, xor_self, zero_xor]
+  rw [← Nat.xor_assoc, Nat.xor_self, zero_xor]
 
 theorem xor_right_injective {n : ℕ} : Function.Injective (HXor.hXor n : ℕ → ℕ) := fun m m' h => by
   rw [← xor_cancel_left n m, ← xor_cancel_left n m', h]
@@ -339,7 +326,7 @@ theorem xor_left_inj {n m m' : ℕ} : m ^^^ n = m' ^^^ n ↔ m = m' :=
 
 @[simp]
 theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := by
-  rw [← xor_self n, xor_right_inj, eq_comm]
+  rw [← Nat.xor_self n, xor_right_inj, eq_comm]
 
 theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m :=
   xor_eq_zero.not

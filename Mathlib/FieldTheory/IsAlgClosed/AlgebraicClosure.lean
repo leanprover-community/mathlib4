@@ -79,7 +79,7 @@ theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
   rw [map_one, Finsupp.linearCombination_apply, Finsupp.sum, map_sum, Finset.sum_eq_zero] at hv
   · exact zero_ne_one hv
   intro j hj
-  rw [smul_eq_mul, map_mul, toSplittingField_evalXSelf (s := v.support) hj,
+  rw [smul_eq_mul, map_mul, toSplittingField_evalXSelf _ (s := v.support) hj,
     mul_zero]
 
 /-- A random maximal ideal that contains `spanEval k` -/
@@ -164,12 +164,8 @@ instance Step.algebraSucc (n) : Algebra (Step k n) (Step k (n + 1)) :=
   (toStepSucc k n).toAlgebra
 
 theorem toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
-    (hfi : Irreducible f) : ∃ x : Step k (n + 1), f.eval₂ (toStepSucc k n) x = 0 := by
--- Porting note: original proof was `@AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi`,
--- but it timeouts.
-  obtain ⟨x, hx⟩ := @AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi
--- Porting note: using `hx` instead of `by apply hx` timeouts.
-  exact ⟨x, by apply hx⟩
+    (hfi : Irreducible f) : ∃ x : Step k (n + 1), f.eval₂ (toStepSucc k n) x = 0 :=
+  @AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi
 
 -- Porting note: the following two declarations were added during the port to be used in the
 -- definition of toStepOfLE
@@ -186,29 +182,24 @@ private theorem toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
 def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
   toFun := toStepOfLE' k m n h
   map_one' := by
--- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 1`
---                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_one]`
     induction' h with a h ih
     · exact Nat.leRecOn_self 1
-    · rw [toStepOfLE'.succ k m a h]; simp [ih]
+    · simp [toStepOfLE'.succ k m a h, ih]
   map_mul' x y := by
--- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
---                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_mul]`
+    simp only
     induction' h with a h ih
-    · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
-    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
--- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 0`
---                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_zero]`
+    · simp_rw [toStepOfLE', Nat.leRecOn_self]
+    · simp [toStepOfLE'.succ k m a h, ih]
   map_zero' := by
+    simp only
     induction' h with a h ih
     · exact Nat.leRecOn_self 0
-    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
+    · simp [toStepOfLE'.succ k m a h, ih]
   map_add' x y := by
--- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
---                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_add]`
+    simp only
     induction' h with a h ih
-    · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
-    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
+    · simp_rw [toStepOfLE', Nat.leRecOn_self]
+    · simp [toStepOfLE'.succ k m a h, ih]
 
 @[simp]
 theorem coe_toStepOfLE (m n : ℕ) (h : m ≤ n) :
@@ -404,12 +395,17 @@ instance : IsAlgClosure k (AlgebraicClosure k) := by
   exact ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic⟩
 
 instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
-  IsAlgClosure.algebraic
+  IsAlgClosure.isAlgebraic
 
 instance [CharZero k] : CharZero (AlgebraicClosure k) :=
   charZero_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k)))
 
 instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
   charP_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k))) p
+
+instance {L : Type*} [Field k] [Field L] [Algebra k L] [Algebra.IsAlgebraic k L] :
+    IsAlgClosure k (AlgebraicClosure L) where
+  isAlgebraic := .trans (L := L)
+  isAlgClosed := inferInstance
 
 end AlgebraicClosure

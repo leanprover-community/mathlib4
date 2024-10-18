@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
+Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.CategoryTheory.Limits.Types
@@ -68,9 +68,9 @@ Generally you should just use `limit.isLimit F`, unless you need the actual defi
 def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v,u} F) where
   lift S :=
     { toFun := fun x =>
-        ⟨fun j => S.π.app _ x, fun f => by
+        ⟨fun _ => S.π.app _ x, fun f => by
           dsimp
-          erw [← S.w f]
+          rw [← S.w f]
           rfl⟩
       continuous_toFun :=
         Continuous.subtype_mk (continuous_pi fun j => (S.π.app j).2) fun x i j f => by
@@ -184,7 +184,7 @@ instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Ty
 /-- The terminal object of `Top` is `PUnit`. -/
 def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
-    ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f => by ext; aesop⟩
+    ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext; aesop⟩
   Limits.IsTerminal.ofUnique _
 
 /-- The terminal object of `Top` is `PUnit`. -/
