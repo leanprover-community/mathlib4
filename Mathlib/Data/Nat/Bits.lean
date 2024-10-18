@@ -266,7 +266,8 @@ theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
   rw [Nat.bits, binaryRec_eq']
-  simpa
+  · rfl
+  · simpa
 
 @[simp]
 theorem bit0_bits (n : ℕ) (hn : n ≠ 0) : (2 * n).bits = false :: n.bits :=
