@@ -284,6 +284,13 @@ theorem totallyBounded_convexHull (hs : TotallyBounded s) :
     TotallyBounded (convexHull ℝ s) :=
   TotallyBounded.subset (convexHull_subset_absConvexHull ℝ) (totallyBounded_absConvexHull E hs)
 
+theorem totallyBounded_absConvexHull₂ (hs : TotallyBounded s) :
+    TotallyBounded (absConvexHull ℝ s) := by
+  rw [← convexHull_union_neg_eq_absConvexHull]
+  apply totallyBounded_convexHull
+  rw [totallyBounded_union]
+  exact ⟨hs, totallyBounded_neg hs⟩
+
 end
 
 section AbsolutelyConvexSets
