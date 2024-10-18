@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Data.Fintype.Order
+import Mathlib.Data.Set.Finite.Parity
+import Mathlib.SetTheory.Cardinal.Ordinal
 
 /-!
 # Matchings
@@ -40,7 +43,7 @@ one edge, and the edges of the subgraph represent the paired vertices.
 open Function
 
 namespace SimpleGraph
-variable {V : Type*} {G G': SimpleGraph V} {M M' : Subgraph G} {v w : V}
+variable {V W : Type*} {G G': SimpleGraph V} {M M' : Subgraph G} {v w : V}
 
 namespace Subgraph
 
@@ -132,6 +135,46 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
     exact ⟨hv.2 ▸ v.2, hw.1⟩
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
+
+lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : SimpleGraph.Iso G G') :
+    (M.map f.toHom).IsMatching ↔ M.IsMatching := by
+  constructor
+  · intro hM v hv
+    have hfv : f v ∈ (Subgraph.map (Iso.map f G).toHom M).verts := by
+      simpa [map_verts, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, Iso.map_apply,
+        Set.mem_image_equiv, Equiv.symm_apply_apply] using hv
+    obtain ⟨w, hw⟩ := hM hfv
+    use f.symm w
+    dsimp at *
+    constructor
+    · rw [Relation.map_apply] at hw
+      obtain ⟨a, b, ⟨hab, ha, rfl⟩⟩ := hw.1
+      rw [RelIso.eq_iff_eq] at ha
+      subst ha
+      simpa [Equiv.symm_apply_apply] using hab
+    · intro y hy
+      have : f y = w := by
+        apply hw.2 (f y)
+        rw [@Relation.map_apply]
+        use v, y
+      rw [← this]
+      simp only [RelIso.symm_apply_apply]
+  · intro hM v hv
+    simp only [map_verts, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, Set.mem_image] at hv
+    obtain ⟨v', ⟨hv', rfl⟩⟩ := hv
+    obtain ⟨w, hw⟩ := hM hv'
+    use f w
+    dsimp at *
+    constructor
+    · have := hw.1
+      apply Relation.map_apply.mpr
+      use v', w
+    · intro y hy
+      rw [Relation.map_apply] at hy
+      obtain ⟨a, b, ⟨hab, ha, rfl⟩⟩ := hy
+      rw [RelIso.eq_iff_eq] at ha
+      subst ha
+      rw [hw.2 _ hab]
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
@@ -234,6 +277,67 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
   exact hMeven
 
 end Finite
+
+lemma IsClique.even_card_iff_exists_isMatching [DecidableEq V] (u : Set V)
+    (hc : G.IsClique u) : Even (Nat.card u) ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
+  obtain hfin | hnfin := u.finite_or_infinite
+  · haveI : Fintype u := hfin.fintype
+    refine ⟨?_ , by
+      rintro ⟨M, ⟨hMl, hMr⟩⟩
+      haveI : Fintype M.verts := hMl ▸ hfin.fintype
+      subst hMl
+      simpa [Nat.card_eq_card_finite_toFinset hfin, Set.toFinite_toFinset,
+        Set.toFinset_card] using hMr.even_card⟩
+    intro he
+    obtain rfl | h := u.eq_empty_or_nonempty
+    · use ⊥
+      simp only [Subgraph.verts_bot, true_and]
+      intro _ h
+      contradiction
+    · obtain ⟨x, y, hxy⟩ := Set.Finite.two_of_even_of_nonempty hfin h he
+      let u' := u \ {x, y}
+      have hu'e := Set.Finite.even_card_diff_pair hfin he hxy.1 hxy.2.1 hxy.2.2
+      have hu'c := hc.subset (Set.diff_subset : u' ⊆ u)
+      obtain ⟨M, hM⟩ := (IsClique.even_card_iff_exists_isMatching u' hu'c).mp hu'e
+      use M ⊔ subgraphOfAdj _ (hc hxy.1 hxy.2.1 hxy.2.2)
+      simp only [Subgraph.verts_sup, hM.1, subgraphOfAdj_verts]
+      refine ⟨by
+        rw [Set.diff_union_self]
+        exact Set.union_eq_self_of_subset_right (Set.pair_subset hxy.1 hxy.2.1), ?_⟩
+      refine Subgraph.IsMatching.sup hM.2
+        (Subgraph.IsMatching.subgraphOfAdj (hc hxy.left hxy.right.left hxy.right.right)) ?_
+      simp only [support_subgraphOfAdj, hM.2.support_eq_verts, hM.1]
+      exact Set.disjoint_sdiff_left
+  · simp only [Set.Infinite.card_eq_zero hnfin, even_zero, true_iff]
+    have : Infinite V := by
+      rw [← @Set.infinite_univ_iff]
+      exact Set.Infinite.mono (fun _ _ ↦ by trivial) hnfin
+    have : V ≃ V ⊕ V := by
+      have : Inhabited (V ≃ V ⊕ V) := by
+        apply Classical.inhabited_of_nonempty
+        rw [← Cardinal.eq, Cardinal.mk_sum, Cardinal.add_eq_max (by
+          rw [@Cardinal.aleph0_le_lift]
+          exact Cardinal.infinite_iff.mp this
+          )]
+        simp only [Cardinal.lift_id, max_self]
+      exact this.default
+
+    simp_rw [← Subgraph.Iso.isMatching_map (SimpleGraph.Iso.map this G)]
+    sorry
+termination_by u.ncard
+decreasing_by
+· simp_wf
+  refine Set.ncard_lt_ncard ?_ hfin
+  exact ⟨Set.diff_subset, by
+    rw [Set.not_subset_iff_exists_mem_not_mem]
+    use x
+    exact ⟨hxy.1, by simp only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
+      not_true_eq_false, and_false, not_false_eq_true]⟩⟩
+
+lemma completeGraph_even_iff_exists_isMatching [DecidableEq V] :
+    Even (Nat.card V) ↔ ∃ (M : Subgraph (completeGraph V)), M.verts = Set.univ ∧ M.IsMatching := by
+  simpa [Set.Nat.card_coe_set_eq, Set.ncard_univ]
+    using IsClique.even_card_iff_exists_isMatching (Set.univ : Set V) IsClique.completeGraph
 end ConnectedComponent
 
 /--
