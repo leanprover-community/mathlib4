@@ -38,6 +38,14 @@ the coproduct of the objects `X₁ i ⊗ X₂ j` for `i + j = n` exists. -/
 abbrev HasTensor (X₁ X₂ : GradedObject I C) : Prop :=
   HasMap (((mapBifunctor (curriedTensor C) I I).obj X₁).obj X₂) (fun ⟨i, j⟩ => i + j)
 
+lemma hasTensor_of_iso {X₁ X₂ Y₁ Y₂ : GradedObject I C}
+    (e₁ : X₁ ≅ Y₁) (e₂ : X₂ ≅ Y₂) [HasTensor X₁ X₂] :
+    HasTensor Y₁ Y₂ := by
+  let e : (((mapBifunctor (curriedTensor C) I I).obj X₁).obj X₂) ≅
+    (((mapBifunctor (curriedTensor C) I I).obj Y₁).obj Y₂) := isoMk _ _
+      (fun ⟨i, j⟩ ↦ (eval i).mapIso e₁ ⊗ (eval j).mapIso e₂)
+  exact hasMap_of_iso e _
+
 namespace Monoidal
 
 /-- The tensor product of two graded objects. -/
