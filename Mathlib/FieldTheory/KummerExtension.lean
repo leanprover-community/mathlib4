@@ -5,10 +5,9 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.LinearAlgebra.Charpoly.Basic
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Norm.Basic
 /-!
 # Kummer Extensions
 
@@ -64,7 +63,7 @@ lemma root_X_pow_sub_C_ne_zero {n : ℕ} (hn : 1 < n) (a : K) :
 lemma root_X_pow_sub_C_ne_zero' {n : ℕ} {a : K} (hn : 0 < n) (ha : a ≠ 0) :
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 := by
   obtain (rfl|hn) := (Nat.succ_le_iff.mpr hn).eq_or_lt
-  · rw [← Nat.one_eq_succ_zero, pow_one]
+  · rw [pow_one]
     intro e
     refine mk_ne_zero_of_natDegree_lt (monic_X_sub_C a) (C_ne_zero.mpr ha) (by simp) ?_
     trans AdjoinRoot.mk (X - C a) (X - (X - C a))
@@ -82,14 +81,25 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
   | inr hn =>
     rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
 
-open BigOperators
-
-theorem X_pow_sub_C_eq_prod
+-- make this private, as we only use it to prove a strictly more general version
+private
+theorem X_pow_sub_C_eq_prod'
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (hn : 0 < n) (e : α ^ n = a) :
-    (X ^ n - C a) = ∏ i in Finset.range n, (X - C (ζ ^ i * α)) := by
+    (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
   rw [eq_prod_roots_of_monic_of_splits_id (monic_X_pow_sub_C _ (Nat.pos_iff_ne_zero.mp hn))
     (X_pow_sub_C_splits_of_isPrimitiveRoot hζ e), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
   rfl
+
+lemma X_pow_sub_C_eq_prod {R : Type*} [CommRing R] [IsDomain R]
+    {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) {α a : R} (hn : 0 < n) (e : α ^ n = a) :
+    (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
+  let K := FractionRing R
+  let i := algebraMap R K
+  have h := NoZeroSMulDivisors.algebraMap_injective R K
+  apply_fun Polynomial.map i using map_injective i h
+  simpa only [Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, map_mul, map_pow,
+    Polynomial.map_prod, Polynomial.map_mul]
+    using X_pow_sub_C_eq_prod' (hζ.map_of_injective h) hn <| map_pow i α n ▸ congrArg i e
 
 end Splits
 
@@ -109,7 +119,7 @@ lemma ne_zero_of_irreducible_X_pow_sub_C' {n : ℕ} (hn : n ≠ 1) {a : K}
 
 lemma root_X_pow_sub_C_eq_zero_iff {n : ℕ} {a : K} (H : Irreducible (X ^ n - C a)) :
     (AdjoinRoot.root (X ^ n - C a)) = 0 ↔ a = 0 := by
-  have hn := (Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H))
+  have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   refine ⟨not_imp_not.mp (root_X_pow_sub_C_ne_zero' hn), ?_⟩
   rintro rfl
   have := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) rfl
@@ -127,8 +137,8 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
   rintro rfl
   obtain ⟨q, hq⟩ := sub_dvd_pow_sub_pow (X ^ k) (C b) m
   rw [mul_comm, pow_mul, map_pow, hq] at H
-  have : degree q = 0
-  · simpa [isUnit_iff_degree_eq_zero, degree_X_pow_sub_C,
+  have : degree q = 0 := by
+    simpa [isUnit_iff_degree_eq_zero, degree_X_pow_sub_C,
       Nat.pos_iff_ne_zero, (mul_ne_zero_iff.mp hn).2] using H.2 _ q rfl
   apply_fun degree at hq
   simp only [this, ← pow_mul, mul_comm k m, degree_X_pow_sub_C, Nat.pos_iff_ne_zero.mpr hn,
@@ -139,8 +149,8 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
 theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ p - C a) := by
   -- First of all, We may find an irreducible factor `g` of `X ^ p - C a`.
-  have : ¬ IsUnit (X ^ p - C a)
-  · rw [Polynomial.isUnit_iff_degree_eq_zero, degree_X_pow_sub_C hp.pos, Nat.cast_eq_zero]
+  have : ¬ IsUnit (X ^ p - C a) := by
+    rw [Polynomial.isUnit_iff_degree_eq_zero, degree_X_pow_sub_C hp.pos, Nat.cast_eq_zero]
     exact hp.ne_zero
   have ⟨g, hg, hg'⟩ := WfDvdMonoid.exists_irreducible_factor this (X_pow_sub_C_ne_zero hp.pos a)
   -- It suffices to show that `deg g = p`.
@@ -150,8 +160,8 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
   by_contra h
   have : Fact (Irreducible g) := ⟨hg⟩
   -- Let `r` be a root of `g`, then `N_K(r) ^ p = N_K(r ^ p) = N_K(a) = a ^ (deg g)`.
-  have key : (Algebra.norm K (AdjoinRoot.root g)) ^ p = a ^ g.natDegree
-  · have := eval₂_eq_zero_of_dvd_of_eval₂_eq_zero _ _ hg' (AdjoinRoot.eval₂_root g)
+  have key : (Algebra.norm K (AdjoinRoot.root g)) ^ p = a ^ g.natDegree := by
+    have := eval₂_eq_zero_of_dvd_of_eval₂_eq_zero _ _ hg' (AdjoinRoot.eval₂_root g)
     rw [eval₂_sub, eval₂_pow, eval₂_C, eval₂_X, sub_eq_zero] at this
     rw [← map_pow, this, ← AdjoinRoot.algebraMap_eq, Algebra.norm_algebraMap,
       ← finrank_top', ← IntermediateField.adjoin_root_eq_top g,
@@ -172,11 +182,11 @@ theorem X_pow_sub_C_irreducible_iff_of_prime {p : ℕ} (hp : p.Prime) {a : K} :
 
 theorem X_pow_mul_sub_C_irreducible
     {n m : ℕ} {a : K} (hm : Irreducible (X ^ m - C a))
-    (hn : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (hx : minpoly K x = X ^ m - C a),
+    (hn : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (_ : minpoly K x = X ^ m - C a),
       Irreducible (X ^ n - C (AdjoinSimple.gen K x))) :
     Irreducible (X ^ (n * m) - C a) := by
-  have hm' : m ≠ 0
-  · rintro rfl
+  have hm' : m ≠ 0 := by
+    rintro rfl
     rw [pow_zero, ← C.map_one, ← map_sub] at hm
     exact not_irreducible_C _ hm
   simpa [pow_mul] using irreducible_comp (monic_X_pow_sub_C a hm') (monic_X_pow n) hm
@@ -187,7 +197,7 @@ theorem X_pow_sub_C_irreducible_of_odd
     {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ n - C a) := by
   induction n using induction_on_primes generalizing K a with
-  | h₀ => simp at hn
+  | h₀ => simp [← Nat.not_even_iff_odd] at hn
   | h₁ => simpa using irreducible_X_sub_C a
   | h p n hp IH =>
     rw [mul_comm]
@@ -196,7 +206,7 @@ theorem X_pow_sub_C_irreducible_of_odd
     intro E _ _ x hx
     have : IsIntegral K x := not_not.mp fun h ↦ by
       simpa only [degree_zero, degree_X_pow_sub_C hp.pos,
-        WithBot.nat_ne_bot] using congr_arg degree (hx.symm.trans (dif_neg h))
+        WithBot.natCast_ne_bot] using congr_arg degree (hx.symm.trans (dif_neg h))
     apply IH (Nat.odd_mul.mp hn).2
     intros q hq hqn b hb
     apply ha q hq (dvd_mul_of_dvd_right hqn p) (Algebra.norm _ b)
@@ -248,6 +258,7 @@ open scoped KummerExtension
 
 section AdjoinRoot
 
+include hζ H in
 /-- Also see `Polynomial.separable_X_pow_sub_C_unit` -/
 theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separable := by
   letI := Fact.mk H
@@ -258,8 +269,14 @@ theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separabl
   have ⟨ζ, hζ⟩ := hζ
   rw [mem_primitiveRoots (Nat.pos_of_ne_zero <| ne_zero_of_irreducible_X_pow_sub_C H)] at hζ
   rw [← separable_map (algebraMap K K[n√a]), Polynomial.map_sub, Polynomial.map_pow, map_C, map_X,
-    algebraMap_eq, X_pow_sub_C_eq_prod (hζ.map_of_injective (algebraMap K _).injective) hn
+    AdjoinRoot.algebraMap_eq,
+    X_pow_sub_C_eq_prod (hζ.map_of_injective (algebraMap K _).injective) hn
     (root_X_pow_sub_C_pow n a), separable_prod_X_sub_C_iff']
+  #adaptation_note
+  /--
+  After https://github.com/leanprover/lean4/pull/5376 we need to provide this helper instance.
+  -/
+  have : MonoidHomClass (K →+* K[n√a]) K K[n√a] := inferInstance
   exact (hζ.map_of_injective (algebraMap K K[n√a]).injective).injOn_pow_mul
     (root_X_pow_sub_C_ne_zero (lt_of_le_of_ne (show 1 ≤ n from hn) (Ne.symm hn')) _)
 
@@ -305,9 +322,9 @@ def AdjoinRootXPowSubCEquivToRootsOfUnity (σ : K[n√a] ≃ₐ[K] K[n√a]) :
     split
     · exact one_pow _
     rw [div_pow, ← map_pow]
-    simp only [PNat.mk_coe, root_X_pow_sub_C_pow, ← algebraMap_eq, AlgEquiv.commutes]
+    simp only [PNat.mk_coe, root_X_pow_sub_C_pow, ← AdjoinRoot.algebraMap_eq, AlgEquiv.commutes]
     rw [div_self]
-    rwa [Ne.def, map_eq_zero_iff _ (algebraMap K _).injective]))
+    rwa [Ne, map_eq_zero_iff _ (algebraMap K _).injective]))
 
 /-- The equivalence between the roots of unity of `K` and `Gal(K[ⁿ√a]/K)`. -/
 noncomputable
@@ -323,7 +340,7 @@ def autAdjoinRootXPowSubCEquiv :
     apply (rootsOfUnityEquivOfPrimitiveRoots
       (n := ⟨n, hn⟩) (algebraMap K K[n√a]).injective hζ).injective
     ext
-    simp only [algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+    simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
       autAdjoinRootXPowSubC_root, Algebra.smul_def, ne_eq, MulEquiv.apply_symm_apply,
       rootsOfUnity.val_mkOfPowEq_coe, val_rootsOfUnityEquivOfPrimitiveRoots_apply_coe,
       AdjoinRootXPowSubCEquivToRootsOfUnity]
@@ -331,38 +348,40 @@ def autAdjoinRootXPowSubCEquiv :
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
       have : (η : Kˣ) = 1 := (pow_one _).symm.trans η.prop
       simp only [PNat.mk_one, this, Units.val_one, map_one]
-    · exact mul_div_cancel _ (root_X_pow_sub_C_ne_zero' hn h)
+    · exact mul_div_cancel_right₀ _ (root_X_pow_sub_C_ne_zero' hn h)
   right_inv := by
     intro e
     have := Fact.mk H
     letI : Algebra K K[n√a] := inferInstance
     apply AlgEquiv.coe_algHom_injective
     apply AdjoinRoot.algHom_ext
-    simp only [algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, AlgHom.coe_coe,
-      autAdjoinRootXPowSubC_root, Algebra.smul_def, PNat.mk_coe,
+    simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+      AlgHom.coe_coe, autAdjoinRootXPowSubC_root, Algebra.smul_def, PNat.mk_coe,
       AdjoinRootXPowSubCEquivToRootsOfUnity]
     rw [rootsOfUnityEquivOfPrimitiveRoots_symm_apply, rootsOfUnity.val_mkOfPowEq_coe]
     split_ifs with h
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
       rw [(pow_one _).symm.trans (root_X_pow_sub_C_pow 1 a), one_mul,
-        ← algebraMap_eq, AlgEquiv.commutes]
-    · refine div_mul_cancel _ (root_X_pow_sub_C_ne_zero' hn h)
+        ← AdjoinRoot.algebraMap_eq, AlgEquiv.commutes]
+    · refine div_mul_cancel₀ _ (root_X_pow_sub_C_ne_zero' hn h)
 
 lemma autAdjoinRootXPowSubCEquiv_root (η) :
     autAdjoinRootXPowSubCEquiv hζ hn H η (root _) = ((η : Kˣ) : K) • root _ :=
   autAdjoinRootXPowSubC_root hn a η
 
+set_option tactic.skipAssignedInstances false in
 lemma autAdjoinRootXPowSubCEquiv_symm_smul (σ) :
     ((autAdjoinRootXPowSubCEquiv hζ hn H).symm σ : Kˣ) • (root _ : K[n√a]) = σ (root _) := by
   have := Fact.mk H
   simp only [autAdjoinRootXPowSubCEquiv, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
     MulEquiv.symm_mk, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk, AdjoinRootXPowSubCEquivToRootsOfUnity,
-    algebraMap_eq, Units.smul_def, Algebra.smul_def, rootsOfUnityEquivOfPrimitiveRoots_symm_apply,
-    rootsOfUnity.mkOfPowEq, PNat.mk_coe, Units.val_ofPowEqOne, ite_mul, one_mul, ne_eq]
+    AdjoinRoot.algebraMap_eq, Units.smul_def, Algebra.smul_def,
+    rootsOfUnityEquivOfPrimitiveRoots_symm_apply, rootsOfUnity.mkOfPowEq, PNat.mk_coe,
+    Units.val_ofPowEqOne, ite_mul, one_mul, ne_eq]
   simp_rw [← root_X_pow_sub_C_eq_zero_iff H]
   split_ifs with h
   · rw [h, mul_zero, map_zero]
-  · rw [div_mul_cancel _ h]
+  · rw [div_mul_cancel₀ _ h]
 
 end AdjoinRoot
 
@@ -373,6 +392,7 @@ section IsSplittingField
 variable {a}
 variable {L : Type*} [Field L] [Algebra K L] [IsSplittingField K L (X ^ n - C a)]
 
+include hζ in
 lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
     haveI := Fact.mk H
     letI : Algebra K K[n√a] := inferInstance
@@ -397,8 +417,8 @@ variable {α : L} (hα : α ^ n = algebraMap K L a)
 /-- Suppose `L/K` is the splitting field of `Xⁿ - a`, then a choice of `ⁿ√a` gives an equivalence of
 `L` with `K[n√a]`. -/
 noncomputable
-def adjoinRootXPowSubCEquiv :
-    K[n√a] ≃ₐ[K] L :=
+def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducible (X ^ n - C a))
+    (hα : α ^ n = algebraMap K L a) : K[n√a] ≃ₐ[K] L :=
   AlgEquiv.ofBijective (AdjoinRoot.liftHom (X ^ n - C a) α (by simp [hα])) <| by
     haveI := Fact.mk H
     letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
@@ -416,6 +436,7 @@ lemma adjoinRootXPowSubCEquiv_symm_eq_root :
   apply (adjoinRootXPowSubCEquiv hζ H hα).injective
   rw [(adjoinRootXPowSubCEquiv hζ H hα).apply_symm_apply, adjoinRootXPowSubCEquiv_root]
 
+include hζ H hα in
 lemma Algebra.adjoin_root_eq_top_of_isSplittingField :
     Algebra.adjoin K {α} = ⊤ := by
   apply Subalgebra.map_injective (f := (adjoinRootXPowSubCEquiv hζ H hα).symm)
@@ -424,6 +445,7 @@ lemma Algebra.adjoin_root_eq_top_of_isSplittingField :
     (adjoinRootXPowSubCEquiv hζ H hα).symm.surjective, AlgHom.map_adjoin,
     Set.image_singleton, AlgHom.coe_coe, adjoinRootXPowSubCEquiv_symm_eq_root, adjoinRoot_eq_top]
 
+include hζ H hα in
 lemma IntermediateField.adjoin_root_eq_top_of_isSplittingField :
     K⟮α⟯ = ⊤ := by
   refine (IntermediateField.eq_adjoin_of_eq_algebra_adjoin _ _ _ ?_).symm
@@ -433,7 +455,8 @@ variable (a) (L)
 
 /-- An arbitrary choice of `ⁿ√a` in the splitting field of `Xⁿ - a`. -/
 noncomputable
-abbrev rootOfSplitsXPowSubC : L :=
+abbrev rootOfSplitsXPowSubC (hn : 0 < n) (a : K)
+    (L) [Field L] [Algebra K L] [IsSplittingField K L (X ^ n - C a)] : L :=
   (rootOfSplits _ (IsSplittingField.splits L (X ^ n - C a))
       (by simpa [degree_X_pow_sub_C hn] using Nat.pos_iff_ne_zero.mp hn))
 
@@ -461,10 +484,11 @@ lemma autEquivRootsOfUnity_apply_rootOfSplit (σ : L ≃ₐ[K] L) :
   rw [MulEquiv.apply_symm_apply, autEquivRootsOfUnity]
   simp only [MulEquiv.symm_trans_apply, AlgEquiv.autCongr_symm, AlgEquiv.symm_symm,
     MulEquiv.symm_symm, AlgEquiv.autCongr_apply, AlgEquiv.trans_apply,
-    adjoinRootXPowSubCEquiv_symm_eq_root, autAdjoinRootXPowSubCEquiv_root, AlgEquiv.map_smul,
+    adjoinRootXPowSubCEquiv_symm_eq_root, autAdjoinRootXPowSubCEquiv_root, map_smul,
     adjoinRootXPowSubCEquiv_root]
   rfl
 
+include hα in
 lemma autEquivRootsOfUnity_smul (σ : L ≃ₐ[K] L) :
     autEquivRootsOfUnity hζ hn H L σ • α = σ α := by
   have ⟨ζ, hζ'⟩ := hζ
@@ -473,7 +497,7 @@ lemma autEquivRootsOfUnity_smul (σ : L ≃ₐ[K] L) :
     (rootOfSplitsXPowSubC_pow hn a L)] at hα
   simp only [Finset.range_val, Multiset.mem_map, Multiset.mem_range] at hα
   obtain ⟨i, _, rfl⟩ := hα
-  simp only [map_mul, ← map_pow, ← Algebra.smul_def, AlgEquiv.map_smul,
+  simp only [map_mul, ← map_pow, ← Algebra.smul_def, map_smul,
     autEquivRootsOfUnity_apply_rootOfSplit hζ hn H L]
   exact smul_comm _ _ _
 
@@ -488,25 +512,30 @@ def autEquivZmod {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
       (hζ.isUnit_unit' hn)).symm).trans (AddEquiv.toMultiplicative'
         (hζ.isUnit_unit' hn).zmodEquivZPowers.symm))
 
+include hα in
 lemma autEquivZmod_symm_apply_intCast {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℤ) :
     (autEquivZmod H L hζ).symm (Multiplicative.ofAdd (m : ZMod n)) α = ζ ^ m • α := by
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   rw [← autEquivRootsOfUnity_smul ⟨ζ, (mem_primitiveRoots hn).mpr hζ⟩ hn H L hα]
   simp [MulEquiv.subgroupCongr_symm_apply, Subgroup.smul_def, Units.smul_def, autEquivZmod]
 
+include hα in
 lemma autEquivZmod_symm_apply_natCast {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℕ) :
     (autEquivZmod H L hζ).symm (Multiplicative.ofAdd (m : ZMod n)) α = ζ ^ m • α := by
-  simpa only [Int.cast_ofNat, zpow_coe_nat] using autEquivZmod_symm_apply_intCast H L hα hζ m
+  simpa only [Int.cast_natCast, zpow_natCast] using autEquivZmod_symm_apply_intCast H L hα hζ m
 
+include hζ H in
 lemma isCyclic_of_isSplittingField_X_pow_sub_C : IsCyclic (L ≃ₐ[K] L) :=
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   isCyclic_of_surjective _
     (autEquivZmod H _ <| (mem_primitiveRoots hn).mp hζ.choose_spec).symm.surjective
 
+include hζ H in
 lemma isGalois_of_isSplittingField_X_pow_sub_C : IsGalois K L :=
   IsGalois.of_separable_splitting_field (separable_X_pow_sub_C_of_irreducible hζ a H)
 
-lemma finrank_of_isSplittingField_X_pow_sub_C : FiniteDimensional.finrank K L = n := by
+include hζ H in
+lemma finrank_of_isSplittingField_X_pow_sub_C : Module.finrank K L = n := by
   have := Polynomial.IsSplittingField.finiteDimensional L (X ^ n - C a)
   have := isGalois_of_isSplittingField_X_pow_sub_C hζ H L
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
@@ -520,15 +549,16 @@ end IsSplittingField
 
 section IsCyclic
 
-variable {L} [Field L] [Algebra K L] [IsGalois K L] [FiniteDimensional K L] [IsCyclic (L ≃ₐ[K] L)]
-variable (hK : (primitiveRoots (FiniteDimensional.finrank K L) K).Nonempty)
+variable {L} [Field L] [Algebra K L] [FiniteDimensional K L]
+variable (hK : (primitiveRoots (Module.finrank K L) K).Nonempty)
 
-open BigOperators FiniteDimensional
+open Module
 variable (K L)
 
+include hK in
 /-- If `L/K` is a cyclic extension of degree `n`, and `K` contains all `n`-th roots of unity,
 then `L = K[α]` for some `α ^ n ∈ K`. -/
-lemma exists_root_adjoin_eq_top_of_isCyclic :
+lemma exists_root_adjoin_eq_top_of_isCyclic [IsGalois K L] [IsCyclic (L ≃ₐ[K] L)] :
     ∃ (α : L), α ^ (finrank K L) ∈ Set.range (algebraMap K L) ∧ K⟮α⟯ = ⊤ := by
   -- Let `ζ` be an `n`-th root of unity, and `σ` be a generator of `L ≃ₐ[K] L`.
   have ⟨ζ, hζ⟩ := hK
@@ -569,8 +599,8 @@ variable {K L}
 lemma irreducible_X_pow_sub_C_of_root_adjoin_eq_top
     {a : K} {α : L} (ha : α ^ (finrank K L) = algebraMap K L a) (hα : K⟮α⟯ = ⊤) :
     Irreducible (X ^ (finrank K L) - C a) := by
-  have : X ^ (finrank K L) - C a = minpoly K α
-  · refine minpoly.unique _ _ (monic_X_pow_sub_C _ finrank_pos.ne.symm) ?_ ?_
+  have : X ^ (finrank K L) - C a = minpoly K α := by
+    refine minpoly.unique _ _ (monic_X_pow_sub_C _ finrank_pos.ne.symm) ?_ ?_
     · simp only [aeval_def, eval₂_sub, eval₂_X_pow, ha, eval₂_C, sub_self]
     · intros q hq hq'
       refine le_trans ?_ (degree_le_of_dvd (minpoly.dvd _ _ hq') hq.ne_zero)
@@ -580,6 +610,7 @@ lemma irreducible_X_pow_sub_C_of_root_adjoin_eq_top
       exact (finrank_top K L).ge
   exact this ▸ minpoly.irreducible (IsIntegral.of_finite K α)
 
+include hK in
 lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
     {a : K} {α : L} (ha : α ^ (finrank K L) = algebraMap K L a) (hα : K⟮α⟯ = ⊤) :
     IsSplittingField K L (X ^ (finrank K L) - C a) := by
@@ -597,7 +628,7 @@ lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
 
 end IsCyclic
 
-open FiniteDimensional in
+open Module in
 /--
 Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
 Then `L/K` is cyclic iff
@@ -605,21 +636,18 @@ Then `L/K` is cyclic iff
 `L = K[α]` for some `αⁿ ∈ K`.
 -/
 lemma isCyclic_tfae (K L) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
-    (hK : (primitiveRoots (FiniteDimensional.finrank K L) K).Nonempty) :
+    (hK : (primitiveRoots (Module.finrank K L) K).Nonempty) :
     List.TFAE [
       IsGalois K L ∧ IsCyclic (L ≃ₐ[K] L),
       ∃ a : K, Irreducible (X ^ (finrank K L) - C a) ∧
         IsSplittingField K L (X ^ (finrank K L) - C a),
       ∃ (α : L), α ^ (finrank K L) ∈ Set.range (algebraMap K L) ∧ K⟮α⟯ = ⊤] := by
   tfae_have 1 → 3
-  · intro ⟨inst₁, inst₂⟩
-    exact exists_root_adjoin_eq_top_of_isCyclic K L hK
+  | ⟨inst₁, inst₂⟩ => exists_root_adjoin_eq_top_of_isCyclic K L hK
   tfae_have 3 → 2
-  · intro ⟨α, ⟨a, ha⟩, hα⟩
-    exact ⟨a, irreducible_X_pow_sub_C_of_root_adjoin_eq_top ha.symm hα,
+  | ⟨α, ⟨a, ha⟩, hα⟩ => ⟨a, irreducible_X_pow_sub_C_of_root_adjoin_eq_top ha.symm hα,
       isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top hK ha.symm hα⟩
   tfae_have 2 → 1
-  · intro ⟨a, H, inst⟩
-    exact ⟨isGalois_of_isSplittingField_X_pow_sub_C hK H L,
+  | ⟨a, H, inst⟩ => ⟨isGalois_of_isSplittingField_X_pow_sub_C hK H L,
       isCyclic_of_isSplittingField_X_pow_sub_C hK H L⟩
   tfae_finish

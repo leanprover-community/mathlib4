@@ -3,8 +3,9 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
 import Lean.Elab.Syntax
-import Std.Lean.Expr
+import Lean.DocString
 
 /-!
 
@@ -67,8 +68,8 @@ private def elabHelpOption (id : Option Ident) : CommandElabM Unit := do
     | .ofNat val => s!"Nat := {repr val}"
     | .ofInt val => s!"Int := {repr val}"
     | .ofSyntax val => s!"Syntax := {repr val}"
-    if let some val := opts.find name then
-      msg1 := s!"{msg1}  (currently: {val})"
+    if let some val := opts.find (.mkSimple name) then
+      msg1 := s!"{msg1} (currently: {val})"
     msg := msg ++ .nest 2 (f!"option {name} : {msg1}" ++ .line ++ decl.descr) ++ .line ++ .line
   logInfo msg
 
@@ -77,7 +78,7 @@ elab_rules : command | `(#help option $(id)?) => elabHelpOption id
 /--
 The command `#help attribute` (or the short form `#help attr`) shows all attributes that have been
 defined in the current environment.
-Each option has a format like:
+Each attribute has a format like:
 ```
 [inline]: mark definition to always be inlined
 ```
@@ -94,7 +95,12 @@ syntax withPosition("#help " colGt (&"attr" <|> &"attribute")
 private def elabHelpAttr (id : Option Ident) : CommandElabM Unit := do
   let id := id.map (·.raw.getId.toString false)
   let mut decls : Lean.RBMap _ _ compare := {}
-  for (name, decl) in ← attributeMapRef.get do
+  /-
+  #adaptation_note
+  On nightly-2024-06-21, added the `.toList` here:
+  without it the requisite `ForIn` instance can't be found.
+  -/
+  for (name, decl) in (← attributeMapRef.get).toList do
     let name := name.toString false
     if let some id := id then
       if !id.isPrefixOf name then
@@ -122,17 +128,36 @@ elab_rules : command
 that don't start with a string constant. -/
 partial def getHeadTk (e : Expr) : Option String :=
   match e.getAppFnArgs with
-  | (``ParserDescr.node, #[_, _, p]) => getHeadTk p
-  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "withPosition")), p]) => getHeadTk p
-  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "atomic")), p]) => getHeadTk p
-  | (``ParserDescr.binary, #[.app _ (.lit (.strVal "andthen")), p, _]) => getHeadTk p
-  | (``ParserDescr.nonReservedSymbol, #[.lit (.strVal tk), _]) => some tk
-  | (``ParserDescr.symbol, #[.lit (.strVal tk)]) => some tk
-  | (``Parser.withAntiquot, #[_, p]) => getHeadTk p
-  | (``Parser.leadingNode, #[_, _, p]) => getHeadTk p
-  | (``HAndThen.hAndThen, #[_, _, _, _, p, _]) => getHeadTk p
-  | (``Parser.nonReservedSymbol, #[.lit (.strVal tk), _]) => some tk
-  | (``Parser.symbol, #[.lit (.strVal tk)]) => some tk
+  | (``ParserDescr.node, #[_, _, p])
+  | (``ParserDescr.trailingNode, #[_, _, _, p])
+  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "withPosition")), p])
+  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "atomic")), p])
+  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "ppRealGroup")), p])
+  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "ppRealFill")), p])
+  | (``Parser.ppRealFill, #[p])
+  | (``Parser.withAntiquot, #[_, p])
+  | (``Parser.leadingNode, #[_, _, p])
+  | (``Parser.trailingNode, #[_, _, _, p])
+  | (``Parser.group, #[p])
+  | (``Parser.withCache, #[_, p])
+  | (``Parser.withResetCache, #[p])
+  | (``Parser.withPosition, #[p])
+  | (``Parser.withOpen, #[p])
+  | (``Parser.withPositionAfterLinebreak, #[p])
+  | (``Parser.suppressInsideQuot, #[p])
+  | (``Parser.ppRealGroup, #[p])
+  | (``Parser.ppIndent, #[p])
+  | (``Parser.ppDedent, #[p])
+    => getHeadTk p
+  | (``ParserDescr.binary, #[.app _ (.lit (.strVal "andthen")), p, q])
+  | (``HAndThen.hAndThen, #[_, _, _, _, p, .lam _ _ q _])
+    => getHeadTk p <|> getHeadTk q
+  | (``ParserDescr.nonReservedSymbol, #[.lit (.strVal tk), _])
+  | (``ParserDescr.symbol, #[.lit (.strVal tk)])
+  | (``Parser.nonReservedSymbol, #[.lit (.strVal tk), _])
+  | (``Parser.symbol, #[.lit (.strVal tk)])
+  | (``Parser.unicodeSymbol, #[.lit (.strVal tk), _])
+    => pure tk
   | _ => none
 
 /--
@@ -291,3 +316,5 @@ syntax withPosition("#help " colGt &"command" "+"?
 macro_rules
   | `(#help command%$tk $[+%$more]? $(id)?) =>
     `(#help cat$[+%$more]? $(mkIdentFrom tk `command) $(id)?)
+
+end Mathlib.Tactic

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Tactic.Common
 
 /-!
 # Lemmas about the divisibility relation in product (semi)groups
@@ -33,7 +33,7 @@ instance [DecompositionMonoid G₁] [DecompositionMonoid G₂] : DecompositionMo
     exact ⟨(a₁, a₂), (a₁', a₂'), ⟨h₁, h₂⟩, ⟨h₁', h₂'⟩, Prod.ext eq₁ eq₂⟩
 
 theorem pi_dvd_iff {x y : ∀ i, G i} : x ∣ y ↔ ∀ i, x i ∣ y i := by
-  simp_rw [dvd_def, Function.funext_iff, Classical.skolem]; rfl
+  simp_rw [dvd_def, funext_iff, Classical.skolem]; rfl
 
 instance [∀ i, DecompositionMonoid (G i)] : DecompositionMonoid (∀ i, G i) where
   primal a b c h := by
