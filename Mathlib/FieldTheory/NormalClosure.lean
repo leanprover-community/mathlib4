@@ -282,4 +282,21 @@ lemma normal_iff_forall_map_eq : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ
 lemma normal_iff_forall_map_eq' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map ↑σ = K :=
 ⟨fun h σ ↦ normal_iff_forall_map_eq.1 h σ, fun h ↦ normal_iff_forall_map_le'.2 (fun σ ↦ (h σ).le)⟩
 
+@[simp]
+lemma normalClosure_map_eq (K : IntermediateField F L) (σ : L →ₐ[F] L) :
+    normalClosure F (K.map σ) L = normalClosure F K L := by
+  have (σ : L ≃ₐ[F] L) : normalClosure F (K.map (σ : L →ₐ[F] L)) L = normalClosure F K L := by
+    simp_rw [normalClosure_def'', map_map]
+    exact (Equiv.mulRight σ).iSup_congr fun _ ↦ rfl
+  exact this ((Algebra.IsAlgebraic.algEquivEquivAlgHom _ _).symm σ)
+
+@[simp]
+theorem normalClosure_le_iff_of_normal {K₁ K₂ : IntermediateField F L} [Normal F K₂] :
+    normalClosure F K₁ L ≤ K₂ ↔ K₁ ≤ K₂ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [normalClosure_le_iff] at h
+    simpa only [fieldRange_val] using h K₁.val
+  · rw [← normalClosure_of_normal K₂]
+    exact normalClosure_mono K₁ K₂ h
+
 end IntermediateField
