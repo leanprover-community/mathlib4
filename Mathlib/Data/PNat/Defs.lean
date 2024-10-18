@@ -114,7 +114,7 @@ theorem pos (n : ℕ+) : 0 < (n : ℕ) :=
 theorem eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
   Subtype.eq
 
-theorem coe_injective : Function.Injective (fun (a : ℕ+) => (a : ℕ)) :=
+theorem coe_injective : Function.Injective PNat.val :=
   Subtype.coe_injective
 
 @[simp]
