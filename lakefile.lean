@@ -10,7 +10,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.42"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.43"
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
   from git "https://github.com/leanprover-community/LeanSearchClient" @ "main"
@@ -31,6 +31,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.refine, true⟩,
   ⟨`linter.style.cdot, true⟩,
   ⟨`linter.style.dollarSyntax, true⟩,
+  ⟨`linter.style.header, true⟩,
   ⟨`linter.style.lambdaSyntax, true⟩,
   ⟨`linter.style.longLine, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,

@@ -40,7 +40,7 @@ Using these formulas, we compute the volume of the unit balls in several cases.
 
 section general_case
 
-open MeasureTheory MeasureTheory.Measure FiniteDimensional ENNReal
+open MeasureTheory MeasureTheory.Measure Module ENNReal
 
 theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : ℝ}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
@@ -48,10 +48,10 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
     μ (Metric.ball 0 1) =
       .ofReal ((∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
   obtain hE | hE := subsingleton_or_nontrivial E
-  · rw [(Metric.nonempty_ball.mpr zero_lt_one).eq_zero, ← integral_univ, Set.univ_nonempty.eq_zero,
-      integral_singleton, finrank_zero_of_subsingleton, Nat.cast_zero, zero_div, zero_add,
-      Real.Gamma_one, div_one, norm_zero, Real.zero_rpow (ne_of_gt hp), neg_zero, Real.exp_zero,
-      smul_eq_mul, mul_one, ofReal_toReal (measure_ne_top μ {0})]
+  · rw [(Metric.nonempty_ball.mpr zero_lt_one).eq_zero, ← setIntegral_univ,
+      Set.univ_nonempty.eq_zero, integral_singleton, finrank_zero_of_subsingleton, Nat.cast_zero,
+      zero_div, zero_add, Real.Gamma_one, div_one, norm_zero, Real.zero_rpow hp.ne', neg_zero,
+      Real.exp_zero, smul_eq_mul, mul_one, ofReal_toReal (measure_ne_top μ {0})]
   · have : (0 : ℝ) < finrank ℝ E := Nat.cast_pos.mpr finrank_pos
     have : ((∫ y in Set.Ioi (0 : ℝ), y ^ (finrank ℝ E - 1) • Real.exp (-y ^ p)) /
         Real.Gamma ((finrank ℝ E) / p + 1)) * (finrank ℝ E) = 1 := by
@@ -112,7 +112,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
     -- The map `ψ` is measure preserving by construction
     have : @MeasurePreserving E F mE _ ψ μ ν :=
       @Measurable.measurePreserving E F mE _ ψ (@MeasurableEquiv.measurable E F mE _ ψ) _
-    erw [← this.integral_comp']
+    rw [← this.integral_comp']
     rfl
 
 theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
@@ -160,7 +160,7 @@ end general_case
 
 section LpSpace
 
-open Real Fintype ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure
+open Real Fintype ENNReal Module MeasureTheory MeasureTheory.Measure
 
 variable (ι : Type*) [Fintype ι] {p : ℝ}
 
@@ -350,7 +350,7 @@ end EuclideanSpace
 
 section InnerProductSpace
 
-open MeasureTheory MeasureTheory.Measure ENNReal Real FiniteDimensional
+open MeasureTheory MeasureTheory.Measure ENNReal Real Module
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E] [Nontrivial E]

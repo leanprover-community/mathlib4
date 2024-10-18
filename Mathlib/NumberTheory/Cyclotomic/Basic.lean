@@ -58,7 +58,7 @@ included in the `Cyclotomic` locale.
 -/
 
 
-open Polynomial Algebra FiniteDimensional Set
+open Polynomial Algebra Module Set
 
 universe u v w z
 
@@ -129,9 +129,10 @@ theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTow
       refine ⟨algebraMap B C b, ?_⟩
       exact hb.map_of_injective h
     · exact ((isCyclotomicExtension_iff _ _ _).1 hT).1 hn
-  · refine adjoin_induction (((isCyclotomicExtension_iff T B _).1 hT).2 x)
+  · refine adjoin_induction (hx := ((isCyclotomicExtension_iff T B _).1 hT).2 x)
       (fun c ⟨n, hn⟩ => subset_adjoin ⟨n, Or.inr hn.1, hn.2⟩) (fun b => ?_)
-      (fun x y hx hy => Subalgebra.add_mem _ hx hy) fun x y hx hy => Subalgebra.mul_mem _ hx hy
+      (fun x y _ _ hx hy => Subalgebra.add_mem _ hx hy)
+      fun x y _ _ hx hy => Subalgebra.mul_mem _ hx hy
     let f := IsScalarTower.toAlgHom A B C
     have hb : f b ∈ (adjoin A {b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1}).map f :=
       ⟨b, ((isCyclotomicExtension_iff _ _ _).1 hS).2 b, rfl⟩
@@ -386,11 +387,11 @@ theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ+}
       rw [Set.mem_singleton_iff] at hi
       refine ⟨⟨ζ, subset_adjoin <| Set.mem_singleton ζ⟩, ?_⟩
       rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk, hi]
-    adjoin_roots := fun x => by
+    adjoin_roots := fun ⟨x, hx⟩ => by
       refine
-        adjoin_induction'
-          (x := x) (fun b hb => ?_) (fun a => ?_) (fun b₁ b₂ hb₁ hb₂ => ?_)
-          (fun b₁ b₂ hb₁ hb₂ => ?_)
+        adjoin_induction
+          (hx := hx) (fun b hb => ?_) (fun a => ?_) (fun b₁ b₂ _ _ hb₁ hb₂ => ?_)
+          (fun b₁ b₂ _ _ hb₁ hb₂ => ?_)
       · rw [Set.mem_singleton_iff] at hb
         refine subset_adjoin ?_
         simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq, hb]
@@ -614,8 +615,10 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
       rwa [← isRoot_cyclotomic_iff] at hμ
     · rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk]
   adjoin_roots x := by
+    obtain ⟨x, hx⟩ := x
     refine
-      adjoin_induction' (fun y hy => ?_) (fun a => ?_) (fun y z hy hz => ?_) (fun y z hy hz => ?_) x
+      adjoin_induction (fun y hy => ?_) (fun a => ?_) (fun y z _ _ hy hz => ?_)
+        (fun y z  _ _ hy hz => ?_) hx
     · refine subset_adjoin ?_
       simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq]
       rwa [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, Subtype.coe_mk]
@@ -634,9 +637,8 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero ((n : ℕ) : A)] :
     letI : NeZero ((n : ℕ) : K) := NeZero.nat_of_injective (IsFractionRing.injective A K)
     refine
       Algebra.adjoin_induction
-        (((IsCyclotomicExtension.iff_singleton n K (CyclotomicField n K)).1
-              (CyclotomicField.isCyclotomicExtension n K)).2
-          x)
+        (hx := ((IsCyclotomicExtension.iff_singleton n K (CyclotomicField n K)).1
+            (CyclotomicField.isCyclotomicExtension n K)).2 x)
         (fun y hy => ?_) (fun k => ?_) ?_ ?_
 -- Porting note: the last goal was `by simpa` that now fails.
     · exact ⟨⟨⟨y, subset_adjoin hy⟩, 1⟩, by simp; rfl⟩
@@ -650,12 +652,12 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero ((n : ℕ) : A)] :
       rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
         @IsScalarTower.algebraMap_apply A K _ _ _ _ _ (_root_.CyclotomicField.algebra n K) _ _ w,
         ← RingHom.map_mul, hw, ← IsScalarTower.algebraMap_apply]
-    · rintro y z ⟨a, ha⟩ ⟨b, hb⟩
+    · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
       refine ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
       rw [RingHom.map_mul, add_mul, ← mul_assoc, ha,
         mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, hb]
       simp only [map_add, map_mul]
-    · rintro y z ⟨a, ha⟩ ⟨b, hb⟩
+    · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
       refine ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
       rw [RingHom.map_mul, mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), mul_assoc, ←
         mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, ha]

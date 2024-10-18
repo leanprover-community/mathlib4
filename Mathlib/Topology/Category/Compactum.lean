@@ -457,7 +457,7 @@ end compactumToCompHaus
 `compactumToCompHaus`. -/
 def compactumToCompHausCompForget :
     compactumToCompHaus ⋙ CategoryTheory.forget CompHaus ≅ Compactum.forget :=
-  NatIso.ofComponents fun X => eqToIso rfl
+  NatIso.ofComponents fun _ => eqToIso rfl
 
 /-
 TODO: `forget CompHaus` is monadic, as it is isomorphic to the composition

@@ -400,7 +400,7 @@ section PosRealAction
 
 instance posRealAction : MulAction { x : ℝ // 0 < x } ℍ where
   smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.2
-  one_smul z := Subtype.ext <| one_smul _ _
+  one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul x y z := Subtype.ext <| mul_smul (x : ℝ) y (z : ℂ)
 
 variable (x : { x : ℝ // 0 < x }) (z : ℍ)

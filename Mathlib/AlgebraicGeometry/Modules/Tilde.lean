@@ -57,7 +57,7 @@ def isFraction {U : Opens (PrimeSpectrum R)} (f : ∀ 𝔭 : U, Localizations M 
 The property of a function `f : ∏_{x ∈ U}, Mₓ` being a fraction is stable under restriction.
 -/
 def isFractionPrelocal : PrelocalPredicate (Localizations M) where
-  pred {U} f := isFraction M f
+  pred {_} f := isFraction M f
   res := by rintro V U i f ⟨m, s, w⟩; exact ⟨m, s, fun x => w (i x)⟩
 
 /--
@@ -187,10 +187,11 @@ lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
 lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
     (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
     st = 0 := by
-  refine Limits.Concrete.colimit_no_zero_smul_divisor (hx := hst)
-    ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq <| funext fun pt ↦ ?_⟩
-  exact LocalizedModule.eq_zero_of_smul_eq_zero (hx := congr_fun (Subtype.ext_iff.1 hs) pt) <|
-    i.unop pt |>.2
+  refine Limits.Concrete.colimit_no_zero_smul_divisor
+    _ _ _ ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq <| funext fun pt ↦ ?_⟩
+    _ hst
+  apply LocalizedModule.eq_zero_of_smul_eq_zero _ (i.unop pt).2 _
+    (congr_fun (Subtype.ext_iff.1 hs) pt)
 
 /--
 If `U` is an open subset of `Spec R`, this is the morphism of `R`-modules from `M` to
@@ -218,7 +219,7 @@ If `x` is a point of `Spec R`, this is the morphism of `R`-modules from `M` to t
 -/
 noncomputable def toStalk (x : PrimeSpectrum.Top R) :
     ModuleCat.of R M ⟶ TopCat.Presheaf.stalk (tildeInModuleCat M) x :=
-  (toOpen M ⊤ ≫ TopCat.Presheaf.germ (tildeInModuleCat M) ⟨x, by trivial⟩)
+  (toOpen M ⊤ ≫ TopCat.Presheaf.germ (tildeInModuleCat M) ⊤ x (by trivial))
 
 open LocalizedModule TopCat.Presheaf in
 lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
@@ -228,7 +229,7 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     smul_stalk_no_nonzero_divisor M r st h, fun st ↦ ?_⟩
   obtain ⟨U, mem, s, rfl⟩ := germ_exist (F := M.tildeInModuleCat) x st
   let O := U ⊓ (PrimeSpectrum.basicOpen r)
-  refine ⟨germ M.tildeInModuleCat (⟨x, ⟨mem, r.2⟩⟩ : O)
+  refine ⟨germ M.tildeInModuleCat O x ⟨mem, r.2⟩
     ⟨fun q ↦ (Localization.mk 1 ⟨r, q.2.2⟩ : Localization.AtPrime q.1.asIdeal) • s.1
       ⟨q.1, q.2.1⟩, fun q ↦ ?_⟩, by
         simpa only [Module.algebraMap_end_apply, ← map_smul] using

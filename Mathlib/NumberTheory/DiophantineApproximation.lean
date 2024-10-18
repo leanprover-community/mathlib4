@@ -406,8 +406,7 @@ private theorem aux₁ : 0 < fract ξ := by
   refine fract_pos.mpr fun hf => ?_
   rw [hf] at h
   have H : (2 * v - 1 : ℝ) < 1 := by
-    refine
-      (mul_lt_iff_lt_one_right hv₀).mp ((inv_lt_inv hv₀ (mul_pos hv₁ hv₂)).mp (lt_of_le_of_lt ?_ h))
+    refine (mul_lt_iff_lt_one_right hv₀).1 ((inv_lt_inv₀ hv₀ (mul_pos hv₁ hv₂)).1 (h.trans_le' ?_))
     have h' : (⌊ξ⌋ : ℝ) - u / v = (⌊ξ⌋ * v - u) / v := by field_simp
     rw [h', abs_div, abs_of_pos hv₀, ← one_div, div_le_div_right hv₀]
     norm_cast
@@ -490,7 +489,7 @@ private theorem aux₃ :
     _ < ((v : ℝ) * (2 * v - 1))⁻¹ * (v / u' / fract ξ) := (mul_lt_mul_right H₁).mpr h'
     _ = (u' * (2 * v - 1) * fract ξ)⁻¹ := help₂ hξ₀.ne' Hv.ne' Hv'.ne' Hu.ne'
     _ ≤ ((u' : ℝ) * (2 * u' - 1))⁻¹ := by
-      rwa [inv_le_inv (mul_pos (mul_pos Hu Hv') hξ₀) <| mul_pos Hu Hu', mul_assoc,
+      rwa [inv_le_inv₀ (mul_pos (mul_pos Hu Hv') hξ₀) <| mul_pos Hu Hu', mul_assoc,
         mul_le_mul_left Hu]
 
 -- The conditions `ass ξ u v` persist in the inductive step.
@@ -506,7 +505,7 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
     have h' := (abs_sub_lt_iff.mp h.2.2).1
     rw [Huv, ← sub_sub, sub_lt_iff_lt_add, self_sub_floor, Hv] at h'
     rwa [lt_sub_iff_add_lt', (by ring : (v : ℝ) + -(1 / 2) = (2 * v - 1) / 2),
-      lt_inv (div_pos hv₀' zero_lt_two) (aux₁ hv h), inv_div]
+      lt_inv_comm₀ (div_pos hv₀' zero_lt_two) (aux₁ hv h), inv_div]
 
 end
 
@@ -538,8 +537,8 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
       · rw [Hξ, hξ₁, cast_sub, cast_one, ← sub_eq_add_neg, sub_lt_sub_iff_left] at h₁
         exact False.elim (lt_irrefl _ <| h₁.trans one_half_lt_one)
       · have hξ₂ : ⌊(fract ξ)⁻¹⌋ = 1 := by
-          rw [floor_eq_iff, cast_one, le_inv zero_lt_one (fract_pos.mpr Hξ), inv_one,
-            one_add_one_eq_two, inv_lt (fract_pos.mpr Hξ) zero_lt_two]
+          rw [floor_eq_iff, cast_one, le_inv_comm₀ zero_lt_one (fract_pos.mpr Hξ), inv_one,
+            one_add_one_eq_two, inv_lt_comm₀ (fract_pos.mpr Hξ) zero_lt_two]
           refine ⟨(fract_lt_one ξ).le, ?_⟩
           rw [fract, hξ₁, cast_sub, cast_one, lt_sub_iff_add_lt', sub_add]
           convert h₁ using 1

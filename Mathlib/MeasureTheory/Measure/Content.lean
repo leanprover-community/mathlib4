@@ -190,7 +190,7 @@ theorem innerContent_iUnion_nat [R1Space G] ⦃U : ℕ → Set G⦄
   rwa [Opens.iSup_def] at this
 
 theorem innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K.map f f.continuous) = μ K)
-    (U : Opens G) : μ.innerContent (Opens.comap f.toContinuousMap U) = μ.innerContent U := by
+    (U : Opens G) : μ.innerContent (Opens.comap f U) = μ.innerContent U := by
   refine (Compacts.equiv f).surjective.iSup_congr _ fun K => iSup_congr_Prop image_subset_iff ?_
   intro hK
   simp only [Equiv.coe_fn_mk, Subtype.mk_eq_mk, Compacts.equiv]
@@ -200,7 +200,7 @@ theorem innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K
 theorem is_mul_left_invariant_innerContent [Group G] [TopologicalGroup G]
     (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_mul_left g) = μ K) (g : G)
     (U : Opens G) :
-    μ.innerContent (Opens.comap (Homeomorph.mulLeft g).toContinuousMap U) = μ.innerContent U := by
+    μ.innerContent (Opens.comap (Homeomorph.mulLeft g) U) = μ.innerContent U := by
   convert μ.innerContent_comap (Homeomorph.mulLeft g) (fun K => h g) U
 
 @[to_additive]
@@ -211,7 +211,7 @@ theorem innerContent_pos_of_is_mul_left_invariant [Group G] [TopologicalGroup G]
   rcases compact_covered_by_mul_left_translates K.2 this with ⟨s, hs⟩
   suffices μ K ≤ s.card * μ.innerContent U by
     exact (ENNReal.mul_pos_iff.mp <| hK.bot_lt.trans_le this).2
-  have : (K : Set G) ⊆ ↑(⨆ g ∈ s, Opens.comap (Homeomorph.mulLeft g).toContinuousMap U) := by
+  have : (K : Set G) ⊆ ↑(⨆ g ∈ s, Opens.comap (Homeomorph.mulLeft g : C(G, G)) U) := by
     simpa only [Opens.iSup_def, Opens.coe_comap, Subtype.coe_mk]
   refine (μ.le_innerContent _ _ this).trans ?_
   refine
@@ -310,7 +310,7 @@ variable [S : MeasurableSpace G] [BorelSpace G]
 
 /-- For the outer measure coming from a content, all Borel sets are measurable. -/
 theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
-  rw [@BorelSpace.measurable_eq G _ _]
+  rw [BorelSpace.measurable_eq (α := G)]
   refine MeasurableSpace.generateFrom_le ?_
   intro U hU
   rw [μ.outerMeasure_caratheodory]

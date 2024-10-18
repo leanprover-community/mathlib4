@@ -173,6 +173,9 @@ theorem comap_eq_top_iff {I : Ideal S} : I.comap f = ⊤ ↔ I = ⊤ :=
 theorem map_bot : (⊥ : Ideal R).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
+theorem ne_bot_of_map_ne_bot (hI : map f I ≠ ⊥) : I ≠ ⊥ :=
+  fun h => hI (Eq.mpr (congrArg (fun I ↦ map f I = ⊥) h) map_bot)
+
 variable (f I J K L)
 
 @[simp]
@@ -291,10 +294,10 @@ theorem map_iInf_comap_of_surjective (K : ι → Ideal S) : (⨅ i, (K i).comap 
   (giMapComap f hf).l_iInf_u _
 
 theorem mem_image_of_mem_map_of_surjective {I : Ideal R} {y} (H : y ∈ map f I) : y ∈ f '' I :=
-  Submodule.span_induction H (fun _ => id) ⟨0, I.zero_mem, map_zero f⟩
-    (fun _ _ ⟨x1, hx1i, hxy1⟩ ⟨x2, hx2i, hxy2⟩ =>
+  Submodule.span_induction (hx := H) (fun _ => id) ⟨0, I.zero_mem, map_zero f⟩
+    (fun _ _ _ _ ⟨x1, hx1i, hxy1⟩ ⟨x2, hx2i, hxy2⟩ =>
       ⟨x1 + x2, I.add_mem hx1i hx2i, hxy1 ▸ hxy2 ▸ map_add f _ _⟩)
-    fun c _ ⟨x, hxi, hxy⟩ =>
+    fun c _ _ ⟨x, hxi, hxy⟩ =>
     let ⟨d, hdc⟩ := hf c
     ⟨d * x, I.mul_mem_left _ hxi, hdc ▸ hxy ▸ map_mul f _ _⟩
 
@@ -480,8 +483,8 @@ theorem map_mul : map f (I * J) = map f I * map f J :=
         show (f (r * s)) ∈ map f I * map f J by
           rw [_root_.map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
     (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <|
-      Set.iUnion₂_subset fun i ⟨r, hri, hfri⟩ =>
-        Set.iUnion₂_subset fun j ⟨s, hsj, hfsj⟩ =>
+      Set.iUnion₂_subset fun _ ⟨r, hri, hfri⟩ =>
+        Set.iUnion₂_subset fun _ ⟨s, hsj, hfsj⟩ =>
           Set.singleton_subset_iff.2 <|
             hfri ▸ hfsj ▸ by rw [← _root_.map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
 
@@ -567,7 +570,7 @@ theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
 lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
     (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by
   ext x
-  simp [mem_ker, Ideal.mem_iInf, Function.funext_iff]
+  simp [mem_ker, Ideal.mem_iInf, funext_iff]
 
 @[simp]
 theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
