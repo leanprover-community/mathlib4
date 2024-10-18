@@ -2122,11 +2122,6 @@ theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace X] [Regul
   refine ⟨interior L, isOpen_interior, KL, A.trans LU, ?_⟩
   exact L_compact.closure_of_subset interior_subset
 
-@[deprecated WeaklyLocallyCompactSpace.locallyCompactSpace (since := "2023-09-03")]
-theorem locally_compact_of_compact [T2Space X] [CompactSpace X] :
-    LocallyCompactSpace X :=
-  inferInstance
-
 end LocallyCompactRegularSpace
 
 section T25
