@@ -48,10 +48,7 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
       (h : fi.comap (c.π.app i) = fj.comap (c.π.app j))
     obtain ⟨k, ki, kj, _⟩ := IsCofilteredOrEmpty.cone_objs i j
     refine ⟨⟨k⟩, ki.op, kj.op, ?_⟩
-    dsimp only [comp_obj, op_obj, functorToPresheaves_obj_obj, CompHausLike.coe_of,
-      Functor.comp_map, op_map, Quiver.Hom.unop_op, functorToPresheaves_obj_map]
-    -- Note: we might want to remove the `simps` attribute from `FintypeCat.toProfinite`; keeping
-    -- `toProfinite_obj` in the `dsimp` block above causes the following `ext` to fail.
+    dsimp
     ext x
     obtain ⟨x, hx⟩ := ((Profinite.epi_iff_surjective (c.π.app k)).mp inferInstance) x
     rw [← hx]
@@ -237,7 +234,7 @@ def isoFinYoneda : toProfinite.op ⋙ F ≅ finYoneda F :=
   NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F (toProfinite.obj X.unop)) fun _ ↦ by
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
-    simp only [toProfinite_obj, types_comp_apply, isoFinYonedaComponents_hom_apply, finYoneda_map,
+    simp only [types_comp_apply, isoFinYonedaComponents_hom_apply, finYoneda_map,
       op_obj, Function.comp_apply, ← FunctorToTypes.map_comp_apply]
     rfl
 
@@ -264,14 +261,14 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u+1))
   apply colimit.hom_ext
   intro ⟨Y, _, g⟩
   simp? [locallyConstantIsoFinYoneda, isoFinYoneda, counitApp] says
-    simp only [comp_obj, CostructuredArrow.proj_obj, op_obj, toProfinite_obj,
-      functorToPresheaves_obj_obj, CompHausLike.coe_of, isoFinYoneda, locallyConstantIsoFinYoneda,
-      finYoneda_obj, LocallyConstant.toFun_eq_coe, NatTrans.comp_app, pointwiseLeftKanExtension_obj,
-      lanPresheafExt_inv, Iso.trans_inv, Iso.symm_inv, whiskerLeft_comp, lanPresheafNatIso_hom_app,
-      Opposite.op_unop, colimit.map_desc, id_eq, Functor.comp_map, op_map, colimit.ι_desc,
-      Cocones.precompose_obj_pt, Profinite.Extend.cocone_pt, Cocones.precompose_obj_ι,
-      Category.assoc, const_obj_obj, whiskerLeft_app, NatIso.ofComponents_hom_app,
-      NatIso.ofComponents_inv_app, Profinite.Extend.cocone_ι_app, counitApp, colimit.ι_desc_assoc]
+    simp only [comp_obj, CostructuredArrow.proj_obj, op_obj, functorToPresheaves_obj_obj,
+      isoFinYoneda, locallyConstantIsoFinYoneda, finYoneda_obj, LocallyConstant.toFun_eq_coe,
+      NatTrans.comp_app, pointwiseLeftKanExtension_obj, lanPresheafExt_inv, Iso.trans_inv,
+      Iso.symm_inv, whiskerLeft_comp, lanPresheafNatIso_hom_app, Opposite.op_unop, colimit.map_desc,
+      id_eq, Functor.comp_map, op_map, colimit.ι_desc, Cocones.precompose_obj_pt,
+      Profinite.Extend.cocone_pt, Cocones.precompose_obj_ι, Category.assoc, const_obj_obj,
+      whiskerLeft_app, NatIso.ofComponents_hom_app, NatIso.ofComponents_inv_app,
+      Profinite.Extend.cocone_ι_app, counitApp, colimit.ι_desc_assoc]
   erw [(counitApp.{u, u+1} X).naturality]
   simp only [← Category.assoc]
   congr
@@ -318,8 +315,7 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
       (h : fi.comap (c.π.app i) = fj.comap (c.π.app j))
     obtain ⟨k, ki, kj, _⟩ := IsCofilteredOrEmpty.cone_objs i j
     refine ⟨⟨k⟩, ki.op, kj.op, ?_⟩
-    dsimp only [comp_obj, op_obj, functorToPresheaves_obj_obj, CompHausLike.coe_of,
-      Functor.comp_map, op_map, Quiver.Hom.unop_op, functorToPresheaves_obj_map]
+    dsimp
     ext x
     obtain ⟨x, hx⟩ := ((LightProfinite.epi_iff_surjective (c.π.app k)).mp inferInstance) x
     rw [← hx]
@@ -541,14 +537,13 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   intro ⟨Y, _, g⟩
   simp? [locallyConstantIsoFinYoneda, isoFinYoneda, counitApp] says
     simp only [comp_obj, CostructuredArrow.proj_obj, op_obj, functorToPresheaves_obj_obj,
-      toLightProfinite_obj_toTop_α, isoFinYoneda, locallyConstantIsoFinYoneda, finYoneda_obj,
-      LocallyConstant.toFun_eq_coe, NatTrans.comp_app, pointwiseLeftKanExtension_obj,
-      lanPresheafExt_inv, Iso.trans_inv, Iso.symm_inv, whiskerLeft_comp, lanPresheafNatIso_hom_app,
-      Opposite.op_unop, colimit.map_desc, id_eq, Functor.comp_map, op_map, colimit.ι_desc,
-      Cocones.precompose_obj_pt, LightProfinite.Extend.cocone_pt, Cocones.precompose_obj_ι,
-      Category.assoc, const_obj_obj, whiskerLeft_app, NatIso.ofComponents_hom_app,
-      NatIso.ofComponents_inv_app, LightProfinite.Extend.cocone_ι_app, counitApp,
-      colimit.ι_desc_assoc]
+      isoFinYoneda, locallyConstantIsoFinYoneda, finYoneda_obj, LocallyConstant.toFun_eq_coe,
+      NatTrans.comp_app, pointwiseLeftKanExtension_obj, lanPresheafExt_inv, Iso.trans_inv,
+      Iso.symm_inv, whiskerLeft_comp, lanPresheafNatIso_hom_app, Opposite.op_unop, colimit.map_desc,
+      id_eq, Functor.comp_map, op_map, colimit.ι_desc, Cocones.precompose_obj_pt,
+      LightProfinite.Extend.cocone_pt, Cocones.precompose_obj_ι, Category.assoc, const_obj_obj,
+      whiskerLeft_app, NatIso.ofComponents_hom_app, NatIso.ofComponents_inv_app,
+      LightProfinite.Extend.cocone_ι_app, counitApp, colimit.ι_desc_assoc]
   erw [(counitApp.{u, u} X).naturality]
   simp only [← Category.assoc]
   congr

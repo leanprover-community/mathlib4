@@ -302,8 +302,6 @@ theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
     isClosed_iInter fun x =>
       isClosed_iInter fun y =>
         isClosed_eq (continuous_apply _)
-          -- Porting note: proof was:
-          -- `((continuous_apply _).mul (continuous_apply _))`
           (by continuity)
 
 -- Porting note: split variables command over two lines, can't change explicitness at the same time
