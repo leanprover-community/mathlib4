@@ -136,7 +136,7 @@ theorem jacobson_pi_le : jacobson R (Π i, M i) ≤ Submodule.pi Set.univ (jacob
 
 /-- A product of modules with trivial Jacobson radical (e.g. simple modules) also has trivial
 Jacobson radical. -/
-theorem jacobson_pi_eq_bot (h : ∀ i, jacobson R (M i) = ⊥) : jacobson R (Π i, M i) = ⊥ :=
+theorem jacobson_pi_eq_bot (h : ∀ i, jacobson R (M i) = ⊥) : jacobson R (∀ i, M i) = ⊥ :=
   le_bot_iff.mp <| (jacobson_pi_le R M).trans <| by simp_rw [h, pi_univ_bot, le_rfl]
 
 end Module
@@ -249,8 +249,8 @@ theorem jacobson_idem : jacobson (jacobson I) = jacobson I :=
 theorem jacobson_top : jacobson (⊤ : Ideal R) = ⊤ :=
   eq_top_iff.2 le_jacobson
 
-theorem jacobson_bot : jacobson (⊥ : Ideal R) = Module.jacobson R R := by
-  simp_rw [jacobson, Module.jacobson, bot_le, true_and, isMaximal_def]
+theorem jacobson_bot : jacobson (⊥ : Ideal R) = Ring.jacobson R := by
+  simp_rw [jacobson, Ring.jacobson, Module.jacobson, bot_le, true_and, isMaximal_def]
 
 @[simp]
 theorem jacobson_eq_top_iff : jacobson I = ⊤ ↔ I = ⊤ :=

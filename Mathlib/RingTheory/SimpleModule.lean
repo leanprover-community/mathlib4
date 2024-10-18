@@ -256,6 +256,12 @@ proof_wanted _root_.LinearMap.isSemisimpleModule_of_injective (_ : Function.Inje
 proof_wanted _root_.LinearMap.isSemisimpleModule_of_surjective (_ : Function.Surjective l)
     [IsSemisimpleModule R M'] : IsSemisimpleModule S N'
 
+theorem _root_.Module.IsTorsionBySet.isSemisimpleModule_iff {I : Ideal R} [I.IsTwoSided]
+    (h : Module.IsTorsionBySet R M' I) : let _ := h.module
+    IsSemisimpleModule (R ⧸ I) M' ↔ IsSemisimpleModule R M' :=
+  let _ := h.module
+  (h.semilinearMap.isSemisimpleModule_iff_of_bijective Function.bijective_id).symm
+
 end
 
 end IsSemisimpleModule
@@ -295,6 +301,22 @@ lemma isSemisimpleModule_of_isSemisimpleModule_submodule' {p : ι → Submodule 
     (hp : ∀ i, IsSemisimpleModule R (p i)) (hp' : ⨆ i, p i = ⊤) :
     IsSemisimpleModule R M :=
   isSemisimpleModule_of_isSemisimpleModule_submodule (s := Set.univ) (fun i _ ↦ hp i) (by simpa)
+
+instance {ι} (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+    [∀ i, IsSemisimpleModule R (M i)] : IsSemisimpleModule R (Π₀ i, M i) := by
+  classical
+  exact isSemisimpleModule_of_isSemisimpleModule_submodule'
+    (fun _ ↦ .range _) DFinsupp.iSup_range_lsingle
+
+theorem isSemisimpleModule_iff_exists_linearEquiv_dfinsupp : IsSemisimpleModule R M ↔
+    ∃ (s : Set (Submodule R M)) (_ : M ≃ₗ[R] Π₀ m : s, m.1), ∀ m : s, IsSimpleModule R m.1 := by
+  refine ⟨fun _ ↦ ?_, fun ⟨s, e, h⟩ ↦ .congr e⟩
+  have ⟨s, ind, sSup, simple⟩ := IsSemisimpleModule.exists_setIndependent_sSup_simples_eq_top R M
+  rw [CompleteLattice.setIndependent_iff] at ind
+  refine ⟨s, ?_, SetCoe.forall.mpr simple⟩
+  classical
+  exact .symm <| .trans (.ofInjective _ ind.dfinsupp_lsum_injective) <| .trans (.ofEq _ ⊤ <|
+    by rw [← Submodule.iSup_eq_range_dfinsupp_lsum, ← sSup, sSup_eq_iSup']) Submodule.topEquiv
 
 open LinearMap in
 instance {ι} [Finite ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]

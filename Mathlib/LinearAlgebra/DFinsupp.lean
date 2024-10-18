@@ -89,6 +89,9 @@ def lapply (i : ι) : (Π₀ i, M i) →ₗ[R] M i where
 theorem lapply_apply (i : ι) (f : Π₀ i, M i) : (lapply i : (Π₀ i, M i) →ₗ[R] _) f = f i :=
   rfl
 
+theorem injective_pi_lapply : Function.Injective (LinearMap.pi (R := R) <| lapply (M := M)) :=
+  fun _ _ h ↦ ext fun _ ↦ congr_fun h _
+
 section Lsum
 
 -- Porting note: Unclear how true these docstrings are in lean 4
@@ -158,6 +161,14 @@ with `DFinsupp.lsum_apply_apply`. -/
 theorem lsum_single [Semiring S] [Module S N] [SMulCommClass R S N] (F : ∀ i, M i →ₗ[R] N) (i)
     (x : M i) : lsum S (M := M) F (single i x) = F i x := by
   simp
+
+theorem lsum_lsingle : lsum ℕ (lsingle (R := R) (M := M)) = .id :=
+  lhom_ext (lsum_single _ _)
+
+theorem iSup_range_lsingle : ⨆ i, LinearMap.range (lsingle (R := R) (M := M) i) = ⊤ :=
+  top_le_iff.mp fun m _ ↦ by
+    rw [← LinearMap.id_apply (R := R) m, ← lsum_lsingle]
+    refine dfinsupp_sumAddHom_mem _ _ _ fun i _ ↦ Submodule.mem_iSup_of_mem i ⟨_, rfl⟩
 
 end Lsum
 
