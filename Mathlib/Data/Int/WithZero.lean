@@ -3,7 +3,7 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Data.NNReal.Basic
+import Mathlib.Data.NNReal.Defs
 
 /-!
 # WithZero
