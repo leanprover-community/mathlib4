@@ -1515,6 +1515,10 @@ lemma zpow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective fun 
 @[simp] lemma zpow_right_inj₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n :=
   (zpow_right_injective₀ ha₀ ha₁).eq_iff
 
+lemma eq_zero_of_zpow_eq_one₀ (ha₀: 0 < a) (ha₁ : a ≠ 1) {n : ℤ}: a ^ n = 1 ↔ n = 0 := by
+  rw [← pow_zero a, ← zpow_natCast a (n := 0)]
+  apply zpow_right_inj₀ ha₀ ha₁
+
 end GroupWithZero.LinearOrder
 
 section CommSemigroupHasZero

@@ -243,23 +243,20 @@ lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
 lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
 
-lemma eq_zero_of_zero_zpow_eq_one₀ {n : ℤ} (ha : (0 : α) ^ n = 1) : n = 0 := by
-  wlog hn : 0 ≤ n
-  · rw [← Int.neg_eq_zero]
+lemma eq_zero_of_zero_zpow_eq_one₀ {n : ℤ} : (0 : α) ^ n = 1 ↔ n = 0 := by
+  constructor
+  · intro h
+    wlog hn : 0 ≤ n
+    rw [← Int.neg_eq_zero]
     apply this (α := α)
     · simpa
     · omega
-  have : n.toNat = 0 := eq_zero_of_zero_pow_eq_one₀ (M₀ := α).mp <| by
-    rwa [← zpow_natCast, Int.toNat_of_nonneg hn]
-  omega
-
-lemma eq_zero_of_zpow_eq_one₀ (ha : a < 1) {n : ℤ} (han : a ^ n = 1) : n = 0 := by
-  by_cases hzero : a = 0
-  · subst hzero
-    exact eq_zero_of_zero_zpow_eq_one₀ han
-  · apply le_antisymm <;>
-    · apply (zpow_le_zpow_iff_right_of_lt_one₀ (zero_lt_iff.mpr hzero) ha).mp
-      simp [han]
+    have : n.toNat = 0 := eq_zero_of_zero_pow_eq_one₀ (M₀ := α).mp <| by
+      rwa [← zpow_natCast, Int.toNat_of_nonneg hn]
+    omega
+  · intro h
+    rw [h]
+    exact zpow_zero 0
 
 end LinearOrderedCommGroupWithZero
 
