@@ -109,7 +109,7 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     rw [this] at h
     have : I (e x) ∈ I.symm ⁻¹' e.target ∩ range I := by simp only [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
-    convert (h.comp' _ (this.of_le le_top)).mono_of_mem _ using 1
+    convert (h.comp_inter _ (this.of_le le_top)).mono_of_mem _ using 1
     · ext y; simp only [mfld_simps]
     refine mem_nhdsWithin.mpr
       ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
@@ -517,7 +517,7 @@ theorem contMDiffOn_iff_target :
   constructor
   · refine fun h' y => ⟨?_, fun x _ => h' x y⟩
     have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
-    convert (h''.comp' (chartAt H' y).continuousOn_toFun).comp' h
+    convert (h''.comp_inter (chartAt H' y).continuousOn_toFun).comp_inter h
     simp
   · exact fun h' x y => (h' y).2 x 0
 
