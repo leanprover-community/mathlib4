@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Logic.Unique
+import Mathlib.Tactic.wlog
 
 /-!
 # Groups with an adjoined zero element
@@ -398,6 +399,21 @@ lemma zero_zpow_eq (n : ℤ) : (0 : G₀) ^ n = if n = 0 then 1 else 0 := by
   split_ifs with h
   · rw [h, zpow_zero]
   · rw [zero_zpow _ h]
+
+lemma eq_zero_of_zero_zpow_eq_one₀ {n : ℤ} : (0 : G₀) ^ n = 1 ↔ n = 0 := by
+  constructor
+  · intro h
+    wlog hn : 0 ≤ n
+    rw [← Int.neg_eq_zero]
+    apply this (G₀ := G₀)
+    · simpa
+    · omega
+    have : n.toNat = 0 := eq_zero_of_zero_pow_eq_one₀ (M₀ := G₀).mp <| by
+      rwa [← zpow_natCast, Int.toNat_of_nonneg hn]
+    omega
+  · intro h
+    rw [h]
+    exact zpow_zero 0
 
 lemma zpow_add_one₀ (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
   | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
