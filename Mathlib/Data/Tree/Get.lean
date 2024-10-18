@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
 import Mathlib.Data.Num.Basic
+import Mathlib.Data.Ordering.Basic
 import Mathlib.Data.Tree.Basic
 
 /-!

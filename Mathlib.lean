@@ -2427,6 +2427,7 @@ import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.NNRat.Order
 import Mathlib.Data.NNReal.Basic
 import Mathlib.Data.NNReal.Star
+import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise
