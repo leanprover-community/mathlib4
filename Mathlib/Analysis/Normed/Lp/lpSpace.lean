@@ -3,6 +3,7 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
+import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
@@ -737,6 +738,10 @@ instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
             mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
               (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
 
+instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
+    NonUnitalNormedCommRing (lp B ∞) where
+  mul_comm _ _ := ext <| mul_comm ..
+
 -- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for mathlib3 #13719
 instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
     [∀ i, IsScalarTower 𝕜 (B i) (B i)] : IsScalarTower 𝕜 (lp B ∞) (lp B ∞) :=
@@ -841,12 +846,8 @@ section NormedCommRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
 
-instance inftyCommRing : CommRing (lp B ∞) :=
-  { lp.inftyRing with
-    mul_comm := fun f g => by ext; simp only [lp.infty_coeFn_mul, Pi.mul_apply, mul_comm] }
-
-instance inftyNormedCommRing : NormedCommRing (lp B ∞) :=
-  { lp.inftyCommRing, lp.inftyNormedRing with }
+instance inftyNormedCommRing : NormedCommRing (lp B ∞) where
+  mul_comm := mul_comm
 
 end NormedCommRing
 
@@ -1101,6 +1102,28 @@ instance completeSpace : CompleteSpace (lp E p) :=
 end Topology
 
 end lp
+
+section CStarAlgebra
+
+variable {I : Type*} {B : I → Type*}
+
+instance [∀ i, NonUnitalCStarAlgebra (B i)] : NonUnitalCStarAlgebra (lp B ∞) where
+
+instance [∀ i, NonUnitalCommCStarAlgebra (B i)] : NonUnitalCommCStarAlgebra (lp B ∞) where
+  mul_comm := mul_comm
+
+-- it's slightly weird that we need the `Nontrivial` instance here
+-- it's because we have no way to say that `‖(1 : B i)‖` is uniformly bounded as a type class
+-- aside from `∀ i, NormOneClass (B i)`, this holds automatically for C⋆-algebras though.
+instance [∀ i, Nontrivial (B i)] [∀ i, CStarAlgebra (B i)] : NormedRing (lp B ∞) where
+  dist_eq := dist_eq_norm
+  norm_mul := norm_mul_le
+
+instance [∀ i, Nontrivial (B i)] [∀ i, CommCStarAlgebra (B i)] : CommCStarAlgebra (lp B ∞) where
+  mul_comm := mul_comm
+
+end CStarAlgebra
+
 
 section Lipschitz
 
