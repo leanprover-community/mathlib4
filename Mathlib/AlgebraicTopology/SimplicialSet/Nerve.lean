@@ -72,38 +72,9 @@ variable {C : Type*} [Category C] {n : ℕ}
 
 lemma δ₀_eq {x : nerve C _[n + 1]} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ₀ := rfl
 
-end Nerve
-
-namespace SSet
-variable (X : SSet.{u})
-
-/-- A simplicial set `X` satisfies the strict segal condition if its simplices are uniquely
-determined by their spine.-/
-def StrictSegal : Prop := ∀ (n : ℕ), Function.Bijective (X.spine (n := n))
-
-variable {X} in
-@[simp]
-noncomputable def StrictSegal.spineToSimplex {hX : StrictSegal X} {n : ℕ} : Path X n → X _[n] :=
-  (Equiv.ofBijective _ (hX n)).invFun
-
-@[simp]
-theorem StrictSegal.spineToSimplex_spine {hX : StrictSegal X} {n : ℕ} (f : Path X n) :
-    X.spine n (StrictSegal.spineToSimplex (hX := hX) f) = f :=
-  (Equiv.ofBijective _ (hX n)).right_inv f
-
-@[simp]
-theorem StrictSegal.spineToSimplex_vertex {hX : StrictSegal X} {n : ℕ}
-    (i : Fin (n + 1)) (f : Path X n) :
-    X.map (const [0] [n] i).op (StrictSegal.spineToSimplex (hX := hX) f) = f.vertex i := by
-  rw [← spine_vertex, spineToSimplex_spine]
-
-end SSet
-
-namespace Nerve
-
 /-- Simplices in the nerve of categories are uniquely determined by their spine. Indeed, this
 property describes the essential image of the nerve functor.-/
-theorem strictSegal (C : Type u) [Category.{v} C] : SSet.StrictSegal (nerve C) := by
+theorem strictSegal (C : Type u) [Category.{v} C] : StrictSegal (nerve C) := by
   intro n
   constructor
   · intro Δ Δ' h
@@ -122,29 +93,6 @@ theorem strictSegal (C : Type u) [Category.{v} C] : SSet.StrictSegal (nerve C) :
       · exact Functor.congr_obj (F.arrow_tgt i).symm 0
       · dsimp
         apply ComposableArrows.mkOfObjOfMapSucc_map_succ
-
--- /-- Simplices in the nerve of categories are uniquely determined by their spine. Indeed, this
--- property describes the essential image of the nerve functor.-/
--- lemma spine_nerve_bijective (C : Type u) [Category.{v} C] (n : ℕ) :
---     Function.Bijective ((nerve C).spine (n := n)) := by
---   constructor
---   · intro Δ Δ' h
---     exact ComposableArrows.ext
---       (fun i ↦ Functor.congr_obj (congr_fun (congr_arg Path.vertex h) i) 0)
---       (fun i hi ↦
---         Functor.congr_hom (congr_fun (congr_arg Path.arrow h) ⟨i, hi⟩) (show 0 ⟶ 1 by tauto))
---   · intro F
---     refine ⟨ComposableArrows.mkOfObjOfMapSucc (fun i ↦ (F.vertex i).obj 0)
---       (fun i ↦ eqToHom (Functor.congr_obj (F.arrow_src i).symm 0) ≫
---         (F.arrow i).map' 0 1 ≫ eqToHom (Functor.congr_obj (F.arrow_tgt i) 0)), ?_⟩
---     ext i
---     · exact ComposableArrows.ext₀ rfl
---     · refine ComposableArrows.ext₁ ?_ ?_ ?_
---       · exact Functor.congr_obj (F.arrow_src i).symm 0
---       · exact Functor.congr_obj (F.arrow_tgt i).symm 0
---       · dsimp
---         apply ComposableArrows.mkOfObjOfMapSucc_map_succ
-
 
 end Nerve
 
@@ -291,6 +239,26 @@ def fact.map.arr {n}
     | 0 => rfl
     | 1 => rfl
 
+@[simp]
+private
+noncomputable def ran.lift {X : SSet.{u}} {hX : StrictSegal X} {n}
+    (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
+      (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt) : X _[n] := by
+  refine StrictSegal.spineToSimplex (hX := hX) ?_
+  exact {
+        vertex := fun i ↦ s.π.app (pt i) x
+        arrow := fun i ↦ s.π.app (ar i) x
+        arrow_src := fun i ↦ ran.lift.arrow_src s x
+        arrow_tgt := fun i ↦ ran.lift.arrow_tgt s x
+  }
+
+/-- Maybe this is the theorem I need? Let's try to use it first.-/
+theorem ran.lift.map {X : SSet.{u}} {hX : StrictSegal X} {n}
+  (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
+      (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt)
+      (j k : Fin (n + 1)) (hjk : j ⟶ k) :
+      X.map (mkOfLe _ _ hjk.le).op (ran.lift (hX := hX) s x) = s.π.app (ar' hjk) x := sorry
+
 -- TODO: State and prove the analog of this.
 -- theorem ran.lift.map {C : Cat} {n}
 --     (s : Cone (StructuredArrow.proj (op [n])
@@ -345,10 +313,59 @@ noncomputable def rightExtensionInclusion₂IsPointwiseRightKanExtensionAt
         rw [← eq]
         rfl
       · simp only [spine_arrow, id_eq, types_comp_apply]
-        simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
+        simp only [← FunctorToTypes.map_comp_apply]
+        have : j.hom.unop.op = j.hom := by exact rfl
+        rw [← this]
+        simp only [← op_comp]
+        have ceq : mkOfSucc i ≫ j.hom.unop = mkOfLe _ _ (strArr.homEv.map j i).le := by
+          simp [strArr.homEv, strArr.homEvSucc, mkOfSucc, mkOfLe]
+          ext i : 3
+          simp at i
+          match i with
+          | 0 => rfl
+          | 1 => rfl
+        rw [ceq]
+
+
+        rw [StrictSegal.spineToSimplex_edge]
+
+        unfold StrictSegal.spineToDiagonal
+
+        have nat := congr_fun (s.π.naturality (fact.map.arr j i)) x
+        unfold fact.map.arr at nat
+        simp at nat
+        rw [← nat]
+        rw [← ran.lift.map (hX := hX)]
+        unfold diagonal
+        congr 1
+
+        unfold ran.lift strArr.homEv strArr.homEvSucc mkOfDiag mkOfLe Path.interval ar pt
+        congr
+        congr 1
+
+        simp
+        congr 2
+
+
+        congr 1
+
+        simp
+
+
+
+
+
+
+
+
+
+        simp
+
+
 
         -- rw [ran.lift.map]
         -- have nat := congr_fun (s.π.naturality (fact.map.arr j (Fin.mk i hi))) x
+
         -- have := congr_arg_heq (·.map' 0 1) <| nat
         -- refine (conj_eqToHom_iff_heq' _ _ _ _).2 ?_
         -- simpa only [Int.reduceNeg, StructuredArrow.proj_obj, op_obj, id_eq, Int.Nat.cast_ofNat_Int,

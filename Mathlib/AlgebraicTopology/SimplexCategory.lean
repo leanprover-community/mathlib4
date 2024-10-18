@@ -219,6 +219,12 @@ def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n]
       | 0, 1, _ => h
   }
 
+/-- The morphism `[1] ⟶ [n]` that picks out the "diagonal composite" edge-/
+def mkOfDiag (n : ℕ) : ([1] : SimplexCategory) ⟶ [n] := by
+  refine mkOfLe 0 n ?_
+  apply Fin.mk_le_mk.mpr
+  exact StrictMono.minimal_preimage_bot (fun ⦃a b⦄ a ↦ a) rfl (n % (n + 1))
+
 /-- The morphism `[1] ⟶ [n]` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`.-/
 def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
   SimplexCategory.mkHom {
@@ -227,6 +233,15 @@ def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
       | 0, 0, _ | 1, 1, _ => le_rfl
       | 0, 1, _ => Fin.castSucc_le_succ i
   }
+
+@[simp]
+lemma mkOfSucc_homToOrderHom_zero {n} (i : Fin n) : Hom.toOrderHom (mkOfSucc i) 0 = i.castSucc :=
+  rfl
+
+@[simp]
+lemma mkOfSucc_homToOrderHom_one {n} (i : Fin n) : Hom.toOrderHom (mkOfSucc i) 1 = i.succ := by
+  unfold mkOfSucc
+  dsimp
 
 /-- The morphism `[2] ⟶ [n]` that picks out a specified composite of morphisms in `Fin (n+1)`.-/
 def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
@@ -239,6 +254,16 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
       | 1, 2, _ => h₂
       | 0, 2, _ => Fin.le_trans h₁ h₂
   }
+
+/-- The "inert" morphism associated to a subinterval `j ≤ i ≤ k` of `Fin (n + 1)`.-/
+def subinterval {n} (j k: Fin (n + 1)) (hjk : j ≤ k) : ([k - j] : SimplexCategory) ⟶ [n] :=
+SimplexCategory.mkHom {
+    toFun := fun i => ⟨i.1 + j.1, (by omega)⟩
+    monotone' := by
+      intro i i' hii'
+      simp only [Fin.mk_le_mk, add_le_add_iff_right, Fin.val_fin_le]
+      exact hii'
+}
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)

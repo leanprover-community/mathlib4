@@ -448,7 +448,6 @@ section Spine
 
 variable (X : SSet.{u})
 
-
 /-- A path in a simplicial set `X` of length `n` is a directed path of `n` edges.-/
 @[ext]
 structure Path (n : ℕ) where
@@ -457,12 +456,30 @@ structure Path (n : ℕ) where
   arrow_src (i : Fin n) : X.δ 1 (arrow i) = vertex i.castSucc
   arrow_tgt (i : Fin n) : X.δ 0 (arrow i) = vertex i.succ
 
--- def Path.map {m n : ℕ} (α : ([m] : SimplexCategory) ⟶ [n]) : X.Path n ⟶ X.Path m := fun σ ↦
---   { vertex := fun i ↦ σ.vertex (Hom.toOrderHom α i)
---     arrow := fun i ↦ by sorry
---     arrow_src := sorry
---     arrow_tgt := sorry}
-
+/-- For `j ≤ k ≤ n`, a path of length `n` restricts to a path of length `k-j`, namely the subpath
+spanned by the vertices `j ≤ i ≤ k` and edges `j ≤ i < k`. -/
+def Path.interval {n : ℕ} (f : Path X n) (j k : ℕ) (hjk : j ≤ k) (hkn : k ≤ n)
+    : Path X (k - j) where
+  vertex i := f.vertex (Fin.addNat i j)
+  arrow i := f.arrow ⟨Fin.addNat i j, (by omega)⟩
+  arrow_src i := by
+    have eq := f.arrow_src ⟨Fin.addNat i j, (by omega)⟩
+    simp_rw [eq]
+    congr 1
+    apply Fin.eq_of_val_eq
+    simp only [Fin.coe_addNat, Fin.coe_castSucc, Fin.val_natCast]
+    have : i.1 + j < n + 1 := by omega
+    have : (↑i + j) % (n + 1) = i.1 + j := by exact Nat.mod_eq_of_lt this
+    rw [this]
+  arrow_tgt i := by
+    have eq := f.arrow_tgt ⟨Fin.addNat i j, (by omega)⟩
+    simp_rw [eq]
+    congr 1
+    apply Fin.eq_of_val_eq
+    simp only [Fin.coe_addNat, Fin.succ_mk, Fin.val_succ, Fin.val_natCast]
+    have : i.1 + 1 + j < n + 1 := by omega
+    have : (i.1 + 1 + j) % (n + 1) = i.1 + 1 + j := by exact Nat.mod_eq_of_lt this
+    rw [this, Nat.add_right_comm]
 
 /-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed by
 traversing through its vertices in order.-/
@@ -470,7 +487,6 @@ traversing through its vertices in order.-/
 def spine (n : ℕ) (Δ : X _[n]) : X.Path n where
   vertex i := X.map (SimplexCategory.const [0] [n] i).op Δ
   arrow i := X.map (SimplexCategory.mkOfSucc i).op Δ
-    -- X.map (SimplexCategory.mkOfLe _ _ i.castSucc_le_succ).op Δ
   arrow_src i := by
     dsimp [SimplicialObject.δ]
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
@@ -488,17 +504,115 @@ def spine (n : ℕ) (Δ : X _[n]) : X.Path n where
     fin_cases j
     rfl
 
--- variable {X} in
--- theorem spine_naturality {m n : ℕ} (α : ([m] : SimplexCategory) ⟶ [n]) :
---     spine X n ≫ Path.map X α = X.map α.op ≫ spine X m := by
---   ext Δ i
---   · dsimp
---     rw [← FunctorToTypes.map_comp_apply]
---     rfl
---   · dsimp
---     rw [← FunctorToTypes.map_comp_apply]
---     have := X.map (α.op ≫ (mkOfSucc i).op)
---     sorry
+variable {X} in
+/-- The diagonal of a simplex is the long edge of the simplex.-/
+def diagonal {n : ℕ} (Δ : X _[n]) : X _[1] := X.map ((mkOfDiag n).op) Δ
+
+/-- A simplicial set `X` satisfies the strict Segal condition if its simplices are uniquely
+determined by their spine.-/
+def StrictSegal : Prop := ∀ (n : ℕ), Function.Bijective (X.spine (n := n))
+
+namespace StrictSegal
+variable {X : SSet.{u}} {hX : StrictSegal X} {n : ℕ}
+
+/-- In the presence of the strict Segal condition, a path of length `n` extends to an `n`-simplex
+whose spine is that path.-/
+@[simp]
+noncomputable def spineToSimplex : Path X n → X _[n] :=
+  (Equiv.ofBijective _ (hX n)).invFun
+
+@[simp]
+theorem spineToSimplex_spine (f : Path X n) :
+    X.spine n (StrictSegal.spineToSimplex (hX := hX) f) = f :=
+  (Equiv.ofBijective _ (hX n)).right_inv f
+
+@[simp]
+theorem spineToSimplex_vertex (i : Fin (n + 1)) (f : Path X n) :
+    X.map (const [0] [n] i).op (spineToSimplex (hX := hX) f) = f.vertex i := by
+  rw [← spine_vertex, spineToSimplex_spine]
+
+@[simp]
+theorem spineToSimplex_spine_edge (i : Fin n) (f : Path X n) :
+    X.map (mkOfSucc i).op (spineToSimplex (hX := hX) f) = f.arrow i := by
+  rw [← spine_arrow, spineToSimplex_spine]
+
+/-- In the presence of the strict Segal condition, a path of length `n` can be "composed" by taking
+the diagonal edge of the resulting `n`-simplex.-/
+noncomputable def spineToDiagonal (f : Path X n) : X _[1] := diagonal (spineToSimplex (hX := hX) f)
+
+@[simp]
+theorem spineToSimplex_interval (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n) :
+    X.map (subinterval j k hjk).op (spineToSimplex (hX := hX) f) =
+      spineToSimplex (hX := hX) (Path.interval X f _ _ hjk (Nat.le_of_lt_succ k.2)) := by
+  apply (hX _).injective
+  rw [StrictSegal.spineToSimplex_spine]
+  ext i
+  · unfold Path.interval
+    simp only [mkHom, Equiv.invFun_as_coe, spine_vertex, Fin.coe_addNat]
+    simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
+    simp only [const_comp, len_mk]
+    unfold subinterval
+    simp only [spineToSimplex_vertex]
+    congr 1
+    apply Fin.eq_of_val_eq
+    simp
+    have : i.1 + j < n + 1 := by omega
+    have : (i.1 + j) % (n + 1) = i.1 + j := by exact Nat.mod_eq_of_lt this
+    rw [this]
+  · unfold Path.interval
+    simp only [Equiv.invFun_as_coe, spine_arrow, Fin.coe_addNat]
+    simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
+    have ceq : mkOfSucc i ≫ subinterval j k hjk = mkOfSucc ⟨i + j, (by omega)⟩ := by
+      ext ⟨e, he⟩ : 3
+      simp at he
+      unfold subinterval
+      match e with
+      | 0 => rfl
+      | 1 => ?_
+      conv_rhs =>
+        apply mkOfSucc_homToOrderHom_one
+      simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, Fin.mk_one,
+        Fin.isValue, OrderHom.comp_coe, OrderHom.coe_mk, Function.comp_apply, Fin.succ_mk,
+        Fin.mk.injEq]
+      exact Nat.succ_add_eq_add_succ ↑i ↑j
+    rw [ceq]
+    simp only [spineToSimplex_spine_edge]
+
+@[simp]
+theorem spineToSimplex_edge (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n) :
+    X.map (mkOfLe j k hjk).op (spineToSimplex (hX := hX) f) =
+      spineToDiagonal (hX := hX) (Path.interval X f _ _ hjk (Nat.le_of_lt_succ k.2)) := by
+  have := spineToSimplex_interval (hX := hX) j k hjk f
+
+
+
+
+  sorry
+
+@[simp]
+theorem spineToSimplex_comp_edge (j : Fin (n + 1)) (hj2 : j.1 + 2 < n + 1) (f : Path X n) :
+    X.map (mkOfLe j ⟨j + 2, hj2⟩ (Nat.le_add_right j 2)).op (spineToSimplex (hX := hX) f) =
+      spineToDiagonal (hX := hX)
+        (Path.interval X f j (j + 2) (Nat.le_add_right j 2) (Nat.le_of_lt_succ hj2)) := by
+  have σ : ([2] : SimplexCategory) ⟶ [n] :=
+    mkOfLeComp j ⟨j + 1, (by omega)⟩ ⟨j + 2, hj2⟩ (Nat.le_add_right _ 1) (Nat.le_add_right _ 1)
+  sorry
+
+
+@[simp]
+theorem spineToSimplex_edge' (j : Fin (n + 1)) (k : ℕ) (hjk : j.1 + k < n + 1) (f : Path X n) :
+    X.map (mkOfLe j ⟨j.1 + k, hjk⟩ (Nat.le_add_right j k)).op (spineToSimplex (hX := hX) f) =
+      spineToDiagonal (hX := hX)
+        (Path.interval X f j (j + k) (Nat.le_add_right j k) (Nat.le_of_lt_succ hjk)) := by
+  unfold spineToDiagonal
+  simp
+  sorry
+
+
+
+
+
+end StrictSegal
 
 
 end Spine
