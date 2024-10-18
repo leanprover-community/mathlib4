@@ -396,7 +396,7 @@ theorem smul_apply {x : HahnSeries Γ R} {s : SummableFamily Γ' V α} {a : α} 
   rfl
 
 @[simp]
-theorem hsum_smul' {R} {V} [Semiring R] [AddCommMonoid V] [Module R V] {x : HahnSeries Γ R}
+theorem hsum_smul_module {R} {V} [Semiring R] [AddCommMonoid V] [Module R V] {x : HahnSeries Γ R}
     {s : SummableFamily Γ' V α} :
     (x • s).hsum = (HahnModule.of R).symm (x • HahnModule.of R s.hsum) := by
   rw [smul_eq, hsum_equiv, hsum_family_smul, hsum_single]
@@ -419,7 +419,7 @@ instance [AddCommMonoid V] [Module R V] : Module (HahnSeries Γ R) (SummableFami
 
 theorem hsum_smul {x : HahnSeries Γ R} {s : SummableFamily Γ R α} :
     (x • s).hsum = x * s.hsum := by
-  rw [hsum_smul', of_symm_smul_of_eq_mul]
+  rw [hsum_smul_module, of_symm_smul_of_eq_mul]
 
 /-- The summation of a `summable_family` as a `LinearMap`. -/
 @[simps]
