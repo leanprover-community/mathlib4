@@ -63,7 +63,7 @@ theorem pi_eq_zero (f : (i : ι) → M₂ →ₗ[R] φ i) : pi f = 0 ↔ ∀ i, 
   simp only [LinearMap.ext_iff, pi_apply, funext_iff]
   exact ⟨fun h a b => h b a, fun h a b => h b a⟩
 
-theorem pi_zero : pi (fun i => 0 : (i : ι) → M₂ →ₗ[R] φ i) = 0 := by ext; rfl
+theorem pi_zero : pi (fun _ => 0 : (i : ι) → M₂ →ₗ[R] φ i) = 0 := by ext; rfl
 
 theorem pi_comp (f : (i : ι) → M₂ →ₗ[R] φ i) (g : M₃ →ₗ[R] M₂) :
     (pi f).comp g = pi fun i => (f i).comp g :=
@@ -462,8 +462,8 @@ def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) �
     [(i : Option ι) → Module R (M i)] :
     ((i : Option ι) → M i) ≃ₗ[R] M none × ((i : ι) → M (some i)) :=
   { Equiv.piOptionEquivProd with
-    map_add' := by simp [Function.funext_iff]
-    map_smul' := by simp [Function.funext_iff] }
+    map_add' := by simp [funext_iff]
+    map_smul' := by simp [funext_iff] }
 
 variable (ι M) (S : Type*) [Fintype ι] [DecidableEq ι] [Semiring S] [AddCommMonoid M]
   [Module R M] [Module S M] [SMulCommClass R S M]

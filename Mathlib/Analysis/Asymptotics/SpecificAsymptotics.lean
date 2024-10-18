@@ -107,11 +107,9 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
       (add_le_add le_rfl (norm_sum_le_of_le _ fun i hi => hN _ (mem_Ico.1 hi).1))
     _ ≤ ‖∑ i ∈ range N, f i‖ + ∑ i ∈ range n, ε / 2 * g i := by
       gcongr
-      apply sum_le_sum_of_subset_of_nonneg
+      · exact fun i _ _ ↦ mul_nonneg (half_pos εpos).le (hg i)
       · rw [range_eq_Ico]
         exact Ico_subset_Ico (zero_le _) le_rfl
-      · intro i _ _
-        exact mul_nonneg (half_pos εpos).le (hg i)
     _ ≤ ε / 2 * ‖∑ i ∈ range n, g i‖ + ε / 2 * ∑ i ∈ range n, g i := by rw [← mul_sum]; gcongr
     _ = ε * ‖∑ i ∈ range n, g i‖ := by
       simp only [B]

@@ -74,6 +74,17 @@ theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
     (x + y) ^ n = ∑ m ∈ range (n + 1), x ^ m * y ^ (n - m) * n.choose m :=
   (Commute.all x y).add_pow n
 
+/-- A special case of the **binomial theorem** -/
+theorem sub_pow [CommRing R] (x y : R) (n : ℕ) :
+    (x - y) ^ n = ∑ m ∈ range (n + 1), (-1) ^ (m + n) * x ^ m * y ^ (n - m) * n.choose m := by
+  rw [sub_eq_add_neg, add_pow]
+  congr! 1 with m hm
+  have : (-1 : R) ^ (n - m) = (-1) ^ (n + m) := by
+    rw [mem_range] at hm
+    simp [show n + m = n - m + 2 * m by omega, pow_add]
+  rw [neg_pow, this]
+  ring
+
 namespace Nat
 
 /-- The sum of entries in a row of Pascal's triangle -/
@@ -113,7 +124,7 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
   calc
     4 ^ n = (1 + 1) ^ (2 * n) := by norm_num [pow_mul]
     _ = ∑ m ∈ range (2 * n + 1), (2 * n).choose m := by set_option simprocs false in simp [add_pow]
-    _ ≤ ∑ m ∈ range (2 * n + 1), (2 * n).choose (2 * n / 2) := by gcongr; apply choose_le_middle
+    _ ≤ ∑ _ ∈ range (2 * n + 1), (2 * n).choose (2 * n / 2) := by gcongr; apply choose_le_middle
     _ = (2 * n + 1) * choose (2 * n) n := by simp
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `Icc`. -/
@@ -181,7 +192,7 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
   rw [sum_powerset_neg_one_pow_card]
   exact if_neg (nonempty_iff_ne_empty.mp h0)
 
-variable {M R : Type*} [CommMonoid M] [NonAssocSemiring R]
+variable [NonAssocSemiring R]
 
 @[to_additive sum_choose_succ_nsmul]
 theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :

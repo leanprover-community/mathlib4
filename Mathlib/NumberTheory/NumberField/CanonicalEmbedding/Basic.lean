@@ -57,7 +57,7 @@ that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`. -/
 theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
-  refine Submodule.span_induction hx ?_ ?_ (fun _ _ hx hy => ?_) (fun a _ hx => ?_)
+  refine Submodule.span_induction ?_ ?_ (fun _ _ _ _ hx hy => ?_) (fun a _ _ hx => ?_) hx
   · rintro _ ⟨x, rfl⟩
     rw [apply_at, apply_at, ComplexEmbedding.conjugate_coe_eq]
   · rw [Pi.zero_apply, Pi.zero_apply, map_zero]
@@ -100,7 +100,7 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
       exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (heq x).mpr hx2⟩
 
-open Module Fintype FiniteDimensional
+open Module Fintype Module
 
 /-- A `ℂ`-basis of `ℂ^n` that is also a `ℤ`-basis of the `integerLattice`. -/
 noncomputable def latticeBasis [NumberField K] :
@@ -176,7 +176,7 @@ end NumberField.canonicalEmbedding
 
 namespace NumberField.mixedEmbedding
 
-open NumberField.InfinitePlace FiniteDimensional Finset
+open NumberField.InfinitePlace Module Finset
 
 /-- The mixed space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`. -/
 abbrev mixedSpace :=
@@ -491,7 +491,7 @@ def indexEquiv : (index K) ≃ (K →+* ℂ) := by
       · exact ⟨Sum.inr ⟨InfinitePlace.mkComplex ⟨φ, hφ⟩, 1⟩,
           by simp [(embedding_mk_eq φ).resolve_left hw]⟩
   · rw [Embeddings.card, ← mixedEmbedding.finrank K,
-      ← FiniteDimensional.finrank_eq_card_basis (stdBasis K)]
+      ← Module.finrank_eq_card_basis (stdBasis K)]
 
 variable {K}
 
@@ -573,6 +573,10 @@ open Module.Free
 
 open scoped nonZeroDivisors
 
+/-- The image of the ring of integers of `K` in the mixed space. -/
+protected abbrev integerLattice : Submodule ℤ (mixedSpace K) :=
+  LinearMap.range ((mixedEmbedding K).comp (algebraMap (𝓞 K) K)).toIntAlgHom.toLinearMap
+
 /-- A `ℝ`-basis of the mixed space that is also a `ℤ`-basis of the image of `𝓞 K`. -/
 def latticeBasis :
     Basis (ChooseBasisIndex ℤ (𝓞 K)) ℝ (mixedSpace K) := by
@@ -607,6 +611,20 @@ theorem mem_span_latticeBasis (x : (mixedSpace K)) :
   simp only [Set.mem_image, SetLike.mem_coe, mem_span_integralBasis K,
     RingHom.mem_range, exists_exists_eq_and]
   rfl
+
+theorem span_latticeBasis :
+    Submodule.span ℤ (Set.range (latticeBasis K)) = mixedEmbedding.integerLattice K :=
+  Submodule.ext_iff.mpr (mem_span_latticeBasis K)
+
+instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
+  classical
+  rw [← span_latticeBasis]
+  infer_instance
+
+open Classical in
+instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
+  simp_rw [← span_latticeBasis]
+  exact ZSpan.isZLattice (latticeBasis K)
 
 theorem mem_rat_span_latticeBasis (x : K) :
     mixedEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
