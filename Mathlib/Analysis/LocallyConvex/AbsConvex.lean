@@ -298,32 +298,20 @@ theorem totallyBounded_convexHull (hs : TotallyBounded s) :
   obtain ⟨V, ⟨hV₁, hV₂, hV₃⟩⟩ :=
     (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs W hW₁
   obtain ⟨t, ⟨htf, hts⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hs) _ hV₁
-  have e6 : TotallyBounded ((convexHull ℝ) t) := by
-    apply IsCompact.totallyBounded
-    apply Set.Finite.isCompact_convexHull htf
-  rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at e6
-  obtain ⟨t',⟨htf',hts'⟩⟩ := e6 _ hV₁
+  obtain ⟨t', ⟨htf', hts'⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp
+    (IsCompact.totallyBounded (Set.Finite.isCompact_convexHull htf)) _ hV₁)
   use t'
   have en {t₁ V₁ : Set E} : (⋃ y ∈ t₁, y +ᵥ V₁) = t₁ + V₁ := iUnion_add_left_image
   simp_rw [en]
   rw [en] at hts'
-  constructor
-  · exact htf'
-  · have e4 : (convexHull ℝ) s ⊆ (convexHull ℝ) t + V := by
-      rw [ ← Convex.convexHull_eq hV₂.2]
-      apply le_trans (convexHull_mono hts)
-      rw [en]
-      apply (convexHull_add_subset)
-    have e7: (convexHull ℝ) s ⊆ t' + (V + V) := by
+  rw [en] at hts
+  exact ⟨htf', subset_trans (by
       rw [← add_assoc]
-      apply le_trans e4
-      apply Set.add_subset_add_right hts'
-    apply subset_trans e7
-    --rw [en]
-    apply Set.add_subset_add_left
-    apply subset_trans _ hW₄
-    exact add_subset_add hV₃ hV₃
-
+      apply le_trans (by
+        rw [ ← Convex.convexHull_eq hV₂.2]
+        exact le_trans (convexHull_mono hts) (convexHull_add_subset)
+      ) (Set.add_subset_add_right hts'))
+      (Set.add_subset_add_left (subset_trans (add_subset_add hV₃ hV₃) hW₄))⟩
 
 theorem totallyBounded_absConvexHull₂ (hs : TotallyBounded s) :
     TotallyBounded (absConvexHull ℝ s) := by
