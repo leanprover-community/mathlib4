@@ -111,11 +111,12 @@ instance category : Category (∫ F) where
       slice_lhs 3 4 => rw [← (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.naturality h.fiber]
       simp [F.mapComp_assoc_right_inv_app, Strict.associator_eqToIso]
 
+variable (F)
 
 /-- The projection `∫ F ⥤ 𝒮` given by projecting both objects and homs to the first
 factor. -/
 @[simps]
-def forget (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : ∫ F ⥤ 𝒮 where
+def forget : ∫ F ⥤ 𝒮 where
   obj := fun X => X.base
   map := fun f => f.base
 
