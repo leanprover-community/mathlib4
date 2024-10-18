@@ -193,7 +193,7 @@ def ofTensorHom : F.LaxMonoidal where
 
 @[simp]
 lemma ofTensorHom_ε :
-  letI := (ofTensorHom ε' μ' μ'_natural associativity' left_unitality' right_unitality')
+    letI := (ofTensorHom ε' μ' μ'_natural associativity' left_unitality' right_unitality')
   ε F = ε' := rfl
 
 @[simp]
