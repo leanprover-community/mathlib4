@@ -46,6 +46,18 @@ structure WLOGResult where
   `hypothesisGoal`). -/
   revertedFVarIds  : Array FVarId
 
+/-- `HType` must be formed in `MkBinding.M`, where we cannot throw errors. This type communicates
+either a successful result or various sorts of errors together with any data needed to throw a
+valid error message. -/
+private inductive HTypeResult where
+  /-- An `HType` was successfully produced. -/
+  | ok (HType : Expr) : HTypeResult
+  /-- Error: The replaced fvars were not among the forward dependencies of the generalized ones. -/
+  | unreplaceable : HTypeResult
+  /-- Error: `HSuffix` depended on replaced fvars which were among the forward dependencies of the
+  remaining reverted fvars (once replaced fvars had been removed). -/
+  | illFormed (offending : Array FVarId) : HTypeResult
+
 open private withFreshCache mkAuxMVarType from Lean.MetavarContext in
 /-- `wlog goal h P xs H` will return two goals: the `hypothesisGoal`, which adds an assumption
 `h : P` to the context of `goal`, and the `reductionGoal`, which requires showing that the case
@@ -60,10 +72,15 @@ If `xs` is `none`, all hypotheses are reverted to produce the reduction goal's h
 Otherwise, the `xs` are elaborated to hypotheses in the context of `goal`, and only those
 hypotheses are reverted (and any that depend on them).
 
-If `h` is `none`, the hypotheses of types `P` and `¬ P` in both branches will be inaccessible. -/
+If `h` is `none`, the hypotheses of types `P` and `¬ P` in both branches will be inaccessible.
+
+The fvars specified by `ys` will be excluded from the type of `this` and from the hypotheses of the
+resulting `hypothesisGoal` as long as they (and their forward dependencies) are among the fvars
+that would be reverted if `ys` were empty. Otherwise, `wlog` fails.
+ -/
 def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
-    (xs : Option (TSyntaxArray `ident) := none) (H : Option Name := none) :
-    TacticM WLOGResult := goal.withContext do
+    (xs : Option (TSyntaxArray `ident) := none) (ys : TSyntaxArray `ident := #[])
+    (H : Option Name := none) : TacticM WLOGResult := goal.withContext do
   goal.checkNotAssigned `wlog
   let H := H.getD `this
   let inaccessible := h.isNone
@@ -71,26 +88,48 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   /- Compute the type for H and keep track of the FVarId's reverted in doing so. (Do not modify the
   tactic state.) -/
   let HSuffix := Expr.forallE h P (← goal.getType) .default
-  let fvars ← getFVarIdsAt goal xs
-  let fvars := fvars.map Expr.fvar
+  let gfvars := (← getFVarIdsAt goal xs).map Expr.fvar
+  let rfvars := (← getFVarIdsAt goal ys).map Expr.fvar
   let lctx := (← goal.getDecl).lctx
-  let (revertedFVars, HType) ← liftMkBindingM fun ctx => (do
-    let f ← collectForwardDeps lctx fvars
-    let revertedFVars := filterOutImplementationDetails lctx (f.map Expr.fvarId!)
+  -- Detail: `HType? : HTypeResult`. See `HTypeResult`.
+  let (revertedFVars, replacedFVars, HType?) ← liftMkBindingM fun ctx => (do
+    let gf ← collectForwardDeps lctx gfvars
+    let revertedFVars := filterOutImplementationDetails lctx (gf.map Expr.fvarId!)
+    -- Ensure the replaced fvars are among the reverted ones
+    let rf ← collectForwardDeps lctx rfvars
+    let replacedFVars := filterOutImplementationDetails lctx (rf.map Expr.fvarId!)
+    unless replacedFVars.all revertedFVars.contains do
+      return (revertedFVars, replacedFVars, HTypeResult.unreplaceable)
+    let revertedFVars := revertedFVars.filter (not ∘ replacedFVars.contains)
+    -- If `HSuffix` depends on a replaced fvar, throw an error (see below).
+    let isIllFormed ← dependsOnPred HSuffix replacedFVars.contains
+    if isIllFormed then
+      let offending ← replacedFVars.filterM <| exprDependsOn HSuffix
+      return (revertedFVars, replacedFVars, .illFormed offending)
     let HType ← withFreshCache do mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix
-    return (revertedFVars, HType))
+    return (revertedFVars, replacedFVars, .ok HType))
       { preserveOrder := false, mainModule := ctx.mainModule }
+  let HType ←
+    match HType? with
+    | .ok HType => pure HType
+    | .unreplaceable => do
+      let unrevertedReplaced := replacedFVars.filter (not ∘ revertedFVars.contains)
+      throwError "replaced hypotheses{indentD (unrevertedReplaced.map Expr.fvar).toList}\n\
+        were expected to depend on the generalized hypotheses\
+        {indentD (revertedFVars.map Expr.fvar).toList}"
+    | .illFormed offending => do
+      throwError "{indentD HSuffix}\n\
+        depends on the replaced hypotheses{indentD (offending.map Expr.fvar).toList}"
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
   is obtained through `introNP` -/
   let HExpr ← mkFreshExprSyntheticOpaqueMVar HType
-  let hGoal := HExpr.mvarId!
   /- Begin the "reduction goal" which will contain hypotheses `H` and `¬h`. For now, it only
   contains `H`. Keep track of that hypothesis' FVarId. -/
   let (HFVarId, reductionGoal) ←
     goal.assertHypotheses #[{ userName := H, type := HType, value := HExpr }]
   let HFVarId := HFVarId[0]!
   /- Clear the reverted fvars from the branch that will contain `h` as a hypothesis. -/
-  let hGoal ← hGoal.tryClearMany revertedFVars
+  let hGoal ← HExpr.mvarId!.tryClearMany (revertedFVars ++ replacedFVars)
   /- Introduce all of the reverted fvars to the context in order to restore the original target as
   well as finally introduce the hypothesis `h`. -/
   let (_, hGoal) ← hGoal.introNP revertedFVars.size
@@ -120,24 +159,39 @@ assumptions:
   `wlog h : P with H`.
 
 Typically, it is useful to use the variant `wlog h : P generalizing x y`,
-to revert certain parts of the context before creating the new goal.
+to revert only certain parts of the context before creating the new goal.
 In this way, the wlog-claim `this` can be applied to `x` and `y` in different orders
 (exploiting symmetry, which is the typical use case).
 
-By default, the entire context is reverted. -/
-syntax (name := wlog) "wlog " binderIdent " : " term
-  (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
+By default, the entire context is reverted.
+
+To replace some hypotheses instead of generalizing them, one can use `wlog h : P replacing y`. The
+new hypothesis `h` will "replace" `y` (and all of its forward dependencies) in both the type of
+`this` and the hypotheses of the second goal, where `y` will no longer appear. For this to make
+sense, `y` and all its forward dependencies must be among all the hypotheses that would be
+generalized if the `replacing` syntax were removed; `wlog` will fail if not.
+
+All syntax options can be used in conjunction:
+```lean
+wlog h : P generalizing x y replacing w z with H
+```
+-/
+syntax (name := wlog) "wlog " binderIdent " : " term (" generalizing" (ppSpace colGt ident)*)?
+  (" replacing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
 elab_rules : tactic
-| `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
-  withMainContext do
+| `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ replacing $ys*]?
+    $[ with $H:ident]?) => withMainContext do
   let H := H.map (·.getId)
   let h := match h with
   | `(binderIdent|$h:ident) => some h.getId
   | _ => none
+  let ys := match ys with
+  | some ys => ys
+  | none => #[]
   let P ← elabType P
   let goal ← getMainGoal
-  let { reductionGoal, hypothesisGoal .. } ← goal.wlog h P xs H
+  let { reductionGoal, hypothesisGoal .. } ← goal.wlog h P xs ys H
   replaceMainGoal [reductionGoal, hypothesisGoal]
 
 end Mathlib.Tactic
