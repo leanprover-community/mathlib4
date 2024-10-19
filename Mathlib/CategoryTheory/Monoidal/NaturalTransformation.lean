@@ -148,8 +148,6 @@ instance : NatTrans.IsMonoidal e.unit :=
 instance : NatTrans.IsMonoidal e.counit :=
   inferInstanceAs (NatTrans.IsMonoidal e.toAdjunction.counit)
 
--- TODO: deduce `e.symm.IsMonoidal`
-
 end Equivalence
 
 end Adjunction

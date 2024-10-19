@@ -963,10 +963,13 @@ end Adjunction
 
 namespace Equivalence
 
-variable (e : C ≌ D) [e.functor.Monoidal]
+variable (e : C ≌ D)
+
+instance [e.inverse.Monoidal] : e.symm.functor.Monoidal := inferInstanceAs (e.inverse.Monoidal)
+instance [e.functor.Monoidal] : e.symm.inverse.Monoidal := inferInstanceAs (e.functor.Monoidal)
 
 /-- If a monoidal functor `F` is an equivalence of categories then its inverse is also monoidal. -/
-noncomputable def inverseMonoidal : e.inverse.Monoidal := by
+noncomputable def inverseMonoidal [e.functor.Monoidal] : e.inverse.Monoidal := by
   letI := e.toAdjunction.rightAdjointLaxMonoidal
   have : IsIso (LaxMonoidal.ε e.inverse) := by
     simp only [Adjunction.rightAdjointLaxMonoidal_ε, Adjunction.homEquiv_unit]
@@ -978,7 +981,72 @@ noncomputable def inverseMonoidal : e.inverse.Monoidal := by
 
 /-- An equivalence of categories involving monoidal functors is monoidal if the underlying
 adjunction satisfies certain compatibilities with respect to the monoidal funtor data. -/
-abbrev IsMonoidal [e.inverse.Monoidal] : Prop := e.toAdjunction.IsMonoidal
+abbrev IsMonoidal [e.functor.Monoidal] [e.inverse.Monoidal] : Prop := e.toAdjunction.IsMonoidal
+
+example [e.functor.Monoidal] : letI := e.inverseMonoidal; e.IsMonoidal := inferInstance
+
+variable [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal]
+
+open Functor.LaxMonoidal Functor.OplaxMonoidal
+
+@[reassoc]
+lemma unitIso_hom_app_comp_inverse_map_η_functor :
+    e.unitIso.hom.app (𝟙_ C) ≫ e.inverse.map (η e.functor) = ε e.inverse :=
+  e.toAdjunction.unit_app_unit_comp_map_η
+
+@[reassoc]
+lemma unitIso_hom_app_tensor_comp_inverse_map_δ_functor (X Y : C) :
+    e.unitIso.hom.app (X ⊗ Y) ≫ e.inverse.map (δ e.functor X Y) =
+      (e.unitIso.hom.app X ⊗ e.unitIso.hom.app Y) ≫ μ e.inverse _ _ :=
+  e.toAdjunction.unit_app_tensor_comp_map_δ X Y
+
+@[reassoc]
+lemma functor_map_ε_inverse_comp_counitIso_hom_app :
+    e.functor.map (ε e.inverse) ≫ e.counitIso.hom.app (𝟙_ D) = η e.functor :=
+  e.toAdjunction.map_ε_comp_counit_app_unit
+
+@[reassoc]
+lemma functor_map_μ_inverse_comp_counitIso_hom_app_tensor (X Y : D) :
+    e.functor.map (μ e.inverse X Y) ≫ e.counitIso.hom.app (X ⊗ Y) =
+      δ e.functor _ _ ≫ (e.counitIso.hom.app X ⊗ e.counitIso.hom.app Y) :=
+  e.toAdjunction.map_μ_comp_counit_app_tensor X Y
+
+@[reassoc]
+lemma unitIso_hom_app_tensor_comp_inverse_map_δ_functor__ (X Y : C) :
+    e.unitIso.hom.app (X ⊗ Y) ≫ e.inverse.map (δ e.functor X Y) =
+      (e.unitIso.hom.app X ⊗ e.unitIso.hom.app Y) ≫ μ e.inverse _ _ :=
+  e.toAdjunction.unit_app_tensor_comp_map_δ X Y
+
+@[reassoc]
+lemma counitIso_inv_app_comp_functor_map_η_inverse :
+    e.counitIso.inv.app (𝟙_ D) ≫ e.functor.map (η e.inverse) = ε e.functor := by
+  rw [← cancel_epi (η e.functor), Monoidal.η_ε, ← functor_map_ε_inverse_comp_counitIso_hom_app,
+    Category.assoc, Iso.hom_inv_id_app_assoc, Monoidal.map_ε_η]
+
+@[reassoc]
+lemma counitIso_inv_app_tensor_comp_functor_map_δ_inverse (X Y : C) :
+    e.counitIso.inv.app (e.functor.obj X ⊗ e.functor.obj Y) ≫
+      e.functor.map (δ e.inverse (e.functor.obj X) (e.functor.obj Y)) =
+      μ e.functor X Y ≫ e.functor.map (e.unitIso.hom.app X ⊗ e.unitIso.hom.app Y) := by
+  rw [← cancel_epi (δ e.functor _ _), Monoidal.δ_μ_assoc]
+  apply e.inverse.map_injective
+  simp [← cancel_epi (e.unitIso.hom.app (X ⊗ Y)), Functor.map_comp,
+    unitIso_hom_app_tensor_comp_inverse_map_δ_functor_assoc]
+
+/-- The inverse of a monoidal category equivalence is also a monoidal category equivalence. -/
+instance isMonoidal_symm [e.inverse.Monoidal] [e.IsMonoidal] :
+    e.symm.IsMonoidal where
+  leftAdjoint_ε := by
+    simp only [toAdjunction, Adjunction.homEquiv_unit]
+    dsimp [symm]
+    rw [counitIso_inv_app_comp_functor_map_η_inverse]
+  leftAdjoint_μ X Y := by
+    simp only [toAdjunction, Adjunction.homEquiv_unit]
+    dsimp [symm]
+    rw [map_comp, counitIso_inv_app_tensor_comp_functor_map_δ_inverse_assoc,
+      ← Functor.map_comp, ← tensor_comp, Iso.hom_inv_id_app, Iso.hom_inv_id_app]
+    dsimp
+    rw [tensorHom_id, id_whiskerRight, map_id, comp_id]
 
 end Equivalence
 
