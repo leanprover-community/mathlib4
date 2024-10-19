@@ -62,7 +62,7 @@ which is the preimage under `F` of `hf.fst g`.
 * `symmetry` and `symmetryIso` are variants of the fact that pullbacks are symmetric for
   representable morphisms, formulated internally to `C`. We assume that `F` is fully faithful here.
 
-We also provide some basic API for dealing with tripple pullbacks, i.e. given
+We also provide some basic API for dealing with triple pullbacks, i.e. given
 `hf₁ : relativelyRepresentable f₁`, `f₂ : F.obj A₂ ⟶ X` and `f₃ : F.obj A₃ ⟶ X`, we define
 `hf₁.pullback₃ f₂ f₃` to be the pullback of `(A₁ ×_X A₂) ×_{A₁} (A₁ ×_X A₃)`. We then develop
 some API for working with this object, mirroring the usual API for pullbacks, but where as much
@@ -461,7 +461,7 @@ namespace Functor.relativelyRepresentable
 
 section Pullbacks₃
 /-
-In this section we develop some basic API that help deal with certain tripple pullbacks obtained
+In this section we develop some basic API that help deal with certain triple pullbacks obtained
 from morphism `f₁ : A₁ ⟶ X` which is relatively representable with respect to some functor
 `F : C ⥤ D`.
 
