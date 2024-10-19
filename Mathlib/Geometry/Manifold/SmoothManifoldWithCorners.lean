@@ -724,12 +724,16 @@ theorem PartialHomeomorph.singleton_smoothManifoldWithCorners
   @SmoothManifoldWithCorners.mk' _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid ∞ I)
 
-theorem OpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+theorem IsOpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H}
-    (h : OpenEmbedding f) :
+    (h : IsOpenEmbedding f) :
     @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ h.singletonChartedSpace :=
   (h.toPartialHomeomorph f).singleton_smoothManifoldWithCorners I (by simp)
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.singleton_smoothManifoldWithCorners :=
+  IsOpenEmbedding.singleton_smoothManifoldWithCorners
 
 namespace TopologicalSpace.Opens
 

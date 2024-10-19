@@ -43,7 +43,7 @@ We follow [wielandt1964].
 
 -/
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 namespace MulAction
 
