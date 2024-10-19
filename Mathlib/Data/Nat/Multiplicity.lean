@@ -282,9 +282,9 @@ theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplic
     by_cases hn : n = 0
     · subst hn
       simp only [ne_eq, bit_eq_zero_iff, true_and, Bool.not_eq_false] at h
-      simp only [h, bit_true, factorial, mul_one, Nat.isUnit_iff, cast_one]
+      simp only [h, factorial, mul_one, Nat.isUnit_iff, cast_one]
       rw [Prime.emultiplicity_one]
-      · simp [zero_lt_one]
+      · exact zero_lt_one
       · decide
     have : emultiplicity 2 (2 * n)! < (2 * n : ℕ) := by
       rw [prime_two.emultiplicity_factorial_mul]
