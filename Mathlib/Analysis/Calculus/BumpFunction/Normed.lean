@@ -16,7 +16,7 @@ In this file we define `ContDiffBump.normed f μ` to be the bump function `f` no
 
 noncomputable section
 
-open Function Filter Set Metric MeasureTheory FiniteDimensional Measure
+open Function Filter Set Metric MeasureTheory Module Measure
 open scoped Topology
 
 namespace ContDiffBump
@@ -97,7 +97,7 @@ variable (μ)
 
 theorem measure_closedBall_le_integral : (μ (closedBall c f.rIn)).toReal ≤ ∫ x, f x ∂μ := by calc
   (μ (closedBall c f.rIn)).toReal = ∫ x in closedBall c f.rIn, 1 ∂μ := by simp
-  _ = ∫ x in closedBall c f.rIn, f x ∂μ := setIntegral_congr measurableSet_closedBall
+  _ = ∫ x in closedBall c f.rIn, f x ∂μ := setIntegral_congr_fun measurableSet_closedBall
         (fun x hx ↦ (one_of_mem_closedBall f hx).symm)
   _ ≤ ∫ x, f x ∂μ := setIntegral_le_integral f.integrable (Eventually.of_forall (fun x ↦ f.nonneg))
 

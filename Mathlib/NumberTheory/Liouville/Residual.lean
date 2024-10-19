@@ -38,7 +38,7 @@ theorem IsGδ.setOf_liouville : IsGδ { x | Liouville x } := by
 
 theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
     { x | Liouville x } =
-      { x | Irrational x } ∩ ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (hb : 1 < b),
+      { x | Irrational x } ∩ ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (_ : 1 < b),
       ball (a / b) (1 / (b : ℝ) ^ n) := by
   refine Subset.antisymm ?_ ?_
   · refine subset_inter (fun x hx => hx.irrational) ?_
@@ -53,7 +53,7 @@ theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
 theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x := by
   rw [Filter.Eventually, setOf_liouville_eq_irrational_inter_iInter_iUnion]
   refine eventually_residual_irrational.and ?_
-  refine residual_of_dense_Gδ ?_ (Rat.denseEmbedding_coe_real.dense.mono ?_)
+  refine residual_of_dense_Gδ ?_ (Rat.isDenseEmbedding_coe_real.dense.mono ?_)
   · exact .iInter fun n => IsOpen.isGδ <|
           isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun _hb => isOpen_ball
   · rintro _ ⟨r, rfl⟩

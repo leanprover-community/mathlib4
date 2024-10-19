@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
@@ -159,21 +159,9 @@ attribute [local simp] transportStruct in
 -/
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   letI : MonoidalCategoryStruct.{v₂} D := transportStruct e
-  induced e.inverse {
-    μIso :=  fun X Y => e.unitIso.app _
-    whiskerLeft_eq := fun _ _ _ _ => by simp [transportStruct_whiskerLeft]
-    whiskerRight_eq := fun _ _ => by simp [transportStruct_whiskerRight]
-    tensorHom_eq := fun _ _ => by simp [transportStruct_tensorHom]
-    εIso := e.unitIso.app _
-    associator_eq := fun _ _ _ => by
-      have := transportStruct_associator e
-      aesop_cat
-    leftUnitor_eq := fun _ => by
-      have := transportStruct_leftUnitor e
-      aesop_cat
-    rightUnitor_eq := fun _ => by
-      have := transportStruct_rightUnitor e
-      aesop_cat }
+  induced e.inverse
+    { μIso := fun _ _ => e.unitIso.app _
+      εIso := e.unitIso.app _ }
 
 /-- A type synonym for `D`, which will carry the transported monoidal structure. -/
 @[nolint unusedArguments]

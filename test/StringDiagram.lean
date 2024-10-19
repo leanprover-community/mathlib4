@@ -3,9 +3,9 @@ import ProofWidgets.Component.Panel.SelectionPanel
 
 /-! ## Example use of string diagram widgets -/
 
-section MonoidalCategory
-
 open ProofWidgets Mathlib.Tactic.Widget
+
+section MonoidalCategory
 
 open CategoryTheory
 open scoped MonoidalCategory
@@ -279,6 +279,9 @@ info: [string_diagram] Penrose substance:
 info: [string_diagram] Penrose substance:
     Left(E_0_0_0, E_0_1_1)
     Left(E_0_1_1, E_0_2_2)
+    Left(E_1_0_0, E_1_2_2)
+    Left(E_2_0_0, E_2_1_1)
+    Left(E_3_0_0, E_3_2_2)
     Left(E_4_0_0, E_4_1_1)
     Left(E_4_1_1, E_4_2_2)
     Above(E_0_0_0, E_1_0_0)
@@ -287,20 +290,23 @@ info: [string_diagram] Penrose substance:
     Above(E_3_0_0, E_4_0_0)
     Mor1 f_0_0 := MakeString (E_0_0_0, E_1_0_0)
     Mor1 f_0_2 := MakeString (E_0_1_1, E_1_0_0)
-    Mor1 f_0_4 := MakeString (E_0_2_2, E_1_0_0)
+    Mor1 f_0_4 := MakeString (E_0_2_2, E_1_2_2)
     Mor1 f_1_0 := MakeString (E_1_0_0, E_2_0_0)
-    Mor1 f_1_1 := MakeString (E_1_0_0, E_2_0_0)
-    Mor1 f_1_2 := MakeString (E_1_0_0, E_2_0_0)
+    Mor1 f_1_1 := MakeString (E_1_0_0, E_2_1_1)
+    Mor1 f_1_4 := MakeString (E_1_2_2, E_2_1_1)
     Mor1 f_2_0 := MakeString (E_2_0_0, E_3_0_0)
-    Mor1 f_2_1 := MakeString (E_2_0_0, E_3_0_0)
-    Mor1 f_2_2 := MakeString (E_2_0_0, E_3_0_0)
+    Mor1 f_2_2 := MakeString (E_2_1_1, E_3_0_0)
+    Mor1 f_2_3 := MakeString (E_2_1_1, E_3_2_2)
     Mor1 f_3_0 := MakeString (E_3_0_0, E_4_0_0)
     Mor1 f_3_1 := MakeString (E_3_0_0, E_4_1_1)
-    Mor1 f_3_2 := MakeString (E_3_0_0, E_4_2_2)
+    Mor1 f_3_4 := MakeString (E_3_2_2, E_4_2_2)
 
 [string_diagram] Penrose substance:
     Left(E_0_0_0, E_0_1_1)
     Left(E_0_1_1, E_0_2_2)
+    Left(E_1_0_0, E_1_1_1)
+    Left(E_2_0_0, E_2_2_2)
+    Left(E_3_0_0, E_3_1_1)
     Left(E_4_0_0, E_4_1_1)
     Left(E_4_1_1, E_4_2_2)
     Above(E_0_0_0, E_1_0_0)
@@ -308,17 +314,17 @@ info: [string_diagram] Penrose substance:
     Above(E_2_0_0, E_3_0_0)
     Above(E_3_0_0, E_4_0_0)
     Mor1 f_0_0 := MakeString (E_0_0_0, E_1_0_0)
-    Mor1 f_0_2 := MakeString (E_0_1_1, E_1_0_0)
-    Mor1 f_0_4 := MakeString (E_0_2_2, E_1_0_0)
+    Mor1 f_0_2 := MakeString (E_0_1_1, E_1_1_1)
+    Mor1 f_0_4 := MakeString (E_0_2_2, E_1_1_1)
     Mor1 f_1_0 := MakeString (E_1_0_0, E_2_0_0)
-    Mor1 f_1_1 := MakeString (E_1_0_0, E_2_0_0)
-    Mor1 f_1_2 := MakeString (E_1_0_0, E_2_0_0)
+    Mor1 f_1_2 := MakeString (E_1_1_1, E_2_0_0)
+    Mor1 f_1_3 := MakeString (E_1_1_1, E_2_2_2)
     Mor1 f_2_0 := MakeString (E_2_0_0, E_3_0_0)
-    Mor1 f_2_1 := MakeString (E_2_0_0, E_3_0_0)
-    Mor1 f_2_2 := MakeString (E_2_0_0, E_3_0_0)
+    Mor1 f_2_1 := MakeString (E_2_0_0, E_3_1_1)
+    Mor1 f_2_4 := MakeString (E_2_2_2, E_3_1_1)
     Mor1 f_3_0 := MakeString (E_3_0_0, E_4_0_0)
-    Mor1 f_3_1 := MakeString (E_3_0_0, E_4_1_1)
-    Mor1 f_3_2 := MakeString (E_3_0_0, E_4_2_2)
+    Mor1 f_3_2 := MakeString (E_3_1_1, E_4_1_1)
+    Mor1 f_3_3 := MakeString (E_3_1_1, E_4_2_2)
 -/
 #guard_msgs (whitespace := lax) in
 #string_diagram yang_baxter''
@@ -440,3 +446,45 @@ info: [string_diagram] Penrose substance:
 #string_diagram yangBaxterLhs
 
 end MonoidalCategory
+
+section Bicategory
+
+open CategoryTheory
+
+set_option trace.string_diagram true
+
+/--
+info: [string_diagram] Penrose substance:
+    Left(E_0_0_0, E_0_1_1)
+    Left(E_1_0_0, E_1_1_1)
+    Left(E_2_0_0, E_2_1_1)
+    Left(E_3_0_0, E_3_1_1)
+    Above(E_0_0_0, E_1_0_0)
+    Above(E_1_0_0, E_2_0_0)
+    Above(E_2_0_0, E_3_0_0)
+    Mor1 f_0_0 := MakeString (E_0_0_0, E_1_0_0)
+    Mor1 f_0_2 := MakeString (E_0_1_1, E_1_1_1)
+    Mor1 f_1_0 := MakeString (E_1_0_0, E_2_0_0)
+    Mor1 f_1_2 := MakeString (E_1_1_1, E_2_1_1)
+    Mor1 f_2_0 := MakeString (E_2_0_0, E_3_0_0)
+    Mor1 f_2_2 := MakeString (E_2_1_1, E_3_1_1)
+
+[string_diagram] Penrose substance:
+    Left(E_0_0_0, E_0_1_1)
+    Left(E_1_0_0, E_1_1_1)
+    Left(E_2_0_0, E_2_1_1)
+    Left(E_3_0_0, E_3_1_1)
+    Above(E_0_0_0, E_1_0_0)
+    Above(E_1_0_0, E_2_0_0)
+    Above(E_2_0_0, E_3_0_0)
+    Mor1 f_0_0 := MakeString (E_0_0_0, E_1_0_0)
+    Mor1 f_0_2 := MakeString (E_0_1_1, E_1_1_1)
+    Mor1 f_1_0 := MakeString (E_1_0_0, E_2_0_0)
+    Mor1 f_1_2 := MakeString (E_1_1_1, E_2_1_1)
+    Mor1 f_2_0 := MakeString (E_2_0_0, E_3_0_0)
+    Mor1 f_2_2 := MakeString (E_2_1_1, E_3_1_1)
+-/
+#guard_msgs (whitespace := lax) in
+#string_diagram Bicategory.whisker_exchange
+
+end Bicategory

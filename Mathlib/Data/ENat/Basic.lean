@@ -45,19 +45,14 @@ instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
 instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 instance : IsWellOrder ℕ∞ (· < ·) where
 
-instance : SuccAddOrder ℕ∞ := by
-  constructor
-  rintro (_ | _)
-  · rfl
-  · change ite .. = _
-    simp
-    rfl
-
 variable {m n : ℕ∞}
 
 /-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
 `ℕ → ℕ∞` is `Nat.cast`. -/
 @[simp] theorem some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
+
+instance : SuccAddOrder ℕ∞ where
+  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
 
 -- Porting note: `simp` and `norm_cast` can prove it
 --@[simp, norm_cast]
@@ -263,5 +258,27 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
   cases a
   · exact htop A
   · exact A _
+
+lemma add_one_nat_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
+  match n with
+  | ⊤ => exact le_top
+  | (⊤ : ℕ∞) => exact WithTop.coe_le_coe.2 (OrderTop.le_top _)
+  | (n : ℕ) => simpa only [Nat.cast_le, ge_iff_le, Nat.cast_lt] using h
+
+@[simp] lemma coe_top_add_one : ((⊤ : ℕ∞) : WithTop ℕ∞) + 1 = (⊤ : ℕ∞) := rfl
+
+@[simp] lemma add_one_eq_coe_top_iff (n : WithTop ℕ∞) :
+    n + 1 = (⊤ : ℕ∞) ↔ n = (⊤ : ℕ∞) := by
+  match n with
+  | ⊤ => exact Iff.rfl
+  | (⊤ : ℕ∞) => exact Iff.rfl
+  | (n : ℕ) => norm_cast; simp only [coe_ne_top, iff_false, ne_eq]
+
+@[simp] lemma nat_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := ne_of_beq_false rfl
+
+lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} :
+    1 ≤ n ↔ n ≠ 0 :=
+  ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
+    fun h ↦ add_one_nat_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
 
 end ENat

@@ -10,9 +10,10 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.42"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.43"
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
+  from git "https://github.com/leanprover-community/LeanSearchClient" @ "main"
 
 /-!
 ## Options for building mathlib
@@ -24,11 +25,13 @@ require "leanprover-community" / "LeanSearchClient" @ git "main"
   (as well as `Archive`, `Counterexamples` and `test`).
 -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
+  ⟨`linter.docPrime, true⟩,
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
   ⟨`linter.style.cdot, true⟩,
   ⟨`linter.style.dollarSyntax, true⟩,
+  ⟨`linter.style.header, true⟩,
   ⟨`linter.style.lambdaSyntax, true⟩,
   ⟨`linter.style.longLine, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
@@ -81,6 +84,16 @@ lean_lib docs where
 /-!
 ## Executables provided by Mathlib
 -/
+
+/--
+`lake exe autolabel 150100` adds a topic label to PR `150100` if there is a unique choice.
+This requires GitHub CLI `gh` to be installed!
+
+Calling `lake exe autolabel` without a PR number will print the result without applying
+any labels online.
+-/
+lean_exe autolabel where
+  srcDir := "scripts"
 
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where

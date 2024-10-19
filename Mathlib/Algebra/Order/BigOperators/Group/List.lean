@@ -119,6 +119,24 @@ lemma one_le_prod_of_one_le [Preorder M] [CovariantClass M M (· * ·) (· ≤ �
   rw [prod_cons]
   exact one_le_mul (hl₁ hd (mem_cons_self hd tl)) (ih fun x h => hl₁ x (mem_cons_of_mem hd h))
 
+@[to_additive]
+lemma max_prod_le (l : List α) (f g : α → M) [LinearOrder M]
+    [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] :
+    max (l.map f).prod (l.map g).prod ≤ (l.map fun i ↦ max (f i) (g i)).prod := by
+  rw [max_le_iff]
+  constructor <;> apply List.prod_le_prod' <;> intros
+  · apply le_max_left
+  · apply le_max_right
+
+@[to_additive]
+lemma prod_min_le [LinearOrder M] [CovariantClass M M (· * ·) (· ≤ ·)]
+    [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] (l : List α) (f g : α → M) :
+    (l.map fun i ↦ min (f i) (g i)).prod ≤ min (l.map f).prod (l.map g).prod := by
+  rw [le_min_iff]
+  constructor <;> apply List.prod_le_prod' <;> intros
+  · apply min_le_left
+  · apply min_le_right
+
 end Monoid
 
 -- TODO: develop theory of tropical rings
@@ -143,7 +161,8 @@ lemma one_lt_prod_of_one_lt [OrderedCommMonoid M] :
     · exact hl₁.2.1
     · exact hl₁.2.2 _ ‹_›
 
-@[to_additive]
+/-- See also `List.le_prod_of_mem`. -/
+@[to_additive "See also `List.le_sum_of_mem`."]
 lemma single_le_prod [OrderedCommMonoid M] {l : List M} (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) :
     ∀ x ∈ l, x ≤ l.prod := by
   induction l
@@ -163,7 +182,7 @@ variable [CanonicallyOrderedCommMonoid M] {l : List M}
 
 @[to_additive] lemma prod_eq_one_iff : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
-    rw [List.eq_replicate.2 ⟨_, h⟩, prod_replicate, one_pow]
+    rw [List.eq_replicate_iff.2 ⟨_, h⟩, prod_replicate, one_pow]
     · exact (length l)
     · rfl⟩
 
@@ -173,6 +192,19 @@ variable [CanonicallyOrderedCommMonoid M] {l : List M}
   · rw [prod_take_succ _ _ h]
     exact le_self_mul
   · simp [take_of_length_le h, take_of_length_le (le_trans h (Nat.le_succ _))]
+
+/-- See also `List.single_le_prod`. -/
+@[to_additive "See also `List.single_le_sum`."]
+theorem le_prod_of_mem {xs : List M} {x : M} (h₁ : x ∈ xs) : x ≤ xs.prod := by
+  induction xs with
+  | nil => simp at h₁
+  | cons y ys ih =>
+    simp only [mem_cons] at h₁
+    rcases h₁ with (rfl | h₁)
+    · simp
+    · specialize ih h₁
+      simp only [List.prod_cons]
+      exact le_mul_left ih
 
 end CanonicallyOrderedCommMonoid
 end List

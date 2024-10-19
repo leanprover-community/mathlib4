@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
@@ -326,13 +326,9 @@ theorem linearization_μ_hom (X Y : Action (Type u) G) :
 @[simp]
 theorem linearization_μ_inv_hom (X Y : Action (Type u) G) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
--- Porting note (#11039): broken proof was
-/- simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
-  apply IsIso.inv_eq_of_hom_inv_id _
-  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
   rw [← Action.forget_map, Functor.map_inv]
   apply IsIso.inv_eq_of_hom_inv_id
-  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply (finsuppTensorFinsupp' k X.V Y.V) x
+  exact LinearMap.ext fun x ↦ LinearEquiv.symm_apply_apply _ _
 
 @[simp]
 theorem linearization_ε_hom : (linearization k G).ε.hom = Finsupp.lsingle PUnit.unit :=
@@ -426,10 +422,10 @@ theorem leftRegularHom_single {A : Rep k G} (g : G) (x : A) (r : k) :
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
-noncomputable def leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A where
-  toFun f := hom f (Finsupp.single 1 1)
-  map_add' x y := rfl
-  map_smul' r x := rfl
+noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶ A) ≃ₗ[k] A where
+  toFun f := f.hom (Finsupp.single 1 1)
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
   invFun x := leftRegularHom A x
   left_inv f := hom_ext <| Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring <| by
     simpa using (hom_comm_apply f x (Finsupp.single 1 1)).symm
@@ -864,7 +860,7 @@ theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
 /- Porting note: rest of broken proof was
   simp only [AddEquiv.apply_eq_iff_eq, AddEquiv.apply_symm_apply,
     Representation.asModuleEquiv_symm_map_rho, Representation.ofModule_asModule_act] -/
-  erw [Representation.asModuleEquiv_symm_map_rho]
+  rw [Representation.asModuleEquiv_symm_map_rho]
   rfl
 
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
