@@ -258,8 +258,8 @@ lemma range_toContinuousMap :
   exact ⟨{ f with map_one' := h1, map_mul' := hmul }, rfl⟩
 
 @[to_additive]
-theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
-    ClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
+theorem isClosedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
+    IsClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
   toEmbedding := embedding_toContinuousMap A B
   isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]

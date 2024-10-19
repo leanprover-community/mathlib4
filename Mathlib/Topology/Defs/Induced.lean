@@ -32,7 +32,7 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
   if it is an embedding and its range is open.
   An open embedding is an open map.
 
-* `ClosedEmbedding`: a map `f : X → Y` is an *open embedding*,
+* `IsClosedEmbedding`: a map `f : X → Y` is an *open embedding*,
   if it is an embedding and its range is open.
   An open embedding is an open map.
 
@@ -121,7 +121,7 @@ alias OpenEmbedding := IsOpenEmbedding
 
 /-- A closed embedding is an embedding with closed image. -/
 @[mk_iff]
-structure ClosedEmbedding (f : X → Y) extends Embedding f : Prop where
+structure IsClosedEmbedding (f : X → Y) extends Embedding f : Prop where
   /-- The range of a closed embedding is a closed set. -/
   isClosed_range : IsClosed <| range f
 

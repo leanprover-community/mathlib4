@@ -347,9 +347,9 @@ alias UniformEmbedding.isDenseEmbedding := IsUniformEmbedding.isDenseEmbedding
 @[deprecated (since := "2024-09-30")]
 alias IsUniformEmbedding.denseEmbedding := IsUniformEmbedding.isDenseEmbedding
 
-theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
+theorem isClosedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
     [T0Space β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
-    (hf : Pairwise fun x y => (f x, f y) ∉ s) : ClosedEmbedding f := by
+    (hf : Pairwise fun x y => (f x, f y) ∉ s) : IsClosedEmbedding f := by
   rcases @DiscreteTopology.eq_bot α _ _ with rfl; let _ : UniformSpace α := ⊥
   exact
     { (isUniformEmbedding_of_spaced_out hs hf).embedding with

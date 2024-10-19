@@ -620,13 +620,14 @@ theorem Inducing.isLindelof_preimage {f : X → Y} (hf : Inducing f) (hf' : IsCl
   rwa [hf.isLindelof_iff, image_preimage_eq_inter_range]
 
 /-- The preimage of a Lindelöf set under a closed embedding is a Lindelöf set. -/
-theorem ClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : ClosedEmbedding f)
+theorem IsClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) :=
   hf.toInducing.isLindelof_preimage (hf.isClosed_range) hK
 
 /-- A closed embedding is proper, ie, inverse images of Lindelöf sets are contained in Lindelöf.
-Moreover, the preimage of a Lindelöf set is Lindelöf, see `ClosedEmbedding.isLindelof_preimage`. -/
-theorem ClosedEmbedding.tendsto_coLindelof {f : X → Y} (hf : ClosedEmbedding f) :
+Moreover, the preimage of a Lindelöf set is Lindelöf, see
+`IsClosedEmbedding.isLindelof_preimage`. -/
+theorem IsClosedEmbedding.tendsto_coLindelof {f : X → Y} (hf : IsClosedEmbedding f) :
     Tendsto f (Filter.coLindelof X) (Filter.coLindelof Y) :=
   hasBasis_coLindelof.tendsto_right_iff.mpr fun _K hK =>
     (hf.isLindelof_preimage hK).compl_mem_coLindelof
@@ -648,12 +649,12 @@ theorem IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.
   countable_coe_iff.mp
   (@countable_of_Lindelof_of_discrete _ _ (isLindelof_iff_LindelofSpace.mp hs) hs')
 
-protected theorem ClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X → Y}
-    (hf : ClosedEmbedding f) : NonLindelofSpace Y :=
+protected theorem IsClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X → Y}
+    (hf : IsClosedEmbedding f) : NonLindelofSpace Y :=
   nonLindelofSpace_of_neBot hf.tendsto_coLindelof.neBot
 
-protected theorem ClosedEmbedding.LindelofSpace [h : LindelofSpace Y] {f : X → Y}
-    (hf : ClosedEmbedding f) : LindelofSpace X :=
+protected theorem IsClosedEmbedding.LindelofSpace [h : LindelofSpace Y] {f : X → Y}
+    (hf : IsClosedEmbedding f) : LindelofSpace X :=
   ⟨by rw [hf.toInducing.isLindelof_iff, image_univ]; exact hf.isClosed_range.isLindelof⟩
 
 /-- Countable topological spaces are Lindelof. -/
