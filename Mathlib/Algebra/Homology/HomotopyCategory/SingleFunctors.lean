@@ -28,7 +28,6 @@ namespace CochainComplex
 
 open HomologicalComplex
 
---set_option diagnostics true
 /-- The collection of all single functors `C ⥤ CochainComplex C ℤ` along with
 their compatibilites with shifts. (This definition has purposely no `simps`
 attribute, as the generated lemmas would not be very useful.) -/
