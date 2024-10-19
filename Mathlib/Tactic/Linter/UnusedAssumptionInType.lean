@@ -51,6 +51,7 @@ def checkUnusedAssumptionInType (declInfo : ConstantInfo) (typesToAvoid : Array 
   if impossibleArgs.isEmpty then return none
   return some <| .joinSep (impossibleArgs.toList.map Prod.snd) ", "
 
+/-- Temporary  hack -/
 @[env_linter] def allOfThem : Linter where
   noErrorsFound := "No uses of `XXX` arguments should be replaced with `YYY`"
   errorsFound := "USES OF `XXX` SHOULD BE REPLACED WITH `YYY` IN THE PROOF."
