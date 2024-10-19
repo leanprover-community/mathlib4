@@ -33,7 +33,7 @@ variable [Group α]
 
 section TypeclassesLeftLE
 
-variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
+variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
 
 /-- Uses `left` co(ntra)variant. -/
 @[to_additive (attr := simp) "Uses `left` co(ntra)variant."]
@@ -471,7 +471,7 @@ variable [Group α] [LE α]
 
 section Right
 
-variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
+variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
 @[to_additive]
 theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
@@ -594,7 +594,7 @@ variable [Group α] [LT α]
 
 section Right
 
-variable [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c d : α}
+variable [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c : α}
 
 @[to_additive (attr := simp)]
 theorem div_lt_div_iff_right (c : α) : a / c < b / c ↔ a < b := by
@@ -722,7 +722,7 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 section VariableNames
 
-variable {a b c : α}
+variable {a b : α}
 
 @[to_additive]
 theorem le_of_forall_one_lt_lt_mul (h : ∀ ε : α, 1 < ε → a < b * ε) : a ≤ b :=

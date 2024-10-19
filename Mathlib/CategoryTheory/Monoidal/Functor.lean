@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta
+Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
@@ -309,6 +309,27 @@ noncomputable def MonoidalFunctor.toOplaxMonoidalFunctor (F : MonoidalFunctor C 
         rw [← F.map_comp, Iso.hom_inv_id, F.map_id]
       simp }
 
+/-- Construct a (strong) monoidal functor out of an oplax monoidal functor whose tensorators and
+unitors are isomorphisms -/
+@[simps]
+noncomputable def MonoidalFunctor.fromOplaxMonoidalFunctor (F : OplaxMonoidalFunctor C D)
+    [IsIso F.η] [∀ (X Y : C), IsIso (F.δ X Y)] : MonoidalFunctor C D :=
+    { F with
+      ε := inv F.η
+      μ := fun X Y => inv (F.δ X Y)
+      associativity := by
+        intro X Y Z
+        rw [← inv_whiskerRight, IsIso.inv_comp_eq, IsIso.inv_comp_eq]
+        simp
+      left_unitality := by
+        intro X
+        rw [← inv_whiskerRight, ← IsIso.inv_comp_eq]
+        simp
+      right_unitality := by
+        intro X
+        rw [← inv_whiskerLeft, ← IsIso.inv_comp_eq]
+        simp }
+
 end
 
 open MonoidalCategory
@@ -322,7 +343,7 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 def id : LaxMonoidalFunctor.{v₁, v₁} C C :=
   { 𝟭 C with
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 instance : Inhabited (LaxMonoidalFunctor C C) :=
   ⟨id C⟩
@@ -338,7 +359,7 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 def id : OplaxMonoidalFunctor.{v₁, v₁} C C :=
   { 𝟭 C with
     η := 𝟙 _
-    δ := fun X Y => 𝟙 _ }
+    δ := fun _ _ => 𝟙 _ }
 
 instance : Inhabited (OplaxMonoidalFunctor C C) :=
   ⟨id C⟩
@@ -457,7 +478,7 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 def id : MonoidalFunctor.{v₁, v₁} C C :=
   { 𝟭 C with
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 instance : Inhabited (MonoidalFunctor C C) :=
   ⟨id C⟩
@@ -558,7 +579,7 @@ variable (C)
 def diag : MonoidalFunctor C (C × C) :=
   { Functor.diag C with
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 end MonoidalFunctor
 

@@ -3,8 +3,8 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Ralf Stephan
 -/
-import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Nat.Nth
+import Mathlib.Data.Nat.Totient
 import Mathlib.NumberTheory.SmoothNumbers
 
 /-!
@@ -56,6 +56,10 @@ def primeCounting (n : ℕ) : ℕ :=
 
 open scoped Nat.Prime
 
+@[simp]
+theorem primeCounting_sub_one (n : ℕ) : π (n - 1) = π' n := by
+  cases n <;> rfl
+
 theorem monotone_primeCounting' : Monotone primeCounting' :=
   count_monotone Prime
 
@@ -67,12 +71,37 @@ theorem primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
   count_nth_of_infinite infinite_setOf_prime _
 
 @[simp]
+theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
+
+/-- The `n`th prime is greater or equal to `n + 2`. -/
+theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
+  zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
+
+theorem surjective_primeCounting' : Function.Surjective π' :=
+  Nat.surjective_count_of_infinite_setOf infinite_setOf_prime
+
+theorem surjective_primeCounting : Function.Surjective π := by
+  suffices Function.Surjective (π ∘ fun n => n - 1) from this.of_comp
+  convert surjective_primeCounting'
+  ext
+  exact primeCounting_sub_one _
+
+open Filter
+
+theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
+  apply tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
+  simp [Set.range_iff_surjective.mpr surjective_primeCounting']
+
+theorem tensto_primeCounting : Tendsto π atTop atTop :=
+  (tendsto_add_atTop_iff_nat 1).mpr tendsto_primeCounting'
+
+@[simp]
 theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
 
 /-- The cardinality of the finset `primesBelow n` equals the counting function
 `primeCounting'` at `n`. -/
-lemma primesBelow_card_eq_primeCounting' (n : ℕ) : n.primesBelow.card = primeCounting' n := by
+theorem primesBelow_card_eq_primeCounting' (n : ℕ) : n.primesBelow.card = primeCounting' n := by
   simp only [primesBelow, primeCounting']
   exact (count_eq_card_filter_range Prime n).symm
 
@@ -97,12 +126,5 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
     _ ≤ π' k + totient a * (n / a + 1) := by
       rw [add_le_add_iff_left]
       exact Ico_filter_coprime_le k n h0
-
-@[simp]
-theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
-
-/-- The `n`th prime is greater or equal to `n + 2`. -/
-lemma add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
-  zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
 
 end Nat

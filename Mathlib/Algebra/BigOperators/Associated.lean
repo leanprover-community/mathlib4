@@ -94,14 +94,14 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α]
     obtain ⟨ha₁ | ha₂, hs⟩ := hm
     · rcases ha₁.exists_right_inv with ⟨k, hk⟩
       refine hind x (y*k) ?_ hs ?_
-      simp only [← mul_assoc, ← hprod, ← Multiset.prod_cons, mul_comm]
-      refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_),
-        Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_), (fun t ht =>
-        subset_closure (hs t ht))⟩⟩)
-      · left; exact isUnit_of_mul_eq_one_right _ _ hk
-      · left; exact ha₁
-      rw [← mul_one s.prod, ← hk, ← mul_assoc, ← mul_assoc, mul_eq_mul_right_iff, mul_comm]
-      left; exact hprod
+      · simp only [← mul_assoc, ← hprod, ← Multiset.prod_cons, mul_comm]
+        refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_),
+          Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_), (fun t ht =>
+          subset_closure (hs t ht))⟩⟩)
+        · left; exact isUnit_of_mul_eq_one_right _ _ hk
+        · left; exact ha₁
+      · rw [← mul_one s.prod, ← hk, ← mul_assoc, ← mul_assoc, mul_eq_mul_right_iff, mul_comm]
+        left; exact hprod
     · rcases ha₂.dvd_mul.1 (Dvd.intro _ hprod) with ⟨c, hc⟩ | ⟨c, hc⟩
       · rw [hc]; rw [hc, mul_assoc] at hprod
         refine Submonoid.mul_mem _ (subset_closure (Set.mem_def.2 ?_))
@@ -135,7 +135,7 @@ theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
       Multiset.countP_pos] at this
     exact this ⟨b, b_in_s, assoc.symm⟩
 
-theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [Unique αˣ] {s : Finset α} (n : α)
+theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [Subsingleton αˣ] {s : Finset α} (n : α)
     (h : ∀ a ∈ s, Prime a) (div : ∀ a ∈ s, a ∣ n) : (∏ p ∈ s, p) ∣ n := by
   classical
     exact
@@ -187,7 +187,7 @@ variable [CancelCommMonoidWithZero α]
 
 theorem exists_mem_multiset_le_of_prime {s : Multiset (Associates α)} {p : Associates α}
     (hp : Prime p) : p ≤ s.prod → ∃ a ∈ s, p ≤ a :=
-  Multiset.induction_on s (fun ⟨d, Eq⟩ => (hp.ne_one (mul_eq_one.1 Eq.symm).1).elim)
+  Multiset.induction_on s (fun ⟨_, Eq⟩ => (hp.ne_one (mul_eq_one.1 Eq.symm).1).elim)
     fun a s ih h =>
     have : p ≤ a * s.prod := by simpa using h
     match Prime.le_or_le hp this with
