@@ -116,9 +116,11 @@ instance isNoetherian_range (f : M →ₗ[R] P) [IsNoetherian R M] :
     IsNoetherian R (LinearMap.range f) :=
   isNoetherian_of_surjective _ _ f.range_rangeRestrict
 
-instance isNoetherian_quotient {R} [Ring R] {M} [AddCommGroup M] [Module R M]
-    (N : Submodule R M) [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
-  isNoetherian_of_surjective _ _ (LinearMap.range_eq_top.mpr N.mkQ_surjective)
+instance isNoetherian_quotient {A M : Type*} [Ring A] [AddCommGroup M] [SMul R A] [Module R M]
+    [Module A M] [IsScalarTower R A M] (N : Submodule A M) [IsNoetherian R M] :
+    IsNoetherian R (M ⧸ N) :=
+  isNoetherian_of_surjective M ((Submodule.mkQ N).restrictScalars R) <|
+    LinearMap.range_eq_top.mpr N.mkQ_surjective
 
 @[deprecated (since := "2024-04-27"), nolint defLemma]
 alias Submodule.Quotient.isNoetherian := isNoetherian_quotient

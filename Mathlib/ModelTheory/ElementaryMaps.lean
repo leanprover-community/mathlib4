@@ -67,9 +67,6 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
     ext x
     exact funext_iff.1 h x
 
-instance : CoeFun (M ↪ₑ[L] N) fun _ => M → N :=
-  DFunLike.hasCoeToFun
-
 @[simp]
 theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
     (v : α → M) (xs : Fin n → M) : φ.Realize (f ∘ v) (f ∘ xs) ↔ φ.Realize v xs := by
