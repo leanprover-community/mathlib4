@@ -247,7 +247,7 @@ theorem toAlgHom_surjective (G F : Type*) [Field F] [Group G] [Finite G] [MulSem
   obtain ⟨q, hq⟩ := (toAlgHom_bijective' Q F).surjective
     (AlgEquiv.ofRingEquiv (f := f) (fun ⟨x, hx⟩ ↦ f.commutes' ⟨x, fun g ↦ hx g⟩))
   revert hq
-  refine Quotient.inductionOn' q (fun g hg ↦ ⟨g, ?_⟩)
+  refine QuotientGroup.induction_on q (fun g hg ↦ ⟨g, ?_⟩)
   rwa [AlgEquiv.ext_iff] at hg ⊢
 
 end fixedfield
@@ -292,10 +292,6 @@ theorem charpoly_eq_prod_smul (b : B) : charpoly G b = ∏ g : G, g • (X - C b
 
 theorem monic_charpoly (b : B) : (charpoly G b).Monic :=
   monic_prod_of_monic _ _ (fun _ _ ↦ monic_X_sub_C _)
-
-theorem natdegree_charpoly [Nontrivial B] (b : B) : (charpoly G b).natDegree = Fintype.card G := by
-  rw [charpoly_eq, natDegree_prod_of_monic _ _ (fun _ _ => monic_X_sub_C _), ← Finset.card_univ]
-  simp only [natDegree_X_sub_C, Finset.sum_const, Nat.smul_one_eq_cast, Nat.cast_id]
 
 theorem eval_charpoly (b : B) : (charpoly G b).eval b = 0 := by
   rw [charpoly_eq, eval_prod]
@@ -346,7 +342,7 @@ theorem reduction_isIntegral
     (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) :
     Algebra.IsIntegral (A ⧸ P) (B ⧸ Q) where
   isIntegral q := by
-    refine Quotient.inductionOn' q (fun b ↦ ?_)
+    obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective q
     change IsIntegral (A ⧸ P) (algebraMap B (B ⧸ Q) b)
     obtain ⟨f, hf1, hf2⟩ := reduction G hFull' b
     refine ⟨f.map (algebraMap A (A ⧸ P)), hf1.map (algebraMap A (A ⧸ P)), ?_⟩
@@ -362,13 +358,8 @@ section part_b
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
-  (P : Ideal A) (Q : Ideal B) [P.IsPrime] [Q.IsPrime]
+  (P : Ideal A) (Q : Ideal B)
   [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
-  variable (K L : Type*) [Field K] [Field L]
-  [Algebra (A ⧸ P) K] [IsFractionRing (A ⧸ P) K]
-  [Algebra (B ⧸ Q) L] [IsFractionRing (B ⧸ Q) L]
-  [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
-  [Algebra K L] [IsScalarTower (A ⧸ P) K L]
 
 def quotientRingAction (Q' : Ideal B) (g : G) (hg : g • Q = Q') :
     B ⧸ Q ≃+* B ⧸ Q' :=
@@ -406,10 +397,24 @@ def stabilizerAction :
     simp
     rw [smul_smul]
 
+end part_b
+
+section part_b
+
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
+  (P : Ideal A) (Q : Ideal B) [P.IsPrime] [Q.IsPrime]
+  [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
+  variable (K L : Type*) [Field K] [Field L]
+  [Algebra (A ⧸ P) K] [IsFractionRing (A ⧸ P) K]
+  [Algebra (B ⧸ Q) L] [IsFractionRing (B ⧸ Q) L]
+  [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
+  [Algebra K L] [IsScalarTower (A ⧸ P) K L]
+
 section redo_part_b
 
 -- technical CRT lemma
-theorem lem1 [DecidableEq (Ideal B)] [Nontrivial B] :
+theorem lem1 [DecidableEq (Ideal B)] :
     ∃ a b : B, (∀ g : G, g • a = a) ∧ (a ∉ Q) ∧
     (∀ g : G, algebraMap B (B ⧸ Q) (g • b) =
       algebraMap B (B ⧸ Q) (if g • Q = Q then a else 0)) := by
@@ -486,7 +491,7 @@ theorem lem1 [DecidableEq (Ideal B)] [Nontrivial B] :
       rw [Ne, inv_smul_eq_iff, eq_comm]
       exact hh
 
-theorem lem2 [DecidableEq (Ideal B)] [Nontrivial B] (b₀ : B)
+theorem lem2 [DecidableEq (Ideal B)] (b₀ : B)
     (hx : ∀ g : G, g • Q = Q → algebraMap B (B ⧸ Q) (g • b₀) = algebraMap B (B ⧸ Q) b₀) :
     ∃ a b : B, (∀ g : G, g • a = a) ∧ (a ∉ Q) ∧
     (∀ g : G, algebraMap B (B ⧸ Q) (g • b) =
@@ -524,12 +529,10 @@ theorem lem4 (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algeb
   classical
   cases nonempty_fintype G
   revert hx
-  refine Quotient.inductionOn' b ?_
-  intro b₀ hx
+  obtain ⟨b₀, rfl⟩ := Ideal.Quotient.mk_surjective b
+  intro hx
   change f (algebraMap (B ⧸ Q) L (algebraMap B (B ⧸ Q) b₀)) =
     (algebraMap (B ⧸ Q) L (algebraMap B (B ⧸ Q) b₀))
-  cases subsingleton_or_nontrivial B
-  · rw [Subsingleton.elim b₀ 0, map_zero, map_zero, map_zero]
   obtain ⟨a, b, ha1, ha2, hb⟩ := lem2 G Q b₀ (fun g hg ↦ hx ⟨g, hg⟩)
   obtain ⟨M, _, key⟩ := MulSemiringAction.Charpoly.reduction G hAB b
   replace key := congrArg (map (algebraMap B (B ⧸ Q))) key
@@ -575,8 +578,6 @@ theorem fullHom_surjective1
     (f : L ≃ₐ[K] L) (x : L) (hx : ∀ g : MulAction.stabilizer G Q, fullHom G P Q K L g x = x) :
     f x = x := by
   obtain ⟨_⟩ := nonempty_fintype G
-  have : Nontrivial A := ((algebraMap (A ⧸ P) K).comp (algebraMap A (A ⧸ P))).domain_nontrivial
-  have : Nontrivial B := ((algebraMap (B ⧸ Q) L).comp (algebraMap B (B ⧸ Q))).domain_nontrivial
   have : NoZeroSMulDivisors (A ⧸ P) L := by
     simp only [NoZeroSMulDivisors.iff_algebraMap_injective,
         injective_iff_map_eq_zero,
