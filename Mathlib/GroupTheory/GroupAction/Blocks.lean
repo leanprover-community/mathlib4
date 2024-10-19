@@ -297,10 +297,6 @@ theorem IsBlock.inter {B₁ B₂ : Set X} (h₁ : IsBlock G B₁) (h₂ : IsBloc
 /-- An intersection of blocks is a block -/
 theorem IsBlock.iInter {ι : Type*} {B : ι → Set X} (hB : ∀ i : ι, IsBlock G (B i)) :
     IsBlock G (⋂ i, B i) := by
-  by_cases hι : (IsEmpty ι)
-  · -- ι = ∅, block = univ
-    suffices (⋂ i : ι, B i) = Set.univ by simpa only [this] using isBlock_univ X
-    simpa only [Set.iInter_eq_univ] using (hι.elim' ·)
   rw [IsBlock.def_one]
   intro g
   rw [Set.smul_set_iInter]

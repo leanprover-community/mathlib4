@@ -248,7 +248,7 @@ theorem mem_inf_iff_superset {f g : Filter α} {s : Set α} :
 
 section CompleteLattice
 
-/- Complete lattice structure on `Filter α`. -/
+/-- Complete lattice structure on `Filter α`. -/
 instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
   le_sup_left _ _ _ h := h.1
   le_sup_right _ _ _ h := h.2

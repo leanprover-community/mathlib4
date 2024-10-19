@@ -57,7 +57,7 @@ variable {I} (R)
 @[simps!]
 def algHom [CommSemiring R] [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
     {A : Type*} [Semiring A] [Algebra R A] (g : ∀ i, A →ₐ[R] f i) :
-      A →ₐ[R] ∀ i, f i where
+    A →ₐ[R] ∀ i, f i where
   __ := Pi.ringHom fun i ↦ (g i).toRingHom
   commutes' r := by ext; simp
 
