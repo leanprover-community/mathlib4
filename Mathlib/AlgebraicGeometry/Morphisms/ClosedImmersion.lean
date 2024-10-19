@@ -132,14 +132,9 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
     simp_rw [Scheme.stalkMap_comp] at h
     exact Function.Surjective.of_comp h
 
-instance {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.residue x)) :=
+instance Spec_map_residue {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.residue x)) :=
   IsClosedImmersion.spec_of_surjective (X.residue x)
     Ideal.Quotient.mk_surjective
-
-instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecResidueField x) := by
-  dsimp only [Scheme.fromSpecResidueField]
-  rw [IsPreimmersion.comp_iff]
-  infer_instance
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'

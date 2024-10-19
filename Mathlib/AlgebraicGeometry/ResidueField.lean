@@ -20,6 +20,9 @@ The following are in the `AlgebraicGeometry.Scheme` namespace:
 - `AlgebraicGeometry.Scheme.Hom.residueFieldMap`: A morphism of schemes induce a homomorphism of
   residue fields.
 - `AlgebraicGeometry.Scheme.fromSpecResidueField`: The canonical map `Spec κ(x) ⟶ X`.
+- `AlgebraicGeometry.Scheme.SpecToEquivOfField`: morphisms `Spec K ⟶ X` for a field `K` correspond
+  to pairs of `x : X` with embedding `κ(x) ⟶ K`.
+
 
 -/
 
@@ -44,6 +47,13 @@ instance (x : X) : Field (X.residueField x) :=
 /-- The residue map from the stalk to the residue field. -/
 def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
   LocalRing.residue _
+
+/-- See `AlgebraicGeometry.IsClosedImmersion.Spec_map_residue` for the stronger result that
+`Spec.map (X.residue x)` is a closed immersion. -/
+instance {X : Scheme.{u}} (x) : IsPreimmersion (Spec.map (X.residue x)) :=
+  IsPreimmersion.mk_Spec_map
+    (PrimeSpectrum.closedEmbedding_comap_of_surjective _ _ (Ideal.Quotient.mk_surjective)).embedding
+    (RingHom.surjectiveOnStalks_of_surjective (Ideal.Quotient.mk_surjective))
 
 @[simp]
 lemma Spec_map_residue_apply {X : Scheme.{u}} (x : X) (s : Spec (X.residueField x)) :
@@ -202,6 +212,11 @@ def fromSpecResidueField (X : Scheme) (x : X) :
     Spec (X.residueField x) ⟶ X :=
   Spec.map (X.residue x) ≫ X.fromSpecStalk x
 
+instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecResidueField x) := by
+  dsimp only [Scheme.fromSpecResidueField]
+  rw [IsPreimmersion.comp_iff]
+  infer_instance
+
 @[reassoc (attr := simp)]
 lemma residueFieldCongr_fromSpecResidueField {x y : X} (h : x = y) :
     Spec.map (X.residueFieldCongr h).hom ≫ X.fromSpecResidueField _ =
@@ -250,6 +265,34 @@ lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
   rw [Scheme.Spec_stalkClosedPointTo_fromSpecStalk]
 
 end fromResidueField
+
+/-- A helper lemma to work with `AlgebraicGeometry.Scheme.SpecToEquivOfField`. -/
+lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
+    {f₁ f₂ : Σ x : X.carrier, X.residueField x ⟶ .of K} :
+    f₁ = f₂ ↔ ∃ e : f₁.1 = f₂.1, f₁.2 = (X.residueFieldCongr e).hom ≫ f₂.2 := by
+  constructor
+  · rintro rfl
+    simp
+  · obtain ⟨f, _⟩ := f₁
+    obtain ⟨g, _⟩ := f₂
+    rintro ⟨(rfl : f = g), h⟩
+    simpa
+
+/-- For a field `K` and a scheme `X`, the morphisms `Spec K ⟶ X` bijectively correspond
+to pairs of points `x` of `X` and embeddings `κ(x) ⟶ K`. -/
+def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
+    (Spec (.of K) ⟶ X) ≃ Σ x, X.residueField x ⟶ .of K where
+  toFun f :=
+    ⟨_, X.descResidueField (Scheme.stalkClosedPointTo f)⟩
+  invFun xf := Spec.map xf.2 ≫ X.fromSpecResidueField xf.1
+  left_inv := Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField K X
+  right_inv f := by
+    rw [SpecToEquivOfField_eq_iff]
+    simp only [CommRingCat.coe_of, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply,
+      Scheme.fromSpecResidueField_apply, exists_true_left]
+    rw [← Spec.map_inj, Spec.map_comp, ← cancel_mono (X.fromSpecResidueField _)]
+    erw [Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField]
+    simp
 
 end Scheme
 
