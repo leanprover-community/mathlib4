@@ -237,14 +237,6 @@ lemma norm_prod_le_of_forall_le_of_nonneg {s : Finset ι} {f : ι → M} {C : �
   lift C to NNReal using h_nonneg
   exact nnnorm_prod_le_of_forall_le hC
 
--- TODO: Find a better place for this lemma to go
-lemma _root_.Finset.Nonempty.sup'_mem_image {α ι : Type*} [LinearOrder α] {t : Finset ι}
-    (ht : t.Nonempty) (f : ι → α) : ∃ i ∈ t, f i = t.sup' ht f := by
-  simp_rw [← Finset.mem_image, ← Finset.mem_coe, Finset.coe_image]
-  refine Finset.sup'_mem _ (fun x hx y hy ↦ ?_) t ht f (by tauto)
-  rcases max_cases x y with h | h <;> rw [sup_eq_max, h.1]
-  exacts [hx, hy]
-
 /--
 Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can always find `i ∈ t` such that
 `‖∏ j in t, f j‖ ≤ ‖f i‖`.
@@ -253,8 +245,8 @@ Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can alw
 `i ∈ t` such that `‖∑ j in t, f j‖ ≤ ‖f i‖`."]
 theorem exists_norm_finset_prod_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) (f : ι → M) :
     ∃ i ∈ t, ‖∏ j in t, f j‖ ≤ ‖f i‖ :=
-  match ht.sup'_mem_image (‖f ·‖) with
-  |⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj'.symm)⟩
+  match t.exists_mem_eq_sup' ht (‖f ·‖) with
+  |⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
 
 /--
 Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`, belonging to `t`
@@ -268,7 +260,6 @@ theorem exists_norm_finset_prod_le (t : Finset ι) [Nonempty ι] (f : ι → M) 
   · simp
   exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| exists_norm_finset_prod_le_of_nonempty ht f
 
--- TODO: golf this similarly to above
 /--
 Given a function `f : ι → M` and a multiset `t : Multiset ι`, we can always find `i : ι`, belonging
 to `t` if `t` is nonempty, such that `‖(s.map f).prod‖ ≤ ‖f i‖`.
