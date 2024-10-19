@@ -328,6 +328,7 @@ theorem bit_cases_on_inj {motive : ℕ → Sort u} (H₁ H₂ : ∀ b n, motive 
     ((fun n => bitCasesOn n H₁) = fun n => bitCasesOn n H₂) ↔ H₁ = H₂ :=
   bit_cases_on_injective.eq_iff
 
+@[simp]
 theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
   constructor
   · cases b <;> simp [Nat.bit]; omega
