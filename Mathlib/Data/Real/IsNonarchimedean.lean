@@ -60,7 +60,7 @@ theorem finset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
     (g : β → α) (t : Finset β) :
     ∃ b : β, (t.Nonempty → b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
   let _ := AddGroupSeminormClass.toSeminormedAddCommGroup f
-  have := AddGroupSeminormClass.isUltrametricDist' hna
+  have := AddGroupSeminormClass.isUltrametricDist hna
   simp_rw [← AddGroupSeminormClass.toSeminormedAddCommGroup_norm_eq]
   rcases t.eq_empty_or_nonempty with rfl|ht
   · simp
