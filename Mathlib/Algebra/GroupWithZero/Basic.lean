@@ -408,7 +408,7 @@ lemma zero_zpow_eq_one₀ {n : ℤ} : (0 : G₀) ^ n = 1 ↔ n = 0 := by
     apply this (G₀ := G₀)
     · simpa
     · omega
-    have : n.toNat = 0 := eq_zero_of_zero_pow_eq_one₀ (M₀ := G₀).mp <| by
+    have : n.toNat = 0 := zero_pow_eq_one₀ (M₀ := G₀).mp <| by
       rwa [← zpow_natCast, Int.toNat_of_nonneg hn]
     omega
   · intro h
