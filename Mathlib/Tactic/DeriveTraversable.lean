@@ -173,6 +173,7 @@ def deriveFunctor (m : MVarId) : TermElabM Unit := do
           levelParams := levels
           modifiers :=
             { isUnsafe := d.isUnsafe
+              stx := ⟨.missing⟩
               attrs :=
                 #[{ kind := .global
                     name := `specialize
@@ -239,6 +240,7 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
           levelParams := decl.levelParams
           modifiers :=
             { isUnsafe
+              stx := ⟨.missing⟩
               attrs :=
                 #[{ kind := .global
                     name := `instance
@@ -414,6 +416,7 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
           levelParams := levels
           modifiers :=
             { isUnsafe := d.isUnsafe
+              stx := ⟨.missing⟩
               visibility := .protected }
           declName := n'
           type := t'

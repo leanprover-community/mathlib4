@@ -328,8 +328,8 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
     value := ← instantiateMVars mvar
   }
   addDeclarationRanges rel {
-    range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange relStx
+    range := (← getDeclarationRange? (← getRef)).get!
+    selectionRange := (← getDeclarationRange? relStx).get!
   }
   addConstInfo relStx rel
 
@@ -406,7 +406,7 @@ initialize Lean.registerBuiltinAttribute {
   add := fun decl stx _ => Lean.Meta.MetaM.run' do
     let (tgt, idStx) ← match stx with
       | `(attr| mk_iff $tgt:ident) =>
-        pure ((← mkDeclName (← getCurrNamespace) {} tgt.getId).1, tgt.raw)
+        pure ((← mkDeclName (← getCurrNamespace) { stx := ⟨.missing⟩ } tgt.getId).1, tgt.raw)
       | `(attr| mk_iff) => pure (decl.decapitalize.appendAfter "_iff", stx)
       | _ => throwError "unrecognized syntax"
     mkIffOfInductivePropImpl decl tgt idStx

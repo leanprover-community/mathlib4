@@ -31,6 +31,7 @@ def toModifiers (nm : Name) (newDoc : Option String := none) :
   let d ← getConstInfo nm
   let mods : Modifiers :=
   { docString? := newDoc
+    stx := ⟨.missing⟩
     visibility :=
     if isPrivateNameExport nm then
       Visibility.private

@@ -975,8 +975,8 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   catch ex =>
     throwError "Failed to add projection lemma {declName}. Nested error:\n{ex.toMessageData}"
   addDeclarationRanges declName {
-    range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange ref }
+    range := (← getDeclarationRange? (← getRef)).get!
+    selectionRange := (← getDeclarationRange? ref).get! }
   _ ← MetaM.run' <| TermElabM.run' <| addTermInfo (isBinder := true) ref <|
     ← mkConstWithLevelParams declName
   if cfg.isSimp then

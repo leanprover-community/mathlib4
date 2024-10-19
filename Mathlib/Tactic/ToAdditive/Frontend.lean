@@ -813,8 +813,8 @@ partial def transformDeclAux
   -- note: we currently also do this for auxiliary declarations, while they are not normally
   -- generated for those. We could change that.
   addDeclarationRanges tgt {
-    range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange cfg.ref }
+    range := (← getDeclarationRange? (← getRef)).get!
+    selectionRange := (← getDeclarationRange? cfg.ref).get! }
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
   if let some matcherInfo ← getMatcherInfo? src then
