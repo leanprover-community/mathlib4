@@ -111,7 +111,7 @@ private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s => compRel s s) �
       · exact monotone_gen
       · exact monotone_id.compRel monotone_id
     _ ≤ (𝓤 α).lift' fun s => gen <| compRel s s :=
-      lift'_mono' fun s _hs => compRel_gen_gen_subset_gen_compRel
+      lift'_mono' fun _ _hs => compRel_gen_gen_subset_gen_compRel
     _ = ((𝓤 α).lift' fun s : Set (α × α) => compRel s s).lift' gen := by
       rw [lift'_lift'_assoc]
       · exact monotone_id.compRel monotone_id
@@ -211,8 +211,8 @@ instance : CompleteSpace (CauchyFilter α) :=
   completeSpace_extension isUniformInducing_pureCauchy denseRange_pureCauchy fun f hf =>
     let f' : CauchyFilter α := ⟨f, hf⟩
     have : map pureCauchy f ≤ (𝓤 <| CauchyFilter α).lift' (preimage (Prod.mk f')) :=
-      le_lift'.2 fun s hs =>
-        let ⟨t, ht₁, (ht₂ : gen t ⊆ s)⟩ := (mem_lift'_sets monotone_gen).mp hs
+      le_lift'.2 fun _ hs =>
+        let ⟨t, ht₁, ht₂⟩ := (mem_lift'_sets monotone_gen).mp hs
         let ⟨t', ht', (h : t' ×ˢ t' ⊆ t)⟩ := mem_prod_same_iff.mp (hf.right ht₁)
         have : t' ⊆ { y : α | (f', pureCauchy y) ∈ gen t } := fun x hx =>
           (f ×ˢ pure x).sets_of_superset (prod_mem_prod ht' hx) h

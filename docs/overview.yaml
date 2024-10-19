@@ -468,7 +468,7 @@ Data structures:
   Maps:
     key-value map: 'AList'
     red-black map: 'Batteries.RBMap'
-    hash map: 'Batteries.HashMap'
+    hash map: 'Std.HashMap'
     finitely supported function: 'Finsupp'
     finite map: 'Finmap'
 

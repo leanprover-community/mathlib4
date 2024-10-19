@@ -142,7 +142,7 @@ theorem isTopologicalBasis_of_isOpen_of_nhds {s : Set (Set α)} (h_open : ∀ u 
     IsTopologicalBasis s :=
   .of_hasBasis_nhds <| fun a ↦
     (nhds_basis_opens a).to_hasBasis' (by simpa [and_assoc] using h_nhds a)
-      fun t ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat
+      fun _ ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat
 
 /-- A set `s` is in the neighbourhood of `a` iff there is some basis set `t`, which
 contains `a` and is itself contained in `s`. -/
@@ -887,8 +887,8 @@ theorem IsTopologicalBasis.sum {s : Set (Set α)} (hs : IsTopologicalBasis s) {t
     IsTopologicalBasis ((fun u => Sum.inl '' u) '' s ∪ (fun u => Sum.inr '' u) '' t) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro u (⟨w, hw, rfl⟩ | ⟨w, hw, rfl⟩)
-    · exact openEmbedding_inl.isOpenMap w (hs.isOpen hw)
-    · exact openEmbedding_inr.isOpenMap w (ht.isOpen hw)
+    · exact isOpenEmbedding_inl.isOpenMap w (hs.isOpen hw)
+    · exact isOpenEmbedding_inr.isOpenMap w (ht.isOpen hw)
   · rintro (x | x) u hxu u_open
     · obtain ⟨v, vs, xv, vu⟩ : ∃ v ∈ s, x ∈ v ∧ v ⊆ Sum.inl ⁻¹' u :=
         hs.exists_subset_of_mem_open hxu (isOpen_sum_iff.1 u_open).1
