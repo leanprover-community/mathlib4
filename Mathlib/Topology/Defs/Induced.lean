@@ -28,7 +28,7 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
 * `Embedding`: a map `f : X → Y` is an *embedding*,
   if it is a topology inducing map and it is injective.
 
-* `OpenEmbedding`: a map `f : X → Y` is an *open embedding*,
+* `IsOpenEmbedding`: a map `f : X → Y` is an *open embedding*,
   if it is an embedding and its range is open.
   An open embedding is an open map.
 
@@ -112,9 +112,12 @@ structure Embedding [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) exte
 
 /-- An open embedding is an embedding with open range. -/
 @[mk_iff]
-structure OpenEmbedding (f : X → Y) extends Embedding f : Prop where
+structure IsOpenEmbedding (f : X → Y) extends Embedding f : Prop where
   /-- The range of an open embedding is an open set. -/
   isOpen_range : IsOpen <| range f
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding := IsOpenEmbedding
 
 /-- A closed embedding is an embedding with closed image. -/
 @[mk_iff]

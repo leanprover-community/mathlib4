@@ -278,7 +278,7 @@ def isoSpec :
     ↑U ≅ Spec Γ(X, U) :=
   haveI : IsAffine U := hU
   U.toScheme.isoSpec ≪≫ Scheme.Spec.mapIso
-    (X.presheaf.mapIso (eqToIso U.openEmbedding_obj_top).op).op
+    (X.presheaf.mapIso (eqToIso U.isOpenEmbedding_obj_top).op).op
 
 open LocalRing in
 lemma isoSpec_hom_base_apply (x : U) :
@@ -395,8 +395,8 @@ theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
     (f : AlgebraicGeometry.Scheme.Hom X Y) [H : IsOpenImmersion f] {U : X.Opens} :
     IsAffineOpen (f ''ᵁ U) ↔ IsAffineOpen U := by
   refine ⟨fun hU => @isAffine_of_isIso _ _
-    (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.openEmbedding ≫ f) (Y.ofRestrict _) ?_).hom ?_ hU,
-    fun hU => hU.image_of_isOpenImmersion f⟩
+    (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.isOpenEmbedding ≫ f) (Y.ofRestrict _) ?_).hom
+      ?_ hU, fun hU => hU.image_of_isOpenImmersion f⟩
   · rw [Scheme.comp_base, coe_comp, Set.range_comp]
     dsimp [Opens.coe_inclusion', Scheme.restrict]
     erw [Subtype.range_coe, Subtype.range_coe] -- now `erw` after #13170
@@ -491,7 +491,7 @@ theorem ι_basicOpen_preimage (r : Γ(X, ⊤)) :
     IsAffineOpen ((X.basicOpen r).ι ⁻¹ᵁ U) := by
   apply (X.basicOpen r).ι.isAffineOpen_iff_of_isOpenImmersion.mp
   dsimp [Scheme.Hom.opensFunctor, LocallyRingedSpace.IsOpenImmersion.opensFunctor]
-  rw [Opens.functor_obj_map_obj, Opens.openEmbedding_obj_top, inf_comm,
+  rw [Opens.functor_obj_map_obj, Opens.isOpenEmbedding_obj_top, inf_comm,
     ← Scheme.basicOpen_res _ _ (homOfLE le_top).op]
   exact hU.basicOpen _
 
@@ -504,12 +504,12 @@ theorem exists_basicOpen_le {V : X.Opens} (x : V) (h : ↑x ∈ U) :
       ((Opens.map U.inclusion').obj V).isOpen
   have :
     U.ι ''ᵁ (U.toScheme.basicOpen r) =
-      X.basicOpen (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
+      X.basicOpen (X.presheaf.map (eqToHom U.isOpenEmbedding_obj_top.symm).op r) := by
     refine (Scheme.image_basicOpen U.ι r).trans ?_
     rw [Scheme.basicOpen_res_eq]
     simp only [Scheme.Opens.toScheme_presheaf_obj, Scheme.Opens.ι_appIso, Iso.refl_inv,
       CommRingCat.id_apply]
-  use X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r
+  use X.presheaf.map (eqToHom U.isOpenEmbedding_obj_top.symm).op r
   rw [← this]
   exact ⟨Set.image_subset_iff.mpr h₂, ⟨_, h⟩, h₁, rfl⟩
 
@@ -573,7 +573,7 @@ theorem isLocalization_of_eq_basicOpen {V : X.Opens} (i : V ⟶ U) (e : V = X.ba
 instance _root_.AlgebraicGeometry.Γ_restrict_isLocalization
     (X : Scheme.{u}) [IsAffine X] (r : Γ(X, ⊤)) :
     IsLocalization.Away r Γ(X.basicOpen r, ⊤) :=
-  (isAffineOpen_top X).isLocalization_of_eq_basicOpen r _ (Opens.openEmbedding_obj_top _)
+  (isAffineOpen_top X).isLocalization_of_eq_basicOpen r _ (Opens.isOpenEmbedding_obj_top _)
 
 include hU in
 theorem basicOpen_basicOpen_is_basicOpen (g : Γ(X, X.basicOpen f)) :

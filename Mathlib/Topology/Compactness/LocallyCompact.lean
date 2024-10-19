@@ -199,9 +199,12 @@ protected theorem ClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f
     (hf : ClosedEmbedding f) : LocallyCompactSpace X :=
   hf.toInducing.locallyCompactSpace hf.isClosed_range.isLocallyClosed
 
-protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
-    (hf : OpenEmbedding f) : LocallyCompactSpace X :=
+protected theorem IsOpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
+    (hf : IsOpenEmbedding f) : LocallyCompactSpace X :=
   hf.toInducing.locallyCompactSpace hf.isOpen_range.isLocallyClosed
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.locallyCompactSpace := IsOpenEmbedding.locallyCompactSpace
 
 protected theorem IsLocallyClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     (hs : IsLocallyClosed s) : LocallyCompactSpace s :=
