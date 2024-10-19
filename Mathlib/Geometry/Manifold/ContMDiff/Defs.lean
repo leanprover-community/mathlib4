@@ -583,7 +583,7 @@ theorem ContMDiffWithinAt.contMDiffOn' {m : ℕ} (hm : (m : ℕ∞) ≤ n)
   obtain ⟨v, v_open, xv, hv⟩ :
       ∃ v, IsOpen v ∧ x ∈ v ∧ v ∩ insert x s ⊆ f ⁻¹' (extChartAt I' (f x)).source := by
     apply mem_nhdsWithin.1
-    exact (contMDiffWithinAt_iff.1 h).1.insert_self.preimage_mem_nhdsWithin
+    exact (contMDiffWithinAt_iff.1 h).1.insert.preimage_mem_nhdsWithin
       (extChartAt_source_mem_nhds I' (f x))
   refine ⟨(extChartAt I x).source ∩ (extChartAt I x) ⁻¹' u ∩ v,
     (isOpen_extChartAt_preimage' _ _ u_open).inter v_open, by simpa [xv] using xu, ?_⟩
@@ -815,27 +815,13 @@ theorem contMDiffWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x :=
   (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_congr_set h
 
-lemma eventuallyEq_insert {X : Type*} [TopologicalSpace X]
-    [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    (insert x s : Set X) =ᶠ[𝓝 x] (insert x t : Set X) := by
-  simp only [← union_singleton, ← nhdsWithin_univ, ← compl_union_self {x}]
-  rw [nhdsWithin_union]
-  apply Filter.mem_sup.2
-  simp only [eq_iff_iff, nhdsWithin_singleton, mem_pure, mem_setOf_eq]
-  change {y | y ∈ (s ∪ {x}) ↔ y ∈ (t ∪ {x})} ∈ 𝓝[≠] x ∧ (x ∈ (s ∪ {x}) ↔ x ∈ (t ∪ {x}))
-  simp only [union_singleton, mem_insert_iff, true_or, and_true]
-  filter_upwards [nhdsWithin_compl_singleton_le x y h] with y (hy : (y ∈ s) = (y ∈ t))
-  aesop
-
-
 /-- Being `C^n` in a set only depends on the germ of the set. Version where one only requires
 the two sets to coincide locally in the complement of a point `y`. -/
 theorem contMDiffWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x := by
   have : T1Space M := I.t1Space M
-  have : (insert x s : Set M) =ᶠ[𝓝 x] (insert x t : Set M) := eventuallyEq_insert h
   rw [← contMDiffWithinAt_insert_self (s := s), ← contMDiffWithinAt_insert_self (s := t)]
-  exact contMDiffWithinAt_congr_set this
+  exact contMDiffWithinAt_congr_set (eventuallyEq_insert h)
 
 theorem ContMDiffWithinAt.congr (h : ContMDiffWithinAt I I' n f s x) (h₁ : ∀ y ∈ s, f₁ y = f y)
     (hx : f₁ x = f x) : ContMDiffWithinAt I I' n f₁ s x :=
