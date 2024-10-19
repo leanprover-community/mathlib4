@@ -209,7 +209,7 @@ theorem mem_lowerBounds_image_iff_mem_lowerBounds (hf : StrictMono f) :
   ⟨fun Ha _ hx => hf.le_iff_le.mp (Ha (mem_image_of_mem f hx)), hf.monotone.mem_lowerBounds_image⟩
 
 theorem map_isLeast_iff_isLeast (hf : StrictMono f) : IsLeast (f '' s) (f a) ↔ IsLeast s a :=
-  ⟨fun Ha =>  ⟨(mem_image_iff_mem_of_injective _ _ hf.injective).mp Ha.left,
+  ⟨fun Ha => ⟨hf.injective.mem_set_image.mp Ha.left,
     (mem_lowerBounds_image_iff_mem_lowerBounds hf).mp Ha.right⟩, hf.monotone.map_isLeast⟩
 
 theorem map_isGreatest_iff_isGreatest (hf : StrictMono f) :
