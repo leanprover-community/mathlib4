@@ -25,13 +25,14 @@ namespace Set
 
 section set_as_partial_function
 
-/-- A set `s : Set (α × α)` represents a partial function when for every `x : α` there's at most
-one `y : α` with `(x, y) ∈ s`. -/
+/-- A set `s : Set (α × α)` represents a partial function if for every `x : α` there is at most one
+`y : α` such that `(x, y) ∈ s`. -/
 def IsPartialFun (s : Set (α × β)) : Prop :=
   ∀ x : α, { y : β | (x, y) ∈ s }.Subsingleton
 
 open Classical in
-/-- Use given set on `α × α` as a partial function. -/
+/-- Use given set on `α × α` as a partial function. Each `x : α` is mapped to the unique `y : β`
+such that `(x, y) ∈ s`, or to `none` if none exists.  -/
 noncomputable def asPartialFun (s : Set (α × β)) : α → Option β :=
   fun a : α => if hb : ∃ b, (a, b) ∈ s then hb.choose else none
 
@@ -45,7 +46,7 @@ end set_as_partial_function
 section set_as_total_function
 
 /-- A set `s : Set (α × α)` represents a total function when for every `x : α` there's exactly one
-`y : α` such that `(x, y) ∈ s`. -/
+`y : β` such that `(x, y) ∈ s`. -/
 def IsFun (s : Set (α × β)) : Prop :=
   ∀ x : α, ∃! y : β, (x, y) ∈ s
 
@@ -55,8 +56,8 @@ theorem isFun.isPartialFun {s : Set (α × β)} (hX : IsFun s) : IsPartialFun s 
   have hz := (hX x).choose_spec.2 z hxz
   exact hy.trans hz.symm
 
-/-- Turns `s : Set (α × α)` into a total function. Each `x : α` is mapped to the unique `y : α`
-such that `(x, y) ∈ s`, or to `none` if none exists. -/
+/-- Turns `s : Set (α × α)` into a total function. Each `x : α` is mapped to the unique `y : β`
+such that `(x, y) ∈ s`. -/
 noncomputable def asFun {s : Set (α × β)} (hX : IsFun s) : α → β :=
   fun a : α => (hX a).choose
 
