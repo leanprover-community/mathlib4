@@ -149,7 +149,7 @@ section PartialOrder
 variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
-theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 :=
+theorem bot_eq_one : (⊥ : α) = 1 :=
   le_antisymm bot_le (one_le ⊥)
 
 @[to_additive (attr := simp)]
@@ -164,7 +164,7 @@ theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
 theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
 
 @[to_additive]
-lemma one_not_mem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
+lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
   bot_eq_one (α := α) ▸ bot_not_mem_iff
 
 @[to_additive]

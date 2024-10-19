@@ -492,7 +492,7 @@ end WeightedHomogeneousComponent
 
 end AddCommMonoid
 
-section CanonicallyOrderedAddCommMonoid
+section OrderedAddCommMonoid
 
 variable [OrderedAddCommMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
 
@@ -522,16 +522,10 @@ theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠
     NonTorsionWeight w :=
   fun _ x hnx => (smul_eq_zero_iff_left (hw x)).mp hnx
 
-end CanonicallyOrderedAddCommMonoid
-
-section CanonicallyOrderedAdd
-
-section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid M] [CanonicallyOrderedAdd M] {w : σ → M} (φ : MvPolynomial σ R)
-
 /-- If `w` is a nontorsion weight function, then the finitely supported function `m : σ →₀ ℕ`
   has weighted degree zero if and only if `∀ x : σ, m x = 0`. -/
-theorem weightedDegree_eq_zero_iff (hw : NonTorsionWeight w) {m : σ →₀ ℕ} :
+theorem weightedDegree_eq_zero_iff [CanonicallyOrderedAdd M]
+    (hw : NonTorsionWeight w) {m : σ →₀ ℕ} :
     weight w m = 0 ↔ ∀ x : σ, m x = 0 := by
   simp only [weight, Finsupp.linearCombination, LinearMap.toAddMonoidHom_coe, coe_lsum,
     LinearMap.coe_smulRight, LinearMap.id_coe, id_eq]
@@ -549,8 +543,8 @@ theorem weightedDegree_eq_zero_iff (hw : NonTorsionWeight w) {m : σ →₀ ℕ}
 end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
-variable [LinearOrderedAddCommMonoid M] [CanonicallyOrderedAdd M]
-  {w : σ → M} (φ : MvPolynomial σ R)
+
+variable [LinearOrderedAddCommMonoid M] [CanonicallyOrderedAdd M] {w : σ → M} (φ : MvPolynomial σ R)
 
 /-- A multivatiate polynomial is weighted homogeneous of weighted degree zero if and only if
   its weighted total degree is equal to zero. -/
@@ -574,8 +568,6 @@ theorem weightedTotalDegree_eq_zero_iff (hw : NonTorsionWeight w) (p : MvPolynom
   exact weightedDegree_eq_zero_iff hw
 
 end LinearOrderedAddCommMonoid
-
-end CanonicallyOrderedAdd
 
 section GradedAlgebra
 
