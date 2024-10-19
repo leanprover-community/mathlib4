@@ -27,6 +27,8 @@ class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] extends
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
 
+attribute [instance 50] CanonicallyOrderedAdd.toExistsAddOfLE
+
 /-- An ordered monoid is `CanonicallyOrderedMul`
   in which the ordering coincides with the divisibility relation,
   which is to say, `a ≤ b` iff there exists `c` with `b = a * c`.
@@ -41,6 +43,8 @@ class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] extends
   ExistsMulOfLE α : Prop where
   /-- For any `a` and `b`, `a ≤ a * b` -/
   protected le_self_mul : ∀ a b : α, a ≤ a * b
+
+attribute [instance 50] CanonicallyOrderedMul.toExistsMulOfLE
 
 section Mul
 variable [Mul α]
