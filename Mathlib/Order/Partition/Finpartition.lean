@@ -221,8 +221,8 @@ instance : LE (Finpartition a) :=
 
 instance : PartialOrder (Finpartition a) :=
   { (inferInstance : LE (Finpartition a)) with
-    le_refl := fun P b hb ↦ ⟨b, hb, le_rfl⟩
-    le_trans := fun P Q R hPQ hQR b hb ↦ by
+    le_refl := fun _ b hb ↦ ⟨b, hb, le_rfl⟩
+    le_trans := fun _ Q R hPQ hQR b hb ↦ by
       obtain ⟨c, hc, hbc⟩ := hPQ hb
       obtain ⟨d, hd, hcd⟩ := hQR hc
       exact ⟨d, hd, hbc.trans hcd⟩
@@ -428,7 +428,7 @@ variable [GeneralizedBooleanAlgebra α] [DecidableEq α] {a b c : α} (P : Finpa
 def avoid (b : α) : Finpartition (a \ b) :=
   ofErase
     (P.parts.image (· \ b))
-    (P.disjoint.image_finset_of_le fun a ↦ sdiff_le).supIndep
+    (P.disjoint.image_finset_of_le fun _ ↦ sdiff_le).supIndep
     (by rw [sup_image, id_comp, Finset.sup_sdiff_right, ← Function.id_def, P.sup_parts])
 
 @[simp]
@@ -581,12 +581,12 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
   sup_parts := by
     ext a
     simp only [sup_image, Function.id_comp, mem_univ, mem_sup, mem_filter, true_and, iff_true]
-    use a; exact s.refl a
+    use a
   not_bot_mem := by
     rw [bot_eq_empty, mem_image, not_exists]
     intro a
     simp only [filter_eq_empty_iff, not_forall, mem_univ, forall_true_left, true_and, not_not]
-    use a; exact s.refl a
+    use a
 
 theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
     b ∈ (ofSetoid s).part a ↔ s.r a b := by

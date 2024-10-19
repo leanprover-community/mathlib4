@@ -18,7 +18,7 @@ satisfies strong rank condition, we put them into a separate file.
 
 -/
 
-open FiniteDimensional
+open Module
 
 namespace Subalgebra
 
