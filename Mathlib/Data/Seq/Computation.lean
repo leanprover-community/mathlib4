@@ -960,10 +960,10 @@ theorem liftRel_def {R : α → β → Prop} {ca cb} :
       let ⟨b', mb', ab⟩ := h.left ma
       rwa [mem_unique mb mb']⟩,
     fun ⟨l, r⟩ =>
-    ⟨fun {a} ma =>
+    ⟨fun {_} ma =>
       let ⟨⟨b, mb⟩⟩ := l.1 ⟨⟨_, ma⟩⟩
       ⟨b, mb, r ma mb⟩,
-      fun {b} mb =>
+      fun {_} mb =>
       let ⟨⟨a, ma⟩⟩ := l.2 ⟨⟨_, mb⟩⟩
       ⟨a, ma, r ma mb⟩⟩⟩
 

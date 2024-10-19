@@ -37,7 +37,7 @@ lattice, order, group
 
 open Function
 
-variable {α β : Type*}
+variable {α : Type*}
 
 section Group
 variable [Lattice α] [Group α]
