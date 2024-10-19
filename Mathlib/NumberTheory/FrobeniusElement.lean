@@ -315,14 +315,15 @@ end MulSemiringAction.Charpoly
 
 end charpoly
 
+-- Charpoly of a finite group acting on an algebra extension
 section charpoly
+
+namespace MulSemiringAction.Charpoly
 
 open Polynomial BigOperators
 
-variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] [Algebra A B]
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Group G] [Fintype G] [MulSemiringAction G B]
-
-namespace MulSemiringAction.Charpoly
 
 theorem reduction
     (hinv : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) (b : B) :
@@ -339,44 +340,9 @@ theorem reduction
       Polynomial.map_X, Polynomial.map_C, hf]
     exact (monic_charpoly G b).as_sum.symm
 
-open scoped algebraMap
-
-noncomputable local instance : Algebra A[X] B[X] :=
-  RingHom.toAlgebra (Polynomial.mapRingHom (Algebra.toRingHom))
-
-@[simp, norm_cast]
-theorem _root_.coe_monomial (n : ℕ) (a : A) : ((monomial n a : A[X]) : B[X]) = monomial n (a : B) :=
-  map_monomial _
-
-variable (hFull : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, a = b)
-
-noncomputable def M (b : B) : A[X] :=
-  (reduction G hFull b).choose
-
-theorem M_spec (b : B) : ((M G hFull b : A[X]) : B[X]) = charpoly G b :=
-  (reduction G hFull b).choose_spec.2
-
-theorem M_spec_map (b : B) : (map (algebraMap A B) (M G hFull b)) = charpoly G b :=
-  M_spec G hFull b
-
-end MulSemiringAction.Charpoly
-
-end charpoly
-
-namespace MulSemiringAction.Charpoly
-
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  (G : Type*) [Group G] [Fintype G] [MulSemiringAction G B]
-  (P : Ideal A) (Q : Ideal B)
-  [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
-  variable (K L : Type*) [Field K] [Field L]
-  [Algebra (A ⧸ P) K] [IsFractionRing (A ⧸ P) K]
-  [Algebra (B ⧸ Q) L] [IsFractionRing (B ⧸ Q) L]
-  [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
-  [Algebra K L] [IsScalarTower (A ⧸ P) K L]
+variable (P : Ideal A) (Q : Ideal B) [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
 
 theorem reduction_isIntegral
-    [Nontrivial A] [Nontrivial B]
     (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) :
     Algebra.IsIntegral (A ⧸ P) (B ⧸ Q) where
   isIntegral q := by
@@ -384,12 +350,13 @@ theorem reduction_isIntegral
     change IsIntegral (A ⧸ P) (algebraMap B (B ⧸ Q) b)
     obtain ⟨f, hf1, hf2⟩ := reduction G hFull' b
     refine ⟨f.map (algebraMap A (A ⧸ P)), hf1.map (algebraMap A (A ⧸ P)), ?_⟩
-    rw [← Polynomial.eval_map, Polynomial.map_map, ← IsScalarTower.algebraMap_eq,
-        IsScalarTower.algebraMap_eq A B (B ⧸ Q), ← Polynomial.map_map, hf2]
-    rw [Polynomial.eval_map_algebraMap, Polynomial.aeval_algebraMap_apply_eq_algebraMap_eval]
-    rw [eval_charpoly, map_zero]
+    rw [← eval_map, map_map, ← IsScalarTower.algebraMap_eq,
+        IsScalarTower.algebraMap_eq A B (B ⧸ Q), ← map_map, hf2, eval_map, eval₂_at_apply,
+        eval_charpoly, map_zero]
 
 end MulSemiringAction.Charpoly
+
+end charpoly
 
 section part_b
 
@@ -564,7 +531,7 @@ theorem lem4 (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algeb
   cases subsingleton_or_nontrivial B
   · rw [Subsingleton.elim b₀ 0, map_zero, map_zero, map_zero]
   obtain ⟨a, b, ha1, ha2, hb⟩ := lem2 G Q b₀ (fun g hg ↦ hx ⟨g, hg⟩)
-  have key := MulSemiringAction.Charpoly.M_spec_map G hAB b
+  obtain ⟨M, _, key⟩ := MulSemiringAction.Charpoly.reduction G hAB b
   replace key := congrArg (map (algebraMap B (B ⧸ Q))) key
   rw [map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A (A ⧸ P) (B ⧸ Q),
       ← map_map, MulSemiringAction.charpoly, Polynomial.map_prod] at key
