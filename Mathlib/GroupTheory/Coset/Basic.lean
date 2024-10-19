@@ -445,7 +445,7 @@ the function that sends an additive subgroup `t` to the pair consisting of
 its intersection with `s` and its image in the quotient `α ⧸ s`
 is strictly monotone, even though it is not injective in general."]
 theorem strictMono_comap_prod_image :
-    StrictMono fun t : Subgroup α ↦ (t.comap s.subtype, mk (s := s) '' t) := by
+    StrictMono fun t : Subgroup α ↦ (t.comap s.subtype, mkQ_ s '' t) := by
   refine fun t₁ t₂ h ↦ ⟨⟨Subgroup.comap_mono h.1, Set.image_mono h.1⟩,
     mt (fun ⟨le1, le2⟩ a ha ↦ ?_) h.2⟩
   obtain ⟨a', h', eq⟩ := le2 ⟨_, ha, rfl⟩
@@ -456,8 +456,9 @@ theorem strictMono_comap_prod_image :
   `simp_rw [H]` or `simp only [H]`. In order for `simp_rw` and `simp only` to work, this lemma is
   stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out'`. -/
 @[to_additive QuotientAddGroup.mk_out'_eq_mul]
-theorem mk_out'_eq_mul (g : α) : ∃ h : s, (⟦g⟧ : α ⧸ s).out' = g * h :=
-  ⟨⟨g⁻¹ * (⟦g⟧_s).out', QuotientGroup.eq.mp (⟦g⟧_s).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
+theorem mk_out'_eq_mul (g : α) : ∃ h : s, QuotLike.out (⟦g⟧ : α ⧸ s) = g * h :=
+  ⟨⟨g⁻¹ * QuotLike.out ⟦g⟧_s, QuotientGroup.eq.mp (⟦g⟧_s).out_eq'.symm⟩,
+    by rw [mul_inv_cancel_left]⟩
 
 variable {s} {a b : α}
 
@@ -501,9 +502,10 @@ lemma orbit_mk_eq_smul (x : α) : MulAction.orbitRel.Quotient.orbit (x : α ⧸ 
   simpa [mem_smul_set_iff_inv_smul_mem, ← leftRel_apply] using Setoid.comm' _
 
 @[to_additive]
-lemma orbit_eq_out'_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x.out' • s := by
+lemma orbit_eq_out'_smul (x : α ⧸ s) :
+    MulAction.orbitRel.Quotient.orbit x = QuotLike.out x • s := by
   induction x using QuotientGroup.induction_on
-  simp only [orbit_mk_eq_smul, ← eq_class_eq_leftCoset, Quotient.out_eq']
+  simp only [orbit_mk_eq_smul, ← eq_class_eq_leftCoset, QuotLike.mkQ_out]
 
 end QuotientGroup
 

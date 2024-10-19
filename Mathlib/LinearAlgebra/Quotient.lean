@@ -108,7 +108,7 @@ theorem mk_neg : (mkQ (-x) : M ⧸ p) = -(mkQ x : M ⧸ p) :=
 theorem mk_sub : (mkQ (x - y) : M ⧸ p) = (mkQ x : M ⧸ p) - (mkQ y : M ⧸ p) :=
   rfl
 
-protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
+protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P ⟦a⟧ := Quotient.forall
 
 section SMul
 

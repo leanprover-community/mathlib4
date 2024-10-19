@@ -692,8 +692,8 @@ protected theorem eq'' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b �
 
 /-- A version of `Quotient.out` taking `{s₁ : Setoid α}` as an implicit argument instead of an
 instance argument. -/
-noncomputable def out' (a : Quotient s₁) : α :=
-  Quotient.out a
+noncomputable abbrev out' (a : Quotient s₁) : α :=
+  QuotLike.out a
 
 @[simp]
 theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out' = q :=
