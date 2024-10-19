@@ -41,6 +41,7 @@ example (p : ℕ) (h2 : 2 < p) (h5 : p < 5) : p = 3 ∨ p = 4 := by
 -- TODO Restore the remaining tests from mathlib3:
 -- Some of these test the `with` and `using` clauses which haven't been re-implemented.
 
+set_option linter.unusedVariables false in
 example (x2 : Fin 2) (x3 : Fin 3) (n : Nat) (y : Fin n) : x2.val * x3.val = x3.val * x2.val := by
   fin_cases x2 <;> fin_cases x3
   fail_if_success

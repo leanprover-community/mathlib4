@@ -233,6 +233,7 @@ example {α β} {F : _ → β} {f g : {f : α → β // f = f}}
   ext x
   apply h
 
+set_option linter.unusedVariables false in
 example {ls : List ℕ} :
     ls.map (fun x => (ls.map (fun y => 1 + y)).sum + 1) =
       ls.map (fun x => (ls.map (fun y => Nat.succ y)).sum + 1) := by
