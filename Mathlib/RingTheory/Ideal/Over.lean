@@ -484,37 +484,39 @@ end CommSemiring
 
 section CommRing
 
-variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] [Algebra A B]
-  (P : Ideal B) (p : Ideal A) [P.LiesOver p]
+namespace Quotient
+
+variable (R : Type*) [CommSemiring R] {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+  [Algebra R A] [Algebra R B] [IsScalarTower R A B] (P : Ideal B) (p : Ideal A) [P.LiesOver p]
 
 /-- If `P` lies over `p`, then canonically `B ⧸ P` is a `A ⧸ p`-algebra. -/
-instance algebraQuotientOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
-  Ideal.Quotient.algebraQuotientOfLEComap (le_of_eq (P.over_def p))
+instance algebraOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
+  algebraQuotientOfLEComap (le_of_eq (P.over_def p))
 
-instance : IsScalarTower A (A ⧸ p) (B ⧸ P) :=
-  IsScalarTower.of_algebraMap_eq' rfl
+instance isScalarTower_of_liesOver : IsScalarTower R (A ⧸ p) (B ⧸ P) :=
+  IsScalarTower.of_algebraMap_eq' <|
+    congrArg (algebraMap B (B ⧸ P)).comp (IsScalarTower.algebraMap_eq R A B)
 
 /-- `B ⧸ P` is a finite `A ⧸ p`-module if `B` is a finite `A`-module. -/
-instance _root_.Module.Finite.algebra_quotient [Module.Finite A B] :
-    Module.Finite (A ⧸ p) (B ⧸ P) :=
+instance module_finite_of_liesOver [Module.Finite A B] : Module.Finite (A ⧸ p) (B ⧸ P) :=
   Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ P)
 
 example [Module.Finite A B] : Module.Finite (A ⧸ P.under A) (B ⧸ P) := inferInstance
 
-instance (R : Type*) {S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] (I : Ideal S)
-    [h : Algebra.FiniteType R S] : Algebra.FiniteType R (S ⧸ I) :=
+instance algebra_finiteType (R : Type*) {S : Type*} [CommSemiring R] [CommRing S]
+    [Algebra R S] (I : Ideal S) [h : Algebra.FiniteType R S] : Algebra.FiniteType R (S ⧸ I) :=
   Algebra.FiniteType.trans (S := S) h inferInstance
 
 /-- `B ⧸ P` is a finitely generated `A ⧸ p`-algebra if `B` is a finitely generated `A`-algebra. -/
-instance _root_.Algebra.FiniteType.quotient [Algebra.FiniteType A B] :
+instance algebra_finiteType_of_liesOver [Algebra.FiniteType A B] :
     Algebra.FiniteType (A ⧸ p) (B ⧸ P) :=
   Algebra.FiniteType.of_restrictScalars_finiteType A (A ⧸ p) (B ⧸ P)
 
 /-- `B ⧸ P` is a Noetherian `A ⧸ p`-module if `B` is a Noetherian `A`-module. -/
-instance _root_.IsNoetherian.algebra_quotient [IsNoetherian A B] : IsNoetherian (A ⧸ p) (B ⧸ P) :=
+instance isNoetherian_of_liesOver [IsNoetherian A B] : IsNoetherian (A ⧸ p) (B ⧸ P) :=
   isNoetherian_of_tower A inferInstance
 
-theorem algebraMap_quotient_injective_of_liesOver :
+theorem algebraMap_injective_of_liesOver :
     Function.Injective (algebraMap (A ⧸ p) (B ⧸ P)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   apply Quotient.eq.mpr ((mem_of_liesOver P p (a - b)).mpr _)
@@ -522,7 +524,9 @@ theorem algebraMap_quotient_injective_of_liesOver :
   exact Quotient.eq.mp hab
 
 instance [P.IsPrime] : NoZeroSMulDivisors (A ⧸ p) (B ⧸ P) :=
-  NoZeroSMulDivisors.of_algebraMap_injective (algebraMap_quotient_injective_of_liesOver P p)
+  NoZeroSMulDivisors.of_algebraMap_injective (Quotient.algebraMap_injective_of_liesOver P p)
+
+end Quotient
 
 end CommRing
 
@@ -546,7 +550,7 @@ theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
   exact isMaximal_comap_of_isIntegral_of_isMaximal P
 
 /-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is a integral `A`-algebra. -/
-instance _root_.Algebra.IsIntegral.quotient_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
+instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
   Algebra.IsIntegral.tower_top A
 
 end IsIntegral
