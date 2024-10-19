@@ -7,6 +7,8 @@ import Lean.Linter.Deprecated
 import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
+import Mathlib.Tactic.TypeStar
+
 /-!
 # Binary representation of integers using inductive types
 
