@@ -207,7 +207,7 @@ noncomputable def finGaloisGroupMap {L₁ L₂ : (FiniteGaloisIntermediateField 
   haveI : Normal k L₂.unop := IsGalois.to_normal
   letI : Algebra L₂.unop L₁.unop := RingHom.toAlgebra (Subsemiring.inclusion <| leOfHom le.1)
   haveI : IsScalarTower k L₂.unop L₁.unop := IsScalarTower.of_algebraMap_eq (congrFun rfl)
-  FiniteGrp.ofHom (AlgEquiv.restrictNormalHom (F := k) (K₁ := L₁.unop) L₂.unop)
+  FiniteGrp.ofHom (AlgEquiv.restrictNormalHom L₂.unop)
 
 namespace finGaloisGroupMap
 
@@ -523,4 +523,5 @@ theorem restrictNormalHomContinuous (L : IntermediateField k K) [Normal k L] :
   · exact ⟨by apply IntermediateField.fixingSubgroup_isOpen, congrFun rfl⟩
 
 end InfiniteGalois
+
 end Profinite

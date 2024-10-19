@@ -559,7 +559,7 @@ variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
     Proposition 2.6.3(ii) in [Kashiwara2006] -/
 theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :
     Functor.Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) := by
-  apply Functor.cofinal_of_isTerminal_colimit_comp_yoneda
+  apply Functor.final_of_isTerminal_colimit_comp_yoneda
 
   suffices IsTerminal (colimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt)) by

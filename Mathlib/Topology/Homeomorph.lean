@@ -60,8 +60,6 @@ instance : EquivLike (X ≃ₜ Y) X Y where
   right_inv h := h.right_inv
   coe_injective' _ _ H _ := toEquiv_injective <| DFunLike.ext' H
 
-instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨DFunLike.coe⟩
-
 @[simp] theorem homeomorph_mk_coe (a : X ≃ Y) (b c) : (Homeomorph.mk a b c : X → Y) = a :=
   rfl
 
@@ -339,8 +337,11 @@ theorem isClosed_image (h : X ≃ₜ Y) {s : Set X} : IsClosed (h '' s) ↔ IsCl
 
 protected theorem isClosedMap (h : X ≃ₜ Y) : IsClosedMap h := fun _ => h.isClosed_image.2
 
-protected theorem openEmbedding (h : X ≃ₜ Y) : OpenEmbedding h :=
-  openEmbedding_of_embedding_open h.embedding h.isOpenMap
+theorem isOpenEmbedding (h : X ≃ₜ Y) : IsOpenEmbedding h :=
+  isOpenEmbedding_of_embedding_open h.embedding h.isOpenMap
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding := isOpenEmbedding
 
 protected theorem closedEmbedding (h : X ≃ₜ Y) : ClosedEmbedding h :=
   closedEmbedding_of_embedding_closed h.embedding h.isClosedMap
@@ -408,7 +409,7 @@ theorem locallyConnectedSpace [i : LocallyConnectedSpace Y] (h : X ≃ₜ Y) :
 the domain is a locally compact space. -/
 theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
     LocallyCompactSpace X ↔ LocallyCompactSpace Y := by
-  exact ⟨fun _ => h.symm.openEmbedding.locallyCompactSpace,
+  exact ⟨fun _ => h.symm.isOpenEmbedding.locallyCompactSpace,
     fun _ => h.closedEmbedding.locallyCompactSpace⟩
 
 /-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
@@ -915,9 +916,12 @@ protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
 protected lemma inducing : Inducing f := (hf.homeomorph f).inducing
 protected lemma quotientMap : QuotientMap f := (hf.homeomorph f).quotientMap
 protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
-protected lemma openEmbedding : OpenEmbedding f := (hf.homeomorph f).openEmbedding
+lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
 protected lemma closedEmbedding : ClosedEmbedding f := (hf.homeomorph f).closedEmbedding
 lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding := isOpenEmbedding
 
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding := isDenseEmbedding
@@ -939,7 +943,7 @@ lemma isHomeomorph_iff_exists_inverse : IsHomeomorph f ↔ Continuous f ∧ ∃ 
 /-- A map is a homeomorphism iff it is a surjective embedding. -/
 lemma isHomeomorph_iff_embedding_surjective : IsHomeomorph f ↔ Embedding f ∧ Surjective f where
   mp hf := ⟨hf.embedding, hf.surjective⟩
-  mpr h := ⟨h.1.continuous, ((openEmbedding_iff f).2 ⟨h.1, h.2.range_eq ▸ isOpen_univ⟩).isOpenMap,
+  mpr h := ⟨h.1.continuous, ((isOpenEmbedding_iff f).2 ⟨h.1, h.2.range_eq ▸ isOpen_univ⟩).isOpenMap,
     h.1.inj, h.2⟩
 
 /-- A map is a homeomorphism iff it is continuous, closed and bijective. -/

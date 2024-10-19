@@ -141,15 +141,18 @@ theorem isLocallyInjective_iff_isOpen_diagonal {f : X → Y} :
     exact ⟨t₁ ∩ t₂, Filter.inter_mem h₁ h₂,
       fun x₁ h₁ x₂ h₂ he ↦ @t_sub ⟨(x₁, x₂), he⟩ (prod_sub ⟨h₁.1, h₂.2⟩)⟩
 
-theorem IsLocallyInjective_iff_openEmbedding {f : X → Y} :
-    IsLocallyInjective f ↔ OpenEmbedding (toPullbackDiag f) := by
+theorem IsLocallyInjective_iff_isOpenEmbedding {f : X → Y} :
+    IsLocallyInjective f ↔ IsOpenEmbedding (toPullbackDiag f) := by
   rw [isLocallyInjective_iff_isOpen_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨embedding_toPullbackDiag f, h⟩, fun h ↦ h.isOpen_range⟩
 
+@[deprecated (since := "2024-10-18")]
+alias IsLocallyInjective_iff_openEmbedding := IsLocallyInjective_iff_isOpenEmbedding
+
 theorem isLocallyInjective_iff_isOpenMap {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenMap (toPullbackDiag f) :=
-  IsLocallyInjective_iff_openEmbedding.trans
-    ⟨OpenEmbedding.isOpenMap, openEmbedding_of_continuous_injective_open
+  IsLocallyInjective_iff_isOpenEmbedding.trans
+    ⟨IsOpenEmbedding.isOpenMap, isOpenEmbedding_of_continuous_injective_open
       (embedding_toPullbackDiag f).continuous (injective_toPullbackDiag f)⟩
 
 theorem discreteTopology_iff_locallyInjective (y : Y) :

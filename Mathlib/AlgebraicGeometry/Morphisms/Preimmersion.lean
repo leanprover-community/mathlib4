@@ -60,7 +60,7 @@ instance : IsLocalAtTarget @IsPreimmersion :=
   isPreimmersion_eq_inf ▸ inferInstance
 
 instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : IsPreimmersion f where
-  base_embedding := f.openEmbedding.toEmbedding
+  base_embedding := f.isOpenEmbedding.toEmbedding
   surj_on_stalks _ := (ConcreteCategory.bijective_of_isIso _).2
 
 instance : MorphismProperty.IsMultiplicative @IsPreimmersion where
