@@ -457,12 +457,15 @@ theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S
   · rintro h₁ _ ⟨⟨n, rfl⟩, h₃⟩
     exact h₁ (x.2.mem_of_pow_mem _ h₃)
 
-theorem localization_away_openEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
-    [IsLocalization.Away r S] : OpenEmbedding (comap (algebraMap R S)) :=
+theorem localization_away_isOpenEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
+    [IsLocalization.Away r S] : IsOpenEmbedding (comap (algebraMap R S)) :=
   { toEmbedding := localization_comap_embedding S (Submonoid.powers r)
     isOpen_range := by
       rw [localization_away_comap_range S r]
       exact isOpen_basicOpen }
+
+@[deprecated (since := "2024-10-18")]
+alias localization_away_openEmbedding := localization_away_isOpenEmbedding
 
 theorem isCompact_basicOpen (f : R) : IsCompact (basicOpen f : Set (PrimeSpectrum R)) := by
   rw [← localization_away_comap_range (Localization (Submonoid.powers f))]
@@ -624,17 +627,20 @@ def closedPoint : PrimeSpectrum R :=
 
 variable {R}
 
-theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S]
-    (f : R →+* S) : IsLocalRingHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
+theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S]
+    (f : R →+* S) : IsLocalHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
   -- Porting note: inline `this` does **not** work
   have := (local_hom_TFAE f).out 0 4
   rw [this, PrimeSpectrum.ext_iff]
   rfl
 
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_iff_comap_closedPoint := isLocalHom_iff_comap_closedPoint
+
 @[simp]
 theorem comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S] (f : R →+* S)
-    [IsLocalRingHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
-  (isLocalRingHom_iff_comap_closedPoint f).mp inferInstance
+    [IsLocalHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
+  (isLocalHom_iff_comap_closedPoint f).mp inferInstance
 
 theorem specializes_closedPoint (x : PrimeSpectrum R) : x ⤳ closedPoint R :=
   (PrimeSpectrum.le_iff_specializes _ _).mp (LocalRing.le_maximalIdeal x.2.1)

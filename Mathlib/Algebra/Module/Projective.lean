@@ -91,7 +91,7 @@ theorem projective_def' :
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
 theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g : P →ₗ[R] N)
-    (hf : Function.Surjective f) : ∃ h : P →ₗ[R] M, f.comp h = g := by
+    (hf : Function.Surjective f) : ∃ h : P →ₗ[R] M, f ∘ₗ h = g := by
   /-
     Here's the first step of the proof.
     Recall that `X →₀ R` is Lean's way of talking about the free `R`-module
@@ -109,6 +109,10 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
   ext p
   conv_rhs => rw [← hs p]
   simp [φ, Finsupp.linearCombination_apply, Function.surjInv_eq hf, map_finsupp_sum]
+
+theorem _root_.LinearMap.exists_rightInverse_of_surjective [Projective R P]
+    (f : M →ₗ[R] P) (hf_surj : range f = ⊤) : ∃ g : P →ₗ[R] M, f ∘ₗ g = LinearMap.id :=
+  projective_lifting_property f (.id : P →ₗ[R] P) (LinearMap.range_eq_top.1 hf_surj)
 
 /-- A module which satisfies the universal property is projective: If all surjections of
 `R`-modules `(P →₀ R) →ₗ[R] P` have `R`-linear left inverse maps, then `P` is
