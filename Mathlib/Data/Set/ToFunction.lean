@@ -3,7 +3,7 @@ Copyright (c) 2024 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Rel
 import Mathlib.Logic.ExistsUnique
 
 /-!
@@ -17,7 +17,7 @@ This file provides API for sets that define functions.
 - `Set.asFun` converts `Set (α × α)` to `α → α` if possible.
 -/
 
-variable {α : Type*}
+variable {α β : Type*}
 
 namespace Set
 
@@ -25,40 +25,40 @@ section set_as_partial_function
 
 /-- A set `s : Set (α × α)` represents a partial function when for every `x : α` there's at most
 one `y : α` with `(x, y) ∈ s`. -/
-def isPartialFun (X : Set (α × α)) : Prop :=
-  ∀ x : α, {y : α | (x, y) ∈ X}.Subsingleton
+def isPartialFun (s : Set (α × β)) : Prop :=
+  ∀ x : α, { y : β | (x, y) ∈ s }.Subsingleton
 
 open Classical in
 /-- Use given set on `α × α` as a partial function. -/
-noncomputable def asPartialFun (X : Set (α × α)) : α → Option α :=
-  fun a : α => if hb : ∃ b, (a, b) ∈ X then hb.choose else none
+noncomputable def asPartialFun (s : Set (α × β)) : α → Option β :=
+  fun a : α => if hb : ∃ b, (a, b) ∈ s then hb.choose else none
 
-theorem asPartialFun_eq {X : Set (α × α)} (hX : isPartialFun X) {a b : α} (hab : (a, b) ∈ X) :
-    asPartialFun X a = b := by
-  have hba : ∃ b, (a, b) ∈ X := ⟨b, hab⟩
-  simpa [asPartialFun, hba] using hX _ _ _ ⟨hba.choose_spec, hab⟩
+theorem asPartialFun_eq {s : Set (α × β)} (hX : isPartialFun s) {a : α} {b : β} (hab : (a, b) ∈ s) :
+    asPartialFun s a = b := by
+  have hba : ∃ b, (a, b) ∈ s := ⟨b, hab⟩
+  simpa [asPartialFun, hba] using hX _ hba.choose_spec hab
 
 end set_as_partial_function
 
 section set_as_total_function
 
 /-- A set `s : Set (α × α)` represents a total function when for every `x : α` there's exactly one
-`y : α` with `(x, y) ∈ s`. -/
-def isFun (X : Set (α × α)) : Prop :=
-  ∀ x : α, ∃! y : α, (x, y) ∈ X
+`y : α` such that `(x, y) ∈ s`. -/
+def isFun (s : Set (α × β)) : Prop :=
+  ∀ x : α, ∃! y : β, (x, y) ∈ s
 
-theorem isFun.isPartialFun {X : Set (α × α)} (hX : isFun X) : isPartialFun X := by
-  intro x y z ⟨hxy, hxz⟩
+theorem isFun.isPartialFun {s : Set (α × β)} (hX : isFun s) : isPartialFun s := by
+  intro x y hxy z hxz
   have hy := (hX x).choose_spec.2 y hxy
   have hz := (hX x).choose_spec.2 z hxz
   exact hy.trans hz.symm
 
-/-- Turns `s : Set (α × α)` into a total function. Each `x : α` is mapped to the unique `y : α` with
-`(x, y) ∈ s`, or to `none` if none exists. -/
-noncomputable def asFun {X : Set (α × α)} (hX : isFun X) : α → α :=
+/-- Turns `s : Set (α × α)` into a total function. Each `x : α` is mapped to the unique `y : α`
+such that `(x, y) ∈ s`, or to `none` if none exists. -/
+noncomputable def asFun {s : Set (α × β)} (hX : isFun s) : α → β :=
   fun a : α => (hX a).choose
 
-theorem asFun_eq {X : Set (α × α)} (hX : isFun X) {a b : α} (hab : (a, b) ∈ X) :
+theorem asFun_eq {s : Set (α × β)} (hX : isFun s) {a : α} {b : β} (hab : (a, b) ∈ s) :
     asFun hX a = b :=
   ((hX a).choose_spec.2 b hab).symm
 
