@@ -23,6 +23,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  [SmoothManifoldWithCorners I' M']
+
 
 /-- The derivative of the chart at a base point is the chart of the tangent bundle, composed with
 the identification between the tangent bundle of the model space and the product space. -/
@@ -64,7 +68,7 @@ theorem UniqueMDiffOn.tangentBundle_proj_preimage {s : Set M} (hs : UniqueMDiffO
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and
 postcomposing it with derivatives of extended charts.
 Concrete version of `inTangentCoordinates_eq`. -/
-lemma inTangentCoordinates_eq_mfderiv_comp [SmoothManifoldWithCorners I' M']
+lemma inTangentCoordinates_eq_mfderiv_comp
     {N : Type*} {f : N → M} {g : N → M'}
     {ϕ : Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)} {x₀ : N} {x : N}
     (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
@@ -84,7 +88,6 @@ lemma inTangentCoordinates_eq_mfderiv_comp [SmoothManifoldWithCorners I' M']
     · apply mdifferentiableWithinAt_extChartAt_symm
       apply (extChartAt I (f x₀)).map_source
       simpa using hx
-
 
 open Bundle
 variable (I) in
