@@ -73,7 +73,7 @@ lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
     simp only [mul_succ, bodd_add, IH, bodd_succ]
     cases bodd m <;> cases bodd n <;> rfl
 
-lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
+lemma mod_two_of_bodd (n : ℕ) : n % 2 = (bodd n).toNat := by
   have := congr_arg bodd (mod_add_div n 2)
   simp? [not] at this says
     simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and, Bool.bne_false]
@@ -100,7 +100,7 @@ lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
-lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
+lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
     simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
@@ -117,7 +117,7 @@ lemma div2_val (n) : div2 n = n / 2 := by
 /-- `bit b` appends the digit `b` to the binary representation of its natural number input. -/
 def bit (b : Bool) : ℕ → ℕ := cond b (2 * · + 1) (2 * ·)
 
-lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
+lemma bit_val (b n) : bit b n = 2 * n + b.toNat := by
   cases b <;> rfl
 
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
@@ -136,6 +136,7 @@ theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) 
 /-- For a predicate `motive : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for any given natural number. -/
+@[inline]
 def bitCasesOn {motive : Nat → Sort u} (n) (h : ∀ b n, motive (bit b n)) : motive n :=
   -- `1 &&& n != 0` is faster than `n.testBit 0`. This may change when we have faster `testBit`.
   let x := h (1 &&& n != 0) (n >>> 1)
@@ -175,6 +176,7 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
   For a predicate `motive : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for all natural numbers. -/
+@[elab_as_elim, specialize]
 def binaryRec {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n → motive (bit b n))
     (n : Nat) : motive n :=
   if n0 : n = 0 then congrArg motive n0 ▸ z
@@ -208,7 +210,7 @@ lemma binaryRec_zero {motive : Nat → Sort u}
 
 @[simp]
 lemma binaryRec_one {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
-    binaryRec z f 1 = f true 0 z := by
+    binaryRec (motive := C) z f 1 = f true 0 z := by
   rw [binaryRec]
   simp only [succ_ne_self, ↓reduceDIte, reduceShiftRight, binaryRec_zero]
   rfl
@@ -369,26 +371,28 @@ theorem binaryRec_eq {motive : Nat → Sort u} {z : motive 0}
 
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
   the bit being appended is `true`-/
-@[elab_as_elim]
+@[elab_as_elim, specialize]
 def binaryRec' {motive : ℕ → Sort*} (z : motive 0)
     (f : ∀ b n, (n = 0 → b = true) → motive n → motive (bit b n)) :
     ∀ n, motive n :=
   binaryRec z fun b n ih =>
     if h : n = 0 → b = true then f b n h ih
-    else by
-      convert z
-      rw [bit_eq_zero_iff]
-      simpa using h
+    else
+      have : bit b n = 0 := by
+        rw [bit_eq_zero_iff]
+        cases n <;> cases b <;> simp at h ⊢
+      congrArg motive this ▸ z
 
 /-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
-@[elab_as_elim]
+@[elab_as_elim, specialize]
 def binaryRecFromOne {motive : ℕ → Sort*} (z₀ : motive 0) (z₁ : motive 1)
     (f : ∀ b n, n ≠ 0 → motive n → motive (bit b n)) :
     ∀ n, motive n :=
   binaryRec' z₀ fun b n h ih =>
-    if h' : n = 0 then by
-      rw [h', h h']
-      exact z₁
+    if h' : n = 0 then
+      have : bit b n = bit true 0 := by
+        rw [h', h h']
+      congrArg motive this ▸ z₁
     else f b n h' ih
 
 @[simp]
@@ -397,7 +401,7 @@ theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 @[simp]
 theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
-  rw [Nat.bits, binaryRec_eq']
+  rw [Nat.bits, Nat.bits, binaryRec_eq']
   simpa
 
 @[simp]

@@ -823,11 +823,14 @@ protected theorem IsOpenMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenMap 
 
 @[deprecated (since := "2024-10-05")] alias IsOpenMap.prod := IsOpenMap.prodMap
 
-protected theorem OpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : OpenEmbedding f)
-    (hg : OpenEmbedding g) : OpenEmbedding (Prod.map f g) :=
-  openEmbedding_of_embedding_open (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
+protected theorem IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenEmbedding f)
+    (hg : IsOpenEmbedding g) : IsOpenEmbedding (Prod.map f g) :=
+  isOpenEmbedding_of_embedding_open (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
 
-@[deprecated (since := "2024-10-05")] alias OpenEmbedding.prod := OpenEmbedding.prodMap
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.prodMap := IsOpenEmbedding.prodMap
+
+@[deprecated (since := "2024-10-05")] alias IsOpenEmbedding.prod := IsOpenEmbedding.prodMap
 
 theorem embedding_graph {f : X → Y} (hf : Continuous f) : Embedding fun x => (x, f x) :=
   embedding_of_embedding_compose (continuous_id.prod_mk hf) continuous_fst embedding_id
@@ -902,23 +905,29 @@ theorem isOpenMap_inl : IsOpenMap (@inl X Y) := fun u hu => by
 theorem isOpenMap_inr : IsOpenMap (@inr X Y) := fun u hu => by
   simpa [isOpen_sum_iff, preimage_image_eq u Sum.inr_injective]
 
-theorem openEmbedding_inl : OpenEmbedding (@inl X Y) :=
-  openEmbedding_of_continuous_injective_open continuous_inl inl_injective isOpenMap_inl
+theorem isOpenEmbedding_inl : IsOpenEmbedding (@inl X Y) :=
+  isOpenEmbedding_of_continuous_injective_open continuous_inl inl_injective isOpenMap_inl
 
-theorem openEmbedding_inr : OpenEmbedding (@inr X Y) :=
-  openEmbedding_of_continuous_injective_open continuous_inr inr_injective isOpenMap_inr
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_inl := isOpenEmbedding_inl
+
+theorem isOpenEmbedding_inr : IsOpenEmbedding (@inr X Y) :=
+  isOpenEmbedding_of_continuous_injective_open continuous_inr inr_injective isOpenMap_inr
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_inr := isOpenEmbedding_inr
 
 theorem embedding_inl : Embedding (@inl X Y) :=
-  openEmbedding_inl.1
+  isOpenEmbedding_inl.1
 
 theorem embedding_inr : Embedding (@inr X Y) :=
-  openEmbedding_inr.1
+  isOpenEmbedding_inr.1
 
 theorem isOpen_range_inl : IsOpen (range (inl : X → X ⊕ Y)) :=
-  openEmbedding_inl.2
+  isOpenEmbedding_inl.2
 
 theorem isOpen_range_inr : IsOpen (range (inr : Y → X ⊕ Y)) :=
-  openEmbedding_inr.2
+  isOpenEmbedding_inr.2
 
 theorem isClosed_range_inl : IsClosed (range (inl : X → X ⊕ Y)) := by
   rw [← isOpen_compl_iff, compl_range_inl]
@@ -935,10 +944,10 @@ theorem closedEmbedding_inr : ClosedEmbedding (inr : Y → X ⊕ Y) :=
   ⟨embedding_inr, isClosed_range_inr⟩
 
 theorem nhds_inl (x : X) : 𝓝 (inl x : X ⊕ Y) = map inl (𝓝 x) :=
-  (openEmbedding_inl.map_nhds_eq _).symm
+  (isOpenEmbedding_inl.map_nhds_eq _).symm
 
 theorem nhds_inr (y : Y) : 𝓝 (inr y : X ⊕ Y) = map inr (𝓝 y) :=
-  (openEmbedding_inr.map_nhds_eq _).symm
+  (isOpenEmbedding_inr.map_nhds_eq _).symm
 
 @[simp]
 theorem continuous_sum_map {f : X → Y} {g : Z → W} :
@@ -1006,12 +1015,15 @@ theorem Continuous.subtype_val {f : Y → Subtype p} (hf : Continuous f) :
     Continuous fun x => (f x : X) :=
   continuous_subtype_val.comp hf
 
-theorem IsOpen.openEmbedding_subtype_val {s : Set X} (hs : IsOpen s) :
-    OpenEmbedding ((↑) : s → X) :=
+theorem IsOpen.isOpenEmbedding_subtypeVal {s : Set X} (hs : IsOpen s) :
+    IsOpenEmbedding ((↑) : s → X) :=
   ⟨embedding_subtype_val, (@Subtype.range_coe _ s).symm ▸ hs⟩
 
+@[deprecated (since := "2024-10-18")]
+alias IsOpen.openEmbedding_subtype_val := IsOpen.isOpenEmbedding_subtypeVal
+
 theorem IsOpen.isOpenMap_subtype_val {s : Set X} (hs : IsOpen s) : IsOpenMap ((↑) : s → X) :=
-  hs.openEmbedding_subtype_val.isOpenMap
+  hs.isOpenEmbedding_subtypeVal.isOpenMap
 
 theorem IsOpenMap.restrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs : IsOpen s) :
     IsOpenMap (s.restrict f) :=
@@ -1123,8 +1135,8 @@ then its restriction to the preimage of an open set is a quotient map too. -/
 theorem QuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : QuotientMap f)
     {s : Set Y} (hs : IsOpen s) : QuotientMap (s.restrictPreimage f) := by
   refine quotientMap_iff.2 ⟨hf.surjective.restrictPreimage _, fun U ↦ ?_⟩
-  rw [hs.openEmbedding_subtype_val.open_iff_image_open, ← hf.isOpen_preimage,
-    (hs.preimage hf.continuous).openEmbedding_subtype_val.open_iff_image_open,
+  rw [hs.isOpenEmbedding_subtypeVal.open_iff_image_open, ← hf.isOpen_preimage,
+    (hs.preimage hf.continuous).isOpenEmbedding_subtypeVal.open_iff_image_open,
     image_val_preimage_restrictPreimage]
 
 open scoped Set.Notation in
@@ -1528,9 +1540,12 @@ theorem isClosedMap_sigmaMk {i : ι} : IsClosedMap (@Sigma.mk ι σ i) := by
 theorem isClosed_range_sigmaMk {i : ι} : IsClosed (range (@Sigma.mk ι σ i)) :=
   isClosedMap_sigmaMk.isClosed_range
 
-theorem openEmbedding_sigmaMk {i : ι} : OpenEmbedding (@Sigma.mk ι σ i) :=
-  openEmbedding_of_continuous_injective_open continuous_sigmaMk sigma_mk_injective
+theorem isOpenEmbedding_sigmaMk {i : ι} : IsOpenEmbedding (@Sigma.mk ι σ i) :=
+  isOpenEmbedding_of_continuous_injective_open continuous_sigmaMk sigma_mk_injective
     isOpenMap_sigmaMk
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_sigmaMk := isOpenEmbedding_sigmaMk
 
 theorem closedEmbedding_sigmaMk {i : ι} : ClosedEmbedding (@Sigma.mk ι σ i) :=
   closedEmbedding_of_continuous_injective_closed continuous_sigmaMk sigma_mk_injective
@@ -1540,7 +1555,7 @@ theorem embedding_sigmaMk {i : ι} : Embedding (@Sigma.mk ι σ i) :=
   closedEmbedding_sigmaMk.1
 
 theorem Sigma.nhds_mk (i : ι) (x : σ i) : 𝓝 (⟨i, x⟩ : Sigma σ) = Filter.map (Sigma.mk i) (𝓝 x) :=
-  (openEmbedding_sigmaMk.map_nhds_eq x).symm
+  (isOpenEmbedding_sigmaMk.map_nhds_eq x).symm
 
 theorem Sigma.nhds_eq (x : Sigma σ) : 𝓝 x = Filter.map (Sigma.mk x.1) (𝓝 x.2) := by
   cases x
@@ -1600,7 +1615,7 @@ theorem isOpenMap_sigma {f : Sigma σ → X} : IsOpenMap f ↔ ∀ i, IsOpenMap 
 theorem isOpenMap_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} :
     IsOpenMap (Sigma.map f₁ f₂) ↔ ∀ i, IsOpenMap (f₂ i) :=
   isOpenMap_sigma.trans <|
-    forall_congr' fun i => (@openEmbedding_sigmaMk _ _ _ (f₁ i)).isOpenMap_iff.symm
+    forall_congr' fun i => (@isOpenEmbedding_sigmaMk _ _ _ (f₁ i)).isOpenMap_iff.symm
 
 theorem inducing_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} (h₁ : Injective f₁) :
     Inducing (Sigma.map f₁ f₂) ↔ ∀ i, Inducing (f₂ i) := by
@@ -1611,10 +1626,13 @@ theorem embedding_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ 
     Embedding (Sigma.map f₁ f₂) ↔ ∀ i, Embedding (f₂ i) := by
   simp only [embedding_iff, Injective.sigma_map, inducing_sigma_map h, forall_and, h.sigma_map_iff]
 
-theorem openEmbedding_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} (h : Injective f₁) :
-    OpenEmbedding (Sigma.map f₁ f₂) ↔ ∀ i, OpenEmbedding (f₂ i) := by
-  simp only [openEmbedding_iff_embedding_open, isOpenMap_sigma_map, embedding_sigma_map h,
+theorem isOpenEmbedding_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} (h : Injective f₁) :
+    IsOpenEmbedding (Sigma.map f₁ f₂) ↔ ∀ i, IsOpenEmbedding (f₂ i) := by
+  simp only [isOpenEmbedding_iff_embedding_open, isOpenMap_sigma_map, embedding_sigma_map h,
     forall_and]
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_sigma_map := isOpenEmbedding_sigma_map
 
 end Sigma
 
@@ -1688,4 +1706,4 @@ theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {px : X → Prop} {
 
 end NhdsSet
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
