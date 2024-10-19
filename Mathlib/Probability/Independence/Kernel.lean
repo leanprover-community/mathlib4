@@ -833,13 +833,13 @@ theorem Indep.indepSet_of_measurableSet {m₁ m₂ _ : MeasurableSpace Ω} {κ :
     (ht : MeasurableSet[m₂] t) :
     IndepSet s t κ μ := by
   refine fun s' t' hs' ht' => h_indep s' t' ?_ ?_
-  · induction s', hs' using generateFrom_induction
-    | hC => simp [hs]
+  · induction s', hs' using generateFrom_induction with
+    | hC t ht => exact ht ▸ hs
     | empty => exact @MeasurableSet.empty _ m₁
     | compl u _ hu => exact hu.compl
     | iUnion f _ hf => exact .iUnion hf
-  · induction t', ht' using generateFrom_induction
-    | hC => simp [ht]
+  · induction t', ht' using generateFrom_induction with
+    | hC s hs => exact hs ▸ ht
     | empty => exact @MeasurableSet.empty _ m₂
     | compl u _ hu => exact hu.compl
     | iUnion f _ hf => exact .iUnion hf
