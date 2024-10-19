@@ -1353,7 +1353,7 @@ theorem exists_upper_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f 
     (h : s.Finite) : ∃ a : α, ∀ b ∈ s, f b ≤ f a :=
   exists_lower_bound_image (β := βᵒᵈ) s f h
 
-lemma map_iSup {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+lemma map_finite_iSup {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
     [SupBotHomClass F α β] [Finite ι] (f : F) (g : ι → α) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by
   rw [← iSup_univ (f := g), ← iSup_univ (f := fun i ↦ f (g i))]
@@ -1362,7 +1362,7 @@ lemma map_iSup {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike
   · intro i s _ _ f_iSup
     rw [iSup_insert, iSup_insert, map_sup, f_iSup]
 
-lemma map_iInf {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+lemma map_finite_iInf {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
     [InfTopHomClass F α β] [Finite ι] (f : F) (g : ι → α) :
     f (⨅ i, g i) = ⨅ i, f (g i) := by
   rw [← iInf_univ (f := g), ← iInf_univ (f := fun i ↦ f (g i))]
