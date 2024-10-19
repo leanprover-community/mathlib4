@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Group.IsTorsionFree.Basic
 
 /-!
 # Archimedean groups are either discrete or densely ordered
