@@ -326,11 +326,11 @@ namespace MulSemiringAction.Charpoly
 
 -- can we swap hinv?
 theorem reduction
-    (hinv : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = algebraMap A B a) (b : B) :
+    (hinv : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) (b : B) :
     ∃ M : A[X], M.Monic ∧ M.map (algebraMap A B) = charpoly G b := by
   let f : ℕ → A := fun k ↦ (hinv ((charpoly G b).coeff k) (smul_coeff_charpoly b k)).choose
   have hf : ∀ k, algebraMap A B (f k) = (charpoly G b).coeff k :=
-    fun k ↦ (hinv ((charpoly G b).coeff k) (smul_coeff_charpoly b k)).choose_spec.symm
+    fun k ↦ (hinv ((charpoly G b).coeff k) (smul_coeff_charpoly b k)).choose_spec
   use X ^ (charpoly G b).natDegree + ∑ k ∈ Finset.range (charpoly G b).natDegree, C (f k) * X ^ k
   constructor
   · apply Polynomial.monic_X_pow_add
@@ -349,7 +349,7 @@ noncomputable local instance : Algebra A[X] B[X] :=
 theorem _root_.coe_monomial (n : ℕ) (a : A) : ((monomial n a : A[X]) : B[X]) = monomial n (a : B) :=
   map_monomial _
 
-variable (hFull : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = a)
+variable (hFull : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, a = b)
 
 noncomputable def M (b : B) : A[X] :=
   (reduction G hFull b).choose
@@ -391,11 +391,11 @@ open Polynomial
 
 variable {Q} in
 noncomputable def Mbar
-    (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = algebraMap A B a)
+    (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b)
     (bbar : B ⧸ Q) : (A ⧸ P)[X] :=
   Polynomial.map (Ideal.Quotient.mk P) <| M G hFull' <| Quotient.out' bbar
 
-variable (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = algebraMap A B a)
+variable (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b)
 
 omit [SMulCommClass G A B] [Q.IsPrime] [P.IsPrime] [Algebra (A ⧸ P) (B ⧸ Q)]
   [IsScalarTower A (A ⧸ P) (B ⧸ Q)] in
@@ -433,7 +433,7 @@ open Charpoly in
 omit [SMulCommClass G A B] [Q.IsPrime] [P.IsPrime] in
 theorem reduction_isIntegral
     [Nontrivial A] [Nontrivial B]
-    (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = algebraMap A B a) :
+    (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) :
     Algebra.IsIntegral (A ⧸ P) (B ⧸ Q) where
   isIntegral x := ⟨Mbar G P hFull' x, Mbar_monic G P Q hFull' x, Mbar_eval_eq_zero G P Q hFull' x⟩
 
@@ -598,7 +598,7 @@ theorem lem3 {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [NoZeroDiviso
 
 omit [P.IsPrime] [IsFractionRing (B ⧸ Q) L]
 open Polynomial in
-theorem lem4 (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = algebraMap A B a)
+theorem lem4 (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b)
     (f : L ≃ₐ[K] L) (b : B ⧸ Q)
     (hx : ∀ g : MulAction.stabilizer G Q, stabilizerAction G P Q g b = b) :
     f (algebraMap (B ⧸ Q) L b) = (algebraMap (B ⧸ Q) L b) := by
@@ -652,7 +652,7 @@ noncomputable def fullHom : MulAction.stabilizer G Q →* (L ≃ₐ[K] L) :=
   MonoidHom.comp (liftHom (A ⧸ P) (B ⧸ Q) K L) (stabilizerAction G P Q)
 
 theorem fullHom_surjective1
-    (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = algebraMap A B a)
+    (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b)
     (f : L ≃ₐ[K] L) (x : L) (hx : ∀ g : MulAction.stabilizer G Q, fullHom G P Q K L g x = x) :
     f x = x := by
   obtain ⟨_⟩ := nonempty_fintype G
@@ -704,7 +704,7 @@ theorem fullHom_surjective1
   apply liftHom_commutes
 
 theorem fullHom_surjective
-    (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = algebraMap A B a) :
+    (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) :
     Function.Surjective (fullHom G P Q K L : MulAction.stabilizer G Q →* (L ≃ₐ[K] L)) := by
   let action : MulSemiringAction (MulAction.stabilizer G Q) L :=
     MulSemiringAction.ofAlgEquivHom _ _
