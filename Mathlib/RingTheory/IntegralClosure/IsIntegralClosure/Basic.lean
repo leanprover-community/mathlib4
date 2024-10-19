@@ -558,6 +558,18 @@ nonrec theorem RingHom.IsIntegral.tower_bot (hg : Function.Injective g)
   haveI : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
   fun x ↦ IsIntegral.tower_bot hg (hfg (g x))
 
+variable (T) in
+/-- Let `T / S / R` be a tower of algebras, `T` is non-trivial and is a torsion free `S`-module,
+  then if `T` is an integral `R`-algebra, then `S` is an integral `R`-algebra. -/
+theorem Algebra.IsIntegral.tower_bot [Algebra R S] [Algebra R T] [Algebra S T]
+    [NoZeroSMulDivisors S T] [Nontrivial T] [IsScalarTower R S T]
+    [h : Algebra.IsIntegral R T] : Algebra.IsIntegral R S where
+  isIntegral := by
+    apply RingHom.IsIntegral.tower_bot (algebraMap R S) (algebraMap S T)
+      (NoZeroSMulDivisors.algebraMap_injective S T)
+    rw [← IsScalarTower.algebraMap_eq R S T]
+    exact h.isIntegral
+
 theorem IsIntegral.tower_bot_of_field {R A B : Type*} [CommRing R] [Field A]
     [CommRing B] [Nontrivial B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
     {x : A} (h : IsIntegral R (algebraMap A B x)) : IsIntegral R x :=
@@ -571,12 +583,25 @@ theorem RingHom.isIntegralElem.of_comp {x : T} (h : (g.comp f).IsIntegralElem x)
 theorem RingHom.IsIntegral.tower_top (h : (g.comp f).IsIntegral) : g.IsIntegral :=
   fun x ↦ RingHom.isIntegralElem.of_comp f g (h x)
 
+variable (R) in
+/-- Let `T / S / R` be a tower of algebras, `T` is an integral `R`-algebra, then it is integral
+  as an `S`-algebra. -/
+theorem Algebra.IsIntegral.tower_top [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    [h : Algebra.IsIntegral R T] : Algebra.IsIntegral S T where
+  isIntegral := by
+    apply RingHom.IsIntegral.tower_top (algebraMap R S) (algebraMap S T)
+    rw [← IsScalarTower.algebraMap_eq R S T]
+    exact h.isIntegral
+
 theorem RingHom.IsIntegral.quotient {I : Ideal S} (hf : f.IsIntegral) :
     (Ideal.quotientMap I f le_rfl).IsIntegral := by
   rintro ⟨x⟩
   obtain ⟨p, p_monic, hpx⟩ := hf x
   refine ⟨p.map (Ideal.Quotient.mk _), p_monic.map _, ?_⟩
   simpa only [hom_eval₂, eval₂_map] using congr_arg (Ideal.Quotient.mk I) hpx
+
+instance {I : Ideal A} [Algebra.IsIntegral R A] : Algebra.IsIntegral R (A ⧸ I) :=
+  Algebra.IsIntegral.trans A
 
 instance Algebra.IsIntegral.quotient {I : Ideal A} [Algebra.IsIntegral R A] :
     Algebra.IsIntegral (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) :=
