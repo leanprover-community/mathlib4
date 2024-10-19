@@ -201,7 +201,7 @@ instance : SMul (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)
       refine Quotient.inductionOn x (fun x ↦ ?_)
       have h : b₁ - b₂ ∈ (I : Submodule R R) := by
         rwa [show I = I • ⊤ by simp, ← Submodule.quotientRel_def]
-      rw [← sub_eq_zero, ← sub_smul, Submodule.Quotient.mk''_eq_mk,
+      rw [← sub_eq_zero, ← sub_smul, Submodule.Quotient.mk_eq_mk,
         ← Submodule.Quotient.mk_smul, Submodule.Quotient.mk_eq_zero]
       exact Submodule.smul_mem_smul h mem_top
 
