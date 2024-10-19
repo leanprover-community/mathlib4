@@ -1,4 +1,5 @@
-import Mathlib.Data.DFinsupp.Multilinear
+import Mathlib.LinearAlgebra.Multilinear.DFinsupp
+import Mathlib.LinearAlgebra.Multilinear.Pi
 import Mathlib.Data.DFinsupp.Notation
 
 /--
@@ -9,13 +10,12 @@ info: fun₀
   | !["goodbye", "complicated", "test file"] => -30
 -/
 #guard_msgs in
-#eval DFinsupp.piMultilinear
+#eval MultilinearMap.dfinsuppFamily
   (κ := fun _ => String)
   (M := fun _ _ => ℤ)
   (N := fun _ => ℤ)
   (R := ℤ)
-  (f := fun _ => MultilinearMap.mkPiAlgebra ℤ (Fin 3) ℤ) <|
-    Fin.cons (fun₀ | "hello" => 1 | "goodbye" => -1) <|
-    Fin.cons (fun₀ | "complicated" => 10) <|
-    Fin.cons (fun₀ | "world" => 2 | "test file" => 3) <|
-    IsEmpty.elim inferInstance
+  (f := fun _ => MultilinearMap.mkPiAlgebra ℤ (Fin 3) ℤ) ![
+    fun₀ | "hello" => 1 | "goodbye" => -1,
+    fun₀ | "complicated" => 10,
+    fun₀ | "world" => 2 | "test file" => 3]
