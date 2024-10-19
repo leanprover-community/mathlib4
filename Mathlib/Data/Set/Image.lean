@@ -950,7 +950,7 @@ theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α)
 -- When `f` is injective, see also `Equiv.ofInjective`.
 theorem leftInverse_rangeSplitting (f : α → β) :
     LeftInverse (rangeFactorization f) (rangeSplitting f) := fun x => by
-  apply Subtype.ext -- Porting note: why doesn't `ext` find this lemma?
+  ext
   simp only [rangeFactorization_coe]
   apply apply_rangeSplitting
 

@@ -46,7 +46,7 @@ provided.
 * `TopCat.GlueData.preimage_range`: The preimage of the image of `U i` in `U j` is `V i j`.
 * `TopCat.GlueData.preimage_image_eq_image`: The preimage of the image of some `U ⊆ U i` is
     given by XXX.
-* `TopCat.GlueData.ι_openEmbedding`: Each of the `ι i`s are open embeddings.
+* `TopCat.GlueData.ι_isOpenEmbedding`: Each of the `ι i`s are open embeddings.
 
 -/
 
@@ -84,7 +84,7 @@ conditions are stated in a less categorical way.
 -/
 -- porting note (#5171): removed @[nolint has_nonempty_instance]
 structure GlueData extends GlueData TopCat where
-  f_open : ∀ i j, OpenEmbedding (f i j)
+  f_open : ∀ i j, IsOpenEmbedding (f i j)
   f_mono := fun i j => (TopCat.mono_iff_injective _).mpr (f_open i j).toEmbedding.inj
 
 namespace GlueData
@@ -292,9 +292,12 @@ theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' 
   apply (D.t j i ≫ D.f i j).continuous_toFun.isOpen_preimage
   exact U.isOpen
 
-theorem ι_openEmbedding (i : D.J) : OpenEmbedding (𝖣.ι i) :=
-  openEmbedding_of_continuous_injective_open (𝖣.ι i).continuous_toFun (D.ι_injective i) fun U h =>
+theorem ι_isOpenEmbedding (i : D.J) : IsOpenEmbedding (𝖣.ι i) :=
+  isOpenEmbedding_of_continuous_injective_open (𝖣.ι i).continuous_toFun (D.ι_injective i) fun U h =>
     D.open_image_open i ⟨U, h⟩
+
+@[deprecated (since := "2024-10-18")]
+alias ι_openEmbedding := ι_isOpenEmbedding
 
 /-- A family of gluing data consists of
 1. An index type `J`
@@ -356,7 +359,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     -- Porting note (#12129): additional beta reduction needed
     beta_reduce
     exact (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
-  f_open := fun i j : h.J => (h.V i j).openEmbedding
+  f_open := fun i j : h.J => (h.V i j).isOpenEmbedding
   t := h.t
   t_id i := by ext; rw [h.t_id]; rfl
   t' := h.t'
@@ -404,7 +407,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
       cocycle := fun _ _ _ _ _ => rfl }
 
 /-- The canonical map from the glue of a family of open subsets `α` into `α`.
-This map is an open embedding (`fromOpenSubsetsGlue_openEmbedding`),
+This map is an open embedding (`fromOpenSubsetsGlue_isOpenEmbedding`),
 and its range is `⋃ i, (U i : Set α)` (`range_fromOpenSubsetsGlue`).
 -/
 def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
@@ -439,7 +442,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   use Set.inter_subset_left
   constructor
   · rw [← Set.image_preimage_eq_inter_range]
-    apply (Opens.openEmbedding (X := TopCat.of α) (U i)).isOpenMap
+    apply (Opens.isOpenEmbedding (X := TopCat.of α) (U i)).isOpenMap
     convert hs i using 1
     erw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
     --  porting note: `congr 1` did nothing, so I replaced it with `apply congr_arg`
@@ -449,9 +452,12 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     rw [ι_fromOpenSubsetsGlue_apply]
     exact Set.mem_range_self _
 
-theorem fromOpenSubsetsGlue_openEmbedding : OpenEmbedding (fromOpenSubsetsGlue U) :=
-  openEmbedding_of_continuous_injective_open (ContinuousMap.continuous_toFun _)
+theorem fromOpenSubsetsGlue_isOpenEmbedding : IsOpenEmbedding (fromOpenSubsetsGlue U) :=
+  isOpenEmbedding_of_continuous_injective_open (ContinuousMap.continuous_toFun _)
     (fromOpenSubsetsGlue_injective U) (fromOpenSubsetsGlue_isOpenMap U)
+
+@[deprecated (since := "2024-10-18")]
+alias fromOpenSubsetsGlue_openEmbedding := fromOpenSubsetsGlue_isOpenEmbedding
 
 theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (U i : Set α) := by
   ext

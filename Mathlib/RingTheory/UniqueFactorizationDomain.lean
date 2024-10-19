@@ -554,6 +554,13 @@ theorem factors_pow_count_prod [DecidableEq α] {x : α} (hx : x ≠ 0) :
   _ = prod (factors x) := by rw [toFinset_sum_count_nsmul_eq (factors x)]
   _ ~ᵤ x := factors_prod hx
 
+theorem factors_rel_of_associated {a b : α} (h : Associated a b) :
+    Multiset.Rel Associated (factors a) (factors b) := by
+  rcases iff_iff_and_or_not_and_not.mp h.eq_zero_iff with (⟨rfl, rfl⟩ | ⟨ha, hb⟩)
+  · simp
+  · refine factors_unique irreducible_of_factor irreducible_of_factor ?_
+    exact ((factors_prod ha).trans h).trans (factors_prod hb).symm
+
 end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
@@ -721,13 +728,17 @@ theorem dvd_iff_normalizedFactors_le_normalizedFactors {x y : α} (hx : x ≠ 0)
       (normalizedFactors_prod hy).dvd_iff_dvd_right]
     apply Multiset.prod_dvd_prod_of_le
 
+theorem _root_.Associated.normalizedFactors_eq {a b : α} (h : Associated a b) :
+    normalizedFactors a = normalizedFactors b := by
+  unfold normalizedFactors
+  have h' : ⇑(normalize (α := α)) = Associates.out ∘ Associates.mk := funext Associates.out_mk
+  rw [h', ← Multiset.map_map, ← Multiset.map_map,
+    Associates.rel_associated_iff_map_eq_map.mp (factors_rel_of_associated h)]
+
 theorem associated_iff_normalizedFactors_eq_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
-    x ~ᵤ y ↔ normalizedFactors x = normalizedFactors y := by
-  refine
-    ⟨fun h => ?_, fun h =>
-      (normalizedFactors_prod hx).symm.trans (_root_.trans (by rw [h]) (normalizedFactors_prod hy))⟩
-  apply le_antisymm <;> rw [← dvd_iff_normalizedFactors_le_normalizedFactors]
-  all_goals simp [*, h.dvd, h.symm.dvd]
+    x ~ᵤ y ↔ normalizedFactors x = normalizedFactors y :=
+  ⟨Associated.normalizedFactors_eq, fun h =>
+    (normalizedFactors_prod hx).symm.trans (_root_.trans (by rw [h]) (normalizedFactors_prod hy))⟩
 
 theorem normalizedFactors_of_irreducible_pow {p : α} (hp : Irreducible p) (k : ℕ) :
     normalizedFactors (p ^ k) = Multiset.replicate k (normalize p) := by
