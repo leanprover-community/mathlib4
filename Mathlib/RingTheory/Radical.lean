@@ -164,7 +164,7 @@ theorem radical_mul {a b : R} (hc : IsCoprime a b) :
   rw [mul_primeFactors_disjUnion ha hb hc]
   rw [Finset.prod_disjUnion (disjoint_primeFactors hc)]
 
-theorem radical_neg {a : R} : radical (-a) = radical a := by
-  exact radical_eq_of_associated Associated.rfl.neg_left
+theorem radical_neg {a : R} : radical (-a) = radical a :=
+  radical_eq_of_associated Associated.rfl.neg_left
 
 end UniqueFactorizationDomain
