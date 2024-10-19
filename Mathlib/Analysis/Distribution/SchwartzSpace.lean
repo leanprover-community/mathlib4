@@ -90,10 +90,6 @@ instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-instance instCoeFun : CoeFun 𝓢(E, F) fun _ => E → F :=
-  DFunLike.hasCoeToFun
-
 /-- All derivatives of a Schwartz function are rapidly decaying. -/
 theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
     ∃ C : ℝ, 0 < C ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ C := by
