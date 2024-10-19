@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
 import Mathlib.FieldTheory.KrullTopology
-import Mathlib.FieldTheory.GaloisClosure
+import Mathlib.FieldTheory.Galois.GaloisClosure
 import Mathlib.Topology.Algebra.ClosedSubgroup
 /-!
 
