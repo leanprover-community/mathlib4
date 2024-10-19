@@ -83,10 +83,7 @@ lemma closedEmbedding_cfcₙAux : ClosedEmbedding (cfcₙAux hp₁ a ha) := by
   refine ((cfcHom_closedEmbedding (hp₁.mpr ha)).comp ?_).comp
     ContinuousMapZero.closedEmbedding_toContinuousMap
   let e : C(σₙ 𝕜 a, 𝕜) ≃ₜ C(σ 𝕜 (a : A⁺¹), 𝕜) :=
-    { (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr <|
-        (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm) with
-      continuous_toFun := ContinuousMap.continuous_comp_left _
-      continuous_invFun := ContinuousMap.continuous_comp_left _ }
+    (Homeomorph.setCongr (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a)).arrowCongr (.refl _)
   exact e.closedEmbedding
 
 lemma spec_cfcₙAux (f : C(σₙ 𝕜 a, 𝕜)₀) : σ 𝕜 (cfcₙAux hp₁ a ha f) = Set.range f := by
