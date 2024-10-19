@@ -324,7 +324,6 @@ variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] [Algebra A B]
 
 namespace MulSemiringAction.Charpoly
 
--- can we swap hinv?
 theorem reduction
     (hinv : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) (b : B) :
     ∃ M : A[X], M.Monic ∧ M.map (algebraMap A B) = charpoly G b := by
@@ -354,21 +353,11 @@ variable (hFull : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, a = b)
 noncomputable def M (b : B) : A[X] :=
   (reduction G hFull b).choose
 
-theorem M_monic (b : B) : (M G hFull b).Monic :=
-  (reduction G hFull b).choose_spec.1
-
 theorem M_spec (b : B) : ((M G hFull b : A[X]) : B[X]) = charpoly G b :=
   (reduction G hFull b).choose_spec.2
 
 theorem M_spec_map (b : B) : (map (algebraMap A B) (M G hFull b)) = charpoly G b :=
   M_spec G hFull b
-
-theorem M_eval_eq_zero (b : B) : (M G hFull b).eval₂ (algebraMap A B) b = 0 := by
-  rw [eval₂_eq_eval_map, M_spec_map, eval_charpoly]
-
-include hFull in
-theorem isIntegral : Algebra.IsIntegral A B where
-  isIntegral b := ⟨M G hFull b, M_monic G hFull b, M_eval_eq_zero G hFull b⟩
 
 end MulSemiringAction.Charpoly
 
@@ -377,67 +366,30 @@ end charpoly
 namespace MulSemiringAction.Charpoly
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  (G : Type*) [Group G] [Fintype G] [MulSemiringAction G B] [SMulCommClass G A B]
-  (P : Ideal A) (Q : Ideal B) [P.IsPrime] [Q.IsPrime]
+  (G : Type*) [Group G] [Fintype G] [MulSemiringAction G B]
+  (P : Ideal A) (Q : Ideal B)
   [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
-  -- from this, we can prove that P = comap Q
   variable (K L : Type*) [Field K] [Field L]
   [Algebra (A ⧸ P) K] [IsFractionRing (A ⧸ P) K]
   [Algebra (B ⧸ Q) L] [IsFractionRing (B ⧸ Q) L]
   [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]
 
-open Polynomial
-
-variable {Q} in
-noncomputable def Mbar
-    (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b)
-    (bbar : B ⧸ Q) : (A ⧸ P)[X] :=
-  Polynomial.map (Ideal.Quotient.mk P) <| M G hFull' <| Quotient.out' bbar
-
-variable (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b)
-
-omit [SMulCommClass G A B] [Q.IsPrime] [P.IsPrime] [Algebra (A ⧸ P) (B ⧸ Q)]
-  [IsScalarTower A (A ⧸ P) (B ⧸ Q)] in
-theorem Mbar_monic [Nontrivial B] (bbar : B ⧸ Q) : (Mbar G P hFull' bbar).Monic := by
-  have := M_monic G hFull'
-  simp [Mbar, (M_monic G hFull' _).map]
-
-/-- docstring -/
-theorem Quotient.out_eq'' {R : Type*} [CommRing R] {I : Ideal R} (x : R ⧸ I) :
-    Ideal.Quotient.mk I (Quotient.out' x) = x := by
-  exact Quotient.out_eq' x
-
-omit [SMulCommClass G A B] [Q.IsPrime] [P.IsPrime] in
-theorem Mbar_eval_eq_zero [Nontrivial A] [Nontrivial B] (bbar : B ⧸ Q) :
-    eval₂ (algebraMap (A ⧸ P) (B ⧸ Q)) bbar (Mbar G P hFull' bbar) = 0 := by
-  have h := congr_arg (algebraMap B (B ⧸ Q)) (M_eval_eq_zero G hFull' (Quotient.out' bbar))
-  rw [map_zero, hom_eval₂, Ideal.Quotient.algebraMap_eq, Quotient.out_eq''] at h
-  simpa [Mbar, eval₂_map, ← Ideal.Quotient.algebraMap_eq,
-    ← IsScalarTower.algebraMap_eq A (A ⧸ P) (B ⧸ Q), IsScalarTower.algebraMap_eq A B (B ⧸ Q)]
-
-end Charpoly
-
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  (G : Type*) [Group G] [Fintype G] [MulSemiringAction G B] [SMulCommClass G A B]
-  (P : Ideal A) (Q : Ideal B) [P.IsPrime] [Q.IsPrime]
-  [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
-  -- from this, we can prove that P = comap Q
-  variable (K L : Type*) [Field K] [Field L]
-  [Algebra (A ⧸ P) K] [IsFractionRing (A ⧸ P) K]
-  [Algebra (B ⧸ Q) L] [IsFractionRing (B ⧸ Q) L]
-  [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
-  [Algebra K L] [IsScalarTower (A ⧸ P) K L]
-
-open Charpoly in
-omit [SMulCommClass G A B] [Q.IsPrime] [P.IsPrime] in
 theorem reduction_isIntegral
     [Nontrivial A] [Nontrivial B]
     (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) :
     Algebra.IsIntegral (A ⧸ P) (B ⧸ Q) where
-  isIntegral x := ⟨Mbar G P hFull' x, Mbar_monic G P Q hFull' x, Mbar_eval_eq_zero G P Q hFull' x⟩
+  isIntegral q := by
+    refine Quotient.inductionOn' q (fun b ↦ ?_)
+    change IsIntegral (A ⧸ P) (algebraMap B (B ⧸ Q) b)
+    obtain ⟨f, hf1, hf2⟩ := reduction G hFull' b
+    refine ⟨f.map (algebraMap A (A ⧸ P)), hf1.map (algebraMap A (A ⧸ P)), ?_⟩
+    rw [← Polynomial.eval_map, Polynomial.map_map, ← IsScalarTower.algebraMap_eq,
+        IsScalarTower.algebraMap_eq A B (B ⧸ Q), ← Polynomial.map_map, hf2]
+    rw [Polynomial.eval_map_algebraMap, Polynomial.aeval_algebraMap_apply_eq_algebraMap_eval]
+    rw [eval_charpoly, map_zero]
 
-end MulSemiringAction
+end MulSemiringAction.Charpoly
 
 section part_b
 
@@ -675,7 +627,8 @@ theorem fullHom_surjective1
     replace hy : y ≠ 0 := by
       rintro rfl
       exact zero_not_mem_nonZeroDivisors hy
-    have : Algebra.IsIntegral (A ⧸ P) (B ⧸ Q) := MulSemiringAction.reduction_isIntegral G P Q hAB
+    have : Algebra.IsIntegral (A ⧸ P) (B ⧸ Q) :=
+      MulSemiringAction.Charpoly.reduction_isIntegral G P Q hAB
     obtain ⟨a, ha, b, hb⟩ := Algebra.exists_dvd_nonzero_if_isIntegral (A ⧸ P) (B ⧸ Q) y hy
     refine ⟨a, x * b, ha, ?_⟩
     rw [IsScalarTower.algebraMap_apply (A ⧸ P) (B ⧸ Q) L, hb]
