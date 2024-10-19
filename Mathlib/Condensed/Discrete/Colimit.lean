@@ -188,12 +188,11 @@ def fintypeCatAsCofan (X : Profinite) :
   Cofan.mk X (fun x ↦ (ContinuousMap.const _ x))
 
 /-- A finite set is the coproduct of its points in `Profinite`. -/
-def fintypeCatAsCofanIsColimit (X : Profinite) [Fintype X] :
+def fintypeCatAsCofanIsColimit (X : Profinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) := by
   refine mkCofanColimit _ (fun t ↦ ⟨fun x ↦ t.inj x PUnit.unit, ?_⟩) ?_
     (fun _ _ h ↦ by ext x; exact ContinuousMap.congr_fun (h x) _)
-  · convert continuous_bot
-    exact (inferInstanceAs (DiscreteTopology X)).1
+  · apply continuous_of_discreteTopology (α := X)
   · aesop
 
 variable [PreservesFiniteProducts F]
@@ -461,12 +460,11 @@ def fintypeCatAsCofan (X : LightProfinite) :
   Cofan.mk X (fun x ↦ (ContinuousMap.const _ x))
 
 /-- A finite set is the coproduct of its points in `LightProfinite`. -/
-def fintypeCatAsCofanIsColimit (X : LightProfinite) [Fintype X] :
+def fintypeCatAsCofanIsColimit (X : LightProfinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) := by
   refine mkCofanColimit _ (fun t ↦ ⟨fun x ↦ t.inj x PUnit.unit, ?_⟩) ?_
     (fun _ _ h ↦ by ext x; exact ContinuousMap.congr_fun (h x) _)
-  · convert continuous_bot
-    exact (inferInstanceAs (DiscreteTopology X)).1
+  · apply continuous_of_discreteTopology (α := X)
   · aesop
 
 variable [PreservesFiniteProducts F]
