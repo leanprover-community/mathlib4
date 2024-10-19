@@ -925,7 +925,7 @@ instance Stmt.inhabited [Inhabited Γ] : Inhabited Stmt₀ :=
   Both `Λ` and `Γ` are required to be inhabited; the default value
   for `Γ` is the "blank" tape value, and the default value of `Λ` is
   the initial state. -/
-@[nolint inhabitedNonempty unusedArguments] -- this is a deliberate addition, see comment
+@[nolint allOfThem unusedArguments] -- this is a deliberate addition, see comment
 def Machine [Inhabited Λ] :=
   Λ → Γ → Option (Λ × Stmt₀)
 
@@ -1019,7 +1019,7 @@ variable (M : Machine Γ Λ) (f₁ : PointedMap Γ Γ') (f₂ : PointedMap Γ' �
 /-- Because the state transition function uses the alphabet and machine states in both the input
 and output, to map a machine from one alphabet and machine state space to another we need functions
 in both directions, essentially an `Equiv` without the laws. -/
-@[nolint inhabitedNonempty]
+@[nolint allOfThem ]
 def Machine.map : Machine Γ' Λ'
   | q, l => (M (g₂ q) (f₂ l)).map (Prod.map g₁ (Stmt.map f₁))
 
@@ -1329,7 +1329,7 @@ def trAux (s : Γ) : Stmt₁ → σ → Λ'₁₀ × Stmt₀
 local notation "Cfg₁₀" => TM0.Cfg Γ Λ'₁₀
 
 /-- The translated TM0 machine (given the TM1 machine input). -/
-@[nolint inhabitedNonempty]
+@[nolint allOfThem ]
 def tr : TM0.Machine Γ Λ'₁₀
   | (none, _), _ => none
   | (some q, v), s => some (trAux M s q v)

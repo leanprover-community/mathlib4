@@ -236,7 +236,7 @@ theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
 -- Post's theorem on the equivalence of r.e., co-r.e. sets and
 -- computable sets. The assumption that p is decidable is required
 -- unless we assume Markov's principle or LEM.
-@[nolint decidableClassical]
+@[nolint allOfThem]
 theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
     ComputablePred p ↔ RePred p ∧ RePred fun a => ¬p a :=
   ⟨fun h => ⟨h.to_re, h.not.to_re⟩, fun ⟨h₁, h₂⟩ =>

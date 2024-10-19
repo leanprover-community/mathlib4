@@ -61,7 +61,7 @@ def checkUnusedAssumptionInType (declInfo : ConstantInfo) (typesToAvoid : Array 
     let names := #[`Decidable, `DecidableEq, `DecidablePred, `Inhabited, `Fintype, `Encodable]
     return ← checkUnusedAssumptionInType (← getConstInfo declName) names
 
-/--/
+/-
 /--
 Linter that checks for theorems that assume `[Decidable p]`
 but don't use this assumption in the type.

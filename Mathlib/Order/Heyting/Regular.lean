@@ -227,7 +227,7 @@ theorem isRegular_of_boolean : ∀ a : α, IsRegular a :=
   compl_compl
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
-@[nolint decidableClassical]
+@[nolint allOfThem]
 theorem isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
   propext <| Decidable.not_not
 

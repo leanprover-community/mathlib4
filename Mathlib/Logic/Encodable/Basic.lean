@@ -507,13 +507,13 @@ theorem choose_spec (h : ∃ x, p x) : p (choose h) :=
 end FindA
 
 /-- A constructive version of `Classical.axiom_of_choice` for `Encodable` types. -/
-@[nolint decidableClassical]
+@[nolint allOfThem]
 theorem axiom_of_choice {α : Type*} {β : α → Type*} {R : ∀ x, β x → Prop} [∀ a, Encodable (β a)]
     [∀ x y, Decidable (R x y)] (H : ∀ x, ∃ y, R x y) : ∃ f : ∀ a, β a, ∀ x, R x (f x) :=
   ⟨fun x => choose (H x), fun x => choose_spec (H x)⟩
 
 /-- A constructive version of `Classical.skolem` for `Encodable` types. -/
-@[nolint decidableClassical]
+@[nolint allOfThem]
 theorem skolem {α : Type*} {β : α → Type*} {P : ∀ x, β x → Prop} [∀ a, Encodable (β a)]
     [∀ x y, Decidable (P x y)] : (∀ x, ∃ y, P x y) ↔ ∃ f : ∀ a, β a, ∀ x, P x (f x) :=
   ⟨axiom_of_choice, fun ⟨_, H⟩ x => ⟨_, H x⟩⟩

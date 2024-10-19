@@ -83,7 +83,7 @@ Return a lazy lists of pairs, consisting of a value under that function,
 and a maximal list of elements having that value.
 -/
 @[deprecated "See deprecation note in module documentation." (since := "2024-08-22"),
-  nolint decidableClassical]
+  nolint allOfThem]
 partial def groupByM [DecidableEq β] (L : MLList m α) (f : α → m β) : MLList m (β × List α) :=
   L.cases (fun _ => nil) fun a t => squash fun _ => do
     let b ← f a
