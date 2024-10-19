@@ -87,7 +87,7 @@ lemma inverse_eq {f : E →L[𝕜] F} {g : F →L[𝕜] E}
 lemma IsInvertible.inverse_apply_eq {f : E →L[𝕜] F} {x : E} {y : F} (hf : f.IsInvertible) :
     f.inverse y = x ↔ y = f x := by
   rcases hf with ⟨M, rfl⟩
-  simp
+  simp only [inverse_equiv, ContinuousLinearEquiv.coe_coe]
   exact ContinuousLinearEquiv.symm_apply_eq M
 
 /-- At an invertible map `e : E →L[𝕜] F` between Banach spaces, the operation of
