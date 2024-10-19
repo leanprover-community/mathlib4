@@ -321,7 +321,7 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     have hx := x.property
     rwa [orbitRel.Quotient.mem_orbit] at hx⟩⟧) fun a b h ↦ by
-      simp only [· ≈ ·, ← Quotient.eq,
+      simp only [← Quotient.eq,
                  orbitRel.Quotient.subgroup_quotient_eq_iff] at h
       simp only [Quotient.eq] at h ⊢
       exact h

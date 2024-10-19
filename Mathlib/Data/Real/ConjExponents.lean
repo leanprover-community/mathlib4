@@ -272,7 +272,7 @@ protected lemma conjExponent (hp : 1 ≤ p) : p.IsConjExponent (conjExponent p) 
   refine (AddLECancellable.eq_tsub_iff_add_eq_of_le (α := ℝ≥0∞) (by simpa) (by simpa)).1 ?_
   rw [inv_eq_iff_eq_inv]
   obtain rfl | hp₁ := hp.eq_or_lt
-  · simp
+  · simp [tsub_eq_zero_of_le]
   obtain rfl | hp := eq_or_ne p ∞
   · simp
   calc
@@ -317,7 +317,7 @@ lemma mul_eq_add : p * q = p + q := by
 
 lemma div_conj_eq_sub_one : p / q = p - 1 := by
   obtain rfl | hq := eq_or_ne q ∞
-  · simp [h.symm.conj_eq]
+  · simp [h.symm.conj_eq, tsub_eq_zero_of_le]
   refine ENNReal.eq_sub_of_add_eq one_ne_top ?_
   rw [← ENNReal.div_self h.symm.ne_zero hq, ← ENNReal.add_div, ← h.mul_eq_add, mul_div_assoc,
     ENNReal.div_self h.symm.ne_zero hq, mul_one]
