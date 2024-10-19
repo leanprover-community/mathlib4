@@ -37,7 +37,7 @@ theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) 
 theorem bit_eq_zero_iff {n : Nat} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
   cases n <;> cases b <;> simp [bit, Nat.shiftLeft_succ, Nat.two_mul, ← Nat.add_assoc]
 
-/-- For a predicate `motive : Nat → Sort*`, if instances can be
+/-- For a predicate `motive : Nat → Sort u`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for any given natural number. -/
 @[inline]
@@ -48,7 +48,7 @@ def bitCasesOn {motive : Nat → Sort u} (n) (h : ∀ b n, motive (bit b n)) : m
   congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
 
 /-- A recursion principle for `bit` representations of natural numbers.
-  For a predicate `motive : Nat → Sort*`, if instances can be
+  For a predicate `motive : Nat → Sort u`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for all natural numbers. -/
 @[elab_as_elim, specialize]
