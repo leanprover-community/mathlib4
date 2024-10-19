@@ -24,8 +24,8 @@ from normed vector spaces to topological vector spaces.
 The definition is motivated by
 https://en.wikipedia.org/wiki/Fr%C3%A9chet_derivative#Generalization_to_topological_vector_spaces
 but the definition there doesn't work for topological vector spaces over general normed fields.
-For the discussion that lead to the current choice of the definition, see
-https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/generalizing.20deriv.20to.20TVS
+[This Zulip discussion](https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/generalizing.20deriv.20to.20TVS)
+led to the current choice of the definition.
 
 ## Main results
 
