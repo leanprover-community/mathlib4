@@ -183,6 +183,8 @@ theorem omega0_lt_omega'_iff {x : Ordinal} : ω < omega' x ↔ ω < x := by
 /-- The `omega` function gives the infinite initial ordinals listed by their ordinal index.
 `omega 0 = ω`, `omega 1 = ω₁` is the first uncountable ordinal, and so on.
 
+This is not to be confused with the first infinite ordinal `Ordinal.omega0`.
+
 For a version including finite ordinals, see `Ordinal.omega'`. -/
 def omega : Ordinal ↪o Ordinal :=
   (OrderEmbedding.addLeft ω).trans omega'
