@@ -269,7 +269,7 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     FinStronglyMeasurable f μ := by
   haveI : SigmaFinite (μ.restrict t) := htμ
   let S := spanningSets (μ.restrict t)
-  have hS_meas : ∀ n, MeasurableSet (S n) := measurable_spanningSets (μ.restrict t)
+  have hS_meas : ∀ n, MeasurableSet (S n) := measurableSet_spanningSets (μ.restrict t)
   let f_approx := hf_meas.approx
   let fs n := SimpleFunc.restrict (f_approx n) (S n ∩ t)
   have h_fs_t_compl : ∀ n, ∀ x, x ∉ t → fs n x = 0 := by

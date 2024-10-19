@@ -151,7 +151,7 @@ jobs:
           rm -rf .lake/build/lib/Mathlib/
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
           lake exe cache get #Mathlib.Init
-          lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
+          #lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
