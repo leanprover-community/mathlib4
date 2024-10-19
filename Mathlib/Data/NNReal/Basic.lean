@@ -58,8 +58,8 @@ open scoped BigOperators
 /-- Nonnegative real numbers. -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
-  SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring, Inhabited,
-  OrderedCommMonoid
+  SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
+  OrderedCommMonoid, Nontrivial, Inhabited
 
 namespace NNReal
 
