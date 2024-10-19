@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Data.NNRat.Order
 import Mathlib.Tactic.FieldSimp
 
 /-!
