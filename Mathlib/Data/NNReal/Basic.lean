@@ -336,8 +336,6 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[bound] private alias ⟨_, Bound.coe_pos_of_pos⟩ := coe_pos
 
-lemma coe_pos_iff_ne_zero : (0 : ℝ) < r ↔ r ≠ 0 := coe_pos.trans pos_iff_ne_zero
-
 @[simp, norm_cast] lemma one_le_coe : 1 ≤ (r : ℝ) ↔ 1 ≤ r := by rw [← coe_le_coe, coe_one]
 @[simp, norm_cast] lemma one_lt_coe : 1 < (r : ℝ) ↔ 1 < r := by rw [← coe_lt_coe, coe_one]
 @[simp, norm_cast] lemma coe_le_one : (r : ℝ) ≤ 1 ↔ r ≤ 1 := by rw [← coe_le_coe, coe_one]
