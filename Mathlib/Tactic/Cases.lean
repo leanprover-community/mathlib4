@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Lean.Elab.Tactic.Induction
 import Batteries.Tactic.OpenPrivate
 import Mathlib.Lean.Expr.Basic
+import Batteries.Data.List.Basic
 
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic
@@ -57,7 +58,7 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     let (introduced, g) ← g.introNP generalized.size
     let subst := (generalized.zip introduced).foldl (init := subst) fun subst (a, b) =>
       subst.insert a (.fvar b)
-    let g ← liftM $ toClear.foldlM (·.tryClear) g
+    let g ← liftM <| toClear.foldlM (·.tryClear) g
     g.withContext do
       for (stx, fvar) in toTag do
         Term.addLocalVarInfo stx (subst.get fvar)

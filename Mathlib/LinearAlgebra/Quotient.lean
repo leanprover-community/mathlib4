@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Pi
 import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Quotients by submodules
@@ -32,12 +34,14 @@ version, where commutativity can't be assumed. -/
 def quotientRel : Setoid M :=
   QuotientAddGroup.leftRel p.toAddSubgroup
 
-theorem quotientRel_r_def {x y : M} : @Setoid.r _ p.quotientRel x y ↔ x - y ∈ p :=
+theorem quotientRel_def {x y : M} : p.quotientRel x y ↔ x - y ∈ p :=
   Iff.trans
     (by
       rw [leftRel_apply, sub_eq_add_neg, neg_add, neg_neg]
       rfl)
     neg_mem_iff
+
+@[deprecated (since := "2024-08-29")] alias quotientRel_r_def := quotientRel_def
 
 /-- The quotient of a module `M` by a submodule `p ⊆ M`. -/
 instance hasQuotient : HasQuotient M (Submodule R M) :=
@@ -67,7 +71,7 @@ protected theorem eq' {x y : M} : (mk x : M ⧸ p) = (mk : M → M ⧸ p) y ↔ 
   QuotientAddGroup.eq
 
 protected theorem eq {x y : M} : (mk x : M ⧸ p) = (mk y : M ⧸ p) ↔ x - y ∈ p :=
-  (Submodule.Quotient.eq' p).trans (leftRel_apply.symm.trans p.quotientRel_r_def)
+  (Submodule.Quotient.eq' p).trans (leftRel_apply.symm.trans p.quotientRel_def)
 
 instance : Zero (M ⧸ p) where
   -- Use Quotient.mk'' instead of mk here because mk is not reducible.
@@ -99,6 +103,8 @@ theorem mk_neg : (mk (-x) : M ⧸ p) = -(mk x : M ⧸ p) :=
 @[simp]
 theorem mk_sub : (mk (x - y) : M ⧸ p) = (mk x : M ⧸ p) - (mk y : M ⧸ p) :=
   rfl
+
+protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
 
 section SMul
 
@@ -281,8 +287,13 @@ def mkQ : M →ₗ[R] M ⧸ p where
 theorem mkQ_apply (x : M) : p.mkQ x = (Quotient.mk x : M ⧸ p) :=
   rfl
 
-theorem mkQ_surjective (A : Submodule R M) : Function.Surjective A.mkQ := by
+theorem mkQ_surjective : Function.Surjective p.mkQ := by
   rintro ⟨x⟩; exact ⟨x, rfl⟩
+
+theorem strictMono_comap_prod_map :
+    StrictMono fun m : Submodule R M ↦ (m.comap p.subtype, m.map p.mkQ) :=
+  fun m₁ m₂ ↦ QuotientAddGroup.strictMono_comap_prod_map
+    p.toAddSubgroup (a := m₁.toAddSubgroup) (b := m₂.toAddSubgroup)
 
 end
 
@@ -308,6 +319,14 @@ theorem liftQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftQ f h (
 
 @[simp]
 theorem liftQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) (h) : (p.liftQ f h).comp p.mkQ = f := by ext; rfl
+
+theorem pi_liftQ_eq_liftQ_pi {ι : Type*} {N : ι → Type*}
+    [∀ i, AddCommGroup (N i)] [∀ i, Module R (N i)]
+    (f : (i : ι) → M →ₗ[R] (N i)) {p : Submodule R M} (h : ∀ i, p ≤ ker (f i)) :
+    LinearMap.pi (fun i ↦ p.liftQ (f i) (h i)) =
+      p.liftQ (LinearMap.pi f) (LinearMap.ker_pi f ▸ le_iInf h) := by
+  ext x i
+  simp
 
 /-- Special case of `submodule.liftQ` when `p` is the span of `x`. In this case, the condition on
 `f` simply becomes vanishing at `x`. -/
@@ -453,8 +472,8 @@ and `f : M ≃ₗ N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`.
 @[simps]
 def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
     (Q : Submodule R N) (f : M ≃ₗ[R] N) (hf : P.map f = Q) : (M ⧸ P) ≃ₗ[R] N ⧸ Q :=
-  { P.mapQ Q (f : M →ₗ[R] N) fun x hx => hf ▸ Submodule.mem_map_of_mem hx with
-    toFun := P.mapQ Q (f : M →ₗ[R] N) fun x hx => hf ▸ Submodule.mem_map_of_mem hx
+  { P.mapQ Q (f : M →ₗ[R] N) fun _ hx => hf ▸ Submodule.mem_map_of_mem hx with
+    toFun := P.mapQ Q (f : M →ₗ[R] N) fun _ hx => hf ▸ Submodule.mem_map_of_mem hx
     invFun :=
       Q.mapQ P (f.symm : N →ₗ[R] M) fun x hx => by
         rw [← hf, Submodule.mem_map] at hx

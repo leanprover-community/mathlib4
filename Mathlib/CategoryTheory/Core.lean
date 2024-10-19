@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Control.EquivFunctor
 import Mathlib.CategoryTheory.Groupoid
@@ -39,7 +39,7 @@ instance coreCategory : Groupoid.{v₁} (Core C) where
   Hom (X Y : C) := X ≅ Y
   id (X : C) := Iso.refl X
   comp f g := Iso.trans f g
-  inv {X Y} f := Iso.symm f
+  inv {_ _} f := Iso.symm f
 
 namespace Core
 

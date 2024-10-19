@@ -266,7 +266,7 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i 
   exact h.eventually_gt_atTop 0
 
 @[aesop safe apply] lemma T_pos (n : ℕ) : 0 < T n := by
-  induction n using Nat.strongInductionOn with
+  induction n using Nat.strongRecOn with
   | ind n h_ind =>
     cases lt_or_le n R.n₀ with
     | inl hn => exact R.T_gt_zero' n hn -- n < R.n₀
@@ -508,7 +508,7 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
 Every Akra-Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
 `∑ a_i b_i^p = 1`.  This section shows the existence and uniqueness of this exponent `p` for any
 `R : AkraBazziRecurrence`, and defines `R.asympBound` to be the asymptotic bound satisfied by `R`,
-namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`.  -/
+namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
 
 @[continuity]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
@@ -1053,7 +1053,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
                   case bn_gt_one =>
                     calc 1 = b i * (b i)⁻¹ := by rw [mul_inv_cancel₀ (by positivity)]
                         _ ≤ b i * ⌈(b i)⁻¹⌉₊ := by gcongr; exact Nat.le_ceil _
-                        _ < b i * n := by gcongr; rw [Nat.cast_lt]; exact hn
+                        _ < b i * n := by gcongr
                   case le => calc b i * n ≤ 1 * n := by have := R.b_lt_one i; gcongr
                                           _ = n := by rw [one_mul]
                 positivity
@@ -1149,7 +1149,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
                 case bn_gt_one =>
                   calc 1 = b i * (b i)⁻¹ := by rw [mul_inv_cancel₀ (by positivity)]
                       _ ≤ b i * ⌈(b i)⁻¹⌉₊ := by gcongr; exact Nat.le_ceil _
-                      _ < b i * n := by gcongr; rw [Nat.cast_lt]; exact hn
+                      _ < b i * n := by gcongr
                 case le => calc b i * n ≤ 1 * n := by have := R.b_lt_one i; gcongr
                                         _ = n := by rw [one_mul]
               positivity
@@ -1220,7 +1220,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
     rw [Finset.mem_Ico] at hn
     have htmp1 : 0 < 1 - ε n := h_smoothingFn_floor n hn.1
     have htmp2 : 0 < asympBound g a b n := h_asympBound_floor n hn.1
-    rw [← _root_.div_le_iff (by positivity)]
+    rw [← _root_.div_le_iff₀ (by positivity)]
     rw [← Finset.mem_Ico] at hn
     calc T n / ((1 - ε ↑n) * asympBound g a b n)
            ≤ (Finset.Ico (⌊b' * n₀⌋₊) n₀).sup' h_base_nonempty
@@ -1231,7 +1231,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
   have h_one_sub_smoothingFn_pos' : 0 < 1 - ε n := h_smoothing_pos n hn
   rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
   -- We now prove all other cases by induction
-  induction n using Nat.strongInductionOn with
+  induction n using Nat.strongRecOn with
   | ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
       exact_mod_cast calc ⌊b' * (n₀ : ℝ)⌋₊ ≤ b' * n₀ := Nat.floor_le <| by positivity
@@ -1369,7 +1369,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
     rw [Finset.mem_Ico] at hn
     have htmp1 : 0 < 1 + ε n := h_smoothingFn_floor n hn.1
     have htmp2 : 0 < asympBound g a b n := h_asympBound_floor n hn.1
-    rw [← _root_.le_div_iff (by positivity)]
+    rw [← _root_.le_div_iff₀ (by positivity)]
     rw [← Finset.mem_Ico] at hn
     calc T n / ((1 + ε ↑n) * asympBound g a b n)
            ≥ (Finset.Ico (⌊b' * n₀⌋₊) n₀).inf' h_base_nonempty
@@ -1380,7 +1380,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
   have h_one_sub_smoothingFn_pos' : 0 < 1 + ε n := h_smoothing_pos n hn
   rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
   -- We now prove all other cases by induction
-  induction n using Nat.strongInductionOn with
+  induction n using Nat.strongRecOn with
   | ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
       exact_mod_cast calc ⌊b' * ↑n₀⌋₊ ≤ b' * n₀ := Nat.floor_le <| by positivity

@@ -41,7 +41,7 @@ numerics, number theory, approximations, fractions
 -- Fix a carrier `α`.
 variable (α : Type*)
 
-/-!### Definitions-/
+/-!### Definitions -/
 
 -- Porting note: Originally `protected structure GenContFract.Pair`
 /-- We collect a partial numerator `aᵢ` and partial denominator `bᵢ` in a pair `⟨aᵢ, bᵢ⟩`. -/

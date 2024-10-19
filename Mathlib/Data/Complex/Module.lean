@@ -93,7 +93,7 @@ instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ
 
 -- priority manually adjusted in #11980
 instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
-  { Complex.ofReal.comp (algebraMap R ℝ) with
+  { Complex.ofRealHom.comp (algebraMap R ℝ) with
     smul := (· • ·)
     smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
     commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes] }
@@ -291,7 +291,7 @@ def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
       congr 1
       -- equate "real" and "imaginary" parts
       · let inst : SMulCommClass ℝ A A := by infer_instance  -- Porting note: added
-        rw [smul_mul_smul, hf, smul_neg, ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg, ←
+        rw [smul_mul_smul_comm, hf, smul_neg, ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg, ←
           RingHom.map_mul, ← RingHom.map_sub]
       · rw [Algebra.smul_def, Algebra.smul_def, Algebra.smul_def, ← Algebra.right_comm _ x₂, ←
           mul_assoc, ← add_mul, ← RingHom.map_mul, ← RingHom.map_mul, ← RingHom.map_add]
@@ -313,7 +313,7 @@ def lift : { I' : A // I' * I' = -1 } ≃ (ℂ →ₐ[ℝ] A) where
   toFun I' := liftAux I' I'.prop
   invFun F := ⟨F I, by rw [← map_mul, I_mul_I, map_neg, map_one]⟩
   left_inv I' := Subtype.ext <| liftAux_apply_I (I' : A) I'.prop
-  right_inv F := algHom_ext <| liftAux_apply_I _ _
+  right_inv _ := algHom_ext <| liftAux_apply_I _ _
 
 -- When applied to `Complex.I` itself, `lift` is the identity.
 @[simp]
@@ -479,7 +479,7 @@ def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where
   toFun := fun z ↦ (z : ℂ).re
   invFun := fun x ↦ ⟨x, conj_ofReal x⟩
   left_inv := fun z ↦ Subtype.ext <| conj_eq_iff_re.mp z.property.star_eq
-  right_inv := fun x ↦ rfl
+  right_inv := fun _ ↦ rfl
   map_add' := by simp
   map_smul' := by simp
 
@@ -498,8 +498,8 @@ lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
   ext1; simp [imaginaryPart_apply_coe, conj_ofReal]
 
 lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
-  (ℜ z : ℂ) = _    := by congrm (ℜ $((re_add_im z).symm))
-  _          = z.re := by
+  (ℜ z : ℂ) = (↑(ℜ (↑z.re + ↑z.im * I))) := by congrm (ℜ $((re_add_im z).symm))
+  _         = z.re                       := by
     rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
     simp [conj_ofReal, ← two_mul]
 

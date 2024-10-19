@@ -75,7 +75,7 @@ private def directSumNeZeroMulEquiv (ι : Type) [DecidableEq ι] (p : ι → ℕ
     · rw [map_zero, map_zero]
     · rw [DirectSum.toAddMonoid_of]
       split_ifs with h
-      · simp [(ZMod.subsingleton_iff.2 $ by rw [h, pow_zero]).elim x 0]
+      · simp [(ZMod.subsingleton_iff.2 <| by rw [h, pow_zero]).elim x 0]
       · simp_rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of]
     · rw [map_add, map_add, hx, hy]
   map_add' := map_add (directSumNeZeroMulHom p n)
@@ -148,7 +148,7 @@ lemma equiv_directSum_zmod_of_finite' (G : Type*) [AddCommGroup G] [Finite G] :
   refine ⟨{i : ι // n i ≠ 0}, inferInstance, fun i ↦ p i ^ n i, ?_,
     ⟨e.trans (directSumNeZeroMulEquiv ι _ _).symm⟩⟩
   rintro ⟨i, hi⟩
-  exact one_lt_pow (hp _).one_lt hi
+  exact one_lt_pow₀ (hp _).one_lt hi
 
 theorem finite_of_fg_torsion [hG' : AddGroup.FG G] (hG : AddMonoid.IsTorsion G) : Finite G :=
   @Module.finite_of_fg_torsion _ _ _ (Module.Finite.iff_addGroup_fg.mpr hG') <|

@@ -116,7 +116,7 @@ theorem hermite_monic (n : ℕ) : (hermite n).Monic :=
   leadingCoeff_hermite n
 
 theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermite n) k = 0 := by
-  induction n  generalizing k with
+  induction n generalizing k with
   | zero =>
     rw [zero_add k] at hnk
     exact coeff_hermite_of_lt hnk.pos
@@ -197,7 +197,7 @@ theorem coeff_hermite (n k : ℕ) :
       if Even (n + k) then (-1 : ℤ) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k else 0 := by
   split_ifs with h
   · exact coeff_hermite_of_even_add h
-  · exact coeff_hermite_of_odd_add (Nat.odd_iff_not_even.mpr h)
+  · exact coeff_hermite_of_odd_add (Nat.not_even_iff_odd.1 h)
 
 end CoeffExplicit
 
