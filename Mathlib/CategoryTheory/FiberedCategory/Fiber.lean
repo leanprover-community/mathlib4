@@ -22,12 +22,16 @@ we define a functor `InducedFunctor : C ⥤ Fiber p S` that `F` factors through.
 
 universe v₁ u₁ v₂ u₂ v₃ u₃
 
-open CategoryTheory Functor Category IsHomLift
+namespace CategoryTheory
+
+open IsHomLift
+
+namespace Functor
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
 /-- `Fiber p S` is the type of elements of `𝒳` mapping to `S` via `p`.  -/
-def Functor.Fiber (p : 𝒳 ⥤ 𝒮) (S : 𝒮) := { a : 𝒳 // p.obj a = S }
+def Fiber (p : 𝒳 ⥤ 𝒮) (S : 𝒮) := { a : 𝒳 // p.obj a = S }
 
 namespace Fiber
 
@@ -117,3 +121,7 @@ lemma inducedFunctor_comp : (inducedFunctor hF) ⋙ fiberInclusion = F := rfl
 end
 
 end Fiber
+
+end Functor
+
+end CategoryTheory
