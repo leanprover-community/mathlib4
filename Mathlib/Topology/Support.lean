@@ -257,7 +257,7 @@ theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U
   continuous_of_mulTSupport fun x h ↦ by
     rw [show x = ↑(⟨x, Subtype.coe_image_subset _ _
       (supp.mulTSupport_extend_one_subset continuous_subtype_val h)⟩ : U) by rfl,
-      ← (hU.openEmbedding_subtype_val).continuousAt_iff, extend_comp Subtype.val_injective]
+      ← (hU.isOpenEmbedding_subtypeVal).continuousAt_iff, extend_comp Subtype.val_injective]
     exact cont.continuousAt
 
 /-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/

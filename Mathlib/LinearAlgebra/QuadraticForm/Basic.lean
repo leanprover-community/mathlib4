@@ -161,11 +161,6 @@ instance instFunLike : FunLike (QuadraticMap R M N) M N where
   coe := toFun
   coe_injective' x y h := by cases x; cases y; congr
 
-/-- Helper instance for when there's too many metavariables to apply
-`DFunLike.hasCoeToFun` directly. -/
-instance : CoeFun (QuadraticMap R M N) fun _ => M → N :=
-  ⟨DFunLike.coe⟩
-
 variable (Q)
 
 /-- The `simp` normal form for a quadratic map is `DFunLike.coe`, not `toFun`. -/

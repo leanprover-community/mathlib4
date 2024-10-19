@@ -330,6 +330,7 @@ import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.GroupWithZero.Opposite
 import Mathlib.Algebra.GroupWithZero.Pi
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
+import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Card
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.ULift
@@ -543,6 +544,10 @@ import Mathlib.Algebra.MvPolynomial.Rename
 import Mathlib.Algebra.MvPolynomial.Supported
 import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Pi
+import Mathlib.Algebra.NoZeroSMulDivisors.Prod
 import Mathlib.Algebra.Notation
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
@@ -1004,6 +1009,7 @@ import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.RCLike
+import Mathlib.Analysis.Calculus.ContDiff.WithLp
 import Mathlib.Analysis.Calculus.Darboux
 import Mathlib.Analysis.Calculus.Deriv.Abs
 import Mathlib.Analysis.Calculus.Deriv.Add
@@ -1041,6 +1047,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Calculus.FDeriv.Star
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+import Mathlib.Analysis.Calculus.FDeriv.WithLp
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Calculus.Gradient.Basic
 import Mathlib.Analysis.Calculus.Implicit
@@ -1455,6 +1462,7 @@ import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 import Mathlib.CategoryTheory.Bicategory.FunctorBicategory
+import Mathlib.CategoryTheory.Bicategory.Grothendieck
 import Mathlib.CategoryTheory.Bicategory.Kan.Adjunction
 import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
@@ -1539,6 +1547,7 @@ import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.FiberedCategory.BasedCategory
 import Mathlib.CategoryTheory.FiberedCategory.Cartesian
 import Mathlib.CategoryTheory.FiberedCategory.Cocartesian
+import Mathlib.CategoryTheory.FiberedCategory.Fiber
 import Mathlib.CategoryTheory.FiberedCategory.Fibered
 import Mathlib.CategoryTheory.FiberedCategory.HomLift
 import Mathlib.CategoryTheory.Filtered.Basic
@@ -2721,6 +2730,7 @@ import Mathlib.FieldTheory.Finite.Trace
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Fixed
 import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.Galois.Infinite
 import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
@@ -3787,6 +3797,7 @@ import Mathlib.Order.SuccPred.IntervalSucc
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.SuccPred.LinearLocallyFinite
 import Mathlib.Order.SuccPred.Relation
+import Mathlib.Order.SuccPred.Tree
 import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
@@ -4439,7 +4450,6 @@ import Mathlib.Tactic.ReduceModChar
 import Mathlib.Tactic.ReduceModChar.Ext
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
-import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
@@ -4561,12 +4571,10 @@ import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 import Mathlib.Topology.Algebra.Nonarchimedean.TotallyDisconnected
 import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.Order.Floor
 import Mathlib.Topology.Algebra.Order.Group
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.Order.Rolle
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.Algebra.PontryaginDual
@@ -4718,6 +4726,8 @@ import Mathlib.Topology.Filter
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Germ
 import Mathlib.Topology.Gluing
+import Mathlib.Topology.Hom.ContinuousEval
+import Mathlib.Topology.Hom.ContinuousEvalConst
 import Mathlib.Topology.Hom.Open
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Homotopy.Basic
@@ -4823,6 +4833,7 @@ import Mathlib.Topology.Order.Bornology
 import Mathlib.Topology.Order.Bounded
 import Mathlib.Topology.Order.Category.AlexDisc
 import Mathlib.Topology.Order.Category.FrameAdjunction
+import Mathlib.Topology.Order.Compact
 import Mathlib.Topology.Order.DenselyOrdered
 import Mathlib.Topology.Order.ExtendFrom
 import Mathlib.Topology.Order.ExtrClosure
@@ -4846,6 +4857,7 @@ import Mathlib.Topology.Order.OrderClosed
 import Mathlib.Topology.Order.PartialSups
 import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Order.ProjIcc
+import Mathlib.Topology.Order.Rolle
 import Mathlib.Topology.Order.ScottTopology
 import Mathlib.Topology.Order.T5
 import Mathlib.Topology.Order.UpperLowerSetTopology
