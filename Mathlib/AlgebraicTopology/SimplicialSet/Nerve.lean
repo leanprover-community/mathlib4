@@ -96,7 +96,11 @@ theorem strictSegal (C : Type u) [Category.{v} C] : StrictSegal (nerve C) := by
 
 end Nerve
 
+end CategoryTheory
+
 namespace SSet
+
+open CategoryTheory
 
 /-- The identity natural transformation exhibits a simplicial set as a right extension of its
 restriction along `(Truncated.inclusion (n := 2)).op`.-/
@@ -120,7 +124,6 @@ private
 def pt {n} (i : Fin (n + 1)) : StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op :=
   .mk (Y := op [0]₂) (.op (SimplexCategory.const _ _ i))
 
-
 /-- The object of `StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op` corresponding to
 the map `[1] ⟶ [n]` with image `i ⟶ i+1`. -/
 private
@@ -132,7 +135,7 @@ def ar {n} (i : Fin n) : StructuredArrow (op [n]) (Truncated.inclusion (n := 2))
 private
 def ar' {n} {i j : Fin (n+1)} (k : i ⟶ j) :
     StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op :=
-  .mk (Y := op [1]₂) (.op (mkOfLe _ _ k.le))
+  .mk (Y := op [1]₂) (mkOfLe _ _ k.le).op
 
 /-- An arrow in `StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op` arising from
 `const 0 : [0] ⟶ [1]`. -/
@@ -145,7 +148,7 @@ def ar.src {n} (i : Fin n) : (ar i) ⟶ (pt i.castSucc) := by
   unfold ar pt
   simp only [StructuredArrow.mk_left, const_obj_obj, len_mk, StructuredArrow.mk_right, op_obj,
     StructuredArrow.mk_hom_eq_self, Fin.isValue, op_map, Quiver.Hom.unop_op, unop_comp,
-    comp_toOrderHom, OrderHom.comp_coe, Function.comp_apply, Fin.coe_eq_castSucc]
+    comp_toOrderHom, OrderHom.comp_coe, Function.comp_apply]
   rfl
 
 /-- An arrow in `StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op` arising from
@@ -239,6 +242,9 @@ def fact.map.arr {n}
     | 0 => rfl
     | 1 => rfl
 
+/-- Given a term in the cone over the diagram `(StructuredArrow.proj (op [n])`
+`(Truncated.inclusion (n := 2)).op ⋙ (Truncated.inclusion (n := 2)).op ⋙ X)` where `X` is
+Strict Segal, one can produce an `n`-simplex in `X`.-/
 @[simp]
 private
 noncomputable def ran.lift {X : SSet.{u}} {hX : StrictSegal X} {n}
@@ -252,30 +258,200 @@ noncomputable def ran.lift {X : SSet.{u}} {hX : StrictSegal X} {n}
         arrow_tgt := fun i ↦ ran.lift.arrow_tgt s x
   }
 
-/-- Maybe this is the theorem I need? Let's try to use it first.-/
+/-- A generic map in `Fin (n + 1)` defined in such a way to permit induction on the distance
+between the domain and the codomain.-/
+@[simp]
+private
+def inductionMap {n} (j : Fin (n + 1))
+    (k : Fin (n - j.1 + 1)) : j ⟶ ⟨j.1 + k.1, (by omega)⟩ :=
+  (Nat.le_add_right j.1 k.1).hom
+
+/-- A generic map in `Fin (n + 1)` defined in such a way to permit induction on the distance
+between the domain and the codomain.-/
+@[simp]
+private
+def inductionHypMap {n} (j : Fin (n + 1))
+    (k₀ : Fin (n - j.1)) : j ⟶ ⟨j.1 + k₀.1 + 1, (by omega)⟩ :=
+  (Nat.le_add_right j.1 (k₀.1 + 1)).hom
+
+
+/-- This theorem is used to prove the factorization property of `ran.lift`.-/
+theorem ran.lift.map' {X : SSet.{u}} {hX : StrictSegal X} {n}
+  (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
+      (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt)
+      (j : Fin (n + 1)) (k : Fin (n - j.1 + 1)) :
+      X.map (mkOfLe _ _ (inductionMap j k).le).op (ran.lift (hX := hX) s x) =
+        s.π.app (ar' (inductionMap j k)) x := by
+  refine Fin.inductionOn k ?_ ?_
+  · simp only [Fin.val_zero, add_zero, Fin.eta]
+    have ceq : mkOfLe j j (by omega) = [1].const [0] 0 ≫ [0].const [n] j := by
+      ext i : 3
+      simp at i
+      match i with
+      | 0 => rfl
+      | 1 => rfl
+    rw [ceq]
+    let map : (pt j) ⟶ (ar' (inductionMap j 0)) := by
+      refine StructuredArrow.homMk ([1].const [0] 0).op ?_
+      unfold pt ar'
+      simp only [StructuredArrow.mk_left, const_obj_obj, Fin.val_zero, Nat.add_zero, id_eq,
+        Int.reduceNeg, Int.Nat.cast_ofNat_Int, Int.reduceAdd, Fin.eta, inductionMap, homOfLE_refl,
+        StructuredArrow.mk_right, op_obj, StructuredArrow.mk_hom_eq_self, Fin.isValue, op_map]
+      rw [← op_comp]
+      rw [ceq]
+      rfl
+    have nat := congr_fun (s.π.naturality (map)) x
+    simp only [Fin.val_zero, Nat.add_zero, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int,
+      Int.reduceAdd, Fin.eta, homOfLE_refl, comp_obj, StructuredArrow.proj_obj,
+      op_obj, const_obj_obj, const_obj_map, types_comp_apply, types_id_apply, Functor.comp_map,
+      StructuredArrow.proj_map, op_map] at nat
+    rw [nat]
+    unfold map
+    simp only [StructuredArrow.homMk_right]
+    rw [op_comp, Functor.map_comp]
+    simp only [types_comp_apply]
+    show X.map ([1].const [0] 0).op _ = X.map ([1].const [0] 0).op _
+    have nec : (X.map ([0].const [n] j).op (ran.lift (hX := hX) s x)) = (s.π.app (pt j) x) := by
+      unfold ran.lift
+      rw [StrictSegal.spineToSimplex_vertex]
+    rw [nec]
+  · intro k₀ k₀hyp
+    let tri : ([2] : SimplexCategory) ⟶ [n] :=
+      mkOfLeComp j ⟨j.1 + k₀.1, (by omega)⟩ ⟨j.1 + k₀.1 + 1, (by omega)⟩
+        (Nat.le_add_right _ _) (Nat.le_add_right _ _)
+    let tri' : StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op :=
+          .mk (Y := op [2]₂) tri.op
+    let facemap₂ : tri' ⟶ ar' (Nat.le_add_right j.1 k₀.1).hom := by
+      refine StructuredArrow.homMk (.op (SimplexCategory.δ 2)) ?_
+      simp [tri', tri, ar']
+      rw [← op_comp]
+      apply Quiver.Hom.unop_inj
+      ext z; revert z;
+      simp
+      intro | 0 | 1 => rfl
+    let facemap₀ : tri' ⟶ ar ⟨j.1 + k₀.1, (by omega)⟩ := by
+        refine StructuredArrow.homMk (.op (SimplexCategory.δ 0)) (Quiver.Hom.unop_inj ?_)
+        ext z; revert z;
+        simp [ar]
+        intro | 0 | 1 => rfl
+    let facemap₁ : tri' ⟶ ar' (inductionMap j k₀.succ) := by
+      refine StructuredArrow.homMk (.op (SimplexCategory.δ 1)) (Quiver.Hom.unop_inj ?_)
+      ext z; revert z;
+      simp [ar']
+      intro | 0 | 1 => rfl
+    let tri₀ : tri' ⟶ pt j := by
+      refine StructuredArrow.homMk (.op (SimplexCategory.const [0] _ 0)) (Quiver.Hom.unop_inj ?_)
+      ext z; revert z
+      simp [ar']
+      intro | 0 => rfl
+    let tri₁ : tri' ⟶ pt ⟨j.1 + k₀.1, (by omega)⟩ := by
+      refine StructuredArrow.homMk (.op (SimplexCategory.const [0] _ 1)) (Quiver.Hom.unop_inj ?_)
+      ext z; revert z
+      simp [ar']
+      intro | 0 => rfl
+    let tri₂ : tri' ⟶ pt ⟨j.1 + k₀.1 + 1, (by omega)⟩ := by
+      refine StructuredArrow.homMk (.op (SimplexCategory.const [0] _ 2)) (Quiver.Hom.unop_inj ?_)
+      ext z; revert z
+      simp [ar']
+      intro | 0 => rfl
+    have nat := congr_fun (s.π.naturality (facemap₁)) x
+    simp only [Int.reduceNeg, id_eq, Int.Nat.cast_ofNat_Int, homOfLE_leOfHom,
+      comp_obj, StructuredArrow.proj_obj, op_obj, const_obj_obj, const_obj_map, types_comp_apply,
+      types_id_apply, Functor.comp_map, StructuredArrow.proj_map, op_map] at nat
+    rw [nat]
+    unfold facemap₁
+    simp only [StructuredArrow.homMk_right, Quiver.Hom.unop_op]
+    have ceq : mkOfLe _ _ (inductionMap j k₀.succ).le = (δ 1) ≫ tri := by
+      ext i : 3
+      simp at i
+      match i with
+      | 0 => rfl
+      | 1 => rfl
+    rw [ceq]
+    rw [op_comp, Functor.map_comp]
+    simp only [types_comp_apply]
+    show X.map (δ 1).op _ = X.map (δ 1).op _
+    refine congrArg (X.map (δ 1).op) ?_
+    apply (hX 2).injective
+    ext i
+    · simp only [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp]
+      unfold ran.lift
+      have ceq' : [0].const [2] i ≫ tri = [0].const [n] (([0].const [2] i ≫ tri).toOrderHom 0) :=
+        eq_const_of_zero _
+      rw [ceq']
+      simp only [StrictSegal.spineToSimplex_vertex]
+      match i with
+      | 0 =>
+        have := congr_fun (s.π.naturality tri₀) x
+        simp at this
+        exact this
+      | 1 =>
+        have := congr_fun (s.π.naturality tri₁) x
+        simp at this
+        exact this
+      | 2 =>
+        have := congr_fun (s.π.naturality tri₂) x
+        simp at this
+        exact this
+    · simp only [spine_arrow, ← FunctorToTypes.map_comp_apply, ← op_comp]
+      unfold ran.lift
+      match i with
+      | 0 =>
+        have ceq' : mkOfSucc 0 ≫ tri =
+          mkOfLe j ⟨j.1 + k₀.1, (by omega)⟩ (Nat.le_add_right _ _) := by
+          ext i : 3
+          simp at i
+          match i with
+          | 0 => rfl
+          | 1 => rfl
+        rw [ceq']
+        have eq' := congr_fun (s.π.naturality facemap₂) x
+        unfold facemap₂ at eq'
+        simp at eq'
+        have : (δ 2 : [1] ⟶ [2]) = mkOfSucc 0 := by
+          ext i : 3
+          simp at i
+          match i with
+          | 0 => rfl
+          | 1 => rfl
+        rw [this] at eq'
+        simp [Truncated.inclusion] at eq'
+        rw [← eq']
+        show _ = s.π.app (SSet.ar' (SSet.inductionMap j k₀.castSucc)) x
+        rw [← k₀hyp]
+        unfold ran.lift
+        rfl
+      | 1 =>
+        have ceq' : mkOfSucc 1 ≫ tri = mkOfSucc ⟨j.1 + k₀.1, (by omega)⟩ := by
+          ext i : 3
+          simp at i
+          match i with
+          | 0 => rfl
+          | 1 => rfl
+        rw [ceq']
+        simp only [StrictSegal.spineToSimplex_spine_edge]
+        have := congr_fun (s.π.naturality facemap₀) x
+        unfold facemap₀ at this
+        simp at this
+        rw [this]
+        have : (δ 0 : [1] ⟶ [2]) = mkOfSucc 1 := by
+          ext i : 3
+          simp at i
+          match i with
+          | 0 => rfl
+          | 1 => rfl
+        rw [this]
+        rfl
+
+/-- This theorem is used to prove the factorization property of `ran.lift`.-/
 theorem ran.lift.map {X : SSet.{u}} {hX : StrictSegal X} {n}
   (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
       (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt)
       (j k : Fin (n + 1)) (hjk : j ⟶ k) :
-      X.map (mkOfLe _ _ hjk.le).op (ran.lift (hX := hX) s x) = s.π.app (ar' hjk) x := sorry
+      X.map (mkOfLe _ _ hjk.le).op (ran.lift (hX := hX) s x) = s.π.app (ar' hjk) x := by
+  have := ran.lift.map' (hX := hX) s x j (k - j)
+  sorry
 
--- TODO: State and prove the analog of this.
--- theorem ran.lift.map {C : Cat} {n}
---     (s : Cone (StructuredArrow.proj (op [n])
---       (Truncated.inclusion (n := 2)).op ⋙ nerveFunctor₂.obj C))
---     (x : s.pt) {i j} (k : i ⟶ j) :
---     (ran.lift s x).map k =
---       eqToHom (ran.lift.eq ..) ≫
---       ((s.π.app (ar' k) x).map' 0 1) ≫
---       eqToHom (ran.lift.eq₂ ..).symm := by
---   have : ran.lift s x = ran.lift' s x := by
---     fapply ComposableArrows.ext
---     · intro; rfl
---     · intro i hi
---       dsimp only [CategoryTheory.Nerve.ran.lift]
---       rw [ComposableArrows.mkOfObjOfMapSucc_map_succ _ _ i hi]
---       rw [eqToHom_refl, eqToHom_refl, id_comp, comp_id]; rfl
---   exact eq_of_heq (congr_arg_heq (·.map k) this)
 
 noncomputable def rightExtensionInclusion₂IsPointwiseRightKanExtensionAt
     (X : SSet.{u}) (hX : ∀ (n : ℕ), Function.Bijective (X.spine (n := n))) (n : ℕ) :
@@ -313,6 +489,9 @@ noncomputable def rightExtensionInclusion₂IsPointwiseRightKanExtensionAt
         rw [← eq]
         rfl
       · simp only [spine_arrow, id_eq, types_comp_apply]
+        have nat := congr_fun (s.π.naturality (fact.map.arr j i)) x
+        simp [fact.map.arr] at nat
+        rw [← nat]
         simp only [← FunctorToTypes.map_comp_apply]
         have : j.hom.unop.op = j.hom := by exact rfl
         rw [← this]
@@ -325,54 +504,10 @@ noncomputable def rightExtensionInclusion₂IsPointwiseRightKanExtensionAt
           | 0 => rfl
           | 1 => rfl
         rw [ceq]
-
-
-        rw [StrictSegal.spineToSimplex_edge]
-
-        unfold StrictSegal.spineToDiagonal
-
-        have nat := congr_fun (s.π.naturality (fact.map.arr j i)) x
-        unfold fact.map.arr at nat
-        simp at nat
-        rw [← nat]
-        rw [← ran.lift.map (hX := hX)]
-        unfold diagonal
-        congr 1
-
-        unfold ran.lift strArr.homEv strArr.homEvSucc mkOfDiag mkOfLe Path.interval ar pt
-        congr
-        congr 1
-
-        simp
-        congr 2
-
-
-        congr 1
-
-        simp
-
-
-
-
-
-
-
-
-
-        simp
-
-
-
-        -- rw [ran.lift.map]
-        -- have nat := congr_fun (s.π.naturality (fact.map.arr j (Fin.mk i hi))) x
-
-        -- have := congr_arg_heq (·.map' 0 1) <| nat
-        -- refine (conj_eqToHom_iff_heq' _ _ _ _).2 ?_
-        -- simpa only [Int.reduceNeg, StructuredArrow.proj_obj, op_obj, id_eq, Int.Nat.cast_ofNat_Int,
-        --   Fin.mk_one, Fin.isValue, ComposableArrows.map', Int.reduceAdd, Int.reduceSub,
-        --   Fin.zero_eta, eqToHom_comp_heq_iff, comp_eqToHom_heq_iff]
-
-        sorry
+        have thm := ran.lift.map (hX := hX) s x (strArr.homEv j i.castSucc) (strArr.homEvSucc j i)
+          (strArr.homEv.map j i)
+        unfold ran.lift at thm
+        rw [thm]
     uniq := by
       intro s lift' fact'
       ext x
@@ -396,7 +531,7 @@ end
 
 end SSet
 
-
+namespace CategoryTheory
 namespace Nerve
 /-- The essential data of the nerve functor is contained in the 2-truncation, which is
 recorded by the composite functor `nerveFunctor₂`.-/
