@@ -429,7 +429,7 @@ theorem typein_surj (r : α → α → Prop) [IsWellOrder α r] {o} (h : o < typ
   (typein r).mem_range_of_rel_top h
 
 theorem typein_surjOn (r : α → α → Prop) [IsWellOrder α r] :
-    Set.SurjOn (typein r) (Set.univ) (Set.Iio (type r)) :=
+    Set.SurjOn (typein r) Set.univ (Set.Iio (type r)) :=
   (typein r).surjOn
 
 theorem typein_injective (r : α → α → Prop) [IsWellOrder α r] : Injective (typein r) :=
