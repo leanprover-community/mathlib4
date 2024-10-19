@@ -107,7 +107,7 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
       π := Discrete.natTrans fun j => (LinearMap.proj j.as : (∀ j, f j) →ₗ[R] f j.as) }
   isLimit :=
     { lift := lift.{_, v} f
-      fac := fun s j => rfl
+      fac := fun _ _ => rfl
       uniq := fun s m w => by
         ext x
         funext j

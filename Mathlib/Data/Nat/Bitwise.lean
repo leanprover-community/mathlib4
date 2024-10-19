@@ -69,10 +69,12 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
     (h : n ≠ 0) :
     binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
-  rw [Eq.rec_eq_cast]
-  rw [binaryRec]
-  dsimp only
-  rw [dif_neg h, eq_mpr_eq_cast]
+  cases n using bitCasesOn with
+  | h b n =>
+    rw [binaryRec_eq' _ _ (by right; simpa [bit_eq_zero_iff] using h)]
+    generalize_proofs h; revert h
+    rw [bodd_bit, div2_bit]
+    simp
 
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
@@ -86,23 +88,18 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   cases a <;> cases b <;> simp [h2, h4] <;> split_ifs
     <;> simp_all (config := {decide := true}) [two_mul]
 
-lemma bit_mod_two (a : Bool) (x : ℕ) :
-    bit a x % 2 = if a then 1 else 0 := by
-  #adaptation_note /-- nightly-2024-03-16: simp was
-  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, ← mul_two,
-  --   Bool.cond_eq_ite] -/
-  simp only [bit, ite_apply, ← mul_two, Bool.cond_eq_ite]
-  split_ifs <;> simp [Nat.add_mod]
-
 @[simp]
+lemma bit_mod_two (a : Bool) (x : ℕ) :
+    bit a x % 2 = a.toNat := by
+  cases a <;> simp [bit_val, mul_add_mod]
+
 lemma bit_mod_two_eq_zero_iff (a x) :
     bit a x % 2 = 0 ↔ !a := by
-  rw [bit_mod_two]; split_ifs <;> simp_all
+  simp
 
-@[simp]
 lemma bit_mod_two_eq_one_iff (a x) :
     bit a x % 2 = 1 ↔ a := by
-  rw [bit_mod_two]; split_ifs <;> simp_all
+  simp
 
 @[simp]
 theorem lor_bit : ∀ a m b n, bit a m ||| bit b n = bit (a || b) (m ||| n) :=
@@ -144,12 +141,10 @@ theorem bit_false : bit false = (2 * ·) :=
 theorem bit_true : bit true = (2 * · + 1) :=
   rfl
 
-@[simp]
-theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false := by
-  cases b <;> simp [bit, Nat.mul_eq_zero]
+@[deprecated (since := "2024-10-19")] alias bit_eq_zero := bit_eq_zero_iff
 
 theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
-  simpa only [not_and, Bool.not_eq_false] using (@bit_eq_zero n b).not
+  simp
 
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
 with assumptions that neither `bit a m` nor `bit b n` are `0`

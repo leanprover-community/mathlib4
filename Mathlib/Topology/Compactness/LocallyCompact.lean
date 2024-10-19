@@ -45,6 +45,13 @@ protected theorem IsClosed.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace 
     {s : Set X} (hs : IsClosed s) : WeaklyLocallyCompactSpace s :=
   (closedEmbedding_subtype_val hs).weaklyLocallyCompactSpace
 
+theorem IsOpenQuotientMap.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X]
+    {f : X → Y} (hf : IsOpenQuotientMap f) : WeaklyLocallyCompactSpace Y where
+  exists_compact_mem_nhds := by
+    refine hf.surjective.forall.2 fun x ↦ ?_
+    rcases exists_compact_mem_nhds x with ⟨K, hKc, hKx⟩
+    exact ⟨f '' K, hKc.image hf.continuous, hf.isOpenMap.image_mem_nhds hKx⟩
+
 /-- In a weakly locally compact space,
 every compact set is contained in the interior of a compact set. -/
 theorem exists_compact_superset [WeaklyLocallyCompactSpace X] {K : Set X} (hK : IsCompact K) :
@@ -166,6 +173,13 @@ theorem exists_compact_between [LocallyCompactSpace X] {K U : Set X} (hK : IsCom
   let ⟨L, hKL, hL, hLU⟩ := exists_mem_nhdsSet_isCompact_mapsTo continuous_id hK hU h_KU
   ⟨L, hL, subset_interior_iff_mem_nhdsSet.2 hKL, hLU⟩
 
+theorem IsOpenQuotientMap.locallyCompactSpace [LocallyCompactSpace X] {f : X → Y}
+    (hf : IsOpenQuotientMap f) : LocallyCompactSpace Y where
+  local_compact_nhds := by
+    refine hf.surjective.forall.2 fun x U hU ↦ ?_
+    rcases local_compact_nhds (hf.continuous.continuousAt hU) with ⟨K, hKx, hKU, hKc⟩
+    exact ⟨f '' K, hf.isOpenMap.image_mem_nhds hKx, image_subset_iff.2 hKU, hKc.image hf.continuous⟩
+
 /-- If `f` is a topology inducing map with a locally compact codomain and a locally closed range,
 then the domain of `f` is a locally compact space. -/
 theorem Inducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y} (hf : Inducing f)
@@ -185,9 +199,12 @@ protected theorem ClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f
     (hf : ClosedEmbedding f) : LocallyCompactSpace X :=
   hf.toInducing.locallyCompactSpace hf.isClosed_range.isLocallyClosed
 
-protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
-    (hf : OpenEmbedding f) : LocallyCompactSpace X :=
+protected theorem IsOpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
+    (hf : IsOpenEmbedding f) : LocallyCompactSpace X :=
   hf.toInducing.locallyCompactSpace hf.isOpen_range.isLocallyClosed
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.locallyCompactSpace := IsOpenEmbedding.locallyCompactSpace
 
 protected theorem IsLocallyClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     (hs : IsLocallyClosed s) : LocallyCompactSpace s :=
