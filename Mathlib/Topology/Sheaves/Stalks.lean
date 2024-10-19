@@ -208,8 +208,8 @@ theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
   ext
   simp [germ, stalkPushforward]
 
-theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding f) (F : X.Presheaf C)
-    (x : X) : IsIso (F.stalkPushforward _ f x) := by
+theorem stalkPushforward_iso_of_isOpenEmbedding {f : X ⟶ Y} (hf : IsOpenEmbedding f)
+    (F : X.Presheaf C) (x : X) : IsIso (F.stalkPushforward _ f x) := by
   haveI := Functor.initial_of_adjunction (hf.isOpenMap.adjunctionNhds x)
   convert
       ((Functor.Final.colimitIso (hf.isOpenMap.functorNhds x).op
@@ -233,6 +233,9 @@ theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding 
     dsimp only [Functor.op]
     refine ((homOfLE ?_).op : op (unop U) ⟶ _)
     exact Set.image_preimage_subset _ _
+
+@[deprecated (since := "2024-10-18")]
+alias stalkPushforward_iso_of_openEmbedding := stalkPushforward_iso_of_isOpenEmbedding
 
 end stalkPushforward
 

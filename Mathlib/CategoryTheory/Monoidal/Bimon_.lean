@@ -68,6 +68,10 @@ theorem one_counit (M : C) [Bimon_Class M] : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) :=
 
 end Bimon_Class
 
+/-- The property that a morphism between bimonoid objects is a bimonoid morphism. -/
+class IsBimon_Hom {M N : C} [Bimon_Class M] [Bimon_Class N] (f : M ⟶ N) extends
+    IsMon_Hom f, IsComon_Hom f : Prop
+
 variable (C)
 
 /--
