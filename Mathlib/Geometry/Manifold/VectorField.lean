@@ -584,6 +584,15 @@ lemma lieBracketWithin_pullbackWithin {f : E → F} {V W : F → F} {x : E} {t :
   · exact M_symm_smooth.differentiableWithinAt le_rfl
   · exact hW.comp x Af hst
 
+omit [CompleteSpace E] in
+lemma fderivWithin_fderivWithin_eq_of_eventuallyEq {f : E → F} {x : E} {s t : Set E}
+    (h : s =ᶠ[𝓝 x] t) :
+    fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
+  fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
+    = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x :=
+      (fderivWithin_eventually_congr_set h).fderivWithin_eq_nhds
+  _ = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := fderivWithin_congr_set h
+
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
 completeness but requiring that `f` is a local diffeo. Variant where unique differentiability and
@@ -613,13 +622,7 @@ lemma lieBracketWithin_pullbackWithin_of_eventuallyEq
   _ = pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) u x := by
     apply lieBracketWithin_pullbackWithin _ _
       hV hW hu hx hst
-    · have B : fderivWithin 𝕜 (fderivWithin 𝕜 f u) u x
-          = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x := calc
-        fderivWithin 𝕜 (fderivWithin 𝕜 f u) u x
-          = fderivWithin 𝕜 (fderivWithin 𝕜 f s) u x :=
-            (fderivWithin_eventually_congr_set hus).fderivWithin_eq_nhds
-        _ = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x := fderivWithin_congr_set hus
-      simp [B, hf]
+    · simp [fderivWithin_fderivWithin_eq_of_eventuallyEq hus, hf]
     · apply h'f.mono_of_mem
       exact nhdsWithin_le_iff.1 ((nhdsWithin_eq_iff_eventuallyEq.2 hus).le)
   _ = pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) s x := by
@@ -1252,6 +1255,12 @@ theorem _root_.Filter.EventuallyEq.mlieBracketWithin_vectorField_eq
     congr 1
     convert hxW <;> exact extChartAt_to_inv I x
 
+theorem _root_.Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem
+    (hV : V₁ =ᶠ[𝓝[s] x] V) (hW : W₁ =ᶠ[𝓝[s] x] W) (hx : x ∈ s) :
+    mlieBracketWithin I V₁ W₁ s x = mlieBracketWithin I V W s x :=
+  hV.mlieBracketWithin_vectorField_eq (mem_of_mem_nhdsWithin hx hV :)
+    hW (mem_of_mem_nhdsWithin hx hW :)
+
 /-- If vector fields coincide on a neighborhood of a point within a set, then the Lie brackets
 also coincide on a neighborhood of this point within this set. Version where one considers the Lie
 bracket within a subset. -/
@@ -1597,7 +1606,6 @@ lemma key {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : 
     mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
       mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
   have A : (extChartAt I x₀).symm (extChartAt I x₀ x₀) = x₀ := by simp
-  have A' : x₀ = (extChartAt I x₀).symm (extChartAt I x₀ x₀) := by simp
   by_cases hfi : (mfderivWithin I I' f s x₀).IsInvertible; swap
   · simp only [mlieBracketWithin_apply, mpullbackWithin_apply,
       ContinuousLinearMap.inverse_of_not_isInvertible hfi, ContinuousLinearMap.zero_apply]
@@ -1611,62 +1619,59 @@ lemma key {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : 
       simp [-extChartAt]
   -- Now, interesting case where the derivative of `f` is invertible
   have : CompleteSpace E' := by
-    rcases hfi with ⟨M, hM⟩
+    rcases hfi with ⟨M, -⟩
     let M' : E ≃L[𝕜] E' := M
     exact (completeSpace_congr (e := M'.toEquiv) M'.isUniformEmbedding).1 (by assumption)
   -- choose a small open set `v` around `x₀` where `f` is `C^2`
-  obtain ⟨v, v_open, x₀v, v_source, maps_v, v_smooth⟩ :
-      ∃ v, IsOpen v ∧ x₀ ∈ v ∧ v ⊆ (extChartAt I x₀).source ∧
-        s ∩ v ⊆ f ⁻¹' (extChartAt I' (f x₀)).source ∧ ContMDiffOn I I' 2 f (s ∩ v) := by
-    obtain ⟨v, v_open, x₀v, hv⟩ :
-      ∃ v, IsOpen v ∧ x₀ ∈ v ∧ ContMDiffOn I I' 2 f (insert x₀ s ∩ v) := hf.contMDiffOn' le_rfl
+  obtain ⟨u, u_open, x₀u, maps_u, u_smooth⟩ :
+      ∃ u, IsOpen u ∧ x₀ ∈ u ∧
+        s ∩ u ⊆ f ⁻¹' (extChartAt I' (f x₀)).source ∧ ContMDiffOn I I' 2 f (s ∩ u) := by
+    obtain ⟨u, u_open, x₀u, hu⟩ :
+      ∃ u, IsOpen u ∧ x₀ ∈ u ∧ ContMDiffOn I I' 2 f (insert x₀ s ∩ u) := hf.contMDiffOn' le_rfl
     have : f ⁻¹' (extChartAt I' (f x₀)).source ∈ 𝓝[s] x₀ :=
       hf.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds I' (f x₀))
     rcases mem_nhdsWithin.1 this with ⟨w, w_open, x₀w, hw⟩
-    refine ⟨v ∩ w ∩ (extChartAt I x₀).source, (v_open.inter w_open).inter
-      (isOpen_extChartAt_source I x₀), by simp [x₀v, x₀w], inter_subset_right, ?_, ?_⟩
+    refine ⟨u ∩ w, u_open.inter w_open, by simp [x₀u, x₀w], ?_, ?_⟩
     · apply Subset.trans _ hw
-      exact fun y hy ↦ ⟨hy.2.1.2, hy.1⟩
-    · apply hv.mono
-      exact fun y hy ↦ ⟨subset_insert _ _ hy.1, hy.2.1.1⟩
-  have v_mem : v ∈ 𝓝 x₀ := v_open.mem_nhds x₀v
-  -- apply the auxiliary version to `s ∩ v`
-  set s' := s ∩ v with hs'
+      exact fun y hy ↦ ⟨hy.2.2, hy.1⟩
+    · apply hu.mono
+      exact fun y hy ↦ ⟨subset_insert _ _ hy.1, hy.2.1⟩
+  have u_mem : u ∈ 𝓝 x₀ := u_open.mem_nhds x₀u
+  -- apply the auxiliary version to `s ∩ u`
+  set s' := s ∩ u with hs'
+  have s'_eq : s' =ᶠ[𝓝 x₀] s := by
+    filter_upwards [u_mem] with y hy
+    change (y ∈ s ∩ u) = (y ∈ s)
+    simp [hy]
   set t' := t ∩ (extChartAt I' (f x₀)).source with ht'
   calc mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀
   _ = mpullbackWithin I I' f (mlieBracketWithin I' V W t) s' x₀ := by
-    simp only [mpullbackWithin, hs', mfderivWithin_inter v_mem]
+    simp only [mpullbackWithin, hs', mfderivWithin_inter u_mem]
   _ = mpullbackWithin I I' f (mlieBracketWithin I' V W t') s' x₀ := by
     simp only [mpullbackWithin, ht', mlieBracketWithin_inter (extChartAt_source_mem_nhds I' (f x₀))]
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s') (mpullbackWithin I I' f W s') s' x₀ := by
     apply key_aux (t := t') (hV.mono inter_subset_left) (hW.mono inter_subset_left)
-      (hu.inter v_open) v_smooth ⟨hx₀, x₀v⟩ inter_subset_right  (fun y hy ↦ ⟨hst hy.1, maps_v hy⟩)
-    sorry
+      (hu.inter u_open) u_smooth ⟨hx₀, x₀u⟩ inter_subset_right  (fun y hy ↦ ⟨hst hy.1, maps_u hy⟩)
+    have : ((extChartAt I x₀).symm ⁻¹' (s ∩ u) ∩ range I : Set E) =ᶠ[𝓝 (extChartAt I x₀ x₀)]
+        ((extChartAt I x₀).symm ⁻¹' s ∩ range I : Set E) := by
+      have : (extChartAt I x₀).symm ⁻¹' u ∈ 𝓝 (extChartAt I x₀ x₀) := by
+        apply (continuousAt_extChartAt_symm I x₀).preimage_mem_nhds
+        apply u_open.mem_nhds (by simpa using x₀u)
+      filter_upwards [this] with y hy
+      change (y ∈ (extChartAt I x₀).symm ⁻¹' (s ∩ u) ∩ range I) =
+        (y ∈ (extChartAt I x₀).symm ⁻¹' s ∩ range I)
+      simp [-extChartAt, hy]
+    simp only [fderivWithin_fderivWithin_eq_of_eventuallyEq this, hsymm, implies_true]
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s') (mpullbackWithin I I' f W s') s x₀ := by
-    simp only [hs', mlieBracketWithin_inter v_mem]
+    simp only [hs', mlieBracketWithin_inter u_mem]
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
-    apply Filter.EventuallyEq.mlieBracketWithin_vectorField_eq
-    · have : s' =ᶠ[𝓝 x₀] s := sorry
-      have Z := fderivWithin_congr_set
-
-
-
-
-
-
-
-
-
-
-
-#exit
-
-
-
-
-
-
-
+    apply Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem _ _ hx₀
+    · apply nhdsWithin_le_nhds
+      filter_upwards [mfderivWithin_eventually_congr_set (I := I) (I' := I') (f := f) s'_eq]
+        with y hy using by simp [mpullbackWithin, hy]
+    · apply nhdsWithin_le_nhds
+      filter_upwards [mfderivWithin_eventually_congr_set (I := I) (I' := I') (f := f) s'_eq]
+        with y hy using by simp [mpullbackWithin, hy]
 
 end VectorField
 
@@ -1713,3 +1718,5 @@ theorem contMDiff_invariantVectorField (v : TangentSpace I (1 : G)) :
 end LieGroup
 
 end LieBracketManifold
+
+set_option linter.style.longFile 1900
