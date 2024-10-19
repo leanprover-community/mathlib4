@@ -131,8 +131,8 @@ theorem disjoint_primeFactors {a b : R} (hc : IsCoprime a b) :
 
 theorem mul_primeFactors_disjUnion {a b : R} (ha : a ≠ 0) (hb : b ≠ 0)
     (hc : IsCoprime a b) :
-    primeFactors (a * b) = (primeFactors a).disjUnion (primeFactors b) (disjoint_primeFactors hc)
-    := by
+    primeFactors (a * b) =
+    (primeFactors a).disjUnion (primeFactors b) (disjoint_primeFactors hc) := by
   rw [Finset.disjUnion_eq_union]
   simp_rw [primeFactors]
   rw [normalizedFactors_mul ha hb, Multiset.toFinset_add]
