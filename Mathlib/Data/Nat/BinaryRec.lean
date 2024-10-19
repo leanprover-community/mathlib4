@@ -107,22 +107,22 @@ theorem testBit_bit_zero (b n) : (bit b n).testBit 0 = b := by
   simp
 
 @[simp]
-theorem bitCasesOn_bit {C : Nat → Sort u} (h : ∀ b n, C (bit b n)) (b : Bool) (n : Nat) :
+theorem bitCasesOn_bit {motive : Nat → Sort u} (h : ∀ b n, motive (bit b n)) (b : Bool) (n : Nat) :
     bitCasesOn (bit b n) h = h b n := by
-  change congrArg C (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
-  generalize congrArg C (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
+  change congrArg motive (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
+  generalize congrArg motive (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
   rw [testBit_bit_zero, bit_shiftRight_one]
   intros; rfl
 
 unseal binaryRec in
 @[simp]
-theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
+theorem binaryRec_zero {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n → motive (bit b n)) :
     binaryRec z f 0 = z :=
   rfl
 
 @[simp]
-theorem binaryRec_one {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
-    binaryRec (motive := C) z f 1 = f true 0 z := by
+theorem binaryRec_one {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n → motive (bit b n)) :
+    binaryRec (motive := motive) z f 1 = f true 0 z := by
   rw [binaryRec]
   simp only [add_one_ne_zero, ↓reduceDIte, Nat.reduceShiftRight, binaryRec_zero]
   rfl
@@ -132,7 +132,8 @@ The same as `binaryRec_eq`,
 but that one unfortunately requires `f` to be the identity when appending `false` to `0`.
 Here, we allow you to explicitly say that that case is not happening,
 i.e. supplying `n = 0 → b = true`. -/
-theorem binaryRec_eq' {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
+theorem binaryRec_eq' {motive : Nat → Sort u} {z : motive 0}
+    {f : ∀ b n, motive n → motive (bit b n)} (b n)
     (h : f false 0 z = z ∨ (n = 0 → b = true)) :
     binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   by_cases h' : bit b n = 0
@@ -143,12 +144,12 @@ theorem binaryRec_eq' {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
     exact h.symm
   case neg =>
     rw [binaryRec, dif_neg h']
-    change congrArg C (bit b n).bit_testBit_zero_shiftRight_one ▸ f _ _ _ = _
-    generalize congrArg C (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
+    change congrArg motive (bit b n).bit_testBit_zero_shiftRight_one ▸ f _ _ _ = _
+    generalize congrArg motive (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
     rw [testBit_bit_zero, bit_shiftRight_one]
     intros; rfl
 
-theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
+theorem binaryRec_eq {motive : Nat → Sort u} {z : motive 0} {f : ∀ b n, motive n → motive (bit b n)}
     (h : f false 0 z = z) (b n) :
     binaryRec z f (bit b n) = f b n (binaryRec z f n) :=
   binaryRec_eq' b n (.inl h)
