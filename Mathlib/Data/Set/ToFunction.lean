@@ -55,11 +55,8 @@ section set_as_total_function
 def IsFun (s : Set (α × β)) : Prop :=
   ∀ x : α, ∃! y : β, (x, y) ∈ s
 
-theorem isFun.isPartialFun {s : Set (α × β)} (hs : IsFun s) : IsPartialFun s := by
-  intro x y hsy z hsz
-  have hy := (hs x).choose_spec.2 y hsy
-  have hz := (hs x).choose_spec.2 z hsz
-  exact hy.trans hz.symm
+theorem isFun.isPartialFun {s : Set (α × β)} (hs : IsFun s) : IsPartialFun s :=
+  fun x y hxy z hxz => ((hs x).choose_spec.2 y hxy).trans ((hs x).choose_spec.2 z hxz).symm
 
 /-- Turns `s : Set (α × α)` into a total function. Each `x : α` is mapped to the unique `y : β`
 such that `(x, y) ∈ s`. -/
@@ -74,7 +71,7 @@ end set_as_total_function
 
 end Set
 
-
+/-- Convert `Rel` to a `Set` (like uncurry). -/
 def Rel.toSet (R : Rel α β) : Set (α × β) := fun ⟨a, b⟩ => R a b
 
 theorem Function.graph_is_fun (f : α → β) : f.graph.toSet.IsFun :=
