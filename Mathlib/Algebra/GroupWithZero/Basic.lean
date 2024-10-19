@@ -400,7 +400,7 @@ lemma zero_zpow_eq (n : ℤ) : (0 : G₀) ^ n = if n = 0 then 1 else 0 := by
   · rw [h, zpow_zero]
   · rw [zero_zpow _ h]
 
-lemma eq_zero_of_zero_zpow_eq_one₀ {n : ℤ} : (0 : G₀) ^ n = 1 ↔ n = 0 := by
+lemma zero_zpow_eq_one₀ {n : ℤ} : (0 : G₀) ^ n = 1 ↔ n = 0 := by
   constructor
   · intro h
     wlog hn : 0 ≤ n
