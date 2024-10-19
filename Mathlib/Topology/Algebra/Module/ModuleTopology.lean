@@ -99,7 +99,8 @@ section basics
 
 /-
 This section is just boilerplate, defining the module topology and making
-some infrastructure.
+some infrastructure. Note that we don't even need that `R` is a ring
+in the main definitions, just that it acts on `A`.
 -/
 variable (R : Type*) [TopologicalSpace R] (A : Type*) [Add A] [SMul R A]
 
@@ -154,15 +155,29 @@ end basics
 
 namespace IsModuleTopology
 
-section subsingleton
+section basics
 
-instance instSubsingleton (R : Type*) [TopologicalSpace R] (A : Type*) [Add A] [SMul R A]
-    [Subsingleton A] [TopologicalSpace A] : IsModuleTopology R A where
+variable {R : Type*} [TopologicalSpace R]
+  {A : Type*} [Add A] [SMul R A] [τA : TopologicalSpace A]
+
+/-- If `A` is a topological `R`-module and the identity map from (`A` with its given
+topology) to (`A` with the module topology) is continuous, then the topology on `A` is
+the module topology. -/
+theorem of_continuous_id [ContinuousAdd A] [ContinuousSMul R A]
+    (h : @Continuous A A τA (moduleTopology R A) id):
+    IsModuleTopology R A where
+  -- The topologies are equal because each is finer than the other. One inclusion
+  -- follows from the continuity hypothesis; the other is because the module topology
+  -- is the inf of all the topologies making `A` a topological module.
+  eq_moduleTopology' := le_antisymm (continuous_id_iff_le.1 h) (moduleTopology_le _ _)
+
+/-- The zero module has the module topology. -/
+instance instSubsingleton [Subsingleton A] : IsModuleTopology R A where
   eq_moduleTopology' := by
     ext U
     simp only [isOpen_discrete]
 
-end subsingleton
+end basics
 
 section iso
 
@@ -170,7 +185,7 @@ variable {R : Type*} [τR : TopologicalSpace R] [Semiring R]
 variable {A : Type*} [AddCommMonoid A] [Module R A] [τA : TopologicalSpace A] [IsModuleTopology R A]
 variable {B : Type*} [AddCommMonoid B] [Module R B] [τB : TopologicalSpace B]
 
-/-- If `A` and `B` are homeomorphic via a homeomorphism which is also `R`-linear, and if
+/-- If `A` and `B` are `R`-modules, homeomorphic via an `R`-linear homeomorphism, and if
 `A` has the module topology, then so does `B`. -/
 theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
   eq_moduleTopology' := by
@@ -181,7 +196,7 @@ theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
     let h' : B →+ A := e.symm
     simp_rw [e.toHomeomorph.symm.inducing.1, eq_moduleTopology R A, moduleTopology, induced_sInf]
     apply congr_arg
-    ext τ -- from this point the definitions of `g, g' etc` above don't work without `@`.
+    ext τ -- from this point on the definitions of `g`, `g'` etc above don't work without `@`.
     rw [Set.mem_image]
     constructor
     · rintro ⟨σ, ⟨hσ1, hσ2⟩, rfl⟩
@@ -208,41 +223,33 @@ is `R`'s topology.
 
 /-- The topology on a topological semiring `R` agrees with the module topology when considering
 `R` as an `R`-module in the obvious way (i.e., via `Semiring.toModule`). -/
-instance _root_.TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R where
-  eq_moduleTopology' := by
-    /- Let `R` be a topological ring with topology `τR`. To prove that `τR` is the module
-    topology, it suffices to prove inclusions in both directions.
-    One way is obvious: addition and multiplication are continuous for `R`, so the
-    module topology is finer than `τR` because it's the finest topology with these properties.-/
-    refine le_antisymm ?_ (moduleTopology_le R R)
-    /- The other way is more interesting. We can interpret the problem as proving that
-    the identity function is continuous from `R` with its usual topology `τR` to `R` with
-    the module topology.
-    -/
-    rw [← continuous_id_iff_le]
-    /-
-    The idea needed here is to rewrite the identity function as the composite of `r ↦ (r,1)`
-    from `R` to `R × R`, and multiplication `R × R → R`.
-    -/
-    rw [show (id : R → R) = (fun rs ↦ rs.1 • rs.2) ∘ (fun r ↦ (r, 1)) by ext; simp]
-    /-
-    It thus suffices to show that each of these maps are continuous. For this claim to even make
-    sense, we need to topologise `R × R`. The trick is to do this by giving the first `R` the usual
-    topology `τR` and the second `R` the module topology. To do this we have to "fight mathlib"
-    a bit with `@`, because there is more than one topology on `R` here.
-    -/
-    apply @Continuous.comp R (R × R) R τR (@instTopologicalSpaceProd R R τR (moduleTopology R R))
-        (moduleTopology R R)
-    · /-
-      The map R × R → R is `•`, so by a fundamental property of the module topology,
-      this is continuous. -/
-      exact @continuous_smul _ _ _ _ (moduleTopology R R) <| ModuleTopology.continuousSMul ..
-    · /-
-      The map `R → R × R` sending `r` to `(r,1)` is a map into a product, so it suffices to show
-      that each of the two factors is continuous. But the first is the identity function
-      on `(R, usual topology)` and the second is a constant function. -/
-      exact @Continuous.prod_mk _ _ _ _ (moduleTopology R R) _ _ _ continuous_id <|
-        @continuous_const _ _ _ (moduleTopology R R) _
+instance _root_.TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R := by
+  /- By a previous lemma it suffices to show that the identity from (R,usual) to
+  (R, module topology) is continuous. -/
+  apply of_continuous_id
+  /-
+  The idea needed here is to rewrite the identity function as the composite of `r ↦ (r,1)`
+  from `R` to `R × R`, and multiplication `R × R → R`.
+  -/
+  rw [show (id : R → R) = (fun rs ↦ rs.1 • rs.2) ∘ (fun r ↦ (r, 1)) by ext; simp]
+  /-
+  It thus suffices to show that each of these maps are continuous. For this claim to even make
+  sense, we need to topologise `R × R`. The trick is to do this by giving the first `R` the usual
+  topology `τR` and the second `R` the module topology. To do this we have to "fight mathlib"
+  a bit with `@`, because there is more than one topology on `R` here.
+  -/
+  apply @Continuous.comp R (R × R) R τR (@instTopologicalSpaceProd R R τR (moduleTopology R R))
+      (moduleTopology R R)
+  · /-
+    The map R × R → R is `•`, so by a fundamental property of the module topology,
+    this is continuous. -/
+    exact @continuous_smul _ _ _ _ (moduleTopology R R) <| ModuleTopology.continuousSMul ..
+  · /-
+    The map `R → R × R` sending `r` to `(r,1)` is a map into a product, so it suffices to show
+    that each of the two factors is continuous. But the first is the identity function
+    on `(R, usual topology)` and the second is a constant function. -/
+    exact @Continuous.prod_mk _ _ _ _ (moduleTopology R R) _ _ _ continuous_id <|
+      @continuous_const _ _ _ (moduleTopology R R) _
 
 end self
 
