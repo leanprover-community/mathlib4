@@ -317,11 +317,11 @@ orbit, and a corresponding quotient expressed in terms of `Setoid.comap Subtype.
 noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
     orbitRel.Quotient H (orbitRel.Quotient.orbit ω) ≃
       Quotient ((orbitRel H β).comap (Subtype.val : Quotient.mk (orbitRel α β) ⁻¹' {ω} → β)) where
-  toFun := fun q ↦ q.liftOn (fun x ↦ ⟦⟨↑x, by
+  toFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     have hx := x.property
     rwa [orbitRel.Quotient.mem_orbit] at hx⟩⟧) fun a b h ↦ by
-      simp only [· ≈ ·, ← Quotient.eq,
+      simp only [← Quotient.eq,
                  orbitRel.Quotient.subgroup_quotient_eq_iff] at h
       simp only [Quotient.eq] at h ⊢
       exact h
