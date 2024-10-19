@@ -602,8 +602,7 @@ lemma iSup_genEigenspace_eq (f : End R M) (μ : R) :
     ⨆ k, (f.genEigenspace μ) k = f.unifEigenspace μ ⊤ := by
   rw [unifEigenspace_eq_iSup_unifEigenspace_nat]
   ext
-  simp only [iSup_subtype, le_top, iSup_pos]
-  rfl
+  simp only [iSup_subtype, le_top, iSup_pos, genEigenspace, OrderHom.coe_mk]
 
 lemma mapsTo_maxGenEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) :
     MapsTo g ↑(f.maxGenEigenspace μ) ↑(f.maxGenEigenspace μ) := by
@@ -633,8 +632,7 @@ lemma isNilpotent_restrict_maxGenEigenspace_sub_algebraMap [IsNoetherian R M] (f
     IsNilpotent ((f - algebraMap R (End R M) μ).restrict h) := by
   apply isNilpotent_restrict_of_le (q := f.unifEigenspace μ (maxUnifEigenspaceIndex f μ))
     _ (isNilpotent_restrict_unifEigenspace_nat f μ (maxUnifEigenspaceIndex f μ))
-  rw [maxGenEigenspace_eq]
-  exact le_rfl
+  rw [maxGenEigenspace_eq, genEigenspace, OrderHom.coe_mk]
 
 /-- The restriction of `f - μ • 1` to the generalized `μ`-eigenspace is nilpotent. -/
 lemma isNilpotent_restrict_iSup_sub_algebraMap [IsNoetherian R M] (f : End R M) (μ : R)
