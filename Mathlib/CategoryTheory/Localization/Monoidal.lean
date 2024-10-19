@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou, Dagur Asgeirsson
+-/
 import Mathlib.CategoryTheory.Localization.Trifunctor
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.Tactic.CategoryTheory.Coherence
@@ -56,6 +61,8 @@ namespace Monoidal
 
 def toMonoidalCategory : C ⥤ LocalizedMonoidal L W ε := L
 
+/-- The isomorphism `ε : L.obj (𝟙_ C) ≅ unit`,
+as `(toMonoidalCategory L W ε).obj (𝟙_ C) ≅ unit`. -/
 abbrev ε' : (toMonoidalCategory L W ε).obj (𝟙_ C) ≅ unit := ε
 
 local notation "L'" => toMonoidalCategory L W ε
@@ -88,11 +95,11 @@ noncomputable abbrev tensorBifunctorIso :
 
 noncomputable instance (X : C) :
     Lifting L' W (tensorLeft X ⋙ L') ((tensorBifunctor L W ε).obj ((L').obj X)) := by
-  apply Lifting₂.fst' (hF := isInvertedBy₂ L W ε)
+  apply Lifting₂.liftingLift₂ (hF := isInvertedBy₂ L W ε)
 
 noncomputable instance (Y : C) :
     Lifting L' W (tensorRight Y ⋙ L') ((tensorBifunctor L W ε).flip.obj ((L').obj Y)) := by
-  apply Lifting₂.snd' (hF := isInvertedBy₂ L W ε)
+  apply Lifting₂.liftingLift₂Flip (hF := isInvertedBy₂ L W ε)
 
 noncomputable def leftUnitor : (tensorBifunctor L W ε).obj unit ≅ 𝟭 _ :=
   (tensorBifunctor L W ε).mapIso ε.symm ≪≫

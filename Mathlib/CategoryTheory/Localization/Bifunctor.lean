@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Localization.Prod
 import Mathlib.CategoryTheory.Functor.Currying
+
+/-!
+# Lifting of bifunctors
+
+-/
 
 namespace CategoryTheory
 
@@ -94,11 +104,11 @@ noncomputable instance : Lifting₂ L₁ L₂ W₁ W₂ F (lift₂ F hF L₁ L�
     curry.mapIso (fac (uncurry.obj F) hF (L₁.prod L₂)) ≪≫
     currying.unitIso.symm.app F
 
-noncomputable instance Lifting₂.fst' (X₁ : C₁) :
+noncomputable instance Lifting₂.liftingLift₂ (X₁ : C₁) :
     Lifting L₂ W₂ (F.obj X₁) ((lift₂ F hF L₁ L₂).obj (L₁.obj X₁)) :=
   Lifting₂.fst _ _ W₁ _ _ _ _
 
-noncomputable instance Lifting₂.snd' (X₂ : C₂) :
+noncomputable instance Lifting₂.liftingLift₂Flip (X₂ : C₂) :
     Lifting L₁ W₁ (F.flip.obj X₂) ((lift₂ F hF L₁ L₂).flip.obj (L₂.obj X₂)) :=
   Lifting₂.snd _ _ _ W₂ _ _ _
 
@@ -150,10 +160,6 @@ noncomputable def lift₂NatIso : F₁' ≅ F₂' where
   inv := lift₂NatTrans L₁ L₂ W₁ W₂ F₂ F₁ F₂' F₁' e.inv
   hom_inv_id := natTrans₂_ext L₁ L₂ W₁ W₂ (by aesop_cat)
   inv_hom_id := natTrans₂_ext L₁ L₂ W₁ W₂ (by aesop_cat)
-
-end
-
-section
 
 end
 
