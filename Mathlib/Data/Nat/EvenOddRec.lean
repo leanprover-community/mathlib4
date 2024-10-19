@@ -5,6 +5,7 @@ Authors: Stuart Presnell
 -/
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Data.Nat.BinaryRec
+
 /-! # A recursion principle based on even and odd numbers. -/
 
 namespace Nat
