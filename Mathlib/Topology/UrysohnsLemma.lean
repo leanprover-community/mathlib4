@@ -7,8 +7,8 @@ import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
-import Mathlib.Topology.UnitInterval
 import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.Topology.UnitInterval
 
 /-!
 # Urysohn's lemma
@@ -724,5 +724,3 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClose [T2Space X] [Lo
       exact subset_trans subset_closure (Classical.choose_spec
         (exists_tsupport_one_of_isOpen_isClosed (hscopen i) (hscccompact i) (IsClosedH i)
         (IsHSubS i))).1
-
-#min_imports
