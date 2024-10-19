@@ -33,8 +33,8 @@ the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
 * `ZLattice.rank`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is free
 of `ℤ`-rank equal to the `K`-rank of `E`
 * `ZLattice.comap`: for `e : E → F` a linear map and `L : Submodule ℤ E`, define the pullback of
-`L` by `e`. If `L` is a `ZLattice` and `e` is a continuous linear equiv, then it is a `ZLattice`
-of `E`, see `instIsZLatticeComap`.
+`L` by `e`. If `L` is a `IsZLattice` and `e` is a continuous linear equiv, then it is a also
+`IsZLattice`, see `instIsZLatticeComap`.
 
 ## Implementation Notes
 
@@ -625,8 +625,8 @@ variable (K : Type*) [NormedField K] {E F : Type*} [NormedAddCommGroup E] [Norme
     [NormedAddCommGroup F] [NormedSpace K F] (L : Submodule ℤ E)
 
 /-- Let `e : E → F` a linear map, the map that sends a `L : Submodule ℤ E` to the
-`Submodule ℤ F` that is the pullback of `L` by `e`. If `L` is a `ZLattice` and `e` is a continuous
-linear equiv, then it is a `ZLattice` of `E`, see `instIsZLatticeComap`. -/
+`Submodule ℤ F` that is the pullback of `L` by `e`. If `IsZLattice L` and `e` is a continuous
+linear equiv, then it is a `IsZLattice` of `E`, see `instIsZLatticeComap`. -/
 protected def ZLattice.comap (e : F →ₗ[K] E) := L.comap (e.restrictScalars ℤ)
 
 @[simp]
