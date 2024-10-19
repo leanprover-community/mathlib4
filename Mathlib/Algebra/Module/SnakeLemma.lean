@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.LinearAlgebra.Quotient
 
 /-!
 
