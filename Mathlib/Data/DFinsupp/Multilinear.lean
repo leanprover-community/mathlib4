@@ -38,9 +38,8 @@ omit [Fintype ι] in
 private theorem update_aux (m : (i : ι) → Π₀ (j : κ i), M i j)
     (i : ι) (p : (i : ι) → κ i) (x : Π₀ (j : κ i), M i j) :
     (fun k ↦ Function.update m i x k (p k)) =
-      Function.update (fun i ↦ m i (p i)) i (x (p i)) := by
-  ext j
-  obtain rfl | hij := eq_or_ne j i <;> simp [*]
+      Function.update (fun i ↦ m i (p i)) i (x (p i)) :=
+  funext <| Function.apply_update (fun i m => m (p i)) m i x
 
 /--
 Given a family of indices `κ` and a multilinear map `f p` for each way `p` to select one index from
