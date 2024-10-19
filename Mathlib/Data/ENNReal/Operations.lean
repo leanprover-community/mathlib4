@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.ENNReal.Basic
 
 /-!
@@ -256,6 +255,7 @@ section Cancel
 -- Porting note (#11215): TODO: generalize to `WithTop`
 /-- An element `a` is `AddLECancellable` if `a + b ≤ a + c` implies `b ≤ c` for all `b` and `c`.
   This is true in `ℝ≥0∞` for all elements except `∞`. -/
+@[simp]
 theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ := by
   constructor
   · rintro h rfl
@@ -294,10 +294,12 @@ theorem sub_eq_sInf {a b : ℝ≥0∞} : a - b = sInf { d | a ≤ d + b } :=
   le_antisymm (le_sInf fun _ h => tsub_le_iff_right.mpr h) <| sInf_le <| mem_setOf.2 le_tsub_add
 
 /-- This is a special case of `WithTop.coe_sub` in the `ENNReal` namespace -/
-@[simp] theorem coe_sub : (↑(r - p) : ℝ≥0∞) = ↑r - ↑p := WithTop.coe_sub
+@[simp, norm_cast] theorem coe_sub : (↑(r - p) : ℝ≥0∞) = ↑r - ↑p := WithTop.coe_sub
 
 /-- This is a special case of `WithTop.top_sub_coe` in the `ENNReal` namespace -/
 @[simp] theorem top_sub_coe : ∞ - ↑r = ∞ := WithTop.top_sub_coe
+
+@[simp] lemma top_sub (ha : a ≠ ∞) : ∞ - a = ∞ := by lift a to ℝ≥0 using ha; exact top_sub_coe
 
 /-- This is a special case of `WithTop.sub_top` in the `ENNReal` namespace -/
 theorem sub_top : a - ∞ = 0 := WithTop.sub_top
@@ -403,7 +405,7 @@ theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc :
     (cancel_of_ne <| ne_top_of_le_ne_top ha hc) hb hc
 
 theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
-  rcases le_or_lt a b with hab | hab; · simp [hab, mul_right_mono hab]
+  rcases le_or_lt a b with hab | hab; · simp [hab, mul_right_mono hab, tsub_eq_zero_of_le]
   rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
   exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
 

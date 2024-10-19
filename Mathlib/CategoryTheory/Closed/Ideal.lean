@@ -204,7 +204,7 @@ theorem bijection_symm_apply_id (A B : C) :
   rw [prod.comp_lift_assoc, prod.lift_snd, prod.lift_fst_assoc, prod.lift_fst_comp_snd_comp,
     ← Adjunction.eq_unit_comp_map_iff, Iso.comp_inv_eq, assoc]
   rw [PreservesLimitPair.iso_hom i ((reflector i).obj A) ((reflector i).obj B)]
-  apply prod.hom_ext
+  apply Limits.prod.hom_ext
   · rw [Limits.prod.map_fst, assoc, assoc, prodComparison_fst, ← i.map_comp, prodComparison_fst]
     apply (reflectorAdjunction i).unit.naturality
   · rw [Limits.prod.map_snd, assoc, assoc, prodComparison_snd, ← i.map_comp, prodComparison_snd]

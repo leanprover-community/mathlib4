@@ -61,7 +61,7 @@ def equivPUnit [HasZeroObject C] : C ≌ Discrete PUnit.{w + 1} where
       (fun X =>
         { hom := default
           inv := default })
-      fun f => Subsingleton.elim _ _
+      fun _ => Subsingleton.elim _ _
   counitIso := Functor.punitExt _ _
 
 end CategoryTheory

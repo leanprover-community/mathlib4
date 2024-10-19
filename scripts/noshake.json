@@ -148,7 +148,6 @@
   "Mathlib.Tactic.Recover",
   "Mathlib.Tactic.ReduceModChar.Ext",
   "Mathlib.Tactic.Relation.Symm",
-  "Mathlib.Tactic.Relation.Trans",
   "Mathlib.Tactic.Rename",
   "Mathlib.Tactic.RenameBVar",
   "Mathlib.Tactic.Replace",
@@ -302,6 +301,7 @@
   "Mathlib.Tactic.Basic": ["Mathlib.Tactic.Linter.OldObtain"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
+  "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
@@ -309,6 +309,10 @@
   ["Mathlib.Algebra.DirectSum.Internal"],
   "Mathlib.RingTheory.KrullDimension.Basic":
   ["Mathlib.Algebra.MvPolynomial.CommRing", "Mathlib.Algebra.Polynomial.Basic"],
+  "Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs":
+  ["Mathlib.Tactic.Algebraize"],
+  "Mathlib.RingTheory.Finiteness":
+  ["Mathlib.Algebra.Algebra.RestrictScalars", "Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
@@ -320,6 +324,7 @@
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
+  "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.NumberTheory.Harmonic.Defs":
   ["Mathlib.Algebra.Order.BigOperators.Ring.Finset",
@@ -339,13 +344,15 @@
   "Mathlib.Lean.Meta": ["Batteries.Logic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
-  "Mathlib.Init.Data.Nat.Lemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.GroupTheory.MonoidLocalization.Basic": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
   "Mathlib.Geometry.Manifold.PoincareConjecture":
   ["Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected",
    "Mathlib.Util.Superscript"],
+  "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
+  "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
+  "Mathlib.Deprecated.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Set.Image": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
@@ -360,7 +367,8 @@
   ["Batteries.Data.Nat.Lemmas", "Mathlib.Data.List.Basic"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
   "Mathlib.Data.List.Defs": ["Batteries.Data.RBMap.Basic"],
-  "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic"],
+  "Mathlib.Data.List.Basic":
+  ["Mathlib.Control.Basic", "Mathlib.Data.Option.Basic"],
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
   "Mathlib.Data.Int.Order.Basic": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order"],
@@ -412,6 +420,7 @@
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Module.Equiv": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
+  "Mathlib.Algebra.Group.Units.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.Algebra.Group.Defs": ["Mathlib.Data.Int.Notation"],

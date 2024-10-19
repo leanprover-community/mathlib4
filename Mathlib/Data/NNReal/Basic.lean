@@ -68,8 +68,8 @@ scoped notation "ℝ≥0" => NNReal
 noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
 instance : OrderBot ℝ≥0 := inferInstance
-instance : Archimedean ℝ≥0 := Nonneg.instArchimedean
-instance : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
+instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
+instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 noncomputable instance : Sub ℝ≥0 := Nonneg.sub
 noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
@@ -493,17 +493,13 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
   rw [← NNReal.coe_le_coe, NNReal.coe_add, coe_iInf, coe_iInf]
   exact le_ciInf_add_ciInf h
 
-example : Archimedean ℝ≥0 := by infer_instance
+-- Short-circuit instance search
+instance instCovariantClassAddLE : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
+instance instContravariantClassAddLT : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < ·) := inferInstance
+instance instCovariantClassMulLE : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
 
--- Porting note (#11215): TODO: remove?
-instance covariant_add : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
-
-instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < ·) := inferInstance
-
-instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
-
--- Porting note (#11215): TODO: delete?
-nonrec theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=
+@[deprecated le_of_forall_pos_le_add (since := "2024-10-17")]
+protected theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=
   le_of_forall_pos_le_add h
 
 theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
@@ -514,7 +510,7 @@ theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
       have : 0 ≤ (q : ℝ) := le_trans a.2 <| le_of_lt haq
       ⟨q, Rat.cast_nonneg.1 this, by
         simp [Real.coe_toNNReal _ this, NNReal.coe_lt_coe.symm, haq, hqb]⟩)
-    fun ⟨q, _, haq, hqb⟩ => lt_trans haq hqb
+    fun ⟨_, _, haq, hqb⟩ => lt_trans haq hqb
 
 theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl
 
@@ -550,7 +546,7 @@ theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
 instance instOrderedSMul {M : Type*} [OrderedAddCommMonoid M] [Module ℝ M] [OrderedSMul ℝ M] :
     OrderedSMul ℝ≥0 M where
   smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) : _)
-  lt_of_smul_lt_smul_of_pos {a b c} hab _ :=
+  lt_of_smul_lt_smul_of_pos {_ _ c} hab _ :=
     lt_of_smul_lt_smul_of_nonneg_left (by exact hab) (NNReal.coe_nonneg c)
 
 end NNReal
@@ -841,25 +837,25 @@ theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
 
 @[deprecated le_div_iff₀ (since := "2024-08-21")]
 protected lemma le_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ a * r ≤ b :=
-  le_div_iff₀ <| pos_iff_ne_zero.2 hr
+  le_div_iff₀ hr.bot_lt
 
-nonrec theorem le_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ r * a ≤ b :=
-  le_div_iff₀' <| pos_iff_ne_zero.2 hr
+@[deprecated le_div_iff₀' (since := "2024-10-02")]
+theorem le_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ r * a ≤ b := le_div_iff₀' hr.bot_lt
 
-theorem div_lt_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < b * r :=
-  lt_iff_lt_of_le_iff_le (le_div_iff₀ (pos_iff_ne_zero.2 hr))
+@[deprecated div_lt_iff₀ (since := "2024-10-02")]
+theorem div_lt_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < b * r := div_lt_iff₀ hr.bot_lt
 
-theorem div_lt_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < r * b :=
-  lt_iff_lt_of_le_iff_le (le_div_iff₀' (pos_iff_ne_zero.2 hr))
+@[deprecated div_lt_iff₀' (since := "2024-10-02")]
+theorem div_lt_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < r * b := div_lt_iff₀' hr.bot_lt
 
-theorem lt_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ a * r < b :=
-  lt_iff_lt_of_le_iff_le (div_le_iff₀ (pos_iff_ne_zero.2 hr))
+@[deprecated lt_div_iff₀ (since := "2024-10-02")]
+theorem lt_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ a * r < b := lt_div_iff₀ hr.bot_lt
 
-theorem lt_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ r * a < b :=
-  lt_iff_lt_of_le_iff_le (div_le_iff₀' (pos_iff_ne_zero.2 hr))
+@[deprecated lt_div_iff₀' (since := "2024-10-02")]
+theorem lt_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ r * a < b := lt_div_iff₀' hr.bot_lt
 
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
-  (lt_div_iff fun hr => False.elim <| by simp [hr] at h).1 h
+  (lt_div_iff₀ <| pos_iff_ne_zero.2 fun hr => False.elim <| by simp [hr] at h).1 h
 
 theorem div_le_div_left_of_le {a b c : ℝ≥0} (c0 : c ≠ 0) (cb : c ≤ b) :
     a / b ≤ a / c :=
@@ -884,8 +880,7 @@ nonrec theorem half_lt_self {a : ℝ≥0} (h : a ≠ 0) : a / 2 < a :=
   half_lt_self h.bot_lt
 
 theorem div_lt_one_of_lt {a b : ℝ≥0} (h : a < b) : a / b < 1 := by
-  rwa [div_lt_iff, one_mul]
-  exact ne_of_gt (lt_of_le_of_lt (zero_le _) h)
+  rwa [div_lt_iff₀ h.bot_lt, one_mul]
 
 theorem _root_.Real.toNNReal_inv {x : ℝ} : Real.toNNReal x⁻¹ = (Real.toNNReal x)⁻¹ := by
   rcases le_total 0 x with hx | hx
@@ -902,13 +897,13 @@ theorem _root_.Real.toNNReal_div' {x y : ℝ} (hy : 0 ≤ y) :
   rw [div_eq_inv_mul, div_eq_inv_mul, Real.toNNReal_mul (inv_nonneg.2 hy), Real.toNNReal_inv]
 
 theorem inv_lt_one_iff {x : ℝ≥0} (hx : x ≠ 0) : x⁻¹ < 1 ↔ 1 < x := by
-  rw [← one_div, div_lt_iff hx, one_mul]
+  rw [← one_div, div_lt_iff₀ hx.bot_lt, one_mul]
 
-theorem zpow_pos {x : ℝ≥0} (hx : x ≠ 0) (n : ℤ) : 0 < x ^ n :=
-  zpow_pos_of_pos hx.bot_lt _
+@[deprecated zpow_pos (since := "2024-10-08")]
+protected theorem zpow_pos {x : ℝ≥0} (hx : x ≠ 0) (n : ℤ) : 0 < x ^ n := zpow_pos hx.bot_lt _
 
 theorem inv_lt_inv {x y : ℝ≥0} (hx : x ≠ 0) (h : x < y) : y⁻¹ < x⁻¹ :=
-  inv_lt_inv_of_lt hx.bot_lt h
+  inv_strictAnti₀ hx.bot_lt h
 
 end Inv
 
@@ -946,7 +941,7 @@ theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
 @[simp]
 theorem iInf_const_zero {α : Sort*} : ⨅ _ : α, (0 : ℝ≥0) = 0 := by
   rw [← coe_inj, coe_iInf]
-  exact Real.ciInf_const_zero
+  exact Real.iInf_const_zero
 
 theorem iInf_mul (f : ι → ℝ≥0) (a : ℝ≥0) : iInf f * a = ⨅ i, f i * a := by
   rw [← coe_inj, NNReal.coe_mul, coe_iInf, coe_iInf]

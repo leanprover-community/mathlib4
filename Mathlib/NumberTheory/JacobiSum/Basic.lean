@@ -28,7 +28,7 @@ but generalize where appropriate.
 This is based on Lean code written as part of the bachelor's thesis of Alexander Spahl.
 -/
 
-open BigOperators Finset
+open Finset
 
 /-!
 ### Jacobi sums: definition and first properties
@@ -269,8 +269,8 @@ lemma MulChar.exists_apply_sub_one_mul_apply_sub_one {n : ℕ} (hn : n ≠ 0) {�
 /-- If `χ` and `ψ` are multiplicative characters of order dividing `n` on a finite field `F`
 with values in an integral domain `R` and `μ` is a primitive `n`th root of unity in `R`,
 then `J(χ,ψ) = -1 + z*(μ - 1)^2` for some `z ∈ ℤ[μ] ⊆ R`. (We assume that `#F ≡ 1 mod n`.)
-Note that we do not state this as a divisbility in `R`, as this would give a weaker statement. -/
-lemma exists_jacobiSum_eq_neg_one_add [DecidableEq F] {n : ℕ} (hn : 2 < n) {χ ψ : MulChar F R}
+Note that we do not state this as a divisibility in `R`, as this would give a weaker statement. -/
+lemma exists_jacobiSum_eq_neg_one_add {n : ℕ} (hn : 2 < n) {χ ψ : MulChar F R}
     {μ : R} (hχ : χ ^ n = 1) (hψ : ψ ^ n = 1) (hn' : n ∣ Fintype.card F - 1)
     (hμ : IsPrimitiveRoot μ n) :
     ∃ z ∈ Algebra.adjoin ℤ {μ}, jacobiSum χ ψ = -1 + z * (μ - 1) ^ 2 := by
@@ -286,7 +286,8 @@ lemma exists_jacobiSum_eq_neg_one_add [DecidableEq F] {n : ℕ} (hn : 2 < n) {χ
     rw [hχ₀, jacobiSum_one_nontrivial hψ₀, zero_mul, add_zero]
   · refine ⟨0, Subalgebra.zero_mem _, ?_⟩
     rw [jacobiSum_comm, hψ₀, jacobiSum_one_nontrivial hχ₀, zero_mul, add_zero]
-  · rw [jacobiSum_eq_aux, MulChar.sum_eq_zero_of_ne_one hχ₀, MulChar.sum_eq_zero_of_ne_one hψ₀, hq]
+  · classical
+    rw [jacobiSum_eq_aux, MulChar.sum_eq_zero_of_ne_one hχ₀, MulChar.sum_eq_zero_of_ne_one hψ₀, hq]
     have H := MulChar.exists_apply_sub_one_mul_apply_sub_one (by omega) hχ hψ hμ
     have Hcs x := (H x).choose_spec
     refine ⟨-q * z₁ + ∑ x ∈ (univ \ {0, 1} : Finset F), (H x).choose, ?_, ?_⟩
@@ -298,3 +299,38 @@ lemma exists_jacobiSum_eq_neg_one_add [DecidableEq F] {n : ℕ} (hn : 2 < n) {χ
       ring
 
 end image
+
+section GaussSum
+
+variable {F R : Type*} [Fintype F] [Field F] [CommRing R] [IsDomain R]
+
+lemma gaussSum_pow_eq_prod_jacobiSum_aux (χ : MulChar F R) (ψ : AddChar F R) {n : ℕ}
+    (hn₁ : 0 < n) (hn₂ : n < orderOf χ) :
+    gaussSum χ ψ ^ n = gaussSum (χ ^ n) ψ * ∏ j ∈ Ico 1 n, jacobiSum χ (χ ^ j) := by
+  induction n, hn₁ using Nat.le_induction with
+  | base => simp only [pow_one, le_refl, Ico_eq_empty_of_le, prod_empty, mul_one]
+  | succ n hn ih =>
+      specialize ih <| lt_trans (Nat.lt_succ_self n) hn₂
+      have gauss_rw : gaussSum (χ ^ n) ψ * gaussSum χ ψ =
+            jacobiSum χ (χ ^ n) * gaussSum (χ ^ (n + 1)) ψ := by
+        have hχn : χ * (χ ^ n) ≠ 1 :=
+          pow_succ' χ n ▸ pow_ne_one_of_lt_orderOf n.add_one_ne_zero hn₂
+        rw [mul_comm, ← jacobiSum_mul_nontrivial hχn, mul_comm, ← pow_succ']
+      apply_fun (· * gaussSum χ ψ) at ih
+      rw [mul_right_comm, ← pow_succ, gauss_rw] at ih
+      rw [ih, Finset.prod_Ico_succ_top hn, mul_rotate, mul_assoc]
+
+/-- If `χ` is a multiplicative character of order `n ≥ 2` on a finite field `F`,
+then `g(χ)^n = χ(-1) * #F * J(χ,χ) * J(χ,χ²) * ... * J(χ,χⁿ⁻²)`. -/
+theorem gaussSum_pow_eq_prod_jacobiSum {χ : MulChar F R} {ψ : AddChar F R} (hχ : 2 ≤ orderOf χ)
+    (hψ : ψ.IsPrimitive) :
+    gaussSum χ ψ ^ orderOf χ =
+      χ (-1) * Fintype.card F * ∏ i ∈ Ico 1 (orderOf χ - 1), jacobiSum χ (χ ^ i) := by
+  have := gaussSum_pow_eq_prod_jacobiSum_aux χ ψ (n := orderOf χ - 1) (by omega) (by omega)
+  apply_fun (gaussSum χ ψ * ·) at this
+  rw [← pow_succ', Nat.sub_one_add_one_eq_of_pos (by omega)] at this
+  have hχ₁ : χ ≠ 1 :=
+    fun h ↦ ((orderOf_one (G := MulChar F R) ▸ h ▸ hχ).trans_lt Nat.one_lt_two).false
+  rw [this, ← mul_assoc, gaussSum_mul_gaussSum_pow_orderOf_sub_one hχ₁ hψ]
+
+end GaussSum

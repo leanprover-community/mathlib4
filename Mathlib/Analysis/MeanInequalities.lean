@@ -272,11 +272,11 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
     have s_pos : 0 < ∑ i in s, w i * (z i)⁻¹ :=
       sum_pos (fun i hi => mul_pos (hw i hi) (inv_pos.2 (hz i hi))) hs
     norm_num at this
-    rw [← inv_le_inv s_pos p_pos] at this
+    rw [← inv_le_inv₀ s_pos p_pos] at this
     apply le_trans this
     have p_pos₂ : 0 < (∏ i in s, (z i) ^ w i)⁻¹ :=
       inv_pos.2 (prod_pos fun i hi => rpow_pos_of_pos ((hz i hi)) _ )
-    rw [← inv_inv (∏ i in s, z i ^ w i), inv_le_inv p_pos p_pos₂, ← Finset.prod_inv_distrib]
+    rw [← inv_inv (∏ i in s, z i ^ w i), inv_le_inv₀ p_pos p_pos₂, ← Finset.prod_inv_distrib]
     gcongr
     · exact fun i hi ↦ inv_nonneg.mpr (Real.rpow_nonneg (le_of_lt (hz i hi)) _)
     · rw [Real.inv_rpow]; apply fun i hi ↦ le_of_lt (hz i hi); assumption
@@ -668,8 +668,8 @@ lemma compact_inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1
     𝔼 i ∈ s, w i * f i ≤ (𝔼 i ∈ s, w i) ^ (1 - p⁻¹) * (𝔼 i ∈ s, w i * f i ^ p) ^ p⁻¹ := by
   simp_rw [expect_eq_sum_div_card]
   rw [div_rpow, div_rpow, div_mul_div_comm, ← rpow_add', sub_add_cancel, rpow_one]
-  gcongr
-  · exact inner_le_weight_mul_Lp_of_nonneg s hp _ _ hw hf
+  · gcongr
+    exact inner_le_weight_mul_Lp_of_nonneg s hp _ _ hw hf
   any_goals simp
   · exact sum_nonneg fun i _ ↦ by have := hw i; have := hf i; positivity
   · exact sum_nonneg fun i _ ↦ by have := hw i; positivity
@@ -821,7 +821,7 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   obtain rfl | hp := hp.eq_or_lt
   · simp
   have hp₀ : 0 < p := by positivity
-  have hp₁ : p⁻¹ < 1 := inv_lt_one hp
+  have hp₁ : p⁻¹ < 1 := inv_lt_one_of_one_lt₀ hp
   by_cases H : (∑ i ∈ s, w i) ^ (1 - p⁻¹) = 0 ∨ (∑ i ∈ s, w i * f i ^ p) ^ p⁻¹ = 0
   · replace H : (∀ i ∈ s, w i = 0) ∨ ∀ i ∈ s, w i = 0 ∨ f i = 0 := by
       simpa [hp₀, hp₁, hp₀.not_lt, hp₁.not_lt, sum_eq_zero_iff_of_nonneg] using H
