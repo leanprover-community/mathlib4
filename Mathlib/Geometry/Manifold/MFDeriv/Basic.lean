@@ -425,7 +425,7 @@ theorem mdifferentiableOn_iff_target :
   constructor
   · refine fun h' y => ⟨?_, fun x _ => h' x y⟩
     have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
-    convert (h''.comp' (chartAt H' y).continuousOn_toFun).comp' h
+    convert (h''.comp_inter (chartAt H' y).continuousOn_toFun).comp_inter h
     simp
   · exact fun h' x y => (h' y).2 x 0
 
@@ -713,7 +713,7 @@ theorem hasMFDerivWithinAt_insert {y : M} :
   refine ⟨fun h => h.mono <| subset_insert y s, fun hf ↦ ?_⟩
   rcases eq_or_ne x y with rfl | h
   · rw [HasMFDerivWithinAt] at hf ⊢
-    refine ⟨hf.1.insert_self, ?_⟩
+    refine ⟨hf.1.insert, ?_⟩
     have : (extChartAt I x).target ∈
         𝓝[(extChartAt I x).symm ⁻¹' insert x s ∩ range I] (extChartAt I x) x :=
       nhdsWithin_mono _ inter_subset_right (extChartAt_target_mem_nhdsWithin I x)
@@ -830,9 +830,10 @@ theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[�
 derivative within one or the other. -/
 theorem hasMFDerivWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     HasMFDerivWithinAt I I' f s x f' ↔ HasMFDerivWithinAt I I' f t x f' := by
+  have : T1Space M := I.t1Space M
   simp only [HasMFDerivWithinAt]
   refine and_congr ?_ ?_
-  · apply continuousWithinAt_congr_set'
+  · exact continuousWithinAt_congr_set' _ h
   · apply hasFDerivWithinAt_congr_set' (extChartAt I x x)
     exact preimage_extChartAt_eventuallyEq_compl_singleton y h
 
