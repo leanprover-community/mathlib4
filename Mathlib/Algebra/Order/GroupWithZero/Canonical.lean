@@ -49,7 +49,7 @@ instance (priority := 100) canonicallyOrderedAddCommMonoid.toZeroLeOneClass
   ⟨zero_le 1⟩
 
 section LinearOrderedCommMonoidWithZero
-variable [LinearOrderedCommMonoidWithZero α] {a b c d x y z : α} {n : ℕ}
+variable [LinearOrderedCommMonoidWithZero α] {a b : α} {n : ℕ}
 
 /-
 The following facts are true more generally in a (linearly) ordered commutative monoid.
@@ -130,11 +130,6 @@ instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
     MulPosStrictMono α where
   elim a b c hbc := by by_contra! h; exact hbc.not_le <| (mul_le_mul_right a.2).1 h
 
-/-- Alias of `mul_le_one'` for unification. -/
-@[deprecated mul_le_one' (since := "2024-08-21")]
-theorem mul_le_one₀ (ha : a ≤ 1) (hb : b ≤ 1) : a * b ≤ 1 :=
-  mul_le_one' ha hb
-
 /-- Alias of `one_le_mul'` for unification. -/
 @[deprecated one_le_mul (since := "2024-08-21")]
 theorem one_le_mul₀ (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
@@ -185,19 +180,9 @@ theorem inv_mul_lt_of_lt_mul₀ (h : a < b * c) : b⁻¹ * a < c := by
 theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c :=
   mul_lt_mul_of_pos_right h (zero_lt_iff.2 hc)
 
-theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
-  show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from
-    have : CovariantClass αˣ αˣ (· * ·) (· < ·) :=
-      IsLeftCancelMul.covariant_mul_lt_of_covariant_mul_le αˣ
-    inv_lt_inv_iff
-
-theorem inv_le_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a :=
-  show (Units.mk0 a ha)⁻¹ ≤ (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb ≤ Units.mk0 a ha from
-    inv_le_inv_iff
-
 theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a) : b < d := by
   have ha : a ≠ 0 := ne_of_gt (lt_of_lt_of_le hc hh)
-  simp_rw [← inv_le_inv₀ ha (ne_of_gt hc)] at hh
+  rw [← inv_le_inv₀ (zero_lt_iff.2 ha) hc] at hh
   have := mul_lt_mul_of_lt_of_le₀ hh (inv_ne_zero (ne_of_gt hc)) h
   simpa [inv_mul_cancel_left₀ ha, inv_mul_cancel_left₀ (ne_of_gt hc)] using this
 
@@ -213,7 +198,8 @@ theorem div_le_div_right₀ (hc : c ≠ 0) : a / c ≤ b / c ↔ a ≤ b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_le_mul_right (zero_lt_iff.2 (inv_ne_zero hc))]
 
 theorem div_le_div_left₀ (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) : a / b ≤ a / c ↔ c ≤ b := by
-  simp only [div_eq_mul_inv, mul_le_mul_left (zero_lt_iff.2 ha), inv_le_inv₀ hb hc]
+  simp only [div_eq_mul_inv, mul_le_mul_left (zero_lt_iff.2 ha),
+    inv_le_inv₀ (zero_lt_iff.2 hb) (zero_lt_iff.2 hc)]
 
 /-- `Equiv.mulLeft₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
 
@@ -256,8 +242,6 @@ lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
 
 lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
-
-@[deprecated (since := "2023-12-23")] alias pow_lt_pow₀ := pow_lt_pow_right₀
 
 end LinearOrderedCommGroupWithZero
 

@@ -328,7 +328,7 @@ theorem Group.mulRightReflectLT_of_mulRightStrictMono [Group N] [LT N]
 
 section Trans
 
-variable [IsTrans N r] (m n : M) {a b c d : N}
+variable [IsTrans N r] (m : M) {a b c : N}
 
 --  Lemmas with 3 elements.
 theorem act_rel_of_rel_of_act_rel (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
@@ -361,7 +361,7 @@ theorem rel_of_act_rel_act (m : M) {a b : N} (ab : r (μ m a) (μ m b)) : r a b 
 
 section Trans
 
-variable [IsTrans N r] (m n : M) {a b c d : N}
+variable [IsTrans N r] (m : M) {a b c : N}
 
 --  Lemmas with 3 elements.
 theorem act_rel_of_act_rel_of_rel_act_rel (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
