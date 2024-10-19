@@ -115,10 +115,8 @@ attribute [coe] RootedTree.α
 
 instance : CoeSort RootedTree Type* := ⟨RootedTree.α⟩
 
-instance (t : RootedTree) : SemilatticeInf t := t.semilatticeInf
-instance (t : RootedTree) : PredOrder t := t.predOrder
-instance (t : RootedTree) : OrderBot t := t.orderBot
-instance (t : RootedTree) : IsPredArchimedean t := t.isPredArchimedean
+attribute [instance] RootedTree.semilatticeInf RootedTree.predOrder
+    RootedTree.orderBot RootedTree.isPredArchimedean
 
 /--
 A subtree is represented by its root, therefore this is a type synonym.
@@ -181,22 +179,22 @@ lemma SubRootedTree.root_ne_bot_of_mem_subtrees (r : SubRootedTree t) (hr : r �
   simp only [RootedTree.subtrees, Set.mem_setOf_eq] at hr
   exact hr.1
 
-lemma RootedTree.subtrees_inf_eq_bot_iff {t₁ t₂ : SubRootedTree t}
+lemma RootedTree.mem_subtrees_disjoint_iff {t₁ t₂ : SubRootedTree t}
     (ht₁ : t₁ ∈ t.subtrees) (ht₂ : t₂ ∈ t.subtrees) (v₁ v₂ : t) (h₁ : v₁ ∈ t₁)
     (h₂ : v₂ ∈ t₂) :
-    v₁ ⊓ v₂ = ⊥ ↔ t₁ ≠ t₂ where
+    Disjoint v₁ v₂ ↔ t₁ ≠ t₂ where
   mp h := by
     intro nh
     have : t₁.root ≤ (v₁ : t) ⊓ (v₂ : t) := by
       simp only [le_inf_iff]
       exact ⟨h₁, nh ▸ h₂⟩
-    rw [h] at this
+    rw [h.eq_bot] at this
     simp only [le_bot_iff] at this
     exact t₁.root_ne_bot_of_mem_subtrees ht₁ this
   mpr h := by
     rw [SubRootedTree.mem_iff] at h₁ h₂
     contrapose! h
-    rw [← bot_lt_iff_ne_bot] at h
+    rw [disjoint_iff, ← ne_eq, ← bot_lt_iff_ne_bot] at h
     rcases lt_or_le_of_directed (by simp : v₁ ⊓ v₂ ≤ v₁) h₁ with oh | oh
     · simp_all [RootedTree.subtrees, IsAtom.lt_iff]
     rw [le_inf_iff] at oh
@@ -208,8 +206,7 @@ lemma RootedTree.subtrees_disjoint : t.subtrees.PairwiseDisjoint ((↑) : _ → 
   intro t₁ ht₁ t₂ ht₂ h
   rw [Function.onFun_apply, Set.disjoint_left]
   intro a ha hb
-  rw [← subtrees_inf_eq_bot_iff ht₁ ht₂ a a ha hb] at h
-  simp only [le_refl, inf_of_le_left] at h
+  rw [← mem_subtrees_disjoint_iff ht₁ ht₂ a a ha hb, disjoint_self] at h
   subst h
   simp only [SetLike.mem_coe, SubRootedTree.bot_mem_iff] at ha
   exact t₁.root_ne_bot_of_mem_subtrees ht₁ ha
