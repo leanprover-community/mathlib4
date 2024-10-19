@@ -609,7 +609,7 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Q
     rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
     convert hb using 1
     rw [orbit_eq_iff, ← orbitRel_apply]
-    exact QuotLike.equiv_out_mkQ _ _
+    exact QuotLike.rel_out_mkQ _ _
   rw [orbitRel.Quotient.mem_orbit, h]
 
 variable (G) (α)
@@ -650,7 +650,7 @@ lemma univ_eq_iUnion_orbit :
     Set.univ (α := α) = ⋃ x : Ω, x.orbit := by
   ext x
   simp only [Set.mem_univ, Set.mem_iUnion, true_iff]
-  exact ⟨Quotient.mk'' x, by simp⟩
+  exact ⟨⟦x⟧, by simp⟩
 
 @[to_additive]
 lemma _root_.Finite.of_finite_mulAction_orbitRel_quotient [Finite G] [Finite Ω] : Finite α := by
