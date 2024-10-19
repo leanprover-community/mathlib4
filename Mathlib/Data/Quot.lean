@@ -355,7 +355,7 @@ noncomputable def Quotient.out {s : Setoid α} : Quotient s → α :=
 theorem Quotient.out_eq {s : Setoid α} (q : Quotient s) : ⟦q.out⟧ = q :=
   Quot.out_eq q
 
-theorem Quotient.mk_out {s : Setoid α} (a : α) : (⟦a⟧ : Quotient s).out ≈ a :=
+theorem Quotient.mk_out {s : Setoid α} (a : α) : s (⟦a⟧ : Quotient s).out a :=
   Quotient.exact (Quotient.out_eq _)
 
 theorem Quotient.mk_eq_iff_out {s : Setoid α} {x : α} {y : Quotient s} :

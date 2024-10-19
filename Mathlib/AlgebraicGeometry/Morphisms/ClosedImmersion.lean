@@ -3,12 +3,10 @@ Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.ResidueField
-import Mathlib.RingTheory.RingHom.Surjective
 
 /-!
 
@@ -133,6 +131,10 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
     have h := (f ≫ g).stalkMap_surjective x
     simp_rw [Scheme.stalkMap_comp] at h
     exact Function.Surjective.of_comp h
+
+instance Spec_map_residue {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.residue x)) :=
+  IsClosedImmersion.spec_of_surjective (X.residue x)
+    Ideal.Quotient.mk_surjective
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'

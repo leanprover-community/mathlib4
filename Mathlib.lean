@@ -3622,6 +3622,7 @@ import Mathlib.Order.Bounded
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.Defs
+import Mathlib.Order.Bounds.Image
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Category.BddDistLat
 import Mathlib.Order.Category.BddLat
