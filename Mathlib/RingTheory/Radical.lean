@@ -41,8 +41,6 @@ namespace UniqueFactorizationMonoid
 -- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
 variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
   [UniqueFactorizationMonoid M]
-variable {R : Type*} [CommRing R] [IsDomain R] [NormalizationMonoid R]
-  [UniqueFactorizationMonoid R]
 
 /-- The finite set of prime factors of an element in a unique factorization monoid. -/
 def primeFactors (a : M) : Finset M :=
@@ -113,7 +111,15 @@ theorem radical_ne_zero (a : M) (h: Nontrivial M) : radical a ≠ 0 := by
   simp only [Multiset.toFinset_val, Multiset.mem_dedup]
   exact zero_not_mem_normalizedFactors _
 
--- Theorems for commutative rings
+end UniqueFactorizationMonoid
+
+open UniqueFactorizationMonoid
+
+namespace UniqueFactorizationDomain
+-- Theorems for UFDs
+
+variable {R : Type*} [CommRing R] [IsDomain R] [NormalizationMonoid R]
+  [UniqueFactorizationMonoid R]
 
 /-- Coprime elements have disjoint prime factors (as multisets). -/
 theorem disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
@@ -157,4 +163,4 @@ theorem radical_mul {a b : R} (hc : IsCoprime a b) :
 theorem radical_neg {a : R} : radical (-a) = radical a :=
   neg_one_mul a ▸ (radical_eq_of_associated <| associated_unit_mul_left a (-1) isUnit_one.neg)
 
-end UniqueFactorizationMonoid
+end UniqueFactorizationDomain
