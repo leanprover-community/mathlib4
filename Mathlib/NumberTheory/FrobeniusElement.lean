@@ -279,55 +279,46 @@ open Polynomial BigOperators
 
 variable {A : Type*} [CommRing A]
   {B : Type*} [CommRing B] [Algebra A B]
-  {G : Type*} [Group G] [MulSemiringAction G B] --[SMulCommClass G A B]
-
+  {G : Type*} [Group G] [Fintype G] [MulSemiringAction G B]
 
 variable (G) in
 
-noncomputable def MulSemiringAction.CharacteristicPolynomial.F (b : B) : B[X] :=
-  ∏ᶠ τ : G, (X - C (τ • b))
+noncomputable def MulSemiringAction.charpoly (b : B) : B[X] :=
+  ∏ g : G, (X - C (g • b))
 
 namespace MulSemiringAction.CharacteristicPolynomial
 
-theorem F_spec (b : B) : F G b = ∏ᶠ τ : G, (X - C (τ • b)) := rfl
+theorem F_spec (b : B) : charpoly G b = ∏ g : G, (X - C (g • b)) := rfl
+
+/-- docstring -/
+theorem F_spec' (b : B) : charpoly G b = ∏ g : G, g • (X - C b) := by
+  simp only [smul_sub, smul_C, smul_X, F_spec]
 
 section F_API
 
-variable [Finite G]
+theorem F_monic (b : B) : (charpoly G b).Monic :=
+  monic_prod_of_monic _ _ (fun i _ ↦ monic_X_sub_C (i • b))
 
-theorem F_monic [Nontrivial B] (b : B) : (F G b).Monic := by
-  have := Fintype.ofFinite G
-  rw [Monic, F_spec, finprod_eq_prod_of_fintype, leadingCoeff_prod'] <;> simp
-
-theorem F_natdegree [Nontrivial B] (b : B) : (F G b).natDegree = Nat.card G := by
-  have := Fintype.ofFinite G
-  rw [F_spec, finprod_eq_prod_of_fintype, natDegree_prod_of_monic _ _ (fun _ _ => monic_X_sub_C _)]
+theorem F_natdegree [Nontrivial B] (b : B) : (charpoly G b).natDegree = Nat.card G := by
+  rw [F_spec, natDegree_prod_of_monic _ _ (fun _ _ => monic_X_sub_C _)]
   simp only [natDegree_X_sub_C, Finset.sum_const, Finset.card_univ, Fintype.card_eq_nat_card,
     nsmul_eq_mul, mul_one, Nat.cast_id]
 
 variable (G) in
-theorem F_degree [Nontrivial B] (b : B) : (F G b).degree = Nat.card G := by
-  have := Fintype.ofFinite G
+theorem F_degree [Nontrivial B] (b : B) : (charpoly G b).degree = Nat.card G := by
   rw [degree_eq_iff_natDegree_eq_of_pos Nat.card_pos, F_natdegree]
 
-theorem F_smul_eq_self (σ : G) (b : B) : σ • (F G b) = F G b := calc
-  σ • F G b = σ • ∏ᶠ τ : G, (X - C (τ • b)) := by rw [F_spec]
-  _         = ∏ᶠ τ : G, σ • (X - C (τ • b)) := smul_finprod' _
-  _         = ∏ᶠ τ : G, (X - C ((σ * τ) • b)) := by simp [smul_sub, smul_smul]
-  _         = ∏ᶠ τ' : G, (X - C (τ' • b)) := finprod_eq_of_bijective (fun τ ↦ σ * τ)
-                                               (Group.mulLeft_bijective σ) (fun _ ↦ rfl)
-  _         = F G b := by rw [F_spec]
+theorem F_smul_eq_self (σ : G) (b : B) : σ • (charpoly G b) = charpoly G b := by
+  simp_rw [F_spec', Finset.smul_prod_perm]
 
-theorem F_eval_eq_zero (b : B) : (F G b).eval b = 0 := by
-  let foo := Fintype.ofFinite G
-  simp [F_spec,finprod_eq_prod_of_fintype,eval_prod]
-  apply @Finset.prod_eq_zero _ _ _ _ _ (1 : G) (Finset.mem_univ 1)
-  simp
+theorem F_eval_eq_zero (b : B) : (charpoly G b).eval b = 0 := by
+  rw [F_spec, eval_prod]
+  apply Finset.prod_eq_zero (Finset.mem_univ (1 : G))
+  rw [one_smul, eval_sub, eval_C, eval_X, sub_self]
 
 private theorem F_coeff_fixed (b : B) (n : ℕ) (g : G) :
-    g • (F G b).coeff n = (F G b).coeff n := by
-  change (g • (F G b)).coeff n = _
-  rw [F_smul_eq_self]
+    g • (charpoly G b).coeff n = (charpoly G b).coeff n := by
+  rw [← coeff_smul, F_smul_eq_self]
 
 end F_API
 
@@ -363,19 +354,19 @@ theorem splitting_of_full_one : splitting_of_full hFull 1 = 1 := by
   rw [if_pos rfl]
 
 noncomputable def M (b : B) : A[X] :=
-  (∑ x ∈ (F G b).support, monomial x (splitting_of_full hFull ((F G b).coeff x)))
+  (∑ x ∈ (charpoly G b).support, monomial x (splitting_of_full hFull ((charpoly G b).coeff x)))
 
-theorem M_deg_le (b : B) : (M hFull b).degree ≤ (F G b).degree := by
+theorem M_deg_le (b : B) : (M hFull b).degree ≤ (charpoly G b).degree := by
   unfold M
-  have := Polynomial.degree_sum_le (F G b).support
-    (fun x => monomial x (splitting_of_full hFull ((F G b).coeff x)))
+  have := Polynomial.degree_sum_le (charpoly G b).support
+    (fun x => monomial x (splitting_of_full hFull ((charpoly G b).coeff x)))
   refine le_trans this ?_
   rw [Finset.sup_le_iff]
   intro n hn
   apply le_trans (degree_monomial_le n _) ?_
   exact le_degree_of_mem_supp n hn
 
-variable [Nontrivial B] [Finite G]
+variable [Nontrivial B]
 
 theorem M_coeff_card (b : B) :
     (M hFull b).coeff (Nat.card G) = 1 := by
@@ -384,8 +375,8 @@ theorem M_coeff_card (b : B) :
   have hdeg := F_degree G b
   rw [degree_eq_iff_natDegree_eq_of_pos Nat.card_pos] at hdeg
   rw [ ← hdeg]
-  rw [Finset.sum_eq_single_of_mem ((F G b).natDegree)]
-  · have : (F G b).Monic := F_monic b
+  rw [Finset.sum_eq_single_of_mem ((charpoly G b).natDegree)]
+  · have : (charpoly G b).Monic := F_monic b
     simp
     simp_all [splitting_of_full_one]
   · refine natDegree_mem_support_of_nonzero ?h.H
@@ -394,9 +385,9 @@ theorem M_coeff_card (b : B) :
     have : 0 < Nat.card G := Nat.card_pos
     simp_all
   · intro d _ hd
-    exact coeff_monomial_of_ne (splitting_of_full hFull ((F G b).coeff d)) hd
+    exact coeff_monomial_of_ne (splitting_of_full hFull ((charpoly G b).coeff d)) hd
 
-theorem M_deg_eq_F_deg [Nontrivial A] (b : B) : (M hFull b).degree = (F G b).degree := by
+theorem M_deg_eq_F_deg [Nontrivial A] (b : B) : (M hFull b).degree = (charpoly G b).degree := by
   apply le_antisymm (M_deg_le hFull b)
   rw [F_degree]
   have := M_coeff_card hFull b
@@ -414,11 +405,11 @@ theorem M_monic (b : B) : (M hFull b).Monic := by
   have this3 : 0 < Nat.card G := Nat.card_pos
   rw [← F_natdegree b] at this2 this3
   -- then the hypos say deg(M)<=n, coefficient of X^n is 1 in M
-  have this4 : (M hFull b).natDegree ≤ (F G b).natDegree := natDegree_le_natDegree this1
+  have this4 : (M hFull b).natDegree ≤ (charpoly G b).natDegree := natDegree_le_natDegree this1
   exact Polynomial.monic_of_natDegree_le_of_coeff_eq_one _ this4 this2
 
 omit [Nontrivial B] in
-theorem M_spec (b : B) : ((M hFull b : A[X]) : B[X]) = F G b := by
+theorem M_spec (b : B) : ((M hFull b : A[X]) : B[X]) = charpoly G b := by
   unfold M
   ext N
   push_cast
@@ -427,7 +418,7 @@ theorem M_spec (b : B) : ((M hFull b : A[X]) : B[X]) = F G b := by
   aesop
 
 omit [Nontrivial B] in
-theorem M_spec_map (b : B) : (map (algebraMap A B) (M hFull b)) = F G b := by
+theorem M_spec_map (b : B) : (map (algebraMap A B) (M hFull b)) = charpoly G b := by
   rw [← M_spec hFull b]; rfl
 
 omit [Nontrivial B] in
@@ -447,7 +438,7 @@ end charpoly
 namespace MulSemiringAction.CharacteristicPolynomial
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
+  (G : Type*) [Group G] [Fintype G] [MulSemiringAction G B] [SMulCommClass G A B]
   (P : Ideal A) (Q : Ideal B) [P.IsPrime] [Q.IsPrime]
   [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
   -- from this, we can prove that P = comap Q
@@ -489,7 +480,7 @@ theorem Mbar_eval_eq_zero [Nontrivial A] [Nontrivial B] (bbar : B ⧸ Q) :
 end CharacteristicPolynomial
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
+  (G : Type*) [Group G] [Fintype G] [MulSemiringAction G B] [SMulCommClass G A B]
   (P : Ideal A) (Q : Ideal B) [P.IsPrime] [Q.IsPrime]
   [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
   -- from this, we can prove that P = comap Q
@@ -573,8 +564,8 @@ theorem lem1 [DecidableEq (Ideal B)] [Nontrivial B] :
   obtain ⟨b, hbP, hbQ⟩ := SetLike.not_le_iff_exists.mp h1
   replace hbP : ∀ g : G, g • Q ≠ Q → b ∈ g • Q :=
     fun g hg ↦ (Finset.inf_le (Finset.mem_filter.mpr ⟨Finset.mem_univ g, hg⟩) : P ≤ g • Q) hbP
-  let f := MulSemiringAction.CharacteristicPolynomial.F G b
-  let n := f.natDegree
+  let f := MulSemiringAction.charpoly G b
+  let _ := f.natDegree
   have hf : f.Monic := MulSemiringAction.CharacteristicPolynomial.F_monic b
   let g := f.map (algebraMap B (B ⧸ Q))
   obtain ⟨q, hq, hq0⟩ :=
@@ -684,8 +675,7 @@ theorem lem4 (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = a
   have key := MulSemiringAction.CharacteristicPolynomial.M_spec_map hAB b
   replace key := congrArg (map (algebraMap B (B ⧸ Q))) key
   rw [map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A (A ⧸ P) (B ⧸ Q),
-      ← map_map, MulSemiringAction.CharacteristicPolynomial.F, finprod_eq_prod_of_fintype,
-      Polynomial.map_prod] at key
+      ← map_map, MulSemiringAction.charpoly, Polynomial.map_prod] at key
   have key₀ : ∀ g : G, (X - C (g • b)).map (algebraMap B (B ⧸ Q)) =
       if g • Q = Q then X - C (algebraMap B (B ⧸ Q) (a * b₀)) else X := by
     intro g
@@ -725,6 +715,7 @@ theorem fullHom_surjective1
     (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, b = algebraMap A B a)
     (f : L ≃ₐ[K] L) (x : L) (hx : ∀ g : MulAction.stabilizer G Q, fullHom G P Q K L g x = x) :
     f x = x := by
+  obtain ⟨_⟩ := nonempty_fintype G
   have : Nontrivial A := ((algebraMap (A ⧸ P) K).comp (algebraMap A (A ⧸ P))).domain_nontrivial
   have : Nontrivial B := ((algebraMap (B ⧸ Q) L).comp (algebraMap B (B ⧸ Q))).domain_nontrivial
   have : NoZeroSMulDivisors (A ⧸ P) L := by
