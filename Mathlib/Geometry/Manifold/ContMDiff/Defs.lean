@@ -571,7 +571,10 @@ theorem smooth_iff_target :
   contMDiff_iff_target
 
 /-- If a function is `C^m` within a set at a point, for some finite `m`, then it is `C^m` within
-this set on an open set around the basepoint. -/
+this set on an open set around the basepoint.
+TODO: unify with contMDiffAt_iff_contMDiffOn_nhds (especially check the naming wrt other parts
+of the library)
+-/
 theorem ContMDiffWithinAt.contMDiffOn' {m : ℕ} (hm : (m : ℕ∞) ≤ n)
     (h : ContMDiffWithinAt I I' n f s x) :
     ∃ u, IsOpen u ∧ x ∈ u ∧ ContMDiffOn I I' m f (insert x s ∩ u) := by
