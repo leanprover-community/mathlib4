@@ -340,7 +340,6 @@ theorem exists_const (U) (s : (tildeInModuleCat M).obj (op U)) (x : PrimeSpectru
         obtain ⟨c, hc⟩ := h2
         exact LocalizedModule.mk_eq.mpr ⟨c, by simpa using hc.symm⟩⟩
 
-
 @[simp]
 theorem res_const (f : M) (g : R) (U hu V hv i) :
     (tildeInModuleCat M).map i (const M f g U hu) = const M f g V hv :=
