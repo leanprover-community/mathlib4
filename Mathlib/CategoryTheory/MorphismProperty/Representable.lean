@@ -441,14 +441,12 @@ lemma presheaf_mono_of_le (hP : P ≤ MorphismProperty.monomorphisms C)
   MorphismProperty.presheaf_monomorphisms_le_monomorphisms _
     (MorphismProperty.relative_monotone hP _ hf)
 
--- TODO: better name
 lemma fst'_self_eq_snd (hP : P ≤ MorphismProperty.monomorphisms C)
     {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : hf.rep.fst' f = hf.rep.snd f := by
   have := P.presheaf_mono_of_le hP hf
   apply yoneda.map_injective
   rw [← cancel_mono f, (hf.rep.isPullback' f).w]
 
--- TODO: better name
 lemma isIso_fst'_self (hP : P ≤ MorphismProperty.monomorphisms C)
     {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : IsIso (hf.rep.fst' f) :=
   have := P.presheaf_mono_of_le hP hf
