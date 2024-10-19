@@ -199,7 +199,7 @@ instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
   apply (quasiCompact_iff_forall_affine f).mpr
   intro U hU
   rw [Opens.map_coe, ← Set.preimage_inter_range]
-  apply f.openEmbedding.toInducing.isCompact_preimage'
+  apply f.isOpenEmbedding.toInducing.isCompact_preimage'
   · apply (noetherianSpace_set_iff _).mp
     · convert noetherianSpace_of_isAffineOpen U hU
       apply IsLocallyNoetherian.component_noetherian ⟨U, hU⟩
@@ -213,7 +213,7 @@ instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoe
     QuasiSeparatedSpace X := by
   apply (quasiSeparatedSpace_iff_affine X).mpr
   intro U V
-  have hInd := U.2.fromSpec.openEmbedding.toInducing
+  have hInd := U.2.fromSpec.isOpenEmbedding.toInducing
   apply (hInd.isCompact_preimage_iff ?_).mp
   · rw [← Set.preimage_inter_range, IsAffineOpen.range_fromSpec, Set.inter_comm]
     apply hInd.isCompact_preimage'

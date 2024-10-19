@@ -1092,18 +1092,24 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' :
   continuous_invFun := by
     simpa only [continuous_iff_continuousOn_univ, h'] using e.continuousOn_symm
 
-theorem openEmbedding_restrict : OpenEmbedding (e.source.restrict e) := by
-  refine openEmbedding_of_continuous_injective_open (e.continuousOn.comp_continuous
+theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.restrict e) := by
+  refine isOpenEmbedding_of_continuous_injective_open (e.continuousOn.comp_continuous
     continuous_subtype_val Subtype.prop) e.injOn.injective fun V hV ↦ ?_
   rw [Set.restrict_eq, Set.image_comp]
   exact e.isOpen_image_of_subset_source (e.open_source.isOpenMap_subtype_val V hV)
     fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
 
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_restrict := isOpenEmbedding_restrict
+
 /-- A partial homeomorphism whose source is all of `X` defines an open embedding of `X` into `Y`.
-The converse is also true; see `OpenEmbedding.toPartialHomeomorph`. -/
-theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e :=
-  e.openEmbedding_restrict.comp
-    ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.openEmbedding
+The converse is also true; see `IsOpenEmbedding.toPartialHomeomorph`. -/
+theorem to_isOpenEmbedding (h : e.source = Set.univ) : IsOpenEmbedding e :=
+  e.isOpenEmbedding_restrict.comp
+    ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.isOpenEmbedding
+
+@[deprecated (since := "2024-10-18")]
+alias to_openEmbedding := to_isOpenEmbedding
 
 end PartialHomeomorph
 
@@ -1156,12 +1162,13 @@ theorem trans_transPartialHomeomorph (e : X ≃ₜ Y) (e' : Y ≃ₜ Z) (f'' : P
 
 end Homeomorph
 
-namespace OpenEmbedding
+namespace IsOpenEmbedding
 
-variable (f : X → Y) (h : OpenEmbedding f)
+variable (f : X → Y) (h : IsOpenEmbedding f)
 
 /-- An open embedding of `X` into `Y`, with `X` nonempty, defines a partial homeomorphism
-whose source is all of `X`. The converse is also true; see `PartialHomeomorph.to_openEmbedding`. -/
+whose source is all of `X`. The converse is also true; see
+`PartialHomeomorph.to_isOpenEmbedding`. -/
 @[simps! (config := mfld_cfg) apply source target]
 noncomputable def toPartialHomeomorph [Nonempty X] : PartialHomeomorph X Y :=
   PartialHomeomorph.ofContinuousOpen (h.toEmbedding.inj.injOn.toPartialEquiv f univ)
@@ -1178,7 +1185,7 @@ lemma toPartialHomeomorph_right_inv {x : Y} (hx : x ∈ Set.range f) :
   rw [← congr_fun (h.toPartialHomeomorph_apply f), PartialHomeomorph.right_inv]
   rwa [toPartialHomeomorph_target]
 
-end OpenEmbedding
+end IsOpenEmbedding
 
 /-! inclusion of an open set in a topological space -/
 namespace TopologicalSpace.Opens
@@ -1191,7 +1198,7 @@ variable (s : Opens X) (hs : Nonempty s)
 /-- The inclusion of an open subset `s` of a space `X` into `X` is a partial homeomorphism from the
 subtype `s` to `X`. -/
 noncomputable def partialHomeomorphSubtypeCoe : PartialHomeomorph s X :=
-  OpenEmbedding.toPartialHomeomorph _ s.2.openEmbedding_subtype_val
+  IsOpenEmbedding.toPartialHomeomorph _ s.2.isOpenEmbedding_subtypeVal
 
 @[simp, mfld_simps]
 theorem partialHomeomorphSubtypeCoe_coe : (s.partialHomeomorphSubtypeCoe hs : s → X) = (↑) :=
