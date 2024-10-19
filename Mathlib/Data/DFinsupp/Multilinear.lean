@@ -33,14 +33,6 @@ variable [DecidableEq ι] [Fintype ι] [Semiring R]
 variable [∀ i k, AddCommMonoid (M i k)] [∀ p, AddCommMonoid (N p)]
 variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 
-omit [Fintype ι] in
-/-- This lemma is sufficiently impossible to name that it's easier to just keep it private. -/
-private theorem update_aux (m : (i : ι) → Π₀ (j : κ i), M i j)
-    (i : ι) (p : (i : ι) → κ i) (x : Π₀ (j : κ i), M i j) :
-    (fun k ↦ Function.update m i x k (p k)) =
-      Function.update (fun i ↦ m i (p i)) i (x (p i)) :=
-  funext <| Function.apply_update (fun i m => m (p i)) m i x
-
 /--
 Given a family of indices `κ` and a multilinear map `f p` for each way `p` to select one index from
 each family, map a family of finitely-supported functions `x` into a finitely-supported function
@@ -68,11 +60,11 @@ def piMultilinear
   map_add' {dec} m i x y := ext fun p => by
     cases Subsingleton.elim dec (by infer_instance)
     dsimp
-    simp_rw [update_aux, DFinsupp.add_apply, (f p).map_add]
+    simp_rw [Function.apply_update (fun i m => m (p i)) m, DFinsupp.add_apply, (f p).map_add]
   map_smul' {dec} m i c x := ext fun p => by
     cases Subsingleton.elim dec (by infer_instance)
     dsimp
-    simp_rw [update_aux, DFinsupp.smul_apply, (f p).map_smul]
+    simp_rw [Function.apply_update (fun i m => m (p i)) m, DFinsupp.smul_apply, (f p).map_smul]
 
 theorem support_piMultilinear_subset
     [∀ i, DecidableEq (κ i)]
