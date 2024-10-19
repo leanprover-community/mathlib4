@@ -98,8 +98,7 @@ instance category : Category (∫ F) where
   id_comp {a b} f := by
     ext
     · simp
-    · simp [F.mapComp_id_right_inv_app, Strict.rightUnitor_eqToIso,
-        ← (F.mapId ⟨op a.1⟩).inv.naturality_assoc f.fiber]
+    · simp [F.mapComp_id_right_inv_app, Strict.rightUnitor_eqToIso, ← NatTrans.naturality_assoc]
   comp_id {a b} f := by
     ext
     · simp
@@ -107,9 +106,7 @@ instance category : Category (∫ F) where
   assoc f g h := by
     ext
     · simp
-    · dsimp
-      slice_lhs 3 4 => rw [← (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.naturality h.fiber]
-      simp [F.mapComp_assoc_right_inv_app, Strict.associator_eqToIso]
+    · simp [← NatTrans.naturality_assoc, F.mapComp_assoc_right_inv_app, Strict.associator_eqToIso]
 
 variable (F)
 
@@ -117,8 +114,8 @@ variable (F)
 factor. -/
 @[simps]
 def forget : ∫ F ⥤ 𝒮 where
-  obj := fun X => X.base
-  map := fun f => f.base
+  obj X := X.base
+  map f := f.base
 
 end Pseudofunctor.Grothendieck
 
