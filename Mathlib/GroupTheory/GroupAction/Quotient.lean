@@ -10,6 +10,7 @@ import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.Algebra.Group.Subgroup.Actions
+import Mathlib.Data.Finite.Basic
 
 /-!
 # Properties of group actions involving quotient groups
@@ -157,7 +158,7 @@ noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ 
   Equiv.symm <|
     Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer α b g, ofQuotientStabilizer_mem_orbit α b g⟩)
       ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert congr_arg Subtype.val hxy),
-        fun ⟨b, ⟨g, hgb⟩⟩ => ⟨g, Subtype.eq hgb⟩⟩
+        fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.eq hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/
 @[to_additive AddAction.orbitProdStabilizerEquivAddGroup "Orbit-stabilizer theorem."]
@@ -402,14 +403,8 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     rw [Quotient.eq'', leftRel_eq]
     simp only
     convert one_mem H
-    rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot, ← free (g⁻¹ • x),
+    · rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot, ← free (g⁻¹ • x),
         mem_stabilizer_iff, mul_smul, (exists_smul_eq α (g⁻¹ • x) x).choose_spec]
-    #adaptation_note
-    /--
-    After https://github.com/leanprover/lean4/pull/5376 we need to search for this instance explicitly.
-    TODO: change `convert` to more agressively solve such goals with `infer_instance` itself.
-    -/
-    infer_instance
 
 end MulAction
 

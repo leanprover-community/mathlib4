@@ -32,7 +32,7 @@ variable {J : Type w} [SmallCategory J] [FinCategory J]
 def finiteLimitCone [SemilatticeInf α] [OrderTop α] (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := Finset.univ.inf F.obj
-      π := { app := fun j => homOfLE (Finset.inf_le (Fintype.complete _)) } }
+      π := { app := fun _ => homOfLE (Finset.inf_le (Fintype.complete _)) } }
   isLimit := { lift := fun s => homOfLE (Finset.le_inf fun j _ => (s.π.app j).down.down) }
 
 /--
@@ -41,7 +41,7 @@ The colimit cocone over any functor from a finite diagram into a `SemilatticeSup
 def finiteColimitCocone [SemilatticeSup α] [OrderBot α] (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := Finset.univ.sup F.obj
-      ι := { app := fun i => homOfLE (Finset.le_sup (Fintype.complete _)) } }
+      ι := { app := fun _ => homOfLE (Finset.le_sup (Fintype.complete _)) } }
   isColimit := { desc := fun s => homOfLE (Finset.sup_le fun j _ => (s.ι.app j).down.down) }
 
 -- see Note [lower instance priority]
@@ -170,7 +170,7 @@ variable {J : Type u} [SmallCategory J]
 def limitCone (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := iInf F.obj
-      π := { app := fun j => homOfLE (CompleteLattice.sInf_le _ _ (Set.mem_range_self _)) } }
+      π := { app := fun _ => homOfLE (CompleteLattice.sInf_le _ _ (Set.mem_range_self _)) } }
   isLimit :=
     { lift := fun s =>
         homOfLE (CompleteLattice.le_sInf _ _ (by rintro _ ⟨j, rfl⟩; exact (s.π.app j).le)) }
@@ -180,7 +180,7 @@ def limitCone (F : J ⥤ α) : LimitCone F where
 def colimitCocone (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := iSup F.obj
-      ι := { app := fun j => homOfLE (CompleteLattice.le_sSup _ _ (Set.mem_range_self _)) } }
+      ι := { app := fun _ => homOfLE (CompleteLattice.le_sSup _ _ (Set.mem_range_self _)) } }
   isColimit :=
     { desc := fun s =>
         homOfLE (CompleteLattice.sSup_le _ _ (by rintro _ ⟨j, rfl⟩; exact (s.ι.app j).le)) }

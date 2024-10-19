@@ -7,6 +7,7 @@ import Mathlib.Algebra.Module.Torsion
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
 # Conditions for rank to be finite
@@ -190,15 +191,6 @@ theorem setFinite [Module.Finite R M] {b : Set M}
   Cardinal.lt_aleph0_iff_set_finite.mp h.lt_aleph0_of_finite
 
 end LinearIndependent
-
-@[deprecated (since := "2023-12-27")]
-alias cardinal_mk_le_finrank_of_linearIndependent := LinearIndependent.cardinal_mk_le_finrank
-@[deprecated (since := "2023-12-27")]
-alias fintype_card_le_finrank_of_linearIndependent := LinearIndependent.fintype_card_le_finrank
-@[deprecated (since := "2023-12-27")]
-alias finset_card_le_finrank_of_linearIndependent := LinearIndependent.finset_card_le_finrank
-@[deprecated (since := "2023-12-27")]
-alias Module.Finite.lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finite
 
 lemma exists_set_linearIndependent_of_lt_rank {n : Cardinal} (hn : n < Module.rank R M) :
     ∃ s : Set M, #s = n ∧ LinearIndependent R ((↑) : s → M) := by
@@ -434,6 +426,14 @@ theorem Module.finrank_zero_iff [NoZeroSMulDivisors R M] :
     finrank R M = 0 ↔ Subsingleton M := by
   rw [← rank_zero_iff (R := R), ← finrank_eq_rank]
   norm_cast
+
+/-- Similar to `rank_quotient_add_rank_le` but for `finrank` and a finite `M`. -/
+lemma Module.finrank_quotient_add_finrank_le (N : Submodule R M) :
+    finrank R (M ⧸ N) + finrank R N ≤ finrank R M := by
+  haveI := nontrivial_of_invariantBasisNumber R
+  have := rank_quotient_add_rank_le N
+  rw [← finrank_eq_rank R M, ← finrank_eq_rank R, ← N.finrank_eq_rank] at this
+  exact mod_cast this
 
 end StrongRankCondition
 

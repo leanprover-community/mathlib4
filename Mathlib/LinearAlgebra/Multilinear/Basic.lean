@@ -106,10 +106,9 @@ variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i
   [AddCommMonoid M₃] [AddCommMonoid M'] [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)] [Module R M₂]
   [Module R M₃] [Module R M'] (f f' : MultilinearMap R M₁ M₂)
 
--- Porting note: Replaced CoeFun with FunLike instance
 instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
-  coe_injective' := fun f g h ↦ by cases f; cases g; cases h; rfl
+  coe_injective' f g h := by cases f; cases g; cases h; rfl
 
 initialize_simps_projections MultilinearMap (toFun → apply)
 
@@ -176,7 +175,7 @@ theorem add_apply (m : ∀ i, M₁ i) : (f + f') m = f m + f' m :=
   rfl
 
 instance : Zero (MultilinearMap R M₁ M₂) :=
-  ⟨⟨fun _ => 0, fun _ i _ _ => by simp, fun _ i c _ => by simp⟩⟩
+  ⟨⟨fun _ => 0, fun _ _ _ _ => by simp, fun _ _ c _ => by simp⟩⟩
 
 instance : Inhabited (MultilinearMap R M₁ M₂) :=
   ⟨0⟩
@@ -260,7 +259,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
     { toFun := fun x ↦ f fun _ ↦ x
       map_add' := fun x y ↦ by simpa [update_eq_const_of_subsingleton] using f.map_add 0 i x y
       map_smul' := fun c x ↦ by simpa [update_eq_const_of_subsingleton] using f.map_smul 0 i c x }
-  left_inv f := rfl
+  left_inv _ := rfl
   right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
 
 variable (M₁) {M₂}
@@ -788,6 +787,36 @@ theorem compMultilinearMap_apply (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R
     g.compMultilinearMap f m = g (f m) :=
   rfl
 
+@[simp]
+theorem compMultilinearMap_zero (g : M₂ →ₗ[R] M₃) :
+    g.compMultilinearMap (0 : MultilinearMap R M₁ M₂) = 0 :=
+  MultilinearMap.ext fun _ => map_zero g
+
+@[simp]
+theorem zero_compMultilinearMap (f: MultilinearMap R M₁ M₂) :
+    (0 : M₂ →ₗ[R] M₃).compMultilinearMap f = 0 := rfl
+
+@[simp]
+theorem compMultilinearMap_add (g : M₂ →ₗ[R] M₃) (f₁ f₂ : MultilinearMap R M₁ M₂) :
+    g.compMultilinearMap (f₁ + f₂) = g.compMultilinearMap f₁ + g.compMultilinearMap f₂ :=
+  MultilinearMap.ext fun _ => map_add g _ _
+
+@[simp]
+theorem add_compMultilinearMap (g₁ g₂ : M₂ →ₗ[R] M₃) (f: MultilinearMap R M₁ M₂) :
+    (g₁ + g₂).compMultilinearMap f = g₁.compMultilinearMap f + g₂.compMultilinearMap f := rfl
+
+@[simp]
+theorem compMultilinearMap_smul [Monoid S] [DistribMulAction S M₂] [DistribMulAction S M₃]
+    [SMulCommClass R S M₂] [SMulCommClass R S M₃] [CompatibleSMul M₂ M₃ S R]
+    (g : M₂ →ₗ[R] M₃) (s : S) (f : MultilinearMap R M₁ M₂) :
+    g.compMultilinearMap (s • f) = s • g.compMultilinearMap f :=
+  MultilinearMap.ext fun _ => g.map_smul_of_tower _ _
+
+@[simp]
+theorem smul_compMultilinearMap [Monoid S] [DistribMulAction S M₃] [SMulCommClass R S M₃]
+    (g : M₂ →ₗ[R] M₃) (s : S) (f : MultilinearMap R M₁ M₂) :
+    (s • g).compMultilinearMap f = s • g.compMultilinearMap f := rfl
+
 /-- The multilinear version of `LinearMap.subtype_comp_codRestrict` -/
 @[simp]
 theorem subtype_compMultilinearMap_codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂)
@@ -836,11 +865,22 @@ instance : Module S (MultilinearMap R M₁ M₂) :=
 instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (MultilinearMap R M₁ M₂) :=
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
+variable [AddCommMonoid M₃] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
+
+variable (S) in
+/-- `LinearMap.compMultilinearMap` as an `S`-linear map. -/
+@[simps]
+def _root_.LinearMap.compMultilinearMapₗ [Semiring S] [Module S M₂] [Module S M₃]
+    [SMulCommClass R S M₂] [SMulCommClass R S M₃] [LinearMap.CompatibleSMul M₂ M₃ S R]
+    (g : M₂ →ₗ[R] M₃) :
+    MultilinearMap R M₁ M₂ →ₗ[S] MultilinearMap R M₁ M₃ where
+  toFun := g.compMultilinearMap
+  map_add' := g.compMultilinearMap_add
+  map_smul' := g.compMultilinearMap_smul
+
 variable (R S M₁ M₂ M₃)
 
 section OfSubsingleton
-
-variable [AddCommMonoid M₃] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
 
 /-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
 and one-multilinear maps `MultilinearMap R (fun _ : ι ↦ M₂) M₃`. -/
@@ -904,8 +944,6 @@ def constLinearEquivOfIsEmpty [IsEmpty ι] : M₂ ≃ₗ[S] MultilinearMap R M�
   invFun f := f 0
   left_inv _ := rfl
   right_inv f := ext fun _ => MultilinearMap.congr_arg f <| Subsingleton.elim _ _
-
-variable [AddCommMonoid M₃] [Module R M₃] [Module S M₃] [SMulCommClass R S M₃]
 
 /-- `MultilinearMap.domDomCongr` as a `LinearEquiv`. -/
 @[simps apply symm_apply]
@@ -1004,7 +1042,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
 @[simps] def compLinearMapMultilinear :
   @MultilinearMap R ι (fun i ↦ M₁ i →ₗ[R] M₁' i)
     ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _
-      (fun i ↦ LinearMap.module) _ where
+      (fun _ ↦ LinearMap.module) _ where
   toFun := MultilinearMap.compLinearMapₗ
   map_add' := by
     intro _ f i f₁ f₂
@@ -1208,16 +1246,16 @@ theorem sub_apply (m : ∀ i, M₁ i) : (f - g) m = f m - g m :=
 
 instance : AddCommGroup (MultilinearMap R M₁ M₂) :=
   { MultilinearMap.addCommMonoid with
-    neg_add_cancel := fun a => MultilinearMap.ext fun v => neg_add_cancel _
-    sub_eq_add_neg := fun a b => MultilinearMap.ext fun v => sub_eq_add_neg _ _
+    neg_add_cancel := fun _ => MultilinearMap.ext fun _ => neg_add_cancel _
+    sub_eq_add_neg := fun _ _ => MultilinearMap.ext fun _ => sub_eq_add_neg _ _
     zsmul := fun n f =>
       { toFun := fun m => n • f m
         map_add' := fun m i x y => by simp [smul_add]
         map_smul' := fun l i x d => by simp [← smul_comm x n (_ : M₂)] }
     -- Porting note: changed from `AddCommGroup` to `SubNegMonoid`
-    zsmul_zero' := fun a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_zero' _
-    zsmul_succ' := fun z a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_succ' _ _
-    zsmul_neg' := fun z a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_neg' _ _ }
+    zsmul_zero' := fun _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_zero' _
+    zsmul_succ' := fun _ _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_succ' _ _
+    zsmul_neg' := fun _ _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_neg' _ _ }
 
 end RangeAddCommGroup
 

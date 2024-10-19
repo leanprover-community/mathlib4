@@ -31,8 +31,6 @@ This instance generates a type-class problem with a metavariable `?m` that shoul
 `RCLike ?m`. Since this can only be satisfied by `ℝ` or `ℂ`, this does not cause problems. -/
 
 /-- An `RCLike` field is finite-dimensional over `ℝ`, since it is spanned by `{1, I}`. -/
--- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
--- @[nolint dangerous_instance]
 instance rclike_to_real : FiniteDimensional ℝ K :=
   ⟨{1, I}, by
     suffices ∀ x : K, ∃ a b : ℝ, a • 1 + b • I = x by
