@@ -231,8 +231,8 @@ def mapGlueData : GlueData C' where
   U i := F.obj (D.U i)
   V i := F.obj (D.V i)
   f i j := F.map (D.f i j)
-  f_mono i j := preserves_mono_of_preservesLimit _ _
-  f_id i := inferInstance
+  f_mono _ _ := preserves_mono_of_preservesLimit _ _
+  f_id _ := inferInstance
   t i j := F.map (D.t i j)
   t_id i := by
     simp [D.t_id i]
@@ -251,8 +251,8 @@ def diagramIso : D.diagram.multispan ⋙ F ≅ (D.mapGlueData F).diagram.multisp
   NatIso.ofComponents
     (fun x =>
       match x with
-      | WalkingMultispan.left a => Iso.refl _
-      | WalkingMultispan.right b => Iso.refl _)
+      | WalkingMultispan.left _ => Iso.refl _
+      | WalkingMultispan.right _ => Iso.refl _)
     (by
       rintro (⟨_, _⟩ | _) _ (_ | _ | _)
       · erw [Category.comp_id, Category.id_comp, Functor.map_id]
