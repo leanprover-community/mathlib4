@@ -350,7 +350,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
       have := natDegree_eq_zero_of_derivative_eq_zero H
       have := (natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_irreducible hf).ne'
       contradiction
-    haveI := isLocalRingHom_expand F hp
+    haveI := isLocalHom_expand F hp
     exact
       Or.inr
         ⟨by rw [separable_iff_derivative_ne_zero hf, Classical.not_not, H], contract p f,

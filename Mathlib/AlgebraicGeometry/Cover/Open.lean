@@ -248,7 +248,7 @@ theorem OpenCover.compactSpace {X : Scheme.{u}} (𝒰 : X.OpenCover) [Finite �
       (TopCat.homeoOfIso
         (asIso
           (IsOpenImmersion.isoOfRangeEq (𝒰.map i)
-                  (X.ofRestrict (Opens.openEmbedding ⟨_, (𝒰.IsOpen i).base_open.isOpen_range⟩))
+                  (X.ofRestrict (Opens.isOpenEmbedding ⟨_, (𝒰.IsOpen i).base_open.isOpen_range⟩))
                   Subtype.range_coe.symm).hom.base))
 
 /-- Given open covers `{ Uᵢ }` and `{ Uⱼ }`, we may form the open cover `{ Uᵢ ∩ Uⱼ }`. -/

@@ -494,14 +494,17 @@ theorem coe_inclusion {E F : IntermediateField K L} (hEF : E ≤ F) (e : E) :
 
 variable {S}
 
-theorem toSubalgebra_injective :
-    Function.Injective (IntermediateField.toSubalgebra : IntermediateField K L → _) := by
-  intro S S' h
+theorem toSubalgebra_injective : Function.Injective (toSubalgebra : IntermediateField K L → _) := by
+  intro _ _ h
   ext
-  rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
+  simp_rw [← mem_toSubalgebra, h]
 
-theorem map_injective (f : L →ₐ[K] L') :
-    Function.Injective (map f) := by
+theorem toSubfield_injective : Function.Injective (toSubfield : IntermediateField K L → _) := by
+  intro _ _ h
+  ext
+  simp_rw [← mem_toSubfield, h]
+
+theorem map_injective (f : L →ₐ[K] L') : Function.Injective (map f) := by
   intro _ _ h
   rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,
     (Subalgebra.map_injective f.injective).eq_iff, toSubalgebra_injective.eq_iff] at h
