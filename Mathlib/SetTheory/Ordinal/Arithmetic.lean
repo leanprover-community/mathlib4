@@ -2099,9 +2099,8 @@ theorem Ordinal.not_bddAbove_compl_of_small (s : Set Ordinal.{u}) [hs : Small.{u
 
 namespace Ordinal
 
-instance instCharZero : CharZero Ordinal := by
-  refine ⟨fun a b h ↦ ?_⟩
-  rwa [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_inj, Nat.cast_inj] at h
+instance instCharZero : CharZero Ordinal where
+  cast_injective := Cardinal.ord_injective.comp Nat.cast_injective
 
 @[simp]
 theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
