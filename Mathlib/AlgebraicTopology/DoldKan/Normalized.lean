@@ -142,7 +142,7 @@ def N₁_iso_normalizedMooreComplex_comp_toKaroubi : N₁ ≅ normalizedMooreCom
       PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap,
       inclusionOfMooreComplexMap_comp_PInfty]
     dsimp only [Functor.comp_obj, toKaroubi]
-    erw [id_comp]
+    rw [id_comp]
 
 end DoldKan
 

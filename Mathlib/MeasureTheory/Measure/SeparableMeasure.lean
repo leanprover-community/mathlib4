@@ -63,7 +63,7 @@ written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch 
 separable measure, measure-dense, Lp space, second-countable
 -/
 
-open MeasurableSpace Set ENNReal TopologicalSpace BigOperators symmDiff Filter Real
+open MeasurableSpace Set ENNReal TopologicalSpace symmDiff Real
 
 namespace MeasureTheory
 
@@ -425,7 +425,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   refine ⟨D, ?_, ?_⟩
   · -- Countability directly follows from countability of `u` and `𝒜₀`. The function `f` below
     -- is the uncurryfied version of `key`, which is easier to manipulate as countability of the
-    -- domain is automatically infered.
+    -- domain is automatically inferred.
     let f (nds : Σ n : ℕ, (Fin n → u) × (Fin n → 𝒜₀)) : Lp E p μ := key nds.1 nds.2.1 nds.2.2
     have := count_𝒜₀.to_subtype
     have := countable_u.to_subtype

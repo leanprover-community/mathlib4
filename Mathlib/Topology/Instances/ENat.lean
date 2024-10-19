@@ -33,11 +33,14 @@ instance : OrderTopology ℕ∞ := ⟨rfl⟩
 theorem embedding_natCast : Embedding ((↑) : ℕ → ℕ∞) :=
   Nat.strictMono_cast.embedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
 
-theorem openEmbedding_natCast : OpenEmbedding ((↑) : ℕ → ℕ∞) :=
+theorem isOpenEmbedding_natCast : IsOpenEmbedding ((↑) : ℕ → ℕ∞) :=
   ⟨embedding_natCast, range_natCast ▸ isOpen_Iio⟩
 
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_natCast := isOpenEmbedding_natCast
+
 theorem nhds_natCast (n : ℕ) : 𝓝 (n : ℕ∞) = pure (n : ℕ∞) := by
-  simp [← openEmbedding_natCast.map_nhds_eq]
+  simp [← isOpenEmbedding_natCast.map_nhds_eq]
 
 @[simp]
 protected theorem nhds_eq_pure {n : ℕ∞} (h : n ≠ ⊤) : 𝓝 n = pure n := by

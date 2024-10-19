@@ -167,7 +167,7 @@ instance : MonoidalCategory (F C) where
   tensorHom_def := by
     rintro W X Y Z ⟨f⟩ ⟨g⟩
     exact QuotLike.sound (tensorHom_def _ _)
-  tensor_id X Y := QuotLike.sound tensor_id
+  tensor_id _ _ := QuotLike.sound tensor_id
   tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
     exact QuotLike.sound (tensor_comp _ _ _ _)
@@ -188,8 +188,8 @@ instance : MonoidalCategory (F C) where
   rightUnitor_naturality := @fun X Y => by
     rintro ⟨f⟩
     exact QuotLike.sound (ρ_naturality _)
-  pentagon W X Y Z := QuotLike.sound pentagon
-  triangle X Y := QuotLike.sound triangle
+  pentagon _ _ _ _ := QuotLike.sound pentagon
+  triangle _ _ := QuotLike.sound triangle
 
 @[simp]
 theorem mk_comp {X Y Z : F C} (f : X ⟶ᵐ Y) (g : Y ⟶ᵐ Z) :
@@ -367,7 +367,7 @@ def project : MonoidalFunctor (F C) D where
   -- Note: It's `QuotLike.recOn` now.
   map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
   ε := 𝟙 _
-  μ X Y := 𝟙 _
+  μ _ _ := 𝟙 _
   μ_natural_left := fun f _ => by
     induction' f using QuotLike.recOn
     · dsimp

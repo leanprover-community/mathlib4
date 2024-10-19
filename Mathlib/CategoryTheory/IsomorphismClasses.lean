@@ -44,7 +44,7 @@ end Category
 -/
 def isomorphismClasses : Cat.{v, u} ⥤ Type u where
   obj C := Quot IsIsomorphic
-  map {C D} F := QuotLike.map F.obj fun X Y ⟨f⟩ => ⟨F.mapIso f⟩
+  map F := QuotLike.map F.obj fun _ _ ⟨f⟩ => ⟨F.mapIso f⟩
   map_id {C} := by  -- Porting note: this used to be `tidy`
     dsimp; apply funext; intro x
     induction x using QuotLike.ind

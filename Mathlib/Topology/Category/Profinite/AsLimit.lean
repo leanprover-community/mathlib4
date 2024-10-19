@@ -66,7 +66,8 @@ instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lif
       · obtain ⟨b, hb⟩ :=
           DiscreteQuotient.exists_of_compat (fun S => a.val S) fun _ _ h => a.prop (homOfLE h)
         use b
-        -- ext S : 3 -- Porting note: `ext` does not work, replaced with following three lines.
+        -- ext S : 3 -- Porting note (#11041): `ext` does not work, replaced with following
+        -- three lines.
         apply Subtype.ext
         apply funext
         rintro S

@@ -149,7 +149,7 @@ instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
   le_refl := by
     refine QuotLike.ind fun a => ?_
     exact ⟨𝟙 _⟩
-  le_trans a b c := QuotLike.inductionOn₃ a b c fun A B C => Nonempty.map2 (· ≫ ·)
+  le_trans a b c := QuotLike.inductionOn₃ a b c fun _ _ _ => Nonempty.map2 (· ≫ ·)
 
 /-- The functor from a category to its thin skeleton. -/
 @[simps]
@@ -179,8 +179,8 @@ lemma out_mkQ (X : C) : Nonempty (QuotLike.out ⟦X⟧' ≅ X) :=
 /-- A functor `C ⥤ D` computably lowers to a functor `ThinSkeleton C ⥤ ThinSkeleton D`. -/
 @[simps]
 def map (F : C ⥤ D) : ThinSkeleton C ⥤ ThinSkeleton D where
-  obj := QuotLike.map F.obj fun X₁ X₂ ⟨hX⟩ => ⟨F.mapIso hX⟩
-  map {X} {Y} := QuotLike.recOnSubsingleton₂ X Y fun x y k => homOfLE (k.le.elim fun t => ⟨F.map t⟩)
+  obj := QuotLike.map F.obj fun _ _ ⟨hX⟩ => ⟨F.mapIso hX⟩
+  map {X} {Y} := QuotLike.recOnSubsingleton₂ X Y fun _ _ k => homOfLE (k.le.elim fun t => ⟨F.map t⟩)
 
 theorem comp_toThinSkeleton (F : C ⥤ D) : F ⋙ toThinSkeleton D = toThinSkeleton C ⋙ map F :=
   rfl
@@ -208,7 +208,7 @@ def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ Th
   fun x =>
     { obj := fun y => map₂ObjMap F x y
       map := fun {y₁} {y₂} => QuotLike.recOnSubsingleton x
-        fun X => QuotLike.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY =>
+        fun X => QuotLike.recOnSubsingleton₂ y₁ y₂ fun _ _ hY =>
             homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩) }
 
 /-- This provides natural transformations `map₂Functor F x₁ ⟶ map₂Functor F x₂` given
@@ -273,11 +273,11 @@ theorem skeletal : Skeletal (ThinSkeleton C) := fun X Y =>
 
 theorem map_comp_eq (F : E ⥤ D) (G : D ⥤ C) : map (F ⋙ G) = map F ⋙ map G :=
   Functor.eq_of_iso skeletal <|
-    NatIso.ofComponents fun X => QuotLike.recOnSubsingleton X fun x => Iso.refl _
+    NatIso.ofComponents fun X => QuotLike.recOnSubsingleton X fun _ => Iso.refl _
 
 theorem map_id_eq : map (𝟭 C) = 𝟭 (ThinSkeleton C) :=
   Functor.eq_of_iso skeletal <|
-    NatIso.ofComponents fun X => QuotLike.recOnSubsingleton X fun x => Iso.refl _
+    NatIso.ofComponents fun X => QuotLike.recOnSubsingleton X fun _ => Iso.refl _
 
 theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F₂ :=
   Functor.eq_of_iso skeletal

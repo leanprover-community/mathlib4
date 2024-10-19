@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
+import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Algebra.Order.Ring.Nat
@@ -79,7 +80,7 @@ Cantor's theorem, König's theorem, Konig's theorem
 assert_not_exists Field
 
 open Mathlib (Vector)
-open Function Set Order
+open Function Order Set
 
 noncomputable section
 
@@ -317,12 +318,6 @@ we provide this statement separately so you don't have to solve the specializati
 theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β ↔ Nonempty (α ≃ β) :=
   lift_mk_eq.{u, v, 0}
 
-@[simp]
-theorem lift_le {a b : Cardinal.{v}} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
-  inductionOn₂ a b fun α β => by
-    rw [← lift_umax]
-    exact lift_mk_le.{u}
-
 -- Porting note: simpNF is not happy with universe levels.
 @[simp, nolint simpNF]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
@@ -339,32 +334,48 @@ theorem lift_mk_shrink'' (α : Type max u v) [Small.{v} α] :
     Cardinal.lift.{u} #(Shrink.{v} α) = #α := by
   rw [← lift_umax', lift_mk_shrink.{max u v, v, 0} α, ← lift_umax, lift_id]
 
-theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift.{v,u} a → ∃ a', lift.{v,u} a' = b :=
-  inductionOn₂ a b fun α β => by
-    rw [← lift_id #β, ← lift_umax, ← lift_umax.{u, v}, lift_mk_le.{v}]
-    exact fun ⟨f⟩ =>
-      ⟨#(Set.range f),
-        Eq.symm <| lift_mk_eq.{_, _, v}.2
-          ⟨Function.Embedding.equivOfSurjective (Embedding.codRestrict _ f Set.mem_range_self)
-              fun ⟨a, ⟨b, e⟩⟩ => ⟨b, Subtype.eq e⟩⟩⟩
+/-- `Cardinal.lift` as an `InitialSeg`. -/
+@[simps!]
+def liftInitialSeg : Cardinal.{u} ≤i Cardinal.{max u v} := by
+  refine ⟨(OrderEmbedding.ofMapLEIff lift ?_).ltEmbedding, ?_⟩ <;> intro a b
+  · refine inductionOn₂ a b fun _ _ ↦ ?_
+    rw [← lift_umax, lift_mk_le.{v, u, u}, le_def]
+  · refine inductionOn₂ a b fun α β h ↦ ?_
+    obtain ⟨e⟩ := h.le
+    replace e := e.congr (Equiv.refl β) Equiv.ulift
+    refine ⟨#(range e), mk_congr (Equiv.ulift.trans <| Equiv.symm ?_)⟩
+    apply (e.codRestrict _ mem_range_self).equivOfSurjective
+    rintro ⟨a, ⟨b, rfl⟩⟩
+    exact ⟨b, rfl⟩
 
--- Porting note: changed `simps` to `simps!` because the linter told to do so.
+theorem mem_range_of_le_lift {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
+    b ≤ lift.{v, u} a → b ∈ Set.range lift.{v, u} :=
+  liftInitialSeg.mem_range_of_le
+
+@[deprecated mem_range_of_le_lift (since := "2024-10-07")]
+theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
+    b ≤ lift.{v, u} a → ∃ a', lift.{v, u} a' = b :=
+  mem_range_of_le_lift
+
 /-- `Cardinal.lift` as an `OrderEmbedding`. -/
-@[simps! (config := .asFn)]
+@[deprecated Cardinal.liftInitialSeg (since := "2024-10-07")]
 def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
-  OrderEmbedding.ofMapLEIff lift.{u, v} fun _ _ => lift_le
+  liftInitialSeg.toOrderEmbedding
 
 theorem lift_injective : Injective lift.{u, v} :=
-  liftOrderEmbedding.injective
+  liftInitialSeg.injective
 
 @[simp]
 theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b :=
   lift_injective.eq_iff
 
 @[simp]
+theorem lift_le {a b : Cardinal.{v}} : lift.{u} a ≤ lift.{u} b ↔ a ≤ b :=
+  liftInitialSeg.le_iff_le
+
+@[simp]
 theorem lift_lt {a b : Cardinal.{u}} : lift.{v, u} a < lift.{v, u} b ↔ a < b :=
-  liftOrderEmbedding.lt_iff_lt
+  liftInitialSeg.lt_iff_lt
 
 theorem lift_strictMono : StrictMono lift := fun _ _ => lift_lt.2
 
@@ -386,18 +397,12 @@ theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
   rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
 
 theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift.{v, u} a ↔ ∃ a', lift.{v, u} a' = b ∧ a' ≤ a :=
-  ⟨fun h =>
-    let ⟨a', e⟩ := lift_down h
-    ⟨a', e, lift_le.1 <| e.symm ▸ h⟩,
-    fun ⟨_, e, h⟩ => e ▸ lift_le.2 h⟩
+    b ≤ lift.{v, u} a ↔ ∃ a' ≤ a, lift.{v, u} a' = b :=
+  liftInitialSeg.le_apply_iff
 
 theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b < lift.{v, u} a ↔ ∃ a', lift.{v, u} a' = b ∧ a' < a :=
-  ⟨fun h =>
-    let ⟨a', e⟩ := lift_down h.le
-    ⟨a', e, lift_lt.1 <| e.symm ▸ h⟩,
-    fun ⟨_, e, h⟩ => e ▸ lift_lt.2 h⟩
+    b < lift.{v, u} a ↔ ∃ a' < a, lift.{v, u} a' = b :=
+  liftInitialSeg.lt_apply_iff
 
 /-! ### Basic cardinals -/
 
@@ -439,8 +444,8 @@ instance : One Cardinal.{u} :=
 instance : Nontrivial Cardinal.{u} :=
   ⟨⟨1, 0, mk_ne_zero _⟩⟩
 
-theorem mk_eq_one (α : Type u) [Unique α] : #α = 1 :=
-  (Equiv.equivOfUnique α (ULift (Fin 1))).cardinal_eq
+theorem mk_eq_one (α : Type u) [Subsingleton α] [Nonempty α] : #α = 1 :=
+  let ⟨_⟩ := nonempty_unique α; (Equiv.equivOfUnique α (ULift (Fin 1))).cardinal_eq
 
 theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
   ⟨fun ⟨f⟩ => ⟨fun _ _ => f.injective (Subsingleton.elim _ _)⟩, fun ⟨h⟩ =>
@@ -527,8 +532,8 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
   add_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumAssoc α β γ
   add_comm a b := inductionOn₂ a b fun α β => mk_congr <| Equiv.sumComm α β
-  zero_mul a := inductionOn a fun α => mk_eq_zero _
-  mul_zero a := inductionOn a fun α => mk_eq_zero _
+  zero_mul a := inductionOn a fun _ => mk_eq_zero _
+  mul_zero a := inductionOn a fun _ => mk_eq_zero _
   one_mul a := inductionOn a fun α => mk_congr <| Equiv.uniqueProd α _
   mul_one a := inductionOn a fun α => mk_congr <| Equiv.prodUnique α _
   mul_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodAssoc α β γ
@@ -630,7 +635,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
     Cardinal.partialOrder with
     bot := 0
     bot_le := Cardinal.zero_le
-    add_le_add_left := fun a b => add_le_add_left
+    add_le_add_left := fun _ _ => add_le_add_left
     exists_add_of_le := fun {a b} =>
       inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
         have : α ⊕ ((range f)ᶜ : Set β) ≃ β := by
@@ -638,7 +643,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
           exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
             Equiv.Set.sumCompl (range f)
         ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-    le_self_add := fun a b => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
+    le_self_add := fun a _ => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
     eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
       inductionOn₂ a b fun α β => by
         simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
@@ -796,7 +801,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
 theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
   le_antisymm
     (le_of_not_gt fun h => by
-      rcases lt_lift_iff.1 h with ⟨b, e, h⟩
+      rcases lt_lift_iff.1 h with ⟨b, h, e⟩
       rw [lt_succ_iff, ← lift_le, e] at h
       exact h.not_lt (lt_succ _))
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
@@ -858,6 +863,34 @@ theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
 @[simp]
 theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
   mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
+
+theorem mk_sigma_congr_lift {ι : Type v} {ι' : Type v'} {f : ι → Type w} {g : ι' → Type w'}
+    (e : ι ≃ ι') (h : ∀ i, lift.{w'} #(f i) = lift.{w} #(g (e i))) :
+    lift.{max v' w'} #(Σ i, f i) = lift.{max v w} #(Σ i, g i) :=
+  Cardinal.lift_mk_eq'.2 ⟨.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.lift_mk_eq'.1 (h i)⟩
+
+theorem mk_sigma_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
+  mk_congr <| Equiv.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+/-- Similar to `mk_sigma_congr` with indexing types in different universes. This is not a strict
+generalization. -/
+theorem mk_sigma_congr' {ι : Type u} {ι' : Type v} {f : ι → Type max w (max u v)}
+    {g : ι' → Type max w (max u v)} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
+  mk_congr <| Equiv.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_sigma_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Σ i, f i) = #(Σ i, g i) :=
+  mk_sigma_congr (Equiv.refl ι) h
+
+theorem mk_psigma_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Σ' i, f i) = #(Σ' i, g i) :=
+  mk_congr <| .psigmaCongrRight fun i => Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_psigma_congrRight_prop {ι : Prop} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Σ' i, f i) = #(Σ' i, g i) :=
+  mk_congr <| .psigmaCongrRight fun i => Classical.choice <| Cardinal.eq.mp (h i)
 
 theorem mk_sigma_arrow {ι} (α : Type*) (f : ι → Type*) :
     #(Sigma f → α) = #(Π i, f i → α) := mk_congr <| Equiv.piCurry fun _ _ ↦ α
@@ -977,7 +1010,7 @@ instance small_Ioo (a b : Cardinal.{u}) : Small.{u} (Ioo a b) := small_subset Io
 
 /-- A set of cardinals is bounded above iff it's small, i.e. it corresponds to a usual ZFC set. -/
 theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :=
-  ⟨fun ⟨a, ha⟩ => @small_subset _ (Iic a) s (fun x h => ha h) _, by
+  ⟨fun ⟨a, ha⟩ => @small_subset _ (Iic a) s (fun _ h => ha h) _, by
     rintro ⟨ι, ⟨e⟩⟩
     suffices (range fun x : ι => (e.symm x).1) = s by
       rw [← this]
@@ -1018,7 +1051,7 @@ theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
   apply ((le_csSup_iff' (bddAbove_image.{_,u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
   · intro c hc
     by_contra h
-    obtain ⟨d, rfl⟩ := Cardinal.lift_down (not_le.1 h).le
+    obtain ⟨d, rfl⟩ := Cardinal.mem_range_of_le_lift (not_le.1 h).le
     simp_rw [lift_le] at h hc
     rw [csSup_le_iff' hs] at h
     exact h fun a ha => lift_le.1 <| hc (mem_image_of_mem _ ha)
@@ -1104,6 +1137,34 @@ def prod {ι : Type u} (f : ι → Cardinal) : Cardinal :=
 @[simp]
 theorem mk_pi {ι : Type u} (α : ι → Type v) : #(Π i, α i) = prod fun i => #(α i) :=
   mk_congr <| Equiv.piCongrRight fun _ => outMkEquiv.symm
+
+theorem mk_pi_congr_lift {ι : Type v} {ι' : Type v'} {f : ι → Type w} {g : ι' → Type w'}
+    (e : ι ≃ ι') (h : ∀ i, lift.{w'} #(f i) = lift.{w} #(g (e i))) :
+    lift.{max v' w'} #(Π i, f i) = lift.{max v w} #(Π i, g i) :=
+  Cardinal.lift_mk_eq'.2 ⟨.piCongr e fun i ↦ Classical.choice <| Cardinal.lift_mk_eq'.1 (h i)⟩
+
+theorem mk_pi_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
+  mk_congr <| Equiv.piCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_pi_congr_prop {ι ι' : Prop} {f : ι → Type v} {g : ι' → Type v} (e : ι ↔ ι')
+    (h : ∀ i, #(f i) = #(g (e.mp i))) : #(Π i, f i) = #(Π i, g i) :=
+  mk_congr <| Equiv.piCongr (.ofIff e) fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+/-- Similar to `mk_pi_congr` with indexing types in different universes. This is not a strict
+generalization. -/
+theorem mk_pi_congr' {ι : Type u} {ι' : Type v} {f : ι → Type max w (max u v)}
+    {g : ι' → Type max w (max u v)} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
+  mk_congr <| Equiv.piCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_pi_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Π i, f i) = #(Π i, g i) :=
+  mk_pi_congr (Equiv.refl ι) h
+
+theorem mk_pi_congrRight_prop {ι : Prop} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Π i, f i) = #(Π i, g i) :=
+  mk_pi_congr_prop Iff.rfl h
 
 @[simp]
 theorem prod_const (ι : Type u) (a : Cardinal.{v}) :
@@ -1331,7 +1392,7 @@ theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α :
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 
--- Porting note: was `simp`. LHS is not normal form.
+-- Porting note (#11119): was `simp`. LHS is not normal form.
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
@@ -1429,21 +1490,21 @@ theorem one_le_aleph0 : 1 ≤ ℵ₀ :=
 
 theorem lt_aleph0 {c : Cardinal} : c < ℵ₀ ↔ ∃ n : ℕ, c = n :=
   ⟨fun h => by
-    rcases lt_lift_iff.1 h with ⟨c, rfl, h'⟩
+    rcases lt_lift_iff.1 h with ⟨c, h', rfl⟩
     rcases le_mk_iff_exists_set.1 h'.1 with ⟨S, rfl⟩
     suffices S.Finite by
       lift S to Finset ℕ using this
       simp
     contrapose! h'
     haveI := Infinite.to_subtype h'
-    exact ⟨Infinite.natEmbedding S⟩, fun ⟨n, e⟩ => e.symm ▸ nat_lt_aleph0 _⟩
+    exact ⟨Infinite.natEmbedding S⟩, fun ⟨_, e⟩ => e.symm ▸ nat_lt_aleph0 _⟩
 
 lemma succ_eq_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : Order.succ c = c + 1 := by
   obtain ⟨n, hn⟩ := Cardinal.lt_aleph0.mp h
   rw [hn, succ_natCast]
 
 theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c :=
-  ⟨fun h n => (nat_lt_aleph0 _).le.trans h, fun h =>
+  ⟨fun h _ => (nat_lt_aleph0 _).le.trans h, fun h =>
     le_of_not_lt fun hn => by
       rcases lt_aleph0.1 hn with ⟨n, rfl⟩
       exact (Nat.lt_succ_self _).not_le (natCast_le.1 (h (n + 1)))⟩
@@ -1771,8 +1832,16 @@ theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : #s = 0 ↔ s = ∅ :
 theorem mk_univ {α : Type u} : #(@univ α) = #α :=
   mk_congr (Equiv.Set.univ α)
 
+@[simp] lemma mk_setProd {α β : Type u} (s : Set α) (t : Set β) : #(s ×ˢ t) = #s * #t := by
+  rw [mul_def, mk_congr (Equiv.Set.prod ..)]
+
 theorem mk_image_le {α β : Type u} {f : α → β} {s : Set α} : #(f '' s) ≤ #s :=
   mk_le_of_surjective surjective_onto_image
+
+lemma mk_image2_le {α β γ : Type u} {f : α → β → γ} {s : Set α} {t : Set β} :
+    #(image2 f s t) ≤ #s * #t := by
+  rw [← image_uncurry_prod, ← mk_setProd]
+  exact mk_image_le
 
 theorem mk_image_le_lift {α : Type u} {β : Type v} {f : α → β} {s : Set α} :
     lift.{u} #(f '' s) ≤ lift.{v} #s :=
@@ -1905,7 +1974,7 @@ theorem mk_union_le {α : Type u} (S T : Set α) : #(S ∪ T : Set α) ≤ #S + 
 theorem mk_union_of_disjoint {α : Type u} {S T : Set α} (H : Disjoint S T) :
     #(S ∪ T : Set α) = #S + #T := by
   classical
-  exact Quot.sound ⟨Equiv.Set.union H.le_bot⟩
+  exact Quot.sound ⟨Equiv.Set.union H⟩
 
 theorem mk_insert {α : Type u} {s : Set α} {a : α} (h : a ∉ s) :
     #(insert a s : Set α) = #s + 1 := by

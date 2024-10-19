@@ -142,22 +142,22 @@ noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
 noncomputable instance linearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero (ValueGroup A K) :=
   { linearOrder .. with
-    mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]; apply Setoid.refl'
-    one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]; apply Setoid.refl'
-    mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]; apply Setoid.refl'
-    mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]; apply Setoid.refl'
+    mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]
+    one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]
+    mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]
+    mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]
     mul_le_mul_left := by
       rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
       use c; simp only [Algebra.smul_def]; ring
-    zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]; apply Setoid.refl'
-    mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]; apply Setoid.refl'
+    zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]
+    mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]
     zero_le_one := ⟨0, by rw [zero_smul]⟩
     exists_pair_ne := by
       use 0, 1
       intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
       apply_fun fun t => d⁻¹ • t at hd
       simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
-    inv_zero := by apply Quotient.sound'; rw [inv_zero]; apply Setoid.refl'
+    inv_zero := by apply Quotient.sound'; rw [inv_zero]
     mul_inv_cancel := by
       rintro ⟨a⟩ ha
       apply Quotient.sound'
@@ -335,8 +335,8 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
   intro x y
   rw [Ideal.span_insert]
   rcases le_total (Ideal.span {x} : Ideal R) (Ideal.span {y}) with h | h
-  · erw [sup_eq_right.mpr h]; exact ⟨⟨_, rfl⟩⟩
-  · erw [sup_eq_left.mpr h]; exact ⟨⟨_, rfl⟩⟩
+  · rw [sup_eq_right.mpr h]; exact ⟨⟨_, rfl⟩⟩
+  · rw [sup_eq_left.mpr h]; exact ⟨⟨_, rfl⟩⟩
 
 instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
   classical

@@ -77,9 +77,9 @@ def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ ≃* (∀ i,
     ext a
     rw [smul_apply, symm_apply_apply, Perm.smul_def]
     apply comp_stabilizerEquiv_invFun⟩
-  left_inv g := rfl
+  left_inv _ := rfl
   right_inv g := by ext i a; apply stabilizerEquiv_invFun_eq
-  map_mul' g h := rfl
+  map_mul' _ _ := rfl
 
 variable {f}
 
@@ -139,7 +139,7 @@ theorem stabilizer_card':
       rw [refl_apply, ← Subtype.coe_inj]
       simp only [φ, Set.val_codRestrict_apply]
   · intro g
-    simp only [Function.funext_iff]
+    simp only [funext_iff]
     apply forall_congr'
     intro a
     simp only [Function.comp_apply, φ, ← Subtype.coe_inj, Set.val_codRestrict_apply]

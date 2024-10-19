@@ -62,7 +62,7 @@ variable [CancelMonoid α]
 -- not generalised.
 @[simp]
 theorem isConj_one_right {a : α} : IsConj 1 a ↔ a = 1 :=
-  ⟨fun ⟨c, hc⟩ => mul_right_cancel (hc.symm.trans ((mul_one _).trans (one_mul _).symm)), fun h => by
+  ⟨fun ⟨_, hc⟩ => mul_right_cancel (hc.symm.trans ((mul_one _).trans (one_mul _).symm)), fun h => by
     rw [h]⟩
 
 @[simp]
@@ -232,7 +232,7 @@ theorem mk_bijective : Function.Bijective (mkQ (Q := ConjClasses α)) :=
 
 /-- The bijection between a `CommGroup` and its `ConjClasses`. -/
 def mkEquiv : α ≃ ConjClasses α :=
-  ⟨mkQ, QuotLike.lift (r := IsConj) id fun (a : α) b => isConj_iff_eq.1, QuotLike.lift_mkQ _ _, by
+  ⟨mkQ, QuotLike.lift (r := IsConj) id fun (_ : α) _ => isConj_iff_eq.1, QuotLike.lift_mkQ _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_isConj]
     intro x
     rw [QuotLike.lift_mkQ, id]⟩
