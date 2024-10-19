@@ -3,9 +3,11 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
-import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Order.Lattice
+import Mathlib.Tactic.Contrapose
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Natural number logarithms
