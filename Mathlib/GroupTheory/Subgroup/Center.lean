@@ -120,7 +120,7 @@ end IsConj
 namespace ConjClasses
 
 theorem mk_bijOn (G : Type*) [Group G] :
-    Set.BijOn ConjClasses.mk (↑(Subgroup.center G)) (noncenter G)ᶜ := by
+    Set.BijOn mkQ (↑(Subgroup.center G)) (noncenter G)ᶜ := by
   refine ⟨fun g hg ↦ ?_, fun x hx y _ H ↦ ?_, ?_⟩
   · simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff]
     intro x hx y hy
