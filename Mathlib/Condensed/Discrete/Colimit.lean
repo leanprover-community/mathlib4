@@ -197,24 +197,24 @@ def fintypeCatAsCofanIsColimit (X : Profinite) [Finite X] :
 
 variable [PreservesFiniteProducts F]
 
-noncomputable instance (X : Profinite) [Fintype X] :
+noncomputable instance (X : Profinite) [Finite X] :
     PreservesLimitsOfShape (Discrete X) F :=
   let X' := (Countable.toSmall.{0} X).equiv_small.choose
   let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
-  have : Fintype X' := Fintype.ofEquiv X e
+  have : Finite X' := .of_equiv X e
   preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
-def isoFinYonedaComponents (X : Profinite.{u}) [Fintype X] :
+def isoFinYonedaComponents (X : Profinite.{u}) [Finite X] :
     F.obj ⟨X⟩ ≅ (X → F.obj ⟨Profinite.of PUnit.{u+1}⟩) :=
   (isLimitFanMkObjOfIsLimit F _ _
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
       (Types.productLimitCone.{u, u+1} fun _ ↦ F.obj ⟨Profinite.of PUnit.{u+1}⟩).2
 
-lemma isoFinYonedaComponents_hom_apply (X : Profinite.{u}) [Fintype X] (y : F.obj ⟨X⟩) (x : X) :
+lemma isoFinYonedaComponents_hom_apply (X : Profinite.{u}) [Finite X] (y : F.obj ⟨X⟩) (x : X) :
     (isoFinYonedaComponents F X).hom y x = F.map ((Profinite.of PUnit.{u+1}).const x).op y := rfl
 
-lemma isoFinYonedaComponents_inv_comp {X Y : Profinite.{u}} [Fintype X] [Fintype Y]
+lemma isoFinYonedaComponents_inv_comp {X Y : Profinite.{u}} [Finite X] [Finite Y]
     (f : Y → F.obj ⟨Profinite.of PUnit⟩) (g : X ⟶ Y) :
     (isoFinYonedaComponents F X).inv (f ∘ g) = F.map g.op ((isoFinYonedaComponents F Y).inv f) := by
   apply injective_of_mono (isoFinYonedaComponents F X).hom
@@ -476,17 +476,17 @@ noncomputable instance (X : FintypeCat.{u}) : PreservesLimitsOfShape (Discrete X
   preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
-def isoFinYonedaComponents (X : LightProfinite.{u}) [Fintype X] :
+def isoFinYonedaComponents (X : LightProfinite.{u}) [Finite X] :
     F.obj ⟨X⟩ ≅ (X → F.obj ⟨LightProfinite.of PUnit.{u+1}⟩) :=
   (isLimitFanMkObjOfIsLimit F _ _
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
       (Types.productLimitCone.{u, u} fun _ ↦ F.obj ⟨LightProfinite.of PUnit.{u+1}⟩).2
 
-lemma isoFinYonedaComponents_hom_apply (X : LightProfinite.{u}) [Fintype X] (y : F.obj ⟨X⟩)
+lemma isoFinYonedaComponents_hom_apply (X : LightProfinite.{u}) [Finite X] (y : F.obj ⟨X⟩)
     (x : X) : (isoFinYonedaComponents F X).hom y x =
       F.map ((LightProfinite.of PUnit.{u+1}).const x).op y := rfl
 
-lemma isoFinYonedaComponents_inv_comp {X Y : LightProfinite.{u}} [Fintype X] [Fintype Y]
+lemma isoFinYonedaComponents_inv_comp {X Y : LightProfinite.{u}} [Finite X] [Finite Y]
     (f : Y → F.obj ⟨LightProfinite.of PUnit⟩) (g : X ⟶ Y) :
     (isoFinYonedaComponents F X).inv (f ∘ g) = F.map g.op ((isoFinYonedaComponents F Y).inv f) := by
   apply injective_of_mono (isoFinYonedaComponents F X).hom
