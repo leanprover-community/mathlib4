@@ -514,7 +514,7 @@ lemma mk_π {X : C} (π : F.obj zero ⟶ X) (h : F.map left ≫ π = F.map right
     (mk π h).π = π := rfl
 
 lemma condition (G : ReflexiveCofork F) : F.map left ≫ G.π = F.map right ≫ G.π := by
-  erw [Cocone.w G left, Cocone.w G right]
+  rw [Cocone.w G left, Cocone.w G right]
 
 @[simp]
 lemma app_one_eq_π (G : ReflexiveCofork F) : G.ι.app zero = G.π := rfl

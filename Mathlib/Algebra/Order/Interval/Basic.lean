@@ -611,11 +611,8 @@ theorem length_sub_le : (s - t).length ≤ s.length + t.length := by
   simpa [sub_eq_add_neg] using length_add_le s (-t)
 
 theorem length_sum_le (f : ι → Interval α) (s : Finset ι) :
-    (∑ i ∈ s, f i).length ≤ ∑ i ∈ s, (f i).length := by
-  -- Porting note: Old proof was `:= Finset.le_sum_of_subadditive _ length_zero length_add_le _ _`
-  apply Finset.le_sum_of_subadditive
-  · exact length_zero
-  · exact length_add_le
+    (∑ i ∈ s, f i).length ≤ ∑ i ∈ s, (f i).length :=
+  Finset.le_sum_of_subadditive _ length_zero length_add_le _ _
 
 end Interval
 

@@ -198,11 +198,9 @@ def stalkClosedPointTo :
     X.presheaf.stalk (f.base (closedPoint R)) ⟶ R :=
   f.stalkMap (closedPoint R) ≫ (stalkClosedPointIso R).hom
 
-instance isLocalRingHom_stalkClosedPointTo :
-    IsLocalRingHom (stalkClosedPointTo f) := by
-  apply (config := { allowSynthFailures := true }) RingHom.isLocalRingHom_comp
-  · apply isLocalRingHom_of_iso
-  · apply f.prop
+instance isLocalHom_stalkClosedPointTo :
+    IsLocalHom (stalkClosedPointTo f) :=
+  inferInstanceAs <| IsLocalHom (f.stalkMap (closedPoint R) ≫ (stalkClosedPointIso R).hom)
 
 lemma preimage_eq_top_of_closedPoint_mem
     {U : Opens X} (hU : f.base (closedPoint R) ∈ U) : f ⁻¹ᵁ U = ⊤ :=
@@ -234,7 +232,7 @@ lemma germ_stalkClosedPointTo (U : Opens X) (hU : f.base (closedPoint R) ∈ U) 
 
 @[reassoc]
 lemma germ_stalkClosedPointTo_Spec_fromSpecStalk
-    {x : X} (f : X.presheaf.stalk x ⟶ R) [IsLocalRingHom f] (U : Opens X) (hU) :
+    {x : X} (f : X.presheaf.stalk x ⟶ R) [IsLocalHom f] (U : Opens X) (hU) :
     X.presheaf.germ U _ hU ≫ stalkClosedPointTo (Spec.map f ≫ X.fromSpecStalk x) =
       X.presheaf.germ U x (by simpa using hU) ≫ f := by
   have : (Spec.map f ≫ X.fromSpecStalk x).base (closedPoint R) = x := by
@@ -278,7 +276,7 @@ variable {R}
 omit [LocalRing R] in
 /-- useful lemma for applications of `SpecToEquivOfLocalRing` -/
 lemma SpecToEquivOfLocalRing_eq_iff
-    {f₁ f₂ : Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalRingHom f }} :
+    {f₁ f₂ : Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalHom f }} :
     f₁ = f₂ ↔ ∃ h₁ : f₁.1 = f₂.1, f₁.2.1 =
       (X.presheaf.stalkCongr (by rw [h₁]; rfl)).hom ≫ f₂.2.1 := by
   constructor
@@ -297,7 +295,7 @@ Given a local ring `R` and scheme `X`, morphisms `Spec R ⟶ X` corresponds to p
 @[simps]
 noncomputable
 def SpecToEquivOfLocalRing :
-    (Spec R ⟶ X) ≃ Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalRingHom f } where
+    (Spec R ⟶ X) ≃ Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalHom f } where
   toFun f := ⟨f.base (closedPoint R), Scheme.stalkClosedPointTo f, inferInstance⟩
   invFun xf := Spec.map xf.2.1 ≫ X.fromSpecStalk xf.1
   left_inv := Scheme.Spec_stalkClosedPointTo_fromSpecStalk

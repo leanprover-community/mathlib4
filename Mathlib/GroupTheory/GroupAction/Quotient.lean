@@ -329,8 +329,7 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
     have hx := x.property
     simp only [Set.mem_preimage, Set.mem_singleton_iff] at hx
     rwa [orbitRel.Quotient.mem_orbit, @Quotient.mk''_eq_mk]⟩⟧) fun a b h ↦ by
-      change Setoid.Rel _ _ _ at h
-      rw [Setoid.comap_rel, Setoid.Rel, ← Quotient.eq'', @Quotient.mk''_eq_mk] at h
+      rw [Setoid.comap_rel, ← Quotient.eq'', @Quotient.mk''_eq_mk] at h
       simp only [orbitRel.Quotient.subgroup_quotient_eq_iff]
       exact h
   left_inv := by
@@ -373,7 +372,7 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     orbitRel.Quotient H β ≃ α ⧸ H where
   toFun := fun q ↦ q.liftOn' (fun y ↦ (exists_smul_eq α y x).choose) (by
     intro y₁ y₂ h
-    rw [orbitRel_r_apply] at h
+    rw [orbitRel_apply] at h
     rw [Quotient.eq'', leftRel_eq]
     dsimp only
     rcases h with ⟨g, rfl⟩
@@ -389,12 +388,12 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     intro g₁ g₂ h
     rw [leftRel_eq] at h
     simp only
-    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_r_apply]
+    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     exact ⟨⟨_, h⟩, by simp [mul_smul]⟩)
   left_inv := fun y ↦ by
     induction' y using Quotient.inductionOn' with y
     simp only [Quotient.liftOn'_mk'']
-    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_r_apply]
+    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     convert mem_orbit_self _
     rw [inv_smul_eq_iff, (exists_smul_eq α y x).choose_spec]
   right_inv := fun g ↦ by
