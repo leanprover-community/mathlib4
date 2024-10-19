@@ -579,6 +579,19 @@ protected theorem liftOn₂'_mk'' (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (@Quotient.mk'' _ s₁ a) (@Quotient.mk'' _ s₂ b) f h = f a b :=
   rfl
 
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias ind' := Quotient.ind
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias ind₂' := Quotient.ind₂
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias inductionOn' :=
+  Quotient.inductionOn
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias inductionOn₂' :=
+  Quotient.inductionOn₂
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias inductionOn₃' :=
+  Quotient.inductionOn₃
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias recOnSubsingleton' :=
+  Quotient.recOnSubsingleton
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias recOnSubsingleton₂' :=
+  Quotient.recOnSubsingleton₂
+
 /-- Recursion on a `Quotient` argument `a`, result type depends on `⟦a⟧`. -/
 protected def hrecOn' {φ : Quotient s₁ → Sort*} (qa : Quotient s₁) (f : ∀ a, φ (Quotient.mk'' a))
     (c : ∀ a₁ a₂, a₁ ≈ a₂ → HEq (f a₁) (f a₂)) : φ qa :=
@@ -603,19 +616,6 @@ theorem hrecOn₂'_mk'' {φ : Quotient s₁ → Quotient s₂ → Sort*}
     (c : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) (x : α) (qb : Quotient s₂) :
     (Quotient.mk'' x).hrecOn₂' qb f c = qb.hrecOn' (f x) fun _ _ ↦ c _ _ _ _ (Setoid.refl _) :=
   rfl
-
-@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias ind' := Quotient.ind
-@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias ind₂' := Quotient.ind₂
-@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias inductionOn' :=
-  Quotient.inductionOn
-@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias inductionOn₂' :=
-  Quotient.inductionOn₂
-@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias inductionOn₃' :=
-  Quotient.inductionOn₃
-@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias recOnSubsingleton' :=
-  Quotient.recOnSubsingleton
-@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias recOnSubsingleton₂' :=
-  Quotient.recOnSubsingleton₂
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/
