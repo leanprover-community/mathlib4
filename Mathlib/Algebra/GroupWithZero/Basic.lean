@@ -148,14 +148,7 @@ lemma zero_pow_eq (n : ℕ) : (0 : M₀) ^ n = if n = 0 then 1 else 0 := by
   · rw [zero_pow h]
 
 lemma zero_pow_eq_one₀ [Nontrivial M₀] : (0 : M₀) ^ n = 1 ↔ n = 0 := by
-  constructor
-  · intro ha
-    induction n with
-    | zero => rfl
-    | succ n _ => simp at ha
-  intro h0
-  rw[zero_pow_eq]
-  exact if_pos h0
+  rw [zero_pow_eq, one_ne_zero.ite_eq_left_iff]
 
 lemma pow_eq_zero_of_le : ∀ {m n} (_ : m ≤ n) (_ : a ^ m = 0), a ^ n = 0
   | _, _, Nat.le.refl, ha => ha
@@ -401,19 +394,7 @@ lemma zero_zpow_eq (n : ℤ) : (0 : G₀) ^ n = if n = 0 then 1 else 0 := by
   · rw [zero_zpow _ h]
 
 lemma zero_zpow_eq_one₀ {n : ℤ} : (0 : G₀) ^ n = 1 ↔ n = 0 := by
-  constructor
-  · intro h
-    wlog hn : 0 ≤ n
-    rw [← Int.neg_eq_zero]
-    apply this (G₀ := G₀)
-    · simpa
-    · omega
-    have : n.toNat = 0 := zero_pow_eq_one₀ (M₀ := G₀).mp <| by
-      rwa [← zpow_natCast, Int.toNat_of_nonneg hn]
-    omega
-  · intro h
-    rw [h]
-    exact zpow_zero 0
+  rw [zero_zpow_eq, one_ne_zero.ite_eq_left_iff]
 
 lemma zpow_add_one₀ (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
   | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
