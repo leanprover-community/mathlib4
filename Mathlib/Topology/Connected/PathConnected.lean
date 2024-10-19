@@ -1154,7 +1154,7 @@ theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
   (path_connected_basis x).hasBasis_self_subset (IsOpen.mem_nhds h hx)
 
-theorem OpenEmbedding.locPathConnectedSpace {e : Y → X} (he : OpenEmbedding e) :
+theorem IsOpenEmbedding.locPathConnectedSpace {e : Y → X} (he : IsOpenEmbedding e) :
     LocPathConnectedSpace Y :=
   have (y : Y) :
       (𝓝 y).HasBasis (fun s ↦ s ∈ 𝓝 (e y) ∧ IsPathConnected s ∧ s ⊆ range e) (e ⁻¹' ·) :=
@@ -1162,8 +1162,11 @@ theorem OpenEmbedding.locPathConnectedSpace {e : Y → X} (he : OpenEmbedding e)
   .of_bases this fun x s ⟨_, hs, hse⟩ ↦ by
     rwa [he.isPathConnected_iff, image_preimage_eq_of_subset hse]
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.locPathConnectedSpace := IsOpenEmbedding.locPathConnectedSpace
+
 theorem IsOpen.locPathConnectedSpace {U : Set X} (h : IsOpen U) : LocPathConnectedSpace U :=
-  (openEmbedding_subtype_val h).locPathConnectedSpace
+  (isOpenEmbedding_subtypeVal h).locPathConnectedSpace
 
 @[deprecated (since := "2024-10-17")]
 alias locPathConnected_of_isOpen := IsOpen.locPathConnectedSpace
