@@ -17,7 +17,7 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type*}
+variable {α : Type u}
 
 -- see Note [lower instance priority]
 instance (priority := 10) CanonicallyOrderedAdd.toZeroLEOneClass

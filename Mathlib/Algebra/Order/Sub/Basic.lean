@@ -17,7 +17,7 @@ variable {α : Type*}
 section CanonicallyOrderedAddCommMonoid
 
 variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
-  [Sub α] [OrderedSub α] {a b c d : α}
+  [Sub α] [OrderedSub α] {a b c : α}
 
 theorem add_tsub_cancel_iff_le : a + (b - a) = b ↔ a ≤ b :=
   ⟨fun h => le_iff_exists_add.mpr ⟨b - a, h.symm⟩, add_tsub_cancel_of_le⟩
@@ -32,8 +32,6 @@ theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
   rw [← nonpos_iff_eq_zero, tsub_le_iff_left, add_zero]
 
 alias ⟨_, tsub_eq_zero_of_le⟩ := tsub_eq_zero_iff_le
-
-attribute [simp] tsub_eq_zero_of_le
 
 theorem tsub_self (a : α) : a - a = 0 :=
   tsub_eq_zero_of_le le_rfl
@@ -107,7 +105,7 @@ end CanonicallyOrderedAddCommMonoid
 section CanonicallyLinearOrderedAddCommMonoid
 
 variable [LinearOrderedAddCommMonoid α] [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
-  {a b c d : α}
+  {a b c : α}
 
 @[simp]
 theorem tsub_pos_iff_lt : 0 < a - b ↔ b < a := by rw [tsub_pos_iff_not_le, not_le]

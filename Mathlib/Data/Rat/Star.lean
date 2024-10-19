@@ -3,10 +3,12 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Yaël Dillies
 -/
+import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.NNRat.Order
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Star ordered ring structures on `ℚ` and `ℚ≥0`

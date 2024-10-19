@@ -214,8 +214,7 @@ theorem odd_induction {P : ∀ x, x ∈ evenOdd Q 1 → Prop}
             (zero_add (1 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 1) : P x hx := by
   refine evenOdd_induction _ _ (motive := P) (fun ιv => ?_) add ι_mul_ι_mul x hx
-  -- Porting note: was `simp_rw [ZMod.val_one, pow_one]`, lean4#1926
-  intro h; rw [ZMod.val_one, pow_one] at h; revert h
+  simp_rw [ZMod.val_one, pow_one]
   rintro ⟨v, rfl⟩
   exact ι v
 
