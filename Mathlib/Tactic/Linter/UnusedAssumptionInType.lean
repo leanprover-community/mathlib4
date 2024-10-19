@@ -51,6 +51,17 @@ def checkUnusedAssumptionInType (declInfo : ConstantInfo) (typesToAvoid : Array 
   if impossibleArgs.isEmpty then return none
   return some <| .joinSep (impossibleArgs.toList.map Prod.snd) ", "
 
+@[env_linter] def allOfThem : Linter where
+  noErrorsFound := "No uses of `XXX` arguments should be replaced with `YYY`"
+  errorsFound := "USES OF `XXX` SHOULD BE REPLACED WITH `YYY` IN THE PROOF."
+  test declName := do
+    if (← isAutoDecl declName) then return none
+    else if Name.isPrefixOf `Decidable declName || Name.isPrefixOf `Encodable declName then
+      return none
+    let names := #[`Decidable, `DecidableEq, `DecidablePred, `Inhabited, `Fintype, `Encodable]
+    return ← checkUnusedAssumptionInType (← getConstInfo declName) names
+
+/--/
 /--
 Linter that checks for theorems that assume `[Decidable p]`
 but don't use this assumption in the type.
@@ -99,5 +110,6 @@ but don't use this assumption in the type.
     if (← isAutoDecl declName) then return none
     else if Name.isPrefixOf `Encodable declName then return none
     return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Encodable]
+-/
 
 end Batteries.Tactic.Lint
