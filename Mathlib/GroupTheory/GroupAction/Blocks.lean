@@ -38,6 +38,7 @@ that contain a given point is a block
 We follow [Wielandt-1964].
 -/
 
+open Set
 open scoped Pointwise
 
 namespace MulAction
@@ -156,7 +157,7 @@ variable {G : Type*} [Group G] {X : Type*} [MulAction G X] {B : Set X}
 lemma isBlock_iff_disjoint_smul_of_ne :
     IsBlock G B ↔ ∀ ⦃g : G⦄, g • B ≠ B → Disjoint (g • B) B := by
   refine ⟨fun hB g ↦ by simpa using hB (g₂ := 1), fun hB g₁ g₂ h ↦ ?_⟩
-  simp only [disjoint_smul_right, ne_eq, ← inv_smul_eq_iff, smul_smul] at h ⊢
+  simp only [disjoint_smul_set_right, ne_eq, ← inv_smul_eq_iff, smul_smul] at h ⊢
   exact hB h
 
 @[to_additive]
