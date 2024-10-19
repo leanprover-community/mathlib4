@@ -173,9 +173,7 @@ theorem of_continuous_id [ContinuousAdd A] [ContinuousSMul R A]
 
 /-- The zero module has the module topology. -/
 instance instSubsingleton [Subsingleton A] : IsModuleTopology R A where
-  eq_moduleTopology' := by
-    ext U
-    simp only [isOpen_discrete]
+  eq_moduleTopology' := Subsingleton.elim _ _
 
 end basics
 
