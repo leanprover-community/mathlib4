@@ -136,10 +136,10 @@ def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     fun x y hxy ↦ Prod.ext (by simpa using hxy.1) (by simpa using hxy.2)
   left_inv := fun q ↦ by
     rcases q with ⟨qa, qb⟩
-    exact Quotient.inductionOn₂' qa qb fun _ _ ↦ rfl
+    exact Quotient.inductionOn₂ qa qb fun _ _ ↦ rfl
   right_inv := fun q ↦ by
     simp only
-    refine Quotient.inductionOn' q fun _ ↦ rfl
+    refine Quotient.inductionOn q fun _ ↦ rfl
 
 /-- A bijection between an indexed product of quotients and the quotient by the product of the
 equivalence relations. -/
@@ -154,7 +154,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
     ext i
     simp
   right_inv := fun q ↦ by
-    refine Quotient.inductionOn' q fun _ ↦ ?_
+    refine Quotient.inductionOn q fun _ ↦ ?_
     simp only [Quotient.liftOn'_mk'', Quotient.eq'']
     intro i
     change Setoid.r _ _

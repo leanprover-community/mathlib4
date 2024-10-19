@@ -83,7 +83,7 @@ instance rTensor_nontrivial
       Submodule.mem_annihilator_span_singleton, I] using hr
   have injective_inc : Function.Injective inc := LinearMap.ker_eq_bot.1 <| eq_bot_iff.2 <| by
     intro r hr
-    induction r using Quotient.inductionOn' with | h r =>
+    induction r using Quotient.inductionOn with | h r =>
     simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.mem_bot, Submodule.Quotient.mk_eq_zero,
       Submodule.mem_annihilator_span_singleton, LinearMap.mem_ker, Submodule.liftQ_apply,
       LinearMap.flip_apply, LinearMap.lsmul_apply, I, inc] using hr
