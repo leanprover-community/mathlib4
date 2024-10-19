@@ -20,7 +20,7 @@ variable {α : Type*} [LinearOrderedSemifield α] [CanonicallyOrderedAdd α]
 abbrev CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero α :=
   { ‹LinearOrderedSemifield α› with
-    mul_le_mul_left := fun a b h c ↦ mul_le_mul_of_nonneg_left h <| zero_le _ }
+    mul_le_mul_left := fun _ _ h _ ↦ mul_le_mul_of_nonneg_left h <| zero_le _ }
 
 variable [Sub α] [OrderedSub α]
 

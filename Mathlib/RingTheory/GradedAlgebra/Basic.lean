@@ -310,10 +310,6 @@ theorem coe_decompose_mul_of_right_mem_of_not_le (b_mem : b ∈ 𝒜 i) (h : ¬i
   lift b to 𝒜 i using b_mem
   rwa [decompose_mul, decompose_coe, coe_mul_of_apply_of_not_le]
 
-end DirectSum
-
-namespace DirectSum
-
 variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·)]
 
 theorem coe_decompose_mul_of_left_mem_of_le (a_mem : a ∈ 𝒜 i) (h : i ≤ n) :
