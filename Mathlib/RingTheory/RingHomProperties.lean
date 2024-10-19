@@ -185,9 +185,11 @@ lemma toMorphismProperty_respectsIso_iff :
   · intro X Y Z e f hf
     exact h.left f e.commRingCatIsoToRingEquiv hf
   · intro X Y Z _ _ _ f e hf
-    exact h.postcomp e.toCommRingCatIso.hom (CommRingCat.ofHom f) hf
+    exact MorphismProperty.RespectsIso.postcomp (toMorphismProperty P)
+      e.toCommRingCatIso.hom (CommRingCat.ofHom f) hf
   · intro X Y Z _ _ _ f e
-    exact h.precomp e.toCommRingCatIso.hom (CommRingCat.ofHom f)
+    exact MorphismProperty.RespectsIso.precomp (toMorphismProperty P)
+      e.toCommRingCatIso.hom (CommRingCat.ofHom f)
 
 end ToMorphismProperty
 

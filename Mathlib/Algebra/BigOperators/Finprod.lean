@@ -5,7 +5,7 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.FiniteSupport
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Set.Subsingleton
 

@@ -68,9 +68,9 @@ Generally you should just use `limit.isLimit F`, unless you need the actual defi
 def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v,u} F) where
   lift S :=
     { toFun := fun x =>
-        ⟨fun j => S.π.app _ x, fun f => by
+        ⟨fun _ => S.π.app _ x, fun f => by
           dsimp
-          erw [← S.w f]
+          rw [← S.w f]
           rfl⟩
       continuous_toFun :=
         Continuous.subtype_mk (continuous_pi fun j => (S.π.app j).2) fun x i j f => by
