@@ -237,7 +237,7 @@ lemma fromSpecResidueField_apply (x : X.carrier) (s : Spec (X.residueField x)) :
     (X.fromSpecResidueField x).base s = x := by
   simp [fromSpecResidueField]
 
-lemma range_fromSpecResidueField  (x : X.carrier) :
+lemma range_fromSpecResidueField (x : X.carrier) :
     Set.range (X.fromSpecResidueField x).base = {x} := by
   ext s
   simp only [Set.mem_range, fromSpecResidueField_apply, Set.mem_singleton_iff, eq_comm (a := s)]
@@ -252,10 +252,6 @@ lemma descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Scheme) {
     Spec.map (X.descResidueField f) ≫
       X.fromSpecResidueField x = Spec.map f ≫ X.fromSpecStalk x := by
   simp [fromSpecResidueField, ← Spec.map_comp_assoc]
-
-instance {R : CommRingCat} [LocalRing R] (f : Spec R ⟶ X) :
-    IsLocalHom (F := X.presheaf.stalk _ →+* R) (stalkClosedPointTo f) :=
-  isLocalHom_stalkClosedPointTo f
 
 lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
     (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec (.of K) ⟶ X) :
