@@ -19,10 +19,21 @@ normed spaces to toplogical spaces.
 This frees the user from having to chose a canonical norm, at the expense of having to pick a
 specific base ring.
 
+This definition was added to the library in order to migrate Fréchet derivatives
+from normed vector spaces to topological vector spaces.
+The definition is motivated by
+https://en.wikipedia.org/wiki/Fr%C3%A9chet_derivative#Generalization_to_topological_vector_spaces
+but the definition there doesn't work for topological vector spaces over general normed fields.
+For the discussion that lead to the current choice of the definition, see
+https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/generalizing.20deriv.20to.20TVS
+
 ## Main results
 
 * `isLittleOTVS_iff_isLittleO`: the equivalence between these two definitions in the case of a
   normed space.
+
+* `isLittleOTVS_iff_tendsto_inv_smul`: the equivalence to convergence of the ratio to zero
+  in case of a topological vector space.
 
 ## TODO
 
@@ -93,7 +104,7 @@ lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] {f : α → E} {l : Filter α} :
       (ε : ℝ≥0∞) * egauge 𝕜 (ball (0 : 𝕜) r) 1 ≤ (ε * ‖c‖₊ / r : ℝ≥0∞) := by
         rw [mul_div_assoc]
         gcongr
-        simpa using egauge_ball_le_of_one_lt_norm (r := r) (E := 𝕜) hc (.inr one_ne_zero)
+        simpa using egauge_ball_le_of_one_lt_norm (r := r) (x := (1 : 𝕜)) hc (by simp)
       _ < 1 := ‹_›
   · intro hf U hU
     refine ⟨ball 0 1, ball_mem_nhds _ one_pos, fun ε hε ↦ ?_⟩
@@ -149,7 +160,7 @@ lemma isLittleOTVS_iff_tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜
     gcongr
     apply le_egauge_ball_one
 
-lemma isLittleOTVS_iff_isLittleO {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
+lemma isLittleOTVS_iff_isLittleO {E F : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
     [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {f : α → E} {g : α → F} {l : Filter α} :
     IsLittleOTVS 𝕜 f g l ↔ f =o[l] g := by
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc : 1 < ‖c‖₊⟩
