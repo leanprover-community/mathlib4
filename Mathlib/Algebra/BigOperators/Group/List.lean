@@ -13,6 +13,7 @@ import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Join
+import Mathlib.Data.List.ProdSigma
 
 /-!
 # Sums and products from lists
