@@ -429,7 +429,7 @@ theorem submodulesRingBasis : SubmodulesRingBasis
 instance : TopologicalSpace (FiniteAdeleRing R K) :=
   SubmodulesRingBasis.topology (submodulesRingBasis R K)
 
--- the point of the above: this now works
+-- the point of `submodulesRingBasis` above: this now works
 example : TopologicalRing (FiniteAdeleRing R K) := inferInstance
 
 end Topology
