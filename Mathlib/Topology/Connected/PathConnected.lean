@@ -85,12 +85,6 @@ instance Path.funLike : FunLike (Path x y) I X where
 instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
   map_continuous γ := show Continuous γ.toContinuousMap by fun_prop
 
--- Porting note: not necessary in light of the instance above
-/-
-instance : CoeFun (Path x y) fun _ => I → X :=
-  ⟨fun p => p.toFun⟩
--/
-
 @[ext]
 protected theorem Path.ext : ∀ {γ₁ γ₂ : Path x y}, (γ₁ : I → X) = γ₂ → γ₁ = γ₂ := by
   rintro ⟨⟨x, h11⟩, h12, h13⟩ ⟨⟨x, h21⟩, h22, h23⟩ rfl
@@ -854,6 +848,24 @@ theorem Joined.mem_pathComponent (hyz : Joined y z) (hxy : y ∈ pathComponent x
     z ∈ pathComponent x :=
   hxy.trans hyz
 
+theorem mem_pathComponentIn_self (h : x ∈ F) : x ∈ pathComponentIn x F :=
+  JoinedIn.refl h
+
+theorem pathComponentIn_subset : pathComponentIn x F ⊆ F :=
+  fun _ hy ↦ hy.target_mem
+
+theorem pathComponentIn_nonempty_iff : (pathComponentIn x F).Nonempty ↔ x ∈ F :=
+  ⟨fun ⟨_, ⟨γ, hγ⟩⟩ ↦ γ.source ▸ hγ 0, fun hx ↦ ⟨x, mem_pathComponentIn_self hx⟩⟩
+
+theorem pathComponentIn_congr (h : x ∈ pathComponentIn y F) :
+    pathComponentIn x F = pathComponentIn y F := by
+  ext; exact ⟨h.trans, h.symm.trans⟩
+
+@[gcongr]
+theorem pathComponentIn_mono {G : Set X} (h : F ⊆ G) :
+    pathComponentIn x F ⊆ pathComponentIn x G :=
+  fun _ ⟨γ, hγ⟩ ↦ ⟨γ, fun t ↦ h (hγ t)⟩
+
 /-! ### Path connected sets -/
 
 
@@ -919,10 +931,25 @@ theorem IsPathConnected.mem_pathComponent (h : IsPathConnected F) (x_in : x ∈ 
 theorem IsPathConnected.subset_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) :
     F ⊆ pathComponent x := fun _y y_in => h.mem_pathComponent x_in y_in
 
+theorem IsPathConnected.subset_pathComponentIn {s : Set X} (hs : IsPathConnected s)
+    (hxs : x ∈ s) (hsF : s ⊆ F) : s ⊆ pathComponentIn x F :=
+  fun y hys ↦ (hs.joinedIn x hxs y hys).mono hsF
+
 theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
   refine ⟨x, rfl, ?_⟩
   rintro y rfl
   exact JoinedIn.refl rfl
+
+theorem isPathConnected_pathComponentIn (h : x ∈ F) : IsPathConnected (pathComponentIn x F) :=
+  ⟨x, mem_pathComponentIn_self h, fun ⟨γ, hγ⟩ ↦ by
+    refine ⟨γ, fun t ↦
+      ⟨(γ.truncateOfLE t.2.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm, fun t' ↦ ?_⟩⟩
+    dsimp [Path.truncateOfLE, Path.truncate]
+    exact γ.extend_extends' ⟨min (max t'.1 0) t.1, by simp [t.2.1, t.2.2]⟩ ▸ hγ _⟩
+
+theorem isPathConnected_pathComponent : IsPathConnected (pathComponent x) := by
+  rw [← pathComponentIn_univ]
+  exact isPathConnected_pathComponentIn (mem_univ x)
 
 theorem IsPathConnected.union {U V : Set X} (hU : IsPathConnected U) (hV : IsPathConnected V)
     (hUV : (U ∩ V).Nonempty) : IsPathConnected (U ∪ V) := by
@@ -1160,7 +1187,7 @@ theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
   (path_connected_basis x).hasBasis_self_subset (IsOpen.mem_nhds h hx)
 
-theorem OpenEmbedding.locPathConnectedSpace {e : Y → X} (he : OpenEmbedding e) :
+theorem IsOpenEmbedding.locPathConnectedSpace {e : Y → X} (he : IsOpenEmbedding e) :
     LocPathConnectedSpace Y :=
   have (y : Y) :
       (𝓝 y).HasBasis (fun s ↦ s ∈ 𝓝 (e y) ∧ IsPathConnected s ∧ s ⊆ range e) (e ⁻¹' ·) :=
@@ -1168,8 +1195,11 @@ theorem OpenEmbedding.locPathConnectedSpace {e : Y → X} (he : OpenEmbedding e)
   .of_bases this fun x s ⟨_, hs, hse⟩ ↦ by
     rwa [he.isPathConnected_iff, image_preimage_eq_of_subset hse]
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.locPathConnectedSpace := IsOpenEmbedding.locPathConnectedSpace
+
 theorem IsOpen.locPathConnectedSpace {U : Set X} (h : IsOpen U) : LocPathConnectedSpace U :=
-  (openEmbedding_subtype_val h).locPathConnectedSpace
+  (isOpenEmbedding_subtypeVal h).locPathConnectedSpace
 
 @[deprecated (since := "2024-10-17")]
 alias locPathConnected_of_isOpen := IsOpen.locPathConnectedSpace

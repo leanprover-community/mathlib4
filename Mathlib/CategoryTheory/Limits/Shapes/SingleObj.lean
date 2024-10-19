@@ -75,7 +75,7 @@ variable {G : Type v} [Group G] (J : SingleObj G ⥤ Type u)
 equivalent to the `MulAction.orbitRel` equivalence relation on `J.obj (SingleObj.star G)`. -/
 lemma Types.Quot.Rel.iff_orbitRel (x y : J.obj (SingleObj.star G)) :
     Types.Quot.Rel J ⟨SingleObj.star G, x⟩ ⟨SingleObj.star G, y⟩
-    ↔ Setoid.Rel (MulAction.orbitRel G (J.obj (SingleObj.star G))) x y := by
+    ↔ MulAction.orbitRel G (J.obj (SingleObj.star G)) x y := by
   have h (g : G) : y = g • x ↔ g • x = y := ⟨symm, symm⟩
   conv => rhs; rw [Setoid.comm']
   show (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)

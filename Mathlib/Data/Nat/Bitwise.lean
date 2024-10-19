@@ -92,12 +92,12 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
 @[simp]
 lemma bit_mod_two_eq_zero_iff (a x) :
     bit a x % 2 = 0 ↔ !a := by
-  rw [bit_mod_two]; split_ifs <;> simp_all
+  simp [bit_mod_two]
 
 @[simp]
 lemma bit_mod_two_eq_one_iff (a x) :
     bit a x % 2 = 1 ↔ a := by
-  rw [bit_mod_two]; split_ifs <;> simp_all
+  simp [bit_mod_two]
 
 @[simp]
 theorem lor_bit : ∀ a m b n, bit a m ||| bit b n = bit (a || b) (m ||| n) :=

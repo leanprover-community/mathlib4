@@ -119,7 +119,7 @@ protected lemma IsInitSeg.shadow [Finite α] (h₁ : IsInitSeg 𝒜 r) : IsInitS
 end Colex
 
 open Finset Colex Nat UV
-open scoped BigOperators FinsetFamily
+open scoped FinsetFamily
 
 variable {α : Type*} [LinearOrder α] {s U V : Finset α} {n : ℕ}
 
