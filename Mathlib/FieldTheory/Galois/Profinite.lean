@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yuyang Zhao, Jujian Zhang
 -/
 
+import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.Galois.GaloisClosure
 import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
