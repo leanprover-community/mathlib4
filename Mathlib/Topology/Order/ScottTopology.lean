@@ -177,7 +177,7 @@ variable {α D}
 
 lemma isOpen_iff [IsScottHausdorff α D] :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
-      a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by erw [topology_eq_scottHausdorff (α := α) (D := D)]; rfl
+      a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by rw [topology_eq_scottHausdorff (α := α) (D := D)]; rfl
 
 lemma dirSupInaccOn_of_isOpen [IsScottHausdorff α D] (h : IsOpen s) : DirSupInaccOn D s :=
   fun d hd₀ hd₁ hd₂ a hda hd₃ ↦ by
@@ -241,7 +241,7 @@ lemma topology_eq [IsScott α D] : ‹_› = scott α D := topology_eq_scott
 variable {α} {D} {s : Set α} {a : α}
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open [IsScott α D] :
-    IsOpen s ↔ IsUpperSet s ∧ IsOpen[scottHausdorff α D] s := by erw [topology_eq α D]; rfl
+    IsOpen s ↔ IsUpperSet s ∧ IsOpen[scottHausdorff α D] s := by rw [topology_eq α D]; rfl
 
 lemma isOpen_iff_isUpperSet_and_dirSupInaccOn [IsScott α D] :
     IsOpen s ↔ IsUpperSet s ∧ DirSupInaccOn D s := by
