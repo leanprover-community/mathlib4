@@ -98,7 +98,8 @@ lemma fac (i : ι) :
   simp only [comp_id]
   apply GlueData.sheafValGluedMk_val
 
-/-- Temporary comment since this has a `'` in the name -/
+/-- Rephasing of `fac` as equalities of sections of the target sheaf `F` over
+any scheme `V` equipped with a morphism `V ⟶ X i`. -/
 lemma fac' {i : ι} {V : Scheme.{u}} (a : V ⟶ X i) :
     (yonedaGluedToSheaf hf).val.app _ (a ≫ toGlued hf i) =
       yonedaEquiv (yoneda.map a ≫ f i) := by
