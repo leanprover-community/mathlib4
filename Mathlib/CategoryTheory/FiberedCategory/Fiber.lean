@@ -17,7 +17,7 @@ In this file we define, for a functor `p : 𝒳 ⥤ 𝒴`, the fiber categories 
 - A morphism in `Fiber p S` is a morphism `φ : a ⟶ b` in 𝒳 such that `p.map φ = 𝟙 S`.
 
 For any category `C` equipped with a functor `F : C ⥤ 𝒳` such that `F ⋙ p` is constant at `S`,
-we define a functor `InducedFunctor : C ⥤ Fiber p S` that `F` factors through.
+we define a functor `inducedFunctor : C ⥤ Fiber p S` that `F` factors through.
 -/
 
 universe v₁ u₁ v₂ u₂ v₃ u₃
