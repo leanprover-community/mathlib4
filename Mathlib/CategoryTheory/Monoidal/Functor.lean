@@ -959,6 +959,27 @@ lemma map_μ_comp_counit_app_tensor (X Y : D) :
   rw [IsMonoidal.leftAdjoint_μ (adj := adj), homEquiv_unit]
   simp
 
+instance : (Adjunction.id (C := C)).IsMonoidal where
+  leftAdjoint_ε := by simp [id, homEquiv]
+  leftAdjoint_μ := by simp [id, homEquiv]
+
+instance isMonoidal_comp {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
+  [F'.OplaxMonoidal] [G'.LaxMonoidal] [adj'.IsMonoidal] : (adj.comp adj').IsMonoidal where
+  leftAdjoint_ε := by
+    dsimp [homEquiv]
+    rw [← adj.unit_app_unit_comp_map_η, ← adj'.unit_app_unit_comp_map_η,
+      assoc, comp_unit_app, assoc, ← Functor.map_comp,
+      ← adj'.unit_naturality_assoc, ← map_comp, ← map_comp]
+  leftAdjoint_μ X Y := by
+    apply ((adj.comp adj').homEquiv _ _).symm.injective
+    erw [Equiv.symm_apply_apply]
+    dsimp [homEquiv]
+    rw [comp_counit_app, comp_counit_app, comp_counit_app, assoc, tensor_comp, δ_natural_assoc]
+    dsimp
+    rw [← adj'.map_μ_comp_counit_app_tensor, ← map_comp_assoc, ← map_comp_assoc,
+      ← map_comp_assoc, ← adj.map_μ_comp_counit_app_tensor, assoc,
+      F.map_comp_assoc, counit_naturality]
+
 end Adjunction
 
 namespace Equivalence
@@ -1033,9 +1054,15 @@ lemma counitIso_inv_app_tensor_comp_functor_map_δ_inverse (X Y : C) :
   simp [← cancel_epi (e.unitIso.hom.app (X ⊗ Y)), Functor.map_comp,
     unitIso_hom_app_tensor_comp_inverse_map_δ_functor_assoc]
 
+instance : (refl (C := C)).functor.Monoidal := inferInstanceAs (𝟭 C).Monoidal
+instance : (refl (C := C)).inverse.Monoidal := inferInstanceAs (𝟭 C).Monoidal
+
+/-- The obvious auto-equivalence of a monoidal category is monoidal. -/
+instance isMonoidal_refl : (Equivalence.refl (C := C)).IsMonoidal :=
+  inferInstanceAs (Adjunction.id (C := C)).IsMonoidal
+
 /-- The inverse of a monoidal category equivalence is also a monoidal category equivalence. -/
-instance isMonoidal_symm [e.inverse.Monoidal] [e.IsMonoidal] :
-    e.symm.IsMonoidal where
+instance isMonoidal_symm : e.symm.IsMonoidal where
   leftAdjoint_ε := by
     simp only [toAdjunction, Adjunction.homEquiv_unit]
     dsimp [symm]
@@ -1047,6 +1074,25 @@ instance isMonoidal_symm [e.inverse.Monoidal] [e.IsMonoidal] :
       ← Functor.map_comp, ← tensor_comp, Iso.hom_inv_id_app, Iso.hom_inv_id_app]
     dsimp
     rw [tensorHom_id, id_whiskerRight, map_id, comp_id]
+
+section
+
+variable (e' : D ≌ E)
+
+instance [e'.functor.Monoidal] : (e.trans e').functor.Monoidal :=
+  inferInstanceAs (e.functor ⋙ e'.functor).Monoidal
+
+instance [e'.inverse.Monoidal] : (e.trans e').inverse.Monoidal :=
+  inferInstanceAs (e'.inverse ⋙ e.inverse).Monoidal
+
+/-- The composition of two monoidal category equivalences is monoidal. -/
+instance isMonoidal_trans [e'.functor.Monoidal] [e'.inverse.Monoidal] [e'.IsMonoidal] :
+    (e.trans e').IsMonoidal := by
+  dsimp [Equivalence.IsMonoidal]
+  rw [trans_toAdjunction]
+  infer_instance
+
+end
 
 end Equivalence
 
