@@ -133,12 +133,12 @@ theorem ModuleTopology.continuousSMul : @ContinuousSMul R A _ _ (moduleTopology 
      to show it's a lower bound, which is not hard. All this is wrapped into
      `continuousSMul_sInf`.
   -/
-  continuousSMul_sInf <| fun _ _ ↦ by simp_all only [Set.mem_setOf_eq]
+  continuousSMul_sInf fun _ h ↦ h.1
 
 /-- Addition `+ : A × A → A` is continuous if `R` is a topological
 ring, and `A` is an `R` module with the module topology. -/
 theorem ModuleTopology.continuousAdd : @ContinuousAdd A (moduleTopology R A) _ :=
-  continuousAdd_sInf <| fun _ _ ↦ by simp_all only [Set.mem_setOf_eq]
+  continuousAdd_sInf fun _ h ↦ h.2
 
 instance IsModuleTopology.toContinuousSMul [TopologicalSpace A] [IsModuleTopology R A] :
     ContinuousSMul R A := eq_moduleTopology R A ▸ ModuleTopology.continuousSMul R A
