@@ -1632,7 +1632,7 @@ instance : TopologicalSpace (t2Quotient X) :=
 /-- The map from a topological space to its largest T2 quotient. -/
 def mk : X → t2Quotient X := Quotient.mk (t2Setoid X)
 
-lemma mk_eq {x y : X} : mk x = mk y ↔ ∀ s : Setoid X, T2Space (Quotient s) → s.Rel x y :=
+lemma mk_eq {x y : X} : mk x = mk y ↔ ∀ s : Setoid X, T2Space (Quotient s) → s x y :=
   Setoid.quotient_mk_sInf_eq
 
 variable (X)
