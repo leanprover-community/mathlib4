@@ -1361,26 +1361,26 @@ lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) {c : �
   (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
-lemma mul_liminf_le_liminf_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
-    liminf u f * liminf v f ≤ liminf (u * v) f := by
-  refine mul_le_of_forall_lt fun a a_u b b_v ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
-  filter_upwards [eventually_lt_of_lt_liminf a_u, eventually_lt_of_lt_liminf b_v] with x a_x b_x
-  exact c_ab.trans (mul_lt_mul a_x b_x)
+lemma le_limsup_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
+    limsup u f * liminf v f ≤ limsup (u * v) f :=
+  mul_le_of_forall_lt fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
+    Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
+    ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (mul_lt_mul ab_x.1 ab_x.2)
 
-lemma limsup_mul_le_mul_limsup {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
+lemma limsup_mul_le {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
     (h : limsup u f ≠ 0 ∨ limsup v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ limsup v f ≠ 0) :
     limsup (u * v) f ≤ limsup u f * limsup v f := by
   refine le_mul_of_forall_lt h h' fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v] with x a_x b_x
   exact (mul_lt_mul a_x b_x).trans c_ab
 
-lemma limsup_mul_liminf_le_limsup_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
-    limsup u f * liminf v f ≤ limsup (u * v) f :=
-  mul_le_of_forall_lt fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
-    Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
-    ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (mul_lt_mul ab_x.1 ab_x.2)
+lemma le_liminf_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
+    liminf u f * liminf v f ≤ liminf (u * v) f := by
+  refine mul_le_of_forall_lt fun a a_u b b_v ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
+  filter_upwards [eventually_lt_of_lt_liminf a_u, eventually_lt_of_lt_liminf b_v] with x a_x b_x
+  exact c_ab.trans (mul_lt_mul a_x b_x)
 
-lemma liminf_mul_le_limsup_mul_liminf {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
+lemma liminf_mul_le {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
     (h : limsup u f ≠ 0 ∨ liminf v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ liminf v f ≠ 0) :
     liminf (u * v) f ≤ limsup u f * liminf v f :=
   le_mul_of_forall_lt h h' fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦
