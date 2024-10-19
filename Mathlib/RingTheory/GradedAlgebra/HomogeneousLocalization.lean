@@ -473,25 +473,25 @@ variable {𝒜} {x}
 
 /-- Numerator of an element in `HomogeneousLocalization x`. -/
 def num (f : HomogeneousLocalization 𝒜 x) : A :=
-  (Quotient.out' f).num
+  (Quotient.out f).num
 
 /-- Denominator of an element in `HomogeneousLocalization x`. -/
 def den (f : HomogeneousLocalization 𝒜 x) : A :=
-  (Quotient.out' f).den
+  (Quotient.out f).den
 
 /-- For an element in `HomogeneousLocalization x`, degree is the natural number `i` such that
   `𝒜 i` contains both numerator and denominator. -/
 def deg (f : HomogeneousLocalization 𝒜 x) : ι :=
-  (Quotient.out' f).deg
+  (Quotient.out f).deg
 
 theorem den_mem (f : HomogeneousLocalization 𝒜 x) : f.den ∈ x :=
-  (Quotient.out' f).den_mem
+  (Quotient.out f).den_mem
 
 theorem num_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.num ∈ 𝒜 f.deg :=
-  (Quotient.out' f).num.2
+  (Quotient.out f).num.2
 
 theorem den_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.den ∈ 𝒜 f.deg :=
-  (Quotient.out' f).den.2
+  (Quotient.out f).den.2
 
 theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
     f.val = Localization.mk f.num ⟨f.den, f.den_mem⟩ :=

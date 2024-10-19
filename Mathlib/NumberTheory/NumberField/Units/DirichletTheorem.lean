@@ -478,7 +478,7 @@ def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
 units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
-  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i):)
+  fun i => Quotient.out (Additive.toMul (basisModTorsion K i):)
 
 theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul (QuotientGroup.mk (fundSystem K i)) = (basisModTorsion K i) := by
