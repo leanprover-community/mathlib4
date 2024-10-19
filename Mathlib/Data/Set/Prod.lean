@@ -532,7 +532,7 @@ namespace Set
 
 section OffDiag
 
-variable {α : Type*} {s t : Set α} {x : α × α} {a : α}
+variable {α : Type*} {s t : Set α} {a : α}
 
 theorem offDiag_mono : Monotone (offDiag : Set α → Set (α × α)) := fun _ _ h _ =>
   And.imp (@h _) <| And.imp_left <| @h _
@@ -839,12 +839,12 @@ theorem univ_pi_subset_univ_pi_iff :
     pi univ t₁ ⊆ pi univ t₂ ↔ (∀ i, t₁ i ⊆ t₂ i) ∨ ∃ i, t₁ i = ∅ := by simp [pi_subset_pi_iff]
 
 theorem eval_preimage [DecidableEq ι] {s : Set (α i)} :
-    eval i ⁻¹' s = pi univ (update (fun i => univ) i s) := by
+    eval i ⁻¹' s = pi univ (update (fun _ => univ) i s) := by
   ext x
   simp [@forall_update_iff _ (fun i => Set (α i)) _ _ _ _ fun i' y => x i' ∈ y]
 
 theorem eval_preimage' [DecidableEq ι] {s : Set (α i)} :
-    eval i ⁻¹' s = pi {i} (update (fun i => univ) i s) := by
+    eval i ⁻¹' s = pi {i} (update (fun _ => univ) i s) := by
   ext
   simp
 

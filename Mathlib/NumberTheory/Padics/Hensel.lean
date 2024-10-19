@@ -227,7 +227,7 @@ private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n
       rw [sub_eq_add_neg, ← hz.1, ← norm_neg (F.derivative.eval z)] at hdist
       have := PadicInt.norm_eq_of_norm_add_lt_right hdist
       rwa [norm_neg, hz.1] at this
-    let ⟨q, heq⟩ := calc_eval_z' hnorm rfl hz h1 rfl
+    let ⟨_, heq⟩ := calc_eval_z' hnorm rfl hz h1 rfl
     have hnle : ‖F.eval z'‖ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ (n + 1) :=
       calc_eval_z'_norm hz heq h1 rfl
     ⟨hfeq, hnle⟩⟩

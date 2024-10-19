@@ -63,7 +63,7 @@ written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch 
 separable measure, measure-dense, Lp space, second-countable
 -/
 
-open MeasurableSpace Set ENNReal TopologicalSpace BigOperators symmDiff Filter Real
+open MeasurableSpace Set ENNReal TopologicalSpace symmDiff Real
 
 namespace MeasureTheory
 

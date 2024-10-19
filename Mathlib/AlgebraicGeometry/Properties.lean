@@ -29,20 +29,18 @@ namespace AlgebraicGeometry
 
 variable (X : Scheme)
 
-instance : T0Space X := by
-  refine T0Space.of_open_cover fun x => ?_
-  obtain ⟨U, R, ⟨e⟩⟩ := X.local_affine x
-  let e' : U.1 ≃ₜ PrimeSpectrum R :=
-    homeoOfIso ((LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).mapIso e)
-  exact ⟨U.1.1, U.2, U.1.2, e'.embedding.t0Space⟩
+instance : T0Space X :=
+  T0Space.of_open_cover fun x => ⟨_, X.affineCover.covers x,
+    (X.affineCover.map x).opensRange.2, Embedding.t0Space (Y := PrimeSpectrum _)
+    (isAffineOpen_opensRange (X.affineCover.map x)).isoSpec.schemeIsoToHomeo.embedding⟩
 
 instance : QuasiSober X := by
   apply (config := { allowSynthFailures := true })
-    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).1.base)
+    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).base)
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.IsOpen i).base_open.isOpen_range
   · rintro ⟨_, i, rfl⟩
-    exact @OpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofEmbedding _
-      (X.affineCover.IsOpen i).base_open.toEmbedding).symm.openEmbedding PrimeSpectrum.quasiSober
+    exact @IsOpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofEmbedding _
+      (X.affineCover.IsOpen i).base_open.toEmbedding).symm.isOpenEmbedding PrimeSpectrum.quasiSober
   · rw [Set.top_eq_univ, Set.sUnion_range, Set.eq_univ_iff_forall]
     intro x; exact ⟨_, ⟨_, rfl⟩, X.affineCover.covers x⟩
 
@@ -128,7 +126,7 @@ theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
 
 theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
     (h₁ : ∀ R x, P (Spec R) x)
-    (h₂ : ∀ {X Y} (f : X ⟶ Y) [IsOpenImmersion f] (x : X), P X x → P Y (f.1.base x)) :
+    (h₂ : ∀ {X Y} (f : X ⟶ Y) [IsOpenImmersion f] (x : X), P X x → P Y (f.base x)) :
     ∀ (X : Scheme) (x : X), P X x := by
   intro X x
   obtain ⟨y, e⟩ := X.affineCover.covers x

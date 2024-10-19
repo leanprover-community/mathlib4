@@ -19,8 +19,8 @@ is the theorem `char_orthonormal`
 
 ## Implementation notes
 
-Irreducible representations are implemented categorically, using the `Simple` class defined in
-`Mathlib.CategoryTheory.Simple`
+Irreducible representations are implemented categorically, using the `CategoryTheory.Simple` class
+defined in `Mathlib.CategoryTheory.Simple`
 
 ## TODO
 * Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
@@ -89,7 +89,7 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 theorem average_char_eq_finrank_invariants (V : FDRep k G) :
     ⅟ (Fintype.card G : k) • ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
-  rw [← (isProj_averageMap V.ρ).trace] -- Porting note: Changed `rw` to `erw`
+  rw [← (isProj_averageMap V.ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
 
 end Group
