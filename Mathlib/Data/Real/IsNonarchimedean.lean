@@ -32,7 +32,7 @@ theorem nsmul_le {F α : Type*} [AddGroup α] [FunLike F α ℝ]
     f (n • a) ≤ f a := by
   let _ := AddGroupSeminormClass.toSeminormedAddGroup f
   have := AddGroupSeminormClass.isUltrametricDist hna
-  simp_rw [← AddGroupSeminormClass.toSeminormedAddGroup_norm_eq]
+  simp only [← AddGroupSeminormClass.toSeminormedAddGroup_norm_eq]
   exact norm_nsmul_le _ _
 
 /-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
@@ -49,7 +49,7 @@ theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α ℝ]
     f (x + y) = max (f x) (f y) := by
   let _ := AddGroupSeminormClass.toSeminormedAddGroup f
   have := AddGroupSeminormClass.isUltrametricDist hna
-  simp_rw [← AddGroupSeminormClass.toSeminormedAddGroup_norm_eq] at hne ⊢
+  simp only [← AddGroupSeminormClass.toSeminormedAddGroup_norm_eq] at hne ⊢
   exact norm_add_eq_max_of_norm_ne_norm hne
 
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a finset
@@ -61,20 +61,8 @@ theorem finset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
     ∃ b : β, (t.Nonempty → b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
   let _ := AddGroupSeminormClass.toSeminormedAddCommGroup f
   have := AddGroupSeminormClass.isUltrametricDist hna
-  simp_rw [← AddGroupSeminormClass.toSeminormedAddCommGroup_norm_eq]
-  rcases t.eq_empty_or_nonempty with rfl|ht
-  · simp
-  have ht' : ∀ x ∈ t, ∀ y ∈ t, ∃ z ∈ t, ‖g z‖ = max ‖g x‖ ‖g y‖ := by
-    intros x hx y hy
-    rcases le_total ‖g x‖ ‖g y‖ with h|h
-    · exact ⟨y, hy, by simp [h]⟩
-    · exact ⟨x, hx, by simp [h]⟩
-  obtain ⟨x, hx, hx'⟩ := Finset.sup'_mem (α := ℝ) ((‖g ·‖) '' t) (by simpa [sup_eq_max] using ht') t
-    ht (‖g ·‖) (fun _ ↦ Set.mem_image_of_mem _)
-  refine ⟨x, fun _ ↦ by simpa using hx, ?_⟩
-  dsimp only at hx'
-  rw [hx']
-  exact ht.norm_sum_le_sup'_norm _
+  simp only [← AddGroupSeminormClass.toSeminormedAddCommGroup_norm_eq]
+  apply exists_norm_finset_sum_le
 
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
   nonempty finset `t : Finset β`, we can always find `b : β` belonging to `t` such that
@@ -93,22 +81,10 @@ theorem multiset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ
     [AddGroupSeminormClass F α ℝ] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
     (g : β → α) (s : Multiset β) :
     ∃ b : β, (s ≠ 0 → b ∈ s) ∧ f (Multiset.map g s).sum ≤ f (g b) := by
-  inhabit β
-  induction s using Multiset.induction_on with
-  | empty => simp
-  | @cons a t hM =>
-      obtain ⟨M, hMs, hM⟩ := hM
-      by_cases hMa : f (g M) ≤ f (g a)
-      · refine ⟨a, by simp, ?_⟩
-        rw [Multiset.map_cons, Multiset.sum_cons]
-        exact le_trans (hna _ _) (max_le (le_refl _) (le_trans hM hMa))
-      · rw [not_le] at hMa
-        rcases eq_or_ne t 0 with rfl|ht
-        · exact ⟨a, by simp, by simp⟩
-        · refine ⟨M, ?_, ?_⟩
-          · simp [hMs ht]
-          · rw [Multiset.map_cons, Multiset.sum_cons]
-            exact le_trans (hna _ _) (max_le hMa.le hM)
+  let _ := AddGroupSeminormClass.toSeminormedAddCommGroup f
+  have := AddGroupSeminormClass.isUltrametricDist hna
+  simp only [← AddGroupSeminormClass.toSeminormedAddCommGroup_norm_eq]
+  apply exists_norm_multiset_sum_le
 
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
   nonempty multiset `s : Multiset β`, we can always find `b : β` belonging to `s` such that
@@ -127,7 +103,7 @@ theorem add_pow_le {F α : Type*} [CommRing α] [FunLike F α ℝ]
     [RingSeminormClass F α ℝ] {f : F} (hna : IsNonarchimedean f) (n : ℕ) (a b : α) :
     ∃ m < n + 1, f ((a + b) ^ n) ≤ f (a ^ m) * f (b ^ (n - m)) := by
   obtain ⟨m, hm_lt, hM⟩ := finset_image_add hna
-    (fun m : ℕ => a ^ m * b ^ (n - m) * ↑(n.choose m)) (Finset.range (n + 1))
+    (fun m => a ^ m * b ^ (n - m) * ↑(n.choose m)) (Finset.range (n + 1))
   simp only [Finset.nonempty_range_iff, ne_eq, Nat.succ_ne_zero, not_false_iff, Finset.mem_range,
     if_true, forall_true_left] at hm_lt
   refine ⟨m, hm_lt, ?_⟩
