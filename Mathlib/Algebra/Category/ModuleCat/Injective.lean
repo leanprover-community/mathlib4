@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.GroupCat.EnoughInjectives
-import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
+import Mathlib.Algebra.Category.Grp.EnoughInjectives
+import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
@@ -26,7 +26,7 @@ universe v u
 variable (R : Type u) [Ring R]
 
 instance : EnoughInjectives (ModuleCat.{v} ℤ) :=
-  EnoughInjectives.of_equivalence (forget₂ (ModuleCat ℤ) AddCommGroupCat)
+  EnoughInjectives.of_equivalence (forget₂ (ModuleCat ℤ) AddCommGrp)
 
 lemma ModuleCat.enoughInjectives : EnoughInjectives (ModuleCat.{max v u} R) :=
   EnoughInjectives.of_adjunction (ModuleCat.restrictCoextendScalarsAdj.{max v u} (algebraMap ℤ R))

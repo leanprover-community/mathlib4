@@ -34,7 +34,7 @@ inductive RecData (α : Type u) : Type u
 
 #guard_msgs (drop info) in #synth LawfulTraversable RecData
 
-unsafe structure MetaStruct (α : Type u) : Type u :=
+unsafe structure MetaStruct (α : Type u) : Type u where
   x : α
   y : ℤ
   z : List α
@@ -81,3 +81,5 @@ example : (ex.run []).1 = node leaf (node (node leaf leaf [(), (), ()]) leaf [()
 example : (ex.run []).2 = [1, 2, 3, 3, 2, 1] := rfl
 
 end
+
+end Testing

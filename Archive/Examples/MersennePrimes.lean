@@ -1,11 +1,9 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.NumberTheory.LucasLehmer
-
-#align_import examples.mersenne_primes from "leanprover-community/mathlib"@"58581d0fe523063f5651df0619be2bf65012a94a"
 
 /-!
 # Explicit Mersenne primes

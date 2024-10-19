@@ -42,7 +42,7 @@ jobs:
             }
 
             // Create a check run with a message about the PR count by this author
-            const message = `Found ${pullRequestCount} PRs by this author.`;
+            const message = `Found ${pullRequestCount} PRs by ${creator}.`;
             await github.rest.checks.create({
               owner,
               repo,

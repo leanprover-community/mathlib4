@@ -7,8 +7,6 @@ import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Dynamics.FixedPoints.Basic
 
-#align_import data.set.pointwise.iterate from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
-
 /-!
 # Results about pointwise operations on sets with iteration.
 -/
@@ -31,7 +29,7 @@ the map `x ↦ x^n`. Then `s` is invariant under the pointwise action of the sub
 theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type*} [CommGroup G] {n : ℤ} {s : Set G}
     (hs : (fun x => x ^ n) ⁻¹' s = s) {g : G} {j : ℕ} (hg : g ^ n ^ j = 1) : g • s = s := by
   suffices ∀ {g' : G} (_ : g' ^ n ^ j = 1), g' • s ⊆ s by
-    refine' le_antisymm (this hg) _
+    refine le_antisymm (this hg) ?_
     conv_lhs => rw [← smul_inv_smul g s]
     replace hg : g⁻¹ ^ n ^ j = 1 := by rw [inv_zpow, hg, inv_one]
     simpa only [le_eq_subset, set_smul_subset_set_smul_iff] using this hg
@@ -40,5 +38,3 @@ theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type*} [CommGroup G] {n : ℤ
   change (zpowGroupHom n)^[j] (g' * y) ∈ s
   replace hg' : (zpowGroupHom n)^[j] g' = 1 := by simpa [zpowGroupHom]
   rwa [iterate_map_mul, hg', one_mul]
-#align smul_eq_self_of_preimage_zpow_eq_self smul_eq_self_of_preimage_zpow_eq_self
-#align vadd_eq_self_of_preimage_zsmul_eq_self vadd_eq_self_of_preimage_zsmul_eq_self

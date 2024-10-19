@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # Unique derivative sets in manifolds
@@ -29,10 +30,13 @@ section UniqueMDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
-  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {E' : Type*}
+  [TopologicalSpace M] [ChartedSpace H M] {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M'] {s : Set M} {x : M}
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H' M'']
+  {s : Set M} {x : M}
+
+section
 
 /-- If `s` has the unique differential property at `x`, `f` is differentiable within `s` at x` and
 its derivative has dense range, then `f '' s` has the unique differential property at `f x`. -/
@@ -77,8 +81,8 @@ diffeomorphism also has the unique differential property. -/
 theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s) {e : PartialHomeomorph M M'}
     (he : e.MDifferentiable I I') : UniqueMDiffOn I' (e.target ∩ e.symm ⁻¹' s) := fun _x hx ↦
   e.right_inv hx.1 ▸ (hs _ hx.2).preimage_partialHomeomorph he (e.map_target hx.1)
-#align unique_mdiff_on.unique_mdiff_on_preimage UniqueMDiffOn.uniqueMDiffOn_preimage
 
+variable [SmoothManifoldWithCorners I M]  in
 /-- If a set in a manifold has the unique derivative property, then its pullback by any extended
 chart, in the vector space, also has the unique derivative property. -/
 theorem UniqueMDiffOn.uniqueDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M) :
@@ -90,13 +94,13 @@ theorem UniqueMDiffOn.uniqueDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M)
   exact (hs.inter (chartAt H x).open_source).image_denseRange'
     (fun y hy ↦ hasMFDerivWithinAt_extChartAt I hy.2)
     fun y hy ↦ ((mdifferentiable_chart _ _).mfderiv_surjective hy.2).denseRange
-#align unique_mdiff_on.unique_diff_on_target_inter UniqueMDiffOn.uniqueDiffOn_target_inter
 
+variable [SmoothManifoldWithCorners I M]  in
 /-- When considering functions between manifolds, this statement shows up often. It entails
 the unique differential of the pullback in extended charts of the set where the function can
 be read in the charts. -/
-theorem UniqueMDiffOn.uniqueDiffOn_inter_preimage (hs : UniqueMDiffOn I s) (x : M) (y : M')
-    {f : M → M'} (hf : ContinuousOn f s) :
+theorem UniqueMDiffOn.uniqueDiffOn_inter_preimage (hs : UniqueMDiffOn I s) (x : M) (y : M'')
+    {f : M → M''} (hf : ContinuousOn f s) :
     UniqueDiffOn 𝕜
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' y).source)) :=
   haveI : UniqueMDiffOn I (s ∩ f ⁻¹' (extChartAt I' y).source) := by
@@ -105,7 +109,8 @@ theorem UniqueMDiffOn.uniqueDiffOn_inter_preimage (hs : UniqueMDiffOn I s) (x : 
     apply (hf z hz.1).preimage_mem_nhdsWithin
     exact (isOpen_extChartAt_source I' y).mem_nhds hz.2
   this.uniqueDiffOn_target_inter _
-#align unique_mdiff_on.unique_diff_on_inter_preimage UniqueMDiffOn.uniqueDiffOn_inter_preimage
+
+end
 
 open Bundle
 
@@ -141,13 +146,5 @@ unique differential in the basis also has unique differential. -/
 theorem UniqueMDiffOn.smooth_bundle_preimage (hs : UniqueMDiffOn I s) :
     UniqueMDiffOn (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) := fun _p hp ↦
   (hs _ hp).smooth_bundle_preimage
-#align unique_mdiff_on.smooth_bundle_preimage UniqueMDiffOn.smooth_bundle_preimage
-
-/-- The preimage under the projection from the tangent bundle of a set with unique differential in
-the basis also has unique differential. -/
-theorem UniqueMDiffOn.tangentBundle_proj_preimage (hs : UniqueMDiffOn I s) :
-    UniqueMDiffOn I.tangent (π E (TangentSpace I) ⁻¹' s) :=
-  hs.smooth_bundle_preimage _
-#align unique_mdiff_on.tangent_bundle_proj_preimage UniqueMDiffOn.tangentBundle_proj_preimage
 
 end UniqueMDiff
