@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Scott Morrison
+Authors: Bhavik Mehta, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Subobject.FactorThru
@@ -379,18 +379,19 @@ theorem inf_arrow_factors_right {B : C} (X Y : Subobject B) : Y.Factors (X ⊓ Y
 theorem finset_inf_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subobject B} (f : A ⟶ B) :
     (s.inf P).Factors f ↔ ∀ i ∈ s, (P i).Factors f := by
   classical
-  induction' s using Finset.induction_on with _ _ _ ih
-  · simp [top_factors]
-  · simp [ih]
+  induction s using Finset.induction_on with
+  | empty => simp [top_factors]
+  | insert _ ih => simp [ih]
 
 -- `i` is explicit here because often we'd like to defer a proof of `m`
 theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → Subobject B) (i : I)
     (m : i ∈ s) : (P i).Factors (s.inf P).arrow := by
   classical
   revert i m
-  induction' s using Finset.induction_on with _ _ _ ih
-  · rintro _ ⟨⟩
-  · intro _ m
+  induction s using Finset.induction_on with
+  | empty => rintro _ ⟨⟩
+  | insert _ ih =>
+    intro _ m
     rw [Finset.inf_insert]
     simp only [Finset.mem_insert] at m
     rcases m with (rfl | m)
@@ -472,9 +473,10 @@ theorem finset_sup_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subob
     (h : ∃ i ∈ s, (P i).Factors f) : (s.sup P).Factors f := by
   classical
   revert h
-  induction' s using Finset.induction_on with _ _ _ ih
-  · rintro ⟨_, ⟨⟨⟩, _⟩⟩
-  · rintro ⟨j, ⟨m, h⟩⟩
+  induction s using Finset.induction_on with
+  | empty => rintro ⟨_, ⟨⟨⟩, _⟩⟩
+  | insert _ ih =>
+    rintro ⟨j, ⟨m, h⟩⟩
     simp only [Finset.sup_insert]
     simp only [Finset.mem_insert] at m
     rcases m with (rfl | m)

@@ -145,7 +145,7 @@ theorem map_ext {N} {f g : AdicCompletion I M → N}
       f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
     f = g := by
   ext x
-  apply induction_on I M x (fun a ↦ h a)
+  apply induction_on I M x h
 
 /-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
 @[ext]
@@ -154,7 +154,7 @@ theorem map_ext' {f g : AdicCompletion I M →ₗ[AdicCompletion I R] T}
       f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
     f = g := by
   ext x
-  apply induction_on I M x (fun a ↦ h a)
+  apply induction_on I M x h
 
 /-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
 @[ext]

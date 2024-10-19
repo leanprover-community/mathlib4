@@ -3,14 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Limits.EssentiallySmall
 import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.Data.Set.Opposite
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Separating and detecting sets
@@ -399,7 +395,7 @@ theorem isSeparator_def (G : C) :
     hG _ _ fun H hH h => by
       obtain rfl := Set.mem_singleton_iff.1 hH
       exact hfg h,
-    fun hG X Y f g hfg => hG _ _ fun h => hfg _ (Set.mem_singleton _) _⟩
+    fun hG _ _ _ _ hfg => hG _ _ fun _ => hfg _ (Set.mem_singleton _) _⟩
 
 theorem IsSeparator.def {G : C} :
     IsSeparator G → ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ h : G ⟶ X, h ≫ f = h ≫ g) → f = g :=
@@ -411,7 +407,7 @@ theorem isCoseparator_def (G : C) :
     hG _ _ fun H hH h => by
       obtain rfl := Set.mem_singleton_iff.1 hH
       exact hfg h,
-    fun hG X Y f g hfg => hG _ _ fun h => hfg _ (Set.mem_singleton _) _⟩
+    fun hG _ _ _ _ hfg => hG _ _ fun _ => hfg _ (Set.mem_singleton _) _⟩
 
 theorem IsCoseparator.def {G : C} :
     IsCoseparator G → ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ h : Y ⟶ G, f ≫ h = g ≫ h) → f = g :=
@@ -423,7 +419,7 @@ theorem isDetector_def (G : C) :
     hG _ fun H hH h => by
       obtain rfl := Set.mem_singleton_iff.1 hH
       exact hf h,
-    fun hG X Y f hf => hG _ fun h => hf _ (Set.mem_singleton _) _⟩
+    fun hG _ _ _ hf => hG _ fun _ => hf _ (Set.mem_singleton _) _⟩
 
 theorem IsDetector.def {G : C} :
     IsDetector G → ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : G ⟶ Y, ∃! h', h' ≫ f = h) → IsIso f :=
@@ -435,7 +431,7 @@ theorem isCodetector_def (G : C) :
     hG _ fun H hH h => by
       obtain rfl := Set.mem_singleton_iff.1 hH
       exact hf h,
-    fun hG X Y f hf => hG _ fun h => hf _ (Set.mem_singleton _) _⟩
+    fun hG _ _ _ hf => hG _ fun _ => hf _ (Set.mem_singleton _) _⟩
 
 theorem IsCodetector.def {G : C} :
     IsCodetector G → ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : X ⟶ G, ∃! h', f ≫ h' = h) → IsIso f :=
@@ -513,7 +509,7 @@ theorem isCoseparator_prod (G H : C) [HasBinaryProduct G H] :
   refine
     ⟨fun h X Y u v huv => ?_, fun h =>
       (isCoseparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => ?_⟩
-  · refine h.def _ _ fun g => prod.hom_ext ?_ ?_
+  · refine h.def _ _ fun g => Limits.prod.hom_ext ?_ ?_
     · simpa using huv G (by simp) (g ≫ Limits.prod.fst)
     · simpa using huv H (by simp) (g ≫ Limits.prod.snd)
   · simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hZ

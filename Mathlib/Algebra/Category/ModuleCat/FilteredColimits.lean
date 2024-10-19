@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
 import Mathlib.Algebra.Category.Grp.FilteredColimits
-import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-!
 # The forgetful functor from `R`-modules preserves filtered colimits.
@@ -51,7 +51,7 @@ abbrev M.mk : (Σ j, F.obj j) → M F :=
 
 theorem M.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) : M.mk F x = M.mk F y :=
-  Quot.EqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget (ModuleCat R)) x y h)
+  Quot.eqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget (ModuleCat R)) x y h)
 
 /-- The "unlifted" version of scalar multiplication in the colimit. -/
 def colimitSMulAux (r : R) (x : Σ j, F.obj j) : M F :=
@@ -183,6 +183,9 @@ instance forget₂AddCommGroupPreservesFilteredColimits :
 instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget (ModuleCat.{u} R)) :=
   Limits.compPreservesFilteredColimits (forget₂ (ModuleCat R) AddCommGrp)
     (forget AddCommGrp)
+
+instance forgetReflectsFilteredColimits : ReflectsFilteredColimits (forget (ModuleCat.{u} R)) where
+  reflects_filtered_colimits _ := { reflectsColimit := reflectsColimitOfReflectsIsomorphisms _ _ }
 
 end
 

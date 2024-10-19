@@ -1,16 +1,17 @@
 /-
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
+Authors: Johan Commelin, Nailin Guan
 -/
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Sets.Opens
 
 /-!
 # Open subgroups of a topological groups
 
-This files builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
+This files builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenAddSubgroup`.  This lattice has a top element, the subgroup of all
 elements, but no bottom element in general. The trivial subgroup which is the natural candidate
 bottom has no reason to be open (this happens only in discrete groups).
@@ -135,8 +136,8 @@ instance : Inhabited (OpenSubgroup G) :=
 @[to_additive]
 theorem isClosed [ContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) := by
   apply isOpen_compl_iff.1
-  refine isOpen_iff_forall_mem_open.2 fun x hx => ⟨(fun y => y * x⁻¹) ⁻¹' U, ?_, ?_, ?_⟩
-  · refine fun u hux hu => hx ?_
+  refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ⟨(fun y ↦ y * x⁻¹) ⁻¹' U, ?_, ?_, ?_⟩
+  · refine fun u hux hu ↦ hx ?_
     simp only [Set.mem_preimage, SetLike.mem_coe] at hux hu ⊢
     convert U.mul_mem (U.inv_mem hux) hu
     simp
@@ -170,7 +171,7 @@ end
 
 @[to_additive]
 instance instInfOpenSubgroup : Inf (OpenSubgroup G) :=
-  ⟨fun U V => ⟨U ⊓ V, U.isOpen.inter V.isOpen⟩⟩
+  ⟨fun U V ↦ ⟨U ⊓ V, U.isOpen.inter V.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inf : (↑(U ⊓ V) : Set G) = (U : Set G) ∩ V :=
@@ -194,7 +195,7 @@ instance instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferIn
 -- Porting note: we override `toPartialorder` to get better `le`
 @[to_additive]
 instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
-  { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ => rfl with
+  { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ ↦ rfl with
     toInf := instInfOpenSubgroup
     toPartialOrder := instPartialOrderOpenSubgroup }
 
@@ -245,9 +246,9 @@ variable {G : Type*} [Group G] [TopologicalSpace G]
 @[to_additive]
 theorem isOpen_of_mem_nhds [ContinuousMul G] (H : Subgroup G) {g : G} (hg : (H : Set G) ∈ 𝓝 g) :
     IsOpen (H : Set G) := by
-  refine isOpen_iff_mem_nhds.2 fun x hx => ?_
+  refine isOpen_iff_mem_nhds.2 fun x hx ↦ ?_
   have hg' : g ∈ H := SetLike.mem_coe.1 (mem_of_mem_nhds hg)
-  have : Filter.Tendsto (fun y => y * (x⁻¹ * g)) (𝓝 x) (𝓝 g) :=
+  have : Filter.Tendsto (fun y ↦ y * (x⁻¹ * g)) (𝓝 x) (𝓝 g) :=
     (continuous_id.mul continuous_const).tendsto' _ _ (mul_inv_cancel_left _ _)
   simpa only [SetLike.mem_coe, Filter.mem_map',
     H.mul_mem_cancel_right (H.mul_mem (H.inv_mem hx) hg')] using this hg
@@ -269,6 +270,56 @@ theorem isOpen_of_one_mem_interior [ContinuousMul G] (H: Subgroup G)
     (h_1_int : (1 : G) ∈ interior (H : Set G)) : IsOpen (H : Set G) :=
   isOpen_of_mem_nhds H <| mem_interior_iff_mem_nhds.1 h_1_int
 
+@[to_additive]
+lemma isClosed_of_isOpen [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
+    IsClosed (U : Set G) :=
+  OpenSubgroup.isClosed ⟨U, h⟩
+
+@[to_additive]
+lemma subgroupOf_isOpen (U K : Subgroup G) (h : IsOpen (K : Set G)) :
+    IsOpen (K.subgroupOf U : Set U) :=
+  Continuous.isOpen_preimage (continuous_iff_le_induced.mpr fun _ ↦ id) _ h
+
+@[to_additive]
+lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
+    DiscreteTopology (G ⧸ U) := by
+  refine singletons_open_iff_discrete.mp (fun g ↦ ?_)
+  induction' g using Quotient.inductionOn with g
+  show IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
+  convert_to IsOpen ((g * ·) '' U)
+  · ext g'
+    simp only [Set.mem_preimage, Set.mem_singleton_iff, QuotientGroup.eq, Set.image_mul_left]
+    rw [← U.inv_mem_iff]
+    simp
+  · exact Homeomorph.mulLeft g |>.isOpen_image |>.mpr h
+
+@[to_additive]
+instance [ContinuousMul G] (U : OpenSubgroup G) : DiscreteTopology (G ⧸ U.toSubgroup) :=
+  discreteTopology U.toSubgroup U.isOpen
+
+@[to_additive]
+lemma quotient_finite_of_isOpen [ContinuousMul G] [CompactSpace G] (U : Subgroup G)
+    (h : IsOpen (U : Set G)) : Finite (G ⧸ U) :=
+  have : DiscreteTopology (G ⧸ U) := U.discreteTopology h
+  finite_of_compact_of_discrete
+
+@[to_additive]
+instance [ContinuousMul G] [CompactSpace G] (U : OpenSubgroup G) : Finite (G ⧸ U.toSubgroup) :=
+  quotient_finite_of_isOpen U.toSubgroup U.isOpen
+
+@[to_additive]
+lemma quotient_finite_of_isOpen' [TopologicalGroup G] [CompactSpace G] (U : Subgroup G)
+    (K : Subgroup U) (hUopen : IsOpen (U : Set G)) (hKopen : IsOpen (K : Set U)) :
+    Finite (U ⧸ K) :=
+  have : CompactSpace U := isCompact_iff_compactSpace.mp <| IsClosed.isCompact <|
+    U.isClosed_of_isOpen hUopen
+  K.quotient_finite_of_isOpen hKopen
+
+@[to_additive]
+instance [TopologicalGroup G] [CompactSpace G] (U : OpenSubgroup G) (K : OpenSubgroup U) :
+    Finite (U ⧸ K.toSubgroup) :=
+  quotient_finite_of_isOpen' U.toSubgroup K.toSubgroup U.isOpen K.isOpen
+
 end Subgroup
 
 namespace OpenSubgroup
@@ -277,7 +328,7 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G]
 
 @[to_additive]
 instance : Sup (OpenSubgroup G) :=
-  ⟨fun U V => ⟨U ⊔ V, Subgroup.isOpen_mono (le_sup_left : U.1 ≤ U.1 ⊔ V.1) U.isOpen⟩⟩
+  ⟨fun U V ↦ ⟨U ⊔ V, Subgroup.isOpen_mono (le_sup_left : U.1 ≤ U.1 ⊔ V.1) U.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = ↑U ⊔ ↑V := rfl
@@ -286,7 +337,7 @@ theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = �
 @[to_additive]
 instance : Lattice (OpenSubgroup G) :=
   { instSemilatticeInfOpenSubgroup,
-    toSubgroup_injective.semilatticeSup ((↑) : OpenSubgroup G → Subgroup G) fun _ _ => rfl with
+    toSubgroup_injective.semilatticeSup ((↑) : OpenSubgroup G → Subgroup G) fun _ _ ↦ rfl with
     toPartialOrder := instPartialOrderOpenSubgroup }
 
 end OpenSubgroup
@@ -314,3 +365,92 @@ theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U 
   @Submodule.isOpen_mono R R _ _ _ _ Semiring.toModule _ _ h hU
 
 end Ideal
+
+/-!
+# Open normal subgroups of a topological group
+
+This section builds the lattice `OpenNormalSubgroup G` of open subgroups in a topological group `G`,
+and its additive version `OpenNormalAddSubgroup`.
+
+-/
+
+section
+
+universe u
+
+/-- The type of open normal subgroups of a topological group. -/
+@[ext]
+structure OpenNormalSubgroup (G : Type u) [Group G] [TopologicalSpace G]
+  extends OpenSubgroup G where
+  isNormal' : toSubgroup.Normal := by infer_instance
+
+/-- The type of open normal subgroups of a topological additive group. -/
+@[ext]
+structure OpenNormalAddSubgroup (G : Type u) [AddGroup G] [TopologicalSpace G]
+  extends OpenAddSubgroup G where
+  isNormal' : toAddSubgroup.Normal := by infer_instance
+
+attribute [to_additive] OpenNormalSubgroup
+
+namespace OpenNormalSubgroup
+
+variable {G : Type u} [Group G] [TopologicalSpace G]
+
+@[to_additive]
+instance (H : OpenNormalSubgroup G) : H.toSubgroup.Normal := H.isNormal'
+
+@[to_additive]
+theorem toSubgroup_injective : Function.Injective
+    (fun H ↦ H.toOpenSubgroup.toSubgroup : OpenNormalSubgroup G → Subgroup G) :=
+  fun A B h ↦ by
+  ext
+  dsimp at h
+  rw [h]
+
+@[to_additive]
+instance : SetLike (OpenNormalSubgroup G) G where
+  coe U := U.1
+  coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
+
+@[to_additive]
+instance : SubgroupClass (OpenNormalSubgroup G) G where
+  mul_mem := Subsemigroup.mul_mem' _
+  one_mem U := U.one_mem'
+  inv_mem := Subgroup.inv_mem' _
+
+@[to_additive]
+instance : Coe (OpenNormalSubgroup G) (Subgroup G) where
+  coe H := H.toOpenSubgroup.toSubgroup
+
+@[to_additive]
+instance instPartialOrderOpenNormalSubgroup : PartialOrder (OpenNormalSubgroup G) := inferInstance
+
+@[to_additive]
+instance instInfOpenNormalSubgroup : Inf (OpenNormalSubgroup G) :=
+  ⟨fun U V ↦ ⟨U.toOpenSubgroup ⊓ V.toOpenSubgroup,
+    Subgroup.normal_inf_normal U.toSubgroup V.toSubgroup⟩⟩
+
+@[to_additive]
+instance instSemilatticeInfOpenNormalSubgroup : SemilatticeInf (OpenNormalSubgroup G) :=
+  SetLike.coe_injective.semilatticeInf ((↑) : OpenNormalSubgroup G → Set G) fun _ _ ↦ rfl
+
+@[to_additive]
+instance [ContinuousMul G] : Sup (OpenNormalSubgroup G) :=
+  ⟨fun U V ↦ ⟨U.toOpenSubgroup ⊔ V.toOpenSubgroup,
+    Subgroup.sup_normal U.toOpenSubgroup.1 V.toOpenSubgroup.1⟩⟩
+
+@[to_additive]
+instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
+    SemilatticeSup (OpenNormalSubgroup G) :=
+  toSubgroup_injective.semilatticeSup
+    (fun (H : OpenNormalSubgroup G) ↦ ↑H.toOpenSubgroup) (fun _ _ ↦ rfl)
+
+@[to_additive]
+instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
+  { instSemilatticeInfOpenNormalSubgroup,
+    instSemilatticeSupOpenNormalSubgroup with
+    toPartialOrder := instPartialOrderOpenNormalSubgroup}
+
+end OpenNormalSubgroup
+
+end

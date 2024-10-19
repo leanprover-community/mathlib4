@@ -3,11 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.NAry
+import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Lift
 import Mathlib.Data.Option.Basic
 
@@ -293,8 +293,8 @@ instance preorder [Preorder α] : Preorder (WithBot α) where
   lt_iff_le_not_le := by
     intros a b
     cases a <;> cases b <;> simp [lt_iff_le_not_le]
-  le_refl o a ha := ⟨a, ha, le_rfl⟩
-  le_trans o₁ o₂ o₃ h₁ h₂ a ha :=
+  le_refl _ a ha := ⟨a, ha, le_rfl⟩
+  le_trans _ _ _ h₁ h₂ a ha :=
     let ⟨b, hb, ab⟩ := h₁ a ha
     let ⟨c, hc, bc⟩ := h₂ b hb
     ⟨c, hc, le_trans ab bc⟩
@@ -434,7 +434,7 @@ instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithBot α) (· ≤ ·)
-  | none, x => isTrue fun a h => Option.noConfusion h
+  | none, _ => isTrue fun _ h => Option.noConfusion h
   | Option.some x, Option.some y =>
       if h : x ≤ y then isTrue (coe_le_coe.2 h) else isFalse <| by simp [*]
   | Option.some x, none => isFalse fun h => by rcases h x rfl with ⟨y, ⟨_⟩, _⟩
@@ -469,7 +469,7 @@ instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot �
   have acc_bot := ⟨_, by simp [not_lt_bot]⟩
   .intro fun
     | ⊥ => acc_bot
-    | (a : α) => (wellFounded_lt.1 a).rec fun a _ ih =>
+    | (a : α) => (wellFounded_lt.1 a).rec fun _ _ ih =>
       .intro _ fun
         | ⊥, _ => acc_bot
         | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
@@ -903,11 +903,37 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithBot αᵒᵈ) :
 
 lemma forall_lt_iff_eq_bot [Preorder α] {x : WithBot α} :
     (∀ y : α, x < y) ↔ x = ⊥ :=
-  ⟨fun h ↦ forall_ne_iff_eq_bot.mp (fun x ↦ (h x).ne'), fun h ↦ h ▸ fun y ↦ bot_lt_coe y⟩
+  ⟨fun h ↦ forall_ne_iff_eq_bot.mp (fun x ↦ (h x).ne'), fun h y ↦ h ▸ bot_lt_coe y⟩
+
+lemma forall_le_iff_eq_bot [Preorder α] [NoMinOrder α] {x : WithBot α} :
+    (∀ y : α, x ≤ y) ↔ x = ⊥ := by
+  refine ⟨fun h ↦ forall_lt_iff_eq_bot.1 fun y ↦ ?_, fun h _ ↦ h ▸ bot_le⟩
+  obtain ⟨w, hw⟩ := exists_lt y
+  exact (h w).trans_lt (coe_lt_coe.2 hw)
+
+lemma le_of_forall_lt_iff_le [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
+    {x y : WithBot α} : (∀ z : α, x < z → y ≤ z) ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h z x_z ↦ h.trans x_z.le⟩
+  induction x with
+  | bot => exact le_of_eq <| forall_le_iff_eq_bot.1 fun z ↦ h z (bot_lt_coe z)
+  | coe x =>
+    rw [le_coe_iff]
+    rintro y rfl
+    exact le_of_forall_le_of_dense (by exact_mod_cast h)
+
+lemma ge_of_forall_gt_iff_ge [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
+    {x y : WithBot α} : (∀ z : α, z < x → z ≤ y) ↔ x ≤ y := by
+  apply Iff.intro _ (fun h _ x_z ↦ x_z.le.trans h)
+  induction y with
+  | bot => simpa using forall_le_iff_eq_bot.1
+  | coe y =>
+    rw [le_coe_iff]
+    rintro h x rfl
+    exact le_of_forall_ge_of_dense (by exact_mod_cast h)
 
 section LE
 
-variable [LE α] {a b : α}
+variable [LE α]
 
 theorem toDual_le_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
     WithBot.toDual a ≤ b ↔ WithTop.ofDual b ≤ a :=
@@ -937,7 +963,7 @@ end LE
 
 section LT
 
-variable [LT α] {a b : α}
+variable [LT α]
 
 theorem toDual_lt_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
     WithBot.toDual a < b ↔ WithTop.ofDual b < a :=
@@ -1062,7 +1088,7 @@ alias ⟨_, _root_.StrictMono.withTop_map⟩ := strictMono_map_iff
 theorem map_le_iff (f : α → β) (a b : WithTop α)
     (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     a.map f ≤ b.map f ↔ a ≤ b := by
-  erw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
+  rw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
   simp [mono_iff]
 
 theorem coe_untop'_le (a : WithTop α) (b : α) : a.untop' b ≤ a :=
@@ -1072,10 +1098,21 @@ theorem coe_untop'_le (a : WithTop α) (b : α) : a.untop' b ≤ a :=
 theorem coe_top_lt [OrderTop α] {x : WithTop α} : (⊤ : α) < x ↔ x = ⊤ :=
   WithBot.lt_coe_bot (α := αᵒᵈ)
 
-lemma forall_lt_iff_eq_top {x : WithTop α} : (∀ y : α, y < x) ↔ x = ⊤ :=
-  ⟨fun h ↦ forall_ne_iff_eq_top.mp (fun x ↦ (h x).ne), fun h ↦ h ▸ fun y ↦ coe_lt_top y⟩
+lemma forall_gt_iff_eq_top {x : WithTop α} : (∀ y : α, y < x) ↔ x = ⊤ :=
+  WithBot.forall_lt_iff_eq_bot (α := αᵒᵈ)
+
+lemma forall_ge_iff_eq_top [NoMaxOrder α] {x : WithTop α} : (∀ y : α, y ≤ x) ↔ x = ⊤ :=
+  WithBot.forall_le_iff_eq_bot (α := αᵒᵈ)
 
 end Preorder
+
+lemma le_of_forall_lt_iff_le [LinearOrder α] [DenselyOrdered α] [NoMaxOrder α]
+    {x y : WithTop α} : (∀ z : α, x < z → y ≤ z) ↔ y ≤ x :=
+  WithBot.ge_of_forall_gt_iff_ge (α := αᵒᵈ)
+
+lemma ge_of_forall_gt_iff_ge [LinearOrder α] [DenselyOrdered α] [NoMaxOrder α]
+    {x y : WithTop α} : (∀ z : α, z < x → z ≤ y) ↔ x ≤ y :=
+  WithBot.le_of_forall_lt_iff_le (α := αᵒᵈ)
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
   { WithTop.partialOrder with

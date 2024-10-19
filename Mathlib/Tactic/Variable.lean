@@ -250,7 +250,7 @@ def elabVariables : CommandElab := fun stx =>
 where
   extendScope (binders : TSyntaxArray ``bracketedBinder) : CommandElabM Unit := do
     for binder in binders do
-      let varUIds ← getBracketedBinderIds binder |>.mapM
+      let varUIds ← (← getBracketedBinderIds binder) |>.mapM
         (withFreshMacroScope ∘ MonadQuotation.addMacroScope)
       modifyScope fun scope =>
         { scope with varDecls := scope.varDecls.push binder, varUIds := scope.varUIds ++ varUIds }
@@ -270,7 +270,7 @@ where
       Term.withAutoBoundImplicit <| Term.elabBinders binders fun _ => pure ()
       -- Filter out omitted binders
       let binders' : TSyntaxArray ``bracketedBinder :=
-        (binders.zip toOmit).filterMap fun (b, omit) => if omit then none else some b
+        (binders.zip toOmit).filterMap fun (b, toOmit) => if toOmit then none else some b
       if let some expectedBinders := expectedBinders? then
         trace[«variable?»] "checking expected binders"
         /- We re-elaborate the binders to create an expression that represents the entire resulting

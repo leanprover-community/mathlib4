@@ -3,7 +3,7 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init.Data.List.Lemmas
+import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Common
 
 /-!
@@ -52,7 +52,7 @@ def head : Vector α (Nat.succ n) → α
 theorem head_cons (a : α) : ∀ v : Vector α n, head (cons a v) = a
   | ⟨_, _⟩ => rfl
 
-/-- The tail of a vector, with an empty vector having empty tail.  -/
+/-- The tail of a vector, with an empty vector having empty tail. -/
 def tail : Vector α n → Vector α (n - 1)
   | ⟨[], h⟩ => ⟨[], congrArg pred h⟩
   | ⟨_ :: v, h⟩ => ⟨v, congrArg pred h⟩
@@ -65,7 +65,7 @@ theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
 @[simp]
 theorem cons_head_tail : ∀ v : Vector α (succ n), cons (head v) (tail v) = v
   | ⟨[], h⟩ => by contradiction
-  | ⟨a :: v, h⟩ => rfl
+  | ⟨_ :: _, _⟩ => rfl
 
 /-- The list obtained from a vector. -/
 def toList (v : Vector α n) : List α :=
@@ -119,7 +119,7 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
 def eraseIdx (i : Fin n) : Vector α n → Vector α (n - 1)
-  | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx] <;> rw [p]; exact i.2⟩
+  | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx_of_lt] <;> rw [p]; exact i.2⟩
 
 @[deprecated (since := "2024-05-04")] alias removeNth := eraseIdx
 
@@ -154,7 +154,7 @@ def mapAccumr₂ (f : α → β → σ → σ × φ) : Vector α n → Vector β
 
 end Accum
 
-/-! ### Shift Primitives-/
+/-! ### Shift Primitives -/
 section Shift
 
 /-- `shiftLeftFill v i` is the vector obtained by left-shifting `v` `i` times and padding with the
@@ -181,7 +181,7 @@ protected theorem eq_nil (v : Vector α 0) : v = nil :=
   v.eq nil (List.eq_nil_of_length_eq_zero v.2)
 
 /-- Vector of length from a list `v`
-with witness that `v` has length `n` maps to `v` under `toList`.  -/
+with witness that `v` has length `n` maps to `v` under `toList`. -/
 @[simp]
 theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P) = v :=
   rfl

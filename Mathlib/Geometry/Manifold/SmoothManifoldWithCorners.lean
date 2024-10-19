@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.ChartedSpace
+import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Data.Bundle
+import Mathlib.Geometry.Manifold.ChartedSpace
 
 /-!
 # Smooth manifolds (possibly with boundary or corners)
@@ -80,6 +82,14 @@ but again in product manifolds the natural model with corners will not be this o
 one (and they are not defeq as `(fun p : E × F ↦ (p.1, p.2))` is not defeq to the identity).
 So, it is important to use the above incantation to maximize the applicability of theorems.
 
+We also define `TangentSpace I (x : M)` as a type synonym of `E`, and `TangentBundle I M` as a
+type synonym for `Π (x : M), TangentSpace I x` (in the form of an
+abbrev of `Bundle.TotalSpace E (TangentSpace I : M → Type _)`). Apart from basic typeclasses on
+`TangentSpace I x`, nothing is proved about them in this file, but it is useful to have them
+available as definitions early on to get a clean import structure below. The smooth bundle structure
+is defined in `VectorBundle.Tangent`, while the definition is used to talk about manifold
+derivatives in `MFDeriv.Basic`, and neither file needs import the other.
+
 ## Implementation notes
 
 We want to talk about manifolds modelled on a vector space, but also on manifolds with
@@ -138,7 +148,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
   source_eq : source = univ
-  unique_diff' : UniqueDiffOn 𝕜 toPartialEquiv.target
+  uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
@@ -149,7 +159,7 @@ def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E where
   toPartialEquiv := PartialEquiv.refl E
   source_eq := rfl
-  unique_diff' := uniqueDiffOn_univ
+  uniqueDiffOn' := uniqueDiffOn_univ
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
 
@@ -236,8 +246,11 @@ theorem target_eq : I.target = range (I : H → E) := by
   rw [← image_univ, ← I.source_eq]
   exact I.image_source_eq_target.symm
 
-protected theorem unique_diff : UniqueDiffOn 𝕜 (range I) :=
-  I.target_eq ▸ I.unique_diff'
+protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) :=
+  I.target_eq ▸ I.uniqueDiffOn'
+
+@[deprecated (since := "2024-09-30")]
+protected alias unique_diff := ModelWithCorners.uniqueDiffOn
 
 @[simp, mfld_simps]
 protected theorem left_inv (x : H) : I.symm (I x) = x := by refine I.left_inv' ?_; simp
@@ -290,17 +303,26 @@ theorem symm_map_nhdsWithin_image {x : H} {s : Set H} : map I.symm (𝓝[I '' s]
 theorem symm_map_nhdsWithin_range (x : H) : map I.symm (𝓝[range I] I x) = 𝓝 x := by
   rw [← I.map_nhds_eq, map_map, I.symm_comp_self, map_id]
 
-theorem unique_diff_preimage {s : Set H} (hs : IsOpen s) :
+theorem uniqueDiffOn_preimage {s : Set H} (hs : IsOpen s) :
     UniqueDiffOn 𝕜 (I.symm ⁻¹' s ∩ range I) := by
   rw [inter_comm]
-  exact I.unique_diff.inter (hs.preimage I.continuous_invFun)
+  exact I.uniqueDiffOn.inter (hs.preimage I.continuous_invFun)
 
-theorem unique_diff_preimage_source {β : Type*} [TopologicalSpace β] {e : PartialHomeomorph H β} :
+@[deprecated (since := "2024-09-30")]
+alias unique_diff_preimage := uniqueDiffOn_preimage
+
+theorem uniqueDiffOn_preimage_source {β : Type*} [TopologicalSpace β] {e : PartialHomeomorph H β} :
     UniqueDiffOn 𝕜 (I.symm ⁻¹' e.source ∩ range I) :=
-  I.unique_diff_preimage e.open_source
+  I.uniqueDiffOn_preimage e.open_source
 
-theorem unique_diff_at_image {x : H} : UniqueDiffWithinAt 𝕜 (range I) (I x) :=
-  I.unique_diff _ (mem_range_self _)
+@[deprecated (since := "2024-09-30")]
+alias unique_diff_preimage_source := uniqueDiffOn_preimage_source
+
+theorem uniqueDiffWithinAt_image {x : H} : UniqueDiffWithinAt 𝕜 (range I) (I x) :=
+  I.uniqueDiffOn _ (mem_range_self _)
+
+@[deprecated (since := "2024-09-30")]
+alias unique_diff_at_image := uniqueDiffWithinAt_image
 
 theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H → X} {s : Set H}
     {x : H} :
@@ -309,7 +331,7 @@ theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H �
   · have := h.comp I.continuousWithinAt (mapsTo_preimage _ _)
     simp_rw [preimage_inter, preimage_preimage, I.left_inv, preimage_id', preimage_range,
       inter_univ] at this
-    rwa [Function.comp.assoc, I.symm_comp_self] at this
+    rwa [Function.comp_assoc, I.symm_comp_self] at this
   · rw [← I.left_inv x] at h; exact h.comp I.continuousWithinAt_symm inter_subset_left
 
 protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorners 𝕜 E H) :
@@ -369,9 +391,9 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     invFun := fun x => (I.symm x.1, I'.symm x.2)
     source := { x | x.1 ∈ I.source ∧ x.2 ∈ I'.source }
     source_eq := by simp only [setOf_true, mfld_simps]
-    unique_diff' := I.unique_diff'.prod I'.unique_diff'
-    continuous_toFun := I.continuous_toFun.prod_map I'.continuous_toFun
-    continuous_invFun := I.continuous_invFun.prod_map I'.continuous_invFun }
+    uniqueDiffOn' := I.uniqueDiffOn'.prod I'.uniqueDiffOn'
+    continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
+    continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
 /-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
 corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
@@ -382,7 +404,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
     ModelWithCorners 𝕜 (∀ i, E i) (ModelPi H) where
   toPartialEquiv := PartialEquiv.pi fun i => (I i).toPartialEquiv
   source_eq := by simp only [pi_univ, mfld_simps]
-  unique_diff' := UniqueDiffOn.pi ι E _ _ fun i _ => (I i).unique_diff'
+  uniqueDiffOn' := UniqueDiffOn.pi ι E _ _ fun i _ => (I i).uniqueDiffOn'
   continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
   continuous_invFun := continuous_pi fun i => (I i).continuous_symm.comp (continuous_apply i)
 
@@ -395,9 +417,9 @@ abbrev ModelWithCorners.tangent {𝕜 : Type u} [NontriviallyNormedField 𝕜] {
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] {G : Type*}
-  [TopologicalSpace G] {G' : Type*} [TopologicalSpace G'] {I : ModelWithCorners 𝕜 E H}
+  [TopologicalSpace G] {I : ModelWithCorners 𝕜 E H}
   {J : ModelWithCorners 𝕜 F G}
 
 @[simp, mfld_simps]
@@ -427,7 +449,7 @@ section Boundaryless
 
 /-- Property ensuring that the model with corners `I` defines manifolds without boundary. This
   differs from the more general `BoundarylessManifold`, which requires every point on the manifold
-  to be an interior point.  -/
+  to be an interior point. -/
 class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : Prop where
@@ -702,12 +724,16 @@ theorem PartialHomeomorph.singleton_smoothManifoldWithCorners
   @SmoothManifoldWithCorners.mk' _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid ∞ I)
 
-theorem OpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+theorem IsOpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H}
-    (h : OpenEmbedding f) :
+    (h : IsOpenEmbedding f) :
     @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ h.singletonChartedSpace :=
   (h.toPartialHomeomorph f).singleton_smoothManifoldWithCorners I (by simp)
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.singleton_smoothManifoldWithCorners :=
+  IsOpenEmbedding.singleton_smoothManifoldWithCorners
 
 namespace TopologicalSpace.Opens
 
@@ -1057,7 +1083,7 @@ theorem extChartAt_target (x : M) :
 
 theorem uniqueDiffOn_extChartAt_target (x : M) : UniqueDiffOn 𝕜 (extChartAt I x).target := by
   rw [extChartAt_target]
-  exact I.unique_diff_preimage (chartAt H x).open_target
+  exact I.uniqueDiffOn_preimage (chartAt H x).open_target
 
 theorem uniqueDiffWithinAt_extChartAt_target (x : M) :
     UniqueDiffWithinAt 𝕜 (extChartAt I x).target (extChartAt I x x) :=
@@ -1351,3 +1377,56 @@ lemma Manifold.locallyCompact_of_finiteDimensional
   exact ChartedSpace.locallyCompactSpace H M
 
 end Topology
+
+section TangentSpace
+
+/- We define the tangent space to `M` modelled on `I : ModelWithCorners 𝕜 E H` as a type synonym
+for `E`. This is enough to define linear maps between tangent spaces, for instance derivatives,
+but the interesting part is to define a manifold structure on the whole tangent bundle, which
+requires that `M` is a smooth manifold with corners. The definition is put here to avoid importing
+all the smooth bundle structure when defining manifold derivatives. -/
+
+set_option linter.unusedVariables false in
+/-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
+`(tangentBundleCore I M).to_topological_vector_bundle_core.fiber x`, but we use `E` to help the
+kernel.
+-/
+@[nolint unusedArguments]
+def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (_x : M) : Type u := E
+-- Porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
+
+/- In general, the definition of `TangentSpace` is not reducible, so that type class inference
+does not pick wrong instances. We record the right instances for them. -/
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
+
+instance : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
+instance : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
+instance : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
+instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
+instance : Inhabited (TangentSpace I x) := ⟨0⟩
+
+variable (M) in
+-- is empty if the base manifold is empty
+/-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
+`Bundle.TotalSpace` to be able to put a suitable topology on it. -/
+-- Porting note(#5171): was nolint has_nonempty_instance
+abbrev TangentBundle :=
+  Bundle.TotalSpace E (TangentSpace I : M → Type _)
+
+end TangentSpace
+
+section Real
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
+
+instance : PathConnectedSpace (TangentSpace I x) := inferInstanceAs (PathConnectedSpace E)
+
+end Real

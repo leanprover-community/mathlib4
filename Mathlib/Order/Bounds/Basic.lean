@@ -3,25 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Data.Set.NAry
+import Mathlib.Order.Bounds.Defs
 import Mathlib.Order.Directed
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Upper / lower bounds
 
-In this file we define:
-* `upperBounds`, `lowerBounds` : the set of upper bounds (resp., lower bounds) of a set;
-* `BddAbove s`, `BddBelow s` : the set `s` is bounded above (resp., below), i.e., the set of upper
-  (resp., lower) bounds of `s` is nonempty;
-* `IsLeast s a`, `IsGreatest s a` : `a` is a least (resp., greatest) element of `s`;
-  for a partial order, it is unique if exists;
-* `IsLUB s a`, `IsGLB s a` : `a` is a least upper bound (resp., a greatest lower bound)
-  of `s`; for a partial order, it is unique if exists.
-We also prove various lemmas about monotonicity, behaviour under `∪`, `∩`, `insert`, and provide
-formulas for `∅`, `univ`, and intervals.
+In this file we prove various lemmas about upper/lower bounds of a set:
+monotonicity, behaviour under `∪`, `∩`, `insert`,
+and provide formulas for `∅`, `univ`, and intervals.
 -/
-
 
 open Function Set
 
@@ -33,44 +26,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
 
 section
 
-variable [Preorder α] [Preorder β] {s t : Set α} {a b : α}
-
-/-!
-### Definitions
--/
-
-
-/-- The set of upper bounds of a set. -/
-def upperBounds (s : Set α) : Set α :=
-  { x | ∀ ⦃a⦄, a ∈ s → a ≤ x }
-
-/-- The set of lower bounds of a set. -/
-def lowerBounds (s : Set α) : Set α :=
-  { x | ∀ ⦃a⦄, a ∈ s → x ≤ a }
-
-/-- A set is bounded above if there exists an upper bound. -/
-def BddAbove (s : Set α) :=
-  (upperBounds s).Nonempty
-
-/-- A set is bounded below if there exists a lower bound. -/
-def BddBelow (s : Set α) :=
-  (lowerBounds s).Nonempty
-
-/-- `a` is a least element of a set `s`; for a partial order, it is unique if exists. -/
-def IsLeast (s : Set α) (a : α) : Prop :=
-  a ∈ s ∧ a ∈ lowerBounds s
-
-/-- `a` is a greatest element of a set `s`; for a partial order, it is unique if exists. -/
-def IsGreatest (s : Set α) (a : α) : Prop :=
-  a ∈ s ∧ a ∈ upperBounds s
-
-/-- `a` is a least upper bound of a set `s`; for a partial order, it is unique if exists. -/
-def IsLUB (s : Set α) : α → Prop :=
-  IsLeast (upperBounds s)
-
-/-- `a` is a greatest lower bound of a set `s`; for a partial order, it is unique if exists. -/
-def IsGLB (s : Set α) : α → Prop :=
-  IsGreatest (lowerBounds s)
+variable [Preorder α] {s t : Set α} {a b : α}
 
 theorem mem_upperBounds : a ∈ upperBounds s ↔ ∀ x ∈ s, x ≤ a :=
   Iff.rfl
@@ -608,7 +564,7 @@ section
 variable [SemilatticeSup γ] [DenselyOrdered γ]
 
 theorem isGLB_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
-  ⟨fun x hx => hx.1.le, fun x hx => by
+  ⟨fun _ hx => hx.1.le, fun x hx => by
     rcases eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ | h₂
     · exact h₁.symm ▸ le_sup_left
     obtain ⟨y, lty, ylt⟩ := exists_between h₂
@@ -759,7 +715,7 @@ theorem nonempty_of_not_bddBelow [Nonempty α] (h : ¬BddBelow s) : s.Nonempty :
 @[simp]
 theorem bddAbove_insert [IsDirected α (· ≤ ·)] {s : Set α} {a : α} :
     BddAbove (insert a s) ↔ BddAbove s := by
-  simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and_iff]
+  simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and]
 
 protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : α) :
     BddAbove s → BddAbove (insert a s) :=
@@ -769,7 +725,7 @@ protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : 
 @[simp]
 theorem bddBelow_insert [IsDirected α (· ≥ ·)] {s : Set α} {a : α} :
     BddBelow (insert a s) ↔ BddBelow s := by
-  simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and_iff]
+  simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and]
 
 protected theorem BddBelow.insert [IsDirected α (· ≥ ·)] {s : Set α} (a : α) :
     BddBelow s → BddBelow (insert a s) :=
@@ -1430,31 +1386,3 @@ lemma BddBelow.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → �
     (hf : BddBelow (range f)) (hg : Monotone g) : BddBelow (range (fun x => g (f x))) := by
   change BddBelow (range (g ∘ f))
   simpa only [Set.range_comp] using hg.map_bddBelow hf
-
-section ScottContinuous
-variable [Preorder α] [Preorder β] {f : α → β} {a : α}
-
-/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
-sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
-Scott topology.
-
-The dual notion
-
-```lean
-∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
-```
-
-does not appear to play a significant role in the literature, so is omitted here.
--/
-def ScottContinuous (f : α → β) : Prop :=
-  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
-
-protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f := by
-  refine fun a b hab =>
-    (h (insert_nonempty _ _) (directedOn_pair le_refl hab) ?_).1
-      (mem_image_of_mem _ <| mem_insert _ _)
-  rw [IsLUB, upperBounds_insert, upperBounds_singleton,
-    inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
-  exact isLeast_Ici
-
-end ScottContinuous
