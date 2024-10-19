@@ -645,7 +645,7 @@ theorem quotientEquivAlgOfEq_symm {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] 
   ext
   rfl
 
-lemma comap_map_mk {I J : Ideal R} [I.IsTwoSided] [J.IsTwoSided] (h : I ≤ J) :
+lemma comap_map_mk {I J : Ideal R} [I.IsTwoSided] (h : I ≤ J) :
     Ideal.comap (Ideal.Quotient.mk I) (Ideal.map (Ideal.Quotient.mk I) J) = J := by
   ext; rw [← Ideal.mem_quotient_iff_mem h, Ideal.mem_comap]
 
