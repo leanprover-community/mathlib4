@@ -503,10 +503,6 @@ instance module_finite_of_liesOver [Module.Finite A B] : Module.Finite (A ⧸ p)
 
 example [Module.Finite A B] : Module.Finite (A ⧸ P.under A) (B ⧸ P) := inferInstance
 
-instance algebra_finiteType (R : Type*) {S : Type*} [CommSemiring R] [CommRing S]
-    [Algebra R S] (I : Ideal S) [h : Algebra.FiniteType R S] : Algebra.FiniteType R (S ⧸ I) :=
-  Algebra.FiniteType.trans (S := S) h inferInstance
-
 /-- `B ⧸ P` is a finitely generated `A ⧸ p`-algebra if `B` is a finitely generated `A`-algebra. -/
 instance algebra_finiteType_of_liesOver [Algebra.FiniteType A B] :
     Algebra.FiniteType (A ⧸ p) (B ⧸ P) :=
