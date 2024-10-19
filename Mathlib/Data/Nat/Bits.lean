@@ -73,7 +73,7 @@ lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
     simp only [mul_succ, bodd_add, IH, bodd_succ]
     cases bodd m <;> cases bodd n <;> rfl
 
-lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
+lemma mod_two_of_bodd (n : ℕ) : n % 2 = (bodd n).toNat := by
   have := congr_arg bodd (mod_add_div n 2)
   simp? [not] at this says
     simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and, Bool.bne_false]
@@ -100,7 +100,7 @@ lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
-lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
+lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
     simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
@@ -117,7 +117,7 @@ lemma div2_val (n) : div2 n = n / 2 := by
 /-- `bit b` appends the digit `b` to the binary representation of its natural number input. -/
 def bit (b : Bool) : ℕ → ℕ := cond b (2 * · + 1) (2 * ·)
 
-lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
+lemma bit_val (b n) : bit b n = 2 * n + b.toNat := by
   cases b <;> rfl
 
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
