@@ -115,40 +115,40 @@ universe u
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 lemma isClosed_image_of_stableUnderSpecialization_of_isAffine [IsAffine X] [IsAffine Y]
-    (A : Set X) (hA : IsClosed A) (hf : StableUnderSpecialization (f.val.base '' A)) :
-    IsClosed (f.val.base '' A) := by
+    (A : Set X) (hA : IsClosed A) (hf : StableUnderSpecialization (f.base '' A)) :
+    IsClosed (f.base '' A) := by
   let φ := f.app ⊤
   let iX := X.isoSpec
   let iY := Y.isoSpec
   let f' : Spec Γ(X, f ⁻¹ᵁ ⊤) ⟶ Spec Γ(Y, ⊤) := Spec.map φ
-  let A' : Set (Spec Γ(X, f ⁻¹ᵁ ⊤)) := iX.hom.val.base '' A
+  let A' : Set (Spec Γ(X, f ⁻¹ᵁ ⊤)) := iX.hom.base '' A
   have hA' : IsClosed A' := iX.hom.homeomorph.isClosedMap A hA
-  have hf' : StableUnderSpecialization (f'.val.base '' A') := by
+  have hf' : StableUnderSpecialization (f'.base '' A') := by
     dsimp only [A']
     rw [← Set.image_comp]
     erw [← TopCat.coe_comp]
-    rw [← Scheme.comp_val_base]
+    rw [← Scheme.comp_base]
     dsimp only [iX, f', φ]
-    rw [Scheme.isoSpec_hom_naturality, Scheme.comp_val_base, TopCat.coe_comp, Set.image_comp]
+    rw [Scheme.isoSpec_hom_naturality, Scheme.comp_base, TopCat.coe_comp, Set.image_comp]
     exact iY.hom.homeomorph.isClosedMap.specializingMap.stableUnderSpecialization_image hf
-  have res' : IsClosed (f'.val.base '' A') :=
+  have res' : IsClosed (f'.base '' A') :=
     PrimeSpectrum.isClosed_image_of_stableUnderSpecialization' φ A' hA' hf'
   have nat : iX.hom ≫ f' ≫ iY.inv = f := by
     dsimp only [f', φ, iX, iY]
     simp [Scheme.isoSpec_hom_naturality_assoc]
-  have : f.val.base '' A = iY.inv.val.base '' (f'.val.base '' A') := by
+  have : f.base '' A = iY.inv.base '' (f'.base '' A') := by
     simp only [A']
-    rw [← Set.image_comp, ← Set.image_comp, ← TopCat.coe_comp, ← Scheme.comp_val_base]
+    rw [← Set.image_comp, ← Set.image_comp, ← TopCat.coe_comp, ← Scheme.comp_base]
     erw [← TopCat.coe_comp]
-    rw [← Scheme.comp_val_base, nat]
+    rw [← Scheme.comp_base, nat]
   rw [this]
-  have : IsClosedMap iY.inv.val.base := iY.inv.homeomorph.isClosedMap
+  have : IsClosedMap iY.inv.base := iY.inv.homeomorph.isClosedMap
   apply this
   exact res'
 
 lemma compactSpace_iff_exists :
     CompactSpace X ↔
-      ∃ (R : CommRingCat.{u}) (f : Spec R ⟶ X), Function.Surjective f.val.base := by
+      ∃ (R : CommRingCat.{u}) (f : Spec R ⟶ X), Function.Surjective f.base := by
   constructor
   · intro h
     let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
@@ -163,9 +163,9 @@ lemma compactSpace_iff_exists :
     intro x
     let j : 𝒰.J := 𝒰.f x
     obtain ⟨y, hy⟩ := 𝒰.covers x
-    use (Sigma.ι (fun x : 𝒰.J ↦ Spec Γ(𝒰.obj x, ⊤)) j).val.base ((𝒰.obj j).isoSpec.hom.val.base y)
-    rw [← Scheme.comp_val_base_apply]
-    rw [← Scheme.comp_val_base_apply]
+    use (Sigma.ι (fun x : 𝒰.J ↦ Spec Γ(𝒰.obj x, ⊤)) j).base ((𝒰.obj j).isoSpec.hom.base y)
+    rw [← Scheme.comp_base_apply]
+    rw [← Scheme.comp_base_apply]
     simpa [p]
   · intro ⟨R, f, hf⟩
     constructor
@@ -188,10 +188,10 @@ lemma isCompact_iff_exists {U : X.Opens} :
       rw [compactSpace_iff_exists]
       use R, IsOpenImmersion.lift U.ι f (by simp [hf])
       rw [← Set.range_iff_surjective]
-      have : Function.Injective (U.ι.val.base '' ·) := Set.image_val_injective
+      have : Function.Injective (U.ι.base '' ·) := Set.image_val_injective
       apply this
       simp only [Set.image_univ, Scheme.Opens.range_ι]
-      rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.comp_val_base]
+      rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.comp_base]
       simpa
     exact isCompact_iff_compactSpace.mpr this
 
@@ -219,12 +219,12 @@ private lemma isClosedMap_iff_isSpecializingMap_aux [IsAffine Y] (f : X ⟶ Y) [
   have hU : IsCompact (U : Set X) := CompactSpace.isCompact_univ
   obtain ⟨S, g, hg⟩ := isCompact_iff_exists.mp hU
   intro A hA
-  let A' : Set (Spec S) := g.val.base ⁻¹' A
-  have hgs : Function.Surjective g.val.base := by
+  let A' : Set (Spec S) := g.base ⁻¹' A
+  have hgs : Function.Surjective g.base := by
     rwa [← Set.range_iff_surjective]
   have : IsClosed A' := hA.preimage (Scheme.Hom.continuous g)
-  have : f.val.base '' A = (g ≫ f).val.base '' A' := by
-    rw [Scheme.comp_val_base, TopCat.coe_comp, Set.image_comp]
+  have : f.base '' A = (g ≫ f).base '' A' := by
+    rw [Scheme.comp_base, TopCat.coe_comp, Set.image_comp]
     simp only [A', Set.image_preimage_eq _ hgs]
   rw [this]
   apply isClosed_image_of_stableUnderSpecialization_of_isAffine
@@ -264,11 +264,11 @@ lemma universallyClosed_iff_specializingMap [QuasiCompact f] :
   constructor
   · intro h Z W g i₂ f' hp
     have : QuasiCompact f' := quasiCompact_stableUnderBaseChange hp.flip inferInstance
-    have hcl : IsClosedMap f'.val.base := h g i₂ f' hp
+    have hcl : IsClosedMap f'.base := h g i₂ f' hp
     rwa [isClosedMap_iff_specializingMap] at hcl
   · intro h Z W g i₂ f' hp
     have : QuasiCompact f' := quasiCompact_stableUnderBaseChange hp.flip inferInstance
-    have hcl : SpecializingMap f'.val.base := h g i₂ f' hp
+    have hcl : SpecializingMap f'.base := h g i₂ f' hp
     rwa [← isClosedMap_iff_specializingMap] at hcl
 
 lemma _root_.AlgebraicGeometry.Scheme.ΓSpecIso_inv_naturality_apply
@@ -294,8 +294,8 @@ lemma Spec_mem_basicOpen {R : CommRingCat} (f : Γ(Spec R, ⊤)) (x : Spec R) :
   simp
   rfl
 
-lemma Spec_map_val_base {R S : CommRingCat} (f : R ⟶ S) (x : Spec S) :
-    (Spec.map f).val.base x = PrimeSpectrum.comap f x :=
+lemma Spec_map_base {R S : CommRingCat} (f : R ⟶ S) (x : Spec S) :
+    (Spec.map f).base x = PrimeSpectrum.comap f x :=
   rfl
 
 lemma aeval_ite_mem_vars {σ R : Type*} [CommRing R] [DecidableEq σ] (q : MvPolynomial σ R) :
@@ -349,45 +349,45 @@ lemma compactSpace_of_universallyClosed
     apply IsOpen.inter
     exact (Ti i).2.preimage (Scheme.Hom.continuous fT)
     exact (U i).2.preimage (Scheme.Hom.continuous p)
-  have hfT : IsClosedMap fT.val.base :=
+  have hfT : IsClosedMap fT.base :=
     UniversallyClosed.out p q fT (IsPullback.of_hasPullback f q).flip
-  have hfZ : IsClosed (fT.val.base '' Z) := hfT _ hZ
-  let Zc : Opens T := ⟨(fT.val.base '' Z)ᶜ, hfZ.isOpen_compl⟩
+  have hfZ : IsClosed (fT.base '' Z) := hfT _ hZ
+  let Zc : Opens T := ⟨(fT.base '' Z)ᶜ, hfZ.isOpen_compl⟩
   let ψ : MvPolynomial 𝒰.J K →ₐ[K] K := MvPolynomial.aeval (fun _ ↦ 1)
   let h : Spec (.of K) ⟶ T := Spec.map ψ.toRingHom
-  let t : T := h.val.base default
+  let t : T := h.base default
   have ht (i : 𝒰.J) : t ∈ Ti i := by
     simp only [Ti, t]
     rw [Spec_mem_basicOpen]
     simp only [R]
     erw [CommRingCat.inv_hom_apply]
-    rw [Spec_map_val_base]
+    rw [Spec_map_base]
     simp [ψ]
-  have : t ∉ fT.val.base '' Z := by
+  have : t ∉ fT.base '' Z := by
     intro ⟨z, hz, hzt⟩
     apply hz
     simp only [Opens.carrier_eq_coe, Opens.coe_iSup, Opens.coe_inf, Opens.map_coe, Set.mem_iUnion,
       Set.mem_inter_iff, Set.mem_preimage, SetLike.mem_coe]
-    refine ⟨𝒰.f (p.val.base z), ?_, ?_⟩
+    refine ⟨𝒰.f (p.base z), ?_, ?_⟩
     · rw [hzt]
       apply ht
-    · simpa [U] using 𝒰.covers (p.val.base z)
+    · simpa [U] using 𝒰.covers (p.base z)
   have htZc : t ∈ Zc := this
   obtain ⟨U', ⟨g, rfl⟩, htU', hU'le⟩ :=
     Opens.isBasis_iff_nbhd.mp (AlgebraicGeometry.isBasis_basicOpen T) htZc
   let σ : Finset 𝒰.J := MvPolynomial.vars ((Scheme.ΓSpecIso R).hom g)
   let φ : MvPolynomial 𝒰.J K →+* MvPolynomial 𝒰.J K :=
     (MvPolynomial.aeval (fun i : 𝒰.J ↦ if i ∈ σ then MvPolynomial.X i else 0)).toRingHom
-  let t' : T := (Spec.map φ).val.base t
+  let t' : T := (Spec.map φ).base t
   have ht'g : t' ∈ T.basicOpen g := by
     simp only [t']
-    rw [Spec_mem_basicOpen, Spec_map_val_base]
+    rw [Spec_mem_basicOpen, Spec_map_base]
     have : φ ((Scheme.ΓSpecIso R).hom g) = (Scheme.ΓSpecIso R).hom g :=
       aeval_ite_mem_vars ((Scheme.ΓSpecIso R).hom g)
     simp only [CommRingCat.coe_of, PrimeSpectrum.comap_asIdeal, Ideal.mem_comap, this]
     erw [← Spec_mem_basicOpen g t]
     exact htU'
-  have ht'Zc : t' ∉ fT.val.base '' Z := hU'le ht'g
+  have ht'Zc : t' ∉ fT.base '' Z := hU'le ht'g
   have hσ : ⋃ i ∈ σ, (U i).1 = Set.univ := by
     by_contra h
     apply ht'Zc
@@ -395,8 +395,8 @@ lemma compactSpace_of_universallyClosed
     simp only [Opens.carrier_eq_coe, Set.mem_iUnion, SetLike.mem_coe, exists_prop, not_forall,
       not_exists, not_and] at h
     obtain ⟨x, hx⟩ := h
-    have tri : f.val.base x = q.val.base t' := Subsingleton.elim _ _
-    obtain ⟨z, hzl, hzr⟩ := Scheme.exists_preimage_pullback f q x t' tri
+    have tri : f.base x = q.base t' := Subsingleton.elim _ _
+    obtain ⟨z, hzl, hzr⟩ := Scheme.Pullback.exists_preimage_pullback x t' tri
     refine ⟨z, ?_, hzr⟩
     simp only [Opens.carrier_eq_coe, Opens.coe_iSup, Opens.coe_inf, Opens.map_coe, Set.compl_iUnion,
       Set.mem_iInter, Set.mem_compl_iff, Set.mem_inter_iff, Set.mem_preimage, SetLike.mem_coe, Z,

@@ -40,20 +40,20 @@ variable {K : Type u} [CommRing K]
 
 /-- https://stacks.math.columbia.edu/tag/00I9 -/
 instance : PartialOrder (LocalSubring K) where
-  le A B := ∃ h : A.1 ≤ B.1, IsLocalRingHom (Subring.inclusion h)
+  le A B := ∃ h : A.1 ≤ B.1, IsLocalHom (Subring.inclusion h)
   le_refl := sorry
   le_trans := sorry
   le_antisymm := sorry
 
 instance : CoeSort (LocalSubring K) (Type u) := ⟨fun s ↦ s.1⟩
 
-instance : Membership K (LocalSubring K) := ⟨fun x K ↦ x ∈ K.1⟩
+instance : Membership K (LocalSubring K) := ⟨fun x k ↦ k ∈ x.1⟩
 
 instance LocalSubring.localRing (A : LocalSubring K) : LocalRing A := A.2
 
 lemma domination_preserved_by_range {R : Type*} {S : Type*} {K : Type*}
     [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing K]
-      (f : R →+* S) [IsLocalRingHom f] (g : S →+* K):
+      (f : R →+* S) [IsLocalHom f] (g : S →+* K):
         (LocalSubring.range (g.comp f)) ≤ (LocalSubring.range g) := by
   sorry
 
@@ -118,7 +118,7 @@ Reduce to the case `R ⊆ S ⊆ K` using `LocalRing.of_surjective'`, by maximali
 lemma bijective_rangeRestrict_comp_of_valuationRing {R S K : Type*} [CommRing R]
     [IsDomain R] [ValuationRing R]
     [CommRing S] [LocalRing S] [Field K] [Algebra R K] [IsFractionRing R K]
-    (f : R →+* S) (g : S →+* K) (h : g.comp f = algebraMap R K) [IsLocalRingHom f] :
+    (f : R →+* S) (g : S →+* K) (h : g.comp f = algebraMap R K) [IsLocalHom f] :
     Function.Bijective (g.rangeRestrict.comp f) := sorry
 
 lemma exists_factor_valuationRing' {K : Type*} {R : Type*} [Field K] (R : LocalSubring K) :
@@ -129,7 +129,7 @@ lemma exists_factor_valuationRing' {K : Type*} {R : Type*} [Field K] (R : LocalS
 Reduce to `R ⊆ K` by `LocalRing.of_surjective'`. -/
 lemma exists_factor_valuationRing {R : Type*} [CommRing R] [LocalRing R] {K : Type*} [Field K]
     (f : R →+* K) :
-      ∃ (A : ValuationSubring K) (h : _), IsLocalRingHom (f.codRestrict A.toSubring h) := by sorry
+      ∃ (A : ValuationSubring K) (h : _), IsLocalHom (f.codRestrict A.toSubring h) := by sorry
 
 lemma val_ring_is_max {K : Type*} [Field K] (A : ValuationSubring K) (B : LocalSubring K)
     (h : A.toLocalSubring ≤ B) : A.toLocalSubring = B := sorry
