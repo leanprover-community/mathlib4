@@ -90,12 +90,8 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
 
 @[simp]
 lemma bit_mod_two (a : Bool) (x : ℕ) :
-    bit a x % 2 = if a then 1 else 0 := by
-  #adaptation_note /-- nightly-2024-03-16: simp was
-  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, ← mul_two,
-  --   Bool.cond_eq_ite] -/
-  simp only [bit, ite_apply, ← mul_two, Bool.cond_eq_ite]
-  split_ifs <;> simp [Nat.add_mod]
+    bit a x % 2 = a.toNat := by
+  cases a <;> simp [bit_val, mul_add_mod]
 
 lemma bit_mod_two_eq_zero_iff (a x) :
     bit a x % 2 = 0 ↔ !a := by
