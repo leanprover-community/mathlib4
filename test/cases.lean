@@ -60,6 +60,7 @@ example (n : Nat) (h : n < 5) : n = n := by
   · guard_hyp n : Nat; guard_hyp ih : n < 5 → n = n; guard_hyp h :ₛ n + 1 < 5
     guard_target =ₛ n + 1 = n + 1; rfl
 
+set_option linter.unusedVariables false in
 example (n : Nat) {m} (h : m < 5) : n = n := by
   induction' n with n ih
   · guard_target = Nat.zero = Nat.zero; rfl
