@@ -55,14 +55,10 @@ instance : (fiberInclusion : Fiber p S ⥤ _).Faithful where
 
 /-- For fixed `S : 𝒮` this is the natural isomorphism between `fiberInclusion ⋙ p` and the constant
 function valued at `S`. -/
-@[simps]
-def fiberInclusionCompIsoConst : fiberInclusion ⋙ p ≅ (const (Fiber p S)).obj S where
-  hom := {
-    app := fun X ↦ eqToHom X.2
-    naturality := fun _ _ φ ↦ by simp [IsHomLift.fac' p (𝟙 S) (fiberInclusion.map φ)] }
-  inv := {
-    app := fun X ↦ eqToHom X.2.symm
-    naturality := fun _ _ φ ↦ by simp [IsHomLift.fac' p (𝟙 S) (fiberInclusion.map φ)] }
+@[simps!]
+def fiberInclusionCompIsoConst : fiberInclusion ⋙ p ≅ (const (Fiber p S)).obj S :=
+  NatIso.ofComponents (fun X ↦ eqToIso X.2)
+    (fun φ ↦ by simp [IsHomLift.fac' p (𝟙 S) (fiberInclusion.map φ)])
 
 lemma fiberInclusion_comp_eq_const : fiberInclusion ⋙ p = (const (Fiber p S)).obj S :=
   Functor.ext (fun x ↦ x.2) (fun _ _ φ ↦ IsHomLift.fac' p (𝟙 S) (fiberInclusion.map φ))
@@ -91,10 +87,6 @@ lemma homMk_id (p : 𝒳 ⥤ 𝒮) (S : 𝒮) (a : 𝒳) [IsHomLift p (𝟙 S) (
   rfl
 
 @[simp]
-lemma val_comp {a b c : Fiber p S} (φ : a ⟶ b) (ψ : b ⟶ c) : (φ ≫ ψ).1 = φ.1 ≫ ψ.1 :=
-  rfl
-
-@[simp]
 lemma homMk_comp {a b c : 𝒳} (φ : a ⟶ b) (ψ : b ⟶ c) [IsHomLift p (𝟙 S) φ]
     [IsHomLift p (𝟙 S) ψ] : homMk p S φ ≫ homMk p S ψ = homMk p S (φ ≫ ψ) :=
   rfl
@@ -108,8 +100,8 @@ variable {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {C : Type u₃} [Category.{v₃} C] {F :
 we get an induced functor `C ⥤ Fiber p S` that `F` factors through. -/
 @[simps]
 def inducedFunctor : C ⥤ Fiber p S where
-  obj := fun x ↦ ⟨F.obj x, by simp only [← comp_obj, hF, const_obj_obj]⟩
-  map := fun φ ↦ ⟨F.map φ, of_commsq _ _ _ _ _ <| by simpa using (eqToIso hF).hom.naturality φ⟩
+  obj x := ⟨F.obj x, by simp only [← comp_obj, hF, const_obj_obj]⟩
+  map φ := ⟨F.map φ, of_commsq _ _ _ _ _ <| by simpa using (eqToIso hF).hom.naturality φ⟩
 
 @[simp]
 lemma inducedFunctor_map {X Y : C} (f : X ⟶ Y) :
@@ -117,12 +109,10 @@ lemma inducedFunctor_map {X Y : C} (f : X ⟶ Y) :
 
 /-- Given a functor `F : C ⥤ 𝒳` such that `F ⋙ p` is constant at some `S : 𝒮`, then
 we get a natural isomorphism between `inducedFunctor _ ⋙ fiberInclusion` and `F`. -/
-def inducedFunctorCompIsoSelf : (inducedFunctor hF) ⋙ fiberInclusion ≅ F where
-  hom := { app := fun X ↦ 𝟙 _ }
-  inv := { app := fun X ↦ 𝟙 _ }
+@[simps!]
+def inducedFunctorCompIsoSelf : (inducedFunctor hF) ⋙ fiberInclusion ≅ F := Iso.refl _
 
-lemma inducedFunctor_comp : (inducedFunctor hF) ⋙ fiberInclusion = F :=
-  Functor.ext (fun x ↦ rfl) (by simp)
+lemma inducedFunctor_comp : (inducedFunctor hF) ⋙ fiberInclusion = F := rfl
 
 end
 
