@@ -88,10 +88,9 @@ lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N
     exact (differentiableAt_LFunction _ _ (.inl hs)).differentiableWithinAt
   · refine DifferentiableOn.analyticOnNhd (fun s hs ↦ ?_) isOpen_compl_singleton
     refine ((differentiableAt_LFunction _ _ (.inl hs)).mul ?_).differentiableWithinAt
-    refine .finset_prod fun i hi ↦ ?_
-    refine (differentiableAt_const _).sub ((differentiableAt_const _).mul ?_)
-    apply differentiableAt_id.neg.const_cpow
-    exact .inl (mod_cast (Nat.pos_of_mem_primeFactors hi).ne')
+    refine .finset_prod fun i h ↦ (differentiableAt_const _).sub ((differentiableAt_const _).mul ?_)
+    have : NeZero i := ⟨(Nat.pos_of_mem_primeFactors h).ne'⟩
+    apply differentiable_const_cpow_neg
   · refine eventually_of_mem ?_  (fun t (ht : 1 < t.re) ↦ ?_)
     · exact (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds (by norm_num : 1 < (2 : ℂ).re)
     · simpa only [LFunction_eq_LSeries _ ht] using LSeries_changeLevel hMN χ ht
