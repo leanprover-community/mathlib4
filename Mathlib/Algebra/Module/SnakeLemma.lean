@@ -23,7 +23,7 @@ open LinearMap hiding id
 open Function
 
 /-!
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
         K₂ -F-→ K₃
         |       |
@@ -99,7 +99,7 @@ C₁
 ```
 Such that `f₂` is surjective with a (set-theoretic) section `ρ`, `g₁` is injective with a
 (set-theoretic) retraction `π`,
-hen the map `π₁ ∘ ρ ∘ i₂ ∘ σ ∘ ι₃` is a linear map from `K₃` to `C₁`.
+then the map `π₁ ∘ ρ ∘ i₂ ∘ σ ∘ ι₃` is a linear map from `K₃` to `C₁`.
 Also see `SnakeLemma.δ'` for a noncomputable version.
 -/
 def SnakeLemma.δ : K₃ →ₗ[R] C₁ :=
