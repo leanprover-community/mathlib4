@@ -24,7 +24,7 @@ A `ℤ`-lattice `L` can be defined in two ways:
 Results about the first point of view are in the `ZSpan` namespace and results about the second
 point of view are in the `ZLattice` namespace.
 
-## Main results
+## Main results and definitions
 
 * `ZSpan.isAddFundamentalDomain`: for a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that
 the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
@@ -32,6 +32,9 @@ the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
 `ℤ`-module
 * `ZLattice.rank`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is free
 of `ℤ`-rank equal to the `K`-rank of `E`
+* `ZLattice.comap`: for `e : E → F` a linear map and `L : Submodule ℤ E`, define the pullback of
+`L` by `e`. If `L` is a `ZLattice` and `e` is a continuous linear equiv, then it is a `ZLattice`
+of `E`, see `instIsZLatticeComap`.
 
 ## Implementation Notes
 
@@ -621,7 +624,9 @@ section comap
 variable (K : Type*) [NormedField K] {E F : Type*} [NormedAddCommGroup E] [NormedSpace K E]
     [NormedAddCommGroup F] [NormedSpace K F] (L : Submodule ℤ E)
 
-/--- The coimage of a `ZLattice` by a linear map. -/
+/-- Let `e : E → F` a linear map, the map that sends a `L : Submodule ℤ E` to the
+`Submodule ℤ F` that is the pullback of `L` by `e`. If `L` is a `ZLattice` and `e` is a continuous
+linear equiv, then it is a `ZLattice` of `E`, see `instIsZLatticeComap`. -/
 protected def ZLattice.comap (e : F →ₗ[K] E) := L.comap (e.restrictScalars ℤ)
 
 @[simp]
@@ -645,7 +650,7 @@ theorem ZLattice.comap_span_top (hL : span K (L : Set E) = ⊤) {e : F →ₗ[K]
     span K (ZLattice.comap K L e : Set F) = ⊤ := by
   rw [ZLattice.coe_comap, Submodule.span_preimage_eq (Submodule.nonempty L) he, hL, comap_top]
 
-instance [DiscreteTopology L] [IsZLattice K L] (e : F ≃L[K] E) :
+instance instIsZLatticeComap [DiscreteTopology L] [IsZLattice K L] (e : F ≃L[K] E) :
     IsZLattice K (ZLattice.comap K L e.toLinearMap) where
   span_top := by
     rw [ZLattice.coe_comap, LinearEquiv.coe_coe, e.coe_toLinearEquiv, ← e.image_symm_eq_preimage,
