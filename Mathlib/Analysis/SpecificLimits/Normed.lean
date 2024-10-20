@@ -214,9 +214,9 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
   rw [tendsto_zero_iff_norm_tendsto_zero]
   simpa [div_eq_mul_inv] using tendsto_pow_const_div_const_pow_of_one_lt k hr'
 
-lemma tendsto_const_div_atTop {F : Type*} [Field F] [TopologicalSpace F]
-    [LinearOrderedField F] [OrderTopology F] (g : ℕ → F)
-    (r : F) (hg : Tendsto g atTop atTop) : Tendsto (fun n ↦ r / g n) atTop (𝓝 0) := by
+lemma tendsto_const_div_atTop {F : Type*} [TopologicalSpace F] [LinearOrderedField F]
+    [OrderTopology F] (g : ℕ → F) (r : F) (hg : Tendsto g atTop atTop) :
+    Tendsto (fun n ↦ r / g n) atTop (𝓝 0) := by
   apply Filter.Tendsto.div_atTop tendsto_const_nhds hg (f := fun _ => r) (a := r)
 
 /--For `k ≠ 0` and a constant `r` the function `r / n ^ k` tends to zero. -/
