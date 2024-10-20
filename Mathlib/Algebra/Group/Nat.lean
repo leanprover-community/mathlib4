@@ -101,6 +101,22 @@ lemma not_even_iff : ¬ Even n ↔ n % 2 = 1 := by rw [even_iff, mod_two_ne_zero
 
 @[parity_simps] lemma even_add_one : Even (n + 1) ↔ ¬Even n := by simp [even_add]
 
+@[simp]
+theorem xor_mod_two_eq : (m ^^^ n) % 2 = (m + n) % 2 := by
+  by_cases h : (m + n) % 2 = 0
+  · simp only [h, mod_two_eq_zero_iff_testBit_zero, testBit_zero, xor_mod_two_eq_one, decide_not,
+    Bool.decide_iff_dist, Bool.not_eq_false', beq_iff_eq, decide_eq_decide]
+    omega
+  · simp only [mod_two_ne_zero] at h
+    simp [h]
+    omega
+
+@[simp]
+theorem even_xor : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
+  simp only [even_iff, xor_mod_two_eq]
+  simp only [← even_iff]
+  exact even_add
+
 lemma succ_mod_two_eq_zero_iff {m : ℕ} : (m + 1) % 2 = 0 ↔ m % 2 = 1 := by
   simp [← Nat.even_iff, ← Nat.not_even_iff, parity_simps]
 
