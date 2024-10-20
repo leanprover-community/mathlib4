@@ -51,11 +51,13 @@ section Subset
 
 lemma IsDynCoverOf.of_subset {T : X → X} {F G : Set X} (F_G : F ⊆ G) {U : Set (X × X)} {n : ℕ}
     {s : Set X} (h : IsDynCoverOf T G U n s) :
-    IsDynCoverOf T F U n s := F_G.trans h
+    IsDynCoverOf T F U n s :=
+  F_G.trans h
 
 lemma IsDynNetIn.of_subset {T : X → X} {F G : Set X} (F_G : F ⊆ G ) {U : Set (X × X)} {n : ℕ}
     {s : Set X} (h : IsDynNetIn T F U n s) :
-    IsDynNetIn T G U n s := ⟨h.1.trans F_G, h.2⟩
+    IsDynNetIn T G U n s :=
+  ⟨h.1.trans F_G, h.2⟩
 
 lemma coverMincard_monotone_subset (T : X → X) (U : Set (X × X)) (n : ℕ) :
     Monotone fun F : Set X ↦ coverMincard T F U n :=
@@ -121,7 +123,7 @@ lemma coverMincard_closure_le (h : Continuous T) (F : Set X) (U : Set (X × X)) 
     coverMincard T (closure F) (U ○ V) n ≤ coverMincard T F U n := by
   rcases eq_top_or_lt_top (coverMincard T F U n) with h' | h'
   · exact h' ▸ le_top
-  rcases (coverMincard_finite_iff T F U n).1 h' with ⟨s, s_cover, s_coverMincard⟩
+  obtain ⟨s, s_cover, s_coverMincard⟩ := (coverMincard_finite_iff T F U n).1 h'
   exact s_coverMincard ▸ (s_cover.closure h V_uni).coverMincard_le_card
 
 open ENat ENNReal EReal Filter Nat
@@ -141,14 +143,14 @@ lemma coverEntropyEntourage_closure (h : Continuous T) (F : Set X) (U : Set (X �
 lemma coverEntropyInf_closure (h : Continuous T) (F : Set X) :
     coverEntropyInf T (closure F) = coverEntropyInf T F := by
   refine (iSup₂_le fun U U_uni ↦ ?_).antisymm (coverEntropyInf_monotone T subset_closure)
-  rcases comp_mem_uniformity_sets U_uni with ⟨V, V_uni, V_U⟩
+  obtain ⟨V, V_uni, V_U⟩ := comp_mem_uniformity_sets U_uni
   exact le_iSup₂_of_le V V_uni ((coverEntropyInfEntourage_antitone T (closure F) V_U).trans
     (coverEntropyInfEntourage_closure h F V V_uni))
 
 theorem coverEntropy_closure (h : Continuous T) (F : Set X) :
     coverEntropy T (closure F) = coverEntropy T F := by
   refine (iSup₂_le fun U U_uni ↦ ?_).antisymm (coverEntropy_monotone T subset_closure)
-  rcases comp_mem_uniformity_sets U_uni with ⟨V, V_uni, V_U⟩
+  obtain ⟨V, V_uni, V_U⟩ := comp_mem_uniformity_sets U_uni
   exact le_iSup₂_of_le V V_uni ((coverEntropyEntourage_antitone T (closure F) V_U).trans
     (coverEntropyEntourage_closure h F V V_uni))
 
@@ -172,8 +174,8 @@ lemma coverMincard_union_le (T : X → X) (F G : Set X) (U : Set (X × X)) (n : 
   · rw [hF, top_add]; exact le_top
   rcases eq_top_or_lt_top (coverMincard T G U n) with hG | hG
   · rw [hG, add_top]; exact le_top
-  rcases (coverMincard_finite_iff T F U n).1 hF with ⟨s, s_cover, s_coverMincard⟩
-  rcases (coverMincard_finite_iff T G U n).1 hG with ⟨t, t_cover, t_coverMincard⟩
+  obtain ⟨s, s_cover, s_coverMincard⟩ := (coverMincard_finite_iff T F U n).1 hF
+  obtain ⟨t, t_cover, t_coverMincard⟩ := (coverMincard_finite_iff T G U n).1 hG
   rw [← s_coverMincard, ← t_coverMincard, ← ENat.coe_add]
   apply (IsDynCoverOf.coverMincard_le_card _).trans (WithTop.coe_mono (s.card_union_le t))
   rw [s.coe_union t]
