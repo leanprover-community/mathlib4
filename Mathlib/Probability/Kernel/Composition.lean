@@ -526,7 +526,7 @@ theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [
   swap
   · rw [compProd_of_not_isSFiniteKernel_left _ _ hκ]
     simp
-  rw [compProd_apply MeasurableSet.univ]
+  rw [compProd_apply .univ]
   simp only [Set.mem_univ, Set.setOf_true]
   let Cη := IsFiniteKernel.bound η
   calc
