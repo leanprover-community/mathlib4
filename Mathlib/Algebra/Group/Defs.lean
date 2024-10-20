@@ -176,8 +176,8 @@ lemma mul_dite [Mul α] (a : α) (b : P → α) (c : ¬ P → α) :
     (a * if h : P then b h else c h) = if h : P then a * b h else a * c h := by split <;> rfl
 
 @[to_additive]
-lemma mul_ite [Mul α] (a b c : α) : (a * if P then b else c) = if P then a * b else a * c :=
-  by split <;> rfl
+lemma mul_ite [Mul α] (a b c : α) : (a * if P then b else c) = if P then a * b else a * c := by
+  split <;> rfl
 
 @[to_additive]
 lemma dite_mul [Mul α] (a : P → α) (b : ¬ P → α) (c : α) :
