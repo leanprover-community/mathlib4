@@ -124,6 +124,31 @@ theorem convex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s �
   ⟨fun _ hx => starConvex_sInter fun _ hs => (h _ hs).1 <| hx _ hs,
     isClosed_sInter fun _ hs => (h _ hs).2⟩
 
+variable (𝕜)
+
+/-- The convex closed hull of a set `s` is the minimal convex closed set that includes `s`. -/
+@[simps! isClosed]
+def convexClosedHull : ClosureOperator (Set E) := .ofCompletePred (fun s => Convex 𝕜 s ∧ IsClosed s)
+  fun _ ↦ convex_closed_sInter
+
+variable {𝕜}
+
+theorem convex_convexClosedHull {s : Set E} :
+    Convex 𝕜 (convexClosedHull 𝕜 s) := ((convexClosedHull 𝕜).isClosed_closure s).1
+
+theorem isClosed_convexClosedHull {s : Set E} :
+    IsClosed (convexClosedHull 𝕜 s) := ((convexClosedHull 𝕜).isClosed_closure s).2
+
+theorem subset_convexClosedHull {s : Set E} : s ⊆ convexClosedHull 𝕜 s :=
+  (convexClosedHull 𝕜).le_closure s
+
+theorem convexClosedHull_min {s t : Set E} : s ⊆ t → Convex 𝕜 t ∧ IsClosed t →
+    convexClosedHull 𝕜 s ⊆ t := (convexClosedHull 𝕜).closure_min
+
+theorem convexHull_subseteq_convexClosedHull {s : Set E} :
+    (convexHull 𝕜) s ⊆ (convexClosedHull 𝕜) s :=
+  convexHull_min subset_convexClosedHull convex_convexClosedHull
+
 variable  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 /-- If `s` is a convex set, then `a • interior s + b • closure s ⊆ interior s` for all `0 < a`,
@@ -238,10 +263,11 @@ protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 
     (continuous_fst.const_smul _).add (continuous_snd.const_smul _)
   show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' => hs hx' hy' ha hb hab
 
-/-- The convex hull of a set `s` is the minimal convex set that includes `s`. -/
-@[simps! isClosed]
-def convexClosedHull : ClosureOperator (Set E) := .ofCompletePred (fun s => Convex 𝕜 s ∧ IsClosed s)
-  fun _ ↦ convex_closed_sInter
+theorem convexClosedHull_eq_closure_convexHull {s : Set E} :
+    convexClosedHull 𝕜 s = closure (convexHull 𝕜 s) := subset_antisymm
+  (convexClosedHull_min (subset_trans (subset_convexHull 𝕜 s) subset_closure)
+    ⟨Convex.closure (convex_convexHull 𝕜 s), isClosed_closure⟩)
+  (closure_minimal convexHull_subseteq_convexClosedHull isClosed_convexClosedHull)
 
 open AffineMap
 
