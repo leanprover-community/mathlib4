@@ -808,7 +808,7 @@ theorem one_not_mem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
 -- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
 @[simp (high)]
 theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F)
-    [IsLocalRingHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
+    [IsLocalHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
   ⟨fun h ha => h <| ha.map f, fun h ha => h <| ha.of_map⟩
 
 theorem coe_subset_nonunits [Semiring α] {I : Ideal α} (h : I ≠ ⊤) : (I : Set α) ⊆ nonunits α :=

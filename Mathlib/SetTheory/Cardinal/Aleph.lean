@@ -21,6 +21,14 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 * The function `Cardinal.beth` enumerates the Beth cardinals. `beth 0 = ℵ₀`,
   `beth (succ o) = 2 ^ beth o`, and for a limit ordinal `o`, `beth o` is the supremum of `beth a`
   for `a < o`.
+
+## Notation
+
+The following notation is scoped to the `Cardinal` namespace.
+
+- `ℵ_ o` is notation for `aleph o`. `ℵ₁` is notation for `ℵ_ 1`.
+- `ℶ_ o` is notation for `beth o`. The value `ℶ_ 1` equals the continuum `𝔠`, which is defined in
+  `Mathlib.SetTheory.Cardinal.Continuum`.
 -/
 
 assert_not_exists Module
@@ -33,9 +41,64 @@ open Function Set Cardinal Equiv Order Ordinal
 
 universe u v w
 
-namespace Cardinal
+/-! ### Omega ordinals -/
+
+namespace Ordinal
+
+/-- An ordinal is initial when it is the first ordinal with a given cardinality.
+
+This is written as `o.card.ord = o`, i.e. `o` is the smallest ordinal with cardinality `o.card`. -/
+def IsInitial (o : Ordinal) : Prop :=
+  o.card.ord = o
+
+theorem IsInitial.ord_card {o : Ordinal} (h : IsInitial o) : o.card.ord = o := h
+
+theorem IsInitial.card_le_card {a b : Ordinal} (ha : IsInitial a) : a.card ≤ b.card ↔ a ≤ b := by
+  refine ⟨fun h ↦ ?_, Ordinal.card_le_card⟩
+  rw [← ord_le_ord, ha.ord_card] at h
+  exact h.trans (ord_card_le b)
+
+theorem IsInitial.card_lt_card {a b : Ordinal} (hb : IsInitial b) : a.card < b.card ↔ a < b :=
+  lt_iff_lt_of_le_iff_le hb.card_le_card
+
+theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
+  rw [IsInitial, card_ord]
+
+theorem isInitial_natCast (n : ℕ) : IsInitial n := by
+  rw [IsInitial, card_nat, ord_nat]
+
+theorem isInitial_zero : IsInitial 0 := by
+  exact_mod_cast isInitial_natCast 0
+
+theorem isInitial_one : IsInitial 1 := by
+  exact_mod_cast isInitial_natCast 1
+
+theorem isInitial_omega0 : IsInitial ω := by
+  rw [IsInitial, card_omega0, ord_aleph0]
+
+theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
+  rintro ⟨a, ha⟩
+  have := ha (isInitial_ord (succ a.card))
+  rw [ord_le] at this
+  exact (lt_succ _).not_le this
+
+/-- Initial ordinals are order-isomorphic to the cardinals. -/
+@[simps!]
+def isInitialIso : {x // IsInitial x} ≃o Cardinal where
+  toFun x := x.1.card
+  invFun x := ⟨x.ord, isInitial_ord _⟩
+  left_inv x := Subtype.ext x.2.ord_card
+  right_inv x := card_ord x
+  map_rel_iff' {a _} := a.2.card_le_card
+
+-- TODO: define `omega` as the enumerator function of `IsInitial`, and redefine
+-- `aleph x = (omega x).card`.
+
+end Ordinal
 
 /-! ### Aleph cardinals -/
+
+namespace Cardinal
 
 /-- The `aleph'` function gives the cardinals listed by their ordinal index. `aleph' n = n`,
 `aleph' ω = ℵ₀`, `aleph' (ω + 1) = succ ℵ₀`, etc.
@@ -186,7 +249,7 @@ theorem aleph'_limit {o : Ordinal} (ho : o.IsLimit) : aleph' o = ⨆ a : Iio o, 
 @[simp]
 theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
   eq_of_forall_ge_iff fun c => by
-    simp only [aleph'_le_of_limit omega0_isLimit, lt_omega0, exists_imp, aleph0_le]
+    simp only [aleph'_le_of_limit isLimit_omega0, lt_omega0, exists_imp, aleph0_le]
     exact forall_swap.trans (forall_congr' fun n => by simp only [forall_eq, aleph'_nat])
 
 @[deprecated (since := "2024-09-30")]
@@ -205,30 +268,36 @@ For a version including finite cardinals, see `Cardinal.aleph'`. -/
 def aleph : Ordinal ↪o Cardinal :=
   (OrderEmbedding.addLeft ω).trans aleph'.toOrderEmbedding
 
-theorem aleph_eq_aleph' (o : Ordinal) : aleph o = aleph' (ω + o) :=
+@[inherit_doc]
+scoped notation "ℵ_ " => aleph
+
+/-- `ℵ₁` is the first uncountable ordinal. -/
+scoped notation "ℵ₁" => ℵ_ 1
+
+theorem aleph_eq_aleph' (o : Ordinal) : ℵ_ o = aleph' (ω + o) :=
   rfl
 
-theorem aleph_lt {o₁ o₂ : Ordinal} : aleph o₁ < aleph o₂ ↔ o₁ < o₂ :=
+theorem aleph_lt {o₁ o₂ : Ordinal} : ℵ_ o₁ < ℵ_ o₂ ↔ o₁ < o₂ :=
   aleph.lt_iff_lt
 
-theorem aleph_le {o₁ o₂ : Ordinal} : aleph o₁ ≤ aleph o₂ ↔ o₁ ≤ o₂ :=
+theorem aleph_le {o₁ o₂ : Ordinal} : ℵ_ o₁ ≤ ℵ_ o₂ ↔ o₁ ≤ o₂ :=
   aleph.le_iff_le
 
-theorem aleph_max (o₁ o₂ : Ordinal) : aleph (max o₁ o₂) = max (aleph o₁) (aleph o₂) :=
+theorem aleph_max (o₁ o₂ : Ordinal) : ℵ_ (max o₁ o₂) = max (ℵ_ o₁) (ℵ_ o₂) :=
   aleph.monotone.map_max
 
 @[deprecated aleph_max (since := "2024-08-28")]
-theorem max_aleph_eq (o₁ o₂ : Ordinal) : max (aleph o₁) (aleph o₂) = aleph (max o₁ o₂) :=
+theorem max_aleph_eq (o₁ o₂ : Ordinal) : max (ℵ_ o₁) (ℵ_ o₂) = ℵ_ (max o₁ o₂) :=
   (aleph_max o₁ o₂).symm
 
 @[simp]
-theorem aleph_succ (o : Ordinal) : aleph (succ o) = succ (aleph o) := by
+theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) := by
   rw [aleph_eq_aleph', add_succ, aleph'_succ, aleph_eq_aleph']
 
 @[simp]
-theorem aleph_zero : aleph 0 = ℵ₀ := by rw [aleph_eq_aleph', add_zero, aleph'_omega0]
+theorem aleph_zero : ℵ_ 0 = ℵ₀ := by rw [aleph_eq_aleph', add_zero, aleph'_omega0]
 
-theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, aleph a := by
+theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
   apply le_antisymm _ (ciSup_le' _)
   · rw [aleph_eq_aleph', aleph'_limit (ho.add _)]
     refine ciSup_mono' (bddAbove_of_small _) ?_
@@ -252,24 +321,24 @@ theorem aleph_pos (o : Ordinal) : 0 < aleph o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)
 
 @[simp]
-theorem aleph_toNat (o : Ordinal) : toNat (aleph o) = 0 :=
+theorem aleph_toNat (o : Ordinal) : toNat (ℵ_ o) = 0 :=
   toNat_apply_of_aleph0_le <| aleph0_le_aleph o
 
 @[simp]
-theorem aleph_toPartENat (o : Ordinal) : toPartENat (aleph o) = ⊤ :=
+theorem aleph_toPartENat (o : Ordinal) : toPartENat (ℵ_ o) = ⊤ :=
   toPartENat_apply_of_aleph0_le <| aleph0_le_aleph o
 
-instance nonempty_toType_aleph (o : Ordinal) : Nonempty (aleph o).ord.toType := by
+instance nonempty_toType_aleph (o : Ordinal) : Nonempty (ℵ_ o).ord.toType := by
   rw [toType_nonempty_iff_ne_zero, ← ord_zero]
   exact fun h => (ord_injective h).not_gt (aleph_pos o)
 
-theorem ord_aleph_isLimit (o : Ordinal) : (aleph o).ord.IsLimit :=
-  ord_isLimit <| aleph0_le_aleph _
+theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
+  isLimit_ord <| aleph0_le_aleph _
 
-instance (o : Ordinal) : NoMaxOrder (aleph o).ord.toType :=
+instance (o : Ordinal) : NoMaxOrder (ℵ_ o).ord.toType :=
   toType_noMax_of_succ_lt (ord_aleph_isLimit o).2
 
-theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = aleph o :=
+theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = ℵ_ o :=
   ⟨fun h =>
     ⟨aleph'.symm c - ω, by
       rw [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le, aleph'.apply_symm_apply]
@@ -281,15 +350,15 @@ theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
     simp [ord_le, aleph'_le_of_limit l]⟩
 
 theorem aleph_isNormal : IsNormal (ord ∘ aleph) :=
-  aleph'_isNormal.trans <| add_isNormal ω
+  aleph'_isNormal.trans <| isNormal_add_right ω
 
-theorem succ_aleph0 : succ ℵ₀ = aleph 1 := by rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
+theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
 
-theorem aleph0_lt_aleph_one : ℵ₀ < aleph 1 := by
+theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by
   rw [← succ_aleph0]
   apply lt_succ
 
-theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < aleph 1 := by
+theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
 
 section deprecated
@@ -321,7 +390,7 @@ theorem ord_card_unbounded' : Unbounded (· < ·) { b : Ordinal | b.card.ord = b
 
 @[deprecated (since := "2024-09-24")]
 theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω ≤ o) :
-    ∃ a, (aleph a).ord = o := by
+    ∃ a, (ℵ_ a).ord = o := by
   cases' eq_aleph'_of_eq_card_ord ho with a ha
   use a - ω
   rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
@@ -331,23 +400,26 @@ end deprecated
 
 /-! ### Beth cardinals -/
 
-/-- Beth numbers are defined so that `beth 0 = ℵ₀`, `beth (succ o) = 2 ^ (beth o)`, and when `o` is
+/-- Beth numbers are defined so that `beth 0 = ℵ₀`, `beth (succ o) = 2 ^ beth o`, and when `o` is
 a limit ordinal, `beth o` is the supremum of `beth o'` for `o' < o`.
 
 Assuming the generalized continuum hypothesis, which is undecidable in ZFC, `beth o = aleph o` for
 every `o`. -/
 def beth (o : Ordinal.{u}) : Cardinal.{u} :=
-  limitRecOn o aleph0 (fun _ x => (2 : Cardinal) ^ x) fun a _ IH => ⨆ b : Iio a, IH b.1 b.2
+  limitRecOn o ℵ₀ (fun _ x => 2 ^ x) fun a _ IH => ⨆ b : Iio a, IH b.1 b.2
+
+@[inherit_doc]
+scoped notation "ℶ_ " => beth
 
 @[simp]
-theorem beth_zero : beth 0 = aleph0 :=
+theorem beth_zero : ℶ_ 0 = ℵ₀ :=
   limitRecOn_zero _ _ _
 
 @[simp]
-theorem beth_succ (o : Ordinal) : beth (succ o) = 2 ^ beth o :=
+theorem beth_succ (o : Ordinal) : ℶ_ (succ o) = 2 ^ beth o :=
   limitRecOn_succ _ _ _ _
 
-theorem beth_limit {o : Ordinal} : o.IsLimit → beth o = ⨆ a : Iio o, beth a :=
+theorem beth_limit {o : Ordinal} : o.IsLimit → ℶ_ o = ⨆ a : Iio o, ℶ_ a :=
   limitRecOn_limit _ _ _ _
 
 theorem beth_strictMono : StrictMono beth := by
@@ -370,14 +442,14 @@ theorem beth_mono : Monotone beth :=
   beth_strictMono.monotone
 
 @[simp]
-theorem beth_lt {o₁ o₂ : Ordinal} : beth o₁ < beth o₂ ↔ o₁ < o₂ :=
+theorem beth_lt {o₁ o₂ : Ordinal} : ℶ_ o₁ < ℶ_ o₂ ↔ o₁ < o₂ :=
   beth_strictMono.lt_iff_lt
 
 @[simp]
-theorem beth_le {o₁ o₂ : Ordinal} : beth o₁ ≤ beth o₂ ↔ o₁ ≤ o₂ :=
+theorem beth_le {o₁ o₂ : Ordinal} : ℶ_ o₁ ≤ ℶ_ o₂ ↔ o₁ ≤ o₂ :=
   beth_strictMono.le_iff_le
 
-theorem aleph_le_beth (o : Ordinal) : aleph o ≤ beth o := by
+theorem aleph_le_beth (o : Ordinal) : ℵ_ o ≤ ℶ_ o := by
   induction o using limitRecOn with
   | H₁ => simp
   | H₂ o h =>
@@ -387,20 +459,24 @@ theorem aleph_le_beth (o : Ordinal) : aleph o ≤ beth o := by
     rw [aleph_limit ho, beth_limit ho]
     exact ciSup_mono (bddAbove_of_small _) fun x => IH x.1 x.2
 
-theorem aleph0_le_beth (o : Ordinal) : ℵ₀ ≤ beth o :=
+theorem aleph0_le_beth (o : Ordinal) : ℵ₀ ≤ ℶ_ o :=
   (aleph0_le_aleph o).trans <| aleph_le_beth o
 
-theorem beth_pos (o : Ordinal) : 0 < beth o :=
+theorem beth_pos (o : Ordinal) : 0 < ℶ_ o :=
   aleph0_pos.trans_le <| aleph0_le_beth o
 
-theorem beth_ne_zero (o : Ordinal) : beth o ≠ 0 :=
+theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
   (beth_pos o).ne'
 
+theorem isNormal_beth : IsNormal (ord ∘ beth) := by
+  refine (isNormal_iff_strictMono_limit _).2
+    ⟨ord_strictMono.comp beth_strictMono, fun o ho a ha ↦ ?_⟩
+  rw [comp_apply, beth_limit ho, ord_le]
+  exact ciSup_le' fun b => ord_le.1 (ha _ b.2)
+
+@[deprecated isNormal_beth (since := "2024-10-11")]
 theorem beth_normal : IsNormal.{u} fun o => (beth o).ord :=
-  (isNormal_iff_strictMono_limit _).2
-    ⟨ord_strictMono.comp beth_strictMono, fun o ho a ha => by
-      rw [beth_limit ho, ord_le]
-      exact ciSup_le' fun b => ord_le.1 (ha _ b.2)⟩
+  isNormal_beth
 
 end Cardinal
 

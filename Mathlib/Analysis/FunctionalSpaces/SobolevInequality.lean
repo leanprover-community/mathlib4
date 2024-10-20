@@ -535,9 +535,9 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner  {u : E → F'}
   by_cases h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ = 0
   · rw [eLpNorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
   have h4u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ ≠ ∞ := by
-    refine lintegral_rpow_nnnorm_lt_top_of_eLpNorm'_lt_top (pos_iff_ne_zero.mpr h0p') ?_ |>.ne
-    dsimp only
-    rw [NNReal.val_eq_coe, ← eLpNorm_nnreal_eq_eLpNorm' h0p']
+    refine lintegral_rpow_nnnorm_lt_top_of_eLpNorm'_lt_top
+      ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr h0p') ?_ |>.ne
+    rw [← eLpNorm_nnreal_eq_eLpNorm' h0p']
     exact hu.continuous.memℒp_of_hasCompactSupport (μ := μ) h2u |>.eLpNorm_lt_top
   have h5u : (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
     ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'

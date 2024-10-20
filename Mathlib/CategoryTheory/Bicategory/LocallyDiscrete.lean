@@ -94,17 +94,17 @@ variable [Category.{v} C]
 equalities between 1-morphisms.
 -/
 instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C) where
-  whiskerLeft f g h η := eqToHom (congr_arg₂ (· ≫ ·) rfl (LocallyDiscrete.eq_of_hom η))
-  whiskerRight η h := eqToHom (congr_arg₂ (· ≫ ·) (LocallyDiscrete.eq_of_hom η) rfl)
+  whiskerLeft _ _ _ η := eqToHom (congr_arg₂ (· ≫ ·) rfl (LocallyDiscrete.eq_of_hom η))
+  whiskerRight η _ := eqToHom (congr_arg₂ (· ≫ ·) (LocallyDiscrete.eq_of_hom η) rfl)
   associator f g h := eqToIso <| by apply Discrete.ext; simp
   leftUnitor f := eqToIso <| by apply Discrete.ext; simp
   rightUnitor f := eqToIso <| by apply Discrete.ext; simp
 
 /-- A locally discrete bicategory is strict. -/
 instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C) where
-  id_comp f := Discrete.ext (Category.id_comp _)
-  comp_id f := Discrete.ext (Category.comp_id _)
-  assoc f g h := Discrete.ext (Category.assoc _ _ _)
+  id_comp _ := Discrete.ext (Category.id_comp _)
+  comp_id _ := Discrete.ext (Category.comp_id _)
+  assoc _ _ _ := Discrete.ext (Category.assoc _ _ _)
 
 attribute [local simp]
   Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso Strict.associator_eqToIso
