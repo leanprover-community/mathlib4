@@ -283,8 +283,6 @@ end NoShrink
 /--
 Print (at most) 10 samples of a given type to stdout for debugging.
 -/
--- Porting note: if `Control.ULiftable` is ported, make use of that here, as in mathlib3,
--- to enable sampling from higher types.
 def printSamples {t : Type u} [Repr t] (g : Gen t) : IO PUnit :=
   -- TODO: this should be a global instance
   letI : MonadLift Id IO := ⟨fun f => pure <| Id.run f⟩
