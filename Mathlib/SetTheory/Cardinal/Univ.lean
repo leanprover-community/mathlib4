@@ -59,8 +59,8 @@ def liftPrincipalSeg : Cardinal.{v} <i Cardinal.{max u (v + 1)} := by
   · rw [← ha]
     exact lift_lt_univ _
   · rw [← c.mk_out]
-    obtain (f | f) := InitialSeg.principalSeg_sum_initialSeg
-      (@WellOrderingRel c.out) ((· < ·) : Cardinal.{v} → Cardinal.{v} → Prop)
+    obtain (f | f) := InitialSeg.principalSeg_sum_initialSeg (α := c.out) (β := Cardinal.{v})
+      WellOrderingRel (· < ·)
     · apply mem_range_of_le_lift
       rw [← lift_id #c.out, lift_mk_le.{max u (v + 1)}]
       refine ⟨fun a ↦ equivShrink (Iio f.top) ⟨f a, f.lt_top a⟩, fun a b ↦ ?_⟩
