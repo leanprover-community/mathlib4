@@ -39,20 +39,20 @@ instance instGroupWithZero [GroupWithZero β] : GroupWithZero β* where
   __ := instDivInvMonoid
   __ := instMonoidWithZero
   mul_inv_cancel f := inductionOn f fun f hf ↦ coe_eq.2 <| (φ.em fun y ↦ f y = 0).elim
-    (fun H ↦ (hf <| coe_eq.2 H).elim) fun H ↦ H.mono fun x ↦ mul_inv_cancel₀
+    (fun H ↦ (hf <| coe_eq.2 H).elim) fun H ↦ H.mono fun _ ↦ mul_inv_cancel₀
   inv_zero := coe_eq.2 <| by simp only [Function.comp_def, inv_zero, EventuallyEq.rfl]
 
 instance instDivisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
   toSemiring := instSemiring
   __ := instGroupWithZero
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
 
 instance instDivisionRing [DivisionRing β] : DivisionRing β* where
   __ := instRing
   __ := instDivisionSemiring
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 instance instSemifield [Semifield β] : Semifield β* where
   __ := instCommSemiring

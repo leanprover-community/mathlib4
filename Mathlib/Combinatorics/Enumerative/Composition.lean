@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Compositions
@@ -167,6 +166,12 @@ theorem blocks_pos' (i : ℕ) (h : i < c.length) : 0 < c.blocks[i] :=
 
 theorem one_le_blocksFun (i : Fin c.length) : 1 ≤ c.blocksFun i :=
   c.one_le_blocks (c.blocksFun_mem_blocks i)
+
+theorem blocksFun_le {n} (c : Composition n) (i : Fin c.length) :
+    c.blocksFun i ≤ n := by
+  have := c.blocks_sum
+  have := List.le_sum_of_mem (c.blocksFun_mem_blocks i)
+  simp_all
 
 theorem length_le : c.length ≤ n := by
   conv_rhs => rw [← c.blocks_sum]
@@ -801,7 +806,7 @@ theorem card_boundaries_eq_succ_length : c.boundaries.card = c.length + 1 :=
 
 theorem length_lt_card_boundaries : c.length < c.boundaries.card := by
   rw [c.card_boundaries_eq_succ_length]
-  exact lt_add_one _
+  exact Nat.lt_add_one _
 
 theorem lt_length (i : Fin c.length) : (i : ℕ) + 1 < c.boundaries.card :=
   lt_tsub_iff_right.mp i.2

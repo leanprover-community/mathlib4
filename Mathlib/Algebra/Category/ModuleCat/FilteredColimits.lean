@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
 import Mathlib.Algebra.Category.Grp.FilteredColimits
-import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-!
 # The forgetful functor from `R`-modules preserves filtered colimits.
@@ -183,6 +183,9 @@ instance forget₂AddCommGroupPreservesFilteredColimits :
 instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget (ModuleCat.{u} R)) :=
   Limits.compPreservesFilteredColimits (forget₂ (ModuleCat R) AddCommGrp)
     (forget AddCommGrp)
+
+instance forgetReflectsFilteredColimits : ReflectsFilteredColimits (forget (ModuleCat.{u} R)) where
+  reflects_filtered_colimits _ := { reflectsColimit := reflectsColimitOfReflectsIsomorphisms _ _ }
 
 end
 
