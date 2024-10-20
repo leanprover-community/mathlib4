@@ -925,10 +925,9 @@ theorem disjUnion_singleton (s : Finset α) (a : α) (h : Disjoint s {a}) :
 
 /-! ### insert -/
 
-
 section Insert
 
-variable [DecidableEq α] {s t u v : Finset α} {a b : α}
+variable [DecidableEq α] {s t u v : Finset α} {a b : α} {f : α → β}
 
 /-- `insert a s` is the set `{a} ∪ s` containing `a` and the elements of `s`. -/
 instance : Insert α (Finset α) :=
@@ -2779,7 +2778,8 @@ end Finset
 
 namespace List
 
-variable [DecidableEq α] {l l' : List α} {a : α}
+variable [DecidableEq α] {l l' : List α} {a : α} {f : α → β}
+  {s : Finset α} {t : Set β} {t' : Finset β}
 
 /-- `toFinset l` removes duplicates from the list `l` to produce a finset. -/
 def toFinset (l : List α) : Finset α :=
@@ -2819,6 +2819,18 @@ theorem toFinset_surj_on : Set.SurjOn toFinset { l : List α | l.Nodup } Set.uni
 theorem toFinset_surjective : Surjective (toFinset : List α → Finset α) := fun s =>
   let ⟨l, _, hls⟩ := toFinset_surj_on (Set.mem_univ s)
   ⟨l, hls⟩
+
+instance [DecidableEq β] : Decidable (Set.SurjOn f s t') :=
+  inferInstanceAs (Decidable (∀ x ∈ t', ∃ y ∈ s, f y = x))
+
+instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
+  inferInstanceAs (Decidable (∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y))
+
+instance [DecidablePred (· ∈ t)] : Decidable (Set.MapsTo f s t) :=
+  inferInstanceAs (Decidable (∀ x ∈ s, f x ∈ t))
+
+instance [DecidableEq β] : Decidable (Set.BijOn f s t') :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 theorem toFinset_eq_iff_perm_dedup : l.toFinset = l'.toFinset ↔ l.dedup ~ l'.dedup := by
   simp [Finset.ext_iff, perm_ext_iff_of_nodup (nodup_dedup _) (nodup_dedup _)]
