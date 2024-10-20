@@ -48,7 +48,6 @@ lemma res_zero {X : RingedSpace.{u}} {U V : TopologicalSpace.Opens X}
 
 variable (X : RingedSpace)
 
--- Porting note (#10670): this was not necessary in mathlib3
 instance : CoeSort RingedSpace Type* where
   coe X := X.carrier
 

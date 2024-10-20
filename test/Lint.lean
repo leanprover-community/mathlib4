@@ -2,6 +2,28 @@ import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Order.SetNotation
 
+-- TODO: the linter also runs on the #guard_msg, so disable it once
+-- See https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/.23guard_msgs.20doesn't.20silence.20warnings/near/423534679
+
+set_option linter.dupNamespace false
+
+namespace termG
+-- this creates a hygienic declaration starting with `termG.termG.«_@».test.Lint...`
+-- and the linter ignores it
+set_option linter.dupNamespace true in
+local notation "G" => Unit
+
+/-- info: [termG, termG] -/
+#guard_msgs in
+open Lean in
+run_meta
+  let env ← getEnv
+  let consts := env.constants.toList.find? (·.1.getRoot == `termG)
+  let reps := (consts.map (·.1.components.take 2)).getD default
+  logInfo m!"{reps}"
+  guard (reps[0]! == reps[1]!)
+end termG
+
 /--
 warning: The namespace 'add' is duplicated in the declaration 'add.add'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
@@ -18,8 +40,12 @@ note: this linter can be disabled with `set_option linter.dupNamespace false`
 #guard_msgs in
 def Foo.foo := True
 
--- the `dupNamespace` linter does not notice that `to_additive` created `Foo.add.add`.
+/--
+warning: The namespace 'add' is duplicated in the declaration 'Foo.add.add'
+note: this linter can be disabled with `set_option linter.dupNamespace false`
+-/
 #guard_msgs in
+set_option linter.dupNamespace true in
 @[to_additive] theorem add.mul : True := .intro
 
 --  However, the declaration `Foo.add.add` is present in the environment.
@@ -44,9 +70,13 @@ namespace add
 /--
 warning: The namespace 'add' is duplicated in the declaration 'add.add'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
+---
+warning: The namespace 'add' is duplicated in the declaration 'add.add'
+note: this linter can be disabled with `set_option linter.dupNamespace false`
 -/
 #guard_msgs in
-export Nat (add)
+set_option linter.dupNamespace true in
+export Nat (add add_comm add)
 
 end add
 

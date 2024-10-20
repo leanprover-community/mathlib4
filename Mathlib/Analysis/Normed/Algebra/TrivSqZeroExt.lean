@@ -115,7 +115,7 @@ variable [T2Space R] [T2Space M]
 theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) :
     exp 𝕜 x = inl (exp 𝕜 x.fst) + inr (exp 𝕜 x.fst • x.snd) := by
   simp_rw [exp, FormalMultilinearSeries.sum]
-  by_cases h : Summable (fun (n : ℕ) => (expSeries 𝕜 R n) fun x_1 ↦ fst x)
+  by_cases h : Summable (fun (n : ℕ) => (expSeries 𝕜 R n) fun _ ↦ fst x)
   · refine (hasSum_expSeries_of_smul_comm 𝕜 x hx ?_).tsum_eq
     exact h.hasSum
   · rw [tsum_eq_zero_of_not_summable h, zero_smul, inr_zero, inl_zero, zero_add,

@@ -37,8 +37,6 @@ theorem succ_natCast_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
 /-! ### `natAbs` -/
 
 
-variable {a b : ℤ} {n : ℕ}
-
 theorem natAbs_eq_iff_sq_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a ^ 2 = b ^ 2 := by
   rw [sq, sq]
   exact natAbs_eq_iff_mul_self_eq
