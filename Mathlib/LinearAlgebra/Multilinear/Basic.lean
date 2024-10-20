@@ -5,10 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Pi
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Sort
-import Mathlib.Data.List.FinRange
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Tactic.Abel
