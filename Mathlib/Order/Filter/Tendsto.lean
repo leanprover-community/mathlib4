@@ -10,9 +10,6 @@ import Mathlib.Order.Filter.Basic
 
 The general notion of limit of a map with respect to filters on the source and target types
 is `Filter.Tendsto`. It is defined in terms of the order and the push-forward operation.
-The predicate "happening eventually" is `Filter.Eventually`, and "happening often" is
-`Filter.Frequently`, whose definitions are immediate after `Filter` is defined (but they come
-rather late in this file in order to immediately relate them to the lattice structure).
 
 For instance, anticipating on Topology.Basic, the statement: "if a sequence `u` converges to
 some `x` and `u n` belongs to a set `M` for `n` large enough then `x` is in the closure of

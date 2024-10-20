@@ -37,6 +37,9 @@ The examples of filters appearing in the description of the two motivating ideas
 * `MeasureTheory.ae` : made of sets whose complement has zero measure with respect to `μ`
   (defined in `Mathlib/MeasureTheory/OuterMeasure/AE`)
 
+The predicate "happening eventually" is `Filter.Eventually`, and "happening often" is
+`Filter.Frequently`, whose definitions are immediate after `Filter` is defined (but they come
+rather late in this file in order to immediately relate them to the lattice structure).
 ## Notations
 
 * `∀ᶠ x in f, p x` : `f.Eventually p`;
