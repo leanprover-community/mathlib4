@@ -1067,10 +1067,6 @@ theorem succ_coe [NoMaxOrder α] {a : α} : succ (↑a : WithTop α) = ↑(succ 
 @[nolint unusedArguments]
 instance [OrderTop α] : SuccOrder (WithTop α) := succOrder
 
-@[simp]
-theorem succ_coe_top [OrderTop α] : succ ↑(⊤ : α) = (⊤ : WithTop α) :=
-  succ_coe_of_isMax isMax_top
-
 theorem succ_coe_of_ne_top [OrderTop α] {a : α} (h : a ≠ ⊤) : succ (↑a : WithTop α) = ↑(succ a) :=
   succ_coe_of_not_isMax (not_isMax_iff_ne_top.mpr h)
 
@@ -1240,10 +1236,6 @@ theorem pred_coe [NoMinOrder α] {a : α} : pred (↑a : WithBot α) = ↑(pred 
 
 @[nolint unusedArguments]
 instance [OrderBot α] : PredOrder (WithBot α) := predOrder
-
-@[simp]
-theorem pred_coe_bot [OrderBot α] : pred ↑(⊥ : α) = (⊥ : WithBot α) :=
-  pred_coe_of_isMin isMin_bot
 
 theorem pred_coe_of_ne_bot [OrderBot α] {a : α} (h : a ≠ ⊥) : pred (↑a : WithBot α) = ↑(pred a) :=
   pred_coe_of_not_isMin (not_isMin_iff_ne_bot.mpr h)
