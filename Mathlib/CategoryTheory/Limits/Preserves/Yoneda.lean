@@ -27,33 +27,34 @@ There is also a relative version of this statement where `F : J ⥤ Over A` for 
 
 -/
 
-universe v v₁ v₂ v₃ u u₁ u₂ u₃
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
 open CategoryTheory.Limits Opposite
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u₁} [Category.{v₁} C]
 
-variable {J : Type v} [SmallCategory J] (F : J ⥤ Cᵒᵖ ⥤ Type v)
+variable {J : Type u₂} [Category.{v₂} J] [HasColimitsOfShape J (Type v₁)]
+  [HasColimitsOfShape J (Type (max u₁ v₁))] (F : J ⥤ Cᵒᵖ ⥤ Type v₁)
 
 /-- Naturally in `X`, we have `Hom(YX, colim_i Fi) ≅ colim_i Hom(YX, Fi)`. -/
 noncomputable def yonedaYonedaColimit :
     yoneda.op ⋙ yoneda.obj (colimit F) ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) := calc
   yoneda.op ⋙ yoneda.obj (colimit F)
-    ≅ colimit F ⋙ uliftFunctor.{u} := yonedaOpCompYonedaObj (colimit F)
-  _ ≅ F.flip ⋙ colim ⋙ uliftFunctor.{u} :=
-        isoWhiskerRight (colimitIsoFlipCompColim F) uliftFunctor.{u}
-  _ ≅ F.flip ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙ colim :=
-        isoWhiskerLeft F.flip (preservesColimitNatIso uliftFunctor.{u})
+    ≅ colimit F ⋙ uliftFunctor.{u₁} := yonedaOpCompYonedaObj (colimit F)
+  _ ≅ F.flip ⋙ colim ⋙ uliftFunctor.{u₁} :=
+        isoWhiskerRight (colimitIsoFlipCompColim F) uliftFunctor.{u₁}
+  _ ≅ F.flip ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} ⋙ colim :=
+        isoWhiskerLeft F.flip (preservesColimitNatIso uliftFunctor.{u₁})
   _ ≅ (yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj F) ⋙ colim := isoWhiskerRight
         (isoWhiskerRight largeCurriedYonedaLemma.symm ((whiskeringLeft _ _ _).obj F)) colim
   _ ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) :=
         isoWhiskerLeft yoneda.op (colimitIsoFlipCompColim (F ⋙ yoneda)).symm
 
 theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X)).inv =
-    (colimitObjIsoColimitCompEvaluation _ _).hom
-      ≫ (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) := by
+    (colimitObjIsoColimitCompEvaluation _ _).hom ≫
+      (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) := by
   dsimp [yonedaYonedaColimit]
   simp only [Category.id_comp, Iso.cancel_iso_hom_left]
   apply colimit.hom_ext
