@@ -305,13 +305,13 @@ def Scheme.Hom.isoImage
 
 @[reassoc (attr := simp)]
 lemma Scheme.Hom.isoImage_hom_ι
-  {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : X.Opens) :
+    {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : X.Opens) :
     (f.isoImage U).hom ≫ (f ''ᵁ U).ι = U.ι ≫ f :=
   IsOpenImmersion.isoOfRangeEq_hom_fac _ _ _
 
 @[reassoc (attr := simp)]
 lemma Scheme.Hom.isoImage_inv_ι
-  {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : X.Opens) :
+    {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : X.Opens) :
     (f.isoImage U).inv ≫ U.ι ≫ f = (f ''ᵁ U).ι :=
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
 
