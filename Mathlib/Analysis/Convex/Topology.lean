@@ -161,7 +161,7 @@ end PseudoMetricSpace
 section ContinuousConstSMul
 
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-variable  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 /-- If `s` is a convex set, then `a • interior s + b • closure s ⊆ interior s` for all `0 < a`,
 `0 ≤ b`, `a + b = 1`. See also `Convex.combo_interior_self_subset_interior` for a weaker version. -/
@@ -280,8 +280,6 @@ theorem convexClosedHull_eq_closure_convexHull {s : Set E} :
   (convexClosedHull_min (subset_trans (subset_convexHull 𝕜 s) subset_closure)
     ⟨Convex.closure (convex_convexHull 𝕜 s), isClosed_closure⟩)
   (closure_minimal convexHull_subseteq_convexClosedHull isClosed_convexClosedHull)
-
-
 
 open AffineMap
 
