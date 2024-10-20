@@ -52,7 +52,7 @@ def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
 `Spec.map (X.residue x)` is a closed immersion. -/
 instance {X : Scheme.{u}} (x) : IsPreimmersion (Spec.map (X.residue x)) :=
   IsPreimmersion.mk_Spec_map
-    (PrimeSpectrum.closedEmbedding_comap_of_surjective _ _ (Ideal.Quotient.mk_surjective)).embedding
+    (PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _ Ideal.Quotient.mk_surjective).embedding
     (RingHom.surjectiveOnStalks_of_surjective (Ideal.Quotient.mk_surjective))
 
 @[simp]
