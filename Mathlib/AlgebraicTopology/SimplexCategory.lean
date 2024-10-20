@@ -142,7 +142,6 @@ lemma id_toOrderHom (a : SimplexCategory) :
 lemma comp_toOrderHom {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c) :
     (f ≫ g).toOrderHom = g.toOrderHom.comp f.toOrderHom := rfl
 
--- Porting note (#5229): added because `Hom.ext'` is not triggered automatically
 @[ext]
 theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g :=

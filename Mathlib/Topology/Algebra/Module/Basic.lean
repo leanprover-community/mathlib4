@@ -12,6 +12,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.Algebra.Module.Opposites
 
 /-!
 # Theory of topological modules and continuous linear maps.
@@ -130,9 +131,8 @@ end Submodule
 
 section closure
 
-variable {R R' : Type u} {M M' : Type v} [Semiring R] [Ring R']
-  [TopologicalSpace M] [AddCommMonoid M] [TopologicalSpace M'] [AddCommGroup M'] [Module R M]
-  [ContinuousConstSMul R M] [Module R' M'] [ContinuousConstSMul R' M']
+variable {R : Type u} {M : Type v} [Semiring R] [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+  [ContinuousConstSMul R M]
 
 theorem Submodule.mapsTo_smul_closure (s : Submodule R M) (c : R) :
     Set.MapsTo (c • ·) (closure s : Set M) (closure s) :=
@@ -378,10 +378,6 @@ instance continuousSemilinearMapClass :
   map_continuous f := f.2
   map_smulₛₗ f := f.toLinearMap.map_smul'
 
--- see Note [function coercion]
-/-- Coerce continuous linear maps to functions. -/
---instance toFun' : CoeFun (M₁ →SL[σ₁₂] M₂) fun _ => M₁ → M₂ := ⟨DFunLike.coe⟩
-
 -- porting note (#10618): was `simp`, now `simp only` proves it
 theorem coe_mk (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ →ₛₗ[σ₁₂] M₂) = f :=
   rfl
@@ -454,11 +450,6 @@ theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M₁] [Module S M�
     [Module S M₂] [LinearMap.CompatibleSMul M₁ M₂ R S] (f : M₁ →L[S] M₂) (c : R) (x : M₁) :
     f (c • x) = c • f x :=
   LinearMap.CompatibleSMul.map_smul (f : M₁ →ₗ[S] M₂) c x
-
-@[deprecated _root_.map_sum (since := "2023-09-16")]
-protected theorem map_sum {ι : Type*} (f : M₁ →SL[σ₁₂] M₂) (s : Finset ι) (g : ι → M₁) :
-    f (∑ i ∈ s, g i) = ∑ i ∈ s, f (g i) :=
-  map_sum ..
 
 @[simp, norm_cast]
 theorem coe_coe (f : M₁ →SL[σ₁₂] M₂) : ⇑(f : M₁ →ₛₗ[σ₁₂] M₂) = f :=
@@ -1422,7 +1413,7 @@ variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R�
   [SMulCommClass R₃ S₃ M₃] [ContinuousConstSMul S₃ M₃] [Module S N₂] [ContinuousConstSMul S N₂]
   [SMulCommClass R S N₂] [Module S N₃] [SMulCommClass R S N₃] [ContinuousConstSMul S N₃]
   {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (c : S)
-  (h : M₂ →SL[σ₂₃] M₃) (f g : M →SL[σ₁₂] M₂) (x y z : M)
+  (h : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂)
 
 /-- `ContinuousLinearMap.prod` as an `Equiv`. -/
 @[simps apply]
@@ -1509,7 +1500,7 @@ section CommRing
 
 variable {R : Type*} [CommRing R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] {M₂ : Type*}
   [TopologicalSpace M₂] [AddCommGroup M₂] {M₃ : Type*} [TopologicalSpace M₃] [AddCommGroup M₃]
-  [Module R M] [Module R M₂] [Module R M₃] [ContinuousConstSMul R M₃]
+  [Module R M] [Module R M₂] [Module R M₃]
 
 variable [TopologicalAddGroup M₂] [ContinuousConstSMul R M₂]
 
@@ -1600,10 +1591,10 @@ variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} [Semiring R₁] [Semiring 
   {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
   {σ₁₃ : R₁ →+* R₃} {σ₃₁ : R₃ →+* R₁} [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
   [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁] {M₁ : Type*}
-  [TopologicalSpace M₁] [AddCommMonoid M₁] {M'₁ : Type*} [TopologicalSpace M'₁] [AddCommMonoid M'₁]
+  [TopologicalSpace M₁] [AddCommMonoid M₁]
   {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] {M₃ : Type*} [TopologicalSpace M₃]
   [AddCommMonoid M₃] {M₄ : Type*} [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R₁ M₁]
-  [Module R₁ M'₁] [Module R₂ M₂] [Module R₃ M₃]
+  [Module R₂ M₂] [Module R₃ M₃]
 
 /-- A continuous linear equivalence induces a continuous linear map. -/
 @[coe]
@@ -1633,11 +1624,6 @@ instance continuousSemilinearEquivClass :
   map_smulₛₗ f := f.map_smul'
   map_continuous := continuous_toFun
   inv_continuous := continuous_invFun
-
--- see Note [function coercion]
--- /-- Coerce continuous linear equivs to maps. -/
--- instance : CoeFun (M₁ ≃SL[σ₁₂] M₂) fun _ => M₁ → M₂ :=
--- ⟨fun f => f⟩
 
 theorem coe_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : (e : M₁ →SL[σ₁₂] M₂) b = e b :=
   rfl
@@ -2311,7 +2297,6 @@ end ContinuousLinearMap
 namespace Submodule
 
 variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
-  {M₂ : Type*} [TopologicalSpace M₂] [AddCommGroup M₂] [Module R M₂]
 
 open ContinuousLinearMap
 
@@ -2394,5 +2379,17 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
+
+namespace MulOpposite
+
+variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
+  {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M] [ContinuousSMul R M]
+
+/-- The function `op` is a continuous linear equivalence. -/
+@[simps!]
+def opContinuousLinearEquiv : M ≃L[R] Mᵐᵒᵖ where
+  __ := MulOpposite.opLinearEquiv R
+
+end MulOpposite
 
 set_option linter.style.longFile 2500

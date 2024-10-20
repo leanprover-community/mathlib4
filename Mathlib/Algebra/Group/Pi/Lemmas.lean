@@ -26,8 +26,7 @@ variable {I : Type u}
 -- The indexing type
 variable {f : I → Type v}
 
--- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i j : I)
+variable (i : I)
 
 @[to_additive (attr := simp)]
 theorem Set.range_one {α β : Type*} [One β] [Nonempty α] : Set.range (1 : α → β) = {1} :=

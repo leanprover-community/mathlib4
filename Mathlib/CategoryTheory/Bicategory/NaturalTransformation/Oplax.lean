@@ -245,7 +245,6 @@ instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   id := Modification.id
   comp := Modification.vcomp
 
--- Porting note (#5229): duplicating the `ext` lemma.
 @[ext]
 lemma ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ b, m.app b = n.app b) :
     m = n := by
