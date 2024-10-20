@@ -366,8 +366,7 @@ theorem xor_mod_two_eq {m n : ℕ} : (m ^^^ n) % 2 = (m + n) % 2 := by
 @[simp]
 theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
   simp only [even_iff, xor_mod_two_eq]
-  simp only [← even_iff]
-  exact even_add
+  omega
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega
