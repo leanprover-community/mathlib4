@@ -567,11 +567,11 @@ protected def mk'' (a : α) : Quotient s₁ :=
   Quot.mk s₁.1 a
 
 /-- `Quotient.mk''` is a surjective function. -/
-theorem surjective_mk'' : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
+theorem mk''_surjective : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
   Quot.exists_rep
 
 @[deprecated (since := "2024-09-02")]
-alias surjective_Quotient_mk'' := surjective_mk''
+alias surjective_Quotient_mk'' := mk''_surjective
 
 /-- A version of `Quotient.liftOn` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
