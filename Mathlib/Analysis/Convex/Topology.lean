@@ -91,33 +91,7 @@ end stdSimplex
 /-! ### Topological vector spaces -/
 section TopologicalSpace
 
-variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
-  [AddCommGroup E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
-  {x y : E}
-
-theorem segment_subset_closure_openSegment : [x -[𝕜] y] ⊆ closure (openSegment 𝕜 x y) := by
-  rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
-  exact image_closure_subset_closure_image (by fun_prop)
-
-end TopologicalSpace
-
-section PseudoMetricSpace
-
-variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜] [OrderTopology 𝕜]
-  [ProperSpace 𝕜] [CompactIccSpace 𝕜] [AddCommGroup E] [TopologicalSpace E] [T2Space E]
-  [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
-
-@[simp]
-theorem closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
-  rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
-  exact (image_closure_of_isCompact (isBounded_Ioo _ _).isCompact_closure <|
-    Continuous.continuousOn <| by fun_prop).symm
-
-end PseudoMetricSpace
-
-section ContinuousConstSMul
-
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 
 theorem convex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s ∧ IsClosed s) :
     Convex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
@@ -156,6 +130,37 @@ theorem convexClosedHull_eq_convexClosedHull_closure {s : Set E} :
   (convexClosedHull_min (closure_minimal subset_convexClosedHull isClosed_convexClosedHull)
     ⟨convex_convexClosedHull, isClosed_convexClosedHull⟩)
 
+end TopologicalSpace
+
+section TopologicalSpace
+
+variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+  [AddCommGroup E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+  {x y : E}
+
+theorem segment_subset_closure_openSegment : [x -[𝕜] y] ⊆ closure (openSegment 𝕜 x y) := by
+  rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
+  exact image_closure_subset_closure_image (by fun_prop)
+
+end TopologicalSpace
+
+section PseudoMetricSpace
+
+variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜] [OrderTopology 𝕜]
+  [ProperSpace 𝕜] [CompactIccSpace 𝕜] [AddCommGroup E] [TopologicalSpace E] [T2Space E]
+  [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+
+@[simp]
+theorem closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
+  rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
+  exact (image_closure_of_isCompact (isBounded_Ioo _ _).isCompact_closure <|
+    Continuous.continuousOn <| by fun_prop).symm
+
+end PseudoMetricSpace
+
+section ContinuousConstSMul
+
+variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 /-- If `s` is a convex set, then `a • interior s + b • closure s ⊆ interior s` for all `0 < a`,
