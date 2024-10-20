@@ -3,11 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
-
--- TODO when `f` is a CLM, coerce it to `ContinuousAddMonoidHom`
--- generalize `liftCLM` to `→SL` from `→L`
+import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Algebraic operations on `SeparationQuotient`

@@ -377,7 +377,7 @@ instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat :=
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
-  HasForget₂.mk' (fun R : CommSemiRingCat => CommMonCat.of R) (fun R => rfl)
+  HasForget₂.mk' (fun R : CommSemiRingCat => CommMonCat.of R) (fun _ => rfl)
     -- Porting note: `(_ := _)` trick
     (fun {R₁ R₂} f => RingHom.toMonoidHom (α := R₁) (β := R₂) f) (by rfl)
 
@@ -531,8 +531,8 @@ instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat :=
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :=
-  HasForget₂.mk' (fun R : CommRingCat => CommSemiRingCat.of R) (fun R => rfl)
-    (fun {R₁ R₂} f => f) (by rfl)
+  HasForget₂.mk' (fun R : CommRingCat => CommSemiRingCat.of R) (fun _ => rfl)
+    (fun {_ _} f => f) (by rfl)
 
 instance : (forget₂ CommRingCat CommSemiRingCat).Full where map_surjective f := ⟨f, rfl⟩
 
@@ -582,6 +582,16 @@ theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
 theorem commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.symm.toRingHom = i.inv := by
   ext
+  rfl
+
+@[simp]
+lemma commRingIsoToRingEquiv_apply {X Y : CommRingCat} (i : X ≅ Y) (x : X) :
+    i.commRingCatIsoToRingEquiv x = i.hom x :=
+  rfl
+
+@[simp]
+lemma commRingIsoToRingEquiv_symm_apply {X Y : CommRingCat} (i : X ≅ Y) (y : Y) :
+    i.commRingCatIsoToRingEquiv.symm y = i.inv y :=
   rfl
 
 end CategoryTheory.Iso
