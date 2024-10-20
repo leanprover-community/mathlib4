@@ -626,14 +626,14 @@ lemma resLE_comp_resLE {Z : Scheme.{u}} (g : Y ⟶ Z) {W : Z.Opens} (e') :
   simp [← cancel_mono W.ι]
 
 @[reassoc (attr := simp)]
-lemma map_resLE (i : V' ⟶ V) :
-    X.homOfLE i.le ≫ f.resLE U V e = f.resLE U V' (i.le.trans e) := by
+lemma map_resLE (i : V' ≤ V) :
+    X.homOfLE i ≫ f.resLE U V e = f.resLE U V' (i.trans e) := by
   simp_rw [← resLE_id, resLE_comp_resLE, Category.id_comp]
 
 @[reassoc (attr := simp)]
-lemma resLE_map (i : U ⟶ U') :
-    f.resLE U V e ≫ Y.homOfLE i.le =
-      f.resLE U' V (e.trans ((Opens.map f.base).map i).le) := by
+lemma resLE_map (i : U ≤ U') :
+    f.resLE U V e ≫ Y.homOfLE i =
+      f.resLE U' V (e.trans ((Opens.map f.base).map i.hom).le) := by
   simp_rw [← resLE_id, resLE_comp_resLE, Category.comp_id]
 
 lemma resLE_congr (e₁ : U = U') (e₂ : V = V') (P : MorphismProperty Scheme.{u}) :
