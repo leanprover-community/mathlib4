@@ -50,8 +50,12 @@ theorem coe_mkHomeomorph_symm : ⇑(mkHomeomorph : M ≃ₜ Mᵈᵐᵃ).symm = m
 @[to_additive] theorem inducing_mk : Inducing (@mk M) := mkHomeomorph.inducing
 @[to_additive] theorem embedding_mk : Embedding (@mk M) := mkHomeomorph.embedding
 @[to_additive] theorem isOpenEmbedding_mk : IsOpenEmbedding (@mk M) := mkHomeomorph.isOpenEmbedding
-@[to_additive] theorem closedEmbedding_mk : ClosedEmbedding (@mk M) := mkHomeomorph.closedEmbedding
+@[to_additive] theorem isClosedEmbedding_mk : IsClosedEmbedding (@mk M) :=
+  mkHomeomorph.isClosedEmbedding
 @[to_additive] theorem quotientMap_mk : QuotientMap (@mk M) := mkHomeomorph.quotientMap
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_mk := isClosedEmbedding_mk
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_mk := isOpenEmbedding_mk
@@ -66,7 +70,11 @@ theorem isOpenEmbedding_mk_symm : IsOpenEmbedding (@mk M).symm := mkHomeomorph.s
 alias openEmbedding_mk_symm := isOpenEmbedding_mk_symm
 
 @[to_additive]
-theorem closedEmbedding_mk_symm : ClosedEmbedding (@mk M).symm := mkHomeomorph.symm.closedEmbedding
+theorem isClosedEmbedding_mk_symm : IsClosedEmbedding (@mk M).symm :=
+  mkHomeomorph.symm.isClosedEmbedding
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_mk_symm := isClosedEmbedding_mk_symm
 
 @[to_additive]
 theorem quotientMap_mk_symm : QuotientMap (@mk M).symm := mkHomeomorph.symm.quotientMap
@@ -76,8 +84,8 @@ theorem quotientMap_mk_symm : QuotientMap (@mk M).symm := mkHomeomorph.symm.quot
 @[to_additive] instance instT2Space [T2Space M] : T2Space Mᵈᵐᵃ := embedding_mk_symm.t2Space
 @[to_additive] instance instT25Space [T25Space M] : T25Space Mᵈᵐᵃ := embedding_mk_symm.t25Space
 @[to_additive] instance instT3Space [T3Space M] : T3Space Mᵈᵐᵃ := embedding_mk_symm.t3Space
-@[to_additive] instance instT4Space [T4Space M] : T4Space Mᵈᵐᵃ := closedEmbedding_mk_symm.t4Space
-@[to_additive] instance instT5Space [T5Space M] : T5Space Mᵈᵐᵃ := closedEmbedding_mk_symm.t5Space
+@[to_additive] instance instT4Space [T4Space M] : T4Space Mᵈᵐᵃ := isClosedEmbedding_mk_symm.t4Space
+@[to_additive] instance instT5Space [T5Space M] : T5Space Mᵈᵐᵃ := isClosedEmbedding_mk_symm.t5Space
 
 @[to_additive] instance instR0Space [R0Space M] : R0Space Mᵈᵐᵃ := embedding_mk_symm.r0Space
 @[to_additive] instance instR1Space [R1Space M] : R1Space Mᵈᵐᵃ := embedding_mk_symm.r1Space
@@ -86,11 +94,11 @@ theorem quotientMap_mk_symm : QuotientMap (@mk M).symm := mkHomeomorph.symm.quot
 instance instRegularSpace [RegularSpace M] : RegularSpace Mᵈᵐᵃ := embedding_mk_symm.regularSpace
 
 @[to_additive]
-instance instNormalSpace [NormalSpace M] : NormalSpace Mᵈᵐᵃ := closedEmbedding_mk_symm.normalSpace
+instance instNormalSpace [NormalSpace M] : NormalSpace Mᵈᵐᵃ := isClosedEmbedding_mk_symm.normalSpace
 
 @[to_additive]
 instance instCompletelyNormalSpace [CompletelyNormalSpace M] : CompletelyNormalSpace Mᵈᵐᵃ :=
-  closedEmbedding_mk_symm.completelyNormalSpace
+  isClosedEmbedding_mk_symm.completelyNormalSpace
 
 @[to_additive]
 instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵈᵐᵃ :=
@@ -119,7 +127,7 @@ instance instLocallyCompactSpace [LocallyCompactSpace M] : LocallyCompactSpace M
 @[to_additive]
 instance instWeaklyLocallyCompactSpace [WeaklyLocallyCompactSpace M] :
     WeaklyLocallyCompactSpace Mᵈᵐᵃ :=
-  closedEmbedding_mk_symm.weaklyLocallyCompactSpace
+  isClosedEmbedding_mk_symm.weaklyLocallyCompactSpace
 
 @[to_additive (attr := simp)]
 theorem map_mk_nhds (x : M) : map (mk : M → Mᵈᵐᵃ) (𝓝 x) = 𝓝 (mk x) :=

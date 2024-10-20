@@ -347,13 +347,16 @@ alias UniformEmbedding.isDenseEmbedding := IsUniformEmbedding.isDenseEmbedding
 @[deprecated (since := "2024-09-30")]
 alias IsUniformEmbedding.denseEmbedding := IsUniformEmbedding.isDenseEmbedding
 
-theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
+theorem isClosedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
     [T0Space β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
-    (hf : Pairwise fun x y => (f x, f y) ∉ s) : ClosedEmbedding f := by
+    (hf : Pairwise fun x y => (f x, f y) ∉ s) : IsClosedEmbedding f := by
   rcases @DiscreteTopology.eq_bot α _ _ with rfl; let _ : UniformSpace α := ⊥
   exact
     { (isUniformEmbedding_of_spaced_out hs hf).embedding with
       isClosed_range := isClosed_range_of_spaced_out hs hf }
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_of_spaced_out := isClosedEmbedding_of_spaced_out
 
 theorem closure_image_mem_nhds_of_isUniformInducing {s : Set (α × α)} {e : α → β} (b : β)
     (he₁ : IsUniformInducing e) (he₂ : IsDenseInducing e) (hs : s ∈ 𝓤 α) :

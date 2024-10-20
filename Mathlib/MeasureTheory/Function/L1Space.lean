@@ -1375,12 +1375,10 @@ theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrabl
     ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
   simp [edist_eq_coe_nnnorm_sub]
 
-@[simp]
 theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
     edist (hf.toL1 f) 0 = ∫⁻ a, edist (f a) 0 ∂μ := by
-  simp only [toL1, Lp.edist_toLp_zero, eLpNorm, one_ne_zero, eLpNorm', one_toReal, ENNReal.rpow_one,
-    ne_eq, not_false_eq_true, div_self, ite_false]
-  simp [edist_eq_coe_nnnorm]
+  simp only [edist_zero_right, Lp.nnnorm_coe_ennreal, toL1_eq_mk, eLpNorm_aeeqFun]
+  apply eLpNorm_one_eq_lintegral_nnnorm
 
 variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
 
