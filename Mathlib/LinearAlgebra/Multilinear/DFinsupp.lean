@@ -127,8 +127,8 @@ end Semiring
 section CommSemiring
 
 variable [DecidableEq ι] [Fintype ι] [CommSemiring R]
-variable [∀ i k, AddCommMonoid (M i k)] [∀ i k, Module R (M i k)]
-variable [∀ p, AddCommMonoid (N p)] [∀ p, Module R (N p)]
+variable [∀ i k, AddCommMonoid (M i k)] [∀ p, AddCommMonoid (N p)]
+variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 
 /-- `MultilinearMap.dfinsuppFamily` as a linear map. -/
 @[simps]
