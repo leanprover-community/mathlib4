@@ -354,10 +354,11 @@ theorem memℒp_of_bounded [IsFiniteMeasure μ]
   let c := max |a| |b|
   (memℒp_const c).mono' hX.aestronglyMeasurable (abs_le_max_abs_abs_ae ha hb)
 
-/-! ### Popvinciu's inequality on variances -/
-/--Variance is bounded by `((b - a) / 2) ^ 2`
-if almost everywhere real-valued measurable function `X` satisfies `a ≤ X ≤ b` almost everywhere.-/
 
+/-- ** Popoviciu's inequality on variance**
+
+The variance of a random variable `X` satisfying `a ≤ X ≤ b`  almost everywhere is at most
+`((b - a) / 2) ^ 2`. -/
 lemma variance_square_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
     (ha : ∀ᵐ ω ∂μ, a ≤ X ω) (hb : ∀ᵐ ω ∂μ, X ω ≤ b) (hX : AEMeasurable X μ) :
     variance X μ ≤ ((b - a) / 2) ^ 2 :=
