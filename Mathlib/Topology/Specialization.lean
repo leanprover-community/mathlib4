@@ -63,7 +63,7 @@ instance instPartialOrder [T0Space α] : PartialOrder (Specialization α) := spe
 orders. -/
 def map (f : C(α, β)) : Specialization α →o Specialization β where
   toFun := toEquiv ∘ f ∘ ofEquiv
-  monotone' := f.continuous.specialization_monotone
+  monotone' := (map_continuous f).specialization_monotone
 
 @[simp] lemma map_id : map (ContinuousMap.id α) = OrderHom.id := rfl
 @[simp] lemma map_comp (g : C(β, γ)) (f : C(α, β)) : map (g.comp f) = (map g).comp (map f) := rfl
