@@ -16,8 +16,8 @@ namespace List
 variable {α : Type u}
 
 instance instMonad : Monad List.{u} where
-  pure := @List.pure
-  bind := @List.bind
+  pure := @List.singleton
+  bind := @List.flatMap
   map := @List.map
 
 @[simp] theorem pure_def (a : α) : pure a = [a] := rfl
@@ -25,8 +25,8 @@ instance instMonad : Monad List.{u} where
 instance instLawfulMonad : LawfulMonad List.{u} := LawfulMonad.mk'
   (id_map := map_id)
   (pure_bind := fun _ _ => List.append_nil _)
-  (bind_assoc := List.bind_assoc)
-  (bind_pure_comp := fun _ _ => (map_eq_bind _ _).symm)
+  (bind_assoc := List.flatMap_assoc)
+  (bind_pure_comp := fun _ _ => (map_eq_flatMap _ _).symm)
 
 instance instAlternative : Alternative List.{u} where
   failure := @List.nil
