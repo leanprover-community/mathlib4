@@ -432,12 +432,11 @@ protected theorem embedding [PseudoEMetricSpace β] [DilationClass F α β] (f :
   (Dilation.isUniformEmbedding f).embedding
 
 /-- A dilation from a complete emetric space is a closed embedding -/
-protected lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :
+lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :
     IsClosedEmbedding f :=
   (antilipschitz f).isClosedEmbedding (lipschitz f).uniformContinuous
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding := isClosedEmbedding
+@[deprecated (since := "2024-10-20")] alias closedEmbedding := isClosedEmbedding
 
 end EmetricDilation
 
