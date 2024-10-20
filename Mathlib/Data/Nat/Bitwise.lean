@@ -357,7 +357,7 @@ theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b <
 theorem xor_mod_two_eq {m n : ℕ} : (m ^^^ n) % 2 = (m + n) % 2 := by
   by_cases h : (m + n) % 2 = 0
   · simp only [h, mod_two_eq_zero_iff_testBit_zero, testBit_zero, xor_mod_two_eq_one, decide_not,
-    Bool.decide_iff_dist, Bool.not_eq_false', beq_iff_eq, decide_eq_decide]
+      Bool.decide_iff_dist, Bool.not_eq_false', beq_iff_eq, decide_eq_decide]
     omega
   · simp only [mod_two_ne_zero] at h
     simp only [h, xor_mod_two_eq_one]
