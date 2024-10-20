@@ -52,7 +52,7 @@ variable {m n : ℕ∞}
 @[simp] theorem some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
 
 instance : SuccAddOrder ℕ∞ where
-  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
+  succ_eq_add_one x := by cases x <;> rfl
 
 -- Porting note: `simp` and `norm_cast` can prove it
 --@[simp, norm_cast]
