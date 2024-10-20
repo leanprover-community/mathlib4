@@ -395,68 +395,47 @@ theorem lem1 [DecidableEq (Ideal B)] :
   replace hbP : ∀ g : G, g • Q ≠ Q → b ∈ g • Q :=
     fun g hg ↦ (Finset.inf_le (Finset.mem_filter.mpr ⟨Finset.mem_univ g, hg⟩) : P ≤ g • Q) hbP
   let f := MulSemiringAction.charpoly G b
-  let _ := f.natDegree
-  have hf : f.Monic := MulSemiringAction.Charpoly.monic_charpoly G b
-  let g := f.map (algebraMap B (B ⧸ Q))
   obtain ⟨q, hq, hq0⟩ :=
-    g.exists_eq_pow_rootMultiplicity_mul_and_not_dvd
-    (Polynomial.map_monic_ne_zero hf) 0
-  let j := g.rootMultiplicity 0
-  let k := q.natDegree
+    (f.map (algebraMap B (B ⧸ Q))).exists_eq_pow_rootMultiplicity_mul_and_not_dvd
+      (Polynomial.map_monic_ne_zero (MulSemiringAction.Charpoly.monic_charpoly G b)) 0
   rw [map_zero, sub_zero] at hq hq0
-  rw [Polynomial.X_dvd_iff] at hq0
-  change g = Polynomial.X ^ j * q at hq
-  let a := f.coeff j
-  use a
+  let j := (f.map (algebraMap B (B ⧸ Q))).rootMultiplicity 0
+  let k := q.natDegree
   let r := ∑ i ∈ Finset.range (k + 1), Polynomial.monomial i (f.coeff (i + j))
   have hr : r.map (algebraMap B (B ⧸ Q)) = q := by
     ext n
     rw [Polynomial.coeff_map, Polynomial.finset_sum_coeff]
-    simp only [Polynomial.coeff_monomial]
-    rw [Finset.sum_ite_eq']
-    simp only [Finset.mem_range_succ_iff]
+    simp only [Polynomial.coeff_monomial, Finset.sum_ite_eq', Finset.mem_range_succ_iff]
     split_ifs with hn
-    · rw [← Polynomial.coeff_map]
-      change g.coeff (n + j) = q.coeff n
-      rw [hq, Polynomial.coeff_X_pow_mul]
-    · rw [map_zero, eq_comm]
-      exact Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_not_le hn)
-  use a - r.eval b
-  have ha : ∀ g : G, g • a = a :=
-    MulSemiringAction.Charpoly.smul_coeff_charpoly b j
-  use ha
-  constructor
-  · rw [← Ideal.Quotient.eq_zero_iff_mem, ← Ideal.Quotient.algebraMap_eq,
-        ← Polynomial.coeff_map]
-    change g.coeff j ≠ 0
-    rwa [← zero_add j, hq, Polynomial.coeff_X_pow_mul]
-  · intro h
-    by_cases hh : h • Q = Q
-    · rw [if_pos hh, smul_sub, ha, map_sub, Ideal.Quotient.algebraMap_eq,
-          sub_eq_self, Ideal.Quotient.eq_zero_iff_mem, ← hh]
-      rw [Ideal.smul_mem_pointwise_smul_iff, ← Ideal.Quotient.eq_zero_iff_mem,
-          ← Ideal.Quotient.algebraMap_eq, ← Polynomial.eval₂_at_apply, ← Polynomial.eval_map, hr]
-      have hf : f.eval b = 0 :=
-        MulSemiringAction.Charpoly.eval_charpoly G b
-      replace hf : algebraMap B (B ⧸ Q) (f.eval b) = 0 := by
-        rw [hf, map_zero]
-      rw [← Polynomial.eval₂_at_apply, ← Polynomial.eval_map] at hf
-      change g.eval _ = 0 at hf
-      rw [hq, Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_X] at hf
-      refine eq_zero_of_ne_zero_of_mul_left_eq_zero (pow_ne_zero _ ?_) hf
-      rwa [Ne, Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem]
-    · rw [if_neg hh, map_zero, Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem]
-      have hr : r = ∑ i ∈ Finset.range (k + 1), Polynomial.monomial i (f.coeff (i + j)) := rfl
-      rw [Finset.sum_range_succ', zero_add] at hr
-      simp only [Polynomial.monomial_zero_left, ← Polynomial.monomial_mul_X,
-        ← Finset.sum_mul] at hr
-      rw [← Ideal.mem_inv_pointwise_smul_iff, hr, Polynomial.eval_add, Polynomial.eval_mul,
-          Polynomial.eval_X, Polynomial.eval_C]
-      rw [sub_add_cancel_right, neg_mem_iff]
-      apply Ideal.mul_mem_left
-      apply hbP
-      rw [Ne, inv_smul_eq_iff, eq_comm]
-      exact hh
+    · rw [← Polynomial.coeff_map, hq, Polynomial.coeff_X_pow_mul]
+    · rw [map_zero, eq_comm, Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_not_le hn)]
+  have hf : f.eval b = 0 := MulSemiringAction.Charpoly.eval_charpoly G b
+  have hr : r.eval b ∈ Q := by
+    rw [← Ideal.Quotient.eq_zero_iff_mem, ← Ideal.Quotient.algebraMap_eq] at hbQ ⊢
+    replace hf := congrArg (algebraMap B (B ⧸ Q)) hf
+    rw [← Polynomial.eval₂_at_apply, ← Polynomial.eval_map] at hf ⊢
+    rwa [map_zero, hq, ← hr, Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_X,
+      mul_eq_zero, or_iff_right (pow_ne_zero _ hbQ)] at hf
+  let a := f.coeff j
+  have ha : ∀ g : G, g • a = a := MulSemiringAction.Charpoly.smul_coeff_charpoly b j
+  have hr' : ∀ g : G, g • Q ≠ Q → a - r.eval b ∈ g • Q := by
+    intro g hg
+    have hr : r = ∑ i ∈ Finset.range (k + 1), Polynomial.monomial i (f.coeff (i + j)) := rfl
+    rw [← Ideal.neg_mem_iff, neg_sub, hr, Finset.sum_range_succ', Polynomial.eval_add,
+        Polynomial.eval_monomial, zero_add, pow_zero, mul_one, add_sub_cancel_right]
+    simp only [ ← Polynomial.monomial_mul_X]
+    rw [← Finset.sum_mul, Polynomial.eval_mul_X]
+    exact Ideal.mul_mem_left (g • Q) _ (hbP g hg)
+  refine ⟨a, a - r.eval b, ha, ?_, fun h ↦ ?_⟩
+  · rwa [← Ideal.Quotient.eq_zero_iff_mem, ← Ideal.Quotient.algebraMap_eq, ← Polynomial.coeff_map,
+      ← zero_add j, hq, Polynomial.coeff_X_pow_mul, ← Polynomial.X_dvd_iff]
+  · rw [← sub_eq_zero, ← map_sub, Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem,
+      ← Ideal.smul_mem_pointwise_smul_iff (a := h⁻¹), smul_sub, inv_smul_smul]
+    simp only [← eq_inv_smul_iff (g := h), eq_comm (a := Q)]
+    split_ifs with hh
+    · rwa [ha, sub_sub_cancel_left, hh, Q.neg_mem_iff]
+    · rw [smul_zero, sub_zero]
+      exact hr' h⁻¹ hh
 
 theorem lem2 [DecidableEq (Ideal B)] (b₀ : B)
     (hx : ∀ g : G, g • Q = Q → algebraMap B (B ⧸ Q) (g • b₀) = algebraMap B (B ⧸ Q) b₀) :
