@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
@@ -84,7 +84,7 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
   | add_zero : ∀ x, Relation (add x zero) x
   | one_mul : ∀ x, Relation (mul one x) x
   | mul_one : ∀ x, Relation (mul x one) x
-  | add_left_neg : ∀ x, Relation (add (neg x) x) zero
+  | neg_add_cancel : ∀ x, Relation (add (neg x) x) zero
   | add_comm : ∀ x y, Relation (add x y) (add y x)
   | add_assoc : ∀ x y z, Relation (add (add x y) z) (add x (add y z))
   | mul_assoc : ∀ x y z, Relation (mul (mul x y) z) (mul x (mul y z))
@@ -119,7 +119,7 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   neg := Quotient.map neg Relation.neg_1
   zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
   add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
-  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  neg_add_cancel := Quotient.ind <| fun _ => Quotient.sound <| Relation.neg_add_cancel _
   add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
   nsmul := nsmulRec
@@ -135,14 +135,14 @@ instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
 instance : Ring (ColimitType.{v} F) :=
   { ColimitType.AddGroupWithOne F with
     mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
-    one_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.one_mul _
-    mul_one := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_one _
-    add_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.add_comm _ _
+    one_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.one_mul _
+    mul_one := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_one _
+    add_comm := fun x y => Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.add_comm _ _
     mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
       simp only [(· * ·)]
       exact Quot.sound (Relation.mul_assoc _ _ _)
-    mul_zero := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_zero _
-    zero_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.zero_mul _
+    mul_zero := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_zero _
+    zero_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.zero_mul _
     left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.left_distrib _ _ _)
@@ -250,7 +250,7 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | add_zero x => dsimp; rw [add_zero]
     | one_mul x => dsimp; rw [one_mul]
     | mul_one x => dsimp; rw [mul_one]
-    | add_left_neg x => dsimp; rw [add_left_neg]
+    | neg_add_cancel x => dsimp; rw [neg_add_cancel]
     | add_comm x y => dsimp; rw [add_comm]
     | add_assoc x y z => dsimp; rw [add_assoc]
     | mul_assoc x y z => dsimp; rw [mul_assoc]
@@ -390,7 +390,7 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
   | add_zero : ∀ x, Relation (add x zero) x
   | one_mul : ∀ x, Relation (mul one x) x
   | mul_one : ∀ x, Relation (mul x one) x
-  | add_left_neg : ∀ x, Relation (add (neg x) x) zero
+  | neg_add_cancel : ∀ x, Relation (add (neg x) x) zero
   | add_comm : ∀ x y, Relation (add x y) (add y x)
   | mul_comm : ∀ x y, Relation (mul x y) (mul y x)
   | add_assoc : ∀ x y z, Relation (add (add x y) z) (add x (add y z))
@@ -426,7 +426,7 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   neg := Quotient.map neg Relation.neg_1
   zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
   add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
-  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  neg_add_cancel := Quotient.ind <| fun _ => Quotient.sound <| Relation.neg_add_cancel _
   add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
   nsmul := nsmulRec
@@ -442,15 +442,15 @@ instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
 instance : CommRing (ColimitType.{v} F) :=
   { ColimitType.AddGroupWithOne F with
     mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
-    one_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.one_mul _
-    mul_one := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_one _
-    add_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.add_comm _ _
-    mul_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.mul_comm _ _
+    one_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.one_mul _
+    mul_one := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_one _
+    add_comm := fun x y => Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.add_comm _ _
+    mul_comm := fun x y => Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.mul_comm _ _
     mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
       simp only [(· * ·)]
       exact Quot.sound (Relation.mul_assoc _ _ _)
-    mul_zero := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_zero _
-    zero_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.zero_mul _
+    mul_zero := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_zero _
+    zero_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.zero_mul _
     left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.left_distrib _ _ _)
@@ -558,7 +558,7 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | add_zero x => dsimp; rw [add_zero]
     | one_mul x => dsimp; rw [one_mul]
     | mul_one x => dsimp; rw [mul_one]
-    | add_left_neg x => dsimp; rw [add_left_neg]
+    | neg_add_cancel x => dsimp; rw [neg_add_cancel]
     | add_comm x y => dsimp; rw [add_comm]
     | mul_comm x y => dsimp; rw [mul_comm]
     | add_assoc x y z => dsimp; rw [add_assoc]

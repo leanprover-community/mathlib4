@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -39,6 +40,63 @@ theorem is_transcendental_of_subsingleton [Subsingleton R] (x : A) : Transcenden
 
 variable {R}
 
+/-- An element `x` is transcendental over `R` if and only if for any polynomial `p`,
+`Polynomial.aeval x p = 0` implies `p = 0`. This is similar to `algebraicIndependent_iff`. -/
+theorem transcendental_iff {x : A} :
+    Transcendental R x ↔ ∀ p : R[X], aeval x p = 0 → p = 0 := by
+  rw [Transcendental, IsAlgebraic, not_exists]
+  congr! 1; tauto
+
+variable (R) in
+theorem Polynomial.transcendental_X : Transcendental R (X (R := R)) := by
+  simp [transcendental_iff]
+
+theorem IsAlgebraic.of_aeval {r : A} (f : R[X]) (hf : f.natDegree ≠ 0)
+    (hf' : f.leadingCoeff ∈ nonZeroDivisors R) (H : IsAlgebraic R (aeval r f)) :
+    IsAlgebraic R r := by
+  obtain ⟨p, h1, h2⟩ := H
+  have : (p.comp f).coeff (p.natDegree * f.natDegree) ≠ 0 := fun h ↦ h1 <| by
+    rwa [coeff_comp_degree_mul_degree hf,
+      mul_right_mem_nonZeroDivisors_eq_zero_iff (pow_mem hf' _),
+      leadingCoeff_eq_zero] at h
+  exact ⟨p.comp f, fun h ↦ this (by simp [h]), by rwa [aeval_comp]⟩
+
+theorem Transcendental.aeval {r : A} (H : Transcendental R r) (f : R[X]) (hf : f.natDegree ≠ 0)
+    (hf' : f.leadingCoeff ∈ nonZeroDivisors R) :
+    Transcendental R (aeval r f) := fun h ↦ H (h.of_aeval f hf hf')
+
+theorem Polynomial.transcendental (f : R[X]) (hf : f.natDegree ≠ 0)
+    (hf' : f.leadingCoeff ∈ nonZeroDivisors R) :
+    Transcendental R f := by
+  simpa using (transcendental_X R).aeval f hf hf'
+
+/-- If `E / F` is a field extension, `x` is an element of `E` transcendental over `F`,
+then `{(x - a)⁻¹ | a : F}` is linearly independent over `F`. -/
+theorem Transcendental.linearIndependent_sub_inv
+    {F E : Type*} [Field F] [Field E] [Algebra F E] {x : E} (H : Transcendental F x) :
+    LinearIndependent F fun a ↦ (x - algebraMap F E a)⁻¹ := by
+  rw [transcendental_iff] at H
+  refine linearIndependent_iff'.2 fun s m hm i hi ↦ ?_
+  have hnz (a : F) : x - algebraMap F E a ≠ 0 := fun h ↦
+    X_sub_C_ne_zero a <| H (.X - .C a) (by simp [h])
+  let b := s.prod fun j ↦ x - algebraMap F E j
+  have h1 : ∀ i ∈ s, m i • (b * (x - algebraMap F E i)⁻¹) =
+      m i • (s.erase i).prod fun j ↦ x - algebraMap F E j := fun i hi ↦ by
+    simp_rw [b, ← s.prod_erase_mul _ hi, mul_inv_cancel_right₀ (hnz i)]
+  replace hm := congr(b * $(hm))
+  simp_rw [mul_zero, Finset.mul_sum, mul_smul_comm, Finset.sum_congr rfl h1] at hm
+  let p : Polynomial F := s.sum fun i ↦ .C (m i) * (s.erase i).prod fun j ↦ .X - .C j
+  replace hm := congr(Polynomial.aeval i $(H p (by simp_rw [← hm, p, map_sum, map_mul, map_prod,
+    map_sub, aeval_X, aeval_C, Algebra.smul_def])))
+  have h2 : ∀ j ∈ s.erase i, m j * ((s.erase j).prod fun x ↦ i - x) = 0 := fun j hj ↦ by
+    have := Finset.mem_erase_of_ne_of_mem (Finset.ne_of_mem_erase hj).symm hi
+    simp_rw [← (s.erase j).prod_erase_mul _ this, sub_self, mul_zero]
+  simp_rw [map_zero, p, map_sum, map_mul, map_prod, map_sub, aeval_X,
+    aeval_C, Algebra.id.map_eq_self, ← s.sum_erase_add _ hi,
+    Finset.sum_eq_zero h2, zero_add] at hm
+  exact eq_zero_of_ne_zero_of_mul_right_eq_zero (Finset.prod_ne_zero_iff.2 fun j hj ↦
+    sub_ne_zero.2 (Finset.ne_of_mem_erase hj).symm) hm
+
 /-- A subalgebra is algebraic if all its elements are algebraic. -/
 nonrec
 def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
@@ -47,11 +105,11 @@ def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
 variable (R A)
 
 /-- An algebra is algebraic if all its elements are algebraic. -/
-protected class Algebra.IsAlgebraic : Prop :=
+protected class Algebra.IsAlgebraic : Prop where
   isAlgebraic : ∀ x : A, IsAlgebraic R x
 
 /-- An algebra is transcendental if some element is transcendental. -/
-protected class Algebra.Transcendental : Prop :=
+protected class Algebra.Transcendental : Prop where
   transcendental : ∃ x : A, Transcendental R x
 
 variable {R A}
@@ -68,7 +126,7 @@ theorem Algebra.transcendental_iff_not_isAlgebraic :
 
 /-- A subalgebra is algebraic if and only if it is algebraic as an algebra. -/
 theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
-    S.IsAlgebraic ↔ @Algebra.IsAlgebraic R S _ _ S.algebra := by
+    S.IsAlgebraic ↔ Algebra.IsAlgebraic R S := by
   delta Subalgebra.IsAlgebraic
   rw [Subtype.forall', Algebra.isAlgebraic_def]
   refine forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl ?_
@@ -79,15 +137,23 @@ theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
 /-- An algebra is algebraic if and only if it is algebraic as a subalgebra. -/
 theorem Algebra.isAlgebraic_iff : Algebra.IsAlgebraic R A ↔ (⊤ : Subalgebra R A).IsAlgebraic := by
   delta Subalgebra.IsAlgebraic
-  simp only [Algebra.isAlgebraic_def, Algebra.mem_top, forall_prop_of_true, iff_self_iff]
+  simp only [Algebra.isAlgebraic_def, Algebra.mem_top, forall_prop_of_true]
 
 theorem isAlgebraic_iff_not_injective {x : A} :
     IsAlgebraic R x ↔ ¬Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) := by
   simp only [IsAlgebraic, injective_iff_map_eq_zero, not_forall, and_comm, exists_prop]
 
+/-- An element `x` is transcendental over `R` if and only if the map `Polynomial.aeval x`
+is injective. This is similar to `algebraicIndependent_iff_injective_aeval`. -/
 theorem transcendental_iff_injective {x : A} :
     Transcendental R x ↔ Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) :=
   isAlgebraic_iff_not_injective.not_left
+
+/-- An element `x` is transcendental over `R` if and only if the kernel of the ring homomorphism
+`Polynomial.aeval x` is the zero ideal. This is similar to `algebraicIndependent_iff_ker_eq_bot`. -/
+theorem transcendental_iff_ker_eq_bot {x : A} :
+    Transcendental R x ↔ RingHom.ker (aeval (R := R) x) = ⊥ := by
+  rw [transcendental_iff_injective, RingHom.injective_iff_ker_eq_bot]
 
 end
 
@@ -109,10 +175,10 @@ theorem isAlgebraic_zero [Nontrivial R] : IsAlgebraic R (0 : A) :=
 
 /-- An element of `R` is algebraic, when viewed as an element of the `R`-algebra `A`. -/
 theorem isAlgebraic_algebraMap [Nontrivial R] (x : R) : IsAlgebraic R (algebraMap R A x) :=
-  ⟨_, X_sub_C_ne_zero x, by rw [_root_.map_sub, aeval_X, aeval_C, sub_self]⟩
+  ⟨_, X_sub_C_ne_zero x, by rw [map_sub, aeval_X, aeval_C, sub_self]⟩
 
 theorem isAlgebraic_one [Nontrivial R] : IsAlgebraic R (1 : A) := by
-  rw [← _root_.map_one (algebraMap R A)]
+  rw [← map_one (algebraMap R A)]
   exact isAlgebraic_algebraMap 1
 
 theorem isAlgebraic_nat [Nontrivial R] (n : ℕ) : IsAlgebraic R (n : A) := by
@@ -120,7 +186,7 @@ theorem isAlgebraic_nat [Nontrivial R] (n : ℕ) : IsAlgebraic R (n : A) := by
   exact isAlgebraic_algebraMap (Nat.cast n)
 
 theorem isAlgebraic_int [Nontrivial R] (n : ℤ) : IsAlgebraic R (n : A) := by
-  rw [← _root_.map_intCast (algebraMap R A)]
+  rw [← map_intCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Int.cast n)
 
 theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Algebra R A] (n : ℚ) :
@@ -172,6 +238,10 @@ end
 theorem isAlgebraic_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S A)) :
     IsAlgebraic R (algebraMap S A a) ↔ IsAlgebraic R a :=
   isAlgebraic_algHom_iff (IsScalarTower.toAlgHom R S A) h
+
+theorem transcendental_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S A)) :
+    Transcendental R (algebraMap S A a) ↔ Transcendental R a := by
+  simp_rw [Transcendental, isAlgebraic_algebraMap_iff h]
 
 theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
     IsAlgebraic R r := by
@@ -306,9 +376,9 @@ section NoZeroSMulDivisors
 namespace Algebra.IsAlgebraic
 
 variable [CommRing K] [Field L]
-variable [Algebra K L] [NoZeroSMulDivisors K L]
+variable [Algebra K L]
 
-theorem algHom_bijective [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
+theorem algHom_bijective [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
     Function.Bijective f := by
   refine ⟨f.injective, fun b ↦ ?_⟩
   obtain ⟨p, hp, he⟩ := Algebra.IsAlgebraic.isAlgebraic (R := K) b
@@ -318,12 +388,12 @@ theorem algHom_bijective [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
   obtain ⟨a, ha⟩ := this ⟨b, mem_rootSet.2 ⟨hp, he⟩⟩
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 
-theorem algHom_bijective₂ [Field R] [Algebra K R]
+theorem algHom_bijective₂ [NoZeroSMulDivisors K L] [Field R] [Algebra K R]
     [Algebra.IsAlgebraic K L] (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
     Function.Bijective f ∧ Function.Bijective g :=
   (g.injective.bijective₂_of_surjective f.injective (algHom_bijective <| g.comp f).2).symm
 
-theorem bijective_of_isScalarTower [Algebra.IsAlgebraic K L]
+theorem bijective_of_isScalarTower [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L]
     [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
   (algHom_bijective₂ (IsScalarTower.toAlgHom K L R) f).2
@@ -338,7 +408,7 @@ variable (K L)
 
 /-- Bijection between algebra equivalences and algebra homomorphisms -/
 @[simps]
-noncomputable def algEquivEquivAlgHom [Algebra.IsAlgebraic K L] :
+noncomputable def algEquivEquivAlgHom [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] :
     (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) where
   toFun ϕ := ϕ.toAlgHom
   invFun ϕ := AlgEquiv.ofBijective ϕ (algHom_bijective ϕ)
@@ -454,7 +524,7 @@ theorem Subalgebra.isField_of_algebraic [Algebra.IsAlgebraic K L] : IsField A :=
   { show Nontrivial A by infer_instance, Subalgebra.toCommRing A with
     mul_inv_cancel := fun {a} ha =>
       ⟨⟨a⁻¹, A.inv_mem_of_algebraic (Algebra.IsAlgebraic.isAlgebraic (a : L))⟩,
-        Subtype.ext (mul_inv_cancel (mt (Subalgebra.coe_eq_zero _).mp ha))⟩ }
+        Subtype.ext (mul_inv_cancel₀ (mt (Subalgebra.coe_eq_zero _).mp ha))⟩ }
 
 end Field
 

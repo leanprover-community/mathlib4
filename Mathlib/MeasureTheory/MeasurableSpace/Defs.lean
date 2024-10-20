@@ -227,10 +227,6 @@ theorem MeasurableSpace.ext {m₁ m₂ : MeasurableSpace α}
     (h : ∀ s : Set α, MeasurableSet[m₁] s ↔ MeasurableSet[m₂] s) : m₁ = m₂ :=
   measurableSet_injective <| funext fun s => propext (h s)
 
-theorem MeasurableSpace.ext_iff {m₁ m₂ : MeasurableSpace α} :
-    m₁ = m₂ ↔ ∀ s : Set α, MeasurableSet[m₁] s ↔ MeasurableSet[m₂] s :=
-  ⟨fun h _ => h ▸ Iff.rfl, MeasurableSpace.ext⟩
-
 /-- A typeclass mixin for `MeasurableSpace`s such that each singleton is measurable. -/
 class MeasurableSingletonClass (α : Type*) [MeasurableSpace α] : Prop where
   /-- A singleton is a measurable set. -/
@@ -422,9 +418,9 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
     { MeasurableSet' := fun s => s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
       measurableSet_compl := by simp (config := { contextual := true }) [or_imp]
-      measurableSet_iUnion := fun f hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
+      measurableSet_iUnion := fun _ hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
-    bot_unique fun s hs =>
+    bot_unique fun _ hs =>
       hs.elim (fun s => s.symm ▸ @measurableSet_empty _ ⊥) fun s =>
         s.symm ▸ @MeasurableSet.univ _ ⊥
   this ▸ Iff.rfl
@@ -521,7 +517,7 @@ end MeasurableFunctions
 
 /-- A typeclass mixin for `MeasurableSpace`s such that all sets are measurable. -/
 class DiscreteMeasurableSpace (α : Type*) [MeasurableSpace α] : Prop where
-  /-- Do not use this. Use `measurableSet_discrete` instead. -/
+  /-- Do not use this. Use `MeasurableSet.of_discrete` instead. -/
   forall_measurableSet : ∀ s : Set α, MeasurableSet s
 
 instance : @DiscreteMeasurableSpace α ⊤ :=
@@ -533,19 +529,24 @@ instance (priority := 100) MeasurableSingletonClass.toDiscreteMeasurableSpace [M
   forall_measurableSet _ := (Set.to_countable _).measurableSet
 
 section DiscreteMeasurableSpace
-variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α]
+variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] {s : Set α} {f : α → β}
 
-@[measurability] lemma measurableSet_discrete (s : Set α) : MeasurableSet s :=
+@[measurability] lemma MeasurableSet.of_discrete : MeasurableSet s :=
   DiscreteMeasurableSpace.forall_measurableSet _
 
-@[measurability]
-lemma measurable_discrete (f : α → β) : Measurable f := fun _ _ ↦ measurableSet_discrete _
+@[measurability, fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
+
+@[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
+lemma measurableSet_discrete (s : Set α) : MeasurableSet s := .of_discrete
+
+@[deprecated Measurable.of_discrete (since := "2024-08-25")]
+lemma measurable_discrete (f : α → β) : Measurable f := .of_discrete
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
 To be monitored. -/
 -- See note [lower instance priority]
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableSingletonClass :
     MeasurableSingletonClass α where
-  measurableSet_singleton _ := measurableSet_discrete _
+  measurableSet_singleton _ := .of_discrete
 
 end DiscreteMeasurableSpace

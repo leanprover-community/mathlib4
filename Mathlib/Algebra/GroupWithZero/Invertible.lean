@@ -18,16 +18,18 @@ universe u
 
 variable {α : Type u}
 
-theorem nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Invertible a] : a ≠ 0 :=
+theorem Invertible.ne_zero [MulZeroOneClass α] (a : α) [Nontrivial α] [Invertible a] : a ≠ 0 :=
   fun ha =>
   zero_ne_one <|
     calc
       0 = ⅟ a * a := by simp [ha]
-      _ = 1 := invOf_mul_self a
+      _ = 1 := invOf_mul_self
 
-instance (priority := 100) Invertible.ne_zero [MulZeroOneClass α] [Nontrivial α] (a : α)
+@[deprecated (since := "2024-08-15")] alias nonzero_of_invertible := Invertible.ne_zero
+
+instance (priority := 100) Invertible.toNeZero [MulZeroOneClass α] [Nontrivial α] (a : α)
     [Invertible a] : NeZero a :=
-  ⟨nonzero_of_invertible a⟩
+  ⟨Invertible.ne_zero a⟩
 
 section MonoidWithZero
 variable [MonoidWithZero α]
@@ -44,19 +46,19 @@ variable [GroupWithZero α]
 
 /-- `a⁻¹` is an inverse of `a` if `a ≠ 0` -/
 def invertibleOfNonzero {a : α} (h : a ≠ 0) : Invertible a :=
-  ⟨a⁻¹, inv_mul_cancel h, mul_inv_cancel h⟩
+  ⟨a⁻¹, inv_mul_cancel₀ h, mul_inv_cancel₀ h⟩
 
 @[simp]
 theorem invOf_eq_inv (a : α) [Invertible a] : ⅟ a = a⁻¹ :=
-  invOf_eq_right_inv (mul_inv_cancel (nonzero_of_invertible a))
+  invOf_eq_right_inv (mul_inv_cancel₀ (Invertible.ne_zero a))
 
 @[simp]
 theorem inv_mul_cancel_of_invertible (a : α) [Invertible a] : a⁻¹ * a = 1 :=
-  inv_mul_cancel (nonzero_of_invertible a)
+  inv_mul_cancel₀ (Invertible.ne_zero a)
 
 @[simp]
 theorem mul_inv_cancel_of_invertible (a : α) [Invertible a] : a * a⁻¹ = 1 :=
-  mul_inv_cancel (nonzero_of_invertible a)
+  mul_inv_cancel₀ (Invertible.ne_zero a)
 
 /-- `a` is the inverse of `a⁻¹` -/
 def invertibleInv {a : α} [Invertible a] : Invertible a⁻¹ :=
@@ -64,15 +66,15 @@ def invertibleInv {a : α} [Invertible a] : Invertible a⁻¹ :=
 
 @[simp]
 theorem div_mul_cancel_of_invertible (a b : α) [Invertible b] : a / b * b = a :=
-  div_mul_cancel₀ a (nonzero_of_invertible b)
+  div_mul_cancel₀ a (Invertible.ne_zero b)
 
 @[simp]
 theorem mul_div_cancel_of_invertible (a b : α) [Invertible b] : a * b / b = a :=
-  mul_div_cancel_right₀ a (nonzero_of_invertible b)
+  mul_div_cancel_right₀ a (Invertible.ne_zero b)
 
 @[simp]
 theorem div_self_of_invertible (a : α) [Invertible a] : a / a = 1 :=
-  div_self (nonzero_of_invertible a)
+  div_self (Invertible.ne_zero a)
 
 /-- `b / a` is the inverse of `a / b` -/
 def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) :=

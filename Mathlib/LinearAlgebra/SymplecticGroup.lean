@@ -86,7 +86,6 @@ open Matrix
 theorem mem_iff {A : Matrix (l ⊕ l) (l ⊕ l) R} :
     A ∈ symplecticGroup l R ↔ A * J l R * Aᵀ = J l R := by simp [symplecticGroup]
 
--- Porting note: Previous proof was `by infer_instance`
 instance coeMatrix : Coe (symplecticGroup l R) (Matrix (l ⊕ l) (l ⊕ l) R) :=
   ⟨Subtype.val⟩
 
@@ -178,7 +177,7 @@ theorem inv_eq_symplectic_inv (A : Matrix (l ⊕ l) (l ⊕ l) R) (hA : A ∈ sym
 
 instance : Group (symplecticGroup l R) :=
   { SymplecticGroup.hasInv, Submonoid.toMonoid _ with
-    mul_left_inv := fun A => by
+    inv_mul_cancel := fun A => by
       apply Subtype.ext
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]
       exact inv_left_mul_aux A.2 }

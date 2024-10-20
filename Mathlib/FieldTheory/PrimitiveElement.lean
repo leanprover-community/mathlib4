@@ -34,10 +34,9 @@ exists_adjoin_simple_eq_top
 
 -/
 
-
 noncomputable section
 
-open FiniteDimensional Polynomial IntermediateField
+open Module Polynomial IntermediateField
 
 namespace Field
 
@@ -64,7 +63,7 @@ theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α�
 /-- Primitive element theorem for finite dimensional extension of a finite field. -/
 theorem exists_primitive_element_of_finite_bot [Finite F] [FiniteDimensional F E] :
     ∃ α : E, F⟮α⟯ = ⊤ :=
-  haveI : Finite E := finite_of_finite F E
+  haveI : Finite E := Module.finite_of_finite F
   exists_primitive_element_of_finite_top F E
 
 end PrimitiveElementFinite
@@ -81,6 +80,7 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
   classical
   let sf := (f.map ϕ).roots
   let sg := (g.map ϕ).roots
+  classical
   let s := (sf.bind fun α' => sg.map fun β' => -(α' - α) / (β' - β)).toFinset
   let s' := s.preimage ϕ fun x _ y _ h => ϕ.injective h
   obtain ⟨c, hc⟩ := Infinite.exists_not_mem_finset s'
@@ -116,6 +116,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
       have α_in_Fαβ : α ∈ F⟮α, β⟯ := subset_adjoin F {α, β} (Set.mem_insert α {β})
       have β_in_Fαβ : β ∈ F⟮α, β⟯ := subset_adjoin F {α, β} (Set.mem_insert_of_mem α rfl)
       exact F⟮α, β⟯.add_mem α_in_Fαβ (F⟮α, β⟯.smul_mem β_in_Fαβ)
+  classical
   let p := EuclideanDomain.gcd ((f.map (algebraMap F F⟮γ⟯)).comp
     (C (AdjoinSimple.gen F γ) - (C ↑c : F⟮γ⟯[X]) * X)) (g.map (algebraMap F F⟮γ⟯))
   let h := EuclideanDomain.gcd ((f.map ιFE).comp (C γ - C (ιFE c) * X)) (g.map ιFE)
@@ -366,7 +367,7 @@ section iff
 
 namespace Field
 
-open FiniteDimensional IntermediateField Polynomial Algebra Set
+open Module IntermediateField Polynomial Algebra Set
 
 variable (F : Type*) {E : Type*} [Field F] [Field E] [Algebra F E] [FiniteDimensional F E]
 
@@ -383,6 +384,7 @@ theorem primitive_element_iff_minpoly_degree_eq (α : E) :
 
 variable [Algebra.IsSeparable F E] (A : Type*) [Field A] [Algebra F A]
   (hA : ∀ x : E, (minpoly F x).Splits (algebraMap F A))
+include hA
 
 theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
     F⟮α⟯ = ⊤ ↔ Function.Injective fun φ : E →ₐ[F] A ↦ φ α := by

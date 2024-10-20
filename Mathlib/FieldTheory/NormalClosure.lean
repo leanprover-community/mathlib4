@@ -6,6 +6,7 @@ Authors: Thomas Browning
 
 import Mathlib.FieldTheory.Normal
 import Mathlib.Order.Closure
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 /-!
 # Normal closures
 
@@ -71,6 +72,7 @@ lemma normalClosure_le_iSup_adjoin :
 
 variable (splits : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
 
+include splits in
 lemma normalClosure_eq_iSup_adjoin_of_splits :
     normalClosure F K L = ⨆ x : K, IntermediateField.adjoin F ((minpoly F x).rootSet L) :=
   normalClosure_le_iSup_adjoin.antisymm <|
@@ -87,6 +89,7 @@ lemma isNormalClosure_iff : IsNormalClosure F K L ↔
     simpa only [normalClosure_eq_iSup_adjoin_of_splits splits] using h
 -- TODO: IntermediateField.isNormalClosure_iff similar to IntermediateField.isSplittingField_iff
 
+include splits in
 /-- `normalClosure F K L` is a valid normal closure if `K/F` is algebraic
   and all minimal polynomials of `K/F` splits in `L/F`. -/
 lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) := by
@@ -96,8 +99,8 @@ lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) 
       SetLike.coe_subset_coe.mpr <| by apply le_iSup _ x)
   simp_rw [normalClosure, ← top_le_iff]
   refine fun x _ ↦ (IntermediateField.val _).injective.mem_set_image.mp ?_
-  change x.val ∈ IntermediateField.map (IntermediateField.val _) _
-  rw [IntermediateField.map_iSup]
+  rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_val, ← IntermediateField.coe_val,
+    ← IntermediateField.coe_map, IntermediateField.map_iSup]
   refine (iSup_le fun f ↦ ?_ : normalClosure F K L ≤ _) x.2
   refine le_iSup_of_le (f.codRestrict _ fun x ↦ f.fieldRange_le_normalClosure ⟨x, rfl⟩) ?_
   rw [AlgHom.map_fieldRange, val, AlgHom.val_comp_codRestrict]
@@ -171,7 +174,7 @@ variable [Algebra K L] [IsScalarTower F K L]
 
 noncomputable instance algebra :
     Algebra K (normalClosure F K L) :=
-  IntermediateField.algebra
+  IntermediateField.algebra'
     { ⨆ f : K →ₐ[F] L, f.fieldRange with
       algebraMap_mem' := fun r ↦ (toAlgHom F K L).fieldRange_le_normalClosure ⟨r, rfl⟩ }
 
@@ -278,5 +281,22 @@ lemma normal_iff_forall_map_eq : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ
 
 lemma normal_iff_forall_map_eq' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map ↑σ = K :=
 ⟨fun h σ ↦ normal_iff_forall_map_eq.1 h σ, fun h ↦ normal_iff_forall_map_le'.2 (fun σ ↦ (h σ).le)⟩
+
+@[simp]
+lemma normalClosure_map_eq (K : IntermediateField F L) (σ : L →ₐ[F] L) :
+    normalClosure F (K.map σ) L = normalClosure F K L := by
+  have (σ : L ≃ₐ[F] L) : normalClosure F (K.map (σ : L →ₐ[F] L)) L = normalClosure F K L := by
+    simp_rw [normalClosure_def'', map_map]
+    exact (Equiv.mulRight σ).iSup_congr fun _ ↦ rfl
+  exact this ((Algebra.IsAlgebraic.algEquivEquivAlgHom _ _).symm σ)
+
+@[simp]
+theorem normalClosure_le_iff_of_normal {K₁ K₂ : IntermediateField F L} [Normal F K₂] :
+    normalClosure F K₁ L ≤ K₂ ↔ K₁ ≤ K₂ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [normalClosure_le_iff] at h
+    simpa only [fieldRange_val] using h K₁.val
+  · rw [← normalClosure_of_normal K₂]
+    exact normalClosure_mono K₁ K₂ h
 
 end IntermediateField

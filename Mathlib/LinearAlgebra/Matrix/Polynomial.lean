@@ -38,7 +38,7 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
   rw [det_apply]
   refine (natDegree_sum_le _ _).trans ?_
   refine Multiset.max_le_of_forall_le _ _ ?_
-  simp only [forall_apply_eq_imp_iff, true_and_iff, Function.comp_apply, Multiset.map_map,
+  simp only [forall_apply_eq_imp_iff, true_and, Function.comp_apply, Multiset.map_map,
     Multiset.mem_map, exists_imp, Finset.mem_univ_val]
   intro g
   calc

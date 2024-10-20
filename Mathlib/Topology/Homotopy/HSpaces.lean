@@ -163,14 +163,14 @@ def qRight (p : I × I) : I :=
 
 theorem continuous_qRight : Continuous qRight :=
   continuous_projIcc.comp <|
-    Continuous.div (by fun_prop) (by fun_prop) fun x ↦ (add_pos zero_lt_one).ne'
+    Continuous.div (by fun_prop) (by fun_prop) fun _ ↦ (add_pos zero_lt_one).ne'
 
 theorem qRight_zero_left (θ : I) : qRight (0, θ) = 0 :=
   Set.projIcc_of_le_left _ <| by simp only [coe_zero, mul_zero, zero_div, le_refl]
 
 theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
   Set.projIcc_of_right_le _ <|
-    (le_div_iff <| add_pos zero_lt_one).2 <| by
+    (le_div_iff₀ <| add_pos zero_lt_one).2 <| by
       dsimp only
       rw [coe_one, one_mul, mul_one, add_comm, ← one_add_one_eq_two]
       simp only [add_le_add_iff_right]
@@ -212,7 +212,7 @@ def delayReflRight (θ : I) (γ : Path x y) : Path x y where
 
 theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayReflRight p.1 p.2 :=
   continuous_uncurry_iff.mp <|
-    (continuous_snd.comp continuous_fst).path_eval <|
+    (continuous_snd.comp continuous_fst).eval <|
       continuous_qRight.comp <| continuous_snd.prod_mk <| continuous_fst.comp continuous_fst
 
 theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) := by

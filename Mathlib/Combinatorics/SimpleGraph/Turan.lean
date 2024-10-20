@@ -72,7 +72,7 @@ lemma turanGraph_zero : turanGraph n 0 = ⊤ := by
 
 @[simp]
 theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
-  simp_rw [SimpleGraph.ext_iff, Function.funext_iff, turanGraph, top_adj, eq_iff_iff, not_iff_not]
+  simp_rw [SimpleGraph.ext_iff, funext_iff, turanGraph, top_adj, eq_iff_iff, not_iff_not]
   refine ⟨fun h ↦ ?_, ?_⟩
   · contrapose! h
     use ⟨0, (Nat.pos_of_ne_zero h.1).trans h.2⟩, ⟨r, h.2⟩
@@ -81,9 +81,7 @@ theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
     · simp [Fin.val_inj]
     · rw [Nat.mod_eq_of_lt (a.2.trans_le h), Nat.mod_eq_of_lt (b.2.trans_le h), Fin.val_inj]
 
-variable (hr : 0 < r)
-
-theorem turanGraph_cliqueFree : (turanGraph n r).CliqueFree (r + 1) := by
+theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1) := by
   rw [cliqueFree_iff]
   by_contra h
   rw [not_isEmpty_iff] at h
@@ -106,7 +104,7 @@ theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ Fintype.card V) (hG : G.IsT
   exact hGab <| le_sup_right.trans_eq ((hG.le_iff_eq <| h.sup_edge _ _).1 le_sup_left).symm <|
     (edge_adj ..).2 ⟨Or.inl ⟨rfl, rfl⟩, hab⟩
 
-lemma exists_isTuranMaximal :
+lemma exists_isTuranMaximal (hr : 0 < r):
     ∃ H : SimpleGraph V, ∃ _ : DecidableRel H.Adj, H.IsTuranMaximal r := by
   classical
   let c := {H : SimpleGraph V | H.CliqueFree (r + 1)}
@@ -170,6 +168,7 @@ lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj 
   omega
 
 variable (h : G.IsTuranMaximal r)
+include h
 
 /-- In a Turán-maximal graph, non-adjacency is an equivalence relation. -/
 theorem equivalence_not_adj : Equivalence (¬G.Adj · ·) where
@@ -263,7 +262,7 @@ theorem card_parts [DecidableEq V] : h.finpartition.parts.card = min (Fintype.ca
 /-- **Turán's theorem**, forward direction.
 
 Any `r + 1`-cliquefree Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`. -/
-theorem nonempty_iso_turanGraph (h : G.IsTuranMaximal r) :
+theorem nonempty_iso_turanGraph :
     Nonempty (G ≃g turanGraph (Fintype.card V) r) := by
   classical
   obtain ⟨zm, zp⟩ := h.isEquipartition.exists_partPreservingEquiv

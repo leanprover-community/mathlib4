@@ -19,7 +19,7 @@ A right resolution consists of an object `X₁ : C₁` and a morphism
 The type of right resolutions `Φ.RightResolution X₂` is endowed with a category
 structure when the morphism property `W₁` is multiplicative.
 
-Similiar definitions are done from left resolutions.
+Similar definitions are done from left resolutions.
 
 ## Future works
 
@@ -128,7 +128,7 @@ lemma comp_f {R R' R'' : Φ.RightResolution X₂} (φ : R ⟶ R') (ψ : R' ⟶ R
 @[ext]
 lemma hom_ext {R R' : Φ.RightResolution X₂} {φ₁ φ₂ : R ⟶ R'} (h : φ₁.f = φ₂.f) :
     φ₁ = φ₂ :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 end RightResolution
 
@@ -177,7 +177,7 @@ lemma comp_f {L L' L'' : Φ.LeftResolution X₂} (φ : L ⟶ L') (ψ : L' ⟶ L'
 @[ext]
 lemma hom_ext {L L' : Φ.LeftResolution X₂} {φ₁ φ₂ : L ⟶ L'} (h : φ₁.f = φ₂.f) :
     φ₁ = φ₂ :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 end LeftResolution
 

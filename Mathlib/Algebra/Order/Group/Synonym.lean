@@ -86,7 +86,7 @@ instance [h : InvolutiveInv α] : InvolutiveInv αᵒᵈ := h
 @[to_additive]
 instance [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ := h
 
-@[to_additive OrderDual.subtractionMonoid]
+@[to_additive]
 instance [h : DivisionMonoid α] : DivisionMonoid αᵒᵈ := h
 
 @[to_additive OrderDual.subtractionCommMonoid]
@@ -194,7 +194,7 @@ instance [h : InvolutiveInv α] : InvolutiveInv (Lex α) := h
 @[to_additive]
 instance [h : DivInvMonoid α] : DivInvMonoid (Lex α) := h
 
-@[to_additive existing OrderDual.subtractionMonoid]
+@[to_additive]
 instance [h : DivisionMonoid α] : DivisionMonoid (Lex α) := h
 
 @[to_additive existing OrderDual.subtractionCommMonoid]

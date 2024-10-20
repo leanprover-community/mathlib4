@@ -13,7 +13,7 @@ In this file, we show that standard operations on smooth maps between smooth man
 * `contMDiff_id` gives the smoothness of the identity
 * `contMDiff_const` gives the smoothness of constant functions
 * `contMDiff_inclusion` shows that the inclusion between open sets of a topological space is smooth
-* `contMDiff_openEmbedding` shows that if `M` has a `ChartedSpace` structure induced by an open
+* `contMDiff_isOpenEmbedding` shows that if `M` has a `ChartedSpace` structure induced by an open
 embedding `e : M → H`, then `e` is smooth.
 
 ## Tags
@@ -25,20 +25,21 @@ open Set Filter Function
 open scoped Topology Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  -- declare a smooth manifold `M` over the pair `(E, H)`.
+  -- declare the prerequisites for a charted space `M` over the pair `(E, H)`.
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M]
-  -- declare a smooth manifold `M'` over the pair `(E', H')`.
+  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M]
+  -- declare the prerequisites for a charted space `M'` over the pair `(E', H')`.
   {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M']
-  -- declare a manifold `M''` over the pair `(E'', H'')`.
+  (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M']
+  -- declare the prerequisites for a charted space `M''` over the pair `(E'', H'')`.
   {E'' : Type*}
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
-  {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
+  {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M'']
+
+section ChartedSpace
+variable [ChartedSpace H M] [ChartedSpace H' M'] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
   {e : PartialHomeomorph M H}
   {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
@@ -63,13 +64,13 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
     filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds I' (f x)),
       inter_mem_nhdsWithin s (extChartAt_source_mem_nhds I x)]
     rintro x' (hfx' : f x' ∈ e'.source) ⟨hx's, hx'⟩
-    simp only [e.map_source hx', true_and_iff, e.left_inv hx', st hx's, *]
+    simp only [e.map_source hx', true_and, e.left_inv hx', st hx's, *]
   refine ((hg.2.comp _ (hf.2.mono inter_subset_right) inter_subset_left).mono_of_mem
     (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
     simp only [*, mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
-      true_and_iff]
+      true_and]
     exact mem_range_self _
   · filter_upwards [A]
     rintro x' ⟨-, hfx'⟩
@@ -216,7 +217,7 @@ variable {c : M'}
 theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
   intro x
   refine ⟨continuousWithinAt_const, ?_⟩
-  simp only [ContDiffWithinAtProp, (· ∘ ·)]
+  simp only [ContDiffWithinAtProp, Function.comp_def]
   exact contDiffWithinAt_const
 
 @[to_additive]
@@ -321,12 +322,13 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f 
   refine contMDiff_of_mulTSupport (fun x h ↦ ?_) _
   lift x to U using Subtype.coe_image_subset _ _
     (supp.mulTSupport_extend_one_subset continuous_subtype_val h)
-  rw [← contMdiffAt_subtype_iff, ← comp_def]
-  erw [extend_comp Subtype.val_injective]
+  rw [← contMdiffAt_subtype_iff]
+  simp_rw [← comp_def]
+  rw [extend_comp Subtype.val_injective]
   exact diff.contMDiffAt
 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
-    ContMDiff I I n (Set.inclusion h : U → V) := by
+    ContMDiff I I n (Opens.inclusion h : U → V) := by
   rintro ⟨x, hx : x ∈ U⟩
   apply (contDiffWithinAt_localInvariantProp I I n).liftProp_inclusion
   intro y
@@ -344,23 +346,23 @@ theorem Smooth.extend_one [T2Space M] [One M'] {U : Opens M} {f : U → M'}
     (supp : HasCompactMulSupport f) (diff : Smooth I I' f) : Smooth I I' (Subtype.val.extend f 1) :=
   ContMDiff.extend_one supp diff
 
-theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) : Smooth I I (Set.inclusion h : U → V) :=
+theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) :
+    Smooth I I (Opens.inclusion h : U → V) :=
   contMDiff_inclusion h
 
 end Inclusion
+
+end ChartedSpace
 
 /-! ### Open embeddings and their inverses are smooth -/
 
 section
 
-variable (I)
-  [Nonempty M] {e : M → H} (h : OpenEmbedding e)
-  [Nonempty M'] {e' : M' → H'} (h' : OpenEmbedding e')
-  {n : WithTop ℕ}
+variable {e : M → H} (h : IsOpenEmbedding e) {n : WithTop ℕ}
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then `e` is smooth. -/
-lemma contMDiff_openEmbedding :
+lemma contMDiff_isOpenEmbedding [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiff I I n e := by
   haveI := h.singleton_smoothManifoldWithCorners I
   rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
@@ -383,14 +385,17 @@ lemma contMDiff_openEmbedding :
       h.toPartialHomeomorph_target] at this
     exact this
 
-variable {I}
+@[deprecated (since := "2024-10-18")]
+alias contMDiff_openEmbedding := contMDiff_isOpenEmbedding
+
+variable {I I'}
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is smooth. -/
-lemma contMDiffOn_openEmbedding_symm :
+lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiffOn I I
-      n (OpenEmbedding.toPartialHomeomorph e h).symm (range e) := by
+      n (IsOpenEmbedding.toPartialHomeomorph e h).symm (range e) := by
   haveI := h.singleton_smoothManifoldWithCorners I
-  rw [@contMDiffOn_iff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
+  rw [@contMDiffOn_iff]
   constructor
   · rw [← h.toPartialHomeomorph_target]
     exact (h.toPartialHomeomorph e).continuousOn_symm
@@ -407,18 +412,27 @@ lemma contMDiffOn_openEmbedding_symm :
     apply I.right_inv
     exact mem_of_subset_of_mem (extChartAt_target_subset_range _ _) hz.1
 
+@[deprecated (since := "2024-10-18")]
+alias contMDiffOn_openEmbedding_symm := contMDiffOn_isOpenEmbedding_symm
+
+variable [ChartedSpace H M]
+variable [Nonempty M'] {e' : M' → H'} (h' : IsOpenEmbedding e')
+
 /-- Let `M'` be a manifold whose chart structure is given by an open embedding `e'` into its model
 space `H'`. Then the smoothness of `e' ∘ f : M → H'` implies the smoothness of `f`.
 
 This is useful, for example, when `e' ∘ f = g ∘ e` for smooth maps `e : M → X` and `g : X → H'`. -/
-lemma ContMDiff.of_comp_openEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :
+lemma ContMDiff.of_comp_isOpenEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :
     haveI := h'.singletonChartedSpace; ContMDiff I I' n f := by
   have : f = (h'.toPartialHomeomorph e').symm ∘ e' ∘ f := by
     ext
-    rw [Function.comp_apply, Function.comp_apply, OpenEmbedding.toPartialHomeomorph_left_inv]
+    rw [Function.comp_apply, Function.comp_apply, IsOpenEmbedding.toPartialHomeomorph_left_inv]
   rw [this]
   apply @ContMDiffOn.comp_contMDiff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    h'.singletonChartedSpace _ _ (range e') _ (contMDiffOn_openEmbedding_symm h') hf
+    h'.singletonChartedSpace _ _ (range e') _ (contMDiffOn_isOpenEmbedding_symm h') hf
   simp
+
+@[deprecated (since := "2024-10-18")]
+alias ContMDiff.of_comp_openEmbedding := ContMDiff.of_comp_isOpenEmbedding
 
 end

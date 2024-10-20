@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.RingTheory.Artinian
 
 /-!
@@ -29,15 +29,14 @@ universe u v
 
 namespace IsLocalization
 
-variable {R : Type u} [CommRing R] (S : Submonoid R) {L : Type u} [CommRing L] [Algebra R L]
-  [IsLocalization S L]
+variable {R : Type u} [CommRing R] {L : Type u} [CommRing L] [Algebra R L]
 
 /-- A localization always has cardinality less than or equal to the base ring. -/
-theorem card_le : #L ≤ #R := by
+theorem card_le (S : Submonoid R) [IsLocalization S L] : #L ≤ #R := by
   classical
     cases fintypeOrInfinite R
     · exact Cardinal.mk_le_of_surjective (IsArtinianRing.localization_surjective S _)
-    erw [← Cardinal.mul_eq_self <| Cardinal.aleph0_le_mk R]
+    rw [← Cardinal.mul_eq_self <| Cardinal.aleph0_le_mk R]
     set f : R × R → L := fun aa => IsLocalization.mk' _ aa.1 (if h : aa.2 ∈ S then ⟨aa.2, h⟩ else 1)
     refine @Cardinal.mk_le_of_surjective _ _ f fun a => ?_
     obtain ⟨x, y, h⟩ := IsLocalization.mk'_surjective S a
@@ -48,7 +47,7 @@ theorem card_le : #L ≤ #R := by
 variable (L)
 
 /-- If you do not localize at any zero-divisors, localization preserves cardinality. -/
-theorem card (hS : S ≤ R⁰) : #R = #L :=
+theorem card (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) : #R = #L :=
   (Cardinal.mk_le_of_injective (IsLocalization.injective L hS)).antisymm (card_le S)
 
 end IsLocalization

@@ -74,10 +74,10 @@ theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
   exact ⟨_, _, h ha, rfl, rfl⟩
 
 @[simp] lemma map_id : G.map (Function.Embedding.refl _) = G :=
-  SimpleGraph.ext _ _ <| Relation.map_id_id _
+  SimpleGraph.ext <| Relation.map_id_id _
 
 @[simp] lemma map_map (f : V ↪ W) (g : W ↪ X) : (G.map f).map g = G.map (f.trans g) :=
-  SimpleGraph.ext _ _ <| Relation.map_map _ _ _ _ _
+  SimpleGraph.ext <| Relation.map_map _ _ _ _ _
 
 /-- Given a function, there is a contravariant induced map on graphs by pulling back the
 adjacency relation.
@@ -92,7 +92,7 @@ protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
 @[simp] lemma comap_adj {G : SimpleGraph W} {f : V → W} :
     (G.comap f).Adj u v ↔ G.Adj (f u) (f v) := Iff.rfl
 
-@[simp] lemma comap_id {G : SimpleGraph V} : G.comap id = G := SimpleGraph.ext _ _ rfl
+@[simp] lemma comap_id {G : SimpleGraph V} : G.comap id = G := SimpleGraph.ext rfl
 
 @[simp] lemma comap_comap {G : SimpleGraph X} (f : V → W) (g : W → X) :
   (G.comap g).comap f = G.comap (g ∘ f) := rfl
@@ -129,7 +129,7 @@ theorem comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap 
 
 theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph W) :
     G.map f ≤ G' ↔ G ≤ G'.comap f :=
-  ⟨fun h u v ha => h ⟨_, _, ha, rfl, rfl⟩, by
+  ⟨fun h _ _ ha => h ⟨_, _, ha, rfl, rfl⟩, by
     rintro h _ _ ⟨u, v, ha, rfl, rfl⟩
     exact h ha⟩
 
@@ -501,6 +501,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
   left_inv w := by simp
   right_inv w := by simp
 
+include f in
 theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
   convert rfl

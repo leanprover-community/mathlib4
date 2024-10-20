@@ -34,7 +34,7 @@ This file is similar to `Algebra.Group.TypeTags`.
 -/
 
 
-variable {α β γ : Type*}
+variable {α : Type*}
 
 /-! ### Order dual -/
 
@@ -44,11 +44,11 @@ namespace OrderDual
 instance [h : Nontrivial α] : Nontrivial αᵒᵈ :=
   h
 
-/-- `toDual` is the identity function to the `OrderDual` of a linear order.  -/
+/-- `toDual` is the identity function to the `OrderDual` of a linear order. -/
 def toDual : α ≃ αᵒᵈ :=
   Equiv.refl _
 
-/-- `ofDual` is the identity function from the `OrderDual` of a linear order.  -/
+/-- `ofDual` is the identity function from the `OrderDual` of a linear order. -/
 def ofDual : αᵒᵈ ≃ α :=
   Equiv.refl _
 
@@ -134,12 +134,12 @@ end OrderDual
 def Lex (α : Type*) :=
   α
 
-/-- `toLex` is the identity function to the `Lex` of a type.  -/
+/-- `toLex` is the identity function to the `Lex` of a type. -/
 @[match_pattern]
 def toLex : α ≃ Lex α :=
   Equiv.refl _
 
-/-- `ofLex` is the identity function from the `Lex` of a type.  -/
+/-- `ofLex` is the identity function from the `Lex` of a type. -/
 @[match_pattern]
 def ofLex : Lex α ≃ α :=
   Equiv.refl _
@@ -169,6 +169,18 @@ theorem toLex_inj {a b : α} : toLex a = toLex b ↔ a = b :=
 -- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
 theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
   Iff.rfl
+
+instance (α : Type*) [BEq α] : BEq (Lex α) where
+  beq a b := ofLex a == ofLex b
+
+instance (α : Type*) [BEq α] [LawfulBEq α] : LawfulBEq (Lex α) :=
+  inferInstanceAs (LawfulBEq α)
+
+instance (α : Type*) [DecidableEq α] : DecidableEq (Lex α) :=
+  inferInstanceAs (DecidableEq α)
+
+instance (α : Type*) [Inhabited α] : Inhabited (Lex α) :=
+  inferInstanceAs (Inhabited α)
 
 /-- A recursor for `Lex`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]

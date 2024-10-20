@@ -6,7 +6,6 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Sublists
-import Mathlib.Data.List.InsertNth
 
 /-!
 # Free groups
@@ -128,7 +127,7 @@ theorem not_step_nil : ¬Step [] L := by
   generalize h' : [] = L'
   intro h
   cases' h with L₁ L₂
-  simp [List.nil_eq_append] at h'
+  simp [List.nil_eq_append_iff] at h'
 
 @[to_additive]
 theorem Step.cons_left_iff {a : α} {b : Bool} :
@@ -195,10 +194,10 @@ respectively. This is also known as Newman's diamond lemma. -/
   to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
   respectively. This is also known as Newman's diamond lemma."]
 theorem church_rosser : Red L₁ L₂ → Red L₁ L₃ → Join Red L₂ L₃ :=
-  Relation.church_rosser fun a b c hab hac =>
+  Relation.church_rosser fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
     | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | b, c, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, hcd.to_red⟩
+    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, hcd.to_red⟩
 
 @[to_additive]
 theorem cons_cons {p} : Red L₁ L₂ → Red (p :: L₁) (p :: L₂) :=
@@ -252,7 +251,7 @@ theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄
             by simp
           rcases ih this with ⟨w₁, w₂, rfl, h₁, h₂⟩
           exact ⟨w₁, w₂, rfl, h₁.tail Step.not, h₂⟩)
-    fun ⟨L₃, L₄, Eq, h₃, h₄⟩ => Eq.symm ▸ append_append h₃ h₄
+    fun ⟨_, _, Eq, h₃, h₄⟩ => Eq.symm ▸ append_append h₃ h₄
 
 /-- The empty word `[]` only reduces to itself. -/
 @[to_additive "The empty word `[]` only reduces to itself."]
@@ -287,7 +286,8 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
   generalize eq : [(x1, not b1), (x2, b2)] = L'
   intro L h'
   cases h'
-  simp [List.cons_eq_append, List.nil_eq_append] at eq
+  simp only [List.cons_eq_append_iff, List.cons.injEq, Prod.mk.injEq, and_false,
+    List.nil_eq_append_iff, exists_const, or_self, or_false, List.cons_ne_nil] at eq
   rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩
   simp at h
 
@@ -312,8 +312,8 @@ theorem inv_of_red_of_ne {x1 b1 x2 b2} (H1 : (x1, b1) ≠ (x2, b2))
 open List -- for <+ notation
 
 @[to_additive]
-theorem Step.sublist (H : Red.Step L₁ L₂) : Sublist L₂ L₁ := by
-  cases H; simp; constructor; constructor; rfl
+theorem Step.sublist (H : Red.Step L₁ L₂) : L₂ <+ L₁ := by
+  cases H; simp
 
 /-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of `w₁`. -/
 @[to_additive "If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of
@@ -368,10 +368,10 @@ end Red
 
 @[to_additive FreeAddGroup.equivalence_join_red]
 theorem equivalence_join_red : Equivalence (Join (@Red α)) :=
-  equivalence_join_reflTransGen fun a b c hab hac =>
+  equivalence_join_reflTransGen fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
     | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | b, c, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
+    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
 
 @[to_additive FreeAddGroup.join_red_of_step]
 theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ :=
@@ -383,8 +383,8 @@ theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L
     (fun h =>
       have : EqvGen (Join Red) L₁ L₂ := h.mono fun _ _ => join_red_of_step
       equivalence_join_red.eqvGen_iff.1 this)
-    (join_of_equivalence (EqvGen.is_equivalence _) fun _ _ =>
-      reflTransGen_of_equivalence (EqvGen.is_equivalence _) EqvGen.rel)
+    (join_of_equivalence (Relation.EqvGen.is_equivalence _) fun _ _ =>
+      reflTransGen_of_equivalence (Relation.EqvGen.is_equivalence _) EqvGen.rel)
 
 end FreeGroup
 
@@ -462,7 +462,7 @@ theorem invRev_length : (invRev L₁).length = L₁.length := by simp [invRev]
 
 @[to_additive (attr := simp)]
 theorem invRev_invRev : invRev (invRev L₁) = L₁ := by
-  simp [invRev, List.map_reverse, (· ∘ ·)]
+  simp [invRev, List.map_reverse, Function.comp_def]
 
 @[to_additive (attr := simp)]
 theorem invRev_empty : invRev ([] : List (α × Bool)) = [] :=
@@ -522,7 +522,7 @@ instance : Group (FreeGroup α) where
   mul_assoc := by rintro ⟨L₁⟩ ⟨L₂⟩ ⟨L₃⟩; simp
   one_mul := by rintro ⟨L⟩; rfl
   mul_one := by rintro ⟨L⟩; simp [one_eq_mk]
-  mul_left_inv := by
+  inv_mul_cancel := by
     rintro ⟨L⟩
     exact
       List.recOn L rfl fun ⟨x, b⟩ tl ih =>
@@ -538,7 +538,7 @@ def of (x : α) : FreeGroup α :=
 @[to_additive]
 theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
-    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.exact _) Quot.EqvGen_sound
+    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro Quot.eqvGen_exact Quot.eqvGen_sound
     _ ↔ Join Red L₁ L₂ := eqvGen_step_iff_join_red
 
 /-- The canonical map from the type to the free group is an injection. -/
@@ -568,10 +568,10 @@ from the free group over `α` to `β` -/
   additive group homomorphism from the free additive group over `α` to `β`"]
 def lift : (α → β) ≃ (FreeGroup α →* β) where
   toFun f :=
-    MonoidHom.mk' (Quot.lift (Lift.aux f) fun L₁ L₂ => Red.Step.lift) <| by
+    MonoidHom.mk' (Quot.lift (Lift.aux f) fun _ _ => Red.Step.lift) <| by
       rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux]
   invFun g := g ∘ of
-  left_inv f := one_mul _
+  left_inv f := List.prod_singleton
   right_inv g :=
     MonoidHom.ext <| by
       rintro ⟨L⟩
@@ -592,7 +592,7 @@ theorem lift.mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f 
 
 @[to_additive (attr := simp)]
 theorem lift.of {x} : lift f (of x) = f x :=
-  one_mul _
+  List.prod_singleton
 
 @[to_additive]
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
@@ -669,7 +669,7 @@ theorem map.id' (x : FreeGroup α) : map (fun z => z) x = x :=
 @[to_additive]
 theorem map.comp {γ : Type w} (f : α → β) (g : β → γ) (x) :
     map g (map f x) = map (g ∘ f) x := by
-  rcases x with ⟨L⟩; simp [(· ∘ ·)]
+  rcases x with ⟨L⟩; simp [Function.comp_def]
 
 @[to_additive (attr := simp)]
 theorem map.of {x} : map f (of x) = of (f x) :=

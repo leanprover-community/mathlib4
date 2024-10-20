@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Quotient
@@ -37,7 +37,7 @@ namespace Paths
 
 instance categoryPaths : Category.{max u₁ v₁} (Paths V) where
   Hom := fun X Y : V => Quiver.Path X Y
-  id X := Quiver.Path.nil
+  id _ := Quiver.Path.nil
   comp f g := Quiver.Path.comp f g
 
 variable {V}
@@ -49,7 +49,7 @@ def of : V ⥤q Paths V where
   obj X := X
   map f := f.toPath
 
-attribute [local ext] Functor.ext
+attribute [local ext (iff := false)] Functor.ext
 
 /-- Any prefunctor from `V` lifts to a functor from `paths V` -/
 def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
@@ -57,12 +57,14 @@ def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
   map {X} {Y} f :=
     @Quiver.Path.rec V _ X (fun Y _ => φ.obj X ⟶ φ.obj Y) (𝟙 <| φ.obj X)
       (fun _ f ihp => ihp ≫ φ.map f) Y f
-  map_id X := rfl
+  map_id _ := rfl
   map_comp f g := by
-    induction' g with _ _ g' p ih _ _ _
-    · rw [Category.comp_id]
+    induction g with
+    | nil =>
+      rw [Category.comp_id]
       rfl
-    · have : f ≫ Quiver.Path.cons g' p = (f ≫ g').cons p := by apply Quiver.Path.comp_cons
+    | cons g' p ih =>
+      have : f ≫ Quiver.Path.cons g' p = (f ≫ g').cons p := by apply Quiver.Path.comp_cons
       rw [this]
       simp only at ih ⊢
       rw [ih, Category.assoc]
@@ -98,10 +100,12 @@ theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
     rfl
   · rintro X Y f
     dsimp [lift]
-    induction' f with _ _ p f' ih
-    · simp only [Category.comp_id]
+    induction f with
+    | nil =>
+      simp only [Category.comp_id]
       apply Functor.map_id
-    · simp only [Category.comp_id, Category.id_comp] at ih ⊢
+    | cons p f' ih =>
+      simp only [Category.comp_id, Category.id_comp] at ih ⊢
       -- Porting note: Had to do substitute `p.cons f'` and `f'.toPath` by their fully qualified
       -- versions in this `have` clause (elsewhere too).
       have : Φ.map (Quiver.Path.cons p f') = Φ.map p ≫ Φ.map (Quiver.Hom.toPath f') := by
@@ -109,7 +113,7 @@ theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
       rw [this, ih]
 
 /-- Two functors out of a path category are equal when they agree on singleton paths. -/
-@[ext]
+@[ext (iff := false)]
 theorem ext_functor {C} [Category C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.obj)
     (h : ∀ (a b : V) (e : a ⟶ b), F.map e.toPath =
         eqToHom (congr_fun h_obj a) ≫ G.map e.toPath ≫ eqToHom (congr_fun h_obj.symm b)) :
@@ -217,7 +221,7 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
         apply Quot.sound
         apply Quotient.CompClosure.of
         simp [Category.comp_id, Category.id_comp, pathsHomRel])
-  counitIso := NatIso.ofComponents (fun X => Iso.refl _) (fun f => by simp [Quot.liftOn_mk])
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [Quot.liftOn_mk])
   functor_unitIso_comp X := by
     cases X
     simp only [pathsHomRel, pathComposition_obj, pathComposition_map, Functor.id_obj,

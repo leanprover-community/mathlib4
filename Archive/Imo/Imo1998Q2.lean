@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Ring
@@ -104,9 +104,9 @@ theorem A_fibre_over_contestant (c : C) :
     (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct) =
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).image Prod.snd := by
   ext p
-  simp only [A, Finset.mem_univ, Finset.mem_filter, Finset.mem_image, true_and_iff, exists_prop]
+  simp only [A, Finset.mem_univ, Finset.mem_filter, Finset.mem_image, exists_prop]
   constructor
-  · rintro ⟨h₁, h₂⟩; refine ⟨(c, p), ?_⟩; tauto
+  · rintro ⟨_, h₂⟩; refine ⟨(c, p), ?_⟩; tauto
   · intro h; aesop
 
 theorem A_fibre_over_contestant_card (c : C) :
