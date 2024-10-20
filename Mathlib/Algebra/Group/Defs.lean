@@ -171,21 +171,22 @@ postfix:max "⁻¹" => Inv.inv
 section ite
 variable {α : Type*} (P : Prop) [Decidable P]
 
+section Mul
+variable [Mul α]
+
 @[to_additive]
-lemma mul_dite [Mul α] (a : α) (b : P → α) (c : ¬ P → α) :
+lemma mul_dite (a : α) (b : P → α) (c : ¬ P → α) :
     (a * if h : P then b h else c h) = if h : P then a * b h else a * c h := by split <;> rfl
 
 @[to_additive]
-lemma mul_ite [Mul α] (a b c : α) : (a * if P then b else c) = if P then a * b else a * c := by
-  split <;> rfl
+lemma mul_ite (a b c : α) : (a * if P then b else c) = if P then a * b else a * c := mul_dite ..
 
 @[to_additive]
-lemma dite_mul [Mul α] (a : P → α) (b : ¬ P → α) (c : α) :
+lemma dite_mul (a : P → α) (b : ¬ P → α) (c : α) :
     (if h : P then a h else b h) * c = if h : P then a h * c else b h * c := by split <;> rfl
 
 @[to_additive]
-lemma ite_mul [Mul α] (a b c : α) : (if P then a else b) * c = if P then a * c else b * c := by
-  split <;> rfl
+lemma ite_mul (a b c : α) : (if P then a else b) * c = if P then a * c else b * c := dite_mul ..
 
 -- We make `mul_ite` and `ite_mul` simp lemmas, but not `add_ite` or `ite_add`.
 -- The problem we're trying to avoid is dealing with sums of the form `∑ x ∈ s, (f x + ite P 1 0)`,
@@ -195,23 +196,43 @@ lemma ite_mul [Mul α] (a b c : α) : (if P then a else b) * c = if P then a * c
 attribute [simp] mul_dite dite_mul mul_ite ite_mul
 
 @[to_additive]
-lemma dite_mul_dite [Mul α] (a : P → α) (b : ¬ P → α) (c : P → α) (d : ¬ P → α) :
+lemma dite_mul_dite (a : P → α) (b : ¬ P → α) (c : P → α) (d : ¬ P → α) :
     ((if h : P then a h else b h) * if h : P then c h else d h) =
       if h : P then a h * c h else b h * d h := by split <;> rfl
 
 @[to_additive]
-lemma ite_mul_ite [Mul α] (a b c d : α) :
+lemma ite_mul_ite (a b c d : α) :
     ((if P then a else b) * if P then c else d) = if P then a * c else b * d := by split <;> rfl
 
+end Mul
+
+section Div
+variable [Div α]
+
 @[to_additive]
-lemma dite_div_dite [Div α] (a : P → α) (b : ¬ P → α) (c : P → α) (d : ¬ P → α) :
+lemma div_dite (a : α) (b : P → α) (c : ¬ P → α) :
+    (a / if h : P then b h else c h) = if h : P then a / b h else a / c h := by split <;> rfl
+
+@[to_additive]
+lemma div_ite (a b c : α) : (a / if P then b else c) = if P then a / b else a / c := div_dite ..
+
+@[to_additive]
+lemma dite_div (a : P → α) (b : ¬ P → α) (c : α) :
+    (if h : P then a h else b h) / c = if h : P then a h / c else b h / c := by split <;> rfl
+
+@[to_additive]
+lemma ite_div (a b c : α) : (if P then a else b) / c = if P then a / c else b / c := dite_div ..
+
+@[to_additive]
+lemma dite_div_dite (a : P → α) (b : ¬ P → α) (c : P → α) (d : ¬ P → α) :
     ((if h : P then a h else b h) / if h : P then c h else d h) =
       if h : P then a h / c h else b h / d h := by split <;> rfl
 
 @[to_additive]
-lemma ite_div_ite [Div α] (a b c d : α) :
-    ((if P then a else b) / if P then c else d) = if P then a / c else b / d := by split <;> rfl
+lemma ite_div_ite (a b c d : α) :
+    ((if P then a else b) / if P then c else d) = if P then a / c else b / d := dite_div_dite ..
 
+end Div
 end ite
 
 section Mul
