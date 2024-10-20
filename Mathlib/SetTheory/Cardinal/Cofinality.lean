@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.FixedPoint
+import Mathlib.SetTheory.Ordinal.Univ
 
 /-!
 # Cofinality
@@ -704,24 +705,25 @@ theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r
     e⟩
 
 @[simp]
-theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
-  le_antisymm (cof_le_card _)
-    (by
-      refine le_of_forall_lt fun c h => ?_
-      rcases lt_univ'.1 h with ⟨c, rfl⟩
-      rcases @cof_eq Ordinal.{u} (· < ·) _ with ⟨S, H, Se⟩
-      rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u+1, v, u}, Cardinal.lift_lt, ← Se]
-      refine lt_of_not_ge fun h => ?_
-      cases' Cardinal.mem_range_of_le_lift h with a e
-      refine Quotient.inductionOn a (fun α e => ?_) e
-      cases' Quotient.exact e with f
-      have f := Equiv.ulift.symm.trans f
-      let g a := (f a).1
-      let o := succ (iSup g)
-      rcases H o with ⟨b, h, l⟩
-      refine l (lt_succ_iff.2 ?_)
-      rw [← show g (f.symm ⟨b, h⟩) = b by simp [g]]
-      apply Ordinal.le_iSup)
+theorem cof_univ : cof Ordinal.univ.{u, v} = Cardinal.univ.{u, v} := by
+  apply le_antisymm
+  · rw [← card_univ]
+    exact cof_le_card _
+  · refine le_of_forall_lt fun c h => ?_
+    rcases Cardinal.lt_univ.1 h with ⟨c, rfl⟩
+    rcases @cof_eq Ordinal.{u} (· < ·) _ with ⟨S, H, Se⟩
+    rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u+1, v, u}, Cardinal.lift_lt, ← Se]
+    refine lt_of_not_ge fun h => ?_
+    cases' Cardinal.mem_range_of_le_lift h with a e
+    refine Quotient.inductionOn a (fun α e => ?_) e
+    cases' Quotient.exact e with f
+    have f := Equiv.ulift.symm.trans f
+    let g a := (f a).1
+    let o := succ (iSup g)
+    rcases H o with ⟨b, h, l⟩
+    refine l (lt_succ_iff.2 ?_)
+    rw [← show g (f.symm ⟨b, h⟩) = b by simp [g]]
+    apply Ordinal.le_iSup
 
 /-! ### Infinite pigeonhole principle -/
 
@@ -1162,10 +1164,10 @@ theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
 theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
-  IsInaccessible.mk (by simpa using lift_lt_univ' ℵ₀) (by simp) fun c h => by
-    rcases lt_univ'.1 h with ⟨c, rfl⟩
+  IsInaccessible.mk (by simpa using lift_lt_univ ℵ₀) (by simp) fun c h => by
+    rcases lt_univ.1 h with ⟨c, rfl⟩
     rw [← lift_two_power]
-    apply lift_lt_univ'
+    apply lift_lt_univ
 
 theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < (c^cof c.ord) :=
   Quotient.inductionOn c fun α h => by
