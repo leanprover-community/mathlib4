@@ -282,7 +282,10 @@ theorem isAcc_iff (o : Ordinal) (S : Set Ordinal) : o.IsAcc S ↔
     exact ⟨⟨hl.2 ⟨hx.2.1, hx.2.2.le⟩, hx.1⟩, hx.2.2.ne⟩
 
 theorem IsAcc.forall_lt {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
-    o ≠ 0 ∧ ∀ p < o, (S ∩ Ioo p o).Nonempty := (isAcc_iff _ _).mp h
+    ∀ p < o, (S ∩ Ioo p o).Nonempty := ((isAcc_iff _ _).mp h).2
+
+theorem IsAcc.pos {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
+    0 < o := Ordinal.pos_iff_ne_zero.mpr ((isAcc_iff _ _).mp h).1
 
 theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsLimit o := by
   rw [isAcc_iff] at h
@@ -296,7 +299,7 @@ theorem IsAcc.subset {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsA
   exact ⟨ho.1, fun p plto ↦ (ho.2 p plto).casesOn fun s hs ↦ ⟨s, h hs.1, hs.2⟩⟩
 
 theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
-    {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.forall_lt.2 p hp
+    {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.forall_lt p hp
 
 theorem IsClosedBelow.sInter {o : Ordinal} {S : Set (Set Ordinal)}
     (h : ∀ C ∈ S, IsClosedBelow C o) : IsClosedBelow (⋂₀ S) o :=
