@@ -139,11 +139,14 @@ def toNormedField : NormedField L :=
         exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
             lt_of_lt_of_le hab (min_le_right _ _)⟩ }
 
+-- When a field is valued, one inherits a `NormedField`.
+-- Scoped instance to avoid a typeclass loop or non-defeq topology or norms.
+scoped[NormedField] attribute [instance] Valued.toNormedField
+scoped[NormedField] attribute [instance] NormedField.toValued
+
 section NormedField
 
-/-- When a field is valued, one inherits a `NormedField`. Local instance to avoid
-a typeclass loop or non-defeq topology or norms. -/
-local instance : NormedField L := Valued.toNormedField L Γ₀
+open scoped NormedField
 
 protected lemma isNonarchimedean_norm : IsNonarchimedean ((‖·‖): L → ℝ) := Valued.norm_add_le
 
