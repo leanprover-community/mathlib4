@@ -34,12 +34,11 @@ and `ProbabilityTheory.measure_limsup_eq_one` for the second (which does).
 
 open Filter
 
-open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
+open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
 
 namespace MeasureTheory
 
 variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
-  {ω : Ω}
 
 /-!
 ### One sided martingale bound
@@ -127,7 +126,7 @@ theorem Submartingale.stoppedValue_leastGE_eLpNorm_le [IsFiniteMeasure μ] (hf :
     eLpNorm (stoppedValue f (leastGE f r i)) 1 μ ≤ 2 * μ Set.univ * ENNReal.ofReal (r + R) := by
   refine eLpNorm_one_le_of_le' ((hf.stoppedValue_leastGE r).integrable _) ?_
     (norm_stoppedValue_leastGE_le hr hf0 hbdd i)
-  rw [← integral_univ]
+  rw [← setIntegral_univ]
   refine le_trans ?_ ((hf.stoppedValue_leastGE r).setIntegral_le (zero_le _) MeasurableSet.univ)
   simp_rw [stoppedValue, leastGE, hitting_of_le le_rfl, hf0, integral_zero', le_rfl]
 

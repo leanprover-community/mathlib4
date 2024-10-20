@@ -59,14 +59,16 @@ section
 /-- `TopHomClass F α β` states that `F` is a type of `⊤`-preserving morphisms.
 
 You should extend this class when you extend `TopHom`. -/
-class TopHomClass (F α β : Type*) [Top α] [Top β] [FunLike F α β] : Prop where
+class TopHomClass (F : Type*) (α β : outParam Type*) [Top α] [Top β] [FunLike F α β] :
+    Prop where
   /-- A `TopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 
 /-- `BotHomClass F α β` states that `F` is a type of `⊥`-preserving morphisms.
 
 You should extend this class when you extend `BotHom`. -/
-class BotHomClass (F α β : Type*) [Bot α] [Bot β] [FunLike F α β] : Prop where
+class BotHomClass (F : Type*) (α β : outParam Type*) [Bot α] [Bot β] [FunLike F α β] :
+    Prop where
   /-- A `BotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 
@@ -111,8 +113,8 @@ variable [EquivLike F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
-    [PartialOrder β] [OrderTop β] [OrderIsoClass F α β] : TopHomClass F α β :=
-  { show OrderHomClass F α β from inferInstance with
+    [PartialOrder β] [OrderTop β] [inst : OrderIsoClass F α β] : TopHomClass F α β :=
+  { show OrderHomClass F α β from inst.toOrderHomClass with
     map_top := fun f => top_le_iff.1 <| (map_inv_le_iff f).1 le_top }
 
 -- See note [lower instance priority]
@@ -122,8 +124,8 @@ instance (priority := 100) OrderIsoClass.toBotHomClass [LE α] [OrderBot α]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [LE α] [BoundedOrder α]
-    [PartialOrder β] [BoundedOrder β] [OrderIsoClass F α β] : BoundedOrderHomClass F α β :=
-  { show OrderHomClass F α β from inferInstance, OrderIsoClass.toTopHomClass,
+    [PartialOrder β] [BoundedOrder β] [inst : OrderIsoClass F α β] : BoundedOrderHomClass F α β :=
+  { show OrderHomClass F α β from inst.toOrderHomClass, OrderIsoClass.toTopHomClass,
     OrderIsoClass.toBotHomClass with }
 
 -- Porting note: the `letI` is needed because we can't make the

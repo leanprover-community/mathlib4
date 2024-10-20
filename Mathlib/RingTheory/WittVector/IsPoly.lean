@@ -92,7 +92,7 @@ namespace WittVector
 
 universe u
 
-variable {p : ℕ} {R S : Type u} {σ idx : Type*} [CommRing R] [CommRing S]
+variable {p : ℕ} {R S : Type u} {idx : Type*} [CommRing R] [CommRing S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -113,7 +113,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolyn
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
   ext1 n
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  rw [← Function.funext_iff] at h
+  rw [← funext_iff] at h
   replace h :=
     congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
   simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
@@ -123,7 +123,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolyno
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
   ext1 n
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  rw [← Function.funext_iff] at h
+  rw [← funext_iff] at h
   replace h :=
     congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
   simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
@@ -220,7 +220,7 @@ variable {p}
 /-- The composition of polynomial functions is polynomial. -/
 -- Porting note (#10754): made this an instance
 instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsPoly p g] :
-    IsPoly₂ p fun R _Rcr x y => h (f x) (g y) := by
+    IsPoly₂ p fun _ _Rcr x y => h (f x) (g y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   obtain ⟨χ, hh⟩ := hh
@@ -238,7 +238,7 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
 -- Porting note (#10754): made this an instance
 instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
-    IsPoly₂ p fun R _Rcr x y => g (f x y) := by
+    IsPoly₂ p fun _ _Rcr x y => g (f x y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   use fun n => bind₁ φ (ψ n)
@@ -247,7 +247,7 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
 
 /-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
 -- Porting note (#10754): made this an instance
-instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x x := by
+instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
   refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
   intros; funext n
@@ -311,15 +311,11 @@ end ZeroOne
 /-- Addition of Witt vectors is a polynomial function. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
 instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
-  -- porting note: the proof was
-  -- `⟨⟨wittAdd p, by intros; dsimp only [WittVector.hasAdd]; simp [eval]⟩⟩`
   ⟨⟨wittAdd p, by intros; ext; exact add_coeff _ _ _⟩⟩
 
 /-- Multiplication of Witt vectors is a polynomial function. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
 instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
-  -- porting note: the proof was
-  -- `⟨⟨wittMul p, by intros; dsimp only [WittVector.hasMul]; simp [eval]⟩⟩`
   ⟨⟨wittMul p, by intros; ext; exact mul_coeff _ _ _⟩⟩
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't

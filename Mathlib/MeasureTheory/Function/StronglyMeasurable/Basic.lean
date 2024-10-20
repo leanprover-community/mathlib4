@@ -127,7 +127,7 @@ theorem SimpleFunc.stronglyMeasurable {α β} {_ : MeasurableSpace α} [Topologi
 @[nontriviality]
 theorem StronglyMeasurable.of_finite [Finite α] {_ : MeasurableSpace α}
     [MeasurableSingletonClass α] [TopologicalSpace β]
-    (f : α → β) : StronglyMeasurable f :=
+    {f : α → β} : StronglyMeasurable f :=
   ⟨fun _ => SimpleFunc.ofFinite f, fun _ => tendsto_const_nhds⟩
 
 @[deprecated (since := "2024-02-05")]
@@ -136,7 +136,7 @@ alias stronglyMeasurable_of_fintype := StronglyMeasurable.of_finite
 @[deprecated StronglyMeasurable.of_finite (since := "2024-02-06")]
 theorem stronglyMeasurable_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} [TopologicalSpace β]
     (f : α → β) : StronglyMeasurable f :=
-  .of_finite f
+  .of_finite
 
 theorem stronglyMeasurable_const {α β} {_ : MeasurableSpace α} [TopologicalSpace β] {b : β} :
     StronglyMeasurable fun _ : α => b :=
@@ -269,7 +269,7 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     FinStronglyMeasurable f μ := by
   haveI : SigmaFinite (μ.restrict t) := htμ
   let S := spanningSets (μ.restrict t)
-  have hS_meas : ∀ n, MeasurableSet (S n) := measurable_spanningSets (μ.restrict t)
+  have hS_meas : ∀ n, MeasurableSet (S n) := measurableSet_spanningSets (μ.restrict t)
   let f_approx := hf_meas.approx
   let fs n := SimpleFunc.restrict (f_approx n) (S n ∩ t)
   have h_fs_t_compl : ∀ n, ∀ x, x ∉ t → fs n x = 0 := by
@@ -691,7 +691,7 @@ theorem _root_.Embedding.comp_stronglyMeasurable_iff {m : MeasurableSpace α} [T
     ⟨fun H => stronglyMeasurable_iff_measurable_separable.2 ⟨?_, ?_⟩, fun H =>
       hg.continuous.comp_stronglyMeasurable H⟩
   · let G : β → range g := rangeFactorization g
-    have hG : ClosedEmbedding G :=
+    have hG : IsClosedEmbedding G :=
       { hg.codRestrict _ _ with
         isClosed_range := by
           rw [surjective_onto_range.range_eq]
@@ -1108,7 +1108,7 @@ variable {m : MeasurableSpace α} {μ ν : Measure α} [TopologicalSpace β] [To
   {f g : α → β}
 
 lemma of_finite [DiscreteMeasurableSpace α] [Finite α] : AEStronglyMeasurable f μ :=
-  ⟨_, .of_finite _, ae_eq_rfl⟩
+  ⟨_, .of_finite, ae_eq_rfl⟩
 
 section Mk
 
@@ -1513,7 +1513,7 @@ theorem _root_.Embedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β
     ⟨fun H => aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨?_, ?_⟩, fun H =>
       hg.continuous.comp_aestronglyMeasurable H⟩
   · let G : β → range g := rangeFactorization g
-    have hG : ClosedEmbedding G :=
+    have hG : IsClosedEmbedding G :=
       { hg.codRestrict _ _ with
         isClosed_range := by rw [surjective_onto_range.range_eq]; exact isClosed_univ }
     have : AEMeasurable (G ∘ f) μ := AEMeasurable.subtype_mk H.aemeasurable

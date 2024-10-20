@@ -285,7 +285,7 @@ end Relation
 
 section add_and_sum
 
-open Filter BigOperators Set
+open Filter Set
 
 variable {α : Type*} {f : Filter α}
 variable {R : Type*}

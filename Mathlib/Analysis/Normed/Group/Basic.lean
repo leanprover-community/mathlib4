@@ -285,7 +285,7 @@ existing `UniformSpace` instance on `E`)."]
 abbrev GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : SeminormedGroup E where
   dist x y := f (x / y)
   norm := f
-  dist_eq x y := rfl
+  dist_eq _ _ := rfl
   dist_self x := by simp only [div_self', map_one_eq_zero]
   dist_triangle := le_map_div_add_map_div f
   dist_comm := map_div_rev f
@@ -635,6 +635,13 @@ theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
 
 alias nndist_eq_nnnorm := nndist_eq_nnnorm_sub
 
+@[to_additive (attr := simp)]
+theorem nndist_one_right (a : E) : nndist a 1 = ‖a‖₊ := by simp [nndist_eq_nnnorm_div]
+
+@[to_additive (attr := simp)]
+theorem edist_one_right (a : E) : edist a 1 = ‖a‖₊ := by
+  rw [edist_nndist, nndist_one_right]
+
 @[to_additive (attr := simp) nnnorm_zero]
 theorem nnnorm_one' : ‖(1 : E)‖₊ = 0 :=
   NNReal.eq norm_one'
@@ -652,6 +659,13 @@ theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
 @[to_additive (attr := simp) nnnorm_neg]
 theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
+
+@[to_additive (attr := simp)]
+theorem nndist_one_left (a : E) : nndist 1 a = ‖a‖₊ := by simp [nndist_eq_nnnorm_div]
+
+@[to_additive (attr := simp)]
+theorem edist_one_left (a : E) : edist 1 a = ‖a‖₊ := by
+  rw [edist_nndist, nndist_one_left]
 
 open scoped symmDiff in
 @[to_additive]
@@ -769,6 +783,16 @@ theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
 @[to_additive (attr := continuity) continuous_nnnorm]
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
+
+set_option linter.docPrime false in
+@[to_additive Inseparable.norm_eq_norm]
+theorem Inseparable.norm_eq_norm' {u v : E} (h : Inseparable u v) : ‖u‖ = ‖v‖ :=
+  h.map continuous_norm' |>.eq
+
+set_option linter.docPrime false in
+@[to_additive Inseparable.nnnorm_eq_nnnorm]
+theorem Inseparable.nnnorm_eq_nnnorm' {u v : E} (h : Inseparable u v) : ‖u‖₊ = ‖v‖₊ :=
+  h.map continuous_nnnorm' |>.eq
 
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
@@ -1129,7 +1153,7 @@ theorem nnnorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖�
 @[to_additive]
 theorem nnnorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0} (h : ∀ b ∈ s, ‖f b‖₊ ≤ n b) :
     ‖∏ b ∈ s, f b‖₊ ≤ ∑ b ∈ s, n b :=
-  (norm_prod_le_of_le s h).trans_eq NNReal.coe_sum.symm
+  (norm_prod_le_of_le s h).trans_eq (NNReal.coe_sum ..).symm
 
 namespace Real
 
