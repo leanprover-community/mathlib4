@@ -39,10 +39,10 @@ object `X` to the `End Y`-module of morphisms `X ⟶ Y`.
 @[simps]
 def preadditiveYonedaObj (Y : C) : Cᵒᵖ ⥤ ModuleCat.{v} (End Y) where
   obj X := ModuleCat.of _ (X.unop ⟶ Y)
-  map f := ModuleCat.ofHom
+  map f := ModuleCat.asHom
     { toFun := fun g => f.unop ≫ g
-      map_add' := fun g g' => comp_add _ _ _ _ _ _
-      map_smul' := fun r g => Eq.symm <| Category.assoc _ _ _ }
+      map_add' := fun _ _ => comp_add _ _ _ _ _ _
+      map_smul' := fun _ _ => Eq.symm <| Category.assoc _ _ _ }
 
 /-- The Yoneda embedding for preadditive categories sends an object `Y` to the presheaf sending an
 object `X` to the group of morphisms `X ⟶ Y`. At each point, we get an additional `End Y`-module
@@ -52,11 +52,11 @@ structure, see `preadditiveYonedaObj`.
 def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGrp.{v} where
   obj Y := preadditiveYonedaObj Y ⋙ forget₂ _ _
   map f :=
-    { app := fun X =>
+    { app := fun _ =>
         { toFun := fun g => g ≫ f
           map_zero' := Limits.zero_comp
-          map_add' := fun g g' => add_comp _ _ _ _ _ _ }
-      naturality := fun X X' g => AddCommGrp.ext fun x => Category.assoc _ _ _ }
+          map_add' := fun _ _ => add_comp _ _ _ _ _ _ }
+      naturality := fun _ _ _ => AddCommGrp.ext fun _ => Category.assoc _ _ _ }
   map_id _ := by ext; dsimp; simp
   map_comp f g := by ext; dsimp; simp
 
@@ -66,10 +66,10 @@ object `Y` to the `End X`-module of morphisms `X ⟶ Y`.
 @[simps]
 def preadditiveCoyonedaObj (X : Cᵒᵖ) : C ⥤ ModuleCat.{v} (End X) where
   obj Y := ModuleCat.of _ (unop X ⟶ Y)
-  map f := ModuleCat.ofHom
+  map f := ModuleCat.asHom
     { toFun := fun g => g ≫ f
-      map_add' := fun g g' => add_comp _ _ _ _ _ _
-      map_smul' := fun r g => Category.assoc _ _ _ }
+      map_add' := fun _ _ => add_comp _ _ _ _ _ _
+      map_smul' := fun _ _ => Category.assoc _ _ _ }
 
 /-- The Yoneda embedding for preadditive categories sends an object `X` to the copresheaf sending an
 object `Y` to the group of morphisms `X ⟶ Y`. At each point, we get an additional `End X`-module
@@ -79,12 +79,12 @@ structure, see `preadditiveCoyonedaObj`.
 def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{v} where
   obj X := preadditiveCoyonedaObj X ⋙ forget₂ _ _
   map f :=
-    { app := fun Y =>
+    { app := fun _ =>
         { toFun := fun g => f.unop ≫ g
           map_zero' := Limits.comp_zero
-          map_add' := fun g g' => comp_add _ _ _ _ _ _ }
-      naturality := fun Y Y' g =>
-        AddCommGrp.ext fun x => Eq.symm <| Category.assoc _ _ _ }
+          map_add' := fun _ _ => comp_add _ _ _ _ _ _ }
+      naturality := fun _ _ _ =>
+        AddCommGrp.ext fun _ => Eq.symm <| Category.assoc _ _ _ }
   map_id _ := by ext; dsimp; simp
   map_comp f g := by ext; dsimp; simp
 

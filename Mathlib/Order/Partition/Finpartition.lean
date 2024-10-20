@@ -221,8 +221,8 @@ instance : LE (Finpartition a) :=
 
 instance : PartialOrder (Finpartition a) :=
   { (inferInstance : LE (Finpartition a)) with
-    le_refl := fun P b hb ↦ ⟨b, hb, le_rfl⟩
-    le_trans := fun P Q R hPQ hQR b hb ↦ by
+    le_refl := fun _ b hb ↦ ⟨b, hb, le_rfl⟩
+    le_trans := fun _ Q R hPQ hQR b hb ↦ by
       obtain ⟨c, hc, hbc⟩ := hPQ hb
       obtain ⟨d, hd, hcd⟩ := hQR hc
       exact ⟨d, hd, hbc.trans hcd⟩
@@ -256,6 +256,15 @@ theorem parts_top_subset (a : α) [Decidable (a = ⊥)] : (⊤ : Finpartition a)
 theorem parts_top_subsingleton (a : α) [Decidable (a = ⊥)] :
     ((⊤ : Finpartition a).parts : Set α).Subsingleton :=
   Set.subsingleton_of_subset_singleton fun _ hb ↦ mem_singleton.1 <| parts_top_subset _ hb
+
+-- TODO: this instance takes double-exponential time to generate all partitions, find a faster way
+instance [DecidableEq α] {s : Finset α} : Fintype (Finpartition s) where
+  elems := s.powerset.powerset.image
+    fun ps ↦ if h : ps.sup id = s ∧ ⊥ ∉ ps ∧ ps.SupIndep id then ⟨ps, h.2.2, h.1, h.2.1⟩ else ⊤
+  complete P := by
+    refine mem_image.mpr ⟨P.parts, ?_, ?_⟩
+    · rw [mem_powerset]; intro p hp; rw [mem_powerset]; exact P.le hp
+    · simp only [P.supIndep, P.sup_parts, P.not_bot_mem]; rfl
 
 end Order
 
@@ -419,7 +428,7 @@ variable [GeneralizedBooleanAlgebra α] [DecidableEq α] {a b c : α} (P : Finpa
 def avoid (b : α) : Finpartition (a \ b) :=
   ofErase
     (P.parts.image (· \ b))
-    (P.disjoint.image_finset_of_le fun a ↦ sdiff_le).supIndep
+    (P.disjoint.image_finset_of_le fun _ ↦ sdiff_le).supIndep
     (by rw [sup_image, id_comp, Finset.sup_sdiff_right, ← Function.id_def, P.sup_parts])
 
 @[simp]
@@ -572,12 +581,12 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
   sup_parts := by
     ext a
     simp only [sup_image, Function.id_comp, mem_univ, mem_sup, mem_filter, true_and, iff_true]
-    use a; exact s.refl a
+    use a
   not_bot_mem := by
     rw [bot_eq_empty, mem_image, not_exists]
     intro a
     simp only [filter_eq_empty_iff, not_forall, mem_univ, forall_true_left, true_and, not_not]
-    use a; exact s.refl a
+    use a
 
 theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
     b ∈ (ofSetoid s).part a ↔ s.r a b := by

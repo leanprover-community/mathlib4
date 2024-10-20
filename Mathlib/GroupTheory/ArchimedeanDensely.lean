@@ -10,7 +10,7 @@ import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.Algebra.Order.Hom.Monoid
 
 /-!
-# Archimedean groups are either discrete or densely ordere
+# Archimedean groups are either discrete or densely ordered
 
 This file proves a few additional facts about linearly ordered additive groups which satisfy the
   `Archimedean` property --
@@ -21,7 +21,7 @@ They are placed here in a separate file (rather than incorporated as a continuat
 `GroupTheory.Archimedean`) because they rely on some imports from pointwise lemmas.
 -/
 
-open Set
+open Multiplicative Set
 
 -- no earlier file imports the necessary requirements for the next two
 
@@ -34,25 +34,15 @@ This is the stronger version of `AddSubgroup.mem_closure_singleton`."]
 lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
     [LinearOrderedCommGroup G] {a b : G} (ha : a ≠ 1) :
     b ∈ closure {a} ↔ ∃! k : ℤ, a ^ k = b := by
-  constructor <;> intro h
-  · wlog ha : 1 < a generalizing a b
-    · simp only [not_lt] at ha
-      rcases ha.eq_or_lt with rfl|ha
-      · contradiction
-      specialize @this a⁻¹ b (by simpa) (by simpa) (by simpa)
-      simp only [inv_zpow'] at this
-      obtain ⟨k, rfl, hk'⟩ := this
-      refine ⟨-k, rfl, ?_⟩
-      intro y hy
-      rw [← neg_eq_iff_eq_neg]
-      exact hk' _ (by simpa using hy)
-    · rw [mem_closure_singleton] at h
-      obtain ⟨k, hk⟩ := h
-      refine ⟨k, hk, ?_⟩
-      rintro l rfl
-      rwa [← zpow_right_inj ha, eq_comm]
-  · rw [mem_closure_singleton]
-    exact h.exists
+  rw [mem_closure_singleton]
+  constructor
+  · suffices Function.Injective (a ^ · : ℤ → G) by
+      rintro ⟨m, rfl⟩
+      exact ⟨m, rfl, fun k hk ↦ this hk⟩
+    rcases ha.lt_or_lt with ha | ha
+    · exact (zpow_right_strictAnti ha).injective
+    · exact (zpow_right_strictMono ha).injective
+  · exact fun h ↦ h.exists
 
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
@@ -201,6 +191,21 @@ lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
     · simp [hz.left]
     · simpa [lt_sub_iff_add_lt'] using hz.right
 
+/-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
+to the integers, or is densely ordered, exclusively. -/
+lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
+    [LinearOrderedAddCommGroup G] [Archimedean G] :
+    Nonempty (G ≃+o ℤ) ↔ ¬ DenselyOrdered G := by
+  suffices ∀ (_ : G ≃+o ℤ), ¬ DenselyOrdered G by
+    rcases LinearOrderedAddCommGroup.discrete_or_denselyOrdered G with ⟨⟨h⟩⟩|h
+    · simpa [this h] using ⟨h⟩
+    · simp only [h, not_true_eq_false, iff_false, not_nonempty_iff]
+      exact ⟨fun H ↦ (this H) h⟩
+  intro e H
+  rw [denselyOrdered_iff_of_orderIsoClass e] at H
+  obtain ⟨_, _⟩ := exists_between (one_pos (α := ℤ))
+  linarith
+
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered. -/
@@ -210,3 +215,85 @@ lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
   refine (LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)).imp ?_ id
   rintro ⟨f, hf⟩
   exact ⟨AddEquiv.toMultiplicative' f, hf⟩
+
+variable (G) in
+/-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
+to the multiplicative integers, or is densely ordered, exclusively. -/
+@[to_additive existing]
+lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
+    Nonempty (G ≃*o Multiplicative ℤ) ↔ ¬ DenselyOrdered G := by
+  let e : G ≃o Additive G := OrderIso.refl G
+  rw [denselyOrdered_iff_of_orderIsoClass e,
+    ← LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (Additive G)]
+  refine Nonempty.congr ?_ ?_ <;> intro f
+  · exact ⟨MulEquiv.toAdditive' f, by simp⟩
+  · exact ⟨MulEquiv.toAdditive'.symm f, by simp⟩
+
+lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] :
+    DenselyOrdered G₀ˣ ↔ DenselyOrdered G₀ := by
+  constructor
+  · intro H
+    refine ⟨fun x y h ↦ ?_⟩
+    rcases (zero_le' (a := x)).eq_or_lt with rfl|hx
+    · lift y to G₀ˣ using h.ne'.isUnit
+      obtain ⟨z, hz⟩ := exists_ne (1 : G₀ˣ)
+      refine ⟨(y * |z|ₘ⁻¹ : G₀ˣ), ?_, ?_⟩
+      · simp [zero_lt_iff]
+      · rw [Units.val_lt_val]
+        simp [hz]
+    · obtain ⟨z, hz, hz'⟩ := H.dense (Units.mk0 x hx.ne') (Units.mk0 y (hx.trans h).ne')
+        (by simp [← Units.val_lt_val, h])
+      refine ⟨z, ?_, ?_⟩ <;>
+      simpa [← Units.val_lt_val]
+  · intro H
+    refine ⟨fun x y h ↦ ?_⟩
+    obtain ⟨z, hz⟩ := exists_between (Units.val_lt_val.mpr h)
+    rcases (zero_le' (a := z)).eq_or_lt with rfl|hz'
+    · simp at hz
+    refine ⟨Units.mk0 z hz'.ne', ?_⟩
+    simp [← Units.val_lt_val, hz]
+
+/-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
+either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
+lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
+    [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
+    Nonempty (G ≃*o WithZero (Multiplicative ℤ)) ∨ DenselyOrdered G := by
+  classical
+  rw [← denselyOrdered_units_iff]
+  refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp_left ?_
+  intro ⟨f⟩
+  refine ⟨OrderMonoidIso.trans
+    ⟨WithZero.withZeroUnitsEquiv.symm, ?_⟩ ⟨f.withZero, ?_⟩⟩
+  · intro
+    simp only [WithZero.withZeroUnitsEquiv, MulEquiv.symm_mk,
+      MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
+      Equiv.coe_fn_symm_mk ]
+    split_ifs <;>
+    simp_all [← Units.val_le_val]
+  · intro a b
+    induction a <;> induction b <;>
+    simp [MulEquiv.withZero]
+
+open WithZero in
+/-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
+either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered, exclusively -/
+lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
+    [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
+    Nonempty (G ≃*o WithZero (Multiplicative ℤ)) ↔ ¬ DenselyOrdered G := by
+  rw [← denselyOrdered_units_iff,
+      ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
+  refine Nonempty.congr ?_ ?_ <;> intro f
+  · refine ⟨MulEquiv.unzero (withZeroUnitsEquiv.trans f), ?_⟩
+    intros
+    simp only [MulEquiv.unzero, withZeroUnitsEquiv, MulEquiv.trans_apply,
+      MulEquiv.coe_mk, Equiv.coe_fn_mk, recZeroCoe_coe, OrderMonoidIso.coe_mulEquiv,
+      MulEquiv.symm_trans_apply, MulEquiv.symm_mk, Equiv.coe_fn_symm_mk, map_eq_zero, coe_ne_zero,
+      ↓reduceDIte, unzero_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
+    rw [← Units.val_le_val, ← map_le_map_iff f, ← coe_le_coe, coe_unzero, coe_unzero]
+  · refine ⟨withZeroUnitsEquiv.symm.trans (MulEquiv.withZero f), ?_⟩
+    intros
+    simp only [withZeroUnitsEquiv, MulEquiv.symm_mk, MulEquiv.withZero,
+      MulEquiv.toMonoidHom_eq_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+      MulEquiv.trans_apply, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk]
+    split_ifs <;>
+    simp_all [← Units.val_le_val]

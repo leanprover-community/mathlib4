@@ -412,13 +412,6 @@ lemma disjoint_lowerCentralSeries_maxTrivSubmodule_iff [IsNilpotent R L M] :
   suffices ¬ Nontrivial (lowerCentralSeriesLast R L M) by
     exact this (nontrivial_lowerCentralSeriesLast R L M)
   rw [h.eq_bot, le_bot_iff] at this
-  #adaptation_note
-  /--
-  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-  -/
-  letI unique : Unique (⊥ : LieSubmodule R L M) := Submodule.uniqueBot
-  letI subsing : Subsingleton (⊥ : LieSubmodule R L M) := Unique.instSubsingleton
   exact this ▸ not_nontrivial _
 
 theorem nontrivial_max_triv_of_isNilpotent [Nontrivial M] [IsNilpotent R L M] :
@@ -595,18 +588,7 @@ theorem LieModule.isNilpotent_of_top_iff :
   Equiv.lieModule_isNilpotent_iff LieSubalgebra.topEquiv (1 : M ≃ₗ[R] M) fun _ _ => rfl
 
 @[simp] lemma LieModule.isNilpotent_of_top_iff' :
-    #adaptation_note
-    /--
-    After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-    See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-    -/
-    letI : LieRingModule L (⊤ : LieSubmodule R L M) :=
-      LieSubmodule.instLieRingModuleSubtypeMemSubmodule ..
     IsNilpotent R L {x // x ∈ (⊤ : LieSubmodule R L M)} ↔ IsNilpotent R L M :=
-  letI : LieRingModule L (⊤ : LieSubmodule R L M) :=
-    LieSubmodule.instLieRingModuleSubtypeMemSubmodule ..
-  letI : LieModule R L {x // x ∈ (⊤ : LieSubmodule R L M)} :=
-    LieSubmodule.instLieModule ⊤
   Equiv.lieModule_isNilpotent_iff 1 (LinearEquiv.ofTop ⊤ rfl) fun _ _ ↦ rfl
 
 end Morphisms
@@ -662,10 +644,10 @@ theorem coe_lowerCentralSeries_ideal_quot_eq {I : LieIdeal R L} (k : ℕ) :
     ext x
     constructor
     · rintro ⟨⟨y, -⟩, ⟨z, hz⟩, rfl : ⁅y, z⁆ = x⟩
-      erw [← LieSubmodule.mem_coeSubmodule, ih, LieSubmodule.mem_coeSubmodule] at hz
+      rw [← LieSubmodule.mem_coeSubmodule, ih, LieSubmodule.mem_coeSubmodule] at hz
       exact ⟨⟨LieSubmodule.Quotient.mk y, LieSubmodule.mem_top _⟩, ⟨z, hz⟩, rfl⟩
     · rintro ⟨⟨⟨y⟩, -⟩, ⟨z, hz⟩, rfl : ⁅y, z⁆ = x⟩
-      erw [← LieSubmodule.mem_coeSubmodule, ← ih, LieSubmodule.mem_coeSubmodule] at hz
+      rw [← LieSubmodule.mem_coeSubmodule, ← ih, LieSubmodule.mem_coeSubmodule] at hz
       exact ⟨⟨y, LieSubmodule.mem_top _⟩, ⟨z, hz⟩, rfl⟩
 
 /-- Note that the below inequality can be strict. For example the ideal of strictly-upper-triangular

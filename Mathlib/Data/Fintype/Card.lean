@@ -48,8 +48,6 @@ assert_not_exists MulAction
 
 open Function
 
-open Nat
-
 universe u v
 
 variable {α β γ : Type*}
@@ -294,6 +292,10 @@ theorem Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) =
 equality of types, using it should be avoided if possible. -/
 theorem fin_injective : Function.Injective Fin := fun m n h =>
   (Fintype.card_fin m).symm.trans <| (Fintype.card_congr <| Equiv.cast h).trans (Fintype.card_fin n)
+
+theorem Fin.val_eq_val_of_heq {k l : ℕ} {i : Fin k} {j : Fin l} (h : HEq i j) :
+    (i : ℕ) = (j : ℕ) :=
+  (Fin.heq_ext_iff (fin_injective (type_eq_of_heq h))).1 h
 
 /-- A reversed version of `Fin.cast_eq_cast` that is easier to rewrite with. -/
 theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
@@ -897,7 +899,7 @@ theorem exists_not_mem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
   not_forall.1 fun h => Fintype.false ⟨s, h⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) (α : Type*) [H : Infinite α] : Nontrivial α :=
+instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=
   ⟨let ⟨x, _hx⟩ := exists_not_mem_finset (∅ : Finset α)
     let ⟨y, hy⟩ := exists_not_mem_finset ({x} : Finset α)
     ⟨y, x, by simpa only [mem_singleton] using hy⟩⟩
@@ -975,7 +977,7 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
     letI := Classical.decEq α
     Classical.choose
       (exists_not_mem_finset
-        ((Multiset.range n).pmap (fun m (hm : m < n) => natEmbeddingAux _ m) fun _ =>
+        ((Multiset.range n).pmap (fun m (_ : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
