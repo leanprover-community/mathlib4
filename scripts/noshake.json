@@ -148,7 +148,6 @@
   "Mathlib.Tactic.Recover",
   "Mathlib.Tactic.ReduceModChar.Ext",
   "Mathlib.Tactic.Relation.Symm",
-  "Mathlib.Tactic.Relation.Trans",
   "Mathlib.Tactic.Rename",
   "Mathlib.Tactic.RenameBVar",
   "Mathlib.Tactic.Replace",
@@ -325,6 +324,7 @@
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
+  "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.NumberTheory.Harmonic.Defs":
   ["Mathlib.Algebra.Order.BigOperators.Ring.Finset",

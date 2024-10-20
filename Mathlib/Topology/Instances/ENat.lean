@@ -92,7 +92,7 @@ protected theorem continuousAt_sub {a b : ℕ∞} (h : a ≠ ⊤ ∨ b ≠ ⊤) 
     simpa [ContinuousAt, nhds_prod_eq] using tendsto_pure_nhds _ _
   | (a : ℕ), ⊤, _ =>
     suffices ∀ᶠ b in 𝓝 ⊤, (a - b : ℕ∞) = 0 by
-      simpa [ContinuousAt, nhds_prod_eq]
+      simpa [ContinuousAt, nhds_prod_eq, tsub_eq_zero_of_le]
     filter_upwards [le_mem_nhds (WithTop.coe_lt_top a)] with b using tsub_eq_zero_of_le
   | ⊤, (b : ℕ), _ =>
     suffices ∀ n : ℕ, ∀ᶠ a : ℕ∞ in 𝓝 ⊤, b + n < a by
