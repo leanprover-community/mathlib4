@@ -1204,8 +1204,8 @@ set_option linter.deprecated false in
 theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v} f ≤ a ↔ ∀ i, f i ≤ a :=
   Ordinal.iSup_le_iff
 
-/-- `ciSup_le'` whenever the input type is small in the output universe. -/
-protected theorem iSup_le {ι} {f : ι → Ordinal.{u}} {a} :
+/-- An alias of `ciSup_le'` for discoverability. -/
+protected theorem iSup_le {ι} {f : ι → Ordinal} {a} :
     (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
 
@@ -1214,11 +1214,10 @@ set_option linter.deprecated false in
 theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i ≤ a) → sup.{_, v} f ≤ a :=
   Ordinal.iSup_le
 
--- TODO: generalize to conditionally complete linear orders.
+/-- `lt_ciSup_iff'` whenever the input type is small in the output universe. -/
 protected theorem lt_iSup {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
-    a < iSup f ↔ ∃ i, a < f i := by
-  rw [← not_iff_not]
-  simpa using Ordinal.iSup_le_iff
+    a < iSup f ↔ ∃ i, a < f i :=
+  lt_ciSup_iff' (bddAbove_of_small _)
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.lt_iSup (since := "2024-08-27")]
