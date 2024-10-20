@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Kexing Ying
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Integration
 import Mathlib.MeasureTheory.Function.L2Space
+import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
 /-!
 # Variance of random variables
@@ -343,61 +344,50 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
       rw [IH (fun i hi => hs i (mem_insert_of_mem hi))
           (h.mono (by simp only [coe_insert, Set.subset_insert]))]
 
-theorem abs_le_max_abs_abs_ae {a b : ℝ} {X : Ω → ℝ}
-    (ha : ∀ᵐ (ω : Ω) ∂μ, a ≤ X ω) (hb : ∀ᵐ (ω : Ω) ∂μ, X ω ≤ b) :
-    ∀ᵐ (ω : Ω) ∂μ, |X ω| ≤ max |a| |b| := by
-  filter_upwards [ha, hb] with ω using abs_le_max_abs_abs
-
-theorem memℒp_of_bounded [IsFiniteMeasure μ]
-    {a b : ℝ} {X : Ω → ℝ} (ha : ∀ᵐ (ω : Ω) ∂μ, a ≤ X ω) (hb : ∀ᵐ (ω : Ω) ∂μ, X ω ≤ b)
-    (hX : AEMeasurable X μ) (p : ENNReal) : Memℒp X p μ :=
-  let c := max |a| |b|
-  (memℒp_const c).mono' hX.aestronglyMeasurable (abs_le_max_abs_abs_ae ha hb)
-
-
 /-- ** Popoviciu's inequality on variance**
 
 The variance of a random variable `X` satisfying `a ≤ X ≤ b`  almost everywhere is at most
 `((b - a) / 2) ^ 2`. -/
 lemma variance_square_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
-    (ha : ∀ᵐ ω ∂μ, a ≤ X ω) (hb : ∀ᵐ ω ∂μ, X ω ≤ b) (hX : AEMeasurable X μ) :
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hX : AEMeasurable X μ) :
     variance X μ ≤ ((b - a) / 2) ^ 2 :=
+  have ha : ∀ᵐ ω ∂μ, a ≤ X ω := h.mono fun ω h => h.1
+  have hb : ∀ᵐ ω ∂μ, X ω ≤ b := h.mono fun ω h => h.2
   let c := max |a| |b|
   have hX_int₁ : Integrable (fun ω ↦ -X ω ^ 2) μ :=
-    ((memℒp_of_bounded ha hb hX 2).integrable_sq).neg
+    ((memℒp_of_bounded h hX.aestronglyMeasurable 2).integrable_sq).neg
   have hX_int₂ : Integrable (fun ω ↦ (a + b) * X ω) μ :=
     ((integrable_const c).mono' hX.aestronglyMeasurable
-      (abs_le_max_abs_abs_ae ha hb)).const_mul (a + b)
-  have h0 : 0 ≤ - ∫ (ω : Ω), (X ω ^ 2) ∂μ + (a + b) * ∫ (ω : Ω), (X ω) ∂μ - a * b :=
+      (by filter_upwards [ha, hb] with ω using abs_le_max_abs_abs :
+  (∀ᵐ ω ∂μ, |X ω| ≤ max |a| |b|))).const_mul (a + b)
+  have h0 : 0 ≤ - μ[X ^ 2] + (a + b) * μ[X] - a * b :=
     calc
-      _ ≤ ∫ (ω : Ω), (b - X ω) * (X ω - a) ∂μ := by
+      _ ≤ ∫ ω, (b - X ω) * (X ω - a) ∂μ := by
         apply integral_nonneg_of_ae
         filter_upwards [ha, hb] with ω ha' hb'
         exact mul_nonneg (by linarith : 0 ≤ b - X ω) (by linarith : 0 ≤ X ω - a)
-      _ = ∫ (ω : Ω), - X ω ^ 2 + (a + b) * X ω - (a * b) ∂μ :=
+      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω - (a * b) ∂μ :=
         integral_congr_ae <| ae_of_all μ fun ω ↦ by ring
-      _ = ∫ (ω : Ω), - X ω ^ 2 + (a + b) * X ω ∂μ - ∫ (_ : Ω), (a * b) ∂μ :=
+      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - ∫ _, (a * b) ∂μ :=
         integral_sub (hX_int₁.add hX_int₂) (integrable_const (a * b))
-      _ = ∫ (ω : Ω), - X ω ^ 2 + (a + b) * X ω ∂μ - (a * b) := by simp only [integral_const,
+      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - (a * b) := by simp only [integral_const,
         measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul]
-      _ = - ∫ (ω : Ω), X ω ^ 2 ∂μ + (a + b) * ∫ (ω : Ω), X ω ∂μ - a * b := by
+      _ = - μ[X ^ 2] + (a + b) * μ[X] - a * b := by
         simp only [sub_left_inj]
         rw [← integral_neg, ← integral_mul_left]
         apply integral_add hX_int₁ hX_int₂
   calc
-    _ ≤ (a + b) * ∫ (ω : Ω), X ω ∂μ - a * b - (∫ (ω : Ω), X ω ∂μ) ^ 2 := by
-      rw [variance_def' (memℒp_of_bounded ha hb hX 2)]
-      simp only [Pi.pow_apply, tsub_le_iff_right, sub_add_cancel, ge_iff_le]
+    _ ≤ (a + b) * μ[X] - a * b - μ[X] ^ 2 := by
+      rw [variance_def' (memℒp_of_bounded h hX.aestronglyMeasurable 2)]
+      simp only [Pi.pow_apply, tsub_le_iff_right, sub_add_cancel]
+      simp only [Pi.pow_apply, sub_nonneg, le_neg_add_iff_add_le] at h0
       linarith
-    _ = (b - ∫ (ω : Ω), X ω ∂μ) * (∫ (ω : Ω), X ω ∂μ - a) := by ring
-    _ ≤ ((b - a) / 2) ^ 2 :=
-      have : ∀ x, (b - x) * (x - a) ≤ ((b - a) / 2) ^ 2 := by
-        intro x
-        set y : ℝ := x - ((b + a) / 2)
-        rw [(by ring : x = y + ((b + a) / 2))]
-        calc
-          _ = ((b - a) / 2) ^ 2 - y ^ 2 := by ring
-          _ ≤ ((b - a) / 2) ^ 2 := sub_le_self (((b - a) / 2) ^ 2) (sq_nonneg y)
-      this (∫ (ω : Ω), X ω ∂μ)
+    _ = (b - μ[X]) * (μ[X] - a) := by ring
+    _ ≤ ((b - a) / 2) ^ 2 := by
+      set y : ℝ := μ[X] - ((b + a) / 2)
+      rw [(by ring : μ[X] = y + ((b + a) / 2))]
+      calc
+        _ = ((b - a) / 2) ^ 2 - y ^ 2 := by ring
+        _ ≤ ((b - a) / 2) ^ 2 := sub_le_self (((b - a) / 2) ^ 2) (sq_nonneg y)
 
 end ProbabilityTheory
