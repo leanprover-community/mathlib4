@@ -2481,6 +2481,7 @@ import Mathlib.Data.Nat.Fib.Zeckendorf
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
+import Mathlib.Data.Nat.GrayCode
 import Mathlib.Data.Nat.Hyperoperation
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Log

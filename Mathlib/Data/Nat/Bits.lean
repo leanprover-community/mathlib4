@@ -114,11 +114,45 @@ lemma div2_val (n) : div2 n = n / 2 := by
     (Nat.add_left_cancel (Eq.trans ?_ (Nat.mod_add_div n 2).symm))
   rw [mod_two_of_bodd, bodd_add_div2]
 
+@[simp]
+lemma div2_testBit (n : ℕ) (i : ℕ) : n.div2.testBit i = n.testBit (i + 1) := by
+  rw [testBit_succ, div2_val]
+
+lemma bitwise_div2 (f : Bool → Bool → Bool) (h : f false false = false) (n : ℕ) (m : ℕ) :
+    (bitwise f n m).div2 = bitwise f n.div2 m.div2 := by
+  apply eq_of_testBit_eq
+  intro
+  simp only [div2_testBit, testBit_bitwise, h]
+
+@[simp]
+lemma xor_div2 (n : ℕ) (m : ℕ) : (n ^^^ m).div2 = n.div2 ^^^ m.div2 := by
+  apply bitwise_div2
+  rfl
+
+@[simp]
+lemma or_div2 (n : ℕ) (m : ℕ) : (n ||| m).div2 = n.div2 ||| m.div2 := by
+  apply bitwise_div2
+  rfl
+
+@[simp]
+lemma and_div2 (n : ℕ) (m : ℕ) : (n &&& m).div2 = n.div2 &&& m.div2 := by
+  apply bitwise_div2
+  rfl
+
 /-- `bit b` appends the digit `b` to the binary representation of its natural number input. -/
 def bit (b : Bool) : ℕ → ℕ := cond b (2 * · + 1) (2 * ·)
 
 lemma bit_val (b n) : bit b n = 2 * n + b.toNat := by
   cases b <;> rfl
+
+@[simp]
+lemma bit_true_succ (n : ℕ) : bit true n + 1 = bit false (n + 1) := by
+  rw [bit_val, bit_val]
+  rfl
+
+@[simp]
+lemma bit_false_succ (n : ℕ) : bit false n + 1 = bit true n := by
+  rw [bit_val, bit_val, cond_true, cond_false]
 
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
@@ -223,6 +257,7 @@ lemma bodd_bit (b n) : bodd (bit b n) = b := by
     Bool.not_true, Bool.and_false, Bool.xor_false]
   cases b <;> cases bodd n <;> rfl
 
+@[simp]
 lemma div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
   <;> cases b
