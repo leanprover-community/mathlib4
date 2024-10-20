@@ -36,7 +36,9 @@ lemma isLocalMax_of_mono_anti
     {a b c : α} (g₀ : a < b) (g₁ : b < c) {f : α → β}
     (h₀ : MonotoneOn f (Ioc a b))
     (h₁ : AntitoneOn f (Ico b c)) : IsLocalMax f b :=
-  mem_of_superset (Ioo_mem_nhds g₀ g₁) (fun x _ => by rcases le_total x b <;> aesop)
+  isLocalMax_of_mono_anti' (Ioc_mem_nhdsWithin_Iic' g₀) (Ico_mem_nhdsWithin_Ici' g₁) h₀ h₁
+
+
 
 /-- If `f` is antitone on `(a,b]` and monotone on `[b,c)` then `f` has
 a local minimum at `b`. -/

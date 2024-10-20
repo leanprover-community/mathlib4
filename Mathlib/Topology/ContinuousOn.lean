@@ -83,18 +83,6 @@ theorem mem_nhdsWithin_iff_exists_mem_nhds_inter {t : Set α} {a : α} {s : Set 
     t ∈ 𝓝[s] a ↔ ∃ u ∈ 𝓝 a, u ∩ s ⊆ t :=
   (nhdsWithin_hasBasis (𝓝 a).basis_sets s).mem_iff
 
-/-- If `L` and `R` are neighborhoods of `b` within sets whose union is `Set.univ`, then
-`L ∪ R` is a neighborhood of `b`. -/
-theorem union_mem_nhds_of_mem_nhdsWithin {b : α}
-    {I₁ I₂ : Set α} (h : ∀ x, x ∈ I₁ ∪ I₂)
-    {L : Set α} (hL : L ∈ nhdsWithin b I₁)
-    {R : Set α} (hR : R ∈ nhdsWithin b I₂) : L ∪ R ∈ nhds b := by
-  rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 hL with ⟨s, s_in, sL⟩
-  rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 hR with ⟨t, t_in, tR⟩
-  apply mem_of_superset (inter_mem s_in t_in)
-  refine fun ⦃x⦄ hx ↦ (h x).elim ?_ ?_ <;> aesop
-
-
 theorem diff_mem_nhdsWithin_compl {x : α} {s : Set α} (hs : s ∈ 𝓝 x) (t : Set α) :
     s \ t ∈ 𝓝[tᶜ] x :=
   diff_mem_inf_principal_compl hs t
@@ -204,18 +192,36 @@ theorem nhdsWithin_union (a : α) (s t : Set α) : 𝓝[s ∪ t] a = 𝓝[s] a �
   delta nhdsWithin
   rw [← inf_sup_left, sup_principal]
 
+theorem nhdsWithin_union_univ (b : α) {I₁ I₂ : Set α} (hI : Set.univ = I₁ ∪ I₂) :
+    nhds b = nhdsWithin b I₁ ⊔ nhdsWithin b I₂ := by
+  rw [← nhdsWithin_univ b, hI, nhdsWithin_union]
+
+/-- If `L` and `R` are neighborhoods of `b` within sets whose union is `Set.univ`, then
+`L ∪ R` is a neighborhood of `b`. -/
+theorem union_mem_nhds_of_mem_nhdsWithin {b : α}
+    {I₁ I₂ : Set α} (h : Set.univ = I₁ ∪ I₂)
+    {L : Set α} (hL : L ∈ nhdsWithin b I₁)
+    {R : Set α} (hR : R ∈ nhdsWithin b I₂) : L ∪ R ∈ nhds b := by
+  rw [← nhdsWithin_univ b, h, nhdsWithin_union]
+  exact ⟨mem_of_superset hL (by aesop), mem_of_superset hR (by aesop)⟩
+
+
+/-- Writing a punctured neighborhood filter as a sup of left and right filters. -/
+lemma nhds_punctured_union [LinearOrder α] {x : α} : 𝓝[≠] x = 𝓝[<] x ⊔ 𝓝[>] x := by
+  rw [← Iio_union_Ioi, nhdsWithin_union]
+
 /-- If a set `P` contains left and right neighborhoods of a point `x` in a linearly ordered
 topological space then `P` contains a punctured neighborhood. -/
 lemma nhdsWithin_punctured_of_Iio_Ioi [LinearOrder α]
     {P : Set α} {x : α} (hl : P ∈ 𝓝[<] x) (hr : P ∈ 𝓝[>] x) : P ∈ 𝓝[≠] x := by
-  rw [← Iio_union_Ioi, nhdsWithin_union]
-  exact Filter.mem_sup.mpr ⟨hl, hr⟩
+  rw [nhds_punctured_union]
+  exact ⟨hl,hr⟩
 
 /-- Obtain a "predictably-sided" neighborhood of `b` from two one-sided neighborhoods. -/
 theorem nhds_of_Ici_Iic [LinearOrder α] {b : α}
     {L : Set α} (hL : L ∈ 𝓝[≤] b)
     {R : Set α} (hR : R ∈ 𝓝[≥] b) : L ∩ Iic b ∪ R ∩ Ici b ∈ 𝓝 b :=
-  union_mem_nhds_of_mem_nhdsWithin (fun x => le_total x b)
+  union_mem_nhds_of_mem_nhdsWithin Iic_union_Ici.symm
     (inter_mem hL self_mem_nhdsWithin) (inter_mem hR self_mem_nhdsWithin)
 
 theorem nhdsWithin_biUnion {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
