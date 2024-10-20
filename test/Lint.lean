@@ -70,9 +70,6 @@ namespace add
 /--
 warning: The namespace 'add' is duplicated in the declaration 'add.add'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
----
-warning: The namespace 'add' is duplicated in the declaration 'add.add'
-note: this linter can be disabled with `set_option linter.dupNamespace false`
 -/
 #guard_msgs in
 set_option linter.dupNamespace true in

@@ -187,11 +187,13 @@ theorem mem_foldr_permutationsAux2 {t : α} {ts : List α} {r L : List (List α)
   simp only [mem_permutationsAux2', ← this, or_comm, and_left_comm, mem_append, mem_flatMap,
     append_assoc, cons_append, exists_prop]
 
+set_option linter.deprecated false in
 theorem length_foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
     length (foldr (fun y r => (permutationsAux2 t ts r y id).2) r L) =
       Nat.sum (map length L) + length r := by
   simp [foldr_permutationsAux2, Function.comp_def, length_permutationsAux2, length_flatMap']
 
+set_option linter.deprecated false in
 theorem length_foldr_permutationsAux2' (t : α) (ts : List α) (r L : List (List α)) (n)
     (H : ∀ l ∈ L, length l = n) :
     length (foldr (fun y r => (permutationsAux2 t ts r y id).2) r L) = n * length L + length r := by

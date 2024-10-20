@@ -370,6 +370,7 @@ example : (2 * 12868 + 25705) * 11621 ^ 2 ≤ 23235 ^ 2 * 12868 := by norm_num1
 --   let n : ℕ := by apply_normed (2^32 - 71)
 --   exact n
 
+set_option linter.unusedVariables false in
 example (a : ℚ) (h : 3⁻¹ * a = a) : True := by
   norm_num1 at h
   guard_hyp h : 1 / 3 * a = a

@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 import Lean.Elab.Tactic.Simp
 import Lean.Elab.App
-import Batteries.Data.String.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Lean.Expr.Basic
 
@@ -486,8 +485,8 @@ This is checked by inspecting whether the first character of the remaining part 
 
 We use this variant because the latter is often a different field with an auto-generated name.
 -/
-private def dropPrefixIfNotNumber? (s : String) (pre : Substring) : Option Substring := do
-  let ret ← Substring.dropPrefix? s pre
+private def dropPrefixIfNotNumber? (s : String) (pre : String) : Option Substring := do
+  let ret ← s.dropPrefix? pre
   -- flag is true when the remaining part is nonempty and starts with a digit.
   let flag := ret.toString.data.head?.elim false Char.isDigit
   if flag then none else some ret
@@ -976,8 +975,8 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   catch ex =>
     throwError "Failed to add projection lemma {declName}. Nested error:\n{ex.toMessageData}"
   addDeclarationRanges declName {
-    range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange ref }
+    range := (← getDeclarationRange? (← getRef)).get!
+    selectionRange := (← getDeclarationRange? ref).get! }
   _ ← MetaM.run' <| TermElabM.run' <| addTermInfo (isBinder := true) ref <|
     ← mkConstWithLevelParams declName
   if cfg.isSimp then

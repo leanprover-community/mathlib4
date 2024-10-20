@@ -1,5 +1,7 @@
 import Mathlib.Tactic.ExtractLets
 
+set_option linter.unusedVariables false
+
 example (h : let x := 1; x = x) : True := by
   extract_lets y at h
   fail_if_success extract_lets a at h
