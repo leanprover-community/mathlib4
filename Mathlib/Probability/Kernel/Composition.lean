@@ -518,7 +518,7 @@ theorem compProd_eq_sum_compProd_right (κ : Kernel α β) (η : Kernel (α × �
 
 instance IsMarkovKernel.compProd (κ : Kernel α β) [IsMarkovKernel κ] (η : Kernel (α × β) γ)
     [IsMarkovKernel η] : IsMarkovKernel (κ ⊗ₖ η) where
-  isProbabilityMeasure a := ⟨by simp [compProd_apply MeasurableSet.univ]⟩
+  isProbabilityMeasure a := ⟨by simp [compProd_apply]⟩
 
 theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [IsFiniteKernel η] (a : α) :
     (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := by
