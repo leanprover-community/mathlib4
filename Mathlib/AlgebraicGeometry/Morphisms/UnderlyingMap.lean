@@ -163,12 +163,12 @@ lemma Dominant.of_comp [H : Dominant (f ≫ g)] : Dominant g := by
 lemma Dominant.comp_iff [Dominant f] : Dominant (f ≫ g) ↔ Dominant g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
-instance : MorphismProperty.RespectsIso @Dominant :=
+instance Dominant.respectsIso : MorphismProperty.RespectsIso @Dominant :=
   MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ f (_ : IsIso f) ↦ inferInstance
 
 instance Dominant.isLocalAtTarget : IsLocalAtTarget @Dominant :=
   have : MorphismProperty.RespectsIso (topologically DenseRange) :=
-    dominant_eq_topologically ▸ instRespectsIsoSchemeDominant
+    dominant_eq_topologically ▸ Dominant.respectsIso
   dominant_eq_topologically ▸ topologically_isLocalAtTarget' DenseRange
     fun _ _ _ hU _ ↦ denseRange_iff_denseRange_of_iSup_eq_top hU
 
