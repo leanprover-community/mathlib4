@@ -10,7 +10,7 @@ import Mathlib.Data.NNRat.Defs
 /-! # Casting lemmas for non-negative rational numbers involving sums and products
 -/
 
-variable {ι α : Type*}
+variable {α : Type*}
 
 namespace NNRat
 
