@@ -355,7 +355,7 @@ lemma variance_square_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
   have hb : ∀ᵐ ω ∂μ, X ω ≤ b := h.mono fun ω h => h.2
   let c := max |a| |b|
   have hX_int₁ : Integrable (fun ω ↦ -X ω ^ 2) μ :=
-    ((memℒp_of_bounded h hX.aestronglyMeasurable 2).integrable_sq).neg
+    (memℒp_of_bounded h hX.aestronglyMeasurable 2).integrable_sq.neg
   have hX_int₂ : Integrable (fun ω ↦ (a + b) * X ω) μ :=
     ((integrable_const c).mono' hX.aestronglyMeasurable
       (by filter_upwards [ha, hb] with ω using abs_le_max_abs_abs :
