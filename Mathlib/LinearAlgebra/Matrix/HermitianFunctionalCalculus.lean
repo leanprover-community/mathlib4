@@ -87,10 +87,10 @@ noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n �
     ext
     simp
 
-lemma closedEmbedding_cfcAux : ClosedEmbedding hA.cfcAux := by
+lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
   have h0 : FiniteDimensional ℝ C(spectrum ℝ A, ℝ) :=
     FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ)) DFunLike.coe_injective
-  refine LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ A, ℝ))
+  refine LinearMap.isClosedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ A, ℝ))
     (F := Matrix n n 𝕜) (f := hA.cfcAux) <| LinearMap.ker_eq_bot'.mpr fun f hf ↦ ?_
   have h2 :
       diagonal (RCLike.ofReal ∘ f ∘ fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩)
@@ -107,6 +107,9 @@ lemma closedEmbedding_cfcAux : ClosedEmbedding hA.cfcAux := by
   have := (diagonal_eq_diagonal_iff).mp h2
   refine RCLike.ofReal_eq_zero.mp (this i)
 
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_cfcAux := isClosedEmbedding_cfcAux
+
 lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by
   conv_rhs => rw [hA.spectral_theorem]
   congr!
@@ -117,7 +120,7 @@ instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : Matrix n n 𝕜 → Prop) where
   exists_cfc_of_predicate a ha := by
     replace ha : IsHermitian a := ha
-    refine ⟨ha.cfcAux, ha.closedEmbedding_cfcAux, ha.cfcAux_id, fun f ↦ ?map_spec,
+    refine ⟨ha.cfcAux, ha.isClosedEmbedding_cfcAux, ha.cfcAux_id, fun f ↦ ?map_spec,
       fun f ↦ ?hermitian⟩
     case map_spec =>
       apply Set.eq_of_subset_of_subset
@@ -159,7 +162,7 @@ protected noncomputable def cfc (f : ℝ → ℝ) : Matrix n n 𝕜 :=
 
 lemma cfc_eq (f : ℝ → ℝ) : cfc f A = hA.cfc f := by
   have hA' : IsSelfAdjoint A := hA
-  have := cfcHom_eq_of_continuous_of_map_id hA' hA.cfcAux hA.closedEmbedding_cfcAux.continuous
+  have := cfcHom_eq_of_continuous_of_map_id hA' hA.cfcAux hA.isClosedEmbedding_cfcAux.continuous
     hA.cfcAux_id
   rw [cfc_apply f A hA' (by rw [continuousOn_iff_continuous_restrict]; fun_prop), this]
   simp only [cfcAux_apply, ContinuousMap.coe_mk, Function.comp_def, Set.restrict_apply,

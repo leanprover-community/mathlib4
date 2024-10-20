@@ -4,6 +4,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.Tactic.Positivity.Finset
 
 /-! # Tests for the `positivity` tactic
 
