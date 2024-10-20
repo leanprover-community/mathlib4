@@ -50,7 +50,7 @@ Its disadvantage is that the statement `X ⊆ M.closure X` is only true provided
 
 Choice (2) has the reverse property: we would have `X ⊆ M.closure X` for all `X`,
 but the condition `M.closure X ⊆ M.E` requires `X ⊆ M.E` to hold.
-It has a couple of other advantages too: is is actually the closure function of a matroid on `α`
+It has a couple of other advantages too: it is actually the closure function of a matroid on `α`
 with ground set `univ` (specifically, the direct sum of `M` and a free matroid on `M.Eᶜ`),
 and because of this, it is an example of a `ClosureOperator` on `α`, which in turn gives access
 to nice existing API for both `ClosureOperator` and `GaloisInsertion`.
@@ -462,7 +462,7 @@ lemma closure_biInter_eq_biInter_closure_of_biUnion_indep {ι : Type*} {A : Set 
   convert closure_iInter_eq_iInter_closure_of_iUnion_indep (Is := fun i : A ↦ I i) (by simpa) <;>
   simp
 
-lemma Indep.closure_iInter_eq_biInter_closure_of_forall_subset [hι : Nonempty ι] {Js : ι → Set α}
+lemma Indep.closure_iInter_eq_biInter_closure_of_forall_subset [Nonempty ι] {Js : ι → Set α}
     (hI : M.Indep I) (hJs : ∀ i, Js i ⊆ I) : M.closure (⋂ i, Js i) = ⋂ i, M.closure (Js i) :=
   closure_iInter_eq_iInter_closure_of_iUnion_indep _ (hI.subset <| by simpa)
 
@@ -600,7 +600,7 @@ lemma closure_exchange_iff :
     e ∈ M.closure (insert f X) \ M.closure X ↔ f ∈ M.closure (insert e X) \ M.closure X :=
   ⟨closure_exchange, closure_exchange⟩
 
-lemma closure_insert_eq_closure_insert_of_mem (he : e ∈ M.closure (insert f X) \ M.closure X) :
+lemma closure_insert_congr (he : e ∈ M.closure (insert f X) \ M.closure X) :
     M.closure (insert e X) = M.closure (insert f X) := by
   have hf := closure_exchange he
   rw [eq_comm, ← closure_closure, ← insert_eq_of_mem he.1, closure_insert_closure_eq_closure_insert,
