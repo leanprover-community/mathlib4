@@ -27,6 +27,9 @@ as an element of `Ordinal.{v}` (when `u < v`). -/
 def univ : Ordinal.{max (u + 1) v} :=
   lift.{v, u + 1} (@type Ordinal (· < ·) _)
 
+theorem lift_type_ordinal : lift.{v} (@type Ordinal.{u} (· < ·) _) = univ.{u, v} :=
+  rfl
+
 @[simp]
 theorem type_ordinal : @type Ordinal (· < ·) _ = univ.{u, u + 1} :=
   (lift_id _).symm
@@ -42,13 +45,10 @@ theorem lift_univ : lift.{w} univ.{u, v} = univ.{u, max v w} :=
 theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
   congr_fun lift_umax _
 
-theorem lift_type_ordinal : lift.{max (u + 1) v} (@type Ordinal.{u} (· < ·) _) = univ.{u, v} := by
-  rw [type_ordinal, lift_univ, univ_umax.{u, v}]
-
 theorem lift_lt_univ (o : Ordinal) : lift.{max (u + 1) v, u} o < univ.{u, v} := by
   suffices ∀ o, lift.{max (u + 1) v, u} o ≤ univ.{u, v} by simpa using this (Order.succ o)
   refine fun o ↦ inductionOn o fun α r _ ↦ ?_
-  rw [← lift_type_ordinal, lift_type_le.{u, u + 1, max (u + 1) v}]
+  rw [← lift_type_ordinal, ← lift_umax'.{u + 1, v}, lift_type_le.{u, u + 1, max (u + 1) v}]
   exact ⟨typein r⟩
 
 /-- `Ordinal.lift` as a `PrincipalSeg` with top `univ`. -/
@@ -56,7 +56,7 @@ def liftPrincipalSeg : Ordinal.{v} <i Ordinal.{max u (v + 1)} := by
   refine ⟨liftInitialSeg.{max u (v + 1)}, univ.{v}, fun o ↦ ⟨fun ⟨a, ha⟩ ↦ ?_, fun h ↦ ?_⟩⟩
   · rw [← ha]
     exact lift_lt_univ _
-  · rw [← lift_id o, ← o.type_lt, ← lift_type_ordinal, lift_type_lt] at h
+  · rw [← lift_id o, ← o.type_lt, ← lift_type_ordinal, ← lift_umax'.{v + 1, u}, lift_type_lt] at h
     obtain ⟨f⟩ := h
     have := lift_typein_top f
     rw [typein_ordinal, lift_lift, type_lt, lift_id'.{v + 1, u}] at this

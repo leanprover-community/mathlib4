@@ -26,6 +26,9 @@ as an element of `Cardinal.{v}` (when `u < v`). It is an inaccessible cardinal. 
 def univ : Cardinal.{max (u + 1) v} :=
   lift.{v} #Cardinal.{u}
 
+theorem lift_mk_cardinal : lift.{v} #Cardinal.{u} = univ.{u, v} :=
+  rfl
+
 @[simp]
 theorem mk_cardinal : #Cardinal = univ.{u, u + 1} :=
   (lift_id _).symm
@@ -41,13 +44,10 @@ theorem lift_univ : lift.{w} univ.{u, v} = univ.{u, max v w} :=
 theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
   congr_fun lift_umax _
 
-theorem lift_mk_cardinal : lift.{max (u + 1) v} #Cardinal.{u} = univ.{u, v} := by
-  rw [mk_cardinal, lift_univ, univ_umax.{u, v}]
-
 theorem lift_lt_univ (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} := by
   suffices ∀ c, lift.{max (u + 1) v, u} c ≤ univ.{u, v} by simpa using this (Order.succ c)
   refine fun c ↦ inductionOn c fun α ↦ ?_
-  rw [← lift_mk_cardinal, lift_mk_le.{max (u + 1) v}]
+  rw [← lift_mk_cardinal, ← lift_umax'.{u + 1, v}, lift_mk_le.{max (u + 1) v}]
   exact nonempty_embedding_to_cardinal
 
 @[deprecated lift_lt_univ (since := "2024-10-20")]
@@ -85,7 +85,7 @@ theorem lt_univ {c} : c < univ.{u, v} ↔ c ∈ range lift.{max (u + 1) v, u} :=
 alias lt_univ' := lt_univ
 
 theorem small_iff_lift_mk_lt_univ {α : Type u} :
-    Small.{v} α ↔ Cardinal.lift.{v + 1, u} #α < univ.{v, max u (v + 1)} := by
+    Small.{v} α ↔ lift.{v + 1} #α < univ.{v, max u (v + 1)} := by
   rw [lt_univ]
   constructor
   · rintro ⟨β, ⟨e⟩⟩
