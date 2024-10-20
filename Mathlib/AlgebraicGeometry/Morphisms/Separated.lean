@@ -113,6 +113,14 @@ lemma IsClosedImmersion.of_comp [IsClosedImmersion (f ≫ g)] [IsSeparated g] :
   have := IsClosedImmersion.stableUnderBaseChange.snd (f ≫ g) g inferInstance
   infer_instance
 
+lemma IsSeparated.of_comp [IsSeparated (f ≫ g)] : IsSeparated f := by
+  have := IsSeparated.diagonal_isClosedImmersion (f := f ≫ g)
+  rw [pullback.diagonal_comp] at this
+  exact ⟨@IsClosedImmersion.of_comp _ _ _ _ _ this inferInstance⟩
+
+lemma IsSeparated.iff_of_comp [IsSeparated g] : IsSeparated (f ≫ g) ↔ IsSeparated f :=
+  ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
+
 namespace Scheme
 
 /-- A scheme `X` is separated if the diagonal map `X ⟶ X × X` is a closed immersion. -/
@@ -128,6 +136,15 @@ lemma isSeparated_iff_isSeparated_terminal {X : Scheme.{u}} :
     ← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _ (prodIsoPullback X X).hom]
   congr
   ext : 1 <;> simp
+
+instance (priority := 900) {X : Scheme.{u}} [IsAffine X] : X.IsSeparated := by
+  rw [isSeparated_iff_isSeparated_terminal]
+  infer_instance
+
+instance : HasAffineProperty @IsSeparated fun X _ _ _ ↦ X.IsSeparated := by
+  convert HasAffineProperty.of_isLocalAtTarget @IsSeparated with X Y f hY
+  rw [isSeparated_iff_isSeparated_terminal, ← terminal.comp_from f, IsSeparated.iff_of_comp]
+  rfl
 
 instance (f g : X ⟶ Y) [Y.IsSeparated] : IsClosedImmersion (Limits.equalizer.ι f g) :=
   IsClosedImmersion.stableUnderBaseChange (isPullback_equalizer_prod f g).flip inferInstance
