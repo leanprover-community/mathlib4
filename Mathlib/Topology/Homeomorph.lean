@@ -701,6 +701,25 @@ def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X whe
   continuous_invFun := continuous_uLift_up
   toEquiv := Equiv.ulift
 
+/-- `Equiv.sumArrowEquivProdArrow` as a homeomorphism. The natural homeomoorphism
+`(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)` -/
+def sumArrowEquivProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)  where
+  toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
+  continuous_toFun := by
+    simp only [Equiv.sumArrowEquivProdArrow, Equiv.coe_fn_mk, continuous_prod_mk]
+    continuity
+  continuous_invFun := continuous_pi fun i ↦ match i with
+    | .inl i => by apply (continuous_apply _).comp' continuous_fst
+    | .inr i => by apply (continuous_apply _).comp' continuous_snd
+
+/-- An equivalence `ι ≃ ι'` yields the homeomorphism `(ι → X) ≃ₜ (ι' → X)`.-/
+def arrowCongrLeft {ι ι' : Type*} (e : ι ≃ ι') : (ι → X) ≃ₜ (ι' → X) :=
+  piCongrLeft (Y := fun _ ↦ X) e
+
+/-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `(Fin (m + n) → X)`.-/
+def finArrowProdHomeomorphFinAddArrow (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) :=
+  (sumArrowEquivProdArrow).symm.trans (arrowCongrLeft finSumFinEquiv)
+
 section Distrib
 
 /-- `(X ⊕ Y) × Z` is homeomorphic to `X × Z ⊕ Y × Z`. -/

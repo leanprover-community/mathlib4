@@ -498,3 +498,8 @@ instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
 /-- `Fin 1` is a subsingleton. -/
 instance subsingleton_fin_one : Subsingleton (Fin 1) :=
   finOneEquiv.subsingleton
+
+/-- The natural `Equiv` between `(Fin m → X) × (Fin n → X)` and `(Fin (m + n) → X)`.-/
+def Equiv.finArrowProdEquivFinAddArrow {α : Type*} (m n : ℕ) :
+    (Fin m → α) × (Fin n → α) ≃ (Fin (m + n) → α) :=
+  (sumArrowEquivProdArrow _ _ _).symm.trans (finSumFinEquiv.arrowCongr (Equiv.refl _))
