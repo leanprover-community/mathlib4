@@ -81,6 +81,7 @@ instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
     (Algebra.TensorProduct.lmul'_apply_tmul (R := R) (S := S) 1 x).trans (one_mul x)⟩
 
 instance (priority := 100) [h : IsAffineHom f] : IsSeparated f := by
+  clear g Z
   wlog hY : IsAffine Y
   · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsSeparated) _
       (iSup_affineOpens_eq_top Y)]
