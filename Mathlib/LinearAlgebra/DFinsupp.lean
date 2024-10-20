@@ -89,6 +89,14 @@ def lapply (i : ι) : (Π₀ i, M i) →ₗ[R] M i where
 theorem lapply_apply (i : ι) (f : Π₀ i, M i) : (lapply i : (Π₀ i, M i) →ₗ[R] _) f = f i :=
   rfl
 
+@[simp]
+theorem lapply_comp_lsingle_same [DecidableEq ι] (i : ι) :
+    lapply i ∘ₗ lsingle i = (.id : M i →ₗ[R] M i) := by ext; simp
+
+@[simp]
+theorem lapply_comp_lsingle_of_ne [DecidableEq ι] (i i' : ι) (h : i ≠ i') :
+    lapply i ∘ₗ lsingle i' = (0 : M i' →ₗ[R] M i) := by ext; simp [h.symm]
+
 section Lsum
 
 -- Porting note: Unclear how true these docstrings are in lean 4
