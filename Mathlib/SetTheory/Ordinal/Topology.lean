@@ -246,33 +246,57 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     rw [hb]
     exact le_bsup.{u, u} _ _ (ha.2 _ hba)
 
-open Set Filter
-
-/- TODO: define `IsAcc` and `IsClosedBelow` topologically. -/
+open Set Filter Set.Notation
 
 /-- An ordinal is an accumulation point of a set of ordinals if it is positive and there
 are elements in the set arbitrarily close to the ordinal from below. -/
 def IsAcc (o : Ordinal) (S : Set Ordinal) : Prop :=
-  o ≠ 0 ∧ ∀ p < o, (S ∩ Ioo p o).Nonempty
+  AccPt o (𝓟 S)
 
 /-- A set of ordinals is closed below an ordinal if it contains all of
 its accumulation points below the ordinal. -/
 def IsClosedBelow (S : Set Ordinal) (o : Ordinal) : Prop :=
   ∀ p < o, IsAcc p S → p ∈ S
 
-theorem IsAcc.subset {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
-    o.IsAcc T := ⟨ho.1, fun p plto ↦ (ho.2 p plto).casesOn fun s hs ↦ ⟨s, h hs.1, hs.2⟩⟩
+theorem isAcc_iff (o : Ordinal) (S : Set Ordinal) : o.IsAcc S ↔
+    o ≠ 0 ∧ ∀ p < o, (S ∩ Ioo p o).Nonempty := by
+  dsimp [IsAcc]
+  constructor
+  · rw [accPt_iff_nhds]
+    intro h
+    constructor
+    · rintro rfl
+      obtain ⟨x, hx⟩ := h (Iio 1) (Iio_mem_nhds zero_lt_one)
+      exact hx.2 <| lt_one_iff_zero.mp hx.1.1
+    · intro p plt
+      obtain ⟨x, hx⟩ := h (Ioo p (o + 1)) <| Ioo_mem_nhds plt (lt_succ o)
+      use x
+      refine ⟨hx.1.2, ⟨hx.1.1.1, lt_of_le_of_ne ?_ hx.2⟩⟩
+      have := hx.1.1.2
+      rwa [← succ_eq_add_one, lt_succ_iff] at this
+  · rw [accPt_iff_nhds]
+    intro h u umem
+    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds umem ⟨0, Ordinal.pos_iff_ne_zero.mpr h.1⟩
+    obtain ⟨x, hx⟩ := h.2 l hl.1
+    use x
+    exact ⟨⟨hl.2 ⟨hx.2.1, hx.2.2.le⟩, hx.1⟩, hx.2.2.ne⟩
+
+theorem IsAcc.forall_lt {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
+    o ≠ 0 ∧ ∀ p < o, (S ∩ Ioo p o).Nonempty := (isAcc_iff _ _).mp h
 
 theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsLimit o := by
+  rw [isAcc_iff] at h
   refine isLimit_of_not_succ_of_ne_zero (fun ⟨x, hx⟩ ↦ ?_) h.1
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.symm.le) with ⟨p, hp⟩
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_lt hp.2.2
 
-theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
-    {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.2 p hp
+theorem IsAcc.subset {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
+    o.IsAcc T := by
+  rw [isAcc_iff] at *
+  exact ⟨ho.1, fun p plto ↦ (ho.2 p plto).casesOn fun s hs ↦ ⟨s, h hs.1, hs.2⟩⟩
 
-theorem isClosedBelow_zero (S : Set Ordinal) : IsClosedBelow S 0 := fun _ h ↦
-  False.elim <| (Ordinal.zero_le _).not_lt h
+theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
+    {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.forall_lt.2 p hp
 
 theorem IsClosedBelow.sInter {o : Ordinal} {S : Set (Set Ordinal)}
     (h : ∀ C ∈ S, IsClosedBelow C o) : IsClosedBelow (⋂₀ S) o :=
