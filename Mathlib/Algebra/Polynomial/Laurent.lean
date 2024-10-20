@@ -6,7 +6,7 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Defs
 
 /-!  # Laurent polynomials
 
@@ -87,7 +87,6 @@ scoped[LaurentPolynomial] notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
 
 open LaurentPolynomial
 
--- Porting note: `ext` no longer applies `Finsupp.ext` automatically
 @[ext]
 theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
   Finsupp.ext h
@@ -297,7 +296,7 @@ def trunc : R[T;T⁻¹] →+ R[X] :=
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
   apply (toFinsuppIso R).injective
   rw [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply]
-  -- Porting note (#10691): was `rw`
+  -- Porting note (#11224): was `rw`
   erw [comapDomain.addMonoidHom_apply Int.ofNat_injective]
   rw [toFinsuppIso_apply]
   -- Porting note: rewrote proof below relative to mathlib3.

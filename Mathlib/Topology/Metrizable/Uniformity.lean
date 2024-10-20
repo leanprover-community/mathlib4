@@ -173,7 +173,6 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
 
 end PseudoMetricSpace
 
--- Porting note (#11083): this is slower than in Lean3 for some reason...
 /-- If `X` is a uniform space with countably generated uniformity filter, there exists a
 `PseudoMetricSpace` structure compatible with the `UniformSpace` structure. Use
 `UniformSpace.pseudoMetricSpace` or `UniformSpace.metricSpace` instead. -/

@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, 
 Neil Strickland, Aaron Anderson
 -/
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 
 /-!
 # Divisibility and units

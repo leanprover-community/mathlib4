@@ -294,10 +294,10 @@ theorem map_iInf_comap_of_surjective (K : ι → Ideal S) : (⨅ i, (K i).comap 
   (giMapComap f hf).l_iInf_u _
 
 theorem mem_image_of_mem_map_of_surjective {I : Ideal R} {y} (H : y ∈ map f I) : y ∈ f '' I :=
-  Submodule.span_induction H (fun _ => id) ⟨0, I.zero_mem, map_zero f⟩
-    (fun _ _ ⟨x1, hx1i, hxy1⟩ ⟨x2, hx2i, hxy2⟩ =>
+  Submodule.span_induction (hx := H) (fun _ => id) ⟨0, I.zero_mem, map_zero f⟩
+    (fun _ _ _ _ ⟨x1, hx1i, hxy1⟩ ⟨x2, hx2i, hxy2⟩ =>
       ⟨x1 + x2, I.add_mem hx1i hx2i, hxy1 ▸ hxy2 ▸ map_add f _ _⟩)
-    fun c _ ⟨x, hxi, hxy⟩ =>
+    fun c _ _ ⟨x, hxi, hxy⟩ =>
     let ⟨d, hdc⟩ := hf c
     ⟨d * x, I.mul_mem_left _ hxi, hdc ▸ hxy ▸ map_mul f _ _⟩
 
@@ -570,7 +570,7 @@ theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
 lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
     (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by
   ext x
-  simp [mem_ker, Ideal.mem_iInf, Function.funext_iff]
+  simp [mem_ker, Ideal.mem_iInf, funext_iff]
 
 @[simp]
 theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
@@ -846,3 +846,19 @@ def idealMap (I : Ideal R) : I →ₗ[R] I.map (algebraMap R S) :=
     (fun _ ↦ Ideal.mem_map_of_mem _)
 
 end Algebra
+
+namespace NoZeroSMulDivisors
+
+theorem of_ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Semiring A] [Algebra R A]
+    [NoZeroDivisors A] (h : RingHom.ker (algebraMap R A) = ⊥) : NoZeroSMulDivisors R A :=
+  of_algebraMap_injective ((RingHom.injective_iff_ker_eq_bot _).mpr h)
+
+theorem ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
+    [NoZeroSMulDivisors R A] : RingHom.ker (algebraMap R A) = ⊥ :=
+  (RingHom.injective_iff_ker_eq_bot _).mp (algebraMap_injective R A)
+
+theorem iff_ker_algebraMap_eq_bot {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A] :
+    NoZeroSMulDivisors R A ↔ RingHom.ker (algebraMap R A) = ⊥ :=
+  iff_algebraMap_injective.trans (RingHom.injective_iff_ker_eq_bot (algebraMap R A))
+
+end NoZeroSMulDivisors

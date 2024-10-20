@@ -135,6 +135,11 @@ instance instContinuousFunctionalCalculus :
       rw [star_eq_conjTranspose, diagonal_conjTranspose]
       congr!
       simp [Pi.star_def, Function.comp_def]
+  spectrum_nonempty a ha := by
+    obtain (h | h) := isEmpty_or_nonempty n
+    · obtain ⟨x, y, hxy⟩ := exists_pair_ne (Matrix n n 𝕜)
+      exact False.elim <| Matrix.of.symm.injective.ne hxy <| Subsingleton.elim _ _
+    · exact eigenvalues_eq_spectrum_real ha ▸ Set.range_nonempty _
   predicate_zero := .zero _
 
 instance instUniqueContinuousFunctionalCalculus :
