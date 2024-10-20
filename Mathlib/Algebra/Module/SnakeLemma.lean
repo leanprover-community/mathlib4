@@ -100,7 +100,9 @@ C₁
 Such that `f₂` is surjective with a (set-theoretic) section `ρ`, `g₁` is injective with a
 (set-theoretic) retraction `π`,
 then the map `π₁ ∘ ρ ∘ i₂ ∘ σ ∘ ι₃` is a linear map from `K₃` to `C₁`.
-Also see `SnakeLemma.δ'` for a noncomputable version.
+
+Also see `SnakeLemma.δ'` for a noncomputable version
+that does not require an explicit section and retraction.
 -/
 def SnakeLemma.δ : K₃ →ₗ[R] C₁ :=
   haveI H₁ : ∀ x, f₂ (σ x) = x := congr_fun hσ
@@ -217,7 +219,67 @@ C₁
 ```
 Such that `f₂` is surjective and `g₁` is injective,
 then this is the linear map `K₃ → C₁` given by the snake lemma.
-Also see `SnakeLemma.δ` for a noncomputable version.
+
+Also see `SnakeLemma.δ` for a computable version.
 -/
 noncomputable def SnakeLemma.δ' (hf₂ : Surjective f₂) (hg₁ : Injective g₁) : K₃ →ₗ[R] C₁ :=
   δ i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ _ (funext (surjInv_eq hf₂)) _ (invFun_comp hg₁) ι₃ hι₃ π₁ hπ₁
+
+lemma SnakeLemma.δ'_eq (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
+    (x : K₃) (y) (hy : f₂ y = ι₃ x) (z) (hz : g₁ z = i₂ y) :
+    δ' i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ ι₃ hι₃ π₁ hπ₁ hf₂ hg₁ x = π₁ z :=
+  SnakeLemma.δ_eq _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ‹_› ‹_› _ ‹_›
+
+include hι₂ in
+/--
+Supppose we have an exact commutative diagram
+```
+        K₂ -F-→ K₃
+        |       |
+        ι₂      ι₃
+        ↓       ↓
+M₁ -f₁→ M₂ -f₂→ M₃
+|       |       |
+i₁      i₂      i₃
+↓       ↓       ↓
+N₁ -g₁→ N₂ -g₂→ N₃
+|
+π₁
+↓
+C₁
+
+```
+Such that `f₂` is surjective, `g₁` is injective, and `ι₃` is injective,
+then `K₂ -F→ K₂ -δ→ C₁` is exact.
+-/
+lemma SnakeLemma.exact_δ'_right (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
+    (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ = ι₃.comp F) (h : Injective ι₃) :
+    Exact F (δ' i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ ι₃ hι₃ π₁ hπ₁ hf₂ hg₁) :=
+  SnakeLemma.exact_δ_right _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ‹_› _ _ _ _ _ ‹_› ‹_›
+
+include hπ₂ in
+/--
+Supppose we have an exact commutative diagram
+```
+                K₃
+                |
+                ι₃
+                ↓
+M₁ -f₁→ M₂ -f₂→ M₃
+|       |       |
+i₁      i₂      i₃
+↓       ↓       ↓
+N₁ -g₁→ N₂ -g₂→ N₃
+|       |
+π₁      π₂
+↓       ↓
+C₁ -G-→ C₂
+
+```
+Such that `f₂` is surjective, `g₁` is injective, and `π₁` is surjective,
+then `K₂ -δ→ C₁ -G→ C₂` is exact.
+-/
+lemma SnakeLemma.exact_δ'_left (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
+    (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π₂.comp g₁) (h : Surjective π₁) :
+    Exact (δ' i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ ι₃ hι₃ π₁ hπ₁ hf₂ hg₁) G :=
+  SnakeLemma.exact_δ_left _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ‹_› _ ‹_› ‹_›
