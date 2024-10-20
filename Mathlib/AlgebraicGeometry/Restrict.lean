@@ -358,6 +358,11 @@ lemma Scheme.isoOfEq_inv_ι (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
     (X.isoOfEq e).inv ≫ U.ι = V.ι :=
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
 
+@[simp]
+lemma Scheme.isoOfEq_rfl (X : Scheme.{u}) (U : X.Opens) : X.isoOfEq (refl U) = Iso.refl _ := by
+  ext1
+  rw [← cancel_mono U.ι, Scheme.isoOfEq_hom_ι, Iso.refl_hom, Category.id_comp]
+
 @[deprecated (since := "2024-10-20")] alias Scheme.restrictIsoOfEq := Scheme.isoOfEq
 
 end
