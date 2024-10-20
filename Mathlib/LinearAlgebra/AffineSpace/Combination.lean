@@ -935,10 +935,7 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
     have hv : s.affineCombination k p w -ᵥ p i1 ∈ (affineSpan k (Set.range p)).direction := by
       rw [direction_affineSpan, ← hw1s, Finset.affineCombination_vsub]
       apply weightedVSub_mem_vectorSpan
-      -- Porting note: Rest was `simp [Pi.sub_apply, h, hw1]`,
-      -- but `Pi.sub_apply` transforms the goal into nonsense
-      change (Finset.sum s fun i => w i - w1 i) = 0
-      simp only [Finset.sum_sub_distrib, h, hw1, sub_self]
+      simp [Pi.sub_apply, h, hw1]
     rw [← vsub_vadd (s.affineCombination k p w) (p i1)]
     exact AffineSubspace.vadd_mem_of_mem_direction hv (mem_affineSpan k (Set.mem_range_self _))
 
@@ -1019,8 +1016,7 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
       s'.affineCombination_of_eq_one_of_eq_zero w0 p (Finset.mem_insert_self _ _)
         (Function.update_same _ _ _) fun _ _ hne => Function.update_noteq hne _ _
     refine ⟨s', w0 + w', ?_, ?_⟩
-    · -- Porting note: proof was `simp [Pi.add_apply, Finset.sum_add_distrib, hw0, h']`
-      simp only [Pi.add_apply, Finset.sum_add_distrib, hw0, h', add_zero]
+    · simp [Pi.add_apply, Finset.sum_add_distrib, hw0, h']
     · rw [add_comm, ← Finset.weightedVSub_vadd_affineCombination, hw0s, hs', vsub_vadd]
 
 theorem eq_affineCombination_of_mem_affineSpan_of_fintype [Fintype ι] {p1 : P} {p : ι → P}

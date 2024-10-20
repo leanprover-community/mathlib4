@@ -636,9 +636,12 @@ protected theorem ClosedEmbedding.measurableEmbedding {f : α → β} (h : Close
     MeasurableEmbedding f :=
   h.toEmbedding.measurableEmbedding h.isClosed_range.measurableSet
 
-protected theorem OpenEmbedding.measurableEmbedding {f : α → β} (h : OpenEmbedding f) :
+protected theorem IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
     MeasurableEmbedding f :=
   h.toEmbedding.measurableEmbedding h.isOpen_range.measurableSet
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.measurableEmbedding := IsOpenEmbedding.measurableEmbedding
 
 instance Empty.borelSpace : BorelSpace Empty :=
   ⟨borel_eq_top_of_discrete.symm⟩

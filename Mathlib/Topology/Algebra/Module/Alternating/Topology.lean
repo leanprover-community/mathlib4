@@ -36,7 +36,7 @@ lemma isClosed_range_toContinuousMultilinearMap [ContinuousSMul 𝕜 E] [T2Space
       ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F)) := by
   simp only [range_toContinuousMultilinearMap, setOf_forall]
   repeat refine isClosed_iInter fun _ ↦ ?_
-  exact isClosed_singleton.preimage (ContinuousMultilinearMap.continuous_eval_const _)
+  exact isClosed_singleton.preimage (continuous_eval_const _)
 
 end IsClosedRange
 
@@ -125,6 +125,10 @@ lemma embedding_toContinuousMultilinearMap :
   haveI := comm_topologicalAddGroup_is_uniform (G := F)
   isUniformEmbedding_toContinuousMultilinearMap.embedding
 
+instance instTopologicalAddGroup : TopologicalAddGroup (E [⋀^ι]→L[𝕜] F) :=
+  embedding_toContinuousMultilinearMap.topologicalAddGroup
+    (toContinuousMultilinearMapLinear (R := ℕ))
+
 @[continuity, fun_prop]
 lemma continuous_toContinuousMultilinearMap :
     Continuous (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
@@ -159,21 +163,19 @@ lemma closedEmbedding_toContinuousMultilinearMap [T2Space F] :
       (E [⋀^ι]→L[𝕜] F) → ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F) :=
   ⟨embedding_toContinuousMultilinearMap, isClosed_range_toContinuousMultilinearMap⟩
 
-@[continuity, fun_prop]
-theorem continuous_eval_const (x : ι → E) :
-    Continuous fun p : E [⋀^ι]→L[𝕜] F ↦ p x :=
-  (ContinuousMultilinearMap.continuous_eval_const x).comp continuous_toContinuousMultilinearMap
+instance instContinuousEvalConst : ContinuousEvalConst (E [⋀^ι]→L[𝕜] F) (ι → E) F :=
+  .of_continuous_forget continuous_toContinuousMultilinearMap
 
-theorem continuous_coe_fun :
-    Continuous (DFunLike.coe : E [⋀^ι]→L[𝕜] F → (ι → E) → F) :=
-  continuous_pi continuous_eval_const
+@[deprecated (since := "2024-10-05")]
+protected alias continuous_eval_const := continuous_eval_const
+
+@[deprecated (since := "2024-10-05")]
+protected alias continuous_coe_fun := continuous_coeFun
 
 instance instT2Space [T2Space F] : T2Space (E [⋀^ι]→L[𝕜] F) :=
-  .of_injective_continuous DFunLike.coe_injective continuous_coe_fun
+  .of_injective_continuous DFunLike.coe_injective continuous_coeFun
 
-instance instT3Space [T2Space F] : T2Space (E [⋀^ι]→L[𝕜] F) :=
-  letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+instance instT3Space [T2Space F] : T3Space (E [⋀^ι]→L[𝕜] F) :=
   inferInstance
 
 section RestrictScalars

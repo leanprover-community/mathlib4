@@ -509,7 +509,7 @@ theorem isCoseparator_prod (G H : C) [HasBinaryProduct G H] :
   refine
     ⟨fun h X Y u v huv => ?_, fun h =>
       (isCoseparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => ?_⟩
-  · refine h.def _ _ fun g => prod.hom_ext ?_ ?_
+  · refine h.def _ _ fun g => Limits.prod.hom_ext ?_ ?_
     · simpa using huv G (by simp) (g ≫ Limits.prod.fst)
     · simpa using huv H (by simp) (g ≫ Limits.prod.snd)
   · simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hZ

@@ -30,7 +30,7 @@ Hölder norm, Hoelder norm, Holder norm
 
 -/
 
-variable {X Y Z : Type*}
+variable {X Y : Type*}
 
 open Filter Set
 
@@ -196,7 +196,7 @@ end MetricSpace
 section SeminormedAddCommGroup
 
 variable [MetricSpace X] [NormedAddCommGroup Y]
-variable {C r : ℝ≥0} {f g : X → Y}
+variable {r : ℝ≥0} {f g : X → Y}
 
 lemma MemHolder.add (hf : MemHolder r f) (hg : MemHolder r g) : MemHolder r (f + g) :=
   (hf.holderWith.add hg.holderWith).memHolder

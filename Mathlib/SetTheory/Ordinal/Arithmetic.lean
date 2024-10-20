@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Logic.UnivLE
 
 /-!
 # Ordinal arithmetic
@@ -864,6 +865,12 @@ theorem zero_div (a : Ordinal) : 0 / a = 0 :=
 theorem mul_div_le (a b : Ordinal) : b * (a / b) ≤ a :=
   if b0 : b = 0 then by simp only [b0, zero_mul, Ordinal.zero_le] else (le_div b0).1 le_rfl
 
+theorem div_le_left {a b : Ordinal} (h : a ≤ b) (c : Ordinal) : a / c ≤ b / c := by
+  obtain rfl | hc := eq_or_ne c 0
+  · rw [div_zero, div_zero]
+  · rw [le_div hc]
+    exact (mul_div_le a c).trans h
+
 theorem mul_add_div (a) {b : Ordinal} (b0 : b ≠ 0) (c) : (b * a + c) / b = a + c / b := by
   apply le_antisymm
   · apply (div_le b0).2
@@ -1167,27 +1174,38 @@ theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (
     exact le_of_lt (Cardinal.lt_ord.2 ((lt_succ _).trans_le
       (le_ciSup (Cardinal.bddAbove_range.{_, v} _) _)))⟩
 
-/-- `le_ciSup` whenever the outputs live in a higher universe than the inputs. -/
-protected theorem le_iSup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ iSup f :=
-  le_ciSup (bddAbove_range f)
+theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
+  obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
+  use a
+  intro b hb
+  simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
+
+theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
+  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
+    bddAbove_of_small _⟩
+
+/-- `le_ciSup` whenever the input type is small in the output universe. This lemma sometimes
+fails to infer `f` in simple cases and needs it to be given explicitly. -/
+protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] : ∀ i, f i ≤ iSup f :=
+  le_ciSup (bddAbove_of_small _)
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.le_iSup (since := "2024-08-27")]
 theorem le_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ sup.{_, v} f := fun i =>
   Ordinal.le_iSup f i
 
-/-- `ciSup_le_iff'` whenever the outputs live in a higher universe than the inputs. -/
-protected theorem iSup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+/-- `ciSup_le_iff'` whenever the input type is small in the output universe. -/
+protected theorem iSup_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
-  ciSup_le_iff' (bddAbove_range f)
+  ciSup_le_iff' (bddAbove_of_small _)
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.iSup_le_iff (since := "2024-08-27")]
 theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v} f ≤ a ↔ ∀ i, f i ≤ a :=
   Ordinal.iSup_le_iff
 
-/-- `ciSup_le'` whenever the outputs live in a higher universe than the inputs. -/
-protected theorem iSup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+/-- `ciSup_le'` whenever the input type is small in the output universe. -/
+protected theorem iSup_le {ι} {f : ι → Ordinal.{u}} {a} :
     (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
 
@@ -1197,7 +1215,7 @@ theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i �
   Ordinal.iSup_le
 
 -- TODO: generalize to conditionally complete linear orders.
-protected theorem lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+protected theorem lt_iSup {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     a < iSup f ↔ ∃ i, a < f i := by
   rw [← not_iff_not]
   simpa using Ordinal.iSup_le_iff
@@ -1219,7 +1237,7 @@ theorem ne_sup_iff_lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} :
   ne_iSup_iff_lt_iSup
 
 -- TODO: state in terms of `IsSuccLimit`.
-theorem succ_lt_iSup_of_ne_iSup {ι : Type u} {f : ι → Ordinal.{max u v}}
+theorem succ_lt_iSup_of_ne_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι]
     (hf : ∀ i, f i ≠ iSup f) {a} (hao : a < iSup f) : succ a < iSup f := by
   by_contra! hoa
   exact hao.not_le (Ordinal.iSup_le fun i => le_of_lt_succ <|
@@ -1234,7 +1252,7 @@ theorem sup_not_succ_of_ne_sup {ι : Type u} {f : ι → Ordinal.{max u v}}
     hao.not_le (sup_le fun i => le_of_lt_succ <| (lt_of_le_of_ne (le_sup _ _) (hf i)).trans_le hoa)
 
 -- TODO: generalize to conditionally complete lattices.
-theorem iSup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
+theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
     iSup f = 0 ↔ ∀ i, f i = 0 := by
   refine
     ⟨fun h i => ?_, fun h =>
@@ -1304,14 +1322,14 @@ theorem sup_eq_of_range_eq {ι : Type u} {ι' : Type v}
   Ordinal.iSup_eq_of_range_eq h
 
 -- TODO: generalize to conditionally complete lattices
-theorem iSup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v w}) :
+theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{u} β]:
     iSup f = max (⨆ a, f (Sum.inl a)) (⨆ b, f (Sum.inr b)) := by
   apply (Ordinal.iSup_le _).antisymm (max_le _ _)
   · rintro (i | i)
-    · exact le_max_of_le_left (Ordinal.le_iSup.{u, max u v w} _ i)
-    · exact le_max_of_le_right (Ordinal.le_iSup.{v, max u v w} _ i)
+    · exact le_max_of_le_left (Ordinal.le_iSup (fun x ↦ f (Sum.inl x)) i)
+    · exact le_max_of_le_right (Ordinal.le_iSup (fun x ↦ f (Sum.inr x)) i)
   all_goals
-    apply csSup_le_csSup' (bddAbove_range _)
+    apply csSup_le_csSup' (bddAbove_of_small _)
     rintro i ⟨a, rfl⟩
     apply mem_range_self
 
@@ -1348,18 +1366,6 @@ theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a
     a ≤ sup.{u, u} fun x => ((@equivShrink s hs).symm x).val := by
   convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
   rw [symm_apply_apply]
-
--- TODO: move this together with `bddAbove_range`.
-
-theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
-  obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
-  use a
-  intro b hb
-  simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
-
-theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
-  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
-    bddAbove_of_small _⟩
 
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]
@@ -2093,6 +2099,10 @@ theorem Ordinal.not_bddAbove_compl_of_small (s : Set Ordinal.{u}) [hs : Small.{u
 
 namespace Ordinal
 
+instance instCharZero : CharZero Ordinal := by
+  refine ⟨fun a b h ↦ ?_⟩
+  rwa [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_inj, Nat.cast_inj] at h
+
 @[simp]
 theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
   rw [← Nat.cast_one, ← Nat.cast_add, add_comm]
@@ -2115,42 +2125,37 @@ theorem natCast_mul (m : ℕ) : ∀ n : ℕ, ((m * n : ℕ) : Ordinal) = m * n
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_mul := natCast_mul
 
-/-- Alias of `Nat.cast_le`, specialized to `Ordinal` --/
-theorem natCast_le {m n : ℕ} : (m : Ordinal) ≤ n ↔ m ≤ n := by
-  rw [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_le_ord, Cardinal.natCast_le]
+@[deprecated Nat.cast_le (since := "2024-10-17")]
+theorem natCast_le {m n : ℕ} : (m : Ordinal) ≤ n ↔ m ≤ n := Nat.cast_le
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_le := natCast_le
 
-/-- Alias of `Nat.cast_inj`, specialized to `Ordinal` --/
-theorem natCast_inj {m n : ℕ} : (m : Ordinal) = n ↔ m = n := by
-  simp only [le_antisymm_iff, natCast_le]
+@[deprecated Nat.cast_inj (since := "2024-10-17")]
+theorem natCast_inj {m n : ℕ} : (m : Ordinal) = n ↔ m = n := Nat.cast_inj
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_inj := natCast_inj
 
-instance charZero : CharZero Ordinal where
-  cast_injective _ _ := natCast_inj.mp
-
-/-- Alias of `Nat.cast_lt`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_lt (since := "2024-10-17")]
 theorem natCast_lt {m n : ℕ} : (m : Ordinal) < n ↔ m < n := Nat.cast_lt
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_lt := natCast_lt
 
-/-- Alias of `Nat.cast_eq_zero`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_eq_zero (since := "2024-10-17")]
 theorem natCast_eq_zero {n : ℕ} : (n : Ordinal) = 0 ↔ n = 0 := Nat.cast_eq_zero
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_eq_zero := natCast_eq_zero
 
-/-- Alias of `Nat.cast_eq_zero`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_ne_zero (since := "2024-10-17")]
 theorem natCast_ne_zero {n : ℕ} : (n : Ordinal) ≠ 0 ↔ n ≠ 0 := Nat.cast_ne_zero
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_ne_zero := natCast_ne_zero
 
-/-- Alias of `Nat.cast_pos'`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_pos' (since := "2024-10-17")]
 theorem natCast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n := Nat.cast_pos'
 
 @[deprecated (since := "2024-04-17")]
@@ -2159,10 +2164,10 @@ alias nat_cast_pos := natCast_pos
 @[simp, norm_cast]
 theorem natCast_sub (m n : ℕ) : ((m - n : ℕ) : Ordinal) = m - n := by
   rcases le_total m n with h | h
-  · rw [tsub_eq_zero_iff_le.2 h, Ordinal.sub_eq_zero_iff_le.2 (natCast_le.2 h)]
+  · rw [tsub_eq_zero_iff_le.2 h, Ordinal.sub_eq_zero_iff_le.2 (Nat.cast_le.2 h)]
     rfl
   · apply (add_left_cancel n).1
-    rw [← Nat.cast_add, add_tsub_cancel_of_le h, Ordinal.add_sub_cancel_of_le (natCast_le.2 h)]
+    rw [← Nat.cast_add, add_tsub_cancel_of_le h, Ordinal.add_sub_cancel_of_le (Nat.cast_le.2 h)]
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_sub := natCast_sub
@@ -2171,12 +2176,12 @@ alias nat_cast_sub := natCast_sub
 theorem natCast_div (m n : ℕ) : ((m / n : ℕ) : Ordinal) = m / n := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
-  · have hn' := natCast_ne_zero.2 hn
+  · have hn' : (n : Ordinal) ≠ 0 := Nat.cast_ne_zero.2 hn
     apply le_antisymm
-    · rw [le_div hn', ← natCast_mul, natCast_le, mul_comm]
+    · rw [le_div hn', ← natCast_mul, Nat.cast_le, mul_comm]
       apply Nat.div_mul_le_self
-    · rw [div_le hn', ← add_one_eq_succ, ← Nat.cast_succ, ← natCast_mul, natCast_lt, mul_comm, ←
-        Nat.div_lt_iff_lt_mul (Nat.pos_of_ne_zero hn)]
+    · rw [div_le hn', ← add_one_eq_succ, ← Nat.cast_succ, ← natCast_mul, Nat.cast_lt, mul_comm,
+        ← Nat.div_lt_iff_lt_mul (Nat.pos_of_ne_zero hn)]
       apply Nat.lt_succ_self
 
 @[deprecated (since := "2024-04-17")]
@@ -2212,14 +2217,6 @@ end Ordinal
 namespace Cardinal
 
 open Ordinal
-
-@[simp]
-theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
-  le_antisymm (ord_le.2 <| le_rfl) <|
-    le_of_forall_lt fun o h => by
-      rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
-      rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
-      exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
 
 @[simp]
 theorem add_one_of_aleph0_le {c} (h : ℵ₀ ≤ c) : c + 1 = c := by
@@ -2265,13 +2262,16 @@ theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omeg
 @[deprecated (since := "2024-09-30")]
 alias one_lt_omega := one_lt_omega0
 
-theorem omega0_isLimit : IsLimit ω :=
+theorem isLimit_omega0 : IsLimit ω :=
   ⟨omega0_ne_zero, fun o h => by
     let ⟨n, e⟩ := lt_omega0.1 h
     rw [e]; exact nat_lt_omega0 (n + 1)⟩
 
+@[deprecated (since := "2024-10-14")]
+alias omega0_isLimit := isLimit_omega0
+
 @[deprecated (since := "2024-09-30")]
-alias omega_isLimit := omega0_isLimit
+alias omega_isLimit := isLimit_omega0
 
 theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
   ⟨fun h n => (nat_lt_omega0 _).le.trans h, fun H =>
@@ -2308,14 +2308,14 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
   refine ⟨fun l => ⟨l.1, ⟨a / ω, le_antisymm ?_ (mul_div_le _ _)⟩⟩, fun h => ?_⟩
   · refine (limit_le l).2 fun x hx => le_of_lt ?_
     rw [← div_lt omega0_ne_zero, ← succ_le_iff, le_div omega0_ne_zero, mul_succ,
-      add_le_of_limit omega0_isLimit]
+      add_le_of_limit isLimit_omega0]
     intro b hb
     rcases lt_omega0.1 hb with ⟨n, rfl⟩
     exact
       (add_le_add_right (mul_div_le _ _) _).trans
         (lt_sub.1 <| nat_lt_limit (isLimit_sub l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
-    refine isLimit_mul_left omega0_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
+    refine isLimit_mul_left isLimit_omega0 (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
     intro e
     simp only [e, mul_zero]
 
@@ -2396,7 +2396,7 @@ namespace Cardinal
 
 open Ordinal
 
-theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
+theorem isLimit_ord {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
   refine ⟨fun h => aleph0_ne_zero ?_, fun a => lt_imp_lt_of_le_imp_le fun h => ?_⟩
   · rw [← Ordinal.le_zero, ord_le] at h
     simpa only [card_zero, nonpos_iff_eq_zero] using co.trans h
@@ -2405,10 +2405,13 @@ theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
     rw [← ord_le, ← le_succ_of_isLimit, ord_le]
     · exact co.trans h
     · rw [ord_aleph0]
-      exact Ordinal.omega0_isLimit
+      exact Ordinal.isLimit_omega0
+
+@[deprecated (since := "2024-10-14")]
+alias ord_isLimit := isLimit_ord
 
 theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
-  toType_noMax_of_succ_lt (ord_isLimit h).2
+  toType_noMax_of_succ_lt (isLimit_ord h).2
 
 end Cardinal
 
@@ -2462,4 +2465,4 @@ theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
 
 end WellFounded
 
-set_option linter.style.longFile 2700
+set_option linter.style.longFile 2600

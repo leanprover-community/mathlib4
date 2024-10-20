@@ -106,7 +106,7 @@ def Coe.addMonoidHom : AddMonoidHom (R_hat R K) (K_hat R K) where
   toFun := (↑)
   map_zero' := rfl
   map_add' x y := by
-    -- Porting note: was `ext v`
+    -- Porting note (#11041): was `ext v`
     refine funext fun v => ?_
     simp only [coe_apply, Pi.add_apply, Subring.coe_add]
     -- Porting note: added
@@ -119,7 +119,7 @@ def Coe.ringHom : RingHom (R_hat R K) (K_hat R K) :=
     toFun := (↑)
     map_one' := rfl
     map_mul' := fun x y => by
-      -- Porting note: was `ext p`
+      -- Porting note (#11041): was `ext p`
       refine funext fun p => ?_
       simp only [Pi.mul_apply, Subring.coe_mul]
       -- Porting note: added

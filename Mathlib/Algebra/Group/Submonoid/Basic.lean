@@ -156,32 +156,35 @@ is preserved under multiplication, then `p` holds for all elements of the closur
       "An induction principle for additive closure membership. If `p` holds for `0` and all
       elements of `s`, and is preserved under addition, then `p` holds for all elements of the
       additive closure of `s`."]
-theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x) (one : p 1)
-    (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨p, mul _ _⟩, one⟩).2 mem h
-
-/-- A dependent version of `Submonoid.closure_induction`. -/
-@[to_additive (attr := elab_as_elim) "A dependent version of `AddSubmonoid.closure_induction`. "]
-theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
+theorem closure_induction {s : Set M} {p : (x : M) → x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (one : p 1 (one_mem _))
-    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
-    p x hx := by
-  refine Exists.elim ?_ fun (hx : x ∈ closure s) (hc : p x hx) => hc
-  exact
-    closure_induction hx (fun x hx => ⟨_, mem x hx⟩) ⟨_, one⟩ fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
-      ⟨_, mul _ _ _ _ hx hy⟩
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
+    p x hx :=
+  let S : Submonoid M :=
+    { carrier := { x | ∃ hx, p x hx }
+      one_mem' := ⟨_, one⟩
+      mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩ }
+  closure_le (S := S) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
+
+@[deprecated closure_induction (since := "2024-10-10")]
+alias closure_induction' := closure_induction
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership for predicates with two arguments."]
-theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ closure s) (hy : y ∈ closure s)
-    (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (H1_left : ∀ x, p 1 x) (H1_right : ∀ x, p x 1)
-    (Hmul_left : ∀ x y z, p x z → p y z → p (x * y) z)
-    (Hmul_right : ∀ x y z, p z x → p z y → p z (x * y)) : p x y :=
-  closure_induction hx
-    (fun x xs =>
-      closure_induction hy (Hs x xs) (H1_right x) fun z _ h₁ h₂ => Hmul_right z _ _ h₁ h₂)
-    (H1_left y) fun _ _ h₁ h₂ => Hmul_left _ _ _ h₁ h₂
+theorem closure_induction₂ {p : (x y : M) → x ∈ closure s → y ∈ closure s → Prop}
+    (mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
+    (one_left : ∀ x hx, p 1 x (one_mem _) hx) (one_right : ∀ x hx, p x 1 hx (one_mem _))
+    (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ x y z hx hy hz, p z x hz hx → p z y hz hy → p z (x * y) hz (mul_mem hx hy))
+    {x y : M} (hx : x ∈ closure s) (hy : y ∈ closure s) : p x y hx hy := by
+  induction hy using closure_induction with
+  | mem z hz => induction hx using closure_induction with
+    | mem _ h => exact mem _ _ h hz
+    | one => exact one_left _ (subset_closure hz)
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+  | one => exact one_right x hx
+  | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ hx h₁ h₂
 
 /-- If `s` is a dense set in a monoid `M`, `Submonoid.closure s = ⊤`, then in order to prove that
 some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`, verify `p 1`,
@@ -190,18 +193,31 @@ and verify that `p x` and `p y` imply `p (x * y)`. -/
       "If `s` is a dense set in an additive monoid `M`, `AddSubmonoid.closure s = ⊤`, then in
       order to prove that some predicate `p` holds for all `x : M` it suffices to verify `p x` for
       `x ∈ s`, verify `p 0`, and verify that `p x` and `p y` imply `p (x + y)`."]
-theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure s = ⊤)
-    (mem : ∀ x ∈ s, p x)
-    (one : p 1) (mul : ∀ x y, p x → p y → p (x * y)) : p x := by
-  have : ∀ x ∈ closure s, p x := fun x hx => closure_induction hx mem one mul
-  simpa [hs] using this x
+theorem dense_induction {p : M → Prop} (s : Set M) (closure : closure s = ⊤) (mem : ∀ x ∈ s, p x)
+    (one : p 1) (mul : ∀ x y, p x → p y → p (x * y)) (x : M) : p x := by
+  induction closure.symm ▸ mem_top x using closure_induction with
+  | mem _ h => exact mem _ h
+  | one => exact one
+  | mul _ _ _ _ h₁ h₂ => exact mul _ _ h₁ h₂
+
+/- The argument `s : Set M` is explicit in `Submonoid.dense_induction` because the type of the
+induction variable, namely `x : M`, does not reference `x`. Making `s` explicit allows the user
+to apply the induction principle while deferring the proof of `closure s = ⊤` without creating
+metavariables, as in the following example. -/
+example {p : M → Prop} (s : Set M) (closure : closure s = ⊤) (mem : ∀ x ∈ s, p x)
+    (one : p 1) (mul : ∀ x y, p x → p y → p (x * y)) (x : M) : p x := by
+  induction x using dense_induction s with
+  | closure => exact closure
+  | mem x hx => exact mem x hx
+  | one => exact one
+  | mul _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
 /-- The `Submonoid.closure` of a set is the union of `{1}` and its `Subsemigroup.closure`. -/
 lemma closure_eq_one_union (s : Set M) :
     closure s = {(1 : M)} ∪ (Subsemigroup.closure s : Set M) := by
   apply le_antisymm
   · intro x hx
-    induction hx using closure_induction' with
+    induction hx using closure_induction with
     | mem x hx => exact Or.inr <| Subsemigroup.subset_closure hx
     | one => exact Or.inl <| by simp
     | mul x hx y hy hx hy =>
@@ -341,8 +357,8 @@ def ofClosureMEqTopLeft {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (h
   toFun := f
   map_one' := h1
   map_mul' x :=
-    (dense_induction (p := _) x hs hmul fun y => by rw [one_mul, h1, one_mul]) fun a b ha hb y => by
-      rw [mul_assoc, ha, ha, hb, mul_assoc]
+    dense_induction (p := _) _ hs hmul fun y => by rw [one_mul, h1, one_mul]
+      (fun a b ha hb y => by rw [mul_assoc, ha, ha, hb, mul_assoc]) x
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_ofClosureMEqTopLeft (f : M → N) (hs : closure s = ⊤) (h1 hmul) :
@@ -362,9 +378,9 @@ def ofClosureMEqTopRight {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (
   toFun := f
   map_one' := h1
   map_mul' x y :=
-    dense_induction y hs (fun y hy x => hmul x y hy) (by simp [h1])
+    dense_induction _ hs (fun y hy x => hmul x y hy) (by simp [h1])
       (fun y₁ y₂ (h₁ : ∀ _, f _ = f _ * f _) (h₂ : ∀ _, f _ = f _ * f _) x => by
-        simp [← mul_assoc, h₁, h₂]) x
+        simp [← mul_assoc, h₁, h₂]) y x
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_ofClosureMEqTopRight (f : M → N) (hs : closure s = ⊤) (h1 hmul) :
