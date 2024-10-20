@@ -292,8 +292,7 @@ theorem mapsTo_singleton {x : α} : MapsTo f {x} t ↔ f x ∈ t :=
 theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
   empty_subset _
 
-@[simp]
-theorem mapsTo_empty_iff : MapsTo f s ∅ ↔ s = ∅ := by
+@[simp] theorem mapsTo_empty_iff : MapsTo f s ∅ ↔ s = ∅ := by
   simp [mapsTo', subset_empty_iff]
 
 /-- If `f` maps `s` to `t` and `s` is non-empty, `t` is non-empty. -/
@@ -947,19 +946,6 @@ theorem BijOn.subset_right {r : Set β} (hf : BijOn f s t) (hrt : r ⊆ t) :
 theorem BijOn.subset_left {r : Set α} (hf : BijOn f s t) (hrs : r ⊆ s) :
     BijOn f r (f '' r) :=
   (hf.injOn.mono hrs).bijOn_image
-
-theorem BijOn.insert (h₁ : BijOn f s t) (h₂ : f a ∉ t) :
-    BijOn f (insert a s) (insert (f a) t) := by
-  repeat rw [insert_eq]
-  refine Set.BijOn.union (bijOn_singleton.mpr rfl) h₁ ?_
-  simp only [singleton_union, injOn_insert fun x ↦ (h₂ (h₁.mapsTo x)), h₁.injOn, mem_image,
-    not_exists, not_and, true_and]
-  exact fun _ hx h ↦ h₂ (h ▸ h₁.mapsTo hx)
-
-theorem BijOn.sdiff_singleton (h₁ : BijOn f s t) (h₂ : a ∈ s) :
-    BijOn f (s \ {a}) (t \ {f a}) := by
-  convert h₁.subset_left diff_subset
-  simp [h₁.injOn.image_diff, h₁.image_eq, h₂, inter_eq_self_of_subset_right]
 
 end bijOn
 
