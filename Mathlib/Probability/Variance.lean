@@ -344,7 +344,7 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
       rw [IH (fun i hi => hs i (mem_insert_of_mem hi))
           (h.mono (by simp only [coe_insert, Set.subset_insert]))]
 
-/-- ** Popoviciu's inequality on variance**
+/-- **Popoviciu's inequality on variance**
 
 The variance of a random variable `X` satisfying `a ≤ X ≤ b`  almost everywhere is at most
 `((b - a) / 2) ^ 2`. -/
