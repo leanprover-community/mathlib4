@@ -109,9 +109,9 @@ lemma cast_negOnePow (K : Type*) (n : ℤ) [Field K] : n.negOnePow = (-1 : K) ^ 
 
 @[deprecated (since := "2024-10-20")] alias coe_negOnePow := cast_negOnePow
 
-lemma cast_negOnePow_natCast (R : Type*) (n : ℕ) [Ring R] : negOnePow n = (-1 : R) ^ n := by
+lemma cast_negOnePow_natCast (R : Type*) [Ring R] (n : ℕ) : negOnePow n = (-1 : R) ^ n := by
   obtain ⟨k, rfl | rfl⟩ := Nat.even_or_odd' n <;> simp [pow_succ, pow_mul]
 
-lemma coe_negOnepow_natCast (n : ℕ) : negOnePow n = (-1 : ℤ) ^ n := cast_negOnePow_natCast ..
+lemma coe_negOnePow_natCast (n : ℕ) : negOnePow n = (-1 : ℤ) ^ n := cast_negOnePow_natCast ..
 
 end Int
