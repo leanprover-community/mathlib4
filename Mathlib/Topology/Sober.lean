@@ -182,6 +182,9 @@ theorem IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) 
     apply image_injective.mpr hf.inj
     rw [← hx.def, ← hf.closure_image_eq, image_singleton]
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.quasiSober := IsClosedEmbedding.quasiSober
+
 theorem IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbedding f) [QuasiSober β] :
     QuasiSober α where
   sober hS hS' := by

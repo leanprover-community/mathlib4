@@ -47,6 +47,9 @@ lemma isClosedEmbedding {X Y : Scheme} (f : X ⟶ Y)
     [IsClosedImmersion f] : IsClosedEmbedding f.base :=
   IsClosedImmersion.base_closed
 
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding := isClosedEmbedding
+
 lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓
     stalkwise (fun f ↦ Function.Surjective f) := by
   ext X Y f

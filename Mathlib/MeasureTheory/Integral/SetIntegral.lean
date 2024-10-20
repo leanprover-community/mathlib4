@@ -563,8 +563,14 @@ theorem _root_.IsClosedEmbedding.setIntegral_map [TopologicalSpace X] [BorelSpac
     (hg : IsClosedEmbedding g) : ∫ y in s, f y ∂Measure.map g μ = ∫ x in g ⁻¹' s, f (g x) ∂μ :=
   hg.measurableEmbedding.setIntegral_map _ _
 
+@[deprecated (since := "2024-10-20")]
+alias _root_.ClosedEmbedding.setIntegral_map := IsClosedEmbedding.setIntegral_map
+
 @[deprecated (since := "2024-04-17")]
 alias _root_.IsClosedEmbedding.set_integral_map := _root_.IsClosedEmbedding.setIntegral_map
+
+@[deprecated (since := "2024-10-20")]
+alias _root_.ClosedEmbedding.set_integral_map := IsClosedEmbedding.set_integral_map
 
 theorem MeasurePreserving.setIntegral_preimage_emb {Y} {_ : MeasurableSpace Y} {f : X → Y} {ν}
     (h₁ : MeasurePreserving f μ ν) (h₂ : MeasurableEmbedding f) (g : Y → E) (s : Set Y) :

@@ -181,6 +181,9 @@ theorem isClosedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (
     IsClosedEmbedding f :=
   hf.antilipschitz.isClosedEmbedding hf.lipschitz.uniformContinuous
 
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding := isClosedEmbedding
+
 end EmetricIsometry
 
 --section

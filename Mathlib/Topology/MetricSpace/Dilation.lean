@@ -436,6 +436,9 @@ protected lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [Dilation
     IsClosedEmbedding f :=
   (antilipschitz f).isClosedEmbedding (lipschitz f).uniformContinuous
 
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding := isClosedEmbedding
+
 end EmetricDilation
 
 /-- Ratio of the composition `g.comp f` of two dilations is the product of their ratios. We assume

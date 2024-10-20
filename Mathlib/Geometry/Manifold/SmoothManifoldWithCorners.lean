@@ -280,8 +280,11 @@ protected theorem image_eq (s : Set H) : I '' s = I.symm ⁻¹' s ∩ range I :=
   · rw [I.source_eq]; exact subset_univ _
   · rw [inter_comm, I.target_eq, I.toPartialEquiv_coe_symm]
 
-protected theorem isClosedEmbedding : IsClosedEmbedding I :=
+theorem isClosedEmbedding : IsClosedEmbedding I :=
   I.leftInverse.isClosedEmbedding I.continuous_symm I.continuous
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding := isClosedEmbedding
 
 theorem isClosed_range : IsClosed (range I) :=
   I.isClosedEmbedding.isClosed_range

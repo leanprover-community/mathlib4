@@ -1009,6 +1009,9 @@ theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
   apply isClosed_set_pi
   simp [forall_update_iff, hs, isClosed_singleton]
 
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_update := isClosedEmbedding_update
+
 /-! ### R₁ (preregular) spaces -/
 
 section R1Space
@@ -1756,6 +1759,9 @@ theorem Function.LeftInverse.isClosedEmbedding [T2Space X] {f : X → Y} {g : Y 
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : IsClosedEmbedding g :=
   ⟨h.embedding hf hg, h.isClosed_range hf hg⟩
 
+@[deprecated (since := "2024-10-20")]
+alias Function.LeftInverse.closedEmbedding := Function.LeftInverse.isClosedEmbedding
+
 theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsCompact s)
     (ht : IsCompact t) (hst : Disjoint s t) : SeparatedNhds s t := by
   simp only [SeparatedNhds, prod_subset_compl_diagonal_iff_disjoint.symm] at hst ⊢
@@ -1853,6 +1859,9 @@ protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X →
 theorem Continuous.isClosedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} (h : Continuous f)
     (hf : Function.Injective f) : IsClosedEmbedding f :=
   .of_continuous_injective_isClosedMap h hf h.isClosedMap
+
+@[deprecated (since := "2024-10-20")]
+alias Continuous.closedEmbedding := Continuous.isClosedEmbedding
 
 /-- A continuous surjective map from a compact space to a Hausdorff space is a quotient map. -/
 theorem QuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
@@ -2263,6 +2272,9 @@ protected theorem IsClosedEmbedding.normalSpace [TopologicalSpace Y] [NormalSpac
         (disjoint_image_of_injective hf.inj hst)
     exact (H.preimage hf.continuous).mono (subset_preimage_image _ _) (subset_preimage_image _ _)
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.normalSpace := IsClosedEmbedding.normalSpace
+
 instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] [R1Space X] :
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
@@ -2304,6 +2316,9 @@ protected theorem IsClosedEmbedding.t4Space [TopologicalSpace Y] [T4Space Y] {f 
     (hf : IsClosedEmbedding f) : T4Space X where
   toT1Space := hf.toEmbedding.t1Space
   toNormalSpace := hf.normalSpace
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.t4Space := IsClosedEmbedding.t4Space
 
 instance ULift.instT4Space [T4Space X] : T4Space (ULift X) :=
   ULift.isClosedEmbedding_down.t4Space

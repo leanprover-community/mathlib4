@@ -1579,6 +1579,9 @@ theorem _root_.IsClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelS
     (f : β → G) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
   hφ.measurableEmbedding.integral_map _
 
+@[deprecated (since := "2024-10-20")]
+alias _root_.ClosedEmbedding.integral_map := _root_.IsClosedEmbedding.integral_map
+
 theorem integral_map_equiv {β} [MeasurableSpace β] (e : α ≃ᵐ β) (f : β → G) :
     ∫ y, f y ∂Measure.map e μ = ∫ x, f (e x) ∂μ :=
   e.measurableEmbedding.integral_map f

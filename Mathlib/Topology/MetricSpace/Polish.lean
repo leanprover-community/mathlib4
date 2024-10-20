@@ -150,6 +150,9 @@ lemma _root_.IsClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpa
     exact hf.isClosed_range.isComplete
   infer_instance
 
+@[deprecated (since := "2024-10-20")]
+alias _root_.ClosedEmbedding.polishSpace := _root_.IsClosedEmbedding.polishSpace
+
 /-- Any countable discrete space is Polish. -/
 instance (priority := 50) polish_of_countable [TopologicalSpace α]
     [h : Countable α] [DiscreteTopology α] : PolishSpace α := by

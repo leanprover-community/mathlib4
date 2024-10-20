@@ -119,6 +119,9 @@ theorem IsClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y}
       hVf.preimage_continuous he.continuous, fun a ↦ ⟨a, preimage_mono (hVU a)⟩⟩
     simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using heV
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.paracompactSpace := IsClosedEmbedding.paracompactSpace
+
 theorem Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
   ⟨fun _ ↦ e.symm.isClosedEmbedding.paracompactSpace, fun _ ↦ e.isClosedEmbedding.paracompactSpace⟩
 

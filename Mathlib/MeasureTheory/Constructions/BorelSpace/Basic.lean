@@ -475,6 +475,9 @@ theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure
 theorem IsClosedEmbedding.measurable {f : α → γ} (hf : IsClosedEmbedding f) : Measurable f :=
   hf.continuous.measurable
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.measurable := IsClosedEmbedding.measurable
+
 /-- If a function is defined piecewise in terms of functions which are continuous on their
 respective pieces, then it is measurable. -/
 theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j : α, Decidable (j ∈ s)]
@@ -635,6 +638,9 @@ protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embeddin
 protected theorem IsClosedEmbedding.measurableEmbedding {f : α → β} (h : IsClosedEmbedding f) :
     MeasurableEmbedding f :=
   h.toEmbedding.measurableEmbedding h.isClosed_range.measurableSet
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.measurableEmbedding := IsClosedEmbedding.measurableEmbedding
 
 protected theorem IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
     MeasurableEmbedding f :=

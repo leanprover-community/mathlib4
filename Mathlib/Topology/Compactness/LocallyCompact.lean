@@ -41,6 +41,9 @@ protected theorem IsClosedEmbedding.weaklyLocallyCompactSpace [WeaklyLocallyComp
     let ⟨K, hK, hKx⟩ := exists_compact_mem_nhds (f x)
     ⟨f ⁻¹' K, hf.isCompact_preimage hK, hf.continuous.continuousAt hKx⟩
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.weaklyLocallyCompactSpace := IsClosedEmbedding.weaklyLocallyCompactSpace
+
 protected theorem IsClosed.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) : WeaklyLocallyCompactSpace s :=
   hs.isClosedEmbedding_subtypeVal.weaklyLocallyCompactSpace
@@ -198,6 +201,9 @@ theorem Inducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y} (hf :
 protected theorem IsClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsClosedEmbedding f) : LocallyCompactSpace X :=
   hf.toInducing.locallyCompactSpace hf.isClosed_range.isLocallyClosed
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.locallyCompactSpace := IsClosedEmbedding.locallyCompactSpace
 
 protected theorem IsOpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsOpenEmbedding f) : LocallyCompactSpace X :=

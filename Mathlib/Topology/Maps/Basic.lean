@@ -633,6 +633,9 @@ theorem _root_.IsClosedEmbedding.of_embedding_closed (h₁ : Embedding f) (h₂ 
     IsClosedEmbedding f :=
   ⟨h₁, image_univ (f := f) ▸ h₂ univ isClosed_univ⟩
 
+@[deprecated (since := "2024-10-20")]
+alias _root_.closedEmbedding_of_embedding_closed := _root_.IsClosedEmbedding.of_embedding_closed
+
 lemma _root_.IsClosedEmbedding.of_continuous_injective_isClosedMap (h₁ : Continuous f)
     (h₂ : Injective f) (h₃ : IsClosedMap f) : IsClosedEmbedding f := by
   refine .of_embedding_closed ⟨⟨?_⟩, h₂⟩ h₃
@@ -640,8 +643,15 @@ lemma _root_.IsClosedEmbedding.of_continuous_injective_isClosedMap (h₁ : Conti
   refine ⟨(f '' sᶜ)ᶜ, (h₃ _ hs.isClosed_compl).isOpen_compl, ?_⟩
   rw [preimage_compl, preimage_image_eq _ h₂, compl_compl]
 
+@[deprecated (since := "2024-10-20")]
+alias _root_.closedEmbedding_of_continuous_injective_closed :=
+  IsClosedEmbedding.of_continuous_injective_isClosedMap
+
 theorem _root_.isClosedEmbedding_id : IsClosedEmbedding (@id X) :=
   ⟨embedding_id, IsClosedMap.id.isClosed_range⟩
+
+@[deprecated (since := "2024-10-20")]
+alias _root_.closedEmbedding_id := _root_.isClosedEmbedding_id
 
 theorem comp (hg : IsClosedEmbedding g) (hf : IsClosedEmbedding f) :
     IsClosedEmbedding (g ∘ f) :=

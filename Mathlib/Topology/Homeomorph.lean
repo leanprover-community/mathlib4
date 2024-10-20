@@ -338,8 +338,11 @@ theorem isOpenEmbedding (h : X ≃ₜ Y) : IsOpenEmbedding h :=
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding := isOpenEmbedding
 
-protected theorem isClosedEmbedding (h : X ≃ₜ Y) : IsClosedEmbedding h :=
+theorem isClosedEmbedding (h : X ≃ₜ Y) : IsClosedEmbedding h :=
   .of_embedding_closed h.embedding h.isClosedMap
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding := isClosedEmbedding
 
 protected theorem normalSpace [NormalSpace X] (h : X ≃ₜ Y) : NormalSpace Y :=
   h.symm.isClosedEmbedding.normalSpace
@@ -914,6 +917,9 @@ protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
 lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
 protected lemma isClosedEmbedding : IsClosedEmbedding f := (hf.homeomorph f).isClosedEmbedding
 lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding := isClosedEmbedding
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding := isOpenEmbedding
