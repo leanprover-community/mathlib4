@@ -238,7 +238,7 @@ lemma topologically_isLocalAtTarget
     exact hf i
 
 /-- A variant of `topologically_isLocalAtTarget`
-that takes one iff statment instead of two implications. -/
+that takes one iff statement instead of two implications. -/
 lemma topologically_isLocalAtTarget'
     [(topologically P).RespectsIso]
     (hP : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) {ι : Type u}

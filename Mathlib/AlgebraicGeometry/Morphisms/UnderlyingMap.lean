@@ -139,7 +139,7 @@ section Dominant
 
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
-/-- A morphism of schemes is dominant if the underlying map is. -/
+/-- A morphism of schemes is dominant if the underlying map has dense range. -/
 @[mk_iff]
 class Dominant : Prop where
   denseRange : DenseRange f.base
@@ -166,7 +166,7 @@ lemma Dominant.comp_iff [Dominant f] : Dominant (f ≫ g) ↔ Dominant g :=
 instance : MorphismProperty.RespectsIso @Dominant :=
   MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ f (_ : IsIso f) ↦ inferInstance
 
-instance dominant_isLocalAtTarget : IsLocalAtTarget @Dominant :=
+instance Dominant.isLocalAtTarget : IsLocalAtTarget @Dominant :=
   have : MorphismProperty.RespectsIso (topologically DenseRange) :=
     dominant_eq_topologically ▸ instRespectsIsoSchemeDominant
   dominant_eq_topologically ▸ topologically_isLocalAtTarget' DenseRange
