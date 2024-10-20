@@ -19,8 +19,6 @@ import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
   `(x, f)` where `x : X` and `f : 𝒪_{X, x} ⟶ R` is a local ring homomorphism.
 -/
 
-universe u
-
 namespace AlgebraicGeometry
 
 open CategoryTheory Opposite TopologicalSpace LocalRing

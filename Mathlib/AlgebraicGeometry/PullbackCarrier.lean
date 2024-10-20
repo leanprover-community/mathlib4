@@ -45,8 +45,8 @@ structure Triplet where
   y : Y
   /-- The point of `S` below `x` and `y`. -/
   s : S
-  hx : f.val.base x = s
-  hy : g.val.base y = s
+  hx : f.base x = s
+  hy : g.base y = s
 
 variable {f g}
 
@@ -58,10 +58,10 @@ protected lemma ext {t₁ t₂ : Triplet f g} (ex : t₁.x = t₂.x) (ey : t₁.
 
 /-- Make a triplet from `x : X` and `y : Y` such that `f x = g y`. -/
 @[simps]
-def mk' (x : X) (y : Y) (h : f.val.base x = g.val.base y) : Triplet f g where
+def mk' (x : X) (y : Y) (h : f.base x = g.base y) : Triplet f g where
   x := x
   y := y
-  s := g.val.base y
+  s := g.base y
   hx := h
   hy := rfl
 
@@ -129,22 +129,11 @@ end Congr
 lemma Spec_map_tensorInl_fromSpecResidueField :
     (Spec.map T.tensorInl ≫ X.fromSpecResidueField T.x) ≫ f =
       (Spec.map T.tensorInr ≫ Y.fromSpecResidueField T.y) ≫ g := by
-  simp only [Category.assoc]
-  have h₁ : X.fromSpecResidueField T.x ≫ f =
-      Spec.map (f.residueFieldMap T.x) ≫
-        Spec.map (S.residueFieldCongr T.hx).inv ≫ S.fromSpecResidueField T.s := by
-    simp only [residueFieldCongr_inv, residueFieldCongr_fromSpecResidueField]
-    exact (Hom.residueFieldMap_fromSpecResidueField f T.x).symm
-  have h₂ : Y.fromSpecResidueField T.y ≫ g =
-      Spec.map (g.residueFieldMap T.y) ≫
-        Spec.map (S.residueFieldCongr T.hy).inv ≫ S.fromSpecResidueField T.s := by
-    simp only [residueFieldCongr_inv, residueFieldCongr_fromSpecResidueField]
-    exact (Hom.residueFieldMap_fromSpecResidueField g T.y).symm
-  simp only [h₁, h₂, ← Spec.map_comp_assoc]
-  apply congrFun (congrArg CategoryStruct.comp _)
-  apply Spec.map_inj.mpr
-  simp only [residueFieldCongr_inv]
-  exact pushout.condition
+  simp only [residueFieldCongr_inv, Category.assoc, tensorInl, tensorInr,
+    ← Hom.Spec_map_residueFieldMap_fromSpecResidueField]
+  rw [← residueFieldCongr_fromSpecResidueField T.hx.symm,
+    ← residueFieldCongr_fromSpecResidueField T.hy.symm]
+  simp only [← Category.assoc, ← Spec.map_comp, pushout.condition]
 
 /-- Given `x : X`, `y : Y` and `s : S` such that `f x = s = g y`,
 this is `Spec (κ(x) ⊗[κ(s)] κ(y)) ⟶ X ×ₛ Y`. -/
@@ -154,17 +143,17 @@ def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
     (Spec_map_tensorInl_fromSpecResidueField _)
 
 @[simp]
-lemma specTensorTo_val_base_fst (p : Spec (T.tensor)) :
-    (pullback.fst f g).val.base (T.SpecTensorTo.val.base p) = T.x := by
+lemma specTensorTo_base_fst (p : Spec (T.tensor)) :
+    (pullback.fst f g).base (T.SpecTensorTo.base p) = T.x := by
   simp only [SpecTensorTo, residueFieldCongr_inv]
-  rw [← Scheme.comp_val_base_apply]
+  rw [← Scheme.comp_base_apply]
   simp
 
 @[simp]
-lemma specTensorTo_val_base_snd (p : Spec (T.tensor)) :
-    (pullback.snd f g).val.base (T.SpecTensorTo.val.base p) = T.y := by
+lemma specTensorTo_base_snd (p : Spec (T.tensor)) :
+    (pullback.snd f g).base (T.SpecTensorTo.base p) = T.y := by
   simp only [SpecTensorTo, residueFieldCongr_inv]
-  rw [← Scheme.comp_val_base_apply]
+  rw [← Scheme.comp_base_apply]
   simp
 
 @[reassoc (attr := simp)]
@@ -181,12 +170,12 @@ lemma specTensorTo_snd :
 `Triplet f g`. -/
 @[simps]
 def ofPoint (t : ↑(pullback f g)) : Triplet f g :=
-  ⟨(pullback.fst f g).1.base t, (pullback.snd f g).1.base t, _, rfl,
-    congr((LocallyRingedSpace.Hom.val $(pullback.condition (f := f) (g := g))).base t).symm⟩
+  ⟨(pullback.fst f g).base t, (pullback.snd f g).base t, _, rfl,
+    congr((Scheme.Hom.toLRSHom $(pullback.condition (f := f) (g := g))).base t).symm⟩
 
 @[simp]
 lemma ofPoint_SpecTensorTo (T : Triplet f g) (p : Spec T.tensor) :
-    ofPoint (T.SpecTensorTo.val.base p) = T := by
+    ofPoint (T.SpecTensorTo.base p) = T := by
   ext <;> simp
 
 end Triplet
@@ -211,11 +200,11 @@ lemma ofPointTensor_SpecTensorTo (t : ↑(pullback f g)) :
     Spec.map (ofPointTensor t) ≫ (Triplet.ofPoint t).SpecTensorTo =
       (pullback f g).fromSpecResidueField t := by
   apply pullback.hom_ext
-  · rw [← Scheme.Hom.residueFieldMap_fromSpecResidueField]
+  · rw [← Scheme.Hom.Spec_map_residueFieldMap_fromSpecResidueField]
     simp only [Category.assoc, Triplet.specTensorTo_fst, Triplet.ofPoint_x]
     rw [← pushout.inl_desc _ _ (residueFieldCongr_inv_residueFieldMap_ofPoint t), Spec.map_comp]
     rfl
-  · rw [← Scheme.Hom.residueFieldMap_fromSpecResidueField]
+  · rw [← Scheme.Hom.Spec_map_residueFieldMap_fromSpecResidueField]
     simp only [Category.assoc, Triplet.specTensorTo_snd, Triplet.ofPoint_y]
     rw [← pushout.inr_desc _ _ (residueFieldCongr_inv_residueFieldMap_ofPoint t), Spec.map_comp]
     rfl
@@ -223,12 +212,12 @@ lemma ofPointTensor_SpecTensorTo (t : ↑(pullback f g)) :
 /-- If `t` is a point in `X ×[S] Y` above `(x, y, s)`, then this is the image of the unique
 point of `Spec κ(s)` in `Spec κ(x) ⊗[κ(s)] κ(y)`. -/
 def SpecOfPoint (t : ↑(pullback f g)) : Spec (Triplet.ofPoint t).tensor :=
-    (Spec.map (ofPointTensor t)).val.base (⊥ : PrimeSpectrum _)
+    (Spec.map (ofPointTensor t)).base (⊥ : PrimeSpectrum _)
 
 @[simp]
 lemma SpecTensorTo_SpecOfPoint (t : ↑(pullback f g)) :
-    (Triplet.ofPoint t).SpecTensorTo.val.base (SpecOfPoint t) = t := by
-  simp [SpecOfPoint, ← Scheme.comp_val_base_apply, ofPointTensor_SpecTensorTo]
+    (Triplet.ofPoint t).SpecTensorTo.base (SpecOfPoint t) = t := by
+  simp [SpecOfPoint, ← Scheme.comp_base_apply, ofPointTensor_SpecTensorTo]
 
 @[reassoc (attr := simp)]
 lemma tensorCongr_SpecTensorTo {T T' : Triplet f g} (h : T = T') :
@@ -238,20 +227,20 @@ lemma tensorCongr_SpecTensorTo {T T' : Triplet f g} (h : T = T') :
 
 lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tensor) :
     Spec.map (Hom.residueFieldMap T.SpecTensorTo p) ≫
-      Spec.map (ofPointTensor (T.SpecTensorTo.val.base p)) ≫
+      Spec.map (ofPointTensor (T.SpecTensorTo.base p)) ≫
       Spec.map (tensorCongr (T.ofPoint_SpecTensorTo p).symm).hom =
     (Spec T.tensor).fromSpecResidueField p := by
   apply T.Spec_map_tensor_isPullback.hom_ext
   · rw [← cancel_mono <| X.fromSpecResidueField T.x]
     simp_rw [Category.assoc, ← T.specTensorTo_fst, tensorCongr_SpecTensorTo_assoc]
-    rw [← Hom.residueFieldMap_fromSpecResidueField_assoc, ofPointTensor_SpecTensorTo_assoc]
+    rw [← Hom.Spec_map_residueFieldMap_fromSpecResidueField_assoc, ofPointTensor_SpecTensorTo_assoc]
   · rw [← cancel_mono <| Y.fromSpecResidueField T.y]
     simp_rw [Category.assoc, ← T.specTensorTo_snd, tensorCongr_SpecTensorTo_assoc]
-    rw [← Hom.residueFieldMap_fromSpecResidueField_assoc, ofPointTensor_SpecTensorTo_assoc]
+    rw [← Hom.Spec_map_residueFieldMap_fromSpecResidueField_assoc, ofPointTensor_SpecTensorTo_assoc]
 
 /-- A helper lemma to work with `AlgebraicGeometry.Scheme.Pullback.carrierEquiv`. -/
 lemma carrierEquiv_eq_iff {T₁ T₂ : Σ T : Triplet f g, Spec T.tensor} :
-    T₁ = T₂ ↔ ∃ e : T₁.1 = T₂.1, (Spec.map (Triplet.tensorCongr e).inv).1.base T₁.2 = T₂.2 := by
+    T₁ = T₂ ↔ ∃ e : T₁.1 = T₂.1, (Spec.map (Triplet.tensorCongr e).inv).base T₁.2 = T₂.2 := by
   constructor
   · rintro rfl
     simp
@@ -267,27 +256,27 @@ pairs of triples `x : X`, `y : Y`, `s : S` with `f x = s = f y` and prime ideals
 -/
 def carrierEquiv : ↑(pullback f g) ≃ Σ T : Triplet f g, Spec T.tensor where
   toFun t := ⟨.ofPoint t, SpecOfPoint t⟩
-  invFun T := T.1.SpecTensorTo.val.base T.2
+  invFun T := T.1.SpecTensorTo.base T.2
   left_inv := SpecTensorTo_SpecOfPoint
   right_inv := by
     intro ⟨T, p⟩
     apply carrierEquiv_eq_iff.mpr
     use T.ofPoint_SpecTensorTo p
-    have : (Spec.map (Hom.residueFieldMap T.SpecTensorTo p)).val.base (⊥ : PrimeSpectrum _) =
+    have : (Spec.map (Hom.residueFieldMap T.SpecTensorTo p)).base (⊥ : PrimeSpectrum _) =
         (⊥ : PrimeSpectrum _) :=
       (PrimeSpectrum.instUnique).uniq _
-    simp only [SpecOfPoint, Triplet.tensorCongr_inv, ← this, ← Scheme.comp_val_base_apply,
-      ← Scheme.comp_val_base_apply]
+    simp only [SpecOfPoint, Triplet.tensorCongr_inv, ← this, ← Scheme.comp_base_apply,
+      ← Scheme.comp_base_apply]
     simp [Triplet.Spec_ofPointTensor_SpecTensorTo]
 
 @[simp]
 lemma carrierEquiv_symm_fst (T : Triplet f g) (p : Spec T.tensor) :
-    (pullback.fst f g).val.base (carrierEquiv.symm ⟨T, p⟩) = T.x := by
+    (pullback.fst f g).base (carrierEquiv.symm ⟨T, p⟩) = T.x := by
   simp [carrierEquiv]
 
 @[simp]
 lemma carrierEquiv_symm_snd (T : Triplet f g) (p : Spec T.tensor) :
-    (pullback.snd f g).val.base (carrierEquiv.symm ⟨T, p⟩) = T.y := by
+    (pullback.snd f g).base (carrierEquiv.symm ⟨T, p⟩) = T.y := by
   simp [carrierEquiv]
 
 /-- Given a triple `(x, y, s)` with `f x = s = f y` there exists `t : X ×[S] Y` above
@@ -295,12 +284,8 @@ lemma carrierEquiv_symm_snd (T : Triplet f g) (p : Spec T.tensor) :
 `AlgebraicGeometry.Scheme.Pullback.exists_preimage`. -/
 lemma Triplet.exists_preimage (T : Triplet f g) :
     ∃ t : ↑(pullback f g),
-    (pullback.fst f g).1.base t = T.x ∧ (pullback.snd f g).1.base t = T.y := by
-  have : Nonempty (Spec T.tensor) := inferInstance
-  obtain ⟨p⟩ := this
-  let a : ↑(pullback f g) := carrierEquiv.symm ⟨T, p⟩
-  use a
-  simp [a]
+    (pullback.fst f g).base t = T.x ∧ (pullback.snd f g).base t = T.y :=
+  ⟨carrierEquiv.symm ⟨T, Nonempty.some inferInstance⟩, by simp⟩
 
 /--
 If `f : X ⟶ S` and `g : Y ⟶ S` are morphisms of schemes and `x : X` and `y : Y` are points such
@@ -309,54 +294,54 @@ that `f x = g y`, then there exists `z : X ×[S] Y` lying above `x` and `y`.
 In other words, the map from the underlying topological space of `X ×[S] Y` to the fiber product
 of the underlying topological spaces of `X` and `Y` over `S` is surjective.
 -/
-lemma exists_preimage_pullback (x : X) (y : Y) (h : f.val.base x = g.val.base y) :
+lemma exists_preimage_pullback (x : X) (y : Y) (h : f.base x = g.base y) :
     ∃ z : ↑(pullback f g),
-    (pullback.fst f g).1.base z = x ∧ (pullback.snd f g).1.base z = y :=
+    (pullback.fst f g).base z = x ∧ (pullback.snd f g).base z = y :=
   (Pullback.Triplet.mk' x y h).exists_preimage
 
 variable (f g)
 
-lemma range_fst : Set.range (pullback.fst f g).1.base = f.1.base ⁻¹' Set.range g.1.base := by
+lemma range_fst : Set.range (pullback.fst f g).base = f.base ⁻¹' Set.range g.base := by
   ext x
   refine ⟨?_, fun ⟨y, hy⟩ ↦ ?_⟩
   · rintro ⟨a, rfl⟩
-    simp only [Set.mem_preimage, Set.mem_range, ← Scheme.comp_val_base_apply, pullback.condition]
+    simp only [Set.mem_preimage, Set.mem_range, ← Scheme.comp_base_apply, pullback.condition]
     simp
   · obtain ⟨a, ha⟩ := Triplet.exists_preimage (Triplet.mk' x y hy.symm)
     use a, ha.left
 
-lemma range_snd : Set.range (pullback.snd f g).1.base = g.1.base ⁻¹' Set.range f.1.base := by
+lemma range_snd : Set.range (pullback.snd f g).base = g.base ⁻¹' Set.range f.base := by
   ext x
   refine ⟨?_, fun ⟨y, hy⟩ ↦ ?_⟩
   · rintro ⟨a, rfl⟩
-    simp only [Set.mem_preimage, Set.mem_range, ← Scheme.comp_val_base_apply, ← pullback.condition]
+    simp only [Set.mem_preimage, Set.mem_range, ← Scheme.comp_base_apply, ← pullback.condition]
     simp
   · obtain ⟨a, ha⟩ := Triplet.exists_preimage (Triplet.mk' y x hy)
     use a, ha.right
 
 lemma range_fst_comp :
-    Set.range (pullback.fst f g ≫ f).1.base = Set.range f.1.base ∩ Set.range g.1.base := by
+    Set.range (pullback.fst f g ≫ f).base = Set.range f.base ∩ Set.range g.base := by
   simp [Set.range_comp, range_fst, Set.image_preimage_eq_range_inter]
 
 lemma range_snd_comp :
-    Set.range (pullback.snd f g ≫ g).1.base = Set.range f.1.base ∩ Set.range g.1.base := by
+    Set.range (pullback.snd f g ≫ g).base = Set.range f.base ∩ Set.range g.base := by
   rw [← pullback.condition, range_fst_comp]
 
 lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ : X ⟶ X')
     (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f')
     (e₂ : g ≫ i₃ = i₂ ≫ g') [Mono i₃] :
-    Set.range (pullback.map f g f' g' i₁ i₂ i₃ e₁ e₂).1.base =
-      (pullback.fst f' g').val.base ⁻¹' Set.range i₁.val.base ∩
-        (pullback.snd f' g').val.base ⁻¹' Set.range i₂.val.base := by
+    Set.range (pullback.map f g f' g' i₁ i₂ i₃ e₁ e₂).base =
+      (pullback.fst f' g').base ⁻¹' Set.range i₁.base ∩
+        (pullback.snd f' g').base ⁻¹' Set.range i₂.base := by
   ext z
   constructor
   · rintro ⟨t, rfl⟩
     constructor
-    · use (pullback.fst f g).val.base t
-      rw [← Scheme.comp_val_base_apply, ← Scheme.comp_val_base_apply]
+    · use (pullback.fst f g).base t
+      rw [← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
       simp
-    · use (pullback.snd f g).val.base t
-      rw [← Scheme.comp_val_base_apply, ← Scheme.comp_val_base_apply]
+    · use (pullback.snd f g).base t
+      rw [← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
       simp
   · intro ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
     let T₁ : Triplet (pullback.fst f' g') i₁ := Triplet.mk' z x hx.symm
@@ -366,8 +351,8 @@ lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ 
     let T : Triplet (pullback.fst (pullback.fst f' g') i₁) (pullback.fst (pullback.snd f' g') i₂) :=
       Triplet.mk' w₁ w₂ <| by simp [hw₁.left, hw₂.left, T₁, T₂]
     obtain ⟨t, _, ht₂⟩ := T.exists_preimage
-    use (pullbackFstFstIso f g f' g' i₁ i₂ i₃ e₁ e₂).hom.val.base t
-    rw [pullback_map_eq_pullbackFstFstIso_inv, ← Scheme.comp_val_base_apply, Iso.hom_inv_id_assoc]
+    use (pullbackFstFstIso f g f' g' i₁ i₂ i₃ e₁ e₂).hom.base t
+    rw [pullback_map_eq_pullbackFstFstIso_inv, ← Scheme.comp_base_apply, Iso.hom_inv_id_assoc]
     simp [ht₂, T, hw₂.left, T₂]
 
 end AlgebraicGeometry.Scheme.Pullback
