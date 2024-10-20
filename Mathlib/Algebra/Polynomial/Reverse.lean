@@ -149,8 +149,8 @@ theorem reflect_monomial (N n : ℕ) : reflect N ((X : R[X]) ^ n) = X ^ revAt N 
 theorem reflect_mul_induction (cf cg : ℕ) :
     ∀ N O : ℕ,
       ∀ f g : R[X],
-        f.support.card ≤ cf.succ →
-          g.support.card ≤ cg.succ →
+        #f.support ≤ cf.succ →
+          #g.support ≤ cg.succ →
             f.natDegree ≤ N →
               g.natDegree ≤ O → reflect (N + O) (f * g) = reflect N f * reflect O g := by
   induction' cf with cf hcf

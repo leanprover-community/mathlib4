@@ -1061,10 +1061,9 @@ end Real
 namespace Complex
 
 theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (hn : 0 < n) :
-    (∑ m ∈ filter (fun k => n ≤ k) (range j),
-      (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
+    (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
   calc
-    (∑ m ∈ filter (fun k => n ≤ k) (range j), (1 / m.factorial : α)) =
+    (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) =
         ∑ m ∈ range (j - n), (1 / ((m + n).factorial : α)) := by
         refine sum_nbij' (· - n) (· + n) ?_ ?_ ?_ ?_ ?_ <;>
           simp (config := { contextual := true }) [lt_tsub_iff_right, tsub_add_cancel_of_le]
@@ -1098,20 +1097,19 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
       abs x ^ n * ((n.succ : ℝ) * (n.factorial * n : ℝ)⁻¹)
   rw [sum_range_sub_sum_range hj]
   calc
-    abs (∑ m ∈ (range j).filter fun k => n ≤ k, (x ^ m / m.factorial : ℂ)) =
-      abs (∑ m ∈ (range j).filter fun k => n ≤ k,
-        (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) := by
+    abs (∑ m ∈ range j with n ≤ m, (x ^ m / m.factorial : ℂ))
+      = abs (∑ m ∈ range j with n ≤ m, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) := by
       refine congr_arg abs (sum_congr rfl fun m hm => ?_)
       rw [mem_filter, mem_range] at hm
       rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
-    _ ≤ ∑ m ∈ filter (fun k => n ≤ k) (range j), abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
-      (IsAbsoluteValue.abv_sum Complex.abs _ _)
-    _ ≤ ∑ m ∈ filter (fun k => n ≤ k) (range j), abs x ^ n * (1 / m.factorial) := by
+    _ ≤ ∑ m ∈ range j with n ≤ m, abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
+      IsAbsoluteValue.abv_sum Complex.abs ..
+    _ ≤ ∑ m ∈ range j with n ≤ m, abs x ^ n * (1 / m.factorial) := by
       simp_rw [map_mul, map_pow, map_div₀, abs_natCast]
       gcongr
       rw [abv_pow abs]
       exact pow_le_one₀ (abs.nonneg _) hx
-    _ = abs x ^ n * ∑ m ∈ (range j).filter fun k => n ≤ k, (1 / m.factorial : ℝ) := by
+    _ = abs x ^ n * ∑ m ∈ range j with n ≤ m, (1 / m.factorial : ℝ) := by
       simp [abs_mul, abv_pow abs, abs_div, ← mul_sum]
     _ ≤ abs x ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) := by
       gcongr

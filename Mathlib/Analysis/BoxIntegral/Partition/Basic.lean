@@ -177,7 +177,7 @@ theorem injOn_setOf_mem_Icc_setOf_lower_eq (x : ι → ℝ) :
 /-- The set of boxes of a prepartition that contain `x` in their closures has cardinality
 at most `2 ^ Fintype.card ι`. -/
 theorem card_filter_mem_Icc_le [Fintype ι] (x : ι → ℝ) :
-    (π.boxes.filter fun J : Box ι => x ∈ Box.Icc J).card ≤ 2 ^ Fintype.card ι := by
+    #{J ∈ π.boxes | x ∈ Box.Icc J} ≤ 2 ^ Fintype.card ι := by
   rw [← Fintype.card_set]
   refine Finset.card_le_card_of_injOn (fun J : Box ι => { i | J.lower i = x i })
     (fun _ _ => Finset.mem_univ _) ?_
@@ -517,7 +517,7 @@ instance : SemilatticeInf (Prepartition I) :=
 /-- The prepartition with boxes `{J ∈ π | p J}`. -/
 @[simps]
 def filter (π : Prepartition I) (p : Box ι → Prop) : Prepartition I where
-  boxes := π.boxes.filter p
+  boxes := {J ∈ π.boxes | p J}
   le_of_mem' _ hJ := π.le_of_mem (mem_filter.1 hJ).1
   pairwiseDisjoint _ h₁ _ h₂ := π.disjoint_coe_of_mem (mem_filter.1 h₁).1 (mem_filter.1 h₂).1
 

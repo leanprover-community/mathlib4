@@ -101,7 +101,7 @@ theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
 
 /-- The cardinality of the finset `primesBelow n` equals the counting function
 `primeCounting'` at `n`. -/
-theorem primesBelow_card_eq_primeCounting' (n : ℕ) : n.primesBelow.card = primeCounting' n := by
+theorem primesBelow_card_eq_primeCounting' (n : ℕ) : #n.primesBelow = primeCounting' n := by
   simp only [primesBelow, primeCounting']
   exact (count_eq_card_filter_range Prime n).symm
 
@@ -109,13 +109,13 @@ theorem primesBelow_card_eq_primeCounting' (n : ℕ) : n.primesBelow.card = prim
 theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
     π' (k + n) ≤ π' k + Nat.totient a * (n / a + 1) :=
   calc
-    π' (k + n) ≤ ((range k).filter Prime).card + ((Ico k (k + n)).filter Prime).card := by
+    π' (k + n) ≤ #{p ∈ range k | p.Prime} + #{p ∈ Ico k (k + n) | p.Prime} := by
       rw [primeCounting', count_eq_card_filter_range, range_eq_Ico, ←
         Ico_union_Ico_eq_Ico (zero_le k) le_self_add, filter_union]
       apply card_union_le
-    _ ≤ π' k + ((Ico k (k + n)).filter Prime).card := by
+    _ ≤ π' k + #{p ∈ Ico k (k + n) | p.Prime} := by
       rw [primeCounting', count_eq_card_filter_range]
-    _ ≤ π' k + ((Ico k (k + n)).filter (Coprime a)).card := by
+    _ ≤ π' k + #{b ∈ Ico k (k + n) | a.Coprime b} := by
       refine add_le_add_left (card_le_card ?_) k.primeCounting'
       simp only [subset_iff, and_imp, mem_filter, mem_Ico]
       intro p succ_k_le_p p_lt_n p_prime

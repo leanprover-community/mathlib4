@@ -221,8 +221,7 @@ def const (n : ℕ) (i k : Fin (n+3)) (m : SimplexCategoryᵒᵖ) : Λ[n+2, i].o
 
 This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
 @[simps]
-def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : Finset.card {i, a, b} ≤ n) :
-    Λ[n, i] _[1] := by
+def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) : Λ[n, i] _[1] := by
   refine ⟨standardSimplex.edge n a b hab, ?range⟩
   case range =>
     suffices ∃ x, ¬i = x ∧ ¬a = x ∧ ¬b = x by

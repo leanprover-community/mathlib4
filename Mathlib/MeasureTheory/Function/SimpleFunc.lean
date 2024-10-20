@@ -269,13 +269,13 @@ theorem map_const (g : β → γ) (b : β) : (const α b).map g = const α (g b)
   rfl
 
 theorem map_preimage (f : α →ₛ β) (g : β → γ) (s : Set γ) :
-    f.map g ⁻¹' s = f ⁻¹' ↑(f.range.filter fun b => g b ∈ s) := by
+    f.map g ⁻¹' s = f ⁻¹' ↑{b ∈ f.range | g b ∈ s} := by
   simp only [coe_range, sep_mem_eq, coe_map, Finset.coe_filter,
     ← mem_preimage, inter_comm, preimage_inter_range, ← Finset.mem_coe]
   exact preimage_comp
 
 theorem map_preimage_singleton (f : α →ₛ β) (g : β → γ) (c : γ) :
-    f.map g ⁻¹' {c} = f ⁻¹' ↑(f.range.filter fun b => g b = c) :=
+    f.map g ⁻¹' {c} = f ⁻¹' ↑{b ∈ f.range | g b = c} :=
   map_preimage _ _ _
 
 /-- Composition of a `SimpleFun` and a measurable function is a `SimpleFunc`. -/
@@ -985,7 +985,7 @@ section FinMeasSupp
 open Finset Function
 
 theorem support_eq [MeasurableSpace α] [Zero β] (f : α →ₛ β) :
-    support f = ⋃ y ∈ f.range.filter fun y => y ≠ 0, f ⁻¹' {y} :=
+    support f = ⋃ y ∈ {y ∈ f.range | y ≠ 0}, f ⁻¹' {y} :=
   Set.ext fun x => by
     simp only [mem_support, Set.mem_preimage, mem_filter, mem_range_self, true_and, exists_prop,
       mem_iUnion, Set.mem_range, mem_singleton_iff, exists_eq_right']
