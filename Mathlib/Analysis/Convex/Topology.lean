@@ -149,6 +149,13 @@ theorem convexHull_subseteq_convexClosedHull {s : Set E} :
     (convexHull 𝕜) s ⊆ (convexClosedHull 𝕜) s :=
   convexHull_min subset_convexClosedHull convex_convexClosedHull
 
+theorem convexClosedHull_eq_convexClosedHull_closure {s : Set E} :
+    convexClosedHull 𝕜 s = convexClosedHull 𝕜 (closure s) := subset_antisymm
+  (convexClosedHull_min (subset_trans subset_closure subset_convexClosedHull)
+    ⟨convex_convexClosedHull, isClosed_convexClosedHull⟩)
+  (convexClosedHull_min (closure_minimal subset_convexClosedHull isClosed_convexClosedHull)
+    ⟨convex_convexClosedHull, isClosed_convexClosedHull⟩)
+
 variable  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 /-- If `s` is a convex set, then `a • interior s + b • closure s ⊆ interior s` for all `0 < a`,
@@ -268,6 +275,8 @@ theorem convexClosedHull_eq_closure_convexHull {s : Set E} :
   (convexClosedHull_min (subset_trans (subset_convexHull 𝕜 s) subset_closure)
     ⟨Convex.closure (convex_convexHull 𝕜 s), isClosed_closure⟩)
   (closure_minimal convexHull_subseteq_convexClosedHull isClosed_convexClosedHull)
+
+
 
 open AffineMap
 
