@@ -149,18 +149,9 @@ noncomputable def liftContinuousMonoidHom [CommMonoid M] [ContinuousMul M] [Comm
     (f : ContinuousMonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) :
     ContinuousMonoidHom (SeparationQuotient M) N where
   toFun := SeparationQuotient.lift f hf
-  map_one' := by
-    rw [← (@MonoidHom.map_one M N _ _ f), ← mk_one, SeparationQuotient.lift_mk hf 1]
-    simp only [map_one, MonoidHom.coe_coe]
-  map_mul' {x y} := by
-    simp only
-    obtain ⟨x', hx'⟩ := surjective_mk x
-    obtain ⟨y', hy'⟩ := surjective_mk y
-    rw [← hx', ← hy', SeparationQuotient.lift_mk hf x', SeparationQuotient.lift_mk hf y', ← mk_mul,
-      SeparationQuotient.lift_mk hf (x' * y')]
-    exact MulHomClass.map_mul f x' y'
-  continuous_toFun := by
-    exact SeparationQuotient.continuous_lift.mpr f.2
+  map_one' := map_one f
+  map_mul' := Quotient.ind₂ <| map_mul f
+  continuous_toFun := SeparationQuotient.continuous_lift.mpr f.2
 
 @[to_additive (attr := simp)]
 theorem liftContinuousCommMonoidHom_apply [CommMonoid M] [ContinuousMul M] [CommMonoid N]
@@ -225,8 +216,8 @@ instance instCommGroup [CommGroup G] [TopologicalGroup G] : CommGroup (Separatio
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
 theorem nhds_eq (x : G) :
-    nhds (mk x) = Filter.map mk (nhds x) := by
-  apply le_antisymm ((SeparationQuotient.isOpenMap_mk).nhds_le x) continuous_quot_mk.continuousAt
+    nhds (mk x) = Filter.map mk (nhds x) :=
+  le_antisymm ((SeparationQuotient.isOpenMap_mk).nhds_le x) continuous_quot_mk.continuousAt
 
 /-- `SeparationQuotient.mk` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`SeparationQuotient.mk` as an `AddMonoidHom`."]
@@ -427,19 +418,10 @@ variable {R M}
 
 /-- The lift as a continuous linear map of `f` with `f x = f y` for `Inseparable x y`. -/
 noncomputable def liftCLM {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y) :
-    (SeparationQuotient M) →SL[σ] N where
+    SeparationQuotient M →SL[σ] N where
   toFun := SeparationQuotient.lift f hf
-  map_add' {x y} := by
-    obtain ⟨x', hx'⟩ := surjective_mk x
-    obtain ⟨y', hy'⟩ := surjective_mk y
-    rw [← hx', ← hy', SeparationQuotient.lift_mk hf x', SeparationQuotient.lift_mk hf y', ← mk_add,
-      lift_mk]
-    exact ContinuousLinearMap.map_add f x' y'
-  map_smul' {r x} := by
-    obtain ⟨x', hx'⟩ := surjective_mk x
-    rw [← hx', ← mk_smul]
-    simp only [lift_mk]
-    exact ContinuousLinearMap.map_smulₛₗ f r x'
+  map_add' := Quotient.ind₂ <| map_add f
+  map_smul' {r} := Quotient.ind <| map_smulₛₗ f r
 
 @[simp]
 theorem liftCLM_apply {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
