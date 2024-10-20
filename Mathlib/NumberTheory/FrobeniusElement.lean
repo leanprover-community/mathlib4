@@ -271,6 +271,25 @@ theorem Algebra.exists_dvd_nonzero_if_isIntegral (R S : Type*) [CommRing R]
   rw [map_sub, hq, zero_sub, dvd_neg, Polynomial.aeval_X, Polynomial.aeval_C] at key
   exact ⟨q.coeff 0, hq0, key⟩
 
+theorem lem0 (A B K L : Type*) [CommRing A] [CommRing B] [IsDomain B] [Field K] [Field L]
+    [Algebra A K] [IsFractionRing A K]
+    [Algebra B L] [IsFractionRing B L]
+    [Algebra A L] [Algebra A B] [Algebra.IsAlgebraic A B] [Algebra K L]
+    [IsScalarTower A B L] [IsScalarTower A K L]
+    (x : L) :
+    ∃ (b : B) (a : A), a ≠ 0 ∧ x = algebraMap B L b / algebraMap A L a := by
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B) x
+  obtain ⟨a, ha, b, h⟩ := Algebra.exists_dvd_nonzero_if_isIntegral A B y
+    (nonZeroDivisors.ne_zero hy)
+  refine ⟨x * b, a, ha, ?_⟩
+  rw [IsScalarTower.algebraMap_apply A B L, h, map_mul, map_mul, mul_div_mul_right]
+  rw [Ne, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
+  contrapose! ha
+  rw [ha, mul_zero] at h
+  replace ha := congrArg (algebraMap B L) h
+  rwa [map_zero, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A K L,
+    NoZeroSMulDivisors.algebraMap_eq_zero_iff, NoZeroSMulDivisors.algebraMap_eq_zero_iff] at ha
+
 end integrallemma
 
 -- Charpoly of a finite group acting on a ring
@@ -544,51 +563,15 @@ theorem fullHom_surjective1
     (f : L ≃ₐ[K] L) (x : L) (hx : ∀ g : MulAction.stabilizer G Q, fullHom G P Q K L g x = x) :
     f x = x := by
   obtain ⟨_⟩ := nonempty_fintype G
-  have : NoZeroSMulDivisors (A ⧸ P) L := by
-    simp only [NoZeroSMulDivisors.iff_algebraMap_injective,
-        injective_iff_map_eq_zero,
-        IsScalarTower.algebraMap_eq (A ⧸ P) K L,
-        RingHom.comp_apply,
-        NoZeroSMulDivisors.algebraMap_eq_zero_iff]
-    simp
-  have : NoZeroSMulDivisors (A ⧸ P) (B ⧸ Q) := by
-    rw [NoZeroSMulDivisors.iff_algebraMap_injective] at this ⊢
-    rw [IsScalarTower.algebraMap_eq (A ⧸ P) (B ⧸ Q) L] at this
-    exact Function.Injective.of_comp this
-  have key : ∃ (a : A ⧸ P) (b : B ⧸ Q), a ≠ 0 ∧
-      x = (algebraMap (B ⧸ Q) L b) / (algebraMap (A ⧸ P) L a) := by
-    obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B ⧸ Q) x
-    replace hy : y ≠ 0 := by
-      rintro rfl
-      exact zero_not_mem_nonZeroDivisors hy
-    have : Algebra.IsIntegral (A ⧸ P) (B ⧸ Q) :=
-      MulSemiringAction.Charpoly.reduction_isIntegral G P Q hAB
-    obtain ⟨a, ha, b, hb⟩ := Algebra.exists_dvd_nonzero_if_isIntegral (A ⧸ P) (B ⧸ Q) y hy
-    refine ⟨a, x * b, ha, ?_⟩
-    rw [IsScalarTower.algebraMap_apply (A ⧸ P) (B ⧸ Q) L, hb]
-    simp only [map_mul]
-    rw [mul_div_mul_right]
-    rw [Ne, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
-    rintro rfl
-    rw [mul_zero] at hb
-    rw [NoZeroSMulDivisors.algebraMap_eq_zero_iff] at hb
-    exact ha hb
-  obtain ⟨a, b, ha, rfl⟩ := key
-  simp only [map_div₀, IsScalarTower.algebraMap_apply (A ⧸ P) K L,
-    AlgEquiv.commutes] at hx ⊢
-  have key : algebraMap (A ⧸ P) L a ≠ 0 := by
-    rwa [Ne, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
-  simp only [← IsScalarTower.algebraMap_apply (A ⧸ P) K L] at hx ⊢
-  simp only [div_left_inj' key] at hx ⊢
-  refine lem4 G P Q K L hAB f b ?_
-  intro g
-  specialize hx g
-  apply IsFractionRing.injective (B ⧸ Q) L
-  rw [fullHom] at hx
-  simp only [MonoidHom.coe_comp, Function.comp_apply] at hx
-  rw [← hx]
-  symm
-  apply liftHom_commutes
+  have := MulSemiringAction.Charpoly.reduction_isIntegral G P Q hAB
+  obtain ⟨b, a, ha, rfl⟩ := lem0 (A ⧸ P) (B ⧸ Q) K L x
+  simp only [map_div₀, IsScalarTower.algebraMap_apply (A ⧸ P) K L, AlgEquiv.commutes] at hx ⊢
+  replace ha : algebraMap (A ⧸ P) L a ≠ 0 := by
+    rwa [Ne, IsScalarTower.algebraMap_apply (A ⧸ P) K L,
+      NoZeroSMulDivisors.algebraMap_eq_zero_iff, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
+  simp only [← IsScalarTower.algebraMap_apply (A ⧸ P) K L, div_left_inj' ha] at hx ⊢
+  refine lem4 G P Q K L hAB f b (fun g ↦ IsFractionRing.injective (B ⧸ Q) L ?_)
+  exact (liftHom_commutes (A ⧸ P) (B ⧸ Q) K L (stabilizerAction G P Q g) b).symm.trans (hx g)
 
 theorem fullHom_surjective
     (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) :
@@ -596,10 +579,9 @@ theorem fullHom_surjective
   let action : MulSemiringAction (MulAction.stabilizer G Q) L :=
     MulSemiringAction.ofAlgEquivHom _ _
       (fullHom G P Q K L : MulAction.stabilizer G Q →* (L ≃ₐ[K] L))
-  have key := toAlgHom_surjective (MulAction.stabilizer G Q) L
   intro f
-  obtain ⟨g, hg⟩ := key (AlgEquiv.ofRingEquiv (f := f)
-    (fun x ↦ fullHom_surjective1 G P Q K L hAB f x x.2))
+  obtain ⟨g, hg⟩ := toAlgHom_surjective (MulAction.stabilizer G Q) L
+    (AlgEquiv.ofRingEquiv (f := f) (fun x ↦ fullHom_surjective1 G P Q K L hAB f x x.2))
   exact ⟨g, by rwa [AlgEquiv.ext_iff] at hg ⊢⟩
 
 end part_b
