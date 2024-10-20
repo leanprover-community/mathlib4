@@ -63,6 +63,14 @@ lemma dynEntourage_mem_uniformity [UniformSpace X] {T : X → X} (h : UniformCon
   rw [map_iterate T T k]
   exact uniformContinuous_def.1 (UniformContinuous.iterate T k h) U U_uni
 
+lemma ball_dynEntourage_mem_nhds [UniformSpace X] {T : X → X} (h : Continuous T) {U : Set (X × X)}
+    (U_uni : U ∈ 𝓤 X) (n : ℕ) (x : X) :
+    ball x (dynEntourage T U n) ∈ nhds x := by
+  rw [dynEntourage_eq_inter_Ico T U n, ball_iInter, Filter.iInter_mem, Subtype.forall]
+  intro k _
+  simp only [map_iterate, ball_preimage]
+  exact (h.iterate k).continuousAt.preimage_mem_nhds (ball_mem_nhds (T^[k] x) U_uni)
+
 lemma idRel_subset_dynEntourage (T : X → X) {U : Set (X × X)} (h : idRel ⊆ U) (n : ℕ) :
     idRel ⊆ (dynEntourage T U n) := by
   simp only [dynEntourage, map_iterate, subset_iInter_iff, idRel_subset, mem_preimage, map_apply]

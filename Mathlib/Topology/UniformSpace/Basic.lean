@@ -593,6 +593,10 @@ theorem ball_inter_left (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ b
 theorem ball_inter_right (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x W :=
   ball_mono inter_subset_right x
 
+lemma ball_iInter {ι : Type*} {F : ι → Set (β × β)} {x : β} :
+    ball x (⋂ i, F i) = ⋂ i, ball x (F i) :=
+  preimage_iInter
+
 theorem mem_ball_symmetry {V : Set (β × β)} (hV : SymmetricRel V) {x y} :
     x ∈ ball y V ↔ y ∈ ball x V :=
   show (x, y) ∈ Prod.swap ⁻¹' V ↔ (x, y) ∈ V by
