@@ -257,10 +257,8 @@ lemma compProd_preimage_fst {s : Set β} (hs : MeasurableSet s) (κ : Kernel α 
 lemma compProd_deterministic_apply [MeasurableSingletonClass γ] {f : α × β → γ} (hf : Measurable f)
     {s : Set (β × γ)} (hs : MeasurableSet s) (κ : Kernel α β) [IsSFiniteKernel κ] (x : α) :
     (κ ⊗ₖ deterministic f hf) x s = κ x {b | (b, f (x, b)) ∈ s} := by
-  rw [compProd_apply hs]
-  simp only [deterministic_apply, measurableSet_setOf, Set.mem_setOf_eq, Measure.dirac_apply]
-  classical
-  simp only [Set.mem_setOf_eq, Set.indicator_apply, Pi.one_apply]
+  simp only [deterministic_apply, measurableSet_setOf, Set.mem_setOf_eq, Measure.dirac_apply,
+    Set.mem_setOf_eq, Set.indicator_apply, Pi.one_apply, compProd_apply hs]
   let t := {b | (b, f (x, b)) ∈ s}
   have ht : MeasurableSet t := (measurable_id.prod_mk (hf.comp measurable_prod_mk_left)) hs
   rw [← lintegral_add_compl _ ht]
@@ -1222,7 +1220,7 @@ instance IsSFiniteKernel.prod (κ : Kernel α β) (η : Kernel α γ) :
     snd (κ ×ₖ η) = η := by
   ext x; simp [snd_apply, prod_apply]
 
-lemma comap_prod_swap (κ : Kernel α β) (η : Kernel γ δ) [IsFiniteKernel κ] [IsFiniteKernel η] :
+lemma comap_prod_swap (κ : Kernel α β) (η : Kernel γ δ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     comap (prodMkRight α η ×ₖ prodMkLeft γ κ) Prod.swap measurable_swap
       = map (prodMkRight γ κ ×ₖ prodMkLeft α η) Prod.swap := by
   rw [ext_fun_iff]
@@ -1235,7 +1233,7 @@ lemma comap_prod_swap (κ : Kernel α β) (η : Kernel γ δ) [IsFiniteKernel κ
   refine (lintegral_lintegral_swap ?_).symm
   exact (hf.comp measurable_swap).aemeasurable
 
-lemma map_prod_swap (κ : Kernel α β) (η : Kernel α γ) [IsMarkovKernel κ] [IsMarkovKernel η] :
+lemma map_prod_swap (κ : Kernel α β) (η : Kernel α γ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     map (κ ×ₖ η) Prod.swap = η ×ₖ κ := by
   rw [ext_fun_iff]
   intro x f hf
