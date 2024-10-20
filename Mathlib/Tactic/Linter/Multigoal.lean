@@ -150,8 +150,9 @@ def multiGoalLinter : Linter where
     let trees ← getInfoTrees
     for t in trees.toArray do
       for (s, n) in getManyGoals t do
-        let gl := if n == 1 then "goal" else "goals"
-        Linter.logLint linter.style.multiGoal s (m!"'{s}' leaves {n} {gl} '{s.getKind}'")
+        Linter.logLint linter.style.multiGoal s
+          m!"There are {n+1} unclosed goals before '{s}' and at least one remaining goal after.\n\
+            Please focus on the current goal, for instance using `·` (typed as \"\\.\")."
 
 initialize addLinter multiGoalLinter
 

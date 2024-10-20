@@ -18,7 +18,8 @@ example : True := by
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
-warning: 'exact .intro' leaves 1 goal 'Lean.Parser.Tactic.exact'
+warning: There are 2 unclosed goals before 'exact .intro' and at least one remaining goal after.
+Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
 #guard_msgs in
@@ -30,10 +31,10 @@ example : True := by
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
-warning: 'assumption' leaves 1 goal 'Lean.Parser.Tactic.assumption'
+warning: There are 2 unclosed goals before 'assumption' and at least one remaining goal after.
+Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
--- the linter keeps linting after ignoring a `conv`, `conv_lhs`, `conv_rhs`
 #guard_msgs in
 example {n : Nat} (hn : n = 0) : n + 0 = 0 := by
   conv =>
@@ -56,10 +57,10 @@ set_option linter.unusedTactic false in
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
-warning: 'rfl' leaves 1 goal 'Lean.Parser.Tactic.tacticRfl'
+warning: There are 2 unclosed goals before 'rfl' and at least one remaining goal after.
+Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
--- the linter allows `iterate` and `repeat'`, but continues to lint.
 #guard_msgs in
 example (p : Prop) (hp : p) : (0 = 0 ∧ p) ∨ 0 = 0 := by
   iterate left; decide
@@ -71,10 +72,12 @@ example (p : Prop) (hp : p) : (0 = 0 ∧ p) ∨ 0 = 0 := by
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
-warning: 'rfl' leaves 2 goals 'Lean.Parser.Tactic.tacticRfl'
+warning: There are 3 unclosed goals before 'rfl' and at least one remaining goal after.
+Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 ---
-warning: 'trivial' leaves 1 goal 'Lean.Parser.Tactic.tacticTrivial'
+warning: There are 2 unclosed goals before 'trivial' and at least one remaining goal after.
+Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
 #guard_msgs in
