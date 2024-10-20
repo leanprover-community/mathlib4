@@ -200,4 +200,5 @@ theorem isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top (h : Continuous f
     apply isClosed_iff_coe_preimage_of_iSup_eq_top hU
 
 @[deprecated (since := "2024-10-20")]
-alias closedEmbedding_iff_closedEmbedding_of_iSup_eq_top := isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top
+alias closedEmbedding_iff_closedEmbedding_of_iSup_eq_top :=
+ isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top

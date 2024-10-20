@@ -499,7 +499,8 @@ theorem ArzelaAscoli.isCompact_closure_of_isClosedEmbedding [TopologicalSpace ι
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
 
 @[deprecated (since := "2024-10-20")]
-alias ArzelaAscoli.isCompact_closure_of_closedEmbedding := ArzelaAscoli.isCompact_closure_of_isClosedEmbedding
+alias ArzelaAscoli.isCompact_closure_of_closedEmbedding :=
+  ArzelaAscoli.isCompact_closure_of_isClosedEmbedding
 
 /-- A version of the **Arzela-Ascoli theorem**.
 
