@@ -212,19 +212,6 @@ theorem sup'_id_eq_csSup (s : Finset α) (hs) : s.sup' hs id = sSup s := by
 theorem inf'_id_eq_csInf (s : Finset α) (hs) : s.inf' hs id = sInf s :=
   sup'_id_eq_csSup (α := αᵒᵈ) _ hs
 
-lemma _root_.Set.finite_range_iSup_mem {s : Set ι} (hs : s.Finite) (f : ι → α) :
-    Set.Finite (Set.range fun i ↦ ⨆ (_ : i ∈ s), f i) := by
-  classical
-  simp_rw [ciSup_eq_ite]
-  refine ((hs.image f).union (Set.finite_singleton (sSup (∅ : Set α)))).subset ?_
-  intro
-  simp only [dite_eq_ite, Set.mem_range, Set.union_singleton, Set.mem_insert_iff,
-    forall_exists_index]
-  rintro x rfl
-  split_ifs with hx
-  · exact Or.inr ⟨x, hx, rfl⟩
-  · simp
-
 variable [Fintype ι] [Nonempty ι]
 
 lemma sup'_univ_eq_ciSup (f : ι → α) : univ.sup' univ_nonempty f = ⨆ i, f i := by
