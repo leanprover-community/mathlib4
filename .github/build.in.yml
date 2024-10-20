@@ -1,4 +1,8 @@
-# This is the master file for autogenerating `.github/workflows/{bors, build_fork, build }.yml`.
+### NB: This is the master file for autogenerating
+### NB: `.github/workflows/{bors, build_fork, build}.yml`.
+### NB: If you need to edit any of those files, you should edit this file instead,
+### NB: and regenerate those files by manually running
+### NB: .github/workflows/mk_build_yml.sh
 
 jobs:
   # Cancels previous runs of jobs in this file
@@ -129,8 +133,8 @@ jobs:
         run: |
           rm -rf .lake/build/lib/Mathlib/
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
-          lake exe cache get Mathlib.Init
-          lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
+          lake exe cache get #Mathlib.Init
+          #lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
@@ -274,7 +278,7 @@ jobs:
       # Output is posted to the zulip topic
       # https://leanprover.zulipchat.com/#narrow/stream/345428-mathlib-reviewers/topic/lean4checker
 
-      - name: Post comments for lean-pr-testing branch
+      - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
         if: always()
         env:
           TOKEN: ${{ secrets.LEAN_PR_TESTING }}
@@ -287,7 +291,8 @@ jobs:
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
         run: |
-          scripts/lean-pr-testing-comments.sh
+          scripts/lean-pr-testing-comments.sh lean
+          scripts/lean-pr-testing-comments.sh batteries
 
   final:
     name: Post-CI jobJOB_NAME
