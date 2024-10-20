@@ -9,6 +9,7 @@ import Lean.Elab.Command
 #  The "multiGoal" linter
 
 The "multiGoal" linter emits a warning where there is more than a single goal in scope.
+There is an exception: a tactic that closes *all* remaining goals is allowed.
 
 There are a few tactics that are intended to work specifically in such a situation and the linter
 ignores them. Otherwise, whenever a tactic leaves multiple goals, the linter will emit a warning,
@@ -43,12 +44,17 @@ register_option linter.style.multiGoal : Bool := {
 
 namespace Style.multiGoal
 
-/-- These are the `SyntaxNodeKind`s of tactics that we allow to have "inactive" goals.
+/-- The `SyntaxNodeKind`s in `exclusions` correspond to tactics that the linter allows,
+even though there are multiple active goals.
 Reasons for admitting a kind in `exclusions` include
+* the tactic focuses on one goal, e.g. `·`, `focus`, `on_goal i =>`, ...;
 * the tactic is reordering the goals, e.g. `swap`, `rotate_left`, ...;
 * the tactic is structuring a proof, e.g. `skip`, `<;>`, ...;
 * the tactic is creating new goals, e.g. `constructor`, `cases`, `induction`, ....
+
 Tactic combinators like `repeat` or `try` are a mix of both.
+
+There is some overlap in scope between `ignoreBranch` and `exclusions`.
 -/
 abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofList [
     -- structuring a proof
@@ -93,7 +99,14 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofList [
     `tacticSleep_heartbeats_
   ]
 
-/-- these are `SyntaxNodeKind`s that block the linter. -/
+/-- The `SyntaxNodeKind`s in `ignoreBranch` correspond to tactics that disable the linter from
+their first application until the corresponding proof branch is closed.
+Reasons for ignoring these tactics include
+* the linter gets confused by the proof management, e.g. `conv`;
+* the tactics are *intended* to act on multiple goals, e.g. `repeat`, `any_goals`, `all_goals`, ...
+
+There is some overlap in scope between `exclusions` and `ignoreBranch`.
+-/
 abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofList [
     ``Lean.Parser.Tactic.Conv.conv,
     `Mathlib.Tactic.Conv.convLHS,
@@ -106,14 +119,15 @@ abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofList [
     ``Lean.Parser.Tactic.focus
   ]
 
-/-- `getManyGoals` returns the syntax nodes where the tactic leaves at least one goal that
-was not present before it ran,
-unless its `SyntaxNodeKind` is either in `exclusions` or in `ignoreBranch`.
+/-- `getManyGoals t` returns the syntax nodes of the `InfoTree` `t` corresponding to tactic calls
+which
+* leave at least one goal that was not present before it ran;
+* are not excluded through `exclusions` or `ignoreBranch`.
 -/
 partial
 def getManyGoals : InfoTree → Array (Syntax × Nat)
   | .node info args =>
-    let kargs := (args.map getManyGoals).foldl (· ++ ·) #[]
+    let kargs := (args.map getManyGoals).toArray.flatten
     if let .ofTacticInfo info := info then
       if ignoreBranch.contains info.stx.getKind then #[] else
       if let .original .. := info.stx.getHeadInfo then
