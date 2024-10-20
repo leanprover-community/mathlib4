@@ -232,7 +232,7 @@ variable [CommRing α]
 `g` over a subset `t` times the product of `f` over the complement of `t` times `(-1) ^ #t`. -/
 lemma prod_sub [DecidableEq ι] (f g : ι → α) (s : Finset ι) :
     ∏ i ∈ s, (f i - g i) = ∑ t ∈ s.powerset, (-1) ^ #t * (∏ i ∈ s \ t, f i) * ∏ i ∈ t, g i := by
-  simp [sub_eq_neg_add, prod_add, ← prod_const, ← prod_mul_distrib]
+  simp [sub_eq_neg_add, prod_add, ← prod_const, ← prod_mul_distrib, mul_right_comm]
 
 /-- `∏ i, (f i - g i) = (∏ i, f i) - ∑ i, g i * (∏ j < i, f j - g j) * (∏ j > i, f j)`. -/
 lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
