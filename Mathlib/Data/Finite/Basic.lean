@@ -53,7 +53,7 @@ instance prop (p : Prop) : Finite p :=
 end Finite
 
 instance Quot.finite {α : Sort*} [Finite α] (r : α → α → Prop) : Finite (Quot r) :=
-  Finite.of_surjective _ Quot.surjective_mk
+  Finite.of_surjective _ Quot.mk_surjective
 
 instance Quotient.finite {α : Sort*} [Finite α] (s : Setoid α) : Finite (Quotient s) :=
   Quot.finite _

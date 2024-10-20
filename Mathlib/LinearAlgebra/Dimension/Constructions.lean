@@ -73,7 +73,7 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
     (by simpa [Function.comp_def, hf] using hs)).cardinal_le_rank
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
-  (mkQ p).rank_le_of_surjective Quot.surjective_mk
+  (mkQ p).rank_le_of_surjective Quot.mk_surjective
 
 theorem rank_quotient_eq_of_le_torsion {R M} [CommRing R] [AddCommGroup M] [Module R M]
     {M' : Submodule R M} (hN : M' ≤ torsion R M) : Module.rank R (M ⧸ M') = Module.rank R M :=
@@ -377,7 +377,7 @@ theorem Submodule.finrank_le [Module.Finite R M] (s : Submodule R M) :
 /-- The dimension of a quotient is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :
     finrank R (M ⧸ s) ≤ finrank R M :=
-  toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective Quot.surjective_mk)
+  toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective Quot.mk_surjective)
     (rank_lt_aleph0 _ _)
 
 /-- Pushforwards of finite submodules have a smaller finrank. -/

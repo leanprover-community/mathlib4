@@ -790,11 +790,11 @@ theorem Fintype.card_compl_eq_card_compl [Finite α] (p q : α → Prop) [Fintyp
 
 theorem Fintype.card_quotient_le [Fintype α] (s : Setoid α)
     [DecidableRel ((· ≈ ·) : α → α → Prop)] : Fintype.card (Quotient s) ≤ Fintype.card α :=
-  Fintype.card_le_of_surjective _ Quotient.surjective_mk'
+  Fintype.card_le_of_surjective _ Quotient.mk'_surjective
 
 theorem Fintype.card_quotient_lt [Fintype α] {s : Setoid α} [DecidableRel ((· ≈ ·) : α → α → Prop)]
     {x y : α} (h1 : x ≠ y) (h2 : x ≈ y) : Fintype.card (Quotient s) < Fintype.card α :=
-  Fintype.card_lt_of_surjective_not_injective _ Quotient.surjective_mk' fun w =>
+  Fintype.card_lt_of_surjective_not_injective _ Quotient.mk'_surjective fun w =>
     h1 (w <| Quotient.eq.mpr h2)
 
 theorem univ_eq_singleton_of_card_one {α} [Fintype α] (x : α) (h : Fintype.card α = 1) :
@@ -937,7 +937,7 @@ instance [Nonempty α] : Infinite (Multiset α) :=
   Infinite.of_injective (fun n => Multiset.replicate n x) (Multiset.replicate_left_injective _)
 
 instance [Nonempty α] : Infinite (List α) :=
-  Infinite.of_surjective ((↑) : List α → Multiset α) Quot.surjective_mk
+  Infinite.of_surjective ((↑) : List α → Multiset α) Quot.mk_surjective
 
 instance String.infinite : Infinite String :=
   Infinite.of_injective (String.mk) <| by

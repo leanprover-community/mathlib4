@@ -503,7 +503,7 @@ instance : TopologicalSpace (ConnectedComponents α) :=
   inferInstanceAs (TopologicalSpace (Quotient _))
 
 theorem surjective_coe : Surjective (mk : α → ConnectedComponents α) :=
-  Quot.surjective_mk
+  Quot.mk_surjective
 
 theorem quotientMap_coe : QuotientMap (mk : α → ConnectedComponents α) :=
   quotientMap_quot_mk

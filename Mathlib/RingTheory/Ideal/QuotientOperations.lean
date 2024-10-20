@@ -374,7 +374,7 @@ theorem Quotient.mk_algebraMap (I : Ideal A) (x : R₁) :
 
 /-- The canonical morphism `A →ₐ[R₁] I.quotient` is surjective. -/
 theorem Quotient.mkₐ_surjective (I : Ideal A) : Function.Surjective (Quotient.mkₐ R₁ I) :=
-  Quot.surjective_mk
+  Quot.mk_surjective
 
 /-- The kernel of `A →ₐ[R₁] I.quotient` is `I`. -/
 @[simp]
