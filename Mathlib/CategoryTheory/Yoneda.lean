@@ -755,25 +755,19 @@ namespace Functor.FullyFaithful
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-/-- Natural version of `FullyFaithful.homEquiv`. -/
+/-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 def homNatIso {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFaithful) (X : C) :
     F.op ⋙ yoneda.obj (F.obj X) ⋙ uliftFunctor.{v₁} ≅ yoneda.obj X ⋙ uliftFunctor.{v₂} :=
   NatIso.ofComponents
-    (fun Y => Equiv.toIso (Equiv.ulift.trans <| hF.homEquiv.symm.trans Equiv.ulift.symm)) (by
-    intros Y Z f
-    ext ⟨x⟩
-    have : hF.preimage (F.map f.unop ≫ x) = f.unop ≫ hF.preimage x := hF.map_injective (by simp)
-    simp [Equiv.ulift, this])
+    (fun Y => Equiv.toIso (Equiv.ulift.trans <| hF.homEquiv.symm.trans Equiv.ulift.symm))
+    (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
-/-- Natural version of `FullyFaithful.homEquiv`. -/
+/-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 def homNatIsoMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D} (hF : F.FullyFaithful)
     (X : C) : F.op ⋙ yoneda.obj (F.obj X) ≅ yoneda.obj X ⋙ uliftFunctor.{v₂} :=
   NatIso.ofComponents
-    (fun Y => Equiv.toIso (hF.homEquiv.symm.trans Equiv.ulift.symm)) (by
-    intros Y Z f
-    ext x
-    have : hF.preimage (F.map f.unop ≫ x) = f.unop ≫ hF.preimage x := hF.map_injective (by simp)
-    simp [Equiv.ulift, this])
+    (fun Y => Equiv.toIso (hF.homEquiv.symm.trans Equiv.ulift.symm))
+    (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
 end Functor.FullyFaithful
 
