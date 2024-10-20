@@ -3,6 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Category.Grp.Adjunctions
+import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Sites.Sheafification
@@ -39,9 +41,6 @@ Given a Mayer-Vietoris square `S` and a presheaf `P` on `C`,
 we introduce a sheaf condition `S.SheafCondition P` and show
 that it is indeed satisfied by sheaves.
 
-## TODO
-* provide constructors for `MayerVietorisSquare`
-
 ## References
 * https://stacks.math.columbia.edu/tag/08GL
 
@@ -52,10 +51,29 @@ namespace CategoryTheory
 
 open Limits Opposite
 
+variable {C : Type u} [Category.{v} C]
+  {J : GrothendieckTopology C} [HasWeakSheafify J (Type v)]
+
+@[simp]
+lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
+    (F : Sheaf J (Type v)) (sq : Square C) :
+    (sq.op.map ((yoneda ⋙ presheafToSheaf J _).op ⋙ yoneda.obj F)).IsPullback ↔
+      (sq.op.map F.val).IsPullback := by
+  refine Square.IsPullback.iff_of_equiv _ _
+    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
+    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
+    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
+    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv) ?_ ?_ ?_ ?_
+  all_goals
+    ext x
+    dsimp
+    rw [yonedaEquiv_naturality]
+    erw [Adjunction.homEquiv_naturality_left]
+    rfl
+
 namespace GrothendieckTopology
 
-variable {C : Type u} [Category.{v} C]
-  (J : GrothendieckTopology C) [HasWeakSheafify J (Type v)]
+variable (J)
 
 /-- A Mayer-Vietoris square in a category `C` equipped with a Grothendieck
 topology consists of a commutative square `f₁₂ ≫ f₂₄ = f₁₃ ≫ f₃₄` in `C`
@@ -69,7 +87,61 @@ structure MayerVietorisSquare extends Square C where
 namespace MayerVietorisSquare
 
 variable {J}
+
+/-- Constructor for Mayer-Vietoris squares taking as an input
+a square `sq` such that `sq.f₂₄` is a mono and that for every
+sheaf of types `F`, the square `sq.op.map F.val` is a pullback square. -/
+@[simps toSquare]
+noncomputable def mk' (sq : Square C) [Mono sq.f₁₃]
+    (H : ∀ (F : Sheaf J (Type v)), (sq.op.map F.val).IsPullback) :
+    J.MayerVietorisSquare where
+  toSquare := sq
+  isPushout := by
+    rw [Square.isPushout_iff_op_map_yoneda_isPullback]
+    intro F
+    exact (F.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff sq).2 (H F)
+
+/-- Constructor for Mayer-Vietoris squares taking as an input
+a pullback square `sq` such that `sq.f₂₄` and `sq.f₃₄` are two monomorphisms
+which form a covering of `S.X₄`. -/
+@[simps! toSquare]
+noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f₃₄]
+    (h₁ : sq.IsPullback) (h₂ : Sieve.ofTwoArrows sq.f₂₄ sq.f₃₄ ∈ J sq.X₄) :
+    J.MayerVietorisSquare :=
+  have : Mono sq.f₁₃ := h₁.mono_f₁₃
+  mk' sq (fun F ↦ by
+    apply Square.IsPullback.mk
+    refine PullbackCone.IsLimit.mk _
+      (fun s ↦ F.2.amalgamateOfArrows _ h₂
+        (fun j ↦ WalkingPair.casesOn j s.fst s.snd)
+        (fun W ↦ by
+          rintro (_|_) (_|_) a b fac
+          · obtain rfl : a = b := by simpa only [← cancel_mono sq.f₂₄] using fac
+            rfl
+          · obtain ⟨φ, rfl, rfl⟩ := PullbackCone.IsLimit.lift' h₁.isLimit _ _ fac
+            simpa using s.condition =≫ F.val.map φ.op
+          · obtain ⟨φ, rfl, rfl⟩ := PullbackCone.IsLimit.lift' h₁.isLimit _ _ fac.symm
+            simpa using s.condition.symm =≫ F.val.map φ.op
+          · obtain rfl : a = b := by simpa only [← cancel_mono sq.f₃₄] using fac
+            rfl)) (fun _ ↦ ?_) (fun _ ↦ ?_) (fun s m hm₁ hm₂ ↦ ?_)
+    · exact F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left
+    · exact F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.right
+    · apply F.2.hom_ext_ofArrows _ h₂
+      rintro (_|_)
+      · rw [F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left]
+        exact hm₁
+      · rw [F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.right]
+        exact hm₂)
+
 variable (S : J.MayerVietorisSquare)
+
+lemma isPushoutAddCommGrpFreeSheaf [HasWeakSheafify J AddCommGrp.{v}] :
+    (S.map (yoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.free ⋙
+      presheafToSheaf J _)).IsPushout :=
+  (S.isPushout.map (Sheaf.composeAndSheafify J AddCommGrp.free)).of_iso
+    ((Square.mapFunctor.mapIso
+      (presheafToSheafCompComposeAndSheafifyIso J AddCommGrp.free)).app
+        (S.map yoneda))
 
 /-- The condition that a Mayer-Vietoris square becomes a pullback square
 when we evaluate a presheaf on it. --/
@@ -126,26 +198,13 @@ lemma map_f₃₄_op_glue : P.map S.f₃₄.op (h.glue u v huv) = v :=
 
 end SheafCondition
 
-private lemma sheafCondition_of_sheaf' (F : Sheaf J (Type v)) :
-    S.SheafCondition F.val := by
-  refine (S.isPushout.op.map (yoneda.obj F)).of_equiv
-    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
-    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
-    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
-    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv) ?_ ?_ ?_ ?_
-  all_goals
-    ext x
-    dsimp
-    rw [yonedaEquiv_naturality]
-    erw [Adjunction.homEquiv_naturality_left]
-    rfl
-
 lemma sheafCondition_of_sheaf {A : Type u'} [Category.{v} A]
     (F : Sheaf J A) : S.SheafCondition F.val := by
   rw [sheafCondition_iff_comp_coyoneda]
   intro X
-  exact S.sheafCondition_of_sheaf'
-    ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (F.cond X.unop)⟩
+  exact (Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff _ S.toSquare).1
+    (S.isPushout.op.map
+      (yoneda.obj ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (F.cond X.unop)⟩))
 
 end MayerVietorisSquare
 

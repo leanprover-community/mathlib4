@@ -108,6 +108,10 @@ lemma snd_mem_orbit_of_mem_orbit {x y : α × β} (h : x ∈ MulAction.orbit M y
   rcases h with ⟨g, rfl⟩
   exact mem_orbit _ _
 
+@[to_additive]
+lemma _root_.Finite.finite_mulAction_orbit [Finite M] (a : α) : Set.Finite (orbit M a) :=
+  Set.finite_range _
+
 variable (M)
 
 @[to_additive]
@@ -328,6 +332,10 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
   simp only [orbit_smul, mem_orbit]
 
 @[to_additive]
+instance instMulAction (H : Subgroup G) : MulAction H α :=
+  inferInstanceAs (MulAction H.toSubmonoid α)
+
+@[to_additive]
 lemma orbit_subgroup_subset (H : Subgroup G) (a : α) : orbit H a ⊆ orbit G a :=
   orbit_submonoid_subset H.toSubmonoid a
 
@@ -345,11 +353,10 @@ lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
     a ∈ MulAction.orbit H b ↔ (a : α) ∈ MulAction.orbit H (b : α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, rfl⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, orbit.coe_smul, ← Submonoid.smul_def]
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, h⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, ← orbit.coe_smul,
-             ← Submonoid.smul_def, ← Subtype.ext_iff] at h
+    dsimp at h
+    erw [← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
 
@@ -366,12 +373,11 @@ def orbitRel : Setoid α where
 variable {G α}
 
 @[to_additive]
-theorem orbitRel_apply {a b : α} : (orbitRel G α).Rel a b ↔ a ∈ orbit G b :=
+theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
   Iff.rfl
 
-@[to_additive]
-lemma orbitRel_r_apply {a b : α} : (orbitRel G _).r a b ↔ a ∈ orbit G b :=
-  Iff.rfl
+@[to_additive (attr := deprecated (since := "2024-10-18"))]
+alias orbitRel_r_apply := orbitRel_apply
 
 @[to_additive]
 lemma orbitRel_subgroup_le (H : Subgroup G) : orbitRel H α ≤ orbitRel G α :=
@@ -461,7 +467,7 @@ theorem pretransitive_iff_subsingleton_quotient :
   · refine Quot.inductionOn a (fun x ↦ ?_)
     exact Quot.inductionOn b (fun y ↦ Quot.sound <| exists_smul_eq G y x)
   · have h : Quotient.mk (orbitRel G α) b = ⟦a⟧ := Subsingleton.elim _ _
-    exact Quotient.eq_rel.mp h
+    exact Quotient.eq''.mp h
 
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
@@ -504,7 +510,7 @@ lemma orbitRel.Quotient.orbit_injective :
     Injective (orbitRel.Quotient.orbit : orbitRel.Quotient G α → Set α) := by
   intro x y h
   simp_rw [orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq', orbit_eq_iff,
-    ← orbitRel_r_apply] at h
+    ← orbitRel_apply] at h
   simpa [← Quotient.eq''] using h
 
 @[to_additive (attr := simp)]
@@ -563,12 +569,11 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Qu
     {a b : x.orbit} : (a : α) ∈ MulAction.orbit H (b : α) ↔ a ∈ MulAction.orbit H b := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, h⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, ← orbit.coe_smul,
-      ← Submonoid.smul_def, ← Subtype.ext_iff] at h
+    dsimp at h
+    erw [← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, rfl⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, orbit.coe_smul, ← Submonoid.smul_def]
     exact MulAction.mem_orbit _ g
 
 @[to_additive]
@@ -590,7 +595,7 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Q
        at hb
     rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
     convert hb using 1
-    rw [orbit_eq_iff, ← orbitRel_r_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
+    rw [orbit_eq_iff, ← orbitRel_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
   rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
 
 variable (G) (α)
@@ -622,6 +627,25 @@ def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out' :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
       Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
+
+/-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
+Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/
+@[to_additive "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
+action. Phrased as a set union. See `AddAction.selfEquivSigmaOrbits` for the type isomorphism."]
+lemma univ_eq_iUnion_orbit :
+    Set.univ (α := α) = ⋃ x : Ω, x.orbit := by
+  ext x
+  simp only [Set.mem_univ, Set.mem_iUnion, true_iff]
+  exact ⟨Quotient.mk'' x, by simp⟩
+
+@[to_additive]
+lemma _root_.Finite.of_finite_mulAction_orbitRel_quotient [Finite G] [Finite Ω] : Finite α := by
+  rw [(selfEquivSigmaOrbits' G _).finite_iff]
+  have : ∀ g : Ω, Finite g.orbit := by
+    intro g
+    induction g using Quotient.inductionOn'
+    simpa [Set.finite_coe_iff] using Finite.finite_mulAction_orbit _
+  exact Finite.instSigma
 
 variable (β)
 
@@ -700,7 +724,7 @@ theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
     inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel G α).Rel a b) :
+noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
     stabilizer G a ≃* stabilizer G b :=
   let g : G := Classical.choose h
   have hg : g • b = a := Classical.choose_spec h
@@ -724,7 +748,7 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     AddAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel G α).Rel a b) :
+noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
     stabilizer G a ≃+ stabilizer G b :=
   let g : G := Classical.choose h
   have hg : g +ᵥ b = a := Classical.choose_spec h
@@ -770,6 +794,7 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
 theorem mem_stabilizer_of_finite_iff_smul_le (s : Set α) (hs : s.Finite) (g : G) :
     g ∈ stabilizer G s ↔ g • s ⊆ s := by
   haveI : Fintype s := Set.Finite.fintype hs
+  haveI : Finite (g • s : Set α) := Finite.Set.finite_image ..
   haveI : Fintype (g • s : Set α) := Fintype.ofFinite _
   rw [mem_stabilizer_iff]
   constructor

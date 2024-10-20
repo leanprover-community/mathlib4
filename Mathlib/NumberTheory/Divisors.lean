@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -82,7 +82,7 @@ theorem cons_self_properDivisors (h : n ≠ 0) :
 @[simp]
 theorem mem_divisors {m : ℕ} : n ∈ divisors m ↔ n ∣ m ∧ m ≠ 0 := by
   rcases eq_or_ne m 0 with (rfl | hm); · simp [divisors]
-  simp only [hm, Ne, not_false_iff, and_true_iff, ← filter_dvd_eq_divisors hm, mem_filter,
+  simp only [hm, Ne, not_false_iff, and_true, ← filter_dvd_eq_divisors hm, mem_filter,
     mem_range, and_iff_right_iff_imp, Nat.lt_succ_iff]
   exact le_of_dvd hm.bot_lt
 
@@ -109,7 +109,7 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
   · rw [Nat.lt_add_one_iff, Nat.lt_add_one_iff]
     rw [mul_eq_zero, not_or] at h
     simp only [succ_le_of_lt (Nat.pos_of_ne_zero h.1), succ_le_of_lt (Nat.pos_of_ne_zero h.2),
-      true_and_iff]
+      true_and]
     exact
       ⟨Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero h.2),
         Nat.le_mul_of_pos_left _ (Nat.pos_of_ne_zero h.1)⟩
@@ -130,7 +130,7 @@ lemma right_ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.d
 theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
   cases' m with m
   · simp
-  · simp only [mem_divisors, Nat.succ_ne_zero m, and_true_iff, Ne, not_false_iff]
+  · simp only [mem_divisors, Nat.succ_ne_zero m, and_true, Ne, not_false_iff]
     exact Nat.le_of_dvd (Nat.succ_pos m)
 
 theorem divisors_subset_of_dvd {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) : divisors m ⊆ divisors n :=
@@ -281,7 +281,7 @@ theorem image_snd_divisorsAntidiagonal : (divisorsAntidiagonal n).image Prod.snd
   exact image_fst_divisorsAntidiagonal
 
 theorem map_div_right_divisors :
-    n.divisors.map ⟨fun d => (d, n / d), fun p₁ p₂ => congr_arg Prod.fst⟩ =
+    n.divisors.map ⟨fun d => (d, n / d), fun _ _ => congr_arg Prod.fst⟩ =
       n.divisorsAntidiagonal := by
   ext ⟨d, nd⟩
   simp only [mem_map, mem_divisorsAntidiagonal, Function.Embedding.coeFn_mk, mem_divisors,
@@ -294,7 +294,7 @@ theorem map_div_right_divisors :
     exact ⟨⟨dvd_mul_right _ _, hn⟩, Nat.mul_div_cancel_left _ (left_ne_zero_of_mul hn).bot_lt⟩
 
 theorem map_div_left_divisors :
-    n.divisors.map ⟨fun d => (n / d, d), fun p₁ p₂ => congr_arg Prod.snd⟩ =
+    n.divisors.map ⟨fun d => (n / d, d), fun _ _ => congr_arg Prod.snd⟩ =
       n.divisorsAntidiagonal := by
   apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
   ext

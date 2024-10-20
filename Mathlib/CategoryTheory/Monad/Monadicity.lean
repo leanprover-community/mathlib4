@@ -79,6 +79,13 @@ def comparisonLeftAdjointObj (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app _)] : D :=
   coequalizer (F.map A.a) (adj.counit.app _)
 
+#adaptation_note
+/--
+The new unused variable linter in
+https://github.com/leanprover/lean4/pull/5338
+flags `{ f : F.obj A.A ⟶ B // _ }`.
+-/
+set_option linter.unusedVariables false in
 /--
 We have a bijection of homsets which will be used to construct the left adjoint to the comparison
 functor.
@@ -187,7 +194,7 @@ def counitCofork (B : D) :
   Cofork.ofπ (adj.counit.app B) (adj.counit_naturality _)
 
 variable {adj} in
-/-- The unit cofork is a colimit provided `G` preserves it.  -/
+/-- The unit cofork is a colimit provided `G` preserves it. -/
 def unitColimitOfPreservesCoequalizer (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))]
     [PreservesColimit (parallelPair (F.map A.a) (adj.counit.app (F.obj A.A))) G] :

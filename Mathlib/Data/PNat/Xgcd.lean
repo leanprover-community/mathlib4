@@ -202,7 +202,7 @@ theorem flip_v : (flip u).v = u.v.swap := by
   · simp only
     ring
 
-/-- Properties of division with remainder for a / b.  -/
+/-- Properties of division with remainder for a / b. -/
 theorem rq_eq : u.r + (u.bp + 1) * u.q = u.ap + 1 :=
   Nat.mod_add_div (u.ap + 1) (u.bp + 1)
 

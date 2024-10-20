@@ -82,13 +82,13 @@ example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂)
 /-- A bicategory structure on the oplax functors between bicategories. -/
 @[simps!]
 instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
-  whiskerLeft {F G H} η _ _ Γ := OplaxTrans.whiskerLeft η Γ
-  whiskerRight {F G H} _ _ Γ η := OplaxTrans.whiskerRight Γ η
-  associator {F G H} I := OplaxTrans.associator
-  leftUnitor {F G} := OplaxTrans.leftUnitor
-  rightUnitor {F G} := OplaxTrans.rightUnitor
-  whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
-
-
+  whiskerLeft {_ _ _} η _ _ Γ := OplaxNatTrans.whiskerLeft η Γ
+  whiskerRight {_ _ _} _ _ Γ η := OplaxNatTrans.whiskerRight Γ η
+  associator {_ _ _} _ := OplaxNatTrans.associator
+  leftUnitor {_ _} := OplaxNatTrans.leftUnitor
+  rightUnitor {_ _} := OplaxNatTrans.rightUnitor
+  whisker_exchange {a b c f g h i} η θ := by
+    ext
+    exact whisker_exchange _ _
 
 end CategoryTheory

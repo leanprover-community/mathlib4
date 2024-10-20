@@ -64,7 +64,7 @@ notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom (MonoidHom.id R) A B
 attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `NonUnitalAlgSemiHomClass F φ A B` asserts `F` is a type of bundled algebra homomorphisms
-from `A` to `B` which are equivariant with respect to `φ`.  -/
+from `A` to `B` which are equivariant with respect to `φ`. -/
 class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Monoid S]
     (φ : outParam (R →* S)) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
@@ -155,11 +155,6 @@ variable (A : Type v) (B : Type w) (C : Type w₁)
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction T C]
-
--- Porting note: Replaced with DFunLike instance
--- /-- see Note [function coercion] -/
--- instance : CoeFun (A →ₙₐ[R] B) fun _ => A → B :=
---   ⟨toFun⟩
 
 instance : DFunLike (A →ₛₙₐ[φ] B) A fun _ => B where
   coe f := f.toFun
@@ -483,7 +478,7 @@ variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S]
     [IsScalarTower R S A] [IsScalarTower R S B]
 
 /-- If a monoid `R` acts on another monoid `S`, then a non-unital algebra homomorphism
-over `S` can be viewed as a non-unital algebra homomorphism over `R`.  -/
+over `S` can be viewed as a non-unital algebra homomorphism over `R`. -/
 def restrictScalars (f : A →ₙₐ[S] B) : A →ₙₐ[R] B :=
   { (f : A →ₙ+* B) with
     map_smul' := fun r x ↦ by have := map_smul f (r • 1) x; simpa }

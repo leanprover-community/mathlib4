@@ -24,7 +24,7 @@ def div2 : ℤ → ℤ
   | (n : ℕ) => n.div2
   | -[n +1] => negSucc n.div2
 
-/-- `bodd n` returns `true` if `n` is odd-/
+/-- `bodd n` returns `true` if `n` is odd -/
 def bodd : ℤ → Bool
   | (n : ℕ) => n.bodd
   | -[n +1] => not (n.bodd)
@@ -81,7 +81,7 @@ def ldiff : ℤ → ℤ → ℤ
   | -[m +1], -[n +1] => Nat.ldiff n m
 
 -- Porting note: I don't know why `Nat.xor'` got the prime, but I'm matching this change here
-/-- `xor` computes the bitwise `xor` of two natural numbers-/
+/-- `xor` computes the bitwise `xor` of two natural numbers -/
 protected def xor : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => (m ^^^ n)
   | (m : ℕ), -[n +1] => -[(m ^^^ n) +1]
@@ -404,7 +404,7 @@ attribute [local simp] Int.zero_div
 theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<< (n : ℤ)) <<< k
   | (m : ℕ), n, (k : ℕ) =>
     congr_arg ofNat (by simp [Nat.shiftLeft_eq, Nat.pow_add, mul_assoc])
-  | -[m+1], n, (k : ℕ) => congr_arg negSucc (Nat.shiftLeft'_add _ _ _ _)
+  | -[_+1], _, (k : ℕ) => congr_arg negSucc (Nat.shiftLeft'_add _ _ _ _)
   | (m : ℕ), n, -[k+1] =>
     subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
       (fun (i n : ℕ) =>

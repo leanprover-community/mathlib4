@@ -21,9 +21,9 @@ The reason is that we did not want to change existing names in the library.
 -/
 
 /-
-`NeZero` should not be needed at this point in the ordered algebraic hierarchy.
+`NeZero` theory should not be needed at this point in the ordered algebraic hierarchy.
 -/
-assert_not_exists NeZero
+assert_not_imported Mathlib.Algebra.NeZero
 
 open Function
 
@@ -54,7 +54,7 @@ instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGr
 @[to_additive OrderedAddCommGroup.toOrderedCancelAddCommMonoid]
 instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCommGroup α] :
     OrderedCancelCommMonoid α :=
-{ ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun a b c ↦ le_of_mul_le_mul_left' }
+{ ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun _ _ _ ↦ le_of_mul_le_mul_left' }
 
 example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· + ·)) (· < ·) :=
   IsRightCancelAdd.covariant_swap_add_lt_of_covariant_swap_add_le α
@@ -109,7 +109,7 @@ class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOr
 
 section LinearOrderedCommGroup
 
-variable [LinearOrderedCommGroup α] {a b c : α}
+variable [LinearOrderedCommGroup α] {a : α}
 
 @[to_additive LinearOrderedAddCommGroup.add_lt_add_left]
 theorem LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=
@@ -170,18 +170,16 @@ end LinearOrderedCommGroup
 section NormNumLemmas
 
 /- The following lemmas are stated so that the `norm_num` tactic can use them with the
-expected signatures.  -/
+expected signatures. -/
 variable [OrderedCommGroup α] {a b : α}
 
 @[to_additive (attr := gcongr) neg_le_neg]
 theorem inv_le_inv' : a ≤ b → b⁻¹ ≤ a⁻¹ :=
-  -- Porting note: explicit type annotation was not needed before.
-  (@inv_le_inv_iff α ..).mpr
+  inv_le_inv_iff.mpr
 
 @[to_additive (attr := gcongr) neg_lt_neg]
 theorem inv_lt_inv' : a < b → b⁻¹ < a⁻¹ :=
-  -- Porting note: explicit type annotation was not needed before.
-  (@inv_lt_inv_iff α ..).mpr
+  inv_lt_inv_iff.mpr
 
 --  The additive version is also a `linarith` lemma.
 @[to_additive]

@@ -169,7 +169,7 @@ def Matroid.ExchangeProperty {α : Type _} (P : Set α → Prop) : Prop :=
   ∀ X Y, P X → P Y → ∀ a ∈ X \ Y, ∃ b ∈ Y \ X, P (insert b (X \ {a}))
 
 /-- A set `X` has the maximal subset property for a predicate `P` if every subset of `X` satisfying
-  `P` is contained in a maximal subset of `X` satisfying `P`.  -/
+  `P` is contained in a maximal subset of `X` satisfying `P`. -/
 def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X : Set α) : Prop :=
   ∀ I, P I → I ⊆ X → ∃ J, I ⊆ J ∧ Maximal (fun K ↦ P K ∧ K ⊆ X) J
 
@@ -186,7 +186,7 @@ def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X :
 @[ext] structure Matroid (α : Type _) where
   /-- `M` has a ground set `E`. -/
   (E : Set α)
-  /-- `M` has a predicate `Base` definining its bases. -/
+  /-- `M` has a predicate `Base` defining its bases. -/
   (Base : Set α → Prop)
   /-- `M` has a predicate `Indep` defining its independent sets. -/
   (Indep : Set α → Prop)
@@ -410,11 +410,11 @@ theorem Base.infinite_of_infinite (hB : M.Base B) (h : B.Infinite) (hB₁ : M.Ba
   by_contra (fun hB_inf ↦ (hB₁.finite_of_finite (not_infinite.mp hB_inf) hB).not_infinite h)
 
 theorem Base.finite [FiniteRk M] (hB : M.Base B) : B.Finite :=
-  let ⟨B₀,hB₀⟩ := ‹FiniteRk M›.exists_finite_base
+  let ⟨_,hB₀⟩ := ‹FiniteRk M›.exists_finite_base
   hB₀.1.finite_of_finite hB₀.2 hB
 
 theorem Base.infinite [InfiniteRk M] (hB : M.Base B) : B.Infinite :=
-  let ⟨B₀,hB₀⟩ := ‹InfiniteRk M›.exists_infinite_base
+  let ⟨_,hB₀⟩ := ‹InfiniteRk M›.exists_infinite_base
   hB₀.1.infinite_of_infinite hB₀.2 hB
 
 theorem empty_not_base [h : RkPos M] : ¬M.Base ∅ :=
@@ -713,7 +713,7 @@ def Basis (M : Matroid α) (I X : Set α) : Prop :=
   Maximal (fun A ↦ M.Indep A ∧ A ⊆ X) I ∧ X ⊆ M.E
 
 /-- A `Basis'` is a basis without the requirement that `X ⊆ M.E`. This is convenient for some
-  API building, especially when working with rank and closure.  -/
+  API building, especially when working with rank and closure. -/
 def Basis' (M : Matroid α) (I X : Set α) : Prop :=
   Maximal (fun A ↦ M.Indep A ∧ A ⊆ X) I
 

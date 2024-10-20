@@ -130,14 +130,14 @@ theorem edist_efixedPoint_le (hf : ContractingWith K f) {x : α} (hx : edist x (
 theorem edist_efixedPoint_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
     edist x (efixedPoint f hf x hx) < ∞ :=
   (hf.edist_efixedPoint_le hx).trans_lt
-    (ENNReal.mul_lt_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero)
+    (ENNReal.mul_ne_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero).lt_top
 
 theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞)
     {y : α} (hy : edist y (f y) ≠ ∞) (h : edist x y ≠ ∞) :
     efixedPoint f hf x hx = efixedPoint f hf y hy := by
   refine (hf.eq_or_edist_eq_top_of_fixedPoints ?_ ?_).elim id fun h' ↦ False.elim (ne_of_lt ?_ h')
     <;> try apply efixedPoint_isFixedPt
-  change edistLtTopSetoid.Rel _ _
+  change edistLtTopSetoid _ _
   trans x
   · apply Setoid.symm' -- Porting note: Originally `symm`
     exact hf.edist_efixedPoint_lt_top hx
@@ -205,7 +205,7 @@ theorem edist_efixedPoint_lt_top' {s : Set α} (hsc : IsComplete s) (hsf : MapsT
     (hf : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
     edist x (efixedPoint' f hsc hsf hf x hxs hx) < ∞ :=
   (hf.edist_efixedPoint_le' hsc hsf hxs hx).trans_lt
-    (ENNReal.mul_lt_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero)
+    (ENNReal.mul_ne_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero).lt_top
 
 /-- If a globally contracting map `f` has two complete forward-invariant sets `s`, `t`,
 and `x ∈ s` is at a finite distance from `y ∈ t`, then the `efixedPoint'` constructed by `x`
@@ -221,7 +221,7 @@ theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} 
     efixedPoint' f hsc hsf hfs x hxs hx = efixedPoint' f htc htf hft y hyt hy := by
   refine (hf.eq_or_edist_eq_top_of_fixedPoints ?_ ?_).elim id fun h' ↦ False.elim (ne_of_lt ?_ h')
     <;> try apply efixedPoint_isFixedPt'
-  change edistLtTopSetoid.Rel _ _
+  change edistLtTopSetoid _ _
   trans x
   · apply Setoid.symm' -- Porting note: Originally `symm`
     apply edist_efixedPoint_lt_top'
@@ -247,7 +247,7 @@ theorem dist_le_mul (x y : α) : dist (f x) (f y) ≤ K * dist x y :=
 
 theorem dist_inequality (x y) : dist x y ≤ (dist x (f x) + dist y (f y)) / (1 - K) :=
   suffices dist x y ≤ dist x (f x) + dist y (f y) + K * dist x y by
-    rwa [le_div_iff hf.one_sub_K_pos, mul_comm, _root_.sub_mul, one_mul, sub_le_iff_le_add]
+    rwa [le_div_iff₀ hf.one_sub_K_pos, mul_comm, _root_.sub_mul, one_mul, sub_le_iff_le_add]
   calc
     dist x y ≤ dist x (f x) + dist y (f y) + dist (f x) (f y) := dist_triangle4_right _ _ _ _
     _ ≤ dist x (f x) + dist y (f y) + K * dist x y := add_le_add_left (hf.dist_le_mul _ _) _

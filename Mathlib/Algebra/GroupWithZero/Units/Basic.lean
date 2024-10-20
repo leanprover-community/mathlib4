@@ -3,7 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Contrapose
@@ -23,7 +23,7 @@ We also define `Ring.inverse`, a globally defined function on any ring
 assert_not_exists Multiplicative
 assert_not_exists DenselyOrdered
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+variable {α M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
 
 namespace Units
@@ -86,6 +86,12 @@ noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.u
 @[simp]
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
   rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
+
+theorem IsUnit.ringInverse {x : M₀} (h : IsUnit x) : IsUnit (inverse x) :=
+  match h with
+  | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (inverse_unit u).symm⟩
+
+theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : inverse x = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
 @[simp]
@@ -152,7 +158,6 @@ theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
 namespace Units
 
 variable [GroupWithZero G₀]
-variable {a b : G₀}
 
 /-- Embed a non-zero element of a `GroupWithZero` into the unit group.
   By combining this function with the operations on units,
@@ -208,7 +213,7 @@ theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀
 end Units
 
 section GroupWithZero
-variable [GroupWithZero G₀] {a b c d : G₀} {m n : ℕ}
+variable [GroupWithZero G₀] {a b c : G₀} {m n : ℕ}
 
 theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
   (Units.mk0 x hx).isUnit
@@ -322,11 +327,11 @@ lemma mul_div_mul_right (a b : G₀) (hc : c ≠ 0) : a * c / (b * c) = a / b :=
 -- TODO: Duplicate of `mul_inv_cancel_right₀`
 lemma mul_mul_div (a : G₀) (hb : b ≠ 0) : a = a * b * (1 / b) := (hb.isUnit.mul_mul_div _).symm
 
-lemma div_div_div_cancel_right (a : G₀) (hc : c ≠ 0) : a / c / (b / c) = a / b := by
+lemma div_div_div_cancel_right₀ (hc : c ≠ 0) (a b : G₀) : a / c / (b / c) = a / b := by
   rw [div_div_eq_mul_div, div_mul_cancel₀ _ hc]
 
-lemma div_mul_div_cancel (a : G₀) (hc : c ≠ 0) : a / c * (c / b) = a / b := by
-  rw [← mul_div_assoc, div_mul_cancel₀ _ hc]
+lemma div_mul_div_cancel₀ (hb : b ≠ 0) : a / b * (b / c) = a / c := by
+  rw [← mul_div_assoc, div_mul_cancel₀ _ hb]
 
 lemma div_mul_cancel_of_imp (h : b = 0 → a = 0) : a / b * b = a := by
   obtain rfl | hb := eq_or_ne b 0 <;>  simp [*]
@@ -458,6 +463,9 @@ lemma div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
 
 lemma div_div_div_cancel_left' (a b : G₀) (hc : c ≠ 0) : c / a / (c / b) = b / a := by
   rw [div_div_div_eq, mul_comm, mul_div_mul_right _ _ hc]
+
+@[simp] lemma div_mul_div_cancel₀' (ha : a ≠ 0) (b c : G₀) : a / b * (c / a) = c / b := by
+  rw [mul_comm, div_mul_div_cancel₀ ha]
 
 end CommGroupWithZero
 

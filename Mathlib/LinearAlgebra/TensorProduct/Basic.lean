@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro
 -/
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.GroupTheory.Congruence.Basic
+import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.SuppressCompilation
 
@@ -449,7 +449,7 @@ variable (R M N)
 
 /-- The simple (aka pure) elements span the tensor product. -/
 theorem span_tmul_eq_top : Submodule.span R { t : M ⊗[R] N | ∃ m n, m ⊗ₜ n = t } = ⊤ := by
-  ext t; simp only [Submodule.mem_top, iff_true_iff]
+  ext t; simp only [Submodule.mem_top, iff_true]
   refine t.induction_on ?_ ?_ ?_
   · exact Submodule.zero_mem _
   · intro m n
@@ -614,6 +614,8 @@ theorem ext_threefold {g h : (M ⊗[R] N) ⊗[R] P →ₗ[R] Q}
   ext x y z
   exact H x y z
 
+@[deprecated (since := "2024-10-18")] alias ext₃ := ext_threefold
+
 -- We'll need this one for checking the pentagon identity!
 theorem ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₗ[R] S}
     (H : ∀ w x y z, g (w ⊗ₜ x ⊗ₜ y ⊗ₜ z) = h (w ⊗ₜ x ⊗ₜ y ⊗ₜ z)) : g = h := by
@@ -669,7 +671,7 @@ theorem comm_tmul (m : M) (n : N) : (TensorProduct.comm R M N) (m ⊗ₜ n) = n 
 theorem comm_symm_tmul (m : M) (n : N) : (TensorProduct.comm R M N).symm (n ⊗ₜ m) = m ⊗ₜ n :=
   rfl
 
-lemma lift_comp_comm_eq  (f : M →ₗ[R] N →ₗ[R] P) :
+lemma lift_comp_comm_eq (f : M →ₗ[R] N →ₗ[R] P) :
     lift f ∘ₗ TensorProduct.comm R N M = lift f.flip :=
   ext rfl
 end
