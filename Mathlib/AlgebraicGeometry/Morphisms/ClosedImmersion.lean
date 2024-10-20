@@ -3,10 +3,12 @@ Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 import Mathlib.AlgebraicGeometry.ResidueField
+import Mathlib.AlgebraicGeometry.Properties
 
 /-!
 
@@ -110,7 +112,7 @@ instance spec_of_quotient_mk {R : CommRingCat.{u}} (I : Ideal R) :
 /-- Any morphism between affine schemes that is surjective on global sections is a
 closed immersion. -/
 lemma of_surjective_of_isAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y)
-    (h : Function.Surjective (Scheme.Γ.map f.op)) : IsClosedImmersion f := by
+    (h : Function.Surjective (f.app ⊤)) : IsClosedImmersion f := by
   rw [MorphismProperty.arrow_mk_iso_iff @IsClosedImmersion (arrowIsoSpecΓOfIsAffine f)]
   apply spec_of_surjective
   exact h
@@ -262,6 +264,17 @@ instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmers
   convert HasAffineProperty.of_isLocalAtTarget @IsClosedImmersion
   refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
 
+instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
+    IsAffineHom f := by
+  wlog hY : IsAffine Y
+  · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsAffineHom) _
+      (iSup_affineOpens_eq_top Y)]
+    intro U
+    have H : IsClosedImmersion (f ∣_ U) := IsLocalAtTarget.restrict h U
+    exact this _ U.2
+  rw [HasAffineProperty.iff_of_isAffine (P := @IsAffineHom)]
+  exact (IsClosedImmersion.isAffine_surjective_of_isAffine f).1
+
 /-- Being a closed immersion is stable under base change. -/
 lemma IsClosedImmersion.stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @IsClosedImmersion := by
@@ -284,5 +297,30 @@ instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersi
   obtain ⟨_, hf⟩ := h.isAffine_surjective_of_isAffine
   rw [HasRingHomProperty.iff_of_isAffine (P := @LocallyOfFiniteType)]
   exact RingHom.FiniteType.of_surjective (Scheme.Hom.app f ⊤) hf
+
+/-- A surjective closed immersion is an isomorphism when the target is reduced. -/
+lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
+    [IsClosedImmersion f] [Surjective f] [IsReduced Y] :
+    IsIso f := by
+  wlog hY : IsAffine Y
+  · refine (IsLocalAtTarget.iff_of_openCover (P := .isomorphisms Scheme) Y.affineCover).mpr ?_
+    intro i
+    apply (config := { allowSynthFailures := true }) this
+    · exact IsClosedImmersion.stableUnderBaseChange.snd _ _ inferInstance
+    · exact IsLocalAtTarget.of_isPullback (.of_hasPullback f (Y.affineCover.map i)) ‹_›
+    · exact isReduced_of_isOpenImmersion (Y.affineCover.map i)
+    · infer_instance
+  apply IsClosedImmersion.isIso_of_injective_of_isAffine
+  obtain ⟨hX, hf⟩ := HasAffineProperty.iff_of_isAffine.mp ‹IsClosedImmersion f›
+  let φ := f.app ⊤
+  suffices RingHom.ker φ ≤ nilradical _ by
+    rwa [nilradical_eq_zero, Submodule.zero_eq_bot, le_bot_iff,
+      ← RingHom.injective_iff_ker_eq_bot] at this
+  refine (PrimeSpectrum.zeroLocus_eq_top_iff _).mp ?_
+  rw [← range_specComap_of_surjective _ _ hf, Set.top_eq_univ, Set.range_iff_surjective]
+  have : Surjective (Spec.map (f.app ⊤)) :=
+    (MorphismProperty.arrow_mk_iso_iff @Surjective (arrowIsoSpecΓOfIsAffine f)).mp
+    (inferInstanceAs (Surjective f))
+  exact this.1
 
 end AlgebraicGeometry
