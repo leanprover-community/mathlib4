@@ -88,6 +88,22 @@ section Preorder
 
 variable [Preorder α]
 
+/-- Changing the `succ` function in a `SuccOrder` to an equal (but not necessarily
+definitionally equal) function still results in a `SuccOrder`. -/
+abbrev SuccOrder.copy (_ : SuccOrder α) (s : α → α) (h : s = succ) : SuccOrder α where
+  succ := s
+  le_succ := h ▸ le_succ
+  max_of_succ_le := h ▸ max_of_succ_le
+  succ_le_of_lt := h ▸ succ_le_of_lt
+
+/-- Changing the `pred` function in a `PredOrder` to an equal (but not necessarily
+definitionally equal) function still results in a `PredOrder`. -/
+abbrev PredOrder.copy (_ : PredOrder α) (p : α → α) (h : p = pred) : PredOrder α where
+  pred := p
+  pred_le := h ▸ pred_le
+  min_of_le_pred := h ▸ min_of_le_pred
+  le_pred_of_lt := h ▸ le_pred_of_lt
+
 /-- A constructor for `SuccOrder α` usable when `α` has no maximal element. -/
 def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :
     SuccOrder α :=
@@ -994,7 +1010,9 @@ section Succ
 
 variable [DecidableEq α] [PartialOrder α] [SuccOrder α]
 
-instance : SuccOrder (WithTop α) where
+/-- If `α` is a `SuccOrder`, `WithTop α` is also one. We provide instances below for
+`NoMaxOrder` and `OrderTop` separately for better definitional equality in the former case. -/
+abbrev succOrder : SuccOrder (WithTop α) where
   succ a :=
     match a with
     | ⊤ => ⊤
@@ -1026,16 +1044,35 @@ instance : SuccOrder (WithTop α) where
       exact (ha.not_lt h).elim
     · exact coe_le_coe.2 (succ_le_of_lt h)
 
-@[simp]
+section
+
+attribute [local instance] succOrder
+
 theorem succ_coe_of_isMax {a : α} (h : IsMax a) : succ ↑a = (⊤ : WithTop α) :=
   dif_pos (succ_eq_iff_isMax.2 h)
 
 theorem succ_coe_of_not_isMax {a : α} (h : ¬ IsMax a) : succ (↑a : WithTop α) = ↑(succ a) :=
   dif_neg (succ_eq_iff_isMax.not.2 h)
 
+end
+
+instance [NoMaxOrder α] : SuccOrder (WithTop α) :=
+  succOrder.copy (WithTop.recTopCoe ⊤ fun a ↦ ↑(succ a)) <| funext fun a ↦ by
+    cases a; exacts [rfl, (succ_coe_of_not_isMax <| not_isMax _).symm]
+
 @[simp]
 theorem succ_coe [NoMaxOrder α] {a : α} : succ (↑a : WithTop α) = ↑(succ a) :=
-  succ_coe_of_not_isMax <| not_isMax a
+  rfl
+
+@[nolint unusedArguments]
+instance [OrderTop α] : SuccOrder (WithTop α) := succOrder
+
+@[simp]
+theorem succ_coe_top [OrderTop α] : succ ↑(⊤ : α) = (⊤ : WithTop α) :=
+  succ_coe_of_isMax isMax_top
+
+theorem succ_coe_of_ne_top [OrderTop α] {a : α} (h : a ≠ ⊤) : succ (↑a : WithTop α) = ↑(succ a) :=
+  succ_coe_of_not_isMax (not_isMax_iff_ne_top.mpr h)
 
 end Succ
 
@@ -1146,7 +1183,9 @@ section Pred
 
 variable [DecidableEq α] [PartialOrder α] [PredOrder α]
 
-instance : PredOrder (WithBot α) where
+/-- If `α` is a `PredOrder`, `WithBot α` is also one. We provide instances below for
+`NoMinOrder` and `OrderBot` separately for better definitional equality in the former case. -/
+abbrev predOrder : PredOrder (WithBot α) where
   pred a :=
     match a with
     | ⊥ => ⊥
@@ -1178,6 +1217,10 @@ instance : PredOrder (WithBot α) where
       exact (hb.not_lt h).elim
     · exact coe_le_coe.2 (le_pred_of_lt h)
 
+section
+
+attribute [local instance] predOrder
+
 @[simp]
 theorem pred_coe_of_isMin {a : α} (h : IsMin a) : pred ↑a = (⊥ : WithBot α) :=
   dif_pos (pred_eq_iff_isMin.2 h)
@@ -1185,8 +1228,25 @@ theorem pred_coe_of_isMin {a : α} (h : IsMin a) : pred ↑a = (⊥ : WithBot α
 theorem pred_coe_of_not_isMin {a : α} (h : ¬ IsMin a) : pred (↑a : WithBot α) = ↑(pred a) :=
   dif_neg (pred_eq_iff_isMin.not.2 h)
 
+end
+
+instance [NoMinOrder α] : PredOrder (WithBot α) :=
+  predOrder.copy (WithTop.recTopCoe ⊥ fun a ↦ ↑(pred a)) <| funext fun a ↦ by
+    cases a; exacts [rfl, (pred_coe_of_not_isMin <| not_isMin _).symm]
+
+@[simp]
 theorem pred_coe [NoMinOrder α] {a : α} : pred (↑a : WithBot α) = ↑(pred a) :=
-  pred_coe_of_not_isMin <| not_isMin a
+  rfl
+
+@[nolint unusedArguments]
+instance [OrderBot α] : PredOrder (WithBot α) := predOrder
+
+@[simp]
+theorem pred_coe_bot [OrderBot α] : pred ↑(⊥ : α) = (⊥ : WithBot α) :=
+  pred_coe_of_isMin isMin_bot
+
+theorem pred_coe_of_ne_bot [OrderBot α] {a : α} (h : a ≠ ⊥) : pred (↑a : WithBot α) = ↑(pred a) :=
+  pred_coe_of_not_isMin (not_isMin_iff_ne_bot.mpr h)
 
 end Pred
 
