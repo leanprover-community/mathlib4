@@ -5,9 +5,9 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Uniform
+import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
-import Mathlib.Topology.MetricSpace.Ultra.Normed
 
 /-!
 # Correspondence between nontrivial nonarchimedean norms and rank one valuations
