@@ -1353,23 +1353,31 @@ theorem exists_upper_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f 
     (h : s.Finite) : ∃ a : α, ∀ b ∈ s, f b ≤ f a :=
   exists_lower_bound_image (β := βᵒᵈ) s f h
 
+lemma map_finite_biSup {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+    [SupBotHomClass F α β] {s : Set ι} (hs : s.Finite) (f : F) (g : ι → α) :
+    f (⨆ x ∈ s, g x) = ⨆ x ∈ s, f (g x) := by
+  have := map_finset_sup f hs.toFinset g
+  simp only [Finset.sup_eq_iSup, hs.mem_toFinset, comp_apply] at this
+  exact this
+
+lemma map_finite_biInf {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+    [InfTopHomClass F α β] {s : Set ι} (hs : s.Finite) (f : F) (g : ι → α) :
+    f (⨅ x ∈ s, g x) = ⨅ x ∈ s, f (g x) := by
+  have := map_finset_inf f hs.toFinset g
+  simp only [Finset.inf_eq_iInf, hs.mem_toFinset, comp_apply] at this
+  exact this
+
 lemma map_finite_iSup {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
     [SupBotHomClass F α β] [Finite ι] (f : F) (g : ι → α) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by
   rw [← iSup_univ (f := g), ← iSup_univ (f := fun i ↦ f (g i))]
-  apply Finite.induction_on (C := fun s ↦ f (⨆ x ∈ s, g x) = ⨆ x ∈ s, f (g x)) finite_univ
-  · rw [iSup_emptyset, iSup_emptyset, map_bot]
-  · intro i s _ _ f_iSup
-    rw [iSup_insert, iSup_insert, map_sup, f_iSup]
+  exact map_finite_biSup finite_univ f g
 
 lemma map_finite_iInf {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
     [InfTopHomClass F α β] [Finite ι] (f : F) (g : ι → α) :
     f (⨅ i, g i) = ⨅ i, f (g i) := by
   rw [← iInf_univ (f := g), ← iInf_univ (f := fun i ↦ f (g i))]
-  apply Finite.induction_on (C := fun s ↦ f (⨅ x ∈ s, g x) = ⨅ x ∈ s, f (g x)) finite_univ
-  · rw [iInf_emptyset, iInf_emptyset, map_top]
-  · intro i s _ _ f_iInf
-    rw [iInf_insert, iInf_insert, map_inf, f_iInf]
+  exact map_finite_biInf finite_univ f g
 
 theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
