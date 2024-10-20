@@ -65,13 +65,13 @@ class HasFibers (p : 𝒳 ⥤ 𝒮) where
   /-- The type of objects of the category `Fib S` for each `S`. -/
   Fib (S : 𝒮) : Type u₃
   /-- `Fib S` is a category. -/
-  isCategory (S : 𝒮) : Category.{v₃} (Fib S)
+  isCategory (S : 𝒮) : Category.{v₃} (Fib S) := by infer_instance
   /-- The functor `ι : Fib S ⥤ 𝒳`. -/
   ι (S : 𝒮) : (Fib S) ⥤ 𝒳
   /-- The composition with the functor `p` is *equal* to the constant functor mapping to `S`. -/
   comp_const (S : 𝒮) : (ι S) ⋙ p = (const (Fib S)).obj S
   /-- The induced functor from `Fib S` to the fiber of `𝒳 ⥤ 𝒮` over `S` is an equivalence. -/
-  equiv (S : 𝒮) : Functor.IsEquivalence (InducedFunctor (comp_const S))
+  equiv (S : 𝒮) : Functor.IsEquivalence (inducedFunctor (comp_const S))
 
 namespace HasFibers
 
@@ -79,14 +79,9 @@ namespace HasFibers
 @[default_instance]
 instance canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
   Fib := Fiber p
-  ι := FiberInclusion p
-  comp_const := FiberInclusion.comp_const p
-  equiv S := by
-    apply isEquivalence_of_iso (F := 𝟭 (Fiber p S))
-    exact {
-      hom := { app := fun x ↦ ⟨𝟙 x.1, IsHomLift.id x.2⟩ }
-      inv := { app := fun x ↦ ⟨𝟙 x.1, IsHomLift.id x.2⟩ }
-    }
+  ι S := @fiberInclusion _ _ _ _ p S
+  comp_const S := fiberInclusion_comp_eq_const
+  equiv S := by exact isEquivalence_of_iso (F := 𝟭 (Fiber p S)) (Iso.refl _)
 
 section
 
@@ -96,20 +91,20 @@ instance : Category (Fib p S) := isCategory S
 
 /-- The induced functor from `Fib p S` to the standard fiber. -/
 @[simps!]
-def InducedFunctor : Fib p S ⥤ Fiber p S :=
-  Fiber.InducedFunctor (comp_const S)
+def inducedFunctor : Fib p S ⥤ Fiber p S :=
+  Fiber.inducedFunctor (comp_const S)
 
-/-- The natural transformation `ι S ≅ (InducedFunctor p S) ⋙ (FiberInclusion p S)` -/
-def InducedFunctor.NatIso : ι S ≅ (InducedFunctor p S) ⋙ (FiberInclusion p S) :=
-  Fiber.InducedFunctor.NatIso (comp_const S)
+/-- The natural transformation `ι S ≅ (inducedFunctor p S) ⋙ (fiberInclusion p S)` -/
+def inducedFunctor.NatIso : ι S ≅ (inducedFunctor p S) ⋙ (fiberInclusion p S) :=
+  Fiber.inducedFunctor.NatIso (comp_const S)
 
-lemma inducedFunctor_comp : ι S = (InducedFunctor p S) ⋙ (FiberInclusion p S) :=
+lemma inducedFunctor_comp : ι S = (inducedFunctor p S) ⋙ (fiberInclusion p S) :=
   Fiber.inducedFunctor_comp (comp_const S)
 
-instance : Functor.IsEquivalence (InducedFunctor p S) := equiv S
+instance : Functor.IsEquivalence (inducedFunctor p S) := equiv S
 
 instance : Functor.Faithful (ι (p:=p) S) :=
-  Functor.Faithful.of_iso (InducedFunctor.NatIso p S).symm
+  Functor.Faithful.of_iso (inducedFunctor.NatIso p S).symm
 
 end
 
@@ -137,7 +132,7 @@ instance homLift {S : 𝒮} {a b : Fib p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S
 `𝒳`. -/
 noncomputable def mapPreimage {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
     [IsHomLift p (𝟙 S) φ] : a ⟶ b :=
-  (InducedFunctor _ S).preimage (mk_map p S φ)
+  (inducedFunctor _ S).preimage (mk_map p S φ)
 
 @[simp]
 lemma mapPreimage_eq {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
@@ -148,25 +143,25 @@ lemma mapPreimage_eq {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).ob
 in `Fib S`. -/
 noncomputable def LiftIso {S : 𝒮} {a b : Fib p S}
     (Φ : (ι S).obj a ≅ (ι S).obj b) (hΦ : IsHomLift p (𝟙 S) Φ.hom) : a ≅ b := by
-  let a' : Fiber p S := (InducedFunctor p S).obj a
-  let b' : Fiber p S := (InducedFunctor p S).obj b
+  let a' : Fiber p S := (inducedFunctor p S).obj a
+  let b' : Fiber p S := (inducedFunctor p S).obj b
   let Φ' : a' ≅ b' := {
     hom := ⟨Φ.hom, hΦ⟩
     inv := ⟨Φ.inv, inferInstance⟩ }
-  exact ((InducedFunctor p S).preimageIso Φ')
+  exact ((inducedFunctor p S).preimageIso Φ')
 
 /-- An object in `Fib p S` isomorphic in `𝒳` to a given object `a : 𝒳` such that `p(a) = S`. -/
 noncomputable def objPreimage {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) : Fib p S :=
-  Functor.objPreimage (InducedFunctor p S) (Fiber.mk_obj ha)
+  Functor.objPreimage (inducedFunctor p S) (Fiber.mk_obj ha)
 
 /-- Applying `ι S` to the preimage of `a : 𝒳` in `Fib p S` yields an object isomorphic to `a`. -/
 noncomputable def objObjPreimageIso {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
     (ι S).obj (objPreimage ha) ≅ a :=
-  (FiberInclusion p S).mapIso (Functor.objObjPreimageIso (InducedFunctor p S) (Fiber.mk_obj ha))
+  (fiberInclusion p S).mapIso (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk_obj ha))
 
 instance objObjPreimageIso.IsHomLift {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
     IsHomLift p (𝟙 S) (objObjPreimageIso ha).hom :=
-  (Functor.objObjPreimageIso (InducedFunctor p S) (Fiber.mk_obj ha)).hom.2
+  (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk_obj ha)).hom.2
 
 section
 
