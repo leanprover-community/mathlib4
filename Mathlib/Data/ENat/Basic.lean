@@ -281,4 +281,21 @@ lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} :
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
     fun h ↦ add_one_nat_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
 
+lemma add_one_pos : 0 < n + 1 := by
+  rw [← Order.one_le_iff_pos]
+  exact le_add_self
+
+lemma add_lt_add_iff_right_of_finite {k : ℕ∞} (ne : k ≠ ⊤) : n + k < m + k ↔ n < m := by
+  cases' k with k
+  · contradiction
+  cases' n with n
+  · simp
+  cases' m with m
+  · norm_cast; simp [coe_lt_top, -Nat.cast_add]
+  · norm_cast; simp_all
+
+lemma add_lt_add_iff_left_of_finite {k : ℕ∞} (ne : k ≠ ⊤) : k + n < k + m ↔ n < m := by
+  repeat rw [add_comm k]
+  exact add_lt_add_iff_right_of_finite ne
+
 end ENat
