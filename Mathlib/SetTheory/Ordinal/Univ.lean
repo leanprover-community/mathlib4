@@ -63,37 +63,14 @@ def liftPrincipalSeg : Ordinal.{v} <i Ordinal.{max u (v + 1)} := by
     rw [← this]
     exact Set.mem_range_self _
 
-@[deprecated liftPrincipalSeg (since := "2024-09-21")]
-alias lift.principalSeg := liftPrincipalSeg
-
 @[simp]
 theorem liftPrincipalSeg_coe :
     (liftPrincipalSeg.{u, v} : Ordinal → Ordinal) = lift.{max u (v + 1)} :=
   rfl
 
-set_option linter.deprecated false in
-@[deprecated liftPrincipalSeg_coe (since := "2024-09-21")]
-theorem lift.principalSeg_coe :
-    (lift.principalSeg.{u, v} : Ordinal → Ordinal) = lift.{max u (v + 1)} :=
-  rfl
-
 @[simp]
 theorem liftPrincipalSeg_top : (liftPrincipalSeg.{v, u}).top = univ.{u, v} :=
   rfl
-
-set_option linter.deprecated false in
-@[deprecated liftPrincipalSeg_top (since := "2024-09-21")]
-theorem lift.principalSeg_top : (lift.principalSeg.{u, v}).top = univ.{v, u} :=
-  rfl
-
-@[deprecated liftPrincipalSeg_top (since := "2024-09-21")]
-theorem liftPrincipalSeg_top' : liftPrincipalSeg.{u + 1, u}.top = @type Ordinal (· < ·) _ := by
-  rw [liftPrincipalSeg_top, type_ordinal]
-
-set_option linter.deprecated false in
-@[deprecated liftPrincipalSeg_top (since := "2024-09-21")]
-theorem lift.principalSeg_top' : lift.principalSeg.{u + 1, u}.top = @type Ordinal (· < ·) _ := by
-  simp only [lift.principalSeg_top, univ_id]
 
 theorem lt_univ {c} : c < univ.{u, v} ↔ c ∈ range lift.{max (u + 1) v, u} :=
   liftPrincipalSeg.mem_range_iff_rel.symm
