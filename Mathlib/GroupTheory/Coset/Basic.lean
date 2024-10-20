@@ -491,7 +491,7 @@ open MulAction in
 lemma orbit_mk_eq_smul (x : α) : MulAction.orbitRel.Quotient.orbit (x : α ⧸ s) = x • s := by
   ext
   rw [orbitRel.Quotient.mem_orbit]
-  simpa [mem_smul_set_iff_inv_smul_mem, ← leftRel_apply] using Setoid.comm' _
+  simpa [mem_smul_set_iff_inv_smul_mem, ← leftRel_apply, Quotient.eq''] using Setoid.comm' _
 
 @[to_additive]
 lemma orbit_eq_out'_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x.out' • s := by
@@ -530,7 +530,7 @@ noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
         show
           (_root_.Subtype fun x : α => Quotient.mk'' x = L) ≃
             _root_.Subtype fun x : α => Quotient.mk'' x = Quotient.mk'' _
-        simp [-Quotient.eq'']
+        simp
         rfl
     _ ≃ Σ _L : α ⧸ s, s := Equiv.sigmaCongrRight fun _ => leftCosetEquivSubgroup _
     _ ≃ (α ⧸ s) × s := Equiv.sigmaEquivProd _ _
