@@ -54,11 +54,15 @@ def IsLittleOTVS (𝕜 : Type*) {α E F : Type*}
   ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F), ∀ ε ≠ (0 : ℝ≥0),
     ∀ᶠ x in l, egauge 𝕜 U (f x) ≤ ε * egauge 𝕜 V (g x)
 
-variable {α β 𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
+variable {α β 𝕜 E F : Type*}
+
+section TopologicalSpace
+
+variable [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 
-theorem _root_.Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Type*} {pE : ιE → Prop} {pF : ιF → Prop}
+theorem _root_.Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Sort*} {pE : ιE → Prop} {pF : ιF → Prop}
     {sE : ιE → Set E} {sF : ιF → Set F} (hE : HasBasis (𝓝 (0 : E)) pE sE)
     (hF : HasBasis (𝓝 (0 : F)) pF sF) {f : α → E} {g : α → F} {l : Filter α} :
     IsLittleOTVS 𝕜 f g l ↔ ∀ i, pE i → ∃ j, pF j ∧ ∀ ε ≠ (0 : ℝ≥0),
@@ -160,8 +164,14 @@ lemma isLittleOTVS_iff_tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜
     gcongr
     apply le_egauge_ball_one
 
-lemma isLittleOTVS_iff_isLittleO {E F : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
-    [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {f : α → E} {g : α → F} {l : Filter α} :
+end TopologicalSpace
+
+section NormedSpace
+
+variable [NontriviallyNormedField 𝕜]
+variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+
+lemma isLittleOTVS_iff_isLittleO {f : α → E} {g : α → F} {l : Filter α} :
     IsLittleOTVS 𝕜 f g l ↔ f =o[l] g := by
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc : 1 < ‖c‖₊⟩
   have hc₀ : 0 < ‖c‖₊ := one_pos.trans hc
@@ -196,5 +206,7 @@ lemma isLittleOTVS_iff_isLittleO {E F : Type*} [SeminormedAddCommGroup E] [Semin
       _ ≤ δ * egauge 𝕜 (ball 0 1) (g x) := by gcongr; apply le_egauge_ball_one
 
 alias ⟨isLittleOTVS.isLittleO, IsLittle.isLittleOTVS⟩ := isLittleOTVS_iff_isLittleO
+
+end NormedSpace
 
 end Asymptotics
