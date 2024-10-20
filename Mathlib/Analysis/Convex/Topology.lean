@@ -118,7 +118,13 @@ end PseudoMetricSpace
 section ContinuousConstSMul
 
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+
+theorem convex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s ∧ IsClosed s) :
+    Convex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
+  ⟨fun _ hx => starConvex_sInter fun _ hs => (h _ hs).1 <| hx _ hs,
+    isClosed_sInter fun _ hs => (h _ hs).2⟩
+
+variable  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 /-- If `s` is a convex set, then `a • interior s + b • closure s ⊆ interior s` for all `0 < a`,
 `0 ≤ b`, `a + b = 1`. See also `Convex.combo_interior_self_subset_interior` for a weaker version. -/
@@ -231,6 +237,11 @@ protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 
   have hf : Continuous (Function.uncurry f) :=
     (continuous_fst.const_smul _).add (continuous_snd.const_smul _)
   show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' => hs hx' hy' ha hb hab
+
+/-- The convex hull of a set `s` is the minimal convex set that includes `s`. -/
+@[simps! isClosed]
+def convexClosedHull : ClosureOperator (Set E) := .ofCompletePred (fun s => Convex 𝕜 s ∧ IsClosed s)
+  fun _ ↦ convex_closed_sInter
 
 open AffineMap
 
