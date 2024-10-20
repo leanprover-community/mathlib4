@@ -5,6 +5,7 @@ Authors: Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
 
 /-!
 # The Grothendieck construction
@@ -116,6 +117,148 @@ factor. -/
 def forget : ∫ F ⥤ 𝒮 where
   obj X := X.base
   map f := f.base
+
+variable {F}
+variable {G : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
+variable (α : F ⟶ G)
+
+/-- A (strong oplax) natural transformation of pseudofunctor induces a functor between the
+Grothendieck constructions. -/
+@[simps]
+def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
+  obj X :=
+  { base := X.base
+    fiber := (α.app ⟨op X.base⟩).obj X.fiber }
+  map {X Y} f :=
+  { base := f.base
+    fiber := (α.app ⟨op X.base⟩).map f.fiber ≫ (α.naturality f.base.op.toLoc).hom.app Y.fiber }
+  map_id X := by
+    ext
+    · simp
+    · simp only [toOplax_toPrelaxFunctor, categoryStruct_Hom, categoryStruct_id_base, op_id,
+        Quiver.Hom.id_toLoc, categoryStruct_id_fiber, eqToHom_refl, comp_id]
+      rw [← NatIso.app_inv, ← Functor.mapIso_inv, Iso.inv_comp_eq]
+      symm
+      rw [← NatIso.app_inv, Iso.comp_inv_eq]
+      simp only [mapIso_hom, Iso.app_hom]
+      haveI := congr_arg (·.app X.fiber) (α.naturality_id ⟨op X.base⟩)
+      simp only [toOplax_toPrelaxFunctor, Cat.comp_obj, Cat.id_obj, toOplax_mapId, Cat.comp_app,
+        Cat.whiskerLeft_app, Cat.whiskerRight_app, NatTrans.naturality_assoc, NatTrans.naturality,
+        Cat.comp_map, Cat.id_map] at this
+      rw [this]
+      simp [F.mapComp_id_right_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso,
+        Strict.rightUnitor_eqToIso]
+  map_comp {X Y Z} f g := by
+    ext
+    · simp
+    · simp only [toOplax_toPrelaxFunctor, categoryStruct_Hom, categoryStruct_comp_base, op_comp,
+        Quiver.Hom.comp_toLoc, categoryStruct_comp_fiber, map_comp, assoc, eqToHom_refl, comp_id]
+      congr 1
+      haveI := congr_arg (·.app Z.fiber) (α.naturality_comp g.base.op.toLoc f.base.op.toLoc)
+      simp only [toOplax_toPrelaxFunctor, Cat.comp_obj, toOplax_mapComp, Cat.comp_app,
+        Cat.whiskerLeft_app, Cat.whiskerRight_app] at this
+      conv_rhs => rw [← NatIso.app_inv]
+      symm
+      slice_lhs 1 3 => rfl
+      rw [Iso.comp_inv_eq]
+      simp only [Iso.app_hom, assoc]
+      rw [this]
+      simp only [Strict.associator_eqToIso, eqToIso_refl, Iso.refl_hom, Cat.id_app, Cat.comp_obj,
+        Iso.refl_inv, comp_id, id_comp]
+      simp only [Category.assoc, ← Functor.map_comp, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
+        Cat.comp_obj, comp_id]
+      haveI := (α.naturality f.base.op.toLoc).hom.naturality g.fiber
+      simp only [toOplax_toPrelaxFunctor, Cat.comp_obj, Cat.comp_map] at this
+      rw [reassoc_of%(this)]
+      simp
+
+variable {α}
+
+@[simp]
+lemma map_obj (X : ∫ F) : (map α).obj X = ⟨X.base, (α.app ⟨op X.base⟩).obj X.fiber⟩ := rfl
+
+@[simp]
+lemma map_map (X Y : ∫ F) (f : X ⟶ Y) : (map α).map f =
+    ⟨f.base, (α.app ⟨op X.base⟩).map f.fiber ≫ (α.naturality f.base.op.toLoc).hom.app Y.fiber⟩ :=
+  rfl
+
+/-- The functor `Pseudofunctor.Grothendieck.map α` lies over `C` -/
+lemma map_comp_forget (α : F ⟶ G) :
+    map α ⋙ forget G = forget F := rfl
+
+/-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
+if possible, and we should prefer `mapCompIso` to `map_comp_eq` whenever we can. -/
+def mapCompForgetIso (α : F ⟶ G) :
+    map α ⋙ forget G ≅ forget F := Iso.refl _
+
+/-- The natural transformation induced by the identity is the identity. -/
+theorem map_id_eq : map (𝟙 F) = 𝟭 (∫ F) := by
+  fapply Functor.ext
+  · intro X; rfl
+  · intro X Y f
+    ext
+    · simp
+    · dsimp
+      simp [F.mapComp_id_left_inv, F.mapComp_id_right_inv, Strict.leftUnitor_eqToIso,
+        Strict.rightUnitor_eqToIso]
+      simp only [← Functor.map_comp_assoc, ← NatTrans.naturality_assoc]
+      simp only [Cat.id_obj, Cat.id_map, id_comp, eqToHom_naturality_assoc, Iso.inv_hom_id_app,
+        comp_id, assoc]
+      slice_rhs 3 5 => equals (F.map _).map ((F.mapId _).hom.app _) =>
+        symm
+        rw [conj_eqToHom_iff_heq']
+        congr
+        simp
+      rw [← NatIso.app_inv, ← Functor.map_comp]
+      simp
+
+/-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
+if possible, and we should prefer `mapCompIso` to `map_comp_eq` whenever we can. -/
+def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) := eqToIso map_id_eq
+
+variable (α)
+
+variable {H : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
+set_option maxHeartbeats 225000 in -- We need this for the second-to last simp to work.
+/-- The construction `map` strictly commutes with functor composition. -/
+theorem map_comp_eq (β : G ⟶ H) : map (α ≫ β) = map α ⋙ map β := by
+  fapply Functor.ext
+  · intro x
+    rfl
+  · intro X Y f
+    ext
+    · simp
+    · dsimp
+      simp only [Strict.associator_eqToIso, eqToIso_refl, Iso.refl_inv, Cat.id_app, Cat.comp_obj,
+        Iso.refl_hom, comp_id, id_comp, map_comp, assoc, H.mapComp_id_left_inv,
+        Strict.leftUnitor_eqToIso, eqToIso.inv, PrelaxFunctor.map₂_eqToHom, eqToHom_naturality,
+        Cat.comp_app, Cat.eqToHom_app, Cat.whiskerRight_app, Cat.id_obj, H.mapComp_id_right_inv,
+        Strict.rightUnitor_eqToIso, Cat.whiskerLeft_app, eqToHom_trans_assoc]
+      rw [eqToHom_map]
+      slice_rhs 6 8 => equals (H.map (𝟙 ⟨op X.base⟩)).map <| (H.map f.base.op.toLoc).map <|
+        (H.mapId ⟨op Y.base⟩).hom.app _ =>
+        symm
+        rw [conj_eqToHom_iff_heq']
+        congr 1 <;> simp only [Cat.id_obj, id_comp]
+        congr
+        simp
+      simp only [← Cat.whiskerLeft_app, ← Cat.whiskerRight_app, ← Cat.whiskerLeft_app,
+        ← NatTrans.comp_app_assoc, ← NatTrans.comp_app, ← Functor.comp_map]
+      slice_rhs 1 2 => erw [← NatTrans.naturality]
+      simp only [← Cat.whiskerLeft_app, ← Cat.whiskerRight_app, ← Cat.whiskerLeft_app,
+        ← NatTrans.comp_app_assoc, ← NatTrans.comp_app, ← Functor.comp_map]
+      simp only [Functor.comp_map, toOplax_toPrelaxFunctor, NatTrans.comp_app, Cat.comp_obj,
+        Cat.whiskerRight_app, Cat.whiskerLeft_app, Cat.id_obj, Cat.comp_map, Cat.id_map,
+        whisker_assoc, Strict.associator_eqToIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, id_comp,
+        Bicategory.whiskerLeft_comp, assoc, comp_whiskerRight, Cat.id_app, map_id,
+        NatTrans.naturality, NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc]
+      congr
+      rw [← NatIso.app_inv, ← Functor.map_comp]
+      simp
+
+/-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
+if possible, and we should prefer `mapCompIso` to `map_comp_eq` whenever we can. -/
+def mapCompIso (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β := eqToIso (map_comp_eq α β)
 
 end Pseudofunctor.Grothendieck
 
