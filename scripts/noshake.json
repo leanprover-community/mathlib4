@@ -219,7 +219,7 @@
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.Positivity.Finset":
-  ["Mathlib.Data.Finset.Density", "Mathlib.Data.Fintype.Card"],
+  ["Mathlib.Algebra.Order.BigOperators.Group.Finset", "Mathlib.Data.Finset.Density"],
   "Mathlib.Tactic.Positivity.Basic":
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
@@ -295,7 +295,6 @@
   ["Mathlib.Algebra.Group.ZeroOne", "Mathlib.Tactic.Bound.Init"],
   "Mathlib.Tactic.Bound":
   ["Mathlib.Algebra.Order.AbsoluteValue",
-   "Mathlib.Algebra.Order.BigOperators.Group.Finset",
    "Mathlib.Algebra.Order.Floor",
    "Mathlib.Analysis.Analytic.Basic",
    "Mathlib.Tactic.Bound.Init"],

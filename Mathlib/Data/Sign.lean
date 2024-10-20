@@ -5,7 +5,9 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Cast
 import Mathlib.Data.Fintype.BigOperators
+
 /-!
 # Sign function
 
