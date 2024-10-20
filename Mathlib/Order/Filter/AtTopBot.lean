@@ -978,12 +978,12 @@ theorem tendsto_comp_val_Iic_atBot [Preorder α] [IsDirected α (· ≥ ·)]
   tendsto_comp_val_Ici_atTop (α := αᵒᵈ)
 
 theorem map_add_atTop_eq_nat (k : ℕ) : map (fun a => a + k) atTop = atTop :=
-  map_atTop_eq_of_gc (· - k) k (fun a b h => Nat.add_le_add_right h k)
-    (fun a b h => (Nat.le_sub_iff_add_le h).symm) fun a h => by rw [Nat.sub_add_cancel h]
+  map_atTop_eq_of_gc (· - k) k (fun _ _ h => Nat.add_le_add_right h k)
+    (fun _ _ h => (Nat.le_sub_iff_add_le h).symm) fun a h => by rw [Nat.sub_add_cancel h]
 
 theorem map_sub_atTop_eq_nat (k : ℕ) : map (fun a => a - k) atTop = atTop :=
-  map_atTop_eq_of_gc (· + k) 0 (fun a b h => Nat.sub_le_sub_right h _)
-    (fun a b _ => Nat.sub_le_iff_le_add) fun b _ => by rw [Nat.add_sub_cancel_right]
+  map_atTop_eq_of_gc (· + k) 0 (fun _ _ h => Nat.sub_le_sub_right h _)
+    (fun _ _ _ => Nat.sub_le_iff_le_add) fun b _ => by rw [Nat.add_sub_cancel_right]
 
 theorem tendsto_add_atTop_nat (k : ℕ) : Tendsto (fun a => a + k) atTop atTop :=
   le_of_eq (map_add_atTop_eq_nat k)
@@ -997,7 +997,7 @@ theorem tendsto_add_atTop_iff_nat {f : ℕ → α} {l : Filter α} (k : ℕ) :
     rw [← tendsto_map'_iff, map_add_atTop_eq_nat]
 
 theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a => a / k) atTop = atTop :=
-  map_atTop_eq_of_gc (fun b => k * b + (k - 1)) 1 (fun a b h => Nat.div_le_div_right h)
+  map_atTop_eq_of_gc (fun b => k * b + (k - 1)) 1 (fun _ _ h => Nat.div_le_div_right h)
     -- Porting note: there was a parse error in `calc`, use `simp` instead
     (fun a b _ => by rw [Nat.div_le_iff_le_mul_add_pred hk])
     fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, add_zero]; omega

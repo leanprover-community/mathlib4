@@ -599,9 +599,7 @@ theorem Basis.det_unitsSMul (e : Basis ι R M) (w : ι → Rˣ) :
       (↑(∏ i, w i)⁻¹ : R) • Matrix.det fun i j => e.repr (f j) i
   simp only [e.repr_unitsSMul]
   convert Matrix.det_mul_column (fun i => (↑(w i)⁻¹ : R)) fun i j => e.repr (f j) i
-  -- porting note (#10745): was `simp [← Finset.prod_inv_distrib]`
-  simp only [← Finset.prod_inv_distrib]
-  norm_cast
+  simp [← Finset.prod_inv_distrib]
 
 /-- The determinant of a basis constructed by `unitsSMul` is the product of the given units. -/
 @[simp]
