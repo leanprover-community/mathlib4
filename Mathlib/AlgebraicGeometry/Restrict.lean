@@ -264,16 +264,10 @@ def Scheme.restrictFunctor : X.Opens ⥤ Over X where
 lemma Scheme.restrictFunctor_map_left {U V : X.Opens} (i : U ⟶ V) :
     (X.restrictFunctor.map i).left = (X.homOfLE i.le) := rfl
 
--- Porting note: the `by ...` used to be automatically done by unification magic
-@[reassoc (attr := simp)]
-theorem Scheme.restrictFunctor_map_ι {U V : X.Opens} (i : U ⟶ V) :
-    (X.restrictFunctor.map i).left ≫ V.ι = U.ι :=
-  IsOpenImmersion.lift_fac _ _ (by simpa using i.le)
-
 @[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_ofRestrict := Scheme.restrictFunctor_map_ι
+alias Scheme.restrictFunctor_map_ofRestrict := Scheme.homOfLE_ι
 @[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_ofRestrict_assoc := Scheme.restrictFunctor_map_ι_assoc
+alias Scheme.restrictFunctor_map_ofRestrict_assoc := Scheme.homOfLE_ι_assoc
 
 @[deprecated (since := "2024-10-20")]
 alias Scheme.restrictFunctor_map_base := Scheme.homOfLE_base
