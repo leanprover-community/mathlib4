@@ -12,6 +12,12 @@ example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4) 2 = 3 := by
 example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4) 3 = 4 := by
   simp
 
+section repr
+
+/-- info: fun₀ | 1 => 3 | 2 => 3 -/
+#guard_msgs in
+#eval (Finsupp.mk {1, 2} (fun | 1 | 2 => 3 | _ => 0) (fun x => by aesop))
+
 /--
 info: fun₀
   | ["there are five words here", "and five more words here"] => 5
@@ -29,6 +35,8 @@ info: fun₀
     | ["just two"] => 2
     | _ => 0)
   (fun x => by aesop)
+
+end repr
 
 section PrettyPrinter
 
