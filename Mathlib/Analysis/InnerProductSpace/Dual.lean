@@ -77,17 +77,10 @@ open SeparationQuotientAddGroup LinearMap
 variable (E)
 
 /-- The null space with respect to the norm. -/
-def nullSubmodule : Submodule 𝕜 E :=
-  { nullSubgroup with
-    smul_mem' := by
-      intro c x hx
-      simp only [Set.mem_setOf_eq] at hx
-      simp only [Set.mem_setOf_eq]
-      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-        AddSubgroup.mem_toAddSubmonoid]
-      have : ‖c • x‖ = 0 := by
-        rw [norm_smul, hx, mul_zero]
-      exact this }
+def nullSubmodule : Submodule 𝕜 E where
+  __ := nullSubgroup
+  smul_mem' c x (hx : ‖x‖ = 0) := show ‖c • x‖ = 0 from
+    le_antisymm (norm_smul_le _ _ |>.trans <| by rw [hx, mul_zero]) (norm_nonneg _)
 
 @[simp]
 lemma mem_nullSubmodule_iff {x : E} : x ∈ nullSubmodule 𝕜 E ↔ ‖x‖ = 0 := Iff.rfl
@@ -113,7 +106,7 @@ lemma norm_sub_eq_norm (x y : E) (h : y ∈ (nullSubmodule 𝕜 E)) : ‖x - y�
     ← @inner_self_eq_norm_mul_norm 𝕜 E _ _ _ x, ← @inner_self_eq_norm_mul_norm 𝕜 E _ _ _ (x-y),
     inner_sub_sub_self, inner_nullSubmodule_right_eq_zero 𝕜 E x y h,
     inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E y x h,
-      inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E y y h]
+    inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E y y h]
   simp only [sub_zero, add_zero]
 
 /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
@@ -131,8 +124,7 @@ lemma nullSubmodule_le_ker_toDualMap' : nullSubmodule 𝕜 E ≤ ker (toDualMap 
   simp only [toDualMap_apply, ContinuousLinearMap.zero_apply]
   exact inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E x y hx
 
-lemma isClosed_nullSubmodule : IsClosed (nullSubmodule 𝕜 E : Set E) := by
-  apply isClosed_nullSubgroup
+lemma isClosed_nullSubmodule : IsClosed (nullSubmodule 𝕜 E : Set E) := isClosed_nullSubgroup
 
 end NullSubmodule
 
