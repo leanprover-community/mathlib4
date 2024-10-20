@@ -738,18 +738,6 @@ theorem toNNReal_mul {p q : ℝ} (hp : 0 ≤ p) :
     Real.toNNReal (p * q) = Real.toNNReal p * Real.toNNReal q :=
   NNReal.eq <| by simp [mul_max_of_nonneg, hp]
 
-lemma toNNReal_iSup {ι : Sort*} {s : ι → ℝ} (hs : ∀ i, 0 ≤ s i) :
-    (⨆ i, s i).toNNReal = ⨆ i, (s i).toNNReal := by
-  refine le_antisymm ?_ ?_
-  · simp [toNNReal_le_iff_le_coe, coe_iSup, hs]
-  · simp [le_toNNReal_iff_coe_le (Real.iSup_nonneg hs), hs]
-
-lemma toNNReal_iInf {ι : Sort*} {s : ι → ℝ} (hs : ∀ i, 0 ≤ s i) :
-    (⨅ i, s i).toNNReal = ⨅ i, (s i).toNNReal := by
-  refine le_antisymm ?_ ?_
-  · simp [Real.toNNReal_le_iff_le_coe, coe_iInf, hs]
-  · simp [le_toNNReal_iff_coe_le (Real.iInf_nonneg hs), coe_iInf, hs]
-
 end ToNNReal
 
 end Real
