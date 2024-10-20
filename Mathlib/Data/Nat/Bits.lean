@@ -73,7 +73,7 @@ lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
     simp only [mul_succ, bodd_add, IH, bodd_succ]
     cases bodd m <;> cases bodd n <;> rfl
 
-lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
+lemma mod_two_of_bodd (n : ℕ) : n % 2 = (bodd n).toNat := by
   have := congr_arg bodd (mod_add_div n 2)
   simp? [not] at this says
     simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and, Bool.bne_false]
@@ -100,7 +100,7 @@ lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
-lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
+lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
     simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
@@ -230,23 +230,23 @@ theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
   cases b <;> dsimp [bit] <;> omega
 
 @[simp]
-theorem bitCasesOn_bit0 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
+theorem bitCasesOn_bit0 {motive : ℕ → Sort u} (H : ∀ b n, motive (bit b n)) (n : ℕ) :
     bitCasesOn (2 * n) H = H false n :=
   bitCasesOn_bit H false n
 
 @[simp]
-theorem bitCasesOn_bit1 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
+theorem bitCasesOn_bit1 {motive : ℕ → Sort u} (H : ∀ b n, motive (bit b n)) (n : ℕ) :
     bitCasesOn (2 * n + 1) H = H true n :=
   bitCasesOn_bit H true n
 
-theorem bit_cases_on_injective {C : ℕ → Sort u} :
-    Function.Injective fun H : ∀ b n, C (bit b n) => fun n => bitCasesOn n H := by
+theorem bit_cases_on_injective {motive : ℕ → Sort u} :
+    Function.Injective fun H : ∀ b n, motive (bit b n) => fun n => bitCasesOn n H := by
   intro H₁ H₂ h
   ext b n
   simpa only [bitCasesOn_bit] using congr_fun h (bit b n)
 
 @[simp]
-theorem bit_cases_on_inj {C : ℕ → Sort u} (H₁ H₂ : ∀ b n, C (bit b n)) :
+theorem bit_cases_on_inj {motive : ℕ → Sort u} (H₁ H₂ : ∀ b n, motive (bit b n)) :
     ((fun n => bitCasesOn n H₁) = fun n => bitCasesOn n H₂) ↔ H₁ = H₂ :=
   bit_cases_on_injective.eq_iff
 
@@ -264,9 +264,8 @@ theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 @[simp]
 theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
-  rw [Nat.bits, binaryRec_eq']
-  · rfl
-  · simpa
+  rw [Nat.bits, Nat.bits, binaryRec_eq']
+  simpa
 
 @[simp]
 theorem bit0_bits (n : ℕ) (hn : n ≠ 0) : (2 * n).bits = false :: n.bits :=

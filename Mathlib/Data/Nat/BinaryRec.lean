@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
+Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Praneeth Kolichala, Yuyang Zhao
+Authors: Mario Carneiro, Praneeth Kolichala, Yuyang Zhao
 -/
 
 /-!
@@ -25,14 +25,19 @@ def bit (b : Bool) : Nat → Nat := cond b (2 * · + 1) (2 * ·)
 
 theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
 
-theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) = n := by
-  simp only [bit, testBit_zero]
+@[simp]
+theorem bit_decide_mod_two_eq_one_shiftRight_one (n : Nat) : bit (n % 2 = 1) (n >>> 1) = n := by
+  simp only [bit, shiftRight_one]
   cases mod_two_eq_zero_or_one n with | _ h => simpa [h] using Nat.div_add_mod n 2
 
+theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) = n := by
+  simp
+
+@[simp]
 theorem bit_eq_zero_iff {n : Nat} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
   cases n <;> cases b <;> simp [bit, Nat.shiftLeft_succ, Nat.two_mul, ← Nat.add_assoc]
 
-/-- For a predicate `motive : Nat → Sort*`, if instances can be
+/-- For a predicate `motive : Nat → Sort u`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for any given natural number. -/
 @[inline]
@@ -43,7 +48,7 @@ def bitCasesOn {motive : Nat → Sort u} (n) (h : ∀ b n, motive (bit b n)) : m
   congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
 
 /-- A recursion principle for `bit` representations of natural numbers.
-  For a predicate `motive : Nat → Sort*`, if instances can be
+  For a predicate `motive : Nat → Sort u`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for all natural numbers. -/
 @[elab_as_elim, specialize]
@@ -66,8 +71,8 @@ def binaryRec' {motive : Nat → Sort u} (z : motive 0)
     else
       have : bit b n = 0 := by
         rw [bit_eq_zero_iff]
-        cases n <;> cases b <;> simp at h <;> simp [h]
-      this ▸ z
+        cases n <;> cases b <;> simp at h ⊢
+      congrArg motive this ▸ z
 
 /-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
 @[elab_as_elim, specialize]
@@ -78,10 +83,10 @@ def binaryRecFromOne {motive : Nat → Sort u} (z₀ : motive 0) (z₁ : motive 
     if h' : n = 0 then
       have : bit b n = bit true 0 := by
         rw [h', h h']
-      this ▸ z₁
+      congrArg motive this ▸ z₁
     else f b n h' ih
 
-theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
+theorem bit_val (b n) : bit b n = 2 * n + b.toNat := by
   cases b <;> rfl
 
 @[simp]
@@ -90,7 +95,8 @@ theorem bit_div_two (b n) : bit b n / 2 = n := by
   · cases b <;> decide
   · decide
 
-theorem bit_mod_two (b n) : bit b n % 2 = if b then 1 else 0 := by
+@[simp]
+theorem bit_mod_two (b n) : bit b n % 2 = b.toNat := by
   cases b <;> simp [bit_val, mul_add_mod]
 
 @[simp]
@@ -98,30 +104,36 @@ theorem bit_shiftRight_one (b n) : bit b n >>> 1 = n :=
   bit_div_two b n
 
 theorem testBit_bit_zero (b n) : (bit b n).testBit 0 = b := by
-  simp [bit_mod_two]
+  simp
 
 @[simp]
-theorem bitCasesOn_bit {C : Nat → Sort u} (h : ∀ b n, C (bit b n)) (b : Bool) (n : Nat) :
+theorem bitCasesOn_bit {motive : Nat → Sort u} (h : ∀ b n, motive (bit b n)) (b : Bool) (n : Nat) :
     bitCasesOn (bit b n) h = h b n := by
-  change congrArg C (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
-  generalize congrArg C (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
+  change congrArg motive (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
+  generalize congrArg motive (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
   rw [testBit_bit_zero, bit_shiftRight_one]
   intros; rfl
 
+unseal binaryRec in
 @[simp]
-theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
-    binaryRec z f 0 = z := by
-  rw [binaryRec]
+theorem binaryRec_zero {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n → motive (bit b n)) :
+    binaryRec z f 0 = z :=
   rfl
 
 @[simp]
-theorem binaryRec_one {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
-    binaryRec (motive := C) z f 1 = f true 0 z := by
+theorem binaryRec_one {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n → motive (bit b n)) :
+    binaryRec (motive := motive) z f 1 = f true 0 z := by
   rw [binaryRec]
   simp only [add_one_ne_zero, ↓reduceDIte, Nat.reduceShiftRight, binaryRec_zero]
   rfl
 
-theorem binaryRec_eq' {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
+/--
+The same as `binaryRec_eq`,
+but that one unfortunately requires `f` to be the identity when appending `false` to `0`.
+Here, we allow you to explicitly say that that case is not happening,
+i.e. supplying `n = 0 → b = true`. -/
+theorem binaryRec_eq' {motive : Nat → Sort u} {z : motive 0}
+    {f : ∀ b n, motive n → motive (bit b n)} (b n)
     (h : f false 0 z = z ∨ (n = 0 → b = true)) :
     binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   by_cases h' : bit b n = 0
@@ -132,12 +144,12 @@ theorem binaryRec_eq' {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
     exact h.symm
   case neg =>
     rw [binaryRec, dif_neg h']
-    change congrArg C (bit b n).bit_testBit_zero_shiftRight_one ▸ f _ _ _ = _
-    generalize congrArg C (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
+    change congrArg motive (bit b n).bit_testBit_zero_shiftRight_one ▸ f _ _ _ = _
+    generalize congrArg motive (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
     rw [testBit_bit_zero, bit_shiftRight_one]
     intros; rfl
 
-theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
+theorem binaryRec_eq {motive : Nat → Sort u} {z : motive 0} {f : ∀ b n, motive n → motive (bit b n)}
     (h : f false 0 z = z) (b n) :
     binaryRec z f (bit b n) = f b n (binaryRec z f n) :=
   binaryRec_eq' b n (.inl h)
