@@ -1193,11 +1193,15 @@ theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
   ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
     bddAbove_of_small _⟩
 
+theorem bddAbove_image {s : Set Ordinal.{u}} (hf : BddAbove s)
+    (f : Ordinal.{u} → Ordinal.{max u v}) : BddAbove (f '' s) := by
+  rw [bddAbove_iff_small] at hf ⊢
+  exact small_lift _
+
 theorem bddAbove_range_comp {ι : Type u} {f : ι → Ordinal.{v}} (hf : BddAbove (range f))
     (g : Ordinal.{v} → Ordinal.{max v w}) : BddAbove (range (g ∘ f)) := by
-  rw [range_comp, bddAbove_iff_small]
-  rw [bddAbove_iff_small] at hf
-  exact small_lift _
+  rw [range_comp]
+  exact bddAbove_image hf g
 
 /-- `le_ciSup` whenever the input type is small in the output universe. This lemma sometimes
 fails to infer `f` in simple cases and needs it to be given explicitly. -/
