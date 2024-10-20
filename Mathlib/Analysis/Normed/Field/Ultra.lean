@@ -66,88 +66,63 @@ lemma isUltrametricDist_of_forall_pow_norm_le_nsmul_pow_max_one_norm
     (h : ∀ (x : R) (m : ℕ), ‖x + 1‖ ^ m ≤ (m + 1) • max 1 (‖x‖ ^ m)) :
     IsUltrametricDist R := by
   -- it will suffice to prove that `‖x + 1‖ ≤ max 1 ‖x‖`
-  refine isUltrametricDist_of_forall_norm_add_one_le_max_norm_one fun x => ?_
-  -- using this more powerful statement in the hypothesis by morally taking the `m`-th root
-  -- to get an inequality of the form `‖x + 1‖ ≤ C • max 1 ‖x‖` where the `C : ℝ` is arbitrary.
-  -- specifically, we will use `C = m + 1` and approach `m = 0` from above.
-  -- we rely on the denseness of the reals to approach `max 1 ‖x‖` from above by values `a : ℝ`
-  -- and show that any such value must be greater than or equal to our LHS: `‖x + 1‖ ≤ a`.
+  refine isUltrametricDist_of_forall_norm_add_one_le_max_norm_one fun x ↦ ?_
+  -- Morally, we want to deduce this from the hypothesis `h` by taking an `m`-th root and showing
+  -- that `(m + 1) ^ (1 / m)` gets arbitrarily close to 1, although we will formalise this in a way
+  -- that avoids explicitly mentioning `m`-th roots.
+  -- First note it suffices to show that `‖x + 1‖ ≤ a` for all `a : ℝ` with `max ‖x‖ 1 < a`.
   rw [max_comm]
-  refine le_of_forall_le_of_dense ?_
-  intro a ha
+  refine le_of_forall_le_of_dense fun a ha ↦ ?_
   have ha' : 1 < a := (max_lt_iff.mp ha).left
   -- `max 1 ‖x‖ < a`, so there must be some `m : ℕ` such that `m + 1 < (a / max 1 ‖x‖) ^ m`
   -- by the virtue of exponential growth being faster than linear growth
-  obtain ⟨m, hm⟩ : ∃ m : ℕ, (a / (max 1 ‖x‖)) ^ m > ((m + 1) : ℕ) := by
+  obtain ⟨m, hm⟩ : ∃ m : ℕ, ((m + 1) : ℕ) < (a / (max 1 ‖x‖)) ^ m := by
     apply_mod_cast Real.exists_natCast_add_one_lt_pow_of_one_lt
     rwa [one_lt_div (by positivity)]
   -- and we rearrange again to get `(m + 1) • max 1 ‖x‖ ^ m < a ^ m`
-  rw [div_pow, gt_iff_lt, lt_div_iff₀ (by positivity), ← nsmul_eq_mul] at hm
+  rw [div_pow, lt_div_iff₀ (by positivity), ← nsmul_eq_mul] at hm
   -- which squeezes down to get our `‖x + 1‖ ≤ a` using our to-be-proven hypothesis of
   -- `‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m`, so we're done
   -- we can distribute powers into the right term of `max`
   have hp : max 1 ‖x‖ ^ m = max 1 (‖x‖ ^ m) := by
-    rcases max_cases 1 ‖x‖ with (⟨hm, hx⟩|⟨hm, hx⟩)
-    · rw [hm, one_pow, eq_comm, max_eq_left_iff]
-      exact (pow_le_pow_left (norm_nonneg _) hx _).trans_eq (one_pow _)
-    · rw [hm, eq_comm, max_eq_right_iff]
-      exact (pow_le_pow_left zero_le_one hx.le _).trans_eq' (one_pow _).symm
+    have : MonotoneOn (fun a : ℝ ↦ a ^ m) (Set.Ici _) := fun a h b _ h' ↦ pow_le_pow_left h h' _
+    rw [this.map_max zero_le_one (norm_nonneg x), one_pow]
   rw [hp] at hm
-  refine le_of_pow_le_pow_left ?_ (zero_lt_one.trans ha').le ((h _ _).trans hm.le)
-  rintro rfl
-  simp at hm
+  refine le_of_pow_le_pow_left (fun h ↦ ?_) (zero_lt_one.trans ha').le ((h _ _).trans hm.le)
+  simp only [h, zero_add, pow_zero, max_self, one_smul, lt_self_iff_false] at hm
 
 /-- To prove that a normed division ring is nonarchimedean, it suffices to prove that the norm
 of the image of any natural is less than or equal to one. -/
 lemma isUltrametricDist_of_forall_norm_natCast_le_one
     (h : ∀ n : ℕ, ‖(n : R)‖ ≤ 1) : IsUltrametricDist R := by
-  -- it will suffice to prove that `‖x + 1‖ ≤ max 1 ‖x‖`
-  -- which we will do by "complicating" the goal:
-  -- proving it for all powers `m`, `‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m`,
-  -- modulo distribution of powers in/out of the `max` term
-  suffices ∀ (x : R) (m : ℕ), ‖x + 1‖ ^ m ≤ (m + 1) • max 1 (‖x‖ ^ m) from
-    isUltrametricDist_of_forall_pow_norm_le_nsmul_pow_max_one_norm this
-  intro x m
+  -- from a previous lemma, suffices to prove that for all `m`, we have
+  -- `‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m`
+  refine isUltrametricDist_of_forall_pow_norm_le_nsmul_pow_max_one_norm (fun x m ↦ ?_)
   -- we first use our hypothesis about the norm of naturals to have that multiplication by
   -- naturals keeps the norm small
   replace h (x : R) (n : ℕ) : ‖n • x‖ ≤ ‖x‖ := by
     rw [nsmul_eq_mul, norm_mul]
-    rcases (norm_nonneg x).eq_or_lt with hx|hx
-    · simp [← hx]
-    · rw [mul_le_iff_le_one_left hx]
-      exact h _
-  -- we distribute the LHS using the binomial theorem  where all terms in the sum
-  -- will be of the form `k • x ^ i` for some binomial coefficient `k : ℕ`
-  -- and the terminal terms with powers `0` and `m` will have the binomial coefficient as `1`
-  have key : ‖x + 1‖ ^ m ≤ ∑ k ∈ Finset.range (m + 1), ‖x‖ ^ k := by
-    -- the nature of the norm means that one of `1` and `‖x‖ ^ m` is the largest of the two,
-    -- so the other terms in the binomial expansion are insignificant,
-    -- since by our hypothesis, we have that `‖k • x ^ i‖ ≤ ‖x ^ i‖`.
-    -- That is, either the power `0` or `m` dominates the other terms.
-    -- if we were over a field, we could use `add_pow`, but we prove in generality
-    -- since in any monoid, all `x` commute with `1`, thus we can expand `(x + 1) ^ m` without
-    -- assuming commutativity over the whole ring
-    simp_rw [← norm_pow, (Commute.one_right x).add_pow', one_pow, mul_one,
-      -- and this means we have to now deconstruct the antidiagonal sum
-      Finset.Nat.sum_antidiagonal_eq_sum_range_succ (fun i _ ↦ m.choose i • x ^ i) m]
-    -- and prove the inequality term by term, where the binomial coefficient keeps the norm small
-    exact (norm_sum_le _ _).trans (Finset.sum_le_sum fun _ _ ↦ h _ _)
-  -- we now suffice to show that the sum of powers of norms is less than the
-  -- multiple of the larger of the two
-  refine key.trans ?_
-  -- and the number of terms in the sum is precisely `m + 1`
+    rcases (norm_nonneg x).eq_or_lt with hx | hx
+    · simp only [← hx, mul_zero, le_refl]
+    · simpa only [mul_le_iff_le_one_left hx] using h _
+  -- we expand the LHS using the binomial theorem, and apply the hypothesis to bound each term by
+  -- a power of ‖x‖
+  transitivity ∑ k ∈ Finset.range (m + 1), ‖x‖ ^ k
+  · simpa only [← norm_pow, (Commute.one_right x).add_pow, one_pow, mul_one, nsmul_eq_mul,
+      Nat.cast_comm] using (norm_sum_le _ _).trans (Finset.sum_le_sum fun _ _ ↦ h _ _)
+  -- the nature of the norm means that one of `1` and `‖x‖ ^ m` is the largest of the two, so the
+  -- other terms in the binomial expansion are bounded by the max of these, and the number of terms
+  -- in the sum is precisely `m + 1`
   rw [← Finset.card_range (m + 1), ← Finset.sum_const, Finset.card_range]
   rcases max_cases 1 (‖x‖ ^ m) with (⟨hm, hx⟩|⟨hm, hx⟩) <;> rw [hm] <;>
   -- which we show by comparing the terms in the sum one by one
   refine Finset.sum_le_sum fun i hi ↦ ?_
-  · rcases i with (_|i)
-    · simp
-    refine pow_le_one₀ (norm_nonneg _) ?_
-    rw [← one_pow m] at hx
-    refine le_of_pow_le_pow_left ?_ zero_le_one hx
-    rintro rfl
-    simp at hi
-  · refine pow_le_pow_right₀ ?_ (by simpa [Nat.lt_succ] using hi)
+  · rcases eq_or_ne m 0 with rfl | hm
+    · simp only [pow_zero, le_refl,
+        show i = 0 by simpa only [zero_add, Finset.range_one, Finset.mem_singleton] using hi]
+    · rw [pow_le_one_iff_of_nonneg (norm_nonneg _) hm] at hx
+      exact pow_le_one₀ (norm_nonneg _) hx
+  · refine pow_le_pow_right₀ ?_ (by simpa only [Finset.mem_range, Nat.lt_succ] using hi)
     contrapose! hx
     exact pow_le_one₀ (norm_nonneg _) hx.le
 
