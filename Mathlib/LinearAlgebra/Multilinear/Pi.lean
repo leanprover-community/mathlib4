@@ -93,7 +93,7 @@ end Semiring
 
 section CommSemiring
 
-variable [DecidableEq ι] [Fintype ι] [CommSemiring R]
+variable [CommSemiring R]
 variable [∀ i k, AddCommMonoid (M i k)] [∀ p, AddCommMonoid (N p)]
 variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 
