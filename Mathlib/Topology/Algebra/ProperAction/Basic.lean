@@ -127,9 +127,7 @@ then this topological space is T2."]
 theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G] : T2Space X := by
   let f := fun x : X ↦ ((1 : G), x)
   have proper_f : IsProperMap f := by
-    apply isProperMap_of_closedEmbedding
-    rw [closedEmbedding_iff]
-    constructor
+    refine IsClosedEmbedding.isProperMap ⟨?_, ?_⟩
     · let g := fun gx : G × X ↦ gx.2
       have : Function.LeftInverse g f := fun x ↦ by simp
       exact this.embedding (by fun_prop) (by fun_prop)
@@ -150,18 +148,20 @@ then `H` also acts properly on `X`. -/
 @[to_additive "If two groups `H` and `G` act on a topological space `X` such that `G` acts properly
 and there exists a group homomorphims `H → G` which is a closed embedding compatible with the
 actions, then `H` also acts properly on `X`."]
-theorem properSMul_of_closedEmbedding {H : Type*} [Group H] [MulAction H X] [TopologicalSpace H]
-    [ProperSMul G X] (f : H →* G) (f_clemb : ClosedEmbedding f)
+theorem properSMul_of_isClosedEmbedding {H : Type*} [Group H] [MulAction H X] [TopologicalSpace H]
+    [ProperSMul G X] (f : H →* G) (f_clemb : IsClosedEmbedding f)
     (f_compat : ∀ (h : H) (x : X), f h • x = h • x) : ProperSMul H X where
   isProperMap_smul_pair := by
-    have := isProperMap_of_closedEmbedding f_clemb
-    have h : IsProperMap (Prod.map f (fun x : X ↦ x)) := this.prodMap isProperMap_id
+    have h : IsProperMap (Prod.map f (fun x : X ↦ x)) := f_clemb.isProperMap.prodMap isProperMap_id
     have : (fun hx : H × X ↦ (hx.1 • hx.2, hx.2)) = (fun hx ↦ (f hx.1 • hx.2, hx.2)) := by
       simp [f_compat]
     rw [this]
     exact h.comp <| ProperSMul.isProperMap_smul_pair
 
+@[deprecated (since := "2024-10-20")]
+alias properSMul_of_closedEmbedding := properSMul_of_isClosedEmbedding
+
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`. -/
 @[to_additive "If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`."]
 instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X :=
-  properSMul_of_closedEmbedding H.subtype H_closed.closedEmbedding_subtype_val fun _ _ ↦ rfl
+  properSMul_of_isClosedEmbedding H.subtype H_closed.isClosedEmbedding_subtypeVal fun _ _ ↦ rfl

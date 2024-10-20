@@ -86,15 +86,18 @@ theorem isSeparatedMap_iff_isClosed_diagonal {f : X → Y} :
   · obtain ⟨s₁, h₁, s₂, h₂, s_sub⟩ := mem_prod_iff.mp ht
     exact ⟨s₁, h₁, s₂, h₂, disjoint_left.2 fun x h₁ h₂ ↦ @t_sub ⟨(x, x), rfl⟩ (s_sub ⟨h₁, h₂⟩) rfl⟩
 
-theorem isSeparatedMap_iff_closedEmbedding {f : X → Y} :
-    IsSeparatedMap f ↔ ClosedEmbedding (toPullbackDiag f) := by
+theorem isSeparatedMap_iff_isClosedEmbedding {f : X → Y} :
+    IsSeparatedMap f ↔ IsClosedEmbedding (toPullbackDiag f) := by
   rw [isSeparatedMap_iff_isClosed_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨embedding_toPullbackDiag f, h⟩, fun h ↦ h.isClosed_range⟩
 
+@[deprecated (since := "2024-10-20")]
+alias isSeparatedMap_iff_closedEmbedding := isSeparatedMap_iff_isClosedEmbedding
+
 theorem isSeparatedMap_iff_isClosedMap {f : X → Y} :
     IsSeparatedMap f ↔ IsClosedMap (toPullbackDiag f) :=
-  isSeparatedMap_iff_closedEmbedding.trans
-    ⟨ClosedEmbedding.isClosedMap, closedEmbedding_of_continuous_injective_closed
+  isSeparatedMap_iff_isClosedEmbedding.trans
+    ⟨IsClosedEmbedding.isClosedMap, .of_continuous_injective_isClosedMap
       (embedding_toPullbackDiag f).continuous (injective_toPullbackDiag f)⟩
 
 open Function.Pullback in
