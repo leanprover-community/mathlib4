@@ -182,7 +182,7 @@ theorem ClosedEmbedding.quasiSober {f : α → β} (hf : ClosedEmbedding f) [Qua
     apply image_injective.mpr hf.inj
     rw [← hx.def, ← hf.closure_image_eq, image_singleton]
 
-theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSober β] :
+theorem IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbedding f) [QuasiSober β] :
     QuasiSober α where
   sober hS hS' := by
     have hS'' := hS.image f hf.continuous.continuousOn
@@ -205,6 +205,9 @@ theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSo
     exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono inter_subset_left h,
       fun h => subset_closure ⟨h, hy⟩⟩
 
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.quasiSober := IsOpenEmbedding.quasiSober
+
 /-- A space is quasi sober if it can be covered by open quasi sober subsets. -/
 theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s : Set α))
     [hS' : ∀ s : S, QuasiSober s] (hS'' : ⋃₀ S = ⊤) : QuasiSober α := by
@@ -216,7 +219,7 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
     trivial
   haveI : QuasiSober U := hS' ⟨U, hU⟩
   have H : IsPreirreducible ((↑) ⁻¹' t : Set U) :=
-    h.2.preimage (hS ⟨U, hU⟩).openEmbedding_subtype_val
+    h.2.preimage (hS ⟨U, hU⟩).isOpenEmbedding_subtypeVal
   replace H : IsIrreducible ((↑) ⁻¹' t : Set U) := ⟨⟨⟨x, hU'⟩, by simpa using hx⟩, H⟩
   use H.genericPoint
   have := continuous_subtype_val.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem

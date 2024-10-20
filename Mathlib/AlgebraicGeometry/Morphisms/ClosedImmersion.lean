@@ -3,11 +3,10 @@ Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.ResidueField
-import Mathlib.RingTheory.RingHom.Surjective
 
 /-!
 
@@ -132,6 +131,10 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
     have h := (f ≫ g).stalkMap_surjective x
     simp_rw [Scheme.stalkMap_comp] at h
     exact Function.Surjective.of_comp h
+
+instance Spec_map_residue {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.residue x)) :=
+  IsClosedImmersion.spec_of_surjective (X.residue x)
+    Ideal.Quotient.mk_surjective
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
@@ -268,5 +271,18 @@ lemma IsClosedImmersion.stableUnderBaseChange :
   intro X Y S _ _ f g ⟨ha, hsurj⟩
   exact ⟨inferInstance, RingHom.surjective_stableUnderBaseChange.pullback_fst_app_top _
     RingHom.surjective_respectsIso f _ hsurj⟩
+
+/-- Closed immersions are locally of finite type. -/
+instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
+    LocallyOfFiniteType f := by
+  wlog hY : IsAffine Y
+  · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
+      (iSup_affineOpens_eq_top Y)]
+    intro U
+    have H : IsClosedImmersion (f ∣_ U) := IsLocalAtTarget.restrict h U
+    exact this _ U.2
+  obtain ⟨_, hf⟩ := h.isAffine_surjective_of_isAffine
+  rw [HasRingHomProperty.iff_of_isAffine (P := @LocallyOfFiniteType)]
+  exact RingHom.FiniteType.of_surjective (Scheme.Hom.app f ⊤) hf
 
 end AlgebraicGeometry

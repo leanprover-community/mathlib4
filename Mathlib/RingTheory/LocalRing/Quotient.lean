@@ -67,7 +67,7 @@ theorem finrank_quotient_map :
   · let b := Module.Free.chooseBasis (R ⧸ p) (S ⧸ pS)
     choose b' hb' using fun i ↦ Ideal.Quotient.mk_surjective (b i)
     conv_rhs => rw [finrank_eq_card_chooseBasisIndex]
-    apply finrank_le_of_span_eq_top
+    refine finrank_le_of_span_eq_top (v := b') ?_
     apply (quotient_span_eq_top_iff_span_eq_top _).mp
     rw [← Set.range_comp, show Ideal.Quotient.mk pS ∘ b' = ⇑b from funext hb']
     exact b.span_eq

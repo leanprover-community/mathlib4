@@ -223,10 +223,10 @@ instance [CompleteSpace E] : CompleteSpace v.FunSpace := by
   refine (completeSpace_iff_isComplete_range isUniformInducing_toContinuousMap).2
       (IsClosed.isComplete ?_)
   rw [range_toContinuousMap, setOf_and]
-  refine (isClosed_eq (ContinuousMap.continuous_eval_const _) continuous_const).inter ?_
+  refine (isClosed_eq (continuous_eval_const _) continuous_const).inter ?_
   have : IsClosed {f : Icc v.tMin v.tMax → E | LipschitzWith v.C f} :=
     isClosed_setOf_lipschitzWith v.C
-  exact this.preimage ContinuousMap.continuous_coe
+  exact this.preimage continuous_coeFun
 
 theorem intervalIntegrable_vComp (t₁ t₂ : ℝ) : IntervalIntegrable f.vComp volume t₁ t₂ :=
   f.continuous_vComp.intervalIntegrable _ _

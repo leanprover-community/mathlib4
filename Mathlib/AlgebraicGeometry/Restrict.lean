@@ -41,7 +41,7 @@ namespace Scheme.Opens
 /-- Open subset of a scheme as a scheme. -/
 @[coe]
 def toScheme {X : Scheme.{u}} (U : X.Opens) : Scheme.{u} :=
-  X.restrict U.openEmbedding
+  X.restrict U.isOpenEmbedding
 
 instance : CoeOut X.Opens Scheme := ⟨toScheme⟩
 
@@ -85,7 +85,7 @@ lemma range_ι : Set.range U.ι.base = U :=
   Subtype.range_val
 
 lemma ι_image_top : U.ι ''ᵁ ⊤ = U :=
-  U.openEmbedding_obj_top
+  U.isOpenEmbedding_obj_top
 
 lemma ι_image_le (W : U.toScheme.Opens) : U.ι ''ᵁ W ≤ U := by
   simp_rw [← U.ι_image_top]
@@ -105,7 +105,7 @@ lemma ι_app_self : U.ι.app U = X.presheaf.map (eqToHom (X := U.ι ''ᵁ _) (by
 
 lemma eq_presheaf_map_eqToHom {V W : Opens U} (e : U.ι ''ᵁ V = U.ι ''ᵁ W) :
     X.presheaf.map (eqToHom e).op =
-      U.toScheme.presheaf.map (eqToHom <| U.openEmbedding.functor_obj_injective e).op := rfl
+      U.toScheme.presheaf.map (eqToHom <| U.isOpenEmbedding.functor_obj_injective e).op := rfl
 
 @[simp]
 lemma nonempty_iff : Nonempty U.toScheme ↔ (U : Set X).Nonempty := by
@@ -121,20 +121,20 @@ def topIso : Γ(U, ⊤) ≅ Γ(X, U) :=
 /-- The stalks of an open subscheme are isomorphic to the stalks of the original scheme. -/
 def stalkIso {X : Scheme.{u}} (U : X.Opens) (x : U) :
     U.toScheme.presheaf.stalk x ≅ X.presheaf.stalk x.1 :=
-  X.restrictStalkIso (Opens.openEmbedding _) _
+  X.restrictStalkIso (Opens.isOpenEmbedding _) _
 
 @[reassoc (attr := simp)]
 lemma germ_stalkIso_hom {X : Scheme.{u}} (U : X.Opens)
     {V : U.toScheme.Opens} (x : U) (hx : x ∈ V) :
       U.toScheme.presheaf.germ V x hx ≫ (U.stalkIso x).hom =
         X.presheaf.germ (U.ι ''ᵁ V) x.1 ⟨x, hx, rfl⟩ :=
-    PresheafedSpace.restrictStalkIso_hom_eq_germ _ U.openEmbedding _ _ _
+    PresheafedSpace.restrictStalkIso_hom_eq_germ _ U.isOpenEmbedding _ _ _
 
 @[reassoc]
 lemma germ_stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (V : U.toScheme.Opens) (x : U)
     (hx : x ∈ V) : X.presheaf.germ (U.ι ''ᵁ V) x ⟨x, hx, rfl⟩ ≫
       (U.stalkIso x).inv = U.toScheme.presheaf.germ V x hx :=
-  PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace U.openEmbedding V x hx
+  PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace U.isOpenEmbedding V x hx
 
 end Scheme.Opens
 
@@ -168,9 +168,9 @@ instance ΓRestrictAlgebra {X : Scheme.{u}} (U : X.Opens) :
 
 lemma Scheme.map_basicOpen' (r : Γ(U, ⊤)) :
     U.ι ''ᵁ (U.toScheme.basicOpen r) = X.basicOpen
-      (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
-  refine (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans ?_
-  rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op]
+      (X.presheaf.map (eqToHom U.isOpenEmbedding_obj_top.symm).op r) := by
+  refine (Scheme.image_basicOpen (X.ofRestrict U.isOpenEmbedding) r).trans ?_
+  rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.isOpenEmbedding_obj_top).op]
   rw [← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
     op_id, CategoryTheory.Functor.map_id]
   congr
@@ -231,7 +231,7 @@ theorem Scheme.restrictFunctor_map_ofRestrict {U V : X.Opens} (i : U ⟶ V) :
 theorem Scheme.restrictFunctor_map_base {U V : X.Opens} (i : U ⟶ V) :
     (X.restrictFunctor.map i).left.base = (Opens.toTopCat _).map i := by
   ext a; refine Subtype.ext ?_ -- Porting note: `ext` did not pick up `Subtype.ext`
-  exact (congr_arg (fun f : X.restrict U.openEmbedding ⟶ X => f.base a)
+  exact (congr_arg (fun f : X.restrict U.isOpenEmbedding ⟶ X => f.base a)
         (X.restrictFunctor_map_ofRestrict i))
 
 theorem Scheme.restrictFunctor_map_app_aux {U V : X.Opens} (i : U ⟶ V) (W : Opens V) :
@@ -258,7 +258,7 @@ isomorphic to the structure sheaf. -/
 @[simps!]
 def Scheme.restrictFunctorΓ : X.restrictFunctor.op ⋙ (Over.forget X).op ⋙ Scheme.Γ ≅ X.presheaf :=
   NatIso.ofComponents
-    (fun U => X.presheaf.mapIso ((eqToIso (unop U).openEmbedding_obj_top).symm.op : _))
+    (fun U => X.presheaf.mapIso ((eqToIso (unop U).isOpenEmbedding_obj_top).symm.op : _))
     (by
       intro U V i
       dsimp
@@ -348,7 +348,7 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Open
   rw [← Category.id_comp f]
   refine
     (IsPullback.of_horiz_isIso ⟨?_⟩).paste_horiz
-      (IsPullback.of_hasPullback f (Y.ofRestrict U.openEmbedding)).flip
+      (IsPullback.of_hasPullback f (Y.ofRestrict U.isOpenEmbedding)).flip
   -- Porting note: changed `rw` to `erw`
   erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
 
@@ -434,8 +434,8 @@ theorem morphismRestrict_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V
 
 theorem Γ_map_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
     Scheme.Γ.map (f ∣_ U).op =
-      Y.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op ≫
-        f.app U ≫ X.presheaf.map (eqToHom (f ⁻¹ᵁ U).openEmbedding_obj_top).op := by
+      Y.presheaf.map (eqToHom U.isOpenEmbedding_obj_top.symm).op ≫
+        f.app U ≫ X.presheaf.map (eqToHom (f ⁻¹ᵁ U).isOpenEmbedding_obj_top).op := by
   rw [Scheme.Γ_map_op, morphismRestrict_app f U ⊤, f.naturality_assoc, ← X.presheaf.map_comp]
   rfl
 
@@ -486,7 +486,7 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
 /-- Restricting a morphism twice onto a basic open set is isomorphic to one restriction. -/
 def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (r : Γ(Y, U)) :
     Arrow.mk (f ∣_ U ∣_
-          U.toScheme.basicOpen (Y.presheaf.map (eqToHom U.openEmbedding_obj_top).op r)) ≅
+          U.toScheme.basicOpen (Y.presheaf.map (eqToHom U.isOpenEmbedding_obj_top).op r)) ≅
       Arrow.mk (f ∣_ Y.basicOpen r) := by
   refine morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ ?_
   have e := Scheme.preimage_basicOpen U.ι r

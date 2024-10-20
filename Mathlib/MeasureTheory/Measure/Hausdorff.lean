@@ -1026,18 +1026,8 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
   -- break lineMap into pieces
   suffices
       μH[1] ((‖v‖ • ·) '' (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v) '' s)) = ‖v‖₊ • μH[1] s by
-    -- Porting note: proof was shorter, could need some golf
-    simp only [hausdorffMeasure_real, nnreal_smul_coe_apply]
-    convert this
-    · simp only [image_smul, LinearMap.toSpanSingleton_apply, Set.image_image]
-      ext e
-      simp only [mem_image]
-      refine ⟨fun ⟨x, h⟩ => ⟨x, ?_⟩, fun ⟨x, h⟩ => ⟨x, ?_⟩⟩
-      · rw [smul_comm (norm _), smul_comm (norm _), inv_smul_smul₀ hn]
-        exact h
-      · rw [smul_comm (norm _), smul_comm (norm _), inv_smul_smul₀ hn] at h
-        exact h
-    · exact hausdorffMeasure_real.symm
+    simpa only [Set.image_image, smul_comm (norm _), inv_smul_smul₀ hn,
+      LinearMap.toSpanSingleton_apply] using this
   have iso_smul : Isometry (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v)) := by
     refine AddMonoidHomClass.isometry_of_norm _ fun x => (norm_smul _ _).trans ?_
     rw [norm_smul, norm_inv, norm_norm, inv_mul_cancel₀ hn, mul_one, LinearMap.id_apply]

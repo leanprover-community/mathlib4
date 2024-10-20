@@ -3,6 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
+import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 
 /-!
@@ -327,6 +328,14 @@ theorem memℒp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : 
 alias memℒp_limitProcess_of_snorm_bdd := memℒp_limitProcess_of_eLpNorm_bdd
 
 end Limit
+
+variable {α : Type*}
+
+/-- The exterior σ-algebras of finite sets of `α` form a cofiltration indexed by `Finset α`. -/
+def cylinderEventsCompl : Filtration (Finset α)ᵒᵈ (.pi (π := fun _ : α ↦ Ω)) where
+  seq Λ := cylinderEvents (↑(OrderDual.ofDual Λ))ᶜ
+  mono' _ _ h := cylinderEvents_mono <| Set.compl_subset_compl_of_subset h
+  le' _  := cylinderEvents_le_pi
 
 end Filtration
 
