@@ -46,15 +46,14 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
   congr_fun lift_umax _
 
 theorem lift_lt_univ (o : Ordinal) : lift.{max (u + 1) v, u} o < univ.{u, v} := by
-  suffices ∀ o, lift.{max (u + 1) v, u} o ≤ univ.{u, v} by simpa using this (Order.succ o)
-  refine fun o ↦ inductionOn o fun α r _ ↦ ?_
-  rw [← lift_type_ordinal, ← lift_umax'.{u + 1, v}, lift_type_le.{u, u + 1, max (u + 1) v}]
+  refine inductionOn o fun α r _ ↦ ?_
+  rw [← lift_type_ordinal, ← lift_umax'.{u + 1, v}, lift_type_lt.{u, u + 1, max (u + 1) v}]
   exact ⟨typein r⟩
 
 /-- `Ordinal.lift` as a `PrincipalSeg` with top `univ`. -/
 def liftPrincipalSeg : Ordinal.{v} <i Ordinal.{max u (v + 1)} := by
-  refine ⟨liftInitialSeg.{max u (v + 1)}, univ.{v}, fun o ↦ ⟨fun ⟨a, ha⟩ ↦ ?_, fun h ↦ ?_⟩⟩
-  · rw [← ha]
+  refine ⟨liftInitialSeg.{max u (v + 1)}, univ.{v}, fun o ↦ ⟨?_, fun h ↦ ?_⟩⟩
+  · rintro ⟨o, rfl⟩
     exact lift_lt_univ _
   · rw [← lift_id o, ← o.type_lt, ← lift_type_ordinal, ← lift_umax'.{v + 1, u}, lift_type_lt] at h
     obtain ⟨f⟩ := h

@@ -55,8 +55,8 @@ alias lift_lt_univ' := lift_lt_univ
 
 /-- `Cardinal.lift` as a `PrincipalSeg` with top `univ`. -/
 def liftPrincipalSeg : Cardinal.{v} <i Cardinal.{max u (v + 1)} := by
-  refine ⟨liftInitialSeg.{max u (v + 1)}, univ.{v}, fun c ↦ ⟨fun ⟨a, ha⟩ ↦ ?_, fun h ↦ ?_⟩⟩
-  · rw [← ha]
+  refine ⟨liftInitialSeg.{max u (v + 1)}, univ.{v}, fun c ↦ ⟨?_, fun h ↦ ?_⟩⟩
+  · rintro ⟨c, rfl⟩
     exact lift_lt_univ _
   · rw [← c.mk_out]
     obtain (f | f) := InitialSeg.principalSeg_sum_initialSeg (α := c.out) (β := Cardinal.{v})
