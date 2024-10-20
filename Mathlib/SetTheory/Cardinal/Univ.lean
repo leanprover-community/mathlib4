@@ -70,8 +70,12 @@ def liftPrincipalSeg : Cardinal.{v} <i Cardinal.{max u (v + 1)} := by
       cases this.not_lt h
 
 @[simp]
-theorem coe_liftPrincipalSeg :
+theorem liftPrincipalSeg_coe :
     (liftPrincipalSeg.{u, v} : Cardinal → Cardinal) = lift.{max u (v + 1)} :=
+  rfl
+
+@[simp]
+theorem liftPrincipalSeg_top : (liftPrincipalSeg.{v, u}).top = univ.{u, v} :=
   rfl
 
 theorem lt_univ {c} : c < univ.{u, v} ↔ c ∈ range lift.{max (u + 1) v, u} :=
