@@ -344,13 +344,13 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
       rw [IH (fun i hi => hs i (mem_insert_of_mem hi))
           (h.mono (by simp only [coe_insert, Set.subset_insert]))]
 
-/-- **Popoviciu's inequality on variance**
+/-- **The Bhatia-Davis inequality on variance**
 
 The variance of a random variable `X` satisfying `a ≤ X ≤ b`  almost everywhere is at most
-`((b - a) / 2) ^ 2`. -/
-lemma variance_square_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
+`(b - 𝔼 X) * (𝔼 X - a)`. -/
+lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hX : AEMeasurable X μ) :
-    variance X μ ≤ ((b - a) / 2) ^ 2 :=
+    variance X μ ≤ (b - μ[X]) * (μ[X] - a) := by
   have ha : ∀ᵐ ω ∂μ, a ≤ X ω := h.mono fun ω h => h.1
   have hb : ∀ᵐ ω ∂μ, X ω ≤ b := h.mono fun ω h => h.2
   let c := max |a| |b|
@@ -383,6 +383,16 @@ lemma variance_square_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
       simp only [Pi.pow_apply, sub_nonneg, le_neg_add_iff_add_le] at h0
       linarith
     _ = (b - μ[X]) * (μ[X] - a) := by ring
+
+/-- **Popoviciu's inequality on variance**
+
+The variance of a random variable `X` satisfying `a ≤ X ≤ b`  almost everywhere is at most
+`((b - a) / 2) ^ 2`. -/
+lemma variance_square_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hX : AEMeasurable X μ) :
+    variance X μ ≤ ((b - a) / 2) ^ 2 :=
+  calc
+    _ ≤ (b - μ[X]) * (μ[X] - a) := variance_le_sub_mul_sub h hX
     _ ≤ ((b - a) / 2) ^ 2 := by
       set y : ℝ := μ[X] - ((b + a) / 2)
       rw [(by ring : μ[X] = y + ((b + a) / 2))]
