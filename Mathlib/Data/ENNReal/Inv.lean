@@ -752,11 +752,11 @@ lemma inv_iSup (f : ι → ℝ≥0∞) : (⨆ i, f i)⁻¹ = ⨅ i, (f i)⁻¹ :
 lemma inv_sInf (s : Set ℝ≥0∞) : (sInf s)⁻¹ = ⨆ a ∈ s, a⁻¹ := by simp [sInf_eq_iInf, inv_iInf]
 lemma inv_sSup (s : Set ℝ≥0∞) : (sSup s)⁻¹ = ⨅ a ∈ s, a⁻¹ := by simp [sSup_eq_iSup, inv_iSup]
 
-lemma iInf_mul_le_mul_iInf {ι : Type*} (u v : ι → ℝ≥0∞) :
+lemma le_iInf_mul {ι : Type*} (u v : ι → ℝ≥0∞) :
     (⨅ i, u i) * ⨅ i, v i ≤ ⨅ i, u i * v i :=
   le_iInf fun i ↦ mul_le_mul' (iInf_le u i) (iInf_le v i)
 
-lemma iSup_mul_le_mul_iSup {ι : Type*} {u v : ι → ℝ≥0∞} :
+lemma iSup_mul_le {ι : Type*} {u v : ι → ℝ≥0∞} :
     ⨆ i, u i * v i ≤ (⨆ i, u i) * ⨆ i, v i :=
   iSup_le fun i ↦ mul_le_mul' (le_iSup u i) (le_iSup v i)
 
