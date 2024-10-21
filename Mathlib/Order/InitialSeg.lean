@@ -289,6 +289,10 @@ theorem mem_range_of_rel [IsTrans β s] (f : r ≺i s) {a : α} {b : β} (h : s 
 @[deprecated mem_range_of_rel (since := "2024-09-21")]
 alias init := mem_range_of_rel
 
+theorem surjOn (f : r ≺i s) : Set.SurjOn f Set.univ { b | s b f.top } := by
+  intro b h
+  simpa using mem_range_of_rel_top _ h
+
 /-- A principal segment is in particular an initial segment. -/
 instance hasCoeInitialSeg [IsTrans β s] : Coe (r ≺i s) (r ≼i s) :=
   ⟨fun f => ⟨f.toRelEmbedding, fun _ _ => f.mem_range_of_rel⟩⟩
@@ -382,6 +386,9 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
     cases f
     cases g
     have := RelEmbedding.coe_fn_injective ef; congr ⟩
+
+protected theorem eq [IsWellOrder β s] (f g : r ≺i s) (a) : f a = g a := by
+  rw [Subsingleton.elim f g]
 
 theorem top_eq [IsWellOrder γ t] (e : r ≃r s) (f : r ≺i t) (g : s ≺i t) : f.top = g.top := by
   rw [Subsingleton.elim f (PrincipalSeg.equivLT e g)]; rfl
