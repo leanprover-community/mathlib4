@@ -969,6 +969,7 @@ import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
