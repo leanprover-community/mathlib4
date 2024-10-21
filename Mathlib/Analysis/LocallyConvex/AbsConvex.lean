@@ -152,12 +152,18 @@ theorem absConvex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex �
     AbsConvex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
   ⟨AbsConvex.sInter (fun s hs => (h s hs).1), isClosed_sInter fun _ hs => (h _ hs).2⟩
 
+variable (𝕜)
+
 /-- The absolutely convex closed hull of a set `s` is the minimal absolutely convex closed set that
 includes `s`. -/
 @[simps! isClosed]
 def absConvexClosedHull : ClosureOperator (Set E) :=
   .ofCompletePred (fun s => AbsConvex 𝕜 s ∧ IsClosed s) fun _ ↦ absConvex_closed_sInter
 
+variable {𝕜}
+
+theorem absConvexClosedHull_min {s t : Set E} : s ⊆ t → AbsConvex 𝕜 t ∧ IsClosed t →
+    absConvexClosedHull 𝕜 s ⊆ t := (absConvexClosedHull 𝕜).closure_min
 
 end AbsolutelyConvex
 
