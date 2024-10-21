@@ -718,9 +718,9 @@ theorem image_mul_left_Ioo {a : α} (h : 0 < a) (b c : α) :
 theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
   ext x
   exact
-    ⟨fun h => inv_inv x ▸ (inv_lt_inv ha h.1).2 h.2, fun h =>
+    ⟨fun h => inv_inv x ▸ (inv_lt_inv₀ ha h.1).2 h.2, fun h =>
       ⟨inv_pos.2 <| (inv_pos.2 ha).trans h,
-        inv_inv a ▸ (inv_lt_inv ((inv_pos.2 ha).trans h)
+        inv_inv a ▸ (inv_lt_inv₀ ((inv_pos.2 ha).trans h)
           (inv_pos.2 ha)).2 h⟩⟩
 
 theorem inv_Ioi {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by

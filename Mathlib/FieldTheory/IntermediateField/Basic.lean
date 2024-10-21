@@ -249,7 +249,7 @@ theorem toSubalgebra_toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x �
 
 @[simp]
 theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
-    (S.toSubalgebra.toIntermediateField fun x => S.inv_mem) = S := by
+    (S.toSubalgebra.toIntermediateField fun _ => S.inv_mem) = S := by
   ext
   rfl
 
@@ -494,14 +494,17 @@ theorem coe_inclusion {E F : IntermediateField K L} (hEF : E ≤ F) (e : E) :
 
 variable {S}
 
-theorem toSubalgebra_injective :
-    Function.Injective (IntermediateField.toSubalgebra : IntermediateField K L → _) := by
-  intro S S' h
+theorem toSubalgebra_injective : Function.Injective (toSubalgebra : IntermediateField K L → _) := by
+  intro _ _ h
   ext
-  rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
+  simp_rw [← mem_toSubalgebra, h]
 
-theorem map_injective (f : L →ₐ[K] L') :
-    Function.Injective (map f) := by
+theorem toSubfield_injective : Function.Injective (toSubfield : IntermediateField K L → _) := by
+  intro _ _ h
+  ext
+  simp_rw [← mem_toSubfield, h]
+
+theorem map_injective (f : L →ₐ[K] L') : Function.Injective (map f) := by
   intro _ _ h
   rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,
     (Subalgebra.map_injective f.injective).eq_iff, toSubalgebra_injective.eq_iff] at h
@@ -630,8 +633,8 @@ def extendScalars.orderIso :
     { E : Subfield L // F ≤ E } ≃o IntermediateField F L where
   toFun E := extendScalars E.2
   invFun E := ⟨E.toSubfield, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
-  left_inv E := rfl
-  right_inv E := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _
@@ -682,8 +685,8 @@ into an order isomorphism from
 def extendScalars.orderIso : { E : IntermediateField K L // F ≤ E } ≃o IntermediateField F L where
   toFun E := extendScalars E.2
   invFun E := ⟨E.restrictScalars K, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
-  left_inv E := rfl
-  right_inv E := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _

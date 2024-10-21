@@ -429,7 +429,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
     (hx : x ∈ α.ker) (hy : y ∈ K ∙ coroot α) :
     traceForm K H L x y = 0 := by
   rw [← coe_corootSpace_eq_span_singleton, LieSubmodule.mem_coeSubmodule, mem_corootSpace'] at hy
-  induction hy using Submodule.span_induction' with
+  induction hy using Submodule.span_induction with
   | mem z hz =>
     obtain ⟨u, hu, v, -, huv⟩ := hz
     change killingForm K L (x : L) (z : L) = 0

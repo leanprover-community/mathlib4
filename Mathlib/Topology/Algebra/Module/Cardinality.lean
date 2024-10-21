@@ -77,7 +77,7 @@ lemma cardinal_eq_of_mem_nhds_zero
         simp_rw [← inv_pow]
         apply tendsto_pow_atTop_nhds_zero_of_norm_lt_one
         rw [norm_inv]
-        exact inv_lt_one hc
+        exact inv_lt_one_of_one_lt₀ hc
       exact Tendsto.smul_const this x
     rw [zero_smul] at this
     filter_upwards [this hs] with n (hn : (c ^ n)⁻¹ • x ∈ s)

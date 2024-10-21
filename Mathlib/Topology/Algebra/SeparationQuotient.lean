@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.Algebra.Module.Projective
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Maps.OpenQuotient
 
@@ -333,6 +334,12 @@ instance instCommRing [CommRing R] [TopologicalRing R] :
   surjective_mk.commRing mk mk_zero mk_one mk_add mk_mul mk_neg mk_sub mk_smul mk_smul mk_pow
     mk_natCast mk_intCast
 
+/-- `SeparationQuotient.mk` as a `RingHom`. -/
+@[simps]
+def mkRingHom [NonAssocSemiring R] [TopologicalSemiring R] : R →+* SeparationQuotient R where
+  toFun := mk
+  map_one' := mk_one; map_zero' := mk_zero; map_add' := mk_add; map_mul' := mk_mul
+
 end Ring
 
 section DistribSMul
@@ -374,6 +381,21 @@ def mkCLM : M →L[R] SeparationQuotient M where
   map_smul' := mk_smul
 
 end Module
+
+section Algebra
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    [TopologicalSpace A] [TopologicalSemiring A] [ContinuousConstSMul R A]
+
+instance instAlgebra : Algebra R (SeparationQuotient A) where
+  toRingHom := mkRingHom.comp (algebraMap R A)
+  commutes' r := Quotient.ind fun a => congrArg _ <| Algebra.commutes r a
+  smul_def' r := Quotient.ind fun a => congrArg _ <| Algebra.smul_def r a
+
+@[simp]
+theorem mk_algebraMap (r : R) : mk (algebraMap R A r) = algebraMap R (SeparationQuotient A) r :=
+  rfl
+
+end Algebra
 
 section VectorSpace
 
@@ -431,19 +453,22 @@ section VectorSpaceUniform
 variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
     [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul K E]
 
-theorem outCLM_uniformInducing : UniformInducing (outCLM K E) := by
-  rw [← uniformInducing_mk.uniformInducing_comp_iff, mk_comp_outCLM]
-  exact uniformInducing_id
+theorem outCLM_isUniformInducing : IsUniformInducing (outCLM K E) := by
+  rw [← isUniformInducing_mk.isUniformInducing_comp_iff, mk_comp_outCLM]
+  exact .id
+
+@[deprecated (since := "2024-10-05")]
+alias outCLM_uniformInducing := outCLM_isUniformInducing
 
 theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where
   inj := outCLM_injective K E
-  toUniformInducing := outCLM_uniformInducing K E
+  toIsUniformInducing := outCLM_isUniformInducing K E
 
 @[deprecated (since := "2024-10-01")]
 alias outCLM_uniformEmbedding := outCLM_isUniformEmbedding
 
 theorem outCLM_uniformContinuous : UniformContinuous (outCLM K E) :=
-  (outCLM_uniformInducing K E).uniformContinuous
+  (outCLM_isUniformInducing K E).uniformContinuous
 
 end VectorSpaceUniform
 

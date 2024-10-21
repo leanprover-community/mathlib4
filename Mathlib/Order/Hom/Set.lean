@@ -16,13 +16,13 @@ import Mathlib.Order.WellFounded
 
 open OrderDual
 
-variable {F α β γ δ : Type*}
+variable {α β : Type*}
 
 namespace OrderIso
 
 section LE
 
-variable [LE α] [LE β] [LE γ]
+variable [LE α] [LE β]
 
 theorem range_eq (e : α ≃o β) : Set.range e = Set.univ :=
   e.surjective.range_eq
@@ -58,7 +58,7 @@ end LE
 
 open Set
 
-variable [Preorder α] [Preorder β] [Preorder γ]
+variable [Preorder α]
 
 /-- Order isomorphism between two equal sets. -/
 def setCongr (s t : Set α) (h : s = t) :

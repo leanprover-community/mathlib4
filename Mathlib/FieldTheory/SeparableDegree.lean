@@ -564,9 +564,9 @@ theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F 
   obtain ⟨n, y, H, hp⟩ := hM.eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible q hI hD
   have hF := multiplicity_finite_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
   classical
-  have hne := (multiplicity.pos_of_dvd hF hf).ne'
+  have hne := (multiplicity_pos_of_dvd hf).ne'
   refine ⟨_, n, y, hne, H, ?_⟩
-  obtain ⟨c, hf, H⟩ := multiplicity.exists_eq_pow_mul_and_not_dvd hF
+  obtain ⟨c, hf, H⟩ := hF.exists_eq_pow_mul_and_not_dvd
   rw [hf, natSepDegree_mul_of_isCoprime _ c <| IsCoprime.pow_left <|
     (hI.coprime_or_dvd c).resolve_right H, natSepDegree_pow_of_ne_zero _ hne, hD,
     add_right_eq_self, natSepDegree_eq_zero_iff] at h
