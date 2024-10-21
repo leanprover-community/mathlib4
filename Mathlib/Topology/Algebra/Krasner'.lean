@@ -10,7 +10,7 @@ import Mathlib.Topology.Connected.Separation
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.Topology.Algebra.UniformField
-import Mathlib.FieldTheory.Minpoly.
+import Mathlib.FieldTheory.Minpoly.IsConjRoot
 
 import Mathlib.Topology.Algebra.KrasnerDependency
 
@@ -35,94 +35,6 @@ completion of alg closure is completed is needed
 -/
 
 open Polynomial minpoly IntermediateField
-
-section conj
-
-variable {R : Type*} {A : Type*} [CommRing R] [Ring A] [Algebra R A]
-
-variable (K : Type*) {L : Type*} {ΓK ΓL : outParam Type*}
-    [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓL]
-    [Field K] [Field L] [Algebra K L] [vK : Valued K ΓK] [vL : Valued L ΓL]
-
-variable (R) in
-def IsConjRoot (x x' : A) : Prop := (minpoly R x) = (minpoly R x')
--- Galois action
-
-namespace IsConjRoot
-
-theorem refl {x : A} : IsConjRoot R x x := rfl
-
-theorem symm {x x' : A} (h : IsConjRoot R x x') : IsConjRoot R x' x := Eq.symm h
-
-theorem trans {x x' x'': A} (h₁ : IsConjRoot R x x') (h₂ : IsConjRoot R x' x'') :
-    IsConjRoot R x x'' := Eq.trans h₁ h₂
-
-theorem of_minpoly_eq {x x' : A} (h : minpoly R x = minpoly R x') : IsConjRoot R x x' := h
-
-theorem algEquiv_apply (x : A) (s : A ≃ₐ[R] A) : IsConjRoot R x (s x) :=
-  Eq.symm (minpoly.algEquiv_eq s x)
-
-theorem algEquiv_apply₂ (x : A) (s₁ s₂ : A ≃ₐ[R] A) : IsConjRoot R (s₁ x) (s₂ x) :=
-  of_minpoly_eq <| (minpoly.algEquiv_eq s₂ x) ▸ (minpoly.algEquiv_eq s₁ x)
-
-variable {K} in
-theorem exist_algEquiv [Normal K L] {x x': L} (h : IsConjRoot K x x') :
-    ∃ σ : L ≃ₐ[K] L, x' = σ x := by
-  obtain ⟨σ, hσ⟩ :=
-    exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K x')
-  exact ⟨AlgEquiv.ofBijective σ (σ.normal_bijective _ _ _), hσ.symm⟩
-
-variable {K} in
-theorem not_mem_iff_exist_ne {x : L} (h : IsSeparable K x)
-    (sp : (minpoly K x).Splits (algebraMap K L)) :
-    x ∉ (⊥ : Subalgebra K L) ↔ ∃ x' : L, x ≠ x' ∧ IsConjRoot K x x' := sorry
--- `should decide what is the definition when both x, x' are trancendental over R`
-
-variable (R) in
-theorem of_isScalarTower {S : Type*} [CommRing S] [Algebra R S] [Algebra S A]
-    [IsScalarTower R S A] {x x' : A} (h : IsConjRoot S x x') : IsConjRoot R x x' := sorry
--- minpoly.aeval_of_isScalarTower
-
--- isIntegral_algHom_iff
-theorem algHom_iff {B} [Ring B] [Algebra R B] {x x' : A} (f : A →ₐ[R] B)
-    (hf : Function.Injective f) :
-  IsConjRoot R (f x) (f x') ↔ IsConjRoot R x x' := sorry
-
-theorem add_algebraMap {x x' : A} (r : R) (h : IsConjRoot R x x') :
-    IsConjRoot R (x + algebraMap R A r) (x' + algebraMap R A r) := sorry
--- minpoly.add_algebraMap
--- `should decide what is the definition when both x, x' are trancendental over R`
-
-/-
-theorem eq_of_degree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
-    (g : degree (minpoly R x) = 1) : x = x' := by
-  sorry
-
-theorem eq_of_natDegree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
-    (g : natDegree (minpoly R x) = 1) : x = x' := sorry
-
-theorem eq_of_isConjRoot_algebraMap {r : R} {x : A} (h : IsConjRoot R x (algebraMap R A r)) :
-    x = algebraMap R A r := sorry
-
-theorem neg {x x' : A} (r : R) (h : IsConjRoot R x x') :  IsConjRoot R (-x) (-x') := sorry
-
-
-theorem sub_algebraMap {x x' : A} (r : R) (h : IsConjRoot R x x') :
-    IsConjRoot R (x - algebraMap R A r) (x' - algebraMap R A r) := sorry
-
-theorem smul {x x' : A} (r : R) (h : IsConjRoot R x x') :  IsConjRoot R (r • x) (r • x') := sorry
-
-variable {K} in
-theorem isIntegral {x x' : L} (hx : IsIntegral K x) (h : IsConjRoot K x x') :
-    IsIntegral K x' := by sorry
-
-theorem iff_eq_zero {x : A} : IsConjRoot R 0 x ↔ x = 0 := sorry
-
-theorem ne_zero {x x' : A} (hx : x ≠ 0) (h : IsConjRoot R x x') : x' ≠ 0 := sorry
--/
-end IsConjRoot
-
-end conj
 
 section ContinuousSMul
 
