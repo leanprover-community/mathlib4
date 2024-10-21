@@ -78,6 +78,9 @@ instance : FunLike (r ≼i s) α β where
 instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'
 
+instance : RelHomClass (r ≼i s) r s where
+  map_rel f := f.map_rel_iff.2
+
 /-- An initial segment embedding between the `<` relations of two partial orders is an order
 embedding. -/
 def toOrderEmbedding [PartialOrder α] [PartialOrder β] (f : α ≤i β) : α ↪o β :=
@@ -153,16 +156,16 @@ theorem trans_apply (f : r ≼i s) (g : s ≼i t) (a : α) : (f.trans g) a = g (
   rfl
 
 instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl β s]
-    [IsWellFounded α r] : Subsingleton (r ≼i s) :=
-  ⟨fun f g => by
+    [IsWellFounded α r] : Subsingleton (r ≼i s) where
+  allEq f g := by
     ext a
     refine IsWellFounded.induction r a fun b IH =>
       extensional_of_trichotomous_of_irrefl s fun x => ?_
     rw [f.exists_eq_iff_rel, g.exists_eq_iff_rel]
-    exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl⟩
+    exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl
 
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
-  ⟨fun a => by let _ := a.isWellFounded; exact Subsingleton.elim a⟩
+  ⟨fun a => have := a.isWellFounded; Subsingleton.elim a⟩
 
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
@@ -264,6 +267,21 @@ instance : CoeOut (r ≺i s) (r ↪r s) :=
 
 instance : CoeFun (r ≺i s) fun _ => α → β :=
   ⟨fun f => f⟩
+
+instance [IsIrrefl β s] [IsTrichotomous β s] : FunLike (r ≺i s) α β where
+  coe f := f.toFun
+  coe_injective' := by
+    rintro ⟨f, a, hf⟩ ⟨g, b, hg⟩ h
+    cases (DFunLike.coe_injective h : f = g)
+    congr
+    refine extensional_of_trichotomous_of_irrefl s fun x ↦ ?_
+    rw [← hf, hg]
+
+instance [IsIrrefl β s] [IsTrichotomous β s] : EmbeddingLike (r ≺i s) α β where
+  injective' f := f.inj'
+
+instance [IsIrrefl β s] [IsTrichotomous β s] : RelHomClass (r ≺i s) r s where
+  map_rel f := f.map_rel_iff.2
 
 @[simp]
 theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α → β) = f :=
@@ -375,17 +393,8 @@ theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
   rfl
 
 /-- Given a well order `s`, there is a most one principal segment embedding of `r` into `s`. -/
-instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
-  ⟨fun f g => by
-    have ef : (f : α → β) = g := by
-      show ((f : r ≼i s) : α → β) = (g : r ≼i s)
-      rw [@Subsingleton.elim _ _ (f : r ≼i s) g]
-    have et : f.top = g.top := by
-      refine extensional_of_trichotomous_of_irrefl s fun x => ?_
-      simp only [← PrincipalSeg.mem_range_iff_rel, ef]
-    cases f
-    cases g
-    have := RelEmbedding.coe_fn_injective ef; congr ⟩
+instance [IsWellOrder β s] : Subsingleton (r ≺i s) where
+  allEq f g := DFunLike.ext f g ((f : r ≼i s).eq g)
 
 protected theorem eq [IsWellOrder β s] (f g : r ≺i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
