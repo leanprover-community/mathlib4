@@ -107,36 +107,41 @@ def toCollapsibleTable (bcs : Array Bench) (roundDiff : Int) : String :=
 /-- Assuming that the input is a `json`-string formatted to produce an array of `Bench`,
 `benchOutput` returns the "significant" changes in numbers of instructions as a string. -/
 def benchOutput (jsonInput : String) : IO String := do
-  let dats ← IO.ofExcept (Json.parse jsonInput >>= fromJson? (α := Array Bench))
-  -- `head` contains `build` and `lint`, `dats` contains the filenames, prefixed by `~`
-  let (head, dats) := dats.partition (·.file.take 1 != "~")
-  -- gather together `Bench`es into subsets each containing `Bench`es with difference of
-  -- instructions in a `[n·10⁹, (n+1)·10⁹)` range
-  let grouped := ((dats.groupByKey (·.diff / (10 ^ 9))).toArray.qsort (·.1 > ·.1)).toList
-  -- we sort `build` and `lint` and consider them as their own individual groups
+  let data ← IO.ofExcept (Json.parse jsonInput >>= fromJson? (α := Array Bench))
+  -- `head` contains the changes for `build` and `lint`,
+  -- `data` contains the instruction changes for individual files:
+  -- each filename is prefixed by `~`.
+  let (head, data) := data.partition (·.file.take 1 != "~")
+  -- Partition the `Bench`es into "bins", i.e. the subsets of all `Bench`es whose difference
+  -- in instructions lies in an interval `[n·10⁹, (n+1)·10⁹)`.
+  -- The values `n` need not be consecutive: we only retain non-empty bins.
+  let grouped := ((data.groupByKey (·.diff / (10 ^ 9))).toArray.qsort (·.1 > ·.1)).toList
+  -- We consider `build` and `lint` as their own groups, in this order.
   let sortHead := (head.qsort (·.file < ·.file)).toList.map (0, #[·])
   let togetherSorted := sortHead ++ grouped
-  -- for better formatting, we collapse consecutive entries with singleton *file* entries
-  -- into a single entry. This covers the two steps `ts1` and `ts2`.
-  -- E.g. `[..., (bound₁, #[a₁]), (bound₂, #[a₂]), (bound₃, #[a₃]), ...]` collapses to
+  -- For better formatting, we merge consecutive bins with just a single *file* into one.
+  -- This covers the two steps `ts1` and `ts2`.
+  -- For example, `[..., (bound₁, #[a₁]), (bound₂, #[a₂]), (bound₃, #[a₃]), ...]` gets collapsed to
   -- `[..., (none, #[a₁, a₂, a₃]), ...]`.
-  -- The `boundᵢ` entry become `none` for the collapsed entries, so that we know that these
+  -- The `boundᵢ` entry becomes `none` for the collapsed entries, so that we know that these
   -- should be printed individually instead of inside a `<details><summary>`-block.
   let ts1 := togetherSorted.groupBy (·.2.size == 1 && ·.2.size == 1)
-  let ts2 := List.join <| ts1.map fun l =>
+  let ts2 := List.join <| ts1.map fun l ↦
     if (l.getD 0 default).2.size == 1 then
       [(none, l.foldl (· ++ ·.2) #[])]
     else
-      l.map fun (n, ar) => (some n, ar)
-  let mut tot := []
+      l.map fun (n, ar) ↦ (some n, ar)
+
+  let mut overall := []
   for (bound, gs) in ts2 do
-    tot := tot ++ [
+    overall := overall ++ [
       match bound with
-        | none => -- `bound = none`: these entries are "singleton" files in their range
-          toTable gs
-        | some roundedDiff => -- these instead should be a collapsible summary
-          toCollapsibleTable gs roundedDiff]
-  return "\n".intercalate tot
+        -- These entries are from "singleton" files in their range;
+        -- we print them individually.
+        | none => toTable gs
+        -- These get a collapsible summary instead.
+        | some roundedDiff => toCollapsibleTable gs roundedDiff]
+  return "\n".intercalate overall
 
 open Lean Elab Command in
 /-- `addBenchSummaryComment PR repo tempFile` adds a summary of bench results as a comment to a
