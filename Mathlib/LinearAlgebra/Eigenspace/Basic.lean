@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.Nilpotent.Basic
-
-#align_import linear_algebra.eigenspace.basic from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
 /-!
 # Eigenvectors and eigenvalues
@@ -54,318 +53,658 @@ namespace Module
 
 namespace End
 
-open FiniteDimensional Set
+open Module Set
 
 variable {K R : Type v} {V M : Type w} [CommRing R] [AddCommGroup M] [Module R M] [Field K]
   [AddCommGroup V] [Module K V]
 
-/-- The submodule `eigenspace f μ` for a linear map `f` and a scalar `μ` consists of all vectors `x`
-    such that `f x = μ • x`. (Def 5.36 of [axler2015])-/
-def eigenspace (f : End R M) (μ : R) : Submodule R M :=
-  LinearMap.ker (f - algebraMap R (End R M) μ)
-#align module.End.eigenspace Module.End.eigenspace
+/-- The submodule `unifEigenspace f μ k` for a linear map `f`, a scalar `μ`,
+and a number `k : ℕ∞` is the kernel of `(f - μ • id) ^ k` if `k` is a natural number,
+or the union of all these kernels if `k = ∞`. -/
+def unifEigenspace (f : End R M) (μ : R) : ℕ∞ →o Submodule R M where
+  toFun k := ⨆ l : ℕ, ⨆ _ : l ≤ k, LinearMap.ker ((f - μ • 1) ^ l)
+  monotone' _ _ hkl := biSup_mono fun _ hi ↦ hi.trans hkl
+
+lemma mem_unifEigenspace {f : End R M} {μ : R} {k : ℕ∞} {x : M} :
+    x ∈ f.unifEigenspace μ k ↔ ∃ l : ℕ, l ≤ k ∧ x ∈ LinearMap.ker ((f - μ • 1) ^ l) := by
+  have : Nonempty {l : ℕ // l ≤ k} := ⟨⟨0, zero_le _⟩⟩
+  have : Directed (ι := { i : ℕ // i ≤ k }) (· ≤ ·) fun i ↦ LinearMap.ker ((f - μ • 1) ^ (i : ℕ)) :=
+    Monotone.directed_le fun m n h ↦ by simpa using (f - μ • 1).iterateKer.monotone h
+  simp_rw [unifEigenspace, OrderHom.coe_mk, LinearMap.mem_ker, iSup_subtype',
+    Submodule.mem_iSup_of_directed _ this, LinearMap.mem_ker, Subtype.exists, exists_prop]
+
+lemma unifEigenspace_directed {f : End R M} {μ : R} {k : ℕ∞} :
+    Directed (· ≤ ·) (fun l : {l : ℕ // l ≤ k} ↦ f.unifEigenspace μ l) := by
+  have aux : Monotone ((↑) : {l : ℕ // l ≤ k} → ℕ∞) := fun x y h ↦ by simpa using h
+  exact ((unifEigenspace f μ).monotone.comp aux).directed_le
+
+lemma mem_unifEigenspace_nat {f : End R M} {μ : R} {k : ℕ} {x : M} :
+    x ∈ f.unifEigenspace μ k ↔ x ∈ LinearMap.ker ((f - μ • 1) ^ k) := by
+  rw [mem_unifEigenspace]
+  constructor
+  · rintro ⟨l, hl, hx⟩
+    simp only [Nat.cast_le] at hl
+    exact (f - μ • 1).iterateKer.monotone hl hx
+  · intro hx
+    exact ⟨k, le_rfl, hx⟩
+
+lemma mem_unifEigenspace_top {f : End R M} {μ : R} {x : M} :
+    x ∈ f.unifEigenspace μ ⊤ ↔ ∃ k : ℕ, x ∈ LinearMap.ker ((f - μ • 1) ^ k) := by
+  simp [mem_unifEigenspace]
+
+lemma unifEigenspace_nat {f : End R M} {μ : R} {k : ℕ} :
+    f.unifEigenspace μ k = LinearMap.ker ((f - μ • 1) ^ k) := by
+  ext; simp [mem_unifEigenspace_nat]
+
+lemma unifEigenspace_eq_iSup_unifEigenspace_nat (f : End R M) (μ : R) (k : ℕ∞) :
+    f.unifEigenspace μ k = ⨆ l : {l : ℕ // l ≤ k}, f.unifEigenspace μ l := by
+  simp_rw [unifEigenspace_nat, unifEigenspace, OrderHom.coe_mk, iSup_subtype]
+
+lemma unifEigenspace_top (f : End R M) (μ : R) :
+    f.unifEigenspace μ ⊤ = ⨆ k : ℕ, f.unifEigenspace μ k := by
+  rw [unifEigenspace_eq_iSup_unifEigenspace_nat, iSup_subtype]
+  simp only [le_top, iSup_pos, OrderHom.coe_mk]
+
+lemma unifEigenspace_one {f : End R M} {μ : R} :
+    f.unifEigenspace μ 1 = LinearMap.ker (f - μ • 1) := by
+  rw [← Nat.cast_one, unifEigenspace_nat, pow_one]
 
 @[simp]
-theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by simp [eigenspace]
-#align module.End.eigenspace_zero Module.End.eigenspace_zero
+lemma mem_unifEigenspace_one {f : End R M} {μ : R} {x : M} :
+    x ∈ f.unifEigenspace μ 1 ↔ f x = μ • x := by
+  rw [unifEigenspace_one, LinearMap.mem_ker, LinearMap.sub_apply,
+    sub_eq_zero, LinearMap.smul_apply, LinearMap.one_apply]
 
-/-- A nonzero element of an eigenspace is an eigenvector. (Def 5.7 of [axler2015]) -/
-def HasEigenvector (f : End R M) (μ : R) (x : M) : Prop :=
-  x ∈ eigenspace f μ ∧ x ≠ 0
-#align module.End.has_eigenvector Module.End.HasEigenvector
+-- `simp` can prove this using `unifEigenspace_zero`
+lemma mem_unifEigenspace_zero {f : End R M} {μ : R} {x : M} :
+    x ∈ f.unifEigenspace μ 0 ↔ x = 0 := by
+  rw [← Nat.cast_zero, mem_unifEigenspace_nat, pow_zero, LinearMap.mem_ker, LinearMap.one_apply]
 
-/-- A scalar `μ` is an eigenvalue for a linear map `f` if there are nonzero vectors `x`
-    such that `f x = μ • x`. (Def 5.5 of [axler2015]) -/
-def HasEigenvalue (f : End R M) (a : R) : Prop :=
-  eigenspace f a ≠ ⊥
-#align module.End.has_eigenvalue Module.End.HasEigenvalue
+@[simp]
+lemma unifEigenspace_zero {f : End R M} {μ : R} :
+    f.unifEigenspace μ 0 = ⊥ := by
+  ext; apply mem_unifEigenspace_zero
 
-/-- The eigenvalues of the endomorphism `f`, as a subtype of `R`. -/
-def Eigenvalues (f : End R M) : Type _ :=
-  { μ : R // f.HasEigenvalue μ }
-#align module.End.eigenvalues Module.End.Eigenvalues
+@[simp]
+lemma unifEigenspace_zero_nat (f : End R M) (k : ℕ) :
+    f.unifEigenspace 0 k = LinearMap.ker (f ^ k) := by
+  ext; simp [mem_unifEigenspace_nat]
 
+/-- Let `M` be an `R`-module, and `f` an `R`-linear endomorphism of `M`,
+and let `μ : R` and `k : ℕ∞` be given.
+Then `x : M` satisfies `HasUnifEigenvector f μ k x` if
+`x ∈ f.unifEigenspace μ k` and `x ≠ 0`.
+
+For `k = 1`, this means that `x` is an eigenvector of `f` with eigenvalue `μ`. -/
+def HasUnifEigenvector (f : End R M) (μ : R) (k : ℕ∞) (x : M) : Prop :=
+  x ∈ f.unifEigenspace μ k ∧ x ≠ 0
+
+/-- Let `M` be an `R`-module, and `f` an `R`-linear endomorphism of `M`.
+Then `μ : R` and `k : ℕ∞` satisfy `HasUnifEigenvalue f μ k` if
+`f.unifEigenspace μ k ≠ ⊥`.
+
+For `k = 1`, this means that `μ` is an eigenvalue of `f`. -/
+def HasUnifEigenvalue (f : End R M) (μ : R) (k : ℕ∞) : Prop :=
+  f.unifEigenspace μ k ≠ ⊥
+
+/-- Let `M` be an `R`-module, and `f` an `R`-linear endomorphism of `M`.
+For `k : ℕ∞`, we define `UnifEigenvalues f k` to be the type of all
+`μ : R` that satisfy `f.HasUnifEigenvalue μ k`.
+
+For `k = 1` this is the type of all eigenvalues of `f`. -/
+def UnifEigenvalues (f : End R M) (k : ℕ∞) : Type _ :=
+  { μ : R // f.HasUnifEigenvalue μ k }
+
+/-- The underlying value of a bundled eigenvalue. -/
 @[coe]
-def Eigenvalues.val (f : Module.End R M) : Eigenvalues f → R := Subtype.val
+def UnifEigenvalues.val (f : Module.End R M) (k : ℕ∞) : UnifEigenvalues f k → R := Subtype.val
 
-instance Eigenvalues.instCoeOut {f : Module.End R M} : CoeOut (Eigenvalues f) R where
-  coe := Eigenvalues.val f
+instance UnifEigenvalues.instCoeOut {f : Module.End R M} (k : ℕ∞) :
+    CoeOut (UnifEigenvalues f k) R where
+  coe := UnifEigenvalues.val f k
 
-instance Eigenvalues.instDecidableEq [DecidableEq R] (f : Module.End R M) :
-    DecidableEq (Eigenvalues f) :=
-  inferInstanceAs (DecidableEq (Subtype (fun x : R => HasEigenvalue f x)))
+instance UnivEigenvalues.instDecidableEq [DecidableEq R] (f : Module.End R M) (k : ℕ∞) :
+    DecidableEq (UnifEigenvalues f k) :=
+  inferInstanceAs (DecidableEq (Subtype (fun x : R ↦ f.HasUnifEigenvalue x k)))
 
-theorem hasEigenvalue_of_hasEigenvector {f : End R M} {μ : R} {x : M} (h : HasEigenvector f μ x) :
-    HasEigenvalue f μ := by
-  rw [HasEigenvalue, Submodule.ne_bot_iff]
+lemma HasUnifEigenvector.hasUnifEigenvalue {f : End R M} {μ : R} {k : ℕ∞} {x : M}
+    (h : f.HasUnifEigenvector μ k x) : f.HasUnifEigenvalue μ k := by
+  rw [HasUnifEigenvalue, Submodule.ne_bot_iff]
   use x; exact h
-#align module.End.has_eigenvalue_of_has_eigenvector Module.End.hasEigenvalue_of_hasEigenvector
 
-theorem mem_eigenspace_iff {f : End R M} {μ : R} {x : M} : x ∈ eigenspace f μ ↔ f x = μ • x := by
-  rw [eigenspace, LinearMap.mem_ker, LinearMap.sub_apply, algebraMap_end_apply, sub_eq_zero]
-#align module.End.mem_eigenspace_iff Module.End.mem_eigenspace_iff
+lemma HasUnifEigenvector.apply_eq_smul {f : End R M} {μ : R} {x : M}
+    (hx : f.HasUnifEigenvector μ 1 x) : f x = μ • x :=
+  mem_unifEigenspace_one.mp hx.1
 
-theorem HasEigenvector.apply_eq_smul {f : End R M} {μ : R} {x : M} (hx : f.HasEigenvector μ x) :
-    f x = μ • x :=
-  mem_eigenspace_iff.mp hx.1
-#align module.End.has_eigenvector.apply_eq_smul Module.End.HasEigenvector.apply_eq_smul
-
-theorem HasEigenvector.pow_apply {f : End R M} {μ : R} {v : M} (hv : f.HasEigenvector μ v) (n : ℕ) :
-    (f ^ n) v = μ ^ n • v := by
+lemma HasUnifEigenvector.pow_apply {f : End R M} {μ : R} {v : M} (hv : f.HasUnifEigenvector μ 1 v)
+    (n : ℕ) : (f ^ n) v = μ ^ n • v := by
   induction n <;> simp [*, pow_succ f, hv.apply_eq_smul, smul_smul, pow_succ' μ]
 
-theorem HasEigenvalue.exists_hasEigenvector {f : End R M} {μ : R} (hμ : f.HasEigenvalue μ) :
-    ∃ v, f.HasEigenvector μ v :=
+theorem HasUnifEigenvalue.exists_hasUnifEigenvector
+    {f : End R M} {μ : R} {k : ℕ∞} (hμ : f.HasUnifEigenvalue μ k) :
+    ∃ v, f.HasUnifEigenvector μ k v :=
   Submodule.exists_mem_ne_zero_of_ne_bot hμ
-#align module.End.has_eigenvalue.exists_has_eigenvector Module.End.HasEigenvalue.exists_hasEigenvector
 
-theorem mem_spectrum_of_hasEigenvalue {f : End R M} {μ : R} (hμ : HasEigenvalue f μ) :
+lemma HasUnifEigenvalue.pow {f : End R M} {μ : R} (h : f.HasUnifEigenvalue μ 1) (n : ℕ) :
+    (f ^ n).HasUnifEigenvalue (μ ^ n) 1 := by
+  rw [HasUnifEigenvalue, Submodule.ne_bot_iff]
+  obtain ⟨m : M, hm⟩ := h.exists_hasUnifEigenvector
+  exact ⟨m, by simpa [mem_unifEigenspace_one] using hm.pow_apply n, hm.2⟩
+
+/-- A nilpotent endomorphism has nilpotent eigenvalues.
+
+See also `LinearMap.isNilpotent_trace_of_isNilpotent`. -/
+lemma HasUnifEigenvalue.isNilpotent_of_isNilpotent [NoZeroSMulDivisors R M] {f : End R M}
+    (hfn : IsNilpotent f) {μ : R} (hf : f.HasUnifEigenvalue μ 1) :
+    IsNilpotent μ := by
+  obtain ⟨m : M, hm⟩ := hf.exists_hasUnifEigenvector
+  obtain ⟨n : ℕ, hn : f ^ n = 0⟩ := hfn
+  exact ⟨n, by simpa [hn, hm.2, eq_comm (a := (0 : M))] using hm.pow_apply n⟩
+
+lemma HasUnifEigenvalue.mem_spectrum {f : End R M} {μ : R} (hμ : HasUnifEigenvalue f μ 1) :
     μ ∈ spectrum R f := by
-  refine' spectrum.mem_iff.mpr fun h_unit => _
+  refine spectrum.mem_iff.mpr fun h_unit ↦ ?_
   set f' := LinearMap.GeneralLinearGroup.toLinearEquiv h_unit.unit
-  rcases hμ.exists_hasEigenvector with ⟨v, hv⟩
-  refine' hv.2 ((LinearMap.ker_eq_bot'.mp f'.ker) v (_ : μ • v - f v = 0))
+  rcases hμ.exists_hasUnifEigenvector with ⟨v, hv⟩
+  refine hv.2 ((LinearMap.ker_eq_bot'.mp f'.ker) v (?_ : μ • v - f v = 0))
   rw [hv.apply_eq_smul, sub_self]
-#align module.End.mem_spectrum_of_has_eigenvalue Module.End.mem_spectrum_of_hasEigenvalue
 
-theorem hasEigenvalue_iff_mem_spectrum [FiniteDimensional K V] {f : End K V} {μ : K} :
-    f.HasEigenvalue μ ↔ μ ∈ spectrum K f :=
-  Iff.intro mem_spectrum_of_hasEigenvalue fun h => by
-    rwa [spectrum.mem_iff, IsUnit.sub_iff, LinearMap.isUnit_iff_ker_eq_bot] at h
-#align module.End.has_eigenvalue_iff_mem_spectrum Module.End.hasEigenvalue_iff_mem_spectrum
+lemma hasUnifEigenvalue_iff_mem_spectrum [FiniteDimensional K V] {f : End K V} {μ : K} :
+    f.HasUnifEigenvalue μ 1 ↔ μ ∈ spectrum K f := by
+  rw [spectrum.mem_iff, IsUnit.sub_iff, LinearMap.isUnit_iff_ker_eq_bot,
+    HasUnifEigenvalue, unifEigenspace_one, ne_eq, not_iff_not]
+  simp [Submodule.ext_iff, LinearMap.mem_ker]
 
-theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
-    eigenspace f (a / b) = LinearMap.ker (b • f - algebraMap K (End K V) a) :=
+alias ⟨_, HasUnifEigenvalue.of_mem_spectrum⟩ := hasUnifEigenvalue_iff_mem_spectrum
+
+lemma unifEigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
+    unifEigenspace f (a / b) 1 = LinearMap.ker (b • f - a • 1) :=
   calc
-    eigenspace f (a / b) = eigenspace f (b⁻¹ * a) := by rw [div_eq_mul_inv, mul_comm]
-    _ = LinearMap.ker (f - (b⁻¹ * a) • LinearMap.id) := by rw [eigenspace]; rfl
-    _ = LinearMap.ker (f - b⁻¹ • a • LinearMap.id) := by rw [smul_smul]
-    _ = LinearMap.ker (f - b⁻¹ • algebraMap K (End K V) a) := rfl
-    _ = LinearMap.ker (b • (f - b⁻¹ • algebraMap K (End K V) a)) := by
-        rw [LinearMap.ker_smul _ b hb]
-    _ = LinearMap.ker (b • f - algebraMap K (End K V) a) := by rw [smul_sub, smul_inv_smul₀ hb]
-#align module.End.eigenspace_div Module.End.eigenspace_div
+    unifEigenspace f (a / b) 1 = unifEigenspace f (b⁻¹ * a) 1 := by rw [div_eq_mul_inv, mul_comm]
+    _ = LinearMap.ker (f - (b⁻¹ * a) • 1)     := by rw [unifEigenspace_one]
+    _ = LinearMap.ker (f - b⁻¹ • a • 1)       := by rw [smul_smul]
+    _ = LinearMap.ker (b • (f - b⁻¹ • a • 1)) := by rw [LinearMap.ker_smul _ b hb]
+    _ = LinearMap.ker (b • f - a • 1)         := by rw [smul_sub, smul_inv_smul₀ hb]
 
-/-- The generalized eigenspace for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
-kernel of `(f - μ • id) ^ k`. (Def 8.10 of [axler2015]). Furthermore, a generalized eigenspace for
-some exponent `k` is contained in the generalized eigenspace for exponents larger than `k`. -/
-def generalizedEigenspace (f : End R M) (μ : R) : ℕ →o Submodule R M where
-  toFun k := LinearMap.ker ((f - algebraMap R (End R M) μ) ^ k)
-  monotone' k m hm := by
-    simp only [← pow_sub_mul_pow _ hm]
-    exact
-      LinearMap.ker_le_ker_comp ((f - algebraMap R (End R M) μ) ^ k)
-        ((f - algebraMap R (End R M) μ) ^ (m - k))
-#align module.End.generalized_eigenspace Module.End.generalizedEigenspace
+/-- The generalized eigenrange for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ∞`
+is the range of `(f - μ • id) ^ k` if `k` is a natural number,
+or the infimum of these ranges if `k = ∞`. -/
+def unifEigenrange (f : End R M) (μ : R) (k : ℕ∞) : Submodule R M :=
+  ⨅ l : ℕ, ⨅ (_ : l ≤ k), LinearMap.range ((f - μ • 1) ^ l)
 
-@[simp]
-theorem mem_generalizedEigenspace (f : End R M) (μ : R) (k : ℕ) (m : M) :
-    m ∈ f.generalizedEigenspace μ k ↔ ((f - μ • (1 : End R M)) ^ k) m = 0 := Iff.rfl
-#align module.End.mem_generalized_eigenspace Module.End.mem_generalizedEigenspace
-
-@[simp]
-theorem generalizedEigenspace_zero (f : End R M) (k : ℕ) :
-    f.generalizedEigenspace 0 k = LinearMap.ker (f ^ k) := by
-  simp [Module.End.generalizedEigenspace]
-#align module.End.generalized_eigenspace_zero Module.End.generalizedEigenspace_zero
-
-/-- A nonzero element of a generalized eigenspace is a generalized eigenvector.
-    (Def 8.9 of [axler2015])-/
-def HasGeneralizedEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
-  x ≠ 0 ∧ x ∈ generalizedEigenspace f μ k
-#align module.End.has_generalized_eigenvector Module.End.HasGeneralizedEigenvector
-
-/-- A scalar `μ` is a generalized eigenvalue for a linear map `f` and an exponent `k ∈ ℕ` if there
-    are generalized eigenvectors for `f`, `k`, and `μ`. -/
-def HasGeneralizedEigenvalue (f : End R M) (μ : R) (k : ℕ) : Prop :=
-  generalizedEigenspace f μ k ≠ ⊥
-#align module.End.has_generalized_eigenvalue Module.End.HasGeneralizedEigenvalue
-
-/-- The generalized eigenrange for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
-    range of `(f - μ • id) ^ k`. -/
-def generalizedEigenrange (f : End R M) (μ : R) (k : ℕ) : Submodule R M :=
-  LinearMap.range ((f - algebraMap R (End R M) μ) ^ k)
-#align module.End.generalized_eigenrange Module.End.generalizedEigenrange
+lemma unifEigenrange_nat {f : End R M} {μ : R} {k : ℕ} :
+    f.unifEigenrange μ k = LinearMap.range ((f - μ • 1) ^ k) := by
+  ext x
+  simp only [unifEigenrange, Nat.cast_le, Submodule.mem_iInf, LinearMap.mem_range]
+  constructor
+  · intro h
+    exact h _ le_rfl
+  · rintro ⟨x, rfl⟩ i hi
+    have : k = i + (k - i) := by omega
+    rw [this, pow_add]
+    exact ⟨_, rfl⟩
 
 /-- The exponent of a generalized eigenvalue is never 0. -/
-theorem exp_ne_zero_of_hasGeneralizedEigenvalue {f : End R M} {μ : R} {k : ℕ}
-    (h : f.HasGeneralizedEigenvalue μ k) : k ≠ 0 := by
+lemma HasUnifEigenvalue.exp_ne_zero {f : End R M} {μ : R} {k : ℕ}
+    (h : f.HasUnifEigenvalue μ k) : k ≠ 0 := by
   rintro rfl
-  exact h LinearMap.ker_id
-#align module.End.exp_ne_zero_of_has_generalized_eigenvalue Module.End.exp_ne_zero_of_hasGeneralizedEigenvalue
-
-/-- The union of the kernels of `(f - μ • id) ^ k` over all `k`. -/
-def maximalGeneralizedEigenspace (f : End R M) (μ : R) : Submodule R M :=
-  ⨆ k, f.generalizedEigenspace μ k
-#align module.End.maximal_generalized_eigenspace Module.End.maximalGeneralizedEigenspace
-
-theorem generalizedEigenspace_le_maximal (f : End R M) (μ : R) (k : ℕ) :
-    f.generalizedEigenspace μ k ≤ f.maximalGeneralizedEigenspace μ :=
-  le_iSup _ _
-#align module.End.generalized_eigenspace_le_maximal Module.End.generalizedEigenspace_le_maximal
-
-@[simp]
-theorem mem_maximalGeneralizedEigenspace (f : End R M) (μ : R) (m : M) :
-    m ∈ f.maximalGeneralizedEigenspace μ ↔ ∃ k : ℕ, ((f - μ • (1 : End R M)) ^ k) m = 0 := by
-  simp only [maximalGeneralizedEigenspace, ← mem_generalizedEigenspace, Submodule.mem_iSup_of_chain]
-#align module.End.mem_maximal_generalized_eigenspace Module.End.mem_maximalGeneralizedEigenspace
+  simp [HasUnifEigenvalue, Nat.cast_zero, unifEigenspace_zero] at h
 
 /-- If there exists a natural number `k` such that the kernel of `(f - μ • id) ^ k` is the
 maximal generalized eigenspace, then this value is the least such `k`. If not, this value is not
 meaningful. -/
-noncomputable def maximalGeneralizedEigenspaceIndex (f : End R M) (μ : R) :=
-  monotonicSequenceLimitIndex (f.generalizedEigenspace μ)
-#align module.End.maximal_generalized_eigenspace_index Module.End.maximalGeneralizedEigenspaceIndex
+noncomputable def maxUnifEigenspaceIndex (f : End R M) (μ : R) :=
+  monotonicSequenceLimitIndex <| (f.unifEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
 
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
 `(f - μ • id) ^ k` for some `k`. -/
-theorem maximalGeneralizedEigenspace_eq [h : IsNoetherian R M] (f : End R M) (μ : R) :
-    maximalGeneralizedEigenspace f μ =
-      f.generalizedEigenspace μ (maximalGeneralizedEigenspaceIndex f μ) := by
-  rw [isNoetherian_iff_wellFounded] at h
-  exact (WellFounded.iSup_eq_monotonicSequenceLimit h (f.generalizedEigenspace μ) : _)
-#align module.End.maximal_generalized_eigenspace_eq Module.End.maximalGeneralizedEigenspace_eq
+lemma unifEigenspace_top_eq_maxUnifEigenspaceIndex [h : IsNoetherian R M] (f : End R M) (μ : R) :
+    unifEigenspace f μ ⊤ = f.unifEigenspace μ (maxUnifEigenspaceIndex f μ) := by
+  rw [isNoetherian_iff] at h
+  have := WellFounded.iSup_eq_monotonicSequenceLimit h <|
+    (f.unifEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
+  convert this using 1
+  simp only [unifEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
+    Function.comp_def]
+  rw [iSup_prod', iSup_subtype', ← sSup_range, ← sSup_range]
+  congr
+  aesop
+
+lemma unifEigenspace_le_unifEigenspace_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R M)
+    (μ : R) (k : ℕ∞) :
+    f.unifEigenspace μ k ≤ f.unifEigenspace μ (maxUnifEigenspaceIndex f μ) := by
+  rw [← unifEigenspace_top_eq_maxUnifEigenspaceIndex]
+  exact (f.unifEigenspace μ).monotone le_top
+
+/-- Generalized eigenspaces for exponents at least `finrank K V` are equal to each other. -/
+theorem unifEigenspace_eq_unifEigenspace_maxUnifEigenspaceIndex_of_le [IsNoetherian R M]
+    (f : End R M) (μ : R) {k : ℕ} (hk : maxUnifEigenspaceIndex f μ ≤ k) :
+    f.unifEigenspace μ k = f.unifEigenspace μ (maxUnifEigenspaceIndex f μ) :=
+  le_antisymm
+    (unifEigenspace_le_unifEigenspace_maxUnifEigenspaceIndex _ _ _)
+    ((f.unifEigenspace μ).monotone <| by simpa using hk)
 
 /-- A generalized eigenvalue for some exponent `k` is also
     a generalized eigenvalue for exponents larger than `k`. -/
-theorem hasGeneralizedEigenvalue_of_hasGeneralizedEigenvalue_of_le {f : End R M} {μ : R} {k : ℕ}
-    {m : ℕ} (hm : k ≤ m) (hk : f.HasGeneralizedEigenvalue μ k) :
-    f.HasGeneralizedEigenvalue μ m := by
-  unfold HasGeneralizedEigenvalue at *
+lemma HasUnifEigenvalue.le {f : End R M} {μ : R} {k m : ℕ∞}
+    (hm : k ≤ m) (hk : f.HasUnifEigenvalue μ k) :
+    f.HasUnifEigenvalue μ m := by
+  unfold HasUnifEigenvalue at *
   contrapose! hk
   rw [← le_bot_iff, ← hk]
-  exact (f.generalizedEigenspace μ).monotone hm
-#align module.End.has_generalized_eigenvalue_of_has_generalized_eigenvalue_of_le Module.End.hasGeneralizedEigenvalue_of_hasGeneralizedEigenvalue_of_le
+  exact (f.unifEigenspace _).monotone hm
 
-/-- The eigenspace is a subspace of the generalized eigenspace. -/
-theorem eigenspace_le_generalizedEigenspace {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
-    f.eigenspace μ ≤ f.generalizedEigenspace μ k :=
-  (f.generalizedEigenspace μ).monotone (Nat.succ_le_of_lt hk)
-#align module.End.eigenspace_le_generalized_eigenspace Module.End.eigenspace_le_generalizedEigenspace
-
-/-- All eigenvalues are generalized eigenvalues. -/
-theorem hasGeneralizedEigenvalue_of_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k)
-    (hμ : f.HasEigenvalue μ) : f.HasGeneralizedEigenvalue μ k := by
-  apply hasGeneralizedEigenvalue_of_hasGeneralizedEigenvalue_of_le hk
-  rw [HasGeneralizedEigenvalue, generalizedEigenspace, OrderHom.coe_mk, pow_one]
-  exact hμ
-#align module.End.has_generalized_eigenvalue_of_has_eigenvalue Module.End.hasGeneralizedEigenvalue_of_hasEigenvalue
-
-/-- All generalized eigenvalues are eigenvalues. -/
-theorem hasEigenvalue_of_hasGeneralizedEigenvalue {f : End R M} {μ : R} {k : ℕ}
-    (hμ : f.HasGeneralizedEigenvalue μ k) : f.HasEigenvalue μ := by
-  intro contra; apply hμ
-  erw [LinearMap.ker_eq_bot] at contra ⊢; rw [LinearMap.coe_pow]
-  exact Function.Injective.iterate contra k
-#align module.End.has_eigenvalue_of_has_generalized_eigenvalue Module.End.hasEigenvalue_of_hasGeneralizedEigenvalue
+/-- A generalized eigenvalue for some exponent `k` is also
+    a generalized eigenvalue for positive exponents. -/
+lemma HasUnifEigenvalue.lt {f : End R M} {μ : R} {k m : ℕ∞}
+    (hm : 0 < m) (hk : f.HasUnifEigenvalue μ k) :
+    f.HasUnifEigenvalue μ m := by
+  apply HasUnifEigenvalue.le (k := 1) (Order.one_le_iff_pos.mpr hm)
+  intro contra; apply hk
+  rw [unifEigenspace_one, LinearMap.ker_eq_bot] at contra
+  rw [eq_bot_iff]
+  intro x hx
+  rw [mem_unifEigenspace] at hx
+  rcases hx with ⟨l, -, hx⟩
+  rwa [LinearMap.ker_eq_bot.mpr] at hx
+  rw [LinearMap.coe_pow (f - μ • 1) l]
+  exact Function.Injective.iterate contra l
 
 /-- Generalized eigenvalues are actually just eigenvalues. -/
 @[simp]
-theorem hasGeneralizedEigenvalue_iff_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
-    f.HasGeneralizedEigenvalue μ k ↔ f.HasEigenvalue μ :=
-  ⟨hasEigenvalue_of_hasGeneralizedEigenvalue, hasGeneralizedEigenvalue_of_hasEigenvalue hk⟩
-#align module.End.has_generalized_eigenvalue_iff_has_eigenvalue Module.End.hasGeneralizedEigenvalue_iff_hasEigenvalue
+lemma hasUnifEigenvalue_iff_hasUnifEigenvalue_one {f : End R M} {μ : R} {k : ℕ∞} (hk : 0 < k) :
+    f.HasUnifEigenvalue μ k ↔ f.HasUnifEigenvalue μ 1 :=
+  ⟨HasUnifEigenvalue.lt zero_lt_one, HasUnifEigenvalue.lt hk⟩
+
+lemma maxUnifEigenspaceIndex_le_finrank [FiniteDimensional K V] (f : End K V) (μ : K) :
+    maxUnifEigenspaceIndex f μ ≤ finrank K V := by
+  apply Nat.sInf_le
+  intro n hn
+  apply le_antisymm
+  · exact (f.unifEigenspace μ).monotone <| WithTop.coeOrderHom.monotone hn
+  · show (f.unifEigenspace μ) n ≤ (f.unifEigenspace μ) (finrank K V)
+    rw [unifEigenspace_nat, unifEigenspace_nat]
+    apply ker_pow_le_ker_pow_finrank
 
 /-- Every generalized eigenvector is a generalized eigenvector for exponent `finrank K V`.
     (Lemma 8.11 of [axler2015]) -/
-theorem generalizedEigenspace_le_generalizedEigenspace_finrank [FiniteDimensional K V] (f : End K V)
-    (μ : K) (k : ℕ) : f.generalizedEigenspace μ k ≤ f.generalizedEigenspace μ (finrank K V) :=
-  ker_pow_le_ker_pow_finrank _ _
-#align module.End.generalized_eigenspace_le_generalized_eigenspace_finrank Module.End.generalizedEigenspace_le_generalizedEigenspace_finrank
-
-@[simp] theorem iSup_generalizedEigenspace_eq_generalizedEigenspace_finrank
-    [FiniteDimensional K V] (f : End K V) (μ : K) :
-    ⨆ k, f.generalizedEigenspace μ k = f.generalizedEigenspace μ (finrank K V) :=
-  le_antisymm (iSup_le (generalizedEigenspace_le_generalizedEigenspace_finrank f μ)) (le_iSup _ _)
+lemma unifEigenspace_le_unifEigenspace_finrank [FiniteDimensional K V] (f : End K V)
+    (μ : K) (k : ℕ∞) : f.unifEigenspace μ k ≤ f.unifEigenspace μ (finrank K V) := by
+  calc f.unifEigenspace μ k
+      ≤ f.unifEigenspace μ ⊤ := (f.unifEigenspace _).monotone le_top
+    _ ≤ f.unifEigenspace μ (finrank K V) := by
+      rw [unifEigenspace_top_eq_maxUnifEigenspaceIndex]
+      exact (f.unifEigenspace _).monotone <| by simpa using maxUnifEigenspaceIndex_le_finrank f μ
 
 /-- Generalized eigenspaces for exponents at least `finrank K V` are equal to each other. -/
-theorem generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le [FiniteDimensional K V]
+theorem unifEigenspace_eq_unifEigenspace_finrank_of_le [FiniteDimensional K V]
     (f : End K V) (μ : K) {k : ℕ} (hk : finrank K V ≤ k) :
-    f.generalizedEigenspace μ k = f.generalizedEigenspace μ (finrank K V) :=
-  ker_pow_eq_ker_pow_finrank_of_le hk
-#align module.End.generalized_eigenspace_eq_generalized_eigenspace_finrank_of_le Module.End.generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le
+    f.unifEigenspace μ k = f.unifEigenspace μ (finrank K V) :=
+  le_antisymm
+    (unifEigenspace_le_unifEigenspace_finrank _ _ _)
+    ((f.unifEigenspace μ).monotone <| by simpa using hk)
 
-lemma mapsTo_generalizedEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) (k : ℕ) :
-    MapsTo g (f.generalizedEigenspace μ k) (f.generalizedEigenspace μ k) := by
-  replace h : Commute ((f - μ • (1 : End R M)) ^ k) g :=
-    (h.sub_left <| Algebra.commute_algebraMap_left μ g).pow_left k
+lemma mapsTo_unifEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) (k : ℕ∞) :
+    MapsTo g (f.unifEigenspace μ k) (f.unifEigenspace μ k) := by
   intro x hx
-  simp only [SetLike.mem_coe, mem_generalizedEigenspace] at hx ⊢
+  simp only [SetLike.mem_coe, mem_unifEigenspace, LinearMap.mem_ker] at hx ⊢
+  rcases hx with ⟨l, hl, hx⟩
+  replace h : Commute ((f - μ • (1 : End R M)) ^ l) g :=
+    (h.sub_left <| Algebra.commute_algebraMap_left μ g).pow_left l
+  use l, hl
   rw [← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, h.eq, LinearMap.mul_eq_comp,
     LinearMap.comp_apply, hx, map_zero]
 
-lemma mapsTo_iSup_generalizedEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) :
-    MapsTo g ↑(⨆ k, f.generalizedEigenspace μ k) ↑(⨆ k, f.generalizedEigenspace μ k) := by
+/-- The restriction of `f - μ • 1` to the `k`-fold generalized `μ`-eigenspace is nilpotent. -/
+lemma isNilpotent_restrict_unifEigenspace_nat (f : End R M) (μ : R) (k : ℕ)
+    (h : MapsTo (f - μ • (1 : End R M))
+      (f.unifEigenspace μ k) (f.unifEigenspace μ k) :=
+      mapsTo_unifEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ k) :
+    IsNilpotent ((f - μ • 1).restrict h) := by
+  use k
+  ext ⟨x, hx⟩
+  rw [mem_unifEigenspace_nat] at hx
+  rw [LinearMap.zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_eq_zero,
+    LinearMap.pow_restrict, LinearMap.restrict_apply]
+  ext
+  simpa
+
+/-- The restriction of `f - μ • 1` to the generalized `μ`-eigenspace is nilpotent. -/
+lemma isNilpotent_restrict_unifEigenspace_top [IsNoetherian R M] (f : End R M) (μ : R)
+    (h : MapsTo (f - μ • (1 : End R M))
+      (f.unifEigenspace μ ⊤) (f.unifEigenspace μ ⊤) :=
+      mapsTo_unifEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ _) :
+    IsNilpotent ((f - μ • 1).restrict h) := by
+  apply isNilpotent_restrict_of_le
+  on_goal 2 => apply isNilpotent_restrict_unifEigenspace_nat f μ (maxUnifEigenspaceIndex f μ)
+  rw [unifEigenspace_top_eq_maxUnifEigenspaceIndex]
+
+/-- The submodule `eigenspace f μ` for a linear map `f` and a scalar `μ` consists of all vectors `x`
+    such that `f x = μ • x`. (Def 5.36 of [axler2015])-/
+abbrev eigenspace (f : End R M) (μ : R) : Submodule R M :=
+  f.unifEigenspace μ 1
+
+lemma eigenspace_def {f : End R M} {μ : R} :
+    f.eigenspace μ = LinearMap.ker (f - μ • 1) := by
+  rw [eigenspace, unifEigenspace_one]
+
+@[simp]
+theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by
+  simp only [eigenspace, ← Nat.cast_one (R := ℕ∞), unifEigenspace_zero_nat, pow_one]
+
+/-- A nonzero element of an eigenspace is an eigenvector. (Def 5.7 of [axler2015]) -/
+abbrev HasEigenvector (f : End R M) (μ : R) (x : M) : Prop :=
+  HasUnifEigenvector f μ 1 x
+
+lemma hasEigenvector_iff {f : End R M} {μ : R} {x : M} :
+    f.HasEigenvector μ x ↔ x ∈ f.eigenspace μ ∧ x ≠ 0 := Iff.rfl
+
+/-- A scalar `μ` is an eigenvalue for a linear map `f` if there are nonzero vectors `x`
+    such that `f x = μ • x`. (Def 5.5 of [axler2015]) -/
+abbrev HasEigenvalue (f : End R M) (a : R) : Prop :=
+  HasUnifEigenvalue f a 1
+
+lemma hasEigenvalue_iff {f : End R M} {μ : R} :
+    f.HasEigenvalue μ ↔ f.eigenspace μ ≠ ⊥ := Iff.rfl
+
+/-- The eigenvalues of the endomorphism `f`, as a subtype of `R`. -/
+abbrev Eigenvalues (f : End R M) : Type _ :=
+  UnifEigenvalues f 1
+
+@[coe]
+abbrev Eigenvalues.val (f : Module.End R M) : Eigenvalues f → R := UnifEigenvalues.val f 1
+
+theorem hasEigenvalue_of_hasEigenvector {f : End R M} {μ : R} {x : M} (h : HasEigenvector f μ x) :
+    HasEigenvalue f μ :=
+  h.hasUnifEigenvalue
+
+theorem mem_eigenspace_iff {f : End R M} {μ : R} {x : M} : x ∈ eigenspace f μ ↔ f x = μ • x :=
+  mem_unifEigenspace_one
+
+nonrec
+theorem HasEigenvector.apply_eq_smul {f : End R M} {μ : R} {x : M} (hx : f.HasEigenvector μ x) :
+    f x = μ • x :=
+  hx.apply_eq_smul
+
+nonrec
+theorem HasEigenvector.pow_apply {f : End R M} {μ : R} {v : M} (hv : f.HasEigenvector μ v) (n : ℕ) :
+    (f ^ n) v = μ ^ n • v :=
+  hv.pow_apply n
+
+theorem HasEigenvalue.exists_hasEigenvector {f : End R M} {μ : R} (hμ : f.HasEigenvalue μ) :
+    ∃ v, f.HasEigenvector μ v :=
+  Submodule.exists_mem_ne_zero_of_ne_bot hμ
+
+nonrec
+lemma HasEigenvalue.pow {f : End R M} {μ : R} (h : f.HasEigenvalue μ) (n : ℕ) :
+    (f ^ n).HasEigenvalue (μ ^ n) :=
+  h.pow n
+
+/-- A nilpotent endomorphism has nilpotent eigenvalues.
+
+See also `LinearMap.isNilpotent_trace_of_isNilpotent`. -/
+nonrec
+lemma HasEigenvalue.isNilpotent_of_isNilpotent [NoZeroSMulDivisors R M] {f : End R M}
+    (hfn : IsNilpotent f) {μ : R} (hf : f.HasEigenvalue μ) :
+    IsNilpotent μ :=
+  hf.isNilpotent_of_isNilpotent hfn
+
+nonrec
+theorem HasEigenvalue.mem_spectrum {f : End R M} {μ : R} (hμ : HasEigenvalue f μ) :
+    μ ∈ spectrum R f :=
+  hμ.mem_spectrum
+
+theorem hasEigenvalue_iff_mem_spectrum [FiniteDimensional K V] {f : End K V} {μ : K} :
+    f.HasEigenvalue μ ↔ μ ∈ spectrum K f :=
+  hasUnifEigenvalue_iff_mem_spectrum
+
+alias ⟨_, HasEigenvalue.of_mem_spectrum⟩ := hasEigenvalue_iff_mem_spectrum
+
+theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
+    eigenspace f (a / b) = LinearMap.ker (b • f - algebraMap K (End K V) a) :=
+  unifEigenspace_div f a b hb
+
+/-- The generalized eigenspace for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
+kernel of `(f - μ • id) ^ k`. (Def 8.10 of [axler2015]). Furthermore, a generalized eigenspace for
+some exponent `k` is contained in the generalized eigenspace for exponents larger than `k`. -/
+def genEigenspace (f : End R M) (μ : R) : ℕ →o Submodule R M where
+  toFun k := f.unifEigenspace μ k
+  monotone' k l hkl := (f.unifEigenspace μ).monotone <| by simpa
+
+lemma genEigenspace_def (f : End R M) (μ : R) (k : ℕ) :
+    f.genEigenspace μ k = LinearMap.ker ((f - μ • 1) ^ k) := by
+  rw [genEigenspace, OrderHom.coe_mk, unifEigenspace_nat]
+
+@[simp]
+theorem mem_genEigenspace (f : End R M) (μ : R) (k : ℕ) (m : M) :
+    m ∈ f.genEigenspace μ k ↔ ((f - μ • (1 : End R M)) ^ k) m = 0 :=
+  mem_unifEigenspace_nat
+
+@[simp]
+theorem genEigenspace_zero (f : End R M) (k : ℕ) :
+    f.genEigenspace 0 k = LinearMap.ker (f ^ k) :=
+  unifEigenspace_zero_nat _ _
+
+/-- A nonzero element of a generalized eigenspace is a generalized eigenvector.
+    (Def 8.9 of [axler2015])-/
+abbrev HasGenEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
+  HasUnifEigenvector f μ k x
+
+lemma hasGenEigenvector_iff {f : End R M} {μ : R} {k : ℕ} {x : M} :
+    f.HasGenEigenvector μ k x ↔ x ∈ f.genEigenspace μ k ∧ x ≠ 0 := Iff.rfl
+
+/-- A scalar `μ` is a generalized eigenvalue for a linear map `f` and an exponent `k ∈ ℕ` if there
+    are generalized eigenvectors for `f`, `k`, and `μ`. -/
+abbrev HasGenEigenvalue (f : End R M) (μ : R) (k : ℕ) : Prop :=
+  HasUnifEigenvalue f μ k
+
+lemma hasGenEigenvalue_iff {f : End R M} {μ : R} {k : ℕ} :
+    f.HasGenEigenvalue μ k ↔ f.genEigenspace μ k ≠ ⊥ := Iff.rfl
+
+/-- The generalized eigenrange for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
+    range of `(f - μ • id) ^ k`. -/
+abbrev genEigenrange (f : End R M) (μ : R) (k : ℕ) : Submodule R M :=
+  unifEigenrange f μ k
+
+lemma genEigenrange_def {f : End R M} {μ : R} {k : ℕ} :
+    f.genEigenrange μ k = LinearMap.range ((f - μ • 1) ^ k) := by
+  rw [genEigenrange, unifEigenrange_nat]
+
+/-- The exponent of a generalized eigenvalue is never 0. -/
+theorem exp_ne_zero_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
+    (h : f.HasGenEigenvalue μ k) : k ≠ 0 :=
+  HasUnifEigenvalue.exp_ne_zero h
+
+/-- The union of the kernels of `(f - μ • id) ^ k` over all `k`. -/
+abbrev maxGenEigenspace (f : End R M) (μ : R) : Submodule R M :=
+  unifEigenspace f μ ⊤
+
+lemma maxGenEigenspace_def (f : End R M) (μ : R) :
+    f.maxGenEigenspace μ = ⨆ k, f.genEigenspace μ k := by
+  simp_rw [maxGenEigenspace, unifEigenspace_top, genEigenspace, OrderHom.coe_mk]
+
+theorem genEigenspace_le_maximal (f : End R M) (μ : R) (k : ℕ) :
+    f.genEigenspace μ k ≤ f.maxGenEigenspace μ :=
+  (f.unifEigenspace μ).monotone le_top
+
+@[simp]
+theorem mem_maxGenEigenspace (f : End R M) (μ : R) (m : M) :
+    m ∈ f.maxGenEigenspace μ ↔ ∃ k : ℕ, ((f - μ • (1 : End R M)) ^ k) m = 0 :=
+  mem_unifEigenspace_top
+
+/-- If there exists a natural number `k` such that the kernel of `(f - μ • id) ^ k` is the
+maximal generalized eigenspace, then this value is the least such `k`. If not, this value is not
+meaningful. -/
+noncomputable abbrev maxGenEigenspaceIndex (f : End R M) (μ : R) :=
+  maxUnifEigenspaceIndex f μ
+
+/-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
+`(f - μ • id) ^ k` for some `k`. -/
+theorem maxGenEigenspace_eq [IsNoetherian R M] (f : End R M) (μ : R) :
+    maxGenEigenspace f μ = f.genEigenspace μ (maxGenEigenspaceIndex f μ) :=
+  unifEigenspace_top_eq_maxUnifEigenspaceIndex _ _
+
+/-- A generalized eigenvalue for some exponent `k` is also
+    a generalized eigenvalue for exponents larger than `k`. -/
+theorem hasGenEigenvalue_of_hasGenEigenvalue_of_le {f : End R M} {μ : R} {k : ℕ}
+    {m : ℕ} (hm : k ≤ m) (hk : f.HasGenEigenvalue μ k) :
+    f.HasGenEigenvalue μ m :=
+  hk.le <| by simpa using hm
+
+/-- The eigenspace is a subspace of the generalized eigenspace. -/
+theorem eigenspace_le_genEigenspace {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
+    f.eigenspace μ ≤ f.genEigenspace μ k :=
+  (f.unifEigenspace _).monotone <| by simpa using Nat.succ_le_of_lt hk
+
+/-- All eigenvalues are generalized eigenvalues. -/
+theorem hasGenEigenvalue_of_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k)
+    (hμ : f.HasEigenvalue μ) : f.HasGenEigenvalue μ k :=
+  hμ.lt <| by simpa using hk
+
+/-- All generalized eigenvalues are eigenvalues. -/
+theorem hasEigenvalue_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
+    (hμ : f.HasGenEigenvalue μ k) : f.HasEigenvalue μ :=
+  hμ.lt zero_lt_one
+
+/-- Generalized eigenvalues are actually just eigenvalues. -/
+@[simp]
+theorem hasGenEigenvalue_iff_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
+    f.HasGenEigenvalue μ k ↔ f.HasEigenvalue μ :=
+  hasUnifEigenvalue_iff_hasUnifEigenvalue_one <| by simpa using hk
+
+/-- Every generalized eigenvector is a generalized eigenvector for exponent `finrank K V`.
+    (Lemma 8.11 of [axler2015]) -/
+theorem genEigenspace_le_genEigenspace_finrank [FiniteDimensional K V] (f : End K V)
+    (μ : K) (k : ℕ) : f.genEigenspace μ k ≤ f.genEigenspace μ (finrank K V) :=
+  unifEigenspace_le_unifEigenspace_finrank _ _ _
+
+@[simp] theorem iSup_genEigenspace_eq_genEigenspace_finrank
+    [FiniteDimensional K V] (f : End K V) (μ : K) :
+    ⨆ k, f.genEigenspace μ k = f.genEigenspace μ (finrank K V) :=
+  le_antisymm (iSup_le (genEigenspace_le_genEigenspace_finrank f μ)) (le_iSup _ _)
+
+/-- Generalized eigenspaces for exponents at least `finrank K V` are equal to each other. -/
+theorem genEigenspace_eq_genEigenspace_finrank_of_le [FiniteDimensional K V]
+    (f : End K V) (μ : K) {k : ℕ} (hk : finrank K V ≤ k) :
+    f.genEigenspace μ k = f.genEigenspace μ (finrank K V) :=
+  unifEigenspace_eq_unifEigenspace_finrank_of_le f μ hk
+
+lemma mapsTo_genEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) (k : ℕ) :
+    MapsTo g (f.genEigenspace μ k) (f.genEigenspace μ k) := by
+  replace h : Commute ((f - μ • (1 : End R M)) ^ k) g :=
+    (h.sub_left <| Algebra.commute_algebraMap_left μ g).pow_left k
+  intro x hx
+  simp only [SetLike.mem_coe, mem_genEigenspace] at hx ⊢
+  rw [← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, h.eq, LinearMap.mul_eq_comp,
+    LinearMap.comp_apply, hx, map_zero]
+
+lemma iSup_genEigenspace_eq (f : End R M) (μ : R) :
+    ⨆ k, (f.genEigenspace μ) k = f.unifEigenspace μ ⊤ := by
+  rw [unifEigenspace_eq_iSup_unifEigenspace_nat]
+  ext
+  simp only [iSup_subtype, le_top, iSup_pos]
+  rfl
+
+lemma mapsTo_maxGenEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) :
+    MapsTo g ↑(f.maxGenEigenspace μ) ↑(f.maxGenEigenspace μ) := by
+  rw [maxGenEigenspace_def]
   simp only [MapsTo, Submodule.coe_iSup_of_chain, mem_iUnion, SetLike.mem_coe]
   rintro x ⟨k, hk⟩
-  exact ⟨k, f.mapsTo_generalizedEigenspace_of_comm h μ k hk⟩
+  exact ⟨k, f.mapsTo_genEigenspace_of_comm h μ k hk⟩
+
+lemma mapsTo_iSup_genEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) :
+    MapsTo g ↑(⨆ k, f.genEigenspace μ k) ↑(⨆ k, f.genEigenspace μ k) := by
+  rw [← maxGenEigenspace_def]
+  apply mapsTo_maxGenEigenspace_of_comm h
 
 /-- The restriction of `f - μ • 1` to the `k`-fold generalized `μ`-eigenspace is nilpotent. -/
 lemma isNilpotent_restrict_sub_algebraMap (f : End R M) (μ : R) (k : ℕ)
     (h : MapsTo (f - algebraMap R (End R M) μ)
-      (f.generalizedEigenspace μ k) (f.generalizedEigenspace μ k) :=
-      mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ k) :
+      (f.genEigenspace μ k) (f.genEigenspace μ k) :=
+      mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ k) :
+    IsNilpotent ((f - algebraMap R (End R M) μ).restrict h) :=
+  isNilpotent_restrict_unifEigenspace_nat _ _ _
+
+/-- The restriction of `f - μ • 1` to the generalized `μ`-eigenspace is nilpotent. -/
+lemma isNilpotent_restrict_maxGenEigenspace_sub_algebraMap [IsNoetherian R M] (f : End R M) (μ : R)
+    (h : MapsTo (f - algebraMap R (End R M) μ)
+      ↑(f.maxGenEigenspace μ) ↑(f.maxGenEigenspace μ) :=
+      mapsTo_maxGenEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ) :
     IsNilpotent ((f - algebraMap R (End R M) μ).restrict h) := by
-  use k
-  ext
-  simp [LinearMap.restrict_apply, LinearMap.pow_restrict _]
+  apply isNilpotent_restrict_of_le (q := f.unifEigenspace μ (maxUnifEigenspaceIndex f μ))
+    _ (isNilpotent_restrict_unifEigenspace_nat f μ (maxUnifEigenspaceIndex f μ))
+  rw [maxGenEigenspace_eq]
+  exact le_rfl
 
 /-- The restriction of `f - μ • 1` to the generalized `μ`-eigenspace is nilpotent. -/
 lemma isNilpotent_restrict_iSup_sub_algebraMap [IsNoetherian R M] (f : End R M) (μ : R)
     (h : MapsTo (f - algebraMap R (End R M) μ)
-      ↑(⨆ k, f.generalizedEigenspace μ k) ↑(⨆ k, f.generalizedEigenspace μ k) :=
-      mapsTo_iSup_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ) :
+      ↑(⨆ k, f.genEigenspace μ k) ↑(⨆ k, f.genEigenspace μ k) :=
+      mapsTo_iSup_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ) :
     IsNilpotent ((f - algebraMap R (End R M) μ).restrict h) := by
-  obtain ⟨l, hl⟩ : ∃ l, ⨆ k, f.generalizedEigenspace μ k = f.generalizedEigenspace μ l :=
-    ⟨_, maximalGeneralizedEigenspace_eq f μ⟩
-  use l
-  ext ⟨x, hx⟩
-  simpa [hl, LinearMap.restrict_apply, LinearMap.pow_restrict _] using hx
+  apply isNilpotent_restrict_of_le (q := f.unifEigenspace μ (maxUnifEigenspaceIndex f μ))
+    _ (isNilpotent_restrict_unifEigenspace_nat f μ (maxUnifEigenspaceIndex f μ))
+  apply iSup_le
+  intro k
+  apply unifEigenspace_le_unifEigenspace_maxUnifEigenspaceIndex
 
-lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M]
-    (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) (k l : ℕ) :
-    Disjoint (f.generalizedEigenspace μ₁ k) (f.generalizedEigenspace μ₂ l) := by
+lemma disjoint_unifEigenspace [NoZeroSMulDivisors R M]
+    (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) (k l : ℕ∞) :
+    Disjoint (f.unifEigenspace μ₁ k) (f.unifEigenspace μ₂ l) := by
+  rw [unifEigenspace_eq_iSup_unifEigenspace_nat, unifEigenspace_eq_iSup_unifEigenspace_nat]
+  simp_rw [unifEigenspace_directed.disjoint_iSup_left, unifEigenspace_directed.disjoint_iSup_right]
+  rintro ⟨k, -⟩ ⟨l, -⟩
   nontriviality M
   have := NoZeroSMulDivisors.isReduced R M
   rw [disjoint_iff]
-  set p := f.generalizedEigenspace μ₁ k ⊓ f.generalizedEigenspace μ₂ l
+  set p := f.unifEigenspace μ₁ k ⊓ f.unifEigenspace μ₂ l
   by_contra hp
   replace hp : Nontrivial p := Submodule.nontrivial_iff_ne_bot.mpr hp
   let f₁ : End R p := (f - algebraMap R (End R M) μ₁).restrict <| MapsTo.inter_inter
-    (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₁) μ₁ k)
-    (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₁) μ₂ l)
+    (mapsTo_unifEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₁) μ₁ k)
+    (mapsTo_unifEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₁) μ₂ l)
   let f₂ : End R p := (f - algebraMap R (End R M) μ₂).restrict <| MapsTo.inter_inter
-    (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₁ k)
-    (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₂ l)
+    (mapsTo_unifEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₁ k)
+    (mapsTo_unifEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₂ l)
   have : IsNilpotent (f₂ - f₁) := by
-    apply Commute.isNilpotent_sub (x := f₂) (y := f₁) _ ⟨l, ?_⟩ ⟨k, ?_⟩
+    apply Commute.isNilpotent_sub (x := f₂) (y := f₁) _
+      (isNilpotent_restrict_of_le inf_le_right _)
+      (isNilpotent_restrict_of_le inf_le_left _)
     · ext; simp [f₁, f₂, smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
-    all_goals ext ⟨x, _, _⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using ‹_›
+    apply mapsTo_unifEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
+    apply isNilpotent_restrict_unifEigenspace_nat
+    apply mapsTo_unifEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
+    apply isNilpotent_restrict_unifEigenspace_nat
   have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [f₁, f₂, sub_smul]
   rw [hf₁₂, IsNilpotent.map_iff (NoZeroSMulDivisors.algebraMap_injective R (End R p)),
     isNilpotent_iff_eq_zero, sub_eq_zero] at this
   contradiction
 
-lemma disjoint_iSup_generalizedEigenspace [NoZeroSMulDivisors R M]
-    (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) :
-    Disjoint (⨆ k, f.generalizedEigenspace μ₁ k) (⨆ k, f.generalizedEigenspace μ₂ k) := by
-  simp_rw [(f.generalizedEigenspace μ₁).mono.directed_le.disjoint_iSup_left,
-    (f.generalizedEigenspace μ₂).mono.directed_le.disjoint_iSup_right]
-  exact disjoint_generalizedEigenspace f hμ
+lemma disjoint_genEigenspace [NoZeroSMulDivisors R M]
+    (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) (k l : ℕ) :
+    Disjoint (f.genEigenspace μ₁ k) (f.genEigenspace μ₂ l) :=
+  disjoint_unifEigenspace f hμ k l
 
-lemma injOn_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
-    InjOn (⨆ k, f.generalizedEigenspace · k) {μ | ⨆ k, f.generalizedEigenspace μ k ≠ ⊥} := by
-  rintro μ₁ _ μ₂ hμ₂ (hμ₁₂ : ⨆ k, f.generalizedEigenspace μ₁ k = ⨆ k, f.generalizedEigenspace μ₂ k)
+lemma disjoint_iSup_genEigenspace [NoZeroSMulDivisors R M]
+    (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) :
+    Disjoint (⨆ k, f.genEigenspace μ₁ k) (⨆ k, f.genEigenspace μ₂ k) := by
+  simpa only [iSup_genEigenspace_eq] using disjoint_unifEigenspace f hμ ⊤ ⊤
+
+lemma injOn_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
+    InjOn (⨆ k, f.genEigenspace · k) {μ | ⨆ k, f.genEigenspace μ k ≠ ⊥} := by
+  rintro μ₁ _ μ₂ hμ₂ (hμ₁₂ : ⨆ k, f.genEigenspace μ₁ k = ⨆ k, f.genEigenspace μ₂ k)
   by_contra contra
   apply hμ₂
-  simpa only [hμ₁₂, disjoint_self] using f.disjoint_iSup_generalizedEigenspace contra
+  simpa only [hμ₁₂, disjoint_self] using f.disjoint_iSup_genEigenspace contra
 
-theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
-    CompleteLattice.Independent (fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) := by
+theorem independent_maxGenEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
+    CompleteLattice.Independent f.maxGenEigenspace := by
   classical
-  suffices ∀ μ (s : Finset R), μ ∉ s → Disjoint (⨆ k, f.generalizedEigenspace μ k)
-      (s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) by
-    simp_rw [CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_generalizedEigenspace,
+  suffices ∀ μ (s : Finset R), μ ∉ s → Disjoint (⨆ k, f.genEigenspace μ k)
+      (s.sup fun μ ↦ ⨆ k, f.genEigenspace μ k) by
+    show CompleteLattice.Independent (f.maxGenEigenspace ·)
+    simp_rw [maxGenEigenspace_def,
+      CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_genEigenspace,
       Finset.supIndep_iff_disjoint_erase]
     exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
   intro μ₁ s
@@ -377,66 +716,88 @@ theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M)
   rw [Finset.sup_insert, disjoint_iff, Submodule.eq_bot_iff]
   rintro x ⟨hx, hx'⟩
   simp only [SetLike.mem_coe] at hx hx'
-  suffices x ∈ ⨆ k, generalizedEigenspace f μ₂ k by
-    rw [← Submodule.mem_bot (R := R), ← (f.disjoint_iSup_generalizedEigenspace hμ₁₂).eq_bot]
+  suffices x ∈ ⨆ k, genEigenspace f μ₂ k by
+    rw [← Submodule.mem_bot (R := R), ← (f.disjoint_iSup_genEigenspace hμ₁₂).eq_bot]
     exact ⟨hx, this⟩
   obtain ⟨y, hy, z, hz, rfl⟩ := Submodule.mem_sup.mp hx'; clear hx'
   let g := f - algebraMap R (End R M) μ₂
   obtain ⟨k : ℕ, hk : (g ^ k) y = 0⟩ := by simpa using hy
   have hyz : (g ^ k) (y + z) ∈
-      (⨆ k, generalizedEigenspace f μ₁ k) ⊓ s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k := by
-    refine ⟨f.mapsTo_iSup_generalizedEigenspace_of_comm ?_ μ₁ hx, ?_⟩
+      (⨆ k, genEigenspace f μ₁ k) ⊓ s.sup fun μ ↦ ⨆ k, f.genEigenspace μ k := by
+    refine ⟨f.mapsTo_iSup_genEigenspace_of_comm ?_ μ₁ hx, ?_⟩
     · exact Algebra.mul_sub_algebraMap_pow_commutes f μ₂ k
     · rw [SetLike.mem_coe, map_add, hk, zero_add]
-      suffices (s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k).map (g ^ k) ≤
-          s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k by exact this (Submodule.mem_map_of_mem hz)
+      suffices (s.sup fun μ ↦ ⨆ k, f.genEigenspace μ k).map (g ^ k) ≤
+          s.sup fun μ ↦ ⨆ k, f.genEigenspace μ k by exact this (Submodule.mem_map_of_mem hz)
       simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := R), Submodule.map_iSup (ι := _ ∈ s)]
       refine iSup₂_mono fun μ _ ↦ ?_
       rintro - ⟨u, hu, rfl⟩
-      refine f.mapsTo_iSup_generalizedEigenspace_of_comm ?_ μ hu
+      refine f.mapsTo_iSup_genEigenspace_of_comm ?_ μ hu
       exact Algebra.mul_sub_algebraMap_pow_commutes f μ₂ k
   rw [ih.eq_bot, Submodule.mem_bot] at hyz
-  simp_rw [Submodule.mem_iSup_of_chain, mem_generalizedEigenspace]
+  simp_rw [Submodule.mem_iSup_of_chain, mem_genEigenspace]
   exact ⟨k, hyz⟩
+
+theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
+    CompleteLattice.Independent (fun μ ↦ ⨆ k, f.genEigenspace μ k) := by
+  simp_rw [← maxGenEigenspace_def]
+  apply independent_maxGenEigenspace
 
 /-- The eigenspaces of a linear operator form an independent family of subspaces of `M`.  That is,
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_independent [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent f.eigenspace :=
-  f.independent_generalizedEigenspace.mono fun μ ↦ le_iSup (generalizedEigenspace f μ) 1
+  f.independent_genEigenspace.mono fun μ ↦ le_iSup (genEigenspace f μ) 1
+
+/-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
+    independent. -/
+theorem eigenvectors_linearIndependent' {ι : Type*} [NoZeroSMulDivisors R M]
+    (f : End R M) (μ : ι → R) (hμ : Function.Injective μ) (v : ι → M)
+    (h_eigenvec : ∀ i, f.HasEigenvector (μ i) (v i)) : LinearIndependent R v :=
+  f.eigenspaces_independent.comp hμ |>.linearIndependent _
+    (fun i ↦ h_eigenvec i |>.left) (fun i ↦ h_eigenvec i |>.right)
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
     independent. (Lemma 5.10 of [axler2015])
 
     We use the eigenvalues as indexing set to ensure that there is only one eigenvector for each
-    eigenvalue in the image of `xs`. -/
+    eigenvalue in the image of `xs`.
+    See `Module.End.eigenvectors_linearIndependent'` for an indexed variant. -/
 theorem eigenvectors_linearIndependent [NoZeroSMulDivisors R M]
     (f : End R M) (μs : Set R) (xs : μs → M)
     (h_eigenvec : ∀ μ : μs, f.HasEigenvector μ (xs μ)) : LinearIndependent R xs :=
-  CompleteLattice.Independent.linearIndependent _
-    (f.eigenspaces_independent.comp Subtype.coe_injective) (fun μ => (h_eigenvec μ).1) fun μ =>
-    (h_eigenvec μ).2
-#align module.End.eigenvectors_linear_independent Module.End.eigenvectors_linearIndependent
+  f.eigenvectors_linearIndependent' (fun μ : μs ↦ μ) Subtype.coe_injective _ h_eigenvec
 
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
     of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/
-theorem generalizedEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ) (μ : R)
+theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ) (μ : R)
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
-    generalizedEigenspace (LinearMap.restrict f hfp) μ k =
-      Submodule.comap p.subtype (f.generalizedEigenspace μ k) := by
-  simp only [generalizedEigenspace, OrderHom.coe_mk, ← LinearMap.ker_comp]
+    genEigenspace (LinearMap.restrict f hfp) μ k =
+      Submodule.comap p.subtype (f.genEigenspace μ k) := by
+  simp only [genEigenspace_def, OrderHom.coe_mk, ← LinearMap.ker_comp]
   induction' k with k ih
   · rw [pow_zero, pow_zero, LinearMap.one_eq_id]
     apply (Submodule.ker_subtype _).symm
   · erw [pow_succ, pow_succ, LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
       LinearMap.comp_assoc]
-#align module.End.generalized_eigenspace_restrict Module.End.generalizedEigenspace_restrict
 
-lemma _root_.Submodule.inf_generalizedEigenspace (f : End R M) (p : Submodule R M) {k : ℕ} {μ : R}
+lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : ℕ} {μ : R}
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
-    p ⊓ f.generalizedEigenspace μ k =
-      (generalizedEigenspace (LinearMap.restrict f hfp) μ k).map p.subtype := by
-  rw [f.generalizedEigenspace_restrict _ _ _ hfp, Submodule.map_comap_eq, Submodule.range_subtype]
+    p ⊓ f.genEigenspace μ k =
+      (genEigenspace (LinearMap.restrict f hfp) μ k).map p.subtype := by
+  rw [f.genEigenspace_restrict _ _ _ hfp, Submodule.map_comap_eq, Submodule.range_subtype]
+
+lemma mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo
+    {p : Submodule R M} (f g : End R M) (hf : MapsTo f p p) (hg : MapsTo g p p) {μ₁ μ₂ : R}
+    (h : MapsTo f (g.maxGenEigenspace μ₁) (g.maxGenEigenspace μ₂)) :
+    MapsTo (f.restrict hf)
+      (maxGenEigenspace (g.restrict hg) μ₁)
+      (maxGenEigenspace (g.restrict hg) μ₂) := by
+  intro x hx
+  simp_rw [SetLike.mem_coe, mem_maxGenEigenspace, ← LinearMap.restrict_smul_one _,
+    LinearMap.restrict_sub _, LinearMap.pow_restrict _, LinearMap.restrict_apply,
+    Submodule.mk_eq_zero, ← mem_maxGenEigenspace] at hx ⊢
+  exact h hx
 
 /-- If `p` is an invariant submodule of an endomorphism `f`, then the `μ`-eigenspace of the
 restriction of `f` to `p` is a submodule of the `μ`-eigenspace of `f`. -/
@@ -445,26 +806,26 @@ theorem eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp
   rintro a ⟨x, hx, rfl⟩
   simp only [SetLike.mem_coe, mem_eigenspace_iff, LinearMap.restrict_apply] at hx ⊢
   exact congr_arg Subtype.val hx
-#align module.End.eigenspace_restrict_le_eigenspace Module.End.eigenspace_restrict_le_eigenspace
 
 /-- Generalized eigenrange and generalized eigenspace for exponent `finrank K V` are disjoint. -/
 theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End K V) (μ : K) :
-    Disjoint (f.generalizedEigenrange μ (finrank K V))
-      (f.generalizedEigenspace μ (finrank K V)) := by
+    Disjoint (f.genEigenrange μ (finrank K V))
+      (f.genEigenspace μ (finrank K V)) := by
   have h :=
     calc
-      Submodule.comap ((f - algebraMap _ _ μ) ^ finrank K V)
-        (f.generalizedEigenspace μ (finrank K V)) =
+      Submodule.comap ((f - μ • 1) ^ finrank K V)
+        (f.genEigenspace μ (finrank K V)) =
           LinearMap.ker ((f - algebraMap _ _ μ) ^ finrank K V *
             (f - algebraMap K (End K V) μ) ^ finrank K V) := by
-              rw [generalizedEigenspace, OrderHom.coe_mk, ← LinearMap.ker_comp]; rfl
-      _ = f.generalizedEigenspace μ (finrank K V + finrank K V) := by rw [← pow_add]; rfl
-      _ = f.generalizedEigenspace μ (finrank K V) := by
-        rw [generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le]; omega
-  rw [disjoint_iff_inf_le, generalizedEigenrange, LinearMap.range_eq_map,
-    Submodule.map_inf_eq_map_inf_comap, top_inf_eq, h]
+              rw [genEigenspace, OrderHom.coe_mk, unifEigenspace_nat, ← LinearMap.ker_comp]; rfl
+      _ = f.genEigenspace μ (finrank K V + finrank K V) := by
+              rw [← pow_add, genEigenspace, OrderHom.coe_mk, unifEigenspace_nat]; rfl
+      _ = f.genEigenspace μ (finrank K V) := by
+              rw [genEigenspace_eq_genEigenspace_finrank_of_le]; omega
+  rw [disjoint_iff_inf_le, genEigenrange, unifEigenrange_nat, LinearMap.range_eq_map,
+    Submodule.map_inf_eq_map_inf_comap, top_inf_eq, h,
+    genEigenspace, OrderHom.coe_mk, unifEigenspace_nat]
   apply Submodule.map_comap_le
-#align module.End.generalized_eigenvec_disjoint_range_ker Module.End.generalized_eigenvec_disjoint_range_ker
 
 /-- If an invariant subspace `p` of an endomorphism `f` is disjoint from the `μ`-eigenspace of `f`,
 then the restriction of `f` to `p` has trivial `μ`-eigenspace. -/
@@ -473,48 +834,45 @@ theorem eigenspace_restrict_eq_bot {f : End R M} {p : Submodule R M} (hfp : ∀ 
   rw [eq_bot_iff]
   intro x hx
   simpa using hμp.le_bot ⟨eigenspace_restrict_le_eigenspace f hfp μ ⟨x, hx, rfl⟩, x.prop⟩
-#align module.End.eigenspace_restrict_eq_bot Module.End.eigenspace_restrict_eq_bot
 
 /-- The generalized eigenspace of an eigenvalue has positive dimension for positive exponents. -/
-theorem pos_finrank_generalizedEigenspace_of_hasEigenvalue [FiniteDimensional K V] {f : End K V}
+theorem pos_finrank_genEigenspace_of_hasEigenvalue [FiniteDimensional K V] {f : End K V}
     {k : ℕ} {μ : K} (hx : f.HasEigenvalue μ) (hk : 0 < k) :
-    0 < finrank K (f.generalizedEigenspace μ k) :=
+    0 < finrank K (f.genEigenspace μ k) :=
   calc
     0 = finrank K (⊥ : Submodule K V) := by rw [finrank_bot]
     _ < finrank K (f.eigenspace μ) := Submodule.finrank_lt_finrank_of_lt (bot_lt_iff_ne_bot.2 hx)
-    _ ≤ finrank K (f.generalizedEigenspace μ k) :=
-      Submodule.finrank_mono ((f.generalizedEigenspace μ).monotone (Nat.succ_le_of_lt hk))
-
-#align module.End.pos_finrank_generalized_eigenspace_of_has_eigenvalue Module.End.pos_finrank_generalizedEigenspace_of_hasEigenvalue
+    _ ≤ finrank K (f.genEigenspace μ k) :=
+      Submodule.finrank_mono ((f.genEigenspace μ).monotone (Nat.succ_le_of_lt hk))
 
 /-- A linear map maps a generalized eigenrange into itself. -/
-theorem map_generalizedEigenrange_le {f : End K V} {μ : K} {n : ℕ} :
-    Submodule.map f (f.generalizedEigenrange μ n) ≤ f.generalizedEigenrange μ n :=
+theorem map_genEigenrange_le {f : End K V} {μ : K} {n : ℕ} :
+    Submodule.map f (f.genEigenrange μ n) ≤ f.genEigenrange μ n :=
   calc
-    Submodule.map f (f.generalizedEigenrange μ n) =
+    Submodule.map f (f.genEigenrange μ n) =
       LinearMap.range (f * (f - algebraMap _ _ μ) ^ n) := by
-        rw [generalizedEigenrange]; exact (LinearMap.range_comp _ _).symm
+        rw [genEigenrange, unifEigenrange_nat]; exact (LinearMap.range_comp _ _).symm
     _ = LinearMap.range ((f - algebraMap _ _ μ) ^ n * f) := by
         rw [Algebra.mul_sub_algebraMap_pow_commutes]
     _ = Submodule.map ((f - algebraMap _ _ μ) ^ n) (LinearMap.range f) := LinearMap.range_comp _ _
-    _ ≤ f.generalizedEigenrange μ n := LinearMap.map_le_range
+    _ ≤ f.genEigenrange μ n := by
+      rw [genEigenrange, unifEigenrange_nat]
+      apply LinearMap.map_le_range
 
-#align module.End.map_generalized_eigenrange_le Module.End.map_generalizedEigenrange_le
-
-lemma iSup_generalizedEigenspace_le_smul (f : Module.End R M) (μ t : R) :
-    (⨆ k, f.generalizedEigenspace μ k) ≤ ⨆ k, (t • f).generalizedEigenspace (t * μ) k := by
+lemma iSup_genEigenspace_le_smul (f : Module.End R M) (μ t : R) :
+    (⨆ k, f.genEigenspace μ k) ≤ ⨆ k, (t • f).genEigenspace (t * μ) k := by
   intro m hm
-  simp only [Submodule.mem_iSup_of_chain, mem_generalizedEigenspace] at hm ⊢
+  simp only [Submodule.mem_iSup_of_chain, mem_genEigenspace] at hm ⊢
   refine Exists.imp (fun k hk ↦ ?_) hm
   rw [mul_smul, ← smul_sub, smul_pow, LinearMap.smul_apply, hk, smul_zero]
 
-lemma iSup_generalizedEigenspace_inf_le_add
+lemma iSup_genEigenspace_inf_le_add
     (f₁ f₂ : End R M) (μ₁ μ₂ : R) (h : Commute f₁ f₂) :
-    (⨆ k, f₁.generalizedEigenspace μ₁ k) ⊓ (⨆ k, f₂.generalizedEigenspace μ₂ k) ≤
-    ⨆ k, (f₁ + f₂).generalizedEigenspace (μ₁ + μ₂) k := by
+    (⨆ k, f₁.genEigenspace μ₁ k) ⊓ (⨆ k, f₂.genEigenspace μ₂ k) ≤
+    ⨆ k, (f₁ + f₂).genEigenspace (μ₁ + μ₂) k := by
   intro m hm
   simp only [iSup_le_iff, Submodule.mem_inf, Submodule.mem_iSup_of_chain,
-    mem_generalizedEigenspace] at hm ⊢
+    mem_genEigenspace] at hm ⊢
   obtain ⟨⟨k₁, hk₁⟩, ⟨k₂, hk₂⟩⟩ := hm
   use k₁ + k₂ - 1
   have : f₁ + f₂ - (μ₁ + μ₂) • 1 = (f₁ - μ₁ • 1) + (f₂ - μ₂ • 1) := by
@@ -531,32 +889,32 @@ lemma iSup_generalizedEigenspace_inf_le_add
       LinearMap.map_zero]
   · rw [LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hj hk₂, LinearMap.map_zero]
 
-lemma map_smul_of_iInf_generalizedEigenspace_ne_bot [NoZeroSMulDivisors R M]
+lemma map_smul_of_iInf_genEigenspace_ne_bot [NoZeroSMulDivisors R M]
     {L F : Type*} [SMul R L] [FunLike F L (End R M)] [MulActionHomClass F R L (End R M)] (f : F)
-    (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).generalizedEigenspace (μ x) k ≠ ⊥)
+    (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).genEigenspace (μ x) k ≠ ⊥)
     (t : R) (x : L) :
     μ (t • x) = t • μ x := by
   by_contra contra
-  let g : L → Submodule R M := fun x ↦ ⨆ k, (f x).generalizedEigenspace (μ x) k
+  let g : L → Submodule R M := fun x ↦ ⨆ k, (f x).genEigenspace (μ x) k
   have : ⨅ x, g x ≤ g x ⊓ g (t • x) := le_inf_iff.mpr ⟨iInf_le g x, iInf_le g (t • x)⟩
   refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
-  apply Disjoint.mono_left (iSup_generalizedEigenspace_le_smul (f x) (μ x) t)
+  apply Disjoint.mono_left (iSup_genEigenspace_le_smul (f x) (μ x) t)
   simp only [g, map_smul]
-  exact disjoint_iSup_generalizedEigenspace (t • f x) (Ne.symm contra)
+  exact disjoint_iSup_genEigenspace (t • f x) (Ne.symm contra)
 
-lemma map_add_of_iInf_generalizedEigenspace_ne_bot_of_commute [NoZeroSMulDivisors R M]
+lemma map_add_of_iInf_genEigenspace_ne_bot_of_commute [NoZeroSMulDivisors R M]
     {L F : Type*} [Add L] [FunLike F L (End R M)] [AddHomClass F L (End R M)] (f : F)
-    (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).generalizedEigenspace (μ x) k ≠ ⊥)
+    (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).genEigenspace (μ x) k ≠ ⊥)
     (h : ∀ x y, Commute (f x) (f y)) (x y : L) :
     μ (x + y) = μ x + μ y := by
   by_contra contra
-  let g : L → Submodule R M := fun x ↦ ⨆ k, (f x).generalizedEigenspace (μ x) k
+  let g : L → Submodule R M := fun x ↦ ⨆ k, (f x).genEigenspace (μ x) k
   have : ⨅ x, g x ≤ (g x ⊓ g y) ⊓ g (x + y) :=
     le_inf_iff.mpr ⟨le_inf_iff.mpr ⟨iInf_le g x, iInf_le g y⟩, iInf_le g (x + y)⟩
   refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
-  apply Disjoint.mono_left (iSup_generalizedEigenspace_inf_le_add (f x) (f y) (μ x) (μ y) (h x y))
+  apply Disjoint.mono_left (iSup_genEigenspace_inf_le_add (f x) (f y) (μ x) (μ y) (h x y))
   simp only [g, map_add]
-  exact disjoint_iSup_generalizedEigenspace (f x + f y) (Ne.symm contra)
+  exact disjoint_iSup_genEigenspace (f x + f y) (Ne.symm contra)
 
 end End
 

@@ -3,7 +3,7 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.Order.Filter.Basic
 
 /-!
@@ -16,16 +16,16 @@ cardinality `≤ a`. Then `t` itself has cardinality at most `a`. This is proved
 Versions are also given when `t = univ`, and with `= a` instead of `≤ a`.
 -/
 
-set_option autoImplicit true
-
 open Set Order Filter
 open scoped Cardinal
 
 namespace Cardinal
 
+universe u v
+
 /-- If a set `t` is eventually covered by a countable family of sets, all with cardinality at
 most `a`, then the cardinality of `t` is also bounded by `a`.
-Supersed by `mk_le_of_countable_eventually_mem` which does not assume
+Superseded by `mk_le_of_countable_eventually_mem` which does not assume
 that the indexing set lives in the same universe. -/
 lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardinal}
     [Countable ι] {f : ι → Set α} {l : Filter ι} [NeBot l]
@@ -45,7 +45,7 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
     have I1 : s.card ≤ u.card := by
       have : s ⊆ u := fun x hx ↦ by simpa only [u, Set.mem_toFinset] using hi x hx
       exact Finset.card_le_card this
-    have I2: (u.card : Cardinal) ≤ n := by
+    have I2 : (u.card : Cardinal) ≤ n := by
       convert h'f i; simp only [u, Set.toFinset_card, mk_fintype]
     exact I1.trans (Nat.cast_le.1 I2)
   -- case `a` infinite:

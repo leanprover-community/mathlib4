@@ -110,11 +110,18 @@ instance [K.HasHomology i] [K.HasHomology j] :
   dsimp
   infer_instance
 
+#adaptation_note /-- nightly-2024-03-11
+We turn off simprocs here.
+Ideally someone will investigate whether `simp` lemmas can be rearranged
+so that this works without the `set_option`,
+*or* come up with a proposal regarding finer control of disabling simprocs. -/
+set_option simprocs false in
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
   dsimp
   infer_instance
 
+include hij in
 /-- The diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j` is exact
 when `c.Rel i j`. -/
 lemma composableArrows₃_exact [CategoryWithHomology C] :
@@ -145,6 +152,12 @@ variable (C)
 
 attribute [local simp] homologyMap_comp cyclesMap_comp opcyclesMap_comp
 
+#adaptation_note /-- nightly-2024-03-11
+We turn off simprocs here.
+Ideally someone will investigate whether `simp` lemmas can be rearranged
+so that this works without the `set_option`,
+*or* come up with a proposal regarding finer control of disabling simprocs. -/
+set_option simprocs false in
 /-- The functor `HomologicalComplex C c ⥤ ComposableArrows C 3` that maps `K` to the
 diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j`. -/
 @[simps]
@@ -173,13 +186,13 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
   have : Epi (ShortComplex.map S (eval C c i)).g := by dsimp; infer_instance
   have hj := (hS.map (HomologicalComplex.eval C c i)).gIsCokernel
   apply ShortComplex.exact_of_g_is_cokernel
-  refine' CokernelCofork.IsColimit.ofπ' _ _  (fun {A} k hk => by
+  refine CokernelCofork.IsColimit.ofπ' _ _  (fun {A} k hk => by
     dsimp at k hk ⊢
     have H := CokernelCofork.IsColimit.desc' hj (S.X₂.pOpcycles i ≫ k) (by
       dsimp
       rw [← p_opcyclesMap_assoc, hk, comp_zero])
     dsimp at H
-    refine' ⟨S.X₃.descOpcycles H.1 _ rfl _, _⟩
+    refine ⟨S.X₃.descOpcycles H.1 _ rfl ?_, ?_⟩
     · rw [← cancel_epi (S.g.f (c.prev i)), comp_zero, Hom.comm_assoc, H.2,
         d_pOpcycles_assoc, zero_comp]
     · rw [← cancel_epi (S.X₂.pOpcycles i), opcyclesMap_comp_descOpcycles, p_descOpcycles, H.2])
@@ -201,7 +214,7 @@ lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exac
       dsimp
       rw [assoc, ← cyclesMap_i, reassoc_of% hk, zero_comp])
     dsimp at H
-    refine' ⟨S.X₁.liftCycles H.1 _ rfl _, _⟩
+    refine ⟨S.X₁.liftCycles H.1 _ rfl ?_, ?_⟩
     · rw [← cancel_mono (S.f.f _), assoc, zero_comp, ← Hom.comm, reassoc_of% H.2,
         iCycles_d, comp_zero]
     · rw [← cancel_mono (S.X₂.iCycles i), liftCycles_comp_cyclesMap, liftCycles_i, H.2])
@@ -216,7 +229,9 @@ such that `c.Rel i j`, this is the snake diagram whose four lines are respective
 obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c i`,
 `cyclesFunctor C c j`, `homologyFunctor C c j` to `S`. Applying the snake lemma to this
 gives the homology sequence of `S`. -/
-noncomputable def snakeInput : ShortComplex.SnakeInput C where
+@[simps]
+noncomputable def snakeInput (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
+    ShortComplex.SnakeInput C where
   L₀ := (homologyFunctor C c i).mapShortComplex.obj S
   L₁ := (opcyclesFunctor C c i).mapShortComplex.obj S
   L₂ := (cyclesFunctor C c j).mapShortComplex.obj S
@@ -268,7 +283,7 @@ namespace ShortComplex
 namespace ShortExact
 
 /-- The connecting homoomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short exact
-short complex `S`.  -/
+short complex `S`. -/
 noncomputable def δ : S.X₃.homology i ⟶ S.X₁.homology j := (snakeInput hS i j hij).δ
 
 @[reassoc (attr := simp)]
@@ -283,6 +298,7 @@ lemma comp_δ : HomologicalComplex.homologyMap S.g i ≫ hS.δ i j hij = 0 :=
 lemma homology_exact₁ : (ShortComplex.mk _ _ (δ_comp hS i j hij)).Exact :=
   (snakeInput hS i j hij).L₂'_exact
 
+include hS in
 /-- Exactness of `S.X₁.homology i ⟶ S.X₂.homology i ⟶ S.X₃.homology i`. -/
 lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i)
     (HomologicalComplex.homologyMap S.g i) (by rw [← HomologicalComplex.homologyMap_comp,

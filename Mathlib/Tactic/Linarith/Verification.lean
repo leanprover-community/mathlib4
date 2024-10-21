@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 
-import Mathlib.Tactic.Linarith.Elimination
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Util.Qq
 
@@ -20,11 +19,11 @@ This file implements the reconstruction.
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
 
-set_option autoImplicit true
-
 open Lean Elab Tactic Meta
 
 namespace Qq
+
+variable {u : Level}
 
 /-- Typesafe conversion of `n : ℕ` to `Q($α)`. -/
 def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
@@ -47,7 +46,7 @@ open Qq
 /-! ### Auxiliary functions for assembling proofs -/
 
 /-- A typesafe version of `mulExpr`. -/
-def mulExpr' (n : ℕ) {α : Q(Type $u)} (inst : Q(Semiring $α)) (e : Q($α)) : Q($α) :=
+def mulExpr' {u : Level} (n : ℕ) {α : Q(Type $u)} (inst : Q(Semiring $α)) (e : Q($α)) : Q($α) :=
   if n = 1 then e else
     let n := ofNatQ α inst n
     q($n * $e)
@@ -62,7 +61,7 @@ def mulExpr (n : ℕ) (e : Expr) : MetaM Expr := do
   return mulExpr' n inst e
 
 /-- A type-safe analogue of `addExprs`. -/
-def addExprs' {α : Q(Type $u)} (_inst : Q(AddMonoid $α)) : List Q($α) → Q($α)
+def addExprs' {u : Level} {α : Q(Type $u)} (_inst : Q(AddMonoid $α)) : List Q($α) → Q($α)
   | []   => q(0)
   | h::t => go h t
     where
@@ -169,9 +168,7 @@ def proveEqZeroUsing (tac : TacticM Unit) (e : Expr) : MetaM Expr := do
 Given a list `l` of proofs of `tᵢ Rᵢ 0`,
 it tries to derive a contradiction from `l` and use this to produce a proof of `False`.
 
-An oracle is used to search for a certificate of unsatisfiability.
-In the current implementation, this is the Fourier Motzkin elimination routine in
-`Elimination.lean`, but other oracles could easily be swapped in.
+`oracle : CertificateOracle` is used to search for a certificate of unsatisfiability.
 
 The returned certificate is a map `m` from hypothesis indices to natural number coefficients.
 If our set of hypotheses has the form `{tᵢ Rᵢ 0}`,
@@ -184,14 +181,17 @@ We have also that
 since for each `i`, `(m i)*tᵢ ≤ 0` and at least one is strictly negative.
 So we conclude a contradiction `0 < 0`.
 
-It remains to produce proofs of (1) and (2). (1) is verified by calling the `discharger` tactic
-of the `LinarithConfig` object, which is typically `ring`. We prove (2) by folding over the
-set of hypotheses.
+It remains to produce proofs of (1) and (2). (1) is verified by calling the provided `discharger`
+tactic, which is typically `ring`. We prove (2) by folding over the set of hypotheses.
+
+`transparency : TransparencyMode` controls the transparency level with which atoms are identified.
 -/
-def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM Expr
+def proveFalseByLinarith (transparency : TransparencyMode) (oracle : CertificateOracle)
+    (discharger : TacticM Unit) : MVarId → List Expr → MetaM Expr
   | _, [] => throwError "no args to linarith"
   | g, l@(h::_) => do
       trace[linarith.detail] "Beginning work in `proveFalseByLinarith`."
+      Lean.Core.checkSystem decl_name%.toString
       -- for the elimination to work properly, we must add a proof of `-1 < 0` to the list,
       -- along with negated equality proofs.
       let l' ← addNegEqProofs l
@@ -199,27 +199,26 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
       let inputs := (← mkNegOneLtZeroProof (← typeOfIneqProof h))::l'.reverse
       trace[linarith.detail] "... finished `mkNegOneLtZeroProof`."
       trace[linarith.detail] (← inputs.mapM inferType)
-      let (comps, max_var) ← linearFormsAndMaxVar cfg.transparency inputs
+      let (comps, max_var) ← linearFormsAndMaxVar transparency inputs
       trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
       trace[linarith.detail] "{comps}"
-      let oracle := cfg.oracle.getD FourierMotzkin.produceCertificate
       -- perform the elimination and fail if no contradiction is found.
       let certificate : Std.HashMap Nat Nat ← try
-        oracle comps max_var
+        oracle.produceCertificate comps max_var
       catch e =>
         trace[linarith] e.toMessageData
         throwError "linarith failed to find a contradiction"
       trace[linarith] "linarith has found a contradiction: {certificate.toList}"
       let enum_inputs := inputs.enum
       -- construct a list pairing nonzero coeffs with the proof of their corresponding comparison
-      let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate.find? n).map (e, ·)
+      let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate[n]?).map (e, ·)
       let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
       -- `sm` is the sum of input terms, scaled to cancel out all variables.
       let sm ← addExprs mls
       -- let sm ← instantiateMVars sm
       trace[linarith] "The expression\n  {sm}\nshould be both 0 and negative"
       -- we prove that `sm = 0`, typically with `ring`.
-      let sm_eq_zero ← proveEqZeroUsing cfg.discharger sm
+      let sm_eq_zero ← proveEqZeroUsing discharger sm
       -- we also prove that `sm < 0`
       let sm_lt_zero ← mkLTZeroProof zip
       -- this is a contradiction.

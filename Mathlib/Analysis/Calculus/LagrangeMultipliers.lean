@@ -7,8 +7,6 @@ import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 import Mathlib.LinearAlgebra.Dual
 
-#align_import analysis.calculus.lagrange_multipliers from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Lagrange multipliers
 
@@ -32,7 +30,7 @@ lagrange multiplier, local extremum
 
 open Filter Set
 
-open scoped Topology Filter BigOperators
+open scoped Topology Filter
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {f : E → F} {φ : E → ℝ} {x₀ : E}
@@ -51,7 +49,6 @@ theorem IsLocalExtrOn.range_ne_top_of_hasStrictFDerivAt
     rw [← map_map, nhdsWithin, map_inf_principal_preimage, (hf'.prod hφ').map_nhds_eq_of_surj htop]
     exact map_snd_nhdsWithin _
   exact hextr.not_nhds_le_map A.ge
-#align is_local_extr_on.range_ne_top_of_has_strict_fderiv_at IsLocalExtrOn.range_ne_top_of_hasStrictFDerivAt
 
 /-- Lagrange multipliers theorem: if `φ : E → ℝ` has a local extremum on the set `{x | f x = f x₀}`
 at `x₀`, both `f : E → F` and `φ` are strictly differentiable at `x₀`, and the codomain of `f` is
@@ -68,7 +65,7 @@ theorem IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
     ((LinearEquiv.refl ℝ (F →ₗ[ℝ] ℝ)).prod (LinearMap.ringLmapEquivSelf ℝ ℝ ℝ).symm).trans
       (LinearMap.coprodEquiv ℝ)
   rcases e.surjective Λ' with ⟨⟨Λ, Λ₀⟩, rfl⟩
-  refine' ⟨Λ, Λ₀, e.map_ne_zero_iff.1 h0, fun x => _⟩
+  refine ⟨Λ, Λ₀, e.map_ne_zero_iff.1 h0, fun x => ?_⟩
   convert LinearMap.congr_fun (LinearMap.range_le_ker_iff.1 hΛ') x using 1
   -- squeezed `simp [mul_comm]` to speed up elaboration
   simp only [e, smul_eq_mul, LinearEquiv.trans_apply, LinearEquiv.prod_apply,
@@ -76,7 +73,6 @@ theorem IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
     ContinuousLinearMap.coe_prod, LinearMap.coprod_comp_prod, LinearMap.add_apply,
     LinearMap.coe_comp, ContinuousLinearMap.coe_coe, Function.comp_apply, LinearMap.coe_smulRight,
     LinearMap.one_apply, mul_comm]
-#align is_local_extr_on.exists_linear_map_of_has_strict_fderiv_at IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
 
 /-- Lagrange multipliers theorem: if `φ : E → ℝ` has a local extremum on the set `{x | f x = f x₀}`
 at `x₀`, and both `f : E → ℝ` and `φ` are strictly differentiable at `x₀`, then there exist
@@ -85,17 +81,16 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d {f : E → ℝ}
     (hextr : IsLocalExtrOn φ {x | f x = f x₀} x₀) (hf' : HasStrictFDerivAt f f' x₀)
     (hφ' : HasStrictFDerivAt φ φ' x₀) : ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • f' + b • φ' = 0 := by
   obtain ⟨Λ, Λ₀, hΛ, hfΛ⟩ := hextr.exists_linear_map_of_hasStrictFDerivAt hf' hφ'
-  refine' ⟨Λ 1, Λ₀, _, _⟩
+  refine ⟨Λ 1, Λ₀, ?_, ?_⟩
   · contrapose! hΛ
     simp only [Prod.mk_eq_zero] at hΛ ⊢
-    refine' ⟨LinearMap.ext fun x => _, hΛ.2⟩
+    refine ⟨LinearMap.ext fun x => ?_, hΛ.2⟩
     simpa [hΛ.1] using Λ.map_smul x 1
   · ext x
     have H₁ : Λ (f' x) = f' x * Λ 1 := by
       simpa only [mul_one, Algebra.id.smul_eq_mul] using Λ.map_smul (f' x) 1
     have H₂ : f' x * Λ 1 + Λ₀ * φ' x = 0 := by simpa only [Algebra.id.smul_eq_mul, H₁] using hfΛ x
     simpa [mul_comm] using H₂
-#align is_local_extr_on.exists_multipliers_of_has_strict_fderiv_at_1d IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d
 
 /-- Lagrange multipliers theorem, 1d version. Let `f : ι → E → ℝ` be a finite family of functions.
 Suppose that `φ : E → ℝ` has a local extremum on the set `{x | ∀ i, f i x = f i x₀}` at `x₀`.
@@ -111,15 +106,14 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type*} [Fint
     ∃ (Λ : ι → ℝ) (Λ₀ : ℝ), (Λ, Λ₀) ≠ 0 ∧ (∑ i, Λ i • f' i) + Λ₀ • φ' = 0 := by
   letI := Classical.decEq ι
   replace hextr : IsLocalExtrOn φ {x | (fun i => f i x) = fun i => f i x₀} x₀ := by
-    simpa only [Function.funext_iff] using hextr
+    simpa only [funext_iff] using hextr
   rcases hextr.exists_linear_map_of_hasStrictFDerivAt (hasStrictFDerivAt_pi.2 fun i => hf' i)
       hφ' with
     ⟨Λ, Λ₀, h0, hsum⟩
   rcases (LinearEquiv.piRing ℝ ℝ ι ℝ).symm.surjective Λ with ⟨Λ, rfl⟩
-  refine' ⟨Λ, Λ₀, _, _⟩
+  refine ⟨Λ, Λ₀, ?_, ?_⟩
   · simpa only [Ne, Prod.ext_iff, LinearEquiv.map_eq_zero_iff, Prod.fst_zero] using h0
   · ext x; simpa [mul_comm] using hsum x
-#align is_local_extr_on.exists_multipliers_of_has_strict_fderiv_at IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt
 
 /-- Lagrange multipliers theorem. Let `f : ι → E → ℝ` be a finite family of functions.
 Suppose that `φ : E → ℝ` has a local extremum on the set `{x | ∀ i, f i x = f i x₀}` at `x₀`.
@@ -136,8 +130,7 @@ theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite
   cases nonempty_fintype ι
   rw [Fintype.linearIndependent_iff]; push_neg
   rcases hextr.exists_multipliers_of_hasStrictFDerivAt hf' hφ' with ⟨Λ, Λ₀, hΛ, hΛf⟩
-  refine' ⟨Option.elim' Λ₀ Λ, _, _⟩
+  refine ⟨Option.elim' Λ₀ Λ, ?_, ?_⟩
   · simpa [add_comm] using hΛf
-  · simpa only [Function.funext_iff, not_and_or, or_comm, Option.exists, Prod.mk_eq_zero, Ne,
+  · simpa only [funext_iff, not_and_or, or_comm, Option.exists, Prod.mk_eq_zero, Ne,
       not_forall] using hΛ
-#align is_local_extr_on.linear_dependent_of_has_strict_fderiv_at IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt

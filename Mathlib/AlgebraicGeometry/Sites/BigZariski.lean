@@ -38,7 +38,7 @@ namespace Scheme
 /-- The Zariski pretopology on the category of schemes. -/
 def zariskiPretopology : Pretopology (Scheme.{u}) where
   coverings Y S := ∃ (U : OpenCover.{u} Y), S = Presieve.ofArrows U.obj U.map
-  has_isos Y X f _ := ⟨openCoverOfIsIso f, (Presieve.ofArrows_pUnit _).symm⟩
+  has_isos _ _ f _ := ⟨openCoverOfIsIso f, (Presieve.ofArrows_pUnit _).symm⟩
   pullbacks := by
     rintro Y X f _ ⟨U, rfl⟩
     exact ⟨U.pullbackCover' f, (Presieve.ofArrows_pullback _ _ _).symm⟩
@@ -64,9 +64,9 @@ lemma zariskiTopology_openCover {Y : Scheme.{u}} (U : OpenCover.{v} Y) :
       obj := fun y => U.obj (U.f y)
       map := fun y => U.map (U.f y)
       f := id
-      Covers := U.Covers
+      covers := U.covers
       IsOpen := fun _ => U.IsOpen _ }
-  refine' ⟨_, zariskiPretopology_openCover V, _⟩
+  refine ⟨_, zariskiPretopology_openCover V, ?_⟩
   rintro _ _ ⟨y⟩
   exact ⟨_, 𝟙 _, U.map (U.f y), ⟨_⟩, by simp⟩
 

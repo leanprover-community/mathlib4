@@ -3,9 +3,10 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Ring.Prod
+import Mathlib.Algebra.Order.Ring.Prod
 import Mathlib.Data.Int.Interval
 import Mathlib.Order.Disjointed
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
@@ -23,13 +24,15 @@ We don't need the full ring structure, only that there is an order embedding `�
 /-! ### General locally finite ordered ring -/
 
 namespace Finset
-variable {α : Type*} [OrderedRing α] [LocallyFiniteOrder α] [DecidableEq α] {n : ℕ}
-
-/-- Hollow box centered at `0 : α` going from `-n` to `n`. -/
-def box : ℕ → Finset α := disjointed fun n ↦ Icc (-n : α) n
+variable {α : Type*} [OrderedRing α] [LocallyFiniteOrder α] {n : ℕ}
 
 private lemma Icc_neg_mono : Monotone fun n : ℕ ↦ Icc (-n : α) n := by
   refine fun m n hmn ↦ by apply Icc_subset_Icc <;> simpa using Nat.mono_cast hmn
+
+variable [DecidableEq α]
+
+/-- Hollow box centered at `0 : α` going from `-n` to `n`. -/
+def box : ℕ → Finset α := disjointed fun n ↦ Icc (-n : α) n
 
 @[simp] lemma box_zero : (box 0 : Finset α) = {0} := by simp [box]
 
@@ -48,6 +51,9 @@ lemma box_succ_disjUnion (n : ℕ) :
 
 @[simp] lemma zero_mem_box : (0 : α) ∈ box n ↔ n = 0 := by cases n <;> simp [box_succ_eq_sdiff]
 
+lemma eq_zero_iff_eq_zero_of_mem_box  {x : α} (hx : x ∈ box n) : x = 0 ↔ n = 0 :=
+  ⟨zero_mem_box.mp ∘ (· ▸ hx), fun hn ↦ by rwa [hn, box_zero, mem_singleton] at hx⟩
+
 end Finset
 
 open Finset
@@ -62,7 +68,9 @@ variable {α β : Type*} [OrderedRing α] [OrderedRing β] [LocallyFiniteOrder �
     (box (n + 1) : Finset (α × β)).card =
       (Icc (-n.succ : α) n.succ).card * (Icc (-n.succ : β) n.succ).card -
         (Icc (-n : α) n).card * (Icc (-n : β) n).card := by
-  rw [box_succ_eq_sdiff, card_sdiff (Icc_neg_mono n.le_succ), Prod.card_Icc, Prod.card_Icc]; rfl
+  rw [box_succ_eq_sdiff, card_sdiff (Icc_neg_mono n.le_succ), Finset.card_Icc_prod,
+    Finset.card_Icc_prod]
+  rfl
 
 end Prod
 
@@ -85,9 +93,9 @@ lemma card_box : ∀ {n}, n ≠ 0 → (box n : Finset (ℤ × ℤ)).card = 8 * n
   | 0 => by simp [Prod.ext_iff]
   | n + 1 => by
     simp [box_succ_eq_sdiff, Prod.le_def]
-    -- Adaptation note: v4.7.0-rc1. `omega` no longer identifies atoms up to defeq.
-    -- (This had become a performance bottleneck.)
-    -- We need a tactic for normalising instances, to avoid the `have`/`simp` dance below:
+    #adaptation_note /-- v4.7.0-rc1: `omega` no longer identifies atoms up to defeq.
+    (This had become a performance bottleneck.)
+    We need a tactic for normalising instances, to avoid the `have`/`simp` dance below: -/
     have : @Nat.cast ℤ instNatCastInt n = @Nat.cast ℤ AddMonoidWithOne.toNatCast n := rfl
     simp only [this]
     omega

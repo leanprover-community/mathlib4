@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Star.Basic
 
 /-!
 # Commutative star-ordered rings are ordered rings
@@ -23,7 +23,7 @@ namespace StarOrderedRing
 
 /- This example shows that nonnegative elements in a ordered semiring which is also star-ordered
 must commute. We provide this only as an example as opposed to a lemma because we never expect the
-type class assumptions to be satisfied without a `CommSemiring` intance already in scope; not that
+type class assumptions to be satisfied without a `CommSemiring` instance already in scope; not that
 it is impossible, only that it shouldn't occur in practice. -/
 example {R : Type*} [OrderedSemiring R] [StarRing R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x)
     (hy : 0 ≤ y) : x * y = y * x := by
@@ -35,7 +35,7 @@ argument in the instance below for `mul_le_mul_of_nonneg_right`. -/
 private lemma mul_le_mul_of_nonneg_left {R : Type*} [CommSemiring R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] {a b c : R} (hab : a ≤ b) (hc : 0 ≤ c) : c * a ≤ c * b := by
   rw [StarOrderedRing.nonneg_iff] at hc
-  induction hc using AddSubmonoid.closure_induction' with
+  induction hc using AddSubmonoid.closure_induction with
   | mem _ h =>
     obtain ⟨x, rfl⟩ := h
     simp_rw [mul_assoc, mul_comm x, ← mul_assoc]
@@ -51,11 +51,10 @@ This is not registered as an instance because it introduces a type class loop be
 and `OrderedCommSemiring`, and it seem loops still cause issues sometimes.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def toOrderedCommSemiring (R : Type*) [CommSemiring R] [PartialOrder R]
+abbrev toOrderedCommSemiring (R : Type*) [CommSemiring R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : OrderedCommSemiring R where
   add_le_add_left _ _ := add_le_add_left
-  zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
+  zero_le_one := zero_le_one
   mul_comm := mul_comm
   mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
   mul_le_mul_of_nonneg_right a b c := by simpa only [mul_comm _ c] using mul_le_mul_of_nonneg_left
@@ -66,10 +65,11 @@ This is not registered as an instance because it introduces a type class loop be
 and `OrderedCommSemiring`, and it seem loops still cause issues sometimes.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
+abbrev toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : OrderedCommRing R where
   add_le_add_left _ _ := add_le_add_left
-  zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
+  zero_le_one := zero_le_one
   mul_comm := mul_comm
   mul_nonneg _ _ := let _ := toOrderedCommSemiring R; mul_nonneg
+
+end StarOrderedRing
