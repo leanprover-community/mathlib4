@@ -249,17 +249,20 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
       refine ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ ?_⟩
       exact compactCovering_subset _ (le_max_right _ _) hn
 
-protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEmbedding e) :
+protected theorem IsClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : IsClosedEmbedding e) :
     SigmaCompactSpace Y :=
   ⟨⟨fun n => e ⁻¹' compactCovering X n, fun _ =>
       he.isCompact_preimage (isCompact_compactCovering _ _), by
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.sigmaCompactSpace := IsClosedEmbedding.sigmaCompactSpace
+
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
-  (closedEmbedding_subtype_val hs).sigmaCompactSpace
+  hs.isClosedEmbedding_subtypeVal.sigmaCompactSpace
 
 instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
-  ULift.closedEmbedding_down.sigmaCompactSpace
+  ULift.isClosedEmbedding_down.sigmaCompactSpace
 
 /-- If `X` is a `σ`-compact space, then a locally finite family of nonempty sets of `X` can have
 only countably many elements, `Set.Countable` version. -/

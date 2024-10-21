@@ -41,6 +41,7 @@
   "Mathlib.Control.Traversable.Lemmas",
   "Mathlib.Data.Finsupp.Notation",
   "Mathlib.Data.Int.Defs",
+  "Mathlib.Data.Int.Notation",
   "Mathlib.Data.Matrix.Notation",
   "Mathlib.Data.Matroid.Init",
   "Mathlib.Data.Nat.Notation",
@@ -148,7 +149,6 @@
   "Mathlib.Tactic.Recover",
   "Mathlib.Tactic.ReduceModChar.Ext",
   "Mathlib.Tactic.Relation.Symm",
-  "Mathlib.Tactic.Relation.Trans",
   "Mathlib.Tactic.Rename",
   "Mathlib.Tactic.RenameBVar",
   "Mathlib.Tactic.Replace",
@@ -219,7 +219,7 @@
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.Positivity.Finset":
-  ["Mathlib.Data.Finset.Density", "Mathlib.Data.Fintype.Card"],
+  ["Mathlib.Algebra.Order.BigOperators.Group.Finset", "Mathlib.Data.Finset.Density"],
   "Mathlib.Tactic.Positivity.Basic":
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
@@ -295,7 +295,6 @@
   ["Mathlib.Algebra.Group.ZeroOne", "Mathlib.Tactic.Bound.Init"],
   "Mathlib.Tactic.Bound":
   ["Mathlib.Algebra.Order.AbsoluteValue",
-   "Mathlib.Algebra.Order.BigOperators.Group.Finset",
    "Mathlib.Algebra.Order.Floor",
    "Mathlib.Analysis.Analytic.Basic",
    "Mathlib.Tactic.Bound.Init"],
@@ -325,6 +324,7 @@
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
+  "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.NumberTheory.Harmonic.Defs":
   ["Mathlib.Algebra.Order.BigOperators.Ring.Finset",
@@ -366,12 +366,11 @@
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
   "Mathlib.Data.List.ProdSigma":
   ["Batteries.Data.Nat.Lemmas", "Mathlib.Data.List.Basic"],
-  "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
+  "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertIdx"],
   "Mathlib.Data.List.Defs": ["Batteries.Data.RBMap.Basic"],
   "Mathlib.Data.List.Basic":
   ["Mathlib.Control.Basic", "Mathlib.Data.Option.Basic"],
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
-  "Mathlib.Data.Int.Order.Basic": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
@@ -424,7 +423,6 @@
   "Mathlib.Algebra.Group.Units.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
-  "Mathlib.Algebra.Group.Defs": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],

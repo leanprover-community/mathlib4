@@ -77,11 +77,6 @@ def Simps.apply (f : AbsoluteValue R S) : R → S :=
 
 initialize_simps_projections AbsoluteValue (toMulHom_toFun → apply)
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.has_coe_to_fun`
-directly. -/
-instance : CoeFun (AbsoluteValue R S) fun _ => R → S :=
-  DFunLike.hasCoeToFun
-
 @[simp]
 theorem coe_toMulHom : ⇑abv.toMulHom = abv :=
   rfl
