@@ -6,7 +6,6 @@ Authors: Patrick Massot
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.UniformSpace.OfFun
 
 /-!
