@@ -301,10 +301,10 @@ variable [Monoid N] {F : Type*} [EquivLike F M N] [MulEquivClass F M N] (f : F)
 open MulEquiv
 
 theorem Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
-  let f := MulEquivClass.toMulEquiv f
-  ⟨fun g ↦ h.1 g.of_map, fun a b g ↦
-    .elim (h.2 _ _ (symm_apply_apply f x ▸ map_mul f.symm a b ▸ congrArg f.symm g))
-    (fun h ↦ .inl h.of_map) (fun h ↦ .inr h.of_map)⟩
+  ⟨fun g ↦ h.not_unit g.of_map, fun a b g ↦
+    let f := MulEquivClass.toMulEquiv f
+    (h.isUnit_or_isUnit (symm_apply_apply f x ▸ map_mul f.symm a b ▸ congrArg f.symm g)).imp
+      (·.of_map) (·.of_map)⟩
 
 theorem MulEquiv.irreducible_iff (f : F) {a : M} :
     Irreducible (f a) ↔ Irreducible a :=
