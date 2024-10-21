@@ -40,7 +40,7 @@ def id (x : V) : 𝟙_ V ⟶ (ihom x).obj x := curry (ρ_ x).hom
 /-- The *uncurried* composition morphism
   `x ⊗ (hom(x, y) ⊗ hom(y, z)) ⟶ (x ⊗ hom(x, y)) ⊗ hom(y, z) ⟶ y ⊗ hom(y, z) ⟶ z`.
 The V-composition morphism is defined as the adjoint transpose of this map. -/
-def compTranspose (x y z : V) :=
+def compTranspose (x y z : V) : x ⊗ (ihom x).obj y ⊗ (ihom y).obj z ⟶ z :=
   (α_ x ((ihom x).obj y) ((ihom y).obj z)).inv ≫
     (ihom.ev x).app y ▷ ((ihom y).obj z) ≫
     (ihom.ev y).app z
