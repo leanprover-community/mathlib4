@@ -587,13 +587,8 @@ theorem coe_equivMapOfInjective_apply (f : M →* N) (hf : Function.Injective f)
 
 @[to_additive (attr := simp)]
 theorem closure_closure_coe_preimage {s : Set M} : closure (((↑) : closure s → M) ⁻¹' s) = ⊤ :=
-  eq_top_iff.2 fun x =>
-    Subtype.recOn x fun x hx _ => by
-      refine closure_induction'
-        (p := fun y hy ↦ (⟨y, hy⟩ : closure s) ∈ closure (((↑) : closure s → M) ⁻¹' s))
-          (fun g hg => subset_closure hg) ?_ (fun g₁ g₂ hg₁ hg₂ => ?_) hx
-      · exact Submonoid.one_mem _
-      · exact Submonoid.mul_mem _
+  eq_top_iff.2 fun x _ ↦ Subtype.recOn x fun _ hx' ↦
+    closure_induction (fun _ h ↦ subset_closure h) (one_mem _) (fun _ _ _ _ ↦ mul_mem) hx'
 
 /-- Given submonoids `s`, `t` of monoids `M`, `N` respectively, `s × t` as a submonoid
 of `M × N`. -/
@@ -865,8 +860,8 @@ that `f x = 1` -/
 def mker (f : F) : Submonoid M :=
   (⊥ : Submonoid N).comap f
 
-@[to_additive]
-theorem mem_mker (f : F) {x : M} : x ∈ mker f ↔ f x = 1 :=
+@[to_additive (attr := simp)]
+theorem mem_mker {f : F} {x : M} : x ∈ mker f ↔ f x = 1 :=
   Iff.rfl
 
 @[to_additive]
@@ -875,7 +870,7 @@ theorem coe_mker (f : F) : (mker f : Set M) = (f : M → N) ⁻¹' {1} :=
 
 @[to_additive]
 instance decidableMemMker [DecidableEq N] (f : F) : DecidablePred (· ∈ mker f) := fun x =>
-  decidable_of_iff (f x = 1) (mem_mker f)
+  decidable_of_iff (f x = 1) mem_mker
 
 @[to_additive]
 theorem comap_mker (g : N →* P) (f : M →* N) : g.mker.comap f = mker (comp g f) :=
@@ -1182,7 +1177,7 @@ elements of `M`. -/
 noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.submonoid M where
   toFun x := ⟨x, Units.isUnit x⟩
   invFun x := x.prop.unit
-  left_inv x := IsUnit.unit_of_val_units _
+  left_inv _ := IsUnit.unit_of_val_units _
   right_inv x := by simp_rw [IsUnit.unit_spec]
   map_mul' x y := by simp_rw [Units.val_mul]; rfl
 

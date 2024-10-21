@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Group.Action
-import Mathlib.Topology.ContinuousFunction.CocompactMap
+import Mathlib.Topology.ContinuousMap.CocompactMap
 
 /-!
 # Measures on Groups
@@ -775,7 +775,7 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGrou
     [TopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
   let f : G ≃ₜ H := .mk e
-  isHaarMeasure_map μ e he e.surjective f.closedEmbedding.tendsto_cocompact
+  isHaarMeasure_map μ (e : G →* H) he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
 /-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
 instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map

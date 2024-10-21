@@ -259,7 +259,7 @@ The linarith monad extends an exceptional monad with a `LinarithData` state.
 An exception produces a contradictory `PComp`.
 -/
 abbrev LinarithM : Type → Type :=
-  StateT LinarithData (ExceptT PComp Id)
+  StateT LinarithData (ExceptT PComp Lean.Core.CoreM)
 
 /-- Returns the current max variable. -/
 def getMaxVar : LinarithM ℕ :=
@@ -273,7 +273,7 @@ def getPCompSet : LinarithM PCompSet :=
 def validate : LinarithM Unit := do
   match (← getPCompSet).toList.find? (fun p : PComp => p.isContr) with
   | none => return ()
-  | some c => throw c
+  | some c => throwThe _ c
 
 /--
 Updates the current state with a new max variable and comparisons,
@@ -305,9 +305,12 @@ from the `linarith` state.
 -/
 def elimVarM (a : ℕ) : LinarithM Unit := do
   let vs ← getMaxVar
-  if (a ≤ vs) then (do
+  if (a ≤ vs) then
+    Lean.Core.checkSystem decl_name%.toString
     let ⟨pos, neg, notPresent⟩ := splitSetByVarSign a (← getPCompSet)
-    update (vs - 1) (pos.foldl (fun s p => s.union (elimWithSet a p neg)) notPresent))
+    update (vs - 1) (← pos.foldlM (fun s p => do
+      Lean.Core.checkSystem decl_name%.toString
+      pure (s.union (elimWithSet a p neg))) notPresent)
   else
     pure ()
 
@@ -328,9 +331,12 @@ def mkLinarithData (hyps : List Comp) (maxVar : ℕ) : LinarithData :=
 
 /-- An oracle that uses Fourier-Motzkin elimination. -/
 def CertificateOracle.fourierMotzkin : CertificateOracle where
-  produceCertificate hyps maxVar := match ExceptT.run
-      (StateT.run (do validate; elimAllVarsM : LinarithM Unit) (mkLinarithData hyps maxVar)) with
-  | (Except.ok _) => failure
-  | (Except.error contr) => return contr.src.flatten
+  produceCertificate hyps maxVar :=  do
+    let linarithData := mkLinarithData hyps maxVar
+    let result ←
+      (ExceptT.run (StateT.run (do validate; elimAllVarsM : LinarithM Unit) linarithData) : _)
+    match result with
+    | (Except.ok _) => failure
+    | (Except.error contr) => return contr.src.flatten
 
 end Linarith

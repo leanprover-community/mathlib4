@@ -101,7 +101,6 @@ theorem hom_ext_iff {P Q : Karoubi C} {f g : P ⟶ Q} : f = g ↔ f.f = g.f := b
     rw [h]
   · apply Hom.ext
 
--- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 theorem hom_ext {P Q : Karoubi C} (f g : P ⟶ Q) (h : f.f = g.f) : f = g := by
   simpa [hom_ext_iff] using h
@@ -248,12 +247,12 @@ variable {C}
 /-- The split mono which appears in the factorisation `decompId P`. -/
 @[simps]
 def decompId_i (P : Karoubi C) : P ⟶ P.X :=
-  ⟨P.p, by erw [coe_p, comp_id, P.idem]⟩
+  ⟨P.p, by rw [coe_p, comp_id, P.idem]⟩
 
 /-- The split epi which appears in the factorisation `decompId P`. -/
 @[simps]
 def decompId_p (P : Karoubi C) : (P.X : Karoubi C) ⟶ P :=
-  ⟨P.p, by erw [coe_p, id_comp, P.idem]⟩
+  ⟨P.p, by rw [coe_p, id_comp, P.idem]⟩
 
 /-- The formal direct factor of `P.X` given by the idempotent `P.p` in the category `C`
 is actually a direct factor in the category `Karoubi C`. -/
