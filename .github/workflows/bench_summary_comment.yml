@@ -1,0 +1,32 @@
+name: Bench output summary
+
+on:
+  issue_comment:
+    types: created
+
+jobs:
+  Produce_bench_summary:
+    name: Post bench summary
+    if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'Here are the [benchmark results]'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          sparse-checkout: |
+            scripts/bench_summary.lean
+
+      - name: Summarize bench output
+        run: |
+          sed "s=--\(run_cmd .*\) putPR=\1 ${PR}=" scripts/bench_summary.lean |
+            lake env lean --stdin
+        env:
+          PR:  ${{ github.event.issue.number }}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
