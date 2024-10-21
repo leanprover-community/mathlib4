@@ -266,7 +266,7 @@ lemma isMeagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagr
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
-theorem isMeagre_sUnion {S : Set (Set X)} (hct : S.Countable)
+protected theorem IsMeagre.sUnion {S : Set (Set X)} (hct : S.Countable)
     (hS : ∀ s ∈ S, IsMeagre s) : IsMeagre (⋃₀ S) := by
   rw [IsMeagre, compl_sUnion, countable_sInter_mem (hct.image _)]
   rintro _ ⟨_, hs, rfl⟩

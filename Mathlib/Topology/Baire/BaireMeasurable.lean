@@ -241,7 +241,7 @@ variable {s : Set α} {t : Set β}
 
 theorem mem_residual_prod (hs : s ∈ residual _) (ht : t ∈ residual _) : s ×ˢ t ∈ residual _ :=
   inter_mem (tendsto_residual_of_isOpenMap continuous_fst isOpenMap_fst hs)
-            (tendsto_residual_of_isOpenMap  continuous_snd isOpenMap_snd ht)
+            (tendsto_residual_of_isOpenMap continuous_snd isOpenMap_snd ht)
 
 theorem IsMeagre.prod_left (hs : IsMeagre s) (t : Set β) : IsMeagre (s ×ˢ t) := by
   apply mem_of_superset <| mem_residual_prod hs univ_mem
