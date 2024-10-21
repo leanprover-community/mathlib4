@@ -198,7 +198,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     rw [map_zero, map_zero, smul_zero, add_zero]
     rw [Polynomial.map_zero] at hp
     replace hp := (mul_eq_zero.mp hp.symm).resolve_left ?_
-    rw [hp, eval_zero, smul_zero]
+    · rw [hp, eval_zero, smul_zero]
     exact fun h => X_sub_C_ne_zero r (pow_eq_zero h)
   let c k := if hk : q ≤ k then (aeval_iterate_derivative_of_ge A p q hk).choose else 0
   have c_le (k) : (c k).natDegree ≤ p.natDegree - k := by
@@ -228,13 +228,13 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
   rw [sumIDeriv_apply, map_sum, map_sum, this]
   have : range q = range (q - 1 + 1) := by rw [tsub_add_cancel_of_le (Nat.one_le_of_lt hq)]
   rw [sum_union, this, sum_range_succ]
-  congr 2
-  · apply sum_eq_zero
-    exact fun x hx => aeval_iterate_derivative_of_lt p _ r hp (mem_range.mp hx)
-  · rw [← aeval_iterate_derivative_self _ _ _ hp]
-  · rw [smul_sum, sum_congr rfl]
-    intro k hk
-    exact hc k (mem_Ico.mp hk).1 r
+  · congr 2
+    · apply sum_eq_zero
+      exact fun x hx => aeval_iterate_derivative_of_lt p _ r hp (mem_range.mp hx)
+    · rw [← aeval_iterate_derivative_self _ _ _ hp]
+    · rw [smul_sum, sum_congr rfl]
+      intro k hk
+      exact hc k (mem_Ico.mp hk).1 r
   · rw [range_eq_Ico, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_not_mem]
     intro x hx
     rw [mem_inter, mem_Ico, mem_Ico] at hx
