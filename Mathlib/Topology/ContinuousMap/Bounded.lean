@@ -1013,6 +1013,16 @@ theorem coe_smul (c : 𝕜) (f : α →ᵇ β) : ⇑(c • f) = fun x => c • f
 
 theorem smul_apply (c : 𝕜) (f : α →ᵇ β) (x : α) : (c • f) x = c • f x := rfl
 
+instance instIsScalarTower {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'] [SMul 𝕜' β]
+    [BoundedSMul 𝕜' β] [SMul 𝕜' 𝕜] [IsScalarTower 𝕜' 𝕜 β] :
+    IsScalarTower 𝕜' 𝕜 (α →ᵇ β) where
+  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
+
+instance instSMulCommClass {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'] [SMul 𝕜' β]
+    [BoundedSMul 𝕜' β] [SMulCommClass 𝕜' 𝕜 β] :
+    SMulCommClass 𝕜' 𝕜 (α →ᵇ β) where
+  smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
+
 instance instIsCentralScalar [SMul 𝕜ᵐᵒᵖ β] [IsCentralScalar 𝕜 β] : IsCentralScalar 𝕜 (α →ᵇ β) where
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
@@ -1162,9 +1172,17 @@ instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) :=
 
 end Seminormed
 
+instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing R] :
+    NonUnitalSeminormedCommRing (α →ᵇ R) where
+  mul_comm _ _ := ext fun _ ↦ mul_comm ..
+
 instance instNonUnitalNormedRing [NonUnitalNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
   __ := instNonUnitalSeminormedRing
   __ := instNormedAddCommGroup
+
+instance instNonUnitalNormedCommRing [NonUnitalNormedCommRing R] :
+    NonUnitalNormedCommRing (α →ᵇ R) where
+  mul_comm := mul_comm
 
 end NonUnital
 
@@ -1245,6 +1263,23 @@ instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) wh
   norm_mul := norm_mul_le
 
 end NormedCommRing
+
+section NonUnitalAlgebra
+
+-- these hypotheses could be generalized if we generalize `BoundedSMul` to `Bornology`.
+variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [NonUnitalSeminormedRing β]
+variable [Zero 𝕜] [SMul 𝕜 β] [BoundedSMul 𝕜 β]
+
+instance [IsScalarTower 𝕜 β β] : IsScalarTower 𝕜 (α →ᵇ β) (α →ᵇ β) where
+  smul_assoc _ _ _ := ext fun _ ↦ smul_mul_assoc ..
+
+instance [SMulCommClass 𝕜 β β] : SMulCommClass 𝕜 (α →ᵇ β) (α →ᵇ β) where
+  smul_comm _ _ _ := ext fun _ ↦ (mul_smul_comm ..).symm
+
+instance [SMulCommClass 𝕜 β β] : SMulCommClass (α →ᵇ β) 𝕜 (α →ᵇ β) where
+  smul_comm _ _ _ := ext fun _ ↦ mul_smul_comm ..
+
+end NonUnitalAlgebra
 
 section NormedAlgebra
 
