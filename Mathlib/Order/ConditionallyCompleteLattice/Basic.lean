@@ -1005,8 +1005,7 @@ theorem csInf_lt_iff (hb : BddBelow s) (hs : s.Nonempty) : sInf s < a ↔ ∃ b 
 
 theorem lt_ciSup_iff [Nonempty ι] {f : ι → α} (hb : BddAbove (range f)) :
     a < iSup f ↔ ∃ i, a < f i := by
-  convert lt_csSup_iff hb (range_nonempty _)
-  simp_rw [mem_range, exists_exists_eq_and]
+  simpa only [mem_range, exists_exists_eq_and] using lt_csSup_iff hb (range_nonempty _)
 
 theorem ciInf_lt_iff [Nonempty ι] {f : ι → α} (hb : BddBelow (range f)) :
     iInf f < a ↔ ∃ i, f i < a := by
