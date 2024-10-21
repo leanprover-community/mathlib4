@@ -121,21 +121,48 @@ abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofList [
     ``Lean.Parser.Tactic.focus
   ]
 
+/--
+`getNonTerminalCdots stx` extracts the position of the syntax nodes contained in `stx`
+whose `SyntaxNodeKind` is `cdot` and that are not preceded by a `cdot`s.
+These are candidates for unnecessary uses of `cdot`:
+if there is only one active goal before placing `·`, then they will be flagged.
+-/
+partial
+def getNonTerminalCdots : Syntax → Array String.Pos
+  | .node _ _ args =>
+    Id.run do
+    let mut nonCDotFollowers := #[]
+    let mut wasCDot? := false
+    for i in [:args.size] do
+      if i % 2 == 1 then continue
+      let argi := args[i]!
+      if (! wasCDot?) && argi.isOfKind `cdot then
+        nonCDotFollowers := nonCDotFollowers.push (argi.getPos?.getD default)
+      wasCDot? := argi.isOfKind `cdot
+    return nonCDotFollowers ++ (args.map getNonTerminalCdots).flatten
+  | _ => default
+
+variable (unCDots : Array String.Pos) in
 /-- `getManyGoals t` returns the syntax nodes of the `InfoTree` `t` corresponding to tactic calls
 which
 * leave at least one goal that was not present before it ran;
-* are not excluded through `exclusions` or `ignoreBranch`;
+* are not excluded through `exclusions` or `ignoreBranch`.
 
-together with the total number of goals
+The `Option Nat` value is `none` if the linter should flag the node as an unnecessary `·`.
+Otherwise, it is `some n`, where `n` is the number of active goals after applying the
+tactic that were not also goals before applying the tactic.
 -/
 partial
-def getManyGoals : InfoTree → Array (Syntax × Nat)
+def getManyGoals : InfoTree → Array (Syntax × Option Nat)
   | .node info args =>
     let kargs := (args.map getManyGoals).toArray.flatten
     if let .ofTacticInfo info := info then
       if ignoreBranch.contains info.stx.getKind then #[] else
       if let .original .. := info.stx.getHeadInfo then
         let newGoals := info.goalsAfter.filter (info.goalsBefore.contains ·)
+        -- record unnecessary uses of `·`
+        if unCDots.contains (info.stx.getPos?.getD default) && info.goalsBefore.length == 1 then
+          kargs.push (info.stx, none) else
         if newGoals.length != 0 && !exclusions.contains info.stx.getKind then
           kargs.push (info.stx, newGoals.length)
         else kargs
@@ -146,17 +173,25 @@ def getManyGoals : InfoTree → Array (Syntax × Nat)
 
 @[inherit_doc Mathlib.Linter.linter.style.multiGoal]
 def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
+    let poss := getNonTerminalCdots _stx
     unless Linter.getLinterValue linter.style.multiGoal (← getOptions) do
       return
     if (← get).messages.hasErrors then
       return
     let trees ← getInfoTrees
     for t in trees.toArray do
-      for (s, n) in getManyGoals t do
-        Linter.logLint linter.style.multiGoal s
-          m!"There are {n+1} unclosed goals before '{s}' and \
-            at least one remaining goal afterwards.\n\
-            Please focus on the current goal, for instance using `·` (typed as \"\\.\")."
+      for (s, n) in getManyGoals poss t do
+        match n with
+          | none =>
+            Linter.logLint linter.style.multiGoal s
+              m!"Unnecessary focusing dot `·`: you should be able to remove it, \
+                or move it earlier up in the proof, as necessary.\n\
+                '{s.getKind}'"
+          | some n =>
+            Linter.logLint linter.style.multiGoal s
+              m!"There are {n+1} unclosed goals before '{s}' and \
+                at least one remaining goal afterwards.\n\
+                Please focus on the current goal, for instance using `·` (typed as \"\\.\")."
 
 initialize addLinter multiGoalLinter
 
