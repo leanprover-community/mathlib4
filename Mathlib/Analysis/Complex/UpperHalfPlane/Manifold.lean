@@ -22,7 +22,7 @@ noncomputable instance : ChartedSpace ℂ ℍ :=
   UpperHalfPlane.isOpenEmbedding_coe.singletonChartedSpace
 
 instance : SmoothManifoldWithCorners 𝓘(ℂ) ℍ :=
-  UpperHalfPlane.isOpenEmbedding_coe.singleton_smoothManifoldWithCorners 𝓘(ℂ)
+  UpperHalfPlane.isOpenEmbedding_coe.singleton_smoothManifoldWithCorners
 
 /-- The inclusion map `ℍ → ℂ` is a smooth map of manifolds. -/
 theorem smooth_coe : Smooth 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ → ℂ) := fun _ => contMDiffAt_extChartAt

@@ -19,7 +19,7 @@ open Bundle
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
 
 /-- The derivative of the chart at a base point is the chart of the tangent bundle, composed with
@@ -31,7 +31,7 @@ theorem tangentMap_chart {p q : TangentBundle I M} (h : q.1 ∈ (chartAt H p.1).
   dsimp [tangentMap]
   rw [MDifferentiableAt.mfderiv]
   · rfl
-  · exact mdifferentiableAt_atlas _ (chart_mem_atlas _ _) h
+  · exact mdifferentiableAt_atlas (chart_mem_atlas _ _) h
 
 /-- The derivative of the inverse of the chart at a base point is the inverse of the chart of the
 tangent bundle, composed with the identification between the tangent bundle of the model space and
@@ -41,7 +41,7 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
     tangentMap I I (chartAt H p.1).symm q =
       (chartAt (ModelProd H E) p).symm (TotalSpace.toProd H E q) := by
   dsimp only [tangentMap]
-  rw [MDifferentiableAt.mfderiv (mdifferentiableAt_atlas_symm _ (chart_mem_atlas _ _) h)]
+  rw [MDifferentiableAt.mfderiv (mdifferentiableAt_atlas_symm (chart_mem_atlas _ _) h)]
   simp only [ContinuousLinearMap.coe_coe, TangentBundle.chartAt, h, tangentBundleCore,
     mfld_simps, (· ∘ ·)]
   -- `simp` fails to apply `PartialEquiv.prod_symm` with `ModelProd`
@@ -50,7 +50,7 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
 
 lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y).source) :
     mfderiv I I (chartAt H y) x = tangentCoordChange I x y x := by
-  have := mdifferentiableAt_atlas I (ChartedSpace.chart_mem_atlas _) hsrc
+  have := mdifferentiableAt_atlas (I := I) (ChartedSpace.chart_mem_atlas _) hsrc
   simp [mfderiv, if_pos this, Function.comp_assoc]
 
 /-- The preimage under the projection from the tangent bundle of a set with unique differential in

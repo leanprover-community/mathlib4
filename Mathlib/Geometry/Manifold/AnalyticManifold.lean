@@ -29,7 +29,7 @@ open scoped Manifold Filter Topology
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*}
-  [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M]
+  [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
 
 /-!
 ## `analyticGroupoid`
@@ -41,6 +41,7 @@ analytic on the interior, and map the interior to itself.  This allows us to def
 
 section analyticGroupoid
 
+variable (I) in
 /-- Given a model with corners `(E, H)`, we define the pregroupoid of analytic transformations of
 `H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
 rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
@@ -74,6 +75,7 @@ def analyticPregroupoid : Pregroupoid H where
     simp only [mfld_simps, ← hx] at hy1 ⊢
     rw [fg _ hy1]
 
+variable (I) in
 /-- Given a model with corners `(E, H)`, we define the groupoid of analytic transformations of
 `H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
 rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
@@ -95,7 +97,7 @@ theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ analyticGroupoid I :=
   haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
     PartialHomeomorph.symm_trans_self _
-  StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_analyticGroupoid I e.open_target) this
+  StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_analyticGroupoid e.open_target) this
 
 /-- The analytic groupoid is closed under restriction. -/
 instance : ClosedUnderRestriction (analyticGroupoid I) :=
@@ -103,7 +105,7 @@ instance : ClosedUnderRestriction (analyticGroupoid I) :=
     (by
       rw [StructureGroupoid.le_iff]
       rintro e ⟨s, hs, hes⟩
-      exact (analyticGroupoid I).mem_of_eqOnSource' _ _ (ofSet_mem_analyticGroupoid I hs) hes)
+      exact (analyticGroupoid I).mem_of_eqOnSource' _ _ (ofSet_mem_analyticGroupoid hs) hes)
 
 /-- `f ∈ analyticGroupoid` iff it and its inverse are analytic within `range I`. -/
 lemma mem_analyticGroupoid {I : ModelWithCorners 𝕜 E H} {f : PartialHomeomorph H H} :
