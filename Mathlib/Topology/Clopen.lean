@@ -118,7 +118,7 @@ theorem isClopen_range_inr : IsClopen (range (Sum.inr : Y → X ⊕ Y)) :=
 
 theorem isClopen_range_sigmaMk {X : ι → Type*} [∀ i, TopologicalSpace (X i)] {i : ι} :
     IsClopen (Set.range (@Sigma.mk ι X i)) :=
-  ⟨closedEmbedding_sigmaMk.isClosed_range, isOpenEmbedding_sigmaMk.isOpen_range⟩
+  ⟨isClosedEmbedding_sigmaMk.isClosed_range, isOpenEmbedding_sigmaMk.isOpen_range⟩
 
 protected theorem QuotientMap.isClopen_preimage {f : X → Y} (hf : QuotientMap f) {s : Set Y} :
     IsClopen (f ⁻¹' s) ↔ IsClopen s :=

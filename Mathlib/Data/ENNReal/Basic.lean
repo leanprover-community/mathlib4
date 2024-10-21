@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.NNReal.Basic
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.NNReal.Defs
 import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!

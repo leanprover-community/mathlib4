@@ -5,8 +5,8 @@ Authors: Praneeth Kolichala
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat
-import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
@@ -114,34 +114,8 @@ lemma div2_val (n) : div2 n = n / 2 := by
     (Nat.add_left_cancel (Eq.trans ?_ (Nat.mod_add_div n 2).symm))
   rw [mod_two_of_bodd, bodd_add_div2]
 
-/-- `bit b` appends the digit `b` to the binary representation of its natural number input. -/
-def bit (b : Bool) : ℕ → ℕ := cond b (2 * · + 1) (2 * ·)
-
-lemma bit_val (b n) : bit b n = 2 * n + b.toNat := by
-  cases b <;> rfl
-
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
-
-theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
-
-@[simp]
-theorem bit_decide_mod_two_eq_one_shiftRight_one (n : Nat) : bit (n % 2 = 1) (n >>> 1) = n := by
-  simp only [bit, shiftRight_one]
-  cases mod_two_eq_zero_or_one n with | _ h => simpa [h] using Nat.div_add_mod n 2
-
-theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) = n := by
-  simp
-
-/-- For a predicate `motive : Nat → Sort*`, if instances can be
-  constructed for natural numbers of the form `bit b n`,
-  they can be constructed for any given natural number. -/
-@[inline]
-def bitCasesOn {motive : Nat → Sort u} (n) (h : ∀ b n, motive (bit b n)) : motive n :=
-  -- `1 &&& n != 0` is faster than `n.testBit 0`. This may change when we have faster `testBit`.
-  let x := h (1 &&& n != 0) (n >>> 1)
-  -- `congrArg motive _ ▸ x` is defeq to `x` in non-dependent case
-  congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
 
 lemma bit_zero : bit false 0 = 0 :=
   rfl
@@ -172,19 +146,6 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
     (lt_of_le_of_ne n.zero_le h.symm)
   rwa [Nat.mul_one] at this
 
-/-- A recursion principle for `bit` representations of natural numbers.
-  For a predicate `motive : Nat → Sort*`, if instances can be
-  constructed for natural numbers of the form `bit b n`,
-  they can be constructed for all natural numbers. -/
-@[elab_as_elim, specialize]
-def binaryRec {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n → motive (bit b n))
-    (n : Nat) : motive n :=
-  if n0 : n = 0 then congrArg motive n0 ▸ z
-  else
-    let x := f (1 &&& n != 0) (n >>> 1) (binaryRec z f (n >>> 1))
-    congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
-decreasing_by exact bitwise_rec_lemma n0
-
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
 def size : ℕ → ℕ :=
@@ -200,20 +161,6 @@ def bits : ℕ → List Bool :=
   boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℕ → ℕ → ℕ :=
   bitwise fun a b => a && not b
-
-@[simp]
-lemma binaryRec_zero {motive : Nat → Sort u}
-    (z : motive 0) (f : ∀ b n, motive n → motive (bit b n)) :
-    binaryRec z f 0 = z := by
-  rw [binaryRec]
-  rfl
-
-@[simp]
-lemma binaryRec_one {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
-    binaryRec (motive := C) z f 1 = f true 0 z := by
-  rw [binaryRec]
-  simp only [succ_ne_self, ↓reduceDIte, reduceShiftRight, binaryRec_zero]
-  rfl
 
 /-! bitwise ops -/
 
@@ -241,13 +188,6 @@ lemma shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (sh
 
 lemma shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n) >>> k :=
   fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
-
--- Not a `simp` lemma, as later `simp` will be able to prove this.
-lemma testBit_bit_zero (b n) : testBit (bit b n) 0 = b := by
-  rw [testBit, bit]
-  cases b
-  · simp [← Nat.mul_two]
-  · simp [← Nat.mul_two]
 
 lemma bodd_eq_one_and_ne_zero : ∀ n, bodd n = (1 &&& n != 0)
   | 0 => rfl
@@ -290,24 +230,6 @@ theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
   cases b <;> dsimp [bit] <;> omega
 
 @[simp]
-theorem bit_div_two (b n) : bit b n / 2 = n := by
-  rw [bit_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
-  · cases b <;> decide
-  · decide
-
-@[simp]
-theorem bit_shiftRight_one (b n) : bit b n >>> 1 = n :=
-  bit_div_two b n
-
-@[simp]
-theorem bitCasesOn_bit {motive : ℕ → Sort u} (h : ∀ b n, motive (bit b n)) (b : Bool) (n : ℕ) :
-    bitCasesOn (bit b n) h = h b n := by
-  change congrArg motive (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
-  generalize congrArg motive (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
-  rw [testBit_bit_zero, bit_shiftRight_one]
-  intros; rfl
-
-@[simp]
 theorem bitCasesOn_bit0 {motive : ℕ → Sort u} (H : ∀ b n, motive (bit b n)) (n : ℕ) :
     bitCasesOn (2 * n) H = H false n :=
   bitCasesOn_bit H false n
@@ -328,13 +250,6 @@ theorem bit_cases_on_inj {motive : ℕ → Sort u} (H₁ H₂ : ∀ b n, motive 
     ((fun n => bitCasesOn n H₁) = fun n => bitCasesOn n H₂) ↔ H₁ = H₂ :=
   bit_cases_on_injective.eq_iff
 
-@[simp]
-theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
-  constructor
-  · cases b <;> simp [Nat.bit]; omega
-  · rintro ⟨rfl, rfl⟩
-    rfl
-
 lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
   | true, _, _, h => by dsimp [bit]; omega
   | false, _, _, h => by dsimp [bit]; omega
@@ -342,59 +257,6 @@ lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
 lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n := calc
   bit a m < 2 * n   := by cases a <;> dsimp [bit] <;> omega
         _ ≤ bit b n := by cases b <;> dsimp [bit] <;> omega
-
-/--
-The same as `binaryRec_eq`,
-but that one unfortunately requires `f` to be the identity when appending `false` to `0`.
-Here, we allow you to explicitly say that that case is not happening,
-i.e. supplying `n = 0 → b = true`. -/
-theorem binaryRec_eq' {motive : ℕ → Sort*} {z : motive 0} {f : ∀ b n, motive n → motive (bit b n)}
-    (b n) (h : f false 0 z = z ∨ (n = 0 → b = true)) :
-    binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
-  by_cases h' : bit b n = 0
-  case pos =>
-    obtain ⟨rfl, rfl⟩ := bit_eq_zero_iff.mp h'
-    simp only [imp_false, or_false, eq_self_iff_true, not_true, reduceCtorEq] at h
-    unfold binaryRec
-    exact h.symm
-  case neg =>
-    rw [binaryRec, dif_neg h']
-    change congrArg motive (bit b n).bit_testBit_zero_shiftRight_one ▸ f _ _ _ = _
-    generalize congrArg motive (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
-    rw [testBit_bit_zero, bit_shiftRight_one]
-    intros; rfl
-
-theorem binaryRec_eq {motive : Nat → Sort u} {z : motive 0}
-    {f : ∀ b n, motive n → motive (bit b n)}
-    (h : f false 0 z = z) (b n) :
-    binaryRec z f (bit b n) = f b n (binaryRec z f n) :=
-  binaryRec_eq' b n (.inl h)
-
-/-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
-  the bit being appended is `true`-/
-@[elab_as_elim, specialize]
-def binaryRec' {motive : ℕ → Sort*} (z : motive 0)
-    (f : ∀ b n, (n = 0 → b = true) → motive n → motive (bit b n)) :
-    ∀ n, motive n :=
-  binaryRec z fun b n ih =>
-    if h : n = 0 → b = true then f b n h ih
-    else
-      have : bit b n = 0 := by
-        rw [bit_eq_zero_iff]
-        cases n <;> cases b <;> simp at h ⊢
-      congrArg motive this ▸ z
-
-/-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
-@[elab_as_elim, specialize]
-def binaryRecFromOne {motive : ℕ → Sort*} (z₀ : motive 0) (z₁ : motive 1)
-    (f : ∀ b n, n ≠ 0 → motive n → motive (bit b n)) :
-    ∀ n, motive n :=
-  binaryRec' z₀ fun b n h ih =>
-    if h' : n = 0 then
-      have : bit b n = bit true 0 := by
-        rw [h', h h']
-      congrArg motive this ▸ z₁
-    else f b n h' ih
 
 @[simp]
 theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
