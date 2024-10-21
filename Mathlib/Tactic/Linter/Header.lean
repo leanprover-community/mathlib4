@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
 import Lean.Elab.Command
+import Lean.Elab.ParseImportsFast
 
 /-!
 #  The "header" linter
@@ -222,15 +223,15 @@ def broadImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id
   return output
 
 /--
-`isInMathlib fname` returns `true` if `Mathlib.lean` imports the file `fname` and `false` otherwise.
+`isInMathlib modName` returns `true` if `Mathlib.lean` imports the file `modName` and `false`
+otherwise.
 This is used by the `Header` linter as a heuristic of whether it should inspect the file or not.
 -/
-def isInMathlib (fname : Name) : IO Bool := do
+def isInMathlib (modName : Name) : IO Bool := do
   let mlPath := ("Mathlib" : System.FilePath).addExtension "lean"
   if ← mlPath.pathExists then
-    let ml ← IO.FS.lines mlPath
-    let curr := fname.toString
-    return (ml.map (·.endsWith curr)).any (·)
+    let ml ← parseImports' (← IO.FS.readFile mlPath) ""
+    return (ml.map (·.module == modName)).any (·)
   else return false
 
 /--
