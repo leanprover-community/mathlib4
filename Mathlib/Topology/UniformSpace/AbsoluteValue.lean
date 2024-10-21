@@ -23,7 +23,6 @@ follows exactly the same path.
 
 absolute value, uniform spaces
 -/
-noncomputable section
 
 open Set Function Filter Uniformity
 
