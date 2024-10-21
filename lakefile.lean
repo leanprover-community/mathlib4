@@ -37,7 +37,6 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.longFile, .ofNat 1500⟩,
   ⟨`linter.style.missingEnd, true⟩,
   ⟨`linter.style.multiGoal, true⟩,
-  ⟨`linter.style.setOption, true⟩,
   ⟨`linter.style.setOption, true⟩
 ]
 
