@@ -49,8 +49,7 @@ universe x u v w
 variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
 variable {A : Type*} {A' : Type*}
 variable (x : ι → A)
-variable [CommRing R] [CommRing A] [CommRing A']
-variable [Algebra R A] [Algebra R A']
+variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`
   is algebraically independent over `R`, meaning that the canonical
