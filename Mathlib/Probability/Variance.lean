@@ -353,34 +353,27 @@ lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
     variance X μ ≤ (b - μ[X]) * (μ[X] - a) := by
   have ha : ∀ᵐ ω ∂μ, a ≤ X ω := h.mono fun ω h => h.1
   have hb : ∀ᵐ ω ∂μ, X ω ≤ b := h.mono fun ω h => h.2
-  let c := max |a| |b|
-  have hX_int₁ : Integrable (fun ω ↦ -X ω ^ 2) μ :=
+  have hX_int₂ : Integrable (fun ω ↦ -X ω ^ 2) μ :=
     (memℒp_of_bounded h hX.aestronglyMeasurable 2).integrable_sq.neg
-  have hX_int₂ : Integrable (fun ω ↦ (a + b) * X ω) μ :=
-    ((integrable_const c).mono' hX.aestronglyMeasurable
-      (by filter_upwards [ha, hb] with ω using abs_le_max_abs_abs :
-  (∀ᵐ ω ∂μ, |X ω| ≤ max |a| |b|))).const_mul (a + b)
+  have hX_int₁ : Integrable (fun ω ↦ (a + b) * X ω) μ :=
+    ((integrable_const (max |a| |b|)).mono' hX.aestronglyMeasurable
+      (by filter_upwards [ha, hb] with ω using abs_le_max_abs_abs)).const_mul (a + b)
   have h0 : 0 ≤ - μ[X ^ 2] + (a + b) * μ[X] - a * b :=
     calc
       _ ≤ ∫ ω, (b - X ω) * (X ω - a) ∂μ := by
         apply integral_nonneg_of_ae
         filter_upwards [ha, hb] with ω ha' hb'
         exact mul_nonneg (by linarith : 0 ≤ b - X ω) (by linarith : 0 ≤ X ω - a)
-      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω - (a * b) ∂μ :=
+      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω - a * b ∂μ :=
         integral_congr_ae <| ae_of_all μ fun ω ↦ by ring
-      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - ∫ _, (a * b) ∂μ :=
-        integral_sub (hX_int₁.add hX_int₂) (integrable_const (a * b))
-      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - (a * b) := by simp only [integral_const,
-        measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul]
+      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - ∫ _, a * b ∂μ :=
+        integral_sub (hX_int₂.add hX_int₁) (integrable_const (a * b))
+      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - a * b := by simp
       _ = - μ[X ^ 2] + (a + b) * μ[X] - a * b := by
-        simp only [sub_left_inj]
-        rw [← integral_neg, ← integral_mul_left]
-        apply integral_add hX_int₁ hX_int₂
+        simp [← integral_neg, ← integral_mul_left, integral_add hX_int₂ hX_int₁]
   calc
     _ ≤ (a + b) * μ[X] - a * b - μ[X] ^ 2 := by
       rw [variance_def' (memℒp_of_bounded h hX.aestronglyMeasurable 2)]
-      simp only [Pi.pow_apply, tsub_le_iff_right, sub_add_cancel]
-      simp only [Pi.pow_apply, sub_nonneg, le_neg_add_iff_add_le] at h0
       linarith
     _ = (b - μ[X]) * (μ[X] - a) := by ring
 
