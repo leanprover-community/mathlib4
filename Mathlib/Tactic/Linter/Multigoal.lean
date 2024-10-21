@@ -11,11 +11,13 @@ import Lean.Elab.Command
 The "multiGoal" linter emits a warning where there is more than a single goal in scope.
 There is an exception: a tactic that closes *all* remaining goals is allowed.
 
-There are a few tactics that are intended to work specifically in such a situation and the linter
-ignores them. Otherwise, whenever a tactic leaves multiple goals, the linter will emit a warning,
-unless some form of "focusing" tactic is used.
-Typically, the focusing is achieved by the `cdot`: `·`, but, e.g., `focus` or `on_goal x` also
-serve a similar purpose.
+There are a few tactics, such as `skip`, `swap` or the `try` combinator, that are intended to work
+specifically in such a situation.
+Otherwise, the mathlib style guide ask that goals be be focused until there is only one active goal
+at a time.
+If this focusing does not happen, the linter emits a warning.
+Typically, the focusing is achieved by the `cdot`: `·`, but, e.g., `focus` or `on_goal x`
+also serve a similar purpose.
 
 TODO:
 * Should the linter flag unnecessary scoping as well?
@@ -52,9 +54,9 @@ Reasons for admitting a kind in `exclusions` include
 * the tactic is structuring a proof, e.g. `skip`, `<;>`, ...;
 * the tactic is creating new goals, e.g. `constructor`, `cases`, `induction`, ....
 
-Tactic combinators like `repeat` or `try` are a mix of both.
-
 There is some overlap in scope between `ignoreBranch` and `exclusions`.
+
+Tactic combinators like `repeat` or `try` are a mix of both.
 -/
 abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofList [
     -- structuring a proof
@@ -122,7 +124,9 @@ abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofList [
 /-- `getManyGoals t` returns the syntax nodes of the `InfoTree` `t` corresponding to tactic calls
 which
 * leave at least one goal that was not present before it ran;
-* are not excluded through `exclusions` or `ignoreBranch`.
+* are not excluded through `exclusions` or `ignoreBranch`;
+
+together with the total number of goals
 -/
 partial
 def getManyGoals : InfoTree → Array (Syntax × Nat)
@@ -141,17 +145,17 @@ def getManyGoals : InfoTree → Array (Syntax × Nat)
   | _ => default
 
 @[inherit_doc Mathlib.Linter.linter.style.multiGoal]
-def multiGoalLinter : Linter where
-  run := withSetOptionIn fun _stx => do
+def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
     unless Linter.getLinterValue linter.style.multiGoal (← getOptions) do
       return
-    if (← MonadState.get).messages.hasErrors then
+    if (← get).messages.hasErrors then
       return
     let trees ← getInfoTrees
     for t in trees.toArray do
       for (s, n) in getManyGoals t do
         Linter.logLint linter.style.multiGoal s
-          m!"There are {n+1} unclosed goals before '{s}' and at least one remaining goal after.\n\
+          m!"There are {n+1} unclosed goals before '{s}' and \
+            at least one remaining goal afterwards.\n\
             Please focus on the current goal, for instance using `·` (typed as \"\\.\")."
 
 initialize addLinter multiGoalLinter

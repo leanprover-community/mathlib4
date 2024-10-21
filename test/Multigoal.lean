@@ -18,7 +18,7 @@ example : True := by
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
-warning: There are 2 unclosed goals before 'exact .intro' and at least one remaining goal after.
+warning: There are 2 unclosed goals before 'exact .intro' and at least one remaining goal afterwards.
 Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
@@ -31,7 +31,7 @@ example : True := by
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
-warning: There are 2 unclosed goals before 'assumption' and at least one remaining goal after.
+warning: There are 2 unclosed goals before 'assumption' and at least one remaining goal afterwards.
 Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
@@ -57,7 +57,7 @@ set_option linter.unusedTactic false in
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
-warning: There are 2 unclosed goals before 'rfl' and at least one remaining goal after.
+warning: There are 2 unclosed goals before 'rfl' and at least one remaining goal afterwards.
 Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
@@ -72,11 +72,11 @@ example (p : Prop) (hp : p) : (0 = 0 ∧ p) ∨ 0 = 0 := by
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
-warning: There are 3 unclosed goals before 'rfl' and at least one remaining goal after.
+warning: There are 3 unclosed goals before 'rfl' and at least one remaining goal afterwards.
 Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 ---
-warning: There are 2 unclosed goals before 'trivial' and at least one remaining goal after.
+warning: There are 2 unclosed goals before 'trivial' and at least one remaining goal afterwards.
 Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
@@ -113,3 +113,11 @@ set_option linter.unusedTactic false in
 example : 1 = 1 := by
   sleep_heartbeats 1000
   rfl
+
+-- we test that a tactic closing all remaining goals does not trigger the linter
+macro "bi_trivial" : tactic => `(tactic| (trivial; trivial))
+
+set_option linter.style.multiGoal true in
+example : True ∧ True := by
+  constructor
+  bi_trivial
