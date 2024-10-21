@@ -5,6 +5,7 @@ Authors: Andrew Yang, Yury Kudryashov
 -/
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Inseparable points in a topological space
@@ -130,6 +131,8 @@ theorem Specializes.trans : x ⤳ y → y ⤳ z → x ⤳ z :=
 
 theorem specializes_of_eq (e : x = y) : x ⤳ y :=
   e ▸ specializes_refl x
+
+alias Specializes.of_eq := specializes_of_eq
 
 theorem specializes_of_nhdsWithin (h₁ : 𝓝[s] x ≤ 𝓝[s] y) (h₂ : x ∈ s) : x ⤳ y :=
   specializes_iff_pure.2 <|
@@ -368,8 +371,11 @@ lemma Inducing.generalizingMap (hf : Inducing f) (h : StableUnderGeneralization 
   obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
   exact ⟨_, hf.specializes_iff.mp e, rfl⟩
 
-lemma OpenEmbedding.generalizingMap (hf : OpenEmbedding f) : GeneralizingMap f :=
+lemma IsOpenEmbedding.generalizingMap (hf : IsOpenEmbedding f) : GeneralizingMap f :=
   hf.toInducing.generalizingMap hf.isOpen_range.stableUnderGeneralization
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.generalizingMap := IsOpenEmbedding.generalizingMap
 
 lemma SpecializingMap.stableUnderSpecialization_range (h : SpecializingMap f) :
     StableUnderSpecialization (range f) :=
@@ -602,14 +608,8 @@ theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
   rw [nhdsWithin, ← comap_principal, Filter.push_pull, nhdsWithin, map_mk_nhds]
 
 /-- The map `(x, y) ↦ (mk x, mk y)` is a quotient map. -/
-theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) := by
-  have hsurj : Surjective (Prod.map mk mk : X × Y → _) := surjective_mk.prodMap surjective_mk
-  refine quotientMap_iff.2 ⟨hsurj, fun s ↦ ?_⟩
-  refine ⟨fun hs ↦ hs.preimage (continuous_mk.prod_map continuous_mk), fun hs ↦ ?_⟩
-  refine isOpen_iff_mem_nhds.2 <| hsurj.forall.2 fun (x, y) h ↦ ?_
-  rw [Prod.map_mk, nhds_prod_eq, ← map_mk_nhds, ← map_mk_nhds, Filter.prod_map_map_eq',
-    ← nhds_prod_eq, Filter.mem_map]
-  exact hs.mem_nhds h
+theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) :=
+  (isOpenQuotientMap_mk.prodMap isOpenQuotientMap_mk).quotientMap
 
 /-- Lift a map `f : X → α` such that `Inseparable x y → f x = f y` to a map
 `SeparationQuotient X → α`. -/

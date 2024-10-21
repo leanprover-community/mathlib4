@@ -156,20 +156,14 @@ theorem mul_left (a₁ a₂ : ℤ) (b : ℕ) : J(a₁ * a₂ | b) = J(a₁ | b) 
     (f := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₁)
     (g := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₂)
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefixes below.
--/
 /-- The symbol `J(a | b)` vanishes iff `a` and `b` are not coprime (assuming `b ≠ 0`). -/
 theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 ↔ a.gcd b ≠ 1 :=
   List.prod_eq_zero_iff.trans
     (by
       rw [List.mem_pmap, Int.gcd_eq_natAbs, Ne, Prime.not_coprime_iff_dvd]
-      -- Porting note: Initially, `and_assoc'` and `and_comm'` were used on line 164 but they have
-      -- been deprecated so we replace them with `and_assoc` and `and_comm`
       simp_rw [legendreSym.eq_zero_iff _ _, intCast_zmod_eq_zero_iff_dvd,
         mem_primeFactorsList (NeZero.ne b), ← Int.natCast_dvd, Int.natCast_dvd_natCast, exists_prop,
-        _root_.and_assoc, _root_.and_comm])
+        and_assoc, _root_.and_comm])
 
 /-- The symbol `J(a | b)` is nonzero when `a` and `b` are coprime. -/
 protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0 := by
@@ -558,7 +552,7 @@ private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a
 private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   if hb0 : b = 0 then
     1
-  else if hb2 : b % 2 = 0 then
+  else if _ : b % 2 = 0 then
     if a % 2 = 0 then
       0
     else

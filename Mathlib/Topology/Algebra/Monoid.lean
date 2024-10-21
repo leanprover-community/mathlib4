@@ -7,8 +7,8 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Topology.ContinuousMap.Defs
 
 /-!
 # Theory of topological monoids
@@ -75,7 +75,7 @@ instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
 instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
   ⟨show Continuous ((fun p : M × M => p.1 * p.2) ∘ Prod.swap ∘ Prod.map MulOpposite.unop id) from
       continuous_mul.comp <|
-        continuous_swap.comp <| Continuous.prod_map MulOpposite.continuous_unop continuous_id⟩
+        continuous_swap.comp <| Continuous.prodMap MulOpposite.continuous_unop continuous_id⟩
 
 @[to_additive]
 theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [MulOneClass α]
@@ -302,8 +302,6 @@ theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
     isClosed_iInter fun x =>
       isClosed_iInter fun y =>
         isClosed_eq (continuous_apply _)
-          -- Porting note: proof was:
-          -- `((continuous_apply _).mul (continuous_apply _))`
           (by continuity)
 
 -- Porting note: split variables command over two lines, can't change explicitness at the same time

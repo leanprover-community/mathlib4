@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Batteries.Classes.Order
+import Batteries.Tactic.Trans
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
 
@@ -184,6 +184,32 @@ end
 
 end
 
+/-! ### Minimal and maximal -/
+
+section LE
+
+variable {α : Type*} [LE α] {P : α → Prop} {x y : α}
+
+/-- `Minimal P x` means that `x` is a minimal element satisfying `P`. -/
+def Minimal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → y ≤ x → x ≤ y
+
+/-- `Maximal P x` means that `x` is a maximal element satisfying `P`. -/
+def Maximal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → x ≤ y → y ≤ x
+
+lemma Minimal.prop (h : Minimal P x) : P x :=
+  h.1
+
+lemma Maximal.prop (h : Maximal P x) : P x :=
+  h.1
+
+lemma Minimal.le_of_le (h : Minimal P x) (hy : P y) (hle : y ≤ x) : x ≤ y :=
+  h.2 hy hle
+
+lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
+  h.2 hy hge
+
+end LE
+
 /-! ### Bundled classes -/
 
 variable {α : Type*}
@@ -357,7 +383,7 @@ macro "compareOfLessAndEq_rfl" : tactic =>
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
-class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α :=
+class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α where
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
@@ -595,7 +621,17 @@ lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
 
-instance : Batteries.TransCmp (compare (α := α)) where
+theorem cmp_eq_compare (a b : α) : cmp a b = compare a b := by
+  refine ((compare_iff ..).2 ?_).symm
+  unfold cmp cmpUsing; split_ifs with h1 h2
+  · exact h1
+  · exact h2
+  · exact le_antisymm (not_lt.1 h2) (not_lt.1 h1)
+
+theorem cmp_eq_compareOfLessAndEq (a b : α) : cmp a b = compareOfLessAndEq a b :=
+  (cmp_eq_compare ..).trans (LinearOrder.compare_eq_compareOfLessAndEq ..)
+
+instance : Batteries.LawfulCmp (compare (α := α)) where
   symm a b := by
     cases h : compare a b <;>
     simp only [Ordering.swap] <;> symm
@@ -604,6 +640,9 @@ instance : Batteries.TransCmp (compare (α := α)) where
     · exact compare_lt_iff_lt.2 <| compare_gt_iff_gt.1 h
   le_trans := fun h₁ h₂ ↦
     compare_le_iff_le.2 <| le_trans (compare_le_iff_le.1 h₁) (compare_le_iff_le.1 h₂)
+  cmp_iff_beq := by simp [compare_eq_iff_eq]
+  cmp_iff_lt := by simp [compare_lt_iff_lt]
+  cmp_iff_le := by simp [compare_le_iff_le]
 
 end Ord
 
