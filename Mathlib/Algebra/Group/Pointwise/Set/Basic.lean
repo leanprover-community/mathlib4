@@ -1109,7 +1109,7 @@ theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
 
 @[to_additive (attr := simp) nsmul_singleton]
 lemma singleton_pow (a : α) : ∀ n, ({a} : Set α) ^ n = {a ^ n}
-  | 0 => by simp
+  | 0 => by simp [singleton_one]
   | n + 1 => by simp [pow_succ, singleton_pow _ n]
 
 @[to_additive]
