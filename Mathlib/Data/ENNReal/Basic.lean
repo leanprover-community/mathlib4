@@ -196,6 +196,12 @@ theorem coe_toNNReal : ∀ {a : ℝ≥0∞}, a ≠ ∞ → ↑a.toNNReal = a
   | ⊤, h => (h rfl).elim
 
 @[simp]
+theorem coe_of_fun_toNNReal {ι : Type*} {f : ι → ℝ≥0∞} (hf : ∀ x, f x ≠ ∞) :
+    (fun (x : ℝ≥0) => (x : ℝ≥0∞)) ∘ ENNReal.toNNReal ∘ f = f := by
+  ext x
+  simp [coe_toNNReal (hf x)]
+
+@[simp]
 theorem ofReal_toReal {a : ℝ≥0∞} (h : a ≠ ∞) : ENNReal.ofReal a.toReal = a := by
   simp [ENNReal.toReal, ENNReal.ofReal, h]
 
