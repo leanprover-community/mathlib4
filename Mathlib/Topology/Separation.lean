@@ -755,6 +755,17 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space X] {x y : X} {s t : Set 
   rw [nhdsWithin_insert_of_ne h]
   exact mem_of_superset self_mem_nhdsWithin (subset_insert x s)
 
+lemma eventuallyEq_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    (insert x s : Set X) =ᶠ[𝓝 x] (insert x t : Set X) := by
+  simp only [← union_singleton, ← nhdsWithin_univ, ← compl_union_self {x}]
+  rw [nhdsWithin_union]
+  apply Filter.mem_sup.2
+  simp only [eq_iff_iff, nhdsWithin_singleton, mem_pure, mem_setOf_eq]
+  change {y | y ∈ (s ∪ {x}) ↔ y ∈ (t ∪ {x})} ∈ 𝓝[≠] x ∧ (x ∈ (s ∪ {x}) ↔ x ∈ (t ∪ {x}))
+  simp only [union_singleton, mem_insert_iff, true_or, and_true]
+  filter_upwards [nhdsWithin_compl_singleton_le x y h] with y (hy : (y ∈ s) = (y ∈ t))
+  aesop
+
 @[simp]
 theorem ker_nhds [T1Space X] (x : X) : (𝓝 x).ker = {x} := by
   simp [ker_nhds_eq_specializes]
@@ -837,6 +848,29 @@ theorem eventually_ne_nhds [T1Space X] {a b : X} (h : a ≠ b) : ∀ᶠ x in �
 theorem eventually_ne_nhdsWithin [T1Space X] {a b : X} {s : Set X} (h : a ≠ b) :
     ∀ᶠ x in 𝓝[s] a, x ≠ b :=
   Filter.Eventually.filter_mono nhdsWithin_le_nhds <| eventually_ne_nhds h
+
+theorem continuousWithinAt_insert [TopologicalSpace Y] [T1Space X]
+    {x y : X} {s : Set X} {f : X → Y} :
+    ContinuousWithinAt f (insert y s) x ↔ ContinuousWithinAt f s x := by
+  rcases eq_or_ne x y with (rfl | h)
+  · exact continuousWithinAt_insert_self
+  simp_rw [ContinuousWithinAt, nhdsWithin_insert_of_ne h]
+
+alias ⟨ContinuousWithinAt.of_insert, ContinuousWithinAt.insert'⟩ := continuousWithinAt_insert
+
+/-- See also `continuousWithinAt_diff_self` for the case `y = x` but not requiring `T1Space`. -/
+theorem continuousWithinAt_diff_singleton [TopologicalSpace Y] [T1Space X]
+    {x y : X} {s : Set X} {f : X → Y} :
+    ContinuousWithinAt f (s \ {y}) x ↔ ContinuousWithinAt f s x := by
+  rw [← continuousWithinAt_insert, insert_diff_singleton, continuousWithinAt_insert]
+
+/-- If two sets coincide locally around `x`, except maybe at `y`, then it is equivalent to be
+continuous at `x` within one set or the other. -/
+theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
+    {x : X} {s t : Set X} {f : X → Y} (y : X) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
+  rw [← continuousWithinAt_insert_self (s := s), ← continuousWithinAt_insert_self (s := t)]
+  exact continuousWithinAt_congr_set (eventuallyEq_insert h)
 
 /-- To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
 `f` admits *some* limit at `x`. -/
