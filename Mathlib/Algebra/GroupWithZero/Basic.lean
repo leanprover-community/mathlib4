@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Logic.Unique
-import Mathlib.Tactic.WLOG
 
 /-!
 # Groups with an adjoined zero element
