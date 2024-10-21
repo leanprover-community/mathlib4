@@ -3,6 +3,7 @@ Copyright (c) 2024 Theodore Hwa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Violeta Hernández Palacios, Junyan Xu, Theodore Hwa
 -/
+import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Logic.Hydra
 import Mathlib.SetTheory.Surreal.Basic
 
@@ -531,3 +532,50 @@ noncomputable instance : LinearOrderedCommRing Surreal where
   decidableLE := Classical.decRel _
 
 end Surreal
+
+theorem Ordinal.toSurreal_nmul (a b : Ordinal) : toSurreal (nmul a b) = toSurreal a * toSurreal b :=
+  Surreal.mk_eq <| toPGame_nmul a b
+
+namespace NatOrdinal
+
+/-- Casts an ordinal with natural operations into its corresponding `Surreal`. -/
+noncomputable def toSurreal : NatOrdinal →+*o Surreal where
+  toFun o := Ordinal.toSurreal <| NatOrdinal.toOrdinal o
+  map_zero' := Ordinal.toSurreal_zero
+  map_one' := Ordinal.toSurreal_one
+  monotone' _ _ := @Ordinal.toSurreal_le_iff.2
+  map_add' := Ordinal.toSurreal_nadd
+  map_mul' := Ordinal.toSurreal_nmul
+
+@[simp]
+theorem toSurreal_le_iff (a b : NatOrdinal) : toSurreal a ≤ toSurreal b ↔ a ≤ b :=
+  Ordinal.toPGame_le_iff
+
+@[simp]
+theorem toSurreal_lt_iff (a b : NatOrdinal) : toSurreal a < toSurreal b ↔ a < b :=
+  Ordinal.toPGame_lt_iff
+
+@[simp]
+theorem toSurreal_eq_iff (a b : NatOrdinal) : toSurreal a = toSurreal b ↔ a = b :=
+  Ordinal.toSurreal_eq_iff
+
+theorem toSurreal_zero : toSurreal 0 = 0 :=
+  map_zero _
+
+theorem toSurreal_one : toSurreal 1 = 1 :=
+  map_one _
+
+@[simp]
+theorem toGame_toSurreal (a : NatOrdinal) : Surreal.toGame (toSurreal a) = toGame a := by
+  rfl
+
+theorem toSurreal_natCast : ∀ n : ℕ, toSurreal n = n :=
+  map_natCast _
+
+theorem toSurreal_add : ∀ a b : NatOrdinal, toSurreal (a + b) = toSurreal a + toSurreal b :=
+  map_add _
+
+theorem toSurreal_mul : ∀ a b : NatOrdinal, toSurreal (a * b) = toSurreal a * toSurreal b :=
+  map_mul _
+
+end NatOrdinal
