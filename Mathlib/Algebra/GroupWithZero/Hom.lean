@@ -36,8 +36,10 @@ assert_not_exists DenselyOrdered
 
 open Function
 
+variable {F α β γ δ M₀ : Type*}
+
 namespace NeZero
-variable {F α β : Type*} [Zero α] [Zero β] [FunLike F α β] [ZeroHomClass F α β] {a : α}
+variable [Zero α] [Zero β] [FunLike F α β] [ZeroHomClass F α β] {a : α}
 
 #adaptation_note
 /--
@@ -54,15 +56,16 @@ lemma of_injective {f : F} (hf : Injective f) [NeZero a] : NeZero (f a) :=
 
 end NeZero
 
-variable {F α β γ δ M₀ : Type*} [MulZeroOneClass α] [MulZeroOneClass β] [MulZeroOneClass γ]
-  [MulZeroOneClass δ]
+section
+
+variable {F α β γ δ M₀ : Type*} [Zero α] [One α] [Mul α] [Zero β] [One β] [Mul β]
 
 /-- `MonoidWithZeroHomClass F α β` states that `F` is a type of
 `MonoidWithZero`-preserving homomorphisms.
 
 You should also extend this typeclass when you extend `MonoidWithZeroHom`. -/
-class MonoidWithZeroHomClass (F : Type*) (α β : outParam Type*) [MulZeroOneClass α]
-  [MulZeroOneClass β] [FunLike F α β] extends MonoidHomClass F α β, ZeroHomClass F α β : Prop
+class MonoidWithZeroHomClass (F : Type*) (α β : outParam Type*) [Zero α] [One α] [Mul α]
+  [Zero β] [One β] [Mul β] [FunLike F α β] extends MonoidHomClass F α β, ZeroHomClass F α β : Prop
 
 /-- `α →*₀ β` is the type of functions `α → β` that preserve
 the `MonoidWithZero` structure.
@@ -73,7 +76,7 @@ When possible, instead of parametrizing results over `(f : α →*₀ β)`,
 you should parametrize over `(F : Type*) [MonoidWithZeroHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `MonoidWithZeroHomClass`. -/
-structure MonoidWithZeroHom (α β : Type*) [MulZeroOneClass α] [MulZeroOneClass β]
+structure MonoidWithZeroHom (α β : Type*) [Zero α] [One α] [Mul α] [Zero β] [One β] [Mul β]
   extends ZeroHom α β, MonoidHom α β
 
 /-- `α →*₀ β` denotes the type of zero-preserving monoid homomorphisms from `α` to `β`. -/
@@ -90,7 +93,13 @@ def MonoidWithZeroHomClass.toMonoidWithZeroHom [FunLike F α β] [MonoidWithZero
 instance [FunLike F α β] [MonoidWithZeroHomClass F α β] : CoeTC F (α →*₀ β) :=
   ⟨MonoidWithZeroHomClass.toMonoidWithZeroHom⟩
 
+end
+
 namespace MonoidWithZeroHom
+
+section ZeroOneMul
+
+variable [Zero α] [One α] [Mul α] [Zero β] [One β] [Mul β]
 
 attribute [nolint docBlame] toMonoidHom
 attribute [nolint docBlame] toZeroHom
@@ -165,6 +174,10 @@ def id (α : Type*) [MulZeroOneClass α] : α →*₀ α where
   map_zero' := rfl
   map_one' := rfl
   map_mul' _ _ := rfl
+
+end ZeroOneMul
+
+variable [MulZeroOneClass α] [MulZeroOneClass β] [MulZeroOneClass γ] [MulZeroOneClass δ]
 
 /-- Composition of `MonoidWithZeroHom`s as a `MonoidWithZeroHom`. -/
 def comp (hnp : β →*₀ γ) (hmn : α →*₀ β) : α →*₀ γ where
