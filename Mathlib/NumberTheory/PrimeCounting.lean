@@ -94,17 +94,7 @@ theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
 
 @[simp]
 lemma primeCounting'_eq_zero_iff {n : ℕ} : n.primeCounting' = 0 ↔ n ≤ 2 := by
-  refine ⟨?_, ?_⟩
-  · contrapose!
-    intro h
-    replace h : 3 ≤ n := by omega
-    have := monotone_primeCounting' h
-    have := nth_prime_one_eq_three ▸ primeCounting'_nth_eq 1
-    omega
-  · intro hn
-    have := nth_prime_zero_eq_two ▸ primeCounting'_nth_eq 0
-    have := monotone_primeCounting' hn
-    omega
+  rw [primeCounting', Nat.count_eq_zero ⟨_, Nat.prime_two⟩, Nat.nth_prime_zero_eq_two]
 
 @[simp]
 lemma primeCounting_eq_zero_iff {n : ℕ} : n.primeCounting = 0 ↔ n ≤ 1 := by
