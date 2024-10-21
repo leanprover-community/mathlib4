@@ -728,8 +728,7 @@ theorem memℒp_of_bounded [IsFiniteMeasure μ]
   have hb : ∀ᵐ x ∂μ, f x ≤ b := h.mono fun ω h => h.2
   let c := max |a| |b|
   (memℒp_const c).mono' hX
-  (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs :
-  (∀ᵐ x ∂μ, |f x| ≤ max |a| |b|))
+    (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs : ∀ᵐ x ∂μ, |f x| ≤ max |a| |b|)
 
 @[mono]
 theorem eLpNorm'_mono_measure (f : α → F) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
