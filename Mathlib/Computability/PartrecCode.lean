@@ -109,7 +109,6 @@ protected def id : Code :=
 def curry (c : Code) (n : ℕ) : Code :=
   comp c (pair (Code.const n) Code.id)
 
--- Porting note: `bit0` and `bit1` are deprecated.
 /-- An encoding of a `Nat.Partrec.Code` as a ℕ. -/
 def encodeCode : Code → ℕ
   | zero => 0

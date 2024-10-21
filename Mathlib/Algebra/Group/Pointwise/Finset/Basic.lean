@@ -5,8 +5,6 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Ring.Pointwise.Set
 import Mathlib.Data.Finset.Density
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Set.Pointwise.Finite
@@ -55,7 +53,8 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
-
+-- TODO
+-- assert_not_exists MonoidWithZero
 assert_not_exists Cardinal
 
 open Function MulOpposite
@@ -915,58 +914,7 @@ end DivisionMonoid
 protected def divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (Finset α) :=
   coe_injective.divisionCommMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
-/-- `Finset α` has distributive negation if `α` has. -/
-protected def distribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Finset α) :=
-  coe_injective.hasDistribNeg _ coe_neg coe_mul
-
-scoped[Pointwise]
-  attribute [instance] Finset.divisionCommMonoid Finset.subtractionCommMonoid Finset.distribNeg
-
-section Distrib
-
-variable [Distrib α] (s t u : Finset α)
-
-/-!
-Note that `Finset α` is not a `Distrib` because `s * t + s * u` has cross terms that `s * (t + u)`
-lacks.
-
-```lean
--- {10, 16, 18, 20, 8, 9}
-#eval {1, 2} * ({3, 4} + {5, 6} : Finset ℕ)
-
--- {10, 11, 12, 13, 14, 15, 16, 18, 20, 8, 9}
-#eval ({1, 2} : Finset ℕ) * {3, 4} + {1, 2} * {5, 6}
-```
--/
-
-
-theorem mul_add_subset : s * (t + u) ⊆ s * t + s * u :=
-  image₂_distrib_subset_left mul_add
-
-theorem add_mul_subset : (s + t) * u ⊆ s * u + t * u :=
-  image₂_distrib_subset_right add_mul
-
-end Distrib
-
-section MulZeroClass
-
-variable [MulZeroClass α] {s : Finset α}
-
-/-! Note that `Finset` is not a `MulZeroClass` because `0 * ∅ ≠ 0`. -/
-
-
-theorem mul_zero_subset (s : Finset α) : s * 0 ⊆ 0 := by simp [subset_iff, mem_mul]
-
-theorem zero_mul_subset (s : Finset α) : 0 * s ⊆ 0 := by simp [subset_iff, mem_mul]
-
-theorem Nonempty.mul_zero (hs : s.Nonempty) : s * 0 = 0 :=
-  s.mul_zero_subset.antisymm <| by simpa [mem_mul] using hs
-
-theorem Nonempty.zero_mul (hs : s.Nonempty) : 0 * s = 0 :=
-  s.zero_mul_subset.antisymm <| by simpa [mem_mul] using hs
-
-end MulZeroClass
-
+scoped[Pointwise] attribute [instance] Finset.divisionCommMonoid Finset.subtractionCommMonoid
 section Group
 
 variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β]
@@ -1028,22 +976,6 @@ theorem image_div : (s / t).image (f : α → β) = s.image f / t.image f :=
   image_image₂_distrib <| map_div f
 
 end Group
-
-section GroupWithZero
-
-variable [GroupWithZero α] {s : Finset α}
-
-theorem div_zero_subset (s : Finset α) : s / 0 ⊆ 0 := by simp [subset_iff, mem_div]
-
-theorem zero_div_subset (s : Finset α) : 0 / s ⊆ 0 := by simp [subset_iff, mem_div]
-
-theorem Nonempty.div_zero (hs : s.Nonempty) : s / 0 = 0 :=
-  s.div_zero_subset.antisymm <| by simpa [mem_div] using hs
-
-theorem Nonempty.zero_div (hs : s.Nonempty) : 0 / s = 0 :=
-  s.zero_div_subset.antisymm <| by simpa [mem_div] using hs
-
-end GroupWithZero
 
 end Instances
 
@@ -1475,48 +1407,6 @@ scoped[Pointwise]
   attribute [instance]
     Finset.mulActionFinset Finset.addActionFinset Finset.mulAction Finset.addAction
 
-/-- If scalar multiplication by elements of `α` sends `(0 : β)` to zero,
-then the same is true for `(0 : Finset β)`. -/
-protected def smulZeroClassFinset [Zero β] [SMulZeroClass α β] :
-    SMulZeroClass α (Finset β) :=
-  coe_injective.smulZeroClass ⟨(↑), coe_zero⟩ coe_smul_finset
-
-scoped[Pointwise] attribute [instance] Finset.smulZeroClassFinset
-
-/-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
-then so is `(· • ·) : α → Finset β → Finset β`. -/
-protected def distribSMulFinset [AddZeroClass β] [DistribSMul α β] :
-    DistribSMul α (Finset β) :=
-  coe_injective.distribSMul coeAddMonoidHom coe_smul_finset
-
-scoped[Pointwise] attribute [instance] Finset.distribSMulFinset
-
-/-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
-multiplicative action on `Finset β`. -/
-protected def distribMulActionFinset [Monoid α] [AddMonoid β] [DistribMulAction α β] :
-    DistribMulAction α (Finset β) :=
-  Function.Injective.distribMulAction coeAddMonoidHom coe_injective coe_smul_finset
-
-/-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
-protected def mulDistribMulActionFinset [Monoid α] [Monoid β] [MulDistribMulAction α β] :
-    MulDistribMulAction α (Finset β) :=
-  Function.Injective.mulDistribMulAction coeMonoidHom coe_injective coe_smul_finset
-
-scoped[Pointwise]
-  attribute [instance] Finset.distribMulActionFinset Finset.mulDistribMulActionFinset
-
-instance [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Finset α) :=
-  Function.Injective.noZeroDivisors (↑) coe_injective coe_zero coe_mul
-
-instance noZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
-    NoZeroSMulDivisors (Finset α) (Finset β) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {s t} := by
-    exact_mod_cast eq_zero_or_eq_zero_of_smul_eq_zero (c := s.toSet) (x := t.toSet)
-
-instance noZeroSMulDivisors_finset [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
-    NoZeroSMulDivisors α (Finset β) :=
-  Function.Injective.noZeroSMulDivisors (↑) coe_injective coe_zero coe_smul_finset
-
 end Instances
 
 section SMul
@@ -1753,148 +1643,6 @@ lemma inv_op_smul_finset_distrib (a : α) (s : Finset α) : (op a • s)⁻¹ = 
 
 end Group
 
-section SMulZeroClass
-
-variable [Zero β] [SMulZeroClass α β] [DecidableEq β] {s : Finset α} {t : Finset β} {a : α}
-
-theorem smul_zero_subset (s : Finset α) : s • (0 : Finset β) ⊆ 0 := by simp [subset_iff, mem_smul]
-
-theorem Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Finset β) = 0 :=
-  s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
-
-theorem zero_mem_smul_finset (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
-  mem_smul_finset.2 ⟨0, h, smul_zero _⟩
-
-variable [Zero α] [NoZeroSMulDivisors α β]
-
-theorem zero_mem_smul_finset_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
-  rw [← mem_coe, coe_smul_finset, Set.zero_mem_smul_set_iff ha, mem_coe]
-
-end SMulZeroClass
-
-section SMulWithZero
-
-variable [Zero α] [Zero β] [SMulWithZero α β] [DecidableEq β] {s : Finset α} {t : Finset β}
-
-/-!
-Note that we have neither `SMulWithZero α (Finset β)` nor `SMulWithZero (Finset α) (Finset β)`
-because `0 • ∅ ≠ 0`.
--/
-
-lemma zero_smul_subset (t : Finset β) : (0 : Finset α) • t ⊆ 0 := by simp [subset_iff, mem_smul]
-
-lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Finset α) • t = 0 :=
-  t.zero_smul_subset.antisymm <| by simpa [mem_smul] using ht
-
-/-- A nonempty set is scaled by zero to the singleton set containing zero. -/
-@[simp] lemma zero_smul_finset {s : Finset β} (h : s.Nonempty) : (0 : α) • s = (0 : Finset β) :=
-  coe_injective <| by simpa using @Set.zero_smul_set α _ _ _ _ _ h
-
-lemma zero_smul_finset_subset (s : Finset β) : (0 : α) • s ⊆ 0 :=
-  image_subset_iff.2 fun x _ ↦ mem_zero.2 <| zero_smul α x
-
-variable [NoZeroSMulDivisors α β]
-
-lemma zero_mem_smul_iff :
-    (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by
-  rw [← mem_coe, coe_smul, Set.zero_mem_smul_iff]; rfl
-
-end SMulWithZero
-
-section GroupWithZero
-
-variable [DecidableEq β] [GroupWithZero α] [MulAction α β] {s t : Finset β} {a : α} {b : β}
-
-@[simp]
-theorem smul_mem_smul_finset_iff₀ (ha : a ≠ 0) : a • b ∈ a • s ↔ b ∈ s :=
-  smul_mem_smul_finset_iff (Units.mk0 a ha)
-
-theorem inv_smul_mem_iff₀ (ha : a ≠ 0) : a⁻¹ • b ∈ s ↔ b ∈ a • s :=
-  show _ ↔ _ ∈ Units.mk0 a ha • _ from inv_smul_mem_iff
-
-theorem mem_inv_smul_finset_iff₀ (ha : a ≠ 0) : b ∈ a⁻¹ • s ↔ a • b ∈ s :=
-  show _ ∈ (Units.mk0 a ha)⁻¹ • _ ↔ _ from mem_inv_smul_finset_iff
-
-@[simp]
-theorem smul_finset_subset_smul_finset_iff₀ (ha : a ≠ 0) : a • s ⊆ a • t ↔ s ⊆ t :=
-  show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_finset_subset_smul_finset_iff
-
-theorem smul_finset_subset_iff₀ (ha : a ≠ 0) : a • s ⊆ t ↔ s ⊆ a⁻¹ • t :=
-  show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_finset_subset_iff
-
-theorem subset_smul_finset_iff₀ (ha : a ≠ 0) : s ⊆ a • t ↔ a⁻¹ • s ⊆ t :=
-  show _ ⊆ Units.mk0 a ha • _ ↔ _ from subset_smul_finset_iff
-
-theorem smul_finset_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :=
-  image_inter _ _ <| MulAction.injective₀ ha
-
-theorem smul_finset_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
-  image_sdiff _ _ <| MulAction.injective₀ ha
-
-open scoped symmDiff in
-theorem smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symmDiff _ _ <| MulAction.injective₀ ha
-
-lemma smul_finset_univ₀ [Fintype β] (ha : a ≠ 0) : a • (univ : Finset β) = univ :=
-  coe_injective <| by push_cast; exact Set.smul_set_univ₀ ha
-
-theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
-  coe_injective <| by
-    rw [← coe_subset] at hs
-    push_cast at hs ⊢
-    exact Set.smul_univ₀ hs
-
-lemma smul_univ₀' [Fintype β] {s : Finset α} (hs : s.Nontrivial) : s • (univ : Finset β) = univ :=
-  coe_injective <| by push_cast; exact Set.smul_univ₀' hs
-
-variable [DecidableEq α]
-
-@[simp] protected lemma inv_zero : (0 : Finset α)⁻¹ = 0 := by ext; simp
-
-@[simp] lemma inv_smul_finset_distrib₀ (a : α) (s : Finset α) : (a • s)⁻¹ = op a⁻¹ • s⁻¹ := by
-  obtain rfl | ha := eq_or_ne a 0
-  · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
-  · ext; simp [← inv_smul_mem_iff₀, *]
-
-@[simp] lemma inv_op_smul_finset_distrib₀ (a : α) (s : Finset α) : (op a • s)⁻¹ = a⁻¹ • s⁻¹ := by
-  obtain rfl | ha := eq_or_ne a 0
-  · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
-  · ext; simp [← inv_smul_mem_iff₀, *]
-
-end GroupWithZero
-
-section Monoid
-
-variable [Monoid α] [AddGroup β] [DistribMulAction α β] [DecidableEq β] (a : α) (s : Finset α)
-  (t : Finset β)
-
-@[simp]
-theorem smul_finset_neg : a • -t = -(a • t) := by
-  simp only [← image_smul, ← image_neg, Function.comp_def, image_image, smul_neg]
-
-@[simp]
-protected theorem smul_neg : s • -t = -(s • t) := by
-  simp_rw [← image_neg]
-  exact image_image₂_right_comm smul_neg
-
-end Monoid
-
-section Ring
-
-variable [Ring α] [AddCommGroup β] [Module α β] [DecidableEq β] {s : Finset α} {t : Finset β}
-  {a : α}
-
-@[simp]
-theorem neg_smul_finset : -a • t = -(a • t) := by
-  simp only [← image_smul, ← image_neg, image_image, neg_smul, Function.comp_def]
-
-@[simp]
-protected theorem neg_smul [DecidableEq α] : -s • t = -(s • t) := by
-  simp_rw [← image_neg]
-  exact image₂_image_left_comm neg_smul
-
-end Ring
-
 section BigOps
 section CommMonoid
 variable [CommMonoid α] {ι : Type*} [DecidableEq ι]
@@ -2042,4 +1790,4 @@ instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)]
   fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) <| by
     simp only [Set.mem_vadd_set, vadd_eq_add]; aesop
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 1800
