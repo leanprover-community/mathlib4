@@ -417,6 +417,11 @@ theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
   (𝓝 (1 : α)).basis_sets.uniformity_of_nhds_one_inv_mul_swapped.totallyBounded_iff.trans <| by
     simp [← preimage_smul_inv, preimage]
 
+@[to_additive]
+theorem totallyBounded_inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded (s⁻¹) := by
+  convert TotallyBounded.image hs uniformContinuous_inv
+  aesop
+
 section UniformConvergence
 
 variable {ι : Type*} {l : Filter ι} {l' : Filter β} {f f' : ι → β → α} {g g' : β → α} {s : Set β}
@@ -581,7 +586,27 @@ universe u v w x
 
 open Filter
 
-variable (G : Type*) [CommGroup G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [CommGroup G]
+
+@[to_additive]
+theorem uniform_space_ball_eq_smul (V : Set G) (x : G) :
+    UniformSpace.ball x ((fun p : G × G => p.2 / p.1) ⁻¹' V) = x • V := by
+  apply le_antisymm
+  · intro y hy
+    use y/x
+    constructor
+    · aesop
+    · simp only [smul_eq_mul, mul_div_cancel]
+  · intro y hy
+    obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hy
+    simp only [smul_eq_mul] at hz₂
+    have a1: y/x ∈ V := by
+      rw [← hz₂, mul_div_cancel_left]
+      exact hz₁
+    rw [UniformSpace.ball]
+    aesop
+
+variable (G) [TopologicalSpace G] [TopologicalGroup G]
 
 section
 
