@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Analysis.Normed.Ring.Ultra
+import Mathlib.Analysis.Normed.Group.Ultra
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
@@ -140,11 +139,14 @@ def toNormedField : NormedField L :=
         exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
             lt_of_lt_of_le hab (min_le_right _ _)⟩ }
 
+-- When a field is valued, one inherits a `NormedField`.
+-- Scoped instance to avoid a typeclass loop or non-defeq topology or norms.
+scoped[Valued] attribute [instance] Valued.toNormedField
+scoped[NormedField] attribute [instance] NormedField.toValued
+
 section NormedField
 
-/-- When a field is valued, one inherits a `NormedField`. Local instance to avoid
-a typeclass loop or non-defeq topology or norms. -/
-local instance : NormedField L := Valued.toNormedField L Γ₀
+open scoped Valued
 
 protected lemma isNonarchimedean_norm : IsNonarchimedean ((‖·‖): L → ℝ) := Valued.norm_add_le
 
