@@ -141,12 +141,12 @@ def toNormedField : NormedField L :=
 
 -- When a field is valued, one inherits a `NormedField`.
 -- Scoped instance to avoid a typeclass loop or non-defeq topology or norms.
-scoped[NormedField] attribute [instance] Valued.toNormedField
+scoped[Valued] attribute [instance] Valued.toNormedField
 scoped[NormedField] attribute [instance] NormedField.toValued
 
 section NormedField
 
-open scoped NormedField
+open scoped Valued
 
 protected lemma isNonarchimedean_norm : IsNonarchimedean ((‖·‖): L → ℝ) := Valued.norm_add_le
 
