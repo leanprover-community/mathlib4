@@ -263,7 +263,7 @@ theorem meval_X [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) :
   · obtain ⟨n, hn⟩ := h
     rw [@multiplesHom_apply] at hn
     rw [← hn, meval_apply_coeff]
-    by_cases h1 : n = 1; simp [h1]
+    by_cases h1 : n = 1; · simp [h1]
     have hng : ¬ n • g = g := by
       nth_rw 2 [← one_nsmul g]
       exact fun hn1 => h1 (StrictMono.injective (nsmul_left_strictMono hg) hn1)
@@ -282,7 +282,7 @@ theorem meval_C [CommSemiring R] {g : Γ} (hg : 0 < g) (r s : R) :
   · obtain ⟨n, hn⟩ := h
     rw [@multiplesHom_apply] at hn
     rw [← hn, meval_apply_coeff]
-    by_cases h0 : n = 0; simp [h0]
+    by_cases h0 : n = 0; · simp [h0]
     have hng : ¬ n • g = 0 • g :=
       fun hn1 => h0 (StrictMono.injective (nsmul_left_strictMono hg) hn1)
     simp_all [PowerSeries.coeff_C, single_coeff]

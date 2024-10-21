@@ -270,22 +270,22 @@ theorem finsum_antidiagonal_prod [AddCommMonoid α] [HasAntidiagonal α] (f : α
   classical
   rw [finsum_eq_sum_of_support_subset _ (s := f.support) (fun i _ => by simp_all),
     finsum_eq_sum_of_support_subset _ (s := (f.support.image fun i => i.1 + i.2)) ?_, sum_sigma']
-  refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) ?_ ?_ ?_ ?_).symm
-  · exact fun x _ y _ hxy => by simp_all
-  · intro x hx
-    simp_all only [mem_coe, Finsupp.mem_support_iff, ne_eq, coe_sigma, coe_image, Set.mem_sigma_iff,
-      Set.mem_image, Prod.exists, mem_antidiagonal, and_true]
-    use x.1, x.2
-  · intro x hx h
-    simp_all only [mem_sigma, mem_image, Finsupp.mem_support_iff, ne_eq, Prod.exists,
-      mem_antidiagonal, Set.mem_image, mem_coe, not_exists, not_and]
-    have h0 : ∀ i j : α, ⟨i + j, (i, j)⟩ = x → f (i, j) = 0 := by
-      intro i j
-      contrapose!
-      exact h i j
-    refine h0 x.snd.1 x.snd.2 ?_
-    simp_all only [Prod.mk.eta, Sigma.eta]
-  · exact fun x _ => rfl
+  · refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) ?_ ?_ ?_ ?_).symm
+    · exact fun x _ y _ hxy => by simp_all
+    · intro x hx
+      simp_all only [mem_coe, Finsupp.mem_support_iff, ne_eq, coe_sigma, coe_image,
+        Set.mem_sigma_iff, Set.mem_image, Prod.exists, mem_antidiagonal, and_true]
+      use x.1, x.2
+    · intro x hx h
+      simp_all only [mem_sigma, mem_image, Finsupp.mem_support_iff, ne_eq, Prod.exists,
+        mem_antidiagonal, Set.mem_image, mem_coe, not_exists, not_and]
+      have h0 : ∀ i j : α, ⟨i + j, (i, j)⟩ = x → f (i, j) = 0 := by
+        intro i j
+        contrapose!
+        exact h i j
+      refine h0 x.snd.1 x.snd.2 ?_
+      simp_all only [Prod.mk.eta, Sigma.eta]
+    · exact fun x _ => rfl
   · intro x hx
     simp_all only [Function.mem_support, ne_eq, coe_image, Set.mem_image, mem_coe,
       Finsupp.mem_support_iff, Prod.exists]

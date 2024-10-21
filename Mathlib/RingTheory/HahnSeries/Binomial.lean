@@ -65,9 +65,8 @@ theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single
   rw [← meval_X hg, ← RingHom.map_one (meval hg r), ← RingHom.map_sub]
   refine RingHom.isUnit_map (meval hg r) ?_
   rw [← pow_one (1 - PowerSeries.X)]
-  nth_rw 2 [← zero_add 1]
-  rw [← PowerSeries.invOneSubPow_inv_eq_one_sub_pow 0]
-  exact Units.isUnit (PowerSeries.invOneSubPow 0)⁻¹
+  rw [← PowerSeries.invOneSubPow_inv_eq_one_sub_pow R 1]
+  exact Units.isUnit (PowerSeries.invOneSubPow R 1)⁻¹
 
 theorem one_sub_single_npow_coeff {g : Γ} (hg : 0 < g) (r : R) (n k : ℕ) :
     ((1 - single g r) ^ n).coeff (k • g) = (-1) ^ k • Nat.choose n k • r ^ k := by
@@ -237,7 +236,7 @@ theorem leadingCoeff_one_sub_single {g : Γ} (hg : 0 < g) (r : R) :
 
 theorem coeff_mul_one_sub_single {x : HahnSeries Γ R} {g g' : Γ} {r : R} :
     (x * (1 - single g r)).coeff (g + g') = x.coeff (g + g') - r * x.coeff g' := by
-  rw [mul_one_sub, sub_coeff, sub_right_inj, add_comm, mul_single_coeff_add, mul_comm]
+  rw [mul_one_sub, sub_coeff, Pi.sub_apply, sub_right_inj, add_comm, mul_single_coeff_add, mul_comm]
 
 theorem support_one_sub_single_npow_zero {g : Γ} {r : R} {n : ℕ} :
     ((1 - single g r) ^ n).support ⊆ AddSubmonoid.closure {0, g} :=
@@ -303,7 +302,7 @@ theorem coeff_zero_one_sub_single_npow {g : Γ} (hg : 0 < g) {r : R} {n : ℕ} :
     by_cases hg' : ∃ g' : Γ, g + g' = 0
     · rw [← hg'.choose_spec, coeff_mul_one_sub_single, hg'.choose_spec, ih, sub_eq_self,
         coeff_one_sub_single_pow_of_add_eq_zero hg hg'.choose_spec, mul_zero]
-    · rw [mul_one_sub, sub_coeff, ih, sub_eq_self, coeff_single_mul_of_no_add]
+    · rw [mul_one_sub, sub_coeff, Pi.sub_apply, ih, sub_eq_self, coeff_single_mul_of_no_add]
       simp_all [add_comm]
 
 theorem coeff_one_sub_single_npow {g : Γ} (hg : 0 < g) (r : R) {k n : ℕ}:
@@ -343,7 +342,7 @@ theorem coeff_one_sub_single_inv {g : Γ} (hg : 0 < g) {r : R} {k : ℕ} :
     (IsUnit.unit (isUnit_one_sub_single hg r)).inv.coeff (k • g) = r ^ k := by
   rw [one_sub_single_inv_eq_powers hg, SummableFamily.hsum_coeff, SummableFamily.coe_powers,
     finsum_eq_single (fun i => ((single g) r ^ i).coeff (k • g)) k]
-  simp only [single_pow, single_coeff_same]
+  · simp only [single_pow, single_coeff_same]
   intro i hi
   rw [single_pow, single_coeff_of_ne]
   rw [ne_iff_lt_or_gt] at hi

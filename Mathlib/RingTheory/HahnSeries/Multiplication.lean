@@ -39,7 +39,7 @@ open Finset Function Pointwise
 
 noncomputable section
 
-variable {Γ Γ' R U V : Type*}
+variable {Γ Γ' R S U V : Type*}
 
 namespace HahnSeries
 

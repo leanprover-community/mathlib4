@@ -155,14 +155,14 @@ theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
   rw [Finset.Nat.antidiagonal_eq_map']
   simp_all only [Finset.sum_map, Function.Embedding.coeFn_mk, neg_sub, neg_add_rev]
   rw [Finset.eventually_constant_sum ?_ (Nat.le_succ (Int.toNat (-s - order R b c)))]
-  refine Finset.sum_congr rfl ?_
-  intro i hi
-  simp_all only [Finset.mem_range]
-  congr 1
-  rw [Ring.choose_natCast, natCast_zsmul]
-  congr 1
-  rw [Int.neg_sub_one_sub_nat i r 1 (-s - order R b c) (le_of_lt (Int.lt_toNat.mp hi)),
-    show -s - 1 - i = -i + -s - 1 by linarith]
+  · refine Finset.sum_congr rfl ?_
+    intro i hi
+    simp_all only [Finset.mem_range]
+    congr 1
+    rw [Ring.choose_natCast, natCast_zsmul]
+    congr 1
+    rw [Int.neg_sub_one_sub_nat i r 1 (-s - order R b c) (le_of_lt (Int.lt_toNat.mp hi)),
+      show -s - 1 - i = -i + -s - 1 by linarith]
   intro i hi
   have h : (HVertexOperator.coeff ((Y R) b) (-s - 1 - ↑i)) c = 0 := by
     refine coeff_zero_if_lt_order R b c ?_ ?_
@@ -179,19 +179,19 @@ theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (F
   rw [Finset.Nat.antidiagonal_eq_map]
   simp_all only [Finset.sum_map, Function.Embedding.coeFn_mk, neg_sub, neg_add_rev]
   rw [Finset.eventually_constant_sum ?_ (Nat.le_succ (Int.toNat (-r - order R a c)))]
-  refine Finset.sum_congr rfl ?_
-  intro i hi
-  simp_all only [Finset.mem_range]
-  congr 1
-  rw [Int.neg_one_pow_sub, ← Int.mul_neg_one]
-  simp only [zpow_add, mul_neg, mul_one, zpow_natCast, zpow_one, Units.val_neg, Units.val_mul,
-    Units.val_pow_eq_pow_val, Units.val_one]
-  exact le_of_lt hi
-  rw [Ring.choose_natCast, natCast_zsmul]
-  congr 1
-  rw [Nat.choose_symm (le_of_lt hi)]
-  rw [Int.neg_sub_one_sub_nat i s 1 (-r - order R a c) (le_of_lt (Int.lt_toNat.mp hi)),
-    show -r - 1 - i = -i + -r - 1 by linarith]
+  · refine Finset.sum_congr rfl ?_
+    intro i hi
+    simp_all only [Finset.mem_range]
+    congr 1
+    · rw [Int.neg_one_pow_sub, ← Int.mul_neg_one]
+      · simp only [zpow_add, mul_neg, mul_one, zpow_natCast, zpow_one, Units.val_neg, Units.val_mul,
+          Units.val_pow_eq_pow_val, Units.val_one]
+      exact le_of_lt hi
+    rw [Ring.choose_natCast, natCast_zsmul]
+    congr 1
+    · rw [Nat.choose_symm (le_of_lt hi)]
+    rw [Int.neg_sub_one_sub_nat i s 1 (-r - order R a c) (le_of_lt (Int.lt_toNat.mp hi)),
+      show -r - 1 - i = -i + -r - 1 by linarith]
   intro i hi
   have h : (HVertexOperator.coeff ((Y R) a) (-r - 1 - ↑i)) c = 0 := by
     refine coeff_zero_if_lt_order R a c ?_ ?_
@@ -262,9 +262,9 @@ theorem borcherds1Recursion
     simp_rw [Finset.sum_range_succ', Nat.add_one, Ring.choose_succ_succ, add_smul]
     rw [Finset.sum_add_distrib, add_assoc, add_comm]
     refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
-    refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
-    rw [add_comm s 1, add_assoc r 1 s] -- end first sum
-    simp only [Ring.choose_zero_right, add_comm s 1, add_assoc r 1 s] -- end second sum
+    · refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
+      · rw [add_comm s 1, add_assoc r 1 s] -- end first sum
+      simp only [Ring.choose_zero_right, add_comm s 1, add_assoc r 1 s] -- end second sum
     rw [← toNat_neg_succ_sub_eq_Nat _ _ _ h]
     refine Finset.sum_congr rfl ?_
     intro k _
@@ -282,18 +282,18 @@ theorem borcherds2Recursion
       simp_rw [Finset.sum_range_succ', Nat.add_one, Ring.choose_succ_succ, add_smul, smul_add]
       rw [Finset.sum_add_distrib, ← add_assoc]
       refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
-      refine eq_add_of_sub_eq' ?_
-      rw [sub_eq_neg_add]
-      refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
-      rw [← Finset.sum_neg_distrib]
-      rw [← toNat_neg_succ_sub_eq_Nat _ _ _ h]
-      refine Finset.sum_congr rfl ?_
-      intro k _
-      rw [Nat.cast_succ, smul_algebra_smul_comm, smul_algebra_smul_comm,
-        ← neg_smul, ← Nat.add_one k, add_comm k 1, pow_add, pow_one, neg_one_mul]
-      have h₂ : r + (t + 1) - (k + 1) = r + t - k := by linarith
-      rw [h₂, add_assoc, add_comm 1 _] -- end first sum
-      rw [add_assoc, add_comm 1 t] --end second sum
+      · refine eq_add_of_sub_eq' ?_
+        rw [sub_eq_neg_add]
+        refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
+        · rw [← Finset.sum_neg_distrib]
+          rw [← toNat_neg_succ_sub_eq_Nat _ _ _ h]
+          refine Finset.sum_congr rfl ?_
+          intro k _
+          rw [Nat.cast_succ, smul_algebra_smul_comm, smul_algebra_smul_comm,
+            ← neg_smul, ← Nat.add_one k, add_comm k 1, pow_add, pow_one, neg_one_mul]
+          have h₂ : r + (t + 1) - (k + 1) = r + t - k := by linarith
+          rw [h₂, add_assoc, add_comm 1 _] -- end first sum
+        rw [add_assoc, add_comm 1 t] --end second sum
       rw [Ring.choose_zero_right (t + 1), Ring.choose_zero_right t, add_assoc, add_comm 1 t]
 
 theorem borcherds3Recursion
@@ -309,19 +309,19 @@ theorem borcherds3Recursion
       simp_rw [Finset.sum_range_succ', Nat.add_one, Ring.choose_succ_succ, add_smul, smul_add]
       rw [Finset.sum_add_distrib, sub_eq_add_neg, neg_add, neg_add, add_assoc, add_assoc]
       refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
-      rw [← neg_add, toNat_neg_succ_sub_eq_Nat _ _ _ h]
-      refine Finset.sum_congr rfl ?_
-      intro i _
-      rw [← Nat.add_one, Nat.cast_add, Nat.cast_one, show (-1:ℤˣ)^(t + 1 + (i + 1) + 1) =
-        (-1)^(t + i + 1) by simp only [zpow_add, zpow_one, mul_neg, mul_one, zpow_natCast, neg_mul,
-        neg_neg], show r + 1 + i =r + (i + 1) by linarith,
-        show s + (t + 1) - (i + 1) = s + t - i by linarith] -- end first sum
+      · rw [← neg_add, toNat_neg_succ_sub_eq_Nat _ _ _ h]
+        refine Finset.sum_congr rfl ?_
+        intro i _
+        rw [← Nat.add_one, Nat.cast_add, Nat.cast_one, show (-1:ℤˣ)^(t + 1 + (i + 1) + 1) =
+          (-1)^(t + i + 1) by simp only [zpow_add, zpow_one, mul_neg, mul_one, zpow_natCast,
+          neg_mul, neg_neg], show r + 1 + i =r + (i + 1) by linarith,
+          show s + (t + 1) - (i + 1) = s + t - i by linarith] -- end first sum
       refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
-      rw [← Finset.sum_neg_distrib]
-      refine Finset.sum_congr rfl ?_
-      intro i _
-      rw [← Nat.add_one, Nat.cast_add, Nat.cast_one, ← Units.neg_smul, neg_eq_neg_one_mul,
-        mul_self_zpow, add_comm 1 t, add_right_comm t 1 _] -- end second sum
+      · rw [← Finset.sum_neg_distrib]
+        refine Finset.sum_congr rfl ?_
+        intro i _
+        rw [← Nat.add_one, Nat.cast_add, Nat.cast_one, ← Units.neg_smul, neg_eq_neg_one_mul,
+          mul_self_zpow, add_comm 1 t, add_right_comm t 1 _] -- end second sum
       rw [← Units.neg_smul, neg_eq_neg_one_mul, mul_self_zpow, add_comm 1 t]
       simp only [Ring.choose_zero_right, Nat.cast_zero, add_zero, zero_add] -- end third sum
 

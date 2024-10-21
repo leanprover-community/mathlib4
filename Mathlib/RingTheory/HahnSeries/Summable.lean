@@ -48,7 +48,6 @@ coefficient of the sum to be well-defined, we require that only finitely many se
 any given coefficient.  For the formal sum to be a Hahn series, we require that the union of the
 supports of the constituent series is partially well-ordered. -/
 structure SummableFamily (Γ) (R) [PartialOrder Γ] [AddCommMonoid R] (α : Type*) where
-structure SummableFamily (Γ) (R) [PartialOrder Γ] [AddCommMonoid R] (α : Type*) where
   /-- A parametrized family of Hahn series. -/
   toFun : α → HahnSeries Γ R
   isPWO_iUnion_support' : Set.IsPWO (⋃ a : α, (toFun a).support)
@@ -226,7 +225,7 @@ instance : Neg (SummableFamily Γ R α) :=
         simp_rw [support_neg]
         exact s.isPWO_iUnion_support
       finite_co_support' := fun g => by
-        simp only [neg_coeff', Pi.neg_apply, Ne, neg_eq_zero]
+        simp only [neg_coeff, Pi.neg_apply, Ne, neg_eq_zero]
         exact s.finite_co_support g }⟩
 
 instance : AddCommGroup (SummableFamily Γ R α) :=
