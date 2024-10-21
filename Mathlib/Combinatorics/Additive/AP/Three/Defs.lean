@@ -253,31 +253,31 @@ subset.
 
 The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see `rothNumberNat`."]
 def mulRothNumber : Finset α →o ℕ :=
-  ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, t.card = m ∧ ThreeGPFree (t : Set α)) s.card, by
+  ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, #t = m ∧ ThreeGPFree (t : Set α)) #s, by
     rintro t u htu
     refine Nat.findGreatest_mono (fun m => ?_) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩
     exact ⟨v, hvt.trans htu, hv⟩⟩
 
 @[to_additive]
-theorem mulRothNumber_le : mulRothNumber s ≤ s.card := Nat.findGreatest_le s.card
+theorem mulRothNumber_le : mulRothNumber s ≤ #s := Nat.findGreatest_le #s
 
 @[to_additive]
 theorem mulRothNumber_spec :
-    ∃ t ⊆ s, t.card = mulRothNumber s ∧ ThreeGPFree (t : Set α) :=
-  Nat.findGreatest_spec (P := fun m ↦ ∃ t ⊆ s, t.card = m ∧ ThreeGPFree (t : Set α))
+    ∃ t ⊆ s, #t = mulRothNumber s ∧ ThreeGPFree (t : Set α) :=
+  Nat.findGreatest_spec (P := fun m ↦ ∃ t ⊆ s, #t = m ∧ ThreeGPFree (t : Set α))
     (Nat.zero_le _) ⟨∅, empty_subset _, card_empty, by norm_cast; exact threeGPFree_empty⟩
 
 variable {s t} {n : ℕ}
 
 @[to_additive]
 theorem ThreeGPFree.le_mulRothNumber (hs : ThreeGPFree (s : Set α)) (h : s ⊆ t) :
-    s.card ≤ mulRothNumber t :=
+    #s ≤ mulRothNumber t :=
   Nat.le_findGreatest (card_le_card h) ⟨s, h, rfl, hs⟩
 
 @[to_additive]
 theorem ThreeGPFree.mulRothNumber_eq (hs : ThreeGPFree (s : Set α)) :
-    mulRothNumber s = s.card :=
+    mulRothNumber s = #s :=
   (mulRothNumber_le _).antisymm <| hs.le_mulRothNumber <| Subset.refl _
 
 @[to_additive (attr := simp)]
@@ -295,9 +295,9 @@ theorem mulRothNumber_union_le (s t : Finset α) :
     mulRothNumber (s ∪ t) ≤ mulRothNumber s + mulRothNumber t :=
   let ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s ∪ t)
   calc
-    mulRothNumber (s ∪ t) = u.card := hcard.symm
-    _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_union_distrib_left, inter_eq_left.2 hus]
-    _ ≤ (u ∩ s).card + (u ∩ t).card := card_union_le _ _
+    mulRothNumber (s ∪ t) = #u := hcard.symm
+    _ = #(u ∩ s ∪ u ∩ t) := by rw [← inter_union_distrib_left, inter_eq_left.2 hus]
+    _ ≤ #(u ∩ s) + #(u ∩ t) := card_union_le _ _
     _ ≤ mulRothNumber s + mulRothNumber t := _root_.add_le_add
       ((hu.mono inter_subset_left).le_mulRothNumber inter_subset_right)
       ((hu.mono inter_subset_left).le_mulRothNumber inter_subset_right)
@@ -407,13 +407,13 @@ theorem rothNumberNat_le (N : ℕ) : rothNumberNat N ≤ N :=
   (addRothNumber_le _).trans (card_range _).le
 
 theorem rothNumberNat_spec (n : ℕ) :
-    ∃ t ⊆ range n, t.card = rothNumberNat n ∧ ThreeAPFree (t : Set ℕ) :=
+    ∃ t ⊆ range n, #t = rothNumberNat n ∧ ThreeAPFree (t : Set ℕ) :=
   addRothNumber_spec _
 
 /-- A verbose specialization of `threeAPFree.le_addRothNumber`, sometimes convenient in
 practice. -/
 theorem ThreeAPFree.le_rothNumberNat (s : Finset ℕ) (hs : ThreeAPFree (s : Set ℕ))
-    (hsn : ∀ x ∈ s, x < n) (hsk : s.card = k) : k ≤ rothNumberNat n :=
+    (hsn : ∀ x ∈ s, x < n) (hsk : #s = k) : k ≤ rothNumberNat n :=
   hsk.ge.trans <| hs.le_addRothNumber fun x hx => mem_range.2 <| hsn x hx
 
 /-- The Roth number is a subadditive function. Note that by Fekete's lemma this shows that

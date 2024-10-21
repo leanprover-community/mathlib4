@@ -223,7 +223,7 @@ theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).I
 open Finset in
 /-- The number of solutions to `x^2 = a` is determined by the quadratic character. -/
 theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
-    ↑{x : F | x ^ 2 = a}.toFinset.card = quadraticChar F a + 1 := by
+    #{x : F | x ^ 2 = a}.toFinset = quadraticChar F a + 1 := by
   -- we consider the cases `a = 0`, `a` is a nonzero square and `a` is a nonsquare in turn
   by_cases h₀ : a = 0
   · simp only [h₀, sq_eq_zero_iff, Set.setOf_eq_eq_singleton, Set.toFinset_card,

@@ -66,10 +66,10 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         This is a contradiction, because both `proj (max₁ + max₂) (x * y) ∈ I` and the sum on the
         right hand side is in `I` however `proj max₁ x * proj max₂ y` is not in `I`.
         -/
-      set set₁ := (decompose 𝒜 x).support.filter (fun i => proj 𝒜 i x ∉ I) with set₁_eq
-      set set₂ := (decompose 𝒜 y).support.filter (fun i => proj 𝒜 i y ∉ I) with set₂_eq
+      set set₁ := {i ∈ (decompose 𝒜 x).support | proj 𝒜 i x ∉ I} with set₁_eq
+      set set₂ := {i ∈ (decompose 𝒜 y).support | proj 𝒜 i y ∉ I} with set₂_eq
       have nonempty :
-        ∀ x : A, x ∉ I → ((decompose 𝒜 x).support.filter (fun i => proj 𝒜 i x ∉ I)).Nonempty := by
+        ∀ x : A, x ∉ I → {i ∈ (decompose 𝒜 x).support | proj 𝒜 i x ∉ I}.Nonempty := by
         intro x hx
         rw [filter_nonempty_iff]
         contrapose! hx
@@ -83,8 +83,8 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
       replace hxy : proj 𝒜 (max₁ + max₂) (x * y) ∈ I := hI _ hxy
       have mem_I : proj 𝒜 max₁ x * proj 𝒜 max₂ y ∈ I := by
         set antidiag :=
-          ((decompose 𝒜 x).support ×ˢ (decompose 𝒜 y).support).filter (fun z : ι × ι =>
-            z.1 + z.2 = max₁ + max₂) with ha
+          {z ∈ (decompose 𝒜 x).support ×ˢ (decompose 𝒜 y).support | z.1 + z.2 = max₁ + max₂}
+           with ha
         have mem_antidiag : (max₁, max₂) ∈ antidiag := by
           simp only [antidiag, add_sum_erase, mem_filter, mem_product]
           exact ⟨⟨mem_of_mem_filter _ mem_max₁, mem_of_mem_filter _ mem_max₂⟩, trivial⟩

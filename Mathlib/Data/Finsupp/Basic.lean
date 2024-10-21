@@ -799,7 +799,7 @@ theorem filter_apply_pos {a : α} (h : p a) : f.filter p a = f a := if_pos h
 theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := if_neg h
 
 @[simp]
-theorem support_filter : (f.filter p).support = f.support.filter p := rfl
+theorem support_filter : (f.filter p).support = {x ∈ f.support | p x} := rfl
 
 theorem filter_zero : (0 : α →₀ M).filter p = 0 := by
   classical rw [← support_eq_empty, support_filter, support_zero, Finset.filter_empty]

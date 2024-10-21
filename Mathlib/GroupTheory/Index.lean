@@ -598,7 +598,7 @@ variable {G M F : Type*} [Group G] [Fintype G] [Monoid M] [DecidableEq M]
 
 @[to_additive]
 lemma card_fiber_eq_of_mem_range (f : F) {x y : M} (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
-    (univ.filter <| fun g => f g = x).card = (univ.filter <| fun g => f g = y).card := by
+    #{g | f g = x} = #{g | f g = y} := by
   rcases hx with ⟨x, rfl⟩
   rcases hy with ⟨y, rfl⟩
   rcases mul_left_surjective x y with ⟨y, rfl⟩

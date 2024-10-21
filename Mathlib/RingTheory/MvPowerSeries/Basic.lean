@@ -671,7 +671,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent
   apply sum_eq_zero
   intro k hk
   rw [mem_finsuppAntidiag] at hk
-  set s := (range n).filter fun i ↦ k i = 0 with hs_def
+  set s := {i ∈ range n | k i = 0} with hs_def
   have hs : s ⊆ range n := filter_subset _ _
   have hs' (i : ℕ) (hi : i ∈ s) : coeff R (k i) f = constantCoeff σ R f := by
     simp only [hs_def, mem_filter] at hi
@@ -682,10 +682,10 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent
   rw [← prod_sdiff (s₁ := s) (filter_subset _ _)]
   apply mul_eq_zero_of_right
   rw [prod_congr rfl hs', prod_const]
-  suffices m ≤ s.card by
+  suffices m ≤ #s by
     obtain ⟨m', hm'⟩ := Nat.exists_eq_add_of_le this
     rw [hm', pow_add, hf, MulZeroClass.zero_mul]
-  rw [← Nat.add_le_add_iff_right, add_comm s.card,
+  rw [← Nat.add_le_add_iff_right, add_comm #s,
     Finset.card_sdiff_add_card_eq_card (filter_subset _ _), card_range]
   apply le_trans _ hn
   simp only [add_comm m, Nat.add_le_add_iff_right, ← hk.1,

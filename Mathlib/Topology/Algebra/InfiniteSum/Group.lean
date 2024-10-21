@@ -241,9 +241,9 @@ theorem Multipliable.multipliable_of_eq_one_or_self (hf : Multipliable f)
   exact multipliable_iff_vanishing.2 fun e he ↦
     let ⟨s, hs⟩ := multipliable_iff_vanishing.1 hf e he
     ⟨s, fun t ht ↦
-      have eq : ∏ b ∈ t.filter fun b ↦ g b = f b, f b = ∏ b ∈ t, g b :=
+      have eq : ∏ b ∈ t with g b = f b, f b = ∏ b ∈ t, g b :=
         calc
-          ∏ b ∈ t.filter fun b ↦ g b = f b, f b = ∏ b ∈ t.filter fun b ↦ g b = f b, g b :=
+          ∏ b ∈ t with g b = f b, f b = ∏ b ∈ t with g b = f b, g b :=
             Finset.prod_congr rfl fun b hb ↦ (Finset.mem_filter.1 hb).2.symm
           _ = ∏ b ∈ t, g b := by
            {refine Finset.prod_subset (Finset.filter_subset _ _) ?_

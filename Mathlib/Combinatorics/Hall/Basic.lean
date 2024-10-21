@@ -50,8 +50,7 @@ The core of this module is constructing the inverse system: for every finite sub
 Hall's Marriage Theorem, indexed families
 -/
 
-
-open Finset CategoryTheory
+open Finset Function CategoryTheory
 
 universe u v
 
@@ -71,7 +70,7 @@ def hallMatchingsOn.restrict {ι : Type u} {α : Type v} (t : ι → Finset α) 
 /-- When the Hall condition is satisfied, the set of matchings on a finite set is nonempty.
 This is where `Finset.all_card_le_biUnion_card_iff_existsInjective'` comes into the argument. -/
 theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t : ι → Finset α)
-    (h : ∀ s : Finset ι, s.card ≤ (s.biUnion t).card) (ι' : Finset ι) :
+    (h : ∀ s : Finset ι, #s ≤ #(s.biUnion t)) (ι' : Finset ι) :
     Nonempty (hallMatchingsOn t ι') := by
   classical
     refine ⟨Classical.indefiniteDescription _ ?_⟩
@@ -115,7 +114,7 @@ which has the additional constraint that `ι` is a `Fintype`.
 -/
 theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α : Type v}
     [DecidableEq α] (t : ι → Finset α) :
-    (∀ s : Finset ι, s.card ≤ (s.biUnion t).card) ↔
+    (∀ s : Finset ι, #s ≤ #(s.biUnion t)) ↔
       ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
   constructor
   · intro h
@@ -178,10 +177,10 @@ Note: if `[Fintype β]`, then there exist instances for `[∀ (a : α), Fintype 
 -/
 theorem Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {β : Type v}
     [DecidableEq β] (r : α → β → Prop) [∀ a : α, Fintype (Rel.image r {a})] :
-    (∀ A : Finset α, A.card ≤ Fintype.card (Rel.image r A)) ↔
+    (∀ A : Finset α, #A ≤ Fintype.card (Rel.image r A)) ↔
       ∃ f : α → β, Function.Injective f ∧ ∀ x, r x (f x) := by
   let r' a := (Rel.image r {a}).toFinset
-  have h : ∀ A : Finset α, Fintype.card (Rel.image r A) = (A.biUnion r').card := by
+  have h : ∀ A : Finset α, Fintype.card (Rel.image r A) = #(A.biUnion r') := by
     intro A
     rw [← Set.toFinset_card]
     apply congr_arg
@@ -203,11 +202,10 @@ rather than `Rel.image`.
 -/
 theorem Fintype.all_card_le_filter_rel_iff_exists_injective {α : Type u} {β : Type v} [Fintype β]
     (r : α → β → Prop) [∀ a, DecidablePred (r a)] :
-    (∀ A : Finset α, A.card ≤ (univ.filter fun b : β => ∃ a ∈ A, r a b).card) ↔
-      ∃ f : α → β, Function.Injective f ∧ ∀ x, r x (f x) := by
+    (∀ A : Finset α, #A ≤ #{b | ∃ a ∈ A, r a b}) ↔ ∃ f : α → β, Injective f ∧ ∀ x, r x (f x) := by
   haveI := Classical.decEq β
-  let r' a := univ.filter fun b => r a b
-  have h : ∀ A : Finset α, (univ.filter fun b : β => ∃ a ∈ A, r a b) = A.biUnion r' := by
+  let r' a : Finset β := {b | r a b}
+  have h : ∀ A : Finset α, ({b | ∃ a ∈ A, r a b} : Finset _) = A.biUnion r' := by
     intro A
     ext b
     simp [r']

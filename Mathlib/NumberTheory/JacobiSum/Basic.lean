@@ -107,7 +107,7 @@ theorem jacobiSum_trivial_trivial :
     simpa only [isUnit_iff_ne_zero, mul_ne_zero_iff, ne_eq, sub_eq_zero, @eq_comm _ _ x] using hx
   calc ∑ x ∈ univ \ {0, 1}, (MulChar.trivial F R) x * (MulChar.trivial F R) (1 - x)
   _ = ∑ _ ∈ univ \ {0, 1}, 1 := sum_congr rfl this
-  _ = Finset.card (univ \ {0, 1}) := (cast_card _).symm
+  _ = #(univ \ {0, 1}) := (cast_card _).symm
   _ = Fintype.card F - 2 := by
     rw [card_sdiff (subset_univ _), card_univ, card_pair zero_ne_one,
       Nat.cast_sub <| Nat.add_one_le_of_lt Fintype.one_lt_card, Nat.cast_two]

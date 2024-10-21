@@ -113,7 +113,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     simpa only [neg_add_cancel_comm_assoc] using hf'
   · -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5127): added `not_and`
     simp_rw [not_exists, not_and] at H
-    have hD : (Ico (0 : ℤ) n).card < D.card := by rw [card_Icc, card_Ico]; exact lt_add_one n
+    have hD : #(Ico (0 : ℤ) n) < #D := by rw [card_Icc, card_Ico]; exact lt_add_one n
     have hfu' : ∀ m, f m ≤ n := fun m => lt_add_one_iff.mp (floor_lt.mpr (mod_cast hfu m))
     have hwd : ∀ m : ℤ, m ∈ D → f m ∈ Ico (0 : ℤ) n := fun x hx =>
       mem_Ico.mpr

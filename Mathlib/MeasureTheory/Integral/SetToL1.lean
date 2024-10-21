@@ -277,9 +277,8 @@ theorem setToSimpleFunc_zero_apply {m : MeasurableSpace α} (T : Set α → F �
   cases isEmpty_or_nonempty α <;> simp [setToSimpleFunc]
 
 theorem setToSimpleFunc_eq_sum_filter [DecidablePred fun x ↦ x ≠ (0 : F)]
-    {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F')
-    (f : α →ₛ F) :
-    setToSimpleFunc T f = ∑ x ∈ f.range.filter fun x => x ≠ 0, (T (f ⁻¹' {x})) x := by
+    {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F') (f : α →ₛ F) :
+    setToSimpleFunc T f = ∑ x ∈ f.range with x ≠ 0, T (f ⁻¹' {x}) x := by
   symm
   refine sum_filter_of_ne fun x _ => mt fun hx0 => ?_
   rw [hx0]
@@ -301,13 +300,13 @@ theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAddi
     rw [mem_filter] at hx
     rw [hx.2, ContinuousLinearMap.map_zero]
   have h_left_eq :
-    T (map g f ⁻¹' {g (f a)}) (g (f a)) =
-      T (f ⁻¹' (f.range.filter fun b => g b = g (f a))) (g (f a)) := by
+    T (map g f ⁻¹' {g (f a)}) (g (f a))
+      = T (f ⁻¹' ({b ∈ f.range | g b = g (f a)} : Finset _)) (g (f a)) := by
     congr; rw [map_preimage_singleton]
   rw [h_left_eq]
   have h_left_eq' :
-    T (f ⁻¹' (filter (fun b : G => g b = g (f a)) f.range)) (g (f a)) =
-      T (⋃ y ∈ filter (fun b : G => g b = g (f a)) f.range, f ⁻¹' {y}) (g (f a)) := by
+    T (f ⁻¹' ({b ∈ f.range | g b = g (f a)} : Finset _)) (g (f a))
+      = T (⋃ y ∈ {b ∈ f.range | g b = g (f a)}, f ⁻¹' {y}) (g (f a)) := by
     congr; rw [← Finset.set_biUnion_preimage_singleton]
   rw [h_left_eq']
   rw [h_add.map_iUnion_fin_meas_set_eq_sum T T_empty]
@@ -381,7 +380,7 @@ theorem setToSimpleFunc_add_left' (T T' T'' : Set α → E →L[ℝ] F)
   classical
   simp_rw [setToSimpleFunc_eq_sum_filter]
   suffices
-    ∀ x ∈ filter (fun x : E => x ≠ 0) f.range, T'' (f ⁻¹' {x}) = T (f ⁻¹' {x}) + T' (f ⁻¹' {x}) by
+    ∀ x ∈ {x ∈ f.range | x ≠ 0}, T'' (f ⁻¹' {x}) = T (f ⁻¹' {x}) + T' (f ⁻¹' {x}) by
     rw [← sum_add_distrib]
     refine Finset.sum_congr rfl fun x hx => ?_
     rw [this x hx]
@@ -402,7 +401,7 @@ theorem setToSimpleFunc_smul_left' (T T' : Set α → E →L[ℝ] F') (c : ℝ)
     setToSimpleFunc T' f = c • setToSimpleFunc T f := by
   classical
   simp_rw [setToSimpleFunc_eq_sum_filter]
-  suffices ∀ x ∈ filter (fun x : E => x ≠ 0) f.range, T' (f ⁻¹' {x}) = c • T (f ⁻¹' {x}) by
+  suffices ∀ x ∈ {x ∈ f.range | x ≠ 0}, T' (f ⁻¹' {x}) = c • T (f ⁻¹' {x}) by
     rw [smul_sum]
     refine Finset.sum_congr rfl fun x hx => ?_
     rw [this x hx]
