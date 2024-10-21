@@ -22,20 +22,20 @@ section
 open scoped TensorProduct
 
 namespace Bialgebra.TensorProduct
-variable {R A B : Type u} [CommRing R] [Ring A] [Ring B]
+variable (R A B : Type u) [CommRing R] [Ring A] [Ring B]
     [Bialgebra R A] [Bialgebra R B]
 
-lemma coe_counit_eq :
-    ⇑(Coalgebra.counit (R := R) (A := A ⊗[R] B))
-      = (Algebra.TensorProduct.lmul' R).comp (Algebra.TensorProduct.map
-      (Bialgebra.counitAlgHom R A) (Bialgebra.counitAlgHom R B)) := by
+lemma counit_eq_algHom_toLinearMap :
+    Coalgebra.counit (R := R) (A := A ⊗[R] B) =
+      ((Algebra.TensorProduct.lmul' R).comp (Algebra.TensorProduct.map
+      (Bialgebra.counitAlgHom R A) (Bialgebra.counitAlgHom R B))).toLinearMap := by
   rfl
 
-lemma coe_comul_eq :
-    ⇑(Coalgebra.comul (R := R) (A := A ⊗[R] B))
-      = (Algebra.TensorProduct.tensorTensorTensorComm R A A B B).toAlgHom.comp
+lemma comul_eq_algHom_toLinearMap :
+    Coalgebra.comul (R := R) (A := A ⊗[R] B) =
+      ((Algebra.TensorProduct.tensorTensorTensorComm R A A B B).toAlgHom.comp
       (Algebra.TensorProduct.map (Bialgebra.comulAlgHom R A)
-      (Bialgebra.comulAlgHom R B)) := by
+      (Bialgebra.comulAlgHom R B))).toLinearMap := by
   rfl
 
 end Bialgebra.TensorProduct
@@ -43,9 +43,11 @@ end Bialgebra.TensorProduct
 noncomputable instance TensorProduct.instBialgebra
     {R A B : Type u} [CommRing R] [Ring A] [Ring B]
     [Bialgebra R A] [Bialgebra R B] : Bialgebra R (A ⊗[R] B) := by
-  refine' Bialgebra.mk' R (A ⊗[R] B) _ (fun {x y} => _) _ (fun {x y} => _)
-  <;> simp only [Bialgebra.TensorProduct.coe_counit_eq, Bialgebra.TensorProduct.coe_comul_eq]
-  <;> simp only [_root_.map_one, _root_.map_mul]
+  have hcounit := congr(DFunLike.coe $(Bialgebra.TensorProduct.counit_eq_algHom_toLinearMap R A B))
+  have hcomul := congr(DFunLike.coe $(Bialgebra.TensorProduct.comul_eq_algHom_toLinearMap R A B))
+  refine Bialgebra.mk' R (A ⊗[R] B) ?_ (fun {x y} => ?_) ?_ (fun {x y} => ?_) <;>
+  simp_all only [AlgHom.toLinearMap_apply] <;>
+  simp only [_root_.map_one, _root_.map_mul]
 
 namespace Bialgebra.TensorProduct
 
@@ -88,8 +90,8 @@ theorem assoc_symm_tmul (x : A) (y : B) (z : C) :
 
 @[simp]
 theorem assoc_toCoalgEquiv :
-    (Bialgebra.TensorProduct.assoc R A B C : _ ≃ₗc[R] _)
-      = Coalgebra.TensorProduct.assoc R A B C := rfl
+    (Bialgebra.TensorProduct.assoc R A B C : _ ≃ₗc[R] _) =
+    Coalgebra.TensorProduct.assoc R A B C := rfl
 
 variable (R A)
 
@@ -110,23 +112,20 @@ theorem lid_tmul (r : R) (a : A) : Bialgebra.TensorProduct.lid R A (r ⊗ₜ a) 
 @[simp]
 theorem lid_symm_apply (a : A) : (Bialgebra.TensorProduct.lid R A).symm a = 1 ⊗ₜ a := rfl
 
--- could deal with this better
 theorem coalgebraRid_eq_algebraRid_apply (x) :
-    Coalgebra.TensorProduct.rid R A x = Algebra.TensorProduct.rid R R A x := by
-  show _root_.TensorProduct.rid R A x = _
-  rw [← TensorProduct.AlgebraTensorModule.rid_eq_rid]
-  rfl
+    Coalgebra.TensorProduct.rid R A x = Algebra.TensorProduct.rid R R A x :=
+  congr($((TensorProduct.AlgebraTensorModule.rid_eq_rid R A).symm) x)
 
 variable (R A)
 
 /-- The base ring is a right identity for the tensor product of bialgebras, up to
 bialgebra equivalence. -/
-protected noncomputable def rid : A ⊗[R] R ≃ₐc[R] A :=
-  { Coalgebra.TensorProduct.rid R A with
-    map_mul' := fun x y => by
-      simp only [CoalgEquiv.toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, AddHom.toFun_eq_coe,
-        LinearMap.coe_toAddHom, CoalgHom.coe_toLinearMap, CoalgHom.coe_coe,
-        coalgebraRid_eq_algebraRid_apply, AlgEquiv.map_mul] }
+protected noncomputable def rid : A ⊗[R] R ≃ₐc[R] A where
+  toCoalgEquiv := Coalgebra.TensorProduct.rid R A
+  map_mul' x y := by
+    simp only [CoalgEquiv.toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, AddHom.toFun_eq_coe,
+      LinearMap.coe_toAddHom, CoalgHom.coe_toLinearMap, CoalgHom.coe_coe,
+      coalgebraRid_eq_algebraRid_apply, AlgEquiv.map_mul]
 
 variable {R A}
 
