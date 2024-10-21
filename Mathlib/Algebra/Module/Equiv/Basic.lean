@@ -195,6 +195,7 @@ def toModuleAut : S →* M ≃ₗ[R] M where
 
 end DistribMulAction
 
+/-- An isomorphism from invertible linear endomorphisms to linear automorphisms. -/
 def Module.endUnitsToModuleAutEquiv (R) (M) [CommRing R] [AddCommGroup M] [Module R M] :
     (M →ₗ[R] M)ˣ ≃* (M ≃ₗ[R] M) where
   toFun f := DistribMulAction.toLinearEquiv R M f
