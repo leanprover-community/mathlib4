@@ -119,8 +119,7 @@ end Classification
 
 section Cardinal
 
-variable {R K : Type u} [CommRing R]
-variable [Field K] [Algebra R K] [IsAlgClosed K]
+variable {R K : Type u} [CommRing R] [Field K] [Algebra R K] [IsAlgClosed K]
 variable {ι : Type u} (v : ι → K)
 
 theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :

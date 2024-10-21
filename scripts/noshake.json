@@ -364,7 +364,7 @@
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
   "Mathlib.Data.List.ProdSigma":
   ["Batteries.Data.Nat.Lemmas", "Mathlib.Data.List.Basic"],
-  "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
+  "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertIdx"],
   "Mathlib.Data.List.Defs": ["Batteries.Data.RBMap.Basic"],
   "Mathlib.Data.List.Basic":
   ["Mathlib.Control.Basic", "Mathlib.Data.Option.Basic"],
