@@ -483,6 +483,69 @@ lemma lieDeriv_pullback (f : E → F) (V : F → F) (g : F → G) (x : E)
   rw [fderiv_pullback]
   exact ⟨M, hM⟩
 
+variable (𝕜) in
+/-- Definition recording that a function has a symmetric second derivative within a set at
+a point. This is automatic in most cases of interest (open sets over real or complex vector fields,
+or general case for analytic functions), but we can express theorems of calculus using this
+as a general assumption, and then specialize to these situations. -/
+def IsSymmSndFDerivWithin (f : E → F) (s : Set E) (x : E) : Prop :=
+  ∀ v w, fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v w = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x w v
+
+lemma leibniz_identity (U V W : E → E) (s : Set E) (x : E)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
+    (hU : ContDiffWithinAt 𝕜 2 U s x) (hV : ContDiffWithinAt 𝕜 2 V s x)
+    (hW : ContDiffWithinAt 𝕜 2 W s x)
+    (h'U : IsSymmSndFDerivWithin 𝕜 U s x) (h'V : IsSymmSndFDerivWithin 𝕜 V s x)
+    (h'W : IsSymmSndFDerivWithin 𝕜 W s x) :
+    lieBracketWithin 𝕜 U (lieBracketWithin 𝕜 V W s) s x =
+      lieBracketWithin 𝕜 (lieBracketWithin 𝕜 U V s) W s x
+      + lieBracketWithin 𝕜 V (lieBracketWithin 𝕜 U W s) s x := by
+  simp only [IsSymmSndFDerivWithin] at h'U h'V h'W
+  simp only [lieBracketWithin_eq, map_sub]
+  rw [fderivWithin_sub (hs x hx)]; rotate_left
+  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+    exact hW.fderivWithin_right_apply (hV.of_le one_le_two) hs le_rfl hx
+  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+    exact hV.fderivWithin_right_apply (hW.of_le one_le_two) hs le_rfl hx
+  rw [fderivWithin_sub (hs x hx)]; rotate_left
+  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+    exact hV.fderivWithin_right_apply (hU.of_le one_le_two) hs le_rfl hx
+  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+    exact hU.fderivWithin_right_apply (hV.of_le one_le_two) hs le_rfl hx
+  rw [fderivWithin_sub (hs x hx)]; rotate_left
+  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+    exact hW.fderivWithin_right_apply (hU.of_le one_le_two) hs le_rfl hx
+  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+    exact hU.fderivWithin_right_apply (hW.of_le one_le_two) hs le_rfl hx
+  rw [fderivWithin_clm_apply (hs x hx)]; rotate_left
+  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+    exact hW.fderivWithin_right hs le_rfl hx
+  · exact ContDiffWithinAt.differentiableWithinAt hV one_le_two
+  rw [fderivWithin_clm_apply (hs x hx)]; rotate_left
+  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+    exact hV.fderivWithin_right hs le_rfl hx
+  · exact ContDiffWithinAt.differentiableWithinAt hW one_le_two
+  rw [fderivWithin_clm_apply (hs x hx)]; rotate_left
+  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+    exact hV.fderivWithin_right hs le_rfl hx
+  · exact ContDiffWithinAt.differentiableWithinAt hU one_le_two
+  rw [fderivWithin_clm_apply (hs x hx)]; rotate_left
+  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+    exact hU.fderivWithin_right hs le_rfl hx
+  · exact ContDiffWithinAt.differentiableWithinAt hV one_le_two
+  rw [fderivWithin_clm_apply (hs x hx)]; rotate_left
+  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+    exact hW.fderivWithin_right hs le_rfl hx
+  · exact ContDiffWithinAt.differentiableWithinAt hU one_le_two
+  rw [fderivWithin_clm_apply (hs x hx)]; rotate_left
+  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+    exact hU.fderivWithin_right hs le_rfl hx
+  · exact ContDiffWithinAt.differentiableWithinAt hW one_le_two
+  simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.add_apply,
+    ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.flip_apply, h'V, h'U,
+    h'W]
+  abel
+
 open Set
 
 variable [CompleteSpace E]
@@ -553,14 +616,11 @@ lemma _root_.exists_continuousLinearEquiv_fderiv_symm_eq
   simp only [← fderivWithin_univ, ← contDiffWithinAt_univ, ← nhdsWithin_univ] at hf h'f ⊢
   exact exists_continuousLinearEquiv_fderivWithin_symm_eq h'f hf uniqueDiffOn_univ (mem_univ _)
 
-
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
 completeness but requiring that `f` is a local diffeo. -/
 lemma lieBracketWithin_pullbackWithin {f : E → F} {V W : F → F} {x : E} {t : Set F}
-    (hf : ∀ v w, fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v w =
-      fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x w v)
-    (h'f : ContDiffWithinAt 𝕜 2 f s x)
+    (hf : IsSymmSndFDerivWithin 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
     (hV : DifferentiableWithinAt 𝕜 V t (f x)) (hW : DifferentiableWithinAt 𝕜 W t (f x))
     (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) :
     lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V s) (pullbackWithin 𝕜 f W s) s x =
@@ -581,7 +641,8 @@ lemma lieBracketWithin_pullbackWithin {f : E → F} {V W : F → F} {x : E} {t :
   have Af : DifferentiableWithinAt 𝕜 f s x := h'f.differentiableWithinAt one_le_two
   simp only [lieBracketWithin_eq, pullbackWithin_eq_of_fderivWithin_eq hMx, map_sub, AV, AW]
   rw [fderivWithin_clm_apply, fderivWithin_clm_apply]
-  · simp [fderivWithin.comp' x hW Af hst (hu x hx), ← hMx,
+  · simp only [IsSymmSndFDerivWithin] at hf
+    simp [fderivWithin.comp' x hW Af hst (hu x hx), ← hMx,
       fderivWithin.comp' x hV Af hst (hu x hx), M_diff, hf]
   · exact hu x hx
   · exact M_symm_smooth.differentiableWithinAt le_rfl
@@ -605,9 +666,7 @@ completeness but requiring that `f` is a local diffeo. Variant where unique diff
 the invariance property are only required in a smaller set `u`. -/
 lemma lieBracketWithin_pullbackWithin_of_eventuallyEq
     {f : E → F} {V W : F → F} {x : E} {t : Set F} {u : Set E}
-    (hf : ∀ v w, fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v w =
-      fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x w v)
-    (h'f : ContDiffWithinAt 𝕜 2 f s x)
+    (hf : IsSymmSndFDerivWithin 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
     (hV : DifferentiableWithinAt 𝕜 V t (f x)) (hW : DifferentiableWithinAt 𝕜 W t (f x))
     (hu : UniqueDiffOn 𝕜 u) (hx : x ∈ u) (hst : MapsTo f u t) (hus : u =ᶠ[𝓝 x] s) :
     lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V s) (pullbackWithin 𝕜 f W s) s x =
@@ -628,7 +687,8 @@ lemma lieBracketWithin_pullbackWithin_of_eventuallyEq
   _ = pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) u x := by
     apply lieBracketWithin_pullbackWithin _ _
       hV hW hu hx hst
-    · simp [fderivWithin_fderivWithin_eq_of_eventuallyEq hus, hf]
+    · simp only [IsSymmSndFDerivWithin] at hf ⊢
+      simp [fderivWithin_fderivWithin_eq_of_eventuallyEq hus, hf]
     · apply h'f.mono_of_mem
       exact nhdsWithin_le_iff.1 ((nhdsWithin_eq_iff_eventuallyEq.2 hus).le)
   _ = pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) s x := by
@@ -664,29 +724,6 @@ lemma DifferentiableWithinAt.pullbackWithin {f : E → F} {V : F → F} {s : Set
   · filter_upwards [hM] with y hy using by simp [← hy]
   · have hMx : M x = fderivWithin 𝕜 f s x := by apply mem_of_mem_nhdsWithin hx hM
     simp [← hMx]
-
-lemma poupou (U V W : E → E) (s : Set E) (x : E)
-    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
-    (hU : ContDiffWithinAt 𝕜 2 U s x) (hV : ContDiffWithinAt 𝕜 2 V s x)
-    (hW : ContDiffWithinAt 𝕜 2 W s x) :
-    lieBracketWithin 𝕜 U (lieBracketWithin 𝕜 V W s) s x =
-      lieBracketWithin 𝕜 (lieBracketWithin 𝕜 U V s) W s x
-      + lieBracketWithin 𝕜 V (lieBracketWithin 𝕜 U W s) s x := by
-  simp only [lieBracketWithin_eq, map_sub]
-  rw [fderivWithin_sub (hs x hx)]
-  sorry
-  · have Z := hW.fderivWithin_right_apply
-    --?_ hs (m := 1) le_rfl hx
-    apply Z.differentiableWithinAt
-
-
-
-
-
-
-#exit
-
--- ⁅u, ⁅v, w⁆⁆ = ⁅⁅u, v⁆, w⁆ + ⁅v, ⁅u, w⁆⁆
 
 end VectorField
 
