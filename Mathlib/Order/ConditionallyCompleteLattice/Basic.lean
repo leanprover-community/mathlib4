@@ -1001,8 +1001,7 @@ theorem lt_csSup_iff (hb : BddAbove s) (hs : s.Nonempty) : a < sSup s ↔ ∃ b 
   simpa only [not_le, not_forall₂, exists_prop] using (csSup_le_iff hb hs (a := a)).not
 
 theorem csInf_lt_iff (hb : BddBelow s) (hs : s.Nonempty) : sInf s < a ↔ ∃ b ∈ s, b < a := by
-  rw [← not_iff_not]
-  simpa using le_csInf_iff hb hs
+  simpa only [not_le, not_forall₂, exists_prop] using (le_csInf_iff hb hs).not
 
 theorem lt_ciSup_iff [Nonempty ι] {f : ι → α} (hb : BddAbove (range f)) :
     a < iSup f ↔ ∃ i, a < f i := by
