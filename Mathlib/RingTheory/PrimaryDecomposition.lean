@@ -3,6 +3,9 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.JacobsonIdeal
 import Mathlib.RingTheory.Valuation.ValuationRing
@@ -25,16 +28,18 @@ decomposed by primary ideals, leading to a direct sum of integral domains and va
 
 variable {R : Type*} [CommRing R]
 
+local notation "JR" => (Ideal.jacobson ⊥ : Ideal R)
+local notation "JB" X => (Ideal.jacobson ⊥ : Ideal X)
+
 namespace Ideal
 
 lemma noZeroDivisors_or_valuationRing_of_zero_divisors_mem_jacobson [IsPrincipalIdealRing R]
-    (h0 : {x : R | ∃ y ≠ 0, y * x = 0} ⊆ (jacobson ⊥ : Ideal R)) :
-    NoZeroDivisors R ∨ (PreValuationRing R ∧
-      (jacobson ⊥ : Ideal R).IsMaximal ∧ ∀ I : Ideal R, ∃ k, I = (jacobson ⊥) ^ k) := by
+    (h0 : {x : R | ∃ y ≠ 0, y * x = 0} ⊆ (JR : Set R)) :
+    NoZeroDivisors R ∨ (PreValuationRing R ∧ (JR).IsMaximal ∧ ∀ I : Ideal R, ∃ k, I = JR ^ k) := by
   classical
   rcases subsingleton_or_nontrivial R with _|_
   · exact Or.inl (Subsingleton.to_noZeroDivisors R)
-  obtain ⟨s, hs⟩ := IsPrincipalIdealRing.principal (jacobson ⊥ : Ideal R)
+  obtain ⟨s, hs⟩ := IsPrincipalIdealRing.principal JR
   rcases eq_or_ne s 0 with rfl|hsn
   · refine Or.inl ⟨fun h ↦ (em _).imp_right fun ha ↦ ?_⟩
     simpa [hs] using h0 ⟨_, ha, h⟩
@@ -149,12 +154,321 @@ lemma noZeroDivisors_or_valuationRing_of_zero_divisors_mem_jacobson [IsPrincipal
     obtain ⟨y, rfl⟩ := hsy
     exact mul_mem_right _ _ this
 
+lemma isNilpotent_of_mem_isNilpotent {x : R} {I : Ideal R} (hx : x ∈ I) (hI : IsNilpotent I) :
+    IsNilpotent x := by
+  refine hI.imp fun n ↦ ?_
+  simp only [Submodule.zero_eq_bot, Ideal.ext_iff, mem_bot]
+  intro H
+  simp [← H, Ideal.pow_mem_pow hx n]
+
+lemma isMaximal_eq_of_isNilpotent {I J : Ideal R} (hN : IsNilpotent I)
+    (hI : I.IsMaximal) (hJ : J.IsMaximal) : J = I := by
+  refine (hI.eq_of_le hJ.ne_top fun x hx ↦ ?_).symm
+  obtain ⟨n, hn⟩ := isNilpotent_of_mem_isNilpotent hx hN
+  have hx' : x ^ n ∈ J := by simp [hn]
+  exact hJ.isPrime.mem_of_pow_mem _ hx'
+
+lemma _root_.IsNilpotent.eq_zero_of_eq_pow_two_of_ne_one {S : Type*} [Semiring S] {x : S}
+    (hx : IsNilpotent x) (h : x ^ 2 = x) (h' : x ≠ 1) :
+    x = 0 := by
+  nontriviality S
+  obtain ⟨_|k, hk⟩ := hx
+  · simp at hk
+  induction k with
+  | zero => simpa using hk
+  | succ k ih =>
+    refine ih ?_
+    rwa [add_assoc, one_add_one_eq_two, pow_add, h, ← pow_succ] at hk
+
+lemma PreValuationRing.of_isMaximal_of_isNilpotent_of_isPrincipal {M : Ideal R}
+    (hM : M.IsMaximal) (hN : IsNilpotent M) (hP : M.IsPrincipal) :
+    PreValuationRing R := by
+  have instLocal : LocalRing R := .of_unique_max_ideal
+    ⟨M, hM, fun N ↦ isMaximal_eq_of_isNilpotent hN hM⟩
+  have hMu (x : R) (hx : ¬ IsUnit x) : x ∈ M := by
+    simp [LocalRing.eq_maximalIdeal hM, LocalRing.mem_maximalIdeal, hx]
+  obtain ⟨s, hs⟩ := hP
+  rw [submodule_span_eq] at hs
+  have hxs : ∀ x, ∃ (k : ℕ) (r : Rˣ), x = r * s ^ k := by
+    intro x
+    obtain ⟨n, hn⟩ := isNilpotent_of_mem_isNilpotent (hs ▸ mem_span_singleton_self _) hN
+    rcases eq_or_ne x 0 with rfl|hx0
+    · exact ⟨n, 1, by simp [hn]⟩
+    by_cases hxu : IsUnit x
+    · exact ⟨0, hxu.unit, by simp⟩
+    classical
+    have hxM : x ∈ M ^ (Nat.findGreatest (fun n ↦ x ∈ M ^ n) n) := by
+      have : 1 ≤ n := by
+        contrapose! hn
+        simp only [Nat.lt_one_iff] at hn
+        simp [hn]
+      exact Nat.findGreatest_spec (P := fun n ↦ x ∈ M ^ n) this (by simpa using hMu _ hxu)
+    rw [hs, span_singleton_pow] at hxM
+    obtain ⟨r, hr⟩ := mem_span_singleton'.mp (hxM)
+    have hru : IsUnit r := by
+      by_contra H
+      replace H : r ∈ span {s} := hs.le (hMu _ H)
+      have H' : x ∈ span {s ^ (Nat.findGreatest (fun n ↦ x ∈ span {s} ^ n) n + 1)} := by
+        rw [pow_succ', ← span_singleton_mul_span_singleton]
+        have := Ideal.mul_mem_mul H
+          (mem_span_singleton_self (s ^ Nat.findGreatest (fun n ↦ x ∈ span {s} ^ n) n))
+        rwa [hr] at this
+      rw [← span_singleton_pow, ← hs] at hxM H'
+      refine Nat.findGreatest_is_greatest (P := fun n ↦ x ∈ M ^ n) (n := n) ?_ ?_ H'
+      · simp
+      · contrapose! H'
+        obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt H'
+        simp only [hk, add_assoc, pow_add, pow_one]
+        simp [hs, span_singleton_pow, hn, hx0]
+    exact ⟨_, hru.unit, hr.symm⟩
+  rw [PreValuationRing.iff_dvd_total]
+  constructor
+  intro x y
+  obtain ⟨k, r, rfl⟩ := hxs x
+  obtain ⟨l, r', rfl⟩ := hxs y
+  refine (le_total k l).imp ?_ ?_ <;>
+  · intro h
+    simpa using pow_dvd_pow s h
+
+lemma eq_pow_of_isMaximal_of_isNilpotent_of_isPrincipal {M : Ideal R}
+    (hM : M.IsMaximal) (hN : IsNilpotent M) (hP : M.IsPrincipal) (I : Ideal R) :
+    ∃ k, I = M ^ k := by
+  have instLocal : LocalRing R := .of_unique_max_ideal
+    ⟨M, hM, fun N ↦ isMaximal_eq_of_isNilpotent hN hM⟩
+  have hMu (x : R) (hx : ¬ IsUnit x) : x ∈ M := by
+    simp [LocalRing.eq_maximalIdeal hM, LocalRing.mem_maximalIdeal, hx]
+  obtain ⟨s, hs⟩ := hP
+  rw [submodule_span_eq] at hs
+  have hxs : ∀ x, ∃ (k : ℕ) (r : Rˣ), x = r * s ^ k := by
+    intro x
+    obtain ⟨n, hn⟩ := isNilpotent_of_mem_isNilpotent (hs ▸ mem_span_singleton_self _) hN
+    rcases eq_or_ne x 0 with rfl|hx0
+    · exact ⟨n, 1, by simp [hn]⟩
+    by_cases hxu : IsUnit x
+    · exact ⟨0, hxu.unit, by simp⟩
+    classical
+    have hxM : x ∈ M ^ (Nat.findGreatest (fun n ↦ x ∈ M ^ n) n) := by
+      have : 1 ≤ n := by
+        contrapose! hn
+        simp only [Nat.lt_one_iff] at hn
+        simp [hn]
+      exact Nat.findGreatest_spec (P := fun n ↦ x ∈ M ^ n) this (by simpa using hMu _ hxu)
+    rw [hs, span_singleton_pow] at hxM
+    obtain ⟨r, hr⟩ := mem_span_singleton'.mp (hxM)
+    have hru : IsUnit r := by
+      by_contra H
+      replace H : r ∈ span {s} := hs.le (hMu _ H)
+      have H' : x ∈ span {s ^ (Nat.findGreatest (fun n ↦ x ∈ span {s} ^ n) n + 1)} := by
+        rw [pow_succ', ← span_singleton_mul_span_singleton]
+        have := Ideal.mul_mem_mul H
+          (mem_span_singleton_self (s ^ Nat.findGreatest (fun n ↦ x ∈ span {s} ^ n) n))
+        rwa [hr] at this
+      rw [← span_singleton_pow, ← hs] at hxM H'
+      refine Nat.findGreatest_is_greatest (P := fun n ↦ x ∈ M ^ n) (n := n) ?_ ?_ H'
+      · simp
+      · contrapose! H'
+        obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt H'
+        simp only [hk, add_assoc, pow_add, pow_one]
+        simp [hs, span_singleton_pow, hn, hx0]
+    exact ⟨_, hru.unit, hr.symm⟩
+  obtain ⟨m, hm⟩ := id hN
+  rcases eq_or_ne I ⊥ with rfl|hIb
+  · exact ⟨m, by simp [hm]⟩
+  have hIs : ∃ k, s ^ k ∈ I := by
+    obtain ⟨x, hx, -⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hIb
+    obtain ⟨k, r, rfl⟩ := hxs x
+    refine ⟨k, ?_⟩
+    simpa using hx
+  classical
+  simp_rw [hs, span_singleton_pow]
+  refine ⟨Nat.find hIs, le_antisymm ?_ ?_⟩ <;> intro x hx <;> obtain ⟨k, r, rfl⟩ := hxs x
+  · simp only [Units.isUnit, unit_mul_mem_iff_mem] at hx
+    simp [mem_span_singleton, pow_dvd_pow _ (Nat.find_min' hIs hx)]
+  · simp only [Units.isUnit, unit_mul_mem_iff_mem, mem_span_singleton'] at hx
+    obtain ⟨d, hd⟩ := hx
+    simp [← hd, Ideal.mul_mem_left _ _ (Nat.find_spec hIs)]
+
+lemma span_singleton_eq_top_of_isPrincipalIdealRing_quotient_noZeroDivisors_zero_divisors_le_aux
+    {c : R} {I J : Ideal R} [IsPrincipalIdealRing (R ⧸ J)] [NoZeroDivisors (R ⧸ I)]
+    (h : I ⊔ J ≤ span {c}) (hIJ : ¬ I ≤ J) (hJI : ¬ J ≤ I)
+    (hJ0 : ({x : R ⧸ J | ∃ y ≠ 0, y * x = 0} ⊆ (JB (R ⧸ J) : Set (R ⧸ J)))) :
+    span {c} = ⊤ := by
+  obtain ⟨a', haJ⟩ := IsPrincipalIdealRing.principal (Ideal.map (Ideal.Quotient.mk J) I)
+  have haI' := haJ.ge (Ideal.mem_span_singleton_self _)
+  simp only [submodule_span_eq] at haJ
+  rw [Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective] at haI'
+  obtain ⟨a, haI, rfl⟩ := haI'
+  obtain ⟨b, hb⟩ := mem_span_singleton.mp ((le_sup_left.trans h) haI)
+  have hb' : b ∈ I := by
+    have ha' : Quotient.mk I a = Quotient.mk I c * Quotient.mk I b := by simp [hb]
+    rw [Quotient.eq_zero_iff_mem.mpr haI, eq_comm, mul_eq_zero, Quotient.eq_zero_iff_mem,
+        Quotient.eq_zero_iff_mem] at ha'
+    refine ha'.resolve_left fun hc ↦ ?_
+    rw [← span_singleton_le_iff_mem] at hc
+    suffices I ⊔ J = span {c} from absurd (le_sup_right.trans (h.trans hc)) hJI
+    exact le_antisymm h (hc.trans le_sup_left)
+  have ha' : Quotient.mk J a = Quotient.mk J c * Quotient.mk J b := by simp [hb]
+  obtain ⟨d, hd⟩ : ∃ d, Quotient.mk J b = Quotient.mk J a * Quotient.mk J d := by
+    have := haJ.le ((Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective).mpr
+      ⟨b, hb', rfl⟩)
+    rw [mem_span_singleton] at this
+    obtain ⟨⟨d⟩, hd⟩ := this
+    exact ⟨d, hd⟩
+  rw [hd, eq_comm, ← sub_eq_zero, mul_left_comm, ← mul_sub_one] at ha'
+  by_cases ha0 : Quotient.mk J a = 0
+  · refine absurd ?_ hIJ
+    simpa [ha0, map_eq_bot_iff_le_ker] using haJ
+  · have := isUnit_of_sub_one_mem_jacobson_bot _ (hJ0 ⟨_, ha0, ha'⟩)
+    rw [IsUnit.mul_iff] at this
+    have : span {Quotient.mk J c} = ⊤ := eq_top_of_isUnit_mem _ (mem_span_singleton_self _)
+      this.left
+    rw [← comap_top (f := Quotient.mk J), ← this, ← Set.image_singleton, ← map_span,
+      comap_map_mk]
+    exact h.trans' le_sup_right
+
+lemma eq_top_of_isPrincipalIdealRing_quotient_of_zero_divisors_le_jacobson_bot_of_disjoint_aux
+    {I J M : Ideal R} (hIJ : ¬ I ≤ J) (hJI : ¬ J ≤ I)
+    [IsPrincipalIdealRing (R ⧸ I)] [IsPrincipalIdealRing (R ⧸ J)]
+    (hI0 : {x | ∃ y ≠ 0, y * x = 0} ⊆ (JB (R ⧸ I) : Set (R ⧸ I)))
+    (hJ0 : {x | ∃ y ≠ 0, y * x = 0} ⊆ (JB (R ⧸ J) : Set (R ⧸ J)))
+    (hM : M.IsPrincipal) (hM' : I ⊔ J ≤ M) (hdis : Disjoint I J) :
+    M = ⊤ := by
+  obtain ⟨c, rfl⟩ := hM
+  rw [submodule_span_eq] at hM' ⊢
+  by_cases hcu : IsUnit c
+  · rwa [span_singleton_eq_top]
+  rcases noZeroDivisors_or_valuationRing_of_zero_divisors_mem_jacobson hI0 with _|⟨_, hmI, hvI⟩
+  · exact span_singleton_eq_top_of_isPrincipalIdealRing_quotient_noZeroDivisors_zero_divisors_le_aux
+      hM' hIJ hJI hJ0
+  rcases noZeroDivisors_or_valuationRing_of_zero_divisors_mem_jacobson hJ0 with _|⟨_, hmJ, hvJ⟩
+  · exact span_singleton_eq_top_of_isPrincipalIdealRing_quotient_noZeroDivisors_zero_divisors_le_aux
+      (sup_comm I J ▸ hM') hJI hIJ hI0
+  have hcI : c ∉ I := by
+    rw [← span_singleton_le_iff_mem]
+    contrapose! hJI
+    exact hJI.trans' (hM'.trans' le_sup_right)
+  set M := Ideal.comap (Quotient.mk I) (jacobson ⊥ : Ideal _) with hM
+  set N := Ideal.comap (Quotient.mk J) (jacobson ⊥ : Ideal _) with hN
+  obtain ⟨k, hk⟩ := hvI ⊥
+  obtain ⟨l, hl⟩ := hvJ ⊥
+  replace hk := congr(comap (Quotient.mk I) $hk)
+  replace hl := congr(comap (Quotient.mk J) $hl)
+  simp only [comap_mk_bot] at hk hl
+  by_cases hMN : M = N
+  · have hMn : IsNilpotent M := by
+      suffices IsNilpotent (M * N) by
+        rw [← hMN, ← pow_two] at this
+        obtain ⟨n, hn⟩ := this
+        exact ⟨2 * n, by simp [pow_mul, hn]⟩
+      refine ⟨k + l, ?_⟩
+      simp only [Submodule.zero_eq_bot, eq_bot_iff, hM, hN, pow_add, mul_pow]
+      refine mul_le_inf.trans ((inf_le_inf ?_ ?_).trans hdis.le_bot)
+      · exact mul_le_inf.trans (inf_le_of_left_le ((le_comap_pow _ _).trans hk.ge))
+      · exact mul_le_inf.trans (inf_le_of_right_le ((le_comap_pow _ _).trans hl.ge))
+    have hMm : IsMaximal M := by
+      rw [hM]
+      exact Ideal.comap_isMaximal_of_surjective _ Quotient.mk_surjective
+    have instLocal : LocalRing R := .of_unique_max_ideal
+      ⟨M, hMm, fun N hN ↦ isMaximal_eq_of_isNilpotent hMn hMm hN⟩
+    have hMu (x : R) (hx : ¬ IsUnit x) : x ∈ M := by
+      simp [LocalRing.eq_maximalIdeal hMm, LocalRing.mem_maximalIdeal, hx]
+    obtain ⟨s, hs, hs'⟩ : ∃ m ∈ M, map (Quotient.mk I) M = span {Quotient.mk I m} := by
+      obtain ⟨⟨m⟩, hm⟩ := IsPrincipalIdealRing.principal (Ideal.map (Quotient.mk I) M)
+      rw [submodule_span_eq, Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk] at hm
+      refine ⟨m, ?_, hm⟩
+      · rw [hM] at hm ⊢
+        rw [mem_comap]
+        exact (hm.ge.trans map_comap_le) (mem_span_singleton_self _)
+    have hMs : M ≤ .span {s} ⊔ I := by
+      intro x hx
+      rw [← Ideal.mem_quotient_iff_mem_sup]
+      simp only [map_span, Set.image_singleton, ← hs', mem_quotient_iff_mem_sup]
+      exact Submodule.mem_sup_left hx
+    obtain ⟨x, i, hi, hc⟩ := Ideal.mem_span_singleton_sup.mp (hMs (hMu _ hcu))
+    obtain ⟨y, hy⟩ := Ideal.mem_span_singleton'.mp (hM' (Ideal.mem_sup_left hi))
+    by_cases hyu : IsUnit y
+    · suffices .span {c} ≤ I from absurd ((span_singleton_le_iff_mem _).mp this) hcI
+      lift y to Rˣ using hyu
+      rw [eq_comm, ← Units.inv_mul_eq_iff_eq_mul] at hy
+      rw [span_singleton_le_iff_mem, ← hy]
+      exact Ideal.mul_mem_left _ _ hi
+    · have hy1 : IsUnit (1 - y) := (isNilpotent_of_mem_isNilpotent (hMu _ hyu) hMn).isUnit_one_sub
+      rw [← hy, eq_comm, ← sub_eq_iff_eq_add, mul_comm, ← mul_one_sub, ← hy1.unit_spec, eq_comm,
+          ← Units.mul_inv_eq_iff_eq_mul, mul_right_comm, mul_comm] at hc
+      replace hc : span {c} ≤ Ideal.span {s} := span_singleton_le_span_singleton.mpr ⟨_, hc.symm⟩
+      rw [sup_eq_left.mpr (hc.trans' (hM'.trans' le_sup_left))] at hMs
+      replace hMs : M = span {s} := by
+        refine hMm.eq_of_le ?_ hMs
+        have := hMm.ne_top
+        contrapose! this
+        rw [span_singleton_eq_top] at this
+        rw [eq_top_of_isUnit_mem _ hs this]
+      have := PreValuationRing.of_isMaximal_of_isNilpotent_of_isPrincipal hMm hMn ⟨_, hMs⟩
+      rw [PreValuationRing.iff_ideal_total] at this
+      have key := this.total I J
+      simp [hIJ, hJI] at key
+  · have : M ⊔ N = ⊤ := by
+      rw [hM, hN]
+      refine IsMaximal.coprime_of_ne ?_ ?_ hMN <;>
+      exact comap_isMaximal_of_surjective (Quotient.mk _) Quotient.mk_surjective
+    have ht := Ideal.pow_sup_pow_eq_top (m := k) (n := l) this
+    refine le_antisymm le_top (hM'.trans' (ht.ge.trans (sup_le_sup ?_ ?_))) <;>
+    simp [M, hk, N, hl, le_comap_pow]
+
+lemma eq_top_of_isPrincipalIdealRing_quotient_of_zero_divisors_le_jacobson_bot_of_isPrincipal_of_le
+    {I J M : Ideal R} (hIJ : ¬ I ≤ J) (hJI : ¬ J ≤ I)
+    [IsPrincipalIdealRing (R ⧸ I)] [IsPrincipalIdealRing (R ⧸ J)]
+    (hI0 : {x | ∃ y ≠ 0, y * x = 0} ⊆ (JB (R ⧸ I) : Set (R ⧸ I)))
+    (hJ0 : {x | ∃ y ≠ 0, y * x = 0} ⊆ (JB (R ⧸ J) : Set (R ⧸ J)))
+    (hM : M.IsPrincipal) (hM' : I ⊔ J ≤ M) :
+    M = ⊤ := by
+  set f := map (Quotient.mk (I ⊓ J)) with hf
+  replace hIJ : ¬ f I ≤ f J := by rwa [hf, map_le_iff_le_comap, comap_map_mk inf_le_right]
+  replace hJI : ¬ f J ≤ f I := by rwa [hf, map_le_iff_le_comap, comap_map_mk inf_le_left]
+  have hI : I ⊓ J ≤ I := inf_le_left
+  have hJ : I ⊓ J ≤ J := inf_le_right
+  have instI : IsPrincipalIdealRing ((R ⧸ I ⊓ J) ⧸ f I) :=
+    IsPrincipalIdealRing.of_surjective (R := R ⧸ I)
+      (DoubleQuot.quotQuotEquivQuotOfLE hI).symm (RingEquiv.surjective _)
+  have instJ : IsPrincipalIdealRing ((R ⧸ I ⊓ J) ⧸ f J) :=
+    IsPrincipalIdealRing.of_surjective (R := R ⧸ J)
+      (DoubleQuot.quotQuotEquivQuotOfLE hJ).symm (RingEquiv.surjective _)
+  replace hM : (f M).IsPrincipal := hM.map_ringHom _
+  have hM'' : f I ⊔ f J ≤ f M := by
+    rwa [hf, ← map_sup, map_le_iff_le_comap, comap_map_mk (inf_le_sup.trans hM')]
+  replace hI0 : {x | ∃ y ≠ 0, y * x = 0} ⊆ (JB ((R ⧸ I ⊓ J) ⧸ f I) : Set ((R ⧸ I ⊓ J) ⧸ f I)) := by
+    let g := (DoubleQuot.quotQuotEquivQuotOfLE hI).symm.toRingHom
+    let g' := (DoubleQuot.quotQuotEquivQuotOfLE hI)
+    rw [← map_bot (f := g), ← map_jacobson_of_bijective (RingEquiv.bijective _), map]
+    rintro x ⟨y, hy0, hy⟩
+    refine subset_span (Set.image_mono hI0 ⟨g' x, ⟨g' y, ?_, ?_⟩, ?_⟩) <;>
+    simp [g, g', ← _root_.map_mul, hy, hy0]
+  replace hJ0 : {x | ∃ y ≠ 0, y * x = 0} ⊆ (JB ((R ⧸ I ⊓ J) ⧸ f J) : Set ((R ⧸ I ⊓ J) ⧸ f J)) := by
+    let g := (DoubleQuot.quotQuotEquivQuotOfLE hJ).symm.toRingHom
+    let g' := (DoubleQuot.quotQuotEquivQuotOfLE hJ)
+    rw [← map_bot (f := g), ← map_jacobson_of_bijective (RingEquiv.bijective _), map]
+    rintro x ⟨y, hy0, hy⟩
+    refine subset_span (Set.image_mono hJ0 ⟨g' x, ⟨g' y, ?_, ?_⟩, ?_⟩) <;>
+    simp [g, g', ← _root_.map_mul, hy, hy0]
+  replace hdis : Disjoint (f I) (f J) := by
+    rw [hf]
+    rintro K hKI hKJ ⟨x⟩ hx
+    simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, mem_bot] at hx ⊢
+    specialize hKI hx
+    specialize hKJ hx
+    rw [mem_quotient_iff_mem] at hKI hKJ <;>
+    simp [Quotient.eq_zero_iff_mem, hKI, hKJ]
+  have := eq_top_of_isPrincipalIdealRing_quotient_of_zero_divisors_le_jacobson_bot_of_disjoint_aux
+      hIJ hJI hI0 hJ0 hM hM'' hdis
+  rwa [hf, eq_top_iff_one, ← map_one (Quotient.mk (I ⊓ J)),
+    Ideal.mem_quotient_iff_mem (inf_le_sup.trans hM'), ← eq_top_iff_one] at this
+
 end Ideal
 
 open Ideal in
 lemma IsPrincipalIdealRing.of_isNoetherian_of_isPrincipal_maximal_of_zero_divisors_mem_jacobson
     [IsNoetherianRing R] (h : ∀ I : Ideal R, I.IsMaximal → I.IsPrincipal)
-    (h0 : {x : R | ∃ y ≠ 0, y * x = 0} ⊆ (Ideal.jacobson ⊥ : Ideal R)) :
+    (h0 : {x : R | ∃ y ≠ 0, y * x = 0} ⊆ JR) :
     IsPrincipalIdealRing R where
   principal I := by
     suffices ∀ a b : R, Submodule.IsPrincipal (span {a} + span {b}) by
