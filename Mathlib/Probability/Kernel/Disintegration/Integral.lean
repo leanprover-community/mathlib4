@@ -39,14 +39,14 @@ variable [CountableOrCountablyGenerated α β] {κ : Kernel α (β × Ω)} [IsFi
 lemma lintegral_condKernel_mem (a : α) {s : Set (β × Ω)} (hs : MeasurableSet s) :
     ∫⁻ x, Kernel.condKernel κ (a, x) {y | (x, y) ∈ s} ∂(Kernel.fst κ a) = κ a s := by
   conv_rhs => rw [← κ.disintegrate κ.condKernel]
-  simp_rw [Kernel.compProd_apply _ _ _ hs]
+  simp_rw [Kernel.compProd_apply hs]
 
 lemma setLIntegral_condKernel_eq_measure_prod (a : α) {s : Set β} (hs : MeasurableSet s)
     {t : Set Ω} (ht : MeasurableSet t) :
     ∫⁻ b in s, Kernel.condKernel κ (a, b) t ∂(Kernel.fst κ a) = κ a (s ×ˢ t) := by
   have : κ a (s ×ˢ t) = (Kernel.fst κ ⊗ₖ Kernel.condKernel κ) a (s ×ˢ t) := by
     congr; exact (κ.disintegrate _).symm
-  rw [this, Kernel.compProd_apply _ _ _ (hs.prod ht)]
+  rw [this, Kernel.compProd_apply (hs.prod ht)]
   classical
   have : ∀ b, Kernel.condKernel κ (a, b) {c | (b, c) ∈ s ×ˢ t}
       = s.indicator (fun b ↦ Kernel.condKernel κ (a, b) t) b := by

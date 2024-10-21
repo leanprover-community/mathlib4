@@ -260,8 +260,8 @@ lemma range_toContinuousMap :
   exact ⟨{ f with map_one' := h1, map_mul' := hmul }, rfl⟩
 
 @[to_additive]
-theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
-    ClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
+theorem isClosedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
+    IsClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
   toEmbedding := embedding_toContinuousMap A B
   isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
@@ -269,6 +269,9 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ ?_
     exact isClosed_eq (continuous_eval_const (x * y)) <|
       .mul (continuous_eval_const x) (continuous_eval_const y)
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_toContinuousMap := isClosedEmbedding_toContinuousMap
 
 variable {A B C D E}
 
@@ -587,7 +590,7 @@ protected lemma inducing (f : M ≃ₜ* N) : Inducing f := f.toHomeomorph.induci
 protected lemma quotientMap (f : M ≃ₜ* N) : QuotientMap f := f.toHomeomorph.quotientMap
 protected lemma embedding (f : M ≃ₜ* N) : Embedding f := f.toHomeomorph.embedding
 lemma isOpenEmbedding (f : M ≃ₜ* N) : IsOpenEmbedding f := f.toHomeomorph.isOpenEmbedding
-protected lemma closedEmbedding (f : M ≃ₜ* N) : ClosedEmbedding f := f.toHomeomorph.closedEmbedding
+lemma isClosedEmbedding (f : M ≃ₜ* N) : IsClosedEmbedding f := f.toHomeomorph.isClosedEmbedding
 lemma isDenseEmbedding (f : M ≃ₜ* N) : IsDenseEmbedding f := f.toHomeomorph.isDenseEmbedding
 
 end map

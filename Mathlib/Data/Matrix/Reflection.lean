@@ -36,7 +36,7 @@ open Matrix
 
 namespace Matrix
 
-variable {l m n : ℕ} {α β : Type*}
+variable {l m n : ℕ} {α : Type*}
 
 /-- `∀` with better defeq for `∀ x : Matrix (Fin m) (Fin n) α, P x`. -/
 def Forall : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop

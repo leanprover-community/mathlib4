@@ -15,6 +15,8 @@ This file contains a number of further results on `iteratedDerivWithin` that nee
 than are available in `Mathlib/Analysis/Calculus/IteratedDeriv/Defs.lean`.
 -/
 
+section one_dimensional
+
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -123,3 +125,43 @@ lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ', neg_mul, one_mul,
       deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_const_smul',
       neg_smul]
+
+open Topology in
+lemma Filter.EventuallyEq.iteratedDeriv_eq (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} (hfg : f =ᶠ[𝓝 x] g) :
+    iteratedDeriv n f x = iteratedDeriv n g x := by
+  simp only [← iteratedDerivWithin_univ, iteratedDerivWithin_eq_iteratedFDerivWithin]
+  rw [(hfg.filter_mono nhdsWithin_le_nhds).iteratedFDerivWithin_eq hfg.eq_of_nhds n]
+
+lemma Set.EqOn.iteratedDeriv_of_isOpen (hfg : Set.EqOn f g s) (hs : IsOpen s) (n : ℕ) :
+    Set.EqOn (iteratedDeriv n f) (iteratedDeriv n g) s := by
+  refine fun x hx ↦ Filter.EventuallyEq.iteratedDeriv_eq n ?_
+  filter_upwards [IsOpen.mem_nhds hs hx] with a ha
+  exact hfg ha
+
+end one_dimensional
+
+/-!
+### Invariance of iterated derivatives under translation
+-/
+
+section shift_invariance
+
+variable {𝕜 F} [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+/-- The iterated derivative commutes with shifting the function by a constant on the left. -/
+lemma iteratedDeriv_comp_const_add (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
+    iteratedDeriv n (fun z ↦ f (s + z)) = fun t ↦ iteratedDeriv n f (s + t) := by
+  induction n with
+  | zero => simp only [iteratedDeriv_zero]
+  | succ n IH =>
+    simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_const_add _ s
+
+/-- The iterated derivative commutes with shifting the function by a constant on the right. -/
+lemma iteratedDeriv_comp_add_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
+    iteratedDeriv n (fun z ↦ f (z + s)) = fun t ↦ iteratedDeriv n f (t + s) := by
+  induction n with
+  | zero => simp only [iteratedDeriv_zero]
+  | succ n IH =>
+    simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_add_const _ s
+
+end shift_invariance
