@@ -718,9 +718,6 @@ theorem lift.initialSeg_coe : (lift.initialSeg.{u, v} : Ordinal → Ordinal) = l
 def omega0 : Ordinal.{u} :=
   lift <| @type ℕ (· < ·) _
 
-@[deprecated Ordinal.omega0 (since := "2024-09-26")]
-alias omega := omega0
-
 @[inherit_doc]
 scoped notation "ω" => Ordinal.omega0
 
@@ -732,9 +729,6 @@ theorem type_nat_lt : @type ℕ (· < ·) _ = ω :=
 @[simp]
 theorem card_omega0 : card ω = ℵ₀ :=
   rfl
-
-@[deprecated (since := "2024-09-30")]
-alias card_omega := card_omega0
 
 @[simp]
 theorem lift_omega0 : lift ω = ω :=

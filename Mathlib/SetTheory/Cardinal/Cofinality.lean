@@ -671,11 +671,22 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
       rcases e with ⟨a, rfl⟩
       exact not_succ_isLimit _ l
 
+set_option linter.docPrime false in
 @[simp]
+theorem cof_omega' {o : Ordinal} (ho : o.IsLimit) : (omega' o).cof = o.cof :=
+  isNormal_omega'.cof_eq ho
+
+@[simp]
+theorem cof_omega {o : Ordinal} (ho : o.IsLimit) : (omega o).cof = o.cof :=
+  isNormal_omega.cof_eq ho
+
+set_option linter.deprecated false in
+@[deprecated cof_omega' (since := "2024-10-11")]
 theorem aleph'_cof {o : Ordinal} (ho : o.IsLimit) : (aleph' o).ord.cof = o.cof :=
   aleph'_isNormal.cof_eq ho
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated cof_omega' (since := "2024-10-11")]
 theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (aleph o).ord.cof = o.cof :=
   aleph_isNormal.cof_eq ho
 
@@ -684,9 +695,6 @@ theorem cof_omega0 : cof ω = ℵ₀ :=
   (aleph0_le_cof.2 isLimit_omega0).antisymm' <| by
     rw [← card_omega0]
     apply cof_le_card
-
-@[deprecated (since := "2024-09-30")]
-alias cof_omega := cof_omega0
 
 theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r)) :
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) :=
@@ -1199,19 +1207,11 @@ namespace Ordinal
 open Cardinal
 open scoped Ordinal
 
--- TODO: generalize universes
+-- TODO: generalize universes, and use ω₁.
 lemma iSup_sequence_lt_omega1 {α : Type u} [Countable α]
-    (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < ω₁) :
-    iSup o < ω₁ := by
+    (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < (aleph 1).ord) :
+    iSup o < (aleph 1).ord := by
   apply iSup_lt_ord_lift _ ho
-  rw [Cardinal.isRegular_aleph_one.cof_eq]
-  exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
-
-set_option linter.deprecated false in
-@[deprecated iSup_sequence_lt_omega1 (since := "2024-08-27")]
-lemma sup_sequence_lt_omega1 {α} [Countable α] (o : α → Ordinal) (ho : ∀ n, o n < ω₁) :
-    sup o < ω₁ := by
-  apply sup_lt_ord_lift _ ho
   rw [Cardinal.isRegular_aleph_one.cof_eq]
   exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
 
