@@ -1,0 +1,9 @@
+version: 2  # Specifies the version of the Dependabot configuration file format
+
+updates:
+  # Configuration for dependency updates
+  - package-ecosystem: "github-actions"  # Specifies the ecosystem to check for updates
+    directory: "/"  # Specifies the directory to check for dependencies; "/" means the root directory
+    schedule:
+      # Check for updates to GitHub Actions every month
+      interval: "monthly"
