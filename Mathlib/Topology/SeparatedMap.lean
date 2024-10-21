@@ -86,15 +86,18 @@ theorem isSeparatedMap_iff_isClosed_diagonal {f : X → Y} :
   · obtain ⟨s₁, h₁, s₂, h₂, s_sub⟩ := mem_prod_iff.mp ht
     exact ⟨s₁, h₁, s₂, h₂, disjoint_left.2 fun x h₁ h₂ ↦ @t_sub ⟨(x, x), rfl⟩ (s_sub ⟨h₁, h₂⟩) rfl⟩
 
-theorem isSeparatedMap_iff_closedEmbedding {f : X → Y} :
-    IsSeparatedMap f ↔ ClosedEmbedding (toPullbackDiag f) := by
+theorem isSeparatedMap_iff_isClosedEmbedding {f : X → Y} :
+    IsSeparatedMap f ↔ IsClosedEmbedding (toPullbackDiag f) := by
   rw [isSeparatedMap_iff_isClosed_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨embedding_toPullbackDiag f, h⟩, fun h ↦ h.isClosed_range⟩
 
+@[deprecated (since := "2024-10-20")]
+alias isSeparatedMap_iff_closedEmbedding := isSeparatedMap_iff_isClosedEmbedding
+
 theorem isSeparatedMap_iff_isClosedMap {f : X → Y} :
     IsSeparatedMap f ↔ IsClosedMap (toPullbackDiag f) :=
-  isSeparatedMap_iff_closedEmbedding.trans
-    ⟨ClosedEmbedding.isClosedMap, closedEmbedding_of_continuous_injective_closed
+  isSeparatedMap_iff_isClosedEmbedding.trans
+    ⟨IsClosedEmbedding.isClosedMap, .of_continuous_injective_isClosedMap
       (embedding_toPullbackDiag f).continuous (injective_toPullbackDiag f)⟩
 
 open Function.Pullback in
@@ -141,15 +144,18 @@ theorem isLocallyInjective_iff_isOpen_diagonal {f : X → Y} :
     exact ⟨t₁ ∩ t₂, Filter.inter_mem h₁ h₂,
       fun x₁ h₁ x₂ h₂ he ↦ @t_sub ⟨(x₁, x₂), he⟩ (prod_sub ⟨h₁.1, h₂.2⟩)⟩
 
-theorem IsLocallyInjective_iff_openEmbedding {f : X → Y} :
-    IsLocallyInjective f ↔ OpenEmbedding (toPullbackDiag f) := by
+theorem IsLocallyInjective_iff_isOpenEmbedding {f : X → Y} :
+    IsLocallyInjective f ↔ IsOpenEmbedding (toPullbackDiag f) := by
   rw [isLocallyInjective_iff_isOpen_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨embedding_toPullbackDiag f, h⟩, fun h ↦ h.isOpen_range⟩
 
+@[deprecated (since := "2024-10-18")]
+alias IsLocallyInjective_iff_openEmbedding := IsLocallyInjective_iff_isOpenEmbedding
+
 theorem isLocallyInjective_iff_isOpenMap {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenMap (toPullbackDiag f) :=
-  IsLocallyInjective_iff_openEmbedding.trans
-    ⟨OpenEmbedding.isOpenMap, openEmbedding_of_continuous_injective_open
+  IsLocallyInjective_iff_isOpenEmbedding.trans
+    ⟨IsOpenEmbedding.isOpenMap, isOpenEmbedding_of_continuous_injective_open
       (embedding_toPullbackDiag f).continuous (injective_toPullbackDiag f)⟩
 
 theorem discreteTopology_iff_locallyInjective (y : Y) :
@@ -174,11 +180,25 @@ section eqLocus
 variable {f : X → Y} {g₁ g₂ : A → X} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
 include h₁ h₂
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/5338,
+the unused variable linter flags `g` here,
+but it is used in a type ascription to direct `fun_prop`.
+-/
+set_option linter.unusedVariables false in
 theorem IsSeparatedMap.isClosed_eqLocus (sep : IsSeparatedMap f) (he : f ∘ g₁ = f ∘ g₂) :
     IsClosed {a | g₁ a = g₂ a} :=
   let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
   (isSeparatedMap_iff_isClosed_diagonal.mp sep).preimage (by fun_prop : Continuous g)
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/5338,
+the unused variable linter flags `g` here,
+but it is used in a type ascription to direct `fun_prop`.
+-/
+set_option linter.unusedVariables false in
 theorem IsLocallyInjective.isOpen_eqLocus (inj : IsLocallyInjective f) (he : f ∘ g₁ = f ∘ g₂) :
     IsOpen {a | g₁ a = g₂ a} :=
   let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩

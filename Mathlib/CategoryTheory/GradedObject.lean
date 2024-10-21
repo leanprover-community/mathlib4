@@ -158,7 +158,7 @@ abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C
 -- Porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
 @[simp]
 theorem eqToHom_proj {I : Type*} {x x' : GradedObject I C} (h : x = x') (i : I) :
-    (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
+    (eqToHom h : x ⟶ x') i = eqToHom (funext_iff.mp h i) := by
   subst h
   rfl
 

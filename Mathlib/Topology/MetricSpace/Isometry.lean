@@ -177,9 +177,12 @@ protected theorem embedding (hf : Isometry f) : Embedding f :=
   hf.isUniformEmbedding.embedding
 
 /-- An isometry from a complete emetric space is a closed embedding -/
-theorem closedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
-    ClosedEmbedding f :=
-  hf.antilipschitz.closedEmbedding hf.lipschitz.uniformContinuous
+theorem isClosedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
+    IsClosedEmbedding f :=
+  hf.antilipschitz.isClosedEmbedding hf.lipschitz.uniformContinuous
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding := isClosedEmbedding
 
 end EmetricIsometry
 
@@ -458,9 +461,9 @@ instance : Group (α ≃ᵢ α) where
   one := IsometryEquiv.refl _
   mul e₁ e₂ := e₂.trans e₁
   inv := IsometryEquiv.symm
-  mul_assoc e₁ e₂ e₃ := rfl
-  one_mul e := ext fun _ => rfl
-  mul_one e := ext fun _ => rfl
+  mul_assoc _ _ _ := rfl
+  one_mul _ := ext fun _ => rfl
+  mul_one _ := ext fun _ => rfl
   inv_mul_cancel e := ext e.symm_apply_apply
 
 @[simp] theorem coe_one : ⇑(1 : α ≃ᵢ α) = id := rfl

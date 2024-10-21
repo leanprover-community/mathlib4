@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Double countings
@@ -66,10 +67,16 @@ theorem mem_bipartiteBelow {a : α} : a ∈ s.bipartiteBelow r b ↔ a ∈ s ∧
 @[simp]
 theorem mem_bipartiteAbove {b : β} : b ∈ t.bipartiteAbove r a ↔ b ∈ t ∧ r a b := mem_filter
 
+@[to_additive]
+theorem prod_prod_bipartiteAbove_eq_prod_prod_bipartiteBelow
+    [CommMonoid R] (f : α → β → R) [∀ a b, Decidable (r a b)] :
+    ∏ a ∈ s, ∏ b ∈ t.bipartiteAbove r a, f a b = ∏ b ∈ t, ∏ a ∈ s.bipartiteBelow r b, f a b := by
+  simp_rw [bipartiteAbove, bipartiteBelow, prod_filter]
+  exact prod_comm
+
 theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (r a b)] :
     (∑ a ∈ s, (t.bipartiteAbove r a).card) = ∑ b ∈ t, (s.bipartiteBelow r b).card := by
-  simp_rw [card_eq_sum_ones, bipartiteAbove, bipartiteBelow, sum_filter]
-  exact sum_comm
+  simp_rw [card_eq_sum_ones, sum_sum_bipartiteAbove_eq_sum_sum_bipartiteBelow]
 
 section OrderedSemiring
 variable [OrderedSemiring R] {m n : R}
@@ -198,10 +205,10 @@ variable [Fintype α] [Fintype β] {r : α → β → Prop}
 
 theorem card_le_card_of_leftTotal_unique (h₁ : LeftTotal r) (h₂ : LeftUnique r) :
     Fintype.card α ≤ Fintype.card β :=
-  card_le_card_of_forall_subsingleton r (by simpa using h₁) fun b _ a₁ ha₁ a₂ ha₂ ↦ h₂ ha₁.2 ha₂.2
+  card_le_card_of_forall_subsingleton r (by simpa using h₁) fun _ _ _ ha₁ _ ha₂ ↦ h₂ ha₁.2 ha₂.2
 
 theorem card_le_card_of_rightTotal_unique (h₁ : RightTotal r) (h₂ : RightUnique r) :
     Fintype.card β ≤ Fintype.card α :=
-  card_le_card_of_forall_subsingleton' r (by simpa using h₁) fun b _ a₁ ha₁ a₂ ha₂ ↦ h₂ ha₁.2 ha₂.2
+  card_le_card_of_forall_subsingleton' r (by simpa using h₁) fun _ _ _ ha₁ _ ha₂ ↦ h₂ ha₁.2 ha₂.2
 
 end Fintype

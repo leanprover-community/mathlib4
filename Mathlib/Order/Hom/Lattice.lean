@@ -1567,7 +1567,6 @@ theorem withTop_id : (SupHom.id α).withTop = SupHom.id _ := DFunLike.coe_inject
 @[simp]
 theorem withTop_comp (f : SupHom β γ) (g : SupHom α β) :
     (f.comp g).withTop = f.withTop.comp g.withTop :=
--- Porting note: Proof was `DFunLike.coe_injective (Option.map_comp_map _ _).symm`
   DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
 
 /-- Adjoins a `⊥` to the domain and codomain of a `SupHom`. -/
@@ -1588,7 +1587,6 @@ theorem withBot_id : (SupHom.id α).withBot = SupBotHom.id _ := DFunLike.coe_inj
 @[simp]
 theorem withBot_comp (f : SupHom β γ) (g : SupHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
--- Porting note: Proof was `DFunLike.coe_injective (Option.map_comp_map _ _).symm`
   DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
 
 /-- Adjoins a `⊤` to the codomain of a `SupHom`. -/
@@ -1638,7 +1636,6 @@ theorem withTop_id : (InfHom.id α).withTop = InfTopHom.id _ := DFunLike.coe_inj
 @[simp]
 theorem withTop_comp (f : InfHom β γ) (g : InfHom α β) :
     (f.comp g).withTop = f.withTop.comp g.withTop :=
--- Porting note: Proof was `DFunLike.coe_injective (Option.map_comp_map _ _).symm`
   DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
 
 /-- Adjoins a `⊥` to the domain and codomain of an `InfHom`. -/
@@ -1658,7 +1655,6 @@ theorem withBot_id : (InfHom.id α).withBot = InfHom.id _ := DFunLike.coe_inject
 @[simp]
 theorem withBot_comp (f : InfHom β γ) (g : InfHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
--- Porting note: Proof was `DFunLike.coe_injective (Option.map_comp_map _ _).symm`
   DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
 
 /-- Adjoins a `⊤` to the codomain of an `InfHom`. -/
@@ -1708,7 +1704,6 @@ theorem withTop_id : (LatticeHom.id α).withTop = LatticeHom.id _ :=
 @[simp]
 theorem withTop_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withTop = f.withTop.comp g.withTop :=
--- Porting note: Proof was `DFunLike.coe_injective (Option.map_comp_map _ _).symm`
   DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
 
 /-- Adjoins a `⊥` to the domain and codomain of a `LatticeHom`. -/
@@ -1729,7 +1724,6 @@ theorem withBot_id : (LatticeHom.id α).withBot = LatticeHom.id _ :=
 @[simp]
 theorem withBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
--- Porting note: Proof was `DFunLike.coe_injective (Option.map_comp_map _ _).symm`
   DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
 
 /-- Adjoins a `⊤` and `⊥` to the domain and codomain of a `LatticeHom`. -/
