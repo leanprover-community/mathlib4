@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.PowMod
 import Mathlib.Tactic.ReduceModChar.Ext
 
