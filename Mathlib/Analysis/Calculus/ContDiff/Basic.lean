@@ -1755,7 +1755,7 @@ def restrContDiff (f : PartialHomeomorph E F) (n : WithTop ℕ∞) (hn : n ≠ �
       {y | ContDiffAt 𝕜 n f.symm y ∧ ContDiffAt 𝕜 n f (f.symm y)} := fun x hx ↦ by
     simp [hx, and_comm]
   H.restr <| isOpen_iff_mem_nhds.2 fun _ ⟨hxs, hxf, hxf'⟩ ↦
-    inter_mem (f.open_source.mem_nhds hxs) <| hxf.eventually.and <|
+    inter_mem (f.open_source.mem_nhds hxs) <| (hxf.eventually hn).and <|
     f.continuousAt hxs (hxf'.eventually hn)
 
 lemma contDiffOn_restrContDiff_source (f : PartialHomeomorph E F) {n : WithTop ℕ∞} (hn : n ≠ ∞) :
