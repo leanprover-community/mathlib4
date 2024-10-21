@@ -78,7 +78,8 @@ def toString : ONote → String
   | oadd e n 0 => toString_aux e n (toString e)
   | oadd e n a => toString_aux e n (toString e) ++ " + " ++ toString a
 
-instance : ToString ONote := ⟨toString⟩
+instance : ToString ONote :=
+  ⟨toString⟩
 
 open Lean in
 /-- Print an ordinal notation -/
@@ -89,7 +90,8 @@ def repr' (prec : ℕ) : ONote → Format
       ("oadd " ++ (repr' max_prec e) ++ " " ++ Nat.repr (n : ℕ) ++ " " ++ (repr' max_prec a))
       prec
 
-instance : Repr ONote := ⟨fun o prec ↦ repr' prec o⟩
+instance : Repr ONote :=
+  ⟨fun o prec ↦ repr' prec o⟩
 
 instance : Preorder ONote where
   le x y := repr x ≤ repr y
@@ -104,10 +106,10 @@ theorem le_def {x y : ONote} : x ≤ y ↔ repr x ≤ repr y := Iff.rfl
 instance : WellFoundedRelation ONote :=
   ⟨(· < ·), InvImage.wf repr Ordinal.lt_wf⟩
 
-instance : NatCast ONote :=
-  ⟨fun n ↦ match n with
-    | 0 => 0
-    | Nat.succ n => oadd 0 n.succPNat 0⟩
+instance : NatCast ONote where
+  natCast
+  | 0 => 0
+  | Nat.succ n => oadd 0 n.succPNat 0
 
 /-- Convert a natural number to an ordinal notation -/
 @[deprecated (since := "2024-10-17")]
@@ -116,6 +118,9 @@ def ofNat (n : ℕ) : ONote := n
 @[simp] theorem natCast_zero : (0 : ℕ) = (0 : ONote) := rfl
 @[simp] theorem natCast_succ (n : ℕ) : n.succ = oadd 0 n.succPNat 0 := rfl
 theorem natCast_one : (1 : ℕ) = (1 : ONote) := rfl
+
+instance nat (n : ℕ) : OfNat ONote n where
+  ofNat := ofNat n
 
 @[deprecated (since := "2024-10-17")] alias ofNat_zero := natCast_zero
 @[deprecated (since := "2024-10-17")] alias ofNat_one := natCast_one
