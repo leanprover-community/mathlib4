@@ -75,8 +75,23 @@ note: this linter can be disabled with `set_option linter.style.setOption false`
 set_option linter.style.setOption true in
 set_option debug.moduleNameAtTimeout false
 
--- The lint does not fire on arbitrary options.
+-- The linter also errors on `autoImplicit true`, but not on setting it to `false`.
+#guard_msgs in
+set_option linter.style.setOption true in
 set_option autoImplicit false
+
+/--
+warning: Using `autoImplicit true` is deprecated in mathlib: please try to rewrite your code to avoid it. ⏎
+(If using this option makes the code much better and you conciously prefer to use autoImplicit,
+please add a comment why you are disabling this linter.)
+note: this linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option linter.style.setOption true in
+set_option autoImplicit true
+
+-- The lint does not fire on arbitrary options.
+set_option linter.missingDocs true
 
 -- We also cover set_option tactics.
 
@@ -93,6 +108,18 @@ lemma tactic : True := by
   trivial
 
 /--
+warning: Using `autoImplicit true` is deprecated in mathlib: please try to rewrite your code to avoid it. ⏎
+(If using this option makes the code much better and you conciously prefer to use autoImplicit,
+please add a comment why you are disabling this linter.)
+note: this linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option linter.style.setOption true in
+lemma tactic2 : True := by
+  set_option autoImplicit true in
+  trivial
+
+/--
 warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
 for development and not for final code. If you intend to submit this contribution to the
 Mathlib project, please remove 'set_option pp.raw.maxDepth'.
@@ -100,7 +127,7 @@ note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option linter.style.setOption true in
-lemma tactic2 : True := by
+lemma tactic3 : True := by
   set_option pp.raw.maxDepth 32 in
   trivial
 
@@ -112,7 +139,7 @@ note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option linter.style.setOption true in
-lemma tactic3 : True := by
+lemma tactic4 : True := by
   set_option pp.all false in
   trivial
 
@@ -124,14 +151,14 @@ note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option linter.style.setOption true in
-lemma tactic4 : True := by
+lemma tactic5 : True := by
   set_option trace.profiler.output "foo" in
   trivial
 
 -- This option is not affected, hence does not throw an error.
-set_option autoImplicit true in
+set_option linter.missingDocs true in
 lemma foo' : True := trivial
 
--- TODO: add terms for the term form
+-- TODO: add tests for the term form
 
 end setOption
