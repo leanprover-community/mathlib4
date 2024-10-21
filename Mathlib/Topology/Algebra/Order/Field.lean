@@ -150,12 +150,9 @@ theorem bdd_le_mul_tendsto_zero' {f g : α → 𝕜} (C : 𝕜) (hf : ∀ᶠ x i
   have hC : Tendsto (fun x ↦ |C * (g x)|) l (𝓝 0) := by
     erw [← tendsto_zero_iff_abs_tendsto_zero, ← mul_zero C]
     exact Tendsto.const_mul C hg
-  have hC' : Tendsto (fun x ↦ - |C * (g x)|) l (𝓝 0) := by
-    rw [← neg_zero]
-    exact Filter.Tendsto.neg hC
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le' hC' hC
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hC
   · filter_upwards [hf]
-    exact fun _ _ ↦ le_trans (neg_nonpos.mpr (abs_nonneg _)) (abs_nonneg _)
+    exact fun _ _ ↦ abs_nonneg _
   · filter_upwards [hf]
     intro x hx
     simp only [comp_apply, abs_mul]
