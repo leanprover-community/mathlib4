@@ -1561,6 +1561,11 @@ theorem diff_compl : s \ tᶜ = s ∩ t :=
 theorem diff_diff_right {s t u : Set α} : s \ (t \ u) = s \ t ∪ s ∩ u :=
   sdiff_sdiff_right'
 
+theorem diff_insert_of_not_mem {x : α} (h : x ∉ s) : s \ insert x t = s \ t := by
+  refine Subset.antisymm (diff_subset_diff (refl _) (subset_insert ..)) fun y hy ↦ ?_
+  simp only [mem_diff, mem_insert_iff, not_or] at hy ⊢
+  exact ⟨hy.1, fun hxy ↦ h <| hxy ▸ hy.1, hy.2⟩
+
 @[simp]
 theorem insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
   ext

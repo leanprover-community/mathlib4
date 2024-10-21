@@ -132,6 +132,8 @@ theorem Specializes.trans : x ⤳ y → y ⤳ z → x ⤳ z :=
 theorem specializes_of_eq (e : x = y) : x ⤳ y :=
   e ▸ specializes_refl x
 
+alias Specializes.of_eq := specializes_of_eq
+
 theorem specializes_of_nhdsWithin (h₁ : 𝓝[s] x ≤ 𝓝[s] y) (h₂ : x ∈ s) : x ⤳ y :=
   specializes_iff_pure.2 <|
     calc
