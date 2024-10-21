@@ -3,10 +3,6 @@ Copyright (c) 2020 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Tactic.Zify
-import Mathlib.Data.Nat.Totient
 import Mathlib.RingTheory.IntegralDomain
 
 /-!
