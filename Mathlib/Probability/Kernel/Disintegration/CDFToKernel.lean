@@ -223,7 +223,7 @@ lemma integral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondKerne
     (a : α) (x : ℝ) :
     ∫ b, stieltjesOfMeasurableRat f hf.measurable (a, b) x ∂(ν a)
       = (κ a (univ ×ˢ Iic x)).toReal := by
-  rw [← integral_univ, setIntegral_stieltjesOfMeasurableRat hf _ _ MeasurableSet.univ]
+  rw [← setIntegral_univ, setIntegral_stieltjesOfMeasurableRat hf _ _ MeasurableSet.univ]
 
 end stieltjesOfMeasurableRat
 
@@ -684,7 +684,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
 lemma compProd_toKernel [IsFiniteKernel κ] [IsSFiniteKernel ν] (hf : IsCondKernelCDF f κ ν) :
     ν ⊗ₖ hf.toKernel f = κ := by
   ext a s hs
-  rw [Kernel.compProd_apply _ _ _ hs, lintegral_toKernel_mem hf a hs]
+  rw [Kernel.compProd_apply hs, lintegral_toKernel_mem hf a hs]
 
 end
 

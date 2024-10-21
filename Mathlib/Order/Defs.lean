@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Batteries.Classes.Order
+import Batteries.Tactic.Trans
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
 
@@ -183,6 +183,32 @@ theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
 end
 
 end
+
+/-! ### Minimal and maximal -/
+
+section LE
+
+variable {α : Type*} [LE α] {P : α → Prop} {x y : α}
+
+/-- `Minimal P x` means that `x` is a minimal element satisfying `P`. -/
+def Minimal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → y ≤ x → x ≤ y
+
+/-- `Maximal P x` means that `x` is a maximal element satisfying `P`. -/
+def Maximal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → x ≤ y → y ≤ x
+
+lemma Minimal.prop (h : Minimal P x) : P x :=
+  h.1
+
+lemma Maximal.prop (h : Maximal P x) : P x :=
+  h.1
+
+lemma Minimal.le_of_le (h : Minimal P x) (hy : P y) (hle : y ≤ x) : x ≤ y :=
+  h.2 hy hle
+
+lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
+  h.2 hy hge
+
+end LE
 
 /-! ### Bundled classes -/
 

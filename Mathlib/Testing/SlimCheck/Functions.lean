@@ -289,7 +289,7 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
   | nil => cases h₂
   | cons x' xs xs_ih =>
     cases i
-    · simp only [length_cons, lt_add_iff_pos_left, add_pos_iff, zero_lt_one, or_true,
+    · simp only [length_cons, lt_add_iff_pos_left, add_pos_iff, Nat.lt_add_one, or_true,
         getElem?_eq_getElem, getElem_cons_zero, Option.some.injEq] at h₂
       subst h₂
       cases ys
@@ -423,7 +423,7 @@ one is a permutation of the other.
 -/
 protected def shrink {α : Type} [DecidableEq α] :
     InjectiveFunction α → List (InjectiveFunction α)
-  | ⟨xs, h₀, h₁⟩ => do
+  | ⟨_, h₀, h₁⟩ => do
     let ⟨xs', ys', h₀, h₁⟩ ← InjectiveFunction.shrinkPerm ⟨_, _, h₀, h₁⟩
     have h₃ : xs'.length ≤ ys'.length := le_of_eq (List.Perm.length_eq h₀)
     have h₄ : ys'.length ≤ xs'.length := le_of_eq (List.Perm.length_eq h₀.symm)
