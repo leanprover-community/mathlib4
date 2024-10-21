@@ -611,6 +611,17 @@ lemma pullbackSpecIso_hom_snd :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (toRingHom includeRight)) = pullback.snd _ _ := by
   rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
 
+lemma isPullback_Spec_map_isPushout {A B C P : CommRingCat} (f : A ⟶ B) (g : A ⟶ C)
+    (inl : B ⟶ P) (inr : C ⟶ P) (h : IsPushout f g inl inr) :
+    IsPullback (Spec.map inl) (Spec.map inr) (Spec.map f) (Spec.map g) :=
+  IsPullback.map Scheme.Spec h.op.flip
+
+lemma isPullback_Spec_map_pushout {A B C : CommRingCat} (f : A ⟶ B) (g : A ⟶ C) :
+    IsPullback (Spec.map (pushout.inl f g))
+      (Spec.map (pushout.inr f g)) (Spec.map f) (Spec.map g) := by
+  apply isPullback_Spec_map_isPushout
+  exact IsPushout.of_hasPushout f g
+
 lemma diagonal_Spec_map :
     pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))) =
       Spec.map (CommRingCat.ofHom (Algebra.TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).toRingHom) ≫
@@ -621,6 +632,5 @@ lemma diagonal_Spec_map :
   · congr 1; ext x; show x = Algebra.TensorProduct.lmul' R (S := S) (1 ⊗ₜ[R] x); simp
 
 end Spec
-
 
 end AlgebraicGeometry
