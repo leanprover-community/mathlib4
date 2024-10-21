@@ -30,31 +30,3 @@ lemma AddGroupSeminormClass.isUltrametricDist [AddGroup α] [AddGroupSeminormCla
     IsUltrametricDist α :=
   ⟨fun x y z ↦ by simpa only [hd, dist_eq_norm, AddGroupSeminormClass.toSeminormedAddGroup_norm_eq,
       ← sub_add_sub_cancel x y z] using hna _ _⟩
-
-/-- Proves that when a `SeminormedAddCommGroup` structure is constructed from an
-`AddGroupSeminormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
-lemma AddGroupSeminormClass.isUltrametricDist' [AddCommGroup α] [AddGroupSeminormClass F α ℝ]
-    [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
-    (hd : inst = (AddGroupSeminormClass.toSeminormedAddCommGroup f).toDist := by rfl) :
-    IsUltrametricDist α :=
-  AddGroupSeminormClass.isUltrametricDist hna hd
-
-/-- Proves that when a `NormedAddGroup` structure is constructed from an
-`AddGroupNormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
-lemma AddGroupNormClass.isUltrametricDist [AddGroup α] [AddGroupNormClass F α ℝ]
-    [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
-    (hd : inst = (AddGroupNormClass.toNormedAddGroup f).toDist := by rfl) :
-    IsUltrametricDist α :=
-  ⟨fun x y z ↦ by
-    subst hd
-    simp_rw [dist_eq_norm, AddGroupNormClass.toNormedAddGroup_norm_eq]
-    rw [← sub_add_sub_cancel x y z]
-    exact hna _ _⟩
-
-/-- Proves that when a `NormedAddCommGroup` structure is constructed from an
-`AddGroupNormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
-lemma AddGroupNormClass.isUltrametricDist' [AddCommGroup α] [AddGroupNormClass F α ℝ]
-    [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
-    (hd : inst = (AddGroupNormClass.toNormedAddCommGroup f).toDist := by rfl) :
-    IsUltrametricDist α :=
-  AddGroupNormClass.isUltrametricDist hna hd
