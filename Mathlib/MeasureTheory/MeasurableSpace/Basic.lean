@@ -11,6 +11,7 @@ import Mathlib.Order.LiminfLimsup
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.Tactic.FinCases
 
 /-!
 # Measurable spaces and measurable functions
@@ -1180,6 +1181,26 @@ namespace MeasurableSpace
   refine le_antisymm (generateFrom_le fun t ht => ⟨{True}, trivial, by simp [ht.symm]⟩) ?_
   rintro _ ⟨u, -, rfl⟩
   exact (show MeasurableSet s from GenerateMeasurable.basic _ <| mem_singleton s).mem trivial
+
+theorem measurableSet_generateFrom_singleton_iff {s t : Set α} :
+    MeasurableSet[generateFrom {s}] t ↔ t = ∅ ∨ t = s ∨ t = sᶜ ∨ t = Set.univ := by
+  simp_rw [generateFrom_singleton]
+  change t ∈ {t | _} ↔ _
+  simp_rw [measurableSet_top, true_and, mem_setOf_eq]
+  constructor
+  · rintro ⟨x, hx⟩
+    have : Multiset.ofList [True, False] = {True, False} := rfl
+    fin_cases x
+    all_goals
+      simp [this, Finset.coeEmb, ← Set.univ_Prop] at hx
+      simp [compl_def, hx]
+  · rintro (rfl | rfl | rfl | rfl)
+    on_goal 1 => use ∅
+    on_goal 2 => use {True}
+    on_goal 3 => use {False}
+    on_goal 4 => use Set.univ
+    all_goals
+      simp [compl_def]
 
 end MeasurableSpace
 
