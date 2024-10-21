@@ -37,7 +37,14 @@ abbrev EndCone := Multifork (multicospanIndexEnd F)
 namespace EndCone
 
 variable {F}
-variable {c : EndCone F} (hc : IsLimit c)
+variable (c : EndCone F)
+
+@[reassoc]
+lemma condition {i j : J} (f : i ⟶ j) :
+    c.ι i ≫ (F.obj (op i)).map f = c.ι j ≫ (F.map f.op).app j :=
+  Multifork.condition c (Arrow.mk f)
+
+variable {c} (hc : IsLimit c)
 
 namespace IsLimit
 
@@ -70,6 +77,11 @@ noncomputable def end_ : C := multiequalizer (multicospanIndexEnd F)
 section
 
 noncomputable abbrev end_.π (j : J) : end_ F ⟶ (F.obj (op j)).obj j := Multiequalizer.ι _ _
+
+@[reassoc]
+lemma end_.condition {i j : J} (f : i ⟶ j) :
+    π F i ≫ (F.obj (op i)).map f = π F j ≫ (F.map f.op).app j := by
+  apply EndCone.condition
 
 variable {F}
 
@@ -222,6 +234,7 @@ variable [HasEnrichedHom V F₁ F₂] [HasEnrichedHom V F₂ F₃] [HasEnrichedH
 noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ F₃ ⟶ enrichedHom V F₁ F₃ :=
   end_.lift (fun j ↦ (end_.π _ j ⊗ end_.π _ j) ≫ eComp V _ _ _) (fun i j f ↦ by
     dsimp
+    simp only [assoc]
     sorry)
 
 @[reassoc (attr := simp)]
