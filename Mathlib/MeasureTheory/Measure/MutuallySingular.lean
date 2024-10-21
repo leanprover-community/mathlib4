@@ -204,11 +204,8 @@ lemma disjoint_of_mutuallySingular (h : μ ⟂ₘ ν) : Disjoint μ ν := by
   ext s hs
   simp only [Measure.coe_zero, Pi.zero_apply]
   rw [← inter_union_compl s h.nullSet, measure_union, add_eq_zero]
-  · constructor
-    · refine measure_inter_null_of_null_right _ ?_
-      exact Measure.absolutelyContinuous_of_le hξμ h.measure_nullSet
-    · refine measure_inter_null_of_null_right _ ?_
-      exact Measure.absolutelyContinuous_of_le hξν h.measure_compl_nullSet
+  · exact ⟨measure_inter_null_of_null_right _ <| absolutelyContinuous_of_le hξμ h.measure_nullSet,
+      measure_inter_null_of_null_right _ <| absolutelyContinuous_of_le hξν h.measure_compl_nullSet⟩
   · exact Disjoint.mono inter_subset_right inter_subset_right disjoint_compl_right
   · exact hs.inter h.measurableSet_nullSet.compl
 
