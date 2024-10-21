@@ -67,7 +67,7 @@ lemma comp_eq (x y z : V) : comp x y z = curry (compTranspose x y z) := rfl
 
 /-- For V closed monoidal, build an instance of V as a V-category -/
 scoped instance : EnrichedCategory V V where
-  Hom := fun x => (ihom x).obj
+  Hom x := (ihom x).obj
   id := id
   comp := comp
   id_comp := fun _ _ => by
