@@ -89,7 +89,7 @@ scoped[Pointwise] attribute [instance] Set.one Set.zero
 
 open Pointwise
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem singleton_one : ({1} : Set α) = 1 :=
   rfl
 
@@ -1098,10 +1098,17 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m �
     rw [pow_succ']
     exact ih.trans (subset_mul_right _ hs)
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) nsmul_empty]
 theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
   match n with
   | n + 1 => rw [pow_succ', empty_mul]
+
+@[deprecated (since := "2024-10-21")] alias empty_nsmul := nsmul_empty
+
+@[to_additive (attr := simp) nsmul_singleton]
+lemma singleton_pow (a : α) : ∀ n, ({a} : Set α) ^ n = {a ^ n}
+  | 0 => by simp
+  | n + 1 => by simp [pow_succ, singleton_pow _ n]
 
 @[to_additive]
 theorem mul_univ_of_one_mem (hs : (1 : α) ∈ s) : s * univ = univ :=
@@ -1138,7 +1145,7 @@ open Pointwise
 
 section DivisionMonoid
 
-variable [DivisionMonoid α] {s t : Set α}
+variable [DivisionMonoid α] {s t : Set α} {n : ℤ}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} ∧ a * b = 1 := by
@@ -1190,6 +1197,12 @@ lemma univ_div_univ : (univ / univ : Set α) = univ := by simp [div_eq_mul_inv]
 
 @[to_additive] lemma inv_subset_div_right (hs : 1 ∈ s) : t⁻¹ ⊆ s / t := by
   rw [div_eq_mul_inv]; exact subset_mul_right _ hs
+
+@[to_additive (attr := simp) zsmul_empty]
+lemma empty_zpow (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by cases n <;> aesop
+
+@[to_additive (attr := simp) zsmul_singleton]
+lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Set α) ^ n = {a ^ n} := by cases n <;> simp
 
 end DivisionMonoid
 
