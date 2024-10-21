@@ -2347,6 +2347,7 @@ import Mathlib.Data.List.GetD
 import Mathlib.Data.List.GroupBy
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Infix
+import Mathlib.Data.List.InsertIdx
 import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Intervals
 import Mathlib.Data.List.Iterate
@@ -2436,6 +2437,7 @@ import Mathlib.Data.NNRat.Floor
 import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.NNRat.Order
 import Mathlib.Data.NNReal.Basic
+import Mathlib.Data.NNReal.Defs
 import Mathlib.Data.NNReal.Star
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.Nat.BitIndices
@@ -3709,6 +3711,7 @@ import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Filter.Ring
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.Subsingleton
+import Mathlib.Order.Filter.Tendsto
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 import Mathlib.Order.Fin.Basic
@@ -4397,6 +4400,7 @@ import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Linter.Header
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.MinImports
+import Mathlib.Tactic.Linter.Multigoal
 import Mathlib.Tactic.Linter.OldObtain
 import Mathlib.Tactic.Linter.PPRoundtrip
 import Mathlib.Tactic.Linter.RefineLinter

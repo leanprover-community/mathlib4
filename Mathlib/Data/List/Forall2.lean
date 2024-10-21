@@ -84,18 +84,14 @@ theorem forall₂_cons_right_iff {b l u} :
     match u, h with
     | _, ⟨_, _, h₁, h₂, rfl⟩ => Forall₂.cons h₁ h₂
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefixes below.
--/
 theorem forall₂_and_left {p : α → Prop} :
     ∀ l u, Forall₂ (fun a b => p a ∧ R a b) l u ↔ (∀ a ∈ l, p a) ∧ Forall₂ R l u
   | [], u => by
     simp only [forall₂_nil_left_iff, forall_prop_of_false (not_mem_nil _), imp_true_iff, true_and]
   | a :: l, u => by
-    simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, _root_.and_assoc,
+    simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
       @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
-    simp only [_root_.and_comm, _root_.and_assoc, and_left_comm, ← exists_and_right]
+    simp only [and_comm, and_assoc, and_left_comm, ← exists_and_right]
 
 @[simp]
 theorem forall₂_map_left_iff {f : γ → α} :

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.ENNReal.Basic
+import Mathlib.Data.NNReal.Basic
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
