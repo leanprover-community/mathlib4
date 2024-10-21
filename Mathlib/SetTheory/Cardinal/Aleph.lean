@@ -263,9 +263,6 @@ For the more common aleph function skipping over finite cardinals, see `Cardinal
 def aleph' : Ordinal.{u} ≃o Cardinal.{u} :=
   (enumOrdOrderIso _ not_bddAbove_isInitial).trans isInitialIso
 
--- This shouldn't fire for theorems ending in `aleph'`.
-set_option linter.docPrime false
-
 @[simp]
 theorem _root_.Ordinal.card_omega' (o : Ordinal) : (omega' o).card = aleph' o :=
   rfl
