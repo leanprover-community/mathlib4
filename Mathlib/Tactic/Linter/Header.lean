@@ -222,6 +222,18 @@ def broadImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id
   return output
 
 /--
+`isInMathlib fname` returns `true` if `Mathlib.lean` imports the file `fname` and `false` otherwise.
+This is used by the `Header` linter as a heuristic of whether it should inspect the file or not.
+-/
+def isInMathlib (fname : Name) : IO Bool := do
+  let mlPath := ("Mathlib" : System.FilePath).addExtension "lean"
+  if ← System.FilePath.pathExists mlPath then
+    let ml ← IO.FS.lines mlPath
+    let curr := fname.toString
+    return (ml.map (·.endsWith curr)).any (·)
+  else return false
+
+/--
 The "header" style linter checks that a file starts with
 ```
 /-
@@ -259,6 +271,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- `Mathlib.lean` imports `Mathlib.Tactic`, which the broad imports check below would flag.
   -- Since that file is imports-only, we can simply skip linting it.
   if mainModule == `Mathlib then return
+  unless ← isInMathlib mainModule do return
   let fm ← getFileMap
   let md := (getMainModuleDoc (← getEnv)).toArray
   -- The end of the first module doc-string, or the end of the file if there is none.
