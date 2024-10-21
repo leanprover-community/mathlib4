@@ -517,7 +517,6 @@ variable {X : SSet.{u}} {hX : StrictSegal X} {n : ℕ}
 
 /-- In the presence of the strict Segal condition, a path of length `n` extends to an `n`-simplex
 whose spine is that path.-/
-@[simp]
 noncomputable def spineToSimplex : Path X n → X _[n] :=
   (Equiv.ofBijective _ (hX n)).invFun
 
@@ -582,35 +581,30 @@ theorem spineToSimplex_interval (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n
 theorem spineToSimplex_edge (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n) :
     X.map (mkOfLe j k hjk).op (spineToSimplex (hX := hX) f) =
       spineToDiagonal (hX := hX) (Path.interval X f _ _ hjk (Nat.le_of_lt_succ k.2)) := by
-  have := spineToSimplex_interval (hX := hX) j k hjk f
-
-
-
-
-  sorry
-
-@[simp]
-theorem spineToSimplex_comp_edge (j : Fin (n + 1)) (hj2 : j.1 + 2 < n + 1) (f : Path X n) :
-    X.map (mkOfLe j ⟨j + 2, hj2⟩ (Nat.le_add_right j 2)).op (spineToSimplex (hX := hX) f) =
-      spineToDiagonal (hX := hX)
-        (Path.interval X f j (j + 2) (Nat.le_add_right j 2) (Nat.le_of_lt_succ hj2)) := by
-  have σ : ([2] : SimplexCategory) ⟶ [n] :=
-    mkOfLeComp j ⟨j + 1, (by omega)⟩ ⟨j + 2, hj2⟩ (Nat.le_add_right _ 1) (Nat.le_add_right _ 1)
-  sorry
-
+  unfold spineToDiagonal
+  rw [← congrArg diagonal (spineToSimplex_interval (hX := hX) j k hjk f)]
+  unfold diagonal
+  simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
+  have : mkOfLe j k hjk = mkOfDiag (k.1 - j.1) ≫ subinterval j k hjk := by
+    ext e : 3
+    simp at e
+    unfold subinterval mkOfDiag mkOfLe
+    simp only [len_mk, Nat.reduceAdd, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk,
+      Fin.natCast_eq_last, comp_toOrderHom, OrderHom.mk_comp_mk, Function.comp_apply]
+    match e with
+    | 0 => simp
+    | 1 => ?_
+    apply Fin.eq_of_val_eq
+    simp only [Fin.val_last]
+    exact (Nat.sub_eq_iff_eq_add hjk).mp rfl
+  rw [this]
 
 @[simp]
 theorem spineToSimplex_edge' (j : Fin (n + 1)) (k : ℕ) (hjk : j.1 + k < n + 1) (f : Path X n) :
     X.map (mkOfLe j ⟨j.1 + k, hjk⟩ (Nat.le_add_right j k)).op (spineToSimplex (hX := hX) f) =
       spineToDiagonal (hX := hX)
-        (Path.interval X f j (j + k) (Nat.le_add_right j k) (Nat.le_of_lt_succ hjk)) := by
-  unfold spineToDiagonal
-  simp
-  sorry
-
-
-
-
+        (Path.interval X f j (j + k) (Nat.le_add_right j k) (Nat.le_of_lt_succ hjk)) :=
+  spineToSimplex_edge (hX := hX) j ⟨j.1 + k, hjk⟩ (Nat.le_add_right j.1 k) f
 
 end StrictSegal
 
