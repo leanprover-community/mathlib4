@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.List.InsertNth
+import Mathlib.Data.List.InsertIdx
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
