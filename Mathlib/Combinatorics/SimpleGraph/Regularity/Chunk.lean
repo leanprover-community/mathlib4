@@ -24,11 +24,6 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 * `SzemerediRegularity.edgeDensity_chunk_not_uniform`: `chunk` locally increases the edge density
   between non-uniform parts.
 
-## TODO
-
-Once ported to mathlib4, this file will be a great golfing ground for Heather's new tactic
-`gcongr`.
-
 ## References
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]

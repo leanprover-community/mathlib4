@@ -402,7 +402,6 @@ continuous.
 When you declare an instance that does not already have a `UniformSpace` instance,
 you should also provide an instance of `UniformSpace` and `UniformGroup` using
 `TopologicalGroup.toUniformSpace` and `topologicalCommGroup_isUniform`. -/
--- Porting note: check that these ↑ names exist once they've been ported in the future.
 @[to_additive]
 class TopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] extends ContinuousMul G,
   ContinuousInv G : Prop
