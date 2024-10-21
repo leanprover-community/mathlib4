@@ -23,7 +23,7 @@ variable {R : Type*} [CommRing R] [IsDomain R]
 
 namespace IsPrimitiveRoot
 
-open Finset Polynomial BigOperators
+open Finset Polynomial
 
 /-- If `μ` is a primitive `n`th root of unity in `R`, then `∏(1≤k<n) (1-μ^k) = n`.
 (Stated with `n+1` in place of `n` to avoid the condition `n ≠ 0`.) -/

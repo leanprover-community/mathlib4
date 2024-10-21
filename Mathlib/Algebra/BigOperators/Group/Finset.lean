@@ -1611,13 +1611,13 @@ theorem dvd_prod_of_mem (f : α → β) {a : α} {s : Finset α} (ha : a ∈ s) 
 /-- A product can be partitioned into a product of products, each equivalent under a setoid. -/
 @[to_additive "A sum can be partitioned into a sum of sums, each equivalent under a setoid."]
 theorem prod_partition (R : Setoid α) [DecidableRel R.r] :
-    ∏ x ∈ s, f x = ∏ xbar ∈ s.image Quotient.mk'', ∏ y ∈ s.filter (⟦·⟧ = xbar), f y := by
+    ∏ x ∈ s, f x = ∏ xbar ∈ s.image (Quotient.mk _), ∏ y ∈ s.filter (⟦·⟧ = xbar), f y := by
   refine (Finset.prod_image' f fun x _hx => ?_).symm
   rfl
 
 /-- If we can partition a product into subsets that cancel out, then the whole product cancels. -/
 @[to_additive "If we can partition a sum into subsets that cancel out, then the whole sum cancels."]
-theorem prod_cancels_of_partition_cancels (R : Setoid α) [DecidableRel R.r]
+theorem prod_cancels_of_partition_cancels (R : Setoid α) [DecidableRel R]
     (h : ∀ x ∈ s, ∏ a ∈ s.filter fun y => R y x, f a = 1) : ∏ x ∈ s, f x = 1 := by
   rw [prod_partition R, ← Finset.prod_eq_one]
   intro xbar xbar_in_s
