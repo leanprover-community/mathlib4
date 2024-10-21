@@ -65,6 +65,8 @@ inductive StyleError where
   | broadImport (module : BroadImports)
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
+  /-- A line contains trailing whitespace -/
+  | trailingWhitespace
   | duplicateImport (importStatement: String) (alreadyImportedLine: ℕ)
 deriving BEq
 
@@ -96,6 +98,7 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
       benchmark it. If this is fine, feel free to allow this linter."
   | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
     endings (\n) instead"
+  | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | StyleError.duplicateImport (importStatement) (alreadyImportedLine) =>
     s!"Duplicate imports: {importStatement} (already imported on line {alreadyImportedLine})"
 
@@ -108,6 +111,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.broadImport _ => "ERR_IMP"
   | StyleError.windowsLineEnding => "ERR_WIN"
+  | StyleError.trailingWhitespace => "ERR_TWS"
   | StyleError.duplicateImport _ _ => "ERR_DIMP"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
@@ -196,6 +200,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_COP" => some (StyleError.copyright none)
         | "ERR_AUT" => some (StyleError.authors)
         | "ERR_ADN" => some (StyleError.adaptationNote)
+        | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
         | "ERR_DIMP" => some (StyleError.duplicateImport "" 0)
         | "ERR_IMP" =>
@@ -341,6 +346,16 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
       lineNumber := lineNumber + 1
   return (errors, none)
 
+/-- Lint a collection of input strings if one of them contains trailing whitespace. -/
+def trailingWhitespaceLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut errors := Array.mkEmpty 0
+  let mut fixedLines := lines
+  for (line, idx) in lines.zipWithIndex do
+    if line.back == ' ' then
+      errors := errors.push (StyleError.trailingWhitespace, idx + 1)
+      fixedLines := fixedLines.set! idx line.trimRight
+  return (errors, if errors.size > 0 then some fixedLines else none)
+
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
@@ -353,7 +368,8 @@ end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, duplicateImportsLinter
+    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, trailingWhitespaceLinter,
+    duplicateImportsLinter
   ]
 
 
@@ -394,7 +410,6 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return (errors, if changes_made then some changed else none)
-
 
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;
