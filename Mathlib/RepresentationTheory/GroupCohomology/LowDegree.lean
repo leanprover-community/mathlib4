@@ -98,7 +98,7 @@ def dZero : A →ₗ[k] G → A where
 
 theorem dZero_ker_eq_invariants : LinearMap.ker (dZero A) = invariants A.ρ := by
   ext x
-  simp only [LinearMap.mem_ker, mem_invariants, ← @sub_eq_zero _ _ _ x, Function.funext_iff]
+  simp only [LinearMap.mem_ker, mem_invariants, ← @sub_eq_zero _ _ _ x, funext_iff]
   rfl
 
 @[simp] theorem dZero_eq_zero [A.IsTrivial] : dZero A = 0 := by
@@ -226,7 +226,7 @@ variable {A}
 theorem mem_oneCocycles_def (f : G → A) :
     f ∈ oneCocycles A ↔ ∀ g h : G, A.ρ g (f h) - f (g * h) + f g = 0 :=
   LinearMap.mem_ker.trans <| by
-    rw [Function.funext_iff]
+    rw [funext_iff]
     simp only [dOne_apply, Pi.zero_apply, Prod.forall]
 
 theorem mem_oneCocycles_iff (f : G → A) :
@@ -277,7 +277,7 @@ theorem mem_twoCocycles_def (f : G × G → A) :
     f ∈ twoCocycles A ↔ ∀ g h j : G,
       A.ρ g (f (h, j)) - f (g * h, j) + f (g, h * j) - f (g, h) = 0 :=
   LinearMap.mem_ker.trans <| by
-    rw [Function.funext_iff]
+    rw [funext_iff]
     simp only [dTwo_apply, Prod.mk.eta, Pi.zero_apply, Prod.forall]
 
 theorem mem_twoCocycles_iff (f : G × G → A) :
@@ -491,7 +491,7 @@ def twoCoboundariesOfIsTwoCoboundary {f : G × G → A} (hf : IsTwoCoboundary f)
 theorem isTwoCoboundary_of_twoCoboundaries (f : twoCoboundaries (Rep.ofDistribMulAction k G A)) :
     IsTwoCoboundary (A := A) f.1.1 := by
   rcases mem_range_of_mem_twoCoboundaries f.2 with ⟨x, hx⟩
-  exact ⟨x, fun g h => Function.funext_iff.1 hx (g, h)⟩
+  exact ⟨x, fun g h => funext_iff.1 hx (g, h)⟩
 
 end ofDistribMulAction
 
@@ -616,7 +616,7 @@ theorem isMulTwoCoboundary_of_twoCoboundaries
     (f : twoCoboundaries (Rep.ofMulDistribMulAction G M)) :
     IsMulTwoCoboundary (M := M) (Additive.toMul ∘ f.1.1) := by
   rcases mem_range_of_mem_twoCoboundaries f.2 with ⟨x, hx⟩
-  exact ⟨x, fun g h => Function.funext_iff.1 hx (g, h)⟩
+  exact ⟨x, fun g h => funext_iff.1 hx (g, h)⟩
 
 end ofMulDistribMulAction
 

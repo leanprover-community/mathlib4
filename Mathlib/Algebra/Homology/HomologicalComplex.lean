@@ -244,7 +244,6 @@ instance : Category (HomologicalComplex V c) where
 
 end
 
--- Porting note (#5229): added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {C D : HomologicalComplex V c} (f g : C ⟶ D)
     (h : ∀ i, f.f i = g.f i) : f = g := by

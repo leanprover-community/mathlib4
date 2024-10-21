@@ -40,7 +40,7 @@ open scoped NumberField
 
 noncomputable section
 
-open NumberField NumberField.InfinitePlace NumberField.Units BigOperators
+open NumberField NumberField.InfinitePlace NumberField.Units
 
 variable (K : Type*) [Field K]
 

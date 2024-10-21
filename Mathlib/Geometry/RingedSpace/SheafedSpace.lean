@@ -80,7 +80,6 @@ instance : Category (SheafedSpace C) :=
   show Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace) by
     infer_instance
 
--- Porting note (#5229): adding an `ext` lemma.
 @[ext (iff := false)]
 theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
@@ -157,20 +156,20 @@ open TopCat.Presheaf
 
 /-- The restriction of a sheafed space along an open embedding into the space.
 -/
-def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : OpenEmbedding f) :
+def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : IsOpenEmbedding f) :
     SheafedSpace C :=
-  { X.toPresheafedSpace.restrict h with IsSheaf := isSheaf_of_openEmbedding h X.IsSheaf }
+  { X.toPresheafedSpace.restrict h with IsSheaf := isSheaf_of_isOpenEmbedding h X.IsSheaf }
 
 /-- The map from the restriction of a presheafed space.
 -/
 @[simps!]
 def ofRestrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)}
-    (h : OpenEmbedding f) : X.restrict h ⟶ X := X.toPresheafedSpace.ofRestrict h
+    (h : IsOpenEmbedding f) : X.restrict h ⟶ X := X.toPresheafedSpace.ofRestrict h
 
 /-- The restriction of a sheafed space `X` to the top subspace is isomorphic to `X` itself.
 -/
 @[simps! hom inv]
-def restrictTopIso (X : SheafedSpace C) : X.restrict (Opens.openEmbedding ⊤) ≅ X :=
+def restrictTopIso (X : SheafedSpace C) : X.restrict (Opens.isOpenEmbedding ⊤) ≅ X :=
   isoMk (X.toPresheafedSpace.restrictTopIso)
 
 /-- The global sections, notated Gamma.

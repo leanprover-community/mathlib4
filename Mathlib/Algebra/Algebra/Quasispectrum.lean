@@ -254,6 +254,9 @@ lemma quasispectrum.not_isUnit_mem (a : A) {r : R} (hr : ¬ IsUnit r) : r ∈ qu
 lemma quasispectrum.zero_mem [Nontrivial R] (a : A) : 0 ∈ quasispectrum R a :=
   quasispectrum.not_isUnit_mem a <| by simp
 
+theorem quasispectrum.nonempty [Nontrivial R] (a : A) : (quasispectrum R a).Nonempty :=
+  Set.nonempty_of_mem <| quasispectrum.zero_mem R a
+
 instance quasispectrum.instZero [Nontrivial R] (a : A) : Zero (quasispectrum R a) where
   zero := ⟨0, quasispectrum.zero_mem R a⟩
 

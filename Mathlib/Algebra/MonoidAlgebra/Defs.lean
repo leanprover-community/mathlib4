@@ -86,7 +86,7 @@ instance MonoidAlgebra.instIsCancelAdd [IsCancelAdd k] : IsCancelAdd (MonoidAlge
   inferInstanceAs (IsCancelAdd (G →₀ k))
 
 instance MonoidAlgebra.coeFun : CoeFun (MonoidAlgebra k G) fun _ => G → k :=
-  Finsupp.instCoeFun
+  inferInstanceAs (CoeFun (G →₀ k) _)
 
 end
 
@@ -633,7 +633,6 @@ def singleOneRingHom [Semiring k] [MulOneClass G] : k →+* MonoidAlgebra k G :=
   { Finsupp.singleAddHom 1 with
     map_one' := rfl
     map_mul' := fun x y => by
-      -- Porting note (#10691): Was `rw`.
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, singleAddHom_apply,
         single_mul_single, mul_one] }
 
@@ -824,7 +823,7 @@ instance instIsCancelAdd [IsCancelAdd k] : IsCancelAdd (AddMonoidAlgebra k G) :=
   inferInstanceAs (IsCancelAdd (G →₀ k))
 
 instance coeFun : CoeFun k[G] fun _ => G → k :=
-  Finsupp.instCoeFun
+  inferInstanceAs (CoeFun (G →₀ k) _)
 
 end AddMonoidAlgebra
 
@@ -1367,7 +1366,6 @@ section Algebra
 def singleZeroRingHom [Semiring k] [AddMonoid G] : k →+* k[G] :=
   { Finsupp.singleAddHom 0 with
     map_one' := rfl
-    -- Porting note (#10691): Was `rw`.
     map_mul' := fun x y => by simp only [singleAddHom, single_mul_single, zero_add] }
 
 /-- If two ring homomorphisms from `k[G]` are equal on all `single a 1`
