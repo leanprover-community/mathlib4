@@ -66,5 +66,42 @@ lemma Basis.baseChange_apply (b : Basis ι R M) (i) :
     b.baseChange S i = 1 ⊗ₜ b i := by
   simp [Basis.baseChange, Basis.tensorProduct]
 
+section
+
+variable (ℬ : Basis ι R M) (𝒞 : Basis κ R N) (x : M ⊗[R] N)
+
+/-- Elements in M ⊗ N can be represented by sum of elements in M tensor elements of basis of N.-/
+lemma TensorProduct.eq_repr_basis_right :
+    ∃ (b : κ →₀ M), (b.sum fun i m => m ⊗ₜ 𝒞 i) = x := by
+  classical
+  induction x using TensorProduct.induction_on with
+  | zero => exact ⟨0, by simp⟩
+  | tmul m n =>
+    use 𝒞.repr n |>.mapRange (fun (r : R) => r • m) (by simp)
+    simp only [Finsupp.mapRange, zero_tmul, implies_true, Finsupp.onFinset_sum, Function.comp_apply,
+      smul_tmul]
+    rw [← tmul_sum]
+    congr
+    conv_rhs => rw [← Basis.linearCombination_repr 𝒞 n]
+    rfl
+  | add x y hx hy =>
+    rcases hx with ⟨x, rfl⟩
+    rcases hy with ⟨y, rfl⟩
+    use x + y
+    rw [Finsupp.sum_add_index]
+    · simp
+    · intro i _; simp [add_tmul]
+
+/-- Elements in M ⊗ N can be represented by sum of elements of basis of M tensor elements of N.-/
+lemma TensorProduct.eq_repr_basis_left :
+    ∃ (c : ι →₀ N), (c.sum fun i n => ℬ i ⊗ₜ n) = x := by
+  obtain ⟨c, hc⟩ := TensorProduct.eq_repr_basis_right ℬ (TensorProduct.comm R M N x)
+  refine ⟨c, ?_⟩
+  apply_fun TensorProduct.comm R M N using (TensorProduct.comm R M N).injective
+  simp only [Finsupp.sum, map_sum, comm_tmul, ← hc]
+
+end
+
 end CommSemiring
+
 end
