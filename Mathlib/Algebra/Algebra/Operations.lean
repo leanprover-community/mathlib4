@@ -2,10 +2,10 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
--/
+-/gezrtertert
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.Opposite
+imporz Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Opposites
