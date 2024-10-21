@@ -20,7 +20,7 @@ of the underlying map of topological spaces, including
 - `Embedding`
 - `IsOpenEmbedding`
 - `IsClosedEmbedding`
-- `DenseRange` (`Dominant`)
+- `DenseRange` (`IsDominant`)
 
 -/
 
@@ -136,43 +136,46 @@ instance isClosedEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsCl
 
 end IsClosedEmbedding
 
-section Dominant
+section IsDominant
 
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 /-- A morphism of schemes is dominant if the underlying map has dense range. -/
 @[mk_iff]
-class Dominant : Prop where
+class IsDominant : Prop where
   denseRange : DenseRange f.base
 
 lemma dominant_eq_topologically :
-    @Dominant = topologically DenseRange := by ext; exact dominant_iff _
+    @IsDominant = topologically DenseRange := by ext; exact isDominant_iff _
 
-lemma Scheme.Hom.denseRange (f : X.Hom Y) [Dominant f] : DenseRange f.base :=
-  Dominant.denseRange
+lemma Scheme.Hom.denseRange (f : X.Hom Y) [IsDominant f] : DenseRange f.base :=
+  IsDominant.denseRange
 
-instance (priority := 100) [Surjective f] : Dominant f := ⟨f.surjective.denseRange⟩
+instance (priority := 100) [Surjective f] : IsDominant f := ⟨f.surjective.denseRange⟩
 
-instance [Dominant f] [Dominant g] : Dominant (f ≫ g) := ⟨g.denseRange.comp f.denseRange g.base.2⟩
+instance [IsDominant f] [IsDominant g] : IsDominant (f ≫ g) :=
+⟨g.denseRange.comp f.denseRange g.base.2⟩
 
-instance : MorphismProperty.IsStableUnderComposition @Dominant := ⟨fun _ _ _ _ ↦ inferInstance⟩
+instance : MorphismProperty.IsMultiplicative @IsDominant where
+  id_mem := fun _ ↦ inferInstance
+  comp_mem := fun _ _ _ _ ↦ inferInstance
 
-lemma Dominant.of_comp [H : Dominant (f ≫ g)] : Dominant g := by
-  rw [dominant_iff, denseRange_iff_closure_range, ← Set.univ_subset_iff] at H ⊢
+lemma IsDominant.of_comp [H : IsDominant (f ≫ g)] : IsDominant g := by
+  rw [isDominant_iff, denseRange_iff_closure_range, ← Set.univ_subset_iff] at H ⊢
   exact H.trans (closure_mono (Set.range_comp_subset_range f.base g.base))
 
-lemma Dominant.comp_iff [Dominant f] : Dominant (f ≫ g) ↔ Dominant g :=
+lemma IsDominant.comp_iff [IsDominant f] : IsDominant (f ≫ g) ↔ IsDominant g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
-instance Dominant.respectsIso : MorphismProperty.RespectsIso @Dominant :=
+instance IsDominant.respectsIso : MorphismProperty.RespectsIso @IsDominant :=
   MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ f (_ : IsIso f) ↦ inferInstance
 
-instance Dominant.isLocalAtTarget : IsLocalAtTarget @Dominant :=
+instance IsDominant.isLocalAtTarget : IsLocalAtTarget @IsDominant :=
   have : MorphismProperty.RespectsIso (topologically DenseRange) :=
-    dominant_eq_topologically ▸ Dominant.respectsIso
+    dominant_eq_topologically ▸ IsDominant.respectsIso
   dominant_eq_topologically ▸ topologically_isLocalAtTarget' DenseRange
     fun _ _ _ hU _ ↦ denseRange_iff_denseRange_of_iSup_eq_top hU
 
-end Dominant
+end IsDominant
 
 end AlgebraicGeometry
