@@ -256,6 +256,10 @@ lemma nnnorm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖₊ = ‖a‖₊ :=
 lemma isometry_inr : Isometry ((↑) : A → Unitization 𝕜 A) :=
   AddMonoidHomClass.isometry_of_norm (inrNonUnitalAlgHom 𝕜 A) norm_inr
 
+@[fun_prop]
+theorem continuous_inr : Continuous (inr : A → Unitization 𝕜 A) :=
+  isometry_inr.continuous
+
 lemma dist_inr (a b : A) : dist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = dist a b :=
   isometry_inr.dist_eq a b
 
