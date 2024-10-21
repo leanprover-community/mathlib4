@@ -108,13 +108,13 @@ def omega' : Ordinal.{u} ↪o Ordinal.{u} where
 theorem coe_omega' : omega' = enumOrd {x | IsInitial x} :=
   rfl
 
-theorem strictMono_omega' : StrictMono omega' :=
+theorem omega'_strictMono : StrictMono omega' :=
   omega'.strictMono
 
-theorem omega'_lt {o₁ o₂ : Ordinal} : omega' o₁ < omega' o₂ ↔ o₁ < o₂ :=
+theorem omega'_lt_omega' {o₁ o₂ : Ordinal} : omega' o₁ < omega' o₂ ↔ o₁ < o₂ :=
   omega'.lt_iff_lt
 
-theorem omega'_le {o₁ o₂ : Ordinal} : omega' o₁ ≤ omega' o₂ ↔ o₁ ≤ o₂ :=
+theorem omega'_le_omega' {o₁ o₂ : Ordinal} : omega' o₁ ≤ omega' o₂ ↔ o₁ ≤ o₂ :=
   omega'.le_iff_le
 
 theorem omega'_max (o₁ o₂ : Ordinal) : omega' (max o₁ o₂) = max (omega' o₁) (omega' o₂) :=
@@ -124,7 +124,7 @@ theorem isInitial_omega' (o : Ordinal) : IsInitial (omega' o) :=
   enumOrd_mem not_bddAbove_isInitial o
 
 theorem le_omega'_self (o : Ordinal) : o ≤ omega' o :=
-  strictMono_omega'.le_apply
+  omega'_strictMono.le_apply
 
 @[simp]
 theorem omega'_zero : omega' 0 = 0 := by
@@ -141,17 +141,22 @@ theorem omega'_natCast (n : ℕ) : omega' n = n := by
     rw [Nat.cast_lt]
     exact lt_succ n
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem omega'_ofNat (n : ℕ) [n.AtLeastTwo] : omega' (no_index (OfNat.ofNat n)) = n :=
+  omega'_natCast n
+
 theorem omega'_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b < o, omega' b < a) :
     omega' o ≤ a :=
   enumOrd_le_of_forall_lt ha H
 
 theorem isNormal_omega' : IsNormal omega' := by
   rw [isNormal_iff_strictMono_limit]
-  refine ⟨strictMono_omega', fun o ho a ha ↦
+  refine ⟨omega'_strictMono, fun o ho a ha ↦
     (omega'_le_of_forall_lt (isInitial_ord _) fun b hb ↦ ?_).trans (ord_card_le a)⟩
   rw [← (isInitial_ord _).card_lt_card, card_ord]
   apply lt_of_lt_of_le _ (card_le_card <| ha _ (ho.succ_lt hb))
-  rw [(isInitial_omega' _).card_lt_card, omega'_lt]
+  rw [(isInitial_omega' _).card_lt_card, omega'_lt_omega']
   exact lt_succ b
 
 @[simp]
@@ -169,14 +174,16 @@ theorem omega'_omega0 : omega' ω = ω := by
 
 @[simp]
 theorem omega0_le_omega'_iff {x : Ordinal} : ω ≤ omega' x ↔ ω ≤ x := by
-  conv_lhs => rw [← omega'_omega0, omega'_le]
+  conv_lhs => rw [← omega'_omega0, omega'_le_omega']
 
 @[simp]
 theorem omega0_lt_omega'_iff {x : Ordinal} : ω < omega' x ↔ ω < x := by
-  conv_lhs => rw [← omega'_omega0, omega'_lt]
+  conv_lhs => rw [← omega'_omega0, omega'_lt_omega']
 
 /-- The `omega` function gives the infinite initial ordinals listed by their ordinal index.
 `omega 0 = ω`, `omega 1 = ω₁` is the first uncountable ordinal, and so on.
+
+This is not to be confused with the first infinite ordinal `Ordinal.omega0`.
 
 For a version including finite ordinals, see `Ordinal.omega'`. -/
 def omega : Ordinal ↪o Ordinal :=
@@ -192,13 +199,13 @@ scoped notation "ω₁" => ω_ 1
 theorem omega'_omega0_add (o : Ordinal) : omega' (ω + o) = ω_ o :=
   rfl
 
-theorem strictMono_omega : StrictMono omega :=
+theorem omega_strictMono : StrictMono omega :=
   omega.strictMono
 
-theorem omega_lt {o₁ o₂ : Ordinal} : ω_ o₁ < ω_ o₂ ↔ o₁ < o₂ :=
+theorem omega_lt_omega {o₁ o₂ : Ordinal} : ω_ o₁ < ω_ o₂ ↔ o₁ < o₂ :=
   omega.lt_iff_lt
 
-theorem omega_le {o₁ o₂ : Ordinal} : ω_ o₁ ≤ ω_ o₂ ↔ o₁ ≤ o₂ :=
+theorem omega_le_omega {o₁ o₂ : Ordinal} : ω_ o₁ ≤ ω_ o₂ ↔ o₁ ≤ o₂ :=
   omega.le_iff_le
 
 theorem omega_max (o₁ o₂ : Ordinal) : ω_ (max o₁ o₂) = max (ω_ o₁) (ω_ o₂) :=
@@ -208,18 +215,18 @@ theorem isInitial_omega (o : Ordinal) : IsInitial (omega o) :=
   isInitial_omega' _
 
 theorem le_omega_self (o : Ordinal) : o ≤ omega o :=
-  strictMono_omega.le_apply
+  omega_strictMono.le_apply
 
 @[simp]
 theorem omega_zero : ω_ 0 = ω := by
   rw [← omega'_omega0_add, add_zero, omega'_omega0]
 
 theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
-  rw [← omega_zero, omega_le]
+  rw [← omega_zero, omega_le_omega]
   exact Ordinal.zero_le o
 
 theorem omega0_lt_omega1 : ω < ω₁ := by
-  rw [← omega_zero, omega_lt]
+  rw [← omega_zero, omega_lt_omega]
   exact zero_lt_one
 
 @[deprecated omega0_lt_omega1 (since := "2024-10-11")]
