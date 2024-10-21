@@ -334,12 +334,12 @@ theorem opensRange_fromSpec : Scheme.Hom.opensRange hU.fromSpec = U := Opens.ext
 @[reassoc (attr := simp)]
 theorem map_fromSpec {V : X.Opens} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
     Spec.map (X.presheaf.map f) ≫ hU.fromSpec = hV.fromSpec := by
-  have : IsAffine (X.restrictFunctor.obj U).left := hU
+  have : IsAffine U := hU
   haveI : IsAffine _ := hV
   conv_rhs =>
-    rw [fromSpec, ← X.restrictFunctor_map_ofRestrict f.unop, isoSpec_inv, Category.assoc,
+    rw [fromSpec, ← X.homOfLE_ι (V := U) f.unop.le, isoSpec_inv, Category.assoc,
       ← Scheme.isoSpec_inv_naturality_assoc,
-      ← Spec.map_comp_assoc, Scheme.restrictFunctor_map_app, ← Functor.map_comp]
+      ← Spec.map_comp_assoc, Scheme.homOfLE_app, ← Functor.map_comp]
   rw [fromSpec, isoSpec_inv, Category.assoc, ← Spec.map_comp_assoc, ← Functor.map_comp]
   rfl
 
@@ -349,10 +349,10 @@ lemma Spec_map_appLE_fromSpec (f : X ⟶ Y) {V : X.Opens} {U : Y.Opens}
     Spec.map (f.appLE U V i) ≫ hU.fromSpec = hV.fromSpec ≫ f := by
   have : IsAffine U := hU
   simp only [IsAffineOpen.fromSpec, Category.assoc, isoSpec_inv]
-  rw [← Scheme.restrictFunctor_map_ofRestrict (homOfLE i), Category.assoc, ← morphismRestrict_ι,
+  rw [← Scheme.homOfLE_ι _ i, Category.assoc, ← morphismRestrict_ι,
     ← Category.assoc _ (f ∣_ U) U.ι, ← @Scheme.isoSpec_inv_naturality_assoc,
     ← Spec.map_comp_assoc, ← Spec.map_comp_assoc, Scheme.comp_app, morphismRestrict_app,
-    Scheme.restrictFunctor_map_app, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map,
+    Scheme.homOfLE_app, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map,
     Scheme.Hom.appLE_map, Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
 
 lemma fromSpec_top [IsAffine X] : (isAffineOpen_top X).fromSpec = X.isoSpec.inv := by
