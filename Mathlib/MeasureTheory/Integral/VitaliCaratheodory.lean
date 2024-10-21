@@ -97,7 +97,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     by_cases h : ∫⁻ x, f x ∂μ = ⊤
     · refine
         ⟨fun _ => c, fun x => ?_, lowerSemicontinuous_const, by
-          simp only [_root_.top_add, le_top, h]⟩
+          simp only [top_add, le_top, h]⟩
       simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise]
       exact Set.indicator_le_self _ _ _
@@ -355,9 +355,9 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
           simpa using hc
   · have A : ((∫⁻ x : α, f₁ x ∂μ) + ∫⁻ x : α, f₂ x ∂μ) ≠ ⊤ := by
       rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]
-    rcases h₁ (ENNReal.add_ne_top.1 A).1 (ENNReal.half_pos ε0).ne' with
+    rcases h₁ (add_ne_top.1 A).1 (ENNReal.half_pos ε0).ne' with
       ⟨g₁, f₁_le_g₁, g₁cont, g₁int⟩
-    rcases h₂ (ENNReal.add_ne_top.1 A).2 (ENNReal.half_pos ε0).ne' with
+    rcases h₂ (add_ne_top.1 A).2 (ENNReal.half_pos ε0).ne' with
       ⟨g₂, f₂_le_g₂, g₂cont, g₂int⟩
     refine
       ⟨fun x => g₁ x + g₂ x, fun x => add_le_add (f₁_le_g₁ x) (f₂_le_g₂ x), g₁cont.add g₂cont, ?_⟩
