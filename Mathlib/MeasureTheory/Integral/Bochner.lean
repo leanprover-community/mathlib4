@@ -1348,7 +1348,7 @@ theorem integral_mono_of_nonneg {f g : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hgi : 
   · rw [integral_non_aestronglyMeasurable hfm]
     exact integral_nonneg_of_ae (hf.trans h)
 
-theorem integral_mono_measure {f : α → ℝ} {ν} (hle : μ ≤ ν) (hf : 0 ≤ᵐ[ν] f)
+theorem integral_mono_measure {f : α → ℝ} {ν : Measure α} (hle : μ ≤ ν) (hf : 0 ≤ᵐ[ν] f)
     (hfi : Integrable f ν) : ∫ a, f a ∂μ ≤ ∫ a, f a ∂ν := by
   have hfi' : Integrable f μ := hfi.mono_measure hle
   have hf' : 0 ≤ᵐ[μ] f := hle.absolutelyContinuous hf
