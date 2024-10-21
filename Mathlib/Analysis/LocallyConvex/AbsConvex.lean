@@ -146,6 +146,19 @@ theorem absConvexHull_nonempty : (absConvexHull 𝕜 s).Nonempty ↔ s.Nonempty 
 
 protected alias ⟨_, Set.Nonempty.absConvexHull⟩ := absConvexHull_nonempty
 
+variable [TopologicalSpace E]
+
+theorem absConvex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s ∧ IsClosed s) :
+    AbsConvex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
+  ⟨AbsConvex.sInter (fun s hs => (h s hs).1), isClosed_sInter fun _ hs => (h _ hs).2⟩
+
+/-- The absolutely convex closed hull of a set `s` is the minimal absolutely convex closed set that
+includes `s`. -/
+@[simps! isClosed]
+def absConvexClosedHull : ClosureOperator (Set E) :=
+  .ofCompletePred (fun s => AbsConvex 𝕜 s ∧ IsClosed s) fun _ ↦ absConvex_closed_sInter
+
+
 end AbsolutelyConvex
 
 section NontriviallyNormedField
