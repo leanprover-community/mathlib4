@@ -139,8 +139,8 @@ lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan fst snd}
 end WalkingMultispan
 
 /-- This is a structure encapsulating the data necessary to define a `Multicospan`. -/
--- Porting note(#5171): linter not ported yet
--- @[nolint has_nonempty_instance]
+-- Porting note(#5171): has_nonempty_instance linter not ported yet
+@[nolint checkUnivs]
 structure MulticospanIndex (C : Type u) [Category.{v} C] where
   (L : Type w)
   (R : Type w')
@@ -152,7 +152,7 @@ structure MulticospanIndex (C : Type u) [Category.{v} C] where
 
 /-- This is a structure encapsulating the data necessary to define a `Multispan`. -/
 -- Porting note(#5171): linter not ported yet
--- @[nolint has_nonempty_instance]
+@[nolint checkUnivs]
 structure MultispanIndex (C : Type u) [Category.{v} C] where
   (L : Type w)
   (R : Type w')
