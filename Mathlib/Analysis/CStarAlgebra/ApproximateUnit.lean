@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
 
 /-! # Positive contractions in a C⋆-algebra form an approximate unit
@@ -38,6 +39,7 @@ local notation "σ" => spectrum
 variable (a : A) [ha : IsStarNormal a]
 
 open Unitization NNReal
+open scoped CStarAlgebra
 
 -- need a non-unital version of this too, where should it go?
 theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
@@ -57,6 +59,8 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
   all_goals
     exact continuous_subtype_val.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
+
+variable [PartialOrder A] [StarOrderedRing A]
 
 lemma CFC.monotoneOn_one_sub_one_add_inv :
     MonotoneOn (cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
