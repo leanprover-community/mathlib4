@@ -261,7 +261,6 @@ lemma mutuallySingular_tfae : List.TFAE
   | h => disjoint_of_disjoint_ae h
   tfae_finish
 
-
 lemma mutuallySingular_iff_disjoint : μ ⟂ₘ ν ↔ Disjoint μ ν :=
   mutuallySingular_tfae.out 0 1
 
