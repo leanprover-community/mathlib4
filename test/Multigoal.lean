@@ -93,7 +93,7 @@ example (p : Bool) : 0 = 0 := by
   case' true => rfl
 
 #guard_msgs in
--- `assumption'` is allowed, as it is useful precisely when there are multiple active goals
+-- `assumption'` is allowed, as it is useful precisely when there are multiple active goals.
 example (p : Bool) (f : False) {h : 0 = 0} : 0 = 0 ∧ 0 = 1 := by
   cases p <;>
   constructor
@@ -101,7 +101,7 @@ example (p : Bool) (f : False) {h : 0 = 0} : 0 = 0 ∧ 0 = 1 := by
   any_goals cases f
 
 #guard_msgs in
--- `focus` is ignored
+-- `focus` is ignored.
 example : True ∧ True := by
   constructor
   focus
@@ -114,7 +114,7 @@ example : 1 = 1 := by
   sleep_heartbeats 1000
   rfl
 
--- we test that a tactic closing all remaining goals does not trigger the linter
+-- We test that a tactic closing all remaining goals does not trigger the linter.
 macro "bi_trivial" : tactic => `(tactic| (trivial; trivial))
 
 set_option linter.style.multiGoal true in

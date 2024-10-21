@@ -13,7 +13,7 @@ There is an exception: a tactic that closes *all* remaining goals is allowed.
 
 There are a few tactics, such as `skip`, `swap` or the `try` combinator, that are intended to work
 specifically in such a situation.
-Otherwise, the mathlib style guide ask that goals be be focused until there is only one active goal
+Otherwise, the mathlib style guide ask that goals be focused until there is only one active goal
 at a time.
 If this focusing does not happen, the linter emits a warning.
 Typically, the focusing is achieved by the `cdot`: `·`, but, e.g., `focus` or `on_goal x`
@@ -126,7 +126,7 @@ which
 * leave at least one goal that was not present before it ran;
 * are not excluded through `exclusions` or `ignoreBranch`;
 
-together with the total number of goals
+together with the total number of goals.
 -/
 partial
 def getManyGoals : InfoTree → Array (Syntax × Nat)
