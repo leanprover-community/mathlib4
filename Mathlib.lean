@@ -1339,6 +1339,8 @@ import Mathlib.Analysis.ODE.PicardLindelof
 import Mathlib.Analysis.Oscillation
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.PSeriesComplex
+import Mathlib.Analysis.Polynomial.Basic
+import Mathlib.Analysis.Polynomial.CauchyBound
 import Mathlib.Analysis.Quaternion
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.RCLike.Inner
@@ -1384,7 +1386,6 @@ import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp
-import Mathlib.Analysis.SpecialFunctions.Polynomials
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
