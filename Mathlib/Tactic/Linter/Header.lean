@@ -243,9 +243,9 @@ def broadImportsCheck (imports : Array Syntax)  : CommandElabM Unit := do
     | modName =>
       if modName.getRoot == `Lake then
         Linter.logLint linter.style.header i s!"\
-          In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
+          In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter\n\
           (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
-          make sure to benchmark it. If this is fine, feel free to allow this linter."
+          make sure to benchmark it.\nIf this is fine, feel free to allow this linter."
 
 /-- Check the syntax `imports` for syntactically duplicate imports.
 The output is an array of `Syntax` atoms whose ranges are the import statements,
