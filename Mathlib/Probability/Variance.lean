@@ -386,7 +386,7 @@ lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
 
 /-- **Popoviciu's inequality on variance**
 
-The variance of a random variable `X` satisfying `a ≤ X ≤ b`  almost everywhere is at most
+The variance of a random variable `X` satisfying `a ≤ X ≤ b` almost everywhere is at most
 `((b - a) / 2) ^ 2`. -/
 lemma variance_square_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hX : AEMeasurable X μ) :
