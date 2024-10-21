@@ -33,7 +33,7 @@ the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
 * `ZLattice.rank`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is free
 of `ℤ`-rank equal to the `K`-rank of `E`
 * `ZLattice.comap`: for `e : E → F` a linear map and `L : Submodule ℤ E`, define the pullback of
-`L` by `e`. If `L` is a `IsZLattice` and `e` is a continuous linear equiv, then it is a also
+`L` by `e`. If `L` is a `IsZLattice` and `e` is a continuous linear equiv, then it is also a
 `IsZLattice`, see `instIsZLatticeComap`.
 
 ## Implementation Notes
