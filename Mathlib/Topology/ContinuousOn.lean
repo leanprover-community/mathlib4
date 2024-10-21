@@ -205,6 +205,38 @@ theorem nhdsWithin_union (a : α) (s t : Set α) : 𝓝[s ∪ t] a = 𝓝[s] a �
   delta nhdsWithin
   rw [← inf_sup_left, sup_principal]
 
+theorem nhdsWithin_union_univ (b : α) {I₁ I₂ : Set α} (hI : Set.univ = I₁ ∪ I₂) :
+    nhds b = nhdsWithin b I₁ ⊔ nhdsWithin b I₂ := by
+  rw [← nhdsWithin_univ b, hI, nhdsWithin_union]
+
+/-- If `L` and `R` are neighborhoods of `b` within sets whose union is `Set.univ`, then
+`L ∪ R` is a neighborhood of `b`. -/
+theorem union_mem_nhds_of_mem_nhdsWithin {b : α}
+    {I₁ I₂ : Set α} (h : Set.univ = I₁ ∪ I₂)
+    {L : Set α} (hL : L ∈ nhdsWithin b I₁)
+    {R : Set α} (hR : R ∈ nhdsWithin b I₂) : L ∪ R ∈ nhds b := by
+  rw [← nhdsWithin_univ b, h, nhdsWithin_union]
+  exact ⟨mem_of_superset hL (by aesop), mem_of_superset hR (by aesop)⟩
+
+
+/-- Writing a punctured neighborhood filter as a sup of left and right filters. -/
+lemma nhds_punctured_union [LinearOrder α] {x : α} : 𝓝[≠] x = 𝓝[<] x ⊔ 𝓝[>] x := by
+  rw [← Iio_union_Ioi, nhdsWithin_union]
+
+/-- If a set `P` contains left and right neighborhoods of a point `x` in a linearly ordered
+topological space then `P` contains a punctured neighborhood. -/
+lemma nhdsWithin_punctured_of_Iio_Ioi [LinearOrder α]
+    {P : Set α} {x : α} (hl : P ∈ 𝓝[<] x) (hr : P ∈ 𝓝[>] x) : P ∈ 𝓝[≠] x := by
+  rw [nhds_punctured_union]
+  exact ⟨hl,hr⟩
+
+/-- Obtain a "predictably-sided" neighborhood of `b` from two one-sided neighborhoods. -/
+theorem nhds_of_Ici_Iic [LinearOrder α] {b : α}
+    {L : Set α} (hL : L ∈ 𝓝[≤] b)
+    {R : Set α} (hR : R ∈ 𝓝[≥] b) : L ∩ Iic b ∪ R ∩ Ici b ∈ 𝓝 b :=
+  union_mem_nhds_of_mem_nhdsWithin Iic_union_Ici.symm
+    (inter_mem hL self_mem_nhdsWithin) (inter_mem hR self_mem_nhdsWithin)
+
 theorem nhdsWithin_biUnion {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
     𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a :=
   Set.Finite.induction_on hI (by simp) fun _ _ hT ↦ by
@@ -1275,3 +1307,57 @@ theorem continuousOn_piecewise_ite {s s' t : Set α} {f f' : α → β} [∀ x, 
     (h : ContinuousOn f s) (h' : ContinuousOn f' s') (H : s ∩ frontier t = s' ∩ frontier t)
     (Heq : EqOn f f' (s ∩ frontier t)) : ContinuousOn (t.piecewise f f') (t.ite s s') :=
   continuousOn_piecewise_ite' (h.mono inter_subset_left) (h'.mono inter_subset_left) H Heq
+
+theorem frontier_inter_open_inter {s t : Set α} (ht : IsOpen t) :
+    frontier (s ∩ t) ∩ t = frontier s ∩ t := by
+  simp only [Set.inter_comm _ t, ← Subtype.preimage_coe_eq_preimage_coe_iff,
+    ht.isOpenMap_subtype_val.preimage_frontier_eq_frontier_preimage continuous_subtype_val,
+    Subtype.preimage_coe_self_inter]
+
+theorem continuousOn_fst {s : Set (α × β)} : ContinuousOn Prod.fst s :=
+  continuous_fst.continuousOn
+
+theorem continuousWithinAt_fst {s : Set (α × β)} {p : α × β} : ContinuousWithinAt Prod.fst s p :=
+  continuous_fst.continuousWithinAt
+
+@[fun_prop]
+theorem ContinuousOn.fst {f : α → β × γ} {s : Set α} (hf : ContinuousOn f s) :
+    ContinuousOn (fun x => (f x).1) s :=
+  continuous_fst.comp_continuousOn hf
+
+theorem ContinuousWithinAt.fst {f : α → β × γ} {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
+    ContinuousWithinAt (fun x => (f x).fst) s a :=
+  continuousAt_fst.comp_continuousWithinAt h
+
+theorem continuousOn_snd {s : Set (α × β)} : ContinuousOn Prod.snd s :=
+  continuous_snd.continuousOn
+
+theorem continuousWithinAt_snd {s : Set (α × β)} {p : α × β} : ContinuousWithinAt Prod.snd s p :=
+  continuous_snd.continuousWithinAt
+
+@[fun_prop]
+theorem ContinuousOn.snd {f : α → β × γ} {s : Set α} (hf : ContinuousOn f s) :
+    ContinuousOn (fun x => (f x).2) s :=
+  continuous_snd.comp_continuousOn hf
+
+theorem ContinuousWithinAt.snd {f : α → β × γ} {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
+    ContinuousWithinAt (fun x => (f x).snd) s a :=
+  continuousAt_snd.comp_continuousWithinAt h
+
+theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} :
+    ContinuousWithinAt f s x ↔
+      ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
+
+end Pi
+
+/-- If `f` is continuous on an open set `s` and continuous at each point of another
+set `t` then `f` is continuous on `s ∪ t`. -/
+lemma ContinuousOn.union_continuousAt
+    {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {s t : Set X} {f : X → Y} (s_op : IsOpen s)
+    (hs : ContinuousOn f s) (ht : ∀ x ∈ t, ContinuousAt f x) :
+    ContinuousOn f (s ∪ t) :=
+  ContinuousAt.continuousOn <| fun _ hx => hx.elim
+  (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
+  (ht _)
