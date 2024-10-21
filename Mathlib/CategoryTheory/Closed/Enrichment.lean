@@ -48,7 +48,7 @@ def compTranspose (x y z : V) : x ⊗ (ihom x).obj y ⊗ (ihom y).obj z ⟶ z :=
 /-- The V-composition morphism
   `hom(x, y) ⊗ hom(y, z) ⟶ hom(x, z)`
 used to equip V with the structure of a V-category -/
-def comp (x y z : V) : (ihom x).obj y ⊗ (ihom y).obj z ⟶ (ihom x).obj z := 
+def comp (x y z : V) : (ihom x).obj y ⊗ (ihom y).obj z ⟶ (ihom x).obj z :=
   curry (compTranspose x y z)
 
 /-- Unfold the definition of id.
@@ -73,7 +73,7 @@ scoped instance : EnrichedCategory V V where
   id_comp _ _ := by
     apply uncurry_injective
     simp only [uncurry_natural_left, comp_eq, id_eq]
-    rw [uncurry_curry, whisker_assoc_symm]; simp only [compTranpose_eq, Category.assoc]
+    rw [uncurry_curry, whisker_assoc_symm]; simp only [compTranspose_eq, Category.assoc]
     rw [Iso.hom_inv_id_assoc, ← comp_whiskerRight_assoc, ← uncurry_eq, uncurry_curry]
     simp only [Functor.id_obj, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc]
     exact (uncurry_id_eq_ev _ _).symm
@@ -87,7 +87,7 @@ scoped instance : EnrichedCategory V V where
   assoc := fun _ _ _ _ => by
     apply uncurry_injective
     simp only [uncurry_natural_left, comp_eq]
-    rw [uncurry_curry, uncurry_curry]; simp only [compTranpose_eq, Category.assoc]
+    rw [uncurry_curry, uncurry_curry]; simp only [compTranspose_eq, Category.assoc]
     rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc]; dsimp
     rw [← uncurry_eq, uncurry_curry, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
       ← uncurry_eq, uncurry_curry]
