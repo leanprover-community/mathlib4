@@ -262,7 +262,7 @@ theorem I_im (z : K) : im z * im (I : K) = im z :=
 @[simp, rclike_simps]
 theorem I_im' (z : K) : im (I : K) * im z = im z := by rw [mul_comm, I_im]
 
-@[rclike_simps] -- porting note (#10618): was `simp`
+@[rclike_simps] -- porting note (#11119): was `simp`
 theorem I_mul_re (z : K) : re (I * z) = -im z := by
   simp only [I_re, zero_sub, I_im', zero_mul, mul_re]
 
@@ -394,7 +394,7 @@ theorem normSq_one : normSq (1 : K) = 1 :=
 theorem normSq_nonneg (z : K) : 0 ≤ normSq z :=
   add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
 
-@[rclike_simps] -- porting note (#10618): was `simp`
+@[rclike_simps] -- porting note (#11119): was `simp`
 theorem normSq_eq_zero {z : K} : normSq z = 0 ↔ z = 0 :=
   map_eq_zero _
 
@@ -409,7 +409,7 @@ theorem normSq_neg (z : K) : normSq (-z) = normSq z := by simp only [normSq_eq_d
 theorem normSq_conj (z : K) : normSq (conj z) = normSq z := by
   simp only [normSq_apply, neg_mul, mul_neg, neg_neg, rclike_simps]
 
-@[rclike_simps] -- porting note (#10618): was `simp`
+@[rclike_simps] -- porting note (#11119): was `simp`
 theorem normSq_mul (z w : K) : normSq (z * w) = normSq z * normSq w :=
   map_mul _ z w
 
@@ -466,7 +466,7 @@ theorem div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / n
   simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm, neg_mul, mul_neg, map_neg,
     rclike_simps]
 
-@[rclike_simps] -- porting note (#10618): was `simp`
+@[rclike_simps] -- porting note (#11119): was `simp`
 theorem conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
 
@@ -506,11 +506,11 @@ theorem inv_I : (I : K)⁻¹ = -I := by
 @[simp, rclike_simps]
 theorem div_I (z : K) : z / I = -(z * I) := by rw [div_eq_mul_inv, inv_I, mul_neg]
 
-@[rclike_simps] -- porting note (#10618): was `simp`
+@[rclike_simps] -- porting note (#11119): was `simp`
 theorem normSq_inv (z : K) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 
-@[rclike_simps] -- porting note (#10618): was `simp`
+@[rclike_simps] -- porting note (#11119): was `simp`
 theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 
@@ -693,11 +693,11 @@ theorem norm_sq_re_conj_add (x : K) : ‖conj x + x‖ ^ 2 = re (conj x + x) ^ 2
 
 /-! ### Cauchy sequences -/
 
-theorem isCauSeq_re (f : CauSeq K norm) : IsCauSeq abs fun n => re (f n) := fun ε ε0 =>
+theorem isCauSeq_re (f : CauSeq K norm) : IsCauSeq abs fun n => re (f n) := fun _ ε0 =>
   (f.cauchy ε0).imp fun i H j ij =>
     lt_of_le_of_lt (by simpa only [map_sub] using abs_re_le_norm (f j - f i)) (H _ ij)
 
-theorem isCauSeq_im (f : CauSeq K norm) : IsCauSeq abs fun n => im (f n) := fun ε ε0 =>
+theorem isCauSeq_im (f : CauSeq K norm) : IsCauSeq abs fun n => im (f n) := fun _ ε0 =>
   (f.cauchy ε0).imp fun i H j ij =>
     lt_of_le_of_lt (by simpa only [map_sub] using abs_im_le_norm (f j - f i)) (H _ ij)
 
@@ -725,8 +725,8 @@ noncomputable instance Real.instRCLike : RCLike ℝ where
   I_mul_I_ax := Or.intro_left _ rfl
   re_add_im_ax z := by
     simp only [add_zero, mul_zero, Algebra.id.map_eq_id, RingHom.id_apply, AddMonoidHom.id_apply]
-  ofReal_re_ax f := rfl
-  ofReal_im_ax r := rfl
+  ofReal_re_ax _ := rfl
+  ofReal_im_ax _ := rfl
   mul_re_ax z w := by simp only [sub_zero, mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
   mul_im_ax z w := by simp only [add_zero, zero_mul, mul_zero, AddMonoidHom.zero_apply]
   conj_re_ax z := by simp only [starRingEnd_apply, star_id_of_comm]
@@ -858,7 +858,7 @@ scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
 lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
     [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
     OrderedSMul K A where
-  smul_lt_smul_of_pos {x y c} hxy hc := StarModule.smul_lt_smul_of_pos hxy hc
+  smul_lt_smul_of_pos {_ _ _} hxy hc := StarModule.smul_lt_smul_of_pos hxy hc
   lt_of_smul_lt_smul_of_pos {x y c} hxy hc := by
     have : c⁻¹ • c • x < c⁻¹ • c • y :=
       StarModule.smul_lt_smul_of_pos hxy (RCLike.inv_pos_of_pos hc)

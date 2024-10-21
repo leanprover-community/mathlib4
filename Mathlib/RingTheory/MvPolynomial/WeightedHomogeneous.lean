@@ -130,7 +130,7 @@ def weightedHomogeneousSubmodule (w : σ → M) (m : M) : Submodule R (MvPolynom
   smul_mem' r a ha c hc := by
     rw [coeff_smul] at hc
     exact ha (right_ne_zero_of_mul hc)
-  zero_mem' d hd := False.elim (hd <| coeff_zero _)
+  zero_mem' _ hd := False.elim (hd <| coeff_zero _)
   add_mem' {a} {b} ha hb c hc := by
     rw [coeff_add] at hc
     obtain h | h : coeff c a ≠ 0 ∨ coeff c b ≠ 0 := by

@@ -321,14 +321,14 @@ theorem map_natDegree_eq_sub {S F : Type*} [Semiring S]
     (φ_mon : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n - k) :
     (φ p).natDegree = p.natDegree - k :=
   mono_map_natDegree_eq k (fun j => j - k) (by simp_all)
-    (@fun m n h => (tsub_lt_tsub_iff_right h).mpr)
+    (@fun _ _ h => (tsub_lt_tsub_iff_right h).mpr)
     (φ_k _) φ_mon
 
 theorem map_natDegree_eq_natDegree {S F : Type*} [Semiring S]
     [FunLike F R[X] S[X]] [AddMonoidHomClass F R[X] S[X]]
     {φ : F} (p) (φ_mon_nat : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n) :
     (φ p).natDegree = p.natDegree :=
-  (map_natDegree_eq_sub (fun f h => (Nat.not_lt_zero _ h).elim) (by simpa)).trans
+  (map_natDegree_eq_sub (fun _ h => (Nat.not_lt_zero _ h).elim) (by simpa)).trans
     p.natDegree.sub_zero
 
 theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : Function.Injective k)
@@ -347,7 +347,7 @@ theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : F
 
 theorem card_support_eq {n : ℕ} :
     f.support.card = n ↔
-      ∃ (k : Fin n → ℕ) (x : Fin n → R) (hk : StrictMono k) (hx : ∀ i, x i ≠ 0),
+      ∃ (k : Fin n → ℕ) (x : Fin n → R) (_ : StrictMono k) (_ : ∀ i, x i ≠ 0),
         f = ∑ i, C (x i) * X ^ k i := by
   refine ⟨?_, fun ⟨k, x, hk, hx, hf⟩ => hf.symm ▸ card_support_eq' k x hk.injective hx⟩
   induction n generalizing f with
@@ -392,7 +392,7 @@ theorem card_support_eq {n : ℕ} :
       all_goals exact H
 
 theorem card_support_eq_one : f.support.card = 1 ↔
-    ∃ (k : ℕ) (x : R) (hx : x ≠ 0), f = C x * X ^ k := by
+    ∃ (k : ℕ) (x : R) (_ : x ≠ 0), f = C x * X ^ k := by
   refine ⟨fun h => ?_, ?_⟩
   · obtain ⟨k, x, _, hx, rfl⟩ := card_support_eq.mp h
     exact ⟨k 0, x 0, hx 0, Fin.sum_univ_one _⟩
@@ -401,7 +401,7 @@ theorem card_support_eq_one : f.support.card = 1 ↔
 
 theorem card_support_eq_two :
     f.support.card = 2 ↔
-      ∃ (k m : ℕ) (hkm : k < m) (x y : R) (hx : x ≠ 0) (hy : y ≠ 0),
+      ∃ (k m : ℕ) (_ : k < m) (x y : R) (_ : x ≠ 0) (_ : y ≠ 0),
         f = C x * X ^ k + C y * X ^ m := by
   refine ⟨fun h => ?_, ?_⟩
   · obtain ⟨k, x, hk, hx, rfl⟩ := card_support_eq.mp h
@@ -413,7 +413,7 @@ theorem card_support_eq_two :
 
 theorem card_support_eq_three :
     f.support.card = 3 ↔
-      ∃ (k m n : ℕ) (hkm : k < m) (hmn : m < n) (x y z : R) (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0),
+      ∃ (k m n : ℕ) (_ : k < m) (_ : m < n) (x y z : R) (_ : x ≠ 0) (_ : y ≠ 0) (_ : z ≠ 0),
         f = C x * X ^ k + C y * X ^ m + C z * X ^ n := by
   refine ⟨fun h => ?_, ?_⟩
   · obtain ⟨k, x, hk, hx, rfl⟩ := card_support_eq.mp h

@@ -38,11 +38,8 @@ open ComplexConjugate
 
 section Seminormed
 
-variable {𝕜 E E' F G : Type*} [RCLike 𝕜]
+variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-variable [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-variable [SeminormedAddCommGroup E'] [InnerProductSpace ℝ E']
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -189,11 +186,8 @@ end Seminormed
 
 section Normed
 
-variable {𝕜 E E' F G : Type*} [RCLike 𝕜]
+variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-variable [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-variable [NormedAddCommGroup E'] [InnerProductSpace ℝ E']
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 

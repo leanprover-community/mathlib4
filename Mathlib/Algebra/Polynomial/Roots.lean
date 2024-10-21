@@ -498,7 +498,7 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
       · exact Set.image_subset_iff.2 fun f hf i _ => hf.2 i
       · refine fun x hx y hy hxy => (ext_iff_natDegree_le hx.1 hy.1).2 fun i hi => ?_
         exact id congr_fun hxy ⟨i, Nat.lt_succ_of_le hi⟩)
-    fun i _ => Finset.finite_toSet _
+    fun _ _ => Finset.finite_toSet _
 
 theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
     a ∈ p.rootSet S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by

@@ -345,7 +345,7 @@ instance : Sup (Ideal P) :=
                 y ≤ yi ⊔ yj := ‹_›
                 _ ≤ xi ⊔ yi ⊔ (xj ⊔ yj) := sup_le_sup le_sup_right le_sup_right)⟩,
           le_sup_left, le_sup_right⟩
-      lower' := fun x y h ⟨yi, hi, yj, hj, hxy⟩ ↦ ⟨yi, hi, yj, hj, h.trans hxy⟩ }⟩
+      lower' := fun _ _ h ⟨yi, hi, yj, hj, hxy⟩ ↦ ⟨yi, hi, yj, hj, h.trans hxy⟩ }⟩
 
 instance : Lattice (Ideal P) :=
   { Ideal.instPartialOrderIdeal with

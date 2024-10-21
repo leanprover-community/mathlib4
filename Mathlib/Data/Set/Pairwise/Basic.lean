@@ -30,11 +30,11 @@ on `Set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 
 open Function Order Set
 
-variable {α β γ ι ι' : Type*} {r p q : α → α → Prop}
+variable {α β γ ι ι' : Type*} {r p : α → α → Prop}
 
 section Pairwise
 
-variable {f g : ι → α} {s t u : Set α} {a b : α}
+variable {f g : ι → α} {s t : Set α} {a b : α}
 
 theorem pairwise_on_bool (hr : Symmetric r) {a b : α} :
     Pairwise (r on fun c => cond c a b) ↔ r a b := by simpa [Pairwise, Function.onFun] using @hr a b
@@ -311,7 +311,7 @@ end PartialOrderBot
 
 section SemilatticeInfBot
 
-variable [SemilatticeInf α] [OrderBot α] {s t : Set ι} {f g : ι → α}
+variable [SemilatticeInf α] [OrderBot α] {s : Set ι} {f : ι → α}
 
 -- classical
 theorem PairwiseDisjoint.elim' (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈ s) (hj : j ∈ s)
