@@ -101,7 +101,7 @@ theorem mem_resolventSet_of_norm_lt_mul {a : A} {k : 𝕜} (h : ‖a‖ * ‖(1 
     ne_zero_of_norm_ne_zero ((mul_nonneg (norm_nonneg _) (norm_nonneg _)).trans_lt h).ne'
   letI ku := Units.map ↑ₐ.toMonoidHom (Units.mk0 k hk)
   rw [← inv_inv ‖(1 : A)‖,
-    mul_inv_lt_iff (inv_pos.2 <| norm_pos_iff.2 (one_ne_zero : (1 : A) ≠ 0))] at h
+    mul_inv_lt_iff₀' (inv_pos.2 <| norm_pos_iff.2 (one_ne_zero : (1 : A) ≠ 0))] at h
   have hku : ‖-a‖ < ‖(↑ku⁻¹ : A)‖⁻¹ := by simpa [ku, norm_algebraMap] using h
   simpa [ku, sub_eq_add_neg, Algebra.algebraMap_eq_smul_one] using (ku.add (-a) hku).isUnit
 
@@ -133,7 +133,7 @@ instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
     (a : A) [CompactSpace (spectrum ℝ a)] : CompactSpace (spectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
-  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 section QuasispectrumCompact
 
@@ -154,7 +154,7 @@ instance _root_.quasispectrum.instCompactSpaceNNReal [NormedSpace ℝ B] [IsScal
     CompactSpace (quasispectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← quasispectrum.preimage_algebraMap ℝ]
-  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 end QuasispectrumCompact
 
@@ -552,8 +552,8 @@ def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
   invFun f :=
     { val := f.toContinuousLinearMap
       property := by rw [eq_set_map_one_map_mul]; exact ⟨map_one f, map_mul f⟩ }
-  left_inv f := Subtype.ext <| ContinuousLinearMap.ext fun x => rfl
-  right_inv f := AlgHom.ext fun x => rfl
+  left_inv _ := Subtype.ext <| ContinuousLinearMap.ext fun _ => rfl
+  right_inv _ := AlgHom.ext fun _ => rfl
 
 @[simp]
 theorem equivAlgHom_coe (f : characterSpace 𝕜 A) : ⇑(equivAlgHom f) = f :=

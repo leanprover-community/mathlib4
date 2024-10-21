@@ -5,10 +5,9 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Big operators on a finset in ordered groups
@@ -16,6 +15,8 @@ import Mathlib.Tactic.Positivity.Core
 This file contains the results concerning the interaction of multiset big operators with ordered
 groups/monoids.
 -/
+
+assert_not_exists Ring
 
 open Function
 
@@ -209,6 +210,16 @@ theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι �
   @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ h
 
 end OrderedCommMonoid
+
+@[to_additive]
+lemma max_prod_le [LinearOrderedCommMonoid M] {f g : ι → M} {s : Finset ι} :
+    max (s.prod f) (s.prod g) ≤ s.prod (fun i ↦ max (f i) (g i)) :=
+  Multiset.max_prod_le
+
+@[to_additive]
+lemma prod_min_le [LinearOrderedCommMonoid M] {f g : ι → M} {s : Finset ι} :
+    s.prod (fun i ↦ min (f i) (g i)) ≤ min (s.prod f) (s.prod g) :=
+  Multiset.prod_min_le
 
 theorem abs_sum_le_sum_abs {G : Type*} [LinearOrderedAddCommGroup G] (f : ι → G) (s : Finset ι) :
     |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero abs_add s f
@@ -509,11 +520,11 @@ lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' fun _
 
 @[to_additive]
 lemma prod_eq_one_iff_of_one_le (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
-  (Finset.prod_eq_one_iff_of_one_le' fun i _ ↦ hf i).trans <| by simp [Function.funext_iff]
+  (Finset.prod_eq_one_iff_of_one_le' fun i _ ↦ hf i).trans <| by simp [funext_iff]
 
 @[to_additive]
 lemma prod_eq_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 :=
-  (Finset.prod_eq_one_iff_of_le_one' fun i _ ↦ hf i).trans <| by simp [Function.funext_iff]
+  (Finset.prod_eq_one_iff_of_le_one' fun i _ ↦ hf i).trans <| by simp [funext_iff]
 
 end OrderedCommMonoid
 
@@ -571,43 +582,3 @@ theorem sup_powerset_len {α : Type*} [DecidableEq α] (x : Multiset α) :
     Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetCard x h)
 
 end Multiset
-
-namespace Mathlib.Meta.Positivity
-open Qq Lean Meta Finset
-
-/-- The `positivity` extension which proves that `∑ i ∈ s, f i` is nonnegative if `f` is, and
-positive if each `f i` is and `s` is nonempty.
-
-TODO: The following example does not work
-```
-example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.sum f := by positivity
-```
-because `compareHyp` can't look for assumptions behind binders.
--/
-@[positivity Finset.sum _ _]
-def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
-  match e with
-  | ~q(@Finset.sum $ι _ $instα $s $f) =>
-    let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
-    have body : Q($α) := .betaRev f #[i]
-    let rbody ← core zα pα body
-    let p_pos : Option Q(0 < $e) := ← (do
-      let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
-      let .some ps ← proveFinsetNonempty s | pure none
-      let .some pα' ← trySynthInstanceQ q(OrderedCancelAddCommMonoid $α) | pure none
-      assertInstancesCommute
-      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      return some q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $ps))
-    -- Try to show that the sum is positive
-    if let some p_pos := p_pos then
-      return .positive p_pos
-    -- Fall back to showing that the sum is nonnegative
-    else
-      let pbody ← rbody.toNonneg
-      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
-      assertInstancesCommute
-      return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
-  | _ => throwError "not Finset.sum"
-
-end Mathlib.Meta.Positivity

@@ -667,7 +667,7 @@ end Affine
 
 namespace EuclideanGeometry
 
-open Affine AffineSubspace FiniteDimensional
+open Affine AffineSubspace Module
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]

@@ -33,7 +33,7 @@ variable {R K M : Type*} [CommRing R] [IsDomain R] [Field K] [AddCommGroup M]
 variable [Module R M] [Module.Finite R M] [Module.Free R M]
 variable [Module K M] [Module.Finite K M]
 
-open FiniteDimensional Module.Free Polynomial
+open Module Module.Free Polynomial
 
 lemma IsNilpotent.charpoly_eq_X_pow_finrank (φ : Module.End R M) (h : IsNilpotent φ) :
     φ.charpoly = X ^ finrank R M := by

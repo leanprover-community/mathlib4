@@ -895,7 +895,7 @@ theorem Filter.EventuallyEq.fderivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : 
 
 theorem Filter.EventuallyEq.fderivWithin' (hs : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) :
     fderivWithin 𝕜 f₁ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 f t :=
-  (eventually_nhdsWithin_nhdsWithin.2 hs).mp <|
+  (eventually_eventually_nhdsWithin.2 hs).mp <|
     eventually_mem_nhdsWithin.mono fun _y hys hs =>
       EventuallyEq.fderivWithin_eq (hs.filter_mono <| nhdsWithin_mono _ ht)
         (hs.self_of_nhdsWithin hys)

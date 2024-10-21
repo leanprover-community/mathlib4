@@ -36,7 +36,7 @@ Hermann Minkowski.
 
 namespace MeasureTheory
 
-open ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure Set Filter
+open ENNReal Module MeasureTheory MeasureTheory.Measure Set Filter
 
 open scoped Pointwise NNReal
 

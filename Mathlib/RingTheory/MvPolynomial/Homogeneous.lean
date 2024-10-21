@@ -64,7 +64,7 @@ def homogeneousSubmodule (n : ℕ) : Submodule R (MvPolynomial σ R) where
     apply hc
     rw [h]
     exact smul_zero r
-  zero_mem' d hd := False.elim (hd <| coeff_zero _)
+  zero_mem' _ hd := False.elim (hd <| coeff_zero _)
   add_mem' {a b} ha hb c hc := by
     rw [coeff_add] at hc
     obtain h | h : coeff c a ≠ 0 ∨ coeff c b ≠ 0 := by

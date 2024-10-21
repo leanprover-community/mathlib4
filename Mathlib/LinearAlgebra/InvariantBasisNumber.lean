@@ -282,7 +282,7 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
   Quotient.liftOn' x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
     (by
       refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
-      rw [Submodule.quotientRel_r_def] at hab
+      rw [Submodule.quotientRel_def] at hab
       rw [← LinearMap.map_sub]
       exact Ideal.map_pi _ _ hab e h)
 

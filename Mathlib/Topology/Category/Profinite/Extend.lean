@@ -141,7 +141,7 @@ then `cone G c.pt` is a limit cone.
 -/
 noncomputable
 def isLimitCone (hc : IsLimit c) [∀ i, Epi (c.π.app i)] (hc' : IsLimit <| G.mapCone c) :
-    IsLimit (cone G c.pt) := (functor_initial c hc).isLimitWhiskerEquiv _ hc'
+    IsLimit (cone G c.pt) := (functor_initial c hc).isLimitWhiskerEquiv _ _ hc'
 
 end Limit
 
@@ -177,7 +177,7 @@ are epimorphic, then `cocone G c.pt` is a colimit cone.
 -/
 noncomputable
 def isColimitCocone (hc : IsLimit c) [∀ i, Epi (c.π.app i)] (hc' : IsColimit <| G.mapCocone c.op) :
-    IsColimit (cocone G c.pt) := (functorOp_final c hc).isColimitWhiskerEquiv _ hc'
+    IsColimit (cocone G c.pt) := (functorOp_final c hc).isColimitWhiskerEquiv _ _ hc'
 
 end Colimit
 

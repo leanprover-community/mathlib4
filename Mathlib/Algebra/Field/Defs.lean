@@ -45,8 +45,8 @@ field, division ring, skew field, skew-field, skewfield
 
 assert_not_imported Mathlib.Tactic.Common
 
--- `NeZero` should not be needed in the basic algebraic hierarchy.
-assert_not_exists NeZero
+-- `NeZero` theory should not be needed in the basic algebraic hierarchy
+assert_not_imported Mathlib.Algebra.NeZero
 
 assert_not_exists MonoidHom
 
@@ -194,7 +194,7 @@ variable (K)
 end NNRat
 
 namespace Rat
-variable [DivisionRing K] {a b : K}
+variable [DivisionRing K]
 
 lemma cast_def (q : ℚ) : (q : K) = q.num / q.den := DivisionRing.ratCast_def _
 

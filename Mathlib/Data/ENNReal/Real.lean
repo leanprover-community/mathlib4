@@ -518,8 +518,8 @@ theorem toReal_sSup (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
   obtain rfl | ha := eq_or_ne a ∞
   · simp
   rw [le_iInf_iff, le_ofReal_iff_toReal_le ha, le_ciInf_iff ⟨0, by simpa [mem_lowerBounds]⟩]
-  exact forall_congr' fun i ↦ (le_ofReal_iff_toReal_le ha (h _)).symm
-  exact Real.iInf_nonneg h
+  · exact forall_congr' fun i ↦ (le_ofReal_iff_toReal_le ha (h _)).symm
+  · exact Real.iInf_nonneg h
 
 theorem iInf_add : iInf f + a = ⨅ i, f i + a :=
   le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) <| le_rfl)
@@ -541,7 +541,7 @@ theorem add_iInf {a : ℝ≥0∞} : a + iInf f = ⨅ b, a + f b := by
 
 theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + iInf g = ⨅ a, f a + g a :=
   suffices ⨅ a, f a + g a ≤ iInf f + iInf g from
-    le_antisymm (le_iInf fun a => add_le_add (iInf_le _ _) (iInf_le _ _)) this
+    le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) (iInf_le _ _)) this
   calc
     ⨅ a, f a + g a ≤ ⨅ (a) (a'), f a + g a' :=
       le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h

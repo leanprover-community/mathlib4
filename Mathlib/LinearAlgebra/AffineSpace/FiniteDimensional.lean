@@ -29,14 +29,14 @@ section AffineSpace'
 variable (k : Type*) {V : Type*} {P : Type*}
 variable {ι : Type*}
 
-open AffineSubspace FiniteDimensional Module
+open AffineSubspace Module
 
 variable [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- The `vectorSpan` of a finite set is finite-dimensional. -/
 theorem finiteDimensional_vectorSpan_of_finite {s : Set P} (h : Set.Finite s) :
     FiniteDimensional k (vectorSpan k s) :=
-  span_of_finite k <| h.vsub h
+  .span_of_finite k <| h.vsub h
 
 /-- The `vectorSpan` of a family indexed by a `Fintype` is
 finite-dimensional. -/
@@ -202,7 +202,7 @@ theorem finrank_vectorSpan_le_iff_not_affineIndependent [Fintype ι] (p : ι →
 variable {k}
 
 lemma AffineIndependent.card_le_finrank_succ [Fintype ι] {p : ι → P} (hp : AffineIndependent k p) :
-    Fintype.card ι ≤ FiniteDimensional.finrank k (vectorSpan k (Set.range p)) + 1 := by
+    Fintype.card ι ≤ Module.finrank k (vectorSpan k (Set.range p)) + 1 := by
   cases isEmpty_or_nonempty ι
   · simp [Fintype.card_eq_zero]
   rw [← tsub_le_iff_right]
@@ -257,7 +257,7 @@ theorem AffineIndependent.vectorSpan_image_finset_eq_of_le_of_card_eq_finrank_ad
     (hi : AffineIndependent k p) {s : Finset ι} {sm : Submodule k V} [FiniteDimensional k sm]
     (hle : vectorSpan k (s.image p : Set P) ≤ sm) (hc : Finset.card s = finrank k sm + 1) :
     vectorSpan k (s.image p : Set P) = sm :=
-  eq_of_le_of_finrank_eq hle <| hi.finrank_vectorSpan_image_finset hc
+  Submodule.eq_of_le_of_finrank_eq hle <| hi.finrank_vectorSpan_image_finset hc
 
 /-- If the `vectorSpan` of a finite affinely independent
 family lies in a submodule with dimension one less than its
@@ -266,7 +266,7 @@ theorem AffineIndependent.vectorSpan_eq_of_le_of_card_eq_finrank_add_one [Fintyp
     (hi : AffineIndependent k p) {sm : Submodule k V} [FiniteDimensional k sm]
     (hle : vectorSpan k (Set.range p) ≤ sm) (hc : Fintype.card ι = finrank k sm + 1) :
     vectorSpan k (Set.range p) = sm :=
-  eq_of_le_of_finrank_eq hle <| hi.finrank_vectorSpan hc
+  Submodule.eq_of_le_of_finrank_eq hle <| hi.finrank_vectorSpan hc
 
 /-- If the `affineSpan` of a finite subset of an affinely independent
 family lies in an affine subspace whose direction has dimension one
@@ -669,7 +669,7 @@ section DivisionRing
 
 variable {k : Type*} {V : Type*} {P : Type*}
 
-open AffineSubspace FiniteDimensional Module
+open AffineSubspace Module Module
 
 variable [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
@@ -764,12 +764,12 @@ protected theorem finite_set [FiniteDimensional k V] {s : Set ι} (b : AffineBas
   finite_set_of_fin_dim_affineIndependent k b.ind
 
 theorem card_eq_finrank_add_one [Fintype ι] (b : AffineBasis ι k P) :
-    Fintype.card ι = FiniteDimensional.finrank k V + 1 :=
+    Fintype.card ι = Module.finrank k V + 1 :=
   have : FiniteDimensional k V := b.finiteDimensional
   b.ind.affineSpan_eq_top_iff_card_eq_finrank_add_one.mp b.tot
 
 theorem exists_affineBasis_of_finiteDimensional [Fintype ι] [FiniteDimensional k V]
-    (h : Fintype.card ι = FiniteDimensional.finrank k V + 1) : Nonempty (AffineBasis ι k P) := by
+    (h : Fintype.card ι = Module.finrank k V + 1) : Nonempty (AffineBasis ι k P) := by
   obtain ⟨s, b, hb⟩ := AffineBasis.exists_affineBasis k V P
   lift s to Finset P using b.finite_set
   refine ⟨b.reindex <| Fintype.equivOfCardEq ?_⟩

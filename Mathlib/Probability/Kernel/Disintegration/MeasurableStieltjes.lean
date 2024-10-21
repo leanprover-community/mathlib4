@@ -48,7 +48,7 @@ open scoped NNReal ENNReal MeasureTheory Topology
 
 namespace ProbabilityTheory
 
-variable {α β ι : Type*}
+variable {α : Type*}
 
 section IsMeasurableRatCDF
 

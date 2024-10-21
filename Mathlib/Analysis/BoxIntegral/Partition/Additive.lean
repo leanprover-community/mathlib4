@@ -57,7 +57,7 @@ namespace BoxAdditiveMap
 
 open Box Prepartition Finset
 
-variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I J : Box ι}
+variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I : Box ι}
   {i : ι}
 
 instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) M where

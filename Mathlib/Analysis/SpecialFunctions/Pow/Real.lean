@@ -528,13 +528,13 @@ theorem monotoneOn_rpow_Ici_of_exponent_nonneg {r : ℝ} (hr : 0 ≤ r) :
 
 lemma rpow_lt_rpow_of_neg (hx : 0 < x) (hxy : x < y) (hz : z < 0) : y ^ z < x ^ z := by
   have := hx.trans hxy
-  rw [← inv_lt_inv, ← rpow_neg, ← rpow_neg]
+  rw [← inv_lt_inv₀, ← rpow_neg, ← rpow_neg]
   on_goal 1 => refine rpow_lt_rpow ?_ hxy (neg_pos.2 hz)
   all_goals positivity
 
 lemma rpow_le_rpow_of_nonpos (hx : 0 < x) (hxy : x ≤ y) (hz : z ≤ 0) : y ^ z ≤ x ^ z := by
   have := hx.trans_le hxy
-  rw [← inv_le_inv, ← rpow_neg, ← rpow_neg]
+  rw [← inv_le_inv₀, ← rpow_neg, ← rpow_neg]
   on_goal 1 => refine rpow_le_rpow ?_ hxy (neg_nonneg.2 hz)
   all_goals positivity
 
@@ -592,7 +592,7 @@ theorem rpow_lt_rpow_of_exponent_neg {x y z : ℝ} (hy : 0 < y) (hxy : y < x) (h
     x ^ z < y ^ z := by
   have hx : 0 < x := hy.trans hxy
   rw [← neg_neg z, Real.rpow_neg (le_of_lt hx) (-z), Real.rpow_neg (le_of_lt hy) (-z),
-      inv_lt_inv (rpow_pos_of_pos hx _) (rpow_pos_of_pos hy _)]
+      inv_lt_inv₀ (rpow_pos_of_pos hx _) (rpow_pos_of_pos hy _)]
   exact Real.rpow_lt_rpow (by positivity) hxy <| neg_pos_of_neg hz
 
 theorem strictAntiOn_rpow_Ioi_of_exponent_neg {r : ℝ} (hr : r < 0) :
@@ -823,7 +823,7 @@ theorem rpow_le_one_iff_of_pos (hx : 0 < x) : x ^ y ≤ 1 ↔ 1 ≤ x ∧ y ≤ 
 /-- Bound for `|log x * x ^ t|` in the interval `(0, 1]`, for positive real `t`. -/
 theorem abs_log_mul_self_rpow_lt (x t : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) (ht : 0 < t) :
     |log x * x ^ t| < 1 / t := by
-  rw [lt_div_iff ht]
+  rw [lt_div_iff₀ ht]
   have := abs_log_mul_self_lt (x ^ t) (rpow_pos_of_pos h1 t) (rpow_le_one h1.le h2 ht.le)
   rwa [log_rpow h1, mul_assoc, abs_mul, abs_of_pos ht, mul_comm] at this
 
@@ -1039,6 +1039,14 @@ theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a ^ (Int.negOfNat nb)) num den) :
     IsRat (a ^ b) num den := by
   rwa [pb.out, Real.rpow_intCast]
+
+#adaptation_note
+/--
+Since https://github.com/leanprover/lean4/pull/5338,
+the unused variable linter can not see usages of variables in
+`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
+-/
+set_option linter.unusedVariables false
 
 /-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals. -/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]

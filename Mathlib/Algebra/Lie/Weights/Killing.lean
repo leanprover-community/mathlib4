@@ -85,7 +85,7 @@ end IsKilling
 
 section Field
 
-open FiniteDimensional LieModule Set
+open Module LieModule Set
 open Submodule (span subset_span)
 
 variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
@@ -429,7 +429,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
     (hx : x ∈ α.ker) (hy : y ∈ K ∙ coroot α) :
     traceForm K H L x y = 0 := by
   rw [← coe_corootSpace_eq_span_singleton, LieSubmodule.mem_coeSubmodule, mem_corootSpace'] at hy
-  induction hy using Submodule.span_induction' with
+  induction hy using Submodule.span_induction with
   | mem z hz =>
     obtain ⟨u, hu, v, -, huv⟩ := hz
     change killingForm K L (x : L) (z : L) = 0
@@ -555,6 +555,16 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
   obtain ⟨n, hn⟩ := P.exists_nat
   replace hn : -2 = (n : ℤ) := by norm_cast at hn
   omega
+
+/-- The collection of roots as a `Finset`. -/
+noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
+
+lemma restrict_killingForm_eq_sum :
+    (killingForm K L).restrict H = ∑ α in H.root, (α : H →ₗ[K] K).smulRight (α : H →ₗ[K] K) := by
+  rw [restrict_killingForm, traceForm_eq_sum_finrank_nsmul' K H L]
+  refine Finset.sum_congr rfl fun χ hχ ↦ ?_
+  replace hχ : χ.IsNonZero := by simpa [LieSubalgebra.root] using hχ
+  simp [finrank_rootSpace_eq_one _ hχ]
 
 end CharZero
 
