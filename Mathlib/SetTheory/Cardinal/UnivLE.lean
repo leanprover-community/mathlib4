@@ -32,4 +32,5 @@ theorem univLE_iff_cardinal_le : UnivLE.{u, v} ↔ univ.{u, v+1} ≤ univ.{v, u+
 
 /-- Together with transitivity, this shows UnivLE "IsTotalPreorder". -/
 theorem univLE_total : UnivLE.{u, v} ∨ UnivLE.{v, u} := by
-  simp_rw [univLE_iff_cardinal_le]; apply le_total
+  simp_rw [univLE_iff_cardinal_le]
+  exact le_total ..
