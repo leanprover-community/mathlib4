@@ -195,6 +195,18 @@ def toModuleAut : S →* M ≃ₗ[R] M where
 
 end DistribMulAction
 
+def Module.endUnitsToModuleAutEquiv (R) (M) [CommRing R] [AddCommGroup M] [Module R M] :
+    (M →ₗ[R] M)ˣ ≃* (M ≃ₗ[R] M) where
+  toFun f := DistribMulAction.toLinearEquiv R M f
+  invFun f := ⟨f, f.symm, by ext; simp, by ext; simp⟩
+  left_inv f := by ext; simp [Units.smul_def]
+  right_inv f := by ext; simp
+  map_mul' f g := by
+    ext x
+    simp only [DistribMulAction.toLinearEquiv_apply, mul_smul,
+      show (DistribMulAction.toLinearEquiv R M f * DistribMulAction.toLinearEquiv R M g) x =
+      DistribMulAction.toLinearEquiv R M f ((DistribMulAction.toLinearEquiv R M g) x) by rfl]
+
 namespace AddEquiv
 
 section AddCommMonoid

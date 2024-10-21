@@ -47,6 +47,24 @@ structure Hom {ι₂ M₂ N₂ : Type*}
   root_weightMap : weightMap ∘ P.root = Q.root ∘ indexEquiv
   coroot_coweightMap : coweightMap ∘ Q.coroot = P.coroot ∘ indexEquiv.symm
 
+lemma weight_coweight_transpose_apply {ι₂ M₂ N₂ : Type*}
+    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (x : N₂) (f : Hom P Q) :
+    f.weightMap.dualMap (Q.toDualRight x) = P.toDualRight (f.coweightMap x) :=
+  Eq.mp (propext LinearMap.ext_iff) f.weight_coweight_transpose x
+
+lemma root_weightMap_apply {ι₂ M₂ N₂ : Type*}
+    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (i : ι) (f : Hom P Q) :
+    f.weightMap (P.root i) = Q.root (f.indexEquiv i) :=
+  Eq.mp (propext funext_iff) f.root_weightMap i
+
+lemma coroot_coweightMap_apply {ι₂ M₂ N₂ : Type*}
+    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (i : ι₂) (f : Hom P Q) :
+    f.coweightMap (Q.coroot i) = P.coroot (f.indexEquiv.symm i) :=
+  Eq.mp (propext funext_iff) f.coroot_coweightMap i
+
 /-- The identity morphism of a root pairing. -/
 @[simps!]
 def Hom.id (P : RootPairing ι R M N) : Hom P P where
@@ -104,8 +122,122 @@ lemma Hom.comp_assoc {ι₁ M₁ N₁ ι₂ M₂ N₂ ι₃ M₃ N₃ : Type*} [
     Hom.comp (Hom.comp h g) f = Hom.comp h (Hom.comp g f) := by
   ext <;> simp
 
+/-- The endomorphism monoid of a root pairing. -/
+instance (P : RootPairing ι R M N) : Monoid (Hom P P) where
+  mul := Hom.comp
+  mul_assoc := Hom.comp_assoc
+  one := Hom.id P
+  one_mul := Hom.id_comp P P
+  mul_one := Hom.comp_id P P
+
+@[simp]
+lemma weightMap_one (P : RootPairing ι R M N) :
+    Hom.weightMap (P := P) (Q := P) 1 = LinearMap.id (R := R) (M := M) :=
+  rfl
+
+@[simp]
+lemma coweightMap_one (P : RootPairing ι R M N) :
+    Hom.coweightMap (P := P) (Q := P) 1 = LinearMap.id (R := R) (M := N) :=
+  rfl
+
+@[simp]
+lemma indexEquiv_one (P : RootPairing ι R M N) :
+    Hom.indexEquiv (P := P) (Q := P) 1 = Equiv.refl ι :=
+  rfl
+
+@[simp]
+lemma weightMap_mul (P : RootPairing ι R M N) (x y : Hom P P) :
+    Hom.weightMap (x * y) = Hom.weightMap x ∘ₗ Hom.weightMap y :=
+  rfl
+
+@[simp]
+lemma coweightMap_mul (P : RootPairing ι R M N) (x y : Hom P P) :
+    Hom.coweightMap (x * y) = Hom.coweightMap y ∘ₗ Hom.coweightMap x :=
+  rfl
+
+@[simp]
+lemma indexEquiv_mul (P : RootPairing ι R M N) (x y : Hom P P) :
+    Hom.indexEquiv (x * y) = Hom.indexEquiv x ∘ Hom.indexEquiv y :=
+  rfl
+
+/-- The endomorphism monoid of a root pairing. -/
+abbrev End (P : RootPairing ι R M N) := Hom P P
+
+/-- The automorphism group of a root pairing. -/
+abbrev Aut (P : RootPairing ι R M N) := (End P)ˣ
+
+instance (P : RootPairing ι R M N) : Group (Aut P) := inferInstance
+
+/-- The weight space representation of endomorphisms -/
+def weightEndHom (P : RootPairing ι R M N) : End P →* (M →ₗ[R] M) where
+  toFun g := Hom.weightMap (P := P) (Q := P) g
+  map_mul' g h := by ext; simp
+  map_one' := by ext; simp
+
+lemma weightEndHom_injective (P : RootPairing ι R M N) : Injective P.weightEndHom := by
+  intro f g hfg
+  ext x
+  · exact congrFun (congrArg DFunLike.coe hfg) x
+  · refine (LinearEquiv.injective P.toDualRight) ?_
+    simp_rw [← weight_coweight_transpose_apply]
+    exact congrFun (congrArg DFunLike.coe (congrArg LinearMap.dualMap hfg)) (P.toDualRight x)
+  · refine (Embedding.injective P.root) ?_
+    simp_rw [← root_weightMap_apply]
+    exact congrFun (congrArg DFunLike.coe hfg) (P.root x)
+
+/-- The weight space representation of automorphisms -/
+def weightHom (P : RootPairing ι R M N) : Aut P →* (M ≃ₗ[R] M) :=
+  MonoidHom.comp (Module.endUnitsToModuleAutEquiv R M) (Units.map (weightEndHom P))
+
+lemma weightHom_injective (P : RootPairing ι R M N) : Injective P.weightHom :=
+  (EquivLike.comp_injective (Units.map P.weightEndHom)
+    (Module.endUnitsToModuleAutEquiv R M)).mpr <| Units.map_injective P.weightEndHom_injective
+
+/-- The coweight space representation of endomorphisms -/
+def coweightEndHom (P : RootPairing ι R M N) : End P →* (N →ₗ[R] N)ᵐᵒᵖ where
+  toFun g := MulOpposite.op (Hom.coweightMap (P := P) (Q := P) g)
+  map_mul' g h := by
+    simp only [← MulOpposite.op_mul, coweightMap_mul, LinearMap.mul_eq_comp]
+  map_one' := by
+    simp only [MulOpposite.op_eq_one_iff, coweightMap_one, LinearMap.one_eq_id]
+
+lemma coweightEndHom_injective (P : RootPairing ι R M N) : Injective P.coweightEndHom := by
+  intro f g hfg
+  ext x
+  · dsimp [coweightEndHom] at hfg
+    rw [MulOpposite.op_inj] at hfg
+    have h := congrArg (LinearMap.comp (M₃ := Module.Dual R M)
+        (σ₂₃ := RingHom.id R) (P.toDualRight)) hfg
+    rw [← f.weight_coweight_transpose, ← g.weight_coweight_transpose] at h
+    have : f.weightMap = g.weightMap := by
+      haveI refl : Module.IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
+      exact (Module.dualMap_dualMap_eq_iff R M (Bijective.injective
+        (Module.bijective_dual_eval R M))).mp (congrArg LinearMap.dualMap
+        ((LinearEquiv.eq_comp_toLinearMap_iff f.weightMap.dualMap g.weightMap.dualMap).mp h))
+    exact congrFun (congrArg DFunLike.coe this) x
+  · dsimp [coweightEndHom] at hfg
+    simp_all only [MulOpposite.op_inj]
+  · dsimp [coweightEndHom] at hfg
+    rw [MulOpposite.op_inj] at hfg
+    set y := f.indexEquiv x with hy
+    have : f.coweightMap (P.coroot y) = g.coweightMap (P.coroot y) := by
+      exact congrFun (congrArg DFunLike.coe hfg) (P.coroot y)
+    rw [coroot_coweightMap_apply, coroot_coweightMap_apply, Embedding.apply_eq_iff_eq, hy] at this
+    rw [Equiv.symm_apply_apply] at this
+    rw [this, Equiv.apply_symm_apply]
+
+/-- The coweight space representation of automorphisms -/
+def coweightHom (P : RootPairing ι R M N) : Aut P →* (N ≃ₗ[R] N)ᵐᵒᵖ :=
+  MonoidHom.comp (N := (N →ₗ[R] N)ˣᵐᵒᵖ) (MulEquiv.op (Module.endUnitsToModuleAutEquiv R N))
+    (MonoidHom.comp (Units.opEquiv (M := (N →ₗ[R] N))) (Units.map (coweightEndHom P)))
+
+lemma coweightHom_injective (P : RootPairing ι R M N) : Injective P.coweightHom :=
+  (EquivLike.comp_injective (⇑Units.opEquiv ∘ ⇑(Units.map P.coweightEndHom))
+          (MulEquiv.op (Module.endUnitsToModuleAutEquiv R N))).mpr <|
+    (EquivLike.comp_injective (⇑(Units.map P.coweightEndHom)) Units.opEquiv).mpr <|
+      Units.map_injective P.coweightEndHom_injective
+
 /-- The endomorphism of a root pairing given by a reflection. -/
-@[simps!]
 def Hom.reflection (P : RootPairing ι R M N) (i : ι) : Hom P P where
   weightMap := P.reflection i
   coweightMap := P.coreflection i
@@ -121,5 +253,26 @@ def Hom.reflection (P : RootPairing ι R M N) (i : ι) : Hom P P where
     simp only [PerfectPairing.toLin_apply, PerfectPairing.flip_apply_apply, mul_comm]
   root_weightMap := by ext; simp
   coroot_coweightMap := by ext; simp
+
+@[simp]
+lemma Hom.reflection_weightMap (P : RootPairing ι R M N) (i : ι) :
+    (reflection P i).weightMap = (P.reflection i) := rfl
+
+@[simp]
+lemma Hom.reflection_coweightMap (P : RootPairing ι R M N) (i : ι) :
+    (reflection P i).coweightMap = (P.coreflection i) := rfl
+
+@[simp]
+lemma Hom.reflection_indexEquiv (P : RootPairing ι R M N) (i : ι) :
+    (RootPairing.Hom.reflection P i).indexEquiv = P.reflection_perm i := rfl
+
+/-- The automorphism of a root pairing given by reflection. -/
+def Hom.reflectionEquiv (P : RootPairing ι R M N) (i : ι) : Aut P where
+  val := Hom.reflection P i
+  inv := Hom.reflection P i
+  val_inv := by ext <;> simp
+  inv_val := by ext <;> simp
+
+-- TODO: redefine Weyl group
 
 end RootPairing
