@@ -136,7 +136,7 @@ def getNonTerminalCdots : Syntax → Array String.Pos
     for i in [:args.size] do
       if i % 2 == 1 then continue
       let argi := args[i]!
-      if (! wasCDot?) && argi.isOfKind `cdot then
+      if (! wasCDot?) && argi.isOfKind ``cdot then
         nonCDotFollowers := nonCDotFollowers.push (argi.getPos?.getD default)
       wasCDot? := argi.isOfKind `cdot
     return nonCDotFollowers ++ (args.map getNonTerminalCdots).flatten
@@ -162,6 +162,10 @@ def getManyGoals : InfoTree → Array (Syntax × Option Nat)
         let newGoals := info.goalsAfter.filter (info.goalsBefore.contains ·)
         -- record unnecessary uses of `·`
         if unCDots.contains (info.stx.getPos?.getD default) && info.goalsBefore.length == 1 then
+        --if info.stx.isOfKind `Lean.cdot &&
+        --    unCDots.contains (info.stx.getPos?.getD default) &&
+        --    info.goalsBefore.length == 1 &&
+        --    info.goalsAfter.length != 0 then
           kargs.push (info.stx, none) else
         if newGoals.length != 0 && !exclusions.contains info.stx.getKind then
           kargs.push (info.stx, newGoals.length)
