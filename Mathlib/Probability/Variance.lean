@@ -393,11 +393,7 @@ lemma variance_square_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
     variance X μ ≤ ((b - a) / 2) ^ 2 :=
   calc
     _ ≤ (b - μ[X]) * (μ[X] - a) := variance_le_sub_mul_sub h hX
-    _ ≤ ((b - a) / 2) ^ 2 := by
-      set y : ℝ := μ[X] - ((b + a) / 2)
-      rw [(by ring : μ[X] = y + ((b + a) / 2))]
-      calc
-        _ = ((b - a) / 2) ^ 2 - y ^ 2 := by ring
-        _ ≤ ((b - a) / 2) ^ 2 := sub_le_self (((b - a) / 2) ^ 2) (sq_nonneg y)
+    _ = ((b - a) / 2) ^ 2 - (μ[X] - (b + a) / 2) ^ 2 := by ring
+    _ ≤ ((b - a) / 2) ^ 2 := sub_le_self _ (sq_nonneg _)
 
 end ProbabilityTheory
