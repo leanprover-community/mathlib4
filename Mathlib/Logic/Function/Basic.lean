@@ -893,7 +893,7 @@ lemma forall_existsUnique_iff {r : α → β → Prop} :
 if and only if it is `(f · = ·)` for some function `f`. -/
 lemma forall_existsUnique_iff' {r : α → β → Prop} :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → β, r = (f · = ·) := by
-  simp [forall_existsUnique_iff, Function.funext_iff]
+  simp [forall_existsUnique_iff, funext_iff]
 
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)

@@ -90,6 +90,9 @@ protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace �
     let ⟨s', hs'⟩ := Classical.axiom_of_choice hs
     ⟨⋃ i, s' i, m.measurableSet_iUnion _ fun i => (hs' i).left, by simp [hs']⟩
 
+lemma measurableSet_comap {m : MeasurableSpace β} :
+    MeasurableSet[m.comap f] s ↔ ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s := .rfl
+
 theorem comap_eq_generateFrom (m : MeasurableSpace β) (f : α → β) :
     m.comap f = generateFrom { t | ∃ s, MeasurableSet s ∧ f ⁻¹' s = t } :=
   (@generateFrom_measurableSet _ (.comap f m)).symm
@@ -471,6 +474,15 @@ theorem QuotientGroup.measurable_coe {G} [Group G] [MeasurableSpace G] {S : Subg
 nonrec theorem QuotientGroup.measurable_from_quotient {G} [Group G] [MeasurableSpace G]
     {S : Subgroup G} {f : G ⧸ S → α} : Measurable f ↔ Measurable (f ∘ ((↑) : G → G ⧸ S)) :=
   measurable_from_quotient
+
+instance Quotient.instDiscreteMeasurableSpace {α} {s : Setoid α} [MeasurableSpace α]
+    [DiscreteMeasurableSpace α] : DiscreteMeasurableSpace (Quotient s) where
+  forall_measurableSet _ := measurableSet_quotient.2 .of_discrete
+
+@[to_additive]
+instance QuotientGroup.instDiscreteMeasurableSpace {G} [Group G] [MeasurableSpace G]
+    [DiscreteMeasurableSpace G] (S : Subgroup G) : DiscreteMeasurableSpace (G ⧸ S) :=
+  Quotient.instDiscreteMeasurableSpace
 
 end Quotient
 

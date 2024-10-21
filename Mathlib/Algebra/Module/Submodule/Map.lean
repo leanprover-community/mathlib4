@@ -290,8 +290,11 @@ theorem map_iInf_comap_of_surjective {ι : Sort*} (S : ι → Submodule R₂ M�
     (⨅ i, (S i).comap f).map f = iInf S :=
   (giMapComap hf).l_iInf_u _
 
-theorem comap_le_comap_iff_of_surjective (p q : Submodule R₂ M₂) : p.comap f ≤ q.comap f ↔ p ≤ q :=
+theorem comap_le_comap_iff_of_surjective {p q : Submodule R₂ M₂} : p.comap f ≤ q.comap f ↔ p ≤ q :=
   (giMapComap hf).u_le_u_iff
+
+lemma comap_lt_comap_iff_of_surjective {p q : Submodule R₂ M₂} : p.comap f < q.comap f ↔ p < q := by
+  apply lt_iff_lt_of_le_iff_le' <;> exact comap_le_comap_iff_of_surjective hf
 
 theorem comap_strictMono_of_surjective : StrictMono (comap f) :=
   (giMapComap hf).strictMono_u

@@ -999,17 +999,18 @@ theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x 
   ⟨{x}ᶜ ∩ V, inter_mem_nhdsWithin _ h,
     disjoint_iff_inter_eq_empty.mpr (by rw [inter_assoc, h', compl_inter_self])⟩
 
-theorem closedEmbedding_update {ι : Type*} {β : ι → Type*}
+theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
     [DecidableEq ι] [(i : ι) → TopologicalSpace (β i)]
     (x : (i : ι) → β i) (i : ι) [(i : ι) → T1Space (β i)] :
-    ClosedEmbedding (update x i) := by
-  apply closedEmbedding_of_continuous_injective_closed
-  · exact continuous_const.update i continuous_id
-  · exact update_injective x i
-  · intro s hs
-    rw [update_image]
-    apply isClosed_set_pi
-    simp [forall_update_iff, hs, isClosed_singleton]
+    IsClosedEmbedding (update x i) := by
+  refine .of_continuous_injective_isClosedMap (continuous_const.update i continuous_id)
+    (update_injective x i) fun s hs ↦ ?_
+  rw [update_image]
+  apply isClosed_set_pi
+  simp [forall_update_iff, hs, isClosed_singleton]
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_update := isClosedEmbedding_update
 
 /-! ### R₁ (preregular) spaces -/
 
@@ -1544,7 +1545,7 @@ Hausdorff spaces:
   `f x ≠ f y`. We use this lemma to prove that topological spaces defined using `induced` are
   Hausdorff spaces.
 
-* `separated_by_openEmbedding` says that for an open embedding `f : X → Y` of a Hausdorff space
+* `separated_by_isOpenEmbedding` says that for an open embedding `f : X → Y` of a Hausdorff space
   `X`, the images of two distinct points `x y : X`, `x ≠ y` can be separated by open neighborhoods.
   We use this lemma to prove that topological spaces defined using `coinduced` are Hausdorff spaces.
 -/
@@ -1560,12 +1561,15 @@ theorem separated_by_continuous [TopologicalSpace Y] [T2Space Y]
   let ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
   ⟨f ⁻¹' u, f ⁻¹' v, uo.preimage hf, vo.preimage hf, xu, yv, uv.preimage _⟩
 
-theorem separated_by_openEmbedding [TopologicalSpace Y] [T2Space X]
-    {f : X → Y} (hf : OpenEmbedding f) {x y : X} (h : x ≠ y) :
+theorem separated_by_isOpenEmbedding [TopologicalSpace Y] [T2Space X]
+    {f : X → Y} (hf : IsOpenEmbedding f) {x y : X} (h : x ≠ y) :
     ∃ u v : Set Y, IsOpen u ∧ IsOpen v ∧ f x ∈ u ∧ f y ∈ v ∧ Disjoint u v :=
   let ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
   ⟨f '' u, f '' v, hf.isOpenMap _ uo, hf.isOpenMap _ vo, mem_image_of_mem _ xu,
     mem_image_of_mem _ yv, disjoint_image_of_injective hf.inj uv⟩
+
+@[deprecated (since := "2024-10-18")]
+alias separated_by_openEmbedding := separated_by_isOpenEmbedding
 
 instance {p : X → Prop} [T2Space X] : T2Space (Subtype p) := inferInstance
 
@@ -1591,10 +1595,10 @@ instance [T2Space X] [TopologicalSpace Y] [T2Space Y] :
     T2Space (X ⊕ Y) := by
   constructor
   rintro (x | x) (y | y) h
-  · exact separated_by_openEmbedding openEmbedding_inl <| ne_of_apply_ne _ h
+  · exact separated_by_isOpenEmbedding isOpenEmbedding_inl <| ne_of_apply_ne _ h
   · exact separated_by_continuous continuous_isLeft <| by simp
   · exact separated_by_continuous continuous_isLeft <| by simp
-  · exact separated_by_openEmbedding openEmbedding_inr <| ne_of_apply_ne _ h
+  · exact separated_by_isOpenEmbedding isOpenEmbedding_inr <| ne_of_apply_ne _ h
 
 instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
     [∀ a, T2Space (Y a)] : T2Space (∀ a, Y a) :=
@@ -1606,7 +1610,7 @@ instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [
   rintro ⟨i, x⟩ ⟨j, y⟩ neq
   rcases eq_or_ne i j with (rfl | h)
   · replace neq : x ≠ y := ne_of_apply_ne _ neq
-    exact separated_by_openEmbedding openEmbedding_sigmaMk neq
+    exact separated_by_isOpenEmbedding isOpenEmbedding_sigmaMk neq
   · let _ := (⊥ : TopologicalSpace ι); have : DiscreteTopology ι := ⟨rfl⟩
     exact separated_by_continuous (continuous_def.2 fun u _ => isOpen_sigma_fst_preimage u) h
 
@@ -1629,7 +1633,7 @@ instance : TopologicalSpace (t2Quotient X) :=
 /-- The map from a topological space to its largest T2 quotient. -/
 def mk : X → t2Quotient X := Quotient.mk (t2Setoid X)
 
-lemma mk_eq {x y : X} : mk x = mk y ↔ ∀ s : Setoid X, T2Space (Quotient s) → s.Rel x y :=
+lemma mk_eq {x y : X} : mk x = mk y ↔ ∀ s : Setoid X, T2Space (Quotient s) → s x y :=
   Setoid.quotient_mk_sInf_eq
 
 variable (X)
@@ -1751,9 +1755,12 @@ theorem Function.LeftInverse.isClosed_range [T2Space X] {f : X → Y} {g : Y →
 @[deprecated (since := "2024-03-17")]
 alias Function.LeftInverse.closed_range := Function.LeftInverse.isClosed_range
 
-theorem Function.LeftInverse.closedEmbedding [T2Space X] {f : X → Y} {g : Y → X}
-    (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : ClosedEmbedding g :=
+theorem Function.LeftInverse.isClosedEmbedding [T2Space X] {f : X → Y} {g : Y → X}
+    (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : IsClosedEmbedding g :=
   ⟨h.embedding hf hg, h.isClosed_range hf hg⟩
+
+@[deprecated (since := "2024-10-20")]
+alias Function.LeftInverse.closedEmbedding := Function.LeftInverse.isClosedEmbedding
 
 theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsCompact s)
     (ht : IsCompact t) (hst : Disjoint s t) : SeparatedNhds s t := by
@@ -1849,9 +1856,12 @@ protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X →
     (h : Continuous f) : IsClosedMap f := fun _s hs => (hs.isCompact.image h).isClosed
 
 /-- A continuous injective map from a compact space to a Hausdorff space is a closed embedding. -/
-theorem Continuous.closedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} (h : Continuous f)
-    (hf : Function.Injective f) : ClosedEmbedding f :=
-  closedEmbedding_of_continuous_injective_closed h hf h.isClosedMap
+theorem Continuous.isClosedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} (h : Continuous f)
+    (hf : Function.Injective f) : IsClosedEmbedding f :=
+  .of_continuous_injective_isClosedMap h hf h.isClosedMap
+
+@[deprecated (since := "2024-10-20")]
+alias Continuous.closedEmbedding := Continuous.isClosedEmbedding
 
 /-- A continuous surjective map from a compact space to a Hausdorff space is a quotient map. -/
 theorem QuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
@@ -2122,11 +2132,6 @@ theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace X] [Regul
   refine ⟨interior L, isOpen_interior, KL, A.trans LU, ?_⟩
   exact L_compact.closure_of_subset interior_subset
 
-@[deprecated WeaklyLocallyCompactSpace.locallyCompactSpace (since := "2023-09-03")]
-theorem locally_compact_of_compact [T2Space X] [CompactSpace X] :
-    LocallyCompactSpace X :=
-  inferInstance
-
 end LocallyCompactRegularSpace
 
 section T25
@@ -2259,13 +2264,16 @@ theorem normal_exists_closure_subset [NormalSpace X] {s t : Set X} (hs : IsClose
   exact fun x hxs hxt => hs't'.le_bot ⟨hxs, hxt⟩
 
 /-- If the codomain of a closed embedding is a normal space, then so is the domain. -/
-protected theorem ClosedEmbedding.normalSpace [TopologicalSpace Y] [NormalSpace Y] {f : X → Y}
-    (hf : ClosedEmbedding f) : NormalSpace X where
+protected theorem IsClosedEmbedding.normalSpace [TopologicalSpace Y] [NormalSpace Y] {f : X → Y}
+    (hf : IsClosedEmbedding f) : NormalSpace X where
   normal s t hs ht hst := by
     have H : SeparatedNhds (f '' s) (f '' t) :=
       NormalSpace.normal (f '' s) (f '' t) (hf.isClosedMap s hs) (hf.isClosedMap t ht)
         (disjoint_image_of_injective hf.inj hst)
     exact (H.preimage hf.continuous).mono (subset_preimage_image _ _) (subset_preimage_image _ _)
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.normalSpace := IsClosedEmbedding.normalSpace
 
 instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] [R1Space X] :
     NormalSpace X where
@@ -2304,13 +2312,16 @@ theorem T4Space.of_compactSpace_t2Space [CompactSpace X] [T2Space X] :
     T4Space X := inferInstance
 
 /-- If the codomain of a closed embedding is a T₄ space, then so is the domain. -/
-protected theorem ClosedEmbedding.t4Space [TopologicalSpace Y] [T4Space Y] {f : X → Y}
-    (hf : ClosedEmbedding f) : T4Space X where
+protected theorem IsClosedEmbedding.t4Space [TopologicalSpace Y] [T4Space Y] {f : X → Y}
+    (hf : IsClosedEmbedding f) : T4Space X where
   toT1Space := hf.toEmbedding.t1Space
   toNormalSpace := hf.normalSpace
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.t4Space := IsClosedEmbedding.t4Space
+
 instance ULift.instT4Space [T4Space X] : T4Space (ULift X) :=
-  ULift.closedEmbedding_down.t4Space
+  ULift.isClosedEmbedding_down.t4Space
 
 namespace SeparationQuotient
 
@@ -2598,11 +2609,11 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
   haveI : CompactSpace s := isCompact_iff_compactSpace.1 comp
   obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := compact_exists_isClopen_in_isOpen u_open_in_s xs
   have VisClopen' : IsClopen (((↑) : s → H) '' V) := by
-    refine ⟨comp.isClosed.closedEmbedding_subtype_val.closed_iff_image_closed.1 VisClopen.1, ?_⟩
+    refine ⟨comp.isClosed.isClosedEmbedding_subtypeVal.closed_iff_image_closed.1 VisClopen.1, ?_⟩
     let v : Set u := ((↑) : u → s) ⁻¹' V
     have : ((↑) : u → H) = ((↑) : s → H) ∘ ((↑) : u → s) := rfl
     have f0 : Embedding ((↑) : u → H) := embedding_subtype_val.comp embedding_subtype_val
-    have f1 : OpenEmbedding ((↑) : u → H) := by
+    have f1 : IsOpenEmbedding ((↑) : u → H) := by
       refine ⟨f0, ?_⟩
       · have : Set.range ((↑) : u → H) = interior s := by
           rw [this, Set.range_comp, Subtype.range_coe, Subtype.image_preimage_coe]

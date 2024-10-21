@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.Adjoin.Tower
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -110,6 +111,10 @@ theorem equiv (hRA : FiniteType R A) (e : A ≃ₐ[R] B) : FiniteType R B :=
 theorem trans [Algebra S A] [IsScalarTower R S A] (hRS : FiniteType R S) (hSA : FiniteType S A) :
     FiniteType R A :=
   ⟨fg_trans' hRS.1 hSA.1⟩
+
+instance quotient (R : Type*) {S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] (I : Ideal S)
+    [h : Algebra.FiniteType R S] : Algebra.FiniteType R (S ⧸ I) :=
+  Algebra.FiniteType.trans h inferInstance
 
 /-- An algebra is finitely generated if and only if it is a quotient
 of a free algebra whose variables are indexed by a finset. -/

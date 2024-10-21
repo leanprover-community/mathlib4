@@ -49,7 +49,7 @@ namespace List
 
 section Sorted
 
-variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β → Prop} {a : α} {l : List α}
+variable {α : Type u} {r : α → α → Prop} {a : α} {l : List α}
 
 /-- `Sorted r l` is the same as `List.Pairwise r l`, preferred in the case that `r`
   is a `<` or `≤`-like relation (transitive and antisymmetric or asymmetric) -/

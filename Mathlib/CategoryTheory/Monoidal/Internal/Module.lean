@@ -103,7 +103,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
   one := Algebra.linearMap R A
   mul := LinearMap.mul' R A
   one_mul := by
-    -- Porting note: `ext` did not pick up `TensorProduct.ext`
+    -- Porting note (#11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [compr₂_apply, compr₂_apply, CategoryTheory.comp_apply]
@@ -116,7 +116,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     erw [LinearMap.mul'_apply, MonoidalCategory.leftUnitor_hom_apply, ← Algebra.smul_def]
     erw [id_apply]
   mul_one := by
-    -- Porting note: `ext` did not pick up `TensorProduct.ext`
+    -- Porting note (#11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext_ring ?_
     -- Porting note: this `dsimp` does nothing
     -- dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
@@ -131,7 +131,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     erw [id_apply]
   mul_assoc := by
     set_option tactic.skipAssignedInstances false in
-    -- Porting note: `ext` did not pick up `TensorProduct.ext`
+    -- Porting note (#11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
       LinearMap.ext fun z => ?_
     dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, LinearMap.compr₂_apply,
@@ -176,7 +176,7 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
                   map_add' := fun _ _ => rfl
                   map_smul' := fun _ _ => rfl }
               mul_hom := by
-                -- Porting note: `ext` did not pick up `TensorProduct.ext`
+                -- Porting note (#11041): `ext` did not pick up `TensorProduct.ext`
                 refine TensorProduct.ext ?_
                 dsimp at *
                 rfl }
@@ -186,7 +186,7 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
                   map_add' := fun _ _ => rfl
                   map_smul' := fun _ _ => rfl }
               mul_hom := by
-                -- Porting note: `ext` did not pick up `TensorProduct.ext`
+                -- Porting note (#11041): `ext` did not pick up `TensorProduct.ext`
                 refine TensorProduct.ext ?_
                 dsimp at *
                 rfl } })
