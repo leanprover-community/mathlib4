@@ -6,7 +6,6 @@ Authors: Salvatore Mercuri
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Topology.UniformSpace.AbsoluteValue
 
 /-!
 # WithAbs
