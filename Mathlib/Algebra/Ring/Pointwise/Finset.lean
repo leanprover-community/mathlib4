@@ -26,8 +26,7 @@ variable {α β : Type*}
 protected def distribNeg [DecidableEq α] [Mul α] [HasDistribNeg α] : HasDistribNeg (Finset α) :=
   coe_injective.hasDistribNeg _ coe_neg coe_mul
 
-scoped[Pointwise]
-  attribute [instance] Finset.divisionCommMonoid Finset.subtractionCommMonoid Finset.distribNeg
+scoped[Pointwise] attribute [instance] Finset.distribNeg
 
 section Distrib
 variable [DecidableEq α] [Distrib α] (s t u : Finset α)

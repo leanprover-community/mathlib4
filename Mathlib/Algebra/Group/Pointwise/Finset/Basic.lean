@@ -914,6 +914,7 @@ end DivisionMonoid
 protected def divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (Finset α) :=
   coe_injective.divisionCommMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
+scoped[Pointwise] attribute [instance] Finset.divisionCommMonoid Finset.subtractionCommMonoid
 section Group
 
 variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β]
