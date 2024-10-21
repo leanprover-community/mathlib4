@@ -8,6 +8,7 @@ import Mathlib.Tactic.FunProp.Theorems
 import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Lean.Expr.Basic
+import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 import Batteries.Tactic.Exact
 
 /-!
@@ -325,9 +326,10 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     applyCompRule funPropDecl e f g funProp
   | .exact =>
 
-    let ext := morTheoremsExt.getState (← getEnv)
-    let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
-    let candidates := candidates.map (·.1) |>.flatten
+    let thms := (← get).morTheorems.theorems
+    let (candidates, thms) ← thms.getMatch e { iota := false, zeta := false } false true
+    modify ({ · with morTheorems := ⟨thms⟩ })
+    let candidates := candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
 
     trace[Meta.Tactic.fun_prop]
       "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
@@ -344,9 +346,10 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
     FunPropM (Option Result) := do
   withIncreasedTransitionDepth do
 
-  let ext := transitionTheoremsExt.getState (← getEnv)
-  let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
-  let candidates := candidates.map (·.1) |>.flatten
+  let thms := (← get).transitionTheorems.theorems
+  let (candidates, thms) ← thms.getMatch e { iota := false, zeta := false } false true
+  modify ({ · with transitionTheorems := ⟨thms⟩ })
+  let candidates := candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
 
   trace[Meta.Tactic.fun_prop]
     "candidate transition theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
