@@ -74,7 +74,7 @@ theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
 theorem span_le {p} : span R s ≤ p ↔ s ⊆ p :=
   ⟨Subset.trans subset_span, fun ss _ h => mem_span.1 h _ ss⟩
 
-theorem span_mono (h : s ⊆ t) : span R s ≤ span R t :=
+@[gcongr] theorem span_mono (h : s ⊆ t) : span R s ≤ span R t :=
   span_le.2 <| Subset.trans h subset_span
 
 theorem span_monotone : Monotone (span R : Set M → Submodule R M) := fun _ _ => span_mono
@@ -254,8 +254,8 @@ theorem span_nat_eq (s : AddSubmonoid M) : (span ℕ (s : Set M)).toAddSubmonoid
 theorem span_int_eq_addSubgroup_closure {M : Type*} [AddCommGroup M] (s : Set M) :
     (span ℤ s).toAddSubgroup = AddSubgroup.closure s :=
   Eq.symm <|
-    AddSubgroup.closure_eq_of_le _ subset_span fun x hx =>
-      span_induction hx (fun x hx => AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
+    AddSubgroup.closure_eq_of_le _ subset_span fun _ hx =>
+      span_induction hx (fun _ hx => AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
         (fun _ _ => AddSubgroup.add_mem _) fun _ _ _ => AddSubgroup.zsmul_mem _ ‹_› _
 
 @[simp]

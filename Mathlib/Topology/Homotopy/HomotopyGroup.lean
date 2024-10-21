@@ -185,7 +185,7 @@ theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
   Path.continuous_uncurry_iff.1 <|
     Continuous.subtype_mk
       (ContinuousMap.continuous_eval.comp <|
-        Continuous.prod_map
+        Continuous.prodMap
           (ContinuousMap.continuous_curry.comp <|
             (ContinuousMap.continuous_comp_left _).comp continuous_subtype_val)
           continuous_id)

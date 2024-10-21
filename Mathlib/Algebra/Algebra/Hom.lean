@@ -354,10 +354,10 @@ protected theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
 @[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
-  mul_assoc ϕ ψ χ := rfl
+  mul_assoc _ _ _ := rfl
   one := AlgHom.id R A
-  one_mul ϕ := rfl
-  mul_one ϕ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₐ[R] A) x = x :=

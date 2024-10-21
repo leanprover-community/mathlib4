@@ -45,7 +45,7 @@ def asFunctor {T : Type*} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
         exact this t }
   map h :=
     { f := fun i => (C.X i).map h
-      comm' := fun i j _ => NatTrans.naturality _ _ }
+      comm' := fun _ _ _ => NatTrans.naturality _ _ }
   map_id t := by
     ext i
     dsimp

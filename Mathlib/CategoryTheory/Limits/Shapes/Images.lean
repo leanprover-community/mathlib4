@@ -81,8 +81,6 @@ attribute [reassoc (attr := simp)] MonoFactorisation.fac
 
 attribute [instance] MonoFactorisation.m_mono
 
-attribute [instance] MonoFactorisation.m_mono
-
 namespace MonoFactorisation
 
 /-- The obvious factorisation of a monomorphism through itself. -/

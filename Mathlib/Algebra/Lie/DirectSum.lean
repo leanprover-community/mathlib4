@@ -41,7 +41,7 @@ variable [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
 variable [∀ i, LieRingModule L (M i)] [∀ i, LieModule R L (M i)]
 
 instance : LieRingModule L (⨁ i, M i) where
-  bracket x m := m.mapRange (fun i m' => ⁅x, m'⁆) fun i => lie_zero x
+  bracket x m := m.mapRange (fun _ m' => ⁅x, m'⁆) fun _ => lie_zero x
   add_lie x y m := by
     refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
     simp only [mapRange_apply, add_apply, add_lie]
@@ -96,7 +96,7 @@ variable [∀ i, LieRing (L i)] [∀ i, LieAlgebra R (L i)]
 
 instance lieRing : LieRing (⨁ i, L i) :=
   { (inferInstance : AddCommGroup _) with
-    bracket := zipWith (fun i => fun x y => ⁅x, y⁆) fun i => lie_zero 0
+    bracket := zipWith (fun _ => fun x y => ⁅x, y⁆) fun _ => lie_zero 0
     add_lie := fun x y z => by
       refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
       simp only [zipWith_apply, add_apply, add_lie]
@@ -157,14 +157,14 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
         erw [AddHom.coe_mk, single_apply, single_apply]
         · simp? [h] says simp only [h, ↓reduceDIte, single_apply]
         · intros
-          erw [single_add]
+          rw [single_add]
       · -- This used to be the end of the proof before leanprover/lean4#2644
         -- with `simp [of, singleAddHom]`
         simp only [of, singleAddHom, bracket_apply]
         erw [AddHom.coe_mk, single_apply, single_apply]
         · simp only [h, dite_false, single_apply, lie_self]
         · intros
-          erw [single_add] }
+          rw [single_add] }
 
 /-- The projection map onto one component, as a morphism of Lie algebras. -/
 @[simps]
@@ -229,20 +229,10 @@ variable {L : Type w} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
 [this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/
 Typeclass.20resolution.20under.20binders/near/245151099). -/
 instance lieRingOfIdeals : LieRing (⨁ i, I i) :=
-  #adaptation_note
-  /--
-  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-  -/
-  letI : (i : ι) → LieRing (I i) := fun _ => LieIdeal.lieRing ..
   DirectSum.lieRing fun i => ↥(I i)
 
 /-- See `DirectSum.lieRingOfIdeals` comment. -/
 instance lieAlgebraOfIdeals : LieAlgebra R (⨁ i, I i) :=
-  #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
-  longer found. -/
-  letI : (i : ι) → LieAlgebra R (I i) := fun _ => LieIdeal.lieAlgebra ..
-  letI : (i : ι) → LieRing (I i) := fun _ => LieIdeal.lieRing ..
   DirectSum.lieAlgebra fun i => ↥(I i)
 
 end Ideals

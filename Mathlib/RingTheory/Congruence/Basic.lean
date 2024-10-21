@@ -67,16 +67,15 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
--- Porting note: upgrade to `FunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
-instance : FunLike (RingCon R) R (R → Prop) :=
-  { coe := fun c => c.r,
-    coe_injective' := fun x y h => by
-      rcases x with ⟨⟨x, _⟩, _⟩
-      rcases y with ⟨⟨y, _⟩, _⟩
-      congr!
-      rw [Setoid.ext_iff,(show x.Rel = y.Rel from h)]
-      simp}
+instance : FunLike (RingCon R) R (R → Prop) where
+  coe c := c.r
+  coe_injective' x y h := by
+    rcases x with ⟨⟨x, _⟩, _⟩
+    rcases y with ⟨⟨y, _⟩, _⟩
+    congr!
+    rw [Setoid.ext_iff, (show x.Rel = y.Rel from h)]
+    simp
 
 theorem rel_eq_coe : c.r = c :=
   rfl
@@ -125,6 +124,16 @@ theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injecti
 /-- Extensionality rule for congruence relations. -/
 theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
   ext' <| by ext; apply H
+
+/--
+Pulling back a `RingCon` across a ring homomorphism.
+-/
+def comap {R R' F : Type*} [Add R] [Add R']
+    [FunLike F R R'] [AddHomClass F R R'] [Mul R] [Mul R'] [MulHomClass F R R']
+    (J : RingCon R') (f : F) :
+    RingCon R where
+  __ := J.toCon.comap f (map_mul f)
+  __ := J.toAddCon.comap f (map_add f)
 
 end Basic
 
@@ -408,7 +417,6 @@ end Quotient
 
 The API in this section is copied from `Mathlib/GroupTheory/Congruence.lean`
 -/
-
 
 section Lattice
 

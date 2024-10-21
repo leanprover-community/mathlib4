@@ -196,7 +196,7 @@ def unitIso : 𝟭 (Action V G) ≅ functor ⋙ inverse :=
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (SingleObj G ⥤ V) :=
-  NatIso.ofComponents fun M => NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun M => NatIso.ofComponents fun _ => Iso.refl _
 
 end FunctorCategoryEquivalence
 
@@ -284,7 +284,7 @@ def actionPunitEquivalence : Action V (MonCat.of PUnit) ≌ V where
       simp only [MonCat.oneHom_apply, MonCat.one_of, End.one_def, id_eq, Functor.comp_obj,
         forget_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
-  counitIso := NatIso.ofComponents fun X => Iso.refl _
+  counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
 variable (V)
 

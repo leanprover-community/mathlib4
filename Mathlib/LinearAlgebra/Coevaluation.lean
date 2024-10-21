@@ -25,7 +25,7 @@ noncomputable section
 
 section coevaluation
 
-open TensorProduct FiniteDimensional
+open TensorProduct Module
 
 open TensorProduct
 

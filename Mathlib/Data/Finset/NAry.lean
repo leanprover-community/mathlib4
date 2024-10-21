@@ -64,13 +64,16 @@ theorem mem_image₂_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image₂ f
 theorem mem_image₂_iff (hf : Injective2 f) : f a b ∈ image₂ f s t ↔ a ∈ s ∧ b ∈ t := by
   rw [← mem_coe, coe_image₂, mem_image2_iff hf, mem_coe, mem_coe]
 
+@[gcongr]
 theorem image₂_subset (hs : s ⊆ s') (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s' t' := by
   rw [← coe_subset, coe_image₂, coe_image₂]
   exact image2_subset hs ht
 
+@[gcongr]
 theorem image₂_subset_left (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s t' :=
   image₂_subset Subset.rfl ht
 
+@[gcongr]
 theorem image₂_subset_right (hs : s ⊆ s') : image₂ f s t ⊆ image₂ f s' t :=
   image₂_subset hs Subset.rfl
 
@@ -454,15 +457,17 @@ theorem card_dvd_card_image₂_left (hf : ∀ b ∈ t, Injective fun a => f a b)
 
 /-- If a `Finset` is a subset of the image of two `Set`s under a binary operation,
 then it is a subset of the `Finset.image₂` of two `Finset` subsets of these `Set`s. -/
-theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
+theorem subset_set_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
     ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ image₂ f s' t' := by
-  rw [← Set.image_prod, subset_image_iff] at hu
+  rw [← Set.image_prod, subset_set_image_iff] at hu
   rcases hu with ⟨u, hu, rfl⟩
   classical
   use u.image Prod.fst, u.image Prod.snd
   simp only [coe_image, Set.image_subset_iff, image₂_image_left, image₂_image_right,
     image_subset_iff]
   exact ⟨fun _ h ↦ (hu h).1, fun _ h ↦ (hu h).2, fun x hx ↦ mem_image₂_of_mem hx hx⟩
+
+@[deprecated (since := "2024-09-22")] alias subset_image₂ := subset_set_image₂
 
 end
 section UnionInter

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # Expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
@@ -269,9 +268,8 @@ section IsDomain
 
 variable (R : Type u) [CommRing R] [IsDomain R]
 
-theorem isLocalRingHom_expand {p : ℕ} (hp : 0 < p) :
-    IsLocalRingHom (↑(expand R p) : R[X] →+* R[X]) := by
-  refine ⟨fun f hf1 => ?_⟩; norm_cast at hf1
+theorem isLocalRingHom_expand {p : ℕ} (hp : 0 < p) : IsLocalRingHom (expand R p) := by
+  refine ⟨fun f hf1 => ?_⟩
   have hf2 := eq_C_of_degree_eq_zero (degree_eq_zero_of_isUnit hf1)
   rw [coeff_expand hp, if_pos (dvd_zero _), p.zero_div] at hf2
   rw [hf2, isUnit_C] at hf1; rw [expand_eq_C hp] at hf2; rwa [hf2, isUnit_C]
@@ -281,7 +279,7 @@ variable {R}
 theorem of_irreducible_expand {p : ℕ} (hp : p ≠ 0) {f : R[X]} (hf : Irreducible (expand R p f)) :
     Irreducible f :=
   let _ := isLocalRingHom_expand R hp.bot_lt
-  of_irreducible_map (↑(expand R p)) hf
+  hf.of_map
 
 theorem of_irreducible_expand_pow {p : ℕ} (hp : p ≠ 0) {f : R[X]} {n : ℕ} :
     Irreducible (expand R (p ^ n) f) → Irreducible f :=

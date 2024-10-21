@@ -551,7 +551,7 @@ abbrev liftSemilatticeSup [SemilatticeSup α] (gi : GaloisInsertion l u) : Semil
     sup := fun a b => l (u a ⊔ u b)
     le_sup_left := fun a _ => (gi.le_l_u a).trans <| gi.gc.monotone_l <| le_sup_left
     le_sup_right := fun _ b => (gi.le_l_u b).trans <| gi.gc.monotone_l <| le_sup_right
-    sup_le := fun a b c hac hbc =>
+    sup_le := fun _ _ _ hac hbc =>
       gi.gc.l_le <| sup_le (gi.gc.monotone_u hac) (gi.gc.monotone_u hbc) }
 
 -- See note [reducible non instances]
@@ -593,8 +593,8 @@ abbrev liftBoundedOrder [Preorder α] [BoundedOrder α] (gi : GaloisInsertion l 
 abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : CompleteLattice β :=
   { gi.liftBoundedOrder, gi.liftLattice with
     sSup := fun s => l (sSup (u '' s))
-    sSup_le := fun s => (gi.isLUB_of_u_image (isLUB_sSup _)).2
-    le_sSup := fun s => (gi.isLUB_of_u_image (isLUB_sSup _)).1
+    sSup_le := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).2
+    le_sSup := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).1
     sInf := fun s =>
       gi.choice (sInf (u '' s)) <|
         (isGLB_sInf _).2 <|

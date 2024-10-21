@@ -77,7 +77,7 @@ variable (F : OplaxFunctor B C)
 @[simps]
 def id : OplaxNatTrans F F where
   app a := 𝟙 (F.obj a)
-  naturality {a b} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
+  naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
 
 instance : Inhabited (OplaxNatTrans F F) :=
   ⟨id F⟩

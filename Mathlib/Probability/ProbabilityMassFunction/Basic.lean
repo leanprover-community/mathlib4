@@ -176,7 +176,8 @@ theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support �
       (fun x => Set.indicator_apply_le fun _ => le_rfl) hsa
   · suffices ∀ (x) (_ : x ∉ s), p x = 0 from
       _root_.trans (tsum_congr
-        fun a => (Set.indicator_apply s p a).trans (ite_eq_left_iff.2 <| symm ∘ this a)) p.tsum_coe
+        fun a => (Set.indicator_apply s p a).trans
+          (ite_eq_left_iff.2 <| symm ∘ this a)) p.tsum_coe
     exact fun a ha => (p.apply_eq_zero_iff a).2 <| Set.not_mem_subset h ha
 
 @[simp]

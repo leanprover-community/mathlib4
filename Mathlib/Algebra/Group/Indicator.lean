@@ -94,7 +94,7 @@ theorem mulIndicator_apply_eq_one : mulIndicator s f a = 1 ↔ a ∈ s → f a =
   ite_eq_right_iff
 
 @[to_additive (attr := simp)]
-theorem mulIndicator_eq_one : (mulIndicator s f = fun x => 1) ↔ Disjoint (mulSupport f) s := by
+theorem mulIndicator_eq_one : (mulIndicator s f = fun _ => 1) ↔ Disjoint (mulSupport f) s := by
   simp only [funext_iff, mulIndicator_apply_eq_one, Set.disjoint_left, mem_mulSupport,
     not_imp_not]
 

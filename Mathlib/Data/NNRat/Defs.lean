@@ -106,8 +106,12 @@ theorem coe_nonneg (q : ℚ≥0) : (0 : ℚ) ≤ q :=
   q.2
 
 @[simp, norm_cast] lemma coe_zero : ((0 : ℚ≥0) : ℚ) = 0 := rfl
+@[simp] lemma num_zero : num 0 = 0 := rfl
+@[simp] lemma den_zero : den 0 = 1 := rfl
 
 @[simp, norm_cast] lemma coe_one : ((1 : ℚ≥0) : ℚ) = 1 := rfl
+@[simp] lemma num_one : num 1 = 1 := rfl
+@[simp] lemma den_one : den 1 = 1 := rfl
 
 @[simp, norm_cast]
 theorem coe_add (p q : ℚ≥0) : ((p + q : ℚ≥0) : ℚ) = p + q :=

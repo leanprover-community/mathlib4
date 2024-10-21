@@ -139,7 +139,7 @@ theorem head_empty : "".data.head! = default :=
   rfl
 
 instance : LinearOrder String where
-  le_refl a := le_iff_toList_le.mpr le_rfl
+  le_refl _ := le_iff_toList_le.mpr le_rfl
   le_trans a b c := by
     simp only [le_iff_toList_le]
     apply le_trans

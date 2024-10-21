@@ -50,6 +50,13 @@ theorem logDeriv_mul {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g 
   simp only [logDeriv_apply, deriv_mul hdf hdg]
   field_simp [mul_comm]
 
+theorem logDeriv_div {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
+    (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
+    logDeriv (fun z => f z / g z) x = logDeriv f x - logDeriv g x := by
+  simp only [logDeriv_apply, deriv_div hdf hdg]
+  field_simp [mul_comm]
+  ring
+
 theorem logDeriv_mul_const {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0):
     logDeriv (fun z => f z * a) x = logDeriv f x := by
   simp only [logDeriv_apply, deriv_mul_const_field, mul_div_mul_right _ _ ha]
@@ -102,4 +109,3 @@ theorem logDeriv_comp {f : 𝕜' → 𝕜'} {g : 𝕜 → 𝕜'} {x : 𝕜} (hf 
     (hg : DifferentiableAt 𝕜 g x) : logDeriv (f ∘ g) x = logDeriv f (g x) * deriv g x := by
   simp only [logDeriv, Pi.div_apply, deriv.comp _ hf hg, comp_apply]
   ring
-

@@ -30,18 +30,6 @@ theorem tail_reverse_eq_reverse_dropLast (l : List α) :
   · rw [getElem?_eq_none, getElem?_eq_none]
     all_goals (simp; omega)
 
-theorem getLast_tail (l : List α) (hl : l.tail ≠ []) :
-    l.tail.getLast hl = l.getLast (by intro h; rw [h] at hl; simp at hl) := by
-  simp only [← drop_one, ne_eq, drop_eq_nil_iff_le,
-    not_le, getLast_eq_getElem, length_drop] at hl |-
-  rw [← getElem_drop']
-  · simp [show 1 + (l.length - 1 - 1) = l.length - 1 by omega]
-  omega
-
-lemma getElem_tail {i} (L : List α) (hi : i < L.tail.length) :
-    L.tail[i] = L[i + 1]'(by simp at *; omega) := by
-  induction L <;> simp at hi |-
-
 @[deprecated (since := "2024-08-19")] alias nthLe_tail := getElem_tail
 
 theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
@@ -109,7 +97,7 @@ theorem mapAccumr_eq_foldr {σ : Type*} (f : α → σ → σ × β) : ∀ (as :
                                     let r := f a s.1
                                     (r.1, r.2 :: s.2)
                                   ) (s, []) as
-  | [], s => rfl
+  | [], _ => rfl
   | a :: as, s => by
     simp only [mapAccumr, foldr, mapAccumr_eq_foldr f as]
 
@@ -119,9 +107,9 @@ theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ
                               let r := f ab.1 ab.2 s.1
                               (r.1, r.2 :: s.2)
                             ) (s, []) (as.zip bs)
-  | [], [], s => rfl
-  | a :: as, [], s => rfl
-  | [], b :: bs, s => rfl
+  | [], [], _ => rfl
+  | _ :: _, [], _ => rfl
+  | [], _ :: _, _ => rfl
   | a :: as, b :: bs, s => by
     simp only [mapAccumr₂, foldr, mapAccumr₂_eq_foldr f as]
     rfl

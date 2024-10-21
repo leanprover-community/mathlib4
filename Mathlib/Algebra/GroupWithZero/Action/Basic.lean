@@ -51,7 +51,7 @@ group action
 
 open Function
 
-variable {G G₀ A M N M₀ N₀ R α : Type*}
+variable {G G₀ A M M₀ N₀ R α : Type*}
 
 section GroupWithZero
 variable [GroupWithZero G₀] [MulAction G₀ α] {a : G₀}

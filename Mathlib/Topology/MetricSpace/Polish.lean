@@ -146,7 +146,7 @@ theorem _root_.ClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpa
   letI : MetricSpace α := hf.toEmbedding.comapMetricSpace f
   haveI : SecondCountableTopology α := hf.toEmbedding.secondCountableTopology
   have : CompleteSpace α := by
-    rw [completeSpace_iff_isComplete_range hf.toEmbedding.to_isometry.uniformInducing]
+    rw [completeSpace_iff_isComplete_range hf.toEmbedding.to_isometry.isUniformInducing]
     exact hf.isClosed_range.isComplete
   infer_instance
 

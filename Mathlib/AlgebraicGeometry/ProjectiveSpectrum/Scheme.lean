@@ -402,7 +402,7 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
             HomogeneousLocalization.val_mul, HomogeneousLocalization.val_mk,
             HomogeneousLocalization.val_mk]
           · simp_rw [mul_pow]; rw [Localization.mk_mul]
-            · congr; erw [← pow_add, Nat.add_sub_of_le h]
+            · congr; rw [← pow_add, Nat.add_sub_of_le h]
         · apply Ideal.mul_mem_left (α := A⁰_ f) _ _ (hx _)
           rw [(_ : m • n = _)]
           · mem_tac
@@ -454,7 +454,7 @@ theorem carrier.asIdeal.ne_top : carrier.asIdeal f_deg hm q ≠ ⊤ := fun rid =
 theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
   (carrier.asIdeal.homogeneous f_deg hm q).isPrime_of_homogeneous_mem_or_mem
     (carrier.asIdeal.ne_top f_deg hm q) fun {x y} ⟨nx, hnx⟩ ⟨ny, hny⟩ hxy =>
-    show (∀ i, _ ∈ _) ∨ ∀ i, _ ∈ _ by
+    show (∀ _, _ ∈ _) ∨ ∀ _, _ ∈ _ by
       rw [← and_forall_ne nx, and_iff_left, ← and_forall_ne ny, and_iff_left]
       · apply q.2.mem_or_mem; convert hxy (nx + ny) using 1
         dsimp
@@ -594,9 +594,9 @@ def awayToSection (f) : CommRingCat.of (A⁰_ f) ⟶ (structureSheaf 𝒜).1.obj
   map_zero' := by ext; simp only [map_zero, HomogeneousLocalization.val_zero, Proj.zero_apply]
   map_one' := by ext; simp only [map_one, HomogeneousLocalization.val_one, Proj.one_apply]
 
-lemma awayToSection_germ (f x) :
-    awayToSection 𝒜 f ≫ (structureSheaf 𝒜).presheaf.germ x =
-      (HomogeneousLocalization.mapId 𝒜 (Submonoid.powers_le.mpr x.2)) ≫
+lemma awayToSection_germ (f x hx) :
+    awayToSection 𝒜 f ≫ (structureSheaf 𝒜).presheaf.germ _ x hx =
+      (HomogeneousLocalization.mapId 𝒜 (Submonoid.powers_le.mpr hx)) ≫
         (Proj.stalkIso' 𝒜 x).toCommRingCatIso.inv := by
   ext z
   apply (Proj.stalkIso' 𝒜 x).eq_symm_apply.mpr
@@ -685,9 +685,9 @@ lemma toStalk_stalkMap_toSpec (f) (x) :
     StructureSheaf.toStalk _ _ ≫ (toSpec 𝒜 f).stalkMap x =
       awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x := by
   rw [StructureSheaf.toStalk, Category.assoc]
-  simp_rw [CommRingCat.coe_of]
-  erw [PresheafedSpace.stalkMap_germ']
-  rw [toOpen_toSpec_val_c_app_assoc, Presheaf.germ_res]
+  simp_rw [CommRingCat.coe_of, ← Spec.locallyRingedSpaceObj_presheaf']
+  rw [LocallyRingedSpace.stalkMap_germ (toSpec 𝒜 f),
+    toOpen_toSpec_val_c_app_assoc, Presheaf.germ_res]
   rfl
 
 /--
@@ -806,7 +806,7 @@ If `f ∈ A` is a homogeneous element of positive degree, then the projective sp
 -/
 def projIsoSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Proj| pbo f) ≅ (Spec (A⁰_ f)) :=
-  @asIso (f := toSpec 𝒜 f) (isIso_toSpec 𝒜 f f_deg hm)
+  @asIso _ _ _ _ (f := toSpec 𝒜 f) (isIso_toSpec 𝒜 f f_deg hm)
 
 /--
 This is the scheme `Proj(A)` for any `ℕ`-graded ring `A`.

@@ -75,7 +75,7 @@ instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpa
 def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
   IsOpen s := IsOpen (f ⁻¹' s)
   isOpen_univ := t.isOpen_univ
-  isOpen_inter s₁ s₂ h₁ h₂ := h₁.inter h₂
+  isOpen_inter _ _ h₁ h₂ := h₁.inter h₂
   isOpen_sUnion s h := by simpa only [preimage_sUnion] using isOpen_biUnion h
 
 end TopologicalSpace

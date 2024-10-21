@@ -299,7 +299,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem {α : Type*} [TopologicalSpace α] [
     [OrderTopology α] [SecondCountableTopology α] [DenselyOrdered α] [NoMinOrder α] {s : Set α}
     (hd : Dense s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S } :=
-  hd.borel_eq_generateFrom_Ico_mem_aux (by simp) fun x y hxy H =>
+  hd.borel_eq_generateFrom_Ico_mem_aux (by simp) fun _ _ hxy H =>
     ((nonempty_Ioo.2 hxy).ne_empty H).elim
 
 theorem borel_eq_generateFrom_Ico (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
@@ -325,7 +325,7 @@ theorem Dense.borel_eq_generateFrom_Ioc_mem {α : Type*} [TopologicalSpace α] [
     [OrderTopology α] [SecondCountableTopology α] [DenselyOrdered α] [NoMaxOrder α] {s : Set α}
     (hd : Dense s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ioc l u = S } :=
-  hd.borel_eq_generateFrom_Ioc_mem_aux (by simp) fun x y hxy H =>
+  hd.borel_eq_generateFrom_Ioc_mem_aux (by simp) fun _ _ hxy H =>
     ((nonempty_Ioo.2 hxy).ne_empty H).elim
 
 theorem borel_eq_generateFrom_Ioc (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
@@ -430,7 +430,7 @@ theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
 
 /-- Two finite measures on a Borel space are equal if they agree on all left-closed right-infinite
 intervals. -/
-theorem ext_of_Ici {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
+theorem ext_of_Ici {α : Type*} [TopologicalSpace α] {_ : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] (μ ν : Measure α)
     [IsFiniteMeasure μ] (h : ∀ a, μ (Ici a) = ν (Ici a)) : μ = ν :=
   @ext_of_Iic αᵒᵈ _ _ _ _ _ ‹_› _ _ _ h
@@ -568,7 +568,8 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
         · simp [hb, hg' hb]
       rw [this]
       exact Measurable.piecewise hs measurable_const g'_meas
-  · let f' : ι → δ → α := fun i ↦ s.piecewise (f i) g'
+  · have : Nonempty ι := ⟨i⟩
+    let f' : ι → δ → α := fun i ↦ s.piecewise (f i) g'
     suffices ∀ b, IsLUB { a | ∃ i, f' i b = a } (g b) from
       Measurable.isLUB (fun i ↦ Measurable.piecewise hs (hf i) g'_meas) this
     intro b
@@ -576,14 +577,7 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
     · have A : ∀ i, f' i b = f i b := fun i ↦ by simp [f', hb]
       simpa [A] using hg b hb
     · have A : ∀ i, f' i b = g' b := fun i ↦ by simp [f', hb]
-      have : {a | ∃ (_i : ι), g' b = a} = {g' b} := by
-        apply Subset.antisymm
-        · rintro - ⟨_j, rfl⟩
-          simp only [mem_singleton_iff]
-        · rintro - rfl
-          exact ⟨i, rfl⟩
-      simp only [exists_prop'] at this
-      simp [A, this, hg' hb, isLUB_singleton]
+      simp [A, hg' hb, isLUB_singleton]
 
 theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsLUB { a | ∃ i, f i b = a } (g b)) :

@@ -31,7 +31,7 @@ modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
 
 noncomputable section
 
-open FiniteDimensional Complex
+open Module Complex
 
 open scoped Real RealInnerProductSpace ComplexConjugate
 

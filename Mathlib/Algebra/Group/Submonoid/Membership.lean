@@ -379,7 +379,7 @@ theorem closure_induction_right {s : Set M} {p : (m : M) → m ∈ closure s →
   closure_induction_left (s := MulOpposite.unop ⁻¹' s)
     (p := fun m hm => p m.unop <| by rwa [← op_closure] at hm)
     one
-    (fun _x hx _y hy => mul_right _ _ _ hx)
+    (fun _x hx _y _ => mul_right _ _ _ hx)
     (by rwa [← op_closure])
 
 @[to_additive (attr := elab_as_elim)]
@@ -440,7 +440,7 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
       ← pow_eq_pow_mod _ hx, pow_mul, pow_mul]
   zpow_succ' m x := Subtype.ext <| by
     obtain ⟨_, k, rfl⟩ := x
-    simp only [← pow_mul, Int.natMod, Int.ofNat_eq_coe, SubmonoidClass.coe_pow, coe_mul]
+    simp only [← pow_mul, Int.natMod, SubmonoidClass.coe_pow, coe_mul]
     norm_cast
     iterate 2 rw [Int.toNat_natCast, mul_comm, pow_mul, ← pow_eq_pow_mod _ hx]
     rw [← pow_mul _ m, mul_comm, pow_mul, ← pow_succ, ← pow_mul, mul_comm, pow_mul]

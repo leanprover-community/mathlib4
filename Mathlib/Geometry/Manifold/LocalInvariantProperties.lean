@@ -68,7 +68,7 @@ structure LocalInvariantProp (P : (H → H') → Set H → H → Prop) : Prop wh
   left_invariance' : ∀ {s x f} {e' : PartialHomeomorph H' H'},
     e' ∈ G' → s ⊆ f ⁻¹' e'.source → f x ∈ e'.source → P f s x → P (e' ∘ f) s x
 
-variable {G G'} {P : (H → H') → Set H → H → Prop} {s t u : Set H} {x : H}
+variable {G G'} {P : (H → H') → Set H → H → Prop}
 variable (hG : G.LocalInvariantProp G' P)
 include hG
 
@@ -272,8 +272,8 @@ theorem liftPropWithinAt_indep_chart_aux (he : e ∈ G.maximalAtlas M) (xe : x �
     (xf : g x ∈ f.source) (hf' : f' ∈ G'.maximalAtlas M') (xf' : g x ∈ f'.source)
     (hgs : ContinuousWithinAt g s x) :
     P (f ∘ g ∘ e.symm) (e.symm ⁻¹' s) (e x) ↔ P (f' ∘ g ∘ e'.symm) (e'.symm ⁻¹' s) (e' x) := by
-  rw [← Function.comp.assoc, hG.liftPropWithinAt_indep_chart_source_aux (f ∘ g) he xe he' xe',
-    Function.comp.assoc, hG.liftPropWithinAt_indep_chart_target_aux xe' hf xf hf' xf' hgs]
+  rw [← Function.comp_assoc, hG.liftPropWithinAt_indep_chart_source_aux (f ∘ g) he xe he' xe',
+    Function.comp_assoc, hG.liftPropWithinAt_indep_chart_target_aux xe' hf xf hf' xf' hgs]
 
 theorem liftPropWithinAt_indep_chart [HasGroupoid M G] [HasGroupoid M' G']
     (he : e ∈ G.maximalAtlas M) (xe : x ∈ e.source) (hf : f ∈ G'.maximalAtlas M')
@@ -292,9 +292,9 @@ theorem liftPropWithinAt_indep_chart_source [HasGroupoid M G] (he : e ∈ G.maxi
   rw [liftPropWithinAt_self_source, liftPropWithinAt_iff',
     e.symm.continuousWithinAt_iff_continuousWithinAt_comp_right xe, e.symm_symm]
   refine and_congr Iff.rfl ?_
-  rw [Function.comp_apply, e.left_inv xe, ← Function.comp.assoc,
+  rw [Function.comp_apply, e.left_inv xe, ← Function.comp_assoc,
     hG.liftPropWithinAt_indep_chart_source_aux (chartAt _ (g x) ∘ g) (chart_mem_maximalAtlas G x)
-      (mem_chart_source _ x) he xe, Function.comp.assoc]
+      (mem_chart_source _ x) he xe, Function.comp_assoc]
 
 /-- A version of `liftPropWithinAt_indep_chart`, only for the target. -/
 theorem liftPropWithinAt_indep_chart_target [HasGroupoid M' G'] (hf : f ∈ G'.maximalAtlas M')

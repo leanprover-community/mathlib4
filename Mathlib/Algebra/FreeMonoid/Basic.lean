@@ -5,7 +5,7 @@ Authors: Simon Hudon, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 
 /-!
 # Free monoid over a given alphabet
@@ -155,7 +155,7 @@ def prodAux {M} [Monoid M] : List M → M
 @[to_additive]
 lemma prodAux_eq : ∀ l : List M, FreeMonoid.prodAux l = l.prod
   | [] => rfl
-  | (_ :: xs) => congr_arg (fun x => List.foldl (· * ·) x xs) (one_mul _).symm
+  | (_ :: xs) => by simp [prodAux, List.prod_eq_foldl]
 
 /-- Equivalence between maps `α → M` and monoid homomorphisms `FreeMonoid α →* M`. -/
 @[to_additive "Equivalence between maps `α → A` and additive monoid homomorphisms
@@ -166,8 +166,8 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
     map_one' := rfl
     map_mul' := fun _ _ ↦ by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
   invFun f x := f (of x)
-  left_inv f := rfl
-  right_inv f := hom_eq fun x ↦ rfl
+  left_inv _ := rfl
+  right_inv _ := hom_eq fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=

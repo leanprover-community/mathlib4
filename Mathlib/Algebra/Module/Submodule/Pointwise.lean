@@ -418,7 +418,7 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
     exact ⟨Finsupp.single r ⟨n, hn⟩, Finsupp.single_mem_supported _ _ hr, by simp⟩
   · intro x hx
     obtain ⟨c, hc, rfl⟩ := hx
-    simp only [LinearMap.coe_comp, coeSubtype, Finsupp.coe_lsum, Finsupp.sum, Function.comp_apply]
+    simp only [LinearMap.coe_comp, coe_subtype, Finsupp.coe_lsum, Finsupp.sum, Function.comp_apply]
     rw [AddSubmonoid.coe_finset_sum]
     refine Submodule.sum_mem (p := sR • N) (t := c.support) ?_ _ ⟨sR • N, ?_⟩
     · rintro r hr

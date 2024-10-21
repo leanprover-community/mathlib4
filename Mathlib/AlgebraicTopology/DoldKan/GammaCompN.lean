@@ -32,7 +32,7 @@ variable {C : Type*} [Category C] [Preadditive C] [HasFiniteCoproducts C]
 /-- The isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for all `K : ChainComplex C ℕ`. -/
 @[simps!]
 def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegComplex ≅ K :=
-  HomologicalComplex.Hom.isoOfComponents (fun n => Iso.refl _)
+  HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
     (by
       rintro _ n (rfl : n + 1 = _)
       dsimp

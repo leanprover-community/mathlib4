@@ -76,9 +76,6 @@ theorem LocallyCompactSpace.of_hasBasis {ι : X → Type*} {p : ∀ x, ι x → 
     let ⟨i, hp, ht⟩ := (h x).mem_iff.1 ht
     ⟨s x i, (h x).mem_of_mem hp, ht, hc x i hp⟩⟩
 
-@[deprecated (since := "2023-12-29")]
-alias locallyCompactSpace_of_hasBasis := LocallyCompactSpace.of_hasBasis
-
 instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
     [TopologicalSpace Y] [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     LocallyCompactSpace (X × Y) :=

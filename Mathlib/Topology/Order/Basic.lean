@@ -284,10 +284,10 @@ theorem nhdsWithin_Iic_basis [TopologicalSpace α] [LinearOrder α] [OrderTopolo
   nhdsWithin_Iic_basis' (exists_lt a)
 
 theorem nhds_top_order [TopologicalSpace α] [Preorder α] [OrderTop α] [OrderTopology α] :
-    𝓝 (⊤ : α) = ⨅ (l) (h₂ : l < ⊤), 𝓟 (Ioi l) := by simp [nhds_eq_order (⊤ : α)]
+    𝓝 (⊤ : α) = ⨅ (l) (_ : l < ⊤), 𝓟 (Ioi l) := by simp [nhds_eq_order (⊤ : α)]
 
 theorem nhds_bot_order [TopologicalSpace α] [Preorder α] [OrderBot α] [OrderTopology α] :
-    𝓝 (⊥ : α) = ⨅ (l) (h₂ : ⊥ < l), 𝓟 (Iio l) := by simp [nhds_eq_order (⊥ : α)]
+    𝓝 (⊥ : α) = ⨅ (l) (_ : ⊥ < l), 𝓟 (Iio l) := by simp [nhds_eq_order (⊥ : α)]
 
 theorem nhds_top_basis [TopologicalSpace α] [LinearOrder α] [OrderTop α] [OrderTopology α]
     [Nontrivial α] : (𝓝 ⊤).HasBasis (fun a : α => a < ⊤) fun a : α => Ioi a := by

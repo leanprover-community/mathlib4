@@ -348,7 +348,7 @@ def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector 
 
 theorem mOfFn_pure {m} [Monad m] [LawfulMonad m] {α} :
     ∀ {n} (f : Fin n → α), (@mOfFn m _ _ _ fun i => pure (f i)) = pure (ofFn f)
-  | 0, f => rfl
+  | 0, _ => rfl
   | n + 1, f => by
     rw [mOfFn, @mOfFn_pure m _ _ _ n _, ofFn]
     simp

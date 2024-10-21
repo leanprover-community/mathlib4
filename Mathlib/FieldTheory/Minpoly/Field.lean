@@ -148,6 +148,27 @@ theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B}
     (a : A) : minpoly A (x - algebraMap A B a) = (minpoly A x).comp (X + C a) := by
   simpa [sub_eq_add_neg] using add_algebraMap x (-a)
 
+theorem neg {B : Type*} [CommRing B] [Algebra A B] (x : B) :
+    minpoly A (- x) = (-1) ^ (natDegree (minpoly A x)) * (minpoly A x).comp (- X) := by
+  by_cases hx : IsIntegral A x
+  · refine (minpoly.unique _ _ ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X)
+        ?_ fun q qmo hq => ?_).symm
+    · simp [aeval_comp]
+    · have : (Polynomial.aeval x) ((-1) ^ q.natDegree * q.comp (- X)) = 0 := by
+        simpa [aeval_comp] using hq
+      have H := minpoly.min A x qmo.neg_one_pow_natDegree_mul_comp_neg_X this
+      have n1 := ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X).ne_zero
+      have n2 := qmo.neg_one_pow_natDegree_mul_comp_neg_X.ne_zero
+      rw [degree_eq_natDegree qmo.ne_zero,
+        degree_eq_natDegree n1, natDegree_mul (by simp) (right_ne_zero_of_mul n1), natDegree_comp]
+      rw [degree_eq_natDegree (minpoly.ne_zero hx),
+        degree_eq_natDegree qmo.neg_one_pow_natDegree_mul_comp_neg_X.ne_zero,
+        natDegree_mul (by simp) (right_ne_zero_of_mul n2), natDegree_comp] at H
+      simpa using H
+  · rw [minpoly.eq_zero hx, minpoly.eq_zero, zero_comp]
+    · simp only [natDegree_zero, pow_zero, mul_zero]
+    · exact IsIntegral.neg_iff.not.mpr hx
+
 section AlgHomFintype
 
 /-- A technical finiteness result. -/
@@ -162,7 +183,7 @@ variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F
 -- though it isn't very computable in practice (since neither `finrank` nor `finBasis` are).
 /-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
-    (x : range (FiniteDimensional.finBasis F E : _ → E)) :
+    (x : range (Module.finBasis F E : _ → E)) :
     { l : K // l ∈ (minpoly F x.1).aroots K } :=
   ⟨φ x, by
     rw [mem_roots_map (minpoly.ne_zero_of_finite F x.val),
@@ -173,14 +194,14 @@ theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   -- needs explicit coercion on the RHS
   suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rwa [DFunLike.ext'_iff] at this ⊢
   rw [funext_iff] at h
-  exact LinearMap.ext_on (FiniteDimensional.finBasis F E).span_eq fun e he =>
+  exact LinearMap.ext_on (Module.finBasis F E).span_eq fun e he =>
     Subtype.ext_iff.mp (h ⟨e, he⟩)
 
 /-- Given field extensions `E/F` and `K/F`, with `E/F` finite, there are finitely many `F`-algebra
   homomorphisms `E →ₐ[K] K`. -/
 noncomputable instance AlgHom.fintype : Fintype (E →ₐ[F] K) :=
   @Fintype.ofInjective _ _
-    (Fintype.subtypeProd (finite_range (FiniteDimensional.finBasis F E)) fun e =>
+    (Fintype.subtypeProd (finite_range (Module.finBasis F E)) fun e =>
       (minpoly F e).aroots K)
     _ (aux_inj_roots_of_min_poly F E K)
 

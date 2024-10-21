@@ -302,7 +302,7 @@ noncomputable def fslope (p : FormalMultilinearSeries 𝕜 𝕜 E) : FormalMulti
 theorem coeff_fslope : p.fslope.coeff n = p.coeff (n + 1) := by
   simp only [fslope, coeff, ContinuousMultilinearMap.curryLeft_apply]
   congr 1
-  exact Fin.cons_self_tail 1
+  exact Fin.cons_self_tail (fun _ => (1 : 𝕜))
 
 @[simp]
 theorem coeff_iterate_fslope (k n : ℕ) : (fslope^[k] p).coeff n = p.coeff (n + k) := by

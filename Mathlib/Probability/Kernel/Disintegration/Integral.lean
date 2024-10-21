@@ -146,12 +146,12 @@ end ProbabilityTheory
 
 namespace MeasureTheory.Measure
 
-variable {α β Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {β Ω : Type*} {mβ : MeasurableSpace β}
   [MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
 
 section Lintegral
 
-variable [CountableOrCountablyGenerated α β] {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
+variable {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
   {f : β × Ω → ℝ≥0∞}
 
 lemma lintegral_condKernel_mem {s : Set (β × Ω)} (hs : MeasurableSet s) :

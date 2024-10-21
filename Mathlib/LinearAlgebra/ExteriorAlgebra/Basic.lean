@@ -164,6 +164,9 @@ theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 
 theorem algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 
+instance isLocalRingHom_algebraMap : IsLocalRingHom (algebraMap R (ExteriorAlgebra R M)) :=
+  isLocalRingHom_of_leftInverse _ (algebraMap_leftInverse M)
+
 theorem isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r) ↔ IsUnit r :=
   isUnit_map_of_leftInverse _ (algebraMap_leftInverse M)
 
@@ -299,8 +302,8 @@ theorem ιMulti_apply {n : ℕ} (v : Fin n → M) : ιMulti R n v = (List.ofFn f
   rfl
 
 @[simp]
-theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 :=
-  rfl
+theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 := by
+  simp [ιMulti]
 
 @[simp]
 theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :

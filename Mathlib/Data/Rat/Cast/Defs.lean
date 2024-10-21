@@ -19,10 +19,6 @@ import Mathlib.Data.Rat.Lemmas
 We define the canonical injection from ℚ into an arbitrary division ring and prove various
 casting lemmas showing the well-behavedness of this injection.
 
-## Notations
-
-- `/.` is infix notation for `Rat.divInt`.
-
 ## Tags
 
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting

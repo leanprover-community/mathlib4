@@ -102,6 +102,10 @@ theorem isClopen_inter_of_disjoint_cover_clopen {s a b : Set X} (h : IsClopen s)
   rintro x ⟨hx₁, hx₂⟩
   exact ⟨hx₁, by simpa [not_mem_of_mem_compl hx₂] using cover hx₁⟩
 
+theorem isClopen_of_disjoint_cover_open {a b : Set X} (cover : univ ⊆ a ∪ b)
+    (ha : IsOpen a) (hb : IsOpen b) (hab : Disjoint a b) : IsClopen a :=
+  univ_inter a ▸ isClopen_inter_of_disjoint_cover_clopen isClopen_univ cover ha hb hab
+
 @[simp]
 theorem isClopen_discrete [DiscreteTopology X] (s : Set X) : IsClopen s :=
   ⟨isClosed_discrete _, isOpen_discrete _⟩

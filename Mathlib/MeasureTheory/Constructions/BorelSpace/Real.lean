@@ -115,7 +115,7 @@ def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
     -- TODO: norm_cast fails here?
     push_cast
     exact neg_lt_self n.cast_add_one_pos
-  finite n := measure_Ioo_lt_top
+  finite _ := measure_Ioo_lt_top
   spanning :=
     iUnion_eq_univ_iff.2 fun x =>
       ⟨⌊|x|⌋₊, neg_lt.1 ((neg_le_abs x).trans_lt (Nat.lt_floor_add_one _)),

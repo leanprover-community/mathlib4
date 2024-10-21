@@ -367,7 +367,7 @@ theorem mem_insert_of_mem {y z : PSet} (x) (h : z ∈ y) : z ∈ insert x y :=
 @[simp]
 theorem mem_singleton {x y : PSet} : x ∈ ({y} : PSet) ↔ Equiv x y :=
   mem_insert_iff.trans
-    ⟨fun o => Or.rec (fun h => h) (fun n => absurd n (not_mem_empty _)) o, Or.inl⟩
+    ⟨fun o => Or.rec id (fun n => absurd n (not_mem_empty _)) o, Or.inl⟩
 
 theorem mem_pair {x y z : PSet} : x ∈ ({y, z} : PSet) ↔ Equiv x y ∨ Equiv x z := by
   simp
@@ -835,6 +835,10 @@ theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
     PSet.mem_sep (p := p ∘ mk) fun _ _ h => (Quotient.sound h).subst
 
 @[simp]
+theorem sep_empty (p : ZFSet → Prop) : (∅ : ZFSet).sep p = ∅ :=
+  (eq_empty _).mpr fun _ h ↦ not_mem_empty _ (mem_sep.mp h).1
+
+@[simp]
 theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
     (ZFSet.sep p a).toSet = { x ∈ a.toSet | p x } := by
   ext
@@ -886,9 +890,8 @@ def sUnion : ZFSet → ZFSet :=
 prefix:110 "⋃₀ " => ZFSet.sUnion
 
 /-- The intersection operator, the collection of elements in all of the elements of a ZFC set. We
-special-case `⋂₀ ∅ = ∅`. -/
-noncomputable def sInter (x : ZFSet) : ZFSet := by
-   classical exact if h : x.Nonempty then ZFSet.sep (fun y => ∀ z ∈ x, y ∈ z) h.some else ∅
+define `⋂₀ ∅ = ∅`. -/
+def sInter (x : ZFSet) : ZFSet := (⋃₀ x).sep (fun y => ∀ z ∈ x, y ∈ z)
 
 @[inherit_doc]
 prefix:110 "⋂₀ " => ZFSet.sInter
@@ -899,9 +902,12 @@ theorem mem_sUnion {x y : ZFSet.{u}} : y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈ z :
     ⟨fun ⟨z, h⟩ => ⟨⟦z⟧, h⟩, fun ⟨z, h⟩ => Quotient.inductionOn z (fun z h => ⟨z, h⟩) h⟩
 
 theorem mem_sInter {x y : ZFSet} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z ∈ x, y ∈ z := by
-  rw [sInter, dif_pos h]
-  simp only [mem_toSet, mem_sep, and_iff_right_iff_imp]
-  exact fun H => H _ h.some_mem
+  unfold sInter
+  simp only [and_iff_right_iff_imp, mem_sep]
+  intro mem
+  apply mem_sUnion.mpr
+  replace ⟨s, h⟩ := h
+  exact ⟨_, h, mem _ h⟩
 
 @[simp]
 theorem sUnion_empty : ⋃₀ (∅ : ZFSet.{u}) = ∅ := by
@@ -909,7 +915,7 @@ theorem sUnion_empty : ⋃₀ (∅ : ZFSet.{u}) = ∅ := by
   simp
 
 @[simp]
-theorem sInter_empty : ⋂₀ (∅ : ZFSet) = ∅ := dif_neg <| by simp
+theorem sInter_empty : ⋂₀ (∅ : ZFSet) = ∅ := by simp [sInter]
 
 theorem mem_of_mem_sInter {x y z : ZFSet} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
   rcases eq_empty_or_nonempty x with (rfl | hx)
@@ -1558,7 +1564,7 @@ private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
 @[simps apply_coe]
 noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
   toFun x := ⟨x.toSet, x.small_toSet⟩
-  invFun := fun ⟨s, h⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
+  invFun := fun ⟨s, _⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
   left_inv := Function.rightInverse_of_injective_of_leftInverse (by intros x y; simp)
     fun s ↦ Subtype.coe_injective <| toSet_equiv_aux s.2
   right_inv s := Subtype.coe_injective <| toSet_equiv_aux s.2

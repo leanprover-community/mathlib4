@@ -126,13 +126,13 @@ theorem openEmbedding {X : TopCat.{u}} (U : Opens X) : OpenEmbedding (inclusion'
 -/
 def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
   hom := inclusion' ⊤
-  inv := ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun U ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
+  inv := ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
 
 /-- `Opens.map f` gives the functor from open sets in Y to open set in X,
     given by taking preimages under f. -/
 def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
   obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.continuous⟩
-  map i := ⟨⟨fun x h => i.le h⟩⟩
+  map i := ⟨⟨fun _ h => i.le h⟩⟩
 
 @[simp]
 theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
@@ -281,8 +281,8 @@ def IsOpenMap.functor {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) : Opens X 
 -/
 def IsOpenMap.adjunction {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
     Adjunction hf.functor (TopologicalSpace.Opens.map f) where
-  unit := { app := fun U => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
-  counit := { app := fun V => homOfLE fun y ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
+  unit := { app := fun _ => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
+  counit := { app := fun _ => homOfLE fun _ ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
 
 instance IsOpenMap.functorFullOfMono {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) [H : Mono f] :
     hf.functor.Full where

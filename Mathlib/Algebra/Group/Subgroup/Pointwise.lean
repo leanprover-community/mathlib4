@@ -105,8 +105,8 @@ theorem closure_induction_right {p : (x : G) → x ∈ closure s → Prop} (one 
   closure_induction_left (s := MulOpposite.unop ⁻¹' s)
     (p := fun m hm => p m.unop <| by rwa [← op_closure] at hm)
     one
-    (fun _x hx _y hy => mul_right _ _ _ hx)
-    (fun _x hx _y hy => mul_inv_cancel _ _ _ hx)
+    (fun _x hx _y _ => mul_right _ _ _ hx)
+    (fun _x hx _y _ => mul_inv_cancel _ _ _ hx)
     (by rwa [← op_closure])
 
 @[to_additive (attr := simp)]
@@ -282,7 +282,7 @@ protected def pointwiseMulAction : MulAction α (Subgroup G) where
   one_smul S := by
     change S.map _ = S
     simpa only [map_one] using S.map_id
-  mul_smul a₁ a₂ S :=
+  mul_smul _ _ S :=
     (congr_arg (fun f : Monoid.End G => S.map f) (MonoidHom.map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
@@ -391,6 +391,13 @@ theorem Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g
 @[simp]
 theorem smul_normal (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
   h.conjAct g
+
+theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
+    H.normalCore = ⨅ (g : ConjAct G), g • H := by
+  ext g
+  simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
+  refine ⟨fun h x ↦ h x⁻¹, fun h x ↦ ?_⟩
+  simpa only [ConjAct.toConjAct_inv, inv_inv] using h x⁻¹
 
 end Group
 

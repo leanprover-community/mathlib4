@@ -157,10 +157,6 @@ lemma map_comp_cotangentComplex (f : Hom P P') :
 
 end CotangentSpace
 
-universe uT
-
-variable {T : Type uT} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-
 lemma Hom.sub_aux (f g : Hom P P') (x y) :
     letI := ((algebraMap S S').comp (algebraMap P.Ring S)).toAlgebra
     f.toAlgHom (x * y) - g.toAlgHom (x * y) -

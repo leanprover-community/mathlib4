@@ -306,7 +306,7 @@ theorem isLindelof_empty : IsLindelof (∅ : Set X) := fun _f hnf _ hsf ↦
 
 /-- A singleton set is a Lindelof set. -/
 @[simp]
-theorem isLindelof_singleton {x : X} : IsLindelof ({x} : Set X) := fun f hf _ hfa ↦
+theorem isLindelof_singleton {x : X} : IsLindelof ({x} : Set X) := fun _ hf _ hfa ↦
   ⟨x, rfl, ClusterPt.of_le_nhds'
     (hfa.trans <| by simpa only [principal_singleton] using pure_le_nhds x) hf⟩
 

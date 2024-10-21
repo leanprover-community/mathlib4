@@ -92,7 +92,7 @@ namespace WittVector
 
 universe u
 
-variable {p : ℕ} {R S : Type u} {σ idx : Type*} [CommRing R] [CommRing S]
+variable {p : ℕ} {R S : Type u} {idx : Type*} [CommRing R] [CommRing S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -220,7 +220,7 @@ variable {p}
 /-- The composition of polynomial functions is polynomial. -/
 -- Porting note (#10754): made this an instance
 instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsPoly p g] :
-    IsPoly₂ p fun R _Rcr x y => h (f x) (g y) := by
+    IsPoly₂ p fun _ _Rcr x y => h (f x) (g y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   obtain ⟨χ, hh⟩ := hh
@@ -238,7 +238,7 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
 -- Porting note (#10754): made this an instance
 instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
-    IsPoly₂ p fun R _Rcr x y => g (f x y) := by
+    IsPoly₂ p fun _ _Rcr x y => g (f x y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   use fun n => bind₁ φ (ψ n)
@@ -247,7 +247,7 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
 
 /-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
 -- Porting note (#10754): made this an instance
-instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x x := by
+instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
   refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
   intros; funext n

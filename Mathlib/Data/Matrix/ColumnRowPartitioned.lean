@@ -258,17 +258,8 @@ lemma fromColumns_mul_fromRows_eq_one_comm
     [Fintype n₁] [Fintype n₂] [Fintype n] [DecidableEq n] [DecidableEq n₁] [DecidableEq n₂]
     (e : n ≃ n₁ ⊕ n₂)
     (A₁ : Matrix n n₁ R) (A₂ : Matrix n n₂ R) (B₁ : Matrix n₁ n R) (B₂ : Matrix n₂ n R) :
-    fromColumns A₁ A₂ * fromRows B₁ B₂ = 1 ↔ fromRows B₁ B₂ * fromColumns A₁ A₂ = 1 := by
-  calc fromColumns A₁ A₂ * fromRows B₁ B₂ = 1
-  _ ↔ submatrix (fromColumns A₁ A₂) id e * submatrix (fromRows B₁ B₂) e id = 1 := by
-    simp
-  _ ↔ submatrix (fromRows B₁ B₂) e id * submatrix (fromColumns A₁ A₂) id e = 1 :=
-    mul_eq_one_comm
-  _ ↔ reindex e.symm e.symm (fromRows B₁ B₂ * fromColumns A₁ A₂) = reindex e.symm e.symm 1 := by
-    simp only [reindex_apply, Equiv.symm_symm, submatrix_one_equiv,
-        submatrix_mul (he₂ := Function.bijective_id)]
-  _ ↔ fromRows B₁ B₂ * fromColumns A₁ A₂ = 1 :=
-    (reindex _ _).injective.eq_iff
+    fromColumns A₁ A₂ * fromRows B₁ B₂ = 1 ↔ fromRows B₁ B₂ * fromColumns A₁ A₂ = 1 :=
+  mul_eq_one_comm_of_equiv e
 
 /-- The lemma `fromColumns_mul_fromRows_eq_one_comm` specialized to the case where the index sets n₁
 and n₂, are the result of subtyping by a predicate and its complement. -/

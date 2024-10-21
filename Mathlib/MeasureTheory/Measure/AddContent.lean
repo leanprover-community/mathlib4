@@ -63,9 +63,8 @@ instance : Inhabited (AddContent C) :=
     sUnion' := by simp }⟩
 
 instance : DFunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
-  coe := fun m s ↦ m.toFun s
-  coe_injective' := by
-    intro m m' h
+  coe m s := m.toFun s
+  coe_injective' m m' _ := by
     cases m
     cases m'
     congr

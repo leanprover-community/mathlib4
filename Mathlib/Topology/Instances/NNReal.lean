@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Data.NNReal.Star
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.MetricSpace.Isometry
 

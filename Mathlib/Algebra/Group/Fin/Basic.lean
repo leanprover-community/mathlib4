@@ -23,7 +23,7 @@ assert_not_exists MonoidWithZero
 open Nat
 
 namespace Fin
-variable {m n : ℕ}
+variable {n : ℕ}
 
 /-! ### Instances -/
 

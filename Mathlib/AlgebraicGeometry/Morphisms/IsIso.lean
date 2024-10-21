@@ -36,7 +36,7 @@ lemma isomorphisms_eq_stalkwise :
 instance : IsLocalAtTarget (isomorphisms Scheme) :=
   isomorphisms_eq_isOpenImmersion_inf_surjective ▸ inferInstance
 
-instance : HasAffineProperty (isomorphisms Scheme) fun X Y f _ ↦ IsAffine X ∧ IsIso (f.app ⊤) := by
+instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X ∧ IsIso (f.app ⊤) := by
   convert HasAffineProperty.of_isLocalAtTarget (isomorphisms Scheme) with X Y f hY
   exact ⟨fun ⟨_, _⟩ ↦ (arrow_mk_iso_iff (isomorphisms _) (arrowIsoSpecΓOfIsAffine f)).mpr
     (inferInstanceAs (IsIso (Spec.map (f.app ⊤)))),

@@ -79,7 +79,7 @@ theorem Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf :
     (c : M) : Tendsto (fun x => c • f x) l (𝓝 (c • a)) :=
   ((continuous_const_smul _).tendsto _).comp hf
 
-variable [TopologicalSpace β] {f : β → M} {g : β → α} {b : β} {s : Set β}
+variable [TopologicalSpace β] {g : β → α} {b : β} {s : Set β}
 
 @[to_additive]
 nonrec theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
@@ -450,6 +450,11 @@ theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
     IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := fun U hU => by
   rw [isOpen_coinduced, MulAction.quotient_preimage_image_eq_union_mul U]
   exact isOpen_iUnion fun γ => isOpenMap_smul γ U hU
+
+@[to_additive]
+theorem MulAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
+    IsOpenQuotientMap (Quotient.mk (MulAction.orbitRel Γ T)) :=
+  ⟨surjective_quot_mk _, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
 
 /-- The quotient by a discontinuous group action of a locally compact t2 space is t2. -/
 @[to_additive "The quotient by a discontinuous group action of a locally compact t2

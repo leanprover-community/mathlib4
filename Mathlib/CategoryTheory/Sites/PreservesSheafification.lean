@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Sites.Sheafification
 
-/-! # Functors which preserves sheafification
+/-! # Functors which preserve sheafification
 
 In this file, given a Grothendieck topology `J` on `C` and `F : A ⥤ B`,
 we define a type class `J.PreservesSheafification F`. We say that `F` preserves
@@ -20,7 +20,7 @@ this property for the map from any presheaf `P` to its associated sheaf, see
 
 In general, we define `Sheaf.composeAndSheafify J F : Sheaf J A ⥤ Sheaf J B` as the functor
 which sends a sheaf `G` to the sheafification of the composition `G.val ⋙ F`.
-It `J.PreservesSheafification F`, we show that this functor can also be thought
+If `J.PreservesSheafification F`, we show that this functor can also be thought of
 as the localization of the functor `_ ⋙ F` on presheaves: we construct an isomorphism
 `presheafToSheafCompComposeAndSheafifyIso` between
 `presheafToSheaf J A ⋙ Sheaf.composeAndSheafify J F` and
@@ -29,7 +29,7 @@ as the localization of the functor `_ ⋙ F` on presheaves: we construct an isom
 Moreover, if we assume `J.HasSheafCompose F`, we obtain an isomorphism
 `sheafifyComposeIso J F P : sheafify J (P ⋙ F) ≅ sheafify J P ⋙ F`.
 
-We show that under suitable assumptions, the forget functor from a concrete
+We show that under suitable assumptions, the forgetful functor from a concrete
 category preserves sheafification; this holds more generally for
 functors between such concrete categories which commute both with
 suitable limits and colimits.

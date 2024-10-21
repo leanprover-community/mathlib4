@@ -502,6 +502,11 @@ theorem cycleOf_mem_cycleFactorsFinset_iff {f : Perm α} {x : α} :
     · rw [cycleOf_apply_of_not_sameCycle H] at hy
       contradiction
 
+lemma cycleOf_ne_one_iff_mem_cycleFactorsFinset {g : Equiv.Perm α} {x : α} :
+    g.cycleOf x ≠ 1 ↔ g.cycleOf x ∈ g.cycleFactorsFinset := by
+  rw [Equiv.Perm.cycleOf_mem_cycleFactorsFinset_iff, Equiv.Perm.mem_support,
+        ne_eq, Equiv.Perm.cycleOf_eq_one_iff]
+
 theorem mem_cycleFactorsFinset_support_le {p f : Perm α} (h : p ∈ cycleFactorsFinset f) :
     p.support ≤ f.support := by
   rw [mem_cycleFactorsFinset_iff] at h
@@ -756,7 +761,6 @@ theorem commute_iff_of_mem_cycleFactorsFinset [DecidableEq α] [Fintype α]{g k 
   apply exists_congr
   intro n
   rw [Equiv.Perm.subtypePerm_on_cycleFactorsFinset hc]
-
 
 end cycleFactors
 

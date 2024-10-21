@@ -223,7 +223,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     [IsFiniteMeasure μ] : IsHaarMeasure μ := by
   obtain ⟨K⟩ := PositiveCompacts.nonempty' (α := G)
   let K' : PositiveCompacts (G ⧸ Γ) :=
-    K.map π continuous_coinduced_rng (QuotientGroup.isOpenMap_coe Γ)
+    K.map π QuotientGroup.continuous_mk QuotientGroup.isOpenMap_coe
   haveI : IsMulLeftInvariant μ :=
     MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient ν
   rw [haarMeasure_unique μ K']

@@ -36,7 +36,7 @@ This is an isomorphism if `f` has a right inverse (`quotientKerEquivOfRightInver
 is surjective (`quotientKerEquivOfSurjective`).
 -/
 def kerLift : R ⧸ ker f →+* S :=
-  Ideal.Quotient.lift _ f fun _ => f.mem_ker.mp
+  Ideal.Quotient.lift _ f fun _ => mem_ker.mp
 
 @[simp]
 theorem kerLift_mk (r : R) : kerLift f (Ideal.Quotient.mk (ker f) r) = f r :=
@@ -49,7 +49,7 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a 
   obtain ⟨v, rfl⟩ := Ideal.Quotient.mk_surjective u
   rw [Ideal.Quotient.lift_mk] at hu
   rw [Ideal.Quotient.eq_zero_iff_mem]
-  exact hI ((RingHom.mem_ker f).mpr hu)
+  exact hI (RingHom.mem_ker.mpr hu)
 
 /-- The induced map from the quotient by the kernel is injective. -/
 theorem kerLift_injective : Function.Injective (kerLift f) :=

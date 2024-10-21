@@ -229,10 +229,10 @@ theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : HahnSeries Γ R}
   ext a
   have hwf := x.isPWO_support.union y.isPWO_support
   rw [smul_coeff_left hwf, HahnSeries.add_coeff', of_symm_add]
-  simp_all only [Pi.add_apply, HahnSeries.add_coeff']
-  rw [smul_coeff_left hwf Set.subset_union_right,
-    smul_coeff_left hwf Set.subset_union_left]
-  · simp only [HahnSeries.add_coeff, h, sum_add_distrib]
+  · simp_all only [Pi.add_apply, HahnSeries.add_coeff']
+    rw [smul_coeff_left hwf Set.subset_union_right,
+      smul_coeff_left hwf Set.subset_union_left]
+    simp only [HahnSeries.add_coeff, h, sum_add_distrib]
   · intro b
     simp_all only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, HahnSeries.mem_support,
       HahnSeries.add_coeff, ne_eq, Set.mem_union, Set.mem_setOf_eq, mem_support]

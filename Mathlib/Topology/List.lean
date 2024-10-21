@@ -118,7 +118,7 @@ theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
 theorem tendsto_insertNth' {a : α} :
     ∀ {n : ℕ} {l : List α},
       Tendsto (fun p : α × List α => insertNth n p.1 p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (insertNth n a l))
-  | 0, l => tendsto_cons
+  | 0, _ => tendsto_cons
   | n + 1, [] => by simp
   | n + 1, a'::l => by
     have : 𝓝 a ×ˢ 𝓝 (a'::l) =

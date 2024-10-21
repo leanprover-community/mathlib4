@@ -366,7 +366,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       apply e.continuousOn_toFun.isOpen_inter_preimage e.open_source e'.open_source
     · apply PG.comp he'.2 he.2 e'.open_target e.open_target
       apply e'.continuousOn_invFun.isOpen_inter_preimage e'.open_target e.open_target
-  symm' e he := ⟨he.2, he.1⟩
+  symm' _ he := ⟨he.2, he.1⟩
   id_mem' := ⟨PG.id_mem, PG.id_mem⟩
   locality' e he := by
     constructor
@@ -445,7 +445,7 @@ instance : CompleteLattice (StructureGroupoid H) :=
     top := instStructureGroupoidOrderTop.top
     le_top := instStructureGroupoidOrderTop.le_top
     inf := (· ⊓ ·)
-    le_inf := fun N₁ N₂ N₃ h₁₂ h₁₃ m hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
+    le_inf := fun _ _ _ h₁₂ h₁₃ _ hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 

@@ -138,8 +138,7 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
   have hf₁ : Continuous f₁ := (Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
   have hf₂ : ContinuousOn f₂ (e₁.source ×ˢ e₂.source) :=
     e₁.toPartialHomeomorph.continuousOn.prod_map e₂.toPartialHomeomorph.continuousOn
-  have hf₃ : Continuous f₃ :=
-    (continuous_fst.comp continuous_fst).prod_mk (continuous_snd.prod_map continuous_snd)
+  have hf₃ : Continuous f₃ := by fun_prop
   refine ((hf₃.comp_continuousOn hf₂).comp hf₁.continuousOn ?_).congr ?_
   · rw [e₁.source_eq, e₂.source_eq]
     exact mapsTo_preimage _ _
@@ -176,8 +175,7 @@ theorem Prod.right_inv {x : B × F₁ × F₂}
 theorem Prod.continuous_inv_fun :
     ContinuousOn (Prod.invFun' e₁ e₂) ((e₁.baseSet ∩ e₂.baseSet) ×ˢ univ) := by
   rw [(Prod.inducing_diag F₁ E₁ F₂ E₂).continuousOn_iff]
-  have H₁ : Continuous fun p : B × F₁ × F₂ ↦ ((p.1, p.2.1), (p.1, p.2.2)) :=
-    (continuous_id.prod_map continuous_fst).prod_mk (continuous_id.prod_map continuous_snd)
+  have H₁ : Continuous fun p : B × F₁ × F₂ ↦ ((p.1, p.2.1), (p.1, p.2.2)) := by fun_prop
   refine (e₁.continuousOn_symm.prod_map e₂.continuousOn_symm).comp H₁.continuousOn ?_
   exact fun x h ↦ ⟨⟨h.1.1, mem_univ _⟩, ⟨h.1.2, mem_univ _⟩⟩
 
@@ -191,10 +189,10 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   invFun := Prod.invFun' e₁ e₂
   source := π (F₁ × F₂) (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)
   target := (e₁.baseSet ∩ e₂.baseSet) ×ˢ Set.univ
-  map_source' x h := ⟨h, Set.mem_univ _⟩
-  map_target' x h := h.1
-  left_inv' x := Prod.left_inv
-  right_inv' x := Prod.right_inv
+  map_source' _ h := ⟨h, Set.mem_univ _⟩
+  map_target' _ h := h.1
+  left_inv' _ := Prod.left_inv
+  right_inv' _ := Prod.right_inv
   open_source := by
     convert (e₁.open_source.prod e₂.open_source).preimage
         (FiberBundle.Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
@@ -207,7 +205,7 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   open_baseSet := e₁.open_baseSet.inter e₂.open_baseSet
   source_eq := rfl
   target_eq := rfl
-  proj_toFun x _ := rfl
+  proj_toFun _ _ := rfl
 
 @[simp]
 theorem baseSet_prod : (prod e₁ e₂).baseSet = e₁.baseSet ∩ e₂.baseSet := rfl
@@ -226,7 +224,7 @@ variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSp
 noncomputable instance FiberBundle.prod : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) where
   totalSpaceMk_inducing' b := by
     rw [← (Prod.inducing_diag F₁ E₁ F₂ E₂).of_comp_iff]
-    exact (totalSpaceMk_inducing F₁ E₁ b).prod_map (totalSpaceMk_inducing F₂ E₂ b)
+    exact (totalSpaceMk_inducing F₁ E₁ b).prodMap (totalSpaceMk_inducing F₂ E₂ b)
   trivializationAtlas' := { e |
     ∃ (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂ (π F₂ E₂))
       (_ : MemTrivializationAtlas e₁) (_ : MemTrivializationAtlas e₂),
@@ -334,14 +332,14 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
       pullbackTotalSpaceEmbedding]
     refine
       continuousOn_fst.prod
-        (e.continuousOn_symm.comp ((map_continuous f).prod_map continuous_id).continuousOn
+        (e.continuousOn_symm.comp ((map_continuous f).prodMap continuous_id).continuousOn
           Subset.rfl)
   source_eq := by
     dsimp only
     rw [e.source_eq]
     rfl
   target_eq := rfl
-  proj_toFun y _ := rfl
+  proj_toFun _ _ := rfl
 
 noncomputable instance FiberBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     (f : K) : FiberBundle F ((f : B' → B) *ᵖ E) where

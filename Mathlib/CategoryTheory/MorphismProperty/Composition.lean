@@ -24,7 +24,7 @@ namespace MorphismProperty
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 /-- Typeclass expressing that a morphism property contain identities. -/
-class ContainsIdentities (W : MorphismProperty C) : Prop :=
+class ContainsIdentities (W : MorphismProperty C) : Prop where
   /-- for all `X : C`, the identity of `X` satisfies the morphism property -/
   id_mem : ∀ (X : C), W (𝟙 X)
 
@@ -63,7 +63,7 @@ instance Pi.containsIdentities {J : Type w} {C : J → Type u}
 
 /-- A morphism property satisfies `IsStableUnderComposition` if the composition of
 two such morphisms still falls in the class. -/
-class IsStableUnderComposition (P : MorphismProperty C) : Prop :=
+class IsStableUnderComposition (P : MorphismProperty C) : Prop where
   comp_mem {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) : P f → P g → P (f ≫ g)
 
 lemma comp_mem (W : MorphismProperty C) [W.IsStableUnderComposition]
@@ -91,9 +91,9 @@ theorem StableUnderInverse.unop {P : MorphismProperty Cᵒᵖ} (h : StableUnderI
 
 theorem respectsIso_of_isStableUnderComposition {P : MorphismProperty C}
     [P.IsStableUnderComposition] (hP : isomorphisms C ≤ P) :
-    RespectsIso P :=
-  ⟨fun _ _ hf => P.comp_mem _ _ (hP _ (isomorphisms.infer_property _)) hf,
-    fun _ _ hf => P.comp_mem _ _ hf (hP _ (isomorphisms.infer_property _))⟩
+    RespectsIso P := RespectsIso.mk _
+  (fun _ _ hf => P.comp_mem _ _ (hP _ (isomorphisms.infer_property _)) hf)
+    (fun _ _ hf => P.comp_mem _ _ hf (hP _ (isomorphisms.infer_property _)))
 
 instance IsStableUnderComposition.inverseImage {P : MorphismProperty D} [P.IsStableUnderComposition]
     (F : C ⥤ D) : (P.inverseImage F).IsStableUnderComposition where
@@ -129,7 +129,7 @@ end naturalityProperty
 /-- A morphism property is multiplicative if it contains identities and is stable by
 composition. -/
 class IsMultiplicative (W : MorphismProperty C)
-    extends W.ContainsIdentities, W.IsStableUnderComposition : Prop :=
+    extends W.ContainsIdentities, W.IsStableUnderComposition : Prop
 
 namespace IsMultiplicative
 

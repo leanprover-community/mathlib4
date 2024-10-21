@@ -148,8 +148,22 @@ variable (f : R →+* S)
 theorem RingHom.IsIntegralElem.neg {x : S} (hx : f.IsIntegralElem x) : f.IsIntegralElem (-x) :=
   hx.of_mem_closure f hx (Subring.neg_mem _ (Subring.subset_closure (Or.inl rfl)))
 
+theorem RingHom.IsIntegralElem.of_neg {x : S} (h : f.IsIntegralElem (-x)) : f.IsIntegralElem x :=
+  neg_neg x ▸ h.neg
+
+@[simp]
+theorem RingHom.IsIntegralElem.neg_iff {x : S} : f.IsIntegralElem (-x) ↔ f.IsIntegralElem x :=
+  ⟨fun h => h.of_neg, fun h => h.neg⟩
+
 theorem IsIntegral.neg {x : B} (hx : IsIntegral R x) : IsIntegral R (-x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ (Subalgebra.neg_mem _ <| Algebra.subset_adjoin rfl)
+
+theorem IsIntegral.of_neg {x : B} (hx : IsIntegral R (-x)) : IsIntegral R x :=
+  neg_neg x ▸ hx.neg
+
+@[simp]
+theorem IsIntegral.neg_iff {x : B} : IsIntegral R (-x) ↔ IsIntegral R x :=
+  ⟨IsIntegral.of_neg, IsIntegral.neg⟩
 
 theorem RingHom.IsIntegralElem.sub {x y : S} (hx : f.IsIntegralElem x) (hy : f.IsIntegralElem y) :
     f.IsIntegralElem (x - y) := by

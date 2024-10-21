@@ -265,7 +265,7 @@ open IsScalarTower
 
 theorem smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ span R s) {x : A}
     (hx : x ∈ t) : k • x ∈ span R (s • t) :=
-  span_induction hks (fun c hc => subset_span <| Set.smul_mem_smul hc hx)
+  span_induction hks (fun _ hc => subset_span <| Set.smul_mem_smul hc hx)
     (by rw [zero_smul]; exact zero_mem _)
     (fun c₁ c₂ ih₁ ih₂ => by rw [add_smul]; exact add_mem ih₁ ih₂)
     fun b c hc => by rw [IsScalarTower.smul_assoc]; exact smul_mem _ _ hc
@@ -274,7 +274,7 @@ theorem span_smul_of_span_eq_top {s : Set S} (hs : span R s = ⊤) (t : Set A) :
     span R (s • t) = (span S t).restrictScalars R :=
   le_antisymm
     (span_le.2 fun _x ⟨p, _hps, _q, hqt, hpqx⟩ ↦ hpqx ▸ (span S t).smul_mem p (subset_span hqt))
-    fun p hp ↦ closure_induction hp (zero_mem _) (fun _ _ ↦ add_mem) fun s0 y hy ↦ by
+    fun _ hp ↦ closure_induction hp (zero_mem _) (fun _ _ ↦ add_mem) fun s0 y hy ↦ by
       refine span_induction (hs ▸ mem_top : s0 ∈ span R s)
         (fun x hx ↦ subset_span ⟨x, hx, y, hy, rfl⟩) ?_ ?_ ?_
       · rw [zero_smul]; apply zero_mem

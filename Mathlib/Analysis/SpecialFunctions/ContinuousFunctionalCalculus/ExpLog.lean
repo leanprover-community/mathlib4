@@ -7,7 +7,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
-import Mathlib.Topology.ContinuousFunction.StarOrdered
+import Mathlib.Topology.ContinuousMap.StarOrdered
 
 /-!
 # The exponential and logarithm based on the continuous functional calculus

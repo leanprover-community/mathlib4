@@ -281,7 +281,7 @@ theorem image_snd_divisorsAntidiagonal : (divisorsAntidiagonal n).image Prod.snd
   exact image_fst_divisorsAntidiagonal
 
 theorem map_div_right_divisors :
-    n.divisors.map ⟨fun d => (d, n / d), fun p₁ p₂ => congr_arg Prod.fst⟩ =
+    n.divisors.map ⟨fun d => (d, n / d), fun _ _ => congr_arg Prod.fst⟩ =
       n.divisorsAntidiagonal := by
   ext ⟨d, nd⟩
   simp only [mem_map, mem_divisorsAntidiagonal, Function.Embedding.coeFn_mk, mem_divisors,
@@ -294,7 +294,7 @@ theorem map_div_right_divisors :
     exact ⟨⟨dvd_mul_right _ _, hn⟩, Nat.mul_div_cancel_left _ (left_ne_zero_of_mul hn).bot_lt⟩
 
 theorem map_div_left_divisors :
-    n.divisors.map ⟨fun d => (n / d, d), fun p₁ p₂ => congr_arg Prod.snd⟩ =
+    n.divisors.map ⟨fun d => (n / d, d), fun _ _ => congr_arg Prod.snd⟩ =
       n.divisorsAntidiagonal := by
   apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
   ext

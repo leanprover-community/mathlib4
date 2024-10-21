@@ -253,7 +253,7 @@ protected lemma norm_triangle [CompleteSpace A] (x y : E) : ‖x + y‖ ≤ ‖x
 /-- This allows us to get `NormedAddCommGroup` and `NormedSpace` instances on `E` via
 `NormedAddCommGroup.ofCore` and `NormedSpace.ofCore`. -/
 lemma normedSpaceCore [CompleteSpace A] : NormedSpace.Core ℂ E where
-  norm_nonneg x := CStarModule.norm_nonneg
+  norm_nonneg _ := CStarModule.norm_nonneg
   norm_eq_zero_iff x := norm_zero_iff x
   norm_smul c x := by simp [norm_eq_sqrt_norm_inner_self, norm_smul, ← mul_assoc]
   norm_triangle x y := CStarModule.norm_triangle x y
@@ -269,7 +269,7 @@ lemma norm_eq_csSup [CompleteSpace A] (v : E) :
   let instNACG : NormedAddCommGroup E := NormedAddCommGroup.ofCore normedSpaceCore
   let instNS : NormedSpace ℂ E := .ofCore normedSpaceCore
   refine Eq.symm <| IsGreatest.csSup_eq ⟨⟨‖v‖⁻¹ • v, ?_, ?_⟩, ?_⟩
-  · simpa only [norm_smul, norm_inv, norm_norm] using inv_mul_le_one_of_le le_rfl (by positivity)
+  · simpa only [norm_smul, norm_inv, norm_norm] using inv_mul_le_one_of_le₀ le_rfl (by positivity)
   · simp [norm_smul, ← norm_sq_eq, pow_two, ← mul_assoc]
   · rintro - ⟨w, hw, rfl⟩
     calc _ ≤ ‖w‖ * ‖v‖ := norm_inner_le E

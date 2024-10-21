@@ -356,7 +356,7 @@ theorem three_le_nValue (hN : 64 ≤ N) : 3 ≤ nValue N := by
     rw [rpow_natCast]
     exact (cast_le.2 hN).trans' (by norm_num1)
   apply lt_of_lt_of_le _ (log_le_log (rpow_pos_of_pos zero_lt_two _) this)
-  rw [log_rpow zero_lt_two, ← div_lt_iff']
+  rw [log_rpow zero_lt_two, ← div_lt_iff₀']
   · exact log_two_gt_d9.trans_le' (by norm_num1)
   · norm_num1
 
@@ -459,7 +459,7 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
 
 theorem exp_four_lt : exp 4 < 64 := by
   rw [show (64 : ℝ) = 2 ^ ((6 : ℕ) : ℝ) by rw [rpow_natCast]; norm_num1,
-    ← lt_log_iff_exp_lt (rpow_pos_of_pos zero_lt_two _), log_rpow zero_lt_two, ← div_lt_iff']
+    ← lt_log_iff_exp_lt (rpow_pos_of_pos zero_lt_two _), log_rpow zero_lt_two, ← div_lt_iff₀']
   · exact log_two_gt_d9.trans_le' (by norm_num1)
   · norm_num
 

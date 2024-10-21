@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Bichang Lei
 -/
 import Mathlib.RingTheory.Valuation.Integers
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.LocalRing.RingHom.Defs
+import Mathlib.Algebra.Group.Units.Hom
 
 /-!
 # Extension of Valuation
@@ -53,7 +52,7 @@ variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
 
 /--
 The class `IsValExtension R A` states that the valuation of `A` is an extension of the valuation
-on `R`. More precisely, the valuation on `R` is equivlent to the comap of the valuation on `A`.
+on `R`. More precisely, the valuation on `R` is equivalent to the comap of the valuation on `A`.
 -/
 class IsValExtension : Prop where
   /-- The valuation on `R` is equivalent to the comap of the valuation on `A` -/

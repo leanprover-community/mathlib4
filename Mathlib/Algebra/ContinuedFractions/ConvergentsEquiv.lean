@@ -166,9 +166,6 @@ theorem succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq :
         gp_head.a / (gp_head.b + convs'Aux s.tail (m + 2)) =
           convs'Aux (squashSeq s (m + 1)) (m + 2)
         by simpa only [convs'Aux, s_head_eq]
-      have : convs'Aux s.tail (m + 2) = convs'Aux (squashSeq s.tail m) (m + 1) := by
-        refine IH gp_succ_n ?_
-        simpa [Stream'.Seq.get?_tail] using s_succ_nth_eq
       have : (squashSeq s (m + 1)).head = some gp_head :=
         (squashSeq_nth_of_lt m.succ_pos).trans s_head_eq
       simp_all [convs'Aux, squashSeq_succ_n_tail_eq_squashSeq_tail_n]

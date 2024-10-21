@@ -56,9 +56,8 @@ noncomputable def relindex : ℕ :=
 @[to_additive]
 theorem index_comap_of_surjective {f : G' →* G} (hf : Function.Surjective f) :
     (H.comap f).index = H.index := by
-  letI := QuotientGroup.leftRel H
-  letI := QuotientGroup.leftRel (H.comap f)
-  have key : ∀ x y : G', Setoid.r x y ↔ Setoid.r (f x) (f y) := by
+  have key : ∀ x y : G',
+      QuotientGroup.leftRel (H.comap f) x y ↔ QuotientGroup.leftRel H (f x) (f y) := by
     simp only [QuotientGroup.leftRel_apply]
     exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
   refine Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨?_, ?_⟩)

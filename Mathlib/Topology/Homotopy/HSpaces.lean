@@ -163,7 +163,7 @@ def qRight (p : I × I) : I :=
 
 theorem continuous_qRight : Continuous qRight :=
   continuous_projIcc.comp <|
-    Continuous.div (by fun_prop) (by fun_prop) fun x ↦ (add_pos zero_lt_one).ne'
+    Continuous.div (by fun_prop) (by fun_prop) fun _ ↦ (add_pos zero_lt_one).ne'
 
 theorem qRight_zero_left (θ : I) : qRight (0, θ) = 0 :=
   Set.projIcc_of_le_left _ <| by simp only [coe_zero, mul_zero, zero_div, le_refl]

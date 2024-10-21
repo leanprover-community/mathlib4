@@ -190,7 +190,6 @@ theorem map_compl (a : α) : f aᶜ = (f a)ᶜ := by rw [← himp_bot, ← himp_
 @[simp]
 theorem map_bihimp (a b : α) : f (a ⇔ b) = f a ⇔ f b := by simp_rw [bihimp, map_inf, map_himp]
 
--- TODO: `map_bihimp`
 end HeytingAlgebra
 
 section CoheytingAlgebra

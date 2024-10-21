@@ -854,15 +854,15 @@ theorem associated_toQuadraticMap (B : BilinMap R M R) (x y : M) :
 
 theorem associated_left_inverse (h : B₁.IsSymm) : associatedHom S B₁.toQuadraticMap = B₁ :=
   LinearMap.ext₂ fun x y => by
-    rw [associated_toQuadraticMap, ← h.eq x y, RingHom.id_apply, ← two_mul, ← smul_mul_assoc,
-      smul_eq_mul, invOf_mul_self, one_mul]
+    rw [associated_toQuadraticMap, ← h.eq x y, RingHom.id_apply]
+    match_scalars
+    linear_combination invOf_mul_self' (2:R)
 
 -- Porting note: moved from below to golf the next theorem
 theorem associated_eq_self_apply (x : M) : associatedHom S Q x x = Q x := by
-  rw [associated_apply, map_add_self, ← three_add_one_eq_four, ← two_add_one_eq_three, add_smul,
-    add_smul, one_smul, add_sub_cancel_right, add_sub_cancel_right, two_smul, ← two_smul R,
-    ← smul_assoc]
-  simp only [smul_eq_mul, invOf_mul_self', one_smul]
+  rw [associated_apply, map_add_self]
+  match_scalars
+  linear_combination invOf_mul_self' (2:R)
 
 theorem toQuadraticMap_associated : (associatedHom S Q).toQuadraticMap = Q :=
   QuadraticMap.ext <| associated_eq_self_apply S Q
@@ -1180,7 +1180,7 @@ theorem exists_bilinForm_self_ne_zero [htwo : Invertible (2 : R)] {B : BilinForm
   obtain ⟨x, hx⟩ := QuadraticMap.exists_quadraticForm_ne_zero hB₁
   exact ⟨x, fun h => hx (Q.associated_eq_self_apply ℕ x ▸ h)⟩
 
-open FiniteDimensional
+open Module
 
 variable {V : Type u} {K : Type v} [Field K] [AddCommGroup V] [Module K V]
 variable [FiniteDimensional K V]
@@ -1194,7 +1194,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   haveI := finrank_pos_iff.1 (hd.symm ▸ Nat.succ_pos d : 0 < finrank K V)
   -- either the bilinear form is trivial or we can pick a non-null `x`
   obtain rfl | hB₁ := eq_or_ne B 0
-  · let b := FiniteDimensional.finBasis K V
+  · let b := Module.finBasis K V
     rw [hd] at b
     exact ⟨b, fun i j _ => rfl⟩
   obtain ⟨x, hx⟩ := exists_bilinForm_self_ne_zero hB₁ hB₂
@@ -1288,8 +1288,7 @@ theorem basisRepr_eq_of_iIsOrtho {R M} [CommRing R] [AddCommGroup M] [Module R M
       smul_eq_mul, smul_eq_mul]
     ring_nf
   · intro i _ hij
-    rw [LinearMap.map_smul, LinearMap.map_smul₂,
-      show associatedHom R Q (v i) (v j) = 0 from hv₂ hij, smul_eq_mul, smul_eq_mul,
-      mul_zero, mul_zero]
+    rw [LinearMap.map_smul, LinearMap.map_smul₂, hv₂ hij]
+    module
 
 end QuadraticMap

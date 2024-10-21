@@ -501,7 +501,7 @@ theorem closure_closure_coe_preimage {s : Set M} :
   eq_top_iff.2 fun x =>
     Subtype.recOn x fun _ hx' _ => closure_induction'
       (p := fun y hy ↦ (⟨y, hy⟩ : closure s) ∈ closure (((↑) : closure s → M) ⁻¹' s))
-        (fun _ hg => subset_closure hg) (fun _ _ _ _ => Subsemigroup.mul_mem _) hx'
+        _ (fun _ hg => subset_closure hg) (fun _ _ _ _ => Subsemigroup.mul_mem _) hx'
 
 /-- Given `Subsemigroup`s `s`, `t` of semigroups `M`, `N` respectively, `s × t` as a subsemigroup
 of `M × N`. -/

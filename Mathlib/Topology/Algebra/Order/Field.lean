@@ -195,10 +195,10 @@ instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
   · obtain ⟨x', h₀, hxx', h₁⟩ : ∃ x', 0 < x' ∧ x ≤ x' ∧ x' < 1 :=
       ⟨max x (1 / 2), one_half_pos.trans_le (le_max_right _ _), le_max_left _ _,
         max_lt hx one_half_lt_one⟩
-    filter_upwards [Ioo_mem_nhds one_pos (one_lt_inv h₀ h₁)] with y hy
-    exact hxx'.trans_lt <| inv_inv x' ▸ inv_lt_inv_of_lt hy.1 hy.2
-  · filter_upwards [Ioi_mem_nhds (inv_lt_one hx)] with y hy
-    simpa only [inv_inv] using inv_lt_inv_of_lt (inv_pos.2 <| one_pos.trans hx) hy
+    filter_upwards [Ioo_mem_nhds one_pos ((one_lt_inv₀ h₀).2 h₁)] with y hy
+    exact hxx'.trans_lt <| lt_inv_of_lt_inv₀ hy.1 hy.2
+  · filter_upwards [Ioi_mem_nhds (inv_lt_one_of_one_lt₀ hx)] with y hy
+    exact inv_lt_of_inv_lt₀ (by positivity) hy
 
 instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
     TopologicalDivisionRing 𝕜 := ⟨⟩

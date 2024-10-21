@@ -329,8 +329,8 @@ variable (R)
 
 /-- The star operation on `Subalgebra` commutes with `Algebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) : star (Algebra.adjoin R s) = Algebra.adjoin R (star s) :=
-  have this : ∀ t : Set A, Algebra.adjoin R (star t) ≤ star (Algebra.adjoin R t) := fun t =>
-    Algebra.adjoin_le fun x hx => Algebra.subset_adjoin hx
+  have this : ∀ t : Set A, Algebra.adjoin R (star t) ≤ star (Algebra.adjoin R t) := fun _ =>
+    Algebra.adjoin_le fun _ hx => Algebra.subset_adjoin hx
   le_antisymm (by simpa only [star_star] using Subalgebra.star_mono (this (star s))) (this s)
 
 variable {R}

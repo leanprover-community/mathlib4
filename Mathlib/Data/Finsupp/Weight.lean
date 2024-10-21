@@ -157,7 +157,7 @@ theorem weight_eq_zero_iff_eq_zero
     ext s
     simp only [Finsupp.coe_zero, Pi.zero_apply]
     by_contra hs
-    apply NonTorsionWeight.ne_zero w _
+    apply NonTorsionWeight.ne_zero w s
     rw [← nonpos_iff_eq_zero, ← h]
     exact le_weight_of_ne_zero' w hs
   · intro h

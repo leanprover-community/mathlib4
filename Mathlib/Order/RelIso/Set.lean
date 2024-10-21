@@ -19,8 +19,7 @@ open Function
 
 universe u v w
 
-variable {α β γ δ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
-  {u : δ → δ → Prop}
+variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
 
 namespace RelHomClass
 
@@ -91,8 +90,6 @@ theorem RelEmbedding.codRestrict_apply (p) (f : r ↪r s) (H a) :
   rfl
 
 section image
-
-variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
 
 theorem RelIso.image_eq_preimage_symm (e : r ≃r s) (t : Set α) : e '' t = e.symm ⁻¹' t :=
   e.toEquiv.image_eq_preimage t

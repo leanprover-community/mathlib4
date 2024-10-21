@@ -794,10 +794,16 @@ theorem eLpNorm'_smul_measure {p : ℝ} (hp : 0 ≤ p) {f : α → F} (c : ℝ�
 @[deprecated (since := "2024-07-27")]
 alias snorm'_smul_measure := eLpNorm'_smul_measure
 
-theorem eLpNormEssSup_smul_measure {f : α → F} {c : ℝ≥0∞} (hc : c ≠ 0) :
+section SMul
+variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+  [NoZeroSMulDivisors R ℝ≥0∞] {c : R}
+
+@[simp] lemma eLpNormEssSup_smul_measure (hc : c ≠ 0) (f : α → F) :
     eLpNormEssSup f (c • μ) = eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup]
-  exact essSup_smul_measure hc
+  exact essSup_smul_measure hc _
+
+end SMul
 
 @[deprecated (since := "2024-07-27")]
 alias snormEssSup_smul_measure := eLpNormEssSup_smul_measure
@@ -1107,7 +1113,7 @@ theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : eLpNormEssSup f μ ≤ c • eLpNormEssSup g μ :=
   calc
     essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ ≤ essSup (fun x => (↑(c * ‖g x‖₊) : ℝ≥0∞)) μ :=
-      essSup_mono_ae <| h.mono fun x hx => ENNReal.coe_le_coe.mpr hx
+      essSup_mono_ae <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
     _ = essSup (fun x => (c * ‖g x‖₊ : ℝ≥0∞)) μ := by simp_rw [ENNReal.coe_mul]
     _ = c • essSup (fun x => (‖g x‖₊ : ℝ≥0∞)) μ := ENNReal.essSup_const_mul
 

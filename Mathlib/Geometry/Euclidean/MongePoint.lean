@@ -344,7 +344,7 @@ theorem vectorSpan_isOrtho_altitude_direction {n : ℕ} (s : Simplex ℝ P (n + 
   rw [direction_altitude]
   exact (Submodule.isOrtho_orthogonal_right _).mono_right inf_le_left
 
-open FiniteDimensional
+open Module
 
 /-- An altitude is finite-dimensional. -/
 instance finiteDimensional_direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
@@ -392,7 +392,7 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} (s : Simplex ℝ P (n + 1)) (i
     rw [vectorSpan_eq_span_vsub_set_left_ne ℝ (Set.mem_insert _ _),
       Set.insert_diff_of_mem _ (Set.mem_singleton _),
       Set.diff_singleton_eq_self fun h => hne (Set.mem_singleton_iff.1 h), Set.image_singleton]
-    refine eq_of_le_of_finrank_eq ?_ ?_
+    refine Submodule.eq_of_le_of_finrank_eq ?_ ?_
     · rw [Submodule.span_le]
       simpa using h
     · rw [finrank_direction_altitude, finrank_span_set_eq_card]
@@ -404,7 +404,7 @@ end Simplex
 
 namespace Triangle
 
-open EuclideanGeometry Finset Simplex AffineSubspace FiniteDimensional
+open EuclideanGeometry Finset Simplex AffineSubspace Module
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -548,7 +548,8 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   have he : affineSpan ℝ (Set.range t₂.points) = affineSpan ℝ (Set.range t₁.points) := by
     refine ext_of_direction_eq ?_
       ⟨t₁.points i₃, mem_affineSpan ℝ ⟨j₃, h₃⟩, mem_affineSpan ℝ (Set.mem_range_self _)⟩
-    refine eq_of_le_of_finrank_eq (direction_le (spanPoints_subset_coe_of_subset_coe ?_)) ?_
+    refine Submodule.eq_of_le_of_finrank_eq (direction_le (spanPoints_subset_coe_of_subset_coe ?_))
+      ?_
     · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by
         clear h₁ h₂ h₃
         -- Porting note (#11043): was `decide!`
@@ -602,7 +603,7 @@ end Affine
 
 namespace EuclideanGeometry
 
-open Affine AffineSubspace FiniteDimensional
+open Affine AffineSubspace Module
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -706,7 +707,7 @@ theorem affineSpan_of_orthocentricSystem {s : Set P} (ho : OrthocentricSystem s)
     ⟨p 0, mem_affineSpan ℝ (Set.mem_range_self _), mem_affineSpan ℝ (hps (Set.mem_range_self _))⟩
   have hfd : FiniteDimensional ℝ (affineSpan ℝ s).direction := by rw [hs]; infer_instance
   haveI := hfd
-  refine eq_of_le_of_finrank_eq (direction_le (affineSpan_mono ℝ hps)) ?_
+  refine Submodule.eq_of_le_of_finrank_eq (direction_le (affineSpan_mono ℝ hps)) ?_
   rw [hs, direction_affineSpan, direction_affineSpan, ha.finrank_vectorSpan (Fintype.card_fin _),
     t.independent.finrank_vectorSpan (Fintype.card_fin _)]
 
