@@ -248,7 +248,7 @@ theorem iSup_affineOpens_eq_top (X : Scheme) : ⨆ i : X.affineOpens, (i : X.Ope
   exact isBasis_affine_open X
 
 theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
-    (X : Scheme) [IsAffine X] (f : Scheme.Γ.obj (op X)) :
+    (X : Scheme) [IsAffine X] (f : Γ(X, ⊤)) :
     X.isoSpec.hom ⁻¹ᵁ PrimeSpectrum.basicOpen f = X.basicOpen f :=
   Scheme.toSpecΓ_preimage_basicOpen _ _
 
@@ -267,23 +267,31 @@ theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
     refine ⟨_, ⟨x, rfl⟩, ?_⟩
     exact congr_arg Opens.carrier (Scheme.toSpecΓ_preimage_basicOpen _ _).symm
 
+/-- The canonical map `U ⟶ Spec Γ(X, U)` for an open `U ⊆ X`. -/
+noncomputable
+def Scheme.Opens.toSpecΓ {X : Scheme.{u}} (U : X.Opens) :
+    U.toScheme ⟶ Spec Γ(X, U) :=
+  U.toScheme.toSpecΓ ≫ Spec.map U.topIso.inv
+
 namespace IsAffineOpen
 
 variable {X Y : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U))
 
 attribute [-simp] eqToHom_op in
 /-- The isomorphism `U ≅ Spec Γ(X, U)` for an affine `U`. -/
-@[simps! (config := .lemmasOnly) hom inv]
+@[simps! (config := .lemmasOnly) inv]
 def isoSpec :
     ↑U ≅ Spec Γ(X, U) :=
   haveI : IsAffine U := hU
-  U.toScheme.isoSpec ≪≫ Scheme.Spec.mapIso
-    (X.presheaf.mapIso (eqToIso U.isOpenEmbedding_obj_top).op).op
+  U.toScheme.isoSpec ≪≫ Scheme.Spec.mapIso U.topIso.symm.op
+
+lemma isoSpec_hom {X : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) :
+    hU.isoSpec.hom = U.toSpecΓ := rfl
 
 open LocalRing in
 lemma isoSpec_hom_base_apply (x : U) :
-    hU.isoSpec.hom.base x = (Spec.map (X.presheaf.germ _ x x.2)).base (closedPoint _) := by
-  dsimp [IsAffineOpen.isoSpec_hom, Scheme.isoSpec_hom, Scheme.toSpecΓ_base]
+    hU.isoSpec.hom.base x = (Spec.map (X.presheaf.germ U x x.2)).base (closedPoint _) := by
+  dsimp [IsAffineOpen.isoSpec_hom, Scheme.isoSpec_hom, Scheme.toSpecΓ_base, Scheme.Opens.toSpecΓ]
   rw [← Scheme.comp_base_apply, ← Spec.map_comp,
     (Iso.eq_comp_inv _).mpr (Scheme.Opens.germ_stalkIso_hom U (V := ⊤) x trivial),
     X.presheaf.germ_res_assoc, Spec.map_comp, Scheme.comp_base_apply]
@@ -329,7 +337,7 @@ theorem range_fromSpec :
   infer_instance
 
 @[simp]
-theorem opensRange_fromSpec : Scheme.Hom.opensRange hU.fromSpec = U := Opens.ext (range_fromSpec hU)
+theorem opensRange_fromSpec :hU.fromSpec.opensRange = U := Opens.ext (range_fromSpec hU)
 
 @[reassoc (attr := simp)]
 theorem map_fromSpec {V : X.Opens} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
@@ -349,7 +357,8 @@ lemma Spec_map_appLE_fromSpec (f : X ⟶ Y) {V : X.Opens} {U : Y.Opens}
     Spec.map (f.appLE U V i) ≫ hU.fromSpec = hV.fromSpec ≫ f := by
   have : IsAffine U := hU
   simp only [IsAffineOpen.fromSpec, Category.assoc, isoSpec_inv]
-  rw [← Scheme.restrictFunctor_map_ofRestrict (homOfLE i), Category.assoc, ← morphismRestrict_ι,
+  simp_rw [← Scheme.restrictFunctor_map_ofRestrict (homOfLE i)]
+  rw [Category.assoc, ← morphismRestrict_ι,
     ← Category.assoc _ (f ∣_ U) U.ι, ← @Scheme.isoSpec_inv_naturality_assoc,
     ← Spec.map_comp_assoc, ← Spec.map_comp_assoc, Scheme.comp_app, morphismRestrict_app,
     Scheme.restrictFunctor_map_app, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map,
