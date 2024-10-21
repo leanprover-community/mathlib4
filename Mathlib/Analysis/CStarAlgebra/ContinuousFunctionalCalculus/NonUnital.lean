@@ -113,6 +113,11 @@ lemma NonUnitalStarAlgHom.ext_continuousMap [UniqueNonUnitalContinuousFunctional
   have := UniqueNonUnitalContinuousFunctionalCalculus.compactSpace_quasispectrum (R := R) a
   UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id _ (by simp) φ ψ hφ hψ h
 
+include instCFCₙ in
+lemma NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (a : A) :
+    IsCompact (σₙ R a) :=
+  isCompact_iff_compactSpace.mpr <| inferInstance
+
 section cfcₙHom
 
 variable {a : A} (ha : p a)
