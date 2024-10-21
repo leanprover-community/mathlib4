@@ -396,6 +396,41 @@ theorem bijective_of_ne_zero [IsSimpleModule R M] [IsSimpleModule R N] {f : M �
     Function.Bijective f :=
   f.bijective_or_eq_zero.resolve_right h
 
+/-- The image of a homomorphism from a simple module is either isomorphic
+  to the simple module or is zero. -/
+lemma IsSimpleModule.mapsTo_equiv_or_zero
+[IsSimpleModule R N] (l : N →ₗ[R] M) :
+  Nonempty (N ≃ₗ[R] (LinearMap.range l)) ∨ (LinearMap.range l) = 0 := by
+  have hl := LinearMap.injective_or_eq_zero l
+  cases hl with
+  | inl hl =>
+  left
+  have hls := LinearMap.surjective_rangeRestrict l
+  have hli : Function.Injective l.rangeRestrict := by
+    rw[<-LinearMapClass.ker_eq_bot, LinearMap.ker_rangeRestrict]
+    exact LinearMap.ker_eq_bot_of_injective hl
+  have hlb : Function.Bijective l.rangeRestrict := And.intro hli hls
+  rw[Function.bijective_iff_has_inverse] at hlb
+  obtain ⟨g, hg⟩ := hlb
+  use l.rangeRestrict
+  · use g
+  · exact hg.left
+  · exact hg.right
+  | inr hl =>
+  right; rw[hl]; exact LinearMap.range_zero
+
+/-- The image of a homomorphism from a simple module is either simple or zero. -/
+lemma IsSimpleModule.mapsTo_simple_or_zero
+[IsSimpleModule R N] (l : N →ₗ[R] M) :
+  IsSimpleModule R (LinearMap.range l) ∨ (LinearMap.range l) = 0 := by
+  cases (IsSimpleModule.mapsTo_equiv_or_zero R M S l) with
+  | inl h =>
+  left
+  apply Classical.choice at h
+  exact IsSimpleModule.congr h.symm
+  | inr h =>
+  right; exact h
+
 theorem isCoatom_ker_of_surjective [IsSimpleModule R N] {f : M →ₗ[R] N}
     (hf : Function.Surjective f) : IsCoatom (LinearMap.ker f) := by
   rw [← isSimpleModule_iff_isCoatom]
