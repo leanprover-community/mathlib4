@@ -31,16 +31,15 @@ open NNReal
 
 namespace Valued.integer
 
-/-- The valued field structure on a nonarchimedean nontrivially normed field K,
-determined by the norm, as a scoped instance so that we can refer to its valuation ring.
-It is scoped because otherwise, NormedField <-> Valued enters a loop. -/
-noncomputable scoped instance : Valued K ℝ≥0 := NormedField.toValued
+open scoped NormedField
 
 -- should we do this all in the Valuation namespace instead?
 
 @[simp]
 lemma v_eq_valuation (x : K) : Valued.v x = NormedField.valuation x := rfl
 
+/-- An element is in the valuation ring if the norm is bounded by 1. This is a variant of
+`Valuation.mem_integer_iff`, phrased using norms instead of the valuation. -/
 lemma mem_integer_iff' {x : K} : x ∈ 𝒪[K] ↔ ‖x‖ ≤ 1 := by
   simp [Valuation.mem_integer_iff, v_eq_valuation, NormedField.valuation_apply, ← NNReal.coe_le_coe]
 
@@ -101,7 +100,7 @@ lemma _root_.Irreducible.span_eq_closedBall [DiscreteValuationRing 𝒪[K]]
       simpa [dvd_pow, pow_succ] using this
     simp only [AddSubgroupClass.coe_norm, SubmonoidClass.coe_pow, norm_pow]
     rw [mul_le_iff_le_one_left (by exact_mod_cast norm_irreducible_pos h)]
-    exact pow_le_one _ (_root_.norm_nonneg _) (norm_le_one _)
+    exact pow_le_one₀ (_root_.norm_nonneg _) (norm_le_one _)
 
 lemma _root_.Irreducible.maximalIdeal_eq_closedBall [DiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) :
