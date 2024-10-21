@@ -29,19 +29,10 @@ namespace AlgebraicGeometry
 variable {X Y S : Scheme.{u}} (f : X ⟶ Y) (sX : X ⟶ S) (sY : Y ⟶ S) (e : f ≫ sY = sX)
 variable {R A : CommRingCat.{u}}
 
-/--
-The class of schemes such that for each `x : X`,
-`Γ(X, U) ⟶ X_x` is injective for some affine `U` containing `x`.
-
-This is typically satisfied when `X` is integral or locally noetherian.
--/
-class Scheme.GermInjective (X : Scheme.{u}) : Prop where
-  exists_germ_injective : ∀ x : X, ∃ (U : X.Opens) (hx : x ∈ U),
-    IsAffineOpen U ∧ Function.Injective (X.presheaf.germ U x hx)
-
-lemma Scheme.exists_germ_injective (X : Scheme.{u}) [X.GermInjective] (x : X) :
-    ∃ (U : X.Opens) (hx : x ∈ U), IsAffineOpen U ∧ Function.Injective (X.presheaf.germ U x hx) :=
-  Scheme.GermInjective.exists_germ_injective x
+/-- The germ map at `x` is injective if there exists some affine `U ∋ x`
+  such that the map `Γ(X, U) ⟶ X_x` is injective -/
+def Scheme.IsGermInjectiveAt (X : Scheme.{u}) (x : X) : Prop :=
+  ∃ (U : X.Opens) (hx : x ∈ U), IsAffineOpen U ∧ Function.Injective (X.presheaf.germ U x hx)
 
 lemma injective_germ_basicOpen (U : X.Opens) (hU : IsAffineOpen U)
     (x : X) (hx : x ∈ U) (f : Γ(X, U))
@@ -57,19 +48,32 @@ lemma injective_germ_basicOpen (U : X.Opens) (hU : IsAffineOpen U)
   swap; · exact @isUnit_of_invertible _ _ _ (@IsLocalization.invertible_mk'_one ..)
   rw [H _ ht, IsLocalization.mk'_zero]
 
-lemma Scheme.exists_germ_injective_le (X : Scheme.{u}) [X.GermInjective]
-    (x : X) (V : X.Opens) (hxV : x ∈ V) :
+lemma Scheme.IsGermInjectiveAt.exists_of_le {X : Scheme.{u}} {x : X} (H : X.IsGermInjectiveAt x)
+    (V : X.Opens) (hxV : x ∈ V) :
     ∃ (U : X.Opens) (hx : x ∈ U),
         IsAffineOpen U ∧ U ≤ V ∧ Function.Injective (X.presheaf.germ U x hx) := by
-  obtain ⟨U, hx, hU, H⟩ := Scheme.exists_germ_injective X x
+  obtain ⟨U, hx, hU, H⟩ := H
   obtain ⟨f, hf, hxf⟩ := hU.exists_basicOpen_le ⟨x, hxV⟩ hx
   exact ⟨X.basicOpen f, hxf, hU.basicOpen f, hf, injective_germ_basicOpen U hU x hx f hxf H⟩
+
+/--
+The class of schemes such that for each `x : X`,
+`Γ(X, U) ⟶ X_x` is injective for some affine `U` containing `x`.
+
+This is typically satisfied when `X` is integral or locally noetherian.
+-/
+class Scheme.GermInjective (X : Scheme.{u}) : Prop where
+  isGermInjectiveAt : ∀ x : X, X.IsGermInjectiveAt x
+
+lemma Scheme.isGermInjectiveAt (X : Scheme.{u}) [X.GermInjective] (x : X) :
+    X.IsGermInjectiveAt x :=
+  Scheme.GermInjective.isGermInjectiveAt x
 
 lemma Scheme.GermInjective.of_openCover
     {X : Scheme.{u}} (𝒰 : X.OpenCover) [∀ i, (𝒰.obj i).GermInjective] : X.GermInjective := by
   refine ⟨fun x ↦ ?_⟩
   obtain ⟨y, e⟩ := 𝒰.covers x
-  obtain ⟨U, hyU, hU, hU'⟩ := (𝒰.obj (𝒰.f x)).exists_germ_injective y
+  obtain ⟨U, hyU, hU, hU'⟩ := (𝒰.obj (𝒰.f x)).isGermInjectiveAt y
   refine ⟨𝒰.map (𝒰.f x) ''ᵁ U, ⟨y, hyU, e⟩, hU.image_of_isOpenImmersion _, ?_⟩
   refine ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso
     _ ((X.presheaf.stalkCongr (.of_eq e.symm)).hom ≫ (𝒰.map (𝒰.f x)).stalkMap y)).mp ?_
@@ -174,7 +178,7 @@ lemma exists_lift_of_germInjective [X.GermInjective] {U : X.Opens} {x : X} (hxU 
     ∃ (V : X.Opens) (hxV : x ∈ V) (φ' : A ⟶ Γ(X, V)) (i : V ≤ U), IsAffineOpen V ∧
       φ = φ' ≫ X.presheaf.germ V x hxV ∧ φRX ≫ X.presheaf.map i.hom.op = φRA ≫ φ' := by
   obtain ⟨V, hxV, iVU, hV⟩ := exists_lift_of_germInjective_aux hxU φ φRA φRX hφRA e
-  obtain ⟨V', hxV', hV', iV'V, H⟩ := X.exists_germ_injective_le x V hxV
+  obtain ⟨V', hxV', hV', iV'V, H⟩ := (X.isGermInjectiveAt x).exists_of_le V hxV
   let f := X.presheaf.germ V' x hxV'
   have hf' : RingHom.range (X.presheaf.germ V x hxV) ≤ RingHom.range f := by
     rw [← X.presheaf.germ_res iV'V.hom _ hxV']
@@ -265,7 +269,8 @@ lemma spread_out_unique_of_germInjective [X.GermInjective] {x : X}
   obtain ⟨_, ⟨V : Y.Opens, hV, rfl⟩, hxV, -⟩ :=
     (isBasis_affine_open Y).exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
   have hxV' : g.base x ∈ V := e ▸ hxV
-  obtain ⟨U, hxU, _, hUV, HU⟩ := X.exists_germ_injective_le x (f ⁻¹ᵁ V ⊓ g ⁻¹ᵁ V) ⟨hxV, hxV'⟩
+  obtain ⟨U, hxU, _, hUV, HU⟩ :=
+    (X.isGermInjectiveAt x).exists_of_le (f ⁻¹ᵁ V ⊓ g ⁻¹ᵁ V) ⟨hxV, hxV'⟩
   refine ⟨U, hxU, ?_⟩
   rw [← Scheme.Hom.resLE_comp_ι _ (hUV.trans inf_le_left),
     ← Scheme.Hom.resLE_comp_ι _ (hUV.trans inf_le_right)]
