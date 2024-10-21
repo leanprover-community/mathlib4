@@ -117,7 +117,7 @@ variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 open MonoidalCategory
 
 -- `SimplicialCategory` should be an abbrev for this
-class StronglyEnrichedCategory extends EnrichedCategory V C where
+class EnrichedOrdinaryCategory extends EnrichedCategory V C where
   homEquiv (K L : C) : (K ⟶ L) ≃ (𝟙_ V ⟶ EnrichedCategory.Hom K L)
   homEquiv_id (K : C) : homEquiv K K (𝟙 K) = eId V K := by aesop_cat
   homEquiv_comp {K L M : C} (f : K ⟶ L) (g : L ⟶ M) :
@@ -126,18 +126,18 @@ class StronglyEnrichedCategory extends EnrichedCategory V C where
 
 section
 
-variable {C} [StronglyEnrichedCategory V C]
+variable {C} [EnrichedOrdinaryCategory V C]
 
 def eHomEquiv {K L : C} : (K ⟶ L) ≃ (𝟙_ V ⟶ EnrichedCategory.Hom K L) :=
-  StronglyEnrichedCategory.homEquiv K L
+  EnrichedOrdinaryCategory.homEquiv K L
 
 lemma eHomEquiv_id (K : C) : eHomEquiv V (𝟙 K) = eId V K :=
-  StronglyEnrichedCategory.homEquiv_id _
+  EnrichedOrdinaryCategory.homEquiv_id _
 
 @[reassoc]
 lemma eHomEquiv_comp {K L M : C} (f : K ⟶ L) (g : L ⟶ M) :
     eHomEquiv V (f ≫ g) = (λ_ _).inv ≫ (eHomEquiv V f ⊗ eHomEquiv V g) ≫ eComp V K L M :=
-  StronglyEnrichedCategory.homEquiv_comp _ _
+  EnrichedOrdinaryCategory.homEquiv_comp _ _
 
 attribute [local simp] eHomEquiv_id eHomEquiv_comp
 
@@ -192,7 +192,7 @@ open Limits
 
 namespace Enriched
 
-variable {C} {J : Type u''} [Category.{v''} J] [StronglyEnrichedCategory V C]
+variable {C} {J : Type u''} [Category.{v''} J] [EnrichedOrdinaryCategory V C]
 
 namespace FunctorCategory
 
@@ -293,14 +293,13 @@ lemma enrichedComp_π (j : J) :
 
 variable {F₁ F₂ F₃}
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma homEquiv_comp (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
   (homEquiv V) (f ≫ g) = (λ_ (𝟙_ V)).inv ≫ ((homEquiv V) f ⊗ (homEquiv V) g) ≫
     enrichedComp V F₁ F₂ F₃ := by
   ext j
-  rw [homEquiv_apply_π, NatTrans.comp_app, assoc, assoc, enrichedComp_π, eHomEquiv_comp,
-    ← tensor_comp_assoc, homEquiv_apply_π, homEquiv_apply_π]
-  dsimp
+  simp only [homEquiv_apply_π, NatTrans.comp_app, eHomEquiv_comp, assoc,
+    enrichedComp_π, Functor.op_obj, ← tensor_comp_assoc]
 
 end
 
@@ -308,7 +307,7 @@ end
 
 variable (J C) [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom V F₁ F₂]
 
-noncomputable def enriched : EnrichedCategory V (J ⥤ C) where
+noncomputable def enrichedOrdinaryCategory : EnrichedOrdinaryCategory V (J ⥤ C) where
   Hom F₁ F₂ := enrichedHom V F₁ F₂
   id F := enrichedId V F
   comp F₁ F₂ F₃ := enrichedComp V F₁ F₂ F₃
@@ -340,10 +339,6 @@ noncomputable def enriched : EnrichedCategory V (J ⥤ C) where
         whisker_exchange_assoc, ← tensorHom_def_assoc]
     dsimp
     rw [e_assoc]
-
-attribute [local instance] enriched
-
-noncomputable def stronglyEnriched : StronglyEnrichedCategory V (J ⥤ C) where
   homEquiv _ _ := homEquiv V
   homEquiv_id _ := homEquiv_id V _
   homEquiv_comp f g := homEquiv_comp V f g
