@@ -721,6 +721,13 @@ theorem Memℒp.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMea
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Memℒp f p μ :=
   (memℒp_const C).of_le hf (hfC.mono fun _x hx => le_trans hx (le_abs_self _))
 
+theorem memℒp_of_bounded [IsFiniteMeasure μ]
+    {a b : ℝ} {f : α → ℝ} (h : ∀ᵐ x ∂μ, f x ∈ Set.Icc a b)
+    (hX : AEStronglyMeasurable f μ) (p : ENNReal) : Memℒp f p μ :=
+  have ha : ∀ᵐ x ∂μ, a ≤ f x := h.mono fun ω h => h.1
+  have hb : ∀ᵐ x ∂μ, f x ≤ b := h.mono fun ω h => h.2
+  (memℒp_const (max |a| |b|)).mono' hX (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs)
+
 @[mono]
 theorem eLpNorm'_mono_measure (f : α → F) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
     eLpNorm' f q ν ≤ eLpNorm' f q μ := by

@@ -90,6 +90,9 @@ protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace �
     let ⟨s', hs'⟩ := Classical.axiom_of_choice hs
     ⟨⋃ i, s' i, m.measurableSet_iUnion _ fun i => (hs' i).left, by simp [hs']⟩
 
+lemma measurableSet_comap {m : MeasurableSpace β} :
+    MeasurableSet[m.comap f] s ↔ ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s := .rfl
+
 theorem comap_eq_generateFrom (m : MeasurableSpace β) (f : α → β) :
     m.comap f = generateFrom { t | ∃ s, MeasurableSet s ∧ f ⁻¹' s = t } :=
   (@generateFrom_measurableSet _ (.comap f m)).symm

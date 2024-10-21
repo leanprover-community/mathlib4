@@ -40,16 +40,19 @@ namespace AlgebraicGeometry
 topological map is a closed embedding and the induced stalk maps are surjective. -/
 @[mk_iff]
 class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
-  base_closed : ClosedEmbedding f.base
+  base_closed : IsClosedEmbedding f.base
   surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
 namespace IsClosedImmersion
 
-lemma closedEmbedding {X Y : Scheme} (f : X ⟶ Y)
-    [IsClosedImmersion f] : ClosedEmbedding f.base :=
+lemma isClosedEmbedding {X Y : Scheme} (f : X ⟶ Y)
+    [IsClosedImmersion f] : IsClosedEmbedding f.base :=
   IsClosedImmersion.base_closed
 
-lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding := isClosedEmbedding
+
+lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓
     stalkwise (fun f ↦ Function.Surjective f) := by
   ext X Y f
   rw [isClosedImmersion_iff]
@@ -57,7 +60,7 @@ lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
 
 lemma iff_isPreimmersion {X Y : Scheme} {f : X ⟶ Y} :
     IsClosedImmersion f ↔ IsPreimmersion f ∧ IsClosed (Set.range f.base) := by
-  rw [and_comm, isClosedImmersion_iff, isPreimmersion_iff, ← and_assoc, closedEmbedding_iff,
+  rw [and_comm, isClosedImmersion_iff, isPreimmersion_iff, ← and_assoc, isClosedEmbedding_iff,
     @and_comm (Embedding _)]
 
 lemma of_isPreimmersion {X Y : Scheme} (f : X ⟶ Y) [IsPreimmersion f]
@@ -69,7 +72,7 @@ instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : 
 
 /-- Isomorphisms are closed immersions. -/
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
-  base_closed := Homeomorph.closedEmbedding <| TopCat.homeoOfIso (asIso f.base)
+  base_closed := Homeomorph.isClosedEmbedding <| TopCat.homeoOfIso (asIso f.base)
   surj_on_stalks := fun _ ↦ (ConcreteCategory.bijective_of_isIso _).2
 
 instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
@@ -93,7 +96,7 @@ instance respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
 closed immersion. -/
 theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surjective f) :
     IsClosedImmersion (Spec.map f) where
-  base_closed := PrimeSpectrum.closedEmbedding_comap_of_surjective _ _ h
+  base_closed := PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _ h
   surj_on_stalks x := by
     haveI : (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f)).RespectsIso := by
       rw [← RingHom.toMorphismProperty_respectsIso_iff]
@@ -121,14 +124,13 @@ lemma of_surjective_of_isAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X 
 theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion g]
     [IsClosedImmersion (f ≫ g)] : IsClosedImmersion f where
   base_closed := by
-    have h := closedEmbedding (f ≫ g)
-    rw [Scheme.comp_base] at h
-    apply closedEmbedding_of_continuous_injective_closed (Scheme.Hom.continuous f)
-    · exact Function.Injective.of_comp h.inj
-    · intro Z hZ
-      rw [ClosedEmbedding.closed_iff_image_closed (closedEmbedding g),
-        ← Set.image_comp]
-      exact ClosedEmbedding.isClosedMap h _ hZ
+    have h := isClosedEmbedding (f ≫ g)
+    simp only [Scheme.comp_coeBase, TopCat.coe_comp] at h
+    refine .of_continuous_injective_isClosedMap (Scheme.Hom.continuous f) h.inj.of_comp ?_
+    intro Z hZ
+    rw [IsClosedEmbedding.closed_iff_image_closed (isClosedEmbedding g),
+      ← Set.image_comp]
+    exact h.isClosedMap _ hZ
   surj_on_stalks x := by
     have h := (f ≫ g).stalkMap_surjective x
     simp_rw [Scheme.stalkMap_comp] at h
@@ -222,14 +224,14 @@ namespace IsClosedImmersion
 sections is injective, `f` is an isomorphism. -/
 theorem isIso_of_injective_of_isAffine [IsClosedImmersion f]
     (hf : Function.Injective (f.app ⊤)) : IsIso f := (isIso_iff_stalk_iso f).mpr <|
-  have : CompactSpace X := (closedEmbedding f).compactSpace
+  have : CompactSpace X := (isClosedEmbedding f).compactSpace
   have hiso : IsIso f.base := TopCat.isIso_of_bijective_of_isClosedMap _
-    ⟨(closedEmbedding f).inj,
-     surjective_of_isClosed_range_of_injective ((closedEmbedding f).isClosed_range) hf⟩
-    ((closedEmbedding f).isClosedMap)
+    ⟨(isClosedEmbedding f).inj,
+     surjective_of_isClosed_range_of_injective ((isClosedEmbedding f).isClosed_range) hf⟩
+    ((isClosedEmbedding f).isClosedMap)
   ⟨hiso, fun x ↦ (ConcreteCategory.isIso_iff_bijective _).mpr
     ⟨stalkMap_injective_of_isOpenMap_of_injective ((TopCat.homeoOfIso (asIso f.base)).isOpenMap)
-    (closedEmbedding f).inj hf _, f.stalkMap_surjective x⟩⟩
+    (isClosedEmbedding f).inj hf _, f.stalkMap_surjective x⟩⟩
 
 variable (f)
 

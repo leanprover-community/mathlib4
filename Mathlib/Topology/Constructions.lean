@@ -937,11 +937,17 @@ theorem isClosed_range_inr : IsClosed (range (inr : Y → X ⊕ Y)) := by
   rw [← isOpen_compl_iff, compl_range_inr]
   exact isOpen_range_inl
 
-theorem closedEmbedding_inl : ClosedEmbedding (inl : X → X ⊕ Y) :=
+theorem isClosedEmbedding_inl : IsClosedEmbedding (inl : X → X ⊕ Y) :=
   ⟨embedding_inl, isClosed_range_inl⟩
 
-theorem closedEmbedding_inr : ClosedEmbedding (inr : Y → X ⊕ Y) :=
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_inl := isClosedEmbedding_inl
+
+theorem isClosedEmbedding_inr : IsClosedEmbedding (inr : Y → X ⊕ Y) :=
   ⟨embedding_inr, isClosed_range_inr⟩
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_inr := isClosedEmbedding_inr
 
 theorem nhds_inl (x : X) : 𝓝 (inl x : X ⊕ Y) = map inl (𝓝 x) :=
   (isOpenEmbedding_inl.map_nhds_eq _).symm
@@ -981,7 +987,7 @@ theorem isClosedMap_sum {f : X ⊕ Y → Z} :
     IsClosedMap f ↔ (IsClosedMap fun a => f (.inl a)) ∧ IsClosedMap fun b => f (.inr b) := by
   constructor
   · intro h
-    exact ⟨h.comp closedEmbedding_inl.isClosedMap, h.comp closedEmbedding_inr.isClosedMap⟩
+    exact ⟨h.comp isClosedEmbedding_inl.isClosedMap, h.comp isClosedEmbedding_inr.isClosedMap⟩
   · rintro h Z hZ
     rw [isClosed_sum_iff] at hZ
     convert (h.1 _ hZ.1).union (h.2 _ hZ.2)
@@ -1003,9 +1009,12 @@ theorem Inducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, f x ∈ t
 theorem embedding_subtype_val : Embedding ((↑) : Subtype p → X) :=
   ⟨inducing_subtype_val, Subtype.coe_injective⟩
 
-theorem closedEmbedding_subtype_val (h : IsClosed { a | p a }) :
-    ClosedEmbedding ((↑) : Subtype p → X) :=
+theorem IsClosedEmbedding.subtypeVal (h : IsClosed {a | p a}) :
+    IsClosedEmbedding ((↑) : Subtype p → X) :=
   ⟨embedding_subtype_val, by rwa [Subtype.range_coe_subtype]⟩
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_subtype_val := IsClosedEmbedding.subtypeVal
 
 @[continuity, fun_prop]
 theorem continuous_subtype_val : Continuous (@Subtype.val X p) :=
@@ -1029,13 +1038,15 @@ theorem IsOpenMap.restrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs : Is
     IsOpenMap (s.restrict f) :=
   hf.comp hs.isOpenMap_subtype_val
 
-nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set X} (hs : IsClosed s) :
-    ClosedEmbedding ((↑) : s → X) :=
-  closedEmbedding_subtype_val hs
+lemma IsClosed.isClosedEmbedding_subtypeVal {s : Set X} (hs : IsClosed s) :
+    IsClosedEmbedding ((↑) : s → X) := .subtypeVal hs
+
+@[deprecated (since := "2024-10-20")]
+alias IsClosed.closedEmbedding_subtype_val := IsClosed.isClosedEmbedding_subtypeVal
 
 theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
     IsClosedMap ((↑) : s → X) :=
-  hs.closedEmbedding_subtype_val.isClosedMap
+  hs.isClosedEmbedding_subtypeVal.isClosedMap
 
 @[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
@@ -1547,12 +1558,15 @@ theorem isOpenEmbedding_sigmaMk {i : ι} : IsOpenEmbedding (@Sigma.mk ι σ i) :
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_sigmaMk := isOpenEmbedding_sigmaMk
 
-theorem closedEmbedding_sigmaMk {i : ι} : ClosedEmbedding (@Sigma.mk ι σ i) :=
-  closedEmbedding_of_continuous_injective_closed continuous_sigmaMk sigma_mk_injective
+theorem isClosedEmbedding_sigmaMk {i : ι} : IsClosedEmbedding (@Sigma.mk ι σ i) :=
+  .of_continuous_injective_isClosedMap continuous_sigmaMk sigma_mk_injective
     isClosedMap_sigmaMk
 
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_sigmaMk := isClosedEmbedding_sigmaMk
+
 theorem embedding_sigmaMk {i : ι} : Embedding (@Sigma.mk ι σ i) :=
-  closedEmbedding_sigmaMk.1
+  isClosedEmbedding_sigmaMk.1
 
 theorem Sigma.nhds_mk (i : ι) (x : σ i) : 𝓝 (⟨i, x⟩ : Sigma σ) = Filter.map (Sigma.mk i) (𝓝 x) :=
   (isOpenEmbedding_sigmaMk.map_nhds_eq x).symm
@@ -1657,9 +1671,12 @@ theorem continuous_uLift_up [TopologicalSpace X] : Continuous (ULift.up : X → 
 theorem embedding_uLift_down [TopologicalSpace X] : Embedding (ULift.down : ULift.{v, u} X → X) :=
   ⟨⟨rfl⟩, ULift.down_injective⟩
 
-theorem ULift.closedEmbedding_down [TopologicalSpace X] :
-    ClosedEmbedding (ULift.down : ULift.{v, u} X → X) :=
+theorem ULift.isClosedEmbedding_down [TopologicalSpace X] :
+    IsClosedEmbedding (ULift.down : ULift.{v, u} X → X) :=
   ⟨embedding_uLift_down, by simp only [ULift.down_surjective.range_eq, isClosed_univ]⟩
+
+@[deprecated (since := "2024-10-20")]
+alias ULift.closedEmbedding_down := ULift.isClosedEmbedding_down
 
 instance [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (ULift X) :=
   embedding_uLift_down.discreteTopology
