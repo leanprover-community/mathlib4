@@ -571,6 +571,25 @@ def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsColimit c) :
     dsimp at this ⊢
     rw [assoc, this, IsColimit.fac, NatTrans.comp_app, whiskerLeft_app])
 
+variable [HasColimit F] [HasColimit F']
+
+/-- The colimit over any left Kan extension of `F` is isomorphic to `F`. -/
+noncomputable def colimitIsoOfIsLeftKanExtension : colimit F' ≅ colimit F :=
+  IsColimit.coconePointUniqueUpToIso (colimit.isColimit F')
+    (F'.isColimitCoconeOfIsLeftKanExtension α (colimit.isColimit F))
+
+@[reassoc (attr := simp)]
+lemma ι_colimitIsoOfIsLeftKanExtension_hom (i : C) :
+    α.app i ≫ colimit.ι F' (L.obj i) ≫ (F'.colimitIsoOfIsLeftKanExtension α).hom =
+      colimit.ι F i := by
+  simp [colimitIsoOfIsLeftKanExtension]
+
+@[reassoc (attr := simp)]
+lemma ι_colimitIsoOfIsLeftKanExtension_inv (i : C) :
+    colimit.ι F i ≫ (F'.colimitIsoOfIsLeftKanExtension α).inv =
+    α.app i ≫ colimit.ι F' (L.obj i) := by
+  rw [@Iso.comp_inv_eq, assoc, ι_colimitIsoOfIsLeftKanExtension_hom]
+
 end Colimit
 
 section Limit
@@ -598,6 +617,24 @@ def isLimitConeOfIsRightKanExtension {c : Cone F} (hc : IsLimit c) :
     nth_rw 1 [← F'.liftOfIsRightKanExtension_fac_app α ((const D).obj c.pt)]
     dsimp at this ⊢
     rw [← assoc, this, IsLimit.fac, NatTrans.comp_app, whiskerLeft_app])
+
+
+variable [HasLimit F] [HasLimit F']
+
+/-- The limit over any right Kan extension of `F` is isomorphic to `F`. -/
+noncomputable def limitIsoOfIsRightKanExtension : limit F' ≅ limit F :=
+  IsLimit.conePointUniqueUpToIso (limit.isLimit F')
+    (F'.isLimitConeOfIsRightKanExtension α (limit.isLimit F))
+
+@[reassoc (attr := simp)]
+lemma limitIsoOfIsRightKanExtension_inv_π (i : C) :
+    (F'.limitIsoOfIsRightKanExtension α).inv ≫ limit.π F' (L.obj i) ≫ α.app i = limit.π F i := by
+  simp [limitIsoOfIsRightKanExtension]
+
+@[reassoc (attr := simp)]
+lemma limitIsoOfIsRightKanExtension_hom_π (i : C) :
+    (F'.limitIsoOfIsRightKanExtension α).hom ≫ limit.π F i = limit.π F' (L.obj i) ≫ α.app i := by
+  rw [← Iso.eq_inv_comp, limitIsoOfIsRightKanExtension_inv_π]
 
 end Limit
 
