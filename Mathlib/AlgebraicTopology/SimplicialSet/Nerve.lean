@@ -168,8 +168,7 @@ def ar.tgt {n} (i : Fin n) : (ar i) ⟶ (pt i.succ) := by
 theorem ran.lift.arrow_src {X : SSet.{u}} {n} {i : Fin n}
     (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
       (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt) :
-    X.δ 1 (s.π.app (ar i) x) = s.π.app (pt i.castSucc) x :=
-      by
+    X.δ 1 (s.π.app (ar i) x) = s.π.app (pt i.castSucc) x := by
   have hi := congr_fun (s.π.naturality (ar.src i)) x
   unfold hom at hi
   simp at hi
@@ -274,12 +273,11 @@ def inductionHypMap {n} (j : Fin (n + 1))
     (k₀ : Fin (n - j.1)) : j ⟶ ⟨j.1 + k₀.1 + 1, (by omega)⟩ :=
   (Nat.le_add_right j.1 (k₀.1 + 1)).hom
 
-
 /-- This theorem is used to prove the factorization property of `ran.lift`.-/
 theorem ran.lift.map' {X : SSet.{u}} {hX : StrictSegal X} {n}
-  (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
-      (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt)
-      (j : Fin (n + 1)) (k : Fin (n - j.1 + 1)) :
+    (s : Cone (StructuredArrow.proj (op [n])
+    (Truncated.inclusion (n := 2)).op ⋙ (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt)
+    (j : Fin (n + 1)) (k : Fin (n - j.1 + 1)) :
       X.map (mkOfLe _ _ (inductionMap j k).le).op (ran.lift (hX := hX) s x) =
         s.π.app (ar' (inductionMap j k)) x := by
   refine Fin.inductionOn k ?_ ?_
@@ -445,11 +443,17 @@ theorem ran.lift.map' {X : SSet.{u}} {hX : StrictSegal X} {n}
 
 /-- This theorem is used to prove the factorization property of `ran.lift`.-/
 theorem ran.lift.map {X : SSet.{u}} {hX : StrictSegal X} {n}
-    (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
-      (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt)
-      (j k : Fin (n + 1)) (hjk : j ⟶ k) :
+    (s : Cone (StructuredArrow.proj (op [n])
+    (Truncated.inclusion (n := 2)).op ⋙ (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt)
+    (j k : Fin (n + 1)) (hjk : j ⟶ k) :
       X.map (mkOfLe _ _ hjk.le).op (ran.lift (hX := hX) s x) = s.π.app (ar' hjk) x := by
-  have := ran.lift.map' (hX := hX) s x j (k - j)
+  revert k
+  have thm := ran.lift.map' (hX := hX) s x j
+  intro ⟨k, hk⟩ hjk
+  unfold inductionMap at thm
+  let k' : Fin (n - j.1 + 1) := ⟨k - j.1, (by omega)⟩
+  have := thm k'
+  have ieq : k = j.1 + k'.1 := Eq.symm (Nat.add_sub_of_le hjk.le)
   sorry
 
 

@@ -458,8 +458,8 @@ structure Path (n : ℕ) where
 
 /-- For `j ≤ k ≤ n`, a path of length `n` restricts to a path of length `k-j`, namely the subpath
 spanned by the vertices `j ≤ i ≤ k` and edges `j ≤ i < k`. -/
-def Path.interval {n : ℕ} (f : Path X n) (j k : ℕ) (hjk : j ≤ k) (hkn : k ≤ n)
-    : Path X (k - j) where
+def Path.interval {n : ℕ} (f : Path X n) (j k : ℕ) (hjk : j ≤ k) (hkn : k ≤ n) :
+    Path X (k - j) where
   vertex i := f.vertex (Fin.addNat i j)
   arrow i := f.arrow ⟨Fin.addNat i j, (by omega)⟩
   arrow_src i := by
@@ -599,6 +599,8 @@ theorem spineToSimplex_edge (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n) :
     exact (Nat.sub_eq_iff_eq_add hjk).mp rfl
   rw [this]
 
+/-- Perhaps it is more useful to index an edge from `j` to `j + k` by `j : Fin (n + 1)` and
+`k : ℕ` and `hjk : j.1 + k < n + 1`.-/
 @[simp]
 theorem spineToSimplex_edge' (j : Fin (n + 1)) (k : ℕ) (hjk : j.1 + k < n + 1) (f : Path X n) :
     X.map (mkOfLe j ⟨j.1 + k, hjk⟩ (Nat.le_add_right j k)).op (spineToSimplex (hX := hX) f) =
