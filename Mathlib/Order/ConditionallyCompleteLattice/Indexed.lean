@@ -3,16 +3,14 @@ Copyright (c) 2018 Sébastian Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastian Gouëzel
 -/
-/-
-Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Indexed sup / inf in conditionally complete lattices
 
+This file proves lemmas about `iSup` and `iInf` for functions valued in a conditionally complete,
+rather than complete, lattice. We add a prefix `c` to distinguish them from the versions for
+complete lattices, giving names `ciSup_xxx` or `ciInf_xxx`.
 -/
 
 -- Guard against import creep
