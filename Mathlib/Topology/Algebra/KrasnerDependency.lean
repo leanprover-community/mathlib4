@@ -1,7 +1,7 @@
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.Seminorm
-import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.RingTheory.Algebraic
 
 /-
 In this file, we state Maria and Fillipo's result. waiting for their work wo be merged into Mathlib.
@@ -204,18 +204,6 @@ structure MulAlgebraNorm (R : Type _) [SeminormedCommRing R] (S : Type _) [Ring 
     [Algebra R S] extends MulRingNorm S, Seminorm R S
 
 attribute [nolint docBlame] MulAlgebraNorm.toSeminorm MulAlgebraNorm.toMulRingNorm
-
--- FromMathlib.RingSeminorm
-/-- The norm on a `normed_field`, as a `mul_ring_norm`. -/
-def NormedField.toMulRingNorm (R : Type _) [NormedField R] : MulRingNorm R where
-  toFun     := norm
-  map_zero' := norm_zero
-  map_one'  := norm_one
-  add_le'   := norm_add_le
-  map_mul'  := norm_mul
-  neg'      := norm_neg
-  eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
-
 
 /-- The spectral norm is a multiplicative `K`-algebra norm on `L`.-/
 def spectralMulAlgNorm [CompleteSpace K] (hna : IsNonarchimedean (norm : K → ℝ)) :
