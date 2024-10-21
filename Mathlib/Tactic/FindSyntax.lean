@@ -43,7 +43,7 @@ def extractSymbols : Expr → Array Expr
 
 /--
 `litToString expr` converts the input `Expr`ession `expr` into the "natural" string that
-it corresponds to, in case `expr` is a `String`/`Nat`-linteral, returning the empty string `""`
+it corresponds to, in case `expr` is a `String`/`Nat`-literal, returning the empty string `""`
 otherwise.
 -/
 def litToString : Expr → String
