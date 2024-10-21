@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Michael Rothgang
 -/
 import Batteries.Tactic.Lint
 import Mathlib.Lean.Expr.Basic
+import Lean.Util.CollectFVars
 
 /-!
 # Linters for unused assumptions in a type
@@ -35,23 +36,37 @@ def checkUnusedAssumptionInType (declInfo : ConstantInfo) (typesToAvoid : Array 
   -- Compute an array of pairs (argument index, error message) for each superfluous argument:
   -- the first component is the index of the superfluous argument, the second component
   -- contains details about the error.
-  let mut impossibleArgs ← forallTelescopeReducing type fun args ty ↦ do
-    let argTys ← args.mapM inferType
+  forallTelescopeReducing type fun args ty ↦ do
+    -- Compute whether the given argument is used by the body of the definition outside of proofs.
+    let usedIdxs : Array Bool ← do
+      if ← pure declInfo.hasValue <&&> not <$> isProp type then
+        lambdaTelescope declInfo.value! fun args' e ↦ do
+          let mut usedIdxs := args.map (fun _ => false)
+          let e ← e.eraseProofs
+          let st := collectFVars {} e
+          for i in [0:args'.size] do
+            usedIdxs := usedIdxs.set! i (st.fvarSet.contains args'[i]!.fvarId!)
+          pure usedIdxs
+      else
+        pure #[]
+    -- Early return: every argument is used.
+    if usedIdxs.size == args.size && usedIdxs.all id then
+      return none
+    -- Compute an array of error messages for each superfluous argument
     let ty ← ty.eraseProofs
-    return ← (args.zip argTys.zipWithIndex).filterMapM fun (arg, t, i) ↦ do
-      unless typesToAvoid.any t.cleanupAnnotations.getForallBody.isAppOf do return none
-      let fv := arg.fvarId!
-      if ty.containsFVar fv then return none
-      if argTys[i+1:].any (·.containsFVar fv) then return none
-      return some (i, (← addMessageContextFull m!"argument {i+1} {arg} : {t}"))
-  if !(← isProp type) then
-    if let some e := declInfo.value? then
-      impossibleArgs ← lambdaTelescope e fun args e ↦ do
-        let e ← e.eraseProofs
-        return impossibleArgs.filter fun (k, _) ↦
-          k < args.size && !e.containsFVar args[k]!.fvarId!
-  if impossibleArgs.isEmpty then return none
-  return some <| .joinSep (impossibleArgs.toList.map Prod.snd) ", "
+    let mut impossibleArgs := #[]
+    let mut usedFVars : CollectFVars.State := collectFVars {} ty
+    for i' in [0:args.size] do
+      let i := args.size - i' - 1
+      let arg := args[i]!
+      let t := (← inferType arg).cleanupAnnotations
+      if t.containsConst typesToAvoid.contains then
+        if usedIdxs[i]? != some true && !usedFVars.fvarSet.contains t.fvarId! then
+          impossibleArgs := impossibleArgs.push
+            (← addMessageContextFull m!"argument {i+1} {arg} : {t}")
+      usedFVars := collectFVars usedFVars t
+    if impossibleArgs.isEmpty then return none
+    return some <| .joinSep impossibleArgs.reverse.toList ", "
 
 /-- Temporary  hack -/
 @[env_linter] def allOfThem : Linter where
