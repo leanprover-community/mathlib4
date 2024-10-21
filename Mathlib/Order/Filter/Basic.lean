@@ -893,6 +893,11 @@ theorem eventually_inf_principal {f : Filter α} {p : α → Prop} {s : Set α} 
     (∀ᶠ x in f ⊓ 𝓟 s, p x) ↔ ∀ᶠ x in f, x ∈ s → p x :=
   mem_inf_principal
 
+theorem eventually_iff_all_subsets {f : Filter α} {p : α → Prop} :
+    (∀ᶠ x in f, p x) ↔ ∀ (s : Set α), ∀ᶠ x in f, x ∈ s → p x where
+    mp h _ := by filter_upwards [h] with _ pa _ using pa
+    mpr h := by filter_upwards [h univ] with _ pa using pa (by simp)
+
 /-! ### Frequently -/
 
 theorem Eventually.frequently {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ᶠ x in f, p x) :
@@ -1218,6 +1223,10 @@ theorem eventuallyEq_iff_sub [AddGroup β] {f g : α → β} {l : Filter α} :
     f =ᶠ[l] g ↔ f - g =ᶠ[l] 0 :=
   ⟨fun h => h.sub_eq, fun h => by simpa using h.add (EventuallyEq.refl l g)⟩
 
+theorem eventuallyEq_iff_all_subsets {f g : α → β} {l : Filter α} :
+    f =ᶠ[l] g ↔ ∀ s : Set α, ∀ᶠ x in l, x ∈ s → f x = g x :=
+  eventually_iff_all_subsets
+
 section LE
 
 variable [LE β] {l : Filter α}
@@ -1229,6 +1238,10 @@ theorem EventuallyLE.congr {f f' g g' : α → β} (H : f ≤ᶠ[l] g) (hf : f =
 theorem eventuallyLE_congr {f f' g g' : α → β} (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') :
     f ≤ᶠ[l] g ↔ f' ≤ᶠ[l] g' :=
   ⟨fun H => H.congr hf hg, fun H => H.congr hf.symm hg.symm⟩
+
+theorem eventuallyLE_iff_all_subsets {f g : α → β} {l : Filter α} :
+    f ≤ᶠ[l] g ↔ ∀ s : Set α, ∀ᶠ x in l, x ∈ s → f x ≤ g x :=
+  eventually_iff_all_subsets
 
 end LE
 
