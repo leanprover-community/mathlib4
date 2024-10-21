@@ -271,28 +271,25 @@ lemma discreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
       exact ⟨u, hu, hu' ▸ by simpa using hw', hu' ▸ by simpa using hw⟩
     let u := t.filter (fun a ↦ ‖a‖₊ < 1)
     have hwu : w ∈ u := by simp [u, hwt, hw1]
-    have hu : u.Nonempty := ⟨w, hwu⟩
-    have := hu.iSup_nnnorm_mem_image id
-    simp only [id_eq, Finset.mem_image] at this
-    obtain ⟨l, hl, hl'⟩ := this
-    rw [hu.ciSup_eq_max'_image] at hl'
+    obtain ⟨l, hl, hl'⟩ := u.sup'_mem (((‖·‖₊) : 𝒪[K] → ℝ≥0) '' u)
+      (fun x hx y hy ↦ (max_cases x y).elim
+        (fun h ↦ (sup_eq_max (a := x) (b := y) ▸ h).left.symm ▸ hx)
+        (fun h ↦ (sup_eq_max (a := x) (b := y) ▸ h).left.symm ▸ hy))
+      ⟨w, hwu⟩ (‖·‖₊) (fun _ ↦ Set.mem_image_of_mem _)
+    simp only at hl'
     have hm : (⟨‖l‖₊, l, rfl⟩ : Set.range ((‖·‖₊) : 𝒪[K] → ℝ≥0)) < (⟨1, y, hy'⟩) := by
-      simp only [Finset.mem_filter, u] at hl
+      simp only [Finset.coe_filter, Set.mem_setOf_eq, u] at hl
       simp [hl.right]
     obtain ⟨⟨_, m, rfl⟩, hm⟩ := exists_between hm
     simp only [Subtype.mk_lt_mk] at hm
     obtain ⟨n, hn, hn'⟩ : ∃ n ∈ t, ‖n‖₊ = ‖m‖₊ := by
       refine htm m (hxw.trans (hm.left.trans_le' ?_))
-      rw [hl']
-      convert Finset.le_max' _ _ ?_
-      simp only [Finset.mem_image]
-      exact ⟨_, hwu, rfl⟩
+      rw [hl', Finset.le_sup'_iff]
+      exact ⟨w, hwu, le_rfl⟩
     rw [← hn'] at hm
     refine hm.left.not_le ?_
-    rw [hl']
-    convert Finset.le_max' _ _ ?_
-    simp only [Finset.mem_image]
-    refine ⟨n, ?_, rfl⟩
+    rw [hl', Finset.le_sup'_iff]
+    refine ⟨n, ?_, le_rfl⟩
     simp [u, hn, hm.right]
   exact {
     __ := hl
