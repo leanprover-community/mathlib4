@@ -162,8 +162,29 @@ def absConvexClosedHull : ClosureOperator (Set E) :=
 
 variable {𝕜}
 
+theorem absConvex_convexClosedHull {s : Set E} :
+    AbsConvex 𝕜 (absConvexClosedHull 𝕜 s) := ((absConvexClosedHull 𝕜).isClosed_closure s).1
+
+theorem isClosed_absConvexClosedHull {s : Set E} :
+    IsClosed (absConvexClosedHull 𝕜 s) := ((absConvexClosedHull 𝕜).isClosed_closure s).2
+
+theorem subset_absConvexClosedHull {s : Set E} : s ⊆ absConvexClosedHull 𝕜 s :=
+  (absConvexClosedHull 𝕜).le_closure s
+
 theorem absConvexClosedHull_min {s t : Set E} : s ⊆ t → AbsConvex 𝕜 t ∧ IsClosed t →
     absConvexClosedHull 𝕜 s ⊆ t := (absConvexClosedHull 𝕜).closure_min
+
+theorem absConvexHull_subseteq_convexClosedHull {s : Set E} :
+    (absConvexHull 𝕜) s ⊆ (absConvexClosedHull 𝕜) s :=
+  absConvexHull_min subset_absConvexClosedHull absConvex_convexClosedHull
+
+theorem absConvexClosedHull_eq_absConvexClosedHull_closure {s : Set E} :
+    absConvexClosedHull 𝕜 s = absConvexClosedHull 𝕜 (closure s) := subset_antisymm
+  (absConvexClosedHull_min (subset_trans subset_closure subset_absConvexClosedHull)
+    ⟨absConvex_convexClosedHull, isClosed_absConvexClosedHull⟩)
+  (absConvexClosedHull_min
+    (closure_minimal subset_absConvexClosedHull isClosed_absConvexClosedHull)
+    ⟨absConvex_convexClosedHull, isClosed_absConvexClosedHull⟩)
 
 end AbsolutelyConvex
 
