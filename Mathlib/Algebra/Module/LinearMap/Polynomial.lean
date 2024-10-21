@@ -351,7 +351,7 @@ lemma polyCharpolyAux_basisIndep {ιM' : Type*} [Fintype ιM'] [DecidableEq ιM'
 
 end aux
 
-open FiniteDimensional Matrix
+open Module Matrix
 
 variable [Module.Free R M] [Module.Finite R M] (b : Basis ι R L)
 
@@ -479,11 +479,11 @@ lemma polyCharpoly_coeff_nilRank_ne_zero :
   rw [nilRank_eq_polyCharpoly_natTrailingDegree _ b]
   apply polyCharpoly_coeff_nilRankAux_ne_zero
 
-open FiniteDimensional Module.Free
+open Module Module.Free
 
 lemma nilRank_le_card {ι : Type*} [Fintype ι] (b : Basis ι R M) : nilRank φ ≤ Fintype.card ι := by
   apply Polynomial.natTrailingDegree_le_of_ne_zero
-  rw [← FiniteDimensional.finrank_eq_card_basis b, ← polyCharpoly_natDegree φ (chooseBasis R L),
+  rw [← Module.finrank_eq_card_basis b, ← polyCharpoly_natDegree φ (chooseBasis R L),
     Polynomial.coeff_natDegree, (polyCharpoly_monic _ _).leadingCoeff]
   apply one_ne_zero
 
@@ -538,7 +538,7 @@ section IsDomain
 
 variable [IsDomain R]
 
-open Cardinal FiniteDimensional MvPolynomial Module.Free in
+open Cardinal Module MvPolynomial Module.Free in
 lemma exists_isNilRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
     ∃ x : L, IsNilRegular φ x := by
   let b := chooseBasis R L

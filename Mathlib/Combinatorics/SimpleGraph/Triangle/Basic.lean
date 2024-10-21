@@ -256,7 +256,7 @@ lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ 
   by_contra! hε
   refine lt_irrefl (ε * card α ^ 2) ?_
   have hε₀ : 0 < ε := hε.trans_lt' (by norm_num)
-  rw [inv_pos_le_iff_one_le_mul (zero_lt_two' 𝕜)] at hε
+  rw [inv_le_iff_one_le_mul₀ (zero_lt_two' 𝕜)] at hε
   calc
     _ ≤ (G.edgeFinset.card : 𝕜) := by
       simpa using hG.le_card_sub_card bot_le (cliqueFree_bot (le_succ _))
@@ -276,7 +276,7 @@ lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ 
   apply tsub_lt_self <;> positivity
 
 lemma FarFromTriangleFree.lt_one (hG : G.FarFromTriangleFree ε) : ε < 1 :=
-  hG.lt_half.trans <| inv_lt_one one_lt_two
+  hG.lt_half.trans two_inv_lt_one
 
 theorem FarFromTriangleFree.nonpos (h₀ : G.FarFromTriangleFree ε) (h₁ : G.CliqueFree 3) :
     ε ≤ 0 := by

@@ -195,7 +195,7 @@ alias IsTotallySeparated.isTotallyDisconnected := isTotallyDisconnected_of_isTot
 
 /-- A space is totally separated if any two points can be separated by two disjoint open sets
 covering the whole space. -/
-class TotallySeparatedSpace (α : Type u) [TopologicalSpace α] : Prop where
+@[mk_iff] class TotallySeparatedSpace (α : Type u) [TopologicalSpace α] : Prop where
   /-- The universal set `Set.univ` in a totally separated space is totally separated. -/
   isTotallySeparated_univ : IsTotallySeparated (univ : Set α)
 
@@ -210,15 +210,19 @@ instance (priority := 100) TotallySeparatedSpace.of_discrete (α : Type*) [Topol
   ⟨fun _ _ b _ h => ⟨{b}ᶜ, {b}, isOpen_discrete _, isOpen_discrete _, h, rfl,
     (compl_union_self _).symm.subset, disjoint_compl_left⟩⟩
 
+theorem totallySeparatedSpace_iff_exists_isClopen {α : Type*} [TopologicalSpace α] :
+    TotallySeparatedSpace α ↔ ∀ x y : α, x ≠ y → ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ := by
+  simp only [totallySeparatedSpace_iff, IsTotallySeparated, Set.Pairwise, mem_univ, true_implies]
+  refine forall₃_congr fun x y _ ↦
+    ⟨fun ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ ↦ ?_, fun ⟨U, hU, Ux, Ucy⟩ ↦ ?_⟩
+  · exact ⟨U, isClopen_of_disjoint_cover_open f hU hV disj,
+      Ux, fun Uy ↦ Set.disjoint_iff.mp disj ⟨Uy, Vy⟩⟩
+  · exact ⟨U, Uᶜ, hU.2, hU.compl.2, Ux, Ucy, (Set.union_compl_self U).ge, disjoint_compl_right⟩
+
 theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
     [TotallySeparatedSpace α] {x y : α} (hxy : x ≠ y) :
-    ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ := by
-  obtain ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ :=
-    TotallySeparatedSpace.isTotallySeparated_univ (Set.mem_univ x) (Set.mem_univ y) hxy
-  have hU := isClopen_inter_of_disjoint_cover_clopen isClopen_univ f hU hV disj
-  rw [univ_inter _] at hU
-  rw [← Set.subset_compl_iff_disjoint_right, subset_compl_comm] at disj
-  exact ⟨U, hU, Ux, disj Vy⟩
+    ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ :=
+  totallySeparatedSpace_iff_exists_isClopen.mp ‹_› _ _ hxy
 
 end TotallySeparated
 
@@ -259,7 +263,6 @@ theorem connectedComponents_lift_unique' {β : Sort*} {g₁ g₂ : ConnectedComp
 theorem Continuous.connectedComponentsLift_unique (h : Continuous f) (g : ConnectedComponents α → β)
     (hg : g ∘ (↑) = f) : g = h.connectedComponentsLift :=
   connectedComponents_lift_unique' <| hg.trans h.connectedComponentsLift_comp_coe.symm
-
 
 instance ConnectedComponents.totallyDisconnectedSpace :
     TotallyDisconnectedSpace (ConnectedComponents α) := by

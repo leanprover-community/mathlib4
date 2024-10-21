@@ -3,8 +3,8 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Algebra.Order.Ring.Basic
 
 /-!
 # Convergence to ±infinity in ordered rings
@@ -30,7 +30,7 @@ theorem tendsto_mul_self_atTop : Tendsto (fun x : α => x * x) atTop atTop :=
 /-- The monomial function `x^n` tends to `+∞` at `+∞` for any positive natural `n`.
 A version for positive real powers exists as `tendsto_rpow_atTop`. -/
 theorem tendsto_pow_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (fun x : α => x ^ n) atTop atTop :=
-  tendsto_atTop_mono' _ ((eventually_ge_atTop 1).mono fun _x hx => le_self_pow hx hn) tendsto_id
+  tendsto_atTop_mono' _ ((eventually_ge_atTop 1).mono fun _x hx => le_self_pow₀ hx hn) tendsto_id
 
 end OrderedSemiring
 

@@ -661,11 +661,9 @@ theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
 
 section Unique
 
-variable [Unique β] (f : β → C)
-
 /-- The limit cone for the product over an index type with exactly one term. -/
 @[simps]
-def limitConeOfUnique : LimitCone (Discrete.functor f) where
+def limitConeOfUnique [Unique β] (f : β → C) : LimitCone (Discrete.functor f) where
   cone :=
     { pt := f default
       π := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by
@@ -682,17 +680,18 @@ def limitConeOfUnique : LimitCone (Discrete.functor f) where
         specialize w default
         simpa using w }
 
-instance (priority := 100) hasProduct_unique : HasProduct f :=
-  HasLimit.mk (limitConeOfUnique f)
+instance (priority := 100) hasProduct_unique [Nonempty β] [Subsingleton β] (f : β → C) :
+    HasProduct f :=
+  let ⟨_⟩ := nonempty_unique β; HasLimit.mk (limitConeOfUnique f)
 
 /-- A product over an index type with exactly one term is just the object over that term. -/
 @[simps!]
-def productUniqueIso : ∏ᶜ f ≅ f default :=
+def productUniqueIso [Unique β] (f : β → C) : ∏ᶜ f ≅ f default :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitConeOfUnique f).isLimit
 
 /-- The colimit cocone for the coproduct over an index type with exactly one term. -/
 @[simps]
-def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f) where
+def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.functor f) where
   cocone :=
     { pt := f default
       ι := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by
@@ -710,12 +709,13 @@ def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f) where
         erw [Category.id_comp] at w
         exact w }
 
-instance (priority := 100) hasCoproduct_unique : HasCoproduct f :=
-  HasColimit.mk (colimitCoconeOfUnique f)
+instance (priority := 100) hasCoproduct_unique [Nonempty β] [Subsingleton β] (f : β → C) :
+    HasCoproduct f :=
+  let ⟨_⟩ := nonempty_unique β; HasColimit.mk (colimitCoconeOfUnique f)
 
 /-- A coproduct over an index type with exactly one term is just the object over that term. -/
 @[simps!]
-def coproductUniqueIso : ∐ f ≅ f default :=
+def coproductUniqueIso [Unique β] (f : β → C) : ∐ f ≅ f default :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitCoconeOfUnique f).isColimit
 
 end Unique

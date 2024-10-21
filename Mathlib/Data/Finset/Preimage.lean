@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Finite
+import Mathlib.Data.Finset.Sum
 
 /-!
 # Preimage of a `Finset` under an injective map.
@@ -46,7 +47,7 @@ theorem preimage_univ {f : α → β} [Fintype α] [Fintype β] (hf) : preimage 
 @[simp]
 theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β}
     (hs : Set.InjOn f (f ⁻¹' ↑s)) (ht : Set.InjOn f (f ⁻¹' ↑t)) :
-    (preimage (s ∩ t) f fun x₁ hx₁ x₂ hx₂ =>
+    (preimage (s ∩ t) f fun _ hx₁ _ hx₂ =>
         hs (mem_of_mem_inter_left hx₁) (mem_of_mem_inter_left hx₂)) =
       preimage s f hs ∩ preimage t f ht :=
   Finset.coe_injective (by simp)
@@ -54,8 +55,8 @@ theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : 
 @[simp]
 theorem preimage_union [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β} (hst) :
     preimage (s ∪ t) f hst =
-      (preimage s f fun x₁ hx₁ x₂ hx₂ => hst (mem_union_left _ hx₁) (mem_union_left _ hx₂)) ∪
-        preimage t f fun x₁ hx₁ x₂ hx₂ => hst (mem_union_right _ hx₁) (mem_union_right _ hx₂) :=
+      (preimage s f fun _ hx₁ _ hx₂ => hst (mem_union_left _ hx₁) (mem_union_left _ hx₂)) ∪
+        preimage t f fun _ hx₁ _ hx₂ => hst (mem_union_right _ hx₁) (mem_union_right _ hx₂) :=
   Finset.coe_injective (by simp)
 
 @[simp, nolint simpNF] -- Porting note: linter complains that LHS doesn't simplify
@@ -94,13 +95,17 @@ theorem image_preimage_of_bij [DecidableEq β] (f : α → β) (s : Finset β)
     (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) : image f (preimage s f hf.injOn) = s :=
   Finset.coe_inj.1 <| by simpa using hf.image_eq
 
+lemma preimage_subset_of_subset_image [DecidableEq β] {f : α → β} {s : Finset β} {t : Finset α}
+    (hs : s ⊆ t.image f) {hf} : s.preimage f hf ⊆ t := by
+  rw [← coe_subset, coe_preimage]; exact Set.preimage_subset (mod_cast hs) hf
+
 theorem preimage_subset {f : α ↪ β} {s : Finset β} {t : Finset α} (hs : s ⊆ t.map f) :
     s.preimage f f.injective.injOn ⊆ t := fun _ h => (mem_map' f).1 (hs (mem_preimage.1 h))
 
 theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
     s ⊆ t.map f ↔ ∃ u ⊆ t, s = u.map f := by
   classical
-  simp_rw [← coe_subset, coe_map, subset_image_iff, map_eq_image, eq_comm]
+  simp_rw [map_eq_image, subset_image_iff, eq_comm]
 
 theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a)) (t : Finset α) :
     (t.sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) =
@@ -117,6 +122,14 @@ theorem sigma_image_fst_preimage_mk {β : α → Type*} [DecidableEq α] (s : Fi
     ((s.image Sigma.fst).sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) =
       s :=
   s.sigma_preimage_mk_of_subset (Subset.refl _)
+
+@[simp] lemma preimage_inl (s : Finset (α ⊕ β)) :
+    s.preimage Sum.inl Sum.inl_injective.injOn = s.toLeft := by
+  ext x; simp
+
+@[simp] lemma preimage_inr (s : Finset (α ⊕ β)) :
+    s.preimage Sum.inr Sum.inr_injective.injOn = s.toRight := by
+  ext x; simp
 
 end Preimage
 end Finset

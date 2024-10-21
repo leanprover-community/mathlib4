@@ -470,7 +470,7 @@ def toNormedAddCommGroup : NormedAddCommGroup F :=
           simp only [← inner_self_eq_norm_mul_norm, inner_add_add_self, mul_add, mul_comm, map_add]
           linarith
         exact nonneg_le_nonneg_of_sq_le_sq (add_nonneg (sqrt_nonneg _) (sqrt_nonneg _)) this
-      eq_zero_of_map_eq_zero' := fun x hx =>
+      eq_zero_of_map_eq_zero' := fun _ hx =>
         normSq_eq_zero.1 <| (sqrt_eq_zero inner_self_nonneg).1 hx }
 
 attribute [local instance] toNormedAddCommGroup
@@ -548,8 +548,30 @@ theorem inner_re_symm (x y : E) : re ⟪x, y⟫ = re ⟪y, x⟫ := by rw [← in
 
 theorem inner_im_symm (x y : E) : im ⟪x, y⟫ = -im ⟪y, x⟫ := by rw [← inner_conj_symm, conj_im]
 
+section Algebra
+variable {𝕝 : Type*} [CommSemiring 𝕝] [StarRing 𝕝] [Algebra 𝕝 𝕜] [Module 𝕝 E]
+  [IsScalarTower 𝕝 𝕜 E] [StarModule 𝕝 𝕜]
+
+/-- See `inner_smul_left` for the common special when `𝕜 = 𝕝`. -/
+lemma inner_smul_left_eq_star_smul (x y : E) (r : 𝕝) : ⟪r • x, y⟫ = r† • ⟪x, y⟫ := by
+  rw [← algebraMap_smul 𝕜 r, InnerProductSpace.smul_left, starRingEnd_apply, starRingEnd_apply,
+    ← algebraMap_star_comm, ← smul_eq_mul, algebraMap_smul]
+
+/-- Special case of `inner_smul_left_eq_star_smul` when the acting ring has a trivial star
+(eg `ℕ`, `ℤ`, `ℚ≥0`, `ℚ`, `ℝ`). -/
+lemma inner_smul_left_eq_smul [TrivialStar 𝕝] (x y : E) (r : 𝕝) : ⟪r • x, y⟫ = r • ⟪x, y⟫ := by
+  rw [inner_smul_left_eq_star_smul, starRingEnd_apply, star_trivial]
+
+/-- See `inner_smul_right` for the common special when `𝕜 = 𝕝`. -/
+lemma inner_smul_right_eq_smul (x y : E) (r : 𝕝) : ⟪x, r • y⟫ = r • ⟪x, y⟫ := by
+  rw [← inner_conj_symm, inner_smul_left_eq_star_smul, starRingEnd_apply, starRingEnd_apply,
+    star_smul, star_star, ← starRingEnd_apply, inner_conj_symm]
+
+end Algebra
+
+/-- See `inner_smul_left_eq_star_smul` for the case of a general algebra action. -/
 theorem inner_smul_left (x y : E) (r : 𝕜) : ⟪r • x, y⟫ = r† * ⟪x, y⟫ :=
-  InnerProductSpace.smul_left _ _ _
+  inner_smul_left_eq_star_smul ..
 
 theorem real_inner_smul_left (x y : F) (r : ℝ) : ⟪r • x, y⟫_ℝ = r * ⟪x, y⟫_ℝ :=
   inner_smul_left _ _ _
@@ -557,8 +579,9 @@ theorem real_inner_smul_left (x y : F) (r : ℝ) : ⟪r • x, y⟫_ℝ = r * �
 theorem inner_smul_real_left (x y : E) (r : ℝ) : ⟪(r : 𝕜) • x, y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_left, conj_ofReal, Algebra.smul_def]
 
-theorem inner_smul_right (x y : E) (r : 𝕜) : ⟪x, r • y⟫ = r * ⟪x, y⟫ := by
-  rw [← inner_conj_symm, inner_smul_left, RingHom.map_mul, conj_conj, inner_conj_symm]
+/-- See `inner_smul_right_eq_smul` for the case of a general algebra action. -/
+theorem inner_smul_right (x y : E) (r : 𝕜) : ⟪x, r • y⟫ = r * ⟪x, y⟫ :=
+  inner_smul_right_eq_smul ..
 
 theorem real_inner_smul_right (x y : F) (r : ℝ) : ⟪x, r • y⟫_ℝ = r * ⟪x, y⟫_ℝ :=
   inner_smul_right _ _ _
@@ -990,7 +1013,7 @@ theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 (Subtype.v
     · exact orthonormal_sUnion_of_directed cc.directedOn fun x xc => hc xc
     · exact fun _ => Set.subset_sUnion_of_mem
 
-open FiniteDimensional
+open Module
 
 /-- A family of orthonormal vectors with the correct cardinality forms a basis. -/
 def basisOfOrthonormalOfCardEqFinrank [Fintype ι] [Nonempty ι] {v : ι → E} (hv : Orthonormal 𝕜 v)
@@ -1472,7 +1495,7 @@ theorem norm_sub_eq_norm_add {v w : E} (h : ⟪v, w⟫ = 0) : ‖w - v‖ = ‖w
 norms, has absolute value at most 1. -/
 theorem abs_real_inner_div_norm_mul_norm_le_one (x y : F) : |⟪x, y⟫_ℝ / (‖x‖ * ‖y‖)| ≤ 1 := by
   rw [abs_div, abs_mul, abs_norm, abs_norm]
-  exact div_le_one_of_le (abs_real_inner_le_norm x y) (by positivity)
+  exact div_le_one_of_le₀ (abs_real_inner_le_norm x y) (by positivity)
 
 /-- The inner product of a vector with a multiple of itself. -/
 theorem real_inner_smul_self_left (x : F) (r : ℝ) : ⟪r • x, x⟫_ℝ = r * (‖x‖ * ‖x‖) := by
@@ -2017,7 +2040,7 @@ theorem OrthogonalFamily.inner_right_dfinsupp
     ⟪V i v, l.sum fun j => V j⟫ = l.sum fun j => fun w => ⟪V i v, V j w⟫ :=
       DFinsupp.inner_sum (fun j => V j) l (V i v)
     _ = l.sum fun j => fun w => ite (i = j) ⟪V i v, V j w⟫ 0 :=
-      (congr_arg l.sum <| funext fun j => funext <| hV.eq_ite v)
+      (congr_arg l.sum <| funext fun _ => funext <| hV.eq_ite v)
     _ = ⟪v, l i⟫ := by
       simp only [DFinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
         DFinsupp.mem_support_toFun]
@@ -2217,7 +2240,7 @@ def InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
     NormedSpace.restrictScalars ℝ 𝕜
       E with
     norm_sq_eq_inner := norm_sq_eq_inner
-    conj_symm := fun x y => inner_re_symm _ _
+    conj_symm := fun _ _ => inner_re_symm _ _
     add_left := fun x y z => by
       change re ⟪x + y, z⟫ = re ⟪x, z⟫ + re ⟪y, z⟫
       simp only [inner_add_left, map_add]
@@ -2345,6 +2368,33 @@ theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {
 
 end ReApplyInnerSelf_Seminormed
 
+section SeparationQuotient
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+theorem Inseparable.inner_eq_inner {x₁ x₂ y₁ y₂ : E}
+    (hx : Inseparable x₁ x₂) (hy : Inseparable y₁ y₂) :
+    inner x₁ y₁ = (inner x₂ y₂ : 𝕜) :=
+  ((hx.prod hy).map continuous_inner).eq
+
+namespace SeparationQuotient
+
+instance : Inner 𝕜 (SeparationQuotient E) where
+  inner := SeparationQuotient.lift₂ Inner.inner fun _ _ _ _ => Inseparable.inner_eq_inner
+
+@[simp]
+theorem inner_mk_mk (x y : E) :
+    inner (mk x) (mk y) = (inner x y : 𝕜) := rfl
+
+instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
+  norm_sq_eq_inner := Quotient.ind norm_sq_eq_inner
+  conj_symm := Quotient.ind₂ inner_conj_symm
+  add_left := Quotient.ind fun x => Quotient.ind₂ <| inner_add_left x
+  smul_left := Quotient.ind₂ inner_smul_left
+
+end SeparationQuotient
+
+end SeparationQuotient
+
 section UniformSpace.Completion
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -2361,11 +2411,11 @@ open UniformSpace Function
 
 instance toInner {𝕜' E' : Type*} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
     Inner 𝕜' (Completion E') where
-  inner := curry <| (isDenseInducing_coe.prod isDenseInducing_coe).extend (uncurry inner)
+  inner := curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend (uncurry inner)
 
 @[simp]
 theorem inner_coe (a b : E) : inner (a : Completion E) (b : Completion E) = (inner a b : 𝕜) :=
-  (isDenseInducing_coe.prod isDenseInducing_coe).extend_eq
+  (isDenseInducing_coe.prodMap isDenseInducing_coe).extend_eq
     (continuous_inner : Continuous (uncurry inner : E × E → 𝕜)) (a, b)
 
 protected theorem continuous_inner :
@@ -2378,7 +2428,7 @@ protected theorem continuous_inner :
   rw [Completion.toInner, inner, uncurry_curry _]
   change
     Continuous
-      (((isDenseInducing_toCompl E).prod (isDenseInducing_toCompl E)).extend fun p : E × E =>
+      (((isDenseInducing_toCompl E).prodMap (isDenseInducing_toCompl E)).extend fun p : E × E =>
         inner' p.1 p.2)
   exact (isDenseInducing_toCompl E).extend_Z_bilin (isDenseInducing_toCompl E) this
 

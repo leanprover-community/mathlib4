@@ -500,9 +500,11 @@ def evalRatDen : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for `posPart`. `a⁺` is always nonegative, and positive if `a` is. -/
 @[positivity _⁺]
-def evalPosPart : PositivityExt where eval zα pα e := do
+def evalPosPart : PositivityExt where eval {u α} zα pα e := do
   match e with
-  | ~q(@posPart _ $instαlat $instαgrp $a) =>
+  | ~q(@posPart _ $instαpospart $a) =>
+    let _instαlat ← synthInstanceQ q(Lattice $α)
+    let _instαgrp ← synthInstanceQ q(AddGroup $α)
     assertInstancesCommute
     -- FIXME: There seems to be a bug in `Positivity.core` that makes it fail (instead of returning
     -- `.none`) here sometimes. See eg the first test for `posPart`. This is why we need `catchNone`
@@ -513,9 +515,11 @@ def evalPosPart : PositivityExt where eval zα pα e := do
 
 /-- Extension for `negPart`. `a⁻` is always nonegative. -/
 @[positivity _⁻]
-def evalNegPart : PositivityExt where eval _ _ e := do
+def evalNegPart : PositivityExt where eval {u α} _ _ e := do
   match e with
-  | ~q(@negPart _ $instαlat $instαgrp $a) =>
+  | ~q(@negPart _ $instαnegpart $a) =>
+    let _instαlat ← synthInstanceQ q(Lattice $α)
+    let _instαgrp ← synthInstanceQ q(AddGroup $α)
     assertInstancesCommute
     return .nonnegative q(negPart_nonneg $a)
   | _ => throwError "not `negPart`"

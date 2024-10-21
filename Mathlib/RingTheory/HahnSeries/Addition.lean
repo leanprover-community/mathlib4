@@ -126,7 +126,7 @@ lemma addOppositeEquiv_orderTop (x : HahnSeries Γ (Rᵃᵒᵖ)) :
   simp only [orderTop, AddOpposite.unop_op, mk_eq_zero, AddEquivClass.map_eq_zero_iff,
     addOppositeEquiv_support, ne_eq]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
-  simp_rw [HahnSeries.ext_iff, Function.funext_iff]
+  simp_rw [HahnSeries.ext_iff, funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
 
 @[simp]
@@ -140,7 +140,7 @@ lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
   simp only [leadingCoeff, coeffTop, orderTop, AddOpposite.unop_op, mk_eq_zero,
     AddEquivClass.map_eq_zero_iff, addOppositeEquiv_support, ne_eq]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
-  simp_rw [HahnSeries.ext_iff, Function.funext_iff]
+  simp_rw [HahnSeries.ext_iff, funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
   split_ifs <;> rfl
 
@@ -292,10 +292,7 @@ instance : AddGroup (HahnSeries Γ R) :=
       apply neg_add_cancel }
 
 @[simp]
-theorem neg_coeff' {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
-  rfl
-
-theorem neg_coeff {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
+theorem neg_coeff {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
   rfl
 
 @[simp]
@@ -309,12 +306,15 @@ protected lemma map_neg [AddGroup S] (f : R →+ S) {x : HahnSeries Γ R} :
   ext; simp
 
 @[simp]
-theorem sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
-  ext
-  simp [sub_eq_add_neg]
+theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
+  cases n with
+  | ofNat n => simp_all only [Int.ofNat_eq_coe, natCast_zsmul, nsmul_coeff]
+  | negSucc _ => simp_all only [negSucc_zsmul, neg_coeff', nsmul_coeff]
 
-theorem sub_coeff {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a - y.coeff a := by
-  simp
+@[simp]
+protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :
+    ((x - y).map f : HahnSeries Γ S) = x.map f - y.map f := by
+  ext; simp
 
 @[simp]
 theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
@@ -335,6 +335,19 @@ theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
   by_cases hf : f = 0
   · simp only [hf, neg_zero]
   simp only [order, support_neg, neg_eq_zero]
+
+@[simp]
+theorem sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
+  ext
+  simp [sub_eq_add_neg]
+
+theorem sub_coeff {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a - y.coeff a := by
+  simp
+
+@[simp]
+protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :
+    ((x - y).map f : HahnSeries Γ S) = x.map f - y.map f := by
+  ext; simp
 
 theorem min_orderTop_le_orderTop_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} :
     min x.orderTop y.orderTop ≤ (x - y).orderTop := by
@@ -483,7 +496,7 @@ protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r :
 
 section Domain
 
-variable {Γ' : Type*} [PartialOrder Γ']
+variable [PartialOrder Γ']
 
 theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : HahnSeries Γ R) :
     embDomain f (r • x) = r • embDomain f x := by

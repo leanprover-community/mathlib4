@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Int.CharZero
@@ -23,12 +24,12 @@ universe u v w u₁ v₁
 
 namespace Algebra
 
-variable {R : Type u} {S : Type v} {A : Type w} {B : Type*}
+variable {R : Type u} {A : Type w}
 
 section Semiring
 
-variable [CommSemiring R] [CommSemiring S]
-variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [CommSemiring R]
+variable [Semiring A] [Algebra R A]
 
 section PUnit
 
@@ -319,7 +320,6 @@ section IsScalarTower
 variable {R : Type*} [CommSemiring R]
 variable (A : Type*) [Semiring A] [Algebra R A]
 variable {M : Type*} [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M]
-variable {N : Type*} [AddCommMonoid N] [Module A N] [Module R N] [IsScalarTower R A N]
 
 theorem algebra_compatible_smul (r : R) (m : M) : r • m = (algebraMap R A) r • m := by
   rw [← one_smul A m, ← smul_assoc, Algebra.smul_def, mul_one, one_smul]
@@ -480,8 +480,8 @@ def LinearMap.extendScalarsOfSurjectiveEquiv (h : Function.Surjective (algebraMa
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f.restrictScalars S
-  left_inv f := rfl
-  right_inv f := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- If `R →+* S` is surjective, then `R`-linear maps are also `S`-linear. -/
 abbrev LinearMap.extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))

@@ -67,16 +67,15 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
--- Porting note: upgrade to `FunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
-instance : FunLike (RingCon R) R (R → Prop) :=
-  { coe := fun c => c.r,
-    coe_injective' := fun x y h => by
-      rcases x with ⟨⟨x, _⟩, _⟩
-      rcases y with ⟨⟨y, _⟩, _⟩
-      congr!
-      rw [Setoid.ext_iff,(show x.Rel = y.Rel from h)]
-      simp}
+instance : FunLike (RingCon R) R (R → Prop) where
+  coe c := c.r
+  coe_injective' x y h := by
+    rcases x with ⟨⟨x, _⟩, _⟩
+    rcases y with ⟨⟨y, _⟩, _⟩
+    congr!
+    rw [Setoid.ext_iff, (show ⇑x = ⇑y from h)]
+    simp
 
 theorem rel_eq_coe : c.r = c :=
   rfl
@@ -419,7 +418,6 @@ end Quotient
 The API in this section is copied from `Mathlib/GroupTheory/Congruence.lean`
 -/
 
-
 section Lattice
 
 variable [Add R] [Mul R]
@@ -447,7 +445,7 @@ instance : InfSet (RingCon R) where
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
     under the map to the underlying equivalence relation. -/
 theorem sInf_toSetoid (S : Set (RingCon R)) : (sInf S).toSetoid = sInf ((·.toSetoid) '' S) :=
-  Setoid.ext' fun x y =>
+  Setoid.ext fun x y =>
     ⟨fun h r ⟨c, hS, hr⟩ => by rw [← hr]; exact h c hS, fun h c hS => h c.toSetoid ⟨c, hS, rfl⟩⟩
 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image

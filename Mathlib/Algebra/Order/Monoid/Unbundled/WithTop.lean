@@ -80,7 +80,7 @@ end One
 
 section Add
 
-variable [Add α] {a b c d : WithTop α} {x y : α}
+variable [Add α] {a b c d : WithTop α} {x : α}
 
 instance add : Add (WithTop α) :=
   ⟨Option.map₂ (· + ·)⟩
