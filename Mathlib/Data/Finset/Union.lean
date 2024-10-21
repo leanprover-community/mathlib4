@@ -52,7 +52,7 @@ lemma disjiUnion_val (s : Finset α) (t : α → Finset β) (h) :
 
 @[simp, norm_cast]
 lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion, iff_self_iff, mem_coe, imp_true_iff]
+  simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion, mem_coe, imp_true_iff]
 
 @[simp] lemma disjiUnion_cons (a : α) (s : Finset α) (ha : a ∉ s) (f : α → Finset β) (H) :
     disjiUnion (cons a s ha) f H =
@@ -69,7 +69,7 @@ lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α),
 lemma disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β → Finset γ) (h1 h2) :
     (s.disjiUnion f h1).disjiUnion g h2 =
       s.attach.disjiUnion
-        (fun a ↦ ((f a).disjiUnion g) fun b hb c hc ↦
+        (fun a ↦ ((f a).disjiUnion g) fun _ hb _ hc ↦
             h2 (mem_disjiUnion.mpr ⟨_, a.prop, hb⟩) (mem_disjiUnion.mpr ⟨_, a.prop, hc⟩))
         fun a _ b _ hab ↦
         disjoint_left.mpr fun x hxa hxb ↦ by
@@ -119,7 +119,7 @@ protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
 
 @[simp, norm_cast]
 lemma coe_biUnion : (s.biUnion t : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion, iff_self_iff, mem_coe, imp_true_iff]
+  simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion, mem_coe, imp_true_iff]
 
 @[simp]
 lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a ∪ s.biUnion t :=

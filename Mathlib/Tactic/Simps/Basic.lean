@@ -8,7 +8,6 @@ import Lean.Elab.App
 import Mathlib.Tactic.Simps.NotationClass
 import Batteries.Data.String.Basic
 import Mathlib.Lean.Expr.Basic
-import Batteries.Data.List.Basic
 
 /-!
 # Simps attribute
@@ -318,8 +317,7 @@ Some common uses:
   This will generate `foo_apply` lemmas for each declaration `foo`.
 * If you prefer `coe_foo` lemmas that state equalities between functions, use
   `initialize_simps_projections MulHom (toFun → coe, as_prefix coe)`
-  In this case you have to use `@[simps (config := .asFn)]` or equivalently
-  `@[simps (config := .asFn)]` whenever you call `@[simps]`.
+  In this case you have to use `@[simps (config := .asFn)]` whenever you call `@[simps]`.
 * You can also initialize to use both, in which case you have to choose which one to use by default,
   by using either of the following
   ```
@@ -1180,7 +1178,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   let env ← getEnv
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
-  let todo := todo.pwFilter (·.1 ≠ ·.1) |>.map fun (proj, stx) ↦ (proj ++ "_", stx)
+  let todo := todo.eraseDups |>.map fun (proj, stx) ↦ (proj ++ "_", stx)
   let mut cfg := cfg
   MetaM.run' <| addProjections ref d.levelParams
     nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []

@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Group.Action
-import Mathlib.Topology.ContinuousFunction.CocompactMap
+import Mathlib.Topology.ContinuousMap.CocompactMap
 
 /-!
 # Measures on Groups
@@ -518,7 +518,7 @@ theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) 
     μ s = 0 ↔ s = ∅ ∨ μ = 0 := by
   rcases eq_zero_or_neZero μ with rfl|hμ
   · simp
-  · simp only [or_false_iff, hs.measure_eq_zero_iff μ, NeZero.ne μ]
+  · simp only [or_false, hs.measure_eq_zero_iff μ, NeZero.ne μ]
 
 @[to_additive]
 theorem measure_ne_zero_iff_nonempty_of_isMulLeftInvariant [Regular μ] (hμ : μ ≠ 0) {s : Set G}
@@ -775,7 +775,7 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGrou
     [TopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
   let f : G ≃ₜ H := .mk e
-  isHaarMeasure_map μ e he e.surjective f.closedEmbedding.tendsto_cocompact
+  isHaarMeasure_map μ (e : G →* H) he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
 /-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
 instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map

@@ -6,6 +6,7 @@ Authors: Shing Tak Lam
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.GroupAction.CardCommute
+import Mathlib.Data.Finite.Sum
 
 /-!
 # Dihedral Groups
@@ -200,7 +201,7 @@ $n + n + n + n*n$) of commuting elements. -/
 def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } ≃
     ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n × ZMod n :=
   let u := ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn.not_two_dvd_nat)
-  have hu : ∀ a : ZMod n, a + a = 0 ↔ a = 0 := fun a => ZMod.add_self_eq_zero_iff_eq_zero hn
+  have hu : ∀ a : ZMod n, a + a = 0 ↔ a = 0 := fun _ => ZMod.add_self_eq_zero_iff_eq_zero hn
   { toFun := fun
       | ⟨⟨sr i, r _⟩, _⟩ => Sum.inl i
       | ⟨⟨r _, sr j⟩, _⟩ => Sum.inr (Sum.inl j)
@@ -212,7 +213,7 @@ def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
       | .inr (.inr (.inl k)) => ⟨⟨sr (u⁻¹ * k), sr (u⁻¹ * k)⟩, rfl⟩
       | .inr (.inr (.inr ⟨i, j⟩)) => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
     left_inv := fun
-      | ⟨⟨r i, r j⟩, h⟩ => rfl
+      | ⟨⟨r _, r _⟩, _⟩ => rfl
       | ⟨⟨r i, sr j⟩, h⟩ => by
         simpa [sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)] using h.eq
       | ⟨⟨sr i, r j⟩, h⟩ => by
@@ -223,11 +224,11 @@ def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
         rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, and_self, ← two_mul]
         exact u.inv_mul_cancel_left j
     right_inv := fun
-      | .inl i => rfl
-      | .inr (.inl j) => rfl
+      | .inl _ => rfl
+      | .inr (.inl _) => rfl
       | .inr (.inr (.inl k)) =>
         congrArg (Sum.inr ∘ Sum.inr ∘ Sum.inl) <| two_mul (u⁻¹ * k) ▸ u.mul_inv_cancel_left k
-      | .inr (.inr (.inr ⟨i, j⟩)) => rfl }
+      | .inr (.inr (.inr ⟨_, _⟩)) => rfl }
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs of commuting elements. -/
 lemma card_commute_odd (hn : Odd n) :

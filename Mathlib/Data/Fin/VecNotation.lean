@@ -108,7 +108,7 @@ instance _root_.PiFin.hasRepr [Repr α] : Repr (Fin n → α) where
 
 end MatrixNotation
 
-variable {m n o : ℕ} {m' n' o' : Type*}
+variable {m n o : ℕ}
 
 theorem empty_eq (v : Fin 0 → α) : v = ![] :=
   Subsingleton.elim _ _

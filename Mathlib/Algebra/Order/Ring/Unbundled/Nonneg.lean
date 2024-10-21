@@ -273,13 +273,6 @@ def coeRingHom : { x : α // 0 ≤ x } →+* α :=
 
 end Semiring
 
-section Nontrivial
-
-variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α] [NeZero 1]
-  [CovariantClass α α (· + ·) (· ≤ ·)] [PosMulMono α]
-
-end Nontrivial
-
 section CommSemiring
 
 variable [CommSemiring α] [PartialOrder α] [ZeroLEOneClass α]

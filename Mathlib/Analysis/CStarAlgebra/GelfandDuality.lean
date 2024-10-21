@@ -6,11 +6,11 @@ Authors: Jireh Loreaux
 import Mathlib.Analysis.CStarAlgebra.Spectrum
 import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.Analysis.Normed.Algebra.Basic
-import Mathlib.Topology.ContinuousFunction.Units
-import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.ContinuousMap.Units
+import Mathlib.Topology.ContinuousMap.Compact
 import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.ContinuousFunction.Ideals
-import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
+import Mathlib.Topology.ContinuousMap.Ideals
+import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
 # Gelfand Duality
@@ -170,7 +170,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
     points in `C(characterSpace ℂ A, ℂ)` and is closed under `star`. -/
   have h : rng.topologicalClosure = rng := le_antisymm
     (StarSubalgebra.topologicalClosure_minimal le_rfl
-      (gelfandTransform_isometry A).closedEmbedding.isClosed_range)
+      (gelfandTransform_isometry A).isClosedEmbedding.isClosed_range)
     (StarSubalgebra.le_topologicalClosure _)
   refine h ▸ ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
     _ (fun _ _ => ?_)

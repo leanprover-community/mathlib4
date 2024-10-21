@@ -330,9 +330,9 @@ noncomputable def equivOption : Part α ≃ Option α :=
 instance : PartialOrder (Part
         α) where
   le x y := ∀ i, i ∈ x → i ∈ y
-  le_refl x y := id
-  le_trans x y z f g i := g _ ∘ f _
-  le_antisymm x y f g := Part.ext fun z => ⟨f _, g _⟩
+  le_refl _ _ := id
+  le_trans _ _ _ f g _ := g _ ∘ f _
+  le_antisymm _ _ f g := Part.ext fun _ => ⟨f _, g _⟩
 
 instance : OrderBot (Part α) where
   bot := none
