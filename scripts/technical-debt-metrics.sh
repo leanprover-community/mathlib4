@@ -57,10 +57,10 @@ printf '%s|%s\n' "$(wc -l < scripts/no_lints_prime_decls.txt)" "exceptions for t
 
 deprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ *==')"
 
-printf '%s|%s\n' "$(printf '%s' "${deprecatedFiles}" | wc -l)" "\`Init\` files"
-printf '%s|%s\n\n' "$(printf '%s\n' "${deprecatedFiles}" | grep total | sed 's= total==')"  'total LoC in `Init` files'
+printf '%s|%s\n' "$(printf '%s' "${deprecatedFiles}" | wc -l)" "\`Deprecated\` files"
+printf '%s|%s\n\n' "$(printf '%s\n' "${deprecatedFiles}" | grep total | sed 's= total==')"  'total LoC in `Deprecated` files'
 
-printf $'```spoiler Changed \'Init\' lines by file\n%s\n```\n' "$(
+printf $'```spoiler Changed \'Deprecated\' lines by file\n%s\n```\n' "$(
     printf '%s\n' "${deprecatedFiles}" | awk 'BEGIN{print("|LoC|Change|File|\n|-:|:-:|-|")} {printf("%s|%s\n", $1, $2)}'
   )"
 }
