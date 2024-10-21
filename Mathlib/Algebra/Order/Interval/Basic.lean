@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Order.Interval.Basic
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Interval arithmetic
