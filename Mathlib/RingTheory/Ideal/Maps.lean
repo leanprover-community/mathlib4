@@ -46,6 +46,9 @@ def comap [RingHomClass F R S] (I : Ideal S) : Ideal R where
     exact mul_mem_left I _ hx
 
 @[simp]
+theorem coe_map (I : Ideal R) : (map f I : Set S) = span (f '' I) := rfl
+
+@[simp]
 theorem coe_comap [RingHomClass F R S] (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
 
 variable {f}
@@ -145,9 +148,6 @@ theorem map_span (f : F) (s : Set R) : map f (span s) = span (f '' s) := by
   · rintro _ ⟨x, hx, rfl⟩; exact mem_map_of_mem f (subset_span hx)
   · rw [map_le_iff_le_comap, span_le, coe_comap, ← Set.image_subset_iff]
     exact subset_span
-
-@[simp]
-theorem coe_map (I : Ideal R) : (map f I : Set S) = span (f '' I) := rfl
 
 variable {f I J K L}
 
