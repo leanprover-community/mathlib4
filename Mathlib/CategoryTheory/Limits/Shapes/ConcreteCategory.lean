@@ -31,7 +31,7 @@ wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
 
 -/
 
-universe w v u t r
+universe w w' v u t r
 
 namespace CategoryTheory.Limits.Concrete
 
@@ -247,9 +247,9 @@ end WidePullback
 
 section Multiequalizer
 
-variable [ConcreteCategory.{max w v} C]
+variable [ConcreteCategory.{max w w' v} C]
 
-theorem multiequalizer_ext {I : MulticospanIndex.{w} C} [HasMultiequalizer I]
+theorem multiequalizer_ext {I : MulticospanIndex.{w, w'} C} [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] (x y : ↑(multiequalizer I))
     (h : ∀ t : I.L, Multiequalizer.ι I t x = Multiequalizer.ι I t y) : x = y := by
   apply Concrete.limit_ext
@@ -298,8 +298,8 @@ noncomputable def multiequalizerEquiv (I : MulticospanIndex.{w} C) [HasMultiequa
       { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } :=
   letI h1 := limit.isLimit I.multicospan
   letI h2 := isLimitOfPreserves (forget C) h1
-  letI E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{w, v} _)
-  Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux.{w, v} I)
+  letI E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{max w w', v} _)
+  Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux.{max w w', v} I)
 
 @[simp]
 theorem multiequalizerEquiv_apply (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
