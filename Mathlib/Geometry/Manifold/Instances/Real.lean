@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Geometry.Manifold.Orientable
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
@@ -11,7 +11,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
-boundary structure on the real interval `[x, y]`.
+boundary structure on the real interval `[x, y]` and prove that it is orientable.
 
 More specifically, we introduce
 * `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
@@ -349,13 +349,47 @@ instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _ _ _)).1
 
-/-! Register the manifold structure on `Icc 0 1`, and also its zero and one. -/
+/-- The manifold structure on `[x, y]` is orientable. -/
+instance Icc_orientable_manifold (x y : ℝ) [Fact (x < y)] :
+    OrientableManifold (𝓡∂ 1) (Icc x y) where
+  compatible {e₁ e₂} he₁ he₂ := by
+    simp only [atlas, mem_singleton_iff, mem_insert_iff] at he₁ he₂
+    rcases he₁ with (rfl | rfl) <;> rcases he₂ with (rfl | rfl)
+    · exact mem_groupoid_of_pregroupoid.mpr
+      <| symm_trans_mem_orientationPreservingGroupoid (𝓡∂ 1) (IccLeftChart x y)
+    · constructor
+      · constructor
+        · rintro z ⟨hz₁, s, ⟨hs₁, hs₂⟩, hz₂⟩
+          -- Notation, for easy of reading
+          set F := (𝓡∂ 1) ∘ ((IccLeftChart x y).symm ≫ₕ IccRightChart x y) ∘ (𝓡∂ 1).symm
+          let S := (𝓡∂ 1).symm ⁻¹' ((IccLeftChart x y).symm ≫ₕ IccRightChart x y).source
+            ∩ range (𝓡∂ 1)
+          -- Recall, this was proven above.
+          have : ContDiffOn ℝ ⊤ F S := sorry
+          show 0 < LinearMap.det (fderiv ℝ F z).toLinearMap
+          -- Choose a basis of EuclideanSpace ℝ (Fin 1), using eg. `stdOrthonormalBasis`
+          -- and OrthonormalBasis.toBasis
+          let basis : Basis (Fin 1) ℝ (EuclideanSpace ℝ (Fin 1)) := sorry
+          let Fder := fderiv ℝ F z
+          let Flin := LinearMap.toMatrix basis basis Fder.toLinearMap
+          rw [← LinearMap.det_toMatrix basis Fder,
+            Matrix.det_eq_elem_of_card_eq_one (by rw [Fintype.card_ofSubsingleton]) 0]
+          -- Next: compute the derivative of the resulting function ℝ → ℝ and prove it is positive.
+          sorry
 
+        · sorry
+      · sorry -- inverse result
+    · sorry -- similar, with left and right swapped
+    · exact mem_groupoid_of_pregroupoid.mpr
+      <| symm_trans_mem_orientationPreservingGroupoid (𝓡∂ 1) (IccRightChart x y)
 
+/-! Register the smooth orientable manifold structure on `Icc 0 1` -/
 section
 
 instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
 instance : SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
+
+instance : OrientableManifold (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
 
 end
