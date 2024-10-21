@@ -296,7 +296,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
                     (inter_subset_left ..)
                     (ms.inter (hgen ▸ measurableSet_generateFrom (T_mem N))).nullMeasurableSet
                     (ne_top_of_le_ne_top hμs (measure_mono (inter_subset_left ..))),
-                  lt_ofReal_iff_toReal_lt (sub_ne_top hμs),
+                  lt_ofReal_iff_toReal_lt (ne_top_of_le_ne_top hμs tsub_le_self),
                   toReal_sub_of_le (measure_mono (inter_subset_left ..)) hμs]
                 apply lt_of_le_of_lt (sub_le_dist ..)
                 nth_rw 1 [← univ_inter s]

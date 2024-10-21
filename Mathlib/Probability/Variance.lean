@@ -224,7 +224,7 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
       simp only [Pi.pow_apply, NNReal.coe_pow, coe_nnnorm, Real.norm_eq_abs, Even.pow_abs even_two]
     · exact hℒ.abs.integrable_sq
   · symm
-    rw [evariance_eq_top hX hℒ, ENNReal.sub_eq_top_iff]
+    rw [evariance_eq_top hX hℒ, ENNReal.sub_eq_top]
     refine ⟨?_, ENNReal.ofReal_ne_top⟩
     rw [Memℒp, not_and] at hℒ
     specialize hℒ hX
