@@ -71,7 +71,8 @@ scoped instance : EnrichedCategory V V where
   id := id
   comp := comp
   id_comp := fun _ _ => by
-    apply uncurry_injective; simp only [uncurry_natural_left, comp_eq, id_eq]
+    apply uncurry_injective
+    simp only [uncurry_natural_left, comp_eq, id_eq]
     rw [uncurry_curry, whisker_assoc_symm]; simp only [compTranpose_eq, Category.assoc]
     rw [Iso.hom_inv_id_assoc, ← comp_whiskerRight_assoc, ← uncurry_eq, uncurry_curry]
     simp only [Functor.id_obj, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc]
