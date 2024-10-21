@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Logic.UnivLE
+import Mathlib.SetTheory.Cardinal.Univ
 import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
