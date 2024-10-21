@@ -6,7 +6,6 @@ Authors: Oliver Nash
 import Mathlib.FieldTheory.Perfect
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-import Mathlib.Order.CompleteSublattice
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.SimpleModule
