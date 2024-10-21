@@ -33,22 +33,63 @@ variable [Ring R]
 /-- The free functor `Type u ⥤ ModuleCat R` sending a type `X` to the
 free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
-@[simps]
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
   map {_ _} f := Finsupp.lmapDomain _ _ f
   map_id := by intros; exact Finsupp.lmapDomain_id _ _
   map_comp := by intros; exact Finsupp.lmapDomain_comp _ _ _ _
 
+variable {R}
+
+/-- Constructor for elements in the module `(free R).obj X`. -/
+noncomputable def freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single x 1
+
+@[ext 1200]
+lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ M}
+    (h : ∀ (x : X), f (freeMk x) = g (freeMk x)) :
+    f = g :=
+  (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))
+
+/-- The morphism of modules `(free R).obj X ⟶ M` corresponding
+to a map `f : X ⟶ M`. -/
+noncomputable def freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
+    (free R).obj X ⟶ M :=
+  Finsupp.lift M R X f
+
+@[simp]
+lemma freeDesc_apply {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) (x : X) :
+    freeDesc f (freeMk x) = f x := by
+  dsimp [freeDesc]
+  erw [Finsupp.lift_apply, Finsupp.sum_single_index]
+  all_goals simp
+
+@[simp]
+lemma free_map_apply {X Y : Type u} (f : X → Y) (x : X) :
+    (free R).map f (freeMk x) = freeMk (f x) := by
+  apply Finsupp.mapDomain_single
+
+/-- The bijection `((free R).obj X ⟶ M) ≃ (X → M)` when `X` is a type and `M` a module. -/
+@[simps]
+def freeHomEquiv {X : Type u} {M : ModuleCat.{u} R} :
+    ((free R).obj X ⟶ M) ≃ (X → M) where
+  toFun φ x := φ (freeMk x)
+  invFun ψ := freeDesc ψ
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+variable (R)
+
 /-- The free-forgetful adjunction for R-modules.
 -/
 def adj : free R ⊣ forget (ModuleCat.{u} R) :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X M => (Finsupp.lift M R X).toEquiv.symm
-      homEquiv_naturality_left_symm := fun {_ _} M _ g =>
-        Finsupp.lhom_ext' fun _ =>
-          LinearMap.ext_ring
-            (Finsupp.sum_mapDomain_index_addMonoidHom fun y => (smulAddHom R M).flip (g y)).symm }
+    { homEquiv := fun _ _ => freeHomEquiv
+      homEquiv_naturality_left_symm := fun {X Y M} f g ↦ by ext; simp [freeHomEquiv] }
+
+@[simp]
+lemma adj_homEquiv (X : Type u) (M : ModuleCat.{u} R) :
+    (adj R).homEquiv X M = freeHomEquiv := by
+  simp only [adj, Adjunction.mkOfHomEquiv_homEquiv]
 
 instance : (forget (ModuleCat.{u} R)).IsRightAdjoint  :=
   (adj R).isRightAdjoint
