@@ -230,20 +230,52 @@ theorem Smooth.snd {f : N → M × M'} (hf : Smooth J (I.prod I') f) : Smooth J 
 
 end Projections
 
-theorem contMDiffWithinAt_prod_iff (f : M → M' × N') {s : Set M} {x : M} :
+theorem contMDiffWithinAt_prod_iff (f : M → M' × N') :
     ContMDiffWithinAt I (I'.prod J') n f s x ↔
       ContMDiffWithinAt I I' n (Prod.fst ∘ f) s x ∧ ContMDiffWithinAt I J' n (Prod.snd ∘ f) s x :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod_mk h.2⟩
 
-theorem contMDiffAt_prod_iff (f : M → M' × N') {x : M} :
+theorem contMDiffWithinAt_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiffWithinAt I 𝓘(𝕜, F₁ × F₂) n f s x ↔
+      ContMDiffWithinAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s x ∧
+      ContMDiffWithinAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s x := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact contMDiffWithinAt_prod_iff f
+
+theorem contMDiffAt_prod_iff (f : M → M' × N') :
     ContMDiffAt I (I'.prod J') n f x ↔
       ContMDiffAt I I' n (Prod.fst ∘ f) x ∧ ContMDiffAt I J' n (Prod.snd ∘ f) x := by
   simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_prod_iff f
+
+theorem contMDiffAt_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiffAt I 𝓘(𝕜, F₁ × F₂) n f x ↔
+      ContMDiffAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) x ∧ ContMDiffAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) x := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact contMDiffAt_prod_iff f
+
+theorem contMDiffOn_prod_iff (f : M → M' × N') :
+    ContMDiffOn I (I'.prod J') n f s ↔
+      ContMDiffOn I I' n (Prod.fst ∘ f) s ∧ ContMDiffOn I J' n (Prod.snd ∘ f) s :=
+  ⟨fun h ↦ ⟨fun x hx ↦ ((contMDiffWithinAt_prod_iff f).1 (h x hx)).1,
+      fun x hx ↦ ((contMDiffWithinAt_prod_iff f).1 (h x hx)).2⟩ ,
+    fun h x hx ↦ (contMDiffWithinAt_prod_iff f).2 ⟨h.1 x hx, h.2 x hx⟩⟩
+
+theorem contMDiffOn_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiffOn I 𝓘(𝕜, F₁ × F₂) n f s ↔
+      ContMDiffOn I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s ∧ ContMDiffOn I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact contMDiffOn_prod_iff f
 
 theorem contMDiff_prod_iff (f : M → M' × N') :
     ContMDiff I (I'.prod J') n f ↔
       ContMDiff I I' n (Prod.fst ∘ f) ∧ ContMDiff I J' n (Prod.snd ∘ f) :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prod_mk h.2⟩
+
+theorem contMDiff_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiff I 𝓘(𝕜, F₁ × F₂) n f ↔
+      ContMDiff I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) ∧ ContMDiff I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact contMDiff_prod_iff f
 
 theorem smoothAt_prod_iff (f : M → M' × N') {x : M} :
     SmoothAt I (I'.prod J') f x ↔ SmoothAt I I' (Prod.fst ∘ f) x ∧ SmoothAt I J' (Prod.snd ∘ f) x :=
