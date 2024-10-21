@@ -403,7 +403,7 @@ theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
   rfl
 
 /-- Composition of a principal segment with an order isomorphism, as a principal segment -/
-abbrev transRelIso (f : r ≺i s) (g : s ≃r t) : r ≺i t :=
+def transRelIso (f : r ≺i s) (g : s ≃r t) : r ≺i t :=
   transInitial f (InitialSeg.ofIso g)
 
 @[deprecated (since := "2024-10-20")]
