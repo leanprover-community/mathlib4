@@ -429,7 +429,7 @@ def prodComparisonIso : F.obj (A ⊗ B) ≅ F.obj A ⊗ F.obj B :=
 lemma prodComparisonIso_hom : (prodComparisonIso F A B).hom = prodComparison F A B := by
   rfl
 
-instance isIso_prodComparison_of_preservesLimit_pair: IsIso (prodComparison F A B) := by
+instance isIso_prodComparison_of_preservesLimit_pair : IsIso (prodComparison F A B) := by
   rw [← prodComparisonIso_hom]
   infer_instance
 
@@ -445,7 +445,7 @@ noncomputable def prodComparisonNatIso (A : C) [∀ B, PreservesLimit (pair A B)
 /-- The natural isomorphism of bifunctors `F(- ⊗ -) ≅ F- ⊗ F-`, provided each
 `prodComparison F A B` is an isomorphism. -/
 @[simps! hom inv]
-noncomputable def prodComparisonBifunctorsNatIso [∀ A B, PreservesLimit (pair A B) F] :
+noncomputable def prodComparisonBifunctorNatIso [∀ A B, PreservesLimit (pair A B) F] :
     curriedTensor C ⋙ (whiskeringRight _ _ _).obj F ≅
       F ⋙ curriedTensor D ⋙ (whiskeringLeft _ _ _).obj F :=
   asIso (prodComparisonBifunctorNatTrans F)
@@ -457,28 +457,17 @@ section ProdComparisonIso
 /-- If `prodComparison F A B` is an isomorphism, then `F` preserves the limit of `pair A B`. -/
 noncomputable def preservesLimitPairOfIsIsoProdComparison (A B : C) [IsIso (prodComparison F A B)] :
     PreservesLimit (pair A B) F := by
-  apply preservesLimitOfPreservesLimitCone (product A B).isLimit
-  apply IsLimit.equivOfNatIsoOfIso (pairComp A B F) _
-    ((product (F.obj A) (F.obj B)).cone.extend (prodComparison F A B)) _|>.invFun
-  rotate_left
-  · apply Cones.ext
-    case φ => exact Iso.refl _
-    rintro ⟨⟨j⟩⟩
-    · simp only [Cones.postcompose_obj_pt, Functor.mapCone_pt, Functor.const_obj_obj,
-      pair_obj_left, Cones.postcompose_obj_π, NatTrans.comp_app, Functor.comp_obj,
-      Functor.mapCone_π_app, BinaryFan.π_app_left, Cone.extend_pt, Iso.refl_hom, Cone.extend_π,
-      yoneda_obj_obj, Cone.extensions_app, Functor.op_obj, Functor.const_map_app, Category.id_comp]
-      rw [← fst, ← fst, pairComp]
-      simp
-    · simp only [Cones.postcompose_obj_pt, Functor.mapCone_pt, Functor.const_obj_obj,
-      pair_obj_right, Cones.postcompose_obj_π, NatTrans.comp_app, Functor.comp_obj,
-      Functor.mapCone_π_app, BinaryFan.π_app_right, Cone.extend_pt, Iso.refl_hom, Cone.extend_π,
-      yoneda_obj_obj, Cone.extensions_app, Functor.op_obj, Functor.const_map_app, Category.id_comp]
-      rw [← snd, ← snd, pairComp]
-      simp
-  · exact IsLimit.extendIso _ (product (F.obj A) (F.obj B)).isLimit
+ apply preservesLimitOfPreservesLimitCone (product A B).isLimit
+ refine IsLimit.equivOfNatIsoOfIso (pairComp A B F) _
+    ((product (F.obj A) (F.obj B)).cone.extend (prodComparison F A B))
+      (BinaryFan.ext (by exact Iso.refl _) ?_ ?_) |>.invFun
+      (IsLimit.extendIso _ (product (F.obj A) (F.obj B)).isLimit)
+ · dsimp only [BinaryFan.fst]
+   simp [pairComp, prodComparison, lift, fst]
+ · dsimp only [BinaryFan.snd]
+   simp [pairComp, prodComparison, lift, snd]
 
-/-- If `prodComparison F A B` is an isomorphism for all `A B` then `F` preserves limits of shape
+  /-- If `prodComparison F A B` is an isomorphism for all `A B` then `F` preserves limits of shape
 `Discrete (WalkingPair)`. -/
 noncomputable def preservesLimitsOfShapeDiscreteWalkingPairOfIsoProdComparison
     [∀ A B, IsIso (prodComparison F A B)] : PreservesLimitsOfShape (Discrete WalkingPair) F := by
