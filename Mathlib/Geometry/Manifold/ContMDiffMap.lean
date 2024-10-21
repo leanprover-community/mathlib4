@@ -40,6 +40,10 @@ scoped[Manifold]
   notation "C^" n "⟮" I ", " M "; " k "⟯" => ContMDiffMap I (modelWithCornersSelf k k) M k n
 
 open scoped Manifold
+/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
+Later, replace with `open scoped ContDiff`. -/
+local notation "∞" => (⊤ : ℕ∞)
+
 
 namespace ContMDiffMap
 

@@ -46,7 +46,7 @@ in terms of extended charts in `contMDiffOn_iff` and `contMDiff_iff`.
 
 open Set Function Filter ChartedSpace SmoothManifoldWithCorners
 
-open scoped Topology Manifold
+open scoped Topology Manifold ContDiff
 
 /-! ### Definition of smooth functions between manifolds -/
 
@@ -109,7 +109,7 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     rw [this] at h
     have : I (e x) ∈ I.symm ⁻¹' e.target ∩ range I := by simp only [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
-    convert (h.comp' _ (this.of_le le_top)).mono_of_mem _ using 1
+    convert (h.comp' _ (this.of_le (by exact_mod_cast le_top))).mono_of_mem _ using 1
     · ext y; simp only [mfld_simps]
     refine mem_nhdsWithin.mpr
       ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
@@ -126,7 +126,7 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ range I' := by
       simp only [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
-    convert (this.of_le le_top).comp _ h _
+    convert (this.of_le (by exact_mod_cast le_top)).comp _ h _
     · ext y; simp only [mfld_simps]
     · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1
 
@@ -187,7 +187,7 @@ around these points. -/
 def ContMDiff (n : ℕ∞) (f : M → M') :=
   ∀ x, ContMDiffAt I I' n f x
 
-/-- Abbreviation for `ContMDiff I I' ⊤ f`.
+/-- Abbreviation for `ContMDiff I I' ∞ f`.
 Short note to work with these abbreviations: a lemma of the form `ContMDiffFoo.bar` will
 apply fine to an assumption `SmoothFoo` using dot notation or normal notation.
 If the consequence `bar` of the lemma involves `ContDiff`, it is still better to restate
@@ -204,7 +204,7 @@ variable {I I'}
 theorem ContMDiffWithinAt.of_le (hf : ContMDiffWithinAt I I' n f s x) (le : m ≤ n) :
     ContMDiffWithinAt I I' m f s x := by
   simp only [ContMDiffWithinAt, LiftPropWithinAt] at hf ⊢
-  exact ⟨hf.1, hf.2.of_le le⟩
+  exact ⟨hf.1, hf.2.of_le (by exact_mod_cast le)⟩
 
 theorem ContMDiffAt.of_le (hf : ContMDiffAt I I' n f x) (le : m ≤ n) : ContMDiffAt I I' m f x :=
   ContMDiffWithinAt.of_le hf le
@@ -525,7 +525,7 @@ theorem smoothOn_iff :
     SmoothOn I I' f s ↔
       ContinuousOn f s ∧
         ∀ (x : M) (y : M'),
-          ContDiffOn 𝕜 ⊤ (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
+          ContDiffOn 𝕜 ∞ (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
               (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' y).source)) :=
   contMDiffOn_iff
@@ -559,7 +559,7 @@ theorem smooth_iff :
     Smooth I I' f ↔
       Continuous f ∧
         ∀ (x : M) (y : M'),
-          ContDiffOn 𝕜 ⊤ (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
+          ContDiffOn 𝕜 ∞ (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
               (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) :=
   contMDiff_iff
@@ -608,8 +608,8 @@ theorem ContMDiff.continuous (hf : ContMDiff I I' n f) : Continuous f :=
 
 theorem contMDiffWithinAt_top :
     SmoothWithinAt I I' f s x ↔ ∀ n : ℕ, ContMDiffWithinAt I I' n f s x :=
-  ⟨fun h n => ⟨h.1, contDiffWithinAt_top.1 h.2 n⟩, fun H =>
-    ⟨(H 0).1, contDiffWithinAt_top.2 fun n => (H n).2⟩⟩
+  ⟨fun h n => ⟨h.1, contDiffWithinAt_infty.1 h.2 n⟩, fun H =>
+    ⟨(H 0).1, contDiffWithinAt_infty.2 fun n => (H n).2⟩⟩
 
 theorem contMDiffAt_top : SmoothAt I I' f x ↔ ∀ n : ℕ, ContMDiffAt I I' n f x :=
   contMDiffWithinAt_top
@@ -720,7 +720,7 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds
   refine ⟨fun h ↦ ?_, fun ⟨u, hmem, hu⟩ ↦ (hu _ (mem_of_mem_nhdsWithin hxs hmem)).mono_of_mem hmem⟩
   -- The property is true in charts. Let `v` be a good neighborhood in the chart where the function
   -- is smooth.
-  rcases (contMDiffWithinAt_iff'.1 h).2.contDiffOn le_rfl with ⟨v, hmem, hsub, hv⟩
+  rcases (contMDiffWithinAt_iff'.1 h).2.contDiffOn le_rfl (by simp) with ⟨v, hmem, hsub, hv⟩
   have hxs' : extChartAt I x x ∈ (extChartAt I x).target ∩
       (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source) :=
     ⟨(extChartAt I x).map_source (mem_extChartAt_source _ _), by rwa [extChartAt_to_inv], by
