@@ -500,11 +500,6 @@ def piCongrLeftofFintype {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι' → T
     [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y (e i)) ≃ᵢ ∀ j, Y j :=
   (piCongrLeftofFintype' e.symm).symm
 
-/-- An equivalence `ι ≃ ι'` of finite types yields the `IsometryEquiv` `(ι → α) ≃ᵢ (ι' → α)`. -/
-def arrowCongrLeftofFintype {ι' : Type*} [Fintype ι] [Fintype ι'] (e : ι ≃ ι') :
-    (ι → α) ≃ᵢ (ι' → α) :=
-  piCongrLeftofFintype (Y := fun _ ↦ α) e
-
 /-- `Equiv.sumArrowEquivProdArrow` as an `IsometryEquiv`.-/
 def sumArrowEquivProdArrowofFintype [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ) :=
   mk (Equiv.sumArrowEquivProdArrow _ _ _) (by
@@ -515,7 +510,7 @@ def sumArrowEquivProdArrowofFintype [Fintype α] [Fintype β] : (α ⊕ β → �
 
 /-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `(Fin (m + n) → α)`.-/
 def finArrowProdHomeomorphFinAddArrow (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃ᵢ (Fin (m + n) → α) :=
-  sumArrowEquivProdArrowofFintype.symm.trans (arrowCongrLeftofFintype finSumFinEquiv)
+  sumArrowEquivProdArrowofFintype.symm.trans (piCongrLeftofFintype (Y := fun _ ↦ α) finSumFinEquiv)
 
 variable (ι α)
 
