@@ -153,15 +153,7 @@ lemma _root_.MeasurableEmbedding.mutuallySingular_map {β : Type*} {_ : Measurab
   · rw [hf.map_apply, hf.injective.preimage_image, hμν.measure_nullSet]
   · rw [hf.map_apply, Set.preimage_compl, hf.injective.preimage_image, hμν.measure_compl_nullSet]
 
-lemma foo : ∑' (n : ℕ), (1 / 2 : ℝ≥0∞) ^ n = 2 := by
-  simp only [one_div, tsum_geometric, one_sub_inv_two, inv_inv]
-
-lemma aux₃ {ε : ℝ≥0∞} : ∑' (n : ℕ), ε * (1 / 2) ^ n = 2 * ε := by
-  conv in 2 * ε => rw [← foo]
-  rw [mul_comm]
-  exact ENNReal.tsum_mul_left
-
-lemma Disjoint.mutuallySingular' (h : Disjoint μ ν) (ε : ℝ≥0) (hε : 0 < ε) :
+lemma exists_null_set_measure_lt_of_disjoint (h : Disjoint μ ν) {ε : ℝ≥0} (hε : 0 < ε) :
     ∃ s, μ s = 0 ∧ ν sᶜ ≤ 2 * ε := by
   have h₁ : (μ ⊓ ν) univ = 0 := le_bot_iff.1 (h (inf_le_left (b := ν)) inf_le_right) ▸ rfl
   simp_rw [Measure.inf_apply MeasurableSet.univ, inter_univ] at h₁
@@ -178,25 +170,24 @@ lemma Disjoint.mutuallySingular' (h : Disjoint μ ν) (ε : ℝ≥0) (hε : 0 < 
   · refine eq_zero_of_le_mul_pow (by norm_num)
       fun n ↦ ((measure_mono <| iInter_subset_of_subset n fun _ ht ↦ ht).trans
       (le_add_right le_rfl)).trans (ht₂ n).le
-  · rw [compl_iInter]
-    refine (measure_iUnion_le _).trans (aux₃ ▸ ?_)
+  · rw [compl_iInter, (by simp [ENNReal.tsum_mul_left, mul_comm] :
+      2 * (ε : ℝ≥0∞) = ∑' (n : ℕ), ε * (1 / 2 : ℝ≥0∞) ^ n)]
+    refine (measure_iUnion_le _).trans ?_
     exact tsum_le_tsum (fun n ↦ (le_add_left le_rfl).trans (ht₂ n).le)
       ENNReal.summable ENNReal.summable
 
-lemma Disjoint.mutuallySingular'' (h : Disjoint μ ν) (n : ℕ) :
-    ∃ s, μ s = 0 ∧ ν sᶜ ≤ (1 / 2) ^ n := by
-  have := Disjoint.mutuallySingular' h ((1 / 2) ^ (n + 1)) <| pow_pos (by simp) (n + 1)
-  convert this
-  push_cast
-  rw [pow_succ, ← mul_assoc, mul_comm, ← mul_assoc]
-  norm_cast
-  rw [div_mul_cancel₀, one_mul]
-  · push_cast
-    simp
-  · simp
-
-lemma Disjoint.mutuallySingular (h : Disjoint μ ν) : μ ⟂ₘ ν := by
-  choose s hs₂ hs₃ using Disjoint.mutuallySingular'' h
+lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
+  have h' (n : ℕ) : ∃ s, μ s = 0 ∧ ν sᶜ ≤ (1 / 2) ^ n := by
+    convert exists_null_set_measure_lt_of_disjoint h (ε := (1 / 2) ^ (n + 1))
+      <| pow_pos (by simp) (n + 1)
+    push_cast
+    rw [pow_succ, ← mul_assoc, mul_comm, ← mul_assoc]
+    norm_cast
+    rw [div_mul_cancel₀, one_mul]
+    · push_cast
+      simp
+    · simp
+  choose s hs₂ hs₃ using h'
   refine Measure.MutuallySingular.mk (t := (⋃ n, s n)ᶜ) (measure_iUnion_null hs₂) ?_ ?_
   · rw [compl_iUnion]
     refine eq_zero_of_le_mul_pow (ε := 1) (by norm_num : (1 / 2 : ℝ≥0∞) < 1) <| fun n ↦ ?_
