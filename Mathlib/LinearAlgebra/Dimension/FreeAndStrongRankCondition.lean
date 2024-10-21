@@ -271,7 +271,8 @@ theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 �
   obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := F) (M := (⊥ : Subalgebra F E))
   refine le_antisymm ?_ ?_
   · have := lift_rank_range_le (Algebra.linearMap F E)
-    rwa [← one_eq_range, rank_self, lift_one, lift_le_one_iff] at this
+    rwa [← one_eq_range, rank_self, lift_one, lift_le_one_iff,
+      ← Algebra.toSubmodule_bot, rank_toSubmodule] at this
   · by_contra H
     rw [not_le, lt_one_iff_zero] at H
     haveI := mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')

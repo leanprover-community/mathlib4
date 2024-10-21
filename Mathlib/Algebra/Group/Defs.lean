@@ -503,6 +503,18 @@ def nsmulRec [Zero M] [Add M] : ℕ → M → M
 
 attribute [to_additive existing] npowRec
 
+variable [One M] [Semigroup M] (m n : ℕ) (hn : n ≠ 0) (a : M) (ha : 1 * a = a)
+include hn ha
+
+@[to_additive] theorem npowRec_add : npowRec (m + n) a = npowRec m a * npowRec n a := by
+  obtain _ | n := n; · exact (hn rfl).elim
+  induction n with
+  | zero => simp only [Nat.zero_add, npowRec, ha]
+  | succ n ih => rw [← Nat.add_assoc, npowRec, ih n.succ_ne_zero]; simp only [npowRec, mul_assoc]
+
+@[to_additive] theorem npowRec_succ : npowRec (n + 1) a = a * npowRec n a := by
+  rw [Nat.add_comm, npowRec_add 1 n hn a ha, npowRec, npowRec, ha]
+
 end
 
 library_note "forgetful inheritance"/--
