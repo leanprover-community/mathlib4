@@ -5,9 +5,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Nat.Factors
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.Nat.Prime.Nth
 import Mathlib.Data.Set.Finite
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Prime numbers
@@ -27,10 +26,6 @@ theorem infinite_setOf_prime : { p | Prime p }.Infinite :=
 instance Primes.infinite : Infinite Primes := infinite_setOf_prime.to_subtype
 
 instance Primes.countable : Countable Primes := ⟨⟨coeNat.coe, coe_nat_injective⟩⟩
-
-/-- The `n`th prime is greater or equal to `n + 2`. -/
-theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
-  nth_prime_zero_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
 
 /-- The prime factors of a natural number as a finset. -/
 def primeFactors (n : ℕ) : Finset ℕ := n.primeFactorsList.toFinset
