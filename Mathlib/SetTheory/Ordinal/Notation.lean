@@ -119,8 +119,8 @@ def ofNat (n : ℕ) : ONote := n
 @[simp] theorem natCast_succ (n : ℕ) : n.succ = oadd 0 n.succPNat 0 := rfl
 theorem natCast_one : (1 : ℕ) = (1 : ONote) := rfl
 
-instance nat (n : ℕ) : OfNat ONote n where
-  ofNat := ofNat n
+instance (n : ℕ) : OfNat ONote n where
+  ofNat := n
 
 @[deprecated (since := "2024-10-17")] alias ofNat_zero := natCast_zero
 @[deprecated (since := "2024-10-17")] alias ofNat_one := natCast_one
@@ -1197,6 +1197,9 @@ instance : WellFoundedRelation NONote :=
 
 instance : NatCast NONote :=
   ⟨fun n ↦ ⟨n, ⟨⟨_, nfBelow_natCast _⟩⟩⟩⟩
+
+instance (n : ℕ) : OfNat NONote n where
+  ofNat := n
 
 /-- Convert a natural number to an ordinal notation -/
 @[deprecated (since := "2024-10-17")]
