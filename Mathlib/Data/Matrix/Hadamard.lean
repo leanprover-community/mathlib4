@@ -30,8 +30,7 @@ hadamard product, hadamard
 -/
 
 
-variable {α β γ m n : Type*}
-variable {R : Type*}
+variable {α m n R : Type*}
 
 namespace Matrix
 
@@ -124,7 +123,7 @@ end Diagonal
 section trace
 
 variable [Fintype m] [Fintype n]
-variable (R) [Semiring α] [Semiring R] [Module R α]
+variable (R) [Semiring α]
 
 theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A * Bᵀ) :=
   rfl
