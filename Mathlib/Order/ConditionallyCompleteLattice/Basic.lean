@@ -1009,8 +1009,7 @@ theorem lt_ciSup_iff [Nonempty ι] {f : ι → α} (hb : BddAbove (range f)) :
 
 theorem ciInf_lt_iff [Nonempty ι] {f : ι → α} (hb : BddBelow (range f)) :
     iInf f < a ↔ ∃ i, f i < a := by
-  convert csInf_lt_iff hb (range_nonempty _)
-  simp_rw [mem_range, exists_exists_eq_and]
+  simpa only [mem_range, exists_exists_eq_and] using csInf_lt_iff hb (range_nonempty _)
 
 theorem csSup_of_not_bddAbove {s : Set α} (hs : ¬BddAbove s) : sSup s = sSup ∅ :=
   ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove s hs
