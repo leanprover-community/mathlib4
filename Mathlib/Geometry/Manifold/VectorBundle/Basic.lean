@@ -462,7 +462,6 @@ instance SmoothFiberwiseLinear.hasGroupoid :
     · rintro ⟨b, v⟩ hb
       exact (e.apply_symm_apply_eq_coordChangeL e' hb.1 v).symm
 
-variable [SmoothManifoldWithCorners IB B] in
 /-- A smooth vector bundle `E` is naturally a smooth manifold. -/
 instance Bundle.TotalSpace.smoothManifoldWithCorners [SmoothManifoldWithCorners IB B] :
     SmoothManifoldWithCorners (IB.prod 𝓘(𝕜, F)) (TotalSpace F E) := by
@@ -548,6 +547,16 @@ theorem Trivialization.smoothOn_symm (e : Trivialization F (π F E)) [MemTrivial
   refine ⟨smoothOn_fst.congr fun x hx ↦ e.proj_symm_apply hx, smoothOn_snd.congr fun x hx ↦ ?_⟩
   rw [e.apply_symm_apply hx]
 
+theorem smoothOn_trivializationAt (x : TotalSpace F E) :
+    SmoothOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) (trivializationAt F E x.proj)
+      (trivializationAt F E x.proj).source :=
+  (trivializationAt F E x.proj).smoothOn IB
+
+theorem smoothOn_trivializationAt_symm (x : TotalSpace F E) :
+    SmoothOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F))
+      (trivializationAt F E x.proj).toPartialHomeomorph.symm (trivializationAt F E x.proj).target :=
+  (trivializationAt F E x.proj).smoothOn_symm IB
+
 end
 
 /-! ### Core construction for smooth vector bundles -/
@@ -592,7 +601,6 @@ instance Bundle.Trivial.smoothVectorBundle : SmoothVectorBundle F (Bundle.Trivia
 
 /-! ### Direct sums of smooth vector bundles -/
 
-
 section Prod
 
 variable (F₁ : Type*) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*)
@@ -605,8 +613,7 @@ variable [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E�
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂] [SmoothVectorBundle F₁ E₁ IB]
   [SmoothVectorBundle F₂ E₂ IB]
 
-variable [SmoothManifoldWithCorners IB B]
-
+variable [SmoothManifoldWithCorners IB B] in
 /-- The direct sum of two smooth vector bundles over the same base is a smooth vector bundle. -/
 instance Bundle.Prod.smoothVectorBundle : SmoothVectorBundle (F₁ × F₂) (E₁ ×ᵇ E₂) IB where
   smoothOn_coordChangeL := by
@@ -620,6 +627,72 @@ instance Bundle.Prod.smoothVectorBundle : SmoothVectorBundle (F₁ × F₂) (E�
     · refine (smoothOn_coordChangeL IB e₂ e₂').mono ?_
       simp only [Trivialization.baseSet_prod, mfld_simps]
       mfld_set_tac
+
+/-- For smooth vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
+total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is smooth. -/
+theorem Bundle.Prod.smooth_fst :
+    Smooth (IB.prod 𝓘(𝕜, F₁ × F₂)) (IB.prod 𝓘(𝕜, F₁)) (TotalSpace.Prod.fst F₁ F₂ E₁ E₂) := by
+  intro x
+  rw [contMDiffAt_totalSpace]
+  refine ⟨smooth_proj (E₁ ×ᵇ E₂) _, ?_⟩
+  have (x : F₁ × F₂) : ContMDiffAt 𝓘(𝕜, F₁ × F₂) 𝓘(𝕜, F₁) ⊤ Prod.fst x := by
+    rw [contMDiffAt_iff_contDiffAt]
+    exact contDiffAt_fst
+  refine (this _).comp _ <| contMDiffAt_snd.comp _ <|
+    (smoothOn_trivializationAt IB x).contMDiffAt ?_
+  apply (trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj).open_source.mem_nhds
+  simp
+
+/-- For smooth vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
+total space of `E₁ ×ᵇ E₂` to the total space of `E₂` is smooth. -/
+theorem Bundle.Prod.smooth_snd :
+    Smooth (IB.prod 𝓘(𝕜, F₁ × F₂)) (IB.prod 𝓘(𝕜, F₂)) (TotalSpace.Prod.snd F₁ F₂ E₁ E₂) := by
+  intro x
+  rw [contMDiffAt_totalSpace]
+  refine ⟨smooth_proj (E₁ ×ᵇ E₂) _, ?_⟩
+  have (x : F₁ × F₂) : ContMDiffAt 𝓘(𝕜, F₁ × F₂) 𝓘(𝕜, F₂) ⊤ Prod.snd x := by
+    rw [contMDiffAt_iff_contDiffAt]
+    exact contDiffAt_snd
+  refine (this _).comp _ <| contMDiffAt_snd.comp _ <|
+    (smoothOn_trivializationAt IB x).contMDiffAt ?_
+  apply (trivializationAt (F₁ × F₂) (E₁ ×ᵇ E₂) x.proj).open_source.mem_nhds
+  simp
+
+variable {M EM HM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] [TopologicalSpace HM]
+  {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
+
+omit [(x : B) → Module 𝕜 (E₁ x)] [(x : B) → Module 𝕜 (E₂ x)] [VectorBundle 𝕜 F₁ E₁]
+  [VectorBundle 𝕜 F₂ E₂] [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB] in
+/-- Given a smooth fiber bundles `E₁`, `E₂` over a manifold `B`, if `φ` is a map into the total
+space of `E₁ ×ᵇ E₂`, then its smoothness can be checked by checking the smoothness of (1) the map
+`TotalSpace.Prod.fst ∘ φ` into the total space of `E₁`, and (ii) the map `TotalSpace.Prod.snd ∘ φ`
+into the total space of `E₂`. -/
+theorem Bundle.Prod.smooth_of_smooth_fst_comp_of_smooth_snd_comp
+    {φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
+    (h1 : Smooth IM (IB.prod 𝓘(𝕜, F₁)) (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ∘ φ))
+    (h2 : Smooth IM (IB.prod 𝓘(𝕜, F₂)) (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ∘ φ)) :
+    Smooth IM (IB.prod 𝓘(𝕜, F₁ × F₂)) φ := by
+  intro x
+  have h1_cont : Continuous (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ∘ φ) := h1.continuous
+  have h2_cont : Continuous (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ∘ φ) := h2.continuous
+  specialize h1 x
+  specialize h2 x
+  have h1_base : ContMDiffAt IM IB ⊤ (TotalSpace.proj ∘ TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ∘ φ) x :=
+    SmoothAt.comp x (smooth_proj E₁ (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ (φ x))) h1
+  rw [contMDiffAt_iff_target] at h1 h2 h1_base ⊢
+  constructor
+  · exact FiberBundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_comp h1_cont h2_cont
+      |>.continuousAt
+  apply ContMDiffAt.prod_mk_space h1_base.2
+  apply ContMDiffAt.prod_mk_space
+  · have (x : EB × F₁) : ContMDiffAt 𝓘(𝕜, EB × F₁) 𝓘(𝕜, F₁) ⊤ Prod.snd x := by
+      rw [contMDiffAt_iff_contDiffAt]
+      exact contDiffAt_snd
+    exact (this _).comp _ h1.2
+  · have (x : EB × F₂) : ContMDiffAt 𝓘(𝕜, EB × F₂) 𝓘(𝕜, F₂) ⊤ Prod.snd x := by
+      rw [contMDiffAt_iff_contDiffAt]
+      exact contDiffAt_snd
+    exact (this _).comp _ h2.2
 
 end Prod
 
