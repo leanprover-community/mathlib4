@@ -144,24 +144,24 @@ def benchOutput (jsonInput : String) : IO String := do
   return "\n".intercalate overall
 
 open Lean Elab Command in
-/-- `addBenchSummaryComment PR repo tempFile` adds a summary of bench results as a comment to a
-pull-request.  It takes as input
+/-- `addBenchSummaryComment PR repo tempFile` adds a summary of benchmarking results
+as a comment to a pull request.  It takes as input
 * the number `PR` and the name `repo` as a `String` containing the relevant pull-request
   (it reads and posts comments there)
 * the `String` `tempFile` of a temporary file where the command stores transient information.
 
-The code itself interfaces with the shell to retrieve and process json-data and eventually
+The code itself interfaces with the shell to retrieve and process json data and eventually
 uses `benchOutput`.
 Here is a summary of the steps:
 * retrieve the last comment to the PR (using `gh pr view ...`),
 * check if it was posted by `leanprover-bot`,
 * try to retrieve the source and target commits from the url that the bot posts
-  and store them in `src` and `tgt`,
-* query the speed-center for the benchmarking data (using `curl url`),
-* format and filter various times the returned json-data,
+  and store them in `source` and `target`,
+* query the speed center for the benchmarking data (using `curl url`),
+* format and filter the returned JSON data (various times),
   saving intermediate steps into `tempFile` (using `jq` multiple times),
 * process the final string to produce a summary (using `benchOutput`),
-* finally post the resulting output (using `gh pr comment ...`).
+* finally post the resulting output to the PR (using `gh pr comment ...`).
 -/
 def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "benchOutput.json") :
     CommandElabM Unit := do
@@ -169,22 +169,27 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
   let jq := ".comments | last | select(.author.login==\"leanprover-bot\") | .body"
   let gh_pr_comments : IO.Process.SpawnArgs :=
     { cmd := "gh", args := #["pr", "view", PR, "--repo", repo, "--json", "comments", "--jq", jq] }
+  -- This is the content of the last comment made by `leanprover-bot` to the PR `PR`.
   let output ← IO.Process.run gh_pr_comments
+  -- URLs of benchmarking results have the form {something}/compare/source_sha/to/target_sha,
+  -- where source_sha and target_sha are the commit hashes of the revisions being benchmarked.
+  -- The comment contains such a URL (and only one); parse the revisions from the comment.
   let frags := output.split (· == '/')
   let some compIdx := frags.findIdx? (· == "compare") |
     logInfo "No 'compare' found in URL."
     return
-  let src := frags.getD (compIdx + 1) ""
-  let tgt := (frags.getD (compIdx + 3) "").takeWhile (· != ')')
-  if (src.length, tgt.length) != (36, 36) then
-    logInfo m!"Found\nsrc: '{src}'\ntgt: '{tgt}'\ninstead of two commit hashes."
+  let source := frags.getD (compIdx + 1) ""
+  let target := (frags.getD (compIdx + 3) "").takeWhile (· != ')')
+  if (source.length, target.length) != (36, 36) then
+    logInfo m!"Found\nsource: '{source}'\ntarget: '{target}'\ninstead of two commit hashes."
     return
-  dbg_trace s!"Using commits\nsrc: '{src}'\ntgt: '{tgt}'\n"
+  dbg_trace s!"Using commits\nsource: '{source}'\ntarget: '{target}'\n"
   let curlSpeedCenter : IO.Process.SpawnArgs :=
     { cmd := "curl"
-      args := #[s!"http://speed.lean-fro.org/mathlib4/api/compare/{src}/to/{tgt}?all_values=true"] }
+      args := #[s!"http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true"] }
   let bench ← IO.Process.run curlSpeedCenter
   IO.FS.writeFile tempFile bench
+  -- Extract all instruction changes whose magnitude is larger than `threshold`.
   let threshold := s!"{10 ^ 9}"
   let jq1 : IO.Process.SpawnArgs :=
     { cmd := "jq"
@@ -194,6 +199,7 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
         tempFile] }
   let firstFilter ← IO.Process.run jq1
   IO.FS.writeFile tempFile firstFilter
+  -- Write these in compact form, in the format suitable for `benchOutput`.
   let jq2 : IO.Process.SpawnArgs :=
     { cmd := "jq"
       args := #["-c", "[{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]", tempFile] }
@@ -204,6 +210,7 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
   let thirdFilter ← IO.Process.run jq3
   let report ← benchOutput thirdFilter
   IO.println report
+  -- Post the computed summary as a github comment.
   let add_comment : IO.Process.SpawnArgs :=
     { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body", report] }
   let _ ← IO.Process.run add_comment
