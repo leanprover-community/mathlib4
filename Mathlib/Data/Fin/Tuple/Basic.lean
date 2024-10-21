@@ -395,8 +395,8 @@ lemma append_comp_rev {m n} (xs : Fin m → α) (ys : Fin n → α) :
   funext <| append_rev xs ys
 
 theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
-    (Fin.append (fun i ↦ f (Fin.castAdd n i)) fun i ↦ f (Fin.natAdd m i)) = f := by
-  unfold Fin.append Fin.addCases
+    (append (fun i ↦ f (castAdd n i)) fun i ↦ f (natAdd m i)) = f := by
+  unfold append addCases
   simp
 
 end Append
