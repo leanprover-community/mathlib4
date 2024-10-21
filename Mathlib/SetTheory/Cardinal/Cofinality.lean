@@ -49,7 +49,7 @@ open scoped Ordinal
 
 universe u v w
 
-variable {α : Type*} {r : α → α → Prop}
+variable {α : Type u} {β : Type v} {r : α → α → Prop}
 
 /-! ### Cofinality of orders -/
 
@@ -62,7 +62,7 @@ def cof (r : α → α → Prop) : Cardinal :=
   sInf { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = c }
 
 /-- The set in the definition of `Order.cof` is nonempty. -/
-theorem cof_nonempty (r : α → α → Prop) [IsRefl α r] :
+private theorem cof_nonempty (r : α → α → Prop) [IsRefl α r] :
     { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = c }.Nonempty :=
   ⟨_, Set.univ, fun a => ⟨a, ⟨⟩, refl _⟩, rfl⟩
 
@@ -72,17 +72,13 @@ theorem cof_le (r : α → α → Prop) {S : Set α} (h : ∀ a, ∃ b ∈ S, r 
 theorem le_cof {r : α → α → Prop} [IsRefl α r] (c : Cardinal) :
     c ≤ cof r ↔ ∀ {S : Set α}, (∀ a, ∃ b ∈ S, r a b) → c ≤ #S := by
   rw [cof, le_csInf_iff'' (cof_nonempty r)]
-  use fun H S h => H _ ⟨S, h, rfl⟩
-  rintro H d ⟨S, h, rfl⟩
-  exact H h
+  simp
 
 end Order
 
-theorem RelIso.cof_le_lift {α : Type u} {β : Type v} {r : α → α → Prop} {s} [IsRefl β s]
-    (f : r ≃r s) : Cardinal.lift.{max u v} (Order.cof r) ≤
-    Cardinal.lift.{max u v} (Order.cof s) := by
-  rw [Order.cof, Order.cof, lift_sInf, lift_sInf,
-    le_csInf_iff'' ((Order.cof_nonempty s).image _)]
+private theorem RelIso.cof_le_lift {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
+    Cardinal.lift.{max u v} (Order.cof r) ≤ Cardinal.lift.{max u v} (Order.cof s) := by
+  rw [Order.cof, Order.cof, lift_sInf, lift_sInf, le_csInf_iff'' ((Order.cof_nonempty s).image _)]
   rintro - ⟨-, ⟨u, H, rfl⟩, rfl⟩
   apply csInf_le'
   refine
@@ -92,17 +88,18 @@ theorem RelIso.cof_le_lift {α : Type u} {β : Type v} {r : α → α → Prop} 
   refine ⟨f.symm b, mem_image_of_mem _ hb, f.map_rel_iff.1 ?_⟩
   rwa [RelIso.apply_symm_apply]
 
-theorem RelIso.cof_eq_lift {α : Type u} {β : Type v} {r s} [IsRefl α r] [IsRefl β s] (f : r ≃r s) :
+theorem RelIso.cof_eq_lift {r s} [IsRefl α r] [IsRefl β s] (f : r ≃r s) :
     Cardinal.lift.{max u v} (Order.cof r) = Cardinal.lift.{max u v} (Order.cof s) :=
   (RelIso.cof_le_lift f).antisymm (RelIso.cof_le_lift f.symm)
-
-theorem RelIso.cof_le {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
-    Order.cof r ≤ Order.cof s :=
-  lift_le.1 (RelIso.cof_le_lift f)
 
 theorem RelIso.cof_eq {α β : Type u} {r s} [IsRefl α r] [IsRefl β s] (f : r ≃r s) :
     Order.cof r = Order.cof s :=
   lift_inj.1 (RelIso.cof_eq_lift f)
+
+@[deprecated RelIso.cof_eq (since := "2024-10-14")]
+theorem RelIso.cof_le {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
+    Order.cof r ≤ Order.cof s :=
+  lift_le.1 (RelIso.cof_le_lift f)
 
 /-- Cofinality of a strict order `≺`. This is the smallest cardinality of a set `S : Set α` such
 that `∀ a, ∃ b ∈ S, ¬ b ≺ a`. -/
@@ -110,7 +107,7 @@ def StrictOrder.cof (r : α → α → Prop) : Cardinal :=
   Order.cof (swap rᶜ)
 
 /-- The set in the definition of `Order.StrictOrder.cof` is nonempty. -/
-theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
+private theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
     { c | ∃ S : Set α, Unbounded r S ∧ #S = c }.Nonempty :=
   @Order.cof_nonempty α _ (IsRefl.swap rᶜ)
 
@@ -119,24 +116,17 @@ theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
 
 namespace Ordinal
 
-/-- Cofinality of an ordinal. This is the smallest cardinal of a
-  subset `S` of the ordinal which is unbounded, in the sense
-  `∀ a, ∃ b ∈ S, a ≤ b`. It is defined for all ordinals, but
-  `cof 0 = 0` and `cof (succ o) = 1`, so it is only really
-  interesting on limit ordinals (when it is an infinite cardinal). -/
-def cof (o : Ordinal.{u}) : Cardinal.{u} :=
-  o.liftOn (fun a => StrictOrder.cof a.r)
-    (by
-      rintro ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨⟨f, hf⟩⟩
-      haveI := wo₁; haveI := wo₂
-      dsimp only
-      apply @RelIso.cof_eq _ _ _ _ ?_ ?_
-      · constructor
-        exact @fun a b => not_iff_not.2 hf
-      · dsimp only [swap]
-        exact ⟨fun _ => irrefl _⟩
-      · dsimp only [swap]
-        exact ⟨fun _ => irrefl _⟩)
+/-- Cofinality of an ordinal. This is the smallest cardinal of a subset `S` of the ordinal which is
+unbounded, in the sense `∀ a, ∃ b ∈ S, a ≤ b`.
+
+Note that `cof 0 = 0` and `cof (succ o) = 1` for every `o`. -/
+def cof (o : Ordinal.{u}) : Cardinal.{u} := by
+  refine o.liftOn (fun a => StrictOrder.cof a.r) ?_
+  rintro ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨⟨f, hf⟩⟩
+  apply @RelIso.cof_eq _ _ _ _ ?_ ?_
+  · exact ⟨_, @fun a b => not_iff_not.2 hf⟩
+  · exact ⟨fun _ => irrefl _⟩
+  · exact ⟨fun _ => irrefl _⟩
 
 theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = StrictOrder.cof r :=
   rfl
@@ -450,7 +440,7 @@ theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o
 
 @[simp]
 theorem cof_zero : cof 0 = 0 := by
-  refine LE.le.antisymm  ?_ (Cardinal.zero_le _)
+  apply (Cardinal.zero_le _).antisymm'
   rw [← card_zero]
   exact cof_le_card 0
 
