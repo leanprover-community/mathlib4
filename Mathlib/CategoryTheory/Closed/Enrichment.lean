@@ -70,7 +70,7 @@ scoped instance : EnrichedCategory V V where
   Hom x := (ihom x).obj
   id := id
   comp := comp
-  id_comp := fun _ _ => by
+  id_comp _ _ := by
     apply uncurry_injective
     simp only [uncurry_natural_left, comp_eq, id_eq]
     rw [uncurry_curry, whisker_assoc_symm]; simp only [compTranpose_eq, Category.assoc]
