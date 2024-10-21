@@ -419,14 +419,13 @@ theorem not_isReal_of_mk_isComplex {φ : K →+* ℂ} (h : IsComplex (mk φ)) :
 
 /-- The absolute value of an infinite place factors through its associated complex embedding. -/
 theorem abs_eq_comp (v : InfinitePlace K) :
-    v.1 = (IsAbsoluteValue.toAbsoluteValue (norm : ℂ → ℝ)).comp v.embedding.injective := by
+    v.1 = Complex.abs.comp v.embedding.injective := by
   rw [← v.2.choose_spec]
   rfl
 
 /-- The absolute value of a real infinite place factors through its associated real embedding. -/
 theorem abs_of_isReal_eq_comp {v : InfinitePlace K} (hv : IsReal v) :
-    v.1 = (IsAbsoluteValue.toAbsoluteValue (norm : ℝ → ℝ)).comp
-      (v.embedding_of_isReal hv).injective := by
+    v.1 = AbsoluteValue.abs.comp (v.embedding_of_isReal hv).injective := by
   ext x
   rw [(show v.1 x = v x by rfl), ← v.norm_embedding_of_isReal hv]
   rfl
