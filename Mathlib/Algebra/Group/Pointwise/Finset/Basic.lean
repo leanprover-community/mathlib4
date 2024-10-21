@@ -94,9 +94,11 @@ lemma coe_eq_one : (s : Set α) = 1 ↔ s = 1 := coe_eq_singleton
 theorem one_subset : (1 : Finset α) ⊆ s ↔ (1 : α) ∈ s :=
   singleton_subset_iff
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem singleton_one : ({1} : Finset α) = 1 :=
   rfl
+
+scoped[Pointwise] attribute [simp] Finset.singleton_one Finset.singleton_zero
 
 @[to_additive]
 theorem one_mem_one : (1 : α) ∈ (1 : Finset α) :=
