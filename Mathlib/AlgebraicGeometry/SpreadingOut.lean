@@ -3,7 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib
+import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+import Mathlib.AlgebraicGeometry.Noetherian
+import Mathlib.AlgebraicGeometry.Stalk
+import Mathlib.AlgebraicGeometry.Properties
 
 /-!
 # Spreading out morphisms
@@ -107,11 +110,11 @@ instance (priority := 100) [IsIntegral X] : X.GermInjective := by
     (Ideal.primeCompl_le_nonZeroDivisors _)
 
 instance (priority := 100) [IsLocallyNoetherian X] : X.GermInjective := by
-  suffices (R : CommRingCat.{u}) (hR : IsNoetherianRing R) : (Spec R).GermInjective
-  · refine @Scheme.GermInjective.of_openCover _ (X.affineOpenCover.openCover) (fun i ↦ this _ ?_)
+  suffices ∀ (R : CommRingCat.{u}) (_ : IsNoetherianRing R), (Spec R).GermInjective by
+    refine @Scheme.GermInjective.of_openCover _ (X.affineOpenCover.openCover) (fun i ↦ this _ ?_)
     have := isLocallyNoetherian_of_isOpenImmersion (X.affineOpenCover.map i)
     infer_instance
-  refine Scheme.GermInjective.Spec fun I hI ↦ ?_
+  refine fun R hR ↦ Scheme.GermInjective.Spec fun I hI ↦ ?_
   let J := RingHom.ker <| algebraMap R (Localization.AtPrime I)
   have hJ (x) : x ∈ J ↔ ∃ y : I.primeCompl, y * x = 0 :=
     IsLocalization.map_eq_zero_iff I.primeCompl _ x
@@ -138,8 +141,8 @@ lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
   letI := φRA.toAlgebra
   obtain ⟨s, hs⟩ := hφRA
   choose W hxW f hf using fun t ↦ X.presheaf.germ_exist x (φ t)
-  have H : x ∈ s.inf W ⊓ U
-  · rw [← SetLike.mem_coe, TopologicalSpace.Opens.coe_inf, TopologicalSpace.Opens.coe_finset_inf]
+  have H : x ∈ s.inf W ⊓ U := by
+    rw [← SetLike.mem_coe, TopologicalSpace.Opens.coe_inf, TopologicalSpace.Opens.coe_finset_inf]
     exact ⟨by simpa using fun x _ ↦ hxW x, hxU⟩
   refine ⟨s.inf W ⊓ U, H, inf_le_right, ?_⟩
   letI := φRX.toAlgebra
@@ -268,15 +271,15 @@ lemma spread_out_unique_of_germInjective [X.GermInjective] {x : X}
     ← Scheme.Hom.resLE_comp_ι _ (hUV.trans inf_le_right)]
   congr 1
   have : IsAffine V := hV
-  suffices (U₀ V₀) (eU : U = U₀) (eV : V = V₀) :
-    f.appLE V₀ U₀ (eU ▸ eV ▸ hUV.trans inf_le_left) =
-      g.appLE V₀ U₀ (eU ▸ eV ▸ hUV.trans inf_le_right)
-  · rw [← cancel_mono V.toScheme.isoSpec.hom]
+  suffices ∀ (U₀ V₀) (eU : U = U₀) (eV : V = V₀),
+      f.appLE V₀ U₀ (eU ▸ eV ▸ hUV.trans inf_le_left) =
+        g.appLE V₀ U₀ (eU ▸ eV ▸ hUV.trans inf_le_right) by
+    rw [← cancel_mono V.toScheme.isoSpec.hom]
     simp only [Scheme.isoSpec, asIso_hom, Scheme.toSpecΓ_naturality,
       Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE]
     congr 2
     apply this <;> simp
-  subst eU eV
+  rintro U V rfl rfl
   have := ConcreteCategory.mono_of_injective _ HU
   rw [← cancel_mono (X.presheaf.germ U x hxU)]
   simp only [Scheme.Hom.appLE, Category.assoc, X.presheaf.germ_res', ← Scheme.stalkMap_germ, H]
