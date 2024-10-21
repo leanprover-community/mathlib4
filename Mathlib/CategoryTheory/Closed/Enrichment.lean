@@ -72,12 +72,11 @@ scoped instance : EnrichedCategory V V where
   comp := comp
   id_comp _ _ := by
     apply uncurry_injective
-    simp only [uncurry_natural_left, comp_eq, id_eq]
-    rw [uncurry_curry, whisker_assoc_symm]; simp only [compTranspose_eq, Category.assoc]
-    rw [Iso.hom_inv_id_assoc, ← comp_whiskerRight_assoc, ← uncurry_eq, uncurry_curry]
-    simp only [Functor.id_obj, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc]
-    exact (uncurry_id_eq_ev _ _).symm
-  comp_id := fun _ _ => by
+    rw [uncurry_natural_left, uncurry_natural_left, comp_eq, uncurry_curry, id_eq, compTranspose_eq,
+      associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ← uncurry_eq,
+      uncurry_curry, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc,
+      uncurry_id_eq_ev _ _]
+  comp_id := fun _ y => by
     apply uncurry_injective
     rw [uncurry_natural_left, uncurry_natural_left, comp_eq, uncurry_curry, compTranspose_eq,
       associator_inv_naturality_right_assoc, ← rightUnitor_tensor_inv_assoc,
