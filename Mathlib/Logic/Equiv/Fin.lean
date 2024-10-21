@@ -499,9 +499,9 @@ instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
 instance subsingleton_fin_one : Subsingleton (Fin 1) :=
   finOneEquiv.subsingleton
 
-/-- The natural `Equiv` between `(Fin m → X) × (Fin n → X)` and `(Fin (m + n) → X)`.-/
-def Equiv.finArrowProdEquivFinAddArrow {X : Type*} (m n : ℕ) :
-    (Fin m → X) × (Fin n → X) ≃ (Fin (m + n) → X) where
+/-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `(Fin (m + n) → α)`.-/
+def Equiv.finArrowProdEquivFinAddArrow {α : Type*} (m n : ℕ) :
+    (Fin m → α) × (Fin n → α) ≃ (Fin (m + n) → α) where
   toFun := fun ⟨f, g⟩ ↦ Fin.append f g
   invFun := fun f ↦ ⟨fun i ↦ f (Fin.castAdd n i), fun i ↦ f (Fin.natAdd m i)⟩
   left_inv := by simp [Function.LeftInverse]
