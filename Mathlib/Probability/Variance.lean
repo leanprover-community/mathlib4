@@ -30,9 +30,9 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
   random variables is the sum of the variances.
 * `ProbabilityTheory.IndepFun.variance_sum`: the variance of a finite sum of pairwise
   independent random variables is the sum of the variances.
-* `Probability.variance_le_sub_mul_sub`: The variance of a random variable `X`
+* `ProbabilityTheory.variance_le_sub_mul_sub`: The variance of a random variable `X`
   satisfying `a ≤ X ≤ b` almost everywhere is at most `(b - 𝔼 X) * (𝔼 X - a)`.
-* `Probability.variance_le_sq_of_bounded`The variance of a random variable `X` satisfying
+* `ProbabilityTheory.variance_le_sq_of_bounded`The variance of a random variable `X` satisfying
   `a ≤ X ≤ b` almost everywhere is at most`((b - a) / 2) ^ 2`.
 -/
 
