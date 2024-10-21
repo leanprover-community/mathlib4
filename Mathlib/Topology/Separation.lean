@@ -1208,7 +1208,7 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 theorem exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds
     {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [R1Space Y] {f : X → Y} {x : X}
     {K : Set X} {s : Set Y} (hf : Continuous f) (hs : s ∈ 𝓝 (f x)) (hKc : IsCompact K)
-    (hKx : K ∈ 𝓝 x) : ∃ K ∈ 𝓝 x, IsCompact K ∧ MapsTo f K s := by
+    (hKx : K ∈ 𝓝 x) : ∃ L ∈ 𝓝 x, IsCompact L ∧ MapsTo f L s := by
   have hc : IsCompact (f '' K \ interior s) := (hKc.image hf).diff isOpen_interior
   obtain ⟨U, V, Uo, Vo, hxU, hV, hd⟩ : SeparatedNhds {f x} (f '' K \ interior s) := by
     simp_rw [separatedNhds_iff_disjoint, nhdsSet_singleton, hc.disjoint_nhdsSet_right,
