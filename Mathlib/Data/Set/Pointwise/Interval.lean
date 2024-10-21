@@ -37,8 +37,7 @@ the unprimed names have been reserved for
 
 section ContravariantLE
 
-variable [Mul α] [Preorder α]
-variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap HMul.hMul) LE.le]
+variable [Mul α] [Preorder α] [MulLeftMono α] [MulRightMono α]
 
 @[to_additive Icc_add_Icc_subset]
 theorem Icc_mul_Icc_subset' (a b c d : α) : Icc a b * Icc c d ⊆ Icc (a * c) (b * d) := by
@@ -59,54 +58,57 @@ end ContravariantLE
 
 section ContravariantLT
 
-variable [Mul α] [PartialOrder α]
-variable [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (Function.swap HMul.hMul) LT.lt]
+variable [Mul α] [PartialOrder α] [MulLeftStrictMono α] [MulRightStrictMono α]
 
 @[to_additive Icc_add_Ico_subset]
 theorem Icc_mul_Ico_subset' (a b c d : α) : Icc a b * Ico c d ⊆ Ico (a * c) (b * d) := by
-  haveI := covariantClass_le_of_lt
+  have := mulLeftMono_of_mulLeftStrictMono α
+  have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
 
 @[to_additive Ico_add_Icc_subset]
 theorem Ico_mul_Icc_subset' (a b c d : α) : Ico a b * Icc c d ⊆ Ico (a * c) (b * d) := by
-  haveI := covariantClass_le_of_lt
+  have := mulLeftMono_of_mulLeftStrictMono α
+  have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
 
 @[to_additive Ioc_add_Ico_subset]
 theorem Ioc_mul_Ico_subset' (a b c d : α) : Ioc a b * Ico c d ⊆ Ioo (a * c) (b * d) := by
-  haveI := covariantClass_le_of_lt
+  have := mulLeftMono_of_mulLeftStrictMono α
+  have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_lt_mul_of_lt_of_le hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
 
 @[to_additive Ico_add_Ioc_subset]
 theorem Ico_mul_Ioc_subset' (a b c d : α) : Ico a b * Ioc c d ⊆ Ioo (a * c) (b * d) := by
-  haveI := covariantClass_le_of_lt
+  have := mulLeftMono_of_mulLeftStrictMono α
+  have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_lt_mul_of_le_of_lt hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
 
 @[to_additive Iic_add_Iio_subset]
 theorem Iic_mul_Iio_subset' (a b : α) : Iic a * Iio b ⊆ Iio (a * b) := by
-  haveI := covariantClass_le_of_lt
+  have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_le_of_lt hya hzb
 
 @[to_additive Iio_add_Iic_subset]
 theorem Iio_mul_Iic_subset' (a b : α) : Iio a * Iic b ⊆ Iio (a * b) := by
-  haveI := covariantClass_le_of_lt
+  have := mulLeftMono_of_mulLeftStrictMono α
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_lt_of_le hya hzb
 
 @[to_additive Ioi_add_Ici_subset]
 theorem Ioi_mul_Ici_subset' (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) := by
-  haveI := covariantClass_le_of_lt
+  have := mulLeftMono_of_mulLeftStrictMono α
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_lt_of_le hya hzb
 
 @[to_additive Ici_add_Ioi_subset]
 theorem Ici_mul_Ioi_subset' (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) := by
-  haveI := covariantClass_le_of_lt
+  have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_le_of_lt hya hzb
 

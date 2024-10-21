@@ -115,8 +115,8 @@ theorem _root_.Set.up_union (s t : Set α) : up (s ∪ t) = up s + up t :=
   rfl
 
 /- Since addition on `SetSemiring` is commutative (it is set union), there is no need
-to also have the instance `CovariantClass (SetSemiring α) (SetSemiring α) (swap (+)) (≤)`. -/
-instance covariantClass_add : CovariantClass (SetSemiring α) (SetSemiring α) (· + ·) (· ≤ ·) :=
+to also have the instance `AddRightMono (SetSemiring α)`. -/
+instance addLeftMono : AddLeftMono (SetSemiring α) :=
   ⟨fun _ _ _ => union_subset_union_right _⟩
 
 section Mul
@@ -150,12 +150,10 @@ instance : NoZeroDivisors (SetSemiring α) :=
       b.eq_empty_or_nonempty.resolve_right fun hb =>
         Nonempty.ne_empty ⟨_, mul_mem_mul ha.some_mem hb.some_mem⟩ ab⟩
 
-instance covariantClass_mul_left :
-    CovariantClass (SetSemiring α) (SetSemiring α) (· * ·) (· ≤ ·) :=
+instance mulLeftMono : MulLeftMono (SetSemiring α) :=
   ⟨fun _ _ _ => mul_subset_mul_left⟩
 
-instance covariantClass_mul_right :
-    CovariantClass (SetSemiring α) (SetSemiring α) (swap (· * ·)) (· ≤ ·) :=
+instance mulRightMono : MulRightMono (SetSemiring α) :=
   ⟨fun _ _ _ => mul_subset_mul_right⟩
 
 end Mul

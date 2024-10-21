@@ -118,8 +118,7 @@ Note that this multiplication does not apply to `ℚ` or `ℝ`.
 
 section Mul
 
-variable [Preorder α] [Mul α] [CovariantClass α α (· * ·) (· ≤ ·)]
-  [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [Preorder α] [Mul α] [MulLeftMono α] [MulRightMono α]
 
 @[to_additive]
 instance : Mul (NonemptyInterval α) :=
@@ -178,8 +177,8 @@ end Mul
 
 
 -- TODO: if `to_additive` gets improved sufficiently, derive this from `hasPow`
-instance NonemptyInterval.hasNSMul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
-    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] : SMul ℕ (NonemptyInterval α) :=
+instance NonemptyInterval.hasNSMul [AddMonoid α] [Preorder α] [AddLeftMono α]
+    [AddRightMono α] : SMul ℕ (NonemptyInterval α) :=
   ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_right s.fst_le_snd _⟩⟩
 
 section Pow
@@ -187,14 +186,13 @@ section Pow
 variable [Monoid α] [Preorder α]
 
 @[to_additive existing]
-instance NonemptyInterval.hasPow
-    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
+instance NonemptyInterval.hasPow [MulLeftMono α] [MulRightMono α] :
     Pow (NonemptyInterval α) ℕ :=
   ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 
 namespace NonemptyInterval
 
-variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [MulLeftMono α] [MulRightMono α]
 variable (s : NonemptyInterval α) (a : α) (n : ℕ)
 
 @[to_additive (attr := simp) toProd_nsmul]
@@ -275,8 +273,7 @@ is not a thing and probably should not become one).
 
 section Sub
 
-variable [Preorder α] [AddCommSemigroup α] [Sub α] [OrderedSub α]
-  [CovariantClass α α (· + ·) (· ≤ ·)]
+variable [Preorder α] [AddCommSemigroup α] [Sub α] [OrderedSub α] [AddLeftMono α]
 
 instance : Sub (NonemptyInterval α) :=
   ⟨fun s t => ⟨(s.fst - t.snd, s.snd - t.fst), tsub_le_tsub s.fst_le_snd t.fst_le_snd⟩⟩
@@ -334,7 +331,7 @@ Note that this division does not apply to `ℚ` or `ℝ`.
 
 section Div
 
-variable [Preorder α] [CommGroup α] [CovariantClass α α (· * ·) (· ≤ ·)]
+variable [Preorder α] [CommGroup α] [MulLeftMono α]
 
 @[to_additive existing]
 instance : Div (NonemptyInterval α) :=

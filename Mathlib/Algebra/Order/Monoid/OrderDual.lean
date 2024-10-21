@@ -21,9 +21,9 @@ namespace OrderDual
 instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
   { mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
 
-@[to_additive OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass]
-instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid α] :
-    ContravariantClass αᵒᵈ αᵒᵈ HMul.hMul LE.le where
+@[to_additive OrderDual.OrderedCancelAddCommMonoid.to_mulLeftReflectLE]
+instance OrderedCancelCommMonoid.to_mulLeftReflectLE [OrderedCancelCommMonoid α] :
+    MulLeftReflectLE αᵒᵈ where
     elim a b c := OrderedCancelCommMonoid.le_of_mul_le_mul_left (α := α) a c b
 -- Porting note: Lean 3 to_additive name omits first namespace part
 
