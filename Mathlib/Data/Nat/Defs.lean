@@ -168,22 +168,10 @@ lemma pred_eq_of_eq_succ (H : m = n.succ) : m.pred = n := by simp [H]
 lemma forall_lt_succ : (∀ m < n + 1, p m) ↔ (∀ m < n, p m) ∧ p n := by
   simp only [Nat.lt_succ_iff, Nat.le_iff_lt_or_eq, or_comm, forall_eq_or_imp, and_comm]
 
-/-- Variant of `forall_lt_succ` which introduces the `p 0` case. -/
-lemma forall_lt_succ' : (∀ m < n + 1, p m) ↔ p 0 ∧ (∀ m < n, p (m + 1)) := by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [ih, forall_lt_succ, and_assoc]
-
 lemma exists_lt_succ : (∃ m < n + 1, p m) ↔ (∃ m < n, p m) ∨ p n := by
   rw [← not_iff_not]
   push_neg
   exact forall_lt_succ
-
-/-- Variant of `exists_lt_succ` which introduces the `p 0` case. -/
-lemma exists_lt_succ' : (∃ m < n + 1, p m) ↔ p 0 ∨ (∃ m < n, p (m + 1)):= by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [ih, exists_lt_succ, or_assoc]
 
 lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
