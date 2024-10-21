@@ -195,6 +195,26 @@ lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
     exact (measure_mono <| iInter_subset_of_subset n fun _ ht ↦ ht).trans (hs₃ n)
   · rw [union_compl_self]
 
+lemma disjoint_of_mutuallySingular (h : μ ⟂ₘ ν) : Disjoint μ ν := by
+  have h_bot_iff (ξ : Measure α) : ξ ≤ ⊥ ↔ ξ = 0 := by
+      rw [le_bot_iff]
+      rfl
+  intro ξ hξμ hξν
+  rw [h_bot_iff]
+  ext s hs
+  simp only [Measure.coe_zero, Pi.zero_apply]
+  rw [← inter_union_compl s h.nullSet, measure_union, add_eq_zero]
+  · constructor
+    · refine measure_inter_null_of_null_right _ ?_
+      exact Measure.absolutelyContinuous_of_le hξμ h.measure_nullSet
+    · refine measure_inter_null_of_null_right _ ?_
+      exact Measure.absolutelyContinuous_of_le hξν h.measure_compl_nullSet
+  · exact Disjoint.mono inter_subset_right inter_subset_right disjoint_compl_right
+  · exact hs.inter h.measurableSet_nullSet.compl
+
+lemma mutuallySingular_iff_disjoint : μ ⟂ₘ ν ↔ Disjoint μ ν :=
+  ⟨disjoint_of_mutuallySingular, mutuallySingular_of_disjoint⟩
+
 end Measure
 
 end MeasureTheory
