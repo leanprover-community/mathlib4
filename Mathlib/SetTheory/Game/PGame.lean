@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.List.InsertNth
+import Mathlib.Data.List.InsertIdx
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
@@ -22,6 +22,9 @@ A pregame (`SetTheory.PGame` below) is axiomatised via an inductive type, whose 
 takes two types (thought of as indexing the possible moves for the players Left and Right), and a
 pair of functions out of these types to `SetTheory.PGame` (thought of as describing the resulting
 game after making a move).
+
+We may denote a game as $\{L | R\}$, where $L$ and $R$ stand for the collections of left and right
+moves. This notation is not currently used in Mathlib.
 
 Combinatorial games themselves, as a quotient of pregames, are constructed in `Game.lean`.
 
@@ -349,15 +352,17 @@ instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
 
 /-- The less or equal relation on pre-games.
 
-If `0 ≤ x`, then Left can win `x` as the second player. -/
+If `0 ≤ x`, then Left can win `x` as the second player. `x ≤ y` means that `0 ≤ y - x`.
+See `PGame.le_iff_sub_nonneg`. -/
 instance le : LE PGame :=
   ⟨Sym2.GameAdd.fix wf_isOption fun x y le =>
       (∀ i, ¬le y (x.moveLeft i) (Sym2.GameAdd.snd_fst <| IsOption.moveLeft i)) ∧
         ∀ j, ¬le (y.moveRight j) x (Sym2.GameAdd.fst_snd <| IsOption.moveRight j)⟩
 
-/-- The less or fuzzy relation on pre-games.
+/-- The less or fuzzy relation on pre-games. `x ⧏ y` is defined as `¬ y ≤ x`.
 
-If `0 ⧏ x`, then Left can win `x` as the first player. -/
+If `0 ⧏ x`, then Left can win `x` as the first player. `x ⧏ y` means that `0 ⧏ y - x`.
+See `PGame.lf_iff_sub_zero_lf`. -/
 def LF (x y : PGame) : Prop :=
   ¬y ≤ x
 

@@ -85,15 +85,28 @@ lemma embedding_toContinuousMap : Embedding ((↑) : C(X, R)₀ → C(X, R)) whe
   inj _ _ h := ext fun x ↦ congr($(h) x)
 
 instance [T0Space R] : T0Space C(X, R)₀ := embedding_toContinuousMap.t0Space
+instance [R0Space R] : R0Space C(X, R)₀ := embedding_toContinuousMap.r0Space
 instance [T1Space R] : T1Space C(X, R)₀ := embedding_toContinuousMap.t1Space
+instance [R1Space R] : R1Space C(X, R)₀ := embedding_toContinuousMap.r1Space
 instance [T2Space R] : T2Space C(X, R)₀ := embedding_toContinuousMap.t2Space
+instance [RegularSpace R] : RegularSpace C(X, R)₀ := embedding_toContinuousMap.regularSpace
+instance [T3Space R] : T3Space C(X, R)₀ := embedding_toContinuousMap.t3Space
 
-lemma closedEmbedding_toContinuousMap [T1Space R] :
-    ClosedEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
+instance instContinuousEvalConst : ContinuousEvalConst C(X, R)₀ X R :=
+  .of_continuous_forget embedding_toContinuousMap.continuous
+
+instance instContinuousEval [LocallyCompactPair X R] : ContinuousEval C(X, R)₀ X R :=
+  .of_continuous_forget embedding_toContinuousMap.continuous
+
+lemma isClosedEmbedding_toContinuousMap [T1Space R] :
+    IsClosedEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
   toEmbedding := embedding_toContinuousMap
   isClosed_range := by
     rw [range_toContinuousMap]
-    exact isClosed_singleton.preimage <| ContinuousMap.continuous_eval_const 0
+    exact isClosed_singleton.preimage <| continuous_eval_const 0
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_toContinuousMap := isClosedEmbedding_toContinuousMap
 
 @[fun_prop]
 lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]
@@ -278,7 +291,7 @@ alias uniformEmbedding_toContinuousMap := isUniformEmbedding_toContinuousMap
 
 instance [T1Space R] [CompleteSpace C(X, R)] : CompleteSpace C(X, R)₀ :=
   completeSpace_iff_isComplete_range isUniformEmbedding_toContinuousMap.isUniformInducing
-    |>.mpr closedEmbedding_toContinuousMap.isClosed_range.isComplete
+    |>.mpr isClosedEmbedding_toContinuousMap.isClosed_range.isComplete
 
 lemma isUniformEmbedding_comp {Y : Type*} [UniformSpace Y] [Zero Y] (g : C(Y, R)₀)
     (hg : IsUniformEmbedding g) : IsUniformEmbedding (g.comp · : C(X, Y)₀ → C(X, R)₀) :=
@@ -293,15 +306,15 @@ alias uniformEmbedding_comp := isUniformEmbedding_comp
 sending `0 : X` to `0 : Y`. -/
 def _root_.UniformEquiv.arrowCongrLeft₀ {Y : Type*} [TopologicalSpace Y] [Zero Y] (f : X ≃ₜ Y)
     (hf : f 0 = 0) : C(X, R)₀ ≃ᵤ C(Y, R)₀ where
-  toFun g := g.comp ⟨f.symm.toContinuousMap, (f.toEquiv.apply_eq_iff_eq_symm_apply.eq ▸ hf).symm⟩
-  invFun g := g.comp ⟨f.toContinuousMap, hf⟩
+  toFun g := g.comp ⟨f.symm, (f.toEquiv.apply_eq_iff_eq_symm_apply.eq ▸ hf).symm⟩
+  invFun g := g.comp ⟨f, hf⟩
   left_inv g := ext fun _ ↦ congrArg g <| f.left_inv _
   right_inv g := ext fun _ ↦ congrArg g <| f.right_inv _
   uniformContinuous_toFun := isUniformEmbedding_toContinuousMap.uniformContinuous_iff.mpr <|
-    ContinuousMap.uniformContinuous_comp_left f.symm.toContinuousMap |>.comp
+    ContinuousMap.uniformContinuous_comp_left (f.symm : C(Y, X)) |>.comp
     isUniformEmbedding_toContinuousMap.uniformContinuous
   uniformContinuous_invFun := isUniformEmbedding_toContinuousMap.uniformContinuous_iff.mpr <|
-    ContinuousMap.uniformContinuous_comp_left f.toContinuousMap |>.comp
+    ContinuousMap.uniformContinuous_comp_left (f : C(X, Y)) |>.comp
     isUniformEmbedding_toContinuousMap.uniformContinuous
 
 end UniformSpace

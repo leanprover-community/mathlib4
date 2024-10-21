@@ -502,7 +502,6 @@
  ["docBlame", "Mathlib.Tactic.tacticMatch_target_"],
  ["docBlame", "Mathlib.Tactic.tacticSet!_"],
  ["docBlame", "Mathlib.Tactic.tacticSuffices_"],
- ["docBlame", "Mathlib.Tactic.tacticTransitivity___"],
  ["docBlame", "Mathlib.Tactic.usingArg"],
  ["docBlame", "Mathlib.Tactic.withArgs"],
  ["docBlame", "Mathlib.WhatsNew.diffExtension"],

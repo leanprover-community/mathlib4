@@ -1380,7 +1380,7 @@ theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α :
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 
--- Porting note: was `simp`. LHS is not normal form.
+-- Porting note (#11119): was `simp`. LHS is not normal form.
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
@@ -1820,8 +1820,16 @@ theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : #s = 0 ↔ s = ∅ :
 theorem mk_univ {α : Type u} : #(@univ α) = #α :=
   mk_congr (Equiv.Set.univ α)
 
+@[simp] lemma mk_setProd {α β : Type u} (s : Set α) (t : Set β) : #(s ×ˢ t) = #s * #t := by
+  rw [mul_def, mk_congr (Equiv.Set.prod ..)]
+
 theorem mk_image_le {α β : Type u} {f : α → β} {s : Set α} : #(f '' s) ≤ #s :=
   mk_le_of_surjective surjective_onto_image
+
+lemma mk_image2_le {α β γ : Type u} {f : α → β → γ} {s : Set α} {t : Set β} :
+    #(image2 f s t) ≤ #s * #t := by
+  rw [← image_uncurry_prod, ← mk_setProd]
+  exact mk_image_le
 
 theorem mk_image_le_lift {α : Type u} {β : Type v} {f : α → β} {s : Set α} :
     lift.{u} #(f '' s) ≤ lift.{v} #s :=
@@ -1954,7 +1962,7 @@ theorem mk_union_le {α : Type u} (S T : Set α) : #(S ∪ T : Set α) ≤ #S + 
 theorem mk_union_of_disjoint {α : Type u} {S T : Set α} (H : Disjoint S T) :
     #(S ∪ T : Set α) = #S + #T := by
   classical
-  exact Quot.sound ⟨Equiv.Set.union H.le_bot⟩
+  exact Quot.sound ⟨Equiv.Set.union H⟩
 
 theorem mk_insert {α : Type u} {s : Set α} {a : α} (h : a ∉ s) :
     #(insert a s : Set α) = #s + 1 := by
