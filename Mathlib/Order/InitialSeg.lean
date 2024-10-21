@@ -167,6 +167,12 @@ instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
 
+theorem eq_relIso [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) : g a = f a :=
+  InitialSeg.eq (InitialSeg.ofIso g) f a
+
+@[deprecated eq_relIso (since := "2024-10-20")]
+alias ltOrEq_apply_right := eq_relIso
+
 theorem Antisymm.aux [IsWellOrder α r] (f : r ≼i s) (g : s ≼i r) : LeftInverse g f :=
   InitialSeg.eq (f.trans g) (InitialSeg.refl _)
 
@@ -300,6 +306,13 @@ instance hasCoeInitialSeg [IsTrans β s] : Coe (r ≺i s) (r ≼i s) :=
 theorem coe_coe_fn' [IsTrans β s] (f : r ≺i s) : ((f : r ≼i s) : α → β) = f :=
   rfl
 
+theorem _root_.InitialSeg.eq_principalSeg [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) :
+    g a = f a :=
+  InitialSeg.eq g f a
+
+@[deprecated (since := "2024-10-20")]
+alias _root_.InitialSeg.ltOrEq_apply_left := InitialSeg.eq_principalSeg
+
 theorem exists_eq_iff_rel [IsTrans β s] (f : r ≺i s) {a : α} {b : β} :
     s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   @InitialSeg.exists_eq_iff_rel α β r s f a b
@@ -319,59 +332,89 @@ theorem _root_.InitialSeg.toPrincipalSeg_apply [IsWellOrder β s] (f : r ≼i s)
 
 theorem irrefl {r : α → α → Prop} [IsWellOrder α r] (f : r ≺i r) : False := by
   have h := f.lt_top f.top
-  rw [show f f.top = f.top from InitialSeg.eq (↑f) (InitialSeg.refl r) f.top] at h
+  rw [show f f.top = f.top from InitialSeg.eq f (InitialSeg.refl r) f.top] at h
   exact _root_.irrefl _ h
 
 instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
   ⟨fun f => f.irrefl⟩
 
 /-- Composition of a principal segment with an initial segment, as a principal segment -/
-def ltLe (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
+def transInitial (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
     simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_swap, ← exists_and_left]⟩
 
 @[simp]
-theorem lt_le_apply (f : r ≺i s) (g : s ≼i t) (a : α) : (f.ltLe g) a = g (f a) :=
+theorem transInitial_apply (f : r ≺i s) (g : s ≼i t) (a : α) : f.transInitial g a = g (f a) :=
   RelEmbedding.trans_apply _ _ _
 
 @[simp]
+theorem transInitial_top (f : r ≺i s) (g : s ≼i t) : (f.transInitial g).top = g f.top :=
+  rfl
+
+@[deprecated (since := "2024-10-20")]
+alias ltLe := transInitial
+
+set_option linter.deprecated false in
+@[deprecated transInitial_apply (since := "2024-10-20")]
+theorem lt_le_apply (f : r ≺i s) (g : s ≼i t) (a : α) : (f.ltLe g) a = g (f a) :=
+  RelEmbedding.trans_apply _ _ _
+
+set_option linter.deprecated false in
+@[deprecated transInitial_top (since := "2024-10-20")]
 theorem lt_le_top (f : r ≺i s) (g : s ≼i t) : (f.ltLe g).top = g f.top :=
   rfl
 
-/-- Composition of two principal segments as a principal segment -/
+/-- Composition of two principal segments as a principal segment. -/
 @[trans]
 protected def trans [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : r ≺i t :=
-  ltLe f g
+  transInitial f g
 
 @[simp]
-theorem trans_apply [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) (a : α) : (f.trans g) a = g (f a) :=
-  lt_le_apply _ _ _
+theorem trans_apply [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) (a : α) : f.trans g a = g (f a) :=
+  transInitial_apply _ _ _
 
 @[simp]
 theorem trans_top [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : (f.trans g).top = g f.top :=
   rfl
 
-/-- Composition of an order isomorphism with a principal segment, as a principal segment -/
-def equivLT (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
-  ⟨@RelEmbedding.trans _ _ _ r s t f g, g.top, fun c =>
-    suffices (∃ a, g a = c) ↔ ∃ a, g (f a) = c by simp [← PrincipalSeg.mem_range_iff_rel]
-    ⟨fun ⟨b, h⟩ => ⟨f.symm b, by simp only [h, RelIso.apply_symm_apply]⟩,
-      fun ⟨a, h⟩ => ⟨f a, h⟩⟩⟩
-
-/-- Composition of a principal segment with an order isomorphism, as a principal segment -/
-def ltEquiv {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} (f : r ≺i s) (g : s ≃r t) :
-    r ≺i t :=
-  ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, by
-    intro x
-    rw [← g.apply_symm_apply x, g.map_rel_iff, ← f.mem_range_iff_rel]
-    exact exists_congr <| fun _ ↦ ⟨fun h => g.toEquiv.bijective.1 h, congr_arg g⟩⟩
+/-- Composition of an order isomorphism with a principal segment, as a principal segment. -/
+def relIsoTrans (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
+  ⟨@RelEmbedding.trans _ _ _ r s t f g, g.top, fun c => by simp [g.mem_range_iff_rel]⟩
 
 @[simp]
-theorem equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a = g (f a) :=
+theorem relIsoTrans_apply (f : r ≃r s) (g : s ≺i t) (a : α) : relIsoTrans f g a = g (f a) :=
   RelEmbedding.trans_apply _ _ _
 
 @[simp]
+theorem relIsoTrans_top (f : r ≃r s) (g : s ≺i t) : (relIsoTrans f g).top = g.top :=
+  rfl
+
+@[deprecated (since := "2024-10-20")]
+alias equivLT := relIsoTrans
+
+set_option linter.deprecated false in
+@[deprecated transInitial_top (since := "2024-10-20")]
+theorem equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a = g (f a) :=
+  RelEmbedding.trans_apply _ _ _
+
+set_option linter.deprecated false in
+@[deprecated transInitial_top (since := "2024-10-20")]
 theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
+  rfl
+
+/-- Composition of a principal segment with an order isomorphism, as a principal segment -/
+abbrev transRelIso (f : r ≺i s) (g : s ≃r t) : r ≺i t :=
+  transInitial f (InitialSeg.ofIso g)
+
+@[deprecated (since := "2024-10-20")]
+alias ltEquiv := transRelIso
+
+@[simp]
+theorem transRelIso_apply (f : r ≺i s) (g : s ≃r t) (a : α) : transRelIso f g a = g (f a) :=
+  RelEmbedding.trans_apply _ _ _
+
+@[simp]
+theorem transRelIso_top (f : r ≺i s) (g : s ≃r t) : (transRelIso f g).top = g f.top :=
   rfl
 
 /-- Given a well order `s`, there is a most one principal segment embedding of `r` into `s`. -/
@@ -391,7 +434,7 @@ protected theorem eq [IsWellOrder β s] (f g : r ≺i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
 
 theorem top_eq [IsWellOrder γ t] (e : r ≃r s) (f : r ≺i t) (g : s ≺i t) : f.top = g.top := by
-  rw [Subsingleton.elim f (PrincipalSeg.equivLT e g)]; rfl
+  rw [Subsingleton.elim f (PrincipalSeg.relIsoTrans e g)]; rfl
 
 theorem top_rel_top {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} [IsWellOrder γ t]
     (f : r ≺i s) (g : s ≺i t) (h : r ≺i t) : t h.top g.top := by
@@ -427,8 +470,7 @@ attribute [nolint simpNF] PrincipalSeg.subrelIso_symm_apply
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
 @[simp, nolint simpNF]
-theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
-    f (f.subrelIso b) = b :=
+theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) : f (f.subrelIso b) = b :=
   Equiv.apply_ofInjective_symm f.injective _
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
@@ -478,33 +520,41 @@ theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} 
 
 namespace InitialSeg
 
+open Classical in
 /-- To an initial segment taking values in a well order, one can associate either a principal
-segment (if the range is not everything, hence one can take as top the minimum of the complement
-of the range) or an order isomorphism (if the range is everything). -/
-noncomputable def ltOrEq [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) := by
-  by_cases h : Surjective f
-  · exact Sum.inr (RelIso.ofSurjective f h)
-  · exact Sum.inl (f.toPrincipalSeg h)
+segment (if the range is not everything, taking the top the minimum of the complement of the range)
+or an order isomorphism (if the range is everything). -/
+noncomputable def principalSumRelIso [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) :=
+  if h : Surjective f
+    then Sum.inr (RelIso.ofSurjective f h)
+    else Sum.inl (f.toPrincipalSeg h)
 
-theorem ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) : g a = f a :=
-  @InitialSeg.eq α β r s _ g f a
-
-theorem ltOrEq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) : g a = f a :=
-  InitialSeg.eq (InitialSeg.ofIso g) f a
+@[deprecated principalSumRelIso (since := "2024-10-20")]
+alias ltOrEq := principalSumRelIso
 
 /-- Composition of an initial segment taking values in a well order and a principal segment. -/
-noncomputable def leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) : r ≺i t :=
-  match f.ltOrEq with
+noncomputable def transPrincipal [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
+    r ≺i t :=
+  match f.principalSumRelIso with
   | Sum.inl f' => f'.trans g
-  | Sum.inr f' => PrincipalSeg.equivLT f' g
+  | Sum.inr f' => PrincipalSeg.relIsoTrans f' g
 
 @[simp]
+theorem transPrincipal_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
+    f.transPrincipal g a = g (f a) := by
+  rw [InitialSeg.transPrincipal]
+  obtain f' | f' := f.principalSumRelIso
+  · rw [PrincipalSeg.trans_apply, f.eq_principalSeg]
+  · rw [PrincipalSeg.relIsoTrans_apply, f.eq_relIso]
+
+@[deprecated transPrincipal (since := "2024-10-20")]
+alias leLT := transPrincipal
+
+set_option linter.deprecated false in
+@[deprecated transPrincipal_apply (since := "2024-10-20")]
 theorem leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
-    (f.leLT g) a = g (f a) := by
-  rw [InitialSeg.leLT]
-  obtain f' | f' := f.ltOrEq
-  · rw [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
-  · rw [PrincipalSeg.equivLT_apply, f.ltOrEq_apply_right]
+    f.leLT g a = g (f a) :=
+  transPrincipal_apply f g a
 
 end InitialSeg
 
@@ -559,19 +609,20 @@ end RelEmbedding
 /-- For any two well orders, one is an initial segment of the other. -/
 noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
     (r ≼i s) ⊕ (s ≼i r) :=
-  match (leAdd r s).ltOrEq, (RelEmbedding.sumLexInr r s).collapse.ltOrEq with
-  | Sum.inl f, Sum.inr g => Sum.inl <| f.ltEquiv g.symm
-  | Sum.inr f, Sum.inl g => Sum.inr <| g.ltEquiv f.symm
+  match (leAdd r s).principalSumRelIso,
+    (RelEmbedding.sumLexInr r s).collapse.principalSumRelIso with
+  | Sum.inl f, Sum.inr g => Sum.inl <| f.transRelIso g.symm
+  | Sum.inr f, Sum.inl g => Sum.inr <| g.transRelIso f.symm
   | Sum.inr f, Sum.inr g => Sum.inl <| InitialSeg.ofIso (f.trans g.symm)
   | Sum.inl f, Sum.inl g => Classical.choice <| by
       obtain h | h | h := trichotomous_of (Sum.Lex r s) f.top g.top
       · exact ⟨Sum.inl <| (f.codRestrict {x | Sum.Lex r s x g.top}
-          (fun a => _root_.trans (f.lt_top a) h) h).ltEquiv g.subrelIso⟩
+          (fun a => _root_.trans (f.lt_top a) h) h).transRelIso g.subrelIso⟩
       · let f := f.subrelIso
         rw [h] at f
         exact ⟨Sum.inl <| InitialSeg.ofIso (f.symm.trans g.subrelIso)⟩
       · exact ⟨Sum.inr <| (g.codRestrict {x | Sum.Lex r s x f.top}
-          (fun a => _root_.trans (g.lt_top a) h) h).ltEquiv f.subrelIso⟩
+          (fun a => _root_.trans (g.lt_top a) h) h).transRelIso f.subrelIso⟩
 
 attribute [nolint simpNF] PrincipalSeg.ofElement_apply PrincipalSeg.subrelIso_symm_apply
   PrincipalSeg.apply_subrelIso PrincipalSeg.subrelIso_apply
