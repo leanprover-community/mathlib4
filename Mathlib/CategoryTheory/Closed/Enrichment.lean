@@ -79,13 +79,11 @@ scoped instance : EnrichedCategory V V where
     exact (uncurry_id_eq_ev _ _).symm
   comp_id := fun _ _ => by
     apply uncurry_injective
-    simp only [uncurry_natural_left, comp_eq, id_eq]
-    rw [uncurry_curry]; simp only [compTranpose_eq, Category.assoc]
-    rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc]; dsimp
-    rw [← uncurry_eq, uncurry_curry]
-    simp only [whiskerLeft_rightUnitor_inv, MonoidalCategory.whiskerRight_id, Category.assoc,
-      Iso.inv_hom_id, Category.comp_id, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc]
-    exact (uncurry_id_eq_ev _ _).symm
+    rw [uncurry_natural_left, uncurry_natural_left, comp_eq, uncurry_curry, compTranspose_eq,
+      associator_inv_naturality_right_assoc, ← rightUnitor_tensor_inv_assoc,
+      whisker_exchange_assoc, ← rightUnitor_inv_naturality_assoc, ← uncurry_id_eq_ev y y,
+      ← uncurry_natural_left]
+    simp [id_eq, uncurry_id_eq_ev]
   assoc := fun _ _ _ _ => by
     apply uncurry_injective
     simp only [uncurry_natural_left, comp_eq]
