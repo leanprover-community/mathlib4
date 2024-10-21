@@ -3,7 +3,8 @@ Copyright (c) 2022 María Inés de Frutos-Fernández, Yaël Dillies. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
-import Mathlib.Data.NNReal.Basic
+import Mathlib.Data.NNReal.Defs
+import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
