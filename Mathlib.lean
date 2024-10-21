@@ -329,6 +329,7 @@ import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.GroupWithZero.Opposite
 import Mathlib.Algebra.GroupWithZero.Pi
+import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Card
 import Mathlib.Algebra.GroupWithZero.Prod
@@ -796,6 +797,7 @@ import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.Ring.Pi
+import Mathlib.Algebra.Ring.Pointwise.Finset
 import Mathlib.Algebra.Ring.Pointwise.Set
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Rat
