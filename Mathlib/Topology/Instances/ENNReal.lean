@@ -59,11 +59,14 @@ theorem isOpen_Ico_zero : IsOpen (Ico 0 b) := by
   rw [ENNReal.Ico_eq_Iio]
   exact isOpen_Iio
 
-theorem openEmbedding_coe : OpenEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
+theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
   ⟨embedding_coe, by rw [range_coe']; exact isOpen_Iio⟩
 
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_coe := isOpenEmbedding_coe
+
 theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r : ℝ≥0∞) :=
-  IsOpen.mem_nhds openEmbedding_coe.isOpen_range <| mem_range_self _
+  IsOpen.mem_nhds isOpenEmbedding_coe.isOpen_range <| mem_range_self _
 
 @[norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
@@ -79,7 +82,7 @@ theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℝ≥0} :
   embedding_coe.continuous_iff.symm
 
 theorem nhds_coe {r : ℝ≥0} : 𝓝 (r : ℝ≥0∞) = (𝓝 r).map (↑) :=
-  (openEmbedding_coe.map_nhds_eq r).symm
+  (isOpenEmbedding_coe.map_nhds_eq r).symm
 
 theorem tendsto_nhds_coe_iff {α : Type*} {l : Filter α} {x : ℝ≥0} {f : ℝ≥0∞ → α} :
     Tendsto f (𝓝 ↑x) l ↔ Tendsto (f ∘ (↑) : ℝ≥0 → α) (𝓝 x) l := by
@@ -91,7 +94,7 @@ theorem continuousAt_coe_iff {α : Type*} [TopologicalSpace α] {x : ℝ≥0} {f
 
 theorem nhds_coe_coe {r p : ℝ≥0} :
     𝓝 ((r : ℝ≥0∞), (p : ℝ≥0∞)) = (𝓝 (r, p)).map fun p : ℝ≥0 × ℝ≥0 => (↑p.1, ↑p.2) :=
-  ((openEmbedding_coe.prod openEmbedding_coe).map_nhds_eq (r, p)).symm
+  ((isOpenEmbedding_coe.prodMap isOpenEmbedding_coe).map_nhds_eq (r, p)).symm
 
 theorem continuous_ofReal : Continuous ENNReal.ofReal :=
   (continuous_coe_iff.2 continuous_id).comp continuous_real_toNNReal
@@ -153,7 +156,7 @@ theorem tendsto_nhds_top_iff_nat {m : α → ℝ≥0∞} {f : Filter α} :
   tendsto_nhds_top_iff_nnreal.trans
     ⟨fun h n => by simpa only [ENNReal.coe_natCast] using h n, fun h x =>
       let ⟨n, hn⟩ := exists_nat_gt x
-      (h n).mono fun y => lt_trans <| by rwa [← ENNReal.coe_natCast, coe_lt_coe]⟩
+      (h n).mono fun _ => lt_trans <| by rwa [← ENNReal.coe_natCast, coe_lt_coe]⟩
 
 theorem tendsto_nhds_top {m : α → ℝ≥0∞} {f : Filter α} (h : ∀ n : ℕ, ∀ᶠ a in f, ↑n < m a) :
     Tendsto m f (𝓝 ∞) :=
@@ -419,7 +422,7 @@ theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ
 
 theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ => x - a := by
   by_cases a_infty : a = ∞
-  · simp [a_infty, continuous_const]
+  · simp [a_infty, continuous_const, tsub_eq_zero_of_le]
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
     apply ContinuousOn.comp_continuous continuousOn_sub (continuous_id'.prod_mk continuous_const)
     intro x
@@ -1360,6 +1363,33 @@ lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) {c : �
     Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F :=
   (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
+
+lemma le_limsup_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
+    limsup u f * liminf v f ≤ limsup (u * v) f :=
+  mul_le_of_forall_lt fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
+    Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
+    ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (mul_lt_mul ab_x.1 ab_x.2)
+
+/-- See also `ENNReal.limsup_mul_le`.-/
+lemma limsup_mul_le' {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
+    (h : limsup u f ≠ 0 ∨ limsup v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ limsup v f ≠ 0) :
+    limsup (u * v) f ≤ limsup u f * limsup v f := by
+  refine le_mul_of_forall_lt h h' fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
+  filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v] with x a_x b_x
+  exact (mul_lt_mul a_x b_x).trans c_ab
+
+lemma le_liminf_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
+    liminf u f * liminf v f ≤ liminf (u * v) f := by
+  refine mul_le_of_forall_lt fun a a_u b b_v ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
+  filter_upwards [eventually_lt_of_lt_liminf a_u, eventually_lt_of_lt_liminf b_v] with x a_x b_x
+  exact c_ab.trans (mul_lt_mul a_x b_x)
+
+lemma liminf_mul_le {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
+    (h : limsup u f ≠ 0 ∨ liminf v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ liminf v f ≠ 0) :
+    liminf (u * v) f ≤ limsup u f * liminf v f :=
+  le_mul_of_forall_lt h h' fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦
+    Frequently.mono (((frequently_lt_of_liminf_lt) b_v).and_eventually
+    ((eventually_lt_of_limsup_lt) a_u)) fun _ ab_x ↦ (mul_lt_mul ab_x.2 ab_x.1).trans c_ab
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
 lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)

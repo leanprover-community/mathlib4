@@ -18,7 +18,7 @@ arbitrary choice in the definition.
 
 We also define a predicate `HasFTaylorSeriesUpTo` (and its localized version
 `HasFTaylorSeriesUpToOn`), saying that a sequence of multilinear maps is *a* sequence of
-derivatives of `f`. Contrary to `iteratedFDerivWithin`, it accomodates well the
+derivatives of `f`. Contrary to `iteratedFDerivWithin`, it accommodates well the
 non-uniqueness of derivatives.
 
 ## Main definitions and results

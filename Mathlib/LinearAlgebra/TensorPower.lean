@@ -197,9 +197,9 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
 -- for now we just use the default for the `gnpow` field as it's easier.
 instance gmonoid : GradedMonoid.GMonoid fun i => ⨂[R]^i M :=
   { TensorPower.gMul, TensorPower.gOne with
-    one_mul := fun a => gradedMonoid_eq_of_cast (zero_add _) (one_mul _)
-    mul_one := fun a => gradedMonoid_eq_of_cast (add_zero _) (mul_one _)
-    mul_assoc := fun a b c => gradedMonoid_eq_of_cast (add_assoc _ _ _) (mul_assoc _ _ _) }
+    one_mul := fun _ => gradedMonoid_eq_of_cast (zero_add _) (one_mul _)
+    mul_one := fun _ => gradedMonoid_eq_of_cast (add_zero _) (mul_one _)
+    mul_assoc := fun _ _ _ => gradedMonoid_eq_of_cast (add_assoc _ _ _) (mul_assoc _ _ _) }
 
 /-- The canonical map from `R` to `⨂[R]^0 M` corresponding to the `algebraMap` of the tensor
 algebra. -/
@@ -229,10 +229,10 @@ theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
 
 instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
   { TensorPower.gmonoid with
-    mul_zero := fun a => LinearMap.map_zero _
-    zero_mul := fun b => LinearMap.map_zero₂ _ _
-    mul_add := fun a b₁ b₂ => LinearMap.map_add _ _ _
-    add_mul := fun a₁ a₂ b => LinearMap.map_add₂ _ _ _ _
+    mul_zero := fun _ => LinearMap.map_zero _
+    zero_mul := fun _ => LinearMap.map_zero₂ _ _
+    mul_add := fun _ _ _ => LinearMap.map_add _ _ _
+    add_mul := fun _ _ _ => LinearMap.map_add₂ _ _ _ _
     natCast := fun n => algebraMap₀ (n : R)
     natCast_zero := by simp only [Nat.cast_zero, map_zero]
     natCast_succ := fun n => by simp only [Nat.cast_succ, map_add, algebraMap₀_one] }

@@ -383,8 +383,6 @@ end
 
 end Constructions
 
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
-
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
   convert hs.uniqueMDiffOn_preimage (h.toPartialHomeomorph_mdifferentiable hn)

@@ -32,10 +32,6 @@ namespace Finpartition
 
 variable {α : Type*} [DecidableEq α] {s t : Finset α} {m n a b : ℕ} {P : Finpartition s}
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 /-- Given a partition `P` of `s`, as well as a proof that `a * m + b * (m + 1) = s.card`, we can
 find a new partition `Q` of `s` where each part has size `m` or `m + 1`, every part of `P` is the
 union of parts of `Q` plus at most `m` extra elements, there are `b` parts of size `m + 1` and
@@ -50,7 +46,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
   obtain rfl | m_pos := m.eq_zero_or_pos
   · refine ⟨⊥, by simp, ?_, by simpa [Finset.filter_true_of_mem] using hs.symm⟩
     simp only [le_zero_iff, card_eq_zero, mem_biUnion, exists_prop, mem_filter, id,
-      _root_.and_assoc, sdiff_eq_empty_iff_subset, subset_iff]
+      and_assoc, sdiff_eq_empty_iff_subset, subset_iff]
     exact fun x hx a ha =>
       ⟨{a}, mem_map_of_mem _ (P.le hx ha), singleton_subset_iff.2 ha, mem_singleton_self _⟩
   -- Prove the case `m > 0` by strong induction on `s`

@@ -309,7 +309,7 @@ protected theorem ContDiffWithinAt.insert (h : ContDiffWithinAt 𝕜 n f s x) :
 
 /-- If a function is `C^n` within a set at a point, with `n ≥ 1`, then it is differentiable
 within this set at this point. -/
-theorem ContDiffWithinAt.differentiable_within_at' (h : ContDiffWithinAt 𝕜 n f s x) (hn : 1 ≤ n) :
+theorem ContDiffWithinAt.differentiableWithinAt' (h : ContDiffWithinAt 𝕜 n f s x) (hn : 1 ≤ n) :
     DifferentiableWithinAt 𝕜 f (insert x s) x := by
   rcases contDiffWithinAt_nat.1 (h.of_le hn) with ⟨u, hu, p, H⟩
   rcases mem_nhdsWithin.1 hu with ⟨t, t_open, xt, tu⟩
@@ -317,9 +317,12 @@ theorem ContDiffWithinAt.differentiable_within_at' (h : ContDiffWithinAt 𝕜 n 
   exact (differentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1 <|
     ((H.mono tu).differentiableOn le_rfl) x ⟨mem_insert x s, xt⟩
 
+@[deprecated (since := "2024-10-10")]
+alias ContDiffWithinAt.differentiable_within_at' := ContDiffWithinAt.differentiableWithinAt'
+
 theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s x) (hn : 1 ≤ n) :
     DifferentiableWithinAt 𝕜 f s x :=
-  (h.differentiable_within_at' hn).mono (subset_insert x s)
+  (h.differentiableWithinAt' hn).mono (subset_insert x s)
 
 /-- A function is `C^(n + 1)` on a domain iff locally, it has a derivative which is `C^n`
 (and moreover the function is analytic when `n = ω`). -/
@@ -478,7 +481,7 @@ protected theorem ContDiffWithinAt.eventually (h : ContDiffWithinAt 𝕜 n f s x
     ∀ᶠ y in 𝓝[insert x s] x, ContDiffWithinAt 𝕜 n f s y := by
   rcases h.contDiffOn le_rfl (by simp [hn]) with ⟨u, hu, _, hd⟩
   have : ∀ᶠ y : E in 𝓝[insert x s] x, u ∈ 𝓝[insert x s] y ∧ y ∈ u :=
-    (eventually_nhdsWithin_nhdsWithin.2 hu).and hu
+    (eventually_eventually_nhdsWithin.2 hu).and hu
   refine this.mono fun y hy => (hd y hy.2).mono_of_mem ?_
   exact nhdsWithin_mono y (subset_insert _ _) hy.1
 

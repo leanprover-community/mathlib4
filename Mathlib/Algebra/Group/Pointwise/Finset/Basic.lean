@@ -176,7 +176,7 @@ end One
 
 section Inv
 
-variable [DecidableEq α] [Inv α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
+variable [DecidableEq α] [Inv α] {s t : Finset α} {a : α}
 
 /-- The pointwise inversion of finset `s⁻¹` is defined as `{x⁻¹ | x ∈ s}` in locale `Pointwise`. -/
 @[to_additive
@@ -420,7 +420,7 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
       `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' + t'`."]
 theorem subset_mul {s t : Set α} :
     ↑u ⊆ s * t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' * t' :=
-  subset_image₂
+  subset_set_image₂
 
 @[to_additive]
 theorem image_mul [DecidableEq β] : (s * t).image (f : α → β) = s.image f * t.image f :=
@@ -606,7 +606,7 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
       `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' - t'`."]
 theorem subset_div {s t : Set α} :
     ↑u ⊆ s / t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' / t' :=
-  subset_image₂
+  subset_set_image₂
 
 @[to_additive (attr := simp (default + 1))]
 lemma sup_div_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
@@ -866,7 +866,7 @@ variable [DivisionMonoid α] {s t : Finset α}
 
 @[to_additive (attr := simp)]
 theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
-  | Int.ofNat n => coe_pow _ _
+  | Int.ofNat _ => coe_pow _ _
   | Int.negSucc n => by
     refine (coe_inv _).trans ?_
     exact congr_arg Inv.inv (coe_pow _ _)
@@ -950,7 +950,7 @@ end Distrib
 
 section MulZeroClass
 
-variable [MulZeroClass α] {s t : Finset α}
+variable [MulZeroClass α] {s : Finset α}
 
 /-! Note that `Finset` is not a `MulZeroClass` because `0 * ∅ ≠ 0`. -/
 
@@ -1031,7 +1031,7 @@ end Group
 
 section GroupWithZero
 
-variable [GroupWithZero α] {s t : Finset α}
+variable [GroupWithZero α] {s : Finset α}
 
 theorem div_zero_subset (s : Finset α) : s / 0 ⊆ 0 := by simp [subset_iff, mem_div]
 
@@ -1049,7 +1049,7 @@ end Instances
 
 section Group
 
-variable [Group α] {s t : Finset α} {a b : α}
+variable [Group α] {a b : α}
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_singleton :
@@ -1200,7 +1200,7 @@ theorem union_smul_inter_subset_union [DecidableEq α] : (s₁ ∪ s₂) • (t�
       finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
 theorem subset_smul {s : Set α} {t : Set β} :
     ↑u ⊆ s • t → ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
-  subset_image₂
+  subset_set_image₂
 
 end SMul
 
@@ -1310,7 +1310,7 @@ end
 finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' -ᵥ t'`. -/
 theorem subset_vsub {s t : Set β} :
     ↑u ⊆ s -ᵥ t → ∃ s' t' : Finset β, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' -ᵥ t' :=
-  subset_image₂
+  subset_set_image₂
 
 end VSub
 
@@ -1321,7 +1321,7 @@ open Pointwise
 
 section SMul
 
-variable [DecidableEq β] [SMul α β] {s s₁ s₂ t u : Finset β} {a : α} {b : β}
+variable [DecidableEq β] [SMul α β] {s s₁ s₂ t : Finset β} {a : α} {b : β}
 
 /-- The scaling of a finset `s` by a scalar `a`: `a • s = {a • x | x ∈ s}`. -/
 @[to_additive "The translation of a finset `s` by a vector `a`: `a +ᵥ s = {a +ᵥ x | x ∈ s}`."]
@@ -1793,7 +1793,7 @@ lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Finset α) • t = 0 :=
 lemma zero_smul_finset_subset (s : Finset β) : (0 : α) • s ⊆ 0 :=
   image_subset_iff.2 fun x _ ↦ mem_zero.2 <| zero_smul α x
 
-variable [NoZeroSMulDivisors α β] {a : α}
+variable [NoZeroSMulDivisors α β]
 
 lemma zero_mem_smul_iff :
     (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by
@@ -1990,7 +1990,7 @@ end Mul
 
 section SMul
 
-variable [SMul α β] [DecidableEq β] {a : α} {s : Set α} {t : Set β}
+variable [SMul α β] [DecidableEq β] {s : Set α} {t : Set β}
 
 @[to_additive (attr := simp)]
 theorem toFinset_smul (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype ↑(s • t)] :
