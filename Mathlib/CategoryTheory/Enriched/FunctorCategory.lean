@@ -23,11 +23,11 @@ variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C] (F : Jᵒ
 
 @[simps]
 def multicospanIndexEnd : MulticospanIndex C where
-  L := ULift.{max u v} J
+  L := J
   R := Arrow J
-  fstTo f := ULift.up f.left
-  sndTo f := ULift.up f.right
-  left j := (F.obj (op j.down)).obj j.down
+  fstTo f := f.left
+  sndTo f := f.right
+  left j := (F.obj (op j)).obj j
   right f := (F.obj (op f.left)).obj f.right
   fst f := (F.obj (op f.left)).map f.hom
   snd f := (F.map f.hom.op).app f.right
@@ -39,8 +39,6 @@ namespace EndCone
 variable {F}
 variable {c : EndCone F} (hc : IsLimit c)
 
-def π' (j : J) : c.pt ⟶ (F.obj (op j)).obj j := Multifork.ι c ⟨j⟩
-
 namespace IsLimit
 
 section
@@ -48,18 +46,14 @@ section
 variable {X : C} (f : ∀ j, X ⟶ (F.obj (op j)).obj j)
   (hf : ∀ ⦃i j : J⦄ (g : i ⟶ j), f i ≫ (F.obj (op i)).map g = f j ≫ (F.map g.op).app j)
 
-def lift : X ⟶ c.pt :=
-  Multifork.IsLimit.lift hc (fun ⟨j⟩ ↦ f j) (fun _ ↦ hf _)
-
-@[reassoc (attr := simp)]
-lemma lift_π' (j : J) : lift hc f hf ≫ c.π' j = f j := by
-  apply IsLimit.fac
+abbrev lift : X ⟶ c.pt :=
+  Multifork.IsLimit.lift hc (fun j ↦ f j) (fun _ ↦ hf _)
 
 end
 
 include hc in
-lemma hom_ext {X : C} {f g : X ⟶ c.pt} (h : ∀ j, f ≫ c.π' j = g ≫ c.π' j) : f = g :=
-  Multifork.IsLimit.hom_ext hc (fun ⟨j⟩ ↦ h j)
+lemma hom_ext {X : C} {f g : X ⟶ c.pt} (h : ∀ j, f ≫ c.ι j = g ≫ c.ι j) : f = g :=
+  Multifork.IsLimit.hom_ext hc h
 
 end IsLimit
 
@@ -75,7 +69,7 @@ noncomputable def end_ : C := multiequalizer (multicospanIndexEnd F)
 
 section
 
-noncomputable def end_.π (j : J) : end_ F ⟶ (F.obj (op j)).obj j := Multiequalizer.ι _ _
+noncomputable abbrev end_.π (j : J) : end_ F ⟶ (F.obj (op j)).obj j := Multiequalizer.ι _ _
 
 variable {F}
 
@@ -85,7 +79,7 @@ variable {X : C} (f : ∀ j, X ⟶ (F.obj (op j)).obj j)
   (hf : ∀ ⦃i j : J⦄ (g : i ⟶ j), f i ≫ (F.obj (op i)).map g = f j ≫ (F.map g.op).app j)
 
 noncomputable def end_.lift : X ⟶ end_ F :=
-  EndCone.IsLimit.lift (F := F) (hc := limit.isLimit _) f hf
+  EndCone.IsLimit.lift (limit.isLimit _) f hf
 
 @[reassoc (attr := simp)]
 lemma end_.lift_π (j : J) : lift f hf ≫ π F j = f j := by
@@ -142,32 +136,43 @@ def eHomBifunctor : Cᵒᵖ ⥤ C ⥤ V where
   obj K :=
     { obj := fun L ↦ K.unop ⟶[V] L
       map := fun {L L'} g ↦ (ρ_ _).inv ≫ _ ◁ eHomEquiv V g ≫ eComp V K.unop L L'
-      map_id := by aesop_cat
       map_comp := fun {L L' L''} f g ↦ by
         dsimp
-        simp only [eHomEquiv_comp, MonoidalCategory.whiskerLeft_comp, assoc,
-          Iso.cancel_iso_inv_left]
-        sorry }
+        rw [eHomEquiv_comp, assoc, assoc, Iso.cancel_iso_inv_left,
+          MonoidalCategory.whiskerLeft_comp_assoc,
+          MonoidalCategory.whiskerLeft_comp_assoc, ← e_assoc]
+        nth_rw 2 [← id_tensorHom]
+        rw [associator_inv_naturality_assoc, id_tensorHom, tensorHom_def, assoc,
+          whisker_exchange_assoc, MonoidalCategory.whiskerRight_id,
+          MonoidalCategory.whiskerRight_id, assoc, assoc, assoc, assoc,
+          Iso.inv_hom_id_assoc, triangle_assoc_comp_left_inv_assoc,
+          MonoidalCategory.whiskerRight_id, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc] }
   map {K K'} f :=
     { app := fun L ↦ (λ_ _).inv ≫ eHomEquiv V f.unop ▷ _ ≫ eComp V K'.unop K.unop L
       naturality := fun L L' g ↦ by
         dsimp
-        simp only [assoc]
-        convert ((λ_ _).inv ≫ _ ◁ (ρ_ _).inv ≫ _ ◁ _ ◁ eHomEquiv V g ≫
-          eHomEquiv V f.unop ▷ _) ≫= (e_assoc V K'.unop K.unop L L').symm using 1
-        · rw [assoc, assoc, assoc, ← whisker_exchange_assoc,
+        have := ((λ_ _).inv ≫ _ ◁ (ρ_ _).inv ≫ _ ◁ _ ◁ eHomEquiv V g ≫
+          eHomEquiv V f.unop ▷ _) ≫= (e_assoc V K'.unop K.unop L L').symm
+        simp only [assoc] at this ⊢
+        conv_lhs at this =>
+          rw [← whisker_exchange_assoc,
             whiskerLeft_rightUnitor_inv, id_whiskerLeft, id_whiskerLeft, assoc,
-            assoc, assoc, assoc, assoc, Iso.inv_hom_id_assoc]
-          simp only [← assoc]; congr 5
-          monoidal_coherence
-        · dsimp
-          rw [assoc, assoc, assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
+            assoc, assoc, assoc, assoc, Iso.inv_hom_id_assoc, leftUnitor_tensor,
+            MonoidalCategory.whiskerRight_id, assoc, assoc, assoc,
+            Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id_assoc]
+        rw [this, ← MonoidalCategory.whiskerLeft_comp_assoc,
             whisker_exchange_assoc, MonoidalCategory.whiskerLeft_comp,
             whiskerLeft_rightUnitor_inv, assoc, assoc, ← associator_naturality_right_assoc,
             Iso.hom_inv_id_assoc, whisker_exchange_assoc, MonoidalCategory.whiskerRight_id,
             assoc, assoc, Iso.inv_hom_id_assoc] }
-  map_id := by aesop_cat
-  map_comp := by aesop_cat
+  map_comp {K K' K''} f g := by
+    ext L
+    dsimp
+    rw [eHomEquiv_comp, assoc, assoc, Iso.cancel_iso_inv_left, comp_whiskerRight,
+      comp_whiskerRight, assoc, assoc, ← e_assoc', tensorHom_def', comp_whiskerRight, assoc,
+      id_whiskerLeft, ← comp_whiskerRight_assoc, Iso.inv_hom_id_assoc, comp_whiskerRight_assoc,
+      associator_naturality_left_assoc, ← whisker_exchange_assoc, leftUnitor_inv_whiskerRight,
+      id_whiskerLeft, assoc, assoc, assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id_assoc]
 
 end
 
@@ -188,7 +193,7 @@ def diagram : Jᵒᵖ ⥤ J ⥤ V := F₁.op ⋙ eHomBifunctor V C ⋙ (whiskeri
 
 abbrev HasEnrichedHom := HasEnd (diagram V F₁ F₂)
 
-noncomputable def enrichedHom [HasEnrichedHom V F₁ F₂] : V := end_ (diagram V F₁ F₂)
+noncomputable abbrev enrichedHom [HasEnrichedHom V F₁ F₂] : V := end_ (diagram V F₁ F₂)
 
 open MonoidalCategory
 
@@ -201,12 +206,12 @@ attribute [local simp] eHomEquiv_id eHomEquiv_comp
 noncomputable def enrichedId : 𝟙_ V ⟶ enrichedHom V F₁ F₁ :=
   end_.lift (fun _ ↦ eId V _) (fun i j f ↦ by
     dsimp
-    sorry)
+    simp only [e_id_comp, ← e_comp_id, rightUnitor_inv_naturality_assoc,
+      ← whisker_exchange_assoc, id_whiskerLeft, assoc, unitors_equal, Iso.inv_hom_id_assoc])
 
-@[reassoc]
-lemma enrichedId_π' (j : J) : enrichedId V F₁ ≫ end_.π _ j = eId V (F₁.obj j) := by
-  dsimp [enrichedId]
-  rw [end_.lift_π]
+@[reassoc (attr := simp)]
+lemma enrichedId_π (j : J) : enrichedId V F₁ ≫ end_.π _ j = eId V (F₁.obj j) := by
+  simp [enrichedId]
 
 end
 
@@ -215,8 +220,15 @@ section
 variable [HasEnrichedHom V F₁ F₂] [HasEnrichedHom V F₂ F₃] [HasEnrichedHom V F₁ F₃]
 
 noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ F₃ ⟶ enrichedHom V F₁ F₃ :=
-  end_.lift (fun j ↦ (end_.π _ j ⊗ end_.π _ j) ≫ eComp V _ _ _)
-    sorry
+  end_.lift (fun j ↦ (end_.π _ j ⊗ end_.π _ j) ≫ eComp V _ _ _) (fun i j f ↦ by
+    dsimp
+    sorry)
+
+@[reassoc (attr := simp)]
+lemma enrichedComp_π (j : J) :
+    enrichedComp V F₁ F₂ F₃ ≫ end_.π _ j =
+      (end_.π (diagram V F₁ F₂) j ⊗ end_.π (diagram V F₂ F₃) j) ≫ eComp V _ _ _ := by
+  simp [enrichedComp]
 
 end
 
@@ -228,9 +240,34 @@ noncomputable def enriched : EnrichedCategory V (J ⥤ C) where
   Hom F₁ F₂ := enrichedHom V F₁ F₂
   id F := enrichedId V F
   comp F₁ F₂ F₃ := enrichedComp V F₁ F₂ F₃
-  id_comp := sorry
-  comp_id := sorry
-  assoc := sorry
+  id_comp F₁ F₂ := by
+    ext j
+    rw [assoc, assoc, enrichedComp_π, id_comp, tensorHom_def, assoc,
+      ← comp_whiskerRight_assoc, enrichedId_π, ← whisker_exchange_assoc,
+      id_whiskerLeft, assoc, assoc, Iso.inv_hom_id_assoc]
+    dsimp
+    rw [e_id_comp, comp_id]
+  comp_id F₁ F₂ := by
+    ext j
+    rw [assoc, assoc, enrichedComp_π, id_comp, tensorHom_def', assoc,
+      ← MonoidalCategory.whiskerLeft_comp_assoc, enrichedId_π,
+      whisker_exchange_assoc, MonoidalCategory.whiskerRight_id, assoc, assoc,
+      Iso.inv_hom_id_assoc]
+    dsimp
+    rw [e_comp_id, comp_id]
+  assoc F₁ F₂ F₃ F₄ := by
+    ext j
+    conv_lhs =>
+      rw [assoc, assoc, enrichedComp_π,
+        tensorHom_def_assoc, ← comp_whiskerRight_assoc, enrichedComp_π,
+        comp_whiskerRight_assoc, ← whisker_exchange_assoc,
+        ← whisker_exchange_assoc, ← tensorHom_def'_assoc, ← associator_inv_naturality_assoc]
+    conv_rhs =>
+      rw [assoc, enrichedComp_π, tensorHom_def'_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
+        enrichedComp_π, MonoidalCategory.whiskerLeft_comp_assoc, whisker_exchange_assoc,
+        whisker_exchange_assoc, ← tensorHom_def_assoc]
+    dsimp
+    rw [e_assoc]
 
 end FunctorCategory
 
