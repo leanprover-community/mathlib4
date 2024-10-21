@@ -500,6 +500,11 @@ instance subsingleton_fin_one : Subsingleton (Fin 1) :=
   finOneEquiv.subsingleton
 
 /-- The natural `Equiv` between `(Fin m → X) × (Fin n → X)` and `(Fin (m + n) → X)`.-/
-def Equiv.finArrowProdEquivFinAddArrow {α : Type*} (m n : ℕ) :
-    (Fin m → α) × (Fin n → α) ≃ (Fin (m + n) → α) :=
-  (sumArrowEquivProdArrow _ _ _).symm.trans (finSumFinEquiv.arrowCongr (Equiv.refl _))
+def Equiv.finArrowProdEquivFinAddArrow {X : Type*} (m n : ℕ) :
+    (Fin m → X) × (Fin n → X) ≃ (Fin (m + n) → X) where
+  toFun := fun ⟨f, g⟩ ↦ Fin.append f g
+  invFun := fun f ↦ ⟨fun i ↦ f (Fin.castAdd n i), fun i ↦ f (Fin.natAdd m i)⟩
+  left_inv := by simp [Function.LeftInverse]
+  right_inv := by
+    unfold Fin.append Fin.addCases
+    simp [Function.RightInverse, Function.LeftInverse]
