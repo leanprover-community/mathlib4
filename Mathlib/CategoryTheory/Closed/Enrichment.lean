@@ -48,7 +48,7 @@ def compTranspose (x y z : V) : x ⊗ (ihom x).obj y ⊗ (ihom y).obj z ⟶ z :=
 /-- The V-composition morphism
   `hom(x, y) ⊗ hom(y, z) ⟶ hom(x, z)`
 used to equip V with the structure of a V-category -/
-def comp (x y z : V) : (ihom x).obj y ⊗ (ihom y).obj z ⟶ (ihom x).obj z := 
+def comp (x y z : V) : (ihom x).obj y ⊗ (ihom y).obj z ⟶ (ihom x).obj z :=
   curry (compTranspose x y z)
 
 /-- Unfold the definition of id.
