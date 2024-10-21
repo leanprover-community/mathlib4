@@ -11,6 +11,7 @@ import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.Topology.Algebra.UniformField
 import Mathlib.FieldTheory.Minpoly.IsConjRoot
+import Mathlib.FieldTheory.AlgebraicClosure
 
 import Mathlib.Topology.Algebra.KrasnerDependency
 
