@@ -444,6 +444,27 @@ theorem sub_half (h : a ≠ ∞) : a - a / 2 = a / 2 := ENNReal.sub_eq_of_eq_add
 theorem one_sub_inv_two : (1 : ℝ≥0∞) - 2⁻¹ = 2⁻¹ := by
   simpa only [div_eq_mul_inv, one_mul] using sub_half one_ne_top
 
+private lemma exists_lt_mul_left {a b c : ℝ≥0∞} (hc : c < a * b) : ∃ a' < a, c < a' * b := by
+  obtain ⟨a', hc, ha'⟩ := exists_between (ENNReal.div_lt_of_lt_mul hc)
+  exact ⟨_, ha', (ENNReal.div_lt_iff (.inl <| by rintro rfl; simp at *)
+    (.inr <| by rintro rfl; simp at *)).1 hc⟩
+
+private lemma exists_lt_mul_right {a b c : ℝ≥0∞} (hc : c < a * b) : ∃ b' < b, c < a * b' := by
+  simp_rw [mul_comm a] at hc ⊢; exact exists_lt_mul_left hc
+
+lemma mul_le_of_forall_lt {a b c : ℝ≥0∞} (h : ∀ a' < a, ∀ b' < b, a' * b' ≤ c) : a * b ≤ c := by
+  refine le_of_forall_ge_of_dense fun d hd ↦ ?_
+  obtain ⟨a', ha', hd⟩ := exists_lt_mul_left hd
+  obtain ⟨b', hb', hd⟩ := exists_lt_mul_right hd
+  exact le_trans hd.le <| h _ ha' _ hb'
+
+lemma le_mul_of_forall_lt {a b c : ℝ≥0∞} (h₁ : a ≠ 0 ∨ b ≠ ∞) (h₂ : a ≠ ∞ ∨ b ≠ 0)
+    (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') : c ≤ a * b := by
+  rw [← ENNReal.inv_le_inv, ENNReal.mul_inv h₁ h₂]
+  exact mul_le_of_forall_lt fun a' ha' b' hb' ↦ ENNReal.le_inv_iff_le_inv.1 <|
+    (h _ (ENNReal.lt_inv_iff_lt_inv.1 ha') _ (ENNReal.lt_inv_iff_lt_inv.1 hb')).trans_eq
+    (ENNReal.mul_inv (Or.inr hb'.ne_top) (Or.inl ha'.ne_top)).symm
+
 /-- The birational order isomorphism between `ℝ≥0∞` and the unit interval `Set.Iic (1 : ℝ≥0∞)`. -/
 @[simps! apply_coe]
 def orderIsoIicOneBirational : ℝ≥0∞ ≃o Iic (1 : ℝ≥0∞) := by
@@ -730,6 +751,14 @@ lemma inv_iSup (f : ι → ℝ≥0∞) : (⨆ i, f i)⁻¹ = ⨅ i, (f i)⁻¹ :
 
 lemma inv_sInf (s : Set ℝ≥0∞) : (sInf s)⁻¹ = ⨆ a ∈ s, a⁻¹ := by simp [sInf_eq_iInf, inv_iInf]
 lemma inv_sSup (s : Set ℝ≥0∞) : (sSup s)⁻¹ = ⨅ a ∈ s, a⁻¹ := by simp [sSup_eq_iSup, inv_iSup]
+
+lemma le_iInf_mul {ι : Type*} (u v : ι → ℝ≥0∞) :
+    (⨅ i, u i) * ⨅ i, v i ≤ ⨅ i, u i * v i :=
+  le_iInf fun i ↦ mul_le_mul' (iInf_le u i) (iInf_le v i)
+
+lemma iSup_mul_le {ι : Type*} {u v : ι → ℝ≥0∞} :
+    ⨆ i, u i * v i ≤ (⨆ i, u i) * ⨆ i, v i :=
+  iSup_le fun i ↦ mul_le_mul' (le_iSup u i) (le_iSup v i)
 
 lemma add_iSup [Nonempty ι] (f : ι → ℝ≥0∞) : a + ⨆ i, f i = ⨆ i, a + f i := by
   obtain rfl | ha := eq_or_ne a ∞
