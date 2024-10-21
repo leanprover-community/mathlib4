@@ -996,8 +996,8 @@ theorem tensorTensorTensorComm_symm :
 
 @[simp]
 theorem tensorTensorTensorComm_toLinearEquiv :
-    (tensorTensorTensorComm R A B C D : _ ≃ₗ[R] _)
-      = _root_.TensorProduct.tensorTensorTensorComm R A B C D := rfl
+    (tensorTensorTensorComm R A B C D : _ ≃ₗ[R] _) =
+      _root_.TensorProduct.tensorTensorTensorComm R A B C D := rfl
 
 end
 

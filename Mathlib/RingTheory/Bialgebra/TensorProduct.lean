@@ -20,7 +20,7 @@ Since the coalgebra instance on a tensor product of coalgebras is defined using 
 monomorphic monoidal category structure on `ModuleCat R`, we require our bialgebras to be in the
 same universe as the base ring `R` here too. Any contribution that achieves universe polymorphism
 would be welcome. For instance, the tensor product of bialgebras in the
-[FLT repo](https://github.com/eric-wieser/FLT/blob/8764e28f03cd0d03f673e1288f47fc7a665207de/FLT/for_mathlib/Coalgebra/TensorProduct.lean)
+[FLT repo](https://github.com/ImperialCollegeLondon/FLT/blob/eef74b4538c8852363936dfaad23e6ffba72eca5/FLT/mathlibExperiments/Coalgebra/TensorProduct.lean)
 is already universe polymorphic since it does not go via category theory.
 
 -/
