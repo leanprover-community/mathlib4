@@ -29,6 +29,9 @@ def checkUnusedAssumptionInType (declInfo : ConstantInfo) (typesToAvoid : Array 
   -- these are less useful for theorem proving, hence the linter is less useful there.
   if declInfo matches .inductInfo .. | .ctorInfo .. | .opaqueInfo .. then return none
   let type := declInfo.type
+  -- Early return: none of the constants to avoid appear.
+  unless type.containsConst typesToAvoid.contains do
+    return none
   -- Compute an array of pairs (argument index, error message) for each superfluous argument:
   -- the first component is the index of the superfluous argument, the second component
   -- contains details about the error.
