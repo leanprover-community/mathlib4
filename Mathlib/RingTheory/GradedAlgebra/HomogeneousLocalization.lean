@@ -528,7 +528,7 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
       (hc ▸ Ideal.mul_mem_left _ c.1 (Ideal.mul_mem_right b _ h))
   refine isUnit_of_mul_eq_one _ (Quotient.mk'' ⟨f.1, f.3, f.2, this⟩) ?_
   rw [← mk_mul, ext_iff_val, val_mk]
-  simp [mul_comm f.den.1]
+  simp [mul_comm f.den.1, Localization.mk_eq_monoidOf_mk']
 
 instance : Nontrivial (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
   ⟨⟨0, 1, fun r => by simp [ext_iff_val, val_zero, val_one, zero_ne_one] at r⟩⟩
