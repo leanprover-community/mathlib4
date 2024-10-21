@@ -30,6 +30,7 @@ open Meta
 namespace Meta.NormNum
 open Qq
 
+/-- Represents and proves equalities of the form `a^b % m = c` for natural numbers. -/
 structure IsNatPowModT (p : Prop) (a b m c : Nat) : Prop where
   run' : p → Nat.mod (Nat.pow a b) m = c
 
@@ -65,6 +66,7 @@ theorem IsNatPowModT.bit1 :
     rw [pow_add, two_mul, pow_add, pow_one, Nat.mul_mod (a ^ b % m) a, Nat.mod_mod,
       ← Nat.mul_mod (a ^ b) a, ← Nat.mul_mod, mul_assoc]⟩
 
+/-- Evaluates and proves `a^b % m` for natural numbers using fast modular exponentiation. -/
 partial def evalNatPowMod (a b m : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.mod (Nat.pow $a $b) $m = $c) :=
   if b.natLit! = 0 then
     haveI : $b =Q 0 := ⟨⟩
