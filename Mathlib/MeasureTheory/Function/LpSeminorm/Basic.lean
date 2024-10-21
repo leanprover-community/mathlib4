@@ -726,9 +726,7 @@ theorem memℒp_of_bounded [IsFiniteMeasure μ]
     (hX : AEStronglyMeasurable f μ) (p : ENNReal) : Memℒp f p μ :=
   have ha : ∀ᵐ x ∂μ, a ≤ f x := h.mono fun ω h => h.1
   have hb : ∀ᵐ x ∂μ, f x ≤ b := h.mono fun ω h => h.2
-  let c := max |a| |b|
-  (memℒp_const c).mono' hX
-    (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs : ∀ᵐ x ∂μ, |f x| ≤ max |a| |b|)
+  (memℒp_const (max |a| |b|)).mono' hX (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs)
 
 @[mono]
 theorem eLpNorm'_mono_measure (f : α → F) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
