@@ -155,6 +155,9 @@ theorem mdifferentiableOn_of_locally_mdifferentiableOn
   rcases h x xs with ⟨t, t_open, xt, ht⟩
   exact (mdifferentiableWithinAt_inter (t_open.mem_nhds xt)).1 (ht x ⟨xs, xt⟩)
 
+theorem MDifferentiable.mdifferentiableAt (hf : MDifferentiable I I' f) :
+    MDifferentiableAt I I' f x :=
+  hf x
 
 /-!
 ### Relating differentiability in a manifold and differentiability in the model space
