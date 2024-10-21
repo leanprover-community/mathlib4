@@ -345,7 +345,7 @@ def transInitial (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
 
 @[simp]
 theorem transInitial_apply (f : r ≺i s) (g : s ≼i t) (a : α) : f.transInitial g a = g (f a) :=
-  RelEmbedding.trans_apply _ _ _
+  rfl
 
 @[simp]
 theorem transInitial_top (f : r ≺i s) (g : s ≼i t) : (f.transInitial g).top = g f.top :=
@@ -357,7 +357,7 @@ alias ltLe := transInitial
 set_option linter.deprecated false in
 @[deprecated transInitial_apply (since := "2024-10-20")]
 theorem lt_le_apply (f : r ≺i s) (g : s ≼i t) (a : α) : (f.ltLe g) a = g (f a) :=
-  RelEmbedding.trans_apply _ _ _
+  rfl
 
 set_option linter.deprecated false in
 @[deprecated transInitial_top (since := "2024-10-20")]
@@ -371,7 +371,7 @@ protected def trans [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : r ≺i t :=
 
 @[simp]
 theorem trans_apply [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) (a : α) : f.trans g a = g (f a) :=
-  transInitial_apply _ _ _
+  rfl
 
 @[simp]
 theorem trans_top [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : (f.trans g).top = g f.top :=
@@ -383,7 +383,7 @@ def relIsoTrans (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
 
 @[simp]
 theorem relIsoTrans_apply (f : r ≃r s) (g : s ≺i t) (a : α) : relIsoTrans f g a = g (f a) :=
-  RelEmbedding.trans_apply _ _ _
+  rfl
 
 @[simp]
 theorem relIsoTrans_top (f : r ≃r s) (g : s ≺i t) : (relIsoTrans f g).top = g.top :=
@@ -395,7 +395,7 @@ alias equivLT := relIsoTrans
 set_option linter.deprecated false in
 @[deprecated transInitial_top (since := "2024-10-20")]
 theorem equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a = g (f a) :=
-  RelEmbedding.trans_apply _ _ _
+  rfl
 
 set_option linter.deprecated false in
 @[deprecated transInitial_top (since := "2024-10-20")]
@@ -411,7 +411,7 @@ alias ltEquiv := transRelIso
 
 @[simp]
 theorem transRelIso_apply (f : r ≺i s) (g : s ≃r t) (a : α) : transRelIso f g a = g (f a) :=
-  RelEmbedding.trans_apply _ _ _
+  rfl
 
 @[simp]
 theorem transRelIso_top (f : r ≺i s) (g : s ≃r t) : (transRelIso f g).top = g f.top :=
