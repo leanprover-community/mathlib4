@@ -146,6 +146,9 @@ theorem map_span (f : F) (s : Set R) : map f (span s) = span (f '' s) := by
   · rw [map_le_iff_le_comap, span_le, coe_comap, ← Set.image_subset_iff]
     exact subset_span
 
+@[simp]
+theorem coe_map (I : Ideal R) : (map f I : Set S) = span (f '' I) := rfl
+
 variable {f I J K L}
 
 theorem map_le_of_le_comap : I ≤ K.comap f → I.map f ≤ K :=
