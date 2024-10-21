@@ -335,7 +335,8 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
       rw [← mul_rpow (by positivity) (by positivity), mul_assoc, add_mul, one_mul,
       mul_comm _ (k : ℝ)]
 -- For 0 < logb n₀ n below we also need to exclude n = 1.
-  rcases eq_or_ne n 1 with rfl | h₁; simp only [Nat.cast_one, map_one, le_refl]
+  rcases eq_or_ne n 1 with rfl | h₁
+  · simp only [Nat.cast_one, map_one, le_refl]
   refine le_of_tendsto_of_tendsto tendsto_const_nhds ?_ (eventually_atTop.2 ⟨1, h_ineq2⟩)
   nth_rw 2 [← mul_one 1]
   have : 0 < logb n₀ n := logb_pos (mod_cast hn₀) (by norm_cast; omega)
