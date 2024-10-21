@@ -998,8 +998,7 @@ theorem exists_lt_of_ciInf_lt [Nonempty ι] {f : ι → α} (h : iInf f < a) : �
   exists_lt_of_lt_ciSup (α := αᵒᵈ) h
 
 theorem lt_csSup_iff (hb : BddAbove s) (hs : s.Nonempty) : a < sSup s ↔ ∃ b ∈ s, a < b := by
-  rw [← not_iff_not]
-  simpa using csSup_le_iff hb hs
+  simpa only [not_le, not_forall₂, exists_prop] using (csSup_le_iff hb hs (a := a)).not
 
 theorem csInf_lt_iff (hb : BddBelow s) (hs : s.Nonempty) : sInf s < a ↔ ∃ b ∈ s, b < a := by
   rw [← not_iff_not]
