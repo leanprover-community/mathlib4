@@ -2637,6 +2637,7 @@ import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Set.Subset
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Set.Sups
+import Mathlib.Data.Set.ToFunction
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.SetLike.Fintype
