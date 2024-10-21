@@ -275,7 +275,7 @@ protected theorem IsMeagre.sUnion {S : Set (Set X)} (hct : S.Countable)
 theorem exists_of_not_isMeagre_sUnion {S : Set (Set X)} (hct : S.Countable)
     (h : ¬ IsMeagre (⋃₀ S)) : ∃ s ∈ S, ¬ IsMeagre s := by
   contrapose! h
-  exact isMeagre_sUnion hct h
+  exact IsMeagre.sUnion hct h
 
 /-- A set is meagre iff it is contained in a countable union of nowhere dense sets. -/
 lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :

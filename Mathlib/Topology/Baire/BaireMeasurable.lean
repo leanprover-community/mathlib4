@@ -254,9 +254,11 @@ theorem IsMeagre.prod_right (ht : IsMeagre t) (s : Set α) : IsMeagre (s ×ˢ t)
 
 variable {s : Set (α × β)}
 
+namespace BaireMeasurableSet
+
 /-- If a set `s` is Baire measurable in a product space, residually-many sections are
 Baire measurable. -/
-theorem BaireMeasurableSet.baireMeasurableSet_curry_left [SecondCountableTopology β]
+theorem baireMeasurableSet_curry_left [SecondCountableTopology β]
     (hs : BaireMeasurableSet s) : ∀ᵇ x : α, BaireMeasurableSet ((x, ·) ⁻¹' s) := by
   simp_rw [BaireMeasurableSet.iff_residualEq_isOpen] at *
   rcases hs with ⟨u, hu, su⟩
@@ -265,7 +267,7 @@ theorem BaireMeasurableSet.baireMeasurableSet_curry_left [SecondCountableTopolog
 
 /-- If a set `s` is Baire measurable in a product space, residually-many sections are
 Baire measurable. -/
-theorem BaireMeasurableSet.baireMeasurableSet_curry_right [SecondCountableTopology α]
+theorem baireMeasurableSet_curry_right [SecondCountableTopology α]
     (hs : BaireMeasurableSet s) : ∀ᵇ y : β, BaireMeasurableSet ((·, y) ⁻¹' s) :=
   (hs.preimage continuous_swap isOpenMap_swap).baireMeasurableSet_curry_left
 
@@ -273,7 +275,7 @@ variable [SecondCountableTopology α] [SecondCountableTopology β]
 
 /-- One direction of the *Kuratowski-Ulam Theorem*. If a set `s` is non-meagre and Baire
 measurable in a product space, non-meagerly many sections are non-meagre. -/
-theorem BaireMeasurableSet.frequently_curry_of_not_isMeagre (hm : BaireMeasurableSet s)
+theorem frequently_curry_of_not_isMeagre (hm : BaireMeasurableSet s)
     (hn : ¬ IsMeagre s) : ∃ᶠ x in (residual α).curry (residual β), x ∈ s := by
   wlog ho : IsOpen s
   · rcases hm.residualEq_isOpen with ⟨u, hu, su⟩
@@ -293,7 +295,7 @@ theorem BaireMeasurableSet.frequently_curry_of_not_isMeagre (hm : BaireMeasurabl
 it is residual if and only if residually many sections are residual.
 
 Expressed here using the `curry` operation on filters. -/
-theorem BaireMeasurableSet.mem_curry_iff_mem_residual (hs : BaireMeasurableSet s) :
+theorem mem_curry_iff_mem_residual (hs : BaireMeasurableSet s) :
     s ∈ (residual _).curry (residual _) ↔ s ∈ residual _ := by
   constructor
   · contrapose
@@ -303,13 +305,13 @@ theorem BaireMeasurableSet.mem_curry_iff_mem_residual (hs : BaireMeasurableSet s
 
 /--The *Kuratowski-Ulam Theorem*. If a set `s` Baire measurable in a product space,
 it is residual if and only if residually many sections are residual. -/
-theorem BaireMeasurableSet.eventually_eventually_left_iff_mem_residual
+theorem eventually_eventually_left_iff_mem_residual
     (hs : BaireMeasurableSet s) :
     (∀ᵇ x : α, ∀ᵇ y : β, (x, y) ∈ s) ↔ s ∈ residual _ := hs.mem_curry_iff_mem_residual
 
 /--The *Kuratowski-Ulam Theorem*. If a set `s` Baire measurable in a product space,
 it is residual if and only if residually many sections are residual. -/
-theorem BaireMeasurableSet.eventually_eventually_right_iff_mem_residual
+theorem eventually_eventually_right_iff_mem_residual
     (hs : BaireMeasurableSet s) :
     (∀ᵇ y : β, ∀ᵇ x : α, (x, y) ∈ s) ↔ s ∈ residual _ := by
   rw [← (Homeomorph.prodComm β α).residual_map_eq]
@@ -318,9 +320,11 @@ theorem BaireMeasurableSet.eventually_eventually_right_iff_mem_residual
 /-- Part of the *Kuratowski-Ulam Theorem*. If a set `s` is Baire measurable in a product space,
 one can "Change the order of integration" when asking whether residually many sections are
 residual. -/
-theorem BaireMeasurableSet.eventually_eventually_swap (hs : BaireMeasurableSet s) :
+theorem eventually_eventually_swap (hs : BaireMeasurableSet s) :
     (∀ᵇ x : α, ∀ᵇ y : β, (x, y) ∈ s) ↔ (∀ᵇ y : β, ∀ᵇ x : α, (x, y) ∈ s) :=
   hs.eventually_eventually_left_iff_mem_residual.trans
     hs.eventually_eventually_right_iff_mem_residual.symm
+
+end BaireMeasurableSet
 
 end KU
