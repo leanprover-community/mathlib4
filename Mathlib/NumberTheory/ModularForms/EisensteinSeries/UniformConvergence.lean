@@ -190,7 +190,7 @@ lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤
   apply TendstoLocallyUniformlyOn.comp (s := ⊤) _ _ _ (PartialHomeomorph.continuousOn_symm _)
   · simp only [SlashInvariantForm.toFun_eq_coe, Set.top_eq_univ, tendstoLocallyUniformlyOn_univ]
     apply eisensteinSeries_tendstoLocallyUniformly hk
-  · simp only [OpenEmbedding.toPartialHomeomorph_target, Set.top_eq_univ, mapsTo_range_iff,
+  · simp only [IsOpenEmbedding.toPartialHomeomorph_target, Set.top_eq_univ, mapsTo_range_iff,
     Set.mem_univ, forall_const]
 
 end summability

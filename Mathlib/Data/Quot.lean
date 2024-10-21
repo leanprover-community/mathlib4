@@ -26,6 +26,8 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``Setoid.r
     (some { numArgs := 2, coercee := 1, type := .coeFun })
 
+/-- When writing a lemma about `someSetoid x y` (which uses this instance),
+call it `someSetoid_apply` not `someSetoid_r`. -/
 instance : CoeFun (Setoid α) (fun _ ↦ α → α → Prop) where
   coe := @Setoid.r _
 
@@ -274,8 +276,11 @@ theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
   ⟨Quot.eqvGen_exact, Quot.eqvGen_sound⟩
 
 @[simp]
-theorem Quotient.eq {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=
+theorem Quotient.eq {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ r x y :=
   ⟨Quotient.exact, Quotient.sound⟩
+
+theorem Quotient.eq_iff_equiv {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=
+  Quotient.eq
 
 theorem Quotient.forall {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
     (∀ a, p a) ↔ ∀ a : α, p ⟦a⟧ :=

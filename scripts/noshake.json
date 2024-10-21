@@ -147,7 +147,6 @@
   "Mathlib.Tactic.Recover",
   "Mathlib.Tactic.ReduceModChar.Ext",
   "Mathlib.Tactic.Relation.Symm",
-  "Mathlib.Tactic.Relation.Trans",
   "Mathlib.Tactic.Rename",
   "Mathlib.Tactic.RenameBVar",
   "Mathlib.Tactic.Replace",
@@ -326,6 +325,7 @@
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
+  "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
   "Mathlib.NumberTheory.Harmonic.Defs":
   ["Mathlib.Algebra.Order.BigOperators.Ring.Finset",
    "Mathlib.Algebra.Order.Field.Basic"],
@@ -352,6 +352,7 @@
    "Mathlib.Util.Superscript"],
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
+  "Mathlib.Deprecated.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Set.Image": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
@@ -427,6 +428,7 @@
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
   "Mathlib.Algebra.Category.MonCat.Basic":
   ["Mathlib.Algebra.Ring.Action.Group"],
+  "Mathlib.Algebra.BigOperators.Group.List": ["Mathlib.Data.List.ProdSigma"],
   "Mathlib.Algebra.Algebra.Subalgebra.Order":
   ["Mathlib.Algebra.Module.Submodule.Order"],
   "Batteries.Tactic.OpenPrivate": ["Lean.Parser.Module"],

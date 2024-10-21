@@ -49,8 +49,8 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
     | Name.str n s => Name.mkStr n <| s ++ suffix
     | x => x
   addDeclarationRanges tgt {
-    range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange ref }
+    range := (← getDeclarationRange? (← getRef)).get!
+    selectionRange := (← getDeclarationRange? ref).get! }
   let info ← getConstInfo src
   let (newValue, newLevels) ← construct info.type info.value! info.levelParams
   let newValue ← instantiateMVars newValue

@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 import Lean.Elab.Tactic.Simp
 import Lean.Elab.App
-import Batteries.Data.String.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Lean.Expr.Basic
 
@@ -317,8 +316,7 @@ Some common uses:
   This will generate `foo_apply` lemmas for each declaration `foo`.
 * If you prefer `coe_foo` lemmas that state equalities between functions, use
   `initialize_simps_projections MulHom (toFun → coe, as_prefix coe)`
-  In this case you have to use `@[simps (config := .asFn)]` or equivalently
-  `@[simps (config := .asFn)]` whenever you call `@[simps]`.
+  In this case you have to use `@[simps (config := .asFn)]` whenever you call `@[simps]`.
 * You can also initialize to use both, in which case you have to choose which one to use by default,
   by using either of the following
   ```
@@ -487,8 +485,8 @@ This is checked by inspecting whether the first character of the remaining part 
 
 We use this variant because the latter is often a different field with an auto-generated name.
 -/
-private def dropPrefixIfNotNumber? (s : String) (pre : Substring) : Option Substring := do
-  let ret ← Substring.dropPrefix? s pre
+private def dropPrefixIfNotNumber? (s : String) (pre : String) : Option Substring := do
+  let ret ← s.dropPrefix? pre
   -- flag is true when the remaining part is nonempty and starts with a digit.
   let flag := ret.toString.data.head?.elim false Char.isDigit
   if flag then none else some ret
@@ -977,8 +975,8 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   catch ex =>
     throwError "Failed to add projection lemma {declName}. Nested error:\n{ex.toMessageData}"
   addDeclarationRanges declName {
-    range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange ref }
+    range := (← getDeclarationRange? (← getRef)).get!
+    selectionRange := (← getDeclarationRange? ref).get! }
   _ ← MetaM.run' <| TermElabM.run' <| addTermInfo (isBinder := true) ref <|
     ← mkConstWithLevelParams declName
   if cfg.isSimp then

@@ -6,7 +6,6 @@ Authors: Kim Morrison
 import Mathlib.Init
 import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
-import Batteries.Data.String.Basic
 import Qq.Match
 
 /-!

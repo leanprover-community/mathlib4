@@ -18,8 +18,12 @@ note: this linter can be disabled with `set_option linter.dupNamespace false`
 #guard_msgs in
 def Foo.foo := True
 
--- the `dupNamespace` linter does not notice that `to_additive` created `Foo.add.add`.
+/--
+warning: The namespace 'add' is duplicated in the declaration 'Foo.add.add'
+note: this linter can be disabled with `set_option linter.dupNamespace false`
+-/
 #guard_msgs in
+set_option linter.dupNamespace true in
 @[to_additive] theorem add.mul : True := .intro
 
 --  However, the declaration `Foo.add.add` is present in the environment.
