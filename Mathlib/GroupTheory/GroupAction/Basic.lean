@@ -539,7 +539,7 @@ nonrec lemma orbitRel.Quotient.orbit_nonempty (x : orbitRel.Quotient G α) :
 nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient G α) :
     Set.MapsTo (g • ·) x.orbit x.orbit := by
   rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
-  exact mapsTo_smul_orbit g x.out'
+  exact mapsTo_smul_orbit g x.out
 
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : MulAction G x.orbit where
@@ -605,12 +605,12 @@ local notation "Ω" => orbitRel.Quotient G α
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 
 This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instead of
-`MulAction.orbit`, to avoid mentioning `Quotient.out'`. -/
+`MulAction.orbit`, to avoid mentioning `Quotient.out`. -/
 @[to_additive
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
 
       This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
-      `AddAction.orbit`, to avoid mentioning `Quotient.out'`. "]
+      `AddAction.orbit`, to avoid mentioning `Quotient.out`. "]
 def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
   letI := orbitRel G α
   calc
@@ -623,7 +623,7 @@ def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
 @[to_additive
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
       action."]
-def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out' :=
+def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
       Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
