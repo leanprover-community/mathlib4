@@ -22,7 +22,7 @@ k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, r
 
 open Finset hiding choose
 
-open Nat BigOperators Polynomial
+open Nat Polynomial
 
 namespace Choose
 
