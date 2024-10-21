@@ -89,7 +89,9 @@ scoped[Pointwise] attribute [instance] Set.one Set.zero
 
 open Pointwise
 
-@[to_additive (attr := simp)]
+-- TODO: This would be a good simp lemma scoped to `Pointwise`, but it seems `@[simp]` can't be
+-- scoped
+@[to_additive]
 theorem singleton_one : ({1} : Set α) = 1 :=
   rfl
 
