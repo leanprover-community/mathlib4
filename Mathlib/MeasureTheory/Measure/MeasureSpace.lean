@@ -1007,7 +1007,7 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
       rw [tsum_eq_add_tsum_ite 0, tsum_eq_add_tsum_ite 1, if_neg zero_ne_one.symm,
         (tsum_eq_zero_iff ENNReal.summable).2 _, add_zero]
       · exact add_le_add (inf_le_left.trans <| by simp [ht']) (inf_le_right.trans <| by simp [ht'])
-      · simp only [ite_eq_then]
+      · simp only [ite_eq_left_iff]
         intro n hn₁ hn₀
         simp only [ht', if_neg hn₀, if_neg hn₁, measure_empty, iInf_pair, le_refl, inf_of_le_left]
   · simp only [iInf_image, coe_toOuterMeasure, iInf_pair]
