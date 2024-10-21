@@ -67,6 +67,12 @@ theorem add_coeff {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a
   rfl
 
 @[simp]
+theorem nsmul_coeff {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [add_nsmul, ih]
+
+@[simp]
 protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
     ((x + y).map f : HahnSeries Γ S) = x.map f + y.map f := by
   ext; simp

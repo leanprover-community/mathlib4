@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Data.Int.Interval
+import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.RingTheory.Binomial
-import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Topology.UniformSpace.Cauchy
 
@@ -86,7 +85,6 @@ end
 section HasseDeriv
 
 /-- The Hasse derivative of Laurent series, as a linear map. -/
-@[simps]
 def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] (k : ℕ) :
     V⸨X⸩ →ₗ[R] V⸨X⸩ where
   toFun f := HahnSeries.ofSuppBddBelow (fun (n : ℤ) => (Ring.choose (n + k) k) • f.coeff (n + k))
@@ -101,9 +99,66 @@ def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
 
 variable [Semiring R] {V : Type*} [AddCommGroup V] [Module R V]
 
-theorem hasseDeriv_coeff (k : ℕ) (f : V⸨X⸩) (n : ℤ) :
+@[simp]
+theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
     (hasseDeriv R k f).coeff n = Ring.choose (n + k) k • f.coeff (n + k) :=
   rfl
+
+@[simp]
+theorem hasseDeriv_zero : hasseDeriv R 0 = LinearMap.id (M := LaurentSeries V) := by
+  ext f n
+  simp
+
+theorem hasseDeriv_single_add (k : ℕ) (n : ℤ) (x : V) :
+    hasseDeriv R k (single (n + k) x) = single n ((Ring.choose (n + k) k) • x) := by
+  ext m
+  dsimp only [hasseDeriv_coeff]
+  by_cases h : m = n
+  · simp [h]
+  · simp [h, show m + k ≠ n + k by omega]
+
+@[simp]
+theorem hasseDeriv_single (k : ℕ) (n : ℤ) (x : V) :
+    hasseDeriv R k (single n x) = single (n - k) ((Ring.choose n k) • x) := by
+  rw [← Int.sub_add_cancel n k, hasseDeriv_single_add, Int.sub_add_cancel n k]
+
+theorem hasseDeriv_comp_coeff (k l : ℕ) (f : LaurentSeries V) (n : ℤ) :
+    (hasseDeriv R k (hasseDeriv R l f)).coeff n =
+      ((Nat.choose (k + l) k) • hasseDeriv R (k + l) f).coeff n := by
+  rw [nsmul_coeff]
+  simp only [hasseDeriv_coeff, Pi.smul_apply, Nat.cast_add]
+  rw [smul_smul, mul_comm, ← Ring.choose_add_smul_choose (n + k), add_assoc, Nat.choose_symm_add,
+    smul_assoc]
+
+@[simp]
+theorem hasseDeriv_comp (k l : ℕ) (f : LaurentSeries V) :
+    hasseDeriv R k (hasseDeriv R l f) = (k + l).choose k • hasseDeriv R (k + l) f := by
+  ext n
+  simp [hasseDeriv_comp_coeff k l f n]
+
+/-- The derivative of a Laurent series. -/
+def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] :
+    LaurentSeries V →ₗ[R] LaurentSeries V :=
+  hasseDeriv R 1
+
+@[simp]
+theorem derivative_apply (f : LaurentSeries V) : derivative R f = hasseDeriv R 1 f := by
+  exact rfl
+
+theorem derivative_iterate (k : ℕ) (f : LaurentSeries V) :
+    (derivative R)^[k] f = k.factorial • (hasseDeriv R k f) := by
+  ext n
+  induction k generalizing f with
+  | zero => simp
+  | succ k ih =>
+    rw [Function.iterate_succ, Function.comp_apply, ih, derivative_apply, hasseDeriv_comp,
+      Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
+
+@[simp]
+theorem derivative_iterate_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
+    ((derivative R)^[k] f).coeff n = (descPochhammer ℤ k).smeval (n + k) • f.coeff (n + k) := by
+  rw [derivative_iterate, nsmul_coeff, Pi.smul_apply, hasseDeriv_coeff,
+    Ring.descPochhammer_eq_factorial_smul_choose, smul_assoc]
 
 end HasseDeriv
 
