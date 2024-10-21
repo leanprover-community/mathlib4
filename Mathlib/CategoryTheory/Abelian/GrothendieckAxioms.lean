@@ -51,6 +51,8 @@ universe v v' u u' w
 
 variable (C : Type u) [Category.{v} C]
 
+attribute [local instance] hasCoproducts_of_finite_and_filtered
+
 /--
 A category `C` which has coproducts is said to have `AB4` provided that
 coproducts are exact.
@@ -115,7 +117,7 @@ instance preservesFiniteLimitsLiftToFinset : PreservesFiniteLimits (liftToFinset
     preservesFiniteLimitsOfNatIso (liftToFinsetEvaluationIso  I).symm
 
 /-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
-def AB4.ofAB5 [HasCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C where
+def AB4.ofAB5 [HasFiniteCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C where
   preservesFiniteLimits J :=
     letI : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
       compPreservesFiniteLimits _ _
