@@ -3711,6 +3711,7 @@ import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Filter.Ring
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.Subsingleton
+import Mathlib.Order.Filter.Tendsto
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 import Mathlib.Order.Fin.Basic
