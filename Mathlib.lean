@@ -2437,6 +2437,7 @@ import Mathlib.Data.NNRat.Floor
 import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.NNRat.Order
 import Mathlib.Data.NNReal.Basic
+import Mathlib.Data.NNReal.Defs
 import Mathlib.Data.NNReal.Star
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.Nat.BitIndices
@@ -3710,6 +3711,7 @@ import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Filter.Ring
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.Subsingleton
+import Mathlib.Order.Filter.Tendsto
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 import Mathlib.Order.Fin.Basic
