@@ -126,6 +126,16 @@ protected lemma isCompl_iff [Lattice α] [BoundedOrder α] {x y : Iic a} :
     IsCompl x y ↔ Disjoint (x : α) (y : α) ∧ (x : α) ⊔ (y : α) = a := by
   rw [_root_.isCompl_iff, Iic.disjoint_iff, Iic.codisjoint_iff]
 
+protected lemma complementedLattice_iff [Lattice α] [BoundedOrder α] :
+    ComplementedLattice (Iic a) ↔ ∀ b, b ≤ a → ∃ c ≤ a, b ⊓ c = ⊥ ∧ b ⊔ c = a := by
+  refine ⟨fun h b hb ↦ ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ↦ ?_⟩⟩
+  · obtain ⟨⟨c, hc₁⟩, hc⟩ := exists_isCompl (⟨b, hb⟩ : Iic a)
+    obtain ⟨hc₂, hc₃⟩ := Set.Iic.isCompl_iff.mp hc
+    exact ⟨c, hc₁, disjoint_iff.mp hc₂, hc₃⟩
+  · simp_rw [Set.Iic.isCompl_iff]
+    obtain ⟨c, hc₁, hc₂, hc₃⟩ := h x hx
+    exact ⟨⟨c, hc₁⟩, disjoint_iff.mpr hc₂, hc₃⟩
+
 end Iic
 
 namespace Ici

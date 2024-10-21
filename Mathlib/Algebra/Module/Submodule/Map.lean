@@ -364,9 +364,15 @@ def orderIsoMapComapOfBijective [FunLike F M M₂] [SemilinearMapClass F σ₁�
   map_rel_iff' := map_le_map_iff_of_injective hf.injective _ _
 
 /-- A linear isomorphism induces an order isomorphism of submodules. -/
-@[simps! symm_apply apply]
+@[simps! apply]
 def orderIsoMapComap [EquivLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂] (f : F) :
     Submodule R M ≃o Submodule R₂ M₂ := orderIsoMapComapOfBijective f (EquivLike.bijective f)
+
+@[simp]
+lemma orderIsoMapComap_symm_apply [EquivLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+    (f : F) (p : Submodule R₂ M₂) :
+    (orderIsoMapComap f).symm p = comap f p :=
+  rfl
 
 end OrderIso
 
