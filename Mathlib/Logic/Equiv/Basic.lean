@@ -1717,6 +1717,14 @@ theorem piCongr'_symm_apply_symm_apply (f : ∀ b, Z b) (b : β) :
 
 end
 
+/-- Transport dependent functions through an equality of sets. -/
+@[simps!] def piCongrSet {α} {W : α → Sort w} {s t : Set α} (h : s = t) :
+    (∀ i : {i // i ∈ s}, W i) ≃ (∀ i : {i // i ∈ t}, W i) where
+  toFun f i := f ⟨i, h ▸ i.2⟩
+  invFun f i := f ⟨i, h.symm ▸ i.2⟩
+  left_inv f := rfl
+  right_inv f := rfl
+
 section BinaryOp
 
 variable {α₁ β₁ : Type*} (e : α₁ ≃ β₁) (f : α₁ → α₁ → α₁)
