@@ -304,9 +304,8 @@ lemma span_singleton_eq_top_of_isPrincipalIdealRing_quotient_noZeroDivisors_zero
     rw [Quotient.eq_zero_iff_mem.mpr haI, eq_comm, mul_eq_zero, Quotient.eq_zero_iff_mem,
         Quotient.eq_zero_iff_mem] at ha'
     refine ha'.resolve_left fun hc ↦ ?_
-    rw [← span_singleton_le_iff_mem] at hc
-    suffices I ⊔ J = span {c} from absurd (le_sup_right.trans (h.trans hc)) hJI
-    exact le_antisymm h (hc.trans le_sup_left)
+    refine absurd ((h.trans ?_).trans' le_sup_right) hJI
+    rwa [← span_singleton_le_iff_mem] at hc
   have ha' : Quotient.mk J a = Quotient.mk J c * Quotient.mk J b := by simp [hb]
   obtain ⟨d, hd⟩ : ∃ d, Quotient.mk J b = Quotient.mk J a * Quotient.mk J d := by
     have := haJ.le ((Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective).mpr
