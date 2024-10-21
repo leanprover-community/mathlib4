@@ -14,7 +14,7 @@ import Mathlib.Topology.ContinuousMap.StarOrdered
 This file contains various basic facts about star-ordered rings (i.e. mainly C⋆-algebras)
 that depend on the continuous functional calculus.
 
-We also put an order instance on `Unitization ℂ A` when `A` is a C⋆-algebra via
+We also put an order instance on `A⁺¹ := Unitization ℂ A` when `A` is a C⋆-algebra via
 the spectral order.
 
 ## Main theorems
@@ -35,7 +35,7 @@ the spectral order.
 continuous functional calculus, normal, selfadjoint
 -/
 
-open scoped NNReal
+open scoped NNReal CStarAlgebra
 
 namespace Unitization
 
@@ -43,22 +43,22 @@ variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A]
   [PartialOrder A] [StarRing A] [StarOrderedRing A] [CStarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
   [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
 
-instance instPartialOrder : PartialOrder (Unitization ℂ A) :=
+instance instPartialOrder : PartialOrder A⁺¹ :=
     CStarAlgebra.spectralOrder _
 
-instance instStarOrderedRing : StarOrderedRing (Unitization ℂ A) :=
+instance instStarOrderedRing : StarOrderedRing A⁺¹ :=
     CStarAlgebra.spectralOrderedRing _
 
 lemma inr_le_iff (a b : A) (ha : IsSelfAdjoint a := by cfc_tac)
     (hb : IsSelfAdjoint b := by cfc_tac) :
-    (a : Unitization ℂ A) ≤ (b : Unitization ℂ A) ↔ a ≤ b := by
+    (a : A⁺¹) ≤ (b : A⁺¹) ↔ a ≤ b := by
   -- TODO: prove the more general result for star monomorphisms and use it here.
   rw [← sub_nonneg, ← sub_nonneg (a := b), StarOrderedRing.nonneg_iff_spectrum_nonneg (R := ℝ) _,
     ← inr_sub ℂ b a, ← Unitization.quasispectrum_eq_spectrum_inr' ℝ ℂ]
   exact StarOrderedRing.nonneg_iff_quasispectrum_nonneg _ |>.symm
 
 @[simp, norm_cast]
-lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization ℂ A) ↔ 0 ≤ a := by
+lemma inr_nonneg_iff {a : A} : 0 ≤ (a : A⁺¹) ↔ 0 ≤ a := by
   by_cases ha : IsSelfAdjoint a
   · exact inr_zero ℂ (A := A) ▸ inr_le_iff 0 a
   · refine ⟨?_, ?_⟩
@@ -336,7 +336,7 @@ instance instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A whe
 
 lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖ ≤ ‖b‖ := by
-  suffices ∀ a b : Unitization ℂ A, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
+  suffices ∀ a b : A⁺¹, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
     have hb := ha.trans hab
     simpa only [ge_iff_le, Unitization.norm_inr] using
       this a b (by simpa) (by rwa [Unitization.inr_le_iff a b])
@@ -356,12 +356,12 @@ lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab :
 
 lemma conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
-  suffices ∀ a b : Unitization ℂ A, IsSelfAdjoint b → star a * b * a ≤ ‖b‖ • (star a * a) by
+  suffices ∀ a b : A⁺¹, IsSelfAdjoint b → star a * b * a ≤ ‖b‖ • (star a * a) by
     rw [← Unitization.inr_le_iff _ _ (by aesop) ((IsSelfAdjoint.all _).smul (.star_mul_self a))]
     simpa [Unitization.norm_inr] using this a b <| hb.inr ℂ
   intro a b hb
   calc
-    star a * b * a ≤ star a * (algebraMap ℝ (Unitization ℂ A) ‖b‖) * a :=
+    star a * b * a ≤ star a * (algebraMap ℝ A⁺¹ ‖b‖) * a :=
       conjugate_le_conjugate hb.le_algebraMap_norm_self _
     _ = ‖b‖ • (star a * a) := by simp [Algebra.algebraMap_eq_smul_one]
 
@@ -374,7 +374,7 @@ lemma conjugate_le_norm_smul' {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
 
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
-  suffices IsClosed {a : Unitization ℂ A | 0 ≤ a} by
+  suffices IsClosed {a : A⁺¹ | 0 ≤ a} by
     rw [Unitization.isometry_inr (𝕜 := ℂ) |>.closedEmbedding.closed_iff_image_closed]
     convert this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).closedEmbedding.isClosed_range
     ext a

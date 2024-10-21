@@ -728,8 +728,8 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [Complet
 open scoped NonUnitalContinuousFunctionalCalculus in
 set_option maxSynthPendingDepth 2 in -- yuck!
 /-- This lemma requires a lot from type class synthesis, and so one should instead favor the bespoke
-versions for `ℝ≥0`, `ℝ`, and `ℂ`, hence this lemma is marked `private`. -/
-private lemma Unitization.cfcₙ_eq_cfc_inr {R : Type*} [Semifield R] [StarRing R] [MetricSpace R]
+versions for `ℝ≥0`, `ℝ`, and `ℂ`. -/
+lemma Unitization.cfcₙ_eq_cfc_inr {R : Type*} [Semifield R] [StarRing R] [MetricSpace R]
     [TopologicalSemiring R] [ContinuousStar R] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] [CompleteSpace R] [Algebra R ℂ] [IsScalarTower R ℂ A]
     {p : A → Prop} {p' : A⁺¹ → Prop} [NonUnitalContinuousFunctionalCalculus R p]
