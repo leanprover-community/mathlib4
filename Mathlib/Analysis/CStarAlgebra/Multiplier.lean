@@ -5,6 +5,7 @@ Authors: Jireh Loreaux, Jon Bannon
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
@@ -666,5 +667,7 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
             using pow_lt_pow_left hxr zero_le' two_ne_zero
 
 end DenselyNormed
+
+noncomputable instance {A : Type*} [NonUnitalCStarAlgebra A] : CStarAlgebra 𝓜(ℂ, A) where
 
 end DoubleCentralizer
