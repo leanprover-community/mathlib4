@@ -143,9 +143,10 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ s.card) :
     -- Now, let's find those `2 * m - 1` sets.
     rintro k hk
     -- We induct on the size `k ≤ 2 * m - 1` of the family we are constructing.
-    induction' k with k ih
+    induction k with
     -- For `k = 0`, the empty family trivially works.
-    · exact ⟨∅, by simp⟩
+    | zero => exact ⟨∅, by simp⟩
+    | succ k ih =>
     -- At `k + 1`, call `𝒜` the existing family of size `k ≤ 2 * m - 2`.
     obtain ⟨𝒜, h𝒜card, h𝒜disj, h𝒜⟩ := ih (Nat.le_of_succ_le hk)
     -- There are at least `2 * (m * n) - 1 - k * n ≥ 2 * m - 1` elements in `s` that have not been
