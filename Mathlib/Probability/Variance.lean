@@ -346,7 +346,7 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
 
 /-- **The Bhatia-Davis inequality on variance**
 
-The variance of a random variable `X` satisfying `a ≤ X ≤ b`  almost everywhere is at most
+The variance of a random variable `X` satisfying `a ≤ X ≤ b` almost everywhere is at most
 `(b - 𝔼 X) * (𝔼 X - a)`. -/
 lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hX : AEMeasurable X μ) :
