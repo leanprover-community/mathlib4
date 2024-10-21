@@ -534,7 +534,7 @@ instance : BooleanRing Bool where
   left_distrib := and_xor_distrib_left
   right_distrib := and_xor_distrib_right
   mul_self := Bool.and_self
-  zero_mul a := rfl
+  zero_mul _ := rfl
   mul_zero a := by cases a <;> rfl
   nsmul := nsmulRec
   zsmul := zsmulRec

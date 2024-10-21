@@ -41,7 +41,7 @@ lemma Fintype.sum_smul_sum [Fintype α] [Fintype β] (f : α → R) (g : β → 
 
 end AddCommMonoid
 
-theorem Finset.cast_card [CommSemiring R] (s : Finset α) : (s.card : R) = ∑ a ∈ s, 1 := by
+theorem Finset.cast_card [CommSemiring R] (s : Finset α) : (s.card : R) = ∑ _ ∈ s, 1 := by
   rw [Finset.sum_const, Nat.smul_one_eq_cast]
 
 open Finset

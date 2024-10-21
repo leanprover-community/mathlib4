@@ -187,8 +187,8 @@ theorem dist_lt_iff_of_nonempty_compact [Nonempty α] [CompactSpace α] :
 instance instPseudoMetricSpace : PseudoMetricSpace (α →ᵇ β) where
   dist_self f := le_antisymm ((dist_le le_rfl).2 fun x => by simp) dist_nonneg'
   dist_comm f g := by simp [dist_eq, dist_comm]
-  dist_triangle f g h := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
-    fun x => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
+  dist_triangle _ _ _ := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
+    fun _ => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
   -- Porting note (#10888): added proof for `edist_dist`
   edist_dist x y := by dsimp; congr; simp [dist_nonneg']
 
@@ -1065,8 +1065,8 @@ variable (𝕜)
 /-- The evaluation at a point, as a continuous linear map from `α →ᵇ β` to `β`. -/
 def evalCLM (x : α) : (α →ᵇ β) →L[𝕜] β where
   toFun f := f x
-  map_add' f g := add_apply _ _
-  map_smul' c f := smul_apply _ _ _
+  map_add' _ _ := add_apply _ _
+  map_smul' _ _ := smul_apply _ _ _
 
 @[simp]
 theorem evalCLM_apply (x : α) (f : α →ᵇ β) : evalCLM 𝕜 x f = f x := rfl

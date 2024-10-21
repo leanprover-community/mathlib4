@@ -72,24 +72,6 @@ if ! command -v gh &> /dev/null; then
     exit 1
 fi
 
-# Check the CI status of the latest commit on the 'nightly-testing' branch
-status=$(gh run list --branch nightly-testing | grep -m1 . | awk '{print $1}')
-if [ "$status" != "completed" ]; then
-  if [ "$status" != "in_progress" ]; then
-    echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
-    gh run list --branch nightly-testing
-    exit 1
-  else
-    if [ "$AUTO" = "yes" ]; then
-      echo "Auto mode enabled. Bailing out because the latest commit on 'nightly-testing' is still running CI."
-      exit 1
-    else
-      echo "The latest commit on 'nightly-testing' is still running CI."
-      read -p "Press enter to continue, or ctrl-C if you'd prefer to wait for CI."
-    fi
-  fi
-fi
-
 echo "### Creating a PR for the nightly adaptation for $NIGHTLYDATE"
 
 echo

@@ -42,7 +42,7 @@ theorem Chain.iff_mem {a : α} {l : List α} :
       constructor
       · exact ⟨mem_cons_self _ _, mem_cons_self _ _, r⟩
       · exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩,
-    Chain.imp fun a b h => h.2.2⟩
+    Chain.imp fun _ _ h => h.2.2⟩
 
 theorem chain_singleton {a b : α} : Chain R a [b] ↔ R a b := by
   simp only [chain_cons, Chain.nil, and_true]
@@ -95,7 +95,7 @@ theorem chain_of_chain_pmap {S : β → β → Prop} {p : α → Prop} (f : ∀ 
 
 protected theorem Chain.pairwise [IsTrans α R] :
     ∀ {a : α} {l : List α}, Chain R a l → Pairwise R (a :: l)
-  | a, [], Chain.nil => pairwise_singleton _ _
+  | _, [], Chain.nil => pairwise_singleton _ _
   | a, _, @Chain.cons _ _ _ b l h hb =>
     hb.pairwise.cons
       (by
@@ -178,10 +178,10 @@ theorem chain'_cons {x y l} : Chain' R (x :: y :: l) ↔ R x y ∧ Chain' R (y :
 
 theorem chain'_isInfix : ∀ l : List α, Chain' (fun x y => [x, y] <:+: l) l
   | [] => chain'_nil
-  | [a] => chain'_singleton _
+  | [_] => chain'_singleton _
   | a :: b :: l =>
     chain'_cons.2
-      ⟨⟨[], l, by simp⟩, (chain'_isInfix (b :: l)).imp fun x y h => h.trans ⟨[a], [], by simp⟩⟩
+      ⟨⟨[], l, by simp⟩, (chain'_isInfix (b :: l)).imp fun _ _ h => h.trans ⟨[a], [], by simp⟩⟩
 
 theorem chain'_split {a : α} :
     ∀ {l₁ l₂ : List α}, Chain' R (l₁ ++ a :: l₂) ↔ Chain' R (l₁ ++ [a]) ∧ Chain' R (a :: l₂)

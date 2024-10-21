@@ -417,7 +417,7 @@ the best we can do in general. -/
 theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.Adj] {v w : V}
     (h : G.Adj v w) : Fintype.card (G.commonNeighbors v w) < G.degree v := by
   classical
-  erw [← Set.toFinset_card]
+  rw [← Set.toFinset_card]
   apply Finset.card_lt_card
   rw [Finset.ssubset_iff]
   use w

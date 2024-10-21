@@ -210,7 +210,7 @@ def BinaryFan.IsLimit.mk {X Y : C} (s : BinaryFan X Y)
       rintro t (rfl | rfl)
       · exact hl₁ _ _
       · exact hl₂ _ _)
-    fun t m h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
+    fun _ _ h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
 
 theorem BinaryFan.IsLimit.hom_ext {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s) {f g : W ⟶ s.pt}
     (h₁ : f ≫ s.fst = g ≫ s.fst) (h₂ : f ≫ s.snd = g ≫ s.snd) : f = g :=
@@ -247,7 +247,7 @@ def BinaryCofan.IsColimit.mk {X Y : C} (s : BinaryCofan X Y)
       rintro t (rfl | rfl)
       · exact hd₁ _ _
       · exact hd₂ _ _)
-    fun t m h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
+    fun _ _ h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
 
 theorem BinaryCofan.IsColimit.hom_ext {W X Y : C} {s : BinaryCofan X Y} (h : IsColimit s)
     {f g : s.pt ⟶ W} (h₁ : s.inl ≫ f = s.inl ≫ g) (h₂ : s.inr ≫ f = s.inr ≫ g) : f = g :=
@@ -1021,7 +1021,7 @@ variable {C} [Category.{v} C] [HasBinaryProducts C]
 def prod.functor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⨯ Y
-      map := fun {Y Z} => prod.map (𝟙 X) }
+      map := fun {_ _} => prod.map (𝟙 X) }
   map f :=
     { app := fun T => prod.map f (𝟙 T) }
 
@@ -1042,7 +1042,7 @@ variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 def coprod.functor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⨿ Y
-      map := fun {Y Z} => coprod.map (𝟙 X) }
+      map := fun {_ _} => coprod.map (𝟙 X) }
   map f := { app := fun T => coprod.map f (𝟙 T) }
 
 /-- The coproduct functor can be decomposed. -/

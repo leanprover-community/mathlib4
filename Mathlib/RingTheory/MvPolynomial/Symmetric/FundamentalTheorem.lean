@@ -61,7 +61,7 @@ section accumulate
 /-- The `j`th entry of `accumulate n m t` is the sum of `t i` over all `i ≥ j`. -/
 @[simps] def accumulate (n m : ℕ) : (Fin n → ℕ) →+ (Fin m → ℕ) where
   toFun t j := ∑ i in univ.filter (fun i : Fin n ↦ (j : ℕ) ≤ i), t i
-  map_zero' := funext <| fun j ↦ sum_eq_zero <| fun h _ ↦ rfl
+  map_zero' := funext <| fun _ ↦ sum_eq_zero <| fun _ _ ↦ rfl
   map_add' t₁ t₂ := funext <| fun j ↦ by dsimp only; exact sum_add_distrib
 
 /-- The `i`th entry of `invAccumulate n m s` is `s i - s (i+1)`, where `s j = 0` if `j ≥ m`. -/

@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Tactic.Ring
+import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # `Fintype` instances for `Equiv` and `Perm`
