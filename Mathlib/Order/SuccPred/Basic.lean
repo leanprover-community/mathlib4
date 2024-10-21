@@ -3,9 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Cover
 import Mathlib.Order.Iterate
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Successor and predecessor

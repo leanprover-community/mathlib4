@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Results about `CovariantClass G α HSMul.hSMul LE.le`

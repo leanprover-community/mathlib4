@@ -7,7 +7,7 @@ import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.PUnitInstances.Module
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # The lattice structure on `Submodule`s
