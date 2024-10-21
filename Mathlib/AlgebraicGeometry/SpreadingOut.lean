@@ -31,7 +31,7 @@ variable {R A : CommRingCat.{u}}
 
 /--
 The class of schemes such that for each `x : X`,
-`Γ(X, U) ⟶ X_x` is injective for some affine `U` containing.
+`Γ(X, U) ⟶ X_x` is injective for some affine `U` containing `x`.
 
 This is typically satisfied when `X` is integral or locally noetherian.
 -/
