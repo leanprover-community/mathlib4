@@ -171,7 +171,7 @@ def mk' : M →ₗ⁅R,L⁆ M ⧸ N :=
     map_lie' := fun {_ _} => rfl }
 
 @[simp]
-theorem surjective_mk' : Function.Surjective (mk' N) := surjective_quot_mk _
+theorem surjective_mk' : Function.Surjective (mk' N) := Quot.mk_surjective
 
 @[simp]
 theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by simp [LieModuleHom.range_eq_top]

@@ -332,7 +332,7 @@ lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
 
 lemma stalkToFiberRingHom_homogeneousLocalizationToStalk (x z) :
     stalkToFiberRingHom 𝒜 x (homogeneousLocalizationToStalk 𝒜 x z) = z := by
-  obtain ⟨z, rfl⟩ := Quotient.surjective_Quotient_mk'' z
+  obtain ⟨z, rfl⟩ := Quotient.mk''_surjective z
   rw [homogeneousLocalizationToStalk, Quotient.liftOn'_mk'',
     stalkToFiberRingHom_germ, sectionInBasicOpen]
 
