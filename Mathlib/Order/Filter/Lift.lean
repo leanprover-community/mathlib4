@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Filter.Bases
 import Mathlib.Order.Filter.Prod
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Lift filters along filter and set functions

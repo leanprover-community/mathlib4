@@ -12,7 +12,7 @@ import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Fintype.Quotient
 import Mathlib.Data.Set.Finite
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Dependent functions with finite support

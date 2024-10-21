@@ -3,7 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Extension of a monotone function from a set to the whole space
