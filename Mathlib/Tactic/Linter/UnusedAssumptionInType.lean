@@ -61,7 +61,7 @@ def checkUnusedAssumptionInType (declInfo : ConstantInfo) (typesToAvoid : Array 
       let arg := args[i]!
       let t := (← inferType arg).cleanupAnnotations
       if t.containsConst typesToAvoid.contains then
-        if usedIdxs[i]? != some true && !usedFVars.fvarSet.contains t.fvarId! then
+        if usedIdxs[i]? != some true && !usedFVars.fvarSet.contains arg.fvarId! then
           impossibleArgs := impossibleArgs.push
             (← addMessageContextFull m!"argument {i+1} {arg} : {t}")
       usedFVars := collectFVars usedFVars t
