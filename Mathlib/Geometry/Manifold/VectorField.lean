@@ -665,6 +665,29 @@ lemma DifferentiableWithinAt.pullbackWithin {f : E → F} {V : F → F} {s : Set
   · have hMx : M x = fderivWithin 𝕜 f s x := by apply mem_of_mem_nhdsWithin hx hM
     simp [← hMx]
 
+lemma poupou (U V W : E → E) (s : Set E) (x : E)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
+    (hU : ContDiffWithinAt 𝕜 2 U s x) (hV : ContDiffWithinAt 𝕜 2 V s x)
+    (hW : ContDiffWithinAt 𝕜 2 W s x) :
+    lieBracketWithin 𝕜 U (lieBracketWithin 𝕜 V W s) s x =
+      lieBracketWithin 𝕜 (lieBracketWithin 𝕜 U V s) W s x
+      + lieBracketWithin 𝕜 V (lieBracketWithin 𝕜 U W s) s x := by
+  simp only [lieBracketWithin_eq, map_sub]
+  rw [fderivWithin_sub (hs x hx)]
+  sorry
+  · have Z := hW.fderivWithin_right_apply
+    --?_ hs (m := 1) le_rfl hx
+    apply Z.differentiableWithinAt
+
+
+
+
+
+
+#exit
+
+-- ⁅u, ⁅v, w⁆⁆ = ⁅⁅u, v⁆, w⁆ + ⁅v, ⁅u, w⁆⁆
+
 end VectorField
 
 end LieBracketVectorField

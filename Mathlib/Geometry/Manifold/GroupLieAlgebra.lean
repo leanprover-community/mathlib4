@@ -72,18 +72,19 @@ lemma bracket_def (v w : LieGroupAlgebra I G) :
 variable [LieGroup I G] [CompleteSpace E]
 
 instance [LieGroup I G] : LieRing (TangentSpace I (1 : G)) where
-  add_lie v w x := by
+  add_lie u v w := by
     simp only [bracket_def, invariantVectorField_add]
     rw [mlieBracket_add_left]
     · exact ((contMDiff_invariantVectorField _).mdifferentiable le_top).mdifferentiableAt
     · exact ((contMDiff_invariantVectorField _).mdifferentiable le_top).mdifferentiableAt
-  lie_add v w x := by
+  lie_add u v w := by
     simp only [bracket_def, invariantVectorField_add]
     rw [mlieBracket_add_right]
     · exact ((contMDiff_invariantVectorField _).mdifferentiable le_top).mdifferentiableAt
     · exact ((contMDiff_invariantVectorField _).mdifferentiable le_top).mdifferentiableAt
-  lie_self := sorry
-  leibniz_lie := sorry
+  lie_self v := by simp [bracket_def]
+  leibniz_lie u v w := by
+
 
 
 end LieGroup
