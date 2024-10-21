@@ -307,6 +307,17 @@ lemma false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False := by
   have : Subsingleton R := CharOne.subsingleton
   exact false_of_nontrivial_of_subsingleton R
 
+variable (R) in
+/-- If a ring `R` is of characteristic `p`, then for any prime number `q` different from `p`,
+it is not zero in `R`. -/
+lemma cast_ne_zero_of_ne_of_prime [Nontrivial R]
+    {p q : ℕ} [CharP R p] (hq : q.Prime) (hneq : p ≠ q) : (q : R) ≠ 0 := fun h ↦ by
+  rw [cast_eq_zero_iff R p q] at h
+  rcases hq.eq_one_or_self_of_dvd _ h with h | h
+  · subst h
+    exact false_of_nontrivial_of_char_one (R := R)
+  · exact hneq h
+
 lemma ringChar_ne_one [Nontrivial R] : ringChar R ≠ 1 := by
   intro h
   apply zero_ne_one' R

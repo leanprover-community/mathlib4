@@ -8,12 +8,10 @@ import Mathlib.Util.AssertExists
 import Mathlib.Data.Nat.Notation
 
 /-!
-# Note about `Mathlib/Init/`
-The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
-(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+# Note about deprecated files
 
-We intend to move all the content of these files out into the main `Mathlib` directory structure.
-Contributions assisting with this are appreciated.
+This file is deprecated, and is no longer imported by anything in mathlib other than other
+deprecated files, and test files. You should not need to import it.
 -/
 
 assert_not_exists Preorder

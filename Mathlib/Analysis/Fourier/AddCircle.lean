@@ -196,9 +196,9 @@ theorem fourierSubalgebra_coe :
   apply adjoin_eq_span_of_subset
   refine Subset.trans ?_ Submodule.subset_span
   intro x hx
-  refine Submonoid.closure_induction hx (fun _ => id) ⟨0, ?_⟩ ?_
+  refine Submonoid.closure_induction (fun _ => id) ⟨0, ?_⟩ ?_ hx
   · ext1 z; exact fourier_zero
-  · rintro _ _ ⟨m, rfl⟩ ⟨n, rfl⟩
+  · rintro - - - - ⟨m, rfl⟩ ⟨n, rfl⟩
     refine ⟨m + n, ?_⟩
     ext1 z
     exact fourier_add

@@ -262,7 +262,7 @@ theorem I_im (z : K) : im z * im (I : K) = im z :=
 @[simp, rclike_simps]
 theorem I_im' (z : K) : im (I : K) * im z = im z := by rw [mul_comm, I_im]
 
-@[rclike_simps] -- porting note (#10618): was `simp`
+@[rclike_simps] -- porting note (#11119): was `simp`
 theorem I_mul_re (z : K) : re (I * z) = -im z := by
   simp only [I_re, zero_sub, I_im', zero_mul, mul_re]
 
@@ -394,7 +394,7 @@ theorem normSq_one : normSq (1 : K) = 1 :=
 theorem normSq_nonneg (z : K) : 0 ≤ normSq z :=
   add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
 
-@[rclike_simps] -- porting note (#10618): was `simp`
+@[rclike_simps] -- porting note (#11119): was `simp`
 theorem normSq_eq_zero {z : K} : normSq z = 0 ↔ z = 0 :=
   map_eq_zero _
 
@@ -409,7 +409,7 @@ theorem normSq_neg (z : K) : normSq (-z) = normSq z := by simp only [normSq_eq_d
 theorem normSq_conj (z : K) : normSq (conj z) = normSq z := by
   simp only [normSq_apply, neg_mul, mul_neg, neg_neg, rclike_simps]
 
-@[rclike_simps] -- porting note (#10618): was `simp`
+@[rclike_simps] -- porting note (#11119): was `simp`
 theorem normSq_mul (z w : K) : normSq (z * w) = normSq z * normSq w :=
   map_mul _ z w
 
@@ -466,7 +466,7 @@ theorem div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / n
   simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm, neg_mul, mul_neg, map_neg,
     rclike_simps]
 
-@[rclike_simps] -- porting note (#10618): was `simp`
+@[rclike_simps] -- porting note (#11119): was `simp`
 theorem conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
 
@@ -506,11 +506,11 @@ theorem inv_I : (I : K)⁻¹ = -I := by
 @[simp, rclike_simps]
 theorem div_I (z : K) : z / I = -(z * I) := by rw [div_eq_mul_inv, inv_I, mul_neg]
 
-@[rclike_simps] -- porting note (#10618): was `simp`
+@[rclike_simps] -- porting note (#11119): was `simp`
 theorem normSq_inv (z : K) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 
-@[rclike_simps] -- porting note (#10618): was `simp`
+@[rclike_simps] -- porting note (#11119): was `simp`
 theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 

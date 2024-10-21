@@ -260,6 +260,11 @@ instance : InfSet (GrothendieckTopology C) where
         apply
           J.transitive (hS _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩) _ fun Y f hf => h hf _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩ }
 
+lemma mem_sInf (s : Set (GrothendieckTopology C)) {X : C} (S : Sieve X) :
+    S ∈ sInf s X ↔ ∀ t ∈ s, S ∈ t X := by
+  show S ∈ sInf (sieves '' s) X ↔ _
+  simp
+
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
 theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
   refine @IsGLB.of_image _ _ _ _ sieves ?_ _ _ ?_

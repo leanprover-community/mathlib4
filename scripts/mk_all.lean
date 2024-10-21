@@ -7,6 +7,8 @@ import Cli.Basic
 import Lake.CLI.Main
 import Mathlib.Util.GetAllModules
 
+-- The `style.header` linter flags `import Lake.CLI.Main` as a potential performance issue.
+set_option linter.style.header false
 /-!
 # Script to create a file importing all files from a folder
 

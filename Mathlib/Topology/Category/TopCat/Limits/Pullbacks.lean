@@ -284,10 +284,10 @@ W ⟶ Y
 X ⟶ Z
 ```
 -/
-theorem pullback_map_openEmbedding_of_open_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
-    (f₂ : X ⟶ S) (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : OpenEmbedding i₁)
-    (H₂ : OpenEmbedding i₂) (i₃ : S ⟶ T) [H₃ : Mono i₃] (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁)
-    (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : OpenEmbedding (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) := by
+theorem pullback_map_isOpenEmbedding {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
+    (f₂ : X ⟶ S) (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : IsOpenEmbedding i₁)
+    (H₂ : IsOpenEmbedding i₂) (i₃ : S ⟶ T) [H₃ : Mono i₃] (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁)
+    (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : IsOpenEmbedding (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) := by
   constructor
   · apply
       pullback_map_embedding_of_embeddings f₁ f₂ g₁ g₂ H₁.toEmbedding H₂.toEmbedding i₃ eq₁ eq₂
@@ -297,6 +297,9 @@ theorem pullback_map_openEmbedding_of_open_embeddings {W X Y Z S T : TopCat.{u}}
     · exact H₁.isOpen_range
     · apply ContinuousMap.continuous_toFun
     · exact H₂.isOpen_range
+
+@[deprecated (since := "2024-10-18")]
+alias pullback_map_openEmbedding_of_open_embeddings := pullback_map_isOpenEmbedding
 
 theorem snd_embedding_of_left_embedding {X Y S : TopCat} {f : X ⟶ S} (H : Embedding f) (g : Y ⟶ S) :
     Embedding <| ⇑(pullback.snd f g) := by
@@ -320,29 +323,38 @@ theorem embedding_of_pullback_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y �
   rw [← coe_comp, ← limit.w _ WalkingCospan.Hom.inr]
   rfl
 
-theorem snd_openEmbedding_of_left_openEmbedding {X Y S : TopCat} {f : X ⟶ S} (H : OpenEmbedding f)
-    (g : Y ⟶ S) : OpenEmbedding <| ⇑(pullback.snd f g) := by
-  convert (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).openEmbedding.comp
-      (pullback_map_openEmbedding_of_open_embeddings (i₂ := 𝟙 Y) f g (𝟙 _) g H
-        (homeoOfIso (Iso.refl _)).openEmbedding (𝟙 _) rfl (by simp))
+theorem snd_isOpenEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsOpenEmbedding f)
+    (g : Y ⟶ S) : IsOpenEmbedding <| ⇑(pullback.snd f g) := by
+  convert (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isOpenEmbedding.comp
+      (pullback_map_isOpenEmbedding (i₂ := 𝟙 Y) f g (𝟙 _) g H
+        (homeoOfIso (Iso.refl _)).isOpenEmbedding (𝟙 _) rfl (by simp))
   erw [← coe_comp]
   simp
 
-theorem fst_openEmbedding_of_right_openEmbedding {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
-    (H : OpenEmbedding g) : OpenEmbedding <| ⇑(pullback.fst f g) := by
-  convert (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).openEmbedding.comp
-      (pullback_map_openEmbedding_of_open_embeddings (i₁ := 𝟙 X) f g f (𝟙 _)
-        (homeoOfIso (Iso.refl _)).openEmbedding H (𝟙 _) rfl (by simp))
+@[deprecated (since := "2024-10-18")]
+alias snd_openEmbedding_of_left_openEmbedding := snd_isOpenEmbedding_of_left
+
+theorem fst_isOpenEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
+    (H : IsOpenEmbedding g) : IsOpenEmbedding <| ⇑(pullback.fst f g) := by
+  convert (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isOpenEmbedding.comp
+      (pullback_map_isOpenEmbedding (i₁ := 𝟙 X) f g f (𝟙 _)
+        (homeoOfIso (Iso.refl _)).isOpenEmbedding H (𝟙 _) rfl (by simp))
   erw [← coe_comp]
   simp
+
+@[deprecated (since := "2024-10-18")]
+alias fst_openEmbedding_of_right_openEmbedding := fst_isOpenEmbedding_of_right
 
 /-- If `X ⟶ S`, `Y ⟶ S` are open embeddings, then so is `X ×ₛ Y ⟶ S`. -/
-theorem openEmbedding_of_pullback_open_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
-    (H₁ : OpenEmbedding f) (H₂ : OpenEmbedding g) :
-    OpenEmbedding (limit.π (cospan f g) WalkingCospan.one) := by
-  convert H₂.comp (snd_openEmbedding_of_left_openEmbedding H₁ g)
+theorem isOpenEmbedding_of_pullback_open_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
+    (H₁ : IsOpenEmbedding f) (H₂ : IsOpenEmbedding g) :
+    IsOpenEmbedding (limit.π (cospan f g) WalkingCospan.one) := by
+  convert H₂.comp (snd_isOpenEmbedding_of_left H₁ g)
   rw [← coe_comp, ← limit.w _ WalkingCospan.Hom.inr]
   rfl
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_of_pullback_open_embeddings := isOpenEmbedding_of_pullback_open_embeddings
 
 theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (hg : Embedding g) (H : Set.range f ⊆ Set.range g) :

@@ -100,7 +100,7 @@ instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset �
     apply Finite.of_injective g
     intro f f' h
     ext a
-    rw [Function.funext_iff] at h
+    rw [funext_iff] at h
     simpa [g] using h a
 
 /-- This is the version of **Hall's Marriage Theorem** in terms of indexed
