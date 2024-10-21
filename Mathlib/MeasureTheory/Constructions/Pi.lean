@@ -756,6 +756,34 @@ theorem volume_measurePreserving_piCongrLeft (α : ι → Type*) (f : ι' ≃ ι
     MeasurePreserving (MeasurableEquiv.piCongrLeft α f) volume volume :=
   measurePreserving_piCongrLeft (fun _ ↦ volume) f
 
+theorem measurePreserving_arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α]
+    [MeasurableSpace β] [Fintype γ] (μ : γ → Measure α) (ν : γ → Measure β) [∀ i, SigmaFinite (μ i)]
+    [∀ i, SigmaFinite (ν i)] :
+    MeasurePreserving (MeasurableEquiv.arrowProdEquivProdArrow α β γ)
+      (.pi fun i ↦ (μ i).prod (ν i))
+        ((Measure.pi fun i ↦ μ i).prod (Measure.pi fun i ↦ ν i)) where
+  measurable := (MeasurableEquiv.arrowProdEquivProdArrow α β γ).measurable
+  map_eq := by
+    refine (FiniteSpanningSetsIn.ext ?_ (isPiSystem_pi.prod isPiSystem_pi)
+      ((FiniteSpanningSetsIn.pi fun i ↦ (μ i).toFiniteSpanningSetsIn).prod
+      (FiniteSpanningSetsIn.pi (fun i ↦ (ν i).toFiniteSpanningSetsIn))) ?_).symm
+    · refine (generateFrom_eq_prod generateFrom_pi generateFrom_pi ?_ ?_).symm
+      exact (FiniteSpanningSetsIn.pi (fun i ↦ (μ i).toFiniteSpanningSetsIn)).isCountablySpanning
+      exact (FiniteSpanningSetsIn.pi (fun i ↦ (ν i).toFiniteSpanningSetsIn)).isCountablySpanning
+    · rintro _ ⟨s, ⟨s, _, rfl⟩, ⟨_, ⟨t, _, rfl⟩, rfl⟩⟩
+      rw [MeasurableEquiv.map_apply, MeasurableEquiv.arrowProdEquivProdArrow,
+        MeasurableEquiv.coe_mk]
+      rw [show Equiv.arrowProdEquivProdArrow α β γ ⁻¹' (univ.pi s ×ˢ univ.pi t) =
+          (univ.pi fun i ↦ s i ×ˢ t i) by
+          ext; simp [Equiv.arrowProdEquivProdArrow, Equiv.coe_fn_mk, Set.mem_pi, forall_and]]
+      simp_rw [pi_pi, prod_prod, pi_pi, Finset.prod_mul_distrib]
+
+theorem volume_measurePreserving_arrowProdEquivProdArrow (α β γ : Type*) [MeasureSpace α]
+    [MeasureSpace β] [Fintype γ] [SigmaFinite (volume : Measure α)]
+    [SigmaFinite (volume : Measure β)] :
+    MeasurePreserving (MeasurableEquiv.arrowProdEquivProdArrow α β γ) :=
+  measurePreserving_arrowProdEquivProdArrow α β γ (fun _ ↦ volume) (fun _ ↦ volume)
+
 theorem measurePreserving_sumPiEquivProdPi_symm {π : ι ⊕ ι' → Type*}
     {m : ∀ i, MeasurableSpace (π i)} (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)] :
     MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π).symm
@@ -885,7 +913,7 @@ theorem volume_preserving_piFinsetUnion {ι : Type*} [DecidableEq ι] (α : ι �
   measurePreserving_piFinsetUnion h (fun _ ↦ volume)
 
 theorem measurePreserving_pi {ι : Type*} [Fintype ι] {α : ι → Type v} {β : ι → Type*}
-    [∀ i, MeasureSpace (α i)] [∀ i, MeasurableSpace (β i)]
+    [∀ i, MeasurableSpace (α i)] [∀ i, MeasurableSpace (β i)]
     (μ : (i : ι) → Measure (α i)) (ν : (i : ι) → Measure (β i))
     {f : (i : ι) → (α i) → (β i)} [∀ i, SigmaFinite (ν i)]
     (hf : ∀ i, MeasurePreserving (f i) (μ i) (ν i)) :
@@ -905,6 +933,28 @@ theorem volume_preserving_pi {α' β' : ι → Type*} [∀ i, MeasureSpace (α' 
     {f : (i : ι) → (α' i) → (β' i)} (hf : ∀ i, MeasurePreserving (f i)) :
     MeasurePreserving (fun (a : (i : ι) → α' i) (i : ι) ↦ (f i) (a i)) :=
   measurePreserving_pi _ _ hf
+
+/-- Docstring. -/
+theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype α₁] [Fintype α₂]
+    [MeasurableSpace β₁] [MeasurableSpace β₂] (μ : α₁ → Measure β₁) (ν : α₂ → Measure β₂)
+    [∀ i, SigmaFinite (ν i)] (hα : α₁ ≃ α₂) (hβ : β₁ ≃ᵐ β₂)
+    (hm : ∀ i, MeasurePreserving hβ (μ i) (ν (hα i))) :
+    MeasurePreserving (MeasurableEquiv.arrowCongr' hα hβ) (Measure.pi fun i ↦ μ i)
+      (Measure.pi fun i ↦ ν i) := by
+  classical
+  convert (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) hα).comp
+    (measurePreserving_pi μ (fun i : α₁ ↦ ν (hα i)) hm)
+  simp only [MeasurableEquiv.arrowCongr', Equiv.arrowCongr', Equiv.arrowCongr, EquivLike.coe_coe,
+    MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.piCongrLeft, Equiv.piCongrLeft,
+    Equiv.symm_symm_apply, Equiv.piCongrLeft'_symm, Equiv.symm_symm]
+  rfl
+
+ /-- Docstring. -/
+ theorem volume_preserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype α₁] [Fintype α₂]
+    [MeasureSpace β₁] [MeasureSpace β₂] [SigmaFinite (volume : Measure β₂)]
+    (hα : α₁ ≃ α₂) (hβ : β₁ ≃ᵐ β₂) (hm : MeasurePreserving hβ) :
+    MeasurePreserving (MeasurableEquiv.arrowCongr' hα hβ) :=
+  measurePreserving_arrowCongr' (fun _ ↦ volume) (fun _ ↦ volume) hα hβ (fun _ ↦ hm)
 
 end MeasurePreserving
 
