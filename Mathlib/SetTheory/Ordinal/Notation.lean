@@ -90,8 +90,8 @@ def repr' (prec : ℕ) : ONote → Format
       ("oadd " ++ (repr' max_prec e) ++ " " ++ Nat.repr (n : ℕ) ++ " " ++ (repr' max_prec a))
       prec
 
-instance : Repr ONote :=
-  ⟨fun o prec ↦ repr' prec o⟩
+instance : Repr ONote where
+  reprPrec o prec := repr' prec o
 
 instance : Preorder ONote where
   le x y := repr x ≤ repr y
