@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Topology.UniformSpace.OfFun
 
 /-!
@@ -42,23 +41,5 @@ def uniformSpace : UniformSpace R :=
 theorem hasBasis_uniformity :
     𝓤[abv.uniformSpace].HasBasis ((0 : 𝕜) < ·) fun ε => { p : R × R | abv (p.2 - p.1) < ε } :=
   UniformSpace.hasBasis_ofFun (exists_gt _) _ _ _ _ _
-
-/-- A real absolute value on a ring determines a `NormedRing` structure. -/
-def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing R where
-  norm := v
-  dist_eq _ _ := rfl
-  dist_self x := by simp only [sub_self, MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom, map_zero]
-  dist_comm := v.map_sub
-  dist_triangle := v.sub_le
-  edist_dist x y := rfl
-  norm_mul x y := (v.map_mul x y).le
-  eq_of_dist_eq_zero := by simp only [MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom,
-    AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
-
-/-- A real absolute value on a field determines a `NormedField` structure. -/
-def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
-  toField := inferInstanceAs (Field K)
-  __ := v.toNormedRing
-  norm_mul' := v.map_mul
 
 end AbsoluteValue
