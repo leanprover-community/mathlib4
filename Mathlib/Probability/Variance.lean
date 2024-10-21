@@ -32,7 +32,7 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
   independent random variables is the sum of the variances.
 * `ProbabilityTheory.variance_le_sub_mul_sub`: The variance of a random variable `X`
   satisfying `a ≤ X ≤ b` almost everywhere is at most `(b - 𝔼 X) * (𝔼 X - a)`.
-* `ProbabilityTheory.variance_le_sq_of_bounded`The variance of a random variable `X` satisfying
+* `ProbabilityTheory.variance_le_sq_of_bounded`: The variance of a random variable `X` satisfying
   `a ≤ X ≤ b` almost everywhere is at most`((b - a) / 2) ^ 2`.
 -/
 
