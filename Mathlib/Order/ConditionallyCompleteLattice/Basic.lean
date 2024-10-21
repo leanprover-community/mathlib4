@@ -1691,4 +1691,4 @@ lemma iInf_coe_lt_top : ⨅ i, (f i : WithTop α) < ⊤ ↔ Nonempty ι := by
 end WithTop
 end WithTopBot
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 1800
