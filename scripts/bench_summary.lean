@@ -10,7 +10,7 @@ import Lean.Elab.Command
 # Summary of `!bench` results
 
 This file contains a script that converts data retrieved from the speed-center into a
-shorter, more accessible format.
+shorter, more accessible format, and post a comment with this summary on github.
 -/
 
 namespace BenchAction
@@ -30,7 +30,8 @@ structure Bench :=
   deriving FromJson, ToJson, Inhabited
 
 /-- `intDecs z exp prec` is a "generic" formatting of an integer `z`.
-It writes the number as `x.y * 10 ^ exp`, where `y` has `prec` digits and returns
+It writes `z` in the form `x.y * 10 ^ exp` (for non-negative integers `x`, `y` and `z`),
+such that `y` has `prec` digits and returns
 * the sign of `z` as a string (in fact, just either `+` or `-`);
 * the integer `x`;
 * the natural number `y` (that has `prec` digits).
@@ -42,14 +43,14 @@ def intDecs (z : Int) (exp : Nat := 9) (prec : Nat := 3) : String × Int × Nat 
   let idec := z / p10
   (if sgn < 0 then "-" else "+", idec / (10 ^ prec), (idec % 10 ^ prec).toNat)
 
-/-- `formatDiff z` uses `intDecs` to format the integer `z` as `±x.y⬝10⁹`. -/
+/-- `formatDiff z` uses `intDecs` to format an integer `z` as `±x.y⬝10⁹`. -/
 def formatDiff (z : Int) : String :=
   let (sgn, intDigs, decDigs) := intDecs z
   s!"{sgn}{intDigs}.{decDigs}⬝10⁹"
 
 /-- Convert a `Float` into a formatted string of the form `±z.w%`. -/
 def formatPercent (reldiff : Float) : String :=
-  -- shift by `2` twice: the first one, to get a `%`; the second, for 2 decimal digits of precision
+  -- shift by `2` twice: once to get a percentage, again for two decimal digits of precision
   let reldiff := reldiff * 10 ^ 4
   let sgn : Int := if reldiff < 0 then -1 else 1
   let reldiff := (.ofInt sgn) * reldiff
@@ -72,12 +73,11 @@ run_cmd
 `formatFile file` converts a `String` into a formatted string of the form `` `file` ``,
 removing leading non-letters. It is expected that `~` is the only leading non-letter.
 -/
-def formatFile (file : String) : String :=
-  "`" ++ file.dropWhile (!·.isAlpha) ++ "`"
+def formatFile (file : String) : String := s!"`{file.dropWhile (!·.isAlpha)}`"
 
 /--
 `summary bc` converts a `Bench` into a formatted string of the form
-`| file | ±x.y⬝10⁹ | ±z.w% |` (technically, without the spaces).
+``| `file` | ±x.y⬝10⁹ | ±z.w% |`` (technically, without the spaces).
 -/
 def summary (bc : Bench) : String :=
   let reldiff := bc.reldiff
@@ -87,18 +87,18 @@ def summary (bc : Bench) : String :=
 
 /--
 `toTable bcs` formats an array of `Bench`es into a markdown table whose columns are
-`File`, `Instructions` and `%`.
-A typical entry may look like ``|`Mathlib.Analysis.Seminorm`|+2.509⬝10⁹|(+1.41%)|``
+the file name, the absolute change in instruction counts and the relative change as a percentage.
+A typical entry may look like ``|`Mathlib.Analysis.Seminorm`|+2.509⬝10⁹|(+1.41%)|``.
 -/
 def toTable (bcs : Array Bench) : String :=
   let header := "|File|Instructions|%|\n|-|-:|:-:|"
   "\n".intercalate (header :: (bcs.map summary).toList)
 
 /--
-`toCollapsibleTable bcs roundDiff` is similar to `toTable bcs`, except that it encloses it
-in a `<details><summary>` html-block.
-The `<summary>` part tallies the number of entries in `bcs` and the significant change in
-number of instructions `roundDiff`.
+`toCollapsibleTable bcs roundDiff` is similar to `toTable bcs`, except that it returns
+output enclosed in a `<details><summary>` html-block.
+The `<summary>` part tallies the number of entries in `bcs` whose instructions increased
+resp. decreased by at least the amount `roundDiff`.
 -/
 def toCollapsibleTable (bcs : Array Bench) (roundDiff : Int) : String :=
   s!"<details><summary>{bcs.size} files, Instructions {formatDiff <| roundDiff * 10 ^ 9}\
