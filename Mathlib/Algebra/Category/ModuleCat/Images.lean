@@ -103,6 +103,6 @@ theorem imageIsoRange_inv_image_ι {G H : ModuleCat.{v} R} (f : G ⟶ H) :
 @[simp, reassoc, elementwise]
 theorem imageIsoRange_hom_subtype {G H : ModuleCat.{v} R} (f : G ⟶ H) :
     (imageIsoRange f).hom ≫ ModuleCat.asHom f.range.subtype = Limits.image.ι f := by
-  erw [← imageIsoRange_inv_image_ι f, Iso.hom_inv_id_assoc]
+  rw [← imageIsoRange_inv_image_ι f, Iso.hom_inv_id_assoc]
 
 end ModuleCat

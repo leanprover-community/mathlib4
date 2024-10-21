@@ -82,10 +82,13 @@ namespace PontryaginDual
 open ContinuousMonoidHom
 
 instance : FunLike (PontryaginDual A) A Circle :=
-  ContinuousMonoidHom.funLike
+  ContinuousMonoidHom.instFunLike
 
-noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A Circle :=
-  ContinuousMonoidHom.ContinuousMonoidHomClass
+noncomputable instance instContinuousMapClass : ContinuousMapClass (PontryaginDual A) A Circle :=
+  ContinuousMonoidHom.instContinuousMapClass
+
+noncomputable instance instMonoidHomClass : MonoidHomClass (PontryaginDual A) A Circle :=
+  ContinuousMonoidHom.instMonoidHomClass
 
 /-- `PontryaginDual` is a contravariant functor. -/
 noncomputable def map (f : ContinuousMonoidHom A B) :

@@ -285,7 +285,7 @@ existing `UniformSpace` instance on `E`)."]
 abbrev GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : SeminormedGroup E where
   dist x y := f (x / y)
   norm := f
-  dist_eq x y := rfl
+  dist_eq _ _ := rfl
   dist_self x := by simp only [div_self', map_one_eq_zero]
   dist_triangle := le_map_div_add_map_div f
   dist_comm := map_div_rev f
@@ -338,7 +338,7 @@ abbrev GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommG
 section SeminormedGroup
 
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
-  {a a₁ a₂ b b₁ b₂ : E} {r r₁ r₂ : ℝ}
+  {a a₁ a₂ b b₁ b₂ c : E} {r r₁ r₂ : ℝ}
 
 @[to_additive]
 theorem dist_eq_norm_div (a b : E) : dist a b = ‖a / b‖ :=
@@ -387,13 +387,14 @@ theorem dist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
 theorem norm_mul_le' (a b : E) : ‖a * b‖ ≤ ‖a‖ + ‖b‖ := by
   simpa [dist_eq_norm_div] using dist_triangle a 1 b⁻¹
 
-@[to_additive]
-theorem norm_mul_le_of_le (h₁ : ‖a₁‖ ≤ r₁) (h₂ : ‖a₂‖ ≤ r₂) : ‖a₁ * a₂‖ ≤ r₁ + r₂ :=
+/-- **Triangle inequality** for the norm. -/
+@[to_additive norm_add_le_of_le "**Triangle inequality** for the norm."]
+theorem norm_mul_le_of_le' (h₁ : ‖a₁‖ ≤ r₁) (h₂ : ‖a₂‖ ≤ r₂) : ‖a₁ * a₂‖ ≤ r₁ + r₂ :=
   (norm_mul_le' a₁ a₂).trans <| add_le_add h₁ h₂
 
-@[to_additive norm_add₃_le]
-theorem norm_mul₃_le (a b c : E) : ‖a * b * c‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ :=
-  norm_mul_le_of_le (norm_mul_le' _ _) le_rfl
+/-- **Triangle inequality** for the norm. -/
+@[to_additive norm_add₃_le "**Triangle inequality** for the norm."]
+lemma norm_mul₃_le' : ‖a * b * c‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ := norm_mul_le_of_le' (norm_mul_le' _ _) le_rfl
 
 @[to_additive]
 lemma norm_div_le_norm_div_add_norm_div (a b c : E) : ‖a / c‖ ≤ ‖a / b‖ + ‖b / c‖ := by
@@ -635,6 +636,13 @@ theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
 
 alias nndist_eq_nnnorm := nndist_eq_nnnorm_sub
 
+@[to_additive (attr := simp)]
+theorem nndist_one_right (a : E) : nndist a 1 = ‖a‖₊ := by simp [nndist_eq_nnnorm_div]
+
+@[to_additive (attr := simp)]
+theorem edist_one_right (a : E) : edist a 1 = ‖a‖₊ := by
+  rw [edist_nndist, nndist_one_right]
+
 @[to_additive (attr := simp) nnnorm_zero]
 theorem nnnorm_one' : ‖(1 : E)‖₊ = 0 :=
   NNReal.eq norm_one'
@@ -652,6 +660,13 @@ theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
 @[to_additive (attr := simp) nnnorm_neg]
 theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
+
+@[to_additive (attr := simp)]
+theorem nndist_one_left (a : E) : nndist 1 a = ‖a‖₊ := by simp [nndist_eq_nnnorm_div]
+
+@[to_additive (attr := simp)]
+theorem edist_one_left (a : E) : edist 1 a = ‖a‖₊ := by
+  rw [edist_nndist, nndist_one_left]
 
 open scoped symmDiff in
 @[to_additive]
@@ -1035,7 +1050,7 @@ theorem norm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖ ≤ n * ‖a‖ := 
   induction n with
   | zero => simp
   | succ n ih =>
-    simpa only [pow_succ, Nat.cast_succ, add_mul, one_mul] using norm_mul_le_of_le ih le_rfl
+    simpa only [pow_succ, Nat.cast_succ, add_mul, one_mul] using norm_mul_le_of_le' ih le_rfl
 
 @[to_additive nnnorm_nsmul_le]
 theorem nnnorm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by

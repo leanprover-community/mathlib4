@@ -261,11 +261,14 @@ theorem continuous_totalSpaceMk (x : B) : Continuous (@TotalSpace.mk B F E x) :=
 theorem totalSpaceMk_embedding (x : B) : Embedding (@TotalSpace.mk B F E x) :=
   ⟨totalSpaceMk_inducing F E x, TotalSpace.mk_injective x⟩
 
-theorem totalSpaceMk_closedEmbedding [T1Space B] (x : B) :
-    ClosedEmbedding (@TotalSpace.mk B F E x) :=
+theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
+    IsClosedEmbedding (@TotalSpace.mk B F E x) :=
   ⟨totalSpaceMk_embedding F E x, by
     rw [TotalSpace.range_mk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
+
+@[deprecated (since := "2024-10-20")]
+alias totalSpaceMk_closedEmbedding := totalSpaceMk_isClosedEmbedding
 
 variable {E F}
 

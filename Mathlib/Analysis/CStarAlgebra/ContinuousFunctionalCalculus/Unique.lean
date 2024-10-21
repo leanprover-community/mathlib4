@@ -33,7 +33,7 @@ variable {𝕜 A : Type*} [RCLike 𝕜]
 theorem RCLike.uniqueContinuousFunctionalCalculus_of_compactSpace_spectrum [TopologicalSpace A]
     [T2Space A] [Ring A] [StarRing A] [Algebra 𝕜 A] [h : ∀ a : A, CompactSpace (spectrum 𝕜 a)] :
     UniqueContinuousFunctionalCalculus 𝕜 A where
-  eq_of_continuous_of_map_id s hs φ ψ hφ hψ h :=
+  eq_of_continuous_of_map_id s _ φ ψ hφ hψ h :=
     ContinuousMap.starAlgHom_ext_map_X hφ hψ <| by
       convert h using 1
       all_goals exact congr_arg _ (by ext; simp)
@@ -169,7 +169,7 @@ instance NNReal.instUniqueContinuousFunctionalCalculus [UniqueContinuousFunction
     have : CompactSpace (spectrum ℝ a) := UniqueContinuousFunctionalCalculus.compactSpace_spectrum a
     rw [← isCompact_iff_compactSpace] at *
     rw [← spectrum.preimage_algebraMap ℝ]
-    exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+    exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
   eq_of_continuous_of_map_id s hs φ ψ hφ hψ h := by
     let s' : Set ℝ := (↑) '' s
     let e : s ≃ₜ s' :=
@@ -376,7 +376,7 @@ instance NNReal.instUniqueNonUnitalContinuousFunctionalCalculus
       UniqueNonUnitalContinuousFunctionalCalculus.compactSpace_quasispectrum a
     rw [← isCompact_iff_compactSpace] at *
     rw [← quasispectrum.preimage_algebraMap ℝ]
-    exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+    exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
   eq_of_continuous_of_map_id s hs _inst h0 φ ψ hφ hψ h := by
     let s' : Set ℝ := (↑) '' s
     let e : s ≃ₜ s' :=

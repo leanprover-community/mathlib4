@@ -7,6 +7,7 @@ import Mathlib.Algebra.Module.Torsion
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
 # Conditions for rank to be finite
@@ -425,6 +426,14 @@ theorem Module.finrank_zero_iff [NoZeroSMulDivisors R M] :
     finrank R M = 0 ↔ Subsingleton M := by
   rw [← rank_zero_iff (R := R), ← finrank_eq_rank]
   norm_cast
+
+/-- Similar to `rank_quotient_add_rank_le` but for `finrank` and a finite `M`. -/
+lemma Module.finrank_quotient_add_finrank_le (N : Submodule R M) :
+    finrank R (M ⧸ N) + finrank R N ≤ finrank R M := by
+  haveI := nontrivial_of_invariantBasisNumber R
+  have := rank_quotient_add_rank_le N
+  rw [← finrank_eq_rank R M, ← finrank_eq_rank R, ← N.finrank_eq_rank] at this
+  exact mod_cast this
 
 end StrongRankCondition
 

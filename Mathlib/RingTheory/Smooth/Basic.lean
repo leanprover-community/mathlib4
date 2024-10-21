@@ -60,7 +60,7 @@ section
 
 variable {R : Type u} [CommSemiring R]
 variable {A : Type u} [Semiring A] [Algebra R A]
-variable {B : Type u} [CommRing B] [Algebra R B] (I : Ideal B)
+variable {B : Type u} [CommRing B] [Algebra R B]
 
 theorem exists_lift {B : Type u} [CommRing B] [_RB : Algebra R B]
     [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I) (g : A →ₐ[R] B ⧸ I) :
@@ -187,9 +187,9 @@ end Comp
 
 section OfSurjective
 
-variable {R S : Type u} [CommRing R] [CommSemiring S]
+variable {R : Type u} [CommRing R]
 variable {P A : Type u} [CommRing A] [Algebra R A] [CommRing P] [Algebra R P]
-variable (I : Ideal P) (f : P →ₐ[R] A)
+variable (f : P →ₐ[R] A)
 
 theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRingHom) ^ 2)
     (hg : f.kerSquareLift.comp g = AlgHom.id R A) : FormallySmooth R A := by
