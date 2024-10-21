@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.GroupTheory.MonoidLocalization.Away
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.SetTheory.Game.Birthday
@@ -175,7 +174,7 @@ theorem nsmul_pow_two_powHalf' (n k : ℕ) : 2 ^ n * powHalf (n + k) = powHalf k
       Surreal.powHalf_zero]
   · rw [← double_powHalf_succ_eq_powHalf (n + k), ← double_powHalf_succ_eq_powHalf k,
       ← mul_assoc, mul_comm (2 ^ n) 2, mul_assoc] at hk
-    rw [← zsmul_eq_zsmul_iff' two_ne_zero]
+    rw [← zsmul_right_inj two_ne_zero]
     simpa only [zsmul_eq_mul, Int.cast_ofNat]
 
 theorem zsmul_pow_two_powHalf (m : ℤ) (n k : ℕ) :
