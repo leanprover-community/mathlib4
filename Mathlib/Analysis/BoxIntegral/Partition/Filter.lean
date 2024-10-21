@@ -334,7 +334,7 @@ theorem MemBaseSet.mono' (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
     fun hD => (hπ.4 (le_iff_imp.1 h.2.2 hD)).imp fun _ hπ => ⟨hπ.1, hπ.2.trans hc⟩⟩
 
 variable (I) in
-@[mono]
+@[gcongr, mono]
 theorem MemBaseSet.mono (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
     (hr : ∀ x ∈ Box.Icc I, r₁ x ≤ r₂ x) (hπ : l₁.MemBaseSet I c₁ r₁ π) : l₂.MemBaseSet I c₂ r₂ π :=
   hπ.mono' I h hc fun J _ => hr _ <| π.tag_mem_Icc J
@@ -399,7 +399,7 @@ theorem biUnionTagged_memBaseSet {π : Prepartition I} {πi : ∀ J, TaggedPrepa
     rw [π.iUnion_compl, ← π.iUnion_biUnion_partition hp]
     rfl
 
-@[mono]
+@[gcongr, mono]
 theorem RCond.mono {ι : Type*} {r : (ι → ℝ) → Ioi (0 : ℝ)} (h : l₁ ≤ l₂) (hr : l₂.RCond r) :
     l₁.RCond r :=
   fun hR => hr (le_iff_imp.1 h.1 hR)
@@ -408,19 +408,19 @@ nonrec theorem RCond.min {ι : Type*} {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ
     (h₂ : l.RCond r₂) : l.RCond fun x => min (r₁ x) (r₂ x) :=
   fun hR x => congr_arg₂ min (h₁ hR x) (h₂ hR x)
 
-@[mono]
+@[gcongr, mono]
 theorem toFilterDistortion_mono (I : Box ι) (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂) :
     l₁.toFilterDistortion I c₁ ≤ l₂.toFilterDistortion I c₂ :=
   iInf_mono fun _ =>
     iInf_mono' fun hr =>
       ⟨hr.mono h, principal_mono.2 fun _ => MemBaseSet.mono I h hc fun _ _ => le_rfl⟩
 
-@[mono]
+@[gcongr, mono]
 theorem toFilter_mono (I : Box ι) {l₁ l₂ : IntegrationParams} (h : l₁ ≤ l₂) :
     l₁.toFilter I ≤ l₂.toFilter I :=
   iSup_mono fun _ => toFilterDistortion_mono I h le_rfl
 
-@[mono]
+@[gcongr, mono]
 theorem toFilteriUnion_mono (I : Box ι) {l₁ l₂ : IntegrationParams} (h : l₁ ≤ l₂)
     (π₀ : Prepartition I) : l₁.toFilteriUnion I π₀ ≤ l₂.toFilteriUnion I π₀ :=
   iSup_mono fun _ => inf_le_inf_right _ <| toFilterDistortion_mono _ h le_rfl

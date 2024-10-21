@@ -721,7 +721,7 @@ theorem Memℒp.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMea
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Memℒp f p μ :=
   (memℒp_const C).of_le hf (hfC.mono fun _x hx => le_trans hx (le_abs_self _))
 
-@[mono]
+@[gcongr, mono]
 theorem eLpNorm'_mono_measure (f : α → F) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
     eLpNorm' f q ν ≤ eLpNorm' f q μ := by
   simp_rw [eLpNorm']
@@ -731,7 +731,7 @@ theorem eLpNorm'_mono_measure (f : α → F) (hμν : ν ≤ μ) (hq : 0 ≤ q) 
 @[deprecated (since := "2024-07-27")]
 alias snorm'_mono_measure := eLpNorm'_mono_measure
 
-@[mono]
+@[gcongr, mono]
 theorem eLpNormEssSup_mono_measure (f : α → F) (hμν : ν ≪ μ) :
     eLpNormEssSup f ν ≤ eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup]
@@ -740,7 +740,7 @@ theorem eLpNormEssSup_mono_measure (f : α → F) (hμν : ν ≪ μ) :
 @[deprecated (since := "2024-07-27")]
 alias snormEssSup_mono_measure := eLpNormEssSup_mono_measure
 
-@[mono]
+@[gcongr, mono]
 theorem eLpNorm_mono_measure (f : α → F) (hμν : ν ≤ μ) : eLpNorm f p ν ≤ eLpNorm f p μ := by
   by_cases hp0 : p = 0
   · simp [hp0]
