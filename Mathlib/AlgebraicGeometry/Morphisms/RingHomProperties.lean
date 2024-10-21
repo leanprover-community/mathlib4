@@ -444,18 +444,18 @@ private lemma respects_isOpenImmersion_aux {X Y : Scheme.{u}} [IsAffine Y] {U : 
   · obtain ⟨(Us : Set Y.Opens), hUs, heq⟩ := Opens.isBasis_iff_cover.mp (isBasis_basicOpen Y) U
     let V (s : Us) : X.Opens := f ⁻¹ᵁ U.ι ⁻¹ᵁ s
     rw [IsLocalAtSource.iff_of_iSup_eq_top (P := P) V]
-    intro s
-    let f' : (V s).toScheme ⟶ U.ι ⁻¹ᵁ s := f ∣_ U.ι ⁻¹ᵁ s
-    have hf' : P f' := IsLocalAtTarget.restrict hf _
-    let e : (U.ι ⁻¹ᵁ s).toScheme ≅ s := IsOpenImmersion.isoOfRangeEq ((U.ι ⁻¹ᵁ s).ι ≫ U.ι) s.1.ι
-      (by simpa [Set.range_comp, Set.image_preimage_eq_iff, heq] using le_sSup s.2)
-    have heq : (V s).ι ≫ f ≫ U.ι = f' ≫ e.hom ≫ s.1.ι := by
-      simp only [IsOpenImmersion.isoOfRangeEq_hom_fac, f', e, morphismRestrict_ι_assoc]
-    rw [heq, ← Category.assoc]
-    refine this _ ?_ ?_
-    · rwa [P.cancel_right_of_respectsIso]
-    · obtain ⟨a, ha⟩ := hUs s.2
-      use a, ha.symm
+    · intro s
+      let f' : (V s).toScheme ⟶ U.ι ⁻¹ᵁ s := f ∣_ U.ι ⁻¹ᵁ s
+      have hf' : P f' := IsLocalAtTarget.restrict hf _
+      let e : (U.ι ⁻¹ᵁ s).toScheme ≅ s := IsOpenImmersion.isoOfRangeEq ((U.ι ⁻¹ᵁ s).ι ≫ U.ι) s.1.ι
+        (by simpa [Set.range_comp, Set.image_preimage_eq_iff, heq] using le_sSup s.2)
+      have heq : (V s).ι ≫ f ≫ U.ι = f' ≫ e.hom ≫ s.1.ι := by
+        simp only [IsOpenImmersion.isoOfRangeEq_hom_fac, f', e, morphismRestrict_ι_assoc]
+      rw [heq, ← Category.assoc]
+      refine this _ ?_ ?_
+      · rwa [P.cancel_right_of_respectsIso]
+      · obtain ⟨a, ha⟩ := hUs s.2
+        use a, ha.symm
     · apply f.preimage_iSup_eq_top
       apply U.ι.image_injective
       simp only [U.ι.image_iSup, U.ι.image_preimage_eq_opensRange_inter, Scheme.Opens.opensRange_ι]

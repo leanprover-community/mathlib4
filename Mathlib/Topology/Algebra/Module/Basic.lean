@@ -12,6 +12,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.Algebra.Module.Opposites
 
 /-!
 # Theory of topological modules and continuous linear maps.
@@ -449,11 +450,6 @@ theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M₁] [Module S M�
     [Module S M₂] [LinearMap.CompatibleSMul M₁ M₂ R S] (f : M₁ →L[S] M₂) (c : R) (x : M₁) :
     f (c • x) = c • f x :=
   LinearMap.CompatibleSMul.map_smul (f : M₁ →ₗ[S] M₂) c x
-
-@[deprecated _root_.map_sum (since := "2023-09-16")]
-protected theorem map_sum {ι : Type*} (f : M₁ →SL[σ₁₂] M₂) (s : Finset ι) (g : ι → M₁) :
-    f (∑ i ∈ s, g i) = ∑ i ∈ s, f (g i) :=
-  map_sum ..
 
 @[simp, norm_cast]
 theorem coe_coe (f : M₁ →SL[σ₁₂] M₂) : ⇑(f : M₁ →ₛₗ[σ₁₂] M₂) = f :=
@@ -2383,5 +2379,17 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
+
+namespace MulOpposite
+
+variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
+  {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M] [ContinuousSMul R M]
+
+/-- The function `op` is a continuous linear equivalence. -/
+@[simps!]
+def opContinuousLinearEquiv : M ≃L[R] Mᵐᵒᵖ where
+  __ := MulOpposite.opLinearEquiv R
+
+end MulOpposite
 
 set_option linter.style.longFile 2500
