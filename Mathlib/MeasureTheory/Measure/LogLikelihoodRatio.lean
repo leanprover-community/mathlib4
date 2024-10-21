@@ -120,13 +120,11 @@ section llr_tilted
 lemma llr_tilted_left [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν)
     (hf : Integrable (fun x ↦ exp (f x)) μ) (hfν : AEMeasurable f ν) :
     (llr (μ.tilted f) ν) =ᵐ[μ] fun x ↦ f x - log (∫ z, exp (f z) ∂μ) + llr μ ν x := by
-  have hfμ : AEMeasurable f μ :=
-    aemeasurable_of_aemeasurable_exp (AEStronglyMeasurable.aemeasurable hf.1)
   cases eq_zero_or_neZero μ with
   | inl hμ =>
     simp only [hμ, ae_zero, Filter.EventuallyEq]; exact Filter.eventually_bot
   | inr h0 =>
-    filter_upwards [hμν.ae_le (toReal_rnDeriv_tilted_left hfμ hfν), Measure.rnDeriv_pos hμν,
+    filter_upwards [hμν.ae_le (toReal_rnDeriv_tilted_left μ hfν), Measure.rnDeriv_pos hμν,
       hμν.ae_le (Measure.rnDeriv_lt_top μ ν)] with x hx hx_pos hx_lt_top
     rw [llr, hx, log_mul, div_eq_mul_inv, log_mul (exp_pos _).ne', log_exp, log_inv, llr,
       ← sub_eq_add_neg]

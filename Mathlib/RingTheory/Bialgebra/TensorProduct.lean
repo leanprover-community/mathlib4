@@ -14,11 +14,19 @@ We define the data in the monoidal structure on the category of bialgebras - e.g
 instance on a tensor product of bialgebras, and the tensor product of two `BialgHom`s as a
 `BialgHom`. This is done by combining the corresponding API for coalgebras and algebras.
 
+## Implementation notes
+
+Since the coalgebra instance on a tensor product of coalgebras is defined using a universe
+monomorphic monoidal category structure on `ModuleCat R`, we require our bialgebras to be in the
+same universe as the base ring `R` here too. Any contribution that achieves universe polymorphism
+would be welcome. For instance, the tensor product of bialgebras in the
+[FLT repo](https://github.com/eric-wieser/FLT/blob/8764e28f03cd0d03f673e1288f47fc7a665207de/FLT/for_mathlib/Coalgebra/TensorProduct.lean)
+is already universe polymorphic since it does not go via category theory.
+
 -/
 
 universe v u
 
-section
 open scoped TensorProduct
 
 namespace Bialgebra.TensorProduct
@@ -125,7 +133,7 @@ protected noncomputable def rid : A ⊗[R] R ≃ₐc[R] A where
   map_mul' x y := by
     simp only [CoalgEquiv.toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, AddHom.toFun_eq_coe,
       LinearMap.coe_toAddHom, CoalgHom.coe_toLinearMap, CoalgHom.coe_coe,
-      coalgebraRid_eq_algebraRid_apply, AlgEquiv.map_mul]
+      coalgebraRid_eq_algebraRid_apply, map_mul]
 
 variable {R A}
 

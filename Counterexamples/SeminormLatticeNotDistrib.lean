@@ -5,8 +5,6 @@ Authors: Pierre-Alexandre Bazin
 -/
 import Mathlib.Analysis.Seminorm
 
-#align_import seminorm_lattice_not_distrib from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
-
 /-!
 # The lattice of seminorms is not distributive
 
@@ -32,23 +30,19 @@ namespace SeminormNotDistrib
 @[simps!]
 noncomputable def p : Seminorm ℝ (ℝ × ℝ) :=
   (normSeminorm ℝ ℝ).comp (LinearMap.fst _ _ _) ⊔ (normSeminorm ℝ ℝ).comp (LinearMap.snd _ _ _)
-#align counterexample.seminorm_not_distrib.p Counterexample.SeminormNotDistrib.p
 
 @[simps!]
 noncomputable def q1 : Seminorm ℝ (ℝ × ℝ) :=
   (4 : ℝ≥0) • (normSeminorm ℝ ℝ).comp (LinearMap.fst _ _ _)
-#align counterexample.seminorm_not_distrib.q1 Counterexample.SeminormNotDistrib.q1
 
 @[simps!]
 noncomputable def q2 : Seminorm ℝ (ℝ × ℝ) :=
   (4 : ℝ≥0) • (normSeminorm ℝ ℝ).comp (LinearMap.snd _ _ _)
-#align counterexample.seminorm_not_distrib.q2 Counterexample.SeminormNotDistrib.q2
 
 theorem eq_one : (p ⊔ q1 ⊓ q2) (1, 1) = 1 := by
   suffices ⨅ x : ℝ × ℝ, q1 x + q2 (1 - x) ≤ 1 by simpa
   apply ciInf_le_of_le bddBelow_range_add ((0, 1) : ℝ × ℝ); dsimp [q1, q2]
   simp only [abs_zero, smul_zero, sub_self, add_zero, zero_le_one]
-#align counterexample.seminorm_not_distrib.eq_one Counterexample.SeminormNotDistrib.eq_one
 
 /-- This is a counterexample to the distributivity of the lattice `Seminorm ℝ (ℝ × ℝ)`. -/
 theorem not_distrib : ¬(p ⊔ q1) ⊓ (p ⊔ q2) ≤ p ⊔ q1 ⊓ q2 := by
@@ -79,7 +73,6 @@ theorem not_distrib : ¬(p ⊔ q1) ⊓ (p ⊔ q2) ≤ p ⊔ q1 ⊓ q2 := by
       _ = q1 x := rfl
       _ ≤ (p ⊔ q1) x := le_sup_right
       _ ≤ (p ⊔ q1) x + (p ⊔ q2) ((1, 1) - x) := le_add_of_nonneg_right (apply_nonneg _ _)
-#align counterexample.seminorm_not_distrib.not_distrib Counterexample.SeminormNotDistrib.not_distrib
 
 end SeminormNotDistrib
 

@@ -47,7 +47,7 @@ theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
       rw [← Multiset.coe_toList m]
       apply congr_arg
       rw [List.map_map]; rw [← hp_length]
-      apply List.map_congr
+      apply List.map_congr_left
       intro x hx; simp only [Function.comp_apply]
       rw [List.support_formPerm_of_nodup x (hp_nodup x hx)]
       ·-- length

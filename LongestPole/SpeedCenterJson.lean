@@ -47,7 +47,7 @@ structure RunResponse where
   run : Run
 deriving ToJson, FromJson
 
-/-- The error response-/
+/-- The error response -/
 structure ErrorMessage where
   repo_id : String
   message : String

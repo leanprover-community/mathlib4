@@ -3,7 +3,7 @@ Copyright (c) 2023 Shogo Saito. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
-import Mathlib.Algebra.BigOperators.List.Lemmas
+import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.GCD.BigOperators
 
@@ -25,7 +25,6 @@ Chinese Remainder Theorem, Gödel, beta function
 namespace Nat
 
 variable {ι : Type*}
-open BigOperators
 
 lemma modEq_list_prod_iff {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
     a ≡ b [MOD l.prod] ↔ ∀ i, a ≡ b [MOD l.get i] := by
@@ -36,7 +35,7 @@ lemma modEq_list_prod_iff {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
       List.length_cons]
     constructor
     · rintro ⟨h0, hs⟩ i
-      cases i using Fin.cases <;> simp [h0, hs]
+      cases i using Fin.cases <;> simp_all
     · intro h; exact ⟨h 0, fun i => h i.succ⟩
 
 lemma modEq_list_prod_iff' {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairwise (Coprime on s)) :
@@ -147,11 +146,11 @@ theorem chineseRemainderOfMultiset_lt_prod {m : Multiset ι}
     (nod : m.Nodup) (hs : ∀ i ∈ m, s i ≠ 0) (pp : Set.Pairwise {x | x ∈ m} (Coprime on s)) :
     chineseRemainderOfMultiset a s nod hs pp < (m.map s).prod := by
   induction' m using Quot.ind with l
-  unfold chineseRemainderOfMultiset; simp
-  exact chineseRemainderOfList_lt_prod a s l
+  unfold chineseRemainderOfMultiset
+  simpa using chineseRemainderOfList_lt_prod a s l
     (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using hs)
 
-/-- The natural number less than `∏ i in t, s i` congruent to
+/-- The natural number less than `∏ i ∈ t, s i` congruent to
 `a i` mod `s i` for all  `i ∈ t`. -/
 def chineseRemainderOfFinset (t : Finset ι)
     (hs : ∀ i ∈ t, s i ≠ 0) (pp : Set.Pairwise t (Coprime on s)) :
@@ -160,7 +159,7 @@ def chineseRemainderOfFinset (t : Finset ι)
 
 theorem chineseRemainderOfFinset_lt_prod {t : Finset ι}
     (hs : ∀ i ∈ t, s i ≠ 0) (pp : Set.Pairwise t (Coprime on s)) :
-    chineseRemainderOfFinset a s t hs pp < ∏ i in t, s i := by
+    chineseRemainderOfFinset a s t hs pp < ∏ i ∈ t, s i := by
   simpa [chineseRemainderOfFinset] using
     chineseRemainderOfMultiset_lt_prod a s t.nodup (by simpa using hs) (by simpa using pp)
 

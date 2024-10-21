@@ -5,8 +5,6 @@ Authors: Scott Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
-#align_import category_theory.limits.preserves.limits from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
-
 /-!
 # Isomorphisms about functors which preserve (co)limits
 
@@ -42,7 +40,6 @@ variable [PreservesLimit F G]
 theorem preserves_lift_mapCone (c₁ c₂ : Cone F) (t : IsLimit c₁) :
     (PreservesLimit.preserves t).lift (G.mapCone c₂) = G.map (t.lift c₂) :=
   ((PreservesLimit.preserves t).uniq (G.mapCone c₂) _ (by simp [← G.map_comp])).symm
-#align category_theory.preserves_lift_map_cone CategoryTheory.preserves_lift_mapCone
 
 variable [HasLimit F]
 
@@ -51,19 +48,16 @@ to the limit of the functor `F ⋙ G`.
 -/
 def preservesLimitIso : G.obj (limit F) ≅ limit (F ⋙ G) :=
   (PreservesLimit.preserves (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _)
-#align category_theory.preserves_limit_iso CategoryTheory.preservesLimitIso
 
 @[reassoc (attr := simp)]
 theorem preservesLimitsIso_hom_π (j) :
     (preservesLimitIso G F).hom ≫ limit.π _ j = G.map (limit.π F j) :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ j
-#align category_theory.preserves_limits_iso_hom_π CategoryTheory.preservesLimitsIso_hom_π
 
 @[reassoc (attr := simp)]
 theorem preservesLimitsIso_inv_π (j) :
     (preservesLimitIso G F).inv ≫ G.map (limit.π F j) = limit.π _ j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ j
-#align category_theory.preserves_limits_iso_inv_π CategoryTheory.preservesLimitsIso_inv_π
 
 @[reassoc (attr := simp)]
 theorem lift_comp_preservesLimitsIso_hom (t : Cone F) :
@@ -71,7 +65,6 @@ theorem lift_comp_preservesLimitsIso_hom (t : Cone F) :
     limit.lift (F ⋙ G) (G.mapCone _) := by
   ext
   simp [← G.map_comp]
-#align category_theory.lift_comp_preserves_limits_iso_hom CategoryTheory.lift_comp_preservesLimitsIso_hom
 
 instance : IsIso (limit.post F G) :=
   show IsIso (preservesLimitIso G F).hom from inferInstance
@@ -89,7 +82,6 @@ def preservesLimitNatIso : lim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ lim :
       dsimp
       simp only [preservesLimitsIso_hom_π, whiskerRight_app, limMap_π, Category.assoc,
         preservesLimitsIso_hom_π_assoc, ← G.map_comp])
-#align category_theory.preserves_limit_nat_iso CategoryTheory.preservesLimitNatIso
 
 end
 
@@ -114,7 +106,6 @@ variable [PreservesColimit F G]
 theorem preserves_desc_mapCocone (c₁ c₂ : Cocone F) (t : IsColimit c₁) :
     (PreservesColimit.preserves t).desc (G.mapCocone _) = G.map (t.desc c₂) :=
   ((PreservesColimit.preserves t).uniq (G.mapCocone _) _ (by simp [← G.map_comp])).symm
-#align category_theory.preserves_desc_map_cocone CategoryTheory.preserves_desc_mapCocone
 
 variable [HasColimit F]
 
@@ -124,19 +115,16 @@ to the colimit of the functor `F ⋙ G`.
 -/
 def preservesColimitIso : G.obj (colimit F) ≅ colimit (F ⋙ G) :=
   (PreservesColimit.preserves (colimit.isColimit _)).coconePointUniqueUpToIso (colimit.isColimit _)
-#align category_theory.preserves_colimit_iso CategoryTheory.preservesColimitIso
 
 @[reassoc (attr := simp)]
 theorem ι_preservesColimitsIso_inv (j : J) :
     colimit.ι _ j ≫ (preservesColimitIso G F).inv = G.map (colimit.ι F j) :=
   IsColimit.comp_coconePointUniqueUpToIso_inv _ (colimit.isColimit (F ⋙ G)) j
-#align category_theory.ι_preserves_colimits_iso_inv CategoryTheory.ι_preservesColimitsIso_inv
 
 @[reassoc (attr := simp)]
 theorem ι_preservesColimitsIso_hom (j : J) :
     G.map (colimit.ι F j) ≫ (preservesColimitIso G F).hom = colimit.ι (F ⋙ G) j :=
   (PreservesColimit.preserves (colimit.isColimit _)).comp_coconePointUniqueUpToIso_hom _ j
-#align category_theory.ι_preserves_colimits_iso_hom CategoryTheory.ι_preservesColimitsIso_hom
 
 @[reassoc (attr := simp)]
 theorem preservesColimitsIso_inv_comp_desc (t : Cocone F) :
@@ -144,7 +132,6 @@ theorem preservesColimitsIso_inv_comp_desc (t : Cocone F) :
     colimit.desc _ (G.mapCocone t) := by
   ext
   simp [← G.map_comp]
-#align category_theory.preserves_colimits_iso_inv_comp_desc CategoryTheory.preservesColimitsIso_inv_comp_desc
 
 instance : IsIso (colimit.post F G) :=
   show IsIso (preservesColimitIso G F).inv from inferInstance
@@ -165,7 +152,6 @@ def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ c
       simp only [ι_preservesColimitsIso_inv, whiskerRight_app, Category.assoc,
         ι_preservesColimitsIso_inv_assoc, ← G.map_comp]
       erw [ι_colimMap])
-#align category_theory.preserves_colimit_nat_iso CategoryTheory.preservesColimitNatIso
 
 end
 

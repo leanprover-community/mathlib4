@@ -88,7 +88,7 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
     HasFDerivAt (inversion c R)
       ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
   rcases add_left_surjective c x with ⟨x, rfl⟩
-  have : HasFDerivAt (inversion c R) (_ : F →L[ℝ] F) (c + x) := by
+  have : HasFDerivAt (inversion c R) (?_ : F →L[ℝ] F) (c + x) := by
     #adaptation_note /-- nightly-2024-03-16: simp was
     simp (config := { unfoldPartialApp := true }) only [inversion] -/
     simp only [inversion_def]
