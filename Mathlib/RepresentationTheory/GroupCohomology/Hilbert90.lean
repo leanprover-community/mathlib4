@@ -4,23 +4,24 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.FieldTheory.Fixed
+import Mathlib.RingTheory.Norm
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
 # Hilbert's Theorem 90
 
-Let `L/K` be a finite extension of fields. Then this file proves Noether's generalization of
-Hilbert's Theorem 90: that the 1st group cohomology $H^1(Aut_K(L), Lˣ)$ is trivial. We state it
-both in terms of $H^1$ and in terms of cocycles being coboundaries.
-
-Hilbert's original statement was that if $L/K$ is Galois, and $Gal(L/K)$ is cyclic, generated
-by an element `σ`, then for every `x : L` such that $N_{L/K}(x) = 1,$ there exists `y : L` such
-that $x = y/σ(y).$ This can be deduced from the fact that the function $Gal(L/K) → L^\times$
-sending $σ^i \mapsto xσ(x)σ^2(x)...σ^{i-1}(x)$ is a 1-cocycle. Alternatively, we can derive it by
-analyzing the cohomology of finite cyclic groups in general.
-
+This file proves 2 versions of Hilbert's theorem 90.
+The first is due to Noether, and is a generalization of Hilbert's original statement. It says that
+given a finite extension of fields $L/K,$ the 1st group cohomology $H^1(Aut_K(L), Lˣ)$ is trivial.
+We state it both in terms of $H^1$ and in terms of cocycles being coboundaries.
 Noether's generalization also holds for infinite Galois extensions.
+
+We then deduce Hilbert's original statement: if $L/K$ is finite and Galois, and $Gal(L/K)$ is
+cyclic with a generator `σ`, then for every `x : L` such that $N_{L/K}(x) = 1,$ there exists `y : L`
+such that $x = σ(y)/y.$ We prove this by showing that the function $Gal(L/K) → L^\times$
+sending $σ^i \mapsto xσ(x)σ^2(x)...σ^{i-1}(x)$ is a 1-cocycle. Alternatively, we could derive it by
+analyzing the cohomology of finite cyclic groups in general.
 
 ## Main statements
 
@@ -29,6 +30,9 @@ of Hilbert's Theorem 90: for all $f: Aut_K(L) \to L^\times$ satisfying the 1-coc
 condition, there exists `β : Lˣ` such that $g(β)/β = f(g)$ for all `g : Aut_K(L)`.
 * `groupCohomology.H1ofAutOnUnitsUnique`: Noether's generalization of Hilbert's Theorem 90:
 $H^1(Aut_K(L), L^\times)$ is trivial.
+* `groupCohomology.hilbert90Cyclic`: Given `L/K` finite, Galois and cyclic with generator
+`g : Gal(L/K)`, then for any `x : L` such that $N_{L/K} = 1,$ there exists `y : L` such that
+$g(y)/y = x.$
 
 ## Implementation notes
 
@@ -40,7 +44,6 @@ statement is clearer.
 
 ## TODO
 
-* The original Hilbert's Theorem 90, deduced from the cohomology of general finite cyclic groups.
 * Develop Galois cohomology to extend Noether's result to infinite Galois extensions.
 * "Additive Hilbert 90": let `L/K` be a finite Galois extension. Then $H^n(Gal(L/K), L)$ is trivial
 for all $1 ≤ n.$
@@ -107,5 +110,41 @@ noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnit
     rcases isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units x.1
       (isMulOneCocycle_of_oneCocycles x) with ⟨β, hβ⟩
     use β
+
+end groupCohomology
+open Rep
+
+variable {K L : Type} [Field K] [Field L] [Algebra K L]
+  [FiniteDimensional K L] [IsGalois K L]
+
+-- could move to `RepresentationTheory.Rep` but would have to add imports
+/-- Given `L/K` finite and Galois, and `x : Lˣ`, this essentially says
+`(∏ σ) • x = N_{L/K}(x)`, where the product is over `σ ∈ Gal(L/K)`. -/
+theorem Rep.norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
+    (Additive.toMul ((Rep.norm (Rep.ofAlgebraAutOnUnits K L)).hom (Additive.ofMul x))).1
+      = algebraMap K L (Algebra.norm K (x : L)) := by
+  simp_rw [Algebra.norm_eq_prod_automorphisms, ofAlgebraAutOnUnits]
+  erw [norm_ofMulDistribMulAction_eq (G := L ≃ₐ[K] L) (M := Lˣ)]
+  simp only [AlgEquiv.smul_units_def, Units.coe_prod, Units.coe_map, MonoidHom.coe_coe]
+
+namespace groupCohomology
+variable (g : L ≃ₐ[K] L) (hg : ∀ h, h ∈ Submonoid.powers g)
+
+/-- Given a finite cyclic Galois extension `L/K`, an element `x : L` such that `N_{L/K}(x) = 1`,
+and a generator `g` of `Gal(L/K)`, there exists `y : Lˣ` such that `g(y)/y = x`. -/
+theorem hilbert90_cyclic (x : L) (hx : Algebra.norm K x = 1) : ∃ y : Lˣ, g y / y = x := by
+  let xu : Lˣ := (Ne.isUnit (fun h0 => zero_ne_one ((Algebra.norm_zero).symm.trans
+     (h0 ▸ hx))) : IsUnit x).unit
+  have hx' : algebraMap K L (Algebra.norm K (xu : L)) = _ := congrArg (algebraMap K L) hx
+  rw [← norm_ofAlgebraAutOnUnits_eq xu, map_one] at hx'
+  let f := oneCocyclesOfGenerator (A := Rep.ofAlgebraAutOnUnits K L) (Additive.ofMul xu) g hg
+    (Additive.toMul.injective (Units.ext hx'))
+  obtain ⟨ε, hε⟩ := groupCohomology.hilbert90 _ (isMulOneCocycle_of_oneCocycles f)
+  use ε
+  specialize hε g
+  simpa only [AlgEquiv.smul_units_def, Rep.ofAlgebraAutOnUnits, Function.comp_apply,
+    oneCocyclesOfGenerator_self, Units.ext_iff, Units.val_div_eq_div_val, Units.coe_map,
+    MonoidHom.coe_coe] using hε
+
 
 end groupCohomology
