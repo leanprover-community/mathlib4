@@ -59,6 +59,8 @@ instance (priority := 100) toBialgHomClass : BialgHomClass F R A B where
   map_mul := map_mul
   map_one := map_one
 
+set_synth_order BialgEquivClass.toBialgHomClass #[11, 12, 4, 5, 6, 7, 8, 9, 10]
+
 /-- Reinterpret an element of a type of bialgebra equivalences as a bialgebra equivalence. -/
 @[coe]
 def toBialgEquiv (f : F) : A ≃ₐc[R] B :=
@@ -72,6 +74,8 @@ instance (priority := 100) toAlgEquivClass : AlgEquivClass F R A B where
   map_mul := map_mul
   map_add := map_add
   commutes := AlgHomClass.commutes
+
+set_synth_order BialgEquivClass.toAlgEquivClass #[11, 12, 4, 5, 6, 7, 8, 9, 10]
 
 end BialgEquivClass
 

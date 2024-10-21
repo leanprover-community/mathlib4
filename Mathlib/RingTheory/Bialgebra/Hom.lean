@@ -69,6 +69,8 @@ instance (priority := 100) toAlgHomClass : AlgHomClass F R A B where
   commutes := fun c r => by
     simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one]
 
+set_synth_order BialgHomClass.toAlgHomClass #[11, 12, 4, 5, 6, 7, 8, 9, 10]
+
 /-- Turn an element of a type `F` satisfying `BialgHomClass F R A B` into an actual
 `BialgHom`. This is declared as the default coercion from `F` to `A →ₐc[R] B`. -/
 @[coe]

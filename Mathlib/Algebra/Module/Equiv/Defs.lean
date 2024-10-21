@@ -112,6 +112,8 @@ instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with }
 
+set_synth_order SemilinearEquivClass.instSemilinearMapClass #[15, 16, 5, 6, 7, 8, 9, 10, 13, 14]
+
 variable {F}
 
 /-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
