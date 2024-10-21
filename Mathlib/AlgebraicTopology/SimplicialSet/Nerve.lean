@@ -445,7 +445,7 @@ theorem ran.lift.map' {X : SSet.{u}} {hX : StrictSegal X} {n}
 
 /-- This theorem is used to prove the factorization property of `ran.lift`.-/
 theorem ran.lift.map {X : SSet.{u}} {hX : StrictSegal X} {n}
-  (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
+    (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
       (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt)
       (j k : Fin (n + 1)) (hjk : j ⟶ k) :
       X.map (mkOfLe _ _ hjk.le).op (ran.lift (hX := hX) s x) = s.π.app (ar' hjk) x := by
