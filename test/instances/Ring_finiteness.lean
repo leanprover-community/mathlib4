@@ -4,10 +4,5 @@ import Mathlib
 
 variable (R : Type*) [Ring R] [IsSemisimpleRing R]
 
-/-- info: isNoetherian_of_isNoetherianRing_of_finite R R -/
-#guard_msgs in
-#synth IsNoetherianRing R
-
-/-- info: instIsArtinianOfIsSemisimpleModuleOfFinite -/
-#guard_msgs in
-#synth IsArtinianRing R
+example : IsNoetherianRing R := inferInstance
+example : IsArtinianRing R := inferInstance
