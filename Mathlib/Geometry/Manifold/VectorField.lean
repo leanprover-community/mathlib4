@@ -244,6 +244,12 @@ lemma lieBracketWithin_swap : lieBracketWithin 𝕜 V W s = - lieBracketWithin �
 lemma lieBracket_swap : lieBracket 𝕜 V W x = - lieBracket 𝕜 W V x := by
   simp [lieBracket]
 
+@[simp] lemma lieBracketWithin_self : lieBracketWithin 𝕜 V V s = 0 := by
+  ext x; simp [lieBracketWithin]
+
+@[simp] lemma lieBracket_self : lieBracket 𝕜 V V = 0 := by
+  ext x; simp [lieBracket]
+
 lemma _root_.ContDiffWithinAt.lieBracketWithin {m n : ℕ∞} (hV : ContDiffWithinAt 𝕜 n V s x)
     (hW : ContDiffWithinAt 𝕜 n W s x) (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) (hx : x ∈ s) :
     ContDiffWithinAt 𝕜 m (lieBracketWithin 𝕜 V W s) s x := by
@@ -1167,6 +1173,11 @@ lemma mlieBracket_swap_apply : mlieBracket I V W x = - mlieBracket I W V x :=
 lemma mlieBracket_swap : mlieBracket I V W = - mlieBracket I W V :=
   mlieBracketWithin_swap
 
+@[simp] lemma mlieBracketWithin_self : mlieBracketWithin I V V = 0 := by
+  ext x; simp [mlieBracketWithin, mpullback]
+
+@[simp] lemma mlieBracket_self : mlieBracket I V V = 0 := by
+  ext x; simp_rw [mlieBracket, mlieBracketWithin_self, Pi.zero_apply]
 
 /-- Variant of `mlieBracketWithin_congr_set` where one requires the sets to coincide only in
 the complement of a point. -/

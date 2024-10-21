@@ -73,16 +73,15 @@ variable [LieGroup I G] [CompleteSpace E]
 
 instance [LieGroup I G] : LieRing (TangentSpace I (1 : G)) where
   add_lie v w x := by
-    simp only [bracket_def, invariantVectorField_add, mlieBracket_add_left]
+    simp only [bracket_def, invariantVectorField_add]
     rw [mlieBracket_add_left]
-    apply ((contMDiff_invariantVectorField v).mdifferentiable le_top)
-
-
-
-
-
-
-  lie_add := sorry
+    · exact ((contMDiff_invariantVectorField _).mdifferentiable le_top).mdifferentiableAt
+    · exact ((contMDiff_invariantVectorField _).mdifferentiable le_top).mdifferentiableAt
+  lie_add v w x := by
+    simp only [bracket_def, invariantVectorField_add]
+    rw [mlieBracket_add_right]
+    · exact ((contMDiff_invariantVectorField _).mdifferentiable le_top).mdifferentiableAt
+    · exact ((contMDiff_invariantVectorField _).mdifferentiable le_top).mdifferentiableAt
   lie_self := sorry
   leibniz_lie := sorry
 
