@@ -189,7 +189,7 @@ lemma Scheme.map_basicOpen_map (r : Γ(X, U)) :
 /-- If `U ≤ V`, then `U` is also a subscheme of `V`. -/
 protected noncomputable
 def Scheme.homOfLE (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : (U : Scheme.{u}) ⟶ V :=
-  IsOpenImmersion.lift (V.ι) U.ι (by simpa using e)
+  IsOpenImmersion.lift V.ι U.ι (by simpa using e)
 
 @[reassoc (attr := simp)]
 lemma Scheme.homOfLE_ι (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) :
