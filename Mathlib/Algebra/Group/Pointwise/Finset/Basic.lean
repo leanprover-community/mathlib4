@@ -94,11 +94,11 @@ lemma coe_eq_one : (s : Set α) = 1 ↔ s = 1 := coe_eq_singleton
 theorem one_subset : (1 : Finset α) ⊆ s ↔ (1 : α) ∈ s :=
   singleton_subset_iff
 
+-- TODO: This would be a good simp lemma scoped to `Pointwise`, but it seems `@[simp]` can't be
+-- scoped
 @[to_additive]
 theorem singleton_one : ({1} : Finset α) = 1 :=
   rfl
-
-scoped[Pointwise] attribute [simp] Finset.singleton_one Finset.singleton_zero
 
 @[to_additive]
 theorem one_mem_one : (1 : α) ∈ (1 : Finset α) :=
@@ -824,7 +824,7 @@ theorem empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by
 
 @[to_additive (attr := simp) nsmul_singleton]
 lemma singleton_pow (a : α) : ∀ n, ({a} : Finset α) ^ n = {a ^ n}
-  | 0 => by simp
+  | 0 => by simp [singleton_one]
   | n + 1 => by simp [pow_succ, singleton_pow _ n]
 
 @[to_additive]
