@@ -31,8 +31,7 @@ variable {R S K : Type*} [Semiring R] [OrderedSemiring S] [Field K]
 an absolute value on a semiring and returns the semiring. We use this to assign and infer instances
 on a semiring that depend on absolute values. -/
 @[nolint unusedArguments]
-def WithAbs :
-    AbsoluteValue R S → Type _ := fun _ => R
+def WithAbs : AbsoluteValue R S → Type _ := fun _ => R
 
 namespace WithAbs
 
@@ -41,11 +40,9 @@ variable (v : AbsoluteValue R ℝ)
 /-- Canonical equivalence between `WithAbs v` and `R`. -/
 def equiv : WithAbs v ≃ R := Equiv.refl (WithAbs v)
 
-instance instNonTrivial [Nontrivial R] : Nontrivial (WithAbs v) :=
-  inferInstanceAs (Nontrivial R)
+instance instNonTrivial [Nontrivial R] : Nontrivial (WithAbs v) := inferInstanceAs (Nontrivial R)
 
-instance instUnique [Unique R] : Unique (WithAbs v) :=
-  inferInstanceAs (Unique R)
+instance instUnique [Unique R] : Unique (WithAbs v) := inferInstanceAs (Unique R)
 
 instance instSemiring : Semiring (WithAbs v) := inferInstanceAs (Semiring R)
 
