@@ -487,9 +487,12 @@ instance instSemilinearIsometryEquivClass :
   map_smulₛₗ e := map_smulₛₗ e.toLinearEquiv
   norm_map e := e.norm_map'
 
--- TODO: Shouldn't these `CoeFun` instances be scrapped?
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
-directly. -/
+/-- Shortcut instance, saving 8.5% of compilation time in
+`Mathlib.Analysis.InnerProductSpace.Adjoint`.
+
+(This instance was pinpointed by benchmarks; we didn't do an in depth investigation why it is
+specifically needed.)
+-/
 instance instCoeFun : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ ↦ E → E₂ := ⟨DFunLike.coe⟩
 
 theorem coe_injective : @Function.Injective (E ≃ₛₗᵢ[σ₁₂] E₂) (E → E₂) (↑) :=
