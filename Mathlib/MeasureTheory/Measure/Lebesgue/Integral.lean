@@ -80,7 +80,7 @@ itself, it does not apply when `f` is more complicated -/
 theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
   have A : MeasurableEmbedding fun x : ℝ => -x :=
-    (Homeomorph.neg ℝ).closedEmbedding.measurableEmbedding
+    (Homeomorph.neg ℝ).isClosedEmbedding.measurableEmbedding
   have := MeasurableEmbedding.setIntegral_map (μ := volume) A f (Ici (-c))
   rw [Measure.map_neg_eq_self (volume : Measure ℝ)] at this
   simp_rw [← integral_Ici_eq_integral_Ioi, this, neg_preimage, preimage_neg_Ici, neg_neg]

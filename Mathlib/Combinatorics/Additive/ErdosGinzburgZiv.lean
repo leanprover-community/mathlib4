@@ -22,7 +22,6 @@ elements of sum zero.
 -/
 
 open Finset MvPolynomial
-open scoped BigOperators
 
 variable {ι : Type*}
 
