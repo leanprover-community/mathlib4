@@ -21,9 +21,7 @@ various instances.
 
 noncomputable section
 
-open Set Filter Function TopologicalSpace Complex
-
-open scoped Filter Topology UpperHalfPlane
+open Complex Filter Function Set TopologicalSpace Topology
 
 namespace UpperHalfPlane
 
@@ -36,11 +34,11 @@ theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_coe := isOpenEmbedding_coe
 
-theorem embedding_coe : Embedding ((↑) : ℍ → ℂ) :=
-  embedding_subtype_val
+theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
+  IsEmbedding.subtypeVal
 
 theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
-  embedding_coe.continuous
+  isEmbedding_coe.continuous
 
 theorem continuous_re : Continuous re :=
   Complex.continuous_re.comp continuous_coe

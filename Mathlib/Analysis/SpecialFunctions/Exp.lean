@@ -19,9 +19,9 @@ exp
 
 noncomputable section
 
-open Finset Filter Metric Asymptotics Set Function Bornology
+open Asymptotics Bornology Finset Filter Function Metric Set Topology
 
-open scoped Topology Nat
+open scoped Nat
 
 namespace Complex
 

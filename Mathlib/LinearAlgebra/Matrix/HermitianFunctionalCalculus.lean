@@ -31,6 +31,8 @@ This file defines an instance of the continuous functional calculus for Hermitia
 spectral theorem, diagonalization theorem, continuous functional calculus
 -/
 
+open Topology
+
 namespace Matrix
 
 variable {n 𝕜 : Type*} [RCLike 𝕜] [Fintype n] [DecidableEq n] {A : Matrix n n 𝕜}

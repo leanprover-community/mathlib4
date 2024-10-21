@@ -905,8 +905,8 @@ theorem IsPathConnected.image (hF : IsPathConnected F) {f : X → Y} (hf : Conti
     IsPathConnected (f '' F) :=
   hF.image' hf.continuousOn
 
-/-- If `f : X → Y` is a `Inducing`, `f(F)` is path-connected iff `F` is. -/
-nonrec theorem Inducing.isPathConnected_iff {f : X → Y} (hf : Inducing f) :
+/-- If `f : X → Y` is a `IsInducing`, `f(F)` is path-connected iff `F` is. -/
+nonrec theorem Topology.IsInducing.isPathConnected_iff {f : X → Y} (hf : IsInducing f) :
     IsPathConnected F ↔ IsPathConnected (f '' F) := by
   simp only [IsPathConnected, forall_mem_image, exists_mem_image]
   refine exists_congr fun x ↦ and_congr_right fun hx ↦ forall₂_congr fun y hy ↦ ?_
@@ -916,7 +916,7 @@ nonrec theorem Inducing.isPathConnected_iff {f : X → Y} (hf : Inducing f) :
 @[simp]
 theorem Homeomorph.isPathConnected_image {s : Set X} (h : X ≃ₜ Y) :
     IsPathConnected (h '' s) ↔ IsPathConnected s :=
-  h.inducing.isPathConnected_iff.symm
+  h.isInducing.isPathConnected_iff.symm
 
 /-- If `h : X → Y` is a homeomorphism, `h⁻¹(s)` is path-connected iff `s` is. -/
 @[simp]

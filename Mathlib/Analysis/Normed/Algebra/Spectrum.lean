@@ -45,10 +45,8 @@ This file contains the basic theory for the resolvent and spectrum of a Banach a
 
 -/
 
-
+open NormedSpace Topology -- For `NormedSpace.exp`.
 open scoped ENNReal NNReal
-
-open NormedSpace -- For `NormedSpace.exp`.
 
 /-- The *spectral radius* is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the spectrum,
     coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this

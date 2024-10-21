@@ -17,6 +17,7 @@ This material was formerly linked to the main definition of fiber bundles, but a
 refactors, there is no longer a direct connection.
 -/
 
+open Topology
 
 variable {B : Type*} (F : Type*) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
   [TopologicalSpace Z]
@@ -53,9 +54,8 @@ protected theorem isOpenMap_proj (h : IsHomeomorphicTrivialFiberBundle F proj) :
 
 /-- The projection from a trivial fiber bundle to its base is open. -/
 protected theorem quotientMap_proj [Nonempty F] (h : IsHomeomorphicTrivialFiberBundle F proj) :
-    QuotientMap proj :=
-  h.isOpenMap_proj.to_quotientMap h.continuous_proj h.surjective_proj
-
+    IsQuotientMap proj :=
+  h.isOpenMap_proj.isQuotientMap h.continuous_proj h.surjective_proj
 end IsHomeomorphicTrivialFiberBundle
 
 /-- The first projection in a product is a trivial fiber bundle. -/
