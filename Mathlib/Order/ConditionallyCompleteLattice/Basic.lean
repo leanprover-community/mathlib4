@@ -1204,8 +1204,7 @@ theorem csSup_le' {s : Set α} {a : α} (h : a ∈ upperBounds s) : sSup s ≤ a
 /-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
 from `lt_csSup_iff`. -/
 theorem lt_csSup_iff' (hb : BddAbove s) : a < sSup s ↔ ∃ b ∈ s, a < b := by
-  rw [← not_iff_not]
-  simpa using csSup_le_iff' hb
+  simpa only [not_le, not_forall₂, exists_prop] using (csSup_le_iff' hb).not
 
 theorem le_csSup_iff' {s : Set α} {a : α} (h : BddAbove s) :
     a ≤ sSup s ↔ ∀ b, b ∈ upperBounds s → a ≤ b :=
