@@ -227,7 +227,7 @@ This is used by the `Header` linter as a heuristic of whether it should inspect 
 -/
 def isInMathlib (fname : Name) : IO Bool := do
   let mlPath := ("Mathlib" : System.FilePath).addExtension "lean"
-  if ← System.FilePath.pathExists mlPath then
+  if ← mlPath.pathExists then
     let ml ← IO.FS.lines mlPath
     let curr := fname.toString
     return (ml.map (·.endsWith curr)).any (·)
