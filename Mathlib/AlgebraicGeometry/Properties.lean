@@ -110,7 +110,7 @@ theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
     {X : Scheme} (U : X.Opens)
     (h₁ : ∀ (X : Scheme) (U : X.Opens),
       (∀ x : U, ∃ (V : _) (_ : x.1 ∈ V) (_ : V ⟶ U), P V) → P U)
-    (h₂ : ∀ (X Y) (f : X ⟶ Y) [hf : IsOpenImmersion f],
+    (h₂ : ∀ (X Y) (f : X ⟶ Y) [IsOpenImmersion f],
       ∃ (U : X.Opens) (V : Y.Opens), U = ⊤ ∧ V = f.opensRange ∧ (P U → P V))
     (h₃ : ∀ R : CommRingCat, P (X := Spec R) ⊤) : P U := by
   apply h₁

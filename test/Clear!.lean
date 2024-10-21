@@ -1,5 +1,7 @@
 import Mathlib.Tactic.ClearExclamation
 
+set_option linter.unusedVariables false
+
 -- Most basic test
 example (delete_this : Nat) (_delete_this_dep : delete_this = delete_this) : Nat := by
   clear! delete_this
