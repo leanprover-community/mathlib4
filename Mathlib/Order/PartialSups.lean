@@ -6,7 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Hom.Basic
 import Mathlib.Data.Set.Finite
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # The monotone sequence of partial supremums of a sequence

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 import Mathlib.Data.Real.Basic
 import Mathlib.Order.Interval.Set.Disjoint
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
