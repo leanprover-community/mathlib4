@@ -324,10 +324,10 @@ theorem lift_mk_shrink'' (α : Type max u v) [Small.{v} α] :
 
 /-- `Cardinal.lift` as an `InitialSeg`. -/
 @[simps!]
-def liftInitialSeg : Cardinal.{u} ≤i Cardinal.{max u v} := by
+def liftInitialSeg : Cardinal.{v} ≤i Cardinal.{max u v} := by
   refine ⟨(OrderEmbedding.ofMapLEIff lift ?_).ltEmbedding, ?_⟩ <;> intro a b
   · refine inductionOn₂ a b fun _ _ ↦ ?_
-    rw [← lift_umax, lift_mk_le.{v, u, u}, le_def]
+    rw [← lift_umax, lift_mk_le.{u, v, v}, le_def]
   · refine inductionOn₂ a b fun α β h ↦ ?_
     obtain ⟨e⟩ := h.le
     replace e := e.congr (Equiv.refl β) Equiv.ulift
@@ -335,6 +335,10 @@ def liftInitialSeg : Cardinal.{u} ≤i Cardinal.{max u v} := by
     apply (e.codRestrict _ mem_range_self).equivOfSurjective
     rintro ⟨a, ⟨b, rfl⟩⟩
     exact ⟨b, rfl⟩
+
+@[simp]
+theorem coe_liftInitialSeg : (liftInitialSeg.{v, u} : Cardinal → Cardinal) = lift.{v} :=
+  rfl
 
 theorem mem_range_of_le_lift {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a → b ∈ Set.range lift.{v, u} :=
@@ -969,6 +973,9 @@ def WellOrderingRel : α → α → Prop :=
 
 instance WellOrderingRel.isWellOrder : IsWellOrder α WellOrderingRel :=
   (RelEmbedding.preimage _ _).isWellOrder
+
+theorem wf_wellOrderingRel : WellFounded (@WellOrderingRel α) :=
+  WellOrderingRel.isWellOrder.wf
 
 instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
   ⟨⟨WellOrderingRel, inferInstance⟩⟩

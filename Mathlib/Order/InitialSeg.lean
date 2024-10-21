@@ -556,9 +556,12 @@ theorem collapse_apply [IsWellOrder β s] (f : r ↪r s) (a) : collapse f a = (c
 
 end RelEmbedding
 
+namespace InitialSeg
+
+variable (r s) [IsWellOrder α r] [IsWellOrder β s]
+
 /-- For any two well orders, one is an initial segment of the other. -/
-noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
-    (r ≼i s) ⊕ (s ≼i r) :=
+noncomputable def total : (r ≼i s) ⊕ (s ≼i r) :=
   match (leAdd r s).ltOrEq, (RelEmbedding.sumLexInr r s).collapse.ltOrEq with
   | Sum.inl f, Sum.inr g => Sum.inl <| f.ltEquiv g.symm
   | Sum.inr f, Sum.inl g => Sum.inr <| g.ltEquiv f.symm
@@ -572,6 +575,17 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
         exact ⟨Sum.inl <| InitialSeg.ofIso (f.symm.trans g.subrelIso)⟩
       · exact ⟨Sum.inr <| (g.codRestrict {x | Sum.Lex r s x f.top}
           (fun a => _root_.trans (g.lt_top a) h) h).ltEquiv f.subrelIso⟩
+
+/-- For any two well orders, either the first is a principal segment of the second, or the second is
+an initial segment of the first. -/
+noncomputable def principalSeg_sum_initialSeg : (r ≺i s) ⊕ (s ≼i r) :=
+  match total r s with
+  | Sum.inr f => Sum.inr f
+  | Sum.inl f => match ltOrEq f with
+    | Sum.inl g => Sum.inl g
+    | Sum.inr g => Sum.inr (ofIso g.symm)
+
+end InitialSeg
 
 attribute [nolint simpNF] PrincipalSeg.ofElement_apply PrincipalSeg.subrelIso_symm_apply
   PrincipalSeg.apply_subrelIso PrincipalSeg.subrelIso_apply

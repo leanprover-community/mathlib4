@@ -4228,6 +4228,7 @@ import Mathlib.SetTheory.Cardinal.PartENat
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.SetTheory.Cardinal.Subfield
 import Mathlib.SetTheory.Cardinal.ToNat
+import Mathlib.SetTheory.Cardinal.Univ
 import Mathlib.SetTheory.Cardinal.UnivLE
 import Mathlib.SetTheory.Game.Basic
 import Mathlib.SetTheory.Game.Birthday
@@ -4251,6 +4252,7 @@ import Mathlib.SetTheory.Ordinal.Nimber
 import Mathlib.SetTheory.Ordinal.Notation
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.SetTheory.Ordinal.Topology
+import Mathlib.SetTheory.Ordinal.Univ
 import Mathlib.SetTheory.Surreal.Basic
 import Mathlib.SetTheory.Surreal.Dyadic
 import Mathlib.SetTheory.Surreal.Multiplication
