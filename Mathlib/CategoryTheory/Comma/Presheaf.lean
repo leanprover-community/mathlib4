@@ -3,6 +3,7 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
+import Mathlib.CategoryTheory.HomCongr
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
@@ -571,5 +572,73 @@ def overEquivPresheafCostructuredArrow (A : Cᵒᵖ ⥤ Type v) :
 def CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow (A : Cᵒᵖ ⥤ Type v) :
     CostructuredArrow.toOver yoneda A ⋙ (overEquivPresheafCostructuredArrow A).functor ≅ yoneda :=
   toOverYonedaCompRestrictedYoneda A
+
+/-- This isomorphism says that hom-sets in the category `Over A` for a presheaf `A` where the domain
+    is of the form `(CostructuredArrow.toOver yoneda A).obj X` can instead be interpreted as
+    hom-sets in the category `(CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v` where the domain is of the
+    form `yoneda.obj X` after adjusting the codomain accordingly. This is desirable because in the
+    latter case the Yoneda lemma can be applied. -/
+def CostructuredArrow.toOverCompYoneda (A : Cᵒᵖ ⥤ Type v) (T : Over A) :
+    (CostructuredArrow.toOver yoneda A).op ⋙ yoneda.obj T ≅
+      yoneda.op ⋙ yoneda.obj ((overEquivPresheafCostructuredArrow A).functor.obj T) :=
+  NatIso.ofComponents (fun X =>
+    (overEquivPresheafCostructuredArrow A).fullyFaithfulFunctor.homEquiv.toIso ≪≫
+      (Iso.homCongr
+        ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
+        (Iso.refl _)).toIso)
+    (by aesop_cat)
+
+@[simp]
+theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverCompYoneda
+    {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}
+    (f : (CostructuredArrow.toOver yoneda A).obj X ⟶ T) :
+    (overEquivPresheafCostructuredArrow A).inverse.map
+      (((CostructuredArrow.toOverCompYoneda A T).hom.app (op X) f)) =
+      (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).isoCompInverse.inv.app X ≫
+        f ≫ (overEquivPresheafCostructuredArrow A).unit.app T := by
+  simp [CostructuredArrow.toOverCompYoneda]
+
+@[simp]
+theorem CostructuredArrow.overEquivPresheafCostructuredArrow_functor_map_toOverCompYoneda
+    {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}
+    (f : yoneda.obj X ⟶ (overEquivPresheafCostructuredArrow A).functor.obj T) :
+    (overEquivPresheafCostructuredArrow A).functor.map
+      (((CostructuredArrow.toOverCompYoneda A T).inv.app (op X) f)) =
+      (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).hom.app X ≫ f := by
+  simp [CostructuredArrow.toOverCompYoneda]
+
+/-- This isomorphism says that hom-sets in the category `Over A` for a presheaf `A` where the domain
+    is of the form `(CostructuredArrow.toOver yoneda A).obj X` can instead be interpreted as
+    hom-sets in the category `(CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v` where the domain is of the
+    form `yoneda.obj X` after adjusting the codomain accordingly. This is desirable because in the
+    latter case the Yoneda lemma can be applied. -/
+def CostructuredArrow.toOverCompCoyoneda (A : Cᵒᵖ ⥤ Type v) :
+    (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ≅
+    yoneda.op ⋙ coyoneda ⋙
+      (whiskeringLeft _ _ _).obj (overEquivPresheafCostructuredArrow A).functor :=
+  NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y =>
+    (overEquivPresheafCostructuredArrow A).fullyFaithfulFunctor.homEquiv.toIso ≪≫
+      (Iso.homCongr
+        ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
+        (Iso.refl _)).toIso)) (by aesop_cat)
+
+@[simp]
+theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverCompCoyoneda
+    {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}
+    (f : (CostructuredArrow.toOver yoneda A).obj X ⟶ T) :
+    (overEquivPresheafCostructuredArrow A).inverse.map
+      (((CostructuredArrow.toOverCompCoyoneda A).hom.app (op X)).app T f) =
+      (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).isoCompInverse.inv.app X ≫
+        f ≫ (overEquivPresheafCostructuredArrow A).unit.app T := by
+  simp [CostructuredArrow.toOverCompCoyoneda]
+
+@[simp]
+theorem CostructuredArrow.overEquivPresheafCostructuredArrow_functor_map_toOverCompCoyoneda
+    {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}
+    (f : yoneda.obj X ⟶ (overEquivPresheafCostructuredArrow A).functor.obj T) :
+    (overEquivPresheafCostructuredArrow A).functor.map
+      (((CostructuredArrow.toOverCompCoyoneda A).inv.app (op X)).app T f) =
+      (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).hom.app X ≫ f := by
+  simp [CostructuredArrow.toOverCompCoyoneda]
 
 end CategoryTheory
