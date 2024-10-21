@@ -113,7 +113,7 @@ def unitCompPartialBijectiveAux [Reflective i] (A : C) (B : D) :
 theorem unitCompPartialBijectiveAux_symm_apply [Reflective i] {A : C} {B : D}
     (f : i.obj ((reflector i).obj A) ⟶ i.obj B) :
     (unitCompPartialBijectiveAux _ _).symm f = (reflectorAdjunction i).unit.app A ≫ f := by
-  simp [unitCompPartialBijectiveAux]
+  simp [unitCompPartialBijectiveAux, Adjunction.homEquiv_unit]
 
 /-- If `i` has a reflector `L`, then the function `(i.obj (L.obj A) ⟶ B) → (A ⟶ B)` given by
 precomposing with `η.app A` is a bijection provided `B` is in the essential image of `i`.

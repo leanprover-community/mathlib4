@@ -151,7 +151,7 @@ namespace Adjunction
 attribute [reassoc (attr := simp)] left_triangle_components right_triangle_components
 
 /-- The hom set equivalence associated to an adjunction. -/
-@[simps]
+@[simps (config := .lemmasOnly)]
 def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
     (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y) where
   toFun := fun f => adj.unit.app X ≫ G.map f
@@ -165,7 +165,17 @@ def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
 
 alias homEquiv_unit := homEquiv_apply
 alias homEquiv_counit := homEquiv_symm_apply
-attribute [simp] homEquiv_unit homEquiv_counit
+
+end Adjunction
+
+-- These lemmas are not global simp lemmas because certain adjunctions
+-- are constructed using `Adjunction.mkOfHomEquiv`, and we certainly
+-- do not want `dsimp` to apply `homEquiv_unit` or `homEquiv_counit`
+-- in that case. However, when proving general API results about adjunctions,
+-- it may be advisable to add a local simp attribute to these lemmas.
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
+
+namespace Adjunction
 
 section
 
@@ -289,12 +299,6 @@ structure CoreHomEquivUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   /-- The relationship between the counit and hom set equivalence of an adjunction -/
   homEquiv_counit : ∀ {X Y g}, (homEquiv X Y).symm g = F.map g ≫ counit.app Y := by aesop_cat
 
-namespace CoreHomEquivUnitCounit
-
-attribute [simp] homEquiv_unit homEquiv_counit
-
-end CoreHomEquivUnitCounit
-
 /-- This is an auxiliary data structure useful for constructing adjunctions.
 See `Adjunction.mkOfHomEquiv`.
 This structure won't typically be used anywhere else.
@@ -363,6 +367,8 @@ end CoreUnitCounit
 
 variable {F : C ⥤ D} {G : D ⥤ C}
 
+attribute [local simp] CoreHomEquivUnitCounit.homEquiv_unit CoreHomEquivUnitCounit.homEquiv_counit
+
 /--
 Construct an adjunction from the data of a `CoreHomEquivUnitCounit`, i.e. a hom set
 equivalence, unit and counit natural transformations together with proofs of the equalities
@@ -401,6 +407,7 @@ def mkOfHomEquiv (adj : CoreHomEquiv F G) : F ⊣ G :=
     homEquiv_unit := fun {X Y f} => by simp [← adj.homEquiv_naturality_right]
     homEquiv_counit := fun {X Y f} => by simp [← adj.homEquiv_naturality_left_symm] }
 
+@[simp]
 lemma mkOfHomEquiv_homEquiv (adj : CoreHomEquiv F G) :
     (mkOfHomEquiv adj).homEquiv = adj.homEquiv := by
   ext X Y g
