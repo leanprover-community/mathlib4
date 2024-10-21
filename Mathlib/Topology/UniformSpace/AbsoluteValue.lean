@@ -58,13 +58,8 @@ def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing R w
 
 /-- A real absolute value on a field determines a `NormedField` structure. -/
 def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
-  norm := v
-  dist_eq _ _ := rfl
-  dist_self := by simp only [sub_self, MulHom.toFun_eq_coe, coe_toMulHom, map_zero, implies_true]
-  dist_comm := v.map_sub
-  dist_triangle := v.sub_le
-  eq_of_dist_eq_zero := by simp only [MulHom.toFun_eq_coe, coe_toMulHom, map_sub_eq_zero_iff,
-    imp_self, implies_true]
+  toField := inferInstanceAs (Field K)
+  __ := v.toNormedRing
   norm_mul' := v.map_mul
 
 end AbsoluteValue
