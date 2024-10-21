@@ -17,10 +17,6 @@ definitions.
 
 Some useful results that relate the topology of the normed field to the discrete topology include:
 * `norm_eq_one_iff_ne_zero_of_discrete`
-
-A method for constructing a normed field instance from a given real absolute value on a field is
-given in:
-* `AbsoluteValue.toNormedField`
 -/
 
 -- Guard against import creep.
