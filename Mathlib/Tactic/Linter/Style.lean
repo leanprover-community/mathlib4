@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 
 import Lean.Elab.Command
+import Mathlib.Tactic.DeclarationNames
 
 /-!
 ## Style linters
@@ -12,10 +13,10 @@ import Lean.Elab.Command
 This file contains (currently one, eventually more) linters about stylistic aspects:
 these are only about coding style, but do not affect correctness nor global coherence of mathlib.
 
-Historically, these were ported from the `lint-style.py` Python script.
+Historically, some of these were ported from the `lint-style.py` Python script.
 -/
 
-open Lean Elab Command
+open Lean Parser Elab Command Meta
 
 namespace Mathlib.Linter
 
@@ -67,5 +68,57 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
 initialize addLinter setOptionLinter
 
 end Style.setOption
+
+/-- The `nameCheck` linter emits a warning on declarations whose name is non-standard style.
+(Currently, this only includes declarations whose name includes a double underscore.)
+
+**Why is this bad?** Double underscores in theorem names can be considered non-standard style and
+probably have been introduced by accident.
+**How to fix this?** Use single underscores to separate parts of a name, following standard naming
+conventions.
+-/
+register_option linter.style.nameCheck : Bool := {
+  defValue := false
+  descr := "enable the `nameCheck` linter"
+}
+
+namespace Style.nameCheck
+
+/-- Checks whether the original input of a given syntax contains "__". -/
+def contains_double_underscore (name : Name) : Bool :=
+  if name.isStr then
+    let string := name.getString!
+   -- let exceptions := []
+    let exceptions := ["___unexpand", "___macroRules", "___elabRules", "With_weak_namespace__"]
+    -- Check for exceptions
+    if exceptions.any (fun exception => 1 < (string.splitOn exception).length) then
+      false
+    else
+      -- Check for double underscore
+      1 < (string.splitOn "__").length
+  else
+    false
+
+@[inherit_doc linter.style.nameCheck]
+def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
+    unless Linter.getLinterValue linter.style.nameCheck (← getOptions) do
+      return
+    if (← get).messages.hasErrors then
+      return
+    let mut aliases := #[]
+    if let some exp := stx.find? (·.isOfKind `Lean.Parser.Command.export) then
+      aliases ← getAliasSyntax exp
+    for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
+      if id.getPos? == some default then continue
+      let declName := id.getId
+      if id.getKind == `ident then
+        if contains_double_underscore declName then
+          Linter.logLint linter.style.nameCheck id
+            m!"The declaration '{id}' contains '__', which does not follow the mathlib naming \
+              conventions. Consider using single underscores instead."
+
+initialize addLinter doubleUnderscore
+
+end Style.nameCheck
 
 end Mathlib.Linter
