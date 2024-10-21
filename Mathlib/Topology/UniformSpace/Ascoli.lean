@@ -456,13 +456,16 @@ and `F : ι → (X → α)`. Assume that:
 * For all `x`, the range of `i ↦ F i x` is contained in some fixed compact subset.
 
 Then `ι` is compact. -/
-theorem ArzelaAscoli.compactSpace_of_closedEmbedding [TopologicalSpace ι] {𝔖 : Set (Set X)}
-    (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (F_clemb : ClosedEmbedding (UniformOnFun.ofFun 𝔖 ∘ F))
+theorem ArzelaAscoli.compactSpace_of_isClosedEmbedding [TopologicalSpace ι] {𝔖 : Set (Set X)}
+    (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (F_clemb : IsClosedEmbedding (UniformOnFun.ofFun 𝔖 ∘ F))
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K)
     (F_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ i, F i x ∈ Q) :
     CompactSpace ι :=
   compactSpace_of_closed_inducing' 𝔖_compact F_clemb.toInducing F_clemb.isClosed_range
     F_eqcont F_pointwiseCompact
+
+@[deprecated (since := "2024-10-20")]
+alias ArzelaAscoli.compactSpace_of_closedEmbedding := ArzelaAscoli.compactSpace_of_isClosedEmbedding
 
 /-- A version of the **Arzela-Ascoli theorem**.
 
@@ -474,13 +477,13 @@ Let `X, ι` be topological spaces, `𝔖` a covering of `X` by compact subsets, 
 * For all `x ∈ ⋃₀ 𝔖`, the image of `s` under `i ↦ F i x` is contained in some fixed compact subset.
 
 Then `s` has compact closure in `ι`. -/
-theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] [T2Space α]
+theorem ArzelaAscoli.isCompact_closure_of_isClosedEmbedding [TopologicalSpace ι] [T2Space α]
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
-    (F_clemb : ClosedEmbedding (UniformOnFun.ofFun 𝔖 ∘ F))
+    (F_clemb : IsClosedEmbedding (UniformOnFun.ofFun 𝔖 ∘ F))
     {s : Set ι} (s_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn (F ∘ ((↑) : s → ι)) K)
     (s_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ i ∈ s, F i x ∈ Q) :
     IsCompact (closure s) := by
-  -- We apply `ArzelaAscoli.compactSpace_of_closedEmbedding` to the map
+  -- We apply `ArzelaAscoli.compactSpace_of_isClosedEmbedding` to the map
   -- `F ∘ (↑) : closure s → (X → α)`, for which all the hypotheses are easily verified.
   rw [isCompact_iff_compactSpace]
   have : ∀ K ∈ 𝔖, ∀ x ∈ K, Continuous (eval x ∘ F) := fun K hK x hx ↦
@@ -491,9 +494,13 @@ theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] 
   have cls_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ i ∈ closure s, F i x ∈ Q :=
     fun K hK x hx ↦ (s_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, closure_minimal hQ.2 <|
       hQ.1.isClosed.preimage (this K hK x hx)⟩
-  exact ArzelaAscoli.compactSpace_of_closedEmbedding 𝔖_compact
-    (F_clemb.comp isClosed_closure.closedEmbedding_subtype_val) cls_eqcont
+  exact ArzelaAscoli.compactSpace_of_isClosedEmbedding 𝔖_compact
+    (F_clemb.comp isClosed_closure.isClosedEmbedding_subtypeVal) cls_eqcont
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
+
+@[deprecated (since := "2024-10-20")]
+alias ArzelaAscoli.isCompact_closure_of_closedEmbedding :=
+  ArzelaAscoli.isCompact_closure_of_isClosedEmbedding
 
 /-- A version of the **Arzela-Ascoli theorem**.
 

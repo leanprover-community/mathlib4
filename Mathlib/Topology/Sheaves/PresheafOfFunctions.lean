@@ -121,7 +121,7 @@ this is a ring homomorphism (with respect to the pointwise ring operations on fu
 def map (X : TopCat.{u}ᵒᵖ) {R S : TopCommRingCat.{u}} (φ : R ⟶ S) :
     continuousFunctions X R ⟶ continuousFunctions X S where
   toFun g := g ≫ (forget₂ TopCommRingCat TopCat).map φ
-  -- Porting note: `ext` tactic does not work, since Lean can't see through `R ⟶ S` is just
+  -- Porting note (#11041): `ext` tactic does not work, since Lean can't see through `R ⟶ S` is just
   -- continuous ring homomorphism
   map_one' := ContinuousMap.ext fun _ => φ.1.map_one
   map_zero' := ContinuousMap.ext fun _ => φ.1.map_zero
