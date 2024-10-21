@@ -195,7 +195,7 @@ lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
     exact (measure_mono <| iInter_subset_of_subset n fun _ ht ↦ ht).trans (hs₃ n)
   · rw [union_compl_self]
 
-lemma disjoint_of_mutuallySingular (h : μ ⟂ₘ ν) : Disjoint μ ν := by
+lemma MutuallySingular.disjoint (h : μ ⟂ₘ ν) : Disjoint μ ν := by
   have h_bot_iff (ξ : Measure α) : ξ ≤ ⊥ ↔ ξ = 0 := by
       rw [le_bot_iff]
       rfl
@@ -209,8 +209,64 @@ lemma disjoint_of_mutuallySingular (h : μ ⟂ₘ ν) : Disjoint μ ν := by
   · exact Disjoint.mono inter_subset_right inter_subset_right disjoint_compl_right
   · exact hs.inter h.measurableSet_nullSet.compl
 
+lemma MutuallySingular.disjoint_ae (h : μ ⟂ₘ ν) : Disjoint (ae μ) (ae ν) := by
+  rw [disjoint_iff_inf_le]
+  intro s _
+  refine ⟨s ∪ h.nullSetᶜ, ?_, s ∪ h.nullSet, ?_, ?_⟩
+  · rw [mem_ae_iff, compl_union, compl_compl]
+    exact measure_inter_null_of_null_right _ h.measure_nullSet
+  · rw [mem_ae_iff, compl_union]
+    exact measure_inter_null_of_null_right _ h.measure_compl_nullSet
+  · rw [union_eq_compl_compl_inter_compl, union_eq_compl_compl_inter_compl,
+      ← compl_union, compl_compl, inter_union_compl, compl_compl]
+
+lemma disjoint_of_disjoint_ae (h : Disjoint (ae μ) (ae ν)) : Disjoint μ ν := by
+  rw [disjoint_iff_inf_le] at h ⊢
+  refine Measure.le_intro fun s hs _ ↦ ?_
+  rw [Measure.inf_apply hs]
+  have : (⊥ : Measure α) = 0 := rfl
+  simp only [this, Measure.coe_zero, Pi.zero_apply, nonpos_iff_eq_zero]
+  specialize h (mem_bot (s := sᶜ))
+  rw [mem_inf_iff] at h
+  obtain ⟨t₁, ht₁, t₂, ht₂, h_eq'⟩ := h
+  have h_eq : s = t₁ᶜ ∪ t₂ᶜ := by
+    rw [union_eq_compl_compl_inter_compl, compl_compl, compl_compl, ← h_eq', compl_compl]
+  rw [mem_ae_iff] at ht₁ ht₂
+  refine le_antisymm ?_ zero_le'
+  refine sInf_le_of_le (a := 0) (b := 0) ?_ le_rfl
+  rw [h_eq]
+  refine ⟨t₁ᶜ ∩ t₂, Eq.symm ?_⟩
+  rw [add_eq_zero]
+  constructor
+  · refine measure_inter_null_of_null_left _ ?_
+    exact measure_inter_null_of_null_left _ ht₁
+  · rw [compl_inter, compl_compl, union_eq_compl_compl_inter_compl,
+      union_eq_compl_compl_inter_compl, ← compl_union, compl_compl, compl_compl, inter_comm,
+      inter_comm t₁, union_comm, inter_union_compl]
+    exact ht₂
+
+lemma mutuallySingular_tfae : List.TFAE
+    [
+      μ ⟂ₘ ν,
+      Disjoint μ ν,
+      Disjoint (ae μ) (ae ν)
+    ] := by
+  tfae_have 1 → 2
+  | h =>  h.disjoint
+  tfae_have 2 → 1
+  | h => mutuallySingular_of_disjoint h
+  tfae_have 1 → 3
+  | h => h.disjoint_ae
+  tfae_have 3 → 2
+  | h => disjoint_of_disjoint_ae h
+  tfae_finish
+
+
 lemma mutuallySingular_iff_disjoint : μ ⟂ₘ ν ↔ Disjoint μ ν :=
-  ⟨disjoint_of_mutuallySingular, mutuallySingular_of_disjoint⟩
+  mutuallySingular_tfae.out 0 1
+
+lemma mutuallySingular_iff_disjoint_ae : μ ⟂ₘ ν ↔ Disjoint (ae μ) (ae ν) :=
+  mutuallySingular_tfae.out 0 2
 
 end Measure
 
