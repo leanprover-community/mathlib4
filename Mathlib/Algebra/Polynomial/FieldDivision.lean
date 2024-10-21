@@ -195,8 +195,9 @@ instance instNormalizationMonoid : NormalizationMonoid R[X] where
 theorem coe_normUnit {p : R[X]} : (normUnit p : R[X]) = C ↑(normUnit p.leadingCoeff) := by
   simp [normUnit]
 
+@[simp]
 theorem leadingCoeff_normalize (p : R[X]) :
-    leadingCoeff (normalize p) = normalize (leadingCoeff p) := by simp
+    leadingCoeff (normalize p) = normalize (leadingCoeff p) := by simp [normalize_apply]
 
 theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := by
   simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
@@ -524,7 +525,8 @@ theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
   simp [CommGroupWithZero.coe_normUnit _ this]
 
-theorem normalize_monic [DecidableEq R] (h : Monic p) : normalize p = p := by simp [h]
+theorem normalize_monic [DecidableEq R] (h : Monic p) : normalize p = p :=
+  h.normalize_eq_self
 
 theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
   by_cases H : x = 0
@@ -535,7 +537,9 @@ theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map 
       leadingCoeff_map, ← map_inv₀ f, ← map_C, ← Polynomial.map_mul,
       map_dvd_map _ f.injective (monic_mul_leadingCoeff_inv H)]
 
-theorem degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by simp
+@[simp]
+theorem degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by
+  simp [normalize_apply]
 
 theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
