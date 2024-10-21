@@ -176,7 +176,7 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] (hP : P ≠ ⊥) {i : ℕ} :
     simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk''_eq_mk,
       Submodule.Quotient.eq] using h
   · intro d'
-    refine Quotient.inductionOn' d' fun d => ?_
+    refine Quotient.inductionOn d' fun d => ?_
     have hd' := (mem_map (f := mkQ (P ^ i.succ))).mpr ⟨a * d, Ideal.mul_mem_right d _ a_mem, rfl⟩
     refine ⟨⟨_, hd'⟩, ?_⟩
     simp only [Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.Quotient.eq,

@@ -177,7 +177,7 @@ nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cy
   rw [Cycle.length_subsingleton_iff, Cycle.length_subsingleton_iff]
   revert s s'
   intro s s'
-  apply @Quotient.inductionOn₂' _ _ _ _ _ s s'
+  apply @Quotient.inductionOn₂ _ _ _ _ _ s s'
   intro l l' hl hl'
   simpa using formPerm_eq_formPerm_iff hl hl'
 
