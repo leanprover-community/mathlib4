@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.Antilipschitz
+import Mathlib.Data.Fintype.Lattice
 
 /-!
 # Isometries
@@ -482,6 +483,34 @@ theorem completeSpace_iff (e : α ≃ᵢ β) : CompleteSpace α ↔ CompleteSpac
 
 protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : CompleteSpace α :=
   e.completeSpace_iff.2 ‹_›
+
+/-- `Equiv.piCongrLeft'` as an `IsometryEquiv`: this is the natural
+`∀ i, Y i ≃ᵢ ∀ j, Y (e.symm j)` obtained from a bijection `ι ≃ ι'` of finite types.-/
+def piCongrLeft' {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι → Type*}
+    [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y i) ≃ᵢ ∀ j, Y (e.symm j) :=
+  mk (Equiv.piCongrLeft' _ e) (by
+    intro x1 x2
+    simp_rw [PseudoEMetricSpace.toEDist, pseudoEMetricSpacePi, instEDistForall,
+      Finset.sup_univ_eq_iSup]
+    exact (Equiv.iSup_comp (g := fun b ↦ edist (x1 b) (x2 b)) e.symm))
+
+/-- `Equiv.piCongrLeft` as an `IsometryEquiv`: this is the natural
+`∀ i, Y (e i) ≃ᵢ ∀ j, Y j` obtained from a bijection `ι ≃ ι'` of finite types.-/
+def piCongrLeft {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι' → Type*}
+    [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y (e i)) ≃ᵢ ∀ j, Y j :=
+  (piCongrLeft' e.symm).symm
+
+/-- `Equiv.sumArrowEquivProdArrow` as an `IsometryEquiv`.-/
+def sumArrowEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ) :=
+  mk (Equiv.sumArrowEquivProdArrow _ _ _) (by
+    intro f1 f2
+    simp_rw [PseudoEMetricSpace.toEDist, Prod.pseudoEMetricSpaceMax, pseudoEMetricSpacePi,
+      instEDistForall, Finset.sup_univ_eq_iSup, iSup_sum]
+    rfl)
+
+/-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `(Fin (m + n) → α)`.-/
+def finArrowProdHomeomorphFinAddArrow (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃ᵢ (Fin (m + n) → α) :=
+  sumArrowEquivProdArrow.symm.trans (piCongrLeft (Y := fun _ ↦ α) finSumFinEquiv)
 
 variable (ι α)
 
