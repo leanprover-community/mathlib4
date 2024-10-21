@@ -126,7 +126,7 @@ which
 * leave at least one goal that was not present before it ran;
 * are not excluded through `exclusions` or `ignoreBranch`;
 
-together with the total number of goals
+together with the total number of goals.
 -/
 partial
 def getManyGoals : InfoTree → Array (Syntax × Nat)
