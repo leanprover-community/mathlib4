@@ -66,26 +66,27 @@ a proof of depth `log (log b)` which will essentially never overflow before the 
 themselves exceed memory limits.
 -/
 partial def evalNatPow (a b : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.pow $a $b = $c) :=
-  if b.natLit! = 0 then -- a^0 = 1
+  if b.natLit! = 0 then
     haveI : $b =Q 0 := ⟨⟩
     ⟨q(nat_lit 1), q(natPow_zero)⟩
-  else if a.natLit! = 0 then -- 0^b = 0
+  else if a.natLit! = 0 then
     haveI : $a =Q 0 := ⟨⟩
     have b' : Q(ℕ) := mkRawNatLit (b.natLit! - 1)
     haveI : $b =Q Nat.succ $b' := ⟨⟩
     ⟨q(nat_lit 0), q(zero_natPow)⟩
-  else if a.natLit! = 1 then -- 1^b = 1
+  else if a.natLit! = 1 then
     haveI : $a =Q 1 := ⟨⟩
     ⟨q(nat_lit 1), q(one_natPow)⟩
-  else if b.natLit! = 1 then -- a^1 = a
+  else if b.natLit! = 1 then
     haveI : $b =Q 1 := ⟨⟩
     ⟨a, q(natPow_one)⟩
   else
-    let ⟨c, p⟩ := go b.natLit!.log2 a (mkRawNatLit 1) a b
+    let ⟨c, p⟩ := go b.natLit!.log2 a (mkRawNatLit 1) a b _ .rfl
     ⟨c, q(($p).run)⟩
 where
-  /-- Invariants: `a ^ b₀ = c₀`, `depth > 0`, `b >>> depth = b₀` -/
-  go (depth : Nat) (a b₀ c₀ b : Q(ℕ)) : (c : Q(ℕ)) × Q(IsNatPowT (Nat.pow $a $b₀ = $c₀) $a $b $c) :=
+  /-- Invariants: `a ^ b₀ = c₀`, `depth > 0`, `b >>> depth = b₀`, `p := Nat.pow $a $b₀ = $c₀` -/
+  go (depth : Nat) (a b₀ c₀ b : Q(ℕ)) (p : Q(Prop)) (hp : $p =Q (Nat.pow $a $b₀ = $c₀)) :
+      (c : Q(ℕ)) × Q(IsNatPowT $p $a $b $c) :=
     let b' := b.natLit!
     if depth ≤ 1 then
       let a' := a.natLit!
@@ -103,8 +104,8 @@ where
     else
       let d := depth >>> 1
       have hi : Q(ℕ) := mkRawNatLit (b' >>> d)
-      let ⟨c1, p1⟩ := go (depth - d) a b₀ c₀ hi
-      let ⟨c2, p2⟩ := go d a hi c1 b
+      let ⟨c1, p1⟩ := go (depth - d) a b₀ c₀ hi p (by exact hp)
+      let ⟨c2, p2⟩ := go d a hi c1 b q(Nat.pow $a $hi = $c1) ⟨⟩
       ⟨c2, q(($p1).trans $p2)⟩
 
 theorem intPow_ofNat (h1 : Nat.pow a b = c) :

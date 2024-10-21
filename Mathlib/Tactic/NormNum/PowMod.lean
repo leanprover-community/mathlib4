@@ -88,12 +88,13 @@ partial def evalNatPowMod (a b m : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.mod (Nat.pow 
   else
     have c₀ : Q(ℕ) := mkRawNatLit (a.natLit! % m.natLit!)
     haveI : $c₀ =Q Nat.mod $a $m := ⟨⟩
-    let ⟨c, p⟩ := go b.natLit!.log2 a m (mkRawNatLit 1) c₀ b
+    let ⟨c, p⟩ := go b.natLit!.log2 a m (mkRawNatLit 1) c₀ b _ .rfl
     ⟨c, q(($p).run)⟩
 where
   /-- Invariants: `a ^ b₀ % m = c₀`, `depth > 0`, `b >>> depth = b₀` -/
-  go (depth : Nat) (a m b₀ c₀ b : Q(ℕ)) :
-      (c : Q(ℕ)) × Q(IsNatPowModT (Nat.mod (Nat.pow $a $b₀) $m = $c₀) $a $b $m $c) :=
+  go (depth : Nat) (a m b₀ c₀ b : Q(ℕ))
+      (p : Q(Prop)) (hp : $p =Q (Nat.mod (Nat.pow $a $b₀) $m = $c₀)) :
+      (c : Q(ℕ)) × Q(IsNatPowModT $p $a $b $m $c) :=
     let b' := b.natLit!
     let m' := m.natLit!
     if depth ≤ 1 then
@@ -112,8 +113,8 @@ where
     else
       let d := depth >>> 1
       have hi : Q(ℕ) := mkRawNatLit (b' >>> d)
-      let ⟨c1, p1⟩ := go (depth - d) a m b₀ c₀ hi
-      let ⟨c2, p2⟩ := go d a m hi c1 b
+      let ⟨c1, p1⟩ := go (depth - d) a m b₀ c₀ hi p (by exact hp)
+      let ⟨c2, p2⟩ := go d a m hi c1 b q(Nat.mod (Nat.pow $a $hi) $m = $c1) ⟨⟩
       ⟨c2, q(($p1).trans $p2)⟩
 end NormNum
 end Meta
