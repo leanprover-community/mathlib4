@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Order.Nat
 
 /-!
 # Definition and basic properties of extended natural numbers
@@ -262,8 +262,8 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
 
 protected lemma exists_nat_gt {n : ℕ∞} (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
   lift n to ℕ using hn
-  obtain ⟨n, hn⟩ := exists_nat_gt n
-  exact ⟨n, Nat.cast_lt.2 hn⟩
+  obtain ⟨m, hm⟩ := exists_gt n
+  exact ⟨m, Nat.cast_lt.2 hm⟩
 
 @[simp] lemma sub_eq_top : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top
 lemma sub_ne_top : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne_top
