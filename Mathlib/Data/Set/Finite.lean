@@ -273,6 +273,11 @@ protected theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) (
   ext
   simp
 
+@[simp]
+protected theorem toFinset_nontrivial {s : Set α} (h : s.Finite) :
+    h.toFinset.Nontrivial ↔ s.Nontrivial := by
+  rw [Finset.Nontrivial, h.coe_toFinset]
+
 end Finite
 
 /-! ### Fintype instances

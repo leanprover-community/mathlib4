@@ -664,6 +664,10 @@ alias ⟨_, toFinset_strict_mono⟩ := toFinset_ssubset_toFinset
 theorem disjoint_toFinset [Fintype s] [Fintype t] :
     Disjoint s.toFinset t.toFinset ↔ Disjoint s t := by simp only [← disjoint_coe, coe_toFinset]
 
+@[simp]
+theorem toFinset_nontrivial {s : Set α} [Fintype s] : s.toFinset.Nontrivial ↔ s.Nontrivial := by
+  rw [Finset.Nontrivial, coe_toFinset]
+
 section DecidableEq
 
 variable [DecidableEq α] (s t) [Fintype s] [Fintype t]
