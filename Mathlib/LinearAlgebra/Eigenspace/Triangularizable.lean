@@ -235,7 +235,6 @@ theorem inf_iSup_unifEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x �
       apply Finset.sup_le
       intro i _hi
       simpa using hlk i
-    -- simp_rw [f.maxGenEigenspace_eq_genEigenspace_finrank] at this ⊢
     rw [LinearMap.ker_noncommProd_eq_of_supIndep_ker, ← Finset.sup_eq_iSup]
     · have := Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
       apply this.mono_right
@@ -260,6 +259,8 @@ theorem inf_iSup_unifEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x �
     hg₄ ⟨(hg₀ ▸ hg₁ hm₀), hg₂ hm₂⟩
   rwa [← hg₃ hy₁ hm₂ hy₂]
 
+set_option linter.deprecated false in
+@[deprecated inf_iSup_unifEigenspace (since := "2024-10-11")]
 theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈ p) :
     p ⊓ ⨆ μ, ⨆ k, f.genEigenspace μ k = ⨆ μ, ⨆ k, p ⊓ f.genEigenspace μ k := by
   simp_rw [← (f.genEigenspace _).mono.directed_le.inf_iSup_eq]
@@ -307,7 +308,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
   have hg₃ : InjOn g ↑(⨆ k, f.genEigenspace μ k) := by
     apply LinearMap.injOn_of_disjoint_ker (subset_refl _)
     have this := f.independent_genEigenspace
-    simp_rw [f.iSup_genEigenspace_eq_genEigenspace_finrank] at this ⊢
+    simp_rw [← f.maxGenEigenspace_def, f.maxGenEigenspace_eq_genEigenspace_finrank] at this ⊢
     rw [LinearMap.ker_noncommProd_eq_of_supIndep_ker, ← Finset.sup_eq_iSup]
     · simpa only [End.genEigenspace_def] using
         Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
@@ -327,8 +328,10 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
 theorem eq_iSup_inf_unifEigenspace [FiniteDimensional K V] (k : ℕ∞)
     (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, f.unifEigenspace μ k = ⊤) :
     p = ⨆ μ, p ⊓ f.unifEigenspace μ k := by
-  rw [← inf_iSup_genEigenspace h, h', inf_top_eq]
+  rw [← inf_iSup_unifEigenspace h, h', inf_top_eq]
 
+set_option linter.deprecated false in
+@[deprecated eq_iSup_inf_unifEigenspace (since := "2024-10-11")]
 theorem eq_iSup_inf_genEigenspace [FiniteDimensional K V]
     (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, ⨆ k, f.genEigenspace μ k = ⊤) :
     p = ⨆ μ, ⨆ k, p ⊓ f.genEigenspace μ k := by
@@ -342,7 +345,7 @@ theorem Module.End.unifEigenspace_restrict_eq_top
     {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V] {k : ℕ∞}
     (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, f.unifEigenspace μ k = ⊤) :
     ⨆ μ, Module.End.unifEigenspace (LinearMap.restrict f h) μ k = ⊤ := by
-  have := congr_arg (Submodule.comap p.subtype) (Submodule.eq_iSup_inf_genEigenspace h h')
+  have := congr_arg (Submodule.comap p.subtype) (Submodule.eq_iSup_inf_unifEigenspace k h h')
   have h_inj : Function.Injective p.subtype := Subtype.coe_injective
   simp_rw [Submodule.inf_genEigenspace f p h, Submodule.comap_subtype_self,
     ← Submodule.map_iSup, Submodule.comap_map_eq_of_injective h_inj] at this
@@ -354,8 +357,5 @@ theorem Module.End.iSup_genEigenspace_restrict_eq_top
     {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V]
     (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, ⨆ k, f.genEigenspace μ k = ⊤) :
     ⨆ μ, ⨆ k, Module.End.genEigenspace (LinearMap.restrict f h) μ k = ⊤ := by
-  have := congr_arg (Submodule.comap p.subtype) (Submodule.eq_iSup_inf_genEigenspace h h')
-  have h_inj : Function.Injective p.subtype := Subtype.coe_injective
-  simp_rw [Submodule.inf_genEigenspace f p h, Submodule.comap_subtype_self,
-    ← Submodule.map_iSup, Submodule.comap_map_eq_of_injective h_inj] at this
-  exact this.symm
+  simp_rw [← maxGenEigenspace_def] at h' ⊢
+  apply Module.End.unifEigenspace_restrict_eq_top h h'
