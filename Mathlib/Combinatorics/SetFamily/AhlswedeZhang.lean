@@ -397,7 +397,7 @@ lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ �
     supSum 𝒜 = card α * ∑ k ∈ range (card α), (k : ℚ)⁻¹ := by
   set m := 𝒜.card with hm
   clear_value m
-  induction' m using Nat.strong_induction_on with m ih generalizing 𝒜
+  induction m using Nat.strongRecOn generalizing 𝒜 with | ind m ih => _
   replace ih := fun 𝒜 h𝒜 h𝒜₁ h𝒜₂ ↦ @ih _ h𝒜 𝒜 h𝒜₁ h𝒜₂ rfl
   obtain ⟨a, rfl⟩ | h𝒜₃ := h𝒜₁.exists_eq_singleton_or_nontrivial
   · refine supSum_singleton ?_

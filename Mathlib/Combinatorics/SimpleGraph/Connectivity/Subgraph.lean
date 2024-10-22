@@ -120,9 +120,11 @@ theorem toSubgraph_cons_nil_eq_subgraphOfAdj (h : G.Adj u v) :
     (cons h nil).toSubgraph = G.subgraphOfAdj h := by simp
 
 theorem mem_verts_toSubgraph (p : G.Walk u v) : w ∈ p.toSubgraph.verts ↔ w ∈ p.support := by
-  induction' p with _ x y z h p' ih
-  · simp
-  · have : w = y ∨ w ∈ p'.support ↔ w ∈ p'.support :=
+  induction p with
+  | nil => simp
+  | cons h p' ih =>
+    rename_i x y z
+    have : w = y ∨ w ∈ p'.support ↔ w ∈ p'.support :=
       ⟨by rintro (rfl | h) <;> simp [*], by simp (config := { contextual := true })⟩
     simp [ih, or_assoc, this]
 
