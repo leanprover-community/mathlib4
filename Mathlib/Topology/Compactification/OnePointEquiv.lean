@@ -140,10 +140,6 @@ lemma divSlope_inv [DivisionRing K] : Function.LeftInverse (@divSlope K _) slope
   |none => exact g₀
   |some t => exact g₁ t
 
-/-- `divSlope` is surjective. -/
-lemma divSlope_surjective [DivisionRing K] : Function.Surjective (@divSlope K _) :=
-  fun r ↦ ⟨slope_inv r, divSlope_inv r⟩
-
 /-- An equivalence between the one-point extension of a division ring `K`
 and the projective line over `K`. -/
 noncomputable def divSlope_equiv [DivisionRing K] :
