@@ -296,7 +296,7 @@ variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
 
 section Orbit
 
--- TODO: This proof is redoing a special case of `MulActionIsInvariantBlock.isBlock`. Can we move
+-- TODO: This proof is redoing a special case of `MulAction.IsInvariantBlock.isBlock`. Can we move
 -- this lemma earlier to golf?
 @[to_additive (attr := simp)]
 theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
