@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 
@@ -272,7 +273,7 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
     congr (config := { closePost := false }) 1
     ext v
     have N : 0 < n + 2 := by norm_num
-    have : ((p 1) fun i : Fin 1 => 0) = 0 := ContinuousMultilinearMap.map_zero _
+    have : ((p 1) fun _ : Fin 1 => 0) = 0 := ContinuousMultilinearMap.map_zero _
     simp [comp_rightInv_aux1 N, lt_irrefl n, this, comp_rightInv_aux2, -Set.toFinset_setOf]
 
 /-! ### Coincidence of the left and the right inverse -/
@@ -630,10 +631,10 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp  {f : E → F} {g : F → G}
     simp only [id_eq, eventually_atTop, ge_iff_le]
     rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
     obtain ⟨a₀, b₀, hab⟩ : ∃ a₀ b₀, ∀ (a b : ℕ), a₀ ≤ a → b₀ ≤ b →
-        q.partialSum a (p.partialSum b y - (p 0) fun x ↦ 0) ∈ v := by
+        q.partialSum a (p.partialSum b y - (p 0) fun _ ↦ 0) ∈ v := by
       simpa using hy (v_open.mem_nhds hv)
     refine ⟨a₀, fun a ha ↦ ?_⟩
-    have : Tendsto (fun b ↦ q.partialSum a (p.partialSum b y - (p 0) fun x ↦ 0)) atTop
+    have : Tendsto (fun b ↦ q.partialSum a (p.partialSum b y - (p 0) fun _ ↦ 0)) atTop
         (𝓝 (q.partialSum a (f (x + y) - f x))) := by
       have : ContinuousAt (q.partialSum a) (f (x + y) - f x) :=
         (partialSum_continuous q a).continuousAt

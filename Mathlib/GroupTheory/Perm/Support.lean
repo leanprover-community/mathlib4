@@ -562,7 +562,7 @@ theorem two_le_card_support_of_ne_one {f : Perm α} (h : f ≠ 1) : 2 ≤ f.supp
 theorem card_support_swap_mul {f : Perm α} {x : α} (hx : f x ≠ x) :
     (swap x (f x) * f).support.card < f.support.card :=
   Finset.card_lt_card
-    ⟨fun z hz => (mem_support_swap_mul_imp_mem_support_ne hz).left, fun h =>
+    ⟨fun _ hz => (mem_support_swap_mul_imp_mem_support_ne hz).left, fun h =>
       absurd (h (mem_support.2 hx)) (mt mem_support.1 (by simp))⟩
 
 theorem card_support_swap {x y : α} (hxy : x ≠ y) : (swap x y).support.card = 2 :=

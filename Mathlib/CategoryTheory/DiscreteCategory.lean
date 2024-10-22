@@ -73,7 +73,7 @@ See <https://stacks.math.columbia.edu/tag/001A>
 -/
 instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
   Hom X Y := ULift (PLift (X.as = Y.as))
-  id X := ULift.up (PLift.up rfl)
+  id _ := ULift.up (PLift.up rfl)
   comp {X Y Z} g f := by
     cases X
     cases Y
@@ -188,7 +188,7 @@ composition of two discrete functors.
 @[simps!]
 def functorComp {I : Type u₁} {J : Type u₁'} (f : J → C) (g : I → J) :
     Discrete.functor (f ∘ g) ≅ Discrete.functor (Discrete.mk ∘ g) ⋙ Discrete.functor f :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- For functors out of a discrete category,
 a natural transformation is just a collection of maps,
@@ -272,8 +272,8 @@ protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
   let F : Discrete α ⥤ (Discrete α)ᵒᵖ := Discrete.functor fun x => op (Discrete.mk x)
   { functor := F.leftOp
     inverse := F
-    unitIso := NatIso.ofComponents fun ⟨X⟩ => Iso.refl _
-    counitIso := Discrete.natIso fun ⟨X⟩ => Iso.refl _ }
+    unitIso := NatIso.ofComponents fun ⟨_⟩ => Iso.refl _
+    counitIso := Discrete.natIso fun ⟨_⟩ => Iso.refl _ }
 
 variable {C : Type u₂} [Category.{v₂} C]
 
@@ -297,7 +297,7 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
     { obj := fun F j => F.obj ⟨j⟩
       map := fun f j => f.app ⟨j⟩ }
   unitIso := Iso.refl _
-  counitIso := NatIso.ofComponents (fun F => (NatIso.ofComponents (fun j => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun F => (NatIso.ofComponents (fun _ => Iso.refl _)
     (by
       rintro ⟨x⟩ ⟨y⟩ f
       obtain rfl : x = y := Discrete.eq_of_hom f

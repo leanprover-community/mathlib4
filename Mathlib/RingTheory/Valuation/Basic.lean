@@ -207,6 +207,9 @@ theorem zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x = 0 �
 theorem ne_zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x ≠ 0 ↔ x ≠ 0 :=
   map_ne_zero v
 
+lemma pos_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : 0 < v x ↔ x ≠ 0 := by
+  rw [zero_lt_iff, ne_zero_iff]
+
 theorem unit_map_eq (u : Rˣ) : (Units.map (v : R →* Γ₀) u : Γ₀) = v u :=
   rfl
 
@@ -322,17 +325,16 @@ theorem map_one_sub_of_lt (h : v x < 1) : v (1 - x) = 1 := by
   simpa only [v.map_one, v.map_neg] using v.map_add_eq_of_lt_left h
 
 theorem one_lt_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 < v x ↔ v x⁻¹ < 1 := by
-  simpa using (inv_lt_inv₀ (v.ne_zero_iff.2 h) one_ne_zero).symm
+  simp [inv_lt_one₀ (v.pos_iff.2 h)]
 
 theorem one_le_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 ≤ v x ↔ v x⁻¹ ≤ 1 := by
-  convert (one_lt_val_iff v (inv_ne_zero h)).symm.not <;>
-  push_neg <;> simp only [inv_inv]
+  simp [inv_le_one₀ (v.pos_iff.2 h)]
 
 theorem val_lt_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x < 1 ↔ 1 < v x⁻¹ := by
-  simpa only [inv_inv] using (one_lt_val_iff v (inv_ne_zero h)).symm
+  simp [one_lt_inv₀ (v.pos_iff.2 h)]
 
 theorem val_le_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x ≤ 1 ↔ 1 ≤ v x⁻¹ := by
-  simpa [inv_inv] using (one_le_val_iff v (inv_ne_zero h)).symm
+  simp [one_le_inv₀ (v.pos_iff.2 h)]
 
 theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} : v x = 1 ↔ v x⁻¹ = 1 := by
   by_cases h : x = 0

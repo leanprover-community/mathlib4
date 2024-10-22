@@ -359,7 +359,7 @@ end Units
 
 namespace IsUnit
 
-variable {M : Type*} {N : Type*} [Monoid M] [Monoid N] {x : M}
+variable {M : Type*} {N : Type*} [Monoid M] [Monoid N]
 
 theorem map' {f : M → N} (hf : IsMonoidHom f) {x : M} (h : IsUnit x) : IsUnit (f x) :=
   h.map (MonoidHom.of hf)

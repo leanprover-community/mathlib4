@@ -25,11 +25,11 @@ All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 * `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace List
 
-variable {l l₁ l₂ l₃ : List α} {a b : α} {m n : ℕ}
+variable {l l₁ l₂ : List α} {a b : α}
 
 /-! ### prefix, suffix, infix -/
 

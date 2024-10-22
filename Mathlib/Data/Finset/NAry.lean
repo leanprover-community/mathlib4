@@ -64,13 +64,16 @@ theorem mem_image₂_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image₂ f
 theorem mem_image₂_iff (hf : Injective2 f) : f a b ∈ image₂ f s t ↔ a ∈ s ∧ b ∈ t := by
   rw [← mem_coe, coe_image₂, mem_image2_iff hf, mem_coe, mem_coe]
 
+@[gcongr]
 theorem image₂_subset (hs : s ⊆ s') (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s' t' := by
   rw [← coe_subset, coe_image₂, coe_image₂]
   exact image2_subset hs ht
 
+@[gcongr]
 theorem image₂_subset_left (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s t' :=
   image₂_subset Subset.rfl ht
 
+@[gcongr]
 theorem image₂_subset_right (hs : s ⊆ s') : image₂ f s t ⊆ image₂ f s' t :=
   image₂_subset hs Subset.rfl
 
@@ -579,7 +582,7 @@ variable {ι : Type*} {α β γ : ι → Type*} [DecidableEq ι] [Fintype ι] [�
 lemma piFinset_image₂ (f : ∀ i, α i → β i → γ i) (s : ∀ i, Finset (α i)) (t : ∀ i, Finset (β i)) :
     piFinset (fun i ↦ image₂ (f i) (s i) (t i)) =
       image₂ (fun a b i ↦ f _ (a i) (b i)) (piFinset s) (piFinset t) := by
-  ext; simp only [mem_piFinset, mem_image₂, Classical.skolem, forall_and, Function.funext_iff]
+  ext; simp only [mem_piFinset, mem_image₂, Classical.skolem, forall_and, funext_iff]
 
 end Fintype
 

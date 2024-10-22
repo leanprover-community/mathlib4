@@ -90,7 +90,7 @@ theorem coeFn_abs (f : Lp E p μ) : ⇑|f| =ᵐ[μ] fun x => |f x| :=
 noncomputable instance instNormedLatticeAddCommGroup [Fact (1 ≤ p)] :
     NormedLatticeAddCommGroup (Lp E p μ) :=
   { Lp.instLattice, Lp.instNormedAddCommGroup with
-    add_le_add_left := fun f g => add_le_add_left
+    add_le_add_left := fun _ _ => add_le_add_left
     solid := fun f g hfg => by
       rw [← coeFn_le] at hfg
       simp_rw [Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top f) (Lp.eLpNorm_ne_top g)]

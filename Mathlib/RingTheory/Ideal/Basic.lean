@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Tactic.FinCases
+import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.Algebra.Field.IsField
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -808,7 +810,7 @@ theorem one_not_mem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
 -- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
 @[simp (high)]
 theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F)
-    [IsLocalRingHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
+    [IsLocalHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
   ⟨fun h ha => h <| ha.map f, fun h ha => h <| ha.of_map⟩
 
 theorem coe_subset_nonunits [Semiring α] {I : Ideal α} (h : I ≠ ⊤) : (I : Set α) ⊆ nonunits α :=
