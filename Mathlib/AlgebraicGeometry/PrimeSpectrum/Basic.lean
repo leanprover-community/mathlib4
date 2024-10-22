@@ -11,6 +11,7 @@ import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
