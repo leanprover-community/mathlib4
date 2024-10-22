@@ -553,7 +553,6 @@ theorem prod.lift_fst {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W �
     prod.lift f g ≫ prod.fst = f :=
   limit.lift_π _ _
 
--- Porting note (#10618): simp removes as simp can prove this
 @[reassoc]
 theorem prod.lift_snd {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     prod.lift f g ≫ prod.snd = g :=
