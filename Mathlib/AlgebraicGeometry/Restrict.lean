@@ -272,7 +272,7 @@ alias Scheme.restrictFunctor_map_ofRestrict_assoc := Scheme.homOfLE_ι_assoc
 @[deprecated (since := "2024-10-20")]
 alias Scheme.restrictFunctor_map_base := Scheme.homOfLE_base
 @[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_app_aux := Scheme.homOfLE_app_aux
+alias Scheme.restrictFunctor_map_app_aux := Scheme.ι_image_homOfLE_le_ι_image
 @[deprecated (since := "2024-10-20")]
 alias Scheme.restrictFunctor_map_app := Scheme.homOfLE_app
 
