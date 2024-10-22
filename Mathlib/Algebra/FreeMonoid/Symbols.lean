@@ -1,0 +1,35 @@
+/-
+Copyright (c) 2024 Hannah Fechtner. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Author: Hannah Fechtner
+-/
+
+import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Data.Finset.Basic
+
+/-!
+# The finite set of symbols in a FreeMonoid element
+
+This is separated from the main FreeMonoid file, as it imports the finiteness hierarchy
+-/
+
+variable {α : Type*} [DecidableEq α]
+
+open FreeMonoid
+
+/-- the set of unique symbols in a free monoid element -/
+def symbols (a : FreeMonoid α) : Finset α := List.toFinset a
+
+@[to_additive (attr := simp)]
+theorem symbols_one : symbols (1 : FreeMonoid α) = ∅ := rfl
+
+theorem symbols_of {m : α} : symbols (of m) = {m} := rfl
+
+@[to_additive (attr := simp)]
+theorem symbols_mul {a b : FreeMonoid α} : symbols (a * b : FreeMonoid α) =
+    (symbols a) ∪ (symbols b) := by
+  simp only [symbols, List.mem_toFinset, Finset.mem_union]
+  apply List.toFinset_append
+
+theorem mem_symbols {m : α} {a : FreeMonoid α} : m ∈ symbols a ↔ m ∈ a :=
+  List.mem_toFinset
