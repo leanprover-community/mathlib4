@@ -264,22 +264,21 @@ namespace Style.header
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.style.header (← getOptions) do
+  let mainModule ← getMainModule
+  unless Linter.getLinterValue linter.style.header (← getOptions) || (← isInMathlib mainModule) do
     return
   if (← get).messages.hasErrors then
     return
-  let mainModule ← getMainModule
   -- `Mathlib.lean` imports `Mathlib.Tactic`, which the broad imports check below would flag.
   -- Since that file is imports-only, we can simply skip linting it.
   if mainModule == `Mathlib then return
-  unless ← isInMathlib mainModule do return
   let fm ← getFileMap
   let md := (getMainModuleDoc (← getEnv)).toArray
   -- The end of the first module doc-string, or the end of the file if there is none.
   let firstDocModPos := match md[0]? with
                           | none     => fm.positions.back
                           | some doc => fm.ofPosition doc.declarationRange.endPos
-  unless stx.getTailPos? == some firstDocModPos do
+  unless stx.getTailPos?.getD default ≤ firstDocModPos do
     return
   -- We try to parse the file up to `firstDocModPos`.
   let upToStx ← parseUpToHere firstDocModPos <|> (do
