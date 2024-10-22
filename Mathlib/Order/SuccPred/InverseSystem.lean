@@ -7,7 +7,7 @@ import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.UpperLower.Basic
 
 /-!
-# Cardinality of nodes in specific inverse systems
+# Definition of direct systems, inverse systems, and cardinalities in specific inverse systems
 
 In this file we compute the cardinality of each node in an inverse system `F i` indexed by a
 well-order in which every map between successive nodes has constant fiber `X i`, and every limit
@@ -52,10 +52,28 @@ the distinguished bijection that is compatible with the projections to all `X i`
 
 open Order Set
 
-variable {ι : Type*} [Preorder ι] {F X : ι → Type*} ⦃i j : ι⦄ (h : i ≤ j)
+variable {ι : Type*} [Preorder ι] {F G X : ι → Type*} ⦃i j : ι⦄ (h : i ≤ j)
   (f : ∀ ⦃i j : ι⦄, i ≤ j → F j → F i)
 
-/-- A directed system indexed by a preorder is a contravariant functor from the preorder
+variable (G) in
+/-- A directed system is a functor from a category (directed poset) to another category. -/
+class DirectedSystem (f : ∀ i j, i ≤ j → G i → G j) : Prop where
+  map_self' : ∀ i x h, f i i h x = x
+  map_map' : ∀ {i j k} (hij hjk x), f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x
+
+section
+
+variable (f : ∀ i j, i ≤ j → G i → G j) [DirectedSystem G f]
+
+theorem DirectedSystem.map_self i x h : f i i h x = x :=
+  DirectedSystem.map_self' i x h
+theorem DirectedSystem.map_map {i j k} (hij hjk x) :
+    f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
+  DirectedSystem.map_map' hij hjk x
+
+end
+
+/-- A inverse system indexed by a preorder is a contravariant functor from the preorder
 to another category. It is dual to `DirectedSystem`. -/
 class InverseSystem : Prop where
   map_self ⦃i⦄ (x : F i) : f le_rfl x = x

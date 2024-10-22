@@ -3,8 +3,9 @@ Copyright (c) 2019 Kenny Lau, Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 -/
-import Mathlib.Data.Finset.Order
 import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Data.Finset.Order
+import Mathlib.Order.SuccPred.InverseSystem
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient
@@ -41,24 +42,6 @@ variable {R : Type u} [Ring R]
 variable {ι : Type v}
 variable [Preorder ι]
 variable (G : ι → Type w)
-
-/-- A directed system is a functor from a category (directed poset) to another category. -/
-class DirectedSystem (f : ∀ i j, i ≤ j → G i → G j) : Prop where
-  map_self' : ∀ i x h, f i i h x = x
-  map_map' : ∀ {i j k} (hij hjk x), f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x
-
-section
-
-variable {G}
-variable (f : ∀ i j, i ≤ j → G i → G j) [DirectedSystem G fun i j h => f i j h]
-
-theorem DirectedSystem.map_self i x h : f i i h x = x :=
-  DirectedSystem.map_self' i x h
-theorem DirectedSystem.map_map {i j k} (hij hjk x) :
-    f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
-  DirectedSystem.map_map' hij hjk x
-
-end
 
 namespace Module
 
