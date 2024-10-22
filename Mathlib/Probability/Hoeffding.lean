@@ -177,7 +177,7 @@ theorem tilt_first_deriv [IsFiniteMeasure μ] [NeZero μ] (t a b : ℝ)
 In order to deal with the differentiation of parametric integrals,
 `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof. -/
 theorem tilt_second_deriv  [IsFiniteMeasure μ] (t a b : ℝ)
-    (X : Ω → ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b):
+    (X : Ω → ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     let g := fun t ↦ μ[fun ω ↦ rexp (t * X ω) * X ω]
     let g' := fun t ↦ μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]
     Integrable (fun ω ↦ rexp (t * X ω) * (X ω ^ 2)) μ → HasDerivAt g (g' t) t := by
@@ -349,7 +349,7 @@ theorem cum_deriv_one [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
 
 /-- Second derivative of cumulant `log μ[rexp (t * X ω))]`-/
 theorem cum_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
-    (X : Ω → ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b):
+    (X : Ω → ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     let g' := fun t ↦ (μ.tilted (fun ω ↦ t * X ω))[X];
     let g'' := fun t ↦ (μ.tilted (fun ω ↦ t * X ω)) [X ^ 2] - (μ.tilted (fun ω ↦ t * X ω))[X] ^ 2;
     ∀ x : ℝ, HasDerivAt g' (g'' x) x := by
