@@ -317,7 +317,7 @@ instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).toType :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
 
 theorem enum_succ_eq_top {o : Ordinal} :
-    enum (α := (succ o).toType) (· < ·) ⟨o, by rw [type_lt]; exact lt_succ o⟩ = ⊤ :=
+    enum (α := (succ o).toType) (· < ·) ⟨o, type_toType _ ▸ lt_succ o⟩ = ⊤ :=
   rfl
 
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
@@ -328,7 +328,7 @@ theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder
   · rw [Subtype.mk_lt_mk, lt_succ_iff]
 
 theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.toType :=
-  ⟨has_succ_of_type_succ_lt (by rwa [type_lt])⟩
+  ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
 
 @[deprecated toType_noMax_of_succ_lt (since := "2024-08-26")]
 alias out_no_max_of_succ_lt := toType_noMax_of_succ_lt
@@ -1072,7 +1072,7 @@ def familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {
 /-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a well-ordering
 given by the axiom of choice. -/
 def familyOfBFamily (o : Ordinal) (f : ∀ a < o, α) : o.toType → α :=
-  familyOfBFamily' (· < ·) (type_lt o) f
+  familyOfBFamily' (· < ·) (type_toType o) f
 
 @[simp]
 theorem bfamilyOfFamily'_typein {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) (i) :
@@ -1092,8 +1092,9 @@ theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrde
 
 @[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
-    familyOfBFamily o f (enum (α := o.toType) (· < ·) ⟨i, hi.trans_eq (type_lt _).symm⟩) = f i hi :=
-  familyOfBFamily'_enum _ (type_lt o) f _ _
+    familyOfBFamily o f (enum (α := o.toType) (· < ·) ⟨i, hi.trans_eq (type_toType _).symm⟩)
+    = f i hi :=
+  familyOfBFamily'_enum _ (type_toType o) f _ _
 
 /-- The range of a family indexed by ordinals. -/
 def brange (o : Ordinal) (f : ∀ a < o, α) : Set α :=

@@ -194,7 +194,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     sInf { a : Cardinal | ∃ (ι : Type u) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = a } := by
   refine le_antisymm (le_csInf (cof_lsub_def_nonempty o) ?_) (csInf_le' ?_)
   · rintro a ⟨ι, f, hf, rfl⟩
-    rw [← type_lt o]
+    rw [← type_toType o]
     refine
       (cof_type_le fun a => ?_).trans
         (@mk_le_of_injective _ _
@@ -208,7 +208,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     simp_rw [← hf, lt_lsub_iff] at this
     cases' this with i hi
     refine ⟨enum (α := o.toType) (· < ·) ⟨f i, ?_⟩, ?_, ?_⟩
-    · rw [type_lt, ← hf]
+    · rw [type_toType, ← hf]
       apply lt_lsub
     · rw [mem_preimage, typein_enum]
       exact mem_range_self i
@@ -216,8 +216,8 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
   · rcases cof_eq (α := o.toType) (· < ·) with ⟨S, hS, hS'⟩
     let f : S → Ordinal := fun s => typein LT.lt s.val
     refine ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self (o := o) i)
-      (le_of_forall_lt fun a ha => ?_), by rwa [type_lt o] at hS'⟩
-    rw [← type_lt o] at ha
+      (le_of_forall_lt fun a ha => ?_), by rwa [type_toType o] at hS'⟩
+    rw [← type_toType o] at ha
     rcases hS (enum (· < ·) ⟨a, ha⟩) with ⟨b, hb, hb'⟩
     rw [← typein_le_typein, typein_enum] at hb'
     exact hb'.trans_lt (lt_lsub.{u, u} f ⟨b, hb⟩)
