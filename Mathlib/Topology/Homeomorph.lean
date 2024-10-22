@@ -915,7 +915,7 @@ noncomputable def homeomorph : X ≃ₜ Y where
 
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
 protected lemma inducing : Inducing f := (hf.homeomorph f).inducing
-protected lemma isQuotientMap : IsQuotientMap f := (hf.homeomorph f).isQuotientMap
+lemma isQuotientMap : IsQuotientMap f := (hf.homeomorph f).isQuotientMap
 protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
 lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
 lemma isClosedEmbedding : IsClosedEmbedding f := (hf.homeomorph f).isClosedEmbedding
