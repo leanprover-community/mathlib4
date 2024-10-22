@@ -196,10 +196,22 @@ theorem exists_linearIndependent_pair_of_one_lt_finrank [NoZeroSMulDivisors R M]
     ∃ y, LinearIndependent R ![x, y] :=
   exists_linearIndependent_pair_of_one_lt_rank (one_lt_rank_of_one_lt_finrank h) hx
 
-lemma Module.finrank_quotient_add_finrank [Module.Finite R M] (N : Submodule R M) :
+/-- Rank-nullity theorem using `finrank`. -/
+lemma Submodule.finrank_quotient_add_finrank [Module.Finite R M] (N : Submodule R M) :
     finrank R (M ⧸ N) + finrank R N = finrank R M := by
   rw [← Cardinal.natCast_inj, Module.finrank_eq_rank, Nat.cast_add, Module.finrank_eq_rank,
     Submodule.finrank_eq_rank]
   exact HasRankNullity.rank_quotient_add_rank _
+
+/-- Rank-nullity theorem using `finrank` and subtraction. -/
+lemma Submodule.finrank_quotient [Module.Finite R M] (N : Submodule R M) :
+    finrank R (M ⧸ N) = finrank R M - finrank R N := by
+  rw [← N.finrank_quotient_add_finrank]
+  omega
+
+/-- Similar to `Submodule.finrank_quotient` but for a module over an `R`-algebra `S`. -/
+lemma Submodule.finrank_quotient' [Module.Finite R M] {S : Type*} [Ring S] [SMul R S] [Module S M]
+    [IsScalarTower R S M] (N : Submodule S M) : finrank R (M ⧸ N) = finrank R M - finrank R N :=
+  (N.restrictScalars R).finrank_quotient
 
 end Finrank
