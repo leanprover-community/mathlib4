@@ -65,6 +65,11 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
     simp only [mod_two_of_bodd, cond]; cases bodd x <;> rfl
   simp [hn, hm, mod_two_iff_bod, bit, div2_val, Nat.shiftLeft_succ, two_mul]
 
+theorem binaryRec_of_ne_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
+    (h : n ≠ 0) :
+    binaryRec z f n = n.bit_decomp ▸ f n.bodd n.div2 (binaryRec z f n.div2) := by
+  rw [binaryRec, dif_neg h, eqRec_eq_cast, eqRec_eq_cast]; rfl
+
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by

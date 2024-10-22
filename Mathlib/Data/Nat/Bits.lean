@@ -83,9 +83,6 @@ lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   cases n using bitCasesOn with
   | h b n => cases b <;> simp
 
-theorem div2_add_bodd (n : Nat) : 2 * div2 n + cond (bodd n) 1 0 = n := by
-  rw [← mod_two_of_bodd, div2_val, Nat.div_add_mod]
-
 @[simp] lemma div2_zero : div2 0 = 0 := rfl
 
 @[simp] lemma div2_one : div2 1 = 0 := rfl
@@ -93,13 +90,13 @@ theorem div2_add_bodd (n : Nat) : 2 * div2 n + cond (bodd n) 1 0 = n := by
 lemma div2_two : div2 2 = 1 := rfl
 
 @[simp]
-lemma div2_bit (b n) : div2 (bit b n) = n := by
-  rw [div2_val, bit_div_two]
-
-@[simp]
-lemma div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
+lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   cases n using bitCasesOn with
   | h b n => cases b <;> simp [bit_val, div2_val, succ_div]
+
+@[simp]
+lemma div2_bit (b n) : div2 (bit b n) = n := by
+  rw [div2_val, bit_div_two]
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
@@ -136,6 +133,11 @@ lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
 /-- Lean takes the unprimed name for `Nat.shiftLeft_eq m n : m <<< n = m * 2 ^ n`. -/
 @[simp] lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 @[simp] lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
+
+lemma div2_lt_self (h : n ≠ 0) : div2 n < n :=
+  div_lt_self (Nat.pos_iff_ne_zero.mpr h) Nat.one_lt_two
+
+@[deprecated (since := "2024-10-22")] alias binaryRec_decreasing := div2_lt_self
 
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
@@ -181,6 +183,26 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   rw [← shiftRight_add, Nat.add_comm] at this
   simp only [bodd_eq_one_and_ne_zero] at this
   exact this
+
+/-! ### `boddDiv2_eq` and `bodd` -/
+
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-10-22")]
+theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    rw [boddDiv2, ih]
+    cases hn : n.bodd <;> simp [hn]
+
+@[simp]
+theorem div2_bit0 (n) : div2 (2 * n) = n :=
+  div2_bit false n
+
+-- simp can prove this
+theorem div2_bit1 (n) : div2 (2 * n + 1) = n :=
+  div2_bit true n
 
 /-! ### `bit0` and `bit1` -/
 
