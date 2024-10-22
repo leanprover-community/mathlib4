@@ -123,7 +123,7 @@ example : True ∧ True := by
   constructor
   bi_trivial
 
--- exclude from linting `fail_if_success` and `success_if_fail_with_msg`
+-- Exclude `fail_if_success` and `success_if_fail_with_msg` from linting.
 set_option linter.style.multiGoal true in
 example : True := by
   fail_if_success done
