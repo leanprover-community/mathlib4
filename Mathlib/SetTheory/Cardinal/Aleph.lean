@@ -373,27 +373,27 @@ theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #
 
 @[simp]
 theorem aleph1_le_lift {c : Cardinal.{u}} : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
-  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_le]
+  simpa using lift_le (a := ℵ₁)
 
 @[simp]
 theorem lift_le_aleph1 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
-  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_le]
+  simpa using lift_le (b := ℵ₁)
 
 @[simp]
 theorem aleph1_lt_lift {c : Cardinal.{u}} : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
-  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_lt]
+  simpa using lift_lt (a := ℵ₁)
 
 @[simp]
 theorem lift_lt_aleph1 {c : Cardinal.{u}} : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
-  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_lt]
+  simpa using lift_lt (b := ℵ₁)
 
 @[simp]
 theorem aleph1_eq_lift {c : Cardinal.{u}} : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
-  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_inj]
+  simpa using lift_inj (a := ℵ₁)
 
 @[simp]
 theorem lift_eq_aleph1 {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
-  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_inj]
+  simpa using lift_inj (b := ℵ₁)
 
 section deprecated
 
