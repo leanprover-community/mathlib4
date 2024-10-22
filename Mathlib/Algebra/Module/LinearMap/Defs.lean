@@ -110,10 +110,6 @@ class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiri
 
 end
 
--- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
--- `σ` becomes a metavariable but that's fine because it's an `outParam`
--- attribute [nolint dangerousInstance] SemilinearMapClass.toAddHomClass
-
 -- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to `lean4#3701`.
 -- attribute [simp] map_smulₛₗ
 
@@ -139,7 +135,6 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMon
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
--- Porting note: the `dangerousInstance` linter has become smarter about `outParam`s
 instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
