@@ -162,7 +162,8 @@ lemma leftShift_add (a n' : ℤ) (hn' : n + a = n') :
 lemma shift_add (a : ℤ) :
     (γ₁ + γ₂).shift a = γ₁.shift a + γ₂.shift a := by
   ext p q hpq
-  simp [shift_v']
+  dsimp
+  simp only [shift_v', add_v]
 
 variable (K L)
 
@@ -182,14 +183,14 @@ def leftShiftAddEquiv (n a n' : ℤ) (hn' : n + a = n') :
     Cochain K L n ≃+ Cochain (K⟦a⟧) L n' where
   toFun γ := γ.leftShift a n' hn'
   invFun γ := γ.leftUnshift n hn'
-  left_inv γ := by simp
-  right_inv γ := by simp
-  map_add' γ γ' := by simp
+  left_inv γ := by dsimp; simp only [leftUnshift_leftShift]
+  right_inv γ := by dsimp; simp only [leftShift_leftUnshift]
+  map_add' γ γ' := by dsimp; simp only [leftShift_add]
 
 /-- The additive map `Cochain K L n →+ Cochain (K⟦a⟧) (L⟦a⟧) n`. -/
 @[simps!]
 def shiftAddHom (n a : ℤ) : Cochain K L n →+ Cochain (K⟦a⟧) (L⟦a⟧) n :=
-  AddMonoidHom.mk' (fun γ => γ.shift a) (by simp)
+  AddMonoidHom.mk' (fun γ => γ.shift a) (by dsimp; simp)
 
 variable (n)
 
@@ -286,7 +287,8 @@ lemma leftShift_smul (a n' : ℤ) (hn' : n + a = n') (x : R) :
 lemma shift_smul (a : ℤ) (x : R) :
     (x • γ).shift a = x • (γ.shift a) := by
   ext p q hpq
-  simp [shift_v']
+  dsimp
+  simp only [shift_v', smul_v]
 
 variable (K L R)
 
@@ -295,21 +297,21 @@ the category is `R`-linear. -/
 @[simps!]
 def rightShiftLinearEquiv (n a n' : ℤ) (hn' : n' + a = n) :
     Cochain K L n ≃ₗ[R] Cochain K (L⟦a⟧) n' :=
-  (rightShiftAddEquiv K L n a n' hn').toLinearEquiv (fun x γ => by simp)
+  (rightShiftAddEquiv K L n a n' hn').toLinearEquiv (fun x γ => by dsimp; simp)
 
 /-- The additive equivalence `Cochain K L n ≃+ Cochain (K⟦a⟧) L n'` when `n + a = n'` and
 the category is `R`-linear. -/
 @[simps!]
 def leftShiftLinearEquiv (n a n' : ℤ) (hn : n + a = n') :
     Cochain K L n ≃ₗ[R] Cochain (K⟦a⟧) L n' :=
-  (leftShiftAddEquiv K L n a n' hn).toLinearEquiv (fun x γ => by simp)
+  (leftShiftAddEquiv K L n a n' hn).toLinearEquiv (fun x γ => by dsimp; simp)
 
 /-- The linear map `Cochain K L n ≃+ Cochain (K⟦a⟧) (L⟦a⟧) n` when the category is `R`-linear. -/
 @[simps!]
 def shiftLinearMap (n a : ℤ) :
     Cochain K L n →ₗ[R] Cochain (K⟦a⟧) (L⟦a⟧) n where
   toAddHom := shiftAddHom K L n a
-  map_smul' _ _ := by simp
+  map_smul' _ _ := by dsimp; simp
 
 variable {K L R}
 
@@ -327,7 +329,8 @@ lemma leftShift_units_smul (a n' : ℤ) (hn' : n + a = n') (x : Rˣ) :
 lemma shift_units_smul (a : ℤ) (x : Rˣ) :
     (x • γ).shift a = x • (γ.shift a) := by
   ext p q hpq
-  simp [shift_v']
+  dsimp
+  simp only [shift_v', units_smul_v]
 
 @[simp]
 lemma rightUnshift_smul {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) (x : R) :

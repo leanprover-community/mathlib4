@@ -228,7 +228,7 @@ def mapCochainComplexShiftIso (n : ℤ) :
     shiftFunctor _ n ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ) ≅
       F.mapHomologicalComplex (ComplexShape.up ℤ) ⋙ shiftFunctor _ n :=
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
-    (by aesop_cat)) (fun _ => by ext; dsimp; rw [id_comp, comp_id])
+    (by dsimp; simp)) (fun _ => by ext; dsimp; rw [id_comp, comp_id])
 
 instance commShiftMapCochainComplex :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ where
