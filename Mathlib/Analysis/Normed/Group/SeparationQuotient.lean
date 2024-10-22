@@ -75,25 +75,8 @@ def nullSubgroup : AddSubgroup M where
 lemma inseparable_iff_norm_zero (x y : M) : Inseparable x y ↔ ‖x - y‖ = 0 := by
   rw [Metric.inseparable_iff, dist_eq_norm]
 
-lemma isClosed_nullSubgroup : IsClosed (@nullSubgroup M _ : Set M) := by
-  rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
-  intro x hx
-  rw [Metric.mem_nhds_iff]
-  use ‖x‖ / 2
-  have : 0 < ‖x‖ := by
-    apply Ne.lt_of_le _ (norm_nonneg x)
-    exact fun a ↦ hx (id (Eq.symm a))
-  constructor
-  · exact half_pos this
-  · intro y hy
-    simp only [mem_ball, dist_eq_norm] at hy
-    have : ‖x‖ / 2 < ‖y‖ := by
-      calc ‖x‖ / 2  = ‖x‖ - ‖x‖ / 2 := by ring
-      _ < ‖x‖ - ‖y - x‖ := by exact sub_lt_sub_left hy ‖x‖
-      _ = ‖x‖ - ‖x - y‖ := by rw [← norm_neg (y-x), ← neg_sub y x]
-      _ ≤ ‖x - (x - y)‖ := by exact norm_sub_norm_le x (x - y)
-      _ = ‖y‖ := by rw [sub_sub_self x y]
-    exact ne_of_gt (lt_of_le_of_lt (div_nonneg (norm_nonneg x) (zero_le_two)) this)
+lemma isClosed_nullSubgroup : IsClosed (@nullSubgroup M _ : Set M) :=
+  isClosed_singleton.preimage continuous_norm
 
 instance : Nonempty (@nullSubgroup M _) := ⟨0⟩
 
@@ -132,9 +115,7 @@ theorem surjective_normedMk : Function.Surjective (@normedMk M _) :=
 /-- The kernel of `normedMk` is `nullSubgroup`. -/
 theorem ker_normedMk : (@normedMk M _).ker = nullSubgroup := by
   rw[ker, normedMk]
-  simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mk_toAddMonoidHom]
   ext x
-  simp only [AddMonoidHom.mem_ker, AddMonoidHom.mk'_apply, mkAddGroupHom_apply]
   exact mk_eq_zero_iff x
 
 /-- The operator norm of the projection is at most `1`. -/
@@ -143,12 +124,10 @@ theorem norm_normedMk_le : ‖(@normedMk M _)‖ ≤ 1 :=
     one_mul, le_refl]
 
 lemma eq_of_inseparable (f : NormedAddGroupHom M N) (hf : ∀ x ∈ nullSubgroup, f x = 0) :
-    ∀ x y, Inseparable x y → f x = f y := by
-  intro x y h
-  rw [inseparable_iff_norm_zero] at h
-  apply eq_of_sub_eq_zero
-  rw [← map_sub f x y]
-  exact hf (x - y) h
+    ∀ x y, Inseparable x y → f x = f y :=
+  fun _ _ h ↦ eq_of_sub_eq_zero <| by
+    rw [← map_sub]
+    exact hf _ <| inseparable_iff_norm_zero .. |>.mp h
 
 /-- The lift of a group hom to the separation quotient as a group hom. -/
 noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
@@ -168,6 +147,8 @@ noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
 theorem liftNormedAddGroupHom_apply (f : NormedAddGroupHom M N) (hf : ∀ x ∈ nullSubgroup, f x = 0)
     (x : M) : liftNormedAddGroupHom f hf (mk x) = f x := rfl
 
+/-- For a norm-continuous group homomorphism `f`, its lift to the separation quotient
+is bounded by the norm of `f`-/
 theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
     (hf : ∀ x ∈ nullSubgroup, f x = 0) (x : SeparationQuotient M) :
     ‖liftNormedAddGroupHom f hf x‖ ≤ ‖f‖ * ‖x‖ := by

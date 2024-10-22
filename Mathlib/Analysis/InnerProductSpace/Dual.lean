@@ -97,17 +97,14 @@ lemma inner_eq_zero_of_left (x y : E) (h : ‖x‖ = 0) :
   _ = (0 * 0) * re ⟪y, y⟫_𝕜 := by rw [(mem_nullSubmodule_iff 𝕜 E).mp h]
   _ = 0 := by ring
 
-lemma inner_nullSubmodule_right_eq_zero (x y : E) (h : y ∈ nullSubmodule 𝕜 E) : ⟪x, y⟫_𝕜 = 0 := by
+lemma inner_nullSubmodule_right_eq_zero (x y : E) (h : ‖y‖ = 0) : ⟪x, y⟫_𝕜 = 0 := by
   rw [inner_eq_zero_symm]
-  exact inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E y x h
+  exact inner_eq_zero_of_left 𝕜 E y x h
 
-lemma norm_sub_eq_norm (x y : E) (h : y ∈ (nullSubmodule 𝕜 E)) : ‖x - y‖ = ‖x‖ := by
-  rw [← sq_eq_sq (norm_nonneg _) (norm_nonneg _), sq, sq,
-    ← @inner_self_eq_norm_mul_norm 𝕜 E _ _ _ x, ← @inner_self_eq_norm_mul_norm 𝕜 E _ _ _ (x-y),
-    inner_sub_sub_self, inner_nullSubmodule_right_eq_zero 𝕜 E x y h,
-    inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E y x h,
-    inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E y y h]
-  simp only [sub_zero, add_zero]
+lemma norm_sub_eq_norm (x y : E) (h : ‖y‖ = 0) : ‖x - y‖ = ‖x‖ := by
+  apply le_antisymm ?_ ?_
+  · simpa [h] using norm_sub_le x y
+  · simpa [h] using norm_add_le (x - y) y
 
 /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
 lemma nullSubmodule_le_ker_toDualMap (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) := by
@@ -122,7 +119,7 @@ lemma nullSubmodule_le_ker_toDualMap' : nullSubmodule 𝕜 E ≤ ker (toDualMap 
   refine LinearMap.mem_ker.mpr ?_
   ext y
   simp only [toDualMap_apply, ContinuousLinearMap.zero_apply]
-  exact inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E x y hx
+  exact inner_eq_zero_of_left 𝕜 E x y hx
 
 lemma isClosed_nullSubmodule : IsClosed (nullSubmodule 𝕜 E : Set E) := isClosed_nullSubgroup
 
