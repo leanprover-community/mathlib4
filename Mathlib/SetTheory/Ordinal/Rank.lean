@@ -16,6 +16,8 @@ universe u
 
 variable {α : Type u} {a b : α}
 
+/-! ### Rank of an accessible value -/
+
 namespace Acc
 
 variable {r : α → α → Prop}
@@ -38,6 +40,8 @@ theorem rank_lt_of_rel (hb : Acc r b) (h : r a b) : (hb.inv h).rank < hb.rank :=
     exact Ordinal.le_iSup _ (⟨a, h⟩ : {a // r a b})
 
 end Acc
+
+/-! ### Rank in a well-founded relation -/
 
 namespace IsWellFounded
 
