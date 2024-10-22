@@ -43,7 +43,9 @@ Hence `÷` projects down to a map `divSlope` from `ℙ K (Fin 2 → K)` to `OneP
 that takes a line through the origin and returns its slope. For a vertical line
 the slope is `∞`.
 -/
+
 variable {K : Type*}
+namespace OnePointEquiv
 /-- A modified division from a structure with `Zero` and `Div` to its
  `OnePoint` extension. With notation `÷` for `divOnePoint`,
   we have in particular that `1 ÷ 0 = ∞`. -/
@@ -139,13 +141,14 @@ lemma divSlope_inv [DivisionRing K] : Function.LeftInverse (@divSlope K _) slope
   cases a with
   |none => exact g₀
   |some t => exact g₁ t
+end OnePointEquiv
 
 /-- An equivalence between the one-point extension of a division ring `K`
 and the projective line over `K`. -/
 noncomputable def divSlope_equiv [DivisionRing K] :
   OnePoint K ≃ ℙ K (Fin 2 → K) where
-  toFun     := slope_inv
-  invFun    := divSlope
-  left_inv  := divSlope_inv
+  toFun     := OnePointEquiv.slope_inv
+  invFun    := OnePointEquiv.divSlope
+  left_inv  := OnePointEquiv.divSlope_inv
   right_inv := Function.rightInverse_of_injective_of_leftInverse
-    divSlope_injective divSlope_inv
+    OnePointEquiv.divSlope_injective OnePointEquiv.divSlope_inv
