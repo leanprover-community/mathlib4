@@ -125,6 +125,7 @@ def benchOutput (jsonInput : String) : IO String := do
   -- `[..., (none, #[a₁, a₂, a₃]), ...]`.
   -- The `boundᵢ` entry becomes `none` for the collapsed entries, so that we know that these
   -- should be printed individually instead of inside a `<details><summary>`-block.
+  -- A single bin with just a single file is also marked with `none`, for the same reason.
   let ts1 := togetherSorted.groupBy (·.2.size == 1 && ·.2.size == 1)
   let ts2 := List.join <| ts1.map fun l ↦
     if (l.getD 0 default).2.size == 1 then
@@ -136,8 +137,7 @@ def benchOutput (jsonInput : String) : IO String := do
   for (bound, gs) in ts2 do
     overall := overall ++ [
       match bound with
-        -- These entries are from "singleton" files in their range;
-        -- we print them individually.
+        -- These entries are from "singleton" files in their range; we print them individually.
         | none => toTable gs
         -- These get a collapsible summary instead.
         | some roundedDiff => toCollapsibleTable gs roundedDiff]
