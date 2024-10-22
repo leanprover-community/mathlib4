@@ -173,9 +173,9 @@ def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
     Cochain K L n ≃+ Cochain K (L⟦a⟧) n' where
   toFun γ := γ.rightShift a n' hn'
   invFun γ := γ.rightUnshift n hn'
-  left_inv γ := by simp
-  right_inv γ := by simp
-  map_add' γ γ' := by simp
+  left_inv γ := by dsimp; simp only [rightUnshift_rightShift]
+  right_inv γ := by dsimp; simp only [rightShift_rightUnshift]
+  map_add' γ γ' := by dsimp; simp only [rightShift_add]
 
 /-- The additive equivalence `Cochain K L n ≃+ Cochain (K⟦a⟧) L n'` when `n + a = n'`. -/
 @[simps]
@@ -190,7 +190,7 @@ def leftShiftAddEquiv (n a n' : ℤ) (hn' : n + a = n') :
 /-- The additive map `Cochain K L n →+ Cochain (K⟦a⟧) (L⟦a⟧) n`. -/
 @[simps!]
 def shiftAddHom (n a : ℤ) : Cochain K L n →+ Cochain (K⟦a⟧) (L⟦a⟧) n :=
-  AddMonoidHom.mk' (fun γ => γ.shift a) (by dsimp; simp)
+  AddMonoidHom.mk' (fun γ => γ.shift a) (by intros; dsimp; simp only [shift_add])
 
 variable (n)
 
@@ -297,21 +297,23 @@ the category is `R`-linear. -/
 @[simps!]
 def rightShiftLinearEquiv (n a n' : ℤ) (hn' : n' + a = n) :
     Cochain K L n ≃ₗ[R] Cochain K (L⟦a⟧) n' :=
-  (rightShiftAddEquiv K L n a n' hn').toLinearEquiv (fun x γ => by dsimp; simp)
+  (rightShiftAddEquiv K L n a n' hn').toLinearEquiv
+    (fun x γ => by dsimp; simp only [rightShift_smul])
 
 /-- The additive equivalence `Cochain K L n ≃+ Cochain (K⟦a⟧) L n'` when `n + a = n'` and
 the category is `R`-linear. -/
 @[simps!]
 def leftShiftLinearEquiv (n a n' : ℤ) (hn : n + a = n') :
     Cochain K L n ≃ₗ[R] Cochain (K⟦a⟧) L n' :=
-  (leftShiftAddEquiv K L n a n' hn).toLinearEquiv (fun x γ => by dsimp; simp)
+  (leftShiftAddEquiv K L n a n' hn).toLinearEquiv
+    (fun x γ => by dsimp; simp only [leftShift_smul])
 
 /-- The linear map `Cochain K L n ≃+ Cochain (K⟦a⟧) (L⟦a⟧) n` when the category is `R`-linear. -/
 @[simps!]
 def shiftLinearMap (n a : ℤ) :
     Cochain K L n →ₗ[R] Cochain (K⟦a⟧) (L⟦a⟧) n where
   toAddHom := shiftAddHom K L n a
-  map_smul' _ _ := by dsimp; simp
+  map_smul' _ _ := by dsimp; simp only [shift_smul]
 
 variable {K L R}
 
@@ -528,7 +530,8 @@ def leftUnshift {n' a : ℤ} (γ : Cocycle (K⟦a⟧) L n') (n : ℤ) (hn : n + 
 @[simps!]
 def shift (γ : Cocycle K L n) (a : ℤ) :
     Cocycle (K⟦a⟧) (L⟦a⟧) n :=
-  Cocycle.mk (γ.1.shift a) _ rfl (by simp)
+  Cocycle.mk (γ.1.shift a) _ rfl
+    (by simp only [Cochain.δ_shift, δ_eq_zero, Cochain.shift_zero, smul_zero])
 
 end Cocycle
 
