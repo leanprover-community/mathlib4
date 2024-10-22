@@ -109,8 +109,7 @@ theorem encard_ne_zero : s.encard ≠ 0 ↔ s.Nonempty := by
 
 theorem encard_union_eq (h : Disjoint s t) : (s ∪ t).encard = s.encard + t.encard := by
   classical
-  have e := (Equiv.Set.union (by rwa [subset_empty_iff, ← disjoint_iff_inter_eq_empty])).symm
-  simp [encard, ← PartENat.card_congr e, PartENat.card_sum, PartENat.withTopEquiv]
+  simp [encard, PartENat.card_congr (Equiv.Set.union h), PartENat.card_sum, PartENat.withTopEquiv]
 
 theorem encard_insert_of_not_mem {a : α} (has : a ∉ s) : (insert a s).encard = s.encard + 1 := by
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]

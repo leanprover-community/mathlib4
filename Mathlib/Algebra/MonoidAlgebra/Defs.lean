@@ -86,7 +86,7 @@ instance MonoidAlgebra.instIsCancelAdd [IsCancelAdd k] : IsCancelAdd (MonoidAlge
   inferInstanceAs (IsCancelAdd (G →₀ k))
 
 instance MonoidAlgebra.coeFun : CoeFun (MonoidAlgebra k G) fun _ => G → k :=
-  Finsupp.instCoeFun
+  inferInstanceAs (CoeFun (G →₀ k) _)
 
 end
 
@@ -823,7 +823,7 @@ instance instIsCancelAdd [IsCancelAdd k] : IsCancelAdd (AddMonoidAlgebra k G) :=
   inferInstanceAs (IsCancelAdd (G →₀ k))
 
 instance coeFun : CoeFun k[G] fun _ => G → k :=
-  Finsupp.instCoeFun
+  inferInstanceAs (CoeFun (G →₀ k) _)
 
 end AddMonoidAlgebra
 

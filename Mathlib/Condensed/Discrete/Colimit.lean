@@ -276,7 +276,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u+1))
   simp only [types_comp_apply, isoFinYoneda_inv_app, counitApp_app]
   apply presheaf_ext.{u, u+1} (X := X) (Y := X) (f := f)
   intro x
-  erw [incl_of_counitAppApp]
+  rw [incl_of_counitAppApp]
   simp only [counitAppAppImage, CompHausLike.coe_of]
   letI : Fintype (fiber.{u, u+1} f x) :=
     Fintype.ofInjective (sigmaIncl.{u, u+1} f x).1 Subtype.val_injective
@@ -551,7 +551,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   simp only [types_comp_apply, isoFinYoneda_inv_app, counitApp_app]
   apply presheaf_ext.{u, u} (X := X) (Y := X) (f := f)
   intro x
-  erw [incl_of_counitAppApp]
+  rw [incl_of_counitAppApp]
   simp only [counitAppAppImage, CompHausLike.coe_of]
   letI : Fintype (fiber.{u, u} f x) :=
     Fintype.ofInjective (sigmaIncl.{u, u} f x).1 Subtype.val_injective

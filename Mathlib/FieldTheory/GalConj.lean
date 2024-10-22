@@ -10,22 +10,8 @@ import Mathlib.FieldTheory.NormalClosure
 TODO
 -/
 
--- #17893
-theorem Algebra.IsAlgebraic.tower_bot (K L A) [CommRing K] [Field L] [Ring A]
-    [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
-    [Nontrivial A] [Algebra.IsAlgebraic K A] :
-    Algebra.IsAlgebraic K L :=
-  ⟨fun x ↦ by
-    simpa [isAlgebraic_algebraMap_iff, (algebraMap L A).injective] using
-      Algebra.IsAlgebraic.isAlgebraic (R := K) (A := A) (algebraMap _ _ x)⟩
-
 variable (F E E' : Type*) [Field F] [Field E] [Algebra F E]
   [Field E'] [Algebra F E'] [Algebra E E'] [IsScalarTower F E E']
-
--- #17894
-instance [Algebra.IsAlgebraic F E] : IsAlgClosure F (AlgebraicClosure E) where
-  isAlgebraic := .trans (L := E)
-  isAlgClosed := inferInstance
 
 noncomputable abbrev NormalClosure : Type _ := normalClosure F E (AlgebraicClosure E)
 
