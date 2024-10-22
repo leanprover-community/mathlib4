@@ -399,11 +399,11 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
     decidableEq := instDecidableEqNum
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem add_of_nat (m n) : ((m + n : ℕ) : Num) = m + n :=
   add_ofNat' _ _
 
-@[norm_cast]  -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem to_nat_to_int (n : Num) : ((n : ℕ) : ℤ) = n :=
   cast_to_nat _
 
@@ -422,7 +422,7 @@ theorem of_natCast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n :
 @[deprecated (since := "2024-04-17")]
 alias of_nat_cast := of_natCast
 
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
   ⟨fun h => Function.LeftInverse.injective to_of_nat h, congr_arg _⟩
 
@@ -1324,7 +1324,7 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
 @[simp, norm_cast]
 theorem cast_sub [Ring α] (m n) : ((m - n : ZNum) : α) = m - n := by simp [sub_eq_neg_add]
 
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem neg_of_int : ∀ n, ((-n : ℤ) : ZNum) = -n
   | (_ + 1 : ℕ) => rfl
   | 0 => by rw [Int.cast_neg]
