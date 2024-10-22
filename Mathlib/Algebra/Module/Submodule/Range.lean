@@ -277,6 +277,12 @@ theorem comap_subtype_eq_top {p p' : Submodule R M} : comap p.subtype p' = ⊤ �
 theorem comap_subtype_self : comap p.subtype p = ⊤ :=
   comap_subtype_eq_top.2 le_rfl
 
+@[simp]
+lemma comap_subtype_le_iff {p q r : Submodule R M} :
+    q.comap p.subtype ≤ r.comap p.subtype ↔ p ⊓ q ≤ p ⊓ r :=
+  ⟨fun h ↦ by simpa using map_mono (f := p.subtype) h,
+   fun h ↦ by simpa using comap_mono (f := p.subtype) h⟩
+
 theorem range_inclusion (p q : Submodule R M) (h : p ≤ q) :
     range (inclusion h) = comap q.subtype p := by
   rw [← map_top, inclusion, LinearMap.map_codRestrict, map_top, range_subtype]
