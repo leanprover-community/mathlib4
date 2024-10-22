@@ -951,7 +951,7 @@ theorem BijOn.subset_left {r : Set α} (hf : BijOn f s t) (hrs : r ⊆ s) :
 theorem BijOn.insert (h₁ : BijOn f s t) (h₂ : f a ∉ t) :
     BijOn f (insert a s) (insert (f a) t) := by
   repeat rw [insert_eq]
-  refine Set.BijOn.union (bijOn_singleton.mpr rfl) h₁ ?_
+  refine (bijOn_singleton.mpr rfl).union h₁ ?_
   simp only [singleton_union, injOn_insert fun x ↦ (h₂ (h₁.mapsTo x)), h₁.injOn, mem_image,
     not_exists, not_and, true_and]
   exact fun _ hx h ↦ h₂ (h ▸ h₁.mapsTo hx)
