@@ -344,6 +344,14 @@ lemma compTranspose_eq (x y z : C) [Closed x] [Closed y] :
 This exists to streamline the proof of MonoidalClosed.assoc -/
 lemma comp_eq (x y z : C) [Closed x] [Closed y] : comp x y z = curry (compTranspose x y z) := rfl
 
+/-!
+The proofs of associativity and unitality use the following outline:
+  1. Take adjoint transpose on each side of the equality (uncurry_injective)
+  2. Do whatever rewrites/simps are necessary to apply uncurry_curry
+  3. Conclude with simp (+ a possible exact)
+-/
+
+/-- Left unitality of the enriched structure -/
 lemma id_comp (x y : C) [Closed x] [Closed y] :
     (λ_ ((ihom x).obj y)).inv ≫ id x ▷ _ ≫ comp x x y = 𝟙 _:= by
   apply uncurry_injective
@@ -352,6 +360,7 @@ lemma id_comp (x y : C) [Closed x] [Closed y] :
       uncurry_curry, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc,
       uncurry_id_eq_ev _ _]
 
+/-- Right unitality of the enriched structure -/
 lemma comp_id (x y : C) [Closed x] [Closed y] :
     (ρ_ ((ihom x).obj y)).inv ≫ _ ◁ id y ≫ comp x y y = 𝟙 _ := by
   apply uncurry_injective
@@ -362,6 +371,7 @@ lemma comp_id (x y : C) [Closed x] [Closed y] :
   rw [← uncurry_natural_left]
   simp [id_eq, uncurry_id_eq_ev]
 
+/-- Associativity of the enriched structure -/
 lemma assoc (w x y z : C) [Closed w] [Closed x] [Closed y] :
     (α_ _ _ _).inv ≫ comp w x y ▷ _ ≫ comp w y z = _ ◁ comp x y z ≫ comp w x z := by
   apply uncurry_injective
