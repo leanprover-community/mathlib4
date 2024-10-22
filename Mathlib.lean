@@ -711,6 +711,7 @@ import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.PUnitInstances.Algebra
+import Mathlib.Algebra.PUnitInstances.GCDMonoid
 import Mathlib.Algebra.PUnitInstances.Module
 import Mathlib.Algebra.PUnitInstances.Order
 import Mathlib.Algebra.Periodic
