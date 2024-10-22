@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kei Tsukamoto, Kazumi Kasaura, Naoto Onda, Sho sonoda, Yuma Mizuno
 -/
 
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+--import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.Probability.Notation
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
@@ -99,7 +99,7 @@ lemma tilt_var_bound [IsProbabilityMeasure μ] (a b t : ℝ) (X : Ω → ℝ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b)
     (hX : AEMeasurable X μ) :
     variance X (μ.tilted (fun ω ↦ t * X ω)) ≤ ((b - a) / 2) ^ 2 := by
-  have : IsProbabilityMeasure (μ.tilted fun ω ↦ t * X ω) :=
+  have _ : IsProbabilityMeasure (μ.tilted fun ω ↦ t * X ω) :=
     isProbabilityMeasure_tilted (integrable_expt_bound μ hX h)
   exact variance_le_sq_of_bounded
       ((tilted_absolutelyContinuous μ fun ω ↦ t * X ω) h)
@@ -116,7 +116,7 @@ theorem integrable_bounded [IsFiniteMeasure μ] (a b : ℝ)
 /-- Derivation of `μ[exp (t * X ω)]` is `μ[exp (t * X ω) * X ω]`.
 In order to deal with the differentiation of parametric integrals,
 `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof. -/
-theorem tilt_first_deriv [IsFiniteMeasure μ] [NeZero μ] (t a b : ℝ)
+theorem tilt_first_deriv [IsFiniteMeasure μ] (t a b : ℝ)
     (X : Ω → ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b):
     let g := fun t ↦ μ[fun ω ↦ rexp (t * X ω)]
     let g' := fun t ↦ μ[fun ω ↦ rexp (t * X ω) * X ω]
@@ -291,7 +291,7 @@ theorem integrable_deriv_expt [IsFiniteMeasure μ] (t a b : ℝ)
           (abs_le_max_abs_abs ha hb) : |X ω| ≤ |c|) (abs_nonneg t)
     exact q0
 
-theorem integral_tilted [IsFiniteMeasure μ] [NeZero μ]
+theorem integral_tilted [IsFiniteMeasure μ]
     (t : ℝ) (f : ℝ → ℝ) (X : Ω → ℝ) (hX : AEMeasurable X μ):
     (μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ f (X ω)] =
     (μ[fun ω ↦ rexp (t * X ω) * f (X ω)]) / μ[fun ω ↦ rexp (t * X ω)] := by
@@ -391,18 +391,17 @@ theorem cum_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
   rw [p'']
   apply HasDerivAt.div
   · set c := max ‖a‖ ‖b‖
-    suffices ∀ᵐ ω ∂μ, HasDerivAt (fun x ↦ rexp (x * X ω)) (rexp (t * X ω) * X ω) t from by
-      apply tilt_second_deriv  μ _ _ _ _ hX h
-      apply MeasureTheory.Integrable.bdd_mul'
-      rw [(by ext ω; ring : (fun ω ↦ X ω ^ 2) = (fun ω ↦ X ω * X ω))]
+    apply tilt_second_deriv μ _ _ _ _ hX h
+    apply MeasureTheory.Integrable.bdd_mul'
+    · rw [(by ext ω; ring : (fun ω ↦ X ω ^ 2) = (fun ω ↦ X ω * X ω))]
       apply MeasureTheory.Integrable.bdd_mul'
         (integrable_bounded μ a b X hX h) (aestronglyMeasurable_iff_aemeasurable.mpr hX)
-      filter_upwards [ha, hb] with x ha hb
-      exact (by simp only [norm_eq_abs];
-                exact le_trans' (le_abs_self (max ‖a‖ ‖b‖)) (abs_le_max_abs_abs ha hb) :
-                ‖X x‖ ≤ |c|)
-      exact measurable_expt μ X t hX
-      simp only [norm_eq_abs, abs_exp]
+      · filter_upwards [ha, hb] with x ha hb
+        exact (by simp only [norm_eq_abs];
+                  exact le_trans' (le_abs_self (max ‖a‖ ‖b‖)) (abs_le_max_abs_abs ha hb) :
+              ‖X x‖ ≤ |c|)
+    · exact measurable_expt μ X t hX
+    · simp only [norm_eq_abs, abs_exp]
       filter_upwards [ha, hb] with ω ha hb
       have r0 : rexp (t * X ω) ≤ rexp (|t| * |c|) := by
         simp only [exp_le_exp]
@@ -412,9 +411,6 @@ theorem cum_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
         _ ≤ |t| * |c| := mul_le_mul_of_nonneg_left (le_trans' (le_abs_self (max ‖a‖ ‖b‖))
                         (abs_le_max_abs_abs ha hb)) (abs_nonneg t)
       exact r0
-    filter_upwards
-    intro ω
-    apply HasDerivAt.exp (hasDerivAt_mul_const (X ω))
   · apply (tilt_first_deriv _ _ _ _ _ hX h)
           (integrable_deriv_expt μ t a b X hX h)
   · exact (by linarith [expt_pos μ X t a b hX h] : ∫ ω, rexp (t * X ω) ∂μ ≠ 0)
@@ -476,7 +472,7 @@ theorem hoeffding_nonneg [IsProbabilityMeasure μ]
         · dsimp [f', f'']
           have p : variance X (Measure.tilted μ fun ω ↦ x * X ω) =
               (μ.tilted fun ω ↦ x * X ω)[X ^ 2] - ((μ.tilted fun ω ↦ x * X ω)[X]) ^ 2 := by
-            have : IsProbabilityMeasure (μ.tilted fun ω ↦ x * X ω) :=
+            have _ : IsProbabilityMeasure (μ.tilted fun ω ↦ x * X ω) :=
               isProbabilityMeasure_tilted (integrable_expt_bound μ hX h)
             have hμ := tilted_absolutelyContinuous μ fun ω ↦ x * X ω
             apply variance_def' <|
@@ -532,7 +528,7 @@ theorem hoeffding_nonneg [IsProbabilityMeasure μ]
       apply mul_le_mul_of_nonneg_right
       apply mul_le_mul_of_nonneg_right
       dsimp [f'']
-      have : IsProbabilityMeasure (μ.tilted fun ω ↦ t * X ω) :=
+      have _ : IsProbabilityMeasure (μ.tilted fun ω ↦ t * X ω) :=
         isProbabilityMeasure_tilted (integrable_expt_bound μ hX h)
       exact tilt_var_bound μ a b c X h hX
       exact sq_nonneg t; simp only [inv_nonneg, Nat.ofNat_nonneg]
