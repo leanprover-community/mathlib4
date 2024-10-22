@@ -1926,4 +1926,4 @@ end PGame
 
 end SetTheory
 
-set_option linter.style.longFile 2300
+set_option linter.style.longFile 2100
