@@ -132,10 +132,7 @@ theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = Or
 
 theorem cof_type_lt [LinearOrder α] [IsWellOrder α (· < ·)] :
     (@type α (· < ·) _).cof = @Order.cof α (· ≤ ·) := by
-  rw [cof_type]
-  congr
-  ext
-  simp [swap]
+  rw [cof_type, compl_lt, swap_ge]
 
 theorem le_cof_type [IsWellOrder α r] {c} : c ≤ cof (type r) ↔ ∀ S, Unbounded r S → c ≤ #S :=
   (le_csInf_iff'' (Order.cof_nonempty _)).trans
