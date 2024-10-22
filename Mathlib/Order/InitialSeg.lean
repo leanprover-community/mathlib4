@@ -135,7 +135,7 @@ alias ofIso := RelIso.toInitialSeg
 /-- The identity function shows that `≼i` is reflexive -/
 @[refl]
 protected def refl (r : α → α → Prop) : r ≼i r :=
-  ⟨RelEmbedding.refl _, fun _ _ _ => ⟨_, rfl⟩⟩
+  (RelIso.refl r).toInitialSeg
 
 instance (r : α → α → Prop) : Inhabited (r ≼i r) :=
   ⟨InitialSeg.refl r⟩
