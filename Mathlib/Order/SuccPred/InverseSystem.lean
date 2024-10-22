@@ -27,21 +27,22 @@ extension `F i ≃ PiLT X i` to the limit node `i`. (We do have such a bijection
 we consider a directed system of algebraic structures (say fields) `K i`, and `F` is
 the inverse system of homomorphisms `K i ⟶ K` into a specific field `K`.)
 
-Now our task reduces to recursive construction of a *natural* family of bijections for each `i`.
-We can prove by that a natural family over all `l ≤ i` (`Iic i`) extends to a natural family over
-`Iic i⁺`, but at a limit node, recursion stops working: we have natural families over all `Iic j`
-for each `j < i`, but we need to know that they glue together to form a natural family over all
-`l < i` (`Iio i`). This intricacy did not occur to the author when he thought he had a proof and
-set out to formalize it. Fortunately he was able to figure out an additional `compat` condition
-(compatibility with the bijections `F i⁺ ≃ F i × X i` in the `X` component) that guarantees
-uniqueness (`unique_pEquivOn`) and hence gluability (well-definedness): see `pEquivOnGlue`.
-Instead of just a family of natural families, we actually construct a family of the stronger
-`PEquivOn`s that bundles the `compat` condition, in order for the inductive argument to work.
+Now our task reduces to the recursive construction of a *natural* family of bijections for each `i`.
+We can prove that a natural family over all `l ≤ i` (`Iic i`) extends to a natural family over
+`Iic i⁺` (where `i⁺ = succ i`), but at a limit node, recursion stops working: we have natural
+families over all `Iic j` for each `j < i`, but we need to know that they glue together to form a
+natural family over all `l < i` (`Iio i`). This intricacy did not occur to the author when he
+thought he had a proof and set out to formalize it. Fortunately he was able to figure out an
+additional `compat` condition (compatibility with the bijections `F i⁺ ≃ F i × X i` in the `X`
+component) that guarantees uniqueness (`unique_pEquivOn`) and hence gluability (well-definedness):
+see `pEquivOnGlue`. Instead of just a family of natural families, we actually construct a family of
+the stronger `PEquivOn`s that bundles the `compat` condition, in order for the inductive argument
+to work.
 
 It is possible to circumvent the introduction of the `compat` condition using Zorn's lemma;
 if there is a chain of natural families (i.e. for any two families in the chain, one is an
 extension of the other) over lowersets (which are all of the form `Iic`, `Iio`, or `univ`),
-we can clearly take the union to get a natural family that extend them all. If a maximal
+we can clearly take the union to get a natural family that extends them all. If a maximal
 natural family has domain `Iic i` or `Iio i` (`i` a limit), we already know how to extend it
 one step further to `Iic i⁺` or `Iic i` respectively, so it must be the case that the domain
 is everything. However, the author chose the `compat` approach in the end because it constructs
@@ -131,15 +132,15 @@ end
 
 variable [LinearOrder ι] {f : ∀ ⦃i j : ι⦄, i ≤ j → F j → F i}
 
-local notation i"⁺" => succ i -- Note: conflicts with `PosPart` notation
+local postfix:max "⁺" => succ -- Note: conflicts with `PosPart` notation
 
 section Succ
 
 variable [SuccOrder ι]
-variable (equiv : ∀ j : Iic i, F j ≃ piLT X j) (e : F (i⁺) ≃ F i × X i) (hi : ¬ IsMax i)
+variable (equiv : ∀ j : Iic i, F j ≃ piLT X j) (e : F i⁺ ≃ F i × X i) (hi : ¬ IsMax i)
 
 /-- Extend a family of bijections to `piLT` by one step. -/
-def piEquivSucc : ∀ j : Iic (i⁺), F j ≃ piLT X j :=
+def piEquivSucc : ∀ j : Iic i⁺, F j ≃ piLT X j :=
   piSplitLE (X := fun i ↦ F i ≃ piLT X i)
   (fun j ↦ equiv ⟨j, (lt_succ_iff_of_not_isMax hi).mp j.2⟩,
     e.trans <| ((equiv ⟨i, le_rfl⟩).prodCongr <| Equiv.refl _).trans <| piSplitLE.trans <|
@@ -199,16 +200,16 @@ end Lim
 
 section Unique
 
-variable [SuccOrder ι] (f) (equivSucc : ∀ ⦃i⦄, ¬IsMax i → F (i⁺) ≃ F i × X i)
+variable [SuccOrder ι] (f) (equivSucc : ∀ ⦃i⦄, ¬IsMax i → F i⁺ ≃ F i × X i)
 
 /-- A natural partial family of bijections to `piLT` satisfying a compatibility condition. -/
 @[ext] structure PEquivOn (s : Set ι) where
   /-- A partial family of bijections between `F` and `piLT X` defined on some set in `ι`. -/
-  equiv : ∀ i : s, F i ≃ piLT X i
+  equiv (i : s) : F i ≃ piLT X i
   /-- It is a natural family of bijections. -/
   nat : IsNatEquiv f equiv
   /-- It is compatible with a family of bijections relating `F i⁺` to `F i`. -/
-  compat : ∀ {i} (hsi : (i⁺ : ι) ∈ s) (hi : ¬IsMax i) (x),
+  compat {i} (hsi : (i⁺ : ι) ∈ s) (hi : ¬IsMax i) (x) :
     equiv ⟨i⁺, hsi⟩ x ⟨i, lt_succ_of_not_isMax hi⟩ = (equivSucc hi x).2
 
 variable {s t : Set ι} {f equivSucc} [WellFoundedLT ι]
@@ -248,7 +249,7 @@ theorem pEquivOn_apply_eq (h : IsLowerSet (s ∩ t))
 /-- Extend a partial family of bijections by one step. -/
 def pEquivOnSucc [InverseSystem f] (hi : ¬IsMax i) (e : PEquivOn f equivSucc (Iic i))
     (H : ∀ ⦃i⦄ (hi : ¬ IsMax i) x, (equivSucc hi x).1 = f (le_succ i) x) :
-    PEquivOn f equivSucc (Iic (i⁺)) where
+    PEquivOn f equivSucc (Iic i⁺) where
   equiv := piEquivSucc e.equiv (equivSucc hi) hi
   nat := isNatEquiv_piEquivSucc hi (H hi) e.nat
   compat hsj hj x := by
@@ -282,7 +283,7 @@ end Unique
 
 /-- Over a well-ordered type, construct a family of bijections by transfinite recursion. -/
 noncomputable def globalEquiv [WellFoundedLT ι] [SuccOrder ι] [InverseSystem f]
-    (equivSucc : ∀ i, ¬IsMax i → {e : F (i⁺) ≃ F i × X i // ∀ x, (e x).1 = f (le_succ i) x})
+    (equivSucc : ∀ i, ¬IsMax i → {e : F i⁺ ≃ F i × X i // ∀ x, (e x).1 = f (le_succ i) x})
     (equivLim : ∀ i, IsSuccPrelimit i → {e : F i ≃ limit f i // ∀ x l, (e x).1 l = f l.2.le x})
     (i : ι) : F i ≃ piLT X i :=
   let e := SuccOrder.prelimitRecOn
