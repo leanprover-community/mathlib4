@@ -695,6 +695,7 @@ import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Algebra.Order.Ring.WithTop
+import Mathlib.Algebra.Order.SMulWithTop
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Algebra.Order.Star.Conjneg
 import Mathlib.Algebra.Order.Sub.Basic
@@ -3993,6 +3994,7 @@ import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
+import Mathlib.RingTheory.HahnSeries.Units
 import Mathlib.RingTheory.HahnSeries.Valuation
 import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.HopfAlgebra

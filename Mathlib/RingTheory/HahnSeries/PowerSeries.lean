@@ -27,6 +27,8 @@ we get the more familiar semiring of formal power series with coefficients in `R
 ## TODO
   * Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
     `X : R[X]` and `X : PowerSeries R`
+  * Given a well-ordering on `σ`, give isomorphisms from `MvPowerSeries σ R` to
+    `HahnSeries (σ →₀ ℕ) R` and back, where `(σ →₀ ℕ)` is given lexicographic ordering.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
