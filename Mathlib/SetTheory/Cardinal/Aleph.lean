@@ -233,6 +233,12 @@ theorem aleph'_nat : ∀ n : ℕ, aleph' n = n
   | 0 => aleph'_zero
   | n + 1 => show aleph' (succ n) = n.succ by rw [aleph'_succ, aleph'_nat n, nat_succ]
 
+set_option linter.docPrime false in
+@[simp]
+theorem lift_aleph' (o : Ordinal.{u}) : lift.{v} (aleph' o) = aleph' (Ordinal.lift.{v} o) :=
+  ((InitialSeg.ofIso aleph'.toRelIsoLT).trans liftInitialSeg).eq
+    (Ordinal.liftInitialSeg.trans (InitialSeg.ofIso aleph'.toRelIsoLT)) o
+
 theorem aleph'_le_of_limit {o : Ordinal} (l : o.IsLimit) {c} :
     aleph' o ≤ c ↔ ∀ o' < o, aleph' o' ≤ c :=
   ⟨fun h o' h' => (aleph'_le.2 <| h'.le).trans h, fun h => by
@@ -297,6 +303,10 @@ theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) := by
 @[simp]
 theorem aleph_zero : ℵ_ 0 = ℵ₀ := by rw [aleph_eq_aleph', add_zero, aleph'_omega0]
 
+@[simp]
+theorem lift_aleph (o : Ordinal.{u}) : lift.{v} (aleph o) = aleph (Ordinal.lift.{v} o) := by
+  simp [aleph_eq_aleph']
+
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
   apply le_antisymm _ (ciSup_le' _)
   · rw [aleph_eq_aleph', aleph'_limit (ho.add _)]
@@ -360,6 +370,22 @@ theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by
 
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
+
+@[simp]
+theorem aleph1_le_lift {c : Cardinal.{u}} : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
+  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_le]
+
+@[simp]
+theorem lift_le_aleph1 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
+  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_le]
+
+@[simp]
+theorem aleph1_lt_lift {c : Cardinal.{u}} : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
+  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_lt]
+
+@[simp]
+theorem lift_lt_aleph1 {c : Cardinal.{u}} : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
+  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_lt]
 
 section deprecated
 
