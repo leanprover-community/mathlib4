@@ -90,25 +90,25 @@ section PeriodicOnℂ
 variable (h : ℝ) (f : ℂ → ℂ)
 
 /-- The function `q ↦ f (invQParam h q)`, extended by a non-canonical choice of limit at 0. -/
-def cuspFcn : ℂ → ℂ :=
+def cuspFunction : ℂ → ℂ :=
   update (f ∘ invQParam h) 0 (limUnder (𝓝[≠] 0) (f ∘ invQParam h))
 
-theorem cuspFcn_eq_of_nonzero {q : ℂ} (hq : q ≠ 0) :
-    cuspFcn h f q = f (invQParam h q) :=
+theorem cuspFunction_eq_of_nonzero {q : ℂ} (hq : q ≠ 0) :
+    cuspFunction h f q = f (invQParam h q) :=
   update_noteq hq ..
 
-theorem cuspFcn_zero_eq_limUnder_nhds_ne :
-    cuspFcn h f 0 = limUnder (𝓝[≠] 0) (cuspFcn h f) := by
-  conv_lhs => simp only [cuspFcn, update_same]
+theorem cuspFunction_zero_eq_limUnder_nhds_ne :
+    cuspFunction h f 0 = limUnder (𝓝[≠] 0) (cuspFunction h f) := by
+  conv_lhs => simp only [cuspFunction, update_same]
   refine congr_arg lim (Filter.map_congr <| eventuallyEq_nhdsWithin_of_eqOn fun r hr ↦ ?_)
-  rw [cuspFcn, update_noteq hr]
+  rw [cuspFunction, update_noteq hr]
 
 variable {f h}
 
-theorem eq_cuspFcn (hh : h ≠ 0) (hf : Periodic f h) (z : ℂ) :
-    (cuspFcn h f) (𝕢 h z) = f z := by
-  have : (cuspFcn h f) (𝕢 h z) = f (invQParam h (𝕢 h z)) := by
-    rw [cuspFcn, update_noteq, comp_apply]
+theorem eq_cuspFunction (hh : h ≠ 0) (hf : Periodic f h) (z : ℂ) :
+    (cuspFunction h f) (𝕢 h z) = f z := by
+  have : (cuspFunction h f) (𝕢 h z) = f (invQParam h (𝕢 h z)) := by
+    rw [cuspFunction, update_noteq, comp_apply]
     exact exp_ne_zero _
   obtain ⟨m, hm⟩ := qParam_left_inv_mod_period hh z
   simpa only [this, hm] using hf.int_mul m z
@@ -120,12 +120,12 @@ section HoloOnC
 variable {h : ℝ} {f : ℂ → ℂ}
 
 /--
-Key technical lemma: the function `cuspFcn h f` is differentiable at the images of
+Key technical lemma: the function `cuspFunction h f` is differentiable at the images of
 differentiability points of `f` (even if `invQParam` is not differentiable there).
 -/
-theorem differentiableAt_cuspFcn (hh : h ≠ 0) (hf : Periodic f h)
+theorem differentiableAt_cuspFunction (hh : h ≠ 0) (hf : Periodic f h)
     {z : ℂ} (hol_z : DifferentiableAt ℂ f z) :
-    DifferentiableAt ℂ (cuspFcn h f) (𝕢 h z) := by
+    DifferentiableAt ℂ (cuspFunction h f) (𝕢 h z) := by
   let q := 𝕢 h z
   have qdiff : HasStrictDerivAt (𝕢 h) (q * (2 * π * I / h)) z := by
     simpa only [id_eq, mul_one] using (((hasStrictDerivAt_id z).const_mul _).div_const _).cexp
@@ -136,23 +136,23 @@ theorem differentiableAt_cuspFcn (hh : h ≠ 0) (hf : Periodic f h)
   have diff_L : DifferentiableAt ℂ L q := (qdiff.to_localInverse diff_ne).differentiableAt
   have hL : 𝕢 h ∘ L =ᶠ[𝓝 q] (id : ℂ → ℂ) :=
     (qdiff.hasStrictFDerivAt_equiv diff_ne).eventually_right_inverse
-  -- Thus, if F = cuspFcn h f, we have F q' = f (L q') for q' near q.
+  -- Thus, if F = cuspFunction h f, we have F q' = f (L q') for q' near q.
   -- Since L is differentiable at q, and f is diff'ble at L q [ = z], we conclude
   -- that F is differentiable at q.
-  have hF := hL.fun_comp (cuspFcn h f)
-  have : cuspFcn h f ∘ 𝕢 h ∘ L = f ∘ L := funext fun z ↦ eq_cuspFcn hh hf (L z)
+  have hF := hL.fun_comp (cuspFunction h f)
+  have : cuspFunction h f ∘ 𝕢 h ∘ L = f ∘ L := funext fun z ↦ eq_cuspFunction hh hf (L z)
   rw [this] at hF
   rw [← EventuallyEq.eq_of_nhds (qdiff.hasStrictFDerivAt_equiv diff_ne).eventually_left_inverse]
     at hol_z
   exact (hol_z.comp q diff_L).congr_of_eventuallyEq hF.symm
 
-theorem eventually_differentiableAt_cuspFcn_nhds_ne_zero (hh : 0 < h) (hf : Periodic f h)
+theorem eventually_differentiableAt_cuspFunction_nhds_ne_zero (hh : 0 < h) (hf : Periodic f h)
     (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) :
-    ∀ᶠ q in 𝓝[≠] 0, DifferentiableAt ℂ (cuspFcn h f) q := by
+    ∀ᶠ q in 𝓝[≠] 0, DifferentiableAt ℂ (cuspFunction h f) q := by
   refine ((invQParam_tendsto hh).eventually h_hol).mp ?_
   refine eventually_nhdsWithin_of_forall (fun q hq h_diff ↦ ?_)
   rw [← qParam_right_inv hh.ne' hq]
-  exact differentiableAt_cuspFcn  hh.ne' hf h_diff
+  exact differentiableAt_cuspFunction  hh.ne' hf h_diff
 
 end HoloOnC
 
@@ -160,32 +160,32 @@ section HoloAtInfC
 
 variable {h : ℝ} {f : ℂ → ℂ}
 
-theorem boundedAtFilter_cuspFcn (hh : 0 < h) (h_bd : BoundedAtFilter I∞ f) :
-    BoundedAtFilter (𝓝[≠] 0) (cuspFcn h f) := by
+theorem boundedAtFilter_cuspFunction (hh : 0 < h) (h_bd : BoundedAtFilter I∞ f) :
+    BoundedAtFilter (𝓝[≠] 0) (cuspFunction h f) := by
   refine (h_bd.comp_tendsto <| invQParam_tendsto hh).congr' ?_ (by rfl)
   refine eventually_nhdsWithin_of_forall fun q hq ↦ ?_
-  rw [cuspFcn_eq_of_nonzero _ _ hq, comp_def]
+  rw [cuspFunction_eq_of_nonzero _ _ hq, comp_def]
 
-theorem cuspFcn_zero_of_zero_at_inf (hh : 0 < h) (h_zer : ZeroAtFilter I∞ f) :
-    cuspFcn h f 0 = 0 := by
-  simpa only [cuspFcn, update_same] using (h_zer.comp (invQParam_tendsto hh)).limUnder_eq
+theorem cuspFunction_zero_of_zero_at_inf (hh : 0 < h) (h_zer : ZeroAtFilter I∞ f) :
+    cuspFunction h f 0 = 0 := by
+  simpa only [cuspFunction, update_same] using (h_zer.comp (invQParam_tendsto hh)).limUnder_eq
 
-theorem differentiableAt_cuspFcn_zero (hh : 0 < h) (hf : Periodic f h)
+theorem differentiableAt_cuspFunction_zero (hh : 0 < h) (hf : Periodic f h)
     (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) (h_bd : BoundedAtFilter I∞ f) :
-    DifferentiableAt ℂ (cuspFcn h f) 0 := by
-  obtain ⟨c, t⟩ := (boundedAtFilter_cuspFcn hh h_bd).bound
-  replace t := (eventually_differentiableAt_cuspFcn_nhds_ne_zero hh hf h_hol).and t
+    DifferentiableAt ℂ (cuspFunction h f) 0 := by
+  obtain ⟨c, t⟩ := (boundedAtFilter_cuspFunction hh h_bd).bound
+  replace t := (eventually_differentiableAt_cuspFunction_nhds_ne_zero hh hf h_hol).and t
   simp only [norm_one, Pi.one_apply, mul_one] at t
   obtain ⟨S, hS1, hS2, hS3⟩ := eventually_nhds_iff.mp (eventually_nhdsWithin_iff.mp t)
-  have h_diff : DifferentiableOn ℂ (cuspFcn h f) (S \ {0}) :=
+  have h_diff : DifferentiableOn ℂ (cuspFunction h f) (S \ {0}) :=
     fun x hx ↦ (hS1 x hx.1 hx.2).1.differentiableWithinAt
-  have hF_bd : BddAbove (norm ∘ cuspFcn h f '' (S \ {0})) := by
+  have hF_bd : BddAbove (norm ∘ cuspFunction h f '' (S \ {0})) := by
     use c
     simp only [mem_upperBounds, Set.mem_image, Set.mem_diff, forall_exists_index, and_imp]
     intro y q hq hq2 hy
     simpa only [← hy, norm_one, mul_one] using (hS1 q hq hq2).2
   have := differentiableOn_update_limUnder_of_bddAbove (IsOpen.mem_nhds hS2 hS3) h_diff hF_bd
-  rw [← cuspFcn_zero_eq_limUnder_nhds_ne, update_eq_self] at this
+  rw [← cuspFunction_zero_eq_limUnder_nhds_ne, update_eq_self] at this
   exact this.differentiableAt (IsOpen.mem_nhds hS2 hS3)
 
 /--
@@ -194,11 +194,11 @@ and this limit is the value of its cusp function at 0.
 -/
 theorem tendsto_at_I_inf (hh : 0 < h) (hf : Periodic f h)
     (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) (h_bd : BoundedAtFilter I∞ f) :
-    Tendsto f I∞ (𝓝 <| cuspFcn h f 0) := by
-  suffices Tendsto (cuspFcn h f) (𝓝[≠] 0) (𝓝 <| cuspFcn h f 0) by
-    simpa only [Function.comp_def, eq_cuspFcn hh.ne' hf] using this.comp (qParam_tendsto hh)
+    Tendsto f I∞ (𝓝 <| cuspFunction h f 0) := by
+  suffices Tendsto (cuspFunction h f) (𝓝[≠] 0) (𝓝 <| cuspFunction h f 0) by
+    simpa only [Function.comp_def, eq_cuspFunction hh.ne' hf] using this.comp (qParam_tendsto hh)
   exact tendsto_nhdsWithin_of_tendsto_nhds
-    (differentiableAt_cuspFcn_zero hh hf h_hol h_bd).continuousAt.tendsto
+    (differentiableAt_cuspFunction_zero hh hf h_hol h_bd).continuousAt.tendsto
 
 /--
 If `f` is periodic, holomorphic near `I∞`, and tends to zero at `I∞`, then in fact it tends to zero
@@ -207,10 +207,10 @@ exponentially fast.
 theorem exp_decay_of_zero_at_inf (hh : 0 < h) (hf : Periodic f h)
     (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) (h_zer : ZeroAtFilter I∞ f) :
     f =O[I∞] fun z ↦ Real.exp (-2 * π * im z / h) := by
-  suffices cuspFcn h f =O[_] id by simpa only [eq_cuspFcn hh.ne' hf, abs_qParam, comp_def, id_eq,
-    norm_eq_abs] using (this.comp_tendsto (qParam_tendsto hh)).norm_right
-  simpa only [cuspFcn_zero_of_zero_at_inf hh h_zer, sub_zero] using
-    (differentiableAt_cuspFcn_zero hh hf h_hol h_zer.boundedAtFilter).isBigO_sub.mono
+  suffices cuspFunction h f =O[_] id by simpa only [comp_def, eq_cuspFunction hh.ne' hf, id_eq,
+    norm_eq_abs, abs_qParam] using (this.comp_tendsto (qParam_tendsto hh)).norm_right
+  simpa only [cuspFunction_zero_of_zero_at_inf hh h_zer, sub_zero] using
+    (differentiableAt_cuspFunction_zero hh hf h_hol h_zer.boundedAtFilter).isBigO_sub.mono
       nhdsWithin_le_nhds
 
 end HoloAtInfC
