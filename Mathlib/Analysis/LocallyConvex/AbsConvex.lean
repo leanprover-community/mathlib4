@@ -188,6 +188,23 @@ theorem absConvexClosedHull_eq_absConvexClosedHull_closure {s : Set E} :
 
 end AbsolutelyConvex
 
+section NormedField
+
+variable [NormedField 𝕜]
+  [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]  [TopologicalSpace E]
+  [TopologicalAddGroup E] [ContinuousSMul ℝ E] [ContinuousSMul 𝕜 E]
+
+theorem AbsConvex.closure {s : Set E} (hs : AbsConvex 𝕜 s) : AbsConvex 𝕜 (closure s) :=
+  ⟨Balanced.closure hs.1, Convex.closure hs.2⟩
+
+theorem absConvexClosedHull_eq_closure_absConvexHull {s : Set E} :
+    absConvexClosedHull 𝕜 s = closure (absConvexHull 𝕜 s) := subset_antisymm
+  (absConvexClosedHull_min (subset_trans (subset_absConvexHull) subset_closure)
+    ⟨AbsConvex.closure absConvex_absConvexHull, isClosed_closure⟩)
+  (closure_minimal absConvexHull_subseteq_convexClosedHull isClosed_absConvexClosedHull)
+
+end NormedField
+
 section NontriviallyNormedField
 
 variable (𝕜 E) {s : Set E}
