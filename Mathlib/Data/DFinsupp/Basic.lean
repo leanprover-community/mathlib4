@@ -17,7 +17,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 /-!
 # Dependent functions with finite support
 
-For a non-dependent version see `data/finsupp.lean`.
+For a non-dependent version see `Mathlib.Data.Finsupp.Defs`.
 
 ## Notation
 
