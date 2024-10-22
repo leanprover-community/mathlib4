@@ -236,7 +236,7 @@ lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
 -- ## Step 4: f p = p ^ (- t) for some positive real t
 
 include hp0 hp1 hmin in
-/-- The absolute value of `p` is `p⁻ᵗ` for some positive real number `t`. -/
+/-- The absolute value of `p` is `p ^ (- t)` for some positive real number `t`. -/
 lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
   have pprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hp0 hp1 hmin
   refine ⟨- logb p (f p), Left.neg_pos_iff.2 <| logb_neg (mod_cast pprime.one_lt) hp0 hp1, ?_⟩
@@ -314,7 +314,7 @@ def mulRingNorm_real : MulRingNorm ℚ :=
 -- ## Preliminary result
 
 /-- Given an two integers `n, m` with `m > 1` the mulRingNorm of `n` is bounded by
-`m + m * f m + m * (f m)² + ... + m * (f m)ᵈ` where `d` is the number of digits of the
+`m + m * f m + m * (f m) ^ 2 + ... + m * (f m) ^ d` where `d` is the number of digits of the
 expansion of `n` in base `m`. -/
 lemma mulRingNorm_apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
     f n ≤ ((Nat.digits m n).mapIdx fun i _ ↦ m * (f m) ^ i).sum := by
@@ -451,7 +451,7 @@ lemma mulRingNorm_le_mulRingNorm_pow_log : f n ≤ f m ^ logb m n := by
     fun b hb ↦ param_upperbound hm hn notbdd (not_eq_zero_of_lt hb)⟩))
 
 include hm hn notbdd in
-/-- Given `m,n ≥ 2` and `f m = mˢ`, `f n = nᵗ` for `s, t > 0`, we have `t ≤ s`. -/
+/-- Given `m,n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
 lemma le_of_mulRingNorm_eq {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
     have hmn : f n ≤ f m ^ Real.logb m n := mulRingNorm_le_mulRingNorm_pow_log hm hn notbdd
     rw [← Real.rpow_le_rpow_left_iff (x:=n) (mod_cast hn), ← hfn]
