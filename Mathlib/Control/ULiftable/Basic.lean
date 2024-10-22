@@ -6,9 +6,6 @@ Authors: Simon Hudon
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Cont
 import Mathlib.Control.Monad.Writer
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Logic.Equiv.Functor
-import Mathlib.Control.Lawful
 
 /-!
 # Universe lifting for type families
@@ -47,17 +44,20 @@ u₂`, this class convert between instantiations, from
 At any rate, the lift should be unique, as the intent is to only lift the same constants with
 different universe parameters. -/
 class ULiftable (f : outParam (Type u₀ → Type u₁)) (g : Type v₀ → Type v₁) where
-  congr {α β} : α ≃ β → f α ≃ g β
+  map {α β} : (α → β) → f α → g β
+  mapRev {α β} : (β → α) → g β → f α
 
 namespace ULiftable
 
 /-- Not an instance as it is incompatible with `outParam`. In practice it seems not to be needed
 anyway. -/
 abbrev symm (f : Type u₀ → Type u₁) (g : Type v₀ → Type v₁) [ULiftable f g] : ULiftable g f where
-  congr e := (ULiftable.congr e.symm).symm
+  map x := ULiftable.mapRev x
+  mapRev x := ULiftable.map x
 
 instance refl (f : Type u₀ → Type u₁) [Functor f] [LawfulFunctor f] : ULiftable f f where
-  congr e := Functor.mapEquiv _ e
+  map x := Functor.map x
+  mapRev x := Functor.map x
 
 example : ULiftable IO IO := inferInstance
 
@@ -65,13 +65,13 @@ example : ULiftable IO IO := inferInstance
 `x : M.{u} α` and lifts it to `M.{max u v} (ULift.{v} α)` -/
 abbrev up {f : Type u₀ → Type u₁} {g : Type max u₀ v → Type v₁} [ULiftable f g] {α} :
     f α → g (ULift.{v} α) :=
-  (ULiftable.congr Equiv.ulift.symm).toFun
+  map ULift.up
 
 /-- The most common practical use of `ULiftable` (together with `up`), the function `down.{v}` takes
 `x : M.{max u v} (ULift.{v} α)` and lowers it to `M.{u} α` -/
 abbrev down {f : Type u₀ → Type u₁} {g : Type max u₀ v → Type v₁} [ULiftable f g] {α} :
     g (ULift.{v} α) → f α :=
-  (ULiftable.congr Equiv.ulift.symm).invFun
+  mapRev ULift.down
 
 /-- convenient shortcut to avoid manipulating `ULift` -/
 def adaptUp (F : Type v₀ → Type v₁) (G : Type max v₀ u₀ → Type u₁) [ULiftable F G] [Monad G] {α β}
@@ -93,26 +93,19 @@ def downMap {F : Type max u₀ v₀ → Type u₁} {G : Type u₀ → Type v₁}
     [Functor F] {α β} (f : α → β) (x : F α) : G β :=
   down (Functor.map (ULift.up.{v₀} ∘ f) x : F (ULift β))
 
-theorem up_down {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
-    (x : g (ULift.{v₀} α)) : up (down x : f α) = x :=
-  (ULiftable.congr Equiv.ulift.symm).right_inv _
-
-theorem down_up {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
-    (x : f α) : down (up x : g (ULift.{v₀} α)) = x :=
-  (ULiftable.congr Equiv.ulift.symm).left_inv _
-
 end ULiftable
 
 open ULift
 
 instance instULiftableId : ULiftable Id Id where
-  congr F := F
+  map F := F
+  mapRev F := F
 
 /-- for specific state types, this function helps to create a uliftable instance -/
 def StateT.uliftable' {m : Type u₀ → Type v₀} {m' : Type u₁ → Type v₁} [ULiftable m m']
-    (F : s ≃ s') : ULiftable (StateT s m) (StateT s' m') where
-  congr G :=
-    StateT.equiv <| Equiv.piCongr F fun _ => ULiftable.congr <| Equiv.prodCongr G F
+    (state : s ≃ s') : ULiftable (StateT s m) (StateT s' m') where
+  map G f := fun x => ULiftable.map (Prod.map G state) (f (state.symm x))
+  mapRev G f := fun x => ULiftable.mapRev (Prod.map G state.symm) (f (state x))
 
 instance {m m'} [ULiftable m m'] : ULiftable (StateT s m) (StateT (ULift s) m') :=
   StateT.uliftable' Equiv.ulift.symm
@@ -124,7 +117,10 @@ instance StateT.instULiftableULiftULift {m m'} [ULiftable m m'] :
 /-- for specific reader monads, this function helps to create a uliftable instance -/
 def ReaderT.uliftable' {m m'} [ULiftable m m'] (F : s ≃ s') :
     ULiftable (ReaderT s m) (ReaderT s' m') where
-  congr G := ReaderT.equiv <| Equiv.piCongr F fun _ => ULiftable.congr G
+  map G f := fun x => ULiftable.map G (f (F.symm x))
+  mapRev G f := fun x => ULiftable.mapRev G (f (F x))
+
+  -- congr G := ReaderT.equiv <| Equiv.piCongr F fun _ => ULiftable.congr G
 
 instance {m m'} [ULiftable m m'] : ULiftable (ReaderT s m) (ReaderT (ULift s) m') :=
   ReaderT.uliftable' Equiv.ulift.symm
