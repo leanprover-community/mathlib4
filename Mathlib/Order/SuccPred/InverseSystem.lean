@@ -35,9 +35,8 @@ for each `j < i`, but we need to know that they glue together to form a natural 
 set out to formalize it. Fortunately he was able to figure out an additional `compat` condition
 (compatibility with the bijections `F i⁺ ≃ F i × X i` in the `X` component) that guarantees
 uniqueness (`unique_pEquivOn`) and hence gluability (well-definedness): see `pEquivOnGlue`.
-Instead of just a family of natural families, we actually construct a family of
-the stronger `PEquivOn`s that bundles the `compat` condition, in order for the inductive argument
-work.
+Instead of just a family of natural families, we actually construct a family of the stronger
+`PEquivOn`s that bundles the `compat` condition, in order for the inductive argument to work.
 
 It is possible to circumvent the introduction of the `compat` condition using Zorn's lemma;
 if there is a chain of natural families (i.e. for any two families in the chain, one is an
