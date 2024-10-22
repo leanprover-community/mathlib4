@@ -372,9 +372,7 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
 theorem zero_lt_top [Zero α] [LT α] : (0 : WithTop α) < ⊤ :=
   coe_lt_top 0
 
--- Porting note (#10618): simp can already prove this.
--- @[simp]
-@[norm_cast]
+@[norm_cast, deprecated coe_pos (since := "2024-10-22")]
 theorem zero_lt_coe [Zero α] [LT α] (a : α) : (0 : WithTop α) < a ↔ 0 < a :=
   coe_lt_coe
 
