@@ -167,9 +167,7 @@ lemma height_mono : Monotone (α := α) height :=
 private lemma height_add_const (a : α) (n : ℕ∞) :
     height a + n = ⨆ (p : LTSeries α ) (_ : p.last = a), p.length + n := by
   have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
-  rw [height_eq_iSup_last_eq, iSup_subtype', iSup_subtype']
-  rw [Monotone.map_ciSup_of_continuousAt (f := (· + n))
-    (continuousAt_id.add continuousAt_const) (monotone_id.add monotone_const)]
+  rw [height_eq_iSup_last_eq, iSup_subtype', iSup_subtype', ENat.iSup_add]
 
 /- For elements of finite height, `height` is strictly monotone. -/
 @[gcongr] lemma height_strictMono {x y : α} (hxy : x < y) (hfin : height y < ⊤) :
