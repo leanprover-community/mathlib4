@@ -37,6 +37,7 @@ def qParam (z : ℂ) : ℂ := exp (2 * π * I * z / h)
 def InvqParam (q : ℂ) : ℂ := h / (2 * π * I) * log q
 
 local notation "𝕢" => qParam
+
 section qParam
 
 theorem abs_qParam (z : ℂ) : abs (𝕢 h z) = Real.exp (-2 * π * im z / h) := by
