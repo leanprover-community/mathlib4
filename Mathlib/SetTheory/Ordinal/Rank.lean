@@ -16,6 +16,8 @@ universe u
 
 variable {α : Type u} {a b : α}
 
+/-! ### Rank of an accessible value -/
+
 namespace Acc
 
 variable {r : α → α → Prop}
@@ -50,6 +52,8 @@ theorem mem_range_rank_of_le {o : Ordinal} (ha : Acc r a) (ho : o ≤ ha.rank) :
     exacts [⟨b, ha b hb, rfl⟩, IH _ hb ho]
 
 end Acc
+
+/-! ### Rank in a well-founded relation -/
 
 namespace IsWellFounded
 
