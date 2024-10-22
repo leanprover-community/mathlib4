@@ -879,9 +879,7 @@ def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
   map := fun g => StructuredArrow.homMk
     (Grothendieck.Hom.mk (by exact g.right)
       (eqToHom (by dsimp; rw [← StructuredArrow.w g, map_comp, Cat.comp_obj])))
-    (by simp only [const_obj_obj, pre_obj_base, id_eq, pre_obj_fiber, StructuredArrow.mk_left,
-          StructuredArrow.mk_right, StructuredArrow.mk_hom_eq_self, comp_obj, Functor.comp_map,
-          Cat.comp_obj, eq_mpr_eq_cast, cast_cast]
+    (by simp only [StructuredArrow.mk_right]
         apply Grothendieck.ext <;> simp)
 
 instance Grothendieck.pre_final [hG : Final G] : (Grothendieck.pre F G).Final := by
