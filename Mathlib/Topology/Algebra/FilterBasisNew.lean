@@ -43,6 +43,52 @@ universe u
 
 namespace Filter
 
+class IsContinuousConstSMulBasis (G : Type*) {X : Type*} {ι : X → Sort*} [SMul G X]
+    (p : Π (x : X), ι x → Prop) (s : Π (x : X), ι x → Set X) where
+  toIsBasis : ∀ x, IsBasis (p x) (s x)
+  const_smul' : ∀ (g : G) x {i}, p (g • x) i → ∃ j, p x j ∧ MapsTo (g • ·) (s x j) (s (g • x) i)
+
+class IsContinuousConstVAddBasis (G : Type*) {X : Type*} {ι : X → Sort*} [VAdd G X]
+    (p : Π (x : X), ι x → Prop) (s : Π (x : X), ι x → Set X) where
+  toIsBasis : ∀ x, IsBasis (p x) (s x)
+  const_vadd' : ∀ (g : G) x {i}, p (g +ᵥ x) i → ∃ j, p x j ∧ s x j ⊆ (g +ᵥ ·) ⁻¹' (s (g +ᵥ x) i)
+
+attribute [to_additive existing] IsContinuousConstSMulBasis IsContinuousConstSMulBasis.toIsBasis
+
+namespace IsContinuousConstSMulBasis
+
+variable {G X : Type*} {ι : X → Sort*} [SMul G X] {p : Π (x : X), ι x → Prop}
+    {s : Π (x : X), ι x → Set X} (hB : IsContinuousConstSMulBasis G p s)
+include hB
+
+@[to_additive]
+theorem const_smul (g : G) (x y : X) (h : g • x = y) {i} : p y i →
+    ∃ j, p x j ∧ s x j ⊆ (g • ·) ⁻¹' (s y i) := by
+  subst h
+  exact hB.const_smul' g x (i := i)
+
+/-- If a group is endowed with a topological structure coming from a group filter basis then it's a
+topological group. -/
+@[to_additive "If a group is endowed with a topological structure coming from a group filter basis
+then it's a topological group."]
+instance (priority := 100) instTopologicalGroup :
+    @TopologicalGroup G hB.topology _ := by
+  letI := hB.topology
+  have basis := hB.nhds_one_hasBasis
+  have basis' := basis.prod_pprod basis
+  refine TopologicalGroup.of_nhds_one ?_ ?_ ?_ ?_
+  · refine basis'.tendsto_iff basis |>.mpr fun i hi ↦ (hB.mul hi).imp' (fun i ↦ ⟨i, i⟩)
+      fun j ⟨hj, hji⟩ ↦ ⟨⟨hj, hj⟩, ?_⟩
+    simpa [← image2_mul, forall_mem_comm] using hji
+  · exact basis.tendsto_iff basis |>.mpr fun i hi ↦ (hB.inv hi).imp fun j ↦ id
+  · intro x₀
+    rw [nhds_eq, nhds_one_eq]
+    rfl
+  · exact fun x₀ ↦ basis.tendsto_iff basis |>.mpr fun i hi ↦ (hB.conj x₀ hi).imp fun j ↦ id
+
+
+end IsContinuousConstSMulBasis
+
 /-- A `GroupFilterBasis` on a group is a `FilterBasis` satisfying some additional axioms.
   Example : if `G` is a topological group then the neighbourhoods of the identity are a
   `GroupFilterBasis`. Conversely given a `GroupFilterBasis` one can define a topology
@@ -102,6 +148,26 @@ theorem conj : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ (x₀ * · * x�
 @[to_additive]
 theorem subset_mul_self {i} (h : p i) : s i ⊆ s i * s i :=
   fun x x_in ↦ ⟨1, hB.one h, x, x_in, one_mul x⟩
+
+/-- If a group is endowed with a topological structure coming from a group filter basis then it's a
+topological group. -/
+@[to_additive "If a group is endowed with a topological structure coming from a group filter basis
+then it's a topological group."]
+instance (priority := 100) instTopologicalGroup :
+    @TopologicalGroup G hB.topology _ := by
+  letI := hB.topology
+  have basis := hB.nhds_one_hasBasis
+  have basis' := basis.prod_pprod basis
+  refine TopologicalGroup.of_nhds_one ?_ ?_ ?_ ?_
+  · refine basis'.tendsto_iff basis |>.mpr fun i hi ↦ (hB.mul hi).imp' (fun i ↦ ⟨i, i⟩)
+      fun j ⟨hj, hji⟩ ↦ ⟨⟨hj, hj⟩, ?_⟩
+    simpa [← image2_mul, forall_mem_comm] using hji
+  · exact basis.tendsto_iff basis |>.mpr fun i hi ↦ (hB.inv hi).imp fun j ↦ id
+  · intro x₀
+    rw [nhds_eq, nhds_one_eq]
+    rfl
+  · exact fun x₀ ↦ basis.tendsto_iff basis |>.mpr fun i hi ↦ (hB.conj x₀ hi).imp fun j ↦ id
+
 
 /-- The neighborhood function of a `GroupFilterBasis`. -/
 @[to_additive "The neighborhood function of an `AddGroupFilterBasis`."]
