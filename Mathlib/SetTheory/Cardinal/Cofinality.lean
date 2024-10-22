@@ -117,15 +117,12 @@ theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
 
 namespace Ordinal
 
-/-- Cofinality of an ordinal. This is the smallest cardinal of a
-  subset `S` of the ordinal which is unbounded, in the sense
-  `∀ a, ∃ b ∈ S, a ≤ b`. It is defined for all ordinals, but
-  `cof 0 = 0` and `cof (succ o) = 1`, so it is only really
-  interesting on limit ordinals (when it is an infinite cardinal). -/
-def cof (o : Ordinal.{u}) : Cardinal.{u} := by
-  refine o.liftOn (fun a => Order.cof (swap a.rᶜ)) ?_
-  rintro _ _ ⟨⟨f, hf⟩⟩
-  exact RelIso.cof_eq ⟨_, not_iff_not.2 hf⟩
+/-- Cofinality of an ordinal. This is the smallest cardinal of a subset `S` of the ordinal which is
+unbounded, in the sense `∀ a, ∃ b ∈ S, a ≤ b`.
+
+In particular, `cof 0 = 0` and `cof (succ o) = 1`. -/
+def cof (o : Ordinal.{u}) : Cardinal.{u} :=
+  o.liftOn (fun a ↦ Order.cof (swap a.rᶜ)) fun _ _ ⟨f⟩ ↦ f.compl.swap.cof_eq
 
 theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = Order.cof (swap rᶜ) :=
   rfl
