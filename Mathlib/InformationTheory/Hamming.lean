@@ -103,7 +103,6 @@ theorem hammingDist_ne_zero {x y : ∀ i, β i} : hammingDist x y ≠ 0 ↔ x �
 theorem hammingDist_pos {x y : ∀ i, β i} : 0 < hammingDist x y ↔ x ≠ y := by
   rw [← hammingDist_ne_zero, iff_not_comm, not_lt, Nat.le_zero]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem hammingDist_lt_one {x y : ∀ i, β i} : hammingDist x y < 1 ↔ x = y := by
   rw [Nat.lt_one_iff, hammingDist_eq_zero]
 
@@ -147,7 +146,6 @@ theorem hammingDist_zero_left : hammingDist (0 : ∀ i, β i) = hammingNorm :=
   funext fun x => by rw [hammingDist_comm, hammingDist_zero_right]
 
 /-- Corresponds to `norm_nonneg`. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem hammingNorm_nonneg {x : ∀ i, β i} : 0 ≤ hammingNorm x :=
   zero_le _
 
@@ -170,7 +168,6 @@ theorem hammingNorm_ne_zero_iff {x : ∀ i, β i} : hammingNorm x ≠ 0 ↔ x �
 theorem hammingNorm_pos_iff {x : ∀ i, β i} : 0 < hammingNorm x ↔ x ≠ 0 :=
   hammingDist_pos
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem hammingNorm_lt_one {x : ∀ i, β i} : hammingNorm x < 1 ↔ x = 0 :=
   hammingDist_lt_one
 
@@ -288,13 +285,9 @@ theorem toHamming_ofHamming (x : Hamming β) : toHamming (ofHamming x) = x :=
 theorem ofHamming_toHamming (x : ∀ i, β i) : ofHamming (toHamming x) = x :=
   rfl
 
---@[simp] -- Porting note (#10618): removing `simp`, `simp` can prove it
--- and `dsimp` cannot use `Iff.rfl`
 theorem toHamming_inj {x y : ∀ i, β i} : toHamming x = toHamming y ↔ x = y :=
   Iff.rfl
 
---@[simp] -- Porting note (#10618): removing `simp`, `simp` can prove it
--- and `dsimp` cannot use `Iff.rfl`
 theorem ofHamming_inj {x y : Hamming β} : ofHamming x = ofHamming y ↔ x = y :=
   Iff.rfl
 
