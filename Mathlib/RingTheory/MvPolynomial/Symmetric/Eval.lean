@@ -98,14 +98,15 @@ lemma scaleAEvalRoots_eq_aevalMultiset (q : S[X]) (p : symmetricSubalgebra σ R)
       Polynomial.natDegree_map_eq_of_injective inj, Polynomial.leadingCoeff_map' inj,
       ← mul_assoc, mul_left_comm, ← mul_assoc, ← mul_assoc, mul_assoc _ _ (_ ^ _),
       pow_add q.leadingCoeff, mul_comm _ (_ ^ 1), pow_one, map_mul]
+    swap
+    · rw [Polynomial.natDegree_map_eq_of_injective inj]
+      exact tsub_le_self
     have h : ↑i + 1 ≤ Polynomial.natDegree q := Nat.add_one_le_iff.mpr (i.2.trans_le h)
     congr 1
     · rw [mul_right_eq_self₀, map_pow, map_neg, map_one,
         tsub_tsub_cancel_of_le h, ← mul_pow,
         neg_one_mul, neg_neg, one_pow, eq_self_iff_true, true_or]; trivial
     · rw [tsub_tsub_cancel_of_le h]
-    · rw [Polynomial.natDegree_map_eq_of_injective inj]
-      exact tsub_le_self
   · simp_rw [← Algebra.smul_def, Multiset.pow_smul_esymm, ← aevalMultiset_apply]
 
 variable (σ)
@@ -139,7 +140,7 @@ lemma aevalMultiset_sumPolynomial
   conv_lhs => rw [eq_univ_map]
   rw [aevalMultiset_map_of_card_eq]
   swap
-  rw [Fintype.card_fin, Multiset.length_toList, hm]
+  · rw [Fintype.card_fin, Multiset.length_toList, hm]
   rw [coe_sumPolynomial, map_sum]
   simp_rw [← Polynomial.aeval_algHom_apply, aeval_X, (· ∘ ·)]
   generalize_proofs h

@@ -26,6 +26,7 @@ theorem Differentiable.real_of_complex {e : ℂ → ℂ} (h : Differentiable ℂ
     Differentiable ℝ fun x : ℝ => e ↑x :=
   (h.restrictScalars ℝ).comp ofRealCLM.differentiable
 
+set_option linter.style.multiGoal false in
 theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
     (deriv fun x ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s))) =
       fun x : ℝ ↦ s * (cexp (-(x • s)) * p.eval (x • s)) := by
@@ -72,13 +73,14 @@ theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
   · rw [one_smul]
   · rw [one_smul]
   · simp_rw [zero_smul, neg_zero, Complex.exp_zero, one_mul]
-  · intro x _; apply (Differentiable.mul _ _).neg.differentiableAt
-    apply @Differentiable.real_of_complex fun c : ℂ => exp (-(c * s))
-    refine (differentiable_id.mul_const _).neg.cexp
+  · intro x _
+    apply (Differentiable.mul _ _).neg.differentiableAt
+    · apply @Differentiable.real_of_complex fun c : ℂ => exp (-(c * s))
+      exact (differentiable_id.mul_const _).neg.cexp
     change Differentiable ℝ ((fun y : ℂ => p.sumIDeriv.eval y) ∘ fun x : ℝ => x • s)
     apply Differentiable.comp
-    apply @Differentiable.restrictScalars ℝ _ ℂ; exact Polynomial.differentiable _
-    exact differentiable_id'.smul_const _
+    · apply @Differentiable.restrictScalars ℝ _ ℂ; exact Polynomial.differentiable _
+    · exact differentiable_id'.smul_const _
   · refine
       (continuous_const.mul ((continuous_id'.smul continuous_const).neg.cexp.mul ?_)).continuousOn
     change Continuous ((fun y : ℂ => p.eval y) ∘ fun x : ℝ => x • s)

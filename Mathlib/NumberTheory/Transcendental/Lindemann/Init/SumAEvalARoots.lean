@@ -33,7 +33,7 @@ theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algeb
     rw [Multiset.card_map, Fintype.card_fin]
   rw [← MvPolynomial.symmetricSubalgebra.aevalMultiset_sumPolynomial _ _ this,
     ← MvPolynomial.symmetricSubalgebra.scaleAEvalRoots_eq_aevalMultiset]
-  exact ⟨_, rfl⟩
+  · exact ⟨_, rfl⟩
   · exact inj
   · rw [Fintype.card_fin]; exact (card_roots' _).trans (natDegree_map_le _ _)
   · exact card_aroots
