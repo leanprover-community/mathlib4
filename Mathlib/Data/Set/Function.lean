@@ -292,8 +292,7 @@ theorem mapsTo_singleton {x : α} : MapsTo f {x} t ↔ f x ∈ t :=
 theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
   empty_subset _
 
-@[simp]
-theorem mapsTo_empty_iff : MapsTo f s ∅ ↔ s = ∅ := by
+@[simp] theorem mapsTo_empty_iff : MapsTo f s ∅ ↔ s = ∅ := by
   simp [mapsTo', subset_empty_iff]
 
 /-- If `f` maps `s` to `t` and `s` is non-empty, `t` is non-empty. -/
