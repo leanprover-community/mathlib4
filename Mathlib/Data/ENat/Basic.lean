@@ -175,8 +175,11 @@ theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - (no_index (OfN
   top_sub_coe a
 
 @[simp]
-theorem zero_lt_top : (0 : ℕ∞) < ⊤ :=
-  WithTop.zero_lt_top
+theorem top_pos : (0 : ℕ∞) < ⊤ :=
+  WithTop.top_pos
+
+@[deprecated ENat.top_pos (since := "2024-10-22")]
+alias zero_lt_top := top_pos
 
 theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
   WithTop.sub_top
