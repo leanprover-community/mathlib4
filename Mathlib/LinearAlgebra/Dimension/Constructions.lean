@@ -68,7 +68,7 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   have := nonempty_linearIndependent_set R M'
   rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range.{v, v} _) _ (bddAbove_range.{v, v} _)]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
-  choose f hf using Quotient.mk_surjective M'
+  choose f hf using Submodule.Quotient.mk_surjective M'
   simpa [add_comm] using (LinearIndependent.sum_elim_of_quotient ht (fun (i : s) ↦ f i)
     (by simpa [Function.comp_def, hf] using hs)).cardinal_le_rank
 
