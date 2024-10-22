@@ -235,6 +235,19 @@ instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
   Pi.module _ _ _
 
+section ofLinearEquiv
+variable [Semiring R] [AddCommMonoid α] [Module R α]
+
+variable (R) in
+/-- `Matrix.of` as a `LinearEquiv`. -/
+def ofLinearEquiv : (m → n → α) ≃ₗ[R] Matrix m n α :=
+  LinearEquiv.refl _ _
+
+@[simp] theorem ofLinearEquiv_apply (f : m → n → α) : ofLinearEquiv R f = of f := rfl
+@[simp] theorem ofLinearEquiv_symm_apply (M : Matrix m n α) :
+  (ofLinearEquiv R).symm M = of.symm M := rfl
+
+end ofLinearEquiv
 section
 
 #adaptation_note
