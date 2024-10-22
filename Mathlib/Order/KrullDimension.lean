@@ -6,8 +6,6 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 
 import Mathlib.Order.RelSeries
 import Mathlib.Data.ENat.Lattice
-import Mathlib.Topology.Order.Monotone
-import Mathlib.Topology.Instances.ENat
 
 /-!
 # Krull dimension of a preordered set and height of an element
