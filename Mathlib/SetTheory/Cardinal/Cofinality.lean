@@ -79,7 +79,9 @@ theorem le_cof [IsRefl α r] (c : Cardinal) :
 
 end Order
 
-theorem RelIso.cof_le_lift [IsRefl β s] (f : r ≃r s) :
+namespace RelIso
+
+private theorem cof_le_lift [IsRefl β s] (f : r ≃r s) :
     Cardinal.lift.{v} (Order.cof r) ≤ Cardinal.lift.{u} (Order.cof s) := by
   rw [Order.cof, Order.cof, lift_sInf, lift_sInf, le_csInf_iff'' ((Order.cof_nonempty s).image _)]
   rintro - ⟨-, ⟨u, H, rfl⟩, rfl⟩
@@ -89,18 +91,21 @@ theorem RelIso.cof_le_lift [IsRefl β s] (f : r ≃r s) :
   refine ⟨f.symm b, mem_image_of_mem _ hb, f.map_rel_iff.1 ?_⟩
   rwa [RelIso.apply_symm_apply]
 
-theorem RelIso.cof_eq_lift [IsRefl β s] (f : r ≃r s) :
+theorem cof_eq_lift [IsRefl β s] (f : r ≃r s) :
     Cardinal.lift.{v} (Order.cof r) = Cardinal.lift.{u} (Order.cof s) :=
   have := f.toRelEmbedding.isRefl
-  (RelIso.cof_le_lift f).antisymm (RelIso.cof_le_lift f.symm)
+  (f.cof_le_lift).antisymm (f.symm.cof_le_lift)
 
-theorem RelIso.cof_le {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
-    Order.cof r ≤ Order.cof s :=
-  lift_le.1 (RelIso.cof_le_lift f)
-
-theorem RelIso.cof_eq {α β : Type u} {r s} [IsRefl α r] [IsRefl β s] (f : r ≃r s) :
+theorem cof_eq {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
     Order.cof r = Order.cof s :=
-  lift_inj.1 (RelIso.cof_eq_lift f)
+  lift_inj.1 (f.cof_eq_lift)
+
+@[deprecated cof_eq (since := "2024-10-22")]
+theorem cof_le {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
+    Order.cof r ≤ Order.cof s :=
+  f.cof_eq.le
+
+end RelIso
 
 /-- Cofinality of a strict order `≺`. This is the smallest cardinality of a set `S : Set α` such
 that `∀ a, ∃ b ∈ S, ¬ b ≺ a`. -/
