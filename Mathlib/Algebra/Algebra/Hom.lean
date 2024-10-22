@@ -49,7 +49,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 -- attribute [nolint dangerousInstance] AlgHomClass.toRingHomClass
 
 -- Porting note (#10618): simp can prove this
--- attribute [simp] AlgHomClass.commutes
+attribute [simp] AlgHomClass.commutes
 
 namespace AlgHomClass
 
