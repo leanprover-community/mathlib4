@@ -216,7 +216,7 @@ theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
   rw [homOfLE_base]
   rfl
 
-theorem Scheme.homOfLE_app_aux {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
+theorem Scheme.ι_image_homOfLE_le_ι_image {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
     U.ι ''ᵁ (X.homOfLE e ⁻¹ᵁ W) ≤ V.ι ''ᵁ W := by
   simp only [← SetLike.coe_subset_coe, IsOpenMap.functor_obj_coe, Set.image_subset_iff,
     Scheme.homOfLE_base, Opens.map_coe, Opens.inclusion'_apply]
@@ -226,7 +226,7 @@ theorem Scheme.homOfLE_app_aux {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
 @[simp]
 theorem Scheme.homOfLE_app {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
     (X.homOfLE e).app W =
-      X.presheaf.map (homOfLE <| X.homOfLE_app_aux e W).op := by
+      X.presheaf.map (homOfLE <| X.ι_image_homOfLE_le_ι_image e W).op := by
   have e₁ := Scheme.congr_app (X.homOfLE_ι e) (V.ι ''ᵁ W)
   have : V.ι ⁻¹ᵁ V.ι ''ᵁ W = W := W.map_functor_eq (U := V)
   have e₂ := (X.homOfLE e).naturality (eqToIso this).hom.op
