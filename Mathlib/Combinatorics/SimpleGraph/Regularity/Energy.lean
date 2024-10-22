@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Rat.BigOperators
 

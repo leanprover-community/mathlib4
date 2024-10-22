@@ -586,6 +586,10 @@ class ComplementedLattice (α) [Lattice α] [BoundedOrder α] : Prop where
   /-- In a `ComplementedLattice`, every element admits a complement. -/
   exists_isCompl : ∀ a : α, ∃ b : α, IsCompl a b
 
+lemma complementedLattice_iff (α) [Lattice α] [BoundedOrder α] :
+    ComplementedLattice α ↔ ∀ a : α, ∃ b : α, IsCompl a b :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
 export ComplementedLattice (exists_isCompl)
 
 instance Subsingleton.instComplementedLattice

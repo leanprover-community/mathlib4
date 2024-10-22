@@ -3,13 +3,14 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
-import Mathlib.Algebra.Ring.Nat
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Common
-import Mathlib.Algebra.NeZero
 
 /-!
 # Bitwise operations on natural numbers
@@ -35,7 +36,6 @@ should be connected.
 
 bitwise, and, or, xor
 -/
-
 
 open Function
 
@@ -87,11 +87,6 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h2, h4] <;> split_ifs
     <;> simp_all (config := {decide := true}) [two_mul]
-
-@[simp]
-lemma bit_mod_two (a : Bool) (x : ℕ) :
-    bit a x % 2 = a.toNat := by
-  cases a <;> simp [bit_val, mul_add_mod]
 
 lemma bit_mod_two_eq_zero_iff (a x) :
     bit a x % 2 = 0 ↔ !a := by
@@ -357,6 +352,21 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c := by
   obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero.2 h.ne
   exacts [(h.asymm ha).elim, Or.inl <| Nat.xor_comm _ _ ▸ hb, Or.inr hc]
+
+@[simp]
+theorem xor_mod_two_eq {m n : ℕ} : (m ^^^ n) % 2 = (m + n) % 2 := by
+  by_cases h : (m + n) % 2 = 0
+  · simp only [h, mod_two_eq_zero_iff_testBit_zero, testBit_zero, xor_mod_two_eq_one, decide_not,
+      Bool.decide_iff_dist, Bool.not_eq_false', beq_iff_eq, decide_eq_decide]
+    omega
+  · simp only [mod_two_ne_zero] at h
+    simp only [h, xor_mod_two_eq_one]
+    omega
+
+@[simp]
+theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
+  simp only [even_iff, xor_mod_two_eq]
+  omega
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega

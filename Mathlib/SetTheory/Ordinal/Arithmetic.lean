@@ -1204,8 +1204,8 @@ set_option linter.deprecated false in
 theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v} f ≤ a ↔ ∀ i, f i ≤ a :=
   Ordinal.iSup_le_iff
 
-/-- `ciSup_le'` whenever the input type is small in the output universe. -/
-protected theorem iSup_le {ι} {f : ι → Ordinal.{u}} {a} :
+/-- An alias of `ciSup_le'` for discoverability. -/
+protected theorem iSup_le {ι} {f : ι → Ordinal} {a} :
     (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
 
@@ -1214,11 +1214,10 @@ set_option linter.deprecated false in
 theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i ≤ a) → sup.{_, v} f ≤ a :=
   Ordinal.iSup_le
 
--- TODO: generalize to conditionally complete linear orders.
+/-- `lt_ciSup_iff'` whenever the input type is small in the output universe. -/
 protected theorem lt_iSup {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
-    a < iSup f ↔ ∃ i, a < f i := by
-  rw [← not_iff_not]
-  simpa using Ordinal.iSup_le_iff
+    a < iSup f ↔ ∃ i, a < f i :=
+  lt_ciSup_iff' (bddAbove_of_small _)
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.lt_iSup (since := "2024-08-27")]
@@ -1927,12 +1926,15 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
         exact H b hb⟩
 
 /-- A two-argument version of `Ordinal.blsub`.
-We don't develop a full API for this, since it's only used in a handful of existence results. -/
+
+Deprecated. If you need this value explicitly, write it in terms of `iSup`. If you just want an
+upper bound for the image of `op`, use that `Iio a ×ˢ Iio b` is a small set. -/
+@[deprecated (since := "2024-10-11")]
 def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) :
     Ordinal :=
   lsub (fun x : o₁.toType × o₂.toType => op (typein_lt_self x.1) (typein_lt_self x.2))
 
--- TODO: deprecate this, and replace the arguments using it by arguments about small sets.
+@[deprecated (since := "2024-10-11")]
 theorem lt_blsub₂ {o₁ o₂ : Ordinal}
     (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
     (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
@@ -1941,8 +1943,6 @@ theorem lt_blsub₂ {o₁ o₂ : Ordinal}
   simp only [typein_enum]
 
 end blsub
-
--- TODO: deprecate in favor of `sInf sᶜ`.
 
 section mex
 set_option linter.deprecated false

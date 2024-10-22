@@ -670,6 +670,18 @@ theorem preimage_div_const_uIcc (ha : a ≠ 0) (b c : α) :
     (fun x => x / a) ⁻¹' [[b, c]] = [[b * a, c * a]] := by
   simp only [div_eq_mul_inv, preimage_mul_const_uIcc (inv_ne_zero ha), inv_inv]
 
+lemma preimage_const_mul_Ioi_or_Iio (hb : a ≠ 0) {U V : Set α}
+    (hU : U ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a}) (hV : V = HMul.hMul a ⁻¹' U) :
+    V ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a} := by
+  obtain ⟨aU, (haU | haU)⟩ := hU <;>
+  simp only [hV, haU, mem_setOf_eq] <;>
+  use a⁻¹ * aU <;>
+  rcases lt_or_gt_of_ne hb with (hb | hb)
+  · right; rw [Set.preimage_const_mul_Ioi_of_neg _ hb, div_eq_inv_mul]
+  · left; rw [Set.preimage_const_mul_Ioi _ hb, div_eq_inv_mul]
+  · left; rw [Set.preimage_const_mul_Iio_of_neg _ hb, div_eq_inv_mul]
+  · right; rw [Set.preimage_const_mul_Iio _ hb, div_eq_inv_mul]
+
 @[simp]
 theorem image_mul_const_uIcc (a b c : α) : (· * a) '' [[b, c]] = [[b * a, c * a]] :=
   if ha : a = 0 then by simp [ha]
