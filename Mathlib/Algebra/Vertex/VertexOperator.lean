@@ -255,18 +255,19 @@ end HasseDerivative
 
 section Local
 
+variable (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
+    (A B : VertexOperator R V) (n : ℕ)
+
 open HVertexOperator
 
 /-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
 vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to switch coordinates,
 since `BA` takes values in the opposite-order Hahn series. -/
-def IsLocalToOrderLeq (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
-    (A B : VertexOperator R V) (n : ℕ) : Prop :=
+def IsLocalToOrderLeq : Prop :=
   ∀ (k l : ℤ), ((subLeft R)^n • (comp A B)).coeff (toLex (k, l)) =
     ((subRight R)^n • (comp B A)).coeff (toLex (l, k))
 
-theorem isLocalToOrderLeqAdd (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
-    (A B : VertexOperator R V) (m n : ℕ) (h : IsLocalToOrderLeq R V A B n) :
+theorem isLocalToOrderLeqAdd (m n : ℕ) (h : IsLocalToOrderLeq R V A B n) :
     IsLocalToOrderLeq R V A B (n + m) := by
   induction m with
   | zero => exact h
@@ -274,9 +275,19 @@ theorem isLocalToOrderLeqAdd (R V : Type*) [CommRing R] [AddCommGroup V] [Module
     intro k l
     rw [← add_assoc, pow_succ', mul_smul, subLeft_smul_eq, subLeft_smul_coeff, pow_succ', mul_smul,
       subRight_smul_coeff, ih, ih]
+/-!
+def isLocal_symm (h : IsLocalToOrderLeq R V A B n) : IsLocalToOrderLeq R V B A n := by
+  intro k l
+
+  sorry
+
+theorem isLocal_with_hasseDeriv_left (m : ℕ) (h : IsLocalToOrderLeq R V A B n) :
+    IsLocalToOrderLeq R V (hasseDeriv m A) B (n + m) := by
+  sorry
 
 --show `A` and `B` local to order `n` implies `∂^[k]A` and `B` are local to order `n+k`.
 --show any vertex operator is local with identity.
+-/
 
 end Local
 

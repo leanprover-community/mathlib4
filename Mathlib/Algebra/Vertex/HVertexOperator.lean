@@ -322,8 +322,11 @@ theorem subLeft_smul_coeff (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : �
   rw [sub_zero, HahnModule.single_smul_coeff_add, one_smul, ← toLex_vAdd_of_sub k l 0 1,
     sub_zero, HahnModule.single_smul_coeff_add, neg_one_smul, ← sub_eq_add_neg]
 
+/-!
 --describe coefficients of powers
---describe coefficients of `subLeft R • A` for `A : HetVO`.
+theorem subLeft_pow_smul_coeff (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l n : ℤ) :
+    ((subLeft R) ^ n • A).coeff (toLex (k, l)) = ∑??
+-/
 
 /-- `X - Y` as a unit of `R((Y))((X))`.  This is `-1` times subLeft, so it may be superfluous. -/
 def subRight (R : Type*) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
@@ -358,8 +361,8 @@ theorem subRight_smul_coeff (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : �
 
 theorem subLeft_smul_eq_subRight_smul (A B : HVertexOperator (ℤ ×ₗ ℤ) R V W)
     (h : ∀ (k l : ℤ), A.coeff (toLex (k, l)) = B.coeff (toLex (l, k))) (k l : ℤ) :
-    ((subLeft R).val • A).coeff (toLex (k, l)) = ((subRight R) • B).coeff (toLex (l, k)) := by
-  rw [subLeft_smul_coeff, subRight_smul_coeff, h k (l-1), h (k-1) l]
+    ((subLeft R) • A).coeff (toLex (k, l)) = ((subRight R) • B).coeff (toLex (l, k)) := by
+  rw [subLeft_smul_eq, subLeft_smul_coeff, subRight_smul_coeff, h k (l-1), h (k-1) l]
 
 end Binomial
 
