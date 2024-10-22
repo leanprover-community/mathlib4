@@ -952,12 +952,12 @@ theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type 
   apply Ordinal.zero_le
 
 theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.toType) :
-    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ ≤ a := by
+    enum (α := o.toType) (· < ·) ⟨0, type_toType _ ▸ h0⟩ ≤ a := by
   rw [← not_lt]
   apply enum_zero_le
 
 theorem le_enum_succ {o : Ordinal} (a : (succ o).toType) :
-    a ≤ enum (α := (succ o).toType) (· < ·) ⟨o, (by rw [type_toType]; exact lt_succ o)⟩ := by
+    a ≤ enum (α := (succ o).toType) (· < ·) ⟨o, (type_toType _ ▸ lt_succ o)⟩ := by
   rw [← enum_typein (α := (succ o).toType) (· < ·) a, enum_le_enum', Subtype.mk_le_mk,
     ← lt_succ_iff]
   apply typein_lt_self
@@ -969,16 +969,11 @@ theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // 
 /-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
 @[simps! (config := .lemmasOnly)]
 noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
-  toFun x :=
-    enum (α := o.toType) (· < ·) ⟨x.1, by
-      rw [type_toType]
-      exact x.2⟩
+  toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
   left_inv := fun ⟨_, _⟩ => Subtype.ext_val (typein_enum _ _)
   right_inv _ := enum_typein _ _
-  map_rel_iff' := by
-    rintro ⟨a, _⟩ ⟨b, _⟩
-    apply enum_le_enum'
+  map_rel_iff' := enum_le_enum' _
 
 @[deprecated (since := "2024-08-26")]
 alias enumIsoOut := enumIsoToType
