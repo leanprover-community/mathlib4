@@ -8,12 +8,13 @@ import Mathlib.GroupTheory.HNNExtension
 import Mathlib.GroupTheory.SemidirectProduct
 import Mathlib.GroupTheory.FreeGroup.Basic
 
-namespace OneRelator
 
 variable {α G : Type*} [Group G] (r : FreeGroup α)
 
 def OneRelator (r : FreeGroup α) : Type _ :=
   FreeGroup α ⧸ Subgroup.normalClosure {r}
+
+namespace OneRelator
 
 instance : Group (OneRelator r) := by
   delta OneRelator; infer_instance
@@ -34,7 +35,8 @@ def of (x : α) : OneRelator r := QuotientGroup.mk (FreeGroup.of x)
 @[simp]
 theorem lift_of (f : α → G) (hf : FreeGroup.lift f r = 1) (x : α) :
     lift f hf (of x) = f x := by
-  rw [lift, of, QuotientGroup.lift_mk', FreeGroup.lift_of]
+  erw [lift, of, QuotientGroup.lift_mk, FreeGroup.lift.of]
+
 
 @[ext high]
 theorem hom_ext {f g : OneRelator r →* G} (h : ∀ x, f (of x) = g (of x)) : f = g := by
@@ -78,7 +80,7 @@ def prodPerm (α : Type*) : Multiplicative ℤ →*
     Equiv.Perm (α × Multiplicative ℤ) :=
   { toFun := fun g => Equiv.prodCongr 1 (MulAction.toPermHom _ _ g),
     map_one' := by ext <;> simp,
-    map_mul' := fun _ _ => by ext <;> simp }
+    map_mul' := fun _ _ => by ext <;> simp [mul_assoc] }
 
 theorem MulAut.conj_pow_apply {G : Type*} [Group G]
     (g₁ g₂: G) (n : ℕ) : (MulAut.conj g₁ ^ n) g₂ =
@@ -104,15 +106,14 @@ def freeGroupEquivSemidirectProduct {α : Type*} [DecidableEq α] (a : α) :
       (zpowersHom _ (of a))
       (fun z => FreeGroup.ext_hom _ _ <| by
         intro b
-        simp [mapPermHom, prodPerm, mul_assoc, MulAut.conj_zpow_apply, zpow_add]
-        group))
+        simp [mapPermHom, prodPerm, mul_assoc, MulAut.conj_zpow_apply, zpow_add] ))
     (FreeGroup.ext_hom _ _ <| fun _ => by
       simp; split_ifs <;> simp_all)
     (SemidirectProduct.hom_ext
       (FreeGroup.ext_hom _ _ <| by
         rintro ⟨⟨b, hb⟩, z⟩
         simp only [ne_eq, zpow_neg, MonoidHom.coe_comp, Function.comp_apply, lift_inl,
-          lift_of, _root_.map_mul, map_zpow, dite_true, hb, dite_false, _root_.map_inv,
+          lift.of, _root_.map_mul, map_zpow, dite_true, hb, dite_false, _root_.map_inv,
           MonoidHom.id_comp]
         rw [← _root_.map_zpow, ← _root_.map_inv, ← inl_aut, ← Int.ofAdd_mul, one_mul,
           ofAdd_toAdd]
