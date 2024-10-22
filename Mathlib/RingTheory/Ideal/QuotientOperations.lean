@@ -667,8 +667,8 @@ def quotQuotMk : R →+* (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) :=
 /-- The kernel of `quotQuotMk` -/
 theorem ker_quotQuotMk : RingHom.ker (quotQuotMk I J) = I ⊔ J := by
   rw [RingHom.ker_eq_comap_bot, quotQuotMk, ← comap_comap, ← RingHom.ker, mk_ker,
-    comap_map_of_surjective (Ideal.Quotient.mk I) Quotient.mk_surjective, ← RingHom.ker, mk_ker,
-    sup_comm]
+    comap_map_of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective, ← RingHom.ker,
+    mk_ker, sup_comm]
 
 /-- The ring homomorphism `R/(I ⊔ J) → (R/I)/J' `induced by `quotQuotMk` -/
 def liftSupQuotQuotMk (I J : Ideal R) : R ⧸ I ⊔ J →+* (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) :=
