@@ -124,11 +124,6 @@ theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a
 @[deprecated exists_eq_iff_rel (since := "2024-09-21")]
 alias init_iff := exists_eq_iff_rel
 
-theorem init_le [Preorder α] [PartialOrder β] (f : @InitialSeg α β (· < ·) (· < ·)) {a : α} {b : β}
-    (h : b ≤ f a) : ∃ a', f a' = b := by
-  obtain rfl | hb := h.eq_or_lt
-  exacts [⟨a, rfl⟩, f.init hb]
-
 /-- An order isomorphism is an initial segment -/
 def ofIso (f : r ≃r s) : r ≼i s :=
   ⟨f, fun _ b _ => ⟨f.symm b, RelIso.apply_symm_apply f _⟩⟩
