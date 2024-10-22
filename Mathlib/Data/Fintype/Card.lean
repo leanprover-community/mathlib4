@@ -306,12 +306,10 @@ theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
 theorem card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : s.card ≤ n := by
   simpa only [Fintype.card_fin] using s.card_le_univ
 
---@[simp] Porting note (#10618): simp can prove it
 theorem Fintype.card_subtype_eq (y : α) [Fintype { x // x = y }] :
     Fintype.card { x // x = y } = 1 :=
   Fintype.card_unique
 
---@[simp] Porting note (#10618): simp can prove it
 theorem Fintype.card_subtype_eq' (y : α) [Fintype { x // y = x }] :
     Fintype.card { x // y = x } = 1 :=
   Fintype.card_unique

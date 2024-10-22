@@ -25,9 +25,9 @@ namespace Module.End
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {f g : End R M}
 
-lemma apply_eq_of_mem_unifEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub
+lemma apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil
     {μ : R} {k : ℕ∞} {m : M} (hm : m ∈ f.unifEigenspace μ k)
-    (hfg : Commute f g) (hss : g.IsSemisimple) (hnil : IsNilpotent (f - g)) :
+    (hfg : Commute f g) (hss : g.IsFinitelySemisimple) (hnil : IsNilpotent (f - g)) :
     g m = μ • m := by
   rw [f.mem_unifEigenspace] at hm
   obtain ⟨l, -, hm⟩ := hm 
@@ -44,33 +44,24 @@ lemma apply_eq_of_mem_unifEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub
     (Commute.sub_right rfl hfg).sub_left <| Algebra.commute_algebraMap_left μ (f - g)
   suffices IsNilpotent ((g - algebraMap R (End R M) μ).restrict h₂) by
     replace this : g.restrict h₁ - algebraMap R (End R p) μ = 0 :=
-      eq_zero_of_isNilpotent_isSemisimple this (by simpa using hss.restrict)
+      eq_zero_of_isNilpotent_of_isFinitelySemisimple this (by simpa using hss.restrict _)
     simpa [LinearMap.restrict_apply, sub_eq_zero] using LinearMap.congr_fun this ⟨m, hm⟩
   simpa [LinearMap.restrict_sub h₄ h₃] using (LinearMap.restrict_commute hfg h₄ h₃).isNilpotent_sub
     (f.isNilpotent_restrict_sub_algebraMap μ l) (Module.End.isNilpotent.restrict h₃ hnil)
 
-@[deprecated apply_eq_of_mem_unifEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub
-  (since := "2024-10-23")]
-lemma apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub
-    {μ : R} {k : ℕ} {m : M} (hm : m ∈ f.genEigenspace μ k)
-    (hfg : Commute f g) (hss : g.IsSemisimple) (hnil : IsNilpotent (f - g)) :
-    g m = μ • m :=
-  apply_eq_of_mem_unifEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hm hfg hss hnil
-
 lemma IsSemisimple.unifEigenspace_eq_eigenspace
-    (hf : f.IsSemisimple) (μ : R) {k : ℕ∞} (hk : 0 < k) :
+    (hf : f.IsFinitelySemisimple) (μ : R) {k : ℕ∞} (hk : 0 < k) :
     f.unifEigenspace μ k = f.eigenspace μ := by
   refine le_antisymm (fun m hm ↦ mem_eigenspace_iff.mpr ?_) (f.unifEigenspace μ |>.mono ?_)
-  · apply apply_eq_of_mem_unifEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hm rfl hf
+  · apply apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil hm rfl hf
     simp
   · exact Order.one_le_iff_pos.mpr hk
 
-lemma IsSemisimple.genEigenspace_eq_eigenspace
-    (hf : f.IsSemisimple) (μ : R) {k : ℕ} (hk : 0 < k) :
+lemma IsFinitelySemisimple.genEigenspace_eq_eigenspace
+    (hf : f.IsFinitelySemisimple) (μ : R) {k : ℕ} (hk : 0 < k) :
     f.genEigenspace μ k = f.eigenspace μ := by
   refine le_antisymm (fun m hm ↦ mem_eigenspace_iff.mpr ?_) (eigenspace_le_genEigenspace hk)
-  apply apply_eq_of_mem_unifEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hm rfl hf
-  simp
+  exact apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil hm rfl hf (by simp)
 
 lemma IsSemisimple.maxGenEigenspace_eq_eigenspace
     (hf : f.IsSemisimple) (μ : R) :

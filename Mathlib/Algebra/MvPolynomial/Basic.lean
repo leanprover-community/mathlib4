@@ -689,7 +689,7 @@ theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
   · contrapose! h
     rw [← mem_support_iff] at h
     obtain ⟨j, -, rfl⟩ : ∃ j ∈ support p, j + s = m := by
-      simpa [Finset.add_singleton]
+      simpa [Finset.mem_add]
         using Finset.add_subset_add_left support_monomial_subset <| support_mul _ _ h
     exact le_add_left le_rfl
 

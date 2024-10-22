@@ -730,7 +730,7 @@ def eapprox : (α → ℝ≥0∞) → ℕ → α →ₛ ℝ≥0∞ :=
 
 theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n a < ∞ := by
   simp only [eapprox, approx, finset_sup_apply, Finset.mem_range, ENNReal.bot_eq_zero, restrict]
-  rw [Finset.sup_lt_iff (α := ℝ≥0∞) WithTop.zero_lt_top]
+  rw [Finset.sup_lt_iff (α := ℝ≥0∞) WithTop.top_pos]
   intro b _
   split_ifs
   · simp only [coe_zero, coe_piecewise, piecewise_eq_indicator, coe_const]
@@ -739,7 +739,7 @@ theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n 
           ennrealRatEmbed b :=
         indicator_le_self _ _ a
       _ < ⊤ := ENNReal.coe_lt_top
-  · exact WithTop.zero_lt_top
+  · exact WithTop.top_pos
 
 @[mono]
 theorem monotone_eapprox (f : α → ℝ≥0∞) : Monotone (eapprox f) :=
