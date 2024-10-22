@@ -627,17 +627,17 @@ theorem lift_type_lt {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWel
         (InitialSeg.ofIso (RelIso.preimage Equiv.ulift s).symm)⟩⟩
 
 @[simp]
-theorem lift_le {a b : Ordinal} : lift.{u,v} a ≤ lift.{u,v} b ↔ a ≤ b :=
+theorem lift_le {a b : Ordinal} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
   inductionOn₂ a b fun α r _ β s _ => by
     rw [← lift_umax]
     exact lift_type_le.{_,_,u}
 
 @[simp]
-theorem lift_inj {a b : Ordinal} : lift.{u,v} a = lift.{u,v} b ↔ a = b := by
+theorem lift_inj {a b : Ordinal} : lift.{u, v} a = lift.{u, v} b ↔ a = b := by
   simp_rw [le_antisymm_iff, lift_le]
 
 @[simp]
-theorem lift_lt {a b : Ordinal} : lift.{u,v} a < lift.{u,v} b ↔ a < b := by
+theorem lift_lt {a b : Ordinal} : lift.{u, v} a < lift.{u, v} b ↔ a < b := by
   simp_rw [lt_iff_le_not_le, lift_le]
 
 @[simp]
