@@ -22,7 +22,7 @@ This file introduces the following properties of a map `f : X → Y` between top
   a subspace of `Y`.
 * `IsOpenEmbedding f` means `f` is an embedding with open image, so it identifies `X` with an
   open subspace of `Y`. Equivalently, `f` is an embedding and an open map.
-* `ClosedEmbedding f` similarly means `f` is an embedding with closed image, so it identifies
+* `IsClosedEmbedding f` similarly means `f` is an embedding with closed image, so it identifies
   `X` with a closed subspace of `Y`. Equivalently, `f` is an embedding and a closed map.
 
 * `QuotientMap f` is the dual condition to `Embedding f`: `f` is surjective and the topology
@@ -603,59 +603,69 @@ end IsOpenEmbedding
 
 end IsOpenEmbedding
 
-section ClosedEmbedding
+section IsClosedEmbedding
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
-namespace ClosedEmbedding
+namespace IsClosedEmbedding
 
-theorem tendsto_nhds_iff {g : ι → X} {l : Filter ι} {x : X} (hf : ClosedEmbedding f) :
+theorem tendsto_nhds_iff {g : ι → X} {l : Filter ι} {x : X} (hf : IsClosedEmbedding f) :
     Tendsto g l (𝓝 x) ↔ Tendsto (f ∘ g) l (𝓝 (f x)) :=
   hf.toEmbedding.tendsto_nhds_iff
 
-theorem continuous (hf : ClosedEmbedding f) : Continuous f :=
+theorem continuous (hf : IsClosedEmbedding f) : Continuous f :=
   hf.toEmbedding.continuous
 
-theorem isClosedMap (hf : ClosedEmbedding f) : IsClosedMap f :=
+theorem isClosedMap (hf : IsClosedEmbedding f) : IsClosedMap f :=
   hf.toEmbedding.toInducing.isClosedMap hf.isClosed_range
 
-theorem closed_iff_image_closed (hf : ClosedEmbedding f) {s : Set X} :
+theorem closed_iff_image_closed (hf : IsClosedEmbedding f) {s : Set X} :
     IsClosed s ↔ IsClosed (f '' s) :=
   ⟨hf.isClosedMap s, fun h => by
     rw [← preimage_image_eq s hf.inj]
     exact h.preimage hf.continuous⟩
 
-theorem closed_iff_preimage_closed (hf : ClosedEmbedding f) {s : Set Y}
+theorem closed_iff_preimage_closed (hf : IsClosedEmbedding f) {s : Set Y}
     (hs : s ⊆ range f) : IsClosed s ↔ IsClosed (f ⁻¹' s) := by
   rw [hf.closed_iff_image_closed, image_preimage_eq_of_subset hs]
 
-theorem _root_.closedEmbedding_of_embedding_closed (h₁ : Embedding f) (h₂ : IsClosedMap f) :
-    ClosedEmbedding f :=
+theorem _root_.IsClosedEmbedding.of_embedding_closed (h₁ : Embedding f) (h₂ : IsClosedMap f) :
+    IsClosedEmbedding f :=
   ⟨h₁, image_univ (f := f) ▸ h₂ univ isClosed_univ⟩
 
-theorem _root_.closedEmbedding_of_continuous_injective_closed (h₁ : Continuous f) (h₂ : Injective f)
-    (h₃ : IsClosedMap f) : ClosedEmbedding f := by
-  refine closedEmbedding_of_embedding_closed ⟨⟨?_⟩, h₂⟩ h₃
+@[deprecated (since := "2024-10-20")]
+alias _root_.closedEmbedding_of_embedding_closed := _root_.IsClosedEmbedding.of_embedding_closed
+
+lemma _root_.IsClosedEmbedding.of_continuous_injective_isClosedMap (h₁ : Continuous f)
+    (h₂ : Injective f) (h₃ : IsClosedMap f) : IsClosedEmbedding f := by
+  refine .of_embedding_closed ⟨⟨?_⟩, h₂⟩ h₃
   refine h₁.le_induced.antisymm fun s hs => ?_
   refine ⟨(f '' sᶜ)ᶜ, (h₃ _ hs.isClosed_compl).isOpen_compl, ?_⟩
   rw [preimage_compl, preimage_image_eq _ h₂, compl_compl]
 
-theorem _root_.closedEmbedding_id : ClosedEmbedding (@id X) :=
+@[deprecated (since := "2024-10-20")]
+alias _root_.closedEmbedding_of_continuous_injective_closed :=
+  IsClosedEmbedding.of_continuous_injective_isClosedMap
+
+theorem _root_.isClosedEmbedding_id : IsClosedEmbedding (@id X) :=
   ⟨embedding_id, IsClosedMap.id.isClosed_range⟩
 
-theorem comp (hg : ClosedEmbedding g) (hf : ClosedEmbedding f) :
-    ClosedEmbedding (g ∘ f) :=
+@[deprecated (since := "2024-10-20")]
+alias _root_.closedEmbedding_id := _root_.isClosedEmbedding_id
+
+theorem comp (hg : IsClosedEmbedding g) (hf : IsClosedEmbedding f) :
+    IsClosedEmbedding (g ∘ f) :=
   ⟨hg.toEmbedding.comp hf.toEmbedding, (hg.isClosedMap.comp hf.isClosedMap).isClosed_range⟩
 
-theorem of_comp_iff (hg : ClosedEmbedding g) :
-    ClosedEmbedding (g ∘ f) ↔ ClosedEmbedding f := by
-  simp_rw [closedEmbedding_iff, hg.toEmbedding.of_comp_iff, Set.range_comp,
+theorem of_comp_iff (hg : IsClosedEmbedding g) :
+    IsClosedEmbedding (g ∘ f) ↔ IsClosedEmbedding f := by
+  simp_rw [isClosedEmbedding_iff, hg.toEmbedding.of_comp_iff, Set.range_comp,
     ← hg.closed_iff_image_closed]
 
-theorem closure_image_eq (hf : ClosedEmbedding f) (s : Set X) :
+theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :
     closure (f '' s) = f '' closure s :=
   hf.isClosedMap.closure_image_eq_of_continuous hf.continuous s
 
-end ClosedEmbedding
+end IsClosedEmbedding
 
-end ClosedEmbedding
+end IsClosedEmbedding
