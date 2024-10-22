@@ -93,10 +93,10 @@ theorem uniformSpace_eq_comap_of_comp
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 `f` is uniform inducing. -/
-theorem uniformInducing_of_comp
+theorem isUniformInducing_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
-    UniformInducing f :=
-  uniformInducing_iff_uniformSpace.2 (Eq.symm (uniformSpace_eq_comap_of_comp h))
+    IsUniformInducing f :=
+  isUniformInducing_iff_uniformSpace.2 <| Eq.symm (uniformSpace_eq_comap_of_comp h)
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 `f` is an isometry. -/
@@ -119,7 +119,7 @@ abbrev completion := UniformSpace.Completion (WithAbs v)
 namespace Completion
 
 instance : Coe K v.completion :=
-  inferInstanceAs (Coe (WithAbs v) (UniformSpace.Completion (WithAbs v)))
+  inferInstanceAs <| Coe (WithAbs v) (UniformSpace.Completion (WithAbs v))
 
 variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
 
@@ -129,13 +129,13 @@ def extensionEmbedding_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
     v.completion →+* L :=
   UniformSpace.Completion.extensionHom _
-    (WithAbs.uniformInducing_of_comp h).uniformContinuous.continuous
+    (WithAbs.isUniformInducing_of_comp h).uniformContinuous.continuous
 
 theorem extensionEmbedding_of_comp_coe
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) (x : K) :
     extensionEmbedding_of_comp h x = f x := by
   rw [← UniformSpace.Completion.extensionHom_coe f
-    (WithAbs.uniformInducing_of_comp h).uniformContinuous.continuous]
+    (WithAbs.isUniformInducing_of_comp h).uniformContinuous.continuous]
   rfl
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
@@ -160,17 +160,17 @@ theorem isometry_extensionEmbedding_of_comp
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.completion →+* L` is a closed embedding. -/
-theorem closedEmbedding_extensionEmbedding_of_comp
+theorem isClosedEmbedding_extensionEmbedding_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
-    ClosedEmbedding (extensionEmbedding_of_comp h) :=
-  (isometry_extensionEmbedding_of_comp h).closedEmbedding
+    IsClosedEmbedding (extensionEmbedding_of_comp h) :=
+  (isometry_extensionEmbedding_of_comp h).isClosedEmbedding
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 that is locally compact, then the completion of the first normed field is also locally compact. -/
 theorem locallyCompactSpace [LocallyCompactSpace L]
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective)  :
     LocallyCompactSpace (v.completion) :=
-  (closedEmbedding_extensionEmbedding_of_comp h).locallyCompactSpace
+  (isClosedEmbedding_extensionEmbedding_of_comp h).locallyCompactSpace
 
 end AbsoluteValue.Completion
 
@@ -186,11 +186,11 @@ abbrev completion := v.1.completion
 namespace Completion
 
 instance : NormedField v.completion :=
-  letI := (WithAbs.uniformInducing_of_comp v.abs_eq_comp).completableTopField
+  letI := (WithAbs.isUniformInducing_of_comp v.abs_eq_comp).completableTopField
   UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v.1)
 
 instance : Algebra K v.completion :=
-  inferInstanceAs (Algebra (WithAbs v.1) v.1.completion)
+  inferInstanceAs <| Algebra (WithAbs v.1) v.1.completion
 
 /-- The embedding associated to an infinite place extended to an embedding `v.completion →+* ℂ`. -/
 def extensionEmbedding : v.completion →+* ℂ := extensionEmbedding_of_comp v.abs_eq_comp
@@ -222,23 +222,23 @@ instance locallyCompactSpace : LocallyCompactSpace (v.completion) :=
   AbsoluteValue.Completion.locallyCompactSpace v.abs_eq_comp
 
 /-- The embedding `v.completion →+* ℂ` has closed image inside `ℂ`. -/
-theorem isClosed_image_extensionEmbedding : IsClosed (Set.range (extensionEmbedding v)) := by
-  exact ((closedEmbedding_iff _).1 <| closedEmbedding_extensionEmbedding_of_comp v.abs_eq_comp).2
+theorem isClosed_image_extensionEmbedding : IsClosed (Set.range (extensionEmbedding v)) :=
+  ((isClosedEmbedding_iff _).1 <| isClosedEmbedding_extensionEmbedding_of_comp v.abs_eq_comp).2
 
 /-- The embedding `v.completion →+* ℝ` associated to a real infinite place has closed image
 inside `ℝ`. -/
 theorem isClosed_image_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     IsClosed (Set.range (extensionEmbedding_of_isReal hv)) :=
-  ((closedEmbedding_iff _).1 <|
-    closedEmbedding_extensionEmbedding_of_comp (abs_of_isReal_eq_comp hv)).2
+  ((isClosedEmbedding_iff _).1 <|
+    isClosedEmbedding_extensionEmbedding_of_comp (abs_of_isReal_eq_comp hv)).2
 
 theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
-    (extensionEmbedding v).fieldRange ≠ Complex.ofReal.fieldRange := by
+    (extensionEmbedding v).fieldRange ≠ Complex.ofRealHom.fieldRange := by
   contrapose! hv
   simp only [not_isComplex_iff_isReal, isReal_iff]
   ext x
   obtain ⟨r, hr⟩ := hv ▸ extensionEmbedding_coe v x ▸ RingHom.mem_fieldRange_self _ _
-  simp only [ComplexEmbedding.conjugate_coe_eq, ← hr, Complex.ofReal_eq_coe, Complex.conj_ofReal]
+  simp only [ComplexEmbedding.conjugate_coe_eq, ← hr, Complex.ofRealHom_eq_coe, Complex.conj_ofReal]
 
 /-- If `v` is a complex infinite place, then the embedding `v.completion →+* ℂ` is surjective. -/
 theorem surjective_extensionEmbedding_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
