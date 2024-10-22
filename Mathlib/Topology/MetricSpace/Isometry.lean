@@ -510,7 +510,11 @@ def sumArrowEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ
 
 /-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `(Fin (m + n) → α)`.-/
 def finArrowProdHomeomorphFinAddArrow (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃ᵢ (Fin (m + n) → α) :=
-  sumArrowEquivProdArrow.symm.trans (piCongrLeft (Y := fun _ ↦ α) finSumFinEquiv)
+  mk (Fin.appendEquiv _ _) (by
+    intro f1 f2
+    simp [PseudoEMetricSpace.toEDist, pseudoEMetricSpacePi, instEDistForall,
+      Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv), Prod.pseudoEMetricSpaceMax,
+      iSup_sum])
 
 variable (ι α)
 
