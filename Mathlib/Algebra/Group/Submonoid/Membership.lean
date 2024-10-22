@@ -106,7 +106,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] (S : Submonoid M) (m : Multiset S) 
     (m.prod : M) = (m.map (↑)).prod :=
   S.subtype.map_multiset_prod m
 
-@[to_additive (attr := norm_cast, simp)]
+@[to_additive (attr := norm_cast)]
 theorem coe_finset_prod {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod S.subtype f s

@@ -531,7 +531,7 @@ theorem div_singleton : s / {b} = (· / b) '' s :=
 theorem singleton_div : {a} / t = (· / ·) a '' t :=
   image2_singleton_left
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
   image2_singleton
 
