@@ -41,7 +41,7 @@ theorem primorial_pos (n : ℕ) : 0 < n# :=
 
 theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# := by
   refine prod_congr ?_ fun _ _ ↦ rfl
-  rw [range_succ, filter_insert, if_neg fun h ↦ odd_iff_not_even.mp hn _]
+  rw [range_succ, filter_insert, if_neg fun h ↦ not_even_iff_odd.2 hn _]
   exact fun h ↦ h.even_sub_one <| mt succ.inj hn1
 
 theorem primorial_add (m n : ℕ) :
@@ -55,7 +55,7 @@ theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (
     (m + n)# = m# * ∏ p ∈ filter Nat.Prime (Ico (m + 1) (m + n + 1)), p := primorial_add _ _
     _ ∣ m# * choose (m + n) m :=
       mul_dvd_mul_left _ <|
-        prod_primes_dvd _ (fun k hk ↦ (mem_filter.1 hk).2.prime) fun p hp ↦ by
+        prod_primes_dvd _ (fun _ hk ↦ (mem_filter.1 hk).2.prime) fun p hp ↦ by
           rw [mem_filter, mem_Ico] at hp
           exact hp.2.dvd_choose_add hp.1.1 (h.trans_lt (m.lt_succ_self.trans_le hp.1.1))
               (Nat.lt_succ_iff.1 hp.1.2)

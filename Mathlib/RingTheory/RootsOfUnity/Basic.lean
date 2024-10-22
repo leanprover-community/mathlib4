@@ -442,7 +442,7 @@ then there is a `b`-th primitive root of unity in `R`. -/
 theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod : n = a * b) :
     IsPrimitiveRoot (ζ ^ a) b := by
   subst n
-  simp only [iff_def, ← pow_mul, h.pow_eq_one, eq_self_iff_true, true_and_iff]
+  simp only [iff_def, ← pow_mul, h.pow_eq_one, eq_self_iff_true, true_and]
   intro l hl
   -- Porting note: was `by rintro rfl; simpa only [Nat.not_lt_zero, zero_mul] using hn`
   have ha0 : a ≠ 0 := left_ne_zero_of_mul hn.ne'
@@ -467,7 +467,7 @@ variable [FunLike F M N]
 
 theorem map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot ζ k) (hf : Injective f) :
     IsPrimitiveRoot (f ζ) k where
-  pow_eq_one := by rw [← map_pow, h.pow_eq_one, _root_.map_one]
+  pow_eq_one := by rw [← map_pow, h.pow_eq_one, map_one]
   dvd_of_pow_eq_one := by
     rw [h.eq_orderOf]
     intro l hl
@@ -476,12 +476,12 @@ theorem map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot ζ k) (hf :
 
 theorem of_map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot (f ζ) k)
     (hf : Injective f) : IsPrimitiveRoot ζ k where
-  pow_eq_one := by apply_fun f; rw [map_pow, _root_.map_one, h.pow_eq_one]
+  pow_eq_one := by apply_fun f; rw [map_pow, map_one, h.pow_eq_one]
   dvd_of_pow_eq_one := by
     rw [h.eq_orderOf]
     intro l hl
     apply_fun f at hl
-    rw [map_pow, _root_.map_one] at hl
+    rw [map_pow, map_one] at hl
     exact orderOf_dvd_of_pow_eq_one hl
 
 theorem map_iff_of_injective [MonoidHomClass F M N] (hf : Injective f) :
@@ -583,10 +583,10 @@ theorem primitiveRoots_one : primitiveRoots 1 R = {(1 : R)} := by
 
 theorem neZero' {n : ℕ+} (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R) := by
   let p := ringChar R
-  have hfin := multiplicity.finite_nat_iff.2 ⟨CharP.char_ne_one R p, n.pos⟩
-  obtain ⟨m, hm⟩ := multiplicity.exists_eq_pow_mul_and_not_dvd hfin
+  have hfin := Nat.multiplicity_finite_iff.2 ⟨CharP.char_ne_one R p, n.pos⟩
+  obtain ⟨m, hm⟩ := hfin.exists_eq_pow_mul_and_not_dvd
   by_cases hp : p ∣ n
-  · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero (multiplicity.pos_of_dvd hfin hp).ne'
+  · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero (multiplicity_pos_of_dvd hp).ne'
     haveI : NeZero p := NeZero.of_pos (Nat.pos_of_dvd_of_pos hp n.pos)
     haveI hpri : Fact p.Prime := CharP.char_is_prime_of_pos R p
     have := hζ.pow_eq_one
@@ -868,14 +868,14 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
   · simp [h0]
   symm
   refine Finset.card_bij (fun i _ ↦ ζ ^ i) ?_ ?_ ?_
-  · simp only [true_and_iff, and_imp, mem_filter, mem_range, mem_univ]
+  · simp only [and_imp, mem_filter, mem_range, mem_univ]
     rintro i - hi
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero h0)]
     exact h.pow_of_coprime i hi.symm
-  · simp only [true_and_iff, and_imp, mem_filter, mem_range, mem_univ]
+  · simp only [and_imp, mem_filter, mem_range, mem_univ]
     rintro i hi - j hj - H
     exact h.pow_inj hi hj H
-  · simp only [exists_prop, true_and_iff, mem_filter, mem_range, mem_univ]
+  · simp only [exists_prop, mem_filter, mem_range, mem_univ]
     intro ξ hξ
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero h0),
       h.isPrimitiveRoot_iff (Nat.pos_of_ne_zero h0)] at hξ
@@ -898,7 +898,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ+} (h : IsPrimi
   · intro x
     simp only [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_one_nodup h), exists_prop,
       Finset.mem_biUnion, Finset.mem_filter, Finset.mem_range, mem_nthRoots, Finset.mem_mk,
-      Nat.mem_divisors, and_true_iff, Ne, PNat.ne_zero, PNat.pos, not_false_iff]
+      Nat.mem_divisors, and_true, Ne, PNat.ne_zero, PNat.pos, not_false_iff]
     rintro ⟨a, ⟨d, hd⟩, ha⟩
     have hazero : 0 < a := by
       contrapose! hd with ha0

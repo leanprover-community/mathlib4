@@ -55,13 +55,13 @@ instance InducedWideCategory.category :
     Category (InducedWideCategory D F P) where
   Hom X Y := {f : F X ⟶ F Y | P f}
   id X := ⟨𝟙 (F X), P.id_mem (F X)⟩
-  comp {X Y Z} f g := ⟨f.1 ≫ g.1, P.comp_mem _ _ f.2 g.2⟩
+  comp {_ _ _} f g := ⟨f.1 ≫ g.1, P.comp_mem _ _ f.2 g.2⟩
 
 /-- The forgetful functor from an induced wide category to the original category. -/
 @[simps]
 def wideInducedFunctor : InducedWideCategory D F P ⥤ D where
   obj := F
-  map {X Y} f := f.1
+  map {_ _} f := f.1
 
 /-- The induced functor `wideInducedFunctor F P : InducedWideCategory D F P ⥤ D`
 is faithful. -/
@@ -83,7 +83,7 @@ Structure for wide subcategories. Objects ignore the morphism property.
 -/
 @[ext, nolint unusedArguments]
 structure WideSubcategory (_P : MorphismProperty C) [IsMultiplicative _P] where
-  /-- The category of which this is a wide subcategory-/
+  /-- The category of which this is a wide subcategory -/
   obj : C
 
 instance WideSubcategory.category : Category.{v₁} (WideSubcategory P) :=

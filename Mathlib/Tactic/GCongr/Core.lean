@@ -134,9 +134,9 @@ structure GCongrLemma where
 
 /-- Environment extension for "generalized congruence" (`gcongr`) lemmas. -/
 initialize gcongrExt : SimpleScopedEnvExtension ((Name × Name × Array Bool) × GCongrLemma)
-    (HashMap (Name × Name × Array Bool) (Array GCongrLemma)) ←
+    (Std.HashMap (Name × Name × Array Bool) (Array GCongrLemma)) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun m (n, lem) => m.insert n ((m.findD n #[]).push lem)
+    addEntry := fun m (n, lem) => m.insert n ((m.getD n #[]).push lem)
     initial := {}
   }
 
@@ -149,7 +149,9 @@ The antecedents of such a lemma are classified as generating "main goals" if the
 `x₁ ≈ x₂` for some "varying argument" pair `x₁`/`x₂` (and a possibly different relation `≈` to `∼`),
 or more generally of the form `∀ i h h' j h'', f₁ i j ≈ f₂ i j` (say) for some "varying argument"
 pair `f₁`/`f₂`. (Other antecedents are considered to generate "side goals".) The index of the
-"varying argument" pair corresponding to each "main" antecedent is recorded. -/
+"varying argument" pair corresponding to each "main" antecedent is recorded.
+
+Lemmas involving `<` or `≤` can also be marked `@[bound]` for use in the related `bound` tactic. -/
 initialize registerBuiltinAttribute {
   name := `gcongr
   descr := "generalized congruence"
@@ -361,7 +363,7 @@ partial def _root_.Lean.MVarId.gcongr
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal and whether the boolean-array of varying/nonvarying arguments of such
   -- a lemma matches `varyingArgs`.
-  for lem in (gcongrExt.getState (← getEnv)).findD (relName, lhsHead, varyingArgs) #[] do
+  for lem in (gcongrExt.getState (← getEnv)).getD (relName, lhsHead, varyingArgs) #[] do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
       Except.ok <$> g.apply (← mkConstWithFreshMVarLevels lem.declName)
@@ -404,8 +406,13 @@ partial def _root_.Lean.MVarId.gcongr
       -- by the `apply`.
       for g in gs do
         if !(← g.isAssigned) && !subgoals.contains g then
-          try sideGoalDischarger g
-          catch _ => out := out.push g
+          let s ← saveState
+          try
+            let (_, g') ← g.intros
+            sideGoalDischarger g'
+          catch _ =>
+            s.restore
+            out := out.push g
       -- Return all unresolved subgoals, "main" or "side"
       return (true, names, out ++ subgoals)
   -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,
@@ -525,3 +532,7 @@ elab_rules : tactic
       let g := Lean.MessageData.joinSep (unsolvedGoals.map Lean.MessageData.ofExpr) Format.line
       throwError "rel failed, cannot prove goal by 'substituting' the listed relationships. \
         The steps which could not be automatically justified were:\n{g}"
+
+end GCongr
+
+end Mathlib.Tactic

@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Prasad, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Kleene Algebras
@@ -322,7 +321,7 @@ protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul
     IdemSemiring β :=
   { hf.semiring f zero one add mul nsmul npow natCast, hf.semilatticeSup _ sup,
     ‹Bot β› with
-    add_eq_sup := fun a b ↦ hf <| by erw [sup, add, add_eq_sup]
+    add_eq_sup := fun a b ↦ hf <| by rw [sup, add, add_eq_sup]
     bot := ⊥
     bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a }
 
@@ -348,25 +347,25 @@ protected abbrev kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [M
   { hf.idemSemiring f zero one add mul nsmul npow natCast sup bot,
     ‹KStar β› with
     one_le_kstar := fun a ↦ one.trans_le <| by
-      erw [kstar]
+      rw [kstar]
       exact one_le_kstar
     mul_kstar_le_kstar := fun a ↦ by
       change f _ ≤ _
-      erw [mul, kstar]
+      rw [mul, kstar]
       exact mul_kstar_le_kstar
     kstar_mul_le_kstar := fun a ↦ by
       change f _ ≤ _
-      erw [mul, kstar]
+      rw [mul, kstar]
       exact kstar_mul_le_kstar
     mul_kstar_le_self := fun a b (h : f _ ≤ _) ↦ by
       change f _ ≤ _
-      erw [mul, kstar]
-      erw [mul] at h
+      rw [mul, kstar]
+      rw [mul] at h
       exact mul_kstar_le_self h
     kstar_mul_le_self := fun a b (h : f _ ≤ _) ↦ by
       change f _ ≤ _
-      erw [mul, kstar]
-      erw [mul] at h
+      rw [mul, kstar]
+      rw [mul] at h
       exact kstar_mul_le_self h }
 
 end Function.Injective

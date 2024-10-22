@@ -68,7 +68,9 @@ variable {α β : Type*} [OrderedRing α] [OrderedRing β] [LocallyFiniteOrder �
     (box (n + 1) : Finset (α × β)).card =
       (Icc (-n.succ : α) n.succ).card * (Icc (-n.succ : β) n.succ).card -
         (Icc (-n : α) n).card * (Icc (-n : β) n).card := by
-  rw [box_succ_eq_sdiff, card_sdiff (Icc_neg_mono n.le_succ), Prod.card_Icc, Prod.card_Icc]; rfl
+  rw [box_succ_eq_sdiff, card_sdiff (Icc_neg_mono n.le_succ), Finset.card_Icc_prod,
+    Finset.card_Icc_prod]
+  rfl
 
 end Prod
 

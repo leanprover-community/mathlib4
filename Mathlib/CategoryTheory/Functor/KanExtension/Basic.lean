@@ -36,8 +36,7 @@ open Category Limits
 
 namespace Functor
 
-variable {C C' H H' D D' : Type*} [Category C] [Category C'] [Category H] [Category H']
-  [Category D] [Category D']
+variable {C C' H D D' : Type*} [Category C] [Category C'] [Category H] [Category D] [Category D']
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
 `F' : H ⥤ D` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
@@ -335,17 +334,17 @@ noncomputable instance (f : L ⋙ G ⟶ L') [IsIso f] (F : C ⥤ H) :
     IsEquivalence (RightExtension.postcomp₁ G f F) := by
   apply CostructuredArrow.isEquivalenceMap₂
 
-variable (e : L ⋙ G ≅ L') (F : C ⥤ H)
-
 variable {G} in
-lemma hasLeftExtension_iff_postcomp₁ :
+lemma hasLeftExtension_iff_postcomp₁ (e : L ⋙ G ≅ L') (F : C ⥤ H) :
     HasLeftKanExtension L' F ↔ HasLeftKanExtension L F :=
   (LeftExtension.postcomp₁ G e.inv F).asEquivalence.hasInitial_iff
 
 variable {G} in
-lemma hasRightExtension_iff_postcomp₁ :
+lemma hasRightExtension_iff_postcomp₁ (e : L ⋙ G ≅ L') (F : C ⥤ H) :
     HasRightKanExtension L' F ↔ HasRightKanExtension L F :=
   (RightExtension.postcomp₁ G e.hom F).asEquivalence.hasTerminal_iff
+
+variable (e : L ⋙ G ≅ L') (F : C ⥤ H)
 
 /-- Given an isomorphism `e : L ⋙ G ≅ L'`, a left extension of `F` along `L'` is universal
 iff the corresponding left extension of `L` along `L` is. -/
@@ -458,6 +457,7 @@ a natural isomorphism `L ≅ L'`. -/
 def rightExtensionEquivalenceOfIso₁ : RightExtension L F ≌ RightExtension L' F :=
   CostructuredArrow.mapNatIso ((whiskeringLeft C D H).mapIso iso₁)
 
+include iso₁ in
 lemma hasRightExtension_iff_of_iso₁ : HasRightKanExtension L F ↔ HasRightKanExtension L' F :=
   (rightExtensionEquivalenceOfIso₁ iso₁ F).hasTerminal_iff
 
@@ -466,6 +466,7 @@ a natural isomorphism `L ≅ L'`. -/
 def leftExtensionEquivalenceOfIso₁ : LeftExtension L F ≌ LeftExtension L' F :=
   StructuredArrow.mapNatIso ((whiskeringLeft C D H).mapIso iso₁)
 
+include iso₁ in
 lemma hasLeftExtension_iff_of_iso₁ : HasLeftKanExtension L F ↔ HasLeftKanExtension L' F :=
   (leftExtensionEquivalenceOfIso₁ iso₁ F).hasInitial_iff
 
@@ -480,6 +481,7 @@ a natural isomorphism `F ≅ F'`. -/
 def rightExtensionEquivalenceOfIso₂ : RightExtension L F ≌ RightExtension L F' :=
   CostructuredArrow.mapIso iso₂
 
+include iso₂ in
 lemma hasRightExtension_iff_of_iso₂ : HasRightKanExtension L F ↔ HasRightKanExtension L F' :=
   (rightExtensionEquivalenceOfIso₂ L iso₂).hasTerminal_iff
 
@@ -488,6 +490,7 @@ a natural isomorphism `F ≅ F'`. -/
 def leftExtensionEquivalenceOfIso₂ : LeftExtension L F ≌ LeftExtension L F' :=
   StructuredArrow.mapIso iso₂
 
+include iso₂ in
 lemma hasLeftExtension_iff_of_iso₂ : HasLeftKanExtension L F ↔ HasLeftKanExtension L F' :=
   (leftExtensionEquivalenceOfIso₂ L iso₂).hasInitial_iff
 

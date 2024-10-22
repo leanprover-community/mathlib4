@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Violeta Hernández. All rights reserved.
+Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Violeta Hernández
+Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.List.AList
@@ -103,8 +103,7 @@ theorem insert_lookupFinsupp [DecidableEq α] (l : AList fun _x : α => M) (a : 
 theorem singleton_lookupFinsupp (a : α) (m : M) :
     (singleton a m).lookupFinsupp = Finsupp.single a m := by
   classical
-  -- porting note (#10745): was `simp [← AList.insert_empty]` but timeout issues
-  simp only [← AList.insert_empty, insert_lookupFinsupp, empty_lookupFinsupp, Finsupp.zero_update]
+  simp [← AList.insert_empty]
 
 @[simp]
 theorem _root_.Finsupp.toAList_lookupFinsupp (f : α →₀ M) : f.toAList.lookupFinsupp = f := by

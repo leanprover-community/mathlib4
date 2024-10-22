@@ -26,13 +26,15 @@ namespace MeasureTheory.Measure
 def count : Measure α :=
   sum dirac
 
+@[simp] lemma count_ne_zero'' [Nonempty α] : (count : Measure α) ≠ 0 := by simp [count]
+
 theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
   calc
     (∑' _ : s, 1 : ℝ≥0∞) = ∑' i, indicator s 1 i := tsum_subtype s 1
     _ ≤ ∑' i, dirac i s := ENNReal.tsum_le_tsum fun _ => le_dirac_apply
     _ ≤ count s := le_sum_apply _ _
 
-theorem count_apply (hs : MeasurableSet s) : count s = ∑' i : s, 1 := by
+theorem count_apply (hs : MeasurableSet s) : count s = ∑' _ : s, 1 := by
   simp only [count, sum_apply, hs, dirac_apply', ← tsum_subtype s (1 : α → ℝ≥0∞), Pi.one_apply]
 
 -- @[simp] -- Porting note (#10618): simp can prove this
@@ -42,8 +44,8 @@ theorem count_empty : count (∅ : Set α) = 0 := by rw [count_apply MeasurableS
 theorem count_apply_finset' {s : Finset α} (s_mble : MeasurableSet (s : Set α)) :
     count (↑s : Set α) = s.card :=
   calc
-    count (↑s : Set α) = ∑' i : (↑s : Set α), 1 := count_apply s_mble
-    _ = ∑ i ∈ s, 1 := s.tsum_subtype 1
+    count (↑s : Set α) = ∑' _ : (↑s : Set α), 1 := count_apply s_mble
+    _ = ∑ _ ∈ s, 1 := s.tsum_subtype 1
     _ = s.card := by simp
 
 @[simp]
@@ -157,9 +159,10 @@ theorem count_injective_image [MeasurableSingletonClass α] [MeasurableSingleton
 
 instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
-  ⟨by
-    cases nonempty_fintype α
-    simpa [Measure.count_apply, tsum_fintype] using (ENNReal.natCast_ne_top _).lt_top⟩
+  ⟨by cases nonempty_fintype α; simp [Measure.count_apply, tsum_fintype]⟩
+
+@[simp] lemma count_univ [Fintype α] : count (univ : Set α) = Fintype.card α := by
+  rw [count_apply .univ]; exact (tsum_univ 1).trans (by simp [tsum_fintype])
 
 end Measure
 

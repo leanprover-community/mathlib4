@@ -47,21 +47,21 @@ open TopologicalSpace Filter Topology Set
 
 section UCompactlyGeneratedSpace
 
-variable {X : Type w} {Y : Type x} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X : Type w} {Y : Type x}
 
 /--
 The compactly generated topology on a topological space `X`. This is the finest topology
 which makes all maps from compact Hausdorff spaces to `X`, which are continuous for the original
 topology, continuous.
 
-Note: this definition should be used with an explicit universe parameter `u` for the size of the
+Note: this definition should be used with an explicit universe parameter `u` for the size of the
 compact Hausdorff spaces mapping to `X`.
 -/
 def TopologicalSpace.compactlyGenerated (X : Type w) [TopologicalSpace X] : TopologicalSpace X :=
   let f : (Σ (i : (S : CompHaus.{u}) × C(S, X)), i.fst) → X := fun ⟨⟨_, i⟩, s⟩ ↦ i s
   coinduced f inferInstance
 
-lemma continuous_from_compactlyGenerated [t : TopologicalSpace Y] (f : X → Y)
+lemma continuous_from_compactlyGenerated [TopologicalSpace X] [t : TopologicalSpace Y] (f : X → Y)
     (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) :
         Continuous[compactlyGenerated.{u} X, t] f := by
   rw [continuous_coinduced_dom]
@@ -94,14 +94,13 @@ instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
     rw [DiscreteTopology.eq_bot (t := t)]
     exact bot_le
 
-/-- If `X` is compactly generated, to prove that `f : X → Y` is continuous it is enough to show
-that for every compact Hausdorff space `K` and every continuous map `g : K → X`,
-`f ∘ g` is continuous. -/
-lemma continuous_from_uCompactlyGeneratedSpace [UCompactlyGeneratedSpace.{u} X] (f : X → Y)
-    (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) : Continuous f := by
-  apply continuous_le_dom UCompactlyGeneratedSpace.le_compactlyGenerated
-  exact continuous_from_compactlyGenerated f h
-
+#adaptation_note
+/--
+The new unused variable linter in
+https://github.com/leanprover/lean4/pull/5338
+flags `[tY : TopologicalSpace Y]`, but we want to use this as a named argument.
+-/
+set_option linter.unusedVariables false in
 /-- Let `f : X → Y`. Suppose that to prove that `f` is continuous, it suffices to show that
 for every compact Hausdorff space `K` and every continuous map `g : K → X`, `f ∘ g` is continuous.
 Then `X` is compactly generated. -/
@@ -119,6 +118,16 @@ lemma uCompactlyGeneratedSpace_of_continuous_maps [t : TopologicalSpace X]
       Continuous[inferInstance, compactlyGenerated X] (fun (a : i.fst) ↦ f ⟨i, a⟩) from this ⟨S, g⟩
     rw [← @continuous_sigma_iff]
     apply continuous_coinduced_rng
+
+variable [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+
+/-- If `X` is compactly generated, to prove that `f : X → Y` is continuous it is enough to show
+that for every compact Hausdorff space `K` and every continuous map `g : K → X`,
+`f ∘ g` is continuous. -/
+lemma continuous_from_uCompactlyGeneratedSpace [UCompactlyGeneratedSpace.{u} X] (f : X → Y)
+    (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) : Continuous f := by
+  apply continuous_le_dom UCompactlyGeneratedSpace.le_compactlyGenerated
+  exact continuous_from_compactlyGenerated f h
 
 /-- A topological space `X` is compactly generated if a set `s` is closed when `f ⁻¹' s` is
 closed for every continuous map `f : K → X`, where `K` is compact Hausdorff. -/
@@ -155,7 +164,6 @@ theorem UCompactlyGeneratedSpace.isOpen [UCompactlyGeneratedSpace.{u} X] {s : Se
 /-- If the topology of `X` is coinduced by a continuous function whose domain is
 compactly generated, then so is `X`. -/
 theorem uCompactlyGeneratedSpace_of_coinduced
-    [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     [UCompactlyGeneratedSpace.{u} X] {f : X → Y} (hf : Continuous f) (ht : tY = coinduced f tX) :
     UCompactlyGeneratedSpace.{u} Y := by
   refine uCompactlyGeneratedSpace_of_isClosed fun s h ↦ ?_
@@ -291,8 +299,8 @@ theorem CompactlyGeneratedSpace.isOpen [CompactlyGeneratedSpace X] {s : Set X}
 
 /-- If the topology of `X` is coinduced by a continuous function whose domain is
 compactly generated, then so is `X`. -/
-theorem compactlyGeneratedSpace_of_coinduced {Y : Type u}
-    [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+theorem compactlyGeneratedSpace_of_coinduced
+    {X : Type u} [tX : TopologicalSpace X] {Y : Type u} [tY : TopologicalSpace Y]
     [CompactlyGeneratedSpace X] {f : X → Y} (hf : Continuous f) (ht : tY = coinduced f tX) :
     CompactlyGeneratedSpace Y := uCompactlyGeneratedSpace_of_coinduced hf ht
 
@@ -306,10 +314,17 @@ instance {ι : Type u} {X : ι → Type v}
   have hg : Continuous g := continuous_sigmaMk.comp <| hf.comp continuous_uLift_down
   exact (h _ g hg).preimage continuous_uLift_up
 
+variable [T2Space X]
+
+theorem CompactlyGeneratedSpace.isClosed_iff_of_t2 [CompactlyGeneratedSpace X] (s : Set X) :
+    IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) where
+  mp hs _ hK := hs.inter hK.isClosed
+  mpr := CompactlyGeneratedSpace.isClosed
+
 /-- Let `s ⊆ X`. Suppose that `X` is Hausdorff, and that to prove that `s` is closed,
 it suffices to show that for every compact set `K ⊆ X`, `s ∩ K` is closed.
 Then `X` is compactly generated. -/
-theorem compactlyGeneratedSpace_of_isClosed_of_t2 [T2Space X]
+theorem compactlyGeneratedSpace_of_isClosed_of_t2
     (h : ∀ s, (∀ (K : Set X), IsCompact K → IsClosed (s ∩ K)) → IsClosed s) :
     CompactlyGeneratedSpace X := by
   refine compactlyGeneratedSpace_of_isClosed fun s hs ↦ h s fun K hK ↦ ?_
@@ -322,15 +337,15 @@ open scoped Set.Notation in
 /-- Let `s ⊆ X`. Suppose that `X` is Hausdorff, and that to prove that `s` is open,
 it suffices to show that for every compact set `K ⊆ X`, `s ∩ K` is open in `K`.
 Then `X` is compactly generated. -/
-theorem compactlyGeneratedSpace_of_isOpen_of_t2 [T2Space X]
+theorem compactlyGeneratedSpace_of_isOpen_of_t2
     (h : ∀ s, (∀ (K : Set X), IsCompact K → IsOpen (K ↓∩ s)) → IsOpen s) :
     CompactlyGeneratedSpace X := by
   refine compactlyGeneratedSpace_of_isOpen fun s hs ↦ h s fun K hK ↦ ?_
   have : CompactSpace ↑K := isCompact_iff_compactSpace.1 hK
   exact hs _ Subtype.val continuous_subtype_val
 
-/-- A Hausdorff and weakly locally compact space and compactly generated. -/
-instance (priority := 100) [WeaklyLocallyCompactSpace X] [T2Space X] :
+/-- A Hausdorff and weakly locally compact space is compactly generated. -/
+instance (priority := 100) [WeaklyLocallyCompactSpace X] :
     CompactlyGeneratedSpace X := by
   refine compactlyGeneratedSpace_of_isClosed_of_t2 fun s h ↦ ?_
   rw [isClosed_iff_forall_filter]

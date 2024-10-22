@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Polynomial.Eval
@@ -12,6 +12,7 @@ import Mathlib.GroupTheory.GroupAction.Ring
 
 ## Main definitions
  * `Polynomial.derivative`: The formal derivative of polynomials, expressed as a linear map.
+ * `Polynomial.derivativeFinsupp`: Iterated derivatives as a finite support function.
 
 -/
 
@@ -21,6 +22,8 @@ noncomputable section
 open Finset
 
 open Polynomial
+
+open scoped Nat
 
 namespace Polynomial
 
@@ -134,9 +137,9 @@ theorem derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarT
 @[simp]
 theorem iterate_derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
     (s : S) (p : R[X]) (k : ℕ) : derivative^[k] (s • p) = s • derivative^[k] p := by
-  induction' k with k ih generalizing p
-  · simp
-  · simp [ih]
+  induction k generalizing p with
+  | zero => simp
+  | succ k ih => simp [ih]
 
 @[simp]
 theorem iterate_derivative_C_mul (a : R) (p : R[X]) (k : ℕ) :
@@ -295,7 +298,7 @@ theorem mem_support_derivative [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
   suffices ¬p.coeff (n + 1) * (n + 1 : ℕ) = 0 ↔ coeff p (n + 1) ≠ 0 by
     simpa only [mem_support_iff, coeff_derivative, Ne, Nat.cast_succ]
   rw [← nsmul_eq_mul', smul_eq_zero]
-  simp only [Nat.succ_ne_zero, false_or_iff]
+  simp only [Nat.succ_ne_zero, false_or]
 
 @[simp]
 theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < natDegree p) :
@@ -330,47 +333,110 @@ theorem coeff_iterate_derivative {k} (p : R[X]) (m : ℕ) :
         _ = Nat.descFactorial (m + k.succ) k.succ • p.coeff (m + k.succ) := by
           rw [Nat.succ_add_eq_add_succ]
 
+theorem iterate_derivative_eq_sum (p : R[X]) (k : ℕ) :
+    derivative^[k] p =
+      ∑ x ∈ (derivative^[k] p).support, C ((x + k).descFactorial k • p.coeff (x + k)) * X ^ x := by
+  conv_lhs => rw [(derivative^[k] p).as_sum_support_C_mul_X_pow]
+  refine sum_congr rfl fun i _ ↦ ?_
+  rw [coeff_iterate_derivative, Nat.descFactorial_eq_factorial_mul_choose]
+
+theorem iterate_derivative_eq_factorial_smul_sum (p : R[X]) (k : ℕ) :
+    derivative^[k] p = k ! •
+      ∑ x ∈ (derivative^[k] p).support, C ((x + k).choose k • p.coeff (x + k)) * X ^ x := by
+  conv_lhs => rw [iterate_derivative_eq_sum]
+  rw [smul_sum]
+  refine sum_congr rfl fun i _ ↦ ?_
+  rw [← smul_mul_assoc, smul_C, smul_smul, Nat.descFactorial_eq_factorial_mul_choose]
+
 theorem iterate_derivative_mul {n} (p q : R[X]) :
     derivative^[n] (p * q) =
       ∑ k ∈ range n.succ, (n.choose k • (derivative^[n - k] p * derivative^[k] q)) := by
-  induction' n with n IH
-  · simp [Finset.range]
-  calc
-    derivative^[n + 1] (p * q) =
-        derivative (∑ k ∈ range n.succ,
-            n.choose k • (derivative^[n - k] p * derivative^[k] q)) := by
-      rw [Function.iterate_succ_apply', IH]
-    _ = (∑ k ∈ range n.succ,
-          n.choose k • (derivative^[n - k + 1] p * derivative^[k] q)) +
-        ∑ k ∈ range n.succ,
-          n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) := by
-      simp_rw [derivative_sum, derivative_smul, derivative_mul, Function.iterate_succ_apply',
-        smul_add, sum_add_distrib]
-    _ = (∑ k ∈ range n.succ,
-              n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
-            1 • (derivative^[n + 1] p * derivative^[0] q) +
-          ∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) :=
-      ?_
-    _ = ((∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q)) +
-            ∑ k ∈ range n.succ,
-              n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
-          1 • (derivative^[n + 1] p * derivative^[0] q) := by
-      rw [add_comm, add_assoc]
-    _ = (∑ i ∈ range n.succ,
-            (n + 1).choose (i + 1) • (derivative^[n + 1 - (i + 1)] p * derivative^[i + 1] q)) +
-          1 • (derivative^[n + 1] p * derivative^[0] q) := by
-      simp_rw [Nat.choose_succ_succ, Nat.succ_sub_succ, add_smul, sum_add_distrib]
-    _ = ∑ k ∈ range n.succ.succ,
-          n.succ.choose k • (derivative^[n.succ - k] p * derivative^[k] q) := by
-      rw [sum_range_succ' _ n.succ, Nat.choose_zero_right, tsub_zero]
-  congr
-  refine (sum_range_succ' _ _).trans (congr_arg₂ (· + ·) ?_ ?_)
-  · rw [sum_range_succ, Nat.choose_succ_self, zero_smul, add_zero]
-    refine sum_congr rfl fun k hk => ?_
-    rw [mem_range] at hk
+  induction n with
+  | zero =>
+    simp [Finset.range]
+  | succ n IH =>
+    calc
+      derivative^[n + 1] (p * q) =
+          derivative (∑ k ∈ range n.succ,
+              n.choose k • (derivative^[n - k] p * derivative^[k] q)) := by
+        rw [Function.iterate_succ_apply', IH]
+      _ = (∑ k ∈ range n.succ,
+            n.choose k • (derivative^[n - k + 1] p * derivative^[k] q)) +
+          ∑ k ∈ range n.succ,
+            n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) := by
+        simp_rw [derivative_sum, derivative_smul, derivative_mul, Function.iterate_succ_apply',
+          smul_add, sum_add_distrib]
+      _ = (∑ k ∈ range n.succ,
+                n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
+              1 • (derivative^[n + 1] p * derivative^[0] q) +
+            ∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) :=
+        ?_
+      _ = ((∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q)) +
+              ∑ k ∈ range n.succ,
+                n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
+            1 • (derivative^[n + 1] p * derivative^[0] q) := by
+        rw [add_comm, add_assoc]
+      _ = (∑ i ∈ range n.succ,
+              (n + 1).choose (i + 1) • (derivative^[n + 1 - (i + 1)] p * derivative^[i + 1] q)) +
+            1 • (derivative^[n + 1] p * derivative^[0] q) := by
+        simp_rw [Nat.choose_succ_succ, Nat.succ_sub_succ, add_smul, sum_add_distrib]
+      _ = ∑ k ∈ range n.succ.succ,
+            n.succ.choose k • (derivative^[n.succ - k] p * derivative^[k] q) := by
+        rw [sum_range_succ' _ n.succ, Nat.choose_zero_right, tsub_zero]
     congr
-    omega
-  · rw [Nat.choose_zero_right, tsub_zero]
+    refine (sum_range_succ' _ _).trans (congr_arg₂ (· + ·) ?_ ?_)
+    · rw [sum_range_succ, Nat.choose_succ_self, zero_smul, add_zero]
+      refine sum_congr rfl fun k hk => ?_
+      rw [mem_range] at hk
+      congr
+      omega
+    · rw [Nat.choose_zero_right, tsub_zero]
+
+/--
+Iterated derivatives as a finite support function.
+-/
+@[simps! apply_toFun]
+noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
+  toFun p := .onFinset (range (p.natDegree + 1)) (derivative^[·] p) fun i ↦ by
+    contrapose; simp_all [iterate_derivative_eq_zero, Nat.succ_le]
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+@[simp]
+theorem support_derivativeFinsupp_subset_range {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
+    (derivativeFinsupp p).support ⊆ range n := by
+  dsimp [derivativeFinsupp]
+  exact Finsupp.support_onFinset_subset.trans (Finset.range_subset.mpr h)
+
+@[simp]
+theorem derivativeFinsupp_C (r : R) : derivativeFinsupp (C r : R[X]) = .single 0 (C r) := by
+  ext i : 1
+  match i with
+  | 0 => simp
+  | i + 1 => simp
+
+@[simp]
+theorem derivativeFinsupp_one : derivativeFinsupp (1 : R[X]) = .single 0 1 := by
+  simpa using derivativeFinsupp_C (1 : R)
+
+@[simp]
+theorem derivativeFinsupp_X : derivativeFinsupp (X : R[X]) = .single 0 X + .single 1 1 := by
+  ext i : 1
+  match i with
+  | 0 => simp
+  | 1 => simp
+  | (n + 2) => simp
+
+theorem derivativeFinsupp_map [Semiring S] (p : R[X]) (f : R →+* S) :
+    derivativeFinsupp (p.map f) = (derivativeFinsupp p).mapRange (·.map f) (by simp) := by
+  ext i : 1
+  simp
+
+theorem derivativeFinsupp_derivative (p : R[X]) :
+    derivativeFinsupp (derivative p) =
+      (derivativeFinsupp p).comapDomain Nat.succ Nat.succ_injective.injOn := by
+  ext i : 1
+  simp
 
 end Semiring
 
@@ -418,9 +484,11 @@ theorem dvd_iterate_derivative_pow (f : R[X]) (n : ℕ) {m : ℕ} (c : R) (hm : 
 
 theorem iterate_derivative_X_pow_eq_natCast_mul (n k : ℕ) :
     derivative^[k] (X ^ n : R[X]) = ↑(Nat.descFactorial n k : R[X]) * X ^ (n - k) := by
-  induction' k with k ih
-  · erw [Function.iterate_zero_apply, tsub_zero, Nat.descFactorial_zero, Nat.cast_one, one_mul]
-  · rw [Function.iterate_succ_apply', ih, derivative_natCast_mul, derivative_X_pow, C_eq_natCast,
+  induction k with
+  | zero =>
+    rw [Function.iterate_zero_apply, tsub_zero, Nat.descFactorial_zero, Nat.cast_one, one_mul]
+  | succ k ih =>
+    rw [Function.iterate_succ_apply', ih, derivative_natCast_mul, derivative_X_pow, C_eq_natCast,
       Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul]
     simp [mul_comm, mul_assoc, mul_left_comm]
 

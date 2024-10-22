@@ -227,3 +227,10 @@ theorem center_eq_infi' (S : Set G) (hS : closure S = ⊤) :
   rw [center_eq_iInf S hS, ← iInf_subtype'']
 
 end Subgroup
+
+lemma AddSubgroup.closure_singleton_int_one_eq_top : closure ({1} : Set ℤ) = ⊤ := by
+  ext
+  simp [mem_closure_singleton]
+
+lemma AddSubgroup.zmultiples_one_eq_top : zmultiples (1 : ℤ) = ⊤ := by
+  rw [zmultiples_eq_closure, closure_singleton_int_one_eq_top]

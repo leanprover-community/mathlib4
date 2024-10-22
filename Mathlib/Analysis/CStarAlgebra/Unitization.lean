@@ -72,11 +72,11 @@ instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
       · simpa only [mem_closedBall_zero_iff, norm_smul, one_mul, norm_star] using
           (NNReal.le_inv_iff_mul_le ha.ne').1 (one_mul ‖a‖₊⁻¹ ▸ hk₂.le : ‖k‖₊ ≤ ‖a‖₊⁻¹)
       · simp only [map_smul, nnnorm_smul, mul_apply', mul_smul_comm, CStarRing.nnnorm_self_mul_star]
-        rwa [← NNReal.div_lt_iff (mul_pos ha ha).ne', div_eq_mul_inv, mul_inv, ← mul_assoc]
+        rwa [← div_lt_iff₀ (mul_pos ha ha), div_eq_mul_inv, mul_inv, ← mul_assoc]
 
 section CStarProperty
 
-variable [StarRing 𝕜] [CStarRing 𝕜] [StarModule 𝕜 E]
+variable [StarRing 𝕜] [StarModule 𝕜 E]
 variable {E}
 
 /-- This is the key lemma used to establish the instance `Unitization.instCStarRing`
@@ -122,13 +122,14 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     simp only [smul_smul, smul_mul_assoc, ← add_assoc, ← mul_assoc, mul_smul_comm]
 
 variable {𝕜}
+variable [CStarRing 𝕜]
 
 /-- The norm on `Unitization 𝕜 E` satisfies the C⋆-property -/
 instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
   norm_mul_self_le x := by
     -- rewrite both sides as a `⊔`
     simp only [Unitization.norm_def, Prod.norm_def, ← sup_eq_max]
-    -- Show that `(Unitization.splitMul 𝕜 E x).snd` satisifes the C⋆-property, in two stages:
+    -- Show that `(Unitization.splitMul 𝕜 E x).snd` satisfies the C⋆-property, in two stages:
     have h₁ : ∀ x : Unitization 𝕜 E,
         ‖(Unitization.splitMul 𝕜 E x).snd‖ ≤ ‖(Unitization.splitMul 𝕜 E (star x)).snd‖ := by
       simp only [add_zero, Unitization.splitMul_apply, Unitization.snd_star, Unitization.fst_star]

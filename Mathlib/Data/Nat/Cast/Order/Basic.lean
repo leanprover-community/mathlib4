@@ -16,7 +16,7 @@ import Mathlib.Order.Hom.Basic
 
 assert_not_exists OrderedCommMonoid
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Nat
 
@@ -68,6 +68,9 @@ variable [CharZero α] {m n : ℕ}
 
 theorem strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
   mono_cast.strictMono_of_injective cast_injective
+
+@[gcongr]
+lemma _root_.GCongr.natCast_lt_natCast {a b : ℕ} (h : a < b) : (a : α) < b := strictMono_cast h
 
 /-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
 @[simps! (config := .asFn)]
@@ -173,7 +176,7 @@ section RingHomClass
 
 variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S] [FunLike F R S]
 
-theorem NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R S] {f : F}
+theorem NeZero.nat_of_injective {n : ℕ} [NeZero (n : R)] [RingHomClass F R S] {f : F}
     (hf : Function.Injective f) : NeZero (n : S) :=
   ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f]⟩
 

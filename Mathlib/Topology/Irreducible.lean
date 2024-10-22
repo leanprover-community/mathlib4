@@ -74,7 +74,7 @@ protected alias ⟨_, IsIrreducible.closure⟩ := isIrreducible_iff_closure
 
 theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
     ∃ t : Set X, IsPreirreducible t ∧ s ⊆ t ∧ ∀ u, IsPreirreducible u → t ⊆ u → u = t :=
-  let ⟨m, hm, hsm, hmm⟩ :=
+  let ⟨m, hsm, hm⟩ :=
     zorn_subset_nonempty { t : Set X | IsPreirreducible t }
       (fun c hc hcc _ =>
         ⟨⋃₀ c, fun u v hu hv ⟨y, hy, hyu⟩ ⟨x, hx, hxv⟩ =>
@@ -89,7 +89,7 @@ theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
             ⟨x, mem_sUnion_of_mem hxp hpc, hxuv⟩,
           fun _ hxc => subset_sUnion_of_mem hxc⟩)
       s H
-  ⟨m, hm, hsm, fun _u hu hmu => hmm _ hu hmu⟩
+  ⟨m, hm.prop, hsm, fun _u hu hmu => (hm.eq_of_subset hu hmu).symm⟩
 
 /-- The set of irreducible components of a topological space. -/
 def irreducibleComponents (X : Type*) [TopologicalSpace X] : Set (Set X) :=
@@ -212,6 +212,11 @@ instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology
     simpa only [compl_union, compl_compl] using ((hu hu').union (hv hv')).infinite_compl.nonempty
   toNonempty := (inferInstance : Nonempty X)
 
+theorem irreducibleComponents_eq_singleton [IrreducibleSpace X] :
+    irreducibleComponents X = {univ} :=
+  Set.ext fun _ ↦ IsGreatest.maximal_iff (s := IsIrreducible (X := X))
+    ⟨IrreducibleSpace.isIrreducible_univ X, fun _ _ ↦ Set.subset_univ _⟩
+
 /-- A set `s` is irreducible if and only if
 for every finite collection of open sets all of whose members intersect `s`,
 `s` also intersects the intersection of the entire collection
@@ -292,7 +297,7 @@ theorem IsPreirreducible.interior (ht : IsPreirreducible t) : IsPreirreducible (
   ht.open_subset isOpen_interior interior_subset
 
 theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
-    (hf : OpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
+    (hf : IsOpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
   rintro U V hU hV ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
   obtain ⟨_, h₁, ⟨y, h₂, rfl⟩, ⟨y', h₃, h₄⟩⟩ :=
     ht _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, Set.mem_image_of_mem f hx'⟩

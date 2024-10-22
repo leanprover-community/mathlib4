@@ -43,7 +43,7 @@ def Finite.equivFinOfCardEq [Finite α] {n : ℕ} (h : Nat.card α = n) : α ≃
   apply Finite.equivFin
 
 theorem Nat.card_eq (α : Type*) :
-    Nat.card α = if h : Finite α then @Fintype.card α (Fintype.ofFinite α) else 0 := by
+    Nat.card α = if _ : Finite α then @Fintype.card α (Fintype.ofFinite α) else 0 := by
   cases finite_or_infinite α
   · letI := Fintype.ofFinite α
     simp only [*, Nat.card_eq_fintype_card, dif_pos]
@@ -205,5 +205,9 @@ theorem equiv_image_eq_iff_subset (e : α ≃ α) (hs : s.Finite) : e '' s = s �
     ge_of_eq (Nat.card_congr (e.image s).symm)⟩
 
 end Finite
+
+theorem eq_top_of_card_le_of_finite [Finite α] {s : Set α} (h : Nat.card α ≤ Nat.card s) : s = ⊤ :=
+  Set.Finite.eq_of_subset_of_card_le univ.toFinite (subset_univ s) <|
+    Nat.card_congr (Equiv.Set.univ α) ▸ h
 
 end Set

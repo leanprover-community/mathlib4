@@ -19,6 +19,17 @@ jobs:
           token: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # required. Personal Access Token with the `read:org` permission
           exit: true # optional. If the action should exit if the user is not part of the team. Defaults to true.
 
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: Determine Zulip topic
+        id: determine_topic
+        run: |
+          ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
+        env:
+          PR:  /repos/leanprover-community/mathlib4/issues/${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
       - name: Send message on Zulip
         uses: zulip/github-actions-zulip/send-message@v1
         with:
@@ -27,14 +38,14 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'mathlib reviewers'
           type: 'stream'
-          topic: 'maintainer merge'
+          topic: ${{ steps.determine_topic.outputs.topic }}
           content: |
             ${{ format('{0} requested a maintainer merge from review on PR [#{1}]({2}):', github.event.review.user.login, github.event.pull_request.number, github.event.pull_request.html_url ) }}
 
             > ${{ github.event.pull_request.title }}
 
       - name: Add comment to PR
-        uses: GrantBirki/comment@v2.0.1
+        uses: GrantBirki/comment@v2
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |

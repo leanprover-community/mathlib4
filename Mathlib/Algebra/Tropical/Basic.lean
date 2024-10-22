@@ -410,7 +410,7 @@ instance instGroupTropical [AddGroup R] : Group (Tropical R) :=
   { instMonoidTropical with
     inv := Inv.inv
     div_eq_mul_inv := fun _ _ => untrop_injective <| by simp [sub_eq_add_neg]
-    mul_left_inv := fun _ => untrop_injective <| add_left_neg _
+    inv_mul_cancel := fun _ => untrop_injective <| neg_add_cancel _
     zpow := fun n x => trop <| n • untrop x
     zpow_zero' := fun _ => untrop_injective <| zero_zsmul _
     zpow_succ' := fun _ _ => untrop_injective <| SubNegMonoid.zsmul_succ' _ _
@@ -489,9 +489,9 @@ instance : CommSemiring (Tropical R) :=
 
 @[simp]
 theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) : (n + 1) • x = x := by
-  induction' n with n IH
-  · simp
-  · rw [add_nsmul, IH, one_nsmul, add_self]
+  induction n with
+  | zero => simp
+  | succ n IH => rw [add_nsmul, IH, one_nsmul, add_self]
 
 -- TODO: find/create the right classes to make this hold (for enat, ennreal, etc)
 -- Requires `zero_eq_bot` to be true

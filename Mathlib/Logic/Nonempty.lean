@@ -32,9 +32,7 @@ theorem Nonempty.exists {α} {p : Nonempty α → Prop} : (∃ h : Nonempty α, 
 theorem exists_true_iff_nonempty {α : Sort*} : (∃ _ : α, True) ↔ Nonempty α :=
   Iff.intro (fun ⟨a, _⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨a, trivial⟩
 
-@[simp]
-theorem nonempty_Prop {p : Prop} : Nonempty p ↔ p :=
-  Iff.intro (fun ⟨h⟩ ↦ h) fun h ↦ ⟨h⟩
+@[deprecated (since := "2024-08-30")] alias nonempty_Prop := nonempty_prop
 
 theorem Nonempty.imp {α} {p : Prop} : (Nonempty α → p) ↔ (α → p) :=
   Nonempty.forall
@@ -100,13 +98,6 @@ protected theorem Nonempty.congr {α β} (f : α → β) (g : β → α) : Nonem
 theorem Nonempty.elim_to_inhabited {α : Sort*} [h : Nonempty α] {p : Prop} (f : Inhabited α → p) :
     p :=
   h.elim <| f ∘ Inhabited.mk
-
-protected instance Prod.instNonempty {α β} [h : Nonempty α] [h2 : Nonempty β] : Nonempty (α × β) :=
-  h.elim fun g ↦ h2.elim fun g2 ↦ ⟨⟨g, g2⟩⟩
-
-protected instance Pi.instNonempty {ι : Sort*} {α : ι → Sort*} [∀ i, Nonempty (α i)] :
-    Nonempty (∀ i, α i) :=
-  ⟨fun _ ↦ Classical.arbitrary _⟩
 
 theorem Classical.nonempty_pi {ι} {α : ι → Sort*} : Nonempty (∀ i, α i) ↔ ∀ i, Nonempty (α i) :=
   ⟨fun ⟨f⟩ a ↦ ⟨f a⟩, @Pi.instNonempty _ _⟩

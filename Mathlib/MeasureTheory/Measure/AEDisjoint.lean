@@ -77,12 +77,12 @@ protected theorem congr (h : AEDisjoint μ s t) (hu : u =ᵐ[μ] s) (hv : v =ᵐ
   mono_ae h (Filter.EventuallyEq.le hu) (Filter.EventuallyEq.le hv)
 
 @[simp]
-theorem iUnion_left_iff [Countable ι] {s : ι → Set α} :
+theorem iUnion_left_iff {ι : Sort*} [Countable ι] {s : ι → Set α} :
     AEDisjoint μ (⋃ i, s i) t ↔ ∀ i, AEDisjoint μ (s i) t := by
   simp only [AEDisjoint, iUnion_inter, measure_iUnion_null_iff]
 
 @[simp]
-theorem iUnion_right_iff [Countable ι] {t : ι → Set α} :
+theorem iUnion_right_iff {ι : Sort*} [Countable ι] {t : ι → Set α} :
     AEDisjoint μ s (⋃ i, t i) ↔ ∀ i, AEDisjoint μ s (t i) := by
   simp only [AEDisjoint, inter_iUnion, measure_iUnion_null_iff]
 
@@ -117,8 +117,8 @@ set `u`. -/
 theorem exists_disjoint_diff (h : AEDisjoint μ s t) :
     ∃ u, MeasurableSet u ∧ μ u = 0 ∧ Disjoint (s \ u) t :=
   ⟨toMeasurable μ (s ∩ t), measurableSet_toMeasurable _ _, (measure_toMeasurable _).trans h,
-    disjoint_sdiff_self_left.mono_left fun x hx => by
-      simp; exact ⟨hx.1, fun hxt => hx.2 <| subset_toMeasurable _ _ ⟨hx.1, hxt⟩⟩⟩
+    disjoint_sdiff_self_left.mono_left (b := s \ t) fun x hx => by
+      simpa using ⟨hx.1, fun hxt => hx.2 <| subset_toMeasurable _ _ ⟨hx.1, hxt⟩⟩⟩
 
 theorem of_null_right (h : μ t = 0) : AEDisjoint μ s t :=
   measure_mono_null inter_subset_right h
