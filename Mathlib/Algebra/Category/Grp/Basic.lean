@@ -112,7 +112,6 @@ instance hasForgetToMonCat : HasForget₂ Grp MonCat :=
 @[to_additive]
 instance : Coe Grp.{u} MonCat.{u} where coe := (forget₂ Grp MonCat).obj
 
--- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance (G H : Grp) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 
@@ -257,7 +256,6 @@ instance hasForgetToCommMonCat : HasForget₂ CommGrp CommMonCat :=
 @[to_additive]
 instance : Coe CommGrp.{u} CommMonCat.{u} where coe := (forget₂ CommGrp CommMonCat).obj
 
--- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance (G H : CommGrp) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 

@@ -3,7 +3,7 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Order.Filter.Basic
+import Mathlib.Order.Filter.Tendsto
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Cofinality

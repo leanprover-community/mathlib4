@@ -681,7 +681,7 @@ theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (aleph o).ord.cof = o.cof :=
 
 @[simp]
 theorem cof_omega0 : cof ω = ℵ₀ :=
-  (aleph0_le_cof.2 omega0_isLimit).antisymm' <| by
+  (aleph0_le_cof.2 isLimit_omega0).antisymm' <| by
     rw [← card_omega0]
     apply cof_le_card
 
@@ -862,7 +862,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α �
   · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
     · apply bounded_singleton
       rw [← hr]
-      apply ord_isLimit ha
+      apply isLimit_ord ha
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
 
@@ -881,7 +881,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
     exact lt_cof_type hs
   · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
     · rw [mk_singleton]
-      exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (ord_isLimit h'.aleph0_le))
+      exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (isLimit_ord h'.aleph0_le))
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
 
@@ -917,7 +917,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
       (by
         cases' Quotient.exists_rep (@succ Cardinal _ _ c) with α αe; simp only [mk'_def] at αe
         rcases ord_eq α with ⟨r, wo, re⟩
-        have := ord_isLimit (h.trans (le_succ _))
+        have := isLimit_ord (h.trans (le_succ _))
         rw [← αe, re] at this ⊢
         rcases cof_eq' r this with ⟨S, H, Se⟩
         rw [← Se]
@@ -1123,7 +1123,7 @@ theorem derivFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : 
     rw [derivFamily_succ]
     exact
       nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
-        ((ord_isLimit hc.1).2 _ (hb ((lt_succ b).trans hb')))
+        ((isLimit_ord hc.1).2 _ (hb ((lt_succ b).trans hb')))
   | H₃ b hb H =>
     intro hb'
     rw [derivFamily_limit f hb]
@@ -1170,7 +1170,7 @@ theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
 theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < (c^cof c.ord) :=
   Quotient.inductionOn c fun α h => by
     rcases ord_eq α with ⟨r, wo, re⟩
-    have := ord_isLimit h
+    have := isLimit_ord h
     rw [mk'_def, re] at this ⊢
     rcases cof_eq' r this with ⟨S, H, Se⟩
     have := sum_lt_prod (fun a : S => #{ x // r x a }) (fun _ => #α) fun i => ?_

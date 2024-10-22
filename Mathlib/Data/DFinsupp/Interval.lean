@@ -102,7 +102,6 @@ def rangeIcc (f g : Π₀ i, α i) : Π₀ i, Finset (α i) where
             (Multiset.not_mem_mono (Multiset.Le.subset <| Multiset.le_add_right _ _) h)
         have hg : g i = 0 := (gs.prop i).resolve_left
             (Multiset.not_mem_mono (Multiset.Le.subset <| Multiset.le_add_left _ _) h)
-        -- Porting note: was rw, but was rewriting under lambda, so changed to simp_rw
         simp_rw [hf, hg]
         exact Icc_self _⟩
 

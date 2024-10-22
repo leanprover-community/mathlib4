@@ -28,7 +28,7 @@ but generalize where appropriate.
 This is based on Lean code written as part of the bachelor's thesis of Alexander Spahl.
 -/
 
-open BigOperators Finset
+open Finset
 
 /-!
 ### Jacobi sums: definition and first properties
