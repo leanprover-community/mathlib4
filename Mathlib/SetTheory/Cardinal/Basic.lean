@@ -1428,8 +1428,8 @@ lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
   convert natCast_add_one_le_iff
   norm_cast
 
-@[simp] theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
-@[simp] theorem succ_one : succ (1 : Cardinal) = 2 := by norm_cast
+@[simp]
+theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
 
 -- This works generally to prove inequalities between numeric cardinals.
 theorem one_lt_two : (1 : Cardinal) < 2 := by norm_cast
