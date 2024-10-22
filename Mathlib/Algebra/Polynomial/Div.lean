@@ -735,6 +735,7 @@ lemma le_rootMultiplicity_mul {p q : R[X]} (x : R) (hpq : p * q ≠ 0) :
 lemma pow_rootMultiplicity_not_dvd (p0 : p ≠ 0) (a : R) :
     ¬(X - C a) ^ (rootMultiplicity a p + 1) ∣ p := by rw [← rootMultiplicity_le_iff p0]
 
+/-- See `Polynomial.rootMultiplicity_eq_natTrailingDegree` for the general case. -/
 lemma rootMultiplicity_eq_natTrailingDegree' : p.rootMultiplicity 0 = p.natTrailingDegree := by
   by_cases h : p = 0
   · simp only [h, rootMultiplicity_zero, natTrailingDegree_zero]

@@ -104,6 +104,7 @@ theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
   convert (multiplicity_map_eq <| algEquivAevalXAddC t).symm using 2
   simp [C_eq_algebraMap]
 
+/-- See `Polynomial.rootMultiplicity_eq_natTrailingDegree'` for the special case of `t = 0`. -/
 theorem rootMultiplicity_eq_natTrailingDegree {p : R[X]} {t : R} :
     p.rootMultiplicity t = (p.comp (X + C t)).natTrailingDegree :=
   rootMultiplicity_eq_rootMultiplicity.trans rootMultiplicity_eq_natTrailingDegree'
