@@ -295,8 +295,8 @@ def Scheme.restrictRestrictComm (X : Scheme.{u}) (U V : X.Opens) :
   IsOpenImmersion.isoOfRangeEq (Opens.ι _ ≫ U.ι) (Opens.ι _ ≫ V.ι) <| by
     simp [Set.image_preimage_eq_inter_range, Set.inter_comm (U : Set X), Set.range_comp]
 
-/-- If `f : X ⟶ Y` is an open immersion, then for any `V : X.Opens`,
-we have the isomorphism `U ≅ f ⁻¹ᵁ U`. -/
+/-- If `f : X ⟶ Y` is an open immersion, then for any `U : X.Opens`,
+we have the isomorphism `U ≅ f ''ᵁ U`. -/
 noncomputable
 def Scheme.Hom.isoImage
     {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] (U : X.Opens) :
