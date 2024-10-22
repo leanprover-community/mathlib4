@@ -89,6 +89,14 @@ def lapply (i : ι) : (Π₀ i, M i) →ₗ[R] M i where
 theorem lapply_apply (i : ι) (f : Π₀ i, M i) : (lapply i : (Π₀ i, M i) →ₗ[R] _) f = f i :=
   rfl
 
+@[simp]
+theorem lapply_comp_lsingle_same [DecidableEq ι] (i : ι) :
+    lapply i ∘ₗ lsingle i = (.id : M i →ₗ[R] M i) := by ext; simp
+
+@[simp]
+theorem lapply_comp_lsingle_of_ne [DecidableEq ι] (i i' : ι) (h : i ≠ i') :
+    lapply i ∘ₗ lsingle i' = (0 : M i' →ₗ[R] M i) := by ext; simp [h.symm]
+
 section Lsum
 
 -- Porting note: Unclear how true these docstrings are in lean 4
@@ -531,18 +539,13 @@ namespace LinearMap
 
 section AddCommMonoid
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} {R₄ : Type*}
-variable {S : Type*}
-variable {K : Type*} {K₂ : Type*}
-variable {M : Type*} {M' : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*} {M₄ : Type*}
-variable {N : Type*} {N₂ : Type*}
+variable {R : Type*} {R₂ : Type*}
+variable {M : Type*} {M₂ : Type*}
 variable {ι : Type*}
-variable {V : Type*} {V₂ : Type*}
-variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
+variable [Semiring R] [Semiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable {σ₁₂ : R →+* R₂}
+variable [Module R M] [Module R₂ M₂]
 
 open Submodule
 

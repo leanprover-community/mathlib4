@@ -81,13 +81,13 @@ theorem mem_annihilator_span (s : Set M) (r : R) :
   · intro h n
     exact h _ (Submodule.subset_span n.prop)
   · intro h n hn
-    refine Submodule.span_induction hn ?_ ?_ ?_ ?_
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ hn
     · intro x hx
       exact h ⟨x, hx⟩
     · exact smul_zero _
-    · intro x y hx hy
+    · intro x y _ _ hx hy
       rw [smul_add, hx, hy, zero_add]
-    · intro a x hx
+    · intro a x _ hx
       rw [smul_comm, hx, smul_zero]
 
 theorem mem_annihilator_span_singleton (g : M) (r : R) :
@@ -304,7 +304,7 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
   constructor; swap
   · rintro ⟨a, ha, rfl⟩
     exact Submodule.sum_mem _ fun c _ => smul_mem_smul (ha c) <| subset_span <| Set.mem_range_self _
-  refine fun hx => span_induction (mem_smul_span.mp hx) ?_ ?_ ?_ ?_
+  refine fun hx => span_induction ?_ ?_ ?_ ?_ (mem_smul_span.mp hx)
   · simp only [Set.mem_iUnion, Set.mem_range, Set.mem_singleton_iff]
     rintro x ⟨y, hy, x, ⟨i, rfl⟩, rfl⟩
     refine ⟨Finsupp.single i y, fun j => ?_, ?_⟩
@@ -316,10 +316,10 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
     refine @Finsupp.sum_single_index ι R M _ _ i _ (fun i y => y • f i) ?_
     simp
   · exact ⟨0, fun _ => I.zero_mem, Finsupp.sum_zero_index⟩
-  · rintro x y ⟨ax, hax, rfl⟩ ⟨ay, hay, rfl⟩
+  · rintro x y - - ⟨ax, hax, rfl⟩ ⟨ay, hay, rfl⟩
     refine ⟨ax + ay, fun i => I.add_mem (hax i) (hay i), Finsupp.sum_add_index' ?_ ?_⟩ <;>
       intros <;> simp only [zero_smul, add_smul]
-  · rintro c x ⟨a, ha, rfl⟩
+  · rintro c x - ⟨a, ha, rfl⟩
     refine ⟨c • a, fun i => I.mul_mem_left c (ha i), ?_⟩
     rw [Finsupp.sum_smul_index, Finsupp.smul_sum] <;> intros <;> simp only [zero_smul, mul_smul]
 

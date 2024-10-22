@@ -55,12 +55,12 @@ theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
   simp [hi]
 
 open scoped Pointwise in
-theorem card_support_mul_le : (p * q).support.card ≤ p.support.card * q.support.card := by
-  calc (p * q).support.card
-   _ = (p.toFinsupp * q.toFinsupp).support.card := by rw [← support_toFinsupp, toFinsupp_mul]
-   _ ≤ (p.toFinsupp.support + q.toFinsupp.support).card :=
+theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
+  calc #(p * q).support
+   _ = #(p.toFinsupp * q.toFinsupp).support := by rw [← support_toFinsupp, toFinsupp_mul]
+   _ ≤ #(p.toFinsupp.support + q.toFinsupp.support) :=
     Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
-   _ ≤ p.support.card * q.support.card := Finset.card_image₂_le ..
+   _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
@@ -104,7 +104,6 @@ lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) 
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
-  -- porting note (#10745): was `simp [Polynomial.sum, support, coeff]`.
   simp [Polynomial.sum, support_ofFinsupp, coeff_ofFinsupp]
 
 /-- Decomposes the coefficient of the product `p * q` as a sum
@@ -213,11 +212,11 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
     zero_add, Ne, hx, hy, hz, not_false_eq_true, and_true]
 
 theorem card_support_binomial {k m : ℕ} (h : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
-    card (support (C x * X ^ k + C y * X ^ m)) = 2 := by
+    #(support (C x * X ^ k + C y * X ^ m)) = 2 := by
   rw [support_binomial h hx hy, card_insert_of_not_mem (mt mem_singleton.mp h), card_singleton]
 
 theorem card_support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
-    (hy : y ≠ 0) (hz : z ≠ 0) : card (support (C x * X ^ k + C y * X ^ m + C z * X ^ n)) = 3 := by
+    (hy : y ≠ 0) (hz : z ≠ 0) : #(support (C x * X ^ k + C y * X ^ m + C z * X ^ n)) = 3 := by
   rw [support_trinomial hkm hmn hx hy hz,
     card_insert_of_not_mem
       (mt mem_insert.mp (not_or_intro hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),

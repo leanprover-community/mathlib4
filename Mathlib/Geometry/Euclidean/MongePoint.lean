@@ -502,16 +502,8 @@ theorem dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂
       ∃ i₃, univ \ ({i₁, i₂} : Finset (Fin 3)) = {i₃} ∧ i₃ ≠ i₁ ∧ i₃ ≠ i₂ := by
     -- Porting note (#11043): was `decide!`
     fin_cases i₁ <;> fin_cases i₂ <;> simp at h <;> decide
-  -- Porting note: Original proof was `simp_rw [← sum_sdiff hu, hi₃]; simp [hi₃₁, hi₃₂]; norm_num`
-  rw [← sum_sdiff hu, ← sum_sdiff hu, hi₃, sum_singleton, ← sum_sdiff hu, hi₃]
-  split_ifs with h
-  · exact (h.elim hi₃₁ hi₃₂).elim
-  simp only [zero_add, Nat.cast_one, inv_one, sub_zero, one_mul, pointsWithCircumcenter_point,
-    sum_singleton, h, ite_false, dist_self, mul_zero, mem_singleton, true_or, ite_true, sub_self,
-    zero_mul, implies_true, sum_insert_of_eq_zero_if_not_mem, or_true, add_zero, div_one,
-    sub_neg_eq_add, pointsWithCircumcenter_eq_circumcenter, dist_circumcenter_eq_circumradius,
-    sum_const_zero, dist_circumcenter_eq_circumradius', mul_one, neg_add_rev, add_self_div_two]
-  norm_num
+  simp_rw [← sum_sdiff hu, hi₃]
+  norm_num [hi₃₁, hi₃₂]
 
 /-- The distance from the orthocenter to the reflection of the
 circumcenter in a side equals the circumradius, variant using a

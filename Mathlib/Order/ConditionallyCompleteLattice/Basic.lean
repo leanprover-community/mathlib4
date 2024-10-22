@@ -997,6 +997,20 @@ When `iInf f < a`, there is an element `i` such that `f i < a`.
 theorem exists_lt_of_ciInf_lt [Nonempty ι] {f : ι → α} (h : iInf f < a) : ∃ i, f i < a :=
   exists_lt_of_lt_ciSup (α := αᵒᵈ) h
 
+theorem lt_csSup_iff (hb : BddAbove s) (hs : s.Nonempty) : a < sSup s ↔ ∃ b ∈ s, a < b := by
+  simpa only [not_le, not_forall₂, exists_prop] using (csSup_le_iff hb hs (a := a)).not
+
+theorem csInf_lt_iff (hb : BddBelow s) (hs : s.Nonempty) : sInf s < a ↔ ∃ b ∈ s, b < a := by
+  simpa only [not_le, not_forall₂, exists_prop] using (le_csInf_iff hb hs).not
+
+theorem lt_ciSup_iff [Nonempty ι] {f : ι → α} (hb : BddAbove (range f)) :
+    a < iSup f ↔ ∃ i, a < f i := by
+  simpa only [mem_range, exists_exists_eq_and] using lt_csSup_iff hb (range_nonempty _)
+
+theorem ciInf_lt_iff [Nonempty ι] {f : ι → α} (hb : BddBelow (range f)) :
+    iInf f < a ↔ ∃ i, f i < a := by
+  simpa only [mem_range, exists_exists_eq_and] using csInf_lt_iff hb (range_nonempty _)
+
 theorem csSup_of_not_bddAbove {s : Set α} (hs : ¬BddAbove s) : sSup s = sSup ∅ :=
   ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove s hs
 
@@ -1106,6 +1120,18 @@ theorem cbiInf_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
     ⨅ (i) (h : p i), f ⟨i, h⟩ = iInf f ⊓ sInf ∅ :=
   cbiSup_eq_of_not_forall (α := αᵒᵈ) hp
 
+theorem csInf_eq_bot_of_bot_mem [OrderBot α] {s : Set α} (hs : ⊥ ∈ s) : sInf s = ⊥ :=
+  eq_bot_iff.2 <| csInf_le (OrderBot.bddBelow s) hs
+
+theorem ciInf_eq_bot_of_bot_mem [OrderBot α] {f : ι → α} (hs : ⊥ ∈ range f) : iInf f = ⊥ :=
+  csInf_eq_bot_of_bot_mem hs
+
+theorem csSup_eq_top_of_top_mem [OrderTop α] {s : Set α} (hs : ⊤ ∈ s) : sSup s = ⊤ :=
+  csInf_eq_bot_of_bot_mem (α := αᵒᵈ) hs
+
+theorem ciInf_eq_top_of_top_mem [OrderTop α] {f : ι → α} (hs : ⊤ ∈ range f) : iSup f = ⊤ :=
+  csSup_eq_top_of_top_mem hs
+
 open Function
 
 variable [WellFoundedLT α]
@@ -1167,11 +1193,18 @@ theorem isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
   · simp only [csSup_empty, isLUB_empty]
   · exact isLUB_csSup hne hs
 
+/-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
+from `csSup_le_iff`. -/
 theorem csSup_le_iff' {s : Set α} (hs : BddAbove s) {a : α} : sSup s ≤ a ↔ ∀ x ∈ s, x ≤ a :=
   isLUB_le_iff (isLUB_csSup' hs)
 
 theorem csSup_le' {s : Set α} {a : α} (h : a ∈ upperBounds s) : sSup s ≤ a :=
   (csSup_le_iff' ⟨a, h⟩).2 h
+
+/-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
+from `lt_csSup_iff`. -/
+theorem lt_csSup_iff' (hb : BddAbove s) : a < sSup s ↔ ∃ b ∈ s, a < b := by
+  simpa only [not_le, not_forall₂, exists_prop] using (csSup_le_iff' hb).not
 
 theorem le_csSup_iff' {s : Set α} {a : α} (h : BddAbove s) :
     a ≤ sSup s ↔ ∀ b, b ∈ upperBounds s → a ≤ b :=
@@ -1197,12 +1230,19 @@ theorem exists_lt_of_lt_csSup' {s : Set α} {a : α} (h : a < sSup s) : ∃ b �
   contrapose! h
   exact csSup_le' h
 
+/-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
+from `ciSup_le_iff`. -/
 theorem ciSup_le_iff' {f : ι → α} (h : BddAbove (range f)) {a : α} :
     ⨆ i, f i ≤ a ↔ ∀ i, f i ≤ a :=
   (csSup_le_iff' h).trans forall_mem_range
 
 theorem ciSup_le' {f : ι → α} {a : α} (h : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
   csSup_le' <| forall_mem_range.2 h
+
+/-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
+from `lt_ciSup_iff`. -/
+theorem lt_ciSup_iff' {f : ι → α} (h : BddAbove (range f)) : a < iSup f ↔ ∃ i, a < f i := by
+    simpa only [not_le, not_forall] using (ciSup_le_iff' h).not
 
 theorem exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : ∃ i, a < f i := by
   contrapose! h
@@ -1651,4 +1691,4 @@ lemma iInf_coe_lt_top : ⨅ i, (f i : WithTop α) < ⊤ ↔ Nonempty ι := by
 end WithTop
 end WithTopBot
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1800

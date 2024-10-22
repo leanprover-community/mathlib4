@@ -118,6 +118,15 @@ lemma hom_ext {T X Y : C} (f g : T ⟶ X ⊗ Y)
     f = g :=
   (product X Y).isLimit.hom_ext fun ⟨j⟩ => j.recOn h_fst h_snd
 
+-- Similarly to `CategoryTheory.Limits.prod.comp_lift`, we do not make the `assoc` version a simp
+-- lemma
+@[reassoc, simp]
+lemma comp_lift {V W X Y : C} (f : V ⟶ W) (g : W ⟶ X) (h : W ⟶ Y) :
+    f ≫ lift g h = lift (f ≫ g) (f ≫ h) := by ext <;> simp
+
+@[simp]
+lemma lift_fst_snd {X Y : C} : lift (fst X Y) (snd X Y) = 𝟙 (X ⊗ Y) := by ext <;> simp
+
 @[reassoc (attr := simp)]
 lemma tensorHom_fst {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
     (f ⊗ g) ≫ fst _ _ = fst _ _ ≫ f := lift_fst _ _
@@ -125,6 +134,14 @@ lemma tensorHom_fst {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ 
 @[reassoc (attr := simp)]
 lemma tensorHom_snd {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
     (f ⊗ g) ≫ snd _ _ = snd _ _ ≫ g := lift_snd _ _
+
+@[reassoc (attr := simp)]
+lemma lift_map {V W X Y Z : C} (f : V ⟶ W) (g : V ⟶ X) (h : W ⟶ Y) (k : X ⟶ Z) :
+    lift f g ≫ (h ⊗ k) = lift (f ≫ h) (g ≫ k) := by ext <;> simp
+
+@[simp]
+lemma lift_fst_comp_snd_comp {W X Y Z : C} (g : W ⟶ X) (g' : Y ⟶ Z) :
+    lift (fst _ _ ≫ g) (snd _ _ ≫ g') = g ⊗ g' := by ext <;> simp
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_fst (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) :

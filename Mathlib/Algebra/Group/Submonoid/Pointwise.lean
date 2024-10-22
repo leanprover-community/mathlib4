@@ -85,11 +85,11 @@ theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) 
 @[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
-  refine @closure_induction N _ s (fun x : N => ∃ n : ℕ, r ^ n • x ∈ closure (r • s)) _ hx ?_ ?_ ?_
-  · intro x hx
-    exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
-  · exact ⟨0, by simpa using one_mem _⟩
-  · rintro x y ⟨nx, hx⟩ ⟨ny, hy⟩
+  induction hx using closure_induction with
+  | mem x hx => exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
+  | one => exact ⟨0, by simpa using one_mem _⟩
+  | mul x y _ _ hx hy =>
+    obtain ⟨⟨nx, hx⟩, ⟨ny, hy⟩⟩ := And.intro hx hy
     use ny + nx
     rw [pow_add, mul_smul, ← smul_mul_assoc, mul_comm, ← smul_mul_assoc]
     exact mul_mem hy hx
