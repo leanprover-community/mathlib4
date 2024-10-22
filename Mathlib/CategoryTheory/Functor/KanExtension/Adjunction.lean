@@ -227,7 +227,7 @@ to `lim` on shapes `C`. -/
 noncomputable def ranCompLimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasRightKanExtension G]
     [HasLimitsOfShape C H] [HasLimitsOfShape D H] : L.ran ⋙ lim ≅ lim (C := H) :=
   NatIso.ofComponents
-    (fun G ↦ (limitIsoOfIsRightKanExtension _ (L.ranCounit.app G)))
+    (fun G ↦ limitIsoOfIsRightKanExtension _ (L.ranCounit.app G))
     (fun f ↦ limit.hom_ext (fun i ↦ by
       dsimp
       rw [assoc, assoc, limMap_π, limitIsoOfIsRightKanExtension_hom_π_assoc,

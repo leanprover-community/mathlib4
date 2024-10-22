@@ -588,7 +588,7 @@ lemma ι_colimitIsoOfIsLeftKanExtension_hom (i : C) :
 lemma ι_colimitIsoOfIsLeftKanExtension_inv (i : C) :
     colimit.ι F i ≫ (F'.colimitIsoOfIsLeftKanExtension α).inv =
     α.app i ≫ colimit.ι F' (L.obj i) := by
-  rw [@Iso.comp_inv_eq, assoc, ι_colimitIsoOfIsLeftKanExtension_hom]
+  rw [Iso.comp_inv_eq, assoc, ι_colimitIsoOfIsLeftKanExtension_hom]
 
 end Colimit
 
