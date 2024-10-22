@@ -7,8 +7,9 @@ import Mathlib.Algebra.Star.Basic
 import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # (Semi-)linear isometries
@@ -210,7 +211,7 @@ protected lemma embedding (f : F →ₛₗᵢ[σ₁₂] E₂) : Embedding f := f
 -- Should be `@[simp]` but it doesn't fire due to `lean4#3107`.
 theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
-  _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).uniformInducing
+  _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).isUniformInducing
 
 @[simp] -- Should be replaced with `LinearIsometry.isComplete_image_iff` when `lean4#3107` is fixed.
 theorem isComplete_image_iff' (f : LinearIsometry σ₁₂ E E₂) {s : Set E} :
@@ -486,9 +487,12 @@ instance instSemilinearIsometryEquivClass :
   map_smulₛₗ e := map_smulₛₗ e.toLinearEquiv
   norm_map e := e.norm_map'
 
--- TODO: Shouldn't these `CoeFun` instances be scrapped?
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
-directly. -/
+/-- Shortcut instance, saving 8.5% of compilation time in
+`Mathlib.Analysis.InnerProductSpace.Adjoint`.
+
+(This instance was pinpointed by benchmarks; we didn't do an in depth investigation why it is
+specifically needed.)
+-/
 instance instCoeFun : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ ↦ E → E₂ := ⟨DFunLike.coe⟩
 
 theorem coe_injective : @Function.Injective (E ≃ₛₗᵢ[σ₁₂] E₂) (E → E₂) (↑) :=

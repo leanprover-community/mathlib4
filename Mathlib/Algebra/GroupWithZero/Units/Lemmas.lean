@@ -15,10 +15,37 @@ import Mathlib.Algebra.GroupWithZero.Hom
 
 assert_not_exists DenselyOrdered
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+variable {M M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]
 
+section Monoid
+
+variable [Monoid M] [GroupWithZero G₀]
+
+lemma isLocalHom_of_exists_map_ne_one [FunLike F G₀ M] [MonoidHomClass F G₀ M] {f : F}
+    (hf : ∃ x : G₀, f x ≠ 1) : IsLocalHom f where
+  map_nonunit a h := by
+    rcases eq_or_ne a 0 with (rfl | h)
+    · obtain ⟨t, ht⟩ := hf
+      refine (ht ?_).elim
+      have := map_mul f t 0
+      rw [← one_mul (f (t * 0)), mul_zero] at this
+      exact (h.mul_right_cancel this).symm
+    · exact ⟨⟨a, a⁻¹, mul_inv_cancel₀ h, inv_mul_cancel₀ h⟩, rfl⟩
+
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_of_exists_map_ne_one := isLocalHom_of_exists_map_ne_one
+
+instance [GroupWithZero G₀] [FunLike F G₀ M₀] [MonoidWithZeroHomClass F G₀ M₀] [Nontrivial M₀]
+    (f : F) : IsLocalHom f :=
+  isLocalHom_of_exists_map_ne_one ⟨0, by simp⟩
+
+end Monoid
+
+section GroupWithZero
+
 namespace Commute
+
 variable [GroupWithZero G₀] {a b c d : G₀}
 
 /-- The `MonoidWithZero` version of `div_eq_div_iff_mul_eq_mul`. -/
@@ -107,3 +134,5 @@ end Units
 theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀'] [FunLike F G₀ G₀']
     [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
   map_zpow' f (map_inv₀ f) x n
+
+end GroupWithZero

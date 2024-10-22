@@ -77,7 +77,7 @@ variable (F : OplaxFunctor B C)
 @[simps]
 def id : OplaxNatTrans F F where
   app a := 𝟙 (F.obj a)
-  naturality {a b} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
+  naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
 
 instance : Inhabited (OplaxNatTrans F F) :=
   ⟨id F⟩
@@ -245,7 +245,6 @@ instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   id := Modification.id
   comp := Modification.vcomp
 
--- Porting note: duplicating the `ext` lemma.
 @[ext]
 lemma ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ b, m.app b = n.app b) :
     m = n := by

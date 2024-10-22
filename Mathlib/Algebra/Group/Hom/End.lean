@@ -19,9 +19,9 @@ They are separate, and if someone would like to split this file in two that may 
 -/
 
 
-universe uM uN uP uQ
+universe uM
 
-variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
+variable {M : Type uM}
 
 namespace AddMonoid.End
 
@@ -121,7 +121,7 @@ end Semiring
 
 section CommSemiring
 
-variable {R S : Type*} [NonUnitalNonAssocCommSemiring R]
+variable {R : Type*} [NonUnitalNonAssocCommSemiring R]
 
 namespace AddMonoid.End
 

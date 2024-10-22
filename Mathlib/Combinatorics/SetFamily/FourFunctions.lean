@@ -7,7 +7,6 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Finset.Sups
-import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice

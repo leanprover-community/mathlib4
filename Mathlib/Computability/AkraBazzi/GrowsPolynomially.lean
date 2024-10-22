@@ -131,7 +131,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
   refine hmain ⌊-logb 2 (x / x₀)⌋₊ x le_rfl ⟨?lb, ?ub⟩
   case lb =>
     rw [← le_div_iff₀ x₀_pos]
-    refine (logb_le_logb (b := 2) (by norm_num) (zpow_pos_of_pos (by norm_num) _)
+    refine (logb_le_logb (b := 2) (by norm_num) (zpow_pos (by norm_num) _)
       (by positivity)).mp ?_
     rw [← rpow_intCast, logb_rpow (by norm_num) (by norm_num), ← neg_le_neg_iff]
     simp only [Int.cast_sub, Int.cast_neg, Int.cast_natCast, Int.cast_one, neg_sub, sub_neg_eq_add]
@@ -140,7 +140,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
   case ub =>
     rw [← div_le_iff₀ x₀_pos]
     refine (logb_le_logb (b := 2) (by norm_num) (by positivity)
-      (zpow_pos_of_pos (by norm_num) _)).mp ?_
+      (zpow_pos (by norm_num) _)).mp ?_
     rw [← rpow_intCast, logb_rpow (by norm_num) (by norm_num), ← neg_le_neg_iff]
     simp only [Int.cast_neg, Int.cast_natCast, neg_neg]
     have : 0 ≤ -logb 2 (x / x₀) := by

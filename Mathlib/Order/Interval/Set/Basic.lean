@@ -38,35 +38,35 @@ section Preorder
 
 variable [Preorder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-/-- Left-open right-open interval -/
+/-- `Ioo a b` is the left-open right-open interval $(a, b)$. -/
 def Ioo (a b : α) :=
   { x | a < x ∧ x < b }
 
-/-- Left-closed right-open interval -/
+/-- `Ico a b` is the left-closed right-open interval $[a, b)$. -/
 def Ico (a b : α) :=
   { x | a ≤ x ∧ x < b }
 
-/-- Left-infinite right-open interval -/
-def Iio (a : α) :=
-  { x | x < a }
+/-- `Iio b` is the left-infinite right-open interval $(-∞, b)$. -/
+def Iio (b : α) :=
+  { x | x < b }
 
-/-- Left-closed right-closed interval -/
+/-- `Icc a b` is the left-closed right-closed interval $[a, b]$. -/
 def Icc (a b : α) :=
   { x | a ≤ x ∧ x ≤ b }
 
-/-- Left-infinite right-closed interval -/
+/-- `Iic b` is the left-infinite right-closed interval $(-∞, b]$. -/
 def Iic (b : α) :=
   { x | x ≤ b }
 
-/-- Left-open right-closed interval -/
+/-- `Ioc a b` is the left-open right-closed interval $(a, b]$. -/
 def Ioc (a b : α) :=
   { x | a < x ∧ x ≤ b }
 
-/-- Left-closed right-infinite interval -/
+/-- `Ici a` is the left-closed right-infinite interval $[a, ∞)$. -/
 def Ici (a : α) :=
   { x | a ≤ x }
 
-/-- Left-open right-infinite interval -/
+/-- `Ioi a` is the left-open right-infinite interval $(a, ∞)$. -/
 def Ioi (a : α) :=
   { x | a < x }
 
@@ -753,7 +753,7 @@ theorem mem_Ici_Ioi_of_subset_of_subset {s : Set α} (ho : Ioi a ⊆ s) (hc : s 
     (fun h : a ∈ s =>
       Or.inl <| Subset.antisymm hc <| by rw [← Ioi_union_left, union_subset_iff]; simp [*])
     fun h =>
-    Or.inr <| Subset.antisymm (fun x hx => lt_of_le_of_ne (hc hx) fun heq => h <| heq.symm ▸ hx) ho
+    Or.inr <| Subset.antisymm (fun _ hx => lt_of_le_of_ne (hc hx) fun heq => h <| heq.symm ▸ hx) ho
 
 theorem mem_Iic_Iio_of_subset_of_subset {s : Set α} (ho : Iio a ⊆ s) (hc : s ⊆ Iic a) :
     s ∈ ({Iic a, Iio a} : Set (Set α)) :=
@@ -1481,7 +1481,7 @@ end Lattice
 
 section LinearOrder
 
-variable [LinearOrder α] [LinearOrder β] {f : α → β} {a a₁ a₂ b b₁ b₂ c d : α}
+variable [LinearOrder α] {a a₁ a₂ b b₁ b₂ c : α}
 
 @[simp]
 theorem Ioi_inter_Ioi : Ioi a ∩ Ioi b = Ioi (a ⊔ b) :=

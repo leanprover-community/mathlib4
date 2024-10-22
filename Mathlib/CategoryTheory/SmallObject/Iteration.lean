@@ -123,7 +123,7 @@ lemma mapSucc_eq (i : J) (hi : i < j) :
 
 end
 
-variable (iter₁ iter₂ iter₃ : Φ.Iteration ε j)
+variable (iter₁ iter₂ : Φ.Iteration ε j)
 
 /-- A morphism between two objects `iter₁` and `iter₂` in the
 category `Φ.Iteration ε j` of `j`th iterations of a functor `Φ`
@@ -148,7 +148,7 @@ attribute [simp, reassoc] natTrans_app_zero
 def id : Hom iter₁ iter₁ where
   natTrans := 𝟙 _
 
-variable {iter₁ iter₂ iter₃}
+variable {iter₁ iter₂}
 
 -- Note: this is not made a global ext lemma because it is shown below
 -- that the type of morphisms is a subsingleton.
