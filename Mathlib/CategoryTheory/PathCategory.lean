@@ -49,8 +49,8 @@ def of : V ⥤q Paths V where
   obj X := X
   map f := f.toPath
 
-/-- To prove a property on morphisms of a path category, it suffices to prove it for the indentity
-and prove that it is preserved by composition on the right by length 1 paths. -/
+/-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
+and prove that the properity is preserved under composition on the right with length 1 paths. -/
 lemma induction (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
     (id : ∀ {v : V}, P (𝟙 (of.obj v)))
     (comp : ∀ {u v w : V} (p : of.obj u ⟶ of.obj v) (q : v ⟶ w), P p → P (p ≫ of.map q)) :
@@ -60,8 +60,8 @@ lemma induction (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
   | nil => exact id
   | @cons a b f w h => exact comp f w h
 
-/-- To prove a property on morphisms of a path category, it suffices to prove it for the indentity
-and prove that it is preserved by composition on the left by length 1 paths. -/
+/-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
+and prove that the property is preserved under composition on the left with length 1 paths. -/
 lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
     (id : ∀ {v : V}, P (𝟙 (of.obj v)))
     (comp : ∀ {u v w : V} (p : u ⟶ v) (q : of.obj v ⟶ of.obj w), P q → P (of.map p ≫ q)) :
