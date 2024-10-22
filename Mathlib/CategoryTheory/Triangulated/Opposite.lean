@@ -105,7 +105,7 @@ lemma shiftFunctorAdd'_op_hom_app (X : Cᵒᵖ) (a₁ a₂ a₃ : ℤ) (h : a₁
         (shiftFunctor Cᵒᵖ a₂).map ((shiftFunctorOpIso C _ _ h₁).inv.app X) := by
   erw [@pullbackShiftFunctorAdd'_hom_app (OppositeShift C ℤ) _ _ _ _ _ _ _ X
     a₁ a₂ a₃ h b₁ b₂ b₃ (by dsimp; omega) (by dsimp; omega) (by dsimp; omega)]
-  erw [oppositeShiftFunctorAdd'_hom_app]
+  rw [oppositeShiftFunctorAdd'_hom_app]
   obtain rfl : b₁ = -a₁ := by omega
   obtain rfl : b₂ = -a₂ := by omega
   obtain rfl : b₃ = -a₃ := by omega

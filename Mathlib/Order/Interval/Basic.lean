@@ -22,7 +22,7 @@ interval arithmetic.
 
 open Function OrderDual Set
 
-variable {α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*}
+variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 /-- The nonempty closed intervals in an order.
 
@@ -91,8 +91,7 @@ end LE
 
 section Preorder
 
-variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] {s : NonemptyInterval α} {x : α × α}
-  {a : α}
+variable [Preorder α] [Preorder β] [Preorder γ] {s : NonemptyInterval α} {x : α × α} {a : α}
 
 instance : Preorder (NonemptyInterval α) :=
   Preorder.lift toDualProd
@@ -189,7 +188,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [PartialOrder β] {s t : NonemptyInterval α} {x : α × α} {a b : α}
+variable [PartialOrder α] [PartialOrder β] {s t : NonemptyInterval α} {a b : α}
 
 instance : PartialOrder (NonemptyInterval α) :=
   PartialOrder.lift _ toDualProd_injective
@@ -272,7 +271,7 @@ namespace Interval
 
 section LE
 
-variable [LE α] {s t : Interval α}
+variable [LE α]
 
 -- Porting note: previously found using `deriving`
 instance : Inhabited (Interval α) := WithBot.inhabited
@@ -471,7 +470,7 @@ instance lattice : Lattice (Interval α) :=
       match s, t with
       | ⊥, ⊥ => bot_le
       | ⊥, some _ => bot_le
-      | some s, ⊥ => bot_le
+      | some _, ⊥ => bot_le
       | some s, some t => by
         change dite _ _ _ ≤ _
         split_ifs
@@ -480,7 +479,7 @@ instance lattice : Lattice (Interval α) :=
     inf_le_right := fun s t =>
       match s, t with
       | ⊥, ⊥ => bot_le
-      | ⊥, some t => bot_le
+      | ⊥, some _ => bot_le
       | some _, ⊥ => bot_le
       | some s, some t => by
         change dite _ _ _ ≤ _
@@ -489,7 +488,7 @@ instance lattice : Lattice (Interval α) :=
         · exact bot_le
     le_inf := fun s t c =>
       match s, t, c with
-      | ⊥, t, c => fun _ _ => bot_le
+      | ⊥, _, _ => fun _ _ => bot_le
       | (s : NonemptyInterval α), t, c => fun hb hc => by
         lift t to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hb
         lift c to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hc

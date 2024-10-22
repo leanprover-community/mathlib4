@@ -1395,7 +1395,8 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- Porting note: was `norm_num [Finset.sum] <;> nlinarith`
       -- This proof should be restored after the norm_num plugin for big operators is ported.
       -- (It may also need the positivity extensions in #3907.)
-      repeat erw [Finset.sum_range_succ]
+      erw [Finset.sum_range_succ]
+      repeat rw [Finset.sum_range_succ]
       norm_num [Nat.factorial]
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff₀] <;> nlinarith
@@ -1412,7 +1413,7 @@ theorem add_one_lt_exp {x : ℝ} (hx : x ≠ 0) : x + 1 < Real.exp x := by
   obtain h' | h' := le_or_lt 1 (-x)
   · linarith [x.exp_pos]
   have hx' : 0 < x + 1 := by linarith
-  simpa [add_comm, exp_neg, inv_lt_inv (exp_pos _) hx']
+  simpa [add_comm, exp_neg, inv_lt_inv₀ (exp_pos _) hx']
     using exp_bound_div_one_sub_of_interval' (neg_pos.2 hx) h'
 
 theorem add_one_le_exp (x : ℝ) : x + 1 ≤ Real.exp x := by

@@ -113,12 +113,12 @@ def preNormEDS' (b c d : R) : ℕ → R
     have h4 : m + 4 < n + 5 := Nat.lt_succ.mpr <| add_le_add_right (n.div_le_self 2) 4
     have h3 : m + 3 < n + 5 := (lt_add_one _).trans h4
     have h2 : m + 2 < n + 5 := (lt_add_one _).trans h3
-    have h1 : m + 1 < n + 5 := (lt_add_one _).trans h2
+    have _ : m + 1 < n + 5 := (lt_add_one _).trans h2
     if hn : Even n then
       preNormEDS' b c d (m + 4) * preNormEDS' b c d (m + 2) ^ 3 * (if Even m then b else 1) -
         preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) ^ 3 * (if Even m then 1 else b)
     else
-      have h5 : m + 5 < n + 5 := add_lt_add_right
+      have _ : m + 5 < n + 5 := add_lt_add_right
         (Nat.div_lt_self (Nat.not_even_iff_odd.1 hn).pos <| Nat.lt_succ_self 1) 5
       preNormEDS' b c d (m + 2) ^ 2 * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 5) -
         preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 4) ^ 2

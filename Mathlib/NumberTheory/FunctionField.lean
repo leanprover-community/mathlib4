@@ -44,7 +44,7 @@ noncomputable section
 
 open scoped nonZeroDivisors Polynomial Multiplicative
 
-variable (Fq F : Type) [Field Fq] [Field F]
+variable (Fq F : Type*) [Field Fq] [Field F]
 
 /-- `F` is a function field over the finite field `Fq` if it is a finite
 extension of the field of rational functions in one variable over `Fq`.
