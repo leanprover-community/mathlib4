@@ -53,12 +53,21 @@ lemma inl_v_triangle_mor₃_f (p q : ℤ) (hpq : p + (-1) = q) :
     (inl φ).v p q hpq ≫ (triangle φ).mor₃.f q =
       -(K.shiftFunctorObjXIso 1 q p (by rw [← hpq, neg_add_cancel_right])).inv := by
   dsimp [triangle]
-  simp [Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by omega)]
+  -- the following list of lemmas was obtained by doing
+  -- simp? [Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by omega)]
+  simp only [Int.reduceNeg, Cochain.rightShift_neg, Cochain.neg_v, shiftFunctor_obj_X',
+    Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by omega), shiftFunctor_obj_X,
+    shiftFunctorObjXIso, Preadditive.comp_neg, inl_v_fst_v_assoc]
 
 @[reassoc (attr := simp)]
 lemma inr_f_triangle_mor₃_f (p : ℤ) : (inr φ).f p ≫ (triangle φ).mor₃.f p = 0 := by
   dsimp [triangle]
-  simp [Cochain.rightShift_v _ 1 0 _ p p (add_zero p) (p+1) rfl]
+  -- the following list of lemmas was obtained by doing
+  -- simp? [Cochain.rightShift_v _ 1 0 _ p p (add_zero p) (p+1) rfl]
+  simp only [Cochain.rightShift_neg, Cochain.neg_v, shiftFunctor_obj_X',
+    Cochain.rightShift_v _ 1 0 _ p p (add_zero p) (p + 1) rfl, shiftFunctor_obj_X,
+    shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id,
+    Preadditive.comp_neg, inr_f_fst_v, neg_zero]
 
 @[reassoc (attr := simp)]
 lemma inr_triangleδ : inr φ ≫ (triangle φ).mor₃ = 0 := by ext; dsimp; simp
@@ -395,7 +404,8 @@ lemma map_δ :
     comp_neg, comp_id, inr_f_triangle_mor₃_f, comp_zero, add_zero]
   dsimp [triangle]
   rw [Cochain.rightShift_v _ 1 0 (by omega) n n (by omega) (n + 1) (by omega)]
-  simp
+  simp only [shiftFunctor_obj_X, Cochain.neg_v, shiftFunctorObjXIso,
+    HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id, Functor.map_neg]
 
 /-- If `φ : K ⟶ L` is a morphism of cochain complexes in `C` and `G : C ⥤ D` is an
 additive functor, then the image by `G` of the triangle `triangle φ` identifies to
@@ -403,8 +413,9 @@ the triangle associated to the image of `φ` by `G`. -/
 noncomputable def mapTriangleIso :
     (G.mapHomologicalComplex (ComplexShape.up ℤ)).mapTriangle.obj (triangle φ) ≅
       triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ) := by
-  refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mapHomologicalComplexIso φ G)
-    (by aesop_cat) ?_ ?_
+  refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mapHomologicalComplexIso φ G) ?_ ?_ ?_
+  · dsimp
+    simp only [comp_id, id_comp]
   · dsimp
     rw [map_inr, id_comp]
   · dsimp
