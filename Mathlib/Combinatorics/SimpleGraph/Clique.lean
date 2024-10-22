@@ -10,8 +10,8 @@ import Mathlib.Data.Finset.Pairwise
 /-!
 # Graph cliques
 
-This file defines cliques in simple graphs. A clique is a set of vertices that are pairwise
-adjacent.
+This file defines cliques in simple graphs.
+A clique is a set of vertices that are pairwise adjacent.
 
 ## Main declarations
 
@@ -270,9 +270,9 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
     ¬G.CliqueFree n := by
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not]
   use Finset.univ.map f.toEmbedding
-  simp only [card_map, Finset.card_fin, eq_self_iff_true, and_true_iff]
+  simp only [card_map, Finset.card_fin, eq_self_iff_true, and_true]
   ext ⟨v, hv⟩ ⟨w, hw⟩
-  simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and_iff] at hv hw
+  simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and] at hv hw
   obtain ⟨v', rfl⟩ := hv
   obtain ⟨w', rfl⟩ := hw
   simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_adj, Function.Embedding.coe_subtype,

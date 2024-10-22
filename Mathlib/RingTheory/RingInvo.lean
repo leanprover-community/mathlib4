@@ -83,10 +83,6 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
     right_inv := fun _ => MulOpposite.unop_injective <| involution _
     involution' := involution }
 
--- Porting note: removed CoeFun instance, undesired in lean4
--- instance : CoeFun (RingInvo R) fun _ => R → Rᵐᵒᵖ :=
---   ⟨fun f => f.toRingEquiv.toFun⟩
-
 @[simp]
 theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x

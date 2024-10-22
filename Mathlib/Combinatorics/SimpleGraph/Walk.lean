@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Maps
-import Mathlib.Data.List.Lemmas
 
 /-!
 
@@ -189,10 +188,8 @@ lemma getVert_cons_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
 
 lemma getVert_cons {u v w n} (p : G.Walk v w) (h : G.Adj u v) (hn : n ≠ 0) :
     (p.cons h).getVert n = p.getVert (n - 1) := by
-  obtain ⟨i, hi⟩ : ∃ (i : ℕ), i.succ = n := by
-    use n - 1; exact Nat.succ_pred_eq_of_ne_zero hn
-  rw [← hi]
-  simp only [Nat.succ_eq_add_one, getVert_cons_succ, Nat.add_sub_cancel]
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
+  rw [getVert_cons_succ, Nat.add_sub_cancel]
 
 @[simp]
 theorem cons_append {u v w x : V} (h : G.Adj u v) (p : G.Walk v w) (q : G.Walk w x) :
@@ -203,22 +200,20 @@ theorem cons_nil_append {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h nil).append p = cons h p := rfl
 
 @[simp]
-theorem append_nil {u v : V} (p : G.Walk u v) : p.append nil = p := by
-  induction p with
-  | nil => rfl
-  | cons _ _ ih => rw [cons_append, ih]
-
-@[simp]
 theorem nil_append {u v : V} (p : G.Walk u v) : nil.append p = p :=
   rfl
+
+@[simp]
+theorem append_nil {u v : V} (p : G.Walk u v) : p.append nil = p := by
+  induction p with
+  | nil => rw [nil_append]
+  | cons _ _ ih => rw [cons_append, ih]
 
 theorem append_assoc {u v w x : V} (p : G.Walk u v) (q : G.Walk v w) (r : G.Walk w x) :
     p.append (q.append r) = (p.append q).append r := by
   induction p with
-  | nil => rfl
-  | cons h p' ih =>
-    dsimp only [append]
-    rw [ih]
+  | nil => rw [nil_append, nil_append]
+  | cons h p' ih => rw [cons_append, cons_append, cons_append, ih]
 
 @[simp]
 theorem append_copy_copy {u v w u' v' w'} (p : G.Walk u v) (q : G.Walk v w)
@@ -513,7 +508,7 @@ theorem getLast_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
 
 theorem tail_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     (p.append p').support.tail = p.support.tail ++ p'.support.tail := by
-  rw [support_append, List.tail_append_of_ne_nil _ _ (support_ne_nil _)]
+  rw [support_append, List.tail_append_of_ne_nil (support_ne_nil _)]
 
 theorem support_eq_cons {u v : V} (p : G.Walk u v) : p.support = u :: p.support.tail := by
   cases p <;> simp
@@ -560,7 +555,7 @@ theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
 theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
     (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support := by
   intro h
-  simp (config := { contextual := true }) only [mem_support_append_iff, or_true_iff, imp_true_iff]
+  simp (config := { contextual := true }) only [mem_support_append_iff, or_true, imp_true_iff]
 
 theorem coe_support {u v : V} (p : G.Walk u v) :
     (p.support : Multiset V) = {u} + p.support.tail := by cases p <;> rfl
@@ -664,9 +659,8 @@ theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.da
 theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
     (p.darts.getLast hp).snd = b := by
   rw [← List.getLast_map (f := fun x : G.Dart ↦ x.snd)]
-  simp_rw [p.map_snd_darts, List.getLast_tail]
-  exact p.getLast_support
-  simpa
+  · simp_rw [p.map_snd_darts, List.getLast_tail, p.getLast_support]
+  · simpa
 
 @[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
@@ -1201,7 +1195,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
     | cons _ _ =>
       simp only [map_cons, cons.injEq] at h
       cases hinj h.1
-      simp only [cons.injEq, heq_iff_eq, true_and_iff]
+      simp only [cons.injEq, heq_iff_eq, true_and]
       apply ih
       simpa using h.2
 

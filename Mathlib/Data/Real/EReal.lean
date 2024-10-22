@@ -673,7 +673,7 @@ theorem natCast_mul (m n : ℕ) :
 
 theorem exists_rat_btwn_of_lt :
     ∀ {a b : EReal}, a < b → ∃ x : ℚ, a < (x : ℝ) ∧ ((x : ℝ) : EReal) < b
-  | ⊤, b, h => (not_top_lt h).elim
+  | ⊤, _, h => (not_top_lt h).elim
   | (a : ℝ), ⊥, h => (lt_irrefl _ ((bot_lt_coe a).trans h)).elim
   | (a : ℝ), (b : ℝ), h => by simp [exists_rat_btwn (EReal.coe_lt_coe_iff.1 h)]
   | (a : ℝ), ⊤, _ =>

@@ -4,7 +4,7 @@ import Mathlib.Data.Finset.Sort
 
 #guard_expr eval% 2^10 =ₛ 1024
 
-#guard_expr (eval% 2^10 : Int) =ₛ .ofNat 1024
+#guard_expr (eval% 2^10 : Int) =ₛ (1024 : Int)
 
 -- https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/How.20to.20simplify.20this.20proof.20without.20using.20a.20have.20statement.3F/near/422294189
 section from_zulip

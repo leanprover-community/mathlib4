@@ -78,9 +78,9 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   mul f g := g.trans f
   one := LinearEquiv.refl R M
   inv f := f.symm
-  mul_assoc f g h := rfl
-  mul_one f := ext fun x ↦ rfl
-  one_mul f := ext fun x ↦ rfl
+  mul_assoc _ _ _ := rfl
+  mul_one _ := ext fun _ ↦ rfl
+  one_mul _ := ext fun _ ↦ rfl
   inv_mul_cancel f := ext <| f.left_inv
 
 @[simp]
@@ -122,7 +122,7 @@ protected theorem smul_def (f : M ≃ₗ[R] M) (a : M) : f • a = f a :=
 
 /-- `LinearEquiv.applyDistribMulAction` is faithful. -/
 instance apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M :=
-  ⟨@fun _ _ ↦ LinearEquiv.ext⟩
+  ⟨LinearEquiv.ext⟩
 
 instance apply_smulCommClass [SMul S R] [SMul S M] [IsScalarTower S R M] :
     SMulCommClass S (M ≃ₗ[R] M) M where

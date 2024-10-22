@@ -45,9 +45,9 @@ theorem _root_.Set.Infinite.Nat.sSup_eq_zero {s : Set ℕ} (h : s.Infinite) : sS
 theorem sInf_eq_zero {s : Set ℕ} : sInf s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
   cases eq_empty_or_nonempty s with
   | inl h => subst h
-             simp only [or_true_iff, eq_self_iff_true, iff_true_iff, iInf, InfSet.sInf,
+             simp only [or_true, eq_self_iff_true, iInf, InfSet.sInf,
                         mem_empty_iff_false, exists_false, dif_neg, not_false_iff]
-  | inr h => simp only [h.ne_empty, or_false_iff, Nat.sInf_def, h, Nat.find_eq_zero]
+  | inr h => simp only [h.ne_empty, or_false, Nat.sInf_def, h, Nat.find_eq_zero]
 
 @[simp]
 theorem sInf_empty : sInf ∅ = 0 := by
@@ -61,7 +61,7 @@ theorem iInf_of_empty {ι : Sort*} [IsEmpty ι] (f : ι → ℕ) : iInf f = 0 :=
 
 /-- This combines `Nat.iInf_of_empty` with `ciInf_const`. -/
 @[simp]
-lemma iInf_const_zero {ι : Sort*} : ⨅ i : ι, 0 = 0 :=
+lemma iInf_const_zero {ι : Sort*} : ⨅ _ : ι, 0 = 0 :=
   (isEmpty_or_nonempty ι).elim (fun h ↦ by simp) fun h ↦ sInf_eq_zero.2 <| by simp
 
 theorem sInf_mem {s : Set ℕ} (h : s.Nonempty) : sInf s ∈ s := by

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Functor.ReflectsIso
@@ -137,19 +137,19 @@ def tensorObj (X Y : Center C) : Center C :=
             X.1 ◁ (HalfBraiding.β Y.2 U).hom ▷ U' ⊗≫
               (_ ◁ (HalfBraiding.β Y.2 U').hom ≫
                 (HalfBraiding.β X.2 U).hom ▷ _) ⊗≫
-                  U ◁ (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := by coherence
-          _ = _ := by rw [whisker_exchange]; coherence
+                  U ◁ (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := by monoidal
+          _ = _ := by rw [whisker_exchange]; monoidal
       naturality := fun {U U'} f => by
         dsimp only [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom]
         calc
           _ = 𝟙 _ ⊗≫
             (X.1 ◁ (Y.1 ◁ f ≫ (HalfBraiding.β Y.2 U').hom)) ⊗≫
-              (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := by coherence
+              (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := by monoidal
           _ = 𝟙 _ ⊗≫
             X.1 ◁ (HalfBraiding.β Y.2 U).hom ⊗≫
               (X.1 ◁ f ≫ (HalfBraiding.β X.2 U').hom) ▷ Y.1 ⊗≫ 𝟙 _ := by
-            rw [HalfBraiding.naturality]; coherence
-          _ = _ := by rw [HalfBraiding.naturality]; coherence }⟩
+            rw [HalfBraiding.naturality]; monoidal
+          _ = _ := by rw [HalfBraiding.naturality]; monoidal }⟩
 
 @[reassoc]
 theorem whiskerLeft_comm (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) (U : C) :
@@ -160,12 +160,12 @@ theorem whiskerLeft_comm (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y�
   calc
     _ = 𝟙 _ ⊗≫
       X.fst ◁ (f.f ▷ U ≫ (HalfBraiding.β Y₂.snd U).hom) ⊗≫
-        (HalfBraiding.β X.snd U).hom ▷ Y₂.fst ⊗≫ 𝟙 _ := by coherence
+        (HalfBraiding.β X.snd U).hom ▷ Y₂.fst ⊗≫ 𝟙 _ := by monoidal
     _ = 𝟙 _ ⊗≫
       X.fst ◁ (HalfBraiding.β Y₁.snd U).hom ⊗≫
         ((X.fst ⊗ U) ◁ f.f ≫ (HalfBraiding.β X.snd U).hom ▷ Y₂.fst) ⊗≫ 𝟙 _ := by
-      rw [f.comm]; coherence
-    _ = _ := by rw [whisker_exchange]; coherence
+      rw [f.comm]; monoidal
+    _ = _ := by rw [whisker_exchange]; monoidal
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def whiskerLeft (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) :
@@ -182,12 +182,12 @@ theorem whiskerRight_comm {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center
   calc
     _ = 𝟙 _ ⊗≫
       (f.f ▷ (Y.fst ⊗ U) ≫ X₂.fst ◁ (HalfBraiding.β Y.snd U).hom) ⊗≫
-        (HalfBraiding.β X₂.snd U).hom ▷ Y.fst ⊗≫ 𝟙 _ := by coherence
+        (HalfBraiding.β X₂.snd U).hom ▷ Y.fst ⊗≫ 𝟙 _ := by monoidal
     _ = 𝟙 _ ⊗≫
       X₁.fst ◁ (HalfBraiding.β Y.snd U).hom ⊗≫
         (f.f ▷ U ≫ (HalfBraiding.β X₂.snd U).hom) ▷ Y.fst ⊗≫ 𝟙 _ := by
-      rw [← whisker_exchange]; coherence
-    _ = _ := by rw [f.comm]; coherence
+      rw [← whisker_exchange]; monoidal
+    _ = _ := by rw [f.comm]; monoidal
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def whiskerRight {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) :
@@ -278,7 +278,7 @@ theorem associator_hom_f (X Y Z : Center C) : Hom.f (α_ X Y Z).hom = (α_ X.1 Y
 
 @[simp]
 theorem associator_inv_f (X Y Z : Center C) : Hom.f (α_ X Y Z).inv = (α_ X.1 Y.1 Z.1).inv := by
-  apply Iso.inv_ext' -- Porting note: Originally `ext`
+  apply Iso.inv_ext' -- Porting note (#11041): Originally `ext`
   rw [← associator_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 
 @[simp]
@@ -287,7 +287,7 @@ theorem leftUnitor_hom_f (X : Center C) : Hom.f (λ_ X).hom = (λ_ X.1).hom :=
 
 @[simp]
 theorem leftUnitor_inv_f (X : Center C) : Hom.f (λ_ X).inv = (λ_ X.1).inv := by
-  apply Iso.inv_ext' -- Porting note: Originally `ext`
+  apply Iso.inv_ext' -- Porting note (#11041): Originally `ext`
   rw [← leftUnitor_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 
 @[simp]
@@ -296,7 +296,7 @@ theorem rightUnitor_hom_f (X : Center C) : Hom.f (ρ_ X).hom = (ρ_ X.1).hom :=
 
 @[simp]
 theorem rightUnitor_inv_f (X : Center C) : Hom.f (ρ_ X).inv = (ρ_ X.1).inv := by
-  apply Iso.inv_ext' -- Porting note: Originally `ext`
+  apply Iso.inv_ext' -- Porting note (#11041): Originally `ext`
   rw [← rightUnitor_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 
 end

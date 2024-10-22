@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.CategoryTheory.DiscreteCategory
@@ -32,7 +32,7 @@ instance Discrete.monoidal : MonoidalCategory (Discrete M) where
   tensorHom f g := eqToHom (by dsimp; rw [eq_of_hom f, eq_of_hom g])
   leftUnitor X := Discrete.eqToIso (one_mul X.as)
   rightUnitor X := Discrete.eqToIso (mul_one X.as)
-  associator X Y Z := Discrete.eqToIso (mul_assoc _ _ _)
+  associator _ _ _ := Discrete.eqToIso (mul_assoc _ _ _)
 
 @[to_additive (attr := simp) Discrete.addMonoidal_tensorUnit_as]
 lemma Discrete.monoidal_tensorUnit_as : (𝟙_ (Discrete M)).as = 1 := rfl
@@ -62,7 +62,7 @@ variable {K : Type u} [Monoid K]
 def Discrete.monoidalFunctorComp (F : M →* N) (G : N →* K) :
     Discrete.monoidalFunctor F ⊗⋙
       Discrete.monoidalFunctor G ≅ Discrete.monoidalFunctor (G.comp F) where
-  hom := { app := fun X => 𝟙 _ }
-  inv := { app := fun X => 𝟙 _ }
+  hom := { app := fun _ => 𝟙 _ }
+  inv := { app := fun _ => 𝟙 _ }
 
 end CategoryTheory
