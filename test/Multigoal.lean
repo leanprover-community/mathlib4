@@ -35,6 +35,7 @@ warning: There are 2 unclosed goals before 'assumption' and at least one remaini
 Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
+-- the linter keeps linting after ignoring a `conv`, `conv_lhs`, `conv_rhs`
 #guard_msgs in
 example {n : Nat} (hn : n = 0) : n + 0 = 0 := by
   conv =>
@@ -61,6 +62,7 @@ warning: There are 2 unclosed goals before 'rfl' and at least one remaining goal
 Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
+-- the linter allows `iterate` and `repeat'`, but continues to lint.
 #guard_msgs in
 example (p : Prop) (hp : p) : (0 = 0 ∧ p) ∨ 0 = 0 := by
   iterate left; decide
@@ -109,7 +111,6 @@ example : True ∧ True := by
   focus
     exact .intro
 
-set_option linter.unusedTactic false in
 example : 1 = 1 := by
   sleep_heartbeats 1000
   rfl
@@ -121,3 +122,12 @@ set_option linter.style.multiGoal true in
 example : True ∧ True := by
   constructor
   bi_trivial
+
+set_option linter.style.multiGoal true in
+example : 1 = 1 ∧ 1 = 1 ∧ 1 = 1 := by
+  refine ?_
+  · constructor
+    · rfl
+    · constructor
+      · rfl
+      · rfl
