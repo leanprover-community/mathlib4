@@ -36,7 +36,7 @@ scoped instance : EnrichedCategory C C where
   Hom x := (ihom x).obj
   id x := @id C _ _ x _
   comp x y z := @comp C _ _ x y z _ _
-  id_comp x y := @id_comp C _ _ x y _ _
+  id_comp x y := @id_comp C _ _ x y _
   comp_id x y := @comp_id C _ _ x y _ _
   assoc x y z w := @assoc C _ _ x y z w _ _ _
 

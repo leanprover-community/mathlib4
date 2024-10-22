@@ -352,7 +352,7 @@ The proofs of associativity and unitality use the following outline:
 -/
 
 /-- Left unitality of the enriched structure -/
-lemma id_comp (x y : C) [Closed x] [Closed y] :
+lemma id_comp (x y : C) [Closed x] :
     (λ_ ((ihom x).obj y)).inv ≫ id x ▷ _ ≫ comp x x y = 𝟙 _:= by
   apply uncurry_injective
   rw [uncurry_natural_left, uncurry_natural_left, comp_eq, uncurry_curry, id_eq, compTranspose_eq,
