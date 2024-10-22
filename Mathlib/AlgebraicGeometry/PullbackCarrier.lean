@@ -143,14 +143,14 @@ def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
     (Spec_map_tensorInl_fromSpecResidueField _)
 
 @[simp]
-lemma specTensorTo_base_fst (p : Spec (T.tensor)) :
+lemma specTensorTo_base_fst (p : Spec T.tensor) :
     (pullback.fst f g).base (T.SpecTensorTo.base p) = T.x := by
   simp only [SpecTensorTo, residueFieldCongr_inv]
   rw [← Scheme.comp_base_apply]
   simp
 
 @[simp]
-lemma specTensorTo_base_snd (p : Spec (T.tensor)) :
+lemma specTensorTo_base_snd (p : Spec T.tensor) :
     (pullback.snd f g).base (T.SpecTensorTo.base p) = T.y := by
   simp only [SpecTensorTo, residueFieldCongr_inv]
   rw [← Scheme.comp_base_apply]
@@ -250,7 +250,7 @@ lemma carrierEquiv_eq_iff {T₁ T₂ : Σ T : Triplet f g, Spec T.tensor} :
     simpa [e]
 
 /--
-The points of the underlying topological space of `X ×[S] Y` are bijectively correspond to
+The points of the underlying topological space of `X ×[S] Y` bijectively correspond to
 pairs of triples `x : X`, `y : Y`, `s : S` with `f x = s = f y` and prime ideals of
 `κ(x) ⊗[κ(s)] κ(y)`.
 -/
