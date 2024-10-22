@@ -430,7 +430,7 @@ lemma whiskerRight_η_ε (T : D) : η F ▷ T ≫ ε F ▷ T = 𝟙 _ := by
   rw [← MonoidalCategory.comp_whiskerRight, η_ε, id_whiskerRight]
 
 @[reassoc (attr := simp)]
-lemma whiskerRight_μ_δ (X Y : C) (T : D) : μ F X Y ▷ T ≫ δ F X Y▷ T = 𝟙 _ := by
+lemma whiskerRight_μ_δ (X Y : C) (T : D) : μ F X Y ▷ T ≫ δ F X Y ▷ T = 𝟙 _ := by
   rw [← MonoidalCategory.comp_whiskerRight, μ_δ, id_whiskerRight]
 
 @[reassoc (attr := simp)]
