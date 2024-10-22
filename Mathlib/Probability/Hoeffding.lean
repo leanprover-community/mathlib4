@@ -272,8 +272,8 @@ theorem tilt_second_deriv  [IsFiniteMeasure μ] (t a b : ℝ)
   exact HasDerivAt.exp (hasDerivAt_mul_const (X ω))
 
 theorem integrable_deriv_expt [IsFiniteMeasure μ] (t a b : ℝ)
-    (X : Ω → ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b)
-    : Integrable (fun ω ↦ rexp (t * X ω) * X ω) μ := by
+    (X : Ω → ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b):
+    Integrable (fun ω ↦ rexp (t * X ω) * X ω) μ := by
   have ha : ∀ᵐ ω ∂μ, a ≤ X ω := h.mono fun ω h ↦ h.1
   have hb : ∀ᵐ ω ∂μ, X ω ≤ b := h.mono fun ω h ↦ h.2
   apply MeasureTheory.Integrable.bdd_mul'
