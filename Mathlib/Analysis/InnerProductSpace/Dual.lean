@@ -85,7 +85,7 @@ def nullSubmodule : Submodule 𝕜 E where
 @[simp]
 lemma mem_nullSubmodule_iff {x : E} : x ∈ nullSubmodule 𝕜 E ↔ ‖x‖ = 0 := Iff.rfl
 
-lemma inner_eq_zero_of_left_mem_nullSubmodule (x y : E) (h : x ∈ nullSubmodule 𝕜 E) :
+lemma inner_eq_zero_of_left (x y : E) (h : ‖x‖ = 0) :
     ⟪x, y⟫_𝕜 = 0 := by
   rw [← norm_eq_zero, ← sq_eq_zero_iff]
   apply le_antisymm _ (sq_nonneg _)
