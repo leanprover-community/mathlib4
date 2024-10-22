@@ -3,6 +3,8 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Embedding
+import Mathlib.Algebra.Order.Interval.Set.Monoid
 import Mathlib.Order.Cover
 import Mathlib.Order.Interval.Finset.Defs
 

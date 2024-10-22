@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Powerset
+import Mathlib.Order.Interval.Finset .Nat
 
 /-!
 # Erdős–Szekeres theorem

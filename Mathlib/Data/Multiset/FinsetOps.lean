@@ -13,6 +13,11 @@ The operations here ignore multiplicities,
 and preparatory for defining the corresponding operations on `Finset`.
 -/
 
+-- Make sure we haven't imported `Data.Nat.Order.Basic`
+assert_not_exists NeZero.one_le
+
+-- Make sure we haven't imported `Data.Multiset.BigOperators`
+assert_not_exists Multiset.sum
 
 -- Assert that we define `Finset` without the material on the set lattice.
 -- Note that we cannot put this in `Data.Finset.Basic` because we proved relevant lemmas there.

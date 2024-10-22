@@ -5,7 +5,12 @@ Authors: David Renshaw
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Ring
 

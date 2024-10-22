@@ -6,6 +6,8 @@ Authors: Anne Baanen, Floris van Doorn
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.List.FinRange
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Tactic.Linarith
 
 /-!
 # `norm_num` plugin for big operators

@@ -121,7 +121,11 @@ finite sets, finset
 assert_not_exists List.sublistsLen
 assert_not_exists Multiset.powerset
 
-assert_not_exists CompleteLattice
+-- Make sure we haven't imported `Data.Nat.Order.Basic`
+assert_not_exists NeZero.one_le
+
+-- Make sure we haven't imported `Data.Multiset.BigOperators`
+assert_not_exists Multiset.sum
 
 assert_not_exists OrderedCommMonoid
 
@@ -2501,101 +2505,6 @@ lemma filter_inj' : s.filter p = s.filter q ↔ ∀ ⦃a⦄, a ∈ s → (p a �
   simp [Finset.ext_iff]
 
 end Filter
-
-/-! ### range -/
-
-
-section Range
-
-open Nat
-
-variable {n m l : ℕ}
-
-/-- `range n` is the set of natural numbers less than `n`. -/
-def range (n : ℕ) : Finset ℕ :=
-  ⟨_, nodup_range n⟩
-
-@[simp]
-theorem range_val (n : ℕ) : (range n).1 = Multiset.range n :=
-  rfl
-
-@[simp]
-theorem mem_range : m ∈ range n ↔ m < n :=
-  Multiset.mem_range
-
-@[simp, norm_cast]
-theorem coe_range (n : ℕ) : (range n : Set ℕ) = Set.Iio n :=
-  Set.ext fun _ => mem_range
-
-@[simp]
-theorem range_zero : range 0 = ∅ :=
-  rfl
-
-@[simp]
-theorem range_one : range 1 = {0} :=
-  rfl
-
-theorem range_succ : range (succ n) = insert n (range n) :=
-  eq_of_veq <| (Multiset.range_succ n).trans <| (ndinsert_of_not_mem not_mem_range_self).symm
-
-theorem range_add_one : range (n + 1) = insert n (range n) :=
-  range_succ
-
-theorem not_mem_range_self : n ∉ range n :=
-  Multiset.not_mem_range_self
-
-theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
-  Multiset.self_mem_range_succ n
-
-@[simp]
-theorem range_subset {n m} : range n ⊆ range m ↔ n ≤ m :=
-  Multiset.range_subset
-
-theorem range_mono : Monotone range := fun _ _ => range_subset.2
-
-@[gcongr] alias ⟨_, _root_.GCongr.finset_range_subset_of_le⟩ := range_subset
-
-theorem mem_range_succ_iff {a b : ℕ} : a ∈ Finset.range b.succ ↔ a ≤ b :=
-  Finset.mem_range.trans Nat.lt_succ_iff
-
-theorem mem_range_le {n x : ℕ} (hx : x ∈ range n) : x ≤ n :=
-  (mem_range.1 hx).le
-
-theorem mem_range_sub_ne_zero {n x : ℕ} (hx : x ∈ range n) : n - x ≠ 0 :=
-  _root_.ne_of_gt <| Nat.sub_pos_of_lt <| mem_range.1 hx
-
-@[simp]
-theorem nonempty_range_iff : (range n).Nonempty ↔ n ≠ 0 :=
-  ⟨fun ⟨k, hk⟩ => (k.zero_le.trans_lt <| mem_range.1 hk).ne',
-   fun h => ⟨0, mem_range.2 <| Nat.pos_iff_ne_zero.2 h⟩⟩
-
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-protected alias ⟨_, Aesop.range_nonempty⟩ := nonempty_range_iff
-
-@[simp]
-theorem range_eq_empty_iff : range n = ∅ ↔ n = 0 := by
-  rw [← not_nonempty_iff_eq_empty, nonempty_range_iff, not_not]
-
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-theorem nonempty_range_succ : (range <| n + 1).Nonempty :=
-  nonempty_range_iff.2 n.succ_ne_zero
-
-@[simp]
-theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ := by
-  convert filter_eq (range n) m using 2
-  · ext
-    rw [eq_comm]
-  · simp
-
-lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := by
-  rw [Finset.Nontrivial, Finset.coe_range]
-  exact ⟨0, Nat.zero_lt_one.trans hn, 1, hn, Nat.zero_ne_one⟩
-
-theorem exists_nat_subset_range (s : Finset ℕ) : ∃ n : ℕ, s ⊆ range n :=
-  s.induction_on (by simp)
-    fun a _ _ ⟨n, hn⟩ => ⟨max (a + 1) n, insert_subset (by simp) (hn.trans (by simp))⟩
-
-end Range
 
 -- useful rules for calculations with quantifiers
 theorem exists_mem_empty_iff (p : α → Prop) : (∃ x, x ∈ (∅ : Finset α) ∧ p x) ↔ False := by

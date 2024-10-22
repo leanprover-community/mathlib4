@@ -8,6 +8,8 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
+import Mathlib.Order.Fin.Basic
+import Mathlib.Tactic.Abel
 
 /-!
 # Series of a relation

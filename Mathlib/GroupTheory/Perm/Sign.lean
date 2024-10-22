@@ -11,6 +11,7 @@ import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.NormNum.Ineq
 
 /-!
