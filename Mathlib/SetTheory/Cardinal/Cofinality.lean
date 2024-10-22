@@ -676,7 +676,7 @@ theorem aleph'_cof {o : Ordinal} (ho : o.IsLimit) : (aleph' o).ord.cof = o.cof :
   aleph'_isNormal.cof_eq ho
 
 @[simp]
-theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (aleph o).ord.cof = o.cof :=
+theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (ℵ_ o).ord.cof = o.cof :=
   aleph_isNormal.cof_eq ho
 
 @[simp]
@@ -932,7 +932,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         · rw [← lt_succ_iff, ← lt_ord, ← αe, re]
           apply typein_lt_type)⟩
 
-theorem isRegular_aleph_one : IsRegular (aleph 1) := by
+theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
   exact isRegular_succ le_rfl
 
@@ -940,7 +940,7 @@ theorem isRegular_aleph'_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (aleph' (
   rw [aleph'_succ]
   exact isRegular_succ (aleph0_le_aleph'.2 h)
 
-theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (aleph (succ o)) := by
+theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) := by
   rw [aleph_succ]
   exact isRegular_succ (aleph0_le_aleph o)
 

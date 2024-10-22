@@ -311,13 +311,13 @@ theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ
 
 theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by rw [← aleph'_omega0, aleph'_le]
 
-theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ aleph o := by
+theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
   rw [aleph_eq_aleph', aleph0_le_aleph']
   apply Ordinal.le_add_right
 
 theorem aleph'_pos {o : Ordinal} (ho : 0 < o) : 0 < aleph' o := by rwa [← aleph'_zero, aleph'_lt]
 
-theorem aleph_pos (o : Ordinal) : 0 < aleph o :=
+theorem aleph_pos (o : Ordinal) : 0 < ℵ_ o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)
 
 @[simp]
