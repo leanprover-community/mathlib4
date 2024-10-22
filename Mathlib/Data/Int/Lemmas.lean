@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Interval.Set.Basic
 
 /-!
@@ -35,8 +36,6 @@ theorem succ_natCast_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
 
 /-! ### `natAbs` -/
 
-
-variable {a b : ℤ} {n : ℕ}
 
 theorem natAbs_eq_iff_sq_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a ^ 2 = b ^ 2 := by
   rw [sq, sq]
@@ -107,7 +106,7 @@ end Intervals
 theorem toNat_of_nonpos : ∀ {z : ℤ}, z ≤ 0 → z.toNat = 0
   | 0, _ => rfl
   | (n + 1 : ℕ), h => (h.not_lt (by simp)).elim
-  | -[n+1], _ => rfl
+  | -[_+1], _ => rfl
 
 /-! ### bitwise ops
 

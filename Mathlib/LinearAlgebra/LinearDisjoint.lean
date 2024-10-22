@@ -311,7 +311,7 @@ theorem linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N
     {ι : Type*} {m : ι → M} (hm : LinearIndependent R m) : LinearMap.ker (mulLeftMap N m) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
   classical simp_rw [mulLeftMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    ← Function.comp.assoc, EquivLike.injective_comp]
+    ← Function.comp_assoc, EquivLike.injective_comp]
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hm
   exact H.injective.comp (Module.Flat.rTensor_preserves_injective_linearMap (M := N) _ hm)
 
@@ -332,7 +332,7 @@ theorem linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R 
     {ι : Type*} {n : ι → N} (hn : LinearIndependent R n) : LinearMap.ker (mulRightMap M n) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
   classical simp_rw [mulRightMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    ← Function.comp.assoc, EquivLike.injective_comp]
+    ← Function.comp_assoc, EquivLike.injective_comp]
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hn
   exact H.injective.comp (Module.Flat.lTensor_preserves_injective_linearMap (M := M) _ hn)
 
@@ -477,8 +477,8 @@ theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
   have hm : mulRightMap M n m = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
   rw [← LinearMap.mem_ker, H.linearIndependent_right_of_flat hn, mem_bot] at hm
   simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
-    SetLike.coe_eq_coe, false_and, AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero,
-    false_or, m] at hm
+    SetLike.coe_eq_coe, false_and, false_or, m] at hm
+  repeat rw [AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero] at hm
   exact h.ne_zero 0 hm.2
 
 /-- If `M` and `N` are linearly disjoint, if `N` is flat, then any two commutative
@@ -493,8 +493,8 @@ theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
   have hn : mulLeftMap N m n = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
   rw [← LinearMap.mem_ker, H.linearIndependent_left_of_flat hm, mem_bot] at hn
   simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
-    SetLike.coe_eq_coe, false_and, AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero,
-    false_or, n] at hn
+    SetLike.coe_eq_coe, false_and, false_or, n] at hn
+  repeat rw [AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero] at hn
   exact h.ne_zero 0 hn.2
 
 /-- If `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then any two commutative
@@ -512,7 +512,7 @@ if any two elements of `↥(M ⊓ N)` are commutative, then the rank of `↥(M �
 theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
     (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 := by
   nontriviality R
-  refine rank_le fun s h ↦ ?_
+  refine _root_.rank_le fun s h ↦ ?_
   by_contra hs
   rw [not_le, ← Fintype.card_coe, Fintype.one_lt_card_iff_nontrivial] at hs
   obtain ⟨a, b, hab⟩ := hs.exists_pair_ne

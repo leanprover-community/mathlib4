@@ -3,6 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.OrderClosed
 
@@ -159,7 +160,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
     rintro ⟨x, y⟩
     wlog hle : x ≤ y generalizing x y
     · have := (this y x (le_of_not_le hle)).comp (continuous_swap.tendsto (x, y))
-      simpa only [mul_comm, Function.comp, Prod.swap] using this
+      simpa only [mul_comm, Function.comp_def, Prod.swap] using this
     rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip]
     · rw [zero_mul]
       refine ((hasBasis_nhds_zero.prod_nhds hasBasis_nhds_zero).tendsto_iff hasBasis_nhds_zero).2

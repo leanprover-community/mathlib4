@@ -266,7 +266,7 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i 
   exact h.eventually_gt_atTop 0
 
 @[aesop safe apply] lemma T_pos (n : ℕ) : 0 < T n := by
-  induction n using Nat.strongInductionOn with
+  induction n using Nat.strongRecOn with
   | ind n h_ind =>
     cases lt_or_le n R.n₀ with
     | inl hn => exact R.T_gt_zero' n hn -- n < R.n₀
@@ -1231,7 +1231,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
   have h_one_sub_smoothingFn_pos' : 0 < 1 - ε n := h_smoothing_pos n hn
   rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
   -- We now prove all other cases by induction
-  induction n using Nat.strongInductionOn with
+  induction n using Nat.strongRecOn with
   | ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
       exact_mod_cast calc ⌊b' * (n₀ : ℝ)⌋₊ ≤ b' * n₀ := Nat.floor_le <| by positivity
@@ -1380,7 +1380,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
   have h_one_sub_smoothingFn_pos' : 0 < 1 + ε n := h_smoothing_pos n hn
   rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
   -- We now prove all other cases by induction
-  induction n using Nat.strongInductionOn with
+  induction n using Nat.strongRecOn with
   | ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
       exact_mod_cast calc ⌊b' * ↑n₀⌋₊ ≤ b' * n₀ := Nat.floor_le <| by positivity

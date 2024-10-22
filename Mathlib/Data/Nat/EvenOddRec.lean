@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
 import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Nat.Bits
+import Mathlib.Data.Nat.BinaryRec
+
 /-! # A recursion principle based on even and odd numbers. -/
 
 namespace Nat

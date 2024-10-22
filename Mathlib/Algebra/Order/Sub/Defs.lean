@@ -41,7 +41,7 @@ TODO: generalize `Nat.le_of_le_of_sub_le_sub_right`, `Nat.sub_le_sub_right_iff`,
 -/
 
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-- `OrderedSub α` means that `α` has a subtraction characterized by `a - b ≤ c ↔ a ≤ c + b`.
 In other words, `a - b` is the least `c` such that `a ≤ b + c`.
@@ -60,7 +60,7 @@ theorem tsub_le_iff_right [LE α] [Add α] [Sub α] [OrderedSub α] {a b c : α}
     a - b ≤ c ↔ a ≤ c + b :=
   OrderedSub.tsub_le_iff_right a b c
 
-variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b : α}
 
 /-- See `add_tsub_cancel_right` for the equality if `ContravariantClass α α (+) (≤)`. -/
 theorem add_tsub_le_right : a + b - b ≤ a :=
@@ -83,7 +83,7 @@ variable [Preorder α]
 section AddCommSemigroup
 
 variable [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
-/- TODO: Most results can be generalized to [Add α] [IsSymmOp α α (· + ·)] -/
+/- TODO: Most results can be generalized to [Add α] [@Std.Commutative α (· + ·)] -/
 
 theorem tsub_le_iff_left : a - b ≤ c ↔ a ≤ b + c := by rw [tsub_le_iff_right, add_comm]
 
@@ -210,7 +210,7 @@ end Contra
 
 end AddCommSemigroup
 
-variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b : α}
 
 theorem tsub_nonpos : a - b ≤ 0 ↔ a ≤ b := by rw [tsub_le_iff_left, add_zero]
 
@@ -243,16 +243,38 @@ theorem tsub_right_comm : a - b - c = a - c - b := by
 
 namespace AddLECancellable
 
+/-- See `AddLECancellable.tsub_eq_of_eq_add'` for a version assuming that `a = c + b` itself is
+cancellable rather than `b`. -/
 protected theorem tsub_eq_of_eq_add (hb : AddLECancellable b) (h : a = c + b) : a - b = c :=
   le_antisymm (tsub_le_iff_right.mpr h.le) <| by
     rw [h]
     exact hb.le_add_tsub
 
+/-- Weaker version of `AddLECancellable.tsub_eq_of_eq_add` assuming that `a = c + b` itself is
+cancellable rather than `b`. -/
+protected lemma tsub_eq_of_eq_add' [CovariantClass α α (· + ·) (· ≤ ·)] (ha : AddLECancellable a)
+    (h : a = c + b) : a - b = c := (h ▸ ha).of_add_right.tsub_eq_of_eq_add h
+
+/-- See `AddLECancellable.eq_tsub_of_add_eq'` for a version assuming that `b = a + c` itself is
+cancellable rather than `c`. -/
 protected theorem eq_tsub_of_add_eq (hc : AddLECancellable c) (h : a + c = b) : a = b - c :=
   (hc.tsub_eq_of_eq_add h.symm).symm
 
+/-- Weaker version of `AddLECancellable.eq_tsub_of_add_eq` assuming that `b = a + c` itself is
+cancellable rather than `c`. -/
+protected lemma eq_tsub_of_add_eq' [CovariantClass α α (· + ·) (· ≤ ·)] (hb : AddLECancellable b)
+    (h : a + c = b) : a = b - c := (hb.tsub_eq_of_eq_add' h.symm).symm
+
+/-- See `AddLECancellable.tsub_eq_of_eq_add_rev'` for a version assuming that `a = b + c` itself is
+cancellable rather than `b`. -/
 protected theorem tsub_eq_of_eq_add_rev (hb : AddLECancellable b) (h : a = b + c) : a - b = c :=
   hb.tsub_eq_of_eq_add <| by rw [add_comm, h]
+
+/-- Weaker version of `AddLECancellable.tsub_eq_of_eq_add_rev` assuming that `a = b + c` itself is
+cancellable rather than `b`. -/
+protected lemma tsub_eq_of_eq_add_rev' [CovariantClass α α (· + ·) (· ≤ ·)]
+    (ha : AddLECancellable a) (h : a = b + c) : a - b = c :=
+  ha.tsub_eq_of_eq_add' <| by rw [add_comm, h]
 
 @[simp]
 protected theorem add_tsub_cancel_right (hb : AddLECancellable b) : a + b - b = a :=
@@ -353,7 +375,7 @@ end OrderedAddCommSemigroup
 
 section LinearOrder
 
-variable {a b c d : α} [LinearOrder α] [AddCommSemigroup α] [Sub α] [OrderedSub α]
+variable {a b c : α} [LinearOrder α] [AddCommSemigroup α] [Sub α] [OrderedSub α]
 
 /-- See `lt_of_tsub_lt_tsub_right_of_le` for a weaker statement in a partial order. -/
 theorem lt_of_tsub_lt_tsub_right (h : a - c < b - c) : a < b :=

@@ -4,6 +4,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.Tactic.Positivity.Finset
 
 /-! # Tests for the `positivity` tactic
 
@@ -22,6 +23,9 @@ example : 0 ≤ 0 := by positivity
 example : 0 ≤ 3 := by positivity
 
 example : 0 < 3 := by positivity
+
+example : (0 : ℝ≥0∞) < 1 := by positivity
+example : (0 : ℝ≥0∞) < 2 := by positivity
 
 /- ## Goals working directly from a hypothesis -/
 -- set_option trace.Meta.debug true

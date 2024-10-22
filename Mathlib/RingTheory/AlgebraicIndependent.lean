@@ -47,11 +47,9 @@ open scoped Classical
 universe x u v w
 
 variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
-variable {A : Type*} {A' A'' : Type*} {V : Type u} {V' : Type*}
+variable {A : Type*} {A' : Type*}
 variable (x : ι → A)
-variable [CommRing R] [CommRing A] [CommRing A'] [CommRing A'']
-variable [Algebra R A] [Algebra R A'] [Algebra R A'']
-variable {a b : R}
+variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`
   is algebraically independent over `R`, meaning that the canonical
@@ -82,11 +80,7 @@ theorem algebraicIndependent_iff_injective_aeval :
 @[simp]
 theorem algebraicIndependent_empty_type_iff [IsEmpty ι] :
     AlgebraicIndependent R x ↔ Injective (algebraMap R A) := by
-  have : aeval x = (Algebra.ofId R A).comp (@isEmptyAlgEquiv R ι _ _).toAlgHom := by
-    ext i
-    exact IsEmpty.elim' ‹IsEmpty ι› i
-  rw [AlgebraicIndependent, this, ← Injective.of_comp_iff' _ (@isEmptyAlgEquiv R ι _ _).bijective]
-  rfl
+  rw [algebraicIndependent_iff_injective_aeval, MvPolynomial.aeval_injective_iff_of_isEmpty]
 
 namespace AlgebraicIndependent
 
@@ -100,7 +94,7 @@ variable (hx : AlgebraicIndependent R x)
 include hx
 
 theorem algebraMap_injective : Injective (algebraMap R A) := by
-  simpa [Function.comp] using
+  simpa [Function.comp_def] using
     (Injective.of_comp_iff (algebraicIndependent_iff_injective_aeval.1 hx) MvPolynomial.C).2
       (MvPolynomial.C_injective _ _)
 
@@ -135,7 +129,7 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
     intro p
     rw [AlgHom.mem_range]
     refine ⟨MvPolynomial.rename (codRestrict x (range x) mem_range_self) p, ?_⟩
-    simp [Function.comp, aeval_rename]
+    simp [Function.comp_def, aeval_rename]
   intro x y hxy
   rw [this] at hxy
   rw [adjoin_eq_range] at hf_inj

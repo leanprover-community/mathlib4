@@ -62,7 +62,7 @@ theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
   · linarith only [hI, hJI]
   · exact (mem_filter.mp hi').2.not_lt (mem_filter.mp hi).2
 
-open FiniteDimensional
+open Module
 
 /-- Corner case for `helly_theorem'`. -/
 private lemma helly_theorem_corner {F : ι → Set E} {s : Finset ι}

@@ -55,14 +55,6 @@ theorem borel_anti : Antitone (@borel α) := fun _ _ h =>
 theorem borel_eq_top_of_discrete [TopologicalSpace α] [DiscreteTopology α] : borel α = ⊤ :=
   top_le_iff.1 fun s _ => GenerateMeasurable.basic s (isOpen_discrete s)
 
-theorem borel_eq_top_of_countable [TopologicalSpace α] [T1Space α] [Countable α] : borel α = ⊤ := by
-  refine top_le_iff.1 fun s _ => biUnion_of_singleton s ▸ ?_
-  apply MeasurableSet.biUnion s.to_countable
-  intro x _
-  apply MeasurableSet.of_compl
-  apply GenerateMeasurable.basic
-  exact isClosed_singleton.isOpen_compl
-
 theorem borel_eq_generateFrom_of_subbasis {s : Set (Set α)} [t : TopologicalSpace α]
     [SecondCountableTopology α] (hs : t = .generateFrom s) : borel α = .generateFrom s :=
   le_antisymm
@@ -274,7 +266,7 @@ theorem IsCompact.nullMeasurableSet [T2Space α] {μ} (h : IsCompact s) : NullMe
 then they can't be separated by a Borel measurable set. -/
 theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
     (hs : MeasurableSet s) : x ∈ s ↔ y ∈ s :=
-  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun s _ ↦ Iff.not)
+  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun _ _ ↦ Iff.not)
     fun _ _ _ h ↦ by simp [h]
 
 /-- If `K` is a compact set in an R₁ space and `s ⊇ K` is a Borel measurable superset,
@@ -341,6 +333,12 @@ instance (priority := 100) OpensMeasurableSpace.separatesPoints [T0Space α] :
   apply Inseparable.eq
   rw [inseparable_iff_forall_open]
   exact fun s hs => hxy _ hs.measurableSet
+
+theorem borel_eq_top_of_countable {α : Type*} [TopologicalSpace α] [T0Space α] [Countable α] :
+    borel α = ⊤ := by
+  refine top_unique fun s _ ↦ ?_
+  borelize α
+  exact .of_discrete
 
 -- see Note [lower instance priority]
 instance (priority := 100) OpensMeasurableSpace.toMeasurableSingletonClass [T1Space α] :
@@ -474,8 +472,11 @@ is ae-measurable. -/
 theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure α} : AEMeasurable f μ :=
   h.measurable.aemeasurable
 
-theorem ClosedEmbedding.measurable {f : α → γ} (hf : ClosedEmbedding f) : Measurable f :=
+theorem IsClosedEmbedding.measurable {f : α → γ} (hf : IsClosedEmbedding f) : Measurable f :=
   hf.continuous.measurable
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.measurable := IsClosedEmbedding.measurable
 
 /-- If a function is defined piecewise in terms of functions which are continuous on their
 respective pieces, then it is measurable. -/
@@ -504,9 +505,8 @@ instance (priority := 100) ContinuousSub.measurableSub [Sub γ] [ContinuousSub �
   measurable_sub_const _ := (continuous_id.sub continuous_const).measurable
 
 @[to_additive]
-instance (priority := 100) TopologicalGroup.measurableInv [Group γ] [TopologicalGroup γ] :
-    MeasurableInv γ :=
-  ⟨continuous_inv.measurable⟩
+instance (priority := 100) ContinuousInv.measurableInv [Inv γ] [ContinuousInv γ] :
+    MeasurableInv γ := ⟨continuous_inv.measurable⟩
 
 @[to_additive]
 instance (priority := 100) ContinuousSMul.measurableSMul {M α} [TopologicalSpace M]
@@ -635,13 +635,19 @@ protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embeddin
       (((↑) : range f → β) ∘ (Homeomorph.ofEmbedding f h₁).toMeasurableEquiv) from
     (MeasurableEmbedding.subtype_coe h₂).comp (MeasurableEquiv.measurableEmbedding _)
 
-protected theorem ClosedEmbedding.measurableEmbedding {f : α → β} (h : ClosedEmbedding f) :
+protected theorem IsClosedEmbedding.measurableEmbedding {f : α → β} (h : IsClosedEmbedding f) :
     MeasurableEmbedding f :=
   h.toEmbedding.measurableEmbedding h.isClosed_range.measurableSet
 
-protected theorem OpenEmbedding.measurableEmbedding {f : α → β} (h : OpenEmbedding f) :
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.measurableEmbedding := IsClosedEmbedding.measurableEmbedding
+
+protected theorem IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
     MeasurableEmbedding f :=
   h.toEmbedding.measurableEmbedding h.isOpen_range.measurableSet
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.measurableEmbedding := IsOpenEmbedding.measurableEmbedding
 
 instance Empty.borelSpace : BorelSpace Empty :=
   ⟨borel_eq_top_of_discrete.symm⟩

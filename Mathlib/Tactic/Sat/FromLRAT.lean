@@ -495,30 +495,30 @@ where
 open Lean
 
 namespace Parser
-open Lean Parsec
+open Lean Std.Internal.Parsec String
 
 /-- Parse a natural number -/
-def parseNat : Parsec Nat := Json.Parser.natMaybeZero
+def parseNat : String.Parser Nat := Json.Parser.natMaybeZero
 
 /-- Parse an integer -/
-def parseInt : Parsec Int := do
+def parseInt : String.Parser Int := do
   if (← peek!) = '-' then skip; pure <| -(← parseNat) else parseNat
 
 /-- Parse a list of integers terminated by 0 -/
-partial def parseInts (arr : Array Int := #[]) : Parsec (Array Int) := do
+partial def parseInts (arr : Array Int := #[]) : String.Parser (Array Int) := do
   match ← parseInt <* ws with
   | 0 => pure arr
   | n => parseInts (arr.push n)
 
 /-- Parse a list of natural numbers terminated by 0 -/
-partial def parseNats (arr : Array Nat := #[]) : Parsec (Array Nat) := do
+partial def parseNats (arr : Array Nat := #[]) : String.Parser (Array Nat) := do
   match ← parseNat <* ws with
   | 0 => pure arr
   | n => parseNats (arr.push n)
 
 /-- Parse a DIMACS format `.cnf` file.
 This is not very robust; we assume the file has had comments stripped. -/
-def parseDimacs : Parsec (Nat × Array (Array Int)) := do
+def parseDimacs : String.Parser (Nat × Array (Array Int)) := do
   pstring "p cnf" *> ws
   let nvars ← parseNat <* ws
   let nclauses ← parseNat <* ws
@@ -528,12 +528,14 @@ def parseDimacs : Parsec (Nat × Array (Array Int)) := do
   pure (nvars, clauses)
 
 /-- Parse an LRAT file into a list of steps. -/
-def parseLRAT : Parsec (Array LRATStep) := many do
+def parseLRAT : String.Parser (Array LRATStep) := many do
   let step ← parseNat <* ws
   if (← peek!) = 'd' then skip <* ws; pure <| LRATStep.del (← parseNats)
   else ws; pure <| LRATStep.add step (← parseInts) (← parseInts)
 
 end Parser
+
+open Std.Internal
 
 /-- Core of `fromLRAT`. Constructs the context and main proof definitions,
 but not the reification theorem. Returns:

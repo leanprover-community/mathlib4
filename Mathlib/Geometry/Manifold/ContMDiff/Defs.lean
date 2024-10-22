@@ -64,21 +64,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E'' : Type*}
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
-  -- declare a smooth manifold `N` over the pair `(F, G)`.
-  {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
-  {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  [SmoothManifoldWithCorners J N]
-  -- declare a smooth manifold `N'` over the pair `(F', G')`.
-  {F' : Type*}
-  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
-  {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  [SmoothManifoldWithCorners J' N']
-  -- F₁, F₂, F₃, F₄ are normed spaces
-  {F₁ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
   {e : PartialHomeomorph M H}
   {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
@@ -769,7 +754,7 @@ theorem contMDiffAt_iff_contMDiffAt_nhds
   refine ⟨?_, fun h => h.self_of_nhds⟩
   rw [contMDiffAt_iff_contMDiffOn_nhds]
   rintro ⟨u, hu, h⟩
-  refine (eventually_mem_nhds.mpr hu).mono fun x' hx' => ?_
+  refine (eventually_mem_nhds_iff.mpr hu).mono fun x' hx' => ?_
   exact (h x' <| mem_of_mem_nhds hx').contMDiffAt hx'
 
 /-! ### Congruence lemmas -/

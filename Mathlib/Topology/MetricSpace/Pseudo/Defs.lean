@@ -59,7 +59,7 @@ def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist
 abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀ x y, dist x y = dist y x)
     (dist_triangle : ∀ x y z, dist x z ≤ dist x y + dist y z) : Bornology α :=
   Bornology.ofBounded { s : Set α | ∃ C, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → dist x y ≤ C }
-    ⟨0, fun x hx y => hx.elim⟩ (fun s ⟨c, hc⟩ t h => ⟨c, fun x hx y hy => hc (h hx) (h hy)⟩)
+    ⟨0, fun _ hx _ => hx.elim⟩ (fun _ ⟨c, hc⟩ _ h => ⟨c, fun _ hx _ hy => hc (h hx) (h hy)⟩)
     (fun s hs t ht => by
       rcases s.eq_empty_or_nonempty with rfl | ⟨x, hx⟩
       · rwa [empty_union]
@@ -766,7 +766,7 @@ theorem tendsto_nhdsWithin_nhds [PseudoMetricSpace β] {f : α → β} {a b} :
     Tendsto f (𝓝[s] a) (𝓝 b) ↔
       ∀ ε > 0, ∃ δ > 0, ∀ {x : α}, x ∈ s → dist x a < δ → dist (f x) b < ε := by
   rw [← nhdsWithin_univ b, tendsto_nhdsWithin_nhdsWithin]
-  simp only [mem_univ, true_and_iff]
+  simp only [mem_univ, true_and]
 
 theorem tendsto_nhds_nhds [PseudoMetricSpace β] {f : α → β} {a b} :
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ ε > 0, ∃ δ > 0, ∀ {x : α}, dist x a < δ → dist (f x) b < ε :=
@@ -1013,8 +1013,8 @@ section Real
 instance Real.pseudoMetricSpace : PseudoMetricSpace ℝ where
   dist x y := |x - y|
   dist_self := by simp [abs_zero]
-  dist_comm x y := abs_sub_comm _ _
-  dist_triangle x y z := abs_sub_le _ _ _
+  dist_comm _ _ := abs_sub_comm _ _
+  dist_triangle _ _ _ := abs_sub_le _ _ _
 
 theorem Real.dist_eq (x y : ℝ) : dist x y = |x - y| := rfl
 
@@ -1083,7 +1083,7 @@ theorem dist_dist_dist_le (x y x' y' : α) : dist (dist x y) (dist x' y') ≤ di
 
 theorem nhds_comap_dist (a : α) : ((𝓝 (0 : ℝ)).comap (dist · a)) = 𝓝 a := by
   simp only [@nhds_eq_comap_uniformity α, Metric.uniformity_eq_comap_nhds_zero, comap_comap,
-    (· ∘ ·), dist_comm]
+    Function.comp_def, dist_comm]
 
 theorem tendsto_iff_dist_tendsto_zero {f : β → α} {x : Filter β} {a : α} :
     Tendsto f x (𝓝 a) ↔ Tendsto (fun b => dist (f b) a) x (𝓝 0) := by

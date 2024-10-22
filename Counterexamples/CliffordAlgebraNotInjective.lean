@@ -52,7 +52,7 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
   have :
       kIdeal = Ideal.span ((monomial · (1 : ZMod 2)) '' Set.range (Finsupp.single · 2)) := by
     simp_rw [kIdeal, X, monomial_mul, one_mul, ← Finsupp.single_add, ← Set.range_comp,
-      Function.comp]
+      Function.comp_def]
   rw [this, mem_ideal_span_monomial_image]
   simp
 
@@ -208,7 +208,7 @@ def Q : QuadraticForm K L :=
   QuadraticMap.ofPolar
     (fun x =>
       Quotient.liftOn' x Q' fun a b h => by
-        rw [Submodule.quotientRel_r_def] at h
+        rw [Submodule.quotientRel_def] at h
         suffices Q' (a - b) = 0 by rwa [Q'_sub, sub_eq_zero] at this
         apply Q'_zero_under_ideal (a - b) h)
     (fun a x => by

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Adam Topaz, Dagur Asgeirsson
 -/
 import Mathlib.Topology.ExtremallyDisconnected
 import Mathlib.Topology.Category.CompHaus.Projective
@@ -30,6 +30,11 @@ can be lifted along epimorphisms).
 * `Stonean.toCompHaus` : the forgetful functor `Stonean ⥤ CompHaus` from Stonean
   spaces to compact Hausdorff spaces
 * `Stonean.toProfinite` : the functor from Stonean spaces to profinite spaces.
+
+## Implementation
+
+The category `Stonean` is defined using the structure `CompHausLike`. See the file
+`CompHausLike.Basic` for more information.
 
 -/
 universe u

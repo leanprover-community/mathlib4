@@ -251,7 +251,7 @@ end SemilatticeInf
 
 section DistribLattice
 
-variable [DistribLattice α] {a b c : α}
+variable [DistribLattice α] {a : α}
 
 @[simp]
 theorem supPrime_iff_supIrred : SupPrime a ↔ SupIrred a :=

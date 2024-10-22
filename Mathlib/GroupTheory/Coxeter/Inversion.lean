@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
 import Mathlib.GroupTheory.Coxeter.Length
-import Mathlib.Data.ZMod.Parity
 import Mathlib.Data.List.GetD
 
 /-!
@@ -300,13 +299,11 @@ theorem rightInvSeq_drop (ω : List B) (j : ℕ) :
 
 theorem leftInvSeq_take (ω : List B) (j : ℕ) :
     lis (ω.take j) = (lis ω).take j := by
-  obtain le | ge := Nat.le_or_ge j ω.length
-  · simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse]
-    rw [List.take_reverse (by simpa)]
-    nth_rw 1 [← List.reverse_reverse ω]
-    rw [List.take_reverse (by simpa)]
-    simp [rightInvSeq_drop]
-  · rw [take_of_length_le ge, take_of_length_le (by simpa)]
+  simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse]
+  rw [List.take_reverse]
+  nth_rw 1 [← List.reverse_reverse ω]
+  rw [List.take_reverse]
+  simp [rightInvSeq_drop]
 
 theorem isReflection_of_mem_rightInvSeq (ω : List B) {t : W} (ht : t ∈ ris ω) :
     cs.IsReflection t := by

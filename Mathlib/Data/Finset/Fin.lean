@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Scott Morrison, Johan Commelin
+Authors: Chris Hughes, Kim Morrison, Johan Commelin
 -/
 import Mathlib.Data.Finset.Card
 

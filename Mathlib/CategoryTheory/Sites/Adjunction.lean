@@ -3,6 +3,7 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Joël Riou
 -/
+import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Adjunction.Whiskering
 import Mathlib.CategoryTheory.Sites.PreservesSheafification
 
@@ -35,52 +36,36 @@ namespace Sheaf
 
 noncomputable section
 
-/-- An auxiliary definition to be used in defining `CategoryTheory.Sheaf.adjunction` below. -/
-@[simps]
-def composeEquiv [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
-    (X : Sheaf J E) (Y : Sheaf J D) :
-    ((composeAndSheafify J G).obj X ⟶ Y) ≃ (X ⟶ (sheafCompose J F).obj Y) :=
-  let A := adj.whiskerRight Cᵒᵖ
-  { toFun := fun η => ⟨A.homEquiv _ _ (toSheafify J _ ≫ η.val)⟩
-    invFun := fun γ => ⟨sheafifyLift J ((A.homEquiv _ _).symm ((sheafToPresheaf _ _).map γ)) Y.2⟩
-    left_inv := by
-      intro η
-      ext1
-      dsimp
-      symm
-      apply sheafifyLift_unique
-      rw [Equiv.symm_apply_apply]
-    right_inv := by
-      intro γ
-      ext1
-      dsimp
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [toSheafify_sheafifyLift, Equiv.apply_symm_apply] }
-
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] CategoryTheory.Sheaf.composeEquiv_apply_val
-  CategoryTheory.Sheaf.composeEquiv_symm_apply_val
-
 /-- An adjunction `adj : G ⊣ F` with `F : D ⥤ E` and `G : E ⥤ D` induces an adjunction
 between `Sheaf J D` and `Sheaf J E`, in contexts where one can sheafify `D`-valued presheaves,
-and `F` preserves the correct limits. -/
-@[simps! unit_app_val counit_app_val]
+and postcomposing with `F` preserves the property of being a sheaf. -/
 def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
     composeAndSheafify J G ⊣ sheafCompose J F :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := composeEquiv J adj
-      homEquiv_naturality_left_symm := fun f g => by
-        ext1
-        dsimp [composeEquiv]
-        rw [sheafifyMap_sheafifyLift]
-        erw [Adjunction.homEquiv_naturality_left_symm]
-        rw [whiskeringRight_obj_map]
-        rfl
-      homEquiv_naturality_right := fun f g => by
-        ext
-        dsimp [composeEquiv]
-        erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
-        simp }
+  Adjunction.restrictFullyFaithful ((adj.whiskerRight Cᵒᵖ).comp (sheafificationAdjunction J D))
+    (fullyFaithfulSheafToPresheaf J E) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
+
+@[simp]
+lemma adjunction_unit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
+    (X : Sheaf J E) : ((adjunction J adj).unit.app X).val =
+      (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.val ⋙ G)) F  := by
+  change (sheafToPresheaf _ _).map ((adjunction J adj).unit.app X) = _
+  simp only [Functor.id_obj, Functor.comp_obj, whiskeringRight_obj_obj, adjunction,
+    Adjunction.map_restrictFullyFaithful_unit_app, Adjunction.comp_unit_app,
+    sheafificationAdjunction_unit_app, whiskeringRight_obj_map, Iso.refl_hom, NatTrans.id_app,
+    Functor.comp_map, Functor.map_id, whiskerRight_id', Category.comp_id]
+  rfl
+
+@[simp]
+lemma adjunction_counit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
+    (Y : Sheaf J D) : ((adjunction J adj).counit.app Y).val =
+      sheafifyLift J (((adj.whiskerRight Cᵒᵖ).counit.app Y.val)) Y.cond := by
+  change ((𝟭 (Sheaf _ _)).map ((adjunction J adj).counit.app Y)).val = _
+  simp only [Functor.comp_obj, sheafToPresheaf_obj, sheafCompose_obj_val, whiskeringRight_obj_obj,
+    adjunction, Adjunction.map_restrictFullyFaithful_counit_app, Iso.refl_inv, NatTrans.id_app,
+    Functor.comp_map, whiskeringRight_obj_map, Adjunction.comp_counit_app,
+    instCategorySheaf_comp_val, instCategorySheaf_id_val, sheafificationAdjunction_counit_app_val,
+    sheafifyMap_sheafifyLift, Functor.id_obj, whiskerRight_id', Category.comp_id, Category.id_comp]
+
 
 instance [HasWeakSheafify J D] [F.IsRightAdjoint] : (sheafCompose J F).IsRightAdjoint :=
   (adjunction J (Adjunction.ofIsRightAdjoint F)).isRightAdjoint
@@ -99,8 +84,12 @@ lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
     convert (((adj.whiskerRight Cᵒᵖ).homEquiv Q R).trans
       (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).cond)).bijective
     ext g X
-    dsimp [Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
-    simp
+    -- The rest of this proof was
+    -- `dsimp [Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]; simp` before #16317.
+    dsimp
+    rw [← NatTrans.comp_app]
+    congr
+    exact Adjunction.homEquiv_naturality_left _ _ _
 
 instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
   preservesSheafification_of_adjunction J (Adjunction.ofIsLeftAdjoint G)
@@ -125,8 +114,7 @@ theorem adjunctionToTypes_unit_app_val {G : Type max v₁ u₁ ⥤ D} (adj : G �
     ((adjunctionToTypes J adj).unit.app Y).val =
       (adj.whiskerRight _).unit.app ((sheafOfTypesToPresheaf J).obj Y) ≫
         whiskerRight (toSheafify J _) (forget D) := by
-  dsimp [adjunctionToTypes, Adjunction.comp]
-  simp
+  simp [adjunctionToTypes]
   rfl
 
 @[simp]
@@ -135,14 +123,8 @@ theorem adjunctionToTypes_counit_app_val {G : Type max v₁ u₁ ⥤ D} (adj : G
     ((adjunctionToTypes J adj).counit.app X).val =
       sheafifyLift J ((Functor.associator _ _ _).hom ≫ (adj.whiskerRight _).counit.app _) X.2 := by
   apply sheafifyLift_unique
-  dsimp only [adjunctionToTypes, Adjunction.comp, NatTrans.comp_app,
-    instCategorySheaf_comp_val, instCategorySheaf_id_val]
-  rw [adjunction_counit_app_val]
-  erw [Category.id_comp, sheafifyMap_sheafifyLift, toSheafify_sheafifyLift]
   ext
-  dsimp [sheafEquivSheafOfTypes, Equivalence.symm, Equivalence.toAdjunction,
-    NatIso.ofComponents, Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
-  simp
+  simp [adjunctionToTypes, sheafEquivSheafOfTypes, Equivalence.symm]
 
 instance [(forget D).IsRightAdjoint] :
     (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint :=

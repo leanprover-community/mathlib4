@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Logic.Relation
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Seq.Seq
-import Batteries.Data.DList
+import Batteries.Data.DList.Basic
 
 /-!
 # Partially defined possibly infinite lists
@@ -105,9 +105,9 @@ def recOn {C : WSeq α → Sort v} (s : WSeq α) (h1 : C nil) (h2 : ∀ x s, C (
     (h3 : ∀ s, C (think s)) : C s :=
   Seq.recOn s h1 fun o => Option.recOn o h3 h2
 
-/-- membership for weak sequences -/
-protected def Mem (a : α) (s : WSeq α) :=
-  Seq.Mem (some a) s
+/-- membership for weak sequences-/
+protected def Mem (s : WSeq α) (a : α) :=
+  Seq.Mem s (some a)
 
 instance membership : Membership α (WSeq α) :=
   ⟨WSeq.Mem⟩
@@ -394,6 +394,7 @@ def LiftRelO (R : α → β → Prop) (C : WSeq α → WSeq β → Prop) :
   | none, none => True
   | some (a, s), some (b, t) => R a b ∧ C s t
   | _, _ => False
+attribute [nolint simpNF] LiftRelO.eq_3
 
 theorem LiftRelO.imp {R S : α → β → Prop} {C D : WSeq α → WSeq β → Prop} (H1 : ∀ a b, R a b → S a b)
     (H2 : ∀ s t, C s t → D s t) : ∀ {o p}, LiftRelO R C o p → LiftRelO S D o p
@@ -626,7 +627,6 @@ theorem dropn_cons (a : α) (s) (n) : drop (cons a s) (n + 1) = drop s n := by
   induction n with
   | zero => simp [drop]
   | succ n n_ih =>
-    -- porting note (#10745): was `simp [*, drop]`.
     simp [drop, ← n_ih]
 
 @[simp]
@@ -707,7 +707,7 @@ theorem drop.aux_none : ∀ n, @drop.aux α n none = Computation.pure none
       rw [ret_bind, drop.aux_none n]
 
 theorem destruct_dropn : ∀ (s : WSeq α) (n), destruct (drop s n) = destruct s >>= drop.aux n
-  | s, 0 => (bind_pure' _).symm
+  | _, 0 => (bind_pure' _).symm
   | s, n + 1 => by
     rw [← dropn_tail, destruct_dropn _ n, destruct_tail, LawfulMonad.bind_assoc]
     rfl
@@ -716,12 +716,9 @@ theorem head_terminates_of_head_tail_terminates (s : WSeq α) [T : Terminates (h
     Terminates (head s) :=
   (head_terminates_iff _).2 <| by
     rcases (head_terminates_iff _).1 T with ⟨⟨a, h⟩⟩
-    simp? [tail] at h says simp only [tail, destruct_flatten] at h
+    simp? [tail] at h says simp only [tail, destruct_flatten, bind_map_left] at h
     rcases exists_of_mem_bind h with ⟨s', h1, _⟩
-    unfold Functor.map at h1
-    exact
-      let ⟨t, h3, _⟩ := Computation.exists_of_mem_map h1
-      Computation.terminates_of_mem h3
+    exact terminates_of_mem h1
 
 theorem destruct_some_of_destruct_tail_some {s : WSeq α} {a} (h : some a ∈ destruct (tail s)) :
     ∃ a', some a' ∈ destruct s := by
@@ -816,7 +813,7 @@ theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
   · cases' this with i1 i2
     rw [i1, i2]
     cases' s' with f al
-    dsimp only [cons, (· ∈ ·), WSeq.Mem, Seq.Mem, Seq.cons]
+    dsimp only [cons, Membership.mem, WSeq.Mem, Seq.Mem, Seq.cons]
     have h_a_eq_a' : a = a' ↔ some (some a) = some (some a') := by simp
     rw [h_a_eq_a']
     refine ⟨Stream'.eq_or_mem_of_mem_cons, fun o => ?_⟩
@@ -877,7 +874,6 @@ theorem exists_get?_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ g
       apply ret_mem
     · cases' h with n h
       exists n + 1
-      -- porting note (#10745): was `simp [get?]`.
       simpa [get?]
   · intro s' h
     cases' h with n h
@@ -1407,7 +1403,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
           U s1 s2)
     {a} (ma : a ∈ destruct (join S)) : ∃ b, b ∈ destruct (join T) ∧ LiftRelO R U a b := by
   cases' exists_results_of_mem ma with n h; clear ma; revert S T ST a
-  induction' n using Nat.strongInductionOn with n IH
+  induction' n using Nat.strongRecOn with n IH
   intro S T ST a ra; simp only [destruct_join] at ra
   exact
     let ⟨o, m, k, rs1, rs2, en⟩ := of_results_bind ra

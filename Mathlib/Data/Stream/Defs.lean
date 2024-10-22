@@ -48,7 +48,7 @@ def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (get s n)
 
 /-- `a ∈ s` means that `a = Stream'.get n s` for some `n`. -/
 instance : Membership α (Stream' α) :=
-  ⟨fun a s => Any (fun b => a = b) s⟩
+  ⟨fun s a => Any (fun b => a = b) s⟩
 
 /-- Apply a function `f` to all elements of a stream `s`. -/
 def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (get s n)
@@ -94,7 +94,7 @@ infixl:65 " ⋈ " => interleave
 
 /-- Elements of a stream with even indices. -/
 def even (s : Stream' α) : Stream' α :=
-  corec (fun s => head s) (fun s => tail (tail s)) s
+  corec head (fun s => tail (tail s)) s
 
 /-- Elements of a stream with odd indices. -/
 def odd (s : Stream' α) : Stream' α :=

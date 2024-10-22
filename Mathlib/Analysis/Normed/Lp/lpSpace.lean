@@ -471,7 +471,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           intro i
           gcongr
           apply norm_add_le
-      eq_zero_of_map_eq_zero' := fun f => norm_eq_zero_iff.1 }
+      eq_zero_of_map_eq_zero' := fun _ => norm_eq_zero_iff.1 }
 
 -- TODO: define an `ENNReal` version of `IsConjExponent`, and then express this inequality
 -- in a better version which also covers the case `p = 1, q = ∞`.
@@ -595,7 +595,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     · simp [lp.eq_zero' f]
     have hcf := lp.isLUB_norm (c • f)
     have hfc := (lp.isLUB_norm f).mul_left (norm_nonneg c)
-    simp_rw [← Set.range_comp, Function.comp] at hfc
+    simp_rw [← Set.range_comp, Function.comp_def] at hfc
     -- TODO: some `IsLUB` API should make it a one-liner from here.
     refine hcf.right ?_
     have := hfc.left
