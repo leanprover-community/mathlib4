@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.CharP.ExpChar
+import Mathlib.Algebra.CharP.Basic
 import Mathlib.GroupTheory.OrderOfElement
 
 /-!
@@ -15,6 +15,8 @@ The lemmas in this file with a `_sq` suffix are just special cases of the `_pow_
 elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (Prime 2)]` argument.
 -/
 
+assert_not_exists Algebra
+assert_not_exists LinearMap
 
 variable {R ι : Type*}
 

@@ -26,6 +26,8 @@ variable {C D : Type*} [Category C] [Category D]
 
 namespace CategoryTheory.Adjunction
 
+attribute [local simp] homEquiv_unit homEquiv_counit
+
 /-- If `F` and `F'` are both left adjoint to `G`, then they are naturally isomorphic. -/
 def leftAdjointUniq {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) : F ≅ F' :=
   ((conjugateIsoEquiv adj1 adj2).symm (Iso.refl G)).symm

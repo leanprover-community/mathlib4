@@ -1204,8 +1204,8 @@ set_option linter.deprecated false in
 theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v} f ≤ a ↔ ∀ i, f i ≤ a :=
   Ordinal.iSup_le_iff
 
-/-- `ciSup_le'` whenever the input type is small in the output universe. -/
-protected theorem iSup_le {ι} {f : ι → Ordinal.{u}} {a} :
+/-- An alias of `ciSup_le'` for discoverability. -/
+protected theorem iSup_le {ι} {f : ι → Ordinal} {a} :
     (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
 
@@ -1214,11 +1214,10 @@ set_option linter.deprecated false in
 theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i ≤ a) → sup.{_, v} f ≤ a :=
   Ordinal.iSup_le
 
--- TODO: generalize to conditionally complete linear orders.
+/-- `lt_ciSup_iff'` whenever the input type is small in the output universe. -/
 protected theorem lt_iSup {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
-    a < iSup f ↔ ∃ i, a < f i := by
-  rw [← not_iff_not]
-  simpa using Ordinal.iSup_le_iff
+    a < iSup f ↔ ∃ i, a < f i :=
+  lt_ciSup_iff' (bddAbove_of_small _)
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.lt_iSup (since := "2024-08-27")]
@@ -1927,12 +1926,15 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
         exact H b hb⟩
 
 /-- A two-argument version of `Ordinal.blsub`.
-We don't develop a full API for this, since it's only used in a handful of existence results. -/
+
+Deprecated. If you need this value explicitly, write it in terms of `iSup`. If you just want an
+upper bound for the image of `op`, use that `Iio a ×ˢ Iio b` is a small set. -/
+@[deprecated (since := "2024-10-11")]
 def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) :
     Ordinal :=
   lsub (fun x : o₁.toType × o₂.toType => op (typein_lt_self x.1) (typein_lt_self x.2))
 
--- TODO: deprecate this, and replace the arguments using it by arguments about small sets.
+@[deprecated (since := "2024-10-11")]
 theorem lt_blsub₂ {o₁ o₂ : Ordinal}
     (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
     (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
@@ -1941,8 +1943,6 @@ theorem lt_blsub₂ {o₁ o₂ : Ordinal}
   simp only [typein_enum]
 
 end blsub
-
--- TODO: deprecate in favor of `sInf sᶜ`.
 
 section mex
 set_option linter.deprecated false
@@ -2099,6 +2099,10 @@ theorem Ordinal.not_bddAbove_compl_of_small (s : Set Ordinal.{u}) [hs : Small.{u
 
 namespace Ordinal
 
+instance instCharZero : CharZero Ordinal := by
+  refine ⟨fun a b h ↦ ?_⟩
+  rwa [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_inj, Nat.cast_inj] at h
+
 @[simp]
 theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
   rw [← Nat.cast_one, ← Nat.cast_add, add_comm]
@@ -2121,42 +2125,37 @@ theorem natCast_mul (m : ℕ) : ∀ n : ℕ, ((m * n : ℕ) : Ordinal) = m * n
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_mul := natCast_mul
 
-/-- Alias of `Nat.cast_le`, specialized to `Ordinal` --/
-theorem natCast_le {m n : ℕ} : (m : Ordinal) ≤ n ↔ m ≤ n := by
-  rw [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_le_ord, Nat.cast_le]
+@[deprecated Nat.cast_le (since := "2024-10-17")]
+theorem natCast_le {m n : ℕ} : (m : Ordinal) ≤ n ↔ m ≤ n := Nat.cast_le
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_le := natCast_le
 
-/-- Alias of `Nat.cast_inj`, specialized to `Ordinal` --/
-theorem natCast_inj {m n : ℕ} : (m : Ordinal) = n ↔ m = n := by
-  simp only [le_antisymm_iff, natCast_le]
+@[deprecated Nat.cast_inj (since := "2024-10-17")]
+theorem natCast_inj {m n : ℕ} : (m : Ordinal) = n ↔ m = n := Nat.cast_inj
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_inj := natCast_inj
 
-instance charZero : CharZero Ordinal where
-  cast_injective _ _ := natCast_inj.mp
-
-/-- Alias of `Nat.cast_lt`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_lt (since := "2024-10-17")]
 theorem natCast_lt {m n : ℕ} : (m : Ordinal) < n ↔ m < n := Nat.cast_lt
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_lt := natCast_lt
 
-/-- Alias of `Nat.cast_eq_zero`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_eq_zero (since := "2024-10-17")]
 theorem natCast_eq_zero {n : ℕ} : (n : Ordinal) = 0 ↔ n = 0 := Nat.cast_eq_zero
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_eq_zero := natCast_eq_zero
 
-/-- Alias of `Nat.cast_eq_zero`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_ne_zero (since := "2024-10-17")]
 theorem natCast_ne_zero {n : ℕ} : (n : Ordinal) ≠ 0 ↔ n ≠ 0 := Nat.cast_ne_zero
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_ne_zero := natCast_ne_zero
 
-/-- Alias of `Nat.cast_pos'`, specialized to `Ordinal` --/
+@[deprecated Nat.cast_pos' (since := "2024-10-17")]
 theorem natCast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n := Nat.cast_pos'
 
 @[deprecated (since := "2024-04-17")]
@@ -2165,10 +2164,10 @@ alias nat_cast_pos := natCast_pos
 @[simp, norm_cast]
 theorem natCast_sub (m n : ℕ) : ((m - n : ℕ) : Ordinal) = m - n := by
   rcases le_total m n with h | h
-  · rw [tsub_eq_zero_iff_le.2 h, Ordinal.sub_eq_zero_iff_le.2 (natCast_le.2 h)]
+  · rw [tsub_eq_zero_iff_le.2 h, Ordinal.sub_eq_zero_iff_le.2 (Nat.cast_le.2 h)]
     rfl
   · apply (add_left_cancel n).1
-    rw [← Nat.cast_add, add_tsub_cancel_of_le h, Ordinal.add_sub_cancel_of_le (natCast_le.2 h)]
+    rw [← Nat.cast_add, add_tsub_cancel_of_le h, Ordinal.add_sub_cancel_of_le (Nat.cast_le.2 h)]
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_sub := natCast_sub
@@ -2177,12 +2176,12 @@ alias nat_cast_sub := natCast_sub
 theorem natCast_div (m n : ℕ) : ((m / n : ℕ) : Ordinal) = m / n := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
-  · have hn' := natCast_ne_zero.2 hn
+  · have hn' : (n : Ordinal) ≠ 0 := Nat.cast_ne_zero.2 hn
     apply le_antisymm
-    · rw [le_div hn', ← natCast_mul, natCast_le, mul_comm]
+    · rw [le_div hn', ← natCast_mul, Nat.cast_le, mul_comm]
       apply Nat.div_mul_le_self
-    · rw [div_le hn', ← add_one_eq_succ, ← Nat.cast_succ, ← natCast_mul, natCast_lt, mul_comm, ←
-        Nat.div_lt_iff_lt_mul (Nat.pos_of_ne_zero hn)]
+    · rw [div_le hn', ← add_one_eq_succ, ← Nat.cast_succ, ← natCast_mul, Nat.cast_lt, mul_comm,
+        ← Nat.div_lt_iff_lt_mul (Nat.pos_of_ne_zero hn)]
       apply Nat.lt_succ_self
 
 @[deprecated (since := "2024-04-17")]
@@ -2416,9 +2415,11 @@ theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
 
 end Cardinal
 
-variable {α : Type u} {r : α → α → Prop} {a b : α}
+variable {α : Type u} {a b : α}
 
 namespace Acc
+
+variable {r : α → α → Prop}
 
 /-- The rank of an element `a` accessible under a relation `r` is defined inductively as the
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
@@ -2435,32 +2436,63 @@ theorem rank_eq (h : Acc r a) :
 theorem rank_lt_of_rel (hb : Acc r b) (h : r a b) : (hb.inv h).rank < hb.rank :=
   (Order.lt_succ _).trans_le <| by
     rw [hb.rank_eq]
-    refine le_trans ?_ (Ordinal.le_iSup _ ⟨a, h⟩)
-    rfl
+    exact Ordinal.le_iSup _ (⟨a, h⟩ : {a // r a b})
 
 end Acc
 
-namespace WellFounded
+namespace IsWellFounded
 
-variable (hwf : WellFounded r)
+variable (r : α → α → Prop) [hwf : IsWellFounded α r]
 
 /-- The rank of an element `a` under a well-founded relation `r` is defined inductively as the
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
 `r b a`). -/
 noncomputable def rank (a : α) : Ordinal.{u} :=
+  (hwf.apply r a).rank
+
+theorem rank_eq (a : α) : rank r a = ⨆ b : { b // r b a }, succ (rank r b) :=
+  (hwf.apply r a).rank_eq
+
+variable {r} in
+theorem rank_lt_of_rel (h : r a b) : rank r a < rank r b :=
+  Acc.rank_lt_of_rel _ h
+
+end IsWellFounded
+
+theorem WellFoundedLT.rank_strictMono [Preorder α] [WellFoundedLT α] :
+    StrictMono (IsWellFounded.rank (α := α) (· < ·)) :=
+  fun _ _ => IsWellFounded.rank_lt_of_rel
+
+theorem WellFoundedGT.rank_strictAnti [Preorder α] [WellFoundedGT α] :
+    StrictAnti (IsWellFounded.rank (α := α) (· > ·)) :=
+  fun _ _ a => IsWellFounded.rank_lt_of_rel a
+
+namespace WellFounded
+
+set_option linter.deprecated false
+
+variable {r : α → α → Prop} (hwf : WellFounded r)
+
+/-- The rank of an element `a` under a well-founded relation `r` is defined inductively as the
+smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
+`r b a`). -/
+@[deprecated IsWellFounded.rank (since := "2024-09-07")]
+noncomputable def rank (a : α) : Ordinal.{u} :=
   (hwf.apply a).rank
 
-theorem rank_eq :
-    hwf.rank a = ⨆ b : { b // r b a }, Order.succ (hwf.rank b) := by
-  rw [rank, Acc.rank_eq]
-  rfl
+@[deprecated IsWellFounded.rank_eq (since := "2024-09-07")]
+theorem rank_eq : hwf.rank a = ⨆ b : { b // r b a }, Order.succ (hwf.rank b) :=
+  (hwf.apply a).rank_eq
 
+@[deprecated IsWellFounded.rank_lt_of_rel (since := "2024-09-07")]
 theorem rank_lt_of_rel (h : r a b) : hwf.rank a < hwf.rank b :=
   Acc.rank_lt_of_rel _ h
 
+@[deprecated WellFoundedLT.rank_strictMono (since := "2024-09-07")]
 theorem rank_strictMono [Preorder α] [WellFoundedLT α] :
     StrictMono (rank <| @wellFounded_lt α _ _) := fun _ _ => rank_lt_of_rel _
 
+@[deprecated WellFoundedGT.rank_strictAnti (since := "2024-09-07")]
 theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
     StrictAnti (rank <| @wellFounded_gt α _ _) := fun _ _ => rank_lt_of_rel wellFounded_gt
 

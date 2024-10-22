@@ -25,8 +25,7 @@ This defines the cardinality of a `Finset` and provides induction principles for
 -/
 
 assert_not_exists MonoidWithZero
--- TODO: After a lot more work,
--- assert_not_exists OrderedCommMonoid
+assert_not_exists OrderedCommMonoid
 
 open Function Multiset Nat
 

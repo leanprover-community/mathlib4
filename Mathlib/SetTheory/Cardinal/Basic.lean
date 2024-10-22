@@ -1253,19 +1253,27 @@ theorem lift_aleph0 : lift ℵ₀ = ℵ₀ :=
 
 @[simp]
 theorem aleph0_le_lift {c : Cardinal.{u}} : ℵ₀ ≤ lift.{v} c ↔ ℵ₀ ≤ c := by
-  rw [← lift_aleph0.{v, u}, lift_le]
+  simpa using lift_le (a := ℵ₀)
 
 @[simp]
 theorem lift_le_aleph0 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₀ ↔ c ≤ ℵ₀ := by
-  rw [← lift_aleph0.{v, u}, lift_le]
+  simpa using lift_le (b := ℵ₀)
 
 @[simp]
 theorem aleph0_lt_lift {c : Cardinal.{u}} : ℵ₀ < lift.{v} c ↔ ℵ₀ < c := by
-  rw [← lift_aleph0.{v, u}, lift_lt]
+  simpa using lift_lt (a := ℵ₀)
 
 @[simp]
 theorem lift_lt_aleph0 {c : Cardinal.{u}} : lift.{v} c < ℵ₀ ↔ c < ℵ₀ := by
-  rw [← lift_aleph0.{v, u}, lift_lt]
+  simpa using lift_lt (b := ℵ₀)
+
+@[simp]
+theorem aleph0_eq_lift {c : Cardinal.{u}} : ℵ₀ = lift.{v} c ↔ ℵ₀ = c := by
+  simpa using lift_inj (a := ℵ₀)
+
+@[simp]
+theorem lift_eq_aleph0 {c : Cardinal.{u}} : lift.{v} c = ℵ₀ ↔ c = ℵ₀ := by
+  simpa using lift_inj (b := ℵ₀)
 
 /-! ### Properties about the cast from `ℕ` -/
 
@@ -1814,8 +1822,16 @@ theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : #s = 0 ↔ s = ∅ :
 theorem mk_univ {α : Type u} : #(@univ α) = #α :=
   mk_congr (Equiv.Set.univ α)
 
+@[simp] lemma mk_setProd {α β : Type u} (s : Set α) (t : Set β) : #(s ×ˢ t) = #s * #t := by
+  rw [mul_def, mk_congr (Equiv.Set.prod ..)]
+
 theorem mk_image_le {α β : Type u} {f : α → β} {s : Set α} : #(f '' s) ≤ #s :=
   mk_le_of_surjective surjective_onto_image
+
+lemma mk_image2_le {α β γ : Type u} {f : α → β → γ} {s : Set α} {t : Set β} :
+    #(image2 f s t) ≤ #s * #t := by
+  rw [← image_uncurry_prod, ← mk_setProd]
+  exact mk_image_le
 
 theorem mk_image_le_lift {α : Type u} {β : Type v} {f : α → β} {s : Set α} :
     lift.{u} #(f '' s) ≤ lift.{v} #s :=
@@ -1948,7 +1964,7 @@ theorem mk_union_le {α : Type u} (S T : Set α) : #(S ∪ T : Set α) ≤ #S + 
 theorem mk_union_of_disjoint {α : Type u} {S T : Set α} (H : Disjoint S T) :
     #(S ∪ T : Set α) = #S + #T := by
   classical
-  exact Quot.sound ⟨Equiv.Set.union H.le_bot⟩
+  exact Quot.sound ⟨Equiv.Set.union H⟩
 
 theorem mk_insert {α : Type u} {s : Set α} {a : α} (h : a ∉ s) :
     #(insert a s : Set α) = #s + 1 := by
