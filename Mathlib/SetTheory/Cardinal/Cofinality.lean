@@ -53,6 +53,7 @@ variable {α : Type*} {r : α → α → Prop}
 
 /-! ### Cofinality of orders -/
 
+attribute [local instance] IsRefl.swap
 
 namespace Order
 
@@ -106,16 +107,17 @@ theorem RelIso.cof_eq {α β : Type u} {r s} [IsRefl α r] [IsRefl β s] (f : r 
 
 /-- Cofinality of a strict order `≺`. This is the smallest cardinality of a set `S : Set α` such
 that `∀ a, ∃ b ∈ S, ¬ b ≺ a`. -/
+@[deprecated Order.cof (since := "2024-10-22")]
 def StrictOrder.cof (r : α → α → Prop) : Cardinal :=
   Order.cof (swap rᶜ)
 
 /-- The set in the definition of `Order.StrictOrder.cof` is nonempty. -/
+@[deprecated (since := "2024-10-22")]
 theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
     { c | ∃ S : Set α, Unbounded r S ∧ #S = c }.Nonempty :=
   @Order.cof_nonempty α _ (IsRefl.swap rᶜ)
 
 /-! ### Cofinality of ordinals -/
-
 
 namespace Ordinal
 
@@ -125,7 +127,7 @@ namespace Ordinal
   `cof 0 = 0` and `cof (succ o) = 1`, so it is only really
   interesting on limit ordinals (when it is an infinite cardinal). -/
 def cof (o : Ordinal.{u}) : Cardinal.{u} :=
-  o.liftOn (fun a => StrictOrder.cof a.r)
+  o.liftOn (fun a => Order.cof (swap a.rᶜ))
     (by
       rintro ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨⟨f, hf⟩⟩
       haveI := wo₁; haveI := wo₂
@@ -138,11 +140,11 @@ def cof (o : Ordinal.{u}) : Cardinal.{u} :=
       · dsimp only [swap]
         exact ⟨fun _ => irrefl _⟩)
 
-theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = StrictOrder.cof r :=
+theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = Order.cof (swap rᶜ) :=
   rfl
 
 theorem le_cof_type [IsWellOrder α r] {c} : c ≤ cof (type r) ↔ ∀ S, Unbounded r S → c ≤ #S :=
-  (le_csInf_iff'' (StrictOrder.cof_nonempty r)).trans
+  (le_csInf_iff'' (Order.cof_nonempty _)).trans
     ⟨fun H S h => H _ ⟨S, h, rfl⟩, by
       rintro H d ⟨S, h, rfl⟩
       exact H _ h⟩
