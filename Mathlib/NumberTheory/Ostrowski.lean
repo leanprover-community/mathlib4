@@ -236,7 +236,7 @@ lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
 -- ## Step 4: f p = p ^ (- t) for some positive real t
 
 include hp0 hp1 hmin in
-/-- The absolute value of `p` is `p ^ (- t)` for some positive real number `t`. -/
+/-- The absolute value of `p` is `p ^ (-t)` for some positive real number `t`. -/
 lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
   have pprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hp0 hp1 hmin
   refine ⟨- logb p (f p), Left.neg_pos_iff.2 <| logb_neg (mod_cast pprime.one_lt) hp0 hp1, ?_⟩
