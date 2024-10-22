@@ -361,9 +361,9 @@ protected theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : Unique
   refine ⟨p.derivSeries, r, ?_⟩
   refine ⟨hr.r_le.trans p.radius_le_radius_derivSeries, hr.r_pos, fun {y} hy h'y ↦ ?_⟩
   apply hr.hasSum_derivSeries_of_hasFDerivWithinAt (by simpa [edist_eq_coe_nnnorm] using h'y) hy
-  rw [insert_eq_of_mem hx] at hy ⊢
-  apply DifferentiableWithinAt.hasFDerivWithinAt
-  · exact h.differentiableOn _ hy
+  · rw [insert_eq_of_mem hx] at hy ⊢
+    apply DifferentiableWithinAt.hasFDerivWithinAt
+    exact h.differentiableOn _ hy
   · rwa [insert_eq_of_mem hx]
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative within this

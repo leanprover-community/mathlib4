@@ -79,14 +79,14 @@ theorem expComparison_ev (A B : C) :
     Limits.prod.map (𝟙 (F.obj A)) ((expComparison F A).app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
   convert mateEquiv_counit _ _ (prodComparisonNatIso F A).inv B using 2
-  apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
+  apply IsIso.inv_eq_of_hom_inv_id -- Porting note (#11041): was `ext`
   simp only [Limits.prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app, IsIso.hom_inv_id]
 
 theorem coev_expComparison (A B : C) :
     F.map ((exp.coev A).app B) ≫ (expComparison F A).app (A ⨯ B) =
       (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) := by
   convert unit_mateEquiv _ _ (prodComparisonNatIso F A).inv B using 3
-  apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
+  apply IsIso.inv_eq_of_hom_inv_id -- Porting note (#11041): was `ext`
   dsimp
   simp
 

@@ -1200,6 +1200,8 @@ protected noncomputable def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Set α) :=
   { Set.divisionMonoid, Set.commSemigroup with }
 
+scoped[Pointwise] attribute [instance] Set.divisionCommMonoid Set.subtractionCommMonoid
+
 section Group
 
 variable [Group α] {s t : Set α} {a b : α}

@@ -171,12 +171,12 @@ protected def unop (F : Cᵒᵖ ⥤ Dᵒᵖ) : C ⥤ D where
 /-- The isomorphism between `F.op.unop` and `F`. -/
 @[simps!]
 def opUnopIso (F : C ⥤ D) : F.op.unop ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The isomorphism between `F.unop.op` and `F`. -/
 @[simps!]
 def unopOpIso (F : Cᵒᵖ ⥤ Dᵒᵖ) : F.unop.op ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 variable (C D)
 
@@ -187,7 +187,7 @@ def opHom : (C ⥤ D)ᵒᵖ ⥤ Cᵒᵖ ⥤ Dᵒᵖ where
   obj F := (unop F).op
   map α :=
     { app := fun X => (α.unop.app (unop X)).op
-      naturality := fun X Y f => Quiver.Hom.unop_inj (α.unop.naturality f.unop).symm }
+      naturality := fun _ _ f => Quiver.Hom.unop_inj (α.unop.naturality f.unop).symm }
 
 /-- Take the "unopposite" of a functor is functorial.
 -/
@@ -197,7 +197,7 @@ def opInv : (Cᵒᵖ ⥤ Dᵒᵖ) ⥤ (C ⥤ D)ᵒᵖ where
   map α :=
     Quiver.Hom.op
       { app := fun X => (α.app (op X)).unop
-        naturality := fun X Y f => Quiver.Hom.op_inj <| (α.naturality f.op).symm }
+        naturality := fun _ _ f => Quiver.Hom.op_inj <| (α.naturality f.op).symm }
 
 variable {C D}
 
@@ -246,12 +246,12 @@ instance leftOp_full {F : C ⥤ Dᵒᵖ} [Full F] : Full F.leftOp where
 /-- The isomorphism between `F.leftOp.rightOp` and `F`. -/
 @[simps!]
 def leftOpRightOpIso (F : C ⥤ Dᵒᵖ) : F.leftOp.rightOp ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The isomorphism between `F.rightOp.leftOp` and `F`. -/
 @[simps!]
 def rightOpLeftOpIso (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- Whenever possible, it is advisable to use the isomorphism `rightOpLeftOpIso`
 instead of this equality of functors. -/
@@ -363,7 +363,7 @@ taking `op` of each component gives a natural transformation `G.rightOp ⟶ F.ri
 -/
 @[simps]
 protected def rightOp (α : F ⟶ G) : G.rightOp ⟶ F.rightOp where
-  app X := (α.app _).op
+  app _ := (α.app _).op
   naturality X Y f := Quiver.Hom.unop_inj (by simp)
 
 @[simp]

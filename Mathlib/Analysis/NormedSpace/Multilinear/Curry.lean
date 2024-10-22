@@ -169,8 +169,8 @@ def continuousMultilinearCurryLeftEquiv :
       Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G :=
   LinearIsometryEquiv.ofBounds
     { toFun := ContinuousMultilinearMap.curryLeft
-      map_add' := fun f₁ f₂ => rfl
-      map_smul' := fun c f => rfl
+      map_add' := fun _ _ => rfl
+      map_smul' := fun _ _ => rfl
       invFun := ContinuousLinearMap.uncurryLeft
       left_inv := ContinuousMultilinearMap.uncurry_curryLeft
       right_inv := ContinuousLinearMap.curry_uncurryLeft }
@@ -283,8 +283,8 @@ def continuousMultilinearCurryRightEquiv :
       ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G) :=
   LinearIsometryEquiv.ofBounds
     { toFun := ContinuousMultilinearMap.curryRight
-      map_add' := fun f₁ f₂ => rfl
-      map_smul' := fun c f => rfl
+      map_add' := fun _ _ => rfl
+      map_smul' := fun _ _ => rfl
       invFun := ContinuousMultilinearMap.uncurryRight
       left_inv := ContinuousMultilinearMap.uncurry_curryRight
       right_inv := ContinuousMultilinearMap.curry_uncurryRight }
@@ -580,7 +580,6 @@ theorem curryFinFinset_symm_apply (hk : s.card = k) (hl : sᶜ.card = l)
         m <| finSumEquivOfFinset hk hl (Sum.inr i) :=
   rfl
 
--- @[simp] -- Porting note (#10618): simp removed: simp can reduce LHS
 theorem curryFinFinset_symm_apply_piecewise_const (hk : s.card = k) (hl : sᶜ.card = l)
     (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (x y : G) :
     (curryFinFinset 𝕜 G G' hk hl).symm f (s.piecewise (fun _ => x) fun _ => y) =
@@ -593,7 +592,6 @@ theorem curryFinFinset_symm_apply_const (hk : s.card = k) (hl : sᶜ.card = l)
     ((curryFinFinset 𝕜 G G' hk hl).symm f fun _ => x) = f (fun _ => x) fun _ => x :=
   rfl
 
--- @[simp] -- Porting note (#10618): simp removed: simp can reduce LHS
 theorem curryFinFinset_apply_const (hk : s.card = k) (hl : sᶜ.card = l) (f : G[×n]→L[𝕜] G')
     (x y : G) : (curryFinFinset 𝕜 G G' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by

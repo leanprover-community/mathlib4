@@ -92,17 +92,16 @@ def box (n d : ℕ) : Finset (Fin n → ℕ) :=
 theorem mem_box : x ∈ box n d ↔ ∀ i, x i < d := by simp only [box, Fintype.mem_piFinset, mem_range]
 
 @[simp]
-theorem card_box : (box n d).card = d ^ n := by simp [box]
+theorem card_box : #(box n d) = d ^ n := by simp [box]
 
 @[simp]
 theorem box_zero : box (n + 1) 0 = ∅ := by simp [box]
 
 /-- The intersection of the sphere of radius `√k` with the integer points in the positive
 quadrant. -/
-def sphere (n d k : ℕ) : Finset (Fin n → ℕ) :=
-  (box n d).filter fun x => ∑ i, x i ^ 2 = k
+def sphere (n d k : ℕ) : Finset (Fin n → ℕ) := {x ∈ box n d | ∑ i, x i ^ 2 = k}
 
-theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x => by simp [sphere, Function.funext_iff]
+theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x => by simp [sphere, funext_iff]
 
 @[simp]
 theorem sphere_zero_right (n k : ℕ) : sphere (n + 1) 0 k = ∅ := by simp [sphere]
@@ -204,7 +203,7 @@ theorem sum_lt : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) < (2 * d + 1) ^ n 
   sum_eq.trans_lt <| (Nat.div_le_self _ 2).trans_lt <| pred_lt (pow_pos (succ_pos _) _).ne'
 
 theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
-    (sphere n d k).card ≤ rothNumberNat ((2 * d - 1) ^ n) := by
+    #(sphere n d k) ≤ rothNumberNat ((2 * d - 1) ^ n) := by
   cases n
   · dsimp; refine (card_le_univ _).trans_eq ?_; rfl
   cases d
@@ -229,7 +228,7 @@ that we then optimize by tweaking the parameters. The (almost) optimal parameter
 
 
 theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
-    (↑(d ^ n) / ((n * (d - 1) ^ 2 :) + 1) : ℝ) ≤ (sphere n d k).card := by
+    (↑(d ^ n) / ((n * (d - 1) ^ 2 :) + 1) : ℝ) ≤ #(sphere n d k) := by
   refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_succ ?_
   · rw [mem_range, Nat.lt_succ_iff]
     exact sum_sq_le_of_mem_box hx
@@ -238,7 +237,7 @@ theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 +
     exact (cast_add_one_pos _).ne'
 
 theorem exists_large_sphere (n d : ℕ) :
-    ∃ k, ((d ^ n :) / (n * d ^ 2 :) : ℝ) ≤ (sphere n d k).card := by
+    ∃ k, ((d ^ n :) / (n * d ^ 2 :) : ℝ) ≤ #(sphere n d k) := by
   obtain ⟨k, -, hk⟩ := exists_large_sphere_aux n d
   refine ⟨k, ?_⟩
   obtain rfl | hn := n.eq_zero_or_pos

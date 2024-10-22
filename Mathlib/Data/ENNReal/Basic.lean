@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.NNReal.Basic
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.NNReal.Defs
 import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
@@ -526,7 +528,7 @@ theorem lt_iff_exists_rat_btwn :
     rcases lt_iff_exists_coe.1 cb with ⟨r, rfl, _⟩
     rcases (NNReal.lt_iff_exists_rat_btwn _ _).1 (coe_lt_coe.1 pc) with ⟨q, hq0, pq, qr⟩
     exact ⟨q, hq0, coe_lt_coe.2 pq, lt_trans (coe_lt_coe.2 qr) cb⟩,
-      fun ⟨q, _, qa, qb⟩ => lt_trans qa qb⟩
+      fun ⟨_, _, qa, qb⟩ => lt_trans qa qb⟩
 
 theorem lt_iff_exists_real_btwn :
     a < b ↔ ∃ r : ℝ, 0 ≤ r ∧ a < ENNReal.ofReal r ∧ (ENNReal.ofReal r : ℝ≥0∞) < b :=

@@ -104,7 +104,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         intro x
         rw [hfdef]
         dsimp only
-        erw [dif_neg x.property, Subtype.coe_eta]
+        rw [dif_neg x.property, Subtype.coe_eta]
       rw [hfg]
       have hf : ∑ ι ∈ s2, f ι = 0 := by
         rw [Finset.sum_insert
@@ -908,7 +908,7 @@ theorem centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n) {fs₁ fs₂ 
     (affineIndependent_iff_indicator_eq_of_affineCombination_eq k s.points).1 s.independent _ _ _ _
       (fs₁.sum_centroidWeightsIndicator_eq_one_of_card_eq_add_one k h₁)
       (fs₂.sum_centroidWeightsIndicator_eq_one_of_card_eq_add_one k h₂) h
-  simp_rw [Finset.coe_univ, Set.indicator_univ, Function.funext_iff,
+  simp_rw [Finset.coe_univ, Set.indicator_univ, funext_iff,
     Finset.centroidWeightsIndicator_def, Finset.centroidWeights, h₁, h₂] at ha
   ext i
   specialize ha i

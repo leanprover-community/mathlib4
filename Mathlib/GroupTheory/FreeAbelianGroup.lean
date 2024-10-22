@@ -375,7 +375,7 @@ theorem of_mul (x y : α) : of (x * y) = of x * of y :=
 
 instance distrib : Distrib (FreeAbelianGroup α) :=
   { FreeAbelianGroup.mul α, FreeAbelianGroup.addCommGroup α with
-    left_distrib := fun x y z ↦ (lift _).map_add _ _
+    left_distrib := fun _ _ _ ↦ (lift _).map_add _ _
     right_distrib := fun x y z ↦ by simp only [(· * ·), Mul.mul, map_add, ← Pi.add_def, lift.add'] }
 
 instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) :=
@@ -419,7 +419,7 @@ instance ring : Ring (FreeAbelianGroup α) :=
       dsimp only [(· * ·), Mul.mul, OfNat.ofNat, One.one]
       rw [lift.of]
       refine FreeAbelianGroup.induction_on x rfl (fun L ↦ ?_) (fun L ih ↦ ?_) fun x1 x2 ih1 ih2 ↦ ?_
-      · erw [lift.of]
+      · rw [lift.of]
         congr 1
         exact mul_one L
       · rw [map_neg, ih]

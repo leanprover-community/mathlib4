@@ -57,7 +57,7 @@ that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`. -/
 theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
-  refine Submodule.span_induction hx ?_ ?_ (fun _ _ hx hy => ?_) (fun a _ hx => ?_)
+  refine Submodule.span_induction ?_ ?_ (fun _ _ _ _ hx hy => ?_) (fun a _ _ hx => ?_) hx
   · rintro _ ⟨x, rfl⟩
     rw [apply_at, apply_at, ComplexEmbedding.conjugate_coe_eq]
   · rw [Pi.zero_apply, Pi.zero_apply, map_zero]

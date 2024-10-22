@@ -323,8 +323,8 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
     r := _
     r_wellFounded := degree_lt_wf
     quotient_mul_add_remainder_eq := quotient_mul_add_remainder_eq_aux
-    remainder_lt := fun p q hq => remainder_lt_aux _ hq
-    mul_left_not_lt := fun p q hq => not_lt_of_ge (degree_le_mul_left _ hq) }
+    remainder_lt := fun _ _ hq => remainder_lt_aux _ hq
+    mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
