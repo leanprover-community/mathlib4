@@ -239,7 +239,6 @@ theorem subset_iInter_iff {s : Set α} {t : ι → Set α} : (s ⊆ ⋂ i, t i) 
   le_iInf_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem subset_iInter₂_iff {s : Set α} {t : ∀ i, κ i → Set α} :
     (s ⊆ ⋂ (i) (j), t i j) ↔ ∀ i j, s ⊆ t i j := by simp_rw [subset_iInter_iff]
 
@@ -568,7 +567,6 @@ theorem iInter_eq_univ : ⋂ i, s i = univ ↔ ∀ i, s i = univ :=
 theorem nonempty_iUnion : (⋃ i, s i).Nonempty ↔ ∃ i, (s i).Nonempty := by
   simp [nonempty_iff_ne_empty]
 
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem nonempty_biUnion {t : Set α} {s : α → Set β} :
     (⋃ i ∈ t, s i).Nonempty ↔ ∃ i ∈ t, (s i).Nonempty := by simp
 
@@ -1019,7 +1017,6 @@ theorem nonempty_iInter {f : ι → Set α} : (⋂ i, f i).Nonempty ↔ ∃ x, �
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 -- classical
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem nonempty_iInter₂ {s : ∀ i, κ i → Set α} :
     (⋂ (i) (j), s i j).Nonempty ↔ ∃ a, ∀ i j, a ∈ s i j := by
   simp
@@ -1767,13 +1764,11 @@ theorem disjoint_iUnion_right {ι : Sort*} {s : ι → Set α} :
   disjoint_iSup_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem disjoint_iUnion₂_left {s : ∀ i, κ i → Set α} {t : Set α} :
     Disjoint (⋃ (i) (j), s i j) t ↔ ∀ i j, Disjoint (s i j) t :=
   iSup₂_disjoint_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem disjoint_iUnion₂_right {s : Set α} {t : ∀ i, κ i → Set α} :
     Disjoint s (⋃ (i) (j), t i j) ↔ ∀ i j, Disjoint s (t i j) :=
   disjoint_iSup₂_iff
