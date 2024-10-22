@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Mathlib.RingTheory.RingHom.Surjective
+import Mathlib.RingTheory.SurjectiveOnStalks
 
 /-!
 
@@ -94,6 +95,32 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g]
 theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g] :
     IsPreimmersion (f ≫ g) ↔ IsPreimmersion f :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
+
+lemma Spec_map_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    IsPreimmersion (Spec.map f) ↔ Embedding (PrimeSpectrum.comap f) ∧ f.SurjectiveOnStalks := by
+  haveI : (RingHom.toMorphismProperty <| fun f ↦ Function.Surjective f).RespectsIso := by
+    rw [← RingHom.toMorphismProperty_respectsIso_iff]
+    exact RingHom.surjective_respectsIso
+  refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun (x : PrimeSpectrum S) ↦ ?_⟩⟩
+  · intro p hp
+    let e := Scheme.arrowStalkMapSpecIso f ⟨p, hp⟩
+    apply ((RingHom.toMorphismProperty <| fun f ↦ Function.Surjective f).arrow_mk_iso_iff e).mp
+    exact h₂ ⟨p, hp⟩
+  · let e := Scheme.arrowStalkMapSpecIso f x
+    apply ((RingHom.toMorphismProperty <| fun f ↦ Function.Surjective f).arrow_mk_iso_iff e).mpr
+    exact h₂ x.asIdeal x.isPrime
+
+lemma mk_Spec_map {R S : CommRingCat.{u}} {f : R ⟶ S}
+    (h₁ : Embedding (PrimeSpectrum.comap f)) (h₂ : f.SurjectiveOnStalks) :
+    IsPreimmersion (Spec.map f) :=
+  (Spec_map_iff f).mpr ⟨h₁, h₂⟩
+
+lemma of_isLocalization {R S : Type u} [CommRing R] (M : Submonoid R) [CommRing S]
+    [Algebra R S] [IsLocalization M S] :
+    IsPreimmersion (Spec.map (CommRingCat.ofHom <| algebraMap R S)) :=
+  IsPreimmersion.mk_Spec_map
+    (PrimeSpectrum.localization_comap_embedding (R := R) S M)
+    (RingHom.surjectiveOnStalks_of_isLocalization (M := M) S)
 
 end IsPreimmersion
 

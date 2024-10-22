@@ -35,15 +35,18 @@ instance {ι : Type*} [Finite ι] {X : ι → Type*} [(i : ι) → TopologicalSp
 instance (priority := 100) [CompactSpace X] : WeaklyLocallyCompactSpace X where
   exists_compact_mem_nhds _ := ⟨univ, isCompact_univ, univ_mem⟩
 
-protected theorem ClosedEmbedding.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace Y]
-    {f : X → Y} (hf : ClosedEmbedding f) : WeaklyLocallyCompactSpace X where
+protected theorem IsClosedEmbedding.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace Y]
+    {f : X → Y} (hf : IsClosedEmbedding f) : WeaklyLocallyCompactSpace X where
   exists_compact_mem_nhds x :=
     let ⟨K, hK, hKx⟩ := exists_compact_mem_nhds (f x)
     ⟨f ⁻¹' K, hf.isCompact_preimage hK, hf.continuous.continuousAt hKx⟩
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.weaklyLocallyCompactSpace := IsClosedEmbedding.weaklyLocallyCompactSpace
+
 protected theorem IsClosed.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) : WeaklyLocallyCompactSpace s :=
-  (closedEmbedding_subtype_val hs).weaklyLocallyCompactSpace
+  hs.isClosedEmbedding_subtypeVal.weaklyLocallyCompactSpace
 
 theorem IsOpenQuotientMap.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X]
     {f : X → Y} (hf : IsOpenQuotientMap f) : WeaklyLocallyCompactSpace Y where
@@ -195,9 +198,12 @@ theorem Inducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y} (hf :
   rw [hf.isCompact_preimage_iff]
   exacts [hs.inter_right hZ, hUZ ▸ by gcongr]
 
-protected theorem ClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
-    (hf : ClosedEmbedding f) : LocallyCompactSpace X :=
+protected theorem IsClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
+    (hf : IsClosedEmbedding f) : LocallyCompactSpace X :=
   hf.toInducing.locallyCompactSpace hf.isClosed_range.isLocallyClosed
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.locallyCompactSpace := IsClosedEmbedding.locallyCompactSpace
 
 protected theorem IsOpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsOpenEmbedding f) : LocallyCompactSpace X :=
