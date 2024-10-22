@@ -262,11 +262,10 @@ protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
       hg.coinduced_le⟩
 
 @[deprecated (since := "2024-10-22")]
-alias of_quotientMap_compose := of_comp
+alias of_quotientMap_compose := IsQuotientMap.of_comp
 
 theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : LeftInverse g f) :
-    IsQuotientMap g :=
-  hf.of_comp hg <| h.comp_eq_id.symm ▸ IsQuotientMap.id
+    IsQuotientMap g := .of_comp hf hg <| h.comp_eq_id.symm ▸ IsQuotientMap.id
 
 protected theorem continuous_iff (hf : IsQuotientMap f) : Continuous g ↔ Continuous (g ∘ f) := by
   rw [continuous_iff_coinduced_le, continuous_iff_coinduced_le, hf.eq_coinduced, coinduced_compose]
