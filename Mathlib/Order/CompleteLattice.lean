@@ -1087,46 +1087,25 @@ lemma biSup_le_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} :
   · exact iSup_le fun j ↦ le_iSup_of_le j (le_iSup_of_le j (le_iSup_of_le (le_refl _) (le_refl _)))
 
 lemma biInf_lt_eq_iInf {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
-    ⨅ (i) (j < i), f j = ⨅ i, f i := by
-  apply le_antisymm
-  · apply le_iInf fun j ↦ ?_
-    obtain ⟨i, jlt⟩ := exists_gt j
-    apply iInf_le_of_le i (iInf_le_of_le j (iInf_le_of_le jlt (le_refl _)))
-  · exact le_iInf fun _ ↦ le_iInf fun _ ↦ le_iInf fun _ ↦ iInf_le _ _
+    ⨅ (i) (j < i), f j = ⨅ i, f i :=
+  biSup_lt_eq_iSup (α := αᵒᵈ)
 
-lemma biInf_le_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} :
-    ⨅ (i) (j ≤ i), f j = ⨅ i, f i := by
-  apply le_antisymm
-  · exact le_iInf fun j ↦ iInf_le_of_le j (iInf_le_of_le j (iInf_le_of_le (le_refl _) (le_refl _)))
-  · exact le_iInf fun _ ↦ le_iInf fun _ ↦ le_iInf fun _ ↦ iInf_le _ _
+lemma biInf_le_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≤ i), f j = ⨅ i, f i :=
+  biSup_le_eq_iSup (α := αᵒᵈ)
 
 lemma biSup_gt_eq_iSup {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
-    ⨆ (i) (j > i), f j = ⨆ i, f i := by
-  apply le_antisymm
-  · exact iSup_le fun _ ↦ iSup_le fun _ ↦ iSup_le fun _ ↦ le_iSup _ _
-  · apply iSup_le fun j ↦ ?_
-    obtain ⟨i, ltj⟩ := exists_lt j
-    exact le_iSup_of_le i (le_iSup_of_le j (le_iSup_of_le ltj (le_refl _)))
+    ⨆ (i) (j > i), f j = ⨆ i, f i :=
+  biSup_lt_eq_iSup (ι := ιᵒᵈ)
 
-lemma biSup_ge_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} :
-    ⨆ (i) (j ≥ i), f j = ⨆ i, f i := by
-  apply le_antisymm
-  · exact iSup_le fun _ ↦ iSup_le fun _ ↦ iSup_le fun _ ↦ le_iSup _ _
-  · exact iSup_le fun j ↦ le_iSup_of_le j (le_iSup_of_le j (le_iSup_of_le (le_refl _) (le_refl _)))
+lemma biSup_ge_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} : ⨆ (i) (j ≥ i), f j = ⨆ i, f i :=
+  biSup_le_eq_iSup (ι := ιᵒᵈ)
 
 lemma biInf_gt_eq_iInf {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
-    ⨅ (i) (j > i), f j = ⨅ i, f i := by
-  apply le_antisymm
-  · apply le_iInf fun j ↦ ?_
-    obtain ⟨i, ltj⟩ := exists_lt j
-    apply iInf_le_of_le i (iInf_le_of_le j (iInf_le_of_le ltj (le_refl _)))
-  · exact le_iInf fun _ ↦ le_iInf fun _ ↦ le_iInf fun _ ↦ iInf_le _ _
+    ⨅ (i) (j > i), f j = ⨅ i, f i :=
+  biInf_lt_eq_iInf (ι := ιᵒᵈ)
 
-lemma biInf_ge_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} :
-    ⨅ (i) (j ≥ i), f j = ⨅ i, f i := by
-  apply le_antisymm
-  · exact le_iInf fun j ↦ iInf_le_of_le j (iInf_le_of_le j (iInf_le_of_le (le_refl _) (le_refl _)))
-  · exact le_iInf fun _ ↦ le_iInf fun _ ↦ le_iInf fun _ ↦ iInf_le _ _
+lemma biInf_ge_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≥ i), f j = ⨅ i, f i :=
+  biInf_le_eq_iInf (ι := ιᵒᵈ)
 
 /-! ### `iSup` and `iInf` under `Prop` -/
 
