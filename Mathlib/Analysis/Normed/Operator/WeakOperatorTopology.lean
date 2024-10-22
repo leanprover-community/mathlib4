@@ -75,6 +75,22 @@ the module structure, `FunLike`, etc.
 -/
 section Basic
 
+/-
+Warning : Due to the irreducibility of `ContinuousLinearMapWOT`, one has to be careful when
+declaring instances with data. For example, adding
+```
+unseal ContinuousLinearMapWOT in
+instance instAddCommMonoid [ContinuousAdd F] : AddCommMonoid (E →WOT[𝕜] F) :=
+  inferInstanceAs <| AddCommMonoid (E →L[𝕜] F)
+```
+would cause the following to fail :
+```
+example [TopologicalAddGroup F] :
+  (instAddCommMonoid : AddCommMonoid (E →WOT[𝕜] F)) =
+    instAddCommGroup.toAddCommMonoid := rfl
+```
+-/
+
 unseal ContinuousLinearMapWOT in
 instance instAddCommGroup [TopologicalAddGroup F] : AddCommGroup (E →WOT[𝕜] F) :=
   inferInstanceAs <| AddCommGroup (E →L[𝕜] F)
