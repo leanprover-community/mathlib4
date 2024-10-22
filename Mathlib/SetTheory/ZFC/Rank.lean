@@ -3,7 +3,7 @@ Copyright (c) 2024 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Rank
 import Mathlib.SetTheory.ZFC.Basic
 
 /-!
