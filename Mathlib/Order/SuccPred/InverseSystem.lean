@@ -260,8 +260,8 @@ theorem unique_pEquivOn (hs : IsLowerSet s) {e₁ e₂ : PEquivOn f equivSucc s}
 theorem pEquivOn_apply_eq (h : IsLowerSet (s ∩ t))
     {e₁ : PEquivOn f equivSucc s} {e₂ : PEquivOn f equivSucc t} {i} {his : i ∈ s} {hit : i ∈ t} :
     e₁.equiv ⟨i, his⟩ = e₂.equiv ⟨i, hit⟩ :=
-  show (e₁.restrict <| inter_subset_left).equiv ⟨i, his, hit⟩ =
-       (e₂.restrict <| inter_subset_right).equiv ⟨i, his, hit⟩ from
+  show (e₁.restrict inter_subset_left).equiv ⟨i, his, hit⟩ =
+       (e₂.restrict inter_subset_right).equiv ⟨i, his, hit⟩ from
   congr_fun (congr_arg _ <| unique_pEquivOn h) _
 
 /-- Extend a partial family of bijections by one step. -/
@@ -278,7 +278,7 @@ def pEquivOnSucc [InverseSystem f] (hi : ¬IsMax i) (e : PEquivOn f equivSucc (I
 variable (hi : IsSuccPrelimit i) (e : ∀ j : Iio i, PEquivOn f equivSucc (Iic j))
 
 /-- Glue partial families of bijections at a limit ordinal,
-obtaining a partial family over an open interval. -/
+obtaining a partial family over a right-open interval. -/
 noncomputable def pEquivOnGlue : PEquivOn f equivSucc (Iio i) where
   equiv := (piLTLim (X := fun j ↦ F j ≃ piLT X j) hi).symm
     ⟨fun j ↦ ((e j).restrict fun _ h ↦ h.le).equiv, fun _ _ h ↦ funext fun _ ↦
@@ -287,7 +287,7 @@ noncomputable def pEquivOnGlue : PEquivOn f equivSucc (Iio i) where
   compat hj := have k := hi.mid hj
     by rw [piLTLim_symm_apply hi ⟨_, k.2.2⟩ (by exact k.2.1)]; apply (e _).compat
 
-/-- Extend `pEquivOnGlue` by one step, obtaining a partial family over a closed interval. -/
+/-- Extend `pEquivOnGlue` by one step, obtaining a partial family over a right-closed interval. -/
 noncomputable def pEquivOnLim [InverseSystem f]
     (equivLim : F i ≃ limit f i) (H : ∀ x l, (equivLim x).1 l = f l.2.le x) :
     PEquivOn f equivSucc (Iic i) where
@@ -299,15 +299,28 @@ noncomputable def pEquivOnLim [InverseSystem f]
 
 end Unique
 
-/-- Over a well-ordered type, construct a family of bijections by transfinite recursion. -/
-noncomputable def globalEquiv [WellFoundedLT ι] [SuccOrder ι] [InverseSystem f]
-    (equivSucc : ∀ i, ¬IsMax i → {e : F i⁺ ≃ F i × X i // ∀ x, (e x).1 = f (le_succ i) x})
-    (equivLim : ∀ i, IsSuccPrelimit i → {e : F i ≃ limit f i // ∀ x l, (e x).1 l = f l.2.le x})
-    (i : ι) : F i ≃ piLT X i :=
-  let e := SuccOrder.prelimitRecOn
-    (C := (PEquivOn f (fun i hi ↦ (equivSucc i hi).1) <| Iic ·)) i
+variable [WellFoundedLT ι] [SuccOrder ι] [InverseSystem f]
+  (equivSucc : ∀ i, ¬IsMax i → {e : F i⁺ ≃ F i × X i // ∀ x, (e x).1 = f (le_succ i) x})
+  (equivLim : ∀ i, IsSuccPrelimit i → {e : F i ≃ limit f i // ∀ x l, (e x).1 l = f l.2.le x})
+
+private noncomputable def globalEquivAux (i : ι) :
+    PEquivOn f (fun i hi ↦ (equivSucc i hi).1) (Iic i) :=
+  SuccOrder.prelimitRecOn i
     (fun _ hi e ↦ pEquivOnSucc hi e fun i hi ↦ (equivSucc i hi).2)
     fun i hi e ↦ pEquivOnLim hi (fun j ↦ e j j.2) (equivLim i hi).1 (equivLim i hi).2
-  e.equiv ⟨i, le_rfl⟩
+
+/-- Over a well-ordered type, construct a family of bijections by transfinite recursion. -/
+noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
+  (globalEquivAux equivSucc equivLim i).equiv ⟨i, le_rfl⟩
+
+theorem globalEquiv_naturality ⦃i j⦄ (h : i ≤ j) (x : F j) :
+    letI e := globalEquiv equivSucc equivLim
+    e i (f h x) = piLTProj h (e j x) := by
+  refine (DFunLike.congr_fun ?_ _).trans ((globalEquivAux equivSucc equivLim j).nat le_rfl h h x)
+  exact (pEquivOn_apply_eq <| (isLowerSet_Iic _).inter <| isLowerSet_Iic _)
+
+theorem globalEquiv_compatibility ⦃i⦄ (hi : ¬IsMax i) (x) :
+    globalEquiv equivSucc equivLim i⁺ x ⟨i, lt_succ_of_not_isMax hi⟩ = ((equivSucc i hi).1 x).2 :=
+  (globalEquivAux equivSucc equivLim i⁺).compat le_rfl hi x
 
 end InverseSystem
