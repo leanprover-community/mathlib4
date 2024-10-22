@@ -3,6 +3,7 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
@@ -483,16 +484,16 @@ lemma lieDeriv_pullback (f : E → F) (V : F → F) (g : F → G) (x : E)
   rw [fderiv_pullback]
   exact ⟨M, hM⟩
 
-lemma leibniz_identity (U V W : E → E) (s : Set E) (x : E)
+lemma leibniz_identity_vectorSpace_of_isSymmSndFDerivWithinAt {U V W : E → E} {s : Set E} {x : E}
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
     (hU : ContDiffWithinAt 𝕜 2 U s x) (hV : ContDiffWithinAt 𝕜 2 V s x)
     (hW : ContDiffWithinAt 𝕜 2 W s x)
-    (h'U : IsSymmSndFDerivWithin 𝕜 U s x) (h'V : IsSymmSndFDerivWithin 𝕜 V s x)
-    (h'W : IsSymmSndFDerivWithin 𝕜 W s x) :
+    (h'U : IsSymmSndFDerivWithinAt 𝕜 U s x) (h'V : IsSymmSndFDerivWithinAt 𝕜 V s x)
+    (h'W : IsSymmSndFDerivWithinAt 𝕜 W s x) :
     lieBracketWithin 𝕜 U (lieBracketWithin 𝕜 V W s) s x =
       lieBracketWithin 𝕜 (lieBracketWithin 𝕜 U V s) W s x
       + lieBracketWithin 𝕜 V (lieBracketWithin 𝕜 U W s) s x := by
-  simp only [IsSymmSndFDerivWithin] at h'U h'V h'W
+  simp only [IsSymmSndFDerivWithinAt] at h'U h'V h'W
   simp only [lieBracketWithin_eq, map_sub]
   rw [fderivWithin_sub (hs x hx)]; rotate_left
   · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
@@ -537,6 +538,18 @@ lemma leibniz_identity (U V W : E → E) (s : Set E) (x : E)
     ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.flip_apply, h'V, h'U,
     h'W]
   abel
+
+lemma leibniz_identity_vectorSpace [IsRCLikeNormedField 𝕜] {U V W : E → E} {s : Set E} {x : E}
+    (hs : UniqueDiffOn 𝕜 s) (h'x : x ∈ closure (interior s)) (hx : x ∈ s)
+    (hU : ContDiffWithinAt 𝕜 2 U s x) (hV : ContDiffWithinAt 𝕜 2 V s x)
+    (hW : ContDiffWithinAt 𝕜 2 W s x) :
+    lieBracketWithin 𝕜 U (lieBracketWithin 𝕜 V W s) s x =
+      lieBracketWithin 𝕜 (lieBracketWithin 𝕜 U V s) W s x
+      + lieBracketWithin 𝕜 V (lieBracketWithin 𝕜 U W s) s x := by
+  apply leibniz_identity_vectorSpace_of_isSymmSndFDerivWithinAt hs hx hU hV hW
+  · exact hU.isSymmSndFDerivWithinAt le_rfl hs h'x hx
+  · exact hV.isSymmSndFDerivWithinAt le_rfl hs h'x hx
+  · exact hW.isSymmSndFDerivWithinAt le_rfl hs h'x hx
 
 open Set
 
@@ -612,7 +625,7 @@ lemma _root_.exists_continuousLinearEquiv_fderiv_symm_eq
 second derivative. Version in a complete space. One could also give a version avoiding
 completeness but requiring that `f` is a local diffeo. -/
 lemma lieBracketWithin_pullbackWithin {f : E → F} {V W : F → F} {x : E} {t : Set F}
-    (hf : IsSymmSndFDerivWithin 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
+    (hf : IsSymmSndFDerivWithinAt 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
     (hV : DifferentiableWithinAt 𝕜 V t (f x)) (hW : DifferentiableWithinAt 𝕜 W t (f x))
     (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) :
     lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V s) (pullbackWithin 𝕜 f W s) s x =
@@ -633,7 +646,7 @@ lemma lieBracketWithin_pullbackWithin {f : E → F} {V W : F → F} {x : E} {t :
   have Af : DifferentiableWithinAt 𝕜 f s x := h'f.differentiableWithinAt one_le_two
   simp only [lieBracketWithin_eq, pullbackWithin_eq_of_fderivWithin_eq hMx, map_sub, AV, AW]
   rw [fderivWithin_clm_apply, fderivWithin_clm_apply]
-  · simp only [IsSymmSndFDerivWithin] at hf
+  · simp only [IsSymmSndFDerivWithinAt] at hf
     simp [fderivWithin.comp' x hW Af hst (hu x hx), ← hMx,
       fderivWithin.comp' x hV Af hst (hu x hx), M_diff, hf]
   · exact hu x hx
@@ -643,22 +656,13 @@ lemma lieBracketWithin_pullbackWithin {f : E → F} {V W : F → F} {x : E} {t :
   · exact M_symm_smooth.differentiableWithinAt le_rfl
   · exact hW.comp x Af hst
 
-omit [CompleteSpace E] in
-lemma fderivWithin_fderivWithin_eq_of_eventuallyEq {f : E → F} {x : E} {s t : Set E}
-    (h : s =ᶠ[𝓝 x] t) :
-    fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
-  fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
-    = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x :=
-      (fderivWithin_eventually_congr_set h).fderivWithin_eq_nhds
-  _ = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := fderivWithin_congr_set h
-
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
 completeness but requiring that `f` is a local diffeo. Variant where unique differentiability and
 the invariance property are only required in a smaller set `u`. -/
 lemma lieBracketWithin_pullbackWithin_of_eventuallyEq
     {f : E → F} {V W : F → F} {x : E} {t : Set F} {u : Set E}
-    (hf : IsSymmSndFDerivWithin 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
+    (hf : IsSymmSndFDerivWithinAt 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
     (hV : DifferentiableWithinAt 𝕜 V t (f x)) (hW : DifferentiableWithinAt 𝕜 W t (f x))
     (hu : UniqueDiffOn 𝕜 u) (hx : x ∈ u) (hst : MapsTo f u t) (hus : u =ᶠ[𝓝 x] s) :
     lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V s) (pullbackWithin 𝕜 f W s) s x =
@@ -679,7 +683,7 @@ lemma lieBracketWithin_pullbackWithin_of_eventuallyEq
   _ = pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) u x := by
     apply lieBracketWithin_pullbackWithin _ _
       hV hW hu hx hst
-    · simp only [IsSymmSndFDerivWithin] at hf ⊢
+    · simp only [IsSymmSndFDerivWithinAt] at hf ⊢
       simp [fderivWithin_fderivWithin_eq_of_eventuallyEq hus, hf]
     · apply h'f.mono_of_mem
       exact nhdsWithin_le_iff.1 ((nhdsWithin_eq_iff_eventuallyEq.2 hus).le)
