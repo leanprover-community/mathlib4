@@ -992,7 +992,7 @@ namespace WithTop
 
 section Succ
 
-variable [PartialOrder α] [SuccOrder α] [∀ a : α, Decidable (succ a = a)]
+variable [DecidableEq α] [PartialOrder α] [SuccOrder α]
 
 instance : SuccOrder (WithTop α) where
   succ a :=
@@ -1144,7 +1144,7 @@ end Succ
 
 section Pred
 
-variable [PartialOrder α] [PredOrder α] [∀ a : α, Decidable (pred a = a)]
+variable [DecidableEq α] [PartialOrder α] [PredOrder α]
 
 instance : PredOrder (WithBot α) where
   pred a :=
