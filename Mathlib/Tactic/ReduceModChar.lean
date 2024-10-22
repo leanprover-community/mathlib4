@@ -57,13 +57,13 @@ lemma CharP.isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} 
     rfl⟩
 
 /-- Evaluates `e` to an integer using `norm_num` and reduces the result modulo `n`. -/
-partial def normBareNumeral {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
-    (e : Q($α)) (instRing : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
-  let ⟨ze, ne, pe⟩ ← Result.toInt instRing (← Mathlib.Meta.NormNum.derive e)
+def normBareNumeral {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
+    (e : Q($α)) (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
+  let ⟨ze, ne, pe⟩ ← Result.toInt _ (← Mathlib.Meta.NormNum.derive e)
   let rr ← evalIntMod.go _ _ ze q(IsInt.raw_refl $ne) _ <|
     .isNat q(instAddMonoidWithOne) _ q(isNat_natCast _ _ (IsNat.raw_refl $n'))
-  let ⟨zr, nr, pr⟩ ← rr.toInt q(Int.instRing)
-  return .isInt instRing nr zr q(CharP.isInt_of_mod $instCharP $pe $pn $pr)
+  let ⟨zr, nr, pr⟩ ← rr.toInt _
+  return .isInt _ nr zr q(CharP.isInt_of_mod $instCharP $pe $pn $pr)
 
 mutual
 
