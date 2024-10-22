@@ -503,15 +503,14 @@ def piCongrLeft {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι' → Type*}
 /-- `Equiv.sumArrowEquivProdArrow` as an `IsometryEquiv`.-/
 def sumArrowEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ) :=
   mk (Equiv.sumArrowEquivProdArrow _ _ _) (by
-    intro f1 f2
-    simp_rw [PseudoEMetricSpace.toEDist, Prod.pseudoEMetricSpaceMax, pseudoEMetricSpacePi,
-      instEDistForall, Finset.sup_univ_eq_iSup, iSup_sum]
-    rfl)
+    intro
+    simp [PseudoEMetricSpace.toEDist, Prod.pseudoEMetricSpaceMax, pseudoEMetricSpacePi,
+      instEDistForall, Finset.sup_univ_eq_iSup, iSup_sum])
 
 /-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `(Fin (m + n) → α)`.-/
 def finArrowProdHomeomorphFinAddArrow (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃ᵢ (Fin (m + n) → α) :=
   mk (Fin.appendEquiv _ _) (by
-    intro f1 f2
+    intro
     simp [PseudoEMetricSpace.toEDist, pseudoEMetricSpacePi, instEDistForall,
       Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv), Prod.pseudoEMetricSpaceMax,
       iSup_sum])
