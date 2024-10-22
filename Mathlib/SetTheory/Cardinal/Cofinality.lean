@@ -79,21 +79,17 @@ theorem le_cof {r : α → α → Prop} [IsRefl α r] (c : Cardinal) :
 end Order
 
 theorem RelIso.cof_le_lift {α : Type u} {β : Type v} {r : α → α → Prop} {s} [IsRefl β s]
-    (f : r ≃r s) : Cardinal.lift.{max u v} (Order.cof r) ≤
-    Cardinal.lift.{max u v} (Order.cof s) := by
-  rw [Order.cof, Order.cof, lift_sInf, lift_sInf,
-    le_csInf_iff'' ((Order.cof_nonempty s).image _)]
+    (f : r ≃r s) : Cardinal.lift.{v} (Order.cof r) ≤ Cardinal.lift.{u} (Order.cof s) := by
+  rw [Order.cof, Order.cof, lift_sInf, lift_sInf, le_csInf_iff'' ((Order.cof_nonempty s).image _)]
   rintro - ⟨-, ⟨u, H, rfl⟩, rfl⟩
   apply csInf_le'
-  refine
-    ⟨_, ⟨f.symm '' u, fun a => ?_, rfl⟩,
-      lift_mk_eq.{u, v, max u v}.2 ⟨(f.symm.toEquiv.image u).symm⟩⟩
+  refine ⟨_, ⟨f.symm '' u, fun a => ?_, rfl⟩, lift_mk_eq'.2 ⟨(f.symm.toEquiv.image u).symm⟩⟩
   rcases H (f a) with ⟨b, hb, hb'⟩
   refine ⟨f.symm b, mem_image_of_mem _ hb, f.map_rel_iff.1 ?_⟩
   rwa [RelIso.apply_symm_apply]
 
 theorem RelIso.cof_eq_lift {α : Type u} {β : Type v} {r s} [IsRefl α r] [IsRefl β s] (f : r ≃r s) :
-    Cardinal.lift.{max u v} (Order.cof r) = Cardinal.lift.{max u v} (Order.cof s) :=
+    Cardinal.lift.{v} (Order.cof r) = Cardinal.lift.{u} (Order.cof s) :=
   (RelIso.cof_le_lift f).antisymm (RelIso.cof_le_lift f.symm)
 
 theorem RelIso.cof_le {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
@@ -124,19 +120,11 @@ namespace Ordinal
   `∀ a, ∃ b ∈ S, a ≤ b`. It is defined for all ordinals, but
   `cof 0 = 0` and `cof (succ o) = 1`, so it is only really
   interesting on limit ordinals (when it is an infinite cardinal). -/
-def cof (o : Ordinal.{u}) : Cardinal.{u} :=
-  o.liftOn (fun a => StrictOrder.cof a.r)
-    (by
-      rintro ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨⟨f, hf⟩⟩
-      haveI := wo₁; haveI := wo₂
-      dsimp only
-      apply @RelIso.cof_eq _ _ _ _ ?_ ?_
-      · constructor
-        exact @fun a b => not_iff_not.2 hf
-      · dsimp only [swap]
-        exact ⟨fun _ => irrefl _⟩
-      · dsimp only [swap]
-        exact ⟨fun _ => irrefl _⟩)
+def cof (o : Ordinal.{u}) : Cardinal.{u} := by
+  refine o.liftOn (fun a => StrictOrder.cof a.r) ?_
+  rintro ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨⟨f, hf⟩⟩
+  refine @RelIso.cof_eq _ _ _ _ ?_ ?_ ⟨_, not_iff_not.2 hf⟩ <;>
+  exact ⟨fun _ => irrefl _⟩
 
 theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = StrictOrder.cof r :=
   rfl
