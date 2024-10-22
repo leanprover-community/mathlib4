@@ -114,9 +114,7 @@ theorem surjective_normedMk : Function.Surjective (@normedMk M _) :=
 
 /-- The kernel of `normedMk` is `nullSubgroup`. -/
 theorem ker_normedMk : (@normedMk M _).ker = nullSubgroup := by
-  rw[ker, normedMk]
-  ext x
-  exact mk_eq_zero_iff x
+  ext _; exact mk_eq_zero_iff _
 
 /-- The operator norm of the projection is at most `1`. -/
 theorem norm_normedMk_le : ‖(@normedMk M _)‖ ≤ 1 :=
