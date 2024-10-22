@@ -3,7 +3,6 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
@@ -1102,28 +1101,6 @@ instance completeSpace : CompleteSpace (lp E p) :=
 end Topology
 
 end lp
-
-section CStarAlgebra
-
-variable {I : Type*} {B : I → Type*}
-
-instance [∀ i, NonUnitalCStarAlgebra (B i)] : NonUnitalCStarAlgebra (lp B ∞) where
-
-instance [∀ i, NonUnitalCommCStarAlgebra (B i)] : NonUnitalCommCStarAlgebra (lp B ∞) where
-  mul_comm := mul_comm
-
--- it's slightly weird that we need the `Nontrivial` instance here
--- it's because we have no way to say that `‖(1 : B i)‖` is uniformly bounded as a type class
--- aside from `∀ i, NormOneClass (B i)`, this holds automatically for C⋆-algebras though.
-instance [∀ i, Nontrivial (B i)] [∀ i, CStarAlgebra (B i)] : NormedRing (lp B ∞) where
-  dist_eq := dist_eq_norm
-  norm_mul := norm_mul_le
-
-instance [∀ i, Nontrivial (B i)] [∀ i, CommCStarAlgebra (B i)] : CommCStarAlgebra (lp B ∞) where
-  mul_comm := mul_comm
-
-end CStarAlgebra
-
 
 section Lipschitz
 
