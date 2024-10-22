@@ -196,8 +196,7 @@ theorem completedLFunction_one_sub {χ : DirichletCharacter ℂ N} (hχ : IsPrim
     rwa [IsPrimitive, h, conductor_one (NeZero.ne _)] at hχ
   let ε := I ^ (if χ.Even then 0 else 1)
   -- gather up powers of N
-  rw [rootNumber, ← mul_div_assoc, ← div_mul_eq_mul_div₀, ← mul_div_assoc, ← div_mul_eq_mul_div₀,
-    ← cpow_sub _ _ (NeZero.ne _), sub_sub, add_halves]
+  rw [rootNumber, ← mul_comm_div, ← mul_comm_div, ← cpow_sub _ _ (NeZero.ne _), sub_sub, add_halves]
   calc completedLFunction χ (1 - s)
   _ = N ^ (s - 1) * χ (-1) /  ε * ZMod.completedLFunction (𝓕 χ) s := by
     simp only [ε]
