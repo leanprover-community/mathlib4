@@ -74,7 +74,7 @@ mutual
     let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
     let .isNat sα na pa ← normIntNumeral' n n' pn a _ instCharP | failure
     let ⟨nb, pb⟩ ← Mathlib.Meta.NormNum.deriveNat b q(instAddMonoidWithOneNat)
-    guard <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
+    guard <|← withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
     haveI' : $e =Q $a ^ $b := ⟨⟩
     haveI' : $f =Q HPow.hPow := ⟨⟩
     have ⟨c, r⟩ := evalNatPowMod na nb n'
@@ -97,7 +97,7 @@ lemma CharP.intCast_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ)
 
 /-- Given an integral expression `e : t` such that `t` is a ring of characteristic `n`,
 reduce `e` modulo `n`. -/
-partial def normIntNumeral {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (instRing : Q(Ring $α))
+partial def normIntNumeral {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_ : Q(Ring $α))
     (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
   let ⟨n', pn⟩ ← deriveNat n q(instAddMonoidWithOneNat)
   normIntNumeral' n n' pn e _ instCharP
