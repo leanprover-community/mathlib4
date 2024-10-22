@@ -50,7 +50,7 @@ lemma apply_eq_of_mem_unifEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub
     (f.isNilpotent_restrict_sub_algebraMap μ l) (Module.End.isNilpotent.restrict h₃ hnil)
 
 @[deprecated apply_eq_of_mem_unifEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub
-  (since := "2024-10-11")]
+  (since := "2024-10-23")]
 lemma apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub
     {μ : R} {k : ℕ} {m : M} (hm : m ∈ f.genEigenspace μ k)
     (hfg : Commute f g) (hss : g.IsSemisimple) (hnil : IsNilpotent (f - g)) :
