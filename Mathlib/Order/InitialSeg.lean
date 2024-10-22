@@ -127,7 +127,7 @@ alias init_iff := exists_eq_iff_rel
 /-- A relation isomorphism is an initial segment -/
 @[simps!]
 def _root_.RelIso.toInitialSeg (f : r ≃r s) : r ≼i s :=
-  ⟨f, fun _ b _ => ⟨f.symm b, RelIso.apply_symm_apply f _⟩⟩
+  ⟨f, by simp⟩
 
 @[deprecated (since := "2024-10-22")]
 alias ofIso := RelIso.toInitialSeg
