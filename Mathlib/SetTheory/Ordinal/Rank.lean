@@ -5,6 +5,15 @@ Authors: Yaël Dillies
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 
+/-!
+# Rank in a well-founded relation
+
+For `r` a well-founded relation, `IsWellFounded.rank r a` is recursively defined as the least
+ordinal greater than the ranks of all elements below `a`.
+-/
+
+universe u
+
 variable {α : Type u} {a b : α}
 
 namespace Acc
@@ -40,7 +49,7 @@ smallest ordinal greater than the ranks of all elements below it (i.e. elements 
 noncomputable def rank (a : α) : Ordinal.{u} :=
   (hwf.apply r a).rank
 
-theorem rank_eq (a : α) : rank r a = ⨆ b : { b // r b a }, succ (rank r b) :=
+theorem rank_eq (a : α) : rank r a = ⨆ b : { b // r b a }, Order.succ (rank r b) :=
   (hwf.apply r a).rank_eq
 
 variable {r} in
