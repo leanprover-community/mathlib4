@@ -232,26 +232,11 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
 
 @[simp]
 theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o) := by
-  refine inductionOn o ?_
-  intro α r _
-  apply le_antisymm
-  · refine le_cof_type.2 fun S H => ?_
-    have : Cardinal.lift.{u, v} #(ULift.up ⁻¹' S) ≤ #(S : Type (max u v)) := by
-      rw [← Cardinal.lift_umax.{v, u}, ← Cardinal.lift_id'.{v, u} #S]
-      exact mk_preimage_of_injective_lift.{v, max u v} ULift.up S (ULift.up_injective.{v, u})
-    refine (Cardinal.lift_le.2 <| cof_type_le ?_).trans this
-    exact fun a =>
-      let ⟨⟨b⟩, bs, br⟩ := H ⟨a⟩
-      ⟨b, bs, br⟩
-  · rcases cof_eq r with ⟨S, H, e'⟩
-    have : #(ULift.down.{u, v} ⁻¹' S) ≤ Cardinal.lift.{u, v} #S :=
-      ⟨⟨fun ⟨⟨x⟩, h⟩ => ⟨⟨x, h⟩⟩, fun ⟨⟨x⟩, h₁⟩ ⟨⟨y⟩, h₂⟩ e => by
-          simp at e; congr⟩⟩
-    rw [e'] at this
-    refine (cof_type_le ?_).trans this
-    exact fun ⟨a⟩ =>
-      let ⟨b, bs, br⟩ := H a
-      ⟨⟨b⟩, bs, br⟩
+  refine inductionOn o fun α r _ ↦ ?_
+  rw [← type_uLift, cof_type, cof_type, ← Cardinal.lift_id'.{v, u} (Order.cof _),
+    ← Cardinal.lift_umax]
+  apply RelIso.cof_eq_lift ⟨Equiv.ulift.symm, _⟩
+  simp [swap]
 
 theorem cof_le_card (o) : cof o ≤ card o := by
   rw [cof_eq_sInf_lsub]
