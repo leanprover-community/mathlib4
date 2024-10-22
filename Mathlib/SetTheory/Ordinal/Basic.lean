@@ -64,8 +64,8 @@ open scoped Cardinal InitialSeg
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
-  {t : γ → γ → Prop}
+variable {α : Type u} {β : Type v} {γ : Type w}
+  {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
 
 /-! ### Definition of ordinals -/
 
