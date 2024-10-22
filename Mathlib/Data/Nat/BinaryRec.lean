@@ -20,8 +20,10 @@ universe u
 
 namespace Nat
 
-/-- `bit b` appends the digit `b` to the binary representation of its natural number input. -/
-def bit (b : Bool) : Nat → Nat := cond b (2 * · + 1) (2 * ·)
+/-- `bit b` appends the digit `b` to the little end of the binary representation of
+  its natural number input. -/
+def bit (b : Bool) (n : Nat) : Nat :=
+  cond b (n <<< 1 + 1) (n <<< 1)
 
 theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
 
