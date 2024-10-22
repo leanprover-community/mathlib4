@@ -231,7 +231,7 @@ def encodeSum : α ⊕ β → ℕ
   | Sum.inr b => 2 * encode b + 1
 
 /-- Explicit decoding function for the sum of two encodable types. -/
-def decodeSum (n : ℕ) : Option (Sum α β) :=
+def decodeSum (n : ℕ) : Option (α ⊕ β) :=
   match bodd n, div2 n with
   | false, m => (decode m : Option α).map Sum.inl
   | _, m => (decode m : Option β).map Sum.inr
