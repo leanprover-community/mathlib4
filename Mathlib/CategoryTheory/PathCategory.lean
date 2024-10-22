@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Robin Carlier
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Quotient
@@ -31,7 +31,7 @@ def Paths (V : Type u₁) : Type u₁ := V
 
 instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)⟩
 
-variable (V : Type u₁) [Quiver.{v₁ + 1} V]
+variable (V : Type u₁) [𝓠 : Quiver.{v₁ + 1} V]
 
 namespace Paths
 
@@ -48,6 +48,52 @@ variable {V}
 def of : V ⥤q Paths V where
   obj X := X
   map f := f.toPath
+
+/-- To prove a property on morphisms of a path category, it suffices to prove it for the indentity
+and prove that it is preserved by composition on the right by length 1 paths. -/
+lemma induction (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
+    (id : ∀ {v : V}, P (𝟙 (of.obj v)))
+    (comp : ∀ {u v w : V} (p : of.obj u ⟶ of.obj v) (q : v ⟶ w), P p → P (p ≫ of.map q)) :
+    ∀ {a b : Paths V} (f : a ⟶ b), P f := by
+  intro _ _ f
+  induction f with
+  | nil => exact id
+  | @cons a b f w h => exact comp f w h
+
+/-- To prove a property on morphisms of a path category, it suffices to prove it for the indentity
+and prove that it is preserved by composition on the left by length 1 paths. -/
+lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
+    (id : ∀ {v : V}, P (𝟙 (of.obj v)))
+    (comp : ∀ {u v w : V} (p : u ⟶ v) (q : of.obj v ⟶ of.obj w), P q → P (of.map p ≫ q)) :
+    ∀ {a b : Paths V} (f : a ⟶ b), P f := by
+  intro a b f
+  generalize h : f.length = k
+  induction k generalizing f a b with
+  | zero => cases f with
+    | nil => exact id
+    | cons _ _ => simp at h
+  | succ k h' => cases f with
+    | nil => simp at h
+    | @cons c _ u q =>
+      change 𝓠.Hom c b at q
+      obtain ⟨x, q', p, h''⟩ : ∃ (x : V) (q' : 𝓠.Hom (a : V) x) (p : (of.obj x) ⟶ b),
+        (@Quiver.Path.cons V _ a c b u q)= of.map q' ≫ p := by
+        clear h
+        induction u generalizing b with
+        | nil => use b, q, (𝟙 _); rfl
+        | @cons c₁ d p' q' h'' =>
+          obtain ⟨x, q'', p'', e⟩ := h'' q'
+          use x, q'', p''.cons q
+          rw [e]
+          rfl
+      rw [h''] at h |-
+      apply comp
+      apply h'
+      conv at h => lhs; congr; change Quiver.Path.comp (of.map q') p
+      rw [Quiver.Path.length_comp] at h; change (1 + _ = k + 1) at h
+      simp only [of_obj] at h
+      rw [Nat.add_comm] at h
+      cases h; rfl
 
 attribute [local ext (iff := false)] Functor.ext
 
