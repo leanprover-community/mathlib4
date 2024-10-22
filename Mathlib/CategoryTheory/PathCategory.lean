@@ -49,26 +49,28 @@ def of : V ⥤q Paths V where
   obj X := X
   map f := f.toPath
 
-/-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
-and prove that the properity is preserved under composition on the right with length 1 paths. -/
-lemma induction (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
-    (id : ∀ {v : V}, P (𝟙 (of.obj v)))
-    (comp : ∀ {u v w : V} (p : of.obj u ⟶ of.obj v) (q : v ⟶ w), P p → P (p ≫ of.map q)) :
-    ∀ {a b : Paths V} (f : a ⟶ b), P f := by
-  intro _ _ f
+/-- To prove a property on morphisms of a path category with given source `a`, it suffices to
+prove it for the identity and prove that the properity is preserved under composition on the right
+with length 1 paths. -/
+lemma induction_fixed_source {a : Paths V} (P : ∀ {b : Paths V}, (a ⟶ b) → Prop)
+    (id : P (𝟙 a))
+    (comp : ∀ {u v : V} (p : a ⟶ of.obj u) (q : u ⟶ v), P p → P (p ≫ of.map q)) :
+    ∀ {b : Paths V} (f : a ⟶ b), P f := by
+  intro _ f
   induction f with
   | nil => exact id
   | @cons a b f w h => exact comp f w h
 
-/-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
-and prove that the property is preserved under composition on the left with length 1 paths. -/
-lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
-    (id : ∀ {v : V}, P (𝟙 (of.obj v)))
-    (comp : ∀ {u v w : V} (p : u ⟶ v) (q : of.obj v ⟶ of.obj w), P q → P (of.map p ≫ q)) :
-    ∀ {a b : Paths V} (f : a ⟶ b), P f := by
-  intro a b f
+/-- To prove a property on morphisms of a path category with given target `b`, it suffices to prove
+it for the identity and prove that the properity is preserved under composition on the left
+with length 1 paths. -/
+lemma induction_fixed_target {b : Paths V} (P : ∀ {a : Paths V}, (a ⟶ b) → Prop)
+    (id : P (𝟙 b))
+    (comp : ∀ {u v : V} (p : of.obj v ⟶ b) (q : u ⟶ v), P p → P (of.map q ≫ p)) :
+    ∀ {a : Paths V} (f : a ⟶ b), P f := by
+  intro a f
   generalize h : f.length = k
-  induction k generalizing f a b with
+  induction k generalizing f a with
   | zero => cases f with
     | nil => exact id
     | cons _ _ => simp at h
@@ -78,7 +80,7 @@ lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
       change 𝓠.Hom c b at q
       obtain ⟨x, q', p, h''⟩ : ∃ (x : V) (q' : 𝓠.Hom (a : V) x) (p : (of.obj x) ⟶ b),
         (@Quiver.Path.cons V _ a c b u q)= of.map q' ≫ p := by
-        clear h
+        clear h; clear comp; clear id; clear h'; clear P
         induction u generalizing b with
         | nil => use b, q, (𝟙 _); rfl
         | @cons c₁ d p' q' h'' =>
@@ -94,6 +96,33 @@ lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
       simp only [of_obj] at h
       rw [Nat.add_comm] at h
       cases h; rfl
+
+/-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
+and prove that the properity is preserved under composition on the right with length 1 paths. -/
+lemma induction (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
+    (id : ∀ {v : V}, P (𝟙 (of.obj v)))
+    (comp : ∀ {u v w : V} (p : of.obj u ⟶ of.obj v) (q : v ⟶ w), P p → P (p ≫ of.map q)) :
+    ∀ {a b : Paths V} (f : a ⟶ b), P f := by
+  intro a
+  apply induction_fixed_source
+  · exact id
+  · intro _ _ _ _ h
+    apply comp
+    exact h
+
+/-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
+and prove that the property is preserved under composition on the left with length 1 paths. -/
+lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
+    (id : ∀ {v : V}, P (𝟙 (of.obj v)))
+    (comp : ∀ {u v w : V} (p : u ⟶ v) (q : of.obj v ⟶ of.obj w), P q → P (of.map p ≫ q)) :
+    ∀ {a b : Paths V} (f : a ⟶ b), P f := by
+  intro a b
+  revert a
+  apply induction_fixed_target
+  · exact id
+  · intro _ _ _ _ h
+    apply comp
+    exact h
 
 attribute [local ext (iff := false)] Functor.ext
 
