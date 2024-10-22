@@ -547,8 +547,7 @@ noncomputable abbrev coprod.desc {W X Y : C} [HasBinaryCoproduct X Y]
 noncomputable abbrev codiag (X : C) [HasBinaryCoproduct X X] : X ⨿ X ⟶ X :=
   coprod.desc (𝟙 _) (𝟙 _)
 
--- Porting note (#10618): simp removes as simp can prove this
-@[reassoc]
+@[reassoc, simp]
 theorem prod.lift_fst {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     prod.lift f g ≫ prod.fst = f :=
   limit.lift_π _ _
@@ -698,15 +697,15 @@ instance prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g :
     · rw [← cancel_mono g]
       simpa using congr_arg (fun f => f ≫ prod.snd) h⟩
 
-@[reassoc] -- Porting note (#10618): simp can prove these
+@[reassoc, simp]
 theorem prod.diag_map {X Y : C} (f : X ⟶ Y) [HasBinaryProduct X X] [HasBinaryProduct Y Y] :
     diag X ≫ prod.map f f = f ≫ diag Y := by simp
 
-@[reassoc] -- Porting note (#10618): simp can prove these
+@[reassoc, simp]
 theorem prod.diag_map_fst_snd {X Y : C} [HasBinaryProduct X Y] [HasBinaryProduct (X ⨯ Y) (X ⨯ Y)] :
     diag (X ⨯ Y) ≫ prod.map prod.fst prod.snd = 𝟙 (X ⨯ Y) := by simp
 
-@[reassoc] -- Porting note (#10618): simp can prove these
+@[reassoc, simp]
 theorem prod.diag_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
     (g : X ⟶ Y) (g' : X' ⟶ Y') :
     diag (X ⨯ X') ≫ prod.map (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' := by simp
