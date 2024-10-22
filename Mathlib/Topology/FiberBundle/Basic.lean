@@ -255,6 +255,9 @@ map. -/
 theorem isQuotientMap_proj [Nonempty F] : IsQuotientMap (π F E) :=
   (isOpenMap_proj F E).isQuotientMap (continuous_proj F E) (surjective_proj F E)
 
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_proj := isQuotientMap_proj
+
 theorem continuous_totalSpaceMk (x : B) : Continuous (@TotalSpace.mk B F E x) :=
   (totalSpaceMk_inducing F E x).continuous
 

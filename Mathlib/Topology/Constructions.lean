@@ -742,8 +742,14 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
 theorem isQuotientMap_fst [Nonempty Y] : IsQuotientMap (Prod.fst : X × Y → X) :=
   isOpenMap_fst.isQuotientMap continuous_fst Prod.fst_surjective
 
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_fst := isQuotientMap_fst
+
 theorem isQuotientMap_snd [Nonempty X] : IsQuotientMap (Prod.snd : X × Y → Y) :=
   isOpenMap_snd.isQuotientMap continuous_snd Prod.snd_surjective
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_snd := isQuotientMap_snd
 
 theorem closure_prod_eq {s : Set X} {t : Set Y} : closure (s ×ˢ t) = closure s ×ˢ closure t :=
   ext fun ⟨a, b⟩ => by
@@ -1150,6 +1156,9 @@ theorem IsQuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : IsQuotientMap 
     (hs.preimage hf.continuous).isOpenEmbedding_subtypeVal.open_iff_image_open,
     image_val_preimage_restrictPreimage]
 
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.restrictPreimage_isOpen := IsQuotientMap.restrictPreimage_isOpen
+
 open scoped Set.Notation in
 lemma isClosed_preimage_val {s t : Set X} : IsClosed (s ↓∩ t) ↔ s ∩ closure (s ∩ t) ⊆ t := by
   rw [← closure_eq_iff_isClosed, embedding_subtype_val.closure_eq_preimage_closure_image,
@@ -1174,6 +1183,9 @@ variable {r : X → X → Prop} {s : Setoid X}
 theorem isQuotientMap_quot_mk : IsQuotientMap (@Quot.mk X r) :=
   ⟨Quot.exists_rep, rfl⟩
 
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_quot_mk := isQuotientMap_quot_mk
+
 @[continuity, fun_prop]
 theorem continuous_quot_mk : Continuous (@Quot.mk X r) :=
   continuous_coinduced_rng
@@ -1185,6 +1197,9 @@ theorem continuous_quot_lift {f : X → Y} (hr : ∀ a b, r a b → f a = f b) (
 
 theorem isQuotientMap_quotient_mk' : IsQuotientMap (@Quotient.mk' X s) :=
   isQuotientMap_quot_mk
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_quotient_mk' := isQuotientMap_quotient_mk'
 
 theorem continuous_quotient_mk' : Continuous (@Quotient.mk' X s) :=
   continuous_coinduced_rng

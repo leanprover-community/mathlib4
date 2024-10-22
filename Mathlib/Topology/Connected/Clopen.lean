@@ -460,10 +460,16 @@ theorem IsQuotientMap.preimage_connectedComponent [TopologicalSpace β] {f : α 
       _).subset_connectedComponent mem_connectedComponent).antisymm
     (hf.continuous.mapsTo_connectedComponent a)
 
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.preimage_connectedComponent := IsQuotientMap.preimage_connectedComponent
+
 lemma IsQuotientMap.image_connectedComponent [TopologicalSpace β] {f : α → β} (hf : IsQuotientMap f)
     (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f '' connectedComponent a = connectedComponent (f a) := by
   rw [← hf.preimage_connectedComponent h_fibers, image_preimage_eq _ hf.surjective]
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.image_connectedComponent := IsQuotientMap.image_connectedComponent
 
 end Preconnected
 
@@ -507,6 +513,9 @@ theorem surjective_coe : Surjective (mk : α → ConnectedComponents α) :=
 
 theorem isQuotientMap_coe : IsQuotientMap (mk : α → ConnectedComponents α) :=
   isQuotientMap_quot_mk
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_coe := isQuotientMap_coe
 
 @[continuity]
 theorem continuous_coe : Continuous (mk : α → ConnectedComponents α) :=

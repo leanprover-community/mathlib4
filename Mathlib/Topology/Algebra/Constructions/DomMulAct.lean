@@ -54,6 +54,9 @@ theorem coe_mkHomeomorph_symm : ⇑(mkHomeomorph : M ≃ₜ Mᵈᵐᵃ).symm = m
   mkHomeomorph.isClosedEmbedding
 @[to_additive] theorem isQuotientMap_mk : IsQuotientMap (@mk M) := mkHomeomorph.isQuotientMap
 
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_mk := isQuotientMap_mk
+
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_mk := isClosedEmbedding_mk
 
@@ -78,6 +81,9 @@ alias closedEmbedding_mk_symm := isClosedEmbedding_mk_symm
 
 @[to_additive]
 theorem isQuotientMap_mk_symm : IsQuotientMap (@mk M).symm := mkHomeomorph.symm.isQuotientMap
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_mk_symm := isQuotientMap_mk_symm
 
 @[to_additive] instance instT0Space [T0Space M] : T0Space Mᵈᵐᵃ := embedding_mk_symm.t0Space
 @[to_additive] instance instT1Space [T1Space M] : T1Space Mᵈᵐᵃ := embedding_mk_symm.t1Space

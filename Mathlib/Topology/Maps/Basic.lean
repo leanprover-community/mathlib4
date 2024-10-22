@@ -235,10 +235,16 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 lemma isQuotientMap_iff : IsQuotientMap f ↔ Surjective f ∧ ∀ s, IsOpen s ↔ IsOpen (f ⁻¹' s) :=
   (isQuotientMap_iff' _).trans <| and_congr Iff.rfl TopologicalSpace.ext_iff
 
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_iff := isQuotientMap_iff
+
 theorem isQuotientMap_iff_closed :
     IsQuotientMap f ↔ Surjective f ∧ ∀ s : Set Y, IsClosed s ↔ IsClosed (f ⁻¹' s) :=
   isQuotientMap_iff.trans <| Iff.rfl.and <| compl_surjective.forall.trans <| by
     simp only [isOpen_compl_iff, preimage_compl]
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_iff_closed := isQuotientMap_iff_closed
 
 namespace IsQuotientMap
 
@@ -248,16 +254,19 @@ protected theorem id : IsQuotientMap (@id X) :=
 protected theorem comp (hg : IsQuotientMap g) (hf : IsQuotientMap f) : IsQuotientMap (g ∘ f) :=
   ⟨hg.surjective.comp hf.surjective, by rw [hg.eq_coinduced, hf.eq_coinduced, coinduced_compose]⟩
 
-protected theorem of_isQuotientMap_compose (hf : Continuous f) (hg : Continuous g)
+protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
     (hgf : IsQuotientMap (g ∘ f)) : IsQuotientMap g :=
   ⟨hgf.1.of_comp,
     le_antisymm
       (by rw [hgf.eq_coinduced, ← coinduced_compose]; exact coinduced_mono hf.coinduced_le)
       hg.coinduced_le⟩
 
+@[deprecated (since := "2024-10-22")]
+alias of_quotientMap_compose := of_comp
+
 theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : LeftInverse g f) :
     IsQuotientMap g :=
-  IsQuotientMap.of_isQuotientMap_compose hf hg <| h.comp_eq_id.symm ▸ IsQuotientMap.id
+  hf.of_comp hg <| h.comp_eq_id.symm ▸ IsQuotientMap.id
 
 protected theorem continuous_iff (hf : IsQuotientMap f) : Continuous g ↔ Continuous (g ∘ f) := by
   rw [continuous_iff_coinduced_le, continuous_iff_coinduced_le, hf.eq_coinduced, coinduced_compose]
@@ -330,6 +339,9 @@ theorem isQuotientMap (open_map : IsOpenMap f) (cont : Continuous f) (surj : Sur
     IsQuotientMap f :=
   isQuotientMap_iff.2
     ⟨surj, fun s => ⟨fun h => h.preimage cont, fun h => surj.image_preimage s ▸ open_map _ h⟩⟩
+
+@[deprecated (since := "2024-10-22")]
+alias to_quotientMap := isQuotientMap
 
 theorem interior_preimage_subset_preimage_interior (hf : IsOpenMap f) {s : Set Y} :
     interior (f ⁻¹' s) ⊆ f ⁻¹' interior s :=
@@ -423,6 +435,9 @@ theorem isQuotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
     (hsurj : Surjective f) : IsQuotientMap f :=
   isQuotientMap_iff_closed.2 ⟨hsurj, fun s =>
     ⟨fun hs => hs.preimage hcont, fun hs => hsurj.image_preimage s ▸ hcl _ hs⟩⟩
+
+@[deprecated (since := "2024-10-22")]
+alias to_quotientMap := isQuotientMap
 
 end IsClosedMap
 

@@ -211,6 +211,9 @@ theorem IsQuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y} (hf : Is
     SequentialSpace Y :=
   hf.2.symm ▸ .coinduced f
 
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.sequentialSpace := IsQuotientMap.sequentialSpace
+
 /-- The quotient of a sequential space is a sequential space. -/
 instance Quotient.instSequentialSpace [SequentialSpace X] {s : Setoid X} :
     SequentialSpace (Quotient s) :=

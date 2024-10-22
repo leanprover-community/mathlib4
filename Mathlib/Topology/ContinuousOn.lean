@@ -1095,6 +1095,9 @@ theorem IsQuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β → γ} (h
   simp only [continuousOn_iff_continuous_restrict, (h.restrictPreimage_isOpen hs).continuous_iff]
   rfl
 
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.continuousOn_isOpen_iff := IsQuotientMap.continuousOn_isOpen_iff
+
 theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}
     (h : IsOpenMap (s.restrict f)) {finv : β → α} (hleft : LeftInvOn finv f s) :
     ContinuousOn finv (f '' s) := by

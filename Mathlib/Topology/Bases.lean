@@ -356,6 +356,9 @@ theorem _root_.IsQuotientMap.separableSpace [SeparableSpace α] [TopologicalSpac
     (hf : IsQuotientMap f) : SeparableSpace β :=
   hf.surjective.denseRange.separableSpace hf.continuous
 
+@[deprecated (since := "2024-10-22")]
+alias _root_.QuotientMap.separableSpace := _root_.IsQuotientMap.separableSpace
+
 /-- The product of two separable spaces is a separable space. -/
 instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
@@ -931,6 +934,9 @@ theorem IsTopologicalBasis.isQuotientMap {V : Set (Set X)} (hV : IsTopologicalBa
     have πZ_in_U : π '' Z ⊆ U := (Set.image_subset _ Z_in_W).trans (image_preimage_subset π U)
     exact ⟨π '' Z, ⟨Z, Z_in_V, rfl⟩, ⟨x, x_in_Z, rfl⟩, πZ_in_U⟩
 
+@[deprecated (since := "2024-10-22")]
+alias IsTopologicalBasis.quotientMap := IsTopologicalBasis.isQuotientMap
+
 /-- A second countable space is mapped by an open quotient map to a second countable space. -/
 theorem _root_.IsQuotientMap.secondCountableTopology [SecondCountableTopology X]
     (h' : IsQuotientMap π) (h : IsOpenMap π) : SecondCountableTopology Y where
@@ -938,6 +944,9 @@ theorem _root_.IsQuotientMap.secondCountableTopology [SecondCountableTopology X]
     obtain ⟨V, V_countable, -, V_generates⟩ := exists_countable_basis X
     exact ⟨Set.image π '' V, V_countable.image (Set.image π),
       (V_generates.isQuotientMap h' h).eq_generateFrom⟩
+
+@[deprecated (since := "2024-10-22")]
+alias _root_.QuotientMap.secondCountableTopology := _root_.IsQuotientMap.secondCountableTopology
 
 variable {S : Setoid X}
 

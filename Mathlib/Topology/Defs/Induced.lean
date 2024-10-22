@@ -135,3 +135,6 @@ structure IsQuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : 
     (f : X → Y) : Prop where
   surjective : Function.Surjective f
   eq_coinduced : tY = tX.coinduced f
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap := IsQuotientMap

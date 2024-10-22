@@ -61,6 +61,9 @@ theorem QuotientRing.isOpenQuotientMap_mk : IsOpenQuotientMap (mk N) :=
 theorem QuotientRing.isQuotientMap_coe_coe : IsQuotientMap fun p : R × R => (mk N p.1, mk N p.2) :=
   ((isOpenQuotientMap_mk N).prodMap (isOpenQuotientMap_mk N)).isQuotientMap
 
+@[deprecated (since := "2024-10-22")]
+alias QuotientRing.quotientMap_coe_coe := QuotientRing.isQuotientMap_coe_coe
+
 instance topologicalRing_quotient : TopologicalRing (R ⧸ N) where
   __ := QuotientAddGroup.instTopologicalAddGroup _
   continuous_mul := (QuotientRing.isQuotientMap_coe_coe N).continuous_iff.2 <|

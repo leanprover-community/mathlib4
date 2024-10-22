@@ -73,4 +73,7 @@ theorem effectiveEpi_iff_isQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) :
     rw [isOpen_coinduced (f := (homeoOfIso i ∘ π)), coequalizer_isOpen_iff _ U, ← this]
     rfl
 
+@[deprecated (since := "2024-10-22")]
+alias effectiveEpi_iff_quotientMap := effectiveEpi_iff_isQuotientMap
+
 end TopCat

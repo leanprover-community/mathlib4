@@ -1868,6 +1868,9 @@ theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f :
     (hsurj : Surjective f) (hcont : Continuous f) : IsQuotientMap f :=
   hcont.isClosedMap.isQuotientMap hcont hsurj
 
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.of_surjective_continuous := IsQuotientMap.of_surjective_continuous
+
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by
   refine ⟨fun h x hx y hy => ?_, Set.Subsingleton.isPreirreducible⟩

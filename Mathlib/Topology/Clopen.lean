@@ -124,6 +124,9 @@ protected theorem IsQuotientMap.isClopen_preimage {f : X → Y} (hf : IsQuotient
     IsClopen (f ⁻¹' s) ↔ IsClopen s :=
   and_congr hf.isClosed_preimage hf.isOpen_preimage
 
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.isClopen_preimage := IsQuotientMap.isClopen_preimage
+
 theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by
   rw [continuous_bool_rng true, preimage_boolIndicator_true]

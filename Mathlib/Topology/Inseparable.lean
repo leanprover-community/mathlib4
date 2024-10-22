@@ -518,6 +518,9 @@ def mk : X → SeparationQuotient X := Quotient.mk''
 theorem isQuotientMap_mk : IsQuotientMap (mk : X → SeparationQuotient X) :=
   isQuotientMap_quot_mk
 
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_mk := isQuotientMap_mk
+
 @[fun_prop, continuity]
 theorem continuous_mk : Continuous (mk : X → SeparationQuotient X) :=
   continuous_quot_mk
@@ -610,6 +613,9 @@ theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
 /-- The map `(x, y) ↦ (mk x, mk y)` is a quotient map. -/
 theorem isQuotientMap_prodMap_mk : IsQuotientMap (Prod.map mk mk : X × Y → _) :=
   (isOpenQuotientMap_mk.prodMap isOpenQuotientMap_mk).isQuotientMap
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_prodMap_mk := isQuotientMap_prodMap_mk
 
 /-- Lift a map `f : X → α` such that `Inseparable x y → f x = f y` to a map
 `SeparationQuotient X → α`. -/

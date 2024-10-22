@@ -210,9 +210,12 @@ protected theorem inducing (h : X ≃ₜ Y) : Inducing h :=
 theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› :=
   h.inducing.1.symm
 
-protected theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
-  IsQuotientMap.of_isQuotientMap_compose h.symm.continuous h.continuous <| by
+theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
+  IsQuotientMap.of_comp h.symm.continuous h.continuous <| by
     simp only [self_comp_symm, IsQuotientMap.id]
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap := isQuotientMap
 
 theorem coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
   h.isQuotientMap.2.symm
@@ -917,6 +920,9 @@ protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
 lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
 lemma isClosedEmbedding : IsClosedEmbedding f := (hf.homeomorph f).isClosedEmbedding
 lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap := isQuotientMap
 
 @[deprecated (since := "2024-10-20")] alias closedEmbedding := isClosedEmbedding
 @[deprecated (since := "2024-10-18")]

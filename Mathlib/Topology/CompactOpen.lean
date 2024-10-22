@@ -459,11 +459,17 @@ theorem IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) {g : X ×
     exact Gf.continuous
   exact ContinuousMap.continuous_uncurry_of_continuous ⟨G, this⟩
 
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.continuous_lift_prod_left := IsQuotientMap.continuous_lift_prod_left
+
 theorem IsQuotientMap.continuous_lift_prod_right (hf : IsQuotientMap f) {g : Y × X → Z}
     (hg : Continuous fun p : Y × X₀ => g (p.1, f p.2)) : Continuous g := by
   have : Continuous fun p : X₀ × Y => g ((Prod.swap p).1, f (Prod.swap p).2) :=
     hg.comp continuous_swap
   have : Continuous fun p : X₀ × Y => (g ∘ Prod.swap) (f p.1, p.2) := this
   exact (hf.continuous_lift_prod_left this).comp continuous_swap
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.continuous_lift_prod_right := IsQuotientMap.continuous_lift_prod_right
 
 end IsQuotientMap
