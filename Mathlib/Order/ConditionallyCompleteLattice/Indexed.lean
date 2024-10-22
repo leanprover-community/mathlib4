@@ -475,7 +475,7 @@ theorem ciSup_le' {f : ι → α} {a : α} (h : ∀ i, f i ≤ a) : ⨆ i, f i �
 /-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
 from `lt_ciSup_iff`. -/
 theorem lt_ciSup_iff' {f : ι → α} (h : BddAbove (range f)) : a < iSup f ↔ ∃ i, a < f i := by
-    simpa only [not_le, not_forall] using (ciSup_le_iff' h).not
+  simpa only [not_le, not_forall] using (ciSup_le_iff' h).not
 
 theorem exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : ∃ i, a < f i := by
   contrapose! h
