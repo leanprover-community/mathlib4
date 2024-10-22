@@ -34,8 +34,7 @@ variable {α ι : Type*} {β : ι → Type*} [Fintype ι] [∀ i, DecidableEq (�
 variable {γ : ι → Type*} [∀ i, DecidableEq (γ i)]
 
 /-- The Hamming distance function to the naturals. -/
-def hammingDist (x y : ∀ i, β i) : ℕ :=
-  (univ.filter fun i => x i ≠ y i).card
+def hammingDist (x y : ∀ i, β i) : ℕ := #{i | x i ≠ y i}
 
 /-- Corresponds to `dist_self`. -/
 @[simp]
@@ -133,8 +132,7 @@ section Zero
 variable [∀ i, Zero (β i)] [∀ i, Zero (γ i)]
 
 /-- The Hamming weight function to the naturals. -/
-def hammingNorm (x : ∀ i, β i) : ℕ :=
-  (univ.filter (x · ≠ 0)).card
+def hammingNorm (x : ∀ i, β i) : ℕ := #{i | x i ≠ 0}
 
 /-- Corresponds to `dist_zero_right`. -/
 @[simp]
