@@ -48,8 +48,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 -- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
 -- attribute [nolint dangerousInstance] AlgHomClass.toRingHomClass
 
--- Porting note (#10618): simp can prove this
--- attribute [simp] AlgHomClass.commutes
+attribute [simp] AlgHomClass.commutes
 
 namespace AlgHomClass
 
@@ -192,7 +191,6 @@ theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁
 theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
   rfl
 
-@[simp]
 theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
   φ.commutes' r
 
