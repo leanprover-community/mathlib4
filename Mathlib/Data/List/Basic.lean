@@ -1122,8 +1122,6 @@ theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a _ => a) a l = a :=
 theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
   foldr_fixed' fun _ => rfl
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem foldr_eta : ∀ l : List α, foldr cons [] l = l := by
   simp only [foldr_cons_eq_append, append_nil, forall_const]
 

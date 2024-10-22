@@ -17,7 +17,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 /-!
 # Dependent functions with finite support
 
-For a non-dependent version see `data/finsupp.lean`.
+For a non-dependent version see `Mathlib.Data.Finsupp.Defs`.
 
 ## Notation
 
@@ -554,7 +554,6 @@ theorem single_apply {i i' b} :
 theorem single_zero (i) : (single i 0 : Π₀ i, β i) = 0 :=
   DFunLike.coe_injective <| Pi.single_zero _
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem single_eq_same {i b} : (single i b : Π₀ i, β i) i = b := by
   simp only [single_apply, dite_eq_ite, ite_true]
 
@@ -655,7 +654,6 @@ def erase (i : ι) (x : Π₀ i, β i) : Π₀ i, β i :=
 theorem erase_apply {i j : ι} {f : Π₀ i, β i} : (f.erase i) j = if j = i then 0 else f j :=
   rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem erase_same {i : ι} {f : Π₀ i, β i} : (f.erase i) i = 0 := by simp
 
 theorem erase_ne {i i' : ι} {f : Π₀ i, β i} (h : i' ≠ i) : (f.erase i) i' = f i' := by simp [h]
