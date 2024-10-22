@@ -236,8 +236,7 @@ theorem aleph'_nat : ∀ n : ℕ, aleph' n = n
 set_option linter.docPrime false in
 @[simp]
 theorem lift_aleph' (o : Ordinal.{u}) : lift.{v} (aleph' o) = aleph' (Ordinal.lift.{v} o) :=
-  ((InitialSeg.ofIso aleph'.toRelIsoLT).trans liftInitialSeg).eq
-    (Ordinal.liftInitialSeg.trans (InitialSeg.ofIso aleph'.toRelIsoLT)) o
+  (aleph'.toInitialSeg.trans liftInitialSeg).eq (Ordinal.liftInitialSeg.trans aleph'.toInitialSeg) o
 
 theorem aleph'_le_of_limit {o : Ordinal} (l : o.IsLimit) {c} :
     aleph' o ≤ c ↔ ∀ o' < o, aleph' o' ≤ c :=
