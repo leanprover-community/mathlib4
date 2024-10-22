@@ -827,7 +827,7 @@ def prodPiCons [DecidableEq α] (f : α → Type*) {a : α} (has : a ∉ s) (x :
     if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_cons_of_ne hi h)
 
 /-- The equivalence between pi types on cons and the product. -/
-def consPiEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+def consPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
     (Π i ∈ cons a s has, f i) ≃ f a × Π i ∈ s, f i where
   toFun := consPiProd f has
   invFun := prodPiCons f has
@@ -992,7 +992,7 @@ theorem mem_insert_of_mem (h : a ∈ s) : a ∈ insert b s :=
 theorem mem_of_mem_insert_of_ne (h : b ∈ insert a s) : b ≠ a → b ∈ s :=
   (mem_insert.1 h).resolve_left
 
-theorem eq_of_not_mem_of_mem_insert (ha : b ∈ insert a s) (hb : b ∉ s) : b = a :=
+theorem eq_of_mem_insert_of_not_mem (ha : b ∈ insert a s) (hb : b ∉ s) : b = a :=
   (mem_insert.1 ha).resolve_right hb
 
 /-- A version of `LawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
@@ -1076,7 +1076,7 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   simp_rw [← coe_subset]; simp [-coe_subset, ha]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_not_mem_of_mem_insert (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
+  ⟨fun h => eq_of_mem_insert_of_not_mem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 
 theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := fun _ h _ _ =>
   (insert_inj h).1
@@ -1185,7 +1185,7 @@ def prodPiInsert (f : α → Type*) {a : α} (x : f a × Π i ∈ s, f i) : (Π 
     if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_insert_of_ne hi h)
 
 /-- The equivalence between pi types on insert and the product. -/
-def insertPiEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+def insertPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
     (Π i ∈ insert a s, f i) ≃ f a × Π i ∈ s, f i where
   toFun := insertPiProd f
   invFun := prodPiInsert f
