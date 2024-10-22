@@ -328,7 +328,6 @@ theorem support_pow_le (σ : Perm α) (n : ℕ) : (σ ^ n).support ≤ σ.suppor
 theorem support_inv (σ : Perm α) : support σ⁻¹ = σ.support := by
   simp_rw [Finset.ext_iff, mem_support, not_iff_not, inv_eq_iff_eq.trans eq_comm, imp_true_iff]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
   rw [mem_support, mem_support, Ne, Ne, apply_eq_iff_eq]
 
@@ -363,11 +362,9 @@ lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
     · rw [ofSubtype_apply_of_not_mem (p := (· ∈ s)) _ ha, eq_comm, ← not_mem_support]
       exact Finset.not_mem_mono hc ha
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   simp only [mem_support, ne_eq, apply_pow_apply_eq_iff]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem zpow_apply_mem_support {n : ℤ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   simp only [mem_support, ne_eq, apply_zpow_apply_eq_iff]
 
@@ -535,7 +532,6 @@ end ExtendDomain
 
 section Card
 
--- @[simp] -- Porting note (#10618): simp can prove thisrove this
 theorem card_support_eq_zero {f : Perm α} : f.support.card = 0 ↔ f = 1 := by
   rw [Finset.card_eq_zero, support_eq_empty_iff]
 
