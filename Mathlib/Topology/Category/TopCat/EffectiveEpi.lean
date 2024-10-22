@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
-import Mathlib.CategoryTheory.EffectiveEpi.Comp
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 /-!
 
@@ -61,7 +60,7 @@ theorem effectiveEpi_iff_quotientMap {B X : TopCat.{u}} (π : X ⟶ B) :
   let F := parallelPair hπ.left hπ.right
   let i : B ≅ colimit F := hπ.isColimit.coconePointUniqueUpToIso (colimit.isColimit _)
   suffices QuotientMap (homeoOfIso i ∘ π) by
-    simpa [← Function.comp.assoc] using (homeoOfIso i).symm.quotientMap.comp this
+    simpa [← Function.comp_assoc] using (homeoOfIso i).symm.quotientMap.comp this
   constructor
   /- Effective epimorphisms are epimorphisms and epimorphisms in `TopCat` are surjective. -/
   · change Function.Surjective (π ≫ i.hom)

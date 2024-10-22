@@ -450,6 +450,25 @@ theorem det_pos [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : 0 < det 
   intro i _
   simpa using hM.eigenvalues_pos i
 
+theorem isUnit [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : IsUnit M :=
+  isUnit_iff_isUnit_det _ |>.2 <| hM.det_pos.ne'.isUnit
+
+protected theorem inv [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : M⁻¹.PosDef := by
+  refine ⟨hM.isHermitian.inv, fun x hx => ?_⟩
+  have := hM.2 (M⁻¹ *ᵥ x) ((Matrix.mulVec_injective_iff_isUnit.mpr ?_ |>.ne_iff' ?_).2 hx)
+  · let _inst := hM.isUnit.invertible
+    rwa [star_mulVec, mulVec_mulVec, Matrix.mul_inv_of_invertible, one_mulVec,
+      ← star_pos_iff, ← star_mulVec, ← star_dotProduct] at this
+  · simpa using hM.isUnit
+  · simp
+
+@[simp]
+theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n 𝕜} :
+    M⁻¹.PosDef ↔ M.PosDef :=
+  ⟨fun h =>
+    letI := (Matrix.isUnit_nonsing_inv_iff.1 <| h.isUnit).invertible
+    Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
+
 end PosDef
 
 end Matrix

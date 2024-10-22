@@ -36,7 +36,7 @@ open Matrix
 
 namespace Matrix
 
-variable {l m n : ℕ} {α β : Type*}
+variable {l m n : ℕ} {α : Type*}
 
 /-- `∀` with better defeq for `∀ x : Matrix (Fin m) (Fin n) α, P x`. -/
 def Forall : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
@@ -51,7 +51,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
 ```
 -/
 theorem forall_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Forall P ↔ ∀ x, P x
-  | 0, n, P => Iff.symm Fin.forall_fin_zero_pi
+  | 0, _, _ => Iff.symm Fin.forall_fin_zero_pi
   | m + 1, n, P => by
     simp only [Forall, FinVec.forall_iff, forall_iff]
     exact Iff.symm Fin.forall_fin_succ_pi
@@ -73,7 +73,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
 ```
 -/
 theorem exists_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Exists P ↔ ∃ x, P x
-  | 0, n, P => Iff.symm Fin.exists_fin_zero_pi
+  | 0, _, _ => Iff.symm Fin.exists_fin_zero_pi
   | m + 1, n, P => by
     simp only [Exists, FinVec.exists_iff, exists_iff]
     exact Iff.symm Fin.exists_fin_succ_pi
@@ -95,7 +95,7 @@ example (a b c d : α) : transpose !![a, b; c, d] = !![a, c; b, d] := (transpose
 -/
 @[simp]
 theorem transposeᵣ_eq : ∀ {m n} (A : Matrix (Fin m) (Fin n) α), transposeᵣ A = transpose A
-  | _, 0, A => Subsingleton.elim _ _
+  | _, 0, _ => Subsingleton.elim _ _
   | m, n + 1, A =>
     Matrix.ext fun i j => by
       simp_rw [transposeᵣ, transposeᵣ_eq]

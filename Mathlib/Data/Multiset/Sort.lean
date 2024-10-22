@@ -62,6 +62,11 @@ theorem map_sort (f : α → β) (s : Multiset α)
   revert s
   exact Quot.ind fun _ => List.map_mergeSort' _ _ _ _
 
+theorem sort_cons (a : α) (s : Multiset α) :
+    (∀ b ∈ s, r a b) → sort r (a ::ₘ s) = a :: sort r s := by
+  refine Quot.inductionOn s fun l => ?_
+  simpa [mergeSort'_eq_insertionSort] using insertionSort_cons r
+
 end sort
 
 -- TODO: use a sort order if available, gh-18166

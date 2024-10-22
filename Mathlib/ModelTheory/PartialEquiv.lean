@@ -411,16 +411,41 @@ instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
 @[simps]
 def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.1.symm, f.1.dom_fg_iff_cod_fg.1 f.2⟩
 
-lemma IsExtensionPair_iff_cod : L.IsExtensionPair M N ↔
+lemma isExtensionPair_iff_cod : L.IsExtensionPair M N ↔
     ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.1.cod ∧ f ≤ g := by
   refine Iff.intro ?_ ?_ <;>
   · intro h f m
     obtain ⟨g, h1, h2⟩ := h f.symm m
     exact ⟨g.symm, h1, monotone_symm h2⟩
 
+/-- An alternate characterization of an extension pair is that every finitely generated partial
+isomorphism can be extended to include any particular element of the domain. -/
+theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
+    L.IsExtensionPair M N ↔
+    ∀ (S : L.Substructure M) (_ : S.FG) (f : S ↪[L] N) (m : M),
+      ∃ g : (closure L {m} ⊔ S : L.Substructure M) ↪[L] N, f =
+        g.comp (Substructure.inclusion le_sup_right) := by
+  refine ⟨fun h S S_FG f m => ?_, fun h ⟨f, f_FG⟩ m => ?_⟩
+  · obtain ⟨⟨f', hf'⟩, mf', ff'1, ff'2⟩ := h ⟨⟨S, _, f.equivRange⟩, S_FG⟩ m
+    refine ⟨f'.toEmbedding.comp (Substructure.inclusion ?_), ?_⟩
+    · simp only [sup_le_iff, ff'1, closure_le, singleton_subset_iff, SetLike.mem_coe, mf',
+        and_self]
+    · ext ⟨x, hx⟩
+      rw [Embedding.subtype_equivRange] at ff'2
+      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion, inclusion_mk,
+        Equiv.coe_toEmbedding, coeSubtype, PartialEquiv.toEmbedding_apply]
+  · obtain ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
+    refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,
+      (fg_closure_singleton _).sup f_FG⟩,
+      subset_closure.trans (le_sup_left : (closure L) {m} ≤ _) (mem_singleton m),
+      ⟨le_sup_right, Embedding.ext (fun _ => ?_)⟩⟩
+    rw [PartialEquiv.toEmbedding] at eq_f'
+    simp only [Embedding.comp_apply, Substructure.coe_inclusion, Equiv.coe_toEmbedding, coeSubtype,
+      Embedding.equivRange_apply, eq_f']
+
 namespace IsExtensionPair
 
-protected alias ⟨cod, _⟩ := IsExtensionPair_iff_cod
+protected alias ⟨cod, _⟩ := isExtensionPair_iff_cod
 
 /-- The cofinal set of finite equivalences with a given element in their domain. -/
 def definedAtLeft

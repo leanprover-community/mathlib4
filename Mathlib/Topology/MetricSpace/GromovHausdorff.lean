@@ -282,7 +282,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     let F : (X ⊕ Y) × (X ⊕ Y) → ℝ := fun p => dist (f p.1) (f p.2)
     -- check that the induced "distance" is a candidate
     have Fgood : F ∈ candidates X Y := by
-      simp only [F, candidates, forall_const, and_true_iff, add_comm, eq_self_iff_true,
+      simp only [F, candidates, forall_const, add_comm, eq_self_iff_true,
         dist_eq_zero, and_self_iff, Set.mem_setOf_eq]
       repeat' constructor
       · exact fun x y =>
@@ -398,7 +398,7 @@ instance : MetricSpace GHSpace where
       · exact ⟨0, by rintro b ⟨⟨u, v⟩, -, rfl⟩; exact hausdorffDist_nonneg⟩
       · simp only [mem_image, mem_prod, mem_setOf_eq, Prod.exists]
         exists y, y
-        simpa only [and_self_iff, hausdorffDist_self_zero, eq_self_iff_true, and_true_iff]
+        simpa only [and_self_iff, hausdorffDist_self_zero, eq_self_iff_true, and_true]
     · apply le_csInf
       · exact Set.Nonempty.image _ <| Set.Nonempty.prod ⟨y, hy⟩ ⟨y, hy⟩
       · rintro b ⟨⟨u, v⟩, -, rfl⟩; exact hausdorffDist_nonneg

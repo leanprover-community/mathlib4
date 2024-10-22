@@ -125,6 +125,8 @@ section
 
 variable {F : C ⥤ D}
 
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
+
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/
 def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
@@ -132,10 +134,7 @@ def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
   desc B := StructuredArrow.homMk ((h.homEquiv _ _).symm B.pt.hom)
   uniq s m _ := by
     apply StructuredArrow.ext
-    dsimp
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [Equiv.eq_symm_apply, Adjunction.homEquiv_unit]
-    apply StructuredArrow.w m
+    simp [← StructuredArrow.w m]
 
 /-- Given a right adjoint to `F`, we can construct a terminal object in each costructured arrow
 category on `F`. -/
@@ -144,9 +143,7 @@ def mkTerminalOfRightAdjoint (h : F ⊣ G) (A : D) :
   lift B := CostructuredArrow.homMk (h.homEquiv _ _ B.pt.hom)
   uniq s m _ := by
     apply CostructuredArrow.ext
-    dsimp
-    rw [h.eq_homEquiv_apply, Adjunction.homEquiv_counit]
-    exact CostructuredArrow.w m
+    simp [← CostructuredArrow.w m]
 
 end
 
