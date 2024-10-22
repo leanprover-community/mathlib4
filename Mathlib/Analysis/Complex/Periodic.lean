@@ -34,7 +34,7 @@ variable (h : ℝ)
 def qParam (z : ℂ) : ℂ := exp (2 * π * I * z / h)
 
 /-- One-sided inverse of `qParam h`. -/
-def InvqParam (q : ℂ) : ℂ := h / (2 * π * I) * log q
+def invQParam (q : ℂ) : ℂ := h / (2 * π * I) * log q
 
 local notation "𝕢" => qParam
 
@@ -45,21 +45,21 @@ theorem abs_qParam (z : ℂ) : abs (𝕢 h z) = Real.exp (-2 * π * im z / h) :=
     mul_zero, sub_zero, I_re, mul_im, zero_mul, add_zero, I_im, mul_one, sub_self, zero_sub,
     neg_mul]
 
-theorem im_InvqParam (q : ℂ) : im (InvqParam h q) = -h / (2 * π) * Real.log (abs q) := by
-  simp only [InvqParam, ← div_div, div_I, neg_mul, neg_im, mul_im, mul_re, div_ofReal_re,
+theorem im_invQParam (q : ℂ) : im (invQParam h q) = -h / (2 * π) * Real.log (abs q) := by
+  simp only [invQParam, ← div_div, div_I, neg_mul, neg_im, mul_im, mul_re, div_ofReal_re,
     div_ofNat_re, ofReal_re, I_re, mul_zero, div_ofReal_im, div_ofNat_im, ofReal_im, zero_div, I_im,
     mul_one, sub_self, zero_mul, add_zero, log_re, zero_add, neg_div]
 
 variable {h} -- next few theorems all assume h ≠ 0 or 0 < h
 
 theorem qParam_right_inv (hh : h ≠ 0) {e : ℂ} (hq : e ≠ 0) :
-    𝕢 h (InvqParam h e) = e := by
-  simp only [qParam, InvqParam, ← mul_assoc, mul_div_cancel₀ _ two_pi_I_ne_zero,
+    𝕢 h (invQParam h e) = e := by
+  simp only [qParam, invQParam, ← mul_assoc, mul_div_cancel₀ _ two_pi_I_ne_zero,
     mul_div_cancel_left₀ _ (ofReal_ne_zero.mpr hh), exp_log hq]
 
 theorem qParam_left_inv_mod_period (hh : h ≠ 0) (z : ℂ) :
-    ∃ m : ℤ, InvqParam h (𝕢 h z) = z + m * h := by
-  dsimp only [qParam, InvqParam]
+    ∃ m : ℤ, invQParam h (𝕢 h z) = z + m * h := by
+  dsimp only [qParam, invQParam]
   obtain ⟨m, hm⟩ := log_exp_exists (2 * ↑π * I * z / ↑h)
   refine ⟨m, by rw [hm, mul_div_assoc, mul_comm (m : ℂ), ← mul_add, ← mul_assoc,
     div_mul_cancel₀ _ two_pi_I_ne_zero, mul_add, mul_div_cancel₀ _ (mod_cast hh), mul_comm]⟩
@@ -78,8 +78,8 @@ theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := b
   refine Real.tendsto_exp_atBot.comp (.atBot_div_const hh (tendsto_id.const_mul_atTop_of_neg ?_))
   simpa using Real.pi_pos
 
-theorem InvqParam_tendsto (hh : 0 < h) : Tendsto (InvqParam h) (𝓝[≠] 0) I∞ := by
-  simp only [tendsto_comap_iff, comp_def, im_InvqParam]
+theorem invQParam_tendsto (hh : 0 < h) : Tendsto (invQParam h) (𝓝[≠] 0) I∞ := by
+  simp only [tendsto_comap_iff, comp_def, im_invQParam]
   apply Tendsto.const_mul_atBot_of_neg (div_neg_of_neg_of_pos (neg_lt_zero.mpr hh) (by positivity))
   exact Real.tendsto_log_nhdsWithin_zero_right.comp tendsto_norm_nhdsWithin_zero
 
@@ -89,12 +89,12 @@ section PeriodicOnℂ
 
 variable (h : ℝ) (f : ℂ → ℂ)
 
-/-- The function `q ↦ f (InvqParam h q)`, extended by a non-canonical choice of limit at 0. -/
+/-- The function `q ↦ f (invQParam h q)`, extended by a non-canonical choice of limit at 0. -/
 def cuspFcn : ℂ → ℂ :=
-  update (f ∘ InvqParam h) 0 (limUnder (𝓝[≠] 0) (f ∘ InvqParam h))
+  update (f ∘ invQParam h) 0 (limUnder (𝓝[≠] 0) (f ∘ invQParam h))
 
 theorem cuspFcn_eq_of_nonzero {q : ℂ} (hq : q ≠ 0) :
-    cuspFcn h f q = f (InvqParam h q) :=
+    cuspFcn h f q = f (invQParam h q) :=
   update_noteq hq ..
 
 theorem cuspFcn_zero_eq_limUnder_nhds_ne :
@@ -107,7 +107,7 @@ variable {f h}
 
 theorem eq_cuspFcn (hh : h ≠ 0) (hf : Periodic f h) (z : ℂ) :
     (cuspFcn h f) (𝕢 h z) = f z := by
-  have : (cuspFcn h f) (𝕢 h z) = f (InvqParam h (𝕢 h z)) := by
+  have : (cuspFcn h f) (𝕢 h z) = f (invQParam h (𝕢 h z)) := by
     rw [cuspFcn, update_noteq, comp_apply]
     exact exp_ne_zero _
   obtain ⟨m, hm⟩ := qParam_left_inv_mod_period hh z
@@ -121,7 +121,7 @@ variable {h : ℝ} {f : ℂ → ℂ}
 
 /--
 Key technical lemma: the function `cuspFcn h f` is differentiable at the images of
-differentiability points of `f` (even if `InvqParam` is not differentiable there).
+differentiability points of `f` (even if `invQParam` is not differentiable there).
 -/
 theorem differentiableAt_cuspFcn (hh : h ≠ 0) (hf : Periodic f h)
     {z : ℂ} (hol_z : DifferentiableAt ℂ f z) :
@@ -146,10 +146,10 @@ theorem differentiableAt_cuspFcn (hh : h ≠ 0) (hf : Periodic f h)
     at hol_z
   exact (hol_z.comp q diff_L).congr_of_eventuallyEq hF.symm
 
-theorem eventually_differentiableAt_nhd_zero (hh : 0 < h) (hf : Periodic f h)
+theorem eventually_differentiableAt_cuspFcn_nhds_ne_zero (hh : 0 < h) (hf : Periodic f h)
     (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) :
     ∀ᶠ q in 𝓝[≠] 0, DifferentiableAt ℂ (cuspFcn h f) q := by
-  refine ((InvqParam_tendsto hh).eventually h_hol).mp ?_
+  refine ((invQParam_tendsto hh).eventually h_hol).mp ?_
   refine eventually_nhdsWithin_of_forall (fun q hq h_diff ↦ ?_)
   rw [← qParam_right_inv hh.ne' hq]
   exact differentiableAt_cuspFcn  hh.ne' hf h_diff
@@ -162,19 +162,19 @@ variable {h : ℝ} {f : ℂ → ℂ}
 
 theorem boundedAtFilter_cuspFcn (hh : 0 < h) (h_bd : BoundedAtFilter I∞ f) :
     BoundedAtFilter (𝓝[≠] 0) (cuspFcn h f) := by
-  refine (h_bd.comp_tendsto <| InvqParam_tendsto hh).congr' ?_ (by rfl)
+  refine (h_bd.comp_tendsto <| invQParam_tendsto hh).congr' ?_ (by rfl)
   refine eventually_nhdsWithin_of_forall fun q hq ↦ ?_
   rw [cuspFcn_eq_of_nonzero _ _ hq, comp_def]
 
 theorem cuspFcn_zero_of_zero_at_inf (hh : 0 < h) (h_zer : ZeroAtFilter I∞ f) :
     cuspFcn h f 0 = 0 := by
-  simpa only [cuspFcn, update_same] using (h_zer.comp (InvqParam_tendsto hh)).limUnder_eq
+  simpa only [cuspFcn, update_same] using (h_zer.comp (invQParam_tendsto hh)).limUnder_eq
 
 theorem differentiableAt_cuspFcn_zero (hh : 0 < h) (hf : Periodic f h)
     (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) (h_bd : BoundedAtFilter I∞ f) :
     DifferentiableAt ℂ (cuspFcn h f) 0 := by
   obtain ⟨c, t⟩ := (boundedAtFilter_cuspFcn hh h_bd).bound
-  replace t := (eventually_differentiableAt_nhd_zero hh hf h_hol).and t
+  replace t := (eventually_differentiableAt_cuspFcn_nhds_ne_zero hh hf h_hol).and t
   simp only [norm_one, Pi.one_apply, mul_one] at t
   obtain ⟨S, hS1, hS2, hS3⟩ := eventually_nhds_iff.mp (eventually_nhdsWithin_iff.mp t)
   have h_diff : DifferentiableOn ℂ (cuspFcn h f) (S \ {0}) :=
