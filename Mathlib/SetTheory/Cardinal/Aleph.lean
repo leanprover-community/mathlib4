@@ -387,6 +387,14 @@ theorem aleph1_lt_lift {c : Cardinal.{u}} : ℵ₁ < lift.{v} c ↔ ℵ₁ < c :
 theorem lift_lt_aleph1 {c : Cardinal.{u}} : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
   rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_lt]
 
+@[simp]
+theorem aleph1_eq_lift {c : Cardinal.{u}} : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
+  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_inj]
+
+@[simp]
+theorem lift_eq_aleph1 {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
+  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_inj]
+
 section deprecated
 
 set_option linter.deprecated false
