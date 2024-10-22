@@ -16,6 +16,9 @@ import Mathlib.Topology.Metrizable.Uniformity
 # Topology on extended non-negative reals
 -/
 
+--TODO: remove
+set_option linter.style.longFile 1700
+
 noncomputable section
 
 open Set Filter Metric Function
