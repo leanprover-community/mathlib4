@@ -100,7 +100,7 @@ reduce `e` modulo `n`. -/
 partial def normIntNumeral {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (instRing : Q(Ring $α))
     (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
   let ⟨n', pn⟩ ← deriveNat n q(instAddMonoidWithOneNat)
-  normIntNumeral' n n' pn e instRing instCharP
+  normIntNumeral' n n' pn e _ instCharP
 
 lemma CharP.neg_eq_sub_one_mul {α : Type _} [Ring α] (n : ℕ) (inst : CharP α n) (b : α)
     (a : ℕ) (a' : α) (p : IsNat (n - 1 : α) a) (pa : a = a') :
