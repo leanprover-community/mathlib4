@@ -584,16 +584,16 @@ needed. These problems do not come up in practice, so most of the time we will n
 the `npow` field when defining multiplicative objects.
 -/
 
-/-- Auxiliary tail-recursive implementation for `npowBinRec`. -/
-@[to_additive nsmulBinRec.go "Auxiliary tail-recursive implementation for `nsmulBinRec`."]
-abbrev npowBinRec.go {M : Type*} [Mul M] (k : ℕ) : M → M → M :=
-  k.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (y * x) y) (x * x)
-
 /-- Exponentiation by repeated squaring. -/
 @[to_additive "Scalar multiplication by repeated self-addition,
 the additive version of exponentation by repeated squaring."]
 def npowBinRec {M : Type*} [One M] [Mul M] (k : ℕ) : M → M :=
   npowBinRec.go k 1
+where
+  /-- Auxiliary tail-recursive implementation for `npowBinRec`. -/
+  @[to_additive nsmulBinRec.go "Auxiliary tail-recursive implementation for `nsmulBinRec`."]
+  go (k : ℕ) : M → M → M :=
+    k.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (y * x) y) (x * x)
 
 /--
 A variant of `npowRec` which is a semigroup homomorphisms from `ℕ₊` to `M`.
@@ -688,15 +688,7 @@ as an automatic parameter."]
 abbrev npowBinRecAuto {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) : M :=
   npowBinRec k m
 
-@[csimp]
-theorem nsmulRec_eq_nsmulBinRec : @nsmulRecAuto = @nsmulBinRecAuto := by
-  funext M _ _ k m
-  rw [nsmulBinRecAuto, nsmulRecAuto, nsmulBinRec]
-  match k with
-  | 0 => rw [nsmulRec, nsmulBinRec.go, Nat.binaryRec_zero]
-  | k + 1 => rw [nsmulBinRec.go_spec, nsmulRec_eq]
-
-@[csimp]
+@[to_additive (attr := csimp)]
 theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   funext M _ _ k m
   rw [npowBinRecAuto, npowRecAuto, npowBinRec]
