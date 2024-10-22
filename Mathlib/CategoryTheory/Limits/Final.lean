@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.PUnit
+import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 # Final and initial functors
@@ -860,5 +861,69 @@ instance CostructuredArrow.initial_pre (T : C ⥤ D) [Initial T] (S : D ⥤ E) (
   exact Initial.out f.left
 
 end
+
+section Grothendieck
+
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable (F : D ⥤ Cat) (G : C ⥤ D)
+
+open Functor
+
+/-- A prefunctor mapping structured arrows on `G` to structured arrows on `pre F G` with their
+action on fibers being the identity. -/
+def Grothendieck.structuredArrowToStructuredArrowPre  (d : D) (f : F.obj d) :
+    StructuredArrow d G ⥤q StructuredArrow ⟨d, f⟩ (pre F G) where
+  obj := fun X => StructuredArrow.mk (Y := ⟨X.right, (F.map X.hom).obj f⟩)
+    (Grothendieck.Hom.mk (by exact X.hom) (by dsimp; exact 𝟙 _))
+  map := fun {X Y} g => StructuredArrow.homMk
+    (Grothendieck.Hom.mk (by exact g.right)
+      (by apply eqToHom
+          have := g.w
+          dsimp at *
+          rw [Category.id_comp] at this
+          rw [this, map_comp]
+          rfl ))
+    (by simp only [const_obj_obj, pre_obj_base, id_eq, pre_obj_fiber, StructuredArrow.mk_left,
+          StructuredArrow.mk_right, StructuredArrow.mk_hom_eq_self, comp_obj, Functor.comp_map,
+          Cat.comp_obj, eq_mpr_eq_cast, cast_cast]
+        fapply Grothendieck.ext
+        · simp only [pre, Cat.comp_obj, id_eq, eq_mp_eq_cast]
+          have := g.w.symm
+          dsimp at this
+          rwa [Category.id_comp] at this
+        · simp)
+
+instance Grothendieck.pre_final [hG : Final G] : (Grothendieck.pre F G).Final := by
+  constructor
+  rintro ⟨d, f⟩
+  let ⟨u, c, g⟩ : Nonempty (StructuredArrow d G) := inferInstance
+  letI :  Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
+    ⟨u, ⟨c, (F.map g).obj f⟩, ⟨(by exact g), (by dsimp; exact 𝟙 _)⟩⟩
+  apply zigzag_isConnected
+  rintro ⟨⟨⟨⟩⟩, ⟨bi, fi⟩, ⟨gbi, gfi⟩⟩ ⟨⟨⟨⟩⟩, ⟨bj, fj⟩, ⟨gbj, gfj⟩⟩
+  dsimp at fj fi gfi gbi gbj gfj
+  fapply Zigzag.trans (j₂ := StructuredArrow.mk (Y := .mk bi ((F.map gbi).obj f))
+      (Grothendieck.Hom.mk gbi (𝟙 _)))
+    (.of_zag (.inr ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
+        (by simp; exact gfi))
+      (by apply Grothendieck.ext
+          · simp
+          · simp only [pre, map_id, Cat.id_obj, congrArg_cast_hom_left]
+            erw [Grothendieck.comp_base]
+            simp )⟩))
+  refine Zigzag.trans (j₂ := StructuredArrow.mk (Y := .mk bj ((F.map gbj).obj f))
+      (Grothendieck.Hom.mk gbj (𝟙 _))) ?_
+    (.of_zag (.inl ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
+        (by simp; exact gfj))
+      (by apply Grothendieck.ext
+          · simp
+          · simp only [pre, map_id, Cat.id_obj, congrArg_cast_hom_left]
+            erw [Grothendieck.comp_base]
+            simp )⟩))
+  exact zigzag_obj_of_zigzag (Grothendieck.structuredArrowToStructuredArrowPre F G d f)
+    (isPreconnected_zigzag (.mk gbi) (.mk gbj))
+
+end Grothendieck
 
 end CategoryTheory
