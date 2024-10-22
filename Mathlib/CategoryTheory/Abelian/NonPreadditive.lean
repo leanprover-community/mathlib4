@@ -232,12 +232,12 @@ instance epi_r {A : C} : Epi (r A) := by
   let hp1 : IsLimit (KernelFork.ofι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) := by
     refine Fork.IsLimit.mk _ (fun s => Fork.ι s ≫ Limits.prod.fst) ?_ ?_
     · intro s
-      apply prod.hom_ext <;> simp
+      apply Limits.prod.hom_ext <;> simp
     · intro s m h
       haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
       apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
       convert h
-      apply prod.hom_ext <;> simp
+      apply Limits.prod.hom_ext <;> simp
   let hp2 : IsColimit (CokernelCofork.ofπ (Limits.prod.snd : A ⨯ A ⟶ A) hlp) :=
     epiIsCokernelOfKernel _ hp1
   apply NormalMonoCategory.epi_of_zero_cancel

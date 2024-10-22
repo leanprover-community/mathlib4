@@ -543,7 +543,7 @@ namespace Subtype
 -- todo: add `OrderEmbedding.orderClosedTopology`
 instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
   have this : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
-    continuous_subtype_val.prod_map continuous_subtype_val
+    continuous_subtype_val.prodMap continuous_subtype_val
   OrderClosedTopology.mk (t.isClosed_le'.preimage this)
 
 end Subtype

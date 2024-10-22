@@ -21,9 +21,10 @@ AUTO="no"
 usage() {
   echo "Usage: $0 <BUMPVERSION> <NIGHTLYDATE>"
   echo "       or"
-  echo "       $0 --bumpversion=<BUMPVERSION> --nightlydate=<NIGHTLYDATE> [--auto=<yes|no>]"
+  echo "       $0 --bumpversion=<BUMPVERSION> --nightlydate=<NIGHTLYDATE> --nightlysha=<SHA> [--auto=<yes|no>]"
   echo "BUMPVERSION: The upcoming release that we are targeting, e.g., 'v4.10.0'"
   echo "NIGHTLYDATE: The date of the nightly toolchain currently used on 'nightly-testing'"
+  echo "NIGHTLYSHA: The SHA of the nightly toolchain that we want to adapt to"
   echo "AUTO: Optional flag to specify automatic mode, default is 'no'"
   exit 1
 }
@@ -41,6 +42,10 @@ elif [ $# -ge 2 ]; then
         ;;
       --nightlydate=*)
         NIGHTLYDATE="${arg#*=}"
+        shift
+        ;;
+      --nightlysha=*)
+        NIGHTLYSHA="${arg#*=}"
         shift
         ;;
       --auto=*)
@@ -65,24 +70,6 @@ fi
 if ! command -v gh &> /dev/null; then
     echo "'gh' (GitHub CLI) is not installed. Please install it and try again."
     exit 1
-fi
-
-# Check the CI status of the latest commit on the 'nightly-testing' branch
-status=$(gh run list --branch nightly-testing | grep -m1 . | awk '{print $1}')
-if [ "$status" != "completed" ]; then
-  if [ "$status" != "in_progress" ]; then
-    echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
-    gh run list --branch nightly-testing
-    exit 1
-  else
-    if [ "$AUTO" = "yes" ]; then
-      echo "Auto mode enabled. Bailing out because the latest commit on 'nightly-testing' is still running CI."
-      exit 1
-    else
-      echo "The latest commit on 'nightly-testing' is still running CI."
-      read -p "Press enter to continue, or ctrl-C if you'd prefer to wait for CI."
-    fi
-  fi
 fi
 
 echo "### Creating a PR for the nightly adaptation for $NIGHTLYDATE"
@@ -148,15 +135,14 @@ echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE"
-git merge origin/nightly-testing || true # ignore error if there are conflicts
+git merge $NIGHTLYSHA || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
   echo
   echo "### [auto] Conflict resolution"
-  echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from the newer branch"
-  echo "### In this case, the newer branch is 'origin/nightly-testing'"
-  git checkout origin/nightly-testing -- lean-toolchain lake-manifest.json
+  echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from 'nightly-testing'"
+  git checkout $NIGHTLYSHA -- lean-toolchain lake-manifest.json
   git add lean-toolchain lake-manifest.json
 fi
 
@@ -172,6 +158,8 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from 'origin/nightly-testing' into 'bump/nightly-$NIGHTLYDATE'"
+  echo "Specifically, we are merging the following version of 'origin/nightly-testing':"
+  echo "$NIGHTLYSHA"
   echo "There seem to be conflicts: please resolve them"
   echo ""
   echo "  1) Open `pwd` in a new terminal and run 'git status'"
@@ -286,7 +274,7 @@ if git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet 
   if [ "$AUTO" = "yes" ]; then
     echo "Auto mode enabled. Bailing out due to unresolved conflicts or uncommitted changes."
     echo "PR has been created, and message posted to Zulip."
-    echo "Error occured while merging the new branch into 'nightly-testing'."
+    echo "Error occurred while merging the new branch into 'nightly-testing'."
     exit 2
   fi
 fi

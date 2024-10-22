@@ -17,7 +17,7 @@ interior and smooth everywhere (including at the boundary).  The definition mirr
 analytic manifolds are smooth manifolds.
 
 Completeness is required throughout, but this is nonessential: it is due to many of the lemmas about
-AnalyticWithinOn` requiring completeness for ease of proof.
+AnalyticOn` requiring completeness for ease of proof.
 -/
 
 noncomputable section
@@ -42,10 +42,10 @@ analytic on the interior, and map the interior to itself.  This allows us to def
 section analyticGroupoid
 
 /-- Given a model with corners `(E, H)`, we define the pregroupoid of analytic transformations of
-`H` as the maps that are `AnalyticWithinOn` when read in `E` through `I`.  Using `AnalyticWithinOn`
-rather than `AnalyticOn` gives us meaningful definitions at boundary points. -/
+`H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
+rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
 def analyticPregroupoid : Pregroupoid H where
-  property f s := AnalyticWithinOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
+  property f s := AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
   comp {f g u v} hf hg _ _ _ := by
     have : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
     simp only [this]
@@ -54,12 +54,12 @@ def analyticPregroupoid : Pregroupoid H where
     · rintro x ⟨hx1, _⟩
       simpa only [mfld_simps] using hx1.2
   id_mem := by
-    apply analyticWithinOn_id.congr
+    apply analyticOn_id.congr
     rintro x ⟨_, hx2⟩
     obtain ⟨y, hy⟩ := mem_range.1 hx2
     simp only [mfld_simps, ← hy]
   locality {f u} _ H := by
-    apply analyticWithinOn_of_locally_analyticWithinOn
+    apply analyticOn_of_locally_analyticOn
     rintro y ⟨hy1, hy2⟩
     obtain ⟨x, hx⟩ := mem_range.1 hy2
     simp only [mfld_simps, ← hx] at hy1 ⊢
@@ -75,8 +75,8 @@ def analyticPregroupoid : Pregroupoid H where
     rw [fg _ hy1]
 
 /-- Given a model with corners `(E, H)`, we define the groupoid of analytic transformations of
-`H` as the maps that are `AnalyticWithinOn` when read in `E` through `I`.  Using `AnalyticWithinOn`
-rather than `AnalyticOn` gives us meaningful definitions at boundary points. -/
+`H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
+rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
 def analyticGroupoid : StructureGroupoid H :=
   (analyticPregroupoid I).groupoid
 
@@ -84,9 +84,9 @@ def analyticGroupoid : StructureGroupoid H :=
 theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
     PartialHomeomorph.ofSet s hs ∈ analyticGroupoid I := by
   rw [analyticGroupoid, mem_groupoid_of_pregroupoid]
-  suffices h : AnalyticWithinOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I) by
+  suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I) by
     simp [h, analyticPregroupoid]
-  have hi : AnalyticWithinOn 𝕜 id (univ : Set E) := analyticWithinOn_id
+  have hi : AnalyticOn 𝕜 id (univ : Set E) := analyticOn_id
   exact (hi.mono (subset_univ _)).congr (fun x hx ↦ I.right_inv hx.2)
 
 /-- The composition of a partial homeomorphism from `H` to `M` and its inverse belongs to
@@ -108,17 +108,17 @@ instance : ClosedUnderRestriction (analyticGroupoid I) :=
 /-- `f ∈ analyticGroupoid` iff it and its inverse are analytic within `range I`. -/
 lemma mem_analyticGroupoid {I : ModelWithCorners 𝕜 E H} {f : PartialHomeomorph H H} :
     f ∈ analyticGroupoid I ↔
-      AnalyticWithinOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' f.source ∩ range I) ∧
-      AnalyticWithinOn 𝕜 (I ∘ f.symm ∘ I.symm) (I.symm ⁻¹' f.target ∩ range I) := by
+      AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' f.source ∩ range I) ∧
+      AnalyticOn 𝕜 (I ∘ f.symm ∘ I.symm) (I.symm ⁻¹' f.target ∩ range I) := by
   rfl
 
 /-- The analytic groupoid on a boundaryless charted space modeled on a complete vector space
 consists of the partial homeomorphisms which are analytic and have analytic inverse. -/
 theorem mem_analyticGroupoid_of_boundaryless [I.Boundaryless] (e : PartialHomeomorph H H) :
-    e ∈ analyticGroupoid I ↔ AnalyticOn 𝕜 (I ∘ e ∘ I.symm) (I '' e.source) ∧
-      AnalyticOn 𝕜 (I ∘ e.symm ∘ I.symm) (I '' e.target) := by
+    e ∈ analyticGroupoid I ↔ AnalyticOnNhd 𝕜 (I ∘ e ∘ I.symm) (I '' e.source) ∧
+      AnalyticOnNhd 𝕜 (I ∘ e.symm ∘ I.symm) (I '' e.target) := by
   simp only [mem_analyticGroupoid, I.range_eq_univ, inter_univ, I.image_eq]
-  rw [IsOpen.analyticWithinOn_iff_analyticOn, IsOpen.analyticWithinOn_iff_analyticOn]
+  rw [IsOpen.analyticOn_iff_analyticOnNhd, IsOpen.analyticOn_iff_analyticOnNhd]
   · exact I.continuous_symm.isOpen_preimage _ e.open_target
   · exact I.continuous_symm.isOpen_preimage _ e.open_source
 
@@ -131,12 +131,12 @@ theorem analyticGroupoid_prod {E A : Type} [NormedAddCommGroup E] [NormedSpace �
     f.prod g ∈ analyticGroupoid (I.prod J) := by
   have pe : range (I.prod J) = (range I).prod (range J) := I.range_prod
   simp only [mem_analyticGroupoid, Function.comp, image_subset_iff] at fa ga ⊢
-  exact ⟨AnalyticWithinOn.prod
-      (fa.1.comp analyticWithinOn_fst fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
-      (ga.1.comp analyticWithinOn_snd fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩),
-    AnalyticWithinOn.prod
-      (fa.2.comp analyticWithinOn_fst fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
-      (ga.2.comp analyticWithinOn_snd fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩)⟩
+  exact ⟨AnalyticOn.prod
+      (fa.1.comp analyticOn_fst fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
+      (ga.1.comp analyticOn_snd fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩),
+    AnalyticOn.prod
+      (fa.2.comp analyticOn_fst fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
+      (ga.2.comp analyticOn_snd fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩)⟩
 
 end analyticGroupoid
 

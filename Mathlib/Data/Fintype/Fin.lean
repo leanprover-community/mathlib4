@@ -52,15 +52,14 @@ theorem Iio_castSucc (i : Fin n) : Iio (castSucc i) = (Iio i).map Fin.castSuccEm
   rw [Finset.map_map, Fin.map_valEmbedding_Iio]
   exact (Fin.map_valEmbedding_Iio i).symm
 
-theorem card_filter_univ_succ' (p : Fin (n + 1) → Prop) [DecidablePred p] :
-    (univ.filter p).card = ite (p 0) 1 0 + (univ.filter (p ∘ Fin.succ)).card := by
-  rw [Fin.univ_succ, filter_cons, card_disjUnion, filter_map, card_map]
-  split_ifs <;> simp
-
 theorem card_filter_univ_succ (p : Fin (n + 1) → Prop) [DecidablePred p] :
     (univ.filter p).card =
-    if p 0 then (univ.filter (p ∘ Fin.succ)).card + 1 else (univ.filter (p ∘ Fin.succ)).card :=
-  (card_filter_univ_succ' p).trans (by split_ifs <;> simp [add_comm 1])
+    if p 0 then (univ.filter (p ∘ Fin.succ)).card + 1 else (univ.filter (p ∘ Fin.succ)).card := by
+  rw [Fin.univ_succ, filter_cons, apply_ite Finset.card, card_cons, filter_map, card_map]; rfl
+
+theorem card_filter_univ_succ' (p : Fin (n + 1) → Prop) [DecidablePred p] :
+    (univ.filter p).card = ite (p 0) 1 0 + (univ.filter (p ∘ Fin.succ)).card := by
+  rw [card_filter_univ_succ]; split_ifs <;> simp [add_comm]
 
 theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : Vector α n) :
     (univ.filter fun i => v.get i = a).card = v.toList.count a := by

@@ -484,7 +484,7 @@ theorem floor_div_nat (a : α) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
   · exact div_nonneg ha n.cast_nonneg
   constructor
   · exact cast_div_le.trans (div_le_div_of_nonneg_right (floor_le ha) n.cast_nonneg)
-  rw [div_lt_iff, add_mul, one_mul, ← cast_mul, ← cast_add, ← floor_lt ha]
+  rw [div_lt_iff₀, add_mul, one_mul, ← cast_mul, ← cast_add, ← floor_lt ha]
   · exact lt_div_mul_add hn
   · exact cast_pos.2 hn
 
@@ -515,7 +515,7 @@ lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b < a) : ⌈a⌉�
   obtain hab | hba := le_total a (b - 1)⁻¹
   · calc
       ⌈a⌉₊ ≤ (⌈(b - 1)⁻¹⌉₊ : α) := by gcongr
-      _ < b * a := by rwa [← div_lt_iff']; positivity
+      _ < b * a := by rwa [← div_lt_iff₀']; positivity
   · rw [← sub_pos] at hb
     calc
       ⌈a⌉₊ < a + 1 := ceil_lt_add_one <| hba.trans' <| by positivity
@@ -526,7 +526,7 @@ lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b < a) : ⌈a⌉�
 lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b ≤ a) : ⌈a⌉₊ ≤ b * a := by
   obtain rfl | hba := hba.eq_or_lt
   · rw [mul_div_cancel₀, cast_le, ceil_le]
-    exact _root_.div_le_self (by positivity) hb.le
+    · exact _root_.div_le_self (by positivity) hb.le
     · positivity
   · exact (ceil_lt_mul hb hba).le
 
@@ -1027,7 +1027,7 @@ theorem sub_floor_div_mul_nonneg (a : k) (hb : 0 < b) : 0 ≤ a - ⌊a / b⌋ * 
 theorem sub_floor_div_mul_lt (a : k) (hb : 0 < b) : a - ⌊a / b⌋ * b < b :=
   sub_lt_iff_lt_add.2 <| by
     -- Porting note: `← one_add_mul` worked in mathlib3 without the argument
-    rw [← one_add_mul _ b, ← div_lt_iff hb, add_comm]
+    rw [← one_add_mul _ b, ← div_lt_iff₀ hb, add_comm]
     exact lt_floor_add_one _
 
 theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) = ↑(m % n) / n := by
@@ -1054,7 +1054,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     obtain ⟨l₀, rfl | rfl⟩ := l.eq_nat_or_neg
     · rw [cast_natCast, ← natCast_mod, cast_natCast, fract_div_natCast_eq_div_natCast_mod]
     · rw [Right.nonneg_neg_iff, natCast_nonpos_iff] at hl
-      simp [hl, zero_mod]
+      simp [hl]
   obtain ⟨m₀, rfl | rfl⟩ := m.eq_nat_or_neg
   · exact this (ofNat_nonneg m₀)
   let q := ⌈↑m₀ / (n : k)⌉
@@ -1261,7 +1261,7 @@ lemma ceil_div_ceil_inv_sub_one (ha : 1 ≤ a) : ⌈⌈(a - 1)⁻¹⌉ / a⌉ = 
   have : 0 < ⌈(a - 1)⁻¹⌉ := ceil_pos.2 <| by positivity
   refine le_antisymm (ceil_le.2 <| div_le_self (by positivity) ha.le) <| ?_
   rw [le_ceil_iff, sub_lt_comm, div_eq_mul_inv, ← mul_one_sub,
-      ← lt_div_iff (sub_pos.2 <| inv_lt_one ha)]
+    ← lt_div_iff₀ (sub_pos.2 <| inv_lt_one_of_one_lt₀ ha)]
   convert ceil_lt_add_one _ using 1
   field_simp
 
@@ -1269,7 +1269,7 @@ lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b < a) : ⌈a⌉ < b 
   obtain hab | hba := le_total a (b - 1)⁻¹
   · calc
       ⌈a⌉ ≤ (⌈(b - 1)⁻¹⌉ : k) := by gcongr
-      _ < b * a := by rwa [← div_lt_iff']; positivity
+      _ < b * a := by rwa [← div_lt_iff₀']; positivity
   · rw [← sub_pos] at hb
     calc
       ⌈a⌉ < a + 1 := ceil_lt_add_one _
@@ -1453,7 +1453,7 @@ section LinearOrderedField
 variable [LinearOrderedField α] [FloorRing α]
 
 theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
-  simp_rw [round, (by simp only [lt_div_iff', two_pos] : 2 * fract x < 1 ↔ fract x < 1 / 2)]
+  simp_rw [round, (by simp only [lt_div_iff₀', two_pos] : 2 * fract x < 1 ↔ fract x < 1 / 2)]
   cases' lt_or_le (fract x) (1 / 2) with hx hx
   · conv_rhs => rw [← fract_add_floor x, add_assoc, add_left_comm, floor_int_add]
     rw [if_pos hx, self_eq_add_right, floor_eq_iff, cast_zero, zero_add]
@@ -1584,7 +1584,7 @@ variable [LinearOrderedRing α] [FloorRing α]
 instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where
   floor a := ⌊a⌋.toNat
   ceil a := ⌈a⌉.toNat
-  floor_of_neg {a} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
+  floor_of_neg {_} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
   gc_floor {a n} ha := by rw [Int.le_toNat (Int.floor_nonneg.2 ha), Int.le_floor, Int.cast_natCast]
   gc_ceil a n := by rw [Int.toNat_le, Int.ceil_le, Int.cast_natCast]
 
@@ -1694,4 +1694,4 @@ def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
 
 end Mathlib.Meta.Positivity
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1800
