@@ -317,7 +317,7 @@ theorem globalEquiv_naturality ⦃i j⦄ (h : i ≤ j) (x : F j) :
     letI e := globalEquiv equivSucc equivLim
     e i (f h x) = piLTProj h (e j x) := by
   refine (DFunLike.congr_fun ?_ _).trans ((globalEquivAux equivSucc equivLim j).nat le_rfl h h x)
-  exact (pEquivOn_apply_eq <| (isLowerSet_Iic _).inter <| isLowerSet_Iic _)
+  exact pEquivOn_apply_eq ((isLowerSet_Iic _).inter <| isLowerSet_Iic _)
 
 theorem globalEquiv_compatibility ⦃i⦄ (hi : ¬IsMax i) (x) :
     globalEquiv equivSucc equivLim i⁺ x ⟨i, lt_succ_of_not_isMax hi⟩ = ((equivSucc i hi).1 x).2 :=
