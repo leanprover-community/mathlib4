@@ -181,11 +181,13 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
 
 /-- The **Cauchy-Davenport Theorem** for torsion-free groups. The size of `s * t` is lower-bounded
 by `|s| + |t| - 1`. -/
-@[to_additive "The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is
+@[to_additive Finset.card_add_card_sub_one_le_card_add_of_addGroup
+  "The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is
 lower-bounded by `|s| + |t| - 1`."]
-lemma Monoid.IsTorsionFree.card_add_card_sub_one_le_card_mul (h : IsTorsionFree α)
+lemma Finset.card_add_card_sub_one_le_card_mul_of_group [IsMulTorsionFree α]
     (hs : s.Nonempty) (ht : t.Nonempty) : s.card + t.card - 1 ≤ (s * t).card := by
-  simpa only [h.minOrder, min_eq_right, le_top, Nat.cast_le] using Finset.min_le_card_mul hs ht
+  simpa only [Monoid.minOrder_eq_top, min_eq_right, le_top, Nat.cast_le]
+    using Finset.min_le_card_mul hs ht
 
 end General
 
@@ -199,11 +201,11 @@ lemma ZMod.min_le_card_add {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs 
 
 /-! ### Linearly ordered cancellative semigroups -/
 
-/-- The **Cauchy-Davenport Theorem** for linearly ordered cancellative semigroups. The size of
-`s * t` is lower-bounded by `|s| + |t| - 1`. -/
-@[to_additive
-"The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups. The size of
-`s + t` is lower-bounded by `|s| + |t| - 1`."]
+/-- The **Cauchy-Davenport Theorem** for linearly ordered cancellative semigroups.
+The size of `s * t` is lower-bounded by `|s| + |t| - 1`. -/
+@[to_additive Finset.card_add_card_sub_one_le_card_add
+"The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups.
+The size of `s + t` is lower-bounded by `|s| + |t| - 1`."]
 lemma Finset.card_add_card_sub_one_le_card_mul [LinearOrder α] [Semigroup α] [IsCancelMul α]
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
     {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : s.card + t.card - 1 ≤ (s * t).card := by

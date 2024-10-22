@@ -5,6 +5,7 @@ Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morris
 -/
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Algebra.Group.IsTorsionFree.Basic
 
 /-!
 # `NoZeroSMulDivisors`
@@ -36,6 +37,12 @@ theorem two_nsmul_eq_zero
     {v : M} : 2 • v = 0 ↔ v = 0 := by
   haveI := Nat.noZeroSMulDivisors R M
   simp [smul_eq_zero]
+
+instance (priority := 200) [AddMonoid M] [IsAddTorsionFree M] : NoZeroSMulDivisors ℕ M where
+  eq_zero_or_eq_zero_of_smul_eq_zero h := (nsmul_eq_zero_iff.mp h).symm
+
+instance (priority := 100) [AddMonoid M] [NoZeroSMulDivisors ℕ M] : IsAddTorsionFree M where
+  eq_zero_of_nsmul_eq_zero _ _ h := (eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left
 
 end Nat
 
@@ -94,6 +101,16 @@ theorem neg_ne_self
   (neg_eq_self R M).not
 
 end Nat
+
+instance (priority := 200) {G : Type*} [AddGroup G] [IsAddTorsionFree G] :
+    NoZeroSMulDivisors ℤ G where
+  eq_zero_or_eq_zero_of_smul_eq_zero h := (zsmul_eq_zero_iff.mp h).symm
+
+instance (priority := 100) {G : Type*} [AddGroup G] [NoZeroSMulDivisors ℤ G] :
+    IsAddTorsionFree G where
+  eq_zero_of_nsmul_eq_zero a n h hn :=
+    have : (n : ℤ) = 0 ∨ a = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (mod_cast h)
+    this.resolve_left (mod_cast hn)
 
 end AddCommGroup
 
