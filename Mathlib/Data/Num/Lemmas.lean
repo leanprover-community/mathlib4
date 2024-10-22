@@ -201,7 +201,7 @@ theorem bit1_of_bit1 : ∀ n : Num, (n + n) + 1 = n.bit1
 theorem ofNat'_zero : Num.ofNat' 0 = 0 := by simp [Num.ofNat']
 
 theorem ofNat'_bit (b n) : ofNat' (Nat.bit b n) = cond b Num.bit1 Num.bit0 (ofNat' n) :=
-  Nat.binaryRec_eq _ _ (.inl rfl)
+  Nat.binaryRec_eq rfl _ _
 
 @[simp]
 theorem ofNat'_one : Num.ofNat' 1 = 1 := by erw [ofNat'_bit true 0, cond, ofNat'_zero]; rfl
