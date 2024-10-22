@@ -167,7 +167,7 @@ def psiStar : OneRelator r →* OneRelator (d.psi r) :=
     (by
         convert ofFreeGroup_rel (d.psi r) using 1
         rw [← MonoidHom.comp_apply]
-        apply FunLike.congr_fun
+        congr
         ext
         simp)
 
