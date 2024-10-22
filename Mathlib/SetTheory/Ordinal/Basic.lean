@@ -421,6 +421,17 @@ theorem typein_lt_typein (r : α → α → Prop) [IsWellOrder α r] {a b : α} 
     typein r a < typein r b ↔ r a b :=
   (typein r).map_rel_iff
 
+@[simp]
+theorem typein_le_typein (r : α → α → Prop) [IsWellOrder α r] {a b : α} :
+    typein r a ≤ typein r b ↔ ¬r b a := by
+  rw [← not_lt, typein_lt_typein]
+
+theorem typein_injective (r : α → α → Prop) [IsWellOrder α r] : Injective (typein r) :=
+  (typein r).injective
+
+theorem typein_inj (r : α → α → Prop) [IsWellOrder α r] {a b} : typein r a = typein r b ↔ a = b :=
+  (typein_injective r).eq_iff
+
 theorem mem_range_typein_iff (r : α → α → Prop) [IsWellOrder α r] {o} :
     o ∈ Set.range (typein r) ↔ o < type r :=
   (typein r).mem_range_iff_rel
@@ -432,22 +443,6 @@ theorem typein_surj (r : α → α → Prop) [IsWellOrder α r] {o} (h : o < typ
 theorem typein_surjOn (r : α → α → Prop) [IsWellOrder α r] :
     Set.SurjOn (typein r) Set.univ (Set.Iio (type r)) :=
   (typein r).surjOn
-
-theorem typein_injective (r : α → α → Prop) [IsWellOrder α r] : Injective (typein r) :=
-  (typein r).injective
-
-theorem typein_inj (r : α → α → Prop) [IsWellOrder α r] {a b} : typein r a = typein r b ↔ a = b :=
-  (typein_injective r).eq_iff
-
-@[simp]
-theorem typein_lt_typein (r : α → α → Prop) [IsWellOrder α r] {a b : α} :
-    typein r a < typein r b ↔ r a b :=
-  (typein.principalSeg r).map_rel_iff
-
-@[simp]
-theorem typein_le_typein (r : α → α → Prop) [IsWellOrder α r] {a b : α} :
-    typein r a ≤ typein r b ↔ ¬r b a := by
-  rw [← not_lt, typein_lt_typein]
 
 /-- A well order `r` is order-isomorphic to the set of ordinals smaller than `type r`.
 `enum r ⟨o, h⟩` is the `o`-th element of `α` ordered by `r`.
@@ -527,8 +522,14 @@ alias enumIsoOut := enumIsoToType
 instance small_Iio (o : Ordinal.{u}) : Small.{u} (Iio o) :=
   ⟨_, ⟨(enumIsoToType _).toEquiv⟩⟩
 
+instance small_Iic (o : Ordinal.{u}) : Small.{u} (Iic o) := by
+  rw [← Iio_union_right]
+  infer_instance
+
 instance small_Ico (a b : Ordinal.{u}) : Small.{u} (Ico a b) := small_subset Ico_subset_Iio_self
+instance small_Icc (a b : Ordinal.{u}) : Small.{u} (Icc a b) := small_subset Icc_subset_Iic_self
 instance small_Ioo (a b : Ordinal.{u}) : Small.{u} (Ioo a b) := small_subset Ioo_subset_Iio_self
+instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
 
 /-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
 def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
@@ -557,12 +558,6 @@ instance isWellOrder : IsWellOrder Ordinal (· < ·) where
 
 instance : ConditionallyCompleteLinearOrderBot Ordinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
-
-@[simp]
-theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
-    (f : r ≼i s) (a : α) : typein s (f a) = typein r a := by
-  change typein.principalSeg s _ = typein.principalSeg r _
-  rw [← f.leLT_apply _ a, Subsingleton.elim (f.leLT _)]
 
 /-- Reformulation of well founded induction on ordinals as a lemma that works with the
 `induction` tactic, as in `induction i using Ordinal.induction with | h i IH => ?_`. -/
@@ -951,13 +946,6 @@ theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_succ := natCast_succ
-
-instance small_Iic (o : Ordinal.{u}) : Small.{u} (Iic o) := by
-  rw [← Iio_succ]
-  exact small_Iio _
-
-instance small_Icc (a b : Ordinal.{u}) : Small.{u} (Icc a b) := small_subset Icc_subset_Iic_self
-instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, by simp⟩
