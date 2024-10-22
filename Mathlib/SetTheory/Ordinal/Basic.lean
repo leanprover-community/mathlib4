@@ -475,12 +475,12 @@ theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o
 
 theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
     ¬r (enum r o₁) (enum r o₂) ↔ o₂ ≤ o₁ := by
-  rw [← @not_lt _ _ o₁ o₂, enum_lt_enum (r := r)]
+  rw [enum_lt_enum (r := r), not_lt]
 
 @[simp]
 theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : {o // o < type (· < ·)}} :
     enum (· < ·) o₁ ≤ enum (α := a.toType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
-  rw [← enum_le_enum (α := a.toType) (· < ·), ← not_lt]
+  rw [← enum_le_enum, not_lt]
 
 theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
     enum r o₁ = enum r o₂ ↔ o₁ = o₂ :=
