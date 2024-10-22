@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 /-!
 # Symmetry of the second derivative
@@ -360,9 +361,44 @@ as a general assumption, and then specialize to these situations. -/
 def IsSymmSndFDerivAt (f : E → F) (x : E) : Prop :=
   ∀ v w, fderiv 𝕜 (fderiv 𝕜 f) x v w = fderiv 𝕜 (fderiv 𝕜 f) x w v
 
-theorem ContDiffAt.isSymmSndFDerivAt (hf : ContDiffAt 𝕜 2 f x) :
+theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞} (hf : ContDiffAt 𝕜 n f x) (hn : 2 ≤ n) :
     IsSymmSndFDerivAt 𝕜 f x := by
-  sorry
+  intro v w
+  apply second_derivative_symmetric_of_eventually (f := f) (f' := fderiv 𝕜 f) (x := x)
+  · obtain ⟨u, hu, h'u⟩ : ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 2 f u := hf.contDiffOn (m := 2) hn
+    rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, xv⟩
+    filter_upwards [v_open.mem_nhds xv] with y hy
+    have : DifferentiableAt 𝕜 f y := by
+      have := (h'u.mono vu y hy).contDiffAt (v_open.mem_nhds hy)
+      exact this.differentiableAt one_le_two
+    exact DifferentiableAt.hasFDerivAt this
+  · have : DifferentiableAt 𝕜 (fderiv 𝕜 f) x := by
+      apply ContDiffAt.differentiableAt _ le_rfl
+      exact hf.fderiv_right hn
+    exact DifferentiableAt.hasFDerivAt this
+
+open Filter
+
+theorem ContDiffWithinAt.isSymmSndFDerivAt {n : ℕ∞} (hf : ContDiffWithinAt 𝕜 n f s x) (hn : 2 ≤ n)
+    (hu : UniqueDiffWithinAt 𝕜 s x) (hx : x ∈ closure (interior s)) :
+    IsSymmSndFDerivAt 𝕜 f x := by
+  intro v w
+  obtain ⟨y, hy, y_lim⟩ : ∃ y, (∀ (n : ℕ), y n ∈ interior s) ∧ Tendsto y atTop (𝓝 x) :=
+    mem_closure_iff_seq_limit.1 hx
+  have : ∀ᶠ n in atTop, IsSymmSndFDerivAt 𝕜 f (y n) := by
+    rcases hf.contDiffOn' hn with ⟨u, u_open, xu, hu⟩
+    have : ∀ᶠ n in atTop, y n ∈ u := y_lim (u_open.mem_nhds xu)
+    filter_upwards [this] with n hn
+    apply ContDiffAt.isSymmSndFDerivAt _ le_rfl
+    apply (hu (y n) ⟨subset_insert _ _ (interior_subset (hy n)), hn⟩).contDiffAt
+    apply inter_mem _ (u_open.mem_nhds hn)
+    apply mem_of_superset (isOpen_interior.mem_nhds (hy n))
+    exact interior_subset.trans (subset_insert _ _)
+
+
+
+
+
 
 
 
