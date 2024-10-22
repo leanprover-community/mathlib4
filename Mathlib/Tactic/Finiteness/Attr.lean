@@ -7,4 +7,4 @@ import Aesop
 
 /-! # Finiteness tactic attributes -/
 
-declare_aesop_rule_sets [finiteness]
+declare_aesop_rule_sets [Finiteness]
