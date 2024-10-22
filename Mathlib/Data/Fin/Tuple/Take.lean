@@ -142,24 +142,26 @@ theorem take_append_right {n' : ℕ} {α : Sort*} (m : ℕ) (h : m ≤ n') (u : 
   take_addCases_right m h _ _
 
 /-- `Fin.take` intertwines with `List.take` via `List.ofFn`. -/
-theorem list_ofFn_take {α : Type*} {m : ℕ} (h : m ≤ n) (v : Fin n → α) :
+theorem take_eq_take_list_ofFn {α : Type*} {m : ℕ} (h : m ≤ n) (v : Fin n → α) :
     List.ofFn (take m h v) = (List.ofFn v).take m :=
   List.ext_get (by simp [h]) (fun n h1 h2 => by simp)
 
-/-- Alternative version of `list_ofFn_take` with `l : List α` instead of `v : Fin n → α`. -/
-theorem list_ofFn_take_get {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :
+/-- Alternative version of `take_eq_take_list_ofFn` with `l : List α` instead of `v : Fin n → α`. -/
+theorem take_eq_take_list_ofFn' {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :
     List.ofFn (take m h l.get) = l.take m :=
   List.ext_get (by simp [h]) (fun n h1 h2 => by simp)
 
 /-- `Fin.take` intertwines with `List.take` via `List.get`. -/
-theorem list_take_get_heq {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :
-    HEq (l.take m).get (take m h l.get) :=
-  (Fin.heq_fun_iff (List.length_take_of_le h)).mpr (by simp)
+theorem take_eq_take_list_get {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :
+    (l.take m).get = (take m h l.get) ∘ Fin.cast (List.length_take_of_le h) := by
+  ext i
+  simp only [List.get_eq_getElem, List.getElem_take, comp_apply, take_apply, coe_castLE, coe_cast]
 
-/-- Alternative version of `list_take_get_heq` with `v : Fin n → α` instead of `l : List α`. -/
-theorem list_ofFn_take_get_heq {α : Type*} {m : ℕ} (v : Fin n → α) (h : m ≤ n) :
-    HEq ((List.ofFn v).take m).get (take m h v) :=
-  (Fin.heq_fun_iff (by simp [h])).mpr (by simp)
+/-- Alternative version of `take_eq_take_list_get` with `v : Fin n → α` instead of `l : List α`. -/
+theorem take_eq_take_list_get' {α : Type*} {m : ℕ} (v : Fin n → α) (h : m ≤ n) :
+    ((List.ofFn v).take m).get = (take m h v) ∘ Fin.cast (by simp [h]) := by
+  ext i
+  simp [castLE]
 
 end Take
 
