@@ -88,7 +88,6 @@ lemma nodup_entries (f : Finmap β) : f.entries.Nodup := f.nodupKeys.nodup
 /-! ### Lifting from AList -/
 
 /-- Lift a permutation-respecting function on `AList` to `Finmap`. -/
--- @[elab_as_elim] Porting note: we can't add `elab_as_elim` attr in this type
 def liftOn {γ} (s : Finmap β) (f : AList β → γ)
     (H : ∀ a b : AList β, a.entries ~ b.entries → f a = f b) : γ := by
   refine
@@ -108,11 +107,10 @@ theorem liftOn_toFinmap {γ} (s : AList β) (f : AList β → γ) (H) : liftOn �
   rfl
 
 /-- Lift a permutation-respecting function on 2 `AList`s to 2 `Finmap`s. -/
--- @[elab_as_elim] Porting note: we can't add `elab_as_elim` attr in this type
 def liftOn₂ {γ} (s₁ s₂ : Finmap β) (f : AList β → AList β → γ)
     (H : ∀ a₁ b₁ a₂ b₂ : AList β,
       a₁.entries ~ a₂.entries → b₁.entries ~ b₂.entries → f a₁ b₁ = f a₂ b₂) : γ :=
-  liftOn s₁ (fun l₁ => liftOn s₂ (f l₁) fun b₁ b₂ p => H _ _ _ _ (Perm.refl _) p) fun a₁ a₂ p => by
+  liftOn s₁ (fun l₁ => liftOn s₂ (f l₁) fun _ _ p => H _ _ _ _ (Perm.refl _) p) fun a₁ a₂ p => by
     have H' : f a₁ = f a₂ := funext fun _ => H _ _ _ _ p (Perm.refl _)
     simp only [H']
 

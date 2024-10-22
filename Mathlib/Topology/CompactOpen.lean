@@ -3,6 +3,7 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
+import Mathlib.Topology.Hom.ContinuousEval
 import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
@@ -160,27 +161,24 @@ section Ev
 
 /-- The evaluation map `C(X, Y) × X → Y` is continuous
 if `X, Y` is a locally compact pair of spaces. -/
-@[continuity]
-theorem continuous_eval [LocallyCompactPair X Y] : Continuous fun p : C(X, Y) × X => p.1 p.2 := by
-  simp_rw [continuous_iff_continuousAt, ContinuousAt, (nhds_basis_opens _).tendsto_right_iff]
-  rintro ⟨f, x⟩ U ⟨hx : f x ∈ U, hU : IsOpen U⟩
-  rcases exists_mem_nhds_isCompact_mapsTo f.continuous (hU.mem_nhds hx) with ⟨K, hxK, hK, hKU⟩
-  filter_upwards [prod_mem_nhds (eventually_mapsTo hK hU hKU) hxK] using fun _ h ↦ h.1 h.2
+instance [LocallyCompactPair X Y] : ContinuousEval C(X, Y) X Y where
+  continuous_eval := by
+    simp_rw [continuous_iff_continuousAt, ContinuousAt, (nhds_basis_opens _).tendsto_right_iff]
+    rintro ⟨f, x⟩ U ⟨hx : f x ∈ U, hU : IsOpen U⟩
+    rcases exists_mem_nhds_isCompact_mapsTo f.continuous (hU.mem_nhds hx) with ⟨K, hxK, hK, hKU⟩
+    filter_upwards [prod_mem_nhds (eventually_mapsTo hK hU hKU) hxK] using fun _ h ↦ h.1 h.2
 
-/-- Evaluation of a continuous map `f` at a point `x` is continuous in `f`.
+@[deprecated (since := "2024-10-01")] protected alias continuous_eval := continuous_eval
 
-Porting note: merged `continuous_eval_const` with `continuous_eval_const'` removing unneeded
-assumptions. -/
-@[continuity]
-theorem continuous_eval_const (a : X) : Continuous fun f : C(X, Y) => f a :=
-  continuous_def.2 fun U hU ↦ by simpa using isOpen_setOf_mapsTo (isCompact_singleton (x := a)) hU
+instance : ContinuousEvalConst C(X, Y) X Y where
+  continuous_eval_const x :=
+    continuous_def.2 fun U hU ↦ by simpa using isOpen_setOf_mapsTo isCompact_singleton hU
 
-/-- Coercion from `C(X, Y)` with compact-open topology to `X → Y` with pointwise convergence
-topology is a continuous map.
+@[deprecated (since := "2024-10-01")] protected alias continuous_eval_const := continuous_eval_const
 
-Porting note: merged `continuous_coe` with `continuous_coe'` removing unneeded assumptions. -/
+@[deprecated continuous_coeFun (since := "2024-10-01")]
 theorem continuous_coe : Continuous ((⇑) : C(X, Y) → (X → Y)) :=
-  continuous_pi continuous_eval_const
+  continuous_coeFun
 
 lemma isClosed_setOf_mapsTo {t : Set Y} (ht : IsClosed t) (s : Set X) :
     IsClosed {f : C(X, Y) | MapsTo f s t} :=
@@ -192,7 +190,7 @@ lemma isClopen_setOf_mapsTo (hK : IsCompact K) (hU : IsClopen U) :
 
 @[norm_cast]
 lemma specializes_coe {f g : C(X, Y)} : ⇑f ⤳ ⇑g ↔ f ⤳ g := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.map continuous_coe⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.map continuous_coeFun⟩
   suffices ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → MapsTo f K U by
     simpa [specializes_iff_pure, nhds_compactOpen]
   exact fun K _ U hU hg x hx ↦ (h.map (continuous_apply x)).mem_open hU (hg hx)
@@ -202,7 +200,7 @@ lemma inseparable_coe {f g : C(X, Y)} : Inseparable (f : X → Y) g ↔ Insepara
   simp only [inseparable_iff_specializes_and, specializes_coe]
 
 instance [T0Space Y] : T0Space C(X, Y) :=
-  t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
+  t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coeFun
 
 instance [R0Space Y] : R0Space C(X, Y) where
   specializes_symmetric f g h := by
@@ -210,10 +208,10 @@ instance [R0Space Y] : R0Space C(X, Y) where
     exact h.symm
 
 instance [T1Space Y] : T1Space C(X, Y) :=
-  t1Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
+  t1Space_of_injective_of_continuous DFunLike.coe_injective continuous_coeFun
 
 instance [R1Space Y] : R1Space C(X, Y) :=
-  .of_continuous_specializes_imp continuous_coe fun _ _ ↦ specializes_coe.1
+  .of_continuous_specializes_imp continuous_coeFun fun _ _ ↦ specializes_coe.1
 
 instance [T2Space Y] : T2Space C(X, Y) := inferInstance
 
@@ -260,7 +258,7 @@ theorem compactOpen_eq_iInf_induced :
 alias compactOpen_eq_sInf_induced := compactOpen_eq_iInf_induced
 
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
-    𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
+    𝓝 f = ⨅ (s) (_ : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
   rw [compactOpen_eq_iInf_induced]
   simp only [nhds_iInf, nhds_induced]
 
@@ -388,7 +386,8 @@ theorem continuous_uncurry [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     Continuous (uncurry : C(X, C(Y, Z)) → C(X × Y, Z)) := by
   apply continuous_of_continuous_uncurry
   rw [← (Homeomorph.prodAssoc _ _ _).comp_continuous_iff']
-  apply continuous_eval.comp (continuous_eval.prodMap continuous_id)
+  dsimp [Function.comp_def]
+  exact (continuous_fst.fst.eval continuous_fst.snd).eval continuous_snd
 
 /-- The family of constant maps: `Y → C(X, Y)` as a continuous map. -/
 def const' : C(Y, C(X, Y)) :=

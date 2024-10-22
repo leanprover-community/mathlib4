@@ -33,7 +33,7 @@ variable {𝕜 A : Type*} [RCLike 𝕜]
 theorem RCLike.uniqueContinuousFunctionalCalculus_of_compactSpace_spectrum [TopologicalSpace A]
     [T2Space A] [Ring A] [StarRing A] [Algebra 𝕜 A] [h : ∀ a : A, CompactSpace (spectrum 𝕜 a)] :
     UniqueContinuousFunctionalCalculus 𝕜 A where
-  eq_of_continuous_of_map_id s hs φ ψ hφ hψ h :=
+  eq_of_continuous_of_map_id s _ φ ψ hφ hψ h :=
     ContinuousMap.starAlgHom_ext_map_X hφ hψ <| by
       convert h using 1
       all_goals exact congr_arg _ (by ext; simp)

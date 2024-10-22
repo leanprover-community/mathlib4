@@ -182,7 +182,7 @@ theorem X_pow_sub_C_irreducible_iff_of_prime {p : ℕ} (hp : p.Prime) {a : K} :
 
 theorem X_pow_mul_sub_C_irreducible
     {n m : ℕ} {a : K} (hm : Irreducible (X ^ m - C a))
-    (hn : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (hx : minpoly K x = X ^ m - C a),
+    (hn : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (_ : minpoly K x = X ^ m - C a),
       Irreducible (X ^ n - C (AdjoinSimple.gen K x))) :
     Irreducible (X ^ (n * m) - C a) := by
   have hm' : m ≠ 0 := by

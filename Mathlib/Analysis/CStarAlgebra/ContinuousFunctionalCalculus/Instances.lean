@@ -155,6 +155,7 @@ instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [NormedRing A
     [CStarRing A] [CompleteSpace A] [NormedAlgebra ℂ A] [StarModule ℂ A] :
     ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) where
   predicate_zero := isStarNormal_zero
+  spectrum_nonempty a _ := spectrum.nonempty a
   exists_cfc_of_predicate a ha := by
     refine ⟨(elementalStarAlgebra ℂ a).subtype.comp <| continuousFunctionalCalculus a,
       ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
@@ -498,14 +499,14 @@ variable [NormedAlgebra ℂ A] [StarModule ℂ A]
 instance CStarAlgebra.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
   .of_spectrum_nonneg fun a ha ↦ by
     rw [StarOrderedRing.nonneg_iff] at ha
-    induction ha using AddSubmonoid.closure_induction' with
+    induction ha using AddSubmonoid.closure_induction with
     | mem x hx =>
       obtain ⟨b, rfl⟩ := hx
       exact spectrum_star_mul_self_nonneg
     | one =>
       nontriviality A
       simp
-    | mul x x_mem y y_mem hx hy =>
+    | mul x y x_mem y_mem hx hy =>
       rw [← SpectrumRestricts.nnreal_iff] at hx hy ⊢
       rw [← StarOrderedRing.nonneg_iff] at x_mem y_mem
       exact hx.nnreal_add (.of_nonneg x_mem) (.of_nonneg y_mem) hy
@@ -557,7 +558,7 @@ lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spec
       · rintro ⟨p, hp, rfl⟩
         suffices IsSelfAdjoint p ∧ SpectrumRestricts p ContinuousMap.realToNNReal from
           ⟨by simpa using this.1, by simpa using this.2⟩
-        induction hp using AddSubmonoid.closure_induction' with
+        induction hp using AddSubmonoid.closure_induction with
         | mem x hx =>
           obtain ⟨s, rfl⟩ := hx
           refine ⟨IsSelfAdjoint.star_mul_self s, ?_⟩
@@ -567,7 +568,7 @@ lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spec
           rw [SpectrumRestricts.nnreal_iff]
           nontriviality A
           simp
-        | mul x _ y _ hx hy =>
+        | mul x y _ _ hx hy =>
           exact ⟨hx.1.add hy.1, hx.2.nnreal_add hx.1 hy.1 hy.2⟩ }
 
 end SpectralOrder

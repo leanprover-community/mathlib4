@@ -73,12 +73,6 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 
 @[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.2
 
--- Porting note: not used in mathlib and coercions done differently in Lean 4
--- @[simp]
--- theorem length_coe (v : Vector α n) :
---     ((coe : { l : List α // l.length = n } → List α) v).length = n :=
---   v.2
-
 @[simp]
 theorem toList_map {β : Type*} (v : Vector α n) (f : α → β) :
     (v.map f).toList = v.toList.map f := by cases v; rfl
@@ -348,7 +342,7 @@ def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector 
 
 theorem mOfFn_pure {m} [Monad m] [LawfulMonad m] {α} :
     ∀ {n} (f : Fin n → α), (@mOfFn m _ _ _ fun i => pure (f i)) = pure (ofFn f)
-  | 0, f => rfl
+  | 0, _ => rfl
   | n + 1, f => by
     rw [mOfFn, @mOfFn_pure m _ _ _ n _, ofFn]
     simp

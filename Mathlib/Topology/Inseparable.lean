@@ -369,8 +369,11 @@ lemma Inducing.generalizingMap (hf : Inducing f) (h : StableUnderGeneralization 
   obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
   exact ⟨_, hf.specializes_iff.mp e, rfl⟩
 
-lemma OpenEmbedding.generalizingMap (hf : OpenEmbedding f) : GeneralizingMap f :=
+lemma IsOpenEmbedding.generalizingMap (hf : IsOpenEmbedding f) : GeneralizingMap f :=
   hf.toInducing.generalizingMap hf.isOpen_range.stableUnderGeneralization
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.generalizingMap := IsOpenEmbedding.generalizingMap
 
 lemma SpecializingMap.stableUnderSpecialization_range (h : SpecializingMap f) :
     StableUnderSpecialization (range f) :=

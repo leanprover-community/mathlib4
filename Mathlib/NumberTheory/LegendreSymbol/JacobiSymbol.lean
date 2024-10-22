@@ -558,7 +558,7 @@ private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a
 private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   if hb0 : b = 0 then
     1
-  else if hb2 : b % 2 = 0 then
+  else if _ : b % 2 = 0 then
     if a % 2 = 0 then
       0
     else

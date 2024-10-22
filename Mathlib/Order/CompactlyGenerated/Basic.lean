@@ -350,7 +350,7 @@ theorem sSup_compact_eq_top : sSup { a : α | CompleteLattice.IsCompactElement a
 
 theorem le_iff_compact_le_imp {a b : α} :
     a ≤ b ↔ ∀ c : α, CompleteLattice.IsCompactElement c → c ≤ a → c ≤ b :=
-  ⟨fun ab c _ ca => le_trans ca ab, fun h => by
+  ⟨fun ab _ _ ca => le_trans ca ab, fun h => by
     rw [← sSup_compact_le_eq a, ← sSup_compact_le_eq b]
     exact sSup_le_sSup fun c hc => ⟨hc.1, h c hc.1 hc.2⟩⟩
 
@@ -416,7 +416,7 @@ theorem inf_sSup_eq_iSup_inf_sup_finset :
 theorem CompleteLattice.setIndependent_iff_finite {s : Set α} :
     CompleteLattice.SetIndependent s ↔
       ∀ t : Finset α, ↑t ⊆ s → CompleteLattice.SetIndependent (↑t : Set α) :=
-  ⟨fun hs t ht => hs.mono ht, fun h a ha => by
+  ⟨fun hs _ ht => hs.mono ht, fun h a ha => by
     rw [disjoint_iff, inf_sSup_eq_iSup_inf_sup_finset, iSup_eq_bot]
     intro t
     rw [iSup_eq_bot, Finset.sup_id_eq_sSup]

@@ -97,7 +97,7 @@ theorem mapAccumr_eq_foldr {σ : Type*} (f : α → σ → σ × β) : ∀ (as :
                                     let r := f a s.1
                                     (r.1, r.2 :: s.2)
                                   ) (s, []) as
-  | [], s => rfl
+  | [], _ => rfl
   | a :: as, s => by
     simp only [mapAccumr, foldr, mapAccumr_eq_foldr f as]
 
@@ -107,9 +107,9 @@ theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ
                               let r := f ab.1 ab.2 s.1
                               (r.1, r.2 :: s.2)
                             ) (s, []) (as.zip bs)
-  | [], [], s => rfl
-  | a :: as, [], s => rfl
-  | [], b :: bs, s => rfl
+  | [], [], _ => rfl
+  | _ :: _, [], _ => rfl
+  | [], _ :: _, _ => rfl
   | a :: as, b :: bs, s => by
     simp only [mapAccumr₂, foldr, mapAccumr₂_eq_foldr f as]
     rfl

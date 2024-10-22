@@ -63,7 +63,7 @@ protected theorem induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1
       convert hm _ _ (hb a) ih
       rw [of, ← FreeAbelianGroup.of_mul]
       rfl)
-    (fun m ih => hn _ ih) ha
+    (fun _ ih => hn _ ih) ha
 
 section lift
 

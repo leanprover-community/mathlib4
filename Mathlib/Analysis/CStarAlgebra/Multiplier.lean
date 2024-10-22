@@ -363,7 +363,7 @@ instance instAlgebra : Algebra 𝕜 𝓜(𝕜, A) where
         simp_rw [Prod.algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_apply, one_apply,
           mul_smul_comm, smul_mul_assoc] }
   map_one' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_one <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
-  map_mul' k₁ k₂ :=
+  map_mul' _ _ :=
     ext (𝕜 := 𝕜) (A := A) _ _ <|
       Prod.ext (map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _)
         ((map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _).trans (Algebra.commutes _ _))

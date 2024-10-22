@@ -757,19 +757,8 @@ outside of that proof. -/
 theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
     o.oangle x (r • x + y) = 0 ∨ o.oangle x (r • x + y) = π ↔
     o.oangle x y = 0 ∨ o.oangle x y = π := by
-  simp_rw [oangle_eq_zero_or_eq_pi_iff_not_linearIndependent, Fintype.not_linearIndependent_iff]
-  -- Porting note: at this point all occurrences of the bound variable `i` are of type
-  -- `Fin (Nat.succ (Nat.succ 0))`, but `Fin.sum_univ_two` and `Fin.exists_fin_two` expect it to be
-  -- `Fin 2` instead. Hence all the `conv`s.
-  -- Was `simp_rw [Fin.sum_univ_two, Fin.exists_fin_two]`
-  conv_lhs => enter [1, g, 1, 1, 2, i]; tactic => change Fin 2 at i
-  conv_lhs => enter [1, g]; rw [Fin.sum_univ_two]
-  conv_rhs => enter [1, g, 1, 1, 2, i]; tactic => change Fin 2 at i
-  conv_rhs => enter [1, g]; rw [Fin.sum_univ_two]
-  conv_lhs => enter [1, g, 2, 1, i]; tactic => change Fin 2 at i
-  conv_lhs => enter [1, g]; rw [Fin.exists_fin_two]
-  conv_rhs => enter [1, g, 2, 1, i]; tactic => change Fin 2 at i
-  conv_rhs => enter [1, g]; rw [Fin.exists_fin_two]
+  simp_rw [oangle_eq_zero_or_eq_pi_iff_not_linearIndependent, Fintype.not_linearIndependent_iff,
+      Fin.sum_univ_two, Fin.exists_fin_two]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • (r • x + y) = 0 at h
