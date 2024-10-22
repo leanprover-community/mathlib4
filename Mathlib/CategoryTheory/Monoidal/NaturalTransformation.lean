@@ -54,7 +54,7 @@ instance id : IsMonoidal (𝟙 F₁) where
 instance comp (τ' : F₂ ⟶ F₃) [IsMonoidal τ] [IsMonoidal τ'] :
     IsMonoidal (τ ≫ τ') where
 
-instance {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' : G₁ ⟶ G₂)
+instance hcomp {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' : G₁ ⟶ G₂)
     [IsMonoidal τ] [IsMonoidal τ'] : IsMonoidal (τ ◫ τ') where
   unit := by
     simp only [comp_obj, comp_ε, hcomp_app, assoc, naturality_assoc, unit_assoc, ← map_comp, unit]

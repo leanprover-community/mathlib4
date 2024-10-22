@@ -7,6 +7,7 @@ import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.UniformSpace.Cauchy
