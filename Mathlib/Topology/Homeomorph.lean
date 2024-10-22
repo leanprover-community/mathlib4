@@ -210,12 +210,12 @@ protected theorem inducing (h : X ≃ₜ Y) : Inducing h :=
 theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› :=
   h.inducing.1.symm
 
-protected theorem quotientMap (h : X ≃ₜ Y) : QuotientMap h :=
-  QuotientMap.of_quotientMap_compose h.symm.continuous h.continuous <| by
-    simp only [self_comp_symm, QuotientMap.id]
+protected theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
+  IsQuotientMap.of_isQuotientMap_compose h.symm.continuous h.continuous <| by
+    simp only [self_comp_symm, IsQuotientMap.id]
 
 theorem coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
-  h.quotientMap.2.symm
+  h.isQuotientMap.2.symm
 
 protected theorem embedding (h : X ≃ₜ Y) : Embedding h :=
   ⟨h.inducing, h.injective⟩
@@ -314,7 +314,7 @@ alias denseEmbedding := isDenseEmbedding
 
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
-  h.quotientMap.isOpen_preimage
+  h.isQuotientMap.isOpen_preimage
 
 @[simp]
 theorem isOpen_image (h : X ≃ₜ Y) {s : Set X} : IsOpen (h '' s) ↔ IsOpen s := by
@@ -450,7 +450,7 @@ theorem comp_continuous_iff (h : X ≃ₜ Y) {f : Z → X} : Continuous (h ∘ f
 
 @[simp]
 theorem comp_continuous_iff' (h : X ≃ₜ Y) {f : Y → Z} : Continuous (f ∘ h) ↔ Continuous f :=
-  h.quotientMap.continuous_iff.symm
+  h.isQuotientMap.continuous_iff.symm
 
 theorem comp_continuousAt_iff (h : X ≃ₜ Y) (f : Z → X) (z : Z) :
     ContinuousAt (h ∘ f) z ↔ ContinuousAt f z :=
@@ -912,7 +912,7 @@ noncomputable def homeomorph : X ≃ₜ Y where
 
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
 protected lemma inducing : Inducing f := (hf.homeomorph f).inducing
-protected lemma quotientMap : QuotientMap f := (hf.homeomorph f).quotientMap
+protected lemma isQuotientMap : IsQuotientMap f := (hf.homeomorph f).isQuotientMap
 protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
 lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
 lemma isClosedEmbedding : IsClosedEmbedding f := (hf.homeomorph f).isClosedEmbedding

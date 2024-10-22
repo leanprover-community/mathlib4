@@ -252,8 +252,8 @@ theorem surjective_proj [Nonempty F] : Function.Surjective (π F E) := fun b =>
 
 /-- The projection from a fiber bundle with a nonempty fiber to its base is a quotient
 map. -/
-theorem quotientMap_proj [Nonempty F] : QuotientMap (π F E) :=
-  (isOpenMap_proj F E).to_quotientMap (continuous_proj F E) (surjective_proj F E)
+theorem isQuotientMap_proj [Nonempty F] : IsQuotientMap (π F E) :=
+  (isOpenMap_proj F E).isQuotientMap (continuous_proj F E) (surjective_proj F E)
 
 theorem continuous_totalSpaceMk (x : B) : Continuous (@TotalSpace.mk B F E x) :=
   (totalSpaceMk_inducing F E x).continuous
