@@ -3,7 +3,6 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Praneeth Kolichala, Yuyang Zhao
 -/
-import Batteries.Tactic.Alias
 
 /-!
 # Binary recursion on `Nat`
@@ -21,10 +20,8 @@ universe u
 
 namespace Nat
 
-/-- `bit b` appends the digit `b` to the little end of the binary representation of
-  its natural number input. -/
-def bit (b : Bool) (n : Nat) : Nat :=
-  cond b (n <<< 1 + 1) (n <<< 1)
+/-- `bit b` appends the digit `b` to the binary representation of its natural number input. -/
+def bit (b : Bool) : Nat → Nat := cond b (2 * · + 1) (2 * ·)
 
 theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
 
@@ -66,25 +63,27 @@ decreasing_by exact bitwise_rec_lemma n0
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
   the bit being appended is `true`-/
 @[elab_as_elim, specialize]
-def binaryRec' {C : Nat → Sort u} (z : C 0)
-    (f : ∀ b n, (n = 0 → b = true) → C n → C (bit b n)) : ∀ n, C n :=
+def binaryRec' {motive : Nat → Sort u} (z : motive 0)
+    (f : ∀ b n, (n = 0 → b = true) → motive n → motive (bit b n)) :
+    ∀ n, motive n :=
   binaryRec z fun b n ih =>
     if h : n = 0 → b = true then f b n h ih
     else
       have : bit b n = 0 := by
         rw [bit_eq_zero_iff]
-        cases n <;> cases b <;> simp at h <;> simp [h]
-      congrArg C this ▸ z
+        cases n <;> cases b <;> simp at h ⊢
+      congrArg motive this ▸ z
 
 /-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
 @[elab_as_elim, specialize]
-def binaryRecFromOne {C : Nat → Sort u} (z₀ : C 0) (z₁ : C 1)
-    (f : ∀ b n, n ≠ 0 → C n → C (bit b n)) : ∀ n, C n :=
+def binaryRecFromOne {motive : Nat → Sort u} (z₀ : motive 0) (z₁ : motive 1)
+    (f : ∀ b n, n ≠ 0 → motive n → motive (bit b n)) :
+    ∀ n, motive n :=
   binaryRec' z₀ fun b n h ih =>
     if h' : n = 0 then
       have : bit b n = bit true 0 := by
         rw [h', h h']
-      congrArg C this ▸ z₁
+      congrArg motive this ▸ z₁
     else f b n h' ih
 
 theorem bit_val (b n) : bit b n = 2 * n + b.toNat := by
@@ -108,10 +107,10 @@ theorem testBit_bit_zero (b n) : (bit b n).testBit 0 = b := by
   simp
 
 @[simp]
-theorem bitCasesOn_bit {C : Nat → Sort u} (h : ∀ b n, C (bit b n)) (b : Bool) (n : Nat) :
+theorem bitCasesOn_bit {motive : Nat → Sort u} (h : ∀ b n, motive (bit b n)) (b : Bool) (n : Nat) :
     bitCasesOn (bit b n) h = h b n := by
-  change congrArg C (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
-  generalize congrArg C (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
+  change congrArg motive (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
+  generalize congrArg motive (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
   rw [testBit_bit_zero, bit_shiftRight_one]
   intros; rfl
 

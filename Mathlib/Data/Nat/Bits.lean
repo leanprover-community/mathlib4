@@ -209,11 +209,11 @@ theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit fal
   | true,  _, _ => by dsimp [bit]; omega
   | false, _, _ => by dsimp [bit]; omega
 
-theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 :=
-  bit_eq_zero_iff.not.mpr (h ·.1)
+theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
+  cases b <;> dsimp [bit] <;> omega
 
 @[simp]
-theorem bitCasesOn_bit0 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
+theorem bitCasesOn_bit0 {motive : ℕ → Sort u} (H : ∀ b n, motive (bit b n)) (n : ℕ) :
     bitCasesOn (2 * n) H = H false n :=
   bitCasesOn_bit H false n
 
