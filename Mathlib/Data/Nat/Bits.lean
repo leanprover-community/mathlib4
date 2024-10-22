@@ -46,7 +46,7 @@ def div2 (n : ℕ) : ℕ := n >>> 1
 
 theorem div2_val (n) : div2 n = n / 2 := rfl
 
-/-- `bodd n` returns `true` if `n` is odd-/
+/-- `bodd n` returns `true` if `n` is odd -/
 def bodd (n : ℕ) : Bool := 1 &&& n != 0
 
 @[simp] lemma bodd_zero : bodd 0 = false := rfl
