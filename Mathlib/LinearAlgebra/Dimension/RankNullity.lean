@@ -215,3 +215,23 @@ lemma Submodule.finrank_quotient' [Module.Finite R M] {S : Type*} [Ring S] [SMul
   (N.restrictScalars R).finrank_quotient
 
 end Finrank
+
+section
+
+open Submodule Module
+
+variable [StrongRankCondition R] [Module.Finite R M]
+
+lemma Submodule.exists_of_finrank_lt (N : Submodule R M) (h : finrank R N < finrank R M) :
+    ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
+  obtain ⟨s, hs, hs'⟩ :=
+    exists_finset_linearIndependent_of_le_finrank (R := R) (M := M ⧸ N) le_rfl
+  obtain ⟨v, hv⟩ : s.Nonempty := by rwa [Finset.nonempty_iff_ne_empty, ne_eq, ← Finset.card_eq_zero,
+    hs, finrank_quotient, tsub_eq_zero_iff_le, not_le]
+  obtain ⟨v, rfl⟩ := N.mkQ_surjective v
+  refine ⟨v, fun r hr ↦ mt ?_ hr⟩
+  have := linearIndependent_iff.mp hs' (Finsupp.single ⟨_, hv⟩ r)
+  rwa [Finsupp.linearCombination_single, Finsupp.single_eq_zero, ← LinearMap.map_smul,
+    Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero] at this
+
+end
