@@ -275,7 +275,7 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
   simp only [MulEquiv.coe_toMonoidHom, MulAut.conj_apply] at hh
   suffices h' • g • B = g • h • B by
     simp only [this]
-    apply (hB.smul_eq_or_disjoint (g := ⟨h, hH⟩)).imp
+    apply (hB.smul_eq_or_disjoint ⟨h, hH⟩).imp
     · intro; congr
     · exact Set.disjoint_image_of_injective (MulAction.injective g)
   suffices (h' : G) • g • B = g • h • B by
