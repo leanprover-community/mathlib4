@@ -70,11 +70,11 @@ mutual
   /-- Given an expression of the form `a ^ b` in a ring of characteristic `n`, reduces `a`
       modulo `n` recursively and then calculates `a ^ b` using fast modular exponentiation. -/
   partial def normPow {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»)) (e : Q($α))
-      (instRing : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
+      (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
     let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
-    let .isNat sα na pa ← normIntNumeral' n n' pn a instRing instCharP | failure
+    let .isNat sα na pa ← normIntNumeral' n n' pn a _ instCharP | failure
     let ⟨nb, pb⟩ ← Mathlib.Meta.NormNum.deriveNat b q(instAddMonoidWithOneNat)
-    guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
+    guard <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
     haveI' : $e =Q $a ^ $b := ⟨⟩
     haveI' : $f =Q HPow.hPow := ⟨⟩
     have ⟨c, r⟩ := evalNatPowMod na nb n'
