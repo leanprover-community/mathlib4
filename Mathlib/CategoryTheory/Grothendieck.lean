@@ -292,6 +292,16 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
     simp
     rfl
 
+variable (F) in
+/-- Applying a functor `G : D ⥤ C` to the base of the Grothendieck construction induces a functor
+`Grothendieck (G ⋙ F) ⥤ Grothendieck F`. -/
+@[simps]
+def pre (G : D ⥤ C) : Grothendieck (G ⋙ F) ⥤ Grothendieck F where
+  obj X := ⟨G.obj X.base, X.fiber⟩
+  map f := ⟨G.map f.base, f.fiber⟩
+  map_id X := Grothendieck.ext _ _ (G.map_id _) (by simp)
+  map_comp f g := Grothendieck.ext _ _ (G.map_comp _ _) (by simp)
+
 end Grothendieck
 
 end CategoryTheory
