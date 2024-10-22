@@ -196,7 +196,7 @@ theorem exists_linearIndependent_pair_of_one_lt_finrank [NoZeroSMulDivisors R M]
     ∃ y, LinearIndependent R ![x, y] :=
   exists_linearIndependent_pair_of_one_lt_rank (one_lt_rank_of_one_lt_finrank h) hx
 
-lemma Module.finrank_add_finrank_quotient [Module.Finite R M] (N : Submodule R M) :
+lemma Module.finrank_quotient_add_finrank [Module.Finite R M] (N : Submodule R M) :
     finrank R (M ⧸ N) + finrank R N = finrank R M := by
   rw [← Cardinal.natCast_inj, Module.finrank_eq_rank, Nat.cast_add, Module.finrank_eq_rank,
     Submodule.finrank_eq_rank]
