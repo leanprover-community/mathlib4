@@ -775,7 +775,7 @@ lemma strong_law_ae_of_measurable
       abel
   _ ≤ ‖(n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, (X i ω - Y k i ω)‖ +
         ‖(n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, Y k i ω - μ [Y k 0]‖ + ‖μ [Y k 0] - μ [X 0]‖ :=
-      norm_add₃_le _ _ _
+      norm_add₃_le
   _ ≤ (∑ i ∈ Finset.range n, ‖X i ω - Y k i ω‖) / n + δ + δ := by
       gcongr
       simp only [Function.comp_apply, norm_smul, norm_inv, RCLike.norm_natCast,

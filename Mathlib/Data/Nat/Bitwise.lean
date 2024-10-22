@@ -37,7 +37,6 @@ should be connected.
 bitwise, and, or, xor
 -/
 
-
 open Function
 
 namespace Nat
@@ -353,6 +352,21 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c := by
   obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero.2 h.ne
   exacts [(h.asymm ha).elim, Or.inl <| Nat.xor_comm _ _ ▸ hb, Or.inr hc]
+
+@[simp]
+theorem xor_mod_two_eq {m n : ℕ} : (m ^^^ n) % 2 = (m + n) % 2 := by
+  by_cases h : (m + n) % 2 = 0
+  · simp only [h, mod_two_eq_zero_iff_testBit_zero, testBit_zero, xor_mod_two_eq_one, decide_not,
+      Bool.decide_iff_dist, Bool.not_eq_false', beq_iff_eq, decide_eq_decide]
+    omega
+  · simp only [mod_two_ne_zero] at h
+    simp only [h, xor_mod_two_eq_one]
+    omega
+
+@[simp]
+theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
+  simp only [even_iff, xor_mod_two_eq]
+  omega
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega

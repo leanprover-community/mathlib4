@@ -588,8 +588,8 @@ lemma ContinuousMapZero.adjoin_id_dense {s : Set 𝕜} [Zero s] (h0 : ((0 : s) :
     [CompactSpace s] : Dense (adjoin 𝕜 {(.id h0 : C(s, 𝕜)₀)} : Set C(s, 𝕜)₀) := by
   have h0' : 0 ∈ s := h0 ▸ (0 : s).property
   rw [dense_iff_closure_eq,
-    ← closedEmbedding_toContinuousMap.injective.preimage_image (closure _),
-    ← closedEmbedding_toContinuousMap.closure_image_eq, ← coe_toContinuousMapHom,
+    ← isClosedEmbedding_toContinuousMap.injective.preimage_image (closure _),
+    ← isClosedEmbedding_toContinuousMap.closure_image_eq, ← coe_toContinuousMapHom,
     ← NonUnitalStarSubalgebra.coe_map, NonUnitalStarAlgHom.map_adjoin_singleton,
     toContinuousMapHom_apply, toContinuousMap_id h0,
     ← ContinuousMap.ker_evalStarAlgHom_eq_closure_adjoin_id s h0']
