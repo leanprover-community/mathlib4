@@ -1120,7 +1120,7 @@ theorem filter_def (f : Π₀ i, β i) : f.filter p = mk (f.support.filter p) fu
   ext i; by_cases h1 : p i <;> by_cases h2 : f i ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 
 @[simp]
-theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = f.support.filter p := by
+theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = {x ∈ f.support | p x} := by
   ext i; by_cases h : p i <;> simp [h]
 
 theorem subtypeDomain_def (f : Π₀ i, β i) :
@@ -1717,7 +1717,7 @@ theorem sumAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f
 theorem sumAddHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (f : Π₀ i, β i) : sumAddHom φ f = f.sum fun x => φ x := by
   rcases f with ⟨f, s, hf⟩
-  change (∑ i ∈ _, _) = ∑ i ∈ Finset.filter _ _, _
+  change (∑ i ∈ _, _) = ∑ i ∈ _ with _, _
   rw [Finset.sum_filter, Finset.sum_congr rfl]
   intro i _
   dsimp only [coe_mk', Subtype.coe_mk] at *
