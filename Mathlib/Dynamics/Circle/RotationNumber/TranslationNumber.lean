@@ -607,7 +607,7 @@ theorem tendsto_translationNumber_of_dist_bounded_aux (x : ℕ → ℝ) (C : ℝ
 theorem translationNumber_eq_of_dist_bounded {f g : CircleDeg1Lift} (C : ℝ)
     (H : ∀ n : ℕ, dist ((f ^ n) 0) ((g ^ n) 0) ≤ C) : τ f = τ g :=
   Eq.symm <| g.translationNumber_eq_of_tendsto_aux <|
-    f.tendsto_translationNumber_of_dist_bounded_aux _ C H
+    f.tendsto_translationNumber_of_dist_bounded_aux (fun n ↦ (g ^ n) 0) C H
 
 @[simp]
 theorem translationNumber_one : τ 1 = 0 :=

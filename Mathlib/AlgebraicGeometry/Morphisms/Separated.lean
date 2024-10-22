@@ -14,10 +14,6 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 A morphism of schemes is separated if its diagonal morphism is a closed immmersion.
 
-## TODO
-
-- Show affine morphisms are separated.
-
 -/
 
 
@@ -73,6 +69,25 @@ lemma stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsSeparate
 
 instance : IsLocalAtTarget @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
+  infer_instance
+
+instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
+  constructor
+  letI := f.toAlgebra
+  show IsClosedImmersion (Limits.pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))))
+  rw [diagonal_Spec_map, MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion]
+  exact .spec_of_surjective _ fun x ↦ ⟨.tmul R 1 x,
+    (Algebra.TensorProduct.lmul'_apply_tmul (R := R) (S := S) 1 x).trans (one_mul x)⟩
+
+instance (priority := 100) [h : IsAffineHom f] : IsSeparated f := by
+  wlog hY : IsAffine Y
+  · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsSeparated) _
+      (iSup_affineOpens_eq_top Y)]
+    intro U
+    have H : IsAffineHom (f ∣_ U) := IsLocalAtTarget.restrict h U
+    exact this _ U.2
+  have : IsAffine X := HasAffineProperty.iff_of_isAffine.mp h
+  rw [MorphismProperty.arrow_mk_iso_iff @IsSeparated (arrowIsoSpecΓOfIsAffine f)]
   infer_instance
 
 end IsSeparated
