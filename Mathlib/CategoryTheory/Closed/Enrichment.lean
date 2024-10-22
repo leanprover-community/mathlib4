@@ -14,12 +14,12 @@ where the hom-object is given by the internal hom (coming from the closed struct
 
 The instance is given at the end of the file.
 
-We use `scoped instance` to avoid potential issues where V may also have
-a V-category structure coming from another source (e.g. the type of simplicial sets
-`SSet.{v}` also has an instance of `EnrichedCategory SSet.{v}` as a category of simplicial objects;
-see `AlgebraicTopology.SimplicialCategory.SimplicialObject`).
+We use `scoped instance` to avoid potential issues where C may also have
+a C-category structure coming from another source (e.g. the type of simplicial sets
+`SSet.{v}` has an instance of `EnrichedCategory SSet.{v}` as a category of simplicial objects;
+see `AlgebraicTopology/SimplicialCategory/SimplicialObject`).
 
-All structure field values are defined in `Monoidal.Closed`
+All structure field values are defined in `Closed/Monoidal`
 
 -/
 
@@ -31,7 +31,7 @@ namespace MonoidalClosed
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [MonoidalClosed C]
 
-/-- For V closed monoidal, build an instance of V as a V-category -/
+/-- For C closed monoidal, build an instance of C as a C-category -/
 scoped instance : EnrichedCategory C C where
   Hom x := (ihom x).obj
   id x := @id C _ _ x _

@@ -306,42 +306,42 @@ end OfEquiv
 
 -- A closed monoidal category C is always enriched over itself.
 -- This section contains the necessary definitions and equalities to endow C with
--- the structure of a C-category.
+-- the structure of a C-category, while the instance itself is defined in `Closed/Enrichment`.
 -- In particular, we only assume the necessary instances of `Closed x`, rather than assuming
 -- C comes with an instance of `MonoidalClosed`
 section Enriched
 
-/-- The V-identity morphism
-  `𝟙_ V ⟶ hom(V, v)`
-used to equip V with the structure of a V-category -/
+/-- The C-identity morphism
+  `𝟙_ C ⟶ hom(x, x)`
+used to equip C with the structure of a C-category -/
 def id (x : C) [Closed x] : 𝟙_ C ⟶ (ihom x).obj x := curry (ρ_ x).hom
 
 /-- The *uncurried* composition morphism
   `x ⊗ (hom(x, y) ⊗ hom(y, z)) ⟶ (x ⊗ hom(x, y)) ⊗ hom(y, z) ⟶ y ⊗ hom(y, z) ⟶ z`.
-The V-composition morphism will be defined as the adjoint transpose of this map. -/
+The C-composition morphism will be defined as the adjoint transpose of this map. -/
 def compTranspose (x y z : C) [Closed x] [Closed y] : x ⊗ (ihom x).obj y ⊗ (ihom y).obj z ⟶ z :=
   (α_ x ((ihom x).obj y) ((ihom y).obj z)).inv ≫
     (ihom.ev x).app y ▷ ((ihom y).obj z) ≫
     (ihom.ev y).app z
 
-/-- The V-composition morphism
+/-- The C-composition morphism
   `hom(x, y) ⊗ hom(y, z) ⟶ hom(x, z)`
-used to equip V with the structure of a V-category -/
+used to equip C with the structure of a C-category -/
 def comp (x y z : C) [Closed x] [Closed y] : (ihom x).obj y ⊗ (ihom y).obj z ⟶ (ihom x).obj z :=
   curry (compTranspose x y z)
 
-/-- Unfold the definition of id.
-This exists to streamline the proofs of MonoidalClosed.id_comp and MonoidalClosed.comp_id -/
+/-- Unfold the definition of `id`.
+This exists to streamline the proofs of `MonoidalClosed.id_comp` and `MonoidalClosed.comp_id` -/
 lemma id_eq (x : C) [Closed x] : id x = curry (ρ_ x).hom := rfl
 
-/-- Unfold the definition of compTranspose.
-This exists to streamline the proof of MonoidalClosed.assoc -/
+/-- Unfold the definition of `compTranspose`.
+This exists to streamline the proof of `MonoidalClosed.assoc` -/
 lemma compTranspose_eq (x y z : C) [Closed x] [Closed y] :
     compTranspose x y z = (α_ _ _ _).inv ≫ (ihom.ev x).app y ▷ _ ≫ (ihom.ev y).app z :=
   rfl
 
-/-- Unfold the definition of comp.
-This exists to streamline the proof of MonoidalClosed.assoc -/
+/-- Unfold the definition of `comp`.
+This exists to streamline the proof of `MonoidalClosed.assoc` -/
 lemma comp_eq (x y z : C) [Closed x] [Closed y] : comp x y z = curry (compTranspose x y z) := rfl
 
 /-!
