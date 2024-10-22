@@ -70,9 +70,8 @@ private lemma list_mul_sum {R : Type*} [CommSemiring R] {T : Type*} (l : List T)
   | nil => simp only [List.mapIdx_nil, List.sum_nil, mul_zero, forall_const]
   | cons head tail ih =>
     intro x
-    simp_rw [List.mapIdx_cons, pow_zero, mul_one, List.sum_cons, mul_add, mul_one]
-    have (a : ℕ) : y ^ (a + 1) = y * y ^ a := by ring
-    simp_rw [this, ← mul_assoc, ih, ← mul_assoc]
+    simp_rw [List.mapIdx_cons, pow_zero, mul_one, List.sum_cons, mul_add, mul_one, _root_.pow_succ',
+      ← mul_assoc, ih, ← mul_assoc]
 
 -- Geometric sum for lists
 private lemma list_geom {T : Type*} {F : Type*} [Field F] (l : List T) {y : F} (hy : y ≠ 1) :
@@ -80,10 +79,9 @@ private lemma list_geom {T : Type*} {F : Type*} [Field F] (l : List T) {y : F} (
   induction l with
   | nil => simp only [List.mapIdx_nil, List.sum_nil, List.length_nil, pow_zero, sub_self, zero_div]
   | cons head tail ih =>
-    simp only [List.mapIdx_cons, pow_zero, List.sum_cons, List.length_cons]
-    have (a : ℕ ) : y ^ (a + 1) = y * y ^ a := by ring
-    simp_rw [this, list_mul_sum, ih]
-    simp only [mul_div, ← same_add_div (sub_ne_zero.2 hy), mul_sub, mul_one, sub_add_sub_cancel']
+    simp only [List.mapIdx_cons, pow_zero, List.sum_cons, List.length_cons, _root_.pow_succ',
+      list_mul_sum, ih, mul_div, ← same_add_div (sub_ne_zero.2 hy), mul_sub, mul_one,
+      sub_add_sub_cancel']
 
 namespace Rat.MulRingNorm
 open Int
@@ -295,8 +293,8 @@ Every unbounded absolute value is equivalent to the standard absolute value
 -/
 
 /-- The usual absolute value on ℚ. -/
-def mulRingNorm_real : MulRingNorm ℚ :=
-{ toFun    := fun x : ℚ ↦ |x|
+def mulRingNorm_real : MulRingNorm ℚ where
+  toFun    := fun x : ℚ ↦ |x|
   map_zero' := by simp only [Rat.cast_zero, abs_zero]
   add_le'   := norm_add_le
   neg'      := norm_neg
@@ -305,7 +303,6 @@ def mulRingNorm_real : MulRingNorm ℚ :=
   map_mul' := by
     simp only [Rat.cast_mul]
     exact_mod_cast abs_mul
-}
 
 @[simp] lemma mul_ring_norm_eq_abs (r : ℚ) : mulRingNorm_real r = |r| := by
   simp only [Rat.cast_abs]
@@ -451,17 +448,18 @@ lemma mulRingNorm_le_mulRingNorm_pow_log : f n ≤ f m ^ logb m n := by
 
 include hm hn notbdd in
 /-- Given `m,n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
-lemma le_of_mulRingNorm_eq {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
-    have hmn : f n ≤ f m ^ Real.logb m n := mulRingNorm_le_mulRingNorm_pow_log hm hn notbdd
-    rw [← Real.rpow_le_rpow_left_iff (x:=n) (mod_cast hn), ← hfn]
-    apply le_trans hmn
-    rw [hfm, ← Real.rpow_mul (Nat.cast_nonneg m), mul_comm, Real.rpow_mul (Nat.cast_nonneg m),
-      Real.rpow_logb (mod_cast zero_lt_of_lt hm) (mod_cast Nat.ne_of_lt' hm)
-      (mod_cast zero_lt_of_lt hn)]
+lemma le_of_mulRingNorm_eq {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) : t ≤ s := by
+  have hmn : f n ≤ f m ^ Real.logb m n := mulRingNorm_le_mulRingNorm_pow_log hm hn notbdd
+  rw [← Real.rpow_le_rpow_left_iff (x:=n) (mod_cast hn), ← hfn]
+  apply le_trans hmn
+  rw [hfm, ← Real.rpow_mul (Nat.cast_nonneg m), mul_comm, Real.rpow_mul (Nat.cast_nonneg m),
+    Real.rpow_logb (mod_cast zero_lt_of_lt hm) (mod_cast Nat.ne_of_lt' hm)
+    (mod_cast zero_lt_of_lt hn)]
 
 include hm hn notbdd in
 private lemma symmetric_roles {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) : s = t :=
-    le_antisymm (le_of_mulRingNorm_eq hn hm notbdd hfn hfm)
+  le_antisymm
+    (le_of_mulRingNorm_eq hn hm notbdd hfn hfm)
     (le_of_mulRingNorm_eq hm hn notbdd hfm hfn)
 
 -- ## Archimedean case: end goal
