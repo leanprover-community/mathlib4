@@ -25,6 +25,10 @@ def updateFinset (x : ∀ i, π i) (s : Finset ι) (y : ∀ i : ↥s, π i) (i :
 
 open Finset Equiv
 
+theorem updateFinset_def {s : Finset ι} {y} :
+    updateFinset x s y = fun i ↦ if hi : i ∈ s then y ⟨i, hi⟩ else x i :=
+  rfl
+
 @[simp] theorem updateFinset_empty {y} : updateFinset x ∅ y = x :=
   rfl
 
@@ -52,8 +56,7 @@ theorem updateFinset_updateFinset {s t : Finset ι} (hst : Disjoint s t)
   set e := Equiv.Finset.union s t hst
   congr with i
   by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
-    simp only [updateFinset, his, hit, dif_pos, dif_neg, Finset.mem_union, true_or_iff,
-      false_or_iff, not_false_iff]
+    simp only [updateFinset, his, hit, dif_pos, dif_neg, Finset.mem_union, false_or, not_false_iff]
   · exfalso; exact Finset.disjoint_left.mp hst his hit
   · exact piCongrLeft_sum_inl (fun b : ↥(s ∪ t) => π b) e y z ⟨i, his⟩ |>.symm
   · exact piCongrLeft_sum_inr (fun b : ↥(s ∪ t) => π b) e y z ⟨i, hit⟩ |>.symm

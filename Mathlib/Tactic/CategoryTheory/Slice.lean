@@ -1,8 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
-
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Tactic.Conv
@@ -49,7 +48,7 @@ def evalSlice (a b : Nat) : TacticM Unit := do
       evalTactic (← `(conv| congr))
       evalTactic (← `(tactic| rotate_left))
   let k ← iterateUntilFailureCount
-    <| evalTactic (← `(conv| rw [←Category.assoc]))
+    <| evalTactic (← `(conv| rw [← Category.assoc]))
   let c := k+1+a-b
   iterateRange c c <| evalTactic (← `(conv| congr))
   let _ ← iterateUntilFailureWithResults do
