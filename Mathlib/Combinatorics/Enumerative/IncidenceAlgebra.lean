@@ -275,7 +275,7 @@ instance [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Semiring 𝕜] 
     [Module 𝕜 𝕝] : Module (IncidenceAlgebra 𝕜 α) (IncidenceAlgebra 𝕝 α) where
   smul := (· • ·)
   one_smul f := by ext a b hab; simp [ite_smul, hab]
-  mul_smul f g h := by convert smul_assoc _ _ _; ext a b; rfl; infer_instance
+  mul_smul := smul_assoc
   smul_add f g h := by ext; exact Eq.trans (sum_congr rfl fun x _ ↦ smul_add _ _ _) sum_add_distrib
   add_smul f g h := by ext; exact Eq.trans (sum_congr rfl fun x _ ↦ add_smul _ _ _) sum_add_distrib
   zero_smul f := by ext; exact sum_eq_zero fun x _ ↦ zero_smul _ _
