@@ -1651,11 +1651,13 @@ end
 section CancelMonoid
 variable [DecidableEq α] [CancelMonoid α] {s : Finset α} {m n : ℕ}
 
-@[to_additive]
+/-- See `Finset.card_pow_mono` for a version that works for the empty set. -/
+@[to_additive "See `Finset.card_nsmul_mono` for a version that works for the empty set."]
 protected lemma Nonempty.card_pow_mono (hs : s.Nonempty) : Monotone fun n : ℕ ↦ (s ^ n).card :=
   monotone_nat_of_le_succ fun n ↦ by rw [pow_succ]; exact card_le_card_mul_right _ hs
 
-@[to_additive]
+/-- See `Finset.Nonempty.card_pow_mono` for a version that works for zero powers. -/
+@[to_additive "See `Finset.Nonempty.card_nsmul_mono` for a version that works for zero scalars."]
 lemma card_pow_mono (hm : m ≠ 0) (hmn : m ≤ n) : (s ^ m).card ≤ (s ^ n).card := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp [hm]
