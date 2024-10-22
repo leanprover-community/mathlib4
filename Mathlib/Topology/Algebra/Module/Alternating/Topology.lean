@@ -158,10 +158,13 @@ theorem hasBasis_nhds_zero :
 
 variable [ContinuousSMul 𝕜 E]
 
-lemma closedEmbedding_toContinuousMultilinearMap [T2Space F] :
-    ClosedEmbedding (toContinuousMultilinearMap :
+lemma isClosedEmbedding_toContinuousMultilinearMap [T2Space F] :
+    IsClosedEmbedding (toContinuousMultilinearMap :
       (E [⋀^ι]→L[𝕜] F) → ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F) :=
   ⟨embedding_toContinuousMultilinearMap, isClosed_range_toContinuousMultilinearMap⟩
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_toContinuousMultilinearMap := isClosedEmbedding_toContinuousMultilinearMap
 
 instance instContinuousEvalConst : ContinuousEvalConst (E [⋀^ι]→L[𝕜] F) (ι → E) F :=
   .of_continuous_forget continuous_toContinuousMultilinearMap
