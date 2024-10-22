@@ -54,7 +54,7 @@ namespace Functor
 -- remember the rule of thumb that component indices of natural transformations
 -- "weigh more" than structural maps.
 -- (However by this argument `associativity` is currently stated backwards!)
-/-- A functor `F : C ⥤ D` between monoidal categoires is lax monoidal if it is
+/-- A functor `F : C ⥤ D` between monoidal categories is lax monoidal if it is
 equipped with morphisms `ε : 𝟙 _D ⟶ F.obj (𝟙_ C)` and `μ X Y : F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)`,
 satisfying the appropriate coherences. -/
 class LaxMonoidal where

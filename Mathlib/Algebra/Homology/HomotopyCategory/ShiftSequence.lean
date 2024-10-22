@@ -41,7 +41,7 @@ def shiftShortComplexFunctor' (n i j k i' j' k' : ℤ)
     exact ShortComplex.isoMk
       (n.negOnePow • ((shiftEval C n i i' hi).app K))
       ((shiftEval C n j j' hj).app K) (n.negOnePow • ((shiftEval C n k k' hk).app K)))
-    (fun f ↦ by ext <;> dsimp <;> simp)
+      (fun f ↦ by ext <;> dsimp <;> simp)
 
 /-- The natural isomorphism `(K⟦n⟧).sc i ≅ K.sc i'` when `n + i = i'`. -/
 @[simps!]
