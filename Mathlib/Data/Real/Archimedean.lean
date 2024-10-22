@@ -6,8 +6,8 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 import Mathlib.Data.Real.Basic
-import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
