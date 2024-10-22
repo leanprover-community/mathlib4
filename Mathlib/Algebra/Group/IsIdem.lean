@@ -27,23 +27,23 @@ An idempotent semigroup is a semigroup that satisfies `x * x = x`.
 -/
 
 /-- An idempotent additive semigroup is a type with an associative idempotent `(+)`. -/
-class IsAddIdem (G : Type _) [AddSemigroup G] : Prop where
+class IsIdemAddSemigroup (G : Type _) [AddSemigroup G] : Prop where
   /-- Idempotence: `x + x = x` -/
   protected add_idem : ∀ x : G, x + x = x
 
 /-- An idempotent semigroup is a type with an associative idempotent `(*)`. -/
 @[to_additive]
-class IsIdem (G : Type _) [Semigroup G] where
+class IsIdemSemigroup (G : Type _) [Semigroup G] : Prop where
   /-- Idempotence: `x * x = x` -/
   protected mul_idem : ∀ x : G, x * x = x
 
 section IsIdem
 
 variable (G : Type _)
-variable [Semigroup G] [IsIdem G]
+variable [Semigroup G] [IsIdemSemigroup G]
 
 /-- Making mul_idem available globally -/
 @[to_additive]
-theorem mul_idem (x : G) : x * x = x := IsIdem.mul_idem _
+theorem mul_idem (x : G) : x * x = x := IsIdemSemigroup.mul_idem _
 
 end IsIdem
