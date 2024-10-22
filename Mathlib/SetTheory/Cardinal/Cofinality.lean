@@ -63,7 +63,7 @@ def cof (r : α → α → Prop) : Cardinal :=
   sInf { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = c }
 
 /-- The set in the definition of `Order.cof` is nonempty. -/
-theorem cof_nonempty (r : α → α → Prop) [IsRefl α r] :
+private theorem cof_nonempty (r : α → α → Prop) [IsRefl α r] :
     { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = c }.Nonempty :=
   ⟨_, Set.univ, fun a => ⟨a, ⟨⟩, refl _⟩, rfl⟩
 
@@ -124,7 +124,7 @@ namespace Ordinal
   interesting on limit ordinals (when it is an infinite cardinal). -/
 def cof (o : Ordinal.{u}) : Cardinal.{u} := by
   refine o.liftOn (fun a => Order.cof (swap a.rᶜ)) ?_
-  rintro ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨⟨f, hf⟩⟩
+  rintro _ _ ⟨⟨f, hf⟩⟩
   exact RelIso.cof_eq ⟨_, not_iff_not.2 hf⟩
 
 theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = Order.cof (swap rᶜ) :=
