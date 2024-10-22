@@ -516,14 +516,14 @@ theorem mem_ball_iff_norm'' : b ∈ ball a r ↔ ‖b / a‖ < r := by rw [mem_b
 @[to_additive mem_ball_iff_norm']
 theorem mem_ball_iff_norm''' : b ∈ ball a r ↔ ‖a / b‖ < r := by rw [mem_ball', dist_eq_norm_div]
 
-@[to_additive] -- Porting note (#10618): `simp` can prove it
+@[to_additive]
 theorem mem_ball_one_iff : a ∈ ball (1 : E) r ↔ ‖a‖ < r := by rw [mem_ball, dist_one_right]
 
 @[to_additive mem_closedBall_iff_norm]
 theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r := by
   rw [mem_closedBall, dist_eq_norm_div]
 
-@[to_additive] -- Porting note (#10618): `simp` can prove it
+@[to_additive]
 theorem mem_closedBall_one_iff : a ∈ closedBall (1 : E) r ↔ ‖a‖ ≤ r := by
   rw [mem_closedBall, dist_one_right]
 
@@ -1073,11 +1073,11 @@ theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ bal
   rw [nsmul_eq_mul]
   nlinarith
 
-@[to_additive] -- Porting note (#10618): `simp` can prove this
+@[to_additive]
 theorem mul_mem_closedBall_mul_iff {c : E} : a * c ∈ closedBall (b * c) r ↔ a ∈ closedBall b r := by
   simp only [mem_closedBall, dist_eq_norm_div, mul_div_mul_right_eq_div]
 
-@[to_additive] -- Porting note (#10618): `simp` can prove this
+@[to_additive]
 theorem mul_mem_ball_mul_iff {c : E} : a * c ∈ ball (b * c) r ↔ a ∈ ball b r := by
   simp only [mem_ball, dist_eq_norm_div, mul_div_mul_right_eq_div]
 

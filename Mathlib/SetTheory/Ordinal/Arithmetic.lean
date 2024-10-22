@@ -2415,9 +2415,11 @@ theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
 
 end Cardinal
 
-variable {α : Type u} {r : α → α → Prop} {a b : α}
+variable {α : Type u} {a b : α}
 
 namespace Acc
+
+variable {r : α → α → Prop}
 
 /-- The rank of an element `a` accessible under a relation `r` is defined inductively as the
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
@@ -2434,32 +2436,63 @@ theorem rank_eq (h : Acc r a) :
 theorem rank_lt_of_rel (hb : Acc r b) (h : r a b) : (hb.inv h).rank < hb.rank :=
   (Order.lt_succ _).trans_le <| by
     rw [hb.rank_eq]
-    refine le_trans ?_ (Ordinal.le_iSup _ ⟨a, h⟩)
-    rfl
+    exact Ordinal.le_iSup _ (⟨a, h⟩ : {a // r a b})
 
 end Acc
 
-namespace WellFounded
+namespace IsWellFounded
 
-variable (hwf : WellFounded r)
+variable (r : α → α → Prop) [hwf : IsWellFounded α r]
 
 /-- The rank of an element `a` under a well-founded relation `r` is defined inductively as the
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
 `r b a`). -/
 noncomputable def rank (a : α) : Ordinal.{u} :=
+  (hwf.apply r a).rank
+
+theorem rank_eq (a : α) : rank r a = ⨆ b : { b // r b a }, succ (rank r b) :=
+  (hwf.apply r a).rank_eq
+
+variable {r} in
+theorem rank_lt_of_rel (h : r a b) : rank r a < rank r b :=
+  Acc.rank_lt_of_rel _ h
+
+end IsWellFounded
+
+theorem WellFoundedLT.rank_strictMono [Preorder α] [WellFoundedLT α] :
+    StrictMono (IsWellFounded.rank (α := α) (· < ·)) :=
+  fun _ _ => IsWellFounded.rank_lt_of_rel
+
+theorem WellFoundedGT.rank_strictAnti [Preorder α] [WellFoundedGT α] :
+    StrictAnti (IsWellFounded.rank (α := α) (· > ·)) :=
+  fun _ _ a => IsWellFounded.rank_lt_of_rel a
+
+namespace WellFounded
+
+set_option linter.deprecated false
+
+variable {r : α → α → Prop} (hwf : WellFounded r)
+
+/-- The rank of an element `a` under a well-founded relation `r` is defined inductively as the
+smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
+`r b a`). -/
+@[deprecated IsWellFounded.rank (since := "2024-09-07")]
+noncomputable def rank (a : α) : Ordinal.{u} :=
   (hwf.apply a).rank
 
-theorem rank_eq :
-    hwf.rank a = ⨆ b : { b // r b a }, Order.succ (hwf.rank b) := by
-  rw [rank, Acc.rank_eq]
-  rfl
+@[deprecated IsWellFounded.rank_eq (since := "2024-09-07")]
+theorem rank_eq : hwf.rank a = ⨆ b : { b // r b a }, Order.succ (hwf.rank b) :=
+  (hwf.apply a).rank_eq
 
+@[deprecated IsWellFounded.rank_lt_of_rel (since := "2024-09-07")]
 theorem rank_lt_of_rel (h : r a b) : hwf.rank a < hwf.rank b :=
   Acc.rank_lt_of_rel _ h
 
+@[deprecated WellFoundedLT.rank_strictMono (since := "2024-09-07")]
 theorem rank_strictMono [Preorder α] [WellFoundedLT α] :
     StrictMono (rank <| @wellFounded_lt α _ _) := fun _ _ => rank_lt_of_rel _
 
+@[deprecated WellFoundedGT.rank_strictAnti (since := "2024-09-07")]
 theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
     StrictAnti (rank <| @wellFounded_gt α _ _) := fun _ _ => rank_lt_of_rel wellFounded_gt
 
