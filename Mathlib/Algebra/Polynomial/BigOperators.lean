@@ -270,6 +270,16 @@ theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s
     (∏ i ∈ s, (X - C (f i))).coeff (#s - 1) = -∑ i ∈ s, f i := by
   simpa using multiset_prod_X_sub_C_coeff_card_pred (s.1.map f) (by simpa using hs)
 
+variable [IsDomain R]
+
+@[simp]
+lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
+    (s.map (X - C ·)).prod.natDegree = Multiset.card s := by
+  rw [natDegree_multiset_prod_of_monic, Multiset.map_map]
+  · simp only [(· ∘ ·), natDegree_X_sub_C, Multiset.map_const', Multiset.sum_replicate, smul_eq_mul,
+      mul_one]
+  · exact Multiset.forall_mem_map_iff.2 fun a _ => monic_X_sub_C a
+
 end CommRing
 
 section NoZeroDivisors
