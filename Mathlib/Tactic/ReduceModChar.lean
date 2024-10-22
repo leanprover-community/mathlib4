@@ -84,8 +84,8 @@ mutual
   /-- If `e` is of the form `a ^ b`, reduce it using fast modular exponentation, otherwise
       reduce it using `norm_num`. -/
   partial def normIntNumeral' {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
-      (e : Q($α)) (instRing : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) :=
-    normPow n n' pn e instRing instCharP <|> normBareNumeral n n' pn e instRing instCharP
+      (e : Q($α)) (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) :=
+    normPow n n' pn e _ instCharP <|> normBareNumeral n n' pn e _ instCharP
 
 end
 
