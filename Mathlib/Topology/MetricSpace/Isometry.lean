@@ -510,7 +510,7 @@ def sumArrowEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ
     simp [PseudoEMetricSpace.toEDist, Prod.pseudoEMetricSpaceMax, pseudoEMetricSpacePi,
       instEDistForall, Finset.sup_univ_eq_iSup, iSup_sum])
 
-lemma _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2: Fin n → α } :
+lemma _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
     edist (Fin.append x y) (Fin.append x2 y2) = max (edist x x2) (edist y y2) := by
   simp [instEDistForall, Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv),
     Prod.pseudoEMetricSpaceMax, iSup_sum]
