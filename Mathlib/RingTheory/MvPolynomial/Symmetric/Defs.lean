@@ -71,6 +71,15 @@ theorem _root_.Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ
   simp only [esymm, powersetCard_map, ← Finset.map_val_val_powersetCard, map_map]
   rfl
 
+lemma pow_smul_esymm {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
+    [SMulCommClass S R R] (s : S) (n : ℕ) (m : Multiset R) :
+    s ^ n • m.esymm n = (m.map (s • ·)).esymm n := by
+  rw [esymm, smul_sum, map_map]
+  trans ((powersetCard n m).map (fun x : Multiset R ↦ s ^ card x • x.prod)).sum
+  · refine congr_arg _ (map_congr rfl (fun x hx ↦ ?_))
+    rw [Function.comp_apply, (mem_powersetCard.1 hx).2]
+  · simp_rw [smul_prod, esymm, powersetCard_map, map_map, Function.comp_def]
+
 end Multiset
 
 namespace MvPolynomial
