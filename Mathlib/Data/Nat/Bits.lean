@@ -107,11 +107,6 @@ lemma bodd_add_div2 (n : ℕ) : cond (bodd n) 1 0 + 2 * div2 n = n := by
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
 
-theorem binaryRec_of_ne_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
-    (h : n ≠ 0) :
-    binaryRec z f n = n.bit_decomp ▸ f n.bodd n.div2 (binaryRec z f n.div2) := by
-  rw [binaryRec, dif_neg h, eqRec_eq_cast, eqRec_eq_cast]; rfl
-
 lemma bit_zero : bit false 0 = 0 :=
   rfl
 
