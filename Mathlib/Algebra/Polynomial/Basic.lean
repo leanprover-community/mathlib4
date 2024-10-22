@@ -60,7 +60,7 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 
 @[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
-open AddMonoidAlgebra
+open AddMonoidAlgebra Finset
 open Finsupp hiding single
 open Function hiding Commute
 
@@ -361,7 +361,7 @@ theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
 @[simp] lemma support_nonempty : p.support.Nonempty ↔ p ≠ 0 :=
   Finset.nonempty_iff_ne_empty.trans support_eq_empty.not
 
-theorem card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
+theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 
 /-- `monomial s a` is the monomial `a * X^s` -/
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
