@@ -48,7 +48,10 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 -- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
 -- attribute [nolint dangerousInstance] AlgHomClass.toRingHomClass
 
-attribute [simp] AlgHomClass.commutes
+-- For now, don't replace `AlgHom.commutes` and `AlgHomClass.commutes` with the more generic lemma.
+-- The file `Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone` slows down by
+-- 15% if we would do so (see benchmark on PR #18040).
+-- attribute [simp] AlgHomClass.commutes
 
 namespace AlgHomClass
 
@@ -191,6 +194,7 @@ theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁
 theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
   rfl
 
+@[simp]
 theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
   φ.commutes' r
 
