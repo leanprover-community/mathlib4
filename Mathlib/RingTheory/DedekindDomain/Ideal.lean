@@ -1023,12 +1023,13 @@ def idealFactorsFunOfQuotHom {f : R ⧸ I →+* A ⧸ J} (hf : Function.Surjecti
     rintro ⟨X, hX⟩ ⟨Y, hY⟩ h
     rw [← Subtype.coe_le_coe, Subtype.coe_mk, Subtype.coe_mk] at h ⊢
     rw [Subtype.coe_mk, comap_le_comap_iff_of_surjective (Ideal.Quotient.mk J)
-      Quotient.mk_surjective, map_le_iff_le_comap, Subtype.coe_mk, comap_map_of_surjective _ hf
-      (map (Ideal.Quotient.mk I) Y)]
+      Ideal.Quotient.mk_surjective, map_le_iff_le_comap, Subtype.coe_mk,
+      comap_map_of_surjective _ hf (map (Ideal.Quotient.mk I) Y)]
     suffices map (Ideal.Quotient.mk I) X ≤ map (Ideal.Quotient.mk I) Y by
       exact le_sup_of_le_left this
     rwa [map_le_iff_le_comap, comap_map_of_surjective (Ideal.Quotient.mk I)
-      Quotient.mk_surjective, ← RingHom.ker_eq_comap_bot, mk_ker, sup_eq_left.mpr <| le_of_dvd hY]
+      Ideal.Quotient.mk_surjective, ← RingHom.ker_eq_comap_bot, mk_ker,
+      sup_eq_left.mpr <| le_of_dvd hY]
 
 @[simp]
 theorem idealFactorsFunOfQuotHom_id :
@@ -1036,7 +1037,7 @@ theorem idealFactorsFunOfQuotHom_id :
   OrderHom.ext _ _
     (funext fun X => by
       simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_mk, OrderHom.id_coe, id,
-        comap_map_of_surjective (Ideal.Quotient.mk J) Quotient.mk_surjective, ←
+        comap_map_of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective, ←
         RingHom.ker_eq_comap_bot (Ideal.Quotient.mk J), mk_ker,
         sup_eq_left.mpr (dvd_iff_le.mp X.prop), Subtype.coe_eta])
 
@@ -1050,7 +1051,7 @@ theorem idealFactorsFunOfQuotHom_comp {f : R ⧸ I →+* A ⧸ J} {g : A ⧸ J �
   rw [idealFactorsFunOfQuotHom, idealFactorsFunOfQuotHom, OrderHom.comp_coe, OrderHom.coe_mk,
     OrderHom.coe_mk, Function.comp_apply, idealFactorsFunOfQuotHom, OrderHom.coe_mk,
     Subtype.mk_eq_mk, Subtype.coe_mk, map_comap_of_surjective (Ideal.Quotient.mk J)
-    Quotient.mk_surjective, map_map]
+    Ideal.Quotient.mk_surjective, map_map]
 
 variable [IsDedekindDomain R] (f : R ⧸ I ≃+* A ⧸ J)
 
