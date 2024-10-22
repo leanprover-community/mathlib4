@@ -3,12 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
--- import Mathlib.Algebra.Module.Projective
--- import Mathlib.LinearAlgebra.Basis.VectorSpace
--- import Mathlib.Topology.Algebra.Module.Basic
--- import Mathlib.Topology.Algebra.ContinuousMonoidHom
--- import Mathlib.Topology.Maps.OpenQuotient
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 # Algebraic operations on `SeparationQuotient`
