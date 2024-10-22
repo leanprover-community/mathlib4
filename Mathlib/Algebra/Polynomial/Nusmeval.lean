@@ -85,7 +85,7 @@ theorem _root_.zero_ppow (n : ℕ+) : (0:S)^n = 0 := by
 
 theorem smul_ppow_zero (n : ℕ+) (r : R) : smul_ppow (0 : S) n r = 0 := by
   refine PNat.recOn n ?_ ?_
-  rw[smul_ppow, ppow_one, smul_zero]
+  · rw [smul_ppow, ppow_one, smul_zero]
   intro n _
   rw [smul_ppow, ppow_add, ppow_one, mul_zero, smul_zero]
 

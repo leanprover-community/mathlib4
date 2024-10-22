@@ -19,14 +19,12 @@ commutative domain.
   summable families whose sums do not converge topologically.
   * The formal sum, `HahnSeries.SummableFamily.hsum` can be bundled as a `LinearMap` via
   `HahnSeries.SummableFamily.lsum`.
+  * `FamilySMul`, `FamilyMul`, and `PiFamily` are the pointwise scalar multiplication and
+  multiplication operations on a pair or collection of summable families.
 
 ## Main results
-  * If `R` is a commutative domain, and `Γ` is a linearly ordered additive commutative group, then
-  a Hahn series is a unit if and only if its leading term is a unit in `R`.
-
-## TODO
-  * Substitution of finitely many formal variables into elements of strictly positive orderTop
-    induces a ring homomorphism.
+  * `FamilySMul`, `FamilyMul`, and `PiFamily` are compatible with `hsum`.  That is, the product of
+  sums is equal to the sum of pointwise products.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]

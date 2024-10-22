@@ -8,23 +8,37 @@ import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Evaluation of power series in Hahn Series
-We describe a class of ring homomorphisms from formal power series to Hahn series, given by
-substitution of the generating variables to elements of strictly positive order.
+We describe a class of ring homomorphisms from multivariable formal power series to Hahn series,
+given by substitution of the generating variables to elements of strictly positive order.
+In the single variable case, we use this homomorphism to characterize invertible Hahn series whose
+coefficients are in a commutative domain.
 
 ## Main Definitions
- * `heval` an `R`-algebra homomorphism from formal power series to Hahn series.
+  * `powers` : A summable family made of natural number powers of a positive order Hahn series.
+  * `PowerSeriesFamily` : A variant of `powers` where powers are multiplied by coefficients of a
+  formal power series.
+  * `mvPowerSeriesFamily` : A summable family made of monomials with natural number exponents, where
+  the variables are taken from finite set of positive order Hahn series.
+  * `PowerSeries.heval` : An `R`-algebra homomorphism from `PowerSeries R` to `HahnSeries Γ R` given
+  by sending the generator to a positive-order element.
+  * `MvPowerSeries.heval` : An `R`-algebra homomorphism from `MvPowerSeries σ R` to `HahnSeries Γ R`
+  for `σ` finite, given by sending each element of `σ` to a positive-order element.
 
 ## Main results
-  * If `R` is a commutative domain, and `Γ` is a linearly ordered additive commutative group, then
-  a Hahn series is a unit if and only if its leading term is a unit in `R`.
+  * `mvPowerSeries_family_prod_eq_family_mul` : `hsum` of `heval` of a product is equal to the
+    product of `hsum`s of `hevals` for multivariable power series.
+  * `isUnit_of_isUnit_leadingCoeff` : A Hahn Series with invertible leading coefficient is
+    invertible.
+  * `isUnit_iff` : If the coefficient ring is a domain, then any invertible Hahn series has
+    invertible leading coefficient.
 
 ## TODO
-  * Multivariable version
-
+  * Rewrite invertibility in terms of power series evaluation?
+## Main results
+  * A HahnSeries module structure on summable families.
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
-
 
 open Finset Function
 
@@ -32,7 +46,46 @@ open Pointwise
 
 noncomputable section
 
-variable {Γ Γ' R V α β : Type*}
+variable {Γ Γ' R V α β σ : Type*}
+
+theorem sum_eq_top [AddCommMonoid Γ] (s : Finset σ) (f : σ → WithTop Γ)
+    (h : ∃i ∈ s, f i = ⊤) : ∑ i ∈ s, f i = ⊤ := by
+  induction s using cons_induction with
+  | empty => simp_all only [not_mem_empty, false_and, exists_false]
+  | cons i s his ih =>
+    obtain ⟨j, hj⟩ := h
+    by_cases hjs : j ∈ s
+    · simp only [sum_cons, WithTop.add_eq_top]
+      exact Or.inr <| ih <| Exists.intro j ⟨hjs, hj.2⟩
+    · classical
+      have hij : j = i := eq_of_not_mem_of_mem_insert (cons_eq_insert i s his ▸ hj.1) hjs
+      rw [sum_cons, ← hij, hj.2, WithTop.add_eq_top]
+      exact Or.inl rfl
+-- #find_home! sum_eq_top --[Mathlib.Algebra.BigOperators.Group.Finset]
+
+theorem add_ne_top [AddCommMonoid Γ] {x y : WithTop Γ} (hx : x ≠ ⊤)
+    (hy : y ≠ ⊤) : x + y ≠ ⊤ := by
+  by_contra h
+  rw [WithTop.add_eq_top] at h
+  simp_all only [ne_eq, or_self]
+--#find_home! add_ne_top --[Mathlib.Algebra.Order.Monoid.Unbundled.WithTop]
+
+theorem add_untop [AddCommMonoid Γ] {x y : WithTop Γ} (hx : x ≠ ⊤) (hy : y ≠ ⊤) :
+    (x + y).untop (add_ne_top hx hy) = x.untop hx + y.untop hy :=
+  (WithTop.untop_eq_iff (add_ne_top hx hy)).mpr (by simp)
+--#find_home! add_untop --[Mathlib.Algebra.Order.Monoid.Unbundled.WithTop]
+
+theorem sum_untop [AddCommMonoid Γ] (s : Finset σ) {f : σ → WithTop Γ}
+    (h : ∀ i, ¬ f i = ⊤) (hs : ¬∑ i ∈ s, f i = ⊤) :
+    (∑ i ∈ s, f i).untop hs = ∑ i ∈ s, ((f i).untop (h i)) := by
+  induction s using cons_induction with
+  | empty => simp
+  | cons i s his ih =>
+    simp only [sum_cons]
+    rw [sum_cons, WithTop.add_eq_top, Mathlib.Tactic.PushNeg.not_or_eq] at hs
+    rw [add_untop (h i) hs.2]
+    exact congrArg (HAdd.hAdd ((f i).untop (h i))) (ih hs.right)
+--#find_home! sum_untop --[Mathlib.Algebra.BigOperators.Group.Finset]
 
 namespace HahnSeries
 
@@ -156,9 +209,6 @@ section PowerSeriesFamily
 
 variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
 
--- consider substitutions of power series in finitely many variables, using finitely many
--- positive-orderTop elements.
-
 theorem co_support_zero (g : Γ) : {a | ¬((0 : HahnSeries Γ R) ^ a).coeff g = 0} ⊆ {0} := by
   simp_all only [Set.subset_singleton_iff, Set.mem_setOf_eq]
   intro n hn
@@ -214,26 +264,6 @@ def Fintype_of_pos_order (σ : Type*) (y : σ →₀ HahnSeries Γ R)
 lemma supp_eq_univ_of_pos_fintype (σ : Type*) [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i : σ, 0 < (y i).order) : y.support = Finset.univ (α := σ) :=
   eq_univ_of_forall fun i => Finsupp.mem_support_iff.mpr (ne_zero_of_order_ne (ne_of_gt (hy i)))
-
-open Classical in
-theorem mvpow_finite_co_support {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
-    (hy : ∀ i, 0 < (y i).orderTop) (g : Γ) :
-    {a : (σ →₀ ℕ) | (∏ i, y i ^ a i).coeff g ≠ 0}.Finite := by
-  have h : ∀ a : (σ →₀ ℕ), (∏ i : σ, y i ^ a i) = ∏ x : σ,
-      if _ : x ∈ univ then y x ^ a x else 1 :=
-    fun a => by simp
-  suffices {a : ((i : σ) → i ∈ univ → ℕ) | ((fun b => ∏ x : σ,
-      if h : x ∈ univ then y x ^ b x h else 1) a).coeff g ≠ 0}.Finite from by
-    simp_rw [h]
-    refine Set.Finite.of_surjOn (fun a => Finsupp.onFinset univ (fun i => a i (mem_univ i))
-      (fun i _ ↦ mem_univ i)) (fun a ha => ?_) this
-    simp_all only [dite_eq_ite, ite_true, implies_true, dite_true, mem_univ, ne_eq,
-      Set.mem_setOf_eq, Set.mem_image]
-    use fun i _ => a i
-    exact ⟨ha, by ext; simp⟩
-  exact pi_finite_co_support Finset.univ _ g (fun i => isPWO_iUnion_support_powers (y i)
-    (zero_le_orderTop_iff.mp (le_of_lt (hy i))))
-    (fun i g => by simp only [pow_finite_co_support (hy i) g])
 
 /-- A summable family of Hahn series given by substituting the power series variable `X` into the
 positive order Hahn series `x`.-/
@@ -432,6 +462,26 @@ theorem isPWO_iUnion_support_smul_MVpowers {σ : Type*} [Fintype σ] (y : σ →
   exact isPWO_iUnion_support_MVpow (fun n => MvPowerSeries.coeff R n f) y
     (fun i => zero_le_orderTop_iff.mp <| le_of_lt (hy i))
 
+open Classical in
+theorem mvpow_finite_co_support {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
+    (hy : ∀ i, 0 < (y i).orderTop) (g : Γ) :
+    {a : (σ →₀ ℕ) | (∏ i, y i ^ a i).coeff g ≠ 0}.Finite := by
+  have h : ∀ a : (σ →₀ ℕ), (∏ i : σ, y i ^ a i) = ∏ x : σ,
+      if _ : x ∈ univ then y x ^ a x else 1 :=
+    fun a => by simp
+  suffices {a : ((i : σ) → i ∈ univ → ℕ) | ((fun b => ∏ x : σ,
+      if h : x ∈ univ then y x ^ b x h else 1) a).coeff g ≠ 0}.Finite from by
+    simp_rw [h]
+    refine Set.Finite.of_surjOn (fun a => Finsupp.onFinset univ (fun i => a i (mem_univ i))
+      (fun i _ ↦ mem_univ i)) (fun a ha => ?_) this
+    simp_all only [dite_eq_ite, ite_true, implies_true, dite_true, mem_univ, ne_eq,
+      Set.mem_setOf_eq, Set.mem_image]
+    use fun i _ => a i
+    exact ⟨ha, by ext; simp⟩
+  exact pi_finite_co_support Finset.univ _ g (fun i => isPWO_iUnion_support_powers (y i)
+    (zero_le_orderTop_iff.mp (le_of_lt (hy i))))
+    (fun i g => by simp only [pow_finite_co_support (hy i) g])
+
 /-- A summable family given by substituting a multivariable power series into positive order
 elements.-/
 @[simps]
@@ -552,9 +602,11 @@ end MVpowers
 
 end SummableFamily
 
-section PowerSeriesSubst
+end HahnSeries
 
-open SummableFamily
+namespace PowerSeries
+
+open HahnSeries SummableFamily
 
 variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] {x : HahnSeries Γ R}
 (hx : 0 < x.orderTop)
@@ -564,7 +616,7 @@ variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] {x : HahnSeries Γ R
 /-- The `R`-algebra homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
 variable `X` to a positive order element `x`. -/
 @[simps]
-def PowerSeriesSubst : PowerSeries R →ₐ[R] HahnSeries Γ R where
+def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
   toFun f := (PowerSeriesFamily hx f).hsum
   map_one' := by
     simp only [hsum, PowerSeriesFamily_toFun, PowerSeries.coeff_one, ite_smul, one_smul, zero_smul]
@@ -584,27 +636,26 @@ def PowerSeriesSubst : PowerSeries R →ₐ[R] HahnSeries Γ R where
       RingHom.id_apply, C_apply]
     ext g
     simp only [hsum_coeff, PowerSeriesFamily_toFun, smul_coeff, smul_eq_mul, PowerSeries.coeff_C]
-    rw [finsum_eq_single _ 0 fun n hn => by simp_all, single_coeff, pow_zero, one_coeff, mul_ite,
-      mul_one, mul_zero]
-    exact rfl
+    rw [finsum_eq_single _ 0 fun n hn => by simp_all]
+    by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one]
 
-theorem subst_mul {a b : PowerSeries R} :
-    PowerSeriesSubst hx (a * b) = (PowerSeriesSubst hx a) * PowerSeriesSubst hx b :=
-  map_mul (PowerSeriesSubst hx) a b
+theorem heval_mul {a b : PowerSeries R} :
+    heval hx (a * b) = (heval hx a) * heval hx b :=
+  map_mul (heval hx) a b
 
-theorem subst_power_series_unit (u : (PowerSeries R)ˣ) : IsUnit (PowerSeriesSubst hx u) := by
+theorem heval_unit (u : (PowerSeries R)ˣ) : IsUnit (heval hx u) := by
   refine isUnit_iff_exists_inv.mpr ?_
-  use PowerSeriesSubst hx u.inv
-  rw [← subst_mul, Units.val_inv, map_one]
+  use heval hx u.inv
+  rw [← heval_mul, Units.val_inv, map_one]
 
-theorem powerSeriesSubst_coeff (f : PowerSeries R) (g : Γ) :
-    (PowerSeriesSubst hx f).coeff g = ∑ᶠ n, ((PowerSeriesFamily hx f).coeff g) n := by
-  rw [PowerSeriesSubst_apply, hsum_coeff]
+theorem heval_coeff (f : PowerSeries R) (g : Γ) :
+    (heval hx f).coeff g = ∑ᶠ n, ((PowerSeriesFamily hx f).coeff g) n := by
+  rw [heval_apply, hsum_coeff]
   exact rfl
 
-theorem powerSeriesSubst_coeff_zero (f : PowerSeries R) :
-    (PowerSeriesSubst hx f).coeff 0 = PowerSeries.constantCoeff R f := by
-  rw [powerSeriesSubst_coeff, finsum_eq_single (fun n => ((PowerSeriesFamily hx f).coeff 0) n) 0,
+theorem heval_coeff_zero (f : PowerSeries R) :
+    (heval hx f).coeff 0 = PowerSeries.constantCoeff R f := by
+  rw [heval_coeff, finsum_eq_single (fun n => ((PowerSeriesFamily hx f).coeff 0) n) 0,
     ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   · simp_all
   · intro n hn
@@ -612,10 +663,19 @@ theorem powerSeriesSubst_coeff_zero (f : PowerSeries R) :
     exact mul_eq_zero_of_right ((PowerSeries.coeff R n) f) (coeff_eq_zero_of_lt_orderTop
       (lt_of_lt_of_le ((nsmul_pos_iff hn).mpr hx) orderTop_nsmul_le_orderTop_pow))
 
-/-- The `R`-algebra homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
-variable `X` to a positive order element `x`. -/
+end PowerSeries
+
+namespace MvPowerSeries
+
+open HahnSeries SummableFamily
+
+variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] {σ : Type*} [Fintype σ]
+(y : σ →₀ HahnSeries Γ R) (hy : ∀ i, 0 < (y i).orderTop)
+
+/-- The `R`-algebra homomorphism from `R[[X₁,…,Xₙ]]` to `HahnSeries Γ R` given by sending each power
+series variable `Xᵢ` to a positive order element. -/
 @[simps]
-def mvPowerSeriesSubst {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
+def heval {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i, 0 < (y i).orderTop) : MvPowerSeries σ R →ₐ[R] HahnSeries Γ R where
   toFun f := (mvPowerSeriesFamily y hy f).hsum
   map_one' := by
@@ -646,10 +706,67 @@ def mvPowerSeriesSubst {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     ext g
     classical
     simp only [hsum_coeff, mvPowerSeriesFamily_toFun, mvPowers_apply, smul_coeff, smul_eq_mul]
-    rw [finsum_eq_single _ 0 (fun s hs => by simp [hs, MvPowerSeries.coeff_C]), single_coeff]
-    by_cases hg : g = 0 <;> simp [hg]
+    rw [finsum_eq_single _ 0 (fun s hs => by simp [hs, MvPowerSeries.coeff_C])]
+    by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one']
 
-end PowerSeriesSubst
+theorem heval_mul {a b : MvPowerSeries σ R} :
+    heval y hy (a * b) = (heval y hy a) * heval y hy b :=
+  map_mul (heval y hy) a b
+
+theorem heval_unit (u : (MvPowerSeries σ R)ˣ) : IsUnit (heval y hy u) := by
+  refine isUnit_iff_exists_inv.mpr ?_
+  use heval y hy u.inv
+  rw [← heval_mul, Units.val_inv, map_one]
+
+theorem heval_coeff (f : MvPowerSeries σ R) (g : Γ) :
+    (heval y hy f).coeff g = ∑ᶠ n, ((mvPowerSeriesFamily y hy f).coeff g) n := by
+  rw [heval_apply, hsum_coeff]
+  exact rfl
+
+theorem heval_coeff_zero (f : MvPowerSeries σ R) :
+    (heval y hy f).coeff 0 = MvPowerSeries.constantCoeff σ R f := by
+  rw [heval_coeff, finsum_eq_single (fun n => ((mvPowerSeriesFamily y hy f).coeff 0) n) 0,
+    ← MvPowerSeries.coeff_zero_eq_constantCoeff_apply]
+  · simp_all
+  · intro n hn
+    simp_all only [ne_eq, coeff_toFun, mvPowerSeriesFamily_toFun, mvPowers_apply, smul_coeff,
+      smul_eq_mul]
+    refine mul_eq_zero_of_right ((MvPowerSeries.coeff R n) f) (coeff_eq_zero_of_lt_orderTop ?_)
+    refine lt_of_lt_of_le ?_ (sum_orderTop_le_orderTop_prod _)
+    by_cases h : ∑ i, (y i ^ n i).orderTop = ⊤
+    · simp [h]
+    · have hi : ∀ i, ¬(y i ^ n i).orderTop = ⊤ := by
+        intro i
+        contrapose h
+        simp_all only [Decidable.not_not]
+        exact sum_eq_top univ _ <| Exists.intro i ⟨mem_univ i, h⟩
+      refine (WithTop.lt_untop_iff h).mp ?_
+      rw [sum_untop univ hi h]
+      rw [Finsupp.ext_iff, Mathlib.Tactic.PushNeg.not_forall_eq] at hn
+      simp only [Finsupp.coe_zero, Pi.zero_apply] at hn
+      refine sum_pos' ?_ ?_
+      · intro i _
+        by_cases hni : n i = 0
+        · rw [WithTop.le_untop_iff, hni, pow_zero]
+          by_cases hz : (1 : HahnSeries Γ R) = 0
+          · simp [hz]
+          · rw [WithTop.coe_zero, zero_le_orderTop_iff, order_one]
+        · rw [WithTop.le_untop_iff]
+          refine LE.le.trans ?_ orderTop_nsmul_le_orderTop_pow
+          rw [WithTop.coe_zero]
+          exact nsmul_nonneg (le_of_lt (hy i)) (n i)
+      · obtain ⟨i, hni⟩ := hn
+        use i
+        constructor
+        · exact mem_univ i
+        · rw [WithTop.lt_untop_iff]
+          refine lt_of_lt_of_le ?_ orderTop_nsmul_le_orderTop_pow
+          rw [WithTop.coe_zero]
+          exact (nsmul_pos_iff hni).mpr (hy i)
+
+end MvPowerSeries
+
+namespace HahnSeries
 
 section Inversion
 
