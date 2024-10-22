@@ -153,6 +153,29 @@ namespace Submodule
 
 variable {p : Submodule K V} {f : Module.End K V}
 
+-- move this
+theorem _root_.Finset.supIndep_antimono_fun {α ι : Type*} [Lattice α] [OrderBot α] {s : Finset ι}
+    {f g : ι → α} (h : ∀ x ∈ s, f x ≤ g x) (h : s.SupIndep g) : s.SupIndep f := by
+  classical
+  induction s using Finset.induction_on
+  case empty => apply Finset.supIndep_empty
+  case insert i s his IH hle =>
+  rw [Finset.supIndep_iff_disjoint_erase] at h ⊢
+  intro j hj
+  simp_all only [Finset.mem_insert, or_true, implies_true, true_implies, forall_eq_or_imp,
+    Finset.erase_insert_eq_erase, not_false_eq_true, Finset.erase_eq_of_not_mem]
+  obtain rfl | hj := hj
+  · simp only [Finset.erase_insert_eq_erase]
+    apply h.left.mono hle.left
+    apply (Finset.sup_mono _).trans (Finset.sup_mono_fun hle.right)
+    apply Finset.erase_subset
+  · apply (h.right j hj).mono (hle.right j hj) (Finset.sup_mono_fun _)
+    intro k hk
+    simp_all only [Finset.mem_erase, ne_eq, Finset.mem_insert]
+    obtain ⟨-, rfl | hk⟩ := hk
+    · exact hle.left
+    · exact hle.right k hk
+
 theorem inf_iSup_unifEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈ p) (k : ℕ∞) :
     p ⊓ ⨆ μ, f.unifEigenspace μ k = ⨆ μ, p ⊓ f.unifEigenspace μ k := by
   refine le_antisymm (fun m hm ↦ ?_)
@@ -185,10 +208,10 @@ theorem inf_iSup_unifEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x �
     split_ifs with hμμ'
     · rw [hμμ']
     have hl₀ : ((f - algebraMap K (End K V) μ') ^ l₀) (m μ') = 0 := by
-      sorry
-      -- obtain ⟨k, hk⟩ := (mem_iSup_of_chain _ _).mp (hm₂ μ')
-      -- simpa only [End.mem_genEigenspace] using
-      --   Module.End.genEigenspace_le_genEigenspace_finrank _ _ k hk
+      rw [← LinearMap.mem_ker, Algebra.algebraMap_eq_smul_one, ← End.mem_unifEigenspace_nat]
+      simp_rw [← End.mem_unifEigenspace_nat] at hl
+      suffices (l μ' : ℕ∞) ≤ l₀ by exact (f.unifEigenspace μ').mono this (hl μ')
+      simpa only [Nat.cast_le] using Finset.le_sup hμ'
     have : _ = g := (m.support.erase μ).noncommProd_erase_mul (Finset.mem_erase.mpr ⟨hμμ', hμ'⟩)
       (fun μ ↦ (f - algebraMap K (End K V) μ) ^ l₀) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
     rw [← this, LinearMap.mul_apply, hl₀, _root_.map_zero]
@@ -204,14 +227,27 @@ theorem inf_iSup_unifEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x �
   have hg₃ : InjOn g ↑(f.unifEigenspace μ k) := by
     apply LinearMap.injOn_of_disjoint_ker (subset_refl _)
     have this := f.independent_unifEigenspace k
+    have aux (μ') (_hμ' : μ' ∈ m.support.erase μ) :
+        (f.unifEigenspace μ') ↑l₀ ≤ (f.unifEigenspace μ') k := by
+      apply (f.unifEigenspace μ').mono
+      rintro k rfl
+      simp only [ENat.some_eq_coe, Nat.cast_inj, exists_eq_left']
+      apply Finset.sup_le
+      intro i _hi
+      simpa using hlk i
     -- simp_rw [f.maxGenEigenspace_eq_genEigenspace_finrank] at this ⊢
     rw [LinearMap.ker_noncommProd_eq_of_supIndep_ker, ← Finset.sup_eq_iSup]
     · have := Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
-      rw [← Finset.supIndep_iff_disjoint_erase]
-      simpa only [End.genEigenspace_def] using
-        Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
+      apply this.mono_right
+      apply Finset.sup_mono_fun
+      intro μ' hμ'
+      rw [Algebra.algebraMap_eq_smul_one, ← End.unifEigenspace_nat]
+      apply aux μ' hμ'
     · have := this.supIndep' (m.support.erase μ)
-      simpa only [End.genEigenspace_def] using this.supIndep' (m.support.erase μ)
+      apply Finset.supIndep_antimono_fun _ this
+      intro μ' hμ'
+      rw [Algebra.algebraMap_eq_smul_one, ← End.unifEigenspace_nat]
+      apply aux μ' hμ'
   have hg₄ : SurjOn g
       ↑(p ⊓ f.unifEigenspace μ k) ↑(p ⊓ f.unifEigenspace μ k) := by
     have : MapsTo g
