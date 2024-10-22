@@ -510,7 +510,7 @@ theorem mulRingNorm_equiv_standard_of_unbounded : MulRingNorm.equiv f mulRingNor
 
 end Archimedean
 
-/-! # Ostrowski's Theorem -/
+/-- **Ostrowski's Theorem** -/
 theorem mulRingNorm_equiv_standard_or_padic (f : MulRingNorm ℚ) (hf_nontriv : f ≠ 1) :
     (MulRingNorm.equiv f mulRingNorm_real) ∨
     ∃! p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
