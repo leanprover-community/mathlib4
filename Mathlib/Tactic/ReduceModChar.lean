@@ -45,7 +45,7 @@ open Mathlib.Meta.NormNum
 
 variable {u : Level}
 
-lemma CharP.isInt_of_mod {e' r : ℤ} {α : Type _} [Ring α] {n n' : ℕ} (inst : CharP α n) {e : α}
+lemma CharP.isInt_of_mod {e' r : ℤ} {α : Type*} [Ring α] {n n' : ℕ} (inst : CharP α n) {e : α}
     (he : IsInt e e') (hn : IsNat n n') (h₂ : IsInt (e' % n') r) : IsInt e r :=
   ⟨by rw [he.out, CharP.intCast_eq_intCast_mod α n, show n = n' from hn.out, h₂.out, Int.cast_id]⟩
 
