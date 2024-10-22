@@ -30,7 +30,7 @@ lemma apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil
     (hfg : Commute f g) (hss : g.IsFinitelySemisimple) (hnil : IsNilpotent (f - g)) :
     g m = μ • m := by
   rw [f.mem_unifEigenspace] at hm
-  obtain ⟨l, -, hm⟩ := hm 
+  obtain ⟨l, -, hm⟩ := hm
   rw [LinearMap.mem_ker, ← f.mem_genEigenspace] at hm
   set p := f.genEigenspace μ l
   have h₁ : MapsTo g p p := mapsTo_unifEigenspace_of_comm hfg μ l
