@@ -269,7 +269,7 @@ lemma isSemisimple_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H) :
       (genWeightSpace_le_genWeightSpaceOf L x' α) hy
     rw [maxGenEigenspace_eq] at hy
     set k := maxGenEigenspaceIndex (ad K L x) (α x')
-    rw [apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hy hS₀ hS hN]
+    rw [apply_eq_of_mem_unifEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hy hS₀ hS hN]
   /- So `S` obeys the derivation axiom if we restrict to root spaces. -/
   have h_der (y z : L) (α β : H → K) (hy : y ∈ rootSpace H α) (hz : z ∈ rootSpace H β) :
       S ⁅y, z⁆ = ⁅S y, z⁆ + ⁅y, S z⁆ := by
@@ -316,8 +316,8 @@ lemma lie_eq_smul_of_mem_rootSpace {α : H → K} {x : L} (hx : x ∈ rootSpace 
     ⁅h, x⁆ = α h • x := by
   replace hx : x ∈ (ad K L h).maxGenEigenspace (α h) :=
     genWeightSpace_le_genWeightSpaceOf L h α hx
-  rw [(isSemisimple_ad_of_mem_isCartanSubalgebra
-    h.property).maxGenEigenspace_eq_eigenspace, Module.End.mem_eigenspace_iff] at hx
+  rw [(isSemisimple_ad_of_mem_isCartanSubalgebra h.property).maxGenEigenspace_eq_eigenspace,
+    Module.End.mem_eigenspace_iff] at hx
   simpa using hx
 
 lemma lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg

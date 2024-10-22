@@ -519,9 +519,14 @@ theorem exp_ne_zero_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
 abbrev maxGenEigenspace (f : End R M) (μ : R) : Submodule R M :=
   unifEigenspace f μ ⊤
 
-lemma maxGenEigenspace_def (f : End R M) (μ : R) :
-    f.maxGenEigenspace μ = ⨆ k, f.genEigenspace μ k := by
+lemma iSup_genEigenspace_eq (f : End R M) (μ : R) :
+    ⨆ k, (f.genEigenspace μ) k = f.maxGenEigenspace μ := by
   simp_rw [maxGenEigenspace, unifEigenspace_top, genEigenspace, OrderHom.coe_mk]
+
+@[deprecated iSup_genEigenspace_eq (since := "2024-10-11")]
+lemma maxGenEigenspace_def (f : End R M) (μ : R) :
+    f.maxGenEigenspace μ = ⨆ k, f.genEigenspace μ k :=
+  (iSup_genEigenspace_eq f μ).symm
 
 theorem genEigenspace_le_maximal (f : End R M) (μ : R) (k : ℕ) :
     f.genEigenspace μ k ≤ f.maxGenEigenspace μ :=
@@ -595,10 +600,6 @@ lemma mapsTo_genEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) (k
     MapsTo g (f.genEigenspace μ k) (f.genEigenspace μ k) :=
   mapsTo_unifEigenspace_of_comm h μ k
 
-lemma iSup_genEigenspace_eq (f : End R M) (μ : R) :
-    ⨆ k, (f.genEigenspace μ) k = f.unifEigenspace μ ⊤ := by
-  exact Eq.symm (maxGenEigenspace_def f μ)
-
 lemma mapsTo_maxGenEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) :
     MapsTo g ↑(f.maxGenEigenspace μ) ↑(f.maxGenEigenspace μ) :=
   mapsTo_unifEigenspace_of_comm h μ ⊤
@@ -606,7 +607,7 @@ lemma mapsTo_maxGenEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R)
 @[deprecated mapsTo_iSup_genEigenspace_of_comm (since := "2024-10-11")]
 lemma mapsTo_iSup_genEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) :
     MapsTo g ↑(⨆ k, f.genEigenspace μ k) ↑(⨆ k, f.genEigenspace μ k) := by
-  rw [← maxGenEigenspace_def]
+  rw [iSup_genEigenspace_eq]
   apply mapsTo_maxGenEigenspace_of_comm h
 
 /-- The restriction of `f - μ • 1` to the `k`-fold generalized `μ`-eigenspace is nilpotent. -/
@@ -699,7 +700,7 @@ lemma injOn_maxGenEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
 @[deprecated injOn_unifEigenspace (since := "2024-10-11")]
 lemma injOn_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
     InjOn (⨆ k, f.genEigenspace · k) {μ | ⨆ k, f.genEigenspace μ k ≠ ⊥} := by
-  simp_rw [← maxGenEigenspace_def]
+  simp_rw [iSup_genEigenspace_eq]
   apply injOn_maxGenEigenspace
 
 theorem independent_unifEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : ℕ∞) :
@@ -748,7 +749,7 @@ theorem independent_maxGenEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
 @[deprecated independent_unifEigenspace (since := "2024-10-11")]
 theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent (fun μ ↦ ⨆ k, f.genEigenspace μ k) := by
-  simp_rw [← maxGenEigenspace_def]
+  simp_rw [iSup_genEigenspace_eq]
   apply independent_maxGenEigenspace
 
 /-- The eigenspaces of a linear operator form an independent family of subspaces of `M`.  That is,
@@ -799,11 +800,18 @@ theorem unifEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (
   simp only [mem_unifEigenspace, LinearMap.mem_ker, ← mem_genEigenspace, genEigenspace_restrict,
     Submodule.mem_comap]
 
+lemma _root_.Submodule.inf_unifEigenspace (f : End R M) (p : Submodule R M) {k : ℕ∞} {μ : R}
+    (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
+    p ⊓ f.unifEigenspace μ k =
+      (unifEigenspace (LinearMap.restrict f hfp) μ k).map p.subtype := by
+  rw [f.unifEigenspace_restrict _ _ _ hfp, Submodule.map_comap_eq, Submodule.range_subtype]
+
+@[deprecated Submodule.inf_unifEigenspace (since := "2024-10-11")]
 lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : ℕ} {μ : R}
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
     p ⊓ f.genEigenspace μ k =
-      (genEigenspace (LinearMap.restrict f hfp) μ k).map p.subtype := by
-  rw [f.genEigenspace_restrict _ _ _ hfp, Submodule.map_comap_eq, Submodule.range_subtype]
+      (genEigenspace (LinearMap.restrict f hfp) μ k).map p.subtype :=
+  Submodule.inf_unifEigenspace _ _ _
 
 lemma mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo
     {p : Submodule R M} (f g : End R M) (hf : MapsTo f p p) (hg : MapsTo g p p) {μ₁ μ₂ : R}
@@ -887,7 +895,7 @@ lemma unifEigenspace_le_smul (f : Module.End R M) (μ t : R) (k : ℕ∞) :
 @[deprecated unifEigenspace_le_smul (since := "2024-10-11")]
 lemma iSup_genEigenspace_le_smul (f : Module.End R M) (μ t : R) :
     (⨆ k, f.genEigenspace μ k) ≤ ⨆ k, (t • f).genEigenspace (t * μ) k := by
-  rw [← maxGenEigenspace_def, ← maxGenEigenspace_def]
+  rw [iSup_genEigenspace_eq, iSup_genEigenspace_eq]
   apply unifEigenspace_le_smul
 
 lemma unifEigenspace_inf_le_add
@@ -915,11 +923,12 @@ lemma unifEigenspace_inf_le_add
       LinearMap.map_zero]
   · rw [LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hj hl₂, LinearMap.map_zero]
 
+@[deprecated unifEigenspace_inf_le_add (since := "2024-10-11")]
 lemma iSup_genEigenspace_inf_le_add
     (f₁ f₂ : End R M) (μ₁ μ₂ : R) (h : Commute f₁ f₂) :
     (⨆ k, f₁.genEigenspace μ₁ k) ⊓ (⨆ k, f₂.genEigenspace μ₂ k) ≤
     ⨆ k, (f₁ + f₂).genEigenspace (μ₁ + μ₂) k := by
-  simp_rw [← maxGenEigenspace_def]
+  simp_rw [iSup_genEigenspace_eq]
   apply unifEigenspace_inf_le_add
   assumption
 
@@ -936,12 +945,13 @@ lemma map_smul_of_iInf_unifEigenspace_ne_bot [NoZeroSMulDivisors R M]
   simp only [g, map_smul]
   exact disjoint_unifEigenspace (t • f x) (Ne.symm contra) k k
 
+@[deprecated map_smul_of_iInf_unifEigenspace_ne_bot (since := "2024-10-11")]
 lemma map_smul_of_iInf_genEigenspace_ne_bot [NoZeroSMulDivisors R M]
     {L F : Type*} [SMul R L] [FunLike F L (End R M)] [MulActionHomClass F R L (End R M)] (f : F)
     (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).genEigenspace (μ x) k ≠ ⊥)
     (t : R) (x : L) :
     μ (t • x) = t • μ x := by
-  simp_rw [← maxGenEigenspace_def] at h_ne
+  simp_rw [iSup_genEigenspace_eq] at h_ne
   apply map_smul_of_iInf_unifEigenspace_ne_bot f μ ⊤ h_ne t x
 
 lemma map_add_of_iInf_unifEigenspace_ne_bot_of_commute [NoZeroSMulDivisors R M]
@@ -958,12 +968,13 @@ lemma map_add_of_iInf_unifEigenspace_ne_bot_of_commute [NoZeroSMulDivisors R M]
   simp only [g, map_add]
   exact disjoint_unifEigenspace (f x + f y) (Ne.symm contra) _ k
 
+@[deprecated map_add_of_iInf_unifEigenspace_ne_bot_of_commute (since := "2024-10-11")]
 lemma map_add_of_iInf_genEigenspace_ne_bot_of_commute [NoZeroSMulDivisors R M]
     {L F : Type*} [Add L] [FunLike F L (End R M)] [AddHomClass F L (End R M)] (f : F)
     (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).genEigenspace (μ x) k ≠ ⊥)
     (h : ∀ x y, Commute (f x) (f y)) (x y : L) :
     μ (x + y) = μ x + μ y := by
-  simp_rw [← maxGenEigenspace_def] at h_ne
+  simp_rw [iSup_genEigenspace_eq] at h_ne
   apply map_add_of_iInf_unifEigenspace_ne_bot_of_commute f μ ⊤ h_ne h x y
 
 end End
