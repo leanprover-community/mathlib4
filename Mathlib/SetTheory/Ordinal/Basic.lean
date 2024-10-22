@@ -149,12 +149,16 @@ theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal)
   rfl
 
 @[simp]
+theorem type_toType (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
+  (type_def' _).symm.trans <| Quotient.out_eq o
+
+@[deprecated type_toType (since := "2024-10-22")]
 theorem type_lt (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
   (type_def' _).symm.trans <| Quotient.out_eq o
 
-@[deprecated type_lt (since := "2024-08-26")]
+@[deprecated type_toType (since := "2024-08-26")]
 theorem type_out (o : Ordinal) : Ordinal.type o.out.r = o :=
-  type_lt o
+  type_toType o
 
 theorem type_eq {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s] :
     type r = type s ↔ Nonempty (r ≃r s) :=
@@ -202,7 +206,7 @@ theorem type_unit : type (@EmptyRelation Unit) = 1 :=
 
 @[simp]
 theorem toType_empty_iff_eq_zero {o : Ordinal} : IsEmpty o.toType ↔ o = 0 := by
-  rw [← @type_eq_zero_iff_isEmpty o.toType (· < ·), type_lt]
+  rw [← @type_eq_zero_iff_isEmpty o.toType (· < ·), type_toType]
 
 @[deprecated toType_empty_iff_eq_zero (since := "2024-08-26")]
 alias out_empty_iff_eq_zero := toType_empty_iff_eq_zero
@@ -216,7 +220,7 @@ instance isEmpty_toType_zero : IsEmpty (toType 0) :=
 
 @[simp]
 theorem toType_nonempty_iff_ne_zero {o : Ordinal} : Nonempty o.toType ↔ o ≠ 0 := by
-  rw [← @type_ne_zero_iff_nonempty o.toType (· < ·), type_lt]
+  rw [← @type_ne_zero_iff_nonempty o.toType (· < ·), type_toType]
 
 @[deprecated toType_nonempty_iff_ne_zero (since := "2024-08-26")]
 alias out_nonempty_iff_ne_zero := toType_nonempty_iff_ne_zero
@@ -356,7 +360,7 @@ instance NeZero.one : NeZero (1 : Ordinal) :=
 `α.toType` into `β.toType`. -/
 def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.toType ≤i β.toType := by
   apply Classical.choice (type_le_iff.mp _)
-  rwa [type_lt, type_lt]
+  rwa [type_toType, type_toType]
 
 @[deprecated initialSegToType (since := "2024-08-26")]
 noncomputable alias initialSegOut := initialSegToType
@@ -365,7 +369,7 @@ noncomputable alias initialSegOut := initialSegToType
 of `α.toType` into `β.toType`. -/
 def principalSegToType {α β : Ordinal} (h : α < β) : α.toType <i β.toType := by
   apply Classical.choice (type_lt_iff.mp _)
-  rwa [type_lt, type_lt]
+  rwa [type_toType, type_toType]
 
 @[deprecated principalSegToType (since := "2024-08-26")]
 noncomputable alias principalSegOut := principalSegToType
@@ -407,7 +411,7 @@ theorem typein_lt_type (r : α → α → Prop) [IsWellOrder α r] (a : α) : ty
   (typein r).lt_top a
 
 theorem typein_lt_self {o : Ordinal} (i : o.toType) : typein (α := o.toType) (· < ·) i < o := by
-  simp_rw [← type_lt o]
+  simp_rw [← type_toType o]
   apply typein_lt_type
 
 @[simp]
@@ -948,12 +952,12 @@ theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type 
   apply Ordinal.zero_le
 
 theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.toType) :
-    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_lt]⟩ ≤ a := by
+    enum (α := o.toType) (· < ·) ⟨0, type_toType _ ▸ h0⟩ ≤ a := by
   rw [← not_lt]
   apply enum_zero_le
 
 theorem le_enum_succ {o : Ordinal} (a : (succ o).toType) :
-    a ≤ enum (α := (succ o).toType) (· < ·) ⟨o, (by rw [type_lt]; exact lt_succ o)⟩ := by
+    a ≤ enum (α := (succ o).toType) (· < ·) ⟨o, (type_toType _ ▸ lt_succ o)⟩ := by
   rw [← enum_typein (α := (succ o).toType) (· < ·) a, enum_le_enum', Subtype.mk_le_mk,
     ← lt_succ_iff]
   apply typein_lt_self
@@ -965,16 +969,11 @@ theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // 
 /-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
 @[simps! (config := .lemmasOnly)]
 noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
-  toFun x :=
-    enum (α := o.toType) (· < ·) ⟨x.1, by
-      rw [type_lt]
-      exact x.2⟩
+  toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
   left_inv := fun ⟨_, _⟩ => Subtype.ext_val (typein_enum _ _)
   right_inv _ := enum_typein _ _
-  map_rel_iff' := by
-    rintro ⟨a, _⟩ ⟨b, _⟩
-    apply enum_le_enum'
+  map_rel_iff' := enum_le_enum' _
 
 @[deprecated (since := "2024-08-26")]
 alias enumIsoOut := enumIsoToType
@@ -999,7 +998,7 @@ def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
 noncomputable alias outOrderBotOfPos := toTypeOrderBotOfPos
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
-    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_lt]⟩ =
+    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
       have _ := toTypeOrderBotOfPos ho
       (⊥ : o.toType) :=
   rfl
@@ -1097,7 +1096,7 @@ open Ordinal
 
 @[simp]
 theorem mk_toType (o : Ordinal) : #o.toType = o.card :=
-  (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_lt]
+  (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_toType]
 
 @[deprecated mk_toType (since := "2024-08-26")]
 alias mk_ordinal_out := mk_toType

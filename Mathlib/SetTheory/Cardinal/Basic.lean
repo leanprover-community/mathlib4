@@ -3,14 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Cardinal Numbers
@@ -1250,19 +1251,27 @@ theorem lift_aleph0 : lift ℵ₀ = ℵ₀ :=
 
 @[simp]
 theorem aleph0_le_lift {c : Cardinal.{u}} : ℵ₀ ≤ lift.{v} c ↔ ℵ₀ ≤ c := by
-  rw [← lift_aleph0.{v, u}, lift_le]
+  simpa using lift_le (a := ℵ₀)
 
 @[simp]
 theorem lift_le_aleph0 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₀ ↔ c ≤ ℵ₀ := by
-  rw [← lift_aleph0.{v, u}, lift_le]
+  simpa using lift_le (b := ℵ₀)
 
 @[simp]
 theorem aleph0_lt_lift {c : Cardinal.{u}} : ℵ₀ < lift.{v} c ↔ ℵ₀ < c := by
-  rw [← lift_aleph0.{v, u}, lift_lt]
+  simpa using lift_lt (a := ℵ₀)
 
 @[simp]
 theorem lift_lt_aleph0 {c : Cardinal.{u}} : lift.{v} c < ℵ₀ ↔ c < ℵ₀ := by
-  rw [← lift_aleph0.{v, u}, lift_lt]
+  simpa using lift_lt (b := ℵ₀)
+
+@[simp]
+theorem aleph0_eq_lift {c : Cardinal.{u}} : ℵ₀ = lift.{v} c ↔ ℵ₀ = c := by
+  simpa using lift_inj (a := ℵ₀)
+
+@[simp]
+theorem lift_eq_aleph0 {c : Cardinal.{u}} : lift.{v} c = ℵ₀ ↔ c = ℵ₀ := by
+  simpa using lift_inj (b := ℵ₀)
 
 /-! ### Properties about the cast from `ℕ` -/
 

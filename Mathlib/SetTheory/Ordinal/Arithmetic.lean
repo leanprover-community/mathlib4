@@ -317,7 +317,7 @@ instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).toType :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
 
 theorem enum_succ_eq_top {o : Ordinal} :
-    enum (α := (succ o).toType) (· < ·) ⟨o, by rw [type_lt]; exact lt_succ o⟩ = ⊤ :=
+    enum (α := (succ o).toType) (· < ·) ⟨o, type_toType _ ▸ lt_succ o⟩ = ⊤ :=
   rfl
 
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
@@ -328,7 +328,7 @@ theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder
   · rw [Subtype.mk_lt_mk, lt_succ_iff]
 
 theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.toType :=
-  ⟨has_succ_of_type_succ_lt (by rwa [type_lt])⟩
+  ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
 
 @[deprecated toType_noMax_of_succ_lt (since := "2024-08-26")]
 alias out_no_max_of_succ_lt := toType_noMax_of_succ_lt
@@ -1072,7 +1072,7 @@ def familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {
 /-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a well-ordering
 given by the axiom of choice. -/
 def familyOfBFamily (o : Ordinal) (f : ∀ a < o, α) : o.toType → α :=
-  familyOfBFamily' (· < ·) (type_lt o) f
+  familyOfBFamily' (· < ·) (type_toType o) f
 
 @[simp]
 theorem bfamilyOfFamily'_typein {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) (i) :
@@ -1092,8 +1092,9 @@ theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrde
 
 @[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
-    familyOfBFamily o f (enum (α := o.toType) (· < ·) ⟨i, hi.trans_eq (type_lt _).symm⟩) = f i hi :=
-  familyOfBFamily'_enum _ (type_lt o) f _ _
+    familyOfBFamily o f (enum (α := o.toType) (· < ·) ⟨i, hi.trans_eq (type_toType _).symm⟩)
+    = f i hi :=
+  familyOfBFamily'_enum _ (type_toType o) f _ _
 
 /-- The range of a family indexed by ordinals. -/
 def brange (o : Ordinal) (f : ∀ a < o, α) : Set α :=
@@ -1204,8 +1205,8 @@ set_option linter.deprecated false in
 theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v} f ≤ a ↔ ∀ i, f i ≤ a :=
   Ordinal.iSup_le_iff
 
-/-- `ciSup_le'` whenever the input type is small in the output universe. -/
-protected theorem iSup_le {ι} {f : ι → Ordinal.{u}} {a} :
+/-- An alias of `ciSup_le'` for discoverability. -/
+protected theorem iSup_le {ι} {f : ι → Ordinal} {a} :
     (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
 
@@ -1214,11 +1215,10 @@ set_option linter.deprecated false in
 theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i ≤ a) → sup.{_, v} f ≤ a :=
   Ordinal.iSup_le
 
--- TODO: generalize to conditionally complete linear orders.
+/-- `lt_ciSup_iff'` whenever the input type is small in the output universe. -/
 protected theorem lt_iSup {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
-    a < iSup f ↔ ∃ i, a < f i := by
-  rw [← not_iff_not]
-  simpa using Ordinal.iSup_le_iff
+    a < iSup f ↔ ∃ i, a < f i :=
+  lt_ciSup_iff' (bddAbove_of_small _)
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.lt_iSup (since := "2024-08-27")]
@@ -1927,12 +1927,15 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
         exact H b hb⟩
 
 /-- A two-argument version of `Ordinal.blsub`.
-We don't develop a full API for this, since it's only used in a handful of existence results. -/
+
+Deprecated. If you need this value explicitly, write it in terms of `iSup`. If you just want an
+upper bound for the image of `op`, use that `Iio a ×ˢ Iio b` is a small set. -/
+@[deprecated (since := "2024-10-11")]
 def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) :
     Ordinal :=
   lsub (fun x : o₁.toType × o₂.toType => op (typein_lt_self x.1) (typein_lt_self x.2))
 
--- TODO: deprecate this, and replace the arguments using it by arguments about small sets.
+@[deprecated (since := "2024-10-11")]
 theorem lt_blsub₂ {o₁ o₂ : Ordinal}
     (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
     (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
@@ -1941,8 +1944,6 @@ theorem lt_blsub₂ {o₁ o₂ : Ordinal}
   simp only [typein_enum]
 
 end blsub
-
--- TODO: deprecate in favor of `sInf sᶜ`.
 
 section mex
 set_option linter.deprecated false
@@ -2414,55 +2415,5 @@ theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
   toType_noMax_of_succ_lt (isLimit_ord h).2
 
 end Cardinal
-
-variable {α : Type u} {r : α → α → Prop} {a b : α}
-
-namespace Acc
-
-/-- The rank of an element `a` accessible under a relation `r` is defined inductively as the
-smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
-`r b a`). -/
-noncomputable def rank (h : Acc r a) : Ordinal.{u} :=
-  Acc.recOn h fun a _h ih => ⨆ b : { b // r b a }, Order.succ (ih b b.2)
-
-theorem rank_eq (h : Acc r a) :
-    h.rank = ⨆ b : { b // r b a }, Order.succ (h.inv b.2).rank := by
-  change (Acc.intro a fun _ => h.inv).rank = _
-  rfl
-
-/-- if `r a b` then the rank of `a` is less than the rank of `b`. -/
-theorem rank_lt_of_rel (hb : Acc r b) (h : r a b) : (hb.inv h).rank < hb.rank :=
-  (Order.lt_succ _).trans_le <| by
-    rw [hb.rank_eq]
-    refine le_trans ?_ (Ordinal.le_iSup _ ⟨a, h⟩)
-    rfl
-
-end Acc
-
-namespace WellFounded
-
-variable (hwf : WellFounded r)
-
-/-- The rank of an element `a` under a well-founded relation `r` is defined inductively as the
-smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
-`r b a`). -/
-noncomputable def rank (a : α) : Ordinal.{u} :=
-  (hwf.apply a).rank
-
-theorem rank_eq :
-    hwf.rank a = ⨆ b : { b // r b a }, Order.succ (hwf.rank b) := by
-  rw [rank, Acc.rank_eq]
-  rfl
-
-theorem rank_lt_of_rel (h : r a b) : hwf.rank a < hwf.rank b :=
-  Acc.rank_lt_of_rel _ h
-
-theorem rank_strictMono [Preorder α] [WellFoundedLT α] :
-    StrictMono (rank <| @wellFounded_lt α _ _) := fun _ _ => rank_lt_of_rel _
-
-theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
-    StrictAnti (rank <| @wellFounded_gt α _ _) := fun _ _ => rank_lt_of_rel wellFounded_gt
-
-end WellFounded
 
 set_option linter.style.longFile 2600
