@@ -19,11 +19,11 @@ a locally finite measure.
 
 
 open Aesop.BuiltinRules in
-attribute [aesop (rule_sets := [Finiteness]) safe -50] assumption intros
+attribute [aesop (rule_sets := [finiteness]) safe -50] assumption intros
 
 open Lean Elab Tactic in
 /-- A version of the positivity tactic for use by `aesop`. -/
-@[aesop safe tactic (rule_sets := [Finiteness])]
+@[aesop safe tactic (rule_sets := [finiteness])]
 def PositivityForAesop : TacticM Unit :=
   liftMetaTactic fun g => do Mathlib.Meta.Positivity.positivity g; pure []
 

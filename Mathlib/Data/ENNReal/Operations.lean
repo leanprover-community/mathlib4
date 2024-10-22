@@ -169,7 +169,7 @@ theorem not_lt_top {x : ℝ≥0∞} : ¬x < ∞ ↔ x = ∞ := by rw [lt_top_iff
 
 theorem add_ne_top : a + b ≠ ∞ ↔ a ≠ ∞ ∧ b ≠ ∞ := by simpa only [lt_top_iff_ne_top] using add_lt_top
 
-@[aesop (rule_sets := [Finiteness]) safe apply]
+@[aesop (rule_sets := [finiteness]) safe apply]
 private theorem ENNReal.add_ne_top' {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : a + b ≠ ∞ :=
   ENNReal.add_ne_top.2 ⟨ha, hb⟩
 
@@ -193,7 +193,7 @@ theorem mul_eq_top : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0
 
 theorem mul_lt_top : a < ∞ → b < ∞ → a * b < ∞ := WithTop.mul_lt_top
 
-@[aesop (rule_sets := [Finiteness]) safe apply]
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem mul_ne_top : a ≠ ∞ → b ≠ ∞ → a * b ≠ ∞ := WithTop.mul_ne_top
 
 theorem lt_top_of_mul_ne_top_left (h : a * b ≠ ∞) (hb : b ≠ 0) : a < ∞ :=
@@ -314,7 +314,7 @@ theorem sub_top : a - ∞ = 0 := WithTop.sub_top
 -- Porting note: added `@[simp]`
 @[simp] theorem sub_eq_top_iff : a - b = ∞ ↔ a = ∞ ∧ b ≠ ∞ := WithTop.sub_eq_top_iff
 
-@[aesop (rule_sets := [Finiteness]) safe apply]
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := mt sub_eq_top_iff.mp <| mt And.left ha
 
 @[simp, norm_cast]

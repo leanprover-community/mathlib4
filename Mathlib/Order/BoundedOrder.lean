@@ -90,9 +90,9 @@ theorem lt_top_of_lt (h : a < b) : a < ⊤ :=
 
 alias LT.lt.lt_top := lt_top_of_lt
 
-attribute [aesop (rule_sets := [Finiteness]) unsafe 20%] ne_top_of_lt
+attribute [aesop (rule_sets := [finiteness]) unsafe 20%] ne_top_of_lt
 -- would have been better to implement this as a "safe" "forward" rule, why doesn't this work?
--- attribute [aesop (rule_sets [Finiteness]) safe forward] ne_top_of_lt
+-- attribute [aesop (rule_sets [finiteness]) safe forward] ne_top_of_lt
 
 end Preorder
 
@@ -139,7 +139,7 @@ theorem not_lt_top_iff : ¬a < ⊤ ↔ a = ⊤ :=
 theorem eq_top_or_lt_top (a : α) : a = ⊤ ∨ a < ⊤ :=
   le_top.eq_or_lt
 
-@[aesop (rule_sets := [Finiteness]) safe apply]
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem Ne.lt_top (h : a ≠ ⊤) : a < ⊤ :=
   lt_top_iff_ne_top.mpr h
 
