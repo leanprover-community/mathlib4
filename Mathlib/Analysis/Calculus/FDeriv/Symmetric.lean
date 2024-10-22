@@ -51,6 +51,8 @@ open Asymptotics Set
 
 open scoped Topology
 
+section Real
+
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
   [NormedSpace ℝ F] {s : Set E} (s_conv : Convex ℝ s) {f : E → F} {f' : E → E →L[ℝ] F}
   {f'' : E →L[ℝ] E →L[ℝ] F} (hf : ∀ x ∈ interior s, HasFDerivAt f (f' x) x) {x : E} (xs : x ∈ s)
@@ -290,7 +292,7 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
 
 /-- If a function is differentiable around `x`, and has two derivatives at `x`, then the second
 derivative is symmetric. -/
-theorem second_derivative_symmetric_of_eventually {f : E → F} {f' : E → E →L[ℝ] F}
+theorem second_derivative_symmetric_of_eventually_of_real {f : E → F} {f' : E → E →L[ℝ] F}
     {f'' : E →L[ℝ] E →L[ℝ] F} (hf : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x)
     (v w : E) : f'' v w = f'' w v := by
   rcases Metric.mem_nhds_iff.1 hf with ⟨ε, εpos, hε⟩
@@ -300,8 +302,75 @@ theorem second_derivative_symmetric_of_eventually {f : E → F} {f' : E → E �
     Convex.second_derivative_within_at_symmetric (convex_ball x ε) A
       (fun y hy => hε (interior_subset hy)) (Metric.mem_ball_self εpos) hx.hasFDerivWithinAt v w
 
+end Real
+
+section IsRCLikeNormedField
+
+variable
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+  {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
+  [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
+
+theorem second_derivative_symmetric_of_eventually {f' : E → E →L[𝕜] F} {x : E}
+    {f'' : E →L[𝕜] E →L[𝕜] F} (hf : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x)
+    (v w : E) : f'' v w = f'' w v := by
+  letI := IsRCLikeNormedField.rclike 𝕜
+  letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
+  letI : NormedSpace ℝ F := NormedSpace.restrictScalars ℝ 𝕜 F
+  let f'R : E → E →L[ℝ] F := fun x ↦ (f' x).restrictScalars ℝ
+  have hfR : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f'R y) y := by
+    filter_upwards [hf] with y hy using HasFDerivAt.restrictScalars ℝ hy
+  let f''Rl : E →ₗ[ℝ] E →ₗ[ℝ] F :=
+  { toFun := fun x ↦
+      { toFun := fun y ↦ f'' x y
+        map_add' := by simp
+        map_smul' := by simp }
+    map_add' := by intros; ext; simp
+    map_smul' := by intros; ext; simp }
+  let f''R : E →L[ℝ] E →L[ℝ] F := by
+    refine LinearMap.mkContinuous₂ f''Rl (‖f''‖) (fun x y ↦ ?_)
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, f''Rl]
+    exact ContinuousLinearMap.le_opNorm₂ f'' x y
+  have : HasFDerivAt f'R f''R x := by
+    simp only [hasFDerivAt_iff_tendsto] at hx ⊢
+    exact hx
+  change f''R v w = f''R w v
+  exact second_derivative_symmetric_of_eventually_of_real hfR this v w
+
 /-- If a function is differentiable, and has two derivatives at `x`, then the second
 derivative is symmetric. -/
-theorem second_derivative_symmetric {f : E → F} {f' : E → E →L[ℝ] F} {f'' : E →L[ℝ] E →L[ℝ] F}
+theorem second_derivative_symmetric
+    {f' : E → E →L[𝕜] F} {f'' : E →L[𝕜] E →L[𝕜] F} {x : E}
     (hf : ∀ y, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v :=
   second_derivative_symmetric_of_eventually (Filter.Eventually.of_forall hf) hx v w
+
+variable (𝕜) in
+/-- Definition recording that a function has a symmetric second derivative within a set at
+a point. This is automatic in most cases of interest (open sets over real or complex vector fields,
+or general case for analytic functions), but we can express theorems of calculus using this
+as a general assumption, and then specialize to these situations. -/
+def IsSymmSndFDerivWithinAt (f : E → F) (s : Set E) (x : E) : Prop :=
+  ∀ v w, fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v w = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x w v
+
+variable (𝕜) in
+/-- Definition recording that a function has a symmetric second derivative within a set at
+a point. This is automatic in most cases of interest (open sets over real or complex vector fields,
+or general case for analytic functions), but we can express theorems of calculus using this
+as a general assumption, and then specialize to these situations. -/
+def IsSymmSndFDerivAt (f : E → F) (x : E) : Prop :=
+  ∀ v w, fderiv 𝕜 (fderiv 𝕜 f) x v w = fderiv 𝕜 (fderiv 𝕜 f) x w v
+
+theorem ContDiffAt.isSymmSndFDerivAt (hf : ContDiffAt 𝕜 2 f x) :
+    IsSymmSndFDerivAt 𝕜 f x := by
+  sorry
+
+
+
+
+
+
+
+
+
+
+end IsRCLikeNormedField

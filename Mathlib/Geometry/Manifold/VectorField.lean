@@ -483,14 +483,6 @@ lemma lieDeriv_pullback (f : E → F) (V : F → F) (g : F → G) (x : E)
   rw [fderiv_pullback]
   exact ⟨M, hM⟩
 
-variable (𝕜) in
-/-- Definition recording that a function has a symmetric second derivative within a set at
-a point. This is automatic in most cases of interest (open sets over real or complex vector fields,
-or general case for analytic functions), but we can express theorems of calculus using this
-as a general assumption, and then specialize to these situations. -/
-def IsSymmSndFDerivWithin (f : E → F) (s : Set E) (x : E) : Prop :=
-  ∀ v w, fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v w = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x w v
-
 lemma leibniz_identity (U V W : E → E) (s : Set E) (x : E)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
     (hU : ContDiffWithinAt 𝕜 2 U s x) (hV : ContDiffWithinAt 𝕜 2 V s x)
