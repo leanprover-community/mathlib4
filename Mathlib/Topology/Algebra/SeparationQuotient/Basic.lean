@@ -3,10 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.Algebra.Module.Projective
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -21,6 +18,8 @@ and show that they satisfy the same kind of laws (`Monoid` etc) as the original 
 Finally, we construct a section of the quotient map
 which is a continuous linear map `SeparationQuotient E →L[K] E`.
 -/
+
+assert_not_exists LinearIndependent
 
 namespace SeparationQuotient
 
@@ -37,7 +36,7 @@ theorem mk_smul (c : M) (x : X) : mk (c • x) = c • mk x := rfl
 
 @[to_additive]
 instance instContinuousConstSMul : ContinuousConstSMul M (SeparationQuotient X) where
-  continuous_const_smul c := quotientMap_mk.continuous_iff.2 <|
+  continuous_const_smul c := isQuotientMap_mk.continuous_iff.2 <|
     continuous_mk.comp <| continuous_const_smul c
 
 @[to_additive]
@@ -68,7 +67,7 @@ end SMul
 instance instContinuousSMul {M X : Type*} [SMul M X] [TopologicalSpace M] [TopologicalSpace X]
     [ContinuousSMul M X] : ContinuousSMul M (SeparationQuotient X) where
   continuous_smul := by
-    rw [(IsOpenQuotientMap.id.prodMap isOpenQuotientMap_mk).quotientMap.continuous_iff]
+    rw [(IsOpenQuotientMap.id.prodMap isOpenQuotientMap_mk).isQuotientMap.continuous_iff]
     exact continuous_mk.comp continuous_smul
 
 instance instSMulZeroClass {M X : Type*} [Zero X] [SMulZeroClass M X] [TopologicalSpace X]
@@ -94,7 +93,7 @@ theorem mk_mul [Mul M] [ContinuousMul M] (a b : M) : mk (a * b) = mk a * mk b :=
 
 @[to_additive]
 instance instContinuousMul [Mul M] [ContinuousMul M] : ContinuousMul (SeparationQuotient M) where
-  continuous_mul := quotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_mul
+  continuous_mul := isQuotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_mul
 
 @[to_additive]
 instance instCommMagma [CommMagma M] [ContinuousMul M] : CommMagma (SeparationQuotient M) :=
@@ -155,7 +154,7 @@ theorem mk_inv [Inv G] [ContinuousInv G] (x : G) : mk x⁻¹ = (mk x)⁻¹ := rf
 
 @[to_additive]
 instance instContinuousInv [Inv G] [ContinuousInv G] : ContinuousInv (SeparationQuotient G) where
-  continuous_inv := quotientMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_inv
+  continuous_inv := isQuotientMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_inv
 
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv G] [ContinuousInv G] :
@@ -176,7 +175,7 @@ theorem mk_div [Div G] [ContinuousDiv G] (x y : G) : mk (x / y) = mk x / mk y :=
 
 @[to_additive]
 instance instContinuousDiv [Div G] [ContinuousDiv G] : ContinuousDiv (SeparationQuotient G) where
-  continuous_div' := quotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_div'
+  continuous_div' := isQuotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_div'
 
 instance instZSMul [AddGroup G] [TopologicalAddGroup G] : SMul ℤ (SeparationQuotient G) :=
   inferInstance
@@ -396,80 +395,5 @@ theorem mk_algebraMap (r : R) : mk (algebraMap R A r) = algebraMap R (Separation
   rfl
 
 end Algebra
-
-section VectorSpace
-
-variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
-  [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul K E]
-
-/-- There exists a continuous `K`-linear map from `SeparationQuotient E` to `E`
-such that `mk (outCLM x) = x` for all `x`.
-
-Note that continuity of this map comes for free, because `mk` is a topology inducing map.
--/
-theorem exists_out_continuousLinearMap :
-    ∃ f : SeparationQuotient E →L[K] E, mkCLM K E ∘L f = .id K (SeparationQuotient E) := by
-  rcases (mkCLM K E).toLinearMap.exists_rightInverse_of_surjective
-    (LinearMap.range_eq_top.mpr surjective_mk) with ⟨f, hf⟩
-  replace hf : mk ∘ f = id := congr_arg DFunLike.coe hf
-  exact ⟨⟨f, inducing_mk.continuous_iff.2 (by continuity)⟩, DFunLike.ext' hf⟩
-
-/-- A continuous `K`-linear map from `SeparationQuotient E` to `E`
-such that `mk (outCLM x) = x` for all `x`. -/
-noncomputable def outCLM : SeparationQuotient E →L[K] E :=
-  (exists_out_continuousLinearMap K E).choose
-
-@[simp]
-theorem mkCLM_comp_outCLM : mkCLM K E ∘L outCLM K E = .id K (SeparationQuotient E) :=
-  (exists_out_continuousLinearMap K E).choose_spec
-
-variable {E} in
-@[simp]
-theorem mk_outCLM (x : SeparationQuotient E) : mk (outCLM K E x) = x :=
-  DFunLike.congr_fun (mkCLM_comp_outCLM K E) x
-
-@[simp]
-theorem mk_comp_outCLM : mk ∘ outCLM K E = id := funext (mk_outCLM K)
-
-variable {K} in
-theorem postcomp_mkCLM_surjective {L : Type*} [Semiring L] (σ : L →+* K)
-    (F : Type*) [AddCommMonoid F] [Module L F] [TopologicalSpace F] :
-    Function.Surjective ((mkCLM K E).comp : (F →SL[σ] E) → (F →SL[σ] SeparationQuotient E)) := by
-  intro f
-  use (outCLM K E).comp f
-  rw [← ContinuousLinearMap.comp_assoc, mkCLM_comp_outCLM, ContinuousLinearMap.id_comp]
-
-/-- The `SeparationQuotient.outCLM K E` map is a topological embedding. -/
-theorem outCLM_embedding : Embedding (outCLM K E) :=
-  Function.LeftInverse.embedding (mk_outCLM K) continuous_mk (map_continuous _)
-
-theorem outCLM_injective : Function.Injective (outCLM K E) :=
-  (outCLM_embedding K E).injective
-
-end VectorSpace
-
-section VectorSpaceUniform
-
-variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
-    [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul K E]
-
-theorem outCLM_isUniformInducing : IsUniformInducing (outCLM K E) := by
-  rw [← isUniformInducing_mk.isUniformInducing_comp_iff, mk_comp_outCLM]
-  exact .id
-
-@[deprecated (since := "2024-10-05")]
-alias outCLM_uniformInducing := outCLM_isUniformInducing
-
-theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where
-  inj := outCLM_injective K E
-  toIsUniformInducing := outCLM_isUniformInducing K E
-
-@[deprecated (since := "2024-10-01")]
-alias outCLM_uniformEmbedding := outCLM_isUniformEmbedding
-
-theorem outCLM_uniformContinuous : UniformContinuous (outCLM K E) :=
-  (outCLM_isUniformInducing K E).uniformContinuous
-
-end VectorSpaceUniform
 
 end SeparationQuotient
