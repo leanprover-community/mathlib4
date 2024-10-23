@@ -3,8 +3,8 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Units
 
 /-!
 # Monoid homomorphisms and units
@@ -164,7 +164,7 @@ end MonoidHom
 
 namespace IsUnit
 
-variable {F G M N : Type*} [FunLike F M N] [FunLike G N M]
+variable {E F G α M N : Type*} [FunLike F M N] [FunLike G N M] [EquivLike E M N]
 
 section Monoid
 
@@ -184,6 +184,11 @@ theorem of_leftInverse [MonoidHomClass G N M] {f : F} {x : M} (g : G)
 theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
     {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
     IsUnit (f x) ↔ IsUnit x := ⟨of_leftInverse g hfg, map _⟩
+
+@[to_additive]
+theorem _root_.isUnit_map_iff' [MulEquivClass E M N]
+    (f : E) {a} : IsUnit (f a) ↔ IsUnit a :=
+  _root_.isUnit_map_of_leftInverse (f : M ≃* N).symm (f : M ≃* N).left_inv
 
 /-- If a homomorphism `f : M →* N` sends each element to an `IsUnit`, then it can be lifted
 to `f : M →* Nˣ`. See also `Units.liftRight` for a computable version. -/
