@@ -288,14 +288,14 @@ namespace IntermediateField
 instance toField : Field S :=
   S.toSubfield.toField
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) := by
   classical
     induction' (Finset.univ : Finset ι) using Finset.induction_on with i s hi H
     · simp
     · rw [Finset.sum_insert hi, AddMemClass.coe_add, H, Finset.sum_insert hi]
 
-@[norm_cast] --Porting note (#10618): `simp` can prove it
+@[norm_cast]
 theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) := by
   classical
     induction' (Finset.univ : Finset ι) using Finset.induction_on with i s hi H
@@ -494,14 +494,17 @@ theorem coe_inclusion {E F : IntermediateField K L} (hEF : E ≤ F) (e : E) :
 
 variable {S}
 
-theorem toSubalgebra_injective :
-    Function.Injective (IntermediateField.toSubalgebra : IntermediateField K L → _) := by
-  intro S S' h
+theorem toSubalgebra_injective : Function.Injective (toSubalgebra : IntermediateField K L → _) := by
+  intro _ _ h
   ext
-  rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
+  simp_rw [← mem_toSubalgebra, h]
 
-theorem map_injective (f : L →ₐ[K] L') :
-    Function.Injective (map f) := by
+theorem toSubfield_injective : Function.Injective (toSubfield : IntermediateField K L → _) := by
+  intro _ _ h
+  ext
+  simp_rw [← mem_toSubfield, h]
+
+theorem map_injective (f : L →ₐ[K] L') : Function.Injective (map f) := by
   intro _ _ h
   rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,
     (Subalgebra.map_injective f.injective).eq_iff, toSubalgebra_injective.eq_iff] at h

@@ -152,13 +152,8 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
 
 theorem ofEven_ι (x y : M × R) :
     ofEven Q ((even.ι (Q' Q)).bilin x y) =
-      (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) := by
-  -- Porting note: entire proof was the term-mode `even.lift_ι (Q' Q) _ x y`
-  unfold ofEven
-  lift_lets
-  intro f
-  -- TODO: replacing `?_` with `_` takes way longer?
-  exact @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
+      (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) :=
+  even.lift_ι (Q' Q) _ x y
 
 theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
   even.algHom_ext (Q' Q) <|

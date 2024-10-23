@@ -931,9 +931,7 @@ theorem LinearIndependent.independent_span_singleton (hv : LinearIndependent R v
   obtain ⟨⟨r, rfl⟩, hm⟩ := hm
   suffices r = 0 by simp [this]
   apply linearIndependent_iff_not_smul_mem_span.mp hv i
-  -- Porting note: The original proof was using `convert hm`.
-  suffices v '' (univ \ {i}) = range fun j : { j // j ≠ i } => v j by
-    rwa [this]
+  convert hm
   ext
   simp
 

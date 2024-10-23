@@ -134,7 +134,7 @@ theorem geom_sum₂_self {α : Type*} [CommRing α] (x : α) (n : ℕ) :
     _ = ∑ _i ∈ Finset.range n, x ^ (n - 1) :=
       Finset.sum_congr rfl fun _ hi =>
         congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| Finset.mem_range.1 hi
-    _ = (Finset.range n).card • x ^ (n - 1) := Finset.sum_const _
+    _ = #(range n) • x ^ (n - 1) := sum_const _
     _ = n * x ^ (n - 1) := by rw [Finset.card_range, nsmul_eq_mul]
 
 /-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/

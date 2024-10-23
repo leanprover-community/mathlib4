@@ -32,7 +32,7 @@ subgroup, subgroups, IsSubgroup
 
 open Set Function
 
-variable {G : Type*} {H : Type*} {A : Type*} {a a₁ a₂ b c : G}
+variable {G : Type*} {H : Type*} {A : Type*} {a b : G}
 
 section Group
 

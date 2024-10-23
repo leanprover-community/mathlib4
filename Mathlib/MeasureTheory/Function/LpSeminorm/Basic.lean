@@ -139,7 +139,7 @@ alias lintegral_rpow_nnnorm_eq_rpow_snorm' := lintegral_rpow_nnnorm_eq_rpow_eLpN
 lemma eLpNorm_nnreal_pow_eq_lintegral {f : α → F} {p : ℝ≥0} (hp : p ≠ 0) :
     eLpNorm f p μ ^ (p : ℝ) = ∫⁻ x, ‖f x‖₊ ^ (p : ℝ) ∂μ := by
   simp [eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top,
-    lintegral_rpow_nnnorm_eq_rpow_eLpNorm' (show 0 < (p : ℝ) from pos_iff_ne_zero.mpr hp)]
+    lintegral_rpow_nnnorm_eq_rpow_eLpNorm' ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp)]
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_nnreal_pow_eq_lintegral := eLpNorm_nnreal_pow_eq_lintegral
@@ -720,6 +720,13 @@ theorem memℒp_top_of_bound {f : α → E} (hf : AEStronglyMeasurable f μ) (C 
 theorem Memℒp.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasurable f μ) (C : ℝ)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Memℒp f p μ :=
   (memℒp_const C).of_le hf (hfC.mono fun _x hx => le_trans hx (le_abs_self _))
+
+theorem memℒp_of_bounded [IsFiniteMeasure μ]
+    {a b : ℝ} {f : α → ℝ} (h : ∀ᵐ x ∂μ, f x ∈ Set.Icc a b)
+    (hX : AEStronglyMeasurable f μ) (p : ENNReal) : Memℒp f p μ :=
+  have ha : ∀ᵐ x ∂μ, a ≤ f x := h.mono fun ω h => h.1
+  have hb : ∀ᵐ x ∂μ, f x ≤ b := h.mono fun ω h => h.2
+  (memℒp_const (max |a| |b|)).mono' hX (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs)
 
 @[mono]
 theorem eLpNorm'_mono_measure (f : α → F) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
@@ -1325,7 +1332,7 @@ theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {p : ℝ≥0∞} {f : ℕ → α
   have hp : p ≠ 0 := fun h => by simp [h] at hp0
   have hp' : p ≠ ∞ := fun h => by simp [h] at hp0
   refine
-    ae_lt_top (measurable_liminf fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
+    ae_lt_top (.liminf fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
       (lt_of_le_of_lt
           (lintegral_liminf_le fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
           (lt_of_le_of_lt ?_

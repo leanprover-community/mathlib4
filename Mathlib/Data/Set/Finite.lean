@@ -266,8 +266,6 @@ protected theorem toFinset_image [DecidableEq β] (f : α → β) (hs : s.Finite
   ext
   simp
 
--- Porting note (#10618): now `simp` can prove it but it needs the `fintypeRange` instance
--- from the next section
 protected theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) (h : (range f).Finite) :
     h.toFinset = Finset.univ.image f := by
   ext
@@ -482,7 +480,6 @@ This is a wrapper around `Set.toFinite`. -/
 theorem finite_toSet (s : Finset α) : (s : Set α).Finite :=
   Set.toFinite _
 
--- Porting note (#10618): was @[simp], now `simp` can prove it
 theorem finite_toSet_toFinset (s : Finset α) : s.finite_toSet.toFinset = s := by
   rw [toFinite_toFinset, toFinset_coe]
 
