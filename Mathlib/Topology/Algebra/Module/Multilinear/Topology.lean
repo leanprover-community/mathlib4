@@ -74,8 +74,9 @@ lemma isUniformEmbedding_toUniformOnFun :
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_toUniformOnFun := isUniformEmbedding_toUniformOnFun
 
-lemma embedding_toUniformOnFun : Embedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
-  isUniformEmbedding_toUniformOnFun.embedding
+lemma isEmbedding_toUniformOnFun :
+    IsEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
+  isUniformEmbedding_toUniformOnFun.isEmbedding
 
 theorem uniformContinuous_coe_fun [∀ i, ContinuousSMul 𝕜 (E i)] :
     UniformContinuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=
@@ -172,7 +173,7 @@ instance instContinuousSMul [ContinuousSMul 𝕜 F] :
   let φ : ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] (Π i, E i) → F :=
     { toFun := (↑), map_add' := fun _ _ ↦ rfl, map_smul' := fun _ _ ↦ rfl }
   UniformOnFun.continuousSMul_induced_of_image_bounded _ _ _ _ φ
-    embedding_toUniformOnFun.toInducing fun _ _ hu ↦ hu.image_multilinear _
+    isEmbedding_toUniformOnFun.inducing fun _ _ hu ↦ hu.image_multilinear _
 
 theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → Set F}
     (h : (𝓝 (0 : F)).HasBasis p b) :
@@ -215,18 +216,18 @@ section RestrictScalars
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [∀ i, Module 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
-theorem embedding_restrictScalars :
-    Embedding
+theorem isEmbedding_restrictScalars :
+    IsEmbedding
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  (isUniformEmbedding_restrictScalars _).embedding
+  (isUniformEmbedding_restrictScalars _).isEmbedding
 
 @[continuity, fun_prop]
 theorem continuous_restrictScalars :
     Continuous
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
-   embedding_restrictScalars.continuous
+   isEmbedding_restrictScalars.continuous
 
 variable (𝕜') in
 /-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/

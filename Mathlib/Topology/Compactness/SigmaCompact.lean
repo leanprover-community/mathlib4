@@ -120,14 +120,14 @@ lemma Inducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
 
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
   if and only `s` is σ-compact. -/
-lemma Embedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
-    (hf : Embedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
+lemma IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
+    (hf : IsEmbedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
   hf.toInducing.isSigmaCompact_iff
 
 /-- Sets of subtype are σ-compact iff the image under a coercion is. -/
 lemma Subtype.isSigmaCompact_iff {p : X → Prop} {s : Set { a // p a }} :
     IsSigmaCompact s ↔ IsSigmaCompact ((↑) '' s : Set X) :=
-  embedding_subtype_val.isSigmaCompact_iff
+  IsEmbedding.subtypeVal.isSigmaCompact_iff
 
 /-- A σ-compact space is a space that is the union of a countable collection of compact subspaces.
   Note that a locally compact separable T₂ space need not be σ-compact.

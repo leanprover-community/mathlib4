@@ -90,7 +90,8 @@ theorem inducing_comp (g : C(Y, Z)) (hg : Inducing g) : Inducing (g.comp : C(X, 
 
 /-- If `g : C(Y, Z)` is a topological embedding,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
-theorem embedding_comp (g : C(Y, Z)) (hg : Embedding g) : Embedding (g.comp : C(X, Y) → C(X, Z)) :=
+theorem isEmbedding_comp (g : C(Y, Z)) (hg : IsEmbedding g) :
+    IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
   ⟨inducing_comp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
 /-- `C(·, Z)` is a functor. -/

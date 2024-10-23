@@ -1072,18 +1072,18 @@ theorem Inducing.continuousOn_iff {f : α → β} {g : β → γ} (hg : Inducing
     ContinuousOn f s ↔ ContinuousOn (g ∘ f) s := by
   simp_rw [ContinuousOn, hg.continuousWithinAt_iff]
 
-theorem Embedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : Embedding g) {s : Set α} :
-    ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
+lemma IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsEmbedding g)
+    {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
   Inducing.continuousOn_iff hg.1
 
-theorem Embedding.map_nhdsWithin_eq {f : α → β} (hf : Embedding f) (s : Set α) (x : α) :
+lemma IsEmbedding.map_nhdsWithin_eq {f : α → β} (hf : IsEmbedding f) (s : Set α) (x : α) :
     map f (𝓝[s] x) = 𝓝[f '' s] f x := by
   rw [nhdsWithin, Filter.map_inf hf.inj, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
     inter_eq_self_of_subset_right (image_subset_range _ _)]
 
 theorem IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : IsOpenEmbedding f) (s : Set β)
     (x : α) : map f (𝓝[f ⁻¹' s] x) = 𝓝[s] f x := by
-  rw [hf.toEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
+  rw [hf.isEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
   apply nhdsWithin_eq_nhdsWithin (mem_range_self _) hf.isOpen_range
   rw [inter_assoc, inter_self]
 

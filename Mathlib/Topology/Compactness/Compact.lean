@@ -908,7 +908,7 @@ theorem Inducing.isCompact_iff {f : X → Y} (hf : Inducing f) :
 
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is compact
   if and only if `s` is compact. -/
-theorem Embedding.isCompact_iff {f : X → Y} (hf : Embedding f) :
+theorem IsEmbedding.isCompact_iff {f : X → Y} (hf : IsEmbedding f) :
     IsCompact s ↔ IsCompact (f '' s) := hf.toInducing.isCompact_iff
 
 /-- The preimage of a compact set under an inducing map is a compact set. -/
@@ -947,7 +947,7 @@ alias ClosedEmbedding.tendsto_cocompact := IsClosedEmbedding.tendsto_cocompact
 /-- Sets of subtype are compact iff the image under a coercion is. -/
 theorem Subtype.isCompact_iff {p : X → Prop} {s : Set { x // p x }} :
     IsCompact s ↔ IsCompact ((↑) '' s : Set X) :=
-  embedding_subtype_val.isCompact_iff
+  IsEmbedding.subtypeVal.isCompact_iff
 
 theorem isCompact_iff_isCompact_univ : IsCompact s ↔ IsCompact (univ : Set s) := by
   rw [Subtype.isCompact_iff, image_univ, Subtype.range_coe]
