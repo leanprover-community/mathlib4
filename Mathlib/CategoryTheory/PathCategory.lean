@@ -32,7 +32,7 @@ def Paths (V : Type u₁) : Type u₁ := V
 
 instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)⟩
 
-variable (V : Type u₁) [𝓠 : Quiver.{v₁ + 1} V]
+variable (V : Type u₁) [Quiver.{v₁ + 1} V]
 
 namespace Paths
 
