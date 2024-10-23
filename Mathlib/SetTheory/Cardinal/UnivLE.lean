@@ -37,6 +37,3 @@ theorem Ordinal.univLE_of_injective {f : Ordinal.{u} → Ordinal.{v}} (h : f.Inj
 /-- Together with transitivity, this shows UnivLE "IsTotalPreorder". -/
 theorem univLE_total : UnivLE.{u, v} ∨ UnivLE.{v, u} := by
   simp_rw [univLE_iff_cardinal_le]; apply le_total
-
-theorem Ordinal.univLE_of_injective {f : Ordinal.{u} → Ordinal.{v}} (h : f.Injective) :
-    UnivLE.{u, v} := univLE_iff_cardinal_le.mpr <| lift_mk_le'.mpr ⟨f, h⟩
