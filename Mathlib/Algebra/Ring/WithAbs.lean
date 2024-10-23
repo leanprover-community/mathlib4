@@ -22,6 +22,8 @@ being used to define Archimedean completions of a number field.
   to assign and infer instances on a semiring that depend on absolute values.
  - `WithAbs.equiv v` : the canonical (type) equivalence between `WithAbs v` and `R`.
  - `WithAbs.ringEquiv v` : The canonical ring equivalence between `WithAbs v` and `R`.
+ - `AbsoluteValue.completion` : the uniform space completion of a field `K` according to the
+  uniform structure defined by the specified real absolute value.
 -/
 noncomputable section
 
