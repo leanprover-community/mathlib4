@@ -311,10 +311,9 @@ end arbitrary_universe
 section fixed_universe
 
 lemma exact_iff_rTensor_exact [fl : FaithfullyFlat R M]
-    (N1 N2 N3 : Type max u v)
-    [AddCommGroup N1] [Module R N1]
-    [AddCommGroup N2] [Module R N2]
-    [AddCommGroup N3] [Module R N3]
+    {N1 : Type max u v} [AddCommGroup N1] [Module R N1]
+    {N2 : Type max u v} [AddCommGroup N2] [Module R N2]
+    {N3 : Type max u v} [AddCommGroup N3] [Module R N3]
     (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3) :
     Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M) :=
   ⟨fun e => Module.Flat.iff_rTensor_exact.1 fl.toFlat e,
@@ -322,25 +321,23 @@ lemma exact_iff_rTensor_exact [fl : FaithfullyFlat R M]
 
 lemma iff_exact_iff_rTensor_exact :
     FaithfullyFlat R M ↔
-    (∀ (N1 N2 N3 : Type max u v)
-        [AddCommGroup N1] [Module R N1]
-        [AddCommGroup N2] [Module R N2]
-        [AddCommGroup N3] [Module R N3]
-        (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
+    (∀ {N1 : Type max u v} [AddCommGroup N1] [Module R N1]
+      {N2 : Type max u v} [AddCommGroup N2] [Module R N2]
+      {N3 : Type max u v} [AddCommGroup N3] [Module R N3]
+      (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
         Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M)) :=
   ⟨fun fl => exact_iff_rTensor_exact R M, fun iff_exact =>
     iff_flat_and_rTensor_reflects_triviality _ _ |>.2 ⟨Flat.iff_rTensor_exact.2 <| by aesop,
     fun N _ _ h => subsingleton_iff_forall_eq 0 |>.2 <| fun y => by
-      simpa [eq_comm] using (iff_exact PUnit N PUnit 0 0 |>.2 fun x => by
+      simpa [eq_comm] using (iff_exact (0 : PUnit →ₗ[R] N) (0 : N →ₗ[R] PUnit) |>.2 fun x => by
         simpa using Subsingleton.elim _ _) y⟩⟩
 
 lemma iff_exact_iff_lTensor_exact :
     FaithfullyFlat R M ↔
-    (∀ (N1 N2 N3 : Type max u v)
-        [AddCommGroup N1] [Module R N1]
-        [AddCommGroup N2] [Module R N2]
-        [AddCommGroup N3] [Module R N3]
-        (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
+    (∀ {N1 : Type max u v} [AddCommGroup N1] [Module R N1]
+      {N2 : Type max u v} [AddCommGroup N2] [Module R N2]
+      {N3 : Type max u v} [AddCommGroup N3] [Module R N3]
+      (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
         Function.Exact l12 l23 ↔ Function.Exact (l12.lTensor M) (l23.lTensor M)) := by
   simp only [iff_exact_iff_rTensor_exact, LinearMap.rTensor_exact_iff_lTensor_exact]
 
