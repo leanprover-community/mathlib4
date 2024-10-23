@@ -787,9 +787,7 @@ variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
 section
 
-variable [Group G]
-
-variable [MulSemiringAction G A] [SMulCommClass G R A]
+variable [Group G] [MulSemiringAction G A] [SMulCommClass G R A]
 
 /-- Each element of the group defines an algebra equivalence.
 
