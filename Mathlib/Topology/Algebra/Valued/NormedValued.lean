@@ -218,4 +218,7 @@ def toNontriviallyNormedField: NontriviallyNormedField L := {
       simp only [map_inv₀, inv_le_one₀ <| zero_lt_iff.mpr hx.1] at h
       simp only [toNormedField.one_lt_norm_iff, lt_of_le_of_ne h hx.2.symm]
 }
+
+scoped[Valued] attribute [instance] Valued.toNontriviallyNormedField
+
 end Valued
