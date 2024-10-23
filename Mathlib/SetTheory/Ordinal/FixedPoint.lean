@@ -225,7 +225,7 @@ theorem derivFamily_eq_enumOrd [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
 theorem strictMono_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
     StrictMono (derivFamily f) := by
   rw [derivFamily_eq_enumOrd H]
-  exact strictMono_enumOrd (not_bddAbove_fp_family H)
+  exact enumOrd_strictMono (not_bddAbove_fp_family H)
 
 end
 
@@ -550,7 +550,7 @@ theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoi
 
 theorem strictMono_deriv (H : IsNormal f) : StrictMono (deriv f) := by
   rw [deriv_eq_enumOrd H]
-  exact strictMono_enumOrd (not_bddAbove_fp H)
+  exact enumOrd_strictMono (not_bddAbove_fp H)
 
 theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : deriv f = id :=
   (IsNormal.eq_iff_zero_and_succ (isNormal_deriv _) IsNormal.refl).2 <| by simp [h]
