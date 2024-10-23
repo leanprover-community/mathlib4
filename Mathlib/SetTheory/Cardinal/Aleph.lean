@@ -215,7 +215,7 @@ theorem le_omega_self (o : Ordinal) : o ≤ omega o :=
 
 @[simp]
 theorem omega_zero : ω_ 0 = ω := by
-  rw [← preOmega_omega0_add, add_zero, preOmega_omega0]
+  rw [omega_eq_preOmega, add_zero, preOmega_omega0]
 
 theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
   rw [← omega_zero, omega_le_omega]
@@ -241,7 +241,7 @@ theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
     obtain ⟨a, rfl⟩ := ha.mem_range_preOmega
     use a - ω
     rw [omega0_le_preOmega_iff] at ha'
-    rw [← preOmega_omega0_add, Ordinal.add_sub_cancel_of_le ha']
+    rw [omega_eq_preOmega, Ordinal.add_sub_cancel_of_le ha']
 
 theorem mem_range_omega_iff {x : Ordinal} : x ∈ range omega ↔ ω ≤ x ∧ IsInitial x := by
   rw [range_omega, mem_setOf]
