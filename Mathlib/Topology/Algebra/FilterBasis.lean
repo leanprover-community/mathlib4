@@ -85,7 +85,7 @@ theorem IsGroupBasis.mk_of_comm {G : Type*} {ι : Sort*} [CommGroup G] (p : ι �
   one' := one
   mul' := mul
   inv' := inv
-  conj' x U U_in := ⟨U, U_in, by simpa only [mul_inv_cancel_comm, preimage_id'] using mapsTo_id _⟩
+  conj' x i hi := ⟨i, hi, by simpa only [mul_inv_cancel_comm, preimage_id'] using mapsTo_id _⟩
 
 namespace IsGroupBasis
 
