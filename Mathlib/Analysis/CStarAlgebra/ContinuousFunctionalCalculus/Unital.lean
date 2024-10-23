@@ -7,7 +7,7 @@ import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.Topology.ContinuousMap.StarOrdered
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
@@ -855,9 +855,8 @@ section Order
 
 section Semiring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [StarRing R]
-variable [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
+variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [StarRing R] [MetricSpace R]
+variable [TopologicalSemiring R] [ContinuousStar R] [ContinuousSqrt R] [StarOrderedRing R]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
 
@@ -961,9 +960,8 @@ end NNReal
 
 section Ring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [StarRing R]
-variable [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
-variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
+variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [StarRing R] [MetricSpace R]
+variable [TopologicalRing R] [ContinuousStar R] [ContinuousSqrt R] [StarOrderedRing R]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
 variable [NonnegSpectrumClass R A]

@@ -3,63 +3,49 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.Real.StarOrdered
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
-/-! # Continuous functions as a star-ordered ring -/
+/-! # Continuous functions as a star-ordered ring
 
-open scoped NNReal
+The type class `ContinuousSqrt` gives a sufficient condition on `R` to make `C(α, R)`
+and `C(α, R)₀` into a `StarOrderedRing` for any topological space `α`, thereby providing a means
+by which we can ensure `C(α, R)` has this property. This condiiton is satisfied
+by `ℝ≥0`, `ℝ`, and `ℂ`, and the instances can be found in the file
+`Topology.ContinuousMap.ContinuousSqrt`.
+-/
+
+/-- A type class encoding the property that there is a continuous square root function on
+nonnegative elements. This holds for `ℝ≥0`, `ℝ` and `ℂ` (as well as any C⋆-algebra), and this
+allows us to derive an instance of `StarOrderedRing C(α, R)` under appropriate hypotheses.
+In order for this to work on `ℝ≥0`, we actually must force our square root function to be defined
+on and well-behaved for pairs `x : R × R` with `x.1 ≤ x.2`. -/
+class ContinuousSqrt (R : Type*) [LE R] [NonUnitalSemiring R] [TopologicalSpace R] where
+  protected sqrt : R × R → R -- should this really be data? We'll get diamonds for `ℂ`.
+  protected continuousOn_sqrt : ContinuousOn sqrt {x | x.1 ≤ x.2}
+  protected sqrt_nonneg (x : R × R) : x.1 ≤ x.2 → 0 ≤ sqrt x
+  protected sqrt_mul_sqrt (x : R × R) : x.1 ≤ x.2 → x.2 = x.1 + sqrt x * sqrt x
 
 namespace ContinuousMap
 
 variable {α : Type*} [TopologicalSpace α]
 
-lemma starOrderedRing_of_sqrt {R : Type*} [PartialOrder R] [NonUnitalRing R] [StarRing R]
-    [StarOrderedRing R] [TopologicalSpace R] [ContinuousStar R] [TopologicalRing R]
-    (sqrt : R → R) (h_continuousOn : ContinuousOn sqrt {x : R | 0 ≤ x})
-    (h_sqrt : ∀ x, 0 ≤ x → star (sqrt x) * sqrt x = x) : StarOrderedRing C(α, R) :=
-  StarOrderedRing.of_nonneg_iff' add_le_add_left fun f ↦ by
-    constructor
-    · intro hf
-      use (mk _ h_continuousOn.restrict).comp ⟨_, map_continuous f |>.codRestrict (by exact hf ·)⟩
-      ext x
-      exact h_sqrt (f x) (hf x) |>.symm
-    · rintro ⟨f, rfl⟩
-      rw [ContinuousMap.le_def]
-      exact fun x ↦ star_mul_self_nonneg (f x)
-
-open scoped ComplexOrder in
-open RCLike in
-instance (priority := 100) instStarOrderedRingRCLike {𝕜 : Type*} [RCLike 𝕜] :
-    StarOrderedRing C(α, 𝕜) :=
-  starOrderedRing_of_sqrt ((↑) ∘ Real.sqrt ∘ re) (by fun_prop) fun x hx ↦ by
-    simp only [Function.comp_apply,star_def]
-    obtain hx' := nonneg_iff.mp hx |>.right
-    rw [← conj_eq_iff_im, conj_eq_iff_re] at hx'
-    rw [conj_ofReal, ← ofReal_mul, Real.mul_self_sqrt, hx']
-    rw [nonneg_iff]
-    simpa using nonneg_iff.mp hx |>.left
-
-instance instStarOrderedRingReal : StarOrderedRing C(α, ℝ) :=
-  instStarOrderedRingRCLike (𝕜 := ℝ)
-
-open scoped ComplexOrder in
-open Complex in
-instance instStarOrderedRingComplex : StarOrderedRing C(α, ℂ) :=
-  instStarOrderedRingRCLike (𝕜 := ℂ)
-
-open NNReal in
-instance instStarOrderedRingNNReal : StarOrderedRing C(α, ℝ≥0) :=
-  StarOrderedRing.of_le_iff fun f g ↦ by
-    constructor
-    · intro hfg
-      use .comp ⟨sqrt, by fun_prop⟩ (g - f)
-      ext1 x
-      simpa using add_tsub_cancel_of_le (hfg x) |>.symm
-    · rintro ⟨s, rfl⟩
-      exact fun _ ↦ by simp
+instance {R : Type*} [PartialOrder R] [NonUnitalSemiring R] [StarRing R]
+    [StarOrderedRing R] [TopologicalSpace R] [ContinuousStar R] [TopologicalSemiring R]
+    [ContinuousSqrt R] : StarOrderedRing C(α, R) := by
+  refine StarOrderedRing.of_le_iff ?_
+  intro f g
+  constructor
+  · rw [ContinuousMap.le_def]
+    intro h
+    use (mk _ ContinuousSqrt.continuousOn_sqrt.restrict).comp
+      ⟨_, map_continuous (f.prodMk g) |>.codRestrict (s := {x | x.1 ≤ x.2}) (by exact h)⟩
+    ext x
+    simpa [IsSelfAdjoint.star_eq <| .of_nonneg (ContinuousSqrt.sqrt_nonneg (f x, g x) (h x))]
+      using ContinuousSqrt.sqrt_mul_sqrt (f x, g x) (h x)
+  · rintro ⟨p, rfl⟩
+    exact fun x ↦ le_add_of_nonneg_right (star_mul_self_nonneg (p x))
 
 end ContinuousMap
 
@@ -101,15 +87,5 @@ instance instStarOrderedRing {R : Type*}
           f ≤ f + g₁ := h₁ f
           _ ≤ (f + g₁) + g₂ := h₂ (f + g₁)
           _ = f + (g₁ + g₂) := add_assoc _ _ _
-
-instance instStarOrderedRingReal : StarOrderedRing C(α, ℝ)₀ :=
-  instStarOrderedRing (R := ℝ)
-
-open scoped ComplexOrder in
-instance instStarOrderedRingComplex : StarOrderedRing C(α, ℂ)₀ :=
-  instStarOrderedRing (R := ℂ)
-
-instance instStarOrderedRingNNReal : StarOrderedRing C(α, ℝ≥0)₀ :=
-  instStarOrderedRing (R := ℝ≥0)
 
 end ContinuousMapZero
