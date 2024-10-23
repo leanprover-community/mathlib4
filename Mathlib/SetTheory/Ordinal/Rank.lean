@@ -92,10 +92,8 @@ theorem IsWellFounded.rank_eq_typein (r) [IsWellOrder α r] : rank r = Ordinal.t
   classical
   letI := linearOrderOfSTO r
   ext a
-  refine (InitialSeg.toPrincipalSeg ⟨(OrderEmbedding.ofStrictMono _ ?_).ltEmbedding,
-    fun a b h ↦ mem_range_rank_of_le h.le⟩ ?_).eq _ a
-  · exact WellFoundedLT.rank_strictMono
-  · exact not_surjective_of_ordinal_of_small _
+  exact InitialSeg.eq (⟨(OrderEmbedding.ofStrictMono _ WellFoundedLT.rank_strictMono).ltEmbedding,
+    fun a b h ↦ mem_range_rank_of_le h.le⟩) (Ordinal.typein r) a
 
 namespace WellFounded
 
