@@ -335,8 +335,9 @@ def liftInitialSeg : Cardinal.{v} ≤i Cardinal.{max u v} := by
     rintro ⟨a, ⟨b, rfl⟩⟩
     exact ⟨b, rfl⟩
 
+-- The universe order on `liftInitialSeg` matches that on `lift`.
 @[simp]
-theorem coe_liftInitialSeg : (liftInitialSeg.{v, u} : Cardinal → Cardinal) = lift.{v} :=
+theorem liftInitialSeg_coe : (liftInitialSeg.{v, u} : Cardinal → Cardinal) = lift.{v, u} :=
   rfl
 
 theorem mem_range_of_le_lift {a : Cardinal.{u}} {b : Cardinal.{max u v}} :

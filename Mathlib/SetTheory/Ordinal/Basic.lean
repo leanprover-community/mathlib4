@@ -663,6 +663,8 @@ def liftInitialSeg : Ordinal.{v} ≤i Ordinal.{max u v} := by
 @[deprecated liftInitialSeg (since := "2024-09-21")]
 alias lift.initialSeg := liftInitialSeg
 
+
+-- The universe order on `liftInitialSeg` matches that on `lift`.
 @[simp]
 theorem liftInitialSeg_coe : (liftInitialSeg.{v, u} : Ordinal → Ordinal) = lift.{v, u} :=
   rfl
