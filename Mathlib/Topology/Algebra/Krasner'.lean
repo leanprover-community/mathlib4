@@ -82,31 +82,31 @@ theorem functionExtends_of_functionExtends_of_functionExtends {A} [CommRing A] [
 
 end FunctionExtends
 
-section IntegralClosure
+-- section IntegralClosure
 
-#check Subalgebra.isField_of_algebraic
+-- #check Subalgebra.isField_of_algebraic
 
--- not in mathlib, maximal algebraic extension
-instance IntermediateField.algebraicClosure (K L : Type*) [Field K] [Field L] [Algebra K L]
-    : IntermediateField K L where
-  toSubalgebra := _root_.integralClosure K L
-  inv_mem' x hx := Subalgebra.inv_mem_of_algebraic (x := ⟨x, hx⟩)
-    (isAlgebraic_iff_isIntegral.mpr hx)
+-- -- not in mathlib, maximal algebraic extension
+-- instance IntermediateField.algebraicClosure (K L : Type*) [Field K] [Field L] [Algebra K L]
+--     : IntermediateField K L where
+--   toSubalgebra := _root_.integralClosure K L
+--   inv_mem' x hx := Subalgebra.inv_mem_of_algebraic (x := ⟨x, hx⟩)
+--     (isAlgebraic_iff_isIntegral.mpr hx)
 
-instance isIntegralClosureIntermediateFieldAlgebraicClosure (K L : Type*) [Field K] [Field L]
-    [Algebra K L] : IsIntegralClosure (IntermediateField.algebraicClosure K L) K L :=
-  inferInstanceAs (IsIntegralClosure (_root_.integralClosure K L) K L)
+-- instance isIntegralClosureIntermediateFieldAlgebraicClosure (K L : Type*) [Field K] [Field L]
+--     [Algebra K L] : IsIntegralClosure (IntermediateField.algebraicClosure K L) K L :=
+--   inferInstanceAs (IsIntegralClosure (_root_.integralClosure K L) K L)
 
-theorem Algebra.IsAlgebraic.of_isIntegralClosure (A R B : Type*)
-    [Field R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B] [Algebra A B]
-    [IsScalarTower R A B] [IsIntegralClosure A R B] : Algebra.IsAlgebraic R A :=
-  Algebra.isAlgebraic_iff_isIntegral.mpr (IsIntegralClosure.isIntegral_algebra R B)
+-- theorem Algebra.IsAlgebraic.of_isIntegralClosure (A R B : Type*)
+--     [Field R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B] [Algebra A B]
+--     [IsScalarTower R A B] [IsIntegralClosure A R B] : Algebra.IsAlgebraic R A :=
+--   Algebra.isAlgebraic_iff_isIntegral.mpr (IsIntegralClosure.isIntegral_algebra R B)
 
-instance instIntermediateFieldAlgebraicClosureIsAlgebraic (K L : Type*) [Field K] [Field L]
-    [Algebra K L] : Algebra.IsAlgebraic K (IntermediateField.algebraicClosure K L) :=
-  Algebra.isAlgebraic_iff_isIntegral.mpr (IsIntegralClosure.isIntegral_algebra K L)
+-- instance instIntermediateFieldAlgebraicClosureIsAlgebraic (K L : Type*) [Field K] [Field L]
+--     [Algebra K L] : Algebra.IsAlgebraic K (IntermediateField.algebraicClosure K L) :=
+--   Algebra.isAlgebraic_iff_isIntegral.mpr (IsIntegralClosure.isIntegral_algebra K L)
 
-end IntegralClosure
+-- end IntegralClosure
 
 section split
 variable {A} [Field A]
@@ -116,41 +116,6 @@ theorem Polynomial.dvd_comp_X_sub_C_iff {B : Type*} [CommRing B] {p q : Polynomi
   convert (map_dvd_iff <| algEquivAevalXAddC a).symm using 2
   rw [C_eq_algebraMap, algEquivAevalXAddC_apply, ← comp_eq_aeval]
   simp [comp_assoc]
-
-@[simp] lemma MulEquivClass.apply_coe_symm_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
-    [MulEquivClass F α β] (e : F) (x : β) :
-    e ((e : α ≃* β).symm x) = x :=
-  (e : α ≃* β).right_inv x
-
-@[simp] lemma MulEquivClass.coe_symm_apply_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
-    [MulEquivClass F α β] (e : F) (x : α) :
-    (e : α ≃* β).symm (e x) = x :=
-  (e : α ≃* β).left_inv x
-
-theorem map_isUnit_iff {α : Type*} {β : Type*} [Monoid α] [Monoid β] {F : Type*}
-    [EquivLike F α β] [MulEquivClass F α β]
-    (f : F) {a} : IsUnit a ↔ IsUnit (f a) :=
-  ⟨IsUnit.map f, by simpa only [MulEquivClass.coe_symm_apply_apply] using
-    (IsUnit.map (f : α ≃* β).symm (x := f a))⟩
-
-variable {M N F : Type*} [Monoid M] [Monoid N] [EquivLike F M N] [MulEquivClass F M N]
-
-variable (f : F)
-
-open MulEquiv
-
-theorem Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
-  let f := MulEquivClass.toMulEquiv f
-  ⟨fun g ↦ h.1 (symm_apply_apply f x ▸ g.map f.symm), fun a b g ↦
-    .elim (h.2 _ _ (symm_apply_apply f x ▸ map_mul f.symm a b ▸ congrArg f.symm g))
-    (fun h ↦ .inl (apply_symm_apply f a ▸ h.map f)) (fun h ↦ .inr (apply_symm_apply f b ▸ h.map f))⟩
-
-theorem map_irreducible_iff {α : Type*} {β : Type*} [Monoid α] [Monoid β] {F : Type*}
-    [EquivLike F α β] [MulEquivClass F α β] (f : F) {a : α} :
-    Irreducible (f a) ↔ Irreducible a :=
-  let f := MulEquivClass.toMulEquiv f
-  ⟨by simpa only [symm_apply_apply] using Irreducible.map f.symm (x := f a) , Irreducible.map f⟩
-
 
 -- #check Polynomial.degree_eq_natDegree
 -- #check Polynomial.natDegree_comp
