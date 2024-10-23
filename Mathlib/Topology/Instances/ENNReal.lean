@@ -16,9 +16,6 @@ import Mathlib.Topology.Metrizable.Uniformity
 # Topology on extended non-negative reals
 -/
 
---TODO: remove
-set_option linter.style.longFile 1700
-
 noncomputable section
 
 open Set Filter Metric Function
@@ -1433,18 +1430,6 @@ lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
   rw [key]
   rfl
 
-/-- If `u v : ℕ → ℝ≥0∞` are bounded above by real numbers, then
-  `filter.limsup (u * v) at_top ≤ filter.limsup u at_top * filter.limsup v at_top`. -/
-theorem limsup_mul_le' {u v : ℕ → ℝ≥0∞} {Bu Bv : ℝ≥0} (hu : ∀ x, u x ≤ Bu) (hv : ∀ x, v x ≤ Bv) :
-    Filter.limsup (u * v) atTop ≤ Filter.limsup u atTop * Filter.limsup v atTop := by
-  have h_le : (⨅ n : ℕ, ⨆ (i : ℕ) (_ : n ≤ i), u i * v i) ≤
-      ⨅ n : ℕ, (⨆ (i : ℕ) (_ : n ≤ i), u i) * ⨆ (j : ℕ) (_ : n ≤ j), v j :=
-    iInf_mono (fun n ↦ iSup_le (fun k ↦  iSup_le fun hk ↦ mul_le_mul' (le_iSup_prop u hk)
-      (le_iSup_prop v hk)))
-  simp only [Filter.limsup_eq_iInf_iSup_of_nat, ge_iff_le, Pi.mul_apply]
-  exact le_trans h_le (iInf_mul_le_mul_iInf (iSup_le_top_of_bddAbove hu) Antitone.iSup
-    (iSup_le_top_of_bddAbove hv) Antitone.iSup)
-
 theorem _root_.NNReal.coe_limsup {u : ℕ → ℝ} (hu : 0 ≤ u) :
     limsup u atTop = ((limsup (fun n ↦ (⟨u n, hu n⟩ : ℝ≥0)) atTop : ℝ≥0) : ℝ) := by
   simp only [limsup_eq]
@@ -1496,42 +1481,6 @@ theorem exists_lt_of_limsup_le {x : ℝ} {u : ℕ → ℝ} (hu_bdd : IsBoundedUn
   simp only [eventually_atTop, ge_iff_le] at h
   obtain ⟨n, hn⟩ := h
   exact ⟨⟨n + 1, Nat.succ_pos _⟩, hn (n + 1) (Nat.le_succ _)⟩
-
-/-- If `u v : ℕ → ℝ` are nonnegative and bounded above, then
-  `filter.limsup (u * v) at_top ≤ filter.limsup u at_top * filter.limsup v at_top `.-/
-theorem _root_.Real.limsup_mul_le {u v : ℕ → ℝ} (hu_bdd : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
-    (hv_bdd : BddAbove (Set.range v)) (hv0 : 0 ≤ v) :
-    Filter.limsup (u * v) atTop ≤ Filter.limsup u atTop * Filter.limsup v atTop := by
-  have h_bdd : BddAbove (Set.range (u * v)) := Real.range_bddAbove_mul hu_bdd hu0 hv_bdd hv0
-  have hc :
-    ∀ n : ℕ, (⟨u n * v n, mul_nonneg (hu0 n) (hv0 n)⟩ : ℝ≥0) = ⟨u n, hu0 n⟩ * ⟨v n, hv0 n⟩ := by
-    intro n; simp only [Nonneg.mk_mul_mk]
-  rw [NNReal.coe_limsup (mul_nonneg hu0 hv0), NNReal.coe_limsup hu0, NNReal.coe_limsup hv0, ←
-    NNReal.coe_mul, NNReal.coe_le_coe, ← ENNReal.coe_le_coe, ENNReal.coe_mul,
-    ENNReal.coe_limsup (NNReal.bddAbove' _ h_bdd),
-    ENNReal.coe_limsup (NNReal.bddAbove' hu0 hu_bdd),
-    ENNReal.coe_limsup (NNReal.bddAbove' hv0 hv_bdd)]
-  simp only [Pi.mul_apply, hc, ENNReal.coe_mul]
-  obtain ⟨Bu, hBu⟩ := hu_bdd
-  obtain ⟨Bv, hBv⟩ := hv_bdd
-  simp only [Nonneg.mk_mul_mk]
-  simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-    at hBu hBv
-  have hBu_0 : 0 ≤ Bu := le_trans (hu0 0) (hBu 0)
-  have hBu' : ∀ n : ℕ, Real.toNNReal (u n) ≤ Real.toNNReal Bu := by
-    intro n
-    rw [Real.toNNReal_of_nonneg (hu0 n), Real.toNNReal_of_nonneg hBu_0]
-    exact hBu n
-  have hBv_0 : 0 ≤ Bv := le_trans (hv0 0) (hBv 0)
-  have hBv' : ∀ n : ℕ, Real.toNNReal (v n) ≤ Real.toNNReal Bv := by
-    intro n
-    rw [Real.toNNReal_of_nonneg (hv0 n), Real.toNNReal_of_nonneg hBv_0]
-    exact hBv n
-  simp_rw [← ENNReal.coe_le_coe] at hBu' hBv'
-  convert ENNReal.limsup_mul_le' hBu' hBv'
-  · rw [Pi.mul_apply, ← Real.toNNReal_of_nonneg, Real.toNNReal_mul (hu0 _), ENNReal.coe_mul]
-  · rw [Real.toNNReal_of_nonneg (hu0 _)]
-  · rw [Real.toNNReal_of_nonneg (hv0 _)]
 
 end LimsupLiminf
 
