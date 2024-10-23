@@ -205,7 +205,7 @@ theorem nhdsWithin_union (a : α) (s t : Set α) : 𝓝[s ∪ t] a = 𝓝[s] a �
   delta nhdsWithin
   rw [← inf_sup_left, sup_principal]
 
-theorem nhdsWithin_union_univ (b : α) {I₁ I₂ : Set α} (hI : Set.univ = I₁ ∪ I₂) :
+theorem nhds_eq_nhdsWithin_sup_nhdsWithin (b : α) {I₁ I₂ : Set α} (hI : Set.univ = I₁ ∪ I₂) :
     nhds b = nhdsWithin b I₁ ⊔ nhdsWithin b I₂ := by
   rw [← nhdsWithin_univ b, hI, nhdsWithin_union]
 
@@ -220,15 +220,10 @@ theorem union_mem_nhds_of_mem_nhdsWithin {b : α}
 
 
 /-- Writing a punctured neighborhood filter as a sup of left and right filters. -/
-lemma nhds_punctured_union [LinearOrder α] {x : α} : 𝓝[≠] x = 𝓝[<] x ⊔ 𝓝[>] x := by
+lemma punctured_nhds_eq_nhdsWithin_sup_nhdsWithin [LinearOrder α] {x : α} :
+    𝓝[≠] x = 𝓝[<] x ⊔ 𝓝[>] x := by
   rw [← Iio_union_Ioi, nhdsWithin_union]
 
-/-- If a set `P` contains left and right neighborhoods of a point `x` in a linearly ordered
-topological space then `P` contains a punctured neighborhood. -/
-lemma nhdsWithin_punctured_of_Iio_Ioi [LinearOrder α]
-    {P : Set α} {x : α} (hl : P ∈ 𝓝[<] x) (hr : P ∈ 𝓝[>] x) : P ∈ 𝓝[≠] x := by
-  rw [nhds_punctured_union]
-  exact ⟨hl,hr⟩
 
 /-- Obtain a "predictably-sided" neighborhood of `b` from two one-sided neighborhoods. -/
 theorem nhds_of_Ici_Iic [LinearOrder α] {b : α}
