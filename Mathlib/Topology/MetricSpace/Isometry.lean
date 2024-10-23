@@ -488,11 +488,11 @@ protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : Complete
 `∀ i, Y i ≃ᵢ ∀ j, Y (e.symm j)` obtained from a bijection `ι ≃ ι'` of finite types.-/
 @[simps!]
 def piCongrLeft' {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι → Type*}
-    [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y i) ≃ᵢ ∀ j, Y (e.symm j) :=
-  mk (Equiv.piCongrLeft' _ e) (by
-    intro x1 x2
+    [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y i) ≃ᵢ ∀ j, Y (e.symm j) where
+  toEquiv := Equiv.piCongrLeft' _ e
+  isometry_toFun x1 x2 := by
     simp_rw [edist_pi_def, Finset.sup_univ_eq_iSup]
-    exact (Equiv.iSup_comp (g := fun b ↦ edist (x1 b) (x2 b)) e.symm))
+    exact (Equiv.iSup_comp (g := fun b ↦ edist (x1 b) (x2 b)) e.symm)
 
 /-- `Equiv.piCongrLeft` as an `IsometryEquiv`: this is the natural
 `∀ i, Y (e i) ≃ᵢ ∀ j, Y j` obtained from a bijection `ι ≃ ι'` of finite types.-/
@@ -503,10 +503,9 @@ def piCongrLeft {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι' → Type*}
 
 /-- `Equiv.sumArrowEquivProdArrow` as an `IsometryEquiv`.-/
 @[simps!]
-def sumArrowEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ) :=
-  mk (Equiv.sumArrowEquivProdArrow _ _ _) (by
-    intro
-    simp [Prod.edist_eq, edist_pi_def, Finset.sup_univ_eq_iSup, iSup_sum])
+def sumArrowEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ) where
+  toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
+  isometry_toFun _ _ := by simp [Prod.edist_eq, edist_pi_def, Finset.sup_univ_eq_iSup, iSup_sum]
 
 lemma _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
     edist (Fin.append x y) (Fin.append x2 y2) = max (edist x x2) (edist y y2) := by
@@ -515,10 +514,9 @@ lemma _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y 
 
 /-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `(Fin (m + n) → α)`.-/
 @[simps!]
-def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃ᵢ (Fin (m + n) → α) :=
-  mk (Fin.appendEquiv _ _) (by
-    intro _ _
-    simp_rw [Fin.appendEquiv, Fin.edist_append_eq_max_edist, Prod.edist_eq])
+def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃ᵢ (Fin (m + n) → α) where
+  toEquiv := Fin.appendEquiv _ _
+  isometry_toFun _ _ := by simp_rw [Fin.appendEquiv, Fin.edist_append_eq_max_edist, Prod.edist_eq]
 
 variable (ι α)
 
