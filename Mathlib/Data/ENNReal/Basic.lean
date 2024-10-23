@@ -480,6 +480,7 @@ theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_n
 
 @[simp] theorem natCast_lt_top (n : ℕ) : (n : ℝ≥0∞) < ∞ := WithTop.natCast_lt_top n
 
+@[simp, aesop (rule_sets := [finiteness]) safe apply]
 lemma ofNat_ne_top {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) ≠ ∞ := natCast_ne_top n
 lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) < ∞ := natCast_lt_top n
 
