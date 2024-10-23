@@ -211,7 +211,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     LinearMap.range l12 ≤ LinearMap.ker l23 := by
   -- let `n1 ∈ N1`. We need to show `l23 (l12 n1) = 0`. Suppose this is not the case.
   rintro _ ⟨n1, rfl⟩
-  show l23 (l12 n1) = 0
+  rw [LinearMap.mem_ker]
   by_contra! hn1
   -- Let `E` be the submodule spanned by `l23 (l12 n1)`. Then because `l23 (l12 n1) ≠ 0`, we have
   -- `E ≠ 0`.
@@ -293,8 +293,9 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     simp only [LinearMap.comp_codRestrict, LinearMap.rTensor_tmul, Submodule.coe_subtype, ← hy]
     rw [← LinearMap.comp_apply]
     erw [← LinearMap.rTensor_comp]
-    rw [← LinearMap.comp_apply, ← LinearMap.rTensor_comp]
-    rfl
+    rw [← LinearMap.comp_apply, ← LinearMap.rTensor_comp, LinearMap.comp_assoc,
+      LinearMap.subtype_comp_codRestrict, ← LinearMap.comp_assoc, Submodule.subtype_comp_inclusion,
+      LinearMap.subtype_comp_codRestrict]
   | add x y hx hy =>
     obtain ⟨x, rfl⟩ := hx; obtain ⟨y, rfl⟩ := hy
     exact ⟨x + y, by simp⟩
