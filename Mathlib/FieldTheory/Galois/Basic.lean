@@ -302,15 +302,15 @@ instance of_fixedField_normal_subgroup [IsGalois K L]
     rintro σ x ⟨a, ha, rfl⟩ τ
     exact (symm_apply_eq σ).mp (ha ⟨σ⁻¹ * τ * σ, Subgroup.Normal.conj_mem' hn τ.1 τ.2 σ⟩)
 
-lemma AlgEquiv.restrictNormalHomKer [IsGalois K L] (H : Subgroup (L ≃ₐ[K] L)) [Subgroup.Normal H] :
-    (restrictNormalHom (fixedField H)).ker = (fixedField H).fixingSubgroup := by
+lemma AlgEquiv.restrictNormalHomKer [IsGalois K L] (E : IntermediateField K L) [Normal K E]:
+    (restrictNormalHom E).ker = E.fixingSubgroup := by
   ext σ
   apply ((((mem_fixingSubgroup_iff (L ≃ₐ[K] L)).trans ⟨fun h ⟨x, hx⟩ ↦ Subtype.val_inj.mp <|
-    (restrictNormal_commutes σ (fixedField H) ⟨x, hx⟩).trans (h x hx) , _⟩).trans
+    (restrictNormal_commutes σ E ⟨x, hx⟩).trans (h x hx) , _⟩).trans
       AlgEquiv.ext_iff.symm)).symm
   intro h x hx
-  have hs : ((restrictNormalHom (fixedField H)) σ) ⟨x, hx⟩ = σ • x :=
-    restrictNormal_commutes σ (fixedField H) ⟨x, hx⟩
+  have hs : ((restrictNormalHom E) σ) ⟨x, hx⟩ = σ • x :=
+    restrictNormal_commutes σ E ⟨x, hx⟩
   exact hs ▸ (Subtype.val_inj.mpr (h ⟨x, hx⟩))
 
 /-- If `H` is a normal Subgroup of `Gal(L / K)`, then `Gal(fixedField H / K)` is isomorphic to
@@ -319,8 +319,9 @@ noncomputable def normalAutEquivQuotient [FiniteDimensional K L] [IsGalois K L]
     (H : Subgroup (L ≃ₐ[K] L)) [Subgroup.Normal H] :
     (L ≃ₐ[K] L) ⧸ H ≃* ((fixedField H) ≃ₐ[K] (fixedField H)) :=
   (QuotientGroup.quotientMulEquivOfEq ((fixingSubgroup_fixedField H).symm.trans
-  (AlgEquiv.restrictNormalHomKer H).symm)).trans <| QuotientGroup.quotientKerEquivOfSurjective
-  (restrictNormalHom (fixedField H)) <| restrictNormalHom_surjective L
+  (AlgEquiv.restrictNormalHomKer (fixedField H)).symm)).trans <|
+  QuotientGroup.quotientKerEquivOfSurjective (restrictNormalHom (fixedField H)) <|
+  restrictNormalHom_surjective L
 
 open scoped Pointwise
 
