@@ -22,9 +22,6 @@ variable {I : Type u}
 -- The indexing type
 variable {f : I → Type v}
 
--- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i : I)
-
 namespace Pi
 
 theorem _root_.IsSMulRegular.pi {α : Type*} [∀ i, SMul α <| f i] {k : α}
@@ -85,18 +82,5 @@ instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCo
     ext1
     -- Porting note: not sure why `apply zero_smul` fails here.
     rw [zero_smul]
-
-instance noZeroSMulDivisors (α) [Semiring α] [∀ i, AddCommMonoid <| f i]
-    [∀ i, Module α <| f i] [∀ i, NoZeroSMulDivisors α <| f i] :
-    NoZeroSMulDivisors α (∀ i : I, f i) :=
-  ⟨fun {_ _} h =>
-    or_iff_not_imp_left.mpr fun hc =>
-      funext fun i => (smul_eq_zero.mp (congr_fun h i)).resolve_left hc⟩
-
-/-- A special case of `Pi.noZeroSMulDivisors` for non-dependent types. Lean struggles to
-synthesize this instance by itself elsewhere in the library. -/
-instance _root_.Function.noZeroSMulDivisors {ι α β : Type*} [Semiring α] [AddCommMonoid β]
-    [Module α β] [NoZeroSMulDivisors α β] : NoZeroSMulDivisors α (ι → β) :=
-  Pi.noZeroSMulDivisors _
 
 end Pi

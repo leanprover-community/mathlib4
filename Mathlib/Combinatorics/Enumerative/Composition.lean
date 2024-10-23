@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Compositions
@@ -807,7 +806,7 @@ theorem card_boundaries_eq_succ_length : c.boundaries.card = c.length + 1 :=
 
 theorem length_lt_card_boundaries : c.length < c.boundaries.card := by
   rw [c.card_boundaries_eq_succ_length]
-  exact lt_add_one _
+  exact Nat.lt_add_one _
 
 theorem lt_length (i : Fin c.length) : (i : ℕ) + 1 < c.boundaries.card :=
   lt_tsub_iff_right.mp i.2

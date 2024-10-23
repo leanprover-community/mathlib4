@@ -303,7 +303,7 @@ theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticMap R (Mᵢ i) P}
 /-- If a family is anisotropic then its components must be. The converse is not true. -/
 theorem anisotropic_of_pi [Fintype ι]
     {Q : ∀ i, QuadraticMap R (Mᵢ i) P} (h : (pi Q).Anisotropic) : ∀ i, (Q i).Anisotropic := by
-  simp_rw [Anisotropic, pi_apply, Function.funext_iff, Pi.zero_apply] at h
+  simp_rw [Anisotropic, pi_apply, funext_iff, Pi.zero_apply] at h
   intro i x hx
   classical
   have := h (Pi.single i x) ?_ i

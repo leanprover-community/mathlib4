@@ -250,11 +250,8 @@ universe u v w₁ w₂ U
 
 variable {B : Type u} (F : Type v) (E : B → Type w₁) {B' : Type w₂} (f : B' → B)
 
-instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) := by
-  -- Porting note: Original proof was `delta_instance Bundle.Pullback`
-  intro x
-  rw [Bundle.Pullback]
-  infer_instance
+instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) :=
+  inferInstanceAs (∀ x, TopologicalSpace (E (f x)))
 
 variable [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)]
 

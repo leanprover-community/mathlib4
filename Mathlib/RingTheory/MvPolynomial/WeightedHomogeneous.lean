@@ -309,7 +309,7 @@ theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
 
 theorem weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
-      ∑ d ∈ φ.support.filter fun d => weight w d = n, monomial d (coeff d φ) :=
+      ∑ d ∈ φ.support with weight w d = n, monomial d (coeff d φ) :=
   letI := Classical.decEq M
   Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weight w d = n) φ |>.trans <| by convert rfl
 
