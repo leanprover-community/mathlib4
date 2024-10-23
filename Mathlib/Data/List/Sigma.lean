@@ -367,7 +367,7 @@ theorem Perm.kreplace {a : α} {b : β a} {l₁ l₂ : List (Sigma β)} (nd : l�
 def kerase (a : α) : List (Sigma β) → List (Sigma β) :=
   eraseP fun s => a = s.1
 
--- Porting note (#10618): removing @[simp], `simp` can prove it
+@[simp]
 theorem kerase_nil {a} : @kerase _ β _ a [] = [] :=
   rfl
 

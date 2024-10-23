@@ -59,7 +59,7 @@ theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.
   congr
   simp only [eq_iff_true_of_subsingleton]
 
--- @[simp] : Porting note (#10618): simp can prove this
+@[simp]
 theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
 
 @[simp]
@@ -369,7 +369,7 @@ theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right =
   let ⟨_,b,_⟩ := f; let ⟨_,e,_⟩ := g
   congr; simp only [eq_iff_true_of_subsingleton]
 
--- @[simp] Porting note (#10618): simp can prove this
+@[simp]
 theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
 
 @[simp]
