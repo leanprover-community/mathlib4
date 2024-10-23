@@ -75,7 +75,6 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
   · simp
   · simp
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem det_zero (_ : Nonempty n) : det (0 : Matrix n n R) = 0 :=
   (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_zero
 
