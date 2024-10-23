@@ -129,7 +129,7 @@ set_option quotPrecheck false in
 /-- Morphisms from an exponentiable object. -/
 notation:30 B " ^^ " A:30 => (exp A).obj B
 
-#adaptation_note /-- Removed simp attribute as simp can already prove it. -/
+-- Not simp as it can already prove it.
 @[reassoc]
 theorem ev_coev : (A ◁ (coev A).app B) ≫ (ev A).app (A ⊗ B) = 𝟙 (A ⊗ B : C) :=
   ihom.ev_coev A B

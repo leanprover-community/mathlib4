@@ -80,7 +80,8 @@ theorem expComparison_ev (A B : C) :
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
   convert mateEquiv_counit _ _ (prodComparisonNatIso F A).inv B using 2
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
-  simp only [prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app, IsIso.hom_inv_id]
+  simp only [prodComparisonNatTrans_app, prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app,
+    IsIso.hom_inv_id]
 
 theorem coev_expComparison (A B : C) :
     F.map ((exp.coev A).app B) ≫ (expComparison F A).app (A ⊗ B) =
@@ -113,7 +114,7 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
   ext B
   simp only [Functor.comp_obj, tensorLeft_obj, prodComparisonNatIso_inv, asIso_inv,
     NatTrans.comp_app, whiskerLeft_app, curriedTensor_map_app, NatIso.isIso_inv_app,
-    whiskerRight_app, IsIso.eq_inv_comp]
+    whiskerRight_app, IsIso.eq_inv_comp, prodComparisonNatTrans_app]
   rw [← prodComparison_inv_natural_whiskerRight F f]
   simp
 
@@ -137,7 +138,6 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   apply congr_arg
   ext B
   unfold mateEquiv
-  #adaptation_note /-- Proof adapted from here on. -/
   simp only [Functor.comp_obj, tensorLeft_obj, Functor.id_obj, Equiv.coe_fn_mk, whiskerLeft_comp,
     whiskerLeft_twice, whiskerRight_comp, assoc, NatTrans.comp_app, whiskerLeft_app,
     curriedTensor_obj_obj, whiskerRight_app, prodComparisonNatTrans_app, curriedTensor_map_app,

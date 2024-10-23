@@ -105,7 +105,6 @@ variable (i : D ⥤ C)
 theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
     Limits.HasFiniteProducts D := ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
 
-#adaptation_note /-- Definition added so that sheaf categories can remain cartesian closed. -/
 /-- Given a reflective subcategory `D` of a category with chosen finite products `C`, `D` admits
 finite chosen products. -/
 def reflectiveChosenFiniteProducts [ChosenFiniteProducts C] [Reflective i] :
@@ -215,11 +214,11 @@ theorem bijection_symm_apply_id (A B : C) :
   rw [comp_id, comp_id, comp_id, i.map_id, comp_id, unitCompPartialBijective_symm_apply,
     unitCompPartialBijective_symm_apply, uncurry_natural_left, uncurry_curry,
     uncurry_natural_left, uncurry_curry, ← BraidedCategory.braiding_naturality_left_assoc]
-  #adaptation_note /-- Proof adapted from here on. -/
   erw [SymmetricCategory.symmetry_assoc, ← MonoidalCategory.whisker_exchange_assoc]
   -- Porting note: added
   dsimp only [Functor.comp_obj]
-  rw [← tensorHom_def'_assoc, ← Adjunction.eq_unit_comp_map_iff, Iso.comp_inv_eq, assoc]
+  rw [← tensorHom_def'_assoc, Adjunction.homEquiv_symm_apply,
+    ← Adjunction.eq_unit_comp_map_iff, Iso.comp_inv_eq, assoc]
   rw [prodComparisonIso_hom i ((reflector i).obj A) ((reflector i).obj B)]
   apply hom_ext
   · rw [tensorHom_fst, assoc, assoc, prodComparison_fst, ← i.map_comp,

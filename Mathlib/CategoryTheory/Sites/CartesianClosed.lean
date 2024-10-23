@@ -20,7 +20,6 @@ open CategoryTheory Limits
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C) (A : Type*) [Category A]
 
-#adaptation_note /-- Added instance. -/
 instance [HasSheafify J A] [ChosenFiniteProducts A] : ChosenFiniteProducts (Sheaf J A) :=
   reflectiveChosenFiniteProducts (sheafToPresheaf _ _)
 
