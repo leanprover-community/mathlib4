@@ -843,15 +843,12 @@ theorem lift_card_iSup_le_sum_card {ι : Type u} [Small.{v} ι] (f : ι → Ordi
 
 theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :
     (⨆ i, f i).card ≤ Cardinal.sum (fun i ↦ (f i).card) := by
-  have := lift_card_iSup_le_sum_card f
-  rwa [Cardinal.lift_id'] at this
+  simpa using lift_card_iSup_le_sum_card f
 
 theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Ordinal.{u} → Ordinal.{max u v}) :
     (⨆ a : Iio o, f a).card ≤ Cardinal.sum fun i ↦ (f ((enumIsoToType o).symm i)).card := by
   apply le_of_eq_of_le _ (card_iSup_le_sum_card _)
-  have := (enumIsoToType o).symm.iSup_comp (g := fun x ↦ f x.1)
-  rw [RelIso.coe_fn_toEquiv] at this
-  rw [this]
+  simpa using (enumIsoToType o).symm.iSup_comp (g := fun x ↦ f x.1)
 
 theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Ordinal.{u} → Ordinal.{max u v}) :
     (⨆ a : Iio o, f a).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
