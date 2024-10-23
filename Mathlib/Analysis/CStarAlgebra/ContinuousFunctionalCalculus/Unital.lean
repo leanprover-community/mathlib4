@@ -1040,16 +1040,16 @@ This is sometimes necessary in order to consider the same continuous functions a
 distinct elements, with the added constraint that `cfc` does not suffice. This can occur, for
 example, if it is necessary to use uniqueness of this continuous functional calculus. -/
 @[simps!]
-noncomputable def cfcHom_superset {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
+noncomputable def cfcHomSuperset {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
     C(s, R) →⋆ₐ[R] A :=
   cfcHom ha |>.comp <| ContinuousMap.compStarAlgHom' R R <| ⟨_, continuous_id.subtype_map hs⟩
 
-lemma cfcHom_superset_continuous {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
-    Continuous (cfcHom_superset ha hs) :=
+lemma cfcHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
+    Continuous (cfcHomSuperset ha hs) :=
   (cfcHom_continuous ha).comp <| ContinuousMap.continuous_comp_left _
 
-lemma cfcHom_superset_id {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
-    cfcHom_superset ha hs (.restrict s <| .id R) = a :=
+lemma cfcHomSuperset_id {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
+    cfcHomSuperset ha hs (.restrict s <| .id R) = a :=
   cfcHom_id ha
 
 end Superset
