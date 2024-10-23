@@ -289,6 +289,17 @@ open IntermediateField
 
 open scoped Pointwise
 
+lemma AlgEquiv.restrictNormalHomKer (E : IntermediateField K L) [Normal K E]:
+    (restrictNormalHom E).ker = E.fixingSubgroup := by
+  ext σ
+  apply ((((mem_fixingSubgroup_iff (L ≃ₐ[K] L)).trans ⟨fun h ⟨x, hx⟩ ↦ Subtype.val_inj.mp <|
+    (restrictNormal_commutes σ E ⟨x, hx⟩).trans (h x hx) , _⟩).trans
+      AlgEquiv.ext_iff.symm)).symm
+  intro h x hx
+  have hs : ((restrictNormalHom E) σ) ⟨x, hx⟩ = σ • x :=
+    restrictNormal_commutes σ E ⟨x, hx⟩
+  exact hs ▸ (Subtype.val_inj.mpr (h ⟨x, hx⟩))
+
 namespace IsGalois
 
 variable (E : IntermediateField K L)
@@ -301,17 +312,6 @@ instance of_fixedField_normal_subgroup [IsGalois K L]
     apply normal_iff_forall_map_le'.mpr
     rintro σ x ⟨a, ha, rfl⟩ τ
     exact (symm_apply_eq σ).mp (ha ⟨σ⁻¹ * τ * σ, Subgroup.Normal.conj_mem' hn τ.1 τ.2 σ⟩)
-
-lemma AlgEquiv.restrictNormalHomKer [IsGalois K L] (E : IntermediateField K L) [Normal K E]:
-    (restrictNormalHom E).ker = E.fixingSubgroup := by
-  ext σ
-  apply ((((mem_fixingSubgroup_iff (L ≃ₐ[K] L)).trans ⟨fun h ⟨x, hx⟩ ↦ Subtype.val_inj.mp <|
-    (restrictNormal_commutes σ E ⟨x, hx⟩).trans (h x hx) , _⟩).trans
-      AlgEquiv.ext_iff.symm)).symm
-  intro h x hx
-  have hs : ((restrictNormalHom E) σ) ⟨x, hx⟩ = σ • x :=
-    restrictNormal_commutes σ E ⟨x, hx⟩
-  exact hs ▸ (Subtype.val_inj.mpr (h ⟨x, hx⟩))
 
 /-- If `H` is a normal Subgroup of `Gal(L / K)`, then `Gal(fixedField H / K)` is isomorphic to
 `Gal(L / K) ⧸ H`. -/
