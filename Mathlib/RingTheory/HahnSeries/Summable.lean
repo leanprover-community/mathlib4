@@ -150,6 +150,17 @@ instance : AddCommMonoid (SummableFamily Γ R α) where
     ext
     apply add_assoc
 
+/-- The coefficient function of a summable family, as a finsupp on the parameter type. -/
+@[simps]
+def coeff (s : SummableFamily Γ R α) (g : Γ) : α →₀ R where
+  support := (s.finite_co_support g).toFinset
+  toFun a := (s a).coeff g
+  mem_support_toFun a := by simp
+
+@[simp]
+theorem coeff_def (s : SummableFamily Γ R α) (a : α) (g : Γ) : s.coeff g a = (s a).coeff g :=
+  rfl
+
 /-- The infinite sum of a `SummableFamily` of Hahn series. -/
 def hsum (s : SummableFamily Γ R α) : HahnSeries Γ R where
   coeff g := ∑ᶠ i, (s i).coeff g
@@ -177,6 +188,15 @@ theorem hsum_add {s t : SummableFamily Γ R α} : (s + t).hsum = s.hsum + t.hsum
   ext g
   simp only [hsum_coeff, add_coeff, add_apply]
   exact finsum_add_distrib (s.finite_co_support _) (t.finite_co_support _)
+
+theorem hsum_coeff_eq_sum_of_subset {s : SummableFamily Γ R α} {g : Γ} {t : Finset α}
+    (h : { a | (s a).coeff g ≠ 0 } ⊆ t) : s.hsum.coeff g = ∑ i ∈ t, (s i).coeff g := by
+  simp only [hsum_coeff, finsum_eq_sum _ (s.finite_co_support _)]
+  exact sum_subset (Set.Finite.toFinset_subset.mpr h) (by simp)
+
+theorem hsum_coeff_eq_sum {s : SummableFamily Γ R α} {g : Γ} :
+    s.hsum.coeff g = ∑ i ∈ (s.coeff g).support, (s i).coeff g := by
+  simp only [hsum_coeff, finsum_eq_sum _ (s.finite_co_support _), coeff_support]
 
 /-- The summable family made of a single Hahn series. -/
 @[simps]

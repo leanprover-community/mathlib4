@@ -52,7 +52,10 @@ theorem coe_mkHomeomorph_symm : ⇑(mkHomeomorph : M ≃ₜ Mᵈᵐᵃ).symm = m
 @[to_additive] theorem isOpenEmbedding_mk : IsOpenEmbedding (@mk M) := mkHomeomorph.isOpenEmbedding
 @[to_additive] theorem isClosedEmbedding_mk : IsClosedEmbedding (@mk M) :=
   mkHomeomorph.isClosedEmbedding
-@[to_additive] theorem quotientMap_mk : QuotientMap (@mk M) := mkHomeomorph.quotientMap
+@[to_additive] theorem isQuotientMap_mk : IsQuotientMap (@mk M) := mkHomeomorph.isQuotientMap
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_mk := isQuotientMap_mk
 
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_mk := isClosedEmbedding_mk
@@ -77,7 +80,10 @@ theorem isClosedEmbedding_mk_symm : IsClosedEmbedding (@mk M).symm :=
 alias closedEmbedding_mk_symm := isClosedEmbedding_mk_symm
 
 @[to_additive]
-theorem quotientMap_mk_symm : QuotientMap (@mk M).symm := mkHomeomorph.symm.quotientMap
+theorem isQuotientMap_mk_symm : IsQuotientMap (@mk M).symm := mkHomeomorph.symm.isQuotientMap
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_mk_symm := isQuotientMap_mk_symm
 
 @[to_additive] instance instT0Space [T0Space M] : T0Space Mᵈᵐᵃ := embedding_mk_symm.t0Space
 @[to_additive] instance instT1Space [T1Space M] : T1Space Mᵈᵐᵃ := embedding_mk_symm.t1Space
@@ -106,7 +112,7 @@ instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵈᵐᵃ
 
 @[to_additive]
 instance instSeparableSpace [SeparableSpace M] : SeparableSpace Mᵈᵐᵃ :=
-  quotientMap_mk.separableSpace
+  isQuotientMap_mk.separableSpace
 
 @[to_additive]
 instance instFirstCountableTopology [FirstCountableTopology M] : FirstCountableTopology Mᵈᵐᵃ :=
