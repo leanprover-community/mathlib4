@@ -96,17 +96,6 @@ instance apply_faithfulSMul : FaithfulSMul (RingAut R) R :=
 
 variable (G R)
 
-/-- Construct a `MulSemiringAction` from a homomorphism `G →* RingAut R`. -/
-@[simps]
-def _root_.MulSemiringAction.ofRingAut (h : G →* RingAut R) : MulSemiringAction G R where
-  smul g r := h g r
-  one_smul := DFunLike.ext_iff.mp (map_one h)
-  mul_smul g g' := DFunLike.ext_iff.mp (map_mul h g g')
-  smul_zero g := map_zero (h g)
-  smul_add g := map_add (h g)
-  smul_one g := map_one (h g)
-  smul_mul g := map_mul (h g)
-
 /-- Each element of the group defines a ring automorphism.
 
 This is a stronger version of `DistribMulAction.toAddAut` and

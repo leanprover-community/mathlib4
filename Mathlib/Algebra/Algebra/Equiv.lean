@@ -789,17 +789,6 @@ section
 
 variable [Group G]
 
-/-- Construct a `MulSemiringAction` from a homomorphism `G →* (A ≃ₐ[R] A)`. -/
-@[simps]
-def ofAlgEquivHom (h : G →* (A ≃ₐ[R] A)) : MulSemiringAction G A where
-  smul g r := h g r
-  one_smul := DFunLike.ext_iff.mp (map_one h)
-  mul_smul g g' := DFunLike.ext_iff.mp (map_mul h g g')
-  smul_zero g := map_zero (h g)
-  smul_add g := map_add (h g)
-  smul_one g := map_one (h g)
-  smul_mul g := map_mul (h g)
-
 variable [MulSemiringAction G A] [SMulCommClass G R A]
 
 /-- Each element of the group defines an algebra equivalence.
@@ -814,9 +803,12 @@ theorem toAlgEquiv_injective [FaithfulSMul G A] :
     Function.Injective (MulSemiringAction.toAlgEquiv R A : G → A ≃ₐ[R] A) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => AlgEquiv.ext_iff.1 h r
 
-/-- Each element of the group defines an algebra equivalence. -/
+/-- Each element of the group defines an algebra equivalence.
+
+This is a stronger version of `MulSemiringAction.toRingAut` and
+`DistribMulAction.toModuleEnd`. -/
 @[simps]
-def toAlgEquivHom : G →* A ≃ₐ[R] A where
+def toAlgAut : G →* A ≃ₐ[R] A where
   toFun := toAlgEquiv R A
   map_one' := AlgEquiv.ext <| one_smul _
   map_mul' g h := AlgEquiv.ext <| mul_smul g h
