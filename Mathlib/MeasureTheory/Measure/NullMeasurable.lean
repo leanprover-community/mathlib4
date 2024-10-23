@@ -173,7 +173,7 @@ protected theorem disjointed {f : ℕ → Set α} (h : ∀ i, NullMeasurableSet 
     NullMeasurableSet (disjointed f n) μ :=
   MeasurableSet.disjointed h n
 
--- @[simp] -- Porting note (#10618): simp can prove thisrove this
+@[simp]
 protected theorem const (p : Prop) : NullMeasurableSet { _a : α | p } μ :=
   MeasurableSet.const p
 
