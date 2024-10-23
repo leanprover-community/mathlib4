@@ -663,8 +663,7 @@ theorem ofNat'_eq : ∀ n, Num.ofNat' n = n :=
     rw [ofNat'] at IH ⊢
     rw [Nat.binaryRec_eq _ _ (.inl rfl), IH]
     -- Porting note: `Nat.cast_bit0` & `Nat.cast_bit1` are not `simp` theorems anymore.
-    · cases b <;> simp [Nat.bit_val, two_mul, ← bit0_of_bit0, ← bit1_of_bit1]
-    · rfl
+    cases b <;> simp [Nat.bit_val, two_mul, ← bit0_of_bit0, ← bit1_of_bit1]
 
 theorem zneg_toZNum (n : Num) : -n.toZNum = n.toZNumNeg := by cases n <;> rfl
 
