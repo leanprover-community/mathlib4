@@ -6,6 +6,7 @@ Authors: Kim Morrison, Robin Carlier
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.Combinatorics.Quiver.Path
+import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # The category paths on a quiver.
@@ -74,32 +75,13 @@ lemma induction_fixed_target {b : Paths V} (P : ∀ {a : Paths V}, (a ⟶ b) →
   | zero => cases f with
     | nil => exact id
     | cons _ _ => simp at h
-  | succ k h' => cases f with
-    | nil => simp at h
-    | @cons c _ u q =>
-      change 𝓠.Hom c b at q
-      obtain ⟨x, q', p, h''⟩ : ∃ (x : V) (q' : 𝓠.Hom (a : V) x) (p : (of.obj x) ⟶ b),
-        (@Quiver.Path.cons V _ a c b u q)= of.map q' ≫ p := by
-        clear h; clear comp; clear id; clear h'; clear P
-        induction u generalizing b with
-        | nil => use b, q, (𝟙 _); rfl
-        | @cons c₁ d p' q' h'' =>
-          obtain ⟨x, q'', p'', e⟩ := h'' q'
-          use x, q'', p''.cons q
-          rw [e]
-          rfl
-      rw [h''] at h |-
-      apply comp
-      apply h'
-      conv at h => lhs; congr; change Quiver.Path.comp (of.map q') p
-      rw [Quiver.Path.length_comp] at h; change (1 + _ = k + 1) at h
-      simp only [of_obj] at h
-      rw [Nat.add_comm] at h
-      cases h; rfl
+  | succ k h' =>
+    obtain ⟨c, f, q, hq, rfl⟩ := f.eq_toPath_comp_of_length_eq_succ h
+    exact comp _ _ (h' _ hq)
 
 /-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
-and prove that the properity is preserved under composition on the right with length 1 paths. -/
-lemma induction (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
+and prove that the property is preserved under composition on the right with length 1 paths. -/
+lemma induction (P : MorphismProperty (Paths V))
     (id : ∀ {v : V}, P (𝟙 (of.obj v)))
     (comp : ∀ {u v w : V} (p : of.obj u ⟶ of.obj v) (q : v ⟶ w), P p → P (p ≫ of.map q)) :
     ∀ {a b : Paths V} (f : a ⟶ b), P f := by
@@ -112,7 +94,7 @@ lemma induction (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
 
 /-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
 and prove that the property is preserved under composition on the left with length 1 paths. -/
-lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
+lemma induction' (P : MorphismProperty (Paths V))
     (id : ∀ {v : V}, P (𝟙 (of.obj v)))
     (comp : ∀ {u v w : V} (p : u ⟶ v) (q : of.obj v ⟶ of.obj w), P q → P (of.map p ≫ q)) :
     ∀ {a b : Paths V} (f : a ⟶ b), P f := by

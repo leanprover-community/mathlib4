@@ -139,6 +139,26 @@ theorem comp_inj_left {p₁ p₂ : Path a b} {q : Path b c} : p₁.comp q = p₂
 theorem comp_inj_right {p : Path a b} {q₁ q₂ : Path b c} : p.comp q₁ = p.comp q₂ ↔ q₁ = q₂ :=
   p.comp_injective_right.eq_iff
 
+lemma eq_toPath_comp_of_length_eq_succ (p : Path a b) {n : ℕ}
+    (hp : p.length = n + 1) :
+    ∃ (c : V) (f : a ⟶ c) (q : Quiver.Path c b) (_ : q.length = n),
+      p = f.toPath.comp q := by
+  induction p generalizing n with
+  | nil => simp at hp
+  | @cons c d p q h =>
+    cases n
+    · have h' : a = c := eq_of_length_zero p (by simpa using hp)
+      subst h'
+      use d, q, nil, rfl
+      cases p
+      · rfl
+      · simp at hp
+    · rw [length_cons, Nat.add_right_cancel_iff] at hp
+      obtain ⟨x, q'', p'', hl, e⟩ := h hp
+      use x, q'', p''.cons q, (by simpa)
+      rw [e]
+      rfl
+
 /-- Turn a path into a list. The list contains `a` at its head, but not `b` a priori. -/
 @[simp]
 def toList : ∀ {b : V}, Path a b → List V
