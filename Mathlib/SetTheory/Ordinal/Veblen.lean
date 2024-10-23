@@ -95,7 +95,7 @@ theorem veblenWith_succ (hf : IsNormal f) (o : Ordinal) :
       exact veblenWith_veblenWith_of_lt hf hb _
   · exact fun a ↦ isNormal_veblenWith hf a
 
-theorem strictMono_veblenWith_right (hf : IsNormal f) (o : Ordinal) :
+theorem veblenWith_right_strictMono (hf : IsNormal f) (o : Ordinal) :
     StrictMono (veblenWith f o) := by
   obtain rfl | h := eq_or_ne o 0
   · rw [veblenWith_zero]
@@ -103,32 +103,32 @@ theorem strictMono_veblenWith_right (hf : IsNormal f) (o : Ordinal) :
   · rw [veblenWith_of_ne_zero f h]
     exact strictMono_derivFamily (fun a ↦ isNormal_veblenWith hf a)
 
-theorem monotone_veblenWith_right (hf : IsNormal f) (o : Ordinal) :
+theorem veblenWith_right_monotone (hf : IsNormal f) (o : Ordinal) :
     Monotone (veblenWith f o) :=
-  (strictMono_veblenWith_right hf o).monotone
+  (veblenWith_right_strictMono hf o).monotone
 
 theorem veblenWith_lt_veblenWith_right_iff (hf : IsNormal f) :
     veblenWith f o a < veblenWith f o b ↔ a < b :=
-  (strictMono_veblenWith_right hf o).lt_iff_lt
+  (veblenWith_right_strictMono hf o).lt_iff_lt
 
 theorem veblenWith_le_veblenWith_right_iff (hf : IsNormal f) :
     veblenWith f o a ≤ veblenWith f o b ↔ a ≤ b :=
-  (strictMono_veblenWith_right hf o).le_iff_le
+  (veblenWith_right_strictMono hf o).le_iff_le
 
 theorem veblenWith_inj (hf : IsNormal f) :
     veblenWith f o a = veblenWith f o b ↔ a = b :=
-  (strictMono_veblenWith_right hf o).injective.eq_iff
+  (veblenWith_right_strictMono hf o).injective.eq_iff
 
 theorem right_le_veblenWith (hf : IsNormal f) (a b : Ordinal) :
     b ≤ veblenWith f a b :=
-  (strictMono_veblenWith_right hf a).le_apply
+  (veblenWith_right_strictMono hf a).le_apply
 
-theorem monotone_veblenWith_left (hf : IsNormal f) (o : Ordinal) :
+theorem veblenWith_left_monotone (hf : IsNormal f) (o : Ordinal) :
     Monotone fun a ↦ veblenWith f a o := by
   rw [monotone_iff_forall_lt]
   intro a b h
   rw [← veblenWith_veblenWith_of_lt hf h]
-  exact (strictMono_veblenWith_right hf a).monotone (right_le_veblenWith hf b o)
+  exact (veblenWith_right_strictMono hf a).monotone (right_le_veblenWith hf b o)
 
 theorem veblenWith_pos (hf : IsNormal f) (hp : 0 < f 0) (a b : Ordinal) : 0 < veblenWith f a b := by
   have H (b) : 0 < veblenWith f 0 b := by
@@ -139,38 +139,38 @@ theorem veblenWith_pos (hf : IsNormal f) (hp : 0 < f 0) (a b : Ordinal) : 0 < ve
   · rw [← veblenWith_veblenWith_of_lt hf h]
     exact H _
 
-theorem strictMono_veblenWith_zero (hf : IsNormal f) (hp : 0 < f 0) :
+theorem veblenWith_zero_strictMono (hf : IsNormal f) (hp : 0 < f 0) :
     StrictMono (veblenWith f · 0) := by
   intro a b h
   dsimp only
   rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_lt_veblenWith_right_iff hf]
   exact veblenWith_pos hf hp b 0
 
-theorem monotone_veblenWith_zero (hf : IsNormal f) (hp : 0 < f 0) :
+theorem veblenWith_zero_monotone (hf : IsNormal f) (hp : 0 < f 0) :
     Monotone (veblenWith f · 0) :=
-  (strictMono_veblenWith_zero hf hp).monotone
+  (veblenWith_zero_strictMono hf hp).monotone
 
 theorem veblenWith_zero_lt_iff (hf : IsNormal f) (hp : 0 < f 0) :
     veblenWith f a 0 < veblenWith f b 0 ↔ a < b :=
-  (strictMono_veblenWith_zero hf hp).lt_iff_lt
+  (veblenWith_zero_strictMono hf hp).lt_iff_lt
 
 theorem veblenWith_zero_le_iff (hf : IsNormal f) (hp : 0 < f 0) :
     veblenWith f a 0 ≤ veblenWith f b 0 ↔ a ≤ b :=
-  (strictMono_veblenWith_zero hf hp).le_iff_le
+  (veblenWith_zero_strictMono hf hp).le_iff_le
 
 theorem veblenWith_zero_inj (hf : IsNormal f) (hp : 0 < f 0) :
     veblenWith f a 0 = veblenWith f b 0 ↔ a = b :=
-  (strictMono_veblenWith_zero hf hp).injective.eq_iff
+  (veblenWith_zero_strictMono hf hp).injective.eq_iff
 
 theorem left_le_veblenWith (hf : IsNormal f) (hp : 0 < f 0) (a b : Ordinal) :
     a ≤ veblenWith f a b :=
-  (strictMono_veblenWith_zero hf hp).le_apply.trans <|
-    monotone_veblenWith_right hf _ (Ordinal.zero_le _)
+  (veblenWith_zero_strictMono hf hp).le_apply.trans <|
+    veblenWith_right_monotone hf _ (Ordinal.zero_le _)
 
 theorem isNormal_veblenWith_zero (hf : IsNormal f) (hp : 0 < f 0) :
     IsNormal (veblenWith f · 0) := by
   rw [isNormal_iff_strictMono_limit]
-  refine ⟨strictMono_veblenWith_zero hf hp, fun o ho a IH ↦ ?_⟩
+  refine ⟨veblenWith_zero_strictMono hf hp, fun o ho a IH ↦ ?_⟩
   rw [veblenWith_of_ne_zero f ho.pos.ne', derivFamily_zero]
   apply nfpFamily_le fun l ↦ ?_
   suffices ∃ b < o, List.foldr _ 0 l ≤ veblenWith f b 0 by
@@ -180,8 +180,8 @@ theorem isNormal_veblenWith_zero (hf : IsNormal f) (hp : 0 < f 0) :
   | nil => use 0; simp [ho.pos]
   | cons a l IH =>
     obtain ⟨b, hb, hb'⟩ := IH
-    refine ⟨_, ho.succ_lt (max_lt a.2 hb), (monotone_veblenWith_right hf _ <| hb'.trans <|
-      monotone_veblenWith_left hf _ <| (le_max_right a.1 b).trans (Order.le_succ _)).trans ?_⟩
+    refine ⟨_, ho.succ_lt (max_lt a.2 hb), (veblenWith_right_monotone hf _ <| hb'.trans <|
+      veblenWith_left_monotone hf _ <| (le_max_right a.1 b).trans (Order.le_succ _)).trans ?_⟩
     rw [veblenWith_veblenWith_of_lt hf]
     rw [Order.lt_succ_iff]
     exact le_max_left _ b
@@ -249,11 +249,11 @@ theorem veblen_veblen_of_lt (h : a < b) (c : Ordinal) : veblen a (veblen b c) = 
 theorem veblen_succ (o : Ordinal) : veblen (Order.succ o) = deriv (veblen o) :=
   veblenWith_succ isNormal_omega0_opow o
 
-theorem strictMono_veblen_right (o : Ordinal) : StrictMono (veblen o) :=
-  strictMono_veblenWith_right isNormal_omega0_opow o
+theorem veblen_right_strictMono (o : Ordinal) : StrictMono (veblen o) :=
+  veblenWith_right_strictMono isNormal_omega0_opow o
 
-theorem monotone_veblen_right (o : Ordinal) : Monotone (veblen o) :=
-  (strictMono_veblen_right o).monotone
+theorem veblen_right_monotone (o : Ordinal) : Monotone (veblen o) :=
+  (veblen_right_strictMono o).monotone
 
 @[simp]
 theorem veblen_lt_veblen_right_iff : veblen o a < veblen o b ↔ a < b :=
@@ -270,30 +270,30 @@ theorem veblen_inj : veblen o a = veblen o b ↔ a = b :=
 theorem right_le_veblen (a b : Ordinal) : b ≤ veblen a b :=
   right_le_veblenWith isNormal_omega0_opow a b
 
-theorem monotone_veblen_left (o : Ordinal) : Monotone fun a ↦ veblen a o :=
-  monotone_veblenWith_left isNormal_omega0_opow o
+theorem veblen_left_monotone (o : Ordinal) : Monotone fun a ↦ veblen a o :=
+  veblenWith_left_monotone isNormal_omega0_opow o
 
 @[simp]
 theorem veblen_pos (a b : Ordinal) : 0 < veblen a b :=
   veblenWith_pos isNormal_omega0_opow omega0_opow_zero_pos a b
 
-theorem strictMono_veblen_zero : StrictMono (veblen · 0) :=
-  strictMono_veblenWith_zero isNormal_omega0_opow omega0_opow_zero_pos
+theorem veblen_zero_strictMono : StrictMono (veblen · 0) :=
+  veblenWith_zero_strictMono isNormal_omega0_opow omega0_opow_zero_pos
 
-theorem monotone_veblen_zero : Monotone (veblen · 0) :=
-  strictMono_veblen_zero.monotone
+theorem veblen_zero_monotone : Monotone (veblen · 0) :=
+  veblen_zero_strictMono.monotone
 
 @[simp]
 theorem veblen_zero_lt_iff : veblen a 0 < veblen b 0 ↔ a < b :=
-  strictMono_veblen_zero.lt_iff_lt
+  veblen_zero_strictMono.lt_iff_lt
 
 @[simp]
 theorem veblen_zero_le_iff : veblen a 0 ≤ veblen b 0 ↔ a ≤ b :=
-  strictMono_veblen_zero.le_iff_le
+  veblen_zero_strictMono.le_iff_le
 
 @[simp]
 theorem veblen_zero_inj : veblen a 0 = veblen b 0 ↔ a = b :=
-  strictMono_veblen_zero.injective.eq_iff
+  veblen_zero_strictMono.injective.eq_iff
 
 theorem left_le_veblen (a b : Ordinal) : a ≤ veblen a b :=
   left_le_veblenWith isNormal_omega0_opow omega0_opow_zero_pos a b
@@ -366,7 +366,7 @@ theorem iterate_omega0_opow_lt_epsilon0' (n : ℕ) : (fun a ↦ ω ^ a)^[n] ω <
   simpa using iterate_omega0_opow_lt_epsilon0 (n + 2)
 
 theorem omega0_lt_epsilon (o : Ordinal) : ω < ε_ o :=
-  (iterate_omega0_opow_lt_epsilon0' 0).trans_le <| monotone_veblen_right _ (Ordinal.zero_le o)
+  (iterate_omega0_opow_lt_epsilon0' 0).trans_le <| veblen_right_monotone _ (Ordinal.zero_le o)
 
 theorem nat_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
   (nat_lt_omega0 n).trans <| omega0_lt_epsilon o
@@ -423,7 +423,7 @@ theorem gamma_succ_eq_nfp (o : Ordinal) :
 
 theorem gamma0_le_of_veblen_le (h : veblen o 0 ≤ o) : Γ₀ ≤ o := by
   rw [gamma0_eq_nfp]
-  exact nfp_le_fp (monotone_veblen_left 0) (Ordinal.zero_le o) h
+  exact nfp_le_fp (veblen_left_monotone 0) (Ordinal.zero_le o) h
 
 /-- `Γ₀` is the limit of `0`, `veblen 0 0`, `veblen (veblen 0 0) 0`, … -/
 theorem lt_gamma0 : o < Γ₀ ↔ ∃ n : ℕ, o < (fun a ↦ veblen a 0)^[n] 0 := by
@@ -434,7 +434,7 @@ theorem lt_gamma0' : o < Γ₀ ↔ ∃ n : ℕ, o < (fun a ↦ veblen a 0)^[n] �
   rw [lt_gamma0]
   constructor <;> rintro ⟨n, hn⟩
   · exact ⟨n, hn.trans_le <|
-      Monotone.iterate (fun a b h ↦ monotone_veblen_left 0 h) n (Ordinal.zero_le ε₀)⟩
+      Monotone.iterate (fun a b h ↦ veblen_left_monotone 0 h) n (Ordinal.zero_le ε₀)⟩
   · use n + 2
     simpa
 
