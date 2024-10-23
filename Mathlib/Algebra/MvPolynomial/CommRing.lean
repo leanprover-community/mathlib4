@@ -55,11 +55,11 @@ instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
 
 variable (σ a a')
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem C_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
   RingHom.map_sub _ _ _
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
   RingHom.map_neg _ _
 

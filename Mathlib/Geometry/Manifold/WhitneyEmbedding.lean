@@ -128,9 +128,9 @@ supports of bump functions, then for some `n` it can be embedded into the `n`-di
 Euclidean space. -/
 theorem exists_embedding_euclidean_of_compact [T2Space M] [CompactSpace M] :
     ∃ (n : ℕ) (e : M → EuclideanSpace ℝ (Fin n)),
-      Smooth I (𝓡 n) e ∧ ClosedEmbedding e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
+      Smooth I (𝓡 n) e ∧ IsClosedEmbedding e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
   rcases SmoothBumpCovering.exists_isSubordinate I isClosed_univ fun (x : M) _ => univ_mem with
     ⟨ι, f, -⟩
   haveI := f.fintype
   rcases f.exists_immersion_euclidean with ⟨n, e, hsmooth, hinj, hinj_mfderiv⟩
-  exact ⟨n, e, hsmooth, hsmooth.continuous.closedEmbedding hinj, hinj_mfderiv⟩
+  exact ⟨n, e, hsmooth, hsmooth.continuous.isClosedEmbedding hinj, hinj_mfderiv⟩

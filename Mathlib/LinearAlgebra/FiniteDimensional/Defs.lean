@@ -488,7 +488,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 theorem surjective_of_injective [FiniteDimensional K V] {f : V →ₗ[K] V} (hinj : Injective f) :
     Surjective f := by
   have h := rank_range_of_injective _ hinj
-  rw [← finrank_eq_rank, ← finrank_eq_rank, natCast_inj] at h
+  rw [← finrank_eq_rank, ← finrank_eq_rank, Nat.cast_inj] at h
   exact range_eq_top.1 (eq_top_of_finrank_eq h)
 
 /-- The image under an onto linear map of a finite-dimensional space is also finite-dimensional. -/
