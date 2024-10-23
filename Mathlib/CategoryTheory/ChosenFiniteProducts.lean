@@ -503,7 +503,7 @@ def Functor.toOplaxMonoidalFunctorOfChosenFiniteProducts : OplaxMonoidalFunctor 
   associativity X Y Z := by
     apply hom_ext
     case' h_snd => apply hom_ext
-    all_goals simp [← Functor.map_comp]      
+    all_goals simp [← Functor.map_comp]
   left_unitality X := by
     apply hom_ext
     · exact toUnit_unique _ _
