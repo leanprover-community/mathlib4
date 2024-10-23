@@ -5,8 +5,11 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.RingTheory.SimpleRing.Defs
+import Mathlib.RingTheory.TwoSidedIdeal.Operations
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Algebra.Ring.ULift
+import Mathlib.Data.ZMod.Defs
 
 /-! # Basic Properties of Simple rings
 
@@ -24,7 +27,7 @@ variable (R : Type*) [NonUnitalNonAssocRing R]
 
 namespace IsSimpleRing
 
-variable {R}
+variable {R S}
 
 instance [IsSimpleRing R] : IsSimpleOrder (TwoSidedIdeal R) := IsSimpleRing.simple
 
@@ -78,6 +81,41 @@ lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.ce
       _ = y * ((a * x) * y) := by rw [mul_assoc]
       _ = y * (a * (x * y)) := by rw [mul_assoc a x y]
       _ = y * a := by rw [hy, mul_one]
+
+lemma injective_ringHom_or_subsingleton_codomain
+    {R S : Type*} [NonAssocRing R] [IsSimpleRing R] [NonAssocRing S]
+    (f : R →+* S) : Function.Injective f ∨ Subsingleton S :=
+  simple.eq_bot_or_eq_top (TwoSidedIdeal.ker f) |>.recOn
+    (fun h => Or.inl <| TwoSidedIdeal.ker_eq_bot _ |>.1 h)
+    (fun h => Or.inr <| subsingleton_iff_zero_eq_one.1 <| by
+      have mem : 1 ∈ TwoSidedIdeal.ker f := h.symm ▸ ⟨⟩
+      rwa [TwoSidedIdeal.mem_ker, map_one, eq_comm] at mem)
+
+lemma injective_ringHom
+    {R S : Type*} [NonAssocRing R] [IsSimpleRing R] [NonAssocRing S] [Nontrivial S]
+    (f : R →+* S) : Function.Injective f :=
+  injective_ringHom_or_subsingleton_codomain f |>.resolve_right fun r => not_subsingleton _ r
+
+universe u in
+lemma iff_injective_ringHom_or_subsingleton_codomain (R : Type u) [NonAssocRing R] [Nontrivial R] :
+    IsSimpleRing R ↔
+    ∀ {S : Type u} [NonAssocRing S] (f : R →+* S), Function.Injective f ∨ Subsingleton S :=
+  ⟨fun h _ _ => injective_ringHom_or_subsingleton_codomain, fun H => of_eq_bot_or_eq_top fun I => by
+    obtain H|H := H I.ringCon.mk'
+    · left
+      exact le_antisymm (fun x hx => TwoSidedIdeal.mem_bot _ |>.2 <| H <| Quotient.sound' <|
+        TwoSidedIdeal.rel_iff _ _ _ |>.2 <| by simpa) bot_le
+    · right
+      refine le_antisymm le_top fun x _ => by
+        simpa using TwoSidedIdeal.rel_iff _ _ _ |>.1 <| Quotient.eq'.1 (H.elim (I.ringCon.mk' x) 0)⟩
+
+universe u in
+lemma iff_injective_ringHom (R : Type u) [NonAssocRing R] [Nontrivial R] :
+    IsSimpleRing R ↔
+    ∀ {S : Type u} [NonAssocRing S] [Nontrivial S] (f : R →+* S), Function.Injective f :=
+  iff_injective_ringHom_or_subsingleton_codomain R |>.trans <|
+    ⟨fun H _ _ _ f => H f |>.resolve_right (by simpa [not_subsingleton_iff_nontrivial]),
+      fun H S _ f => subsingleton_or_nontrivial S |>.recOn Or.inr fun _ => Or.inl <| H f⟩
 
 end IsSimpleRing
 
