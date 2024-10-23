@@ -34,11 +34,7 @@ theorem stdBasisMatrix_eq_of_single_single (i : m) (j : n) (a : α) :
     stdBasisMatrix i j a = Matrix.of (Pi.single i (Pi.single j a)) := by
   ext a b
   unfold stdBasisMatrix
-  by_cases hi : i = a <;> by_cases hj : j = b
-  · simp [hi, hj]
-  · simp [hi, hj]
-  · simp [hi, hj, Ne.symm hi]
-  · simp [hi, hj, Ne.symm hj, Ne.symm hi]
+  by_cases hi : i = a <;> by_cases hj : j = b <;> simp [*]
 
 @[simp]
 theorem smul_stdBasisMatrix [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :
