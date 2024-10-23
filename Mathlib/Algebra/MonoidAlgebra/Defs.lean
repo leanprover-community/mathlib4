@@ -86,7 +86,7 @@ instance MonoidAlgebra.instIsCancelAdd [IsCancelAdd k] : IsCancelAdd (MonoidAlge
   inferInstanceAs (IsCancelAdd (G →₀ k))
 
 instance MonoidAlgebra.coeFun : CoeFun (MonoidAlgebra k G) fun _ => G → k :=
-  Finsupp.instCoeFun
+  inferInstanceAs (CoeFun (G →₀ k) _)
 
 end
 
@@ -397,14 +397,10 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
       calc
         (f * g) x = ∑ a₁ ∈ f.support, ∑ a₂ ∈ g.support, F (a₁, a₂) := mul_apply f g x
         _ = ∑ p ∈ f.support ×ˢ g.support, F p := by rw [Finset.sum_product]
-        _ = ∑ p ∈ (f.support ×ˢ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
+        _ = ∑ p ∈ f.support ×ˢ g.support with p.1 * p.2 = x, f p.1 * g p.2 :=
           (Finset.sum_filter _ _).symm
-        _ = ∑ p ∈ s.filter fun p : G × G => p.1 ∈ f.support ∧ p.2 ∈ g.support, f p.1 * g p.2 :=
-          (sum_congr
-            (by
-              ext
-              simp only [mem_filter, mem_product, hs, and_comm])
-            fun _ _ => rfl)
+        _ = ∑ p ∈ s with p.1 ∈ f.support ∧ p.2 ∈ g.support, f p.1 * g p.2 := by
+          congr! 1; ext; simp only [mem_filter, mem_product, hs, and_comm]
         _ = ∑ p ∈ s, f p.1 * g p.2 :=
           sum_subset (filter_subset _ _) fun p hps hp => by
             simp only [mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
@@ -477,9 +473,13 @@ def of [MulOneClass G] : G →* MonoidAlgebra k G :=
 
 end
 
+/-- Copy of `Finsupp.smul_single'` that avoids the `MonoidAlgebra = Finsupp` defeq abuse. -/
+@[simp]
+theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
+  Finsupp.smul_single' c a b
+
 theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r := by
-  -- porting note (#10745): was `simp`.
-  rw [of_apply, smul_single', mul_one]
+  simp
 
 theorem of_injective [MulOneClass G] [Nontrivial k] :
     Function.Injective (of k G) := fun a b h => by
@@ -629,7 +629,6 @@ def singleOneRingHom [Semiring k] [MulOneClass G] : k →+* MonoidAlgebra k G :=
   { Finsupp.singleAddHom 1 with
     map_one' := rfl
     map_mul' := fun x y => by
-      -- Porting note (#10691): Was `rw`.
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, singleAddHom_apply,
         single_mul_single, mul_one] }
 
@@ -671,8 +670,7 @@ theorem induction_on [Semiring k] [Monoid G] {p : MonoidAlgebra k G → Prop} (f
   refine Finsupp.induction_linear f ?_ (fun f g hf hg => hadd f g hf hg) fun g r => ?_
   · simpa using hsmul 0 (of k G 1) (hM 1)
   · convert hsmul r (of k G g) (hM g)
-    -- Porting note: Was `simp only`.
-    rw [of_apply, smul_single', mul_one]
+    simp
 
 section
 
@@ -821,7 +819,7 @@ instance instIsCancelAdd [IsCancelAdd k] : IsCancelAdd (AddMonoidAlgebra k G) :=
   inferInstanceAs (IsCancelAdd (G →₀ k))
 
 instance coeFun : CoeFun k[G] fun _ => G → k :=
-  Finsupp.instCoeFun
+  inferInstanceAs (CoeFun (G →₀ k) _)
 
 end AddMonoidAlgebra
 
@@ -1223,6 +1221,11 @@ def singleHom [AddZeroClass G] : k × Multiplicative G →* k[G] where
   map_one' := rfl
   map_mul' _a _b := single_mul_single.symm
 
+/-- Copy of `Finsupp.smul_single'` that avoids the `AddMonoidAlgebra = Finsupp` defeq abuse. -/
+@[simp]
+theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
+  Finsupp.smul_single' c a b
+
 theorem mul_single_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
     (H : ∀ a, a + x = z ↔ a = y) : (f * single x r) z = f y * r :=
   @MonoidAlgebra.mul_single_apply_aux k (Multiplicative G) _ _ _ _ _ _ _ H
@@ -1267,8 +1270,7 @@ theorem induction_on [AddMonoid G] {p : k[G] → Prop} (f : k[G])
   refine Finsupp.induction_linear f ?_ (fun f g hf hg => hadd f g hf hg) fun g r => ?_
   · simpa using hsmul 0 (of k G (Multiplicative.ofAdd 0)) (hM 0)
   · convert hsmul r (of k G (Multiplicative.ofAdd g)) (hM g)
-    -- Porting note: Was `simp only`.
-    rw [of_apply, toAdd_ofAdd, smul_single', mul_one]
+    simp
 
 /-- If `f : G → H` is an additive homomorphism between two additive monoids, then
 `Finsupp.mapDomain f` is a ring homomorphism between their add monoid algebras. -/
@@ -1360,7 +1362,6 @@ section Algebra
 def singleZeroRingHom [Semiring k] [AddMonoid G] : k →+* k[G] :=
   { Finsupp.singleAddHom 0 with
     map_one' := rfl
-    -- Porting note (#10691): Was `rw`.
     map_mul' := fun x y => by simp only [singleAddHom, single_mul_single, zero_add] }
 
 /-- If two ring homomorphisms from `k[G]` are equal on all `single a 1`

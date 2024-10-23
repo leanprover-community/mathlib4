@@ -78,8 +78,8 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   -- Assume first t < s - min s, and take k as the colex witness for this
   have hjk : j ≤ k := min'_le _ _ (mem_compl.2 ‹k ∉ t›)
   have : j ∉ t := mem_compl.1 (min'_mem _ _)
-  have hcard : card s = card (insert j t) := by
-    rw [card_insert_of_not_mem ‹j ∉ t›, ← ‹_ = card t›, card_erase_add_one (min'_mem _ _)]
+  have hcard : #s = #(insert j t) := by
+    rw [card_insert_of_not_mem ‹j ∉ t›, ← ‹_ = #t›, card_erase_add_one (min'_mem _ _)]
   refine ⟨j, ‹_›, hcard, ?_⟩
   -- Cases on j < k or j = k
   obtain hjk | r₁ := hjk.lt_or_eq
@@ -119,7 +119,7 @@ protected lemma IsInitSeg.shadow [Finite α] (h₁ : IsInitSeg 𝒜 r) : IsInitS
 end Colex
 
 open Finset Colex Nat UV
-open scoped BigOperators FinsetFamily
+open scoped FinsetFamily
 
 variable {α : Type*} [LinearOrder α] {s U V : Finset α} {n : ℕ}
 
@@ -139,7 +139,7 @@ lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' 
 
 /-- These are the compressions which we will apply to decrease the "measure" of a family of sets.-/
 private def UsefulCompression (U V : Finset α) : Prop :=
-  Disjoint U V ∧ U.card = V.card ∧ ∃ (HU : U.Nonempty) (HV : V.Nonempty), max' U HU < max' V HV
+  Disjoint U V ∧ #U = #V ∧ ∃ (HU : U.Nonempty) (HV : V.Nonempty), max' U HU < max' V HV
 
 private instance UsefulCompression.instDecidableRel : @DecidableRel (Finset α) UsefulCompression :=
   fun _ _ ↦ inferInstanceAs (Decidable (_ ∧ _))
@@ -148,8 +148,8 @@ private instance UsefulCompression.instDecidableRel : @DecidableRel (Finset α) 
 shadow. In particular, 'good' means it's useful, and every smaller compression won't make a
 difference. -/
 private lemma compression_improved (𝒜 : Finset (Finset α)) (h₁ : UsefulCompression U V)
-    (h₂ : ∀ ⦃U₁ V₁⦄, UsefulCompression U₁ V₁ → U₁.card < U.card → IsCompressed U₁ V₁ 𝒜) :
-    (∂ (𝓒 U V 𝒜)).card ≤ (∂ 𝒜).card := by
+    (h₂ : ∀ ⦃U₁ V₁⦄, UsefulCompression U₁ V₁ → #U₁ < #U → IsCompressed U₁ V₁ 𝒜) :
+    #(∂ (𝓒 U V 𝒜)) ≤ #(∂ 𝒜) := by
   obtain ⟨UVd, same_size, hU, hV, max_lt⟩ := h₁
   refine card_shadow_compression_le _ _ fun x Hx ↦ ⟨min' V hV, min'_mem _ _, ?_⟩
   obtain hU' | hU' := eq_or_lt_of_le (succ_le_iff.2 hU.card_pos)
@@ -174,7 +174,7 @@ lemma isInitSeg_of_compressed {ℬ : Finset (Finset α)} {r : ℕ} (h₁ : (ℬ 
   rintro A B hA ⟨hBA, sizeA⟩
   by_contra hB
   have hAB : A ≠ B := ne_of_mem_of_not_mem hA hB
-  have hAB' : A.card = B.card := (h₁ hA).trans sizeA.symm
+  have hAB' : #A = #B := (h₁ hA).trans sizeA.symm
   have hU : (A \ B).Nonempty := sdiff_nonempty.2 fun h ↦ hAB <| eq_of_subset_of_card_le h hAB'.ge
   have hV : (B \ A).Nonempty :=
     sdiff_nonempty.2 fun h ↦ hAB.symm <| eq_of_subset_of_card_le h hAB'.le
@@ -203,14 +203,14 @@ private lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} 
     {hV : V.Nonempty} (h : max' U hU < max' V hV) {𝒜 : Finset (Finset (Fin n))} (a : 𝓒 U V 𝒜 ≠ 𝒜) :
     familyMeasure (𝓒 U V 𝒜) < familyMeasure 𝒜 := by
   rw [compression] at a ⊢
-  have q : ∀ Q ∈ 𝒜.filter fun A ↦ compress U V A ∉ 𝒜, compress U V Q ≠ Q := by
+  have q : ∀ Q ∈ {A ∈ 𝒜 | compress U V A ∉ 𝒜}, compress U V Q ≠ Q := by
     simp_rw [mem_filter]
     intro Q hQ h
     rw [h] at hQ
     exact hQ.2 hQ.1
-  have uA : (𝒜.filter fun A => compress U V A ∈ 𝒜) ∪ 𝒜.filter (fun A ↦ compress U V A ∉ 𝒜) = 𝒜 :=
+  have uA : {A ∈ 𝒜 | compress U V A ∈ 𝒜} ∪ {A ∈ 𝒜 | compress U V A ∉ 𝒜} = 𝒜 :=
     filter_union_filter_neg_eq _ _
-  have ne₂ : (𝒜.filter fun A ↦ compress U V A ∉ 𝒜).Nonempty := by
+  have ne₂ : {A ∈ 𝒜 | compress U V A ∉ 𝒜}.Nonempty := by
     refine nonempty_iff_ne_empty.2 fun z ↦ a ?_
     rw [filter_image, z, image_empty, union_empty]
     rwa [z, union_empty] at uA
@@ -229,12 +229,12 @@ we can't any more, which gives a set family which is fully compressed and has th
 want. -/
 private lemma kruskal_katona_helper {r : ℕ} (𝒜 : Finset (Finset (Fin n)))
     (h : (𝒜 : Set (Finset (Fin n))).Sized r) :
-    ∃ ℬ : Finset (Finset (Fin n)), (∂ ℬ).card ≤ (∂ 𝒜).card ∧ 𝒜.card = ℬ.card ∧
+    ∃ ℬ : Finset (Finset (Fin n)), #(∂ ℬ) ≤ #(∂ 𝒜) ∧ #𝒜 = #ℬ ∧
       (ℬ : Set (Finset (Fin n))).Sized r ∧ ∀ U V, UsefulCompression U V → IsCompressed U V ℬ := by
   classical
   -- Are there any compressions we can make now?
   set usable : Finset (Finset (Fin n) × Finset (Fin n)) :=
-    univ.filter fun t ↦ UsefulCompression t.1 t.2 ∧ ¬ IsCompressed t.1 t.2 𝒜
+    {t | UsefulCompression t.1 t.2 ∧ ¬ IsCompressed t.1 t.2 𝒜}
   obtain husable | husable := usable.eq_empty_or_nonempty
   -- No. Then where we are is the required set family.
   · refine ⟨𝒜, le_rfl, rfl, h, fun U V hUV ↦ ?_⟩
@@ -242,13 +242,13 @@ private lemma kruskal_katona_helper {r : ℕ} (𝒜 : Finset (Finset (Fin n)))
     by_contra h
     exact husable ⟨U, V⟩ <| mem_filter.2 ⟨mem_univ _, hUV, h⟩
   -- Yes. Then apply the smallest compression, then keep going
-  obtain ⟨⟨U, V⟩, hUV, t⟩ := exists_min_image usable (fun t ↦ t.1.card) husable
+  obtain ⟨⟨U, V⟩, hUV, t⟩ := exists_min_image usable (fun t ↦ #t.1) husable
   rw [mem_filter] at hUV
-  have h₂ : ∀ U₁ V₁, UsefulCompression U₁ V₁ → U₁.card < U.card → IsCompressed U₁ V₁ 𝒜 := by
+  have h₂ : ∀ U₁ V₁, UsefulCompression U₁ V₁ → #U₁ < #U → IsCompressed U₁ V₁ 𝒜 := by
     rintro U₁ V₁ huseful hUcard
     by_contra h
     exact hUcard.not_le <| t ⟨U₁, V₁⟩ <| mem_filter.2 ⟨mem_univ _, huseful, h⟩
-  have p1 : (∂ (𝓒 U V 𝒜)).card ≤ (∂ 𝒜).card := compression_improved _ hUV.2.1 h₂
+  have p1 : #(∂ (𝓒 U V 𝒜)) ≤ #(∂ 𝒜) := compression_improved _ hUV.2.1 h₂
   obtain ⟨-, hUV', hu, hv, hmax⟩ := hUV.2.1
   have := familyMeasure_compression_lt_familyMeasure hmax hUV.2.2
   obtain ⟨t, q1, q2, q3, q4⟩ := UV.kruskal_katona_helper (𝓒 U V 𝒜) (h.uvCompression hUV')
@@ -266,8 +266,8 @@ variable {r k i : ℕ} {𝒜 𝒞 : Finset <| Finset <| Fin n}
 Given a set family `𝒜` consisting of `r`-sets, and `𝒞` an initial segment of the colex order of the
 same size, the shadow of `𝒞` is smaller than the shadow of `𝒜`. In particular, this gives that the
 minimum shadow size is achieved by initial segments of colex. -/
-theorem kruskal_katona (h𝒜r : (𝒜 : Set (Finset (Fin n))).Sized r) (h𝒞𝒜 : 𝒞.card ≤ 𝒜.card)
-    (h𝒞 : IsInitSeg 𝒞 r) : (∂ 𝒞).card ≤ (∂ 𝒜).card := by
+theorem kruskal_katona (h𝒜r : (𝒜 : Set (Finset (Fin n))).Sized r) (h𝒞𝒜 : #𝒞 ≤ #𝒜)
+    (h𝒞 : IsInitSeg 𝒞 r) : #(∂ 𝒞) ≤ #(∂ 𝒜) := by
   -- WLOG `|𝒜| = |𝒞|`
   obtain ⟨𝒜', h𝒜, h𝒜𝒞⟩ := exists_subset_card_eq h𝒞𝒜
   -- By `kruskal_katona_helper`, we find a fully compressed family `ℬ` of the same size as `𝒜`
@@ -276,15 +276,15 @@ theorem kruskal_katona (h𝒜r : (𝒜 : Set (Finset (Fin n))).Sized r) (h𝒞�
   -- This means that `ℬ` is an initial segment of the same size as `𝒞`. Hence they are equal and
   -- we are done.
   suffices ℬ = 𝒞 by subst 𝒞; exact hℬ𝒜.trans (by gcongr)
-  have hcard : card ℬ = card 𝒞 := h𝒜ℬ.symm.trans h𝒜𝒞
+  have hcard : #ℬ = #𝒞 := h𝒜ℬ.symm.trans h𝒜𝒞
   obtain h𝒞ℬ | hℬ𝒞 := h𝒞.total (UV.isInitSeg_of_compressed hℬr hℬ)
   · exact (eq_of_subset_of_card_le h𝒞ℬ hcard.le).symm
   · exact eq_of_subset_of_card_le hℬ𝒞 hcard.ge
 
 /-- An iterated form of the Kruskal-Katona theorem. In particular, the minimum possible iterated
 shadow size is attained by initial segments. -/
-theorem iterated_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : 𝒞.card ≤ 𝒜.card)
-    (h₃ : IsInitSeg 𝒞 r) : (∂^[k] 𝒞).card ≤ (∂^[k] 𝒜).card := by
+theorem iterated_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : #𝒞 ≤ #𝒜) (h₃ : IsInitSeg 𝒞 r) :
+    #(∂^[k] 𝒞) ≤ #(∂^[k] 𝒜) := by
   induction' k with _k ih generalizing r 𝒜 𝒞
   · simpa
   · refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_

@@ -1975,6 +1975,13 @@ theorem quasiMeasurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
 
 end MeasurableEquiv
 
+namespace MeasureTheory.Measure
+variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+
+lemma comap_swap (μ : Measure (α × β)) : μ.comap Prod.swap = μ.map Prod.swap :=
+  (MeasurableEquiv.prodComm ..).comap_symm
+
+end MeasureTheory.Measure
 end
 
 set_option linter.style.longFile 2000

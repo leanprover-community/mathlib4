@@ -120,9 +120,7 @@ theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M} {x : ↥(p ⊔ p')} :
     (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) = 0 ↔ (x : M) ∈ p' :=
-  (LinearEquiv.symm_apply_eq _).trans <| by
-    -- porting note (#10745): was `simp`.
-    rw [_root_.map_zero, Quotient.mk_eq_zero, mem_comap, Submodule.coe_subtype]
+  (LinearEquiv.symm_apply_eq _).trans <| by simp
 
 theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x : ↥(p ⊔ p')}
     (hx : (x : M) ∈ p') : (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x)

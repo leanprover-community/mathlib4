@@ -107,8 +107,7 @@ theorem toSubalgebra_le_iff {S₁ S₂ : StarSubalgebra R A} :
 equalities. -/
 protected def copy (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : StarSubalgebra R A where
   toSubalgebra := Subalgebra.copy S.toSubalgebra s hs
-  star_mem' := @fun a ha => hs ▸ (S.star_mem' (by simpa [hs] using ha) : star a ∈ (S : Set A))
-  -- Porting note: the old proof kept crashing Lean
+  star_mem' {a} ha := hs ▸ S.star_mem' (by simpa [hs] using ha)
 
 @[simp]
 theorem coe_copy (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : (S.copy s hs : Set A) = s :=
@@ -700,10 +699,9 @@ theorem ext_adjoin_singleton {a : A} [FunLike F (adjoin R ({a} : Set A)) B]
 variable [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B] (f g : F)
 
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
-def equalizer : StarSubalgebra R A :=
-  { toSubalgebra := AlgHom.equalizer (f : A →ₐ[R] B) g
-    star_mem' := @fun a (ha : f a = g a) => by simpa only [← map_star] using congrArg star ha }
--- Porting note: much like `StarSubalgebra.copy` the old proof was broken and hard to fix
+def equalizer : StarSubalgebra R A where
+  toSubalgebra := AlgHom.equalizer (f : A →ₐ[R] B) g
+  star_mem' {a} (ha : f a = g a) := by simpa only [← map_star] using congrArg star ha
 
 @[simp]
 theorem mem_equalizer (x : A) : x ∈ StarAlgHom.equalizer f g ↔ f x = g x :=

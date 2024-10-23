@@ -233,6 +233,12 @@ theorem aleph'_nat : ∀ n : ℕ, aleph' n = n
   | 0 => aleph'_zero
   | n + 1 => show aleph' (succ n) = n.succ by rw [aleph'_succ, aleph'_nat n, nat_succ]
 
+set_option linter.docPrime false in
+@[simp]
+theorem lift_aleph' (o : Ordinal.{u}) : lift.{v} (aleph' o) = aleph' (Ordinal.lift.{v} o) :=
+  ((InitialSeg.ofIso aleph'.toRelIsoLT).trans liftInitialSeg).eq
+    (Ordinal.liftInitialSeg.trans (InitialSeg.ofIso aleph'.toRelIsoLT)) o
+
 theorem aleph'_le_of_limit {o : Ordinal} (l : o.IsLimit) {c} :
     aleph' o ≤ c ↔ ∀ o' < o, aleph' o' ≤ c :=
   ⟨fun h o' h' => (aleph'_le.2 <| h'.le).trans h, fun h => by
@@ -249,7 +255,7 @@ theorem aleph'_limit {o : Ordinal} (ho : o.IsLimit) : aleph' o = ⨆ a : Iio o, 
 @[simp]
 theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
   eq_of_forall_ge_iff fun c => by
-    simp only [aleph'_le_of_limit omega0_isLimit, lt_omega0, exists_imp, aleph0_le]
+    simp only [aleph'_le_of_limit isLimit_omega0, lt_omega0, exists_imp, aleph0_le]
     exact forall_swap.trans (forall_congr' fun n => by simp only [forall_eq, aleph'_nat])
 
 @[deprecated (since := "2024-09-30")]
@@ -297,6 +303,10 @@ theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) := by
 @[simp]
 theorem aleph_zero : ℵ_ 0 = ℵ₀ := by rw [aleph_eq_aleph', add_zero, aleph'_omega0]
 
+@[simp]
+theorem lift_aleph (o : Ordinal.{u}) : lift.{v} (aleph o) = aleph (Ordinal.lift.{v} o) := by
+  simp [aleph_eq_aleph']
+
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
   apply le_antisymm _ (ciSup_le' _)
   · rw [aleph_eq_aleph', aleph'_limit (ho.add _)]
@@ -311,13 +321,13 @@ theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ
 
 theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by rw [← aleph'_omega0, aleph'_le]
 
-theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ aleph o := by
+theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
   rw [aleph_eq_aleph', aleph0_le_aleph']
   apply Ordinal.le_add_right
 
 theorem aleph'_pos {o : Ordinal} (ho : 0 < o) : 0 < aleph' o := by rwa [← aleph'_zero, aleph'_lt]
 
-theorem aleph_pos (o : Ordinal) : 0 < aleph o :=
+theorem aleph_pos (o : Ordinal) : 0 < ℵ_ o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)
 
 @[simp]
@@ -333,12 +343,12 @@ instance nonempty_toType_aleph (o : Ordinal) : Nonempty (ℵ_ o).ord.toType := b
   exact fun h => (ord_injective h).not_gt (aleph_pos o)
 
 theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
-  ord_isLimit <| aleph0_le_aleph _
+  isLimit_ord <| aleph0_le_aleph _
 
 instance (o : Ordinal) : NoMaxOrder (ℵ_ o).ord.toType :=
   toType_noMax_of_succ_lt (ord_aleph_isLimit o).2
 
-theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = aleph o :=
+theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = ℵ_ o :=
   ⟨fun h =>
     ⟨aleph'.symm c - ω, by
       rw [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le, aleph'.apply_symm_apply]
@@ -360,6 +370,30 @@ theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by
 
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
+
+@[simp]
+theorem aleph1_le_lift {c : Cardinal.{u}} : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
+  simpa using lift_le (a := ℵ₁)
+
+@[simp]
+theorem lift_le_aleph1 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
+  simpa using lift_le (b := ℵ₁)
+
+@[simp]
+theorem aleph1_lt_lift {c : Cardinal.{u}} : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
+  simpa using lift_lt (a := ℵ₁)
+
+@[simp]
+theorem lift_lt_aleph1 {c : Cardinal.{u}} : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
+  simpa using lift_lt (b := ℵ₁)
+
+@[simp]
+theorem aleph1_eq_lift {c : Cardinal.{u}} : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
+  simpa using lift_inj (a := ℵ₁)
+
+@[simp]
+theorem lift_eq_aleph1 {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
+  simpa using lift_inj (b := ℵ₁)
 
 section deprecated
 

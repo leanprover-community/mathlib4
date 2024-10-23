@@ -528,6 +528,14 @@ theorem lift_injective_iff :
     Injective (lift hg : S → P) ↔ ∀ x y, algebraMap R S x = algebraMap R S y ↔ g x = g y :=
   (toLocalizationMap M S).lift_injective_iff hg
 
+variable (M) in
+include M in
+lemma injective_iff_map_algebraMap_eq {T} [CommRing T] (f : S →+* T) :
+    Function.Injective f ↔ ∀ x y,
+      algebraMap R S x = algebraMap R S y ↔ f (algebraMap R S x) = f (algebraMap R S y) := by
+  rw [← IsLocalization.lift_of_comp (M := M) f, IsLocalization.lift_injective_iff]
+  simp
+
 section Map
 
 variable {T : Submonoid P} {Q : Type*} [CommSemiring Q]
@@ -827,6 +835,16 @@ end Localization
 namespace IsLocalization
 
 variable {K : Type*} [IsLocalization M S]
+
+include M in
+lemma injective_of_map_algebraMap_zero {T} [CommRing T] (f : S →+* T)
+    (h : ∀ x, f (algebraMap R S x) = 0 → algebraMap R S x = 0) :
+    Function.Injective f := by
+  rw [IsLocalization.injective_iff_map_algebraMap_eq M]
+  refine fun x y ↦ ⟨fun hz ↦ hz ▸ rfl, fun hz ↦ ?_⟩
+  rw [← sub_eq_zero, ← map_sub, ← map_sub] at hz
+  apply h at hz
+  rwa [map_sub, sub_eq_zero] at hz
 
 theorem to_map_eq_zero_iff {x : R} (hM : M ≤ nonZeroDivisors R) : algebraMap R S x = 0 ↔ x = 0 := by
   rw [← (algebraMap R S).map_zero]

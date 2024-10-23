@@ -722,7 +722,7 @@ abbrev lift (W : C) (k : ∀ a, W ⟶ I.left a)
     (h : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) : W ⟶ multiequalizer I :=
   limit.lift _ (Multifork.ofι I _ k h)
 
-@[reassoc] -- Porting note (#10618): simp can prove this, removed attribute
+@[reassoc]
 theorem lift_ι (W : C) (k : ∀ a, W ⟶ I.left a)
     (h : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) (a) :
     Multiequalizer.lift I _ k h ≫ Multiequalizer.ι I a = k _ :=
@@ -792,7 +792,7 @@ abbrev desc (W : C) (k : ∀ b, I.right b ⟶ W)
     (h : ∀ a, I.fst a ≫ k (I.fstFrom a) = I.snd a ≫ k (I.sndFrom a)) : multicoequalizer I ⟶ W :=
   colimit.desc _ (Multicofork.ofπ I _ k h)
 
-@[reassoc] -- Porting note (#10618): simp can prove this, removed attribute
+@[reassoc]
 theorem π_desc (W : C) (k : ∀ b, I.right b ⟶ W)
     (h : ∀ a, I.fst a ≫ k (I.fstFrom a) = I.snd a ≫ k (I.sndFrom a)) (b) :
     Multicoequalizer.π I b ≫ Multicoequalizer.desc I _ k h = k _ :=
