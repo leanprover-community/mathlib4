@@ -491,7 +491,7 @@ theorem ofHom_apply {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x 
 /-- A variant of `ofHom_apply` that makes `simpNF` happy -/
 @[simp]
 theorem ofHom_apply' {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
-  DFunLike.coe (α := R) (β := fun _ ↦ S) (ofHom f) x = f x := rfl
+    DFunLike.coe (α := R) (β := fun _ ↦ S) (ofHom f) x = f x := rfl
 
 
 instance : Inhabited CommRingCat :=
