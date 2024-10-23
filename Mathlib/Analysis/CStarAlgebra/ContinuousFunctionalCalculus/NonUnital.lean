@@ -272,6 +272,11 @@ lemma cfcₙ_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     · rwa [cfcₙ_apply_of_not_map_zero _ h]
     · rwa [cfcₙ_apply_of_not_predicate _ h]
 
+lemma cfcₙ_commute_cfcₙ (f g : R → R) (a : A) : Commute (cfcₙ f a) (cfcₙ g a) := by
+  refine cfcₙ_cases (fun x ↦ Commute x (cfcₙ g a)) a f (by simp) fun hf hf0 ha ↦ ?_
+  refine cfcₙ_cases (fun x ↦ Commute _ x) a g (by simp) fun hg hg0 _ ↦ ?_
+  exact Commute.all _ _ |>.map _
+
 variable (R) in
 include ha in
 lemma cfcₙ_id : cfcₙ (id : R → R) a = a :=
