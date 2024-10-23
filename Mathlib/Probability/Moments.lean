@@ -631,7 +631,7 @@ theorem cum_deriv_one [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
   rw [r0]
   apply HasDerivAt.log
     (tilt_first_deriv _ _ _ _ hX h (integrable_deriv_expt t a b X hX h))
-    (Ne.symm (ne_of_lt (mgf_pos' (Ne.symm (NeZero.ne' μ)) (integrable_expt_bound hX h))))
+    (mgf_pos' (NeZero.ne μ) (integrable_expt_bound hX h)).ne'
 
 /-- Second derivative of cumulant `cgf X μ f`-/
 theorem cum_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
@@ -661,7 +661,7 @@ theorem cum_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
   ((μ[fun ω ↦ rexp (t * X ω)]) * (μ[fun ω ↦ rexp (t * X ω)])) := by
     apply Eq.symm (mul_div_mul_right (∫ ω, rexp (t * X ω) * X ω ^ 2 ∂μ)
     (μ[fun ω ↦ rexp (t * X ω)]) _)
-    exact Ne.symm (ne_of_lt (mgf_pos' (Ne.symm (NeZero.ne' μ)) (integrable_expt_bound hX h)))
+    exact (mgf_pos' (NeZero.ne μ) (integrable_expt_bound hX h)).ne'
   rw [p, Eq.symm (pow_two (∫ ω, rexp (t * X ω) ∂μ))]
   have p'' : (((μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]) *
     (μ[fun ω ↦ rexp (t * X ω)])) / (μ[fun ω ↦ rexp (t * X ω)]) ^ 2 -
@@ -699,7 +699,7 @@ theorem cum_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
       exact r0
   · apply (tilt_first_deriv _ _ _ _ hX h)
           (integrable_deriv_expt t a b X hX h)
-  · exact Ne.symm (ne_of_lt (mgf_pos' (Ne.symm (NeZero.ne' μ)) (integrable_expt_bound hX h)))
+  · exact (mgf_pos' (NeZero.ne μ) (integrable_expt_bound hX h)).ne'
 
 end GeneratingFunctionDerivatives
 
