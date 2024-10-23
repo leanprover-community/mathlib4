@@ -8,6 +8,8 @@ import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Topology.ContinuousMap.Units
+import Mathlib.Analysis.Matrix
+import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
 # Continuous Functional Calculus for Hermitian Matrices
