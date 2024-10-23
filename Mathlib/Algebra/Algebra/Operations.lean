@@ -102,7 +102,7 @@ end Module
 variable {ι : Sort uι}
 variable {R : Type u} [CommSemiring R]
 
-section Ring
+section AlgebraSemiring
 
 variable {A : Type v} [Semiring A] [Algebra R A]
 variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
@@ -564,9 +564,9 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseMulSemiringAction
 
 end
 
-end Ring
+end AlgebraSemiring
 
-section CommRing
+section AlgebraCommSemiring
 
 variable {A : Type v} [CommSemiring A] [Algebra R A]
 variable {M N : Submodule R A} {m n : A}
@@ -702,6 +702,6 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
 
 end Quotient
 
-end CommRing
+end AlgebraCommSemiring
 
 end Submodule
