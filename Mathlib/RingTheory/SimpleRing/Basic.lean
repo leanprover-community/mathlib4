@@ -27,7 +27,7 @@ variable (R : Type*) [NonUnitalNonAssocRing R]
 
 namespace IsSimpleRing
 
-variable {R S}
+variable {R}
 
 instance [IsSimpleRing R] : IsSimpleOrder (TwoSidedIdeal R) := IsSimpleRing.simple
 
