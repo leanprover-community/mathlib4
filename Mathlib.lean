@@ -1698,6 +1698,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.Shapes.Connected
 import Mathlib.CategoryTheory.Limits.Shapes.Countable
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
@@ -1721,6 +1722,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Over
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
