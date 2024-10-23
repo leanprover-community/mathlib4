@@ -1,12 +1,14 @@
 /-
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot
+Authors: Patrick Massot, Anatole Dedecker
 -/
 import Mathlib.Order.Filter.Bases
 import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
+# TODO
+
 # Group and ring filter bases
 
 A `GroupFilterBasis` is a `FilterBasis` on a group with some properties relating
@@ -43,89 +45,47 @@ universe u
 
 namespace Filter
 
-class IsContinuousConstSMulBasis (G : Type*) {X : Type*} {ι : X → Sort*} [SMul G X]
-    (p : Π (x : X), ι x → Prop) (s : Π (x : X), ι x → Set X) where
-  toIsBasis : ∀ x, IsBasis (p x) (s x)
-  const_smul' : ∀ (g : G) x {i}, p (g • x) i → ∃ j, p x j ∧ MapsTo (g • ·) (s x j) (s (g • x) i)
-
-class IsContinuousConstVAddBasis (G : Type*) {X : Type*} {ι : X → Sort*} [VAdd G X]
-    (p : Π (x : X), ι x → Prop) (s : Π (x : X), ι x → Set X) where
-  toIsBasis : ∀ x, IsBasis (p x) (s x)
-  const_vadd' : ∀ (g : G) x {i}, p (g +ᵥ x) i → ∃ j, p x j ∧ s x j ⊆ (g +ᵥ ·) ⁻¹' (s (g +ᵥ x) i)
-
-attribute [to_additive existing] IsContinuousConstSMulBasis IsContinuousConstSMulBasis.toIsBasis
-
-namespace IsContinuousConstSMulBasis
-
-variable {G X : Type*} {ι : X → Sort*} [SMul G X] {p : Π (x : X), ι x → Prop}
-    {s : Π (x : X), ι x → Set X} (hB : IsContinuousConstSMulBasis G p s)
-include hB
-
-@[to_additive]
-theorem const_smul (g : G) (x y : X) (h : g • x = y) {i} : p y i →
-    ∃ j, p x j ∧ s x j ⊆ (g • ·) ⁻¹' (s y i) := by
-  subst h
-  exact hB.const_smul' g x (i := i)
-
-/-- If a group is endowed with a topological structure coming from a group filter basis then it's a
-topological group. -/
-@[to_additive "If a group is endowed with a topological structure coming from a group filter basis
-then it's a topological group."]
-instance (priority := 100) instTopologicalGroup :
-    @TopologicalGroup G hB.topology _ := by
-  letI := hB.topology
-  have basis := hB.nhds_one_hasBasis
-  have basis' := basis.prod_pprod basis
-  refine TopologicalGroup.of_nhds_one ?_ ?_ ?_ ?_
-  · refine basis'.tendsto_iff basis |>.mpr fun i hi ↦ (hB.mul hi).imp' (fun i ↦ ⟨i, i⟩)
-      fun j ⟨hj, hji⟩ ↦ ⟨⟨hj, hj⟩, ?_⟩
-    simpa [← image2_mul, forall_mem_comm] using hji
-  · exact basis.tendsto_iff basis |>.mpr fun i hi ↦ (hB.inv hi).imp fun j ↦ id
-  · intro x₀
-    rw [nhds_eq, nhds_one_eq]
-    rfl
-  · exact fun x₀ ↦ basis.tendsto_iff basis |>.mpr fun i hi ↦ (hB.conj x₀ hi).imp fun j ↦ id
-
-
-end IsContinuousConstSMulBasis
+/-!
+## Filter bases for group topologies
+-/
 
 /-- A `GroupFilterBasis` on a group is a `FilterBasis` satisfying some additional axioms.
   Example : if `G` is a topological group then the neighbourhoods of the identity are a
   `GroupFilterBasis`. Conversely given a `GroupFilterBasis` one can define a topology
   compatible with the group structure on `G`. -/
 class IsGroupBasis {G : Type*} {ι : Sort*} [Group G] (p : ι → Prop) (s : ι → Set G)
-    extends IsBasis p s where
+    extends IsBasis p s : Prop where
   one' : ∀ {i}, p i → (1 : G) ∈ s i
   mul' : ∀ {i}, p i → ∃ j, p j ∧ s j * s j ⊆ s i
   inv' : ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ (s i)⁻¹
-  conj' : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ (x₀ * · * x₀⁻¹) ⁻¹' (s i)
+  conj' : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * · * x₀⁻¹) (s j) (s i)
 
 /-- An `AddGroupFilterBasis` on an additive group is a `FilterBasis` satisfying some additional
   axioms. Example : if `G` is a topological group then the neighbourhoods of the identity are an
   `AddGroupFilterBasis`. Conversely given an `AddGroupFilterBasis` one can define a topology
   compatible with the group structure on `G`. -/
 class IsAddGroupBasis {G : Type*} {ι : Sort*} [AddGroup G] (p : ι → Prop) (s : ι → Set G)
-    extends IsBasis p s where
+    extends IsBasis p s : Prop where
   zero' : ∀ {i}, p i → (0 : G) ∈ s i
   add' : ∀ {i}, p i → ∃ j, p j ∧ s j + s j ⊆ s i
   neg' : ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ -(s i)
-  conj' : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ (x₀ + · + -x₀) ⁻¹' (s i)
+  conj' : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x₀ + · + -x₀) (s j) (s i)
 
 attribute [to_additive existing] IsGroupBasis IsGroupBasis.conj'
   IsGroupBasis.toIsBasis
 
 /-- `GroupFilterBasis` constructor in the commutative group case. -/
 @[to_additive "`AddGroupFilterBasis` constructor in the additive commutative group case."]
-def IsGroupBasis.mk_of_comm {G : Type*} {ι : Sort*} [CommGroup G] (p : ι → Prop) (s : ι → Set G)
+theorem IsGroupBasis.mk_of_comm {G : Type*} {ι : Sort*} [CommGroup G] (p : ι → Prop) (s : ι → Set G)
     (toIsBasis : IsBasis p s) (one : ∀ {i}, p i → (1 : G) ∈ s i)
     (mul : ∀ {i}, p i → ∃ j, p j ∧ s j * s j ⊆ s i)
     (inv : ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ (s i)⁻¹) :
-    IsGroupBasis p s :=
-  { toIsBasis := toIsBasis
-    one' := one
-    mul' := mul
-    inv' := inv
-    conj' := fun x U U_in ↦ ⟨U, U_in, by simp only [mul_inv_cancel_comm, preimage_id']; rfl⟩ }
+    IsGroupBasis p s where
+  toIsBasis := toIsBasis
+  one' := one
+  mul' := mul
+  inv' := inv
+  conj' x U U_in := ⟨U, U_in, by simpa only [mul_inv_cancel_comm, preimage_id'] using mapsTo_id _⟩
 
 namespace IsGroupBasis
 
@@ -142,32 +102,33 @@ theorem mul {i} : p i → ∃ j, p j ∧ s j * s j ⊆ s i := hB.mul'
 theorem inv {i} : p i → ∃ j, p j ∧ s j ⊆ (s i)⁻¹ := hB.inv'
 
 @[to_additive]
-theorem conj : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ (x₀ * · * x₀⁻¹) ⁻¹' (s i) :=
+theorem conj : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * · * x₀⁻¹) (s j) (s i) :=
   hB.conj'
 
 @[to_additive]
 theorem subset_mul_self {i} (h : p i) : s i ⊆ s i * s i :=
   fun x x_in ↦ ⟨1, hB.one h, x, x_in, one_mul x⟩
 
-/-- If a group is endowed with a topological structure coming from a group filter basis then it's a
-topological group. -/
-@[to_additive "If a group is endowed with a topological structure coming from a group filter basis
-then it's a topological group."]
-instance (priority := 100) instTopologicalGroup :
-    @TopologicalGroup G hB.topology _ := by
-  letI := hB.topology
-  have basis := hB.nhds_one_hasBasis
-  have basis' := basis.prod_pprod basis
-  refine TopologicalGroup.of_nhds_one ?_ ?_ ?_ ?_
-  · refine basis'.tendsto_iff basis |>.mpr fun i hi ↦ (hB.mul hi).imp' (fun i ↦ ⟨i, i⟩)
-      fun j ⟨hj, hji⟩ ↦ ⟨⟨hj, hj⟩, ?_⟩
-    simpa [← image2_mul, forall_mem_comm] using hji
-  · exact basis.tendsto_iff basis |>.mpr fun i hi ↦ (hB.inv hi).imp fun j ↦ id
-  · intro x₀
-    rw [nhds_eq, nhds_one_eq]
-    rfl
-  · exact fun x₀ ↦ basis.tendsto_iff basis |>.mpr fun i hi ↦ (hB.conj x₀ hi).imp fun j ↦ id
+/-!
+### Proving `TopologicalGroup` from `Filter.IsGroupBasis`
+-/
 
+@[to_additive]
+lemma topologicalGroup [TopologicalSpace G] [ContinuousConstSMul G G] (hB' : (𝓝 1).HasBasis p s) :
+    TopologicalGroup G := by
+  refine TopologicalGroup.of_nhds_one ?_ ?_ ?_ ?_
+  · refine hB'.prod_self.tendsto_iff hB' |>.mpr fun i hi ↦ (hB.mul hi).imp
+      fun j ⟨hj, hji⟩ ↦ ⟨hj, ?_⟩
+    simpa [← image2_mul, forall_mem_comm] using hji
+  · exact hB'.tendsto_iff hB' |>.mpr fun i hi ↦ (hB.inv hi).imp fun j ↦ id
+  · intro x₀
+    simp_rw [← smul_eq_mul, ← Homeomorph.smul_apply x₀, (Homeomorph.smul x₀).map_nhds_eq,
+      Homeomorph.smul_apply x₀, smul_eq_mul, mul_one]
+  · exact fun x₀ ↦ hB'.tendsto_iff hB' |>.mpr fun i hi ↦ (hB.conj x₀ hi).imp fun j ↦ id
+
+/-!
+### Constructing a group topology from `Filter.IsGroupBasis`
+-/
 
 /-- The neighborhood function of a `GroupFilterBasis`. -/
 @[to_additive "The neighborhood function of an `AddGroupFilterBasis`."]
@@ -229,32 +190,38 @@ theorem mem_nhds_one {i} (hi : p i) :
 topological group. -/
 @[to_additive "If a group is endowed with a topological structure coming from a group filter basis
 then it's a topological group."]
+instance (priority := 100) instContinuousConstSMul :
+    @ContinuousConstSMul G G hB.topology _ := by
+  letI := hB.topology
+  refine ⟨?_⟩
+  simp_rw [continuous_iff_continuousAt, ContinuousAt, Tendsto, nhds_eq, N, ← Filter.map_smul,
+    smul_eq_mul, map_map, comp_mul_left, le_refl, implies_true]
+
+-- See note [lower instance priority]
+/-- If a group is endowed with a topological structure coming from a group filter basis then it's a
+topological group. -/
+@[to_additive "If a group is endowed with a topological structure coming from a group filter basis
+then it's a topological group."]
 instance (priority := 100) instTopologicalGroup :
     @TopologicalGroup G hB.topology _ := by
   letI := hB.topology
-  have basis := hB.nhds_one_hasBasis
-  have basis' := basis.prod_pprod basis
-  refine TopologicalGroup.of_nhds_one ?_ ?_ ?_ ?_
-  · refine basis'.tendsto_iff basis |>.mpr fun i hi ↦ (hB.mul hi).imp' (fun i ↦ ⟨i, i⟩)
-      fun j ⟨hj, hji⟩ ↦ ⟨⟨hj, hj⟩, ?_⟩
-    simpa [← image2_mul, forall_mem_comm] using hji
-  · exact basis.tendsto_iff basis |>.mpr fun i hi ↦ (hB.inv hi).imp fun j ↦ id
-  · intro x₀
-    rw [nhds_eq, nhds_one_eq]
-    rfl
-  · exact fun x₀ ↦ basis.tendsto_iff basis |>.mpr fun i hi ↦ (hB.conj x₀ hi).imp fun j ↦ id
+  exact hB.topologicalGroup hB.nhds_one_hasBasis
 
 end IsGroupBasis
+
+/-!
+## Filter bases for ring topologies
+-/
 
 /-- A `RingFilterBasis` on a ring is a `FilterBasis` satisfying some additional axioms.
   Example : if `R` is a topological ring then the neighbourhoods of the identity are a
   `RingFilterBasis`. Conversely given a `RingFilterBasis` on a ring `R`, one can define a
   topology on `R` which is compatible with the ring structure. -/
-class IsRingBasis {R : Type*} {ι : Sort*} [Ring R] (p : ι → Prop) (s : ι → Set R) extends
-    IsAddGroupBasis p s where
+class IsRingBasis {R : Type*} {ι : Sort*} [Ring R] (p : ι → Prop) (s : ι → Set R)
+    extends IsAddGroupBasis p s : Prop where
   mul' : ∀ {i}, p i → ∃ j, p j ∧ s j * s j ⊆ s i
-  mul_left' : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ s j ⊆ (x₀ * ·) ⁻¹' (s i)
-  mul_right' : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ s j ⊆ (· * x₀) ⁻¹' (s i)
+  mul_left' : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * ·) (s j) (s i)
+  mul_right' : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (· * x₀) (s j) (s i)
 
 namespace IsRingBasis
 
@@ -264,53 +231,83 @@ include hB
 theorem mul {i} (hi : p i) : ∃ j, p j ∧ s j * s j ⊆ s i :=
   hB.mul' hi
 
-theorem mul_left (x₀ : R) {i} (hi : p i) : ∃ j, p j ∧ s j ⊆ (x₀ * ·) ⁻¹' (s i) :=
+theorem mul_left (x₀ : R) {i} (hi : p i) : ∃ j, p j ∧ MapsTo (x₀ * ·) (s j) (s i) :=
   hB.mul_left' x₀ hi
 
-theorem mul_right (x₀ : R) {i} (hi : p i) : ∃ j, p j ∧ s j ⊆ (· * x₀) ⁻¹' (s i) :=
+theorem mul_right (x₀ : R) {i} (hi : p i) : ∃ j, p j ∧ MapsTo (· * x₀) (s j) (s i) :=
   hB.mul_right' x₀ hi
+
+/-!
+### Proving `TopologicalRing` from `Filter.IsRingBasis`
+-/
+
+lemma topologicalRing [TopologicalSpace R] [ContinuousConstVAdd R R] (hB' : (𝓝 0).HasBasis p s) :
+    TopologicalRing R := by
+  haveI := hB.topologicalAddGroup hB'
+  refine TopologicalRing.of_addGroup_of_nhds_zero ?_ ?_ ?_
+  · refine hB'.prod_self.tendsto_iff hB' |>.mpr fun i hi ↦ (hB.mul hi).imp
+      fun j ⟨hj, hji⟩ ↦ ⟨hj, ?_⟩
+    simpa [← image2_mul, forall_mem_comm] using hji
+  · exact fun x₀ ↦ hB'.tendsto_iff hB' |>.mpr fun i hi ↦ (hB.mul_left x₀ hi).imp fun j ↦ id
+  · exact fun x₀ ↦ hB'.tendsto_iff hB' |>.mpr fun i hi ↦ (hB.mul_right x₀ hi).imp fun j ↦ id
+
+/-!
+### Constructing a ring topology from `Filter.IsRingBasis`
+-/
 
 /-- The topology associated to a ring filter basis.
 It has the given basis as a basis of neighborhoods of zero. -/
-nonrec def topology : TopologicalSpace R := hB.topology
+nonrec abbrev topology : TopologicalSpace R := hB.topology
 
 /-- If a ring is endowed with a topological structure coming from
 a ring filter basis then it's a topological ring. -/
 instance (priority := 100) instTopologicalRing :
     @TopologicalRing R hB.topology _ := by
   letI := hB.topology
-  have basis := hB.nhds_zero_hasBasis
-  have basis' := basis.prod_pprod basis
-  haveI := hB.instTopologicalAddGroup
-  apply TopologicalRing.of_addGroup_of_nhds_zero
-  · refine basis'.tendsto_iff basis |>.mpr fun i hi ↦ (hB.mul hi).imp' (fun i ↦ ⟨i, i⟩)
-      fun j ⟨hj, hji⟩ ↦ ⟨⟨hj, hj⟩, ?_⟩
-    simpa [← image2_mul, forall_mem_comm] using hji
-  · exact fun x₀ ↦ basis.tendsto_iff basis |>.mpr fun i hi ↦ (hB.mul_left x₀ hi).imp fun j ↦ id
-  · exact fun x₀ ↦ basis.tendsto_iff basis |>.mpr fun i hi ↦ (hB.mul_right x₀ hi).imp fun j ↦ id
+  haveI := hB.instContinuousConstVAdd
+  exact hB.topologicalRing hB.nhds_zero_hasBasis
 
 end IsRingBasis
+
+/-!
+## Filter bases for module topologies
+-/
 
 /-- A `ModuleFilterBasis` on a module is a `FilterBasis` satisfying some additional axioms.
   Example : if `M` is a topological module then the neighbourhoods of zero are a
   `ModuleFilterBasis`. Conversely given a `ModuleFilterBasis` one can define a topology
   compatible with the module structure on `M`. -/
-structure IsModuleBasis (R : Type*) {M : Type*} {ι : Sort*} [CommRing R] [TopologicalSpace R]
-    [AddCommGroup M] [Module R M] (p : ι → Prop) (s : ι → Set M) extends IsAddGroupBasis p s where
+structure IsModuleBasis (R : Type*) {M : Type*} {ι : Sort*} [Ring R] [TopologicalSpace R]
+    [AddCommGroup M] [Module R M] (p : ι → Prop) (s : ι → Set M)
+    extends IsAddGroupBasis p s : Prop where
   smul' : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ j, p j ∧ V • (s j) ⊆ s i
-  smul_left' : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ s j ⊆ (x₀ • ·) ⁻¹' (s j)
+  smul_left' : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ • ·) (s j) (s i)
   smul_right' : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ s i
+
+#check HasBasis.eventually_iff
+
+theorem IsModuleBasis.mk_of_hasBasis {R M : Type*} {ιR ιM : Sort*} [Ring R] [TopologicalSpace R]
+    [AddCommGroup M] [Module R M] {pR : ιR → Prop} {sR : ιR → Set R} (hR : (𝓝 0).HasBasis pR sR)
+    (pM : ιM → Prop) (sM : ιM → Set M) (toIsAddGroupBasis : IsAddGroupBasis pM sM)
+    (smul : ∀ {i}, pM i → ∃ j, pR j ∧ ∃ k, pM k ∧ (sR j) • (sM k) ⊆ sM i)
+    (smul_left : ∀ (x₀ : R) {i}, pM i → ∃ j, pM j ∧ MapsTo (x₀ • ·) (sM j) (sM i))
+    (smul_right : ∀ (m₀ : M) {i}, pM i → ∃ j, pR j ∧ MapsTo (· • m₀) (sR j) (sM i)) :
+    IsModuleBasis R pM sM where
+  toIsAddGroupBasis := toIsAddGroupBasis
+  smul' hi := smul hi |>.imp' sR fun _ ↦ And.imp_left <| hR.mem_of_mem
+  smul_left' := smul_left
+  smul_right' m₀ _ hi := hR.eventually_iff.mpr <| smul_right m₀ hi
 
 namespace IsModuleBasis
 
-variable {R M : Type*} {ι : Sort*} [CommRing R] [TopologicalSpace R]
+variable {R M : Type*} {ι : Sort*} [Ring R] [TopologicalSpace R]
     [AddCommGroup M] [Module R M] {p : ι → Prop} {s : ι → Set M} (hB : IsModuleBasis R p s)
 include hB
 
 theorem smul {i} (hi : p i) : ∃ V ∈ 𝓝 (0 : R), ∃ j, p j ∧ V • (s j) ⊆ s i :=
   hB.smul' hi
 
-theorem smul_left (x₀ : R) {i} (hi : p i) : ∃ j, p j ∧ s j ⊆ (x₀ • ·) ⁻¹' (s j) :=
+theorem smul_left (x₀ : R) {i} (hi : p i) : ∃ j, p j ∧ MapsTo (x₀ • ·) (s j) (s i) :=
   hB.smul_left' x₀ hi
 
 theorem smul_right (m₀ : M) {i} (hi : p i) : ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ s i :=
@@ -339,76 +336,44 @@ instance [DiscreteTopology R] : Inhabited (ModuleFilterBasis R M) :=
         simp [h, nhds_discrete] }⟩
 -/
 
+/-!
+### Proving `ContinuousSMul` from `Filter.IsModuleBasis`
+-/
+
+theorem continuousSMul [TopologicalRing R] [TopologicalSpace M] [ContinuousConstVAdd M M]
+    (hB' : (𝓝 0).HasBasis p s) : ContinuousSMul R M := by
+  haveI := hB.topologicalAddGroup hB'
+  refine ContinuousSMul.of_nhds_zero ?_ ?_ ?_
+  · refine basis_sets _ |>.prod_pprod hB' |>.tendsto_iff hB' |>.mpr fun i hi ↦
+      let ⟨V, hV, j, hj, hVj⟩ := (hB.smul hi); ⟨⟨V, j⟩, ⟨hV, hj⟩, ?_⟩
+    simpa [forall_swap (α := M), ← image2_smul] using hVj
+  · exact fun m₀ ↦ hB'.tendsto_right_iff.mpr fun i hi ↦ hB.smul_right m₀ hi
+  · exact fun x₀ ↦ hB'.tendsto_iff hB' |>.mpr fun i hi ↦ (hB.smul_left x₀ hi).imp fun j ↦ id
+
+/-!
+### Constructing a module topology from `Filter.IsModuleBasis`
+-/
+
 /-- The topology associated to a module filter basis on a module over a topological ring.
 It has the given basis as a basis of neighborhoods of zero. -/
-nonrec def topology : TopologicalSpace M := hB.topology
+nonrec abbrev topology : TopologicalSpace M := hB.topology
 
 /-- The topology associated to a module filter basis on a module over a topological ring.
 It has the given basis as a basis of neighborhoods of zero. This version gets the ring
 topology by unification instead of type class inference. -/
-def topology' {R M : Type*} {ι : Sort*} [CommRing R] {_ : TopologicalSpace R}
+abbrev topology' {R M : Type*} {ι : Sort*} [CommRing R] {_ : TopologicalSpace R}
     [AddCommGroup M] [Module R M] {p : ι → Prop} {s : ι → Set M} (hB : IsModuleBasis R p s) :
     TopologicalSpace M :=
   hB.topology
 
-/-- A topological add group with a basis of `𝓝 0` satisfying the axioms of `ModuleFilterBasis`
-is a topological module.
-
-This lemma is mathematically useless because one could obtain such a result by applying
-`ModuleFilterBasis.continuousSMul` and use the fact that group topologies are characterized
-by their neighborhoods of 0 to obtain the `ContinuousSMul` on the pre-existing topology.
-
-But it turns out it's just easier to get it as a byproduct of the proof, so this is just a free
-quality-of-life improvement. -/
-theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [TopologicalRing R] [TopologicalSpace M]
-    [TopologicalAddGroup M] {p : ι → Prop} {b : ι → Set M} (h : HasBasis (𝓝 0) p b)
-    (hsmul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ j, p j ∧ V • b j ⊆ b i)
-    (hsmul_left : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ • ·) (b j) (b i))
-    (hsmul_right : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ b i) : ContinuousSMul R M := by
-  apply ContinuousSMul.of_nhds_zero
-  · rw [h.tendsto_right_iff]
-    intro i hi
-    rcases hsmul hi with ⟨V, V_in, j, hj, hVj⟩
-    apply mem_of_superset (prod_mem_prod V_in <| h.mem_of_mem hj)
-    rintro ⟨v, w⟩ ⟨v_in : v ∈ V, w_in : w ∈ b j⟩
-    exact hVj (Set.smul_mem_smul v_in w_in)
-  · intro m₀
-    rw [h.tendsto_right_iff]
-    intro i hi
-    exact hsmul_right m₀ hi
-  · intro x₀
-    rw [h.tendsto_right_iff]
-    intro i hi
-    rcases hsmul_left x₀ hi with ⟨j, hj, hji⟩
-    exact mem_of_superset (h.mem_of_mem hj) hji
-
 /-- If a module is endowed with a topological structure coming from
 a module filter basis then it's a topological module. -/
-instance (priority := 100) continuousSMul [TopologicalRing R] :
-    @ContinuousSMul R M _ _ B.topology := by
-  let B' := B.toAddGroupFilterBasis
-  let _ := B'.topology
-  have _ := B'.isTopologicalAddGroup
-  exact ContinuousSMul.of_basis_zero B'.nhds_zero_hasBasis
-      (fun {_} => by simpa using B.smul)
-      (by simpa using B.smul_left) B.smul_right
+instance (priority := 100) instContinuousSMul [TopologicalRing R] :
+    @ContinuousSMul R M _ _ hB.topology := by
+  letI := hB.topology
+  haveI := hB.instContinuousConstVAdd
+  exact hB.continuousSMul hB.nhds_zero_hasBasis
 
-/-- Build a module filter basis from compatible ring and additive group filter bases. -/
-def ofBases {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (BR : RingFilterBasis R)
-    (BM : AddGroupFilterBasis M) (smul : ∀ {U}, U ∈ BM → ∃ V ∈ BR, ∃ W ∈ BM, V • W ⊆ U)
-    (smul_left : ∀ (x₀ : R) {U}, U ∈ BM → ∃ V ∈ BM, V ⊆ (fun x ↦ x₀ • x) ⁻¹' U)
-    (smul_right : ∀ (m₀ : M) {U}, U ∈ BM → ∃ V ∈ BR, V ⊆ (fun x ↦ x • m₀) ⁻¹' U) :
-    @ModuleFilterBasis R M _ BR.topology _ _ :=
-  let _ := BR.topology
-  { BM with
-    smul' := by
-      intro U U_in
-      rcases smul U_in with ⟨V, V_in, W, W_in, H⟩
-      exact ⟨V, BR.toAddGroupFilterBasis.mem_nhds_zero V_in, W, W_in, H⟩
-    smul_left' := smul_left
-    smul_right' := by
-      intro m₀ U U_in
-      rcases smul_right m₀ U_in with ⟨V, V_in, H⟩
-      exact mem_of_superset (BR.toAddGroupFilterBasis.mem_nhds_zero V_in) H }
+end IsModuleBasis
 
-end ModuleFilterBasis
+end Filter
