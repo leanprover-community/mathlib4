@@ -155,8 +155,9 @@ theorem preAleph_pos {o : Ordinal} : 0 < preAleph o ↔ 0 < o := by
   rw [← preAleph_zero, preAleph_lt_preAleph]
 
 @[simp]
-theorem lift_preAleph (o : Ordinal.{u}) : lift.{v} (aleph' o) = aleph' (Ordinal.lift.{v} o) :=
-  (aleph'.toInitialSeg.trans liftInitialSeg).eq (Ordinal.liftInitialSeg.trans aleph'.toInitialSeg) o
+theorem lift_preAleph (o : Ordinal.{u}) : lift.{v} (preAleph o) = preAleph (Ordinal.lift.{v} o) :=
+  (preAleph.toInitialSeg.trans liftInitialSeg).eq
+    (Ordinal.liftInitialSeg.trans preAleph.toInitialSeg) o
 
 theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
     preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
