@@ -60,7 +60,7 @@ lemma induction_fixed_source {a : Paths V} (P : ∀ {b : Paths V}, (a ⟶ b) →
   intro _ f
   induction f with
   | nil => exact id
-  | cons _ _ h => exact comp _ w h
+  | cons _ w h => exact comp _ w h
 
 /-- To prove a property on morphisms of a path category with given target `b`, it suffices to prove
 it for the identity and prove that the property is preserved under composition on the left
@@ -84,13 +84,8 @@ and prove that the property is preserved under composition on the right with len
 lemma induction (P : MorphismProperty (Paths V))
     (id : ∀ {v : V}, P (𝟙 (of.obj v)))
     (comp : ∀ {u v w : V} (p : of.obj u ⟶ of.obj v) (q : v ⟶ w), P p → P (p ≫ of.map q)) :
-    ∀ {a b : Paths V} (f : a ⟶ b), P f := by
-  intro a
-  apply induction_fixed_source
-  · exact id
-  · intro _ _ _ _ h
-    apply comp
-    exact h
+    ∀ {a b : Paths V} (f : a ⟶ b), P f :=
+  fun {_} ↦ induction_fixed_source _ id comp
 
 /-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
 and prove that the property is preserved under composition on the left with length 1 paths. -/
@@ -100,11 +95,7 @@ lemma induction' (P : MorphismProperty (Paths V))
     ∀ {a b : Paths V} (f : a ⟶ b), P f := by
   intro a b
   revert a
-  apply induction_fixed_target
-  · exact id
-  · intro _ _ _ _ h
-    apply comp
-    exact h
+  exact induction_fixed_target (P := fun f ↦ P f) id (fun _ _ ↦ comp _ _)
 
 attribute [local ext (iff := false)] Functor.ext
 
