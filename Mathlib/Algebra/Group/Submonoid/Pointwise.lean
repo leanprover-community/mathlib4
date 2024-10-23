@@ -85,11 +85,11 @@ theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) 
 @[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
-  refine @closure_induction N _ s (fun x : N => ∃ n : ℕ, r ^ n • x ∈ closure (r • s)) _ hx ?_ ?_ ?_
-  · intro x hx
-    exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
-  · exact ⟨0, by simpa using one_mem _⟩
-  · rintro x y ⟨nx, hx⟩ ⟨ny, hy⟩
+  induction hx using closure_induction with
+  | mem x hx => exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
+  | one => exact ⟨0, by simpa using one_mem _⟩
+  | mul x y _ _ hx hy =>
+    obtain ⟨⟨nx, hx⟩, ⟨ny, hy⟩⟩ := And.intro hx hy
     use ny + nx
     rw [pow_add, mul_smul, ← smul_mul_assoc, mul_comm, ← smul_mul_assoc]
     exact mul_mem hy hx
@@ -184,7 +184,7 @@ protected def pointwiseMulAction : MulAction α (Submonoid M) where
   one_smul S := by
     change S.map _ = S
     simpa only [map_one] using S.map_id
-  mul_smul a₁ a₂ S :=
+  mul_smul _ _ S :=
     (congr_arg (fun f : Monoid.End M => S.map f) (MonoidHom.map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
@@ -484,7 +484,7 @@ theorem mul_bot (S : AddSubmonoid R) : S * ⊥ = ⊥ :=
 
 @[simp]
 theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
-  eq_bot_iff.2 <| mul_le.2 fun m hm n hn => by
+  eq_bot_iff.2 <| mul_le.2 fun m hm n _ => by
     rw [AddSubmonoid.mem_bot] at hm ⊢; rw [hm, zero_mul]
 
 @[mono]

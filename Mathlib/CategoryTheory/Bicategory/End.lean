@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Monoidal.Category
@@ -36,8 +36,8 @@ open Bicategory
 attribute [local simp] EndMonoidal in
 instance (X : C) : MonoidalCategory (EndMonoidal X) where
   tensorObj f g := f ≫ g
-  whiskerLeft {f g h} η := f ◁ η
-  whiskerRight {f g} η h := η ▷ h
+  whiskerLeft {f _ _} η := f ◁ η
+  whiskerRight {_ _} η h := η ▷ h
   tensorUnit := 𝟙 _
   associator f g h := α_ f g h
   leftUnitor f := λ_ f

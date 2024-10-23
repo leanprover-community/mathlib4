@@ -237,7 +237,7 @@ then `fixedBy α m = Set.univ` implies that `m = 1`. -/
 then `fixedBy α m = Set.univ` implies that `m = 1`."]
 theorem fixedBy_eq_univ_iff_eq_one {m : M} : fixedBy α m = Set.univ ↔ m = 1 := by
   rw [← (smul_left_injective' (M := M) (α := α)).eq_iff, Set.eq_univ_iff_forall]
-  simp_rw [Function.funext_iff, one_smul, mem_fixedBy]
+  simp_rw [funext_iff, one_smul, mem_fixedBy]
 
 /--
 If the image of the `(fixedBy α g)ᶜ` set by the pointwise action of `h: G`

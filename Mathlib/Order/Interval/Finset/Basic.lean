@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Yaël Dillies
+Authors: Kim Morrison, Yaël Dillies
 -/
 import Mathlib.Order.Cover
 import Mathlib.Order.Interval.Finset.Defs
@@ -17,7 +17,7 @@ respectively, `⩿` and `⋖`, which then leads to a characterization of monoton
 functions whose domain is a locally finite order. In particular, this file proves:
 
 * `le_iff_transGen_wcovBy`: `≤` is the transitive closure of `⩿`
-* `lt_iff_transGen_covBy`: `≤` is the transitive closure of `⩿`
+* `lt_iff_transGen_covBy`: `<` is the transitive closure of `⋖`
 * `monotone_iff_forall_wcovBy`: Characterization of monotone functions
 * `strictMono_iff_forall_covBy`: Characterization of strictly monotone functions
 
@@ -51,17 +51,26 @@ section LocallyFiniteOrder
 
 variable [LocallyFiniteOrder α]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b := by
   rw [← coe_nonempty, coe_Icc, Set.nonempty_Icc]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.nonempty_Icc_of_le⟩ := nonempty_Icc
+
+@[simp]
 theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ico, Set.nonempty_Ico]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.nonempty_Ico_of_lt⟩ := nonempty_Ico
+
+@[simp]
 theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioc, Set.nonempty_Ioc]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.nonempty_Ioc_of_lt⟩ := nonempty_Ioc
 
 -- TODO: This is nonsense. A locally finite order is never densely ordered
 @[simp]
@@ -260,66 +269,58 @@ def _root_.Set.fintypeOfMemBounds {s : Set α} [DecidablePred (· ∈ s)] (ha : 
 section Filter
 
 theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
-    (Ico a b).filter (· < c) = ∅ :=
+    {x ∈ Ico a b | x < c} = ∅ :=
   filter_false_of_mem fun _ hx => (hca.trans (mem_Ico.1 hx).1).not_lt
 
 theorem Ico_filter_lt_of_right_le [DecidablePred (· < c)] (hbc : b ≤ c) :
-    (Ico a b).filter (· < c) = Ico a b :=
+    {x ∈ Ico a b | x < c} = Ico a b :=
   filter_true_of_mem fun _ hx => (mem_Ico.1 hx).2.trans_le hbc
 
 theorem Ico_filter_lt_of_le_right [DecidablePred (· < c)] (hcb : c ≤ b) :
-    (Ico a b).filter (· < c) = Ico a c := by
+    {x ∈ Ico a b | x < c} = Ico a c := by
   ext x
   rw [mem_filter, mem_Ico, mem_Ico, and_right_comm]
   exact and_iff_left_of_imp fun h => h.2.trans_le hcb
 
 theorem Ico_filter_le_of_le_left {a b c : α} [DecidablePred (c ≤ ·)] (hca : c ≤ a) :
-    (Ico a b).filter (c ≤ ·) = Ico a b :=
+    {x ∈ Ico a b | c ≤ x} = Ico a b :=
   filter_true_of_mem fun _ hx => hca.trans (mem_Ico.1 hx).1
 
 theorem Ico_filter_le_of_right_le {a b : α} [DecidablePred (b ≤ ·)] :
-    (Ico a b).filter (b ≤ ·) = ∅ :=
+    {x ∈ Ico a b | b ≤ x} = ∅ :=
   filter_false_of_mem fun _ hx => (mem_Ico.1 hx).2.not_le
 
 theorem Ico_filter_le_of_left_le {a b c : α} [DecidablePred (c ≤ ·)] (hac : a ≤ c) :
-    (Ico a b).filter (c ≤ ·) = Ico c b := by
+    {x ∈ Ico a b | c ≤ x} = Ico c b := by
   ext x
   rw [mem_filter, mem_Ico, mem_Ico, and_comm, and_left_comm]
   exact and_iff_right_of_imp fun h => hac.trans h.1
 
 theorem Icc_filter_lt_of_lt_right {a b c : α} [DecidablePred (· < c)] (h : b < c) :
-    (Icc a b).filter (· < c) = Icc a b :=
+    {x ∈ Icc a b | x < c} = Icc a b :=
   filter_true_of_mem fun _ hx => lt_of_le_of_lt (mem_Icc.1 hx).2 h
 
 theorem Ioc_filter_lt_of_lt_right {a b c : α} [DecidablePred (· < c)] (h : b < c) :
-    (Ioc a b).filter (· < c) = Ioc a b :=
+    {x ∈ Ioc a b | x < c} = Ioc a b :=
   filter_true_of_mem fun _ hx => lt_of_le_of_lt (mem_Ioc.1 hx).2 h
 
 theorem Iic_filter_lt_of_lt_right {α} [Preorder α] [LocallyFiniteOrderBot α] {a c : α}
-    [DecidablePred (· < c)] (h : a < c) : (Iic a).filter (· < c) = Iic a :=
+    [DecidablePred (· < c)] (h : a < c) : {x ∈ Iic a | x < c} = Iic a :=
   filter_true_of_mem fun _ hx => lt_of_le_of_lt (mem_Iic.1 hx) h
 
 variable (a b) [Fintype α]
 
 theorem filter_lt_lt_eq_Ioo [DecidablePred fun j => a < j ∧ j < b] :
-    (univ.filter fun j => a < j ∧ j < b) = Ioo a b := by
-  ext
-  simp
+    ({j | a < j ∧ j < b} : Finset _) = Ioo a b := by ext; simp
 
 theorem filter_lt_le_eq_Ioc [DecidablePred fun j => a < j ∧ j ≤ b] :
-    (univ.filter fun j => a < j ∧ j ≤ b) = Ioc a b := by
-  ext
-  simp
+    ({j | a < j ∧ j ≤ b} : Finset _) = Ioc a b := by ext; simp
 
 theorem filter_le_lt_eq_Ico [DecidablePred fun j => a ≤ j ∧ j < b] :
-    (univ.filter fun j => a ≤ j ∧ j < b) = Ico a b := by
-  ext
-  simp
+    ({j | a ≤ j ∧ j < b} : Finset _) = Ico a b := by ext; simp
 
 theorem filter_le_le_eq_Icc [DecidablePred fun j => a ≤ j ∧ j ≤ b] :
-    (univ.filter fun j => a ≤ j ∧ j ≤ b) = Icc a b := by
-  ext
-  simp
+    ({j | a ≤ j ∧ j ≤ b} : Finset _) = Icc a b := by ext; simp
 
 end Filter
 
@@ -331,8 +332,11 @@ variable [LocallyFiniteOrderTop α]
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.nonempty_Ioi_of_not_isMax⟩ := nonempty_Ioi
 
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
   simpa [← coe_subset] using Set.Ici_subset_Ici
@@ -366,8 +370,13 @@ section LocallyFiniteOrderBot
 
 variable [LocallyFiniteOrderBot α]
 
-@[simp] lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
-@[simp] lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
+@[simp]
+lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.nonempty_Iio_of_not_isMin⟩ := nonempty_Iio
 
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
   simpa [← coe_subset] using Set.Iic_subset_Iic
@@ -413,13 +422,8 @@ theorem _root_.Set.Infinite.not_bddBelow {s : Set α} : s.Infinite → ¬BddBelo
 
 variable [Fintype α]
 
-theorem filter_lt_eq_Ioi [DecidablePred (a < ·)] : univ.filter (a < ·) = Ioi a := by
-  ext
-  simp
-
-theorem filter_le_eq_Ici [DecidablePred (a ≤ ·)] : univ.filter (a ≤ ·) = Ici a := by
-  ext
-  simp
+theorem filter_lt_eq_Ioi [DecidablePred (a < ·)] : ({x | a < x} : Finset _) = Ioi a := by ext; simp
+theorem filter_le_eq_Ici [DecidablePred (a ≤ ·)] : ({x | a ≤ x} : Finset _) = Ici a := by ext; simp
 
 end LocallyFiniteOrderTop
 
@@ -438,13 +442,8 @@ theorem _root_.Set.Infinite.not_bddAbove {s : Set α} : s.Infinite → ¬BddAbov
 
 variable [Fintype α]
 
-theorem filter_gt_eq_Iio [DecidablePred (· < a)] : univ.filter (· < a) = Iio a := by
-  ext
-  simp
-
-theorem filter_ge_eq_Iic [DecidablePred (· ≤ a)] : univ.filter (· ≤ a) = Iic a := by
-  ext
-  simp
+theorem filter_gt_eq_Iio [DecidablePred (· < a)] : ({x | x < a} : Finset _) = Iio a := by ext; simp
+theorem filter_ge_eq_Iic [DecidablePred (· ≤ a)] : ({x | x ≤ a} : Finset _) = Iic a := by ext; simp
 
 end LocallyFiniteOrderBot
 
@@ -544,32 +543,32 @@ theorem Ico_eq_cons_Ioo (h : a < b) : Ico a b = (Ioo a b).cons a left_not_mem_Io
   classical rw [cons_eq_insert, Ioo_insert_left h]
 
 theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
-    ((Ico a b).filter fun x => x ≤ a) = {a} := by
+    {x ∈ Ico a b | x ≤ a} = {a} := by
   ext x
   rw [mem_filter, mem_Ico, mem_singleton, and_right_comm, ← le_antisymm_iff, eq_comm]
   exact and_iff_left_of_imp fun h => h.le.trans_lt hab
 
-theorem card_Ico_eq_card_Icc_sub_one (a b : α) : (Ico a b).card = (Icc a b).card - 1 := by
+theorem card_Ico_eq_card_Icc_sub_one (a b : α) : #(Ico a b) = #(Icc a b) - 1 := by
   classical
     by_cases h : a ≤ b
     · rw [Icc_eq_cons_Ico h, card_cons]
       exact (Nat.add_sub_cancel _ _).symm
     · rw [Ico_eq_empty fun h' => h h'.le, Icc_eq_empty h, card_empty, Nat.zero_sub]
 
-theorem card_Ioc_eq_card_Icc_sub_one (a b : α) : (Ioc a b).card = (Icc a b).card - 1 :=
+theorem card_Ioc_eq_card_Icc_sub_one (a b : α) : #(Ioc a b) = #(Icc a b) - 1 :=
   @card_Ico_eq_card_Icc_sub_one αᵒᵈ _ _ _ _
 
-theorem card_Ioo_eq_card_Ico_sub_one (a b : α) : (Ioo a b).card = (Ico a b).card - 1 := by
+theorem card_Ioo_eq_card_Ico_sub_one (a b : α) : #(Ioo a b) = #(Ico a b) - 1 := by
   classical
     by_cases h : a < b
     · rw [Ico_eq_cons_Ioo h, card_cons]
       exact (Nat.add_sub_cancel _ _).symm
     · rw [Ioo_eq_empty h, Ico_eq_empty h, card_empty, Nat.zero_sub]
 
-theorem card_Ioo_eq_card_Ioc_sub_one (a b : α) : (Ioo a b).card = (Ioc a b).card - 1 :=
+theorem card_Ioo_eq_card_Ioc_sub_one (a b : α) : #(Ioo a b) = #(Ioc a b) - 1 :=
   @card_Ioo_eq_card_Ico_sub_one αᵒᵈ _ _ _ _
 
-theorem card_Ioo_eq_card_Icc_sub_two (a b : α) : (Ioo a b).card = (Icc a b).card - 2 := by
+theorem card_Ioo_eq_card_Icc_sub_two (a b : α) : #(Ioo a b) = #(Icc a b) - 2 := by
   rw [card_Ioo_eq_card_Ico_sub_one, card_Ico_eq_card_Icc_sub_one]
   rfl
 
@@ -602,7 +601,7 @@ theorem not_mem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi
 theorem Ici_eq_cons_Ioi (a : α) : Ici a = (Ioi a).cons a not_mem_Ioi_self := by
   classical rw [cons_eq_insert, Ioi_insert]
 
-theorem card_Ioi_eq_card_Ici_sub_one (a : α) : (Ioi a).card = (Ici a).card - 1 := by
+theorem card_Ioi_eq_card_Ici_sub_one (a : α) : #(Ioi a) = #(Ici a) - 1 := by
   rw [Ici_eq_cons_Ioi, card_cons, Nat.add_sub_cancel_right]
 
 end OrderTop
@@ -630,7 +629,7 @@ theorem not_mem_Iio_self {b : α} : b ∉ Iio b := fun h => lt_irrefl _ (mem_Iio
 theorem Iic_eq_cons_Iio (b : α) : Iic b = (Iio b).cons b not_mem_Iio_self := by
   classical rw [cons_eq_insert, Iio_insert]
 
-theorem card_Iio_eq_card_Iic_sub_one (a : α) : (Iio a).card = (Iic a).card - 1 := by
+theorem card_Iio_eq_card_Iic_sub_one (a : α) : #(Iio a) = #(Iic a) - 1 := by
   rw [Iic_eq_cons_Iio, card_cons, Nat.add_sub_cancel_right]
 
 end OrderBot
@@ -666,7 +665,7 @@ variable [LinearOrder α]
 
 section LocallyFiniteOrder
 
-variable [LocallyFiniteOrder α] {a b : α}
+variable [LocallyFiniteOrder α]
 
 theorem Ico_subset_Ico_iff {a₁ b₁ a₂ b₂ : α} (h : a₁ < b₁) :
     Ico a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ := by
@@ -698,25 +697,25 @@ theorem Ico_inter_Ico {a b c d : α} : Ico a b ∩ Ico c d = Ico (max a c) (min 
     Set.Ico_inter_Ico]
 
 @[simp]
-theorem Ico_filter_lt (a b c : α) : ((Ico a b).filter fun x => x < c) = Ico a (min b c) := by
+theorem Ico_filter_lt (a b c : α) : {x ∈ Ico a b | x < c} = Ico a (min b c) := by
   cases le_total b c with
   | inl h => rw [Ico_filter_lt_of_right_le h, min_eq_left h]
   | inr h => rw [Ico_filter_lt_of_le_right h, min_eq_right h]
 
 @[simp]
-theorem Ico_filter_le (a b c : α) : ((Ico a b).filter fun x => c ≤ x) = Ico (max a c) b := by
+theorem Ico_filter_le (a b c : α) : {x ∈ Ico a b | c ≤ x} = Ico (max a c) b := by
   cases le_total a c with
   | inl h => rw [Ico_filter_le_of_left_le h, max_eq_right h]
   | inr h => rw [Ico_filter_le_of_le_left h, max_eq_left h]
 
 @[simp]
-theorem Ioo_filter_lt (a b c : α) : (Ioo a b).filter (· < c) = Ioo a (min b c) := by
+theorem Ioo_filter_lt (a b c : α) : {x ∈ Ioo a b | x < c} = Ioo a (min b c) := by
   ext
   simp [and_assoc]
 
 @[simp]
 theorem Iio_filter_lt {α} [LinearOrder α] [LocallyFiniteOrderBot α] (a b : α) :
-    (Iio a).filter (· < b) = Iio (min a b) := by
+    {x ∈ Iio a | x < b} = Iio (min a b) := by
   ext
   simp [and_assoc]
 
@@ -773,7 +772,7 @@ end LinearOrder
 
 section Lattice
 
-variable [Lattice α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [Lattice α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ x : α}
 
 theorem uIcc_toDual (a b : α) : [[toDual a, toDual b]] = [[a, b]].map toDual.toEmbedding :=
   Icc_toDual _ _
@@ -845,7 +844,7 @@ end Lattice
 
 section DistribLattice
 
-variable [DistribLattice α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [DistribLattice α] [LocallyFiniteOrder α] {a b c : α}
 
 theorem eq_of_mem_uIcc_of_mem_uIcc : a ∈ [[b, c]] → b ∈ [[a, c]] → a = b := by
   simp_rw [mem_uIcc]
@@ -866,7 +865,7 @@ end DistribLattice
 
 section LinearOrder
 
-variable [LinearOrder α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [LinearOrder α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c : α}
 
 theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
@@ -916,7 +915,7 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
     TransGen (· ⩿ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Icc x y`.
   -- It's impossible for the cardinality to be zero since `x ≤ y`
-  have : (Ico x y).card < (Icc x y).card := card_lt_card <|
+  have : #(Ico x y) < #(Icc x y) := card_lt_card <|
     ⟨Ico_subset_Icc_self, not_subset.mpr ⟨y, ⟨right_mem_Icc.mpr hxy, right_not_mem_Ico⟩⟩⟩
   by_cases hxy' : y ≤ x
   -- If `y ≤ x`, then `x ⩿ y`
@@ -926,16 +925,15 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
   induction hypothesis to show that `Relation.TransGen (· ⩿ ·) x z`. -/
   · have h_non : (Ico x y).Nonempty := ⟨x, mem_Ico.mpr ⟨le_rfl, lt_of_le_not_le hxy hxy'⟩⟩
     obtain ⟨z, z_mem, hz⟩ := (Ico x y).exists_maximal h_non
-    have z_card : (Icc x z).card <(Icc x y).card := calc
-      (Icc x z).card ≤ (Ico x y).card :=
-        card_le_card <| Icc_subset_Ico_right (mem_Ico.mp z_mem).2
-      _              < (Icc x y).card := this
+    have z_card := calc
+      #(Icc x z) ≤ #(Ico x y) := card_le_card <| Icc_subset_Ico_right (mem_Ico.mp z_mem).2
+      _          < #(Icc x y) := this
     have h₁ := transGen_wcovBy_of_le (mem_Ico.mp z_mem).1
     have h₂ : z ⩿ y := by
       refine ⟨(mem_Ico.mp z_mem).2.le, fun c hzc hcy ↦ hz c ?_ hzc⟩
       exact mem_Ico.mpr <| ⟨(mem_Ico.mp z_mem).1.trans hzc.le, hcy⟩
     exact .tail h₁ h₂
-termination_by (Icc x y).card
+termination_by #(Icc x y)
 
 /-- In a locally finite preorder, `≤` is the transitive closure of `⩿`. -/
 lemma le_iff_transGen_wcovBy [Preorder α] [LocallyFiniteOrder α] {x y : α} :
@@ -959,7 +957,7 @@ lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy
   -- `Ico x y` is a nonempty finset and so contains a maximal element `z` and
   -- `Ico x z` has cardinality strictly less than the cardinality of `Ico x y`
   obtain ⟨z, z_mem, hz⟩ := (Ico x y).exists_maximal h_non
-  have z_card : (Ico x z).card < (Ico x y).card := card_lt_card <| ssubset_iff_of_subset
+  have z_card : #(Ico x z) < #(Ico x y) := card_lt_card <| ssubset_iff_of_subset
     (Ico_subset_Ico le_rfl (mem_Ico.mp z_mem).2.le) |>.mpr ⟨z, z_mem, right_not_mem_Ico⟩
   /- Since `z` is maximal in `Ico x y`, `z ⋖ y`. -/
   have hzy : z ⋖ y := by
@@ -973,7 +971,7 @@ lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy
   `x ≤ z`), and since `z ⋖ y` we conclude that `x ⋖ y` , then `Relation.TransGen.single`. -/
   · simp only [lt_iff_le_not_le, not_and, not_not] at hxz
     exact .single (hzy.of_le_of_lt (hxz (mem_Ico.mp z_mem).1) hxy)
-termination_by (Ico x y).card
+termination_by #(Ico x y)
 
 /-- In a locally finite preorder, `<` is the transitive closure of `⋖`. -/
 lemma lt_iff_transGen_covBy [Preorder α] [LocallyFiniteOrder α] {x y : α} :
