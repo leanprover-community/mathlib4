@@ -173,8 +173,7 @@ lemma isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
 @[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 /-- An isometry from an emetric space is an embedding -/
-protected theorem embedding (hf : Isometry f) : Embedding f :=
-  hf.isUniformEmbedding.embedding
+protected theorem isEmbedding (hf : Isometry f) : IsEmbedding f := hf.isUniformEmbedding.isEmbedding
 
 /-- An isometry from a complete emetric space is a closed embedding -/
 theorem isClosedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
@@ -246,8 +245,8 @@ alias UniformEmbedding.to_isometry := IsUniformEmbedding.to_isometry
 
 /-- An embedding from a topological space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
-theorem Embedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
-    (h : Embedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
+theorem IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
+    (h : IsEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
 

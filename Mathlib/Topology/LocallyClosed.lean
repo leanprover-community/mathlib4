@@ -125,8 +125,8 @@ lemma Inducing.isLocallyClosed_iff {s : Set X}
   · rintro ⟨_, ⟨U, Z, hU, hZ, rfl⟩, rfl⟩
     exact ⟨_, _, ⟨U, hU, rfl⟩, ⟨Z, hZ, rfl⟩, rfl⟩
 
-lemma Embedding.isLocallyClosed_iff {s : Set X}
-    {f : X → Y} (hf : Embedding f) :
+lemma IsEmbedding.isLocallyClosed_iff {s : Set X}
+    {f : X → Y} (hf : IsEmbedding f) :
     IsLocallyClosed s ↔ ∃ s' : Set Y, IsLocallyClosed s' ∧ s' ∩ range f = f '' s := by
   simp_rw [hf.toInducing.isLocallyClosed_iff,
     ← (image_injective.mpr hf.inj).eq_iff, image_preimage_eq_inter_range]

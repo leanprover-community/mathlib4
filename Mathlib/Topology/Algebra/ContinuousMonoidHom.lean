@@ -236,8 +236,8 @@ theorem inducing_toContinuousMap : Inducing (toContinuousMap : ContinuousMonoidH
   ⟨rfl⟩
 
 @[to_additive]
-theorem embedding_toContinuousMap :
-    Embedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
+theorem isEmbedding_toContinuousMap :
+    IsEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
   ⟨inducing_toContinuousMap A B, toContinuousMap_injective⟩
 
 @[to_additive]
@@ -260,7 +260,7 @@ lemma range_toContinuousMap :
 @[to_additive]
 theorem isClosedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     IsClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
-  toEmbedding := embedding_toContinuousMap A B
+  toIsEmbedding := isEmbedding_toContinuousMap A B
   isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
     refine .inter (isClosed_singleton.preimage (continuous_eval_const 1)) <|
@@ -275,7 +275,7 @@ variable {A B C D E}
 
 @[to_additive]
 instance [T2Space B] : T2Space (ContinuousMonoidHom A B) :=
-  (embedding_toContinuousMap A B).t2Space
+  (isEmbedding_toContinuousMap A B).t2Space
 
 @[to_additive]
 instance : TopologicalGroup (ContinuousMonoidHom A E) :=
