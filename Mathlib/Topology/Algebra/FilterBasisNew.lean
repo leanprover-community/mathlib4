@@ -284,8 +284,6 @@ structure IsModuleBasis (R : Type*) {M : Type*} {ι : Sort*} [Ring R] [Topologic
   smul_left' : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ • ·) (s j) (s i)
   smul_right' : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ s i
 
-#check HasBasis.eventually_iff
-
 theorem IsModuleBasis.mk_of_hasBasis {R M : Type*} {ιR ιM : Sort*} [Ring R] [TopologicalSpace R]
     [AddCommGroup M] [Module R M] {pR : ιR → Prop} {sR : ιR → Set R} (hR : (𝓝 0).HasBasis pR sR)
     (pM : ιM → Prop) (sM : ιM → Set M) (toIsAddGroupBasis : IsAddGroupBasis pM sM)

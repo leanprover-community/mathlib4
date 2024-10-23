@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Anatole Dedecker
 -/
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
-import Mathlib.Topology.Algebra.FilterBasis
+import Mathlib.Topology.Algebra.FilterBasisNew
 import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
@@ -34,104 +34,56 @@ namespace Filter
 /-- A family of additive subgroups on a ring `A` is a subgroups basis if it satisfies some
 axioms ensuring there is a topology on `A` which is compatible with the ring structure and
 admits this family as a basis of neighborhoods of zero. -/
-structure RingSubgroupsBasis {A ι : Type*} [Ring A] (B : ι → AddSubgroup A) : Prop where
+structure IsRingBasisOfSubgroups {A : Type*} {ι : Sort*} [Ring A]
+    (p : ι → Prop) (B : ι → AddSubgroup A) : Prop where
+  nonempty : ∃ i, p i
   /-- Condition for `B` to be a filter basis on `A`. -/
-  inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
+  inter : ∀ {i j}, p i → p j → ∃ k, p k ∧ B k ≤ B i ⊓ B j
   /-- For each set `B` in the submodule basis on `A`, there is another basis element `B'` such
    that the set-theoretic product `B' * B'` is in `B`. -/
-  mul : ∀ i, ∃ j, (B j : Set A) * B j ⊆ B i
+  mul : ∀ {i}, p i → ∃ j, p j ∧ (B j : Set A) * B j ⊆ B i
   /-- For any element `x : A` and any set `B` in the submodule basis on `A`,
     there is another basis element `B'` such that `B' * x` is in `B`. -/
-  leftMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (x * ·) ⁻¹' B i
+  mul_left : ∀ x : A, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x * ·) (B j) (B i)
   /-- For any element `x : A` and any set `B` in the submodule basis on `A`,
     there is another basis element `B'` such that `x * B'` is in `B`. -/
-  rightMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (· * x) ⁻¹' B i
+  mul_right : ∀ x : A, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (· * x) (B j) (B i)
 
-namespace RingSubgroupsBasis
+namespace IsRingBasisOfSubgroups
 
-variable {A ι : Type*} [Ring A]
+variable {A : Type*} {ι : Sort*} [Ring A]
 
-theorem of_comm {A ι : Type*} [CommRing A] (B : ι → AddSubgroup A)
-    (inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j) (mul : ∀ i, ∃ j, (B j : Set A) * B j ⊆ B i)
-    (leftMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (fun y : A => x * y) ⁻¹' B i) :
-    RingSubgroupsBasis B :=
-  { inter
-    mul
-    leftMul
-    rightMul := fun x i ↦ (leftMul x i).imp fun j hj ↦ by simpa only [mul_comm] using hj }
+theorem mk_of_comm {A : Type*} {ι : Sort*} [CommRing A] (p : ι → Prop) (B : ι → AddSubgroup A)
+    (nonempty : ∃ i, p i)
+    (inter : ∀ {i j}, p i → p j → ∃ k, p k ∧ B k ≤ B i ⊓ B j)
+    (mul : ∀ {i}, p i → ∃ j, p j ∧ (B j : Set A) * B j ⊆ B i)
+    (mul_left : ∀ x : A, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x * ·) (B j) (B i)) :
+    IsRingBasisOfSubgroups p B where
+  nonempty := nonempty
+  inter := inter
+  mul := mul
+  mul_left := mul_left
+  mul_right := fun x i hi ↦ (mul_left x hi).imp fun j hj ↦ by simpa only [mul_comm] using hj
 
-/-- Every subgroups basis on a ring leads to a ring filter basis. -/
-def toRingFilterBasis [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgroupsBasis B) :
-    RingFilterBasis A where
-  sets := { U | ∃ i, U = B i }
-  nonempty := by
-    inhabit ι
-    exact ⟨B default, default, rfl⟩
-  inter_sets := by
-    rintro _ _ ⟨i, rfl⟩ ⟨j, rfl⟩
-    cases' hB.inter i j with k hk
-    use B k
-    constructor
-    · use k
-    · exact hk
-  zero' := by
-    rintro _ ⟨i, rfl⟩
-    exact (B i).zero_mem
-  add' := by
-    rintro _ ⟨i, rfl⟩
-    use B i
-    constructor
-    · use i
-    · rintro x ⟨y, y_in, z, z_in, rfl⟩
-      exact (B i).add_mem y_in z_in
-  neg' := by
-    rintro _ ⟨i, rfl⟩
-    use B i
-    constructor
-    · use i
-    · intro x x_in
-      exact (B i).neg_mem x_in
-  conj' := by
-    rintro x₀ _ ⟨i, rfl⟩
-    use B i
-    constructor
-    · use i
-    · simp
-  mul' := by
-    rintro _ ⟨i, rfl⟩
-    cases' hB.mul i with k hk
-    use B k
-    constructor
-    · use k
-    · exact hk
-  mul_left' := by
-    rintro x₀ _ ⟨i, rfl⟩
-    cases' hB.leftMul x₀ i with k hk
-    use B k
-    constructor
-    · use k
-    · exact hk
-  mul_right' := by
-    rintro x₀ _ ⟨i, rfl⟩
-    cases' hB.rightMul x₀ i with k hk
-    use B k
-    constructor
-    · use k
-    · exact hk
+variable {p : ι → Prop} {B : ι → AddSubgroup A} (hB : IsRingBasisOfSubgroups p B)
+include hB
 
-variable [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgroupsBasis B)
-
-theorem mem_addGroupFilterBasis_iff {V : Set A} :
-    V ∈ hB.toRingFilterBasis.toAddGroupFilterBasis ↔ ∃ i, V = B i :=
-  Iff.rfl
-
-theorem mem_addGroupFilterBasis (i) : (B i : Set A) ∈ hB.toRingFilterBasis.toAddGroupFilterBasis :=
-  ⟨i, rfl⟩
+theorem isRingBasis :
+    IsRingBasis p ((↑) ∘ B : ι → Set A) where
+  nonempty := hB.nonempty
+  inter := hB.inter
+  zero' _ := zero_mem _
+  add' {i} hi := ⟨i, hi, add_subset_iff.mpr fun _ ha _ hb ↦ add_mem ha hb⟩
+  neg' {i} hi := ⟨i, hi, fun _ ha ↦ neg_mem ha⟩
+  conj' a {i} hi := ⟨i, hi, fun _ hb ↦ by simpa [SetLike.mem_coe] using hb⟩
+  mul' := hB.mul
+  mul_left' := hB.mul_left
+  mul_right' := hB.mul_right
 
 /-- The topology defined from a subgroups basis, admitting the given subgroups as a basis
 of neighborhoods of zero. -/
-def topology : TopologicalSpace A :=
-  hB.toRingFilterBasis.toAddGroupFilterBasis.topology
+abbrev topology : TopologicalSpace A :=
+  hB.isRingBasis.topology
 
 theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fun i => B i :=
   ⟨by
