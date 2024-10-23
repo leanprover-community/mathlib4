@@ -1739,13 +1739,31 @@ lemma mpullbackWithin_mlieBracketWithin [IsRCLikeNormedField 𝕜]
     mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
       mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
   apply mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt hV hW hu hf hx₀ hst
-  have : ((extChartAt I x₀).symm ⁻¹' s ∩ range I : Set E) =ᶠ[𝓝 (extChartAt I x₀ x₀)]
-      ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target : Set E) := by
-    apply EventuallyEq.inter (by rfl)
-    symm
-    rw [← nhdsWithin_eq_iff_eventuallyEq]
-    exact nhdsWithin_extChartAt_target_eq I x₀
-
+  have A : ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target : Set E)
+      =ᶠ[𝓝 (extChartAt I x₀ x₀)] ((extChartAt I x₀).symm ⁻¹' s ∩ range I : Set E) :=
+    EventuallyEq.inter (by rfl) (extChartAt_target_eventuallyEq I)
+  apply IsSymmSndFDerivWithinAt.congr_set _ A
+  apply ContDiffWithinAt.isSymmSndFDerivWithinAt (n := 2) _ le_rfl
+  · rw [inter_comm]
+    exact UniqueMDiffOn.uniqueDiffOn_target_inter hu x₀
+  · simp_rw [mem_closure_iff, interior_inter, ← inter_assoc]
+    intro o o_open ho
+    obtain ⟨y, ⟨yo, hy⟩, ys⟩ :
+        ((extChartAt I x₀) ⁻¹' o ∩ (extChartAt I x₀).source ∩ interior s).Nonempty := by
+      have : (extChartAt I x₀) ⁻¹' o ∈ 𝓝 x₀ := by
+        apply (continuousAt_extChartAt I x₀).preimage_mem_nhds (o_open.mem_nhds ho)
+      exact (mem_closure_iff_nhds.1 h'x₀) _ (inter_mem this (extChartAt_source_mem_nhds I x₀))
+    have A : interior (↑(extChartAt I x₀).symm ⁻¹' s) ∈ 𝓝 (extChartAt I x₀ y) := by
+      simp only [interior_mem_nhds]
+      apply (continuousAt_extChartAt_symm' _ hy).preimage_mem_nhds
+      simp only [hy, PartialEquiv.left_inv]
+      exact mem_interior_iff_mem_nhds.mp ys
+    have B : (extChartAt I x₀) y ∈ closure (interior (extChartAt I x₀).target) := by
+      apply extChartAt_target_subset_closure_interior I (x := x₀)
+      exact (extChartAt I x₀).map_source hy
+    exact mem_closure_iff_nhds.1 B _ (inter_mem (o_open.mem_nhds yo) A)
+  · simp [hx₀]
+  · exact (contMDiffWithinAt_iff.1 hf).2.congr_set A.symm
 
 end VectorField
 
