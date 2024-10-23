@@ -354,7 +354,7 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
     rw [← lt_add_one_iff, ← hp]
     exact x.2
 
-theorem isClosedBelow_iff (S : Set Ordinal) (o : Ordinal) : IsClosedBelow S o ↔
+theorem isClosedBelow_iff {S : Set Ordinal} {o : Ordinal} : IsClosedBelow S o ↔
     ∀ p < o, IsAcc p S → p ∈ S := by
   dsimp [IsClosedBelow]
   constructor
@@ -370,7 +370,7 @@ theorem isClosedBelow_iff (S : Set Ordinal) (o : Ordinal) : IsClosedBelow S o �
     | .inr h' => exact h r.1 r.2 <| (accPt_subtype _ _).mpr h'
 
 theorem IsClosedBelow.forall_lt {S : Set Ordinal} {o : Ordinal} (h : IsClosedBelow S o) :
-    ∀ p < o, IsAcc p S → p ∈ S := (isClosedBelow_iff _ _).mp h
+    ∀ p < o, IsAcc p S → p ∈ S := isClosedBelow_iff.mp h
 
 theorem IsClosedBelow.sInter {o : Ordinal} {S : Set (Set Ordinal)}
     (h : ∀ C ∈ S, IsClosedBelow C o) : IsClosedBelow (⋂₀ S) o := by
