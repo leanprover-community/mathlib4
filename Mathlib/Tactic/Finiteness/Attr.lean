@@ -5,6 +5,6 @@ Authors: Floris van Doorn
 -/
 import Aesop
 
-/-! # Finiteness tactic attributes -/
+/-! # Finiteness tactic attribute -/
 
 declare_aesop_rule_sets [finiteness]
