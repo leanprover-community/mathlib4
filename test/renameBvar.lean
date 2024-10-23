@@ -25,10 +25,10 @@ h : ∀ (q : ℕ), ∃ m, P q m
 #guard_msgs in
 example (P : ℕ → ℕ → Prop) (h : ∀ n, ∃ m, P n m) : ∀ l, ∃ m, P l m := by
   trace_state
-  rename_bvar n → q at h -- h is now ∀ (q : ℕ), ∃ (m : ℕ), P q m,
+  rename_bvar n → q at h
   trace_state
-  rename_bvar m → n -- target is now ∀ (l : ℕ), ∃ (n : ℕ), P k n,
+  rename_bvar m → n
   trace_state
   rename_bvar l → m
   trace_state
-  exact h -- Lean does not care about those bound variable names
+  exact h
