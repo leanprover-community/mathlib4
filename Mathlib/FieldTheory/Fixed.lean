@@ -349,11 +349,11 @@ theorem toAlgAut_bijective [Finite G] [FaithfulSMul G F] :
 def toAlgAutMulEquiv [Finite G] [FaithfulSMul G F] : G ≃* (F ≃ₐ[FixedPoints.subfield G F] F) :=
   MulEquiv.ofBijective _ (toAlgAut_bijective G F)
 
-/-- `MulSemiringAction.toAlgHom` is surjective. -/
+/-- `MulSemiringAction.toAlgAut` is surjective. -/
 theorem toAlgAut_surjective [Finite G] :
     Function.Surjective (MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F) := by
   let f : G →* F ≃ₐ[FixedPoints.subfield G F] F :=
-    MulSemiringAction.toAlgAut (FixedPoints.subfield G F) F
+    MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F
   let Q := G ⧸ f.ker
   let _ : MulSemiringAction Q F := MulSemiringAction.compHom _ (QuotientGroup.kerLift f)
   have : FaithfulSMul Q F := ⟨by
