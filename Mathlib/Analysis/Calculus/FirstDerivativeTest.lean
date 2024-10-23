@@ -69,72 +69,20 @@ lemma localMin_of_deriv_Ioo {f : ℝ → ℝ} {a b c : ℝ} (h : ContinuousAt f 
       (fun x hx => deriv.neg (f := f) ▸ Left.neg_nonpos_iff.mpr <|h₁ x hx)
     exact (neg_neg f) ▸ IsLocalMax.neg this
 
--- If `p` holds to the left of `a` then it holds in an open interval `(l, a)`. -/
--- lemma Filter.Eventually.exists_lt_forall_Ioo {α : Type*} [TopologicalSpace α] [LinearOrder α]
---     [OrderTopology α] [NoMinOrder α] {a : α} {p : α → Prop} (h : ∀ᶠ x in 𝓝[<] a, p x) :
---     ∃ l < a, ∀ x ∈ Ioo l a, p x :=
---   mem_nhdsWithin_Iio_iff_exists_Ioo_subset.1 h
-
--- If `p` holds to the right of `a` then it holds in an open interval `(a, l)`. -/
--- lemma Filter.Eventually.exists_gt_forall_Ioo {α : Type*} [TopologicalSpace α] [LinearOrder α]
---     [OrderTopology α] [NoMaxOrder α] {a : α} {p : α → Prop} (h : ∀ᶠ x in 𝓝[>] a, p x) :
---     ∃ l > a, ∀ x ∈ Ioo a l, p x :=
---   mem_nhdsWithin_Ioi_iff_exists_Ioo_subset.1 h
-
-
-/-- Monotonicity of open intervals under removal of `max` at a left endpoint. -/
-theorem mem_Ioo_of_mem_Ioo_max_left {R : Type*} [LinearOrder R]
-    {b u₀ v₀ x : R} (hx : x ∈ Ioo (max u₀ v₀) b) :
-    x ∈ Ioo u₀ b := by simp_all
-
-/-- Monotonicity of open intervals under removal of `min` at a right endpoint. -/
-theorem mem_Ioo_of_mem_Ioo_min_right {R : Type*} [LinearOrder R]
-    {b u₁ v₁ x : R} (hx : x ∈ Ioo b (min u₁ v₁)) :
-    x ∈ Ioo b u₁ := by simp_all
-
--- The interval inclusion `(a,b] \ {b} ⊆ (a,b)`.
--- theorem mem_Ioo_of_mem_Ioc_of_ne {R : Type*} [LinearOrder R]
---     {b u₀ x : R} (hx : x ∈ Ioc u₀ b) (H : ¬x = b) :
---     x ∈ Ioo u₀ b := by
---     rw [← Ioc_diff_right]
---     exact ⟨hx, H⟩
-
--- The interval inclusion `[a,b) \ {a} ⊆ (a,b)`.
--- theorem mem_Ioo_of_mem_Ico_of_ne {R : Type*} [LinearOrder R]
---     {b u₀ x : R} (hx : x ∈ Ico u₀ b) (H : ¬x = u₀) :
---     x ∈ Ioo u₀ b := by
---     rw [← Ico_diff_left]
---     exact ⟨hx, H⟩
-
-
  /-- The First-Derivative Test from calculus, maxima version,
  expressed in terms of left and right filters. -/
 lemma localMax_of_deriv' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd₀ : ∀ᶠ x in 𝓝[<] b, DifferentiableAt ℝ f x) (hd₁ : ∀ᶠ x in 𝓝[>] b, DifferentiableAt ℝ f x)
     (h₀  : ∀ᶠ x in 𝓝[<] b, 0 ≤ deriv f x) (h₁  : ∀ᶠ x in 𝓝[>] b, deriv f x ≤ 0) :
     IsLocalMax f b := by
-  obtain ⟨u₀, hu₀, diff_u₀ : Ioo u₀ b ⊆ {x | DifferentiableAt ℝ f x}⟩ :=
-      mem_nhdsWithin_Iio_iff_exists_Ioo_subset.1 hd₀
-  obtain ⟨u₁, hu₁, diff_u₁ : Ioo b u₁ ⊆ {x | DifferentiableAt ℝ f x}⟩ :=
-    mem_nhdsWithin_Ioi_iff_exists_Ioo_subset.1 hd₁
-  obtain ⟨v₀, hv₀, diff_v₀⟩ := mem_nhdsWithin_Iio_iff_exists_Ioo_subset.1 h₀
-  obtain ⟨v₁, hv₁, diff_v₁⟩ := mem_nhdsWithin_Ioi_iff_exists_Ioo_subset.1 h₁
-  apply isLocalMax_of_mono_anti
-  · show max u₀ v₀ < b; exact max_lt (by simp_all) (by simp_all)
-  · show b < min u₁ v₁; exact lt_min (by simp_all) (by simp_all)
-  · exact monotoneOn_of_deriv_nonneg (convex_Ioc _ _)
-      (fun x hx => ContinuousAt.continuousWithinAt
-        <|(em (x = b)).elim (fun H => H ▸ h)
-          fun H => DifferentiableAt.continuousAt <|diff_u₀
-            <|mem_Ioo_of_mem_Ioo_max_left <|by rw [← Ioc_diff_right]; exact ⟨hx, H⟩)
-      (fun _ _ => DifferentiableAt.differentiableWithinAt (by aesop)) (by aesop)
-  · exact antitoneOn_of_deriv_nonpos (convex_Ico _ _)
-      (fun x hx => ContinuousAt.continuousWithinAt
-        <|(em (x = b)).elim (fun H => H ▸ h)
-          fun H => DifferentiableAt.continuousAt <|diff_u₁
-            <|mem_Ioo_of_mem_Ioo_min_right <|by rw [← Ico_diff_left]; exact ⟨hx, H⟩
-        )
-      (fun _ _ => DifferentiableAt.differentiableWithinAt (by aesop)) (by aesop)
+  obtain ⟨a,ha⟩ := (Filter.HasBasis.eventually_iff
+    (nhdsWithin_Iio_basis' ⟨b - 1, sub_one_lt b⟩)).mp <|Filter.Eventually.and hd₀ h₀
+  obtain ⟨c,hc⟩ := (Filter.HasBasis.eventually_iff
+    (nhdsWithin_Ioi_basis' ⟨b + 1, lt_add_one b⟩)).mp <|Filter.Eventually.and hd₁ h₁
+  exact localMax_of_deriv_Ioo ha.1 hc.1 h
+    (fun _ hx => (ha.2 hx).1.differentiableWithinAt)
+    (fun _ hx => (hc.2 hx).1.differentiableWithinAt)
+    (fun _ hx => (ha.2 hx).2) (fun x hx => (hc.2 hx).2)
 
 /-- The First Derivative test, maximum version. -/
 theorem localMax_of_deriv {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
