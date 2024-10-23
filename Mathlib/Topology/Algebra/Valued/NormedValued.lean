@@ -177,16 +177,6 @@ theorem one_lt_norm_iff {x : L} :
     1 < ‖x‖ ↔ 1 < val.v x := by
   simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
 
-/--
-The norm associated to a rank-one valued field is nonarchimedean.
--/
-theorem isNonarchimedean:
-    let _ := val.toNormedField
-    IsNonarchimedean (norm : L → ℝ) := by
-  intro x y
-  simp only [norm, le_max_iff, NNReal.coe_le_coe, (Valuation.RankOne.strictMono val.v).le_iff_le,
-    Valuation.map_add', implies_true]
-
 end toNormedField
 
 variable (L) (Γ₀)
@@ -206,6 +196,11 @@ def toNontriviallyNormedField: NontriviallyNormedField L := {
       simp only [map_inv₀, inv_le_one₀ <| zero_lt_iff.mpr hx.1] at h
       simp only [toNormedField.one_lt_norm_iff, lt_of_le_of_ne h hx.2.symm]
 }
+
+end Valued
+
+variable (L) (Γ₀)
+
 -- When a field is valued, one inherits a `NormedField`.
 -- Scoped instance to avoid a typeclass loop or non-defeq topology or norms.
 scoped[Valued] attribute [instance] Valued.toNormedField
@@ -226,5 +221,3 @@ instance : IsUltrametricDist L :=
 lemma coe_valuation_eq_rankOne_hom_comp_valuation : ⇑NormedField.valuation = hv.hom ∘ val.v := rfl
 
 end NormedField
-
-end Valued
