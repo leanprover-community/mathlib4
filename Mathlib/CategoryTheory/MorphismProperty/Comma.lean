@@ -203,7 +203,7 @@ protected abbrev Over (P Q : MorphismProperty T) (X : T) : Type _ :=
 
 variable (P Q : MorphismProperty T) [Q.IsMultiplicative] (X : T)
 
-/-- Construct a morphism in `P.Over Q X` from a morphism in `Over.X`. -/
+/-- Construct a morphism in `P.Over Q X` from a morphism in `Over X`. -/
 @[simps hom]
 def Over.Hom.mk {A B : P.Over Q X} (f : A.toComma ⟶ B.toComma) (hf : Q f.left) : A ⟶ B where
   __ := f
