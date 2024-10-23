@@ -28,6 +28,7 @@ The following notation is scoped to the `Ordinal` namespace.
 
 ## Todo
 
+- Prove that `ε₀` and `Γ₀` are countable.
 - Prove that the exponential principal ordinals are the epsilon ordinals (and 0, 1, 2, ω).
 - Prove that the ordinals principal under `veblen` are the gamma ordinals (and 0).
 -/
