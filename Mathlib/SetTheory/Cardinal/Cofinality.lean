@@ -661,19 +661,19 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
 
 @[simp]
 theorem cof_preOmega {o : Ordinal} (ho : o.IsLimit) : (preOmega o).cof = o.cof :=
-  isNormal_omega'.cof_eq ho
+  isNormal_preOmega.cof_eq ho
 
 @[simp]
 theorem cof_omega {o : Ordinal} (ho : o.IsLimit) : (ω_ o).cof = o.cof :=
   isNormal_omega.cof_eq ho
 
 set_option linter.deprecated false in
-@[deprecated cof_omega' (since := "2024-10-11")]
+@[deprecated cof_preOmega (since := "2024-10-11")]
 theorem aleph'_cof {o : Ordinal} (ho : o.IsLimit) : (aleph' o).ord.cof = o.cof :=
   aleph'_isNormal.cof_eq ho
 
 set_option linter.deprecated false in
-@[deprecated cof_omega' (since := "2024-10-11")]
+@[deprecated cof_omega (since := "2024-10-11")]
 theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (aleph o).ord.cof = o.cof :=
   aleph_isNormal.cof_eq ho
 
