@@ -76,7 +76,7 @@ lemma exists_triplet_summing_to_squares {n : ℕ} (hn : 100 ≤ n) :
 -- pair of pairwise unequal elements of B sums to a perfect square.
 lemma exists_finset_3_le_card_with_pairs_summing_to_squares {n : ℕ} (hn : 100 ≤ n) :
     ∃ B : Finset ℕ,
-      2 * 1 + 1 ≤ B.card ∧
+      2 * 1 + 1 ≤ #B ∧
       (∀ a ∈ B, ∀ b ∈ B, a ≠ b → IsSquare (a + b)) ∧
       ∀ c ∈ B, n ≤ c ∧ c ≤ 2 * n := by
   obtain ⟨a, b, c, hna, hab, hbc, hcn, h₁, h₂, h₃⟩ := exists_triplet_summing_to_squares hn
@@ -115,7 +115,7 @@ theorem imo2021_q1 :
   obtain ⟨B, hB, h₁, h₂⟩ := exists_finset_3_le_card_with_pairs_summing_to_squares hn
   have hBsub : B ⊆ Finset.Icc n (2 * n) := by
     intro c hcB; simpa only [Finset.mem_Icc] using h₂ c hcB
-  have hB' : 2 * 1 < (B ∩ (Finset.Icc n (2 * n) \ A) ∪ B ∩ A).card := by
+  have hB' : 2 * 1 < #(B ∩ (Icc n (2 * n) \ A) ∪ B ∩ A) := by
     rwa [← inter_union_distrib_left, sdiff_union_self_eq_union, union_eq_left.2 hA,
       inter_eq_left.2 hBsub, ← Nat.succ_le_iff]
   -- Since B has cardinality greater or equal to 3, there must exist a subset C ⊆ B such that
