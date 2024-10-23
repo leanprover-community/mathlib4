@@ -38,80 +38,7 @@ apply. -/
 protected theorem _root_.Ideal.smul_eq_mul (I J : Ideal R) : I • J = I * J :=
   rfl
 
-variable (R M) in
-/-- `Module.annihilator R M` is the ideal of all elements `r : R` such that `r • M = 0`. -/
-def _root_.Module.annihilator : Ideal R := LinearMap.ker (LinearMap.lsmul R M)
-
-theorem _root_.Module.mem_annihilator {r} : r ∈ Module.annihilator R M ↔ ∀ m : M, r • m = 0 :=
-  ⟨fun h ↦ (congr($h ·)), (LinearMap.ext ·)⟩
-
-theorem _root_.LinearMap.annihilator_le_of_injective (f : M →ₗ[R] M') (hf : Function.Injective f) :
-    Module.annihilator R M' ≤ Module.annihilator R M := fun x h ↦ by
-  rw [Module.mem_annihilator] at h ⊢; exact fun m ↦ hf (by rw [map_smul, h, f.map_zero])
-
-theorem _root_.LinearMap.annihilator_le_of_surjective (f : M →ₗ[R] M')
-    (hf : Function.Surjective f) : Module.annihilator R M ≤ Module.annihilator R M' := fun x h ↦ by
-  rw [Module.mem_annihilator] at h ⊢
-  intro m; obtain ⟨m, rfl⟩ := hf m
-  rw [← map_smul, h, f.map_zero]
-
-theorem _root_.LinearEquiv.annihilator_eq (e : M ≃ₗ[R] M') :
-    Module.annihilator R M = Module.annihilator R M' :=
-  (e.annihilator_le_of_surjective e.surjective).antisymm (e.annihilator_le_of_injective e.injective)
-
-/-- `N.annihilator` is the ideal of all elements `r : R` such that `r • N = 0`. -/
-abbrev annihilator (N : Submodule R M) : Ideal R :=
-  Module.annihilator R N
-
-theorem annihilator_top : (⊤ : Submodule R M).annihilator = Module.annihilator R M :=
-  topEquiv.annihilator_eq
-
 variable {I J : Ideal R} {N P : Submodule R M}
-
-theorem mem_annihilator {r} : r ∈ N.annihilator ↔ ∀ n ∈ N, r • n = (0 : M) := by
-  simp_rw [annihilator, Module.mem_annihilator, Subtype.forall, Subtype.ext_iff]; rfl
-
-theorem mem_annihilator' {r} : r ∈ N.annihilator ↔ N ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) ⊥ :=
-  mem_annihilator.trans ⟨fun H n hn => (mem_bot R).2 <| H n hn, fun H _ hn => (mem_bot R).1 <| H hn⟩
-
-theorem mem_annihilator_span (s : Set M) (r : R) :
-    r ∈ (Submodule.span R s).annihilator ↔ ∀ n : s, r • (n : M) = 0 := by
-  rw [Submodule.mem_annihilator]
-  constructor
-  · intro h n
-    exact h _ (Submodule.subset_span n.prop)
-  · intro h n hn
-    refine Submodule.span_induction ?_ ?_ ?_ ?_ hn
-    · intro x hx
-      exact h ⟨x, hx⟩
-    · exact smul_zero _
-    · intro x y _ _ hx hy
-      rw [smul_add, hx, hy, zero_add]
-    · intro a x _ hx
-      rw [smul_comm, hx, smul_zero]
-
-theorem mem_annihilator_span_singleton (g : M) (r : R) :
-    r ∈ (Submodule.span R ({g} : Set M)).annihilator ↔ r • g = 0 := by simp [mem_annihilator_span]
-
-theorem annihilator_bot : (⊥ : Submodule R M).annihilator = ⊤ :=
-  (Ideal.eq_top_iff_one _).2 <| mem_annihilator'.2 bot_le
-
-theorem annihilator_eq_top_iff : N.annihilator = ⊤ ↔ N = ⊥ :=
-  ⟨fun H =>
-    eq_bot_iff.2 fun (n : M) hn =>
-      (mem_bot R).2 <| one_smul R n ▸ mem_annihilator.1 ((Ideal.eq_top_iff_one _).1 H) n hn,
-    fun H => H.symm ▸ annihilator_bot⟩
-
-theorem annihilator_mono (h : N ≤ P) : P.annihilator ≤ N.annihilator := fun _ hrp =>
-  mem_annihilator.2 fun n hn => mem_annihilator.1 hrp n <| h hn
-
-theorem annihilator_iSup (ι : Sort w) (f : ι → Submodule R M) :
-    annihilator (⨆ i, f i) = ⨅ i, annihilator (f i) :=
-  le_antisymm (le_iInf fun _ => annihilator_mono <| le_iSup _ _) fun _ H =>
-    mem_annihilator'.2 <|
-      iSup_le fun i =>
-        have := (mem_iInf _).1 H i
-        mem_annihilator'.1 this
 
 theorem smul_mem_smul {r} {n} (hr : r ∈ I) (hn : n ∈ N) : r • n ∈ I • N :=
   apply_mem_map₂ _ hr hn
@@ -176,17 +103,6 @@ theorem map_le_smul_top (I : Ideal R) (f : R →ₗ[R] M) :
   rintro _ ⟨y, hy, rfl⟩
   rw [← mul_one y, ← smul_eq_mul, f.map_smul]
   exact smul_mem_smul hy mem_top
-
-@[simp]
-theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=
-  eq_bot_iff.2 (smul_le.2 fun _ => mem_annihilator.1)
-
-@[simp]
-theorem annihilator_mul (I : Ideal R) : annihilator I * I = ⊥ :=
-  annihilator_smul I
-
-@[simp]
-theorem mul_annihilator (I : Ideal R) : I * annihilator I = ⊥ := by rw [mul_comm, annihilator_mul]
 
 variable (I J N P)
 
