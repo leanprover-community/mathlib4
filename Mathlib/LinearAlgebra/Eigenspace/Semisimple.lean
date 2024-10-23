@@ -49,7 +49,7 @@ lemma apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil
   simpa [LinearMap.restrict_sub h₄ h₃] using (LinearMap.restrict_commute hfg h₄ h₃).isNilpotent_sub
     (f.isNilpotent_restrict_sub_algebraMap μ l) (Module.End.isNilpotent.restrict h₃ hnil)
 
-lemma IsSemisimple.unifEigenspace_eq_eigenspace
+lemma IsFinitelySemisimple.unifEigenspace_eq_eigenspace
     (hf : f.IsFinitelySemisimple) (μ : R) {k : ℕ∞} (hk : 0 < k) :
     f.unifEigenspace μ k = f.eigenspace μ := by
   refine le_antisymm (fun m hm ↦ mem_eigenspace_iff.mpr ?_) (f.unifEigenspace μ |>.mono ?_)
@@ -63,9 +63,9 @@ lemma IsFinitelySemisimple.genEigenspace_eq_eigenspace
   refine le_antisymm (fun m hm ↦ mem_eigenspace_iff.mpr ?_) (eigenspace_le_genEigenspace hk)
   exact apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil hm rfl hf (by simp)
 
-lemma IsSemisimple.maxGenEigenspace_eq_eigenspace
+lemma IsFinitelySemisimple.maxGenEigenspace_eq_eigenspace
     (hf : f.IsFinitelySemisimple) (μ : R) :
     f.maxGenEigenspace μ = f.eigenspace μ :=
-  hf.unifEigenspace_eq_eigenspace μ ENat.zero_lt_top
+  hf.unifEigenspace_eq_eigenspace μ ENat.top_pos
 
 end Module.End
