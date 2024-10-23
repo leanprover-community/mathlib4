@@ -153,29 +153,6 @@ namespace Submodule
 
 variable {p : Submodule K V} {f : Module.End K V}
 
--- move this
-theorem _root_.Finset.supIndep_antimono_fun {α ι : Type*} [Lattice α] [OrderBot α] {s : Finset ι}
-    {f g : ι → α} (h : ∀ x ∈ s, f x ≤ g x) (h : s.SupIndep g) : s.SupIndep f := by
-  classical
-  induction s using Finset.induction_on
-  case empty => apply Finset.supIndep_empty
-  case insert i s his IH hle =>
-  rw [Finset.supIndep_iff_disjoint_erase] at h ⊢
-  intro j hj
-  simp_all only [Finset.mem_insert, or_true, implies_true, true_implies, forall_eq_or_imp,
-    Finset.erase_insert_eq_erase, not_false_eq_true, Finset.erase_eq_of_not_mem]
-  obtain rfl | hj := hj
-  · simp only [Finset.erase_insert_eq_erase]
-    apply h.left.mono hle.left
-    apply (Finset.sup_mono _).trans (Finset.sup_mono_fun hle.right)
-    apply Finset.erase_subset
-  · apply (h.right j hj).mono (hle.right j hj) (Finset.sup_mono_fun _)
-    intro k hk
-    simp_all only [Finset.mem_erase, ne_eq, Finset.mem_insert]
-    obtain ⟨-, rfl | hk⟩ := hk
-    · exact hle.left
-    · exact hle.right k hk
-
 theorem inf_iSup_unifEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈ p) (k : ℕ∞) :
     p ⊓ ⨆ μ, f.unifEigenspace μ k = ⨆ μ, p ⊓ f.unifEigenspace μ k := by
   refine le_antisymm (fun m hm ↦ ?_)
