@@ -234,10 +234,8 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     let r :  ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha =>
       Submodule.mem_span_singleton.1 (b ha).2 |>.choose
     have hr : ∀ ⦃i : E ⊗[R] M⦄ (hi : i ∈ c.support), b hi =
-        r hi • ⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩ := by
-      intro i hi
-      ext
-      exact Submodule.mem_span_singleton.1 (b hi).2 |>.choose_spec.symm
+        r hi • ⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩ := fun a ha =>
+      Subtype.ext <| Submodule.mem_span_singleton.1 (b ha).2 |>.choose_spec.symm
     -- Since `M` is flat and `E -> N1` is injective, we only need to check that x = 0
     -- in `N1 ⊗ M`. We write `x = ∑ μᵢ • (l23 (l12 n1)) ⊗ mᵢ = ∑ μᵢ • 0 = 0`
     -- (remember `E = span {l23 (l12 n1)}` and `eq1`)
