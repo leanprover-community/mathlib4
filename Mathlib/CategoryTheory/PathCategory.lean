@@ -50,7 +50,7 @@ def of : V ⥤q Paths V where
   map f := f.toPath
 
 /-- To prove a property on morphisms of a path category with given source `a`, it suffices to
-prove it for the identity and prove that the properity is preserved under composition on the right
+prove it for the identity and prove that the property is preserved under composition on the right
 with length 1 paths. -/
 lemma induction_fixed_source {a : Paths V} (P : ∀ {b : Paths V}, (a ⟶ b) → Prop)
     (id : P (𝟙 a))
@@ -62,7 +62,7 @@ lemma induction_fixed_source {a : Paths V} (P : ∀ {b : Paths V}, (a ⟶ b) →
   | @cons a b f w h => exact comp f w h
 
 /-- To prove a property on morphisms of a path category with given target `b`, it suffices to prove
-it for the identity and prove that the properity is preserved under composition on the left
+it for the identity and prove that the property is preserved under composition on the left
 with length 1 paths. -/
 lemma induction_fixed_target {b : Paths V} (P : ∀ {a : Paths V}, (a ⟶ b) → Prop)
     (id : P (𝟙 b))
