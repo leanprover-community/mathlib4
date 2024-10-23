@@ -488,8 +488,7 @@ end ChosenFiniteProducts
 open Limits MonoidalCategory ChosenFiniteProducts
 
 variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
-  {D : Type u₁} [Category.{v₁} D] (F : C ⥤ D)
-  [ChosenFiniteProducts D]
+  {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F : C ⥤ D)
 
 /-- Any functor between categories with chosen finite products induces an oplax monoial functor. -/
 @[simps]
