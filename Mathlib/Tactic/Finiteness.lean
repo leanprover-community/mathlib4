@@ -17,15 +17,11 @@ set.
 a locally finite measure.
 -/
 
-
 open Aesop.BuiltinRules in
 attribute [aesop (rule_sets := [finiteness]) safe -50] assumption intros
 
-open Lean Elab Tactic in
-/-- A version of the positivity tactic for use by `aesop`. -/
-@[aesop safe tactic (rule_sets := [finiteness])]
-def PositivityForAesop : TacticM Unit :=
-  liftMetaFinishingTactic Mathlib.Meta.Positivity.positivity
+set_option linter.unusedTactic false in
+add_aesop_rules safe tactic (rule_sets := [finiteness]) (by positivity)
 
 /-- Tactic to solve goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
 nonnegative reals (`ℝ≥0∞`). -/
