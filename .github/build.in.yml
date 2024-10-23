@@ -33,7 +33,7 @@ jobs:
         uses: credfeto/action-case-checker@v1.3.0
 
       - name: Look for ignored files
-        uses: credfeto/action-no-ignored-files@v1.1.0
+        uses: credfeto/action-no-ignored-files@v1.2.0
 
       - name: "Check for Lean files with the executable bit set"
         shell: bash
@@ -92,7 +92,7 @@ jobs:
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@v1.0.1
+        uses: dcarbone/install-jq-action@v2.1.0
 
       - name: install elan
         run: |
