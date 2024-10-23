@@ -5,7 +5,7 @@ Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Data.Finset.Order
-import Mathlib.Order.SuccPred.InverseSystem
+import Mathlib.Order.DirectedInverseSystem
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient
