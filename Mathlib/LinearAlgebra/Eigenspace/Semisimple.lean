@@ -64,7 +64,7 @@ lemma IsFinitelySemisimple.genEigenspace_eq_eigenspace
   exact apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil hm rfl hf (by simp)
 
 lemma IsSemisimple.maxGenEigenspace_eq_eigenspace
-    (hf : f.IsSemisimple) (μ : R) :
+    (hf : f.IsFinitelySemisimple) (μ : R) :
     f.maxGenEigenspace μ = f.eigenspace μ :=
   hf.unifEigenspace_eq_eigenspace μ ENat.zero_lt_top
 
