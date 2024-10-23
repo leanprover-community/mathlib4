@@ -341,6 +341,8 @@ def ofAddEquiv [Add α] : (m → n → α) ≃+ Matrix m n α where
   map_add' _ _ := rfl
 
 @[simp] lemma coe_ofAddEquiv [Add α] : (ofAddEquiv : (m → n → α) → Matrix m n α) = of := rfl
+@[simp] lemma coe_ofAddEquiv_symm [Add α] :
+    (ofAddEquiv : (m → n → α) → Matrix m n α).symm = of.symm := rfl
 
 /-- This is `Matrix.of` bundled as a linear equivalence. -/
 def ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : (m → n → α) ≃ₗ[R] Matrix m n α where
@@ -349,6 +351,8 @@ def ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : (m → n → �
 
 @[simp] lemma coe_ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
     (ofLinearEquiv (R := R) : (m → n → α) → Matrix m n α) = of := rfl
+@[simp] lemma coe_ofLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] :
+    (ofLinearEquiv (R := R) : (m → n → α) → Matrix m n α).symm = of.symm := rfl
 
 end Matrix
 
