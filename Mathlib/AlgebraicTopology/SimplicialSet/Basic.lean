@@ -554,16 +554,14 @@ theorem spineToSimplex_interval (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n
     simp only [spineToSimplex_vertex]
     congr 1
     apply Fin.eq_of_val_eq
-    simp
-    have : i.1 + j < n + 1 := by omega
-    have : (i.1 + j) % (n + 1) = i.1 + j := by exact Nat.mod_eq_of_lt this
+    simp only [mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk, Fin.val_natCast]
+    have : (i.1 + j) % (n + 1) = i.1 + j := by exact Nat.mod_eq_of_lt (by omega)
     rw [this]
   · unfold Path.interval
     simp only [Equiv.invFun_as_coe, spine_arrow, Fin.coe_addNat]
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
     have ceq : mkOfSucc i ≫ subinterval j k hjk = mkOfSucc ⟨i + j, (by omega)⟩ := by
       ext ⟨e, he⟩ : 3
-      simp at he
       unfold subinterval
       match e with
       | 0 => rfl
@@ -587,7 +585,6 @@ theorem spineToSimplex_edge (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n) :
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
   have : mkOfLe j k hjk = mkOfDiag (k.1 - j.1) ≫ subinterval j k hjk := by
     ext e : 3
-    simp at e
     unfold subinterval mkOfDiag mkOfLe
     simp only [len_mk, Nat.reduceAdd, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk,
       Fin.natCast_eq_last, comp_toOrderHom, OrderHom.mk_comp_mk, Function.comp_apply]
