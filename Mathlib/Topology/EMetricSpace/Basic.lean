@@ -300,7 +300,7 @@ namespace NNReal
 
 open Filter
 
-/-- If `u : ℕ → ℝ` is bounded above an nonnegative, it is also bounded above when regarded as
+/-- If `u : ℕ → ℝ` is bounded above and nonnegative, it is also bounded above when regarded as
   a function to `ℝ≥0`. -/
 theorem bddAbove' {u : ℕ → ℝ} (hu0 : 0 ≤ u) (hu_bdd : BddAbove (Set.range u)) :
     BddAbove (Set.range fun n : ℕ ↦ (⟨u n, hu0 n⟩ : ℝ≥0)) := by
@@ -314,6 +314,7 @@ theorem bddAbove' {u : ℕ → ℝ} (hu0 : 0 ≤ u) (hu_bdd : BddAbove (Set.rang
   rw [← hn]
   exact hB n
 
+/-- If `u : ℕ → ℝ` is bounded above an nonnegative, it is eventually bounded by some constant `. -/
 theorem eventually_le_of_bddAbove' {u : ℕ → ℝ≥0} (hu : BddAbove (Set.range u)) :
     {a : ℝ≥0 | ∀ᶠ n : ℕ in atTop, u n ≤ a}.Nonempty := by
   obtain ⟨B, hB⟩ := hu
