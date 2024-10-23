@@ -79,26 +79,29 @@ lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
   · fun_prop
   · fun_prop
 
-lemma autEmbedding_closedEmbedding : ClosedEmbedding (autEmbedding F) where
+lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
   induced := rfl
   inj := autEmbedding_injective F
   isClosed_range := autEmbedding_range_isClosed F
 
-instance : CompactSpace (Aut F) := ClosedEmbedding.compactSpace (autEmbedding_closedEmbedding F)
+@[deprecated (since := "2024-10-20")]
+alias autEmbedding_closedEmbedding := autEmbedding_isClosedEmbedding
+
+instance : CompactSpace (Aut F) := IsClosedEmbedding.compactSpace (autEmbedding_isClosedEmbedding F)
 
 instance : T2Space (Aut F) :=
   T2Space.of_injective_continuous (autEmbedding_injective F) continuous_induced_dom
 
 instance : TotallyDisconnectedSpace (Aut F) :=
-  (Embedding.isTotallyDisconnected_range (autEmbedding_closedEmbedding F).embedding).mp
+  (Embedding.isTotallyDisconnected_range (autEmbedding_isClosedEmbedding F).embedding).mp
     (isTotallyDisconnected_of_totallyDisconnectedSpace _)
 
 instance : ContinuousMul (Aut F) :=
   Inducing.continuousMul (autEmbedding F)
-    (autEmbedding_closedEmbedding F).toInducing
+    (autEmbedding_isClosedEmbedding F).toInducing
 
 instance : ContinuousInv (Aut F) :=
-  Inducing.continuousInv (autEmbedding_closedEmbedding F).toInducing (fun _ ↦ rfl)
+  Inducing.continuousInv (autEmbedding_isClosedEmbedding F).toInducing (fun _ ↦ rfl)
 
 instance : TopologicalGroup (Aut F) := ⟨⟩
 
