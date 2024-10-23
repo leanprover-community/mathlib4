@@ -290,22 +290,6 @@ theorem add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_deg : ℝ}
     · replace h_out := CoList.out_eq_cons h_out
       exact h_out
 
--- theorem cons_add' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_tl Y : PreMS (basis_hd :: basis_tl)}
---     {X_deg : ℝ} {X_coef : PreMS basis_tl}
---     (h_lt : Y.allLt X_deg)
---     : add (CoList.cons (X_deg, X_coef) X_tl) Y =
---     CoList.cons (X_deg, X_coef) (X_tl.add Y) := by
---   apply cons_add
---   revert h_lt
---   apply Y.casesOn
---   · intro h_lt
---     simp [leadingExp]
---   · intro (Y_deg, Y_coef) Y_tl h_lt
---     simp [allLt] at h_lt
---     simp [leadingExp, h_lt.left]
-
--- TODO: prove add_cons'
-
 theorem add_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_tl Y_tl: PreMS (basis_hd :: basis_tl)}
     {X_deg Y_deg : ℝ} {X_coef Y_coef : PreMS basis_tl}
     : HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) (CoList.cons (Y_deg, Y_coef) Y_tl) =
@@ -318,6 +302,72 @@ theorem add_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_tl Y_tl: Pr
     := by
   rw [add_unfold, add']
   simp
+
+theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
+    (X + Y).mulConst c = (X.mulConst c) + Y.mulConst c := by
+  cases basis with
+  | nil => simp [mulConst]; ring
+  | cons basis_hd basis_tl =>
+    let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
+      ∃ (X Y : PreMS (basis_hd :: basis_tl)), a = (X + Y).mulConst c ∧ b = X.mulConst c + Y.mulConst c
+    apply CoList.Eq.coind_strong motive
+    · intro a b ih
+      simp only [motive] at ih ⊢
+      obtain ⟨X, Y, ha, hb⟩ := ih
+      subst ha hb
+      apply X.casesOn
+      · simp
+      intro (X_deg, X_coef) X_tl
+      apply Y.casesOn
+      · simp
+      intro (Y_deg, Y_coef) Y_tl
+      right
+      rw [add_cons_cons]
+      split_ifs
+      · use ?_, ?_, ?_
+        constructor
+        · simp [-CoList.cons_eq_cons]
+          exact Eq.refl _
+        constructor
+        · simp
+          rw [add_cons_cons]
+          split_ifs
+          exact Eq.refl _
+        use ?_, ?_
+        constructor
+        · exact Eq.refl _
+        · simp
+      · use ?_, ?_, ?_
+        constructor
+        · simp [-CoList.cons_eq_cons]
+          exact Eq.refl _
+        constructor
+        · simp
+          rw [add_cons_cons]
+          split_ifs
+          exact Eq.refl _
+        use ?_, ?_
+        constructor
+        · exact Eq.refl _
+        · simp
+      · have : X_deg = Y_deg := by linarith
+        subst this
+        use ?_, ?_, ?_
+        constructor
+        · simp [-CoList.cons_eq_cons]
+          exact Eq.refl _
+        constructor
+        · simp
+          rw [add_cons_cons]
+          split_ifs
+          rw [add_mulConst]
+          exact Eq.refl _
+        use ?_, ?_
+        constructor
+        · exact Eq.refl _
+        · simp
+    · simp only [motive]
+      use X, Y
 
 private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
     X + Y = Y + X := by

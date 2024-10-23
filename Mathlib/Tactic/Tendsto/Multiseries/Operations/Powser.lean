@@ -181,70 +181,67 @@ theorem apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis
 theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
     {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     (apply (.cons s_hd s_tl) ms) = .cons (0, PreMS.const s_hd _) ((apply s_tl ms).mul ms) := by
-  sorry
-  -- simp [apply]
-  -- conv =>
-  --   lhs
-  --   rw [CoList.corec_cons (by rfl)]
-  --   simp [one]
-  --   arg 1
-  --   arg 1
-  --   unfold const
-  -- rw [merge1_cons_head_cons]
-  -- simp [one, ← merge1_mul_comm_right]
-  -- congr 1
-  -- let motive : CoList (PreMS (basis_hd :: basis_tl)) → CoList (PreMS (basis_hd :: basis_tl)) → Prop := fun x y =>
-  --   ∃ (X : PreMS (basis_hd :: basis_tl)), ∃ s,
-  --     x = CoList.corec (apply_aux ms) (X.mul ms, s) ∧
-  --     y = CoList.map (fun x ↦ x.mul ms) (CoList.corec (apply_aux ms) (X, s)) --∧
-  --     -- X.wellOrdered
-  -- apply CoList.Eq.coind motive
-  -- · intro x y ih
-  --   simp [motive] at ih
-  --   obtain ⟨X, s, hx, hy⟩ := ih
-  --   subst hx hy
-  --   apply s.casesOn
-  --   · right
-  --     simp [apply_aux]
-  --   · intro s_hd s_tl
-  --     left
-  --     use ?_, ?_, ?_
-  --     constructor
-  --     · unfold apply_aux
-  --       simp
-  --       rw [CoList.corec_cons]
-  --       pick_goal 2
-  --       · simp
-  --         constructor
-  --         · exact Eq.refl _
-  --         · exact Eq.refl _
-  --       congr
-  --       · exact Eq.refl _
-  --       · exact Eq.refl _
-  --     constructor
-  --     · unfold apply_aux
-  --       rw [CoList.corec_cons]
-  --       pick_goal 2
-  --       · simp
-  --         constructor
-  --         · exact Eq.refl _
-  --         · exact Eq.refl _
-  --       simp
-  --       constructor
-  --       · sorry
-  --       · exact Eq.refl _
-  --     simp only [motive]
-  --     use ?_, s_tl
-  --     constructor
-  --     · unfold apply_aux
-  --       simp
-  --       congr 2
-  --       -- rw [mul_assoc' hX_wo]
-  --       exact Eq.refl _
-  --     · unfold apply_aux
-  --       simp
-  -- · simp [motive]
-  --   use const 1 (basis_hd :: basis_tl), s_tl
+  simp [apply]
+  conv =>
+    lhs
+    rw [CoList.corec_cons (by rfl)]
+    simp [one]
+    arg 1
+    arg 1
+    unfold const
+  rw [merge1_cons_head_cons]
+  simp [one, ← merge1_mul_comm_right]
+  congr 1
+  let motive : CoList (PreMS (basis_hd :: basis_tl)) → CoList (PreMS (basis_hd :: basis_tl)) → Prop := fun x y =>
+    ∃ (X : PreMS (basis_hd :: basis_tl)), ∃ s,
+      x = CoList.corec (apply_aux ms) (X.mul ms, s) ∧
+      y = CoList.map (fun x ↦ x.mul ms) (CoList.corec (apply_aux ms) (X, s))
+  apply CoList.Eq.coind motive
+  · intro x y ih
+    simp [motive] at ih
+    obtain ⟨X, s, hx, hy⟩ := ih
+    subst hx hy
+    apply s.casesOn
+    · right
+      simp [apply_aux]
+    · intro s_hd s_tl
+      left
+      use ?_, ?_, ?_
+      constructor
+      · unfold apply_aux
+        simp
+        rw [CoList.corec_cons]
+        pick_goal 2
+        · simp
+          constructor
+          · exact Eq.refl _
+          · exact Eq.refl _
+        congr
+        · exact Eq.refl _
+        · exact Eq.refl _
+      constructor
+      · unfold apply_aux
+        rw [CoList.corec_cons]
+        pick_goal 2
+        · simp
+          constructor
+          · exact Eq.refl _
+          · exact Eq.refl _
+        simp
+        constructor
+        · rw [mul_mulConst]
+        · exact Eq.refl _
+      simp only [motive]
+      use ?_, s_tl
+      constructor
+      · unfold apply_aux
+        simp
+        congr 2
+        exact Eq.refl _
+      · unfold apply_aux
+        simp
+  · simp [motive]
+    use const 1 (basis_hd :: basis_tl), s_tl
 
 @[simp]
 theorem apply_cons_leadingExp {s_hd : ℝ} {s_tl : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
@@ -254,74 +251,6 @@ theorem apply_cons_leadingExp {s_hd : ℝ} {s_tl : LazySeries} {basis_hd : ℝ �
 theorem apply_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     (apply s ms).leadingExp ≤ 0 := by
   apply s.casesOn <;> simp [leadingExp]
-
--- theorem apply_wellOrdered {s : LazySeries} (h_analytic : analytic s) {basis : Basis}
---     {ms : PreMS basis}
---     (h_wo : ms.wellOrdered) (h_neg : ms.hasNegativeLeading) :
---     (apply s ms).wellOrdered := by
---   cases basis with
---   | nil => constructor
---   | cons basis_hd basis_tl =>
---     apply s.casesOn
---     · simp
---       exact wellOrdered.nil
---     intro s_hd s_tl
---     simp [hasNegativeLeading] at h_neg
---     let motive : (ms : PreMS (basis_hd :: basis_tl)) → Prop := fun ms' =>
---         ∃ (X Y : PreMS (basis_hd :: basis_tl)), ms' = X + (Y.mul (apply (CoList.cons s_hd s_tl) ms)) ∧
---         X.wellOrdered ∧ Y.wellOrdered
---     apply wellOrdered.coind motive
---     · intro ms ih
---       simp only [motive] at ih ⊢
---       obtain ⟨X, Y, h_ms_eq, hX_wo, hY_wo⟩ := ih
---       subst h_ms_eq
---       revert hX_wo
---       apply X.casesOn
---       · intro _
---         revert hY_wo
---         apply Y.casesOn
---         · intro _
---           left
---           simp
---         · intro (Y_deg, Y_coef) Y_tl hY_wo
---           obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := wellOrdered_cons hY_wo
---           right
---           use ?_, ?_, ?_
---           constructor
---           · simp only [apply_cons, mul_cons_cons, add_zero, nil_add]
---             congr 1
---             · exact Eq.refl _
---             · rw [← apply_cons]
---               exact Eq.refl _
---           constructor
---           · apply mul_wellOrdered hY_coef_wo
---             exact const_wellOrdered
---           constructor
---           · simp
---             constructor
---             · conv => rhs; arg 1; rw [← add_zero Y_deg]
---               rw [WithBot.coe_add]
---               apply WithBot.add_lt_add_left (by simp)
---               conv => rhs; arg 1; rw [← zero_add 0]
---               rw [WithBot.coe_add]
---               apply WithBot.add_lt_add_of_lt_of_le (by simp)
---               · exact h_neg
---               · apply apply_leadingExp_le_zero
---             · exact hY_comp
---           use ?_, Y_tl
---           constructor
---           · exact Eq.refl _
---           constructor
---           · apply mulMonomial_wellOrdered
---             · apply mul_wellOrdered
-
---     · simp only [motive]
---       use 0, one _
---       constructor
---       · simp
---       constructor
---       · exact zero_wellOrdered
---       · exact const_wellOrdered
 
 theorem apply_wellOrdered {s : LazySeries} {basis : Basis}
     {ms : PreMS basis}

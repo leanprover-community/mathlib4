@@ -213,6 +213,121 @@ theorem one_mul' {basis : Basis} {ms : PreMS basis} : mul (one basis) ms = ms :=
           · simp only [motive]
     · simp only [motive]
 
+-- Is not needed so far
+-- theorem mulMonomial_mulConst {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+--     {b : PreMS (basis_hd :: basis_tl)} {m_coef : PreMS basis_tl} {m_deg c : ℝ} :
+--     (b.mulConst c).mulMonomial m_coef m_deg = (b.mulMonomial m_coef m_deg).mulConst c := by
+--   sorry
+
+mutual
+  theorem mulMonomial_mulConst_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+      {b : PreMS (basis_hd :: basis_tl)} {m_coef : PreMS basis_tl} {m_deg c : ℝ} :
+      b.mulMonomial (m_coef.mulConst c) m_deg = (b.mulMonomial m_coef m_deg).mulConst c := by
+    let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
+      ∃ (b : PreMS (basis_hd :: basis_tl)),
+        x = b.mulMonomial (m_coef.mulConst c) m_deg ∧
+        y = (b.mulMonomial m_coef m_deg).mulConst c
+    apply CoList.Eq.coind motive
+    · intro x y ih
+      simp only [motive] at ih ⊢
+      obtain ⟨b, hx, hy⟩ := ih
+      subst hx hy
+      apply b.casesOn
+      · simp
+      intro (b_deg, b_coef) b_tl
+      left
+      use ?_, ?_, ?_
+      constructor
+      · simp [-CoList.cons_eq_cons]
+        exact Eq.refl _
+      constructor
+      · simp
+        constructor
+        · rw [mul_mulConst]
+        · exact Eq.refl _
+      use b_tl
+    · simp only [motive]
+      use b
+
+  theorem mul_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
+      (X.mulConst c).mul Y = (X.mul Y).mulConst c := by
+    cases basis with
+    | nil => simp [mul, mulConst]; ring
+    | cons basis_hd basis_tl =>
+      let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
+        ∃ (X Y S : PreMS (basis_hd :: basis_tl)), a = S + (X.mulConst c).mul Y ∧ b = S + (X.mul Y).mulConst c
+      apply CoList.Eq.coind_strong motive
+      · intro a b ih
+        simp only [motive] at ih ⊢
+        obtain ⟨X, Y, S, ha, hb⟩ := ih
+        subst ha hb
+        apply X.casesOn
+        · simp
+        intro (X_deg, X_coef) X_tl
+        apply Y.casesOn
+        · simp
+        intro (Y_deg, Y_coef) Y_tl
+        right
+        apply S.casesOn
+        · use ?_, ?_, ?_
+          constructor
+          · simp [-CoList.cons_eq_cons]
+            exact Eq.refl _
+          constructor
+          · simp
+            constructor
+            · rw [mul_mulConst]
+            · exact Eq.refl _
+          use ?_, ?_, ?_
+          constructor
+          · exact Eq.refl _
+          · rw [add_mulConst, mulMonomial_mulConst_coef]
+        intro (S_deg, S_coef) S_tl
+        simp only [mulConst_cons, mul_cons_cons]
+        rw [add_cons_cons, add_cons_cons]
+        split_ifs
+        · use ?_, ?_, ?_
+          constructor
+          · exact Eq.refl _
+          constructor
+          · exact Eq.refl _
+          use CoList.cons (X_deg, X_coef) X_tl, CoList.cons (Y_deg, Y_coef) Y_tl, S_tl
+          constructor
+          · simp
+          · simp
+        · use ?_, ?_, ?_
+          constructor
+          · exact Eq.refl _
+          constructor
+          · simp
+            constructor
+            · rw [mul_mulConst]
+            · exact Eq.refl _
+          use ?_, ?_, ?_
+          constructor
+          · rw [← add_assoc]
+            exact Eq.refl _
+          · rw [add_assoc]
+            rw [add_mulConst, mulMonomial_mulConst_coef]
+        · use ?_, ?_, ?_ -- Copypaste
+          constructor
+          · exact Eq.refl _
+          constructor
+          · simp
+            constructor
+            · rw [mul_mulConst]
+            · exact Eq.refl _
+          use ?_, ?_, ?_
+          constructor
+          · rw [← add_assoc]
+            exact Eq.refl _
+          · rw [add_assoc]
+            rw [add_mulConst, mulMonomial_mulConst_coef]
+      · simp only [motive]
+        use X, Y, 0
+        simp
+end
+
 mutual
   @[simp]
   theorem add_mulMonomial_right {basis_hd : _} {basis_tl : _} {b : PreMS (basis_hd :: basis_tl)}
@@ -1053,11 +1168,12 @@ mutual
         exact hX_wo
 end
 
-@[simp]
-theorem merge_mul_comm_left {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {s : CoList (PreMS (basis_hd :: basis_tl))} {X : PreMS (basis_hd :: basis_tl)} {m : ℕ} :
-    merge m (s.map (X.mul ·)) = X.mul (merge m s) := by
-  sorry
+-- Is not needed so far
+-- @[simp]
+-- theorem merge_mul_comm_left {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+--     {s : CoList (PreMS (basis_hd :: basis_tl))} {X : PreMS (basis_hd :: basis_tl)} {m : ℕ} :
+--     merge m (s.map (X.mul ·)) = X.mul (merge m s) := by
+--   sorry
 
 @[simp]
 theorem merge_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -1065,11 +1181,12 @@ theorem merge_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     merge m (s.map (·.mul X)) = (merge m s).mul X := by
   sorry
 
-@[simp]
-theorem merge1_mul_comm_left {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {s : CoList (PreMS (basis_hd :: basis_tl))} {X : PreMS (basis_hd :: basis_tl)} :
-    merge1 (s.map (X.mul ·)) = X.mul (merge1 s) := by
-  simp [merge1]
+-- Is not needed so far
+-- @[simp]
+-- theorem merge1_mul_comm_left {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+--     {s : CoList (PreMS (basis_hd :: basis_tl))} {X : PreMS (basis_hd :: basis_tl)} :
+--     merge1 (s.map (X.mul ·)) = X.mul (merge1 s) := by
+--   simp [merge1]
 
 @[simp]
 theorem merge1_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
