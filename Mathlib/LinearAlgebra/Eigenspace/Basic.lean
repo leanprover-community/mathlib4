@@ -706,7 +706,7 @@ lemma injOn_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
 theorem independent_unifEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : ℕ∞) :
     CompleteLattice.Independent (f.unifEigenspace · k) := by
   classical
-  suffices ∀ μ₁ (s : Finset R), μ₁ ∉ s →  Disjoint (f.unifEigenspace μ₁ k)
+  suffices ∀ μ₁ (s : Finset R), μ₁ ∉ s → Disjoint (f.unifEigenspace μ₁ k)
     (s.sup fun μ ↦ f.unifEigenspace μ k) by
     simp_rw [CompleteLattice.independent_iff_supIndep_of_injOn (injOn_unifEigenspace f k),
       Finset.supIndep_iff_disjoint_erase]
