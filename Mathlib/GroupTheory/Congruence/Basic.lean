@@ -298,9 +298,8 @@ lemma comapQuotientEquivOfSurj_symm_mk (c : Con M) {f : N →* M} (hf : Function
 /-- This version infers the surjectivity of the function from a MulEquiv function -/
 @[simp]
 lemma comapQuotientEquivOfSurj_symm_mk' (c : Con M) (f : N ≃* M) (x : N) :
-    ((@MulEquiv.symm (Con.Quotient (comap ⇑f _ c)) _ (hasMul (comap ⇑f _ c))
-    _ (comapQuotientEquivOfSurj c ↑f f.surjective))
-    ⟦f x⟧) = ↑x :=
+    ((@MulEquiv.symm (Con.Quotient (comap ⇑f _ c)) _ _ _
+    (comapQuotientEquivOfSurj c f f.surjective)) ⟦f x⟧) = ↑x :=
   (MulEquiv.symm_apply_eq (@comapQuotientEquivOfSurj M N _ _ c f _)).mpr rfl
 
 /-- The **second isomorphism theorem for monoids**. -/
