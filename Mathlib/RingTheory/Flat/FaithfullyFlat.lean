@@ -169,7 +169,7 @@ lemma iff_flat_and_lTensor_reflects_triviality :
 
 end faithful
 
-section complex
+section exact
 
 /-!
 ### Faithfully flat modules and exact sequences
@@ -195,9 +195,9 @@ On the other hand, if `- ⊗ M` preserves and reflects exact sequences, then `M`
 
 section arbitrary_universe
 
-variable ⦃N1 : Type*⦄ [AddCommGroup N1] [Module R N1]
-variable ⦃N2 : Type*⦄ [AddCommGroup N2] [Module R N2]
-variable ⦃N3 : Type*⦄ [AddCommGroup N3] [Module R N3]
+variable {N1 : Type*} [AddCommGroup N1] [Module R N1]
+variable {N2 : Type*} [AddCommGroup N2] [Module R N2]
+variable {N3 : Type*} [AddCommGroup N3] [Module R N3]
 variable (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3)
 
 /--
@@ -253,7 +253,6 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
   exact not_subsingleton_iff_nontrivial.2 inferInstance <| fl.rTensor_reflects_triviality R M E
 
 lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
-    (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3)
     (ex : Function.Exact (l12.rTensor M) (l23.rTensor M)) :
     Function.Exact l12 l23 := LinearMap.exact_iff.2 <| by
   have complex : LinearMap.range l12 ≤ LinearMap.ker l23 := range_le_ker_of_exact_rTensor R M _ _ ex
@@ -301,11 +300,6 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     exact ⟨x + y, by simp⟩
 
 lemma lTensor_reflects_exact [fl : FaithfullyFlat R M]
-    (N1 N2 N3 : Type*)
-    [AddCommGroup N1] [Module R N1]
-    [AddCommGroup N2] [Module R N2]
-    [AddCommGroup N3] [Module R N3]
-    (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3)
     (ex : Function.Exact (l12.lTensor M) (l23.lTensor M)) :
     Function.Exact l12 l23 :=
   rTensor_reflects_exact R M _ _ <| ex.of_ladder_linearEquiv_of_exact
@@ -313,6 +307,8 @@ lemma lTensor_reflects_exact [fl : FaithfullyFlat R M]
     (e₃ := TensorProduct.comm _ _ _) (by ext; rfl) (by ext; rfl)
 
 end arbitrary_universe
+
+section fixed_universe
 
 lemma exact_iff_rTensor_exact [fl : FaithfullyFlat R M]
     (N1 N2 N3 : Type max u v)
@@ -348,7 +344,9 @@ lemma iff_exact_iff_lTensor_exact :
         Function.Exact l12 l23 ↔ Function.Exact (l12.lTensor M) (l23.lTensor M)) := by
   simp only [iff_exact_iff_rTensor_exact, LinearMap.rTensor_exact_iff_lTensor_exact]
 
-end complex
+end fixed_universe
+
+end exact
 
 end FaithfullyFlat
 
