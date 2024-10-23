@@ -213,7 +213,7 @@ theorem comap_sInf' (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ comap f '
   _root_.trans (comap_sInf f s) (by rw [iInf_image])
 
 theorem comap_isPrime [H : IsPrime K] : IsPrime (comap f K) :=
-  ⟨comap_ne_top f H.ne_top, fun {x y} h => H.mem_or_mem <| by rwa [mem_comap, map_mul] at h⟩
+  H.comap f
 
 variable {I J K L}
 
