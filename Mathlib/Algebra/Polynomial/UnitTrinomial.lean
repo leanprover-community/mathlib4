@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Polynomial.Mirror
 import Mathlib.Data.Int.Order.Units
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Unit Trinomials

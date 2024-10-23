@@ -120,9 +120,12 @@ theorem isClopen_range_sigmaMk {X : ι → Type*} [∀ i, TopologicalSpace (X i)
     IsClopen (Set.range (@Sigma.mk ι X i)) :=
   ⟨isClosedEmbedding_sigmaMk.isClosed_range, isOpenEmbedding_sigmaMk.isOpen_range⟩
 
-protected theorem QuotientMap.isClopen_preimage {f : X → Y} (hf : QuotientMap f) {s : Set Y} :
+protected theorem IsQuotientMap.isClopen_preimage {f : X → Y} (hf : IsQuotientMap f) {s : Set Y} :
     IsClopen (f ⁻¹' s) ↔ IsClopen s :=
   and_congr hf.isClosed_preimage hf.isOpen_preimage
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.isClopen_preimage := IsQuotientMap.isClopen_preimage
 
 theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by

@@ -226,7 +226,6 @@ theorem mem_cons {a b : α} {s : Multiset α} : a ∈ b ::ₘ s ↔ a = b ∨ a 
 theorem mem_cons_of_mem {a b : α} {s : Multiset α} (h : a ∈ s) : a ∈ b ::ₘ s :=
   mem_cons.2 <| Or.inr h
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_cons_self (a : α) (s : Multiset α) : a ∈ a ::ₘ s :=
   mem_cons.2 (Or.inl rfl)
 
