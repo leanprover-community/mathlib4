@@ -36,7 +36,7 @@ This file states Hoeffding's lemma. We introduce cumulant to complete the proof.
 
 ## Tags
 
-hoeffding's lemma, cumulant
+Hoeffding's lemma, cumulant
 -/
 
 open MeasureTheory ProbabilityTheory Real
