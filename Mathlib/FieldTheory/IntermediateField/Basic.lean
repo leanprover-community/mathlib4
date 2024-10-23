@@ -288,7 +288,7 @@ namespace IntermediateField
 instance toField : Field S :=
   S.toSubfield.toField
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) := by
   classical
     induction' (Finset.univ : Finset ι) using Finset.induction_on with i s hi H
