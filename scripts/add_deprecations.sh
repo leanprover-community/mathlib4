@@ -1,5 +1,23 @@
 #! /bin/bash
 
+ : <<'BASH_MODULE_DOC'
+
+The script contained in this file tries to automatically generate deprecations for declarations
+that were renamed in a PR.
+The script is entirely text-based, so it makes several simplifying assumptions and may be easily
+confused.
+
+** Assumptions **
+The script works under the assumption that the only modifications between `master` and the current
+branch are renames of lemmas that sould be deprecated.
+The script inspects the relevant `git diff`, extracts the old name and the new one and uses this
+information to insert deprecated aliases as needed.
+
+Most other differences may confuse the script, although there is some slack.
+Please, do not try to push the boundaries of the script, since it is quite simple-minded!
+
+BASH_MODULE_DOC
+
 if [ -z "${1}" ]
 then
   commit="$( git merge-base master "$( git rev-parse --abbrev-ref HEAD )" )"
@@ -10,12 +28,6 @@ correspond to deprecated declarations (use '"'${commit}'"' otherwise):
 else
   commit="${1}"
 fi
-
-start='2f27e1ff3e82aaf84ddacf0bf0d466be4842cc86~'
-commit='2f27e1ff3e82aaf84ddacf0bf0d466be4842cc86'
-#commit=b9ed435607e168cf3b58498b2041123940fa2460
-#final pr: 1deca17a1b609ab594f02d2200998c396a52d1e7
-#first commit without deprecated aliases: 2f27e1ff3e82aaf84ddacf0bf0d466be4842cc86
 
 # check that the given commit is valid
 git cat-file -e "${commit}" || { printf $'invalid commit hash \'%s\'\n' "${commit}";  exit 1; }
@@ -29,9 +41,8 @@ begs="(theorem|lemma|inductive|structure|def|class|alias|abbrev)"
 ##  The separators `@@@` delimit different declarations.
 ##  The separators `||||` are later replaced by line breaks.
 ## To use a specific date, replace $(date +%Y-%m-%d) with 2024-04-17 for instance
-
 mkDeclAndDepr () {
-  git diff --unified=0 "${start}" "${commit}" "${1}" |
+  git diff --unified=0 "${commit}" "${1}" |
     awk -v regex="${begs}" -v date="$(date +%Y-%m-%d)" '
     function depr(ol,ne) {
       return sprintf("@[deprecated (since := \"%s\")]||||alias %s := %s", date, ol, ne)
@@ -90,7 +101,7 @@ addDeprecations () {
 ##  loops through the changed files and runs `addDeprecations` on each one of them
 new="i_am_a_file_name_with_no_clashes"
 while [ -f "${new}" ]; do new=${new}0; done
-for fil in $( git diff --name-only ${start} ${commit} ); do
+for fil in $( git diff --name-only ${commit} ); do
   if [ "${fil/*./}" == "lean" ]
   then
     printf $'Processing %s\n' "${fil}"
