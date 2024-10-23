@@ -25,7 +25,7 @@ variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] 
 variable [AddCommGroup N'] [Module R N'] (S : Submonoid R)
 
 theorem split_surjective_of_localization_maximal (f : M →ₗ[R] N) [Module.FinitePresentation R N]
-   (H : ∀ (I : Ideal R) (hI : I.IsMaximal),
+    (H : ∀ (I : Ideal R) (hI : I.IsMaximal),
     ∃ (g : _ →ₗ[Localization.AtPrime I] _),
       (LocalizedModule.map I.primeCompl f).comp g = LinearMap.id) :
     ∃ (g : N →ₗ[R] M), f.comp g = LinearMap.id := by
