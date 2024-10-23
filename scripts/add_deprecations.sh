@@ -39,18 +39,18 @@ mkDeclAndDepr () {
     # `{plus/minus}Regex` makes sure that we find a declaration, followed by something that
     # could be an identifier. For instance, this filters out "We now prove theorem `my_name`."
     BEGIN{
-      regexIdent=regex "  *[a-zA-Z]"
+      regexIdent=regex "  *[a-zA-Z_]"
       plusRegex="^\\+[^+-]*" regexIdent
       minusRegex="^-[^+-]*" regexIdent
     }
     ($0 ~ minusRegex) {
-      printf("Found:        %s\n", $0)
+      #printf("Found:        %s\n", $0)
       for(i=1; i<=NF; i++) {
         if ($i ~ regex"$") { old=$(i+1) }
       }
     }
     ($0 ~ plusRegex) {
-      printf("Comparing to: %s\n\n", $0)
+      #printf("Comparing to: %s\n\n", $0)
       for(i=1; i<=NF; i++) {
         if ($i ~ regex"$") {
           sub(/^\+/, "", $i)
