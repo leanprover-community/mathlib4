@@ -802,7 +802,7 @@ theorem merge1_cons_head {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd_deg :
   rw [merge_unfold, merge']
   simp [leadingExp, merge_aux_coef]
 
--- You can change arguments if it's incovenient
+@[simp]
 theorem merge1_cons_head_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
     {s_tl : CoList (PreMS (basis_hd :: basis_tl))} :

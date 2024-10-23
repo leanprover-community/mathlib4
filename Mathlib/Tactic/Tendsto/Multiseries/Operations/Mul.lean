@@ -454,7 +454,7 @@ mutual
         · intro (S_deg, S_coef) S_tl
           simp only [mul_cons_cons]
           rw [add_cons_cons, add_cons_cons]
-          split_ifs <;> (first | exfalso; linarith | rw [add_cons_cons]; split_ifs; try (exfalso; linarith))
+          split_ifs <;> (first | exfalso; linarith | rw [add_cons_cons]; split_ifs)
           · use ?_, ?_, ?_
             constructor
             · simp
@@ -1170,29 +1170,91 @@ end
 
 -- Is not needed so far
 -- @[simp]
--- theorem merge_mul_comm_left {basis_hd : ℝ → ℝ} {basis_tl : Basis}
---     {s : CoList (PreMS (basis_hd :: basis_tl))} {X : PreMS (basis_hd :: basis_tl)} {m : ℕ} :
---     merge m (s.map (X.mul ·)) = X.mul (merge m s) := by
---   sorry
-
-@[simp]
-theorem merge_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {s : CoList (PreMS (basis_hd :: basis_tl))} {X : PreMS (basis_hd :: basis_tl)} {m : ℕ} :
-    merge m (s.map (·.mul X)) = (merge m s).mul X := by
-  sorry
-
--- Is not needed so far
--- @[simp]
 -- theorem merge1_mul_comm_left {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 --     {s : CoList (PreMS (basis_hd :: basis_tl))} {X : PreMS (basis_hd :: basis_tl)} :
 --     merge1 (s.map (X.mul ·)) = X.mul (merge1 s) := by
---   simp [merge1]
+--   sorry
 
 @[simp]
 theorem merge1_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {s : CoList (PreMS (basis_hd :: basis_tl))} {X : PreMS (basis_hd :: basis_tl)} :
     merge1 (s.map (·.mul X)) = (merge1 s).mul X := by
-  simp [merge1]
+  apply X.casesOn
+  · simp
+    apply s.casesOn
+    · simp
+    · simp
+  intro (X_deg, X_coef) X_tl
+  let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
+    ∃ Y s,
+      a = Y + merge1 (CoList.map (fun x ↦ x.mul (.cons (X_deg, X_coef) X_tl)) s) ∧
+      b = Y + (merge1 s).mul (.cons (X_deg, X_coef) X_tl)
+  apply CoList.Eq.coind_strong motive
+  · intro a b ih
+    simp only [motive] at ih ⊢
+    obtain ⟨Y, s, ha, hb⟩ := ih
+    subst ha hb
+    apply s.casesOn
+    · simp
+    intro s_hd s_tl
+    apply s_hd.casesOn
+    · simp
+    intro (s_hd_deg, s_hd_coef) s_hd_tl
+    right
+    apply Y.casesOn
+    · use ?_, ?_, ?_
+      constructor
+      · simp [-CoList.cons_eq_cons]
+        exact Eq.refl _
+      constructor
+      · simp
+        exact Eq.refl _
+      use ?_, s_tl
+      constructor
+      · exact Eq.refl _
+      · rw [add_mul_right']
+        abel
+    intro (Y_deg, Y_coef) Y_tl
+    simp only [CoList.map_cons, mul_cons_cons, merge1_cons_head_cons]
+    rw [add_cons_cons, add_cons_cons]
+    split_ifs
+    · use ?_, ?_, ?_
+      constructor
+      · exact Eq.refl _
+      constructor
+      · exact Eq.refl _
+      use ?_, CoList.cons (CoList.cons (s_hd_deg, s_hd_coef) s_hd_tl) s_tl
+      constructor
+      · rw [CoList.map_cons, mul_cons_cons, merge1_cons_head_cons]
+        exact Eq.refl _
+      · simp
+    · use ?_, ?_, ?_
+      constructor
+      · exact Eq.refl _
+      constructor
+      · simp
+        exact Eq.refl _
+      use ?_, s_tl
+      constructor
+      · rw [← add_assoc]
+        exact Eq.refl _
+      · rw [add_mul_right']
+        abel
+    · use ?_, ?_, ?_
+      constructor
+      · exact Eq.refl _
+      constructor
+      · simp
+        exact Eq.refl _
+      use ?_, s_tl
+      constructor
+      · rw [← add_assoc]
+        exact Eq.refl _
+      · rw [add_mul_right']
+        abel
+  · simp only [motive]
+    use 0, s
+    simp
 
 noncomputable def longAdd {basis : Basis} {k : ℕ} (args : Fin k → PreMS basis) : PreMS basis :=
   match k with
