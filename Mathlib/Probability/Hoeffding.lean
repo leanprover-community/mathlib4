@@ -74,7 +74,7 @@ lemma integrable_expt [IsFiniteMeasure μ] (X : Ω → ℝ) (t b : ℝ) (ht : t 
   exact ⟨aestronglyMeasurable_iff_aemeasurable.mpr <|
     measurable_exp.comp_aemeasurable' (hX.const_mul t), hm1⟩
 
-lemma integrable_expt_bound[IsFiniteMeasure μ] {X : Ω → ℝ} {t a b : ℝ} (hX : AEMeasurable X μ)
+lemma integrable_expt_bound [IsFiniteMeasure μ] {X : Ω → ℝ} {t a b : ℝ} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     Integrable (fun ω ↦ exp (t * (X ω))) μ := by
   have ha : ∀ᵐ ω ∂μ, a ≤ X ω := h.mono fun ω h ↦ h.1
