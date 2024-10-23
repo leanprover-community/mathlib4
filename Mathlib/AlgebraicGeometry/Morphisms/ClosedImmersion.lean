@@ -120,8 +120,12 @@ lemma of_surjective_of_isAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X 
   apply spec_of_surjective
   exact h
 
-/-- If `f ≫ g` is a closed immersion, then `f` is a closed immersion. -/
-theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion g]
+/--
+If `f ≫ g` and `g` are closed immersions, then `f` is a closed immersion.
+Also see `IsClosedImmersion.of_comp` for the general version
+where `g` is only required to be separated.
+-/
+theorem of_comp_isClosedImmersion {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion g]
     [IsClosedImmersion (f ≫ g)] : IsClosedImmersion f where
   base_closed := by
     have h := isClosedEmbedding (f ≫ g)
@@ -243,7 +247,7 @@ theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
   rw [← affineTargetImageFactorization_comp f] at i ⊢
   haveI := of_surjective_of_isAffine (affineTargetImageInclusion f)
     (affineTargetImageInclusion_app_surjective f)
-  haveI := IsClosedImmersion.of_comp (affineTargetImageFactorization f)
+  haveI := IsClosedImmersion.of_comp_isClosedImmersion (affineTargetImageFactorization f)
     (affineTargetImageInclusion f)
   haveI := isIso_of_injective_of_isAffine (affineTargetImageFactorization_app_injective f)
   exact ⟨isAffine_of_isIso (affineTargetImageFactorization f),
