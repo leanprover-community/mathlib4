@@ -76,7 +76,7 @@ instance : HasCoeToSort X := ConcreteCategory.hasCoeToSort X
 -/
 def ConcreteCategory.hasCoeToSort (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] :
     CoeSort C (Type w) where
-  coe := fun X => (forget C).obj X
+  coe X := (forget C).obj X
 
 section
 

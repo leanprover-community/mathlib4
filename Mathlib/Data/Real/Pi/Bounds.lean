@@ -40,7 +40,7 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     · rw [div_le_iff₀']
       · refine le_trans pi_le_four ?_
         simp only [show (4 : ℝ) = (2 : ℝ) ^ 2 by norm_num, mul_one]
-        apply pow_le_pow_right (by norm_num)
+        apply pow_right_mono₀ (by norm_num)
         apply le_add_of_nonneg_left; apply Nat.zero_le
       · apply pow_pos; norm_num
     apply add_le_add_left; rw [div_le_div_right (by norm_num)]

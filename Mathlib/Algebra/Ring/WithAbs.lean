@@ -6,7 +6,10 @@ Authors: Salvatore Mercuri
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Analysis.Normed.Field.Basic
+<<<<<<< HEAD
 import Mathlib.Analysis.Normed.Module.Completion
+=======
+>>>>>>> 8a18755e1f1ed3b93176930891acefa2cdd71df1
 
 /-!
 # WithAbs

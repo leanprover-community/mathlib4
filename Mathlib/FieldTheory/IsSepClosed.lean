@@ -92,6 +92,35 @@ theorem exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.S
     ∃ x, IsRoot p x :=
   exists_root_of_splits _ (IsSepClosed.splits_of_separable p hsep) hp
 
+/-- If `n ≥ 2` equals zero in a separably closed field `k`, `b ≠ 0`,
+then there exists `x` in `k` such that `a * x ^ n + b * x + c = 0`. -/
+theorem exists_root_C_mul_X_pow_add_C_mul_X_add_C
+    [IsSepClosed k] {n : ℕ} (a b c : k) (hn : (n : k) = 0) (hn' : 2 ≤ n) (hb : b ≠ 0) :
+    ∃ x, a * x ^ n + b * x + c = 0 := by
+  let f : k[X] := C a * X ^ n + C b * X + C c
+  have hdeg : f.degree ≠ 0 := degree_ne_of_natDegree_ne <| by
+    by_cases ha : a = 0
+    · suffices f.natDegree = 1 from this ▸ one_ne_zero
+      simp_rw [f, ha, map_zero, zero_mul, zero_add]
+      compute_degree!
+    · suffices f.natDegree = n from this ▸ (lt_of_lt_of_le zero_lt_two hn').ne'
+      simp_rw [f]
+      have h0 : n ≠ 0 := by linarith only [hn']
+      have h1 : n ≠ 1 := by linarith only [hn']
+      have : 1 ≤ n := le_trans one_le_two hn'
+      compute_degree!
+      simp [h0, h1, ha]
+  have hsep : f.Separable := separable_C_mul_X_pow_add_C_mul_X_add_C a b c hn hb.isUnit
+  obtain ⟨x, hx⟩ := exists_root f hdeg hsep
+  exact ⟨x, by simpa [f] using hx⟩
+
+/-- If a separably closed field `k` is of characteristic `p`, `n ≥ 2` is such that `p ∣ n`, `b ≠ 0`,
+then there exists `x` in `k` such that `a * x ^ n + b * x + c = 0`. -/
+theorem exists_root_C_mul_X_pow_add_C_mul_X_add_C'
+    [IsSepClosed k] (p n : ℕ) (a b c : k) [CharP k p] (hn : p ∣ n) (hn' : 2 ≤ n) (hb : b ≠ 0) :
+    ∃ x, a * x ^ n + b * x + c = 0 :=
+  exists_root_C_mul_X_pow_add_C_mul_X_add_C a b c ((CharP.cast_eq_zero_iff k p n).2 hn) hn' hb
+
 variable (k) in
 /-- A separably closed perfect field is also algebraically closed. -/
 instance (priority := 100) isAlgClosed_of_perfectField [IsSepClosed k] [PerfectField k] :
@@ -214,8 +243,8 @@ instance (priority := 100) IsSepClosure.isAlgClosure_of_perfectField
 then it is also a separable closure of `k`. -/
 instance (priority := 100) IsSepClosure.of_isAlgClosure_of_perfectField
     [Algebra k K] [IsAlgClosure k K] [PerfectField k] : IsSepClosure k K :=
-  ⟨haveI := IsAlgClosure.alg_closed (R := k) (K := K); inferInstance,
-    (IsAlgClosure.algebraic (R := k) (K := K)).isSeparable_of_perfectField⟩
+  ⟨haveI := IsAlgClosure.isAlgClosed (R := k) (K := K); inferInstance,
+    (IsAlgClosure.isAlgebraic (R := k) (K := K)).isSeparable_of_perfectField⟩
 
 variable {k} {K}
 

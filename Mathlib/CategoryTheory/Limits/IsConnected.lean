@@ -50,7 +50,7 @@ def constPUnitFunctor : C ⥤ Type w := (Functor.const C).obj PUnit.{w + 1}
 @[simps]
 def pUnitCocone : Cocone (constPUnitFunctor.{w} C) where
   pt := PUnit
-  ι := { app := fun X => id }
+  ι := { app := fun _ => id }
 
 /-- If `C` is connected, the cocone on `constPUnitFunctor` with cone point `PUnit` is a colimit
     cocone. -/

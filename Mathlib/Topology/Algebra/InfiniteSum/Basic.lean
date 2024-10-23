@@ -572,7 +572,7 @@ theorem tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β → α} (b : β)
     ∏' x, f x = ∏' x, (ite (x = b) (f x) 1 * update f b 1 x) :=
       tprod_congr fun n ↦ by split_ifs with h <;> simp [update_apply, h]
     _ = (∏' x, ite (x = b) (f x) 1) * ∏' x, update f b 1 x :=
-      tprod_mul ⟨ite (b = b) (f b) 1, hasProd_single b fun b hb ↦ if_neg hb⟩ hf
+      tprod_mul ⟨ite (b = b) (f b) 1, hasProd_single b fun _ hb ↦ if_neg hb⟩ hf
     _ = ite (b = b) (f b) 1 * ∏' x, update f b 1 x := by
       congr
       exact tprod_eq_mulSingle b fun b' hb' ↦ if_neg hb'
