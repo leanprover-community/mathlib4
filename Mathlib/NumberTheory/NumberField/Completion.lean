@@ -66,7 +66,7 @@ variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ}
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 the distance associated to the absolute value also factors through `f`. -/
 theorem dist_of_comp
-    (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective)
+    (h : ∀ x, ‖f x‖ = v x)
     (x y : WithAbs v) :
     dist x y = dist (f x) (f y) := by
   rw [(normedField v).dist_eq, (inferInstanceAs <| NormedField L).dist_eq,
@@ -77,7 +77,7 @@ theorem dist_of_comp
 the pseudo metric space associated to the absolute value is the same as the pseudo metric space
 induced by `f`. -/
 theorem pseudoMetricSpace_induced_of_comp
-    (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
+    (h : ∀ x, ‖f x‖ = v x) :
     (normedField v).toPseudoMetricSpace = PseudoMetricSpace.induced f inferInstance := by
   ext
   exact dist_of_comp h _ _
@@ -86,7 +86,7 @@ theorem pseudoMetricSpace_induced_of_comp
 the uniform structure associated to the absolute value is the same as the uniform structure
 induced by `f`. -/
 theorem uniformSpace_eq_comap_of_comp
-    (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
+    (h : ∀ x, ‖f x‖ = v x) :
     (normedField v).toUniformSpace = UniformSpace.comap f inferInstance := by
   rw [pseudoMetricSpace_induced_of_comp h]
   rfl
@@ -94,14 +94,14 @@ theorem uniformSpace_eq_comap_of_comp
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 `f` is uniform inducing. -/
 theorem isUniformInducing_of_comp
-    (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
+    (h : ∀ x, ‖f x‖ = v x) :
     IsUniformInducing f :=
   isUniformInducing_iff_uniformSpace.2 <| Eq.symm (uniformSpace_eq_comap_of_comp h)
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 `f` is an isometry. -/
 theorem isometry_of_comp
-    (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
+    (h : ∀ x, ‖f x‖ = v x) :
     Isometry f :=
   Isometry.of_dist_eq <| fun x y => by rw [pseudoMetricSpace_induced_of_comp h]; rfl
 
@@ -126,13 +126,13 @@ variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 `L`, then we can extend that embedding to an embedding on the completion `v.completion →+* L`. -/
 def extensionEmbedding_of_comp
-    (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
+    (h : ∀ x, ‖f x‖ = v x) :
     v.completion →+* L :=
   UniformSpace.Completion.extensionHom _
     (WithAbs.isUniformInducing_of_comp h).uniformContinuous.continuous
 
 theorem extensionEmbedding_of_comp_coe
-    (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) (x : K) :
+    (h : ∀ x, ‖f x‖ = v x) (x : K) :
     extensionEmbedding_of_comp h x = f x := by
   rw [← UniformSpace.Completion.extensionHom_coe f
     (WithAbs.isUniformInducing_of_comp h).uniformContinuous.continuous]
@@ -141,7 +141,7 @@ theorem extensionEmbedding_of_comp_coe
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.completion →+* L` preserves distances. -/
 theorem extensionEmbedding_dist_eq_of_comp
-    (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective)
+    (h : ∀ x, ‖f x‖ = v x)
     (x y : v.completion) :
     dist (extensionEmbedding_of_comp h x) (extensionEmbedding_of_comp h y) =
       dist x y := by
@@ -154,21 +154,21 @@ theorem extensionEmbedding_dist_eq_of_comp
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.completion →+* L` is an isometry. -/
 theorem isometry_extensionEmbedding_of_comp
-    (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
+    (h : ∀ x, ‖f x‖ = v x) :
     Isometry (extensionEmbedding_of_comp h) :=
   Isometry.of_dist_eq <| extensionEmbedding_dist_eq_of_comp h
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.completion →+* L` is a closed embedding. -/
 theorem isClosedEmbedding_extensionEmbedding_of_comp
-    (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
+    (h : ∀ x, ‖f x‖ = v x) :
     IsClosedEmbedding (extensionEmbedding_of_comp h) :=
   (isometry_extensionEmbedding_of_comp h).isClosedEmbedding
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 that is locally compact, then the completion of the first normed field is also locally compact. -/
 theorem locallyCompactSpace [LocallyCompactSpace L]
-    (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective)  :
+    (h : ∀ x, ‖f x‖ = v x)  :
     LocallyCompactSpace (v.completion) :=
   (isClosedEmbedding_extensionEmbedding_of_comp h).locallyCompactSpace
 
@@ -186,51 +186,52 @@ abbrev completion := v.1.completion
 namespace Completion
 
 instance : NormedField v.completion :=
-  letI := (WithAbs.isUniformInducing_of_comp v.abs_eq_comp).completableTopField
+  letI := (WithAbs.isUniformInducing_of_comp v.norm_embedding_eq).completableTopField
   UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v.1)
 
 instance : Algebra K v.completion :=
   inferInstanceAs <| Algebra (WithAbs v.1) v.1.completion
 
 /-- The embedding associated to an infinite place extended to an embedding `v.completion →+* ℂ`. -/
-def extensionEmbedding : v.completion →+* ℂ := extensionEmbedding_of_comp v.abs_eq_comp
+def extensionEmbedding : v.completion →+* ℂ := extensionEmbedding_of_comp v.norm_embedding_eq
 
 /-- The embedding `K →+* ℝ` associated to a real infinite place extended to `v.completion →+* ℝ`. -/
 def extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) : v.completion →+* ℝ :=
-  extensionEmbedding_of_comp <| abs_of_isReal_eq_comp hv
+  extensionEmbedding_of_comp <| v.norm_embedding_of_isReal hv
 
 @[simp]
 theorem extensionEmbedding_coe (x : K) : extensionEmbedding v x = v.embedding x :=
-  extensionEmbedding_of_comp_coe v.abs_eq_comp x
+  extensionEmbedding_of_comp_coe v.norm_embedding_eq x
 
 @[simp]
 theorem extensionEmbedding_of_isReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : K) :
     extensionEmbedding_of_isReal hv x = embedding_of_isReal hv x :=
-  extensionEmbedding_of_comp_coe (abs_of_isReal_eq_comp hv) x
+  extensionEmbedding_of_comp_coe (v.norm_embedding_of_isReal hv) x
 
 /-- The embedding `v.completion →+* ℂ` is an isometry. -/
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
-  Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp v.abs_eq_comp)
+  Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp v.norm_embedding_eq)
 
 /-- The embedding `v.completion →+* ℝ` at a real infinite palce is an isometry. -/
 theorem isometry_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     Isometry (extensionEmbedding_of_isReal hv) :=
-  Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp <| abs_of_isReal_eq_comp hv)
+  Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp <| v.norm_embedding_of_isReal hv)
 
 /-- The completion of a number field at an infinite place is locally compact. -/
 instance locallyCompactSpace : LocallyCompactSpace (v.completion) :=
-  AbsoluteValue.Completion.locallyCompactSpace v.abs_eq_comp
+  AbsoluteValue.Completion.locallyCompactSpace v.norm_embedding_eq
 
 /-- The embedding `v.completion →+* ℂ` has closed image inside `ℂ`. -/
 theorem isClosed_image_extensionEmbedding : IsClosed (Set.range (extensionEmbedding v)) :=
-  ((isClosedEmbedding_iff _).1 <| isClosedEmbedding_extensionEmbedding_of_comp v.abs_eq_comp).2
+  ((isClosedEmbedding_iff _).1 <|
+    isClosedEmbedding_extensionEmbedding_of_comp v.norm_embedding_eq).2
 
 /-- The embedding `v.completion →+* ℝ` associated to a real infinite place has closed image
 inside `ℝ`. -/
 theorem isClosed_image_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     IsClosed (Set.range (extensionEmbedding_of_isReal hv)) :=
   ((isClosedEmbedding_iff _).1 <|
-    isClosedEmbedding_extensionEmbedding_of_comp (abs_of_isReal_eq_comp hv)).2
+    isClosedEmbedding_extensionEmbedding_of_comp (v.norm_embedding_of_isReal hv)).2
 
 theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     (extensionEmbedding v).fieldRange ≠ Complex.ofRealHom.fieldRange := by
