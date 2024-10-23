@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity.Finset
 
 /-!
 

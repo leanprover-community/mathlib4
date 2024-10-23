@@ -5,8 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Data.Finset.Density
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 
 /-!
