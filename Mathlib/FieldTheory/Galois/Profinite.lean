@@ -157,12 +157,6 @@ noncomputable def homtoLimit : (K ≃ₐ[k] K) →*
     simp only [map_mul]
     rfl
 
-private lemma restrict_eq (σ : K ≃ₐ[k] K) (x : K) (Lx : FiniteGaloisIntermediateField k K)
-    (hLx : x ∈ Lx.toIntermediateField) : σ x = (AlgEquiv.restrictNormalHom Lx σ) ⟨x, hLx⟩ := by
-  have := AlgEquiv.restrictNormal_commutes σ Lx ⟨x, hLx⟩
-  convert this
-  exact id this.symm
-
 /--Define the coordinate map from `lim Gal(L/k)` to a specific `Gal(L/k)`-/
 noncomputable def proj (L : FiniteGaloisIntermediateField k K) :
     ProfiniteGrp.limit (profinGaloisGroupFunctor k K) →* (L ≃ₐ[k] L) where
@@ -327,7 +321,7 @@ lemma limtoGalContinuous [IsGalois k K] : Continuous (mulEquivtoLimit k K).symm 
         apply AlgEquiv.ext
         intro x
         apply Subtype.val_injective
-        rw [← restrict_eq α x.1 L' x.2, AlgEquiv.one_apply]
+        rw [AlgEquiv.restrictNormalHom_apply L'.1 α x, AlgEquiv.one_apply]
         exact hα1 x
       · intro h
         simp only [Set.mem_preimage] at h
@@ -343,7 +337,7 @@ lemma limtoGalContinuous [IsGalois k K] : Continuous (mulEquivtoLimit k K).symm 
           MulEquiv.coe_mk, Equiv.coe_fn_mk] at fix
         have fix_y : AlgEquiv.restrictNormalHom L' Aut ⟨y, hy⟩ = ⟨y, hy⟩ := by
           simp only [fix, AlgEquiv.one_apply]
-        rw [restrict_eq Aut y L' hy, fix_y]
+        rw [← AlgEquiv.restrictNormalHom_apply L'.1 Aut ⟨y,hy⟩, fix_y]
     have op : IsOpen fix1 := C.isOpen_preimage {1} trivial
     exact this ▸ (isOpen_induced op)
   · simp only [Set.mem_preimage, map_one, Subsemigroup.mem_carrier, Submonoid.mem_toSubsemigroup,
