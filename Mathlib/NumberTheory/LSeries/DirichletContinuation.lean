@@ -171,7 +171,7 @@ lemma LFunction_triv_char_residue_one :
   have H : (fun s ↦ (s - 1) * LFunction_triv_char N s) =ᶠ[𝓝[≠] 1]
         fun s ↦ (∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))) * ((s - 1) * riemannZeta s) := by
     refine Set.EqOn.eventuallyEq_nhdsWithin fun s hs ↦ ?_
-    rw [mul_left_comm, LFunction_one_eq_mul_riemannZeta hs]
+    rw [mul_left_comm, LFunction_triv_char_eq_mul_riemannZeta hs]
   rw [tendsto_congr' H]
   conv => enter [3, 1]; rw [← mul_one <| Finset.prod ..]; enter [1, 2, p]; rw [← cpow_neg_one]
   refine .mul (f := fun s ↦ ∏ p ∈ N.primeFactors, _) ?_ riemannZeta_residue_one
