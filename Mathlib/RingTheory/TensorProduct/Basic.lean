@@ -587,12 +587,11 @@ variable [CommSemiring B] [Algebra R B]
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
 abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
-  includeRight.toRingHom.toAlgebra' <| fun a b => by
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, includeRight_apply]
-    induction b with
-    | zero => simp only [mul_zero, zero_mul]
-    | tmul d a' => simp only [tmul_mul_tmul, one_mul, mul_one, mul_comm]
-    | add x y hx hy => rw [left_distrib, hx, hy, right_distrib]
+  includeRight.toRingHom.toAlgebra' fun b x => by
+    suffices LinearMap.mulLeft R (includeRight b) = LinearMap.mulRight R (includeRight b) from
+      congr($this x)
+    ext xa xb
+    simp [mul_comm]
 
 attribute [local instance] TensorProduct.rightAlgebra
 
