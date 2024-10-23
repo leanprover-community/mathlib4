@@ -70,7 +70,7 @@ attribute [to_additive existing] isMulCentral_iff
 
 namespace IsMulCentral
 
-variable {a b c : M} [Mul M]
+variable {a c : M} [Mul M]
 
 -- cf. `Commute.left_comm`
 @[to_additive]

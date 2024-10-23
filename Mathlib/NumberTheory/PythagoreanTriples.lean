@@ -179,7 +179,7 @@ theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / I
     have hz : z = 0 := by
       simpa only [PythagoreanTriple, hx, hy, add_zero, zero_eq_mul, mul_zero,
         or_self_iff] using h
-    simp only [hx, hy, hz, Int.zero_div]
+    simp only [hx, hy, hz]
     exact zero
   rcases h.gcd_dvd with ⟨z0, rfl⟩
   obtain ⟨k, x0, y0, k0, h2, rfl, rfl⟩ :

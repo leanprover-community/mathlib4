@@ -69,9 +69,7 @@ def integer : Subalgebra R K :=
 theorem integer_eq :
     (S.integer K).toSubring =
       ⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.toSubring :=
-  SetLike.ext' <| by
-    -- Porting note: was `simpa only [integer, Subring.copy_eq]`
-    ext; simp
+  SetLike.ext' <| by ext; simp
 
 theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv : v ∉ S) :
     v.valuation (x : K) ≤ 1 :=

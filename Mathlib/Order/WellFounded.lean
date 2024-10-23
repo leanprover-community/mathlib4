@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Set.Function
-import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Bounds.Defs
 
 /-!
 # Well-founded relations

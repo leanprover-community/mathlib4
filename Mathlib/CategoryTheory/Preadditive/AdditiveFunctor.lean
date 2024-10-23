@@ -69,6 +69,8 @@ instance : Additive (𝟭 C) where
 instance {E : Type*} [Category E] [Preadditive E] (G : D ⥤ E) [Functor.Additive G] :
     Additive (F ⋙ G) where
 
+instance {J : Type*} [Category J] (j : J) : ((evaluation J C).obj j).Additive where
+
 @[simp]
 theorem map_neg {X Y : C} {f : X ⟶ Y} : F.map (-f) = -F.map f :=
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_neg _

@@ -114,7 +114,7 @@ the edist from `x` to `y` -/
 theorem infEdist_le_infEdist_add_edist : infEdist x s ≤ infEdist y s + edist x y :=
   calc
     ⨅ z ∈ s, edist x z ≤ ⨅ z ∈ s, edist y z + edist x y :=
-      iInf₂_mono fun z _ => (edist_triangle _ _ _).trans_eq (add_comm _ _)
+      iInf₂_mono fun _ _ => (edist_triangle _ _ _).trans_eq (add_comm _ _)
     _ = (⨅ z ∈ s, edist y z) + edist x y := by simp only [ENNReal.iInf_add]
 
 theorem infEdist_le_edist_add_infEdist : infEdist x s ≤ edist x y + infEdist y s := by
@@ -451,7 +451,7 @@ theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by
   rcases h with ⟨y, hy⟩
   exact ne_top_of_le_ne_top (edist_ne_top _ _) (infEdist_le_edist_of_mem hy)
 
--- Porting note (#11215): TODO: make it a `simp` lemma
+@[simp]
 theorem infEdist_eq_top_iff : infEdist x s = ∞ ↔ s = ∅ := by
   rcases s.eq_empty_or_nonempty with rfl | hs <;> simp [*, Nonempty.ne_empty, infEdist_ne_top]
 

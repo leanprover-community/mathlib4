@@ -302,8 +302,8 @@ section FEPair
 /-- A `StrongFEPair` structure with `f = oddKernel a` and `g = sinKernel a`. -/
 @[simps]
 def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
-  f := ofReal' ∘ oddKernel a
-  g := ofReal' ∘ sinKernel a
+  f := ofReal ∘ oddKernel a
+  g := ofReal ∘ sinKernel a
   hf_int := (continuous_ofReal.comp_continuousOn (continuousOn_oddKernel a)).locallyIntegrableOn
     measurableSet_Ioi
   hg_int := (continuous_ofReal.comp_continuousOn (continuousOn_sinKernel a)).locallyIntegrableOn

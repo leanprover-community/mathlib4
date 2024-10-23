@@ -129,8 +129,8 @@ private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε 
 private theorem glueDist_triangle (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
     (H : ∀ p q, |dist (Φ p) (Φ q) - dist (Ψ p) (Ψ q)| ≤ 2 * ε) :
     ∀ x y z, glueDist Φ Ψ ε x z ≤ glueDist Φ Ψ ε x y + glueDist Φ Ψ ε y z
-  | .inl x, .inl y, .inl z => dist_triangle _ _ _
-  | .inr x, .inr y, .inr z => dist_triangle _ _ _
+  | .inl _, .inl _, .inl _ => dist_triangle _ _ _
+  | .inr _, .inr _, .inr _ => dist_triangle _ _ _
   | .inr x, .inl y, .inl z => by
     simp only [← glueDist_swap Φ]
     apply glueDist_triangle_inl_inr_inr
@@ -139,7 +139,7 @@ private theorem glueDist_triangle (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
   | .inl x, .inl y, .inr z => by
     simpa only [← glueDist_swap Φ, glueDist_comm, add_comm, Sum.swap_inl, Sum.swap_inr]
       using glueDist_triangle_inl_inr_inr Ψ Φ ε z y x
-  | .inl x, .inr y, .inr z => glueDist_triangle_inl_inr_inr ..
+  | .inl _, .inr _, .inr _ => glueDist_triangle_inl_inr_inr ..
   | .inl x, .inr y, .inl z => glueDist_triangle_inl_inr_inl Φ Ψ ε H x y z
   | .inr x, .inl y, .inr z => by
     simp only [← glueDist_swap Φ]
@@ -243,8 +243,7 @@ private theorem Sum.mem_uniformity (s : Set ((X ⊕ Y) × (X ⊕ Y))) :
     · cases not_le_of_lt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inr_inl
     · exact hY (lt_of_lt_of_le h (le_trans (min_le_left _ _) (min_le_right _ _)))
   · rintro ⟨ε, ε0, H⟩
-    constructor <;> rw [Filter.mem_sets, Filter.mem_map, mem_uniformity_dist] <;>
-      exact ⟨ε, ε0, fun h => H _ _ h⟩
+    constructor <;> rw [Filter.mem_map, mem_uniformity_dist] <;> exact ⟨ε, ε0, fun h => H _ _ h⟩
 
 /-- The distance on the disjoint union indeed defines a metric space. All the distance properties
 follow from our choice of the distance. The harder work is to show that the uniform structure
@@ -432,7 +431,7 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
   set U := { p : (Σk, E k) × Σk, E k | dist p.1 p.2 < 1 }
   have hc : ∀ i, IsComplete (s i) := fun i => by
     simp only [s, ← range_sigmaMk]
-    exact (isometry_mk i).uniformInducing.isComplete_range
+    exact (isometry_mk i).isUniformInducing.isComplete_range
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
   refine completeSpace_of_isComplete_univ ?_

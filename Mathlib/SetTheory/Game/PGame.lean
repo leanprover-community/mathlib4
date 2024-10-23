@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.List.InsertNth
+import Mathlib.Data.List.InsertIdx
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
@@ -22,6 +22,9 @@ A pregame (`SetTheory.PGame` below) is axiomatised via an inductive type, whose 
 takes two types (thought of as indexing the possible moves for the players Left and Right), and a
 pair of functions out of these types to `SetTheory.PGame` (thought of as describing the resulting
 game after making a move).
+
+We may denote a game as $\{L | R\}$, where $L$ and $R$ stand for the collections of left and right
+moves. This notation is not currently used in Mathlib.
 
 Combinatorial games themselves, as a quotient of pregames, are constructed in `Game.lean`.
 
@@ -349,15 +352,17 @@ instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
 
 /-- The less or equal relation on pre-games.
 
-If `0 ≤ x`, then Left can win `x` as the second player. -/
+If `0 ≤ x`, then Left can win `x` as the second player. `x ≤ y` means that `0 ≤ y - x`.
+See `PGame.le_iff_sub_nonneg`. -/
 instance le : LE PGame :=
   ⟨Sym2.GameAdd.fix wf_isOption fun x y le =>
       (∀ i, ¬le y (x.moveLeft i) (Sym2.GameAdd.snd_fst <| IsOption.moveLeft i)) ∧
         ∀ j, ¬le (y.moveRight j) x (Sym2.GameAdd.fst_snd <| IsOption.moveRight j)⟩
 
-/-- The less or fuzzy relation on pre-games.
+/-- The less or fuzzy relation on pre-games. `x ⧏ y` is defined as `¬ y ≤ x`.
 
-If `0 ⧏ x`, then Left can win `x` as the first player. -/
+If `0 ⧏ x`, then Left can win `x` as the first player. `x ⧏ y` means that `0 ⧏ y - x`.
+See `PGame.lf_iff_sub_zero_lf`. -/
 def LF (x y : PGame) : Prop :=
   ¬y ≤ x
 
@@ -822,12 +827,14 @@ theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x
   ⟨fun h _ => ⟨fun h' => Equiv.trans (Equiv.symm h) h', fun h' => Equiv.trans h h'⟩,
    fun h => (h x₂).2 <| equiv_rfl⟩
 
-theorem equiv_of_mk_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
+theorem Equiv.of_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, x.moveLeft i ≈ y.moveLeft (L i))
     (hr : ∀ j, x.moveRight j ≈ y.moveRight (R j)) : x ≈ y := by
   constructor <;> rw [le_def]
   · exact ⟨fun i => Or.inl ⟨_, (hl i).1⟩, fun j => Or.inr ⟨_, by simpa using (hr (R.symm j)).1⟩⟩
   · exact ⟨fun i => Or.inl ⟨_, by simpa using (hl (L.symm i)).2⟩, fun j => Or.inr ⟨_, (hr j).2⟩⟩
+
+@[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
 
 /-- The fuzzy, confused, or incomparable relation on pre-games.
 
@@ -995,7 +1002,7 @@ def moveRightSymm :
 /-- The identity relabelling. -/
 @[refl]
 def refl (x : PGame) : x ≡r x :=
-  ⟨Equiv.refl _, Equiv.refl _, fun i => refl _, fun j => refl _⟩
+  ⟨Equiv.refl _, Equiv.refl _, fun _ => refl _, fun _ => refl _⟩
 termination_by x
 
 instance (x : PGame) : Inhabited (x ≡r x) :=
@@ -1432,8 +1439,10 @@ instance : Sub PGame :=
   ⟨fun x y => x + -y⟩
 
 @[simp]
-theorem sub_zero (x : PGame) : x - 0 = x + 0 :=
+theorem sub_zero_eq_add_zero (x : PGame) : x - 0 = x + 0 :=
   show x + -0 = x + 0 by rw [neg_zero]
+
+@[deprecated (since := "2024-09-26")] alias sub_zero := sub_zero_eq_add_zero
 
 /-- If `w` has the same moves as `x` and `y` has the same moves as `z`,
 then `w - y` has the same moves as `x - z`. -/
