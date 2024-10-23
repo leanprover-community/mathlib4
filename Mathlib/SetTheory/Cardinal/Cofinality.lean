@@ -660,6 +660,11 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
       exact not_succ_isLimit _ l
 
 @[simp]
+theorem preAleph_cof {o : Ordinal} (ho : o.IsLimit) : (preAleph o).ord.cof = o.cof :=
+  preAleph_isNormal.cof_eq ho
+
+set_option linter.deprecated false in
+@[deprecated preAleph_cof (since := "2024-10-22")]
 theorem aleph'_cof {o : Ordinal} (ho : o.IsLimit) : (aleph' o).ord.cof = o.cof :=
   aleph'_isNormal.cof_eq ho
 
@@ -700,7 +705,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       rcases @cof_eq Ordinal.{u} (· < ·) _ with ⟨S, H, Se⟩
       rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u+1, v, u}, Cardinal.lift_lt, ← Se]
       refine lt_of_not_ge fun h => ?_
-      cases' Cardinal.mem_range_of_le_lift h with a e
+      cases' Cardinal.mem_range_lift_of_le h with a e
       refine Quotient.inductionOn a (fun α e => ?_) e
       cases' Quotient.exact e with f
       have f := Equiv.ulift.symm.trans f
@@ -924,6 +929,12 @@ theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
   exact isRegular_succ le_rfl
 
+theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (succ o)) := by
+  rw [preAleph_succ]
+  exact isRegular_succ (aleph0_le_preAleph.2 h)
+
+set_option linter.deprecated false in
+@[deprecated isRegular_preAleph_succ (since := "2024-10-22")]
 theorem isRegular_aleph'_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (aleph' (succ o)) := by
   rw [aleph'_succ]
   exact isRegular_succ (aleph0_le_aleph'.2 h)

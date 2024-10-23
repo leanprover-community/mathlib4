@@ -801,6 +801,16 @@ theorem toAlgEquiv_injective [FaithfulSMul G A] :
     Function.Injective (MulSemiringAction.toAlgEquiv R A : G → A ≃ₐ[R] A) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => AlgEquiv.ext_iff.1 h r
 
+/-- Each element of the group defines an algebra equivalence.
+
+This is a stronger version of `MulSemiringAction.toRingAut` and
+`DistribMulAction.toModuleEnd`. -/
+@[simps]
+def toAlgAut : G →* A ≃ₐ[R] A where
+  toFun := toAlgEquiv R A
+  map_one' := AlgEquiv.ext <| one_smul _
+  map_mul' g h := AlgEquiv.ext <| mul_smul g h
+
 end
 
 end MulSemiringAction
