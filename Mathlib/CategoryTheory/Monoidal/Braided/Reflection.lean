@@ -12,13 +12,13 @@ import Mathlib.Tactic.TFAE
 
 # Day's reflection theorem
 
-Let `D` be a symmetric monoidal closed category and let `C` be a reflective subcategory. Day's
+Let `D` be a symmetric monoidal closed category and let `C` be a reflective subcategory. Day's
 reflection theorem gives four equivalent conditions, which are all of the form that a map obtained
 by acting on the unit of the reflective adjunction, with the internal hom and tensor functors, is
 an isomorphism.
 
-Suppose that `C` is itself monoidal and that the reflector is a monoidal functor. Then we can
-apply Day's reflection theorem to prove that `C` is also closed monoidal.
+Suppose that `C` is itself monoidal and that the reflector is a monoidal functor. Then we can
+apply Day's reflection theorem to prove that `C` is also closed monoidal.
 
 ## References
 
@@ -37,7 +37,7 @@ variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 section
 variable {R : C ⥤ D} [R.Faithful] [R.Full] {L : D ⥤ C} (adj : L ⊣ R)
 
-/-- The uncurried retraction of the unit in the proof of `4 → 1` in `day_reflection` below. -/
+/-- The uncurried retraction of the unit in the proof of `4 → 1` in `day_reflection` below. -/
 private noncomputable def adjRetractionAux
     (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
   d ⊗ ((L ⋙ R).obj ((ihom d).obj (R.obj c))) ⟶ (R.obj c) :=
@@ -45,7 +45,7 @@ private noncomputable def adjRetractionAux
     R.map (inv (L.map (adj.unit.app _ ⊗ adj.unit.app _))) ≫ (L ⋙ R).map (β_ _ _).hom ≫
       (L ⋙ R).map ((ihom.ev _).app _) ≫ inv (adj.unit.app _)
 
-/-- The retraction of the unit in the proof of `4 → 1` in `day_reflection` below. -/
+/-- The retraction of the unit in the proof of `4 → 1` in `day_reflection` below. -/
 private noncomputable def adjRetraction (c : C) (d : D)
     [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
     (L ⋙ R).obj ((ihom d).obj (R.obj c)) ⟶ ((ihom d).obj (R.obj c)) :=
@@ -65,11 +65,13 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
     rw [← adj.unit_naturality_assoc]
   simp
 
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
+
 /--
 Day's reflection theorem.
 
-Let `D` be a symmetric monoidal closed category and let `C` be a reflective subcategory. Denote by
-`R : C ⥤ D` the inclusion functor and by `L : D ⥤ C` the reflector. Let `u` denote the unit of the
+Let `D` be a symmetric monoidal closed category and let `C` be a reflective subcategory. Denote by
+`R : C ⥤ D` the inclusion functor and by `L : D ⥤ C` the reflector. Let `u` denote the unit of the
 adjunction `L ⊣ R`. Denote the internal hom by `[-,-]`. The following are equivalent:
 
 1. `u : [d, Rc] ⟶ RL[d, Rc]` is an isomorphism,
@@ -77,7 +79,7 @@ adjunction `L ⊣ R`. Denote the internal hom by `[-,-]`. The following are equi
 3. `L(u ▷ d') : L(d ⊗ d') ⟶ L(RLd ⊗ d')` is an isomorphism,
 4. `L(u ⊗ u) : L(d ⊗ d') ⟶ L(RLd ⊗ RLd')` is an isomorphism,
 
-where `c, d, d'` are arbitrary objects of `C`/`D`, quantified over separately in each condition.
+where `c, d, d'` are arbitrary objects of `C`/`D`, quantified over separately in each condition.
 -/
 theorem isIso_tfae : List.TFAE
     [ ∀ (c : C) (d : D), IsIso (adj.unit.app ((ihom d).obj (R.obj c)))
@@ -106,7 +108,7 @@ theorem isIso_tfae : List.TFAE
   tfae_have 4 → 1
   · intros
     -- It is enough to show that the unit is a split monomorphism, and the retraction is given
-    -- by `adjRetraction` above.
+    -- by `adjRetraction` above.
     let _ : Reflective R := { L := L, adj := adj }
     have : IsIso adj.toMonad.μ := μ_iso_of_reflective (R := R)
     erw [← adj.toMonad.isSplitMono_iff_isIso_unit]
@@ -115,9 +117,9 @@ theorem isIso_tfae : List.TFAE
   · intro h d d'
     rw [isIso_iff_isIso_coyoneda_map]
     intro c
-    -- `w₁, w₃, w₄` are the three stacked commutative squares in the proof on nLab:
+    -- `w₁, w₃, w₄` are the three stacked commutative squares in the proof on nLab:
     have w₁ : (coyoneda.map (L.map (adj.unit.app d ▷ d')).op).app c = (adj.homEquiv _ _).symm ∘
-      (coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c) ∘ adj.homEquiv _ _ := by ext; simp
+        (coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c) ∘ adj.homEquiv _ _ := by ext; simp
     rw [w₁, isIso_iff_bijective]
     simp only [comp_obj, coyoneda_obj_obj, id_obj, EquivLike.comp_bijective,
       EquivLike.bijective_comp]
@@ -133,8 +135,8 @@ theorem isIso_tfae : List.TFAE
           ((coyoneda.map (adj.unit.app _).op).app _) ∘ (ihom.adjunction d').homEquiv _ _ := by
       ext
       simp only [id_obj, op_tensorObj, coyoneda_obj_obj, unop_tensorObj, comp_obj,
-        coyoneda_map_app, Quiver.Hom.unop_op, Function.comp_apply]
-      erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
+        coyoneda_map_app, Quiver.Hom.unop_op, Function.comp_apply,
+        Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
       simp
     rw [w₃, isIso_iff_bijective]
     simp only [comp_obj, op_tensorObj, coyoneda_obj_obj, unop_tensorObj, id_obj,
@@ -165,7 +167,7 @@ theorem isIso_tfae : List.TFAE
     -- bring the quantifiers out of the `↔`:
     rw [forall_swap]; apply forall_congr'; intro d
     rw [forall_swap]; apply forall₂_congr; intro d' c
-    -- `w₁, w₂,` are the two stacked commutative squares in the proof on nLab:
+    -- `w₁, w₂,` are the two stacked commutative squares in the proof on nLab:
     have w₁ : ((coyoneda.map (L.map (adj.unit.app d ▷ d')).op).app c) =
         (adj.homEquiv _ _).symm ∘
           (coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c) ∘
@@ -174,12 +176,12 @@ theorem isIso_tfae : List.TFAE
           ((ihom.adjunction d).homEquiv _ _) ∘
             ((coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c)) ∘
               ((ihom.adjunction ((L ⋙ R).obj d)).homEquiv _ _).symm := by
-      rw [← Function.comp.assoc, ((ihom.adjunction ((L ⋙ R).obj d)).homEquiv _ _).eq_comp_symm]
+      rw [← Function.comp_assoc, ((ihom.adjunction ((L ⋙ R).obj d)).homEquiv _ _).eq_comp_symm]
       ext
       simp only [id_obj, yoneda_obj_obj, comp_obj, Function.comp_apply,
         yoneda_map_app, op_tensorObj, coyoneda_obj_obj, unop_tensorObj, op_whiskerRight,
         coyoneda_map_app, unop_whiskerRight, Quiver.Hom.unop_op]
-      erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
+      rw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
       simp
     rw [w₂, w₁, isIso_iff_bijective, isIso_iff_bijective]
     simp
@@ -220,8 +222,8 @@ noncomputable def closed (c : C) : Closed c where
     · exact NatIso.ofComponents (fun _ ↦ asIso (adj.unit.app ((ihom _).obj _)))
 
 /--
-Given a reflective functor `R : C ⥤ D` with a monoidal left adjoint, such that `D` is symmetric
-monoidal closed, then `C` is monoidal closed.
+Given a reflective functor `R : C ⥤ D` with a monoidal left adjoint, such that `D` is symmetric
+monoidal closed, then `C` is monoidal closed.
 -/
 noncomputable def monoidalClosed : MonoidalClosed C where
   closed c := closed adj c
