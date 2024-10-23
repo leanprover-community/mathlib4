@@ -869,7 +869,7 @@ theorem nhdsWithin_extend_target_eq {y : M} (hy : y ∈ f.source) :
 
 theorem extend_target_eventuallyEq {y : M} (hy : y ∈ f.source) :
     (f.extend I).target =ᶠ[𝓝 (f.extend I y)] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extend_target_eq hy)
+  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extend_target_eq _ _ hy)
 
 theorem continuousAt_extend_symm' {x : E} (h : x ∈ (f.extend I).target) :
     ContinuousAt (f.extend I).symm x :=

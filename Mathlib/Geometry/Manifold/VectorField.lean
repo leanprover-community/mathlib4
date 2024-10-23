@@ -1743,6 +1743,8 @@ lemma mpullbackWithin_mlieBracketWithin [IsRCLikeNormedField 𝕜]
       ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target : Set E) := by
     apply EventuallyEq.inter (by rfl)
     symm
+    rw [← nhdsWithin_eq_iff_eventuallyEq]
+    exact nhdsWithin_extChartAt_target_eq I x₀
 
 
 end VectorField
