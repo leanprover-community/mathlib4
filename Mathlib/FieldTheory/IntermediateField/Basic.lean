@@ -552,16 +552,14 @@ theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F)
   Subtype.val_injective.mem_set_image
 
 /--The algEquiv between an intermediate field and its lift-/
-def lift_algEquiv (E : IntermediateField K L) (F : IntermediateField K E) :
-    ↥F ≃ₐ[K] (IntermediateField.lift F) where
-  toFun := fun x => ⟨x.1.1,(mem_lift x.1).mpr x.2⟩
-  invFun := fun x => ⟨⟨x.1, IntermediateField.lift_le F x.2⟩,
-    (mem_lift ⟨x.1, IntermediateField.lift_le F x.2⟩).mp x.2⟩
+def lift_algEquiv (E : IntermediateField K L) (F : IntermediateField K E) : ↥F ≃ₐ[K] lift F where
+  toFun x := ⟨x.1.1,(mem_lift x.1).mpr x.2⟩
+  invFun x := ⟨⟨x.1, lift_le F x.2⟩, (mem_lift ⟨x.1, lift_le F x.2⟩).mp x.2⟩
   left_inv := congrFun rfl
   right_inv := congrFun rfl
-  map_mul' := fun _ _ => rfl
-  map_add' := fun _ _ => rfl
-  commutes' := fun _ => rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
 
 section RestrictScalars
 
