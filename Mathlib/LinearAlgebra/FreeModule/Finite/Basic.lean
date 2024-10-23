@@ -22,7 +22,7 @@ universe u v w
 
 /-- If a free module is finite, then the arbitrary basis is finite. -/
 noncomputable instance Module.Free.ChooseBasisIndex.fintype (R : Type u) (M : Type v)
-    [Semiring R] [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] :
+    [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M] [Module.Finite R M] :
     Fintype (Module.Free.ChooseBasisIndex R M) := by
   refine @Fintype.ofFinite _ ?_
   cases subsingleton_or_nontrivial R

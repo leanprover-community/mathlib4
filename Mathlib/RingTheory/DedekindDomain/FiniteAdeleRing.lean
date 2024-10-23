@@ -175,7 +175,7 @@ end FiniteIntegralAdeles
 /-! ### The finite adèle ring of a Dedekind domain
 We define the finite adèle ring of `R` as the restricted product over all maximal ideals `v` of `R`
 of `adicCompletion` with respect to `adicCompletionIntegers`. We prove that it is a commutative
-ring. TODO: show that it is a topological ring with the restricted product topology. -/
+ring. -/
 
 
 namespace ProdAdicCompletions
@@ -429,7 +429,7 @@ theorem submodulesRingBasis : SubmodulesRingBasis
 instance : TopologicalSpace (FiniteAdeleRing R K) :=
   SubmodulesRingBasis.topology (submodulesRingBasis R K)
 
--- the point of the above: this now works
+-- the point of `submodulesRingBasis` above: this now works
 example : TopologicalRing (FiniteAdeleRing R K) := inferInstance
 
 end Topology
