@@ -496,7 +496,7 @@ theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type 
   apply Ordinal.zero_le
 
 theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.toType) :
-    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ ≤ a := by
+    enum (α := o.toType) (· < ·) ⟨0, type_toType _ ▸ h0⟩ ≤ a := by
   rw [← not_lt]
   apply enum_zero_le
 
