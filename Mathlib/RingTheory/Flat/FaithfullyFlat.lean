@@ -443,9 +443,9 @@ lemma of_linearEquiv [fl : FaithfullyFlat R M]
   specialize @rid (e.symm x) ⟨⟩
   rw [← Submodule.coe_set_smul, Submodule.mem_set_smul] at rid
   obtain ⟨c, hc, eq⟩ := rid
-  rw [Finsupp.sum, ← Submodule.coe_subtype, map_sum, Submodule.coe_subtype] at eq
   apply_fun e at eq
-  simp only [LinearEquiv.apply_symm_apply, SetLike.val_smul, map_sum, map_smul] at eq
+  simp only [LinearEquiv.apply_symm_apply, Finsupp.sum, AddSubmonoidClass.coe_finset_sum,
+    SetLike.val_smul, map_sum, map_smul] at eq
   exact eq ▸ Submodule.sum_mem _ fun i hi => Submodule.apply_mem_map₂ (hm := hc hi) (hn := ⟨⟩) _
 
 section comp
