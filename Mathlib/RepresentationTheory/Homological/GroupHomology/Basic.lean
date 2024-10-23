@@ -30,13 +30,17 @@ namespace Rep
 
 variable {k G : Type u} [CommRing k] [Group G] (A B C D : Rep k G) {n : ℕ} (α : Type u)
 
+theorem tensor_ρ' {A B : Rep k G} :
+    DFunLike.coe (F := no_index (G →* (TensorProduct k A B →ₗ[k] TensorProduct k A B)))
+      (A ⊗ B).ρ = fun g => TensorProduct.map (A.ρ g) (B.ρ g) := rfl
+
 def finsuppTensorLeft [DecidableEq α] :
     A.finsupp α ⊗ B ≅ (A ⊗ B).finsupp α :=
-  mkIso' (TensorProduct.finsuppLeft k A B α) fun g =>
+  mkIso (TensorProduct.finsuppLeft k A B α) fun g =>
     TensorProduct.ext <| Finsupp.lhom_ext fun a b => by
     ext (x : B)
     simp only [Equivalence.symm_inverse, Action.functorCategoryEquivalence_functor,
-      Action.FunctorCategoryEquivalence.functor_obj_obj, coe_def, tensor_ρ]
+      Action.FunctorCategoryEquivalence.functor_obj_obj, coe_V, tensor_ρ]
     simp [coe_tensor, tensor_ρ', TensorProduct.finsuppLeft_apply_tmul]
 
 variable {A B}
@@ -55,10 +59,10 @@ variable (A B)
 
 def finsuppTensorRight [DecidableEq α] :
     A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
-  mkIso' (TensorProduct.finsuppRight k A B α) fun g =>
+  mkIso (TensorProduct.finsuppRight k A B α) fun g =>
     TensorProduct.ext <| LinearMap.ext fun x => Finsupp.lhom_ext fun a b => by
     simp only [Equivalence.symm_inverse, Action.functorCategoryEquivalence_functor,
-      Action.FunctorCategoryEquivalence.functor_obj_obj, coe_def, tensor_ρ]
+      Action.FunctorCategoryEquivalence.functor_obj_obj, coe_V, tensor_ρ]
     simp [coe_tensor, tensor_ρ', TensorProduct.finsuppRight_apply_tmul]
 
 variable {A B}
@@ -81,7 +85,7 @@ open Representation
 (Representation.coinvariantsLift _ (Finsupp.mapRange.linearMap (Submodule.mkQ _)) <| fun g =>
   Finsupp.lhom_ext fun i x => by
   simp [Finsupp.mapRange.linearMap, ← (Submodule.Quotient.eq _).2
-    (mem_coinvariantsKer A.ρ g x _ rfl), finsupp])
+    (mem_coinvariantsKer_of_eq A.ρ g x _ rfl), finsupp])
 
 @[simp] def finsuppToCoinvariants :
     (α →₀ coinvariants A.ρ) →ₗ[k] coinvariants (A.finsupp α).ρ :=

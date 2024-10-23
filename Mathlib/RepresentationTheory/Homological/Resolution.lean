@@ -69,6 +69,29 @@ noncomputable section
 universe u v w
 open CategoryTheory
 
+lemma Fin.partialProd_contractNth_eq {G : Type*} [Monoid G] {n : ℕ}
+    (g : Fin (n + 1) → G) (a : Fin (n + 1)) :
+    partialProd (contractNth a (· * ·) g) = partialProd g ∘ a.succ.succAbove := by
+  ext i
+  refine inductionOn i ?_ ?_
+  · simp only [partialProd_zero, Function.comp_apply, succ_succAbove_zero]
+  · intro i hi
+    simp only [Function.comp_apply, succ_succAbove_succ] at *
+    rw [partialProd_succ, partialProd_succ, hi]
+    rcases lt_trichotomy (i : ℕ) a with (h | h | h)
+    · rw [succAbove_of_castSucc_lt, contractNth_apply_of_lt _ _ _ _ h,
+        succAbove_of_castSucc_lt] <;>
+      simp only [lt_def, coe_castSucc, val_succ] <;>
+      omega
+    · rw [succAbove_of_castSucc_lt, contractNth_apply_of_eq _ _ _ _ h,
+        succAbove_of_le_castSucc, castSucc_fin_succ, partialProd_succ, mul_assoc] <;>
+      simp only [castSucc_lt_succ_iff, le_def, coe_castSucc] <;>
+      omega
+    · rw [succAbove_of_le_castSucc, succAbove_of_le_castSucc, contractNth_apply_of_gt _ _ _ _ h,
+        castSucc_fin_succ] <;>
+      simp only [le_def, Nat.succ_eq_add_one, val_succ, coe_castSucc] <;>
+      omega
+
 namespace CategoryTheory.ShortComplex
 open Limits
 section
@@ -84,6 +107,7 @@ theorem SnakeInput.epi_δ (h₃ : IsZero S.L₃.X₂) : Epi S.δ :=
 theorem SnakeInput.isIso_δ (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) : IsIso S.δ :=
   @Balanced.isIso_of_mono_of_epi _ _ _ _ _ S.δ (S.mono_δ h₀) (S.epi_δ h₃)
 
+/-- When `L₀₂` and `L₃₂` are trivial, `δ` defines an isomorphism `L₀₃ ≅ L₃₁`. -/
 noncomputable def SnakeInput.δIso (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) :
     S.L₀.X₃ ≅ S.L₃.X₁ :=
   @asIso _ _ _ _ S.δ (SnakeInput.isIso_δ S h₀ h₃)
@@ -104,11 +128,28 @@ theorem ShortExact.isIso_δ (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X�
     IsIso (hS.δ i j hij) :=
   (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).isIso_δ hi hj
 
+/-- If `c.Rel i j` and `Hᵢ(X₂), Hⱼ(X₂)` are trivial, `δ` defines an isomorphism
+`Hᵢ(X₃) ≅ Hⱼ(X₁)`. -/
 noncomputable def ShortExact.δIso (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
     S.X₃.homology i ≅ S.X₁.homology j :=
   @asIso _ _ _ _ (hS.δ i j hij) (hS.isIso_δ i j hij hi hj)
 
 end
+
+theorem map_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [HasForget₂ C Ab] [Abelian C]
+    [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
+    {K K' : ShortComplex C} (f : K ⟶ K')
+    (x : (forget₂ C Ab).obj K.X₂) (hx : (forget₂ C Ab).map K.g x = 0) :
+    ((forget₂ C Ab).map <| ShortComplex.cyclesMap f) (K.cyclesMk x hx) =
+      K'.cyclesMk ((forget₂ C Ab).map f.τ₂ <| x)
+      (by simpa [hx] using congr((forget₂ C Ab).map $(f.comm₂₃) x)) := by
+  apply (AddCommGrp.mono_iff_injective ((forget₂ C Ab).map K'.iCycles)).1 inferInstance
+  rw [K'.i_cyclesMk ((forget₂ C Ab).map f.τ₂ <| x)
+    (by simpa [hx] using congr((forget₂ C Ab).map $(f.comm₂₃) x)),
+    ← Function.comp_apply (f := (forget₂ C Ab).map _), ← AddCommGrp.coe_comp, ← Functor.map_comp]
+  simp
+
+
 end CategoryTheory.ShortComplex
 
 namespace HomologicalComplex
@@ -118,11 +159,10 @@ theorem cyclesIsoSc'_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [Ha
     {c : ComplexShape ι} (K : HomologicalComplex C c) {i j k : ι} (x : (forget₂ C Ab).obj (K.X j))
     (hi : c.prev j = i) (hk : c.next j = k) (hx : ((forget₂ C Ab).map (K.d j k)) x = 0) :
     ((forget₂ C Ab).map (K.cyclesIsoSc' i j k hi hk).hom) (K.cyclesMk x k hk hx)
-      = (K.sc' i j k).cyclesMk x (by simp_all) := by
-  apply (AddCommGrp.mono_iff_injective ((forget₂ C Ab).map (K.sc' i j k).iCycles)).1 inferInstance
-  rw [(K.sc' i j k).i_cyclesMk x (by simp_all), ← Function.comp_apply (f := (forget₂ C Ab).map _),
-    ← AddCommGrp.coe_comp, ← Functor.map_comp]
-  simp
+      = (K.sc' i j k).cyclesMk x (by simp_all) :=  by
+  cases hk
+  simpa using ShortComplex.map_cyclesMk (C := C) (K := K.sc j) (K' := K.sc' i j (c.next j))
+    (K.isoSc' i j (c.next j) hi rfl).hom x (by simp_all)
 
 theorem cyclesIsoSc'_inv_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [HasForget₂ C Ab]
     [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*}
@@ -130,10 +170,9 @@ theorem cyclesIsoSc'_inv_cyclesMk {C : Type u} [Category C] [ConcreteCategory C]
     (hi : c.prev j = i) (hk : c.next j = k) (hx : ((forget₂ C Ab).map (K.d j k)) x = 0) :
     ((forget₂ C Ab).map (K.cyclesIsoSc' i j k hi hk).inv) ((K.sc' i j k).cyclesMk x (by simp_all))
       = K.cyclesMk x k hk hx := by
-  apply (AddCommGrp.mono_iff_injective ((forget₂ C Ab).map (K.iCycles j))).1 inferInstance
-  rw [K.i_cyclesMk x k hk hx, ← Function.comp_apply (f := (forget₂ C Ab).map _),
-    ← AddCommGrp.coe_comp, ← Functor.map_comp]
-  simpa using (K.sc' i j k).i_cyclesMk x (by simp_all)
+  cases hk
+  simpa using ShortComplex.map_cyclesMk (C := C) (K := K.sc' i j (c.next j)) (K' := K.sc j)
+    (K.isoSc' i j (c.next j) hi rfl).inv x (by simp_all)
 
 end HomologicalComplex
 namespace LinearEquiv
@@ -190,28 +229,14 @@ theorem kerLEquivOfCompEqComp_symm_apply
 
 end LinearEquiv
 
-variable {k G : Type u} [CommRing k] {n : ℕ}
-
-open CategoryTheory Finsupp
-
-local notation "Gⁿ" => Fin n → G
-
-set_option quotPrecheck false
-local notation "Gⁿ⁺¹" => Fin (n + 1) → G
-
-open Finsupp hiding lift
-open MonoidalCategory
-open Fin (partialProd)
-
 namespace CategoryTheory.ShortComplex
 
 variable {R : Type u} [Ring R] {M : ShortComplex (ModuleCat R)}
     (x : LinearMap.ker M.g)
 
 theorem forget₂_moduleCat_mapCyclesIso (M : ShortComplex (ModuleCat R)) :
-    (M.mapCyclesIso (forget₂ (ModuleCat R) Ab))
-      ≪≫ (forget₂ (ModuleCat R) Ab).mapIso M.moduleCatCyclesIso
-      = (ShortComplex.abCyclesIso _) := by
+    (M.mapCyclesIso (forget₂ (ModuleCat R) Ab)) ≪≫
+      (forget₂ (ModuleCat R) Ab).mapIso M.moduleCatCyclesIso = (ShortComplex.abCyclesIso _) := by
   apply Iso.ext
   rw [← Iso.inv_eq_inv]
   refine (cancel_mono (M.map (forget₂ (ModuleCat R) Ab)).iCycles).1 ?_
@@ -227,99 +252,25 @@ theorem moduleCatCyclesIso_inv_apply {M : ShortComplex (ModuleCat R)}
   exact congr($this ⟨x, _⟩)
 
 end CategoryTheory.ShortComplex
-namespace Rep
 
-variable (k G n) [Group G]
+variable {k G : Type u} [CommRing k] {n : ℕ}
 
-open Action
+open CategoryTheory Finsupp
 
-def diagonalSucc (n : ℕ) :
-    diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
-  (linearization k G).mapIso (diagonalSucc' G n ≪≫ β_ _ _)
-  ≪≫ mkIso' (Finsupp.finsuppProdLEquiv k)
-  fun g => Finsupp.lhom_ext fun ⟨(x : Fin n → G), (y : G)⟩ r => by
-    rw [linearization_obj_ρ']
-    dsimp only [coe_linearization_obj, Action.tensor_typeρ, LinearMap.coe_comp,
-      Function.comp_apply, lmapDomain_apply]
-    simp only [mapDomain_single, Prod.map_apply, Action.trivial_typeρ_apply,
-      Action.ofMulAction_apply]
-    simp [Action.trivial_V, Action.ofMulAction_V, type_tensorObj]
+local notation "Gⁿ" => Fin n → G
 
-variable {k G n}
+set_option quotPrecheck false
+local notation "Gⁿ⁺¹" => Fin (n + 1) → G
 
-theorem diagonalSucc_hom_single' (f : Gⁿ⁺¹) (a : k) :
-    hom (diagonalSucc k G n).hom (single f a) =
-      single (fun i => (f i.castSucc)⁻¹ * f i.succ) (single (f 0) a) := by
-  simp [diagonalSucc, diagonalSucc'_hom_apply', coe_linearization_obj, type_tensorObj,
-    Action.trivial_V, Action.ofMulAction_V]
-
-@[simp]
-theorem diagonalSucc_inv_single_single' (g : G) (f : Gⁿ) (a : k) :
-    hom (diagonalSucc k G n).inv (Finsupp.single f (Finsupp.single g a)) =
-      single (g • partialProd f) a := by
-  simpa [diagonalSucc, coe_linearization_obj, type_tensorObj, Action.trivial_V,
-    Action.ofMulAction_V] using congr(single $(diagonalSucc'_inv_apply' g f) a)
-
-theorem diagonalSucc_inv_single' (g : G →₀ k) (f : Gⁿ) :
-    hom (diagonalSucc k G n).inv (Finsupp.single f g) =
-      Finsupp.lift _ k G (fun a => single (a • partialProd f) 1) g := by
-  classical
-  refine g.induction ?_ ?_
-  · simp
-  · intro x r y _ _ hx
-    simp only [single_add, map_add, diagonalSucc_inv_single_single']
-    simp_all
-
-end Rep
-
+open Finsupp hiding lift
+open MonoidalCategory
+open Fin (partialProd)
 open scoped TensorProduct
-
-namespace Representation
-open Rep
-
-variable (k G n) [Group G]
-
-def finsuppLEquivFreeAsModule :
-    ((Fin n → G) →₀ MonoidAlgebra k G) ≃ₗ[MonoidAlgebra k G]
-      ((free k G (Fin n → G))).asModule :=
-  { AddEquiv.refl _ with
-    map_smul' := fun r x => by
-      simp only [AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
-        AddEquiv.refl_apply, RingHom.id_apply]
-      refine x.induction ?_ fun x y f _ _ h => ?_
-      · simp only [smul_zero]
-      · rw [smul_add, h]
-        show _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
-        simp only [map_add, smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
-          asAlgebraHom_def, MonoidAlgebra.lift_apply]
-        congr
-        simp [asModule, ofMulAction_def, mapDomain, smul_sum, ← single_sum] }
-
-def freeAsModuleBasis :
-    Basis (Fin n → G) (MonoidAlgebra k G) (free k G (Fin n → G)).asModule where
-  repr := (finsuppLEquivFreeAsModule k G n).symm
-
-/-- A `k[G]`-basis of `k[Gⁿ⁺¹]`, coming from the `k[G]`-linear isomorphism
-`k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹].` -/
-def ofMulActionAsModuleBasis :
-    Basis (Fin n → G) (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule where
-  repr := (equivalenceModuleMonoidAlgebra.functor.mapIso (diagonalSucc k G n)).toLinearEquiv
-    ≪≫ₗ (finsuppLEquivFreeAsModule k G n).symm
-
-theorem free_asModule_free :
-    Module.Free (MonoidAlgebra k G) (free k G (Fin n → G)).asModule :=
-  Module.Free.of_basis (freeAsModuleBasis k G n)
-
-theorem ofMulAction_asModule_free :
-    Module.Free (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  Module.Free.of_basis (ofMulActionAsModuleBasis k G n)
-
-end Representation
 
 variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
-@[simps (config := .lemmasOnly)]
+@[simps obj]
 def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action (Type u) <| G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
@@ -330,7 +281,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
   map_comp _ _ := rfl
 
 @[simp]
-lemma classifyingSpaceUniversalCover_map_hom' [Monoid G] {n m : SimplexCategoryᵒᵖ} (f : n ⟶ m)
+lemma classifyingSpaceUniversalCover_map_hom [Monoid G] {n m : SimplexCategoryᵒᵖ} (f : n ⟶ m)
     (x : Fin (n.unop.len + 1) → G) :
     Action.hom ((classifyingSpaceUniversalCover G).map f) x = x ∘ f.unop.toOrderHom := rfl
 
@@ -415,45 +366,41 @@ open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory CategoryThe
 
 section Differentials
 
-variable [Monoid G]
+variable (n)
 
 /-- The `k`-linear map underlying the differential in the standard resolution of `k` as a trivial
 `k`-linear `G`-representation. It sends `(g₀, ..., gₙ) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ)`. -/
-def d (G : Type u) (n : ℕ) : ((Fin (n + 1) → G) →₀ k) →ₗ[k] (Fin n → G) →₀ k :=
-  Finsupp.lift ((Fin n → G) →₀ k) k (Fin (n + 1) → G) fun g =>
-    (@Finset.univ (Fin (n + 1)) _).sum fun p =>
-      Finsupp.single (g ∘ p.succAbove) ((-1 : k) ^ (p : ℕ))
+def d : (Gⁿ⁺¹ →₀ k) →ₗ[k] Gⁿ →₀ k :=
+  lift (Gⁿ →₀ k) k Gⁿ⁺¹ fun g => (@Finset.univ (Fin (n + 1)) _).sum fun p =>
+    single (g ∘ p.succAbove) ((-1 : k) ^ (p : ℕ))
 
-variable {k G}
+variable {k G n}
 
 @[simp]
-theorem d_of {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) :
-    d k G n (Finsupp.single c 1) =
-      Finset.univ.sum fun p : Fin (n + 1) =>
-        Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) := by
+theorem d_of (c : Gⁿ⁺¹) :
+    d k G n (single c 1) =
+      Finset.univ.sum fun p : Fin (n + 1) => single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) := by
   simp [d]
 
-variable (k G)
-
+variable (k G n)
 /-- The `n`th object of the standard resolution of `k` is definitionally isomorphic to `k[Gⁿ⁺¹]`
 equipped with the representation induced by the diagonal action of `G`. -/
-def xIso (n : ℕ) : (standardResolution k G).X n ≅ Rep.ofMulAction k G (Fin (n + 1) → G) :=
-  Iso.refl _
+def xIso [Monoid G] : (standardResolution k G).X n ≅ Rep.ofMulAction k G Gⁿ⁺¹ := Iso.refl _
 
-instance x_projective (G : Type u) [Group G] (n : ℕ) :
+instance x_projective [Group G] :
     Projective ((standardResolution k G).X n) :=
   Rep.equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
     @ModuleCat.projective_of_free.{u} _ _
-      (ModuleCat.of (MonoidAlgebra k G) (Representation.ofMulAction k G (Fin (n + 1) → G)).asModule)
+      (ModuleCat.of (MonoidAlgebra k G) (Representation.ofMulAction k G Gⁿ⁺¹).asModule)
       _ (Representation.ofMulActionAsModuleBasis k G n)
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq (n : ℕ) : Rep.hom ((standardResolution k G).d (n + 1) n) = d k G (n + 1) := by
+theorem d_eq [Monoid G] : Rep.hom ((standardResolution k G).d (n + 1) n) = d k G (n + 1) := by
   refine Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
   simp [classifyingSpaceUniversalCover_obj, Action.ofMulAction_V, standardResolution,
     Rep.coe_linearization_obj, d_of (k := k) x, SimplicialObject.δ,
-    ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), classifyingSpaceUniversalCover_map_hom',
+    ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), classifyingSpaceUniversalCover_map_hom,
     SimplexCategory.δ, Fin.succAboveOrderEmb]
 
 end Differentials
@@ -494,7 +441,7 @@ def forget₂ToModuleCatHomotopyEquiv :
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 abbrev ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k :=
-  Rep.mkHom' (Finsupp.linearCombination _ fun _ => (1 : k)) fun g =>
+  Rep.mkHom (Finsupp.linearCombination _ fun _ => (1 : k)) fun g =>
     Finsupp.lhom_ext' fun _ => LinearMap.ext_ring (by simp)
 
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
@@ -555,12 +502,7 @@ variable [Group G]
 def projectiveResolution : ProjectiveResolution (Rep.trivial k G k) where
   π := εToSingle₀ k G
 
--- why's this here
-instance : EnoughProjectives (Rep k G) :=
-  Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2
-    ModuleCat.moduleCat_enoughProjectives.{u}
-
-/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
+/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 standard resolution of `k`. -/
 def extIso (V : Rep k G) (n : ℕ) :
@@ -574,44 +516,26 @@ variable {k G} (n) [Group G] (A : Rep k G)
 
 namespace barResolution
 
-open Rep
+open Rep Finsupp
 
 variable (k G)
 
-def d (n : ℕ) : free k G (Fin (n + 1) → G) ⟶ free k G (Fin n → G) :=
-freeLift _ fun g => Finsupp.single (fun i => g i.succ) (Finsupp.single (g 0) 1)
-  + Finset.univ.sum fun j : Fin (n + 1) =>
-        Finsupp.single (Fin.contractNth j (· * ·) g)
-          (Finsupp.single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1)))
+/-- The differential from `Gⁿ⁺¹ →₀ k[G]` to `Gⁿ →₀ k[G]` in the bar resolution of `k` as a trivial
+`k`-linear `G`-representation. It sends `(g₀, ..., gₙ)` to
+`g₀ • (g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹ • (g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹ • (g₀, ..., gₙ₋₁)` for
+`j = 0, ... , n - 1`. -/
+def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
+  freeLift _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
+    Finset.univ.sum fun j : Fin (n + 1) =>
+      single (Fin.contractNth j (· * ·) g) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1)))
 
 variable {k G}
 
-@[simp] lemma d_single (x : Gⁿ⁺¹) :
-    hom (d k G n) (Finsupp.single x (Finsupp.single 1 1)) =
-      Finsupp.single (fun i => x i.succ) (Finsupp.single (x 0) 1)
-    + Finset.univ.sum fun j : Fin (n + 1) =>
-          Finsupp.single (Fin.contractNth j (· * ·) x)
-            (Finsupp.single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
+lemma d_single (x : Gⁿ⁺¹) :
+    hom (d k G n) (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
+      Finset.univ.sum fun j : Fin (n + 1) =>
+        single (Fin.contractNth j (· * ·) x)  (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
   simp [d]
-
-lemma Fin.partialProd_contractNth_eq (g : Fin (n + 1) → G) (a : Fin (n + 1)) :
-    Fin.partialProd (Fin.contractNth a (· * ·) g) = Fin.partialProd g ∘ a.succ.succAbove := by
-  ext i
-  refine Fin.inductionOn i ?_ ?_
-  · simp only [Fin.partialProd_zero, Function.comp_apply, Fin.succ_succAbove_zero]
-  · intro i hi
-    simp only [Function.comp_apply, Fin.succ_succAbove_succ] at *
-    rw [Fin.partialProd_succ, Fin.partialProd_succ, hi]
-    rcases lt_trichotomy (i : ℕ) a with (h | h | h)
-    · rw [Fin.succAbove_of_castSucc_lt, Fin.contractNth_apply_of_lt _ _ _ _ h,
-        Fin.succAbove_of_castSucc_lt]
-      <;> simp only [Fin.lt_def, Fin.coe_castSucc, Fin.val_succ] <;> omega
-    · rw [Fin.succAbove_of_castSucc_lt, Fin.contractNth_apply_of_eq _ _ _ _ h,
-        Fin.succAbove_of_le_castSucc, Fin.castSucc_fin_succ, Fin.partialProd_succ, mul_assoc]
-      <;> simp only [Fin.castSucc_lt_succ_iff, Fin.le_def, Fin.coe_castSucc] <;> omega
-    · rw [Fin.succAbove_of_le_castSucc, Fin.succAbove_of_le_castSucc,
-        Fin.contractNth_apply_of_gt _ _ _ _ h, Fin.castSucc_fin_succ]
-      <;> simp only [Fin.le_def, Nat.succ_eq_add_one, Fin.val_succ, Fin.coe_castSucc] <;> omega
 
 variable (k G)
 
@@ -631,12 +555,12 @@ open barResolution
 
 variable (k G)
 
-/-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
-$$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
-which calculates the group cohomology of `A`. -/
+/-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
+differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to
+`g₀ • (g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹ • (g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹ • (g₀, ..., gₙ₋₁)` for
+`j = 0, ... , n - 1`. -/
 noncomputable abbrev barResolution : ChainComplex (Rep k G) ℕ :=
-  ChainComplex.of (fun n => Rep.free k G (Fin n → G))
-    (fun n => d k G n) fun n => by
+  ChainComplex.of (fun n => Rep.free k G (Fin n → G)) (fun n => d k G n) fun n => by
     ext x
     simp only [(diagonalSucc k G _).comp_inv_eq.1 (d_comp_diagonalSucc_inv_eq k G _),
       Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc,
@@ -645,29 +569,27 @@ noncomputable abbrev barResolution : ChainComplex (Rep k G) ℕ :=
 namespace barResolution
 
 @[simp]
-theorem d_def (n : ℕ) :
-    (barResolution k G).d (n + 1) n = d k G n :=
-  ChainComplex.of_d _ _ _ _
+theorem d_def : (barResolution k G).d (n + 1) n = d k G n := ChainComplex.of_d _ _ _ _
 
-/-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
-to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
-def isoStandardResolution : barResolution k G ≅ standardResolution k G := by
-  refine HomologicalComplex.Hom.isoOfComponents (fun i =>
-    (diagonalSucc k G i).symm) ?_
-  rintro i j (h : j + 1 = i)
-  subst h
+/-- Isomorphism between the bar resolution and standard resolution, with `n`th map
+`(Gⁿ →₀ k[G]) → k[Gⁿ⁺¹]` sending `(g₁, ..., gₙ) ↦ (1, g₁, g₁g₂, ..., g₁...gₙ)`. -/
+def isoStandardResolution : barResolution k G ≅ standardResolution k G :=
+  HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSucc k G i).symm) fun i j => by
+  rintro (rfl : j + 1 = i)
   simp only [ChainComplex.of_x, Iso.symm_hom, d_def, d_comp_diagonalSucc_inv_eq]
 
+/-- The chain complex `Rep.barResolution k G` as a projective resolution of `k` as a trivial
+`k`-linear `G`-representation. -/
 def projectiveResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := barResolution k G
   projective n := Rep.equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
     @ModuleCat.projective_of_free.{u} _ _ (@ModuleCat.of (MonoidAlgebra k G) _
       (Representation.free k G (Fin n → G)).asModule
       (inferInstance : AddCommGroup ((Fin n → G) →₀ G →₀ k)) _)
-      _ (Representation.freeAsModuleBasis k G n)
+      _ (Representation.freeAsModuleBasis k G (Fin n → G))
   π := (isoStandardResolution k G).hom ≫ standardResolution.εToSingle₀ k G
 
-/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
+/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 bar resolution of `k`. -/
 def extIso (V : Rep k G) (n : ℕ) :

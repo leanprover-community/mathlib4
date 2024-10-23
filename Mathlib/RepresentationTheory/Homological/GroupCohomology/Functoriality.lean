@@ -40,9 +40,9 @@ namespace ModuleCat
 
 variable (R : Type u) [Ring R]
 
-lemma ofHom_comp {M N P : Type v} [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
+lemma asHom_comp {M N P : Type v} [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
     [Module R M] [Module R N] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
-    ofHom (g ∘ₗ f) = ofHom f ≫ ofHom g := rfl
+    asHom (g ∘ₗ f) = asHom f ≫ asHom g := rfl
 
 end ModuleCat
 
@@ -118,7 +118,7 @@ variable (A B f φ) in
 @[simps (config := .lemmasOnly)]
 noncomputable def cochainsMap :
     inhomogeneousCochains A ⟶ inhomogeneousCochains B where
-  f i := ModuleCat.ofHom (φ.compLeft (Fin i → G)
+  f i := ModuleCat.asHom (φ.compLeft (Fin i → G)
     ∘ₗ LinearMap.funLeft k A (fun x : Fin i → G => (f ∘ x)))
   comm' i j (hij : _ = _) := by
     subst hij
@@ -126,7 +126,7 @@ noncomputable def cochainsMap :
     funext g
     simp only [CochainComplex.of_x, inhomogeneousCochains.d_def, ModuleCat.coe_comp,
       Function.comp_apply]
-    simpa [ModuleCat.ofHom, ModuleCat.coe_of, ModuleCat.hom_def, Fin.comp_contractNth]
+    simpa [ModuleCat.asHom, ModuleCat.coe_of, ModuleCat.hom_def, Fin.comp_contractNth]
       using (compatible_apply _ _).symm
 
 @[simp]
@@ -139,10 +139,10 @@ lemma cochainsMap_id :
     cochainsMap A A (MonoidHom.id _) (𝟙 A.V) = 𝟙 (inhomogeneousCochains A) := by
   rfl
 
-@[simp]
+/-@[simp]
 lemma cochainsMap_id' :
     cochainsMap A A (MonoidHom.id _) LinearMap.id = 𝟙 (inhomogeneousCochains A) := by
-  rfl
+  rfl-/
 
 @[simp]
 lemma cochainsMap_eq_compLeft {A B : Rep k G} (f : A ⟶ B) (i : ℕ) :
@@ -158,7 +158,7 @@ lemma cochainsMap_comp {k G H K : Type u} [CommRing k] [Group G] [Group H] [Grou
   rfl
 
 @[simp]
-lemma cochainsMap_comp' {k G : Type u} [CommRing k] [Group G]
+lemma cochainsMap_hom_comp {k G : Type u} [CommRing k] [Group G]
     {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     cochainsMap A C (MonoidHom.id G) (φ.hom ≫ ψ.hom)
       = cochainsMap A B (MonoidHom.id G) φ.hom ≫ cochainsMap B C (MonoidHom.id G) ψ.hom := by
@@ -206,7 +206,7 @@ abbrev fThree := φ.compLeft (G × G × G) ∘ₗ LinearMap.funLeft k A (Prod.ma
 @[reassoc (attr := simp)]
 lemma cochainsMap_f_0_comp_zeroCochainsLEquiv :
     (cochainsMap A B f φ).f 0 ≫ (zeroCochainsLEquiv B : (inhomogeneousCochains B).X 0 →ₗ[k] B)
-      = (zeroCochainsLEquiv A : (inhomogeneousCochains A).X 0 →ₗ[k] A) ≫ ModuleCat.ofHom φ := by
+      = (zeroCochainsLEquiv A : (inhomogeneousCochains A).X 0 →ₗ[k] A) ≫ ModuleCat.asHom φ := by
   ext x
   simp only [cochainsMap_f, Unique.eq_default (f ∘ _)]
   rfl
@@ -215,7 +215,7 @@ lemma cochainsMap_f_0_comp_zeroCochainsLEquiv :
 lemma cochainsMap_f_1_comp_oneCochainsLEquiv :
     (cochainsMap A B f φ).f 1 ≫ (oneCochainsLEquiv B : (inhomogeneousCochains B).X 1 →ₗ[k] G → B)
       = (oneCochainsLEquiv A).toModuleIso.hom
-      ≫ ModuleCat.ofHom (fOne A B f φ) := by
+      ≫ ModuleCat.asHom (fOne A B f φ) := by
   ext x
   simp only [cochainsMap_f, Unique.eq_default (f ∘ _)]
   rfl
@@ -224,7 +224,7 @@ lemma cochainsMap_f_1_comp_oneCochainsLEquiv :
 lemma cochainsMap_f_2_comp_twoCochainsLEquiv :
     (cochainsMap A B f φ).f 2
       ≫ (twoCochainsLEquiv B : (inhomogeneousCochains B).X 2 →ₗ[k] G × G → B)
-      = (twoCochainsLEquiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fTwo A B f φ) := by
+      = (twoCochainsLEquiv A).toModuleIso.hom ≫ ModuleCat.asHom (fTwo A B f φ) := by
   ext x
   funext g
   show φ (x _) = φ (x _)
@@ -235,7 +235,7 @@ lemma cochainsMap_f_2_comp_twoCochainsLEquiv :
 lemma cochainsMap_f_3_comp_threeCochainsLEquiv :
     (cochainsMap A B f φ).f 3
       ≫ (threeCochainsLEquiv B : (inhomogeneousCochains B).X 3 →ₗ[k] G × G × G → B)
-      = (threeCochainsLEquiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fThree A B f φ) := by
+      = (threeCochainsLEquiv A).toModuleIso.hom ≫ ModuleCat.asHom (fThree A B f φ) := by
   ext x
   funext g
   show φ (x _) = φ (x _)
@@ -284,9 +284,9 @@ theorem cohomologyMap_comp_isoH0_hom :
 @[simps]
 def mapShortComplexH1 :
     shortComplexH1 A ⟶ shortComplexH1 B where
-  τ₁ := ModuleCat.ofHom φ
-  τ₂ := ModuleCat.ofHom (fOne A B f φ)
-  τ₃ := ModuleCat.ofHom (fTwo A B f φ)
+  τ₁ := ModuleCat.asHom φ
+  τ₂ := ModuleCat.asHom (fOne A B f φ)
+  τ₃ := ModuleCat.asHom (fTwo A B f φ)
   comm₁₂ := by
     ext x
     funext g
@@ -360,9 +360,9 @@ lemma cohomologyMap_comp_isoH1_hom :
 @[simps]
 def mapShortComplexH2 :
     shortComplexH2 A ⟶ shortComplexH2 B where
-  τ₁ := ModuleCat.ofHom (fOne A B f φ)
-  τ₂ := ModuleCat.ofHom (fTwo A B f φ)
-  τ₃ := ModuleCat.ofHom (fThree A B f φ)
+  τ₁ := ModuleCat.asHom (fOne A B f φ)
+  τ₂ := ModuleCat.asHom (fTwo A B f φ)
+  τ₃ := ModuleCat.asHom (fThree A B f φ)
   comm₁₂ := by
     ext x
     funext g
@@ -658,7 +658,7 @@ theorem H0ShortComplex₃_exact (H : ShortExact X) :
 /-- The short complex  `X₃ᴳ ⟶ H¹(G, X₁) ⟶ H¹(G, X₂)`-/
 noncomputable abbrev H1ShortComplex₁ (H : ShortExact X) :=
   ShortComplex.mk (δ₀ H) (mapH1 X.X₁ X.X₂ (MonoidHom.id G) X.f.hom) <| by
-    simpa [δ₀, ModuleCat.ofHom, ← cohomologyMap_comp_isoH1_hom]
+    simpa [δ₀, ModuleCat.asHom, ← cohomologyMap_comp_isoH1_hom]
       using (mapShortExact H).δ_comp_assoc 0 1 rfl _
 
 noncomputable def isoH1ShortComplex₁ (H : ShortExact X) :
@@ -706,7 +706,7 @@ theorem H1ShortComplex₃_exact (H : ShortExact X) :
 /-- The short complex  `H¹(G, X₃) ⟶ H²(G, X₁) ⟶ H²(G, X₂)`-/
 noncomputable abbrev H2ShortComplex₁ (H : ShortExact X) :=
   ShortComplex.mk (δ₁ H) (mapH2 X.X₁ X.X₂ (MonoidHom.id G) X.f.hom) <| by
-    simpa [δ₁, ModuleCat.ofHom, ← cohomologyMap_comp_isoH2_hom]
+    simpa [δ₁, ModuleCat.asHom, ← cohomologyMap_comp_isoH2_hom]
       using (mapShortExact H).δ_comp_assoc 1 2 rfl _
 
 noncomputable def isoH2ShortComplex₁ (H : ShortExact X) :
