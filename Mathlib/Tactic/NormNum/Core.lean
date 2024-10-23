@@ -94,7 +94,7 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
           trace[Tactic.norm_num] "{ext.name}:\n{e} ==> {new}"
           return new
         catch err =>
-          trace[Tactic.norm_num] "{e} failed: {err.toMessageData}"
+          trace[Tactic.norm_num] "{ext.name} failed {e}: {err.toMessageData}"
           s.restore
     throwError "{e}: no norm_nums apply"
 
