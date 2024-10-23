@@ -220,7 +220,7 @@ alias quotientMap := isQuotientMap
 theorem coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
   h.isQuotientMap.2.symm
 
-protected theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.toInducing, h.injective⟩
+protected theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.inducing, h.injective⟩
 
 /-- Homeomorphism given an embedding. -/
 noncomputable def ofIsEmbedding (f : X → Y) (hf : IsEmbedding f) : X ≃ₜ Set.range f where
