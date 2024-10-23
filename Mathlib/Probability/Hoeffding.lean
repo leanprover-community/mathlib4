@@ -19,13 +19,7 @@ This file states Hoeffding's lemma.
 
 ## References
 
-We follow the proof of Hoeffding's lemma in the following references:
-* Martin J. Wainwright. High-Dimensional Statistics. Cambridge university press, 2019. Chapter 2
-* Mehryar Mohri. Foundations of Machine Learning. The MIT Press, 2018. Chapter D
-
-## Tags
-
-Hoeffding's lemma, cumulant
+We follow [martin2019] and [mehryar2018] for the proof of Hoeffding's lemma.
 -/
 
 open MeasureTheory ProbabilityTheory Real
