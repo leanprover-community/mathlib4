@@ -176,11 +176,11 @@ theorem intrinsicFrontier_union_intrinsicInterior (s : Set P) :
 
 theorem isClosed_intrinsicClosure (hs : IsClosed (affineSpan 𝕜 s : Set P)) :
     IsClosed (intrinsicClosure 𝕜 s) :=
-  (closedEmbedding_subtype_val hs).isClosedMap _ isClosed_closure
+  hs.isClosedEmbedding_subtypeVal.isClosedMap _ isClosed_closure
 
 theorem isClosed_intrinsicFrontier (hs : IsClosed (affineSpan 𝕜 s : Set P)) :
     IsClosed (intrinsicFrontier 𝕜 s) :=
-  (closedEmbedding_subtype_val hs).isClosedMap _ isClosed_frontier
+  hs.isClosedEmbedding_subtypeVal.isClosedMap _ isClosed_frontier
 
 @[simp]
 theorem affineSpan_intrinsicClosure (s : Set P) :

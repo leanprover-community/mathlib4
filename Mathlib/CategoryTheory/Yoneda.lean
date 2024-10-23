@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 open Opposite
 
-universe v v₁ u₁ u₂
+universe v v₁ v₂ u₁ u₂
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable {C : Type u₁} [Category.{v₁} C]
@@ -486,8 +486,6 @@ to `yoneda.op.obj X ⟶ F`, functorially in both `X` and `F`.
 def yonedaPairing : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
   Functor.prod yoneda.op (𝟭 (Cᵒᵖ ⥤ Type v₁)) ⋙ Functor.hom (Cᵒᵖ ⥤ Type v₁)
 
--- Porting note (#5229): we need to provide this `@[ext]` lemma separately,
--- as `ext` will not look through the definition.
 @[ext]
 lemma yonedaPairingExt {X : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)} {x y : (yonedaPairing C).obj X}
     (w : ∀ Y, x.app Y = y.app Y) : x = y :=
@@ -657,8 +655,6 @@ to `coyoneda.rightOp.obj X ⟶ F`, functorially in both `X` and `F`.
 def coyonedaPairing : C × (C ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
   Functor.prod coyoneda.rightOp (𝟭 (C ⥤ Type v₁)) ⋙ Functor.hom (C ⥤ Type v₁)
 
--- Porting note (#5229): we need to provide this `@[ext]` lemma separately,
--- as `ext` will not look through the definition.
 @[ext]
 lemma coyonedaPairingExt {X : C × (C ⥤ Type v₁)} {x y : (coyonedaPairing C).obj X}
     (w : ∀ Y, x.app Y = y.app Y) : x = y :=
@@ -770,5 +766,25 @@ lemma yonedaMap_app_apply {Y : C} {X : Cᵒᵖ} (f : X.unop ⟶ Y) :
     (yonedaMap F Y).app X f = F.map f := rfl
 
 end
+
+namespace Functor.FullyFaithful
+
+variable {C : Type u₁} [Category.{v₁} C]
+
+/-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
+def homNatIso {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFaithful) (X : C) :
+    F.op ⋙ yoneda.obj (F.obj X) ⋙ uliftFunctor.{v₁} ≅ yoneda.obj X ⋙ uliftFunctor.{v₂} :=
+  NatIso.ofComponents
+    (fun Y => Equiv.toIso (Equiv.ulift.trans <| hF.homEquiv.symm.trans Equiv.ulift.symm))
+    (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
+
+/-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
+def homNatIsoMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D} (hF : F.FullyFaithful)
+    (X : C) : F.op ⋙ yoneda.obj (F.obj X) ≅ yoneda.obj X ⋙ uliftFunctor.{v₂} :=
+  NatIso.ofComponents
+    (fun Y => Equiv.toIso (hF.homEquiv.symm.trans Equiv.ulift.symm))
+    (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
+
+end Functor.FullyFaithful
 
 end CategoryTheory

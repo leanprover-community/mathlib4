@@ -280,19 +280,22 @@ protected theorem image_eq (s : Set H) : I '' s = I.symm ⁻¹' s ∩ range I :=
   · rw [I.source_eq]; exact subset_univ _
   · rw [inter_comm, I.target_eq, I.toPartialEquiv_coe_symm]
 
-protected theorem closedEmbedding : ClosedEmbedding I :=
-  I.leftInverse.closedEmbedding I.continuous_symm I.continuous
+theorem isClosedEmbedding : IsClosedEmbedding I :=
+  I.leftInverse.isClosedEmbedding I.continuous_symm I.continuous
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding := isClosedEmbedding
 
 theorem isClosed_range : IsClosed (range I) :=
-  I.closedEmbedding.isClosed_range
+  I.isClosedEmbedding.isClosed_range
 
 @[deprecated (since := "2024-03-17")] alias closed_range := isClosed_range
 
 theorem map_nhds_eq (x : H) : map I (𝓝 x) = 𝓝[range I] I x :=
-  I.closedEmbedding.toEmbedding.map_nhds_eq x
+  I.isClosedEmbedding.toEmbedding.map_nhds_eq x
 
 theorem map_nhdsWithin_eq (s : Set H) (x : H) : map I (𝓝[s] x) = 𝓝[I '' s] I x :=
-  I.closedEmbedding.toEmbedding.map_nhdsWithin_eq s x
+  I.isClosedEmbedding.toEmbedding.map_nhdsWithin_eq s x
 
 theorem image_mem_nhdsWithin {x : H} {s : Set H} (hs : s ∈ 𝓝 x) : I '' s ∈ 𝓝[range I] I x :=
   I.map_nhds_eq x ▸ image_mem_map hs
@@ -348,7 +351,7 @@ open TopologicalSpace
 
 protected theorem secondCountableTopology [SecondCountableTopology E] (I : ModelWithCorners 𝕜 E H) :
     SecondCountableTopology H :=
-  I.closedEmbedding.toEmbedding.secondCountableTopology
+  I.isClosedEmbedding.toEmbedding.secondCountableTopology
 
 end ModelWithCorners
 
@@ -417,9 +420,9 @@ abbrev ModelWithCorners.tangent {𝕜 : Type u} [NontriviallyNormedField 𝕜] {
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] {G : Type*}
-  [TopologicalSpace G] {G' : Type*} [TopologicalSpace G'] {I : ModelWithCorners 𝕜 E H}
+  [TopologicalSpace G] {I : ModelWithCorners 𝕜 E H}
   {J : ModelWithCorners 𝕜 F G}
 
 @[simp, mfld_simps]
@@ -724,12 +727,16 @@ theorem PartialHomeomorph.singleton_smoothManifoldWithCorners
   @SmoothManifoldWithCorners.mk' _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid ∞ I)
 
-theorem OpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+theorem IsOpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H}
-    (h : OpenEmbedding f) :
+    (h : IsOpenEmbedding f) :
     @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ h.singletonChartedSpace :=
   (h.toPartialHomeomorph f).singleton_smoothManifoldWithCorners I (by simp)
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.singleton_smoothManifoldWithCorners :=
+  IsOpenEmbedding.singleton_smoothManifoldWithCorners
 
 namespace TopologicalSpace.Opens
 

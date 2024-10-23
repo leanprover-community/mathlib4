@@ -14,7 +14,7 @@ This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since th
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
 -/
 universe u v
-open Polynomial BigOperators
+open Polynomial
 
 /-- The `R[X]`-module `M[X]` for an `R`-module `M`.
 This is isomorphic (as an `R`-module) to `M[X]` when `M` is a ring.
@@ -57,7 +57,7 @@ instance instFunLike : FunLike (PolynomialModule R M) ℕ M :=
   Finsupp.instFunLike
 
 instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=
-  Finsupp.instCoeFun
+  inferInstanceAs <| CoeFun (_ →₀ _) _
 
 theorem zero_apply (i : ℕ) : (0 : PolynomialModule R M) i = 0 :=
   Finsupp.zero_apply
