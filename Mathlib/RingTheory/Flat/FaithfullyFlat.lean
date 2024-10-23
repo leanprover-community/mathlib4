@@ -353,6 +353,18 @@ end exact
 
 section linearMap
 
+/-!
+### Faithfully flat modules and linear maps
+
+In this section we prove that an `R`-module `M` is faithfully flat iff the following holds:
+
+- `M` is flat
+- for any `R`-linear map `f : N → N'`, `f` = 0 iff `f ⊗ 𝟙M = 0` iff `𝟙M ⊗ f = 0`
+
+-/
+
+section arbitrary_universe
+
 /--
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `id ⊗ f = 0`, if and only
 if  `f = 0`. -/
@@ -381,6 +393,9 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
     (by simpa using congr($h (m ⊗ₜ n))), fun h => by
     ext m n; exact (TensorProduct.comm R M N').injective <| (by simpa using congr($h (n ⊗ₜ m)))⟩
 
+end arbitrary_universe
+
+section fixed_universe
 
 /--
 An `R`-module `M` is faithfully flat iff it is flat and for all linear maps `f`, the map
@@ -412,8 +427,9 @@ lemma iff_zero_iff_rTensor_zero :
       rw [subsingleton_iff_forall_eq 0]
       exact fun y => congr($this y)⟩⟩
 
-end linearMap
+end fixed_universe
 
+end linearMap
 
 /-- An `R`-module linearly equivalent to a faithfully flat `R`-module is faithfully flat. -/
 lemma of_linearEquiv [fl : FaithfullyFlat R M]
@@ -440,9 +456,10 @@ lemma of_linearEquiv [fl : FaithfullyFlat R M]
 section comp
 
 open TensorProduct LinearMap
-variable (R : Type u) (S M : Type*)
-variable [CommRing R] [CommRing S] [Algebra R S]
-variable [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+
+variable (R : Type*) [CommRing R]
+variable (S : Type*) [CommRing S] [Algebra R S]
+variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 variable [FaithfullyFlat R S] [FaithfullyFlat S M]
 
 include S in
@@ -452,33 +469,14 @@ theorem comp  :
     FaithfullyFlat R M := by
   rw [iff_zero_iff_lTensor_zero]
   refine ⟨Module.Flat.comp R S M, @fun N _ _ N' _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
-  let e1 : M ⊗[S] (S ⊗[R] N') →ₗ[S] (M ⊗[R] N') := AlgebraTensorModule.cancelBaseChange R S S M N'
-  let e1.symm := (AlgebraTensorModule.cancelBaseChange R S S M N').symm
-  let e2 : (M ⊗[R] N) →ₗ[S] M ⊗[S] (S ⊗[R] N) :=
-    (AlgebraTensorModule.cancelBaseChange R S S M N).symm
-  let e2.symm := (AlgebraTensorModule.cancelBaseChange R S S M N)
-  let fS :  M ⊗[S] (S ⊗[R] N) →ₗ[S] M ⊗[S] (S ⊗[R] N') :=
-    lTensor M (AlgebraTensorModule.map LinearMap.id f)
-  have h : restrictScalars (R:= R) (S:= S) (e1 ∘ₗ fS ∘ₗ e2) = lTensor M f := by
-    ext; simp [e1, e2, fS]
-  have h1 : fS = e1.symm ∘ₗ (e1 ∘ₗ fS ∘ₗ e2) ∘ₗ e2.symm := by
-    ext; simp [e1, e1.symm, e2, e2.symm]
-  have g : e1 ∘ₗ fS ∘ₗ e2 = 0 := by
-    rw [aux] at h; rwa [← DFunLike.coe_fn_eq] at h ⊢
-  have g1: fS = 0 := by
-    simp only [g.symm ▸ h1, zero_comp, comp_zero]
-  rw [zero_iff_lTensor_zero (R:= R) (M := S) f]
-  have h3: lTensor S f = 0 ↔
-      TensorProduct.AlgebraTensorModule.map (R:= R) (A:= S) (M:= S) LinearMap.id f = 0 := by
-    have res : restrictScalars (R:= R) (S:= S)
-        (AlgebraTensorModule.map (R:= R) (A:= S) (M:= S) LinearMap.id f) =
-        LinearMap.lTensor S f := by
-      ext s n
-      simp only [AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars,
-        AlgebraTensorModule.map_tmul, id_coe, id_eq, lTensor_tmul]
-    exact ⟨res ▸ fun h => by ext; simp [h], res ▸ fun h => by ext; simp [h]⟩
-  rwa [h3, zero_iff_lTensor_zero (R:= S) (M := M) (N:= S ⊗ N) (N':= S ⊗ N')
+  rw [zero_iff_lTensor_zero (R:= R) (M := S) f,
+    show f.lTensor S = (AlgebraTensorModule.map (A:= S) LinearMap.id f).restrictScalars R by aesop,
+    show (0 :  S ⊗[R] N →ₗ[R] S ⊗[R] N') = (0 : S ⊗[R] N →ₗ[S] S ⊗[R] N').restrictScalars R by rfl,
+    restrictScalars_inj, zero_iff_lTensor_zero (R:= S) (M := M) (N:= S ⊗ N) (N':= S ⊗ N')
     (AlgebraTensorModule.map LinearMap.id f)]
+  ext m n
+  apply_fun AlgebraTensorModule.cancelBaseChange R S S M N' using LinearEquiv.injective _
+  simpa using congr($aux (m ⊗ₜ[R] n))
 
 end comp
 
