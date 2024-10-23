@@ -22,7 +22,7 @@ namespace Acc
 
 variable {r : α → α → Prop}
 
-/-- The rank of an element `a` accessible under a relation `r` is defined inductively as the
+/-- The rank of an element `a` accessible under a relation `r` is defined recursively as the
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
 `r b a`). -/
 noncomputable def rank (h : Acc r a) : Ordinal.{u} :=
@@ -59,7 +59,7 @@ namespace IsWellFounded
 
 variable (r : α → α → Prop) [hwf : IsWellFounded α r]
 
-/-- The rank of an element `a` under a well-founded relation `r` is defined inductively as the
+/-- The rank of an element `a` under a well-founded relation `r` is defined recursively as the
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
 `r b a`). -/
 noncomputable def rank (a : α) : Ordinal.{u} :=
