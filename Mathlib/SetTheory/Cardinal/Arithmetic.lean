@@ -823,8 +823,8 @@ namespace Ordinal
 
 theorem lift_card_iSup_le_sum_card {ι : Type u} [Small.{v} ι] (f : ι → Ordinal.{v}) :
     Cardinal.lift.{u} (⨆ i, f i).card ≤ Cardinal.sum fun i ↦ (f i).card := by
-  have : (Cardinal.sum fun i ↦ (f i).card) = Cardinal.sum fun i ↦ #(f i).toType := by simp
-  rw [this, ← mk_toType, ← mk_sigma, ← Cardinal.lift_id'.{v} #(Σ _, _), ← Cardinal.lift_umax.{v, u}]
+  simp_rw [← mk_toType]
+  rw [← mk_sigma, ← Cardinal.lift_id'.{v} #(Σ _, _), ← Cardinal.lift_umax.{v, u}]
   apply lift_mk_le_lift_mk_of_injective (f := fun x ↦
     let a := (enumIsoToType _).symm x
     have H := (Ordinal.lt_iSup (f := f) (a := a.1)).1 a.2
