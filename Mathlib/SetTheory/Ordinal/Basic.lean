@@ -496,7 +496,7 @@ theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type 
   apply Ordinal.zero_le
 
 theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.toType) :
-    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_lt]⟩ ≤ a := by
+    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ ≤ a := by
   rw [← not_lt]
   apply enum_zero_le
 
@@ -514,7 +514,7 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 /-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
 @[simps! (config := .lemmasOnly)]
 noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
-  toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_lt _ ▸ x.2⟩
+  toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
   left_inv _ := Subtype.ext_val (typein_enum _ _)
   right_inv _ := enum_typein _ _
@@ -543,7 +543,7 @@ def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
 noncomputable alias outOrderBotOfPos := toTypeOrderBotOfPos
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
-    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_lt]⟩ =
+    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
       have H := toTypeOrderBotOfPos ho
       (⊥ : o.toType) :=
   rfl
