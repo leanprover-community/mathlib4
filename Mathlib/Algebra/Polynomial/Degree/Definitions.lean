@@ -414,11 +414,11 @@ theorem natDegree_X_le : (X : R[X]).natDegree ≤ 1 :=
 theorem mem_support_C_mul_X_pow {n a : ℕ} {c : R} (h : a ∈ support (C c * X ^ n)) : a = n :=
   mem_singleton.1 <| support_C_mul_X_pow' n c h
 
-theorem card_support_C_mul_X_pow_le_one {c : R} {n : ℕ} : card (support (C c * X ^ n)) ≤ 1 := by
+theorem card_support_C_mul_X_pow_le_one {c : R} {n : ℕ} : #(support (C c * X ^ n)) ≤ 1 := by
   rw [← card_singleton n]
   apply card_le_card (support_C_mul_X_pow' n c)
 
-theorem card_supp_le_succ_natDegree (p : R[X]) : p.support.card ≤ p.natDegree + 1 := by
+theorem card_supp_le_succ_natDegree (p : R[X]) : #p.support ≤ p.natDegree + 1 := by
   rw [← Finset.card_range (p.natDegree + 1)]
   exact Finset.card_le_card supp_subset_range_natDegree_succ
 
@@ -888,13 +888,13 @@ theorem leadingCoeff_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
   rw [natDegree_mul' h, coeff_mul_degree_add_degree]
   rfl
 
-theorem monomial_natDegree_leadingCoeff_eq_self (h : p.support.card ≤ 1) :
+theorem monomial_natDegree_leadingCoeff_eq_self (h : #p.support ≤ 1) :
     monomial p.natDegree p.leadingCoeff = p := by
   classical
   rcases card_support_le_one_iff_monomial.1 h with ⟨n, a, rfl⟩
   by_cases ha : a = 0 <;> simp [ha]
 
-theorem C_mul_X_pow_eq_self (h : p.support.card ≤ 1) : C p.leadingCoeff * X ^ p.natDegree = p := by
+theorem C_mul_X_pow_eq_self (h : #p.support ≤ 1) : C p.leadingCoeff * X ^ p.natDegree = p := by
   rw [C_mul_X_pow_eq_monomial, monomial_natDegree_leadingCoeff_eq_self h]
 
 theorem leadingCoeff_pow' : leadingCoeff p ^ n ≠ 0 → leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
