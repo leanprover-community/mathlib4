@@ -948,16 +948,13 @@ theorem congr_trans [Algebra S C] [IsScalarTower R S C]
 
 theorem congr_symm (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) : congr f.symm g.symm = (congr f g).symm := rfl
 
-variable (R A B C D)
-
+variable (R A B C) in
 /-- Tensor product of algebras analogue of `mul_left_comm`. -/
 def leftComm : A ⊗[R] B ⊗[R] C ≃ₐ[R] B ⊗[R] A ⊗[R] C :=
   let e₁ := (Algebra.TensorProduct.assoc R A B C).symm
   let e₂ := congr (Algebra.TensorProduct.comm R A B) (1 : C ≃ₐ[R] C)
   let e₃ := Algebra.TensorProduct.assoc R B A C
   e₁.trans (e₂.trans e₃)
-
-variable {A B C D}
 
 @[simp]
 theorem leftComm_tmul (m : A) (n : B) (p : C) :
@@ -973,16 +970,13 @@ theorem leftComm_symm_tmul (m : A) (n : B) (p : C) :
 theorem leftComm_toLinearEquiv :
     (leftComm R A B C : _ ≃ₗ[R] _) = _root_.TensorProduct.leftComm R A B C := rfl
 
-variable (A B C D)
-
+variable (R A B C D) in
 /-- Tensor product of algebras analogue of `mul_mul_mul_comm`. -/
 def tensorTensorTensorComm : (A ⊗[R] B) ⊗[R] C ⊗[R] D ≃ₐ[R] (A ⊗[R] C) ⊗[R] B ⊗[R] D :=
   let e₁ := Algebra.TensorProduct.assoc R A B (C ⊗[R] D)
   let e₂ := congr (1 : A ≃ₐ[R] A) (leftComm R B C D)
   let e₃ := (Algebra.TensorProduct.assoc R A C (B ⊗[R] D)).symm
   e₁.trans (e₂.trans e₃)
-
-variable {M N P Q}
 
 @[simp]
 theorem tensorTensorTensorComm_tmul (m : A) (n : B) (p : C) (q : D) :
