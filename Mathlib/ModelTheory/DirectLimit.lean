@@ -7,7 +7,7 @@ import Mathlib.Data.Finite.Sum
 import Mathlib.Data.Fintype.Order
 import Mathlib.ModelTheory.FinitelyGenerated
 import Mathlib.ModelTheory.Quotients
-import Mathlib.Order.SuccPred.InverseSystem
+import Mathlib.Order.DirectedInverseSystem
 
 /-!
 # Direct Limits of First-Order Structures
