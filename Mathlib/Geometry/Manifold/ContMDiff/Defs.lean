@@ -286,7 +286,7 @@ theorem contMDiffWithinAt_iff' :
             (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source))
           (extChartAt I x x) := by
   simp only [ContMDiffWithinAt, liftPropWithinAt_iff']
-  exact and_congr_right fun hc => contDiffWithinAt_congr_nhds <|
+  exact and_congr_right fun hc => contDiffWithinAt_congr_set <|
     hc.nhdsWithin_extChartAt_symm_preimage_inter_range I I'
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
@@ -679,16 +679,25 @@ theorem ContMDiffWithinAt.mono (hf : ContMDiffWithinAt I I' n f s x) (hts : t �
     ContMDiffWithinAt I I' n f t x :=
   hf.mono_of_mem <| mem_of_superset self_mem_nhdsWithin hts
 
-theorem contMDiffWithinAt_congr_nhds (hst : 𝓝[s] x = 𝓝[t] x) :
+
+theorem ContMDiffWithinAt.congr_set (h : ContMDiffWithinAt I I' n f s x) (hst : s =ᶠ[𝓝 x] t) :
+    ContMDiffWithinAt I I' n f t x := by
+  rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
+  exact h.mono_of_mem <| hst ▸ self_mem_nhdsWithin
+
+theorem contMDiffWithinAt_congr_set (hst : s =ᶠ[𝓝 x] t) :
     ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x :=
-  ⟨fun h => h.mono_of_mem <| hst ▸ self_mem_nhdsWithin, fun h =>
-    h.mono_of_mem <| hst.symm ▸ self_mem_nhdsWithin⟩
+  ⟨fun h ↦ h.congr_set hst, fun h ↦ h.congr_set hst.symm⟩
+
+@[deprecated (since := "2024-10-23")]
+alias contMDiffWithinAt_congr_nhds := contMDiffWithinAt_congr_set
 
 theorem contMDiffWithinAt_insert_self :
     ContMDiffWithinAt I I' n f (insert x s) x ↔ ContMDiffWithinAt I I' n f s x := by
   simp only [contMDiffWithinAt_iff, continuousWithinAt_insert_self]
-  refine Iff.rfl.and <| (contDiffWithinAt_congr_nhds ?_).trans contDiffWithinAt_insert_self
-  simp only [← map_extChartAt_nhdsWithin I, nhdsWithin_insert, Filter.map_sup, Filter.map_pure]
+  refine Iff.rfl.and <| (contDiffWithinAt_congr_set ?_).trans contDiffWithinAt_insert_self
+  simp only [← map_extChartAt_nhdsWithin I, nhdsWithin_insert, Filter.map_sup, Filter.map_pure,
+    ← nhdsWithin_eq_iff_eventuallyEq]
 
 alias ⟨ContMDiffWithinAt.of_insert, _⟩ := contMDiffWithinAt_insert_self
 
@@ -744,9 +753,8 @@ theorem contMDiffOn_iff_source_of_mem_maximalAtlas [SmoothManifoldWithCorners I 
   simp_rw [ContMDiffOn, Set.forall_mem_image]
   refine forall₂_congr fun x hx => ?_
   rw [contMDiffWithinAt_iff_source_of_mem_maximalAtlas he (hs hx)]
-  apply contMDiffWithinAt_congr_nhds
-  simp_rw [nhdsWithin_eq_iff_eventuallyEq,
-    e.extend_symm_preimage_inter_range_eventuallyEq I hs (hs hx)]
+  apply contMDiffWithinAt_congr_set
+  simp_rw [e.extend_symm_preimage_inter_range_eventuallyEq I hs (hs hx)]
 
 -- Porting note: didn't compile; fixed by golfing the proof and moving parts to lemmas
 /-- A function is `C^n` within a set at a point, for `n : ℕ`, if and only if it is `C^n` on
