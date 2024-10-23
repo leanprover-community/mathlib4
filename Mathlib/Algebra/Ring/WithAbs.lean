@@ -108,8 +108,7 @@ variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ}
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 the distance associated to the absolute value also factors through `f`. -/
 theorem dist_of_comp (h : ∀ x, ‖f x‖ = v x) (x y : WithAbs v) : dist x y = dist (f x) (f y) := by
-  rw [(normedField v).dist_eq, (inferInstanceAs <| NormedField L).dist_eq,
-    ← f.map_sub, h]
+  rw [(normedField v).dist_eq, (inferInstanceAs <| NormedField L).dist_eq, ← f.map_sub, h]
   rfl
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
