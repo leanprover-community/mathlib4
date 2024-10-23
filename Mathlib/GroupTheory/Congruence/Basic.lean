@@ -295,12 +295,22 @@ lemma comapQuotientEquivOfSurj_symm_mk (c : Con M) {f : N →* M} (hf : Function
     (x : N) : (comapQuotientEquivOfSurj c f hf).symm (f x) = x :=
   (MulEquiv.symm_apply_eq (c.comapQuotientEquivOfSurj f hf)).mpr rfl
 
+set_option pp.explicit true
 /-- This version infers the surjectivity of the function from a MulEquiv function -/
 @[simp]
 lemma comapQuotientEquivOfSurj_symm_mk' (c : Con M) (f : N ≃* M) (x : N) :
-    (c.comapQuotientEquivOfSurj ↑f f.surjective).symm (@Quotient.mk M c.toSetoid (f x)) = x := by
-  conv => lhs; simp only [MonoidHom.coe_coe]
-  exact(MulEquiv.symm_apply_eq (@comapQuotientEquivOfSurj M N _ _ c f _)).mpr rfl
+  @Eq
+  (@Con.Quotient N (@MulOneClass.toMul N _)
+    (@comap N M (@MulOneClass.toMul N _) (@MulOneClass.toMul M _) ⇑f _ c))
+  ((@MulEquiv.symm
+      (@Con.Quotient N (@MulOneClass.toMul N _)
+        (@comap N M (@MulOneClass.toMul N _) (@MulOneClass.toMul M _) ⇑f _ c))
+      (@Con.Quotient M (@MulOneClass.toMul M _) c)
+      (@hasMul N (@MulOneClass.toMul N _)
+        (@comap N M (@MulOneClass.toMul N _) (@MulOneClass.toMul M _) ⇑f _ c))
+      (@hasMul M (@MulOneClass.toMul M _) c) (@comapQuotientEquivOfSurj M N _ _ c ↑f f.surjective))
+    ⟦f x⟧)
+  ↑x := (MulEquiv.symm_apply_eq (@comapQuotientEquivOfSurj M N _ _ c f _)).mpr rfl
 
 /-- The **second isomorphism theorem for monoids**. -/
 @[to_additive "The second isomorphism theorem for `AddMonoid`s."]
