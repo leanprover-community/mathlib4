@@ -665,8 +665,8 @@ protected theorem _root_.Inducing.firstCountableTopology {β : Type*}
   rw [hf.1]
   exact firstCountableTopology_induced α β f
 
-protected theorem _root_.Embedding.firstCountableTopology {β : Type*}
-    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : Embedding f) :
+protected theorem _root_.IsEmbedding.firstCountableTopology {β : Type*}
+    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsEmbedding f) :
     FirstCountableTopology α :=
   hf.1.firstCountableTopology
 
