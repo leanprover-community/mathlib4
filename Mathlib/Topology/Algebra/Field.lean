@@ -3,8 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.FieldTheory.Adjoin
-import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Order.LocalExtr
