@@ -264,7 +264,7 @@ theorem _root_.Ordinal.card_preOmega (o : Ordinal) : (preOmega o).card = preAlep
   rfl
 
 @[simp]
-theorem ord_preAleph (o : Ordinal) : (ℵ_ o).ord = ω_ o := by
+theorem ord_preAleph (o : Ordinal) : (preAleph o).ord = preOmega o := by
   rw [← o.card_preOmega, (isInitial_preOmega o).ord_card]
 
 @[simp]
@@ -428,9 +428,9 @@ theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = ℵ_ o :=
     fun ⟨o, e⟩ => e.symm ▸ aleph0_le_aleph _⟩
 
 @[deprecated isNormal_preOmega (since := "2024-10-11")]
-theorem aleph'_isNormal : IsNormal (ord ∘ aleph') := by
-  convert isNormal_omega'
-  exact funext ord_aleph'
+theorem preAleph_isNormal : IsNormal (ord ∘ preAleph) := by
+  convert isNormal_preOmega
+  exact funext ord_preAleph
 
 @[deprecated isNormal_omega (since := "2024-10-11")]
 theorem aleph_isNormal : IsNormal (ord ∘ aleph) := by
@@ -511,22 +511,6 @@ def alephIdx.relIso : @RelIso Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) :=
 @[deprecated aleph' (since := "2024-08-28")]
 def alephIdx : Cardinal → Ordinal :=
   aleph'.symm
-
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx.initialSeg_coe : (alephIdx.initialSeg : Cardinal → Ordinal) = alephIdx :=
-  rfl
-
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx_lt {a b} : alephIdx a < alephIdx b ↔ a < b :=
-  alephIdx.initialSeg.toRelEmbedding.map_rel_iff
-
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx_le {a b} : alephIdx a ≤ alephIdx b ↔ a ≤ b := by
-  rw [← not_lt, ← not_lt, alephIdx_lt]
-
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx.init {a b} : b < alephIdx a → ∃ c, alephIdx c = b :=
-  alephIdx.initialSeg.init
 
 @[deprecated (since := "2024-08-28")]
 theorem alephIdx.relIso_coe : (alephIdx.relIso : Cardinal → Ordinal) = alephIdx :=
