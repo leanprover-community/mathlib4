@@ -658,6 +658,50 @@ end Ring
 
 end Order
 
+/-! ### `cfcₙHom` on a superset of the quasispectrum -/
+
+section Superset
+
+open ContinuousMapZero
+
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [Nontrivial R] [StarRing R]
+    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
+    [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+    [instCFCₙ : NonUnitalContinuousFunctionalCalculus R p]
+
+/-- The composition of `cfcₙHom` with the natural embedding `C(s, R)₀ → C(quasispectrum R a, R)₀`
+whenever `quasispectrum R a ⊆ s`.
+
+This is sometimes necessary in order to consider the same continuous functions applied to multiple
+distinct elements, with the added constraint that `cfcₙ` does not suffice. This can occur, for
+example, if it is necessary to use uniqueness of this continuous functional calculus. A practical
+example can be found in the proof of `CFC.posPart_negPart_unique`. -/
+@[simps!]
+noncomputable def cfcₙHomSuperset {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
+    letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+    C(s, R)₀ →⋆ₙₐ[R] A :=
+  letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+  cfcₙHom ha (R := R) |>.comp <| ContinuousMapZero.nonUnitalStarAlgHom_precomp R <|
+    ⟨⟨_, continuous_id.subtype_map hs⟩, rfl⟩
+
+lemma cfcₙHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
+    Continuous (cfcₙHomSuperset ha hs) :=
+  letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+  (cfcₙHom_continuous ha).comp <| ContinuousMapZero.continuous_comp_left _
+
+lemma cfcₙHomSuperset_id {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
+    letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+    cfcₙHomSuperset ha hs ⟨.restrict s <| .id R, rfl⟩ = a :=
+  cfcₙHom_id ha
+
+/-- this version uses `ContinuousMapZero.id`. -/
+lemma cfcₙHomSuperset_id' {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
+    letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+    cfcₙHomSuperset ha hs (.id rfl) = a :=
+  cfcₙHom_id ha
+
+end Superset
+
 /-! ### Obtain a non-unital continuous functional calculus from a unital one -/
 
 section UnitalToNonUnital
