@@ -163,7 +163,7 @@ instance condKernelCountable.instIsCondKernel [∀ a, IsMarkovKernel (κCond a)]
   constructor
   ext a s hs
   conv_rhs => rw [← (κ a).disintegrate (κCond a)]
-  simp_rw [compProd_apply _ _ _ hs, condKernelCountable_apply, Measure.compProd_apply hs]
+  simp_rw [compProd_apply hs, condKernelCountable_apply, Measure.compProd_apply hs]
   congr
 
 end Countable

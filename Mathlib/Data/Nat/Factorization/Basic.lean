@@ -187,7 +187,7 @@ theorem exists_factorization_lt_of_lt {a b : ℕ} (ha : a ≠ 0) (hab : a < b) :
 theorem factorization_div {d n : ℕ} (h : d ∣ n) :
     (n / d).factorization = n.factorization - d.factorization := by
   rcases eq_or_ne d 0 with (rfl | hd); · simp [zero_dvd_iff.mp h]
-  rcases eq_or_ne n 0 with (rfl | hn); · simp
+  rcases eq_or_ne n 0 with (rfl | hn); · simp [tsub_eq_zero_of_le]
   apply add_left_injective d.factorization
   simp only
   rw [tsub_add_cancel_of_le <| (Nat.factorization_le_iff_dvd hd hn).mpr h, ←

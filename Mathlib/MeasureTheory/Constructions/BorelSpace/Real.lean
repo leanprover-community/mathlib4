@@ -255,7 +255,8 @@ instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
 instance instMeasurableSub₂ : MeasurableSub₂ ℝ≥0∞ :=
   ⟨by
     apply measurable_of_measurable_nnreal_nnreal <;>
-      simp [← WithTop.coe_sub]; exact continuous_sub.measurable.coe_nnreal_ennreal⟩
+      simp [← WithTop.coe_sub, tsub_eq_zero_of_le];
+        exact continuous_sub.measurable.coe_nnreal_ennreal⟩
 
 instance instMeasurableInv : MeasurableInv ℝ≥0∞ :=
   ⟨continuous_inv.measurable⟩

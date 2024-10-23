@@ -13,7 +13,7 @@ We show that the following properties of continuous maps are local at the target
 - `Inducing`
 - `Embedding`
 - `IsOpenEmbedding`
-- `ClosedEmbedding`
+- `IsClosedEmbedding`
 
 -/
 
@@ -53,12 +53,18 @@ alias IsOpenEmbedding.restrictPreimage := Set.restrictPreimage_isOpenEmbedding
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.restrictPreimage := IsOpenEmbedding.restrictPreimage
 
-theorem Set.restrictPreimage_closedEmbedding (s : Set β) (h : ClosedEmbedding f) :
-    ClosedEmbedding (s.restrictPreimage f) :=
+theorem Set.restrictPreimage_isClosedEmbedding (s : Set β) (h : IsClosedEmbedding f) :
+    IsClosedEmbedding (s.restrictPreimage f) :=
   ⟨h.1.restrictPreimage s,
     (s.range_restrictPreimage f).symm ▸ inducing_subtype_val.isClosed_preimage _ h.isClosed_range⟩
 
-alias ClosedEmbedding.restrictPreimage := Set.restrictPreimage_closedEmbedding
+@[deprecated (since := "2024-10-20")]
+alias Set.restrictPreimage_closedEmbedding := Set.restrictPreimage_isClosedEmbedding
+
+alias IsClosedEmbedding.restrictPreimage := Set.restrictPreimage_isClosedEmbedding
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.restrictPreimage := IsClosedEmbedding.restrictPreimage
 
 theorem IsClosedMap.restrictPreimage (H : IsClosedMap f) (s : Set β) :
     IsClosedMap (s.restrictPreimage f) := by
@@ -184,11 +190,15 @@ theorem isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top (h : Continuous f) :
 alias openEmbedding_iff_openEmbedding_of_iSup_eq_top :=
   isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top
 
-theorem closedEmbedding_iff_closedEmbedding_of_iSup_eq_top (h : Continuous f) :
-    ClosedEmbedding f ↔ ∀ i, ClosedEmbedding ((U i).1.restrictPreimage f) := by
-  simp_rw [closedEmbedding_iff]
+theorem isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top (h : Continuous f) :
+    IsClosedEmbedding f ↔ ∀ i, IsClosedEmbedding ((U i).1.restrictPreimage f) := by
+  simp_rw [isClosedEmbedding_iff]
   rw [forall_and]
   apply and_congr
   · apply embedding_iff_embedding_of_iSup_eq_top <;> assumption
   · simp_rw [Set.range_restrictPreimage]
     apply isClosed_iff_coe_preimage_of_iSup_eq_top hU
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_iff_closedEmbedding_of_iSup_eq_top :=
+ isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top
