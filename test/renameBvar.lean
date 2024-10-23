@@ -1,4 +1,4 @@
-import Mathlib.Tactic.RenameBvar
+import Mathlib.Tactic.RenameBVar
 
 /- This test is somewhat flaky since it depends on the pretty printer. -/
 /--
