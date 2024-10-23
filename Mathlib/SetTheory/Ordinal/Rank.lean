@@ -74,7 +74,7 @@ theorem rank_lt_of_rel (h : r a b) : rank r a < rank r b :=
   Acc.rank_lt_of_rel _ h
 
 theorem mem_range_rank_of_le {o : Ordinal} (h : o ≤ rank r a) : o ∈ Set.range (rank r) := by
-  obtain ⟨b, hb, rfl⟩ := Acc.mem_range_rank_of_le (IsWellFounded.apply r a) h
+  obtain ⟨b, hb, rfl⟩ := Acc.mem_range_rank_of_le (hwf.apply r a) h
   exact ⟨b, rfl⟩
 
 end IsWellFounded
