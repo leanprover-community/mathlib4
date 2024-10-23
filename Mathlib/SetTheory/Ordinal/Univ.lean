@@ -101,3 +101,6 @@ theorem isInitial_univ : IsInitial univ.{u, v} := by
   rw [IsInitial, card_univ, ord_univ]
 
 end Ordinal
+
+@[deprecated (since := "2024-10-20")]
+alias Cardinal.type_cardinal := Ordinal.type_cardinal
