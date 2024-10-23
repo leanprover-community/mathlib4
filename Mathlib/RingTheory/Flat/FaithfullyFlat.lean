@@ -467,7 +467,7 @@ theorem comp  :
   rw [zero_iff_lTensor_zero (R:= R) (M := S) f,
     show f.lTensor S = (AlgebraTensorModule.map (A:= S) LinearMap.id f).restrictScalars R by aesop,
     show (0 :  S ⊗[R] N →ₗ[R] S ⊗[R] N') = (0 : S ⊗[R] N →ₗ[S] S ⊗[R] N').restrictScalars R by rfl,
-    restrictScalars_inj, zero_iff_lTensor_zero (R:= S) (M := M) (N:= S ⊗ N) (N':= S ⊗ N')]
+    restrictScalars_inj, zero_iff_lTensor_zero (R:= S) (M := M)]
   ext m n
   apply_fun AlgebraTensorModule.cancelBaseChange R S S M N' using LinearEquiv.injective _
   simpa using congr($aux (m ⊗ₜ[R] n))
