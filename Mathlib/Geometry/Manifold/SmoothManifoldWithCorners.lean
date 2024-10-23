@@ -1285,7 +1285,13 @@ theorem ContinuousWithinAt.nhdsWithin_extChartAt_symm_preimage_inter_range
     ← map_extChartAt_nhdsWithin, nhdsWithin_inter_of_mem']
   exact hc (extChartAt_source_mem_nhds _ _)
 
-theorem foo
+theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
+    {f : M → M'} {x : M} (hc : ContinuousWithinAt f s x) :
+    ((extChartAt I x).symm ⁻¹' s ∩ range I : Set E) =ᶠ[𝓝 (extChartAt I x x)]
+      ((extChartAt I x).target ∩
+        (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source) : Set E) := by
+  rw [← nhdsWithin_eq_iff_eventuallyEq]
+  exact hc.nhdsWithin_extChartAt_symm_preimage_inter_range I I'
 
 /-! We use the name `ext_coord_change` for `(extChartAt I x').symm ≫ extChartAt I x`. -/
 

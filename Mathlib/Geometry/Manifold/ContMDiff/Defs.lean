@@ -287,7 +287,7 @@ theorem contMDiffWithinAt_iff' :
           (extChartAt I x x) := by
   simp only [ContMDiffWithinAt, liftPropWithinAt_iff']
   exact and_congr_right fun hc => contDiffWithinAt_congr_set <|
-    hc.nhdsWithin_extChartAt_symm_preimage_inter_range I I'
+    hc.extChartAt_symm_preimage_inter_range_eventuallyEq I I'
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
 point, and smoothness in the corresponding extended chart in the target. -/
@@ -394,8 +394,8 @@ theorem contMDiffWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I M)
         ContDiffWithinAt 𝕜 n (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s)
           (e.extend I x) := by
   rw [contMDiffWithinAt_iff_of_mem_maximalAtlas he he' hx hy, and_congr_right_iff]
-  refine fun _ => contDiffWithinAt_congr_nhds ?_
-  simp_rw [nhdsWithin_eq_iff_eventuallyEq, e.extend_symm_preimage_inter_range_eventuallyEq I hs hx]
+  refine fun _ => contDiffWithinAt_congr_set ?_
+  simp_rw [e.extend_symm_preimage_inter_range_eventuallyEq I hs hx]
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
 point, and smoothness in any chart containing that point. -/
@@ -420,8 +420,9 @@ theorem contMDiffWithinAt_iff_of_mem_source' {x' : M} {y : M'} (hx : x' ∈ (cha
   rw [← extChartAt_source I'] at hy
   rw [and_congr_right_iff]
   set e := extChartAt I x; set e' := extChartAt I' (f x)
-  refine fun hc => contDiffWithinAt_congr_nhds ?_
-  rw [← e.image_source_inter_eq', ← map_extChartAt_nhdsWithin_eq_image' I hx, ←
+  refine fun hc => contDiffWithinAt_congr_set ?_
+  rw [← nhdsWithin_eq_iff_eventuallyEq, ← e.image_source_inter_eq',
+    ← map_extChartAt_nhdsWithin_eq_image' I hx, ←
     map_extChartAt_nhdsWithin' I hx, inter_comm, nhdsWithin_inter_of_mem]
   exact hc (extChartAt_source_mem_nhds' _ hy)
 
@@ -679,15 +680,13 @@ theorem ContMDiffWithinAt.mono (hf : ContMDiffWithinAt I I' n f s x) (hts : t �
     ContMDiffWithinAt I I' n f t x :=
   hf.mono_of_mem <| mem_of_superset self_mem_nhdsWithin hts
 
+theorem contMDiffWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+    ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x :=
+  (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_congr_set h
 
 theorem ContMDiffWithinAt.congr_set (h : ContMDiffWithinAt I I' n f s x) (hst : s =ᶠ[𝓝 x] t) :
-    ContMDiffWithinAt I I' n f t x := by
-  rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
-  exact h.mono_of_mem <| hst ▸ self_mem_nhdsWithin
-
-theorem contMDiffWithinAt_congr_set (hst : s =ᶠ[𝓝 x] t) :
-    ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x :=
-  ⟨fun h ↦ h.congr_set hst, fun h ↦ h.congr_set hst.symm⟩
+    ContMDiffWithinAt I I' n f t x :=
+  (contMDiffWithinAt_congr_set hst).1 h
 
 @[deprecated (since := "2024-10-23")]
 alias contMDiffWithinAt_congr_nhds := contMDiffWithinAt_congr_set
@@ -705,6 +704,14 @@ alias ⟨ContMDiffWithinAt.of_insert, _⟩ := contMDiffWithinAt_insert_self
 protected theorem ContMDiffWithinAt.insert (h : ContMDiffWithinAt I I' n f s x) :
     ContMDiffWithinAt I I' n f (insert x s) x :=
   contMDiffWithinAt_insert_self.2 h
+
+/-- Being `C^n` in a set only depends on the germ of the set. Version where one only requires
+the two sets to coincide locally in the complement of a point `y`. -/
+theorem contMDiffWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x := by
+  have : T1Space M := I.t1Space M
+  rw [← contMDiffWithinAt_insert_self (s := s), ← contMDiffWithinAt_insert_self (s := t)]
+  exact contMDiffWithinAt_congr_set (eventuallyEq_insert h)
 
 protected theorem ContMDiffAt.contMDiffWithinAt (hf : ContMDiffAt I I' n f x) :
     ContMDiffWithinAt I I' n f s x :=
@@ -822,18 +829,6 @@ theorem contMDiffWithinAt_iff_contMDiffWithinAt_nhdsWithin
 
 /-! ### Congruence lemmas -/
 
-theorem contMDiffWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
-    ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x :=
-  (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_congr_set h
-
-/-- Being `C^n` in a set only depends on the germ of the set. Version where one only requires
-the two sets to coincide locally in the complement of a point `y`. -/
-theorem contMDiffWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x := by
-  have : T1Space M := I.t1Space M
-  rw [← contMDiffWithinAt_insert_self (s := s), ← contMDiffWithinAt_insert_self (s := t)]
-  exact contMDiffWithinAt_congr_set (eventuallyEq_insert h)
-
 theorem ContMDiffWithinAt.congr (h : ContMDiffWithinAt I I' n f s x) (h₁ : ∀ y ∈ s, f₁ y = f y)
     (hx : f₁ x = f x) : ContMDiffWithinAt I I' n f₁ s x :=
   (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_congr h h₁ hx
@@ -849,7 +844,6 @@ theorem ContMDiffWithinAt.congr_of_eventuallyEq (h : ContMDiffWithinAt I I' n f 
 theorem ContMDiffWithinAt.congr_of_eventuallyEq_of_mem (h : ContMDiffWithinAt I I' n f s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : ContMDiffWithinAt I I' n f₁ s x :=
   (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_congr_of_eventuallyEq_of_mem h h₁ hx
-
 
 theorem Filter.EventuallyEq.contMDiffWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     ContMDiffWithinAt I I' n f₁ s x ↔ ContMDiffWithinAt I I' n f s x :=
