@@ -638,7 +638,7 @@ theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω �
     ∃ a, (ℵ_ a).ord = o := by
   cases' eq_aleph'_of_eq_card_ord ho with a ha
   use a - ω
-  rwa [← aleph'_omega0_add, Ordinal.add_sub_cancel_of_le]
+  rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]
 
 end deprecated
