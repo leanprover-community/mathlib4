@@ -19,7 +19,7 @@ of the underlying map of topological spaces, including
 - `IsClosedMap`
 - `Embedding`
 - `IsOpenEmbedding`
-- `ClosedEmbedding`
+- `IsClosedEmbedding`
 
 -/
 
@@ -131,16 +131,16 @@ instance isOpenEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsOpen
 
 end IsOpenEmbedding
 
-section ClosedEmbedding
+section IsClosedEmbedding
 
-instance : (topologically ClosedEmbedding).RespectsIso :=
-  topologically_respectsIso _ (fun e ↦ e.closedEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
+instance : (topologically IsClosedEmbedding).RespectsIso :=
+  topologically_respectsIso _ (fun e ↦ e.isClosedEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance closedEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically ClosedEmbedding) :=
+instance isClosedEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedEmbedding) :=
   topologically_isLocalAtTarget _
     (fun _ s hf ↦ hf.restrictPreimage s)
-    (fun _ _ _ hU hfcont hf ↦ (closedEmbedding_iff_closedEmbedding_of_iSup_eq_top hU hfcont).mpr hf)
+    (fun _ _ _ hU hfcont ↦ (isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top hU hfcont).mpr)
 
-end ClosedEmbedding
+end IsClosedEmbedding
 
 end AlgebraicGeometry

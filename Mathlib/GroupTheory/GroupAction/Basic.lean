@@ -373,12 +373,11 @@ def orbitRel : Setoid α where
 variable {G α}
 
 @[to_additive]
-theorem orbitRel_apply {a b : α} : (orbitRel G α).Rel a b ↔ a ∈ orbit G b :=
+theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
   Iff.rfl
 
-@[to_additive]
-lemma orbitRel_r_apply {a b : α} : (orbitRel G _).r a b ↔ a ∈ orbit G b :=
-  Iff.rfl
+@[to_additive (attr := deprecated (since := "2024-10-18"))]
+alias orbitRel_r_apply := orbitRel_apply
 
 @[to_additive]
 lemma orbitRel_subgroup_le (H : Subgroup G) : orbitRel H α ≤ orbitRel G α :=
@@ -468,7 +467,7 @@ theorem pretransitive_iff_subsingleton_quotient :
   · refine Quot.inductionOn a (fun x ↦ ?_)
     exact Quot.inductionOn b (fun y ↦ Quot.sound <| exists_smul_eq G y x)
   · have h : Quotient.mk (orbitRel G α) b = ⟦a⟧ := Subsingleton.elim _ _
-    exact Quotient.eq_rel.mp h
+    exact Quotient.eq''.mp h
 
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
@@ -511,7 +510,7 @@ lemma orbitRel.Quotient.orbit_injective :
     Injective (orbitRel.Quotient.orbit : orbitRel.Quotient G α → Set α) := by
   intro x y h
   simp_rw [orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq', orbit_eq_iff,
-    ← orbitRel_r_apply] at h
+    ← orbitRel_apply] at h
   simpa [← Quotient.eq''] using h
 
 @[to_additive (attr := simp)]
@@ -596,7 +595,7 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Q
        at hb
     rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
     convert hb using 1
-    rw [orbit_eq_iff, ← orbitRel_r_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
+    rw [orbit_eq_iff, ← orbitRel_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
   rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
 
 variable (G) (α)
@@ -725,7 +724,7 @@ theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
     inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel G α).Rel a b) :
+noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
     stabilizer G a ≃* stabilizer G b :=
   let g : G := Classical.choose h
   have hg : g • b = a := Classical.choose_spec h
@@ -749,7 +748,7 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     AddAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel G α).Rel a b) :
+noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
     stabilizer G a ≃+ stabilizer G b :=
   let g : G := Classical.choose h
   have hg : g +ᵥ b = a := Classical.choose_spec h
