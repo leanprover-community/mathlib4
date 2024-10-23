@@ -25,7 +25,7 @@ open Lean Elab Tactic in
 /-- A version of the positivity tactic for use by `aesop`. -/
 @[aesop safe tactic (rule_sets := [finiteness])]
 def PositivityForAesop : TacticM Unit :=
-  liftMetaTactic fun g => do Mathlib.Meta.Positivity.positivity g; pure []
+  liftMetaFinishingTactic Mathlib.Meta.Positivity.positivity
 
 /-- Tactic to solve goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
 nonnegative reals (`ℝ≥0∞`). -/
