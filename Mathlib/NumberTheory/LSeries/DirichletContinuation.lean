@@ -122,9 +122,9 @@ private lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN :
     exact (differentiableAt_LFunction _ _ (.inl hs)).differentiableWithinAt
   · refine DifferentiableOn.analyticOnNhd (fun s hs ↦ ?_) isOpen_compl_singleton
     refine ((differentiableAt_LFunction _ _ (.inl hs)).mul ?_).differentiableWithinAt
-    refine .finset_prod fun i h ↦ (differentiableAt_const _).sub ((differentiableAt_const _).mul ?_)
+    refine .finset_prod fun i h ↦ ?_
     have : NeZero i := ⟨(Nat.pos_of_mem_primeFactors h).ne'⟩
-    apply differentiable_const_cpow_neg
+    fun_prop
   · refine eventually_of_mem ?_  (fun t (ht : 1 < t.re) ↦ ?_)
     · exact (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds (by norm_num : 1 < (2 : ℂ).re)
     · simpa only [LFunction_eq_LSeries _ ht] using LSeries_changeLevel hMN χ ht
@@ -140,10 +140,9 @@ lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
   rcases h with h | h
   · have hχ : changeLevel hMN χ ≠ 1 := h ∘ (changeLevel_eq_one_iff hMN).mp
     have h' : Continuous fun s ↦ LFunction χ s * ∏ p ∈ N.primeFactors, (1 - χ p * ↑p ^ (-s)) :=
-      (differentiable_LFunction h).continuous.mul <|
-        continuous_finset_prod _ fun p hp ↦ continuous_const.sub <| continuous_const.mul <|
-          have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩;
-          continuous_const_cpow_neg _
+      (differentiable_LFunction h).continuous.mul <| continuous_finset_prod _ fun p hp ↦ by
+        have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
+        fun_prop
     exact congrFun ((differentiable_LFunction hχ).continuous.ext_on
       (dense_compl_singleton 1) h' (fun _ h ↦ LFunction_changeLevel_aux hMN χ h)) s
   · exact LFunction_changeLevel_aux hMN χ h
@@ -158,7 +157,7 @@ noncomputable abbrev LFunction_triv_char (N : ℕ) [NeZero N] :=
 
 /-- The L function of the trivial Dirichlet character mod `N` is obtained from the Riemann
 zeta function by multiplying with `∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))`. -/
-lemma LFunction_one_eq_mul_riemannZeta {s : ℂ} (hs : s ≠ 1) :
+lemma LFunction_triv_char_eq_mul_riemannZeta {s : ℂ} (hs : s ≠ 1) :
     LFunction_triv_char N s = (∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))) * riemannZeta s := by
   rw [← LFunction_modOne_eq (χ := 1), LFunction_triv_char, ← changeLevel_one N.one_dvd, mul_comm]
   convert LFunction_changeLevel N.one_dvd 1 (.inr hs) using 4 with p
@@ -166,7 +165,7 @@ lemma LFunction_one_eq_mul_riemannZeta {s : ℂ} (hs : s ≠ 1) :
 
 /-- The L function of the trivial Dirichlet character mod `N` has a simple pole with
 residue `∏ p ∈ N.primeFactors, (1 - p⁻¹)` at `s = 1`. -/
-lemma LFunction_one_residue_one :
+lemma LFunction_triv_char_residue_one :
     Tendsto (fun s ↦ (s - 1) * LFunction_triv_char N s) (𝓝[≠] 1)
       (𝓝 <| ∏ p ∈ N.primeFactors, (1 - (p : ℂ)⁻¹)) := by
   have H : (fun s ↦ (s - 1) * LFunction_triv_char N s) =ᶠ[𝓝[≠] 1]
@@ -177,9 +176,9 @@ lemma LFunction_one_residue_one :
   conv => enter [3, 1]; rw [← mul_one <| Finset.prod ..]; enter [1, 2, p]; rw [← cpow_neg_one]
   refine .mul (f := fun s ↦ ∏ p ∈ N.primeFactors, _) ?_ riemannZeta_residue_one
   refine tendsto_nhdsWithin_of_tendsto_nhds <| Continuous.tendsto ?_ 1
-  exact continuous_finset_prod _ fun p hp ↦
+  exact continuous_finset_prod _ fun p hp ↦ by
     have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
-    continuous_const.sub (continuous_const_cpow_neg _)
+    fun_prop
 
 /-!
 ## Completed L-functions and the functional equation
