@@ -72,6 +72,11 @@ theorem eq_of_length_zero (p : Path a b) (hzero : p.length = 0) : a = b := by
   · rfl
   · cases Nat.succ_ne_zero _ hzero
 
+theorem eq_nil_of_length_zero (p : Path a a) (hzero : p.length = 0) : p = nil := by
+  cases p
+  · rfl
+  · simp at hzero
+
 /-- Composition of paths. -/
 def comp {a b : V} : ∀ {c}, Path a b → Path b c → Path a c
   | _, p, nil => p
@@ -147,17 +152,13 @@ lemma eq_toPath_comp_of_length_eq_succ (p : Path a b) {n : ℕ}
   | nil => simp at hp
   | @cons c d p q h =>
     cases n
-    · have h' : a = c := eq_of_length_zero p (by simpa using hp)
-      subst h'
-      use d, q, nil, rfl
-      cases p
-      · rfl
-      · simp at hp
+    · rw [length_cons, Nat.zero_add, Nat.add_left_eq_self] at hp
+      obtain rfl := eq_of_length_zero p hp
+      obtain rfl := eq_nil_of_length_zero p hp
+      exact ⟨d, q, nil, rfl, rfl⟩
     · rw [length_cons, Nat.add_right_cancel_iff] at hp
-      obtain ⟨x, q'', p'', hl, e⟩ := h hp
-      use x, q'', p''.cons q, (by simpa)
-      rw [e]
-      rfl
+      obtain ⟨x, q'', p'', hl, rfl⟩ := h hp
+      exact ⟨x, q'', p''.cons q, by simpa, rfl⟩
 
 /-- Turn a path into a list. The list contains `a` at its head, but not `b` a priori. -/
 @[simp]
