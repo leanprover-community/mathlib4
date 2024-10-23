@@ -77,25 +77,24 @@ def Hom.Simps.hom {X Y : P.Comma L R Q W} (f : X.Hom Y) :
 
 initialize_simps_projections Comma.Hom (toCommaMorphism → hom)
 
-variable [ContainsIdentities Q] [ContainsIdentities W]
-
 /-- The identity morphism of an object in `P.Comma L R Q W`. -/
 @[simps]
-def id (X : P.Comma L R Q W) : Comma.Hom X X where
+def id [Q.ContainsIdentities] [W.ContainsIdentities] (X : P.Comma L R Q W) : Comma.Hom X X where
   left := 𝟙 X.left
   prop_hom_left := Q.id_mem X.toComma.left
   prop_hom_right := W.id_mem X.toComma.right
 
-variable [Q.IsStableUnderComposition] [W.IsStableUnderComposition]
-
 /-- Composition of morphisms in `P.Comma L R Q W`. -/
 @[simps]
-def Hom.comp {X Y Z : P.Comma L R Q W} (f : Comma.Hom X Y) (g : Comma.Hom Y Z) :
+def Hom.comp [Q.IsStableUnderComposition] [W.IsStableUnderComposition] {X Y Z : P.Comma L R Q W}
+    (f : Comma.Hom X Y) (g : Comma.Hom Y Z) :
     Comma.Hom X Z where
   left := f.left ≫ g.left
   right := f.right ≫ g.right
   prop_hom_left := Q.comp_mem _ _ f.prop_hom_left g.prop_hom_left
   prop_hom_right := W.comp_mem _ _ f.prop_hom_right g.prop_hom_right
+
+variable [Q.IsMultiplicative] [W.IsMultiplicative]
 
 variable (L R P Q W) in
 instance : Category (P.Comma L R Q W) where
