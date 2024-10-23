@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Order.BoundedOrder
 import Mathlib.Algebra.Ring.Units
 
@@ -295,6 +295,27 @@ theorem irreducible_mul_iff {a b : M} :
   · rintro (⟨ha, hb⟩ | ⟨hb, ha⟩)
     · rwa [irreducible_mul_isUnit hb]
     · rwa [irreducible_isUnit_mul ha]
+
+variable [Monoid N] {F : Type*} [EquivLike F M N] [MulEquivClass F M N] (f : F)
+
+open MulEquiv
+
+/--
+Irreducibility is preserved by multiplicative equivalences.
+Note that surjective + local hom is not enough. Consider the additive monoids `M = ℕ ⊕ ℕ`, `N = ℕ`,
+with a surjective local (additive) hom `f : M →+ N` sending `(m, n)` to `2m + n`.
+It is local because the only add unit in `N` is `0`, with preimage `{(0, 0)}` also an add unit.
+Then `x = (1, 0)` is irreducible in `M`, but `f x = 2 = 1 + 1` is not irreducible in `N`.
+-/
+theorem Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
+  ⟨fun g ↦ h.not_unit g.of_map, fun a b g ↦
+    let f := MulEquivClass.toMulEquiv f
+    (h.isUnit_or_isUnit (symm_apply_apply f x ▸ map_mul f.symm a b ▸ congrArg f.symm g)).imp
+      (·.of_map) (·.of_map)⟩
+
+theorem MulEquiv.irreducible_iff (f : F) {a : M} :
+    Irreducible (f a) ↔ Irreducible a :=
+  ⟨Irreducible.of_map, Irreducible.map f⟩
 
 end
 
