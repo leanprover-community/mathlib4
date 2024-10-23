@@ -52,26 +52,15 @@ the distinguished bijection that is compatible with the projections to all `X i`
 
 open Order Set
 
-variable {ι : Type*} [Preorder ι] {F G X : ι → Type*} ⦃i j : ι⦄ (h : i ≤ j)
-  (f : ∀ ⦃i j : ι⦄, i ≤ j → F j → F i)
+variable {ι : Type*} [Preorder ι] {F X : ι → Type*}
 
-variable (G) in
+variable (F) in
 /-- A directed system is a functor from a category (directed poset) to another category. -/
-class DirectedSystem (f : ∀ i j, i ≤ j → G i → G j) : Prop where
-  map_self' : ∀ i x h, f i i h x = x
-  map_map' : ∀ {i j k} (hij hjk x), f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x
+class DirectedSystem (f : ∀ ⦃i j⦄, i ≤ j → F i → F j) : Prop where
+  map_self ⦃i⦄ (x : F i) : f le_rfl x = x
+  map_map ⦃k j i⦄ (hij : i ≤ j) (hjk : j ≤ k) (x : F i) : f hjk (f hij x) = f (hij.trans hjk) x
 
-section
-
-variable (f : ∀ i j, i ≤ j → G i → G j) [DirectedSystem G f]
-
-theorem DirectedSystem.map_self i x h : f i i h x = x :=
-  DirectedSystem.map_self' i x h
-theorem DirectedSystem.map_map {i j k} (hij hjk x) :
-    f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
-  DirectedSystem.map_map' hij hjk x
-
-end
+variable (f : ∀ ⦃i j : ι⦄, i ≤ j → F j → F i) ⦃i j : ι⦄ (h : i ≤ j)
 
 /-- A inverse system indexed by a preorder is a contravariant functor from the preorder
 to another category. It is dual to `DirectedSystem`. -/
