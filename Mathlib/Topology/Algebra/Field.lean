@@ -3,7 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.FieldTheory.Adjoin
+import Mathlib.Algebra.Field.Subfield
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Basic
@@ -153,23 +153,9 @@ end Preconnected
 section ContinuousSMul
 
 variable {F : Type*} [DivisionRing F] [TopologicalSpace F] [TopologicalRing F]
-
-variable {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [TopologicalSpace L] [TopologicalRing L]
-
-variable (X : Type*) [TopologicalSpace X]
-    [MulAction L X] [ContinuousSMul L X]
-    [MulAction F X] [ContinuousSMul F X]
+    (X : Type*) [TopologicalSpace X] [MulAction F X] [ContinuousSMul F X]
 
 instance Subfield.continuousSMul (M : Subfield F) : ContinuousSMul M X :=
   Subring.continuousSMul M.toSubring X
-
-instance IntermediateField.continuousSMul (M : IntermediateField K L) : ContinuousSMul M X :=
-  M.toSubfield.continuousSMul X
-
-instance IntermediateField.botContinuousSMul (M : IntermediateField K L) :
-    ContinuousSMul (⊥ : IntermediateField K L) M :=
-  Inducing.continuousSMul (X := L) (N := (⊥ : IntermediateField K L)) (Y := M)
-    (M := (⊥ : IntermediateField K L)) inducing_subtype_val continuous_id rfl
 
 end ContinuousSMul
