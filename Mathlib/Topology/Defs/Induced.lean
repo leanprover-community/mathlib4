@@ -36,7 +36,7 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
   if it is an embedding and its range is open.
   An open embedding is an open map.
 
-* `QuotientMap`: a map `f : X → Y` is a *quotient map*,
+* `IsQuotientMap`: a map `f : X → Y` is a *quotient map*,
   if it is surjective
   and the topology on the codomain is equal to the coinduced topology.
 -/
@@ -130,8 +130,11 @@ alias ClosedEmbedding := IsClosedEmbedding
 
 /-- A function between topological spaces is a quotient map if it is surjective,
   and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/
-@[mk_iff quotientMap_iff']
-structure QuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+@[mk_iff isQuotientMap_iff']
+structure IsQuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     (f : X → Y) : Prop where
   surjective : Function.Surjective f
   eq_coinduced : tY = tX.coinduced f
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap := IsQuotientMap
