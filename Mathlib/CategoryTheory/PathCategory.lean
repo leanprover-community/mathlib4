@@ -60,7 +60,7 @@ lemma induction_fixed_source {a : Paths V} (P : ∀ {b : Paths V}, (a ⟶ b) →
   intro _ f
   induction f with
   | nil => exact id
-  | @cons a b f w h => exact comp f w h
+  | cons _ _ h => exact comp _ w h
 
 /-- To prove a property on morphisms of a path category with given target `b`, it suffices to prove
 it for the identity and prove that the property is preserved under composition on the left
