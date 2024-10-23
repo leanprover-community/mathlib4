@@ -30,8 +30,8 @@ universe v u
 open scoped TensorProduct
 
 namespace Bialgebra.TensorProduct
-variable (R A B : Type u) [CommRing R] [Ring A] [Ring B]
-    [Bialgebra R A] [Bialgebra R B]
+
+variable (R A B : Type u) [CommRing R] [Ring A] [Ring B] [Bialgebra R A] [Bialgebra R B]
 
 lemma counit_eq_algHom_toLinearMap :
     Coalgebra.counit (R := R) (A := A ⊗[R] B) =
@@ -77,14 +77,11 @@ theorem map_tmul (f : A →ₐc[R] B) (g : C →ₐc[R] D) (x : A) (y : C) :
 theorem map_toCoalgHom (f : A →ₐc[R] B) (g : C →ₐc[R] D) :
     map f g = Coalgebra.TensorProduct.map (f : A →ₗc[R] B) (g : C →ₗc[R] D) := rfl
 
-variable (R A B C)
-
+variable (R A B C) in
 /-- The associator for tensor products of R-bialgebras, as a bialgebra equivalence. -/
 protected noncomputable def assoc :
     (A ⊗[R] B) ⊗[R] C ≃ₐc[R] A ⊗[R] (B ⊗[R] C) :=
   { Coalgebra.TensorProduct.assoc R A B C, Algebra.TensorProduct.assoc R A B C with }
-
-variable {R A B C}
 
 @[simp]
 theorem assoc_tmul (x : A) (y : B) (z : C) :
@@ -93,7 +90,7 @@ theorem assoc_tmul (x : A) (y : B) (z : C) :
 
 @[simp]
 theorem assoc_symm_tmul (x : A) (y : B) (z : C) :
-    (Coalgebra.TensorProduct.assoc R A B C).symm (x ⊗ₜ (y ⊗ₜ z)) = (x ⊗ₜ y) ⊗ₜ z :=
+    (Bialgebra.TensorProduct.assoc R A B C).symm (x ⊗ₜ (y ⊗ₜ z)) = (x ⊗ₜ y) ⊗ₜ z :=
   rfl
 
 @[simp]
@@ -101,14 +98,11 @@ theorem assoc_toCoalgEquiv :
     (Bialgebra.TensorProduct.assoc R A B C : _ ≃ₗc[R] _) =
     Coalgebra.TensorProduct.assoc R A B C := rfl
 
-variable (R A)
-
+variable (R A) in
 /-- The base ring is a left identity for the tensor product of bialgebras, up to
 bialgebra equivalence. -/
 protected noncomputable def lid : R ⊗[R] A ≃ₐc[R] A :=
   { Coalgebra.TensorProduct.lid R A, Algebra.TensorProduct.lid R A with }
-
-variable {R A}
 
 @[simp]
 theorem lid_toCoalgEquiv :
@@ -120,12 +114,11 @@ theorem lid_tmul (r : R) (a : A) : Bialgebra.TensorProduct.lid R A (r ⊗ₜ a) 
 @[simp]
 theorem lid_symm_apply (a : A) : (Bialgebra.TensorProduct.lid R A).symm a = 1 ⊗ₜ a := rfl
 
-theorem coalgebraRid_eq_algebraRid_apply (x) :
+theorem coalgebra_rid_eq_algebra_rid_apply (x) :
     Coalgebra.TensorProduct.rid R A x = Algebra.TensorProduct.rid R R A x :=
   congr($((TensorProduct.AlgebraTensorModule.rid_eq_rid R A).symm) x)
 
-variable (R A)
-
+variable (R A) in
 /-- The base ring is a right identity for the tensor product of bialgebras, up to
 bialgebra equivalence. -/
 protected noncomputable def rid : A ⊗[R] R ≃ₐc[R] A where
@@ -133,9 +126,7 @@ protected noncomputable def rid : A ⊗[R] R ≃ₐc[R] A where
   map_mul' x y := by
     simp only [CoalgEquiv.toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, AddHom.toFun_eq_coe,
       LinearMap.coe_toAddHom, CoalgHom.coe_toLinearMap, CoalgHom.coe_coe,
-      coalgebraRid_eq_algebraRid_apply, map_mul]
-
-variable {R A}
+      coalgebra_rid_eq_algebra_rid_apply, map_mul]
 
 @[simp]
 theorem rid_toCoalgEquiv :
@@ -150,8 +141,8 @@ theorem rid_symm_apply (a : A) : (Bialgebra.TensorProduct.rid R A).symm a = a �
 end Bialgebra.TensorProduct
 namespace BialgHom
 
-variable {R A B C D : Type u} [CommRing R] [Ring A] [Ring B] [Ring C] [Ring D]
-    [Bialgebra R A] [Bialgebra R B] [Bialgebra R C] [Bialgebra R D]
+variable {R A B C : Type u} [CommRing R] [Ring A] [Ring B] [Ring C]
+    [Bialgebra R A] [Bialgebra R B] [Bialgebra R C]
 
 variable (A)
 
