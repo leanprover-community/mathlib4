@@ -38,7 +38,7 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
   `completedLFunction χ s = N ^ (s - 1 / 2) * rootNumber χ * completedLFunction χ⁻¹ s`.
 -/
 
-open Complex Filter HurwitzZeta Finset Classical ZMod
+open HurwitzZeta Complex Finset Classical ZMod Filter
 
 open scoped Real Topology
 
@@ -84,6 +84,25 @@ lemma differentiableAt_LFunction (χ : DirichletCharacter ℂ N) (s : ℂ) (hs :
 lemma differentiable_LFunction {χ : DirichletCharacter ℂ N} (hχ : χ ≠ 1) :
     Differentiable ℂ (LFunction χ) :=
   (differentiableAt_LFunction _ · <| Or.inr hχ)
+
+/-- The L-function of an even Dirichlet character vanishes at strictly negative even integers. -/
+@[simp]
+lemma Even.LFunction_neg_two_mul_nat_add_one {χ : DirichletCharacter ℂ N} (hχ : Even χ) (n : ℕ) :
+    LFunction χ (-(2 * (n + 1))) = 0 :=
+  ZMod.LFunction_neg_two_mul_nat_add_one hχ.to_fun n
+
+/-- The L-function of an even Dirichlet character vanishes at strictly negative even integers. -/
+@[simp]
+lemma Even.LFunction_neg_two_mul_nat {χ : DirichletCharacter ℂ N} (hχ : Even χ) (n : ℕ) [NeZero n] :
+    LFunction χ (-(2 * n)) = 0 := by
+  obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
+  exact_mod_cast hχ.LFunction_neg_two_mul_nat_add_one m
+
+/-- The L-function of an odd Dirichlet character vanishes at negative odd integers. -/
+@[simp] lemma Odd.LFunction_neg_two_mul_nat_sub_one
+  {χ : DirichletCharacter ℂ N} (hχ : Odd χ) (n : ℕ) :
+    LFunction χ (-(2 * n) - 1) = 0 :=
+  ZMod.LFunction_neg_two_mul_nat_sub_one hχ.to_fun n
 
 /-!
 ## Results on changing levels
@@ -161,24 +180,10 @@ lemma LFunction_one_residue_one :
   exact continuous_finset_prod _ fun p hp ↦
     have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
     continuous_const.sub (continuous_const_cpow_neg _)
-/-- The L-function of an even Dirichlet character vanishes at strictly negative even integers. -/
-@[simp]
-lemma Even.LFunction_neg_two_mul_nat_add_one {χ : DirichletCharacter ℂ N} (hχ : Even χ) (n : ℕ) :
-    LFunction χ (-(2 * (n + 1))) = 0 :=
-  ZMod.LFunction_neg_two_mul_nat_add_one hχ.to_fun n
 
-/-- The L-function of an even Dirichlet character vanishes at strictly negative even integers. -/
-@[simp]
-lemma Even.LFunction_neg_two_mul_nat {χ : DirichletCharacter ℂ N} (hχ : Even χ) (n : ℕ) [NeZero n] :
-    LFunction χ (-(2 * n)) = 0 := by
-  obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
-  exact_mod_cast hχ.LFunction_neg_two_mul_nat_add_one m
-
-/-- The L-function of an odd Dirichlet character vanishes at negative odd integers. -/
-@[simp] lemma Odd.LFunction_neg_two_mul_nat_sub_one
-  {χ : DirichletCharacter ℂ N} (hχ : Odd χ) (n : ℕ) :
-    LFunction χ (-(2 * n) - 1) = 0 :=
-  ZMod.LFunction_neg_two_mul_nat_sub_one hχ.to_fun n
+/-!
+## Completed L-functions and the functional equation
+-/
 
 section gammaFactor
 
