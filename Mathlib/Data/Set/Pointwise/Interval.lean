@@ -306,10 +306,10 @@ theorem preimage_const_sub_Ioo : (fun x => a - x) ⁻¹' Ioo b c = Ioo (a - c) (
 -/
 
 
--- @[simp] -- Porting note (#10618): simp can prove this modulo `add_comm`
+-- simp can prove this modulo `add_comm`
 theorem image_const_add_Iic : (fun x => a + x) '' Iic b = Iic (a + b) := by simp [add_comm]
 
--- @[simp] -- Porting note (#10618): simp can prove this modulo `add_comm`
+-- simp can prove this modulo `add_comm`
 theorem image_const_add_Iio : (fun x => a + x) '' Iio b = Iio (a + b) := by simp [add_comm]
 
 /-!
@@ -317,10 +317,8 @@ theorem image_const_add_Iio : (fun x => a + x) '' Iio b = Iio (a + b) := by simp
 -/
 
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem image_add_const_Iic : (fun x => x + a) '' Iic b = Iic (b + a) := by simp
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem image_add_const_Iio : (fun x => x + a) '' Iio b = Iio (b + a) := by simp
 
 /-!
@@ -461,10 +459,9 @@ theorem preimage_const_sub_uIcc : (fun x => a - x) ⁻¹' [[b, c]] = [[a - b, a 
   simp_rw [← Icc_min_max, preimage_const_sub_Icc]
   simp only [sub_eq_add_neg, min_add_add_left, max_add_add_left, min_neg_neg, max_neg_neg]
 
--- @[simp] -- Porting note (#10618): simp can prove this module `add_comm`
+-- simp can prove this modulo `add_comm`
 theorem image_const_add_uIcc : (fun x => a + x) '' [[b, c]] = [[a + b, a + c]] := by simp [add_comm]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem image_add_const_uIcc : (fun x => x + a) '' [[b, c]] = [[b + a, c + a]] := by simp
 
 @[simp]

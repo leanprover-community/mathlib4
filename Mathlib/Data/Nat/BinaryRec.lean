@@ -3,6 +3,7 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Praneeth Kolichala, Yuyang Zhao
 -/
+import Batteries.Tactic.Alias
 
 /-!
 # Binary recursion on `Nat`
@@ -127,12 +128,7 @@ theorem binaryRec_one {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, mot
   simp only [add_one_ne_zero, ↓reduceDIte, Nat.reduceShiftRight, binaryRec_zero]
   rfl
 
-/--
-The same as `binaryRec_eq`,
-but that one unfortunately requires `f` to be the identity when appending `false` to `0`.
-Here, we allow you to explicitly say that that case is not happening,
-i.e. supplying `n = 0 → b = true`. -/
-theorem binaryRec_eq' {motive : Nat → Sort u} {z : motive 0}
+theorem binaryRec_eq {motive : Nat → Sort u} {z : motive 0}
     {f : ∀ b n, motive n → motive (bit b n)} (b n)
     (h : f false 0 z = z ∨ (n = 0 → b = true)) :
     binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
@@ -149,9 +145,6 @@ theorem binaryRec_eq' {motive : Nat → Sort u} {z : motive 0}
     rw [testBit_bit_zero, bit_shiftRight_one]
     intros; rfl
 
-theorem binaryRec_eq {motive : Nat → Sort u} {z : motive 0} {f : ∀ b n, motive n → motive (bit b n)}
-    (h : f false 0 z = z) (b n) :
-    binaryRec z f (bit b n) = f b n (binaryRec z f n) :=
-  binaryRec_eq' b n (.inl h)
+@[deprecated (since := "2024-10-21")] alias binaryRec_eq' := binaryRec_eq
 
 end Nat

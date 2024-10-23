@@ -176,7 +176,6 @@ theorem mem_coe : a ∈ (s : Multiset α) ↔ a ∈ s :=
 theorem mem_cons_of_mem (h : a ∈ s) : a ∈ b ::ₛ s :=
   Multiset.mem_cons_of_mem h
 
---@[simp] Porting note (#10618): simp can prove it
 theorem mem_cons_self (a : α) (s : Sym α n) : a ∈ a ::ₛ s :=
   Multiset.mem_cons_self a s.1
 
