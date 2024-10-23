@@ -73,11 +73,8 @@ theorem nfpFamily_le_iff [Small.{u} ι] {a b} : nfpFamily f a ≤ b ↔ ∀ l, L
 theorem nfpFamily_le {a b} : (∀ l, List.foldr f a l ≤ b) → nfpFamily f a ≤ b :=
   Ordinal.iSup_le
 
-theorem monotone_nfpFamily [Small.{u} ι] (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily f) :=
+theorem nfpFamily_monotone [Small.{u} ι] (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily f) :=
   fun _ _ h ↦ nfpFamily_le <| fun l ↦ (List.foldr_monotone hf l h).trans (foldr_le_nfpFamily _ _ l)
-
-@[deprecated monotone_nfpFamily (since := "2024-10-14")]
-alias nfpFamily_monotone := monotone_nfpFamily
 
 theorem apply_lt_nfpFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a b}
     (hb : b < nfpFamily f a) (i) : f i b < nfpFamily f a :=
@@ -274,7 +271,7 @@ theorem nfpBFamily_le {o : Ordinal} {f : ∀ b < o, Ordinal → Ordinal} {a b} :
 
 @[deprecated (since := "2024-10-14")]
 theorem nfpBFamily_monotone (hf : ∀ i hi, Monotone (f i hi)) : Monotone (nfpBFamily.{u, v} o f) :=
-  monotone_nfpFamily fun _ => hf _ _
+  nfpFamily_monotone fun _ => hf _ _
 
 @[deprecated (since := "2024-10-14")]
 theorem apply_lt_nfpBFamily (H : ∀ i hi, IsNormal (f i hi)) {a b} (hb : b < nfpBFamily.{u, v} o f a)
@@ -466,11 +463,8 @@ theorem nfp_id : nfp id = id := by
   simp_rw [← iSup_iterate_eq_nfp, iterate_id]
   exact ciSup_const
 
-theorem monotone_nfp (hf : Monotone f) : Monotone (nfp f) :=
-  monotone_nfpFamily fun _ => hf
-
-@[deprecated (since := "2024-10-14")]
-alias nfp_monotone := monotone_nfp
+theorem nfp_monotone (hf : Monotone f) : Monotone (nfp f) :=
+  nfpFamily_monotone fun _ => hf
 
 theorem IsNormal.apply_lt_nfp {f} (H : IsNormal f) {a b} : f b < nfp f a ↔ b < nfp f a := by
   unfold nfp
@@ -583,7 +577,7 @@ theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * ω := by
 theorem nfp_add_eq_mul_omega0 {a b} (hba : b ≤ a * ω) : nfp (a + ·) b = a * ω := by
   apply le_antisymm (nfp_le_fp (isNormal_add_right a).monotone hba _)
   · rw [← nfp_add_zero]
-    exact monotone_nfp (isNormal_add_right a).monotone (Ordinal.zero_le b)
+    exact nfp_monotone (isNormal_add_right a).monotone (Ordinal.zero_le b)
   · dsimp; rw [← mul_one_add, one_add_omega0]
 
 @[deprecated (since := "2024-09-30")]
@@ -649,7 +643,7 @@ theorem nfp_mul_eq_opow_omega0 {a b : Ordinal} (hb : 0 < b) (hba : b ≤ a ^ ω)
   · apply nfp_le_fp (isNormal_mul_right ha).monotone hba
     rw [← opow_one_add, one_add_omega0]
   rw [← nfp_mul_one ha]
-  exact monotone_nfp (isNormal_mul_right ha).monotone (one_le_iff_pos.2 hb)
+  exact nfp_monotone (isNormal_mul_right ha).monotone (one_le_iff_pos.2 hb)
 
 @[deprecated (since := "2024-09-30")]
 alias nfp_mul_eq_opow_omega := nfp_mul_eq_opow_omega0
