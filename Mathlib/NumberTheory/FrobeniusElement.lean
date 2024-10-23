@@ -170,63 +170,12 @@ lemma liftHom_commutes (f : B ≃ₐ[A] B) (b : B) :
 
 end lifting
 
-section MulSemiringAction
-
-variable {G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-variable [Group G]
-
--- PRed
-@[simps]
-def MulSemiringAction.ofAlgEquivHom (h : G →* A ≃ₐ[R] A) : MulSemiringAction G A where
-  smul := fun g r ↦ h g r
-  one_smul := DFunLike.ext_iff.mp (map_one h)
-  mul_smul := fun g g' ↦ DFunLike.ext_iff.mp (map_mul h g g')
-  smul_zero := fun g ↦ map_zero (h g)
-  smul_add := fun g ↦ map_add (h g)
-  smul_one := fun g ↦ map_one (h g)
-  smul_mul := fun g ↦ map_mul (h g)
-
-variable [MulSemiringAction G A] [SMulCommClass G R A]
-
--- PRed
-@[simps]
-def MulSemiringAction.toAlgEquivHom : G →* A ≃ₐ[R] A where
-  toFun := MulSemiringAction.toAlgEquiv R A
-  map_one' := by ext; rw [toAlgEquiv_apply, one_smul]; rfl
-  map_mul' := fun f g ↦ by ext; rw [toAlgEquiv_apply, mul_smul]; rfl
-
-end MulSemiringAction
-
-section MulSemiringAction
-
-variable {G : Type*} (R : Type*) [Semiring R] [Group G]
-
--- PRed
-def MulSemiringAction.ofHom (h : G →* R ≃+* R) : MulSemiringAction G R where
-  smul := fun g r ↦ h g r
-  one_smul := DFunLike.ext_iff.mp (map_one h)
-  mul_smul := fun g g' ↦ DFunLike.ext_iff.mp (map_mul h g g')
-  smul_zero := fun g ↦ map_zero (h g)
-  smul_add := fun g ↦ map_add (h g)
-  smul_one := fun g ↦ map_one (h g)
-  smul_mul := fun g ↦ map_mul (h g)
-
-variable [MulSemiringAction G R]
-
--- PRed
-def MulSemiringAction.toHom : G →* R ≃+* R  where
-  toFun := MulSemiringAction.toRingEquiv G R
-  map_one' := by ext; rw [toRingEquiv_apply, one_smul]; rfl
-  map_mul' := fun f g ↦ by ext; rw [toRingEquiv_apply, mul_smul]; rfl
-
-end MulSemiringAction
-
 section fixedfield
 
 /-- `MulSemiringAction.toAlgHom` is bijective. -/
 theorem toAlgHom_bijective' (G F : Type*) [Field F] [Group G] [Finite G] [MulSemiringAction G F]
     [FaithfulSMul G F] : Function.Bijective
-      (MulSemiringAction.toAlgEquivHom _ _ : G →* F ≃ₐ[FixedPoints.subfield G F] F) := by
+      (MulSemiringAction.toAlgAut _ _ : G →* F ≃ₐ[FixedPoints.subfield G F] F) := by
   refine ⟨fun _ _ h ↦ (FixedPoints.toAlgHom_bijective G F).injective ?_,
     fun f ↦ ((FixedPoints.toAlgHom_bijective G F).surjective f).imp (fun _ h ↦ ?_)⟩
       <;> rwa [DFunLike.ext_iff] at h ⊢
@@ -234,11 +183,11 @@ theorem toAlgHom_bijective' (G F : Type*) [Field F] [Group G] [Finite G] [MulSem
 /-- `MulSemiringAction.toAlgHom` is surjective. -/
 theorem toAlgHom_surjective (G F : Type*) [Field F] [Group G] [Finite G] [MulSemiringAction G F] :
     Function.Surjective
-      (MulSemiringAction.toAlgEquivHom _ _ : G →* F ≃ₐ[FixedPoints.subfield G F] F) := by
+      (MulSemiringAction.toAlgAut _ _ : G →* F ≃ₐ[FixedPoints.subfield G F] F) := by
   let f : G →* F ≃ₐ[FixedPoints.subfield G F] F :=
-    MulSemiringAction.toAlgEquivHom (FixedPoints.subfield G F) F
+    MulSemiringAction.toAlgAut (FixedPoints.subfield G F) F
   let Q := G ⧸ f.ker
-  let _ : MulSemiringAction Q F := MulSemiringAction.ofAlgEquivHom _ _ (QuotientGroup.kerLift f)
+  let _ : MulSemiringAction Q F := MulSemiringAction.compHom _ (QuotientGroup.kerLift f)
   have : FaithfulSMul Q F := ⟨by
     intro q₁ q₂
     refine Quotient.inductionOn₂' q₁ q₂ (fun g₁ g₂ h ↦ QuotientGroup.eq.mpr ?_)
@@ -577,7 +526,7 @@ theorem fullHom_surjective
     (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) :
     Function.Surjective (fullHom G P Q K L : MulAction.stabilizer G Q →* (L ≃ₐ[K] L)) := by
   let action : MulSemiringAction (MulAction.stabilizer G Q) L :=
-    MulSemiringAction.ofAlgEquivHom _ _
+    MulSemiringAction.compHom _
       (fullHom G P Q K L : MulAction.stabilizer G Q →* (L ≃ₐ[K] L))
   intro f
   obtain ⟨g, hg⟩ := toAlgHom_surjective (MulAction.stabilizer G Q) L
