@@ -17,7 +17,7 @@ noncomputable section
 
 open Filter Function
 
-open scoped Topology BigOperators Classical
+open scoped Topology Classical
 
 variable {𝕜 𝕜': Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
   [NormedAlgebra 𝕜 𝕜']
