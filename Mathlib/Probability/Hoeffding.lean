@@ -8,6 +8,7 @@ import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.MeasureTheory.Measure.Tilted
 import Mathlib.Probability.Variance
+import Mathlib.Probability.Moments
 
 /-!
 # Hoeffding's lemma
@@ -16,21 +17,22 @@ This file states Hoeffding's lemma. We introduce cumulant to complete the proof.
 
 ## Main results
 
-* `ProbabilityTheory.tilt_first_deriv`: derivation of `μ[exp (t * X ω)]` is
+* `ProbabilityTheory.tilt_first_deriv`: derivation of `mgf X μ t` is
   `μ[exp (t * X ω) * X ω]`. In order to deal with the differentiation of parametric integrals,
 `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof.
 * `ProbabilityTheory.tilt_second_deriv`: derivation of `μ[fun ω ↦ rexp (t * X ω) * X ω]` is
   `μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]`. In order to deal with the differentiation of
   parametric integrals, `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof.
-* `ProbabilityTheory.cum_deriv_one`: first derivative of cumulant `log μ[rexp (t * X ω))]`.
+* `ProbabilityTheory.cum_deriv_one`: first derivative of cumulant `cgf X μ t`.
   It can be described by exponential tilting.
-* `ProbabilityTheory.cum_deriv_two`: second derivative of cumulant `log μ[rexp (t * X ω))]`.
+* `ProbabilityTheory.cum_deriv_two`: second derivative of cumulant `cgf X μ t`.
 * `ProbabilityTheory.hoeffding`: Hoeffding's Lemma states that for a random variable `X` with
   `E[X] = 0` (zero mean) and `a ≤ X ≤ b` almost surely, the inequality
-  `μ[exp (t * (X ω))] ≤ exp (t^2 * (b - a)^2 / 8)` holds almost surely for all `t ∈ ℝ`.
+  `mgf X μ t ≤ exp (t^2 * (b - a)^2 / 8)` holds almost surely for all `t ∈ ℝ`.
 
 ## References
 
+We follow the proof of Hoeffding's lemma in the following references:
 * Martin J. Wainwright. High-Dimensional Statistics. Cambridge university press, 2019. Chapter 2
 * Mehryar Mohri. Foundations of Machine Learning. The MIT Press, 2018. Chapter D
 
@@ -47,7 +49,7 @@ universe u
 
 variable {Ω : Type u} [MeasurableSpace Ω] (μ : Measure Ω := by volume_tac)
 
-lemma measurable_expt (X : Ω → ℝ) (t : ℝ) (hX : AEMeasurable X μ) :
+lemma aemeasurable_expt (X : Ω → ℝ) (t : ℝ) (hX : AEMeasurable X μ) :
     AEStronglyMeasurable (fun ω ↦ rexp (t * (X ω))) μ :=
   aestronglyMeasurable_iff_aemeasurable.mpr <| measurable_exp.comp_aemeasurable' (hX.const_mul t)
 
@@ -88,11 +90,6 @@ lemma integrable_expt_bound [IsFiniteMeasure μ] {X : Ω → ℝ} {t a b : ℝ} 
     exact integrable_expt _ _ _ _ (by linarith : -t > 0) (AEMeasurable.neg hX)
       (by filter_upwards [ha] with ω ha using neg_le_neg ha)
 
-lemma expt_pos [IsFiniteMeasure μ] [NeZero μ] (X : Ω → ℝ) (t a b : ℝ)
-    (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
-    0 < μ[fun ω ↦ exp (t * (X ω))] :=
-  integral_exp_pos <| integrable_expt_bound μ hX h
-
 lemma tilt_var_bound [IsProbabilityMeasure μ] (a b t : ℝ) (X : Ω → ℝ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b)
     (hX : AEMeasurable X μ) :
@@ -106,17 +103,15 @@ lemma tilt_var_bound [IsProbabilityMeasure μ] (a b t : ℝ) (X : Ω → ℝ)
 theorem integrable_bounded [IsFiniteMeasure μ] (a b : ℝ)
     (X : Ω → ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     Integrable X μ := by
-  have m1 : HasFiniteIntegral X μ := by
-    apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
-    filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
-  exact ⟨aestronglyMeasurable_iff_aemeasurable.mpr hX, m1⟩
+  apply MeasureTheory.memℒp_one_iff_integrable.mp
+  apply memℒp_of_bounded h (aestronglyMeasurable_iff_aemeasurable.mpr hX)
 
-/-- Derivation of `μ[exp (t * X ω)]` is `μ[exp (t * X ω) * X ω]`.
+/-- Derivation of `mgf X μ t` is `μ[exp (t * X ω) * X ω]`.
 In order to deal with the differentiation of parametric integrals,
 `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof. -/
 theorem tilt_first_deriv [IsFiniteMeasure μ] (t a b : ℝ)
     (X : Ω → ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b):
-    let g := fun t ↦ μ[fun ω ↦ rexp (t * X ω)]
+    let g := fun t ↦ mgf X μ t
     let g' := fun t ↦ μ[fun ω ↦ rexp (t * X ω) * X ω]
     Integrable (fun ω ↦ rexp (t * X ω) * X ω) μ → HasDerivAt g (g' t) t := by
   have ha : ∀ᵐ ω ∂μ, a ≤ X ω := h.mono fun ω h ↦ h.1
@@ -126,11 +121,12 @@ theorem tilt_first_deriv [IsFiniteMeasure μ] (t a b : ℝ)
   set e' := (fun t ↦ fun ω ↦ rexp (t * X ω) * X ω)
   suffices MeasureTheory.Integrable (e' t) μ ∧
     HasDerivAt (fun t ↦ μ[e t]) (μ[e' t]) t from by
+    dsimp [mgf]
     simp only [this.2, implies_true]
   apply hasDerivAt_integral_of_dominated_loc_of_deriv_le
   · exact LE.le.trans_lt (abs_nonneg t) (lt_add_one |t|)
   · exact Filter.Eventually.of_forall
-      (by intro t'; apply measurable_expt _ _ _ hX : ∀ (x : ℝ), AEStronglyMeasurable (e x) μ)
+      (by intro t'; apply aemeasurable_expt _ _ _ hX : ∀ (x : ℝ), AEStronglyMeasurable (e x) μ)
   · simp only [e]; apply integrable_expt_bound _ hX h
   · simp only [e']
     apply AEMeasurable.aestronglyMeasurable;
@@ -157,7 +153,7 @@ theorem tilt_first_deriv [IsFiniteMeasure μ] (t a b : ℝ)
     exact ae_of_all μ p
   · apply MeasureTheory.Integrable.bdd_mul'
     · exact MeasureTheory.Integrable.abs (integrable_bounded μ a b X hX h)
-    · apply measurable_expt μ (fun ω ↦ |X ω|) (2 * |t| + 1) _
+    · apply aemeasurable_expt μ (fun ω ↦ |X ω|) (2 * |t| + 1) _
       apply Measurable.comp_aemeasurable' _ hX
       apply measurable_norm
     · filter_upwards [ha, hb] with ω ha hb
@@ -198,7 +194,7 @@ theorem tilt_second_deriv  [IsFiniteMeasure μ] (t a b : ℝ)
     exact Filter.Eventually.of_forall u
   · simp only [e];
     apply MeasureTheory.Integrable.bdd_mul'
-      (integrable_bounded μ a b X hX h) (measurable_expt μ X t hX)
+      (integrable_bounded μ a b X hX h) (aemeasurable_expt μ X t hX)
     · filter_upwards [ha, hb] with ω ha hb
       have q00 : ‖rexp (t * X ω)‖ ≤ rexp (|t| * c) := by
         simp only [norm_eq_abs, abs_exp, exp_le_exp]
@@ -249,7 +245,7 @@ theorem tilt_second_deriv  [IsFiniteMeasure μ] (t a b : ℝ)
       · filter_upwards [ha, hb] with x ha hb
         exact (by simp only [norm_eq_abs]; exact
           le_trans' (le_abs_self (max ‖a‖ ‖b‖)) (abs_le_max_abs_abs ha hb) : ‖X x‖ ≤ |c|)
-    · apply measurable_expt μ (fun ω ↦ |X ω|) (2 * |t| + 1) _
+    · apply aemeasurable_expt μ (fun ω ↦ |X ω|) (2 * |t| + 1) _
       apply Measurable.comp_aemeasurable' _ hX
       apply measurable_norm
     · filter_upwards [ha, hb] with ω ha hb
@@ -275,7 +271,7 @@ theorem integrable_deriv_expt [IsFiniteMeasure μ] (t a b : ℝ)
   have ha : ∀ᵐ ω ∂μ, a ≤ X ω := h.mono fun ω h ↦ h.1
   have hb : ∀ᵐ ω ∂μ, X ω ≤ b := h.mono fun ω h ↦ h.2
   apply MeasureTheory.Integrable.bdd_mul'
-    (integrable_bounded μ a b X hX h) (measurable_expt _ _ _ hX)
+    (integrable_bounded μ a b X hX h) (aemeasurable_expt _ _ _ hX)
   · set c := max ‖a‖ ‖b‖
     filter_upwards [ha, hb] with ω ha hb
     have q0 : ‖rexp (t * X ω)‖ ≤ ‖rexp (|t| * c)‖ := by
@@ -292,7 +288,7 @@ theorem integrable_deriv_expt [IsFiniteMeasure μ] (t a b : ℝ)
 theorem integral_tilted [IsFiniteMeasure μ]
     (t : ℝ) (f : ℝ → ℝ) (X : Ω → ℝ) (hX : AEMeasurable X μ):
     (μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ f (X ω)] =
-    (μ[fun ω ↦ rexp (t * X ω) * f (X ω)]) / μ[fun ω ↦ rexp (t * X ω)] := by
+    (μ[fun ω ↦ rexp (t * X ω) * f (X ω)]) / mgf X μ t := by
   calc
   _ = (∫ ω, ((∂Measure.tilted μ fun ω ↦ t * X ω/∂μ) ω).toReal • f (X ω) ∂μ) :=
     Eq.symm (MeasureTheory.integral_rnDeriv_smul (tilted_absolutelyContinuous μ fun ω ↦ t * X ω))
@@ -320,11 +316,11 @@ theorem integral_tilted [IsFiniteMeasure μ]
 
 /-! ### Derivatives of cumulant-/
 
-/-- First derivative of cumulant `log (∫ ω, (rexp (t * X ω)) a ∂μ)`.
+/-- First derivative of cumulant `cgf X μ f`.
 It can be described by exponential tilting.-/
 theorem cum_deriv_one [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
     (X : Ω → ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
-    let f := fun t ↦ log (μ[fun ω ↦ rexp (t * X ω)])
+    let f := fun t ↦ cgf X μ t
     let f' := fun t ↦ (μ.tilted (fun ω ↦ t * X ω)) [X]
     ∀ x : ℝ, HasDerivAt f (f' x) x := by
   intros f f' t
@@ -337,10 +333,10 @@ theorem cum_deriv_one [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
   simp at r0
   rw [r0]
   apply HasDerivAt.log
-  · exact tilt_first_deriv μ _ _ _ _ hX h (integrable_deriv_expt μ t a b X hX h)
-  · exact (by linarith [expt_pos μ X t a b hX h] : ∫ ω, rexp (t * X ω) ∂μ ≠ 0)
+    (tilt_first_deriv μ _ _ _ _ hX h (integrable_deriv_expt μ t a b X hX h))
+    (Ne.symm (ne_of_lt (mgf_pos' (Ne.symm (NeZero.ne' μ)) (integrable_expt_bound μ hX h))))
 
-/-- Second derivative of cumulant `log μ[rexp (t * X ω))]`-/
+/-- Second derivative of cumulant `cgf X μ f`-/
 theorem cum_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
     (X : Ω → ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     let g' := fun t ↦ (μ.tilted (fun ω ↦ t * X ω))[X];
@@ -368,15 +364,15 @@ theorem cum_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
   ((μ[fun ω ↦ rexp (t * X ω)]) * (μ[fun ω ↦ rexp (t * X ω)])) := by
     apply Eq.symm (mul_div_mul_right (∫ ω, rexp (t * X ω) * X ω ^ 2 ∂μ)
     (μ[fun ω ↦ rexp (t * X ω)]) _)
-    exact (by linarith [expt_pos μ X t a b hX h] : ∫ ω, rexp (t * X ω) ∂μ ≠ 0)
+    exact Ne.symm (ne_of_lt (mgf_pos' (Ne.symm (NeZero.ne' μ)) (integrable_expt_bound μ hX h)))
   rw [p, Eq.symm (pow_two (∫ ω, rexp (t * X ω) ∂μ))]
   have p'' : (((μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]) *
     (μ[fun ω ↦ rexp (t * X ω)])) / (μ[fun ω ↦ rexp (t * X ω)]) ^ 2 -
   (μ[fun ω ↦ rexp (t * X ω) * X ω]) ^ 2 / (μ[fun ω ↦ rexp (t * X ω)]) ^ 2) =
   ((μ[fun ω ↦ exp (t * (X ω)) * (X ω) ^ 2] *
-    μ[fun ω ↦ exp (t * (X ω))]) -
+    mgf X μ t) -
     (μ[fun ω ↦ exp (t * (X ω)) * X ω] * μ[fun ω ↦ exp (t * (X ω)) * X ω])) /
-    (μ[fun ω ↦ exp (t * (X ω))] ^ 2) := by
+    (mgf X μ t ^ 2) := by
     rw [Eq.symm (pow_two (∫ ω, (fun ω ↦ rexp (t * X ω) * X ω) ω ∂μ))]
     exact
       div_sub_div_same ((μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]) * μ[fun ω ↦ rexp (t * X ω)])
@@ -393,7 +389,7 @@ theorem cum_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
         exact (by simp only [norm_eq_abs];
                   exact le_trans' (le_abs_self (max ‖a‖ ‖b‖)) (abs_le_max_abs_abs ha hb) :
               ‖X x‖ ≤ |c|)
-    · exact measurable_expt μ X t hX
+    · exact aemeasurable_expt μ X t hX
     · simp only [norm_eq_abs, abs_exp]
       filter_upwards [ha, hb] with ω ha hb
       have r0 : rexp (t * X ω) ≤ rexp (|t| * |c|) := by
@@ -406,21 +402,25 @@ theorem cum_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
       exact r0
   · apply (tilt_first_deriv _ _ _ _ _ hX h)
           (integrable_deriv_expt μ t a b X hX h)
-  · exact (by linarith [expt_pos μ X t a b hX h] : ∫ ω, rexp (t * X ω) ∂μ ≠ 0)
+  · exact Ne.symm (ne_of_lt (mgf_pos' (Ne.symm (NeZero.ne' μ)) (integrable_expt_bound μ hX h)))
 
 /-! ### Hoeffding's lemma restricted to t ≥ 0-/
 
 theorem hoeffding_nonneg [IsProbabilityMeasure μ]
     (t a b : ℝ) (X : Ω → ℝ) (ht : 0 ≤ t) (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (h0 : μ[X] = 0) :
-    μ[fun ω ↦ exp (t * (X ω))] ≤ exp (t^2 * (b - a)^2 / 8) := by
+    mgf X μ t ≤ exp (t^2 * (b - a)^2 / 8) := by
+  dsimp [mgf]
   by_cases w : t = 0;
     · rw [w]; simp only [zero_mul, exp_zero, integral_const, measure_univ,
     ENNReal.one_toReal, smul_eq_mul, mul_one, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
     zero_pow, zero_div, le_refl]
-  suffices log (μ[fun ω ↦ exp (t * (X ω))]) ≤ t^2 * (b - a)^2 / 8 from
-    (log_le_iff_le_exp (expt_pos μ X t a b hX h)).mp this
-  set f : ℝ → ℝ := fun t ↦ log (μ[fun ω ↦ exp (t * (X ω))])
+  suffices log (μ[fun x => exp (t * X x)]) ≤ t^2 * (b - a)^2 / 8 from by
+    rw [<- log_le_iff_le_exp]
+    exact this
+    apply mgf_pos' (Ne.symm (NeZero.ne' μ))
+    apply integrable_expt_bound μ hX h
+  set f : ℝ → ℝ := fun t ↦ log (∫ (x : Ω), rexp (t * X x) ∂μ)
   have hf : f 0 = 0 := by simp only
     [zero_mul, exp_zero, integral_const, measure_univ, ENNReal.one_toReal,
     smul_eq_mul, mul_one, log_one, f]
@@ -535,7 +535,7 @@ theorem hoeffding_nonneg [IsProbabilityMeasure μ]
  `μ[exp (t * (X ω))] ≤ exp (t^2 * (b - a)^2 / 8)` holds almost surely for all `t ∈ ℝ`.-/
 theorem hoeffding [IsProbabilityMeasure μ] (t a b : ℝ) (X : Ω → ℝ) (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (h0 : μ[X] = 0) :
-    μ[fun ω ↦ exp (t * (X ω))] ≤ exp (t^2 * (b - a)^2 / 8) := by
+    mgf X μ t ≤ exp (t^2 * (b - a)^2 / 8) := by
   by_cases h' : 0 ≤ t
   case pos =>
     exact hoeffding_nonneg μ t a b X h' hX h h0
