@@ -152,10 +152,6 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
 theorem coe_period : (p : AddCircle p) = 0 :=
   (QuotientAddGroup.eq_zero_iff p).2 <| mem_zmultiples p
 
-/- Porting note (#10618): `simp` attribute removed because linter reports:
-simp can prove this:
-  by simp only [@mem_zmultiples, @QuotientAddGroup.mk_add_of_mem]
--/
 theorem coe_add_period (x : 𝕜) : ((x + p : 𝕜) : AddCircle p) = x := by
   rw [coe_add, ← eq_sub_iff_add_eq', sub_self, coe_period]
 
