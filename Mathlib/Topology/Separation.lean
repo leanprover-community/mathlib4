@@ -2058,7 +2058,7 @@ theorem RegularSpace.inf {X} {t₁ t₂ : TopologicalSpace X} (h₁ : @RegularSp
   exact regularSpace_iInf (Bool.forall_bool.2 ⟨h₂, h₁⟩)
 
 instance {p : X → Prop} : RegularSpace (Subtype p) :=
-  IsEmbedding.subtypeVal.inducing.regularSpace
+  IsEmbedding.subtypeVal.toInducing.regularSpace
 
 instance [TopologicalSpace Y] [RegularSpace Y] : RegularSpace (X × Y) :=
   (regularSpace_induced (@Prod.fst X Y)).inf (regularSpace_induced (@Prod.snd X Y))
@@ -2205,7 +2205,7 @@ instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
 protected theorem IsEmbedding.t3Space [TopologicalSpace Y] [T3Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T3Space X :=
   { toT0Space := hf.t0Space
-    toRegularSpace := hf.inducing.regularSpace }
+    toRegularSpace := hf.toInducing.regularSpace }
 
 instance Subtype.t3Space [T3Space X] {p : X → Prop} : T3Space (Subtype p) :=
   IsEmbedding.subtypeVal.t3Space
