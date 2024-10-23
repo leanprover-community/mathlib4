@@ -17,7 +17,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 /-!
 # Dependent functions with finite support
 
-For a non-dependent version see `data/finsupp.lean`.
+For a non-dependent version see `Mathlib.Data.Finsupp.Defs`.
 
 ## Notation
 
@@ -554,7 +554,6 @@ theorem single_apply {i i' b} :
 theorem single_zero (i) : (single i 0 : Π₀ i, β i) = 0 :=
   DFunLike.coe_injective <| Pi.single_zero _
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem single_eq_same {i b} : (single i b : Π₀ i, β i) i = b := by
   simp only [single_apply, dite_eq_ite, ite_true]
 
@@ -655,7 +654,6 @@ def erase (i : ι) (x : Π₀ i, β i) : Π₀ i, β i :=
 theorem erase_apply {i j : ι} {f : Π₀ i, β i} : (f.erase i) j = if j = i then 0 else f j :=
   rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem erase_same {i : ι} {f : Π₀ i, β i} : (f.erase i) i = 0 := by simp
 
 theorem erase_ne {i i' : ι} {f : Π₀ i, β i} (h : i' ≠ i) : (f.erase i) i' = f i' := by simp [h]
@@ -1120,7 +1118,7 @@ theorem filter_def (f : Π₀ i, β i) : f.filter p = mk (f.support.filter p) fu
   ext i; by_cases h1 : p i <;> by_cases h2 : f i ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 
 @[simp]
-theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = f.support.filter p := by
+theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = {x ∈ f.support | p x} := by
   ext i; by_cases h : p i <;> simp [h]
 
 theorem subtypeDomain_def (f : Π₀ i, β i) :
@@ -1717,7 +1715,7 @@ theorem sumAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f
 theorem sumAddHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (f : Π₀ i, β i) : sumAddHom φ f = f.sum fun x => φ x := by
   rcases f with ⟨f, s, hf⟩
-  change (∑ i ∈ _, _) = ∑ i ∈ Finset.filter _ _, _
+  change (∑ i ∈ _, _) = ∑ i ∈ _ with _, _
   rw [Finset.sum_filter, Finset.sum_congr rfl]
   intro i _
   dsimp only [coe_mk', Subtype.coe_mk] at *
