@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bjørn Kjos-Hanssen
+Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
 import Mathlib.LinearAlgebra.Projectivization.Basic
 import Mathlib.Topology.Compactification.OnePoint
@@ -10,20 +10,15 @@ import Mathlib.Topology.Compactification.OnePoint
 # One-point compactification and projectivization
 
 We construct a set-theoretic equivalence between
-`OnePoint K` and the projectivization `ℙ K (Fin 2 → K)` for an arbitrary division ring `K`.
+`OnePoint K` and the projectivization `ℙ K (K × K)` for an arbitrary division ring `K`.
 
 TODO: Add the extension of this equivalence to a homeomorphism in the case `K = ℝ`,
 where `OnePoint ℝ` gets the topology of one-point compactification.
 
 
-## Main definitions
+## Main definitions and results
 
-* `divOnePoint`: Division on `K` taking values in `OnePoint K`. Notation: `÷`.
-* `divSlope`: Lowering `divOnePoint` to a map `ℙ K (Fin 2 → K) → OnePoint K`.
-
-## Main results
-
-* `divSlope_equiv` proves that `ℙ K (Fin 2 → K) ≃ OnePoint K`.
+* `equivProjectivization` : the equivalence `OnePoint K ≃ ℙ K (K × K)`.
 
 ## Tags
 
@@ -31,124 +26,45 @@ one-point extension, projectivization
 -/
 
 open scoped LinearAlgebra.Projectivization OnePoint
-open Projectivization Classical
+open Projectivization
 
-/-!
-### Definition and basic properties
+namespace OnePoint
+variable (K : Type*) [DivisionRing K] [DecidableEq K]
 
-We define a division operation `divOnePoint`, with notation `÷`.
-It takes inputs from a division ring `K` and outputs a value in `K ∪ {∞}`, i.e.,  `OnePoint K`.
-We prove that `÷` preserves projective equivalence: `(c•a)÷(c•b)=a÷b`.
-Hence `÷` projects down to a map `divSlope` from `ℙ K (Fin 2 → K)` to `OnePoint K`
-that takes a line through the origin and returns its slope. For a vertical line
-the slope is `∞`.
--/
+/-- The one-point compactification of a division ring `K` is equivalent to
+ the projectivivization `ℙ K (K × K)`. -/
+def equivProjectivization :
+    OnePoint K ≃ ℙ K (K × K) where
+  toFun p := Option.elim p (mk K (1, 0) (by simp)) (fun t ↦ mk K (t, 1) (by simp))
+  invFun p := by
+    refine Projectivization.lift
+      (fun u : {v : K × K // v ≠ 0} ↦ if u.1.2 ≠ 0 then ((u.1.2)⁻¹ * u.1.1) else ∞) ?_ p
+    rintro ⟨-, hv⟩ ⟨⟨x, y⟩, hw⟩ t rfl
+    have ht : t ≠ 0 := by rintro rfl; simp at hv
+    by_cases h₀ : y = 0 <;> simp [h₀, ht, mul_assoc]
+  left_inv p := by cases p <;> simp [OnePoint.infty, OnePoint.some]
+  right_inv p := by
+    induction' p using ind with p hp
+    obtain ⟨x, y⟩ := p
+    by_cases h₀ : y = 0 <;>
+    simp only [Option.elim, ite_not, Projectivization.lift_mk, h₀, mk_eq_mk_iff]
+    · have h₀' : x ≠ 0 := by aesop
+      exact ⟨Units.mk0 _ (inv_ne_zero h₀'), by simp [h₀']⟩
+    · exact ⟨Units.mk0 _ (inv_ne_zero h₀), by simp [h₀]⟩
 
-variable {K : Type*}
-namespace OnePointEquiv
-/-- A modified division from a structure with `Zero` and `Div` to its
- `OnePoint` extension. With notation `÷` for `divOnePoint`,
-  we have in particular that `1 ÷ 0 = ∞`. -/
-noncomputable def divOnePoint [Zero K] [Inv K] [Mul K] (a : K) (r : K): OnePoint K :=
-  if r ≠ 0 then r⁻¹ * a else ∞
+@[simp]
+lemma equivProjectivization_apply_infinity :
+    equivProjectivization K ∞ = mk K ⟨1, 0⟩ (by simp) :=
+  rfl
 
-/-- Uncurried version of `divOnePoint`, with nonzeroness assumption. -/
-noncomputable def divOnePoint' [Zero K] [Inv K] [Mul K]
-  (u : {v : Fin 2 → K // v ≠ 0}) : OnePoint K :=
-  if u.1 1 ≠ 0 then some ((u.1 1)⁻¹ * u.1 0) else ∞
+@[simp]
+lemma equivProjectivization_apply_coe (t : K) :
+    equivProjectivization K t = mk K ⟨t, 1⟩ (by simp) :=
+  rfl
 
-/-- Notation `÷` showing that `divOnePoint` is distinct from
- ordinary division `/`. -/
-infix:50 " ÷ " => divOnePoint
+@[simp]
+lemma equivProjectivization_symm_apply_mk (x y : K) (h : (x, y) ≠ 0) :
+    (equivProjectivization K).symm (mk K ⟨x, y⟩ h) = if y = 0 then ∞ else y⁻¹ * x := by
+  simp [equivProjectivization]
 
-/-- `divOnePoint` can be lifted to the projective line (see `divSlope`.) -/
-lemma divOnePoint_lifts [DivisionRing K] (a b : {v : Fin 2 → K // v ≠ 0})
-    (h : ∃ c : Kˣ, c • b.1 = a.1) :
-    (a.1 0 ÷ a.1 1) = (b.1 0 ÷ b.1 1) := by
-  obtain ⟨c,hc⟩ : ∃ c : Kˣ, (fun m : Kˣ ↦ m.1 • b.1) c = a.1 := h
-  rw [← hc]
-  simp only [divOnePoint, ne_eq, Fin.isValue, Pi.smul_apply, smul_eq_mul, ite_not]
-  split_ifs with hbc hb hb
-  · rfl
-  · simp only [ne_eq, OnePoint.infty_ne_coe]
-    exact hb <| (Units.mul_right_eq_zero c).mp hbc
-  · rw [hb] at hbc
-    simp at hbc
-  · apply congrArg some
-    simp [mul_assoc]
-
-/-- Equivalence between the projective line and the one-point extension. -/
-noncomputable def divSlope [DivisionRing K] (p : ℙ K (Fin 2 → K)) : OnePoint K :=
-  Quotient.lift (fun u => divOnePoint (u.1 0) (u.1 1)) divOnePoint_lifts p
-
-/-! ### Equivalence
-We establish the equivalence between `OnePoint K` and `ℙ K (Fin 2 → K)` for a division ring `K`.
--/
-
-
-/-- In a division ring, if `a ≠ 0 ≠ b` then `(a b⁻¹) (b a⁻¹) = 1`. -/
-lemma rev_div_assoc {K : Type*} [DivisionRing K] {a b : K}
-    (ga : a ≠ 0) (gb : b ≠ 0) : a * b⁻¹ * (b * a⁻¹) = 1 :=
-  (IsUnit.mul_eq_one_iff_inv_eq (by simp_all)).mpr (by simp_all)
-
-/-- `divSlope` respects projective equivalence. -/
-lemma divSlope_inj_lifted [DivisionRing K] (a b : {v : Fin 2 → K // v ≠ 0})
-    (h : divSlope ⟦a⟧ = divSlope ⟦b⟧) : (⟦a⟧ : Quotient (projectivizationSetoid K _)) = ⟦b⟧ :=
-  Quotient.sound <| by
-  by_cases ga : a.1 1 = 0
-  · by_cases gb : b.1 1 = 0
-    · simp only [ne_eq, Decidable.not_not]
-      have : a.1 0 ≠ 0 := fun hc => .elim <|a.2 <|funext fun j => by fin_cases j <;> simp [hc,ga]
-      have : b.1 0 ≠ 0 := fun hc => .elim <|b.2 <|funext fun j => by fin_cases j <;> simp [hc,gb]
-      use Units.mk ((a.1 0) / (b.1 0)) ((b.1 0) / (a.1 0)) (by field_simp) (by field_simp)
-      apply List.ofFn_inj.mp
-      simp only [List.ofFn_succ, Pi.smul_apply, Fin.succ_zero_eq_one]
-      rw [ga, gb]
-      field_simp
-    · simp [divSlope, divOnePoint, ga, gb] at h
-  · by_cases gb : b.1 1 = 0
-    · simp [divSlope, divOnePoint, ga, gb] at h
-    · use Units.mk (a.1 1 * (b.1 1)⁻¹) (b.1 1 * (a.1 1)⁻¹)
-        (rev_div_assoc ga gb) (rev_div_assoc gb ga)
-      ext s
-      fin_cases s
-      · simp only [divSlope, divOnePoint, ite_not, Quotient.lift_mk, smul_eq_mul, ga, gb] at h
-        have h' : (a.1 1)⁻¹ * a.1 0  = (b.1 1)⁻¹ * b.1 0 := Option.some_injective K h
-        simp only [ne_eq, Fin.isValue, Fin.zero_eta, Pi.smul_apply, Units.smul_mk_apply,
-          smul_eq_mul]
-        rw [mul_assoc]
-        rw [← h']
-        rw [← mul_assoc]
-        simp only [Fin.isValue, ne_eq]
-        field_simp at h' ⊢
-      · simp [h, ga, gb]
-
-/-- Over any division ring `K`, `divSlope` is injective. -/
-lemma divSlope_injective [DivisionRing K] : Function.Injective (@divSlope K _) :=
-  Quotient.ind (fun a ↦ Quotient.ind (divSlope_inj_lifted a))
-
-/-- An inverse of `divSlope`. -/
-def slope_inv [DivisionRing K] (p : OnePoint K) : ℙ K (Fin 2 → K) := match p with
-|some t => mk' K ⟨![t, 1], by simp⟩
-|∞      => mk' K ⟨![1, 0], by simp⟩
-
-
-/-- `slope_inv` is an inverse of `divSlope`. -/
-lemma divSlope_inv [DivisionRing K] : Function.LeftInverse (@divSlope K _) slope_inv := by
-  intro a
-  have g₀       : divOnePoint' ⟨![(1:K), 0], by simp⟩ =      ∞ := by simp [divOnePoint']
-  have g₁ (t:K) : divOnePoint' ⟨![    t, 1], by simp⟩ = some t := by simp [divOnePoint']
-  cases a with
-  |none => exact g₀
-  |some t => exact g₁ t
-end OnePointEquiv
-
-/-- An equivalence between the one-point extension of a division ring `K`
-and the projective line over `K`. -/
-noncomputable def divSlope_equiv [DivisionRing K] :
-  OnePoint K ≃ ℙ K (Fin 2 → K) where
-  toFun     := OnePointEquiv.slope_inv
-  invFun    := OnePointEquiv.divSlope
-  left_inv  := OnePointEquiv.divSlope_inv
-  right_inv := Function.rightInverse_of_injective_of_leftInverse
-    OnePointEquiv.divSlope_injective OnePointEquiv.divSlope_inv
+end OnePoint
