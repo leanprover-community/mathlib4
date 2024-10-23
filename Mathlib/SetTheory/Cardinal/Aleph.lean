@@ -427,7 +427,7 @@ def aleph : Ordinal ↪o Cardinal :=
 @[inherit_doc]
 scoped notation "ℵ_ " => aleph
 
-/-- `ℵ₁` is the first uncountable ordinal. -/
+/-- `ℵ₁` is the first uncountable cardinal. -/
 scoped notation "ℵ₁" => ℵ_ 1
 
 @[simp]
