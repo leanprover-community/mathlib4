@@ -677,15 +677,13 @@ lemma lieBracketWithin_pullbackWithin_of_eventuallyEq
   _ = lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V u) (pullbackWithin 𝕜 f W u) u x := by
     apply Filter.EventuallyEq.lieBracketWithin_vectorField_eq_of_mem _ _ hx
     · apply nhdsWithin_le_nhds
-      simp only [pullbackWithin]
       filter_upwards [fderivWithin_eventually_congr_set (𝕜 := 𝕜) (f := f) hus] with y hy
-      simp [hy]
+      simp [pullbackWithin, hy]
     · apply nhdsWithin_le_nhds
-      simp only [pullbackWithin]
       filter_upwards [fderivWithin_eventually_congr_set (𝕜 := 𝕜) (f := f) hus] with y hy
-      simp [hy]
-  _ = pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) u x := by
-    apply lieBracketWithin_pullbackWithin (hf.congr_set hus.symm) (h'f.congr_set hus)
+      simp [pullbackWithin, hy]
+  _ = pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) u x :=
+    lieBracketWithin_pullbackWithin (hf.congr_set hus.symm) (h'f.congr_set hus.symm)
       hV hW hu hx hst
   _ = pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) s x := by
     simp only [pullbackWithin]
@@ -1521,15 +1519,14 @@ variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] [Comp
 /- The Lie bracket of vector fields on manifolds is well defined, i.e., it is invariant under
 diffeomorphisms. Auxiliary version where one assumes that all relevant sets are contained
 in chart domains. -/
-lemma key_aux [CompleteSpace E']
+private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
     {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : Set M} {t : Set M'}
     (hV : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) t (f x₀))
     (hW : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (W x : TangentBundle I' M')) t (f x₀))
     (hu : UniqueMDiffOn I s) (hf : ContMDiffOn I I' 2 f s) (hx₀ : x₀ ∈ s)
     (ht : t ⊆ (extChartAt I' (f x₀)).source) (hst : MapsTo f s t)
-    (hsymm : IsSymmSndFDerivWithinAt 𝕜
-      (((extChartAt I' (f x₀)) ∘ f) ∘ ↑(extChartAt I x₀).symm)
-          ((extChartAt I x₀).symm ⁻¹' s ∩ range I)) (extChartAt I x₀ x₀)) :
+    (hsymm : IsSymmSndFDerivWithinAt 𝕜 ((extChartAt I' (f x₀)) ∘ f ∘ (extChartAt I x₀).symm)
+      ((extChartAt I x₀).symm ⁻¹' s ∩ range I) (extChartAt I x₀ x₀)) :
     mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
       mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
   have A : (extChartAt I x₀).symm (extChartAt I x₀ x₀) = x₀ := by simp
@@ -1654,18 +1651,14 @@ lemma key_aux [CompleteSpace E']
 
 /- The Lie bracket of vector fields on manifolds is well defined, i.e., it is invariant under
 diffeomorphisms. -/
-lemma key {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : Set M} {t : Set M'}
+lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
+    {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : Set M} {t : Set M'}
     (hV : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) t (f x₀))
     (hW : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (W x : TangentBundle I' M')) t (f x₀))
     (hu : UniqueMDiffOn I s) (hf : ContMDiffWithinAt I I' 2 f s x₀) (hx₀ : x₀ ∈ s)
     (hst : MapsTo f s t)
-    (hsymm : ∀ (v w : E),
-      fderivWithin 𝕜 (fderivWithin 𝕜 (((extChartAt I' (f x₀)) ∘ f) ∘ ↑(extChartAt I x₀).symm)
-          ((extChartAt I x₀).symm ⁻¹' s ∩ range I))
-          ((extChartAt I x₀).symm ⁻¹' s ∩ range I) (extChartAt I x₀ x₀) v w =
-      fderivWithin 𝕜 (fderivWithin 𝕜 (((extChartAt I' (f x₀)) ∘ f) ∘ ↑(extChartAt I x₀).symm)
-          ((extChartAt I x₀).symm ⁻¹' s ∩ range I))
-          ((extChartAt I x₀).symm ⁻¹' s ∩ range I) (extChartAt I x₀ x₀) w v) :
+    (hsymm : IsSymmSndFDerivWithinAt 𝕜 ((extChartAt I' (f x₀)) ∘ f ∘ (extChartAt I x₀).symm)
+      ((extChartAt I x₀).symm ⁻¹' s ∩ range I) (extChartAt I x₀ x₀)) :
     mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
       mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
   have A : (extChartAt I x₀).symm (extChartAt I x₀ x₀) = x₀ := by simp
@@ -1713,18 +1706,17 @@ lemma key {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : 
   _ = mpullbackWithin I I' f (mlieBracketWithin I' V W t') s' x₀ := by
     simp only [mpullbackWithin, ht', mlieBracketWithin_inter (extChartAt_source_mem_nhds I' (f x₀))]
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s') (mpullbackWithin I I' f W s') s' x₀ := by
-    apply key_aux (t := t') (hV.mono inter_subset_left) (hW.mono inter_subset_left)
-      (hu.inter u_open) u_smooth ⟨hx₀, x₀u⟩ inter_subset_right  (fun y hy ↦ ⟨hst hy.1, maps_u hy⟩)
-    have : ((extChartAt I x₀).symm ⁻¹' (s ∩ u) ∩ range I : Set E) =ᶠ[𝓝 (extChartAt I x₀ x₀)]
-        ((extChartAt I x₀).symm ⁻¹' s ∩ range I : Set E) := by
-      have : (extChartAt I x₀).symm ⁻¹' u ∈ 𝓝 (extChartAt I x₀ x₀) := by
-        apply (continuousAt_extChartAt_symm I x₀).preimage_mem_nhds
-        apply u_open.mem_nhds (by simpa using x₀u)
-      filter_upwards [this] with y hy
-      change (y ∈ (extChartAt I x₀).symm ⁻¹' (s ∩ u) ∩ range I) =
-        (y ∈ (extChartAt I x₀).symm ⁻¹' s ∩ range I)
-      simp [-extChartAt, hy]
-    simp only [fderivWithin_fderivWithin_eq_of_eventuallyEq this, hsymm, implies_true]
+    apply mpullbackWithin_mlieBracketWithin_aux (t := t') (hV.mono inter_subset_left)
+      (hW.mono inter_subset_left) (hu.inter u_open) u_smooth ⟨hx₀, x₀u⟩ inter_subset_right
+      (fun y hy ↦ ⟨hst hy.1, maps_u hy⟩)
+    apply hsymm.congr_set
+    have : (extChartAt I x₀).symm ⁻¹' u ∈ 𝓝 (extChartAt I x₀ x₀) := by
+      apply (continuousAt_extChartAt_symm I x₀).preimage_mem_nhds
+      apply u_open.mem_nhds (by simpa using x₀u)
+    filter_upwards [this] with y hy
+    change (y ∈ (extChartAt I x₀).symm ⁻¹' s ∩ range I) =
+      (y ∈ (extChartAt I x₀).symm ⁻¹' (s ∩ u) ∩ range I)
+    simp [-extChartAt, hy]
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s') (mpullbackWithin I I' f W s') s x₀ := by
     simp only [hs', mlieBracketWithin_inter u_mem]
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
@@ -1735,6 +1727,23 @@ lemma key {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : 
     · apply nhdsWithin_le_nhds
       filter_upwards [mfderivWithin_eventually_congr_set (I := I) (I' := I') (f := f) s'_eq]
         with y hy using by simp [mpullbackWithin, hy]
+
+open Filter
+
+lemma mpullbackWithin_mlieBracketWithin [IsRCLikeNormedField 𝕜]
+    {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : Set M} {t : Set M'}
+    (hV : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) t (f x₀))
+    (hW : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (W x : TangentBundle I' M')) t (f x₀))
+    (hu : UniqueMDiffOn I s) (hf : ContMDiffWithinAt I I' 2 f s x₀) (hx₀ : x₀ ∈ s)
+    (hst : MapsTo f s t) (h'x₀ : x₀ ∈ closure (interior s)) :
+    mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
+      mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
+  apply mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt hV hW hu hf hx₀ hst
+  have : ((extChartAt I x₀).symm ⁻¹' s ∩ range I : Set E) =ᶠ[𝓝 (extChartAt I x₀ x₀)]
+      ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target : Set E) := by
+    apply EventuallyEq.inter (by rfl)
+    symm
+
 
 end VectorField
 
