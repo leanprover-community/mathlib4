@@ -35,6 +35,7 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
   all linear maps `f : N → N'`, `f = 0` iff `M ⊗ f = 0`.
 - `Module.FaithfullyFlat.iff_zero_iff_rTensor_zero`: an `R`-module `M` is faithfully flat iff for
   all linear maps `f : N → N'`, `f = 0` iff `f ⊗ M = 0`.
+
 - `Module.FaithfullyFlat.of_linearEquiv`: modules linearly equivalent to a flat modules are flat
 - `Module.FaithfullyFlat.comp`: if `S` is `R`-faithfully flat and `M` is `S`-faithfully flat, then
   `M` is `R`-faithfully flat.
@@ -355,10 +356,9 @@ section linearMap
 /--
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `id ⊗ f = 0`, if and only
 if  `f = 0`. -/
-lemma implies_zero_iff_lTensor_zero {N N' : Type*}
-    [AddCommGroup N] [Module R N]
-    [AddCommGroup N'] [Module R N']
-    [h: FaithfullyFlat R M] (f : N →ₗ[R] N') :
+lemma zero_iff_lTensor_zero [h: FaithfullyFlat R M]
+    {N : Type*} [AddCommGroup N] [Module R N]
+    {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N') :
     f = 0 ↔  LinearMap.lTensor M f = 0 :=
   ⟨fun hf => hf.symm ▸ LinearMap.lTensor_zero M, fun hf => by
     have := lTensor_reflects_exact R M f LinearMap.id (by
@@ -371,12 +371,12 @@ lemma implies_zero_iff_lTensor_zero {N N' : Type*}
 /--
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `f ⊗ id = 0`, if and only
 if  `f = 0`. -/
-lemma implies_zero_iff_rTensor_zero {N N' : Type*}
-    [AddCommGroup N] [Module R N]
-    [AddCommGroup N'] [Module R N']
-    [h: FaithfullyFlat R M] (f : N →ₗ[R] N') :
+lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
+    {N : Type*} [AddCommGroup N] [Module R N]
+    {N' : Type*} [AddCommGroup N'] [Module R N']
+    (f : N →ₗ[R] N') :
     f = 0 ↔  LinearMap.rTensor M f = 0 :=
-  implies_zero_iff_lTensor_zero R M f |>.trans
+  zero_iff_lTensor_zero R M f |>.trans
   ⟨fun h => by ext n m; exact (TensorProduct.comm R N' M).injective <|
     (by simpa using congr($h (m ⊗ₜ n))), fun h => by
     ext m n; exact (TensorProduct.comm R M N').injective <| (by simpa using congr($h (n ⊗ₜ m)))⟩
@@ -388,9 +388,10 @@ An `R`-module `M` is faithfully flat iff it is flat and for all linear maps `f`,
 lemma iff_zero_iff_lTensor_zero :
     FaithfullyFlat R M ↔
     (Module.Flat R M ∧
-      (∀ {N N': Type max u v} [AddCommGroup N] [Module R N] [AddCommGroup N'] [Module R N']
-      (f : N →ₗ[R] N'), f.lTensor M = 0 ↔ f = 0)):=
-  ⟨fun fl => ⟨inferInstance, fun f => implies_zero_iff_lTensor_zero R M f |>.symm⟩,
+      (∀ {N : Type max u v} [AddCommGroup N] [Module R N]
+        {N' : Type max u v} [AddCommGroup N'] [Module R N']
+        (f : N →ₗ[R] N'), f.lTensor M = 0 ↔ f = 0)):=
+  ⟨fun fl => ⟨inferInstance, fun f => zero_iff_lTensor_zero R M f |>.symm⟩,
     fun ⟨flat, Z⟩ => iff_flat_and_lTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ => by
       have := Z (LinearMap.id : N →ₗ[R] N) |>.1 (by ext; exact Subsingleton.elim _ _)
       rw [subsingleton_iff_forall_eq 0]
@@ -402,9 +403,10 @@ An `R`-module `M` is faithfully flat iff it is flat and for all linear maps `f`,
 lemma iff_zero_iff_rTensor_zero :
     FaithfullyFlat R M ↔
     (Module.Flat R M ∧
-      (∀ ⦃N N': Type max u v⦄ [AddCommGroup N] [Module R N] [AddCommGroup N'] [Module R N']
-      (f : N →ₗ[R] N'), f.rTensor M = 0 ↔ (f = 0))):=
-  ⟨fun fl => ⟨inferInstance, fun N N' _ _ _ _ f => implies_zero_iff_rTensor_zero R M f |>.symm⟩,
+      (∀ {N : Type max u v} [AddCommGroup N] [Module R N]
+        {N' : Type max u v} [AddCommGroup N'] [Module R N']
+        (f : N →ₗ[R] N'), f.rTensor M = 0 ↔ (f = 0))):=
+  ⟨fun fl => ⟨inferInstance, fun f => zero_iff_rTensor_zero R M f |>.symm⟩,
     fun ⟨flat, Z⟩ => iff_flat_and_rTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ => by
       have := Z (LinearMap.id : N →ₗ[R] N) |>.1 (by ext; exact Subsingleton.elim _ _)
       rw [subsingleton_iff_forall_eq 0]
@@ -449,7 +451,7 @@ as an `R`-module. -/
 theorem comp  :
     FaithfullyFlat R M := by
   rw [iff_zero_iff_lTensor_zero]
-  refine ⟨Module.Flat.comp R S M, @fun N N' _ _ _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
+  refine ⟨Module.Flat.comp R S M, @fun N _ _ N' _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
   let e1 : M ⊗[S] (S ⊗[R] N') →ₗ[S] (M ⊗[R] N') := AlgebraTensorModule.cancelBaseChange R S S M N'
   let e1.symm := (AlgebraTensorModule.cancelBaseChange R S S M N').symm
   let e2 : (M ⊗[R] N) →ₗ[S] M ⊗[S] (S ⊗[R] N) :=
@@ -465,7 +467,7 @@ theorem comp  :
     rw [aux] at h; rwa [← DFunLike.coe_fn_eq] at h ⊢
   have g1: fS = 0 := by
     simp only [g.symm ▸ h1, zero_comp, comp_zero]
-  rw [implies_zero_iff_lTensor_zero (R:= R) (M := S) f]
+  rw [zero_iff_lTensor_zero (R:= R) (M := S) f]
   have h3: lTensor S f = 0 ↔
       TensorProduct.AlgebraTensorModule.map (R:= R) (A:= S) (M:= S) LinearMap.id f = 0 := by
     have res : restrictScalars (R:= R) (S:= S)
@@ -475,7 +477,7 @@ theorem comp  :
       simp only [AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars,
         AlgebraTensorModule.map_tmul, id_coe, id_eq, lTensor_tmul]
     exact ⟨res ▸ fun h => by ext; simp [h], res ▸ fun h => by ext; simp [h]⟩
-  rwa [h3, implies_zero_iff_lTensor_zero (R:= S) (M := M) (N:= S ⊗ N) (N':= S ⊗ N')
+  rwa [h3, zero_iff_lTensor_zero (R:= S) (M := M) (N:= S ⊗ N) (N':= S ⊗ N')
     (AlgebraTensorModule.map LinearMap.id f)]
 
 end comp
