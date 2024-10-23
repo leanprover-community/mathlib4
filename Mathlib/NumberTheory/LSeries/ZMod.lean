@@ -294,6 +294,11 @@ noncomputable def completedLFunction (Φ : ZMod N → ℂ) (s : ℂ) : ℂ :=
 @[simp] lemma completedLFunction_zero (s : ℂ) : completedLFunction (0 : ZMod N → ℂ) s = 0 := by
   simp only [completedLFunction, Pi.zero_apply, zero_mul, sum_const_zero, mul_zero, zero_add]
 
+lemma completedLFunction_const_mul (a : ℂ) (Φ : ZMod N → ℂ) (s : ℂ) :
+    completedLFunction (fun j ↦ a * Φ j) s = a * completedLFunction Φ s := by
+  simp only [completedLFunction, mul_add, mul_sum]
+  congr with i <;> ring
+
 lemma completedLFunction_def_even (hΦ : Φ.Even) (s : ℂ) :
     completedLFunction Φ s = N ^ (-s) * ∑ j, Φ j * completedHurwitzZetaEven (toAddCircle j) s := by
   suffices ∑ j, Φ j * completedHurwitzZetaOdd (toAddCircle j) s = 0 by

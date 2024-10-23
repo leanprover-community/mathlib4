@@ -222,8 +222,8 @@ lemma topologically_respectsIso
 we may check the corresponding properties on topological spaces. -/
 lemma topologically_isLocalAtTarget
     [(topologically P).RespectsIso]
-    (hP₂ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) (s : Set β),
-      P f → P (s.restrictPreimage f))
+    (hP₂ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) (s : Set β)
+      (_ : Continuous f) (_ : IsOpen s), P f → P (s.restrictPreimage f))
     (hP₃ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) {ι : Type u}
       (U : ι → TopologicalSpace.Opens β) (_ : iSup U = ⊤) (_ : Continuous f),
       (∀ i, P ((U i).carrier.restrictPreimage f)) → P f) :
@@ -231,11 +231,25 @@ lemma topologically_isLocalAtTarget
   apply IsLocalAtTarget.mk'
   · intro X Y f U hf
     simp_rw [topologically, morphismRestrict_base]
-    exact hP₂ f.base U.carrier hf
+    exact hP₂ f.base U.carrier f.base.2 U.2 hf
   · intro X Y f ι U hU hf
     apply hP₃ f.base U hU f.base.continuous fun i ↦ ?_
     rw [← morphismRestrict_base]
     exact hf i
+
+/-- A variant of `topologically_isLocalAtTarget`
+that takes one iff statement instead of two implications. -/
+lemma topologically_isLocalAtTarget'
+    [(topologically P).RespectsIso]
+    (hP : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) {ι : Type u}
+      (U : ι → TopologicalSpace.Opens β) (_ : iSup U = ⊤) (_ : Continuous f),
+      P f ↔ (∀ i, P ((U i).carrier.restrictPreimage f))) :
+    IsLocalAtTarget (topologically P) := by
+  refine topologically_isLocalAtTarget P ?_ (fun f _ U hU hU' ↦ (hP f U hU hU').mpr)
+  introv hf hs H
+  refine by simpa using (hP f (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ?_ hf).mp H ⟨1⟩
+  rw [← top_le_iff]
+  exact le_iSup (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ⟨0⟩
 
 end Topologically
 

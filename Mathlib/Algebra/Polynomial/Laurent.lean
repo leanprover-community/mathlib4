@@ -87,7 +87,6 @@ scoped[LaurentPolynomial] notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
 
 open LaurentPolynomial
 
--- Porting note (#5229): `ext` no longer applies `Finsupp.ext` automatically
 @[ext]
 theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
   Finsupp.ext h
@@ -206,16 +205,16 @@ theorem _root_.Polynomial.toLaurent_X : (toLaurent Polynomial.X : R[T;T⁻¹]) =
   have : (Polynomial.X : R[X]) = monomial 1 1 := by simp [← C_mul_X_pow_eq_monomial]
   simp [this, Polynomial.toLaurent_C_mul_T]
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem _root_.Polynomial.toLaurent_one : (Polynomial.toLaurent : R[X] → R[T;T⁻¹]) 1 = 1 :=
   map_one Polynomial.toLaurent
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem _root_.Polynomial.toLaurent_C_mul_eq (r : R) (f : R[X]) :
     toLaurent (Polynomial.C r * f) = C r * toLaurent f := by
   simp only [_root_.map_mul, Polynomial.toLaurent_C]
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem _root_.Polynomial.toLaurent_X_pow (n : ℕ) : toLaurent (X ^ n : R[X]) = T n := by
   simp only [map_pow, Polynomial.toLaurent_X, T_pow, mul_one]
 

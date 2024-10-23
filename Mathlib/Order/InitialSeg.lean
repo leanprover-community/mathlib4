@@ -289,6 +289,10 @@ theorem mem_range_of_rel [IsTrans β s] (f : r ≺i s) {a : α} {b : β} (h : s 
 @[deprecated mem_range_of_rel (since := "2024-09-21")]
 alias init := mem_range_of_rel
 
+theorem surjOn (f : r ≺i s) : Set.SurjOn f Set.univ { b | s b f.top } := by
+  intro b h
+  simpa using mem_range_of_rel_top _ h
+
 /-- A principal segment is in particular an initial segment. -/
 instance hasCoeInitialSeg [IsTrans β s] : Coe (r ≺i s) (r ≼i s) :=
   ⟨fun f => ⟨f.toRelEmbedding, fun _ _ => f.mem_range_of_rel⟩⟩
@@ -383,6 +387,9 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
     cases g
     have := RelEmbedding.coe_fn_injective ef; congr ⟩
 
+protected theorem eq [IsWellOrder β s] (f g : r ≺i s) (a) : f a = g a := by
+  rw [Subsingleton.elim f g]
+
 theorem top_eq [IsWellOrder γ t] (e : r ≃r s) (f : r ≺i t) (g : s ≺i t) : f.top = g.top := by
   rw [Subsingleton.elim f (PrincipalSeg.equivLT e g)]; rfl
 
@@ -460,20 +467,6 @@ protected theorem acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s
   (f : r ≼i s).acc a
 
 end PrincipalSeg
-
-/-- A relation is well-founded iff every principal segment of it is well-founded.
-
-In this lemma we use `Subrel` to indicate its principal segments because it's usually more
-convenient to use.
--/
-theorem wellFounded_iff_wellFounded_subrel {β : Type*} {s : β → β → Prop} [IsTrans β s] :
-    WellFounded s ↔ ∀ b, WellFounded (Subrel s { b' | s b' b }) := by
-  refine
-    ⟨fun wf b => ⟨fun b' => ((PrincipalSeg.ofElement _ b).acc b').mpr (wf.apply b')⟩, fun wf =>
-      ⟨fun b => Acc.intro _ fun b' hb' => ?_⟩⟩
-  let f := PrincipalSeg.ofElement s b
-  obtain ⟨b', rfl⟩ := f.mem_range_of_rel_top ((PrincipalSeg.ofElement_top s b).symm ▸ hb')
-  exact (f.acc b').mp ((wf b).apply b')
 
 theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} [IsTrans β s] :
     WellFounded s ↔ ∀ (α : Type u) (r : α → α → Prop) (_ : r ≺i s), WellFounded r :=

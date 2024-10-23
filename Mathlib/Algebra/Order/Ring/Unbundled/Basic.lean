@@ -751,8 +751,8 @@ lemma max_mul_mul_le_max_mul_max [PosMulMono α] [MulPosMono α] (b c : α) (ha 
     mul_le_mul (le_max_right a c) (le_max_right b d) hd (le_trans ha (le_max_left a c))
   max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)
 
-/-- Binary **arithmetic mean-geometric mean inequality** (aka AM-GM inequality) for linearly ordered
-commutative semirings. -/
+/-- Binary, squared, and division-free **arithmetic mean-geometric mean inequality**
+(aka AM-GM inequality) for linearly ordered commutative semirings. -/
 lemma two_mul_le_add_sq [ExistsAddOfLE α] [MulPosStrictMono α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· ≤ ·)]
     (a b : α) : 2 * a * b ≤ a ^ 2 + b ^ 2 := by
@@ -760,6 +760,19 @@ lemma two_mul_le_add_sq [ExistsAddOfLE α] [MulPosStrictMono α]
     using mul_add_mul_le_mul_add_mul (@min_le_max _ _ a b) (@min_le_max _ _ a b)
 
 alias two_mul_le_add_pow_two := two_mul_le_add_sq
+
+/-- Binary, squared, and division-free **arithmetic mean-geometric mean inequality**
+(aka AM-GM inequality) for linearly ordered commutative semirings. -/
+lemma four_mul_le_sq_add [ExistsAddOfLE α] [MulPosStrictMono α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· ≤ ·)]
+    (a b : α) : 4 * a * b ≤ (a + b) ^ 2 := by
+  calc 4 * a * b
+    _ = 2 * a * b + 2 * a * b := by rw [mul_assoc, two_add_two_eq_four.symm, add_mul, mul_assoc]
+    _ ≤ a ^ 2 + b ^ 2 + 2 * a * b := by gcongr; exact two_mul_le_add_sq _ _
+    _ = a ^ 2 + 2 * a * b + b ^ 2 := by rw [add_right_comm]
+    _ = (a + b) ^ 2 := (add_sq a b).symm
+
+alias four_mul_le_pow_two_add := four_mul_le_sq_add
 
 end LinearOrderedCommSemiring
 
