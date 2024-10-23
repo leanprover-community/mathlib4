@@ -10,8 +10,8 @@ import Mathlib.SetTheory.Ordinal.Enum
 /-!
 # Omega, aleph, and beth functions
 
-* The function `Ordinal.preOmega` enumerates the initial ordinals, i.e. the smallest ordinals with any
-  given cardinality. Thus `preOmega n = n`, `preOmega ω = ω`, `preOmega (ω + 1) = ω₁`, etc.
+* The function `Ordinal.preOmega` enumerates the initial ordinals, i.e. the smallest ordinals with
+  any given cardinality. Thus `preOmega n = n`, `preOmega ω = ω`, `preOmega (ω + 1) = ω₁`, etc.
   `Ordinal.omega` is the more standard function which skips over finite ordinals.
 * The function `Cardinal.preAleph` is an order isomorphism between ordinals and cardinals. Thus
   `preAleph n = n`, `preAleph ω = ℵ₀`, `preAleph (ω + 1) = ℵ₁`, etc. `Cardinal.aleph` is the more
@@ -93,7 +93,7 @@ def isInitialIso : {x // IsInitial x} ≃o Cardinal where
   right_inv x := card_ord x
   map_rel_iff' {a _} := a.2.card_le_card
 
-/-- The `preOmega` function gives the initial ordinals listed by their ordinal index.
+/-- The "pre-omega" function gives the initial ordinals listed by their ordinal index.
 `preOmega n = n`, `preOmega ω = ω`, `preOmega (ω + 1) = ω₁`, etc.
 
 For the more common omega function skipping over finite ordinals, see `Ordinal.omega`. -/
