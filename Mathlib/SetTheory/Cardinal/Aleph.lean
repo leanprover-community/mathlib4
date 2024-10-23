@@ -192,7 +192,7 @@ scoped notation "ω_ " => omega
 /-- `ω₁` is the first uncountable ordinal. -/
 scoped notation "ω₁" => ω_ 1
 
-theorem omega_eq_preOmega (o : Ordinal) : ω_ o = preOmega (ω + o) = :=
+theorem omega_eq_preOmega (o : Ordinal) : ω_ o = preOmega (ω + o) :=
   rfl
 
 theorem omega_strictMono : StrictMono omega :=
