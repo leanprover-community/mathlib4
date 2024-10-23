@@ -555,7 +555,7 @@ section Semiring
 
 variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [Nontrivial R]
 variable [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [ContinuousSqrt R] [StarOrderedRing R]
+variable [ContinuousSqrt R] [StarOrderedRing R] [NoZeroDivisors R]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [NonUnitalContinuousFunctionalCalculus R p]
@@ -637,7 +637,6 @@ lemma cfcₙ_le_iff (f g : R → R) (a : A) (hf : ContinuousOn f (σₙ R a) := 
   rw [cfcₙ_apply f a, cfcₙ_apply g a, cfcₙHom_le_iff (show p a from ha), ContinuousMapZero.le_def]
   simp
 
-omit [NoZeroDivisors R] in
 lemma cfcₙ_nonpos_iff (f : R → R) (a : A) (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac)
     (h0 : f 0 = 0 := by cfc_zero_tac) (ha : p a := by cfc_tac) :
     cfcₙ f a ≤ 0 ↔ ∀ x ∈ σₙ R a, f x ≤ 0 := by
