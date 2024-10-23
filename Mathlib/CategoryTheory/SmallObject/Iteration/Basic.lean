@@ -18,8 +18,8 @@ a functor `F : { i // i ≤ j } ⥤ C ⥤ C` equipped with the data
 which makes it the `i`th-iteration of `Φ` for all `i` such that `i ≤ j`.
 Under suitable assumptions on `C`, we shall show that this category
 `Iteration ε j` is equivalent to the punctual category (TODO).
-We shall study morphisms in this category, showing first that
-there is at most one morphism between two morphisms (done), and secondly,
+In this file, we show that the there is at most one morphism between
+two objects. In `SmallObject.Iteration.UniqueHom`, we shall show
 that there does always exist a unique morphism between
 two objects (TODO). Then, we shall show the existence of
 an object (TODO). In these proofs, which are all done using
@@ -173,7 +173,7 @@ lemma ext' {f g : Hom iter₁ iter₂} (h : f.natTrans = g.natTrans) : f = g := 
 
 attribute [local ext] ext'
 
-/-- The composition of morphisms in the category `Φ.Iteration ε j`. -/
+/-- The composition of morphisms in the category `Iteration ε j`. -/
 @[simps]
 def comp {iter₃ : Iteration ε j} (f : Hom iter₁ iter₂) (g : Hom iter₂ iter₃) :
     Hom iter₁ iter₃ where
