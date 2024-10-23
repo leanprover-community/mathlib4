@@ -906,6 +906,7 @@ import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Mathlib.AlgebraicGeometry.Spec
+import Mathlib.AlgebraicGeometry.SpreadingOut
 import Mathlib.AlgebraicGeometry.Stalk
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
