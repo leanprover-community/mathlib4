@@ -48,11 +48,10 @@ namespace Module.End
 theorem exists_hasEigenvalue_of_unifEigenspace_eq_top [Nontrivial M] {f : End R M} (k : ℕ∞)
     (hf : ⨆ μ, f.unifEigenspace μ k = ⊤) :
     ∃ μ, f.HasEigenvalue μ := by
-  by_contra! contra
-  suffices ∀ μ, f.unifEigenspace μ k = ⊥ by simp [this] at hf
-  contrapose! contra
-  peel contra with μ hμ
-  exact HasUnifEigenvalue.lt zero_lt_one hμ
+  suffices ∃ μ, f.HasUnifEigenvalue μ k by
+    peel this with μ hμ
+    exact HasUnifEigenvalue.lt zero_lt_one hμ
+  simp [HasUnifEigenvalue, ← not_forall, ← iSup_eq_bot, hf]
 
 @[deprecated exists_hasEigenvalue_of_unifEigenspace_eq_top (since := "2024-10-11")]
 theorem exists_hasEigenvalue_of_iSup_genEigenspace_eq_top [Nontrivial M] {f : End R M}
@@ -187,7 +186,7 @@ theorem inf_iSup_unifEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x �
     have hl₀ : ((f - algebraMap K (End K V) μ') ^ l₀) (m μ') = 0 := by
       rw [← LinearMap.mem_ker, Algebra.algebraMap_eq_smul_one, ← End.mem_unifEigenspace_nat]
       simp_rw [← End.mem_unifEigenspace_nat] at hl
-      suffices (l μ' : ℕ∞) ≤ l₀ by exact (f.unifEigenspace μ').mono this (hl μ')
+      suffices (l μ' : ℕ∞) ≤ l₀ from (f.unifEigenspace μ').mono this (hl μ')
       simpa only [Nat.cast_le] using Finset.le_sup hμ'
     have : _ = g := (m.support.erase μ).noncommProd_erase_mul (Finset.mem_erase.mpr ⟨hμμ', hμ'⟩)
       (fun μ ↦ (f - algebraMap K (End K V) μ) ^ l₀) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)

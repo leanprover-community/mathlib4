@@ -97,9 +97,9 @@ theorem supIndep_iff_disjoint_erase [DecidableEq ι] :
 theorem supIndep_antimono_fun {g : ι → α} (h : ∀ x ∈ s, f x ≤ g x) (h : s.SupIndep g) :
     s.SupIndep f := by
   classical
-  induction s using Finset.induction_on
-  case empty => apply Finset.supIndep_empty
-  case insert i s his IH hle =>
+  induction s using Finset.induction_on with
+  | empty => apply Finset.supIndep_empty
+  | @insert i s his IH hle =>
   rw [Finset.supIndep_iff_disjoint_erase] at h ⊢
   intro j hj
   simp_all only [Finset.mem_insert, or_true, implies_true, true_implies, forall_eq_or_imp,
