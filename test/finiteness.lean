@@ -1,6 +1,7 @@
+import Mathlib.Tactic.Finiteness
 import Mathlib.Data.ENNReal.Operations
 
-/-! ## Tests -/
+open scoped ENNReal
 
 example : (1:ℝ≥0∞) < ∞ := by finiteness
 example : (3:ℝ≥0∞) ≠ ∞ := by finiteness

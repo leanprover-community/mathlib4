@@ -29,4 +29,4 @@ macro (name := finiteness) "finiteness" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop $c*
     (config := { introsTransparency? := some .reducible, terminal := true, enableSimp := false })
-    (rule_sets := [$(Lean.mkIdent `Finiteness):ident, -default, -builtin]))
+    (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
