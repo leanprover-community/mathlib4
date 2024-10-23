@@ -80,21 +80,17 @@ theorem le_cof {r : α → α → Prop} [IsRefl α r] (c : Cardinal) :
 end Order
 
 theorem RelIso.cof_le_lift {α : Type u} {β : Type v} {r : α → α → Prop} {s} [IsRefl β s]
-    (f : r ≃r s) : Cardinal.lift.{max u v} (Order.cof r) ≤
-    Cardinal.lift.{max u v} (Order.cof s) := by
-  rw [Order.cof, Order.cof, lift_sInf, lift_sInf,
-    le_csInf_iff'' ((Order.cof_nonempty s).image _)]
+    (f : r ≃r s) : Cardinal.lift.{v} (Order.cof r) ≤ Cardinal.lift.{u} (Order.cof s) := by
+  rw [Order.cof, Order.cof, lift_sInf, lift_sInf, le_csInf_iff'' ((Order.cof_nonempty s).image _)]
   rintro - ⟨-, ⟨u, H, rfl⟩, rfl⟩
   apply csInf_le'
-  refine
-    ⟨_, ⟨f.symm '' u, fun a => ?_, rfl⟩,
-      lift_mk_eq.{u, v, max u v}.2 ⟨(f.symm.toEquiv.image u).symm⟩⟩
+  refine ⟨_, ⟨f.symm '' u, fun a => ?_, rfl⟩, lift_mk_eq'.2 ⟨(f.symm.toEquiv.image u).symm⟩⟩
   rcases H (f a) with ⟨b, hb, hb'⟩
   refine ⟨f.symm b, mem_image_of_mem _ hb, f.map_rel_iff.1 ?_⟩
   rwa [RelIso.apply_symm_apply]
 
 theorem RelIso.cof_eq_lift {α : Type u} {β : Type v} {r s} [IsRefl α r] [IsRefl β s] (f : r ≃r s) :
-    Cardinal.lift.{max u v} (Order.cof r) = Cardinal.lift.{max u v} (Order.cof s) :=
+    Cardinal.lift.{v} (Order.cof r) = Cardinal.lift.{u} (Order.cof s) :=
   (RelIso.cof_le_lift f).antisymm (RelIso.cof_le_lift f.symm)
 
 theorem RelIso.cof_le {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
@@ -125,19 +121,11 @@ namespace Ordinal
   `∀ a, ∃ b ∈ S, a ≤ b`. It is defined for all ordinals, but
   `cof 0 = 0` and `cof (succ o) = 1`, so it is only really
   interesting on limit ordinals (when it is an infinite cardinal). -/
-def cof (o : Ordinal.{u}) : Cardinal.{u} :=
-  o.liftOn (fun a => StrictOrder.cof a.r)
-    (by
-      rintro ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨⟨f, hf⟩⟩
-      haveI := wo₁; haveI := wo₂
-      dsimp only
-      apply @RelIso.cof_eq _ _ _ _ ?_ ?_
-      · constructor
-        exact @fun a b => not_iff_not.2 hf
-      · dsimp only [swap]
-        exact ⟨fun _ => irrefl _⟩
-      · dsimp only [swap]
-        exact ⟨fun _ => irrefl _⟩)
+def cof (o : Ordinal.{u}) : Cardinal.{u} := by
+  refine o.liftOn (fun a => StrictOrder.cof a.r) ?_
+  rintro ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨⟨f, hf⟩⟩
+  refine @RelIso.cof_eq _ _ _ _ ?_ ?_ ⟨_, not_iff_not.2 hf⟩ <;>
+  exact ⟨fun _ => irrefl _⟩
 
 theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = StrictOrder.cof r :=
   rfl
@@ -207,7 +195,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     sInf { a : Cardinal | ∃ (ι : Type u) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = a } := by
   refine le_antisymm (le_csInf (cof_lsub_def_nonempty o) ?_) (csInf_le' ?_)
   · rintro a ⟨ι, f, hf, rfl⟩
-    rw [← type_lt o]
+    rw [← type_toType o]
     refine
       (cof_type_le fun a => ?_).trans
         (@mk_le_of_injective _ _
@@ -221,7 +209,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     simp_rw [← hf, lt_lsub_iff] at this
     cases' this with i hi
     refine ⟨enum (α := o.toType) (· < ·) ⟨f i, ?_⟩, ?_, ?_⟩
-    · rw [type_lt, ← hf]
+    · rw [type_toType, ← hf]
       apply lt_lsub
     · rw [mem_preimage, typein_enum]
       exact mem_range_self i
@@ -229,8 +217,8 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
   · rcases cof_eq (α := o.toType) (· < ·) with ⟨S, hS, hS'⟩
     let f : S → Ordinal := fun s => typein LT.lt s.val
     refine ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self (o := o) i)
-      (le_of_forall_lt fun a ha => ?_), by rwa [type_lt o] at hS'⟩
-    rw [← type_lt o] at ha
+      (le_of_forall_lt fun a ha => ?_), by rwa [type_toType o] at hS'⟩
+    rw [← type_toType o] at ha
     rcases hS (enum (· < ·) ⟨a, ha⟩) with ⟨b, hb, hb'⟩
     rw [← typein_le_typein, typein_enum] at hb'
     exact hb'.trans_lt (lt_lsub.{u, u} f ⟨b, hb⟩)
@@ -677,7 +665,7 @@ theorem aleph'_cof {o : Ordinal} (ho : o.IsLimit) : (aleph' o).ord.cof = o.cof :
   aleph'_isNormal.cof_eq ho
 
 @[simp]
-theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (aleph o).ord.cof = o.cof :=
+theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (ℵ_ o).ord.cof = o.cof :=
   aleph_isNormal.cof_eq ho
 
 @[simp]
@@ -827,7 +815,7 @@ set_option linter.deprecated false in
 theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
   ⟨H.ne_zero, H.isSuccPrelimit⟩
 
-theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (beth o) := by
+theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
   rcases eq_or_ne o 0 with (rfl | h)
   · rw [beth_zero]
     exact isStrongLimit_aleph0
@@ -934,7 +922,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         · rw [← lt_succ_iff, ← lt_ord, ← αe, re]
           apply typein_lt_type)⟩
 
-theorem isRegular_aleph_one : IsRegular (aleph 1) := by
+theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
   exact isRegular_succ le_rfl
 
@@ -942,7 +930,7 @@ theorem isRegular_aleph'_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (aleph' (
   rw [aleph'_succ]
   exact isRegular_succ (aleph0_le_aleph'.2 h)
 
-theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (aleph (succ o)) := by
+theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) := by
   rw [aleph_succ]
   exact isRegular_succ (aleph0_le_aleph o)
 

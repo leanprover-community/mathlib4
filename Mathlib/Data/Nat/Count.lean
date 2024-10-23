@@ -36,7 +36,7 @@ theorem count_zero : count p 0 = 0 := by
 
 /-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in locale `count` -/
 def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } := by
-  apply Fintype.ofFinset ((Finset.range n).filter p)
+  apply Fintype.ofFinset {x ∈ range n | p x}
   intro x
   rw [mem_filter, mem_range]
   rfl
@@ -45,7 +45,7 @@ scoped[Count] attribute [instance] Nat.CountSet.fintype
 
 open Count
 
-theorem count_eq_card_filter_range (n : ℕ) : count p n = ((range n).filter p).card := by
+theorem count_eq_card_filter_range (n : ℕ) : count p n = #{x ∈ range n | p x} := by
   rw [count, List.countP_eq_length_filter]
   rfl
 
@@ -62,7 +62,7 @@ theorem count_monotone : Monotone (count p) :=
   monotone_nat_of_le_succ fun n ↦ by by_cases h : p n <;> simp [count_succ, h]
 
 theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p (a + k)) b := by
-  have : Disjoint ((range a).filter p) (((range b).map <| addLeftEmbedding a).filter p) := by
+  have : Disjoint {x ∈ range a | p x} {x ∈ (range b).map <| addLeftEmbedding a | p x} := by
     apply disjoint_filter_filter
     rw [Finset.disjoint_left]
     simp_rw [mem_map, mem_range, addLeftEmbedding_apply]
@@ -114,11 +114,11 @@ theorem count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = cou
   · exact this hn hm heq.symm h.symm (h.lt_or_lt.resolve_left hmn)
   · simpa [heq] using count_strict_mono hm hmn
 
-theorem count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ hp.toFinset.card := by
+theorem count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ #hp.toFinset := by
   rw [count_eq_card_filter_range]
   exact Finset.card_mono fun x hx ↦ hp.mem_toFinset.2 (mem_filter.1 hx).2
 
-theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n < hp.toFinset.card :=
+theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n < #hp.toFinset :=
   (count_lt_count_succ_iff.2 hpn).trans_le (count_le_card hp _)
 
 theorem count_of_forall {n : ℕ} (hp : ∀ n' < n, p n') : count p n = n := by
