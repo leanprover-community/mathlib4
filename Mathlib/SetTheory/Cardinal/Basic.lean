@@ -3,14 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Cardinal Numbers
@@ -258,8 +259,6 @@ theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
   lift_id'.{u, u} a
 
 /-- A cardinal lifted to the zero universe equals itself. -/
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
   lift_id'.{0, u} a
 
@@ -540,12 +539,8 @@ instance commSemiring : CommSemiring Cardinal.{u} where
 theorem one_power {a : Cardinal} : (1 : Cardinal) ^ a = 1 :=
   inductionOn a fun _ => mk_eq_one _
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_bool : #Bool = 2 := by simp
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_Prop : #Prop = 2 := by simp
 
 @[simp]
@@ -1274,8 +1269,6 @@ theorem lift_eq_aleph0 {c : Cardinal.{u}} : lift.{v} c = ℵ₀ ↔ c = ℵ₀ :
 
 /-! ### Properties about the cast from `ℕ` -/
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_fin (n : ℕ) : #(Fin n) = n := by simp
 
 @[simp]
@@ -1388,21 +1381,15 @@ theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α :
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 
--- Porting note (#11119): was `simp`. LHS is not normal form.
--- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
   induction n <;> simp [pow_succ, power_add, *, Pow.pow]
 
--- porting note (#10618): simp can prove this
--- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := by
   rw [← lift_mk_fin, ← lift_mk_fin, lift_le, le_def, Function.Embedding.nonempty_iff_card_le,
     Fintype.card_fin, Fintype.card_fin]
 
--- porting note (#10618): simp can prove this
--- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := by
   rw [lt_iff_le_not_le, ← not_le]
@@ -1568,8 +1555,6 @@ theorem lt_aleph0_iff_fintype {α : Type u} : #α < ℵ₀ ↔ Nonempty (Fintype
 theorem lt_aleph0_of_finite (α : Type u) [Finite α] : #α < ℵ₀ :=
   lt_aleph0_iff_finite.2 ‹_›
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem lt_aleph0_iff_set_finite {S : Set α} : #S < ℵ₀ ↔ S.Finite :=
   lt_aleph0_iff_finite.trans finite_coe_iff
 
@@ -1586,8 +1571,6 @@ theorem mk_le_aleph0_iff : #α ≤ ℵ₀ ↔ Countable α := by
 theorem mk_le_aleph0 [Countable α] : #α ≤ ℵ₀ :=
   mk_le_aleph0_iff.mpr ‹_›
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem le_aleph0_iff_set_countable {s : Set α} : #s ≤ ℵ₀ ↔ s.Countable := mk_le_aleph0_iff
 
 alias ⟨_, _root_.Set.Countable.le_aleph0⟩ := le_aleph0_iff_set_countable
@@ -1690,8 +1673,6 @@ theorem denumerable_iff {α : Type u} : Nonempty (Denumerable α) ↔ #α = ℵ�
     cases' Quotient.exact h with f
     exact ⟨Denumerable.mk' <| f.trans Equiv.ulift⟩⟩
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_denumerable (α : Type u) [Denumerable α] : #α = ℵ₀ :=
   denumerable_iff.1 ⟨‹_›⟩
 
@@ -1759,36 +1740,24 @@ theorem mk_pNat : #ℕ+ = ℵ₀ :=
 
 /-! ### Cardinalities of basic sets and types -/
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_empty : #Empty = 0 :=
   mk_eq_zero _
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_pempty : #PEmpty = 0 :=
   mk_eq_zero _
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_punit : #PUnit = 1 :=
   mk_eq_one PUnit
 
 theorem mk_unit : #Unit = 1 :=
   mk_punit
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_singleton {α : Type u} (x : α) : #({x} : Set α) = 1 :=
   mk_eq_one _
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_plift_true : #(PLift True) = 1 :=
   mk_eq_one _
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_plift_false : #(PLift False) = 0 :=
   mk_eq_zero _
 
@@ -1811,8 +1780,6 @@ theorem mk_subtype_le_of_subset {α : Type u} {p q : α → Prop} (h : ∀ ⦃x�
     #(Subtype p) ≤ #(Subtype q) :=
   ⟨Embedding.subtypeMap (Embedding.refl α) h⟩
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
   mk_eq_zero _
 

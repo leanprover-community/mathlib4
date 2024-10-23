@@ -379,7 +379,7 @@ theorem toFinsupp_monomial (n : ℕ) (r : R) : (monomial n r).toFinsupp = Finsup
 theorem ofFinsupp_single (n : ℕ) (r : R) : (⟨Finsupp.single n r⟩ : R[X]) = monomial n r := by
   simp [monomial]
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 :=
   (monomial n).map_zero
 
@@ -1028,7 +1028,7 @@ theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q
   -- Porting note: The last rule should be `apply`ed.
   rw [← ofFinsupp_sub, coeff, coeff, coeff]; apply Finsupp.sub_apply
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
   rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_cancel, monomial_zero_right]
 
