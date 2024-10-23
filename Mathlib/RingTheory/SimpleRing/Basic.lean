@@ -8,8 +8,6 @@ import Mathlib.RingTheory.SimpleRing.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Algebra.Ring.ULift
-import Mathlib.Data.ZMod.Defs
 
 /-! # Basic Properties of Simple rings
 
