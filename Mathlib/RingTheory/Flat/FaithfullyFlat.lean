@@ -361,7 +361,7 @@ lemma implies_zero_iff_lTensor_zero {N N' : Type*}
     [h: FaithfullyFlat R M] (f : N →ₗ[R] N') :
     f = 0 ↔  LinearMap.lTensor M f = 0 :=
   ⟨fun hf => hf.symm ▸ LinearMap.lTensor_zero M, fun hf => by
-    have := lTensor_reflects_exact R M N N' N' f LinearMap.id (by
+    have := lTensor_reflects_exact R M f LinearMap.id (by
       rw [LinearMap.exact_iff, hf, LinearMap.range_zero, LinearMap.ker_eq_bot]
       apply Module.Flat.lTensor_preserves_injective_linearMap
       exact fun _ _ h => h)
@@ -388,9 +388,9 @@ An `R`-module `M` is faithfully flat iff it is flat and for all linear maps `f`,
 lemma iff_zero_iff_lTensor_zero :
     FaithfullyFlat R M ↔
     (Module.Flat R M ∧
-      (∀ ⦃N N': Type max u v⦄ [AddCommGroup N] [Module R N] [AddCommGroup N'] [Module R N']
+      (∀ {N N': Type max u v} [AddCommGroup N] [Module R N] [AddCommGroup N'] [Module R N']
       (f : N →ₗ[R] N'), f.lTensor M = 0 ↔ f = 0)):=
-  ⟨fun fl => ⟨inferInstance, fun N N' _ _ _ _ f => implies_zero_iff_lTensor_zero R M f |>.symm⟩,
+  ⟨fun fl => ⟨inferInstance, fun f => implies_zero_iff_lTensor_zero R M f |>.symm⟩,
     fun ⟨flat, Z⟩ => iff_flat_and_lTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ => by
       have := Z (LinearMap.id : N →ₗ[R] N) |>.1 (by ext; exact Subsingleton.elim _ _)
       rw [subsingleton_iff_forall_eq 0]
@@ -449,7 +449,7 @@ as an `R`-module. -/
 theorem comp  :
     FaithfullyFlat R M := by
   rw [iff_zero_iff_lTensor_zero]
-  refine ⟨Module.Flat.comp R S M, fun N N' _ _ _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
+  refine ⟨Module.Flat.comp R S M, @fun N N' _ _ _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
   let e1 : M ⊗[S] (S ⊗[R] N') →ₗ[S] (M ⊗[R] N') := AlgebraTensorModule.cancelBaseChange R S S M N'
   let e1.symm := (AlgebraTensorModule.cancelBaseChange R S S M N').symm
   let e2 : (M ⊗[R] N) →ₗ[S] M ⊗[S] (S ⊗[R] N) :=
