@@ -7,6 +7,9 @@ import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Maps on modules and ideals
+
+Main definitions include `Ideal.map`, `Ideal.comap`, `RingHom.ker`, `Module.annihilator`
+and `Submodule.annihilator`.
 -/
 
 assert_not_exists Basis -- See `RingTheory.Ideal.Basis`
