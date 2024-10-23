@@ -13,6 +13,7 @@ import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Join
 
 /-!
 # Sums and products from lists
@@ -625,7 +626,6 @@ namespace MonoidHom
 protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map f).prod :=
   map_list_prod f l
 
-attribute [deprecated map_list_prod (since := "2023-01-10")] MonoidHom.map_list_prod
 attribute [deprecated map_list_sum (since := "2024-05-02")] AddMonoidHom.map_list_sum
 
 end MonoidHom

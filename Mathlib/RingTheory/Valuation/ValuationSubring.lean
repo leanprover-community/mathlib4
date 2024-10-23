@@ -646,7 +646,7 @@ theorem ker_unitGroupToResidueFieldUnits :
 theorem surjective_unitGroupToResidueFieldUnits :
     Function.Surjective A.unitGroupToResidueFieldUnits :=
   (LocalRing.surjective_units_map_of_local_ringHom _ Ideal.Quotient.mk_surjective
-        LocalRing.isLocalRingHom_residue).comp
+        LocalRing.isLocalHom_residue).comp
     (MulEquiv.surjective _)
 
 /-- The quotient of the unit group of `A` by the principal unit group of `A` agrees with

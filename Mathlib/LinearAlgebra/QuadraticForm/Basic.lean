@@ -161,11 +161,6 @@ instance instFunLike : FunLike (QuadraticMap R M N) M N where
   coe := toFun
   coe_injective' x y h := by cases x; cases y; congr
 
-/-- Helper instance for when there's too many metavariables to apply
-`DFunLike.hasCoeToFun` directly. -/
-instance : CoeFun (QuadraticMap R M N) fun _ => M → N :=
-  ⟨DFunLike.coe⟩
-
 variable (Q)
 
 /-- The `simp` normal form for a quadratic map is `DFunLike.coe`, not `toFun`. -/
@@ -334,7 +329,7 @@ theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
 
 protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
     Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i) +
-      ∑ ij in s.sym2.filter (¬ ·.IsDiag),
+      ∑ ij ∈ s.sym2 with ¬ ij.IsDiag,
         Sym2.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ ij := by
   induction s using Finset.cons_induction with
   | empty => simp

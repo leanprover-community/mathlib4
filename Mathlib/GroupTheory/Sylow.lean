@@ -414,9 +414,9 @@ end InfiniteSylow
 
 open Equiv Equiv.Perm Finset Function List QuotientGroup
 
-universe u v w
+universe u
 
-variable {G : Type u} {α : Type v} {β : Type w} [Group G]
+variable {G : Type u} [Group G]
 
 theorem QuotientGroup.card_preimage_mk (s : Subgroup G) (t : Set (G ⧸ s)) :
     Nat.card (QuotientGroup.mk ⁻¹' t) = Nat.card s * Nat.card t := by

@@ -437,7 +437,7 @@ instance (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso] :
     rintro ⟨U, hU : IsAffineOpen U⟩; dsimp
     haveI : IsAffine _ := hU.preimage_of_isIso e.hom
     rw [morphismRestrict_comp, P.cancel_right_of_respectsIso]
-    exact H ⟨(Opens.map e.hom.val.base).obj U, hU.preimage_of_isIso e.hom⟩
+    exact H ⟨(Opens.map e.hom.base).obj U, hU.preimage_of_isIso e.hom⟩
 
 /--
 `HasAffineProperty P Q` is a type class asserting that `P` is local at the target, and over affine
