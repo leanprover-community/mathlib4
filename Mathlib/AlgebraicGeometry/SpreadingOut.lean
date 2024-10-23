@@ -84,6 +84,33 @@ lemma Scheme.exists_le_and_germ_injective (X : Scheme.{u}) (x : X) [X.IsGermInje
   obtain ⟨f, hf, hxf⟩ := hU.exists_basicOpen_le ⟨x, hxV⟩ hx
   exact ⟨X.basicOpen f, hxf, hU.basicOpen f, hf, injective_germ_basicOpen U hU x hx f hxf H⟩
 
+instance (x : X) [X.IsGermInjectiveAt x] [IsOpenImmersion f] :
+    Y.IsGermInjectiveAt (f.base x) := by
+  obtain ⟨U, hxU, hU, H⟩ := X.exists_germ_injective x
+  refine ⟨⟨f ''ᵁ U, ⟨x, hxU, rfl⟩, hU.image_of_isOpenImmersion f, ?_⟩⟩
+  refine ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso _
+    (f.stalkMap x)).mp ?_
+  refine ((MorphismProperty.injective CommRingCat).cancel_left_of_respectsIso
+    (f.appIso U).inv _).mp ?_
+  simpa
+
+variable {f} in
+lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f]:
+    Y.IsGermInjectiveAt (f.base x) ↔ X.IsGermInjectiveAt x := by
+  refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
+  obtain ⟨U, hxU, hU, hU', H⟩ :=
+    Y.exists_le_and_germ_injective (f.base x) (V := f.opensRange) ⟨x, rfl⟩
+  obtain ⟨V, hV⟩ := (IsOpenImmersion.affineOpensEquiv f).surjective ⟨⟨U, hU⟩, hU'⟩
+  obtain rfl : f ''ᵁ V = U := Subtype.eq_iff.mp (Subtype.eq_iff.mp hV)
+  obtain ⟨y, hy, e : f.base y = f.base x⟩ := hxU
+  obtain rfl := f.isOpenEmbedding.inj e
+  refine ⟨V, hy, V.2, ?_⟩
+  replace H := ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso _
+    (f.stalkMap y)).mpr H
+  replace H := ((MorphismProperty.injective CommRingCat).cancel_left_of_respectsIso
+    (f.appIso V).inv _).mpr H
+  simpa using H
+
 /--
 The class of schemes such that for each `x : X`,
 `Γ(X, U) ⟶ X_x` is injective for some affine `U` containing `x`.
@@ -94,15 +121,9 @@ abbrev Scheme.IsGermInjective (X : Scheme.{u}) := ∀ x : X, X.IsGermInjectiveAt
 
 lemma Scheme.IsGermInjective.of_openCover
     {X : Scheme.{u}} (𝒰 : X.OpenCover) [∀ i, (𝒰.obj i).IsGermInjective] : X.IsGermInjective := by
-  refine fun x ↦ ⟨?_⟩
-  obtain ⟨y, e⟩ := 𝒰.covers x
-  obtain ⟨U, hyU, hU, hU'⟩ := (𝒰.obj (𝒰.f x)).exists_germ_injective y
-  refine ⟨𝒰.map (𝒰.f x) ''ᵁ U, ⟨y, hyU, e⟩, hU.image_of_isOpenImmersion _, ?_⟩
-  refine ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso
-    _ ((X.presheaf.stalkCongr (.of_eq e.symm)).hom ≫ (𝒰.map (𝒰.f x)).stalkMap y)).mp ?_
-  refine ((MorphismProperty.injective CommRingCat).cancel_left_of_respectsIso
-    ((𝒰.map (𝒰.f x)).appIso U).inv _).mp ?_
-  simpa
+  intro x
+  rw [← (𝒰.covers x).choose_spec]
+  infer_instance
 
 protected
 lemma Scheme.IsGermInjective.Spec
