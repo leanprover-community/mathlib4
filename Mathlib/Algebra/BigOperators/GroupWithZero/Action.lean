@@ -75,7 +75,7 @@ theorem smul_finprod' {ι : Sort*} [Finite ι] {f : ι → β} (r : α) :
 
 variable {G : Type*} [Group G] [MulDistribMulAction G β]
 
-theorem Finset.smul_prod_perm [Fintype G]  (b : β) (g : G) :
+theorem Finset.smul_prod_perm [Fintype G] (b : β) (g : G) :
     (g • ∏ h : G, h • b) = ∏ h : G, h • b := by
   simp only [smul_prod', smul_smul]
   exact Finset.prod_bijective (g * ·) (Group.mulLeft_bijective g) (by simp) (fun _ _ ↦ rfl)
