@@ -71,7 +71,11 @@ section Module
 
 variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
 
-/-- `1 : Submodule R A` is the submodule `R ∙ 1` of A. -/
+/-- `1 : Submodule R A` is the submodule `R ∙ 1` of A.
+TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
+once a version of `Algebra` without the `commutes'` field is introduced.
+See issue #18110.
+-/
 instance one : One (Submodule R A) :=
   ⟨LinearMap.range (LinearMap.toSpanSingleton R A 1)⟩
 
