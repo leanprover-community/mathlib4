@@ -28,8 +28,6 @@ initial segment (or, equivalently, in any way). This total order is well founded
 * `Ordinal.lift` lifts an ordinal in universe `u` to an ordinal in universe `max u v`.
   For a version registering additionally that this is an initial segment embedding, see
   `Ordinal.liftInitialSeg`.
-  For a version registering that it is a principal segment embedding if `u < v`, see
-  `Ordinal.liftPrincipalSeg`.
 * `Ordinal.omega0` or `ω` is the order type of `ℕ`. It is called this to match `Cardinal.aleph0`
   and so that the omega function can be named `Ordinal.omega`. This definition is universe
   polymorphic: `Ordinal.omega0.{u} : Ordinal.{u}` (contrast with `ℕ : Type`, which lives in
@@ -662,7 +660,6 @@ def liftInitialSeg : Ordinal.{v} ≤i Ordinal.{max u v} := by
 
 @[deprecated liftInitialSeg (since := "2024-09-21")]
 alias lift.initialSeg := liftInitialSeg
-
 
 -- The universe order on `liftInitialSeg` matches that on `lift`.
 @[simp]
