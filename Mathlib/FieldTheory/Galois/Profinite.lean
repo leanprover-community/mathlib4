@@ -157,7 +157,7 @@ noncomputable def homtoLimit : (K ≃ₐ[k] K) →*
     simp only [map_mul]
     rfl
 
-lemma restrict_eq (σ : K ≃ₐ[k] K) (x : K) (Lx : FiniteGaloisIntermediateField k K)
+private lemma restrict_eq (σ : K ≃ₐ[k] K) (x : K) (Lx : FiniteGaloisIntermediateField k K)
     (hLx : x ∈ Lx.toIntermediateField) : σ x = (AlgEquiv.restrictNormalHom Lx σ) ⟨x, hLx⟩ := by
   have := AlgEquiv.restrictNormal_commutes σ Lx ⟨x, hLx⟩
   convert this
