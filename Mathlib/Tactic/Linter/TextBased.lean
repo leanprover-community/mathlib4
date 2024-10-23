@@ -6,7 +6,6 @@ Authors: Michael Rothgang
 
 import Batteries.Data.String.Matcher
 import Mathlib.Data.Nat.Notation
-import Std.Data.HashMap.Basic
 
 /-!
 ## Text-based linters
