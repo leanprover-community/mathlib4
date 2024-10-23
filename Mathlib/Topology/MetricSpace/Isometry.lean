@@ -491,8 +491,7 @@ def piCongrLeft' {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι → Type*}
     [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y i) ≃ᵢ ∀ j, Y (e.symm j) :=
   mk (Equiv.piCongrLeft' _ e) (by
     intro x1 x2
-    simp_rw [PseudoEMetricSpace.toEDist, pseudoEMetricSpacePi, instEDistForall,
-      Finset.sup_univ_eq_iSup]
+    simp_rw [edist_pi_def, Finset.sup_univ_eq_iSup]
     exact (Equiv.iSup_comp (g := fun b ↦ edist (x1 b) (x2 b)) e.symm))
 
 /-- `Equiv.piCongrLeft` as an `IsometryEquiv`: this is the natural
@@ -507,21 +506,19 @@ def piCongrLeft {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι' → Type*}
 def sumArrowEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ) :=
   mk (Equiv.sumArrowEquivProdArrow _ _ _) (by
     intro
-    simp [PseudoEMetricSpace.toEDist, Prod.pseudoEMetricSpaceMax, pseudoEMetricSpacePi,
-      instEDistForall, Finset.sup_univ_eq_iSup, iSup_sum])
+    simp [Prod.edist_eq, edist_pi_def, Finset.sup_univ_eq_iSup, iSup_sum])
 
 lemma _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
     edist (Fin.append x y) (Fin.append x2 y2) = max (edist x x2) (edist y y2) := by
-  simp [instEDistForall, Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv),
-    Prod.pseudoEMetricSpaceMax, iSup_sum]
+  simp [edist_pi_def, Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv),
+    Prod.edist_eq, iSup_sum]
 
 /-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `(Fin (m + n) → α)`.-/
 @[simps!]
 def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃ᵢ (Fin (m + n) → α) :=
   mk (Fin.appendEquiv _ _) (by
     intro _ _
-    simp_rw [Fin.appendEquiv, Fin.edist_append_eq_max_edist, Prod.pseudoEMetricSpaceMax,
-      sup_eq_max])
+    simp_rw [Fin.appendEquiv, Fin.edist_append_eq_max_edist, Prod.edist_eq])
 
 variable (ι α)
 
