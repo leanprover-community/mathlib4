@@ -3,7 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.Algebra.Field.Subfield
+import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Basic
@@ -149,3 +149,10 @@ theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [Cont
       (iff_of_eq (iff_false _)).2 (hg_ne _)] at hy' ⊢ <;> assumption
 
 end Preconnected
+
+section ContinuousSMul
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+    [TopologicalSpace L] [TopologicalRing L] (M : IntermediateField K L)
+
+end ContinuousSMul
