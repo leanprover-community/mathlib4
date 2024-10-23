@@ -504,33 +504,33 @@ def Functor.toOplaxMonoidalFunctorOfChosenFiniteProducts : OplaxMonoidalFunctor 
   associativity X Y Z := by
     apply hom_ext
     case' h_snd => apply hom_ext
-    all_goals simp only [Category.assoc, associator_hom_fst, whiskerRight_fst_assoc,
-      ChosenFiniteProducts.prodComparison_fst, ChosenFiniteProducts.prodComparison_fst_assoc,
-      whiskerLeft_fst, associator_hom_snd_fst, associator_hom_snd_snd, whiskerRight_snd_assoc,
-      ChosenFiniteProducts.prodComparison_snd, ChosenFiniteProducts.prodComparison_snd_assoc,
-      whiskerLeft_snd, whiskerRight_snd, ← F.map_comp]
+    all_goals simp [← Functor.map_comp]      
   left_unitality X := by
     apply hom_ext
     · exact toUnit_unique _ _
     · simp only [leftUnitor_inv_snd, Category.assoc, whiskerRight_snd,
-      ChosenFiniteProducts.prodComparison_snd, ← F.map_comp, F.map_id]
+        ChosenFiniteProducts.prodComparison_snd, ← F.map_comp, F.map_id]
   right_unitality X := by
     apply hom_ext
     · simp only [rightUnitor_inv_fst, Category.assoc, whiskerLeft_fst,
-      ChosenFiniteProducts.prodComparison_fst, ← F.map_comp, F.map_id]
+        ChosenFiniteProducts.prodComparison_fst, ← F.map_comp, F.map_id]
     · exact toUnit_unique _ _
 
 variable [PreservesLimit (Functor.empty.{0} C) F]
   [PreservesLimitsOfShape (Discrete WalkingPair) F]
 
+instance : IsIso F.toOplaxMonoidalFunctorOfChosenFiniteProducts.η :=
+  terminalComparison_isIso_of_preservesLimits F
+
+instance (A B : C) : IsIso (F.toOplaxMonoidalFunctorOfChosenFiniteProducts.δ A B) :=
+  isIso_prodComparison_of_preservesLimit_pair F A B
+
 /-- If `F` preserves finite products, the oplax monoidal functor
 `F.toOplaxMonoidalFunctorOfChosenFiniteProducts` can be promoted to a strong monoidal functor. -/
 @[simps!]
 noncomputable def Functor.toMonoidalFunctorOfChosenFiniteProducts : MonoidalFunctor C D :=
-  @MonoidalFunctor.fromOplaxMonoidalFunctor _ _ _ _ _ _
+  MonoidalFunctor.fromOplaxMonoidalFunctor
     (toOplaxMonoidalFunctorOfChosenFiniteProducts F)
-    (terminalComparison_isIso_of_preservesLimits F)
-    (fun A B ↦ isIso_prodComparison_of_preservesLimit_pair F A B)
 
 instance [F.IsEquivalence] : F.toMonoidalFunctorOfChosenFiniteProducts.IsEquivalence := by
   assumption
