@@ -9,19 +9,10 @@ import Mathlib.Probability.Moments
 /-!
 # Hoeffding's lemma
 
-This file states Hoeffding's lemma. We introduce cumulant to complete the proof.
+This file states Hoeffding's lemma.
 
 ## Main results
 
-* `ProbabilityTheory.tilt_first_deriv`: derivation of `mgf X μ t` is
-  `μ[exp (t * X ω) * X ω]`. In order to deal with the differentiation of parametric integrals,
-`hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof.
-* `ProbabilityTheory.tilt_second_deriv`: derivation of `μ[fun ω ↦ rexp (t * X ω) * X ω]` is
-  `μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]`. In order to deal with the differentiation of
-  parametric integrals, `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof.
-* `ProbabilityTheory.cum_deriv_one`: first derivative of cumulant `cgf X μ t`.
-  It can be described by exponential tilting.
-* `ProbabilityTheory.cum_deriv_two`: second derivative of cumulant `cgf X μ t`.
 * `ProbabilityTheory.hoeffding`: Hoeffding's Lemma states that for a random variable `X` with
   `E[X] = 0` (zero mean) and `a ≤ X ≤ b` almost surely, the inequality
   `mgf X μ t ≤ exp (t^2 * (b - a)^2 / 8)` holds almost surely for all `t ∈ ℝ`.
