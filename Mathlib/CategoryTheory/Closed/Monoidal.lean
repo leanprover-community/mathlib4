@@ -348,7 +348,7 @@ lemma comp_eq (x y z : C) [Closed x] [Closed y] : comp x y z = curry (compTransp
 The proofs of associativity and unitality use the following outline:
   1. Take adjoint transpose on each side of the equality (uncurry_injective)
   2. Do whatever rewrites/simps are necessary to apply uncurry_curry
-  3. Conclude with simp (+ a possible exact)
+  3. Conclude with simp
 -/
 
 /-- Left unitality of the enriched structure -/
