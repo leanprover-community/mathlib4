@@ -75,8 +75,8 @@ def functorialityCounit :
 
 /-- The functor `Cocones.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)` is a left adjoint. -/
 def functorialityAdjunction : Cocones.functoriality K F ⊣ functorialityRightAdjoint adj K where
-unit := functorialityUnit adj K
-counit := functorialityCounit adj K
+  unit := functorialityUnit adj K
+  counit := functorialityCounit adj K
 
 /-- A left adjoint preserves colimits.
 
@@ -89,6 +89,11 @@ def leftAdjointPreservesColimits : PreservesColimitsOfSize.{v, u} F where
             IsColimit.isoUniqueCoconeMorphism.inv fun _ =>
               @Equiv.unique _ _ (IsColimit.isoUniqueCoconeMorphism.hom hc _)
                 ((adj.functorialityAdjunction _).homEquiv _ _) } }
+
+noncomputable
+instance colimPreservesColimits [HasColimitsOfShape J C] :
+    PreservesColimits (colim (J := J) (C := C)) :=
+  colimConstAdj.leftAdjointPreservesColimits
 
 -- see Note [lower instance priority]
 noncomputable instance (priority := 100) isEquivalencePreservesColimits
@@ -193,6 +198,11 @@ def rightAdjointPreservesLimits : PreservesLimitsOfSize.{v, u} G where
               @Equiv.unique _ _ (IsLimit.isoUniqueConeMorphism.hom hc _)
                 ((adj.functorialityAdjunction' _).homEquiv _ _).symm } }
 
+noncomputable
+instance limPreservesLimits [HasLimitsOfShape J C] :
+    PreservesLimits (lim (J := J) (C := C)) :=
+  constLimAdj.rightAdjointPreservesLimits
+
 -- see Note [lower instance priority]
 noncomputable instance (priority := 100) isEquivalencePreservesLimits
     (E : D ⥤ C) [E.IsEquivalence] :
@@ -285,6 +295,8 @@ end ArbitraryUniverse
 
 variable {C : Type u₁} [Category.{v₀} C] {D : Type u₂} [Category.{v₀} D] {F : C ⥤ D} {G : D ⥤ C}
   (adj : F ⊣ G)
+
+attribute [local simp] homEquiv_unit homEquiv_counit
 
 -- Note: this is natural in K, but we do not yet have the tools to formulate that.
 /-- When `F ⊣ G`,

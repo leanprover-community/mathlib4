@@ -192,7 +192,7 @@ theorem continuous_iff_seqContinuous [SequentialSpace X] {f : X → Y} :
 theorem SequentialSpace.coinduced [SequentialSpace X] {Y} (f : X → Y) :
     @SequentialSpace Y (.coinduced f ‹_›) :=
   letI : TopologicalSpace Y := .coinduced f ‹_›
-  ⟨fun s hs ↦ isClosed_coinduced.2 (hs.preimage continuous_coinduced_rng.seqContinuous).isClosed⟩
+  ⟨fun _ hs ↦ isClosed_coinduced.2 (hs.preimage continuous_coinduced_rng.seqContinuous).isClosed⟩
 
 protected theorem SequentialSpace.iSup {X} {ι : Sort*} {t : ι → TopologicalSpace X}
     (h : ∀ i, @SequentialSpace X (t i)) : @SequentialSpace X (⨆ i, t i) := by
@@ -207,14 +207,17 @@ protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
   rw [sup_eq_iSup]
   exact .iSup <| Bool.forall_bool.2 ⟨h₂, h₁⟩
 
-theorem QuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y} (hf : QuotientMap f) :
+theorem IsQuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y} (hf : IsQuotientMap f) :
     SequentialSpace Y :=
   hf.2.symm ▸ .coinduced f
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.sequentialSpace := IsQuotientMap.sequentialSpace
 
 /-- The quotient of a sequential space is a sequential space. -/
 instance Quotient.instSequentialSpace [SequentialSpace X] {s : Setoid X} :
     SequentialSpace (Quotient s) :=
-  quotientMap_quot_mk.sequentialSpace
+  isQuotientMap_quot_mk.sequentialSpace
 
 /-- The sum (disjoint union) of two sequential spaces is a sequential space. -/
 instance Sum.instSequentialSpace [SequentialSpace X] [SequentialSpace Y] :
@@ -328,7 +331,7 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
   refine ⟨u, u_in, fun x _ φ hφ huφ => ?_⟩
   obtain ⟨N, hN⟩ : ∃ N, ∀ p q, p ≥ N → q ≥ N → (u (φ p), u (φ q)) ∈ V :=
     huφ.cauchySeq.mem_entourage V_in
-  exact hu (φ <| N + 1) (φ N) (hφ <| lt_add_one N) (hN (N + 1) N N.le_succ le_rfl)
+  exact hu (φ <| N + 1) (φ N) (hφ <| Nat.lt_add_one N) (hN (N + 1) N N.le_succ le_rfl)
 
 variable [IsCountablyGenerated (𝓤 X)]
 

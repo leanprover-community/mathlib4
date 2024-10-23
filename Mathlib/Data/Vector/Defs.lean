@@ -65,7 +65,7 @@ theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
 @[simp]
 theorem cons_head_tail : ∀ v : Vector α (succ n), cons (head v) (tail v) = v
   | ⟨[], h⟩ => by contradiction
-  | ⟨a :: v, h⟩ => rfl
+  | ⟨_ :: _, _⟩ => rfl
 
 /-- The list obtained from a vector. -/
 def toList (v : Vector α n) : List α :=
@@ -119,7 +119,7 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
 def eraseIdx (i : Fin n) : Vector α n → Vector α (n - 1)
-  | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx] <;> rw [p]; exact i.2⟩
+  | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx_of_lt] <;> rw [p]; exact i.2⟩
 
 @[deprecated (since := "2024-05-04")] alias removeNth := eraseIdx
 

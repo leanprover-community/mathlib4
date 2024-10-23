@@ -85,23 +85,19 @@ theorem map_subtype_embedding_uIcc : (uIcc a b).map valEmbedding = uIcc ↑a ↑
   map_valEmbedding_Icc _ _
 
 @[simp]
-theorem card_Icc : (Icc a b).card = b + 1 - a := by
-  rw [← Nat.card_Icc, ← map_valEmbedding_Icc, card_map]
+lemma card_Icc : #(Icc a b) = b + 1 - a := by rw [← Nat.card_Icc, ← map_valEmbedding_Icc, card_map]
 
 @[simp]
-theorem card_Ico : (Ico a b).card = b - a := by
-  rw [← Nat.card_Ico, ← map_valEmbedding_Ico, card_map]
+lemma card_Ico : #(Ico a b) = b - a := by rw [← Nat.card_Ico, ← map_valEmbedding_Ico, card_map]
 
 @[simp]
-theorem card_Ioc : (Ioc a b).card = b - a := by
-  rw [← Nat.card_Ioc, ← map_valEmbedding_Ioc, card_map]
+lemma card_Ioc : #(Ioc a b) = b - a := by rw [← Nat.card_Ioc, ← map_valEmbedding_Ioc, card_map]
 
 @[simp]
-theorem card_Ioo : (Ioo a b).card = b - a - 1 := by
-  rw [← Nat.card_Ioo, ← map_valEmbedding_Ioo, card_map]
+lemma card_Ioo : #(Ioo a b) = b - a - 1 := by rw [← Nat.card_Ioo, ← map_valEmbedding_Ioo, card_map]
 
 @[simp]
-theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
+theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← Nat.card_uIcc, ← map_subtype_embedding_uIcc, card_map]
 
 -- Porting note (#10618): simp can prove this
@@ -172,23 +168,20 @@ theorem map_valEmbedding_Iio : (Iio b).map Fin.valEmbedding = Iio ↑b := by
   simp [Iio_eq_finset_subtype, Finset.fin, Finset.map_map]
 
 @[simp]
-theorem card_Ici : (Ici a).card = n - a := by
+theorem card_Ici : #(Ici a) = n - a := by
   cases n with
   | zero => exact Fin.elim0 a
   | succ =>
     rw [← card_map, map_valEmbedding_Ici, Nat.card_Icc, Nat.add_one_sub_one]
 
 @[simp]
-theorem card_Ioi : (Ioi a).card = n - 1 - a := by
-  rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioc]
+theorem card_Ioi : #(Ioi a) = n - 1 - a := by rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioc]
 
 @[simp]
-theorem card_Iic : (Iic b).card = b + 1 := by
-  rw [← Nat.card_Iic b, ← map_valEmbedding_Iic, card_map]
+theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmbedding_Iic, card_map]
 
 @[simp]
-theorem card_Iio : (Iio b).card = b := by
-  rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
+theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
 
 -- Porting note (#10618): simp can prove this
 -- @[simp]

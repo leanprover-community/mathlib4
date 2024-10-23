@@ -184,6 +184,6 @@ def MulAction.prodEquiv :
     congr 1
     · funext; congr; ext m a; (conv_rhs => rw [← hN.one_smul a]); rfl
     · ext n a; (conv_rhs => rw [← hM.one_smul (SMul.smul n a)]); rfl
-    · apply heq_prop
+    · exact proof_irrel_heq ..
 
 end Action_by_Prod

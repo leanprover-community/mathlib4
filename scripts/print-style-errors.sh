@@ -11,6 +11,6 @@ IFS=$'\n\t'
 
 # use C locale so that sorting is the same on macOS and Linux
 # see https://unix.stackexchange.com/questions/362728/why-does-gnu-sort-sort-differently-on-my-osx-machine-and-linux-machine
-find Mathlib -name '*.lean' | xargs ./scripts/lint-style.py "$@" | LC_ALL=C sort || true
-find Archive -name '*.lean' | xargs ./scripts/lint-style.py "$@" | LC_ALL=C sort || true
-find Counterexamples -name '*.lean' | xargs ./scripts/lint-style.py "$@" | LC_ALL=C sort || true
+find Mathlib -name '*.lean' -print0 | xargs --null ./scripts/lint-style.py "$@" | LC_ALL=C sort || true
+find Archive -name '*.lean' -print0 | xargs --null ./scripts/lint-style.py "$@" | LC_ALL=C sort || true
+find Counterexamples -name '*.lean' -print0 | xargs --null ./scripts/lint-style.py "$@" | LC_ALL=C sort || true

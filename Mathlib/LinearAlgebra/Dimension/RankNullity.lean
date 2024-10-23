@@ -136,7 +136,7 @@ theorem exists_linearIndependent_pair_of_one_lt_rank [StrongRankCondition R]
     [NoZeroSMulDivisors R M] (h : 1 < Module.rank R M) {x : M} (hx : x ≠ 0) :
     ∃ y, LinearIndependent R ![x, y] := by
   obtain ⟨y, hy⟩ := exists_linearIndependent_snoc_of_lt_rank (linearIndependent_unique ![x] hx) h
-  have : Fin.snoc ![x] y = ![x, y] := Iff.mp List.ofFn_inj rfl
+  have : Fin.snoc ![x] y = ![x, y] := by simp [Fin.snoc, ← List.ofFn_inj]
   rw [this] at hy
   exact ⟨y, hy⟩
 
@@ -171,7 +171,7 @@ theorem Submodule.rank_add_le_rank_add_rank (s t : Submodule R M) :
 
 section Finrank
 
-open Submodule FiniteDimensional
+open Submodule Module
 
 variable [StrongRankCondition R]
 
