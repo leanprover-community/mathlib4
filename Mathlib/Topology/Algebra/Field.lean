@@ -153,6 +153,23 @@ end Preconnected
 section ContinuousSMul
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [TopologicalSpace L] [TopologicalRing L] (M : IntermediateField K L)
+    [TopologicalSpace L] [TopologicalRing L] (M : Subfield L)
+
+#synth SMul M L
+
+instance Subfield.continuousSMul (M : Subfield L) (X) [TopologicalSpace X] [MulAction L X]
+    [ContinuousSMul L X] : ContinuousSMul M X :=
+  Subsemiring.continuousSMul S.toSubsemiring X
+
+instance IntermediateField (M : IntermediateField K L)
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+    [TopologicalSpace L] [TopologicalRing L] (M : IntermediateField K L) (N : Subalgebra K L)
+    (R : Subring L)
+
+#synth TopologicalSpace M
+#synth TopologicalSpace N
+#synth ContinuousSMul R L
+instance : ContinuousSMul N L := sorry
+#synth ContinuousSMul N L
 
 end ContinuousSMul
