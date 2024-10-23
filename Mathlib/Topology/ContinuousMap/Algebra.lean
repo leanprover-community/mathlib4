@@ -372,25 +372,27 @@ instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
       uniformContinuous_inv.comp_tendstoUniformlyOn
         (tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK)
 
--- TODO: rewrite the next three lemmas for products and deduce sum case via `to_additive`, once
--- definition of `tprod` is in place
-/-- If `α` is locally compact, and an infinite sum of functions in `C(α, β)`
-converges to `g` (for the compact-open topology), then the pointwise sum converges to `g x` for
-all `x ∈ α`. -/
-theorem hasSum_apply {γ : Type*} [AddCommMonoid β] [ContinuousAdd β]
-    {f : γ → C(α, β)} {g : C(α, β)} (hf : HasSum f g) (x : α) :
-    HasSum (fun i : γ => f i x) (g x) := by
-  let ev : C(α, β) →+ β := (Pi.evalAddMonoidHom _ x).comp coeFnAddMonoidHom
-  exact hf.map ev (ContinuousMap.continuous_eval_const x)
+/-- If an infinite product of functions in `C(α, β)` converges to `g`
+(for the compact-open topology), then the pointwise product converges to `g x` for all `x ∈ α`. -/
+@[to_additive
+  "If an infinite sum of functions in `C(α, β)` converges to `g` (for the compact-open topology),
+then the pointwise sum converges to `g x` for all `x ∈ α`."]
+theorem hasProd_apply {γ : Type*} [CommMonoid β] [ContinuousMul β]
+    {f : γ → C(α, β)} {g : C(α, β)} (hf : HasProd f g) (x : α) :
+    HasProd (fun i : γ => f i x) (g x) := by
+  let ev : C(α, β) →* β := (Pi.evalMonoidHom _ x).comp coeFnMonoidHom
+  exact hf.map ev (continuous_eval_const x)
 
-theorem summable_apply [AddCommMonoid β] [ContinuousAdd β] {γ : Type*} {f : γ → C(α, β)}
-    (hf : Summable f) (x : α) : Summable fun i : γ => f i x :=
-  (hasSum_apply hf.hasSum x).summable
+@[to_additive]
+theorem multipliable_apply [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
+    (hf : Multipliable f) (x : α) : Multipliable fun i : γ => f i x :=
+  (hasProd_apply hf.hasProd x).multipliable
 
-theorem tsum_apply [T2Space β] [AddCommMonoid β] [ContinuousAdd β] {γ : Type*} {f : γ → C(α, β)}
-    (hf : Summable f) (x : α) :
-    ∑' i : γ, f i x = (∑' i : γ, f i) x :=
-  (hasSum_apply hf.hasSum x).tsum_eq
+@[to_additive]
+theorem tprod_apply [T2Space β] [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
+    (hf : Multipliable f) (x : α) :
+    ∏' i : γ, f i x = (∏' i : γ, f i) x :=
+  (hasProd_apply hf.hasProd x).tprod_eq
 
 end ContinuousMap
 
@@ -578,6 +580,18 @@ instance [SMul R M] [ContinuousConstSMul R M] [SMul R₁ M] [ContinuousConstSMul
 
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousConstSMul R M] [IsCentralScalar R M] :
     IsCentralScalar R C(α, M) where op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+
+instance [SMul R M] [ContinuousConstSMul R M] [Mul M] [ContinuousMul M] [IsScalarTower R M M] :
+    IsScalarTower R C(α, M) C(α, M) where
+  smul_assoc _ _ _ := ext fun _ => smul_mul_assoc ..
+
+instance [SMul R M] [ContinuousConstSMul R M] [Mul M] [ContinuousMul M] [SMulCommClass R M M] :
+    SMulCommClass R C(α, M) C(α, M) where
+  smul_comm _ _ _ := ext fun _ => (mul_smul_comm ..).symm
+
+instance [SMul R M] [ContinuousConstSMul R M] [Mul M] [ContinuousMul M] [SMulCommClass M R M] :
+    SMulCommClass C(α, M) R C(α, M) where
+  smul_comm _ _ _ := ext fun _ => smul_comm (_ : M) ..
 
 instance [Monoid R] [MulAction R M] [ContinuousConstSMul R M] : MulAction R C(α, M) :=
   Function.Injective.mulAction _ coe_injective coe_smul
@@ -1008,7 +1022,7 @@ variable [ContinuousStar A] [Algebra 𝕜 A]
 actually a homeomorphism. -/
 @[simps]
 def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
-  { f.toContinuousMap.compStarAlgHom' 𝕜 A with
+  { (f : C(X, Y)).compStarAlgHom' 𝕜 A with
     toFun := (f : C(X, Y)).compStarAlgHom' 𝕜 A
     invFun := (f.symm : C(Y, X)).compStarAlgHom' 𝕜 A
     left_inv := fun g => by
@@ -1017,7 +1031,7 @@ def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
     right_inv := fun g => by
       simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
         symm_comp_toContinuousMap, ContinuousMap.comp_id]
-    map_smul' := fun k a => map_smul (f.toContinuousMap.compStarAlgHom' 𝕜 A) k a }
+    map_smul' := fun k a => map_smul ((f : C(X, Y)).compStarAlgHom' 𝕜 A) k a }
 
 end Homeomorph
 

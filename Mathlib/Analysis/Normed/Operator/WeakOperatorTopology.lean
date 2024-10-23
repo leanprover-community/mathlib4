@@ -175,7 +175,7 @@ lemma continuous_of_dual_apply_continuous {α : Type*} [TopologicalSpace α] {g 
 lemma embedding_inducingFn : Embedding (inducingFn 𝕜 E F) := by
   refine Function.Injective.embedding_induced fun A B hAB => ?_
   rw [ContinuousLinearMapWOT.ext_dual_iff]
-  simpa [Function.funext_iff] using hAB
+  simpa [funext_iff] using hAB
 
 open Filter in
 /-- The defining property of the weak operator topology: a function `f` tends to

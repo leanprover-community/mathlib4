@@ -53,12 +53,6 @@ open DirectSum
 
 variable {ι : Type*} {σ S R : Type*}
 
-instance AddCommMonoid.ofSubmonoidOnSemiring [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R]
-    (A : ι → σ) : ∀ i, AddCommMonoid (A i) := fun i => by infer_instance
-
-instance AddCommGroup.ofSubgroupOnRing [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ) :
-    ∀ i, AddCommGroup (A i) := fun i => by infer_instance
-
 theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedOne A] (s : S) : algebraMap S R s ∈ A 0 := by
   rw [Algebra.algebraMap_eq_smul_one]

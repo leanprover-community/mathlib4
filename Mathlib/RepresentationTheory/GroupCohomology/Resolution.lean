@@ -23,9 +23,9 @@ This allows us to define a `k[G]`-basis on `k[Gⁿ⁺¹]`, by mapping the natura
 
 We then define the standard resolution of `k` as a trivial representation, by
 taking the alternating face map complex associated to an appropriate simplicial `k`-linear
-`G`-representation. This simplicial object is the `linearization` of the simplicial `G`-set given
-by the universal cover of the classifying space of `G`, `EG`. We prove this simplicial `G`-set `EG`
-is isomorphic to the Čech nerve of the natural arrow of `G`-sets `G ⟶ {pt}`.
+`G`-representation. This simplicial object is the `Rep.linearization` of the simplicial `G`-set
+given by the universal cover of the classifying space of `G`, `EG`. We prove this simplicial
+`G`-set `EG` is isomorphic to the Čech nerve of the natural arrow of `G`-sets `G ⟶ {pt}`.
 
 We then use this isomorphism to deduce that as a complex of `k`-modules, the standard resolution
 of `k` as a trivial `G`-representation is homotopy equivalent to the complex with `k` at 0 and 0
