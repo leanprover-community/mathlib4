@@ -472,11 +472,13 @@ end Mul
 section MulOneClass
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
--- Porting note (#10618): `simp` can prove this
+-- Porting note (#10618): `simp` can prove this but it is a valid `dsimp` lemma.
+-- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
 @[to_additive]
 theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
 
--- Porting note (#10618): `simp` can prove this
+-- Porting note (#10618): `simp` can prove this but it is a valid `dsimp` lemma.
+-- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
 @[to_additive]
 lemma coe_monoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
     (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl

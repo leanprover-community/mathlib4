@@ -21,7 +21,7 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
+variable [Algebra R S]
 
 namespace IsLocalization
 
@@ -72,9 +72,6 @@ theorem coeSubmodule_span_singleton (x : R) :
     coeSubmodule S (Ideal.span {x}) = Submodule.span R {(algebraMap R S) x} := by
   rw [coeSubmodule_span, Set.image_singleton]
 
-variable {g : R →+* P}
-variable {T : Submonoid P} (hy : M ≤ T.comap g) {Q : Type*} [CommRing Q]
-variable [Algebra P Q] [IsLocalization T Q]
 variable [IsLocalization M S]
 
 include M in
@@ -159,11 +156,11 @@ namespace IsFractionRing
 
 open IsLocalization
 
-variable {A K : Type*} [CommRing A]
+variable {K : Type*}
 
 section CommRing
 
-variable [CommRing K] [Algebra R K] [IsFractionRing R K] [Algebra A K] [IsFractionRing A K]
+variable [CommRing K] [Algebra R K] [IsFractionRing R K]
 
 @[simp, mono]
 theorem coeSubmodule_le_coeSubmodule {I J : Ideal R} :

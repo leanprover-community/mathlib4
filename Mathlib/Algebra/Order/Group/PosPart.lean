@@ -65,7 +65,7 @@ instance instLeOnePart : LeOnePart α where
 @[to_additive] lemma oneLePart_mono : Monotone (·⁺ᵐ : α → α) :=
   fun _a _b hab ↦ sup_le_sup_right hab _
 
-@[to_additive (attr := simp)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem _
+@[to_additive (attr := simp high)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem _
 
 @[to_additive (attr := simp)] lemma leOnePart_one : (1 : α)⁻ᵐ = 1 := by simp [leOnePart]
 
@@ -79,8 +79,10 @@ instance instLeOnePart : LeOnePart α where
 @[to_additive] lemma inv_le_leOnePart (a : α) : a⁻¹ ≤ a⁻ᵐ := le_sup_left
 
 @[to_additive (attr := simp)] lemma oneLePart_eq_self : a⁺ᵐ = a ↔ 1 ≤ a := sup_eq_left
+@[to_additive (attr := simp)] lemma oneLePart_eq_one : a⁺ᵐ = 1 ↔ a ≤ 1 := sup_eq_right
 
-@[to_additive] lemma oneLePart_eq_one : a⁺ᵐ = 1 ↔ a ≤ 1 := sup_eq_right
+@[to_additive (attr := simp)] alias ⟨_, oneLePart_of_one_le⟩ := oneLePart_eq_self
+@[to_additive (attr := simp)] alias ⟨_, oneLePart_of_le_one⟩ := oneLePart_eq_one
 
 /-- See also `leOnePart_eq_inv`. -/
 @[to_additive "See also `negPart_eq_neg`."]
@@ -113,6 +115,9 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 @[to_additive (attr := simp)]
 lemma leOnePart_eq_one : a⁻ᵐ = 1 ↔ 1 ≤ a := by simp [leOnePart_eq_one']
+
+@[to_additive (attr := simp)] alias ⟨_, leOnePart_of_le_one⟩ := leOnePart_eq_inv
+@[to_additive (attr := simp)] alias ⟨_, leOnePart_of_one_le⟩ := leOnePart_eq_one
 
 @[to_additive (attr := simp) negPart_pos] lemma one_lt_ltOnePart (ha : a < 1) : 1 < a⁻ᵐ := by
   rwa [leOnePart_eq_inv.2 ha.le, one_lt_inv']

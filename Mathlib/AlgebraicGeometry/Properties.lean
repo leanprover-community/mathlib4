@@ -39,8 +39,8 @@ instance : QuasiSober X := by
     quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).base)
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.IsOpen i).base_open.isOpen_range
   · rintro ⟨_, i, rfl⟩
-    exact @OpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofEmbedding _
-      (X.affineCover.IsOpen i).base_open.toEmbedding).symm.openEmbedding PrimeSpectrum.quasiSober
+    exact @IsOpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofEmbedding _
+      (X.affineCover.IsOpen i).base_open.toEmbedding).symm.isOpenEmbedding PrimeSpectrum.quasiSober
   · rw [Set.top_eq_univ, Set.sUnion_range, Set.eq_univ_iff_forall]
     intro x; exact ⟨_, ⟨_, rfl⟩, X.affineCover.covers x⟩
 
