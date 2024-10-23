@@ -298,12 +298,7 @@ theorem integral_tilted [IsFiniteMeasure μ]
     Eq.symm (MeasureTheory.integral_rnDeriv_smul (tilted_absolutelyContinuous μ fun ω ↦ t * X ω))
   _ = ∫ ω, (rexp (t * X ω) / μ[fun ω ↦ rexp (t * X ω)]) * f (X ω) ∂μ := by
     apply integral_congr_ae
-    have w : (μ.tilted fun ω ↦ t * X ω).rnDeriv μ =ᵐ[μ]
-      fun ω ↦ ENNReal.ofReal (Real.exp (t * X ω) / ∫ ω, Real.exp (t * X ω) ∂μ) := by
-        apply MeasureTheory.rnDeriv_tilted_left_self
-        apply AEMeasurable.const_mul _ t
-        exact hX
-    filter_upwards [w] with ω w
+    filter_upwards [rnDeriv_tilted_left_self (hX.const_mul t)] with ω w
     rw [w]
     simp only [smul_eq_mul, mul_eq_mul_right_iff, ENNReal.toReal_ofReal_eq_iff]
     left
