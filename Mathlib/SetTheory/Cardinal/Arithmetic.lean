@@ -825,18 +825,12 @@ theorem lift_card_iSup_le_sum_card {ι : Type u} [Small.{v} ι] (f : ι → Ordi
     Cardinal.lift.{u} (⨆ i, f i).card ≤ Cardinal.sum fun i ↦ (f i).card := by
   simp_rw [← mk_toType]
   rw [← mk_sigma, ← Cardinal.lift_id'.{v} #(Σ _, _), ← Cardinal.lift_umax.{v, u}]
-  apply lift_mk_le_lift_mk_of_injective (f := fun x ↦
-    let a := (enumIsoToType _).symm x
-    have H := (Ordinal.lt_iSup (f := f) (a := a.1)).1 a.2
-    let b := Classical.choose H
-    ⟨b, enumIsoToType (f b) ⟨a.1, Classical.choose_spec H⟩⟩)
-  intro a b h
-  rw [Sigma.mk.inj_iff] at h
-  suffices ∀ {x y z a b hx hy}, x = y → HEq (enumIsoToType x ⟨↑((enumIsoToType z).symm a), hx⟩)
-    (enumIsoToType y ⟨↑((enumIsoToType z).symm b), hy⟩) → a = b from this (congr_arg f h.1) h.2
-  intro _ _ _ _ _ _ _ h
-  subst h
-  simp [← Subtype.eq_iff]
+  apply lift_mk_le_lift_mk_of_surjective (f := enumIsoToType _ ∘ (⟨(enumIsoToType _).symm ·.2,
+    (mem_Iio.mp ((enumIsoToType _).symm _).2).trans_le (Ordinal.le_iSup _ _)⟩))
+  rw [EquivLike.comp_surjective]
+  rintro ⟨x, hx⟩
+  obtain ⟨i, hi⟩ := Ordinal.lt_iSup.mp hx
+  exact ⟨⟨i, enumIsoToType _ ⟨x, hi⟩⟩, by simp⟩
 
 theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :
     (⨆ i, f i).card ≤ Cardinal.sum (fun i ↦ (f i).card) := by
