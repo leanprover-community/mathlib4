@@ -456,7 +456,7 @@ theorem aleph'_pos {o : Ordinal} (ho : 0 < o) : 0 < aleph' o := by
 
 @[deprecated preAleph_isNormal (since := "2024-10-22")]
 theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
-  preAleph_isNormal 
+  preAleph_isNormal
 
 -- TODO: these lemmas should be stated in terms of the `ω` function and of an `IsInitial` predicate,
 -- neither of which currently exist.
