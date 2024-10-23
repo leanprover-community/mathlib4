@@ -22,6 +22,7 @@ allows us to derive an instance of `StarOrderedRing C(α, R)` under appropriate 
 In order for this to work on `ℝ≥0`, we actually must force our square root function to be defined
 on and well-behaved for pairs `x : R × R` with `x.1 ≤ x.2`. -/
 class ContinuousSqrt (R : Type*) [LE R] [NonUnitalSemiring R] [TopologicalSpace R] where
+  /-- `sqrt (a, b)` returns a value `s` such that `b = a + s * s` when `a ≤ b`. -/
   protected sqrt : R × R → R -- should this really be data? We'll get diamonds for `ℂ`.
   protected continuousOn_sqrt : ContinuousOn sqrt {x | x.1 ≤ x.2}
   protected sqrt_nonneg (x : R × R) : x.1 ≤ x.2 → 0 ≤ sqrt x
