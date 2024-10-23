@@ -197,17 +197,24 @@ theorem ContDiffWithinAt.mono (h : ContDiffWithinAt 𝕜 n f s x) {t : Set E} (h
     ContDiffWithinAt 𝕜 n f t x :=
   h.mono_of_mem <| Filter.mem_of_superset self_mem_nhdsWithin hst
 
-theorem ContDiffWithinAt.congr_nhds (h : ContDiffWithinAt 𝕜 n f s x) {t : Set E}
-    (hst : 𝓝[s] x = 𝓝[t] x) : ContDiffWithinAt 𝕜 n f t x :=
-  h.mono_of_mem <| hst ▸ self_mem_nhdsWithin
+theorem ContDiffWithinAt.congr_set (h : ContDiffWithinAt 𝕜 n f s x) {t : Set E}
+    (hst : s =ᶠ[𝓝 x] t) : ContDiffWithinAt 𝕜 n f t x := by
+  rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
+  apply h.mono_of_mem <| hst ▸ self_mem_nhdsWithin
 
-theorem contDiffWithinAt_congr_nhds {t : Set E} (hst : 𝓝[s] x = 𝓝[t] x) :
+@[deprecated (since := "2024-10-23")]
+alias ContDiffWithinAt.congr_nhds := ContDiffWithinAt.congr_set
+
+theorem contDiffWithinAt_congr_set {t : Set E} (hst : s =ᶠ[𝓝 x] t) :
     ContDiffWithinAt 𝕜 n f s x ↔ ContDiffWithinAt 𝕜 n f t x :=
-  ⟨fun h => h.congr_nhds hst, fun h => h.congr_nhds hst.symm⟩
+  ⟨fun h => h.congr_set hst, fun h => h.congr_set hst.symm⟩
+
+@[deprecated (since := "2024-10-23")]
+alias contDiffWithinAt_congr_nhds := contDiffWithinAt_congr_set
 
 theorem contDiffWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     ContDiffWithinAt 𝕜 n f (s ∩ t) x ↔ ContDiffWithinAt 𝕜 n f s x :=
-  contDiffWithinAt_congr_nhds <| Eq.symm <| nhdsWithin_restrict'' _ h
+  contDiffWithinAt_congr_set (mem_nhdsWithin_iff_eventuallyEq.1 h).symm
 
 theorem contDiffWithinAt_inter (h : t ∈ 𝓝 x) :
     ContDiffWithinAt 𝕜 n f (s ∩ t) x ↔ ContDiffWithinAt 𝕜 n f s x :=

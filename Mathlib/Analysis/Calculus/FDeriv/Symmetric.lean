@@ -63,7 +63,7 @@ section General
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
+  [NormedSpace 𝕜 F] {s t : Set E} {f : E → F} {x : E}
 
 variable (𝕜) in
 /-- Definition recording that a function has a symmetric second derivative within a set at
@@ -81,8 +81,16 @@ as a general assumption, and then specialize to these situations. -/
 def IsSymmSndFDerivAt (f : E → F) (x : E) : Prop :=
   ∀ v w, fderiv 𝕜 (fderiv 𝕜 f) x v w = fderiv 𝕜 (fderiv 𝕜 f) x w v
 
-lemma fderivWithin_fderivWithin_eq_of_eventuallyEq {f : E → F} {x : E} {s t : Set E}
-    (h : s =ᶠ[𝓝 x] t) :
+protected lemma IsSymmSndFDerivWithinAt.eq (h : IsSymmSndFDerivWithinAt 𝕜 f s x) (v w : E) :
+    fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v w = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x w v :=
+  h v w
+
+protected lemma IsSymmSndFDerivAt.eq
+    (h : IsSymmSndFDerivAt 𝕜 f x) (v w : E) :
+    fderiv 𝕜 (fderiv 𝕜 f) x v w = fderiv 𝕜 (fderiv 𝕜 f) x w v :=
+  h v w
+
+lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
   fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
     = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x :=
@@ -95,6 +103,20 @@ lemma fderivWithin_fderivWithin_eq_of_mem_nhds {f : E → F} {x : E} {s : Set E}
   simp only [← fderivWithin_univ]
   apply fderivWithin_fderivWithin_eq_of_eventuallyEq
   simp [h]
+
+@[simp] lemma isSymmSndFDerivWithinAt_univ :
+    IsSymmSndFDerivWithinAt 𝕜 f univ x ↔ IsSymmSndFDerivAt 𝕜 f x := by
+  simp [IsSymmSndFDerivWithinAt, IsSymmSndFDerivAt]
+
+theorem IsSymmSndFDerivWithinAt.congr_set (h : IsSymmSndFDerivWithinAt 𝕜 f s x)
+    (hst : s =ᶠ[𝓝 x] t) : IsSymmSndFDerivWithinAt 𝕜 f t x := by
+  intro v w
+  rw [fderivWithin_fderivWithin_eq_of_eventuallyEq hst.symm]
+  exact h v w
+
+theorem isSymmSndFDerivWithinAt_congr_set (hst : s =ᶠ[𝓝 x] t) :
+    IsSymmSndFDerivWithinAt 𝕜 f s x ↔ IsSymmSndFDerivWithinAt 𝕜 f t x :=
+  ⟨fun h ↦ h.congr_set hst, fun h ↦ h.congr_set hst.symm⟩
 
 end General
 
