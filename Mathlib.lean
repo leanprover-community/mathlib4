@@ -1649,6 +1649,7 @@ import Mathlib.CategoryTheory.Limits.IsConnected
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Lattice
 import Mathlib.CategoryTheory.Limits.MonoCoprod
+import Mathlib.CategoryTheory.Limits.MorphismProperty
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Over
 import Mathlib.CategoryTheory.Limits.Pi

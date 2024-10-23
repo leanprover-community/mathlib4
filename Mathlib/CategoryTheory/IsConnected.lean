@@ -42,7 +42,7 @@ category is preserved by the functor `(X × -)`. This appears in `CategoryTheory
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe w₁ w₂ v₁ v₂ u₁ u₂
 
 noncomputable section
 
@@ -412,7 +412,7 @@ def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] :
       unitIso := isoConstant _ (Classical.arbitrary _)
       counitIso := Functor.punitExt _ _ }
 
-variable {C : Type u₂} [Category.{u₁} C]
+variable {C : Type w₂} [Category.{w₁} C]
 
 /-- For objects `X Y : C`, any natural transformation `α : const X ⟶ const Y` from a connected
 category must be constant.

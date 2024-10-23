@@ -70,6 +70,12 @@ lemma Hom.hom_mk {X Y : P.Comma L R Q W}
     (f : CommaMorphism X.toComma Y.toComma) (hf) (hg) :
   Comma.Hom.hom ⟨f, hf, hg⟩ = f := rfl
 
+@[simp]
+lemma Hom.hom_left {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : f.hom.left = f.left := rfl
+
+@[simp]
+lemma Hom.hom_right {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : f.hom.right = f.right := rfl
+
 /-- See Note [custom simps projection] -/
 def Hom.Simps.hom {X Y : P.Comma L R Q W} (f : X.Hom Y) :
     X.toComma ⟶ Y.toComma :=
@@ -194,14 +200,18 @@ end Comma
 
 section Over
 
-variable {T : Type*} [Category T]
+variable {T : Type*} [Category T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
 
 /-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
 subcategory of `Over X` defined by `P` where morphisms satisfy `Q`. -/
-protected abbrev Over (P Q : MorphismProperty T) (X : T) : Type _ :=
-  P.Comma (Functor.id T) (Functor.fromPUnit X) Q ⊤
+protected abbrev Over : Type _ :=
+  P.Comma (Functor.id T) (Functor.fromPUnit.{0} X) Q ⊤
 
-variable (P Q : MorphismProperty T) [Q.IsMultiplicative] (X : T)
+/-- The forgetful functor from the full subcategory of `Over X` defined by `P` to `Over X`. -/
+protected abbrev Over.forget : P.Over Q X ⥤ Over X :=
+  Comma.forget (Functor.id T) (Functor.fromPUnit.{0} X) P Q ⊤
+
+variable {P Q X}
 
 /-- Construct a morphism in `P.Over Q X` from a morphism in `Over.X`. -/
 @[simps hom]
@@ -210,22 +220,39 @@ def Over.Hom.mk {A B : P.Over Q X} (f : A.toComma ⟶ B.toComma) (hf : Q f.left)
   prop_hom_left := hf
   prop_hom_right := trivial
 
-/-- The forgetful functor from the full subcategory of `Over X` defined by `P` to `Over X`. -/
-protected abbrev Over.forget : P.Over Q X ⥤ Over X :=
-  Comma.forget (Functor.id T) (Functor.fromPUnit X) P Q ⊤
+variable (Q) in
+/-- Make an object of `P.Over Q X` from a morphism `f : A ⟶ X` and a proof of `P f`. -/
+@[simps hom left]
+protected def Over.mk {A : T} (f : A ⟶ X) (hf : P f) : P.Over Q X where
+  left := A
+  right := ⟨⟨⟩⟩
+  hom := f
+  prop := hf
+
+/-- Make a morphism in `P.Over Q X` from a morphism in `T` with compatibilities. -/
+@[simps hom]
+protected def Over.homMk {A B : P.Over Q X} (f : A.left ⟶ B.left)
+    (w : f ≫ B.hom = A.hom := by aesop_cat) (hf : Q f := by trivial) : A ⟶ B where
+  __ := CategoryTheory.Over.homMk f w
+  prop_hom_left := hf
+  prop_hom_right := trivial
 
 end Over
 
 section Under
 
-variable {T : Type*} [Category T]
+variable {T : Type*} [Category T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
 
 /-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
 subcategory of `Under X` defined by `P` where morphisms satisfy `Q`. -/
-protected abbrev Under (P Q : MorphismProperty T) (X : T) : Type _ :=
-  P.Comma (Functor.fromPUnit X) (Functor.id T) ⊤ Q
+protected abbrev Under : Type _ :=
+  P.Comma (Functor.fromPUnit.{0} X) (Functor.id T) ⊤ Q
 
-variable (P Q : MorphismProperty T) [Q.IsMultiplicative] (X : T)
+/-- The forgetful functor from the full subcategory of `Under X` defined by `P` to `Under X`. -/
+protected abbrev Under.forget : P.Under Q X ⥤ Under X :=
+  Comma.forget (Functor.fromPUnit.{0} X) (Functor.id T) P ⊤ Q
+
+variable {P Q X}
 
 /-- Construct a morphism in `P.Under Q X` from a morphism in `Under.X`. -/
 @[simps hom]
@@ -234,9 +261,22 @@ def Under.Hom.mk {A B : P.Under Q X} (f : A.toComma ⟶ B.toComma) (hf : Q f.rig
   prop_hom_left := trivial
   prop_hom_right := hf
 
-/-- The forgetful functor from the full subcategory of `Under X` defined by `P` to `Under X`. -/
-protected abbrev Under.forget : P.Under Q X ⥤ Under X :=
-  Comma.forget (Functor.fromPUnit X) (Functor.id T) P ⊤ Q
+variable (Q) in
+/-- Make an object of `P.Under Q X` from a morphism `f : A ⟶ X` and a proof of `P f`. -/
+@[simps hom left]
+protected def Under.mk {A : T} (f : X ⟶ A) (hf : P f) : P.Under Q X where
+  left := ⟨⟨⟩⟩
+  right := A
+  hom := f
+  prop := hf
+
+/-- Make a morphism in `P.Under Q X` from a morphism in `T` with compatibilities. -/
+@[simps hom]
+protected def Under.homMk {A B : P.Under Q X} (f : A.right ⟶ B.right)
+    (w : A.hom ≫ f = B.hom := by aesop_cat) (hf : Q f := by trivial) : A ⟶ B where
+  __ := CategoryTheory.Under.homMk f w
+  prop_hom_left := trivial
+  prop_hom_right := hf
 
 end Under
 
