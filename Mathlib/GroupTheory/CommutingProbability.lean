@@ -47,7 +47,7 @@ theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * 
 theorem commProb_pi {α : Type*} (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
     commProb (∀ a, i a) = ∏ a, commProb (i a) := by
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ← Nat.cast_prod,
-    ← Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
+    ← Nat.card_pi, Commute, SemiconjBy, funext_iff]
   congr 2
   exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
     fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
@@ -142,8 +142,8 @@ private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → 
 
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
-  if h0 : n = 0 then [0]
-  else if h1 : n = 1 then []
+  if _ : n = 0 then [0]
+  else if _ : n = 1 then []
   else if Even n then
     3 :: reciprocalFactors (n / 2)
   else

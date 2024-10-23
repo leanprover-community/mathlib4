@@ -193,7 +193,7 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
   have h : Polynomial.map (MulSemiringActionHom.toRingHom (IsInvariantSubring.subtypeHom G
     (subfield G F).toSubring)) f = Polynomial.map
     ((IsInvariantSubring.subtypeHom G (subfield G F).toSubring)) f := rfl
-  erw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
+  rw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
     Polynomial.map_toSubring _ _, prodXSubSMul]
   refine
     Fintype.prod_dvd_of_coprime
@@ -246,7 +246,7 @@ theorem minpoly_eq_minpoly : minpoly G F x = _root_.minpoly (FixedPoints.subfiel
 theorem rank_le_card : Module.rank (FixedPoints.subfield G F) F ≤ Fintype.card G :=
   rank_le fun s hs => by
     simpa only [rank_fun', Cardinal.mk_coe_finset, Finset.coe_sort_coe, Cardinal.lift_natCast,
-      Cardinal.natCast_le] using
+      Nat.cast_le] using
       (linearIndependent_smul_of_linearIndependent G F hs).cardinal_lift_le_rank
 
 end Fintype
@@ -282,7 +282,7 @@ instance : FiniteDimensional (subfield G F) F := by
 end Finite
 
 theorem finrank_le_card [Fintype G] : finrank (subfield G F) F ≤ Fintype.card G := by
-  rw [← Cardinal.natCast_le, finrank_eq_rank]
+  rw [← @Nat.cast_le Cardinal, finrank_eq_rank]
   apply rank_le_card
 
 end FixedPoints

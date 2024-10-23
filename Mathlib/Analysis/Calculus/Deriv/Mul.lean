@@ -169,7 +169,6 @@ lemma deriv_const_smul' {f : 𝕜 → F} {x : 𝕜} {R : Type*} [Field R] [Modul
     · simp only [zero_smul, deriv_const']
     · have H : ¬DifferentiableAt 𝕜 (fun y ↦ c • f y) x := by
         contrapose! hf
-        change DifferentiableAt 𝕜 (fun y ↦ f y) x
         conv => enter [2, y]; rw [← inv_smul_smul₀ hc (f y)]
         exact DifferentiableAt.const_smul hf c⁻¹
       rw [deriv_zero_of_not_differentiableAt hf, deriv_zero_of_not_differentiableAt H, smul_zero]

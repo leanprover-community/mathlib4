@@ -675,7 +675,7 @@ def ofStructuredArrowProjEquivalence (F : D ⥤ T) (Y : T) (X : D) :
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 /-- The canonical functor from the structured arrow category on the diagonal functor
-`T ⥤ T × T` to the the structured arrow category on `Under.forget`. -/
+`T ⥤ T × T` to the structured arrow category on `Under.forget`. -/
 @[simps!]
 def ofDiagEquivalence.functor (X : T × T) :
     StructuredArrow X (Functor.diag _) ⥤ StructuredArrow X.2 (Under.forget X.1) :=
@@ -741,7 +741,7 @@ def ofCostructuredArrowProjEquivalence (F : T ⥤ D) (Y : D) (X : T) :
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 /-- The canonical functor from the costructured arrow category on the diagonal functor
-`T ⥤ T × T` to the the costructured arrow category on `Under.forget`. -/
+`T ⥤ T × T` to the costructured arrow category on `Under.forget`. -/
 @[simps!]
 def ofDiagEquivalence.functor (X : T × T) :
     CostructuredArrow (Functor.diag _) X ⥤ CostructuredArrow (Over.forget X.1) X.2 :=
