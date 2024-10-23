@@ -9,7 +9,6 @@ namespace TendstoTactic
 
 namespace PreMS
 
-
 noncomputable def add {basis : Basis} (a b : PreMS basis) : PreMS basis :=
   match basis with
   | [] => a + b
@@ -37,9 +36,29 @@ noncomputable def add {basis : Basis} (a b : PreMS basis) : PreMS basis :=
         )
     CoList.corec g (a, b)
 
+noncomputable instance instAdd {basis : List (ℝ → ℝ)} : Add (PreMS basis) where
+  add := add
+
+-- TODO: can I get rid of it?
+noncomputable instance {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} : Add (PreMS (basis_hd :: basis_tl)) :=
+  instAdd
+
 -- theorems
 open Filter Asymptotics
 
+scoped instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Zero (PreMS (basis_hd :: basis_tl)) :=
+  instZero
+
+@[simp]
+theorem noConfusion_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : ℝ × PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
+    (CoList.cons hd tl) ≠ (0 : PreMS (basis_hd :: basis_tl)) := by
+  rw [show (0 : PreMS (basis_hd :: basis_tl)) = CoList.nil by rfl]
+  simp
+
+@[simp]
+theorem noConfusion_zero' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : ℝ × PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
+    (0 : PreMS (basis_hd :: basis_tl)) ≠ (CoList.cons hd tl) := by
+  exact noConfusion_zero.symm
 
 -- TODO : rewrite all API without `out`. Just `add_unfold`
 noncomputable def add_out {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -49,43 +68,43 @@ noncomputable def add_out {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   (nil := y.casesOn' -- just y
     (nil := .nil)
     (cons := fun (y_deg, y_coef) y_tl =>
-      .cons (y_deg, y_coef) (add (basis := basis_hd :: basis_tl) .nil y_tl)
+      .cons (y_deg, y_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) .nil y_tl)
     )
   )
   (cons := fun (x_deg, x_coef) x_tl =>
     y.casesOn'
-    (nil := .cons (x_deg, x_coef) (add (basis := basis_hd :: basis_tl) x_tl .nil)) -- just x
+    (nil := .cons (x_deg, x_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) x_tl .nil)) -- just x
     (cons := fun (y_deg, y_coef) y_tl =>
       if y_deg < x_deg then
-        .cons (x_deg, x_coef) (add x_tl y)
+        .cons (x_deg, x_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) x_tl y)
       else if x_deg < y_deg then
-        .cons (y_deg, y_coef) (add x y_tl)
+        .cons (y_deg, y_coef) (x + y_tl)
       else
-        .cons (x_deg, x_coef.add y_coef) (add (basis := basis_hd :: basis_tl) x_tl y_tl)
+        .cons (x_deg, x_coef + y_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) x_tl y_tl)
     )
   )
 
 theorem add_out_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : PreMS (basis_hd :: basis_tl)} :
-    (x.add y).out = add_out x y
+    (x + y).out = add_out x y
     := by
   unfold add_out
-  conv => lhs; unfold add
+  conv => lhs; simp [HAdd.hAdd, Add.add, add]
   rw [CoList.corec_out]
   simp [Functor.map]
   apply x.casesOn
   · apply y.casesOn
     · simp only [CoList.casesOn_nil]
     · intro (y_deg, y_coef) y_tl
-      simp only [CoList.casesOn_cons, CoList.casesOn_nil, add, Prod.mk.eta]
+      simp [HAdd.hAdd, Add.add, CoList.casesOn_cons, CoList.casesOn_nil, add, Prod.mk.eta]
   · apply y.casesOn
-    · intros; simp only [CoList.casesOn_nil, CoList.casesOn_cons, add, Prod.mk.eta]
+    · intros; simp [HAdd.hAdd, Add.add, CoList.casesOn_nil, CoList.casesOn_cons, add, Prod.mk.eta]
     · intros
-      simp only [CoList.casesOn_cons]
+      simp [HAdd.hAdd, Add.add]
       split_ifs <;> simp only [add, Prod.mk.eta]
 
 -- do we need it?
 theorem add_eq_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)}
-    (h : X.add Y = .nil) : X = .nil ∧ Y = .nil := by
+    (h : X + Y = .nil) : X = .nil ∧ Y = .nil := by
   have := add_out_eq (x := X) (y := Y)
   unfold add_out at this
   rw [h] at this
@@ -105,19 +124,19 @@ theorem add_eq_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (bas
 
 @[simp]
 theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    add CoList.nil ms = ms := by
+    HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) CoList.nil ms = ms := by
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
-    x = add CoList.nil y
+    x = HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) CoList.nil y
   apply CoList.Eq.coind motive
   · intro x y ih
     simp [motive] at ih
     subst ih
     apply y.casesOn
     · right
-      simp [add]
+      simp [HAdd.hAdd, Add.add, add]
     · intro (deg, coef) tl
       left
-      have h_out : CoList.out (add (basis := basis_hd :: basis_tl) CoList.nil
+      have h_out : CoList.out (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) CoList.nil
         (CoList.cons (deg, coef) tl)) = ?_ := by exact add_out_eq
       simp [add_out] at h_out
       use (deg, coef)
@@ -132,28 +151,28 @@ theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
   · simp only [motive]
 
 @[simp]
-theorem zero_add' {basis : Basis} {ms : PreMS basis} :
-    add (zero _) ms = ms := by
+private theorem zero_add' {basis : Basis} {ms : PreMS basis} :
+    (zero _) + ms = ms := by
   cases basis with
-  | nil => simp [add, zero]
+  | nil => simp [zero]
   | cons => simp [zero]
 
 -- copypaste from above
 @[simp]
 theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    add ms CoList.nil = ms := by
+    HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) ms CoList.nil = ms := by
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
-    x = add y CoList.nil
+    x = HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) y CoList.nil
   apply CoList.Eq.coind motive
   · intro x y ih
     simp [motive] at ih
     subst ih
     apply y.casesOn
     · right
-      simp [add]
+      simp
     · intro (deg, coef) tl
       left
-      have h_out : CoList.out (add (basis := basis_hd :: basis_tl)
+      have h_out : CoList.out (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl))
         (CoList.cons (deg, coef) tl) CoList.nil) = ?_ := by exact add_out_eq
       simp [add_out] at h_out
       use (deg, coef)
@@ -168,10 +187,10 @@ theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
   · simp only [motive]
 
 @[simp]
-theorem add_zero' {basis : Basis} {ms : PreMS basis} :
-    add ms (zero _) = ms := by
+private theorem add_zero' {basis : Basis} {ms : PreMS basis} :
+    ms + (zero _) = ms := by
   cases basis with
-  | nil => simp [add, zero]
+  | nil => simp [zero]
   | cons => simp [zero]
 
 noncomputable def add' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -184,17 +203,17 @@ noncomputable def add' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (nil := x)
     (cons := fun (y_deg, y_coef) y_tl =>
       if y_deg < x_deg then
-        .cons (x_deg, x_coef) (add x_tl y)
+        .cons (x_deg, x_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) x_tl y)
       else if x_deg < y_deg then
-        .cons (y_deg, y_coef) (add x y_tl)
+        .cons (y_deg, y_coef) (x + y_tl)
       else
-        .cons (x_deg, x_coef.add y_coef) (add (basis := basis_hd :: basis_tl) x_tl y_tl)
+        .cons (x_deg, x_coef + y_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) x_tl y_tl)
     )
   )
 
 theorem add_unfold {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : PreMS (basis_hd :: basis_tl)} :
-    add x y = add' x y := by
-  have h_out : CoList.out (add (basis := basis_hd :: basis_tl) x y) = ?_ := by exact add_out_eq
+    x + y = add' x y := by
+  have h_out : CoList.out (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) x y) = ?_ := by exact add_out_eq
   simp [add_out] at h_out
   revert h_out
   apply x.casesOn
@@ -219,8 +238,8 @@ theorem add_unfold {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : PreMS (bas
 
 theorem cons_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_deg : ℝ} {X_coef : PreMS basis_tl}
     {X_tl Y : PreMS (basis_hd :: basis_tl)} (h_lt : Y.leadingExp < X_deg) :
-    add (CoList.cons (X_deg, X_coef) X_tl) Y = CoList.cons (X_deg, X_coef) (X_tl.add Y) := by
-  have h_out : CoList.out (add (basis := basis_hd :: basis_tl) (CoList.cons (X_deg, X_coef) X_tl) Y) =
+    HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) Y = CoList.cons (X_deg, X_coef) (X_tl + Y) := by
+  have h_out : CoList.out (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) Y) =
     ?_ := by exact add_out_eq
   simp [add_out] at h_out
   revert h_lt h_out
@@ -234,10 +253,11 @@ theorem cons_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_deg : ℝ} {X_co
       exact h_out
     · simp [h_lt] at h1
 
+-- TODO: may be prove after comm?
 theorem add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_deg : ℝ} {X_coef : PreMS basis_tl}
     {X_tl Y : PreMS (basis_hd :: basis_tl)} (h_lt : Y.leadingExp < X_deg) :
-    add (CoList.cons (X_deg, X_coef) X_tl) Y = CoList.cons (X_deg, X_coef) (X_tl.add Y) := by
-  have h_out : CoList.out (add (basis := basis_hd :: basis_tl) (CoList.cons (X_deg, X_coef) X_tl) Y) =
+    HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) Y = CoList.cons (X_deg, X_coef) (X_tl + Y) := by
+  have h_out : CoList.out (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) Y) =
     ?_ := by exact add_out_eq
   simp [add_out] at h_out
   revert h_lt h_out
@@ -254,8 +274,8 @@ theorem add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_deg : ℝ} 
 
 theorem add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_deg : ℝ} {Y_coef : PreMS basis_tl}
     {Y_tl X : PreMS (basis_hd :: basis_tl)} (h_lt : X.leadingExp < Y_deg) :
-    add X (CoList.cons (Y_deg, Y_coef) Y_tl) = CoList.cons (Y_deg, Y_coef) (X.add Y_tl) := by
-  have h_out : CoList.out (add (basis := basis_hd :: basis_tl) X (CoList.cons (Y_deg, Y_coef) Y_tl)) =
+    X + (CoList.cons (Y_deg, Y_coef) Y_tl) = CoList.cons (Y_deg, Y_coef) (X + Y_tl) := by
+  have h_out : CoList.out (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X (CoList.cons (Y_deg, Y_coef) Y_tl)) =
     ?_ := by exact add_out_eq
   simp [add_out] at h_out
   revert h_lt h_out
@@ -288,24 +308,97 @@ theorem add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_deg : ℝ}
 
 theorem add_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_tl Y_tl: PreMS (basis_hd :: basis_tl)}
     {X_deg Y_deg : ℝ} {X_coef Y_coef : PreMS basis_tl}
-    : add (basis := basis_hd :: basis_tl) (CoList.cons (X_deg, X_coef) X_tl) (CoList.cons (Y_deg, Y_coef) Y_tl) =
+    : HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) (CoList.cons (Y_deg, Y_coef) Y_tl) =
     if Y_deg < X_deg then
-      CoList.cons (X_deg, X_coef) (add X_tl (CoList.cons (Y_deg, Y_coef) Y_tl))
+      CoList.cons (X_deg, X_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl (CoList.cons (Y_deg, Y_coef) Y_tl))
     else if X_deg < Y_deg then
-      CoList.cons (Y_deg, Y_coef) (add (CoList.cons (X_deg, X_coef) X_tl) Y_tl)
+      CoList.cons (Y_deg, Y_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) Y_tl)
     else
-      CoList.cons (X_deg, X_coef.add Y_coef) (add (basis := basis_hd :: basis_tl) X_tl Y_tl)
+      CoList.cons (X_deg, X_coef + Y_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl Y_tl)
     := by
   rw [add_unfold, add']
   simp
 
-theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
-    (X.add Y).add Z = X.add (Y.add Z) := by
+private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
+    X + Y = Y + X := by
   cases basis with
-  | nil => simp [add]; ring
+  | nil => simp [HAdd.hAdd, Add.add]; simp [add]; ring
   | cons basis_hd basis_tl =>
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
-    ∃ (X Y Z : PreMS (basis_hd :: basis_tl)), a = (X.add Y).add Z ∧ b = X.add (Y.add Z)
+    ∃ (X Y : PreMS (basis_hd :: basis_tl)), a = (X + Y) ∧ b = Y + X
+  apply CoList.Eq.coind_strong motive
+  · intro a b ih
+    obtain ⟨X, Y, ha_eq, hb_eq⟩ := ih
+    subst ha_eq hb_eq
+    apply X.casesOn
+    · left
+      simp
+    intro (X_deg, X_coef) X_tl
+    apply Y.casesOn
+    · left
+      simp
+    intro (Y_deg, Y_coef) Y_tl
+    right
+    rw [add_cons_cons, add_cons_cons]
+    split_ifs with h1 h2
+    · linarith
+    · use ?_, ?_, ?_
+      simp
+      constructor
+      · constructor
+        · exact Eq.refl _
+        · exact Eq.refl _
+      simp
+      constructor
+      · exact Eq.refl _
+      simp only [motive]
+      use ?_, ?_
+      constructor
+      · exact Eq.refl _
+      · rfl
+    · use ?_, ?_, ?_ -- total copypaste
+      simp
+      constructor
+      · constructor
+        · exact Eq.refl _
+        · exact Eq.refl _
+      simp
+      constructor
+      · exact Eq.refl _
+      simp only [motive]
+      use ?_, ?_
+      constructor
+      · exact Eq.refl _
+      · rfl
+    · have : X_deg = Y_deg := by linarith -- almost copypaste
+      subst this
+      use ?_, ?_, ?_
+      simp
+      constructor
+      · constructor
+        · exact Eq.refl _
+        · exact Eq.refl _
+      simp
+      constructor
+      · constructor
+        · apply add_comm'
+        · exact Eq.refl _
+      simp only [motive]
+      use ?_, ?_
+      constructor
+      · exact Eq.refl _
+      · rfl
+  · simp only [motive]
+    use X, Y
+
+private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
+    X + (Y + Z) = (X + Y) + Z := by
+  symm -- TODO : rewrie proof without `symm`s
+  cases basis with
+  | nil => simp [HAdd.hAdd, Add.add]; simp [add]; ring
+  | cons basis_hd basis_tl =>
+  let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
+    ∃ (X Y Z : PreMS (basis_hd :: basis_tl)), a = (X + Y) + Z ∧ b = X + (Y + Z)
   apply CoList.Eq.coind motive
   · intro a b ih
     simp only [motive] at ih
@@ -543,9 +636,9 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
             · simp
             simp
         · intro (Z_deg, Z_coef) Z_tl ha_eq hb_eq -- main case
-          have h_XY_out : CoList.out (add (basis := basis_hd :: basis_tl) (CoList.cons (X_deg, X_coef) X_tl) (CoList.cons (Y_deg, Y_coef) Y_tl)) = ?_ := by
+          have h_XY_out : CoList.out (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) (CoList.cons (Y_deg, Y_coef) Y_tl)) = ?_ := by
             exact add_out_eq
-          have h_YZ_out : CoList.out (add (basis := basis_hd :: basis_tl) (CoList.cons (Y_deg, Y_coef) Y_tl) (CoList.cons (Z_deg, Z_coef) Z_tl)) = ?_ := by
+          have h_YZ_out : CoList.out (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (Y_deg, Y_coef) Y_tl) (CoList.cons (Z_deg, Z_coef) Z_tl)) = ?_ := by
             exact add_out_eq
           simp [add_out] at h_XY_out h_YZ_out
           split_ifs at h_XY_out h_YZ_out <;>
@@ -569,7 +662,7 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
               constructor
               · exact ha_out
               constructor
-              · try rw [add_assoc']
+              · try rw [← add_assoc']
                 exact hb_out
               simp only [motive]
               use ?_
@@ -589,9 +682,57 @@ theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
     use Y
     use Z
 
+
+noncomputable instance instAddCommMonoid (basis : List (ℝ → ℝ)) : AddCommMonoid (PreMS basis) where
+  zero_add := by
+    intro a
+    apply zero_add'
+  add_zero := by
+    intro a
+    apply add_zero'
+  add_assoc := by
+    intro a b c
+    apply add_assoc'.symm
+  add_comm := by
+    intro a b
+    apply add_comm'
+  nsmul := nsmulRec
+
+-- TODO: can I get rid of specifiyng in explicitly?
+noncomputable instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : AddCommMonoid (PreMS (basis_hd :: basis_tl)) := by apply instAddCommMonoid
+
+-- @[simp]
+-- theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
+--     HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.nil : PreMS (basis_hd :: basis_tl)) ms = ms :=
+--   nil_add'
+
+-- @[simp]
+-- theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
+--     HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) ms (CoList.nil : PreMS (basis_hd :: basis_tl)) = ms :=
+--   add_nil'
+
+-- example {basis : Basis} {x y : PreMS basis} : x + y = y + x := by abel
+
+
+
+
+-- example {x y : PreMS ([fun x ↦ x] : List (ℝ → ℝ))} : x + y = y + x := by abel
+
+
+-- #check fun (x y : PreMS [fun x ↦ x]) ↦ (x + y : PreMS [fun x ↦ x])
+
+-- -- set_option diagnostics.threshold 1
+-- -- set_option diagnostics true
+-- -- set_option trace.Meta.synthInstance true
+-- -- noncomputable instance : Add (PreMS [fun x ↦ x]) := by apply kek
+-- noncomputable instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Add (PreMS (basis_hd :: basis_tl)) := by apply kek
+
+
+-- #check fun (x y : PreMS [fun x ↦ x]) ↦ (x + y : PreMS [fun x ↦ x])
+
 @[simp]
 theorem add_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)} :
-    (X.add Y).leadingExp = X.leadingExp ⊔ Y.leadingExp := by
+    (X + Y).leadingExp = X.leadingExp ⊔ Y.leadingExp := by
   apply X.casesOn
   · simp [leadingExp]
   · intro (X_deg, X_coef) X_tl
@@ -604,15 +745,167 @@ theorem add_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS 
       linarith
     }
 
+-- -- TODO: rename
+-- theorem add_left_coind_strong {basis_hd : ℝ → ℝ} {basis_tl : Basis} {a b : PreMS (basis_hd :: basis_tl)}
+--     (motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop)
+--     (h_survive : ∀ (a b c : PreMS (basis_hd :: basis_tl)), motive (c.add a) (c.add b) →
+--       (a = b) ∨
+--       (∃ hd a_tl b_tl, a = .cons hd a_tl ∧ b = .cons hd b_tl ∧ (motive a_tl b_tl)))
+--     (h : motive a b) : a = b := by
+--   let motive' : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
+--     ∃ (c a' b' : PreMS (basis_hd :: basis_tl)), a = c.add a' ∧ b = c.add b' ∧ motive a b
+--   apply CoList.Eq.coind_strong motive'
+--   · intro a b ih
+--     simp only [motive'] at ih
+--     obtain ⟨c, a', b', ha, hb, ih⟩ := ih
+--     subst ha hb
+--     revert ih
+--     apply c.casesOn
+--     · sorry
+--       -- intro ih
+--     --   simp at ih ⊢
+--     --   specialize h_survive a' b' ih .nil a' b' (by simp) (by simp)
+--     --   cases h_survive with
+--     --   | inl h_eq =>
+--     --     left
+--     --     exact h_eq
+--     --   | inr h_survive =>
+--     --     obtain ⟨hd, a_tl, b_tl, ha', hb', h_tail⟩ := h_survive
+--     --     right
+--     --     use ?_, ?_, ?_
+--     --     constructor
+--     --     · exact ha'
+--     --     use ?_
+--     --     constructor
+--     --     · exact hb'
+--     --     simp only [motive']
+--     --     use .nil, ?_, ?_
+--     --     constructor
+--     --     · simp
+--     --       exact Eq.refl _
+--     --     constructor
+--     --     · simp
+--     --       exact Eq.refl _
+--     --     exact h_tail
+--     · intro (c_deg, c_coef) c_tl ih
+--       specialize h_survive _ _ _ ih
+--       cases h_survive with --(.cons (c_deg, c_coef) c_tl) a' b' (by rfl) (by rfl) with
+--       | inl h_eq =>
+--         left
+--         congr
+--       | inr h_survive =>
+--         obtain ⟨⟨deg, coef⟩, a_tl, b_tl, ha', hb', h_tail⟩ := h_survive
+--         subst ha' hb'
+--         right
+
+--         use ?_, ?_, ?_
+--         rw [add_cons_cons, add_cons_cons]
+--         split_ifs with h1 h2
+--         · constructor
+--           · exact Eq.refl _
+--           constructor
+--           · exact Eq.refl _
+--           simp only [motive']
+--           use c_tl, ?_, ?_
+--           constructor
+--           · exact Eq.refl _
+--           constructor
+--           · exact Eq.refl _
+
+
+
+
+
+
+--   · simp [motive']
+--     use .nil
+--     simpa
+
+
+-- -- TODO: rename
+-- theorem add_left_coind_strong {basis_hd : ℝ → ℝ} {basis_tl : Basis} {a b : PreMS (basis_hd :: basis_tl)}
+--     (motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop)
+--     (h_survive : ∀ a b, motive a b → ∀ (c a' b' : PreMS (basis_hd :: basis_tl)),
+--       (a = c.add a') → (b = c.add b') →
+--       (a' = b') ∨
+--       (∃ hd a_tl b_tl, a' = .cons hd a_tl ∧ b' = .cons hd b_tl ∧ (motive a_tl b_tl)))
+--     (h : motive a b) : a = b := by
+--   let motive' : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
+--     ∃ (c a' b' : PreMS (basis_hd :: basis_tl)), a = c.add a' ∧ b = c.add b' ∧ motive a b
+--   apply CoList.Eq.coind_strong motive'
+--   · intro a b ih
+--     simp only [motive'] at ih
+--     obtain ⟨c, a', b', ha, hb, ih⟩ := ih
+--     subst ha hb
+--     revert ih
+--     apply c.casesOn
+--     · intro ih
+--       simp at ih ⊢
+--       specialize h_survive a' b' ih .nil a' b' (by simp) (by simp)
+--       cases h_survive with
+--       | inl h_eq =>
+--         left
+--         exact h_eq
+--       | inr h_survive =>
+--         obtain ⟨hd, a_tl, b_tl, ha', hb', h_tail⟩ := h_survive
+--         right
+--         use ?_, ?_, ?_
+--         constructor
+--         · exact ha'
+--         use ?_
+--         constructor
+--         · exact hb'
+--         simp only [motive']
+--         use .nil, ?_, ?_
+--         constructor
+--         · simp
+--           exact Eq.refl _
+--         constructor
+--         · simp
+--           exact Eq.refl _
+--         exact h_tail
+--     · intro (c_deg, c_coef) c_tl ih
+--       -- specialize
+--       cases h_survive _ _ ih (.cons (c_deg, c_coef) c_tl) a' b' (by rfl) (by rfl) with
+--       | inl h_eq =>
+--         left
+--         congr
+--       | inr h_survive =>
+--         obtain ⟨⟨deg, coef⟩, a_tl, b_tl, ha', hb', h_tail⟩ := h_survive
+--         subst ha' hb'
+--         right
+
+--         use ?_, ?_, ?_
+--         rw [add_cons_cons, add_cons_cons]
+--         split_ifs with h1 h2
+--         · constructor
+--           · exact Eq.refl _
+--           constructor
+--           · exact Eq.refl _
+--           simp only [motive']
+--           use c_tl, ?_, ?_
+--           constructor
+--           · exact Eq.refl _
+--           constructor
+--           · exact Eq.refl _
+
+
+
+
+
+--   · simp [motive']
+--     use .nil
+--     simpa
+
 theorem add_wellOrdered {basis : Basis} {x y : PreMS basis}
-    (h_x_wo : x.wellOrdered) (h_y_wo : y.wellOrdered) : (x.add y).wellOrdered := by
+    (h_x_wo : x.wellOrdered) (h_y_wo : y.wellOrdered) : (x + y).wellOrdered := by
   cases basis with
   | nil =>
     constructor
   | cons basis_hd basis_tl =>
     let motive : (PreMS (basis_hd :: basis_tl)) → Prop := fun ms =>
       ∃ (X Y : PreMS (basis_hd :: basis_tl)),
-        ms = X.add Y ∧ X.wellOrdered ∧ Y.wellOrdered
+        ms = X + Y ∧ X.wellOrdered ∧ Y.wellOrdered
     apply wellOrdered.coind motive
     · intro ms ih
       simp only [motive] at ih
@@ -642,7 +935,7 @@ theorem add_wellOrdered {basis : Basis} {x y : PreMS basis}
           simp only [motive]
           use .nil
           use Y_tl
-          simp only [nil_add, true_and]
+          simp
           constructor
           · apply wellOrdered.nil
           · exact hY_tl_wo
@@ -666,7 +959,7 @@ theorem add_wellOrdered {basis : Basis} {x y : PreMS basis}
           simp only [motive]
           use .nil
           use X_tl
-          simp only [nil_add, true_and]
+          simp
           constructor
           · apply wellOrdered.nil
           · exact hX_tl_wo
@@ -736,15 +1029,15 @@ theorem add_wellOrdered {basis : Basis} {x y : PreMS basis}
 
 theorem add_isApproximation {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
     (hX_approx : X.isApproximation fX basis) (hY_approx : Y.isApproximation fY basis) :
-    (X.add Y).isApproximation (fX + fY) basis := by
+    (X + Y).isApproximation (fX + fY) basis := by
   cases basis with
   | nil =>
-    simp [isApproximation, add] at *
+    simp [isApproximation] at *
     exact EventuallyEq.add hX_approx hY_approx
   | cons basis_hd basis_tl =>
     let motive : (ℝ → ℝ) → (PreMS (basis_hd :: basis_tl)) → Prop := fun f ms =>
       ∃ (X Y : PreMS (basis_hd :: basis_tl)) (fX fY : ℝ → ℝ),
-        ms = X.add Y ∧ f =ᶠ[atTop] fX + fY ∧ X.isApproximation fX ∧ Y.isApproximation fY
+        ms = X + Y ∧ f =ᶠ[atTop] fX + fY ∧ X.isApproximation fX ∧ Y.isApproximation fY
     apply isApproximation.coind motive
     · intro f ms ih
       simp only [motive] at ih

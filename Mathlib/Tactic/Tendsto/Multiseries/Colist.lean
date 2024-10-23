@@ -637,7 +637,7 @@ theorem set_all {α : Type u} {p : α → Prop} {li : CoList α} (h_all : li.all
   sorry
 
 /-- Coinduction principle for proving `a = b`. -/
-def Eq.coind {α : Type u} {a b : CoList α}
+theorem Eq.coind {α : Type u} {a b : CoList α}
     (motive : CoList α → CoList α → Prop)
     (h_survive : ∀ a b, motive a b →
       (∃ hd a_tl b_tl, a = cons hd a_tl ∧ b = cons hd b_tl ∧ motive a_tl b_tl) ∨
@@ -667,6 +667,52 @@ def Eq.coind {α : Type u} {a b : CoList α}
     obtain ⟨hd, a_tl, b_tl, h_a_eq, h_b_eq, _⟩ := h
     simp [h_a_eq, h_b_eq]
   | inr h => rw [h.1, h.2]
+
+-- version where we can finish prove explicitly prove a = b without further coinduction
+-- useful for edge cases
+theorem Eq.coind_strong {α : Type u} {a b : CoList α}
+    (motive : CoList α → CoList α → Prop)
+    (h_survive : ∀ a b, motive a b →
+      (a = b) ∨
+      (∃ hd a_tl b_tl, a = cons hd a_tl ∧ b = cons hd b_tl ∧ (motive a_tl b_tl)))
+    (h : motive a b) : a = b := by
+  apply Subtype.eq
+  ext1 n
+  have : motive (tail^[n] a) (tail^[n] b) ∨ (tail^[n] a) = (tail^[n] b) := by
+    induction n with
+    | zero =>
+      left
+      simpa
+    | succ m ih =>
+      simp only [Function.iterate_succ', Function.comp_apply]
+      cases ih with
+      | inl ih =>
+        specialize h_survive (tail^[m] a) (tail^[m] b) ih
+        cases h_survive with
+        | inl h_eq =>
+          right
+          congr
+        | inr h =>
+          left
+          obtain ⟨hd, a_tl, b_tl, h_a_eq, h_b_eq, h_tail⟩ := h
+          rw [h_a_eq, h_b_eq]
+          simpa
+      | inr ih =>
+        right
+        congr
+  cases this with
+  | inl this =>
+    simp
+    specialize h_survive _ _ this
+    cases h_survive with
+    | inl h_eq =>
+      congr
+    | inr h =>
+      obtain ⟨hd, a_tl, b_tl, h_a_eq, h_b_eq, _⟩ := h
+      simp [h_a_eq, h_b_eq]
+  | inr this =>
+    simp
+    congr
 
 @[simp]
 theorem map_append {α : Type v} {β : Type v} (a b : CoList α) (f : α → β) :

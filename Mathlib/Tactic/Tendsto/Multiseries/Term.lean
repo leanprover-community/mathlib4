@@ -6,6 +6,8 @@ Here we find the limit of the term of the form `coef * b1(x)^d1 * b2(x)^d2 * ...
 where `[b1, b2, ...]` is well-formed basis.
 -/
 
+set_option linter.style.longLine false
+
 namespace TendstoTactic
 
 open Asymptotics Filter
@@ -105,7 +107,7 @@ theorem fun_pos {t : MS.Term} {basis : List (ℝ → ℝ)}
   intro x hx
   have hx' : ∀ hd ∈ t.degs.zip basis, 0 < hd.2 x := by
     intro hd h_hd
-    exact hx _ (List.mem_zip h_hd).right
+    exact hx _ (List.of_mem_zip h_hd).right
   simp [toFun]
   generalize t.coef = c at *
   generalize t.degs.zip basis = li at *
@@ -131,7 +133,7 @@ theorem fun_log {t : MS.Term} {basis : List (ℝ → ℝ)}
       have h' : ∀ hd ∈ t.degs.zip basis, Tendsto hd.2 atTop atTop := by
         intro hd h_hd
         apply MS.basis_tendsto_top h_basis
-        exact (List.mem_zip h_hd).right
+        exact (List.of_mem_zip h_hd).right
       intro hd h_hd
       exact Tendsto.eventually (h' hd h_hd) <| eventually_gt_atTop 0
     generalize t.degs.zip basis = li at *
@@ -214,13 +216,13 @@ theorem IsEquivalent_of_nonzero_head {coef deg : ℝ} {tl : List ℝ} {basis : L
     have h_little : ∀ hd ∈ tl.zip basis_tl, (Real.log ∘ hd.2) =o[atTop] (Real.log ∘ basis_hd) := by
       intro hd h_hd
       apply MS.basis_IsLittleO_of_head h_basis
-      exact (List.mem_zip h_hd).right
+      exact (List.of_mem_zip h_hd).right
 
     have h_tendsto : ∀ hd ∈ tl.zip basis_tl, Tendsto hd.2 atTop atTop := by
       intro hd h_hd
       apply MS.basis_tendsto_top h_basis
       simp; right
-      exact (List.mem_zip h_hd).right
+      exact (List.of_mem_zip h_hd).right
 
     generalize tl.zip basis_tl = li at *
     induction li with

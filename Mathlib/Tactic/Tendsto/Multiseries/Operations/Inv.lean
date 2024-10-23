@@ -92,7 +92,7 @@ theorem inv'_wellOrdered {basis : Basis} {ms : PreMS basis}
       obtain ⟨h_coef, h_comp, h_tl⟩ := wellOrdered_cons h_wo
       simp [inv']
       apply mulMonomial_wellOrdered
-      · apply apply_wellOrdered invSeries'_analytic
+      · apply apply_wellOrdered
         · apply mulMonomial_wellOrdered
           · apply neg_wellOrdered h_tl
           · apply inv'_wellOrdered

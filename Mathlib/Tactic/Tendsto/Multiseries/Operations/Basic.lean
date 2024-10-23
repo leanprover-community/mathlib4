@@ -17,10 +17,16 @@ def mulConst {basis : Basis} (ms : PreMS basis) (c : ℝ) : PreMS basis :=
 def neg {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   ms.mulConst (-1)
 
+instance instNeg {basis : Basis} : Neg (PreMS basis) where
+  neg := neg
+
+instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Neg (PreMS (basis_hd :: basis_tl)) := instNeg
+
 -------------------- theorems
 
 open Filter Asymptotics
 
+-- TODO : move it
 theorem const_isApproximation_const {c : ℝ} {basis : Basis} (h_wo : MS.wellOrderedBasis basis) :
     (const c basis).isApproximation (fun _ ↦ c) basis := by
   cases basis with
@@ -42,18 +48,7 @@ theorem const_isApproximation_const {c : ℝ} {basis : Basis} (h_wo : MS.wellOrd
       simp
       rfl
 
-theorem const_wellOrdered {c : ℝ} {basis : Basis} :
-    (const c basis).wellOrdered := by
-  cases basis with
-  | nil => constructor
-  | cons basis_hd basis_tl =>
-    simp [const]
-    apply wellOrdered.cons
-    · exact const_wellOrdered
-    · simp [leadingExp, Ne.bot_lt] -- may be `Ne.bot_lt` should be simp lemma?
-    · apply wellOrdered.nil
-
-
+-- TODO : move it
 theorem zero_isApproximation_zero {basis : Basis} :
     (zero basis).isApproximation (fun _ ↦ 0) basis := by
   cases basis with

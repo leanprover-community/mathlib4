@@ -1,6 +1,9 @@
 import Mathlib.Tactic.Tendsto.TendstoM
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
 
+set_option linter.style.longLine false
+set_option linter.unusedVariables false
+
 namespace TendstoTactic
 
 namespace PreMS

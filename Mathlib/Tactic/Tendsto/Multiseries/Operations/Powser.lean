@@ -17,6 +17,26 @@ abbrev LazySeries := CoList ℝ
 
 namespace LazySeries
 
+noncomputable def apply_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (ms : PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) × LazySeries →
+    CoList.OutType (PreMS (basis_hd :: basis_tl)) (PreMS (basis_hd :: basis_tl) × LazySeries) := fun (cur_power, cur_s) =>
+      cur_s.casesOn'
+      (nil := .nil)
+      (cons := fun c cs =>
+        .cons (mulConst cur_power c) (cur_power.mul ms, cs)
+      )
+
+noncomputable def apply (s : LazySeries) {basis : Basis}
+    (ms : PreMS basis) : PreMS basis :=
+  match basis with
+  | [] => default -- We can not substitute constant (and PreMS with nonnegative
+                  -- leading exponent) to series
+  | basis_hd :: basis_tl =>
+    let terms := CoList.corec (apply_aux ms) (PreMS.one _, s) -- [c0, c1 * ms, c2, * ms^2, ...]
+    merge1 terms
+
+-- theorems
+
 noncomputable def coeff (s : LazySeries) (n : ℕ) :=
   match s.get n with
   | .none => 0
@@ -152,41 +172,79 @@ theorem toFun_IsBigO_one {s : LazySeries} (h_analytic : s.analytic) {F : ℝ →
     apply Tendsto.comp _ hF
     apply toFun_tendsto_head h_analytic
 
-noncomputable def apply (s : LazySeries) {basis : Basis}
-    (ms : PreMS basis) : PreMS basis :=
-  match basis with
-  | [] => default -- We can not substitute constant (and PreMS with nonnegative
-                  -- leading exponent) to series
-  | basis_hd :: basis_tl =>
-    let T := PreMS (basis_hd :: basis_tl) × LazySeries
-    let g : T → CoList.OutType (PreMS (basis_hd :: basis_tl)) T := fun (cur_power, cur_s) =>
-      cur_s.casesOn'
-      (nil := .nil)
-      (cons := fun c cs =>
-        .cons (mulConst cur_power c) (cur_power.mul ms, cs)
-      )
-    let terms := CoList.corec g (PreMS.one _, s) -- [c0, c1 * ms, c2, * ms^2, ...]
-    merge1 terms
-
 @[simp]
 theorem apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     apply .nil ms = CoList.nil := by
-  simp [apply]
+  simp [apply, apply_aux]
 
 @[simp]
 theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
     {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     (apply (.cons s_hd s_tl) ms) = .cons (0, PreMS.const s_hd _) ((apply s_tl ms).mul ms) := by
-  simp [apply]
-  conv =>
-    lhs
-    rw [CoList.corec_cons (by rfl)]
-    simp [one]
-    arg 1
-    arg 1
-    unfold const
-  rw [merge1_cons_head_cons]
   sorry
+  -- simp [apply]
+  -- conv =>
+  --   lhs
+  --   rw [CoList.corec_cons (by rfl)]
+  --   simp [one]
+  --   arg 1
+  --   arg 1
+  --   unfold const
+  -- rw [merge1_cons_head_cons]
+  -- simp [one, ← merge1_mul_comm_right]
+  -- congr 1
+  -- let motive : CoList (PreMS (basis_hd :: basis_tl)) → CoList (PreMS (basis_hd :: basis_tl)) → Prop := fun x y =>
+  --   ∃ (X : PreMS (basis_hd :: basis_tl)), ∃ s,
+  --     x = CoList.corec (apply_aux ms) (X.mul ms, s) ∧
+  --     y = CoList.map (fun x ↦ x.mul ms) (CoList.corec (apply_aux ms) (X, s)) --∧
+  --     -- X.wellOrdered
+  -- apply CoList.Eq.coind motive
+  -- · intro x y ih
+  --   simp [motive] at ih
+  --   obtain ⟨X, s, hx, hy⟩ := ih
+  --   subst hx hy
+  --   apply s.casesOn
+  --   · right
+  --     simp [apply_aux]
+  --   · intro s_hd s_tl
+  --     left
+  --     use ?_, ?_, ?_
+  --     constructor
+  --     · unfold apply_aux
+  --       simp
+  --       rw [CoList.corec_cons]
+  --       pick_goal 2
+  --       · simp
+  --         constructor
+  --         · exact Eq.refl _
+  --         · exact Eq.refl _
+  --       congr
+  --       · exact Eq.refl _
+  --       · exact Eq.refl _
+  --     constructor
+  --     · unfold apply_aux
+  --       rw [CoList.corec_cons]
+  --       pick_goal 2
+  --       · simp
+  --         constructor
+  --         · exact Eq.refl _
+  --         · exact Eq.refl _
+  --       simp
+  --       constructor
+  --       · sorry
+  --       · exact Eq.refl _
+  --     simp only [motive]
+  --     use ?_, s_tl
+  --     constructor
+  --     · unfold apply_aux
+  --       simp
+  --       congr 2
+  --       -- rw [mul_assoc' hX_wo]
+  --       exact Eq.refl _
+  --     · unfold apply_aux
+  --       simp
+  -- · simp [motive]
+  --   use const 1 (basis_hd :: basis_tl), s_tl
 
 @[simp]
 theorem apply_cons_leadingExp {s_hd : ℝ} {s_tl : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
@@ -197,271 +255,173 @@ theorem apply_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basi
     (apply s ms).leadingExp ≤ 0 := by
   apply s.casesOn <;> simp [leadingExp]
 
-theorem apply_wellOrdered {s : LazySeries} (h_analytic : analytic s) {basis : Basis}
+-- theorem apply_wellOrdered {s : LazySeries} (h_analytic : analytic s) {basis : Basis}
+--     {ms : PreMS basis}
+--     (h_wo : ms.wellOrdered) (h_neg : ms.hasNegativeLeading) :
+--     (apply s ms).wellOrdered := by
+--   cases basis with
+--   | nil => constructor
+--   | cons basis_hd basis_tl =>
+--     apply s.casesOn
+--     · simp
+--       exact wellOrdered.nil
+--     intro s_hd s_tl
+--     simp [hasNegativeLeading] at h_neg
+--     let motive : (ms : PreMS (basis_hd :: basis_tl)) → Prop := fun ms' =>
+--         ∃ (X Y : PreMS (basis_hd :: basis_tl)), ms' = X + (Y.mul (apply (CoList.cons s_hd s_tl) ms)) ∧
+--         X.wellOrdered ∧ Y.wellOrdered
+--     apply wellOrdered.coind motive
+--     · intro ms ih
+--       simp only [motive] at ih ⊢
+--       obtain ⟨X, Y, h_ms_eq, hX_wo, hY_wo⟩ := ih
+--       subst h_ms_eq
+--       revert hX_wo
+--       apply X.casesOn
+--       · intro _
+--         revert hY_wo
+--         apply Y.casesOn
+--         · intro _
+--           left
+--           simp
+--         · intro (Y_deg, Y_coef) Y_tl hY_wo
+--           obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := wellOrdered_cons hY_wo
+--           right
+--           use ?_, ?_, ?_
+--           constructor
+--           · simp only [apply_cons, mul_cons_cons, add_zero, nil_add]
+--             congr 1
+--             · exact Eq.refl _
+--             · rw [← apply_cons]
+--               exact Eq.refl _
+--           constructor
+--           · apply mul_wellOrdered hY_coef_wo
+--             exact const_wellOrdered
+--           constructor
+--           · simp
+--             constructor
+--             · conv => rhs; arg 1; rw [← add_zero Y_deg]
+--               rw [WithBot.coe_add]
+--               apply WithBot.add_lt_add_left (by simp)
+--               conv => rhs; arg 1; rw [← zero_add 0]
+--               rw [WithBot.coe_add]
+--               apply WithBot.add_lt_add_of_lt_of_le (by simp)
+--               · exact h_neg
+--               · apply apply_leadingExp_le_zero
+--             · exact hY_comp
+--           use ?_, Y_tl
+--           constructor
+--           · exact Eq.refl _
+--           constructor
+--           · apply mulMonomial_wellOrdered
+--             · apply mul_wellOrdered
+
+--     · simp only [motive]
+--       use 0, one _
+--       constructor
+--       · simp
+--       constructor
+--       · exact zero_wellOrdered
+--       · exact const_wellOrdered
+
+theorem apply_wellOrdered {s : LazySeries} {basis : Basis}
     {ms : PreMS basis}
     (h_wo : ms.wellOrdered) (h_neg : ms.hasNegativeLeading) :
     (apply s ms).wellOrdered := by
   cases basis with
-  | nil => constructor
+  | nil =>
+    simp [apply, default]
+    exact zero_wellOrdered
   | cons basis_hd basis_tl =>
-    simp [hasNegativeLeading] at h_neg
-    let motive : (ms : PreMS (basis_hd :: basis_tl)) → Prop := fun ms' =>
-      ∃ (s : LazySeries), (analytic s) ∧
-        ∃ X Y, ms' = PreMS.add X ((s.apply ms).mul Y) ∧
-        X.wellOrdered ∧ Y.wellOrdered
-    apply wellOrdered.coind motive
-    · intro ms' ih
-      simp [motive] at ih
-      obtain ⟨s, h_analytic, ⟨X, Y, h_ms_eq, hX_wo, hY_wo⟩⟩ := ih
-      revert h_ms_eq hX_wo
-      apply X.casesOn
-      · intro h_ms_eq _
-        revert h_ms_eq hY_wo
-        apply Y.casesOn
-        · intro _ h_ms_eq
-          left
-          simpa using h_ms_eq
-        · intro (Y_deg, Y_coef) Y_tl hY_wo h_ms_eq
-          have hY_wo' := wellOrdered_cons hY_wo
-          obtain ⟨hY_coef_wo, hY_comp_wo, hY_tl_wo⟩ := hY_wo'
-          revert h_ms_eq h_analytic
-          apply s.casesOn
-          · intro h_analytic h_ms_eq
-            left
-            simpa [apply_nil] using h_ms_eq
-          · intro s_hd s_tl h_analytic h_ms_eq
-            right
-            simp [-apply_cons] at h_ms_eq -- TODO: rewrite
-            rw [apply_cons] at h_ms_eq
-            simp only [mul_cons_cons, mul_assoc', zero_add] at h_ms_eq
-            use Y_deg
-            use (const s_hd basis_tl).mul Y_coef
-            use (mulMonomial Y_tl (const s_hd basis_tl) 0).add ((apply s_tl ms).mul (ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)))
-
-            constructor
-            · exact h_ms_eq
-            constructor
-            · apply mul_wellOrdered
-              · exact const_wellOrdered
-              · apply hY_coef_wo
-            constructor
+    by_cases h_ms_ne_nil : ms = .nil
+    · rw [h_ms_ne_nil]
+      apply s.casesOn
+      · simp
+        exact wellOrdered.nil
+      · intro s_hd s_tl
+        simp
+        apply wellOrdered.cons_nil
+        exact const_wellOrdered
+    simp [apply]
+    apply merge1_wellOrdered
+    · let motive : CoList (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
+        ∃ X s, a = CoList.corec (apply_aux ms) (X, s) ∧ X.wellOrdered
+      apply CoList.all.coind motive
+      · intro hd tl ih
+        simp only [motive] at ih ⊢
+        obtain ⟨X, s, h_eq⟩ := ih
+        revert h_eq
+        apply s.casesOn
+        · intro h_eq
+          rw [CoList.corec_nil] at h_eq
+          · simp at h_eq
+          simp [apply_aux]
+        intro s_hd s_tl h_eq
+        rw [CoList.corec_cons] at h_eq
+        pick_goal 2
+        · simp only [apply_aux, CoList.casesOn_cons]
+          exact Eq.refl _
+        simp at h_eq
+        obtain ⟨⟨h_hd, h_tl⟩, hX_wo⟩ := h_eq
+        constructor
+        · rw [h_hd]
+          exact mulConst_wellOrdered hX_wo
+        use ?_, ?_
+        constructor
+        · exact h_tl
+        · exact mul_wellOrdered hX_wo h_wo
+      · simp only [motive]
+        use one _, s
+        simp
+        exact const_wellOrdered
+    · simp [hasNegativeLeading] at h_neg
+      let motive : CoList (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
+        ∃ X s, a = CoList.corec (apply_aux ms) (X, s) ∧ X ≠ .nil
+      apply CoList.Sorted.coind (r := (fun x1 x2 ↦ x1 > x2)) motive
+      · intro hd tl ih
+        simp only [motive] at ih ⊢
+        obtain ⟨X, s, h_eq, hX_ne_nil⟩ := ih
+        revert h_eq
+        apply s.casesOn
+        · intro h_eq
+          rw [CoList.corec_nil] at h_eq
+          · simp at h_eq
+          simp [apply_aux]
+        intro s_hd s_tl h_eq
+        rw [CoList.corec_cons] at h_eq
+        pick_goal 2
+        · simp only [apply_aux, CoList.casesOn_cons]
+          exact Eq.refl _
+        simp at h_eq
+        obtain ⟨h_hd, h_tl⟩ := h_eq
+        constructor
+        · rw [h_tl]
+          apply s_tl.casesOn
+          · rw [CoList.corec_nil]
             · simp
-              constructor
-              · exact hY_comp_wo
-              · conv => lhs; arg 2; arg 2; simp [leadingExp]
-                conv => rhs; arg 1; rw [← zero_add Y_deg]
-                rw [WithBot.coe_add, ← add_assoc]
-                apply WithBot.add_lt_add_right (by simp)
-                conv => rhs; arg 1; rw [← zero_add 0]
-                rw [WithBot.coe_add]
-                apply WithBot.add_lt_add_of_le_of_lt (by simp)
-                · apply apply_leadingExp_le_zero
-                · exact h_neg
-            simp only [motive]
-            use s_tl
-            constructor
-            · apply tail_analytic h_analytic
-            use mulMonomial Y_tl (const s_hd basis_tl) 0
-            use ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)
-            constructor
-            · rfl
-            constructor
-            · apply mulMonomial_wellOrdered hY_tl_wo
-              exact const_wellOrdered
-            · apply mul_wellOrdered h_wo hY_wo
-      · intro (X_deg, X_coef) X_tl h_ms_eq hX_wo
-        right
-        have hX_wo' := wellOrdered_cons hX_wo
-        obtain ⟨hX_coef_wo, hX_comp_wo, hX_tl_wo⟩ := hX_wo'
-        revert h_ms_eq hY_wo
-        apply Y.casesOn
-        · intro _ h_ms_eq
-          simp at h_ms_eq -- #1 (i've copypasted it to below)
-          use X_deg
-          use X_coef
-          use X_tl
-          constructor
-          · exact h_ms_eq
-          constructor
-          · exact hX_coef_wo
-          constructor
-          · exact hX_comp_wo
-          simp [motive]
-          use s
-          constructor
-          · exact h_analytic
-          use X_tl
-          use .nil
-          constructor
-          · simp
-          constructor
-          · exact hX_tl_wo
-          · apply wellOrdered.nil
-        · intro (Y_deg, Y_coef) Y_tl hY_wo h_ms_eq
-          have hY_wo' := wellOrdered_cons hY_wo
-          obtain ⟨hY_coef_wo, hY_comp_wo, hY_tl_wo⟩ := hY_wo'
-          revert h_ms_eq h_analytic
-          apply s.casesOn
-          · intro h_analytic h_ms_eq
-            simp [apply_nil] at h_ms_eq -- copypaste from #1
-            use X_deg
-            use X_coef
-            use X_tl
-            constructor
-            · exact h_ms_eq
-            constructor
-            · exact hX_coef_wo
-            constructor
-            · exact hX_comp_wo
-            simp [motive]
-            use .nil
-            constructor
-            · exact h_analytic
-            use X_tl
-            use .nil
-            constructor
-            · simp
-            constructor
-            · exact hX_tl_wo
-            · apply wellOrdered.nil
-          · intro s_hd s_tl h_analytic h_ms_eq
-            simp only [apply_cons, zero_add, mul_assoc, mul_cons_cons] at h_ms_eq
-            have h_out : ms'.out = ?_ := by simp only [h_ms_eq]; exact add_out_eq
-            simp [add_out] at h_out
-            split_ifs at h_out with h1 h2
-            · replace h_ms_eq := CoList.out_eq_cons h_out
-              clear h_out
-              use X_deg
-              use X_coef
-              use ?_
-              constructor
-              · exact h_ms_eq
-              constructor
-              · exact hX_coef_wo
-              constructor
-              · simp
-                constructor
-                · exact hX_comp_wo
-                · simpa [leadingExp]
-              simp [motive]
-              use .cons s_hd s_tl
-              constructor
-              · exact h_analytic
-              replace h_ms_eq : ms' = CoList.cons (X_deg, X_coef)
-                  (add X_tl
-                  ((apply (CoList.cons s_hd s_tl) ms).mul (CoList.cons (Y_deg, Y_coef) Y_tl))) := by
-                rw [h_ms_eq]
-                congr
-                simp [apply_cons]
-              use X_tl
-              use .cons (Y_deg, Y_coef) Y_tl
-              constructor
-              · simp
-              constructor
-              · exact hX_tl_wo
-              · exact hY_wo
-            · replace h_ms_eq := CoList.out_eq_cons h_out
-              clear h_out
-              simp only [← add_assoc] at h_ms_eq
-              use Y_deg
-              use (const s_hd basis_tl).mul Y_coef
-              use ?_
-              constructor
-              · exact h_ms_eq
-              constructor
-              · apply mul_wellOrdered
-                · exact const_wellOrdered
-                · exact hY_coef_wo
-              constructor
-              · simp
-                constructor
-                · simpa [leadingExp]
-                · constructor
-                  · exact hY_comp_wo
-                  · conv => lhs; arg 2; arg 2; simp [leadingExp]
-                    conv => rhs; arg 1; rw [← zero_add Y_deg]
-                    rw [WithBot.coe_add, ← add_assoc]
-                    apply WithBot.add_lt_add_right (by simp)
-                    conv => rhs; arg 1; rw [← zero_add 0]
-                    rw [WithBot.coe_add]
-                    apply WithBot.add_lt_add_of_le_of_lt (by simp)
-                    · apply apply_leadingExp_le_zero
-                    · exact h_neg
-              simp [motive]
-              use s_tl
-              constructor
-              · apply tail_analytic h_analytic
-              use add (CoList.cons (X_deg, X_coef) X_tl) (mulMonomial Y_tl (const s_hd basis_tl) 0)
-              use ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)
-              constructor
-              · simp [add_assoc']
-              constructor
-              · apply add_wellOrdered
-                · exact hX_wo
-                apply mulMonomial_wellOrdered
-                · exact hY_tl_wo
-                · exact const_wellOrdered
-              · apply mul_wellOrdered
-                · exact h_wo
-                · exact hY_wo
-            · have h : X_deg = Y_deg := by linarith
-              clear h1 h2
-              replace h_ms_eq := CoList.out_eq_cons h_out
-              clear h_out
-              simp only [← add_assoc] at h_ms_eq
-              use X_deg
-              use X_coef.add ((const s_hd basis_tl).mul Y_coef)
-              use ?_
-              constructor
-              · exact h_ms_eq
-              constructor
-              · apply add_wellOrdered
-                · exact hX_coef_wo
-                · apply mul_wellOrdered
-                  · exact const_wellOrdered
-                  · exact hY_coef_wo
-              constructor
-              · simp
-                constructor
-                · exact hX_comp_wo
-                · constructor
-                  · exact h ▸ hY_comp_wo
-                  · conv => lhs; arg 2; arg 2; simp [leadingExp]
-                    conv => rhs; arg 1; rw [← zero_add X_deg]
-                    rw [WithBot.coe_add, ← add_assoc, h]
-                    apply WithBot.add_lt_add_right (by simp)
-                    conv => rhs; arg 1; rw [← zero_add 0]
-                    rw [WithBot.coe_add]
-                    apply WithBot.add_lt_add_of_le_of_lt (by simp)
-                    · apply apply_leadingExp_le_zero
-                    · exact h_neg
-              simp [motive]
-              use s_tl
-              constructor
-              · exact tail_analytic h_analytic
-              use add X_tl (mulMonomial Y_tl (const s_hd basis_tl) 0)
-              use ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)
-              constructor
-              · simp [add_assoc']
-              constructor
-              · apply add_wellOrdered
-                · exact hX_tl_wo
-                · apply mulMonomial_wellOrdered
-                  · exact hY_tl_wo
-                  · exact const_wellOrdered
-              · apply mul_wellOrdered
-                · exact h_wo
-                · exact hY_wo
-    · simp [motive]
-      use s
-      constructor
-      · exact h_analytic
-      use .nil
-      use one _
-      simp
-      constructor
-      · apply wellOrdered.nil
-      · apply const_wellOrdered
+            · simp [apply_aux]
+          intro s_tl_hd s_tl_tl
+          rw [CoList.corec_cons]
+          pick_goal 2
+          · simp only [apply_aux, CoList.casesOn_cons]
+            exact Eq.refl _
+          simp [h_hd, lt_iff_lt]
+          conv => rhs; rw [← add_zero X.leadingExp]
+          apply WithBot.add_lt_add_left
+          · contrapose hX_ne_nil
+            simp at hX_ne_nil ⊢
+            rwa [leadingExp_eq_bot]
+          · exact h_neg
+        use ?_, ?_
+        constructor
+        · exact h_tl
+        · intro h
+          apply mul_eq_nil at h
+          tauto
+      · simp only [motive]
+        use one _, s
+        constructor
+        · rfl
+        · simp [one, const]
 
 theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis : Basis}
     {ms : PreMS basis}
@@ -476,7 +436,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
     simp [hasNegativeLeading] at h_neg
     let motive : (F : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop := fun F' ms' =>
       ∃ (s : LazySeries), (analytic s) ∧
-        ∃ X Y fX fY, F' =ᶠ[atTop] fX + fY * s.toFun ∘ F ∧ ms' = PreMS.add X ((s.apply ms).mul Y) ∧
+        ∃ X Y fX fY, F' =ᶠ[atTop] fX + fY * s.toFun ∘ F ∧ ms' = X + ((s.apply ms).mul Y) ∧
         X.wellOrdered ∧ X.isApproximation fX (basis_hd :: basis_tl) ∧
         Y.wellOrdered ∧ Y.isApproximation fY (basis_hd :: basis_tl)
     apply isApproximation.coind motive
@@ -530,10 +490,13 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
             right
             simp [-apply_cons] at h_ms_eq -- TODO: rewrite
             rw [apply_cons] at h_ms_eq
-            simp only [mul_cons_cons, mul_assoc', zero_add] at h_ms_eq
+            simp only [mul_cons_cons, zero_add] at h_ms_eq
+            rw [mul_assoc'] at h_ms_eq
+            pick_goal 2
+            · exact apply_wellOrdered h_wo h_neg
             use Y_deg
             use (const s_hd basis_tl).mul Y_coef
-            use (mulMonomial Y_tl (const s_hd basis_tl) 0).add ((apply s_tl ms).mul (ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)))
+            use (mulMonomial Y_tl (const s_hd basis_tl) 0) + ((apply s_tl ms).mul (ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)))
             use fun x ↦ s_hd * (YC x)
             constructor
             · exact h_ms_eq
@@ -791,7 +754,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
               use s_tl
               constructor
               · apply tail_analytic h_analytic
-              use add (CoList.cons (X_deg, X_coef) X_tl) (mulMonomial Y_tl (const s_hd basis_tl) 0)
+              use HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) (mulMonomial Y_tl (const s_hd basis_tl) 0)
               use ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)
               use fun x ↦ fX x + s_hd * (fY x - basis_hd x ^ Y_deg * YC x)
               use F * fY
@@ -802,7 +765,8 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                 simp [hf_eq, toFun_cons h_analytic hF_in_ball]
                 ring
               constructor
-              · simp [add_assoc']
+              · rw [mul_assoc']
+                exact apply_wellOrdered h_wo h_neg
               constructor
               · apply add_wellOrdered
                 · exact hX_wo
@@ -834,7 +798,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
               clear h_out
               simp only [← add_assoc] at h_ms_eq
               use X_deg
-              use X_coef.add ((const s_hd basis_tl).mul Y_coef)
+              use X_coef + ((const s_hd basis_tl).mul Y_coef)
               use ?_
               use fun x ↦ XC x + s_hd * YC x
               constructor
@@ -861,7 +825,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
               use s_tl
               constructor
               · exact tail_analytic h_analytic
-              use add X_tl (mulMonomial Y_tl (const s_hd basis_tl) 0)
+              use HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl (mulMonomial Y_tl (const s_hd basis_tl) 0)
               use ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)
               use fun x ↦ (fX x - basis_hd x ^ X_deg * XC x) + s_hd * (fY x - basis_hd x ^ Y_deg * YC x)
               use F * fY
@@ -872,7 +836,8 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                 simp [h, hf_eq, toFun_cons h_analytic hF_in_ball]
                 ring
               constructor
-              · simp [add_assoc']
+              · rw [mul_assoc']
+                exact apply_wellOrdered h_wo h_neg
               constructor
               · apply add_wellOrdered
                 · exact hX_tl_wo

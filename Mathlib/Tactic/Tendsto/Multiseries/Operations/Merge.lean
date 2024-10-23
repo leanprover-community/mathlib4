@@ -7,18 +7,20 @@ namespace TendstoTactic
 
 namespace PreMS
 
+-- TODO : remove theorems about `Sorted`
+
 noncomputable def maxExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (li : List (PreMS (basis_hd :: basis_tl))) : WithBot ℝ :=
   (li.map leadingExp).maximum.bind (·)
 
 noncomputable def merge_aux_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (firsts : List (PreMS (basis_hd :: basis_tl))) (deg : ℝ) : PreMS basis_tl :=
-  firsts.foldl (init := zero _) fun curCoef elem =>
+  firsts.foldl (init := 0) fun curCoef elem =>
     elem.casesOn'
     (nil := curCoef)
     (cons := fun (deg', coef) tl =>
       if deg' == deg then
-        curCoef.add coef
+        curCoef + coef
       else
         curCoef
     )
@@ -345,17 +347,17 @@ theorem merge_aux_coef_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd_deg 
     {firsts_tl : List (PreMS (basis_hd :: basis_tl))} :
     merge_aux_coef (CoList.cons (hd_deg, hd_coef) hd_tl :: firsts_tl) deg =
     if hd_deg = deg then
-      hd_coef.add (merge_aux_coef firsts_tl deg)
+      hd_coef + (merge_aux_coef firsts_tl deg)
     else
      merge_aux_coef firsts_tl deg := by
   simp [merge_aux_coef]
   split_ifs
-  · conv => lhs; rw [show hd_coef = hd_coef.add (zero _) by simp]
-    generalize zero basis_tl = init
+  · conv => lhs; rw [← add_zero hd_coef] --rw [show hd_coef = hd_coef + 0 by simp]
+    generalize (0 : PreMS basis_tl) = init
     induction firsts_tl generalizing init with
     | nil => simp
     | cons firsts_tl_hd firsts_tl_tl ih =>
-      simp [add_assoc']
+      simp [add_assoc]
       apply firsts_tl_hd.casesOn
       · simp
         apply ih
@@ -602,11 +604,11 @@ theorem merge_aux_coef_cons_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg 
 
 theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreMS (basis_hd :: basis_tl)}
     {s_tl : CoList (PreMS (basis_hd :: basis_tl))} {m : ℕ} :
-    merge (m + 1) (CoList.cons s_hd s_tl) = s_hd.add (merge m s_tl) := by
+    merge (m + 1) (CoList.cons s_hd s_tl) = s_hd + (merge m s_tl) := by
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
     ∃ m s_hd s_tl,
       x = merge (m + 1) (CoList.cons s_hd s_tl) ∧
-      y = s_hd.add (merge m s_tl)
+      y = s_hd + (merge m s_tl)
   apply CoList.Eq.coind motive
   · intro x y ih
     simp only [motive] at ih
@@ -620,6 +622,7 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
       | bot =>
         right
         simp [h_maxExp, leadingExp] at hx_eq hy_eq
+        -- rw [add_nil] at hy_eq
         exact ⟨hx_eq, hy_eq⟩
       | coe right_deg =>
         left
@@ -775,7 +778,7 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
     use m, s_hd, s_tl
 
 @[simp]
-theorem merge1_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem merge1_cons_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {s_hd : PreMS (basis_hd :: basis_tl)}
     {s_tl : CoList (PreMS (basis_hd :: basis_tl))} :
     (merge1 (.cons s_hd s_tl)).leadingExp = s_hd.leadingExp := by
@@ -785,6 +788,11 @@ theorem merge1_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   · simp [leadingExp]
   · intro (deg, coef) tl
     simp [leadingExp]
+
+theorem merge1_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {s : CoList (PreMS (basis_hd :: basis_tl))} :
+    (merge1 s).leadingExp = s.head.elim ⊥ (·.leadingExp) := by
+  apply s.casesOn <;> simp
 
 @[simp]
 theorem merge1_cons_head {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd_deg : ℝ} {s_hd_coef : PreMS basis_tl}
@@ -798,23 +806,225 @@ theorem merge1_cons_head {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd_deg :
 theorem merge1_cons_head_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
     {s_tl : CoList (PreMS (basis_hd :: basis_tl))} :
-    merge1 (.cons (.cons (deg, coef) tl) s_tl) = .cons (deg, coef) (tl.add (merge1 s_tl)) := by
+    merge1 (.cons (.cons (deg, coef) tl) s_tl) = .cons (deg, coef) (tl + (merge1 s_tl)) := by
   simp [merge1]
   conv => lhs; rw [merge_unfold, merge']; simp [leadingExp]
   simp [merge_aux_coef, merge_aux_kNew, leadingExp, merge_aux_liNew]
   apply merge_succ_cons
 
--- theorem merge1_cons_eq_add {basis_hd : ℝ → ℝ} {basis_tl : Basis}
---     {s_hd : PreMS (basis_hd :: basis_tl)} {s_tl : CoList (PreMS (basis_hd :: basis_tl))} :
---     merge1 (.cons s_hd s_tl) = add s_hd (merge1 s_tl) := by
---   apply s_hd.casesOn
---   · sorry
---   · intro (deg, coef) tl
---     rw [add_cons_left]
---     · apply merge1_cons_head_cons
---     · apply s_tl.casesOn
---       · simp
---       · simp
+theorem merge1_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {s_hd : PreMS (basis_hd :: basis_tl)} {s_tl : CoList (PreMS (basis_hd :: basis_tl))}
+    (h_sorted : (CoList.cons s_hd s_tl).Sorted (· > ·)) :
+    merge1 (.cons s_hd s_tl) = s_hd + (merge1 s_tl) := by
+  revert h_sorted
+  apply s_hd.casesOn
+  · intro h_sorted
+    simp [tail_eq_nil_of_nil_head h_sorted]
+  · intro (s_hd_deg, s_hd_coef) s_hd_tl h_sorted
+    rw [add_cons_left]
+    · apply merge1_cons_head_cons
+    · revert h_sorted
+      apply s_tl.casesOn
+      · simp
+      · intro s_tl_hd s_tl_tl h_sorted
+        apply CoList.Sorted_cons at h_sorted
+        simp at h_sorted
+        simp
+        exact lt_iff_lt.mp h_sorted.left
+
+theorem merge1_wellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {s : CoList (PreMS (basis_hd :: basis_tl))}
+    (h_wo : s.all wellOrdered)
+    (h_sorted : s.Sorted (· > ·)) : (merge1 s).wellOrdered := by
+  let motive : PreMS (basis_hd :: basis_tl) → Prop := fun ms =>
+    ∃ X s,
+      ms = X + merge1 s ∧
+      X.wellOrdered ∧
+      s.all wellOrdered ∧
+      s.Sorted (fun x1 x2 ↦ x1 > x2)
+  apply wellOrdered.coind motive
+  · intro ms ih
+    simp only [motive] at ih ⊢
+    obtain ⟨X, s, h_eq, hX_wo, h_wo, h_sorted⟩ := ih
+    subst h_eq
+    revert hX_wo
+    apply X.casesOn
+    · intro _
+      revert h_wo h_sorted
+      apply s.casesOn
+      · intro _ _
+        simp
+      intro s_hd s_tl h_wo h_sorted
+      simp at h_wo
+      obtain ⟨h_hd_wo, h_tl_wo⟩ := h_wo
+      obtain ⟨h_sorted_hd, h_sorted_tl⟩ := CoList.Sorted_cons h_sorted
+      revert h_hd_wo h_sorted_hd h_sorted_tl
+      apply s_hd.casesOn
+      · intros
+        simp
+      intro (s_hd_deg, s_hd_coef) s_hd_tl h_hd_wo h_sorted_hd h_sorted_tl
+      obtain ⟨h_hd_coef_wo, h_hd_comp, h_hd_tl_wo⟩ := wellOrdered_cons h_hd_wo
+      right
+      use ?_, ?_, ?_
+      constructor
+      · rw [nil_add, merge1_cons_head_cons]
+        exact Eq.refl _
+      constructor
+      · exact h_hd_coef_wo
+      constructor
+      · simp
+        constructor
+        · exact h_hd_comp
+        · revert h_sorted_hd
+          apply s_tl.casesOn
+          · simp
+          · intro s_tl_hd s_tl_tl h_sorted_hd
+            simpa [lt_iff_lt] using h_sorted_hd
+      use ?_, ?_
+      constructor
+      · exact Eq.refl _
+      constructor
+      · exact h_hd_tl_wo
+      constructor
+      · exact h_tl_wo
+      · exact h_sorted_tl
+    · intro (X_deg, X_coef) X_tl hX_wo
+      obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := wellOrdered_cons hX_wo
+      right
+      revert h_wo h_sorted
+      apply s.casesOn
+      · intro _ _
+        use ?_, ?_, ?_
+        constructor
+        · simp only [merge1_nil, add_nil]
+          exact Eq.refl _
+        constructor
+        · exact hX_coef_wo
+        constructor
+        · exact hX_comp
+        use ?_, .nil
+        constructor
+        · simp
+          exact Eq.refl _
+        constructor
+        · exact hX_tl_wo
+        · simp
+          apply CoList.Sorted.nil
+      intro s_hd s_tl h_wo h_sorted
+      simp at h_wo
+      obtain ⟨h_hd_wo, h_tl_wo⟩ := h_wo
+      obtain ⟨h_sorted_hd, h_sorted_tl⟩ := CoList.Sorted_cons h_sorted
+      revert h_hd_wo h_sorted_hd h_sorted_tl
+      apply s_hd.casesOn
+      · intros -- Copypaste
+        use ?_, ?_, ?_
+        constructor
+        · simp only [megre1_cons_head_nil, add_nil]
+          exact Eq.refl _
+        constructor
+        · exact hX_coef_wo
+        constructor
+        · exact hX_comp
+        use ?_, .nil
+        constructor
+        · simp
+          exact Eq.refl _
+        constructor
+        · exact hX_tl_wo
+        · simp
+          apply CoList.Sorted.nil
+      intro (s_hd_deg, s_hd_coef) s_hd_tl h_hd_wo h_sorted_hd h_sorted_tl
+      obtain ⟨h_hd_coef_wo, h_hd_comp, h_hd_tl_wo⟩ := wellOrdered_cons h_hd_wo
+      rw [merge1_cons_head_cons, add_cons_cons]
+      split_ifs with h1 h2
+      · use ?_, ?_, ?_
+        constructor
+        · exact Eq.refl _
+        constructor
+        · exact hX_coef_wo
+        constructor
+        · simp
+          constructor
+          · exact hX_comp
+          · exact h1
+        use ?_, ?_
+        constructor
+        · rw [← merge1_cons_head_cons]
+          exact Eq.refl _
+        constructor
+        · exact hX_tl_wo
+        constructor
+        · simp
+          tauto
+        · apply CoList.Sorted.cons
+          · assumption
+          · assumption
+      · use ?_, ?_, ?_
+        constructor
+        · exact Eq.refl _
+        constructor
+        · exact h_hd_coef_wo
+        constructor
+        · simp
+          constructor
+          · exact h2
+          constructor
+          · exact h_hd_comp
+          · revert h_sorted_hd
+            apply s_tl.casesOn
+            · simp
+            · intro s_tl_hd s_tl_tl h_sorted_hd
+              simpa [lt_iff_lt] using h_sorted_hd
+        use ?_, s_tl
+        constructor
+        · rw [← add_assoc]
+          exact Eq.refl _
+        constructor
+        · apply add_wellOrdered
+          · exact hX_wo
+          · exact h_hd_tl_wo
+        constructor
+        · exact h_tl_wo
+        · exact h_sorted_tl
+      · have : X_deg = s_hd_deg := by linarith
+        subst this
+        use ?_, ?_, ?_
+        constructor
+        · exact Eq.refl _
+        constructor
+        · apply add_wellOrdered
+          · exact hX_coef_wo
+          · exact h_hd_coef_wo
+        constructor
+        · simp
+          constructor
+          · exact hX_comp
+          constructor
+          · exact h_hd_comp
+          · revert h_sorted_hd
+            apply s_tl.casesOn
+            · simp
+            · intro s_tl_hd s_tl_tl h_sorted_hd
+              simpa [lt_iff_lt] using h_sorted_hd
+        use ?_, s_tl
+        constructor
+        · rw [← add_assoc]
+          exact Eq.refl _
+        constructor
+        · apply add_wellOrdered
+          · exact hX_tl_wo
+          · exact h_hd_tl_wo
+        constructor
+        · exact h_tl_wo
+        · exact h_sorted_tl
+  · simp only [motive]
+    use 0, s
+    simp
+    constructor
+    · exact zero_wellOrdered
+    constructor
+    · exact h_wo
+    · exact h_sorted
 
 end PreMS
 
