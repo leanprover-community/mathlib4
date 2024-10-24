@@ -84,7 +84,7 @@ attribute [instance] WellOrder.wo
 namespace WellOrder
 
 instance inhabited : Inhabited WellOrder :=
-  ⟨⟨PEmpty, EmptyRelation, inferInstance⟩⟩ 
+  ⟨⟨PEmpty, EmptyRelation, inferInstance⟩⟩
 
 instance hasWellFounded (o : WellOrder) : WellFoundedRelation o.α :=
   ⟨o.r, o.wo.wf⟩
@@ -145,8 +145,7 @@ instance one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
 @[simp]
-theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := by
-  cases w
+theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r :=
   rfl
 
 @[simp]
