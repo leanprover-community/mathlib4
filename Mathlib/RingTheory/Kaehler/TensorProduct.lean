@@ -123,7 +123,7 @@ lemma map_liftBaseChange_smul [h : Algebra.IsPushout R S A B] (b : B) (x) :
 The `S`-derivation `B = S ⊗[R] A` to `S ⊗[R] Ω[A⁄R]` sending `a ⊗ b` to `a ⊗ d b`. -/
 noncomputable
 def derivationTensorProduct [h : Algebra.IsPushout R S A B] :
-  Derivation S B (S ⊗[R] Ω[A⁄R]) where
+    Derivation S B (S ⊗[R] Ω[A⁄R]) where
   __ := h.out.lift ((TensorProduct.mk R S (Ω[A⁄R]) 1).comp (D R A).toLinearMap)
   map_one_eq_zero' := by
     rw [← (algebraMap A B).map_one]
