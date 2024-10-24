@@ -405,6 +405,10 @@ def ofElement {α : Type*} (r : α → α → Prop) (a : α) :
 theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
   rfl
 
+@[simp]
+theorem ofElement_top {α : Type*} (r : α → α → Prop) (a : α) : (ofElement r a).top = a :=
+  rfl
+
 /-- For any principal segment `r ≺i s`, there is a `Subrel` of `s` order isomorphic to `r`. -/
 -- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply]
