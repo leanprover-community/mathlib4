@@ -553,6 +553,8 @@ variable [NumberField K]
 /-- The number of infinite real places of the number field `K`. -/
 noncomputable abbrev nrRealPlaces := card { w : InfinitePlace K // IsReal w }
 
+@[deprecated (since := "2024-10-24")] alias NrRealPlaces := nrRealPlaces
+
 /-- The number of infinite complex places of the number field `K`. -/
 noncomputable abbrev nrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
 
