@@ -262,6 +262,9 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
     if h : ∃ a, o = succ a then Or.inr (Or.inl h)
     else Or.inr <| Or.inr ⟨o0, fun _a => (succ_lt_of_not_succ h).2⟩
 
+theorem isLimit_of_not_succ_of_ne_zero {o : Ordinal} (h : ¬∃ a, o = succ a) (h' : o ≠ 0) :
+    IsLimit o := ((zero_or_succ_or_limit o).resolve_left h').resolve_left h
+
 -- TODO: this is an iff with `IsSuccPrelimit`
 theorem IsLimit.sSup_Iio {o : Ordinal} (h : IsLimit o) : sSup (Iio o) = o := by
   apply (csSup_le' (fun a ha ↦ le_of_lt ha)).antisymm

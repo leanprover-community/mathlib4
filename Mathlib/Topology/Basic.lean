@@ -1012,6 +1012,12 @@ theorem acc_principal_iff_cluster (x : X) (C : Set X) :
     AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ {x})) := by
   rw [acc_iff_cluster, inf_principal, inter_comm, diff_eq]
 
+theorem clusterPt_principal {x : X} {C : Set X} (h : ClusterPt x (𝓟 C)) :
+    x ∈ C ∨ AccPt x (𝓟 C) := by
+  by_contra! hc
+  rw [acc_principal_iff_cluster] at hc
+  simp_all only [not_false_eq_true, diff_singleton_eq_self, not_true_eq_false, hc.1]
+
 /-- `x` is an accumulation point of a set `C` iff every neighborhood
 of `x` contains a point of `C` other than `x`. -/
 theorem accPt_iff_nhds (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
