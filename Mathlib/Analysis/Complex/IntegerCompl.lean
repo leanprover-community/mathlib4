@@ -34,11 +34,6 @@ instance : LocallyCompactSpace ℂ_ℤ := by
 
 instance : Coe ℂ_ℤ ℂ := ⟨coe⟩
 
-lemma UpperHalfPlane.ne_int (z : ℍ) : ∀ n : ℤ, z.1 ≠ n := by
-  intro n
-  have h1 := z.2
-  aesop
-
 @[coe] def ucoe : ℍ → ℂ_ℤ := fun z => ⟨z, by simpa using UpperHalfPlane.ne_int z⟩
 
 instance : Coe ℍ ℂ_ℤ := ⟨ucoe⟩
@@ -49,7 +44,11 @@ lemma IntegerComplement_add_ne_zero (x : ℂ_ℤ) (a : ℤ) : x.1 + a ≠ 0 := b
   have := not_exists.mp x.2 (-a)
   aesop
 
-lemma IntegerComplement_not_zero (x : ℂ_ℤ) : x.1 ≠ 0 := by
+lemma IntegerComplement_ne_zero (x : ℂ_ℤ) : x.1 ≠ 0 := by
   simpa using IntegerComplement_add_ne_zero x 0
+
+lemma IntegerComplement_ne_one (x : ℂ_ℤ) : x.1 ≠ 1 := by
+  have := IntegerComplement_add_ne_zero x (-1 : ℤ)
+  aesop
 
 end Complex
