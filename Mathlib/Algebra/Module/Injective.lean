@@ -3,11 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.CategoryTheory.Preadditive.Injective
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Logic.Small.Basic
 
 /-!
 # Injective modules
@@ -33,6 +32,7 @@ import Mathlib.Logic.Equiv.TransferInstance
 
 -/
 
+assert_not_exists ModuleCat
 
 noncomputable section
 
@@ -56,26 +56,6 @@ map to `Q`, i.e. in the following diagram, if `f` is injective then there is an 
   out : ∀ ⦃X Y : Type v⦄ [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]
     (f : X →ₗ[R] Y) (_ : Function.Injective f) (g : X →ₗ[R] Q),
     ∃ h : Y →ₗ[R] Q, ∀ x, h (f x) = g x
-
-theorem Module.injective_object_of_injective_module [inj : Module.Injective R Q] :
-    CategoryTheory.Injective (ModuleCat.of R Q) where
-  factors g f m :=
-    have ⟨l, h⟩ := inj.out f ((ModuleCat.mono_iff_injective f).mp m) g
-    ⟨l, LinearMap.ext h⟩
-
-theorem Module.injective_module_of_injective_object
-    [inj : CategoryTheory.Injective <| ModuleCat.of R Q] :
-    Module.Injective R Q where
-  out X Y _ _ _ _ f hf g := by
-    have : CategoryTheory.Mono (ModuleCat.asHom f) := (ModuleCat.mono_iff_injective _).mpr hf
-    obtain ⟨l, rfl⟩ := inj.factors (ModuleCat.asHom g) (ModuleCat.asHom f)
-    exact ⟨l, fun _ ↦ rfl⟩
-
-theorem Module.injective_iff_injective_object :
-    Module.Injective R Q ↔
-    CategoryTheory.Injective (ModuleCat.of R Q) :=
-  ⟨fun _ => injective_object_of_injective_module R Q,
-   fun _ => injective_module_of_injective_object R Q⟩
 
 /-- An `R`-module `Q` satisfies Baer's criterion if any `R`-linear map from an `Ideal R` extends to
 an `R`-linear map `R ⟶ Q`-/
@@ -439,13 +419,6 @@ lemma Module.injective_iff_ulift_injective :
     Module.Injective R M ↔ Module.Injective R (ULift.{v'} M) :=
   ⟨Module.ulift_injective_of_injective R,
    Module.injective_of_ulift_injective R⟩
-
-instance ModuleCat.ulift_injective_of_injective
-    [inj : CategoryTheory.Injective <| ModuleCat.of R M] :
-    CategoryTheory.Injective <| ModuleCat.of R (ULift.{v'} M) :=
-  Module.injective_object_of_injective_module
-    (inj := Module.ulift_injective_of_injective
-      (inj := Module.injective_module_of_injective_object (inj := inj)))
 
 end ULift
 
