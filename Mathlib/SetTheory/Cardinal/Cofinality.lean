@@ -908,7 +908,8 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
   ⟨h.trans (le_succ c),
     succ_le_of_lt
       (by
-        cases' Quotient.exists_rep (@succ Cardinal _ _ c) with α αe; simp only [mk'_def] at αe
+        have αe := Cardinal.mk_out (succ c)
+        set α := (succ c).out
         rcases ord_eq α with ⟨r, wo, re⟩
         have := isLimit_ord (h.trans (le_succ _))
         rw [← αe, re] at this ⊢
@@ -1167,10 +1168,10 @@ theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
     apply lift_lt_univ'
 
 theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < (c^cof c.ord) :=
-  Quotient.inductionOn c fun α h => by
+  Cardinal.inductionOn c fun α h => by
     rcases ord_eq α with ⟨r, wo, re⟩
     have := isLimit_ord h
-    rw [mk'_def, re] at this ⊢
+    rw [re] at this ⊢
     rcases cof_eq' r this with ⟨S, H, Se⟩
     have := sum_lt_prod (fun a : S => #{ x // r x a }) (fun _ => #α) fun i => ?_
     · simp only [Cardinal.prod_const, Cardinal.lift_id, ← Se, ← mk_sigma, power_def] at this ⊢
