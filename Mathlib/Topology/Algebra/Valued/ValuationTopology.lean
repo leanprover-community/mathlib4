@@ -15,7 +15,7 @@ The main definition is a `Valued` type class which equips a ring with a valuatio
 values in a group with zero. Other instances are then deduced from this.
 -/
 
-open scoped Topology uniformity
+open scoped Topology Uniformity
 open Set Valuation
 
 noncomputable section
@@ -28,52 +28,55 @@ namespace Valuation
 
 variable (v : Valuation R Γ₀)
 
-/-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
-theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgroup γ : AddSubgroup R) :=
-  { inter := by
-      rintro γ₀ γ₁
-      use min γ₀ γ₁
-      simp only [ltAddSubgroup, Units.min_val, Units.val_le_val, lt_min_iff,
-        AddSubgroup.mk_le_mk, setOf_subset_setOf, le_inf_iff, and_imp, imp_self, implies_true,
-        forall_const, and_true]
-      tauto
-    mul := by
-      rintro γ
-      cases' exists_square_le γ with γ₀ h
-      use γ₀
-      rintro - ⟨r, r_in, s, s_in, rfl⟩
-      calc
-        (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
-        _ < γ₀ * γ₀ := mul_lt_mul₀ r_in s_in
-        _ ≤ γ := mod_cast h
-    leftMul := by
-      rintro x γ
-      rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
-      · use (1 : Γ₀ˣ)
-        rintro y _
-        change v (x * y) < _
-        rw [Valuation.map_mul, Hx, zero_mul]
-        exact Units.zero_lt γ
-      · use γx⁻¹ * γ
-        rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
-        change (v (x * y) : Γ₀) < γ
-        rw [Valuation.map_mul, Hx, mul_comm]
-        rw [Units.val_mul, mul_comm] at vy_lt
-        simpa using mul_inv_lt_of_lt_mul₀ vy_lt
-    rightMul := by
-      rintro x γ
-      rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
-      · use 1
-        rintro y _
-        change v (y * x) < _
-        rw [Valuation.map_mul, Hx, mul_zero]
-        exact Units.zero_lt γ
-      · use γx⁻¹ * γ
-        rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
-        change (v (y * x) : Γ₀) < γ
-        rw [Valuation.map_mul, Hx]
-        rw [Units.val_mul, mul_comm] at vy_lt
-        simpa using mul_inv_lt_of_lt_mul₀ vy_lt }
+theorem isBasis : Filter.IsBasis (fun _ ↦ True) (fun γ ↦ v.ltAddSubgroup γ : Γ₀ˣ → Set R) where
+  nonempty := ⟨1, trivial⟩
+  inter {γ₀ γ₁} _ _ := by
+    use min γ₀ γ₁, trivial
+    simp only [ltAddSubgroup, Units.min_val, Units.val_le_val, lt_min_iff,
+      AddSubgroup.mk_le_mk, setOf_subset_setOf, le_inf_iff, and_imp, imp_self, implies_true,
+      forall_const, and_true]
+    tauto
+
+theorem isRingBasis :
+    Filter.IsRingBasis (fun _ ↦ True) (fun γ ↦ v.ltAddSubgroup γ : Γ₀ˣ → Set R) := by
+  refine .mk_of_subgroups v.isBasis ?mul ?mul_left ?mul_right
+  case mul =>
+    rintro γ -
+    cases' exists_square_le γ with γ₀ h
+    use γ₀, trivial
+    rintro - ⟨r, r_in, s, s_in, rfl⟩
+    calc
+      (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
+      _ < γ₀ * γ₀ := mul_lt_mul₀ r_in s_in
+      _ ≤ γ := mod_cast h
+  case mul_left =>
+    rintro x γ -
+    rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
+    · use (1 : Γ₀ˣ), trivial
+      rintro y _
+      change v (x * y) < _
+      rw [Valuation.map_mul, Hx, zero_mul]
+      exact Units.zero_lt γ
+    · use γx⁻¹ * γ, trivial
+      rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
+      change (v (x * y) : Γ₀) < γ
+      rw [Valuation.map_mul, Hx, mul_comm]
+      rw [Units.val_mul, mul_comm] at vy_lt
+      simpa using mul_inv_lt_of_lt_mul₀ vy_lt
+  case mul_right =>
+    rintro x γ -
+    rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
+    · use 1, trivial
+      rintro y _
+      change v (y * x) < _
+      rw [Valuation.map_mul, Hx, mul_zero]
+      exact Units.zero_lt γ
+    · use γx⁻¹ * γ, trivial
+      rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
+      change (v (y * x) : Γ₀) < γ
+      rw [Valuation.map_mul, Hx]
+      rw [Units.val_mul, mul_comm] at vy_lt
+      simpa using mul_inv_lt_of_lt_mul₀ vy_lt
 
 end Valuation
 
@@ -94,12 +97,12 @@ namespace Valued
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
-    toUniformSpace := @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
-    toUniformAddGroup := @comm_topologicalAddGroup_is_uniform _ _ v.subgroups_basis.topology _
+    toUniformSpace := @TopologicalAddGroup.toUniformSpace R _ v.isRingBasis.topology _
+    toUniformAddGroup := @comm_topologicalAddGroup_is_uniform _ _ v.isRingBasis.topology _
     is_topological_valuation := by
-      letI := @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
+      letI := @TopologicalAddGroup.toUniformSpace R _ v.isRingBasis.topology _
       intro s
-      rw [Filter.hasBasis_iff.mp v.subgroups_basis.hasBasis_nhds_zero s]
+      rw [Filter.hasBasis_iff.mp v.isRingBasis.nhds_zero_hasBasis s]
       exact exists_congr fun γ => by rw [true_and]; rfl }
 
 variable (R Γ₀)
@@ -116,9 +119,9 @@ theorem hasBasis_uniformity : (uniformity R).HasBasis (fun _ => True)
   exact (hasBasis_nhds_zero R Γ₀).comap _
 
 theorem toUniformSpace_eq :
-    toUniformSpace = @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _ :=
+    toUniformSpace = @TopologicalAddGroup.toUniformSpace R _ v.isRingBasis.topology _ :=
   UniformSpace.ext
-    ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
+    ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.isRingBasis.nhds_zero_hasBasis.comap _)
 
 variable {R Γ₀}
 
@@ -137,18 +140,12 @@ theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 
   exact Valuation.map_eq_of_sub_lt _ y_in
 
 instance (priority := 100) : TopologicalRing R :=
-  (toUniformSpace_eq R Γ₀).symm ▸ v.subgroups_basis.toRingFilterBasis.isTopologicalRing
+  (toUniformSpace_eq R Γ₀).symm ▸ v.isRingBasis.instTopologicalRing
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : Γ₀ˣ, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), (v (y - x) : Γ₀) < γ := by
-  rw [toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
-  apply and_congr Iff.rfl
-  simp_rw [Valued.v.subgroups_basis.mem_addGroupFilterBasis_iff]
-  constructor
-  · intro h γ
-    exact h _ (Valued.v.subgroups_basis.mem_addGroupFilterBasis _)
-  · rintro h - ⟨γ, rfl⟩
-    exact h γ
+  rw [toUniformSpace_eq, v.isRingBasis.cauchy_iff]
+  simp only [ltAddSubgroup, AddSubgroup.coe_set_mk, mem_setOf_eq, true_implies]
 
 variable (R)
 

@@ -225,7 +225,9 @@ all `x` and `y`. -/
 def seminormFamily : SeminormFamily 𝕜 (E →WOT[𝕜] F) (E × F⋆) :=
   fun ⟨x, y⟩ => seminorm x y
 
-lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis (seminormFamily 𝕜 E F).basisSets id := by
+open Function in
+lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis (fun sr ↦ 0 < sr.2)
+    (uncurry (seminormFamily 𝕜 E F).basis) := by
   let p := seminormFamily 𝕜 E F
   rw [nhds_induced, nhds_pi]
   simp only [map_zero, Pi.zero_apply]
@@ -235,17 +237,17 @@ lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis (seminormFamil
   · rintro ⟨s, U₂⟩ ⟨hs, hU₂⟩
     lift s to Finset (E × F⋆) using hs
     by_cases hU₃ : s.Nonempty
-    · refine ⟨(s.sup p).ball 0 <| s.inf' hU₃ U₂, p.basisSets_mem _ <| (Finset.lt_inf'_iff _).2 hU₂,
-        fun x hx y hy => ?_⟩
+    · refine ⟨⟨s, s.inf' hU₃ U₂⟩, (Finset.lt_inf'_iff hU₃).2 hU₂, fun x hx y hy => ?_⟩
       simp only [Set.mem_preimage, Set.mem_pi, mem_ball_zero_iff]
-      rw [id, Seminorm.mem_ball_zero] at hx
+      rw [uncurry_apply_pair, SeminormFamily.basis, Seminorm.mem_ball_zero] at hx
       have hp : p y ≤ s.sup p := Finset.le_sup hy
       refine lt_of_le_of_lt (hp x) (lt_of_lt_of_le hx ?_)
       exact Finset.inf'_le _ hy
     · rw [Finset.not_nonempty_iff_eq_empty.mp hU₃]
-      exact ⟨(p 0).ball 0 1, p.basisSets_singleton_mem 0 one_pos, by simp⟩
-  · suffices ∀ U ∈ p.basisSets, U ∈ 𝓝 (0 : E →WOT[𝕜] F) by simpa [nhds_induced, nhds_pi]
-    exact p.basisSets_mem_nhds fun ⟨x, y⟩ ↦ continuous_dual_apply x y |>.norm
+      exact ⟨⟨{0}, 1⟩, one_pos, by simp⟩
+  · suffices ∀ s r, 0 < r → (seminormFamily 𝕜 E F).basis s r ∈ 𝓝 (0 : E →WOT[𝕜] F) by
+      simpa [nhds_induced, nhds_pi]
+    exact p.basis_mem_nhds fun ⟨x, y⟩ ↦ continuous_dual_apply x y |>.norm
 
 lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E F) :=
   SeminormFamily.withSeminorms_of_hasBasis _ hasBasis_seminorms

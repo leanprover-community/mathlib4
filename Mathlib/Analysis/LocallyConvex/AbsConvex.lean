@@ -307,14 +307,12 @@ variable [SMulCommClass ℝ 𝕜 E] [LocallyConvexSpace ℝ E]
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/
 theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
   refine SeminormFamily.withSeminorms_of_hasBasis _ ?_
-  refine (nhds_hasBasis_absConvex_open 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs => ?_
-  · refine ⟨s, ⟨?_, rfl.subset⟩⟩
-    convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
-    rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
-  refine ⟨s, ⟨?_, rfl.subset⟩⟩
-  rw [SeminormFamily.basisSets_iff] at hs
-  rcases hs with ⟨t, r, hr, rfl⟩
-  rw [Seminorm.ball_finset_sup_eq_iInter _ _ _ hr]
+  refine (nhds_hasBasis_absConvex_open 𝕜 E).to_hasBasis (fun s hs => ?_) ?_
+  · use ⟨{⟨s, hs.1, hs.2⟩}, 1⟩, one_pos
+    simp [SeminormFamily.basis, gaugeSeminormFamily_ball]
+  rintro ⟨t, r⟩ hr
+  refine ⟨(gaugeSeminormFamily 𝕜 E).basis t r, ?_, subset_rfl⟩
+  rw [SeminormFamily.basis, Seminorm.ball_finset_sup_eq_iInter _ _ _ hr]
   -- We have to show that the intersection contains zero, is open, balanced, and convex
   refine
     ⟨mem_iInter₂.mpr fun _ _ => by simp [Seminorm.mem_ball_zero, hr],
