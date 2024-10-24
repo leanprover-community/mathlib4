@@ -86,8 +86,8 @@ lemma isClosed_preCantorSet (n : ℕ) : IsClosed (preCantorSet n) := by
   | zero => exact isClosed_Icc
   | succ n ih =>
     refine IsClosed.union ?_ ?_
-    · simpa [f, div_eq_inv_mul] using f.closedEmbedding.closed_iff_image_closed.mp ih
-    · simpa [g, f, div_eq_inv_mul] using g.closedEmbedding.closed_iff_image_closed.mp ih
+    · simpa [f, div_eq_inv_mul] using f.isClosedEmbedding.closed_iff_image_closed.mp ih
+    · simpa [g, f, div_eq_inv_mul] using g.isClosedEmbedding.closed_iff_image_closed.mp ih
 
 /-- The ternary Cantor set is closed. -/
 lemma isClosed_cantorSet : IsClosed cantorSet :=
