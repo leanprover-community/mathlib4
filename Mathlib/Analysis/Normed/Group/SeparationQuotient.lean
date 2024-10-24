@@ -95,9 +95,9 @@ open NormedAddGroupHom
 
 /-- The morphism from a seminormed group to the quotient by the null space. -/
 noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) :=
-  { mkAddGroupHom with
+  { mkAddMonoidHom with
     bound' := ⟨1, fun m => by simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-      mkAddGroupHom_apply, norm_mk, one_mul, le_refl]⟩}
+      mkAddMonoidHom_apply, norm_mk, one_mul, le_refl]⟩}
 
 /-- `mkAddGroupHom` agrees with `QuotientAddGroup.mk`. -/
 @[simp]
