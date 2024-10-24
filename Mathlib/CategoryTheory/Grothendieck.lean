@@ -94,7 +94,6 @@ instance (X : Grothendieck F) : Inhabited (Hom X X) :=
 
 /-- Composition of morphisms in the Grothendieck category.
 -/
-@[simps]
 def comp {X Y Z : Grothendieck F} (f : Hom X Y) (g : Hom Y Z) : Hom X Z where
   base := f.base ≫ g.base
   fiber :=
@@ -108,15 +107,15 @@ instance : Category (Grothendieck F) where
   comp := @fun _ _ _ f g => Grothendieck.comp f g
   comp_id := @fun X Y f => by
     dsimp; ext
-    · simp
-    · dsimp
+    · simp [comp]
+    · dsimp [comp]
       rw [← NatIso.naturality_2 (eqToIso (F.map_id Y.base)) f.fiber]
       simp
-  id_comp := @fun X Y f => by dsimp; ext <;> simp
+  id_comp := @fun X Y f => by dsimp; ext <;> simp [comp]
   assoc := @fun W X Y Z f g h => by
     dsimp; ext
-    · simp
-    · dsimp
+    · simp [comp]
+    · dsimp [comp]
       rw [← NatIso.naturality_2 (eqToIso (F.map_comp _ _)) f.fiber]
       simp
 
@@ -126,11 +125,16 @@ theorem id_fiber' (X : Grothendieck F) :
   id_fiber X
 
 @[simp]
-theorem comp_fiber' {X Y Z : Grothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
+theorem comp_base {X Y Z : Grothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).base = f.base ≫ g.base :=
+  rfl
+
+@[simp]
+theorem comp_fiber {X Y Z : Grothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
     Hom.fiber (f ≫ g) =
     eqToHom (by erw [Functor.map_comp, Functor.comp_obj]) ≫
     (F.map g.base).map f.fiber ≫ g.fiber :=
-  comp_fiber f g
+  rfl
 
 
 theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
@@ -170,7 +174,7 @@ def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
   map_comp {X Y Z} f g := by
     dsimp
     congr 1
-    simp only [comp_fiber' f g, ← Category.assoc, Functor.map_comp, eqToHom_map]
+    simp only [comp_fiber f g, ← Category.assoc, Functor.map_comp, eqToHom_map]
     congr 1
     simp only [Cat.eqToHom_app, Cat.comp_obj, eqToHom_trans, eqToHom_map, Category.assoc]
     erw [Functor.congr_hom (α.naturality g.base).symm f.fiber]
@@ -291,6 +295,16 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
     dsimp
     simp
     rfl
+
+variable (F) in
+/-- Applying a functor `G : D ⥤ C` to the base of the Grothendieck construction induces a functor
+`Grothendieck (G ⋙ F) ⥤ Grothendieck F`. -/
+@[simps]
+def pre (G : D ⥤ C) : Grothendieck (G ⋙ F) ⥤ Grothendieck F where
+  obj X := ⟨G.obj X.base, X.fiber⟩
+  map f := ⟨G.map f.base, f.fiber⟩
+  map_id X := Grothendieck.ext _ _ (G.map_id _) (by simp)
+  map_comp f g := Grothendieck.ext _ _ (G.map_comp _ _) (by simp)
 
 end Grothendieck
 
