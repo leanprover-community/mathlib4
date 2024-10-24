@@ -886,7 +886,7 @@ namespace Subfield
 variable {X Y}
 
 /-- The action by a subfield is the action by the underlying field. -/
-instance [SMul K X] (F : Subfield K): SMul F X :=
+instance [SMul K X] (F : Subfield K) : SMul F X :=
   inferInstanceAs (SMul F.toSubsemiring X)
 
 theorem smul_def [SMul K X] {F : Subfield K} (g : F) (m : X) : g • m = (g : K) • m :=
