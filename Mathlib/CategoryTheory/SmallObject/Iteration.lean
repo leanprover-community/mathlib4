@@ -97,7 +97,7 @@ structure Iteration [Preorder J] [OrderBot J] [SuccOrder J] (j : J) where
     Iteration.mapSucc' F i hi = whiskerLeft _ ε ≫ (isoSucc i hi).inv
   /-- If `i` is a limit element, the `i`th iteration is the colimit
   of `k`th iterations for `k < i`. -/
-  isColimit (i : J) (h_bot : i ≠ ⊥) (h_lim : Order.IsSuccLimit i) (hi : i ≤ j) :
+  isColimit (i : J) [Fact (Order.IsSuccLimit i)] (hi : i ≤ j) :
     IsColimit (Iteration.coconeOfLE F hi)
 
 namespace Iteration
@@ -178,12 +178,13 @@ instance {J} {j : J} [ConditionallyCompleteLinearOrderBot J] [WellFoundedLT J] [
     suffices ∀ i hi, f.natTrans.app ⟨i, hi⟩ = g.natTrans.app ⟨i, hi⟩ by
       ext ⟨i, hi⟩ : 2
       apply this
-    refine fun i => SuccOrder.limitRecOn i ?_ ?_ <;>
+    refine fun i => SuccOrder.prelimitRecOn i ?_ ?_ <;>
     intro j H IH hj
     · simp [Hom.natTrans_app_succ, IH, (Order.lt_succ_of_not_isMax H).trans_le hj]
     · rcases eq_or_ne j ⊥ with rfl | h_bot
       · simp only [natTrans_app_zero]
-      · apply (iter₁.isColimit j h_bot H hj).hom_ext
+      · have : Fact (Order.IsSuccLimit j) := ⟨Order.isSuccLimit_iff.2 ⟨h_bot, H⟩⟩ 
+        apply (iter₁.isColimit j hj).hom_ext
         rintro ⟨k, hk⟩
         simp [IH k hk]
 
