@@ -15,9 +15,8 @@ This file collects facts about ordered algebraic structures on the one-element t
 
 namespace PUnit
 
-instance canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit where
+instance canonicallyOrderedAdd : CanonicallyOrderedAdd PUnit where
   exists_add_of_le {_ _} _ := ⟨unit, by subsingleton⟩
-  add_le_add_left _ _ _ _ := trivial
   le_self_add _ _ := trivial
 
 instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUnit where

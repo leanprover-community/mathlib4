@@ -23,7 +23,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
 
   - `LinearOrderedSemiring ℝ≥0`;
   - `OrderedCommSemiring ℝ≥0`;
-  - `CanonicallyOrderedCommSemiring ℝ≥0`;
+  - `CanonicallyOrderedAdd ℝ≥0`;
   - `LinearOrderedCommGroupWithZero ℝ≥0`;
   - `CanonicallyLinearOrderedAddCommMonoid ℝ≥0`;
   - `Archimedean ℝ≥0`;
@@ -54,12 +54,14 @@ open Function
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
   SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
-  CanonicallyOrderedCommSemiring, Inhabited
+  OrderedCommMonoid, Nontrivial, Inhabited
 
 namespace NNReal
 
 scoped notation "ℝ≥0" => NNReal
 
+instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
+instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
 instance : OrderBot ℝ≥0 := inferInstance
 instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
@@ -67,8 +69,11 @@ instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedea
 noncomputable instance : Sub ℝ≥0 := Nonneg.sub
 noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
-noncomputable instance : CanonicallyLinearOrderedSemifield ℝ≥0 :=
-  Nonneg.canonicallyLinearOrderedSemifield
+noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
+  Nonneg.linearOrderedSemifield
+
+noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
+  Nonneg.linearOrderedCommGroupWithZero
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
 @[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
@@ -332,8 +337,6 @@ example : OrderBot ℝ≥0 := by infer_instance
 
 example : PartialOrder ℝ≥0 := by infer_instance
 
-noncomputable example : CanonicallyLinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
-
 noncomputable example : LinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
 example : DistribLattice ℝ≥0 := by infer_instance
@@ -349,10 +352,6 @@ example : OrderedCommSemiring ℝ≥0 := by infer_instance
 noncomputable example : LinearOrderedCommMonoid ℝ≥0 := by infer_instance
 
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
-
-noncomputable example : LinearOrderedCommGroupWithZero ℝ≥0 := by infer_instance
-
-example : CanonicallyOrderedCommSemiring ℝ≥0 := by infer_instance
 
 example : DenselyOrdered ℝ≥0 := by infer_instance
 

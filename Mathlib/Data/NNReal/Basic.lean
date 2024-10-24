@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.BigOperators.Expect
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Canonical.Basic
+import Mathlib.Algebra.Order.Field.Canonical
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Data.NNReal.Defs
