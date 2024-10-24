@@ -130,6 +130,16 @@ theorem Differentiable.const_cpow (hf : Differentiable ℂ f)
     (h0 : c ≠ 0 ∨ ∀ x, f x ≠ 0) : Differentiable ℂ (fun x ↦ c ^ f x) :=
   fun x ↦ (hf x).const_cpow (h0.imp_right fun h ↦ h x)
 
+@[fun_prop]
+lemma differentiable_const_cpow_of_neZero (z : ℂ) [NeZero z] :
+    Differentiable ℂ fun s : ℂ ↦ z ^ s :=
+  differentiable_id.const_cpow (.inl <| NeZero.ne z)
+
+@[fun_prop]
+lemma differentiableAt_const_cpow_of_neZero (z : ℂ) [NeZero z] (t : ℂ) :
+    DifferentiableAt ℂ (fun s : ℂ ↦ z ^ s) t :=
+  differentiableAt_id.const_cpow (.inl <| NeZero.ne z)
+
 end fderiv
 
 section deriv
