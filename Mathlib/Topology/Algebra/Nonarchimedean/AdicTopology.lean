@@ -54,8 +54,7 @@ namespace Ideal
 
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
-abbrev adicBasis (n : ℕ) :
-    Submodule R M := I ^ n • ⊤
+abbrev adicBasis (n : ℕ) : Submodule R M := I ^ n • ⊤
 
 theorem adicBasis_isBasis :
     IsBasis (fun _ ↦ True) (fun n ↦ I.adicBasis M n : ℕ → Set M) where

@@ -87,6 +87,24 @@ theorem IsGroupBasis.mk_of_comm {G : Type*} {ι : Sort*} [CommGroup G] (p : ι �
   inv := inv
   conj x i hi := ⟨i, hi, by simpa only [mul_inv_cancel_comm, preimage_id'] using mapsTo_id _⟩
 
+@[to_additive]
+theorem HasBasis.isGroupBasis {G : Type*} {ι : Sort*} [Group G] [TopologicalSpace G]
+    [TopologicalGroup G] {p : ι → Prop} {s : ι → Set G} (h : (𝓝 1).HasBasis p s) :
+    IsGroupBasis p s where
+  toIsBasis := h.isBasis
+  one hi := mem_of_mem_nhds (h.mem_of_mem hi)
+  mul := by
+    have : Tendsto (fun p : G × G ↦ p.1 * p.2) (𝓝 1 ×ˢ 𝓝 1) (𝓝 1) := by
+      simpa only [nhds_prod_eq, one_mul] using (tendsto_mul (M := G) (a := 1) (b := 1))
+    simpa [h.prod_self.tendsto_iff h, mul_subset_iff, forall_mem_comm] using this
+  inv := by
+    have : Tendsto (·⁻¹ : G → G) (𝓝 1) (𝓝 1) := by simpa using tendsto_inv (1 : G)
+    rwa [h.tendsto_iff h] at this
+  conj x₀ := by
+    have : Tendsto (x₀ * · * x₀⁻¹ : G → G) (𝓝 1) (𝓝 1) := by simpa using
+      (tendsto_id (x := 𝓝 1) |>.const_mul x₀ |>.mul_const x₀⁻¹)
+    rwa [h.tendsto_iff h] at this
+
 namespace IsGroupBasis
 
 variable {G : Type*} {ι : Sort*} [Group G] {p : ι → Prop} {s : ι → Set G} (hB : IsGroupBasis p s)
@@ -214,6 +232,21 @@ theorem IsRingBasis.mk_of_comm {R : Type*} {ι : Sort*} [CommRing R] (p : ι →
   mul := mul
   mul_left := mul_left
   mul_right := by simpa only [mul_comm] using mul_left
+
+theorem HasBasis.isRingBasis {R : Type*} {ι : Sort*} [Ring R] [TopologicalSpace R]
+    [TopologicalRing R] {p : ι → Prop} {s : ι → Set R} (h : (𝓝 0).HasBasis p s) :
+    IsRingBasis p s where
+  toIsAddGroupBasis := h.isAddGroupBasis
+  mul := by
+    have : Tendsto (fun p : R × R ↦ p.1 * p.2) (𝓝 0 ×ˢ 𝓝 0) (𝓝 0) := by
+      simpa only [nhds_prod_eq, zero_mul] using (tendsto_mul (M := R) (a := 0) (b := 0))
+    simpa [h.prod_self.tendsto_iff h, mul_subset_iff, forall_mem_comm] using this
+  mul_left x₀ := by
+    have : Tendsto (x₀ * ·) (𝓝 0) (𝓝 0) := by simpa using (tendsto_id (x := 𝓝 0) |>.const_mul x₀)
+    rwa [h.tendsto_iff h] at this
+  mul_right x₀ := by
+    have : Tendsto (· * x₀) (𝓝 0) (𝓝 0) := by simpa using (tendsto_id (x := 𝓝 0) |>.mul_const x₀)
+    rwa [h.tendsto_iff h] at this
 
 namespace IsRingBasis
 

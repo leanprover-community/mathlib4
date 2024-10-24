@@ -21,29 +21,34 @@ open uniformity Filter
 
 open Filter
 
-namespace AddGroupFilterBasis
+open scoped Uniformity
 
-variable {G : Type*} [AddCommGroup G] (B : AddGroupFilterBasis G)
+namespace Filter.IsAddGroupBasis
+
+variable {G : Type*} {ι : Type*} {p : ι → Prop} {s : ι → Set G} [AddCommGroup G]
+  (h : IsAddGroupBasis p s)
+
+-- TODO(Anatole): Prove `UniformAddGroup` from `Filter.IsAddGroupBasis` like we do for topologies
 
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure. -/
 protected def uniformSpace : UniformSpace G :=
-  @TopologicalAddGroup.toUniformSpace G _ B.topology B.isTopologicalAddGroup
+  @TopologicalAddGroup.toUniformSpace G _ h.topology h.instTopologicalAddGroup
 
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure is compatible with its group structure. -/
-protected theorem uniformAddGroup : @UniformAddGroup G B.uniformSpace _ :=
-  @comm_topologicalAddGroup_is_uniform G _ B.topology B.isTopologicalAddGroup
+protected instance (priority := 100) uniformAddGroup : @UniformAddGroup G h.uniformSpace _ :=
+  @comm_topologicalAddGroup_is_uniform G _ h.topology h.instTopologicalAddGroup
 
 theorem cauchy_iff {F : Filter G} :
-    @Cauchy G B.uniformSpace F ↔
-      F.NeBot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ U := by
-  letI := B.uniformSpace
-  haveI := B.uniformAddGroup
-  suffices F ×ˢ F ≤ uniformity G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ U by
+    @Cauchy G h.uniformSpace F ↔
+      F.NeBot ∧ ∀ i, p i → ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ s i := by
+  letI := h.uniformSpace
+  haveI := h.uniformAddGroup
+  suffices F ×ˢ F ≤ uniformity G ↔ ∀ i, p i → ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ s i by
     constructor <;> rintro ⟨h', h⟩ <;> refine ⟨h', ?_⟩ <;> [rwa [← this]; rwa [this]]
   rw [uniformity_eq_comap_nhds_zero G, ← map_le_iff_le_comap]
   change Tendsto _ _ _ ↔ _
-  simp [(basis_sets F).prod_self.tendsto_iff B.nhds_zero_hasBasis, @forall_swap (_ ∈ _) G]
+  simp [(basis_sets F).prod_self.tendsto_iff h.nhds_zero_hasBasis, @forall_swap (_ ∈ _) G]
 
-end AddGroupFilterBasis
+end Filter.IsAddGroupBasis

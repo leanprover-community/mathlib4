@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Monnet
 -/
 import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.Topology.Algebra.FilterBasis
+import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.Algebra.Nonarchimedean.TotallyDisconnected
 import Mathlib.Tactic.ByContra
 
@@ -121,20 +121,16 @@ theorem galBasis_isBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
       IntermediateField.fixingSubgroup.antimono le_sup_right⟩⟩
 
 theorem galBasis_isGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    Filter.IsGroupBasis (fun E : IntermediateField K L ↦ FiniteDimensional K E) (galBasis K L) where
-  toIsBasis := galBasis_isBasis K L
-  one _ := one_mem (IntermediateField.fixingSubgroup _)
-  mul {E} hE := ⟨E, hE, Set.mul_subset_iff.mpr fun σ hσ τ hτ ↦ mul_mem hσ hτ⟩
-  inv {E} hE := ⟨E, hE, fun σ hσ ↦ inv_mem hσ⟩
-  conj σ {E} hE := by
+    Filter.IsGroupBasis (fun E : IntermediateField K L ↦ FiniteDimensional K E) (galBasis K L) :=
+  .mk_of_subgroups (galBasis_isBasis K L) fun σ {E} hE ↦ by
     let F := E.map σ.symm.toAlgHom
     refine ⟨F, im_finiteDimensional σ.symm, fun g hg ↦ ?_⟩
-    simp_rw [galBasis, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff]
+    simp_rw [SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff]
     intro x hx
     change σ (g (σ⁻¹ x)) = x
     have h_in_F : σ⁻¹ x ∈ F := ⟨x, hx, by dsimp; rw [← AlgEquiv.invFun_eq_symm]; rfl⟩
     have h_g_fix : g (σ⁻¹ x) = σ⁻¹ x := by
-      rw [galBasis, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff F g] at hg
+      rw [SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff F g] at hg
       exact hg (σ⁻¹ x) h_in_F
     rw [h_g_fix]
     exact AlgEquiv.apply_symm_apply σ x
@@ -176,10 +172,8 @@ theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field
   OpenSubgroup.isClosed ⟨E.fixingSubgroup, E.fixingSubgroup_isOpen⟩
 
 /-- For a field extension `L/K`, the Krull topology on `L ≃ₐ[K] L` makes it a topological group. -/
-instance (K L : Type*) [Field K] [Field L] [Algebra K L] : NonarchimedeanGroup (L ≃ₐ[K] L) where
-  is_nonarchimedean := fun _ hU ↦
-    let ⟨E, _, hEU⟩ := krullTopology_basis_nhds_one K L |>.mem_iff.mp hU
-    ⟨⟨E.fixingSubgroup, E.fixingSubgroup_isOpen⟩, hEU⟩
+instance (K L : Type*) [Field K] [Field L] [Algebra K L] : NonarchimedeanGroup (L ≃ₐ[K] L) :=
+  (galBasis_isGroupBasis K L).nonarchimedean_of_subgroups
 
 -- TODO : remove the three following declarations ? They don't seem to be used anywhere else.
 /-- Given a field extension `L/K`, `finiteExts K L` is the set of
@@ -234,7 +228,7 @@ end TotallyDisconnected
 
 instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type) [Field K] [Field L]
     [Algebra K L] [FiniteDimensional K L] : DiscreteTopology (L ≃ₐ[K] L) := by
-  -- TODO: general criterion for `DiscreteTopology` ?
+  -- TODO: criterion `DiscreteTopology` in terms of `𝓝 1` ?
   rw [discreteTopology_iff_isOpen_singleton_one]
   change IsOpen (⊥ : Subgroup (L ≃ₐ[K] L))
   rw [← IntermediateField.fixingSubgroup_top]
