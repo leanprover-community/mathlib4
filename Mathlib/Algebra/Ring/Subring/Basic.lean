@@ -387,11 +387,11 @@ def subtype (s : Subring R) : s →+* R :=
 theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
 
-@[norm_cast] -- Porting note (#10618): simp can prove this (removed `@[simp]`)
+@[norm_cast]
 theorem coe_natCast : ∀ n : ℕ, ((n : s) : R) = n :=
   map_natCast s.subtype
 
-@[norm_cast] -- Porting note (#10618): simp can prove this (removed `@[simp]`)
+@[norm_cast]
 theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
   map_intCast s.subtype
 

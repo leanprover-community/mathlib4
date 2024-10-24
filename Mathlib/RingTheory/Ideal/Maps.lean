@@ -7,6 +7,9 @@ import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Maps on modules and ideals
+
+Main definitions include `Ideal.map`, `Ideal.comap`, `RingHom.ker`, `Module.annihilator`
+and `Submodule.annihilator`.
 -/
 
 assert_not_exists Basis -- See `RingTheory.Ideal.Basis`
@@ -209,8 +212,9 @@ theorem comap_sInf (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ s, (I : Id
 theorem comap_sInf' (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ comap f '' s, I :=
   _root_.trans (comap_sInf f s) (by rw [iInf_image])
 
+/-- Variant of `Ideal.IsPrime.comap` where ideal is explicit rather than implicit.  -/
 theorem comap_isPrime [H : IsPrime K] : IsPrime (comap f K) :=
-  ⟨comap_ne_top f H.ne_top, fun {x y} h => H.mem_or_mem <| by rwa [mem_comap, map_mul] at h⟩
+  H.comap f
 
 variable {I J K L}
 
@@ -694,14 +698,6 @@ theorem annihilator_iSup (ι : Sort w) (f : ι → Submodule R M) :
       (fun i ↦ mem_annihilator.1 <| (mem_iInf _).mp H i) (smul_zero _)
       fun m₁ m₂ h₁ h₂ ↦ by simp_rw [smul_add, h₁, h₂, add_zero]
 
-@[simp]
-theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=
-  eq_bot_iff.2 (smul_le.2 fun _ => mem_annihilator.1)
-
-@[simp]
-theorem annihilator_mul (I : Ideal R) : annihilator I * I = ⊥ :=
-  annihilator_smul I
-
 end Submodule
 
 end Semiring
@@ -731,6 +727,14 @@ theorem mem_annihilator_span (s : Set M) (r : R) :
 
 theorem mem_annihilator_span_singleton (g : M) (r : R) :
     r ∈ (Submodule.span R ({g} : Set M)).annihilator ↔ r • g = 0 := by simp [mem_annihilator_span]
+
+@[simp]
+theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=
+  eq_bot_iff.2 (smul_le.2 fun _ => mem_annihilator.1)
+
+@[simp]
+theorem annihilator_mul (I : Ideal R) : annihilator I * I = ⊥ :=
+  annihilator_smul I
 
 @[simp]
 theorem mul_annihilator (I : Ideal R) : I * annihilator I = ⊥ := by rw [mul_comm, annihilator_mul]
@@ -948,3 +952,19 @@ def idealMap (I : Ideal R) : I →ₗ[R] I.map (algebraMap R S) :=
     (fun _ ↦ Ideal.mem_map_of_mem _)
 
 end Algebra
+
+namespace NoZeroSMulDivisors
+
+theorem of_ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Semiring A] [Algebra R A]
+    [NoZeroDivisors A] (h : RingHom.ker (algebraMap R A) = ⊥) : NoZeroSMulDivisors R A :=
+  of_algebraMap_injective ((RingHom.injective_iff_ker_eq_bot _).mpr h)
+
+theorem ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
+    [NoZeroSMulDivisors R A] : RingHom.ker (algebraMap R A) = ⊥ :=
+  (RingHom.injective_iff_ker_eq_bot _).mp (algebraMap_injective R A)
+
+theorem iff_ker_algebraMap_eq_bot {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A] :
+    NoZeroSMulDivisors R A ↔ RingHom.ker (algebraMap R A) = ⊥ :=
+  iff_algebraMap_injective.trans (RingHom.injective_iff_ker_eq_bot (algebraMap R A))
+
+end NoZeroSMulDivisors

@@ -336,10 +336,8 @@ protected theorem mul_assoc : I * J * K = I * (J * K) :=
 
 variable (I)
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem mul_bot : I * ⊥ = ⊥ := by simp
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem bot_mul : ⊥ * I = ⊥ := by simp
 
 @[simp]
