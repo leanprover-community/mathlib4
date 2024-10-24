@@ -245,7 +245,7 @@ theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k
 @[simps! (config := .asFn) toFun toSlashInvariantForm]
 def const (x : ℂ) : ModularForm Γ 0 where
   toSlashInvariantForm := .const x
-  holo' x := mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
+  holo' _ := mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
   bdd_at_infty' A := by
     simpa only [SlashInvariantForm.const_toFun,
       ModularForm.is_invariant_const] using atImInfty.const_boundedAtFilter x
@@ -407,20 +407,20 @@ instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GMul (ModularForm Γ) where
   mul f g := f.mul g
 
 instance instGCommRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (ModularForm Γ) where
-  one_mul a := gradedMonoid_eq_of_cast (zero_add _) (ext fun _ => one_mul _)
-  mul_one a := gradedMonoid_eq_of_cast (add_zero _) (ext fun _ => mul_one _)
-  mul_assoc a b c := gradedMonoid_eq_of_cast (add_assoc _ _ _) (ext fun _ => mul_assoc _ _ _)
-  mul_zero {i j} f := ext fun _ => mul_zero _
-  zero_mul {i j} f := ext fun _ => zero_mul _
-  mul_add {i j} f g h := ext fun _ => mul_add _ _ _
-  add_mul {i j} f g h := ext fun _ => add_mul _ _ _
-  mul_comm a b := gradedMonoid_eq_of_cast (add_comm _ _) (ext fun _ => mul_comm _ _)
+  one_mul _ := gradedMonoid_eq_of_cast (zero_add _) (ext fun _ => one_mul _)
+  mul_one _ := gradedMonoid_eq_of_cast (add_zero _) (ext fun _ => mul_one _)
+  mul_assoc _ _ _ := gradedMonoid_eq_of_cast (add_assoc _ _ _) (ext fun _ => mul_assoc _ _ _)
+  mul_zero {_ _} _ := ext fun _ => mul_zero _
+  zero_mul {_ _} _ := ext fun _ => zero_mul _
+  mul_add {_ _} _ _ _ := ext fun _ => mul_add _ _ _
+  add_mul {_ _} _ _ _ := ext fun _ => add_mul _ _ _
+  mul_comm _ _ := gradedMonoid_eq_of_cast (add_comm _ _) (ext fun _ => mul_comm _ _)
   natCast := Nat.cast
   natCast_zero := ext fun _ => Nat.cast_zero
-  natCast_succ n := ext fun _ => Nat.cast_succ _
+  natCast_succ _ := ext fun _ => Nat.cast_succ _
   intCast := Int.cast
-  intCast_ofNat n := ext fun _ => AddGroupWithOne.intCast_ofNat _
-  intCast_negSucc_ofNat n := ext fun _ => AddGroupWithOne.intCast_negSucc _
+  intCast_ofNat _ := ext fun _ => AddGroupWithOne.intCast_ofNat _
+  intCast_negSucc_ofNat _ := ext fun _ => AddGroupWithOne.intCast_negSucc _
 
 instance instGAlgebra (Γ : Subgroup SL(2, ℤ)) : DirectSum.GAlgebra ℂ (ModularForm Γ) where
   toFun := { toFun := const, map_zero' := rfl, map_add' := fun _ _ => rfl }

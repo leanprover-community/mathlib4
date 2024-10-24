@@ -79,7 +79,7 @@ theorem Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf :
     (c : M) : Tendsto (fun x => c • f x) l (𝓝 (c • a)) :=
   ((continuous_const_smul _).tendsto _).comp hf
 
-variable [TopologicalSpace β] {f : β → M} {g : β → α} {b : β} {s : Set β}
+variable [TopologicalSpace β] {g : β → α} {b : β} {s : Set β}
 
 @[to_additive]
 nonrec theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
@@ -258,7 +258,7 @@ theorem subset_interior_smul_right {s : Set G} {t : Set α} : s • interior t �
 
 @[to_additive (attr := simp)]
 theorem smul_mem_nhds_smul_iff {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 (g • a) ↔ t ∈ 𝓝 a :=
-  (Homeomorph.smul g).openEmbedding.image_mem_nhds
+  (Homeomorph.smul g).isOpenEmbedding.image_mem_nhds
 
 @[to_additive] alias ⟨_, smul_mem_nhds_smul⟩ := smul_mem_nhds_smul_iff
 

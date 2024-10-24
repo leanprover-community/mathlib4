@@ -28,6 +28,9 @@ objects `X : C`, then `F` has a left adjoint.
 When colimits indexed by a category `J` exist in `D`, we show that
 the predicate `F.LeftAdjointObjIsDefined` is stable under colimits indexed by `J`.
 
+## TODO
+* consider dualizing the results to right adjoints
+
 -/
 
 universe v₁ v₂ u₁ u₂
@@ -46,6 +49,11 @@ def LeftAdjointObjIsDefined (X : C) : Prop := IsCorepresentable (F ⋙ coyoneda.
 
 lemma leftAdjointObjIsDefined_iff (X : C) :
     F.LeftAdjointObjIsDefined X ↔ IsCorepresentable (F ⋙ coyoneda.obj (op X)) := by rfl
+
+variable {F} in
+lemma leftAdjointObjIsDefined_of_adjunction {G : C ⥤ D} (adj : G ⊣ F) (X : C) :
+    F.LeftAdjointObjIsDefined X :=
+  (adj.corepresentableBy X).isCorepresentable
 
 /-- The full subcategory where `F.partialLeftAdjoint` shall be defined. -/
 abbrev PartialLeftAdjointSource := FullSubcategory F.LeftAdjointObjIsDefined
@@ -119,6 +127,14 @@ lemma isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
   exact (Adjunction.adjunctionOfEquivLeft
     (fun X Y ↦ (F ⋙ coyoneda.obj (op X)).corepresentableBy.homEquiv)
     (fun X Y Y' g f ↦ by apply CorepresentableBy.homEquiv_comp)).isRightAdjoint
+
+variable (F) in
+lemma isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top :
+    F.IsRightAdjoint ↔ F.LeftAdjointObjIsDefined = ⊤ := by
+  refine ⟨fun h ↦ ?_, isRightAdjoint_of_leftAdjointObjIsDefined_eq_top⟩
+  ext X
+  simpa only [Pi.top_apply, Prop.top_eq_true, iff_true]
+    using leftAdjointObjIsDefined_of_adjunction (Adjunction.ofIsRightAdjoint F) X
 
 /-- Auxiliary definition for `leftAdjointObjIsDefined_of_isColimit`. -/
 noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Category J]

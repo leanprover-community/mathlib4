@@ -410,11 +410,11 @@ theorem Base.infinite_of_infinite (hB : M.Base B) (h : B.Infinite) (hB₁ : M.Ba
   by_contra (fun hB_inf ↦ (hB₁.finite_of_finite (not_infinite.mp hB_inf) hB).not_infinite h)
 
 theorem Base.finite [FiniteRk M] (hB : M.Base B) : B.Finite :=
-  let ⟨B₀,hB₀⟩ := ‹FiniteRk M›.exists_finite_base
+  let ⟨_,hB₀⟩ := ‹FiniteRk M›.exists_finite_base
   hB₀.1.finite_of_finite hB₀.2 hB
 
 theorem Base.infinite [InfiniteRk M] (hB : M.Base B) : B.Infinite :=
-  let ⟨B₀,hB₀⟩ := ‹InfiniteRk M›.exists_infinite_base
+  let ⟨_,hB₀⟩ := ‹InfiniteRk M›.exists_infinite_base
   hB₀.1.infinite_of_infinite hB₀.2 hB
 
 theorem empty_not_base [h : RkPos M] : ¬M.Base ∅ :=

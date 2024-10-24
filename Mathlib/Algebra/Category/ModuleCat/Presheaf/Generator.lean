@@ -10,7 +10,8 @@ import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Generator
 
-/-! Generators for the category of presheaves of modules
+/-!
+# Generators for the category of presheaves of modules
 
 In this file, given a presheaf of rings `R` on a category `C`,
 we construct a set `FreeYoneda R` of presheaf of modules that
@@ -21,7 +22,7 @@ presheaf represented by some `X : C` (the functor
 represented by such a presheaf of modules is the evaluation
 functor `M ↦ M.obj (op X)`, see `freeYonedaEquiv`).
 
-We deducde that if `C : Type u` is a small category,
+We deduce that if `C : Type u` is a small category,
 and `R : Cᵒᵖ ⥤ RingCat.{u}`, then `PresheafOfModules.{u} R`
 is a well powered category.
 

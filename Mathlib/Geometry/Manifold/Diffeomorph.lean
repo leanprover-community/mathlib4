@@ -383,8 +383,6 @@ end
 
 end Constructions
 
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
-
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
   convert hs.uniqueMDiffOn_preimage (h.toPartialHomeomorph_mdifferentiable hn)
@@ -531,7 +529,6 @@ theorem contMDiff_transDiffeomorph_right {f : M' → M} :
     ContMDiff I' (I.transDiffeomorph e) n f ↔ ContMDiff I' I n f :=
   (toTransDiffeomorph I M e).contMDiff_diffeomorph_comp_iff le_top
 
--- Porting note (#10618): was `@[simp]` but now `simp` can prove it
 theorem smooth_transDiffeomorph_right {f : M' → M} :
     Smooth I' (I.transDiffeomorph e) f ↔ Smooth I' I f :=
   contMDiff_transDiffeomorph_right e
@@ -556,7 +553,6 @@ theorem contMDiff_transDiffeomorph_left {f : M → M'} :
     ContMDiff (I.transDiffeomorph e) I' n f ↔ ContMDiff I I' n f :=
   ((toTransDiffeomorph I M e).contMDiff_comp_diffeomorph_iff le_top).symm
 
--- Porting note (#10618): was `@[simp]` but now `simp` can prove it
 theorem smooth_transDiffeomorph_left {f : M → M'} :
     Smooth (I.transDiffeomorph e) I' f ↔ Smooth I I' f :=
   e.contMDiff_transDiffeomorph_left
