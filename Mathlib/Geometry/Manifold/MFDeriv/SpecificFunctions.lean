@@ -124,7 +124,7 @@ theorem hasMFDerivAt_id (x : M) :
     HasMFDerivAt I I (@id M) x (ContinuousLinearMap.id 𝕜 (TangentSpace I x)) := by
   refine ⟨continuousAt_id, ?_⟩
   have : ∀ᶠ y in 𝓝[range I] (extChartAt I x) x, (extChartAt I x ∘ (extChartAt I x).symm) y = y := by
-    apply Filter.mem_of_superset (extChartAt_target_mem_nhdsWithin I x)
+    apply Filter.mem_of_superset (extChartAt_target_mem_nhdsWithin x)
     mfld_set_tac
   apply HasFDerivWithinAt.congr_of_eventuallyEq (hasFDerivWithinAt_id _ _) this
   simp only [mfld_simps]
@@ -219,12 +219,12 @@ theorem hasMFDerivAt_fst (x : M × M') :
     apply Filter.mem_of_superset (extChartAt_target_mem_nhdsWithin (I.prod I') x)
     mfld_set_tac
     -/
-    filter_upwards [extChartAt_target_mem_nhdsWithin (I.prod I') x] with y hy
+    filter_upwards [extChartAt_target_mem_nhdsWithin x] with y hy
     rw [extChartAt_prod] at hy
     exact (extChartAt I x.1).right_inv hy.1
   apply HasFDerivWithinAt.congr_of_eventuallyEq hasFDerivWithinAt_fst this
   -- Porting note: next line was `simp only [mfld_simps]`
-  exact (extChartAt I x.1).right_inv <| (extChartAt I x.1).map_source (mem_extChartAt_source _ _)
+  exact (extChartAt I x.1).right_inv <| (extChartAt I x.1).map_source (mem_extChartAt_source _)
 
 theorem hasMFDerivWithinAt_fst (s : Set (M × M')) (x : M × M') :
     HasMFDerivWithinAt (I.prod I') I Prod.fst s x
@@ -281,12 +281,12 @@ theorem hasMFDerivAt_snd (x : M × M') :
     apply Filter.mem_of_superset (extChartAt_target_mem_nhdsWithin (I.prod I') x)
     mfld_set_tac
     -/
-    filter_upwards [extChartAt_target_mem_nhdsWithin (I.prod I') x] with y hy
+    filter_upwards [extChartAt_target_mem_nhdsWithin x] with y hy
     rw [extChartAt_prod] at hy
     exact (extChartAt I' x.2).right_inv hy.2
   apply HasFDerivWithinAt.congr_of_eventuallyEq hasFDerivWithinAt_snd this
   -- Porting note: the next line was `simp only [mfld_simps]`
-  exact (extChartAt I' x.2).right_inv <| (extChartAt I' x.2).map_source (mem_extChartAt_source _ _)
+  exact (extChartAt I' x.2).right_inv <| (extChartAt I' x.2).map_source (mem_extChartAt_source _)
 
 theorem hasMFDerivWithinAt_snd (s : Set (M × M')) (x : M × M') :
     HasMFDerivWithinAt (I.prod I') I' Prod.snd s x
@@ -462,8 +462,6 @@ theorem MDifferentiableAt.mfderiv_prod {f : M → M'} {g : M → M''} {x : M}
   simp_rw [mfderiv, if_pos (hf.prod_mk hg), if_pos hf, if_pos hg]
   exact hf.differentiableWithinAt_writtenInExtChartAt.fderivWithin_prod
     hg.differentiableWithinAt_writtenInExtChartAt (I.uniqueDiffOn _ (mem_range_self _))
-
-variable (I I' I'')
 
 theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
     mfderiv I (I.prod I') (fun x => (x, y₀)) x₀ =

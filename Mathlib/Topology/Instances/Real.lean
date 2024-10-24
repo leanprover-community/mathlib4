@@ -28,7 +28,7 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
-instance : NoncompactSpace ℝ := Int.closedEmbedding_coe_real.noncompactSpace
+instance : NoncompactSpace ℝ := Int.isClosedEmbedding_coe_real.noncompactSpace
 
 theorem Real.uniformContinuous_add : UniformContinuous fun p : ℝ × ℝ => p.1 + p.2 :=
   Metric.uniformContinuous_iff.2 fun _ε ε0 =>
