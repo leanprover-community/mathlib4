@@ -133,7 +133,7 @@ instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
     (a : A) [CompactSpace (spectrum ℝ a)] : CompactSpace (spectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
-  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 section QuasispectrumCompact
 
@@ -154,7 +154,7 @@ instance _root_.quasispectrum.instCompactSpaceNNReal [NormedSpace ℝ B] [IsScal
     CompactSpace (quasispectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← quasispectrum.preimage_algebraMap ℝ]
-  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 end QuasispectrumCompact
 

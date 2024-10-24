@@ -200,18 +200,11 @@ abbrev EuclideanSpace.equiv : EuclideanSpace 𝕜 ι ≃L[𝕜] ι → 𝕜 :=
 
 variable {ι 𝕜}
 
--- TODO : This should be generalized to `PiLp`.
 /-- The projection on the `i`-th coordinate of `EuclideanSpace 𝕜 ι`, as a linear map. -/
-@[simps!]
-def EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 :=
-  (LinearMap.proj i).comp (WithLp.linearEquiv 2 𝕜 (ι → 𝕜) : EuclideanSpace 𝕜 ι →ₗ[𝕜] ι → 𝕜)
+abbrev EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 := PiLp.projₗ _ _ i
 
--- TODO : This should be generalized to `PiLp`.
-/-- The projection on the `i`-th coordinate of `EuclideanSpace 𝕜 ι`,
-as a continuous linear map. -/
-@[simps! apply coe]
-def EuclideanSpace.proj (i : ι) : EuclideanSpace 𝕜 ι →L[𝕜] 𝕜 :=
-  ⟨EuclideanSpace.projₗ i, continuous_apply i⟩
+/-- The projection on the `i`-th coordinate of `EuclideanSpace 𝕜 ι`, as a continuous linear map. -/
+abbrev EuclideanSpace.proj (i : ι) : EuclideanSpace 𝕜 ι →L[𝕜] 𝕜 := PiLp.proj _ _ i
 
 section DecEq
 

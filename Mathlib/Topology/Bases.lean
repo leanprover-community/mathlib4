@@ -352,9 +352,12 @@ protected theorem _root_.DenseRange.separableSpace [SeparableSpace α] [Topologi
   let ⟨s, s_cnt, s_dense⟩ := exists_countable_dense α
   ⟨⟨f '' s, Countable.image s_cnt f, h.dense_image h' s_dense⟩⟩
 
-theorem _root_.QuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace β] {f : α → β}
-    (hf : QuotientMap f) : SeparableSpace β :=
+theorem _root_.IsQuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace β] {f : α → β}
+    (hf : IsQuotientMap f) : SeparableSpace β :=
   hf.surjective.denseRange.separableSpace hf.continuous
+
+@[deprecated (since := "2024-10-22")]
+alias _root_.QuotientMap.separableSpace := _root_.IsQuotientMap.separableSpace
 
 /-- The product of two separable spaces is a separable space. -/
 instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := by
@@ -382,10 +385,10 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     exact hyu ⟨i, _⟩
 
 instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) :=
-  quotientMap_quot_mk.separableSpace
+  isQuotientMap_quot_mk.separableSpace
 
 instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
-  quotientMap_quot_mk.separableSpace
+  isQuotientMap_quot_mk.separableSpace
 
 /-- A topological space with discrete topology is separable iff it is countable. -/
 theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α ↔ Countable α := by
@@ -887,8 +890,8 @@ theorem IsTopologicalBasis.sum {s : Set (Set α)} (hs : IsTopologicalBasis s) {t
     IsTopologicalBasis ((fun u => Sum.inl '' u) '' s ∪ (fun u => Sum.inr '' u) '' t) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro u (⟨w, hw, rfl⟩ | ⟨w, hw, rfl⟩)
-    · exact openEmbedding_inl.isOpenMap w (hs.isOpen hw)
-    · exact openEmbedding_inr.isOpenMap w (ht.isOpen hw)
+    · exact isOpenEmbedding_inl.isOpenMap w (hs.isOpen hw)
+    · exact isOpenEmbedding_inr.isOpenMap w (ht.isOpen hw)
   · rintro (x | x) u hxu u_open
     · obtain ⟨v, vs, xv, vu⟩ : ∃ v ∈ s, x ∈ v ∧ v ⊆ Sum.inl ⁻¹' u :=
         hs.exists_subset_of_mem_open hxu (isOpen_sum_iff.1 u_open).1
@@ -917,8 +920,8 @@ section Quotient
 variable {X : Type*} [TopologicalSpace X] {Y : Type*} [TopologicalSpace Y] {π : X → Y}
 
 /-- The image of a topological basis under an open quotient map is a topological basis. -/
-theorem IsTopologicalBasis.quotientMap {V : Set (Set X)} (hV : IsTopologicalBasis V)
-    (h' : QuotientMap π) (h : IsOpenMap π) : IsTopologicalBasis (Set.image π '' V) := by
+theorem IsTopologicalBasis.isQuotientMap {V : Set (Set X)} (hV : IsTopologicalBasis V)
+    (h' : IsQuotientMap π) (h : IsOpenMap π) : IsTopologicalBasis (Set.image π '' V) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro - ⟨U, U_in_V, rfl⟩
     apply h U (hV.isOpen U_in_V)
@@ -931,13 +934,19 @@ theorem IsTopologicalBasis.quotientMap {V : Set (Set X)} (hV : IsTopologicalBasi
     have πZ_in_U : π '' Z ⊆ U := (Set.image_subset _ Z_in_W).trans (image_preimage_subset π U)
     exact ⟨π '' Z, ⟨Z, Z_in_V, rfl⟩, ⟨x, x_in_Z, rfl⟩, πZ_in_U⟩
 
+@[deprecated (since := "2024-10-22")]
+alias IsTopologicalBasis.quotientMap := IsTopologicalBasis.isQuotientMap
+
 /-- A second countable space is mapped by an open quotient map to a second countable space. -/
-theorem _root_.QuotientMap.secondCountableTopology [SecondCountableTopology X] (h' : QuotientMap π)
-    (h : IsOpenMap π) : SecondCountableTopology Y where
+theorem _root_.IsQuotientMap.secondCountableTopology [SecondCountableTopology X]
+    (h' : IsQuotientMap π) (h : IsOpenMap π) : SecondCountableTopology Y where
   is_open_generated_countable := by
     obtain ⟨V, V_countable, -, V_generates⟩ := exists_countable_basis X
     exact ⟨Set.image π '' V, V_countable.image (Set.image π),
-      (V_generates.quotientMap h' h).eq_generateFrom⟩
+      (V_generates.isQuotientMap h' h).eq_generateFrom⟩
+
+@[deprecated (since := "2024-10-22")]
+alias _root_.QuotientMap.secondCountableTopology := _root_.IsQuotientMap.secondCountableTopology
 
 variable {S : Setoid X}
 
@@ -945,12 +954,12 @@ variable {S : Setoid X}
 theorem IsTopologicalBasis.quotient {V : Set (Set X)} (hV : IsTopologicalBasis V)
     (h : IsOpenMap (Quotient.mk' : X → Quotient S)) :
     IsTopologicalBasis (Set.image (Quotient.mk' : X → Quotient S) '' V) :=
-  hV.quotientMap quotientMap_quotient_mk' h
+  hV.isQuotientMap isQuotientMap_quotient_mk' h
 
 /-- An open quotient of a second countable space is second countable. -/
 theorem Quotient.secondCountableTopology [SecondCountableTopology X]
     (h : IsOpenMap (Quotient.mk' : X → Quotient S)) : SecondCountableTopology (Quotient S) :=
-  quotientMap_quotient_mk'.secondCountableTopology h
+  isQuotientMap_quotient_mk'.secondCountableTopology h
 
 end Quotient
 

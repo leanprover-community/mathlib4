@@ -26,6 +26,8 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``Setoid.r
     (some { numArgs := 2, coercee := 1, type := .coeFun })
 
+/-- When writing a lemma about `someSetoid x y` (which uses this instance),
+call it `someSetoid_apply` not `someSetoid_r`. -/
 instance : CoeFun (Setoid α) (fun _ ↦ α → α → Prop) where
   coe := @Setoid.r _
 
@@ -274,8 +276,11 @@ theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
   ⟨Quot.eqvGen_exact, Quot.eqvGen_sound⟩
 
 @[simp]
-theorem Quotient.eq {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=
+theorem Quotient.eq {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ r x y :=
   ⟨Quotient.exact, Quotient.sound⟩
+
+theorem Quotient.eq_iff_equiv {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=
+  Quotient.eq
 
 theorem Quotient.forall {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
     (∀ a, p a) ↔ ∀ a : α, p ⟦a⟧ :=
@@ -350,7 +355,7 @@ noncomputable def Quotient.out {s : Setoid α} : Quotient s → α :=
 theorem Quotient.out_eq {s : Setoid α} (q : Quotient s) : ⟦q.out⟧ = q :=
   Quot.out_eq q
 
-theorem Quotient.mk_out {s : Setoid α} (a : α) : (⟦a⟧ : Quotient s).out ≈ a :=
+theorem Quotient.mk_out {s : Setoid α} (a : α) : s (⟦a⟧ : Quotient s).out a :=
   Quotient.exact (Quotient.out_eq _)
 
 theorem Quotient.mk_eq_iff_out {s : Setoid α} {x : α} {y : Quotient s} :
@@ -541,8 +546,8 @@ several different quotient relations on a type, for example quotient groups, rin
 -- Porting note: Quotient.mk' is the equivalent of Lean 3's `Quotient.mk`
 /-- A version of `Quotient.mk` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
-protected def mk'' (a : α) : Quotient s₁ :=
-  Quot.mk s₁.1 a
+protected abbrev mk'' (a : α) : Quotient s₁ :=
+  ⟦a⟧
 
 /-- `Quotient.mk''` is a surjective function. -/
 theorem surjective_Quotient_mk'' : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
@@ -688,7 +693,6 @@ protected theorem eq' {s₁ : Setoid α} {a b : α} :
     @Quotient.mk' α s₁ a = @Quotient.mk' α s₁ b ↔ s₁ a b :=
   Quotient.eq
 
-@[simp]
 protected theorem eq'' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b ↔ s₁ a b :=
   Quotient.eq
 
@@ -720,7 +724,6 @@ protected theorem liftOn₂'_mk {t : Setoid β} (f : α → β → γ) (h) (a : 
     Quotient.liftOn₂' (Quotient.mk s a) (Quotient.mk t b) f h = f a b :=
   Quotient.liftOn₂'_mk'' _ _ _ _
 
-@[simp]
 theorem map'_mk {t : Setoid β} (f : α → β) (h) (x : α) :
     (Quotient.mk s x).map' f h = (Quotient.mk t (f x)) :=
   rfl
