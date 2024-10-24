@@ -560,6 +560,11 @@ protected def mul : Mul (AddSubgroup R) where
       (fun m hm n hn ↦ by rw [← neg_mul]; exact AddSubmonoid.mul_mem_mul (M.neg_mem hm) hn)
       fun r₁ r₂ h₁ h₂ ↦ by rw [neg_add]; exact (M.1 * N.1).add_mem h₁ h₂ }
 
+scoped[Pointwise] attribute [instance] AddSubgroup.mul
+
+theorem mul_toAddSubmonoid (M N : AddSubgroup R) :
+    (M * N).toAddSubmonoid = M.toAddSubmonoid * N.toAddSubmonoid := rfl
+
 end Mul
 
 end AddSubgroup
