@@ -384,10 +384,11 @@ lemma decompose_unique  (rep₁ rep₂ : ⨁ i, ℳ i)
   simp only [Equiv.apply_symm_apply]
   exact h₁.symm
 
+omit [Fintype I] in
 /-- If a ring can be decomposed into direct sum of finitely many left ideals `Vᵢ`
   where `1 = e₁ + ... + eₙ` and `eᵢ ∈ Vᵢ`, then `eᵢ` is a family of orthogonal
   idempotents.-/
-def decomp_ring_ortho_idem [DecidableEq I] (V : I → Submodule R R)
+theorem decomp_ring_ortho_idem [DecidableEq I] (V : I → Submodule R R)
     [Decomposition V] (e : ⨁ (i : I), (V i)) [(i : I) → (x : ↥(V i)) → Decidable (x ≠ 0)]
     (he : (1 : R) = ∑ j ∈ e.support, e j):
     OrthogonalIdempotents (R := R) (I := DFinsupp.support e) fun i ↦ e i where
@@ -397,7 +398,6 @@ def decomp_ring_ortho_idem [DecidableEq I] (V : I → Submodule R R)
       rw [← smul_eq_mul] ; obtain ⟨z, hz⟩ := z
       exact Submodule.smul_mem (V j) ((e i)) hz⟩)
       fun i' ↦ by simp only [ZeroMemClass.coe_zero, mul_zero, Submodule.mk_eq_zero]
-    have hx1 : x i = e i := by simp only [DFinsupp.single_apply, ↓reduceDIte, x]
     have hx2 (j) (h : j ≠ i) : (x j : R) = 0 := by
       simp [x, Finsupp.single_apply]
       intro hij ; exfalso
@@ -433,8 +433,10 @@ def decomp_ring_ortho_idem [DecidableEq I] (V : I → Submodule R R)
       rw [hx3, hy3, mul_one]
       simp only [DFinsupp.single_apply, ↓reduceDIte, x]
     have := congr($this i)
-    simp [hx1, hy, y, Subtype.ext_iff] at this
-    exact this.symm
+    simp only [DFinsupp.mapRange_apply, Subtype.ext_iff, y] at this
+    unfold IsIdempotentElem
+    rw [this.symm]
+    simp only [DFinsupp.single_apply, ↓reduceDIte, x]
   ortho := fun i j hij ↦ by
     simp only
     let x : (⨁ i, V i) := DFinsupp.single i (e i) -- 0,0,0,...,eᵢ,0,0,0,...
@@ -442,7 +444,6 @@ def decomp_ring_ortho_idem [DecidableEq I] (V : I → Submodule R R)
       rw [← smul_eq_mul] ; obtain ⟨z, hz⟩ := z
       exact Submodule.smul_mem (V j) (↑(e ↑i)) hz ⟩)
       fun i' ↦ by simp only [ZeroMemClass.coe_zero, mul_zero, Submodule.mk_eq_zero]
-    have hx1 : x i = e i := by simp [x]
     have hx2 (j) (h : j ≠ i) : (x j : R) = 0 := by
       simp [x, Finsupp.single_apply]
       intro hij ; exfalso
@@ -478,7 +479,7 @@ def decomp_ring_ortho_idem [DecidableEq I] (V : I → Submodule R R)
       rw [hx3, hy3, mul_one]
       simp only [DFinsupp.single_apply, ↓reduceDIte, x]
     have := congr($this j)
-    simp [hx1, hy, y, Subtype.ext_iff, (hx2 j hij.symm)] at this
+    simp only [DFinsupp.mapRange_apply, Subtype.ext_iff, (hx2 j hij.symm), y] at this
     exact this.symm
 
 end Ring
