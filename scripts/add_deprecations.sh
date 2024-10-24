@@ -46,7 +46,7 @@ mkDeclAndDepr () {
     awk -v regex="${begs}" -v date="$(date +%Y-%m-%d)" '
     function depr(ol,ne) {
       line=sprintf("@[deprecated (since := \"%s\")]||||alias %s := %s", date, ol, ne)
-      if(length(line) <= 102) { sub(/\|\|\|\|/, " ", line) }
+      if(length(line) <= 103) { sub(/\|\|\|\|/, " ", line) }
       return line
     }
     # `{plus/minus}Regex` makes sure that we find a declaration, followed by something that
