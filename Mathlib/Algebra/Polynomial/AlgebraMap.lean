@@ -294,6 +294,19 @@ def algEquivOfCompEqX (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) : R
   refine AlgEquiv.ofAlgHom (aeval p) (aeval q) ?_ ?_ <;>
     exact AlgHom.ext fun _ ↦ by simp [← comp_eq_aeval, comp_assoc, hpq, hqp]
 
+/-- The automorphism of the polynomial algebra given by `p(X) ↦ p(a*X+b)`,
+  with inverse `p(X) ↦ p(a⁻¹*(X-b))`. -/
+@[simps!]
+def algEquivOfDegreeOne {R} [CommRing R] {p : R[X]} (hd : p.degree = 1)
+    (hl : IsUnit p.leadingCoeff) : R[X] ≃ₐ[R] R[X] := by
+  let c := hl.unit.inv
+  refine algEquivOfCompEqX p (C c * (X - C (p.coeff 0))) ?_ ?_ <;>
+  rw [eq_X_add_C_of_degree_eq_one hd] <;>
+  simp only [coeff_add, mul_coeff_zero, coeff_C_zero, coeff_X_zero, add_comp, sub_comp, mul_comp,
+    C_comp, X_comp, C_1, ← C_mul, ← mul_assoc, mul_zero, mul_sub, one_mul, mul_add, c,
+    Units.inv_eq_val_inv, IsUnit.val_inv_mul, IsUnit.mul_val_inv, zero_add, sub_add_cancel,
+    add_sub_cancel_right]
+
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
   with inverse `p(X) ↦ p(X-t)`. -/
 @[simps!]
@@ -557,11 +570,22 @@ lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
 
 lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
 
+lemma dvd_comp_iff_of_degree_one (p q r : R[X]) (hd : r.degree = 1) (hl : IsUnit r.leadingCoeff) :
+  p ∣ q.comp r ↔ p.comp (C hl.unit.inv * (X - C (r.coeff 0))) ∣ q := by
+  convert map_dvd_iff <| algEquivOfDegreeOne hd hl using 2
+  simp only [algEquivOfDegreeOne, Units.inv_eq_val_inv, algEquivOfCompEqX_apply, ← comp_eq_aeval,
+    comp_assoc, mul_comp, C_comp, sub_comp, X_comp]
+  convert Polynomial.comp_X.symm
+  nth_rw 2 [eq_X_add_C_of_degree_eq_one hd]
+  simp only [add_sub_cancel_right, ← mul_assoc, ← C_mul, IsUnit.val_inv_mul, map_one, one_mul]
+
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
-  convert (map_dvd_iff <| algEquivAevalXAddC a).symm using 2
-  rw [C_eq_algebraMap, algEquivAevalXAddC_apply, ← comp_eq_aeval]
-  simp [comp_assoc]
+  by_cases h : Nontrivial R
+  · simpa using dvd_comp_iff_of_degree_one p q (X - C a) (degree_X_sub_C _) (by simp)
+  · have : Subsingleton R[X] :=
+      not_nontrivial_iff_subsingleton.mp (Polynomial.nontrivial_iff.not.mpr h)
+    exact ⟨fun _ => dvd_of_eq (Subsingleton.allEq _ _), fun _ => dvd_of_eq (Subsingleton.allEq _ _)⟩
 
 lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by

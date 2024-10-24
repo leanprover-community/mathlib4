@@ -139,6 +139,21 @@ theorem splits_X_pow (n : ℕ) : (X ^ n).Splits i :=
 theorem splits_id_iff_splits {f : K[X]} : (f.map i).Splits (RingHom.id L) ↔ f.Splits i := by
   rw [splits_map_iff, RingHom.id_comp]
 
+theorem Splits.comp_of_degree_one {f : K[X]} {p : K[X]} (hd : p.degree = 1)
+    (hl : IsUnit p.leadingCoeff) (h : f.Splits i) : (f.comp p).Splits i := by
+  cases h with
+  | inl h0 =>
+    exact Or.inl <| map_comp i _ _ ▸ h0.symm ▸ zero_comp
+  | inr h =>
+    right
+    intro g irr dvd
+    rw [map_comp, Polynomial.map_sub, map_X, map_C, dvd_comp_X_sub_C_iff] at dvd
+    have := h (irr.map (algEquivAevalXAddC _)) dvd
+    rw [degree_eq_natDegree irr.ne_zero]
+    rwa [algEquivAevalXAddC_apply, ← comp_eq_aeval,
+      degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
+      natDegree_comp, natDegree_X_add_C, mul_one] at this
+
 theorem Splits.comp_X_sub_C {i : L →+* F} (a : L) {f : L[X]}
     (h : f.Splits i) : (f.comp (X - C a)).Splits i := by
   cases h with
