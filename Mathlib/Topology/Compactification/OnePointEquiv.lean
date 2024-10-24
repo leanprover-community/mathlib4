@@ -47,10 +47,12 @@ def equivProjectivization :
     induction' p using ind with p hp
     obtain ⟨x, y⟩ := p
     by_cases h₀ : y = 0 <;>
-    simp only [Option.elim, ite_not, Projectivization.lift_mk, h₀, mk_eq_mk_iff]
+    simp only [Option.elim, ne_eq, ite_not, h₀, Projectivization.lift_mk, reduceIte]
     · have h₀' : x ≠ 0 := by aesop
+      simp only [mk_eq_mk_iff, Prod.smul_mk, smul_zero, Prod.mk.injEq, and_true]
       exact ⟨Units.mk0 _ (inv_ne_zero h₀'), by simp [h₀']⟩
-    · exact ⟨Units.mk0 _ (inv_ne_zero h₀), by simp [h₀]⟩
+    · simp only [mk_eq_mk_iff, Prod.smul_mk, Prod.mk.injEq]
+      exact ⟨Units.mk0 _ (inv_ne_zero h₀), by simp [h₀]⟩
 
 @[simp]
 lemma equivProjectivization_apply_infinity :
