@@ -142,8 +142,7 @@ theorem type_def (w : WellOrder) : ⟦w⟧ = type w.r :=
   rfl
 
 @[deprecated type_def (since := "2024-10-24")]
-theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r :=
-  rfl
+alias type_def' := type_def
 
 @[simp]
 theorem type_toType (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
