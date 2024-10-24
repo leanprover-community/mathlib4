@@ -231,6 +231,8 @@ theorem C_inj {σ : Type*} (R : Type*) [CommSemiring R] (r s : R) :
     (C r : MvPolynomial σ R) = C s ↔ r = s :=
   (C_injective σ R).eq_iff
 
+@[simp] lemma C_eq_zero : (C a : MvPolynomial σ R) = 0 ↔ a = 0 := by rw [← map_zero C, C_inj]
+
 instance nontrivial_of_nontrivial (σ : Type*) (R : Type*) [CommSemiring R] [Nontrivial R] :
     Nontrivial (MvPolynomial σ R) :=
   inferInstanceAs (Nontrivial <| AddMonoidAlgebra R (σ →₀ ℕ))

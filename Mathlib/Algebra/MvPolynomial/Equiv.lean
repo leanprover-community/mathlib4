@@ -336,7 +336,6 @@ theorem finSuccEquiv_eq :
     rfl
   · refine Fin.cases ?_ ?_ i <;> simp [finSuccEquiv]
 
-@[simp]
 theorem finSuccEquiv_apply (p : MvPolynomial (Fin (n + 1)) R) :
     finSuccEquiv R n p =
       eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R))
@@ -356,10 +355,10 @@ theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
 
 variable {n} {R}
 
-theorem finSuccEquiv_X_zero : finSuccEquiv R n (X 0) = Polynomial.X := by simp
+theorem finSuccEquiv_X_zero : finSuccEquiv R n (X 0) = Polynomial.X := by simp [finSuccEquiv_apply]
 
 theorem finSuccEquiv_X_succ {j : Fin n} : finSuccEquiv R n (X j.succ) = Polynomial.C (X j) := by
-  simp
+  simp [finSuccEquiv_apply]
 
 /-- The coefficient of `m` in the `i`-th coefficient of `finSuccEquiv R n f` equals the
     coefficient of `Finsupp.cons i m` in `f`. -/
@@ -524,8 +523,8 @@ lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Op
       (Polynomial.mapRingHom (rename e).toRingHom).comp (optionEquivLeft R σ) by
     exact DFunLike.congr_fun this φ
   apply ringHom_ext
-  · simp [Polynomial.algebraMap_apply, algebraMap_eq]
-  · rintro (i|i) <;> simp
+  · simp [Polynomial.algebraMap_apply, algebraMap_eq, finSuccEquiv_apply]
+  · rintro (i|i) <;> simp [finSuccEquiv_apply]
 
 end
 
