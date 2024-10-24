@@ -12,8 +12,8 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 From the data of a closed monoidal category `C`, we define a `C`-category structure for `C`.
 where the hom-object is given by the internal hom (coming from the closed structure).
 
-We use `scoped instance` to avoid potential issues where C may also have
-a C-category structure coming from another source (e.g. the type of simplicial sets
+We use `scoped instance` to avoid potential issues where `C` may also have
+a `C`-category structure coming from another source (e.g. the type of simplicial sets
 `SSet.{v}` has an instance of `EnrichedCategory SSet.{v}` as a category of simplicial objects;
 see `AlgebraicTopology/SimplicialCategory/SimplicialObject`).
 
