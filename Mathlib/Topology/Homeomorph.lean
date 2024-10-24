@@ -713,7 +713,7 @@ def sumArrowEquivProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → 
     | .inr i => by apply (continuous_apply _).comp' continuous_snd
 
 /-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `(Fin (m + n) → X)`.-/
-def finArrowProdHomeomorphFinAddArrow (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) :=
+def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) :=
   (sumArrowEquivProdArrow).symm.trans (piCongrLeft (Y := fun _ ↦ X) finSumFinEquiv)
 
 section Distrib
