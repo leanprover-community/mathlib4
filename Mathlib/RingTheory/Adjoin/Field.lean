@@ -98,7 +98,7 @@ theorem IsIntegral.mem_range_algebraMap_of_minpoly_splits [Algebra K L] [IsScala
   int.mem_range_algHom_of_minpoly_splits h (IsScalarTower.toAlgHom R K L)
 
 theorem minpoly_neg_splits [Algebra K L] {x : L} (g : (minpoly K x).Splits (algebraMap K L)) :
-    (minpoly K (- x)).Splits (algebraMap K L) := by
+    (minpoly K (-x)).Splits (algebraMap K L) := by
   rw [minpoly.neg]
   apply splits_mul _ _ g.comp_neg_X
   simpa only [map_pow, map_neg, map_one] using
