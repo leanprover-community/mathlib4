@@ -48,7 +48,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   refine ⟨fun ι s ho hcov => ?_⟩
   simp only [iUnion_eq_univ_iff] at hcov
   -- choose a well founded order on `S`
-  obtain ⟨_, wf⟩ := exists_wellOrder (α := ι)
+  obtain ⟨_, wf⟩ := exists_wellOrder ι
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
   set ind : α → ι := fun x => wellFounded_lt.min { i : ι | x ∈ s i } (hcov x)
   have mem_ind : ∀ x, x ∈ s (ind x) := fun x => wellFounded_lt.min_mem _ (hcov x)

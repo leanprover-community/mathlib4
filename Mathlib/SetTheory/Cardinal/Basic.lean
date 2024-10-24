@@ -971,9 +971,10 @@ instance WellOrderingRel.isWellOrder : IsWellOrder α WellOrderingRel :=
 instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
   ⟨⟨WellOrderingRel, inferInstance⟩⟩
 
+variable (α) in
 theorem exists_wellOrder : ∃ (_ : LinearOrder α), WellFoundedLT α := by
   classical
-  exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toIsWellFounded⟩ 
+  exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toIsWellFounded⟩
 
 /-! ### Small sets of cardinals -/
 
