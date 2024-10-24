@@ -288,11 +288,8 @@ lemma piEquiv_apply_apply (ι R M : Type*) [Fintype ι] [CommSemiring R]
 end Module
 
 namespace Basis
-
 variable {ι R M : Type*} (m n : Type*)
 variable [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid M] [Module R M]
-
-section
 
 /-- The standard basis of `Matrix m n M` given a basis on `M`. -/
 protected noncomputable def matrix {ι} (b : Basis ι R M) :
@@ -307,8 +304,6 @@ variable {n m}
 theorem matrix_apply (b : Basis ι R M) (i : m) (j : n) (k : ι) [DecidableEq m] [DecidableEq n] :
     b.matrix m n (i, j, k) = Matrix.stdBasisMatrix i j (b k) := by
   simp [Basis.matrix, Matrix.stdBasisMatrix_eq_of_single_single]
-
-end
 
 end Basis
 
