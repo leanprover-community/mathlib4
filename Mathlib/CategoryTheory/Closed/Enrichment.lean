@@ -31,7 +31,7 @@ namespace MonoidalClosed
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [MonoidalClosed C]
 
-/-- For C closed monoidal, build an instance of C as a C-category -/
+/-- For `C` closed monoidal, build an instance of `C` as a `C`-category -/
 scoped instance : EnrichedCategory C C where
   Hom x := (ihom x).obj
   id _ := id _
