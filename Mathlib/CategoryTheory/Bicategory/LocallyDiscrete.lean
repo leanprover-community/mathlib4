@@ -21,8 +21,6 @@ namespace CategoryTheory
 
 open Bicategory Discrete
 
-open Bicategory
-
 universe w₂ w₁ v₂ v₁ v u₂ u₁ u
 
 section
@@ -147,6 +145,17 @@ lemma PrelaxFunctor.map₂_eqToHom (F : PrelaxFunctor B C) {a b : B} {f g : a �
   subst h; simp only [eqToHom_refl, PrelaxFunctor.map₂_id]
 
 end
+
+namespace Bicategory
+
+/-- A bicategory is locally discrete if the categories of 1-morphisms are discrete. -/
+abbrev IsLocallyDiscrete (B : Type*) [Bicategory B] := ∀ (b c : B), IsDiscrete (b ⟶ c)
+
+instance (C : Type*) [Category C] :
+    IsLocallyDiscrete (LocallyDiscrete C) :=
+  fun _ _ ↦ Discrete.isDiscrete _
+
+end Bicategory
 
 end CategoryTheory
 
