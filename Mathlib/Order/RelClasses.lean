@@ -148,7 +148,8 @@ theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTricho
   ((@trichotomous _ r _ a b).resolve_left <| mt (H _).2 <| irrefl a).resolve_right <| mt (H _).1
     <| irrefl b
 
-/-- Construct a partial order from an `isStrictOrder` relation.
+/-- Construct a partial order from an `isStrictOrder` relation. We set `x < y ↔ r x y` and
+`x ≤ y ↔ x = y ∨ r x y`.
 
 See note [reducible non-instances]. -/
 abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
@@ -169,7 +170,8 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
     ⟨fun h => ⟨Or.inr h, not_or_intro (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_left fun e => h₂ <| e ▸ Or.inl rfl⟩
 
-/-- Construct a linear order from an `IsStrictTotalOrder` relation.
+/-- Construct a linear order from an `IsStrictTotalOrder` relation. We set `x < y ↔ r x y` and
+`x ≤ y ↔ ¬ r y x`.
 
 See note [reducible non-instances]. -/
 abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearOrder α :=
