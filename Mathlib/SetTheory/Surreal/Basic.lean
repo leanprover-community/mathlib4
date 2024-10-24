@@ -33,11 +33,10 @@ In this file, we show that the surreals form a linear ordered commutative group.
 In `Mathlib.SetTheory.Surreal.Multiplication`, we define multiplication and show that the
 surreals form a linear ordered commutative ring.
 
+In `Mathlib.SetTheory.Surreal.Division`, we prove that the surreals form a linear ordered
+field.
+
 One can also map all the ordinals into the surreals!
-
-## TODO
-
-- Define the field structure on the surreals.
 
 ## References
 
