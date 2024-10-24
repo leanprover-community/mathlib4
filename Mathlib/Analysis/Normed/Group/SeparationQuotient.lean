@@ -3,7 +3,7 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-Mathlib.Analysis.Normed.Group.Uniform
+import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
 # The null subgroup in a seminormed commutative group
