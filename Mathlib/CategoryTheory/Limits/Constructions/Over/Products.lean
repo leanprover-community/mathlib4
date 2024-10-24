@@ -3,9 +3,7 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.Over
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Products in the over category
@@ -165,5 +163,47 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
             have := m.w
             dsimp at this
             rwa [Category.comp_id, Category.comp_id] at this } }
+
+section BinaryProduct
+
+variable {X : C} {Y Z : Over X}
+
+open Limits
+
+lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
+    IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
+  ⟨by simp, ⟨((IsLimit.postcomposeHomEquiv (diagramIsoCospan _) _).symm
+    ((IsLimit.ofConeEquiv (ConstructProducts.conesEquiv X _).symm).symm hc)).ofIsoLimit
+    (PullbackCone.isoMk _)⟩⟩
+
+variable (Y Z) [HasPullback Y.hom Z.hom] [HasBinaryProduct Y Z]
+
+/-- The product of `Y` and `Z` in `Over X` is isomorpic to `Y ×ₓ Z`. -/
+noncomputable
+def prodLeftIsoPullback :
+    (Y ⨯ Z).left ≅ pullback Y.hom Z.hom :=
+  (Over.isPullback_of_binaryFan_isLimit _ (prodIsProd Y Z)).isoPullback
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_hom_fst :
+    (prodLeftIsoPullback Y Z).hom ≫ pullback.fst _ _ = (prod.fst (X := Y)).left :=
+  IsPullback.isoPullback_hom_fst _
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_hom_snd :
+    (prodLeftIsoPullback Y Z).hom ≫ pullback.snd _ _ = (prod.snd (X := Y)).left :=
+  IsPullback.isoPullback_hom_snd _
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_inv_fst :
+    (prodLeftIsoPullback Y Z).inv ≫ (prod.fst (X := Y)).left = pullback.fst _ _ :=
+  IsPullback.isoPullback_inv_fst _
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_inv_snd :
+    (prodLeftIsoPullback Y Z).inv ≫ (prod.snd (X := Y)).left = pullback.snd _ _ :=
+  IsPullback.isoPullback_inv_snd _
+
+end BinaryProduct
 
 end CategoryTheory.Over

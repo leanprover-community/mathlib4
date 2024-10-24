@@ -412,7 +412,9 @@ def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] :
       unitIso := isoConstant _ (Classical.arbitrary _)
       counitIso := Functor.punitExt _ _ }
 
-variable {C : Type u₂} [Category.{u₁} C]
+universe v u
+
+variable {C : Type u} [Category.{v} C]
 
 /-- For objects `X Y : C`, any natural transformation `α : const X ⟶ const Y` from a connected
 category must be constant.
