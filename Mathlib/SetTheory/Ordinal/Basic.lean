@@ -1088,27 +1088,23 @@ theorem mk_toType (o : Ordinal) : #o.toType = o.card :=
 @[deprecated mk_toType (since := "2024-08-26")]
 alias mk_ordinal_out := mk_toType
 
-/-- The ordinal corresponding to a cardinal `c` is the least ordinal
-  whose cardinal is `c`. For the order-embedding version, see `ord.order_embedding`. -/
+/-- The ordinal corresponding to a cardinal `c` is the least ordinal whose cardinal is `c`. For the
+order-embedding version, see `ord.orderEmbedding`. -/
 def ord (c : Cardinal) : Ordinal := by
-  let F := fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2
-  apply Quot.liftOn c F
-  suffices ∀ {α β}, α ≈ β → F α ≤ F β from fun α β h => (this h).antisymm (this (Setoid.symm h))
+  apply Quot.liftOn c fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2
   rintro α β ⟨f⟩
-  refine le_ciInf_iff'.2 fun i => ?_
-  haveI := @RelEmbedding.isWellOrder _ _ (f ⁻¹'o i.1) _ (↑(RelIso.preimage f i.1)) i.2
-  exact
-    (ciInf_le' _
-          (Subtype.mk (f ⁻¹'o i.val)
-            (@RelEmbedding.isWellOrder _ _ _ _ (↑(RelIso.preimage f i.1)) i.2))).trans_eq
-      (Quot.sound ⟨RelIso.preimage f i.1⟩)
+  apply congr_arg sInf
+  ext o
+  constructor <;>
+    rintro ⟨⟨r, hr⟩, rfl⟩ <;>
+    refine ⟨⟨_, RelIso.IsWellOrder.preimage r ?_⟩, type_preimage _ _⟩
+  exacts [f.symm, f]
 
-theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
+@[deprecated (since := "2024-10-24")]
+theorem ord_eq_Inf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
   rfl
 
-@[deprecated ord_eq_iInf (since := "2024-10-24")]
-alias ord_eq_Inf := ord_eq_iInf
-
+/-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord #α = @type α r wo :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
@@ -1116,19 +1112,16 @@ theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord 
 theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α ≤ type r :=
   ciInf_le' _ (Subtype.mk r h)
 
-theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
-  inductionOn c fun α =>
-    Ordinal.inductionOn o fun β s _ => by
-      let ⟨r, _, e⟩ := ord_eq α
-      simp only [card_type]; constructor <;> intro h
-      · rw [e] at h
-        exact
-          let ⟨f⟩ := h
-          ⟨f.toEmbedding⟩
-      · cases' h with f
-        have g := RelEmbedding.preimage f s
-        haveI := RelEmbedding.isWellOrder g
-        exact le_trans (ord_le_type _) g.ordinal_type_le
+theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card := by
+  refine c.inductionOn fun α ↦ o.inductionOn fun β s _ ↦ ?_
+  let ⟨r, _, e⟩ := ord_eq α
+  constructor <;> intro h
+  · rw [e] at h
+    exact card_le_card h
+  · cases' h with f
+    have g := RelEmbedding.preimage f s
+    have := RelEmbedding.isWellOrder g
+    exact (ord_le_type _).trans g.ordinal_type_le
 
 theorem gc_ord_card : GaloisConnection ord card := fun _ _ => ord_le
 
@@ -1136,11 +1129,10 @@ theorem lt_ord {c o} : o < ord c ↔ o.card < c :=
   gc_ord_card.lt_iff_lt
 
 @[simp]
-theorem card_ord (c) : (ord c).card = c :=
-  Quotient.inductionOn c fun α => by
-    let ⟨r, _, e⟩ := ord_eq α
-    -- Porting note: cardinal.mk_def is now Cardinal.mk'_def, not sure why
-    simp only [mk'_def, e, card_type]
+theorem card_ord (c) : (ord c).card = c := by
+  refine c.inductionOn fun α ↦ ?_
+  let ⟨r, _, e⟩ := ord_eq α
+  rw [e, card_type]
 
 theorem card_surjective : Function.Surjective card :=
   fun c ↦ ⟨_, card_ord c⟩
@@ -1164,9 +1156,9 @@ initial ordinal of cardinality `c`, then its cardinal is no greater than `c`.
 
 The converse, however, is false (for instance, `o = ω+1` and `c = ℵ₀`).
 -/
-lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) :
-    o.card ≤ c := by
-  rw [← card_ord c]; exact Ordinal.card_le_card ho
+lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) : o.card ≤ c := by
+  rw [← card_ord c]
+  exact Ordinal.card_le_card ho
 
 @[mono]
 theorem ord_strictMono : StrictMono ord :=
@@ -1184,17 +1176,26 @@ theorem ord_le_ord {c₁ c₂} : ord c₁ ≤ ord c₂ ↔ c₁ ≤ c₂ :=
 theorem ord_lt_ord {c₁ c₂} : ord c₁ < ord c₂ ↔ c₁ < c₂ :=
   ord_strictMono.lt_iff_lt
 
+/-- The ordinal corresponding to a cardinal `c` is the least ordinal
+  whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
+-/
+def ord.orderEmbedding : Cardinal ↪o Ordinal :=
+  OrderEmbedding.ofStrictMono _ ord_strictMono
+
+@[simp]
+theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = ord :=
+  rfl
+
 @[simp]
 theorem ord_zero : ord 0 = 0 :=
   gc_ord_card.l_bot
 
 @[simp]
-theorem ord_nat (n : ℕ) : ord n = n :=
-  (ord_le.2 (card_nat n).ge).antisymm
-    (by
-      induction' n with n IH
-      · apply Ordinal.zero_le
-      · exact succ_le_of_lt (IH.trans_lt <| ord_lt_ord.2 <| Nat.cast_lt.2 (Nat.lt_succ_self n)))
+theorem ord_nat (n : ℕ) : ord n = n := by
+  apply (ord_le.2 (card_nat n).ge).antisymm
+  induction' n with n IH
+  · exact Ordinal.zero_le _
+  · exact succ_le_of_lt (IH.trans_lt <| ord_lt_ord.2 <| Nat.cast_lt.2 (Nat.lt_succ_self n))
 
 @[simp]
 theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1
@@ -1205,15 +1206,14 @@ theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord (no_index (OfNat.ofNat n)) = Of
   ord_nat n
 
 @[simp]
-theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
-  le_antisymm (ord_le.2 le_rfl) <|
-    le_of_forall_lt fun o h => by
-      rcases Ordinal.lt_lift_iff.1 h with ⟨o, h', rfl⟩
-      rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
-      exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
+theorem ord_aleph0 : ord.{u} ℵ₀ = ω := by
+  refine le_antisymm (ord_le.2 le_rfl) <| le_of_forall_lt fun o h ↦ ?_
+  rcases Ordinal.lt_lift_iff.1 h with ⟨o, ho, rfl⟩
+  rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum _ ho]
+  exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
 
 @[simp]
-theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
+theorem lift_ord (c) : Ordinal.lift.{v} (ord c) = ord (lift.{v} c) := by
   refine le_antisymm (le_of_forall_lt fun a ha => ?_) ?_
   · rcases Ordinal.lt_lift_iff.1 ha with ⟨a, _, rfl⟩
     rwa [lt_ord, ← lift_card, lift_lt, ← lt_ord, ← Ordinal.lift_lt]
@@ -1258,17 +1258,6 @@ theorem ord_eq_zero {a : Cardinal} : a.ord = 0 ↔ a = 0 :=
 @[simp]
 theorem ord_eq_one {a : Cardinal} : a.ord = 1 ↔ a = 1 :=
   ord_injective.eq_iff' ord_one
-
-/-- The ordinal corresponding to a cardinal `c` is the least ordinal
-  whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
--/
-def ord.orderEmbedding : Cardinal ↪o Ordinal :=
-  RelEmbedding.orderEmbeddingOfLTEmbedding
-    (RelEmbedding.ofMonotone Cardinal.ord fun _ _ => Cardinal.ord_lt_ord.2)
-
-@[simp]
-theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = ord :=
-  rfl
 
 -- intended to be used with explicit universe parameters
 /-- The cardinal `univ` is the cardinality of ordinal `univ`, or
