@@ -167,4 +167,11 @@ theorem Commute.right_bijOn_fixedPoints_comp (h : Commute f g) :
     Set.BijOn g (fixedPoints <| f ∘ g) (fixedPoints <| f ∘ g) := by
   simpa only [h.comp_eq] using bijOn_fixedPoints_comp f g
 
+/-- If `f^[m + 1] x = f^[m] x`, then the sequence `n ↦ f^[n] x` is constant after index `m`. -/
+lemma iterate_fixed_point_from_index
+    {m n : ℕ} {x : α} (hx : f^[m + 1] x = f^[m] x) (hn : m ≤ n) : f^[n] x = f^[m] x := by
+  rw [add_comm, iterate_add_apply] at hx
+  rw [show n = n - m + m by omega, iterate_add_apply]
+  apply IsFixedPt.iterate hx
+
 end Function
