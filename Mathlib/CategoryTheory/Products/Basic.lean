@@ -266,6 +266,20 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
 
 /- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
    use instead `α.prod β` or `NatTrans.prod α β`. -/
+
+section
+
+variable {F G : A ⥤ C} {H K : A ⥤ D} (α : F ⟶ G) (β : H ⟶ K)
+
+/-- The cartesian product of two natural transformations. -/
+def prod' : F.prod' H ⟶ G.prod' K where
+  app X := (α.app X, β.app X)
+
+@[simp] lemma prod'_app_fst (X : A) : ((prod' α β).app X).1 = α.app X := rfl
+@[simp] lemma prod'_app_snd (X : A) : ((prod' α β).app X).2 = β.app X := rfl
+
+end
+
 end NatTrans
 
 /-- The cartesian product functor between functor categories -/

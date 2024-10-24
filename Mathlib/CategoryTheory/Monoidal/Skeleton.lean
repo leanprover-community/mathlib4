@@ -57,9 +57,10 @@ noncomputable instance instMonoid : Monoid (Skeleton C) :=
 
 /-- The skeleton of a braided monoidal category has a braided monoidal structure itself, induced by
 the equivalence. -/
-noncomputable instance instBraidedCategory [BraidedCategory C] : BraidedCategory (Skeleton C) :=
-  letI := Monoidal.instIsEquivalence_fromTransported (skeletonEquivalence C).symm
-  braidedCategoryOfFullyFaithful (Monoidal.fromTransported (skeletonEquivalence C).symm)
+noncomputable instance instBraidedCategory [BraidedCategory C] : BraidedCategory (Skeleton C) := by
+  letI := braidedCategoryOfFullyFaithful
+    (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).inverse
+  exact this
 
 /--
 The skeleton of a braided monoidal category can be viewed as a commutative monoid, where the

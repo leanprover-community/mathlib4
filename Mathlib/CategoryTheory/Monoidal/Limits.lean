@@ -3,139 +3,96 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # `lim : (J ⥤ C) ⥤ C` is lax monoidal when `C` is a monoidal category.
 
-When `C` is a monoidal category, the functorial association `F ↦ limit F` is lax monoidal,
+When `C` is a monoidal category, the limit functor `lim : (J ⥤ C) ⥤ C` is lax monoidal,
 i.e. there are morphisms
-* `limLax.ε : (𝟙_ C) → limit (𝟙_ (J ⥤ C))`
-* `limLax.μ : limit F ⊗ limit G ⟶ limit (F ⊗ G)`
+* `(𝟙_ C) → limit (𝟙_ (J ⥤ C))`
+* `limit F ⊗ limit G ⟶ limit (F ⊗ G)`
 satisfying the laws of a lax monoidal functor.
 
 ## TODO
 Now that we have oplax monoidal functors, assemble `Limits.colim` into an oplax monoidal functor.
 -/
 
-
-open CategoryTheory
-
-open CategoryTheory.MonoidalCategory
-
 namespace CategoryTheory.Limits
+
+open MonoidalCategory
 
 universe v u w
 
 noncomputable section
 
-variable {J : Type w} [SmallCategory J]
-variable {C : Type u} [Category.{v} C] [HasLimitsOfShape J C]
+variable {J : Type w} [SmallCategory J] {C : Type u} [Category.{v} C] [HasLimitsOfShape J C]
+  [MonoidalCategory.{v} C]
 
-instance limitFunctorial : Functorial fun F : J ⥤ C => limit F where
-  map' := Limits.lim.map
+open Functor.LaxMonoidal
 
-@[simp]
-theorem limitFunctorial_map {F G : J ⥤ C} (α : F ⟶ G) :
-    map (fun F : J ⥤ C => limit F) α = Limits.lim.map α :=
-  rfl
-
-variable [MonoidalCategory.{v} C]
-
-@[simps]
-instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorHom
-  (ε :=
-    limit.lift _
-      { pt := _
-        π := { app := fun _ => 𝟙 _ } })
-  (μ := fun F G =>
-    limit.lift (F ⊗ G)
-      { pt := limit F ⊗ limit G
-        π :=
-          { app := fun j => limit.π F j ⊗ limit.π G j
-            naturality := fun j j' f => by
-              dsimp
-              simp only [Category.id_comp, ← tensor_comp, limit.w] } })
-  (μ_natural := fun f g => by
-    ext; dsimp
-    simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.tensorHom_app, limit.lift_map,
-      NatTrans.comp_app, Category.assoc, ← tensor_comp, limMap_π])
-  (associativity := fun X Y Z => by
-    ext j; dsimp
-    simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.associator_hom_app, limit.lift_map,
-      NatTrans.comp_app, Category.assoc]
-    slice_lhs 2 2 => rw [← tensor_id_comp_id_tensor]
-    slice_lhs 1 2 =>
-      rw [← comp_tensor_id, limit.lift_π]
-      dsimp
-    slice_lhs 1 2 => rw [tensor_id_comp_id_tensor]
-    conv_lhs => rw [associator_naturality]
-    conv_rhs => rw [← id_tensor_comp_tensor_id (limit.π (Y ⊗ Z) j)]
-    slice_rhs 2 3 =>
-      rw [← id_tensor_comp, limit.lift_π]
-      dsimp
-    dsimp; rw [id_tensor_comp_tensor_id])
-  (left_unitality := fun X => by
-    ext j; dsimp
-    simp only [limit.lift_map, Category.assoc, limit.lift_π, Cones.postcompose_obj_pt,
-      Cones.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj, Monoidal.tensorObj_obj,
-      Monoidal.tensorUnit_obj, Monoidal.leftUnitor_hom_app]
-    conv_rhs => rw [← tensor_id_comp_id_tensor (limit.π X j)]
-    slice_rhs 1 2 =>
-      rw [← comp_tensor_id]
-      erw [limit.lift_π]
-      dsimp
-    slice_rhs 2 3 => rw [id_tensorHom, leftUnitor_naturality]
-    simp)
-  (right_unitality := fun X => by
-    ext j; dsimp
-    simp only [limit.lift_map, Category.assoc, limit.lift_π, Cones.postcompose_obj_pt,
-      Cones.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj, Monoidal.tensorObj_obj,
-      Monoidal.tensorUnit_obj, Monoidal.rightUnitor_hom_app]
-    conv_rhs => rw [← id_tensor_comp_tensor_id _ (limit.π X j)]
-    slice_rhs 1 2 =>
-      rw [← id_tensor_comp]
-      erw [limit.lift_π]
-      dsimp
-    slice_rhs 2 3 => rw [tensorHom_id, rightUnitor_naturality]
-    simp)
-
-/-- The limit functor `F ↦ limit F` bundled as a lax monoidal functor. -/
-def limLax : LaxMonoidalFunctor (J ⥤ C) C :=
-  LaxMonoidalFunctor.of fun F : J ⥤ C => limit F
-
-@[simp]
-theorem limLax_obj (F : J ⥤ C) : limLax.obj F = limit F :=
-  rfl
-
-theorem limLax_obj' (F : J ⥤ C) : limLax.obj F = lim.obj F :=
-  rfl
-
-@[simp]
-theorem limLax_map {F G : J ⥤ C} (α : F ⟶ G) : limLax.map α = lim.map α :=
-  rfl
-
-@[simp]
-theorem limLax_ε :
-    (@limLax J _ C _ _ _).ε =
+instance : (lim (J := J) (C := C)).LaxMonoidal :=
+  Functor.LaxMonoidal.ofTensorHom
+    (ε' :=
       limit.lift _
         { pt := _
-          π := { app := fun _ => 𝟙 _ } } :=
-  rfl
-
-@[simp]
-theorem limLax_μ (F G : J ⥤ C) :
-    (@limLax J _ C _ _ _).μ F G =
+          π := { app := fun _ => 𝟙 _ } })
+    (μ' := fun F G ↦
       limit.lift (F ⊗ G)
         { pt := limit F ⊗ limit G
           π :=
             { app := fun j => limit.π F j ⊗ limit.π G j
               naturality := fun j j' f => by
                 dsimp
-                simp only [Category.id_comp, ← tensor_comp, limit.w] } } :=
-  rfl
+                simp only [Category.id_comp, ← tensor_comp, limit.w] } })
+    (μ'_natural := fun f g ↦ limit.hom_ext (fun j ↦ by
+      dsimp
+      simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.tensorHom_app, limit.lift_map,
+        NatTrans.comp_app, Category.assoc, ← tensor_comp, limMap_π]))
+    (associativity' := fun F G H ↦ limit.hom_ext (fun j ↦ by
+      dsimp
+      simp only [tensorHom_id, limit.lift_map, Category.assoc, limit.lift_π,
+        id_tensorHom]
+      dsimp
+      conv_lhs => rw [tensorHom_def, Category.assoc, ← comp_whiskerRight_assoc,
+        limit.lift_π, tensor_whiskerLeft, Category.assoc, Category.assoc,
+        Iso.inv_hom_id, Category.comp_id,
+        ← associator_naturality_right, ← tensorHom_def_assoc]
+      dsimp
+      conv_rhs => rw [tensorHom_def, ← whisker_exchange,
+        ← MonoidalCategory.whiskerLeft_comp_assoc, limit.lift_π,
+        whisker_exchange, ← associator_naturality_left_assoc]
+      dsimp only
+      conv_rhs => rw [tensorHom_def, MonoidalCategory.whiskerLeft_comp,
+        ← associator_naturality_middle_assoc,
+        ← associator_naturality_right, ← comp_whiskerRight_assoc,
+        ← tensorHom_def, ← tensorHom_def_assoc]))
+    (left_unitality' := fun F ↦ limit.hom_ext (fun j ↦ by
+      dsimp
+      simp only [tensorHom_id, limit.lift_map, Category.assoc, limit.lift_π]
+      dsimp
+      simp only [tensorHom_def, id_whiskerLeft, Category.assoc,
+        Iso.inv_hom_id, Category.comp_id, ← comp_whiskerRight_assoc]
+      erw [limit.lift_π]
+      rw [id_whiskerRight, Category.id_comp]))
+    (right_unitality' := fun F ↦ limit.hom_ext (fun j ↦ by
+      dsimp
+      simp only [id_tensorHom, limit.lift_map, Category.assoc, limit.lift_π]
+      dsimp
+      simp only [tensorHom_def, ← whisker_exchange,
+        MonoidalCategory.whiskerRight_id, Category.assoc, Iso.inv_hom_id,
+        Category.comp_id, ← MonoidalCategory.whiskerLeft_comp_assoc]
+      erw [limit.lift_π]
+      rw [MonoidalCategory.whiskerLeft_id, Category.id_comp]))
+
+@[reassoc (attr := simp)]
+lemma lim_ε_π (j : J) : ε (lim (J := J) (C := C)) ≫ limit.π _ j = 𝟙 _ :=
+  limit.lift_π _ _
+
+@[reassoc (attr := simp)]
+lemma lim_μ_π (F G : J ⥤ C) (j : J) : μ lim F G ≫ limit.π _ j = limit.π F j ⊗ limit.π G j :=
+  limit.lift_π _ _
 
 end
 

@@ -145,8 +145,12 @@ variable (k G)
 
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
-noncomputable def linearization : MonoidalFunctor (Action (Type u) (MonCat.of G)) (Rep k G) :=
-  (ModuleCat.monoidalFree k).mapAction (MonCat.of G)
+noncomputable def linearization : (Action (Type u) (MonCat.of G)) ⥤ (Rep k G) :=
+  (ModuleCat.free k).mapAction (MonCat.of G)
+
+instance : (linearization k G).Monoidal := by
+  dsimp only [linearization]
+  infer_instance
 
 variable {k G}
 
@@ -175,25 +179,25 @@ theorem linearization_map_hom_single (x : X.V) (r : k) :
     ((linearization k G).map f).hom (Finsupp.single x r) = Finsupp.single (f.hom x) r :=
   Finsupp.mapDomain_single
 
+open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
+
 @[simp]
 theorem linearization_μ_hom (X Y : Action (Type u) (MonCat.of G)) :
-    ((linearization k G).μ X Y).hom = (finsuppTensorFinsupp' k X.V Y.V).toLinearMap :=
+    (μ (linearization k G) X Y).hom = (finsuppTensorFinsupp' k X.V Y.V).toLinearMap :=
   rfl
 
 @[simp]
-theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
-    (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
-  rw [← Action.forget_map, Functor.map_inv]
-  apply IsIso.inv_eq_of_hom_inv_id
-  exact LinearMap.ext fun x ↦ LinearEquiv.symm_apply_apply _ _
-
-@[simp]
-theorem linearization_ε_hom : (linearization k G).ε.hom = Finsupp.lsingle PUnit.unit :=
+theorem linearization_δ_hom (X Y : Action (Type u) (MonCat.of G)) :
+    (δ (linearization k G) X Y).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap :=
   rfl
 
-theorem linearization_ε_inv_hom_apply (r : k) :
-    (inv (linearization k G).ε).hom (Finsupp.single PUnit.unit r) = r :=
-  IsIso.hom_inv_id_apply (linearization k G).ε r
+@[simp]
+theorem linearization_ε_hom : (ε (linearization k G)).hom = Finsupp.lsingle PUnit.unit :=
+  rfl
+
+theorem linearization_η_hom_apply (r : k) :
+    (η (linearization k G)).hom (Finsupp.single PUnit.unit r) = r :=
+  (εIso (linearization k G)).hom_inv_id_apply r
 
 variable (k G)
 
