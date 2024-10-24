@@ -6,7 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Ring.Divisibility.Lemmas
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Engel
-import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+import Mathlib.LinearAlgebra.Eigenspace.Pi
 import Mathlib.RingTheory.Artinian
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.FreeModule.PID
@@ -246,6 +246,8 @@ abbrev IsNonZero (χ : Weight R L M) := ¬ IsZero (χ : Weight R L M)
 
 lemma isNonZero_iff_ne_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : Weight R L M} :
     χ.IsNonZero ↔ χ ≠ 0 := isZero_iff_eq_zero.not
+
+noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) := Classical.decPred _
 
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
@@ -648,48 +650,11 @@ lemma injOn_genWeightSpace [NoZeroSMulDivisors R M] :
 
 See also `LieModule.independent_genWeightSpace'`. -/
 lemma independent_genWeightSpace [NoZeroSMulDivisors R M] :
-    CompleteLattice.Independent fun (χ : L → R) ↦ genWeightSpace M χ := by
-  classical
-  suffices ∀ χ (s : Finset (L → R)) (_ : χ ∉ s),
-      Disjoint (genWeightSpace M χ) (s.sup fun (χ : L → R) ↦ genWeightSpace M χ) by
-    simpa only [CompleteLattice.independent_iff_supIndep_of_injOn (injOn_genWeightSpace R L M),
-      Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.not_mem_erase χ)
-  intro χ₁ s
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert _n ih =>
-  rename_i χ₂ s
-  intro hχ₁₂
-  obtain ⟨hχ₁₂ : χ₁ ≠ χ₂, hχ₁ : χ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hχ₁₂
-  specialize ih hχ₁
-  rw [Finset.sup_insert, disjoint_iff, LieSubmodule.eq_bot_iff]
-  rintro x ⟨hx, hx'⟩
-  simp only [SetLike.mem_coe, LieSubmodule.mem_coeSubmodule] at hx hx'
-  suffices x ∈ genWeightSpace M χ₂ by
-    rw [← LieSubmodule.mem_bot (R := R) (L := L), ← (disjoint_genWeightSpace R L M hχ₁₂).eq_bot]
-    exact ⟨hx, this⟩
-  obtain ⟨y, hy, z, hz, rfl⟩ := (LieSubmodule.mem_sup _ _ _).mp hx'; clear hx'
-  suffices ∀ l, ∃ (k : ℕ),
-      ((toEnd R L M l - algebraMap R (Module.End R M) (χ₂ l)) ^ k) (y + z) ∈
-      genWeightSpace M χ₁ ⊓ Finset.sup s fun χ ↦ genWeightSpace M χ by
-    simpa only [ih.eq_bot, LieSubmodule.mem_bot, mem_genWeightSpace] using this
-  intro l
-  let g : Module.End R M := toEnd R L M l - algebraMap R (Module.End R M) (χ₂ l)
-  obtain ⟨k, hk : (g ^ k) y = 0⟩ := (mem_genWeightSpace _ _ _).mp hy l
-  refine ⟨k, (LieSubmodule.mem_inf _ _ _).mp ⟨?_, ?_⟩⟩
-  · exact LieSubmodule.mapsTo_pow_toEnd_sub_algebraMap _ hx
-  · rw [map_add, hk, zero_add]
-    suffices (s.sup fun χ ↦ genWeightSpace M χ : Submodule R M).map (g ^ k) ≤
-        s.sup fun χ ↦ genWeightSpace M χ by
-      refine this (Submodule.mem_map_of_mem ?_)
-      simp_rw [← LieSubmodule.mem_coeSubmodule, Finset.sup_eq_iSup,
-        LieSubmodule.iSup_coe_toSubmodule, ← Finset.sup_eq_iSup] at hz
-      exact hz
-    simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := L → R), Submodule.map_iSup (ι := _ ∈ s),
-      LieSubmodule.iSup_coe_toSubmodule]
-    refine iSup₂_mono fun χ _ ↦ ?_
-    rintro - ⟨u, hu, rfl⟩
-    exact LieSubmodule.mapsTo_pow_toEnd_sub_algebraMap _ hu
+    CompleteLattice.Independent fun χ : L → R ↦ genWeightSpace M χ := by
+  simp only [LieSubmodule.independent_iff_coe_toSubmodule, genWeightSpace,
+    LieSubmodule.iInf_coe_toSubmodule]
+  exact Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo (toEnd R L M)
+    (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem)
 
 lemma independent_genWeightSpace' [NoZeroSMulDivisors R M] :
     CompleteLattice.Independent fun χ : Weight R L M ↦ genWeightSpace M χ :=
@@ -705,13 +670,11 @@ lemma independent_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
 
 lemma finite_genWeightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
     {χ : R | genWeightSpaceOf M χ x ≠ ⊥}.Finite :=
-  CompleteLattice.WellFounded.finite_ne_bot_of_independent
-    IsWellFounded.wf (independent_genWeightSpaceOf R L M x)
+  CompleteLattice.WellFoundedGT.finite_ne_bot_of_independent (independent_genWeightSpaceOf R L M x)
 
 lemma finite_genWeightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     {χ : L → R | genWeightSpace M χ ≠ ⊥}.Finite :=
-  CompleteLattice.WellFounded.finite_ne_bot_of_independent
-    IsWellFounded.wf (independent_genWeightSpace R L M)
+  CompleteLattice.WellFoundedGT.finite_ne_bot_of_independent (independent_genWeightSpace R L M)
 
 instance Weight.instFinite [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     Finite (Weight R L M) := by
@@ -724,7 +687,7 @@ noncomputable instance Weight.instFintype [NoZeroSMulDivisors R M] [IsNoetherian
 
 /-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
 any `x : L` is triangularizable. -/
-class IsTriangularizable : Prop :=
+class IsTriangularizable : Prop where
   iSup_eq_top : ∀ x, ⨆ φ, ⨆ k, (toEnd R L M x).genEigenspace φ k = ⊤
 
 instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizable R L' M where
@@ -780,8 +743,10 @@ lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, genWeightSpace M χ = ⊤ := by
   simp only [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule,
     LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.top_coeSubmodule, genWeightSpace]
-  exact Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo (toEnd K L M)
-    (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem) (IsTriangularizable.iSup_eq_top)
+  refine Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo (toEnd K L M)
+    (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem) ?_
+  simp_rw [Module.End.maxGenEigenspace_def]
+  apply IsTriangularizable.iSup_eq_top
 
 lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
     ⨆ χ : Weight K L M, genWeightSpace M χ = ⊤ := by

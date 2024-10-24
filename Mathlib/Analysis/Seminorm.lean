@@ -231,7 +231,7 @@ theorem smul_sup [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
   have real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
       mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
-  ext fun x => real.smul_max _ _
+  ext fun _ => real.smul_max _ _
 
 instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
   PartialOrder.lift _ DFunLike.coe_injective
@@ -462,8 +462,8 @@ noncomputable instance instLattice : Lattice (Seminorm 𝕜 E) :=
     inf_le_right := fun p q x =>
       ciInf_le_of_le bddBelow_range_add 0 <| by
         simp only [sub_self, map_zero, zero_add, sub_zero]; rfl
-    le_inf := fun a b c hab hac x =>
-      le_ciInf fun u => (le_map_add_map_sub a _ _).trans <| add_le_add (hab _) (hac _) }
+    le_inf := fun a _ _ hab hac _ =>
+      le_ciInf fun _ => (le_map_add_map_sub a _ _).trans <| add_le_add (hab _) (hac _) }
 
 theorem smul_inf [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p q : Seminorm 𝕜 E) :
     r • (p ⊓ q) = r • p ⊓ r • q := by
@@ -533,7 +533,7 @@ protected theorem coe_sSup_eq' {s : Set <| Seminorm 𝕜 E}
 
 protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
     BddAbove s ↔ BddAbove ((↑) '' s : Set (E → ℝ)) :=
-  ⟨fun ⟨q, hq⟩ => ⟨q, forall_mem_image.2 fun p hp => hq hp⟩, fun H =>
+  ⟨fun ⟨q, hq⟩ => ⟨q, forall_mem_image.2 fun _ hp => hq hp⟩, fun H =>
     ⟨sSup s, fun p hp x => by
       dsimp
       rw [Seminorm.coe_sSup_eq' H, iSup_apply]
@@ -1190,7 +1190,7 @@ lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) 
   · show ε / ‖c‖ ≤ p (c ^ (-(n + 1)) • x)
     rw [zpow_neg, div_le_iff₀ cpos, map_smul_eq_mul, norm_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos),
         zpow_one, mul_inv_rev, mul_comm, ← mul_assoc, ← mul_assoc, mul_inv_cancel₀ (ne_of_gt cpos),
-        one_mul, ← div_eq_inv_mul, le_div_iff₀ (zpow_pos_of_pos cpos _), mul_comm]
+        one_mul, ← div_eq_inv_mul, le_div_iff₀ (zpow_pos cpos _), mul_comm]
     exact (le_div_iff₀ εpos).1 hn.1
   · show ‖(c ^ (-(n + 1)))‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x
     have : ε⁻¹ * ‖c‖ * p x = ε⁻¹ * p x * ‖c‖ := by ring

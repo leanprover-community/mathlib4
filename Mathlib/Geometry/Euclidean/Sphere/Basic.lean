@@ -157,7 +157,7 @@ theorem Cospherical.subset {ps₁ ps₂ : Set P} (hs : ps₁ ⊆ ps₂) (hc : Co
 /-- The empty set is cospherical. -/
 theorem cospherical_empty [Nonempty P] : Cospherical (∅ : Set P) :=
   let ⟨p⟩ := ‹Nonempty P›
-  ⟨p, 0, fun p => False.elim⟩
+  ⟨p, 0, fun _ => False.elim⟩
 
 /-- A single point is cospherical. -/
 theorem cospherical_singleton (p : P) : Cospherical ({p} : Set P) := by

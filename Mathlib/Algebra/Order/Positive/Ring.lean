@@ -19,7 +19,7 @@ open Function
 
 namespace Positive
 
-variable {M R K : Type*}
+variable {M R : Type*}
 
 section AddBasic
 

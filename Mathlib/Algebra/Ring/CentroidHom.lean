@@ -102,13 +102,6 @@ instance : CentroidHomClass (CentroidHom α) α where
   map_mul_right f := f.map_mul_right'
 
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.CoeFun`
-directly. -/
-/- Porting note: Lean gave me `unknown constant 'DFunLike.CoeFun'` and says `CoeFun` is a type
-mismatch, so I used `library_search`. -/
-instance : CoeFun (CentroidHom α) fun _ ↦ α → α :=
-  inferInstanceAs (CoeFun (CentroidHom α) fun _ ↦ α → α)
-
 -- Porting note: removed @[simp]; not in normal form. (`toAddMonoidHom_eq_coe` below ensures that
 -- the LHS simplifies to the RHS anyway.)
 theorem toFun_eq_coe {f : CentroidHom α} : f.toFun = f := rfl

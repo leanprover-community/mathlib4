@@ -207,7 +207,7 @@ variable [LinearOrder β] [SuccOrder β] [IsSuccArchimedean β]
   such that any two neighboring sets meet is preconnected. -/
 theorem IsPreconnected.iUnion_of_chain {s : β → Set α} (H : ∀ n, IsPreconnected (s n))
     (K : ∀ n, (s n ∩ s (succ n)).Nonempty) : IsPreconnected (⋃ n, s n) :=
-  IsPreconnected.iUnion_of_reflTransGen H fun i j =>
+  IsPreconnected.iUnion_of_reflTransGen H fun _ _ =>
     reflTransGen_of_succ _ (fun i _ => K i) fun i _ => by
       rw [inter_comm]
       exact K i
@@ -216,7 +216,7 @@ theorem IsPreconnected.iUnion_of_chain {s : β → Set α} (H : ∀ n, IsPreconn
   such that any two neighboring sets meet is connected. -/
 theorem IsConnected.iUnion_of_chain [Nonempty β] {s : β → Set α} (H : ∀ n, IsConnected (s n))
     (K : ∀ n, (s n ∩ s (succ n)).Nonempty) : IsConnected (⋃ n, s n) :=
-  IsConnected.iUnion_of_reflTransGen H fun i j =>
+  IsConnected.iUnion_of_reflTransGen H fun _ _ =>
     reflTransGen_of_succ _ (fun i _ => K i) fun i _ => by
       rw [inter_comm]
       exact K i

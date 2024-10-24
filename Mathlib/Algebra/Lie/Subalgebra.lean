@@ -295,7 +295,7 @@ theorem rangeRestrict_apply (x : L) : f.rangeRestrict x = ⟨f x, f.mem_range_se
 
 theorem surjective_rangeRestrict : Function.Surjective f.rangeRestrict := by
   rintro ⟨y, hy⟩
-  erw [mem_range] at hy; obtain ⟨x, rfl⟩ := hy
+  rw [mem_range] at hy; obtain ⟨x, rfl⟩ := hy
   use x
   simp only [Subtype.mk_eq_mk, rangeRestrict_apply]
 
@@ -461,7 +461,7 @@ instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
     top := ⊤
     le_top := fun _ _ _ ↦ trivial
     inf := (· ⊓ ·)
-    le_inf := fun N₁ N₂ N₃ h₁₂ h₁₃ m hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
+    le_inf := fun _ _ _ h₁₂ h₁₃ _ hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
@@ -694,7 +694,7 @@ def ofEq (h : (L₁' : Set L₁) = L₁'') : L₁' ≃ₗ⁅R⁆ L₁'' :=
       ext x
       change x ∈ (L₁' : Set L₁) ↔ x ∈ (L₁'' : Set L₁)
       rw [h]) with
-    map_lie' := @fun x y ↦ rfl }
+    map_lie' := @fun _ _ ↦ rfl }
 
 @[simp]
 theorem ofEq_apply (L L' : LieSubalgebra R L₁) (h : (L : Set L₁) = L') (x : L) :

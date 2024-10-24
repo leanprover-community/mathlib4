@@ -308,7 +308,7 @@ noncomputable def liftEquiv (pb : PowerBasis A S) :
     (S →ₐ[A] S') ≃ { y : S' // aeval y (minpoly A pb.gen) = 0 } where
   toFun f := ⟨f pb.gen, by rw [aeval_algHom_apply, minpoly.aeval, map_zero]⟩
   invFun y := pb.lift y y.2
-  left_inv f := pb.algHom_ext <| lift_gen _ _ _
+  left_inv _ := pb.algHom_ext <| lift_gen _ _ _
   right_inv y := Subtype.ext <| lift_gen _ _ y.prop
 
 /-- `pb.liftEquiv'` states that elements of the root set of the minimal
@@ -442,7 +442,6 @@ noncomputable def map (pb : PowerBasis R S) (e : S ≃ₐ[R] S') : PowerBasis R 
 
 variable [Algebra A S] [Algebra A S']
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem minpolyGen_map (pb : PowerBasis A S) (e : S ≃ₐ[A] S') :
     (pb.map e).minpolyGen = pb.minpolyGen := by
   dsimp only [minpolyGen, map_dim]
