@@ -199,7 +199,7 @@ theorem exists_linearIndependent_pair_of_one_lt_finrank [NoZeroSMulDivisors R M]
 /-- Rank-nullity theorem using `finrank`. -/
 lemma Submodule.finrank_quotient_add_finrank [Module.Finite R M] (N : Submodule R M) :
     finrank R (M ⧸ N) + finrank R N = finrank R M := by
-  rw [← Cardinal.natCast_inj, Module.finrank_eq_rank, Nat.cast_add, Module.finrank_eq_rank,
+  rw [← Nat.cast_inj (R := Cardinal), Module.finrank_eq_rank, Nat.cast_add, Module.finrank_eq_rank,
     Submodule.finrank_eq_rank]
   exact HasRankNullity.rank_quotient_add_rank _
 
