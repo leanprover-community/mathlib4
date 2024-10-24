@@ -362,6 +362,7 @@ lemma id_comp (x y : C) [Closed x] :
       uncurry_id_eq_ev _ _]
 
 /-- Right unitality of the enriched structure -/
+@[reassoc (attr := simp)]
 lemma comp_id (x y : C) [Closed x] [Closed y] :
     (ρ_ ((ihom x).obj y)).inv ≫ _ ◁ id y ≫ comp x y y = 𝟙 _ := by
   apply uncurry_injective
