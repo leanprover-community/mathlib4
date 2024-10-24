@@ -99,7 +99,7 @@ theorem supIndep_antimono_fun {g : ι → α} (h : ∀ x ∈ s, f x ≤ g x) (h 
   classical
   induction s using Finset.induction_on with
   | empty => apply Finset.supIndep_empty
-  | @insert i s his IH hle =>
+  | @insert i s his IH =>
   rw [Finset.supIndep_iff_disjoint_erase] at h ⊢
   intro j hj
   simp_all only [Finset.mem_insert, or_true, implies_true, true_implies, forall_eq_or_imp,
