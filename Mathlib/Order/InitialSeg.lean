@@ -124,14 +124,18 @@ theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a
 @[deprecated exists_eq_iff_rel (since := "2024-09-21")]
 alias init_iff := exists_eq_iff_rel
 
-/-- An order isomorphism is an initial segment -/
-def ofIso (f : r ≃r s) : r ≼i s :=
-  ⟨f, fun _ b _ => ⟨f.symm b, RelIso.apply_symm_apply f _⟩⟩
+/-- A relation isomorphism is an initial segment -/
+@[simps!]
+def _root_.RelIso.toInitialSeg (f : r ≃r s) : r ≼i s :=
+  ⟨f, by simp⟩
+
+@[deprecated (since := "2024-10-22")]
+alias ofIso := RelIso.toInitialSeg
 
 /-- The identity function shows that `≼i` is reflexive -/
 @[refl]
 protected def refl (r : α → α → Prop) : r ≼i r :=
-  ⟨RelEmbedding.refl _, fun _ _ _ => ⟨_, rfl⟩⟩
+  (RelIso.refl r).toInitialSeg
 
 instance (r : α → α → Prop) : Inhabited (r ≼i r) :=
   ⟨InitialSeg.refl r⟩
@@ -487,10 +491,10 @@ noncomputable def ltOrEq [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r �
   · exact Sum.inl (f.toPrincipalSeg h)
 
 theorem ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) : g a = f a :=
-  @InitialSeg.eq α β r s _ g f a
+  InitialSeg.eq g f a
 
 theorem ltOrEq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) : g a = f a :=
-  InitialSeg.eq (InitialSeg.ofIso g) f a
+  InitialSeg.eq g.toInitialSeg f a
 
 /-- Composition of an initial segment taking values in a well order and a principal segment. -/
 noncomputable def leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) : r ≺i t :=
@@ -562,14 +566,14 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
   match (leAdd r s).ltOrEq, (RelEmbedding.sumLexInr r s).collapse.ltOrEq with
   | Sum.inl f, Sum.inr g => Sum.inl <| f.ltEquiv g.symm
   | Sum.inr f, Sum.inl g => Sum.inr <| g.ltEquiv f.symm
-  | Sum.inr f, Sum.inr g => Sum.inl <| InitialSeg.ofIso (f.trans g.symm)
+  | Sum.inr f, Sum.inr g => Sum.inl <| (f.trans g.symm).toInitialSeg
   | Sum.inl f, Sum.inl g => Classical.choice <| by
       obtain h | h | h := trichotomous_of (Sum.Lex r s) f.top g.top
       · exact ⟨Sum.inl <| (f.codRestrict {x | Sum.Lex r s x g.top}
           (fun a => _root_.trans (f.lt_top a) h) h).ltEquiv g.subrelIso⟩
       · let f := f.subrelIso
         rw [h] at f
-        exact ⟨Sum.inl <| InitialSeg.ofIso (f.symm.trans g.subrelIso)⟩
+        exact ⟨Sum.inl <| (f.symm.trans g.subrelIso).toInitialSeg⟩
       · exact ⟨Sum.inr <| (g.codRestrict {x | Sum.Lex r s x f.top}
           (fun a => _root_.trans (g.lt_top a) h) h).ltEquiv f.subrelIso⟩
 
@@ -579,6 +583,11 @@ attribute [nolint simpNF] PrincipalSeg.ofElement_apply PrincipalSeg.subrelIso_sy
 /-! ### Initial or principal segments with `<` -/
 
 namespace InitialSeg
+
+/-- An order isomorphism is an initial segment -/
+@[simps!]
+def _root_.OrderIso.toInitialSeg [Preorder α] [Preorder β] (f : α ≃o β) : α ≤i β :=
+  f.toRelIsoLT.toInitialSeg
 
 variable [PartialOrder β] {a a' : α} {b : β}
 
