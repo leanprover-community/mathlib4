@@ -641,5 +641,4 @@ theorem CostructuredArrow.overEquivPresheafCostructuredArrow_functor_map_toOverC
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).hom.app X ≫ f := by
   simp [CostructuredArrow.toOverCompCoyoneda]
 
-
 end CategoryTheory
