@@ -221,6 +221,9 @@ theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
   rw [← omega_zero, omega_le_omega]
   exact Ordinal.zero_le o
 
+theorem omega_pos (o : Ordinal) : 0 < ω_ o :=
+  omega0_pos.trans_le (omega0_le_omega o)
+
 theorem omega0_lt_omega1 : ω < ω₁ := by
   rw [← omega_zero, omega_lt_omega]
   exact zero_lt_one

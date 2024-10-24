@@ -29,9 +29,7 @@ universe u v
 
 variable {α : Type u}
 
-open Cardinal Set MeasureTheory
-
-local notation "ω₁" => Cardinal.ord (aleph 1)
+open Cardinal Ordinal Set MeasureTheory
 
 namespace MeasurableSpace
 
@@ -109,9 +107,7 @@ theorem generateMeasurableRec_induction {s : Set (Set α)} {i : Ordinal} {t : Se
 theorem generateMeasurableRec_omega1 (s : Set (Set α)) :
     generateMeasurableRec s (ω₁ : Ordinal.{v}) =
       ⋃ i < (ω₁ : Ordinal.{v}), generateMeasurableRec s i := by
-  have H : 0 < ω₁ := by
-    rw [← ord_zero, ord_lt_ord]
-    exact aleph_pos 1
+  have H : 0 < ω₁ := omega_pos 1
   apply (iUnion₂_subset fun i h => generateMeasurableRec_mono s h.le).antisymm'
   intro t ht
   rw [mem_iUnion₂]
@@ -120,7 +116,7 @@ theorem generateMeasurableRec_omega1 (s : Set (Set α)) :
     exact ⟨0, H, self_subset_generateMeasurableRec s 0 ht⟩
   · exact ⟨0, H, empty_mem_generateMeasurableRec s 0⟩
   · rintro u - ⟨j, hj, hj'⟩
-    exact ⟨_, (ord_aleph_isLimit 1).succ_lt hj,
+    exact ⟨_, (isLimit_omega 1).succ_lt hj,
       compl_mem_generateMeasurableRec (Order.lt_succ j) hj'⟩
   · intro f H
     choose I hI using fun n => (H n).1
@@ -151,7 +147,7 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
   · simp_rw [generateMeasurableRec_omega1, mem_iUnion₂, exists_prop] at IH
     exact iUnion_mem_generateMeasurableRec IH
 
-theorem generateMeasurableRec_of_ge_omega1 (s : Set (Set α)) {i : Ordinal.{v}} (hi : ω₁ ≤ i) :
+theorem generateMeasurableRec_of_omega1_le (s : Set (Set α)) {i : Ordinal.{v}} (hi : ω₁ ≤ i) :
     generateMeasurableRec s i = generateMeasurableRec s (ω₁ : Ordinal.{v}) := by
   apply (generateMeasurableRec_mono s hi).antisymm'
   rw [← generateMeasurable_eq_rec]
@@ -163,7 +159,7 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :
   suffices ∀ i ≤ ω₁, #(generateMeasurableRec s i) ≤ max #s 2 ^ ℵ₀ by
     obtain hi | hi := le_or_lt i ω₁
     · exact this i hi
-    · rw [generateMeasurableRec_of_ge_omega1 s hi.le]
+    · rw [generateMeasurableRec_of_omega1_le s hi.le]
       exact this _ le_rfl
   intro i
   apply WellFoundedLT.induction i
