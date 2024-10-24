@@ -660,6 +660,11 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
       exact not_succ_isLimit _ l
 
 @[simp]
+theorem preAleph_cof {o : Ordinal} (ho : o.IsLimit) : (preAleph o).ord.cof = o.cof :=
+  preAleph_isNormal.cof_eq ho
+
+set_option linter.deprecated false in
+@[deprecated preAleph_cof (since := "2024-10-22")]
 theorem aleph'_cof {o : Ordinal} (ho : o.IsLimit) : (aleph' o).ord.cof = o.cof :=
   aleph'_isNormal.cof_eq ho
 
@@ -700,7 +705,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       rcases @cof_eq Ordinal.{u} (· < ·) _ with ⟨S, H, Se⟩
       rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u+1, v, u}, Cardinal.lift_lt, ← Se]
       refine lt_of_not_ge fun h => ?_
-      cases' Cardinal.mem_range_of_le_lift h with a e
+      cases' Cardinal.mem_range_lift_of_le h with a e
       refine Quotient.inductionOn a (fun α e => ?_) e
       cases' Quotient.exact e with f
       have f := Equiv.ulift.symm.trans f
@@ -924,6 +929,12 @@ theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
   exact isRegular_succ le_rfl
 
+theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (succ o)) := by
+  rw [preAleph_succ]
+  exact isRegular_succ (aleph0_le_preAleph.2 h)
+
+set_option linter.deprecated false in
+@[deprecated isRegular_preAleph_succ (since := "2024-10-22")]
 theorem isRegular_aleph'_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (aleph' (succ o)) := by
   rw [aleph'_succ]
   exact isRegular_succ (aleph0_le_aleph'.2 h)
@@ -1187,19 +1198,11 @@ namespace Ordinal
 open Cardinal
 open scoped Ordinal
 
--- TODO: generalize universes
+-- TODO: generalize universes, and use ω₁.
 lemma iSup_sequence_lt_omega1 {α : Type u} [Countable α]
-    (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < ω₁) :
-    iSup o < ω₁ := by
+    (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < (aleph 1).ord) :
+    iSup o < (aleph 1).ord := by
   apply iSup_lt_ord_lift _ ho
-  rw [Cardinal.isRegular_aleph_one.cof_eq]
-  exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
-
-set_option linter.deprecated false in
-@[deprecated iSup_sequence_lt_omega1 (since := "2024-08-27")]
-lemma sup_sequence_lt_omega1 {α} [Countable α] (o : α → Ordinal) (ho : ∀ n, o n < ω₁) :
-    sup o < ω₁ := by
-  apply sup_lt_ord_lift _ ho
   rw [Cardinal.isRegular_aleph_one.cof_eq]
   exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
 

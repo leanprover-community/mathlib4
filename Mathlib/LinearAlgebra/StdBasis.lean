@@ -306,9 +306,7 @@ variable {n m}
 @[simp]
 theorem matrix_apply (b : Basis ι R M) (i : m) (j : n) (k : ι) [DecidableEq m] [DecidableEq n] :
     b.matrix m n (i, j, k) = Matrix.stdBasisMatrix i j (b k) := by
-  suffices Matrix.of (Pi.single i (Pi.single j (b k))) = Matrix.stdBasisMatrix i j (b k) by
-    simpa [Basis.matrix]
-  rw [Matrix.stdBasisMatrix_eq_of_single_single]
+  simp [Basis.matrix, Matrix.stdBasisMatrix_eq_of_single_single]
 
 end
 
@@ -331,9 +329,6 @@ variable {n m}
 
 theorem stdBasis_eq_stdBasisMatrix (i : m) (j : n) [DecidableEq m] [DecidableEq n] :
     stdBasis R m n (i, j) = stdBasisMatrix i j (1 : R) := by
-  suffices of (Pi.single i (Pi.single j 1)) = stdBasisMatrix i j (1 : R) by simpa [stdBasis]
-  rw [Matrix.stdBasisMatrix_eq_of_single_single]
-
-end
+  simp [stdBasis, stdBasisMatrix_eq_of_single_single]
 
 end Matrix
