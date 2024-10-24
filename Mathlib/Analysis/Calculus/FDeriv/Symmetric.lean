@@ -32,6 +32,11 @@ requiring that the point under consideration is accumulated by points in the int
 These are written using ad hoc predicates `IsSymmSndFDerivAt` and `IsSymmSndFDerivWithinAt`, which
 increase readability of statements in differential geometry where they show up a lot.
 
+The statements are formulated using a typeclass `IsAdmissibleSmoothness 𝕜 n` which requires
+either that `𝕜` is `ℝ` or `ℂ`, or that the smoothness exponent is `ω`. In the current state of the
+library, the latter option is not possible, but it will become so with an ongoing refactor. We
+formulate things to minimize the necessary changes after the refactor.
+
 ## Implementation note
 
 For the proof, we obtain an asymptotic expansion to order two of `f (x + v + w) - f (x + v)`, by
@@ -376,11 +381,12 @@ end Real
 
 section IsRCLikeNormedField
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
 
-theorem second_derivative_symmetric_of_eventually {f' : E → E →L[𝕜] F} {x : E}
+theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
+    {f' : E → E →L[𝕜] F} {x : E}
     {f'' : E →L[𝕜] E →L[𝕜] F} (hf : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x)
     (v w : E) : f'' v w = f'' w v := by
   letI := IsRCLikeNormedField.rclike 𝕜
@@ -408,14 +414,29 @@ theorem second_derivative_symmetric_of_eventually {f' : E → E →L[𝕜] F} {x
 
 /-- If a function is differentiable, and has two derivatives at `x`, then the second
 derivative is symmetric. -/
-theorem second_derivative_symmetric
+theorem second_derivative_symmetric [IsRCLikeNormedField 𝕜]
     {f' : E → E →L[𝕜] F} {f'' : E →L[𝕜] E →L[𝕜] F} {x : E}
     (hf : ∀ y, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v :=
   second_derivative_symmetric_of_eventually (Filter.Eventually.of_forall hf) hx v w
 
+variable (𝕜) in
+/-- A smoothness exponent is admissible if it is `ω` or the field is ℝ or ℂ. This guarantees that
+second derivatives are symmetric, and more generally good behavior for calculus. -/
+class IsAdmissibleSmoothness (n : WithTop ℕ∞) :=
+  out : n = ⊤ ∨ IsRCLikeNormedField 𝕜
+
+instance (priority := 100) [h : IsRCLikeNormedField 𝕜] (n : WithTop ℕ∞) :
+    IsAdmissibleSmoothness 𝕜 n :=
+  ⟨Or.inr h⟩
+
+instance : IsAdmissibleSmoothness 𝕜 ⊤ := ⟨Or.inl rfl⟩
+
 /-- If a function is `C^2` at a point, then its second derivative there is symmetric. -/
-theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞} (hf : ContDiffAt 𝕜 n f x) (hn : 2 ≤ n) :
+theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞} [h : IsAdmissibleSmoothness 𝕜 n]
+    (hf : ContDiffAt 𝕜 n f x) (hn : 2 ≤ n) :
     IsSymmSndFDerivAt 𝕜 f x := by
+  rcases h.out with h'n | h𝕜
+  · simp at h'n
   intro v w
   apply second_derivative_symmetric_of_eventually (f := f) (f' := fderiv 𝕜 f) (x := x)
   · obtain ⟨u, hu, h'u⟩ : ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 2 f u := hf.contDiffOn (m := 2) hn
@@ -432,9 +453,12 @@ theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞} (hf : ContDiffAt 𝕜 n f x) (
 
 /-- If a function is `C^2` within a set at a point, and accumulated by points in the interior
 of the set, then its second derivative there is symmetric. -/
-theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞} (hf : ContDiffWithinAt 𝕜 n f s x)
+theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞} [h : IsAdmissibleSmoothness 𝕜 n]
+    (hf : ContDiffWithinAt 𝕜 n f s x)
     (hn : 2 ≤ n) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ closure (interior s)) (h'x : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by
+  rcases h.out with h'n | h𝕜
+  · simp at h'n
   /- We argue that, at interior points, the second derivative is symmetric, and moreover by
   continuity it converges to the second derivative at `x`. Therefore, the latter is also
   symmetric. -/
@@ -443,16 +467,16 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞} (hf : ContDiffWith
   have h'u : UniqueDiffOn 𝕜 (s ∩ u) := hs.inter u_open
   obtain ⟨y, hy, y_lim⟩ : ∃ y, (∀ (n : ℕ), y n ∈ interior s) ∧ Tendsto y atTop (𝓝 x) :=
     mem_closure_iff_seq_limit.1 hx
-  have L : ∀ᶠ n in atTop, y n ∈ u := y_lim (u_open.mem_nhds xu)
-  have I : ∀ᶠ n in atTop, IsSymmSndFDerivWithinAt 𝕜 f s (y n) := by
-    filter_upwards [L] with n hn
-    have s_mem : s ∈ 𝓝 (y n) := by
-      apply mem_of_superset (isOpen_interior.mem_nhds (hy n))
+  have L : ∀ᶠ k in atTop, y k ∈ u := y_lim (u_open.mem_nhds xu)
+  have I : ∀ᶠ k in atTop, IsSymmSndFDerivWithinAt 𝕜 f s (y k) := by
+    filter_upwards [L] with k hk
+    have s_mem : s ∈ 𝓝 (y k) := by
+      apply mem_of_superset (isOpen_interior.mem_nhds (hy k))
       exact interior_subset
-    have : IsSymmSndFDerivAt 𝕜 f (y n) := by
+    have : IsSymmSndFDerivAt 𝕜 f (y k) := by
       apply ContDiffAt.isSymmSndFDerivAt _ le_rfl
-      apply (hu (y n) ⟨(interior_subset (hy n)), hn⟩).contDiffAt
-      exact inter_mem s_mem (u_open.mem_nhds hn)
+      apply (hu (y k) ⟨(interior_subset (hy k)), hk⟩).contDiffAt
+      exact inter_mem s_mem (u_open.mem_nhds hk)
     intro v w
     rw [fderivWithin_fderivWithin_eq_of_mem_nhds s_mem]
     exact this v w
@@ -465,20 +489,20 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞} (hf : ContDiffWith
     filter_upwards [u_open.mem_nhds hy.2] with z hz
     change (z ∈ s) = (z ∈ s ∩ u)
     aesop
-  have B : Tendsto (fun n ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y n)) atTop
+  have B : Tendsto (fun k ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y k)) atTop
       (𝓝 (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x)) := by
     have : Tendsto y atTop (𝓝[s ∩ u] x) := by
       apply tendsto_nhdsWithin_iff.2 ⟨y_lim, ?_⟩
-      filter_upwards [L] with n hn using ⟨interior_subset (hy n), hn⟩
+      filter_upwards [L] with k hk using ⟨interior_subset (hy k), hk⟩
     exact (A x ⟨h'x, xu⟩ ).tendsto.comp this
-  have C (v w : E) : Tendsto (fun n ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y n) v w) atTop
+  have C (v w : E) : Tendsto (fun k ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y k) v w) atTop
       (𝓝 (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v w)) := by
     have : Continuous (fun (A : E →L[𝕜] E →L[𝕜] F) ↦ A v w) := by fun_prop
     exact (this.tendsto _).comp B
-  have C' (v w : E) : Tendsto (fun n ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y n) w v) atTop
+  have C' (v w : E) : Tendsto (fun k ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y k) w v) atTop
       (𝓝 (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v w)) := by
     apply (C v w).congr'
-    filter_upwards [I] with n hn using hn v w
+    filter_upwards [I] with k hk using hk v w
   intro v w
   exact tendsto_nhds_unique (C v w) (C' w v)
 
