@@ -134,39 +134,6 @@ lemma liftHom_commutes (f : B ≃ₐ[A] B) (b : B) :
 
 end lifting
 
-section fixedfield
-
--- PRed
-/-- `MulSemiringAction.toAlgHom` is bijective. -/
-theorem toAlgHom_bijective' (G F : Type*) [Field F] [Group G] [Finite G] [MulSemiringAction G F]
-    [FaithfulSMul G F] : Function.Bijective
-      (MulSemiringAction.toAlgAut _ _ _ : G →* F ≃ₐ[FixedPoints.subfield G F] F) := by
-  refine ⟨fun _ _ h ↦ (FixedPoints.toAlgHom_bijective G F).injective ?_,
-    fun f ↦ ((FixedPoints.toAlgHom_bijective G F).surjective f).imp (fun _ h ↦ ?_)⟩
-      <;> rwa [DFunLike.ext_iff] at h ⊢
-
--- PRed
-/-- `MulSemiringAction.toAlgHom` is surjective. -/
-theorem toAlgHom_surjective (G F : Type*) [Field F] [Group G] [Finite G] [MulSemiringAction G F] :
-    Function.Surjective
-      (MulSemiringAction.toAlgAut _ _ _ : G →* F ≃ₐ[FixedPoints.subfield G F] F) := by
-  let f : G →* F ≃ₐ[FixedPoints.subfield G F] F :=
-    MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F
-  let Q := G ⧸ f.ker
-  let _ : MulSemiringAction Q F := MulSemiringAction.compHom _ (QuotientGroup.kerLift f)
-  have : FaithfulSMul Q F := ⟨by
-    intro q₁ q₂
-    refine Quotient.inductionOn₂' q₁ q₂ (fun g₁ g₂ h ↦ QuotientGroup.eq.mpr ?_)
-    rwa [MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
-  intro f
-  obtain ⟨q, hq⟩ := (toAlgHom_bijective' Q F).surjective
-    (AlgEquiv.ofRingEquiv (f := f) (fun ⟨x, hx⟩ ↦ f.commutes' ⟨x, fun g ↦ hx g⟩))
-  revert hq
-  refine QuotientGroup.induction_on q (fun g hg ↦ ⟨g, ?_⟩)
-  rwa [AlgEquiv.ext_iff] at hg ⊢
-
-end fixedfield
-
 section integrallemma
 
 open Polynomial
@@ -520,7 +487,7 @@ theorem fullHom_surjective
     MulSemiringAction.compHom _
       (fullHom G P Q K L : MulAction.stabilizer G Q →* (L ≃ₐ[K] L))
   intro f
-  obtain ⟨g, hg⟩ := toAlgHom_surjective (MulAction.stabilizer G Q) L
+  obtain ⟨g, hg⟩ := FixedPoints.toAlgAut_surjective (MulAction.stabilizer G Q) L
     (AlgEquiv.ofRingEquiv (f := f) (fun x ↦ fullHom_surjective1 G P Q K L hAB f x x.2))
   exact ⟨g, by rwa [AlgEquiv.ext_iff] at hg ⊢⟩
 
