@@ -34,7 +34,7 @@ variable {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [TopologicalSpace M]
   [ChartedSpace H M]
 
-open Function Filter FiniteDimensional Set Metric
+open Function Filter Module Set Metric
 
 open scoped Topology Manifold
 

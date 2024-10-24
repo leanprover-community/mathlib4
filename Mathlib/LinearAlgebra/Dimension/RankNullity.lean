@@ -171,7 +171,7 @@ theorem Submodule.rank_add_le_rank_add_rank (s t : Submodule R M) :
 
 section Finrank
 
-open Submodule FiniteDimensional
+open Submodule Module
 
 variable [StrongRankCondition R]
 

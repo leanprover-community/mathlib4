@@ -512,7 +512,7 @@ if any two elements of `↥(M ⊓ N)` are commutative, then the rank of `↥(M �
 theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
     (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 := by
   nontriviality R
-  refine rank_le fun s h ↦ ?_
+  refine _root_.rank_le fun s h ↦ ?_
   by_contra hs
   rw [not_le, ← Fintype.card_coe, Fintype.one_lt_card_iff_nontrivial] at hs
   obtain ⟨a, b, hab⟩ := hs.exists_pair_ne

@@ -256,7 +256,7 @@ nonrec def shiftFunctorAdd (m n : S) :
   · dsimp
     rw [← cancel_epi ((shiftFunctorAdd C m n).inv.app X.obj)]
     simp only [Category.assoc, Iso.inv_hom_id_app_assoc]
-    erw [← NatTrans.naturality_assoc]
+    rw [← NatTrans.naturality_assoc]
     dsimp
     simp only [Functor.map_comp, Category.assoc,
       shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app 1 m n X.obj,

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
@@ -338,7 +338,7 @@ theorem mul_lt_of_one_lt_right [ExistsAddOfLE α] [PosMulStrictMono α]
 
 section Monotone
 
-variable [Preorder β] {f g : β → α}
+variable [Preorder β] {f : β → α}
 
 theorem strictAnti_mul_left [ExistsAddOfLE α] [PosMulStrictMono α]
     [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
@@ -409,7 +409,7 @@ end StrictOrderedSemiring
 
 section LinearOrderedSemiring
 
-variable [Semiring α] [LinearOrder α] {a b c d : α}
+variable [Semiring α] [LinearOrder α] {a b c : α}
 
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
     [MulPosStrictMono α] [PosMulStrictMono α]
@@ -741,7 +741,7 @@ end LinearOrderedSemiring
 
 section LinearOrderedCommSemiring
 
-variable [CommSemiring α] [LinearOrder α] {a b c d : α}
+variable [CommSemiring α] [LinearOrder α] {a d : α}
 
 lemma max_mul_mul_le_max_mul_max [PosMulMono α] [MulPosMono α] (b c : α) (ha : 0 ≤ a) (hd : 0 ≤ d) :
     max (a * b) (d * c) ≤ max a c * max d b :=
@@ -751,8 +751,8 @@ lemma max_mul_mul_le_max_mul_max [PosMulMono α] [MulPosMono α] (b c : α) (ha 
     mul_le_mul (le_max_right a c) (le_max_right b d) hd (le_trans ha (le_max_left a c))
   max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)
 
-/-- Binary **arithmetic mean-geometric mean inequality** (aka AM-GM inequality) for linearly ordered
-commutative semirings. -/
+/-- Binary, squared, and division-free **arithmetic mean-geometric mean inequality**
+(aka AM-GM inequality) for linearly ordered commutative semirings. -/
 lemma two_mul_le_add_sq [ExistsAddOfLE α] [MulPosStrictMono α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· ≤ ·)]
     (a b : α) : 2 * a * b ≤ a ^ 2 + b ^ 2 := by
@@ -760,6 +760,19 @@ lemma two_mul_le_add_sq [ExistsAddOfLE α] [MulPosStrictMono α]
     using mul_add_mul_le_mul_add_mul (@min_le_max _ _ a b) (@min_le_max _ _ a b)
 
 alias two_mul_le_add_pow_two := two_mul_le_add_sq
+
+/-- Binary, squared, and division-free **arithmetic mean-geometric mean inequality**
+(aka AM-GM inequality) for linearly ordered commutative semirings. -/
+lemma four_mul_le_sq_add [ExistsAddOfLE α] [MulPosStrictMono α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· ≤ ·)]
+    (a b : α) : 4 * a * b ≤ (a + b) ^ 2 := by
+  calc 4 * a * b
+    _ = 2 * a * b + 2 * a * b := by rw [mul_assoc, two_add_two_eq_four.symm, add_mul, mul_assoc]
+    _ ≤ a ^ 2 + b ^ 2 + 2 * a * b := by gcongr; exact two_mul_le_add_sq _ _
+    _ = a ^ 2 + 2 * a * b + b ^ 2 := by rw [add_right_comm]
+    _ = (a + b) ^ 2 := (add_sq a b).symm
+
+alias four_mul_le_pow_two_add := four_mul_le_sq_add
 
 end LinearOrderedCommSemiring
 
@@ -813,10 +826,4 @@ lemma mul_self_le_mul_self_of_le_of_neg_le
       mul_le_mul h₂ h₂ (neg_nonneg.2 h) <| (neg_nonneg.2 h).trans h₂
 
 end LinearOrderedRing
-
-@[deprecated (since := "2023-12-23")] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
-@[deprecated (since := "2023-12-23")] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
-@[deprecated (since := "2023-12-23")] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
-@[deprecated (since := "2023-12-23")] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
-
 end OrderedCommRing

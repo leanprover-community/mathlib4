@@ -202,6 +202,9 @@ theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := b
   simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
     Units.val_one, Polynomial.C.map_one, mul_one]
 
+@[deprecated Polynomial.Monic.normalize_eq_self (since := "2024-10-21")]
+alias normalize_monic := Monic.normalize_eq_self
+
 theorem roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 
@@ -323,8 +326,8 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
     r := _
     r_wellFounded := degree_lt_wf
     quotient_mul_add_remainder_eq := quotient_mul_add_remainder_eq_aux
-    remainder_lt := fun p q hq => remainder_lt_aux _ hq
-    mul_left_not_lt := fun p q hq => not_lt_of_ge (degree_le_mul_left _ hq) }
+    remainder_lt := fun _ _ hq => remainder_lt_aux _ hq
+    mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
@@ -381,6 +384,21 @@ theorem map_mod [Field k] (f : R →+* k) : (p % q).map f = p.map f % q.map f :=
   · simp [hq0]
   · rw [mod_def, mod_def, leadingCoeff_map f, ← map_inv₀ f, ← map_C f, ← Polynomial.map_mul f,
       map_modByMonic f (monic_mul_leadingCoeff_inv hq0)]
+
+lemma natDegree_mod_lt [Field k] (p : k[X]) {q : k[X]} (hq : q.natDegree ≠ 0) :
+    (p % q).natDegree < q.natDegree := by
+  have hq' : q.leadingCoeff ≠ 0 := by
+    rw [leadingCoeff_ne_zero]
+    contrapose! hq
+    simp [hq]
+  rw [mod_def]
+  refine (natDegree_modByMonic_lt p ?_ ?_).trans_le ?_
+  · refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
+    rw [mul_inv_eq_one₀ hq']
+  · contrapose! hq
+    rw [← natDegree_mul_C_eq_of_mul_eq_one ((inv_mul_eq_one₀ hq').mpr rfl)]
+    simp [hq]
+  · exact natDegree_mul_C_le q q.leadingCoeff⁻¹
 
 section
 
@@ -508,8 +526,6 @@ theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
     (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
   simp [CommGroupWithZero.coe_normUnit _ this]
-
-theorem normalize_monic [DecidableEq R] (h : Monic p) : normalize p = p := by simp [h]
 
 theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
   by_cases H : x = 0

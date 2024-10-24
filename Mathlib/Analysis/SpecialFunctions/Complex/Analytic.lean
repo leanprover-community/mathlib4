@@ -11,7 +11,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 /-!
 # Various complex special functions are analytic
 
-`exp`, `log`, and `cpow` are analytic, since they are differentiable.
+`log`, and `cpow` are analytic, since they are differentiable.
 -/
 
 open Complex Set
@@ -19,31 +19,6 @@ open scoped Topology
 
 variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
 variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
-
-/-- `exp` is entire -/
-theorem analyticOnNhd_cexp : AnalyticOnNhd ℂ exp univ := by
-  rw [analyticOnNhd_univ_iff_differentiable]; exact differentiable_exp
-
-theorem analyticOn_cexp : AnalyticOn ℂ exp univ := analyticOnNhd_cexp.analyticOn
-
-/-- `exp` is analytic at any point -/
-theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
-  analyticOnNhd_cexp z (mem_univ _)
-
-/-- `exp ∘ f` is analytic -/
-theorem AnalyticAt.cexp (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (fun z ↦ exp (f z)) x :=
-  analyticAt_cexp.comp fa
-
-theorem AnalyticWithinAt.cexp (fa : AnalyticWithinAt ℂ f s x) :
-    AnalyticWithinAt ℂ (fun z ↦ exp (f z)) s x :=
-  analyticAt_cexp.comp_analyticWithinAt fa
-
-/-- `exp ∘ f` is analytic -/
-theorem AnalyticOnNhd.cexp (fs : AnalyticOnNhd ℂ f s) : AnalyticOnNhd ℂ (fun z ↦ exp (f z)) s :=
-  fun z n ↦ analyticAt_cexp.comp (fs z n)
-
-theorem AnalyticOn.cexp (fs : AnalyticOn ℂ f s) : AnalyticOn ℂ (fun z ↦ exp (f z)) s :=
-  analyticOnNhd_cexp.comp_analyticOn fs (mapsTo_univ _ _)
 
 /-- `log` is analytic away from nonpositive reals -/
 theorem analyticAt_clog (m : z ∈ slitPlane) : AnalyticAt ℂ log z := by

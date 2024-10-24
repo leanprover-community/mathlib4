@@ -336,7 +336,6 @@ theorem coeFn_neg (f : lp E p) : ⇑(-f) = -f :=
 theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
   rfl
 
--- porting note (#10618): removed `@[simp]` because `simp` can prove this
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) := by
   simp
@@ -471,7 +470,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           intro i
           gcongr
           apply norm_add_le
-      eq_zero_of_map_eq_zero' := fun f => norm_eq_zero_iff.1 }
+      eq_zero_of_map_eq_zero' := fun _ => norm_eq_zero_iff.1 }
 
 -- TODO: define an `ENNReal` version of `IsConjExponent`, and then express this inequality
 -- in a better version which also covers the case `p = 1, q = ∞`.
