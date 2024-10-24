@@ -7,7 +7,6 @@ Authors: Joël Riou
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
 
 /-!
 # Pullback of sheaves of modules
