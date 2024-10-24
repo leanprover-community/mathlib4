@@ -45,7 +45,9 @@ mkDeclAndDepr () {
   git diff --unified=0 "${commit}" "${1}" |
     awk -v regex="${begs}" -v date="$(date +%Y-%m-%d)" '
     function depr(ol,ne) {
-      return sprintf("@[deprecated (since := \"%s\")]||||alias %s := %s", date, ol, ne)
+      line=sprintf("@[deprecated (since := \"%s\")]||||alias %s := %s", date, ol, ne)
+      if(length(line) <= 102) { sub(/\|\|\|\|/, " ", line) }
+      return line
     }
     # `{plus/minus}Regex` makes sure that we find a declaration, followed by something that
     # could be an identifier. For instance, this filters out "We now prove theorem `my_name`."
@@ -57,7 +59,7 @@ mkDeclAndDepr () {
     ($0 ~ minusRegex) {
       #printf("Found:        %s\n", $0)
       for(i=1; i<=NF; i++) {
-        if ($i ~ regex"$") { old=$(i+1) }
+        if ($i ~ regex"$") { old=$(i+1); break }
       }
     }
     ($0 ~ plusRegex) {
@@ -65,7 +67,10 @@ mkDeclAndDepr () {
       for(i=1; i<=NF; i++) {
         if ($i ~ regex"$") {
           sub(/^\+/, "", $i)
-          if (!(old == $(i+1))) { printf("%s %s ,%s@@@", $i, $(i+1), depr(old, $(i+1))) }
+          if (!(old == $(i+1))) {
+            printf("%s %s ,%s@@@", $i, $(i+1), depr(old, $(i+1)))
+            break
+          }
         }
       }
     }'
