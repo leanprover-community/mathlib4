@@ -374,7 +374,6 @@ theorem toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
   ext x
   rfl
 
--- Porting note (#10618): @[simp] can prove this
 theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.symm.toLinearEquiv = e.symm := by
   ext x
