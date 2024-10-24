@@ -137,12 +137,12 @@ instance inhabited : Inhabited Ordinal :=
 instance one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
-@[deprecated (since := "2024-10-24")]
-theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r :=
+@[simp]
+theorem type_def (w : WellOrder) : ⟦w⟧ = type w.r :=
   rfl
 
-@[simp]
-theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r :=
+@[deprecated type_def (since := "2024-10-24")]
+theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r :=
   rfl
 
 @[simp]
