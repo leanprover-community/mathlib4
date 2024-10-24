@@ -213,6 +213,70 @@ def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N 
 @[simp] lemma LinearMap.extendScalarsOfIsLocalization_apply' (f : M →ₗ[R] N) (x : M) :
     (f.extendScalarsOfIsLocalization S A) x = f x := rfl
 
+/-- The `S⁻¹R`-linear maps between two `S⁻¹R`-modules are exactly the `R`-linear maps. -/
+@[simps]
+def LinearMap.extendScalarsOfIsLocalizationEquiv : (M →ₗ[R] N) ≃ₗ[A] (M →ₗ[A] N) where
+  toFun := LinearMap.extendScalarsOfIsLocalization S A
+  invFun := LinearMap.restrictScalars R
+  map_add' := by intros; ext; simp
+  map_smul' := by intros; ext; simp
+  left_inv := by intros _; ext; simp
+  right_inv := by intros _; ext; simp
+
 end
 
 end Localization
+
+namespace IsLocalizedModule
+
+variable {R : Type*} [CommSemiring R] (S : Submonoid R)
+variable {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M']
+variable [Module R M] [Module R M']
+variable (f : M →ₗ[R] M') [IsLocalizedModule S f]
+variable {N N'} [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
+variable (g : N →ₗ[R] N') [IsLocalizedModule S g]
+variable (Rₛ) [CommSemiring Rₛ] [Algebra R Rₛ] [Module Rₛ M'] [Module Rₛ N']
+variable [IsScalarTower R Rₛ M'] [IsScalarTower R Rₛ N'] [IsLocalization S Rₛ]
+
+/-- A linear map `M →ₗ[R] N` gives a map between localized modules `Mₛ →ₗ[Rₛ] Nₛ`. -/
+@[simps!]
+noncomputable
+def mapExtendScalars : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[Rₛ] N') :=
+  ((LinearMap.extendScalarsOfIsLocalizationEquiv
+    S Rₛ).restrictScalars R).toLinearMap.comp (map S f g)
+
+end IsLocalizedModule
+
+section LocalizedModule
+
+variable {R : Type*} [CommSemiring R] (S : Submonoid R)
+variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {N} [AddCommMonoid N] [Module R N]
+
+/-- A linear map `M →ₗ[R] N` gives a map between localized modules `Mₛ →ₗ[Rₛ] Nₛ`. -/
+noncomputable
+abbrev LocalizedModule.map :
+    (M →ₗ[R] N) →ₗ[R] (LocalizedModule S M →ₗ[Localization S] LocalizedModule S N) :=
+  IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
+        (LocalizedModule.mkLinearMap S N) (Localization S)
+
+lemma LocalizedModule.map_mk (f : M →ₗ[R] N) (x y) :
+    map S f (.mk x y) = LocalizedModule.mk (f x) y := by
+  rw [IsLocalizedModule.mk_eq_mk', IsLocalizedModule.mk_eq_mk']
+  exact IsLocalizedModule.map_mk' _ _ _ _ _ _
+
+@[simp]
+lemma LocalizedModule.map_id :
+    LocalizedModule.map S (.id (R := R) (M := M)) = LinearMap.id := by
+  ext x
+  induction x using induction_on
+  simp only [LocalizedModule.map_mk, LinearMap.id_coe, id_eq]
+
+lemma LocalizedModule.map_surjective (l : M →ₗ[R] N) (hl : Function.Surjective l) :
+    Function.Surjective (map S l) := by
+  intro x
+  induction' x using LocalizedModule.induction_on with m s
+  obtain ⟨m, rfl⟩ := hl m
+  exact ⟨mk m s, map_mk _ _ _ _⟩
+
+end LocalizedModule
