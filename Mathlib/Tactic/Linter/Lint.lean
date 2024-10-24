@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Batteries.Tactic.Lint
+import Mathlib.Tactic.DeclarationNames
 
 /-!
 # Linters for Mathlib
@@ -77,29 +78,20 @@ namespace DupNamespaceLinter
 
 open Lean Parser Elab Command Meta
 
-/-- `getIds stx` extracts the `declId` nodes from the `Syntax` `stx`.
-If `stx` is an `alias` or an `export`, then it extracts an `ident`, instead of a `declId`. -/
-partial
-def getIds : Syntax → Array Syntax
-  | .node _ `Batteries.Tactic.Alias.alias args => args[2:3]
-  | .node _ ``Lean.Parser.Command.export args => (args[3:4] : Array Syntax).map (·[0])
-  | stx@(.node _ _ args) =>
-    ((args.attach.map fun ⟨a, _⟩ ↦ getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
-  | _ => default
-
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if Linter.getLinterValue linter.dupNamespace (← getOptions) then
-    match getIds stx with
-      | #[id] =>
-        let ns := (← getScope).currNamespace
-        let declName := ns ++ (if id.getKind == ``declId then id[0].getId else id.getId)
-        let nm := declName.components
-        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
-          | return
-        Linter.logLint linter.dupNamespace id
-          m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
-      | _ => return
+    let mut aliases := #[]
+    if let some exp := stx.find? (·.isOfKind `Lean.Parser.Command.export) then
+      aliases ← getAliasSyntax exp
+    for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
+      let declName := id.getId
+      if declName.hasMacroScopes then continue
+      let nm := declName.components
+      let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
+        | continue
+      Linter.logLint linter.dupNamespace id
+        m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
 
 initialize addLinter dupNamespace
 

@@ -216,7 +216,7 @@ theorem first_vote_pos :
         rw [inter_eq_right, counted_succ_succ]
         exact subset_union_left
       rw [(uniformOn_eq_zero_iff <| (countedSequence_finite _ _).image _).2 this, uniformOn,
-        cond_apply _ list_int_measurableSet, hint, count_injective_image List.cons_injective,
+        cond_apply list_int_measurableSet, hint, count_injective_image List.cons_injective,
         count_countedSequence, count_countedSequence, one_mul, zero_mul, add_zero,
         Nat.cast_add, Nat.cast_one, mul_comm, ← div_eq_mul_inv, ENNReal.div_eq_div_iff]
       · norm_cast
@@ -270,7 +270,7 @@ theorem ballot_pos (p q : ℕ) :
     uniformOn (countedSequence (p + 1) (q + 1) ∩ {l | l.headI = 1}) staysPositive =
       uniformOn (countedSequence p (q + 1)) staysPositive := by
   rw [countedSequence_int_pos_counted_succ_succ, uniformOn, uniformOn,
-    cond_apply _ list_int_measurableSet, cond_apply _ list_int_measurableSet,
+    cond_apply list_int_measurableSet, cond_apply list_int_measurableSet,
     count_injective_image List.cons_injective]
   congr 1
   have : (1 :: ·) '' countedSequence p (q + 1) ∩ staysPositive =
@@ -297,7 +297,7 @@ theorem ballot_neg (p q : ℕ) (qp : q < p) :
     uniformOn (countedSequence (p + 1) (q + 1) ∩ {l | l.headI = 1}ᶜ) staysPositive =
       uniformOn (countedSequence (p + 1) q) staysPositive := by
   rw [countedSequence_int_neg_counted_succ_succ, uniformOn, uniformOn,
-    cond_apply _ list_int_measurableSet, cond_apply _ list_int_measurableSet,
+    cond_apply list_int_measurableSet, cond_apply list_int_measurableSet,
     count_injective_image List.cons_injective]
   congr 1
   have : List.cons (-1) '' countedSequence (p + 1) q ∩ staysPositive =
