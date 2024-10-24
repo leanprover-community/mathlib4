@@ -249,9 +249,6 @@ the $p$-adic order/valuation of a number, and `proj` and `compl` are for the pro
 complementary projection. The term `n.factorization p` is the $p$-adic order itself.
 For example, `ord_proj[2] n` is the even part of `n` and `ord_compl[2] n` is the odd part. -/
 
-
--- Porting note: Lean 4 thinks we need `HPow` without this
-set_option quotPrecheck false in
 notation "ord_proj[" p "] " n:arg => p ^ Nat.factorization n p
 
 notation "ord_compl[" p "] " n:arg => n / ord_proj[p] n
