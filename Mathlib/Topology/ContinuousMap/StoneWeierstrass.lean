@@ -425,29 +425,31 @@ theorem polynomialFunctions.starClosure_topologicalClosure {𝕜 : Type*} [RCLik
 @[elab_as_elim]
 theorem ContinuousMap.induction_on {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜}
     {p : C(s, 𝕜) → Prop} (const : ∀ r, p (.const s r)) (id : p (.restrict s <| .id 𝕜))
+    (star_id : p (star (.restrict s <| .id 𝕜)))
     (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
-    (star : ∀ f, p f → p (star f))
     (closure : (∀ f ∈ (polynomialFunctions s).starClosure, p f) → ∀ f, p f) (f : C(s, 𝕜)) :
     p f := by
   refine closure (fun f hf => ?_) f
   rw [polynomialFunctions.starClosure_eq_adjoin_X] at hf
-  induction hf using StarAlgebra.adjoin_induction with
+  induction hf using Algebra.adjoin_induction with
   | mem f hf =>
-    simp only [toContinuousMapOnAlgHom_apply, Set.mem_singleton_iff] at hf
-    rwa [hf, toContinuousMapOn_X_eq_restrict_id]
+    simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_star] at hf
+    rw [star_eq_iff_star_eq, eq_comm (b := f)] at hf
+    obtain (rfl | rfl) := hf
+    all_goals simpa only [toContinuousMapOnAlgHom_apply, toContinuousMapOn_X_eq_restrict_id]
   | algebraMap r => exact const r
   | add _ _ _ _ hf hg => exact add _ _ hf hg
   | mul _ _ _ _ hf hg => exact mul _ _ hf hg
-  | star _ _ hf => exact star _ hf
 
 open Topology in
 @[elab_as_elim]
 theorem ContinuousMap.induction_on_of_compact {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜} [CompactSpace s]
     {p : C(s, 𝕜) → Prop} (const : ∀ r, p (.const s r)) (id : p (.restrict s <| .id 𝕜))
+    (star_id : p (star (.restrict s <| .id 𝕜)))
     (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
-    (star : ∀ f, p f → p (star f)) (frequently : ∀ f, (∃ᶠ g in 𝓝 f, p g) → p f) (f : C(s, 𝕜)) :
+    (frequently : ∀ f, (∃ᶠ g in 𝓝 f, p g) → p f) (f : C(s, 𝕜)) :
     p f := by
-  refine f.induction_on const id add mul star fun h f ↦ frequently f ?_
+  refine f.induction_on const id star_id add mul fun h f ↦ frequently f ?_
   have := polynomialFunctions.starClosure_topologicalClosure s ▸ mem_top (x := f)
   rw [← SetLike.mem_coe, topologicalClosure_coe, mem_closure_iff_frequently] at this
   exact this.mp <| .of_forall h
@@ -601,31 +603,32 @@ lemma ContinuousMapZero.adjoin_id_dense {s : Set 𝕜} [Zero s] (h0 : ((0 : s) :
 /-- An induction principle for `C(s, 𝕜)₀`. -/
 @[elab_as_elim]
 lemma ContinuousMapZero.induction_on {s : Set 𝕜} [Zero s] (h0 : ((0 : s) : 𝕜) = 0)
-    {p : C(s, 𝕜)₀ → Prop} (zero : p 0) (id : p (.id h0))
+    {p : C(s, 𝕜)₀ → Prop} (zero : p 0) (id : p (.id h0)) (star_id : p (star (.id h0)))
     (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
-    (smul : ∀ (r : 𝕜) f, p f → p (r • f)) (star : ∀ f, p f → p (star f))
+    (smul : ∀ (r : 𝕜) f, p f → p (r • f))
     (closure : (∀ f ∈ adjoin 𝕜 {(.id h0 : C(s, 𝕜)₀)}, p f) → ∀ f, p f) (f : C(s, 𝕜)₀) :
     p f := by
   refine closure (fun f hf => ?_) f
-  induction hf using NonUnitalStarAlgebra.adjoin_induction with
+  induction hf using NonUnitalAlgebra.adjoin_induction with
   | mem f hf =>
-    simp only [Set.mem_singleton_iff] at hf
-    rwa [hf]
+    simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_star] at hf
+    rw [star_eq_iff_star_eq, eq_comm (b := f)] at hf
+    obtain (rfl | rfl) := hf
+    all_goals assumption
   | zero => exact zero
   | add _ _ _ _ hf hg => exact add _ _ hf hg
   | mul _ _ _ _ hf hg => exact mul _ _ hf hg
   | smul _ _ _ hf => exact smul _ _ hf
-  | star _ _ hf => exact star _ hf
 
 open Topology in
 @[elab_as_elim]
 theorem ContinuousMapZero.induction_on_of_compact {s : Set 𝕜} [Zero s] (h0 : ((0 : s) : 𝕜) = 0)
     [CompactSpace s] {p : C(s, 𝕜)₀ → Prop} (zero : p 0) (id : p (.id h0))
-    (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
-    (smul : ∀ (r : 𝕜) f, p f → p (r • f)) (star : ∀ f, p f → p (star f))
+    (star_id : p (star (.id h0))) (add : ∀ f g, p f → p g → p (f + g))
+    (mul : ∀ f g, p f → p g → p (f * g)) (smul : ∀ (r : 𝕜) f, p f → p (r • f))
     (frequently : ∀ f, (∃ᶠ g in 𝓝 f, p g) → p f) (f : C(s, 𝕜)₀) :
     p f := by
-  refine f.induction_on h0 zero id add mul smul star fun h f ↦ frequently f ?_
+  refine f.induction_on h0 zero id star_id add mul smul fun h f ↦ frequently f ?_
   have := (ContinuousMapZero.adjoin_id_dense h0).closure_eq ▸ Set.mem_univ (x := f)
   exact mem_closure_iff_frequently.mp this |>.mp <| .of_forall h
 
