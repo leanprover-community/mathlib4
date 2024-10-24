@@ -395,7 +395,7 @@ theorem decomp_ring_ortho_idem [DecidableEq I] (V : I → Submodule R R)
   idem i := by
     let x : (⨁ i, V i) := DFinsupp.single i (e i)
     let y : (⨁ i, V i) := DFinsupp.mapRange (x := e) (fun j (z : V j) => ⟨e i * (z : R), by
-      rw [← smul_eq_mul] ; obtain ⟨z, hz⟩ := z
+      rw [← smul_eq_mul]; obtain ⟨z, hz⟩ := z
       exact Submodule.smul_mem (V j) ((e i)) hz⟩)
       fun i' ↦ by simp only [ZeroMemClass.coe_zero, mul_zero, Submodule.mk_eq_zero]
     have hx2 (j) (h : j ≠ i) : (x j : R) = 0 := by
