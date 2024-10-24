@@ -28,6 +28,11 @@ instance (C) [Quiver C] : Inhabited (HomRel C) where
 
 namespace CategoryTheory
 
+
+/-- A functor induces a `HomRel` on its domain, relating those maps that have the same image. -/
+def Functor.homRel {C D : Type*} [Category C] [Category D] (F : C ⥤ D) : HomRel C :=
+  fun _ _ f g ↦ F.map f = F.map g
+
 variable {C : Type _} [Category C] (r : HomRel C)
 
 /-- A `HomRel` is a congruence when it's an equivalence on every hom-set, and it can be composed
@@ -39,6 +44,25 @@ class Congruence : Prop where
   compLeft : ∀ {X Y Z} (f : X ⟶ Y) {g g' : Y ⟶ Z}, r g g' → r (f ≫ g) (f ≫ g')
   /-- Postcomposition with an arrow respects `r`. -/
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
+
+/-- For `F : C ⥤ D`, `F.homRel` is a congruence.-/
+theorem Functor.homRelCongruence {C D : Type*} [Category C] [Category D] (F : C ⥤ D) :
+    Congruence (F.homRel) where
+  equivalence := by
+    intro X Y
+    unfold homRel
+    exact {
+      refl := fun _ => rfl
+      symm := by aesop
+      trans := by aesop
+    }
+  compLeft f g g' := by
+    unfold homRel
+    aesop
+  compRight := by
+    intro _ _ _ f f' g
+    unfold homRel
+    aesop
 
 /-- A type synonym for `C`, thought of as the objects of the quotient category. -/
 @[ext]
@@ -66,30 +90,6 @@ theorem comp_left {a b c : C} (f : a ⟶ b) :
 theorem comp_right {a b c : C} (g : b ⟶ c) :
     ∀ (f₁ f₂ : a ⟶ b) (_ : CompClosure r f₁ f₂), CompClosure r (f₁ ≫ g) (f₂ ≫ g)
   | _, _, ⟨x, m₁, m₂, y, h⟩ => by simpa using CompClosure.intro x m₁ m₂ (y ≫ g) h
-
-theorem CompClosure.congruence :
-    Congruence fun a b => Relation.EqvGen (@CompClosure C _ r a b) where
-  equivalence := Relation.EqvGen.is_equivalence _
-  compLeft f g g' rel := by
-    induction rel with
-    | rel _ _ h =>
-      let .intro f' m₁ m₂ g h := h
-      apply Relation.EqvGen.rel
-      rw [← Category.assoc, ← Category.assoc f]
-      exact ⟨_, _, _, _, h⟩
-    | refl => exact Relation.EqvGen.refl _
-    | symm _ _ _ ih => exact Relation.EqvGen.symm _ _ ih
-    | trans _ _ _ _ _ ih₁ ih₂ => exact Relation.EqvGen.trans _ _ _ ih₁ ih₂
-  compRight g rel := by
-    induction rel with
-    | rel _ _ h =>
-      let .intro f' m₁ m₂ g h := h
-      apply Relation.EqvGen.rel
-      repeat rw [Category.assoc]
-      exact ⟨_, _, _, _, h⟩
-    | refl => exact Relation.EqvGen.refl _
-    | symm _ _ _ ih => exact Relation.EqvGen.symm _ _ ih
-    | trans _ _ _ _ _ ih₁ ih₂ => exact Relation.EqvGen.trans _ _ _ ih₁ ih₂
 
 /-- Hom-sets of the quotient category. -/
 def Hom (s t : Quotient r) :=
@@ -163,6 +163,31 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
   dsimp [functor]
   rw [Equivalence.quot_mk_eq_iff, compClosure_eq_self r]
   simpa only [compClosure_eq_self r] using h.equivalence
+
+theorem CompClosure.congruence :
+    Congruence fun a b => Relation.EqvGen (@CompClosure C _ r a b) where
+  equivalence := Relation.EqvGen.is_equivalence _
+  compLeft f g g' rel := by
+    induction rel with
+    | rel _ _ h =>
+      let .intro f' m₁ m₂ g h := h
+      apply Relation.EqvGen.rel
+      rw [← Category.assoc, ← Category.assoc f]
+      exact ⟨_, _, _, _, h⟩
+    | refl => exact Relation.EqvGen.refl _
+    | symm _ _ _ ih => exact Relation.EqvGen.symm _ _ ih
+    | trans _ _ _ _ _ ih₁ ih₂ => exact Relation.EqvGen.trans _ _ _ ih₁ ih₂
+  compRight g rel := by
+    induction rel with
+    | rel _ _ h =>
+      let .intro f' m₁ m₂ g h := h
+      apply Relation.EqvGen.rel
+      repeat rw [Category.assoc]
+      exact ⟨_, _, _, _, h⟩
+    | refl => exact Relation.EqvGen.refl _
+    | symm _ _ _ ih => exact Relation.EqvGen.symm _ _ ih
+    | trans _ _ _ _ _ ih₁ ih₂ => exact Relation.EqvGen.trans _ _ _ ih₁ ih₂
+
 
 variable {D : Type _} [Category D] (F : C ⥤ D)
 
