@@ -279,17 +279,16 @@ instance partialOrder : PartialOrder Ordinal where
           ⟨(InitialSeg.ofIso f).trans <| h.trans (InitialSeg.ofIso g.symm)⟩⟩
   lt a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≺i s))
-      fun _ _ _ _ ⟨f⟩ ⟨g⟩ =>
-      propext
-        ⟨fun ⟨h⟩ => ⟨PrincipalSeg.equivLT f.symm <| h.ltLe (InitialSeg.ofIso g)⟩, fun ⟨h⟩ =>
-          ⟨PrincipalSeg.equivLT f <| h.ltLe (InitialSeg.ofIso g.symm)⟩⟩
+      fun _ _ _ _ ⟨f⟩ ⟨g⟩ => propext
+        ⟨fun ⟨h⟩ => ⟨PrincipalSeg.relIsoTrans f.symm <| h.transInitial (InitialSeg.ofIso g)⟩,
+          fun ⟨h⟩ => ⟨PrincipalSeg.relIsoTrans f <| h.transInitial (InitialSeg.ofIso g.symm)⟩⟩
   le_refl := Quot.ind fun ⟨_, _, _⟩ => ⟨InitialSeg.refl _⟩
   le_trans a b c :=
     Quotient.inductionOn₃ a b c fun _ _ _ ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
   lt_iff_le_not_le a b :=
     Quotient.inductionOn₂ a b fun _ _ =>
-      ⟨fun ⟨f⟩ => ⟨⟨f⟩, fun ⟨g⟩ => (f.ltLe g).irrefl⟩, fun ⟨⟨f⟩, h⟩ =>
-        f.ltOrEq.recOn (fun g => ⟨g⟩) fun g => (h ⟨InitialSeg.ofIso g.symm⟩).elim⟩
+      ⟨fun ⟨f⟩ => ⟨⟨f⟩, fun ⟨g⟩ => (f.transInitial g).irrefl⟩, fun ⟨⟨f⟩, h⟩ =>
+        f.principalSumRelIso.recOn (fun g => ⟨g⟩) fun g => (h ⟨InitialSeg.ofIso g.symm⟩).elim⟩
   le_antisymm a b :=
     Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ =>
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
@@ -477,7 +476,7 @@ theorem relIso_enum' {α β : Type u} {r : α → α → Prop} {s : β → β �
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) :
     ∀ (hr : o < type r) (hs : o < type s), f (enum r ⟨o, hr⟩) = enum s ⟨o, hs⟩ := by
   refine inductionOn o ?_; rintro γ t wo ⟨g⟩ ⟨h⟩
-  rw [enum_type g, enum_type (PrincipalSeg.ltEquiv g f)]; rfl
+  rw [enum_type g, enum_type (g.transRelIso f)]; rfl
 
 theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) (hr : o < type r) :
@@ -507,7 +506,7 @@ theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ 
 
 theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
     (f : r ≼i s) (a : α) : typein s (f a) = typein r a := by
-  rw [← f.leLT_apply _ a, (f.leLT _).eq]
+  rw [← f.transPrincipal_apply _ a, (f.transPrincipal _).eq]
 
 /-! ### Cardinality of ordinals -/
 
@@ -624,10 +623,10 @@ theorem lift_type_lt {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWel
   haveI := @RelEmbedding.isWellOrder _ _ (@Equiv.ulift.{max u w} β ⁻¹'o s) s
     (RelIso.preimage Equiv.ulift.{max u w} s) _
   exact ⟨fun ⟨f⟩ =>
-    ⟨(f.equivLT (RelIso.preimage Equiv.ulift r).symm).ltLe
+    ⟨(f.relIsoTrans (RelIso.preimage Equiv.ulift r).symm).transInitial
         (InitialSeg.ofIso (RelIso.preimage Equiv.ulift s))⟩,
     fun ⟨f⟩ =>
-    ⟨(f.equivLT (RelIso.preimage Equiv.ulift r)).ltLe
+    ⟨(f.relIsoTrans (RelIso.preimage Equiv.ulift r)).transInitial
         (InitialSeg.ofIso (RelIso.preimage Equiv.ulift s).symm)⟩⟩
 
 @[simp]
