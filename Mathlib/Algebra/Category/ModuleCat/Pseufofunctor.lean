@@ -28,7 +28,7 @@ namespace CategoryTheory
 
 section
 
-class IsDiscrete (C : Type*) [Category C] where
+class IsDiscrete (C : Type*) [Category C] : Prop where
   subsingleton (X Y : C) : Subsingleton (X ⟶ Y) := by infer_instance
   eq_of_hom {X Y : C} (f : X ⟶ Y) : X = Y
 
@@ -125,7 +125,7 @@ noncomputable def restrictScalarsPseudofunctor :
     (fun R ↦ restrictScalarsId R.unop)
     (fun f g ↦ restrictScalarsComp g.unop f.unop)
 
-noncomputable def extendsScalarsPseudofunctor :
+noncomputable def extendScalarsPseudofunctor :
     Pseudofunctor (LocallyDiscrete CommRingCat.{u}) Cat :=
   LocallyDiscrete.mkPseudofunctor
     (fun R ↦ Cat.of (ModuleCat.{u} R))
