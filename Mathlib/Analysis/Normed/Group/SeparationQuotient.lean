@@ -124,7 +124,7 @@ lemma eq_of_inseparable (f : NormedAddGroupHom M N) (hf : ∀ x ∈ nullSubgroup
 
 /-- The lift of a group hom to the separation quotient as a group hom. -/
 noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
-    (hf : ∀ x ∈ nullSubgroup, f x = 0) : NormedAddGroupHom (SeparationQuotient M) N :=
+    (hf : ∀ x, ‖x‖ = 0 → f x = 0) : NormedAddGroupHom (SeparationQuotient M) N :=
   { SeparationQuotient.liftContinuousAddMonoidHom ⟨f.toAddMonoidHom, f.continuous⟩
       <| eq_of_inseparable f hf with
     bound' := by
