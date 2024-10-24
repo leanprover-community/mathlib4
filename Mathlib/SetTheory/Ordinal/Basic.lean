@@ -150,8 +150,7 @@ theorem type_toType (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
   (type_def _).symm.trans o.out_eq
 
 @[deprecated type_toType (since := "2024-10-22")]
-theorem type_lt (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
-  (type_def _).symm.trans o.out_eq
+alias type_lt := type_toType
 
 @[deprecated type_toType (since := "2024-08-26")]
 theorem type_out (o : Ordinal) : Ordinal.type o.out.r = o :=
