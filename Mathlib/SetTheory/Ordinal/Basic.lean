@@ -1135,10 +1135,10 @@ theorem lt_ord {c o} : o < ord c ↔ o.card < c :=
   gc_ord_card.lt_iff_lt
 
 @[simp]
-theorem card_ord (c) : (ord c).card = c :=
-  Cardinal.inductionOn c fun α => by
-    let ⟨r, _, e⟩ := ord_eq α
-    simp only [e, card_type]
+theorem card_ord (c) : (ord c).card = c := by
+  refine c.inductionOn fun α ↦ ?_
+  let ⟨r, _, e⟩ := ord_eq α
+  rw [e, card_type]
 
 theorem card_surjective : Function.Surjective card :=
   fun c ↦ ⟨_, card_ord c⟩

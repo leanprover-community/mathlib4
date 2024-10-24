@@ -277,9 +277,7 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
   exact Equiv.ofBijective f this
 
 theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
-  trans
-  · rw [← Cardinal.mk_out c, ← Cardinal.mk_out c']
-  · rw [le_def]
+  conv_lhs => rw [← Cardinal.mk_out c, ← Cardinal.mk_out c', le_def]
 
 theorem lift_mk_le {α : Type v} {β : Type w} :
     lift.{max u w} #α ≤ lift.{max u v} #β ↔ Nonempty (α ↪ β) :=
