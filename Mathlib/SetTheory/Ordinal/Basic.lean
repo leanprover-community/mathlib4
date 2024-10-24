@@ -147,11 +147,11 @@ theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r :=
 
 @[simp]
 theorem type_toType (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
-  (type_def _).symm.trans <| Quotient.out_eq o
+  (type_def _).symm.trans o.out_eq
 
 @[deprecated type_toType (since := "2024-10-22")]
 theorem type_lt (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
-  (type_def _).symm.trans <| Quotient.out_eq o
+  (type_def _).symm.trans o.out_eq
 
 @[deprecated type_toType (since := "2024-08-26")]
 theorem type_out (o : Ordinal) : Ordinal.type o.out.r = o :=
