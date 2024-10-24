@@ -79,7 +79,7 @@ theorem normalize_coe_nat (n : ℕ) : normalize (n : ℤ) = n :=
 
 theorem abs_eq_normalize (z : ℤ) : |z| = normalize z := by
   cases le_total 0 z <;>
-  simp [-normalize_apply, abs_of_nonneg, abs_of_nonpos, normalize_of_nonneg, normalize_of_nonpos, *]
+  simp [abs_of_nonneg, abs_of_nonpos, normalize_of_nonneg, normalize_of_nonpos, *]
 
 theorem nonneg_of_normalize_eq_self {z : ℤ} (hz : normalize z = z) : 0 ≤ z := by
   by_cases h : 0 ≤ z
@@ -147,7 +147,7 @@ def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
   refine ⟨(·.out.natAbs), (Associates.mk ·), ?_, fun n ↦ ?_⟩
   · refine Associates.forall_associated.2 fun a ↦ ?_
     refine Associates.mk_eq_mk_iff_associated.2 <| Associated.symm <| ⟨normUnit a, ?_⟩
-    simp [Int.abs_eq_normalize]
+    simp [Int.abs_eq_normalize, normalize_apply]
   · dsimp only [Associates.out_mk]
     rw [← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_ofNat]
 

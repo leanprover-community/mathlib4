@@ -1429,7 +1429,7 @@ theorem count_span_normalizedFactors_eq_of_normUnit {r X : R}
     (hr : r ≠ 0) (hX₁ : normUnit X = 1) (hX : Prime X) :
       Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) =
         Multiset.count X (normalizedFactors r) := by
-  simpa [hX₁] using count_span_normalizedFactors_eq hr hX
+  simpa [hX₁, normalize_apply] using count_span_normalizedFactors_eq hr hX
 
 end NormalizationMonoid
 
