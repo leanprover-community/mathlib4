@@ -255,11 +255,7 @@ is also the smallest `R`-submodule that does so. -/
 @[simp]
 theorem restrictScalars_mul {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
     (I J : Ideal S) : (I * J).restrictScalars R = I.restrictScalars R * J.restrictScalars R :=
-  le_antisymm
-    (fun _ hx =>
-      Submodule.mul_induction_on hx (fun _ hx _ hy => Submodule.mul_mem_mul hx hy) fun _ _ =>
-        Submodule.add_mem _)
-    (Submodule.mul_le.mpr fun _ hx _ hy => Ideal.mul_mem_mul hx hy)
+  rfl
 
 section Surjective
 
