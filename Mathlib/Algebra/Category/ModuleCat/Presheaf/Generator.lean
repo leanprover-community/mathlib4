@@ -127,21 +127,24 @@ variable {C : Type u} [SmallCategory.{u} C] {R : Cᵒᵖ ⥤ RingCat.{u}} (M : P
 /-- Given a presheaf of modules `M`, this is the coproduct of
 all free Yoneda presheaves `m.freeYoneda` for all `m : M.Elements`. -/
 noncomputable abbrev freeYonedaCoproduct : PresheafOfModules.{u} R :=
-    ∐ (Elements.freeYoneda (M := M))
+  ∐ (Elements.freeYoneda (M := M))
 
 /-- Given a element `m : M.Elements` of a presheaf of modules `M`, this is the
 canonical inclusion `e.freeYoneda ⟶ M.freeYonedaCoproduct`. -/
 noncomputable abbrev ιFreeYonedaCoproduct (m : M.Elements) :
-    m.freeYoneda ⟶ M.freeYonedaCoproduct := Sigma.ι _ m
+    m.freeYoneda ⟶ M.freeYonedaCoproduct :=
+  Sigma.ι _ m
 
 /-- Given a presheaf of modules `M`, this is the
 canonical morphism `M.freeYonedaCoproduct ⟶ M`. -/
-noncomputable def fromFreeYonedaCoproduct : M.freeYonedaCoproduct ⟶ M :=
+noncomputable def fromFreeYonedaCoproduct :
+    M.freeYonedaCoproduct ⟶ M :=
   Sigma.desc Elements.fromFreeYoneda
 
 /-- Given an element `m` of a presheaf of modules `M`, this is the associated
 canonical section of the presheaf `M.freeYonedaCoproduct` over the object `m.1`. -/
-noncomputable def freeYonedaCoproductMk (m : M.Elements) : M.freeYonedaCoproduct.obj m.1 :=
+noncomputable def freeYonedaCoproductMk (m : M.Elements) :
+    M.freeYonedaCoproduct.obj m.1 :=
   (M.ιFreeYonedaCoproduct m).app _ (ModuleCat.freeMk (𝟙 _))
 
 @[reassoc (attr := simp)]
