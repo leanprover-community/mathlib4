@@ -329,6 +329,10 @@ noncomputable def normalAutEquivQuotient [FiniteDimensional K L] [IsGalois K L]
   QuotientGroup.quotientKerEquivOfSurjective (restrictNormalHom (fixedField H)) <|
   restrictNormalHom_surjective L
 
+lemma normalAutEquivQuotient_apply [FiniteDimensional K L] [IsGalois K L]
+    (H : Subgroup (L ≃ₐ[K] L)) [Subgroup.Normal H] (σ : (L ≃ₐ[K] L)) :
+    normalAutEquivQuotient H (QuotientGroup.mk σ) = (restrictNormalHom (fixedField H)) σ := rfl
+
 open scoped Pointwise
 
 theorem fixingSubgroup_conjugate_of_map (σ : L ≃ₐ[K] L) :
