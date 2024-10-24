@@ -359,6 +359,10 @@ theorem isUnitSMul_apply {v : Basis ι R M} {w : ι → R} (hw : ∀ i, IsUnit (
     v.isUnitSMul hw i = w i • v i :=
   unitsSMul_apply i
 
+theorem repr_isUnitSMul {v : Basis ι R₂ M} {w : ι → R₂} (hw : ∀ i, IsUnit (w i)) (x : M) (i : ι) :
+    (v.isUnitSMul hw).repr x i = (hw i).unit⁻¹ • v.repr x i :=
+  repr_unitsSMul _ _ _ _
+
 section Fin
 
 /-- Let `b` be a basis for a submodule `N` of `M`. If `y : M` is linear independent of `N`
