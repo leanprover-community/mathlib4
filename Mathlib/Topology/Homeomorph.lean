@@ -701,7 +701,7 @@ def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X whe
   continuous_invFun := continuous_uLift_up
   toEquiv := Equiv.ulift
 
-/-- `Equiv.sumArrowEquivProdArrow` as a homeomorphism. The natural homeomoorphism
+/-- `Equiv.sumArrowEquivProdArrow` as a homeomorphism. The natural homeomorphism
 `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)` -/
 def sumArrowEquivProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)  where
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
