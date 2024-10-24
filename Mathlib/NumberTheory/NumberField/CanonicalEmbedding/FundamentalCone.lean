@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.RingTheory.Ideal.IsPrincipal
+import Mathlib.RingTheory.ClassGroup
 import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 
 /-!
@@ -164,6 +165,23 @@ theorem logMap_eq_of_normAtPlace_eq (h : ∀ w, normAtPlace w x = normAtPlace w 
   ext
   simp_rw [logMap_apply, h, norm_eq_of_normAtPlace_eq h]
 
+variable (K)
+
+theorem measurable_logMap :
+    Measurable (logMap : (mixedSpace K) → _) :=
+  measurable_pi_iff.mpr fun _ ↦
+    measurable_const.mul <| (continuous_normAtPlace _).measurable.log.sub
+      <| (mixedEmbedding.continuous_norm K).measurable.log.mul measurable_const
+
+theorem continuousOn_logMap :
+    ContinuousOn (logMap : (mixedSpace K) → _) {x | mixedEmbedding.norm x ≠ 0} := by
+  refine continuousOn_pi.mpr fun w ↦ continuousOn_const.mul (ContinuousOn.sub ?_ ?_)
+  · exact Real.continuousOn_log.comp''  (continuous_normAtPlace _).continuousOn
+      fun _ hx ↦ mixedEmbedding.norm_ne_zero_iff.mp hx _
+  · exact ContinuousOn.mul
+      (Real.continuousOn_log.comp''  (mixedEmbedding.continuous_norm K).continuousOn
+        fun _ hx ↦ hx) continuousOn_const
+
 end logMap
 
 noncomputable section
@@ -179,6 +197,17 @@ of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem
 def fundamentalCone : Set (mixedSpace K) :=
   logMap⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
       {x | mixedEmbedding.norm x = 0}
+
+theorem measurableSet_fundamentalCone :
+    MeasurableSet (fundamentalCone K) := by
+  classical
+  refine MeasurableSet.diff ?_ ?_
+  · unfold logMap
+    refine MeasurableSet.preimage (ZSpan.fundamentalDomain_measurableSet _) <|
+      measurable_pi_iff.mpr fun w ↦ measurable_const.mul ?_
+    exact (continuous_normAtPlace _).measurable.log.sub <|
+      (mixedEmbedding.continuous_norm _).measurable.log.mul measurable_const
+  · exact measurableSet_eq_fun (mixedEmbedding.continuous_norm K).measurable measurable_const
 
 namespace fundamentalCone
 
@@ -286,10 +315,10 @@ theorem mixedEmbedding_preimageOfIntegralPoint (a : integralPoint K) :
     mixedEmbedding K (preimageOfIntegralPoint a : 𝓞 K) = (a : mixedSpace K) := by
   rw [preimageOfIntegralPoint, (mem_integralPoint.mp a.prop).2.choose_spec]
 
-theorem preimageOfIntegralPoint_mixedEmbedding {x : (𝓞 K)⁰}
+theorem preimageOfIntegralPoint_mixedEmbedding {x : (𝓞 K)}
     (hx : mixedEmbedding K (x : 𝓞 K) ∈ integralPoint K) :
     preimageOfIntegralPoint (⟨mixedEmbedding K (x : 𝓞 K), hx⟩) = x := by
-  simp_rw [Subtype.ext_iff, RingOfIntegers.ext_iff, ← (mixedEmbedding_injective K).eq_iff,
+  simp_rw [RingOfIntegers.ext_iff, ← (mixedEmbedding_injective K).eq_iff,
     mixedEmbedding_preimageOfIntegralPoint]
 
 /-- If `x : mixedSpace K` is nonzero and the image of an algebraic integer, then there exists a
@@ -427,29 +456,30 @@ variable (K) in
 /-- For an integer `n`, The equivalence between the `integralPoint K` of norm `n` and the product
 of the set of nonzero principal ideals of `K` of norm `n` and the torsion of `K`. -/
 def integralPointEquivNorm (n : ℕ) :
-    {a : integralPoint K // intNorm a = n} ≃
+    {a : integralPoint K // mixedEmbedding.norm (a : mixedSpace K) = n} ≃
       {I : (Ideal (𝓞 K))⁰ // IsPrincipal (I : Ideal (𝓞 K)) ∧
         absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) :=
-  calc {a // intNorm a = n}
-      ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1} × torsion K //
+  calc
+    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1} × torsion K //
           absNorm (I.1 : Ideal (𝓞 K)) = n} :=
-      (Equiv.subtypeEquiv (integralPointEquiv K) fun _ ↦ by simp [intNorm, absNorm_span_singleton])
+      Equiv.subtypeEquiv (integralPointEquiv K) fun _ ↦ by simp_rw [← intNorm_coe, intNorm,
+        Nat.cast_inj, integralPointEquiv_apply_fst, absNorm_span_singleton]
     _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1} // absNorm (I.1 : Ideal (𝓞 K)) = n} ×
-          torsion K :=
-      Equiv.prodSubtypeFstEquivSubtypeProd (p := fun I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1} ↦
-        absNorm (I : Ideal (𝓞 K)) = n)
+          torsion K := Equiv.prodSubtypeFstEquivSubtypeProd
+      (p := fun I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1} ↦ absNorm (I : Ideal (𝓞 K)) = n)
     _ ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal (I : Ideal (𝓞 K)) ∧
-          absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) :=
-      Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
+          absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) :=  Equiv.prodCongrLeft fun _ ↦
+      (Equiv.subtypeSubtypeEquivSubtypeInter
         (fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.1) (fun I ↦ absNorm I.1 = n))
 
 @[simp]
-theorem integralPointEquivNorm_apply_fst {n : ℕ} {a : integralPoint K} (ha : intNorm a = n) :
-    ((integralPointEquivNorm K n ⟨a, ha⟩).1 : Ideal (𝓞 K)) =
-      span {(preimageOfIntegralPoint a : 𝓞 K)} := by
-  simp_rw [integralPointEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.instTrans_trans,
-    Equiv.prodCongrLeft, Equiv.trans_apply, Equiv.subtypeEquiv_apply, Equiv.coe_fn_mk,
-    Equiv.subtypeSubtypeEquivSubtypeInter_apply_coe, integralPointEquiv_apply_fst]
+theorem integralPointEquivNorm_apply_fst {n : ℕ}
+    (a : {a : integralPoint K // mixedEmbedding.norm (a : mixedSpace K) = n}) :
+    ((integralPointEquivNorm K n a).1 : Ideal (𝓞 K)) =
+      span {(preimageOfIntegralPoint a.val : 𝓞 K)} := by
+ simp_rw [integralPointEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.instTrans_trans,
+   Equiv.prodCongrLeft, Equiv.trans_apply, Equiv.subtypeEquiv_apply, Equiv.coe_fn_mk,
+   Equiv.subtypeSubtypeEquivSubtypeInter_apply_coe, integralPointEquiv_apply_fst]
 
 variable (K)
 
@@ -458,42 +488,141 @@ of the torsion of `K` is equal to the number of `integralPoint K` of norm `n`. -
 theorem card_isPrincipal_norm_eq_mul_torsion (n : ℕ) :
     Nat.card {I : (Ideal (𝓞 K))⁰ | IsPrincipal (I : Ideal (𝓞 K)) ∧
       absNorm (I : Ideal (𝓞 K)) = n} * torsionOrder K =
-        Nat.card {a : integralPoint K | intNorm a = n} := by
+        Nat.card {a : integralPoint K | mixedEmbedding.norm (a : mixedSpace K) = n} := by
   rw [torsionOrder, PNat.mk_coe, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
   exact Nat.card_congr (integralPointEquivNorm K n).symm
 
-/-- For `s : ℝ`, the number of principal nonzero ideals in `𝓞 K` of norm `≤ s` multiplied by the
-order of the torsion of `K` is equal to the number of `integralPoint K` of norm `≤ s`. -/
-theorem card_isPrincipal_norm_le_mul_torsion (s : ℝ) :
-    Nat.card {I : (Ideal (𝓞 K))⁰ | IsPrincipal (I : Ideal (𝓞 K)) ∧
+variable (J : (Ideal (𝓞 K))⁰)
+
+/-- The set of images by `mixedEmbedding` of the elements of the integral ideal `J` contained in
+the fundamental cone. -/
+def idealPoint : Set (mixedSpace K) :=
+  fundamentalCone K ∩ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
+
+variable {K J} in
+theorem mem_idealPoint :
+    x ∈ idealPoint K J ↔ x ∈ fundamentalCone K ∧ ∃ a : (𝓞 K), (a : 𝓞 K) ∈ (J : Set (𝓞 K)) ∧
+      mixedEmbedding K (a : 𝓞 K) = x := by
+  simp_rw [idealPoint, Set.mem_inter_iff, idealLattice, SetLike.mem_coe, FractionalIdeal.coe_mk0,
+    LinearMap.mem_range, LinearMap.coe_comp, LinearMap.coe_restrictScalars, coe_subtype,
+    Function.comp_apply, AlgHom.toLinearMap_apply, RingHom.toIntAlgHom_coe, Subtype.exists,
+    FractionalIdeal.mem_coe, FractionalIdeal.mem_coeIdeal, exists_prop', nonempty_prop,
+    exists_exists_and_eq_and]
+
+/-- The map that sends an `idealPoint` to an `integralPoint`. This map exists because `J` is an
+integral ideal. -/
+def idealPointMap : idealPoint K J → integralPoint K :=
+  fun ⟨a, ha⟩ ↦ ⟨a,
+    mem_integralPoint.mpr ⟨(mem_idealPoint.mp ha).1, (mem_idealPoint.mp ha).2.choose,
+      (mem_idealPoint.mp ha).2.choose_spec.2⟩⟩
+
+@[simp]
+theorem idealPointMap_apply (a : idealPoint K J) :
+    (idealPointMap K J a : mixedSpace K) = a := rfl
+
+theorem preimage_of_IdealPointMap (a : idealPoint K J) :
+    (preimageOfIntegralPoint (idealPointMap K J a) : 𝓞 K) ∈ (J : Set (𝓞 K)) := by
+  obtain ⟨_, ⟨x, hx₁, hx₂⟩⟩ := mem_idealPoint.mp a.prop
+  simp_rw [idealPointMap, ← hx₂, preimageOfIntegralPoint_mixedEmbedding]
+  exact hx₁
+
+/-- The map `idealPointMap` is actually an equiv between the `idealPoint K J` and the
+`integralPoint K` whose preimage lies in `J`. -/
+def idealPointEquiv : idealPoint K J ≃
+    {a : integralPoint K | (preimageOfIntegralPoint a : 𝓞 K) ∈ (J : Set (𝓞 K))} :=
+  Equiv.ofBijective (fun a ↦ ⟨idealPointMap K J a, preimage_of_IdealPointMap K J a⟩)
+    ⟨fun _ _ h ↦ (by
+        simp_rw [Subtype.ext_iff_val, idealPointMap_apply] at h
+        rwa [Subtype.ext_iff_val]),
+    fun ⟨a, ha₂⟩ ↦ ⟨⟨a.val,  mem_idealPoint.mpr ⟨a.prop.1,
+        ⟨preimageOfIntegralPoint a, ha₂, mixedEmbedding_preimageOfIntegralPoint a⟩⟩⟩, rfl⟩⟩
+
+variable {K J}
+
+theorem idealPointEquiv_apply (a : idealPoint K J) :
+    (idealPointEquiv K J a : mixedSpace K) = a := rfl
+
+theorem idealPointEquiv_symm_apply
+    (a : {a : integralPoint K // (preimageOfIntegralPoint a : 𝓞 K) ∈ (J : Set (𝓞 K)) }) :
+    ((idealPointEquiv K J).symm a : mixedSpace K) = a := by
+  rw [← (idealPointEquiv_apply ((idealPointEquiv K J).symm a)), Equiv.apply_symm_apply]
+
+theorem intNorm_idealPointEquiv_apply (a : idealPoint K J) :
+    intNorm (idealPointEquiv K J a).val = mixedEmbedding.norm (a : mixedSpace K) := by
+  rw [intNorm_coe, idealPointEquiv_apply]
+
+variable (K J)
+
+/-- For an integer `n`, The equivalence between the `idealPoint K` of norm `n` and the product
+of the set of nonzero principal ideals of `K` divisible by `J` of norm `n` and the
+torsion of `K`. -/
+def idealPointEquivNorm (n : ℕ) :
+    {a : idealPoint K J // mixedEmbedding.norm (a : mixedSpace K) = n} ≃
+      {I : (Ideal (𝓞 K))⁰ // (J : Ideal (𝓞 K)) ∣ I ∧ IsPrincipal (I : Ideal (𝓞 K)) ∧
+        absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) := by
+  calc
+    _ ≃ {a : {a : integralPoint K // (preimageOfIntegralPoint a).1 ∈ J.1} //
+          mixedEmbedding.norm a.1.1 = n} := by
+      convert (Equiv.subtypeEquivOfSubtype (idealPointEquiv K J).symm).symm using 3
+      rw [idealPointEquiv_symm_apply]
+    _ ≃ {a : integralPoint K // (preimageOfIntegralPoint a).1 ∈ J.1 ∧
+          mixedEmbedding.norm a.1 = n} := Equiv.subtypeSubtypeEquivSubtypeInter
+        (fun a : integralPoint K ↦ (preimageOfIntegralPoint a).1 ∈ J.1)
+        (fun a ↦ mixedEmbedding.norm a.1 = n)
+    _ ≃ {a : {a :integralPoint K // mixedEmbedding.norm a.1 = n} //
+          (preimageOfIntegralPoint a.1).1 ∈ J.1} := ((Equiv.subtypeSubtypeEquivSubtypeInter
+        (fun a : integralPoint K ↦ mixedEmbedding.norm a.1 = n)
+        (fun a ↦ (preimageOfIntegralPoint a).1 ∈ J.1)).trans
+        (Equiv.subtypeEquivRight (fun _ ↦ by simp [and_comm]))).symm
+    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = n} × (torsion K) //
+          J.1 ∣ I.1.1} := by
+      convert Equiv.subtypeEquivOfSubtype (p := fun I ↦ J.1 ∣ I.1) (integralPointEquivNorm K n)
+      rw [integralPointEquivNorm_apply_fst, dvd_span_singleton]
+    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = n} // J.1 ∣ I.1} ×
+        (torsion K) := Equiv.prodSubtypeFstEquivSubtypeProd
+        (p := fun I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = n} ↦ J.1 ∣ I.1)
+    _ ≃ {I : (Ideal (𝓞 K))⁰ // (IsPrincipal I.1 ∧ absNorm I.1 = n) ∧ J.1 ∣ I.1} × (torsion K) :=
+      Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
+        (fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.1 ∧ absNorm I.1 = n)
+        (fun I ↦ J.1 ∣ I.1))
+    _ ≃ {I : (Ideal (𝓞 K))⁰ // J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 = n} ×
+          (Units.torsion K) :=
+      Equiv.prodCongrLeft fun _ ↦ Equiv.subtypeEquivRight fun _ ↦ by rw [and_comm]
+
+/-- For `s : ℝ`, the number of principal nonzero ideals in `𝓞 K` divisible par `J` of norm `≤ s`
+multiplied by the order of the torsion of `K` is equal to the number of `idealPoint K J`
+of norm `≤ s`. -/
+theorem card_isPrincipal_dvd_norm_le (s : ℝ) :
+    Nat.card {I : (Ideal (𝓞 K))⁰ // (J : Ideal (𝓞 K)) ∣ I ∧ IsPrincipal (I : Ideal (𝓞 K)) ∧
       absNorm (I : Ideal (𝓞 K)) ≤ s} * torsionOrder K =
-        Nat.card {a : integralPoint K | intNorm a ≤ s} := by
+        Nat.card {a : idealPoint K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by
   obtain hs | hs := le_or_gt 0 s
-  · simp_rw [← Nat.le_floor_iff hs]
+  · simp_rw [← intNorm_idealPointEquiv_apply, ← Nat.le_floor_iff hs]
     rw [torsionOrder, PNat.mk_coe, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
-    refine Nat.card_congr <| @Equiv.ofFiberEquiv _ (γ := Finset.Iic _) _
-      (fun I ↦ ⟨absNorm (I.1 : Ideal (𝓞 K)), Finset.mem_Iic.mpr I.1.2.2⟩)
-      (fun a ↦ ⟨intNorm a.1, Finset.mem_Iic.mpr a.2⟩) fun ⟨i, hi⟩ ↦ ?_
+    refine Nat.card_congr <| @Equiv.ofFiberEquiv _ (γ := Finset.Iic ⌊s⌋₊) _
+      (fun I ↦ ⟨absNorm I.1.val.1, Finset.mem_Iic.mpr I.1.prop.2.2⟩)
+      (fun a ↦ ⟨intNorm (idealPointEquiv K J a.1).1, Finset.mem_Iic.mpr a.prop⟩) fun ⟨i, hi⟩ ↦ ?_
     simp_rw [Subtype.mk.injEq]
     calc
-    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 ≤ _} // absNorm I.1.1 = i}
-          × torsion K := Equiv.prodSubtypeFstEquivSubtypeProd
-    _ ≃ {I : (Ideal (𝓞 K))⁰ // (IsPrincipal I.1 ∧ absNorm I.1 ≤ _) ∧ absNorm I.1 = i}
-          × torsion K :=
-      Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
-        (p := fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.1 ∧ absNorm I.1 ≤ _)
-        (q := fun I ↦ absNorm I.1 = i))
-    _ ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = i ∧ absNorm I.1 ≤ _}
-          × torsion K :=
-      Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeEquivRight fun _ ↦ by aesop)
-    _ ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = i} × torsion K :=
-      Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeEquivRight fun _ ↦ by
-      rw [and_iff_left_of_imp (a := absNorm _ = _) fun h ↦ Finset.mem_Iic.mp (h ▸ hi)])
-    _ ≃ {a : integralPoint K // intNorm a = i} := (integralPointEquivNorm K i).symm
-    _ ≃ {a : {a : integralPoint K // intNorm a ≤ _} // intNorm a.1 = i} :=
-      (Equiv.subtypeSubtypeEquivSubtype fun h ↦ Finset.mem_Iic.mp (h ▸ hi)).symm
-  · simp_rw [lt_iff_not_le.mp (lt_of_lt_of_le hs (Nat.cast_nonneg _)), and_false, Set.setOf_false,
-      Nat.card_eq_fintype_card, Fintype.card_ofIsEmpty, zero_mul]
+      _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // _ ∧ _ ∧ _} // absNorm I.1.1 = i} × torsion K :=
+        Equiv.prodSubtypeFstEquivSubtypeProd
+      _ ≃ {I : (Ideal (𝓞 K))⁰ // (_ ∧ _ ∧ absNorm I.1 ≤ ⌊s⌋₊) ∧ absNorm I.1 = i}
+          × torsion K := Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
+      (p := fun I : (Ideal (𝓞 K))⁰ ↦ J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 ≤ ⌊s⌋₊)
+      (q := fun I ↦ absNorm I.1 = i))
+      _ ≃ {I : (Ideal (𝓞 K))⁰ // J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 = i}
+          × torsion K := Equiv.prodCongrLeft fun _ ↦ Equiv.subtypeEquivRight fun _ ↦ by aesop
+      _ ≃ {a : idealPoint K J // mixedEmbedding.norm (a : mixedSpace K) = i} :=
+        (idealPointEquivNorm K J i).symm
+      _ ≃ {a : idealPoint K J // intNorm (idealPointEquiv K J a).1 = i} := by
+        simp_rw [← intNorm_idealPointEquiv_apply, Nat.cast_inj]
+        rfl
+      _ ≃ {b : {a : idealPoint K J // intNorm (idealPointEquiv K J a).1 ≤ ⌊s⌋₊} //
+          intNorm (idealPointEquiv K J b).1 = i} :=
+        (Equiv.subtypeSubtypeEquivSubtype fun h ↦ Finset.mem_Iic.mp (h ▸ hi)).symm
+  · simp_rw [lt_iff_not_le.mp (lt_of_lt_of_le hs (Nat.cast_nonneg _)), lt_iff_not_le.mp
+      (lt_of_lt_of_le hs (mixedEmbedding.norm_nonneg _)), and_false, Nat.card_of_isEmpty,
+      zero_mul]
 
 end fundamentalCone
 
