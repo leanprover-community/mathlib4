@@ -76,7 +76,7 @@ variable (R A) in
 Note this is heterobasic; the bilinear form on the left can take values in an (commutative) algebra
 over the ring in which the right bilinear form is valued. -/
 def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
-  (congr₂ (AlgebraTensorModule.rid R A A)).toLinearMap ∘ₗ (tensorDistrib' R A)
+  (LinearEquiv.congrRight₂ (AlgebraTensorModule.rid R A A)).toLinearMap ∘ₗ (tensorDistrib' R A)
 
 variable (R A) in
 
