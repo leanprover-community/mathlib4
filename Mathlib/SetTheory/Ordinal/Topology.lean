@@ -369,8 +369,7 @@ theorem isClosedBelow_iff {S : Set Ordinal} {o : Ordinal} : IsClosedBelow S o �
     | .inl h => exact h
     | .inr h' => exact h r.1 r.2 <| (accPt_subtype _ _).mpr h'
 
-theorem IsClosedBelow.forall_lt {S : Set Ordinal} {o : Ordinal} (h : IsClosedBelow S o) :
-    ∀ p < o, IsAcc p S → p ∈ S := isClosedBelow_iff.mp h
+alias ⟨IsClosedBelow.forall_lt, _⟩ := isClosedBelow_iff
 
 theorem IsClosedBelow.sInter {o : Ordinal} {S : Set (Set Ordinal)}
     (h : ∀ C ∈ S, IsClosedBelow C o) : IsClosedBelow (⋂₀ S) o := by
