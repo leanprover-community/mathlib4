@@ -25,6 +25,8 @@ namespace CategoryTheory
 
 open Bicategory
 
+/-- Constructor for pseudofunctors from a strict locally discrete bicategory. In that
+case, we do not need to provide the `map₂` field of pseudofunctors. -/
 @[simps obj map mapId mapComp]
 def pseudofunctorOfIsLocallyDiscrete
     {B C : Type*} [Bicategory B] [IsLocallyDiscrete B] [Bicategory C] [Strict B]
@@ -59,6 +61,8 @@ def pseudofunctorOfIsLocallyDiscrete
 
 namespace LocallyDiscrete
 
+/-- Constructor for pseudofunctors from a strict locally discrete bicategory. In that
+case, we do not need to provide the `map₂` field of pseudofunctors. -/
 @[simps! obj map mapId mapComp]
 def mkPseudofunctor {B₀ C : Type*} [Category B₀] [Bicategory C]
     (obj : B₀ → C)
