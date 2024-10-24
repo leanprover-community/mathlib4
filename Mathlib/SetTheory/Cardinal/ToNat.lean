@@ -116,8 +116,7 @@ theorem aleph0_toNat : toNat ℵ₀ = 0 :=
 
 theorem mk_toNat_eq_card [Fintype α] : toNat #α = Fintype.card α := by simp
 
--- porting note (#10618): simp can prove this
--- @[simp]
+@[simp]
 theorem zero_toNat : toNat 0 = 0 := map_zero _
 
 theorem one_toNat : toNat 1 = 1 := map_one _

@@ -363,13 +363,17 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply
         (aeval (fun o : Option ι => o.elim Polynomial.X fun s : ι => Polynomial.C (X s)) y) :=
   rfl
 
---@[simp] Porting note: removing simp because the linter complains about deterministic timeout
+/-- `simp`-normal form of `mvPolynomialOptionEquivPolynomialAdjoin_C` -/
+@[simp]
+theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C'
+    (hx : AlgebraicIndependent R x) (r) :
+    Polynomial.C (hx.aevalEquiv (C r)) = Polynomial.C (algebraMap _ _ r) := by
+  simp [aevalEquiv]
+
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C
     (hx : AlgebraicIndependent R x) (r) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (C r) = Polynomial.C (algebraMap _ _ r) := by
-  rw [AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply, aeval_C,
-    IsScalarTower.algebraMap_apply R (MvPolynomial ι R), ← Polynomial.C_eq_algebraMap,
-    Polynomial.map_C, RingHom.coe_coe, AlgEquiv.commutes]
+  simp
 
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
     (hx : AlgebraicIndependent R x) :

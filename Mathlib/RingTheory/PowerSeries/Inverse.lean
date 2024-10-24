@@ -150,8 +150,7 @@ theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff k φ = 0 :=
 theorem zero_inv : (0 : k⟦X⟧)⁻¹ = 0 :=
   MvPowerSeries.zero_inv
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem invOfUnit_eq (φ : k⟦X⟧) (h : constantCoeff k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
   MvPowerSeries.invOfUnit_eq _ _

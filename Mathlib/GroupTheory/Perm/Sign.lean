@@ -370,7 +370,7 @@ section SignType.sign
 
 variable [Fintype α]
 
---@[simp] Porting note (#10618): simp can prove
+@[simp]
 theorem sign_mul (f g : Perm α) : sign (f * g) = sign f * sign g :=
   MonoidHom.map_mul sign f g
 
@@ -378,7 +378,7 @@ theorem sign_mul (f g : Perm α) : sign (f * g) = sign f * sign g :=
 theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
   rw [← mul_def, sign_mul]
 
---@[simp] Porting note (#10618): simp can prove
+@[simp]
 theorem sign_one : sign (1 : Perm α) = 1 :=
   MonoidHom.map_one sign
 
@@ -386,7 +386,7 @@ theorem sign_one : sign (1 : Perm α) = 1 :=
 theorem sign_refl : sign (Equiv.refl α) = 1 :=
   MonoidHom.map_one sign
 
---@[simp] Porting note (#10618): simp can prove
+@[simp]
 theorem sign_inv (f : Perm α) : sign f⁻¹ = sign f := by
   rw [MonoidHom.map_inv sign f, Int.units_inv_eq_self]
 
