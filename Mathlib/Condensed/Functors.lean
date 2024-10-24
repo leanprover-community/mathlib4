@@ -20,15 +20,6 @@ sets.
 * `compHausToCondensed : CompHaus.{u} ⥤ CondensedSet.{u}` is essentially the yoneda presheaf
   functor. We also define `profiniteToCondensed` and `stoneanToCondensed`.
 
-TODO (Dagur):
-
-* Define the analogues of `compHausToCondensed` for sheaves on `Profinite` and `Stonean` and provide
-  the relevant isomorphisms with `profiniteToCondensed` and `stoneanToCondensed`.
-
-* Define the functor `Type (u+1) ⥤ CondensedSet.{u}` which takes a set `X` to the presheaf given by
-  mapping a compact Hausdorff space `S` to `LocallyConstant S X`, along with the isomorphism with
-  the functor that goes through `TopCat.{u+1}`.
-
 -/
 
 universe u v

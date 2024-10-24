@@ -104,12 +104,12 @@ lemma eval_image_piFinset_const {β} [DecidableEq β] (t : Finset β) (a : α) :
 variable [∀ a, DecidableEq (δ a)]
 
 lemma filter_piFinset_of_not_mem (t : ∀ a, Finset (δ a)) (a : α) (x : δ a) (hx : x ∉ t a) :
-    (piFinset t).filter (· a = x) = ∅ := by
+    {f ∈ piFinset t | f a = x} = ∅ := by
   simp only [filter_eq_empty_iff, mem_piFinset]; rintro f hf rfl; exact hx (hf _)
 
 -- TODO: This proof looks like a good example of something that `aesop` can't do but should
 lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α) {t : Finset (δ i)}
-    (hts : t ⊆ s i) : piFinset (Function.update s i t) = (piFinset s).filter (fun f ↦ f i ∈ t) := by
+    (hts : t ⊆ s i) : piFinset (Function.update s i t) = {f ∈ piFinset s | f i ∈ t} := by
   ext f
   simp only [mem_piFinset, mem_filter]
   refine ⟨fun h ↦ ?_, fun h j ↦ ?_⟩
@@ -124,7 +124,7 @@ lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α)
 
 lemma piFinset_update_singleton_eq_filter_piFinset_eq (s : ∀ i, Finset (δ i)) (i : α) {a : δ i}
     (ha : a ∈ s i) :
-    piFinset (Function.update s i {a}) = (piFinset s).filter (fun f ↦ f i = a) := by
+    piFinset (Function.update s i {a}) = {f ∈ piFinset s | f i = a} := by
   simp [piFinset_update_eq_filter_piFinset_mem, ha]
 
 end Fintype
@@ -172,7 +172,7 @@ namespace Finset
 variable {ι : Type*} [DecidableEq (ι → α)] {s : Finset α} {f : ι → α}
 
 lemma piFinset_filter_const [DecidableEq ι] [Fintype ι] :
-    (Fintype.piFinset fun _ ↦ s).filter (∃ a ∈ s, const ι a = ·) = s.piDiag ι := by aesop
+    {f ∈ Fintype.piFinset fun _ : ι ↦ s | ∃ a ∈ s, const ι a = f} = s.piDiag ι := by aesop
 
 lemma piDiag_subset_piFinset [DecidableEq ι] [Fintype ι] :
     s.piDiag ι ⊆ Fintype.piFinset fun _ ↦ s := by simp [← piFinset_filter_const]

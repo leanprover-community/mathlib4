@@ -45,10 +45,9 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
   [FunLike F A B] extends RingHomClass F A B : Prop where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
--- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
--- attribute [nolint dangerousInstance] AlgHomClass.toRingHomClass
-
--- Porting note (#10618): simp can prove this
+-- For now, don't replace `AlgHom.commutes` and `AlgHomClass.commutes` with the more generic lemma.
+-- The file `Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone` slows down by
+-- 15% if we would do so (see benchmark on PR #18040).
 -- attribute [simp] AlgHomClass.commutes
 
 namespace AlgHomClass

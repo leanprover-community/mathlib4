@@ -1864,9 +1864,12 @@ theorem Continuous.isClosedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} 
 alias Continuous.closedEmbedding := Continuous.isClosedEmbedding
 
 /-- A continuous surjective map from a compact space to a Hausdorff space is a quotient map. -/
-theorem QuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
-    (hsurj : Surjective f) (hcont : Continuous f) : QuotientMap f :=
-  hcont.isClosedMap.to_quotientMap hcont hsurj
+theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
+    (hsurj : Surjective f) (hcont : Continuous f) : IsQuotientMap f :=
+  hcont.isClosedMap.isQuotientMap hcont hsurj
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.of_surjective_continuous := IsQuotientMap.of_surjective_continuous
 
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by
@@ -1888,6 +1891,10 @@ theorem isIrreducible_iff_singleton [T2Space X] {S : Set X} : IsIrreducible S �
 theorem not_preirreducible_nontrivial_t2 (X) [TopologicalSpace X] [PreirreducibleSpace X]
     [Nontrivial X] [T2Space X] : False :=
   (PreirreducibleSpace.isPreirreducible_univ (X := X)).subsingleton.not_nontrivial nontrivial_univ
+
+theorem t2Space_antitone {X : Type*} : Antitone (@T2Space X) :=
+  fun inst₁ inst₂ h_top h_t2 ↦ @T2Space.of_injective_continuous _ _ inst₁ inst₂
+    h_t2 _ Function.injective_id <| continuous_id_of_le h_top
 
 end Separation
 
@@ -2659,7 +2666,7 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
     have hU : IsClopen U := isClopen_biInter_finset fun i _ => i.2.1
     exact ⟨U, (↑) '' U, hU, ha, subset_iInter₂ fun s _ => s.2.1.connectedComponent_subset s.2.2,
       (connectedComponents_preimage_image U).symm ▸ hU.biUnion_connectedComponent_eq⟩
-  rw [ConnectedComponents.quotientMap_coe.isClopen_preimage] at hU
+  rw [ConnectedComponents.isQuotientMap_coe.isClopen_preimage] at hU
   refine ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, ?_, hb mem_connectedComponent, disjoint_compl_left⟩
   exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
 

@@ -1969,7 +1969,6 @@ theorem normalCore_eq_iSup (H : Subgroup G) :
 theorem normalCore_eq_self (H : Subgroup G) [H.Normal] : H.normalCore = H :=
   le_antisymm H.normalCore_le (normal_le_normalCore.mpr le_rfl)
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem normalCore_idempotent (H : Subgroup G) : H.normalCore.normalCore = H.normalCore :=
   H.normalCore.normalCore_eq_self
 
