@@ -446,7 +446,7 @@ theorem decomp_ring_ortho_idem [DecidableEq I] (V : I → Submodule R R)
       fun i' ↦ by simp only [ZeroMemClass.coe_zero, mul_zero, Submodule.mk_eq_zero]
     have hx2 (j) (h : j ≠ i) : (x j : R) = 0 := by
       simp [x, Finsupp.single_apply]
-      intro hij ; exfalso
+      intro hij; exfalso
       exact h.symm <| Subtype.coe_inj.1 hij
     have hy (j) : (y j : R) = e i * e j := by
       simp only [DFinsupp.mapRange_apply, y]
