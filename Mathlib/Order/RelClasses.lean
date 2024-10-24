@@ -139,7 +139,7 @@ theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α
   exacts [_root_.trans h₃ h₂, h₂, absurd h₃ h₁]
 
 theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α}
-    (h₁ : r a b) → (h₂ : ¬r c b) : r a c := by
+    (h₁ : r a b) (h₂ : ¬r c b) : r a c := by
   rcases trichotomous_of r b c with (h₃ | rfl | h₃)
   exacts [_root_.trans h₁ h₃, h₁, absurd h₃ h₂]
 
