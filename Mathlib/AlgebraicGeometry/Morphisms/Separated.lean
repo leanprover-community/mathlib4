@@ -5,7 +5,7 @@ Authors: Christian Merten, Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Over
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
