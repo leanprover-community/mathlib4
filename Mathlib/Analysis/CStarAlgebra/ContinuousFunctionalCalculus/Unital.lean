@@ -200,6 +200,11 @@ variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpa
 variable [TopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
 
+include instCFC in
+lemma ContinuousFunctionalCalculus.isCompact_spectrum (a : A) :
+    IsCompact (spectrum R a) :=
+  isCompact_iff_compactSpace.mpr inferInstance
+
 lemma StarAlgHom.ext_continuousMap [UniqueContinuousFunctionalCalculus R A]
     (a : A) (φ ψ : C(spectrum R a, R) →⋆ₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (.restrict (spectrum R a) <| .id R) = ψ (.restrict (spectrum R a) <| .id R)) :

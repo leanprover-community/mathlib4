@@ -106,6 +106,11 @@ variable [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing 
 variable [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [instCFCₙ : NonUnitalContinuousFunctionalCalculus R p]
 
+include instCFCₙ in
+lemma NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (a : A) :
+    IsCompact (σₙ R a) :=
+  isCompact_iff_compactSpace.mpr inferInstance
+
 lemma NonUnitalStarAlgHom.ext_continuousMap [UniqueNonUnitalContinuousFunctionalCalculus R A]
     (a : A) (φ ψ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = ψ ⟨.restrict (σₙ R a) <| .id R, rfl⟩) :
