@@ -101,7 +101,7 @@ theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
 
 /-- Create a doset out of an element of `H \ G / K`-/
 def quotToDoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
-  doset q.out' H K
+  doset q.out H K
 
 /-- Map from `G` to `H \ G / K`-/
 abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
@@ -115,34 +115,38 @@ theorem eq (H K : Subgroup G) (a b : G) :
   rw [Quotient.eq'']
   apply rel_iff
 
-theorem out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out' = q :=
+theorem out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out = q :=
   Quotient.out_eq' q
 
-theorem mk_out'_eq_mul (H K : Subgroup G) (g : G) :
-    ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out' = h * g * k := by
-  have := eq H K (mk H K g : Quotient ↑H ↑K).out' g
+theorem mk_out_eq_mul (H K : Subgroup G) (g : G) :
+    ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out = h * g * k := by
+  have := eq H K (mk H K g : Quotient ↑H ↑K).out g
   rw [out_eq'] at this
   obtain ⟨h, h_h, k, hk, T⟩ := this.1 rfl
   refine ⟨h⁻¹, k⁻¹, H.inv_mem h_h, K.inv_mem hk, eq_mul_inv_of_mul_eq (eq_inv_mul_of_mul_eq ?_)⟩
   rw [← mul_assoc, ← T]
+
+@[deprecated (since := "2024-10-19")] alias mk_out'_eq_mul := mk_out_eq_mul
 
 theorem mk_eq_of_doset_eq {H K : Subgroup G} {a b : G} (h : doset a H K = doset b H K) :
     mk H K a = mk H K b := by
   rw [eq]
   exact mem_doset.mp (h.symm ▸ mem_doset_self H K b)
 
-theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H K} :
-    a ≠ b → Disjoint (doset a.out' H K) (doset b.out' (H : Set G) K) := by
+theorem disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
+    a ≠ b → Disjoint (doset a.out H K) (doset b.out (H : Set G) K) := by
   contrapose!
   intro h
   simpa [out_eq'] using mk_eq_of_doset_eq (eq_of_not_disjoint h)
+
+@[deprecated (since := "2024-10-19")] alias disjoint_out' := disjoint_out
 
 theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
   ext x
   simp only [Set.mem_iUnion, quotToDoset, mem_doset, SetLike.mem_coe, exists_prop, Set.mem_univ,
     iff_true]
   use mk H K x
-  obtain ⟨h, k, h3, h4, h5⟩ := mk_out'_eq_mul H K x
+  obtain ⟨h, k, h3, h4, h5⟩ := mk_out_eq_mul H K x
   refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
   simp only [h5, Subgroup.coe_mk, ← mul_assoc, one_mul, inv_mul_cancel, mul_inv_cancel_right]
 
