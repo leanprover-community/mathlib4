@@ -59,7 +59,7 @@ theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.
   congr
   simp only [eq_iff_true_of_subsingleton]
 
--- @[simp] : Porting note (#10618): simp can prove this
+@[simp]
 theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
 
 @[simp]
@@ -369,7 +369,7 @@ theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right =
   let ⟨_,b,_⟩ := f; let ⟨_,e,_⟩ := g
   congr; simp only [eq_iff_true_of_subsingleton]
 
--- @[simp] Porting note (#10618): simp can prove this
+@[simp]
 theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
 
 @[simp]
@@ -675,7 +675,7 @@ def ofStructuredArrowProjEquivalence (F : D ⥤ T) (Y : T) (X : D) :
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 /-- The canonical functor from the structured arrow category on the diagonal functor
-`T ⥤ T × T` to the the structured arrow category on `Under.forget`. -/
+`T ⥤ T × T` to the structured arrow category on `Under.forget`. -/
 @[simps!]
 def ofDiagEquivalence.functor (X : T × T) :
     StructuredArrow X (Functor.diag _) ⥤ StructuredArrow X.2 (Under.forget X.1) :=
@@ -741,7 +741,7 @@ def ofCostructuredArrowProjEquivalence (F : T ⥤ D) (Y : D) (X : T) :
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 /-- The canonical functor from the costructured arrow category on the diagonal functor
-`T ⥤ T × T` to the the costructured arrow category on `Under.forget`. -/
+`T ⥤ T × T` to the costructured arrow category on `Under.forget`. -/
 @[simps!]
 def ofDiagEquivalence.functor (X : T × T) :
     CostructuredArrow (Functor.diag _) X ⥤ CostructuredArrow (Over.forget X.1) X.2 :=
