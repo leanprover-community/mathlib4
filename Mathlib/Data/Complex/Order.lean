@@ -63,6 +63,32 @@ theorem nonneg_iff {z : ℂ} : 0 ≤ z ↔ 0 ≤ z.re ∧ 0 = z.im :=
 theorem pos_iff {z : ℂ} : 0 < z ↔ 0 < z.re ∧ 0 = z.im :=
   lt_def
 
+theorem nonpos_iff {z : ℂ} : z ≤ 0 ↔ z.re ≤ 0 ∧ z.im = 0 :=
+  le_def
+
+theorem neg_iff {z : ℂ} : z < 0 ↔ z.re < 0 ∧ z.im = 0 :=
+  lt_def
+
+theorem ofReal_mul_pos_iff (x : ℝ) (z : ℂ) :
+    0 < x * z ↔ (x < 0 ∧ z < 0) ∨ (0 < x ∧ 0 < z) := by
+  simp_rw [pos_iff, neg_iff, re_ofReal_mul, im_ofReal_mul]
+  obtain hx | hx | hx := lt_trichotomy x 0
+  · simp_rw [mul_pos_iff, eq_comm, mul_eq_zero, hx, not_lt_of_gt hx, hx.ne, false_and, true_and,
+      false_or, or_false]
+  · simp_rw [hx, zero_mul, lt_self_iff_false, false_and, false_or]
+  · simp_rw [mul_pos_iff, eq_comm, mul_eq_zero, hx, not_lt_of_gt hx, hx.ne', false_and, true_and,
+      false_or, or_false]
+
+theorem ofReal_mul_neg_iff (x : ℝ) (z : ℂ) :
+    x * z < 0 ↔ (x < 0 ∧ 0 < z) ∨ (0 < x ∧ z < 0) := by
+  simp_rw [pos_iff, neg_iff, re_ofReal_mul, im_ofReal_mul]
+  obtain hx | hx | hx := lt_trichotomy x 0
+  · simp_rw [mul_neg_iff, mul_eq_zero, hx, not_lt_of_gt hx, hx.ne, false_and, true_and, false_or,
+      or_false, eq_comm]
+  · simp_rw [hx, zero_mul, lt_self_iff_false, false_and, false_or]
+  · simp_rw [mul_neg_iff, mul_eq_zero, hx, not_lt_of_gt hx, hx.ne', false_and, true_and, false_or,
+      or_false]
+
 @[simp, norm_cast]
 theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by simp [le_def, ofReal]
 
