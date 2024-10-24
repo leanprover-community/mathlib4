@@ -313,7 +313,7 @@ section Enriched
 
 /-- The C-identity morphism
   `𝟙_ C ⟶ hom(x, x)`
-used to equip C with the structure of a C-category -/
+used to equip `C` with the structure of a `C`-category -/
 def id (x : C) [Closed x] : 𝟙_ C ⟶ (ihom x).obj x := curry (ρ_ x).hom
 
 /-- The *uncurried* composition morphism
