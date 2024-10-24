@@ -56,9 +56,6 @@ instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [S
   { SubringClass.toNormedRing (elementalStarAlgebra R a) with
     mul_comm := mul_comm }
 
-noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elementalStarAlgebra ℂ a) where
-  mul_comm := mul_comm
-
 variable (a : A) [IsStarNormal a]
 
 /-- The natural map from `characterSpace ℂ (elementalStarAlgebra ℂ x)` to `spectrum ℂ x` given
