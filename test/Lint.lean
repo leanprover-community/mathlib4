@@ -312,7 +312,7 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 info: "                              \"                                                            " : String
 ---
 warning: This line exceeds the 100 character limit, please shorten it!
-You can use "string gaps" to format long strings: within a string quotation, using a '' at the end of a line allows you to continue the string on the following line, removing all intervening whitespace.
+You can use "string gaps" to format long strings: within a string quotation, using a '\' at the end of a line allows you to continue the string on the following line, removing all intervening whitespace.
 note: this linter can be disabled with `set_option linter.style.longLine false`
 -/
 #guard_msgs in
