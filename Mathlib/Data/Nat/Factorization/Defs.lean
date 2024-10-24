@@ -241,16 +241,16 @@ theorem factorization_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
   ext q
   rw [Finsupp.add_apply, factorization_mul_apply_of_coprime hab]
 
-/-! ### Generalisation of the "even part" and "odd part" of a natural number
+/-! ### Generalisation of the "even part" and "odd part" of a natural number -/
 
-We introduce the notations `ordProj[p] n` for the largest power of the prime `p` that
+/-- We introduce the notations `ordProj[p] n` for the largest power of the prime `p` that
 divides `n` and `ordCompl[p] n` for the complementary part. The `ord` naming comes from
 the $p$-adic order/valuation of a number, and `proj` and `compl` are for the projection and
 complementary projection. The term `n.factorization p` is the $p$-adic order itself.
 For example, `ordProj[2] n` is the even part of `n` and `ordCompl[2] n` is the odd part. -/
-
 notation "ordProj[" p "] " n:arg => p ^ Nat.factorization n p
 
+@[inherit_doc «termOrdProj[_]_»]
 notation "ordCompl[" p "] " n:arg => n / ordProj[p] n
 
 theorem ordProj_dvd (n p : ℕ) : ordProj[p] n ∣ n := by
