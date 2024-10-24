@@ -28,13 +28,13 @@ theorem two_eq_zero [CharP R 2] : (2 : R) = 0 := by
   rw [← Nat.cast_two, CharP.cast_eq_zero]
 
 /-- The only hypotheses required to build a `CharP R 2` instance are `1 ≠ 0` and `2 = 0`. -/
-protected theorem mk (h₁ : (1 : R) ≠ 0) (h₂ : (2 : R) = 0) : CharP R 2 := by
-  refine ⟨fun n ↦ ?_⟩
-  obtain hn | hn := Nat.even_or_odd n
-  · simp_rw [hn.two_dvd, iff_true]
-    exact natCast_eq_zero_of_even_of_two_eq_zero hn h₂
-  · simp_rw [hn.not_two_dvd_nat, iff_false]
-    rwa [natCast_eq_one_of_odd_of_two_eq_zero hn h₂]
+protected theorem mk (h₁ : (1 : R) ≠ 0) (h₂ : (2 : R) = 0) : CharP R 2 where
+  cast_eq_zero_iff' n := by
+    obtain hn | hn := Nat.even_or_odd n
+    · simp_rw [hn.two_dvd, iff_true]
+      exact natCast_eq_zero_of_even_of_two_eq_zero hn h₂
+    · simp_rw [hn.not_two_dvd_nat, iff_false]
+      rwa [natCast_eq_one_of_odd_of_two_eq_zero hn h₂]
 
 end AddMonoidWithOne
 
