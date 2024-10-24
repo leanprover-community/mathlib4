@@ -815,30 +815,28 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 
 end extend
 
-end Cardinal
+/-! ### Cardinal operations with ordinal indices -/
 
-/-!
-### Cardinal operations with ordinal indices
+/-- Bounds the cardinal of an ordinal-indexed union of sets. -/
+lemma mk_iUnion_Ordinal_lift_le_of_le {β : Type v} {o : Ordinal.{u}} {c : Cardinal.{v}}
+    (ho : lift.{v} o.card ≤ lift.{u} c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
+    (hA : ∀ j < o, #(A j) ≤ c) : #(⋃ j < o, A j) ≤ c := by
+  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoToType.symm.surjective.range_comp]
+  rw [← lift_le.{u}]
+  apply ((mk_iUnion_le_lift _).trans _).trans_eq (mul_eq_self (aleph0_le_lift.2 hc))
+  rw [mk_toType]
+  refine mul_le_mul' ho (ciSup_le' ?_)
+  intro i
+  simpa using hA _ (o.enumIsoToType.symm i).2
 
-Results on cardinality of ordinal-indexed families of sets.
--/
-
-namespace Ordinal
-namespace Cardinal
-
-open scoped Cardinal
-
-/--
-Bounding the cardinal of an ordinal-indexed union of sets.
--/
+/-- Bounds the cardinal of an ordinal-indexed union of sets. -/
 lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
     (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
-    (hA : ∀ j < o, #(A j) ≤ c) :
-    #(⋃ j < o, A j) ≤ c := by
-  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoToType.symm.surjective.range_comp]
-  apply ((mk_iUnion_le _).trans _).trans_eq (mul_eq_self hc)
-  rw [mk_toType]
-  exact mul_le_mul' ho <| ciSup_le' <| (hA _ <| typein_lt_self ·)
+    (hA : ∀ j < o, #(A j) ≤ c) : #(⋃ j < o, A j) ≤ c := by
+  apply mk_iUnion_Ordinal_lift_le_of_le _ hc A hA
+  rwa [Cardinal.lift_le]
+
+@[deprecated mk_iUnion_Ordinal_le_of_le (since := "2024-08-30")]
+alias _root_.Ordinal.Cardinal.mk_iUnion_Ordinal_le_of_le := mk_iUnion_Ordinal_le_of_le
 
 end Cardinal
-end Ordinal
