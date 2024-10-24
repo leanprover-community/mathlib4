@@ -519,7 +519,7 @@ end InitialSeg
 private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { b // ¬s (f a) b } :=
   (RelEmbedding.isWellFounded f).fix _ fun a IH =>
     have H : f a ∈ { b | ∀ a h, s (IH a h).1 b } :=
-      fun b h => IsWellOrder.trans_le_lt (IH b h).2 (f.map_rel_iff.2 h)
+      fun b h => IsWellOrder.trans_trichotomous_left (IH b h).2 (f.map_rel_iff.2 h)
     ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, H⟩ H⟩
 
 private theorem collapseF_lt [IsWellOrder β s] (f : r ↪r s) {a : α} :

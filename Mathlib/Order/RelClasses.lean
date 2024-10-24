@@ -133,15 +133,13 @@ theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelat
 instance : IsIrrefl α EmptyRelation :=
   ⟨fun _ => id⟩
 
-theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α} :
-    ¬r b a → r b c → r a c := by
-  intro h₁ h₂
+theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+    (h₁ : ¬r b a) (h₂ : r b c) : r a c := by
   rcases trichotomous_of r a b with (h₃ | rfl | h₃)
   exacts [_root_.trans h₃ h₂, h₂, absurd h₃ h₁]
 
-theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α} :
-    r a b → ¬r c b → r a c := by
-  intro h₁ h₂
+theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+    (h₁ : r a b) → (h₂ : ¬r c b) : r a c := by
   rcases trichotomous_of r b c with (h₃ | rfl | h₃)
   exacts [_root_.trans h₁ h₃, h₁, absurd h₃ h₂]
 
@@ -422,27 +420,15 @@ def toWellFoundedRelation : WellFoundedRelation α :=
 
 end WellFoundedGT
 
-namespace IsWellOrder
-
-theorem trans_lt_le [IsWellOrder α r] {a b c : α} (hab : r a b) (hcb : ¬ r c b) : r a c := by
-  rcases trichotomous_of r b c with (lt | rfl | gt)
-  exacts [_root_.trans hab lt, hab, (hcb gt).elim]
-
-theorem trans_le_lt [IsWellOrder α r] {a b c : α} (hab : ¬ r b a) (hcb : r b c) : r a c := by
-  rcases trichotomous_of r a b with (lt | rfl | gt)
-  exacts [_root_.trans lt hcb, hcb, (hab gt).elim]
-
 /-- Construct a decidable linear order from a well-founded linear order. -/
-noncomputable def linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
+noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
   letI := fun x y => Classical.dec ¬r x y
   linearOrderOfSTO r
 
 /-- Derive a `WellFoundedRelation` instance from an `IsWellOrder` instance. -/
-def toHasWellFounded [LT α] [hwo : IsWellOrder α (· < ·)] : WellFoundedRelation α where
+def IsWellOrder.toHasWellFounded [LT α] [hwo : IsWellOrder α (· < ·)] : WellFoundedRelation α where
   rel := (· < ·)
   wf := hwo.wf
-
-end IsWellOrder
 
 -- This isn't made into an instance as it loops with `IsIrrefl α r`.
 theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [hr : IsIrrefl α r] :
