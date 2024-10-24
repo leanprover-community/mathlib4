@@ -62,7 +62,7 @@ lemma of_counit {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
 /-- A type alias for `CoalgHom` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
 @[ext]
-structure Hom (V W : CoalgebraCat.{v} R) :=
+structure Hom (V W : CoalgebraCat.{v} R) where
   /-- The underlying `CoalgHom` -/
   toCoalgHom : V →ₗc[R] W
 
@@ -79,7 +79,7 @@ instance category : Category (CoalgebraCat.{v} R) where
 @[ext]
 lemma hom_ext {M N : CoalgebraCat.{v} R} (f g : M ⟶ N) (h : f.toCoalgHom = g.toCoalgHom) :
     f = g :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 /-- Typecheck a `CoalgHom` as a morphism in `CoalgebraCat R`. -/
 abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
@@ -100,7 +100,7 @@ instance concreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
     { obj := fun M => M
       map := fun f => f.toCoalgHom }
   forget_faithful :=
-    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
+    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (CoalgebraCat R) (ModuleCat R) where
   forget₂ :=
@@ -133,8 +133,8 @@ variable [Coalgebra R X] [Coalgebra R Y] [Coalgebra R Z]
 def toCoalgebraCatIso (e : X ≃ₗc[R] Y) : CoalgebraCat.of R X ≅ CoalgebraCat.of R Y where
   hom := CoalgebraCat.ofHom e
   inv := CoalgebraCat.ofHom e.symm
-  hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
-  inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
+  hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
 @[simp] theorem toCoalgebraCatIso_refl :
     toCoalgebraCatIso (CoalgEquiv.refl R X) = .refl _ :=

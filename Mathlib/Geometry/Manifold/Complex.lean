@@ -42,7 +42,7 @@ open Function Set Filter Complex
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
-variable {M : Type*} [TopologicalSpace M] [CompactSpace M] [ChartedSpace H M]
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
 
 /-- **Maximum modulus principle**: if `f : M → F` is complex differentiable in a neighborhood of `c`
@@ -90,7 +90,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
     replace hm : IsLocalMax (‖f ·‖) x :=
       mem_of_superset (ho.mem_nhds hx.1) fun z hz ↦ (hm hz).out.trans_eq hx.2.symm
     replace hd : ∀ᶠ y in 𝓝 x, MDifferentiableAt I 𝓘(ℂ, F) f y :=
-      (eventually_mem_nhds.2 (ho.mem_nhds hx.1)).mono fun z ↦ hd.mdifferentiableAt
+      (eventually_mem_nhds_iff.2 (ho.mem_nhds hx.1)).mono fun z ↦ hd.mdifferentiableAt
     exact (Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax hd hm).mono fun _ ↦
       (Eq.trans · hx.2)
   have hVne : (U ∩ V).Nonempty := ⟨c, hcU, hcU, rfl⟩
@@ -145,6 +145,8 @@ model so that it works, e.g., on a product of two manifolds without a boundary. 
 -/
 
 namespace MDifferentiable
+
+variable [CompactSpace M]
 
 /-- A holomorphic function on a compact complex manifold is locally constant. -/
 protected theorem isLocallyConstant {f : M → F} (hf : MDifferentiable I 𝓘(ℂ, F) f) :

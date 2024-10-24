@@ -241,10 +241,10 @@ protected theorem sup {f g : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) (h
   refine EventuallyLE.sup_le ?_ ?_
   · exact EventuallyLE.trans (hf.2.1 i j hij)
       (condexp_mono (hf.integrable _) (Integrable.sup (hf.integrable j) (hg.integrable j))
-        (eventually_of_forall fun x => le_max_left _ _))
+        (Eventually.of_forall fun x => le_max_left _ _))
   · exact EventuallyLE.trans (hg.2.1 i j hij)
       (condexp_mono (hg.integrable _) (Integrable.sup (hf.integrable j) (hg.integrable j))
-        (eventually_of_forall fun x => le_max_right _ _))
+        (Eventually.of_forall fun x => le_max_right _ _))
 
 protected theorem pos {f : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) : Submartingale (f⁺) ℱ μ :=
   hf.sup (martingale_zero _ _ _).submartingale
@@ -489,7 +489,7 @@ theorem Submartingale.sum_mul_sub [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ →
   refine submartingale_of_condexp_sub_nonneg_nat hadp hint fun i => ?_
   simp only [← Finset.sum_Ico_eq_sub _ (Nat.le_succ _), Finset.sum_apply, Pi.mul_apply,
     Pi.sub_apply, Nat.Ico_succ_singleton, Finset.sum_singleton]
-  exact EventuallyLE.trans (EventuallyLE.mul_nonneg (eventually_of_forall (hnonneg _))
+  exact EventuallyLE.trans (EventuallyLE.mul_nonneg (Eventually.of_forall (hnonneg _))
     (hf.condexp_sub_nonneg (Nat.le_succ _))) (condexp_stronglyMeasurable_mul (hξ _)
     (((hf.integrable _).sub (hf.integrable _)).bdd_mul
       hξ.stronglyMeasurable.aestronglyMeasurable (hξbdd _))

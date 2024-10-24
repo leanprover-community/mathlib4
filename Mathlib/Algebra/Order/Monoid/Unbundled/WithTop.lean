@@ -80,7 +80,7 @@ end One
 
 section Add
 
-variable [Add α] {a b c d : WithTop α} {x y : α}
+variable [Add α] {a b c d : WithTop α} {x : α}
 
 instance add : Add (WithTop α) :=
   ⟨Option.map₂ (· + ·)⟩
@@ -305,9 +305,9 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
 
 @[simp, norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithTop α) = n := rfl
 
-@[simp] lemma natCast_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
-
 @[simp] lemma top_ne_natCast (n : ℕ) : (⊤ : WithTop α) ≠ n := top_ne_coe
+@[simp] lemma natCast_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
+@[simp] lemma natCast_lt_top [LT α] (n : ℕ) : (n : WithTop α) < ⊤ := coe_lt_top _
 
 @[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
 @[deprecated (since := "2024-04-05")] alias nat_ne_top := natCast_ne_top
@@ -368,13 +368,13 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
 --     CanonicallyLinearOrderedAddCommMonoid (WithTop α) :=
 --   { WithTop.canonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
 
-@[simp]
-theorem zero_lt_top [Zero α] [LT α] : (0 : WithTop α) < ⊤ :=
-  coe_lt_top 0
+@[to_additive (attr := simp) top_pos]
+theorem one_lt_top [One α] [LT α] : (1 : WithTop α) < ⊤ := coe_lt_top _
 
--- Porting note (#10618): simp can already prove this.
--- @[simp]
-@[norm_cast]
+@[deprecated top_pos (since := "2024-10-22")]
+alias zero_lt_top := top_pos
+
+@[norm_cast, deprecated coe_pos (since := "2024-10-22")]
 theorem zero_lt_coe [Zero α] [LT α] (a : α) : (0 : WithTop α) < a ↔ 0 < a :=
   coe_lt_coe
 

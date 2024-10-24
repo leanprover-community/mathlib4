@@ -206,7 +206,7 @@ where
       let type ← instantiateMVars (← inferType e)
       trace[Elab.fbinop] "visiting {e} : {type}"
       let some (_, x) ← extractS type
-        | -- We want our operators to be "homogenous" so do a defeq check as an elaboration hint
+        | -- We want our operators to be "homogeneous" so do a defeq check as an elaboration hint
           let x' ← mkFreshExprMVar none
           let some maxType ← applyS maxS x' | trace[Elab.fbinop] "mvar apply failed"; return t
           trace[Elab.fbinop] "defeq hint {maxType} =?= {type}"

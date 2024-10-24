@@ -114,8 +114,8 @@ theorem Gamma0_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma0 N ↔ ((↑ₘA 1 0
 
 theorem Gamma0_det (N : ℕ) (A : Gamma0 N) : (A.1.1.det : ZMod N) = 1 := by simp [A.1.property]
 
-/-- The group homomorphism from `Gamma0` to `ZMod N` given by mapping a matrix to its lower
-right-hand entry. -/
+/-- The group homomorphism from `CongruenceSubgroup.Gamma0` to `ZMod N` given by
+mapping a matrix to its lower right-hand entry. -/
 def Gamma0Map (N : ℕ) : Gamma0 N →* ZMod N where
   toFun g := ((↑ₘg 1 1 : ℤ) : ZMod N)
   map_one' := by simp
@@ -157,8 +157,8 @@ theorem Gamma1_to_Gamma0_mem (N : ℕ) (A : Gamma0 N) : A ∈ Gamma1' N ↔
       Int.coe_castRingHom, map_apply]
     exact ha.2.1
 
-/-- The congruence subgroup `Gamma1` of `SL(2, ℤ)` consisting of matrices whose bottom
-row is congruent to `(0,1)` modulo `N`. -/
+/-- The congruence subgroup `Gamma1` of `SL(2, ℤ)` consisting of matrices
+whose bottom row is congruent to `(0,1)` modulo `N`. -/
 def Gamma1 (N : ℕ) : Subgroup SL(2, ℤ) :=
   Subgroup.map ((Gamma0 N).subtype.comp (Gamma1' N).subtype) ⊤
 

@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.NNRat.Defs
@@ -484,9 +483,9 @@ def evalRatNum : PositivityExt where eval {u α} _ _ e := do
     let pα : Q(PartialOrder ℚ) := q(inferInstance)
     assumeInstancesCommute
     match ← core zα pα a with
-    | .positive pa => pure $ .positive q(num_pos_of_pos $pa)
-    | .nonnegative pa => pure $ .nonnegative q(num_nonneg_of_nonneg $pa)
-    | .nonzero pa => pure $ .nonzero q(num_ne_zero_of_ne_zero $pa)
+    | .positive pa => pure <| .positive q(num_pos_of_pos $pa)
+    | .nonnegative pa => pure <| .nonnegative q(num_nonneg_of_nonneg $pa)
+    | .nonzero pa => pure <| .nonzero q(num_ne_zero_of_ne_zero $pa)
     | .none => pure .none
   | _, _ => throwError "not Rat.num"
 
@@ -496,14 +495,16 @@ def evalRatDen : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Rat.den $a) =>
     assumeInstancesCommute
-    pure $ .positive q(den_pos $a)
+    pure <| .positive q(den_pos $a)
   | _, _ => throwError "not Rat.num"
 
 /-- Extension for `posPart`. `a⁺` is always nonegative, and positive if `a` is. -/
 @[positivity _⁺]
-def evalPosPart : PositivityExt where eval zα pα e := do
+def evalPosPart : PositivityExt where eval {u α} zα pα e := do
   match e with
-  | ~q(@posPart _ $instαlat $instαgrp $a) =>
+  | ~q(@posPart _ $instαpospart $a) =>
+    let _instαlat ← synthInstanceQ q(Lattice $α)
+    let _instαgrp ← synthInstanceQ q(AddGroup $α)
     assertInstancesCommute
     -- FIXME: There seems to be a bug in `Positivity.core` that makes it fail (instead of returning
     -- `.none`) here sometimes. See eg the first test for `posPart`. This is why we need `catchNone`
@@ -514,9 +515,11 @@ def evalPosPart : PositivityExt where eval zα pα e := do
 
 /-- Extension for `negPart`. `a⁻` is always nonegative. -/
 @[positivity _⁻]
-def evalNegPart : PositivityExt where eval _ _ e := do
+def evalNegPart : PositivityExt where eval {u α} _ _ e := do
   match e with
-  | ~q(@negPart _ $instαlat $instαgrp $a) =>
+  | ~q(@negPart _ $instαnegpart $a) =>
+    let _instαlat ← synthInstanceQ q(Lattice $α)
+    let _instαgrp ← synthInstanceQ q(AddGroup $α)
     assertInstancesCommute
     return .nonnegative q(negPart_nonneg $a)
   | _ => throwError "not `negPart`"

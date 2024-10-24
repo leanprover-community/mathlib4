@@ -186,6 +186,11 @@ theorem ofBijective_symm_apply_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHom
     (ofBijective f h).symm (f x) = x := by
   simp [LinearEquiv.symm_apply_eq]
 
+@[simp]
+theorem apply_ofBijective_symm_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h}
+    (x : M₂) : f ((ofBijective f h).symm x) = x := by
+  rw [← ofBijective_apply f ((ofBijective f h).symm x), apply_symm_apply]
+
 end
 
 end AddCommMonoid
@@ -226,7 +231,7 @@ noncomputable def comap_equiv_self_of_inj_of_le {f : M →ₗ[R] N} {p : Submodu
     (hf : Injective f) (h : p ≤ LinearMap.range f) :
     p.comap f ≃ₗ[R] p :=
   LinearEquiv.ofBijective
-  ((f ∘ₗ (p.comap f).subtype).codRestrict p <| fun ⟨x, hx⟩ ↦ mem_comap.mp hx)
+  ((f ∘ₗ (p.comap f).subtype).codRestrict p <| fun ⟨_, hx⟩ ↦ mem_comap.mp hx)
   (⟨fun x y hxy ↦ by simpa using hf (Subtype.ext_iff.mp hxy),
     fun ⟨x, hx⟩ ↦ by obtain ⟨y, rfl⟩ := h hx; exact ⟨⟨y, hx⟩, by simp [Subtype.ext_iff]⟩⟩)
 

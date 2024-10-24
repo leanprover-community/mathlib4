@@ -7,7 +7,7 @@ import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.DiscreteSubset
 import Mathlib.Tactic.Abel
 
@@ -34,10 +34,8 @@ group naturally induces a uniform structure.
   the quotient of a Banach space by a subspace is complete.
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Uniformity Topology Filter Pointwise
 
 section UniformGroup
@@ -95,6 +93,33 @@ theorem UniformContinuous.mul [UniformSpace β] {f : β → α} {g : β → α} 
 theorem uniformContinuous_mul : UniformContinuous fun p : α × α => p.1 * p.2 :=
   uniformContinuous_fst.mul uniformContinuous_snd
 
+@[to_additive]
+theorem UniformContinuous.mul_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f)
+    (a : α) : UniformContinuous fun x ↦ f x * a :=
+  hf.mul uniformContinuous_const
+
+@[to_additive]
+theorem UniformContinuous.const_mul [UniformSpace β] {f : β → α} (hf : UniformContinuous f)
+    (a : α) : UniformContinuous fun x ↦ a * f x :=
+  uniformContinuous_const.mul hf
+
+@[to_additive]
+theorem uniformContinuous_mul_left (a : α) : UniformContinuous fun b : α => a * b :=
+  uniformContinuous_id.const_mul _
+
+@[to_additive]
+theorem uniformContinuous_mul_right (a : α) : UniformContinuous fun b : α => b * a :=
+  uniformContinuous_id.mul_const _
+
+@[to_additive]
+theorem UniformContinuous.div_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f)
+    (a : α) : UniformContinuous fun x ↦ f x / a :=
+  hf.div uniformContinuous_const
+
+@[to_additive]
+theorem uniformContinuous_div_const (a : α) : UniformContinuous fun b : α => b / a :=
+  uniformContinuous_id.div_const _
+
 @[to_additive UniformContinuous.const_nsmul]
 theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℕ, UniformContinuous fun x => f x ^ n
@@ -148,18 +173,21 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
     (calc
       𝓤 α =
           ((𝓤 α).map fun x : α × α => (x.1 * a⁻¹, x.2 * a⁻¹)).map fun x : α × α =>
-            (x.1 * a, x.2 * a) := by simp [Filter.map_map, (· ∘ ·)]
+            (x.1 * a, x.2 * a) := by simp [Filter.map_map, Function.comp_def]
       _ ≤ (𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a) :=
         Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
       )
 
 @[to_additive]
-theorem uniformEmbedding_translate_mul (a : α) : UniformEmbedding fun x : α => x * a :=
+theorem isUniformEmbedding_translate_mul (a : α) : IsUniformEmbedding fun x : α => x * a :=
   { comap_uniformity := by
       nth_rw 1 [← uniformity_translate_mul a, comap_map]
       rintro ⟨p₁, p₂⟩ ⟨q₁, q₂⟩
       simp only [Prod.mk.injEq, mul_left_inj, imp_self]
     inj := mul_left_injective a }
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_translate_mul := isUniformEmbedding_translate_mul
 
 namespace MulOpposite
 
@@ -197,18 +225,21 @@ theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β 
   cases b <;> assumption
 
 @[to_additive]
-lemma UniformInducing.uniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [UniformGroup γ]
+lemma IsUniformInducing.uniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [UniformGroup γ]
     [UniformSpace β] {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ]
-    (f : F) (hf : UniformInducing f) :
+    (f : F) (hf : IsUniformInducing f) :
     UniformGroup β where
   uniformContinuous_div := by
     simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
-    exact uniformContinuous_div.comp (hf.uniformContinuous.prod_map hf.uniformContinuous)
+    exact uniformContinuous_div.comp (hf.uniformContinuous.prodMap hf.uniformContinuous)
+
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.uniformGroup := IsUniformInducing.uniformGroup
 
 @[to_additive]
 protected theorem UniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ} [UniformGroup γ]
     {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ] (f : F) : @UniformGroup β (u.comap f) _ :=
-  letI : UniformSpace β := u.comap f; UniformInducing.uniformGroup f ⟨rfl⟩
+  letI : UniformSpace β := u.comap f; IsUniformInducing.uniformGroup f ⟨rfl⟩
 
 end LatticeOps
 
@@ -272,7 +303,7 @@ theorem uniformity_eq_comap_inv_mul_nhds_one :
     𝓤 α = comap (fun x : α × α => x.1⁻¹ * x.2) (𝓝 (1 : α)) := by
   rw [← comap_uniformity_mulOpposite, uniformity_eq_comap_nhds_one, ← op_one, ← comap_unop_nhds,
     comap_comap, comap_comap]
-  simp [(· ∘ ·)]
+  simp [Function.comp_def]
 
 @[to_additive]
 theorem uniformity_eq_comap_inv_mul_nhds_one_swapped :
@@ -466,7 +497,7 @@ def TopologicalGroup.toUniformSpace : UniformSpace G where
     refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
     rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
     simpa using V_mul _ hz₂ _ hz₁
-  nhds_eq_comap_uniformity _ := by simp only [comap_comap, (· ∘ ·), nhds_translation_div]
+  nhds_eq_comap_uniformity _ := by simp only [comap_comap, Function.comp_def, nhds_translation_div]
 
 attribute [local instance] TopologicalGroup.toUniformSpace
 
@@ -570,7 +601,7 @@ theorem comm_topologicalGroup_is_uniform : UniformGroup G := by
   constructor
   rw [UniformContinuous, uniformity_prod_eq_prod, tendsto_map'_iff, uniformity_eq_comap_nhds_one' G,
     tendsto_comap_iff, prod_comap_comap_eq]
-  simp only [Function.comp, div_eq_mul_inv, mul_inv_rev, inv_inv, mul_comm, mul_left_comm] at *
+  simp only [Function.comp_def, div_eq_mul_inv, mul_inv_rev, inv_inv, mul_comm, mul_left_comm] at *
   simp only [inv_one, mul_one, ← mul_assoc] at this
   simp_rw [← mul_assoc, mul_comm]
   assumption
@@ -596,10 +627,10 @@ variable [TopologicalSpace α] [Group α] [TopologicalGroup α]
 
 -- β is a dense subgroup of α, inclusion is denoted by e
 variable [TopologicalSpace β] [Group β]
-variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom} (de : DenseInducing e)
+variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom}
 
 @[to_additive]
-theorem tendsto_div_comap_self (x₀ : α) :
+theorem tendsto_div_comap_self (de : IsDenseInducing e) (x₀ : α) :
     Tendsto (fun t : β × β => t.2 / t.1) ((comap fun p : β × β => (e p.1, e p.2)) <| 𝓝 (x₀, x₀))
       (𝓝 1) := by
   have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
@@ -613,7 +644,7 @@ theorem tendsto_div_comap_self (x₀ : α) :
 
 end
 
-namespace DenseInducing
+namespace IsDenseInducing
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 variable {G : Type*}
@@ -621,16 +652,18 @@ variable {G : Type*}
 -- β is a dense subgroup of α, inclusion is denoted by e
 -- δ is a dense subgroup of γ, inclusion is denoted by f
 variable [TopologicalSpace α] [AddCommGroup α] [TopologicalAddGroup α]
-variable [TopologicalSpace β] [AddCommGroup β] [TopologicalAddGroup β]
+variable [TopologicalSpace β] [AddCommGroup β]
 variable [TopologicalSpace γ] [AddCommGroup γ] [TopologicalAddGroup γ]
-variable [TopologicalSpace δ] [AddCommGroup δ] [TopologicalAddGroup δ]
-variable [UniformSpace G] [AddCommGroup G] [UniformAddGroup G] [T0Space G] [CompleteSpace G]
-variable {e : β →+ α} (de : DenseInducing e)
-variable {f : δ →+ γ} (df : DenseInducing f)
+variable [TopologicalSpace δ] [AddCommGroup δ]
+variable [UniformSpace G] [AddCommGroup G]
+variable {e : β →+ α} (de : IsDenseInducing e)
+variable {f : δ →+ γ} (df : IsDenseInducing f)
 variable {φ : β →+ δ →+ G}
 variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
+include de hφ
 
+include W'_nhd in
 private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ x ∈ U₂, ∀ x' ∈ U₂,
     (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
@@ -648,6 +681,9 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
   simp_rw [forall_mem_comm]
   exact lim W' W'_nhd
 
+variable [UniformAddGroup G]
+
+include df W'_nhd in
 private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
     ∀ x ∈ U, ∀ x' ∈ U, ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
     (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
@@ -695,19 +731,21 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
   have h₄ := H x₁ x₁_in x xU₁ y yV₁ y' y'V₁
   exact W4 h₁ h₂ h₃ h₄
 
-open DenseInducing
+open IsDenseInducing
+
+variable [T0Space G] [CompleteSpace G]
 
 /-- Bourbaki GT III.6.5 Theorem I:
 ℤ-bilinear continuous maps from dense images into a complete Hausdorff group extend by continuity.
 Note: Bourbaki assumes that α and β are also complete Hausdorff, but this is not necessary. -/
-theorem extend_Z_bilin : Continuous (extend (de.prod df) (fun p : β × δ => φ p.1 p.2)) := by
+theorem extend_Z_bilin : Continuous (extend (de.prodMap df) (fun p : β × δ => φ p.1 p.2)) := by
   refine continuous_extend_of_cauchy _ ?_
   rintro ⟨x₀, y₀⟩
   constructor
   · apply NeBot.map
     apply comap_neBot
     intro U h
-    rcases mem_closure_iff_nhds.1 ((de.prod df).dense (x₀, y₀)) U h with ⟨x, x_in, ⟨z, z_x⟩⟩
+    rcases mem_closure_iff_nhds.1 ((de.prodMap df).dense (x₀, y₀)) U h with ⟨x, x_in, ⟨z, z_x⟩⟩
     exists z
     aesop
   · suffices map (fun p : (β × δ) × β × δ => (fun p : β × δ => φ p.1 p.2) p.2 -
@@ -735,7 +773,7 @@ theorem extend_Z_bilin : Continuous (extend (de.prod df) (fun p : β × δ => φ
       rcases p with ⟨⟨x, y⟩, ⟨x', y'⟩⟩
       apply h <;> tauto
 
-end DenseInducing
+end IsDenseInducing
 
 section CompleteQuotient
 
@@ -824,7 +862,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     exact fun m =>
       ⟨m, fun n hmn =>
         Nat.decreasingInduction'
-          (fun k _ _ hk => u_mul k ⟨_, hx' k, _, hk, div_mul_div_cancel' _ _ _⟩) hmn
+          (fun k _ _ hk => u_mul k ⟨_, hx' k, _, hk, div_mul_div_cancel _ _ _⟩) hmn
           (by simpa only [div_self'] using mem_of_mem_nhds (hu.mem _))⟩
   /- Since `G` is complete, `x'` converges to some `x₀`, and so the image of this sequence under
     the quotient map converges to `↑x₀`. The image of `x'` is a convergent subsequence of `x`, and
@@ -845,7 +883,7 @@ already equipped with a uniform structure.
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
 uniform structure, so it is still provided manually via `TopologicalGroup.toUniformSpace`.
 In the most common use cases, this coincides (definitionally) with the uniform structure on the
-quotient obtained via other means.  -/
+quotient obtained via other means. -/
 @[to_additive "The quotient `G ⧸ N` of a complete first countable uniform additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
 subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in this version

@@ -74,15 +74,16 @@ section Casts
 
 /-- Abbreviation for `eqToHom` that accepts points in a topological space -/
 abbrev hcast {X : TopCat} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
-  eqToHom <| FundamentalGroupoid.ext _ _ hx
+  eqToHom <| FundamentalGroupoid.ext hx
 
 @[simp]
 theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
-    hcast hx₀ = eqToHom (FundamentalGroupoid.ext _ _ hx₀) :=
+    hcast hx₀ = eqToHom (FundamentalGroupoid.ext hx₀) :=
   rfl
 
 variable {X₁ X₂ Y : TopCat.{u}} {f : C(X₁, Y)} {g : C(X₂, Y)} {x₀ x₁ : X₁} {x₂ x₃ : X₂}
   {p : Path x₀ x₁} {q : Path x₂ x₃} (hfg : ∀ t, f (p t) = g (q t))
+include hfg
 
 /-- If `f(p(t) = g(q(t))` for two paths `p` and `q`, then the induced path homotopy classes
 `f(p)` and `g(p)` are the same as well, despite having a priori different types -/
@@ -95,10 +96,10 @@ private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Pa
 
 theorem eq_path_of_eq_image :
     (πₘ f).map ⟦p⟧ = hcast (start_path hfg) ≫ (πₘ g).map ⟦q⟧ ≫ hcast (end_path hfg).symm := by
-  rw [Functor.conj_eqToHom_iff_heq
+  rw [conj_eqToHom_iff_heq
     ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧)
-    (FundamentalGroupoid.ext _ _ <| start_path hfg)
-    (FundamentalGroupoid.ext _ _ <| end_path hfg)]
+    (FundamentalGroupoid.ext <| start_path hfg)
+    (FundamentalGroupoid.ext <| end_path hfg)]
   exact heq_path_of_eq_image hfg
 
 end Casts
@@ -177,8 +178,8 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
     (πₘ H.uliftMap).map (prodToProdTopI uhpath01 (𝟙 (fromTop x))) ≫
       hcast (H.apply_one x).symm.symm := by
   dsimp only [prodToProdTopI, uhpath01, hcast]
-  refine (@Functor.conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _
-    (FundamentalGroupoid.ext _ _ <| H.apply_one x).symm).mpr ?_
+  refine (@conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _
+    (FundamentalGroupoid.ext <| H.apply_one x).symm).mpr ?_
   simp only [id_eq_path_refl, prodToProdTop_map, Path.Homotopic.prod_lift, map_eq, ←
     Path.Homotopic.map_lift]
   apply Path.Homotopic.hpath_hext; intro; rfl

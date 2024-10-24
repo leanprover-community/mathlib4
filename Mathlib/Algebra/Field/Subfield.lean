@@ -126,20 +126,20 @@ variable (S)
 /-- A subfield inherits a division ring structure -/
 instance (priority := 75) toDivisionRing (s : S) : DivisionRing s :=
   Subtype.coe_injective.divisionRing ((↑) : s → K)
-    (by rfl) (by rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (coe_nnqsmul _) (coe_qsmul _) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
+    rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (coe_nnqsmul _) (coe_qsmul _) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 -- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield of a field inherits a field structure -/
 instance (priority := 75) toField {K} [Field K] [SetLike S K] [SubfieldClass S K] (s : S) :
     Field s :=
   Subtype.coe_injective.field ((↑) : s → K)
-    (by rfl) (by rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (coe_nnqsmul _) (coe_qsmul _) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (by intros; rfl) (by intros; rfl)
+    rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (coe_nnqsmul _) (coe_qsmul _) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 end SubfieldClass
 
@@ -313,15 +313,15 @@ instance : Pow s ℤ :=
 instance toDivisionRing (s : Subfield K) : DivisionRing s :=
   Subtype.coe_injective.divisionRing ((↑) : s → K) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (by intros; rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
-    (by intros; rfl) fun _ ↦ rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl) fun _ ↦ rfl
 
 /-- A subfield inherits a field structure -/
 instance toField {K} [Field K] (s : Subfield K) : Field s :=
   Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (by intros; rfl)  (fun _ => rfl)
-    (fun _ => rfl) (by intros; rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ ↦ rfl) (fun _ => rfl)
+    (fun _ => rfl) (fun _ ↦ rfl) fun _ => rfl
 
 @[simp, norm_cast]
 theorem coe_add (x y : s) : (↑(x + y) : K) = ↑x + ↑y :=
@@ -545,6 +545,13 @@ theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, 
   Subring.mem_sInf.trans
     ⟨fun h p hp => h p.toSubring ⟨p, hp, rfl⟩, fun h _ ⟨p', hp', p_eq⟩ => p_eq ▸ h p' hp'⟩
 
+@[simp, norm_cast]
+theorem coe_iInf {ι : Sort*} {S : ι → Subfield K} : (↑(⨅ i, S i) : Set K) = ⋂ i, S i := by
+  simp only [iInf, coe_sInf, Set.biInter_range]
+
+theorem mem_iInf {ι : Sort*} {S : ι → Subfield K} {x : K} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
+
 @[simp]
 theorem sInf_toSubring (s : Set (Subfield K)) :
     (sInf s).toSubring = ⨅ t ∈ s, Subfield.toSubring t := by
@@ -616,7 +623,7 @@ theorem closure_induction {s : Set K} {p : K → Prop} {x} (h : x ∈ closure s)
     (inv : ∀ x, p x → p x⁻¹) (mul : ∀ x y, p x → p y → p (x * y)) : p x := by
     letI : Subfield K :=
       ⟨⟨⟨⟨⟨p, by intro _ _; exact mul _ _⟩, one⟩,
-        by intro _ _; exact add _ _, @add_neg_self K _ 1 ▸ add _ _ one (neg _ one)⟩,
+        by intro _ _; exact add _ _, @add_neg_cancel K _ 1 ▸ add _ _ one (neg _ one)⟩,
           by intro _; exact neg _⟩, inv⟩
     exact (closure_le (t := this)).2 mem h
 
@@ -658,6 +665,14 @@ theorem map_sup (s t : Subfield K) (f : K →+* L) : (s ⊔ t).map f = s.map f �
 theorem map_iSup {ι : Sort*} (f : K →+* L) (s : ι → Subfield K) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
+
+theorem map_inf (s t : Subfield K) (f : K →+* L) : (s ⊓ t).map f = s.map f ⊓ t.map f :=
+  SetLike.coe_injective (Set.image_inter f.injective)
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : K →+* L) (s : ι → Subfield K) :
+    (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective f.injective).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem comap_inf (s t : Subfield L) (f : K →+* L) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf
@@ -838,5 +853,23 @@ theorem mem_closure_iff {s : Set K} {x} :
   rw [← commClosure_eq_closure]; rfl
 
 end Commutative
+
+end Subfield
+
+namespace Subfield
+
+theorem map_comap_eq (f : K →+* L) (s : Subfield L) : (s.comap f).map f = s ⊓ f.fieldRange :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+theorem map_comap_eq_self
+    {f : K →+* L} {s : Subfield L} (h : s ≤ f.fieldRange) : (s.comap f).map f = s := by
+  simpa only [inf_of_le_left h] using map_comap_eq f s
+
+theorem map_comap_eq_self_of_surjective
+    {f : K →+* L} (hf : Function.Surjective f) (s : Subfield L) : (s.comap f).map f = s :=
+  SetLike.coe_injective (Set.image_preimage_eq _ hf)
+
+theorem comap_map (f : K →+* L) (s : Subfield K) : (s.map f).comap f = s :=
+  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
 
 end Subfield

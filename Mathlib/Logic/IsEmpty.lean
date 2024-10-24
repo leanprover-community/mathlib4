@@ -138,7 +138,7 @@ theorem not_isEmpty_iff : ¬IsEmpty α ↔ Nonempty α :=
 
 @[simp]
 theorem isEmpty_Prop {p : Prop} : IsEmpty p ↔ ¬p := by
-  simp only [← not_nonempty_iff, nonempty_Prop]
+  simp only [← not_nonempty_iff, nonempty_prop]
 
 @[simp]
 theorem isEmpty_pi {π : α → Sort*} : IsEmpty (∀ a, π a) ↔ ∃ a, IsEmpty (π a) := by

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nicolò Cavalleri, Sebastien Gouezel, Heather Macbeth, Patrick Massot, Floris van Doorn
+Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Patrick Massot, Floris van Doorn
 -/
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Topology.FiberBundle.Basic
@@ -54,7 +54,6 @@ Vector bundle
 
 noncomputable section
 
-open scoped Classical
 open Bundle Set
 open scoped Topology
 
@@ -104,12 +103,14 @@ def linearEquivAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) (hb 
   map_add' v w := (e.linear R hb).map_add v w
   map_smul' c v := (e.linear R hb).map_smul c v
 
+open Classical in
 /-- A fiberwise linear map equal to `e` on `e.baseSet`. -/
 protected def linearMapAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) : E b →ₗ[R] F :=
   if hb : b ∈ e.baseSet then e.linearEquivAt R b hb else 0
 
 variable {R}
 
+open Classical in
 theorem coe_linearMapAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) :
     ⇑(e.linearMapAt R b) = fun y => if b ∈ e.baseSet then (e ⟨b, y⟩).2 else 0 := by
   rw [Pretrivialization.linearMapAt]
@@ -119,6 +120,7 @@ theorem coe_linearMapAt_of_mem (e : Pretrivialization F (π F E)) [e.IsLinear R]
     (hb : b ∈ e.baseSet) : ⇑(e.linearMapAt R b) = fun y => (e ⟨b, y⟩).2 := by
   simp_rw [coe_linearMapAt, if_pos hb]
 
+open Classical in
 theorem linearMapAt_apply (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B} (y : E b) :
     e.linearMapAt R b y = if b ∈ e.baseSet then (e ⟨b, y⟩).2 else 0 := by
   rw [coe_linearMapAt]
@@ -208,6 +210,7 @@ protected def linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
 
 variable {R}
 
+open Classical in
 theorem coe_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) :
     ⇑(e.linearMapAt R b) = fun y => if b ∈ e.baseSet then (e ⟨b, y⟩).2 else 0 :=
   e.toPretrivialization.coe_linearMapAt b
@@ -216,6 +219,7 @@ theorem coe_linearMapAt_of_mem (e : Trivialization F (π F E)) [e.IsLinear R] {b
     (hb : b ∈ e.baseSet) : ⇑(e.linearMapAt R b) = fun y => (e ⟨b, y⟩).2 := by
   simp_rw [coe_linearMapAt, if_pos hb]
 
+open Classical in
 theorem linearMapAt_apply (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (y : E b) :
     e.linearMapAt R b y = if b ∈ e.baseSet then (e ⟨b, y⟩).2 else 0 := by
   rw [coe_linearMapAt]
@@ -238,7 +242,7 @@ theorem linearMapAt_symmₗ (e : Trivialization F (π F E)) [e.IsLinear R] {b : 
 
 variable (R)
 
-
+open Classical in
 /-- A coordinate change function between two trivializations, as a continuous linear equivalence.
   Defined to be the identity when `b` does not lie in the base set of both trivializations. -/
 def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] (b : B) :
@@ -378,6 +382,7 @@ def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
     cont := by
       dsimp
       rw [e.coe_linearMapAt b]
+      classical
       refine continuous_if_const _ (fun hb => ?_) fun _ => continuous_zero
       exact (e.continuousOn.comp_continuous (FiberBundle.totalSpaceMk_inducing F E b).continuous
         fun x => e.mem_source.mpr hb).snd }
@@ -533,7 +538,7 @@ theorem coordChange_linear_comp (i j k : ι) :
 @[nolint unusedArguments] -- Porting note(#5171): was `nolint has_nonempty_instance`
 def Index := ι
 
-/-- The base space of a vector bundle core, as a convenience function for dot notation-/
+/-- The base space of a vector bundle core, as a convenience function for dot notation -/
 @[nolint unusedArguments, reducible]
 def Base := B
 

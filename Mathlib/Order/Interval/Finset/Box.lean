@@ -24,13 +24,15 @@ We don't need the full ring structure, only that there is an order embedding `�
 /-! ### General locally finite ordered ring -/
 
 namespace Finset
-variable {α : Type*} [OrderedRing α] [LocallyFiniteOrder α] [DecidableEq α] {n : ℕ}
-
-/-- Hollow box centered at `0 : α` going from `-n` to `n`. -/
-def box : ℕ → Finset α := disjointed fun n ↦ Icc (-n : α) n
+variable {α : Type*} [OrderedRing α] [LocallyFiniteOrder α] {n : ℕ}
 
 private lemma Icc_neg_mono : Monotone fun n : ℕ ↦ Icc (-n : α) n := by
   refine fun m n hmn ↦ by apply Icc_subset_Icc <;> simpa using Nat.mono_cast hmn
+
+variable [DecidableEq α]
+
+/-- Hollow box centered at `0 : α` going from `-n` to `n`. -/
+def box : ℕ → Finset α := disjointed fun n ↦ Icc (-n : α) n
 
 @[simp] lemma box_zero : (box 0 : Finset α) = {0} := by simp [box]
 
@@ -63,10 +65,12 @@ variable {α β : Type*} [OrderedRing α] [OrderedRing β] [LocallyFiniteOrder �
   [DecidableEq α] [DecidableEq β] [@DecidableRel (α × β) (· ≤ ·)]
 
 @[simp] lemma card_box_succ (n : ℕ) :
-    (box (n + 1) : Finset (α × β)).card =
-      (Icc (-n.succ : α) n.succ).card * (Icc (-n.succ : β) n.succ).card -
-        (Icc (-n : α) n).card * (Icc (-n : β) n).card := by
-  rw [box_succ_eq_sdiff, card_sdiff (Icc_neg_mono n.le_succ), Prod.card_Icc, Prod.card_Icc]; rfl
+    #(box (n + 1) : Finset (α × β)) =
+      #(Icc (-n.succ : α) n.succ) * #(Icc (-n.succ : β) n.succ) -
+        #(Icc (-n : α) n) * #(Icc (-n : β) n) := by
+  rw [box_succ_eq_sdiff, card_sdiff (Icc_neg_mono n.le_succ), Finset.card_Icc_prod,
+    Finset.card_Icc_prod]
+  rfl
 
 end Prod
 
@@ -77,7 +81,7 @@ variable {n : ℕ} {x : ℤ × ℤ}
 
 attribute [norm_cast] toNat_ofNat
 
-lemma card_box : ∀ {n}, n ≠ 0 → (box n : Finset (ℤ × ℤ)).card = 8 * n
+lemma card_box : ∀ {n}, n ≠ 0 → #(box n : Finset (ℤ × ℤ)) = 8 * n
   | n + 1, _ => by
     simp_rw [Prod.card_box_succ, card_Icc, sub_neg_eq_add]
     norm_cast

@@ -53,3 +53,5 @@ macro_rules
   | `(scoped[$ns] attribute [$[$attr:attr],*] $ids*) =>
     `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
       attribute [$[scoped $attr:attr],*] $ids*)
+
+end Mathlib.Tactic

@@ -67,7 +67,7 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
   refine .of_isLittleO <| this.triangle ?_
   calc
     (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x))
-    _ =ᶠ[L] fun x' => g' (f x' - f x - f' (x' - x)) := eventually_of_forall fun x' => by simp
+    _ =ᶠ[L] fun x' => g' (f x' - f x - f' (x' - x)) := Eventually.of_forall fun x' => by simp
     _ =O[L] fun x' => f x' - f x - f' (x' - x) := g'.isBigO_comp _ _
     _ =o[L] fun x' => x' - x := hf.isLittleO
 
@@ -172,7 +172,7 @@ theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 
 protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
     (hg : HasStrictFDerivAt g g' (f x)) (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => g (f x)) (g'.comp f') x :=
-  ((hg.comp_tendsto (hf.continuousAt.prod_map' hf.continuousAt)).trans_isBigO
+  ((hg.comp_tendsto (hf.continuousAt.prodMap' hf.continuousAt)).trans_isBigO
       hf.isBigO_sub).triangle <| by
     simpa only [g'.map_sub, f'.coe_comp'] using (g'.isBigO_comp _ _).trans_isLittleO hf
 
@@ -191,9 +191,10 @@ variable {x}
 protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
     HasFDerivAtFilter f^[n] (f' ^ n) x L := by
-  induction' n with n ihn
-  · exact hasFDerivAtFilter_id x L
-  · rw [Function.iterate_succ, pow_succ]
+  induction n with
+  | zero => exact hasFDerivAtFilter_id x L
+  | succ n ihn =>
+    rw [Function.iterate_succ, pow_succ]
     rw [← hx] at ihn
     exact ihn.comp x hf hL
 
@@ -218,9 +219,10 @@ protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
 protected theorem HasStrictFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasStrictFDerivAt f f' x) (hx : f x = x) (n : ℕ) :
     HasStrictFDerivAt f^[n] (f' ^ n) x := by
-  induction' n with n ihn
-  · exact hasStrictFDerivAt_id x
-  · rw [Function.iterate_succ, pow_succ]
+  induction n with
+  | zero => exact hasStrictFDerivAt_id x
+  | succ n ihn =>
+    rw [Function.iterate_succ, pow_succ]
     rw [← hx] at ihn
     exact ihn.comp x hf
 

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Alistair Tucker, Wen Yang
+Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 -/
 import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.CompleteLatticeIntervals
@@ -43,10 +43,9 @@ intermediate value theorem, connected space, connected set
 
 
 open Filter OrderDual TopologicalSpace Function Set
+open scoped Topology Filter Interval
 
-open Topology Filter
-
-universe u v w
+universe u v
 
 /-!
 ### Intermediate value theorem on a (pre)connected space
@@ -56,7 +55,6 @@ and `g` are two functions continuous on a preconnected set `s`, `f a ≤ g a` at
 `g b ≤ f b` at some `b ∈ s`, then `f c = g c` at some `c ∈ s`. We prove several versions of this
 statement, including the classical IVT that corresponds to a constant function `g`.
 -/
-
 
 section
 
@@ -218,9 +216,7 @@ theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s)
 
 end
 
-variable {α : Type u} {β : Type v} {γ : Type w} [ConditionallyCompleteLinearOrder α]
-  [TopologicalSpace α] [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
-  [OrderTopology β] [Nonempty γ]
+variable {α : Type u} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
 /-- A bounded connected subset of a conditionally complete linear order includes the open interval
 `(Inf s, Sup s)`. -/
@@ -375,12 +371,12 @@ theorem isPreconnected_Icc : IsPreconnected (Icc a b) :=
         rw [union_comm s t] at hab
         exact isPreconnected_Icc_aux y x t s h ht hs hab hy hx)
 
-theorem isPreconnected_uIcc : IsPreconnected (uIcc a b) :=
+theorem isPreconnected_uIcc : IsPreconnected ([[a, b]]) :=
   isPreconnected_Icc
 
 theorem Set.OrdConnected.isPreconnected {s : Set α} (h : s.OrdConnected) : IsPreconnected s :=
   isPreconnected_of_forall_pair fun x hx y hy =>
-    ⟨uIcc x y, h.uIcc_subset hx hy, left_mem_uIcc, right_mem_uIcc, isPreconnected_uIcc⟩
+    ⟨[[x, y]], h.uIcc_subset hx hy, left_mem_uIcc, right_mem_uIcc, isPreconnected_uIcc⟩
 
 theorem isPreconnected_iff_ordConnected {s : Set α} : IsPreconnected s ↔ OrdConnected s :=
   ⟨IsPreconnected.ordConnected, Set.OrdConnected.isPreconnected⟩
@@ -445,7 +441,7 @@ theorem setOf_isPreconnected_eq_of_ordered :
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
   refine Subset.antisymm setOf_isPreconnected_subset_of_ordered ?_
   simp only [subset_def, forall_mem_range, uncurry, or_imp, forall_and, mem_union,
-    mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true_iff,
+    mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true,
     isPreconnected_Icc, isPreconnected_Ico, isPreconnected_Ioc, isPreconnected_Ioo,
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,
     isPreconnected_univ, isPreconnected_empty]
@@ -486,9 +482,31 @@ theorem intermediate_value_Icc' {a b : α} (hab : a ≤ b) {f : α → δ}
   isPreconnected_Icc.intermediate_value (right_mem_Icc.2 hab) (left_mem_Icc.2 hab) hf
 
 /-- **Intermediate Value Theorem** for continuous functions on closed intervals, unordered case. -/
-theorem intermediate_value_uIcc {a b : α} {f : α → δ} (hf : ContinuousOn f (uIcc a b)) :
-    uIcc (f a) (f b) ⊆ f '' uIcc a b := by
+theorem intermediate_value_uIcc {a b : α} {f : α → δ} (hf : ContinuousOn f [[a, b]]) :
+    [[f a, f b]] ⊆ f '' uIcc a b := by
   cases le_total (f a) (f b) <;> simp [*, isPreconnected_uIcc.intermediate_value]
+
+/-- If `f : α → α` is continuous on `[[a, b]]`, `a ≤ f a`, and `f b ≤ b`,
+then `f` has a fixed point on `[[a, b]]`. -/
+theorem exists_mem_uIcc_isFixedPt {a b : α} {f : α → α} (hf : ContinuousOn f (uIcc a b))
+    (ha : a ≤ f a) (hb : f b ≤ b) : ∃ c ∈ [[a, b]], IsFixedPt f c :=
+  isPreconnected_uIcc.intermediate_value₂ right_mem_uIcc left_mem_uIcc hf continuousOn_id hb ha
+
+/-- If `f : α → α` is continuous on `[a, b]`, `a ≤ b`, `a ≤ f a`, and `f b ≤ b`,
+then `f` has a fixed point on `[a, b]`.
+
+In particular, if `[a, b]` is forward-invariant under `f`,
+then `f` has a fixed point on `[a, b]`, see `exists_mem_Icc_isFixedPt_of_mapsTo`. -/
+theorem exists_mem_Icc_isFixedPt {a b : α} {f : α → α} (hf : ContinuousOn f (Icc a b))
+    (hle : a ≤ b) (ha : a ≤ f a) (hb : f b ≤ b) : ∃ c ∈ Icc a b, IsFixedPt f c :=
+  isPreconnected_Icc.intermediate_value₂
+    (right_mem_Icc.2 hle) (left_mem_Icc.2 hle) hf continuousOn_id hb ha
+
+/-- If a closed interval is forward-invariant under a continuous map `f : α → α`,
+then this map has a fixed point on this interval. -/
+theorem exists_mem_Icc_isFixedPt_of_mapsTo {a b : α} {f : α → α} (hf : ContinuousOn f (Icc a b))
+    (hle : a ≤ b) (hmaps : MapsTo f (Icc a b) (Icc a b)) : ∃ c ∈ Icc a b, IsFixedPt f c :=
+  exists_mem_Icc_isFixedPt hf hle (hmaps <| left_mem_Icc.2 hle).1 (hmaps <| right_mem_Icc.2 hle).2
 
 theorem intermediate_value_Ico {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ico (f a) (f b) ⊆ f '' Ico a b :=
@@ -621,7 +639,7 @@ theorem Continuous.strictMonoOn_of_inj_rigidity {f : α → δ}
   let t := max b y
   have hsa : s ≤ a := min_le_left a x
   have hbt : b ≤ t := le_max_left b y
-  have hst : s ≤ t := hsa.trans $ hbt.trans' hab.le
+  have hst : s ≤ t := hsa.trans <| hbt.trans' hab.le
   have hf_mono_st : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) := by
     letI := Icc.completeLinearOrder hst
     have := Continuous.strictMono_of_inj_boundedOrder' (f := Set.restrict (Icc s t) f)

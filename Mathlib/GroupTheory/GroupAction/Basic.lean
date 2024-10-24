@@ -9,7 +9,6 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Group
 
 /-!
 # Basic properties of group actions
@@ -108,6 +107,10 @@ lemma snd_mem_orbit_of_mem_orbit {x y : α × β} (h : x ∈ MulAction.orbit M y
     x.2 ∈ MulAction.orbit M y.2 := by
   rcases h with ⟨g, rfl⟩
   exact mem_orbit _ _
+
+@[to_additive]
+lemma _root_.Finite.finite_mulAction_orbit [Finite M] (a : α) : Set.Finite (orbit M a) :=
+  Set.finite_range _
 
 variable (M)
 
@@ -293,6 +296,8 @@ variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
 
 section Orbit
 
+-- TODO: This proof is redoing a special case of `MulAction.IsInvariantBlock.isBlock`. Can we move
+-- this lemma earlier to golf?
 @[to_additive (attr := simp)]
 theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
   (smul_orbit_subset g a).antisymm <|
@@ -329,6 +334,10 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
   simp only [orbit_smul, mem_orbit]
 
 @[to_additive]
+instance instMulAction (H : Subgroup G) : MulAction H α :=
+  inferInstanceAs (MulAction H.toSubmonoid α)
+
+@[to_additive]
 lemma orbit_subgroup_subset (H : Subgroup G) (a : α) : orbit H a ⊆ orbit G a :=
   orbit_submonoid_subset H.toSubmonoid a
 
@@ -346,11 +355,10 @@ lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
     a ∈ MulAction.orbit H b ↔ (a : α) ∈ MulAction.orbit H (b : α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, rfl⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, orbit.coe_smul, ← Submonoid.smul_def]
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, h⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, ← orbit.coe_smul,
-             ← Submonoid.smul_def, ← Subtype.ext_iff] at h
+    dsimp at h
+    erw [← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
 
@@ -367,16 +375,34 @@ def orbitRel : Setoid α where
 variable {G α}
 
 @[to_additive]
-theorem orbitRel_apply {a b : α} : (orbitRel G α).Rel a b ↔ a ∈ orbit G b :=
+theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
   Iff.rfl
 
-@[to_additive]
-lemma orbitRel_r_apply {a b : α} : (orbitRel G _).r a b ↔ a ∈ orbit G b :=
-  Iff.rfl
+@[to_additive (attr := deprecated (since := "2024-10-18"))]
+alias orbitRel_r_apply := orbitRel_apply
 
 @[to_additive]
 lemma orbitRel_subgroup_le (H : Subgroup G) : orbitRel H α ≤ orbitRel G α :=
   Setoid.le_def.2 mem_orbit_of_mem_orbit_subgroup
+
+@[to_additive]
+lemma orbitRel_subgroupOf (H K : Subgroup G) :
+    orbitRel (H.subgroupOf K) α = orbitRel (H ⊓ K : Subgroup G) α := by
+  rw [← Subgroup.subgroupOf_map_subtype]
+  ext x
+  simp_rw [orbitRel_apply]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases h with ⟨⟨gv, gp⟩, rfl⟩
+    simp only [Submonoid.mk_smul]
+    refine mem_orbit _ (⟨gv, ?_⟩ : Subgroup.map K.subtype (H.subgroupOf K))
+    simpa using gp
+  · rcases h with ⟨⟨gv, gp⟩, rfl⟩
+    simp only [Submonoid.mk_smul]
+    simp only [Subgroup.subgroupOf_map_subtype, Subgroup.mem_inf] at gp
+    refine mem_orbit _ (⟨⟨gv, ?_⟩, ?_⟩ : H.subgroupOf K)
+    · exact gp.2
+    · simp only [Subgroup.mem_subgroupOf]
+      exact gp.1
 
 /-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `G`. -/
@@ -428,9 +454,9 @@ theorem image_inter_image_iff (U V : Set α) :
 variable (G α)
 
 /-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
-@[to_additive (attr := reducible)
+@[to_additive
     "The quotient by `AddAction.orbitRel`, given a name to enable dot notation."]
-def orbitRel.Quotient : Type _ :=
+abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
@@ -443,7 +469,7 @@ theorem pretransitive_iff_subsingleton_quotient :
   · refine Quot.inductionOn a (fun x ↦ ?_)
     exact Quot.inductionOn b (fun y ↦ Quot.sound <| exists_smul_eq G y x)
   · have h : Quotient.mk (orbitRel G α) b = ⟦a⟧ := Subsingleton.elim _ _
-    exact Quotient.eq_rel.mp h
+    exact Quotient.eq''.mp h
 
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
@@ -486,7 +512,7 @@ lemma orbitRel.Quotient.orbit_injective :
     Injective (orbitRel.Quotient.orbit : orbitRel.Quotient G α → Set α) := by
   intro x y h
   simp_rw [orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq', orbit_eq_iff,
-    ← orbitRel_r_apply] at h
+    ← orbitRel_apply] at h
   simpa [← Quotient.eq''] using h
 
 @[to_additive (attr := simp)]
@@ -545,12 +571,11 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Qu
     {a b : x.orbit} : (a : α) ∈ MulAction.orbit H (b : α) ↔ a ∈ MulAction.orbit H b := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, h⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, ← orbit.coe_smul,
-      ← Submonoid.smul_def, ← Subtype.ext_iff] at h
+    dsimp at h
+    erw [← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, rfl⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, orbit.coe_smul, ← Submonoid.smul_def]
     exact MulAction.mem_orbit _ g
 
 @[to_additive]
@@ -572,7 +597,7 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Q
        at hb
     rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
     convert hb using 1
-    rw [orbit_eq_iff, ← orbitRel_r_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
+    rw [orbit_eq_iff, ← orbitRel_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
   rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
 
 variable (G) (α)
@@ -604,6 +629,25 @@ def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out' :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
       Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
+
+/-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
+Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/
+@[to_additive "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
+action. Phrased as a set union. See `AddAction.selfEquivSigmaOrbits` for the type isomorphism."]
+lemma univ_eq_iUnion_orbit :
+    Set.univ (α := α) = ⋃ x : Ω, x.orbit := by
+  ext x
+  simp only [Set.mem_univ, Set.mem_iUnion, true_iff]
+  exact ⟨Quotient.mk'' x, by simp⟩
+
+@[to_additive]
+lemma _root_.Finite.of_finite_mulAction_orbitRel_quotient [Finite G] [Finite Ω] : Finite α := by
+  rw [(selfEquivSigmaOrbits' G _).finite_iff]
+  have : ∀ g : Ω, Finite g.orbit := by
+    intro g
+    induction g using Quotient.inductionOn'
+    simpa [Set.finite_coe_iff] using Finite.finite_mulAction_orbit _
+  exact Finite.instSigma
 
 variable (β)
 
@@ -646,9 +690,12 @@ lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
     stabilizer G a ≤ stabilizer G (a • b) := by
   simp_rw [SetLike.le_def, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
 
+-- This lemma does not need `MulAction G α`, only `SMul G α`.
+-- We use `G'` instead of `G` to locally reduce the typeclass assumptions.
 @[to_additive]
-lemma le_stabilizer_smul_right [SMul α β] [SMulCommClass G α β] (a : α) (b : β) :
-    stabilizer G b ≤ stabilizer G (a • b) := by
+lemma le_stabilizer_smul_right {G'} [Group G'] [SMul α β] [MulAction G' β]
+    [SMulCommClass G' α β] (a : α) (b : β) :
+    stabilizer G' b ≤ stabilizer G' (a • b) := by
   simp_rw [SetLike.le_def, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
 
 @[to_additive (attr := simp)]
@@ -658,7 +705,7 @@ lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
   simpa only [mem_stabilizer_iff, ← smul_assoc, h.eq_iff] using ha
 
 @[to_additive (attr := simp)]
-lemma stabilizer_smul_eq_right [Group α] [MulAction α β] [SMulCommClass G α β] (a : α) (b : β) :
+lemma stabilizer_smul_eq_right {α} [Group α] [MulAction α β] [SMulCommClass G α β] (a : α) (b : β) :
     stabilizer G (a • b) = stabilizer G b :=
   (le_stabilizer_smul_right _ _).antisymm' <| (le_stabilizer_smul_right a⁻¹ _).trans_eq <| by
     rw [inv_smul_smul]
@@ -675,11 +722,11 @@ lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g • a) = (stabilizer G a).map (MulAut.conj g).toMonoidHom := by
   ext h
-  rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul, mul_left_inv,
-    one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
+  rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul,
+    inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel G α).Rel a b) :
+noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
     stabilizer G a ≃* stabilizer G b :=
   let g : G := Classical.choose h
   have hg : g • b = a := Classical.choose_spec h
@@ -699,11 +746,11 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toAddMonoidHom := by
   ext h
   rw [mem_stabilizer_iff, ← vadd_left_cancel_iff (-g), vadd_vadd, vadd_vadd, vadd_vadd,
-    add_left_neg, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
+    neg_add_cancel, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
     AddAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel G α).Rel a b) :
+noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
     stabilizer G a ≃+ stabilizer G b :=
   let g : G := Classical.choose h
   have hg : g +ᵥ b = a := Classical.choose_spec h
@@ -749,6 +796,7 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
 theorem mem_stabilizer_of_finite_iff_smul_le (s : Set α) (hs : s.Finite) (g : G) :
     g ∈ stabilizer G s ↔ g • s ⊆ s := by
   haveI : Fintype s := Set.Finite.fintype hs
+  haveI : Finite (g • s : Set α) := Finite.Set.finite_image ..
   haveI : Fintype (g • s : Set α) := Fintype.ofFinite _
   rw [mem_stabilizer_iff]
   constructor

@@ -282,7 +282,7 @@ theorem contMDiffWithinAt_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) 
   constructor
   · intro Hfh
     rw [← h.symm_apply_apply x] at Hfh
-    simpa only [(· ∘ ·), h.apply_symm_apply] using
+    simpa only [Function.comp_def, h.apply_symm_apply] using
       Hfh.comp (h x) (h.symm.contMDiffWithinAt.of_le hm) (mapsTo_preimage _ _)
   · rw [← h.image_eq_preimage]
     exact fun hf => hf.comp x (h.contMDiffWithinAt.of_le hm) (mapsTo_image _ _)
@@ -308,7 +308,7 @@ theorem contMDiff_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : N �
 theorem contMDiffWithinAt_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M' → M} (hm : m ≤ n)
     {s x} : ContMDiffWithinAt I' J m (h ∘ f) s x ↔ ContMDiffWithinAt I' I m f s x :=
   ⟨fun Hhf => by
-    simpa only [(· ∘ ·), h.symm_apply_apply] using
+    simpa only [Function.comp_def, h.symm_apply_apply] using
       (h.symm.contMDiffAt.of_le hm).comp_contMDiffWithinAt _ Hhf,
     fun Hf => (h.contMDiffAt.of_le hm).comp_contMDiffWithinAt _ Hf⟩
 
@@ -383,8 +383,6 @@ end
 
 end Constructions
 
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
-
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
   convert hs.uniqueMDiffOn_preimage (h.toPartialHomeomorph_mdifferentiable hn)
@@ -447,7 +445,7 @@ variable (I) (e : E ≃ₘ[𝕜] E')
 def transDiffeomorph (I : ModelWithCorners 𝕜 E H) (e : E ≃ₘ[𝕜] E') : ModelWithCorners 𝕜 E' H where
   toPartialEquiv := I.toPartialEquiv.trans e.toEquiv.toPartialEquiv
   source_eq := by simp
-  unique_diff' := by simp [range_comp e, I.unique_diff]
+  uniqueDiffOn' := by simp [range_comp e, I.uniqueDiffOn]
   continuous_toFun := e.continuous.comp I.continuous
   continuous_invFun := I.continuous_symm.comp e.symm.continuous
 
@@ -531,7 +529,6 @@ theorem contMDiff_transDiffeomorph_right {f : M' → M} :
     ContMDiff I' (I.transDiffeomorph e) n f ↔ ContMDiff I' I n f :=
   (toTransDiffeomorph I M e).contMDiff_diffeomorph_comp_iff le_top
 
--- Porting note (#10618): was `@[simp]` but now `simp` can prove it
 theorem smooth_transDiffeomorph_right {f : M' → M} :
     Smooth I' (I.transDiffeomorph e) f ↔ Smooth I' I f :=
   contMDiff_transDiffeomorph_right e
@@ -556,7 +553,6 @@ theorem contMDiff_transDiffeomorph_left {f : M → M'} :
     ContMDiff (I.transDiffeomorph e) I' n f ↔ ContMDiff I I' n f :=
   ((toTransDiffeomorph I M e).contMDiff_comp_diffeomorph_iff le_top).symm
 
--- Porting note (#10618): was `@[simp]` but now `simp` can prove it
 theorem smooth_transDiffeomorph_left {f : M → M'} :
     Smooth (I.transDiffeomorph e) I' f ↔ Smooth I I' f :=
   e.contMDiff_transDiffeomorph_left

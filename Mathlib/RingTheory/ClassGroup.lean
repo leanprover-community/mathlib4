@@ -3,7 +3,6 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.RingTheory.DedekindDomain.Ideal
 
 /-!
@@ -136,7 +135,7 @@ theorem ClassGroup.mk_eq_mk_of_coe_ideal {I J : (FractionalIdeal R⁰ <| Fractio
 theorem ClassGroup.mk_eq_one_of_coe_ideal {I : (FractionalIdeal R⁰ <| FractionRing R)ˣ}
     {I' : Ideal R} (hI : (I : FractionalIdeal R⁰ <| FractionRing R) = I') :
     ClassGroup.mk I = 1 ↔ ∃ x : R, x ≠ 0 ∧ I' = Ideal.span {x} := by
-  rw [← _root_.map_one (ClassGroup.mk (R := R) (K := FractionRing R)),
+  rw [← map_one (ClassGroup.mk (R := R) (K := FractionRing R)),
     ClassGroup.mk_eq_mk_of_coe_ideal hI (?_ : _ = ↑(⊤ : Ideal R))]
   any_goals rfl
   constructor
@@ -322,8 +321,8 @@ theorem ClassGroup.mk_eq_one_iff {I : (FractionalIdeal R⁰ K)ˣ} :
     ClassGroup.mk I = 1 ↔ (I : Submodule R K).IsPrincipal := by
   rw [← (ClassGroup.equiv K).injective.eq_iff]
   simp only [equiv_mk, canonicalEquiv_self, RingEquiv.coe_mulEquiv_refl, QuotientGroup.mk'_apply,
-    _root_.map_one, QuotientGroup.eq_one_iff, MonoidHom.mem_range, ext_iff, coe_toPrincipalIdeal,
-    coe_mapEquiv, MulEquiv.refl_apply]
+    _root_.map_one, QuotientGroup.eq_one_iff, MonoidHom.mem_range, Units.ext_iff,
+    coe_toPrincipalIdeal, coe_mapEquiv, MulEquiv.refl_apply]
   refine ⟨fun ⟨x, hx⟩ => ⟨⟨x, by rw [← hx, coe_spanSingleton]⟩⟩, ?_⟩
   intro hI
   obtain ⟨x, hx⟩ := @Submodule.IsPrincipal.principal _ _ _ _ _ _ hI

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Semiconj.Defs
-import Mathlib.Init.Algebra.Classes
+import Mathlib.Order.Defs
 
 /-!
 # Commuting pairs of elements in monoids
@@ -181,7 +181,7 @@ end Monoid
 
 section DivisionMonoid
 
-variable [DivisionMonoid G] {a b c d : G}
+variable [DivisionMonoid G] {a b : G}
 
 @[to_additive]
 protected theorem mul_inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]

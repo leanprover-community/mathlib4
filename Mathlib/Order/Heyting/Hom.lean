@@ -190,7 +190,6 @@ theorem map_compl (a : α) : f aᶜ = (f a)ᶜ := by rw [← himp_bot, ← himp_
 @[simp]
 theorem map_bihimp (a b : α) : f (a ⇔ b) = f a ⇔ f b := by simp_rw [bihimp, map_inf, map_himp]
 
--- TODO: `map_bihimp`
 end HeytingAlgebra
 
 section CoheytingAlgebra
@@ -246,13 +245,6 @@ instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
   map_inf f := f.map_inf'
   map_bot f := f.map_bot'
   map_himp := HeytingHom.map_himp'
-
-
--- Porting note: CoeFun undesired here in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `DFunLike.CoeFun`
--- directly. -/
--- instance : CoeFun (HeytingHom α β) fun _ => α → β :=
---   DFunLike.hasCoeToFun
 
 -- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : HeytingHom α β} : f.toFun = ⇑f :=

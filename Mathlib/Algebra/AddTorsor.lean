@@ -3,7 +3,8 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Torsors of additive group actions
@@ -52,9 +53,6 @@ class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddAction 
 
  -- Porting note(#12096): removed `nolint instance_priority`; lint not ported yet
 attribute [instance 100] AddTorsor.nonempty
-
--- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
---attribute [nolint dangerous_instance] AddTorsor.toVSub
 
 /-- An `AddGroup G` is a torsor for itself. -/
 -- Porting note(#12096): linter not ported yet
@@ -146,7 +144,7 @@ theorem vadd_vsub_eq_sub_vsub (g : G) (p q : P) : g +ᵥ p -ᵥ q = g - (q -ᵥ 
 as subtracting the points and subtracting that group element. -/
 theorem vsub_vadd_eq_vsub_sub (p₁ p₂ : P) (g : G) : p₁ -ᵥ (g +ᵥ p₂) = p₁ -ᵥ p₂ - g := by
   rw [← add_right_inj (p₂ -ᵥ p₁ : G), vsub_add_vsub_cancel, ← neg_vsub_eq_vsub_rev, vadd_vsub, ←
-    add_sub_assoc, ← neg_vsub_eq_vsub_rev, neg_add_self, zero_sub]
+    add_sub_assoc, ← neg_vsub_eq_vsub_rev, neg_add_cancel, zero_sub]
 
 /-- Cancellation subtracting the results of two subtractions. -/
 @[simp]
@@ -167,8 +165,6 @@ namespace Set
 
 open Pointwise
 
--- porting note (#10618): simp can prove this
---@[simp]
 theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
 
@@ -247,7 +243,6 @@ instance instAddTorsor : AddTorsor (G × G') (P × P') where
   zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
   add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)
   vsub p₁ p₂ := (p₁.1 -ᵥ p₂.1, p₁.2 -ᵥ p₂.2)
-  nonempty := Prod.instNonempty
   vsub_vadd' _ _ := Prod.ext (vsub_vadd _ _) (vsub_vadd _ _)
   vadd_vsub' _ _ := Prod.ext (vadd_vsub _ _) (vadd_vsub _ _)
 

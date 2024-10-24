@@ -53,12 +53,6 @@ open DirectSum
 
 variable {ι : Type*} {σ S R : Type*}
 
-instance AddCommMonoid.ofSubmonoidOnSemiring [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R]
-    (A : ι → σ) : ∀ i, AddCommMonoid (A i) := fun i => by infer_instance
-
-instance AddCommGroup.ofSubgroupOnRing [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ) :
-    ∀ i, AddCommGroup (A i) := fun i => by infer_instance
-
 theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedOne A] (s : S) : algebraMap S R s ∈ A 0 := by
   rw [Algebra.algebraMap_eq_smul_one]
@@ -66,10 +60,12 @@ theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [A
 
 theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
     [AddSubmonoidClass σ R] (A : ι → σ) [SetLike.GradedOne A] (n : ℕ) : (n : R) ∈ A 0 := by
-  induction' n with _ n_ih
-  · rw [Nat.cast_zero]
+  induction n with
+  | zero =>
+    rw [Nat.cast_zero]
     exact zero_mem (A 0)
-  · rw [Nat.cast_succ]
+  | succ _ n_ih =>
+    rw [Nat.cast_succ]
     exact add_mem n_ih (SetLike.one_mem_graded _)
 
 @[deprecated (since := "2024-04-17")]
@@ -283,9 +279,9 @@ instance galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R] (A 
   smul_def := fun _r ⟨i, _xi⟩ => Sigma.subtype_ext (zero_add i).symm <| Algebra.smul_def _ _
 
 @[simp]
-theorem setLike.coe_galgebra_toFun [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
+theorem setLike.coe_galgebra_toFun {ι} [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (s : S) :
-    ↑(@DirectSum.GAlgebra.toFun _ S (fun i => A i) _ _ _ _ _ _ _ s) = (algebraMap S R s : R) :=
+    (DirectSum.GAlgebra.toFun (A := fun i => A i) s) = (algebraMap S R s : R) :=
   rfl
 
 /-- A direct sum of powers of a submodule of an algebra has a multiplicative structure. -/

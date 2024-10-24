@@ -22,14 +22,13 @@ properties about separable polynomials here.
 * `IsSeparable K x`: an element `x` is separable over `K` iff the minimal polynomial of `x`
 over `K` is separable.
 * `Algebra.IsSeparable K L`: `L` is separable over `K` iff every element in `L` is separable
-over `K`
+over `K`.
 
 -/
 
 
 universe u v w
 
-open scoped Classical
 open Polynomial Finset
 
 namespace Polynomial
@@ -86,11 +85,13 @@ theorem Separable.of_dvd {f g : R[X]} (hf : f.Separable) (hfg : g ∣ f) : g.Sep
   rcases hfg with ⟨f', rfl⟩
   exact Separable.of_mul_left hf
 
-theorem separable_gcd_left {F : Type*} [Field F] {f : F[X]} (hf : f.Separable) (g : F[X]) :
+theorem separable_gcd_left {F : Type*} [Field F] [DecidableEq F[X]]
+    {f : F[X]} (hf : f.Separable) (g : F[X]) :
     (EuclideanDomain.gcd f g).Separable :=
   Separable.of_dvd hf (EuclideanDomain.gcd_dvd_left f g)
 
-theorem separable_gcd_right {F : Type*} [Field F] {g : F[X]} (f : F[X]) (hg : g.Separable) :
+theorem separable_gcd_right {F : Type*} [Field F] [DecidableEq F[X]]
+    {g : F[X]} (f : F[X]) (hg : g.Separable) :
     (EuclideanDomain.gcd f g).Separable :=
   Separable.of_dvd hg (EuclideanDomain.gcd_dvd_right f g)
 
@@ -166,23 +167,22 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
     ring
   exact IsCoprime.of_mul_right_left (IsCoprime.of_mul_left_left this)
 
-theorem multiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep : Separable p) :
-    multiplicity q p ≤ 1 := by
+theorem emultiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep : Separable p) :
+    emultiplicity q p ≤ 1 := by
   contrapose! hq
   apply isUnit_of_self_mul_dvd_separable hsep
   rw [← sq]
-  apply multiplicity.pow_dvd_of_le_multiplicity
-  have h : ⟨Part.Dom 1 ∧ Part.Dom 1, fun _ ↦ 2⟩ ≤ multiplicity q p := PartENat.add_one_le_of_lt hq
-  rw [and_self] at h
-  exact h
+  apply pow_dvd_of_le_emultiplicity
+  exact Order.add_one_le_of_lt hq
 
 /-- A separable polynomial is square-free.
 
 See `PerfectField.separable_iff_squarefree` for the converse when the coefficients are a perfect
 field. -/
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
-  rw [multiplicity.squarefree_iff_multiplicity_le_one p]
-  exact fun f => or_iff_not_imp_right.mpr fun hunit => multiplicity_le_one_of_separable hunit hsep
+  classical
+  rw [multiplicity.squarefree_iff_emultiplicity_le_one p]
+  exact fun f => or_iff_not_imp_right.mpr fun hunit => emultiplicity_le_one_of_separable hunit hsep
 
 end CommSemiring
 
@@ -201,8 +201,9 @@ theorem Separable.mul {f g : R[X]} (hf : f.Separable) (hg : g.Separable) (h : Is
 
 theorem separable_prod' {ι : Sort _} {f : ι → R[X]} {s : Finset ι} :
     (∀ x ∈ s, ∀ y ∈ s, x ≠ y → IsCoprime (f x) (f y)) →
-      (∀ x ∈ s, (f x).Separable) → (∏ x ∈ s, f x).Separable :=
-  Finset.induction_on s (fun _ _ => separable_one) fun a s has ih h1 h2 => by
+      (∀ x ∈ s, (f x).Separable) → (∏ x ∈ s, f x).Separable := by
+  classical
+  exact Finset.induction_on s (fun _ _ => separable_one) fun a s has ih h1 h2 => by
     simp_rw [Finset.forall_mem_insert, forall_and] at h1 h2; rw [prod_insert has]
     exact
       h2.1.mul (ih h1.2.2 h2.2)
@@ -215,6 +216,7 @@ theorem separable_prod {ι : Sort _} [Fintype ι] {f : ι → R[X]} (h1 : Pairwi
 theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} {f : ι → R} {s : Finset ι}
     (hfs : (∏ i ∈ s, (X - C (f i))).Separable) {x y : ι} (hx : x ∈ s) (hy : y ∈ s)
     (hfxy : f x = f y) : x = y := by
+  classical
   by_contra hxy
   rw [← insert_erase hx, prod_insert (not_mem_erase _ _), ←
     insert_erase (mem_erase_of_ne_of_mem (Ne.symm hxy) hy), prod_insert (not_mem_erase _ _), ←
@@ -251,13 +253,34 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
       simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ',
         Nat.sub_add_cancel (show 1 ≤ n from hpos), sub_add_cancel]
 
+/-- If `n = 0` in `R` and `b` is a unit, then `a * X ^ n + b * X + c` is separable. -/
+theorem separable_C_mul_X_pow_add_C_mul_X_add_C
+    {n : ℕ} (a b c : R) (hn : (n : R) = 0) (hb : IsUnit b) :
+    (C a * X ^ n + C b * X + C c).Separable := by
+  set f := C a * X ^ n + C b * X + C c
+  have hderiv : derivative f = C b := by
+    simp_rw [f, map_add derivative, derivative_C]
+    simp [hn]
+  obtain ⟨e, hb⟩ := hb.exists_left_inv
+  refine ⟨-derivative f, f + C e, ?_⟩
+  rw [hderiv, right_distrib, ← add_assoc, neg_mul, mul_comm, neg_add_cancel, zero_add,
+    ← map_mul, hb, map_one]
+
+/-- If `R` is of characteristic `p`, `p ∣ n` and `b` is a unit,
+then `a * X ^ n + b * X + c` is separable. -/
+theorem separable_C_mul_X_pow_add_C_mul_X_add_C'
+    (p n : ℕ) (a b c : R) [CharP R p] (hn : p ∣ n) (hb : IsUnit b) :
+    (C a * X ^ n + C b * X + C c).Separable :=
+  separable_C_mul_X_pow_add_C_mul_X_add_C a b c ((CharP.cast_eq_zero_iff R p n).2 hn) hb
+
 theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : Separable p)
     (x : R) : rootMultiplicity x p ≤ 1 := by
+  classical
   by_cases hp : p = 0
   · simp [hp]
-  rw [rootMultiplicity_eq_multiplicity, dif_neg hp, ← PartENat.coe_le_coe, PartENat.natCast_get,
-    Nat.cast_one]
-  exact multiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
+  rw [rootMultiplicity_eq_multiplicity, if_neg hp, ← Nat.cast_le (α := ℕ∞),
+    Nat.cast_one, ← (multiplicity_X_sub_C_finite x hp).emultiplicity_eq_multiplicity]
+  apply emultiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
 
 end CommRing
 
@@ -265,12 +288,14 @@ section IsDomain
 
 variable {R : Type u} [CommRing R] [IsDomain R]
 
-theorem count_roots_le_one {p : R[X]} (hsep : Separable p) (x : R) : p.roots.count x ≤ 1 := by
+theorem count_roots_le_one [DecidableEq R] {p : R[X]} (hsep : Separable p) (x : R) :
+    p.roots.count x ≤ 1 := by
   rw [count_roots p]
   exact rootMultiplicity_le_one_of_separable hsep x
 
-theorem nodup_roots {p : R[X]} (hsep : Separable p) : p.roots.Nodup :=
-  Multiset.nodup_iff_count_le_one.mpr (count_roots_le_one hsep)
+theorem nodup_roots {p : R[X]} (hsep : Separable p) : p.roots.Nodup := by
+  classical
+  exact Multiset.nodup_iff_count_le_one.mpr (count_roots_le_one hsep)
 
 end IsDomain
 
@@ -299,7 +324,7 @@ theorem separable_map {S} [CommRing S] [Nontrivial S] (f : F →+* S) {p : F[X]}
 
 theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι} :
     (∏ i ∈ s, (X - C (f i))).Separable ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
-  ⟨fun hfs x hx y hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
+  ⟨fun hfs _ hx _ hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
     rw [← prod_attach]
     exact
       separable_prod'
@@ -317,19 +342,19 @@ section CharP
 variable (p : ℕ) [HF : CharP F p]
 
 theorem separable_or {f : F[X]} (hf : Irreducible f) :
-    f.Separable ∨ ¬f.Separable ∧ ∃ g : F[X], Irreducible g ∧ expand F p g = f :=
-  if H : derivative f = 0 then by
+    f.Separable ∨ ¬f.Separable ∧ ∃ g : F[X], Irreducible g ∧ expand F p g = f := by
+  classical
+  exact if H : derivative f = 0 then by
     rcases p.eq_zero_or_pos with (rfl | hp)
     · haveI := CharP.charP_to_charZero F
       have := natDegree_eq_zero_of_derivative_eq_zero H
       have := (natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_irreducible hf).ne'
       contradiction
-    haveI := isLocalRingHom_expand F hp
+    haveI := isLocalHom_expand F hp
     exact
       Or.inr
         ⟨by rw [separable_iff_derivative_ne_zero hf, Classical.not_not, H], contract p f,
-          of_irreducible_map (expand F p : F[X] →+* F[X])
-            (by rwa [← expand_contract p H hp.ne'] at hf),
+          Irreducible.of_map (by rwa [← expand_contract p H hp.ne'] at hf),
           expand_contract p H hp.ne'⟩
   else Or.inl <| (separable_iff_derivative_ne_zero hf).2 H
 
@@ -373,8 +398,6 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
     (g₁ : F[X]) (hg₁ : g₁.Separable) (hgf₁ : expand F (p ^ n₁) g₁ = f) (n₂ : ℕ) (g₂ : F[X])
     (hg₂ : g₂.Separable) (hgf₂ : expand F (p ^ n₂) g₂ = f) : n₁ = n₂ ∧ g₁ = g₂ := by
   revert g₁ g₂
-  -- Porting note: the variable `K` affects the `wlog` tactic.
-  clear! K
   wlog hn : n₁ ≤ n₂
   · intro g₁ hg₁ Hg₁ g₂ hg₂ Hg₂
     simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_le hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
@@ -400,6 +423,11 @@ theorem separable_X_pow_sub_C {n : ℕ} (a : F) (hn : (n : F) ≠ 0) (ha : a ≠
     Separable (X ^ n - C a) :=
   separable_X_pow_sub_C_unit (Units.mk0 a ha) (IsUnit.mk0 (n : F) hn)
 
+/-- If `F` is of characteristic `p` and `p ∤ n`, then `X ^ n - a` is separable for any `a ≠ 0`. -/
+theorem separable_X_pow_sub_C' (p n : ℕ) (a : F) [CharP F p] (hn : ¬p ∣ n) (ha : a ≠ 0) :
+    Separable (X ^ n - C a) :=
+  separable_X_pow_sub_C a (by rwa [← CharP.cast_eq_zero_iff F p n] at hn) ha
+
 -- this can possibly be strengthened to making `separable_X_pow_sub_C_unit` a
 -- bi-implication, but it is nontrivial!
 /-- In a field `F`, `X ^ n - 1` is separable iff `↑n ≠ 0`. -/
@@ -415,6 +443,7 @@ section Splits
 
 theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
     (hsplit : Splits (algebraMap F K) p) : Fintype.card (p.rootSet K) = p.natDegree := by
+  classical
   simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe]
   rw [Multiset.toFinset_card_of_nodup (nodup_roots hsep.map), ← natDegree_eq_card_roots hsplit]
 
@@ -422,6 +451,7 @@ theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
 if and only if it is separable. -/
 theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingHom.id F)) :
     f.roots.Nodup ↔ f.Separable := by
+  classical
   refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
   rw [Separable, ← gcd_isUnit_iff, isUnit_iff_degree_eq_zero] at hnsep
   obtain ⟨x, hx⟩ := exists_root_of_splits _
@@ -438,6 +468,7 @@ theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
 
 theorem card_rootSet_eq_natDegree_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
     (h : f.Splits (algebraMap F K)) : Fintype.card (f.rootSet K) = f.natDegree ↔ f.Separable := by
+  classical
   simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, natDegree_eq_card_roots h,
     Multiset.toFinset_card_eq_card_iff_nodup, nodup_aroots_iff_of_splits hf h]
 
@@ -463,6 +494,7 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
 
 theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f) (sp : Splits i f) :
     ∃ s : Finset K, f.map i = C (i f.leadingCoeff) * s.prod fun a : K => X - C a := by
+  classical
   obtain ⟨s, h⟩ := (splits_iff_exists_multiset _).1 sp
   use s.toFinset
   rw [h, Finset.prod_eq_multiset_prod, ← Multiset.toFinset_eq]
@@ -492,7 +524,7 @@ open Polynomial
 
 section CommRing
 
-variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
+variable (F L K : Type*) [CommRing F] [Ring K] [Algebra F K]
 
 -- TODO: refactor to allow transcendental extensions?
 -- See: https://en.wikipedia.org/wiki/Separable_extension#Separability_of_transcendental_extensions
@@ -503,7 +535,7 @@ variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 variable {K} in
 /--
 An element `x` of an algebra `K` over a commutative ring `F` is said to be *separable*, if its
-minimal polynamial over `K` is separable. Note that the minimal polynomial of any element not
+minimal polynomial over `K` is separable. Note that the minimal polynomial of any element not
 integral over `F` is defined to be `0`, which is not a separable polynomial.
 -/
 def IsSeparable (x : K) : Prop := Polynomial.Separable (minpoly F x)
@@ -536,6 +568,11 @@ theorem IsSeparable.isIntegral {x : K} (h : IsSeparable F x) : IsIntegral F x :=
 theorem Algebra.IsSeparable.isIntegral [Algebra.IsSeparable F K] : ∀ x : K, IsIntegral F x :=
   fun x ↦ _root_.IsSeparable.isIntegral (Algebra.IsSeparable.isSeparable F x)
 
+variable (K) in
+instance Algebra.IsSeparable.isAlgebraic [Nontrivial F] [Algebra.IsSeparable F K] :
+    Algebra.IsAlgebraic F K :=
+  ⟨fun x ↦ (Algebra.IsSeparable.isIntegral F x).isAlgebraic⟩
+
 variable {F}
 
 theorem Algebra.isSeparable_iff :
@@ -543,71 +580,132 @@ theorem Algebra.isSeparable_iff :
   ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
     fun h => ⟨fun x => (h x).2⟩⟩
 
-variable {E : Type*} [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
+variable {E : Type*}
+
+section AlgEquiv
+
+variable [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
+include e
+
+/-- Transfer `IsSeparable` across an `AlgEquiv`. -/
+theorem AlgEquiv.isSeparable_iff {x : K} : IsSeparable F (e x) ↔ IsSeparable F x := by
+  simp only [IsSeparable, minpoly.algEquiv_eq e x]
 
 /-- Transfer `Algebra.IsSeparable` across an `AlgEquiv`. -/
-theorem AlgEquiv.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=
-  ⟨fun _ ↦
-    by rw [IsSeparable, ← minpoly.algEquiv_eq e.symm]; exact Algebra.IsSeparable.isSeparable F _⟩
+theorem AlgEquiv.Algebra.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=
+  ⟨fun _ ↦ e.symm.isSeparable_iff.mp (Algebra.IsSeparable.isSeparable _ _)⟩
 
-theorem AlgEquiv.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
-  ⟨fun _ ↦ e.isSeparable, fun _ ↦ e.symm.isSeparable⟩
+@[deprecated (since := "2024-08-06")]
+alias AlgEquiv.isSeparable := AlgEquiv.Algebra.isSeparable
 
-variable (F K)
+theorem AlgEquiv.Algebra.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
+  ⟨fun _ ↦ AlgEquiv.Algebra.isSeparable e, fun _ ↦ AlgEquiv.Algebra.isSeparable e.symm⟩
 
-instance Algebra.IsSeparable.isAlgebraic [Nontrivial F] [Algebra.IsSeparable F K] :
-    Algebra.IsAlgebraic F K :=
-  ⟨fun x ↦ (Algebra.IsSeparable.isIntegral F x).isAlgebraic⟩
+end AlgEquiv
+
+section IsScalarTower
+
+variable [Field L] [CommRing E] [Algebra F L]
+    [Algebra F E] [Algebra L E] [IsScalarTower F L E]
+
+/-- If `E / L / F` is a scalar tower and `x : E` is separable over `F`, then it's also separable
+over `L`. -/
+theorem IsSeparable.tower_top
+    {x : E} (h : IsSeparable F x) : IsSeparable L x :=
+  h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
+
+variable (F E) in
+theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
+    Algebra.IsSeparable L E :=
+  ⟨fun x ↦ IsSeparable.tower_top _ (Algebra.IsSeparable.isSeparable F x)⟩
+
+@[deprecated (since := "2024-08-06")]
+alias IsSeparable.of_isScalarTower := Algebra.isSeparable_tower_top_of_isSeparable
+
+end IsScalarTower
 
 end CommRing
 
-instance Algebra.isSeparable_self (F : Type*) [Field F] : Algebra.IsSeparable F F :=
-  ⟨fun x => by
-    rw [IsSeparable, minpoly.eq_X_sub_C']
-    exact separable_X_sub_C⟩
+section Field
+
+variable (F : Type*) [Field F] {K E E' : Type*}
+
+section IsIntegral
+
+variable [Ring K] [Algebra F K]
+
+variable {F} in
+theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
+  Polynomial.Separable.of_dvd (Polynomial.separable_X_sub_C (x := x))
+    (minpoly.dvd F (algebraMap F K x) (by simp only [map_sub, aeval_X, aeval_C, sub_self]))
+
+instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
+  ⟨isSeparable_algebraMap⟩
+
+variable [IsDomain K] [Algebra.IsIntegral F K] [CharZero F]
+
+theorem IsSeparable.of_integral (x : K) : IsSeparable F x :=
+  (minpoly.irreducible <| Algebra.IsIntegral.isIntegral x).separable
 
 -- See note [lower instance priority]
-/-- A finite field extension in characteristic 0 is separable. -/
-instance (priority := 100) Algebra.IsSeparable.of_finite (F K : Type*) [Field F] [Field K]
-    [Algebra F K] [FiniteDimensional F K] [CharZero F] : Algebra.IsSeparable F K :=
-  ⟨fun x => (minpoly.irreducible <| .of_finite F x).separable⟩
+variable (K) in
+/-- A integral field extension in characteristic 0 is separable. -/
+protected instance (priority := 100) Algebra.IsSeparable.of_integral : Algebra.IsSeparable F K :=
+  ⟨_root_.IsSeparable.of_integral _⟩
 
-section IsSeparableTower
+end IsIntegral
 
-/-- If `R / K / A` is an extension tower, `x : R` is separable over `A`, then it's also separable
-over `K`. -/
-theorem IsSeparable.of_isScalarTower {A : Type*} [CommRing A]
-    (K : Type*) [Field K] [Algebra A K] {R : Type*} [CommRing R] [Algebra A R] [Algebra K R]
-    [IsScalarTower A K R] {x : R} (h : IsSeparable A x) : IsSeparable K x :=
-  h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
+section IsScalarTower
 
-variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
-  [IsScalarTower F K E]
+variable [Field K] [Ring E] [Algebra F K] [Algebra F E] [Algebra K E]
+  [Nontrivial E] [IsScalarTower F K E]
 
-theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
-    Algebra.IsSeparable K E :=
-  ⟨fun x ↦ IsSeparable.of_isScalarTower _ (Algebra.IsSeparable.isSeparable F x)⟩
-
-theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F E] :
-    Algebra.IsSeparable F K :=
-  ⟨fun x ↦
+variable {F} in
+/-- If `E / K / F` is a scalar tower and `algebraMap K E x` is separable over `F`, then `x` is
+``
+also separable over `F`. -/
+theorem IsSeparable.tower_bot {x : K} (h : IsSeparable F (algebraMap K E x)) : IsSeparable F x :=
     have ⟨_q, hq⟩ :=
       minpoly.dvd F x
         ((aeval_algebraMap_eq_zero_iff _ _ _).mp (minpoly.aeval F ((algebraMap K E) x)))
-    (Eq.mp (congrArg Separable hq) (h.isSeparable _)).of_mul_left⟩
+    (Eq.mp (congrArg Separable hq) h).of_mul_left
 
-variable {E}
+variable (K E) in
+theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F E] :
+    Algebra.IsSeparable F K :=
+  ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _ _)⟩
 
-theorem Algebra.IsSeparable.of_algHom (E' : Type*) [Field E'] [Algebra F E'] (f : E →ₐ[F] E')
-    [Algebra.IsSeparable F E'] : Algebra.IsSeparable F E := by
-  letI : Algebra E E' := RingHom.toAlgebra f.toRingHom
+end IsScalarTower
+
+section
+
+variable [Field E] [Field E'] [Algebra F E] [Algebra F E']
+    (f : E →ₐ[F] E')
+include f
+
+variable {F} in
+theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
+  let _ : Algebra E E' := RingHom.toAlgebra f.toRingHom
   haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
-  exact Algebra.isSeparable_tower_bot_of_isSeparable F E E'
+  exact h.tower_bot
 
-lemma Algebra.IsSeparable.of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
+
+variable (E') in
+theorem Algebra.IsSeparable.of_algHom [Algebra.IsSeparable F E'] : Algebra.IsSeparable F E :=
+  ⟨fun x => (Algebra.IsSeparable.isSeparable F (f x)).of_algHom⟩
+
+end
+
+end Field
+
+section AlgEquiv
+
+variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
     [Field A₂] [Field B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
-    [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ := by
+include e₁ e₂ he
+
+lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) :=
   letI := e₁.toRingHom.toAlgebra
   letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
   haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
@@ -616,10 +714,15 @@ lemma Algebra.IsSeparable.of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Field A�
     { e₂ with
       commutes' := fun r ↦ by
         simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
-  haveI := Algebra.isSeparable_tower_top_of_isSeparable A₁ A₂ B₁
-  exact Algebra.IsSeparable.of_algHom _ _ e.symm.toAlgHom
+  have := IsSeparable.tower_top A₂ h
+  IsSeparable.of_algHom e.symm ((e₂.symm_apply_apply x).symm ▸ this)
 
-end IsSeparableTower
+lemma Algebra.IsSeparable.of_equiv_equiv
+    [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
+  ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
+    (Algebra.IsSeparable.isSeparable _ _)⟩
+
+end AlgEquiv
 
 section CardAlgHom
 
@@ -630,6 +733,7 @@ variable [Algebra K S] [Algebra K L]
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
     (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
+  classical
   let _ := (PowerBasis.AlgHom.fintype pb : Fintype (S →ₐ[K] L))
   rw [Fintype.card_congr pb.liftEquiv', Fintype.card_of_subtype _ (fun x => Multiset.mem_toFinset),
     ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]

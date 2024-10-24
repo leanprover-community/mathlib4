@@ -33,7 +33,7 @@ open Function OrderDual
 
 universe u v
 
-variable {α : Type u} {β : Type v} {γ δ : Type*}
+variable {α : Type u} {β : Type v}
 
 /-! ### Top, bottom element -/
 
@@ -83,6 +83,11 @@ theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
   (h.trans_le le_top).ne
 
 alias LT.lt.ne_top := ne_top_of_lt
+
+theorem lt_top_of_lt (h : a < b) : a < ⊤ :=
+  lt_of_lt_of_le h le_top
+
+alias LT.lt.lt_top := lt_top_of_lt
 
 end Preorder
 
@@ -143,6 +148,9 @@ theorem StrictMono.apply_eq_top_iff (hf : StrictMono f) : f a = f ⊤ ↔ a = �
 
 theorem StrictAnti.apply_eq_top_iff (hf : StrictAnti f) : f a = f ⊤ ↔ a = ⊤ :=
   ⟨fun h => not_lt_top_iff.1 fun ha => (hf ha).ne' h, congr_arg _⟩
+
+lemma top_not_mem_iff {s : Set α} : ⊤ ∉ s ↔ ∀ x ∈ s, x < ⊤ :=
+  ⟨fun h x hx ↦ Ne.lt_top (fun hx' : x = ⊤ ↦ h (hx' ▸ hx)), fun h h₀ ↦ (h ⊤ h₀).false⟩
 
 variable [Nontrivial α]
 
@@ -250,6 +258,11 @@ theorem ne_bot_of_gt (h : a < b) : b ≠ ⊥ :=
 
 alias LT.lt.ne_bot := ne_bot_of_gt
 
+theorem bot_lt_of_lt (h : a < b) : ⊥ < b :=
+  lt_of_le_of_lt bot_le h
+
+alias LT.lt.bot_lt := bot_lt_of_lt
+
 end Preorder
 
 variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a b : α}
@@ -313,6 +326,9 @@ theorem StrictMono.apply_eq_bot_iff (hf : StrictMono f) : f a = f ⊥ ↔ a = �
 theorem StrictAnti.apply_eq_bot_iff (hf : StrictAnti f) : f a = f ⊥ ↔ a = ⊥ :=
   hf.dual.apply_eq_top_iff
 
+lemma bot_not_mem_iff {s : Set α} : ⊥ ∉ s ↔ ∀ x ∈ s, ⊥ < x :=
+  top_not_mem_iff (α := αᵒᵈ)
+
 variable [Nontrivial α]
 
 theorem not_isMax_bot : ¬IsMax (⊥ : α) :=
@@ -337,7 +353,7 @@ theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : Par
 
 section SemilatticeSupTop
 
-variable [SemilatticeSup α] [OrderTop α] {a : α}
+variable [SemilatticeSup α] [OrderTop α]
 
 -- Porting note: Not simp because simp can prove it
 theorem top_sup_eq (a : α) : ⊤ ⊔ a = ⊤ :=
@@ -384,7 +400,7 @@ end SemilatticeInfTop
 
 section SemilatticeInfBot
 
-variable [SemilatticeInf α] [OrderBot α] {a : α}
+variable [SemilatticeInf α] [OrderBot α]
 
 -- Porting note: Not simp because simp can prove it
 lemma bot_inf_eq (a : α) : ⊥ ⊓ a = ⊥ := inf_of_le_left bot_le
@@ -487,6 +503,11 @@ theorem exists_ge_and_iff_exists {P : α → Prop} {x₀ : α} (hP : Monotone P)
     (∃ x, x₀ ≤ x ∧ P x) ↔ ∃ x, P x :=
   ⟨fun h => h.imp fun _ h => h.2, fun ⟨x, hx⟩ => ⟨x ⊔ x₀, le_sup_right, hP le_sup_left hx⟩⟩
 
+lemma exists_and_iff_of_monotone {P Q : α → Prop} (hP : Monotone P) (hQ : Monotone Q) :
+    ((∃ x, P x) ∧ ∃ x, Q x) ↔ (∃ x, P x ∧ Q x) :=
+  ⟨fun ⟨⟨x, hPx⟩, ⟨y, hQx⟩⟩ ↦ ⟨x ⊔ y, ⟨hP le_sup_left hPx, hQ le_sup_right hQx⟩⟩,
+    fun ⟨x, hPx, hQx⟩ ↦ ⟨⟨x, hPx⟩, ⟨x, hQx⟩⟩⟩
+
 end SemilatticeSup
 
 section SemilatticeInf
@@ -496,6 +517,11 @@ variable [SemilatticeInf α]
 theorem exists_le_and_iff_exists {P : α → Prop} {x₀ : α} (hP : Antitone P) :
     (∃ x, x ≤ x₀ ∧ P x) ↔ ∃ x, P x :=
   exists_ge_and_iff_exists <| hP.dual_left
+
+lemma exists_and_iff_of_antitone {P Q : α → Prop} (hP : Antitone P) (hQ : Antitone Q) :
+    ((∃ x, P x) ∧ ∃ x, Q x) ↔ (∃ x, P x ∧ Q x) :=
+  ⟨fun ⟨⟨x, hPx⟩, ⟨y, hQx⟩⟩ ↦ ⟨x ⊓ y, ⟨hP inf_le_left hPx, hQ inf_le_right hQx⟩⟩,
+    fun ⟨x, hPx, hQx⟩ ↦ ⟨⟨x, hPx⟩, ⟨x, hQx⟩⟩⟩
 
 end SemilatticeInf
 
@@ -640,12 +666,12 @@ theorem coe_top [OrderTop α] [OrderTop (Subtype p)] (htop : p ⊤) : ((⊤ : Su
 @[simp]
 theorem coe_eq_bot_iff [OrderBot α] [OrderBot (Subtype p)] (hbot : p ⊥) {x : { x // p x }} :
     (x : α) = ⊥ ↔ x = ⊥ := by
-  rw [← coe_bot hbot, ext_iff]
+  rw [← coe_bot hbot, Subtype.ext_iff]
 
 @[simp]
 theorem coe_eq_top_iff [OrderTop α] [OrderTop (Subtype p)] (htop : p ⊤) {x : { x // p x }} :
     (x : α) = ⊤ ↔ x = ⊤ := by
-  rw [← coe_top htop, ext_iff]
+  rw [← coe_top htop, Subtype.ext_iff]
 
 @[simp]
 theorem mk_eq_bot_iff [OrderBot α] [OrderBot (Subtype p)] (hbot : p ⊥) {x : α} (hx : p x) :

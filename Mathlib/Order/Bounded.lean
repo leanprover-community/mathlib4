@@ -92,8 +92,8 @@ theorem unbounded_lt_of_unbounded_le [Preorder α] (h : Unbounded (· ≤ ·) s)
 theorem bounded_le_iff_bounded_lt [Preorder α] [NoMaxOrder α] :
     Bounded (· ≤ ·) s ↔ Bounded (· < ·) s := by
   refine ⟨fun h => ?_, bounded_le_of_bounded_lt⟩
-  cases' h with a ha
-  cases' exists_gt a with b hb
+  obtain ⟨a, ha⟩ := h
+  obtain ⟨b, hb⟩ := exists_gt a
   exact ⟨b, fun c hc => lt_of_le_of_lt (ha c hc) hb⟩
 
 theorem unbounded_lt_iff_unbounded_le [Preorder α] [NoMaxOrder α] :
@@ -247,7 +247,7 @@ theorem bounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c m)
     Bounded r (s ∩ { b | ¬r b a }) ↔ Bounded r s := by
   refine ⟨?_, Bounded.mono inter_subset_left⟩
   rintro ⟨b, hb⟩
-  cases' H a b with m hm
+  obtain ⟨m, hm⟩ := H a b
   exact ⟨m, fun c hc => hm c (or_iff_not_imp_left.2 fun hca => hb c ⟨hc, hca⟩)⟩
 
 theorem unbounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c m) (a : α) :
