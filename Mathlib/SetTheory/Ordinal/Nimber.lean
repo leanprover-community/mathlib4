@@ -353,7 +353,7 @@ instance : AddCommGroupWithOne Nimber where
   add_comm := Nimber.add_comm
 
 instance : CharP Nimber 2 := by
-  apply CharTwo.mk one_ne_zero
+  apply CharTwo.of_one_ne_zero_of_two_eq_zero one_ne_zero
   rw [← one_add_one_eq_two, add_self]
 
 @[simp]
