@@ -176,7 +176,6 @@ instance : SubfieldClass (Subfield K) K where
   one_mem s := s.one_mem'
   inv_mem {s} := s.inv_mem' _
 
--- @[simp] -- Porting note (#10618): simp can prove this (with `coe_toSubring`, which comes later)
 theorem mem_carrier {s : Subfield K} {x : K} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -373,7 +372,6 @@ theorem toSubring_subtype_eq_subtype (S : Subfield K) :
 /-! # Partial order -/
 
 
---@[simp] -- Porting note (#10618): simp can prove this
 theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 

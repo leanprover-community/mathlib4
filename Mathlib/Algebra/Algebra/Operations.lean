@@ -184,12 +184,10 @@ theorem mul_bot : M * ⊥ = ⊥ :=
 theorem bot_mul : ⊥ * M = ⊥ :=
   map₂_bot_left _ _
 
--- @[simp] -- Porting note (#10618): simp can prove this once we have a monoid structure
 protected theorem one_mul : (1 : Submodule R A) * M = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
   erw [span_mul_span, one_mul, span_eq]
 
--- @[simp] -- Porting note (#10618): simp can prove this once we have a monoid structure
 protected theorem mul_one : M * 1 = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
   erw [span_mul_span, mul_one, span_eq]

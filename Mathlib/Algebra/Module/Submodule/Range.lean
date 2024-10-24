@@ -266,7 +266,6 @@ theorem map_subtype_le (p' : Submodule R p) : map p.subtype p' ≤ p := by
 
 /-- Under the canonical linear map from a submodule `p` to the ambient space `M`, the image of the
 maximal submodule of `p` is just `p`. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_subtype_top : map p.subtype (⊤ : Submodule R p) = p := by simp
 
 @[simp]

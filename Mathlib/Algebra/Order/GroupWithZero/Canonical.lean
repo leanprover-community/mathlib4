@@ -352,11 +352,9 @@ variable [LinearOrder α] {a b c : α}
 
 instance linearOrder : LinearOrder (WithZero α) := WithBot.linearOrder
 
--- Porting note (#10618): @[simp] can prove this
 protected lemma le_max_iff : (a : WithZero α) ≤ max (b : WithZero α) c ↔ a ≤ max b c := by
   simp only [WithZero.coe_le_coe, le_max_iff]
 
--- Porting note (#10618): @[simp] can prove this
 protected lemma min_le_iff : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
   simp only [WithZero.coe_le_coe, min_le_iff]
 

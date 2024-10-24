@@ -224,8 +224,6 @@ variable [Ring R] [AddCommGroup M] [Module R M] (r : R) (x : M)
 theorem neg_smul : -r • x = -(r • x) :=
   eq_neg_of_add_eq_zero_left <| by rw [← add_smul, neg_add_cancel, zero_smul]
 
--- Porting note (#10618): simp can prove this
---@[simp]
 theorem neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg]
 
 @[simp]
@@ -408,13 +406,9 @@ instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCo
     [Module R M] : IsScalarTower ℤ R M where
   smul_assoc n x y := ((smulAddHom R M).flip y).map_zsmul x n
 
--- Porting note (#10618): simp can prove this
---@[simp]
 theorem Nat.smul_one_eq_cast {R : Type*} [NonAssocSemiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
 
--- Porting note (#10618): simp can prove this
---@[simp]
 theorem Int.smul_one_eq_cast {R : Type*} [NonAssocRing R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
 

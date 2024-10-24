@@ -251,8 +251,6 @@ theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
 theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem add_one_le_ceil_iff : n + 1 ≤ ⌈a⌉₊ ↔ (n : α) < a := by
   rw [← Nat.lt_ceil, Nat.add_one_le_iff]
 
@@ -924,8 +922,6 @@ theorem fract_ofNat (n : ℕ) [n.AtLeastTwo] :
     fract ((no_index (OfNat.ofNat n)) : α) = 0 :=
   fract_natCast n
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem fract_floor (a : α) : fract (⌊a⌋ : α) = 0 :=
   fract_intCast _
 

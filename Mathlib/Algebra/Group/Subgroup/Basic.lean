@@ -1923,7 +1923,6 @@ theorem normalClosure_eq_iInf :
 theorem normalClosure_eq_self (H : Subgroup G) [H.Normal] : normalClosure ↑H = H :=
   le_antisymm (normalClosure_le_normal rfl.subset) le_normalClosure
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem normalClosure_idempotent : normalClosure ↑(normalClosure s) = normalClosure s :=
   normalClosure_eq_self _
 
