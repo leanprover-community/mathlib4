@@ -46,9 +46,17 @@ lemma Scheme.Hom.isLocallyClosed_range (f : X.Hom Y) [IsImmersion f] :
     IsLocallyClosed (Set.range f.base) :=
   IsImmersion.isLocallyClosed_range
 
+/--
+Given an immersion `f : X ⟶ Y`, this is the biggest open set `U ⊆ Y` containing the image of `X`
+such that `X` is closed in `U`.
+-/
 def Scheme.Hom.coborderRange (f : X.Hom Y) [IsImmersion f] : Y.Opens :=
   ⟨coborder (Set.range f.base), f.isLocallyClosed_range.isOpen_coborder⟩
 
+/--
+The first part of the factorization of an immersion `f : X ⟶ Y` to a closed immersion
+`f.liftCoborder : X ⟶ f.coborderRange` and a dominant open immersion `f.coborderRange.ι`.
+-/
 noncomputable
 def Scheme.Hom.liftCoborder (f : X.Hom Y) [IsImmersion f] : X ⟶ f.coborderRange :=
   IsOpenImmersion.lift f.coborderRange.ι f (by simpa using subset_coborder)
