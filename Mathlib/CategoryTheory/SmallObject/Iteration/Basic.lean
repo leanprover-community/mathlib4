@@ -76,6 +76,19 @@ def coconeOfLE : Cocone (restrictionLT F hi) where
       naturality := fun ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩ _ => by
         simp [comp_id, ← Functor.map_comp, homOfLE_comp] }
 
+/-- The functor `{ k // k ≤ i } ⥤ C` obtained by "restriction" of `F : { i // i ≤ j } ⥤ C`
+when `i ≤ j`. -/
+def restrictionLE : { k | k ≤ i } ⥤ C :=
+  (monotone_inclusion_le_le_of_le hi).functor ⋙ F
+
+@[simp]
+lemma restrictionLE_obj (k : J) (hk : k ≤ i) :
+    (restrictionLE F hi).obj ⟨k, hk⟩ = F.obj ⟨k, hk.trans hi⟩ := rfl
+
+@[simp]
+lemma restrictionLE_map {k₁ k₂ : { k | k ≤ i }} (φ : k₁ ⟶ k₂) :
+    (restrictionLE F hi).map φ = F.map (homOfLE (by simpa using leOfHom φ)) := rfl
+
 end Iteration
 
 variable [IsWellOrder J (· < ·)] [OrderBot J]
@@ -183,6 +196,62 @@ instance : Subsingleton (iter₁ ⟶ iter₂) where
     · simp only [natTrans_app_zero]
     · simp only [Hom.natTrans_app_succ _ i (lt_of_lt_of_le hi'' hi'), hi i hi'']
     · exact (iter₁.isColimit i hi').hom_ext (fun ⟨k, hk⟩ => by simp [hi k hk]))
+
+end Hom
+
+@[simp]
+lemma natTrans_id : Hom.natTrans (𝟙 iter₁) = 𝟙 _ := rfl
+
+variable {iter₁ iter₂}
+
+@[simp, reassoc]
+lemma natTrans_comp {iter₃ : Iteration ε j} (φ : iter₁ ⟶ iter₂) (ψ : iter₂ ⟶ iter₃) :
+    (φ ≫ ψ).natTrans = φ.natTrans ≫ ψ.natTrans := rfl
+
+@[reassoc]
+lemma natTrans_naturality (φ : iter₁ ⟶ iter₂) (i₁ i₂ : J) (h : i₁ ≤ i₂) (h' : i₂ ≤ j) :
+    iter₁.F.map (by exact homOfLE h) ≫ φ.natTrans.app ⟨i₂, h'⟩ =
+      φ.natTrans.app ⟨i₁, h.trans h'⟩ ≫ iter₂.F.map (by exact homOfLE h) := by
+  apply φ.natTrans.naturality
+
+variable (ε) in
+/-- The evaluation functor `Iteration ε j ⥤ C ⥤ C` at `i : J` when `i ≤ j`. -/
+@[simps]
+def eval {i : J} (hi : i ≤ j) : Iteration ε j ⥤ C ⥤ C where
+  obj iter := iter.F.obj ⟨i, hi⟩
+  map φ := φ.natTrans.app _
+
+/-- Given `iter : Iteration ε j` and `i : J` such that `i ≤ j`, this is the
+induced element in `Iteration ε i`. -/
+@[simps F isoZero isoSucc]
+def trunc (iter : Iteration ε j) {i : J} (hi : i ≤ j) : Iteration ε i where
+  F := restrictionLE (iter.F) hi
+  isoZero := iter.isoZero
+  isoSucc k hk := iter.isoSucc k (lt_of_lt_of_le hk hi)
+  mapSucc'_eq k hk := iter.mapSucc'_eq k (lt_of_lt_of_le hk hi)
+  isColimit k _ hk := iter.isColimit k (hk.trans hi)
+
+variable (ε) in
+/-- The truncation functor `Iteration ε j ⥤ Iteration ε i` when `i ≤ j`. -/
+@[simps obj]
+def truncFunctor {i : J} (hi : i ≤ j) : Iteration ε j ⥤ Iteration ε i where
+  obj iter := iter.trunc hi
+  map {iter₁ iter₂} φ :=
+    { natTrans := whiskerLeft _ φ.natTrans
+      natTrans_app_succ := fun k hk => φ.natTrans_app_succ k (lt_of_lt_of_le hk hi) }
+
+@[simp]
+lemma truncFunctor_map_natTrans_app
+    (φ : iter₁ ⟶ iter₂) {i : J} (hi : i ≤ j) (k : J) (hk : k ≤ i) :
+    ((truncFunctor ε hi).map φ).natTrans.app ⟨k, hk⟩ =
+      φ.natTrans.app ⟨k, hk.trans hi⟩ := rfl
+
+namespace Hom
+
+lemma congr_app (φ φ' : iter₁ ⟶ iter₂) (i : J) (hi : i ≤ j) :
+    φ.natTrans.app ⟨i, hi⟩ = φ'.natTrans.app ⟨i, hi⟩ := by
+  obtain rfl := Subsingleton.elim φ φ'
+  rfl
 
 end Hom
 
