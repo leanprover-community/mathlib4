@@ -153,6 +153,9 @@ def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 /-- `IsIrrefl` as a definition, suitable for use in proofs. -/
 def Irreflexive := ∀ x, ¬x ≺ x
 
+/-- `IsAssym` as a definition, suitable for use in proofs. -/
+def Asymmetric := ∀ ⦃x y⦄, x ≺ y → ¬ y ≺ x
+
 /-- `IsAntisymm` as a definition, suitable for use in proofs. -/
 def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 
