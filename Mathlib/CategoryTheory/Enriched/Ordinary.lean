@@ -128,16 +128,11 @@ noncomputable def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
   map φ :=
     { app := fun Y => eHomWhiskerRight V φ.unop Y }
 
-namespace EnrichedCategory
-
-variable {D : Type*} [EnrichedCategory V D]
-
-instance : EnrichedOrdinaryCategory V (ForgetEnrichment V D) where
+instance ForgetEnrichment.EnrichedOrdinaryCategory {D : Type*} [EnrichedCategory V D] :
+    EnrichedOrdinaryCategory V (ForgetEnrichment V D) where
   toEnrichedCategory := inferInstanceAs (EnrichedCategory V D)
   homEquiv := Equiv.refl _
   homEquiv_id _ := Category.id_comp _
   homEquiv_comp _ _ := Category.assoc _ _ _
-
-end EnrichedCategory
 
 end CategoryTheory
