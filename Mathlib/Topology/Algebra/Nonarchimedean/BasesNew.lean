@@ -274,14 +274,14 @@ in the sense of `R`-modules (forgetting about the ring structure on `A`) and tho
 view definitionaly gives the same topology on `A`.
 -/
 variable [tR : TopologicalSpace R] {p : ι → Prop} {B : ι → Submodule R A}
-  (hB : IsRingBasisOfSubmodules p B) (hsmul : ∀ m {i}, p i → ∀ᶠ (a : R) in 𝓝 0, a • m ∈ B i)
-include hB hsmul
+  (hB : IsRingBasisOfSubmodules p B)
+include hB
 
 theorem IsRingBasisOfSubmodules.isModuleBasisOfSubmodules :
     IsModuleBasisOfSubmodules p B where
   nonempty := hB.nonempty
   inter := hB.inter
-  smul := hsmul
+  smul m {i} hi := ?_
 
 example : hB.topology = (hB.isModuleBasisOfSubmodules hsmul).topology :=
   rfl
