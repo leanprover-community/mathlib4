@@ -153,7 +153,7 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
   rfl
 
 -- Porting note: removed `↑`, added `.cells` and changed proof
-@[norm_cast, simp]
+@[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
   refine Set.eq_of_subset_of_subset ?_ ?_
   · intros x h
