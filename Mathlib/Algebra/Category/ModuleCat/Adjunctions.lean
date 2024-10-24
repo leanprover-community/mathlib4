@@ -89,6 +89,7 @@ def adj : free R ⊣ forget (ModuleCat.{u} R) :=
 lemma adj_homEquiv (X : Type u) (M : ModuleCat.{u} R) :
     (adj R).homEquiv X M = freeHomEquiv := by
   simp only [adj, Adjunction.mkOfHomEquiv_homEquiv]
+
 instance : (forget (ModuleCat.{u} R)).IsRightAdjoint  :=
   (adj R).isRightAdjoint
 
