@@ -71,7 +71,7 @@ lemma free_map_apply {X Y : Type u} (f : X → Y) (x : X) :
 /-- The bijection `((free R).obj X ⟶ M) ≃ (X → M)` when `X` is a type and `M` a module. -/
 @[simps]
 def freeHomEquiv {X : Type u} {M : ModuleCat.{u} R} :
-    ((free R).obj X ⟶ M) ≃ (X ⟶ M) where
+    ((free R).obj X ⟶ M) ≃ (X → M) where
   toFun φ x := φ (freeMk x)
   invFun ψ := freeDesc ψ
   left_inv _ := by ext; simp

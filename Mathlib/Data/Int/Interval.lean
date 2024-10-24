@@ -98,35 +98,35 @@ theorem uIcc_eq_finset_map :
       (Nat.castEmbedding.trans <| addLeftEmbedding <| min a b) := rfl
 
 @[simp]
-theorem card_Icc : (Icc a b).card = (b + 1 - a).toNat := (card_map _).trans <| card_range _
+theorem card_Icc : #(Icc a b) = (b + 1 - a).toNat := (card_map _).trans <| card_range _
 
 @[simp]
-theorem card_Ico : (Ico a b).card = (b - a).toNat := (card_map _).trans <| card_range _
+theorem card_Ico : #(Ico a b) = (b - a).toNat := (card_map _).trans <| card_range _
 
 @[simp]
-theorem card_Ioc : (Ioc a b).card = (b - a).toNat := (card_map _).trans <| card_range _
+theorem card_Ioc : #(Ioc a b) = (b - a).toNat := (card_map _).trans <| card_range _
 
 @[simp]
-theorem card_Ioo : (Ioo a b).card = (b - a - 1).toNat := (card_map _).trans <| card_range _
+theorem card_Ioo : #(Ioo a b) = (b - a - 1).toNat := (card_map _).trans <| card_range _
 
 @[simp]
-theorem card_uIcc : (uIcc a b).card = (b - a).natAbs + 1 :=
+theorem card_uIcc : #(uIcc a b) = (b - a).natAbs + 1 :=
   (card_map _).trans <|
     (Nat.cast_inj (R := ℤ)).mp <| by
       rw [card_range, sup_eq_max, inf_eq_min,
         Int.toNat_of_nonneg (sub_nonneg_of_le <| le_add_one min_le_max), Int.ofNat_add,
         Int.natCast_natAbs, add_comm, add_sub_assoc, max_sub_min_eq_abs, add_comm, Int.ofNat_one]
 
-theorem card_Icc_of_le (h : a ≤ b + 1) : ((Icc a b).card : ℤ) = b + 1 - a := by
+theorem card_Icc_of_le (h : a ≤ b + 1) : (#(Icc a b) : ℤ) = b + 1 - a := by
   rw [card_Icc, toNat_sub_of_le h]
 
-theorem card_Ico_of_le (h : a ≤ b) : ((Ico a b).card : ℤ) = b - a := by
+theorem card_Ico_of_le (h : a ≤ b) : (#(Ico a b) : ℤ) = b - a := by
   rw [card_Ico, toNat_sub_of_le h]
 
-theorem card_Ioc_of_le (h : a ≤ b) : ((Ioc a b).card : ℤ) = b - a := by
+theorem card_Ioc_of_le (h : a ≤ b) : (#(Ioc a b) : ℤ) = b - a := by
   rw [card_Ioc, toNat_sub_of_le h]
 
-theorem card_Ioo_of_lt (h : a < b) : ((Ioo a b).card : ℤ) = b - a - 1 := by
+theorem card_Ioo_of_lt (h : a < b) : (#(Ioo a b) : ℤ) = b - a - 1 := by
   rw [card_Ioo, sub_sub, toNat_sub_of_le h]
 
 -- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it

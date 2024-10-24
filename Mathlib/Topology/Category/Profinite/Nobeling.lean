@@ -1779,7 +1779,7 @@ def GoodProducts.Basis (hC : IsClosed C) :
 
 end Induction
 
-variable {S : Profinite} {ι : S → I → Bool} (hι : ClosedEmbedding ι)
+variable {S : Profinite} {ι : S → I → Bool} (hι : IsClosedEmbedding ι)
 include hι
 
 /--
@@ -1801,8 +1801,8 @@ def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decid
 
 open scoped Classical in
 /-- The map `Nobeling.ι` is a closed embedding. -/
-theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
-  apply Continuous.closedEmbedding
+theorem Nobeling.embedding : IsClosedEmbedding (Nobeling.ι S) := by
+  apply Continuous.isClosedEmbedding
   · dsimp (config := { unfoldPartialApp := true }) [ι]
     refine continuous_pi ?_
     intro C
