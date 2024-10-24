@@ -312,7 +312,7 @@ theorem realize_denselyOrdered [h : DenselyOrdered M] :
 
 variable (L) (M)
 
-theorem denselyOrdered_of_dlo [h: M ⊨ L.dlo] : DenselyOrdered M :=
+theorem denselyOrdered_of_dlo [M ⊨ L.dlo] : DenselyOrdered M :=
   realize_denselyOrdered_iff.1 (L.dlo.realize_sentence_of_mem (by
     simp only [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or, or_true]))
 
@@ -533,7 +533,7 @@ theorem dlo_isComplete : Language.order.dlo.IsComplete :=
     ⟨by
       letI : Language.order.Structure ℚ := orderStructure ℚ
       exact Theory.ModelType.of _ ℚ⟩
-    fun M => inferInstance
+    fun _ => inferInstance
 
 end Fraisse
 

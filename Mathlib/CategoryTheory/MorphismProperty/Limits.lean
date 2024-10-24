@@ -163,6 +163,16 @@ theorem StableUnderBaseChange.op {P : MorphismProperty C} (hP : StableUnderBaseC
 theorem StableUnderBaseChange.unop {P : MorphismProperty Cᵒᵖ} (hP : StableUnderBaseChange P) :
     StableUnderCobaseChange P.unop := fun _ _ _ _ _ _ _ _ sq hf => hP sq.op hf
 
+lemma StableUnderBaseChange.inf {P Q : MorphismProperty C} (hP : StableUnderBaseChange P)
+    (hQ : StableUnderBaseChange Q) :
+    StableUnderBaseChange (P ⊓ Q) :=
+  fun _ _ _ _ _ _ _ _ hp hg ↦ ⟨hP hp hg.left, hQ hp hg.right⟩
+
+lemma StableUnderCobaseChange.inf {P Q : MorphismProperty C} (hP : StableUnderCobaseChange P)
+    (hQ : StableUnderCobaseChange Q) :
+    StableUnderCobaseChange (P ⊓ Q) :=
+  fun _ _ _ _ _ _ _ _ hp hg ↦ ⟨hP hp hg.left, hQ hp hg.right⟩
+
 section
 
 variable (W : MorphismProperty C)
@@ -203,7 +213,7 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
   simp
 
 /-- The condition that a property of morphisms is stable by finite products. -/
-class IsStableUnderFiniteProducts : Prop :=
+class IsStableUnderFiniteProducts : Prop where
   isStableUnderProductsOfShape (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
 
 lemma isStableUnderProductsOfShape_of_isStableUnderFiniteProducts

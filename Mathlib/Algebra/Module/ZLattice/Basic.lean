@@ -24,7 +24,7 @@ A `ℤ`-lattice `L` can be defined in two ways:
 Results about the first point of view are in the `ZSpan` namespace and results about the second
 point of view are in the `ZLattice` namespace.
 
-## Main results
+## Main results and definitions
 
 * `ZSpan.isAddFundamentalDomain`: for a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that
 the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
@@ -32,6 +32,9 @@ the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
 `ℤ`-module
 * `ZLattice.rank`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is free
 of `ℤ`-rank equal to the `K`-rank of `E`
+* `ZLattice.comap`: for `e : E → F` a linear map and `L : Submodule ℤ E`, define the pullback of
+`L` by `e`. If `L` is a `IsZLattice` and `e` is a continuous linear equiv, then it is also a
+`IsZLattice`, see `instIsZLatticeComap`.
 
 ## Implementation Notes
 
@@ -287,7 +290,7 @@ theorem discreteTopology_pi_basisFun [Finite ι] :
   refine discreteTopology_iff_isOpen_singleton_zero.mpr ⟨Metric.ball 0 1, Metric.isOpen_ball, ?_⟩
   ext x
   rw [Set.mem_preimage, mem_ball_zero_iff, pi_norm_lt_iff zero_lt_one, Set.mem_singleton_iff]
-  simp_rw [← coe_eq_zero, Function.funext_iff, Pi.zero_apply, Real.norm_eq_abs]
+  simp_rw [← coe_eq_zero, funext_iff, Pi.zero_apply, Real.norm_eq_abs]
   refine forall_congr' (fun i => ?_)
   rsuffices ⟨y, hy⟩ : ∃ (y : ℤ), (y : ℝ) = (x : ι → ℝ) i
   · rw [← hy, ← Int.cast_abs, ← Int.cast_one,  Int.cast_lt, Int.abs_lt_one_iff, Int.cast_eq_zero]
@@ -634,7 +637,9 @@ section comap
 variable (K : Type*) [NormedField K] {E F : Type*} [NormedAddCommGroup E] [NormedSpace K E]
     [NormedAddCommGroup F] [NormedSpace K F] (L : Submodule ℤ E)
 
-/--- The coimage of a `ZLattice` by a linear map. -/
+/-- Let `e : E → F` a linear map, the map that sends a `L : Submodule ℤ E` to the
+`Submodule ℤ F` that is the pullback of `L` by `e`. If `IsZLattice L` and `e` is a continuous
+linear equiv, then it is a `IsZLattice` of `E`, see `instIsZLatticeComap`. -/
 protected def ZLattice.comap (e : F →ₗ[K] E) := L.comap (e.restrictScalars ℤ)
 
 @[simp]
@@ -658,7 +663,7 @@ theorem ZLattice.comap_span_top (hL : span K (L : Set E) = ⊤) {e : F →ₗ[K]
     span K (ZLattice.comap K L e : Set F) = ⊤ := by
   rw [ZLattice.coe_comap, Submodule.span_preimage_eq (Submodule.nonempty L) he, hL, comap_top]
 
-instance [DiscreteTopology L] [IsZLattice K L] (e : F ≃L[K] E) :
+instance instIsZLatticeComap [DiscreteTopology L] [IsZLattice K L] (e : F ≃L[K] E) :
     IsZLattice K (ZLattice.comap K L e.toLinearMap) where
   span_top := by
     rw [ZLattice.coe_comap, LinearEquiv.coe_coe, e.coe_toLinearEquiv, ← e.image_symm_eq_preimage,

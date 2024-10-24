@@ -65,7 +65,7 @@ set, sets, subset, subsets, union, intersection, insert, singleton, complement, 
 
 open Function
 
-universe u v w x
+universe u v
 
 namespace Set
 
@@ -142,11 +142,9 @@ theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
 theorem Set.coe_setOf (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
   rfl
 
--- Porting note (#10618): removed `simp` because `simp` can prove it
 theorem SetCoe.forall {s : Set α} {p : s → Prop} : (∀ x : s, p x) ↔ ∀ (x) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.forall
 
--- Porting note (#10618): removed `simp` because `simp` can prove it
 theorem SetCoe.exists {s : Set α} {p : s → Prop} :
     (∃ x : s, p x) ↔ ∃ (x : _) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.exists
@@ -182,7 +180,7 @@ theorem Eq.subset {α} {s t : Set α} : s = t → s ⊆ t :=
 
 namespace Set
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
+variable {α : Type u} {β : Type v} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
 
 instance : Inhabited (Set α) :=
   ⟨∅⟩
@@ -347,7 +345,6 @@ protected theorem ssubset_of_subset_of_ssubset {s₁ s₂ s₃ : Set α} (hs₁s
 theorem not_mem_empty (x : α) : ¬x ∈ (∅ : Set α) :=
   id
 
--- Porting note (#10618): removed `simp` because `simp` can prove it
 theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
   not_not
 
@@ -355,8 +352,6 @@ theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
 
 -- Porting note: we seem to need parentheses at `(↥s)`,
 -- even if we increase the right precedence of `↥` in `Mathlib.Tactic.Coe`.
--- Porting note: removed `simp` as it is competing with `nonempty_subtype`.
--- @[simp]
 theorem nonempty_coe_sort {s : Set α} : Nonempty (↥s) ↔ s.Nonempty :=
   nonempty_subtype
 
@@ -942,7 +937,6 @@ theorem ssubset_insert {s : Set α} {a : α} (h : a ∉ s) : s ⊂ insert a s :=
 theorem insert_comm (a b : α) (s : Set α) : insert a (insert b s) = insert b (insert a s) :=
   ext fun _ => or_left_comm
 
--- Porting note (#10618): removing `simp` attribute because `simp` can prove it
 theorem insert_idem (a : α) (s : Set α) : insert a (insert a s) = insert a s :=
   insert_eq_of_mem <| mem_insert _ _
 
@@ -1046,7 +1040,6 @@ theorem singleton_nonempty (a : α) : ({a} : Set α).Nonempty :=
 theorem singleton_ne_empty (a : α) : ({a} : Set α) ≠ ∅ :=
   (singleton_nonempty _).ne_empty
 
---Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem empty_ssubset_singleton : (∅ : Set α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
 
@@ -1136,19 +1129,15 @@ theorem sep_eq_self_iff_mem_true : { x ∈ s | p x } = s ↔ ∀ x ∈ s, p x :=
 theorem sep_eq_empty_iff_mem_false : { x ∈ s | p x } = ∅ ↔ ∀ x ∈ s, ¬p x := by
   simp_rw [Set.ext_iff, mem_sep_iff, mem_empty_iff_false, iff_false, not_and]
 
---Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_true : { x ∈ s | True } = s :=
   inter_univ s
 
---Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_false : { x ∈ s | False } = ∅ :=
   inter_empty s
 
---Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_empty (p : α → Prop) : { x ∈ (∅ : Set α) | p x } = ∅ :=
   empty_inter {x | p x}
 
---Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_univ : { x ∈ (univ : Set α) | p x } = { x | p x } :=
   univ_inter {x | p x}
 
@@ -1497,6 +1486,10 @@ theorem diff_subset_diff_left {s₁ s₂ t : Set α} (h : s₁ ⊆ s₂) : s₁ 
 theorem diff_subset_diff_right {s t u : Set α} (h : t ⊆ u) : s \ u ⊆ s \ t :=
   sdiff_le_sdiff_left ‹t ≤ u›
 
+theorem diff_subset_diff_iff_subset {r : Set α} (hs : s ⊆ r) (ht : t ⊆ r) :
+    r \ s ⊆ r \ t ↔ t ⊆ s :=
+  sdiff_le_sdiff_iff_le hs ht
+
 theorem compl_eq_univ_diff (s : Set α) : sᶜ = univ \ s :=
   top_sdiff.symm
 
@@ -1556,6 +1549,11 @@ theorem diff_compl : s \ tᶜ = s ∩ t :=
 
 theorem diff_diff_right {s t u : Set α} : s \ (t \ u) = s \ t ∪ s ∩ u :=
   sdiff_sdiff_right'
+
+theorem diff_insert_of_not_mem {x : α} (h : x ∉ s) : s \ insert x t = s \ t := by
+  refine Subset.antisymm (diff_subset_diff (refl _) (subset_insert ..)) fun y hy ↦ ?_
+  simp only [mem_diff, mem_insert_iff, not_or] at hy ⊢
+  exact ⟨hy.1, fun hxy ↦ h <| hxy ▸ hy.1, hy.2⟩
 
 @[simp]
 theorem insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
@@ -1634,7 +1632,6 @@ theorem insert_diff_singleton_comm (hab : a ≠ b) (s : Set α) :
   simp_rw [← union_singleton, union_diff_distrib,
     diff_singleton_eq_self (mem_singleton_iff.not.2 hab.symm)]
 
---Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem diff_self {s : Set α} : s \ s = ∅ :=
   sdiff_self
 
@@ -1662,7 +1659,6 @@ theorem union_eq_diff_union_diff_union_inter (s t : Set α) : s ∪ t = s \ t �
 
 /-! ### Lemmas about pairs -/
 
---Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} :=
   union_self _
 

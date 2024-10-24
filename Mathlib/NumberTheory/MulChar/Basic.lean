@@ -502,7 +502,7 @@ theorem IsQuadratic.pow_char {χ : MulChar R R'} (hχ : χ.IsQuadratic) (p : ℕ
   rcases hχ x with (hx | hx | hx) <;> rw [hx]
   · rw [zero_pow (@Fact.out p.Prime).ne_zero]
   · rw [one_pow]
-  · exact CharP.neg_one_pow_char R' p
+  · exact neg_one_pow_char R' p
 
 /-- The `n`th power of a quadratic character is the trivial character, when `n` is even. -/
 theorem IsQuadratic.pow_even {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ} (hn : Even n) :
