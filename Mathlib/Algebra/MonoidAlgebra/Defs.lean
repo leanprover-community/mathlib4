@@ -397,14 +397,10 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
       calc
         (f * g) x = ∑ a₁ ∈ f.support, ∑ a₂ ∈ g.support, F (a₁, a₂) := mul_apply f g x
         _ = ∑ p ∈ f.support ×ˢ g.support, F p := by rw [Finset.sum_product]
-        _ = ∑ p ∈ (f.support ×ˢ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
+        _ = ∑ p ∈ f.support ×ˢ g.support with p.1 * p.2 = x, f p.1 * g p.2 :=
           (Finset.sum_filter _ _).symm
-        _ = ∑ p ∈ s.filter fun p : G × G => p.1 ∈ f.support ∧ p.2 ∈ g.support, f p.1 * g p.2 :=
-          (sum_congr
-            (by
-              ext
-              simp only [mem_filter, mem_product, hs, and_comm])
-            fun _ _ => rfl)
+        _ = ∑ p ∈ s with p.1 ∈ f.support ∧ p.2 ∈ g.support, f p.1 * g p.2 := by
+          congr! 1; ext; simp only [mem_filter, mem_product, hs, and_comm]
         _ = ∑ p ∈ s, f p.1 * g p.2 :=
           sum_subset (filter_subset _ _) fun p hps hp => by
             simp only [mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
@@ -759,7 +755,9 @@ protected noncomputable def opRingEquiv [Monoid G] :
       erw [unop_op, unop_op, single_mul_single]
       simp }
 
--- @[simp] -- Porting note (#10618): simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this.
+-- More specifically, the LHS simplifies to `Finsupp.single`, which implies there's some
+-- defeq abuse going on.
 theorem opRingEquiv_single [Monoid G] (r : k) (x : G) :
     MonoidAlgebra.opRingEquiv (op (single x r)) = single (op x) (op r) := by simp
 
@@ -1417,7 +1415,9 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
       erw [mapRange_single, single_mul_single, mapRange_single, mapRange_single]
       simp only [mapRange_single, single_mul_single, ← op_mul, add_comm] }
 
--- @[simp] -- Porting note (#10618): simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this.
+-- More specifically, the LHS simplifies to `Finsupp.single`, which implies there's some
+-- defeq abuse going on.
 theorem opRingEquiv_single [AddCommMonoid G] (r : k) (x : G) :
     AddMonoidAlgebra.opRingEquiv (op (single x r)) = single x (op r) := by simp
 

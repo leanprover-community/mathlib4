@@ -261,8 +261,7 @@ theorem reverse_cons' (a : α) (l : List α) : reverse (a :: l) = concat (revers
 theorem reverse_concat' (l : List α) (a : α) : (l ++ [a]).reverse = a :: l.reverse := by
   rw [reverse_append]; rfl
 
--- Porting note (#10618): simp can prove this
--- @[simp]
+@[simp]
 theorem reverse_singleton (a : α) : reverse [a] = [a] :=
   rfl
 
@@ -308,8 +307,7 @@ theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne
 @[simp]
 theorem getLast_singleton' (a : α) : getLast [a] (cons_ne_nil a []) = a := rfl
 
--- Porting note (#10618): simp can prove this
--- @[simp]
+@[simp]
 theorem getLast_cons_cons (a₁ a₂ : α) (l : List α) :
     getLast (a₁ :: a₂ :: l) (cons_ne_nil _ _) = getLast (a₂ :: l) (cons_ne_nil a₂ l) :=
   rfl
@@ -1113,8 +1111,6 @@ theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a _ => a) a l = a :=
 theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
   foldr_fixed' fun _ => rfl
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem foldr_eta : ∀ l : List α, foldr cons [] l = l := by
   simp only [foldr_cons_eq_append, append_nil, forall_const]
 
@@ -1949,8 +1945,7 @@ theorem map₂Right'_nil_left : map₂Right' f [] bs = (bs.map (f none), []) := 
 theorem map₂Right'_nil_right : map₂Right' f as [] = ([], as) :=
   rfl
 
--- Porting note (#10618): simp can prove this
--- @[simp]
+@[simp]
 theorem map₂Right'_nil_cons : map₂Right' f [] (b :: bs) = (f none b :: bs.map (f none), []) :=
   rfl
 
@@ -1977,8 +1972,7 @@ theorem zipLeft'_nil_right : zipLeft' as ([] : List β) = (as.map fun a => (a, n
 theorem zipLeft'_nil_left : zipLeft' ([] : List α) bs = ([], bs) :=
   rfl
 
--- Porting note (#10618): simp can prove this
--- @[simp]
+@[simp]
 theorem zipLeft'_cons_nil :
     zipLeft' (a :: as) ([] : List β) = ((a, none) :: as.map fun a => (a, none), []) :=
   rfl
@@ -2006,8 +2000,7 @@ theorem zipRight'_nil_left : zipRight' ([] : List α) bs = (bs.map fun b => (non
 theorem zipRight'_nil_right : zipRight' as ([] : List β) = ([], as) :=
   rfl
 
--- Porting note (#10618): simp can prove this
--- @[simp]
+@[simp]
 theorem zipRight'_nil_cons :
     zipRight' ([] : List α) (b :: bs) = ((none, b) :: bs.map fun b => (none, b), []) :=
   rfl
@@ -2062,8 +2055,7 @@ theorem map₂Right_nil_left : map₂Right f [] bs = bs.map (f none) := by cases
 theorem map₂Right_nil_right : map₂Right f as [] = [] :=
   rfl
 
--- Porting note (#10618): simp can prove this
--- @[simp]
+@[simp]
 theorem map₂Right_nil_cons : map₂Right f [] (b :: bs) = f none b :: bs.map (f none) :=
   rfl
 
@@ -2096,8 +2088,7 @@ theorem zipLeft_nil_right : zipLeft as ([] : List β) = as.map fun a => (a, none
 theorem zipLeft_nil_left : zipLeft ([] : List α) bs = [] :=
   rfl
 
--- Porting note (#10618): simp can prove this
--- @[simp]
+@[simp]
 theorem zipLeft_cons_nil :
     zipLeft (a :: as) ([] : List β) = (a, none) :: as.map fun a => (a, none) :=
   rfl
@@ -2134,8 +2125,7 @@ theorem zipRight_nil_left : zipRight ([] : List α) bs = bs.map fun b => (none, 
 theorem zipRight_nil_right : zipRight as ([] : List β) = [] :=
   rfl
 
--- Porting note (#10618): simp can prove this
--- @[simp]
+@[simp]
 theorem zipRight_nil_cons :
     zipRight ([] : List α) (b :: bs) = (none, b) :: bs.map fun b => (none, b) :=
   rfl

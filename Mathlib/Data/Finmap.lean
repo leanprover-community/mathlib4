@@ -513,7 +513,12 @@ theorem lookup_union_left_of_not_in {a} {s₁ s₂ : Finmap β} (h : a ∉ s₂)
   · rw [lookup_union_left h']
   · rw [lookup_union_right h', lookup_eq_none.mpr h, lookup_eq_none.mpr h']
 
--- @[simp] -- Porting note (#10618): simp can prove this
+/-- `simp`-normal form of `mem_lookup_union` -/
+@[simp]
+theorem mem_lookup_union' {a} {b : β a} {s₁ s₂ : Finmap β} :
+    lookup a (s₁ ∪ s₂) = some b ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
+  induction_on₂ s₁ s₂ fun _ _ => AList.mem_lookup_union
+
 theorem mem_lookup_union {a} {b : β a} {s₁ s₂ : Finmap β} :
     b ∈ lookup a (s₁ ∪ s₂) ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
   induction_on₂ s₁ s₂ fun _ _ => AList.mem_lookup_union
