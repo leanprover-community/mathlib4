@@ -134,7 +134,6 @@ theorem ofNat_one : ofNat 1 = 1 :=
 @[simp]
 theorem repr_ofNat (n : ℕ) : repr (ofNat n) = n := by cases n <;> simp
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem repr_one : repr (ofNat 1) = (1 : ℕ) := repr_ofNat 1
 
 theorem omega0_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by

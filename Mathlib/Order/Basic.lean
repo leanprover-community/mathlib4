@@ -1288,11 +1288,9 @@ theorem max_eq : max a b = unit :=
 theorem min_eq : min a b = unit :=
   rfl
 
--- Porting note (#10618): simp can prove this @[simp]
 protected theorem le : a ≤ b :=
   trivial
 
--- Porting note (#10618): simp can prove this @[simp]
 theorem not_lt : ¬a < b :=
   not_false
 

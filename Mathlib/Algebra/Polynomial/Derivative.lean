@@ -71,7 +71,7 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
     push_neg at h
     simp [h]
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
+@[simp]
 theorem derivative_zero : derivative (0 : R[X]) = 0 :=
   derivative.map_zero
 
@@ -116,7 +116,7 @@ theorem derivative_X : derivative (X : R[X]) = 1 :=
 theorem derivative_one : derivative (1 : R[X]) = 0 :=
   derivative_C
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
+@[simp]
 theorem derivative_add {f g : R[X]} : derivative (f + g) = derivative f + derivative g :=
   derivative.map_add f g
 
@@ -560,14 +560,14 @@ section Ring
 
 variable [Ring R]
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
+@[simp]
 theorem derivative_neg (f : R[X]) : derivative (-f) = -derivative f :=
   LinearMap.map_neg derivative f
 
 theorem iterate_derivative_neg {f : R[X]} {k : ℕ} : derivative^[k] (-f) = -derivative^[k] f :=
   iterate_map_neg derivative k f
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
+@[simp]
 theorem derivative_sub {f g : R[X]} : derivative (f - g) = derivative f - derivative g :=
   LinearMap.map_sub derivative f g
 

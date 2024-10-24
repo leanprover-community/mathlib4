@@ -194,7 +194,6 @@ theorem support_single_subset : support (single a r) ⊆ {a} := by
 theorem eq_of_mem_support_single {b : Γ} (h : b ∈ support (single a r)) : b = a :=
   support_single_subset h
 
---@[simp] Porting note (#10618): simp can prove it
 theorem single_eq_zero : single a (0 : R) = 0 :=
   (single a).map_zero
 
