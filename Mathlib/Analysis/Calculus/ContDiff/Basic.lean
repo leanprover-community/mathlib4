@@ -1562,9 +1562,8 @@ end prodMap
 
 section AlgebraInverse
 
-variable (𝕜) {R : Type*} [NormedRing R]
--- Porting note: this couldn't be on the same line as the binder type update of `𝕜`
-variable [NormedAlgebra 𝕜 R]
+variable (𝕜)
+variable {R : Type*} [NormedRing R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 

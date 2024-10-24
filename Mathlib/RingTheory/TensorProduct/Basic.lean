@@ -576,12 +576,22 @@ instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
     mul_comm := mul_comm }
 
+end CommRing
+
 section RightAlgebra
+
+variable [CommSemiring R]
+variable [Semiring A] [Algebra R A]
+variable [CommSemiring B] [Algebra R B]
 
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
 abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
-  (Algebra.TensorProduct.includeRight.toRingHom : B →+* A ⊗[R] B).toAlgebra
+  includeRight.toRingHom.toAlgebra' fun b x => by
+    suffices LinearMap.mulLeft R (includeRight b) = LinearMap.mulRight R (includeRight b) from
+      congr($this x)
+    ext xa xb
+    simp [mul_comm]
 
 attribute [local instance] TensorProduct.rightAlgebra
 
@@ -589,8 +599,6 @@ instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
 
 end RightAlgebra
-
-end CommRing
 
 /-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely rings, by treating both as `ℤ`-algebras.

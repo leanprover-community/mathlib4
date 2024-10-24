@@ -72,7 +72,6 @@ theorem coe_mk (f h) : ⇑(mk f h : ι →ᵇᵃ[I₀] M) = f := rfl
 theorem coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x :=
   DFunLike.coe_injective
 
--- Porting note (#10618): was @[simp], now can be proved by `simp`
 theorem coe_inj {f g : ι →ᵇᵃ[I₀] M} : (f : Box ι → M) = g ↔ f = g := DFunLike.coe_fn_eq
 
 theorem sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π : Prepartition I}
