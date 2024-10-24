@@ -66,7 +66,7 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
   · rw [← eval_map_algebraMap, Polynomial.eval_add_of_sq_eq_zero, derivative_map,
       ← one_mul (eval x _), eval_map_algebraMap, eval_map_algebraMap, ← mul_assoc, ← add_mul,
       ← Ideal.mem_bot, ← h, pow_two, add_comm]
-    exact Ideal.mul_mem_mul hu (Ideal.Quotient.eq_zero_iff_mem.mp hx')
+    · exact Ideal.mul_mem_mul hu (Ideal.Quotient.eq_zero_iff_mem.mp hx')
     rw [← Ideal.mem_bot, ← h]
     apply Ideal.pow_mem_pow
     rw [← Ideal.Quotient.eq_zero_iff_mem, map_mul, hx', mul_zero]
