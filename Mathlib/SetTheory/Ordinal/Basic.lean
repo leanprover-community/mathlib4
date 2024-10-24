@@ -89,9 +89,8 @@ instance inhabited : Inhabited WellOrder :=
 instance hasWellFounded (o : WellOrder) : WellFoundedRelation o.α :=
   ⟨o.r, o.wo.wf⟩
 
-open Classical in
 instance linearOrder (o : WellOrder) : LinearOrder o.α :=
-  linearOrderOfSTO o.r
+  o.wo.linearOrder
 
 @[simp]
 theorem eta (o : WellOrder) : mk o.α o.r o.wo = o :=
