@@ -80,6 +80,7 @@ theorem generateMeasurableRec_subset (s : Set (Set α)) {i j : Ordinal} (h : i �
     generateMeasurableRec s i ⊆ generateMeasurableRec s j :=
   generateMeasurableRec_mono s h
 
+/-- An inductive principle for the elements of `generateMeasurableRec`. -/
 @[elab_as_elim]
 theorem generateMeasurableRec_induction {s : Set (Set α)} {i : Ordinal} {t : Set α}
     {p : Set α → Prop} (hs : ∀ t ∈ s, p t) (h0 : p ∅)
@@ -147,6 +148,7 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
   · simp_rw [generateMeasurableRec_omega1, mem_iUnion₂, exists_prop] at IH
     exact iUnion_mem_generateMeasurableRec IH
 
+/-- `generateMeasurableRec` is constant for ordinals `≥ ω₁`. -/
 theorem generateMeasurableRec_of_omega1_le (s : Set (Set α)) {i : Ordinal.{v}} (hi : ω₁ ≤ i) :
     generateMeasurableRec s i = generateMeasurableRec s (ω₁ : Ordinal.{v}) := by
   apply (generateMeasurableRec_mono s hi).antisymm'
@@ -164,11 +166,12 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :
   intro i
   apply WellFoundedLT.induction i
   intro i IH hi
-  have D : # s ^ ℵ₀ ≤ max #s 2 ^ ℵ₀ := power_le_power_right (le_max_left _ _)
   have A : 𝔠 ≤ max #s 2 ^ ℵ₀ := power_le_power_right (le_max_right _ _)
   have B := aleph0_le_continuum.trans A
   have C : #(⋃ j < i, generateMeasurableRec s j) ≤ max #s 2 ^ ℵ₀ := by
-    apply mk_iUnion_Ordinal_lift_le_of_le
+    apply mk_iUnion_Ordinal_lift_le_of_le _ B _
+    · intro j hj
+      exact IH j hj (hj.trans_le hi).le
     · rw [lift_power, lift_aleph0]
       rw [← Ordinal.lift_le.{u}, lift_omega, Ordinal.lift_one, ← ord_aleph] at hi
       have H := card_le_of_le_ord hi
@@ -176,13 +179,10 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :
       apply H.trans <| aleph_one_le_continuum.trans <| power_le_power_right _
       rw [lift_max, Cardinal.lift_ofNat]
       exact le_max_right _ _
-    · exact B
-    · intro j hj
-      apply IH j hj (hj.trans_le hi).le
   rw [generateMeasurableRec]
   apply_rules [(mk_union_le _ _).trans, add_le_of_le (aleph_one_le_continuum.trans A),
     mk_image_le.trans]
-  · exact (self_le_power _ one_le_aleph0).trans D
+  · exact (self_le_power _ one_le_aleph0).trans (power_le_power_right (le_max_left _ _))
   · rw [mk_singleton]
     exact one_lt_aleph0.le.trans B
   · apply mk_range_le.trans
