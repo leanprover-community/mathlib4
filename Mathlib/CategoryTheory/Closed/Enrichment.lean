@@ -17,7 +17,7 @@ a `C`-category structure coming from another source (e.g. the type of simplicial
 `SSet.{v}` has an instance of `EnrichedCategory SSet.{v}` as a category of simplicial objects;
 see `AlgebraicTopology/SimplicialCategory/SimplicialObject`).
 
-All structure field values are defined in `Closed/Monoidal`
+All structure field values are defined in `Closed/Monoidal`.
 
 -/
 
