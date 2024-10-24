@@ -171,7 +171,7 @@ theorem Splits.comp_neg_X {i : L →+* F} {f : L[X]} (h : f.Splits i) : (f.comp 
     right
     intro g irr dvd
     rw [map_comp, Polynomial.map_neg, map_X, dvd_comp_neg_X_iff] at dvd
-    have := h (irr.map (algEquivAevalNegX)) dvd
+    have := h (irr.map algEquivAevalNegX) dvd
     rw [degree_eq_natDegree irr.ne_zero]
     rwa [algEquivAevalNegX_apply, ← comp_eq_aeval,
       degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
