@@ -62,6 +62,8 @@ section
 
 variable (R : Type u) [CommRing R]
 
+/-- The extension of scalars by the identity of a ring is isomorphic to the
+identity functor. -/
 noncomputable def extendScalarsId : extendScalars (RingHom.id R) ≅ 𝟭 _ :=
   ((conjugateIsoEquiv (extendRestrictScalarsAdj (RingHom.id R)) Adjunction.id).symm
     (restrictScalarsId R)).symm
@@ -93,6 +95,8 @@ section
 variable {R₁ R₂ R₃ : Type u} [CommRing R₁] [CommRing R₂] [CommRing R₃]
   (f : R₁ →+* R₂) (g : R₂ →+* R₃)
 
+/-- The extension of scalars by a composition of commutative ring morphisms
+identify to the composition of the extension of scalars functors. -/
 noncomputable def extendScalarsComp :
     extendScalars (g.comp f) ≅ extendScalars f ⋙ extendScalars g :=
   (conjugateIsoEquiv
@@ -136,6 +140,8 @@ lemma extendScalars_assoc :
     extendScalarsComp_hom_app_one_tmul g h, ExtendScalars.map_tmul,
     extendScalarsComp_hom_app_one_tmul f g]
 
+/-- The associativity compatibility for the extension of scalars, in the exact form
+that is needed in the definition `ModuleCat.extendScalarsPseudofunctor`. -/
 lemma extendScalars_assoc' :
     (extendScalarsComp (g.comp f) h).hom ≫ whiskerRight (extendScalarsComp f g).hom _ ≫
       (Functor.associator _ _ _).hom ≫ whiskerLeft _ (extendScalarsComp g h).inv ≫
