@@ -125,6 +125,17 @@ theorem card_edgeFinset_le_card_choose_two : #G.edgeFinset ≤ (Fintype.card V).
   rw [← card_edgeFinset_top_eq_card_choose_two]
   exact card_le_card (edgeFinset_mono le_top)
 
+variable [DecidableEq V]
+
+lemma card_toFinset_of_mem_edgeFinset (e : Sym2 V) (he : e ∈ G.edgeFinset) :
+    (e : Finset V).card = 2 :=
+  Sym2.card_toFinset_of_not_isDiag (not_isDiag_of_mem_edgeSet _ (mem_edgeFinset.mp he))
+
+lemma card_filter_mem_of_mem_edgeFinset (e : Sym2 V) (he : e ∈ G.edgeFinset) :
+    Finset.card {v | v ∈ e} = 2 := by
+  rw [← SimpleGraph.card_toFinset_of_mem_edgeFinset _ he]
+  congr; ext; simp
+
 end EdgeFinset
 
 theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (Sym2 V))
