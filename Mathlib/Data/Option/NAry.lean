@@ -45,7 +45,7 @@ theorem map₂_def {α β γ : Type u} (f : α → β → γ) (a : Option α) (b
     map₂ f a b = f <$> a <*> b := by
   cases a <;> rfl
 
--- Porting note (#10618): In Lean3, was `@[simp]` but now `simp` can prove it
+@[simp]
 theorem map₂_some_some (f : α → β → γ) (a : α) (b : β) : map₂ f (some a) (some b) = f a b := rfl
 
 theorem map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
