@@ -16,7 +16,8 @@ underlying space has a norm (rather than just a seminorm).
 
 suppress_compilation
 
-open scoped NNReal Topology
+open Topology
+open scoped NNReal
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G : Type*}
@@ -139,7 +140,7 @@ variable (f)
 
 /-- If a continuous linear map is a topology embedding, then it is expands the distances
 by a positive factor. -/
-theorem antilipschitz_of_embedding (f : E →L[𝕜] Fₗ) (hf : Embedding f) :
+theorem antilipschitz_of_isEmbedding (f : E →L[𝕜] Fₗ) (hf : IsEmbedding f) :
     ∃ K, AntilipschitzWith K f :=
   f.toLinearMap.antilipschitz_of_comap_nhds_le <| map_zero f ▸ (hf.nhds_eq_comap 0).ge
 

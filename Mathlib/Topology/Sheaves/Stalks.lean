@@ -56,7 +56,7 @@ open TopCat
 
 open CategoryTheory.Limits
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open Opposite
 

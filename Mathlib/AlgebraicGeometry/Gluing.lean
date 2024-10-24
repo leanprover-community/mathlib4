@@ -51,7 +51,7 @@ noncomputable section
 
 universe u
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits AlgebraicGeometry.PresheafedSpace
 
@@ -379,9 +379,8 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.base := by
     exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.covers x⟩
 
-theorem fromGlued_isOpenEmbedding : IsOpenEmbedding 𝒰.fromGlued.base :=
-  isOpenEmbedding_of_continuous_injective_open
-    (by fun_prop) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
+theorem fromGlued_isOpenEmbedding : IsOpenEmbedding 𝒰.fromGlued.1.base :=
+  .of_continuous_injective_isOpenMap (by fun_prop) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
 
 @[deprecated (since := "2024-10-18")]
 alias fromGlued_openEmbedding := fromGlued_isOpenEmbedding

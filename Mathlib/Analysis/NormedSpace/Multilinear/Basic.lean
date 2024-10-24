@@ -87,7 +87,7 @@ instance ContinuousMultilinearMap.instContinuousEval :
     let _ := TopologicalAddGroup.toUniformSpace F
     have := comm_topologicalAddGroup_is_uniform (G := F)
     refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
-      (embedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
+      (isEmbedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
     exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
       ball_mem_nhds _ one_pos⟩
 

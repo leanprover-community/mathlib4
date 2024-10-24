@@ -19,7 +19,7 @@ If furthermore explicit finite coproducts exist, then `CompHausLike P` is precoh
 
 universe u
 
-open CategoryTheory Limits
+open CategoryTheory Limits Topology
 
 attribute [local instance] ConcreteCategory.instFunLike
 

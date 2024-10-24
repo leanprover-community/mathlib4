@@ -164,7 +164,7 @@ instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiri
     TopologicalSemiring αᵐᵒᵖ := ⟨⟩
 
 instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [ContinuousNeg α] : ContinuousNeg αᵐᵒᵖ :=
-  opHomeomorph.symm.inducing.continuousNeg fun _ => rfl
+  opHomeomorph.symm.isInducing.continuousNeg fun _ => rfl
 
 instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] :
     TopologicalRing αᵐᵒᵖ := ⟨⟩

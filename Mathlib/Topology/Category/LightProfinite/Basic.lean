@@ -145,7 +145,7 @@ def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
         constructor
         · infer_instance
         · change SecondCountableTopology ({ u : ∀ j : J, F.obj j | _ } : Type _)
-          apply inducing_subtype_val.secondCountableTopology }
+          apply IsInducing.subtypeVal.secondCountableTopology }
   π :=
   { app := (CompHaus.limitCone.{v, u} (F ⋙ lightProfiniteToCompHaus)).π.app
     naturality := by

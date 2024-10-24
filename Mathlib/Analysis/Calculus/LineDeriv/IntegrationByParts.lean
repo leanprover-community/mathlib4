@@ -44,7 +44,7 @@ TODO: prove similar theorems assuming that the functions tend to zero at infinit
 integrable derivatives.
 -/
 
-open MeasureTheory Measure Module
+open MeasureTheory Measure Module Topology
 
 variable {E F G W : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
   [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedAddCommGroup W]

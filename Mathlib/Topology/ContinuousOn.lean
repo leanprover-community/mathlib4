@@ -1091,33 +1091,33 @@ theorem Function.LeftInverse.map_nhds_eq {f : α → β} {g : β → α} {x : β
   simpa only [nhdsWithin_univ, image_univ] using
     (h.leftInvOn univ).map_nhdsWithin_eq (h x) (by rwa [image_univ]) hg.continuousWithinAt
 
-theorem Inducing.continuousWithinAt_iff {f : α → β} {g : β → γ} (hg : Inducing g) {s : Set α}
-    {x : α} : ContinuousWithinAt f s x ↔ ContinuousWithinAt (g ∘ f) s x := by
-  simp_rw [ContinuousWithinAt, Inducing.tendsto_nhds_iff hg]; rfl
+lemma Topology.IsInducing.continuousWithinAt_iff {f : α → β} {g : β → γ} (hg : IsInducing g)
+    {s : Set α} {x : α} : ContinuousWithinAt f s x ↔ ContinuousWithinAt (g ∘ f) s x := by
+  simp_rw [ContinuousWithinAt, IsInducing.tendsto_nhds_iff hg]; rfl
 
-theorem Inducing.continuousOn_iff {f : α → β} {g : β → γ} (hg : Inducing g) {s : Set α} :
-    ContinuousOn f s ↔ ContinuousOn (g ∘ f) s := by
+lemma Topology.IsInducing.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsInducing g)
+    {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s := by
   simp_rw [ContinuousOn, hg.continuousWithinAt_iff]
 
-theorem Embedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : Embedding g) {s : Set α} :
-    ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
-  Inducing.continuousOn_iff hg.1
+lemma Topology.IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsEmbedding g)
+    {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
+  IsInducing.continuousOn_iff hg.1
 
-theorem Embedding.map_nhdsWithin_eq {f : α → β} (hf : Embedding f) (s : Set α) (x : α) :
+lemma Topology.IsEmbedding.map_nhdsWithin_eq {f : α → β} (hf : IsEmbedding f) (s : Set α) (x : α) :
     map f (𝓝[s] x) = 𝓝[f '' s] f x := by
   rw [nhdsWithin, Filter.map_inf hf.inj, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
     inter_eq_self_of_subset_right (image_subset_range _ _)]
 
-theorem IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : IsOpenEmbedding f) (s : Set β)
-    (x : α) : map f (𝓝[f ⁻¹' s] x) = 𝓝[s] f x := by
-  rw [hf.toEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
+theorem Topology.IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : IsOpenEmbedding f)
+    (s : Set β) (x : α) : map f (𝓝[f ⁻¹' s] x) = 𝓝[s] f x := by
+  rw [hf.isEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
   apply nhdsWithin_eq_nhdsWithin (mem_range_self _) hf.isOpen_range
   rw [inter_assoc, inter_self]
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.map_nhdsWithin_preimage_eq := IsOpenEmbedding.map_nhdsWithin_preimage_eq
 
-theorem IsQuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β → γ} (h : IsQuotientMap f)
+theorem Topology.IsQuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β → γ} (h : IsQuotientMap f)
     {s : Set β} (hs : IsOpen s) : ContinuousOn g s ↔ ContinuousOn (g ∘ f) (f ⁻¹' s) := by
   simp only [continuousOn_iff_continuous_restrict, (h.restrictPreimage_isOpen hs).continuous_iff]
   rfl

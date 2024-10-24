@@ -23,7 +23,7 @@ We apply this API to `CompHaus` and define the functor
 
 universe w w' v u
 
-open CategoryTheory Opposite Limits regularTopology ContinuousMap
+open CategoryTheory Opposite Limits regularTopology ContinuousMap Topology
 
 attribute [local instance] ConcreteCategory.instFunLike
 

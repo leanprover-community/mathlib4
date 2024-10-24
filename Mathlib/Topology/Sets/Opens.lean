@@ -250,11 +250,11 @@ theorem isOpenEmbedding' (U : Opens α) : IsOpenEmbedding (Subtype.val : U → �
 alias openEmbedding' := isOpenEmbedding'
 
 theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
-    IsOpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) :=
-  { toEmbedding := embedding_inclusion i
-    isOpen_range := by
-      rw [Set.range_inclusion i]
-      exact U.isOpen.preimage continuous_subtype_val }
+    IsOpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) where
+  toIsEmbedding := .inclusion i
+  isOpen_range := by
+    rw [Set.range_inclusion i]
+    exact U.isOpen.preimage continuous_subtype_val
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_of_le := isOpenEmbedding_of_le

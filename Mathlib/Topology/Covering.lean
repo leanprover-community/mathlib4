@@ -21,8 +21,7 @@ This file defines covering maps.
   assumed to be surjective, so the fibers are even allowed to be empty.
 -/
 
-
-open Bundle
+open Bundle Topology
 
 variable {E X : Type*} [TopologicalSpace E] [TopologicalSpace X] (f : E → X) (s : Set X)
 
@@ -63,7 +62,7 @@ theorem to_isEvenlyCovered_preimage {x : X} {I : Type*} [TopologicalSpace I]
     (h : IsEvenlyCovered f x I) : IsEvenlyCovered f x (f ⁻¹' {x}) :=
   let ⟨_, h2⟩ := h
   ⟨((Classical.choose h2).preimageSingletonHomeomorph
-          (Classical.choose_spec h2)).embedding.discreteTopology,
+          (Classical.choose_spec h2)).isEmbedding.discreteTopology,
     _, h.mem_toTrivialization_baseSet⟩
 
 end IsEvenlyCovered

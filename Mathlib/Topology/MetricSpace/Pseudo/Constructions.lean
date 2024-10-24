@@ -37,9 +37,9 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`
 structure. -/
-def Inducing.comapPseudoMetricSpace {α β} [TopologicalSpace α] [m : PseudoMetricSpace β] {f : α → β}
-    (hf : Inducing f) : PseudoMetricSpace α :=
-  .replaceTopology (.induced f m) hf.induced
+def Topology.IsInducing.comapPseudoMetricSpace {α β} [TopologicalSpace α] [m : PseudoMetricSpace β]
+    {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
+  .replaceTopology (.induced f m) hf.eq_induced
 
 /-- Pull back a pseudometric space structure by a uniform inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `UniformSpace`

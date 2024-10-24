@@ -16,8 +16,8 @@ The structures are induced by those on `ContinuousMultilinearMap`s,
 and most of the lemmas follow from the corresponding lemmas about `ContinuousMultilinearMap`s.
 -/
 
-open Bornology Function Set
-open scoped Topology UniformConvergence Filter
+open Bornology Function Set Topology
+open scoped UniformConvergence Filter
 
 namespace ContinuousAlternatingMap
 
@@ -82,7 +82,7 @@ section CompleteSpace
 variable [ContinuousSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [CompleteSpace F] [T2Space F]
 
 open UniformOnFun in
-theorem completeSpace (h : RestrictGenTopology {s : Set (ι → E) | IsVonNBounded 𝕜 s}) :
+theorem completeSpace (h : IsRestrictGen {s : Set (ι → E) | IsVonNBounded 𝕜 s}) :
     CompleteSpace (E [⋀^ι]→L[𝕜] F) := by
   have := ContinuousMultilinearMap.completeSpace (F := F) h
   rw [completeSpace_iff_isComplete_range
@@ -119,28 +119,28 @@ end UniformAddGroup
 
 variable [TopologicalSpace F] [TopologicalAddGroup F]
 
-lemma embedding_toContinuousMultilinearMap :
-    Embedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
+lemma isEmbedding_toContinuousMultilinearMap :
+    IsEmbedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
   letI := TopologicalAddGroup.toUniformSpace F
   haveI := comm_topologicalAddGroup_is_uniform (G := F)
-  isUniformEmbedding_toContinuousMultilinearMap.embedding
+  isUniformEmbedding_toContinuousMultilinearMap.isEmbedding
 
 instance instTopologicalAddGroup : TopologicalAddGroup (E [⋀^ι]→L[𝕜] F) :=
-  embedding_toContinuousMultilinearMap.topologicalAddGroup
+  isEmbedding_toContinuousMultilinearMap.topologicalAddGroup
     (toContinuousMultilinearMapLinear (R := ℕ))
 
 @[continuity, fun_prop]
 lemma continuous_toContinuousMultilinearMap :
     Continuous (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
-  embedding_toContinuousMultilinearMap.continuous
+  isEmbedding_toContinuousMultilinearMap.continuous
 
 instance instContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F] [ContinuousConstSMul M F] :
     ContinuousConstSMul M (E [⋀^ι]→L[𝕜] F) :=
-  embedding_toContinuousMultilinearMap.continuousConstSMul id rfl
+  isEmbedding_toContinuousMultilinearMap.continuousConstSMul id rfl
 
 instance instContinuousSMul [ContinuousSMul 𝕜 F] : ContinuousSMul 𝕜 (E [⋀^ι]→L[𝕜] F) :=
-  embedding_toContinuousMultilinearMap.continuousSMul continuous_id rfl
+  isEmbedding_toContinuousMultilinearMap.continuousSMul continuous_id rfl
 
 theorem hasBasis_nhds_zero_of_basis {ι' : Type*} {p : ι' → Prop} {b : ι' → Set F}
     (h : (𝓝 (0 : F)).HasBasis p b) :
@@ -161,7 +161,7 @@ variable [ContinuousSMul 𝕜 E]
 lemma isClosedEmbedding_toContinuousMultilinearMap [T2Space F] :
     IsClosedEmbedding (toContinuousMultilinearMap :
       (E [⋀^ι]→L[𝕜] F) → ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F) :=
-  ⟨embedding_toContinuousMultilinearMap, isClosed_range_toContinuousMultilinearMap⟩
+  ⟨isEmbedding_toContinuousMultilinearMap, isClosed_range_toContinuousMultilinearMap⟩
 
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_toContinuousMultilinearMap := isClosedEmbedding_toContinuousMultilinearMap
@@ -186,16 +186,16 @@ section RestrictScalars
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
-theorem embedding_restrictScalars :
-    Embedding (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
+theorem isEmbedding_restrictScalars :
+    IsEmbedding (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  (isUniformEmbedding_restrictScalars _).embedding
+  (isUniformEmbedding_restrictScalars _).isEmbedding
 
 @[continuity, fun_prop]
 theorem continuous_restrictScalars :
     Continuous (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
-  embedding_restrictScalars.continuous
+  isEmbedding_restrictScalars.continuous
 
 variable (𝕜') in
 /-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/

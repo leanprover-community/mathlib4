@@ -22,8 +22,7 @@ Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
 -/
 
-open Function Set Filter
-open scoped Topology
+open Filter Function Set Topology
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y}
 

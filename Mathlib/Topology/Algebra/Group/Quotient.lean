@@ -15,7 +15,8 @@ In this file we define topology on `G ⧸ N`, where `N` is a subgroup of `G`,
 and prove basic properties of this topology.
 -/
 
-open scoped Pointwise Topology
+open Topology
+open scoped Pointwise
 
 variable {G : Type*} [TopologicalSpace G] [Group G]
 

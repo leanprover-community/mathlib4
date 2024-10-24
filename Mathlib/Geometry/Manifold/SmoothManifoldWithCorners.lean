@@ -125,6 +125,8 @@ derivative will be `mfderiv I I' f`, instead of the more natural notations `Tang
 real and complex manifolds).
 -/
 
+open Topology
+
 noncomputable section
 
 universe u v w u' v' w'
@@ -292,10 +294,10 @@ theorem isClosed_range : IsClosed (range I) :=
 @[deprecated (since := "2024-03-17")] alias closed_range := isClosed_range
 
 theorem map_nhds_eq (x : H) : map I (𝓝 x) = 𝓝[range I] I x :=
-  I.isClosedEmbedding.toEmbedding.map_nhds_eq x
+  I.isClosedEmbedding.isEmbedding.map_nhds_eq x
 
 theorem map_nhdsWithin_eq (s : Set H) (x : H) : map I (𝓝[s] x) = 𝓝[I '' s] I x :=
-  I.isClosedEmbedding.toEmbedding.map_nhdsWithin_eq s x
+  I.isClosedEmbedding.isEmbedding.map_nhdsWithin_eq s x
 
 theorem image_mem_nhdsWithin {x : H} {s : Set H} (hs : s ∈ 𝓝 x) : I '' s ∈ 𝓝[range I] I x :=
   I.map_nhds_eq x ▸ image_mem_map hs
@@ -351,7 +353,7 @@ open TopologicalSpace
 
 protected theorem secondCountableTopology [SecondCountableTopology E] (I : ModelWithCorners 𝕜 E H) :
     SecondCountableTopology H :=
-  I.isClosedEmbedding.toEmbedding.secondCountableTopology
+  I.isClosedEmbedding.isEmbedding.secondCountableTopology
 
 end ModelWithCorners
 
@@ -727,8 +729,8 @@ theorem PartialHomeomorph.singleton_smoothManifoldWithCorners
   @SmoothManifoldWithCorners.mk' _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid ∞ I)
 
-theorem IsOpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+theorem Topology.IsOpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 E H : Type*}
+    [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H}
     (h : IsOpenEmbedding f) :
     @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ h.singletonChartedSpace :=

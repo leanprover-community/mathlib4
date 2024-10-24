@@ -148,7 +148,7 @@ def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
   letI normed_add_comm_group : NormedAddCommGroup (Matrix m n 𝕜) :=
     { l2OpNormedAddCommGroupAux.replaceTopology <|
         (toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap
-        |>.toContinuousLinearEquiv.toHomeomorph.inducing.induced with
+        |>.toContinuousLinearEquiv.toHomeomorph.isInducing.eq_induced with
       norm := l2OpNormedAddCommGroupAux.norm
       dist_eq := l2OpNormedAddCommGroupAux.dist_eq }
   exact normed_add_comm_group.replaceUniformity <| by

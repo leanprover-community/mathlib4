@@ -32,8 +32,7 @@ compact-open, curry, function space
 -/
 
 
-open Set Filter TopologicalSpace
-open scoped Topology
+open Set Filter TopologicalSpace Topology
 
 namespace ContinuousMap
 
@@ -83,15 +82,17 @@ theorem continuous_comp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, 
 
 /-- If `g : C(Y, Z)` is a topology inducing map,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology inducing map too. -/
-theorem inducing_comp (g : C(Y, Z)) (hg : Inducing g) : Inducing (g.comp : C(X, Y) → C(X, Z)) where
-  induced := by
+theorem isInducing_comp (g : C(Y, Z)) (hg : IsInducing g) :
+    IsInducing (g.comp : C(X, Y) → C(X, Z)) where
+  eq_induced := by
     simp only [compactOpen_eq, induced_generateFrom_eq, image_image2, hg.setOf_isOpen,
       image2_image_right, MapsTo, mem_preimage, preimage_setOf_eq, comp_apply]
 
 /-- If `g : C(Y, Z)` is a topological embedding,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
-theorem embedding_comp (g : C(Y, Z)) (hg : Embedding g) : Embedding (g.comp : C(X, Y) → C(X, Z)) :=
-  ⟨inducing_comp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
+theorem isEmbedding_comp (g : C(Y, Z)) (hg : IsEmbedding g) :
+    IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
+  ⟨isInducing_comp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
 /-- `C(·, Z)` is a functor. -/
 @[fun_prop]
@@ -446,7 +447,7 @@ section IsQuotientMap
 variable {X₀ X Y Z : Type*} [TopologicalSpace X₀] [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [LocallyCompactSpace Y] {f : X₀ → X}
 
-theorem IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) {g : X × Y → Z}
+theorem Topology.IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) {g : X × Y → Z}
     (hg : Continuous fun p : X₀ × Y => g (f p.1, p.2)) : Continuous g := by
   let Gf : C(X₀, C(Y, Z)) := ContinuousMap.curry ⟨_, hg⟩
   have h : ∀ x : X, Continuous fun y => g (x, y) := by
@@ -462,14 +463,11 @@ theorem IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) {g : X ×
 @[deprecated (since := "2024-10-22")]
 alias QuotientMap.continuous_lift_prod_left := IsQuotientMap.continuous_lift_prod_left
 
-theorem IsQuotientMap.continuous_lift_prod_right (hf : IsQuotientMap f) {g : Y × X → Z}
+theorem Topology.IsQuotientMap.continuous_lift_prod_right (hf : IsQuotientMap f) {g : Y × X → Z}
     (hg : Continuous fun p : Y × X₀ => g (p.1, f p.2)) : Continuous g := by
   have : Continuous fun p : X₀ × Y => g ((Prod.swap p).1, f (Prod.swap p).2) :=
     hg.comp continuous_swap
   have : Continuous fun p : X₀ × Y => (g ∘ Prod.swap) (f p.1, p.2) := this
   exact (hf.continuous_lift_prod_left this).comp continuous_swap
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.continuous_lift_prod_right := IsQuotientMap.continuous_lift_prod_right
 
 end IsQuotientMap

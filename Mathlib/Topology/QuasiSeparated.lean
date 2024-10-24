@@ -27,7 +27,7 @@ of compact open subsets are still compact.
 -/
 
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
 
@@ -55,8 +55,8 @@ theorem isQuasiSeparated_univ {α : Type*} [TopologicalSpace α] [QuasiSeparated
     IsQuasiSeparated (Set.univ : Set α) :=
   isQuasiSeparated_univ_iff.mpr inferInstance
 
-theorem IsQuasiSeparated.image_of_embedding {s : Set α} (H : IsQuasiSeparated s) (h : Embedding f) :
-    IsQuasiSeparated (f '' s) := by
+theorem IsQuasiSeparated.image_of_isEmbedding {s : Set α} (H : IsQuasiSeparated s)
+    (h : IsEmbedding f) : IsQuasiSeparated (f '' s) := by
   intro U V hU hU' hU'' hV hV' hV''
   convert
     (H (f ⁻¹' U) (f ⁻¹' V)
@@ -79,11 +79,11 @@ theorem IsQuasiSeparated.image_of_embedding {s : Set α} (H : IsQuasiSeparated s
     rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left]
     exact hV.trans (Set.image_subset_range _ _)
 
-theorem IsOpenEmbedding.isQuasiSeparated_iff (h : IsOpenEmbedding f) {s : Set α} :
+theorem Topology.IsOpenEmbedding.isQuasiSeparated_iff (h : IsOpenEmbedding f) {s : Set α} :
     IsQuasiSeparated s ↔ IsQuasiSeparated (f '' s) := by
-  refine ⟨fun hs => hs.image_of_embedding h.toEmbedding, ?_⟩
+  refine ⟨fun hs => hs.image_of_isEmbedding h.isEmbedding, ?_⟩
   intro H U V hU hU' hU'' hV hV' hV''
-  rw [h.toEmbedding.isCompact_iff, Set.image_inter h.inj]
+  rw [h.isEmbedding.isCompact_iff, Set.image_inter h.inj]
   exact
     H (f '' U) (f '' V) (Set.image_subset _ hU) (h.isOpenMap _ hU') (hU''.image h.continuous)
       (Set.image_subset _ hV) (h.isOpenMap _ hV') (hV''.image h.continuous)

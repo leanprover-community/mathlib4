@@ -146,9 +146,8 @@ assert_not_exists Differentiable
 
 noncomputable section
 
-open scoped Topology NNReal ENNReal MeasureTheory
-
-open Set Filter TopologicalSpace ENNReal EMetric
+open Filter ENNReal EMetric Set TopologicalSpace Topology
+open scoped NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
@@ -1574,13 +1573,13 @@ theorem _root_.MeasurableEmbedding.integral_map {β} {_ : MeasurableSpace β} {f
   · rw [integral_non_aestronglyMeasurable hgm, integral_non_aestronglyMeasurable]
     exact fun hgf => hgm (hf.aestronglyMeasurable_map_iff.2 hgf)
 
-theorem _root_.IsClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]
+theorem _root_.Topology.IsClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]
     [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] {φ : α → β} (hφ : IsClosedEmbedding φ)
     (f : β → G) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
   hφ.measurableEmbedding.integral_map _
 
 @[deprecated (since := "2024-10-20")]
-alias _root_.ClosedEmbedding.integral_map := _root_.IsClosedEmbedding.integral_map
+alias _root_.ClosedEmbedding.integral_map := IsClosedEmbedding.integral_map
 
 theorem integral_map_equiv {β} [MeasurableSpace β] (e : α ≃ᵐ β) (f : β → G) :
     ∫ y, f y ∂Measure.map e μ = ∫ x, f (e x) ∂μ :=

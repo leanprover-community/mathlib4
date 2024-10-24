@@ -15,7 +15,7 @@ the file `Mathlib.Topology.Category.CompHausLike.Limits`) to the special case of
 
 universe w u
 
-open CategoryTheory Limits CompHausLike
+open CategoryTheory Limits CompHausLike Topology
 
 attribute [local instance] ConcreteCategory.instFunLike
 
@@ -39,7 +39,7 @@ lemma extremallyDisconnected_preimage : ExtremallyDisconnected (i ⁻¹' (Set.ra
 
 lemma extremallyDisconnected_pullback : ExtremallyDisconnected {xy : X × Y | f xy.1 = i xy.2} :=
   have := extremallyDisconnected_preimage i hi
-  let e := (TopCat.pullbackHomeoPreimage i i.2 f hi.toEmbedding).symm
+  let e := (TopCat.pullbackHomeoPreimage i i.2 f hi.isEmbedding).symm
   let e' : {xy : X × Y | f xy.1 = i xy.2} ≃ₜ {xy : Y × X | i xy.1 = f xy.2} := by
     exact TopCat.homeoOfIso
       ((TopCat.pullbackIsoProdSubtype f i).symm ≪≫ pullbackSymmetry _ _ ≪≫

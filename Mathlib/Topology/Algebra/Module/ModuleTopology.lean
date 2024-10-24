@@ -192,7 +192,7 @@ theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
     let g' : B →ₗ[R] A := e.symm
     let h : A →+ B := e
     let h' : B →+ A := e.symm
-    simp_rw [e.toHomeomorph.symm.inducing.1, eq_moduleTopology R A, moduleTopology, induced_sInf]
+    simp_rw [e.toHomeomorph.symm.isInducing.1, eq_moduleTopology R A, moduleTopology, induced_sInf]
     apply congr_arg
     ext τ -- from this point on the definitions of `g`, `g'` etc above don't work without `@`.
     rw [Set.mem_image]

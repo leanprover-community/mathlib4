@@ -17,7 +17,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits
 

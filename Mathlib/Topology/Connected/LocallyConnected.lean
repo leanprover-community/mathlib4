@@ -120,7 +120,7 @@ theorem locallyConnectedSpace_of_connected_bases {ι : Type*} (b : α → ι →
       (fun i hi => ⟨b x i, ⟨(hbasis x).mem_of_mem hi, hconnected x i hi⟩, subset_rfl⟩) fun s hs =>
       ⟨(hbasis x).index s hs.1, ⟨(hbasis x).property_index hs.1, (hbasis x).set_index_subset hs.1⟩⟩
 
-theorem IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [TopologicalSpace β]
+lemma Topology.IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [TopologicalSpace β]
     {f : β → α} (h : IsOpenEmbedding f) : LocallyConnectedSpace β := by
   refine locallyConnectedSpace_of_connected_bases (fun _ s ↦ f ⁻¹' s)
     (fun x s ↦ (IsOpen s ∧ f x ∈ s ∧ IsConnected s) ∧ s ⊆ range f) (fun x ↦ ?_)

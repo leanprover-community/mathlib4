@@ -32,7 +32,7 @@ is a closed immersion and the induced morphisms of stalks are all surjective.
 
 universe v u
 
-open CategoryTheory TopologicalSpace Opposite
+open CategoryTheory Opposite TopologicalSpace Topology
 
 namespace AlgebraicGeometry
 
@@ -61,7 +61,7 @@ lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓
 lemma iff_isPreimmersion {X Y : Scheme} {f : X ⟶ Y} :
     IsClosedImmersion f ↔ IsPreimmersion f ∧ IsClosed (Set.range f.base) := by
   rw [and_comm, isClosedImmersion_iff, isPreimmersion_iff, ← and_assoc, isClosedEmbedding_iff,
-    @and_comm (Embedding _)]
+    @and_comm (IsEmbedding _)]
 
 lemma of_isPreimmersion {X Y : Scheme} (f : X ⟶ Y) [IsPreimmersion f]
     (hf : IsClosed (Set.range f.base)) : IsClosedImmersion f :=
@@ -132,7 +132,7 @@ theorem of_comp_isClosedImmersion {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [
     simp only [Scheme.comp_coeBase, TopCat.coe_comp] at h
     refine .of_continuous_injective_isClosedMap (Scheme.Hom.continuous f) h.inj.of_comp ?_
     intro Z hZ
-    rw [IsClosedEmbedding.closed_iff_image_closed (isClosedEmbedding g),
+    rw [IsClosedEmbedding.isClosed_iff_image_isClosed (isClosedEmbedding g),
       ← Set.image_comp]
     exact h.isClosedMap _ hZ
   surj_on_stalks x := by
