@@ -55,10 +55,10 @@ namespace Filter
   compatible with the group structure on `G`. -/
 class IsGroupBasis {G : Type*} {ι : Sort*} [Group G] (p : ι → Prop) (s : ι → Set G)
     extends IsBasis p s : Prop where
-  one' : ∀ {i}, p i → (1 : G) ∈ s i
-  mul' : ∀ {i}, p i → ∃ j, p j ∧ s j * s j ⊆ s i
-  inv' : ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ (s i)⁻¹
-  conj' : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * · * x₀⁻¹) (s j) (s i)
+  one : ∀ {i}, p i → (1 : G) ∈ s i
+  mul : ∀ {i}, p i → ∃ j, p j ∧ s j * s j ⊆ s i
+  inv : ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ (s i)⁻¹
+  conj : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * · * x₀⁻¹) (s j) (s i)
 
 /-- An `AddGroupFilterBasis` on an additive group is a `FilterBasis` satisfying some additional
   axioms. Example : if `G` is a topological group then the neighbourhoods of the identity are an
@@ -66,12 +66,12 @@ class IsGroupBasis {G : Type*} {ι : Sort*} [Group G] (p : ι → Prop) (s : ι 
   compatible with the group structure on `G`. -/
 class IsAddGroupBasis {G : Type*} {ι : Sort*} [AddGroup G] (p : ι → Prop) (s : ι → Set G)
     extends IsBasis p s : Prop where
-  zero' : ∀ {i}, p i → (0 : G) ∈ s i
-  add' : ∀ {i}, p i → ∃ j, p j ∧ s j + s j ⊆ s i
-  neg' : ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ -(s i)
-  conj' : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x₀ + · + -x₀) (s j) (s i)
+  zero : ∀ {i}, p i → (0 : G) ∈ s i
+  add : ∀ {i}, p i → ∃ j, p j ∧ s j + s j ⊆ s i
+  neg : ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ -(s i)
+  conj : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x₀ + · + -x₀) (s j) (s i)
 
-attribute [to_additive existing] IsGroupBasis IsGroupBasis.conj'
+attribute [to_additive existing] IsGroupBasis IsGroupBasis.conj
   IsGroupBasis.toIsBasis
 
 /-- `GroupFilterBasis` constructor in the commutative group case. -/
@@ -82,32 +82,15 @@ theorem IsGroupBasis.mk_of_comm {G : Type*} {ι : Sort*} [CommGroup G] (p : ι �
     (inv : ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ (s i)⁻¹) :
     IsGroupBasis p s where
   toIsBasis := toIsBasis
-  one' := one
-  mul' := mul
-  inv' := inv
-  conj' x i hi := ⟨i, hi, by simpa only [mul_inv_cancel_comm, preimage_id'] using mapsTo_id _⟩
+  one := one
+  mul := mul
+  inv := inv
+  conj x i hi := ⟨i, hi, by simpa only [mul_inv_cancel_comm, preimage_id'] using mapsTo_id _⟩
 
 namespace IsGroupBasis
 
 variable {G : Type*} {ι : Sort*} [Group G] {p : ι → Prop} {s : ι → Set G} (hB : IsGroupBasis p s)
 include hB
-
-@[to_additive]
-theorem one {i} : p i → (1 : G) ∈ s i := hB.one'
-
-@[to_additive]
-theorem mul {i} : p i → ∃ j, p j ∧ s j * s j ⊆ s i := hB.mul'
-
-@[to_additive]
-theorem inv {i} : p i → ∃ j, p j ∧ s j ⊆ (s i)⁻¹ := hB.inv'
-
-@[to_additive]
-theorem conj : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * · * x₀⁻¹) (s j) (s i) :=
-  hB.conj'
-
-@[to_additive]
-theorem subset_mul_self {i} (h : p i) : s i ⊆ s i * s i :=
-  fun x x_in ↦ ⟨1, hB.one h, x, x_in, one_mul x⟩
 
 /-!
 ### Proving `TopologicalGroup` from `Filter.IsGroupBasis`
@@ -219,23 +202,23 @@ end IsGroupBasis
   topology on `R` which is compatible with the ring structure. -/
 class IsRingBasis {R : Type*} {ι : Sort*} [Ring R] (p : ι → Prop) (s : ι → Set R)
     extends IsAddGroupBasis p s : Prop where
-  mul' : ∀ {i}, p i → ∃ j, p j ∧ s j * s j ⊆ s i
-  mul_left' : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * ·) (s j) (s i)
-  mul_right' : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (· * x₀) (s j) (s i)
+  mul : ∀ {i}, p i → ∃ j, p j ∧ s j * s j ⊆ s i
+  mul_left : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * ·) (s j) (s i)
+  mul_right : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (· * x₀) (s j) (s i)
+
+theorem IsRingBasis.mk_of_comm {R : Type*} {ι : Sort*} [CommRing R] (p : ι → Prop) (s : ι → Set R)
+    (toIsAddGroupBasis : IsAddGroupBasis p s) (mul : ∀ {i}, p i → ∃ j, p j ∧ s j * s j ⊆ s i)
+    (mul_left : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * ·) (s j) (s i)) :
+    IsRingBasis p s where
+  toIsAddGroupBasis := toIsAddGroupBasis
+  mul := mul
+  mul_left := mul_left
+  mul_right := by simpa only [mul_comm] using mul_left
 
 namespace IsRingBasis
 
 variable {R : Type*} {ι : Sort*} [Ring R] {p : ι → Prop} {s : ι → Set R} (hB : IsRingBasis p s)
 include hB
-
-theorem mul {i} (hi : p i) : ∃ j, p j ∧ s j * s j ⊆ s i :=
-  hB.mul' hi
-
-theorem mul_left (x₀ : R) {i} (hi : p i) : ∃ j, p j ∧ MapsTo (x₀ * ·) (s j) (s i) :=
-  hB.mul_left' x₀ hi
-
-theorem mul_right (x₀ : R) {i} (hi : p i) : ∃ j, p j ∧ MapsTo (· * x₀) (s j) (s i) :=
-  hB.mul_right' x₀ hi
 
 /-!
 ### Proving `TopologicalRing` from `Filter.IsRingBasis`
@@ -280,9 +263,9 @@ end IsRingBasis
 structure IsModuleBasis (R : Type*) {M : Type*} {ι : Sort*} [Ring R] [TopologicalSpace R]
     [AddCommGroup M] [Module R M] (p : ι → Prop) (s : ι → Set M)
     extends IsAddGroupBasis p s : Prop where
-  smul' : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ j, p j ∧ V • (s j) ⊆ s i
-  smul_left' : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ • ·) (s j) (s i)
-  smul_right' : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ s i
+  smul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ j, p j ∧ V • (s j) ⊆ s i
+  smul_left : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ • ·) (s j) (s i)
+  smul_right : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ s i
 
 theorem IsModuleBasis.mk_of_hasBasis {R M : Type*} {ιR ιM : Sort*} [Ring R] [TopologicalSpace R]
     [AddCommGroup M] [Module R M] {pR : ιR → Prop} {sR : ιR → Set R} (hR : (𝓝 0).HasBasis pR sR)
@@ -292,24 +275,15 @@ theorem IsModuleBasis.mk_of_hasBasis {R M : Type*} {ιR ιM : Sort*} [Ring R] [T
     (smul_right : ∀ (m₀ : M) {i}, pM i → ∃ j, pR j ∧ MapsTo (· • m₀) (sR j) (sM i)) :
     IsModuleBasis R pM sM where
   toIsAddGroupBasis := toIsAddGroupBasis
-  smul' hi := smul hi |>.imp' sR fun _ ↦ And.imp_left <| hR.mem_of_mem
-  smul_left' := smul_left
-  smul_right' m₀ _ hi := hR.eventually_iff.mpr <| smul_right m₀ hi
+  smul hi := smul hi |>.imp' sR fun _ ↦ And.imp_left <| hR.mem_of_mem
+  smul_left := smul_left
+  smul_right m₀ _ hi := hR.eventually_iff.mpr <| smul_right m₀ hi
 
 namespace IsModuleBasis
 
 variable {R M : Type*} {ι : Sort*} [Ring R] [TopologicalSpace R]
     [AddCommGroup M] [Module R M] {p : ι → Prop} {s : ι → Set M} (hB : IsModuleBasis R p s)
 include hB
-
-theorem smul {i} (hi : p i) : ∃ V ∈ 𝓝 (0 : R), ∃ j, p j ∧ V • (s j) ⊆ s i :=
-  hB.smul' hi
-
-theorem smul_left (x₀ : R) {i} (hi : p i) : ∃ j, p j ∧ MapsTo (x₀ • ·) (s j) (s i) :=
-  hB.smul_left' x₀ hi
-
-theorem smul_right (m₀ : M) {i} (hi : p i) : ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ s i :=
-  hB.smul_right' m₀ hi
 
 /- TODO
 /-- If `R` is discrete then the trivial additive group filter basis on any `R`-module is a

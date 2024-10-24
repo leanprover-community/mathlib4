@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Monnet
 -/
 import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.Topology.Algebra.FilterBasisNew
+import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Nonarchimedean.TotallyDisconnected
 import Mathlib.Tactic.ByContra
 
@@ -123,10 +123,10 @@ theorem galBasis_isBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
 theorem galBasis_isGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     Filter.IsGroupBasis (fun E : IntermediateField K L ↦ FiniteDimensional K E) (galBasis K L) where
   toIsBasis := galBasis_isBasis K L
-  one' _ := one_mem (IntermediateField.fixingSubgroup _)
-  mul' {E} hE := ⟨E, hE, Set.mul_subset_iff.mpr fun σ hσ τ hτ ↦ mul_mem hσ hτ⟩
-  inv' {E} hE := ⟨E, hE, fun σ hσ ↦ inv_mem hσ⟩
-  conj' σ {E} hE := by
+  one _ := one_mem (IntermediateField.fixingSubgroup _)
+  mul {E} hE := ⟨E, hE, Set.mul_subset_iff.mpr fun σ hσ τ hτ ↦ mul_mem hσ hτ⟩
+  inv {E} hE := ⟨E, hE, fun σ hσ ↦ inv_mem hσ⟩
+  conj σ {E} hE := by
     let F := E.map σ.symm.toAlgHom
     refine ⟨F, im_finiteDimensional σ.symm, fun g hg ↦ ?_⟩
     simp_rw [galBasis, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff]
