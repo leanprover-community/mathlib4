@@ -46,3 +46,6 @@ instance Module.Finite.matrix {R ι₁ ι₂ M : Type*}
   cases nonempty_fintype ι₁
   cases nonempty_fintype ι₂
   exact Module.Finite.of_basis <| (Free.chooseBasis _ _).matrix _ _
+
+example {ι₁ ι₂ R : Type*} [Semiring R] [Finite ι₁] [Finite ι₂] :
+    Module.Finite R (Matrix ι₁ ι₂ R) := inferInstance
