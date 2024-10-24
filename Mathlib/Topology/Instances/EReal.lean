@@ -96,8 +96,11 @@ theorem embedding_coe_ennreal : Embedding ((↑) : ℝ≥0∞ → EReal) :=
   coe_ennreal_strictMono.embedding_of_ordConnected <| by
     rw [range_coe_ennreal]; exact ordConnected_Ici
 
-theorem closedEmbedding_coe_ennreal : ClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
+theorem isClosedEmbedding_coe_ennreal : IsClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   ⟨embedding_coe_ennreal, by rw [range_coe_ennreal]; exact isClosed_Ici⟩
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_coe_ennreal := isClosedEmbedding_coe_ennreal
 
 @[norm_cast]
 theorem tendsto_coe_ennreal {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :

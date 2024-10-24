@@ -33,7 +33,7 @@ lemma extremallyDisconnected_preimage : ExtremallyDisconnected (i ⁻¹' (Set.ra
       ⟨IsClosed.preimage i.continuous (isCompact_range f.continuous).isClosed,
         IsOpen.preimage i.continuous hi.isOpen_range⟩
     rw [← (closure U).preimage_image_eq Subtype.coe_injective,
-      ← h.1.closedEmbedding_subtype_val.closure_image_eq U]
+      ← h.1.isClosedEmbedding_subtypeVal.closure_image_eq U]
     exact isOpen_induced (ExtremallyDisconnected.open_closure _
       (h.2.isOpenEmbedding_subtypeVal.isOpenMap U hU))
 

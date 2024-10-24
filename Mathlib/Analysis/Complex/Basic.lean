@@ -358,9 +358,16 @@ theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
 theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
   ofRealLI.continuous
 
+theorem isUniformEmbedding_ofReal : IsUniformEmbedding ((↑) : ℝ → ℂ) :=
+  ofRealLI.isometry.isUniformEmbedding
+
+theorem _root_.Filter.tendsto_ofReal_iff {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ} :
+    Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) ↔ Tendsto f l (𝓝 x) :=
+  isUniformEmbedding_ofReal.toIsClosedEmbedding.tendsto_nhds_iff.symm
+
 lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ}
     (hf : Tendsto f l (𝓝 x)) : Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) :=
-  (continuous_ofReal.tendsto _).comp hf
+  tendsto_ofReal_iff.mpr hf
 
 /-- The only continuous ring homomorphism from `ℝ` to `ℂ` is the identity. -/
 theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = ofRealHom := by
