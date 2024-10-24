@@ -377,6 +377,31 @@ theorem add_trichotomy {a b c : Nimber} (h : a + b + c ≠ 0) :
   · rw [← hx'] at hx
     exact Or.inr <| Or.inr hx
 
+theorem lt_add_cases {a b c : Nimber} (h : a < b + c) : a + c < b ∨ a + b < c := by
+  obtain ha | hb | hc := add_trichotomy <| add_assoc a b c ▸ add_ne_zero_iff.2 h.ne
+  exacts [(h.asymm ha).elim, Or.inl <| add_comm c a ▸ hb, Or.inr hc]
+
+/-- Nimber addition of naturals corresponds to the bitwise XOR operation. -/
+theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by
+  apply le_antisymm
+  · apply add_le_of_forall_ne
+    all_goals
+      intro c hc
+      obtain ⟨c, rfl⟩ := eq_nat_of_le_nat hc.le
+      rw [OrderIso.lt_iff_lt] at hc
+      replace hc := Nat.cast_lt.1 hc
+      rw [add_nat]
+      simpa using hc.ne
+  · apply le_of_not_lt
+    intro hc
+    obtain ⟨c, hc'⟩ := eq_nat_of_le_nat hc.le
+    rw [hc', OrderIso.lt_iff_lt, Nat.cast_lt] at hc
+    obtain h | h := Nat.lt_xor_cases hc
+    · apply h.ne
+      simpa [Nat.xor_comm, Nat.xor_cancel_left, ← hc'] using add_nat (c ^^^ b) b
+    · apply h.ne
+      simpa [Nat.xor_comm, Nat.xor_cancel_left, ← hc'] using add_nat a (c ^^^ a)
+
 private theorem two_zsmul (x : Nimber) : (2 : ℤ) • x = 0 := by
   rw [_root_.two_zsmul]
   exact add_self x

@@ -63,6 +63,7 @@ theorem neg_eq (x : R) : -x = x := by
 theorem neg_eq' : Neg.neg = (id : R → R) :=
   funext neg_eq
 
+@[scoped simp]
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 
 @[deprecated sub_eq_add (since := "2024-10-24")]
