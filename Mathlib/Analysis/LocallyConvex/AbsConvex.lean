@@ -146,7 +146,64 @@ theorem absConvexHull_nonempty : (absConvexHull 𝕜 s).Nonempty ↔ s.Nonempty 
 
 protected alias ⟨_, Set.Nonempty.absConvexHull⟩ := absConvexHull_nonempty
 
+variable [TopologicalSpace E]
+
+theorem absConvex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s ∧ IsClosed s) :
+    AbsConvex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
+  ⟨AbsConvex.sInter (fun s hs => (h s hs).1), isClosed_sInter fun _ hs => (h _ hs).2⟩
+
+variable (𝕜)
+
+/-- The absolutely convex closed hull of a set `s` is the minimal absolutely convex closed set that
+includes `s`. -/
+@[simps! isClosed]
+def absConvexClosedHull : ClosureOperator (Set E) :=
+  .ofCompletePred (fun s => AbsConvex 𝕜 s ∧ IsClosed s) fun _ ↦ absConvex_closed_sInter
+
+variable {𝕜}
+
+theorem absConvex_convexClosedHull {s : Set E} :
+    AbsConvex 𝕜 (absConvexClosedHull 𝕜 s) := ((absConvexClosedHull 𝕜).isClosed_closure s).1
+
+theorem isClosed_absConvexClosedHull {s : Set E} :
+    IsClosed (absConvexClosedHull 𝕜 s) := ((absConvexClosedHull 𝕜).isClosed_closure s).2
+
+theorem subset_absConvexClosedHull {s : Set E} : s ⊆ absConvexClosedHull 𝕜 s :=
+  (absConvexClosedHull 𝕜).le_closure s
+
+theorem absConvexClosedHull_min {s t : Set E} : s ⊆ t → AbsConvex 𝕜 t ∧ IsClosed t →
+    absConvexClosedHull 𝕜 s ⊆ t := (absConvexClosedHull 𝕜).closure_min
+
+theorem absConvexHull_subseteq_convexClosedHull {s : Set E} :
+    (absConvexHull 𝕜) s ⊆ (absConvexClosedHull 𝕜) s :=
+  absConvexHull_min subset_absConvexClosedHull absConvex_convexClosedHull
+
+theorem absConvexClosedHull_eq_absConvexClosedHull_closure {s : Set E} :
+    absConvexClosedHull 𝕜 s = absConvexClosedHull 𝕜 (closure s) := subset_antisymm
+  (absConvexClosedHull_min (subset_trans subset_closure subset_absConvexClosedHull)
+    ⟨absConvex_convexClosedHull, isClosed_absConvexClosedHull⟩)
+  (absConvexClosedHull_min
+    (closure_minimal subset_absConvexClosedHull isClosed_absConvexClosedHull)
+    ⟨absConvex_convexClosedHull, isClosed_absConvexClosedHull⟩)
+
 end AbsolutelyConvex
+
+section NormedField
+
+variable [NormedField 𝕜]
+  [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]  [TopologicalSpace E]
+  [TopologicalAddGroup E] [ContinuousSMul ℝ E] [ContinuousSMul 𝕜 E]
+
+theorem AbsConvex.closure {s : Set E} (hs : AbsConvex 𝕜 s) : AbsConvex 𝕜 (closure s) :=
+  ⟨Balanced.closure hs.1, Convex.closure hs.2⟩
+
+theorem absConvexClosedHull_eq_closure_absConvexHull {s : Set E} :
+    absConvexClosedHull 𝕜 s = closure (absConvexHull 𝕜 s) := subset_antisymm
+  (absConvexClosedHull_min (subset_trans (subset_absConvexHull) subset_closure)
+    ⟨AbsConvex.closure absConvex_absConvexHull, isClosed_closure⟩)
+  (closure_minimal absConvexHull_subseteq_convexClosedHull isClosed_absConvexClosedHull)
+
+end NormedField
 
 section NontriviallyNormedField
 
