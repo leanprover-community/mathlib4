@@ -292,7 +292,7 @@ variable {ι R M : Type*} (m n : Type*)
 variable [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- The standard basis of `Matrix m n M` given a basis on `M`. -/
-protected noncomputable def matrix {ι} (b : Basis ι R M) :
+protected noncomputable def matrix (b : Basis ι R M) :
     Basis (m × n × ι) R (Matrix m n M) :=
   Basis.reindex (Pi.basis fun _ : m => Pi.basis fun _ : n => b)
     ((Equiv.sigmaEquivProd _ _).trans <| .prodCongr (.refl _) (Equiv.sigmaEquivProd _ _))
