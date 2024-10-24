@@ -30,8 +30,7 @@ the interval `{x : ℝ≥0 | x < 1}`.
 
 -/
 
-variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [CompleteSpace A]
-  [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
+variable {A : Type*} [NonUnitalCStarAlgebra A]
 
 local notation "σₙ" => quasispectrum
 local notation "σ" => spectrum
@@ -68,8 +67,6 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
   simp only [Set.mem_Ici] at ha hb
   rw [← Unitization.inr_le_iff .., Unitization.nnreal_cfcₙ_eq_cfc_inr a _,
     Unitization.nnreal_cfcₙ_eq_cfc_inr b _]
-  have h1_add {x : ℝ≥0} : 1 + (x : ℝ) ≠ 0 := by positivity
-  have h1_add_inv_le (x : ℝ≥0) : (1 + x)⁻¹ ≤ 1 := by simp
   have h_cfc_one_sub (c : A⁺¹) (hc : 0 ≤ c := by cfc_tac) :
       cfc (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) c = 1 - cfc (·⁻¹ : ℝ≥0 → ℝ≥0) (1 + c) := by
     rw [cfc_tsub _ _ _ (fun x _ ↦ by simp) (hg := by fun_prop (disch := intro _ _; positivity)),
@@ -87,7 +84,6 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
   exact CStarAlgebra.rpow_neg_one_le_rpow_neg_one (add_nonneg zero_le_one ha) (by gcongr) <|
     CStarAlgebra.isUnit_of_le isUnit_one zero_le_one <| le_add_of_nonneg_right ha
 
-
 lemma Set.InvOn.one_sub_one_add_inv : Set.InvOn (fun x ↦ 1 - (1 + x)⁻¹) (fun x ↦ x * (1 - x)⁻¹)
     {x : ℝ≥0 | x < 1} {x : ℝ≥0 | x < 1} := by
   have h1_add {x : ℝ≥0} : 0 < 1 + (x : ℝ) := by positivity
@@ -97,8 +93,9 @@ lemma Set.InvOn.one_sub_one_add_inv : Set.InvOn (fun x ↦ 1 - (1 + x)⁻¹) (fu
     simp [sub_mul, inv_mul_cancel₀ h1_add.ne']
   rw [← this]
   constructor
-  all_goals intro x (hx : x < 1); have : 0 < 1 - x := tsub_pos_of_lt hx
-  · field_simp [tsub_add_cancel_of_le hx.le, tsub_tsub_cancel_of_le hx.le]
+  all_goals intro x (hx : x < 1)
+  · have : 0 < 1 - x := tsub_pos_of_lt hx
+    field_simp [tsub_add_cancel_of_le hx.le, tsub_tsub_cancel_of_le hx.le]
   · field_simp [mul_tsub]
 
 lemma norm_cfcₙ_one_sub_one_add_inv_lt_one (a : A) (ha : 0 ≤ a) :
@@ -110,12 +107,13 @@ lemma norm_cfcₙ_one_sub_one_add_inv_lt_one (a : A) (ha : 0 ≤ a) :
   calc ‖cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) a‖₊ = 1 - (1 + y)⁻¹ := hy'.symm
     _ < 1 := tsub_lt_self zero_lt_one (by positivity)
 
-omit [StarModule ℂ A] in
 lemma CStarAlgebra.le_nnnorm_of_mem_quasispectrum {a : A} {x : ℝ≥0} (hx : x ∈ σₙ ℝ≥0 a) :
     x ≤ ‖a‖₊ := by
   rw [quasispectrum_eq_spectrum_inr' ℝ≥0 ℂ] at hx
   simpa [nnnorm_inr] using spectrum.le_nnnorm_of_mem hx
 
+-- the calls to `fun_prop` with a discharger set off the linter
+set_option linter.style.multiGoal false in
 lemma CStarAlgebra.directedOn_nonneg_ball :
     DirectedOn (· ≤ ·) ({x : A | 0 ≤ x} ∩ Metric.ball 0 1) := by
   let f : ℝ≥0 → ℝ≥0 := fun x => 1 - (1 + x)⁻¹
@@ -136,7 +134,7 @@ lemma CStarAlgebra.directedOn_nonneg_ball :
       refine cfcₙ_congr (Set.InvOn.one_sub_one_add_inv.1.eqOn.symm.mono fun x hx ↦ ?_)
       exact lt_of_le_of_lt (CStarAlgebra.le_nnnorm_of_mem_quasispectrum hx) ha₂
     _ = cfcₙ f (cfcₙ g a) := by
-      rw [cfcₙ_comp f g a ?_ (by simp [f]) ?_ (by simp [g]) ha₁]
+      rw [cfcₙ_comp f g a ?_ (by simp [f, tsub_self]) ?_ (by simp [g]) ha₁]
       · fun_prop (disch := intro _ _; positivity)
       · have (x) (hx : x ∈ σₙ ℝ≥0 a) :  1 - x ≠ 0 := by
           refine tsub_pos_of_lt ?_ |>.ne'
