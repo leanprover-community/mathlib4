@@ -306,4 +306,3 @@ def RationalMap.equivFunctionField [IsIntegral X] [LocallyOfFiniteType sY] :
 end Scheme
 
 end AlgebraicGeometry
-#min_imports
