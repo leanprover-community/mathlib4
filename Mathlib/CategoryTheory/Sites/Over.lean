@@ -148,10 +148,28 @@ lemma over_forget_compatiblePreserving (X : C) :
 instance (X : C) : (Over.forget X).IsCocontinuous (J.over X) J where
   cover_lift hS := J.overEquiv_symm_mem_over _ _ hS
 
+instance {X : C} {Y : Over X} (E : (J.over X).OneHypercover Y) :
+    E.IsPreservedBy (Over.forget X) J where
+  mem₀ := by
+    refine J.superset_covering ?_ ((mem_over_iff _ _).1 E.mem₀)
+    intro Z f hf
+    rw [Sieve.overEquiv_iff] at hf
+    obtain ⟨W, a, _, h, fac⟩ := hf
+    cases' h with i
+    exact ⟨_, a.left, _, ⟨i⟩, by simpa using (Over.forget _).congr_map fac⟩
+  mem₁ i₁ i₂ W p₁ p₂ fac := by
+    refine J.superset_covering ?_
+      ((mem_over_iff _ _).1 (E.mem₁ i₁ i₂ (W := Over.mk (p₁ ≫ (E.X i₁).hom))
+        (Over.homMk p₁) (Over.homMk p₂ (by simpa using fac.symm =≫ Y.hom))
+        (by ext; simpa using fac)))
+    intro Z f hf
+    rw [Sieve.overEquiv_iff] at hf
+    obtain ⟨i, a, h₁, h₂⟩ := hf
+    exact ⟨i, a.left, by simpa using (Over.forget X).congr_map h₁,
+      by simpa using (Over.forget X).congr_map h₂⟩
+
 instance (X : C) : (Over.forget X).IsContinuous (J.over X) J :=
-  Functor.isContinuous_of_coverPreserving
-    (over_forget_compatiblePreserving J X)
-    (over_forget_coverPreserving J X)
+  Functor.isContinuous_of_preservesOneHypercovers.{max u v} _ _ _
 
 /-- The pullback functor `Sheaf J A ⥤ Sheaf (J.over X) A` -/
 abbrev overPullback (A : Type u') [Category.{v'} A] (X : C) :
