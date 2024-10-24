@@ -51,14 +51,6 @@ noncomputable section
 open scoped NNReal Topology Uniformity
 open Finset Metric Function Filter
 
-/-
-Porting note: These lines are not required in Mathlib4.
-```lean
-attribute [local instance 1001]
-  AddCommGroup.toAddCommMonoid NormedAddCommGroup.toAddCommGroup NormedSpace.toModule'
-```
--/
-
 /-!
 ### Type variables
 
