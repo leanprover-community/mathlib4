@@ -167,14 +167,14 @@ instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
 
-theorem Antisymm.aux [IsWellOrder α r] (f : r ≼i s) (g : s ≼i r) : LeftInverse g f :=
-  InitialSeg.eq (f.trans g) (InitialSeg.refl _)
+private theorem antisymm_aux [IsWellOrder α r] (f : r ≼i s) (g : s ≼i r) : LeftInverse g f :=
+  (f.trans g).eq (InitialSeg.refl _)
 
 /-- If we have order embeddings between `α` and `β` whose images are initial segments, and `β`
 is a well-order then `α` and `β` are order-isomorphic. -/
 def antisymm [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : r ≃r s :=
-  haveI := f.toRelEmbedding.isWellOrder
-  ⟨⟨f, g, Antisymm.aux f g, Antisymm.aux g f⟩, f.map_rel_iff'⟩
+  have := f.toRelEmbedding.isWellOrder
+  ⟨⟨f, g, antisymm_aux f g, antisymm_aux g f⟩, f.map_rel_iff'⟩
 
 @[simp]
 theorem antisymm_toFun [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : (antisymm f g : α → β) = f :=
@@ -508,53 +508,41 @@ theorem leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i 
 
 end InitialSeg
 
-namespace RelEmbedding
+/-- The function in `collapse`. -/
+private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { b // ¬s (f a) b } :=
+  (RelEmbedding.isWellFounded f).fix _ fun a IH =>
+    have H : f a ∈ { b | ∀ a h, s (IH a h).1 b } :=
+      fun b h => trans_trichotomous_left (IH b h).2 (f.map_rel_iff.2 h)
+    ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, H⟩ H⟩
 
-/-- Given an order embedding into a well order, collapse the order embedding by filling the
-gaps, to obtain an initial segment. Here, we construct the collapsed order embedding pointwise,
-but the proof of the fact that it is an initial segment will be given in `collapse`. -/
-noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : ∀ a, { b // ¬s (f a) b } :=
-  (RelEmbedding.wellFounded f <| IsWellFounded.wf).fix fun a IH => by
-    let S := { b | ∀ a h, s (IH a h).1 b }
-    have : f a ∈ S := fun a' h =>
-      ((trichotomous _ _).resolve_left fun h' =>
-            (IH a' h).2 <| _root_.trans (f.map_rel_iff.2 h) h').resolve_left
-        fun h' => (IH a' h).2 <| h' ▸ f.map_rel_iff.2 h
-    exact ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, this⟩ this⟩
-
-theorem collapseF.lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
-    ∀ {a'}, r a' a → s (collapseF f a').1 (collapseF f a).1 := @fun a => by
-  revert a
-  show (collapseF f a).1 ∈ { b | ∀ (a') (_ : r a' a), s (collapseF f a').1 b }
-  unfold collapseF; rw [WellFounded.fix_eq]
+private theorem collapseF_lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
+    ∀ {a'}, r a' a → s (collapseF f a') (collapseF f a) := by
+  show _ ∈ { b | ∀ a', r a' a → s (collapseF f a') b }
+  rw [collapseF, IsWellFounded.fix_eq]
   dsimp only
-  apply WellFounded.min_mem _ _
+  exact WellFounded.min_mem _ _ _
 
-theorem collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
-    (h : ∀ a' (_ : r a' a), s (collapseF f a').1 b) : ¬s b (collapseF f a).1 := by
-  unfold collapseF; rw [WellFounded.fix_eq]
+private theorem collapseF_not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
+    (h : ∀ a', r a' a → s (collapseF f a') b) : ¬s b (collapseF f a) := by
+  rw [collapseF, IsWellFounded.fix_eq]
   dsimp only
   exact WellFounded.not_lt_min _ _ _ h
 
-/-- Construct an initial segment from an order embedding into a well order, by collapsing it
-to fill the gaps. -/
-noncomputable def collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
-  haveI := RelEmbedding.isWellOrder f
-  ⟨RelEmbedding.ofMonotone (fun a => (collapseF f a).1) fun _ _ => collapseF.lt f, fun a b =>
-    Acc.recOn (IsWellFounded.wf.apply b : Acc s b)
-      (fun b _ _ a h => by
-        rcases (@IsWellFounded.wf _ r).has_min { a | ¬s (collapseF f a).1 b }
-          ⟨_, asymm h⟩ with ⟨m, hm, hm'⟩
-        refine ⟨m, ((@trichotomous _ s _ _ _).resolve_left hm).resolve_right
-          (collapseF.not_lt f _ fun a' h' => ?_)⟩
-        by_contra hn
-        exact hm' _ hn h')
-      a⟩
+/-- Construct an initial segment embedding `r ≼i s` by "filling in the gaps". That is, each
+subsequent element in `α` is mapped to the least element in `β` that hasn't been used yet.
 
-theorem collapse_apply [IsWellOrder β s] (f : r ↪r s) (a) : collapse f a = (collapseF f a).1 :=
-  rfl
-
-end RelEmbedding
+This construction is guaranteed to work as long as there exists some relation embedding `r ↪r s`. -/
+noncomputable def RelEmbedding.collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
+  have H := RelEmbedding.isWellOrder f
+  ⟨RelEmbedding.ofMonotone _ fun a b => collapseF_lt f, fun a b h ↦ by
+    obtain ⟨m, hm, hm'⟩ := H.wf.has_min { a | ¬s _ b } ⟨_, asymm h⟩
+    use m
+    obtain lt | rfl | gt := trichotomous_of s b (collapseF f m)
+    · refine (collapseF_not_lt f m (fun c h ↦ ?_) lt).elim
+      by_contra hn
+      exact hm' _ hn h
+    · rfl
+    · exact (hm gt).elim⟩
 
 /-- For any two well orders, one is an initial segment of the other. -/
 noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
