@@ -1472,13 +1472,6 @@ theorem Set.InjOn.exists_isOpen_superset {X Y : Type*} [TopologicalSpace X] [Top
   let ⟨u, huo, hsu, hut⟩ := mem_nhdsSet_iff_exists.1 hst
   ⟨u, huo, hsu, ht.mono hut⟩
 
-theorem t2Space_antitone {X : Type*} : Antitone (@T2Space X) := by
-  intro s t le t2
-  rw [t2Space_iff] at t2 ⊢
-  intro i j ne
-  obtain ⟨u, v, openu, openv, huv⟩ := t2 ne
-  exact ⟨u, v, le _ openu, le _ openv, huv⟩
-
 section limUnder
 
 variable [T2Space X] {f : Filter X}
@@ -1898,6 +1891,10 @@ theorem isIrreducible_iff_singleton [T2Space X] {S : Set X} : IsIrreducible S �
 theorem not_preirreducible_nontrivial_t2 (X) [TopologicalSpace X] [PreirreducibleSpace X]
     [Nontrivial X] [T2Space X] : False :=
   (PreirreducibleSpace.isPreirreducible_univ (X := X)).subsingleton.not_nontrivial nontrivial_univ
+
+theorem t2Space_antitone {X : Type*} : Antitone (@T2Space X) :=
+  fun inst₁ inst₂ h_top h_t2 ↦ @T2Space.of_injective_continuous _ _ inst₁ inst₂
+    h_t2 _ Function.injective_id <| continuous_id_of_le h_top
 
 end Separation
 
