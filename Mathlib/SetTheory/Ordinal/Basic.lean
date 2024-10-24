@@ -1090,23 +1090,24 @@ alias mk_ordinal_out := mk_toType
 
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. For the order-embedding version, see `ord.order_embedding`. -/
-def ord (c : Cardinal) : Ordinal :=
+def ord (c : Cardinal) : Ordinal := by
   let F := fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2
-  Quot.liftOn c F
-    (by
-      suffices ∀ {α β}, α ≈ β → F α ≤ F β from
-        fun α β h => (this h).antisymm (this (Setoid.symm h))
-      rintro α β ⟨f⟩
-      refine le_ciInf_iff'.2 fun i => ?_
-      haveI := @RelEmbedding.isWellOrder _ _ (f ⁻¹'o i.1) _ (↑(RelIso.preimage f i.1)) i.2
-      exact
-        (ciInf_le' _
-              (Subtype.mk (f ⁻¹'o i.val)
-                (@RelEmbedding.isWellOrder _ _ _ _ (↑(RelIso.preimage f i.1)) i.2))).trans_eq
-          (Quot.sound ⟨RelIso.preimage f i.1⟩))
+  apply Quot.liftOn c F
+  suffices ∀ {α β}, α ≈ β → F α ≤ F β from fun α β h => (this h).antisymm (this (Setoid.symm h))
+  rintro α β ⟨f⟩
+  refine le_ciInf_iff'.2 fun i => ?_
+  haveI := @RelEmbedding.isWellOrder _ _ (f ⁻¹'o i.1) _ (↑(RelIso.preimage f i.1)) i.2
+  exact
+    (ciInf_le' _
+          (Subtype.mk (f ⁻¹'o i.val)
+            (@RelEmbedding.isWellOrder _ _ _ _ (↑(RelIso.preimage f i.1)) i.2))).trans_eq
+      (Quot.sound ⟨RelIso.preimage f i.1⟩)
 
-theorem ord_eq_Inf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
+theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
   rfl
+
+@[deprecated ord_eq_iInf (since := "2024-10-24")]
+alias ord_eq_Inf := ord_eq_iInf
 
 theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord #α = @type α r wo :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
