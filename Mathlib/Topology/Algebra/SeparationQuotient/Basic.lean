@@ -217,15 +217,6 @@ theorem nhds_eq (x : G) :
     nhds (mk x) = Filter.map mk (nhds x) :=
   le_antisymm ((SeparationQuotient.isOpenMap_mk).nhds_le x) continuous_quot_mk.continuousAt
 
-/-- `SeparationQuotient.mk` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`SeparationQuotient.mk` as an `AddMonoidHom`."]
-def mkGroupHom [CommGroup G] [TopologicalGroup G]  : G →* SeparationQuotient G where
-  toFun := mk
-  map_mul' := mk_mul
-  map_one' := mk_one
-
-variable {H : Type*} [TopologicalSpace H]
-
 end Group
 
 section UniformGroup
