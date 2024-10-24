@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Abby J. Goldberg, Mario Carneiro
+Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring.Compare
 
 /-!
 # linear_combination Tactic
@@ -14,6 +15,9 @@ works over `CommRing`s, attempts to simplify the target by creating a linear com
 of a list of equalities and subtracting it from the target. A `Syntax.Tactic`
 object can also be passed into the tactic, allowing the user to specify a
 normalization tactic.
+
+Over ordered algebraic objects (such as `LinearOrderedCommRing`), taking linear combinations of
+inequalities is also supported.
 
 ## Implementation Notes
 
@@ -34,19 +38,22 @@ namespace Mathlib.Tactic.LinearCombination
 open Lean hiding Rat
 open Elab Meta Term
 
-/-- Result of `expandLinearCombo`, either an equality proof or a value. -/
+/-- Result of `expandLinearCombo`, either an equality/inequality proof or a value. -/
 inductive Expanded
-  /-- A proof of `a = b`. -/
-  | proof (pf : Syntax.Term)
+  /-- A proof of `a = b`, `a ≤ b`, or `a < b` (according to the value of `RelType`). -/
+  | proof (rel : RelType) (pf : Syntax.Term)
   /-- A value, equivalently a proof of `c = c`. -/
   | const (c : Syntax.Term)
 
 /--
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
-* `.proof p` means that `p` is a syntax corresponding to a proof of an equation.
+* `.proof Eq p` means that `p` is a syntax corresponding to a proof of an equation.
   For example, if `h : a = b` then `expandLinearCombo (2 * h)` returns `.proof (c_add_pf 2 h)`
   which is a proof of `2 * a = 2 * b`.
+  Similarly, `.proof Le p` means that `p` is a syntax corresponding to a proof of a non-strict
+  inequality, and `.proof Lt p` means that `p` is a syntax corresponding to a proof of a strict
+  inequality.
 * `.const c` means that the input expression is not an equation but a value.
 -/
 partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expanded := withRef stx do
@@ -55,84 +62,113 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
   | `($e₁ + $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ + $c₂)
-    | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ $p₂)
-    | .proof p, .const c | .const c, .proof p =>
+    | .proof rel₁ p₁, .proof rel₂ p₂ =>
+      let (rel, n) := rel₁.addRelRelData rel₂
+      .proof rel <$> ``($(mkIdent n) $p₁ $p₂)
+    | .proof rel p, .const c | .const c, .proof rel p =>
       logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
         from the term"
-      pure (.proof p)
+      pure (.proof rel p)
   | `($e₁ - $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂)
-    | .proof p, .const c =>
+    | .proof rel p, .const c =>
       logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
         from the term"
-      pure (.proof p)
-    | .const c, .proof p =>
+      pure (.proof rel p)
+    | .const c, .proof rel p =>
       logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
         from the term"
-      .proof <$> ``(Eq.symm $p)
-    | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ (Eq.symm $p₂))
+      .proof rel <$> ``(Eq.symm $p)
+    | .proof rel₁ p₁, .proof Eq p₂ =>
+      let (rel, n) := rel₁.addRelRelData Eq
+      .proof rel <$> ``($(mkIdent n) $p₁ (Eq.symm $p₂))
+    | .proof _ _, .proof _ _ =>
+      throwError "coefficients of inequalities in 'linear_combination' must be nonnegative"
   | `(-$e) => do
-    match ← expandLinearCombo ty e with
-    | .const c => .const <$> `(-$c)
-    | .proof p => .proof <$> ``(Eq.symm $p)
+      match ← expandLinearCombo ty e with
+      | .const c => .const <$> `(-$c)
+      | .proof Eq p => .proof Eq <$> ``(Eq.symm $p)
+      | .proof _ _ =>
+        throwError "coefficients of inequalities in 'linear_combination' must be nonnegative"
   | `($e₁ *%$tk $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ * $c₂)
-    | .proof p₁, .const c₂ => .proof <$> ``(pf_mul_c $p₁ $c₂)
-    | .const c₁, .proof p₂ => .proof <$> ``(c_mul_pf $p₂ $c₁)
-    | .proof _, .proof _ =>
+    | .proof rel₁ p₁, .const c₂ =>
+      let (rel, n) := rel₁.mulRelConstData
+      .proof rel <$> ``($(mkIdent n) $p₁ $c₂)
+    | .const c₁, .proof rel₂ p₂ =>
+      let (rel, n) := rel₂.mulConstRelData
+      .proof rel <$> ``($(mkIdent n) $p₂ $c₁)
+    | .proof _ _, .proof _ _ =>
       throwErrorAt tk "'linear_combination' supports only linear operations"
   | `($e₁ /%$tk $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ / $c₂)
-    | .proof p₁, .const c₂ => .proof <$> ``(pf_div_c $p₁ $c₂)
-    | _, .proof _ =>
-      throwErrorAt tk "'linear_combination' supports only linear operations"
+    | .proof rel₁ p₁, .const c₂ =>
+      let (rel, n) := rel₁.divRelConstData
+      .proof rel <$> ``($(mkIdent n) $p₁ $c₂)
+    | _, .proof _ _ => throwErrorAt tk "'linear_combination' supports only linear operations"
   | e =>
     -- We have the expected type from the goal, so we can fully synthesize this leaf node.
     withSynthesize do
       -- It is OK to use `ty` as the expected type even if `e` is a proof.
       -- The expected type is just a hint.
       let c ← withSynthesizeLight <| Term.elabTerm e ty
-      if (← whnfR (← inferType c)).isEq then
-        .proof <$> c.toSyntax
-      else
-        .const <$> c.toSyntax
+      match (← whnfR (← inferType c)).relType with
+      | some (rel, _) => .proof rel <$> c.toSyntax
+      | none => .const <$> c.toSyntax
 
 /-- Implementation of `linear_combination`. -/
 def elabLinearCombination (tk : Syntax)
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
-    Tactic.TacticM Unit := Tactic.withMainContext do
-  let some (ty, _) := (← (← Tactic.getMainGoal).getType').eq? |
-    throwError "'linear_combination' only proves equalities"
-  let p ← match input with
-  | none => `(Eq.refl 0)
+    Tactic.TacticM Unit := Tactic.withMainContext <| Tactic.focus do
+  let eType ← withReducible <| (← Tactic.getMainGoal).getType'
+  let some (goalRel, ty) := eType.relType |
+    throwError "'linear_combination' only proves equalities and inequalities"
+  -- build the specified linear combination of the hypotheses
+  let (hypRel, p) ← match input with
+  | none => Prod.mk Eq <$>  `(Eq.refl 0)
   | some e =>
     match ← expandLinearCombo ty e with
     | .const c =>
       logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
         from the term"
-      `(Eq.refl 0)
-    | .proof p => pure p
-  let norm := norm?.getD (Unhygienic.run <| withRef tk `(tactic| ring1))
-  let lem : Ident ← mkIdent <$> do
-    try
-      -- if we are in a "true" ring, with well-behaved negation, it is better to present the
-      -- normalization tactic with a goal of the form `[stuff] = 0`, because this gives more useful
-      -- error messages on failure
-      let _ ← synthInstance (← mkAppM ``Neg #[ty])
-      pure ``eq_of_sub
-    catch _ =>
-      -- but otherwise (for example over `ℕ` or `ℝ≥0`) we can solve the problem by presenting the
-      -- normalization tactic with a goal of the form `[stuff] = [stuff]`
-      pure ``eq_of_add
-  Term.withoutErrToSorry <| Tactic.evalTactic <| ← withFreshMacroScope <|
-  match exp? with
-  | some n =>
-    if n.getNat = 1 then `(tactic| (refine $lem $p ?a; case' a => $norm:tactic))
-    else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
-  | _ => `(tactic| (refine $lem $p ?a; case' a => $norm:tactic))
+      Prod.mk Eq <$> `(Eq.refl 0)
+    | .proof hypRel p => pure (hypRel, p)
+  -- look up the lemma for the central `refine` in `linear_combination`
+  let (reduceLem, newGoalRel) : Name × RelType := ← do
+    match hypRel.relImpRelData goalRel with
+    | none => throwError "cannot prove an equality from inequality hypotheses"
+    | some n => pure n
+  -- build the term for the central `refine` in `linear_combination`
+  let p' ← do
+    match exp? with
+    | some n =>
+      if n.getNat = 1 then
+        `($(mkIdent reduceLem) $p ?a)
+      else
+        match hypRel with
+        | Eq => `(eq_of_add_pow $n $p ?a)
+        | _ => throwError
+          "linear_combination tactic not implemented for exponentiation of inequality goals"
+    | _ => `($(mkIdent reduceLem) $p ?a)
+  -- run the central `refine` in `linear_combination`
+  Term.withoutErrToSorry <| Tactic.refineCore p' `refine false
+  -- if we are in a "true" ring, with well-behaved negation, we rearrange from the form
+  -- `[stuff] = [stuff]` (or `≤` or `<`) to the form `[stuff] = 0` (or `≤` or `<`), because this
+  -- gives more useful error messages on failure
+  try
+    Tactic.liftMetaTactic fun g ↦ g.applyConst newGoalRel.rearrangeData
+  catch _ => pure ()
+  -- now run the normalization tactic provided, or the default normalization if none is provided
+  match norm? with
+  | some norm => Tactic.evalTactic norm
+  | none => withRef tk <| Tactic.liftMetaFinishingTactic <|
+    match newGoalRel with
+    | Eq => fun g ↦ AtomM.run .instances <| Ring.proveEq g
+    | Le => Ring.proveLE
+    | Lt => Ring.proveLT
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
