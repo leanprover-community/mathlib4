@@ -125,6 +125,9 @@ protected theorem smul_assoc : (I • J) • N = I • J • N :=
       (fun j hj n hn ↦ (smul_assoc r j n).symm ▸ smul_mem_smul (smul_mem_smul hr hj) hn)
       fun m₁ m₂ ↦ (smul_add r m₁ m₂) ▸ add_mem)
 
+protected theorem mul_smul : (I * J) • N = I • J • N :=
+  Submodule.smul_assoc _ _ _
+
 @[deprecated smul_inf_le (since := "2024-03-31")]
 protected theorem smul_inf_le (M₁ M₂ : Submodule R M) :
     I • (M₁ ⊓ M₂) ≤ I • M₁ ⊓ I • M₂ := smul_inf_le _ _ _
@@ -321,15 +324,26 @@ theorem mul_le : I * J ≤ K ↔ ∀ r ∈ I, ∀ s ∈ J, r * s ∈ K :=
   Submodule.smul_le
 
 theorem mul_le_left : I * J ≤ J :=
-  Ideal.mul_le.2 fun _ _ _ => J.mul_mem_left _
+  mul_le.2 fun _ _ _ => J.mul_mem_left _
 
 @[simp]
 theorem sup_mul_left_self : I ⊔ J * I = I :=
-  sup_eq_left.2 Ideal.mul_le_left
+  sup_eq_left.2 mul_le_left
 
 @[simp]
 theorem mul_left_self_sup : J * I ⊔ I = I :=
-  sup_eq_right.2 Ideal.mul_le_left
+  sup_eq_right.2 mul_le_left
+
+theorem mul_le_right [I.IsTwoSided] : I * J ≤ I :=
+  mul_le.2 fun _ hr _ _ ↦ I.mul_mem_right _ hr
+
+@[simp]
+theorem sup_mul_right_self [I.IsTwoSided] : I ⊔ I * J = I :=
+  sup_eq_left.2 mul_le_right
+
+@[simp]
+theorem mul_right_self_sup [I.IsTwoSided] : I * J ⊔ I = I :=
+  sup_eq_right.2 mul_le_right
 
 protected theorem mul_assoc : I * J * K = I * (J * K) :=
   Submodule.smul_assoc I J K
@@ -377,14 +391,41 @@ theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
     I ^ n ≤ I ^ 1 := pow_le_pow_right (Nat.pos_of_ne_zero hn)
     _ = I := Submodule.pow_one _
 
-theorem pow_right_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
+theorem pow_right_mono (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
   induction' n with _ hn
   · rw [Submodule.pow_zero, Submodule.pow_zero]
   · rw [Submodule.pow_succ, Submodule.pow_succ]
     exact Ideal.mul_mono hn e
 
+namespace IsTwoSided
+
+instance [J.IsTwoSided] : (I * J).IsTwoSided :=
+  ⟨fun b ha ↦ Submodule.mul_induction_on ha
+    (fun i hi j hj ↦ by rw [mul_assoc]; exact mul_mem_mul hi (mul_mem_right _ _ hj))
+    fun x y hx hy ↦ by rw [right_distrib]; exact add_mem hx hy⟩
+
+variable [I.IsTwoSided] (m n : ℕ)
+
+instance : (I ^ n).IsTwoSided :=
+  n.rec
+    (by rw [Submodule.pow_zero, one_eq_top]; infer_instance)
+    (fun _ _ ↦ by rw [Submodule.pow_succ]; infer_instance)
+
+protected theorem mul_one : I * 1 = I :=
+  mul_le_right.antisymm fun i hi ↦ mul_one i ▸ mul_mem_mul hi (one_eq_top (R := R) ▸ trivial)
+
+theorem pow_add : I ^ (m + n) = I ^ m * I ^ n := by
+  obtain rfl | h := eq_or_ne n 0
+  · rw [add_zero, Submodule.pow_zero, IsTwoSided.mul_one]
+  · exact Submodule.pow_add _ h
+
+theorem pow_succ : I ^ (n + 1) = I * I ^ n := by
+  rw [add_comm, pow_add, Submodule.pow_one]
+
+end IsTwoSided
+
 @[simp]
-theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal R} :
+theorem mul_eq_bot [NoZeroDivisors R] :
     I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
   ⟨fun hij =>
     or_iff_not_imp_left.mpr fun I_ne_bot =>
@@ -393,10 +434,10 @@ theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal 
         Or.resolve_left (mul_eq_zero.mp ((I * J).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
     fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
 
-instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
+instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
-instance {R : Type*} [CommSemiring R] {S : Type*} [CommRing S] [Algebra R S]
+instance {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
     [NoZeroSMulDivisors R S] {I : Ideal S} : NoZeroSMulDivisors R I :=
   Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 
@@ -422,17 +463,6 @@ theorem prod_mem_prod {ι : Type*} {s : Finset ι} {I : ι → Ideal R} {x : ι 
       exact
         mul_mem_mul (h a <| Finset.mem_insert_self a s)
           (IH fun i hi => h i <| Finset.mem_insert_of_mem hi)
-
-theorem mul_le_right : I * J ≤ I :=
-  Ideal.mul_le.2 fun _ hr _ _ => I.mul_mem_right _ hr
-
-@[simp]
-theorem sup_mul_right_self : I ⊔ I * J = I :=
-  sup_eq_left.2 Ideal.mul_le_right
-
-@[simp]
-theorem mul_right_self_sup : I * J ⊔ I = I :=
-  sup_eq_right.2 Ideal.mul_le_right
 
 variable (I J K)
 
@@ -1226,7 +1256,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
   smul_add := smul_sup
   add_smul := sup_smul
-  mul_smul := Submodule.smul_assoc
+  mul_smul := Submodule.mul_smul
   one_smul := by simp
   zero_smul := bot_smul
   smul_zero := smul_bot
