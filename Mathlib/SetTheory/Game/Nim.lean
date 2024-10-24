@@ -5,7 +5,7 @@ Authors: Fox Thomson, Markus Himmel
 -/
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Game.Impartial
-import Mathlib.SetTheory.Ordinal.Nimber
+import Mathlib.SetTheory.Nimber.Basic
 
 /-!
 # Nim and the Sprague-Grundy theorem
