@@ -35,6 +35,10 @@ open scoped TensorProduct
 
 namespace Algebra.FormallyEtale
 
+/--
+This is a weaker version of `of_isSeparable` that additionally assumes `EssFiniteType K L`.
+Use that instead.
+-/
 theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
     FormallyEtale K L := by
   have := FormallyUnramified.of_isSeparable K L
