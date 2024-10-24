@@ -42,7 +42,7 @@ open Pointwise
 
 noncomputable section
 
-variable {Γ Γ' R V α β : Type*}
+variable {Γ R α β : Type*}
 
 namespace HahnSeries
 

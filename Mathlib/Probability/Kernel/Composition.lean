@@ -65,7 +65,7 @@ namespace ProbabilityTheory
 
 namespace Kernel
 
-variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 section CompositionProduct
 
@@ -335,7 +335,7 @@ end Ae
 
 section Restrict
 
-variable {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [IsSFiniteKernel η] {a : α}
+variable {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [IsSFiniteKernel η]
 
 theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     Kernel.restrict κ hs ⊗ₖ Kernel.restrict η ht = Kernel.restrict (κ ⊗ₖ η) (hs.prod ht) := by
@@ -759,7 +759,7 @@ def prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : Kernel α β) : Kernel (�
 def prodMkRight (γ : Type*) [MeasurableSpace γ] (κ : Kernel α β) : Kernel (α × γ) β :=
   comap κ Prod.fst measurable_fst
 
-variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
+variable {γ : Type*} {mγ : MeasurableSpace γ}
 
 @[simp]
 theorem prodMkLeft_apply (κ : Kernel α β) (ca : γ × α) : prodMkLeft γ κ ca = κ ca.snd :=

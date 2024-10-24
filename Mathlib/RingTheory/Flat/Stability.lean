@@ -153,7 +153,7 @@ section Localization
 
 variable {R : Type u} {M Mp : Type*} (Rp : Type v)
   [CommRing R] [AddCommGroup M] [Module R M] [CommRing Rp] [Algebra R Rp]
-  [AddCommGroup Mp] [Module R Mp] [Module Rp Mp] [IsScalarTower R Rp Mp] (f : M →ₗ[R] Mp)
+  [AddCommGroup Mp] [Module R Mp] [Module Rp Mp] [IsScalarTower R Rp Mp]
 
 instance localizedModule [Module.Flat R M] (S : Submonoid R) : Module.Flat (Localization S)
     (LocalizedModule S M) := by

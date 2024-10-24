@@ -101,7 +101,7 @@ end Preorder
 
 section SemilatticeInf
 
-variable [SemilatticeInf P] {x y : P} {I : Ideal P}
+variable [SemilatticeInf P] {I : Ideal P}
 
 theorem IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ I ∨ y ∈ I := by
   contrapose!
