@@ -172,17 +172,22 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
 
 See note [reducible non-instances]. -/
-abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] : LinearOrder α :=
-  let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y =>
-      decidable_of_iff (¬r y x)
-        ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
-          h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
-  { __ := partialOrderOfSO r
+abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearOrder α :=
+  let le : LE α := ⟨fun x y ↦ ¬ r y x⟩
+  let hD : @DecidableRel α (· ≤ ·) := fun x y ↦ inferInstanceAs (Decidable (¬ r y x))
+  { __ := le
+    lt := r
+    le_refl := irrefl
+    le_antisymm := fun x y hx hy ↦ ((trichotomous x y).resolve_left hy).resolve_right hx
+    le_trans := fun x y z hx hy hz ↦ hx <| trans_trichotomous_left hy hz
+    lt_iff_le_not_le := fun x y ↦
+      ⟨fun h => ⟨asymm h, not_not.2 h⟩,
+        fun h => (trichotomous x y).resolve_right (not_or.2 ⟨fun he ↦ he ▸ h.2 <| irrefl y, h.1⟩)⟩
     le_total := fun x y =>
       match y, trichotomous_of r x y with
-      | _, Or.inl h => Or.inl (Or.inr h)
-      | _, Or.inr (Or.inl rfl) => Or.inl (Or.inl rfl)
-      | _, Or.inr (Or.inr h) => Or.inr (Or.inr h),
+      | _, Or.inl h => Or.inl (asymm h)
+      | _, Or.inr (Or.inl rfl) => Or.inl (irrefl _)
+      | _, Or.inr (Or.inr h) => Or.inr (asymm h)
     toMin := minOfLe,
     toMax := maxOfLe,
     decidableLE := hD }
