@@ -861,6 +861,10 @@ theorem ContinuousOn.comp_continuous {g : β → γ} {f : α → β} {s : Set β
   rw [continuous_iff_continuousOn_univ] at *
   exact hg.comp hf fun x _ => hs x
 
+theorem ContinuousOn.image_comp_continuous {g : β → γ} {f : α → β} {s : Set α}
+    (conton : ContinuousOn g (f '' s)) (cont : Continuous f) : ContinuousOn (g ∘ f) s :=
+  conton.comp cont.continuousOn (s.mapsTo_image f)
+
 theorem ContinuousAt.comp₂_continuousWithinAt {f : β × γ → δ} {g : α → β} {h : α → γ} {x : α}
     {s : Set α} (hf : ContinuousAt f (g x, h x)) (hg : ContinuousWithinAt g s x)
     (hh : ContinuousWithinAt h s x) :
