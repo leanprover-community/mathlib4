@@ -17,11 +17,11 @@ We also show that the upper half plane embeds into the integer complement.
 open UpperHalfPlane
 
 /--The complement of the integers in `ℂ`. -/
-def ComplexIntegerComplement := {z : ℂ // ¬ ∃ (n : ℤ), z = ↑n}
+def Complex.IntegerComplement := {z : ℂ // ¬ ∃ (n : ℤ), z = ↑n}
 
-namespace ComplexIntegerComplement
+namespace Complex
 
-local notation "ℂ_ℤ " => ComplexIntegerComplement
+local notation "ℂ_ℤ " => IntegerComplement
 
 noncomputable instance : UniformSpace ℂ_ℤ := instUniformSpaceSubtype
 
@@ -30,22 +30,26 @@ instance : LocallyCompactSpace ℂ_ℤ := by
   convert Complex.isOpen_compl_range_intCast
   simp only [Set.mem_range, eq_comm]
 
-instance : Coe ℂ_ℤ ℂ := ⟨fun x => x.1⟩
+@[coe] def coe (z : ℂ_ℤ) : ℂ := z.1
+
+instance : Coe ℂ_ℤ ℂ := ⟨coe⟩
 
 lemma UpperHalfPlane.ne_int (z : ℍ) : ∀ n : ℤ, z.1 ≠ n := by
   intro n
   have h1 := z.2
   aesop
 
-instance : Coe ℍ ℂ_ℤ := ⟨fun x => ⟨x, by simpa using UpperHalfPlane.ne_int x⟩⟩
+@[coe] def ucoe : ℍ → ℂ_ℤ := fun z => ⟨z, by simpa using UpperHalfPlane.ne_int z⟩
 
-lemma ℂ_ℤ_add_ne_zero (x : ℂ_ℤ) (a : ℤ) : x.1 + a ≠ 0 := by
+instance : Coe ℍ ℂ_ℤ := ⟨ucoe⟩
+
+lemma IntegerComplement_add_ne_zero (x : ℂ_ℤ) (a : ℤ) : x.1 + a ≠ 0 := by
   intro h
   rw [add_eq_zero_iff_eq_neg] at h
   have := not_exists.mp x.2 (-a)
   aesop
 
-lemma ℂ_ℤ_not_zero (x : ℂ_ℤ) : x.1 ≠ 0 := by
-  simpa using ℂ_ℤ_add_ne_zero x 0
+lemma IntegerComplement_not_zero (x : ℂ_ℤ) : x.1 ≠ 0 := by
+  simpa using IntegerComplement_add_ne_zero x 0
 
-end ComplexIntegerComplement
+end Complex
