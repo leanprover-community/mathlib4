@@ -334,6 +334,9 @@ theorem preAleph_omega0 : preAleph ω = ℵ₀ :=
 theorem aleph0_le_preAleph {o : Ordinal} : ℵ₀ ≤ preAleph o ↔ ω ≤ o := by
   rw [← preAleph_omega0, preAleph_le_preAleph]
 
+theorem range_preAleph : range preAleph = Set.univ :=
+  preAleph.range_eq
+
 /-- The `aleph` function gives the infinite cardinals listed by their ordinal index. `aleph 0 = ℵ₀`,
 `aleph 1 = succ ℵ₀` is the first uncountable cardinal, and so on.
 
@@ -417,6 +420,19 @@ theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
 instance (o : Ordinal) : NoMaxOrder (ℵ_ o).ord.toType :=
   toType_noMax_of_succ_lt (ord_aleph_isLimit o).2
 
+@[simp]
+theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
+  ext c
+  refine ⟨?_, fun hc ↦ ⟨preAleph.symm c - ω, ?_⟩⟩
+  · rintro ⟨o, rfl⟩
+    exact aleph0_le_aleph o
+  · rw [aleph_eq_preAleph, Ordinal.add_sub_cancel_of_le, preAleph.apply_symm_apply]
+    rwa [← aleph0_le_preAleph, preAleph.apply_symm_apply]
+
+theorem mem_range_aleph_iff {c : Cardinal} : c ∈ range aleph ↔ ℵ₀ ≤ c := by
+  rw [range_aleph, mem_Ici]
+
+@[deprecated mem_range_aleph_iff (since := "2024-10-24")]
 theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = ℵ_ o :=
   ⟨fun h =>
     ⟨preAleph.symm c - ω, by
@@ -431,7 +447,9 @@ theorem preAleph_isNormal : IsNormal (ord ∘ preAleph) :=
 theorem aleph_isNormal : IsNormal (ord ∘ aleph) :=
   preAleph_isNormal.trans <| isNormal_add_right ω
 
-theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
+@[simp]
+theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by
+  rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
 
 theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by
   rw [← succ_aleph0]
