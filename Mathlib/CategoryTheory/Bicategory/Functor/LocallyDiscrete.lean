@@ -37,11 +37,11 @@ def pseudofunctorOfIsLocallyDiscrete
         (mapComp f g).hom ▷ map h ≫ (α_ (map f) (map g) (map h)).hom ≫
           map f ◁ (mapComp g h).inv ≫ (mapComp f (g ≫ h)).inv = eqToHom (by simp) := by aesop_cat)
     (map₂_left_unitor : ∀ {b₀ b₁ : B} (f : b₀ ⟶ b₁),
-      (mapComp (𝟙 b₀) f).hom ≫ (mapId b₀).hom ▷ map f ≫ (λ_ (map f)).hom = eqToHom (by simp) :=
-        by aesop_cat)
+      (mapComp (𝟙 b₀) f).hom ≫ (mapId b₀).hom ▷ map f ≫ (λ_ (map f)).hom = eqToHom (by simp) := by
+        aesop_cat)
     (map₂_right_unitor : ∀ {b₀ b₁ : B} (f : b₀ ⟶ b₁),
-      (mapComp f (𝟙 b₁)).hom ≫ map f ◁ (mapId b₁).hom ≫ (ρ_ (map f)).hom = eqToHom (by simp) :=
-        by aesop_cat) :
+      (mapComp f (𝟙 b₁)).hom ≫ map f ◁ (mapId b₁).hom ≫ (ρ_ (map f)).hom = eqToHom (by simp) := by
+        aesop_cat) :
     Pseudofunctor B C where
   obj := obj
   map := map
@@ -70,11 +70,11 @@ def mkPseudofunctor {B₀ C : Type*} [Category B₀] [Bicategory C]
         (mapComp f g).hom ▷ map h ≫ (α_ (map f) (map g) (map h)).hom ≫
           map f ◁ (mapComp g h).inv ≫ (mapComp f (g ≫ h)).inv = eqToHom (by simp) := by aesop_cat)
     (map₂_left_unitor : ∀ {b₀ b₁ : B₀} (f : b₀ ⟶ b₁),
-      (mapComp (𝟙 b₀) f).hom ≫ (mapId b₀).hom ▷ map f ≫ (λ_ (map f)).hom = eqToHom (by simp) :=
-        by aesop_cat)
+      (mapComp (𝟙 b₀) f).hom ≫ (mapId b₀).hom ▷ map f ≫ (λ_ (map f)).hom = eqToHom (by simp) := by
+        aesop_cat)
     (map₂_right_unitor : ∀ {b₀ b₁ : B₀} (f : b₀ ⟶ b₁),
-      (mapComp f (𝟙 b₁)).hom ≫ map f ◁ (mapId b₁).hom ≫ (ρ_ (map f)).hom = eqToHom (by simp) :=
-        by aesop_cat) :
+      (mapComp f (𝟙 b₁)).hom ≫ map f ◁ (mapId b₁).hom ≫ (ρ_ (map f)).hom = eqToHom (by simp) := by
+        aesop_cat) :
     Pseudofunctor (LocallyDiscrete B₀) C :=
   pseudofunctorOfIsLocallyDiscrete (fun b ↦ obj b.as) (fun f ↦ map f.as)
     (fun _ ↦ mapId _) (fun _ _ ↦ mapComp _ _) (fun _ _ _ ↦ map₂_associator _ _ _)
