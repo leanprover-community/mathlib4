@@ -323,9 +323,9 @@ def compTranspose (x y z : C) [Closed x] [Closed y] : x ⊗ (ihom x).obj y ⊗ (
   (α_ x ((ihom x).obj y) ((ihom y).obj z)).inv ≫
     (ihom.ev x).app y ▷ ((ihom y).obj z) ≫ (ihom.ev y).app z
 
-/-- The C-composition morphism
+/-- The `C`-composition morphism
   `hom(x, y) ⊗ hom(y, z) ⟶ hom(x, z)`
-used to equip C with the structure of a C-category -/
+used to equip `C` with the structure of a `C`-category -/
 def comp (x y z : C) [Closed x] [Closed y] : (ihom x).obj y ⊗ (ihom y).obj z ⟶ (ihom x).obj z :=
   curry (compTranspose x y z)
 
