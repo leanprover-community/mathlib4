@@ -588,7 +588,7 @@ theorem rank_pow_quot_aux [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : 
   letI : Field (R ⧸ p) := Ideal.Quotient.field _
   rw [← rank_range_of_injective _ (powQuotSuccInclusion_injective f p P i),
     (quotientRangePowQuotSuccInclusionEquiv f p P hP0 hi).symm.rank_eq]
-  exact (rank_quotient_add_rank (LinearMap.range (powQuotSuccInclusion f p P i))).symm
+  exact (Submodule.rank_quotient_add_rank (LinearMap.range (powQuotSuccInclusion f p P i))).symm
 
 theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P ≠ ⊥)
     (i : ℕ) (hi : i ≤ e) :

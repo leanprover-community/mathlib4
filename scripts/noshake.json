@@ -379,6 +379,7 @@
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Sites.IsSheafFor":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono"],
+  "Mathlib.CategoryTheory.Preadditive.Basic": ["Mathlib.Algebra.Module.End"],
   "Mathlib.CategoryTheory.Monoidal.Rigid.Basic":
   ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
   "Mathlib.CategoryTheory.Monoidal.Braided.Basic":
