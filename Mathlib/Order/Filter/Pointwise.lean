@@ -3,6 +3,7 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
 -/
+import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Data.Set.Pointwise.SMul
@@ -261,13 +262,22 @@ theorem mem_mul : s ∈ f * g ↔ ∃ t₁ ∈ f, ∃ t₂ ∈ g, t₁ * t₂ �
 theorem mul_mem_mul : s ∈ f → t ∈ g → s * t ∈ f * g :=
   image2_mem_map₂
 
-@[to_additive (attr := simp)]
 theorem bot_mul : ⊥ * g = ⊥ :=
   map₂_bot_left
 
-@[to_additive (attr := simp)]
 theorem mul_bot : f * ⊥ = ⊥ :=
   map₂_bot_right
+
+instance {α : Type*} [Add α] : IsBotAbsorbing (Filter α) where
+  bot_add _ := map₂_bot_left
+  add_bot _ := map₂_bot_right
+
+protected theorem bot_add {α : Type*} [Add α] {g : Filter α} : ⊥ + g = ⊥ := by simp
+
+protected theorem add_bot {α : Type*} [Add α] {f : Filter α} : f + ⊥ = ⊥ := by simp
+
+attribute [to_additive existing] bot_mul mul_bot
+attribute [simp] bot_mul mul_bot
 
 @[to_additive (attr := simp)]
 theorem mul_eq_bot_iff : f * g = ⊥ ↔ f = ⊥ ∨ g = ⊥ :=

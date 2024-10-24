@@ -142,8 +142,8 @@ lemma levyProkhorovEDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure 
   have hs_add_r' : s.toReal + r.toReal
       = (levyProkhorovEDist μ ν + levyProkhorovEDist ν κ + ε).toReal := by
     rw [← hs_add_r, ← ENNReal.toReal_add]
-    · exact ENNReal.add_ne_top.mpr ⟨LPνκ_finite, half_ε_lt_top.ne⟩
-    · exact ENNReal.add_ne_top.mpr ⟨LPμν_finite, half_ε_lt_top.ne⟩
+    · exact add_ne_top.mpr ⟨LPνκ_finite, half_ε_lt_top.ne⟩
+    · exact add_ne_top.mpr ⟨LPμν_finite, half_ε_lt_top.ne⟩
   rw [← hs_add_r', add_assoc, ← hs_add_r, add_assoc _ _ ε, ← hs_add_r]
   refine ⟨?_, ?_⟩
   · calc μ B ≤ ν (thickening r.toReal B) + r :=
@@ -188,7 +188,7 @@ lemma levyProkhorovDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure �
     _ _).mpr <| levyProkhorovEDist_triangle μ ν κ
   · simp only [levyProkhorovDist, ENNReal.toReal_add dμν_finite dνκ_finite]
   · exact dμκ_finite
-  · exact ENNReal.add_ne_top.mpr ⟨dμν_finite, dνκ_finite⟩
+  · exact add_ne_top.mpr ⟨dμν_finite, dνκ_finite⟩
 
 /-- A type synonym, to be used for `Measure α`, `FiniteMeasure α`, or `ProbabilityMeasure α`,
 when they are to be equipped with the Lévy-Prokhorov distance. -/
@@ -370,7 +370,7 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
             <| left_measure_le_of_levyProkhorovEDist_lt hμν (B := {a | t ≤ f a})
                 (f.continuous.measurable measurableSet_Ici)
     · rw [ENNReal.toReal_add (measure_ne_top ν _) ofReal_ne_top, ENNReal.toReal_ofReal ε_pos.le]
-    · exact ENNReal.add_ne_top.mpr ⟨measure_ne_top ν _, ofReal_ne_top⟩
+    · exact add_ne_top.mpr ⟨measure_ne_top ν _, ofReal_ne_top⟩
   have intble₁ : IntegrableOn (fun t ↦ ENNReal.toReal (μ {a | t ≤ f a})) (Ioc 0 ‖f‖) := by
     apply Measure.integrableOn_of_bounded (M := ENNReal.toReal (μ univ)) measure_Ioc_lt_top.ne
     · apply (Measurable.ennreal_toReal (Antitone.measurable ?_)).aestronglyMeasurable

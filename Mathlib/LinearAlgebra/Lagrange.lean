@@ -319,7 +319,7 @@ theorem degree_interpolate_le (hvs : Set.InjOn v s) :
   intro i hi
   rw [degree_mul, degree_basis hvs hi]
   by_cases hr : r i = 0
-  · simpa only [hr, map_zero, degree_zero, WithBot.bot_add] using bot_le
+  · simpa only [hr, map_zero, degree_zero, bot_add] using bot_le
   · rw [degree_C hr, zero_add]
 
 -- Porting note: Added `Nat.cast_withBot` rewrites
