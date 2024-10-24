@@ -141,7 +141,8 @@ theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
-@[simp]
+/-- Avoid using `Quotient.mk` to construct a `Cardinal` directly -/
+@[deprecated (since := "2024-10-24")]
 theorem mk'_def (α : Type u) : @Eq Cardinal ⟦α⟧ #α :=
   rfl
 
@@ -277,8 +278,8 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
 
 theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
   trans
-  · rw [← Quotient.out_eq c, ← Quotient.out_eq c']
-  · rw [mk'_def, mk'_def, le_def]
+  · rw [← Cardinal.mk_out c, ← Cardinal.mk_out c']
+  · rw [le_def]
 
 theorem lift_mk_le {α : Type v} {β : Type w} :
     lift.{max u w} #α ≤ lift.{max u v} #β ↔ Nonempty (α ↪ β) :=
