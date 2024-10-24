@@ -133,9 +133,9 @@ instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSepa
   refine IsClosedImmersion.stableUnderBaseChange
     ((Limits.isPullback_equalizer_prod f g).map (Over.forget _)).flip ?_
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _
-    (Over.prod_left_iso_pullback Y Y).hom]
+    (Over.prodLeftIsoPullback Y Y).hom]
   convert (inferInstanceAs (IsClosedImmersion (pullback.diagonal Y.hom)))
-  ext1 <;> simp [Over.prod_left_iso_pullback, ← Over.comp_left]
+  ext1 <;> simp [← Over.comp_left]
 
 /--
 Suppose `X` is a reduced scheme and that `f g : X ⟶ Y` agree over some separated `Y ⟶ Z`.
