@@ -75,6 +75,9 @@ variable (α) (r : α → α → Prop) [IsPreorder α r]
 def AntisymmRel.setoid : Setoid α :=
   ⟨AntisymmRel r, antisymmRel_refl _, AntisymmRel.symm, AntisymmRel.trans⟩
 
+instance {α : Type*} (f : α → α → Prop) [DecidableRel f] [IsPreorder α f] :
+  DecidableRel (AntisymmRel.setoid _ f).r := inferInstanceAs (DecidableRel (AntisymmRel f))
+
 /-- The partial order derived from a preorder by making pairwise comparable elements equal. This is
 the quotient by `fun a b => a ≤ b ∧ b ≤ a`. -/
 def Antisymmetrization : Type _ :=
