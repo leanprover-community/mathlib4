@@ -507,7 +507,12 @@ def sumArrowEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
   isometry_toFun _ _ := by simp [Prod.edist_eq, edist_pi_def, Finset.sup_univ_eq_iSup, iSup_sum]
 
-lemma _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
+theorem sumArrowEquivProdArrow_eq_homeomorph {α β : Type*} [Fintype α] [Fintype β] :
+    sumArrowEquivProdArrow.toHomeomorph
+    = Homeomorph.sumArrowEquivProdArrow (ι := α) (ι' := β) (X := γ):= by
+  rfl
+
+theorem _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
     edist (Fin.append x y) (Fin.append x2 y2) = max (edist x x2) (edist y y2) := by
   simp [edist_pi_def, Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv),
     Prod.edist_eq, iSup_sum]
@@ -517,6 +522,15 @@ lemma _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y 
 def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃ᵢ (Fin (m + n) → α) where
   toEquiv := Fin.appendEquiv _ _
   isometry_toFun _ _ := by simp_rw [Fin.appendEquiv, Fin.edist_append_eq_max_edist, Prod.edist_eq]
+
+theorem _root_.Fin.appendIsometry_eq_appendHomeomorph (m n : ℕ) :
+    (Fin.appendIsometry m n).toHomeomorph = Fin.appendHomeomorph (X := α) m n := by
+  ext ⟨x1, x2⟩ l
+  simp only [coe_toHomeomorph, Fin.appendIsometry_toFun, Fin.append, Fin.addCases,
+    Fin.appendHomeomorph, Homeomorph.sumArrowEquivProdArrow, finSumFinEquiv]
+  by_cases h : l < m
+  · simp [h]
+  · simp [h]
 
 variable (ι α)
 

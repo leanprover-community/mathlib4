@@ -716,6 +716,15 @@ def sumArrowEquivProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → 
 def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) :=
   (sumArrowEquivProdArrow).symm.trans (piCongrLeft (Y := fun _ ↦ X) finSumFinEquiv)
 
+theorem _root_.Fin.appendHomeomorph_eq_appendEquiv (m n : ℕ) :
+    (Fin.appendHomeomorph (X := X) m n).toEquiv = Fin.appendEquiv m n := by
+  ext ⟨x1, x2⟩ l
+  simp only [Fin.appendHomeomorph, sumArrowEquivProdArrow, Equiv.sumArrowEquivProdArrow,
+    finSumFinEquiv, Fin.addCases, Fin.appendEquiv, Fin.append, Equiv.coe_fn_mk]
+  by_cases h : l < m
+  · simp [h]
+  · simp [h]
+
 section Distrib
 
 /-- `(X ⊕ Y) × Z` is homeomorphic to `X × Z ⊕ Y × Z`. -/
