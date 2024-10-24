@@ -222,6 +222,7 @@ where two partial maps are equivalent if they are equal on a dense open subschem
 def RationalMap (X Y : Scheme.{u}) : Type u :=
   @_root_.Quotient (X.PartialMap Y) inferInstance
 
+/-- The notation for rational maps. -/
 scoped[AlgebraicGeometry] infix:10 " ⤏ " => Scheme.RationalMap
 
 /-- A partial map as a rational map. -/
@@ -264,7 +265,7 @@ def RationalMap.fromFunctionField [IrreducibleSpace X] (f : X ⤏ Y) :
 
 @[simp]
 lemma RationalMap.fromFunctionField_toRationalMap [IrreducibleSpace X] (f : X.PartialMap Y) :
-  f.toRationalMap.fromFunctionField = f.fromFunctionField := rfl
+    f.toRationalMap.fromFunctionField = f.fromFunctionField := rfl
 
 /--
 Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and `X` is integral,
@@ -280,8 +281,7 @@ lemma RationalMap.fromFunctionField_ofFunctionField [IsIntegral X] [LocallyOfFin
     (ofFunctionField sX sY f h).fromFunctionField = f :=
   PartialMap.fromSpecStalkOfMem_ofFromSpecStalk sX sY _ _
 
-lemma RationalMap.eq_of_fromFunctionField_eq [IsIntegral X]
-    {x : X} [X.IsGermInjectiveAt x] (f g : X.RationalMap Y)
+lemma RationalMap.eq_of_fromFunctionField_eq [IsIntegral X] (f g : X.RationalMap Y)
     (H : f.fromFunctionField = g.fromFunctionField) : f = g := by
     obtain ⟨f, rfl⟩ := f.exists_rep
     obtain ⟨g, rfl⟩ := g.exists_rep
@@ -305,7 +305,7 @@ def RationalMap.equivFunctionField [IsIntegral X] [LocallyOfFiniteType sY] :
   left_inv f := Subtype.ext (RationalMap.fromFunctionField_ofFunctionField _ _ _ _)
   right_inv f := Subtype.ext (RationalMap.eq_of_fromFunctionField_eq
       (ofFunctionField sX sY f.1.fromFunctionField _) f
-      (x := genericPoint X) (RationalMap.fromFunctionField_ofFunctionField _ _ _ _))
+      (RationalMap.fromFunctionField_ofFunctionField _ _ _ _))
 
 end Scheme
 
