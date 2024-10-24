@@ -72,7 +72,7 @@ theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
 
 section NullSubmodule
 
-open SeparationQuotientAddGroup LinearMap
+open SeparationQuotient LinearMap
 
 variable (E)
 
