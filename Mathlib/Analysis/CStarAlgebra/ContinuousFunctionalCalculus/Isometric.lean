@@ -273,12 +273,7 @@ instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℂ A IsStarNormal where
   isometric a ha := by
     rw [cfcHom_eq_of_isStarNormal]
-    refine isometry_subtype_coe.comp ?_
-    -- note: Lean should find these for `StarAlgEquiv.isometry`, but it doesn't and so we
-    -- provide them manually. Hopefully this is fixed after #16953
-    have : SMulCommClass ℂ C(σ ℂ a, ℂ) C(σ ℂ a, ℂ) := Algebra.to_smulCommClass (A := C(σ ℂ a, ℂ))
-    have : IsScalarTower ℂ C(σ ℂ a, ℂ) C(σ ℂ a, ℂ) := IsScalarTower.right (A := C(σ ℂ a, ℂ))
-    exact StarAlgEquiv.isometry (continuousFunctionalCalculus a)
+    exact isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
 
 instance IsSelfAdjoint.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
