@@ -69,7 +69,6 @@ variable {α : Type u} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : �
 
 /-! ### Definition of ordinals -/
 
-
 /-- Bundled structure registering a well order on a type. Ordinals will be defined as a quotient
 of this type. -/
 structure WellOrder : Type (u + 1) where
@@ -85,11 +84,17 @@ attribute [instance] WellOrder.wo
 namespace WellOrder
 
 instance inhabited : Inhabited WellOrder :=
-  ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty EmptyRelation)⟩⟩
+  ⟨⟨PEmpty, EmptyRelation, inferInstance⟩⟩ 
+
+instance hasWellFounded (o : WellOrder) : WellFoundedRelation o.α :=
+  ⟨o.r, o.wo.wf⟩
+
+open Classical in
+instance linearOrder (o : WellOrder) : LinearOrder o.α :=
+  linearOrderOfSTO o.r
 
 @[simp]
-theorem eta (o : WellOrder) : mk o.α o.r o.wo = o := by
-  cases o
+theorem eta (o : WellOrder) : mk o.α o.r o.wo = o :=
   rfl
 
 end WellOrder
@@ -114,10 +119,10 @@ def Ordinal.toType (o : Ordinal.{u}) : Type u :=
   o.out.α
 
 instance hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.toType :=
-  ⟨o.out.r, o.out.wo.wf⟩
+  o.out.hasWellFounded
 
 instance linearOrder_toType (o : Ordinal) : LinearOrder o.toType :=
-  @IsWellOrder.linearOrder _ o.out.r o.out.wo
+  o.out.linearOrder
 
 instance isWellOrder_toType_lt (o : Ordinal) : IsWellOrder o.toType (· < ·) :=
   o.out.wo
