@@ -1892,6 +1892,10 @@ theorem not_preirreducible_nontrivial_t2 (X) [TopologicalSpace X] [Preirreducibl
     [Nontrivial X] [T2Space X] : False :=
   (PreirreducibleSpace.isPreirreducible_univ (X := X)).subsingleton.not_nontrivial nontrivial_univ
 
+theorem t2Space_antitone {X : Type*} : Antitone (@T2Space X) :=
+  fun inst₁ inst₂ h_top h_t2 ↦ @T2Space.of_injective_continuous _ _ inst₁ inst₂
+    h_t2 _ Function.injective_id <| continuous_id_of_le h_top
+
 end Separation
 
 section RegularSpace
