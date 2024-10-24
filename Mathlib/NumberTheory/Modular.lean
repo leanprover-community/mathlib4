@@ -388,6 +388,11 @@ theorem three_lt_four_mul_im_sq_of_mem_fdo (h : z ∈ 𝒟ᵒ) : 3 < 4 * z.im ^ 
   have := h.2
   cases abs_cases z.re <;> nlinarith
 
+/-- non-strict variant of `ModularGroup.three_le_four_mul_im_sq_of_mem_fdo` -/
+theorem three_le_four_mul_im_sq_of_mem_fd {τ : ℍ} (h : τ ∈ 𝒟) : 3 ≤ 4 * τ.im ^ 2 := by
+  have : 1 ≤ τ.re * τ.re + τ.im * τ.im := by simpa [Complex.normSq_apply] using h.1
+  cases abs_cases τ.re <;> nlinarith [h.2]
+
 /-- If `z ∈ 𝒟ᵒ`, and `n : ℤ`, then `|z + n| > 1`. -/
 theorem one_lt_normSq_T_zpow_smul (hz : z ∈ 𝒟ᵒ) (n : ℤ) : 1 < normSq (T ^ n • z : ℍ) := by
   have hz₁ : 1 < z.re * z.re + z.im * z.im := hz.1
@@ -507,5 +512,30 @@ theorem eq_smul_self_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ �
 end UniqueRepresentative
 
 end FundamentalDomain
+
+section UpperHalfPlane
+
+lemma exists_translate (τ : ℍ) :
+    ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) := by
+  obtain ⟨γ, hγ⟩ := ModularGroup.exists_smul_mem_fd τ
+  use γ
+  nlinarith [ModularGroup.three_le_four_mul_im_sq_of_mem_fd hγ, UpperHalfPlane.im_pos (γ • τ)]
+
+/--For every `τ : ℍ` there is some matrix in `SL(2, ℤ)` that sends it to an elemenet whose
+imaginary part is at least `1/2` and `denom γ τ` has norm at most 1. -/
+lemma exists_translate' (τ : ℍ) :
+    ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) ∧ ‖denom γ τ‖ ≤ 1 := by
+  by_cases h : 1 / 2 ≤ τ.im
+  · refine ⟨1, by simpa using h, by simp [ModularGroup.coe_one, denom_one]⟩
+  · obtain ⟨γ, hγ⟩ := exists_translate τ
+    refine ⟨γ, hγ, ?_⟩
+    have h0 :=  ModularGroup.im_smul_eq_div_normSq γ τ
+    simp only [ModularGroup.det_coe', one_mul, ← UpperHalfPlane.ModularGroup.sl_moeb] at h0
+    have h1 : τ.im ≤ (γ • τ).im := by nlinarith
+    rw [h0, le_div_iff₀ (normSq_denom_pos (↑γ) τ), normSq_eq_norm_sq] at h1
+    have H : ‖denom γ τ‖^2 ≤ 1 := (mul_le_iff_le_one_right τ.2).mp h1
+    simpa using H
+
+end UpperHalfPlane
 
 end ModularGroup

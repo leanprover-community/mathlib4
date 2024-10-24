@@ -280,6 +280,9 @@ theorem coe'_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
 theorem det_coe' {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe' g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe']
 
+lemma coe_one : UpperHalfPlane.ModularGroup.coe' 1 = 1 := by
+  simp only [coe', _root_.map_one]
+
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 
@@ -391,6 +394,18 @@ nonrec theorem im_smul_eq_div_normSq :
 theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
     denom g z = (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
   simp [denom, coe']
+
+lemma denom_one (τ : ℍ) : denom 1 τ = 1 := by
+  simp [denom]
+
+@[simp]
+lemma denom_S (z : ℍ) : denom (ModularGroup.S) z = z.1 := by
+  rw [ModularGroup.S, denom]
+  simp only [Int.reduceNeg, Fin.isValue, ModularGroup.coe'_apply_complex, Matrix.of_apply,
+    Matrix.cons_val', Matrix.cons_val_zero, Matrix.empty_val', Matrix.cons_val_fin_one,
+    Matrix.cons_val_one, Matrix.head_fin_const, Int.cast_one, one_mul, Matrix.head_cons,
+    Int.cast_zero, add_zero]
+  rfl
 
 end ModularGroup
 
