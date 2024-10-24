@@ -224,7 +224,7 @@ theorem lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank [Module.Free K 
     exact basis_finite_of_finite_spans _ t.finite_toSet ht hs
   have := lift_mk_eq'.2 ⟨hs.repr.toEquiv⟩
   rwa [Finsupp.equivFunOnFinite.cardinal_eq, mk_arrow, hs.mk_eq_rank'', lift_power, lift_lift,
-    lift_lift, lift_umax'] at this
+    lift_lift, lift_umax] at this
 
 theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [Ring K] [StrongRankCondition K]
     [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
