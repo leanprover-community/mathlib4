@@ -38,20 +38,30 @@ namespace Algebra.FormallyEtale
 /--
 This is a weaker version of `of_isSeparable` that additionally assumes `EssFiniteType K L`.
 Use that instead.
+
+This is Iversen Corollary II.5.3.
 -/
 theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
     FormallyEtale K L := by
+  -- We already know that for field extensions
+  -- IsSeparable + EssFiniteType => FormallyUnramified + Finite
   have := FormallyUnramified.of_isSeparable K L
   have := FormallyUnramified.finite_of_free (R := K) (S := L)
   constructor
+  -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`
   intros B _ _ I h
   refine ⟨(FormallyUnramified.of_isSeparable K L).1 I h, ?_⟩
   intro f
+  -- By separability and finiteness, we may assume `L = K(α)` with `p` the minpoly of `α`.
   let pb := Field.powerBasisOfFiniteOfSeparable K L
+  -- Let `x : B` such that `f(α) = x` in `B / I`.
   obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective (f pb.gen)
   have helper : ∀ x, IsScalarTower.toAlgHom K B (B ⧸ I) x = Ideal.Quotient.mk I x := fun _ ↦ rfl
+  -- Then `p(x) = 0 mod I`, and the goal is to find some `ε ∈ I` such that
+  -- `p(x + ε) = p(x) + ε p'(x) = 0`, and we will get our lift into `B`.
   have hx' : Ideal.Quotient.mk I (aeval x (minpoly K pb.gen)) = 0 := by
     rw [← helper, ← aeval_algHom_apply, helper, hx, aeval_algHom_apply, minpoly.aeval, map_zero]
+  -- Since `p` is separable, `-p'(x)` is invertible in `B ⧸ I`,
   obtain ⟨u, hu⟩ : ∃ u, (aeval x) (derivative (minpoly K pb.gen)) * u + 1 ∈ I := by
     have := (isUnit_iff_ne_zero.mpr ((Algebra.IsSeparable.isSeparable K
       pb.gen).aeval_derivative_ne_zero (minpoly.aeval K _))).map f
@@ -60,6 +70,7 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
     use u
     rw [← Ideal.Quotient.eq_zero_iff_mem, map_add, map_mul, map_one, hu, mul_neg,
       IsUnit.mul_val_inv, neg_add_cancel]
+  -- And `ε = p(x)/(-p'(x))` works.
   use pb.liftEquiv.symm ⟨x + u * aeval x (minpoly K pb.gen), ?_⟩
   · apply pb.algHom_ext
     simp [hx, hx']
@@ -75,6 +86,9 @@ open scoped IntermediateField in
 lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
   constructor
   intros B _ _ I h
+  -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`.
+  -- But we already know that there exists a unique lift for every finite subfield of `L`
+  -- by `of_isSeparable_aux`, so we can glue them all together.
   refine ⟨(FormallyUnramified.of_isSeparable K L).1 I h, ?_⟩
   intro f
   have : ∀ k : L, ∃! g : K⟮k⟯ →ₐ[K] B,
