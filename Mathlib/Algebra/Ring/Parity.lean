@@ -233,9 +233,6 @@ lemma even_or_odd (n : ℕ) : Even n ∨ Odd n := (even_xor_odd n).or
 lemma even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [← two_mul, exists_or, Odd, Even] using even_or_odd n
 
-lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by
-  rw [← not_even_iff_odd, Nat.even_add_one, not_even_iff_odd]
-
 lemma even_xor_odd' (n : ℕ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
   obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n <;> use k
   · simpa only [← two_mul, eq_self_iff_true, xor_true] using (succ_ne_self (2 * k)).symm
