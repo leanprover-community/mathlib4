@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.Finite
-import Mathlib.NumberTheory.NumberField.Discriminant
+import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 
 /-!
 # Class numbers of number fields
