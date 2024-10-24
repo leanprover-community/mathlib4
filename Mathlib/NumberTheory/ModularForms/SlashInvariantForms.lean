@@ -92,6 +92,13 @@ theorem slash_action_eqn' (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [SlashInvariantFo
     (γ : Γ) (z : ℍ) : f (γ • z) = ((↑ₘ[ℤ] γ 1 0 : ℂ) * z + (↑ₘ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
   rw [← ModularForm.slash_action_eq'_iff, slash_action_eqn]
 
+/--For `f` SlashInvariantForm, we show ` f (γ • z) = (denom γ z) ^ k * f z`. -/
+theorem slash_action_eqn'' {F : Type*} [FunLike F ℍ ℂ] (k : ℤ) (Γ : Subgroup SL(2, ℤ))
+    [SlashInvariantFormClass F Γ k] (f : F) (γ : Γ) (z : ℍ) :
+    f (γ • z) = (denom γ z) ^ k * f z := by
+  rw [denom]
+  exact (SlashInvariantForm.slash_action_eqn' k Γ f γ z)
+
 instance [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
   ⟨fun f =>
     { toFun := f
