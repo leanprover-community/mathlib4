@@ -1157,6 +1157,12 @@ theorem exists_mem_eq_inf [OrderTop α] (s : Finset ι) (h : s.Nonempty) (f : ι
 
 end LinearOrder
 
+set_option linter.docPrime false in
+@[simp]
+lemma mem_inf' [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α} (hs) :
+    a ∈ s.inf' hs f ↔ ∀ i ∈ s, a ∈ f i := by
+  induction' hs using Finset.Nonempty.cons_induction <;> simp [*]
+
 end Finset
 
 namespace Multiset

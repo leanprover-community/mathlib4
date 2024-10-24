@@ -393,9 +393,14 @@
   author : Manuel Candales
 96:
   title  : Principle of Inclusion/Exclusion
+  decls  :
+    - Finset.inclusion_exclusion_sum_biUnion
+    - Finset.inclusion_exclusion_card_biUnion
+    - Finset.inclusion_exclusion_sum_inf_compl
+    - Finset.inclusion_exclusion_card_inf_compl
   links  :
     github : https://github.com/NeilStrickland/lean_lib/blob/f88d162da2f990b87c4d34f5f46bbca2bbc5948e/src/combinatorics/matching.lean#L304
-  author : Neil Strickland
+  author : Neil Strickland (outside mathlib), Yaël Dillies (in mathlib)
 97:
   title  : Cramer’s Rule
   decl   : Matrix.mulVec_cramer

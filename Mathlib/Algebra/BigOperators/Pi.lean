@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Ring.Pi
 
@@ -14,6 +14,7 @@ This file contains theorems relevant to big operators in binary and arbitrary pr
 of monoids and groups
 -/
 
+variable {ι κ α : Type*}
 
 namespace Pi
 
@@ -56,6 +57,26 @@ theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [S
     (x : ι → R) : x = ∑ i, (x i) • fun j => if i = j then (1 : R) else 0 := by
   ext
   simp
+
+section CommSemiring
+variable [CommSemiring α]
+
+lemma prod_indicator_apply (s : Finset ι) (f : ι → Set κ) (g : ι → κ → α) (j : κ) :
+    ∏ i ∈ s, (f i).indicator (g i) j = (s.inf f).indicator (∏ i ∈ s, g i) j := by
+  rw [Set.indicator]
+  split_ifs with hj
+  · rw [Finset.prod_apply]
+    congr! 1 with i hi
+    simp only [Finset.inf_set_eq_iInter, Set.mem_iInter] at hj
+    exact Set.indicator_of_mem (hj _ hi) _
+  · obtain ⟨i, hi, hj⟩ := by simpa using hj
+    exact Finset.prod_eq_zero hi <| Set.indicator_of_not_mem hj _
+
+lemma prod_indicator (s : Finset ι) (f : ι → Set κ) (g : ι → κ → α) :
+    ∏ i ∈ s, (f i).indicator (g i) = (s.inf f).indicator (∏ i ∈ s, g i) := by
+  ext a; simpa using prod_indicator_apply ..
+
+end CommSemiring
 
 section MulSingle
 
