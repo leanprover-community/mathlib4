@@ -127,6 +127,7 @@ lemma IsSeparated.of_comp [IsSeparated (f ≫ g)] : IsSeparated f := by
 lemma IsSeparated.comp_iff [IsSeparated g] : IsSeparated (f ≫ g) ↔ IsSeparated f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
+@[stacks 01KM]
 instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSeparated Y.hom]
     (f g : X ⟶ Y) : IsClosedImmersion (equalizer.ι f g).left := by
   refine IsClosedImmersion.stableUnderBaseChange
@@ -136,6 +137,10 @@ instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSepa
   convert (inferInstanceAs (IsClosedImmersion (pullback.diagonal Y.hom)))
   ext1 <;> simp [Over.prod_left_iso_pullback, ← Over.comp_left]
 
+/--
+Suppose `X` is a reduced scheme and that `f g : X ⟶ Y` agree over some separated `Y ⟶ Z`.
+Then `f = g` if `ι ≫ f = ι ≫ g` for some dominant `ι`.
+-/
 lemma ext_of_isDominant [IsReduced X] {f g : X ⟶ Y}
     (s : Y ⟶ Z) [IsSeparated s] (h : f ≫ s = g ≫ s)
     (ι : W ⟶ X) [IsDominant ι] (hU : ι ≫ f = ι ≫ g) : f = g := by
