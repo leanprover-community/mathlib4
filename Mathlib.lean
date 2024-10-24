@@ -1056,6 +1056,7 @@ import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Calculus.FDeriv.Star
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Calculus.FDeriv.WithLp
+import Mathlib.Analysis.Calculus.FirstDerivativeTest
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Calculus.Gradient.Basic
 import Mathlib.Analysis.Calculus.Implicit
@@ -4451,6 +4452,7 @@ import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
 import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.NormNum.PowMod
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Tactic.NormNum.Result
 import Mathlib.Tactic.NthRewrite
@@ -4881,6 +4883,7 @@ import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Order.MonotoneConvergence
 import Mathlib.Topology.Order.NhdsSet
 import Mathlib.Topology.Order.OrderClosed
+import Mathlib.Topology.Order.OrderClosedExtr
 import Mathlib.Topology.Order.PartialSups
 import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Order.ProjIcc

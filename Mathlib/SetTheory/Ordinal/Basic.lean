@@ -712,9 +712,6 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
 def omega0 : Ordinal.{u} :=
   lift <| @type ℕ (· < ·) _
 
-@[deprecated Ordinal.omega0 (since := "2024-09-26")]
-alias omega := omega0
-
 @[inherit_doc]
 scoped notation "ω" => Ordinal.omega0
 
