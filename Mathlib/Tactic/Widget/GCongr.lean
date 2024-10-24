@@ -37,7 +37,7 @@ return (res, res, none)
 @[server_rpc_method]
 def GCongrSelectionPanel.rpc := mkSelectionPanelRPC makeGCongrString
   "Use shift-click to select sub-expressions in the goal that should become holes in gcongr."
-  "GCongr 🔍"
+  "GCongr 🔍️"
 
 /-- The gcongr widget. -/
 @[widget_module]
