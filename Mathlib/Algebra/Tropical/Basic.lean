@@ -431,15 +431,15 @@ end Monoid
 
 section Distrib
 
-instance covariant_mul [LE R] [Add R] [CovariantClass R R (· + ·) (· ≤ ·)] :
-    CovariantClass (Tropical R) (Tropical R) (· * ·) (· ≤ ·) :=
+instance mulLeftMono [LE R] [Add R] [AddLeftMono R] :
+    MulLeftMono (Tropical R) :=
   ⟨fun _ y z h => add_le_add_left (show untrop y ≤ untrop z from h) _⟩
 
-instance covariant_swap_mul [LE R] [Add R] [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] :
-    CovariantClass (Tropical R) (Tropical R) (Function.swap (· * ·)) (· ≤ ·) :=
+instance mulRightMono [LE R] [Add R] [AddRightMono R] :
+    MulRightMono (Tropical R) :=
   ⟨fun _ y z h => add_le_add_right (show untrop y ≤ untrop z from h) _⟩
 
-instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R) (· + ·) (· ≤ ·) :=
+instance addLeftMono [LinearOrder R] : AddLeftMono (Tropical R) :=
   ⟨fun x y z h => by
     rcases le_total x y with hx | hy
     · rw [add_eq_left hx, add_eq_left (hx.trans h)]
@@ -448,17 +448,15 @@ instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R
       · rwa [add_eq_left hx]
       · rwa [add_eq_right hx]⟩
 
-instance covariant_mul_lt [LT R] [Add R] [CovariantClass R R (· + ·) (· < ·)] :
-    CovariantClass (Tropical R) (Tropical R) (· * ·) (· < ·) :=
+instance mulLeftStrictMono [LT R] [Add R] [AddLeftStrictMono R] :
+    MulLeftStrictMono (Tropical R) :=
   ⟨fun _ _ _ h => add_lt_add_left (untrop_lt_iff.2 h) _⟩
 
-instance covariant_swap_mul_lt [Preorder R] [Add R]
-    [CovariantClass R R (Function.swap (· + ·)) (· < ·)] :
-    CovariantClass (Tropical R) (Tropical R) (Function.swap (· * ·)) (· < ·) :=
+instance mulRightStrictMono [Preorder R] [Add R] [AddRightStrictMono R] :
+    MulRightStrictMono (Tropical R) :=
   ⟨fun _ y z h => add_lt_add_right (show untrop y < untrop z from h) _⟩
 
-instance instDistribTropical [LinearOrder R] [Add R] [CovariantClass R R (· + ·) (· ≤ ·)]
-    [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] :
+instance instDistribTropical [LinearOrder R] [Add R] [AddLeftMono R] [AddRightMono R] :
     Distrib (Tropical R) where
   mul := (· * ·)
   add := (· + ·)
@@ -466,8 +464,8 @@ instance instDistribTropical [LinearOrder R] [Add R] [CovariantClass R R (· + �
   right_distrib _ _ _ := untrop_injective (min_add_add_right _ _ _).symm
 
 @[simp]
-theorem add_pow [LinearOrder R] [AddMonoid R] [CovariantClass R R (· + ·) (· ≤ ·)]
-    [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] (x y : Tropical R) (n : ℕ) :
+theorem add_pow [LinearOrder R] [AddMonoid R] [AddLeftMono R] [AddRightMono R]
+    (x y : Tropical R) (n : ℕ) :
     (x + y) ^ n = x ^ n + y ^ n := by
   rcases le_total x y with h | h
   · rw [add_eq_left h, add_eq_left (pow_le_pow_left' h _)]
