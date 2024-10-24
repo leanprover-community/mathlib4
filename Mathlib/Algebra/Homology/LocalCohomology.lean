@@ -206,19 +206,6 @@ def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
 
 variable {I J K : Ideal R}
 
-/-- The lemma below essentially says that `idealPowersToSelfLERadical I` is initial in
-`selfLERadicalDiagram I`.
-
-Porting note: This lemma should probably be moved to `Mathlib/RingTheory/Finiteness`
-to be near `Ideal.exists_radical_pow_le_of_fg`, which it generalizes. -/
-theorem Ideal.exists_pow_le_of_le_radical_of_fG (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
-    ∃ k : ℕ, I ^ k ≤ J := by
-  obtain ⟨k, hk⟩ := J.exists_radical_pow_le_of_fg hJ
-  use k
-  calc
-    I ^ k ≤ J.radical ^ k := Ideal.pow_right_mono hIJ _
-    _ ≤ J := hk
-
 /-- The diagram of powers of `J` is initial in the diagram of all ideals with
 radical containing `J`. This uses noetherianness. -/
 instance ideal_powers_initial [hR : IsNoetherian R R] :
