@@ -49,11 +49,11 @@ def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
 
 @[to_additive]
 instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ :=
-  opHomeomorph.symm.embedding.t2Space
+  opHomeomorph.t2Space
 
 @[to_additive]
 instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵐᵒᵖ :=
-  opHomeomorph.symm.embedding.discreteTopology
+  opHomeomorph.discreteTopology
 
 @[to_additive (attr := simp)]
 theorem map_op_nhds (x : M) : map (op : M → Mᵐᵒᵖ) (𝓝 x) = 𝓝 (op x) :=
@@ -90,16 +90,15 @@ theorem inducing_embedProduct : Inducing (embedProduct M) :=
   ⟨rfl⟩
 
 @[to_additive]
-theorem embedding_embedProduct : Embedding (embedProduct M) :=
+theorem isEmbedding_embedProduct : IsEmbedding (embedProduct M) :=
   ⟨inducing_embedProduct, embedProduct_injective M⟩
 
 @[to_additive]
-instance instT2Space [T2Space M] : T2Space Mˣ :=
-  embedding_embedProduct.t2Space
+instance instT2Space [T2Space M] : T2Space Mˣ := isEmbedding_embedProduct.t2Space
 
 @[to_additive]
 instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
-  embedding_embedProduct.discreteTopology
+  isEmbedding_embedProduct.discreteTopology
 
 @[to_additive] lemma topology_eq_inf :
     instTopologicalSpaceUnits =
@@ -108,12 +107,12 @@ instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
     instTopologicalSpaceMulOpposite, induced_compose]; rfl
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
-Use `Units.embedding_val₀`, `Units.embedding_val`, or `toUnits_homeomorph` instead. -/
+Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/
 @[to_additive "An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
-topological embedding. Use `AddUnits.embedding_val` or `toAddUnits_homeomorph` instead."]
-lemma embedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
+topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph` instead."]
+lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
     (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.1 = ↑u⁻¹) :
-    Embedding (val : Mˣ → M) := by
+    IsEmbedding (val : Mˣ → M) := by
   refine ⟨⟨?_⟩, ext⟩
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,
     @continuous_iff_continuousAt _ _ (.induced _ _)]
@@ -122,12 +121,12 @@ lemma embedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M
   exact ⟨_, mem_inf_principal.1 (hc u u.isUnit hs), fun u' hu' ↦ hu' u'.isUnit⟩
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
-Use `Units.embedding_val₀`, `Units.embedding_val`, or `toUnits_homeomorph` instead. -/
+Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/
 @[to_additive "An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
-topological embedding. Use `AddUnits.embedding_val` or `toAddUnits_homeomorph` instead."]
+topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph` instead."]
 lemma embedding_val_mk {M : Type*} [DivisionMonoid M] [TopologicalSpace M]
-    (h : ContinuousOn Inv.inv {x : M | IsUnit x}) : Embedding (val : Mˣ → M) :=
-  embedding_val_mk' h fun u ↦ (val_inv_eq_inv_val u).symm
+    (h : ContinuousOn Inv.inv {x : M | IsUnit x}) : IsEmbedding (val : Mˣ → M) :=
+  isEmbedding_val_mk' h fun u ↦ (val_inv_eq_inv_val u).symm
 
 @[to_additive]
 theorem continuous_embedProduct : Continuous (embedProduct M) :=

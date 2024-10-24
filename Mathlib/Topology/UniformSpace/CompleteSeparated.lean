@@ -30,7 +30,7 @@ theorem IsComplete.isClosed [UniformSpace α] [T0Space α] {s : Set α} (h : IsC
 theorem IsUniformEmbedding.toIsClosedEmbedding [UniformSpace α] [UniformSpace β] [CompleteSpace α]
     [T0Space β] {f : α → β} (hf : IsUniformEmbedding f) :
     IsClosedEmbedding f :=
-  ⟨hf.embedding, hf.isUniformInducing.isComplete_range.isClosed⟩
+  ⟨hf.isEmbedding, hf.isUniformInducing.isComplete_range.isClosed⟩
 
 @[deprecated (since := "2024-10-20")]
 alias IsUniformEmbedding.toClosedEmbedding := IsUniformEmbedding.toIsClosedEmbedding

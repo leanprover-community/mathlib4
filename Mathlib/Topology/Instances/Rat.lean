@@ -42,8 +42,8 @@ theorem isDenseEmbedding_coe_real : IsDenseEmbedding ((↑) : ℚ → ℝ) :=
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding_coe_real := isDenseEmbedding_coe_real
 
-theorem embedding_coe_real : Embedding ((↑) : ℚ → ℝ) :=
-  isDenseEmbedding_coe_real.to_embedding
+theorem isEmbedding_coe_real : IsEmbedding ((↑) : ℚ → ℝ) :=
+  isDenseEmbedding_coe_real.isEmbedding
 
 theorem continuous_coe_real : Continuous ((↑) : ℚ → ℝ) :=
   uniformContinuous_coe_real.continuous

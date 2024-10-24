@@ -228,9 +228,7 @@ variable {e : α → β}
 theorem inj_iff (de : IsDenseEmbedding e) {x y} : e x = e y ↔ x = y :=
   de.inj.eq_iff
 
-theorem to_embedding (de : IsDenseEmbedding e) : Embedding e :=
-  { induced := de.induced
-    inj := de.inj }
+theorem isEmbedding (de : IsDenseEmbedding e) : IsEmbedding e where __ := de
 
 /-- If the domain of a `IsDenseEmbedding` is a separable space, then so is its codomain. -/
 protected theorem separableSpace [SeparableSpace α] (de : IsDenseEmbedding e) : SeparableSpace β :=
@@ -267,7 +265,7 @@ theorem dense_image (de : IsDenseEmbedding e) {s : Set α} : Dense (e '' s) ↔ 
   de.toIsDenseInducing.dense_image
 
 protected lemma id {α : Type*} [TopologicalSpace α] : IsDenseEmbedding (id : α → α) :=
-  { embedding_id with dense := denseRange_id }
+  { IsEmbedding.id with dense := denseRange_id }
 
 end IsDenseEmbedding
 
@@ -276,7 +274,7 @@ alias denseEmbedding_id := IsDenseEmbedding.id
 
 theorem Dense.isDenseEmbedding_val [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     IsDenseEmbedding ((↑) : s → α) :=
-  { embedding_subtype_val with dense := hs.denseRange_val }
+  { IsEmbedding.subtypeVal with dense := hs.denseRange_val }
 
 @[deprecated (since := "2024-09-30")]
 alias Dense.denseEmbedding_val := Dense.isDenseEmbedding_val

@@ -261,12 +261,12 @@ alias quotientMap_proj := isQuotientMap_proj
 theorem continuous_totalSpaceMk (x : B) : Continuous (@TotalSpace.mk B F E x) :=
   (totalSpaceMk_inducing F E x).continuous
 
-theorem totalSpaceMk_embedding (x : B) : Embedding (@TotalSpace.mk B F E x) :=
+theorem totalSpaceMk_isEmbedding (x : B) : IsEmbedding (@TotalSpace.mk B F E x) :=
   ⟨totalSpaceMk_inducing F E x, TotalSpace.mk_injective x⟩
 
 theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
     IsClosedEmbedding (@TotalSpace.mk B F E x) :=
-  ⟨totalSpaceMk_embedding F E x, by
+  ⟨totalSpaceMk_isEmbedding F E x, by
     rw [TotalSpace.range_mk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
 
@@ -680,7 +680,7 @@ instance fiberBundle : FiberBundle F Z.Fiber where
     rw [(Z.localTrivAt b).nhds_eq_comap_inf_principal (mk_mem_localTrivAt_source _ _ _), comap_inf,
       comap_principal, comap_comap]
     simp only [Function.comp_def, localTrivAt_apply_mk, Trivialization.coe_coe,
-      ← (embedding_prod_mk b).nhds_eq_comap]
+      ← (isEmbedding_prodMk b).nhds_eq_comap]
     convert_to 𝓝 x = 𝓝 x ⊓ 𝓟 univ
     · congr
       exact eq_univ_of_forall (mk_mem_localTrivAt_source Z _)

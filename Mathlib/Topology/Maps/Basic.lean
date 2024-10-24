@@ -18,14 +18,14 @@ This file introduces the following properties of a map `f : X → Y` between top
 * `Inducing f` means the topology on `X` is the one induced via `f` from the topology on `Y`.
   These behave like embeddings except they need not be injective. Instead, points of `X` which
   are identified by `f` are also inseparable in the topology on `X`.
-* `Embedding f` means `f` is inducing and also injective. Equivalently, `f` identifies `X` with
+* `IsEmbedding f` means `f` is inducing and also injective. Equivalently, `f` identifies `X` with
   a subspace of `Y`.
 * `IsOpenEmbedding f` means `f` is an embedding with open image, so it identifies `X` with an
   open subspace of `Y`. Equivalently, `f` is an embedding and an open map.
 * `IsClosedEmbedding f` similarly means `f` is an embedding with closed image, so it identifies
   `X` with a closed subspace of `Y`. Equivalently, `f` is an embedding and a closed map.
 
-* `IsQuotientMap f` is the dual condition to `Embedding f`: `f` is surjective and the topology
+* `IsQuotientMap f` is the dual condition to `IsEmbedding f`: `f` is surjective and the topology
   on `Y` is the one coinduced via `f` from the topology on `X`. Equivalently, `f` identifies
   `Y` with a quotient of `X`. Quotient maps are also sometimes known as identification maps.
 
@@ -162,57 +162,52 @@ end Inducing
 
 end Inducing
 
-section Embedding
+namespace IsEmbedding
 
-theorem Function.Injective.embedding_induced [t : TopologicalSpace Y] (hf : Injective f) :
-    @_root_.Embedding X Y (t.induced f) t f :=
-  @_root_.Embedding.mk X Y (t.induced f) t _ (inducing_induced f) hf
+theorem Function.Injective.isEmbedding_induced [t : TopologicalSpace Y] (hf : Injective f) :
+    @_root_.IsEmbedding X Y (t.induced f) t f :=
+  @_root_.IsEmbedding.mk X Y (t.induced f) t _ (inducing_induced f) hf
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
-theorem Embedding.mk' (f : X → Y) (inj : Injective f) (induced : ∀ x, comap f (𝓝 (f x)) = 𝓝 x) :
-    Embedding f :=
+lemma mk' (f : X → Y) (inj : Injective f) (induced : ∀ x, comap f (𝓝 (f x)) = 𝓝 x) :
+    IsEmbedding f :=
   ⟨inducing_iff_nhds.2 fun x => (induced x).symm, inj⟩
 
-theorem embedding_id : Embedding (@id X) :=
-  ⟨inducing_id, fun _ _ h => h⟩
+protected lemma id : IsEmbedding (@id X) := ⟨inducing_id, fun _ _ h => h⟩
 
-protected theorem Embedding.comp (hg : Embedding g) (hf : Embedding f) :
-    Embedding (g ∘ f) :=
+protected lemma comp (hg : IsEmbedding g) (hf : IsEmbedding f) : IsEmbedding (g ∘ f) :=
   { hg.toInducing.comp hf.toInducing with inj := fun _ _ h => hf.inj <| hg.inj h }
 
-theorem Embedding.of_comp_iff (hg : Embedding g) : Embedding (g ∘ f) ↔ Embedding f := by
-  simp_rw [embedding_iff, hg.toInducing.of_comp_iff, hg.inj.of_comp_iff f]
+lemma of_comp_iff (hg : IsEmbedding g) : IsEmbedding (g ∘ f) ↔ IsEmbedding f := by
+  simp_rw [isEmbedding_iff, hg.toInducing.of_comp_iff, hg.inj.of_comp_iff f]
 
-theorem embedding_of_embedding_compose
-    (hf : Continuous f) (hg : Continuous g) (hgf : Embedding (g ∘ f)) : Embedding f :=
-  { induced := (inducing_of_inducing_compose hf hg hgf.toInducing).induced
-    inj := fun x₁ x₂ h => hgf.inj <| by simp [h, (· ∘ ·)] }
+protected lemma of_comp (hf : Continuous f) (hg : Continuous g) (hgf : IsEmbedding (g ∘ f)) :
+    IsEmbedding f where
+  toInducing := inducing_of_inducing_compose hf hg hgf.toInducing
+  inj := hgf.inj.of_comp
 
-protected theorem Function.LeftInverse.embedding {f : X → Y} {g : Y → X} (h : LeftInverse f g)
-    (hf : Continuous f) (hg : Continuous g) : _root_.Embedding g :=
-  embedding_of_embedding_compose hg hf <| h.comp_eq_id.symm ▸ embedding_id
+lemma of_leftInverse {f : X → Y} {g : Y → X} (h : LeftInverse f g) (hf : Continuous f)
+    (hg : Continuous g) : IsEmbedding g := .of_comp hg hf <| h.comp_eq_id.symm ▸ .id
 
-theorem Embedding.map_nhds_eq (hf : Embedding f) (x : X) :
-    (𝓝 x).map f = 𝓝[range f] f x :=
+alias _root_.Function.LeftInverse.isEmbedding := of_leftInverse
+
+lemma map_nhds_eq (hf : IsEmbedding f) (x : X) :     (𝓝 x).map f = 𝓝[range f] f x :=
   hf.1.map_nhds_eq x
 
-theorem Embedding.map_nhds_of_mem (hf : Embedding f) (x : X) (h : range f ∈ 𝓝 (f x)) :
+lemma map_nhds_of_mem (hf : IsEmbedding f) (x : X) (h : range f ∈ 𝓝 (f x)) :
     (𝓝 x).map f = 𝓝 (f x) :=
   hf.1.map_nhds_of_mem x h
 
-theorem Embedding.tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y}
-    (hg : Embedding g) : Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) :=
-  hg.toInducing.tendsto_nhds_iff
+lemma tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y} (hg : IsEmbedding g) :
+    Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) := hg.toInducing.tendsto_nhds_iff
 
-theorem Embedding.continuous_iff (hg : Embedding g) :
-    Continuous f ↔ Continuous (g ∘ f) :=
-  Inducing.continuous_iff hg.1
+lemma continuous_iff (hg : IsEmbedding g) : Continuous f ↔ Continuous (g ∘ f) :=
+  hg.toInducing.continuous_iff
 
-theorem Embedding.continuous (hf : Embedding f) : Continuous f :=
-  Inducing.continuous hf.1
+lemma continuous (hf : IsEmbedding f) : Continuous f := hf.toInducing.continuous
 
-theorem Embedding.closure_eq_preimage_closure_image (hf : Embedding f) (s : Set X) :
+lemma closure_eq_preimage_closure_image (hf : IsEmbedding f) (s : Set X) :
     closure s = f ⁻¹' closure (f '' s) :=
   hf.1.closure_eq_preimage_closure_image s
 
@@ -220,13 +215,13 @@ theorem Embedding.closure_eq_preimage_closure_image (hf : Embedding f) (s : Set 
 is the discrete topology on `X`.
 
 See also `DiscreteTopology.of_continuous_injective`. -/
-theorem Embedding.discreteTopology [DiscreteTopology Y] (hf : Embedding f) : DiscreteTopology X :=
+lemma discreteTopology [DiscreteTopology Y] (hf : IsEmbedding f) : DiscreteTopology X :=
   .of_continuous_injective hf.continuous hf.inj
 
-theorem Embedding.of_subsingleton [Subsingleton X] (f : X → Y) : Embedding f :=
+lemma of_subsingleton [Subsingleton X] (f : X → Y) : IsEmbedding f :=
   ⟨.of_subsingleton f, f.injective_of_subsingleton⟩
 
-end Embedding
+end IsEmbedding
 
 section IsQuotientMap
 
@@ -488,15 +483,19 @@ section IsOpenEmbedding
 
 variable [TopologicalSpace X] [TopologicalSpace Y]
 
-theorem IsOpenEmbedding.isOpenMap (hf : IsOpenEmbedding f) : IsOpenMap f :=
-  hf.toEmbedding.toInducing.isOpenMap hf.isOpen_range
+lemma IsOpenEmbedding.isEmbedding (hf : IsOpenEmbedding f) : IsEmbedding f := hf.toIsEmbedding
+lemma IsOpenEmbedding.inducing (hf : IsOpenEmbedding f) : Inducing f :=
+  hf.isEmbedding.toInducing
+
+lemma IsOpenEmbedding.isOpenMap (hf : IsOpenEmbedding f) : IsOpenMap f :=
+  hf.isEmbedding.toInducing.isOpenMap hf.isOpen_range
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.isOpenMap := IsOpenEmbedding.isOpenMap
 
 theorem IsOpenEmbedding.map_nhds_eq (hf : IsOpenEmbedding f) (x : X) :
     map f (𝓝 x) = 𝓝 (f x) :=
-  hf.toEmbedding.map_nhds_of_mem _ <| hf.isOpen_range.mem_nhds <| mem_range_self _
+  hf.isEmbedding.map_nhds_of_mem _ <| hf.isOpen_range.mem_nhds <| mem_range_self _
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.map_nhds_eq := IsOpenEmbedding.map_nhds_eq
@@ -504,7 +503,7 @@ alias OpenEmbedding.map_nhds_eq := IsOpenEmbedding.map_nhds_eq
 theorem IsOpenEmbedding.open_iff_image_open (hf : IsOpenEmbedding f) {s : Set X} :
     IsOpen s ↔ IsOpen (f '' s) :=
   ⟨hf.isOpenMap s, fun h => by
-    convert ← h.preimage hf.toEmbedding.continuous
+    convert ← h.preimage hf.isEmbedding.continuous
     apply preimage_image_eq _ hf.inj⟩
 
 @[deprecated (since := "2024-10-18")]
@@ -512,7 +511,7 @@ alias OpenEmbedding.open_iff_image_open := IsOpenEmbedding.open_iff_image_open
 
 theorem IsOpenEmbedding.tendsto_nhds_iff [TopologicalSpace Z] {f : ι → Y} {l : Filter ι} {y : Y}
     (hg : IsOpenEmbedding g) : Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) :=
-  hg.toEmbedding.tendsto_nhds_iff
+  hg.isEmbedding.tendsto_nhds_iff
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.tendsto_nhds_iff := IsOpenEmbedding.tendsto_nhds_iff
@@ -532,7 +531,7 @@ theorem IsOpenEmbedding.continuousAt_iff [TopologicalSpace Z] (hf : IsOpenEmbedd
 alias OpenEmbedding.continuousAt_iff := IsOpenEmbedding.continuousAt_iff
 
 theorem IsOpenEmbedding.continuous (hf : IsOpenEmbedding f) : Continuous f :=
-  hf.toEmbedding.continuous
+  hf.isEmbedding.continuous
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.continuous := IsOpenEmbedding.continuous
@@ -544,31 +543,31 @@ theorem IsOpenEmbedding.open_iff_preimage_open (hf : IsOpenEmbedding f) {s : Set
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.open_iff_preimage_open := IsOpenEmbedding.open_iff_preimage_open
 
-theorem isOpenEmbedding_of_embedding_open (h₁ : Embedding f) (h₂ : IsOpenMap f) :
+lemma IsOpenEmbedding.of_isEmbedding_isOpenMap (h₁ : IsEmbedding f) (h₂ : IsOpenMap f) :
     IsOpenEmbedding f :=
   ⟨h₁, h₂.isOpen_range⟩
 
 @[deprecated (since := "2024-10-18")]
-alias openEmbedding_of_embedding_open := isOpenEmbedding_of_embedding_open
+alias openEmbedding_of_embedding_open := IsOpenEmbedding.of_isEmbedding_isOpenMap
 
 /-- A surjective embedding is an `IsOpenEmbedding`. -/
-theorem _root_.Embedding.toIsOpenEmbedding_of_surjective (hf : Embedding f) (hsurj : f.Surjective) :
+lemma IsOpenEmbedding.of_isEmbedding (hf : IsEmbedding f) (hsurj : f.Surjective) :
     IsOpenEmbedding f :=
   ⟨hf, hsurj.range_eq ▸ isOpen_univ⟩
 
 @[deprecated (since := "2024-10-18")]
-alias _root_.Embedding.toOpenEmbedding_of_surjective := Embedding.toIsOpenEmbedding_of_surjective
+alias _root_.Embedding.toOpenEmbedding_of_surjective := IsOpenEmbedding.of_isEmbedding
 
-theorem isOpenEmbedding_iff_embedding_open :
-    IsOpenEmbedding f ↔ Embedding f ∧ IsOpenMap f :=
-  ⟨fun h => ⟨h.1, h.isOpenMap⟩, fun h => isOpenEmbedding_of_embedding_open h.1 h.2⟩
+lemma isOpenEmbedding_iff_isEmbedding_isOpenMap : IsOpenEmbedding f ↔ IsEmbedding f ∧ IsOpenMap f :=
+  ⟨fun h => ⟨h.1, h.isOpenMap⟩, fun h => .of_isEmbedding_isOpenMap h.1 h.2⟩
 
 @[deprecated (since := "2024-10-18")]
-alias openEmbedding_iff_embedding_open := isOpenEmbedding_iff_embedding_open
+alias openEmbedding_iff_embedding_open := isOpenEmbedding_iff_isEmbedding_isOpenMap
 
 theorem isOpenEmbedding_of_continuous_injective_open
     (h₁ : Continuous f) (h₂ : Injective f) (h₃ : IsOpenMap f) : IsOpenEmbedding f := by
-  simp only [isOpenEmbedding_iff_embedding_open, embedding_iff, inducing_iff_nhds, *, and_true]
+  simp only [isOpenEmbedding_iff_isEmbedding_isOpenMap, isEmbedding_iff, inducing_iff_nhds, *,
+    and_true]
   exact fun x =>
     le_antisymm (h₁.tendsto _).le_comap (@comap_map _ _ (𝓝 x) _ h₂ ▸ comap_mono (h₃.nhds_le _))
 
@@ -581,7 +580,7 @@ theorem isOpenEmbedding_iff_continuous_injective_open :
 alias openEmbedding_iff_continuous_injective_open := isOpenEmbedding_iff_continuous_injective_open
 
 theorem isOpenEmbedding_id : IsOpenEmbedding (@id X) :=
-  ⟨embedding_id, IsOpenMap.id.isOpen_range⟩
+  ⟨.id, IsOpenMap.id.isOpen_range⟩
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_id := isOpenEmbedding_id
@@ -607,7 +606,7 @@ theorem of_comp (f : X → Y) (hg : IsOpenEmbedding g)
   (IsOpenEmbedding.of_comp_iff f hg).1 h
 
 theorem of_isEmpty [IsEmpty X] (f : X → Y) : IsOpenEmbedding f :=
-  isOpenEmbedding_of_embedding_open (.of_subsingleton f) (IsOpenMap.of_isEmpty f)
+  of_isEmbedding_isOpenMap (.of_subsingleton f) (.of_isEmpty f)
 
 theorem image_mem_nhds {f : X → Y} (hf : IsOpenEmbedding f) {s : Set X} {x : X} :
     f '' s ∈ 𝓝 (f x) ↔ s ∈ 𝓝 x := by
@@ -623,15 +622,15 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 namespace IsClosedEmbedding
 
-theorem tendsto_nhds_iff {g : ι → X} {l : Filter ι} {x : X} (hf : IsClosedEmbedding f) :
-    Tendsto g l (𝓝 x) ↔ Tendsto (f ∘ g) l (𝓝 (f x)) :=
-  hf.toEmbedding.tendsto_nhds_iff
+lemma isEmbedding (hf : IsClosedEmbedding f) : IsEmbedding f := hf.toIsEmbedding
+lemma inducing (hf : IsClosedEmbedding f) : Inducing f := hf.isEmbedding.toInducing
+lemma continuous (hf : IsClosedEmbedding f) : Continuous f := hf.isEmbedding.continuous
 
-theorem continuous (hf : IsClosedEmbedding f) : Continuous f :=
-  hf.toEmbedding.continuous
+lemma tendsto_nhds_iff {g : ι → X} {l : Filter ι} {x : X} (hf : IsClosedEmbedding f) :
+    Tendsto g l (𝓝 x) ↔ Tendsto (f ∘ g) l (𝓝 (f x)) := hf.isEmbedding.tendsto_nhds_iff
 
-theorem isClosedMap (hf : IsClosedEmbedding f) : IsClosedMap f :=
-  hf.toEmbedding.toInducing.isClosedMap hf.isClosed_range
+lemma isClosedMap (hf : IsClosedEmbedding f) : IsClosedMap f :=
+  hf.isEmbedding.toInducing.isClosedMap hf.isClosed_range
 
 theorem closed_iff_image_closed (hf : IsClosedEmbedding f) {s : Set X} :
     IsClosed s ↔ IsClosed (f '' s) :=
@@ -643,16 +642,16 @@ theorem closed_iff_preimage_closed (hf : IsClosedEmbedding f) {s : Set Y}
     (hs : s ⊆ range f) : IsClosed s ↔ IsClosed (f ⁻¹' s) := by
   rw [hf.closed_iff_image_closed, image_preimage_eq_of_subset hs]
 
-theorem _root_.IsClosedEmbedding.of_embedding_closed (h₁ : Embedding f) (h₂ : IsClosedMap f) :
+lemma of_isEmbedding_isClosedMap (h₁ : IsEmbedding f) (h₂ : IsClosedMap f) :
     IsClosedEmbedding f :=
   ⟨h₁, image_univ (f := f) ▸ h₂ univ isClosed_univ⟩
 
 @[deprecated (since := "2024-10-20")]
-alias _root_.closedEmbedding_of_embedding_closed := _root_.IsClosedEmbedding.of_embedding_closed
+alias _root_.closedEmbedding_of_embedding_closed := of_isEmbedding_isClosedMap
 
 lemma _root_.IsClosedEmbedding.of_continuous_injective_isClosedMap (h₁ : Continuous f)
     (h₂ : Injective f) (h₃ : IsClosedMap f) : IsClosedEmbedding f := by
-  refine .of_embedding_closed ⟨⟨?_⟩, h₂⟩ h₃
+  refine .of_isEmbedding_isClosedMap ⟨⟨?_⟩, h₂⟩ h₃
   refine h₁.le_induced.antisymm fun s hs => ?_
   refine ⟨(f '' sᶜ)ᶜ, (h₃ _ hs.isClosed_compl).isOpen_compl, ?_⟩
   rw [preimage_compl, preimage_image_eq _ h₂, compl_compl]
@@ -662,18 +661,17 @@ alias _root_.closedEmbedding_of_continuous_injective_closed :=
   IsClosedEmbedding.of_continuous_injective_isClosedMap
 
 theorem _root_.isClosedEmbedding_id : IsClosedEmbedding (@id X) :=
-  ⟨embedding_id, IsClosedMap.id.isClosed_range⟩
+  ⟨.id, IsClosedMap.id.isClosed_range⟩
 
 @[deprecated (since := "2024-10-20")]
 alias _root_.closedEmbedding_id := _root_.isClosedEmbedding_id
 
 theorem comp (hg : IsClosedEmbedding g) (hf : IsClosedEmbedding f) :
     IsClosedEmbedding (g ∘ f) :=
-  ⟨hg.toEmbedding.comp hf.toEmbedding, (hg.isClosedMap.comp hf.isClosedMap).isClosed_range⟩
+  ⟨hg.isEmbedding.comp hf.isEmbedding, (hg.isClosedMap.comp hf.isClosedMap).isClosed_range⟩
 
-theorem of_comp_iff (hg : IsClosedEmbedding g) :
-    IsClosedEmbedding (g ∘ f) ↔ IsClosedEmbedding f := by
-  simp_rw [isClosedEmbedding_iff, hg.toEmbedding.of_comp_iff, Set.range_comp,
+lemma of_comp_iff (hg : IsClosedEmbedding g) : IsClosedEmbedding (g ∘ f) ↔ IsClosedEmbedding f := by
+  simp_rw [isClosedEmbedding_iff, hg.isEmbedding.of_comp_iff, Set.range_comp,
     ← hg.closed_iff_image_closed]
 
 theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :

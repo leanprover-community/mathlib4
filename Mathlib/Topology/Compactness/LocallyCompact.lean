@@ -214,7 +214,7 @@ alias OpenEmbedding.locallyCompactSpace := IsOpenEmbedding.locallyCompactSpace
 
 protected theorem IsLocallyClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     (hs : IsLocallyClosed s) : LocallyCompactSpace s :=
-  embedding_subtype_val.locallyCompactSpace <| by rwa [Subtype.range_val]
+  IsEmbedding.subtypeVal.locallyCompactSpace <| by rwa [Subtype.range_val]
 
 protected theorem IsClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     (hs : IsClosed s) : LocallyCompactSpace s :=
