@@ -27,7 +27,6 @@ def coe1 : SL(2, ℤ) → Γ(1) :=
 
 instance : Coe SL(2, ℤ) Γ(1) := ⟨coe1⟩
 
-@[simp]
 lemma coe_smul_eq_smul {g : SL(2, ℤ)} {τ : ℍ} : (g : Γ(1)) • τ = (g • τ) := by
   simp only [coe1, Subgroup.mk_smul, ModularGroup.sl_moeb]
 
