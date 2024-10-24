@@ -64,7 +64,7 @@ include hB
 
 @[to_additive]
 theorem isGroupBasis :
-    IsGroupBasis p ((↑) ∘ B : ι → Set G) where
+    IsGroupBasis p (fun i ↦ B i : ι → Set G) where
   nonempty := hB.nonempty
   inter := hB.inter
   one' _ := one_mem _
@@ -79,7 +79,7 @@ abbrev topology : TopologicalSpace G :=
   hB.isGroupBasis.topology
 
 @[to_additive]
-theorem hasBasis_nhds_one : HasBasis (@nhds G hB.topology 1) p ((↑) ∘ B) :=
+theorem hasBasis_nhds_one : HasBasis (@nhds G hB.topology 1) p (fun i ↦ B i) :=
   hB.isGroupBasis.nhds_one_hasBasis
 
 @[to_additive]
@@ -104,7 +104,6 @@ theorem nonarchimedean : @NonarchimedeanGroup G _ hB.topology := by
   intro U hU
   obtain ⟨i, hi, hiU : (B i : Set G) ⊆ U⟩ := hB.hasBasis_nhds_one.mem_iff.mp hU
   exact ⟨hB.openSubgroup hi, hiU⟩
-
 
 end IsGroupBasisOfSubgroups
 
@@ -140,7 +139,7 @@ variable {p : ι → Prop} {B : ι → AddSubgroup A} (hB : IsRingBasisOfSubgrou
 include hB
 
 theorem isRingBasis :
-    IsRingBasis p ((↑) ∘ B : ι → Set A) where
+    IsRingBasis p (fun i ↦ B i : ι → Set A) where
   toIsAddGroupBasis := hB.isAddGroupBasis
   mul' := hB.mul
   mul_left' := hB.mul_left
@@ -151,7 +150,7 @@ of neighborhoods of zero. -/
 abbrev topology : TopologicalSpace A :=
   hB.isRingBasis.topology
 
-theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) p ((↑) ∘ B) :=
+theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) p (fun i ↦ B i) :=
   hB.isRingBasis.nhds_zero_hasBasis
 
 theorem hasBasis_nhds (a : A) :
@@ -207,7 +206,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 /-- A family of submodules in an `R`-module `M` is a submodules basis if it satisfies
 some axioms ensuring there is a topology on `M` which is compatible with the module structure and
 admits this family as a basis of neighborhoods of zero. -/
-structure IsModuleBasisOfSubmodules [TopologicalSpace R]
+structure IsModuleBasisOfSubmodules [tR : TopologicalSpace R]
     (p : ι → Prop) (B : ι → Submodule R M) : Prop where
   nonempty : ∃ i, p i
   /-- Condition for `B` to be a filter basis on `M`. -/
@@ -216,22 +215,33 @@ structure IsModuleBasisOfSubmodules [TopologicalSpace R]
     `a` sufficiently close to `0`. -/
   smul : ∀ (m : M) {i : ι}, p i → ∀ᶠ a in 𝓝 (0 : R), a • m ∈ B i
 
+set_option linter.unusedVariables.funArgs false
+theorem IsModuleBasisOfSubmodules.mk_of_hasBasis {R M : Type*} {ιR ιM : Sort*} [CommRing R]
+    [tR : TopologicalSpace R] [AddCommGroup M] [Module R M] {pR : ιR → Prop} {sR : ιR → Set R}
+    (hR : (𝓝 0).HasBasis pR sR) (pM : ιM → Prop) (sM : ιM → Submodule R M)
+    (nonempty : ∃ i, pM i)
+    (inter : ∀ {i j}, pM i → pM j → ∃ k, pM k ∧ sM k ≤ sM i ⊓ sM j)
+    (smul : ∀ (m : M) {i}, pM i → ∃ j, pR j ∧ MapsTo (· • m) (sR j) (sM i)) :
+    IsModuleBasisOfSubmodules pM sM where
+  nonempty := nonempty
+  inter := inter
+  smul m₀ _ hi := hR.eventually_iff.mpr <| smul m₀ hi
+
 namespace IsModuleBasisOfSubmodules
 
-variable [TopologicalSpace R] {p : ι → Prop} {B : ι → Submodule R M}
+variable [tR : TopologicalSpace R] {p : ι → Prop} {B : ι → Submodule R M}
   (hB : IsModuleBasisOfSubmodules p B)
 include hB
 
-theorem isModuleBasis : IsModuleBasis R p ((↑) ∘ B : ι → Set M) where
-  nonempty := hB.nonempty
-  inter := hB.inter
-  zero' _ := zero_mem _
-  add' {i} hi := ⟨i, hi, add_subset_iff.mpr fun _ ha _ hb ↦ add_mem ha hb⟩
-  neg' {i} hi := ⟨i, hi, fun _ ha ↦ neg_mem ha⟩
-  conj' a {i} hi := ⟨i, hi, fun _ hb ↦ by simpa [SetLike.mem_coe] using hb⟩
+theorem isAddGroupBasisOfSubgroups :
+    IsAddGroupBasisOfSubgroups p (fun i ↦ (B i).toAddSubgroup) :=
+  .mk_of_comm _ _ hB.nonempty hB.inter
+
+theorem isModuleBasis : IsModuleBasis R p (fun i ↦ B i : ι → Set M) where
+  toIsAddGroupBasis := hB.isAddGroupBasisOfSubgroups.isAddGroupBasis
   smul' {i} hi := ⟨univ, univ_mem, i, hi, smul_subset_iff.mpr
     fun _ _ _ hb ↦ Submodule.smul_mem _ _ hb⟩
-  smul_left' x₀ {i} hi := ⟨i, hi, fun _ hb ↦ Submodule.smul_mem _ _ hb⟩
+  smul_left' _ {i} hi := ⟨i, hi, fun _ hb ↦ Submodule.smul_mem _ _ hb⟩
   smul_right' := hB.smul
 
 /-- The topology associated to a basis of submodules in a module. -/
@@ -240,28 +250,12 @@ abbrev topology : TopologicalSpace M :=
 
 /-- Given a submodules basis, the basis elements as open additive subgroups in the associated
 topology. -/
-def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
-  let _ := hB.topology -- Porting note: failed to synthesize instance `TopologicalSpace A`
-  { (B i).toAddSubgroup with
-    isOpen' := by
-      letI := hB.topology
-      rw [isOpen_iff_mem_nhds]
-      intro a a_in
-      rw [(hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_hasBasis a).mem_iff]
-      use B i
-      constructor
-      · use i
-      · rintro - ⟨b, b_in, rfl⟩
-        exact (B i).add_mem a_in b_in }
+abbrev openAddSubgroup {i : ι} (h : p i) : @OpenAddSubgroup M _ hB.topology :=
+  hB.isAddGroupBasisOfSubgroups.openAddSubgroup h
 
 -- see Note [nonarchimedean non instances]
-theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB.topology := by
-  letI := hB.topology
-  constructor
-  intro U hU
-  obtain ⟨-, ⟨i, rfl⟩, hi : (B i : Set M) ⊆ U⟩ :=
-    hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff.mp hU
-  exact ⟨hB.openAddSubgroup i, hi⟩
+theorem nonarchimedean : @NonarchimedeanAddGroup M _ hB.topology :=
+  hB.isAddGroupBasisOfSubgroups.nonarchimedean
 
 library_note "nonarchimedean non instances"/--
 The non archimedean subgroup basis lemmas cannot be instances because some instances
@@ -269,8 +263,7 @@ The non archimedean subgroup basis lemmas cannot be instances because some insta
 cause the search for `@TopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where
 the topology/group structure are unknown. -/
 
-
-end SubmodulesBasis
+end IsModuleBasisOfSubmodules
 
 section
 
@@ -280,43 +273,48 @@ a basis of `R`-submodules which is compatible with the topology on `R` is also a
 in the sense of `R`-modules (forgetting about the ring structure on `A`) and those two points of
 view definitionaly gives the same topology on `A`.
 -/
-variable [TopologicalSpace R] {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
-  (hsmul : ∀ (m : A) (i : ι), ∀ᶠ a : R in 𝓝 0, a • m ∈ B i)
-include hB hsmul
+variable [tR : TopologicalSpace R] {p : ι → Prop} {B : ι → Submodule R A}
+  (hB : IsRingBasisOfSubmodules p B)
+include hB
 
-theorem SubmodulesRingBasis.toSubmodulesBasis : SubmodulesBasis B :=
-  { inter := hB.inter
-    smul := hsmul }
+theorem IsRingBasisOfSubmodules.isModuleBasisOfSubmodules :
+    IsModuleBasisOfSubmodules p B where
+  nonempty := hB.nonempty
+  inter := hB.inter
+  smul m {i} hi := ?_
 
-example [Nonempty ι] : hB.topology = (hB.toSubmodulesBasis hsmul).topology :=
+example : hB.topology = (hB.isModuleBasisOfSubmodules hsmul).topology :=
   rfl
 
 end
 
-/-- Given a ring filter basis on a commutative ring `R`, define a compatibility condition
-on a family of submodules of an `R`-module `M`. This compatibility condition allows to get
-a topological module structure. -/
-structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → Submodule R M) :
-    Prop where
-  /-- Condition for `B` to be a filter basis on `M`. -/
-  inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
-  /-- For any element `m : M` and any set `B i` in the submodule basis on `M`,
-    there is a `U` in the ring filter basis on `R` such that `U * m` is in `B i`. -/
-  smul : ∀ (m : M) (i : ι), ∃ U ∈ BR, U ⊆ (· • m) ⁻¹' B i
+end Filter
 
-theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι → Submodule R M}
-    (hB : BR.SubmodulesBasis B) : @_root_.SubmodulesBasis ι R _ M _ _ BR.topology B :=
-  let _ := BR.topology -- Porting note: failed to synthesize instance `TopologicalSpace R`
-  { inter := hB.inter
-    smul := by
-      letI := BR.topology
-      intro m i
-      rcases hB.smul m i with ⟨V, V_in, hV⟩
-      exact mem_of_superset (BR.toAddGroupFilterBasis.mem_nhds_zero V_in) hV }
-
-/-- The module filter basis associated to a ring filter basis and a compatible submodule basis.
-This allows to build a topological module structure compatible with the given module structure
-and the topology associated to the given ring filter basis. -/
-def RingFilterBasis.moduleFilterBasis [Nonempty ι] (BR : RingFilterBasis R) {B : ι → Submodule R M}
-    (hB : BR.SubmodulesBasis B) : @ModuleFilterBasis R M _ BR.topology _ _ :=
-  @SubmodulesBasis.toModuleFilterBasis ι R _ M _ _ BR.topology _ _ (BR.submodulesBasisIsBasis hB)
+--/-- Given a ring filter basis on a commutative ring `R`, define a compatibility condition
+--on a family of submodules of an `R`-module `M`. This compatibility condition allows to get
+--a topological module structure. -/
+--structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → Submodule R M) :
+--    Prop where
+--  /-- Condition for `B` to be a filter basis on `M`. -/
+--  inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
+--  /-- For any element `m : M` and any set `B i` in the submodule basis on `M`,
+--    there is a `U` in the ring filter basis on `R` such that `U * m` is in `B i`. -/
+--  smul : ∀ (m : M) (i : ι), ∃ U ∈ BR, U ⊆ (· • m) ⁻¹' B i
+--
+--theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι → Submodule R M}
+--    (hB : BR.SubmodulesBasis B) : @_root_.SubmodulesBasis ι R _ M _ _ BR.topology B :=
+--  let _ := BR.topology -- Porting note: failed to synthesize instance `TopologicalSpace R`
+--  { inter := hB.inter
+--    smul := by
+--      letI := BR.topology
+--      intro m i
+--      rcases hB.smul m i with ⟨V, V_in, hV⟩
+--      exact mem_of_superset (BR.toAddGroupFilterBasis.mem_nhds_zero V_in) hV }
+--
+--/-- The module filter basis associated to a ring filter basis and a compatible submodule basis.
+--This allows to build a topological module structure compatible with the given module structure
+--and the topology associated to the given ring filter basis. -/
+--def RingFilterBasis.moduleFilterBasis [Nonempty ι] (BR : RingFilterBasis R) {B : ι → Submodule R M}
+--    (hB : BR.SubmodulesBasis B) : @ModuleFilterBasis R M _ BR.topology _ _ :=
+--  @SubmodulesBasis.toModuleFilterBasis ι R _ M _ _ BR.topology _ _ (BR.submodulesBasisIsBasis hB)
+--
