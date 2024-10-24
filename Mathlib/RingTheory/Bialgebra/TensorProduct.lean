@@ -31,7 +31,7 @@ open scoped TensorProduct
 
 namespace Bialgebra.TensorProduct
 
-variable (R A B : Type u) [CommRing R] [Ring A] [Ring B] [Bialgebra R A] [Bialgebra R B]
+variable (R A B : Type*) [CommRing R] [Ring A] [Ring B] [Bialgebra R A] [Bialgebra R B]
 
 lemma counit_eq_algHom_toLinearMap :
     Coalgebra.counit (R := R) (A := A ⊗[R] B) =
