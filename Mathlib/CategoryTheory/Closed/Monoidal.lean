@@ -374,6 +374,7 @@ lemma comp_id (x y : C) [Closed x] [Closed y] :
   simp [id_eq, uncurry_id_eq_ev]
 
 /-- Associativity of the enriched structure -/
+@[reassoc]
 lemma assoc (w x y z : C) [Closed w] [Closed x] [Closed y] :
     (α_ _ _ _).inv ≫ comp w x y ▷ _ ≫ comp w y z = _ ◁ comp x y z ≫ comp w x z := by
   apply uncurry_injective
