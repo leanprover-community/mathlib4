@@ -1443,6 +1443,40 @@ theorem sInf_compl_lt_ord_succ {ι : Type u} (f : ι → Ordinal.{u}) :
     sInf (range f)ᶜ < (succ #ι).ord :=
   lift_id (succ #ι).ord ▸ sInf_compl_lt_lift_ord_succ f
 
+theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :
+    (⨆ i, f i).card ≤ Cardinal.sum (fun i ↦ (f i).card) := by
+  have : Cardinal.sum (fun i ↦ (f i).card) = Cardinal.sum (fun i ↦ #(f i).toType) := by simp
+  rw [this, ← mk_toType, ← mk_sigma]
+  let g : (⨆ i, f i).toType → Σ i, (f i).toType := fun x ↦
+    let a := (enumIsoToType _).symm x
+    have H := (Ordinal.lt_iSup (f := f) (a := a.1)).1 a.2
+    let b := Classical.choose H
+    ⟨b, enumIsoToType (f b) ⟨a.1, Classical.choose_spec H⟩⟩
+  apply mk_le_of_injective (f := g)
+  intro a b h
+  simp_rw [g, Sigma.mk.inj_iff] at h
+  obtain ⟨h₁, h₂⟩ := h
+  suffices ∀ {x y z a b hx hy}, x = y → HEq (enumIsoToType x ⟨↑((enumIsoToType z).symm a), hx⟩)
+    (enumIsoToType y ⟨↑((enumIsoToType z).symm b), hy⟩) → a = b from this (congr_arg f h₁) h₂
+  intro _ _ _ _ _ _ _ h
+  subst h
+  simp [← Subtype.eq_iff]
+
+theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Ordinal.{u} → Ordinal.{max u v}) :
+    (⨆ a : Iio o, f a).card ≤
+    Cardinal.sum (fun i : o.toType ↦ (f ((enumIsoToType _).symm i)).card) := by
+  apply le_of_eq_of_le _ (card_iSup_le_sum_card _)
+  have := (enumIsoToType o).symm.iSup_comp (g := fun x ↦ f x.1)
+  rw [RelIso.coe_fn_toEquiv] at this
+  rw [this]
+
+theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Ordinal.{u} → Ordinal.{max u v}) :
+    (⨆ a : Iio o, f a).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
+  apply (card_iSup_Iio_le_sum_card f).trans
+  convert ← sum_le_iSup_lift _
+  · exact mk_toType o
+  · exact (enumIsoToType o).symm.iSup_comp (g := fun x ↦ (f x.1).card)
+
 -- TODO: remove `bsup` in favor of `iSup` in a future refactor.
 
 section bsup
@@ -1586,6 +1620,9 @@ theorem bsup_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o'
 theorem bsup_eq_of_brange_eq {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : brange o f = brange o' g) : bsup.{u, max v w} o f = bsup.{v, max u w} o' g :=
   (bsup_le_of_brange_subset.{u, v, w} h.le).antisymm (bsup_le_of_brange_subset.{v, u, w} h.ge)
+
+theorem iSup_eq_bsup {o} {f : ∀ a < o, Ordinal} : ⨆ a : {a // a < o}, f a.1 a.2 = bsup o f := by
+  simp_rw [bsup, sup, iSup, range_familyOfBFamily, brange, range, Subtype.exists]
 
 end bsup
 
@@ -2281,6 +2318,11 @@ theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
 
 @[deprecated (since := "2024-09-30")]
 alias nat_lt_omega := nat_lt_omega0
+
+theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
+  obtain ho | ho := lt_or_le o ω
+  · exact Or.inl <| lt_omega0.1 ho
+  · exact Or.inr ho
 
 theorem omega0_pos : 0 < ω :=
   nat_lt_omega0 0
