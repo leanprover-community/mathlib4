@@ -3,10 +3,6 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
-import Mathlib.AlgebraicGeometry.Morphisms.Separated
 import Mathlib.AlgebraicGeometry.SpreadingOut
 import Mathlib.AlgebraicGeometry.FunctionField
 /-!
@@ -310,3 +306,4 @@ def RationalMap.equivFunctionField [IsIntegral X] [LocallyOfFiniteType sY] :
 end Scheme
 
 end AlgebraicGeometry
+#min_imports
