@@ -305,9 +305,15 @@ theorem preAleph_pos {o : Ordinal} : 0 < preAleph o ↔ 0 < o := by
   rw [← preAleph_zero, preAleph_lt_preAleph]
 
 @[simp]
-theorem lift_preAleph (o : Ordinal.{u}) : lift.{v} (preAleph o) = preAleph (Ordinal.lift.{v} o) :=
+theorem lift_preAleph (o : Ordinal.{u}) :
+    lift.{v} (preAleph o) = preAleph (Ordinal.lift.{v} o) :=
   ((InitialSeg.ofIso preAleph.toRelIsoLT).trans liftInitialSeg).eq
     (Ordinal.liftInitialSeg.trans (InitialSeg.ofIso preAleph.toRelIsoLT)) o
+
+@[simp]
+theorem _root_.Ordinal.lift_preOmega (o : Ordinal.{u}) :
+    Ordinal.lift.{v} (preOmega o) = preOmega (Ordinal.lift.{v} o) := by
+  rw [← ord_preAleph, lift_ord, lift_preAleph, ord_preAleph]
 
 theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
     preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
@@ -383,8 +389,14 @@ theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) := by
 theorem aleph_zero : ℵ_ 0 = ℵ₀ := by rw [aleph_eq_preAleph, add_zero, preAleph_omega0]
 
 @[simp]
-theorem lift_aleph (o : Ordinal.{u}) : lift.{v} (aleph o) = aleph (Ordinal.lift.{v} o) := by
+theorem lift_aleph (o : Ordinal.{u}) :
+    lift.{v} (aleph o) = aleph (Ordinal.lift.{v} o) := by
   simp [aleph_eq_preAleph]
+
+@[simp]
+theorem _root_.Ordinal.lift_omega (o : Ordinal.{u}) :
+    Ordinal.lift.{v} (ω_ o) = ω_ (Ordinal.lift.{v} o) := by
+  simp [omega_eq_preOmega]
 
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
   apply le_antisymm _ (ciSup_le' _)
@@ -417,11 +429,13 @@ instance nonempty_toType_aleph (o : Ordinal) : Nonempty (ℵ_ o).ord.toType := b
   rw [toType_nonempty_iff_ne_zero, ← ord_zero]
   exact fun h => (ord_injective h).not_gt (aleph_pos o)
 
+theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) := by
+  rw [← ord_aleph]
+  exact isLimit_ord (aleph0_le_aleph _)
+
+@[deprecated isLimit_omega (since := "2024-10-24")]
 theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
   isLimit_ord <| aleph0_le_aleph _
-
-instance (o : Ordinal) : NoMaxOrder (ℵ_ o).ord.toType :=
-  toType_noMax_of_succ_lt (ord_aleph_isLimit o).2
 
 theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = ℵ_ o :=
   ⟨fun h =>

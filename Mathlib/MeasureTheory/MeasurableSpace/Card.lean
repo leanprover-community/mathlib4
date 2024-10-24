@@ -123,7 +123,7 @@ theorem generateMeasurableRec_omega1 (s : Set (Set α)) :
     simp_rw [exists_prop] at hI
     refine ⟨_, Ordinal.lsub_lt_ord_lift ?_ fun n => (hI n).1,
       iUnion_mem_generateMeasurableRec fun n => ⟨_, Ordinal.lt_lsub I n, (hI n).2⟩⟩
-    rw [mk_nat, lift_aleph0, isRegular_aleph_one.cof_eq]
+    rw [mk_nat, lift_aleph0, isRegular_aleph_one.cof_omega_eq]
     exact aleph0_lt_aleph_one
 
 theorem generateMeasurableRec_subset_rec (s : Set (Set α)) (i : Ordinal) :
@@ -142,7 +142,7 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
   · exact empty_mem_generateMeasurableRec s _
   · rw [generateMeasurableRec_omega1, mem_iUnion₂] at IH
     obtain ⟨i, hi, hi'⟩ := IH
-    exact generateMeasurableRec_mono _ ((ord_aleph_isLimit 1).succ_lt hi).le
+    exact generateMeasurableRec_mono _ ((isLimit_omega 1).succ_lt hi).le
       (compl_mem_generateMeasurableRec (Order.lt_succ i) hi')
   · simp_rw [generateMeasurableRec_omega1, mem_iUnion₂, exists_prop] at IH
     exact iUnion_mem_generateMeasurableRec IH
@@ -170,11 +170,11 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :
   have C : #(⋃ j < i, generateMeasurableRec s j) ≤ max #s 2 ^ ℵ₀ := by
     apply mk_iUnion_Ordinal_lift_le_of_le
     · rw [lift_power, lift_aleph0]
-      rw [← Ordinal.lift_le.{u}, lift_ord, lift_aleph, Ordinal.lift_one] at hi
+      rw [← Ordinal.lift_le.{u}, lift_omega, Ordinal.lift_one, ← ord_aleph] at hi
       have H := card_le_of_le_ord hi
       rw [← Ordinal.lift_card] at H
       apply H.trans <| aleph_one_le_continuum.trans <| power_le_power_right _
-      rw [lift_max, lift_ofNat]
+      rw [lift_max, Cardinal.lift_ofNat]
       exact le_max_right _ _
     · exact B
     · intro j hj
@@ -186,7 +186,7 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :
   · rw [mk_singleton]
     exact one_lt_aleph0.le.trans B
   · apply mk_range_le.trans
-    simp only [mk_pi, prod_const, lift_uzero, mk_denumerable, lift_aleph0]
+    simp only [mk_pi, prod_const, Cardinal.lift_uzero, mk_denumerable, lift_aleph0]
     have := @power_le_power_right _ _ ℵ₀ C
     rwa [← power_mul, aleph0_mul_aleph0] at this
 
