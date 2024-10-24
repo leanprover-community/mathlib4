@@ -321,8 +321,7 @@ def id (x : C) [Closed x] : 𝟙_ C ⟶ (ihom x).obj x := curry (ρ_ x).hom
 The C-composition morphism will be defined as the adjoint transpose of this map. -/
 def compTranspose (x y z : C) [Closed x] [Closed y] : x ⊗ (ihom x).obj y ⊗ (ihom y).obj z ⟶ z :=
   (α_ x ((ihom x).obj y) ((ihom y).obj z)).inv ≫
-    (ihom.ev x).app y ▷ ((ihom y).obj z) ≫
-    (ihom.ev y).app z
+    (ihom.ev x).app y ▷ ((ihom y).obj z) ≫ (ihom.ev y).app z
 
 /-- The C-composition morphism
   `hom(x, y) ⊗ hom(y, z) ⟶ hom(x, z)`
