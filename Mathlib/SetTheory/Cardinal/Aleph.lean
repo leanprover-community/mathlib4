@@ -207,6 +207,9 @@ theorem omega_le_omega {o₁ o₂ : Ordinal} : ω_ o₁ ≤ ω_ o₂ ↔ o₁ �
 theorem omega_max (o₁ o₂ : Ordinal) : ω_ (max o₁ o₂) = max (ω_ o₁) (ω_ o₂) :=
   omega.monotone.map_max
 
+theorem preOmega_le_omega (o : Ordinal) : preOmega o ≤ ω_ o :=
+  preOmega_le_preOmega.2 (Ordinal.le_add_left _ _)
+
 theorem isInitial_omega (o : Ordinal) : IsInitial (omega o) :=
   isInitial_preOmega _
 
@@ -256,21 +259,16 @@ namespace Cardinal
 `preAleph ω = ℵ₀`, `preAleph (ω + 1) = succ ℵ₀`, etc.
 
 For the more common aleph function skipping over finite cardinals, see `Cardinal.aleph`. -/
-def preAleph : Ordinal.{u} ≃o Cardinal.{u} := by
-  let f := RelEmbedding.collapse Cardinal.ord.orderEmbedding.ltEmbedding.{u}
-  refine (OrderIso.ofRelIsoLT <| RelIso.ofSurjective f ?_).symm
-  apply f.eq_or_principal.resolve_right
-  rintro ⟨o, e⟩
-  have : ∀ c, f c < o := fun c => (e _).1 ⟨_, rfl⟩
-  refine Ordinal.inductionOn o ?_ this
-  intro α r _ h
-  let s := ⨆ a, invFun f (Ordinal.typein r a)
-  apply (lt_succ s).not_le
-  have I : Injective f := f.toEmbedding.injective
-  simpa only [typein_enum, leftInverse_invFun I (succ s)] using
-    le_ciSup
-      (Cardinal.bddAbove_range.{u, u} fun a : α => invFun f (Ordinal.typein r a))
-      (Ordinal.enum r ⟨_, h (succ s)⟩)
+def preAleph : Ordinal.{u} ≃o Cardinal.{u} :=
+  (enumOrdOrderIso _ not_bddAbove_isInitial).trans isInitialIso
+
+@[simp]
+theorem _root_.Ordinal.card_preOmega (o : Ordinal) : (preOmega o).card = preAleph o :=
+  rfl
+
+@[simp]
+theorem ord_preAleph (o : Ordinal) : (preAleph o).ord = preOmega o := by
+  rw [← o.card_preOmega, (isInitial_preOmega o).ord_card]
 
 @[simp]
 theorem type_cardinal : @type Cardinal (· < ·) _ = Ordinal.univ.{u, u + 1} := by
@@ -299,12 +297,20 @@ theorem preAleph_succ (o : Ordinal) : preAleph (succ o) = succ (preAleph o) :=
   preAleph.map_succ o
 
 @[simp]
-theorem preAleph_nat : ∀ n : ℕ, preAleph n = n
-  | 0 => preAleph_zero
-  | n + 1 => show preAleph (succ n) = n.succ by rw [preAleph_succ, preAleph_nat n, nat_succ]
+theorem preAleph_nat (n : ℕ) : preAleph n = n := by
+  rw [← card_preOmega, preOmega_natCast, card_nat]
 
+@[simp]
+theorem preAleph_omega0 : preAleph ω = ℵ₀ := by
+  rw [← card_preOmega, preOmega_omega0, card_omega0]
+
+@[simp]
 theorem preAleph_pos {o : Ordinal} : 0 < preAleph o ↔ 0 < o := by
   rw [← preAleph_zero, preAleph_lt_preAleph]
+
+@[simp]
+theorem aleph0_le_preAleph {o : Ordinal} : ℵ₀ ≤ preAleph o ↔ ω ≤ o := by
+  rw [← preAleph_omega0, preAleph_le_preAleph]
 
 @[simp]
 theorem lift_preAleph (o : Ordinal.{u}) : lift.{v} (preAleph o) = preAleph (Ordinal.lift.{v} o) :=
@@ -324,16 +330,6 @@ theorem preAleph_limit {o : Ordinal} (ho : o.IsLimit) : preAleph o = ⨆ a : Iio
   rw [preAleph_le_of_isLimit ho]
   exact fun a ha => le_ciSup (bddAbove_of_small _) (⟨a, ha⟩ : Iio o)
 
-@[simp]
-theorem preAleph_omega0 : preAleph ω = ℵ₀ :=
-  eq_of_forall_ge_iff fun c => by
-    simp only [preAleph_le_of_isLimit isLimit_omega0, lt_omega0, exists_imp, aleph0_le]
-    exact forall_swap.trans (forall_congr' fun n => by simp only [forall_eq, preAleph_nat])
-
-@[simp]
-theorem aleph0_le_preAleph {o : Ordinal} : ℵ₀ ≤ preAleph o ↔ ω ≤ o := by
-  rw [← preAleph_omega0, preAleph_le_preAleph]
-
 /-- The `aleph` function gives the infinite cardinals listed by their ordinal index. `aleph 0 = ℵ₀`,
 `aleph 1 = succ ℵ₀` is the first uncountable cardinal, and so on.
 
@@ -349,6 +345,14 @@ scoped notation "ℵ₁" => ℵ_ 1
 
 theorem aleph_eq_preAleph (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
   rfl
+
+@[simp]
+theorem _root_.Ordinal.card_omega (o : Ordinal) : (ω_ o).card = ℵ_ o :=
+  rfl
+
+@[simp]
+theorem ord_aleph (o : Ordinal) : (ℵ_ o).ord = ω_ o :=
+  ord_preAleph _
 
 theorem aleph_lt_aleph {o₁ o₂ : Ordinal} : ℵ_ o₁ < ℵ_ o₂ ↔ o₁ < o₂ :=
   aleph.lt_iff_lt
@@ -369,6 +373,9 @@ theorem aleph_max (o₁ o₂ : Ordinal) : ℵ_ (max o₁ o₂) = max (ℵ_ o₁)
 theorem max_aleph_eq (o₁ o₂ : Ordinal) : max (ℵ_ o₁) (ℵ_ o₂) = ℵ_ (max o₁ o₂) :=
   (aleph_max o₁ o₂).symm
 
+theorem preAleph_le_aleph (o : Ordinal) : preAleph o ≤ ℵ_ o :=
+  preAleph_le_preAleph.2 (Ordinal.le_add_left _ _)
+
 @[simp]
 theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) := by
   rw [aleph_eq_preAleph, add_succ, preAleph_succ, aleph_eq_preAleph]
@@ -381,16 +388,13 @@ theorem lift_aleph (o : Ordinal.{u}) : lift.{v} (aleph o) = aleph (Ordinal.lift.
   simp [aleph_eq_preAleph]
 
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
-  apply le_antisymm _ (ciSup_le' _)
-  · rw [aleph_eq_preAleph, preAleph_limit (ho.add _)]
-    refine ciSup_mono' (bddAbove_of_small _) ?_
-    rintro ⟨i, hi⟩
-    cases' lt_or_le i ω with h h
-    · rcases lt_omega0.1 h with ⟨n, rfl⟩
-      use ⟨0, ho.pos⟩
-      simpa using (nat_lt_aleph0 n).le
-    · exact ⟨⟨_, (sub_lt_of_le h).2 hi⟩, preAleph_le_preAleph.2 (le_add_sub _ _)⟩
-  · exact fun i => aleph_le_aleph.2 i.2.le
+  rw [aleph_eq_preAleph, preAleph_limit (isLimit_add ω ho)]
+  apply le_antisymm <;>
+  apply ciSup_mono' (bddAbove_of_small _) <;>
+  intro i
+  · refine ⟨⟨_, sub_lt_of_lt_add i.2 ho.pos⟩, ?_⟩
+    simpa [aleph_eq_preAleph] using le_add_sub _ _
+  · exact ⟨⟨_, add_lt_add_left i.2 ω⟩, le_rfl⟩
 
 theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
   rw [aleph_eq_preAleph, aleph0_le_preAleph]
@@ -424,14 +428,19 @@ theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = ℵ_ o :=
       rwa [← aleph0_le_preAleph, preAleph.apply_symm_apply]⟩,
     fun ⟨o, e⟩ => e.symm ▸ aleph0_le_aleph _⟩
 
-theorem preAleph_isNormal : IsNormal (ord ∘ preAleph) :=
-  ⟨fun o => ord_lt_ord.2 <| preAleph_lt_preAleph.2 <| lt_succ o, fun o l a => by
-    simp [ord_le, preAleph_le_of_isLimit l]⟩
+@[deprecated isNormal_preOmega (since := "2024-10-11")]
+theorem preAleph_isNormal : IsNormal (ord ∘ preAleph) := by
+  convert isNormal_preOmega
+  exact funext ord_preAleph
 
-theorem aleph_isNormal : IsNormal (ord ∘ aleph) :=
-  preAleph_isNormal.trans <| isNormal_add_right ω
+@[deprecated isNormal_omega (since := "2024-10-11")]
+theorem aleph_isNormal : IsNormal (ord ∘ aleph) := by
+  convert isNormal_omega
+  exact funext ord_aleph
 
-theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
+@[simp]
+theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by
+  rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
 
 theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by
   rw [← succ_aleph0]
@@ -503,22 +512,6 @@ def alephIdx.relIso : @RelIso Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) :=
 @[deprecated aleph' (since := "2024-08-28")]
 def alephIdx : Cardinal → Ordinal :=
   aleph'.symm
-
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx.initialSeg_coe : (alephIdx.initialSeg : Cardinal → Ordinal) = alephIdx :=
-  rfl
-
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx_lt {a b} : alephIdx a < alephIdx b ↔ a < b :=
-  alephIdx.initialSeg.toRelEmbedding.map_rel_iff
-
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx_le {a b} : alephIdx a ≤ alephIdx b ↔ a ≤ b := by
-  rw [← not_lt, ← not_lt, alephIdx_lt]
-
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx.init {a b} : b < alephIdx a → ∃ c, alephIdx c = b :=
-  alephIdx.initialSeg.init
 
 @[deprecated (since := "2024-08-28")]
 theorem alephIdx.relIso_coe : (alephIdx.relIso : Cardinal → Ordinal) = alephIdx :=
