@@ -130,7 +130,7 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion f]
 variable {f} in
 /--
 A morphism is a (locally-closed) immersion if and only if it can be factored into
-a closed immersion followed by a (dominant) open immersion.
+a closed immersion followed by an open immersion.
 -/
 lemma isImmersion_iff_exists : IsImmersion f ↔ ∃ (Z : Scheme) (g₁ : X ⟶ Z) (g₂ : Z ⟶ Y),
     IsClosedImmersion g₁ ∧ IsOpenImmersion g₂ ∧ g₁ ≫ g₂ = f :=
