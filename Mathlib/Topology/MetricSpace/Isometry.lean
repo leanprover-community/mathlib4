@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.Antilipschitz
+import Mathlib.Data.Fintype.Lattice
 
 /-!
 # Isometries
@@ -482,6 +483,49 @@ theorem completeSpace_iff (e : α ≃ᵢ β) : CompleteSpace α ↔ CompleteSpac
 
 protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : CompleteSpace α :=
   e.completeSpace_iff.2 ‹_›
+
+/-- `Equiv.piCongrLeft'` as an `IsometryEquiv`: this is the natural
+`∀ i, Y i ≃ᵢ ∀ j, Y (e.symm j)` obtained from a bijection `ι ≃ ι'` of finite types.-/
+@[simps!]
+def piCongrLeft' {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι → Type*}
+    [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y i) ≃ᵢ ∀ j, Y (e.symm j) where
+  toEquiv := Equiv.piCongrLeft' _ e
+  isometry_toFun x1 x2 := by
+    simp_rw [edist_pi_def, Finset.sup_univ_eq_iSup]
+    exact (Equiv.iSup_comp (g := fun b ↦ edist (x1 b) (x2 b)) e.symm)
+
+/-- `Equiv.piCongrLeft` as an `IsometryEquiv`: this is the natural
+`∀ i, Y (e i) ≃ᵢ ∀ j, Y j` obtained from a bijection `ι ≃ ι'` of finite types.-/
+@[simps!]
+def piCongrLeft {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι' → Type*}
+    [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y (e i)) ≃ᵢ ∀ j, Y j :=
+  (piCongrLeft' e.symm).symm
+
+/-- `Equiv.sumArrowEquivProdArrow` as an `IsometryEquiv`.-/
+@[simps!]
+def sumArrowEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ) where
+  toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
+  isometry_toFun _ _ := by simp [Prod.edist_eq, edist_pi_def, Finset.sup_univ_eq_iSup, iSup_sum]
+
+theorem sumArrowEquivProdArrow_eq_homeomorph {α β : Type*} [Fintype α] [Fintype β] :
+    sumArrowEquivProdArrow.toHomeomorph
+    = Homeomorph.sumArrowEquivProdArrow (ι := α) (ι' := β) (X := γ) :=
+  rfl
+
+theorem _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
+    edist (Fin.append x y) (Fin.append x2 y2) = max (edist x x2) (edist y y2) := by
+  simp [edist_pi_def, Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv),
+    Prod.edist_eq, iSup_sum]
+
+/-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `(Fin (m + n) → α)`.-/
+@[simps!]
+def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃ᵢ (Fin (m + n) → α) where
+  toEquiv := Fin.appendEquiv _ _
+  isometry_toFun _ _ := by simp_rw [Fin.appendEquiv, Fin.edist_append_eq_max_edist, Prod.edist_eq]
+
+theorem _root_.Fin.appendIsometry_eq_appendHomeomorph (m n : ℕ) :
+    (Fin.appendIsometry m n).toHomeomorph = Fin.appendHomeomorph (X := α) m n :=
+  rfl
 
 variable (ι α)
 

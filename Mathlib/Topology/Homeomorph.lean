@@ -704,6 +704,45 @@ def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X whe
   continuous_invFun := continuous_uLift_up
   toEquiv := Equiv.ulift
 
+/-- `Equiv.sumArrowEquivProdArrow` as a homeomorphism. The natural homeomorphism
+`(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)` -/
+def sumArrowEquivProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)  where
+  toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
+  continuous_toFun := by
+    simp only [Equiv.sumArrowEquivProdArrow, Equiv.coe_fn_mk, continuous_prod_mk]
+    continuity
+  continuous_invFun := continuous_pi fun i ↦ match i with
+    | .inl i => by apply (continuous_apply _).comp' continuous_fst
+    | .inr i => by apply (continuous_apply _).comp' continuous_snd
+
+private theorem _root_.Fin.appendEquiv_eq_Homeomorph (m n : ℕ) : Fin.appendEquiv m n =
+    ((sumArrowEquivProdArrow).symm.trans
+    (piCongrLeft (Y := fun _ ↦ X) finSumFinEquiv)).toEquiv := by
+  ext ⟨x1, x2⟩ l
+  simp only [sumArrowEquivProdArrow, Equiv.sumArrowEquivProdArrow,
+    finSumFinEquiv, Fin.addCases, Fin.appendEquiv, Fin.append, Equiv.coe_fn_mk]
+  by_cases h : l < m
+  · simp [h]
+  · simp [h]
+
+theorem _root_.Fin.continuous_append (m n : ℕ) :
+    Continuous fun (p : (Fin m → X) × (Fin n → X)) ↦ Fin.append p.1 p.2 := by
+  suffices Continuous (Fin.appendEquiv m n) by exact this
+  rw [Fin.appendEquiv_eq_Homeomorph]
+  exact Homeomorph.continuous_toFun _
+
+/-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `(Fin (m + n) → X)`.-/
+def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) where
+  toEquiv := Fin.appendEquiv m n
+  continuous_toFun := Fin.continuous_append m n
+  continuous_invFun := by
+    rw [Fin.appendEquiv_eq_Homeomorph]
+    exact Homeomorph.continuous_invFun _
+
+theorem _root_.Fin.appendHomeomorph_eq_appendEquiv (m n : ℕ) :
+    (Fin.appendHomeomorph (X := X) m n).toEquiv = Fin.appendEquiv m n :=
+  rfl
+
 section Distrib
 
 /-- `(X ⊕ Y) × Z` is homeomorphic to `X × Z ⊕ Y × Z`. -/
