@@ -3,7 +3,6 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
 
 /-!
@@ -264,24 +263,17 @@ lemma expGrowthSup_add {u v : ℕ → ℝ≥0∞} :
     rw [Pi.sup_apply u v n, Pi.add_apply u v n]
     exact sup_le (self_le_add_right (u n) (v n)) (self_le_add_left (v n) (u n))
 
-noncomputable def addMonoidHom_expGrowthSup : AddMonoidHom (ℕ → ℝ≥0∞) (Tropical ERealᵒᵈ) where
-  toFun := Tropical.trop ∘ expGrowthSup
-  map_zero' := by
-    rw [comp_apply, expGrowthSup_zero]
-    exact Tropical.trop_top
-  map_add' := by
-    intro u v
-    simp only [comp_apply]
-    rw [← Tropical.trop_inf, expGrowthSup_add]
-    congr
-
+-- By lemma `expGrowthSup_add`, `expGrowthSup` is an `AddMonoidHom` from `ℕ → ℝ≥0∞` to
+-- `Tropical ERealᵒᵈ`. Lemma `expGrowthSup_sum` is exactly `Finset.trop_inf`. We prove it from
+-- scratch to avoid importing `Mathlib.Algebra.Tropical.BigOperators`.
 lemma expGrowthSup_sum {α : Type*} (u : α → ℕ → ℝ≥0∞) (s : Finset α) :
     expGrowthSup (∑ x ∈ s, u x) = ⨆ x ∈ s, expGrowthSup (u x) := by
-  have := map_sum addMonoidHom_expGrowthSup u s
-  simp only [addMonoidHom_expGrowthSup, AddMonoidHom.coe_mk, ZeroHom.coe_mk, comp_apply,
-    ← Finset.trop_inf, Finset.inf_eq_iInf s] at this
-  rw [Tropical.injective_trop this]
-  rfl
+  classical
+  induction s using Finset.induction_on with
+  | empty => rw [Finset.sum_empty, ← Finset.iSup_coe, Finset.coe_empty, iSup_emptyset,
+    expGrowthSup_zero]
+  | @insert a t a_t ha => rw [Finset.sum_insert a_t, expGrowthSup_add, ← Finset.iSup_coe,
+    Finset.coe_insert a t, iSup_insert, Finset.iSup_coe, ha]
 
 lemma expGrowthInf_inv {u : ℕ → ℝ≥0∞} :
     expGrowthInf u⁻¹ = - expGrowthSup u := by
