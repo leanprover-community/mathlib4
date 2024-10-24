@@ -138,6 +138,12 @@ theorem unop_inj {x y : αᵐᵒᵖ} : unop x = unop y ↔ x = y :=
 
 attribute [nolint simpComm] AddOpposite.unop_inj
 
+@[to_additive (attr := simp)] lemma «forall» {p : αᵐᵒᵖ → Prop} : (∀ a, p a) ↔ ∀ a, p (op a) :=
+  op_surjective.forall
+
+@[to_additive (attr := simp)] lemma «exists» {p : αᵐᵒᵖ → Prop} : (∃ a, p a) ↔ ∃ a, p (op a) :=
+  op_surjective.exists
+
 @[to_additive] instance instNontrivial [Nontrivial α] : Nontrivial αᵐᵒᵖ := op_injective.nontrivial
 
 @[to_additive] instance instInhabited [Inhabited α] : Inhabited αᵐᵒᵖ := ⟨op default⟩
