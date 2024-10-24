@@ -183,7 +183,7 @@ instance {J} {j : J} [ConditionallyCompleteLinearOrderBot J] [WellFoundedLT J] [
     · simp [Hom.natTrans_app_succ, IH, (Order.lt_succ_of_not_isMax H).trans_le hj]
     · rcases eq_or_ne j ⊥ with rfl | h_bot
       · simp only [natTrans_app_zero]
-      · have : Fact (Order.IsSuccLimit j) := ⟨Order.isSuccLimit_iff.2 ⟨h_bot, H⟩⟩ 
+      · have : Fact (Order.IsSuccLimit j) := ⟨Order.isSuccLimit_iff.2 ⟨h_bot, H⟩⟩
         apply (iter₁.isColimit j hj).hom_ext
         rintro ⟨k, hk⟩
         simp [IH k hk]
