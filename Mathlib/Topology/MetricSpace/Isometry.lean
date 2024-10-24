@@ -509,7 +509,7 @@ def sumArrowEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ
 
 theorem sumArrowEquivProdArrow_eq_homeomorph {α β : Type*} [Fintype α] [Fintype β] :
     sumArrowEquivProdArrow.toHomeomorph
-    = Homeomorph.sumArrowEquivProdArrow (ι := α) (ι' := β) (X := γ):= by
+    = Homeomorph.sumArrowEquivProdArrow (ι := α) (ι' := β) (X := γ) :=
   rfl
 
 theorem _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
@@ -524,13 +524,8 @@ def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃
   isometry_toFun _ _ := by simp_rw [Fin.appendEquiv, Fin.edist_append_eq_max_edist, Prod.edist_eq]
 
 theorem _root_.Fin.appendIsometry_eq_appendHomeomorph (m n : ℕ) :
-    (Fin.appendIsometry m n).toHomeomorph = Fin.appendHomeomorph (X := α) m n := by
-  ext ⟨x1, x2⟩ l
-  simp only [coe_toHomeomorph, Fin.appendIsometry_toFun, Fin.append, Fin.addCases,
-    Fin.appendHomeomorph, Homeomorph.sumArrowEquivProdArrow, finSumFinEquiv]
-  by_cases h : l < m
-  · simp [h]
-  · simp [h]
+    (Fin.appendIsometry m n).toHomeomorph = Fin.appendHomeomorph (X := α) m n :=
+  rfl
 
 variable (ι α)
 
