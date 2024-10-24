@@ -388,6 +388,11 @@ theorem three_lt_four_mul_im_sq_of_mem_fdo (h : z ∈ 𝒟ᵒ) : 3 < 4 * z.im ^ 
   have := h.2
   cases abs_cases z.re <;> nlinarith
 
+/-- non-strict variant of `ModularGroup.three_le_four_mul_im_sq_of_mem_fdo` -/
+theorem three_le_four_mul_im_sq_of_mem_fd {τ : ℍ} (h : τ ∈ 𝒟) : 3 ≤ 4 * τ.im ^ 2 := by
+  have : 1 ≤ τ.re * τ.re + τ.im * τ.im := by simpa [Complex.normSq_apply] using h.1
+  cases abs_cases τ.re <;> nlinarith [h.2]
+
 /-- If `z ∈ 𝒟ᵒ`, and `n : ℤ`, then `|z + n| > 1`. -/
 theorem one_lt_normSq_T_zpow_smul (hz : z ∈ 𝒟ᵒ) (n : ℤ) : 1 < normSq (T ^ n • z : ℍ) := by
   have hz₁ : 1 < z.re * z.re + z.im * z.im := hz.1
@@ -504,10 +509,11 @@ theorem eq_smul_self_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ �
   rw [hn] at hg ⊢
   simp [eq_zero_of_mem_fdo_of_T_zpow_mem_fdo hz hg, one_smul]
 
-/-- non-strict variant of `ModularGroup.three_le_four_mul_im_sq_of_mem_fdo` -/
-theorem three_le_four_mul_im_sq_of_mem_fd {τ : ℍ} (h : τ ∈ 𝒟) : 3 ≤ 4 * τ.im ^ 2 := by
-  have : 1 ≤ τ.re * τ.re + τ.im * τ.im := by simpa [Complex.normSq_apply] using h.1
-  cases abs_cases τ.re <;> nlinarith [h.2]
+end UniqueRepresentative
+
+end FundamentalDomain
+
+section UpperHalfPlane
 
 lemma exists_translate (τ : ℍ) :
     ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) := by
@@ -530,9 +536,6 @@ lemma exists_translate' (τ : ℍ) :
     have H : ‖denom γ τ‖^2 ≤ 1 := (mul_le_iff_le_one_right τ.2).mp h1
     simpa using H
 
-
-end UniqueRepresentative
-
-end FundamentalDomain
+end UpperHalfPlane
 
 end ModularGroup

@@ -16,7 +16,7 @@ TODO: Add finite dimisionality of these spaces of modular forms.
 
 -/
 
-open UpperHalfPlane ModularGroup SlashInvariantForm
+open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm CongruenceSubgroup Complex
 local notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
 local notation  "Γ(" n ")"  => CongruenceSubgroup.Gamma n
 
@@ -49,4 +49,30 @@ lemma modform_exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ
     exact norm_pos_iff.2 (denom_ne_zero _ _)
   nlinarith
 
-open ModularForm CongruenceSubgroup
+-- find_home suggests Mathlib.Topology.ContinuousMap.StarOrdered which seems wrong..
+lemma Complex.zpow_two_eq_one (k : ℤ) (h : (2 : ℂ) ^ k = 1) : k = 0 := by
+  replace h : ‖(2 : ℂ) ^ k‖ = 1 := by simp [h]
+  replace h : ‖(2 : ℝ) ^ k‖ = 1 := by simp [← h]
+  replace h : (2 : ℝ) ^ k = (2 : ℝ) ^ (0 : ℤ) := by simp [← h]
+  exact zpow_right_injective₀ (by norm_num) (by norm_num) h
+
+lemma const_modform_neg_wt_eq_zero_lvl_one {F : Type*} [FunLike F ℍ ℂ] (k : ℤ) (f : F) (c : ℂ)
+    [SlashInvariantFormClass F Γ(1) k] (hf : ⇑f = (fun _ => c)) : k = 0 ∨ c = 0 := by
+  have := slash_action_eqn'' k Γ(1) f
+  rw [hf] at this
+  have hI := (this ModularGroup.S) I
+  have h2I2 := (this ModularGroup.S) ⟨2 * Complex.I, by simp⟩
+  simp only [SlashInvariantForm.toFun_eq_coe, toSlashInvariantForm_coe, subgroup_slash,
+    Subtype.forall, Gamma_mem, Fin.isValue, and_imp, denom_coe1_eq_denom, denom_S, Pi.mul_apply,
+    Pi.inv_apply] at *
+  nth_rw 1 [ hI] at h2I2
+  simp only [mul_eq_mul_right_iff] at h2I2
+  rcases h2I2 with H | H
+  · left
+    symm at H
+    rw [UpperHalfPlane.I, mul_zpow, mul_left_eq_self₀] at H
+    rcases H with H | H
+    · apply Complex.zpow_two_eq_one k H
+    · exfalso
+      exact (zpow_ne_zero k I_ne_zero) H
+  · exact Or.inr H
