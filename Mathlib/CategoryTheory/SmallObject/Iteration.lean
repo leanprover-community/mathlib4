@@ -98,7 +98,7 @@ structure Iteration [Preorder J] [OrderBot J] [SuccOrder J] (j : J) where
   /-- If `i` is a limit element, the `i`th iteration is the colimit
   of `k`th iterations for `k < i`. -/
   isColimit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
-    IsColimit (Iteration.coconeOfLE F hi)
+    IsColimit (Iteration.coconeOfLE F hij)
 
 namespace Iteration
 
@@ -181,7 +181,7 @@ instance {J} {j : J} [ConditionallyCompleteLinearOrderBot J] [WellFoundedLT J] [
     refine fun i => SuccOrder.prelimitRecOn i ?_ ?_ <;>
     intro j H IH hj
     · simp [Hom.natTrans_app_succ, IH, (Order.lt_succ_of_not_isMax H).trans_le hj]
-    · rcases eq_or_ne j ⊥ with rfl | h_bot
+    · obtain rfl | h_bot := eq_or_ne j ⊥
       · simp only [natTrans_app_zero]
       · apply (iter₁.isColimit j (Order.isSuccLimit_iff.2 ⟨h_bot, H⟩) hj).hom_ext
         rintro ⟨k, hk⟩
