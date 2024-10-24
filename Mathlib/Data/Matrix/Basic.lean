@@ -345,15 +345,20 @@ def ofAddEquiv [Add α] : (m → n → α) ≃+ Matrix m n α where
 @[simp] lemma coe_ofAddEquiv_symm [Add α] :
     ⇑(ofAddEquiv.symm : Matrix m n α ≃+ (m → n → α)) = of.symm := rfl
 
+section
+variable (R)
+
 /-- This is `Matrix.of` bundled as a linear equivalence. -/
 def ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : (m → n → α) ≃ₗ[R] Matrix m n α where
   __ := ofAddEquiv
   map_smul' _ _ := rfl
 
 @[simp] lemma coe_ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
-    ⇑(ofLinearEquiv : (m → n → α) ≃ₗ[R] Matrix m n α) = of := rfl
+    ⇑(ofLinearEquiv _ : (m → n → α) ≃ₗ[R] Matrix m n α) = of := rfl
 @[simp] lemma coe_ofLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] :
-    ⇑(ofLinearEquiv.symm : Matrix m n α ≃ₗ[R] (m → n → α)) = of.symm := rfl
+    ⇑((ofLinearEquiv _).symm : Matrix m n α ≃ₗ[R] (m → n → α)) = of.symm := rfl
+
+end
 
 end Matrix
 
@@ -1302,7 +1307,7 @@ def entryLinearMap (i : m) (j : n) :
 -- for unification to succeed
 lemma entryLinearMap_eq_comp {i : m} {j : n} :
     entryLinearMap R α i j =
-      LinearMap.proj j ∘ₗ LinearMap.proj i ∘ₗ ofLinearEquiv.symm.toLinearMap := by
+      LinearMap.proj j ∘ₗ LinearMap.proj i ∘ₗ (ofLinearEquiv R).symm.toLinearMap := by
   rfl
 
 @[simp] lemma proj_comp_diagLinearMap (i : m) :
