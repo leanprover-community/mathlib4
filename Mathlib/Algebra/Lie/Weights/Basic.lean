@@ -6,7 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Ring.Divisibility.Lemmas
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Engel
-import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+import Mathlib.LinearAlgebra.Eigenspace.Pi
 import Mathlib.RingTheory.Artinian
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.FreeModule.PID
@@ -650,48 +650,11 @@ lemma injOn_genWeightSpace [NoZeroSMulDivisors R M] :
 
 See also `LieModule.independent_genWeightSpace'`. -/
 lemma independent_genWeightSpace [NoZeroSMulDivisors R M] :
-    CompleteLattice.Independent fun (χ : L → R) ↦ genWeightSpace M χ := by
-  classical
-  suffices ∀ χ (s : Finset (L → R)) (_ : χ ∉ s),
-      Disjoint (genWeightSpace M χ) (s.sup fun (χ : L → R) ↦ genWeightSpace M χ) by
-    simpa only [CompleteLattice.independent_iff_supIndep_of_injOn (injOn_genWeightSpace R L M),
-      Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.not_mem_erase χ)
-  intro χ₁ s
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert _n ih =>
-  rename_i χ₂ s
-  intro hχ₁₂
-  obtain ⟨hχ₁₂ : χ₁ ≠ χ₂, hχ₁ : χ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hχ₁₂
-  specialize ih hχ₁
-  rw [Finset.sup_insert, disjoint_iff, LieSubmodule.eq_bot_iff]
-  rintro x ⟨hx, hx'⟩
-  simp only [SetLike.mem_coe, LieSubmodule.mem_coeSubmodule] at hx hx'
-  suffices x ∈ genWeightSpace M χ₂ by
-    rw [← LieSubmodule.mem_bot (R := R) (L := L), ← (disjoint_genWeightSpace R L M hχ₁₂).eq_bot]
-    exact ⟨hx, this⟩
-  obtain ⟨y, hy, z, hz, rfl⟩ := (LieSubmodule.mem_sup _ _ _).mp hx'; clear hx'
-  suffices ∀ l, ∃ (k : ℕ),
-      ((toEnd R L M l - algebraMap R (Module.End R M) (χ₂ l)) ^ k) (y + z) ∈
-      genWeightSpace M χ₁ ⊓ Finset.sup s fun χ ↦ genWeightSpace M χ by
-    simpa only [ih.eq_bot, LieSubmodule.mem_bot, mem_genWeightSpace] using this
-  intro l
-  let g : Module.End R M := toEnd R L M l - algebraMap R (Module.End R M) (χ₂ l)
-  obtain ⟨k, hk : (g ^ k) y = 0⟩ := (mem_genWeightSpace _ _ _).mp hy l
-  refine ⟨k, (LieSubmodule.mem_inf _ _ _).mp ⟨?_, ?_⟩⟩
-  · exact LieSubmodule.mapsTo_pow_toEnd_sub_algebraMap _ hx
-  · rw [map_add, hk, zero_add]
-    suffices (s.sup fun χ ↦ genWeightSpace M χ : Submodule R M).map (g ^ k) ≤
-        s.sup fun χ ↦ genWeightSpace M χ by
-      refine this (Submodule.mem_map_of_mem ?_)
-      simp_rw [← LieSubmodule.mem_coeSubmodule, Finset.sup_eq_iSup,
-        LieSubmodule.iSup_coe_toSubmodule, ← Finset.sup_eq_iSup] at hz
-      exact hz
-    simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := L → R), Submodule.map_iSup (ι := _ ∈ s),
-      LieSubmodule.iSup_coe_toSubmodule]
-    refine iSup₂_mono fun χ _ ↦ ?_
-    rintro - ⟨u, hu, rfl⟩
-    exact LieSubmodule.mapsTo_pow_toEnd_sub_algebraMap _ hu
+    CompleteLattice.Independent fun χ : L → R ↦ genWeightSpace M χ := by
+  simp only [LieSubmodule.independent_iff_coe_toSubmodule, genWeightSpace,
+    LieSubmodule.iInf_coe_toSubmodule]
+  exact Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo (toEnd R L M)
+    (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem)
 
 lemma independent_genWeightSpace' [NoZeroSMulDivisors R M] :
     CompleteLattice.Independent fun χ : Weight R L M ↦ genWeightSpace M χ :=

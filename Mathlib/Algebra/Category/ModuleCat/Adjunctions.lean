@@ -33,22 +33,63 @@ variable [Ring R]
 /-- The free functor `Type u ⥤ ModuleCat R` sending a type `X` to the
 free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
-@[simps]
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
-  map {X Y} f := Finsupp.lmapDomain _ _ f
+  map {_ _} f := Finsupp.lmapDomain _ _ f
   map_id := by intros; exact Finsupp.lmapDomain_id _ _
   map_comp := by intros; exact Finsupp.lmapDomain_comp _ _ _ _
+
+variable {R}
+
+/-- Constructor for elements in the module `(free R).obj X`. -/
+noncomputable def freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single x 1
+
+@[ext 1200]
+lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ M}
+    (h : ∀ (x : X), f (freeMk x) = g (freeMk x)) :
+    f = g :=
+  (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))
+
+/-- The morphism of modules `(free R).obj X ⟶ M` corresponding
+to a map `f : X ⟶ M`. -/
+noncomputable def freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
+    (free R).obj X ⟶ M :=
+  Finsupp.lift M R X f
+
+@[simp]
+lemma freeDesc_apply {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) (x : X) :
+    freeDesc f (freeMk x) = f x := by
+  dsimp [freeDesc]
+  erw [Finsupp.lift_apply, Finsupp.sum_single_index]
+  all_goals simp
+
+@[simp]
+lemma free_map_apply {X Y : Type u} (f : X → Y) (x : X) :
+    (free R).map f (freeMk x) = freeMk (f x) := by
+  apply Finsupp.mapDomain_single
+
+/-- The bijection `((free R).obj X ⟶ M) ≃ (X → M)` when `X` is a type and `M` a module. -/
+@[simps]
+def freeHomEquiv {X : Type u} {M : ModuleCat.{u} R} :
+    ((free R).obj X ⟶ M) ≃ (X → M) where
+  toFun φ x := φ (freeMk x)
+  invFun ψ := freeDesc ψ
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+variable (R)
 
 /-- The free-forgetful adjunction for R-modules.
 -/
 def adj : free R ⊣ forget (ModuleCat.{u} R) :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X M => (Finsupp.lift M R X).toEquiv.symm
-      homEquiv_naturality_left_symm := fun {_ _} M f g =>
-        Finsupp.lhom_ext' fun x =>
-          LinearMap.ext_ring
-            (Finsupp.sum_mapDomain_index_addMonoidHom fun y => (smulAddHom R M).flip (g y)).symm }
+    { homEquiv := fun _ _ => freeHomEquiv
+      homEquiv_naturality_left_symm := fun {X Y M} f g ↦ by ext; simp [freeHomEquiv] }
+
+@[simp]
+lemma adj_homEquiv (X : Type u) (M : ModuleCat.{u} R) :
+    (adj R).homEquiv X M = freeHomEquiv := by
+  simp only [adj, Adjunction.mkOfHomEquiv_homEquiv]
 
 instance : (forget (ModuleCat.{u} R)).IsRightAdjoint  :=
   (adj R).isRightAdjoint
@@ -246,7 +287,7 @@ open Finsupp
 instance categoryFree : Category (Free R C) where
   Hom := fun X Y : C => (X ⟶ Y) →₀ R
   id := fun X : C => Finsupp.single (𝟙 X) 1
-  comp {X Y Z : C} f g :=
+  comp {X _ Z : C} f g :=
     (f.sum (fun f' s => g.sum (fun g' t => Finsupp.single (f' ≫ g') (s * t))) : (X ⟶ Z) →₀ R)
   assoc {W X Y Z} f g h := by
     dsimp
@@ -263,7 +304,7 @@ section
 -- accordingly
 
 instance : Preadditive (Free R C) where
-  homGroup X Y := Finsupp.instAddCommGroup
+  homGroup _ _ := Finsupp.instAddCommGroup
   add_comp X Y Z f f' g := by
     dsimp [CategoryTheory.categoryFree]
     rw [Finsupp.sum_add_index'] <;> · simp [add_mul]
@@ -274,7 +315,7 @@ instance : Preadditive (Free R C) where
     rw [Finsupp.sum_add_index'] <;> · simp [mul_add]
 
 instance : Linear R (Free R C) where
-  homModule X Y := Finsupp.module _ R
+  homModule _ _ := Finsupp.module _ R
   smul_comp X Y Z r f g := by
     dsimp [CategoryTheory.categoryFree]
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.smul_sum, mul_assoc]
@@ -297,8 +338,8 @@ attribute [local simp] single_comp_single
 @[simps]
 def embedding : C ⥤ Free R C where
   obj X := X
-  map {X Y} f := Finsupp.single f 1
-  map_id X := rfl
+  map {_ _} f := Finsupp.single f 1
+  map_id _ := rfl
   map_comp {X Y Z} f g := by
     -- Porting note (#10959): simp used to be able to close this goal
     dsimp only []
@@ -313,13 +354,11 @@ open Preadditive Linear
 @[simps]
 def lift (F : C ⥤ D) : Free R C ⥤ D where
   obj X := F.obj X
-  map {X Y} f := f.sum fun f' r => r • F.map f'
+  map {_ _} f := f.sum fun f' r => r • F.map f'
   map_id := by dsimp [CategoryTheory.categoryFree]; simp
   map_comp {X Y Z} f g := by
     apply Finsupp.induction_linear f
-    · -- Porting note (#10959): simp used to be able to close this goal
-      dsimp
-      rw [Limits.zero_comp, sum_zero_index, Limits.zero_comp]
+    · simp
     · intro f₁ f₂ w₁ w₂
       rw [add_comp]
       dsimp at *
@@ -331,9 +370,7 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
       · intros; simp only [add_smul]
     · intro f' r
       apply Finsupp.induction_linear g
-      · -- Porting note (#10959): simp used to be able to close this goal
-        dsimp
-        rw [Limits.comp_zero, sum_zero_index, Limits.comp_zero]
+      · simp
       · intro f₁ f₂ w₁ w₂
         rw [comp_add]
         dsimp at *
@@ -364,20 +401,18 @@ instance lift_linear (F : C ⥤ D) : (lift R F).Linear R where
 is isomorphic to the original functor.
 -/
 def embeddingLiftIso (F : C ⥤ D) : embedding R C ⋙ lift R F ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- Two `R`-linear functors out of the `R`-linear completion are isomorphic iff their
 compositions with the embedding functor are isomorphic.
 -/
--- Porting note: used to be @[ext]
 def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear R]
     (α : embedding R C ⋙ F ≅ embedding R C ⋙ G) : F ≅ G :=
   NatIso.ofComponents (fun X => α.app X)
     (by
       intro X Y f
       apply Finsupp.induction_linear f
-      · -- Porting note (#10959): simp used to be able to close this goal
-        rw [Functor.map_zero, Limits.zero_comp, Functor.map_zero, Limits.comp_zero]
+      · simp
       · intro f₁ f₂ w₁ w₂
         -- Porting note: Using rw instead of simp
         rw [Functor.map_add, add_comp, w₁, w₂, Functor.map_add, comp_add]

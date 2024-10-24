@@ -41,7 +41,7 @@ This is the image sieve of `f` under `yonedaMap G V` and hence the name.
 See `Functor.imageSieve_eq_imageSieve`.
 -/
 def Functor.imageSieve {U V : C} (f : G.obj U ⟶ G.obj V) : Sieve U where
-  arrows Y i := ∃ l, G.map l = G.map i ≫ f
+  arrows _ i := ∃ l, G.map l = G.map i ≫ f
   downward_closed := by
     rintro Y₁ Y₂ i₁ ⟨l, hl⟩ i₂
     exact ⟨i₂ ≫ l, by simp [hl]⟩
@@ -55,7 +55,7 @@ For two arrows `f₁ f₂ : U ⟶ V`, the arrows `i` such that `i ≫ f₁ = i �
 -/
 @[simps]
 def Sieve.equalizer {U V : C} (f₁ f₂ : U ⟶ V) : Sieve U where
-  arrows Y i := i ≫ f₁ = i ≫ f₂
+  arrows _ i := i ≫ f₁ = i ≫ f₂
   downward_closed := by aesop
 
 @[simp]

@@ -147,7 +147,7 @@ theorem Q_idem (q : ℕ) : (Q q : K[X] ⟶ K[X]) ≫ Q q = Q q := by
 /-- For each `q`, `P q` is a natural transformation. -/
 @[simps]
 def natTransP (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
-  app X := P q
+  app _ := P q
   naturality _ _ f := by
     induction' q with q hq
     · dsimp [alternatingFaceMapComplex]
@@ -172,7 +172,7 @@ theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
 /-- For each `q`, `Q q` is a natural transformation. -/
 @[simps]
 def natTransQ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
-  app X := Q q
+  app _ := Q q
 
 theorem map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :

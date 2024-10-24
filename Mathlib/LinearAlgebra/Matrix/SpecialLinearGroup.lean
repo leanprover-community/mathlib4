@@ -302,7 +302,7 @@ noncomputable def center_equiv_rootsOfUnity :
   (fun hn ↦ by
     rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, Nat.toPNat'_zero, rootsOfUnity_one]
     exact MulEquiv.mulEquivOfUnique)
-  (fun hn ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
+  (fun _ ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
 
 end center
 

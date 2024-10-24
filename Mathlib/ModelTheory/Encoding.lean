@@ -33,15 +33,14 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
 -/
 
 
-universe u v w u' v'
+universe u v w u'
 
 namespace FirstOrder
 
 namespace Language
 
 variable {L : Language.{u, v}}
-variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
-variable {α : Type u'} {β : Type v'}
+variable {α : Type u'}
 
 open FirstOrder Cardinal
 

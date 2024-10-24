@@ -5,7 +5,9 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Cast
 import Mathlib.Data.Fintype.BigOperators
+
 /-!
 # Sign function
 
@@ -373,7 +375,6 @@ section OrderedSemiring
 
 variable [OrderedSemiring α] [DecidableRel ((· < ·) : α → α → Prop)] [Nontrivial α]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem sign_one : sign (1 : α) = 1 :=
   sign_pos zero_lt_one
 
@@ -484,7 +485,7 @@ because lean4 infers α to live in a different universe u_2 otherwise -/
 private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Finset α) (f : α → ℤ) :
     ∃ (β : Type u_1) (t : Finset β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∈ s) ∧
-        (t.card = ∑ a ∈ s, (f a).natAbs) ∧
+        (#t = ∑ a ∈ s, (f a).natAbs) ∧
           ∀ a ∈ s, (∑ b ∈ t, if g b = a then (sgn b : ℤ) else 0) = f a := by
   refine
     ⟨(Σ _ : { x // x ∈ s }, ℕ), Finset.univ.sigma fun a => range (f a).natAbs,

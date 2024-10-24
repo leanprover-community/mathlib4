@@ -32,7 +32,7 @@ for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where the product is over th
 number field, embeddings, places, infinite places
 -/
 
-open scoped Classical
+open scoped Classical Finset
 
 namespace NumberField.Embeddings
 
@@ -432,8 +432,7 @@ theorem one_le_mult {w : InfinitePlace K} : (1 : ℝ) ≤ mult w := by
   rw [← Nat.cast_one, Nat.cast_le]
   exact mult_pos
 
-theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
-    (Finset.univ.filter fun φ => mk φ = w).card = mult w := by
+theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ = w} = mult w := by
   conv_lhs =>
     congr; congr; ext
     rw [← mk_embedding w, mk_eq_iff, ComplexEmbedding.conjugate, star_involutive.eq_iff]
@@ -490,11 +489,8 @@ theorem prod_eq_abs_norm (x : K) :
   · rw [map_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => Complex.abs (f x))
       (fun φ => Complex.abs (φ x)) fun _ => by simp [RingHom.equivRatAlgHom_apply]; rfl]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => Complex.abs (φ x))]
-    have : ∀ w : InfinitePlace K, ∀ φ ∈ Finset.filter (fun a ↦ mk a = w) Finset.univ,
-        Complex.abs (φ x) = w x := by
-      intro _ _ hφ
-      rw [← (Finset.mem_filter.mp hφ).2]
-      rfl
+    have (w : InfinitePlace K) (φ) (hφ : φ ∈ ({φ | mk φ = w} : Finset _)) :
+        Complex.abs (φ x) = w x := by rw [← (Finset.mem_filter.mp hφ).2, apply]
     simp_rw [Finset.prod_congr rfl (this _), Finset.prod_const, card_filter_mk_eq]
   · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_ratCast]
 
@@ -571,8 +567,8 @@ theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
 
 theorem card_complex_embeddings :
     card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * NrComplexPlaces K := by
-  suffices ∀ w : { w : InfinitePlace K // IsComplex w }, (Finset.univ.filter
-      fun φ : { φ // ¬ ComplexEmbedding.IsReal φ } => mkComplex φ = w).card = 2 by
+  suffices ∀ w : { w : InfinitePlace K // IsComplex w },
+     #{φ : {φ //¬ ComplexEmbedding.IsReal φ} | mkComplex φ = w} = 2 by
     rw [Fintype.card, Finset.card_eq_sum_ones, ← Finset.sum_fiberwise _ (fun φ => mkComplex φ)]
     simp_rw [Finset.sum_const, this, smul_eq_mul, mul_one, Fintype.card, Finset.card_eq_sum_ones,
       Finset.mul_sum, Finset.sum_const, smul_eq_mul, mul_one]
@@ -930,16 +926,16 @@ variable [NumberField K]
 
 open Finset in
 lemma card_isUnramified [NumberField k] [IsGalois k K] :
-    Finset.card (univ.filter <| IsUnramified k (K := K)) =
-      Finset.card (univ.filter <| IsUnramifiedIn K (k := k)) * (finrank k K) := by
+    #{w : InfinitePlace K | w.IsUnramified k} =
+      #{w : InfinitePlace k | w.IsUnramifiedIn K} * finrank k K := by
   letI := Module.Finite.of_restrictScalars_finite ℚ k K
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
-    (t := (univ.filter <| IsUnramifiedIn K (k := k))), ← smul_eq_mul, ← sum_const]
+    (t := {w : InfinitePlace k | w.IsUnramifiedIn K}), ← smul_eq_mul, ← sum_const]
   · refine sum_congr rfl (fun w hw ↦ ?_)
     obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
     simp only [mem_univ, forall_true_left, mem_filter, true_and] at hw
-    trans Finset.card (MulAction.orbit (K ≃ₐ[k] K) w).toFinset
+    trans #(MulAction.orbit (K ≃ₐ[k] K) w).toFinset
     · congr; ext w'
       simp only [mem_univ, forall_true_left, filter_congr_decidable, mem_filter, true_and,
         Set.mem_toFinset, mem_orbit_iff, @eq_comm _ (comap w' _), and_iff_right_iff_imp]
@@ -952,12 +948,12 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
 
 open Finset in
 lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
-    Finset.card (univ.filter <| IsUnramified k (K := K))ᶜ =
-      Finset.card (univ.filter <| IsUnramifiedIn K (k := k))ᶜ * (finrank k K / 2) := by
+    #({w : InfinitePlace K | w.IsUnramified k} : Finset _)ᶜ =
+      #({w : InfinitePlace k | w.IsUnramifiedIn K} : Finset _)ᶜ * (finrank k K / 2) := by
   letI := Module.Finite.of_restrictScalars_finite ℚ k K
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
-    (t := (univ.filter <| IsUnramifiedIn K (k := k))ᶜ), ← smul_eq_mul, ← sum_const]
+    (t := ({w : InfinitePlace k | w.IsUnramifiedIn K}: Finset _)ᶜ), ← smul_eq_mul, ← sum_const]
   · refine sum_congr rfl (fun w hw ↦ ?_)
     obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
     simp only [mem_univ, forall_true_left, compl_filter, not_not, mem_filter, true_and] at hw
@@ -974,8 +970,8 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
 
 lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :
     Fintype.card (InfinitePlace K) =
-      Finset.card (Finset.univ.filter <| IsUnramifiedIn K (k := k)) * finrank k K +
-      Finset.card (Finset.univ.filter <| IsUnramifiedIn K (k := k))ᶜ * (finrank k K / 2) := by
+      #{w : InfinitePlace k | w.IsUnramifiedIn K} * finrank k K +
+      #({w : InfinitePlace k | w.IsUnramifiedIn K} : Finset _)ᶜ * (finrank k K / 2) := by
   rw [← card_isUnramified, ← card_isUnramified_compl, Finset.card_add_card_compl]
 
 end NumberField.InfinitePlace

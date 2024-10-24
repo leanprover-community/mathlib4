@@ -360,20 +360,19 @@ def fpowerSeries (f : E →L[𝕜] F) (x : E) : FormalMultilinearSeries 𝕜 E F
   | 1 => (continuousMultilinearCurryFin1 𝕜 E F).symm f
   | _ => 0
 
+@[simp]
 theorem fpowerSeries_apply_zero (f : E →L[𝕜] F) (x : E) :
     f.fpowerSeries x 0 = ContinuousMultilinearMap.uncurry0 𝕜 _ (f x) :=
   rfl
 
+@[simp]
 theorem fpowerSeries_apply_one (f : E →L[𝕜] F) (x : E) :
     f.fpowerSeries x 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm f :=
   rfl
 
+@[simp]
 theorem fpowerSeries_apply_add_two (f : E →L[𝕜] F) (x : E) (n : ℕ) : f.fpowerSeries x (n + 2) = 0 :=
   rfl
-
-attribute
-  [eqns fpowerSeries_apply_zero fpowerSeries_apply_one fpowerSeries_apply_add_two] fpowerSeries
-attribute [simp] fpowerSeries
 
 end ContinuousLinearMap
 
