@@ -132,6 +132,12 @@ lean_exe pole where
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
 
+lean_exe unused where
+  root := `LongestPole.Unused
+  supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
+
 /--
 `lake exe test` is a thin wrapper around `lake exe batteries/test`, until
 https://github.com/leanprover/lean4/issues/4121 is resolved.
