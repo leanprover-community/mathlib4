@@ -574,7 +574,7 @@ theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_
 namespace Subgroup
 variable {H : Subgroup G}
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10618): simp can prove this (so removed simp)
+@[to_additive (attr := norm_cast)]
 lemma orderOf_coe (a : H) : orderOf (a : G) = orderOf a :=
   orderOf_injective H.subtype Subtype.coe_injective _
 
@@ -942,11 +942,11 @@ noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) 
     rwa [zpow_add, zpow_mul, zpow_mul', zpow_natCast, zpow_natCast, zpow_natCast, h.gcd_eq_one,
       pow_one, pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
 
-@[to_additive] -- Porting note (#10618): simp can prove this (so removed simp)
+@[to_additive]
 theorem powCoprime_one {G : Type*} [Group G] (h : (Nat.card G).Coprime n) : powCoprime h 1 = 1 :=
   one_pow n
 
-@[to_additive] -- Porting note (#10618): simp can prove this (so removed simp)
+@[to_additive]
 theorem powCoprime_inv {G : Type*} [Group G] (h : (Nat.card G).Coprime n) {g : G} :
     powCoprime h g⁻¹ = (powCoprime h g)⁻¹ :=
   inv_pow g n
