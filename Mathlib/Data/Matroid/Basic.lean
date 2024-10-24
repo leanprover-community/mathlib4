@@ -146,6 +146,10 @@ There are a few design decisions worth discussing.
   with respect to the ground set, rather than a complement within a type. The lemma
   `compl_base_dual` is one of the many examples of this.
 
+  Finally, in theorem names, matroid predicates that apply to sets
+  (such as `Base`, `Indep`, `Basis`) are typically used as suffixes rather than prefixes.
+  For instance, we have `ground_indep_iff_base` rather than `indep_ground_iff_base`.
+
 ## References
 
 [1] The standard text on matroid theory
