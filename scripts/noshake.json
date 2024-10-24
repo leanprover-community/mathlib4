@@ -326,9 +326,6 @@
   ["Mathlib.Control.Traversable.Instances"],
   "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.Basic": ["Batteries.Tactic.Classical"],
-  "Mathlib.NumberTheory.Harmonic.Defs":
-  ["Mathlib.Algebra.Order.BigOperators.Ring.Finset",
-   "Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.NumberTheory.Cyclotomic.Basic": ["Mathlib.Init.Core"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
