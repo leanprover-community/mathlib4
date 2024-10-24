@@ -558,6 +558,8 @@ noncomputable abbrev nrRealPlaces := card { w : InfinitePlace K // IsReal w }
 /-- The number of infinite complex places of the number field `K`. -/
 noncomputable abbrev nrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
 
+@[deprecated (since := "2024-10-24")] alias NrComplexPlaces := nrComplexPlaces
+
 theorem card_real_embeddings :
     card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } = nrRealPlaces K := Fintype.card_congr mkReal
 
