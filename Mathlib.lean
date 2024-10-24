@@ -227,12 +227,16 @@ import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.GradedMulAction
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Action.Option
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Group.Action.Pretransitive
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Action.Sigma
 import Mathlib.Algebra.Group.Action.Sum
+import Mathlib.Algebra.Group.Action.TypeTags
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Group.Aut
