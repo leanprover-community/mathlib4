@@ -159,7 +159,7 @@ theorem principal_add_of_le_one {o : Ordinal} (ho : o ≤ 1) : Principal (· + �
   · exact principal_zero
   · exact principal_add_one
 
-theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· + ·) o) :
+theorem isLimit_of_principal_add {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· + ·) o) :
     o.IsLimit := by
   refine ⟨fun ho₀ => ?_, fun a hao => ?_⟩
   · rw [ho₀] at ho₁
@@ -170,11 +170,14 @@ theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· 
     · refine lt_of_le_of_lt ?_ (ho hao hao)
       rwa [← add_one_eq_succ, add_le_add_iff_left, one_le_iff_ne_zero]
 
+@[deprecated (since := "2024-10-16")]
+alias principal_add_isLimit := isLimit_of_principal_add
+
 theorem principal_add_iff_add_left_eq_self {o : Ordinal} :
     Principal (· + ·) o ↔ ∀ a < o, a + o = o := by
   refine ⟨fun ho a hao => ?_, fun h a b hao hbo => ?_⟩
   · cases' lt_or_le 1 o with ho₁ ho₁
-    · exact op_eq_self_of_principal hao (isNormal_add_right a) ho (principal_add_isLimit ho₁ ho)
+    · exact op_eq_self_of_principal hao (isNormal_add_right a) ho (isLimit_of_principal_add ho₁ ho)
     · rcases le_one_iff.1 ho₁ with (rfl | rfl)
       · exact (Ordinal.not_lt_zero a hao).elim
       · rw [lt_one_iff_zero] at hao
@@ -268,7 +271,7 @@ theorem principal_add_iff_zero_or_omega0_opow {o : Ordinal} :
 @[deprecated (since := "2024-09-30")]
 alias principal_add_iff_zero_or_omega_opow := principal_add_iff_zero_or_omega0_opow
 
-theorem opow_principal_add_of_principal_add {a} (ha : Principal (· + ·) a) (b : Ordinal) :
+theorem principal_add_opow_of_principal_add {a} (ha : Principal (· + ·) a) (b : Ordinal) :
     Principal (· + ·) (a ^ b) := by
   rcases principal_add_iff_zero_or_omega0_opow.1 ha with (rfl | ⟨c, rfl⟩)
   · rcases eq_or_ne b 0 with (rfl | hb)
@@ -278,10 +281,13 @@ theorem opow_principal_add_of_principal_add {a} (ha : Principal (· + ·) a) (b 
   · rw [← opow_mul]
     exact principal_add_omega0_opow _
 
+@[deprecated (since := "2024-10-16")]
+alias opow_principal_add_of_principal_add := principal_add_opow_of_principal_add
+
 theorem add_absorp {a b c : Ordinal} (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c := by
   rw [← Ordinal.add_sub_cancel_of_le h₂, ← add_assoc, add_omega0_opow h₁]
 
-theorem mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
+theorem principal_add_mul_of_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
     (hb : Principal (· + ·) b) : Principal (· + ·) (a * b) := by
   rcases eq_zero_or_pos a with (rfl | _)
   · rw [zero_mul]
@@ -291,12 +297,15 @@ theorem mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (
       exact principal_zero
     · rw [← succ_le_iff, succ_zero] at hb₁'
       intro c d hc hd
-      rw [lt_mul_of_limit (principal_add_isLimit (lt_of_le_of_ne hb₁' hb₁.symm) hb)] at *
+      rw [lt_mul_of_limit (isLimit_of_principal_add (lt_of_le_of_ne hb₁' hb₁.symm) hb)] at *
       rcases hc with ⟨x, hx, hx'⟩
       rcases hd with ⟨y, hy, hy'⟩
       use x + y, hb hx hy
       rw [mul_add]
       exact Left.add_lt_add hx' hy'
+
+@[deprecated (since := "2024-10-16")]
+alias mul_principal_add_is_principal_add := principal_add_mul_of_principal_add
 
 /-! #### Multiplicative principal ordinals -/
 
@@ -330,10 +339,13 @@ theorem principal_add_of_principal_mul {o : Ordinal} (ho : Principal (· * ·) o
     rw [← one_add_one_eq_two, mul_add, mul_one]
     exact add_le_add (le_max_left a b) (le_max_right a b)
 
-theorem principal_mul_isLimit {o : Ordinal.{u}} (ho₂ : 2 < o) (ho : Principal (· * ·) o) :
+theorem isLimit_of_principal_mul {o : Ordinal.{u}} (ho₂ : 2 < o) (ho : Principal (· * ·) o) :
     o.IsLimit :=
-  principal_add_isLimit ((lt_succ 1).trans (succ_one ▸ ho₂))
+  isLimit_of_principal_add ((lt_succ 1).trans (succ_one ▸ ho₂))
     (principal_add_of_principal_mul ho (ne_of_gt ho₂))
+
+@[deprecated (since := "2024-10-16")]
+alias principal_mul_isLimit := isLimit_of_principal_mul
 
 theorem principal_mul_iff_mul_left_eq {o : Ordinal} :
     Principal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
@@ -344,7 +356,7 @@ theorem principal_mul_iff_mul_left_eq {o : Ordinal} :
       · rw [← lt_succ_iff, succ_one]
         exact hao.trans_le ho
       · rwa [← succ_le_iff, succ_zero] at ha₀
-    · exact op_eq_self_of_principal hao (isNormal_mul_right ha₀) h (principal_mul_isLimit ho h)
+    · exact op_eq_self_of_principal hao (isNormal_mul_right ha₀) h (isLimit_of_principal_mul ho h)
   · rcases eq_or_ne a 0 with (rfl | ha)
     · dsimp only; rwa [zero_mul]
     rw [← Ordinal.pos_iff_ne_zero] at ha
@@ -442,7 +454,7 @@ alias mul_omega_dvd := mul_omega0_dvd
 theorem mul_eq_opow_log_succ {a b : Ordinal.{u}} (ha : a ≠ 0) (hb : Principal (· * ·) b)
     (hb₂ : 2 < b) : a * b = b ^ succ (log b a) := by
   apply le_antisymm
-  · have hbl := principal_mul_isLimit hb₂ hb
+  · have hbl := isLimit_of_principal_mul hb₂ hb
     rw [← (isNormal_mul_right (Ordinal.pos_iff_ne_zero.2 ha)).bsup_eq hbl, bsup_le_iff]
     intro c hcb
     have hb₁ : 1 < b := one_lt_two.trans hb₂
