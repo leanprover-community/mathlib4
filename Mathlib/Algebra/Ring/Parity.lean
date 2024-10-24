@@ -31,7 +31,7 @@ assert_not_exists OrderedRing
 
 open MulOpposite
 
-variable {F α β R : Type*}
+variable {F α β : Type*}
 
 section Monoid
 variable [Monoid α] [HasDistribNeg α] {n : ℕ} {a : α}
@@ -156,7 +156,7 @@ lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
 end Semiring
 
 section Monoid
-variable [Monoid α] [HasDistribNeg α] {a : α} {n : ℕ}
+variable [Monoid α] [HasDistribNeg α] {n : ℕ}
 
 lemma Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
   rintro ⟨c, rfl⟩ a; simp_rw [pow_add, pow_mul, neg_sq, pow_one, mul_neg]
@@ -236,14 +236,13 @@ lemma even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
 lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by
   rw [← not_even_iff_odd, Nat.even_add_one, not_even_iff_odd]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 lemma even_xor_odd' (n : ℕ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
   obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n <;> use k
   · simpa only [← two_mul, eq_self_iff_true, xor_true] using (succ_ne_self (2 * k)).symm
-  · simpa only [xor_true, _root_.xor_comm] using (succ_ne_self _)
+  · simpa only [xor_true, xor_comm] using (succ_ne_self _)
+
+lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by
+  rw [← not_even_iff_odd, Nat.even_add_one, not_even_iff_odd]
 
 lemma mod_two_add_add_odd_mod_two (m : ℕ) {n : ℕ} (hn : Odd n) : m % 2 + (m + n) % 2 = 1 :=
   ((even_or_odd m).elim fun hm ↦ by rw [even_iff.1 hm, odd_iff.1 (hm.add_odd hn)]) fun hm ↦ by

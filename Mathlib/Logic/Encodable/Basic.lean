@@ -555,13 +555,9 @@ theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directe
   · exact (Classical.choose_spec (hf p p)).1
   · exact (Classical.choose_spec (hf p a)).1
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f) (a : α) :
     r (f a) (f (hf.sequence f (encode a + 1))) := by
-  simp only [Directed.sequence, add_eq, add_zero, encodek, _root_.and_self]
+  simp only [Directed.sequence, add_eq, add_zero, encodek, and_self]
   exact (Classical.choose_spec (hf _ a)).2
 
 variable [Preorder β] {f : α → β}

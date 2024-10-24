@@ -139,7 +139,7 @@ lemma alexandrovDiscrete_iSup {t : ι → TopologicalSpace α} (_ : ∀ i, @Alex
 
 section
 variable [TopologicalSpace α] [TopologicalSpace β] [AlexandrovDiscrete α] [AlexandrovDiscrete β]
-  {s t : Set α} {a x y : α}
+  {s t : Set α} {a : α}
 
 @[simp] lemma isOpen_exterior : IsOpen (exterior s) := by
   rw [exterior_def]; exact isOpen_sInter fun _ ↦ And.left

@@ -92,7 +92,7 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
   · -- cases' h with _ _ _ _ _ h₀ h₁
     cases h
     simp only [truncate, Function.comp_def, eq_self_iff_true, heq_iff_eq]
-    -- Porting note: used to be `ext y`
+    -- Porting note (#11041): used to be `ext y`
     rename_i n_ih a f y h₁
     suffices (fun x => truncate (y x)) = f
       by simp [this]
@@ -470,10 +470,6 @@ theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map 
     dsimp only [PFunctor.map]
     congr
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx : Agree' n z x)
     (hy : Agree' n z y) (hrec : ∀ ps : Path F, n = ps.length → iselect ps x = iselect ps y) :
     x.approx (n + 1) = y.approx (n + 1) := by

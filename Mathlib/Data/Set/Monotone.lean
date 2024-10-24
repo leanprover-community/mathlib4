@@ -85,6 +85,16 @@ protected theorem _root_.StrictAntiOn.strictAnti (h : StrictAntiOn f s) :
     StrictAnti (f ∘ Subtype.val : s → β) :=
   fun x y hlt => h x.coe_prop y.coe_prop hlt
 
+lemma MonotoneOn_insert_iff {a : α} :
+    MonotoneOn f (insert a s) ↔
+       (∀ b ∈ s, b ≤ a → f b ≤ f a) ∧ (∀ b ∈ s, a ≤ b → f a ≤ f b) ∧ MonotoneOn f s := by
+  simp [MonotoneOn, forall_and]
+
+lemma AntitoneOn_insert_iff {a : α} :
+    AntitoneOn f (insert a s) ↔
+       (∀ b ∈ s, b ≤ a → f a ≤ f b) ∧ (∀ b ∈ s, a ≤ b → f b ≤ f a) ∧ AntitoneOn f s :=
+  @MonotoneOn_insert_iff α βᵒᵈ _ _ _ _ _
+
 end Mono
 
 end Set
@@ -147,6 +157,16 @@ alias ⟨_root_.StrictMono.of_restrict, _root_.StrictMonoOn.restrict⟩ := stric
 theorem StrictMono.codRestrict [Preorder α] [Preorder β] {f : α → β} (hf : StrictMono f)
     {s : Set β} (hs : ∀ x, f x ∈ s) : StrictMono (Set.codRestrict f s hs) :=
   hf
+
+lemma strictMonoOn_insert_iff [Preorder α] [Preorder β] {f : α → β} {s : Set α} {a : α} :
+    StrictMonoOn f (insert a s) ↔
+       (∀ b ∈ s, b < a → f b < f a) ∧ (∀ b ∈ s, a < b → f a < f b) ∧ StrictMonoOn f s := by
+  simp [StrictMonoOn, forall_and]
+
+lemma strictAntiOn_insert_iff [Preorder α] [Preorder β] {f : α → β} {s : Set α} {a : α} :
+    StrictAntiOn f (insert a s) ↔
+       (∀ b ∈ s, b < a → f a < f b) ∧ (∀ b ∈ s, a < b → f b < f a) ∧ StrictAntiOn f s :=
+  @strictMonoOn_insert_iff α βᵒᵈ _ _ _ _ _
 
 end strictMono
 

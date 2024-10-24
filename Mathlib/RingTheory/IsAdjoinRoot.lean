@@ -141,7 +141,6 @@ theorem aeval_eq (h : IsAdjoinRoot S f) (p : R[X]) : aeval h.root p = h.map p :=
     rw [map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, ← h.algebraMap_apply,
       RingHom.map_pow, map_X]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem aeval_root (h : IsAdjoinRoot S f) : aeval h.root f = 0 := by rw [aeval_eq, map_self]
 
 /-- Choose an arbitrary representative so that `h.map (h.repr x) = x`.

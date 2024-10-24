@@ -217,8 +217,7 @@ theorem Multiset.card_coe (m : Multiset α) : Fintype.card m = Multiset.card m :
 @[to_additive]
 theorem Multiset.prod_eq_prod_coe [CommMonoid α] (m : Multiset α) : m.prod = ∏ x : m, (x : α) := by
   congr
-  -- Porting note: `simp` fails with "maximum recursion depth has been reached"
-  erw [map_univ_coe]
+  simp
 
 @[to_additive]
 theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :

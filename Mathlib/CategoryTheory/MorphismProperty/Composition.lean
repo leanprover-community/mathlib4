@@ -24,7 +24,7 @@ namespace MorphismProperty
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 /-- Typeclass expressing that a morphism property contain identities. -/
-class ContainsIdentities (W : MorphismProperty C) : Prop :=
+class ContainsIdentities (W : MorphismProperty C) : Prop where
   /-- for all `X : C`, the identity of `X` satisfies the morphism property -/
   id_mem : ∀ (X : C), W (𝟙 X)
 
@@ -49,6 +49,10 @@ instance inverseImage {P : MorphismProperty D} [P.ContainsIdentities] (F : C ⥤
     (P.inverseImage F).ContainsIdentities where
   id_mem X := by simpa only [← F.map_id] using P.id_mem (F.obj X)
 
+instance inf {P Q : MorphismProperty C} [P.ContainsIdentities] [Q.ContainsIdentities] :
+    (P ⊓ Q).ContainsIdentities where
+  id_mem X := ⟨P.id_mem X, Q.id_mem X⟩
+
 end ContainsIdentities
 
 instance Prod.containsIdentities {C₁ C₂ : Type*} [Category C₁] [Category C₂]
@@ -61,9 +65,17 @@ instance Pi.containsIdentities {J : Type w} {C : J → Type u}
     (pi W).ContainsIdentities :=
   ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
 
+lemma of_isIso (P : MorphismProperty C) [P.ContainsIdentities] [P.RespectsIso] {X Y : C} (f : X ⟶ Y)
+    [IsIso f] : P f :=
+  Category.id_comp f ▸ RespectsIso.postcomp P f (𝟙 X) (P.id_mem X)
+
+lemma isomorphisms_le_of_containsIdentities (P : MorphismProperty C) [P.ContainsIdentities]
+    [P.RespectsIso] :
+    isomorphisms C ≤ P := fun _ _ f (_ : IsIso f) ↦ P.of_isIso f
+
 /-- A morphism property satisfies `IsStableUnderComposition` if the composition of
 two such morphisms still falls in the class. -/
-class IsStableUnderComposition (P : MorphismProperty C) : Prop :=
+class IsStableUnderComposition (P : MorphismProperty C) : Prop where
   comp_mem {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) : P f → P g → P (f ≫ g)
 
 lemma comp_mem (W : MorphismProperty C) [W.IsStableUnderComposition]
@@ -77,6 +89,11 @@ instance IsStableUnderComposition.op {P : MorphismProperty C} [P.IsStableUnderCo
 instance IsStableUnderComposition.unop {P : MorphismProperty Cᵒᵖ} [P.IsStableUnderComposition] :
     P.unop.IsStableUnderComposition where
   comp_mem f g hf hg := P.comp_mem g.op f.op hg hf
+
+instance IsStableUnderComposition.inf {P Q : MorphismProperty C} [P.IsStableUnderComposition]
+    [Q.IsStableUnderComposition] :
+    (P ⊓ Q).IsStableUnderComposition where
+  comp_mem f g hf hg := ⟨P.comp_mem f g hf.left hg.left, Q.comp_mem f g hf.right hg.right⟩
 
 /-- A morphism property is `StableUnderInverse` if the inverse of a morphism satisfying
 the property still falls in the class. -/
@@ -129,7 +146,7 @@ end naturalityProperty
 /-- A morphism property is multiplicative if it contains identities and is stable by
 composition. -/
 class IsMultiplicative (W : MorphismProperty C)
-    extends W.ContainsIdentities, W.IsStableUnderComposition : Prop :=
+    extends W.ContainsIdentities, W.IsStableUnderComposition : Prop
 
 namespace IsMultiplicative
 
@@ -145,6 +162,10 @@ lemma of_op (W : MorphismProperty C) [IsMultiplicative W.op] : IsMultiplicative 
 
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W.unop] : IsMultiplicative W :=
   (inferInstance : IsMultiplicative W.unop.op)
+
+instance : MorphismProperty.IsMultiplicative (⊤ : MorphismProperty C) where
+  comp_mem _ _ _ _ := trivial
+  id_mem _ := trivial
 
 instance : (isomorphisms C).IsMultiplicative where
   id_mem _ := isomorphisms.infer_property _
@@ -166,6 +187,9 @@ instance : (epimorphisms C).IsMultiplicative where
 
 instance {P : MorphismProperty D} [P.IsMultiplicative] (F : C ⥤ D) :
     (P.inverseImage F).IsMultiplicative where
+
+instance inf {P Q : MorphismProperty C} [P.IsMultiplicative] [Q.IsMultiplicative] :
+    (P ⊓ Q).IsMultiplicative where
 
 end IsMultiplicative
 

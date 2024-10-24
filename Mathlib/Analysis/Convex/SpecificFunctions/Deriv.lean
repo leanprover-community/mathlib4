@@ -96,7 +96,7 @@ theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
   intro x hx
   rw [mem_Ioi] at hx
   rw [iter_deriv_zpow]
-  refine mul_pos ?_ (zpow_pos_of_pos hx _)
+  refine mul_pos ?_ (zpow_pos hx _)
   norm_cast
   refine int_prod_range_pos (by decide) fun hm => ?_
   rw [← Finset.coe_Ico] at hm

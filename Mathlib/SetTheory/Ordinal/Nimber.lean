@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.CharP.Two
+import Mathlib.Data.Nat.Bitwise
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Tactic.Abel
 
@@ -20,6 +21,12 @@ Nim addition arises within the context of impartial games. By the Sprague-Grundy
 impartial game is equivalent to some game of nim. If `x ≈ nim o₁` and `y ≈ nim o₂`, then
 `x + y ≈ nim (o₁ + o₂)`, where the ordinals are summed together as nimbers. Unfortunately, the
 nim product admits no such characterization.
+
+## Notation
+
+Following [On Numbers And Games][conway2001] (p. 121), we define notation `∗o` for the cast from
+`Ordinal` to `Nimber`. Note that for general `n : ℕ`, `∗n` is **not** the same as `↑n`. For
+instance, `∗2 ≠ 0`, whereas `↑2 = ↑1 + ↑1 = 0`.
 
 ## Implementation notes
 
@@ -66,6 +73,9 @@ def Ordinal.toNimber : Ordinal ≃o Nimber :=
 def Nimber.toOrdinal : Nimber ≃o Ordinal :=
   OrderIso.refl _
 
+@[inherit_doc]
+scoped[Nimber] prefix:75 "∗" => Ordinal.toNimber
+
 namespace Nimber
 
 open Ordinal
@@ -75,8 +85,8 @@ theorem toOrdinal_symm_eq : Nimber.toOrdinal.symm = Ordinal.toNimber :=
   rfl
 
 @[simp]
-theorem toOrdinal_toNimber (a : Nimber) :
-    Ordinal.toNimber (Nimber.toOrdinal a) = a := rfl
+theorem toOrdinal_toNimber (a : Nimber) : ∗(Nimber.toOrdinal a) = a :=
+  rfl
 
 theorem lt_wf : @WellFounded Nimber (· < ·) :=
   Ordinal.lt_wf
@@ -117,12 +127,12 @@ theorem toOrdinal_max (a b : Nimber) : toOrdinal (max a b) = max (toOrdinal a) (
 theorem toOrdinal_min (a b : Nimber) : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
   rfl
 
-theorem succ_def (a : Nimber) : succ a = toNimber (toOrdinal a + 1) :=
+theorem succ_def (a : Nimber) : succ a = ∗(toOrdinal a + 1) :=
   rfl
 
 /-- A recursor for `Nimber`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected def rec {β : Nimber → Sort*} (h : ∀ a, β (toNimber a)) : ∀ a, β a := fun a =>
+protected def rec {β : Nimber → Sort*} (h : ∀ a, β (∗a)) : ∀ a, β a := fun a =>
   h (toOrdinal a)
 
 /-- `Ordinal.induction` but for `Nimber`. -/
@@ -141,6 +151,9 @@ protected theorem pos_iff_ne_zero {a : Nimber} : 0 < a ↔ a ≠ 0 :=
 theorem lt_one_iff_zero {a : Nimber} : a < 1 ↔ a = 0 :=
   Ordinal.lt_one_iff_zero
 
+theorem eq_nat_of_le_nat {a : Nimber} {b : ℕ} (h : a ≤ ∗b) : ∃ c : ℕ, a = ∗c :=
+  Ordinal.lt_omega0.1 (h.trans_lt (nat_lt_omega0 b))
+
 instance small_Iio (a : Nimber.{u}) : Small.{u} (Set.Iio a) := Ordinal.small_Iio a
 instance small_Iic (a : Nimber.{u}) : Small.{u} (Set.Iic a) := Ordinal.small_Iic a
 instance small_Ico (a b : Nimber.{u}) : Small.{u} (Set.Ico a b) := Ordinal.small_Ico a b
@@ -156,6 +169,8 @@ end Nimber
 theorem not_small_nimber : ¬ Small.{u} Nimber.{max u v} :=
   not_small_ordinal
 
+open Nimber
+
 namespace Ordinal
 
 @[simp]
@@ -163,33 +178,31 @@ theorem toNimber_symm_eq : toNimber.symm = Nimber.toOrdinal :=
   rfl
 
 @[simp]
-theorem toNimber_toOrdinal (a : Ordinal) :  Nimber.toOrdinal (toNimber a) = a :=
+theorem toNimber_toOrdinal (a : Ordinal) : Nimber.toOrdinal (∗a) = a :=
   rfl
 
 @[simp]
-theorem toNimber_zero : toNimber 0 = 0 :=
+theorem toNimber_zero : ∗0 = 0 :=
   rfl
 
 @[simp]
-theorem toNimber_one : toNimber 1 = 1 :=
+theorem toNimber_one : ∗1 = 1 :=
   rfl
 
 @[simp]
-theorem toNimber_eq_zero {a} : toNimber a = 0 ↔ a = 0 :=
+theorem toNimber_eq_zero {a} : ∗a = 0 ↔ a = 0 :=
   Iff.rfl
 
 @[simp]
-theorem toNimber_eq_one {a} : toNimber a = 1 ↔ a = 1 :=
+theorem toNimber_eq_one {a} : ∗a = 1 ↔ a = 1 :=
   Iff.rfl
 
 @[simp]
-theorem toNimber_max (a b : Ordinal) :
-    toNimber (max a b) = max (toNimber a) (toNimber b) :=
+theorem toNimber_max (a b : Ordinal) : ∗(max a b) = max (∗a) (∗b) :=
   rfl
 
 @[simp]
-theorem toNimber_min (a b : Ordinal) :
-    toNimber (min a b) = min (toNimber a) (toNimber b) :=
+theorem toNimber_min (a b : Ordinal) : ∗(min a b) = min (∗a) (∗b) :=
   rfl
 
 end Ordinal
