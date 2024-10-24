@@ -867,13 +867,6 @@ theorem modifyTailIdx_modifyTailIdx_same {f g : List α → List α} (n : ℕ) (
 alias modifyNthTail_modifyNthTail_same := modifyTailIdx_modifyTailIdx_same
 @[deprecated (since := "2024-05-04")] alias removeNth_eq_nthTail := eraseIdx_eq_modifyTailIdx
 
-theorem modify_eq_set (f : α → α) :
-    ∀ (n) (l : List α), modify f n l = ((fun a => set l n (f a)) <$> l[n]?).getD l
-  | 0, l => by cases l <;> simp
-  | _ + 1, [] => rfl
-  | n + 1, b :: l =>
-    (congr_arg (cons b) (modify_eq_set f n l)).trans <| by cases h : l[n]? <;> simp [h]
-
 @[deprecated (since := "2024-10-21")] alias modifyNth_eq_set := modify_eq_set
 
 @[simp]
