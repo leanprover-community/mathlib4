@@ -6,6 +6,7 @@ Authors: María Inés de Frutos-Fernández
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Data.Real.IsNonarchimedean
+import Mathlib.Order.Filter.ENNReal
 import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
@@ -310,7 +311,7 @@ private theorem f_bddAbove (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : ℕ
     rw [← rpow_natCast, ← rpow_mul (apply_nonneg _ _), mul_one_div]
     conv_rhs => rw [← rpow_one (f x)]
     rw [rpow_le_rpow_left_iff (not_le.mp hx)]
-    exact div_le_one_of_le (cast_le.mpr (hs (ψ n))) (cast_nonneg _)
+    exact div_le_one_of_le₀ (cast_le.mpr (hs (ψ n))) (cast_nonneg _)
 
 private theorem f_bddAbove' (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : ℕ, s n ≤ n) (x : R)
     (ψ : ℕ → ℕ) : BddAbove ((fun n : ℕ => f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))) '' Set.univ) := by
@@ -337,7 +338,7 @@ private theorem f_nonempty {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x
     nth_rw 2 [← rpow_one (f x)]
     apply rpow_le_rpow_of_exponent_le (not_lt.mp hfx)
     rw [mul_one_div]
-    exact div_le_one_of_le (cast_le.mpr (hs_le (ψ b))) (cast_nonneg _)
+    exact div_le_one_of_le₀ (cast_le.mpr (hs_le (ψ b))) (cast_nonneg _)
 
 private theorem f_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x y : R}
     (hn : ∀ n : ℕ, ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
@@ -364,7 +365,7 @@ private theorem f_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ 
       apply le_of_forall_pos_le_add
       intro ε hε
       have h1 : (1 : ℝ) ∈ Set.Ioo 0 (1 + ε) := by
-        simp only [Set.mem_Ioo, zero_lt_one, lt_add_iff_pos_right, true_and_iff, hε]
+        simp only [Set.mem_Ioo, zero_lt_one, lt_add_iff_pos_right, hε, and_self]
       obtain ⟨k, hk⟩ := hf_lim (Set.Ioo (0 : ℝ) (1 + ε)) h1 isOpen_Ioo
       exact hc_bd (1 + ε) k fun b hb => le_of_lt (Set.mem_Ioo.mp (hk b hb)).2
 
@@ -405,15 +406,14 @@ private theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n 
         (f (x ^ s (ψ n)) ^ (1 / (s (ψ n) : ℝ))) ^ ((s (ψ n) : ℝ) / (ψ n : ℝ))) =ᶠ[atTop]
         fun n : ℕ => f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ)) := by
       have h : (fun n : ℕ => (1 : ℝ) / (s (ψ n) : ℝ) * (s (ψ n) : ℝ)) =ᶠ[atTop] 1 := by
-        convert div_mul_eventually_cancel 1 (Tendsto.num hψ_mono.tendsto_atTop ha_pos hψ_lim)
-          using 1
-        · simp only [Pi.one_apply, cast_one]
-        · simp only [Pi.one_apply, cast_one]; rfl
+        apply Filter.EventuallyEq.div_mul_cancel_atTop
+        exact  (Tendsto.num (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop) ha_pos hψ_lim)
       simp_rw [← rpow_mul (apply_nonneg f _), mul_div]
       exact EventuallyEq.comp₂ EventuallyEq.rfl HPow.hPow (h.div EventuallyEq.rfl)
-    exact le_of_eq (Tendsto.limsup_eq (Tendsto.congr' h_eq (Tendsto.rpow
-      ((smoothingSeminorm'_isLimit f hf1 x).comp (Tendsto.num hψ_mono.tendsto_atTop ha_pos hψ_lim))
-      hψ_lim (Or.inr ha_pos))))
+    exact le_of_eq (Tendsto.limsup_eq (Tendsto.congr' h_eq
+      ((((smoothingSeminorm'_isLimit f hf1 x).comp ((tendsto_natCast_atTop_iff (R := ℝ)).mp <|
+      Tendsto.num (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop)
+        ha_pos hψ_lim)).rpow hψ_lim (Or.inr ha_pos)))))
 
 /-- If `f 1 ≤ 1` and `f` is nonarchimedean, then `smoothingSeminorm'` is nonarchimedean. -/
 theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) :
@@ -438,7 +438,7 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
     have h0 : (ψ m : ℝ) ≠ 0 := cast_ne_zero.mpr (_root_.ne_of_gt (lt_of_le_of_lt (_root_.zero_le _)
       (hψ_mono (Nat.pos_of_ne_zero (one_le_iff_ne_zero.mp hm)))))
     rw [← div_self h0, ← sub_div, cast_sub (hmu_le _)]
-  have b_in : b ∈ Set.Icc (0 : ℝ) 1 := sub_mem_Icc a_in
+  have b_in : b ∈ Set.Icc (0 : ℝ) 1 := unitInterval.mem_iff_one_sub_mem.mp a_in
   have hnu_le : ∀ n : ℕ, nu n ≤ n := fun n => by simp only [hnu, tsub_le_self]
   have hx : limsup (fun n : ℕ => f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
       smoothingSeminorm' f x ^ a := limsup_mu_le f hf1 hmu_le hn a_in hψ_mono hψ_lim
@@ -481,9 +481,9 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
   apply le_trans _ h_mul
   have hex : ∃ n : PNat, f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ)) <
       smoothingSeminorm' f x ^ a * smoothingSeminorm' f y ^ b + ε :=
-    ENNReal.exists_lt_of_limsup_le ((image_bddAbove_mul (f_bddAbove' f hf1 hmu_le x ψ)
-      (fun n => rpow_nonneg (apply_nonneg _ _) _) (f_bddAbove' f hf1 hnu_le y ψ)
-      fun n => rpow_nonneg (apply_nonneg _ _) _).isBoundedUnder Filter.univ_mem ) hxy hε
+    ENNReal.exists_lt_of_limsup_le (range_bddAbove_mul (f_bddAbove f hf1 hmu_le _ _)
+        (fun n => rpow_nonneg (apply_nonneg _ _) _) (f_bddAbove f hf1 hnu_le _ _)
+        fun n => rpow_nonneg (apply_nonneg _ _) _).isBoundedUnder_of_range hxy hε
   obtain ⟨N, hN⟩ := hex
   apply le_trans (ciInf_le (smoothingSeminormSeq_bddBelow f _)
     ⟨ψ N, lt_of_le_of_lt (_root_.zero_le (ψ 0)) (hψ_mono.lt_iff_lt.mpr N.pos)⟩)
@@ -505,8 +505,8 @@ def smoothingSeminorm (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) : RingSeminor
     simp only [smoothingSeminormSeq]
     rw [zero_pow (pos_iff_ne_zero.mp hn), map_zero, zero_rpow]
     exact one_div_ne_zero (cast_ne_zero.mpr (one_le_iff_ne_zero.mp hn))
-  add_le' := add_le_of_isNonarchimedean (smoothingSeminorm_nonneg f hf1)
-      (smoothingSeminorm_isNonarchimedean f hf1 hna)
+  add_le' _ _ :=  (smoothingSeminorm_isNonarchimedean f hf1 hna).add_le
+    (smoothingSeminorm_nonneg f hf1)
   neg' n := by
     simp only [smoothingSeminorm', smoothingSeminorm']
     congr
@@ -576,7 +576,7 @@ theorem smoothingSeminorm_apply_of_is_mul' (hf1 : f 1 ≤ 1) {x : R}
     rw [hx0, hxn, zero_rpow (one_div_cast_ne_zero (one_le_iff_ne_zero.mp hn))]
   · have h1 : f 1 = 1 := by rw [← mul_right_inj' hx0, ← hx 1, mul_one, mul_one]
     have hn0 : (n : ℝ) ≠ 0 := cast_ne_zero.mpr (_root_.ne_of_gt (lt_of_lt_of_le zero_lt_one hn))
-    rw [← mul_one (x ^ n), is_mul_pow_of_is_mul f hx, ← rpow_natCast, h1, mul_one, ←
+    rw [← mul_one (x ^ n), pow_isMul_of_isMul f hx, ← rpow_natCast, h1, mul_one, ←
       rpow_mul (apply_nonneg f _), mul_one_div_cancel hn0, rpow_one]
 
 /-- If `f 1 ≤ 1`, `f` is nonarchimedean, and `∀ y : R, f (x * y) = f x * f y`, then
@@ -599,7 +599,7 @@ theorem smoothingSeminorm_of_mul' (hf1 : f 1 ≤ 1) {x : R} (hx : ∀ y : R, f (
   intro n hn1
   have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (_root_.ne_of_gt (lt_of_lt_of_le zero_lt_one hn1))
   simp only [smoothingSeminormSeq]
-  rw [mul_pow, is_mul_pow_of_is_mul f hx,
+  rw [mul_pow, pow_isMul_of_isMul f hx,
     mul_rpow (pow_nonneg (apply_nonneg f _) _) (apply_nonneg f _), ← rpow_natCast, ←
     rpow_mul (apply_nonneg f _), mul_one_div_cancel hn0, rpow_one]
 

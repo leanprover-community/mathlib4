@@ -590,6 +590,16 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
       exact (pow_le_pow_left zero_le_one (by simpa using ha'.le) b).trans' (by simp)
     · exact hb ha'
 
+/-- If `u v : ℕ → ℝ` are nonnegative and bounded above, then `u * v` is bounded above. -/
+theorem range_bddAbove_mul {u v : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
+    (hv : BddAbove (Set.range v)) (hv0 : 0 ≤ v) : BddAbove (Set.range (u * v)) := by
+  obtain ⟨bu, hbu⟩ := hu
+  obtain ⟨bv, hbv⟩ := hv
+  use bu * bv
+  simp only [mem_upperBounds, Set.mem_range, Pi.mul_apply, forall_exists_index,
+    forall_apply_eq_imp_iff] at hbu hbv ⊢
+  exact fun n ↦ mul_le_mul (hbu n) (hbv n) (hv0 n) (le_trans (hu0 n) (hbu n))
+
 end Real
 
 /-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
@@ -608,3 +618,23 @@ def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
 def RingHom.IsBoundedWrt {α : Type*} [Ring α] {β : Type*} [Ring β] (nα : α → ℝ) (nβ : β → ℝ)
     (f : α →+* β) : Prop :=
   ∃ C : ℝ, 0 < C ∧ ∀ x : α, nβ (f x) ≤ C * nα x
+
+/-- If `x` is multiplicative with respect to `f`, then so is any `x^n`. -/
+theorem pow_isMul_of_isMul {R : Type _} [CommRing R] (f : R → ℝ) {x : R}
+    (hx : ∀ y : R, f (x * y) = f x * f y) : ∀ (n : ℕ) (y : R), f (x ^ n * y) = f x ^ n * f y := by
+  intro n
+  induction n with
+  | zero => intro y; rw [pow_zero, pow_zero, one_mul, one_mul]
+  | succ n hn => intro y; rw [pow_succ', pow_succ', mul_assoc, mul_assoc, hx, hn]
+
+namespace Nat
+
+theorem one_div_cast_pos {n : ℕ} (hn : n ≠ 0) : 0 < 1 / (n : ℝ) :=
+  one_div_pos.mpr (cast_pos.mpr (Nat.pos_of_ne_zero hn))
+
+theorem one_div_cast_nonneg (n : ℕ) : 0 ≤ 1 / (n : ℝ) := one_div_nonneg.mpr (cast_nonneg' n)
+
+theorem one_div_cast_ne_zero {n : ℕ} (hn : n ≠ 0) : 1 / (n : ℝ) ≠ 0 :=
+  _root_.ne_of_gt (one_div_cast_pos hn)
+
+end Nat
