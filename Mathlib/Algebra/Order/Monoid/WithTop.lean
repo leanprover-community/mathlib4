@@ -34,6 +34,63 @@ instance [CanonicallyLinearOrderedAddCommMonoid α] :
     CanonicallyLinearOrderedAddCommMonoid (WithTop α) :=
   { WithTop.canonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
 
+instance linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
+    LinearOrderedAddCommMonoidWithTop (WithTop α) :=
+  { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid,
+    WithTop.isTopAbsorbing with }
+
+namespace LinearOrderedAddCommGroup
+
+variable [LinearOrderedAddCommGroup α]
+
+instance instNeg : Neg (WithTop α) where neg := Option.map fun a : α => -a
+
+/-- If `α` has subtraction, we can extend the subtraction to `WithTop α`, by
+setting `x - ⊤ = ⊤` and `⊤ - x = ⊤`. This definition is only registered as an instance on linearly
+ordered additive commutative groups, to avoid conflicting with the instance `WithTop.instSub` on
+types with a bottom element. -/
+protected def sub : ∀ _ _ : WithTop α, WithTop α
+  | _, ⊤ => ⊤
+  | ⊤, (x : α) => ⊤
+  | (x : α), (y : α) => (x - y : α)
+
+instance instSub : Sub (WithTop α) where sub := WithTop.LinearOrderedAddCommGroup.sub
+
+@[simp, norm_cast]
+theorem coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
+  rfl
+
+@[simp]
+theorem neg_top : -(⊤ : WithTop α) = ⊤ := rfl
+
+@[simp, norm_cast]
+theorem coe_sub {a b : α} : (↑(a - b) : WithTop α) = ↑a - ↑b := rfl
+
+@[simp]
+theorem top_sub {a : WithTop α} : (⊤ : WithTop α) - a = ⊤ := by
+  cases a <;> rfl
+
+@[simp]
+theorem sub_top {a : WithTop α} : a - ⊤ = ⊤ := by cases a <;> rfl
+
+@[simp]
+lemma sub_eq_top_iff {a b : WithTop α} : a - b = ⊤ ↔ (a = ⊤ ∨ b = ⊤) := by
+  cases a <;> cases b <;> simp [← coe_sub]
+
+instance : LinearOrderedAddCommGroupWithTop (WithTop α) where
+  __ := WithTop.linearOrderedAddCommMonoidWithTop
+  __ := WithTop.nontrivial
+  sub_eq_add_neg a b := by
+    cases a <;> cases b <;> simp [← coe_sub, ← coe_neg, sub_eq_add_neg]
+  neg_top := WithTop.map_top _
+  zsmul := zsmulRec
+  add_neg_cancel := by
+    rintro (a | a) ha
+    · exact (ha rfl).elim
+    · exact (WithTop.coe_add ..).symm.trans (WithTop.coe_eq_coe.2 (add_neg_cancel a))
+
+end LinearOrderedAddCommGroup
+
 end WithTop
 
 namespace WithBot

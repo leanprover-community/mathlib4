@@ -156,8 +156,8 @@ protected theorem casesOn {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → 
   exact PartENat.casesOn'
 
 instance : IsTopAbsorbing PartENat where
-  top_add _ := Part.ext' (false_and_iff _) fun h => h.left.elim
-  add_top _ := (add_comm _ _).trans <|Part.ext' (false_and_iff _) fun h => h.left.elim
+  top_add _ := Part.ext' (false_and _) fun h => h.left.elim
+  add_top _ := (add_comm _ _).trans <|Part.ext' (false_and _) fun h => h.left.elim
 
 @[simp]
 theorem natCast_get {x : PartENat} (h : x.Dom) : (x.get h : PartENat) = x := by

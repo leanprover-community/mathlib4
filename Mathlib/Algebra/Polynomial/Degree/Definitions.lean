@@ -1375,9 +1375,9 @@ variable [NoZeroDivisors R] {p q : R[X]}
 @[simp]
 lemma degree_mul : degree (p * q) = degree p + degree q :=
   letI := Classical.decEq R
-  if hp0 : p = 0 then by simp only [hp0, degree_zero, zero_mul, WithBot.bot_add]
+  if hp0 : p = 0 then by simp only [hp0, degree_zero, zero_mul, bot_add]
   else
-    if hq0 : q = 0 then by simp only [hq0, degree_zero, mul_zero, WithBot.add_bot]
+    if hq0 : q = 0 then by simp only [hq0, degree_zero, mul_zero, add_bot]
     else degree_mul' <| mul_ne_zero (mt leadingCoeff_eq_zero.1 hp0) (mt leadingCoeff_eq_zero.1 hq0)
 
 /-- `degree` as a monoid homomorphism between `R[X]` and `Multiplicative (WithBot ℕ)`.
@@ -1605,59 +1605,6 @@ variable [IsDomain R] {p q : R[X]}
 instance : IsDomain R[X] := NoZeroDivisors.to_isDomain _
 
 end Ring
-
-section NoZeroDivisors
-
-variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
-
-@[simp]
-theorem degree_mul : degree (p * q) = degree p + degree q :=
-  letI := Classical.decEq R
-  if hp0 : p = 0 then by simp only [hp0, degree_zero, zero_mul, bot_add]
-  else
-    if hq0 : q = 0 then by simp only [hq0, degree_zero, mul_zero, add_bot]
-    else degree_mul' <| mul_ne_zero (mt leadingCoeff_eq_zero.1 hp0) (mt leadingCoeff_eq_zero.1 hq0)
-
-/-- `degree` as a monoid homomorphism between `R[X]` and `Multiplicative (WithBot ℕ)`.
-  This is useful to prove results about multiplication and degree. -/
-def degreeMonoidHom [Nontrivial R] : R[X] →* Multiplicative (WithBot ℕ) where
-  toFun := degree
-  map_one' := degree_one
-  map_mul' _ _ := degree_mul
-
-@[simp]
-theorem degree_pow [Nontrivial R] (p : R[X]) (n : ℕ) : degree (p ^ n) = n • degree p :=
-  map_pow (@degreeMonoidHom R _ _ _) _ _
-
-@[simp]
-theorem leadingCoeff_mul (p q : R[X]) : leadingCoeff (p * q) = leadingCoeff p * leadingCoeff q := by
-  by_cases hp : p = 0
-  · simp only [hp, zero_mul, leadingCoeff_zero]
-  · by_cases hq : q = 0
-    · simp only [hq, mul_zero, leadingCoeff_zero]
-    · rw [leadingCoeff_mul']
-      exact mul_ne_zero (mt leadingCoeff_eq_zero.1 hp) (mt leadingCoeff_eq_zero.1 hq)
-
-/-- `Polynomial.leadingCoeff` bundled as a `MonoidHom` when `R` has `NoZeroDivisors`, and thus
-  `leadingCoeff` is multiplicative -/
-def leadingCoeffHom : R[X] →* R where
-  toFun := leadingCoeff
-  map_one' := by simp
-  map_mul' := leadingCoeff_mul
-
-@[simp]
-theorem leadingCoeffHom_apply (p : R[X]) : leadingCoeffHom p = leadingCoeff p :=
-  rfl
-
-@[simp]
-theorem leadingCoeff_pow (p : R[X]) (n : ℕ) : leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
-  (leadingCoeffHom : R[X] →* R).map_pow p n
-
-theorem leadingCoeff_dvd_leadingCoeff {a p : R[X]} (hap : a ∣ p) :
-    a.leadingCoeff ∣ p.leadingCoeff :=
-  map_dvd leadingCoeffHom hap
-
-end NoZeroDivisors
 
 end Polynomial
 

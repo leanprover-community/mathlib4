@@ -709,10 +709,10 @@ def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
 
 instance : IsBotAbsorbing EReal := WithBot.isBotAbsorbing
 
-instance : NoTopAddends EReal where
+instance : NoTopSum EReal where
   eq_top_or_eq_top_of_add_eq_top {a b h} := by cases a <;> cases b <;> simp_all [← coe_add]
 
-instance : NoBotAddends EReal := WithBot.noBotAddends
+instance : NoBotSum EReal := WithBot.noBotSum
 
 
 @[simp]

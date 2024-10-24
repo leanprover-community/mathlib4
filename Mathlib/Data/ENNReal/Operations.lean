@@ -155,7 +155,7 @@ section OperationsAndInfty
 
 variable {α : Type*}
 
-instance : NoTopAddends ℝ≥0∞ := inferInstanceAs <| NoTopAddends (WithTop ℝ≥0)
+instance : NoTopSum ℝ≥0∞ := inferInstanceAs <| NoTopSum (WithTop ℝ≥0)
 
 theorem toNNReal_add {r₁ r₂ : ℝ≥0∞} (h₁ : r₁ ≠ ∞) (h₂ : r₂ ≠ ∞) :
     (r₁ + r₂).toNNReal = r₁.toNNReal + r₂.toNNReal := by
