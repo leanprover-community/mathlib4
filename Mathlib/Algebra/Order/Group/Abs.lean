@@ -60,7 +60,7 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] {a b c d : α}
+variable [LinearOrderedAddCommGroup α] {a b c : α}
 
 -- Porting note:
 -- Lean can perfectly well find this instance,

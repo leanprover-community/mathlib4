@@ -101,7 +101,7 @@ theorem induction_on_irreducible {P : α → Prop} (a : α) (h0 : P 0) (hu : ∀
 theorem exists_factors (a : α) :
     a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ Associated f.prod a :=
   induction_on_irreducible a (fun h => (h rfl).elim)
-    (fun u hu _ => ⟨0, fun _ h => False.elim (Multiset.not_mem_zero _ h), hu.unit, one_mul _⟩)
+    (fun _ hu _ => ⟨0, fun _ h => False.elim (Multiset.not_mem_zero _ h), hu.unit, one_mul _⟩)
     fun a i ha0 hi ih _ =>
     let ⟨s, hs⟩ := ih ha0
     ⟨i ::ₘ s, fun b H => (Multiset.mem_cons.1 H).elim (fun h => h.symm ▸ hi) (hs.1 b), by
@@ -118,7 +118,7 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
       · obtain rfl | ha := Multiset.mem_cons.1 ha
         exacts [Associated.irreducible ⟨u, rfl⟩ (hi b h), hi a (Multiset.mem_of_mem_erase ha)]
       · rw [Multiset.prod_cons, mul_comm b, mul_assoc, Multiset.prod_erase h, mul_comm],
-    fun ⟨f, hi, he, hne⟩ =>
+    fun ⟨_, hi, he, hne⟩ =>
     let ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
     not_isUnit_of_not_isUnit_dvd (hi b h).not_unit <| he ▸ Multiset.dvd_prod h⟩
 
@@ -494,7 +494,7 @@ theorem exists_mem_factors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p
   have hb0 : b ≠ 0 := fun hb0 => by simp_all
   have : Multiset.Rel Associated (p ::ₘ factors b) (factors a) :=
     factors_unique
-      (fun x hx => (Multiset.mem_cons.1 hx).elim (fun h => h.symm ▸ hp) (irreducible_of_factor _))
+      (fun _ hx => (Multiset.mem_cons.1 hx).elim (fun h => h.symm ▸ hp) (irreducible_of_factor _))
       irreducible_of_factor
       (Associated.symm <|
         calc
@@ -553,6 +553,13 @@ theorem factors_pow_count_prod [DecidableEq α] {x : α} (hx : x ≠ 0) :
     simp only [prod_sum, prod_nsmul, prod_singleton]
   _ = prod (factors x) := by rw [toFinset_sum_count_nsmul_eq (factors x)]
   _ ~ᵤ x := factors_prod hx
+
+theorem factors_rel_of_associated {a b : α} (h : Associated a b) :
+    Multiset.Rel Associated (factors a) (factors b) := by
+  rcases iff_iff_and_or_not_and_not.mp h.eq_zero_iff with (⟨rfl, rfl⟩ | ⟨ha, hb⟩)
+  · simp
+  · refine factors_unique irreducible_of_factor irreducible_of_factor ?_
+    exact ((factors_prod ha).trans h).trans (factors_prod hb).symm
 
 end UniqueFactorizationMonoid
 
@@ -627,7 +634,7 @@ theorem exists_mem_normalizedFactors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irr
   have hb0 : b ≠ 0 := fun hb0 => by simp_all
   have : Multiset.Rel Associated (p ::ₘ normalizedFactors b) (normalizedFactors a) :=
     factors_unique
-      (fun x hx =>
+      (fun _ hx =>
         (Multiset.mem_cons.1 hx).elim (fun h => h.symm ▸ hp) (irreducible_of_normalized_factor _))
       irreducible_of_normalized_factor
       (Associated.symm <|
@@ -721,13 +728,17 @@ theorem dvd_iff_normalizedFactors_le_normalizedFactors {x y : α} (hx : x ≠ 0)
       (normalizedFactors_prod hy).dvd_iff_dvd_right]
     apply Multiset.prod_dvd_prod_of_le
 
+theorem _root_.Associated.normalizedFactors_eq {a b : α} (h : Associated a b) :
+    normalizedFactors a = normalizedFactors b := by
+  unfold normalizedFactors
+  have h' : ⇑(normalize (α := α)) = Associates.out ∘ Associates.mk := funext Associates.out_mk
+  rw [h', ← Multiset.map_map, ← Multiset.map_map,
+    Associates.rel_associated_iff_map_eq_map.mp (factors_rel_of_associated h)]
+
 theorem associated_iff_normalizedFactors_eq_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
-    x ~ᵤ y ↔ normalizedFactors x = normalizedFactors y := by
-  refine
-    ⟨fun h => ?_, fun h =>
-      (normalizedFactors_prod hx).symm.trans (_root_.trans (by rw [h]) (normalizedFactors_prod hy))⟩
-  apply le_antisymm <;> rw [← dvd_iff_normalizedFactors_le_normalizedFactors]
-  all_goals simp [*, h.dvd, h.symm.dvd]
+    x ~ᵤ y ↔ normalizedFactors x = normalizedFactors y :=
+  ⟨Associated.normalizedFactors_eq, fun h =>
+    (normalizedFactors_prod hx).symm.trans (_root_.trans (by rw [h]) (normalizedFactors_prod hy))⟩
 
 theorem normalizedFactors_of_irreducible_pow {p : α} (hp : Irreducible p) (k : ℕ) :
     normalizedFactors (p ^ k) = Multiset.replicate k (normalize p) := by
@@ -923,15 +934,14 @@ section multiplicity
 
 variable [NormalizationMonoid R]
 
-open multiplicity Multiset
+open Multiset
 
 section
-variable [DecidableRel (Dvd.dvd : R → R → Prop)]
 
-theorem le_multiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} (ha : Irreducible a)
+theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} (ha : Irreducible a)
     (hb : b ≠ 0) :
-    ↑n ≤ multiplicity a b ↔ replicate n (normalize a) ≤ normalizedFactors b := by
-  rw [← pow_dvd_iff_le_multiplicity]
+    ↑n ≤ emultiplicity a b ↔ replicate n (normalize a) ≤ normalizedFactors b := by
+  rw [← pow_dvd_iff_le_emultiplicity]
   revert b
   induction' n with n ih; · simp
   intro b hb
@@ -952,14 +962,14 @@ the normalized factor occurs in the `normalizedFactors`.
 See also `count_normalizedFactors_eq` which expands the definition of `multiplicity`
 to produce a specification for `count (normalizedFactors _) _`..
 -/
-theorem multiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : Irreducible a)
-    (hb : b ≠ 0) : multiplicity a b = (normalizedFactors b).count (normalize a) := by
+theorem emultiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : Irreducible a)
+    (hb : b ≠ 0) : emultiplicity a b = (normalizedFactors b).count (normalize a) := by
   apply le_antisymm
-  · apply PartENat.le_of_lt_add_one
+  · apply Order.le_of_lt_add_one
     rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge, ge_iff_le,
-      le_multiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
+      le_emultiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
     simp
-  rw [le_multiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
+  rw [le_emultiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
 
 end
 
@@ -970,14 +980,13 @@ See also `multiplicity_eq_count_normalizedFactors` if `n` is given by `multiplic
 -/
 theorem count_normalizedFactors_eq [DecidableEq R] {p x : R} (hp : Irreducible p)
     (hnorm : normalize p = p) {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
-    (normalizedFactors x).count p = n := by
-  letI : DecidableRel ((· ∣ ·) : R → R → Prop) := fun _ _ => Classical.propDecidable _
+    (normalizedFactors x).count p = n := by classical
   by_cases hx0 : x = 0
   · simp [hx0] at hlt
-  rw [← PartENat.natCast_inj]
-  convert (multiplicity_eq_count_normalizedFactors hp hx0).symm
+  apply Nat.cast_injective (R := ℕ∞)
+  convert (emultiplicity_eq_count_normalizedFactors hp hx0).symm
   · exact hnorm.symm
-  exact (multiplicity.eq_coe_iff.mpr ⟨hle, hlt⟩).symm
+  exact (emultiplicity_eq_coe.mpr ⟨hle, hlt⟩).symm
 
 /-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
 the number of times it divides `x`. This is a slightly more general version of
@@ -1027,7 +1036,7 @@ theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α
 /-- If `P` holds for units and powers of primes,
 and `P x ∧ P y` for coprime `x, y` implies `P (x * y)`,
 then `P` holds on a product of powers of distinct primes. -/
--- @[elab_as_elim] Porting note: commented out
+@[elab_as_elim]
 theorem induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → ℕ)
     (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q)
     (h1 : ∀ {x}, IsUnit x → P x) (hpr : ∀ {p} (i : ℕ), Prime p → P (p ^ i))
@@ -1066,7 +1075,6 @@ theorem induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}
 
 /-- If `f` maps `p ^ i` to `(f p) ^ i` for primes `p`, and `f`
 is multiplicative on coprime elements, then `f` is multiplicative on all products of primes. -/
--- @[elab_as_elim] Porting note: commented out
 theorem multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α → ℕ)
     (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q)
     (h1 : ∀ {x y}, IsUnit y → f (x * y) = f x * f y)
@@ -1202,7 +1210,7 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
     have : b = ⊤ := top_unique h
     rw [this, prod_top]
   | a, ⊤, _ => show a.prod ≤ (⊤ : FactorSet α).prod by simp
-  | WithTop.some a, WithTop.some b, h =>
+  | WithTop.some _, WithTop.some _, h =>
     prod_le_prod <| Multiset.map_le_map <| WithTop.coe_le_coe.1 <| h
 
 theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by

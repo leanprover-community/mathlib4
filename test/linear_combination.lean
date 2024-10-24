@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith
 
@@ -228,6 +229,15 @@ example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y = -2 * y + 1 :
   linear_combination h1 - 2 * h2
 
 /-! ### Cases that should fail -/
+
+/--
+error: ring failed, ring expressions not equal
+a : ℤ
+ha : a = 1
+⊢ -1 = 0
+-/
+#guard_msgs in
+example (a : ℤ) (ha : a = 1) : a = 2 := by linear_combination ha
 
 /--
 error: ring failed, ring expressions not equal
