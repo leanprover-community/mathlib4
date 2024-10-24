@@ -660,16 +660,26 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
       exact not_succ_isLimit _ l
 
 @[simp]
-theorem preAleph_cof {o : Ordinal} (ho : o.IsLimit) : (preAleph o).ord.cof = o.cof :=
-  preAleph_isNormal.cof_eq ho
+theorem cof_preOmega {o : Ordinal} (ho : o.IsLimit) : (preOmega o).cof = o.cof :=
+  isNormal_preOmega.cof_eq ho
+
+@[simp]
+theorem cof_omega {o : Ordinal} (ho : o.IsLimit) : (ω_ o).cof = o.cof :=
+  isNormal_omega.cof_eq ho
 
 set_option linter.deprecated false in
-@[deprecated preAleph_cof (since := "2024-10-22")]
+@[deprecated cof_preOmega (since := "2024-10-22")]
+theorem preAleph_cof {o : Ordinal} (ho : o.IsLimit) : (preAleph o).ord.cof = o.cof :=
+  aleph'_isNormal.cof_eq ho
+
+set_option linter.deprecated false in
+@[deprecated cof_preOmega (since := "2024-10-22")]
 theorem aleph'_cof {o : Ordinal} (ho : o.IsLimit) : (aleph' o).ord.cof = o.cof :=
   aleph'_isNormal.cof_eq ho
 
-@[simp]
-theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (ℵ_ o).ord.cof = o.cof :=
+set_option linter.deprecated false in
+@[deprecated cof_omega (since := "2024-10-22")]
+theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (ℵ_  o).ord.cof = o.cof :=
   aleph_isNormal.cof_eq ho
 
 @[simp]
@@ -677,9 +687,6 @@ theorem cof_omega0 : cof ω = ℵ₀ :=
   (aleph0_le_cof.2 isLimit_omega0).antisymm' <| by
     rw [← card_omega0]
     apply cof_le_card
-
-@[deprecated (since := "2024-09-30")]
-alias cof_omega := cof_omega0
 
 theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r)) :
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) :=
@@ -887,6 +894,9 @@ theorem IsRegular.aleph0_le {c : Cardinal} (H : c.IsRegular) : ℵ₀ ≤ c :=
 
 theorem IsRegular.cof_eq {c : Cardinal} (H : c.IsRegular) : c.ord.cof = c :=
   (cof_ord_le c).antisymm H.2
+
+theorem IsRegular.cof_omega_eq {o : Ordinal} (H : (ℵ_ o).IsRegular) : (ω_ o).cof = ℵ_ o := by
+  rw [← ord_aleph, H.cof_eq]
 
 theorem IsRegular.pos {c : Cardinal} (H : c.IsRegular) : 0 < c :=
   aleph0_pos.trans_le H.1
