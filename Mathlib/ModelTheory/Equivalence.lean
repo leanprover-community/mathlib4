@@ -205,7 +205,7 @@ end Theory
 
 namespace BoundedFormula
 
-variable (φ ψ : L.BoundedFormula α n)
+variable (φ ψ χ : L.BoundedFormula α n)
 
 theorem iff_not_not : φ ⇔[T] φ.not.not := fun M v xs => by
   simp
@@ -216,14 +216,38 @@ theorem imp_iff_not_sup : (φ.imp ψ) ⇔[T] (φ.not ⊔ ψ) :=
 theorem sup_iff_not_inf_not : (φ ⊔ ψ) ⇔[T] (φ.not ⊓ ψ.not).not :=
   fun M v xs => by simp [imp_iff_not_or]
 
+theorem not_sup_iff_inf_not : (φ ⊔ ψ).not ⇔[T] φ.not ⊓ ψ.not :=
+  fun M v xs => by simp [imp_iff_not_or]
+
 theorem inf_iff_not_sup_not : (φ ⊓ ψ) ⇔[T] (φ.not ⊔ ψ.not).not :=
   fun M v xs => by simp
+
+theorem not_inf_iff_sup_not : (φ ⊓ ψ).not ⇔[T] (φ.not ⊔ ψ.not) :=
+  fun M v xs => by simp [imp_iff_not_or]
+
+theorem inf_sup_left_iff : χ ⊓ (φ ⊔ ψ) ⇔[T] (χ ⊓ φ) ⊔ (χ ⊓ ψ) :=
+  fun M v xs => by simp [and_or_left]
+
+theorem sup_inf_right_iff : (φ ⊔ ψ) ⊓ χ ⇔[T] (φ ⊓ χ) ⊔ (ψ ⊓ χ) :=
+  fun M v xs => by simp [or_and_right]
+
+theorem inf_sup_right_iff : (φ ⊓ ψ) ⊔ χ ⇔[T] (φ ⊔ χ) ⊓ (ψ ⊔ χ) :=
+  fun M v xs => by simp [and_or_right]
+
+theorem sup_inf_left_iff : χ ⊔ (φ ⊓ ψ) ⇔[T] (χ ⊔ φ) ⊓ (χ ⊔ ψ) :=
+  fun M v xs => by simp [or_and_left]
 
 theorem all_iff_not_ex_not (φ : L.BoundedFormula α (n + 1)) :
     φ.all ⇔[T] φ.not.ex.not := fun M v xs => by simp
 
+theorem not_all_iff_ex_not (φ : L.BoundedFormula α (n + 1)) :
+    φ.all.not ⇔[T] φ.not.ex := fun M v xs => by simp
+
 theorem ex_iff_not_all_not (φ : L.BoundedFormula α (n + 1)) :
     φ.ex ⇔[T] φ.not.all.not := fun M v xs => by simp
+
+theorem not_ex_iff_all_not (φ : L.BoundedFormula α (n + 1)) :
+    φ.ex.not ⇔[T] φ.not.all := fun M v xs => by simp
 
 theorem iff_all_liftAt : φ ⇔[T] (φ.liftAt 1 n).all :=
   fun M v xs => by
