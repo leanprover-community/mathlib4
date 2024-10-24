@@ -1288,12 +1288,6 @@ theorem liminf_le_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter 
     (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
     liminf u f ≤ x ↔ ∀ y > x, ∃ᶠ a in f, u a < y := le_limsup_iff (β := βᵒᵈ) h₁ h₂
 
-/-- If `u : β → α` is nonnegative and `isBoundedUnder has_le.le f u`, then `0 ≤ limsup u f`. -/
-theorem limsup_nonneg_of_nonneg {α β} [Zero α] [ConditionallyCompleteLinearOrder α]
-    {f : Filter β} [f.NeBot] {u : β → α} (hfu : IsBoundedUnder LE.le f u) (h : 0 ≤ u) :
-    0 ≤ limsup u f :=
-  le_limsup_of_frequently_le (Frequently.of_forall h) hfu
-
 variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
 
 -- The linter erroneously claims that I'm not referring to `c`

@@ -591,7 +591,7 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
     · exact hb ha'
 
 /-- If `u v : ℕ → ℝ` are nonnegative and bounded above, then `u * v` is bounded above. -/
-theorem range_bddAbove_mul {u v : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
+theorem bddAbove_range_mul {u v : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
     (hv : BddAbove (Set.range v)) (hv0 : 0 ≤ v) : BddAbove (Set.range (u * v)) := by
   obtain ⟨bu, hbu⟩ := hu
   obtain ⟨bv, hbv⟩ := hv
@@ -626,15 +626,3 @@ theorem pow_isMul_of_isMul {R : Type _} [CommRing R] (f : R → ℝ) {x : R}
   induction n with
   | zero => intro y; rw [pow_zero, pow_zero, one_mul, one_mul]
   | succ n hn => intro y; rw [pow_succ', pow_succ', mul_assoc, mul_assoc, hx, hn]
-
-namespace Nat
-
-theorem one_div_cast_pos {n : ℕ} (hn : n ≠ 0) : 0 < 1 / (n : ℝ) :=
-  one_div_pos.mpr (cast_pos.mpr (Nat.pos_of_ne_zero hn))
-
-theorem one_div_cast_nonneg (n : ℕ) : 0 ≤ 1 / (n : ℝ) := one_div_nonneg.mpr (cast_nonneg' n)
-
-theorem one_div_cast_ne_zero {n : ℕ} (hn : n ≠ 0) : 1 / (n : ℝ) ≠ 0 :=
-  _root_.ne_of_gt (one_div_cast_pos hn)
-
-end Nat

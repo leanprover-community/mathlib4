@@ -96,12 +96,11 @@ open ENNReal NNReal
 theorem limsup_mul_le {u v : ℕ → ℝ} (hu_bdd : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
     (hv_bdd : BddAbove (Set.range v)) (hv0 : 0 ≤ v) :
     Filter.limsup (u * v) atTop ≤ Filter.limsup u atTop * Filter.limsup v atTop := by
-  have h_bdd : BddAbove (Set.range (u * v)) := range_bddAbove_mul hu_bdd hu0 hv_bdd hv0
-  rw [NNReal.coe_limsup (mul_nonneg hu0 hv0), NNReal.coe_limsup hu0, NNReal.coe_limsup hv0, ←
-    NNReal.coe_mul, NNReal.coe_le_coe, ← ENNReal.coe_le_coe, ENNReal.coe_mul,
-    ENNReal.coe_limsup (NNReal.bddAbove' _ h_bdd),
-    ENNReal.coe_limsup (NNReal.bddAbove' hu0 hu_bdd),
-    ENNReal.coe_limsup (NNReal.bddAbove' hv0 hv_bdd)]
+  have h_bdd : BddAbove (Set.range (u * v)) := bddAbove_range_mul hu_bdd hu0 hv_bdd hv0
+  rw [NNReal.coe_limsup (mul_nonneg hu0 hv0), NNReal.coe_limsup hu0, NNReal.coe_limsup hv0,
+    ← NNReal.coe_mul, NNReal.coe_le_coe, ← ENNReal.coe_le_coe, ENNReal.coe_mul,
+    ENNReal.coe_limsup (bddAbove' _ h_bdd), ENNReal.coe_limsup (bddAbove' hu0 hu_bdd),
+    ENNReal.coe_limsup (bddAbove' hv0 hv_bdd)]
   obtain ⟨Bu, hBu⟩ := hu_bdd
   obtain ⟨Bv, hBv⟩ := hv_bdd
   simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
@@ -114,7 +113,7 @@ theorem limsup_mul_le {u v : ℕ → ℝ} (hu_bdd : BddAbove (Set.range u)) (hu0
     exact Or.inl (hBv n)
   simp_rw [← ENNReal.coe_le_coe] at hBu' hBv'
   apply ENNReal.limsup_mul_le' (Or.inr (ne_top_of_le_ne_top coe_ne_top
-      (le_trans Filter.limsup_le_iSup (iSup_le hBv')))) (Or.inl (ne_top_of_le_ne_top coe_ne_top
-      (le_trans Filter.limsup_le_iSup (iSup_le hBu'))))
+      (le_trans limsup_le_iSup (iSup_le hBv')))) (Or.inl (ne_top_of_le_ne_top coe_ne_top
+      (le_trans limsup_le_iSup (iSup_le hBu'))))
 
 end Real

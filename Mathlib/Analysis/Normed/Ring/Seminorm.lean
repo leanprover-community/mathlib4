@@ -134,7 +134,7 @@ section CommRing
 
 variable [CommRing R] (p : RingSeminorm R)
 
-theorem exists_index_le (hna : IsNonarchimedean p) (x y : R) (n : ℕ) :
+theorem exists_index_pow_le (hna : IsNonarchimedean p) (x y : R) (n : ℕ) :
     ∃ (m : ℕ) (_ : m ∈ Finset.range (n + 1)), p ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
       (p (x ^ m) * p (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) := by
   obtain ⟨m, hm_lt, hm⟩ := IsNonarchimedean.add_pow_le hna n x y
@@ -175,14 +175,8 @@ namespace RingSeminorm
 
 variable [Ring R] (p : RingSeminorm R)
 
-theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
-  refine
-    ⟨fun h =>
-      ne_zero_iff.mpr
-        ⟨1, by
-          rw [h]
-          exact one_ne_zero⟩,
-      fun h => ?_⟩
+theorem map_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
+  refine ⟨fun h => ne_zero_iff.mpr ⟨1, by rw [h]; exact one_ne_zero⟩, fun h => ?_⟩
   obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_gt
   · exfalso
     refine h (ext fun x => (apply_nonneg _ _).antisymm' ?_)
@@ -191,6 +185,7 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
 
 open Filter Nat Real
+
 /-- If `f` is a ring seminorm on `R` with `f 1 ≤ 1` and `s : ℕ → ℕ` is bounded by `n`, then
   `f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))` is eventually bounded. -/
 theorem isBoundedUnder (hp : p 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x : R} (ψ : ℕ → ℕ) :

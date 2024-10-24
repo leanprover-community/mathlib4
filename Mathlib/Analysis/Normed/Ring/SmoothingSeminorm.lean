@@ -421,7 +421,7 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
   intro x y
   have hn : ∀ n : ℕ, ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
         f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) :=
-    fun n => RingSeminorm.exists_index_le f hna x y n
+    fun n => RingSeminorm.exists_index_pow_le f hna x y n
   set mu : ℕ → ℕ := fun n => mu f hn n
   set nu : ℕ → ℕ := fun n => n - mu n with hnu
   have hmu_le : ∀ n : ℕ, mu n ≤ n := fun n => mu_le f hn n
@@ -444,7 +444,7 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
       smoothingSeminorm' f x ^ a := limsup_mu_le f hf1 hmu_le hn a_in hψ_mono hψ_lim
   have hy : limsup (fun n : ℕ => f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
       smoothingSeminorm' f y ^ b :=
-    limsup_mu_le f hf1 hnu_le (RingSeminorm.exists_index_le f hna y x) b_in hψ_mono hb_lim
+    limsup_mu_le f hf1 hnu_le (RingSeminorm.exists_index_pow_le f hna y x) b_in hψ_mono hb_lim
   have hxy : limsup
       (fun n : ℕ => f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
       smoothingSeminorm' f x ^ a * smoothingSeminorm' f y ^ b := by
@@ -456,8 +456,9 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
         (f_bddAbove f hf1 hnu_le y ψ) fun n => rpow_nonneg (apply_nonneg _ _) _
     have h_bdd : IsBoundedUnder LE.le atTop fun n : ℕ => f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ)) :=
       RingSeminorm.isBoundedUnder f hf1 hnu_le ψ
-    exact le_trans hxy' (mul_le_mul hx hy (limsup_nonneg_of_nonneg h_bdd fun m =>
-      rpow_nonneg (apply_nonneg _ _) _) (rpow_nonneg (smoothingSeminorm_nonneg f hf1 x) _))
+    apply le_trans hxy' (mul_le_mul hx hy (le_limsup_of_frequently_le (Frequently.of_forall
+      (fun n ↦ rpow_nonneg (apply_nonneg f _) _)) h_bdd)
+        (rpow_nonneg (smoothingSeminorm_nonneg f hf1 x) _))
   conv_lhs => simp only [smoothingSeminorm']
   apply le_of_forall_sub_le
   intro ε hε
@@ -481,7 +482,7 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
   apply le_trans _ h_mul
   have hex : ∃ n : PNat, f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ)) <
       smoothingSeminorm' f x ^ a * smoothingSeminorm' f y ^ b + ε :=
-    ENNReal.exists_lt_of_limsup_le (range_bddAbove_mul (f_bddAbove f hf1 hmu_le _ _)
+    ENNReal.exists_lt_of_limsup_le (bddAbove_range_mul (f_bddAbove f hf1 hmu_le _ _)
         (fun n => rpow_nonneg (apply_nonneg _ _) _) (f_bddAbove f hf1 hnu_le _ _)
         fun n => rpow_nonneg (apply_nonneg _ _) _).isBoundedUnder_of_range hxy hε
   obtain ⟨N, hN⟩ := hex
