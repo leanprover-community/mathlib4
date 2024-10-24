@@ -495,7 +495,7 @@ theorem orbitRel.Quotient.orbit_mk (a : α) :
 @[to_additive]
 theorem orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
     a ∈ x.orbit ↔ Quotient.mk'' a = x := by
-  induction x using Quotient.inductionOn'
+  induction x using Quotient.inductionOn
   rw [Quotient.eq'']
   rfl
 
@@ -557,7 +557,7 @@ lemma orbitRel.Quotient.orbit.coe_smul {g : G} {x : orbitRel.Quotient G α} {a :
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
   exists_smul_eq := by
-    induction x using Quotient.inductionOn'
+    induction x using Quotient.inductionOn
     rintro ⟨y, yh⟩ ⟨z, zh⟩
     rw [orbitRel.Quotient.mem_orbit, Quotient.eq''] at yh zh
     rcases yh with ⟨g, rfl⟩
@@ -645,7 +645,7 @@ lemma _root_.Finite.of_finite_mulAction_orbitRel_quotient [Finite G] [Finite Ω]
   rw [(selfEquivSigmaOrbits' G _).finite_iff]
   have : ∀ g : Ω, Finite g.orbit := by
     intro g
-    induction g using Quotient.inductionOn'
+    induction g using Quotient.inductionOn
     simpa [Set.finite_coe_iff] using Finite.finite_mulAction_orbit _
   exact Finite.instSigma
 

@@ -202,7 +202,7 @@ theorem mem_leftTransversals_iff_existsUnique_quotient_mk''_eq :
       ∀ q : Quotient (QuotientGroup.leftRel H), ∃! s : S, Quotient.mk'' s.1 = q := by
   simp_rw [mem_leftTransversals_iff_existsUnique_inv_mul_mem, SetLike.mem_coe, ←
     QuotientGroup.eq]
-  exact ⟨fun h q => Quotient.inductionOn' q h, fun h g => h (Quotient.mk'' g)⟩
+  exact ⟨fun h q => Quotient.inductionOn q h, fun h g => h (Quotient.mk'' g)⟩
 
 @[to_additive]
 theorem mem_rightTransversals_iff_existsUnique_quotient_mk''_eq :
@@ -210,7 +210,7 @@ theorem mem_rightTransversals_iff_existsUnique_quotient_mk''_eq :
       ∀ q : Quotient (QuotientGroup.rightRel H), ∃! s : S, Quotient.mk'' s.1 = q := by
   simp_rw [mem_rightTransversals_iff_existsUnique_mul_inv_mem, SetLike.mem_coe, ←
     QuotientGroup.rightRel_apply, ← Quotient.eq'']
-  exact ⟨fun h q => Quotient.inductionOn' q h, fun h g => h (Quotient.mk'' g)⟩
+  exact ⟨fun h q => Quotient.inductionOn q h, fun h g => h (Quotient.mk'' g)⟩
 
 @[to_additive]
 theorem mem_leftTransversals_iff_bijective :
@@ -576,7 +576,7 @@ theorem smul_toFun (f : F) (T : leftTransversals (H : Set G)) (g : G) :
 @[to_additive]
 theorem smul_toEquiv (f : F) (T : leftTransversals (H : Set G)) (q : G ⧸ H) :
     f • (toEquiv T.2 q : G) = toEquiv (f • T).2 (f • q) :=
-  Quotient.inductionOn' q fun g => smul_toFun f T g
+  Quotient.inductionOn q fun g => smul_toFun f T g
 
 @[to_additive]
 theorem smul_apply_eq_smul_apply_inv_smul (f : F) (T : leftTransversals (H : Set G)) (q : G ⧸ H) :
