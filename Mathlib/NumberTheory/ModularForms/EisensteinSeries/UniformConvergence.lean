@@ -78,7 +78,7 @@ lemma r_lower_bound_on_verticalStrip {A B : ℝ} (h : 0 < B) (hz : z ∈ vertica
   apply min_le_min hz.2
   rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
   simp only [r1_eq, div_pow, one_div]
-  rw [inv_le_inv (by positivity) (by positivity), add_le_add_iff_right]
+  rw [inv_le_inv₀ (by positivity) (by positivity), add_le_add_iff_right]
   apply div_le_div (sq_nonneg _) _ (by positivity) (pow_le_pow_left h.le hz.2 2)
   simpa only [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
 
@@ -190,7 +190,7 @@ lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤
   apply TendstoLocallyUniformlyOn.comp (s := ⊤) _ _ _ (PartialHomeomorph.continuousOn_symm _)
   · simp only [SlashInvariantForm.toFun_eq_coe, Set.top_eq_univ, tendstoLocallyUniformlyOn_univ]
     apply eisensteinSeries_tendstoLocallyUniformly hk
-  · simp only [OpenEmbedding.toPartialHomeomorph_target, Set.top_eq_univ, mapsTo_range_iff,
+  · simp only [IsOpenEmbedding.toPartialHomeomorph_target, Set.top_eq_univ, mapsTo_range_iff,
     Set.mem_univ, forall_const]
 
 end summability

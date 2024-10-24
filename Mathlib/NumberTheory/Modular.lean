@@ -113,7 +113,7 @@ attribute [local simp] ContinuousLinearMap.coe_smul
 theorem tendsto_normSq_coprime_pair :
     Filter.Tendsto (fun p : Fin 2 → ℤ => normSq ((p 0 : ℂ) * z + p 1)) cofinite atTop := by
   -- using this instance rather than the automatic `Function.module` makes unification issues in
-  -- `LinearEquiv.closedEmbedding_of_injective` less bad later in the proof.
+  -- `LinearEquiv.isClosedEmbedding_of_injective` less bad later in the proof.
   letI : Module ℝ (Fin 2 → ℝ) := NormedSpace.toModule
   let π₀ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 0
   let π₁ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 1
@@ -149,7 +149,7 @@ theorem tendsto_normSq_coprime_pair :
       rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
         conj_ofReal, ← ofReal_mul, add_im, ofReal_im, zero_add, inv_mul_eq_iff_eq_mul₀ hz]
       simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
-  have hf' : ClosedEmbedding f := f.closedEmbedding_of_injective hf
+  have hf' : IsClosedEmbedding f := f.isClosedEmbedding_of_injective hf
   have h₂ : Tendsto (fun p : Fin 2 → ℤ => ((↑) : ℤ → ℝ) ∘ p) cofinite (cocompact _) := by
     convert Tendsto.pi_map_coprodᵢ fun _ => Int.tendsto_coe_cofinite
     · rw [coprodᵢ_cofinite]
@@ -207,8 +207,8 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
         Tendsto.pi_map_coprodᵢ fun _ : Fin 2 => Int.tendsto_coe_cofinite
   have hf₁ : Tendsto f₁ cofinite (cocompact _) :=
     cocompact_ℝ_to_cofinite_ℤ_matrix.comp Subtype.coe_injective.tendsto_cofinite
-  have hf₂ : ClosedEmbedding (lcRow0Extend hcd) :=
-    (lcRow0Extend hcd).toContinuousLinearEquiv.toHomeomorph.closedEmbedding
+  have hf₂ : IsClosedEmbedding (lcRow0Extend hcd) :=
+    (lcRow0Extend hcd).toContinuousLinearEquiv.toHomeomorph.isClosedEmbedding
   convert hf₂.tendsto_cocompact.comp (hf₁.comp Subtype.coe_injective.tendsto_cofinite) using 1
   ext ⟨g, rfl⟩ i j : 3
   fin_cases i <;> [fin_cases j; skip]
@@ -258,7 +258,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
   let f := Homeomorph.mulRight₀ _ this
   let ff := Homeomorph.addRight
     (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1))).re
-  convert (f.trans ff).closedEmbedding.tendsto_cocompact.comp (tendsto_lcRow0 hp) with _ _ g
+  convert (f.trans ff).isClosedEmbedding.tendsto_cocompact.comp (tendsto_lcRow0 hp) with _ _ g
   change
     ((g : SL(2, ℤ)) • z).re =
       lcRow0 p ↑(↑g : SL(2, ℝ)) / ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2) +
@@ -351,7 +351,7 @@ theorem g_eq_of_c_eq_one (hc : (↑ₘg) 1 0 = 1) : g = T ^ (↑ₘg) 0 0 * S * 
 
 /-- If `1 < |z|`, then `|S • z| < 1`. -/
 theorem normSq_S_smul_lt_one (h : 1 < normSq z) : normSq ↑(S • z) < 1 := by
-  simpa [coe_S, num, denom] using (inv_lt_inv z.normSq_pos zero_lt_one).mpr h
+  simpa [coe_S, num, denom] using (inv_lt_inv₀ z.normSq_pos zero_lt_one).mpr h
 
 /-- If `|z| < 1`, then applying `S` strictly decreases `im`. -/
 theorem im_lt_im_S_smul (h : normSq z < 1) : z.im < (S • z).im := by

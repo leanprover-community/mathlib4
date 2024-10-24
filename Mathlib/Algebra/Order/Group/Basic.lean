@@ -15,7 +15,7 @@ assert_not_exists Set.Subsingleton
 
 open Function Int
 
-variable {α M R : Type*}
+variable {α : Type*}
 
 section OrderedCommGroup
 variable [OrderedCommGroup α] {m n : ℤ} {a b : α}

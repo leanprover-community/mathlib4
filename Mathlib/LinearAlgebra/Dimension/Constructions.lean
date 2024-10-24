@@ -203,7 +203,6 @@ theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
 
 /-- If `m` and `n` are `Fintype` that lie in the same universe as `R`, the rank of `m × n` matrices
   is `# m * # n`. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = #m * #n := by simp
 
@@ -298,7 +297,6 @@ theorem Module.finrank_fintype_fun_eq_card : finrank R (η → R) = Fintype.card
   finrank_eq_of_rank_eq rank_fun'
 
 /-- The vector space of functions on `Fin n` has finrank equal to `n`. -/
--- @[simp] -- Porting note (#10618): simp already proves this
 theorem Module.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
 
 variable {R}
@@ -468,6 +466,12 @@ theorem span_lt_of_subset_of_card_lt_finrank {s : Set M} [Fintype s] {t : Submod
 theorem span_lt_top_of_card_lt_finrank {s : Set M} [Fintype s]
     (card_lt : s.toFinset.card < finrank R M) : span R s < ⊤ :=
   lt_top_of_finrank_lt_finrank (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
+
+lemma finrank_le_of_span_eq_top {ι : Type*} [Fintype ι] {v : ι → M}
+    (hv : Submodule.span R (Set.range v) = ⊤) : finrank R M ≤ Fintype.card ι := by
+  classical
+  rw [← finrank_top, ← hv]
+  exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
 
 end Span
 
