@@ -506,7 +506,7 @@ theorem exists_pow_le_of_le_radical_of_radical_fg {R : Type*} [CommSemiring R] {
 alias exists_pow_le_of_le_radical_of_fG := exists_pow_le_of_le_radical_of_radical_fg
 
 lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Ideal R}
-    (h : I.FG) (h' : I ≤ J.radical) :
+    (h' : I ≤ J.radical) (h : I.FG) :
     ∃ n : ℕ, I ^ n ≤ J := by
   revert h'
   apply Submodule.fg_induction _ _ _ _ _ I h
