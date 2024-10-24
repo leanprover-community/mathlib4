@@ -45,7 +45,11 @@ mkDeclAndDepr () {
   git diff --unified=0 "${commit}" "${1}" |
     awk -v regex="${begs}" -v date="$(date +%Y-%m-%d)" '
     function depr(ol,ne) {
-      line=sprintf("@[deprecated (since := \"%s\")]||||alias %s := %s", date, ol, ne)
+      aliasLine=sprintf("alias %s :=||||  %s", ol, ne)
+      # if the `alias` line contains less than 100 characters long, we leave it on a single line
+      if(length(aliasLine) <= 105) { sub(/\|\|\|\| /, "", aliasLine) }
+      line=sprintf("@[deprecated (since := \"%s\")]||||%s", date, aliasLine)
+      # if the `deprecated` and `alias` lines together contain less than 100 characters, we leave them on a single line
       if(length(line) <= 103) { sub(/\|\|\|\|/, " ", line) }
       return line
     }
