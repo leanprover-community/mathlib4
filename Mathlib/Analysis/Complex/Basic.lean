@@ -455,7 +455,8 @@ theorem isometry_intCast : Isometry ((↑) : ℤ → ℂ) :=
   Isometry.of_dist_eq <| by simp_rw [← Complex.ofReal_intCast,
     Complex.isometry_ofReal.dist_eq, Int.dist_cast_real, implies_true]
 
-theorem closedEmbedding_intCast : ClosedEmbedding ((↑) : ℤ → ℂ) := isometry_intCast.closedEmbedding
+theorem closedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
+  isometry_intCast.isClosedEmbedding
 
 lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℂ)) :=
   Complex.closedEmbedding_intCast.isClosed_range
