@@ -40,7 +40,7 @@ open scoped NumberField
 
 noncomputable section
 
-open NumberField NumberField.InfinitePlace NumberField.Units BigOperators
+open NumberField NumberField.InfinitePlace NumberField.Units
 
 variable (K : Type*) [Field K]
 
@@ -248,10 +248,6 @@ def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
 /-- The terms of the sequence are nonzero. -/
 theorem seq_ne_zero (n : ℕ) : algebraMap (𝓞 K) K (seq K w₁ hB n) ≠ 0 :=
   RingOfIntegers.coe_ne_zero_iff.mpr (seq K w₁ hB n).prop
-
--- /-- The terms of the sequence have nonzero norm. -/
--- theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K) ≠ 0 :=
---  Algebra.norm_ne_zero_iff.mpr (Subtype.coe_ne_coe.1 (seq_ne_zero K w₁ hB n))
 
 /-- The sequence is strictly decreasing at infinite places distinct from `w₁`. -/
 theorem seq_decreasing {n m : ℕ} (h : n < m) (w : InfinitePlace K) (hw : w ≠ w₁) :

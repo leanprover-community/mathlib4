@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 -/
+import Mathlib.GroupTheory.QuotientGroup.Finite
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.RingTheory.Ideal.Basic
@@ -347,5 +348,15 @@ theorem map_pi {ι : Type*} [Finite ι] {ι' : Type w} (x : ι → R) (hi : ∀ 
     exact I.sum_mem fun j _ => I.mul_mem_right _ (hi j)
 
 end Pi
+
+open scoped Pointwise in
+/-- A ring is made up of a disjoint union of cosets of an ideal. -/
+lemma univ_eq_iUnion_image_add {R : Type*} [Ring R] (I : Ideal R) :
+    (Set.univ (α := R)) = ⋃ x : R ⧸ I, x.out' +ᵥ (I : Set R) :=
+  QuotientAddGroup.univ_eq_iUnion_vadd I.toAddSubgroup
+
+lemma _root_.Finite.of_finite_quot_finite_ideal {R : Type*} [Ring R] {I : Ideal R}
+    [hI : Finite I] [h : Finite (R ⧸ I)] : Finite R :=
+  @Finite.of_finite_quot_finite_addSubgroup _ _ _ hI h
 
 end Ideal

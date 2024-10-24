@@ -33,7 +33,7 @@ assert_not_exists MonoidWithZero
 
 open Function
 
-variable {α β ι M N : Type*}
+variable {α β M N : Type*}
 
 namespace Set
 
@@ -267,7 +267,7 @@ end One
 
 section Monoid
 
-variable [MulOneClass M] {s t : Set α} {f g : α → M} {a : α}
+variable [MulOneClass M] {s t : Set α} {a : α}
 
 @[to_additive]
 theorem mulIndicator_union_mul_inter_apply (f : α → M) (s t : Set α) (a : α) :
@@ -365,7 +365,7 @@ end Monoid
 
 section Group
 
-variable {G : Type*} [Group G] {s t : Set α} {f g : α → G} {a : α}
+variable {G : Type*} [Group G] {s t : Set α}
 
 @[to_additive]
 theorem mulIndicator_inv' (s : Set α) (f : α → G) : mulIndicator s f⁻¹ = (mulIndicator s f)⁻¹ :=

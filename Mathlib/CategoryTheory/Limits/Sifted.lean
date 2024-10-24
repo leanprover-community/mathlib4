@@ -17,7 +17,7 @@ preserves finite products.
 
 ## References
 - [nLab, *Sifted category*](https://ncatlab.org/nlab/show/sifted+category)
-- [*Algebraic Theories*, Chapter 2.][Adámek_Rosický_Vitale_2010]
+- [*Algebraic Theories*, Chapter 2.][Adamek_Rosicky_Vitale_2010]
 -/
 
 universe w v v₁ u u₁

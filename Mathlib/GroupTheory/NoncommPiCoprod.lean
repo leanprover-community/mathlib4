@@ -90,9 +90,6 @@ variable (ϕ : ∀ i : ι, N i →* M)
 -- We assume that the elements of different morphism commute
 variable (hcomm : Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y))
 
--- We use `f` and `g` to denote elements of `Π (i : ι), N i`
-variable (f g : ∀ i : ι, N i)
-
 namespace MonoidHom
 
 /-- The canonical homomorphism from a family of monoids. -/
@@ -167,9 +164,6 @@ variable {G : Type*} [Group G]
 variable {ι : Type*}
 variable {H : ι → Type*} [∀ i, Group (H i)]
 variable (ϕ : ∀ i : ι, H i →* G)
-
--- We use `f` and `g` to denote elements of `Π (i : ι), H i`
-variable (f g : ∀ i : ι, H i)
 
 namespace MonoidHom
 -- The subgroup version of `MonoidHom.noncommPiCoprod_mrange`
@@ -250,9 +244,6 @@ namespace Subgroup
 -- We have a family of subgroups
 variable {G : Type*} [Group G]
 variable {ι : Type*} {H : ι → Subgroup G}
-
--- Elements of `Π (i : ι), H i` are called `f` and `g` here
-variable (f g : ∀ i : ι, H i)
 
 section CommutingSubgroups
 
