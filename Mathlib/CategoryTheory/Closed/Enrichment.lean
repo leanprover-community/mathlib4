@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 /-!
 # A closed monoidal category is enriched in itself
 
-From the data of a closed monoidal category C, we define a C-category structure for C
+From the data of a closed monoidal category `C`, we define a `C`-category structure for `C`.
 where the hom-object is given by the internal hom (coming from the closed structure).
 
 The instance is given at the end of the file.
