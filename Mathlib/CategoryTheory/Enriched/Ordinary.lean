@@ -93,8 +93,8 @@ lemma eHomWhiskerLeft_id (X Y : C) : eHomWhiskerLeft V X (𝟙 Y) = 𝟙 _ := by
 @[simp, reassoc]
 lemma eHomWhiskerLeft_comp (X : C) {Y Y' Y'' : C} (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
     eHomWhiskerLeft V X (g ≫ g') = eHomWhiskerLeft V X g ≫ eHomWhiskerLeft V X g' := by
-  simp [eHomWhiskerLeft]
-  rw [eHomEquiv_comp, MonoidalCategory.whiskerLeft_comp_assoc,
+  dsimp [eHomWhiskerLeft]
+  rw [assoc, assoc, eHomEquiv_comp, MonoidalCategory.whiskerLeft_comp_assoc,
     MonoidalCategory.whiskerLeft_comp_assoc, ← e_assoc, tensorHom_def,
     MonoidalCategory.whiskerRight_id_assoc, MonoidalCategory.whiskerLeft_comp_assoc,
     MonoidalCategory.whiskerLeft_comp_assoc, MonoidalCategory.whiskerLeft_comp_assoc,
