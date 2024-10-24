@@ -151,7 +151,7 @@ structure MulticospanIndex (C : Type u) [Category.{v} C] where
   snd : ∀ b, left (sndTo b) ⟶ right b
 
 /-- This is a structure encapsulating the data necessary to define a `Multispan`. -/
--- Porting note(#5171): linter not ported yet
+-- Porting note(#5171): has_nonempty_instance linter not ported yet
 @[nolint checkUnivs]
 structure MultispanIndex (C : Type u) [Category.{v} C] where
   (L : Type w)
