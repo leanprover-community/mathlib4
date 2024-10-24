@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Nat.Set
+import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
@@ -45,7 +46,7 @@ In lemma names,
 
 open Function OrderDual Set
 
-variable {α β β₂ γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
+variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
 @[simp] lemma iSup_ulift {ι : Type*} [SupSet α] (f : ULift ι → α) :
     ⨆ i : ULift ι, f i = ⨆ i, f (.up i) := by simp [iSup]; congr with x; simp
@@ -362,7 +363,7 @@ theorem ofDual_iInf [SupSet α] (f : ι → αᵒᵈ) : ofDual (⨅ i, f i) = �
 
 end OrderDual
 
-variable [CompleteLattice α] {s t : Set α} {a b : α}
+variable [CompleteLattice α] {s t : Set α} {b : α}
 
 theorem sInf_le_sSup (hs : s.Nonempty) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_sInf s) (isLUB_sSup s) hs
@@ -468,7 +469,7 @@ end
 
 section CompleteLinearOrder
 
-variable [CompleteLinearOrder α] {s t : Set α} {a b : α}
+variable [CompleteLinearOrder α] {s : Set α} {a b : α}
 
 theorem lt_sSup_iff : b < sSup s ↔ ∃ a ∈ s, b < a :=
   lt_isLUB_iff <| isLUB_sSup s
@@ -616,7 +617,7 @@ end InfSet
 
 section
 
-variable [CompleteLattice α] {f g s t : ι → α} {a b : α}
+variable [CompleteLattice α] {f g s : ι → α} {a b : α}
 
 theorem le_iSup (f : ι → α) (i : ι) : f i ≤ iSup f :=
   le_sSup ⟨i, rfl⟩
@@ -1071,6 +1072,41 @@ theorem biInf_inf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i,
 theorem inf_biInf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (a ⊓ ⨅ (i) (h : p i), f i h) = ⨅ (i) (h : p i), a ⊓ f i h :=
   @sup_biSup αᵒᵈ ι _ p f _ h
+
+lemma biSup_lt_eq_iSup {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
+    ⨆ (i) (j < i), f j = ⨆ i, f i := by
+  apply le_antisymm
+  · exact iSup_le fun _ ↦ iSup₂_le fun _ _ ↦ le_iSup _ _
+  · refine iSup_le fun j ↦ ?_
+    obtain ⟨i, jlt⟩ := exists_gt j
+    exact le_iSup_of_le i (le_iSup₂_of_le j jlt le_rfl)
+
+lemma biSup_le_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} :
+    ⨆ (i) (j ≤ i), f j = ⨆ i, f i := by
+  apply le_antisymm
+  · exact iSup_le fun _ ↦ iSup₂_le fun _ _ ↦ le_iSup _ _
+  · exact iSup_le fun j ↦ le_iSup_of_le j (le_iSup₂_of_le j le_rfl le_rfl)
+
+lemma biInf_lt_eq_iInf {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
+    ⨅ (i) (j < i), f j = ⨅ i, f i :=
+  biSup_lt_eq_iSup (α := αᵒᵈ)
+
+lemma biInf_le_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≤ i), f j = ⨅ i, f i :=
+  biSup_le_eq_iSup (α := αᵒᵈ)
+
+lemma biSup_gt_eq_iSup {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
+    ⨆ (i) (j > i), f j = ⨆ i, f i :=
+  biSup_lt_eq_iSup (ι := ιᵒᵈ)
+
+lemma biSup_ge_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} : ⨆ (i) (j ≥ i), f j = ⨆ i, f i :=
+  biSup_le_eq_iSup (ι := ιᵒᵈ)
+
+lemma biInf_gt_eq_iInf {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
+    ⨅ (i) (j > i), f j = ⨅ i, f i :=
+  biInf_lt_eq_iInf (ι := ιᵒᵈ)
+
+lemma biInf_ge_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≥ i), f j = ⨅ i, f i :=
+  biInf_le_eq_iInf (ι := ιᵒᵈ)
 
 /-! ### `iSup` and `iInf` under `Prop` -/
 
@@ -1548,7 +1584,7 @@ theorem binary_relation_sInf_iff {α β : Type*} (s : Set (α → β → Prop)) 
 
 section CompleteLattice
 
-variable {ι : Sort*} [Preorder α] [CompleteLattice β] {s : Set (α → β)} {f : ι → α → β}
+variable [Preorder α] [CompleteLattice β] {s : Set (α → β)} {f : ι → α → β}
 
 protected lemma Monotone.sSup (hs : ∀ f ∈ s, Monotone f) : Monotone (sSup s) :=
   fun _ _ h ↦ iSup_mono fun f ↦ hs f f.2 h

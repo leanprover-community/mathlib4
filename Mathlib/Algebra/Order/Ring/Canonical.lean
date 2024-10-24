@@ -27,7 +27,7 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type*}
+variable {α : Type u}
 
 /-- A canonically ordered commutative semiring is an ordered, commutative semiring in which `a ≤ b`
 iff there exists `c` with `b = a + c`. This is satisfied by the natural numbers, for example, but

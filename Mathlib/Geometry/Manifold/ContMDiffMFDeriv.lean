@@ -45,13 +45,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F' : Type*}
   [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  -- declare some additional normed spaces, used for fibers of vector bundles
-  {F₁ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂]
   -- declare functions, sets, points and smoothness indices
-  {f f₁ : M → M'}
-  {s s₁ t : Set M} {x : M} {m n : ℕ∞}
+  {f : M → M'}
+  {s : Set M} {m n : ℕ∞}
 
 -- Porting note: section about deducing differentiability from smoothness moved to
 -- `Geometry.Manifold.MFDeriv.Basic`

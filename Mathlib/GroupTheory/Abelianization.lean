@@ -6,6 +6,7 @@ Authors: Kenny Lau, Michael Howes
 import Mathlib.Data.Finite.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.Data.Finite.Basic
 
 /-!
 # The abelianization of a group
