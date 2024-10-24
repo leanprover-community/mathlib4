@@ -34,11 +34,6 @@ interacting with the arithmetic in any nice way.
 To reduce API duplication, we opt not to implement operations on `Nimber` on `Ordinal`. The order
 isomorphisms `Ordinal.toNimber` and `Nimber.toOrdinal` allow us to cast between them whenever
 needed.
-
-## Todo
-
-- Define nim division and prove nimbers are a field.
-- Show the nimbers are algebraically closed.
 -/
 
 universe u v
