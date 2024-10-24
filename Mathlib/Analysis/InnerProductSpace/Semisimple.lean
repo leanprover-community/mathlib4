@@ -34,7 +34,7 @@ theorem isFinitelySemisimple :
     ⟨qᗮ ⊓ p, inf_le_right, Module.End.invtSubmodule.inf_mem ?_ hp₁, ?_, ?_⟩
   · exact orthogonalComplement_mem_invtSubmodule hT hq₁
   · simp [disjoint_iff, ← inf_assoc, Submodule.inf_orthogonal_eq_bot q]
-  · suffices q ⊔ qᗮ = ⊤ by  rw [← sup_inf_assoc_of_le _ hq₂, this, top_inf_eq p]
+  · suffices q ⊔ qᗮ = ⊤ by rw [← sup_inf_assoc_of_le _ hq₂, this, top_inf_eq p]
     replace hp₂ : Module.Finite 𝕜 q := Submodule.finiteDimensional_of_le hq₂
     exact Submodule.sup_orthogonal_of_completeSpace
 
