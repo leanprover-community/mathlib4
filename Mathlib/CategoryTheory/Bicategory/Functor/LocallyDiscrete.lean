@@ -73,8 +73,8 @@ def mkPseudofunctor {B₀ C : Type*} [Category B₀] [Bicategory C]
       (mapComp (𝟙 b₀) f).hom ≫ (mapId b₀).hom ▷ map f ≫ (λ_ (map f)).hom = eqToHom (by simp) := by
         aesop_cat)
     (map₂_right_unitor : ∀ {b₀ b₁ : B₀} (f : b₀ ⟶ b₁),
-      (mapComp f (𝟙 b₁)).hom ≫ map f ◁ (mapId b₁).hom ≫ (ρ_ (map f)).hom = eqToHom (by simp) :=
-        by aesop_cat) :
+      (mapComp f (𝟙 b₁)).hom ≫ map f ◁ (mapId b₁).hom ≫ (ρ_ (map f)).hom = eqToHom (by simp) := by
+        aesop_cat) :
     Pseudofunctor (LocallyDiscrete B₀) C :=
   pseudofunctorOfIsLocallyDiscrete (fun b ↦ obj b.as) (fun f ↦ map f.as)
     (fun _ ↦ mapId _) (fun _ _ ↦ mapComp _ _) (fun _ _ _ ↦ map₂_associator _ _ _)
