@@ -33,21 +33,19 @@ theorem isIndependentSet_iff_isClique_of_complement : G.IsIndependentSet s ↔ G
   rw [isIndependentSet_iff, isClique_iff]; repeat rw [Set.Pairwise]
   simp_all only [compl_adj, ne_eq, not_false_eq_true, true_and]
 
+-- TODO this should live in Maps.lean probably
 lemma induce_compl_eq_compl_induce : induce s Gᶜ = (induce s G)ᶜ := by
   ext u v
   simp only [comap_adj, Embedding.coe_subtype, compl_adj, ne_eq, and_congr_left_iff]
   intro a
   obtain ⟨valu, _⟩ := u
   obtain ⟨valv, _⟩ := v
-  simp only [Subtype.mk.injEq]
+  rw [Subtype.mk.injEq]
 
 /-- An independent set is a set of vertices whose induced graph is empty. -/
 theorem isIndependentSet_iff_induce_eq : G.IsIndependentSet s ↔ G.induce s = ⊥ := by
   rw [isIndependentSet_iff_isClique_of_complement, isClique_iff_induce_eq, ←compl_eq_top,
   induce_compl_eq_compl_induce]
-
-instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsClique s) :=
-  decidable_of_iff' _ G.isClique_iff
 
 instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsIndependentSet s) :=
   decidable_of_iff' _ G.isIndependentSet_iff
@@ -63,26 +61,18 @@ theorem IsIndependentSet.of_subsingleton {G : SimpleGraph α} (hs : s.Subsinglet
   hs.pairwise (fun v w => ¬ G.Adj v w)
 
 lemma isIndependentSet_pair : G.IsIndependentSet {a, b} ↔ ¬ G.Adj a b := by
-  rw [isIndependentSet_iff_isClique_of_complement, isClique_iff]
-
-  have cp : Gᶜ.IsClique {a, b} ↔ a ≠ b → Gᶜ.Adj a b := isClique_pair
-  have neq_ad_iff_nadj : (a ≠ b → Gᶜ.Adj a b) ↔ ¬ G.Adj a b := by
-    simp_all only [ne_eq, compl_adj, not_false_eq_true, true_and, Classical.imp_iff_right_iff]
-    rw [←not_and_or];
-    aesop;
-  rw [neq_ad_iff_nadj] at cp
-  exact cp
+  by_cases h : a = b
+  · subst h; simp
+  · rw [isIndependentSet_iff_isClique_of_complement, isClique_pair, compl_adj, ne_eq]
+    simp only [h]
+    rw [not_false_eq_true, true_and, true_implies]
 
 @[simp]
 lemma isIndependentSet_insert :
     G.IsIndependentSet (insert a s) ↔ G.IsIndependentSet s ∧ ∀ b ∈ s, ¬ G.Adj a b := by
   repeat rw [isIndependentSet_iff_isClique_of_complement]
-  have cin : Gᶜ.IsClique (insert a s) ↔ Gᶜ.IsClique s ∧ ∀ b ∈ s, a ≠ b → Gᶜ.Adj a b
-    := isClique_insert
-  -- TODO this is almost neq_ad_iff_nadj from the lemma above. make it a lemma if you can manage?!
   have hu : (∀ b ∈ s, (a ≠ b → Gᶜ.Adj a b)) ↔ ∀ b ∈ s, ¬ G.Adj a b := by aesop
-  rw [hu] at cin
-  exact cin
+  rw [isClique_insert, hu]
 
 -- TODO this is implied in the normal insert one
 --lemma isIndependentSet_insert_of_not_mem (ha : a ∉ s) :
@@ -157,8 +147,6 @@ lemma map_compl_le_compl_map {f : α ↪ β} : (SimpleGraph.map f Gᶜ) ≤ (Sim
 
 
 
--- TODO some more tricky map stuff here
-
 end IndependentSet
 
 -- TODO this is mostly just copy paste. ok?
@@ -177,7 +165,7 @@ theorem isNIndependentSet_iff : G.IsNIndependentSet n s ↔ G.IsIndependentSet s
 /-- An independent n-set is an n-clique in the complement graph and vice versa. -/
 theorem isNIndependentSet_iff_isNClique_of_complement :
     G.IsNIndependentSet n s ↔ Gᶜ.IsNClique n s := by
-  rw [isNIndependentSet_iff]; rw [isIndependentSet_iff_isClique_of_complement]
+  rw [isNIndependentSet_iff, isIndependentSet_iff_isClique_of_complement]
   simp [isNClique_iff]
 
 instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
@@ -197,6 +185,9 @@ theorem IsNIndependentSet.anti (h : G ≤ H) : H.IsNIndependentSet n s → G.IsN
   simp_rw [isNIndependentSet_iff]
   exact And.imp_left (IsIndependentSet.anti h)
 
+protected theorem IsNIndependentSet.map (h : G.IsNIndependentSet n s) {f : α ↪ β} :
+    (G.map f).IsNIndependentSet n (s.map f) :=
+  ⟨by rw [coe_map]; exact h.1.map, (card_map _).trans h.2⟩
 
 @[simp]
 theorem isNIndependentSet_top_iff :
@@ -264,6 +255,10 @@ variable {m n : ℕ}
 def IndependentSetFree (n : ℕ) : Prop :=
   ∀ t, ¬G.IsNIndependentSet n t
 
+/-- An graph is 'n'-independent set free iff its complement is n-clique free. -/
+theorem isIndependentSetFree_iff_isCliqueFree_of_complement :
+    G.IndependentSetFree n ↔ Gᶜ.CliqueFree n := by
+  simp [IndependentSetFree, isNIndependentSet_iff_isNClique_of_complement, CliqueFree]
 
 variable {G H} {s : Finset α}
 
@@ -271,14 +266,95 @@ theorem IsNIndependentSet.not_independentSetFree (hG : G.IsNIndependentSet n s) 
     ¬G.IndependentSetFree n :=
   fun h ↦ h _ hG
 
--- TODO is this even an interesting concept? IndependentSetFree stuff goes here...
+theorem not_independentSetFree_of_bot_embedding {n : ℕ} (f : (⊥ : SimpleGraph (Fin n)) ↪g G) :
+    ¬G.IndependentSetFree n := by
+  simp [isIndependentSetFree_iff_isCliqueFree_of_complement]
+  exact not_cliqueFree_of_top_embedding ⟨ f.toEmbedding , by simp? ⟩
 
+/-- An embedding of an empty graph that witnesses the fact that the graph is not independent set
+free. -/
+noncomputable def botEmbeddingOfNotIndependentSetFree {n : ℕ} (h : ¬G.IndependentSetFree n) :
+    (⊥ : SimpleGraph (Fin n)) ↪g G := by
+  simp [isIndependentSetFree_iff_isCliqueFree_of_complement] at h
+  refine ⟨ (topEmbeddingOfNotCliqueFree h).toEmbedding, ?_⟩
+  intro a b
+  by_cases h : a = b
+  · subst h; simp
+  · simp; exact And.right ((compl_adj _ _ _).mp (by simp [←compl_adj]; exact h))
+
+theorem not_independentSetFree_iff (n : ℕ) :
+    ¬G.IndependentSetFree n ↔ Nonempty ((⊥ : SimpleGraph (Fin n)) ↪g G) :=
+  ⟨fun h ↦ ⟨botEmbeddingOfNotIndependentSetFree h⟩,
+   fun ⟨f⟩ ↦ not_independentSetFree_of_bot_embedding f⟩
+
+theorem independentSetFree_iff {n : ℕ} :
+    G.IndependentSetFree n ↔ IsEmpty ((⊥ : SimpleGraph (Fin n)) ↪g G) := by
+  rw [← not_iff_not, not_independentSetFree_iff, not_isEmpty_iff]
+
+theorem not_independentSetFree_card_of_bot_embedding [Fintype α] (f : (⊥ : SimpleGraph α) ↪g G) :
+    ¬G.IndependentSetFree (card α) := by
+  rw [isIndependentSetFree_iff_isCliqueFree_of_complement]
+  exact (not_cliqueFree_card_of_top_embedding ⟨f.toEmbedding , by simp⟩)
 
 @[simp]
 theorem independentSetFree_top (h : 2 ≤ n) : (⊤ : SimpleGraph α).IndependentSetFree n := by
   intro t ht
   have := le_trans h (isNIndependentSet_top_iff.1 ht).1
   contradiction
+
+theorem IndependentSetFree.mono (h : m ≤ n) : G.IndependentSetFree m → G.IndependentSetFree n := by
+  repeat rw [isIndependentSetFree_iff_isCliqueFree_of_complement]
+  apply CliqueFree.mono
+  exact h
+
+-- TODO naming
+theorem IndependentSetFree.mono' (h : G ≤ H) : G.IndependentSetFree n → H.IndependentSetFree n :=
+  forall_imp fun _ ↦ mt <| IsNIndependentSet.anti h
+
+/-- If a graph is independent set free, any graph that embeds into it is also independent set
+free. -/
+theorem IndependentSetFree.comap {H : SimpleGraph β} (f : H ↪g G) :
+    G.IndependentSetFree n → H.IndependentSetFree n := by
+  intro h; contrapose h
+  exact not_independentSetFree_of_bot_embedding <| f.comp (botEmbeddingOfNotIndependentSetFree h)
+
+@[simp] theorem independentSetFree_map_if {f : α ↪ β} [Nonempty α] :
+    (G.map f).IndependentSetFree n → G.IndependentSetFree n := by
+  sorry
+
+/-- See `SimpleGraph.independentSetFree_of_chromaticNumber_lt` for a tighter bound. -/
+theorem independentSetFree_of_card_lt [Fintype α] (hc : card α < n) : G.IndependentSetFree n := by
+  by_contra h
+  refine Nat.lt_le_asymm hc ?_
+  rw [independentSetFree_iff, not_isEmpty_iff] at h
+  simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding h.some.toEmbedding
+
+-- TODO is there an interesting dual?
+--theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*)
+--    (hc : card ι < n) : (completeMultipartiteGraph V).CliqueFree n := by
+
+
+-- TODO
+-- protected theorem IndependentSetFree.replaceVertex [DecidableEq α]
+--    (h : G.IndependentSetFree n) (s t : α) :
+--    (G.replaceVertex s t).IndependentSetFree n := by
+
+
+@[simp]
+theorem independentSetFree_two : G.IndependentSetFree 2 ↔ G = ⊤ := by
+  rw [isIndependentSetFree_iff_isCliqueFree_of_complement, Iff.symm compl_eq_bot, cliqueFree_two]
+
+/-- Removing an edge increases the coclique number by at most one. -/
+protected theorem IndependentSetFree.sup_edge (h : G.IndependentSetFree n) (v w : α) :
+    (G ⊓ edge v w).IndependentSetFree (n + 1) := by
+  rw [isIndependentSetFree_iff_isCliqueFree_of_complement] at *
+  have : (G ⊓ edge v w)ᶜ = (Gᶜ ⊔ edge v w) := by ext a b
+                                                 rw [compl_adj]
+                                                 sorry
+  rw [this]
+  exact (CliqueFree.sup_edge h v w)
+
+
 
 end IndependentSetFree
 
