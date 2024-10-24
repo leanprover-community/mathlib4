@@ -108,6 +108,11 @@ def ker : TwoSidedIdeal R :=
 lemma mem_ker {x : R} : x ∈ ker f ↔ f x = 0 := by
   delta ker; rw [mem_mk']; rfl
 
+lemma ker_eq_bot : ker f = ⊥ ↔ Function.Injective f :=
+  ⟨fun h _ _ _ =>
+      sub_eq_zero.1 <| mem_bot _ |>.1 <| h.symm ▸ mem_ker _ |>.2 <| by simpa [sub_eq_zero],
+    fun h => eq_bot_iff.2 fun x hx => mem_bot _ |>.2 <| h <| by simpa [mem_ker] using hx⟩
+
 end NonUnitalNonAssocRing
 
 section NonUnitalRing
