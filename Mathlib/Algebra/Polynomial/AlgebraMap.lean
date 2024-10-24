@@ -303,9 +303,9 @@ def algEquivAevalXAddC {R} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
 /-- The involutive automorphism of the polynomial algebra given by `p(X) ↦ p(-X)`. -/
 @[simps!]
 def algEquivAevalNegX {R} [CommRing R] : R[X] ≃ₐ[R] R[X] :=
-  algEquivOfCompEqX (- X) (- X) (by simp) (by simp)
+  algEquivOfCompEqX (-X) (-X) (by simp) (by simp)
 
-theorem comp_neg_X_comp_neg_X {R} [CommRing R] (p : R[X]) : (p.comp (- X)).comp (-X) = p := by
+theorem comp_neg_X_comp_neg_X {R} [CommRing R] (p : R[X]) : (p.comp (-X)).comp (-X) = p := by
   rw [comp_assoc]
   simp only [neg_comp, X_comp, neg_neg, comp_X]
 
