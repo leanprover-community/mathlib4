@@ -10,7 +10,6 @@ import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Finset.Sym
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Triangles in graphs
