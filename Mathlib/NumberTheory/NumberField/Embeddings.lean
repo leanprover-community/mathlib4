@@ -551,22 +551,26 @@ section NumberField
 variable [NumberField K]
 
 /-- The number of infinite real places of the number field `K`. -/
-noncomputable abbrev NrRealPlaces := card { w : InfinitePlace K // IsReal w }
+noncomputable abbrev nrRealPlaces := card { w : InfinitePlace K // IsReal w }
+
+@[deprecated (since := "2024-10-24")] alias NrRealPlaces := nrRealPlaces
 
 /-- The number of infinite complex places of the number field `K`. -/
-noncomputable abbrev NrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
+noncomputable abbrev nrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
+
+@[deprecated (since := "2024-10-24")] alias NrComplexPlaces := nrComplexPlaces
 
 theorem card_real_embeddings :
-    card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } = NrRealPlaces K := Fintype.card_congr mkReal
+    card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } = nrRealPlaces K := Fintype.card_congr mkReal
 
 theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
-    Fintype.card (InfinitePlace K) = NrRealPlaces K + NrComplexPlaces K := by
+    Fintype.card (InfinitePlace K) = nrRealPlaces K + nrComplexPlaces K := by
   convert Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
     (disjoint_isReal_isComplex K) using 1
   exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
 theorem card_complex_embeddings :
-    card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * NrComplexPlaces K := by
+    card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * nrComplexPlaces K := by
   suffices ∀ w : { w : InfinitePlace K // IsComplex w },
      #{φ : {φ //¬ ComplexEmbedding.IsReal φ} | mkComplex φ = w} = 2 by
     rw [Fintype.card, Finset.card_eq_sum_ones, ← Finset.sum_fiberwise _ (fun φ => mkComplex φ)]
@@ -583,7 +587,7 @@ theorem card_complex_embeddings :
   · simp_rw [mult, not_isReal_iff_isComplex.mpr hw, ite_false]
 
 theorem card_add_two_mul_card_eq_rank :
-    NrRealPlaces K + 2 * NrComplexPlaces K = finrank ℚ K := by
+    nrRealPlaces K + 2 * nrComplexPlaces K = finrank ℚ K := by
   rw [← card_real_embeddings, ← card_complex_embeddings, Fintype.card_subtype_compl,
     ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _
@@ -591,10 +595,10 @@ theorem card_add_two_mul_card_eq_rank :
 variable {K}
 
 theorem nrComplexPlaces_eq_zero_of_finrank_eq_one (h : finrank ℚ K = 1) :
-    NrComplexPlaces K = 0 := by linarith [card_add_two_mul_card_eq_rank K]
+    nrComplexPlaces K = 0 := by linarith [card_add_two_mul_card_eq_rank K]
 
 theorem nrRealPlaces_eq_one_of_finrank_eq_one (h : finrank ℚ K = 1) :
-    NrRealPlaces K = 1 := by
+    nrRealPlaces K = 1 := by
   have := card_add_two_mul_card_eq_rank K
   rwa [nrComplexPlaces_eq_zero_of_finrank_eq_one h, h, mul_zero, add_zero] at this
 
@@ -1042,7 +1046,7 @@ namespace IsPrimitiveRoot
 variable {K : Type*} [Field K] [NumberField K] {ζ : K} {k : ℕ}
 
 theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k) :
-    NumberField.InfinitePlace.NrRealPlaces K = 0 := by
+    NumberField.InfinitePlace.nrRealPlaces K = 0 := by
   refine (@Fintype.card_eq_zero_iff _ (_)).2 ⟨fun ⟨w, hwreal⟩ ↦ ?_⟩
   rw [NumberField.InfinitePlace.isReal_iff] at hwreal
   let f := w.embedding
