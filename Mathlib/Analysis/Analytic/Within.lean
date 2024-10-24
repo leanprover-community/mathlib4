@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Properties of analyticity restricted to a set
@@ -41,8 +42,8 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
     AnalyticWithinAt 𝕜 f s x := by
   rcases mem_nhdsWithin.mp h with ⟨t, ot, xt, st⟩
   rcases Metric.mem_nhds_iff.mp (ot.mem_nhds xt) with ⟨r, r0, rt⟩
-  exact ⟨constFormalMultilinearSeries 𝕜 E (f x), .ofReal r, {
-    r_le := by simp only [FormalMultilinearSeries.constFormalMultilinearSeries_radius, le_top]
+  exact ⟨constFormalMultilinearSeries 𝕜 E (f x), .ofReal r,
+  { r_le := by simp only [FormalMultilinearSeries.constFormalMultilinearSeries_radius, le_top]
     r_pos := by positivity
     hasSum := by
       intro y ys yr
@@ -64,10 +65,10 @@ lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}
   rcases h x m with ⟨u, ou, xu, fu⟩
   rcases Metric.mem_nhds_iff.mp (ou.mem_nhds xu) with ⟨r, r0, ru⟩
   rcases fu x ⟨m, xu⟩ with ⟨p, t, fp⟩
-  exact ⟨p, min (.ofReal r) t, {
-    r_pos := lt_min (by positivity) fp.r_pos
-    r_le := min_le_of_right_le fp.r_le
-    hasSum := by
+  exact ⟨p, min (.ofReal r) t,
+    { r_pos := lt_min (by positivity) fp.r_pos
+      r_le := min_le_of_right_le fp.r_le
+      hasSum := by
         intro y ys yr
         simp only [EMetric.mem_ball, lt_min_iff, edist_lt_ofReal, dist_zero_right] at yr
         apply fp.hasSum
@@ -89,8 +90,8 @@ lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen
   intro hf x m
   rcases Metric.mem_nhds_iff.mp (hs.mem_nhds m) with ⟨r, r0, rs⟩
   rcases hf x m with ⟨p, t, fp⟩
-  exact ⟨p, min (.ofReal r) t, {
-    r_pos := lt_min (by positivity) fp.r_pos
+  exact ⟨p, min (.ofReal r) t,
+  { r_pos := lt_min (by positivity) fp.r_pos
     r_le := min_le_of_right_le fp.r_le
     hasSum := by
       intro y ym
@@ -201,3 +202,15 @@ lemma analyticWithinAt_iff_exists_analyticAt' [CompleteSpace F] {f : E → F} {s
     exact ⟨g, by filter_upwards [self_mem_nhdsWithin] using hf, hg⟩
 
 alias ⟨AnalyticWithinAt.exists_analyticAt, _⟩ := analyticWithinAt_iff_exists_analyticAt'
+
+lemma AnalyticWithinAt.exists_mem_nhdsWithin_analyticOn
+    [CompleteSpace F] {f : E → F} {s : Set E} {x : E} (h : AnalyticWithinAt 𝕜 f s x) :
+    ∃ u ∈ 𝓝[insert x s] x, AnalyticOn 𝕜 f u := by
+  obtain ⟨g, -, h'g, hg⟩ : ∃ g, f x = g x ∧ EqOn f g (insert x s) ∧ AnalyticAt 𝕜 g x :=
+    h.exists_analyticAt
+  let u := insert x s ∩ {y | AnalyticAt 𝕜 g y}
+  refine ⟨u, ?_, ?_⟩
+  · exact inter_mem_nhdsWithin _ ((isOpen_analyticAt 𝕜 g).mem_nhds hg)
+  · intro y hy
+    have : AnalyticWithinAt 𝕜 g u y := hy.2.analyticWithinAt
+    exact this.congr (h'g.mono (inter_subset_left)) (h'g (inter_subset_left hy))

@@ -42,7 +42,7 @@ noncomputable section
 
 open Set Function
 
-open scoped Manifold
+open scoped Manifold ContDiff
 
 /-- The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when
 `1 ≤ n`, as the definition only makes sense in this case.

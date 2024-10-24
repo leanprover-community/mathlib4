@@ -12,7 +12,7 @@ In this file we define smooth structures that build on Lie groups. We prefer usi
 instead of Lie mainly because Lie ring has currently another use in mathematics.
 -/
 
-open scoped Manifold
+open scoped Manifold ContDiff
 
 section SmoothRing
 
@@ -35,7 +35,7 @@ instance (priority := 100) SmoothRing.toSmoothMul (I : ModelWithCorners 𝕜 E H
 -- see Note [lower instance priority]
 instance (priority := 100) SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E H) (R : Type*)
     [Ring R] [TopologicalSpace R] [ChartedSpace H R] [SmoothRing I R] : LieAddGroup I R where
-  compatible := StructureGroupoid.compatible (contDiffGroupoid ⊤ I)
+  compatible := StructureGroupoid.compatible (contDiffGroupoid ∞ I)
   smooth_add := smooth_add I
   smooth_neg := by simpa only [neg_one_mul] using @smooth_mul_left 𝕜 _ H _ E _ _ I R _ _ _ _ (-1)
 
