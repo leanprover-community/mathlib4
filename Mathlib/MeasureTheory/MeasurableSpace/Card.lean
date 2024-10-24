@@ -108,14 +108,13 @@ theorem generateMeasurableRec_induction {s : Set (Set α)} {i : Ordinal} {t : Se
 theorem generateMeasurableRec_omega1 (s : Set (Set α)) :
     generateMeasurableRec s (ω₁ : Ordinal.{v}) =
       ⋃ i < (ω₁ : Ordinal.{v}), generateMeasurableRec s i := by
-  have H : 0 < ω₁ := omega_pos 1
   apply (iUnion₂_subset fun i h => generateMeasurableRec_mono s h.le).antisymm'
   intro t ht
   rw [mem_iUnion₂]
   refine generateMeasurableRec_induction ?_ ?_ ?_ ?_ ht
   · intro t ht
-    exact ⟨0, H, self_subset_generateMeasurableRec s 0 ht⟩
-  · exact ⟨0, H, empty_mem_generateMeasurableRec s 0⟩
+    exact ⟨0, omega_pos 1, self_subset_generateMeasurableRec s 0 ht⟩
+  · exact ⟨0, omega_pos 1, empty_mem_generateMeasurableRec s 0⟩
   · rintro u - ⟨j, hj, hj'⟩
     exact ⟨_, (isLimit_omega 1).succ_lt hj,
       compl_mem_generateMeasurableRec (Order.lt_succ j) hj'⟩
