@@ -18,7 +18,7 @@ where `OnePoint ℝ` gets the topology of one-point compactification.
 
 ## Main definitions and results
 
-* `equivProjectivization` : the equivalence `OnePoint K ≃ ℙ K (K × K)`.
+* `OnePoint.equivProjectivization` : the equivalence `OnePoint K ≃ ℙ K (K × K)`.
 
 ## Tags
 
