@@ -157,7 +157,7 @@ def mk : FreeMonoid (M ⊕ N) →* M ∗ N := Con.mk' _
 theorem con_ker_mk : Con.ker mk = coprodCon M N := Con.mk'_ker _
 
 @[to_additive]
-theorem mk_surjective : Surjective (@mk M N _ _) := surjective_quot_mk _
+theorem mk_surjective : Surjective (@mk M N _ _) := Quot.mk_surjective
 
 @[to_additive (attr := simp)]
 theorem mrange_mk : MonoidHom.mrange (@mk M N _ _) = ⊤ := Con.mrange_mk'

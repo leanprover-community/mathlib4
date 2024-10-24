@@ -330,7 +330,7 @@ def Quot (F : J ⥤ Type u) : Type (max v u) :=
   _root_.Quot (Quot.Rel F)
 
 instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (Quot F) :=
-  small_of_surjective (surjective_quot_mk _)
+  small_of_surjective Quot.mk_surjective
 
 /-- Inclusion into the quotient type implementing the colimit. -/
 def Quot.ι (F : J ⥤ Type u) (j : J) : F.obj j → Quot F :=
