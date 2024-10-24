@@ -1186,6 +1186,31 @@ lemma mulSupport_prod (s : Finset ι) (f : ι → α → β) :
   simp only [mulSupport_subset_iff', Set.mem_iUnion, not_exists, nmem_mulSupport]
   exact fun x ↦ prod_eq_one
 
+/-- The product of a function `g` over the image of a finset `I` by a function `f` is equal to
+the product over `I` of `g ∘ f`.
+This lemma supposes that the images by `f` of two distinct elements of `I` are different,
+unless they are both `⊥` (hypothesis `hf_disj`), and that `g ⊥ = 1`.
+If `f` is injective on `I`, use `Finset.prod_image` instead. See also `Finset.prod_map`. -/
+@[to_additive
+"The sum of a function `g` over the image of a finset `I` by a function `f` is equal to
+the sum over `I` of `g ∘ f`.
+This lemma supposes that the images by `f` of two distinct elements of `I` are different,
+unless they are both `⊥` (hypothesis `hf_disj`), and that `g ⊥ = 0`.
+If `f` is injective on `I`, use `Finset.sum_image` instead. See also `Finset.sum_map`."]
+lemma prod_image_of_disjoint [PartialOrder α] [OrderBot α] [DecidableEq α]
+    (hg_bot : g ⊥ = 1) {f : ι → α} {I : Finset ι} (hf_disj : (I : Set ι).PairwiseDisjoint f) :
+    ∏ s in I.image f, g s = ∏ i in I, g (f i) := by
+  rw [prod_image']
+  intro n hnI
+  by_cases hfn : f n = ⊥
+  · simp only [hfn, hg_bot]
+    exact (prod_eq_one fun i hi ↦ by aesop).symm
+  · classical
+    suffices filter (fun j ↦ f j = f n) I = filter (fun j ↦ j = n) I by
+      simp only [this, prod_filter, prod_ite_eq', if_pos hnI]
+    congr! with j hj
+    exact ⟨fun h ↦ hf_disj.elim hj hnI (by simpa [h]), by congr!⟩
+
 section indicator
 open Set
 variable {κ : Type*}
