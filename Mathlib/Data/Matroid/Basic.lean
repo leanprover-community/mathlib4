@@ -133,7 +133,7 @@ There are a few design decisions worth discussing.
   so our notation mirrors common practice.
 
 ### Notation
-  We use a couple of nonstandard conventions in theorem names that are related to the above.
+  We use a few nonstandard conventions in theorem names that are related to the above.
   First, we mirror common informal practice by referring explicitly to the `ground` set rather
   than the notation `E`. (Writing `ground` everywhere in a proof term would be unwieldy, and
   writing `E` in theorem names would be unnatural to read.)
