@@ -31,11 +31,6 @@ open scoped Pointwise
 section ForMathlib
 
 -- PRed
-instance Ideal.IsPrime.smul {R : Type*} [CommRing R] {G : Type*} [Group G] [MulSemiringAction G R]
-    {P : Ideal R} [P.IsPrime] (g : G) : (g • P).IsPrime :=
-  Ideal.map_isPrime_of_equiv (MulSemiringAction.toRingEquiv _ _ g)
-
--- PRed
 lemma Finset.smul_prod_perm
     {A : Type*} [CommMonoid A] {G : Type*} [Group G] [Fintype G] [MulDistribMulAction G A]
     (a : A) (g0 : G) : g0 • (∏ g : G, g • a) = ∏ g : G, g • a := by
@@ -145,7 +140,7 @@ section fixedfield
 /-- `MulSemiringAction.toAlgHom` is bijective. -/
 theorem toAlgHom_bijective' (G F : Type*) [Field F] [Group G] [Finite G] [MulSemiringAction G F]
     [FaithfulSMul G F] : Function.Bijective
-      (MulSemiringAction.toAlgAut _ _ : G →* F ≃ₐ[FixedPoints.subfield G F] F) := by
+      (MulSemiringAction.toAlgAut _ _ _ : G →* F ≃ₐ[FixedPoints.subfield G F] F) := by
   refine ⟨fun _ _ h ↦ (FixedPoints.toAlgHom_bijective G F).injective ?_,
     fun f ↦ ((FixedPoints.toAlgHom_bijective G F).surjective f).imp (fun _ h ↦ ?_)⟩
       <;> rwa [DFunLike.ext_iff] at h ⊢
@@ -154,9 +149,9 @@ theorem toAlgHom_bijective' (G F : Type*) [Field F] [Group G] [Finite G] [MulSem
 /-- `MulSemiringAction.toAlgHom` is surjective. -/
 theorem toAlgHom_surjective (G F : Type*) [Field F] [Group G] [Finite G] [MulSemiringAction G F] :
     Function.Surjective
-      (MulSemiringAction.toAlgAut _ _ : G →* F ≃ₐ[FixedPoints.subfield G F] F) := by
+      (MulSemiringAction.toAlgAut _ _ _ : G →* F ≃ₐ[FixedPoints.subfield G F] F) := by
   let f : G →* F ≃ₐ[FixedPoints.subfield G F] F :=
-    MulSemiringAction.toAlgAut (FixedPoints.subfield G F) F
+    MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F
   let Q := G ⧸ f.ker
   let _ : MulSemiringAction Q F := MulSemiringAction.compHom _ (QuotientGroup.kerLift f)
   have : FaithfulSMul Q F := ⟨by
@@ -174,19 +169,23 @@ end fixedfield
 
 section integrallemma
 
-theorem Polynomial.nonzero_const_if_isIntegral (R S : Type*) [CommRing R] [Ring S] [Algebra R S]
-    [h : Algebra.IsAlgebraic R S] [NoZeroDivisors S] (s : S) (hs : s ≠ 0) :
-    ∃ (q : Polynomial R), q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
-  obtain ⟨p, hp0, hp⟩ := h.isAlgebraic s
-  obtain ⟨q, hpq, hq⟩ := Polynomial.exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
-  rw [C_0, sub_zero] at hpq hq
-  rw [hpq, map_mul, aeval_X_pow, mul_eq_zero, or_iff_right (pow_ne_zero _ hs)] at hp
-  exact ⟨q, mt X_dvd_iff.mpr hq, hp⟩
+open Polynomial
 
-theorem Algebra.exists_dvd_nonzero_if_isIntegral (R S : Type*) [CommRing R]
-    [CommRing S] [Algebra R S] [Algebra.IsAlgebraic R S] [NoZeroDivisors S] (s : S) (hs : s ≠ 0) :
+variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
+
+theorem IsAlgebraic.def_of_mem_nonZeroDivisors
+    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
+    ∃ (q : Polynomial R), q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
+  obtain ⟨p, hp0, hp⟩ := hRs
+  obtain ⟨q, hpq, hq⟩ := Polynomial.exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
+  simp only [C_0, sub_zero, X_pow_mul, X_dvd_iff] at hpq hq
+  rw [hpq, map_mul, aeval_X_pow] at hp
+  exact ⟨q, hq, (nonZeroDivisors S).pow_mem hs (rootMultiplicity 0 p) (aeval s q) hp⟩
+
+theorem IsAlgebraic.exists_nonzero_dvd
+    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
     ∃ r : R, r ≠ 0 ∧ s ∣ (algebraMap R S) r := by
-  obtain ⟨q, hq0, hq⟩ := Polynomial.nonzero_const_if_isIntegral R S s hs
+  obtain ⟨q, hq0, hq⟩ := hRs.def_of_mem_nonZeroDivisors hs
   have key := map_dvd (Polynomial.aeval s) (Polynomial.X_dvd_sub_C (p := q))
   rw [map_sub, hq, zero_sub, dvd_neg, Polynomial.aeval_X, Polynomial.aeval_C] at key
   exact ⟨q.coeff 0, hq0, key⟩
@@ -194,13 +193,12 @@ theorem Algebra.exists_dvd_nonzero_if_isIntegral (R S : Type*) [CommRing R]
 theorem lem0 (A B K L : Type*) [CommRing A] [CommRing B] [IsDomain B] [Field K] [Field L]
     [Algebra A K] [IsFractionRing A K]
     [Algebra B L] [IsFractionRing B L]
-    [Algebra A L] [Algebra A B] [Algebra.IsAlgebraic A B] [Algebra K L]
+    [Algebra A L] [Algebra A B] [h : Algebra.IsAlgebraic A B] [Algebra K L]
     [IsScalarTower A B L] [IsScalarTower A K L]
     (x : L) :
     ∃ (b : B) (a : A), a ≠ 0 ∧ x = algebraMap B L b / algebraMap A L a := by
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B) x
-  obtain ⟨a, ha, b, h⟩ := Algebra.exists_dvd_nonzero_if_isIntegral A B y
-    (nonZeroDivisors.ne_zero hy)
+  obtain ⟨a, ha, b, h⟩ := (h.isAlgebraic y).exists_nonzero_dvd hy
   refine ⟨x * b, a, ha, ?_⟩
   rw [IsScalarTower.algebraMap_apply A B L, h, map_mul, map_mul, mul_div_mul_right]
   rw [Ne, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
@@ -241,6 +239,7 @@ theorem exists_smul_of_comap_eq [Finite G]
     rw [← hP.prod_mem_iff, ha, ← P.mem_comap, hPQ, Q.mem_comap, ← ha, hQ.prod_mem_iff]
     exact ⟨1, Finset.mem_univ 1, (one_smul G b).symm ▸ hb⟩
   obtain ⟨g, -, hg⟩ := this P Q hPQ
+  have h := hP.smul g -- should this be an instance?
   obtain ⟨g', -, hg'⟩ := this Q (g • P) ((P.comap_smul g).trans hPQ).symm
   exact ⟨g, le_antisymm hg (smul_eq_of_le_smul (hg.trans hg') ▸ hg')⟩
 
