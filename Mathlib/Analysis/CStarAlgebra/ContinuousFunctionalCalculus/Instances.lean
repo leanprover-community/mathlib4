@@ -83,10 +83,7 @@ lemma isClosedEmbedding_cfcₙAux : IsClosedEmbedding (cfcₙAux hp₁ a ha) := 
   refine ((cfcHom_isClosedEmbedding (hp₁.mpr ha)).comp ?_).comp
     ContinuousMapZero.isClosedEmbedding_toContinuousMap
   let e : C(σₙ 𝕜 a, 𝕜) ≃ₜ C(σ 𝕜 (a : A⁺¹), 𝕜) :=
-    { (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr <|
-        (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm) with
-      continuous_toFun := ContinuousMap.continuous_comp_left _
-      continuous_invFun := ContinuousMap.continuous_comp_left _ }
+    (Homeomorph.setCongr (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a)).arrowCongr (.refl _)
   exact e.isClosedEmbedding
 
 @[deprecated (since := "2024-10-20")]

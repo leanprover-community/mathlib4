@@ -192,7 +192,7 @@ theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
       (continuous_eval.comp <|
         Continuous.prodMap
           (ContinuousMap.continuous_curry.comp <|
-            (ContinuousMap.continuous_comp_left _).comp continuous_subtype_val)
+            (ContinuousMap.continuous_precomp _).comp continuous_subtype_val)
           continuous_id)
       _
 
@@ -211,9 +211,9 @@ def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
     · exact GenLoop.boundary _ _ ⟨⟨j, Hne⟩, Hj⟩⟩
 
 theorem continuous_fromLoop (i : N) : Continuous (@fromLoop N X _ x _ i) :=
-  ((ContinuousMap.continuous_comp_left _).comp <|
+  ((ContinuousMap.continuous_precomp _).comp <|
         ContinuousMap.continuous_uncurry.comp <|
-          (ContinuousMap.continuous_comp _).comp continuous_induced_dom).subtype_mk
+          (ContinuousMap.continuous_postcomp _).comp continuous_induced_dom).subtype_mk
     _
 
 theorem to_from (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : toLoop i (fromLoop i p) = p := by
@@ -244,7 +244,7 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
 /-- Composition with `Cube.insertAt` as a continuous map. -/
 abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
   ⟨fun f => f.comp (Cube.insertAt i),
-    (toContinuousMap <| Cube.insertAt i).continuous_comp_left⟩
+    (toContinuousMap <| Cube.insertAt i).continuous_precomp⟩
 
 /-- A homotopy between `n+1`-dimensional loops `p` and `q` constant on the boundary
   seen as a homotopy between two paths in the space of `n`-dimensional paths. -/

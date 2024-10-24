@@ -44,7 +44,7 @@ namespace ContinuousMap
 theorem embedding_sigmaMk_comp [Nonempty X] :
     Embedding (fun g : Σ i, C(X, Y i) ↦ (sigmaMk g.1).comp g.2) where
   toInducing := inducing_sigma.2
-    ⟨fun i ↦ (sigmaMk i).inducing_comp embedding_sigmaMk.toInducing, fun i ↦
+    ⟨fun i ↦ (sigmaMk i).inducing_postcomp embedding_sigmaMk.toInducing, fun i ↦
       let ⟨x⟩ := ‹Nonempty X›
       ⟨_, (isOpen_sigma_fst_preimage {i}).preimage (continuous_eval_const x), fun _ ↦ Iff.rfl⟩⟩
   inj := by
