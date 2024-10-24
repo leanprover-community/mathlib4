@@ -61,6 +61,8 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
     map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 
+set_synth_order AlgHomClass.linearMapClass #[9, 10, 4, 5, 6, 7, 8]
+
 -- Porting note (#11445): A new definition underlying a coercion `↑`.
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
