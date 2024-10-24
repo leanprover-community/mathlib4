@@ -66,7 +66,7 @@ open Set
 
 namespace Matroid
 
-variable {α : Type*} {M : Matroid α} {R I J X Y : Set α}
+variable {α : Type*} {M : Matroid α} {R I X Y : Set α}
 
 section restrict
 

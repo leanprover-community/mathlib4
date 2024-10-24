@@ -258,8 +258,8 @@ lemma range_toContinuousMap :
   exact ⟨{ f with map_one' := h1, map_mul' := hmul }, rfl⟩
 
 @[to_additive]
-theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
-    ClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
+theorem isClosedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
+    IsClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
   toEmbedding := embedding_toContinuousMap A B
   isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
@@ -267,6 +267,9 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ ?_
     exact isClosed_eq (continuous_eval_const (x * y)) <|
       .mul (continuous_eval_const x) (continuous_eval_const y)
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_toContinuousMap := isClosedEmbedding_toContinuousMap
 
 variable {A B C D E}
 
