@@ -35,7 +35,7 @@ attribute [local instance] mulActionBaseChange
 
 @[simp]
 lemma mulActionBaseChange_smul_tmul (a : A) (s : S) (x : Ω[A⁄R]) :
-  a • (s ⊗ₜ[R] x) = s ⊗ₜ (a • x) := rfl
+    a • (s ⊗ₜ[R] x) = s ⊗ₜ (a • x) := rfl
 
 @[local simp]
 lemma mulActionBaseChange_smul_zero (a : A) :
@@ -107,7 +107,7 @@ instance [Algebra.IsPushout R S A B] :
   simp only [Algebra.pushoutDesc_left, LinearMap.smul_def, Algebra.lsmul_coe]
 
 lemma map_liftBaseChange_smul [h : Algebra.IsPushout R S A B] (b : B) (x) :
-  ((map R S A B).restrictScalars R).liftBaseChange S (b • x) =
+    ((map R S A B).restrictScalars R).liftBaseChange S (b • x) =
     b • ((map R S A B).restrictScalars R).liftBaseChange S x := by
   induction b using h.1.inductionOn with
   | h₁ => simp only [zero_smul, map_zero]
@@ -154,12 +154,12 @@ def derivationTensorProduct [h : Algebra.IsPushout R S A B] :
       | h₄ _ _ e₁ e₂ => simp only [mul_add, add_smul, map_add, e₁, e₂, smul_add, add_add_add_comm]
 
 lemma derivationTensorProduct_algebraMap [Algebra.IsPushout R S A B] (x) :
-  derivationTensorProduct R S A B (algebraMap A B x) =
+    derivationTensorProduct R S A B (algebraMap A B x) =
     1 ⊗ₜ D _ _ x :=
 IsBaseChange.lift_eq _ _ _
 
 lemma tensorKaehlerEquiv_left_inv [Algebra.IsPushout R S A B] :
-  ((derivationTensorProduct R S A B).liftKaehlerDifferential.restrictScalars S).comp
+    ((derivationTensorProduct R S A B).liftKaehlerDifferential.restrictScalars S).comp
     (((map R S A B).restrictScalars R).liftBaseChange S) = LinearMap.id := by
   refine LinearMap.restrictScalars_injective R ?_
   apply TensorProduct.ext'
@@ -178,7 +178,7 @@ lemma tensorKaehlerEquiv_left_inv [Algebra.IsPushout R S A B] :
 /-- The canonical isomorphism `(S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S]` for `B = S ⊗[R] A`. -/
 @[simps! symm_apply] noncomputable
 def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
-  (S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S] where
+    (S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S] where
   __ := ((map R S A B).restrictScalars R).liftBaseChange S
   invFun := (derivationTensorProduct R S A B).liftKaehlerDifferential
   left_inv := LinearMap.congr_fun (tensorKaehlerEquiv_left_inv R S A B)
@@ -210,7 +210,7 @@ If `B` is the tensor product of `S` and `A` over `R`,
 then `Ω[B⁄S]` is the base change of `Ω[A⁄R]` along `R → S`.
 -/
 lemma isBaseChange [h : Algebra.IsPushout R S A B] :
-  IsBaseChange S ((map R S A B).restrictScalars R) := by
+    IsBaseChange S ((map R S A B).restrictScalars R) := by
   convert (TensorProduct.isBaseChange R (Ω[A⁄R]) S).comp
     (IsBaseChange.ofEquiv (tensorKaehlerEquiv R S A B))
   refine LinearMap.ext fun x ↦ ?_
