@@ -1472,6 +1472,13 @@ theorem Set.InjOn.exists_isOpen_superset {X Y : Type*} [TopologicalSpace X] [Top
   let ⟨u, huo, hsu, hut⟩ := mem_nhdsSet_iff_exists.1 hst
   ⟨u, huo, hsu, ht.mono hut⟩
 
+theorem t2Space_antitone {X : Type*} : Antitone (@T2Space X) := by
+  intro s t le t2
+  rw [t2Space_iff] at t2 ⊢
+  intro i j ne
+  obtain ⟨u, v, openu, openv, huv⟩ := t2 ne
+  exact ⟨u, v, le _ openu, le _ openv, huv⟩
+
 section limUnder
 
 variable [T2Space X] {f : Filter X}
