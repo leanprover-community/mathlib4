@@ -203,7 +203,6 @@ theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
 
 /-- If `m` and `n` are `Fintype` that lie in the same universe as `R`, the rank of `m × n` matrices
   is `# m * # n`. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = #m * #n := by simp
 
@@ -298,7 +297,6 @@ theorem Module.finrank_fintype_fun_eq_card : finrank R (η → R) = Fintype.card
   finrank_eq_of_rank_eq rank_fun'
 
 /-- The vector space of functions on `Fin n` has finrank equal to `n`. -/
--- @[simp] -- Porting note (#10618): simp already proves this
 theorem Module.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
 
 variable {R}

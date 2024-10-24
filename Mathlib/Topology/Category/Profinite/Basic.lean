@@ -140,7 +140,7 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `Profinite`, endowing a finite type with the
 discrete topology. -/
-@[simps]
+@[simps map_apply]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
   map f := ⟨f, by continuity⟩

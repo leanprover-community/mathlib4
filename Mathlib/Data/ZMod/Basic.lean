@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.OrderOfElement
@@ -129,7 +130,6 @@ theorem ringChar_zmod_n (n : ℕ) : ringChar (ZMod n) = n := by
   rw [ringChar.eq_iff]
   exact ZMod.charP n
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem natCast_self (n : ℕ) : (n : ZMod n) = 0 :=
   CharP.cast_eq_zero (ZMod n) n
 
@@ -780,7 +780,6 @@ def inv : ∀ n : ℕ, ZMod n → ZMod n
 instance (n : ℕ) : Inv (ZMod n) :=
   ⟨inv n⟩
 
-@[nolint unusedHavesSuffices]
 theorem inv_zero : ∀ n : ℕ, (0 : ZMod n)⁻¹ = 0
   | 0 => Int.sign_zero
   | n + 1 =>

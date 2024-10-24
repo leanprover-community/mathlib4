@@ -101,7 +101,7 @@ noncomputable instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, Linea
 
 section PartialOrder
 
-variable [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ i, PartialOrder (β i)] {x y : ∀ i, β i} {i : ι}
+variable [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ i, PartialOrder (β i)] {x : ∀ i, β i} {i : ι}
   {a : β i}
 
 open Function

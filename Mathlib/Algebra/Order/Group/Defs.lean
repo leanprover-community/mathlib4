@@ -109,7 +109,7 @@ class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOr
 
 section LinearOrderedCommGroup
 
-variable [LinearOrderedCommGroup α] {a b c : α}
+variable [LinearOrderedCommGroup α] {a : α}
 
 @[to_additive LinearOrderedAddCommGroup.add_lt_add_left]
 theorem LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=

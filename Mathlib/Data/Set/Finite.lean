@@ -3,10 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Finite.Powerset
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finite.Sigma
+import Mathlib.Data.Finite.Vector
+import Mathlib.Data.Finite.Basic
+import Mathlib.Logic.Embedding.Set
 
 /-!
 # Finite sets
@@ -261,8 +266,6 @@ protected theorem toFinset_image [DecidableEq β] (f : α → β) (hs : s.Finite
   ext
   simp
 
--- Porting note (#10618): now `simp` can prove it but it needs the `fintypeRange` instance
--- from the next section
 protected theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) (h : (range f).Finite) :
     h.toFinset = Finset.univ.image f := by
   ext
@@ -477,7 +480,6 @@ This is a wrapper around `Set.toFinite`. -/
 theorem finite_toSet (s : Finset α) : (s : Set α).Finite :=
   Set.toFinite _
 
--- Porting note (#10618): was @[simp], now `simp` can prove it
 theorem finite_toSet_toFinset (s : Finset α) : s.finite_toSet.toFinset = s := by
   rw [toFinite_toFinset, toFinset_coe]
 
@@ -1574,7 +1576,7 @@ end LinearOrder
 namespace List
 variable (α) [Finite α] (n : ℕ)
 
-lemma finite_length_eq : {l : List α | l.length = n}.Finite := Vector.finite
+lemma finite_length_eq : {l : List α | l.length = n}.Finite := Mathlib.Vector.finite
 
 lemma finite_length_lt : {l : List α | l.length < n}.Finite := by
   convert (Finset.range n).finite_toSet.biUnion fun i _ ↦ finite_length_eq α i; ext; simp

@@ -36,7 +36,7 @@ lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [Compl
   set g' := BoundedContinuousFunction.mkOfBound
       ⟨fun x ↦ Real.toNNReal (g x), continuous_real_toNNReal.comp g_cont.subtype_val⟩ 1 g_bdd
   set f := 1 - g'
-  refine ⟨f, by simp [f, g', gx_zero], fun y y_in_K ↦ by simp [f, g', g_one_on_K y_in_K]⟩
+  refine ⟨f, by simp [f, g', gx_zero], fun y y_in_K ↦ by simp [f, g', g_one_on_K y_in_K, tsub_self]⟩
 
 namespace MeasureTheory
 

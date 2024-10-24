@@ -42,7 +42,7 @@ variable
   {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
   {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
-  {f f₀ f₁ : M → M'} {x : M} {s t : Set M} {g : M' → M''} {u : Set M'}
+  {f f₁ : M → M'} {x : M} {s t : Set M} {g : M' → M''} {u : Set M'}
 
 theorem uniqueMDiffWithinAt_univ : UniqueMDiffWithinAt I univ x := by
   unfold UniqueMDiffWithinAt

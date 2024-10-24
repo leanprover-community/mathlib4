@@ -361,7 +361,7 @@ private theorem lintegral_tendsto_of_monotone_of_nat {φ : ℕ → Set α} (hφ 
     indicator_le_indicator_of_subset (hmono hij) (fun x => zero_le <| f x) x
   have key₃ : ∀ᵐ x : α ∂μ, Tendsto (fun n => F n x) atTop (𝓝 (f x)) := hφ.ae_tendsto_indicator f
   (lintegral_tendsto_of_tendsto_of_monotone key₁ key₂ key₃).congr fun n =>
-    lintegral_indicator f (hφ.measurableSet n)
+    lintegral_indicator (hφ.measurableSet n) _
 
 theorem AECover.lintegral_tendsto_of_nat {φ : ℕ → Set α} (hφ : AECover μ atTop φ) {f : α → ℝ≥0∞}
     (hfm : AEMeasurable f μ) : Tendsto (∫⁻ x in φ ·, f x ∂μ) atTop (𝓝 <| ∫⁻ x, f x ∂μ) := by
@@ -642,7 +642,7 @@ open scoped Interval
 
 section IoiFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a l : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- If the derivative of a function defined on the real line is integrable close to `+∞`, then
@@ -864,7 +864,7 @@ end IoiFTC
 
 section IicFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {a : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- If the derivative of a function defined on the real line is integrable close to `-∞`, then
@@ -983,7 +983,7 @@ end IicFTC
 
 section UnivFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m n : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {m n : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- **Fundamental theorem of calculus-2**, on the whole real line
@@ -1025,7 +1025,7 @@ open Real
 
 open scoped Interval
 
-variable {E : Type*} {f : ℝ → E} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Change-of-variables formula for `Ioi` integrals of vector-valued functions, proved by taking
 limits from the result for finite intervals. -/
@@ -1224,7 +1224,7 @@ end IntegrationByPartsBilinear
 section IntegrationByPartsAlgebra
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
-  {a b : ℝ} {a' b' : A} {u : ℝ → A} {v : ℝ → A} {u' : ℝ → A} {v' : ℝ → A}
+  {a : ℝ} {a' b' : A} {u : ℝ → A} {v : ℝ → A} {u' : ℝ → A} {v' : ℝ → A}
 
 /-- For finite intervals, see: `intervalIntegral.integral_deriv_mul_eq_sub`. -/
 theorem integral_deriv_mul_eq_sub [CompleteSpace A]

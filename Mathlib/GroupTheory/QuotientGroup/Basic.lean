@@ -6,7 +6,7 @@ Authors: Kevin Buzzard, Patrick Massot
 -- This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
 
 import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.GroupTheory.Congruence.Basic
+import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.Coset.Basic
 
 /-!
@@ -432,7 +432,7 @@ the equalities, since the type of `(A'.addSubgroupOf A : AddSubgroup A)` depends
 def equivQuotientSubgroupOfOfEq {A' A B' B : Subgroup G} [hAN : (A'.subgroupOf A).Normal]
     [hBN : (B'.subgroupOf B).Normal] (h' : A' = B') (h : A = B) :
     A ⧸ A'.subgroupOf A ≃* B ⧸ B'.subgroupOf B :=
-  MonoidHom.toMulEquiv (quotientMapSubgroupOfOfLe h'.le h.le) (quotientMapSubgroupOfOfLe h'.ge h.ge)
+  (quotientMapSubgroupOfOfLe h'.le h.le).toMulEquiv (quotientMapSubgroupOfOfLe h'.ge h.ge)
     (by ext ⟨x, hx⟩; rfl)
     (by ext ⟨x, hx⟩; rfl)
 

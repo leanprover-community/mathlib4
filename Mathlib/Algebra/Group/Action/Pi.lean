@@ -21,7 +21,7 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 
 assert_not_exists MonoidWithZero
 
-variable {ι M N : Type*} {α β γ : ι → Type*} (x y : ∀ i, α i) (i : ι)
+variable {ι M N : Type*} {α β γ : ι → Type*} (i : ι)
 
 namespace Pi
 
