@@ -955,6 +955,7 @@ import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
 import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.AlgebraicTopology.SimplicialSet.Nerve

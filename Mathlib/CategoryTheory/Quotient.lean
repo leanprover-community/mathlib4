@@ -28,6 +28,11 @@ instance (C) [Quiver C] : Inhabited (HomRel C) where
 
 namespace CategoryTheory
 
+
+/-- A functor induces a `HomRel` on its domain, relating those maps that have the same image. -/
+def Functor.homRel {C D : Type*} [Category C] [Category D] (F : C ⥤ D) : HomRel C :=
+  fun _ _ f g ↦ F.map f = F.map g
+
 variable {C : Type _} [Category C] (r : HomRel C)
 
 /-- A `HomRel` is a congruence when it's an equivalence on every hom-set, and it can be composed
@@ -39,6 +44,25 @@ class Congruence : Prop where
   compLeft : ∀ {X Y Z} (f : X ⟶ Y) {g g' : Y ⟶ Z}, r g g' → r (f ≫ g) (f ≫ g')
   /-- Postcomposition with an arrow respects `r`. -/
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
+
+/-- For `F : C ⥤ D`, `F.homRel` is a congruence.-/
+theorem Functor.homRelCongruence {C D : Type*} [Category C] [Category D] (F : C ⥤ D) :
+    Congruence (F.homRel) where
+  equivalence := by
+    intro X Y
+    unfold homRel
+    exact {
+      refl := fun _ => rfl
+      symm := by aesop
+      trans := by aesop
+    }
+  compLeft f g g' := by
+    unfold homRel
+    aesop
+  compRight := by
+    intro _ _ _ f f' g
+    unfold homRel
+    aesop
 
 /-- A type synonym for `C`, thought of as the objects of the quotient category. -/
 @[ext]
@@ -139,6 +163,37 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
   dsimp [functor]
   rw [Equivalence.quot_mk_eq_iff, compClosure_eq_self r]
   simpa only [compClosure_eq_self r] using h.equivalence
+
+theorem functorHomRel_eq_compClosureEqvGen {X Y : C} (f g : X ⟶ Y) :
+    (functor r).homRel f g ↔ Relation.EqvGen (@CompClosure C _ r X Y) f g where
+  mp := fun a ↦ Quot.eqvGen_exact a
+  mpr := by
+    have : Relation.EqvGen (Functor.homRel (functor r) (X := X) (Y := Y)) =
+      Functor.homRel (functor r) (X := X) (Y := Y) :=
+        Equivalence.eqvGen_eq
+        ((Functor.homRelCongruence (functor r)).equivalence (X := X) (Y := Y))
+    rw [← this]
+    apply Relation.EqvGen.mono
+    intro f g
+    have := (Functor.homRelCongruence (functor r)).equivalence (X := X) (Y := Y)
+    intro rel
+    induction rel
+    unfold Functor.homRel
+    apply (Functor.homRelCongruence (functor r)).compLeft
+    apply (Functor.homRelCongruence (functor r)).compRight
+    unfold Functor.homRel
+    apply Quotient.sound
+    assumption
+
+theorem compClosure.congruence :
+    Congruence fun X Y => Relation.EqvGen (@CompClosure C _ r X Y) := by
+  have : (fun X Y => Relation.EqvGen (@CompClosure C _ r X Y)) =
+    (fun X Y => @Functor.homRel _ _ _ _ (functor r) X Y) := by
+    funext
+    ext
+    exact Iff.symm (functorHomRel_eq_compClosureEqvGen r _ _)
+  rw [this]
+  exact Functor.homRelCongruence (functor r)
 
 variable {D : Type _} [Category D] (F : C ⥤ D)
 
