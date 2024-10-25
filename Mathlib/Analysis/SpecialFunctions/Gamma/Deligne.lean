@@ -28,7 +28,6 @@ This file defines these functions, and proves some elementary properties, includ
 formula which is an important input in functional equations of (un-completed) Dirichlet L-functions.
 -/
 
-
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex hiding abs_of_nonneg
 

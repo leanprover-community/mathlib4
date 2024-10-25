@@ -41,7 +41,6 @@ lemma LSeriesSummable.add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f 
 lemma LSeries_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg : LSeriesSummable g s) :
     LSeries (f + g) s = LSeries f s + LSeries g s := by
   simpa only [LSeries, term_add, Pi.add_apply] using tsum_add hf hg
-#align nat.arithmetic_function.l_series_add LSeries_add
 
 /-!
 ### Negation
@@ -49,7 +48,7 @@ lemma LSeries_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg :
 
 lemma LSeries.term_neg (f : ℕ → ℂ) (s : ℂ) : term (-f) s = -term f s := by
   ext ⟨- | n⟩
-  · simp only [Nat.zero_eq, term_zero, Pi.neg_apply, neg_zero]
+  · simp only [term_zero, Pi.neg_apply, neg_zero]
   · simp only [term_of_ne_zero (Nat.succ_ne_zero _), Pi.neg_apply, Nat.cast_succ, neg_div]
 
 lemma LSeries.term_neg_apply (f : ℕ → ℂ) (s : ℂ) (n : ℕ) : term (-f) s n = -term f s n := by
@@ -106,7 +105,7 @@ lemma LSeries_sub {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg :
 
 lemma LSeries.term_smul (f : ℕ → ℂ) (c s : ℂ) : term (c • f) s = c • term f s := by
   ext ⟨- | n⟩
-  · simp only [Nat.zero_eq, term_zero, Pi.smul_apply, smul_eq_mul, mul_zero]
+  · simp only [term_zero, Pi.smul_apply, smul_eq_mul, mul_zero]
   · simp only [term_of_ne_zero (Nat.succ_ne_zero _), Pi.smul_apply, smul_eq_mul, Nat.cast_succ,
       mul_div_assoc]
 

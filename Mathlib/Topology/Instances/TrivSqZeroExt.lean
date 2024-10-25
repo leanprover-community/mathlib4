@@ -7,8 +7,6 @@ import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Module.Basic
 
-#align_import topology.instances.triv_sq_zero_ext from "leanprover-community/mathlib"@"b8d2eaa69d69ce8f03179a5cda774fc0cde984e4"
-
 /-!
 # Topology on `TrivSqZeroExt R M`
 
@@ -46,39 +44,30 @@ instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
 theorem nhds_def (x : tsze R M) : 𝓝 x = (𝓝 x.fst).prod (𝓝 x.snd) := by
   cases x using Prod.rec
   exact nhds_prod_eq
-#align triv_sq_zero_ext.nhds_def TrivSqZeroExt.nhds_def
 
 theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = (𝓝 x).prod (𝓝 0) :=
   nhds_def _
-#align triv_sq_zero_ext.nhds_inl TrivSqZeroExt.nhds_inl
 
 theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = (𝓝 0).prod (𝓝 m) :=
   nhds_def _
-#align triv_sq_zero_ext.nhds_inr TrivSqZeroExt.nhds_inr
 
 nonrec theorem continuous_fst : Continuous (fst : tsze R M → R) :=
   continuous_fst
-#align triv_sq_zero_ext.continuous_fst TrivSqZeroExt.continuous_fst
 
 nonrec theorem continuous_snd : Continuous (snd : tsze R M → M) :=
   continuous_snd
-#align triv_sq_zero_ext.continuous_snd TrivSqZeroExt.continuous_snd
 
 theorem continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
   continuous_id.prod_mk continuous_const
-#align triv_sq_zero_ext.continuous_inl TrivSqZeroExt.continuous_inl
 
 theorem continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
   continuous_const.prod_mk continuous_id
-#align triv_sq_zero_ext.continuous_inr TrivSqZeroExt.continuous_inr
 
 theorem embedding_inl [Zero M] : Embedding (inl : R → tsze R M) :=
   embedding_of_embedding_compose continuous_inl continuous_fst embedding_id
-#align triv_sq_zero_ext.embedding_inl TrivSqZeroExt.embedding_inl
 
 theorem embedding_inr [Zero R] : Embedding (inr : M → tsze R M) :=
   embedding_of_embedding_compose continuous_inr continuous_snd embedding_id
-#align triv_sq_zero_ext.embedding_inr TrivSqZeroExt.embedding_inr
 
 variable (R M)
 
@@ -86,7 +75,6 @@ variable (R M)
 @[simps]
 def fstCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] R :=
   { ContinuousLinearMap.fst R R M with toFun := fst }
-#align triv_sq_zero_ext.fst_clm TrivSqZeroExt.fstCLM
 
 /-- `TrivSqZeroExt.snd` as a continuous linear map. -/
 @[simps]
@@ -94,19 +82,16 @@ def sndCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] M 
   { ContinuousLinearMap.snd R R M with
     toFun := snd
     cont := continuous_snd }
-#align triv_sq_zero_ext.snd_clm TrivSqZeroExt.sndCLM
 
 /-- `TrivSqZeroExt.inl` as a continuous linear map. -/
 @[simps]
 def inlCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : R →L[R] tsze R M :=
   { ContinuousLinearMap.inl R R M with toFun := inl }
-#align triv_sq_zero_ext.inl_clm TrivSqZeroExt.inlCLM
 
 /-- `TrivSqZeroExt.inr` as a continuous linear map. -/
 @[simps]
 def inrCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : M →L[R] tsze R M :=
   { ContinuousLinearMap.inr R R M with toFun := inr }
-#align triv_sq_zero_ext.inr_clm TrivSqZeroExt.inrCLM
 
 variable {R M}
 
@@ -128,7 +113,6 @@ really care about the `TopologicalRing` instance below. -/
 theorem topologicalSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
     [TopologicalSemiring R] [ContinuousAdd M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
     TopologicalSemiring (tsze R M) := { }
-#align triv_sq_zero_ext.topological_semiring TrivSqZeroExt.topologicalSemiring
 
 instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [TopologicalRing R]
     [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
@@ -147,22 +131,18 @@ variable (M)
 theorem hasSum_inl [AddCommMonoid R] [AddCommMonoid M] {f : α → R} {a : R} (h : HasSum f a) :
     HasSum (fun x ↦ inl (f x)) (inl a : tsze R M) :=
   h.map (⟨⟨inl, inl_zero _⟩, inl_add _⟩ : R →+ tsze R M) continuous_inl
-#align triv_sq_zero_ext.has_sum_inl TrivSqZeroExt.hasSum_inl
 
 theorem hasSum_inr [AddCommMonoid R] [AddCommMonoid M] {f : α → M} {a : M} (h : HasSum f a) :
     HasSum (fun x ↦ inr (f x)) (inr a : tsze R M) :=
   h.map (⟨⟨inr, inr_zero _⟩, inr_add _⟩ : M →+ tsze R M) continuous_inr
-#align triv_sq_zero_ext.has_sum_inr TrivSqZeroExt.hasSum_inr
 
 theorem hasSum_fst [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
     (h : HasSum f a) : HasSum (fun x ↦ fst (f x)) (fst a) :=
   h.map (⟨⟨fst, fst_zero⟩, fst_add⟩ : tsze R M →+ R) continuous_fst
-#align triv_sq_zero_ext.has_sum_fst TrivSqZeroExt.hasSum_fst
 
 theorem hasSum_snd [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
     (h : HasSum f a) : HasSum (fun x ↦ snd (f x)) (snd a) :=
   h.map (⟨⟨snd, snd_zero⟩, snd_add⟩ : tsze R M →+ M) continuous_snd
-#align triv_sq_zero_ext.has_sum_snd TrivSqZeroExt.hasSum_snd
 
 end Topology
 

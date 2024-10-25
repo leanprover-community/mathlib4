@@ -3,9 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Defs
-
-#align_import group_theory.group_action.sigma from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
+import Mathlib.Algebra.Group.Action.Faithful
 
 /-!
 # Sigma instances for additive and multiplicative actions
@@ -38,14 +36,10 @@ instance : SMul M (Σi, α i) :=
 @[to_additive]
 theorem smul_def : a • x = x.map id fun _ => (a • ·) :=
   rfl
-#align sigma.smul_def Sigma.smul_def
-#align sigma.vadd_def Sigma.vadd_def
 
 @[to_additive (attr := simp)]
 theorem smul_mk : a • mk i b = ⟨i, a • b⟩ :=
   rfl
-#align sigma.smul_mk Sigma.smul_mk
-#align sigma.vadd_mk Sigma.vadd_mk
 
 @[to_additive]
 instance instIsScalarTowerOfSMul [SMul M N] [∀ i, IsScalarTower M N (α i)] :
@@ -69,9 +63,7 @@ instance [∀ i, SMul Mᵐᵒᵖ (α i)] [∀ i, IsCentralScalar M (α i)] : IsC
 /-- This is not an instance because `i` becomes a metavariable. -/
 @[to_additive "This is not an instance because `i` becomes a metavariable."]
 protected theorem FaithfulSMul' [FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) :=
-  ⟨fun h => eq_of_smul_eq_smul fun a : α i => heq_iff_eq.1 (ext_iff.1 <| h <| mk i a).2⟩
-#align sigma.has_faithful_smul' Sigma.FaithfulSMul'
-#align sigma.has_faithful_vadd' Sigma.FaithfulVAdd'
+  ⟨fun h => eq_of_smul_eq_smul fun a : α i => heq_iff_eq.1 (Sigma.ext_iff.1 <| h <| mk i a).2⟩
 
 @[to_additive]
 instance [Nonempty ι] [∀ i, FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) :=

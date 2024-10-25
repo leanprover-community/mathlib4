@@ -38,7 +38,7 @@ noncomputable def pushforward : SheafOfModules.{v} R ⥤ SheafOfModules.{v} S wh
     { val := (PresheafOfModules.pushforward φ.val).obj M.val
       isSheaf := ((F.sheafPushforwardContinuous _ J K).obj ⟨_, M.isSheaf⟩).cond }
   map f :=
-    { val :=(PresheafOfModules.pushforward φ.val).map f.val }
+    { val := (PresheafOfModules.pushforward φ.val).map f.val }
 
 /-- Given `M : SheafOfModules R` and `X : D`, this is the restriction of `M`
 over the sheaf of rings `R.over X` on the category `Over X`. -/

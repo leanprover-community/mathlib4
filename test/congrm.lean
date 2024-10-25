@@ -139,3 +139,7 @@ example (a b : Nat) (h : a = b) : 1 + a ≤ 1 + b := by
 example [Fintype α] [Fintype β] (h : α = β) : Fintype.card α = Fintype.card β := by
   congrm Fintype.card ?_
   exact h
+
+end Congrm
+
+end Tests

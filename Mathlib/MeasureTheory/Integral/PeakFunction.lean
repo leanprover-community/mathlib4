@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
-#align_import measure_theory.integral.peak_function from "leanprover-community/mathlib"@"13b0d72fd8533ba459ac66e9a885e35ffabb32b2"
-
 /-!
 # Integrals against peak functions
 
@@ -32,7 +30,7 @@ functions are also called approximations of unity, or approximations of identity
   at `0` and integrable.
 
 Note that there are related results about convolution with respect to peak functions in the file
-`Analysis.Convolution`, such as `convolution_tendsto_right` there.
+`Mathlib.Analysis.Convolution`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
@@ -84,13 +82,10 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
       exact (norm_lt_of_mem_ball (hu x hx)).le
   convert A.union B
   simp only [diff_union_inter]
-#align integrable_on_peak_smul_of_integrable_on_of_continuous_within_at integrableOn_peak_smul_of_integrableOn_of_tendsto
 
 @[deprecated (since := "2024-02-20")]
 alias integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt :=
   integrableOn_peak_smul_of_integrableOn_of_tendsto
-
-variable [CompleteSpace E]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
@@ -105,7 +100,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
     (hmg : IntegrableOn g s μ) (hcg : Tendsto g (𝓝[s] x₀) (𝓝 0)) :
     Tendsto (fun i : ι => ∫ x in s, φ i x • g x ∂μ) l (𝓝 0) := by
   refine Metric.tendsto_nhds.2 fun ε εpos => ?_
-  obtain ⟨δ, hδ, δpos, δone⟩ : ∃ δ, (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ < ε ∧ 0 < δ ∧ δ < 1:= by
+  obtain ⟨δ, hδ, δpos, δone⟩ : ∃ δ, (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ < ε ∧ 0 < δ ∧ δ < 1 := by
     have A :
       Tendsto (fun δ => (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ) (𝓝[>] 0)
         (𝓝 ((0 * ∫ x in s, ‖g x‖ ∂μ) + 2 * 0)) := by
@@ -149,10 +144,10 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
       _ ≤ ∫ x in t, ‖φ i x‖ * δ ∂μ := by
         apply setIntegral_mono_set
         · exact I.norm.mul_const _
-        · exact eventually_of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
-        · exact eventually_of_forall ut
+        · exact Eventually.of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
+        · exact Eventually.of_forall ut
       _ = ∫ x in t, φ i x * δ ∂μ := by
-        apply setIntegral_congr ht fun x hx => ?_
+        apply setIntegral_congr_fun ht fun x hx => ?_
         rw [Real.norm_of_nonneg (hφpos _ (hts hx))]
       _ = (∫ x in t, φ i x ∂μ) * δ := by rw [integral_mul_right]
       _ ≤ 2 * δ := by gcongr; linarith [(le_abs_self _).trans h'i.le]
@@ -176,15 +171,16 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
     ‖∫ x in s, φ i x • g x ∂μ‖ =
       ‖(∫ x in s \ u, φ i x • g x ∂μ) + ∫ x in s ∩ u, φ i x • g x ∂μ‖ := by
       conv_lhs => rw [← diff_union_inter s u]
-      rw [integral_union disjoint_sdiff_inter (hs.inter u_open.measurableSet)
+      rw [setIntegral_union disjoint_sdiff_inter (hs.inter u_open.measurableSet)
           (h''i.mono_set diff_subset) (h''i.mono_set inter_subset_left)]
     _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := norm_add_le _ _
     _ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ := add_le_add C B
-#align tendsto_set_integral_peak_smul_of_integrable_on_of_continuous_within_at_aux tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
 
 @[deprecated (since := "2024-02-20")]
 alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt_aux :=
   tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
+
+variable [CompleteSpace E]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
@@ -223,7 +219,6 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
   apply Integrable.smul_const
   rw [restrict_restrict ht, inter_eq_left.mpr hts]
   exact .of_integral_ne_zero (fun h ↦ by simp [h] at h'i)
-#align tendsto_set_integral_peak_smul_of_integrable_on_of_continuous_within_at tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
 
 @[deprecated (since := "2024-02-20")]
 alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt :=
@@ -293,7 +288,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     apply (hμ u u_open x₀_u).trans_le
     exact measure_mono fun x hx => ⟨ne_of_gt (pow_pos (a := c x) (hu hx) _), hx.2⟩
   have hiφ : ∀ n, ∫ x in s, φ n x ∂μ = 1 := fun n => by
-    rw [integral_mul_left, inv_mul_cancel (P n).ne']
+    rw [integral_mul_left, inv_mul_cancel₀ (P n).ne']
   have A : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 atTop (s \ u) := by
     intro u u_open x₀u
     obtain ⟨t, t_pos, tx₀, ht⟩ : ∃ t, 0 ≤ t ∧ t < c x₀ ∧ ∀ x ∈ s \ u, c x ≤ t := by
@@ -324,7 +319,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
             · intro x hx
               exact pow_le_pow_left t'_pos.le (le_of_lt (hv hx)) _
           _ ≤ ∫ y in s, c y ^ n ∂μ :=
-            setIntegral_mono_set (I n) (J n) (eventually_of_forall inter_subset_right)
+            setIntegral_mono_set (I n) (J n) (Eventually.of_forall inter_subset_right)
       simp_rw [φ, ← div_eq_inv_mul, div_pow, div_div]
       apply div_le_div (pow_nonneg t_pos n) _ _ B
       · exact pow_le_pow_left (hnc _ hx.1) (ht x hx) _
@@ -346,13 +341,12 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     have B : Tendsto (fun i ↦ ∫ (x : α) in s, φ i x ∂μ) atTop (𝓝 1) :=
       tendsto_const_nhds.congr (fun n ↦ (hiφ n).symm)
     have C : ∀ᶠ (i : ℕ) in atTop, AEStronglyMeasurable (fun x ↦ φ i x) (μ.restrict s) := by
-      apply eventually_of_forall (fun n ↦ ((I n).const_mul _).aestronglyMeasurable)
+      apply Eventually.of_forall (fun n ↦ ((I n).const_mul _).aestronglyMeasurable)
     exact tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto hs.measurableSet
       hs.measurableSet (Subset.rfl) (self_mem_nhdsWithin)
-      hs.measure_lt_top.ne (eventually_of_forall hnφ) A B C hmg hcg
+      hs.measure_lt_top.ne (Eventually.of_forall hnφ) A B C hmg hcg
   convert this
   simp_rw [φ, ← smul_smul, integral_smul]
-#align tendsto_set_integral_pow_smul_of_unique_maximum_of_is_compact_of_measure_nhds_within_pos tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_nhdsWithin_pos
 
 /-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
 then the sequence of functions `(c x) ^ n / ∫ (c x) ^ n` is a sequence of peak functions
@@ -379,7 +373,6 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_integrabl
     0 < μ (u ∩ interior s) :=
       (u_open.inter isOpen_interior).measure_pos μ (_root_.mem_closure_iff.1 h₀ u u_open x₀_u)
     _ ≤ μ (u ∩ s) := by gcongr; apply interior_subset
-#align tendsto_set_integral_pow_smul_of_unique_maximum_of_is_compact_of_integrable_on tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_integrableOn
 
 /-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
 then the sequence of functions `(c x) ^ n / ∫ (c x) ^ n` is a sequence of peak functions
@@ -394,13 +387,12 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuou
   haveI : x₀ ∈ s := by rw [← hs.isClosed.closure_eq]; exact closure_mono interior_subset h₀
   tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_integrableOn hs hc h'c hnc hnc₀ h₀
     (hmg.integrableOn_compact hs) (hmg x₀ this)
-#align tendsto_set_integral_pow_smul_of_unique_maximum_of_is_compact_of_continuous_on tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn
 
 /-!
 ### Peak functions of the form `x ↦ c ^ dim * φ (c x)`
 -/
 
-open FiniteDimensional Bornology
+open Module Bornology
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
   [MeasurableSpace F] [BorelSpace F] {μ : Measure F} [IsAddHaarMeasure μ]
@@ -446,7 +438,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
         simp [norm_smul, abs_of_pos cpos, mul_pow]; ring
       _ < δ ^ finrank ℝ F * ε := by
         apply hM
-        rw [div_lt_iff δpos] at hc
+        rw [div_lt_iff₀ δpos] at hc
         simp only [mem_compl_iff, mem_closedBall, dist_zero_right, norm_smul, Real.norm_eq_abs,
           abs_of_nonneg cpos.le, not_le, gt_iff_lt]
         exact hc.trans_le (by gcongr)
@@ -456,7 +448,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
     apply this.congr'
     filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
     rw [integral_mul_left, setIntegral_comp_smul_of_pos _ _ _ hc, smul_eq_mul, ← mul_assoc,
-      mul_inv_cancel (by positivity), _root_.smul_closedBall _ _ zero_le_one]
+      mul_inv_cancel₀ (by positivity), _root_.smul_closedBall _ _ zero_le_one]
     simp [abs_of_nonneg hc.le]
   · filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
     exact (I.comp_smul hc.ne').aestronglyMeasurable.const_mul _
