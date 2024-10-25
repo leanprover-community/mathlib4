@@ -27,7 +27,10 @@ namespace Polynomial
 
 open Polynomial
 
-variable {R : Type*} [Semiring R] (r : R) (f : R[X])
+variable {R : Type _}
+section Semiring
+
+variable [Semiring R] (r : R) (f : R[X])
 
 /-- The Taylor expansion of a polynomial `f` at `r`. -/
 def taylor (r : R) : R[X] →ₗ[R] R[X] where
@@ -80,56 +83,82 @@ theorem taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
   rw [taylor_coeff, hasseDeriv_one]
 
 @[simp]
-theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree p := by
+theorem natDegree_taylor (r : R) : natDegree (taylor r f) = natDegree f := by
   refine map_natDegree_eq_natDegree _ ?_
   nontriviality R
   intro n c c0
   simp [taylor_monomial, natDegree_C_mul_eq_of_mul_ne_zero, natDegree_pow_X_add_C, c0]
 
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R] (r : R) (f : R[X])
+
 @[simp]
-theorem taylor_mul {R} [CommSemiring R] (r : R) (p q : R[X]) :
+theorem taylor_mul (p q : R[X]) :
     taylor r (p * q) = taylor r p * taylor r q := by simp only [taylor_apply, mul_comp]
 
 /-- `Polynomial.taylor` as an `AlgHom` for commutative semirings -/
 @[simps!]
-def taylorAlgHom {R} [CommSemiring R] (r : R) : R[X] →ₐ[R] R[X] :=
+def taylorAlgHom : R[X] →ₐ[R] R[X] :=
   AlgHom.ofLinearMap (taylor r) (taylor_one r) (taylor_mul r)
 
-theorem taylor_taylor {R} [CommSemiring R] (f : R[X]) (r s : R) :
+theorem taylor_taylor (r s : R) :
     taylor r (taylor s f) = taylor (r + s) f := by
   simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, C_add, add_assoc]
 
-theorem taylor_eval {R} [CommSemiring R] (r : R) (f : R[X]) (s : R) :
-    (taylor r f).eval s = f.eval (s + r) := by
+theorem taylor_eval (s : R) : (taylor r f).eval s = f.eval (s + r) := by
   simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
 
-theorem taylor_eval_sub {R} [CommRing R] (r : R) (f : R[X]) (s : R) :
-    (taylor r f).eval (s - r) = f.eval s := by rw [taylor_eval, sub_add_cancel]
+theorem eval_add_of_sq_eq_zero (x y : R) (hy : y ^ 2 = 0) :
+    f.eval (x + y) = f.eval x + f.derivative.eval x * y := by
+  rw [add_comm, ← Polynomial.taylor_eval,
+    Polynomial.eval_eq_sum_range' ((Nat.lt_succ_self _).trans (Nat.lt_succ_self _)),
+    Finset.sum_range_succ', Finset.sum_range_succ']
+  simp [pow_succ, mul_assoc, ← pow_two, hy, add_comm (eval x f)]
 
-theorem taylor_injective {R} [CommRing R] (r : R) : Function.Injective (taylor r) := by
+end CommSemiring
+
+
+section CommRing
+
+variable [CommRing R] (r : R) (f : R[X])
+
+theorem taylor_eval_sub  (s : R) : (taylor r f).eval (s - r) = f.eval s := by
+  rw [taylor_eval, sub_add_cancel]
+
+theorem taylor_injective : Function.Injective (taylor r) := by
   intro f g h
   apply_fun taylor (-r) at h
   simpa only [taylor_apply, comp_assoc, add_comp, X_comp, C_comp, C_neg, neg_add_cancel_right,
     comp_X] using h
 
-theorem eq_zero_of_hasseDeriv_eq_zero {R} [CommRing R] (f : R[X]) (r : R)
-    (h : ∀ k, (hasseDeriv k f).eval r = 0) : f = 0 := by
+theorem eq_zero_of_hasseDeriv_eq_zero (h : ∀ k, (hasseDeriv k f).eval r = 0) : f = 0 := by
   apply taylor_injective r
   rw [LinearMap.map_zero]
   ext k
   simp only [taylor_coeff, h, coeff_zero]
 
 /-- Taylor's formula. -/
-theorem sum_taylor_eq {R} [CommRing R] (f : R[X]) (r : R) :
-    ((taylor r f).sum fun i a => C a * (X - C r) ^ i) = f := by
+theorem sum_taylor_eq : ((taylor r f).sum fun i a => C a * (X - C r) ^ i) = f := by
   rw [← comp_eq_sum_left, sub_eq_add_neg, ← C_neg, ← taylor_apply, taylor_taylor, neg_add_cancel,
     taylor_zero]
 
-theorem eval_add_of_sq_eq_zero {A} [CommSemiring A] (p : Polynomial A) (x y : A) (hy : y ^ 2 = 0) :
-    p.eval (x + y) = p.eval x + p.derivative.eval x * y := by
-  rw [add_comm, ← Polynomial.taylor_eval,
-    Polynomial.eval_eq_sum_range' ((Nat.lt_succ_self _).trans (Nat.lt_succ_self _)),
-    Finset.sum_range_succ', Finset.sum_range_succ']
-  simp [pow_succ, mul_assoc, ← pow_two, hy, add_comm (eval x p)]
+@[simps] noncomputable
+def taylorAlgEquiv : R[X] ≃ₐ[R] R[X] where
+  __ := taylorAlgHom r
+  invFun := fun p ↦ taylor (-r) p
+  left_inv := fun p ↦ by simp [taylor_taylor]
+  right_inv := fun p ↦ by simp [taylor_taylor]
+
+variable {r f} in
+lemma irreducible_taylor_iff : Irreducible (taylor r f) ↔ Irreducible f := by
+  refine ⟨fun H ↦ H.of_map (f := (taylorAlgEquiv r).toRingEquiv), fun H ↦ ?_⟩
+  apply Irreducible.of_map (f := (taylorAlgEquiv r).symm.toRingEquiv)
+  simpa only [AlgEquiv.toRingEquiv_eq_coe, RingHom.coe_coe, AlgEquiv.coe_ringEquiv,
+    taylorAlgEquiv_symm_apply, taylor_taylor, neg_add_cancel, taylor_zero', LinearMap.id_coe, id_eq]
+
+end CommRing
 
 end Polynomial
