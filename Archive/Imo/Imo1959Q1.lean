@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
 import Mathlib.Tactic.Ring
-import Mathlib.Data.Nat.Prime.Infinite
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # IMO 1959 Q1
