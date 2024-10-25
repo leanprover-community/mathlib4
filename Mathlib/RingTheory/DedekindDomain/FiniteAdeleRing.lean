@@ -441,7 +441,7 @@ instance : TopologicalSpace (FiniteAdeleRing R K) :=
   (basis_isRingBasis R K).topology
 
 instance : TopologicalRing (FiniteAdeleRing R K) :=
-  (basis_isRingBasis R K).instTopologicalRing
+  (basis_isRingBasis R K).topologicalRing
 
 instance : NonarchimedeanRing (FiniteAdeleRing R K) :=
   (basis_isRingBasis R K).nonarchimedean_of_subgroups

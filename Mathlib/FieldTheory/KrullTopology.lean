@@ -132,7 +132,7 @@ instance krullTopology (K L : Type*) [Field K] [Field L] [Algebra K L] :
 
 /-- For a field extension `L/K`, the Krull topology on `L ≃ₐ[K] L` makes it a topological group. -/
 instance (K L : Type*) [Field K] [Field L] [Algebra K L] : TopologicalGroup (L ≃ₐ[K] L) :=
-  fixingSubgroup_isGroupBasis K L |>.instTopologicalGroup
+  fixingSubgroup_isGroupBasis K L |>.topologicalGroup
 
 open scoped Topology in
 lemma krullTopology_basis_nhds_one (K L : Type*) [Field K] [Field L] [Algebra K L] :
