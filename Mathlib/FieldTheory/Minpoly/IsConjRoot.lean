@@ -73,6 +73,11 @@ root of `x`.
 @[trans] theorem trans {x y z: A} (h₁ : IsConjRoot R x y) (h₂ : IsConjRoot R y z) :
     IsConjRoot R x z := Eq.trans h₁ h₂
 
+variable (R A) in
+def setoid : Setoid A where
+  r := IsConjRoot R
+  iseqv := ⟨fun _ => refl, symm, trans⟩
+
 /--
 Let `p` be the minimal polynomial of `x`. If `y` is a conjugate root of `x`, then `p y = 0`.
 -/
@@ -156,23 +161,32 @@ theorem isConjRoot_of_algEquiv₂ (x : A) (s₁ s₂ : A ≃ₐ[R] A) : IsConjRo
 
 /--
 Let `L / K` be a normal field extension. For any two elements `x` and `y` in `L`, if `y` is a
-conjugate root of `x`, then there exists an `K`-automorphism `σ : L ≃ₐ[K] L` such
-that `y = σ x`.
+conjugate root of `x`, then there exists a `K`-automorphism `σ : L ≃ₐ[K] L` such
+that `σ y = x`.
 -/
 theorem IsConjRoot.exists_algEquiv [Normal K L] {x y: L} (h : IsConjRoot K x y) :
-    ∃ σ : L ≃ₐ[K] L, σ x = y := by
+    ∃ σ : L ≃ₐ[K] L, σ y = x := by
   obtain ⟨σ, hσ⟩ :=
-    exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K y)
+    exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K x)
   exact ⟨AlgEquiv.ofBijective σ (σ.normal_bijective _ _ _), hσ⟩
 
 /--
 Let `L / K` be a normal field extension. For any two elements `x` and `y` in `L`, `y` is a
-conjugate root of `x` if and only if there exists an `K`-automorphism `σ : L ≃ₐ[K] L` such
-that `y = σ x`.
+conjugate root of `x` if and only if there exists a `K`-automorphism `σ : L ≃ₐ[K] L` such
+that `σ y = x`.
 -/
 theorem isConjRoot_iff_exists_algEquiv [Normal K L] {x y : L} :
-    IsConjRoot K x y ↔ ∃ σ : L ≃ₐ[K] L, σ x = y :=
-  ⟨exists_algEquiv, fun ⟨_, h⟩ => h ▸ isConjRoot_of_algEquiv _ _⟩
+    IsConjRoot K x y ↔ ∃ σ : L ≃ₐ[K] L, σ y = x :=
+  ⟨exists_algEquiv, fun ⟨_, h⟩ => h ▸ (isConjRoot_of_algEquiv _ _).symm⟩
+
+/--
+Let `L / K` be a normal field extension. For any two elements `x` and `y` in `L`, `y` is a
+conjugate root of `x` if and only if `x` and `y` falls in the same orbit of the action of Galois
+group.
+-/
+theorem isConjRoot_iff_orbitRel [Normal K L] {x y : L} :
+    IsConjRoot K x y ↔ MulAction.orbitRel (L ≃ₐ[K] L) L x y:=
+  (isConjRoot_iff_exists_algEquiv)
 
 variable [IsDomain S]
 
