@@ -62,11 +62,11 @@ lemma positive {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha₁ : 0 < a 1) {x : ℝ} (
 is positive, and the L-series of `a` agrees with an entire function `f` on some open
 right half-plane where it converges, then `f` is real and positive on `ℝ`. -/
 lemma positive_of_differentiable_of_eqOn {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha₁ : 0 < a 1) {f : ℂ → ℂ}
-    (hf : Differentiable ℂ f) {x : ℝ} (hx : abscissaOfAbsConv a < x)
+    (hf : Differentiable ℂ f) {x : ℝ} (hx : abscissaOfAbsConv a ≤ x)
     (hf' : {s | x < s.re}.EqOn f (LSeries a)) (y : ℝ) :
     0 < f y := by
   have hxy : x < max x y + 1 := (le_max_left x y).trans_lt (lt_add_one _)
-  have hxy' : abscissaOfAbsConv a < max x y + 1 := hx.trans <| mod_cast hxy
+  have hxy' : abscissaOfAbsConv a < max x y + 1 := hx.trans_lt <| mod_cast hxy
   have hys : (max x y + 1 : ℂ) ∈ {s | x < s.re} := by
     simp only [Set.mem_setOf_eq, add_re, ofReal_re, one_re, hxy]
   have hfx : 0 < f (max x y + 1) := by
@@ -105,7 +105,7 @@ is positive, and the L-series of `a` agrees with an entire function `f` on some 
 right half-plane where it converges, then `f` is real and positive on `ℝ`. -/
 lemma LSeries_positive_of_differentiable_of_eqOn {a : ArithmeticFunction ℂ} (ha₀ : 0 ≤ (a ·))
     (ha₁ : 0 < a 1) {f : ℂ → ℂ} (hf : Differentiable ℂ f) {x : ℝ}
-    (hx : LSeries.abscissaOfAbsConv a < x) (hf' : {s | x < s.re}.EqOn f (LSeries a)) (y : ℝ) :
+    (hx : LSeries.abscissaOfAbsConv a ≤ x) (hf' : {s | x < s.re}.EqOn f (LSeries a)) (y : ℝ) :
     0 < f y :=
   LSeries.positive_of_differentiable_of_eqOn ha₀ ha₁ hf hx hf' y
 
