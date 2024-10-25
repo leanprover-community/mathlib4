@@ -1318,15 +1318,8 @@ def WithBot.orderIsoFin (n : ℕ) : WithBot (Fin n) ≃o Fin (n + 1) where
 
 /-- `Fin (n + 1)` is order equivalent to `Fin n` with a top element. -/
 def WithTop.orderIsoFin (n : ℕ) : WithTop (Fin n) ≃o Fin (n + 1) where
-  toFun x := x.recTopCoe ⟨n, n.lt_succ_self⟩ fun x ↦ ⟨_, x.2.trans n.lt_succ_self⟩
-  invFun x := if h : x < n then (⟨x, h⟩ : Fin n) else ⊤
-  left_inv x := by
-    refine x.recTopCoe ?_ fun x ↦ ?_ <;>
-    simp
-  right_inv x := by
-    obtain hx | hx := Nat.lt_succ_iff_lt_or_eq.1 x.2 <;>
-    simp [hx, Fin.ext_iff]
-  map_rel_iff' {x y} := by
-    refine x.recTopCoe ?_ fun x ↦ ?_ <;>
-    refine y.recTopCoe ?_ fun y ↦ ?_ <;>
-    simp [Fin.le_def]
+  toFun x := x.recTopCoe (Fin.last n) Fin.castSucc
+  invFun := Fin.lastCases ⊤ WithTop.some
+  left_inv x := by cases x <;> simp
+  right_inv x := by cases x using Fin.lastCases <;> simp
+  map_rel_iff' {x y} := by cases x <;> cases y <;> simp [Fin.le_def]
