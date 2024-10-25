@@ -946,9 +946,8 @@ theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype
   convert (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) hα).comp
     (measurePreserving_pi μ (fun i : α₁ ↦ ν (hα i)) hm)
   simp only [MeasurableEquiv.arrowCongr', Equiv.arrowCongr', Equiv.arrowCongr, EquivLike.coe_coe,
-    MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.piCongrLeft, Equiv.piCongrLeft,
-    Equiv.symm_symm_apply, Equiv.piCongrLeft'_symm, Equiv.symm_symm]
-  rfl
+    comp_def, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.piCongrLeft,
+    Equiv.piCongrLeft, Equiv.symm_symm, Equiv.piCongrLeft', eq_rec_constant, Equiv.coe_fn_symm_mk]
 
 /-- The measurable equiv `(α₁ → β₁) ≃ᵐ (α₂ → β₂)` induced by `α₁ ≃ α₂` and `β₁ ≃ᵐ β₂` is
 volume preserving. -/
