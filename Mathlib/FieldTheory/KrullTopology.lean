@@ -17,18 +17,6 @@ this, we first show that the family of all `E.fixingSubgroup`, for `E` an interm
 
 ## Main Definitions
 
-- `finiteExts K L`. Given a field extension `L/K`, this is the set of intermediate fields that are
-  finite-dimensional over `K`.
-
-- `fixedByFinite K L`. Given a field extension `L/K`, `fixedByFinite K L` is the set of
-  subsets `Gal(L/E)` of `Gal(L/K)`, where `E/K` is finite
-
-- `galBasis K L`. Given a field extension `L/K`, this is the filter basis on `L ≃ₐ[K] L` whose
-  sets are `Gal(L/E)` for intermediate fields `E` with `E/K` finite.
-
-- `galGroupBasis K L`. This is the same as `galBasis K L`, but with the added structure
-  that it is a group filter basis on `L ≃ₐ[K] L`, rather than just a filter basis.
-
 - `krullTopology K L`. Given a field extension `L/K`, this is the group topology on `L ≃ₐ[K] L`
   whose filter of neighborhoods at `1` admits as a basis the family of all `E.fixingSubgroup` for
   `E` an intermediate field with `E/K` finite dimensional.
@@ -134,7 +122,8 @@ theorem fixingSubgroup_isGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K
     exact AlgEquiv.apply_symm_apply σ x
 
 /-- For a field extension `L/K`, `krullTopology K L` is the topological space structure on
-`L ≃ₐ[K] L` induced by the group filter basis `galGroupBasis K L` -/
+`L ≃ₐ[K] L` induced by the group filter basis of fixing subgroups
+(see `fixingSubgroup_isGroupBasis`). -/
 instance krullTopology (K L : Type*) [Field K] [Field L] [Algebra K L] :
     TopologicalSpace (L ≃ₐ[K] L) :=
   fixingSubgroup_isGroupBasis K L |>.topology
