@@ -8,6 +8,9 @@ import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Orientation
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Analysis.InnerProductSpace.Orientation
+import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
 
 /-!
 Documentation
@@ -24,54 +27,26 @@ finite-dimensional oriented vector space endowed with a nondegenerate symmetric 
 α ∧ ⋆β = ⟨α , β⟩ ω
 -/
 
-open ExteriorAlgebra LinearMap
+open ExteriorAlgebra CliffordAlgebra LinearMap
 
-section Clifford
+noncomputable section Clifford
 
-variable {R : Type*} [CommRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
-variable (B : LinearMap.BilinForm R M) -- (Bsymm : B.IsSymm) --(Bnondeg : B.Nondegenerate)
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable [Nontrivial E]
+instance : Nonempty (Fin <| Module.finrank ℝ E) := Fin.pos_iff_nonempty.mp Module.finrank_pos
+variable (o : Orientation ℝ E (Fin <| Module.finrank ℝ E))
 
-def Q := LinearMap.BilinMap.toQuadraticMap B
+def basis : OrthonormalBasis (Fin <| Module.finrank ℝ E) ℝ E :=
+  OrthonormalBasis.adjustToOrientation (stdOrthonormalBasis ℝ E) o
+
+def vol : ExteriorAlgebra ℝ E := (ιMulti ℝ (Module.finrank ℝ E)) (basis o)
+
+variable (B : LinearMap.BilinForm ℝ E) --(Bsymm : B.IsSymm) --(Bnondeg : B.Nondegenerate)
+
+def Q := BilinMap.toQuadraticMap B
 def C := CliffordAlgebra (Q B)
 
+def HodgeStar : (ExteriorAlgebra ℝ E) → (ExteriorAlgebra ℝ E) :=
+  fun v ↦ equivExterior (Q B) ((equivExterior (Q B)).symm v * (equivExterior (Q B)).symm (vol o))
+
 end Clifford
-
-noncomputable section InducedBilinearMap
-
-
-#check Matrix.det
-#check Module.Finite.exists_fin
-
-variable (R : Type*) [CommRing R]
-variable (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
-variable (B : LinearMap.BilinForm R M) (Bsymm : B.IsSymm) (Bnondeg : B.Nondegenerate)
-
-def dim : ℕ := (@Module.Finite.exists_fin R M).choose
-def s : (Fin (dim R M) → M) := (@Module.Finite.exists_fin R M).choose_spec.choose
-def spec : Submodule.span R (Set.range (s R M)) = ⊤ :=
-  (@Module.Finite.exists_fin R M).choose_spec.choose_spec
-
-theorem span : ∀ (m : M), ∃ (c : Fin (dim R M) → R),
-  ∑ i : Fin (dim R M), c i • (s R M) i = m := by
-  intro m
-  rw [← mem_span_range_iff_exists_fun R, spec]
-  exact Submodule.mem_top
-
-#check span
-
-def F (ι₁ : Fin (dim R M) → R) (ι₂ : Fin (dim R M) → R) : R :=
-  Matrix.det (Matrix.of fun (i : Fin (dim R M)) (j : Fin (dim R M)) ↦
-  (ι₁ i) * (ι₂ j) * B (s R M i) (s R M j) )
-
-def F2 : M → M → R := fun m n ↦ F R M B (span R M m).choose (span R M n).choose
-
-
-
-def B2 (k : ℕ) : LinearMap.BilinForm R (⋀[R]^k M) where
-  toFun := sorry
-  map_add' := sorry
-  map_smul' := sorry
-
-
-end InducedBilinearMap
