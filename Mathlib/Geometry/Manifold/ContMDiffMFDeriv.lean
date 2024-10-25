@@ -79,13 +79,13 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
         (fun x ↦ mfderivWithin I I' (f x) u (g x)) x₀) t' x₀ by
     apply ContMDiffWithinAt.mono_of_mem this
     apply inter_mem self_mem_nhdsWithin
-    exact hg.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds I (g x₀))
+    exact hg.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (g x₀))
   have hx₀gx₀ : (x₀, g x₀) ∈ t ×ˢ u := by simp [hx₀, hu hx₀]
   have h4f : ContinuousWithinAt (fun x => f x (g x)) t x₀ := by
     change ContinuousWithinAt ((Function.uncurry f) ∘ (fun x ↦ (x, g x))) t x₀
     refine ContinuousWithinAt.comp hf.continuousWithinAt ?_ (fun y hy ↦ by simp [hy, hu hy])
     exact (continuousWithinAt_id.prod hg.continuousWithinAt)
-  have h4f := h4f.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds I' (f x₀ (g x₀)))
+  have h4f := h4f.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (I := I') (f x₀ (g x₀)))
   have h3f := contMDiffWithinAt_iff_contMDiffWithinAt_nhdsWithin.mp
     (hf.of_le <| (self_le_add_left 1 m).trans hmn)
   simp only [Nat.cast_one, hx₀gx₀, insert_eq_of_mem] at h3f
@@ -96,7 +96,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     apply hx.comp (g x) (contMDiffWithinAt_const.prod_mk contMDiffWithinAt_id)
     exact fun y hy ↦ by simp [h'x, hy]
   have h2g : g ⁻¹' (extChartAt I (g x₀)).source ∈ 𝓝[t] x₀ :=
-    hg.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds I (g x₀))
+    hg.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (g x₀))
   have : ContDiffWithinAt 𝕜 m (fun x ↦ fderivWithin 𝕜
         (extChartAt I' (f x₀ (g x₀)) ∘ f ((extChartAt J x₀).symm x) ∘ (extChartAt I (g x₀)).symm)
         ((extChartAt I (g x₀)).target ∩ (extChartAt I (g x₀)).symm ⁻¹' u)
@@ -121,7 +121,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
           ⊆ ((fun p ↦ ((extChartAt J x₀).symm p.1, (extChartAt I (g x₀)).symm p.2)) ⁻¹' t' ×ˢ u
             ∩ range J ×ˢ range I) := by
         apply inter_subset_inter_right
-        exact Set.prod_mono_right (extChartAt_target_subset_range I (g x₀))
+        exact Set.prod_mono_right (extChartAt_target_subset_range (g x₀))
       convert hf'.2.mono this
       · ext y; simp; tauto
       · simp
@@ -155,7 +155,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     apply (MDifferentiableWithinAt.mfderivWithin_mono _ h3 _).symm
     · apply mdifferentiableWithinAt_extChartAt_symm
       exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
-    · exact inter_subset_left.trans (extChartAt_target_subset_range I (g x₀))
+    · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))
   rw [inTangentCoordinates_eq_mfderiv_comp, A,
     ← mfderivWithin_comp_of_eq, ← mfderiv_comp_mfderivWithin_of_eq]
   · exact mfderivWithin_eq_fderivWithin
@@ -164,13 +164,13 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     · convert hx.mdifferentiableWithinAt le_rfl
       exact PartialEquiv.left_inv (extChartAt I (g x₀)) h2
     · apply (mdifferentiableWithinAt_extChartAt_symm _).mono
-      · exact inter_subset_left.trans (extChartAt_target_subset_range I (g x₀))
+      · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))
       · exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
   · exact h3
   · simp only [Function.comp_def, PartialEquiv.left_inv (extChartAt I (g x₀)) h2]
   · exact hx.mdifferentiableWithinAt le_rfl
   · apply (mdifferentiableWithinAt_extChartAt_symm _).mono
-    · exact inter_subset_left.trans (extChartAt_target_subset_range I (g x₀))
+    · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))
     · exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
   · exact inter_subset_right
   · exact h3
@@ -472,7 +472,7 @@ lemma smooth_equivTangentBundleProd_symm :
         exact smooth_id.prod_mk smooth_const
       have B : tangentMap I (I.prod I') f = fun p ↦ ⟨(p.1, b.1), (p.2, 0)⟩ := by
         ext p : 1
-        exact tangentMap_prod_left I I'
+        exact tangentMap_prod_left
       rw [B] at A
       exact A a
     have Z := ((contMDiffAt_totalSpace _ _).1 C).2
@@ -549,7 +549,7 @@ lemma smooth_equivTangentBundleProd_symm :
         exact smooth_const.prod_mk smooth_id
       have B : tangentMap I' (I.prod I') f = fun p ↦ ⟨(a.1, p.1), (0, p.2)⟩ := by
         ext p : 1
-        exact tangentMap_prod_right I I'
+        exact tangentMap_prod_right
       rw [B] at A
       exact A b
     have Z := ((contMDiffAt_totalSpace _ _).1 C).2

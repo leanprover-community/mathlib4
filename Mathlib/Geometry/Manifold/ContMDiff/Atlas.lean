@@ -111,7 +111,7 @@ theorem contMDiffWithinAt_extChartAt_symm_range
     (x : M) {y : E} (hy : y ∈ (extChartAt I x).target) :
     ContMDiffWithinAt 𝓘(𝕜, E) I n (extChartAt I x).symm (range I) y :=
   (contMDiffWithinAt_extChartAt_symm_target x hy).mono_of_mem
-    (extChartAt_target_mem_nhdsWithin_of_mem _ hy)
+    (extChartAt_target_mem_nhdsWithin_of_mem hy)
 
 /-- An element of `contDiffGroupoid ⊤ I` is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_contDiffGroupoid {e' : PartialHomeomorph H H}

@@ -369,7 +369,7 @@ theorem tangentBundleModelSpaceHomeomorph_coe_symm :
 
 theorem contMDiff_tangentBundleModelSpaceHomeomorph {n : ℕ∞} :
     ContMDiff I.tangent (I.prod 𝓘(𝕜, E)) n
-    (tangentBundleModelSpaceHomeomorph H I : TangentBundle I H → ModelProd H E) := by
+    (tangentBundleModelSpaceHomeomorph I : TangentBundle I H → ModelProd H E) := by
   apply contMDiff_iff.2 ⟨Homeomorph.continuous _, fun x y ↦ ?_⟩
   apply contDiffOn_id.congr
   simp only [mfld_simps, mem_range, TotalSpace.toProd, Equiv.coe_fn_symm_mk, forall_exists_index,
@@ -379,7 +379,7 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph {n : ℕ∞} :
 
 theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm {n : ℕ∞} :
     ContMDiff (I.prod 𝓘(𝕜, E)) I.tangent n
-    ((tangentBundleModelSpaceHomeomorph H I).symm : ModelProd H E → TangentBundle I H) := by
+    ((tangentBundleModelSpaceHomeomorph I).symm : ModelProd H E → TangentBundle I H) := by
   apply contMDiff_iff.2 ⟨Homeomorph.continuous _, fun x y ↦ ?_⟩
   apply contDiffOn_id.congr
   simp only [mfld_simps, mem_range, TotalSpace.toProd, Equiv.coe_fn_symm_mk, forall_exists_index,

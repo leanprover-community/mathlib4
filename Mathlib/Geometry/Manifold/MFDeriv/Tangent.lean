@@ -76,7 +76,7 @@ lemma inTangentCoordinates_eq_mfderiv_comp
     (mfderiv I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x)) ∘L (ϕ x) ∘L
       (mfderivWithin 𝓘(𝕜, E) I (extChartAt I (f x₀)).symm (range I)
         (extChartAt I (f x₀) (f x))) := by
-  rw [inTangentCoordinates_eq _ _ _ _ _ hx hy, tangentBundleCore_coordChange]
+  rw [inTangentCoordinates_eq _ _ _ hx hy, tangentBundleCore_coordChange]
   congr
   · have : MDifferentiableAt I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x) :=
       mdifferentiableAt_extChartAt hy
@@ -96,5 +96,5 @@ as a diffeomorphism -/
 def tangentBundleModelSpaceDiffeomorph (n : ℕ∞) :
     TangentBundle I H ≃ₘ^n⟮I.tangent, I.prod 𝓘(𝕜, E)⟯ ModelProd H E where
   __ := TotalSpace.toProd H E
-  contMDiff_toFun := contMDiff_tangentBundleModelSpaceHomeomorph _ _
-  contMDiff_invFun := contMDiff_tangentBundleModelSpaceHomeomorph_symm _ _
+  contMDiff_toFun := contMDiff_tangentBundleModelSpaceHomeomorph
+  contMDiff_invFun := contMDiff_tangentBundleModelSpaceHomeomorph_symm

@@ -1187,12 +1187,12 @@ variable (H I) in
 lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
     ContMDiff I.tangent 𝓘(𝕜, E) n (fun (p : TangentBundle I H) ↦ p.2) := by
   change ContMDiff I.tangent 𝓘(𝕜, E) n
-    ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph H I))
+    ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph I))
   apply ContMDiff.comp (I' := I.prod 𝓘(𝕜, E))
   · convert contMDiff_snd
     rw [chartedSpaceSelf_prod]
     rfl
-  · exact contMDiff_tangentBundleModelSpaceHomeomorph H I
+  · exact contMDiff_tangentBundleModelSpaceHomeomorph
 
 variable [SmoothManifoldWithCorners I M] in
 lemma isInvertible_mfderivWithin_extChartAt_symm {y : E} (hy : y ∈ (extChartAt I x).target) :
@@ -1246,12 +1246,12 @@ theorem mlieBracketWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     apply lieBracketWithin_congr_set' _ A
   obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | (y ∈ s) = (y ∈ t)} :=
     mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (nhdsWithin_compl_singleton_le x y h)
-  rw [← extChartAt_to_inv I x] at u_mem
+  rw [← extChartAt_to_inv (I := I) x] at u_mem
   have B : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 (extChartAt I x x) := by
     rw [← nhdsWithin_univ, ← union_compl_self (range I), nhdsWithin_union]
-    apply Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin I x) self_mem_nhdsWithin
+    apply Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin x) self_mem_nhdsWithin
   apply mem_nhdsWithin_iff_exists_mem_nhds_inter.2
-    ⟨_, Filter.inter_mem ((continuousAt_extChartAt_symm I x).preimage_mem_nhds u_mem) B, ?_⟩
+    ⟨_, Filter.inter_mem ((continuousAt_extChartAt_symm x).preimage_mem_nhds u_mem) B, ?_⟩
   rintro z ⟨hz, h'z⟩
   simp only [eq_iff_iff, mem_setOf_eq]
   change z ∈ (extChartAt I x).symm ⁻¹' s ∩ range I ↔ z ∈ (extChartAt I x).symm ⁻¹' t ∩ range I
@@ -1304,21 +1304,21 @@ theorem _root_.Filter.EventuallyEq.mlieBracketWithin_vectorField_eq
     inferInstanceAs (NormedSpace 𝕜 E)
   apply Filter.EventuallyEq.lieBracketWithin_vectorField_eq
   · apply nhdsWithin_mono _ inter_subset_left
-    filter_upwards [(continuousAt_extChartAt_symm I x).continuousWithinAt.preimage_mem_nhdsWithin''
+    filter_upwards [(continuousAt_extChartAt_symm x).continuousWithinAt.preimage_mem_nhdsWithin''
       hV (by simp)] with y hy
     simp only [mpullbackWithin_apply]
     congr 1
   · simp only [mpullbackWithin_apply]
     congr 1
-    convert hxV <;> exact extChartAt_to_inv I x
+    convert hxV <;> exact extChartAt_to_inv x
   · apply nhdsWithin_mono _ inter_subset_left
-    filter_upwards [(continuousAt_extChartAt_symm I x).continuousWithinAt.preimage_mem_nhdsWithin''
+    filter_upwards [(continuousAt_extChartAt_symm x).continuousWithinAt.preimage_mem_nhdsWithin''
       hW (by simp)] with y hy
     simp only [mpullbackWithin_apply]
     congr 1
   · simp only [mpullbackWithin_apply]
     congr 1
-    convert hxW <;> exact extChartAt_to_inv I x
+    convert hxW <;> exact extChartAt_to_inv x
 
 theorem _root_.Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem
     (hV : V₁ =ᶠ[𝓝[s] x] V) (hW : W₁ =ᶠ[𝓝[s] x] W) (hx : x ∈ s) :
@@ -1392,9 +1392,9 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vect
     ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
   apply MDifferentiableWithinAt.differentiableWithinAt
   have := MDifferentiableWithinAt.mpullbackWithin_vectorField_of_eq hV
-    (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target I x))
-    (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x)) (mem_range_self _)
-    I.uniqueMDiffOn le_rfl (extChartAt_to_inv I x).symm
+    (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target x))
+    (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x)) (mem_range_self _)
+    I.uniqueMDiffOn le_rfl (extChartAt_to_inv x).symm
   rw [inter_comm]
   exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
     le_rfl).comp_mdifferentiableWithinAt _ this
@@ -1475,7 +1475,7 @@ theorem mlieBracketWithin_of_mem
   rw [lieBracketWithin_of_mem]
   · apply Filter.inter_mem
     · apply nhdsWithin_mono _ inter_subset_left
-      exact (continuousAt_extChartAt_symm I x).continuousWithinAt.preimage_mem_nhdsWithin''
+      exact (continuousAt_extChartAt_symm x).continuousWithinAt.preimage_mem_nhdsWithin''
         st (by simp)
     · exact nhdsWithin_mono _ inter_subset_right self_mem_nhdsWithin
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
@@ -1537,9 +1537,9 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
   -- `F = extChartAt I' (f x₀) ∘ f ∘ (extChartAt I x₀).symm` of a Lie bracket computed in `E'`,
   -- of two vector fields `V'` and `W'`.
   rw [← ContinuousLinearMap.IsInvertible.inverse_comp_apply_of_left
-    (isInvertible_mfderiv_extChartAt (mem_extChartAt_source I' (f x₀)))]
-  rw [← mfderiv_comp_mfderivWithin _ (mdifferentiableAt_extChartAt_self I') h'f (hu x₀ hx₀)]
-  rw [eq_comm, (isInvertible_mfderiv_extChartAt (mem_extChartAt_source I x₀)).inverse_apply_eq]
+    (isInvertible_mfderiv_extChartAt (mem_extChartAt_source (f x₀)))]
+  rw [← mfderiv_comp_mfderivWithin _ mdifferentiableAt_extChartAt_self h'f (hu x₀ hx₀)]
+  rw [eq_comm, (isInvertible_mfderiv_extChartAt (mem_extChartAt_source x₀)).inverse_apply_eq]
   have : (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm (range I) (extChartAt I x₀ x₀)).inverse =
       mfderiv I 𝓘(𝕜, E) (extChartAt I x₀) x₀ := by
     apply ContinuousLinearMap.inverse_eq
@@ -1548,17 +1548,17 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
     · convert mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm (I := I) (x := x₀)
         (y := extChartAt I x₀ x₀) (by simp)
   rw [← this, ← ContinuousLinearMap.IsInvertible.inverse_comp_apply_of_right]; swap
-  · exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x₀)
+  · exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x₀)
   have : mfderivWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm (range I) (extChartAt I x₀ x₀) =
       mfderivWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm ((extChartAt I x₀).symm ⁻¹' s ∩ range I)
       (extChartAt I x₀ x₀) :=
-    (MDifferentiableWithinAt.mfderivWithin_mono (mdifferentiableWithinAt_extChartAt_symm_self _)
+    (MDifferentiableWithinAt.mfderivWithin_mono mdifferentiableWithinAt_extChartAt_symm_self
       (UniqueDiffWithinAt.uniqueMDiffWithinAt (hu x₀ hx₀)) inter_subset_right).symm
   rw [this]; clear this
   rw [← mfderivWithin_comp_of_eq]; rotate_left
   · apply MDifferentiableAt.comp_mdifferentiableWithinAt (I' := I') _ _ h'f
     exact mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source (f x₀))
-  · exact (mdifferentiableWithinAt_extChartAt_symm_self _).mono inter_subset_right
+  · exact mdifferentiableWithinAt_extChartAt_symm_self.mono inter_subset_right
   · exact inter_subset_left
   · exact UniqueDiffWithinAt.uniqueMDiffWithinAt (hu x₀ hx₀)
   · simp
@@ -1577,7 +1577,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
           ((extChartAt I x₀).symm ⁻¹' s ∩ range I) := by
     have : (extChartAt I x₀).target
         ∈ 𝓝[(extChartAt I x₀).symm ⁻¹' s ∩ range I] (extChartAt I x₀ x₀) :=
-      nhdsWithin_mono _ inter_subset_right (extChartAt_target_mem_nhdsWithin I x₀)
+      nhdsWithin_mono _ inter_subset_right (extChartAt_target_mem_nhdsWithin x₀)
     filter_upwards [self_mem_nhdsWithin, this] with y hy h'''y
     have h'y : f ((extChartAt I x₀).symm y) ∈ (extChartAt I' (f x₀)).source := ht (hst hy.1)
     have h''y : f ((extChartAt I x₀).symm y) ∈ (chartAt H' (f x₀)).source := by simpa using h'y
@@ -1628,7 +1628,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
     apply ContMDiffAt.comp_contMDiffWithinAt (I' := I')
     · exact contMDiffAt_extChartAt' (by simp)
     apply ContMDiffWithinAt.comp_of_eq (I' := I) (hf _ hx₀) _ _ A
-    · exact (contMDiffWithinAt_extChartAt_symm_range _ (mem_extChartAt_target I x₀)).mono
+    · exact (contMDiffWithinAt_extChartAt_symm_range _ (mem_extChartAt_target x₀)).mono
         inter_subset_right
     · exact (mapsTo_preimage _ _).mono_left inter_subset_left
   · rw [← hFx₀]
@@ -1645,9 +1645,9 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
     exact PartialEquiv.left_inv (extChartAt I' (f x₀)) (ht (hst hz.1))
   · rw [← nhdsWithin_eq_iff_eventuallyEq]
     apply le_antisymm
-    · exact nhdsWithin_mono _ (inter_subset_inter_right _ (extChartAt_target_subset_range I x₀))
+    · exact nhdsWithin_mono _ (inter_subset_inter_right _ (extChartAt_target_subset_range x₀))
     · rw [nhdsWithin_le_iff, nhdsWithin_inter]
-      exact Filter.inter_mem_inf self_mem_nhdsWithin (extChartAt_target_mem_nhdsWithin I x₀)
+      exact Filter.inter_mem_inf self_mem_nhdsWithin (extChartAt_target_mem_nhdsWithin x₀)
 
 /- The Lie bracket of vector fields on manifolds is well defined, i.e., it is invariant under
 diffeomorphisms. -/
@@ -1685,7 +1685,7 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
     obtain ⟨u, u_open, x₀u, hu⟩ :
       ∃ u, IsOpen u ∧ x₀ ∈ u ∧ ContMDiffOn I I' 2 f (insert x₀ s ∩ u) := hf.contMDiffOn' le_rfl
     have : f ⁻¹' (extChartAt I' (f x₀)).source ∈ 𝓝[s] x₀ :=
-      hf.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds I' (f x₀))
+      hf.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (f x₀))
     rcases mem_nhdsWithin.1 this with ⟨w, w_open, x₀w, hw⟩
     refine ⟨u ∩ w, u_open.inter w_open, by simp [x₀u, x₀w], ?_, ?_⟩
     · apply Subset.trans _ hw
@@ -1704,14 +1704,14 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
   _ = mpullbackWithin I I' f (mlieBracketWithin I' V W t) s' x₀ := by
     simp only [mpullbackWithin, hs', mfderivWithin_inter u_mem]
   _ = mpullbackWithin I I' f (mlieBracketWithin I' V W t') s' x₀ := by
-    simp only [mpullbackWithin, ht', mlieBracketWithin_inter (extChartAt_source_mem_nhds I' (f x₀))]
+    simp only [mpullbackWithin, ht', mlieBracketWithin_inter (extChartAt_source_mem_nhds (f x₀))]
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s') (mpullbackWithin I I' f W s') s' x₀ := by
     apply mpullbackWithin_mlieBracketWithin_aux (t := t') (hV.mono inter_subset_left)
       (hW.mono inter_subset_left) (hu.inter u_open) u_smooth ⟨hx₀, x₀u⟩ inter_subset_right
       (fun y hy ↦ ⟨hst hy.1, maps_u hy⟩)
     apply hsymm.congr_set
     have : (extChartAt I x₀).symm ⁻¹' u ∈ 𝓝 (extChartAt I x₀ x₀) := by
-      apply (continuousAt_extChartAt_symm I x₀).preimage_mem_nhds
+      apply (continuousAt_extChartAt_symm x₀).preimage_mem_nhds
       apply u_open.mem_nhds (by simpa using x₀u)
     filter_upwards [this] with y hy
     change (y ∈ (extChartAt I x₀).symm ⁻¹' s ∩ range I) =
@@ -1741,7 +1741,7 @@ lemma mpullbackWithin_mlieBracketWithin [IsRCLikeNormedField 𝕜]
   apply mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt hV hW hu hf hx₀ hst
   have A : ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target : Set E)
       =ᶠ[𝓝 (extChartAt I x₀ x₀)] ((extChartAt I x₀).symm ⁻¹' s ∩ range I : Set E) :=
-    EventuallyEq.inter (by rfl) (extChartAt_target_eventuallyEq I)
+    EventuallyEq.inter (by rfl) extChartAt_target_eventuallyEq
   apply IsSymmSndFDerivWithinAt.congr_set _ A
   apply ContDiffWithinAt.isSymmSndFDerivWithinAt (n := 2) _ le_rfl
   · rw [inter_comm]
@@ -1751,15 +1751,15 @@ lemma mpullbackWithin_mlieBracketWithin [IsRCLikeNormedField 𝕜]
     obtain ⟨y, ⟨yo, hy⟩, ys⟩ :
         ((extChartAt I x₀) ⁻¹' o ∩ (extChartAt I x₀).source ∩ interior s).Nonempty := by
       have : (extChartAt I x₀) ⁻¹' o ∈ 𝓝 x₀ := by
-        apply (continuousAt_extChartAt I x₀).preimage_mem_nhds (o_open.mem_nhds ho)
-      exact (mem_closure_iff_nhds.1 h'x₀) _ (inter_mem this (extChartAt_source_mem_nhds I x₀))
+        apply (continuousAt_extChartAt x₀).preimage_mem_nhds (o_open.mem_nhds ho)
+      exact (mem_closure_iff_nhds.1 h'x₀) _ (inter_mem this (extChartAt_source_mem_nhds x₀))
     have A : interior (↑(extChartAt I x₀).symm ⁻¹' s) ∈ 𝓝 (extChartAt I x₀ y) := by
       simp only [interior_mem_nhds]
-      apply (continuousAt_extChartAt_symm' _ hy).preimage_mem_nhds
+      apply (continuousAt_extChartAt_symm' hy).preimage_mem_nhds
       simp only [hy, PartialEquiv.left_inv]
       exact mem_interior_iff_mem_nhds.mp ys
     have B : (extChartAt I x₀) y ∈ closure (interior (extChartAt I x₀).target) := by
-      apply extChartAt_target_subset_closure_interior I (x := x₀)
+      apply extChartAt_target_subset_closure_interior (x := x₀)
       exact (extChartAt I x₀).map_source hy
     exact mem_closure_iff_nhds.1 B _ (inter_mem (o_open.mem_nhds yo) A)
   · simp [hx₀]

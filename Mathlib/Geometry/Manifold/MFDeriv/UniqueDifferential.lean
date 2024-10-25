@@ -100,7 +100,7 @@ theorem UniqueMDiffOn.uniqueDiffWithinAt_range_inter (hs : UniqueMDiffOn I s) (x
     (hy : y ∈ (extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) :
     UniqueDiffWithinAt 𝕜 (range I ∩ (extChartAt I x).symm ⁻¹' s) y := by
   apply (hs.uniqueDiffOn_target_inter x y hy).mono
-  apply inter_subset_inter_left _ (extChartAt_target_subset_range I x)
+  apply inter_subset_inter_left _ (extChartAt_target_subset_range x)
 
 variable [SmoothManifoldWithCorners I M]  in
 /-- When considering functions between manifolds, this statement shows up often. It entails

@@ -514,7 +514,7 @@ theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
           (TangentSpace (I.prod I') p) →L[𝕜] (TangentSpace I p.1)) +
         (mfderiv I' I'' (fun z : M' => f (p.1, z)) p.2) ∘L (id (ContinuousLinearMap.snd 𝕜 E E') :
           (TangentSpace (I.prod I') p) →L[𝕜] (TangentSpace I' p.2)) := by
-  rw [mfderiv_prod_eq_add _ _ _ hf]
+  rw [mfderiv_prod_eq_add hf]
   congr
   · have : (fun z : M × M' => f (z.1, p.2)) = (fun z : M => f (z, p.2)) ∘ Prod.fst := rfl
     rw [this, mfderiv_comp (I' := I)]
@@ -537,7 +537,7 @@ theorem mfderiv_prod_eq_add_apply {f : M × M' → M''} {p : M × M'} {v : Tange
     mfderiv (I.prod I') I'' f p v =
       (mfderiv I I'' (fun z : M => f (z, p.2)) p.1 v.1) +
       (mfderiv I' I'' (fun z : M' => f (p.1, z)) p.2 v.2) := by
-  rw [mfderiv_prod_eq_add_comp _ _ _ hf]
+  rw [mfderiv_prod_eq_add_comp hf]
   rfl
 
 end Prod
