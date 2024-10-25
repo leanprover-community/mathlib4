@@ -195,22 +195,29 @@ theorem rank_matrix_module (m : Type w) (n : Type w') [Finite m] [Finite n] :
   rw [← (b.matrix m n).mk_eq_rank'']
   simp only [mk_prod, lift_mul, lift_lift, ← mul_assoc, b.mk_eq_rank'']
 
-/-- If `m` and `n` are `Fintype`, the rank of `m × n` matrices is `(#m).lift * (#n).lift`. -/
-@[simp]
+
+/-- If `m` and `n` are finite and lie in the same universe, the rank of `m × n` matrices over a
+module `M` is `(#m * #n).lift * rank R M`. -/
+@[simp high]
+theorem rank_matrix_module' (m n : Type w) [Finite m] [Finite n] :
+    Module.rank R (Matrix m n M) =
+      lift.{max v} (#m * #n) * lift.{w} (Module.rank R M) := by
+  rw [rank_matrix_module, lift_mul, lift_umax.{w, v}]
+
+/-- If `m` and `n` are finite, the rank of `m × n` matrices is `(#m).lift * (#n).lift`. -/
 theorem rank_matrix (m : Type v) (n : Type w) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) =
       Cardinal.lift.{max v w u, v} #m * Cardinal.lift.{max v w u, w} #n := by
   rw [rank_matrix_module, rank_self, lift_one, mul_one, ← lift_lift.{v, max u w}, lift_id,
     ← lift_lift.{w, max u v}, lift_id]
 
-/-- If `m` and `n` are `Fintype` that lie in the same universe, the rank of `m × n` matrices is
+/-- If `m` and `n` are finite and lie in the same universe, the rank of `m × n` matrices is
   `(#n * #m).lift`. -/
-@[simp high]
 theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = Cardinal.lift.{u} (#m * #n) := by
   rw [rank_matrix, lift_mul, lift_umax.{v, u}]
 
-/-- If `m` and `n` are `Fintype` that lie in the same universe as `R`, the rank of `m × n` matrices
+/-- If `m` and `n` are finite and lie in the same universe as `R`, the rank of `m × n` matrices
   is `# m * # n`. -/
 theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = #m * #n := by simp
