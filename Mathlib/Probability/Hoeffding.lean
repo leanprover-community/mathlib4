@@ -85,8 +85,8 @@ theorem hoeffding_nonneg [IsProbabilityMeasure μ]
       intro x
       apply HasDerivAt.add
       · rw [← (by ring : 0 - f' x + (f' x - f'' x * (t - x)) = - f'' x * (t - x))]
-        apply ((hasDerivAt_const x _).sub (cum_deriv_one a b X hX h x)).add
-        convert (cum_deriv_two a b X hX h x).mul ((hasDerivAt_id' x).add_const (-t)) using 1
+        apply ((hasDerivAt_const x _).sub (cum_deriv_one a b hX h x)).add
+        convert (cum_deriv_two a b hX h x).mul ((hasDerivAt_id' x).add_const (-t)) using 1
         · ext; ring
         · dsimp [f', f'']
           have p : variance X (Measure.tilted μ fun ω ↦ x * X ω) =
@@ -149,7 +149,7 @@ theorem hoeffding_nonneg [IsProbabilityMeasure μ]
       dsimp [f'']
       have _ : IsProbabilityMeasure (μ.tilted fun ω ↦ t * X ω) :=
         isProbabilityMeasure_tilted (integrable_expt_bound hX h)
-      exact tilt_var_bound a b c X h hX
+      exact tilt_var_bound a b c h hX
       exact sq_nonneg t; simp only [inv_nonneg, Nat.ofNat_nonneg]
     _ = t ^ 2 * (b - a) ^ 2 / 8 := by ring
   exact s
