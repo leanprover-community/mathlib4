@@ -37,7 +37,6 @@ theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
 theorem count_apply (hs : MeasurableSet s) : count s = ∑' _ : s, 1 := by
   simp only [count, sum_apply, hs, dirac_apply', ← tsum_subtype s (1 : α → ℝ≥0∞), Pi.one_apply]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem count_empty : count (∅ : Set α) = 0 := by rw [count_apply MeasurableSet.empty, tsum_empty]
 
 @[simp]
@@ -102,13 +101,13 @@ theorem count_apply_lt_top [MeasurableSingletonClass α] : count s < ∞ ↔ s.F
 theorem empty_of_count_eq_zero' (s_mble : MeasurableSet s) (hsc : count s = 0) : s = ∅ := by
   have hs : s.Finite := by
     rw [← count_apply_lt_top' s_mble, hsc]
-    exact WithTop.zero_lt_top
+    exact WithTop.top_pos
   simpa [count_apply_finite' hs s_mble] using hsc
 
 theorem empty_of_count_eq_zero [MeasurableSingletonClass α] (hsc : count s = 0) : s = ∅ := by
   have hs : s.Finite := by
     rw [← count_apply_lt_top, hsc]
-    exact WithTop.zero_lt_top
+    exact WithTop.top_pos
   simpa [count_apply_finite _ hs] using hsc
 
 @[simp]
@@ -133,7 +132,6 @@ theorem count_singleton' {a : α} (ha : MeasurableSet ({a} : Set α)) : count ({
   simp [@toFinset_card _ _ (Set.finite_singleton a).fintype,
     @Fintype.card_unique _ _ (Set.finite_singleton a).fintype]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem count_singleton [MeasurableSingletonClass α] (a : α) : count ({a} : Set α) = 1 :=
   count_singleton' (measurableSet_singleton a)
 

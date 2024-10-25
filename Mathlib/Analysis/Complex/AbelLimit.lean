@@ -6,6 +6,7 @@ Authors: Jeremy Tan
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Tactic.Peel
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Abel's limit theorem

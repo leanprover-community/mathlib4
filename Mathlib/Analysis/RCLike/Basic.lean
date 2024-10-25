@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Data.Real.Sqrt
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -298,7 +299,7 @@ theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : K)) = OfNat.ofNat n :=
   map_ofNat _ _
 
-@[rclike_simps] -- Porting note (#10618): was a `simp` but `simp` can prove it
+@[rclike_simps, simp]
 theorem conj_neg_I : conj (-I) = (I : K) := by rw [map_neg, conj_I, neg_neg]
 
 theorem conj_eq_re_sub_im (z : K) : conj z = re z - im z * I :=
