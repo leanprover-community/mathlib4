@@ -243,16 +243,25 @@ theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α 
     type (f ⁻¹'o r) = type r :=
   (RelIso.preimage f r).ordinal_type_eq
 
+/-- `Quotient.inductionOn` specialized to ordinals.
+
+Not to be confused with well-founded recursion `Ordinal.induction`. -/
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r], C (type r)) : C o :=
   Quot.inductionOn o fun ⟨α, r, wo⟩ => @H α r wo
 
+/-- `Quotient.inductionOn₂` specialized to ordinals.
+
+Not to be confused with well-founded recursion `Ordinal.induction`. -/
 @[elab_as_elim]
 theorem inductionOn₂ {C : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s], C (type r) (type s)) : C o₁ o₂ :=
   Quotient.inductionOn₂ o₁ o₂ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ => @H α r wo₁ β s wo₂
 
+/-- `Quotient.inductionOn₃` specialized to ordinals.
+
+Not to be confused with well-founded recursion `Ordinal.induction`. -/
 @[elab_as_elim]
 theorem inductionOn₃ {C : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂ o₃ : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s] (γ t) [IsWellOrder γ t],
@@ -260,7 +269,47 @@ theorem inductionOn₃ {C : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂
   Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨γ, t, wo₃⟩ =>
     @H α r wo₁ β s wo₂ γ t wo₃
 
-#exit
+instance test {α : Type*} [LinearOrder α] [WellFoundedLT α] : IsWellOrder α (· < ·) where
+
+/-- To prove a result on ordinals, it suffices to prove it for order types of well-orders. -/
+@[elab_as_elim]
+theorem inductionOnWellOrder {C : Ordinal → Prop} (o : Ordinal)
+    (H : ∀ (α) [LinearOrder α] [WellFoundedLT α], C (typeLT α)) : C o := by
+  classical
+  refine inductionOn o fun α r wo ↦ ?_
+  letI : LinearOrder α := linearOrderOfSTO r
+  have : WellFoundedLT α := wo.toIsWellFounded
+  exact H α
+
+/-- To define a function on ordinals, it suffices to define them on order types of well-orders.
+
+Since `LinearOrder` is data-carrying, `liftOnWellOrder_type` is not a definitional equality, unlike
+`Quotient.liftOn` which is always def-eq. -/
+def liftOnWellOrder {δ : Sort v} (o : Ordinal) (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
+    (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
+      typeLT α = typeLT β → f α = f β) : δ := by
+  classical
+  refine Quotient.liftOn o (fun w ↦ ?_) fun w₁ w₂ h ↦ ?_
+  · letI : LinearOrder w.α := linearOrderOfSTO w.r
+    have : WellFoundedLT w.α := w.wo.toIsWellFounded
+    exact f w.α
+  · letI : LinearOrder w₁.α := linearOrderOfSTO w₁.r
+    letI : LinearOrder w₂.α := linearOrderOfSTO w₂.r
+    have : WellFoundedLT w₁.α := w₁.wo.toIsWellFounded
+    have : WellFoundedLT w₂.α := w₂.wo.toIsWellFounded
+    exact c _ _ (Quotient.sound h)
+
+@[simp]
+theorem liftOnWellOrder_type {δ : Sort v} (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
+    (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
+      typeLT α = typeLT β → f α = f β) {γ} [LinearOrder γ] [WellFoundedLT γ] :
+    liftOnWellOrder (typeLT γ) f c = f γ := by
+  classical
+  rw [liftOnWellOrder, ← type_def, Quotient.liftOn_mk]
+  dsimp
+  congr
+  exact LinearOrder.ext_lt fun _ _ ↦ Iff.rfl
+
 /-! ### The order on ordinals -/
 
 /--
@@ -1451,3 +1500,5 @@ theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [IsWellOrder α (· < ·)] {l 
       | head as => exact List.head_le_of_lt hmltl
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)
           (List.head_le_of_lt hmltl))
+
+set_option linter.style.longFile 1700
