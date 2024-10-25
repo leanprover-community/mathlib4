@@ -39,7 +39,7 @@ instance coreCategory : Groupoid.{v₁} (Core C) where
   Hom (X Y : C) := X ≅ Y
   id (X : C) := Iso.refl X
   comp f g := Iso.trans f g
-  inv {X Y} f := Iso.symm f
+  inv {_ _} f := Iso.symm f
 
 namespace Core
 

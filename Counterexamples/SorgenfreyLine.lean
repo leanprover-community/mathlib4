@@ -110,7 +110,7 @@ theorem nhds_countable_basis_Ico_inv_pnat (a : ℝₗ) :
 theorem nhds_antitone_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasAntitoneBasis fun n : ℕ+ => Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, monotone_const.Ico <| Antitone.const_add
-    (fun k _l hkl => inv_le_inv_of_le (Nat.cast_pos.2 k.2)
+    (fun k _l hkl => inv_anti₀ (Nat.cast_pos.2 k.2)
       (Nat.mono_cast <| Subtype.coe_le_coe.2 hkl)) _⟩
 
 theorem isOpen_iff {s : Set ℝₗ} : IsOpen s ↔ ∀ x ∈ s, ∃ y > x, Ico x y ⊆ s :=

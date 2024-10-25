@@ -15,7 +15,7 @@ import Mathlib.Topology.ContinuousMap.Algebra
 
 namespace LocallyConstant
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : LocallyConstant X Y)
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- The inclusion of locally-constant functions into continuous functions as a multiplicative
 monoid hom. -/

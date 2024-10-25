@@ -576,12 +576,22 @@ instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
     mul_comm := mul_comm }
 
+end CommRing
+
 section RightAlgebra
+
+variable [CommSemiring R]
+variable [Semiring A] [Algebra R A]
+variable [CommSemiring B] [Algebra R B]
 
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
 abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
-  (Algebra.TensorProduct.includeRight.toRingHom : B →+* A ⊗[R] B).toAlgebra
+  includeRight.toRingHom.toAlgebra' fun b x => by
+    suffices LinearMap.mulLeft R (includeRight b) = LinearMap.mulRight R (includeRight b) from
+      congr($this x)
+    ext xa xb
+    simp [mul_comm]
 
 attribute [local instance] TensorProduct.rightAlgebra
 
@@ -589,8 +599,6 @@ instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
 
 end RightAlgebra
-
-end CommRing
 
 /-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely rings, by treating both as `ℤ`-algebras.
@@ -692,8 +700,8 @@ def lift (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (
     (AlgebraTensorModule.lift <|
       letI restr : (C →ₗ[S] C) →ₗ[S] _ :=
         { toFun := (·.restrictScalars R)
-          map_add' := fun f g => LinearMap.ext fun x => rfl
-          map_smul' := fun c g => LinearMap.ext fun x => rfl }
+          map_add' := fun _ _ => LinearMap.ext fun _ => rfl
+          map_smul' := fun _ _ => LinearMap.ext fun _ => rfl }
       LinearMap.flip <| (restr ∘ₗ LinearMap.mul S C ∘ₗ f.toLinearMap).flip ∘ₗ g)
     (fun a₁ a₂ b₁ b₂ => show f (a₁ * a₂) * g (b₁ * b₂) = f a₁ * g b₁ * (f a₂ * g b₂) by
       rw [map_mul, map_mul, (hfg a₂ b₁).mul_mul_mul_comm])
@@ -707,7 +715,7 @@ theorem lift_tmul (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commut
 
 @[simp]
 theorem lift_includeLeft_includeRight :
-    lift includeLeft includeRight (fun a b => (Commute.one_right _).tmul (Commute.one_left _)) =
+    lift includeLeft includeRight (fun _ _ => (Commute.one_right _).tmul (Commute.one_left _)) =
       .id S (A ⊗[R] B) := by
   ext <;> simp
 
@@ -733,7 +741,7 @@ algebra. -/
 def liftEquiv : {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg.1 x) (fg.2 y)}
     ≃ ((A ⊗[R] B) →ₐ[S] C) where
   toFun fg := lift fg.val.1 fg.val.2 fg.prop
-  invFun f' := ⟨(f'.comp includeLeft, (f'.restrictScalars R).comp includeRight), fun x y =>
+  invFun f' := ⟨(f'.comp includeLeft, (f'.restrictScalars R).comp includeRight), fun _ _ =>
     ((Commute.one_right _).tmul (Commute.one_left _)).map f'⟩
   left_inv fg := by ext <;> simp
   right_inv f' := by ext <;> simp

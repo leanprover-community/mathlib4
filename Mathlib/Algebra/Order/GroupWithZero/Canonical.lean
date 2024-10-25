@@ -49,7 +49,7 @@ instance (priority := 100) canonicallyOrderedAddCommMonoid.toZeroLeOneClass
   ⟨zero_le 1⟩
 
 section LinearOrderedCommMonoidWithZero
-variable [LinearOrderedCommMonoidWithZero α] {a b c d x y z : α} {n : ℕ}
+variable [LinearOrderedCommMonoidWithZero α] {a b : α} {n : ℕ}
 
 /-
 The following facts are true more generally in a (linearly) ordered commutative monoid.
@@ -180,19 +180,9 @@ theorem inv_mul_lt_of_lt_mul₀ (h : a < b * c) : b⁻¹ * a < c := by
 theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c :=
   mul_lt_mul_of_pos_right h (zero_lt_iff.2 hc)
 
-theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
-  show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from
-    have : CovariantClass αˣ αˣ (· * ·) (· < ·) :=
-      IsLeftCancelMul.covariant_mul_lt_of_covariant_mul_le αˣ
-    inv_lt_inv_iff
-
-theorem inv_le_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a :=
-  show (Units.mk0 a ha)⁻¹ ≤ (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb ≤ Units.mk0 a ha from
-    inv_le_inv_iff
-
 theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a) : b < d := by
   have ha : a ≠ 0 := ne_of_gt (lt_of_lt_of_le hc hh)
-  simp_rw [← inv_le_inv₀ ha (ne_of_gt hc)] at hh
+  rw [← inv_le_inv₀ (zero_lt_iff.2 ha) hc] at hh
   have := mul_lt_mul_of_lt_of_le₀ hh (inv_ne_zero (ne_of_gt hc)) h
   simpa [inv_mul_cancel_left₀ ha, inv_mul_cancel_left₀ (ne_of_gt hc)] using this
 
@@ -208,7 +198,8 @@ theorem div_le_div_right₀ (hc : c ≠ 0) : a / c ≤ b / c ↔ a ≤ b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_le_mul_right (zero_lt_iff.2 (inv_ne_zero hc))]
 
 theorem div_le_div_left₀ (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) : a / b ≤ a / c ↔ c ≤ b := by
-  simp only [div_eq_mul_inv, mul_le_mul_left (zero_lt_iff.2 ha), inv_le_inv₀ hb hc]
+  simp only [div_eq_mul_inv, mul_le_mul_left (zero_lt_iff.2 ha),
+    inv_le_inv₀ (zero_lt_iff.2 hb) (zero_lt_iff.2 hc)]
 
 /-- `Equiv.mulLeft₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
 
@@ -300,8 +291,8 @@ lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b :=
   WithBot.coe_le_iff
 
-instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ ·)] :
-    CovariantClass (WithZero α) (WithZero α) (· * ·) (· ≤ ·) := by
+instance mulLeftMono [Mul α] [MulLeftMono α] :
+    MulLeftMono (WithZero α) := by
   refine ⟨fun a b c hbc => ?_⟩
   induction a; · exact zero_le _
   induction b; · exact zero_le _
@@ -309,8 +300,8 @@ instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ 
   rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
   exact mul_le_mul_left' hbc' _
 
-protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (· + ·) (· ≤ ·)]
-    (h : ∀ a : α, 0 ≤ a) : CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
+protected lemma addLeftMono [AddZeroClass α] [AddLeftMono α]
+    (h : ∀ a : α, 0 ≤ a) : AddLeftMono (WithZero α) := by
   refine ⟨fun a b c hbc => ?_⟩
   induction a
   · rwa [zero_add, zero_add]
@@ -341,8 +332,8 @@ variable [PartialOrder α]
 
 instance partialOrder : PartialOrder (WithZero α) := WithBot.partialOrder
 
-instance contravariantClass_mul_lt [Mul α] [ContravariantClass α α (· * ·) (· < ·)] :
-    ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
+instance mulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
+    MulLeftReflectLT (WithZero α) := by
   refine ⟨fun a b c h => ?_⟩
   have := ((zero_le _).trans_lt h).ne'
   induction a
@@ -361,11 +352,9 @@ variable [LinearOrder α] {a b c : α}
 
 instance linearOrder : LinearOrder (WithZero α) := WithBot.linearOrder
 
--- Porting note (#10618): @[simp] can prove this
 protected lemma le_max_iff : (a : WithZero α) ≤ max (b : WithZero α) c ↔ a ≤ max b c := by
   simp only [WithZero.coe_le_coe, le_max_iff]
 
--- Porting note (#10618): @[simp] can prove this
 protected lemma min_le_iff : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
   simp only [WithZero.coe_le_coe, min_le_iff]
 
@@ -387,7 +376,7 @@ elements are ≤ 1 and then 1 is the top element.
 protected abbrev orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : α, 0 ≤ a) :
     OrderedAddCommMonoid (WithZero α) :=
   { WithZero.partialOrder, WithZero.addCommMonoid with
-    add_le_add_left := @add_le_add_left _ _ _ (WithZero.covariantClass_add_le zero_le).. }
+    add_le_add_left := @add_le_add_left _ _ _ (WithZero.addLeftMono zero_le).. }
 
 -- This instance looks absurd: a monoid already has a zero
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/

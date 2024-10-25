@@ -476,7 +476,7 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
       (P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion f p P i) :=
   Quotient.map' (fun x : S => ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩)
     fun x y h => by
-    rw [Submodule.quotientRel_r_def] at h ⊢
+    rw [Submodule.quotientRel_def] at h ⊢
     simp only [_root_.map_mul, LinearMap.mem_range]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul a_mem h)⟩, ?_⟩
     ext
@@ -588,7 +588,7 @@ theorem rank_pow_quot_aux [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : 
   letI : Field (R ⧸ p) := Ideal.Quotient.field _
   rw [← rank_range_of_injective _ (powQuotSuccInclusion_injective f p P i),
     (quotientRangePowQuotSuccInclusionEquiv f p P hP0 hi).symm.rank_eq]
-  exact (rank_quotient_add_rank (LinearMap.range (powQuotSuccInclusion f p P i))).symm
+  exact (Submodule.rank_quotient_add_rank (LinearMap.range (powQuotSuccInclusion f p P i))).symm
 
 theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P ≠ ⊥)
     (i : ℕ) (hi : i ≤ e) :
@@ -639,7 +639,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
   by_cases hP : FiniteDimensional (R ⧸ p) (S ⧸ P)
   · haveI := hP
     haveI := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
-    refine Cardinal.natCast_injective ?_
+    apply @Nat.cast_injective Cardinal
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP
   simp only [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe,

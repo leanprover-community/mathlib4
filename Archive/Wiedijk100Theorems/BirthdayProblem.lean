@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Data.Fintype.CardEmbedding
-import Mathlib.Probability.CondCount
+import Mathlib.Probability.UniformOn
 import Mathlib.Probability.Notation
 
 /-!
@@ -52,15 +52,15 @@ instance : MeasurableSingletonClass (Fin m) :=
 /- We then endow the space with a canonical measure, which is called ℙ.
 We define this to be the conditional counting measure. -/
 noncomputable instance : MeasureSpace (Fin n → Fin m) :=
-  ⟨condCount Set.univ⟩
+  ⟨uniformOn Set.univ⟩
 
 -- The canonical measure on `Fin n → Fin m` is a probability measure (except on an empty space).
 instance : IsProbabilityMeasure (ℙ : Measure (Fin n → Fin (m + 1))) :=
-  condCount_isProbabilityMeasure Set.finite_univ Set.univ_nonempty
+  uniformOn_isProbabilityMeasure Set.finite_univ Set.univ_nonempty
 
 theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
     ℙ s = |s.toFinite.toFinset| / ‖Fin n → Fin m‖ := by
-  erw [condCount_univ, Measure.count_apply_finite]
+  erw [uniformOn_univ, Measure.count_apply_finite]
 
 /-- **Birthday Problem**: first probabilistic interpretation. -/
 theorem birthday_measure :
