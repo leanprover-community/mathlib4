@@ -152,26 +152,26 @@ lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
 -/
 
 /-- The `L`-function of the trivial character mod `N`. -/
-noncomputable abbrev LFunction_triv_char (N : ℕ) [NeZero N] :=
+noncomputable abbrev LFunctionTrivChar (N : ℕ) [NeZero N] :=
   (1 : DirichletCharacter ℂ N).LFunction
 
 /-- The L function of the trivial Dirichlet character mod `N` is obtained from the Riemann
 zeta function by multiplying with `∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))`. -/
-lemma LFunction_triv_char_eq_mul_riemannZeta {s : ℂ} (hs : s ≠ 1) :
-    LFunction_triv_char N s = (∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))) * riemannZeta s := by
-  rw [← LFunction_modOne_eq (χ := 1), LFunction_triv_char, ← changeLevel_one N.one_dvd, mul_comm]
+lemma LFunctionTrivChar_eq_mul_riemannZeta {s : ℂ} (hs : s ≠ 1) :
+    LFunctionTrivChar N s = (∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))) * riemannZeta s := by
+  rw [← LFunction_modOne_eq (χ := 1), LFunctionTrivChar, ← changeLevel_one N.one_dvd, mul_comm]
   convert LFunction_changeLevel N.one_dvd 1 (.inr hs) using 4 with p
   rw [MulChar.one_apply <| isUnit_of_subsingleton _, one_mul]
 
 /-- The L function of the trivial Dirichlet character mod `N` has a simple pole with
 residue `∏ p ∈ N.primeFactors, (1 - p⁻¹)` at `s = 1`. -/
-lemma LFunction_triv_char_residue_one :
-    Tendsto (fun s ↦ (s - 1) * LFunction_triv_char N s) (𝓝[≠] 1)
+lemma LFunctionTrivChar_residue_one :
+    Tendsto (fun s ↦ (s - 1) * LFunctionTrivChar N s) (𝓝[≠] 1)
       (𝓝 <| ∏ p ∈ N.primeFactors, (1 - (p : ℂ)⁻¹)) := by
-  have H : (fun s ↦ (s - 1) * LFunction_triv_char N s) =ᶠ[𝓝[≠] 1]
+  have H : (fun s ↦ (s - 1) * LFunctionTrivChar N s) =ᶠ[𝓝[≠] 1]
         fun s ↦ (∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))) * ((s - 1) * riemannZeta s) := by
     refine Set.EqOn.eventuallyEq_nhdsWithin fun s hs ↦ ?_
-    rw [mul_left_comm, LFunction_triv_char_eq_mul_riemannZeta hs]
+    rw [mul_left_comm, LFunctionTrivChar_eq_mul_riemannZeta hs]
   rw [tendsto_congr' H]
   conv => enter [3, 1]; rw [← mul_one <| Finset.prod ..]; enter [1, 2, p]; rw [← cpow_neg_one]
   refine .mul (f := fun s ↦ ∏ p ∈ N.primeFactors, _) ?_ riemannZeta_residue_one
