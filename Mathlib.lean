@@ -158,6 +158,7 @@ import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.CharP.IntermediateField
 import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Algebra.CharP.LocalRing
 import Mathlib.Algebra.CharP.MixedCharZero
 import Mathlib.Algebra.CharP.Pi
@@ -228,12 +229,16 @@ import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.GradedMulAction
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Action.Option
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Group.Action.Pretransitive
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Action.Sigma
 import Mathlib.Algebra.Group.Action.Sum
+import Mathlib.Algebra.Group.Action.TypeTags
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Group.Aut
@@ -1520,6 +1525,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
 import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Closed.Cartesian
+import Mathlib.CategoryTheory.Closed.Enrichment
 import Mathlib.CategoryTheory.Closed.Functor
 import Mathlib.CategoryTheory.Closed.FunctorCategory
 import Mathlib.CategoryTheory.Closed.FunctorToTypes
@@ -4708,6 +4714,7 @@ import Mathlib.Topology.Clopen
 import Mathlib.Topology.ClopenBox
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.Compactification.OnePointEquiv
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 import Mathlib.Topology.Compactness.Exterior
