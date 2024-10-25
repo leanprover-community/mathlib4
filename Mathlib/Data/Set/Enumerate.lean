@@ -42,7 +42,7 @@ theorem enumerate_eq_none_of_sel {s : Set α} (h : sel s = none) : ∀ {n}, enum
 
 theorem enumerate_eq_none :
     ∀ {s n₁ n₂}, enumerate sel s n₁ = none → n₁ ≤ n₂ → enumerate sel s n₂ = none
-  | s, 0, m => fun h _ ↦ enumerate_eq_none_of_sel sel h
+  | _, 0, _ => fun h _ ↦ enumerate_eq_none_of_sel sel h
   | s, n + 1, m => fun h hm ↦ by
     cases hs : sel s
     · exact enumerate_eq_none_of_sel sel hs

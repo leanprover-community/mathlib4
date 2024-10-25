@@ -272,7 +272,7 @@ instance toEventualRanges_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite (F.to
 def toEventualRangesSectionsEquiv : F.toEventualRanges.sections ≃ F.sections where
   toFun s := ⟨_, fun f => Subtype.coe_inj.2 <| s.prop f⟩
   invFun s :=
-    ⟨fun j => ⟨_, mem_iInter₂.2 fun i f => ⟨_, s.prop f⟩⟩, fun f => Subtype.ext <| s.prop f⟩
+    ⟨fun _ => ⟨_, mem_iInter₂.2 fun _ f => ⟨_, s.prop f⟩⟩, fun f => Subtype.ext <| s.prop f⟩
   left_inv _ := by
     ext
     rfl
