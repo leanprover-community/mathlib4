@@ -873,14 +873,14 @@ instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrdere
 scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
 
 theorem ofReal_mul_pos_iff (x : ℝ) (z : K) :
-     0 < x * z ↔ (x < 0 ∧ z < 0) ∨ (0 < x ∧ 0 < z) := by
+    0 < x * z ↔ (x < 0 ∧ z < 0) ∨ (0 < x ∧ 0 < z) := by
    simp_rw [pos_iff (z := x * z), pos_iff (z := z), neg_iff (z := z), re_ofReal_mul, im_ofReal_mul]
    obtain hx | hx | hx := lt_trichotomy x 0
    · simp_rw [mul_pos_iff, mul_eq_zero, hx, not_lt_of_gt hx, hx.ne, false_and, true_and,
-       false_or, or_false]
+      false_or, or_false]
    · simp_rw [hx, zero_mul, lt_self_iff_false, false_and, false_or]
    · simp_rw [mul_pos_iff, mul_eq_zero, hx, not_lt_of_gt hx, hx.ne', false_and, true_and,
-       false_or, or_false]
+      false_or, or_false]
 
 theorem ofReal_mul_neg_iff (x : ℝ) (z : K) :
     x * z < 0 ↔ (x < 0 ∧ 0 < z) ∨ (0 < x ∧ z < 0) := by
