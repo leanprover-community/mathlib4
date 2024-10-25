@@ -68,6 +68,7 @@ private lemma exists_mul_right_lt [CommGroup α] [LT α] [DenselyOrdered α]
   obtain ⟨a', ha', hc'⟩ := exists_between (lt_div_iff_mul_lt'.2 hc)
   exact ⟨a', ha', lt_div_iff_mul_lt'.1 hc'⟩
 
+/-- See `le_mul_of_forall_lt'` for multiplication in fields.-/
 @[to_additive]
 lemma le_mul_of_forall_lt [CommGroup α] [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)]
     [DenselyOrdered α] {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') :
@@ -77,7 +78,7 @@ lemma le_mul_of_forall_lt [CommGroup α] [LinearOrder α] [CovariantClass α α 
   obtain ⟨b', hb', hd⟩ := exists_mul_right_lt hd
   exact (h a' ha' b' hb').trans hd.le
 
-
+/-- See `mul_le_of_forall_lt'` for multiplication in fields.-/
 @[to_additive]
 lemma mul_le_of_forall_lt [CommGroup α] [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)]
     [DenselyOrdered α] {a b c : α} (h : ∀ a' < a, ∀ b' < b, a' * b' ≤ c) :

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.AtTopBot.Archimedean
@@ -519,6 +520,56 @@ theorem limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring
     simp only [Set.indicator, Pi.one_apply, Finset.sum_boole, Nat.cast_id]
 
 end Indicator
+
+section LiminfLimsupAdd
+
+variable [AddCommGroup α] [ConditionallyCompleteLinearOrder α] [DenselyOrdered α]
+  [CovariantClass α α (fun a b ↦ a + b) fun x1 x2 ↦ x1 ≤ x2]
+  {f : Filter ι} [f.NeBot] {u v : ι → α}
+
+lemma le_limsup_add (h₁ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u := by isBoundedDefault)
+    (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≥ x2) f u := by isBoundedDefault)
+    (h₃ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f v := by isBoundedDefault)
+    (h₄ : IsBoundedUnder (fun x1 x2 ↦ x1 ≥ x2) f v := by isBoundedDefault) :
+    (limsup u f) + liminf v f ≤ limsup (u + v) f :=
+  add_le_of_forall_lt fun _ a_u _ b_v ↦
+    (le_limsup_iff (isBoundedUnder_ge_add h₂ h₄).isCobounded_le (isBoundedUnder_le_add h₁ h₃)).2
+    fun _ c_ab ↦ ((frequently_lt_of_lt_limsup h₂.isCobounded_le a_u).and_eventually
+    (eventually_lt_of_lt_liminf b_v h₄)).mono  fun _ ab_x ↦ c_ab.trans (add_lt_add ab_x.1 ab_x.2)
+
+lemma limsup_add_le (h₁ : IsBoundedUnder (fun x1 x2 ↦ x1 ≥ x2) f u := by isBoundedDefault)
+    (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u := by isBoundedDefault)
+    (h₃ : IsBoundedUnder (fun x1 x2 ↦ x1 ≥ x2) f v := by isBoundedDefault)
+    (h₄ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f v := by isBoundedDefault) :
+    limsup (u + v) f ≤ (limsup u f) + limsup v f := by
+  refine le_add_of_forall_lt fun a a_u b b_v ↦ ?_
+  rw [limsup_le_iff (isBoundedUnder_ge_add h₁ h₃).isCobounded_le (isBoundedUnder_le_add h₂ h₄)]
+  intro c c_ab
+  filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v] with x a_x b_x
+  exact (add_lt_add a_x b_x).trans c_ab
+
+lemma le_liminf_add (h₁ : IsBoundedUnder (fun x1 x2 ↦ x1 ≥ x2) f u := by isBoundedDefault)
+    (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u := by isBoundedDefault)
+    (h₃ : IsBoundedUnder (fun x1 x2 ↦ x1 ≥ x2) f v := by isBoundedDefault)
+    (h₄ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f v := by isBoundedDefault) :
+    (liminf u f) + liminf v f ≤ liminf (u + v) f := by
+  refine add_le_of_forall_lt fun a a_u b b_v ↦ ?_
+  rw [le_liminf_iff (isBoundedUnder_le_add h₂ h₄).isCobounded_ge (isBoundedUnder_ge_add h₁ h₃)]
+  intro c c_ab
+  filter_upwards [eventually_lt_of_lt_liminf a_u, eventually_lt_of_lt_liminf b_v] with x a_x b_x
+  exact c_ab.trans (add_lt_add a_x b_x)
+
+lemma liminf_add_le (h₁ : IsBoundedUnder (fun x1 x2 ↦ x1 ≥ x2) f u := by isBoundedDefault)
+    (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u := by isBoundedDefault)
+    (h₃ : IsBoundedUnder (fun x1 x2 ↦ x1 ≥ x2) f v := by isBoundedDefault)
+    (h₄ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f v := by isBoundedDefault) :
+    liminf (u + v) f ≤ (limsup u f) + liminf v f :=
+  le_add_of_forall_lt fun _ a_u _ b_v ↦
+    (liminf_le_iff (isBoundedUnder_le_add h₂ h₄).isCobounded_ge (isBoundedUnder_ge_add h₁ h₃)).2
+    fun _ c_ab ↦ ((frequently_lt_of_liminf_lt h₄.isCobounded_ge b_v).and_eventually
+    (eventually_lt_of_limsup_lt a_u h₂)).mono fun _ ab_x ↦ (add_lt_add ab_x.2 ab_x.1).trans c_ab
+
+end LiminfLimsupAdd
 
 section LiminfLimsupAddSub
 variable [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
