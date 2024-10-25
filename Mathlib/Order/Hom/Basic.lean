@@ -1311,20 +1311,10 @@ end DenselyOrdered
 /-- `Fin (n + 1)` is order equivalent to `Fin n` with a bottom element. -/
 def WithBot.orderIsoFin (n : ℕ) : WithBot (Fin n) ≃o Fin (n + 1) where
   toFun x := x.recBotCoe 0 Fin.succ
-  invFun := by
-    rintro ⟨x, hx⟩
-    revert hx
-    refine x.casesOn (fun _ ↦ ⊥) fun x hx ↦ (⟨x, Nat.succ_lt_succ_iff.1 hx⟩ : Fin n)
-  left_inv x := by
-    refine x.recBotCoe ?_ fun x ↦ ?_ <;>
-    simp
-  right_inv := by
-    rintro ⟨(_ | x), hx⟩ <;>
-    simp
-  map_rel_iff' {x y} := by
-    refine x.recBotCoe ?_ fun x ↦ ?_ <;>
-    refine y.recBotCoe ?_ fun y ↦ ?_ <;>
-    simp [Fin.le_def]
+  invFun := Fin.cases ⊥ WithBot.some
+  left_inv x := by cases x <;> rfl
+  right_inv x := by cases x using Fin.cases <;> rfl
+  map_rel_iff' {x y} := by cases x <;> cases y <;> simp [Fin.le_def]
 
 /-- `Fin (n + 1)` is order equivalent to `Fin n` with a top element. -/
 def WithTop.orderIsoFin (n : ℕ) : WithTop (Fin n) ≃o Fin (n + 1) where
