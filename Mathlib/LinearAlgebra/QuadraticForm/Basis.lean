@@ -13,6 +13,8 @@ does not require `Invertible (2 : R)`. Unlike that definition, this only works i
 a basis.
 -/
 
+open LinearMap (BilinMap)
+
 namespace QuadraticMap
 
 variable {ι R M N} [LinearOrder ι]
@@ -59,5 +61,20 @@ theorem _root_.LinearMap.BilinMap.toQuadraticMap_surjective [Module.Free R M] :
   obtain ⟨ι, b⟩ := Module.Free.exists_basis (R := R) (M := M)
   letI : LinearOrder ι := IsWellOrder.linearOrder WellOrderingRel
   exact ⟨_, toQuadraticMap_toBilin _ b⟩
+
+noncomputable def toBilinHom (bm : Basis ι R M) : QuadraticMap R M N →ₗ[R] (BilinMap R M N) where
+  toFun Q := Q.toBilin bm
+  map_add' Q₁ Q₂ := by
+    refine bm.ext fun i => bm.ext fun j => ?_
+    obtain h | rfl | h := lt_trichotomy i j
+    · simp [h.ne, h, toBilin_apply, polar_add]
+    · simp [toBilin_apply]
+    · simp [h.ne', h.not_lt, toBilin_apply, polar_add]
+  map_smul' r Q := by
+    refine bm.ext fun i => bm.ext fun j => ?_
+    obtain h | rfl | h := lt_trichotomy i j
+    · simp [h.ne, h, toBilin_apply, polar_smul]
+    · simp [toBilin_apply]
+    · simp [h.ne', h.not_lt, toBilin_apply]
 
 end QuadraticMap
