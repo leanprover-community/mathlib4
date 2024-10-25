@@ -708,8 +708,6 @@ theorem div_singleton (a : α) : s / {a} = s.image (· / a) :=
 theorem singleton_div (a : α) : {a} / s = s.image (a / ·) :=
   image₂_singleton_left
 
--- @[to_additive (attr := simp)]
--- Porting note (#10618): simp can prove this & the additive version
 @[to_additive]
 theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
   image₂_singleton
@@ -1251,7 +1249,6 @@ theorem vsub_singleton (b : β) : s -ᵥ ({b} : Finset β) = s.image (· -ᵥ b)
 theorem singleton_vsub (a : β) : ({a} : Finset β) -ᵥ t = t.image (a -ᵥ ·) :=
   image₂_singleton_left
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem singleton_vsub_singleton (a b : β) : ({a} : Finset β) -ᵥ {b} = {a -ᵥ b} :=
   image₂_singleton
 

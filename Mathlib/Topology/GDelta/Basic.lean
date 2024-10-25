@@ -3,8 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Filter.CountableInter
+import Mathlib.Topology.Basic
 
 /-!
 # `Gδ` sets
@@ -24,8 +25,7 @@ In this file we define `Gδ` sets and prove their basic properties.
 
 ## Main results
 
-We prove that finite or countable intersections of Gδ sets are Gδ sets. We also prove that the
-continuity set of a function from a topological space to an (e)metric space is a Gδ set.
+We prove that finite or countable intersections of Gδ sets are Gδ sets.
 
 - `isClosed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
 its complement is open and dense
@@ -33,16 +33,19 @@ its complement is open and dense
 union of nowhere dense sets
 - subsets of meagre sets are meagre; countable unions of meagre sets are meagre
 
+See `Mathlib.Topology.GDelta.UniformSpace` for the proof that
+continuity set of a function from a topological space to a uniform space is a Gδ set.
+
 ## Tags
 
 Gδ set, residual set, nowhere dense set, meagre set
 -/
 
+assert_not_exists UniformSpace
 
 noncomputable section
 
 open Topology TopologicalSpace Filter Encodable Set
-open scoped Uniformity
 
 variable {X Y ι : Type*} {ι' : Sort*}
 
@@ -154,33 +157,7 @@ alias isGδ_biUnion := IsGδ.biUnion
 theorem IsGδ.iUnion [Finite ι'] {f : ι' → Set X} (h : ∀ i, IsGδ (f i)) : IsGδ (⋃ i, f i) :=
   .sUnion (finite_range _) <| forall_mem_range.2 h
 
-theorem IsClosed.isGδ {X : Type*} [UniformSpace X] [IsCountablyGenerated (𝓤 X)] {s : Set X}
-    (hs : IsClosed s) : IsGδ s := by
-  rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
-  rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
-  refine .biInter (to_countable _) fun n _ => IsOpen.isGδ ?_
-  exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
-
 end IsGδ
-
-section ContinuousAt
-
-variable [TopologicalSpace X]
-
-/-- The set of points where a function is continuous is a Gδ set. -/
-theorem IsGδ.setOf_continuousAt [UniformSpace Y] [IsCountablyGenerated (𝓤 Y)] (f : X → Y) :
-    IsGδ { x | ContinuousAt f x } := by
-  obtain ⟨U, _, hU⟩ := (@uniformity_hasBasis_open_symmetric Y _).exists_antitone_subbasis
-  simp only [Uniform.continuousAt_iff_prod, nhds_prod_eq]
-  simp only [(nhds_basis_opens _).prod_self.tendsto_iff hU.toHasBasis, forall_prop_of_true,
-    setOf_forall, id]
-  refine .iInter fun k ↦ IsOpen.isGδ <| isOpen_iff_mem_nhds.2 fun x ↦ ?_
-  rintro ⟨s, ⟨hsx, hso⟩, hsU⟩
-  filter_upwards [IsOpen.mem_nhds hso hsx] with _ hy using ⟨s, ⟨hy, hso⟩, hsU⟩
-
-@[deprecated (since := "2024-02-15")] alias isGδ_setOf_continuousAt := IsGδ.setOf_continuousAt
-
-end ContinuousAt
 
 section residual
 

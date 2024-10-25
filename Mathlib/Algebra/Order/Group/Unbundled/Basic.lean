@@ -148,7 +148,6 @@ theorem mul_inv_le_iff_le_mul : a * b⁻¹ ≤ c ↔ a ≤ c * b :=
 theorem le_mul_inv_iff_mul_le : c ≤ a * b⁻¹ ↔ c * b ≤ a :=
   (mul_le_mul_iff_right b).symm.trans <| by rw [inv_mul_cancel_right]
 
--- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem mul_inv_le_one_iff_le : a * b⁻¹ ≤ 1 ↔ a ≤ b :=
   mul_inv_le_iff_le_mul.trans <| by rw [one_mul]
@@ -193,7 +192,6 @@ theorem mul_inv_lt_iff_lt_mul : a * b⁻¹ < c ↔ a < c * b := by
 theorem lt_mul_inv_iff_mul_lt : c < a * b⁻¹ ↔ c * b < a :=
   (mul_lt_mul_iff_right b).symm.trans <| by rw [inv_mul_cancel_right]
 
--- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem inv_mul_lt_one_iff_lt : a * b⁻¹ < 1 ↔ a < b := by
   rw [← mul_lt_mul_iff_right b, inv_mul_cancel_right, one_mul]
