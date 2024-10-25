@@ -141,8 +141,8 @@ instance (α : ι → Type*) [∀ i, OrderedCancelAddCommMonoid (α i)] :
   { (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
     le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
 
-instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, ContravariantClass (α i) (α i) (· + ·) (· ≤ ·)] :
-    ContravariantClass (Π₀ i, α i) (Π₀ i, α i) (· + ·) (· ≤ ·) :=
+instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, AddLeftReflectLE (α i)] :
+    AddLeftReflectLE (Π₀ i, α i) :=
   ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
 
 section Module
