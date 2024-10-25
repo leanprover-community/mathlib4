@@ -281,32 +281,27 @@ theorem inductionOnWellOrder {C : Ordinal → Prop} (o : Ordinal)
   have : WellFoundedLT α := wo.toIsWellFounded
   exact H α
 
+open Classical in
 /-- To define a function on ordinals, it suffices to define them on order types of well-orders.
 
 Since `LinearOrder` is data-carrying, `liftOnWellOrder_type` is not a definitional equality, unlike
-`Quotient.liftOn` which is always def-eq. -/
+`Quotient.liftOn_mk` which is always def-eq. -/
 def liftOnWellOrder {δ : Sort v} (o : Ordinal) (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
     (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
-      typeLT α = typeLT β → f α = f β) : δ := by
-  classical
-  refine Quotient.liftOn o (fun w ↦ ?_) fun w₁ w₂ h ↦ ?_
-  · letI : LinearOrder w.α := linearOrderOfSTO w.r
-    have : WellFoundedLT w.α := w.wo.toIsWellFounded
-    exact f w.α
-  · letI : LinearOrder w₁.α := linearOrderOfSTO w₁.r
-    letI : LinearOrder w₂.α := linearOrderOfSTO w₂.r
-    have : WellFoundedLT w₁.α := w₁.wo.toIsWellFounded
-    have : WellFoundedLT w₂.α := w₂.wo.toIsWellFounded
-    exact c _ _ (Quotient.sound h)
+      typeLT α = typeLT β → f α = f β) : δ :=
+  Quotient.liftOn o (fun w ↦ @f w.α (linearOrderOfSTO w.r) w.wo.toIsWellFounded)
+    fun w₁ w₂ h ↦ @c
+      w₁.α (linearOrderOfSTO w₁.r) w₁.wo.toIsWellFounded
+      w₂.α (linearOrderOfSTO w₂.r) w₂.wo.toIsWellFounded
+      (Quotient.sound h)
 
 @[simp]
 theorem liftOnWellOrder_type {δ : Sort v} (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
     (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
       typeLT α = typeLT β → f α = f β) {γ} [LinearOrder γ] [WellFoundedLT γ] :
     liftOnWellOrder (typeLT γ) f c = f γ := by
-  classical
-  rw [liftOnWellOrder, ← type_def, Quotient.liftOn_mk]
-  dsimp
+  change Quotient.liftOn' ⟦_⟧ _ _ = _
+  rw [Quotient.liftOn'_mk]
   congr
   exact LinearOrder.ext_lt fun _ _ ↦ Iff.rfl
 
