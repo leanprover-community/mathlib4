@@ -107,8 +107,8 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : Quadra
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
-    associated (R := A) (N := A) (Q₁.tmul Q₂)
-      = BilinForm.tmul ((associated (R := A) (N := A) Q₁)) (associated (R := R) (N := R) Q₂) := by
+    associated (R := A) (Q₁.tmul Q₂)
+      = BilinForm.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
   rw [QuadraticForm.tmul, tensorDistrib, BilinForm.tmul]
   dsimp
   have : Subsingleton (Invertible (2 : A)) := inferInstance
