@@ -8,7 +8,6 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.InsertIdx
-import Mathlib.Data.List.Lattice
 import Batteries.Data.List.Perm
 import Mathlib.Data.List.Perm.Basic
 
