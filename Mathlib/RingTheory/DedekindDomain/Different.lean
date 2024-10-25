@@ -594,37 +594,35 @@ lemma pow_sub_one_dvd_differentIdeal_aux [IsFractionRing B L] [IsDedekindDomain 
     rw [pow_add, hb, mul_assoc, mul_right_inj' (pow_ne_zero _ hPbot), pow_one, mul_comm] at ha
     exact ⟨_, ha.symm⟩
   suffices ∀ x ∈ a, intTrace A B x ∈ p by
-    · have hP : ((P ^ (e - 1) : _)⁻¹ : FractionalIdeal B⁰ L) = a / p.map (algebraMap A B) := by
-        apply inv_involutive.injective
-        simp only [inv_inv, ha, FractionalIdeal.coeIdeal_mul, inv_div, ne_eq,
-            FractionalIdeal.coeIdeal_eq_zero, mul_div_assoc]
-        rw [div_self (by simpa), mul_one]
-      rw [Ideal.dvd_iff_le, differentialIdeal_le_iff (K := K) (L := L) (pow_ne_zero _ hPbot), hP,
-        Submodule.map_le_iff_le_comap]
-      intro x hx
-      rw [Submodule.restrictScalars_mem, FractionalIdeal.mem_coe,
-        FractionalIdeal.mem_div_iff_of_nonzero (by simpa using hp')] at hx
-      rw [Submodule.mem_comap, LinearMap.coe_restrictScalars, ← FractionalIdeal.coe_one,
-        ← div_self (G₀ := FractionalIdeal A⁰ K) (a := p) (by simpa using hp),
-        FractionalIdeal.mem_coe, FractionalIdeal.mem_div_iff_of_nonzero (by simpa using hp)]
-      simp only [FractionalIdeal.mem_coeIdeal, forall_exists_index, and_imp,
-        forall_apply_eq_imp_iff₂] at hx
-      intro y hy'
-      obtain ⟨y, hy, rfl : algebraMap A K _ = _⟩ := (FractionalIdeal.mem_coeIdeal _).mp hy'
-      obtain ⟨z, hz, hz'⟩ := hx _ (Ideal.mem_map_of_mem _ hy)
-      have : trace K L (algebraMap B L z) ∈ (p : FractionalIdeal A⁰ K) := by
-        rw [← algebraMap_intTrace (A := A)]
-        exact ⟨intTrace A B z, this z hz, rfl⟩
-      rwa [mul_comm, ← smul_eq_mul, ← LinearMap.map_smul, smul_def, mul_comm,
-        ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L, ← hz']
+    have hP : ((P ^ (e - 1) : _)⁻¹ : FractionalIdeal B⁰ L) = a / p.map (algebraMap A B) := by
+      apply inv_involutive.injective
+      simp only [inv_inv, ha, FractionalIdeal.coeIdeal_mul, inv_div, ne_eq,
+          FractionalIdeal.coeIdeal_eq_zero, mul_div_assoc]
+      rw [div_self (by simpa), mul_one]
+    rw [Ideal.dvd_iff_le, differentialIdeal_le_iff (K := K) (L := L) (pow_ne_zero _ hPbot), hP,
+      Submodule.map_le_iff_le_comap]
+    intro x hx
+    rw [Submodule.restrictScalars_mem, FractionalIdeal.mem_coe,
+      FractionalIdeal.mem_div_iff_of_nonzero (by simpa using hp')] at hx
+    rw [Submodule.mem_comap, LinearMap.coe_restrictScalars, ← FractionalIdeal.coe_one,
+      ← div_self (G₀ := FractionalIdeal A⁰ K) (a := p) (by simpa using hp),
+      FractionalIdeal.mem_coe, FractionalIdeal.mem_div_iff_of_nonzero (by simpa using hp)]
+    simp only [FractionalIdeal.mem_coeIdeal, forall_exists_index, and_imp,
+      forall_apply_eq_imp_iff₂] at hx
+    intro y hy'
+    obtain ⟨y, hy, rfl : algebraMap A K _ = _⟩ := (FractionalIdeal.mem_coeIdeal _).mp hy'
+    obtain ⟨z, hz, hz'⟩ := hx _ (Ideal.mem_map_of_mem _ hy)
+    have : trace K L (algebraMap B L z) ∈ (p : FractionalIdeal A⁰ K) := by
+      rw [← algebraMap_intTrace (A := A)]
+      exact ⟨intTrace A B z, this z hz, rfl⟩
+    rwa [mul_comm, ← smul_eq_mul, ← LinearMap.map_smul, smul_def, mul_comm,
+      ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L, ← hz']
   intros x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← trace_quotient_eq_of_isDedekindDomain,
     ← isNilpotent_iff_eq_zero]
-  apply trace_isNilpotent_of_isNilpotent
-  use e
+  refine trace_isNilpotent_of_isNilpotent ⟨e, ?_⟩
   rw [← map_pow, Ideal.Quotient.eq_zero_iff_mem]
-  apply (Ideal.dvd_iff_le.mp this)
-  exact Ideal.pow_mem_pow hx _
+  exact (Ideal.dvd_iff_le.mp this) <| Ideal.pow_mem_pow hx _
 
 lemma pow_sub_one_dvd_differentIdeal [IsDedekindDomain A] [NoZeroSMulDivisors A B]
     [Module.Finite A B] [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
