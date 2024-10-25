@@ -2396,6 +2396,8 @@ import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
+import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Perm.Lattice
 import Mathlib.Data.List.Perm.Subperm
 import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Pi
