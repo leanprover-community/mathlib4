@@ -395,6 +395,7 @@ lemma mul_nonZeroDivisor_mem_finiteIntegralAdeles (a : FiniteAdeleRing R K) :
     rw [← mul_assoc]
     exact mul_mem (h v (a v)) <| coe_mem_adicCompletionIntegers _ _
 
+/-- The canonical basis of neighborhoods of zero on `FiniteAdeleRing R K`. -/
 abbrev basis (r : R⁰) : Set (FiniteAdeleRing R K) :=
   Submodule.span (R_hat R K) {((r : R) : FiniteAdeleRing R K)}
 

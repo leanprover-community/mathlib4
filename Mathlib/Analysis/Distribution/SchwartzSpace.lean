@@ -500,10 +500,10 @@ instance instTopologicalAddGroup : TopologicalAddGroup 𝓢(E, F) :=
   schwartz_withSeminorms ℝ E F |>.topologicalAddGroup
 
 instance instUniformSpace : UniformSpace 𝓢(E, F) :=
-  (schwartzSeminormFamily ℝ E F).basis_isAddGroupBasis.uniformSpace
+  (schwartzSeminormFamily ℝ E F).isAddGroupBasis.uniformSpace
 
 instance instUniformAddGroup : UniformAddGroup 𝓢(E, F) :=
-  (schwartzSeminormFamily ℝ E F).basis_isAddGroupBasis.uniformAddGroup
+  (schwartzSeminormFamily ℝ E F).isAddGroupBasis.uniformAddGroup
 
 instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
