@@ -139,7 +139,50 @@ theorem splits_X_pow (n : ℕ) : (X ^ n).Splits i :=
 theorem splits_id_iff_splits {f : K[X]} : (f.map i).Splits (RingHom.id L) ↔ f.Splits i := by
   rw [splits_map_iff, RingHom.id_comp]
 
-theorem Splits.comp_of_degree_one {f : K[X]} {p : K[X]} (hd : p.degree ≤ 1)
+theorem Splits.comp_of_map_degree_le_one {f : K[X]} {p : K[X]} (hd : (p.map i).degree ≤ 1)
+    (h : f.Splits i) : (f.comp p).Splits i := by
+  by_cases hzero : map i (f.comp p) = 0
+  · exact Or.inl hzero
+  cases h with
+  | inl h0 =>
+    exact Or.inl <| map_comp i _ _ ▸ h0.symm ▸ zero_comp
+  | inr h =>
+    right
+    intro g irr dvd
+    rw [map_comp] at dvd hzero
+    cases lt_or_eq_of_le hd with
+    | inl hd =>
+      rw [eq_C_of_degree_le_zero (Nat.WithBot.lt_one_iff_le_zero.mp hd), comp_C] at dvd hzero
+      refine False.elim (irr.1 (isUnit_of_dvd_unit dvd ?_))
+      simpa using hzero
+    | inr hd =>
+      let _ := invertibleOfNonzero (leadingCoeff_ne_zero.mpr
+          (ne_zero_of_degree_gt (n := ⊥) (by rw [hd]; decide)))
+      rw [eq_X_add_C_of_degree_eq_one hd, dvd_comp_C_mul_X_add_C_iff _ _] at dvd
+      have := h (irr.map (algEquivOfCMulXAddC _ _).symm) dvd
+      rw [degree_eq_natDegree irr.ne_zero]
+      rwa [algEquivOfCMulXAddC_symm_apply, ← comp_eq_aeval,
+        degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
+        natDegree_comp, natDegree_C_mul (invertibleInvOf.ne_zero),
+        natDegree_X_sub_C, mul_one] at this
+
+theorem comp_splits_iff_splits_of_degree_eq_one {f : K[X]} {p : K[X]} (hd : (p.map i).degree = 1) :
+    f.Splits i ↔ (f.comp p).Splits i := by
+  let _ := invertibleOfNonzero (leadingCoeff_ne_zero.mpr
+      (ne_zero_of_degree_gt (n := ⊥) (by rw [hd]; decide)))
+  rw [← splits_id_iff_splits, ← splits_id_iff_splits (f := f.comp p), map_comp, comp_eq_aeval, eq_X_add_C_of_degree_eq_one hd, ← algEquivOfCMulXAddC_apply]
+
+  refine or_congr (by simp only [map_id, coeff_map, map_eq_zero_iff _ ((algEquivOfCMulXAddC _ _).injective)]) ⟨fun h g irr dvd => ?_, fun h g irr dvd => ?_⟩
+  exact Splits.
+  ⟨Splits.comp_of_map_degree_le_one i (hd ▸ le_refl _),
+    fun h => by
+      rw [← splits_id_iff_splits] at h
+      let _ := invertibleOfNonzero (leadingCoeff_ne_zero.mpr
+          (ne_zero_of_degree_gt (n := ⊥) (by rw [hd]; decide)))
+      rw [← algEquivOfCMulXAddC .symm_apply_apply]
+      exact Splits.comp_of_map_degree_le_one i (le_of_eq hd) h⟩
+
+theorem Splits.comp_of_degree_le_one {f : K[X]} {p : K[X]} (hd : p.degree ≤ 1)
     (h : f.Splits i) : (f.comp p).Splits i := by
   by_cases hzero : map i (f.comp p) = 0
   · exact Or.inl hzero
@@ -165,7 +208,7 @@ theorem Splits.comp_of_degree_one {f : K[X]} {p : K[X]} (hd : p.degree ≤ 1)
 
 theorem Splits.comp_X_sub_C {i : L →+* F} (a : L) {f : L[X]}
     (h : f.Splits i) : (f.comp (X - C a)).Splits i :=
-  Splits.comp_of_degree_one i 
+  Splits.comp_of_degree_one i
 
 theorem Splits.comp_X_add_C {i : L →+* F} (a : L) {f : L[X]}
     (h : f.Splits i) : (f.comp (X + C a)).Splits i := by

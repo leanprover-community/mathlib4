@@ -294,18 +294,12 @@ def algEquivOfCompEqX (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) : R
   refine AlgEquiv.ofAlgHom (aeval p) (aeval q) ?_ ?_ <;>
     exact AlgHom.ext fun _ ↦ by simp [← comp_eq_aeval, comp_assoc, hpq, hqp]
 
-/-- The automorphism of the polynomial algebra given by `p(X) ↦ p(a*X+b)`,
-  with inverse `p(X) ↦ p(a⁻¹*(X-b))`. -/
+/-- The automorphism of the polynomial algebra given by `p(X) ↦ p(a * X + b)`,
+  with inverse `p(X) ↦ p(a⁻¹ * (X - b))`. -/
 @[simps!]
-def algEquivOfDegreeOne {R} [CommRing R] {p : R[X]} (hd : p.degree = 1)
-    (hl : IsUnit p.leadingCoeff) : R[X] ≃ₐ[R] R[X] := by
-  let c := hl.unit.inv
-  refine algEquivOfCompEqX p (C c * (X - C (p.coeff 0))) ?_ ?_ <;>
-  rw [eq_X_add_C_of_degree_eq_one hd] <;>
-  simp only [coeff_add, mul_coeff_zero, coeff_C_zero, coeff_X_zero, add_comp, sub_comp, mul_comp,
-    C_comp, X_comp, C_1, ← C_mul, ← mul_assoc, mul_zero, mul_sub, one_mul, mul_add, c,
-    Units.inv_eq_val_inv, IsUnit.val_inv_mul, IsUnit.mul_val_inv, zero_add, sub_add_cancel,
-    add_sub_cancel_right]
+def algEquivOfCMulXAddC {R} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
+  algEquivOfCompEqX (C a * X + C b) (C ⅟ a * (X - C b))
+      (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
 
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
   with inverse `p(X) ↦ p(X-t)`. -/
@@ -570,31 +564,24 @@ lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
 
 lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
 
-lemma dvd_comp_iff_of_degree_one (p q : R[X]) {r : R[X]} (hd : r.degree = 1) (hl : IsUnit
-    r.leadingCoeff) : p ∣ q.comp r ↔ p.comp (C hl.unit.inv * (X - C (r.coeff 0))) ∣ q := by
-  convert map_dvd_iff <| algEquivOfDegreeOne hd hl using 2
-  simp only [algEquivOfDegreeOne, Units.inv_eq_val_inv, algEquivOfCompEqX_apply, ← comp_eq_aeval,
-    comp_assoc, mul_comp, C_comp, sub_comp, X_comp]
-  convert Polynomial.comp_X.symm
-  nth_rw 2 [eq_X_add_C_of_degree_eq_one hd]
-  simp only [add_sub_cancel_right, ← mul_assoc, ← C_mul, IsUnit.val_inv_mul, map_one, one_mul]
+lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
+    p ∣ q.comp (C a * X + C b) ↔ p.comp (C ⅟ a * (X - C b)) ∣ q := by
+  convert map_dvd_iff <| algEquivOfCMulXAddC a b using 2
+  simp [← comp_eq_aeval, comp_assoc, ← mul_assoc, ← C_mul]
 
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
-  by_cases h : Nontrivial R
-  · simpa using dvd_comp_iff_of_degree_one p q (degree_X_sub_C _) (by simp)
-  · have : Subsingleton R[X] :=
-      not_nontrivial_iff_subsingleton.mp (Polynomial.nontrivial_iff.not.mpr h)
-    exact ⟨fun _ => dvd_of_eq (Subsingleton.allEq _ _), fun _ => dvd_of_eq (Subsingleton.allEq _ _)⟩
+  let _ := invertibleOne (α := R)
+  simpa using dvd_comp_C_mul_X_add_C_iff p q 1 (-a)
 
 lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
   simpa using dvd_comp_X_sub_C_iff p q (-a)
 
 lemma dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
-  convert (map_dvd_iff algEquivAevalNegX).symm using 2
-  rw [algEquivAevalNegX_apply, ← comp_eq_aeval, comp_assoc]
-  simp only [neg_comp, X_comp, neg_neg, comp_X]
+  let _ := invertibleOne (α := R)
+  let _ := invertibleNeg (α := R) 1
+  simpa using dvd_comp_C_mul_X_add_C_iff p q (-1) 0
 
 variable [IsDomain R]
 
