@@ -17,7 +17,7 @@ be used in the proof of the Special Adjoint Functor Theorem.
 namespace CategoryTheory
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
-universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
