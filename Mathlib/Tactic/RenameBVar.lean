@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Patrick Massot
 -/
 
-import Lean
+import Lean.Elab.Tactic.Location
 import Mathlib.Util.Tactic
 import Mathlib.Lean.Expr.Basic
 
@@ -41,6 +41,9 @@ example (P : ℕ → ℕ → Prop) (h : ∀ n, ∃ m, P n m) : ∀ l, ∃ m, P l
 Note: name clashes are resolved automatically.
 -/
 elab "rename_bvar " old:ident " → " new:ident loc?:(location)? : tactic => do
+  if old == new then
+    -- FIXME: can I warn on the union of `old` and `new`?
+    logWarningAt old s!"renaming the variable {old} to itself has no effect"
   let mvarId ← getMainGoal
   match loc? with
   | none => renameBVarTarget mvarId old.getId new.getId

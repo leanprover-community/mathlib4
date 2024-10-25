@@ -93,7 +93,10 @@ initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     |>.insert `change?
     |>.insert `«tactic#adaptation_note_»
     |>.insert `tacticSleep_heartbeats_
+    -- These tactics just rename meta-variables resp. binder names,
+    -- and have custom logic to warn if they do nothing.
     |>.insert `Mathlib.Tactic.«tacticRename_bvar_→__»
+    |>.insert `Mathlib.Tactic.«tacticSwap_var__,,»
 
 /-- `#allow_unused_tactic` takes an input a space-separated list of identifiers.
 These identifiers are then allowed by the unused tactic linter:
@@ -189,10 +192,6 @@ partial def eraseUsedTactics : InfoTree → M Unit
         then modify (·.erase r)
         -- bespoke check for `swap_var`: the only change that it does is
         -- in the usernames of local declarations, so we check the names before and after
-        else
-        if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
-                (getNames i.mctxBefore != getNames i.mctxAfter)
-        then modify (·.erase r)
     eraseUsedTacticsList c
   | .context _ t => eraseUsedTactics t
   | .hole _ => pure ()

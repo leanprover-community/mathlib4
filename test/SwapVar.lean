@@ -21,3 +21,22 @@ example {a b c d : Nat} (h : a = b ∧ c = d) : a = b ∧ c = d := by
   swap_var a ↔ b, b c
   guard_target = c = a ∧ b = d
   exact h
+
+-- The tactic errors on unknown variables.
+/-- error: unknown local declaration 'c' -/
+#guard_msgs in
+example {a b : Nat} (h : a = b ∧ a + b = b + b) : a = b ∧ a+ b = b + b := by
+  swap_var c ↔ a
+
+set_option linter.unusedTactic false in
+/--
+warning: swapping the variable `a with itself has no effect
+---
+warning: swapping the variable `c with itself has no effect
+-/
+#guard_msgs in
+set_option linter.unusedTactic true in
+example {a b c d : Nat} (h : a = b ∧ c = d) : a = b ∧ c = d := by
+  swap_var a ↔ a, c ↔ c
+  guard_target = a = b ∧ c = d
+  exact h

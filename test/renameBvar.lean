@@ -32,3 +32,20 @@ example (P : ℕ → ℕ → Prop) (h : ∀ n, ∃ m, P n m) : ∀ l, ∃ m, P l
   rename_bvar l → m
   trace_state
   exact h
+
+/--
+warning: renaming the variable `n to itself has no effect
+---
+warning: renaming the variable `n to itself has no effect
+-/
+#guard_msgs in
+example {P : ℕ → ℕ → Prop} (h : ∀ n, ∀ m, P n m) : ∀ n, ∀ m, P n m := by
+  rename_bvar n → n
+  rename_bvar n → n at h
+  exact h
+
+-- Renaming a non-existent variable does not warn, at the moment.
+#guard_msgs in
+example {P : ℕ → Prop} (h : ∀ n, P n) : ∀ m, P m := by
+  rename_bvar Q → R
+  exact h

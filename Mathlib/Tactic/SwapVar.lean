@@ -35,6 +35,11 @@ elab "swap_var " swapRules:(colGt swapRule),+ : tactic => do
   let mvarId ← getMainGoal
   let mdecl ← mvarId.getDecl
   let localInstances := mdecl.localInstances
+  for rule in swapRules.getElems do
+    let `(swapRule| $n₁:ident $[↔]? $n₂:ident) := rule
+      | unreachable!
+    if n₁ == n₂ then
+      logWarningAt rule s!"swapping the variable {n₁} with itself has no effect"
   let lctx ← swapRules.getElems.foldlM (init := mdecl.lctx) fun lctx swapRule ↦ do
     withLCtx lctx localInstances do
       let `(swapRule| $n₁:ident $[↔]? $n₂:ident) := swapRule
