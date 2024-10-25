@@ -315,7 +315,7 @@ theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (·<·) l.val m.va
 instance [WellFoundedLT I] : WellFoundedLT (Products I) := by
   have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (·<·) l.val m.val) := by
     ext; exact lt_iff_lex_lt _ _
-  rw [this]
+  rw [WellFoundedLT, this]
   dsimp [Products]
   rw [(by rfl : (·>· : I → _) = flip (·<·))]
   infer_instance
@@ -429,7 +429,7 @@ theorem prop_of_isGood {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)
 end Products
 
 /-- The good products span `LocallyConstant C ℤ` if and only all the products do. -/
-theorem GoodProducts.span_iff_products [WellFoundedLT ι] :
+theorem GoodProducts.span_iff_products [WellFoundedLT I] :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) ↔
       ⊤ ≤ Submodule.span ℤ (Set.range (Products.eval C)) := by
   refine ⟨fun h ↦ le_trans h (span_mono (fun a ⟨b, hb⟩ ↦ ⟨b.val, hb⟩)), fun h ↦ le_trans h ?_⟩
@@ -602,7 +602,7 @@ theorem GoodProducts.finsupp_sum_mem_span_eval {a : I} {as : List I}
   simp only [Products.eval, List.map, List.prod_cons]
 
 /-- If `s` is a finite subset of `I`, then the good products span. -/
-theorem GoodProducts.spanFin [WellFoundedLT ι] :
+theorem GoodProducts.spanFin [WellFoundedLT I] :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (· ∈ s)))) := by
   rw [span_iff_products]
   refine le_trans (spanFinBasis.span C s) ?_
@@ -668,7 +668,7 @@ theorem fin_comap_jointlySurjective
   exact ⟨(Opposite.unop J), g, h⟩
 
 /-- The good products span all of `LocallyConstant C ℤ` if `C` is closed. -/
-theorem GoodProducts.span [WellFoundedLT ι] (hC : IsClosed C) :
+theorem GoodProducts.span [WellFoundedLT I] (hC : IsClosed C) :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := by
   rw [span_iff_products]
   intro f _
@@ -680,7 +680,7 @@ theorem GoodProducts.span [WellFoundedLT ι] (hC : IsClosed C) :
 
 end Span
 
-variable [WellFoundedLT ι]
+variable [WellFoundedLT I]
 
 section Ordinal
 /-!
@@ -1834,7 +1834,7 @@ open Profinite NobelingProof
 instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
     Module.Free ℤ (LocallyConstant S ℤ) :=
   @Nobeling_aux {C : Set S // IsClopen C}
-    (IsWellOrder.linearOrder WellOrderingRel) WellOrderingRel.isWellOrder
+    (IsWellOrder.linearOrder WellOrderingRel) WellOrderingRel.isWellOrder.toIsWellFounded
     S (Nobeling.ι S) (Nobeling.embedding S)
 
 set_option linter.style.longFile 2000
