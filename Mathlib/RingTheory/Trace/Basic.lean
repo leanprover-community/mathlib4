@@ -490,7 +490,7 @@ namespace Algebra
 
 /-- The trace of a nilpotent element is nilpotent. -/
 lemma trace_isNilpotent_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
-  (hx : IsNilpotent x) : IsNilpotent (trace R S x) := by
+    (hx : IsNilpotent x) : IsNilpotent (trace R S x) := by
   by_cases hS : ∃ s : Finset S, Nonempty (Basis s R S)
   · obtain ⟨s, ⟨b⟩⟩ := hS
     have := Module.Finite.of_basis b
