@@ -87,10 +87,8 @@ namespace WellOrder
 instance inhabited : Inhabited WellOrder :=
   ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty EmptyRelation)⟩⟩
 
-@[simp]
-theorem eta (o : WellOrder) : mk o.α o.r o.wo = o := by
-  cases o
-  rfl
+@[deprecated (since := "2024-10-24")]
+theorem eta (o : WellOrder) : mk o.α o.r o.wo = o := rfl
 
 end WellOrder
 
@@ -139,22 +137,21 @@ instance inhabited : Inhabited Ordinal :=
 instance one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
-@[simp]
-theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := by
-  cases w
-  rfl
+/-- Avoid using `Quotient.mk` to construct an `Ordinal` directly -/
+@[deprecated (since := "2024-10-24")]
+theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := rfl
 
-@[simp]
-theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := by
-  rfl
+/-- Avoid using `Quotient.mk` to construct an `Ordinal` directly -/
+@[deprecated (since := "2024-10-24")]
+theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := rfl
 
 @[simp]
 theorem type_toType (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
-  (type_def' _).symm.trans <| Quotient.out_eq o
+  o.out_eq
 
 @[deprecated type_toType (since := "2024-10-22")]
 theorem type_lt (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
-  (type_def' _).symm.trans <| Quotient.out_eq o
+  o.out_eq
 
 @[deprecated type_toType (since := "2024-08-26")]
 theorem type_out (o : Ordinal) : Ordinal.type o.out.r = o :=
