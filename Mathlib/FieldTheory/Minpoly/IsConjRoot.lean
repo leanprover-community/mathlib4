@@ -38,7 +38,7 @@ conjugate root, minimal polynomial
 
 open Polynomial minpoly IntermediateField
 
-variable {R K L S A B: Type*} [CommRing R] [CommRing S] [Ring A] [Ring B] [Field K] [Field L]
+variable {R K L S A B : Type*} [CommRing R] [CommRing S] [Ring A] [Ring B] [Field K] [Field L]
 variable [Algebra R S] [Algebra R A] [Algebra R B]
 variable [Algebra K S] [Algebra K L] [Algebra K A] [Algebra L S]
 
