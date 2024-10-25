@@ -35,7 +35,7 @@ macro_rules
   | `(scoped[$ns] attribute [$[$attr:attr],*] $ids*) =>
     `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
       attribute [$[scoped $attr:attr],*] $ids*)
-  | `($[$doc]? $(attr)? scoped[$ns] $cmd) => do
+  | `($[$doc]? $(attr)? scoped%$tk[$ns] $cmd) => do
     let attrKindArg ← match cmd.raw.getKind with
       | ``Parser.Command.notation
       | ``Parser.Command.macro_rules
@@ -45,8 +45,9 @@ macro_rules
       | ``Parser.Command.elab
       | ``Parser.Command.binderPredicate
       | ``Parser.Command.mixfix => pure 2
-      | _ => Macro.throwUnsupported
-    let `(Parser.Term.attrKind|) := cmd.raw[attrKindArg] | Macro.throwUnsupported
+      | _ => Macro.throwErrorAt tk "can't use scoped[NS] on this kind of command"
+    let `(Parser.Term.attrKind|) := cmd.raw[attrKindArg]
+      | Macro.throwErrorAt cmd.raw[attrKindArg] "This scoping directive conflicts with scoped[NS]"
     let cmd' := ⟨cmd.raw.setArg attrKindArg <| Unhygienic.run `(Parser.Term.attrKind| scoped)⟩
     `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId) $cmd':command)
 
