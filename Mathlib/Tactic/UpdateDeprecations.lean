@@ -100,12 +100,12 @@ The entries of the array associated to each `System.FilePath` are the two pairs
 * `(oldString, newString)`,
 * `(row, column)`.
 -/
-abbrev Corrections := HashMap System.FilePath (Array ((String × String) × (Nat × Nat)))
+abbrev Corrections := Std.HashMap System.FilePath (Array ((String × String) × (Nat × Nat)))
 
 /-- extend the input `Corrections` with the given data. -/
 def extend (s : Corrections) (fil : System.FilePath) (oldNew : String × String) (pos : Nat × Nat) :
     Corrections :=
-  let corrections := (s.find? fil).getD default
+  let corrections := s.getD fil default
   s.insert fil (corrections.push (oldNew, pos))
 
 /-- A custom syntax category for parsing the output lines of `lake build`:
@@ -162,13 +162,13 @@ elab bds:build* tk:"Build completed successfully." : command => do
     if let some (fil, oldNew, pos) := getCorrections bd then
       s := extend s fil oldNew pos
   let modifiedFiles ← s.foldM (init := {}) fun summary fil arr => do
-    let mut summary : HashMap System.FilePath (Nat × Nat) := summary
+    let mut summary : Std.HashMap System.FilePath (Nat × Nat) := summary
     -- sort the corrections, so that the lines are parsed in reverse order and, within each line,
     -- the corrections are applied also in reverse order
     let arr := arr.qsort fun (_, (l1, c1)) (_, (l2, c2)) => l2 < l1 || (l1 == l2 && c2 < c1)
     let lines ← IO.FS.lines fil
     let ((replaced, unreplaced), replacedLines) := substitutions lines arr
-    let (m, n) := (summary.find? fil).getD (0, 0)
+    let (m, n) := summary.getD fil (0, 0)
     summary := summary.insert fil (m + replaced, n + unreplaced)
     if replacedLines != lines then
       let newFile := ("\n".intercalate replacedLines.toList).trimRight.push '\n'
