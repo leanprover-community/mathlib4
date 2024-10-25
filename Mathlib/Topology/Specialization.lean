@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Order.Category.Preord
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!

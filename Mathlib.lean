@@ -4923,7 +4923,8 @@ import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.RestrictGen
 import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.SeparatedMap
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Sequences
 import Mathlib.Topology.Sets.Closeds
