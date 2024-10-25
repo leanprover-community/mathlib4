@@ -73,7 +73,6 @@ theorem finiteDimensional_sup {K L : Type*} [Field K] [Field L] [Algebra K L]
   IntermediateField.finiteDimensional_sup E1 E2
 
 /-- An element of `L ≃ₐ[K] L` is in `Gal(L/E)` if and only if it fixes every element of `E`-/
-@[simp]
 theorem IntermediateField.mem_fixingSubgroup_iff {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) (σ : L ≃ₐ[K] L) : σ ∈ E.fixingSubgroup ↔ ∀ x : L, x ∈ E → σ x = x :=
   ⟨fun hσ x hx => hσ ⟨x, hx⟩, fun h ⟨x, hx⟩ => h x hx⟩
@@ -86,6 +85,7 @@ theorem IntermediateField.fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [
   simp [mem_fixingSubgroup_iff, mem_bot]
 
 /-- This lemma says that `Gal(K/K) = {1}` -/
+@[simp]
 theorem IntermediateField.fixingSubgroup.top {K L : Type*} [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
   ext
