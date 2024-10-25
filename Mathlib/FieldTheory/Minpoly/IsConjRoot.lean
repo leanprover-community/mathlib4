@@ -27,7 +27,7 @@ element over `K` and the minimal polynomial of `x` splits in `L`, then `x` is no
 there exists a different conjugate root of `x` in `L` over `K`.
 
 ## TODO
-* move `IsConjRoot` to earlier files and refactor the theorems in field theory using `IsConjRoot`.
+* Move `IsConjRoot` to earlier files and refactor the theorems in field theory using `IsConjRoot`.
 
 * Prove `IsConjRoot.smul`, if `x` and `y` are conjugate roots, then so are `r • x` and `r • y`.
 
@@ -38,7 +38,7 @@ conjugate root, minimal polynomial
 
 open Polynomial minpoly IntermediateField
 
-variable {R K L S A B: Type*} [CommRing R] [CommRing S] [Ring A] [Ring B] [Field K] [Field L]
+variable {R K L S A B : Type*} [CommRing R] [CommRing S] [Ring A] [Ring B] [Field K] [Field L]
 variable [Algebra R S] [Algebra R A] [Algebra R B]
 variable [Algebra K S] [Algebra K L] [Algebra K A] [Algebra L S]
 
@@ -74,6 +74,9 @@ root of `x`.
     IsConjRoot R x z := Eq.trans h₁ h₂
 
 variable (R A) in
+/--
+The setoid structure on `A` defined by the equivalence relation of `IsConjRoot R · ·`.
+-/
 def setoid : Setoid A where
   r := IsConjRoot R
   iseqv := ⟨fun _ => refl, symm, trans⟩
