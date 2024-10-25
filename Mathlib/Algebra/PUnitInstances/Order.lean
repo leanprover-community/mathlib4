@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.PUnitInstances.Algebra
-import Mathlib.Algebra.Order.AddGroupWithTop
+import Mathlib.Algebra.Order.Group.WithTop
 import Mathlib.Order.Heyting.Basic
 
 /-!

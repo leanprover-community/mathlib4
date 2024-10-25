@@ -6,7 +6,7 @@ Authors: Kenny Lau, Johan Commelin, Patrick Massot
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.Algebra.Order.AddGroupWithTop
+import Mathlib.Algebra.Order.Group.WithTop
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
