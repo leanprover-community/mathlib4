@@ -289,7 +289,7 @@ open IntermediateField
 
 open scoped Pointwise
 
-lemma AlgEquiv.restrictNormalHom_Ker (E : IntermediateField K L) [Normal K E]:
+lemma AlgEquiv.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E]:
     (restrictNormalHom E).ker = E.fixingSubgroup := by
   simp only [IntermediateField.fixingSubgroup, Subgroup.ext_iff, MonoidHom.mem_ker,
     AlgEquiv.ext_iff, one_apply, Subtype.ext_iff, restrictNormalHom_apply, Subtype.forall,
@@ -314,7 +314,7 @@ noncomputable def normalAutEquivQuotient [FiniteDimensional K L] [IsGalois K L]
     (H : Subgroup (L ≃ₐ[K] L)) [Subgroup.Normal H] :
     (L ≃ₐ[K] L) ⧸ H ≃* ((fixedField H) ≃ₐ[K] (fixedField H)) :=
   (QuotientGroup.quotientMulEquivOfEq ((fixingSubgroup_fixedField H).symm.trans
-  (AlgEquiv.restrictNormalHom_Ker (fixedField H)).symm)).trans <|
+  (AlgEquiv.restrictNormalHom_ker (fixedField H)).symm)).trans <|
   QuotientGroup.quotientKerEquivOfSurjective (restrictNormalHom (fixedField H)) <|
   restrictNormalHom_surjective L
 
