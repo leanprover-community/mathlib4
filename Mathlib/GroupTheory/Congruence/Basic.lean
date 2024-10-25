@@ -222,15 +222,6 @@ noncomputable def quotientKerEquivOfSurjective (f : M →* P) (hf : Surjective f
     (ker f).Quotient ≃* P :=
   quotientKerEquivOfRightInverse _ _ hf.hasRightInverse.choose_spec
 
-/-- If e : M →* N is surjective then (c.comap e).Quotient ≃* c.Quotient
-with c : Con N -/
-@[to_additive "If e : M →* N is surjective then (c.comap e).Quotient ≃* c.Quotient
-with c : AddCon N"]
-noncomputable def comapQuotientEquivOfSurj (c : Con M) (f : N →* M) (hf : Function.Surjective f) :
-    (Con.comap f f.map_mul c).Quotient ≃* c.Quotient :=
-  (Con.congr Con.comap_eq).trans <| Con.quotientKerEquivOfSurjective
-  (c.mk'.comp f) <| Con.mk'_surjective.comp hf
-
 /-- The **second isomorphism theorem for monoids**. -/
 @[to_additive "The second isomorphism theorem for `AddMonoid`s."]
 noncomputable def comapQuotientEquiv (f : N →* M) :
