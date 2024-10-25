@@ -70,14 +70,11 @@ lemma positive_of_differentiable_of_eqOn {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha
   have hys : (max x y + 1 : ℂ) ∈ {s | x < s.re} := by
     simp only [Set.mem_setOf_eq, add_re, ofReal_re, one_re, hxy]
   have hfx : 0 < f (max x y + 1) := by
-    rw [hf' hys]
-    convert positive ha₀ ha₁ hxy'
-    simp only [ofReal_add, ofReal_one]
+    simpa only [hf' hys, ofReal_add, ofReal_one] using positive ha₀ ha₁ hxy'
   refine (hfx.trans_le <| hf.apply_le_of_iteratedDeriv_alternating (fun n _ ↦ ?_) ?_)
-  · have hs : IsOpen {s : ℂ | x < s.re} := by refine isOpen_lt ?_ ?_ <;> fun_prop
-    convert iteratedDeriv_alternating ha₀ hxy' n using 2
-    convert hf'.iteratedDeriv_of_isOpen hs n hys
-    simp only [ofReal_add, ofReal_one]
+  · have hs : IsOpen {s : ℂ | x < s.re} := continuous_re.isOpen_preimage _ isOpen_Ioi
+    simpa only [hf'.iteratedDeriv_of_isOpen hs n hys, ofReal_add, ofReal_one] using
+      iteratedDeriv_alternating ha₀ hxy' n
   · exact_mod_cast (le_max_right x y).trans (lt_add_one _).le
 
 end LSeries
