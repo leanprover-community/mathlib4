@@ -241,7 +241,7 @@ A variant of `IsConjRoot.eq_zero`, only assuming `Nontrivial R`,
 `NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. If `x` is a
 conjugate root of `0`, then `x = 0`.
 -/
-theorem eq_zero' [Nontrivial R] [NoZeroSMulDivisors R S] {x : S} (h : IsConjRoot R 0 x)
+theorem eq_zero_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {x : S} (h : IsConjRoot R 0 x)
     (hf : Function.Injective (algebraMap R S)) : x = 0 :=
   (algebraMap R S).map_zero ▸ (eq_algebraMap' ((algebraMap R S).map_zero ▸ h.symm) hf)
 
@@ -249,25 +249,56 @@ theorem eq_zero' [Nontrivial R] [NoZeroSMulDivisors R S] {x : S} (h : IsConjRoot
 If `x` is a conjugate root of `0`, then `x = 0`.
 -/
 theorem eq_zero {x : S} (h : IsConjRoot K 0 x) : x = 0 :=
-  eq_zero' h (algebraMap K S).injective
+  eq_zero_of_injective h (algebraMap K S).injective
 
 end IsConjRoot
 
 /--
-A variant of `IsConjRoot.iff_eq_zero'`, only assuming `Nontrivial R`,
+A variant of `IsConjRoot.eq_of_isConjRoot_algebraMap`, only assuming `Nontrivial R`,
+`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. If `x` is a
+conjugate root of some element `algebraMap R S r` in the image of the base ring, then
+`x = algebraMap R S r`.
+-/
+theorem isConjRoot_iff_eq_algebraMap_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {r : R}
+    {x : S} (hf : Function.Injective (algebraMap R S)) :
+    IsConjRoot R x (algebraMap R S r) ↔ x = algebraMap R S r := by
+  rw [IsConjRoot, minpoly.eq_X_sub_C_of_algebraMap_inj _ hf] at h
+  have : x ∈ (X - C r).aroots S := by
+    rw [mem_aroots]
+    simp [X_sub_C_ne_zero, h ▸ minpoly.aeval R x]
+  simpa [aroots_X_sub_C] using this
+
+/--
+An elemnet `x` is a conjugate root of some element `algebraMap R S r` in the image of the base ring
+if and only if `x = algebraMap R S r`.
+-/
+@[simp]
+theorem isConjRoot_iff_eq_algebraMap {r : K} {x : S} :
+    IsConjRoot K x (algebraMap K S r) ↔ x = algebraMap K S r :=
+  isConjRoot_iff_eq_algebraMap_of_injective (algebraMap K S).injective
+
+/--
+A variant of `IsConjRoot.iff_eq_zero`, only assuming `Nontrivial R`,
 `NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. `x` is a
 conjugate root of `0` if and only if `x = 0`.
 -/
-theorem isConjRoot_zero_iff_eq_zero' [Nontrivial R] {x : S} [NoZeroSMulDivisors R S]
+theorem isConjRoot_zero_iff_eq_zero_of_injective [Nontrivial R] {x : S} [NoZeroSMulDivisors R S]
     (hf : Function.Injective (algebraMap R S)) : IsConjRoot R 0 x ↔ x = 0 :=
-  ⟨fun h => eq_zero' h hf, fun h => h.symm ▸ rfl⟩
+  ⟨fun h => eq_zero_of_injective h hf, fun h => h.symm ▸ rfl⟩
 
 /--
 `x` is a conjugate root of `0` if and only if `x = 0`.
 -/
 @[simp]
-theorem isConjRoot_zero_iff_eq_zero {x : S} : IsConjRoot K 0 x ↔ x = 0 :=
-  isConjRoot_zero_iff_eq_zero' (algebraMap K S).injective
+theorem isConjRoot_zero_iff_eq_zero {x : S} : IsConjRoot K x 0 ↔ x = 0 :=
+  isConjRoot_zero_iff_eq_zero_of_injective (algebraMap K S).injective
+
+/--
+A variant of `IsConjRoot.iff_eq_zero`. `0` is a conjugate root of `x` if and only if `x = 0`.
+-/
+@[simp]
+theorem isConjRoot_zero_iff_eq_zero' {x : S} : IsConjRoot K 0 x ↔ x = 0 :=
+  eq_comm.trans <| isConjRoot_zero_iff_eq_zero_of_injective (algebraMap K S).injective
 
 namespace IsConjRoot
 
@@ -278,7 +309,7 @@ a conjugate root of a nonzero element `x`, then `y` is not zero.
 -/
 theorem ne_zero' [Nontrivial R] [NoZeroSMulDivisors R S] {x y : S} (hx : x ≠ 0)
     (h : IsConjRoot R x y) (hf : Function.Injective (algebraMap R S)) : y ≠ 0 :=
-  fun h' => hx (eq_zero' (h' ▸ h.symm) hf)
+  fun h' => hx (eq_zero_of_injective (h' ▸ h.symm) hf)
 
 /--
 If `y` is a conjugate root of a nonzero element `x`, then `y` is not zero.
