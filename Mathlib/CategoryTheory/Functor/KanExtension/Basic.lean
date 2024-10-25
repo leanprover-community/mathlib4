@@ -549,13 +549,16 @@ section Colimit
 
 variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') [F'.IsLeftKanExtension α]
 
-/-- Construct a cocone for a left Kan extension of `F` given a cocone for `F`. -/
+/-- Construct a cocone for a left Kan extension `F' : D ⥤ H` of `F : C ⥤ H` along a functor
+`L : C ⥤ D` given a cocone for `F`. -/
 @[simps]
 noncomputable def coconeOfIsLeftKanExtension (c : Cocone F) : Cocone F' where
   pt := c.pt
   ι := F'.descOfIsLeftKanExtension α _ c.ι
 
-/-- If `c` is a colimit cocone, then `coconeOfIsLeftKanExtension α c` is a colimit cocone, too. -/
+/-- If `c` is a colimit cocone for a functor `F : C ⥤ H` and `α : F ⟶ L ⋙ F'` is the unit of any
+left Kan extension `F' : D ⥤ H` of `F` along `L : C ⥤ D`, then `coconeOfIsLeftKanExtension α c` is
+a colimit cocone, too. -/
 @[simps]
 def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsColimit c) :
     IsColimit (F'.coconeOfIsLeftKanExtension α c) where
@@ -573,7 +576,8 @@ def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsColimit c) :
 
 variable [HasColimit F] [HasColimit F']
 
-/-- The colimit over any left Kan extension of `F` is isomorphic to `F`. -/
+/-- If `F' : D ⥤ H` is a left Kan extension of `F : C ⥤ H` along `L : C ⥤ D`, the colimit over `F'`
+is isomorphic to the colimit over `F`. -/
 noncomputable def colimitIsoOfIsLeftKanExtension : colimit F' ≅ colimit F :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit F')
     (F'.isColimitCoconeOfIsLeftKanExtension α (colimit.isColimit F))
@@ -596,13 +600,16 @@ section Limit
 
 variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : L ⋙ F' ⟶ F) [F'.IsRightKanExtension α]
 
-/-- Construct a cone for a right Kan extension of `F` given a cone for `F`. -/
+/-- Construct a cone for a right Kan extension `F' : D ⥤ H` of `F : C ⥤ H` along a functor
+`L : C ⥤ D` given a cone for `F`. -/
 @[simps]
 noncomputable def coneOfIsRightKanExtension (c : Cone F) : Cone F' where
   pt := c.pt
   π := F'.liftOfIsRightKanExtension α _ c.π
 
-/-- If `c` is a limit cone, then `coneOfIsRightKanExtension α c` is a limit cone, too. -/
+/-- If `c` is a limit cone for a functor `F : C ⥤ H` and `α : L ⋙ F' ⟶ F` is the counit of any
+right Kan extension `F' : D ⥤ H` of `F` along `L : C ⥤ D`, then `coneOfIsRightKanExtension α c` is
+a limit cone, too. -/
 @[simps]
 def isLimitConeOfIsRightKanExtension {c : Cone F} (hc : IsLimit c) :
     IsLimit (F'.coneOfIsRightKanExtension α c) where
@@ -621,7 +628,8 @@ def isLimitConeOfIsRightKanExtension {c : Cone F} (hc : IsLimit c) :
 
 variable [HasLimit F] [HasLimit F']
 
-/-- The limit over any right Kan extension of `F` is isomorphic to `F`. -/
+/-- If `F' : D ⥤ H` is a right Kan extension of `F : C ⥤ H` along `L : C ⥤ D`, the limit over `F'`
+is isomorphic to the limit over `F`. -/
 noncomputable def limitIsoOfIsRightKanExtension : limit F' ≅ limit F :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit F')
     (F'.isLimitConeOfIsRightKanExtension α (limit.isLimit F))
