@@ -575,6 +575,9 @@ protected theorem wellFounded (f : α ↪o β) :
     WellFounded ((· < ·) : β → β → Prop) → WellFounded ((· < ·) : α → α → Prop) :=
   f.ltEmbedding.wellFounded
 
+protected theorem isWellOrder [IsWellOrder β (· < ·)] (f : α ↪o β) : IsWellOrder α (· < ·) :=
+  f.ltEmbedding.isWellOrder
+
 /-- An order embedding is also an order embedding between dual orders. -/
 protected def dual : αᵒᵈ ↪o βᵒᵈ :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
@@ -587,9 +590,6 @@ protected theorem wellFoundedLT [WellFoundedLT β] (f : α ↪o β) : WellFounde
 also has `(· > ·)` well-founded. -/
 protected theorem wellFoundedGT [WellFoundedGT β] (f : α ↪o β) : WellFoundedGT α :=
   @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ _ f.dual
-
-protected theorem isWellOrder [IsWellOrder β (· < ·)] (f : α ↪o β) : IsWellOrder α (· < ·) :=
-  f.ltEmbedding.isWellOrder
 
 /-- A version of `WithBot.map` for order embeddings. -/
 @[simps (config := .asFn)]
