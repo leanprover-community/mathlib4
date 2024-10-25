@@ -672,7 +672,7 @@ def PiFamily (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
 open Classical in
 theorem eq_of_not_mem_of_mem_cons {s : Finset σ} {a : σ} (has : a ∉ s) {i : σ}
     (hi : i ∈ cons a s has) (his : i ∉ s) : i = a :=
-  Finset.eq_of_not_mem_of_mem_insert (cons_eq_insert a s has ▸ hi) his
+  Finset.eq_of_mem_insert_of_not_mem (cons_eq_insert a s has ▸ hi) his
 
 /-- Make an element of a product from a Pi type on cons. -/
 def cons_pi_prod (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s) :

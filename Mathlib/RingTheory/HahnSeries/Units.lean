@@ -58,7 +58,7 @@ theorem sum_eq_top [AddCommMonoid Γ] (s : Finset σ) (f : σ → WithTop Γ)
     · simp only [sum_cons, WithTop.add_eq_top]
       exact Or.inr <| ih <| Exists.intro j ⟨hjs, hj.2⟩
     · classical
-      have hij : j = i := eq_of_not_mem_of_mem_insert (cons_eq_insert i s his ▸ hj.1) hjs
+      have hij : j = i := eq_of_mem_insert_of_not_mem (cons_eq_insert i s his ▸ hj.1) hjs
       rw [sum_cons, ← hij, hj.2, WithTop.add_eq_top]
       exact Or.inl rfl
 -- #find_home! sum_eq_top --[Mathlib.Algebra.BigOperators.Group.Finset]

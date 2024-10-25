@@ -5,7 +5,6 @@ Authors: Aaron Anderson, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Data.Int.Interval
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Units
@@ -98,8 +97,6 @@ def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
 
 variable [Semiring R] {V : Type*} [AddCommGroup V] [Module R V]
 
-@[simp]
-theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
 @[simp]
 theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
     (hasseDeriv R k f).coeff n = Ring.choose (n + k) k • f.coeff (n + k) :=
