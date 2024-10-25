@@ -7,8 +7,6 @@ import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
 
-#align_import representation_theory.group_cohomology.basic from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
-
 /-!
 # The group cohomology of a `k`-linear `G`-representation
 
@@ -32,8 +30,8 @@ $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken i
 `Rep k G`.
 
 To talk about cohomology in low degree, please see the file
-`RepresentationTheory.GroupCohomology.LowDegree`, which gives simpler expressions for `H⁰, H¹, H²`
-than the definition `groupCohomology` in this file.
+`Mathlib.RepresentationTheory.GroupCohomology.LowDegree`, which gives simpler expressions for
+`H⁰`, `H¹`, `H²` than the definition `groupCohomology` in this file.
 
 ## Main definitions
 
@@ -86,12 +84,10 @@ variable [Monoid G]
 `G`-representation. -/
 abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
   (groupCohomology.resolution k G).linearYonedaObj k A
-#align group_cohomology.linear_yoneda_obj_resolution groupCohomology.linearYonedaObjResolution
 
 theorem linearYonedaObjResolution_d_apply {A : Rep k G} (i j : ℕ) (x : (resolution k G).X i ⟶ A) :
     (linearYonedaObjResolution A).d i j x = (resolution k G).d j i ≫ x :=
   rfl
-#align group_cohomology.linear_yoneda_obj_resolution_d_apply groupCohomology.linearYonedaObjResolution_d_apply
 
 end groupCohomology
 
@@ -116,7 +112,6 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
 /- Porting note: changed from `simp only` which needed extra heartbeats -/
     simp_rw [Pi.smul_apply, RingHom.id_apply, map_smul, smul_add, Finset.smul_sum, ← smul_assoc,
       smul_eq_mul, mul_comm r]
-#align inhomogeneous_cochains.d inhomogeneousCochains.d
 
 variable [Group G] (n) (A : Rep k G)
 
@@ -151,8 +146,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   change d n A f g = diagonalHomEquiv (n + 1) A
     ((resolution k G).d (n + 1) n ≫ (diagonalHomEquiv n A).symm f) g
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply,
+  rw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply,
     resolution.d_eq]
   erw [resolution.d_of (Fin.partialProd g)]
   simp only [map_sum, ← Finsupp.smul_single_one _ ((-1 : k) ^ _)]
@@ -167,7 +161,6 @@ and the homogeneous `linearYonedaObjResolution`. -/
     rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
   · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [map_smul, diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ]
-#align inhomogeneous_cochains.d_eq inhomogeneousCochains.d_eq
 
 end inhomogeneousCochains
 
@@ -201,7 +194,6 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
       rewrite the second `coe_coe`... -/
     erw [LinearEquiv.symm_apply_apply, this]
     exact map_zero _
-#align group_cohomology.inhomogeneous_cochains groupCohomology.inhomogeneousCochains
 
 @[simp]
 theorem inhomogeneousCochains.d_def (n : ℕ) :
@@ -211,14 +203,12 @@ theorem inhomogeneousCochains.d_def (n : ℕ) :
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A := by
-/- Porting note: just needs a `refine'` now, instead of term mode -/
-  refine' HomologicalComplex.Hom.isoOfComponents (fun i =>
-    (Rep.diagonalHomEquiv i A).toModuleIso.symm) _
+  refine HomologicalComplex.Hom.isoOfComponents (fun i =>
+    (Rep.diagonalHomEquiv i A).toModuleIso.symm) ?_
   rintro i j (h : i + 1 = j)
   subst h
   simp only [CochainComplex.of_d, d_eq, Category.assoc, Iso.symm_hom, Iso.hom_inv_id,
     Category.comp_id]
-#align group_cohomology.inhomogeneous_cochains_iso groupCohomology.inhomogeneousCochainsIso
 
 /-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 `n`th differential in the complex of inhomogeneous cochains. -/
@@ -241,7 +231,6 @@ open groupCohomology
 of inhomogeneous cochains. -/
 def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
-#align group_cohomology groupCohomology
 
 /-- The natural map from `n`-cocycles to `n`th group cohomology for a `k`-linear
 `G`-representation `A`. -/
@@ -255,5 +244,3 @@ def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
     (extIso k G A n).symm
-set_option linter.uppercaseLean3 false in
-#align group_cohomology_iso_Ext groupCohomologyIsoExt

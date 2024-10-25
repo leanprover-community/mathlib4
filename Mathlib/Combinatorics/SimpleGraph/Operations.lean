@@ -26,14 +26,15 @@ open Finset
 
 namespace SimpleGraph
 
-variable {V : Type*} [DecidableEq V] (G : SimpleGraph V) (s t : V)
+variable {V : Type*} (G : SimpleGraph V) (s t : V)
 
 namespace Iso
 
 variable {G} {W : Type*} {G' : SimpleGraph W} (f : G ≃g G')
 
+include f in
 theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
-    G.edgeFinset.card = G'.edgeFinset.card := by
+    #G.edgeFinset = #G'.edgeFinset := by
   apply Finset.card_eq_of_equiv
   simp only [Set.mem_toFinset]
   exact f.mapEdgeSet
@@ -41,6 +42,8 @@ theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
 end Iso
 
 section ReplaceVertex
+
+variable [DecidableEq V]
 
 /-- The graph formed by forgetting `t`'s neighbours and instead giving it those of `s`. The `s-t`
 edge is removed if present. -/
@@ -75,13 +78,13 @@ variable {s}
 
 theorem edgeSet_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeSet =
     G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s) := by
-  ext e; refine' e.inductionOn _
+  ext e; refine e.inductionOn ?_
   simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
   intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
 
 theorem edgeSet_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeSet =
     (G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s)) \ {s(t, t)} := by
-  ext e; refine' e.inductionOn _
+  ext e; refine e.inductionOn ?_
   simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
   intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
 
@@ -113,22 +116,22 @@ lemma disjoint_sdiff_neighborFinset_image :
   aesop
 
 theorem card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
-    (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t := by
+    #(G.replaceVertex s t).edgeFinset = #G.edgeFinset + G.degree s - G.degree t := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_not_adj hn,
     card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
-    tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
+    ← Nat.sub_add_comm <| card_le_card inc, card_incidenceFinset_eq_degree]
   congr 2
   rw [card_image_of_injective, card_neighborFinset_eq_degree]
   unfold Function.Injective
   aesop
 
 theorem card_edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
-    (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t - 1 := by
+    #(G.replaceVertex s t).edgeFinset = #G.edgeFinset + G.degree s - G.degree t - 1 := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_adj ha, card_sdiff (by simp [ha]),
     card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
-    tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
+    ← Nat.sub_add_comm <| card_le_card inc, card_incidenceFinset_eq_degree]
   congr 2
   rw [card_image_of_injective, card_neighborFinset_eq_degree]
   unfold Function.Injective
@@ -144,6 +147,7 @@ def edge : SimpleGraph V := fromEdgeSet {s(s, t)}
 lemma edge_adj (v w : V) : (edge s t).Adj v w ↔ (v = s ∧ w = t ∨ v = t ∧ w = s) ∧ v ≠ w := by
   rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff]
 
+variable [DecidableEq V] in
 instance : DecidableRel (edge s t).Adj := fun _ _ ↦ by
   rw [edge_adj]; infer_instance
 
@@ -166,6 +170,7 @@ lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
 
 variable [Fintype V] [DecidableRel G.Adj]
 
+variable [DecidableEq V] in
 instance : Fintype (edge s t).edgeSet := by rw [edge]; infer_instance
 
 theorem edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
@@ -175,7 +180,9 @@ theorem edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s
   simp_rw [edgeFinset, edge_edgeSet_of_ne h]; rfl
 
 theorem card_edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
-    (G ⊔ edge s t).edgeFinset.card = G.edgeFinset.card + 1 := by
+    #(G ⊔ edge s t).edgeFinset = #G.edgeFinset + 1 := by
   rw [G.edgeFinset_sup_edge hn h, card_cons]
 
 end AddEdge
+
+end SimpleGraph

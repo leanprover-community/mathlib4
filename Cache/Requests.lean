@@ -6,8 +6,6 @@ Authors: Arthur Paulino
 import Lean.Data.Json.Parser
 import Cache.Hashing
 
-set_option autoImplicit true
-
 namespace Cache.Requests
 
 -- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
@@ -75,7 +73,8 @@ def downloadFile (hash : UInt64) : IO Bool := do
     IO.FS.removeFile partPath
     pure false
 
-/-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) -/
+/-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
+Exit the process with exit code 1 if any files failed to download. -/
 def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
@@ -139,6 +138,8 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
       IO.Process.exit 1
   else IO.println "No files to download"
 
+/-- Check if the project's `lean-toolchain` file matches mathlib's.
+Print and error and exit the process with error code 1 otherwise. -/
 def checkForToolchainMismatch : IO.CacheM Unit := do
   let mathlibToolchainFile := (← IO.mathlibDepPath) / "lean-toolchain"
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
@@ -166,6 +167,8 @@ def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompre
   downloadFiles hashMap forceDownload parallel
   if decompress then
     IO.unpackCache hashMap forceUnpack
+  else
+    IO.println "Downloaded all files successfully!"
 
 end Get
 
@@ -181,7 +184,7 @@ def UPLOAD_URL : String :=
 /-- Formats the config file for `curl`, containing the list of files to be uploaded -/
 def mkPutConfigContent (fileNames : Array String) (token : String) : IO String := do
   let token := if useFROCache then "" else s!"?{token}" -- the FRO cache doesn't pass the token here
-  let l ← fileNames.data.mapM fun fileName : String => do
+  let l ← fileNames.toList.mapM fun fileName : String => do
     pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {mkFileURL UPLOAD_URL fileName}{token}"
   return "\n".intercalate l
 
@@ -250,7 +253,7 @@ def QueryType.prefix : QueryType → String
   | commits => "&prefix=c/"
   | all     => default
 
-def formatError : IO α :=
+def formatError {α : Type} : IO α :=
   throw <| IO.userError "Invalid format for curl return"
 
 def QueryType.desc : QueryType → String

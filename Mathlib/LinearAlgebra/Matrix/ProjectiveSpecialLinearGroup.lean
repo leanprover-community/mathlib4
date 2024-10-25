@@ -31,3 +31,5 @@ abbrev ProjectiveSpecialLinearGroup : Type _ :=
 
 /-- `PSL(n, R)` is the projective special linear group `SL(n, R)/Z(SL(n, R))`. -/
 scoped[MatrixGroups] notation "PSL(" n ", " R ")" => Matrix.ProjectiveSpecialLinearGroup (Fin n) R
+
+end Matrix

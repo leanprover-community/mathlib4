@@ -25,7 +25,7 @@ open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
 
 section Class
 
-variable (F : Type*) (X Y : outParam (Type*)) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
+variable (F : Type*) (X Y : outParam Type*) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
 
 /-- Typeclass saying that `F` is a type of bundled equivalences such that all `e : F` are
 dilations. -/
@@ -60,9 +60,6 @@ instance : EquivLike (X ≃ᵈ Y) X Y where
 instance : DilationEquivClass (X ≃ᵈ Y) X Y where
   edist_eq' f := f.edist_eq'
 
-instance : CoeFun (X ≃ᵈ Y) fun _ ↦ (X → Y) where
-  coe f := f
-
 @[simp] theorem coe_toEquiv (e : X ≃ᵈ Y) : ⇑e.toEquiv = e := rfl
 
 @[ext]
@@ -75,7 +72,7 @@ def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
   edist_eq' := by
     refine ⟨(ratio e)⁻¹, inv_ne_zero <| ratio_ne_zero e, e.surjective.forall₂.2 fun x y ↦ ?_⟩
     simp_rw [Equiv.toFun_as_coe, Equiv.symm_apply_apply, coe_toEquiv, edist_eq]
-    rw [← mul_assoc, ← ENNReal.coe_mul, inv_mul_cancel (ratio_ne_zero e),
+    rw [← mul_assoc, ← ENNReal.coe_mul, inv_mul_cancel₀ (ratio_ne_zero e),
       ENNReal.coe_one, one_mul]
 
 @[simp] theorem symm_symm (e : X ≃ᵈ Y) : e.symm.symm = e := rfl
@@ -142,7 +139,7 @@ instance : Group (X ≃ᵈ X) where
   one_mul _ := rfl
   mul_one _ := rfl
   inv := symm
-  mul_left_inv := self_trans_symm
+  inv_mul_cancel := self_trans_symm
 
 theorem mul_def (e e' : X ≃ᵈ X) : e * e' = e'.trans e := rfl
 theorem one_def : (1 : X ≃ᵈ X) = refl X := rfl

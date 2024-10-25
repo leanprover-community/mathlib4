@@ -15,6 +15,14 @@ Note that `Nat.coprime` is reducible and defined in terms of `Nat.gcd`, so the `
 also indirectly provides a `Nat.coprime` extension.
 -/
 
+#adaptation_note
+/--
+Since https://github.com/leanprover/lean4/pull/5338,
+the unused variable linter can not see usages of variables in
+`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
+-/
+set_option linter.unusedVariables false
+
 namespace Tactic
 
 namespace NormNum
@@ -35,7 +43,7 @@ theorem nat_gcd_helper_dvd_right (x y : ℕ) (h : x % y = 0) : Nat.gcd x y = y :
 
 theorem nat_gcd_helper_2 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
     (h : x * a = y * b + d) : Nat.gcd x y = d := by
-  rw [← Int.coe_nat_gcd]
+  rw [← Int.gcd_natCast_natCast]
   apply int_gcd_helper' a (-b)
     (Int.natCast_dvd_natCast.mpr (Nat.dvd_of_mod_eq_zero hu))
     (Int.natCast_dvd_natCast.mpr (Nat.dvd_of_mod_eq_zero hv))

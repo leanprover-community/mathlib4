@@ -6,8 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Preadditive.Projective
-
-#align_import topology.category.Profinite.projective from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Profinite sets have enough projectives
@@ -31,9 +30,11 @@ universe u v w
 
 open CategoryTheory Function
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
+
 namespace Profinite
 
-set_option linter.uppercaseLean3 false
 
 instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) where
   factors {Y Z} f g hg := by
@@ -49,9 +50,9 @@ instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) 
      -- Porting note: same fix as in `Topology.Category.CompHaus.Projective`
     let g'' : ContinuousMap Y Z := g
     have : g'' ∘ g' = id := hg'.comp_eq_id
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, id_comp]
-#align Profinite.projective_ultrafilter Profinite.projective_ultrafilter
+    -- This used to be `rw`, but we need `rw; rfl` after leanprover/lean4#2644
+    rw [comp_assoc, ultrafilter_extend_extends, ← comp_assoc, this, id_comp]
+    rfl
 
 /-- For any profinite `X`, the natural map `Ultrafilter X → X` is a projective presentation. -/
 def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X where
@@ -60,7 +61,6 @@ def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X where
   projective := Profinite.projective_ultrafilter X
   epi := ConcreteCategory.epi_of_surjective _ fun x =>
     ⟨(pure x : Ultrafilter X), congr_fun (ultrafilter_extend_extends (𝟙 X)) x⟩
-#align Profinite.projective_presentation Profinite.projectivePresentation
 
 instance : EnoughProjectives Profinite.{u} where presentation X := ⟨projectivePresentation X⟩
 

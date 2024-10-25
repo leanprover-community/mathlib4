@@ -35,8 +35,8 @@ variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
 theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
-    (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den:R)| =
-      (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a:R)| := by
+    (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| =
+      (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a : R)| := by
   rw [div_eq_div_iff]
   · replace h := congr_arg (I.den • ·) h
     have h' := congr_arg (a • ·) (den_mul_self_eq_num I)
@@ -48,7 +48,7 @@ theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R
     · simp_rw [← Int.cast_natAbs, ← Nat.cast_mul, ← Ideal.absNorm_span_singleton]
       rw [← _root_.map_mul, ← _root_.map_mul, mul_comm, ← h', mul_comm]
     · exact LinearMap.ker_eq_bot.mpr (IsFractionRing.injective R K)
-  all_goals simpa [Algebra.norm_eq_zero_iff] using nonZeroDivisors.coe_ne_zero _
+  all_goals simp [Algebra.norm_eq_zero_iff]
 
 /-- The absolute norm of the fractional ideal `I` extending by multiplicativity the absolute norm
 on (integral) ideals. -/
@@ -77,7 +77,7 @@ theorem absNorm_eq (I : FractionalIdeal R⁰ K) :
 
 theorem absNorm_eq' {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
-    absNorm I = (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a:R)| := by
+    absNorm I = (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a : R)| := by
   rw [absNorm, ← absNorm_div_norm_eq_absNorm_div_norm a I₀ h, MonoidWithZeroHom.coe_mk,
     ZeroHom.coe_mk]
 
@@ -92,7 +92,7 @@ theorem absNorm_eq_zero_iff [NoZeroDivisors K] {I : FractionalIdeal R⁰ K} :
   refine ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq, div_eq_zero_iff] at h
   refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
-  simpa [Algebra.norm_eq_zero_iff] using nonZeroDivisors.coe_ne_zero _
+  simp [Algebra.norm_eq_zero_iff]
 
 theorem coeIdeal_absNorm (I₀ : Ideal R) :
     absNorm (I₀ : FractionalIdeal R⁰ K) = Ideal.absNorm I₀ := by
@@ -122,8 +122,8 @@ theorem abs_det_basis_change [NoZeroDivisors K] {ι : Type*} [Fintype ι]
       Algebra.smul_def]
     rfl]
   rw [Basis.toMatrix_smul, Matrix.det_mul, abs_mul, ← Algebra.norm_eq_matrix_det,
-    Algebra.norm_localization ℤ ℤ⁰, show (Algebra.norm ℤ (den I: R) : ℚ) =
-    algebraMap ℤ ℚ (Algebra.norm ℤ (den I: R)) by rfl, mul_div_assoc, mul_div_cancel₀ _ (by
+    Algebra.norm_localization ℤ ℤ⁰, show (Algebra.norm ℤ (den I : R) : ℚ) =
+    algebraMap ℤ ℚ (Algebra.norm ℤ (den I : R)) by rfl, mul_div_assoc, mul_div_cancel₀ _ (by
     rw [ne_eq, abs_eq_zero, IsFractionRing.to_map_eq_zero_iff, Algebra.norm_eq_zero_iff_of_basis b]
     exact nonZeroDivisors.coe_ne_zero _)]
 
@@ -147,3 +147,5 @@ theorem absNorm_span_singleton [Module.Finite ℚ K] (x : K) :
       smul_comm (d : R)]
 
 end IsLocalization
+
+end FractionalIdeal

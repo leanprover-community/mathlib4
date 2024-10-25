@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Group.Synonym
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Algebra.Order.Monoid.Defs
 
-#align_import algebra.order.monoid.order_dual from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
-
 /-! # Ordered monoid structures on the order dual. -/
-
 
 universe u
 
@@ -20,78 +18,14 @@ open Function
 namespace OrderDual
 
 @[to_additive]
-instance mulLeftReflectLE [LE α] [Mul α] [c : MulLeftReflectLE α] :
-    MulLeftReflectLE αᵒᵈ :=
-  ⟨c.1.flip⟩
-#align order_dual.contravariant_class_add_le OrderDual.addLeftReflectLE
-#align order_dual.contravariant_class_mul_le OrderDual.mulLeftReflectLE
-
-@[to_additive]
-instance mulLeftMono [LE α] [Mul α] [c : MulLeftMono α] :
-    MulLeftMono αᵒᵈ :=
-  ⟨c.1.flip⟩
-#align order_dual.covariant_class_add_le OrderDual.addLeftMono
-#align order_dual.covariant_class_mul_le OrderDual.mulLeftMono
-
-@[to_additive]
-instance mulRightReflectLE [LE α] [Mul α]
-    [c : MulRightReflectLE α] :
-    MulRightReflectLE αᵒᵈ :=
-  ⟨c.1.flip⟩
-#align order_dual.contravariant_class_swap_add_le OrderDual.addRightReflectLE
-#align order_dual.contravariant_class_swap_mul_le OrderDual.mulRightReflectLE
-
-@[to_additive]
-instance mulRightMono [LE α] [Mul α]
-    [c : MulRightMono α] :
-    MulRightMono αᵒᵈ :=
-  ⟨c.1.flip⟩
-#align order_dual.covariant_class_swap_add_le OrderDual.addRightMono
-#align order_dual.covariant_class_swap_mul_le OrderDual.mulRightMono
-
-@[to_additive]
-instance mulLeftReflectLT [LT α] [Mul α] [c : MulLeftReflectLT α] :
-    MulLeftReflectLT αᵒᵈ :=
-  ⟨c.1.flip⟩
-#align order_dual.contravariant_class_add_lt OrderDual.addLeftReflectLT
-#align order_dual.contravariant_class_mul_lt OrderDual.mulLeftReflectLT
-
-@[to_additive]
-instance mulLeftStrictMono [LT α] [Mul α] [c : MulLeftStrictMono α] :
-    MulLeftStrictMono αᵒᵈ :=
-  ⟨c.1.flip⟩
-#align order_dual.covariant_class_add_lt OrderDual.addLeftStrictMono
-#align order_dual.covariant_class_mul_lt OrderDual.mulLeftStrictMono
-
-@[to_additive]
-instance mulRightReflectLT [LT α] [Mul α]
-    [c : MulRightReflectLT α] :
-    MulRightReflectLT αᵒᵈ :=
-  ⟨c.1.flip⟩
-#align order_dual.contravariant_class_swap_add_lt OrderDual.addRightReflectLT
-#align order_dual.contravariant_class_swap_mul_lt OrderDual.mulRightReflectLT
-
-@[to_additive]
-instance mulRightStrictMono [LT α] [Mul α]
-    [c : MulRightStrictMono α] :
-    MulRightStrictMono αᵒᵈ :=
-  ⟨c.1.flip⟩
-#align order_dual.covariant_class_swap_add_lt OrderDual.addRightStrictMono
-#align order_dual.covariant_class_swap_mul_lt OrderDual.mulRightStrictMono
-
-@[to_additive]
 instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
   { mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
-#align order_dual.ordered_comm_monoid OrderDual.orderedCommMonoid
-#align order_dual.ordered_add_comm_monoid OrderDual.orderedAddCommMonoid
 
 @[to_additive OrderDual.OrderedCancelAddCommMonoid.to_mulLeftReflectLE]
 instance OrderedCancelCommMonoid.to_mulLeftReflectLE [OrderedCancelCommMonoid α] :
     MulLeftReflectLE αᵒᵈ where
     elim a b c := OrderedCancelCommMonoid.le_of_mul_le_mul_left (α := α) a c b
 -- Porting note: Lean 3 to_additive name omits first namespace part
-#align ordered_cancel_add_comm_monoid.to_contravariant_class OrderDual.OrderedCancelAddCommMonoid.to_mulLeftReflectLE
-#align order_dual.ordered_cancel_comm_monoid.to_contravariant_class OrderDual.OrderedCancelCommMonoid.to_mulLeftReflectLE
 
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=

@@ -1,10 +1,11 @@
 import Mathlib.Tactic.DefEqTransformations
-import Mathlib.Init.Logic
 
 set_option autoImplicit true
 
 private axiom test_sorry : ∀ {α}, α
 namespace Tests
+
+set_option linter.unusedTactic false
 
 example : id (1 = 1) := by
   with_reducible whnf
@@ -87,6 +88,30 @@ example (a : Int) (a : Nat) : Nat := by
   unfold_let at *
   exact a
 
+set_option linter.unusedVariables false in
+example : let x := 1; let y := 2 + x; 2 + 1 = 3 := by
+  intro x y
+  refold_let x
+  guard_target =ₛ 2 + x = 3
+  refold_let y
+  guard_target =ₛ y = 3
+  rfl
+
+example : 5 = 5 := by
+  let x := 5
+  refold_let x
+  guard_target =ₛ x = x
+  rfl
+
+example : 2 + 1 = 3 := by
+  let a : Fin 1 := 0
+  let x := 1
+  let b : Fin 1 := 0
+  refold_let x at *
+  guard_hyp a :ₛ Fin 1 := 0
+  guard_hyp b :ₛ Fin x := 0
+  rfl
+
 example : 1 + 2 = 2 + 1 := by
   unfold_projs
   guard_target =ₛ Nat.add (nat_lit 1) (nat_lit 2) = Nat.add (nat_lit 2) (nat_lit 1)
@@ -158,3 +183,5 @@ example (n : Fin 5) : n = ⟨n.val2, n.prop2⟩ := by
   eta_struct
   guard_target =ₛ n = n
   rfl
+
+end Tests
