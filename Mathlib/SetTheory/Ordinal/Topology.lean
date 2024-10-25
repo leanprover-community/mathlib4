@@ -301,6 +301,7 @@ theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc
 theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
     {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.forall_lt p hp
 
+-- todo: prove this for a general linear `SuccOrder`.
 theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
     AccPt p (𝓟 S) ↔ AccPt ⟨p, hpo⟩ (𝓟 (Iio o ↓∩ S)) := by
   constructor
