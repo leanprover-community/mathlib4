@@ -526,13 +526,6 @@ instance noBotSum : NoBotSum (WithBot α) where
   | _, ⊥ => simp
   | (a : α), (b : α) => simp only [← coe_add, coe_ne_bot] at h
 
-@[simp]
-theorem bot_add (a : WithBot α) : ⊥ + a = ⊥ :=
-  rfl
-
-@[simp]
-theorem add_bot (a : WithBot α) : a + ⊥ = ⊥ := by cases a <;> rfl
-
 theorem add_eq_coe : a + b = x ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = x :=
   WithTop.add_eq_coe
 
