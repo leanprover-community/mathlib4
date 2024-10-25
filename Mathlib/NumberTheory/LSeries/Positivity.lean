@@ -44,7 +44,7 @@ lemma iteratedDeriv_alternating {a : ℕ → ℂ} (hn : 0 ≤ a) {x : ℝ}
   · exact le_rfl
   · refine mul_nonneg ?_ <| (inv_natCast_cpow_ofReal_pos (by assumption) x).le
     induction n with
-    | zero => simp only [Function.iterate_zero, id_eq]; exact hn k
+    | zero => simpa only [Function.iterate_zero, id_eq] using hn k
     | succ n IH =>
         rw [Function.iterate_succ_apply']
         refine mul_nonneg ?_ IH
@@ -61,7 +61,7 @@ lemma positive {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha₁ : 0 < a 1) {x : ℝ} (
 /-- If all values of `a : ℕ → ℂ` are nonnegative reals and `a 1`
 is positive, and the L-series of `a` agrees with an entire function `f` on some open
 right half-plane where it converges, then `f` is real and positive on `ℝ`. -/
-lemma positive_of_eq_differentiable {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha₁ : 0 < a 1) {f : ℂ → ℂ}
+lemma positive_of_differentiable_of_eqOn {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha₁ : 0 < a 1) {f : ℂ → ℂ}
     (hf : Differentiable ℂ f) {x : ℝ} (hx : abscissaOfAbsConv a < x)
     (hf' : {s | x < s.re}.EqOn f (LSeries a)) (y : ℝ) :
     0 < f y := by
@@ -103,10 +103,10 @@ lemma LSeries_positive {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha₁ : 0 < a 1) {x 
 /-- If all values of a `ℂ`-valued arithmetic function `a` are nonnegative reals and `a 1`
 is positive, and the L-series of `a` agrees with an entire function `f` on some open
 right half-plane where it converges, then `f` is real and positive on `ℝ`. -/
-lemma LSeries_positive_of_eq_differentiable {a : ArithmeticFunction ℂ} (ha₀ : 0 ≤ (a ·))
+lemma LSeries_positive_of_differentiable_of_eqOn {a : ArithmeticFunction ℂ} (ha₀ : 0 ≤ (a ·))
     (ha₁ : 0 < a 1) {f : ℂ → ℂ} (hf : Differentiable ℂ f) {x : ℝ}
     (hx : LSeries.abscissaOfAbsConv a < x) (hf' : {s | x < s.re}.EqOn f (LSeries a)) (y : ℝ) :
     0 < f y :=
-  LSeries.positive_of_eq_differentiable ha₀ ha₁ hf hx hf' y
+  LSeries.positive_of_differentiable_of_eqOn ha₀ ha₁ hf hx hf' y
 
 end ArithmeticFunction
