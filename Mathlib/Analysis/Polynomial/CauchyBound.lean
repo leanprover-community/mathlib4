@@ -6,6 +6,7 @@ Authors: Daniel Weber
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Cauchy's bound on polynomial roots.
@@ -19,7 +20,42 @@ open Polynomial Finset NNReal
 Cauchy's bound on the roots of a given polynomial.
 -/
 noncomputable def cauchyBound (p : K[X]) : ℝ≥0 :=
-  sup (range p.natDegree) (‖p.coeff ·‖₊) / ‖p.leadingCoeff‖₊
+  sup (range p.natDegree) (‖p.coeff ·‖₊) / ‖p.leadingCoeff‖₊ + 1
+
+@[simp]
+lemma one_le_cauchyBound (p : K[X]) : 1 ≤ cauchyBound p := by
+  simp [cauchyBound]
+
+@[simp]
+lemma cauchyBound_zero : cauchyBound (0 : K[X]) = 1 := by
+  simp [cauchyBound]
+
+@[simp]
+lemma cauchyBound_C (x : K) : cauchyBound (C x) = 1 := by
+  simp [cauchyBound]
+
+@[simp]
+lemma cauchyBound_one : cauchyBound (1 : K[X]) = 1 := cauchyBound_C 1
+
+@[simp]
+lemma cauchyBound_X : cauchyBound (X : K[X]) = 1 := by
+  simp [cauchyBound]
+
+@[simp]
+lemma cauchyBound_X_add_C (x : K) : cauchyBound (X + C x) = ‖x‖₊ + 1 := by
+  simp [cauchyBound]
+
+@[simp]
+lemma cauchyBound_X_sub_C (x : K) : cauchyBound (X - C x) = ‖x‖₊ + 1 := by
+  simp [cauchyBound]
+
+@[simp]
+lemma cauchyBound_smul {x : K} (hx : x ≠ 0) (p : K[X]) : cauchyBound (x • p) = cauchyBound p := by
+  simp only [cauchyBound, (isRegular_of_ne_zero hx).left.isSMulRegular,
+    natDegree_smul_of_smul_regular, coeff_smul, smul_eq_mul, nnnorm_mul, ← mul_finset_sup,
+    leadingCoeff_smul_of_smul_regular, add_left_inj]
+  apply mul_div_mul_left
+  simpa
 
 lemma NNReal.geom_sum {x : ℝ≥0} (h : 1 < x) (n : ℕ) :
     ∑ i ∈ Finset.range n, x ^ i = (x ^ n - 1) / (x - 1) := by
@@ -28,14 +64,17 @@ lemma NNReal.geom_sum {x : ℝ≥0} (h : 1 < x) (n : ℕ) :
   convert geom_sum_mul_add (x - 1) n <;>
   rw [tsub_add_cancel_of_le h.le]
 
-theorem norm_lt_cauchyBound_add_one_of_isRoot (p : K[X]) (hp : p ≠ 0) (a : K) (h : p.IsRoot a) :
-    ‖a‖₊ < cauchyBound p + 1 := by
+/--
+`cauchyBound` is a bound on the norm of polynomial roots.
+-/
+theorem Polynomial.IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) (a : K) (h : p.IsRoot a) :
+    ‖a‖₊ < cauchyBound p := by
   rw [IsRoot.def, eval_eq_sum_range, range_add_one] at h
   simp only [mem_range, lt_self_iff_false, not_false_eq_true, sum_insert, coeff_natDegree,
     add_eq_zero_iff_eq_neg] at h
   apply_fun nnnorm at h
   simp only [nnnorm_mul, nnnorm_pow, nnnorm_neg] at h
-  suffices ‖a‖₊ ^ p.natDegree ≤ cauchyBound p * ∑ x ∈ range p.natDegree, ‖a‖₊ ^ x by
+  suffices ‖a‖₊ ^ p.natDegree ≤ (cauchyBound p - 1) * ∑ x ∈ range p.natDegree, ‖a‖₊ ^ x by
     rcases eq_or_ne ‖a‖₊ 1 with ha | ha
     · simp only [ha, one_pow, sum_const, card_range, nsmul_eq_mul, mul_one, lt_add_iff_pos_left,
         gt_iff_lt] at this ⊢
@@ -50,13 +89,13 @@ theorem norm_lt_cauchyBound_add_one_of_isRoot (p : K[X]) (hp : p ≠ 0) (a : K) 
         ‖a‖₊ = ‖a‖₊ - 1 + 1 := (tsub_add_cancel_of_le ha.le).symm
         _ = ‖a‖₊ ^ p.natDegree * (‖a‖₊ - 1) / ‖a‖₊ ^ p.natDegree + 1 := by
           field_simp
-        _ ≤ cauchyBound p * ((‖a‖₊ ^ p.natDegree - 1) / (‖a‖₊ - 1)) * (‖a‖₊ - 1)
+        _ ≤ (cauchyBound p - 1) * ((‖a‖₊ ^ p.natDegree - 1) / (‖a‖₊ - 1)) * (‖a‖₊ - 1)
             / ‖a‖₊ ^ p.natDegree + 1 := by gcongr
-        _ = cauchyBound p * (‖a‖₊ ^ p.natDegree - 1) / ‖a‖₊ ^ p.natDegree + 1 := by
+        _ = (cauchyBound p - 1) * (‖a‖₊ ^ p.natDegree - 1) / ‖a‖₊ ^ p.natDegree + 1 := by
           congr 2
           have : ‖a‖₊ - 1 ≠ 0 := fun nh ↦ (ha.trans_le (tsub_eq_zero_iff_le.mp nh)).false
           field_simp
-        _ < cauchyBound p * ‖a‖₊ ^ p.natDegree / ‖a‖₊ ^ p.natDegree + 1 := by
+        _ < (cauchyBound p - 1) * ‖a‖₊ ^ p.natDegree / ‖a‖₊ ^ p.natDegree + 1 := by
           gcongr
           · apply lt_of_le_of_ne (by simp)
             contrapose! this
@@ -64,7 +103,7 @@ theorem norm_lt_cauchyBound_add_one_of_isRoot (p : K[X]) (hp : p ≠ 0) (a : K) 
             apply pow_pos
             exact zero_lt_one.trans ha
           simp [zero_lt_one.trans ha]
-        _ = cauchyBound p + 1 := by field_simp
+        _ = cauchyBound p := by field_simp [tsub_add_cancel_of_le]
   apply le_of_eq at h
   have pld : ‖p.leadingCoeff‖₊ ≠ 0 := by simpa
   calc ‖a‖₊ ^ p.natDegree
@@ -76,13 +115,13 @@ theorem norm_lt_cauchyBound_add_one_of_isRoot (p : K[X]) (hp : p ≠ 0) (a : K) 
       gcongr
       apply nnnorm_sum_le
     _ = (∑ x ∈ range p.natDegree, ‖p.coeff x‖₊ * ‖a‖₊ ^ x) / ‖p.leadingCoeff‖₊ := by simp [abs_mul]
-    _ ≤ (∑ x ∈ range p.natDegree, ‖p.leadingCoeff‖₊ * cauchyBound p * ‖a‖₊ ^ x) /
+    _ ≤ (∑ x ∈ range p.natDegree, ‖p.leadingCoeff‖₊ * (cauchyBound p - 1) * ‖a‖₊ ^ x) /
         ‖p.leadingCoeff‖₊ := by
       gcongr (∑ x ∈ _, ?_ * _) / _
-      rw [cauchyBound]
+      rw [cauchyBound, add_tsub_cancel_right]
       field_simp
       apply le_sup (f := (‖p.coeff ·‖₊)) ‹_›
-    _ = cauchyBound p * ∑ x ∈ range p.natDegree, ‖a‖₊ ^ x := by
+    _ = (cauchyBound p - 1) * ∑ x ∈ range p.natDegree, ‖a‖₊ ^ x := by
       simp only [← mul_sum]
       field_simp
       ring
