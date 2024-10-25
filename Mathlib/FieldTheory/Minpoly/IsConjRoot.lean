@@ -62,7 +62,7 @@ theorem refl {x : A} : IsConjRoot R x x := rfl
 /--
 If `y` is a conjugate root of `x`, then `x` is also a conjugate root of `y`.
 -/
-theorem symm {x y : A} (h : IsConjRoot R x y) : IsConjRoot R y x := Eq.symm h
+@[symm] theorem symm {x y : A} (h : IsConjRoot R x y) : IsConjRoot R y x := Eq.symm h
 
 /--
 If `y` is a conjugate root of `x` and `z` is a conjugate root of `y`, then `z` is a conjugate
