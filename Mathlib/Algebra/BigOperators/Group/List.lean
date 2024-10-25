@@ -14,7 +14,7 @@ import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Join
 import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Perm.Basic
 
 /-!
 # Sums and products from lists

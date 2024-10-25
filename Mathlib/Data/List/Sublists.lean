@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.List.Range
-import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Perm.Basic
 
 /-! # sublists
 
