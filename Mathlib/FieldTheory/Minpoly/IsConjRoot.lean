@@ -151,8 +151,8 @@ theorem isConjRoot_iff_aeval_eq_zero [IsDomain A] {x y : A}
 Let `s` be an `R`-algebra isomorphism. Then `s x` is a conjugate root of `x`.
 -/
 @[simp]
-theorem isConjRoot_of_algEquiv (x : A) (s : A ≃ₐ[R] A) : IsConjRoot R x (s x) :=
-  Eq.symm (minpoly.algEquiv_eq s x)
+theorem isConjRoot_of_algEquiv (x : A) (s : A ≃ₐ[R] A) : IsConjRoot R (s x) x :=
+  minpoly.algEquiv_eq s x
 
 /--
 Let `s₁` and `s₂` be two `R`-algebra isomorphisms. Then `s₂ x` is a conjugate root of `s₁ x`.
@@ -167,9 +167,9 @@ conjugate root of `x`, then there exists an `K`-automorphism `σ : L ≃ₐ[K] L
 that `y = σ x`.
 -/
 theorem IsConjRoot.exists_algEquiv [Normal K L] {x y: L} (h : IsConjRoot K x y) :
-    ∃ σ : L ≃ₐ[K] L, σ x = y := by
+    ∃ σ : L ≃ₐ[K] L, σ y = x := by
   obtain ⟨σ, hσ⟩ :=
-    exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K y)
+    exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K x)
   exact ⟨AlgEquiv.ofBijective σ (σ.normal_bijective _ _ _), hσ⟩
 
 /--
@@ -178,7 +178,7 @@ conjugate root of `x` if and only if there exists an `K`-automorphism `σ : L �
 that `y = σ x`.
 -/
 theorem isConjRoot_iff_exists_algEquiv [Normal K L] {x y : L} :
-    IsConjRoot K x y ↔ ∃ σ : L ≃ₐ[K] L, σ x = y :=
+    IsConjRoot K x y ↔ ∃ σ : L ≃ₐ[K] L, σ y = x :=
   ⟨exists_algEquiv, fun ⟨_, h⟩ => h ▸ isConjRoot_of_algEquiv _ _⟩
 
 /--

@@ -40,44 +40,16 @@ lemma ind {motive : ConjRootClass K L → Prop} (h : ∀ x : L, motive (mk K x))
 
 variable {K}
 
-/-- Choose an element of a `ConjRootClass`. -/
-noncomputable def out (c : ConjRootClass K L) : L := Quotient.out c
-
 @[simp]
 theorem mk_eq_mk {x y : L} : mk K x = mk K y ↔ IsConjRoot K x y := Quotient.eq''
 
 @[simp]
-theorem mk_out (q : ConjRootClass K L) : mk K q.out = q :=
-  q.out_eq'
-
-theorem out_isConjRoot (x : L) :
-    IsConjRoot K (mk K x).out x :=
-  letI := IsConjRoot.setoid K L
-  Quotient.mk_out x
-
-theorem mk_eq_iff_out {x : L} {c : ConjRootClass K L} : mk K x = c ↔ IsConjRoot K x c.out :=
-  Quotient.mk_eq_iff_out
-
-theorem eq_mk_iff_out {c : ConjRootClass K L} {x : L} : c = mk K x ↔ IsConjRoot K c.out x :=
-  Quotient.eq_mk_iff_out
-
-@[simp]
-theorem out_isConjRoot_out {c₁ c₂ : ConjRootClass K L} : IsConjRoot K c₁.out c₂.out ↔ c₁ = c₂ :=
-  @Quotient.out_equiv_out _ _ c₁ c₂
-
-theorem out_eq_zero_iff (c : ConjRootClass K L) : c.out = 0 ↔ c = 0 := by
-  rw [zero_def, eq_comm (a := c), mk_eq_iff_out, isConjRoot_zero_iff_eq_zero]
-
-theorem zero_out : (0 : ConjRootClass K L).out = 0 :=
-  (out_eq_zero_iff 0).mpr rfl
+theorem mk_zero : mk K (0 : L) = 0 :=
+  rfl
 
 @[simp]
 theorem mk_eq_zero_iff (x : L) : mk K x = 0 ↔ x = 0 := by
-  rw [eq_comm (b := 0), eq_mk_iff_out, zero_out, isConjRoot_zero_iff_eq_zero]
-
-@[simp]
-theorem mk_zero : mk K (0 : L) = 0 :=
-  (mk_eq_zero_iff 0).mpr rfl
+  rw [eq_comm (b := 0), ← mk_zero, mk_eq_mk, isConjRoot_zero_iff_eq_zero]
 
 instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] : DecidableEq (ConjRootClass K L) :=
   @Quotient.decidableEq _ (IsConjRoot.setoid K L) IsConjRoot.decidable
@@ -119,7 +91,7 @@ instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] (c : ConjRootCla
     Fintype c.carrier :=
   Quotient.recOnSubsingleton c fun x =>
     .ofFinset ((Finset.univ (α := L ≃ₐ[K] L)).image (· x)) fun _ ↦ by
-      simpa [← isConjRoot_iff_exists_algEquiv] using by exact mk_eq_mk.symm.trans eq_comm
+      simpa [← isConjRoot_iff_exists_algEquiv] using by exact mk_eq_mk.symm
 
 open Polynomial
 
@@ -130,9 +102,6 @@ protected noncomputable def minpoly : ConjRootClass K L → K[X] :=
 @[simp]
 theorem minpoly_mk (x : L) : (mk K x).minpoly = minpoly K x :=
   rfl
-
-theorem minpoly_out (c : ConjRootClass K L) : minpoly K c.out = c.minpoly := by
-  rw [← c.mk_out, minpoly_mk, c.mk_out]
 
 @[simp]
 theorem minpoly_inj {c d : ConjRootClass K L} :
