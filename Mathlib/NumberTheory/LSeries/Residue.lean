@@ -183,7 +183,7 @@ theorem lt_u_rpow_lt {ε : ℝ} (hε₁ : 0 < ε) (hε₂ : ε ≤ l) :
   rw [← Real.mul_rpow, ← Real.mul_rpow, Real.rpow_lt_rpow_iff, Real.rpow_lt_rpow_iff,
     mul_inv_lt_iff₀, lt_mul_inv_iff₀, ← neg_add_lt_iff_lt_add, sub_eq_add_neg,
     ← lt_neg_add_iff_add_lt (a := l), neg_add_eq_sub, ← abs_lt, mul_comm]
-  exact h
+  · exact h
   all_goals positivity
 
 theorem summable_u_rpow {s : ℝ} (hs : 1 < s) :
@@ -198,9 +198,9 @@ theorem summable_u_rpow {s : ℝ} (hs : 1 < s) :
   refine Eventually.isBigO ?_
   filter_upwards [this] with n hn
   rw [Real.norm_eq_abs, abs_of_nonneg]
-  exact (hn s (lt_trans zero_lt_one hs)).2.le
-  refine Real.rpow_nonneg ?_ _
-  exact Nat.cast_nonneg _
+  · exact (hn s (lt_trans zero_lt_one hs)).2.le
+  · refine Real.rpow_nonneg ?_ _
+    exact Nat.cast_nonneg _
 
 theorem exist_finset_lt_tsum_u_lt {ε : ℝ} (hε₁ : 0 < ε) (hε₂ : ε ≤ l) :
     ∃ T : Finset ℕ, ∀ s, 1 < s →

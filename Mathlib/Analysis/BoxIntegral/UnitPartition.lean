@@ -121,7 +121,7 @@ abbrev tag (ν : ι → ℤ) : ι → ℝ := fun i ↦ (ν i + 1) / n
 theorem tag_apply (ν : ι → ℤ) (i : ι) : tag n ν i = (ν i + 1) / n := rfl
 
 theorem tag_injective : Function.Injective (fun ν : ι → ℤ ↦ tag n ν) := by
-  refine fun _ _ h ↦ Function.funext_iff.mpr fun i ↦ ?_
+  refine fun _ _ h ↦ funext_iff.mpr fun i ↦ ?_
   have := congr_arg (fun x ↦ x i) h
   field_simp at this
   exact this
@@ -143,7 +143,7 @@ theorem index_apply {x : ι → ℝ} (i : ι) :
 variable {n} in
 theorem mem_box_iff_index {x : ι → ℝ} {ν : ι → ℤ} :
     x ∈ box n ν ↔ index n x = ν := by
-  simp_rw [mem_box_iff', Function.funext_iff, index_apply, sub_eq_iff_eq_add, Int.ceil_eq_iff,
+  simp_rw [mem_box_iff', funext_iff, index_apply, sub_eq_iff_eq_add, Int.ceil_eq_iff,
     Int.cast_add, Int.cast_one, add_sub_cancel_right]
 
 @[simp]
@@ -393,7 +393,7 @@ theorem tendsto_tsum_div_pow (hF : Continuous F) (hs₁ : Bornology.IsBounded s)
   rw [← integralSum_eq_tsum_div _ s F hB hs₀, ← Measure.restrict_restrict_of_subset hs₀,
     ← MeasureTheory.integral_indicator hs₂]
   refine hr₂ 0 _ ⟨?_, fun _ ↦ ?_, fun h ↦ ?_, fun h ↦ ?_⟩ (prepartition_isPartition _ hB)
-  · rw [show r 0 = fun _ ↦ r 0 0 from Function.funext_iff.mpr (hr₁ 0 rfl)]
+  · rw [show r 0 = fun _ ↦ r 0 0 from funext_iff.mpr (hr₁ 0 rfl)]
     apply prepartition_isSubordinate n B
     rw [one_div, inv_le_comm₀ (Nat.cast_pos.mpr <| PNat.pos n) (by convert (r 0 0).prop)]
     exact le_trans (Nat.le_ceil _) (Nat.cast_le.mpr hn)

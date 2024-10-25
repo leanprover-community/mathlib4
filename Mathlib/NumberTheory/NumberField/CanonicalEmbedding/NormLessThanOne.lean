@@ -326,10 +326,10 @@ def mapToUnitsPow₀_aux :
     refine ⟨Set.mem_setOf.mpr fun w ↦ by split_ifs <;> exact Real.exp_pos _, ?_⟩
     simp_rw [Set.mem_setOf_eq, ← Finset.univ.sum_erase_add _ (mem_univ w₀), dif_pos]
     rw [sum_subtype _ (by aesop : ∀ w, w ∈ univ.erase w₀ ↔ w ≠ w₀)]
-    conv_lhs => enter [1,2,w]; rw [dif_neg w.prop]
-    simp_rw [Real.log_exp, neg_mul, mul_neg, mul_inv_cancel_left₀ mult_coe_ne_zero,
-      add_neg_eq_zero]
-    infer_instance
+    · conv_lhs => enter [1,2,w]; rw [dif_neg w.prop]
+      simp_rw [Real.log_exp, neg_mul, mul_neg, mul_inv_cancel_left₀ mult_coe_ne_zero,
+        add_neg_eq_zero]
+    · infer_instance
   map_target' _ _ := trivial
   left_inv' := by
     intro x _
@@ -544,11 +544,9 @@ def mapToUnitsPow : PartialHomeomorph (realSpace K) (realSpace K) where
       enter [2, 2, w]
       rw [dif_neg w.prop]
     ext w
-    rw [Pi.smul_apply, ← logMap_real_smul]
-    rw [← _root_.map_smul]
-    rw [← mapToUnitsPow₀_symm_apply_of_norm_one h₀]
-    rw [PartialEquiv.right_inv, Pi.smul_apply, smul_eq_mul, smul_eq_mul]
-    rw [abs_of_nonneg, Real.rpow_neg, mul_inv_cancel_left₀]
+    rw [Pi.smul_apply, ← logMap_real_smul, ← _root_.map_smul,
+      ← mapToUnitsPow₀_symm_apply_of_norm_one h₀, PartialEquiv.right_inv, Pi.smul_apply,
+      smul_eq_mul, smul_eq_mul, abs_of_nonneg, Real.rpow_neg, mul_inv_cancel_left₀]
     · refine Real.rpow_ne_zero_of_pos ?_ _
       exact pos_norm_realToMixed hx'
     · exact mixedEmbedding.norm_nonneg (realToMixed x)
@@ -578,8 +576,8 @@ def mapToUnitsPow : PartialHomeomorph (realSpace K) (realSpace K) where
       refine Continuous.continuousOn ?_
       refine Continuous.rpow_const ?_ ?_
       · refine Continuous.comp' ?_ ?_
-        exact mixedEmbedding.continuous_norm K
-        exact ContinuousLinearMap.continuous realToMixed
+        · exact mixedEmbedding.continuous_norm K
+        · exact ContinuousLinearMap.continuous realToMixed
       · intro _
         right
         rw [inv_nonneg]
@@ -588,11 +586,11 @@ def mapToUnitsPow : PartialHomeomorph (realSpace K) (realSpace K) where
       refine Continuous.comp_continuousOn' (continuous_apply _) <|
         (continuous_equivFun_basis _).comp_continuousOn' ?_
       refine ContinuousOn.comp'' (continuousOn_logMap K) ?_ ?_
-      refine Continuous.continuousOn ?_
-      exact ContinuousLinearMap.continuous realToMixed
-      intro x hx
-      refine ne_of_gt ?_
-      exact pos_norm_realToMixed (fun w ↦ (hx w).ne')
+      · refine Continuous.continuousOn ?_
+        exact ContinuousLinearMap.continuous realToMixed
+      · intro x hx
+        refine ne_of_gt ?_
+        exact pos_norm_realToMixed (fun w ↦ (hx w).ne')
 
 theorem measurable_mapToUnitsPow_symm :
     Measurable (mapToUnitsPow K).symm := by
@@ -929,16 +927,16 @@ theorem mapToUnitsPowComplex_prod_indicator_aux (x y : ℝ × ℝ) (hx : x ∈ S
     · rw [lt_iff_le_and_ne]
       exact ⟨hx.2.2, this.2.2⟩
   have := (Complex.polarCoord_symm_mem_polarCoord_source x).mp ?_
-  have hx₁ : 0 < x.1 := by
-    refine lt_iff_le_and_ne.mpr ⟨?_, ?_⟩
-    exact hx.1
-    exact this.1.symm
-  · refine ⟨?_, ?_, ?_⟩
-    · exact this.1
-    · have := this.2.1 hx₁ (-1)
-      rwa [show π + (-1 : ℤ) * (2 * π) = -π by ring, ne_comm] at this
-    · have := this.2.1 hx₁ 0
-      rwa [Int.cast_zero, zero_mul, add_zero, ne_comm] at this
+  · have hx₁ : 0 < x.1 := by
+      refine lt_iff_le_and_ne.mpr ⟨?_, ?_⟩
+      exact hx.1
+      exact this.1.symm
+    · refine ⟨?_, ?_, ?_⟩
+      · exact this.1
+      · have := this.2.1 hx₁ (-1)
+        rwa [show π + (-1 : ℤ) * (2 * π) = -π by ring, ne_comm] at this
+      · have := this.2.1 hx₁ 0
+        rwa [Int.cast_zero, zero_mul, add_zero, ne_comm] at this
   · rw [hxy]
     exact Complex.polarCoord.map_target hy
 
@@ -1086,25 +1084,25 @@ theorem volume_mapToUnitsPowComplex_set_prod_set {s : Set (InfinitePlace K → �
           ∫⁻ x in mapToUnitsPow K '' (s ∩ {x | 0 < x w₀}),
             ∏ w : {w // IsComplex w}, (x w.val).toNNReal := by
       rw [← lintegral_indicator, ← lintegral_indicator]
-      congr with x
-      rw [Set.indicator_mul_right, Set.indicator_indicator, Set.inter_eq_right.mpr]
-      by_cases hx : x ∈ (mapToUnitsPow K) '' (s ∩ {x | 0 < x w₀})
-      · rw [Set.indicator_of_mem hx, Set.indicator_of_mem hx, Pi.one_apply, mul_one,
-          ENNReal.coe_finset_prod]
-      · rw [Set.indicator_of_not_mem hx, Set.indicator_of_not_mem hx, mul_zero]
-      · rintro _ ⟨x, hx, rfl⟩
-        refine Set.mem_univ_pi.mpr fun _ ↦ ?_
-        rw [Set.mem_ite_univ_left]
-        intro _
-        rw [Set.mem_Ioi]
-        exact mapToUnitsPow_pos (ne_of_gt hx.2) _
+      · congr with x
+        rw [Set.indicator_mul_right, Set.indicator_indicator, Set.inter_eq_right.mpr]
+        · by_cases hx : x ∈ (mapToUnitsPow K) '' (s ∩ {x | 0 < x w₀})
+          · rw [Set.indicator_of_mem hx, Set.indicator_of_mem hx, Pi.one_apply, mul_one,
+              ENNReal.coe_finset_prod]
+          · rw [Set.indicator_of_not_mem hx, Set.indicator_of_not_mem hx, mul_zero]
+        · rintro _ ⟨x, hx, rfl⟩
+          refine Set.mem_univ_pi.mpr fun _ ↦ ?_
+          rw [Set.mem_ite_univ_left]
+          intro _
+          rw [Set.mem_Ioi]
+          exact mapToUnitsPow_pos (ne_of_gt hx.2) _
       · refine measurable_mapToUnitsPow_image ?_ ?_
         · exact hs.inter (measurableSet_lt measurable_const (measurable_pi_apply w₀))
         · exact Set.inter_subset_left.trans hs'
       · refine MeasurableSet.univ_pi fun _ ↦ ?_
         refine MeasurableSet.ite' (fun _ ↦ ?_) (fun _ ↦ ?_)
-        exact MeasurableSet.univ
-        exact measurableSet_Ioi
+        · exact MeasurableSet.univ
+        · exact measurableSet_Ioi
 
 end mapToUnitsPowComplex
 
@@ -1378,28 +1376,28 @@ theorem volume_normLessThanOnePlus_aux (n : ℕ) :
   classical
   rw [volume_pi, box₁, restrict_pi_pi, lintegral_eq_lmarginal_univ 0,
     lmarginal_erase' _ ?_ (Finset.mem_univ w₀)]
-  simp_rw [if_true, Function.update_same]
-  have : ∫⁻ (xᵢ : ℝ) in Set.Ioc 0 1, ENNReal.ofReal |xᵢ| ^ n = (n + 1 : ENNReal)⁻¹ := by
-    convert congr_arg ENNReal.ofReal (integral_pow (a := 0) (b := 1) n)
-    · rw [intervalIntegral.integral_of_le zero_le_one]
-      rw [ofReal_integral_eq_lintegral_ofReal]
-      · refine setLIntegral_congr_fun measurableSet_Ioc ?_
-        filter_upwards with _ h using by rw [abs_of_pos h.1, ENNReal.ofReal_pow h.1.le]
-      · refine IntegrableOn.integrable ?_
-        rw [← Set.uIoc_of_le zero_le_one, ← intervalIntegrable_iff]
-        exact intervalIntegral.intervalIntegrable_pow n
-      · exact ae_restrict_of_forall_mem measurableSet_Ioc fun _ h ↦ pow_nonneg h.1.le _
-    · rw [one_pow, zero_pow (by linarith), sub_zero, ENNReal.ofReal_div_of_pos (by positivity),
-        ENNReal.ofReal_add (by positivity) zero_le_one, ENNReal.ofReal_one, ENNReal.ofReal_natCast,
-        one_div]
-  rw [this]
-  rw [lmarginal]
-  rw [lintegral_const]
-  rw [pi_univ]
-  rw [Finset.prod_congr rfl (g := fun _ ↦ 1) (fun x _ ↦ by rw [if_neg (by aesop), restrict_apply
-    MeasurableSet.univ, Set.univ_inter, Real.volume_Ico, sub_zero, ENNReal.ofReal_one])]
-  rw [Finset.prod_const_one, mul_one]
-  fun_prop
+  · simp_rw [if_true, Function.update_same]
+    have : ∫⁻ (xᵢ : ℝ) in Set.Ioc 0 1, ENNReal.ofReal |xᵢ| ^ n = (n + 1 : ENNReal)⁻¹ := by
+      convert congr_arg ENNReal.ofReal (integral_pow (a := 0) (b := 1) n)
+      · rw [intervalIntegral.integral_of_le zero_le_one]
+        rw [ofReal_integral_eq_lintegral_ofReal]
+        · refine setLIntegral_congr_fun measurableSet_Ioc ?_
+          filter_upwards with _ h using by rw [abs_of_pos h.1, ENNReal.ofReal_pow h.1.le]
+        · refine IntegrableOn.integrable ?_
+          rw [← Set.uIoc_of_le zero_le_one, ← intervalIntegrable_iff]
+          exact intervalIntegral.intervalIntegrable_pow n
+        · exact ae_restrict_of_forall_mem measurableSet_Ioc fun _ h ↦ pow_nonneg h.1.le _
+      · rw [one_pow, zero_pow (by linarith), sub_zero, ENNReal.ofReal_div_of_pos (by positivity),
+          ENNReal.ofReal_add (by positivity) zero_le_one, ENNReal.ofReal_one,
+          ENNReal.ofReal_natCast, one_div]
+    rw [this]
+    rw [lmarginal]
+    rw [lintegral_const]
+    rw [pi_univ]
+    rw [Finset.prod_congr rfl (g := fun _ ↦ 1) (fun x _ ↦ by rw [if_neg (by aesop), restrict_apply
+      MeasurableSet.univ, Set.univ_inter, Real.volume_Ico, sub_zero, ENNReal.ofReal_one])]
+    rw [Finset.prod_const_one, mul_one]
+  · fun_prop
 
 open Classical in
 theorem volume_plusPart_normLessThanOne : volume (plusPart (normLessThanOne K)) =
@@ -1573,14 +1571,14 @@ theorem volume_mapToUnitsPowComplex_interior_eq_volume_mapToUnitsPowComplex_clos
 open Classical in
 theorem volume_frontier_plusPart_normLessThanOne :
     volume (frontier (plusPart (normLessThanOne K))) = 0 := by
-  rw [frontier, measure_diff]
   have : volume (closure (plusPart (normLessThanOne K))) =
       volume (interior (plusPart (normLessThanOne K))) := by
     refine le_antisymm ?_ (measure_mono interior_subset_closure)
     refine le_trans ?_ (measure_mono (mapToUnitsPowComplex_interior_subset_interior K))
     rw [volume_mapToUnitsPowComplex_interior_eq_volume_mapToUnitsPowComplex_closure]
     exact measure_mono (closure_subset_mapToUnitsPowComplex_closure K)
-  refine tsub_eq_zero_iff_le.mpr (le_of_eq this)
+  rw [frontier, measure_diff]
+  · exact tsub_eq_zero_iff_le.mpr (le_of_eq this)
   · exact interior_subset_closure
   · exact measurableSet_interior.nullMeasurableSet
   · rw [← lt_top_iff_ne_top]

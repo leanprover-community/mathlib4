@@ -163,7 +163,7 @@ theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ENNReal) :
     _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, |p.1|.toNNReal • f (polarCoord.symm p) := by
       rw [lintegral_image_eq_lintegral_abs_det_fderiv_mul volume _
         (fun p _ ↦ (hasFDerivAt_polarCoord_symm p).hasFDerivWithinAt)]
-      simp_rw [FDerivAt_polarCoord_symm_det]; rfl
+      · simp_rw [FDerivAt_polarCoord_symm_det]; rfl
       exacts [polarCoord.symm.injOn, measurableSet_Ioi.prod measurableSet_Ioo]
     _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, (p.1).toNNReal • f (polarCoord.symm p) := by
       refine setLIntegral_congr_fun polarCoord.open_target.measurableSet ?_
