@@ -7,7 +7,7 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Chebyshev
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.Polynomial.Roots
 
@@ -200,9 +200,8 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
   -- The two polynomials agree on all `x` of the form `x = y + y⁻¹`.
   apply @Set.Infinite.mono _ { x : K | ∃ y, x = y + y⁻¹ ∧ y ≠ 0 }
   · rintro _ ⟨x, rfl, hx⟩
-    simp only [eval_X, eval_pow, Set.mem_setOf_eq, @add_pow_char K _ p,
-      dickson_one_one_eval_add_inv _ _ (mul_inv_cancel₀ hx), inv_pow, ZMod.castHom_apply,
-      ZMod.cast_one']
+    simp only [eval_X, eval_pow, Set.mem_setOf_eq, ZMod.cast_one', add_pow_char,
+      dickson_one_one_eval_add_inv _ _ (mul_inv_cancel₀ hx), ZMod.castHom_apply]
   -- Now we need to show that the set of such `x` is infinite.
   -- If the set is finite, then we will show that `K` is also finite.
   · intro h
@@ -231,7 +230,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
           mem_roots hφ, IsRoot, eval_add, eval_sub, eval_pow, eval_mul, eval_X, eval_C, eval_one,
           Multiset.mem_singleton]
         by_cases hy : y = 0
-        · simp only [hy, eq_self_iff_true, or_true_iff]
+        · simp only [hy, eq_self_iff_true, or_true]
         apply or_congr _ Iff.rfl
         rw [← mul_left_inj' hy, eq_comm, ← sub_eq_zero, add_mul, inv_mul_cancel₀ hy]
         apply eq_iff_eq_cancel_right.mpr
@@ -241,9 +240,9 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     intro x
     simp only [exists_prop, Set.mem_iUnion, Set.bind_def, Ne, Set.mem_setOf_eq]
     by_cases hx : x = 0
-    · simp only [hx, and_true_iff, eq_self_iff_true, inv_zero, or_true_iff]
+    · simp only [hx, and_true, eq_self_iff_true, inv_zero, or_true]
       exact ⟨_, 1, rfl, one_ne_zero⟩
-    · simp only [hx, or_false_iff, exists_eq_right]
+    · simp only [hx, or_false, exists_eq_right]
       exact ⟨_, rfl, hx⟩
 
 theorem dickson_one_one_charP (p : ℕ) [Fact p.Prime] [CharP R p] : dickson 1 (1 : R) p = X ^ p := by

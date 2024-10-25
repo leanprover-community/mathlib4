@@ -21,7 +21,7 @@ theorem mabs_mem_iff {S G} [Group G] [LinearOrder G] {_ : SetLike S G}
 
 section ModularLattice
 
-variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
+variable {C : Type*} [CommGroup C]
 
 @[to_additive]
 instance : IsModularLattice (Subgroup C) :=

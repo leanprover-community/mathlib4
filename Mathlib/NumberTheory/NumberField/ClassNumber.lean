@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.Finite
-import Mathlib.NumberTheory.NumberField.Discriminant
+import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 
 /-!
 # Class numbers of number fields
@@ -18,7 +18,6 @@ on the class number.
 - `NumberField.classNumber`: the class number of a number field is the (finite)
 cardinality of the class group of its ring of integers
 -/
-
 
 namespace NumberField
 
@@ -41,7 +40,7 @@ variable {K}
 theorem classNumber_eq_one_iff : classNumber K = 1 ↔ IsPrincipalIdealRing (𝓞 K) :=
   card_classGroup_eq_one_iff
 
-open FiniteDimensional NumberField.InfinitePlace
+open Module NumberField.InfinitePlace
 
 open scoped nonZeroDivisors Real
 
@@ -75,7 +74,7 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
       ((finrank ℚ K) ^ (finrank ℚ K) / (finrank ℚ K).factorial)) ^ 2) :
     IsPrincipalIdealRing (𝓞 K) := by
   have : 0 < finrank ℚ K := finrank_pos -- Lean needs to know that for positivity to succeed
-  rw [← Real.sqrt_lt (by positivity) (by positivity), mul_assoc, ← inv_mul_lt_iff' (by positivity),
+  rw [← Real.sqrt_lt (by positivity) (by positivity), mul_assoc, ← inv_mul_lt_iff₀' (by positivity),
     mul_inv, ← inv_pow, inv_div, inv_div, mul_assoc, Int.cast_abs] at h
   rw [← classNumber_eq_one_iff, classNumber, Fintype.card_eq_one_iff]
   refine ⟨1, fun C ↦ ?_⟩

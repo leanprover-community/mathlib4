@@ -49,7 +49,7 @@ assert_not_exists Ring
 
 open Function
 
-variable {R R' M M' N G A B α β : Type*}
+variable {M N A B α β : Type*}
 
 /-- `Monoid.toMulAction` is faithful on nontrivial cancellative monoids with zero. -/
 instance CancelMonoidWithZero.faithfulSMul [CancelMonoidWithZero α] [Nontrivial α] :
@@ -91,8 +91,6 @@ end GroupWithZero
 class SMulZeroClass (M A : Type*) [Zero A] extends SMul M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
-
-set_synth_order SMulZeroClass.toSMul #[3, 2]
 
 section smul_zero
 
@@ -162,8 +160,6 @@ class DistribSMul (M A : Type*) [AddZeroClass A] extends SMulZeroClass M A where
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 
-set_synth_order DistribSMul.toSMulZeroClass #[3, 2]
-
 section DistribSMul
 
 variable [AddZeroClass A] [DistribSMul M A]
@@ -176,7 +172,7 @@ instance AddMonoidHom.smulZeroClass [AddZeroClass B] : SMulZeroClass M (B →+ A
     { toFun := fun a => r • (f a)
       map_zero' := by simp only [map_zero, smul_zero]
       map_add' := fun x y => by simp only [map_add, smul_add] }
-  smul_zero r := ext fun _ => smul_zero _
+  smul_zero _ := ext fun _ => smul_zero _
 
 /-- Pullback a distributive scalar multiplication along an injective additive monoid
 homomorphism.
@@ -230,8 +226,6 @@ class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction 
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 
-set_synth_order DistribMulAction.toMulAction #[4, 2, 3]
-
 section
 
 variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
@@ -239,8 +233,6 @@ variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 -- See note [lower instance priority]
 instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
   { ‹DistribMulAction M A› with }
-
-set_synth_order DistribMulAction.toDistribSMul #[4, 2, 3]
 
 -- Porting note: this probably is no longer relevant.
 /-! Since Lean 3 does not have definitional eta for structures, we have to make sure
@@ -335,8 +327,6 @@ class MulDistribMulAction (M : Type*) (A : Type*) [Monoid M] [Monoid A] extends
   smul_mul : ∀ (r : M) (x y : A), r • (x * y) = r • x * r • y
   /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : A) = 1
-
-set_synth_order MulDistribMulAction.toMulAction #[4, 2, 3]
 
 export MulDistribMulAction (smul_one)
 

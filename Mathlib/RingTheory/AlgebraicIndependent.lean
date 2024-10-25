@@ -47,11 +47,9 @@ open scoped Classical
 universe x u v w
 
 variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
-variable {A : Type*} {A' A'' : Type*} {V : Type u} {V' : Type*}
+variable {A : Type*} {A' : Type*}
 variable (x : ι → A)
-variable [CommRing R] [CommRing A] [CommRing A'] [CommRing A'']
-variable [Algebra R A] [Algebra R A'] [Algebra R A'']
-variable {a b : R}
+variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`
   is algebraically independent over `R`, meaning that the canonical
@@ -82,11 +80,7 @@ theorem algebraicIndependent_iff_injective_aeval :
 @[simp]
 theorem algebraicIndependent_empty_type_iff [IsEmpty ι] :
     AlgebraicIndependent R x ↔ Injective (algebraMap R A) := by
-  have : aeval x = (Algebra.ofId R A).comp (@isEmptyAlgEquiv R ι _ _).toAlgHom := by
-    ext i
-    exact IsEmpty.elim' ‹IsEmpty ι› i
-  rw [AlgebraicIndependent, this, ← Injective.of_comp_iff' _ (@isEmptyAlgEquiv R ι _ _).bijective]
-  rfl
+  rw [algebraicIndependent_iff_injective_aeval, MvPolynomial.aeval_injective_iff_of_isEmpty]
 
 namespace AlgebraicIndependent
 
@@ -377,14 +371,12 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C
     IsScalarTower.algebraMap_apply R (MvPolynomial ι R), ← Polynomial.C_eq_algebraMap,
     Polynomial.map_C, RingHom.coe_coe, AlgEquiv.commutes]
 
---@[simp] Porting note (#10618): simp can prove it
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
     (hx : AlgebraicIndependent R x) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X none) = Polynomial.X := by
   rw [AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply, aeval_X, Option.elim,
     Polynomial.map_X]
 
---@[simp] Porting note (#10618): simp can prove it
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
     (hx : AlgebraicIndependent R x) (i) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X (some i)) =

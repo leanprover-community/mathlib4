@@ -40,7 +40,7 @@ variable (K : Type*) [Field K]
 
 namespace NumberField.mixedEmbedding
 
-open NumberField NumberField.InfinitePlace FiniteDimensional
+open NumberField NumberField.InfinitePlace Module
 
 section convexBodyLT
 
@@ -94,8 +94,7 @@ theorem convexBodyLTFactor_ne_zero : convexBodyLTFactor K ≠ 0 :=
   mul_ne_zero (pow_ne_zero _ two_ne_zero) (pow_ne_zero _ pi_ne_zero)
 
 theorem one_le_convexBodyLTFactor : 1 ≤ convexBodyLTFactor K :=
-  one_le_mul (one_le_pow_of_one_le one_le_two _)
-    (one_le_pow_of_one_le (le_trans one_le_two Real.two_le_pi) _)
+  one_le_mul (one_le_pow₀ one_le_two) (one_le_pow₀ (one_le_two.trans Real.two_le_pi))
 
 /-- The volume of `(ConvexBodyLt K f)` where `convexBodyLT K f` is the set of points `x`
 such that `‖x w‖ < f w` for all infinite places `w`. -/
@@ -212,8 +211,7 @@ theorem convexBodyLT'Factor_ne_zero : convexBodyLT'Factor K ≠ 0 :=
   mul_ne_zero (pow_ne_zero _ two_ne_zero) (pow_ne_zero _ pi_ne_zero)
 
 theorem one_le_convexBodyLT'Factor : 1 ≤ convexBodyLT'Factor K :=
-  one_le_mul (one_le_pow_of_one_le one_le_two _)
-    (one_le_pow_of_one_le (le_trans one_le_two Real.two_le_pi) _)
+  one_le_mul (one_le_pow₀ one_le_two) (one_le_pow₀ (one_le_two.trans Real.two_le_pi))
 
 theorem convexBodyLT'_volume :
     volume (convexBodyLT' K f w₀) = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
@@ -312,8 +310,8 @@ theorem convexBodySumFun_smul (c : ℝ) (x : mixedSpace K) :
 
 theorem convexBodySumFun_eq_zero_iff (x : mixedSpace K) :
     convexBodySumFun x = 0 ↔ x = 0 := by
-  rw [← normAtPlace_eq_zero, convexBodySumFun, Finset.sum_eq_zero_iff_of_nonneg fun _ _ =>
-    mul_nonneg (Nat.cast_pos.mpr mult_pos).le (normAtPlace_nonneg _ _)]
+  rw [← forall_normAtPlace_eq_zero_iff, convexBodySumFun, Finset.sum_eq_zero_iff_of_nonneg
+    fun _ _ ↦ mul_nonneg (Nat.cast_pos.mpr mult_pos).le (normAtPlace_nonneg _ _)]
   conv =>
     enter [1, w, hw]
     rw [mul_left_mem_nonZeroDivisors_eq_zero_iff
@@ -405,7 +403,7 @@ theorem convexBodySum_volume :
       convert addHaar_smul volume B (convexBodySum K 1)
       · simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hB), Set.preimage_setOf_eq, convexBodySumFun,
         normAtPlace_smul, abs_inv, abs_eq_self.mpr (le_of_lt hB), ← mul_assoc, mul_comm, mul_assoc,
-        ← Finset.mul_sum, inv_mul_le_iff hB, mul_one]
+        ← Finset.mul_sum, inv_mul_le_iff₀ hB, mul_one]
       · rw [abs_pow, ofReal_pow (abs_nonneg _), abs_eq_self.mpr (le_of_lt hB),
           mixedEmbedding.finrank]
       · exact this.symm
@@ -452,7 +450,7 @@ end convexBodySum
 section minkowski
 
 open scoped Classical
-open MeasureTheory MeasureTheory.Measure FiniteDimensional ZSpan Real Submodule
+open MeasureTheory MeasureTheory.Measure Module ZSpan Real Submodule
 
 open scoped ENNReal NNReal nonZeroDivisors IntermediateField
 
@@ -500,7 +498,7 @@ the computation of this volume), then there exists a nonzero algebraic number `a
 that `w a < f w` for all infinite places `w`. -/
 theorem exists_ne_zero_mem_ideal_lt (h : minkowskiBound K I < volume (convexBodyLT K f)) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
-  have h_fund := ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
+  have h_fund := ZSpan.isAddFundamentalDomain' (fractionalIdealLatticeBasis K I) volume
   have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
     change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)))
     infer_instance
@@ -516,7 +514,7 @@ theorem exists_ne_zero_mem_ideal_lt' (w₀ : {w : InfinitePlace K // IsComplex w
     (h : minkowskiBound K I < volume (convexBodyLT' K f w₀)) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧ (∀ w : InfinitePlace K, w ≠ w₀ → w a < f w) ∧
       |(w₀.val.embedding a).re| < 1 ∧ |(w₀.val.embedding a).im| < (f w₀ : ℝ) ^ 2 := by
-  have h_fund := ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
+  have h_fund := ZSpan.isAddFundamentalDomain' (fractionalIdealLatticeBasis K I) volume
   have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
     change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)))
     infer_instance
@@ -604,7 +602,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   -- Some inequalities that will be useful later on
   have h1 : 0 < (finrank ℚ K : ℝ)⁻¹ := inv_pos.mpr (Nat.cast_pos.mpr finrank_pos)
   have h2 : 0 ≤ B / (finrank ℚ K) := div_nonneg hB (Nat.cast_nonneg _)
-  have h_fund := ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
+  have h_fund := ZSpan.isAddFundamentalDomain' (fractionalIdealLatticeBasis K I) volume
   have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
     change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)))
     infer_instance

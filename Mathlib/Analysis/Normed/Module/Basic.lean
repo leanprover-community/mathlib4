@@ -44,8 +44,6 @@ class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCo
     extends Module 𝕜 E where
   norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
 
-set_synth_order NormedSpace.toModule #[4, 2, 3]
-
 attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
 
 end Prio
@@ -121,6 +119,9 @@ instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, Sem
       NNReal.mul_finset_sup]
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
 
+instance SeparationQuotient.instNormedSpace : NormedSpace 𝕜 (SeparationQuotient E) where
+  norm_smul_le := norm_smul_le
+
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
   norm_smul_le _ x := norm_smul_le _ x.unop
 
@@ -188,7 +189,7 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
   rcases NormedField.exists_lt_norm 𝕜 (c / ‖x‖) with ⟨r, hr⟩
   use r • x
-  rwa [norm_smul, ← _root_.div_lt_iff]
+  rwa [norm_smul, ← div_lt_iff₀]
   rwa [norm_pos_iff]
 
 protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
@@ -227,8 +228,8 @@ protected theorem NormedSpace.noncompactSpace : NoncompactSpace E := by
     exact ⟨fun h ↦ NormedSpace.unbounded_univ 𝕜 E h.isBounded⟩
   · push_neg at H
     rcases exists_ne (0 : E) with ⟨x, hx⟩
-    suffices ClosedEmbedding (Infinite.natEmbedding 𝕜 · • x) from this.noncompactSpace
-    refine closedEmbedding_of_pairwise_le_dist (norm_pos_iff.2 hx) fun k n hne ↦ ?_
+    suffices IsClosedEmbedding (Infinite.natEmbedding 𝕜 · • x) from this.noncompactSpace
+    refine isClosedEmbedding_of_pairwise_le_dist (norm_pos_iff.2 hx) fun k n hne ↦ ?_
     simp only [dist_eq_norm, ← sub_smul, norm_smul]
     rw [H, one_mul]
     rwa [sub_ne_zero, (Embedding.injective _).ne_iff]
@@ -255,8 +256,6 @@ variable [NormedSpace 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTowe
 class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜'] extends
   Algebra 𝕜 𝕜' where
   norm_smul_le : ∀ (r : 𝕜) (x : 𝕜'), ‖r • x‖ ≤ ‖r‖ * ‖x‖
-
-set_synth_order NormedAlgebra.toAlgebra #[4, 2, 3]
 
 attribute [inherit_doc NormedAlgebra] NormedAlgebra.norm_smul_le
 
@@ -351,6 +350,10 @@ instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, S
   { Pi.normedSpace, Pi.algebra _ E with }
 
 variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
+
+instance SeparationQuotient.instNormedAlgebra : NormedAlgebra 𝕜 (SeparationQuotient E) where
+  __ : NormedSpace 𝕜 (SeparationQuotient E) := inferInstance
+  __ : Algebra 𝕜 (SeparationQuotient E) := inferInstance
 
 instance MulOpposite.instNormedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ where

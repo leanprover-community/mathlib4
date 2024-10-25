@@ -10,8 +10,10 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.42"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.43"
 require "leanprover-community" / "importGraph" @ git "main"
+require "leanprover-community" / "LeanSearchClient" @ git "main"
+  from git "https://github.com/leanprover-community/LeanSearchClient" @ "main"
 
 /-!
 ## Options for building mathlib
@@ -23,15 +25,18 @@ require "leanprover-community" / "importGraph" @ git "main"
   (as well as `Archive`, `Counterexamples` and `test`).
 -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
+  ⟨`linter.docPrime, true⟩,
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
   ⟨`linter.style.cdot, true⟩,
   ⟨`linter.style.dollarSyntax, true⟩,
+  ⟨`linter.style.header, true⟩,
   ⟨`linter.style.lambdaSyntax, true⟩,
   ⟨`linter.style.longLine, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
   ⟨`linter.style.missingEnd, true⟩,
+  ⟨`linter.style.multiGoal, true⟩,
   ⟨`linter.style.setOption, true⟩
 ]
 
@@ -47,6 +52,8 @@ package mathlib where
   leanOptions := mathlibLeanOptions
   -- Mathlib also enforces these linter options, which are not active by default.
   moreServerOptions := mathlibOnlyLinters
+  -- Use Batteries' test driver for `lake test`
+  testDriver := "batteries/test"
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -80,6 +87,16 @@ lean_lib docs where
 /-!
 ## Executables provided by Mathlib
 -/
+
+/--
+`lake exe autolabel 150100` adds a topic label to PR `150100` if there is a unique choice.
+This requires GitHub CLI `gh` to be installed!
+
+Calling `lake exe autolabel` without a PR number will print the result without applying
+any labels online.
+-/
+lean_exe autolabel where
+  srcDir := "scripts"
 
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
@@ -116,18 +133,6 @@ lean_exe pole where
   supportInterpreter := true
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
-
-/--
-`lake exe test` is a thin wrapper around `lake exe batteries/test`, until
-https://github.com/leanprover/lean4/issues/4121 is resolved.
-
-You can also use it as e.g. `lake exe test conv eval_elab` to only run the named tests.
--/
-@[test_driver]
-lean_exe test where
-  -- We could add the above `leanOptions` and `moreServerOptions`: currently, these do not take
-  -- effect as `test` is a `lean_exe`. With a `lean_lib`, it would work...
-  srcDir := "scripts"
 
 /-!
 ## Other configuration

@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.GDelta
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jalex Stark, Scott Morrison, Eric Wieser, Oliver Nash, Wen Yang
+Authors: Jalex Stark, Kim Morrison, Eric Wieser, Oliver Nash, Wen Yang
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.Trace
@@ -29,6 +29,12 @@ and zeroes elsewhere.
 -/
 def stdBasisMatrix (i : m) (j : n) (a : α) : Matrix m n α := fun i' j' =>
   if i = i' ∧ j = j' then a else 0
+
+theorem stdBasisMatrix_eq_of_single_single (i : m) (j : n) (a : α) :
+    stdBasisMatrix i j a = Matrix.of (Pi.single i (Pi.single j a)) := by
+  ext a b
+  unfold stdBasisMatrix
+  by_cases hi : i = a <;> by_cases hj : j = b <;> simp [*]
 
 @[simp]
 theorem smul_stdBasisMatrix [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :

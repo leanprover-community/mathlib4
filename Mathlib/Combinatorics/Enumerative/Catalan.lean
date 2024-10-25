@@ -187,7 +187,7 @@ theorem coe_treesOfNumNodesEq (n : ℕ) :
     ↑(treesOfNumNodesEq n) = { x : Tree Unit | x.numNodes = n } :=
   Set.ext (by simp)
 
-theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = catalan n := by
+theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : #(treesOfNumNodesEq n) = catalan n := by
   induction n using Nat.caseStrongRecOn with
   | zero => simp
   | ind n ih =>

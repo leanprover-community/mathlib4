@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 import Mathlib.CategoryTheory.Limits.Final
@@ -103,7 +103,7 @@ of open sets below some `U i`.
 @[simps]
 def pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U where
   obj := pairwiseToOpensLeCoverObj U
-  map {V W} i := pairwiseToOpensLeCoverMap U i
+  map {_ _} i := pairwiseToOpensLeCoverMap U i
 
 instance (V : OpensLeCover U) : Nonempty (StructuredArrow V (pairwiseToOpensLeCover U)) :=
   ⟨@StructuredArrow.mk _ _ _ _ _ (single V.index) _ V.homToIndex⟩
