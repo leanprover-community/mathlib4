@@ -26,11 +26,11 @@ variable (F E : Type*) [Field F] [Field E] [Algebra F E]
 variable {K : Type*} [Field K] [Algebra F K]
 
 /--
-The relative algebraic closure of a field `F` in an extension `E`, or called maximal
-algebraic subextension
-of `E / F`, is defined to be the subalgebra `integralClosure F E`
-upgraded to an intermediate field (when `F` and `E` are both fields). This is exactly the
-intermediate field of `E / F` consisting of all integral/algebraic elements.
+The *relative algebraic closure* of a field `F` in a field extension `E`,
+also called the *maximal algebraic subextension* of `E / F`,
+is defined to be the subalgebra `integralClosure F E`
+upgraded to an intermediate field (since `F` and `E` are both fields).
+This is exactly the intermediate field of `E / F` consisting of all integral/algebraic elements.
 -/
 def algebraicClosure : IntermediateField F E :=
   Algebra.IsAlgebraic.toIntermediateField (integralClosure F E)
