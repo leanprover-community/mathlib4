@@ -46,7 +46,7 @@ instance : QuasiSober X := by
 
 /-- A scheme `X` is reduced if all `𝒪ₓ(U)` are reduced. -/
 class IsReduced : Prop where
-  component_reduced : ∀ U, IsReduced Γ(X, U) := by infer_instance
+  component_reduced : ∀ U, _root_.IsReduced Γ(X, U) := by infer_instance
 
 attribute [instance] IsReduced.component_reduced
 
