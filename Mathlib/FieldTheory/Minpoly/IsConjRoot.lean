@@ -57,19 +57,26 @@ namespace IsConjRoot
 /--
 Every element is a conjugate root of itself.
 -/
+@[refl]
 theorem refl {x : A} : IsConjRoot R x x := rfl
 
 /--
 If `y` is a conjugate root of `x`, then `x` is also a conjugate root of `y`.
 -/
+@[symm]
 theorem symm {x y : A} (h : IsConjRoot R x y) : IsConjRoot R y x := Eq.symm h
 
 /--
 If `y` is a conjugate root of `x` and `z` is a conjugate root of `y`, then `z` is a conjugate
 root of `x`.
 -/
+@[trans]
 theorem trans {x y y': A} (h₁ : IsConjRoot R x y) (h₂ : IsConjRoot R y y') :
     IsConjRoot R x y' := Eq.trans h₁ h₂
+
+variable (R A) in
+/- `IsConjRoot` as a `Setoid`. -/
+def setoid : Setoid A := .ker <| minpoly R
 
 /--
 Let `p` be the minimal polynomial of `x`. If `y` is a conjugate root of `x`, then `p y = 0`.
@@ -202,6 +209,14 @@ theorem isConjRoot_iff_mem_minpoly_rootSet {x y : S}
   (isConjRoot_iff_mem_aroots h).trans (by simp [rootSet])
 
 namespace IsConjRoot
+
+instance decidable [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] (x y : L) :
+    Decidable (IsConjRoot K x y) :=
+  decidable_of_iff _ isConjRoot_iff_exists_algEquiv.symm
+
+instance : IsEquiv L (IsConjRoot K) :=
+  letI := IsConjRoot.setoid K L
+  inferInstanceAs <| IsEquiv L (· ≈ ·)
 
 /--
 If `y` is a conjugate root of an integral element `x` over `R`, then `y` is also integral
