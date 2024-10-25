@@ -132,9 +132,9 @@ noncomputable instance : DivInvMonoid ℝ≥0∞ where
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 -- Porting note: are these 2 instances still required in Lean 4?
-instance covariantClass_mul_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· * ·) (· ≤ ·) := inferInstance
+instance mulLeftMono : MulLeftMono ℝ≥0∞ := inferInstance
 
-instance covariantClass_add_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· + ·) (· ≤ ·) := inferInstance
+instance addLeftMono : AddLeftMono ℝ≥0∞ := inferInstance
 
 -- Porting note (#11215): TODO: add a `WithTop` instance and use it here
 noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=

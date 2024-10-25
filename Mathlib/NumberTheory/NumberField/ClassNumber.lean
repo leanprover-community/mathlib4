@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.Finite
-import Mathlib.NumberTheory.NumberField.Discriminant
+import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 
 /-!
 # Class numbers of number fields
@@ -18,7 +18,6 @@ on the class number.
 - `NumberField.classNumber`: the class number of a number field is the (finite)
 cardinality of the class group of its ring of integers
 -/
-
 
 namespace NumberField
 
