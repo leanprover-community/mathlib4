@@ -296,6 +296,13 @@ theorem neg_coeff {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
   rfl
 
 @[simp]
+theorem neg_coeffTop {x : HahnSeries Γ R} : (-x).coeffTop = -x.coeffTop := by
+  ext g
+  match g with
+  | ⊤ => simp
+  | (g : Γ) => exact rfl
+
+@[simp]
 theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
   ext
   simp
@@ -313,6 +320,11 @@ theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.
 
 @[simp]
 theorem sub_coeff {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
+  ext
+  simp [sub_eq_add_neg]
+
+@[simp]
+theorem sub_coeffTop {x y : HahnSeries Γ R} : (x - y).coeffTop = x.coeffTop - y.coeffTop := by
   ext
   simp [sub_eq_add_neg]
 
@@ -346,6 +358,13 @@ theorem leadingCoeff_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
   rw [sub_eq_add_neg]
   rw [← orderTop_neg (x := y)] at hxy
   exact leadingCoeff_add_eq_left hxy
+
+theorem sub_orderTop_ne_of_leadingCoeff_eq {x y : HahnSeries Γ R} {g : Γ}
+    (hxg : x.orderTop = g) (hyg : y.orderTop = g) (hxyc : x.leadingCoeff = y.leadingCoeff) :
+    (x - y).orderTop ≠ g := by
+  refine orderTop_ne_of_coeffTop_zero ?_
+  simp only [leadingCoeff] at hxyc
+  rw [sub_coeffTop, Pi.sub_apply, sub_eq_zero, ← hxg, hxyc, hxg, hyg]
 
 end AddGroup
 

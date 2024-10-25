@@ -242,6 +242,9 @@ theorem ne_zero_iff_orderTop {x : HahnSeries Γ R} : x ≠ 0 ↔ orderTop x ≠ 
   · contrapose!
     exact fun hx ↦ Eq.mpr (congrArg (fun y ↦ orderTop y = ⊤) hx) orderTop_zero
 
+theorem orderTop_eq_zero_iff {x : HahnSeries Γ R} : orderTop x = ⊤ ↔ x = 0 :=
+  ⟨Mathlib.Tactic.Contrapose.mtr ne_zero_iff_orderTop.mp, fun h => h ▸ orderTop_zero⟩
+
 theorem untop_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
     WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx) =
       x.isWF_support.min (support_nonempty_iff.2 hx) :=
@@ -255,6 +258,10 @@ theorem coeff_orderTop_ne {x : HahnSeries Γ R} {g : Γ} (hg : x.orderTop = g) :
   rw [orderTop_of_ne hx, WithTop.coe_eq_coe] at hg
   rw [← hg]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
+
+theorem orderTop_ne_of_coeff_zero {x : HahnSeries Γ R} {i : Γ} (hx : x.coeff i = 0) :
+    x.orderTop ≠ i :=
+  fun h ↦ coeff_orderTop_ne h hx
 
 theorem orderTop_le_of_coeff_ne_zero {Γ} [LinearOrder Γ] {x : HahnSeries Γ R}
     {g : Γ} (h : x.coeff g ≠ 0) : x.orderTop ≤ g := by
@@ -322,6 +329,14 @@ theorem coeffTop_eq_zero_of_lt_orderTop {x : HahnSeries Γ R} {i : WithTop Γ} (
   match i with
   | ⊤ => exact rfl
   | (i : Γ) => rw [coeffTop_eq, coeff_eq_zero_of_lt_orderTop hi]
+
+theorem orderTop_ne_of_coeffTop_zero {x : HahnSeries Γ R} {i : Γ} (hx : x.coeffTop i = 0) :
+    x.orderTop ≠ i :=
+  fun h ↦ coeff_orderTop_ne h hx
+
+theorem coeffTop_orderTop_ne {x : HahnSeries Γ R} {g : Γ} (hg : x.orderTop = g) :
+    x.coeffTop g ≠ 0 :=
+  fun h => orderTop_ne_of_coeffTop_zero h hg
 
 /-- A leading coefficient of a Hahn series is the coefficient of a lowest-order nonzero term, or
 zero if the series vanishes. -/

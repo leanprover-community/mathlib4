@@ -350,7 +350,7 @@ theorem power_series_family_prod_eq_family_mul (hx : 0 < x.orderTop) (a b : Powe
     ((PowerSeriesFamily hx a).FamilyMul (PowerSeriesFamily hx b)).hsum := by
   ext g
   simp only [PowerSeriesFamily_toFun, PowerSeries.coeff_mul, Finset.sum_smul, ← Finset.sum_product,
-    hsum_coeff_sum, FamilyMul_toFun]
+    hsum_coeff_eq_sum, FamilyMul_toFun]
   rw [sum_subset (power_series_family_supp_subset hx a b g)]
   · rw [← HahnSeries.sum_coeff, sum_sigma', sum_coeff]
     refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) ?_ ?_ ?_ ?_).symm
@@ -556,7 +556,7 @@ theorem mvPowerSeries_family_prod_eq_family_mul {σ : Type*} [Fintype σ] (y : �
   ext g
   classical
   simp only [mvPowerSeriesFamily_toFun, MvPowerSeries.coeff_mul, Finset.sum_smul,
-    ← Finset.sum_product, hsum_coeff_sum, FamilyMul_toFun, mvPowers_apply]
+    ← Finset.sum_product, hsum_coeff_eq_sum, FamilyMul_toFun, mvPowers_apply]
   rw [sum_subset (mvPowerSeriesFamily_supp_subset y hy a b g)]
   · rw [← HahnSeries.sum_coeff, sum_sigma', sum_coeff]
     refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) ?_ ?_ ?_ ?_).symm
@@ -811,7 +811,7 @@ theorem unit_aux_addUnit (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff 
       nth_rw 2 [eq_of_sub_eq_zero hy] -- get a bad loop without `nth_rw`
       simp only [AddUnits.neg_eq_val_neg, leadingTerm_eq, ← leadingCoeff_eq, single_mul_single,
         IsAddUnit.val_neg_add, hr, single_zero_one]
-    simp only [hrx, sub_self, orderTop_zero, WithTop.zero_lt_top]
+    simp only [hrx, sub_self, orderTop_zero, WithTop.top_pos]
   have hr' : ∀ (s : R), r * s = 0 → s = 0 :=
     fun s hs => by rw [← one_mul s, ← hr, mul_right_comm, hs, zero_mul]
   have hy' : 0 < (single (IsAddUnit.addUnit hxo).neg r * y).order := by

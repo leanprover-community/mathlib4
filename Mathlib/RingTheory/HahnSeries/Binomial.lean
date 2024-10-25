@@ -59,6 +59,74 @@ theorem pos_addUnit_neg_add [AddMonoid Γ] [LT Γ]
 
 --#find_home pos_addUnit_neg_add --Mathlib.Algebra.Order.Group.Units
 
+theorem minus_one_orderTop_pos [LinearOrderedCancelAddCommMonoid Γ] [Nontrivial R] [CommRing R]
+    (x : HahnSeries Γ R) : 0 < (x - 1).orderTop ↔ x.orderTop = 0 ∧ x.leadingCoeff = 1 := by
+  constructor
+  · intro hx
+    rw [show x = (x - 1) + 1 by exact Eq.symm (sub_add_cancel x 1), add_comm,
+      ← orderTop_one (R := R) (Γ := Γ), ← leadingCoeff_one (R := R) (Γ := Γ)]
+    constructor
+    · exact orderTop_add_eq_left (Γ := Γ) (R := R) (orderTop_one (R := R) (Γ := Γ) ▸ hx)
+    · exact leadingCoeff_add_eq_left (Γ := Γ) (R := R) (orderTop_one (R := R) (Γ := Γ) ▸ hx)
+  · intro h
+    refine lt_of_le_of_ne (le_of_eq_of_le (by simp_all)
+      (min_orderTop_le_orderTop_sub (Γ := Γ) (R := R))) <| Ne.symm <|
+      sub_orderTop_ne_of_leadingCoeff_eq h.1 orderTop_one ?_
+    rw [h.2, leadingCoeff_one]
+
+/-- The monoid of elements close to 1, i.e., subtracting 1 yields positive `orderTop`. -/
+@[simps]
+def onePlusPosOrderTop (Γ) (R) [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] :
+    Submonoid (HahnSeries Γ R) where
+  carrier := { x : HahnSeries Γ R | 0 < (x - 1).orderTop}
+  mul_mem' := by
+    intro x y hx hy
+    by_cases hR : (0 : R) ≠ 1
+    · letI : Nontrivial R := nontrivial_of_ne 0 1 hR
+      simp_all only [Set.mem_setOf_eq, minus_one_orderTop_pos]
+      have h1 : x.leadingCoeff * y.leadingCoeff = 1 := by rw [hx.2, hy.2, mul_one]
+      constructor
+      · rw [orderTop_mul_of_nonzero (h1 ▸ one_ne_zero), hx.1, hy.1, add_zero]
+      · rw [leadingCoeff_mul_of_nonzero (h1 ▸ one_ne_zero), h1]
+    · rw [Mathlib.Tactic.PushNeg.not_ne_eq] at hR
+      have hz : (0 : HahnSeries Γ R) = 1 := by rw [← single_zero_one, ← hR, single_eq_zero]
+      rw [← one_mul x, ← hz, zero_mul, zero_mul]
+      simp
+  one_mem' := by simp
+
+-- Need to generalize to comm. algebra over binomial ring.
+/-- A summable family of Hahn series given by `Ring.choose r n • (x-1)^n`. It is a formal expansion
+of `x^r` as `(1 + (x-1))^r`. -/
+def binomialSeries [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+    [BinomialRing R] (x : onePlusPosOrderTop Γ R) (r : R) : SummableFamily Γ R ℕ :=
+  SummableFamily.PowerSeriesFamily x.2 (PowerSeries.mk (fun n => Ring.choose r n))
+/-!
+theorem binomialSeries_hsum_in_onePlusPosOrderTop [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+    [BinomialRing R] (x : onePlusPosOrderTop Γ R) (r : R) :
+    0 < (SummableFamily.hsum (binomialSeries x r) - 1).orderTop := by
+  by_cases hR : (0 : R) ≠ 1
+  · letI : Nontrivial R := nontrivial_of_ne 0 1 hR
+    rw [minus_one_orderTop_pos]
+    constructor
+    ·
+  sorry
+
+
+instance [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] [BinomialRing R] :
+    HPow (onePlusPosOrderTop Γ R) R (onePlusPosOrderTop Γ R) where
+  hPow x r := ⟨SummableFamily.hsum (binomialSeries x r),
+    binomialSeries_hsum_in_onePlusPosOrderTop x r⟩
+
+theorem one_sub_single_sub_one_orderTop_pos [OrderedCancelAddCommMonoid Γ] [CommRing R]
+    {g : Γ} (hg : 0 < g) (r : R) : 0 < ((1 - single g r) - 1).orderTop := by
+  sorry
+
+theorem one_sub_single_pow_coeff [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] [BinomialRing R]
+    {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) :
+    HahnSeries.coeff ((⟨(1 - single g r), one_sub_single_sub_one_orderTop_pos hg r⟩ :
+      onePlusPosOrderTop Γ R) ^ s) (k • g) = (-1) ^ k • Ring.choose s k • r ^ k := by
+  sorry
+-/
 variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
 
 theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single g r) := by

@@ -176,6 +176,7 @@ theorem hsum_coeff_eq_sum {s : SummableFamily Γ R α} {g : Γ} :
     s.hsum.coeff g = ∑ i ∈ (s.coeff g).support, (s i).coeff g := by
   simp only [hsum_coeff, finsum_eq_sum _ (s.finite_co_support _), coeff_support]
 
+
 /-- The summable family made of a single Hahn series. -/
 @[simps]
 def single (x : HahnSeries Γ R) : SummableFamily Γ R Unit where
@@ -205,6 +206,88 @@ theorem hsum_equiv (e : α ≃ β) (s : SummableFamily Γ R α) : (Equiv e s).hs
   ext g
   simp only [hsum_coeff, Equiv_toFun]
   exact finsum_eq_of_bijective e.symm (Equiv.bijective e.symm) fun x => rfl
+
+theorem hsum_subsingleton [Subsingleton α] {s : SummableFamily Γ R α} (a : α) :
+    s.hsum = s a := by
+  haveI : Unique α := uniqueOfSubsingleton a
+  let e : Unit ≃ α := Equiv.equivOfUnique Unit α
+  have he : ∀u : Unit, e u = a := fun u ↦ (fun f ↦ (Equiv.apply_eq_iff_eq_symm_apply f).mpr) e rfl
+  have hs : Equiv e.symm s = single (s a) := by ext; simp [he]
+  rw [← hsum_equiv e.symm, hs, hsum_single]
+/-!
+theorem hsum_orderTop_of_supp {s : SummableFamily Γ R α} {a : α}
+    (ha : ∀ b : α, b ≠ a → ∀ g ∈ (s b).support, (s a).orderTop < g) :
+    s.hsum.orderTop = (s a).orderTop := by
+  by_cases h : Subsingleton α; · rw [hsum_subsingleton]
+  rw [not_subsingleton_iff_nontrivial] at h
+  obtain ⟨b, hb⟩ := exists_ne a
+  by_cases ha0 : s a = 0
+  · have : ∀ b, s b = 0 := by
+      rw [ha0, orderTop_zero] at ha
+      simp only [ne_eq, mem_support, not_top_lt, imp_false, not_not] at ha
+      intro c
+      by_cases hc : c = a
+      · exact hc ▸ ha0
+      · have : (s c).coeff = (0 : HahnSeries Γ R).coeff := by
+          ext g
+          exact ha c hc g
+        exact coeff_fun_eq_zero_iff.mp this
+    rw [ha0, orderTop_zero]
+
+
+
+  · let g := (s a).orderTop.untop <| ne_zero_iff_orderTop.mp ha0
+    sorry
+
+
+
+
+theorem hsum_orderTop {s : SummableFamily Γ R α} {a : α}
+    (ha : ∀ b : α, b ≠ a → (s a).orderTop < (s b).orderTop) :
+    s.hsum.orderTop = (s a).orderTop := by
+  by_cases h : Subsingleton α
+  · haveI : Unique α := uniqueOfSubsingleton a
+    let e : Unit ≃ α := Equiv.equivOfUnique Unit α
+    have he : ∀u : Unit, e u = a := fun u ↦ (fun f ↦ (Equiv.apply_eq_iff_eq_symm_apply f).mpr) e rfl
+    have hs : Equiv e.symm s = single (s a) := by
+      ext u g
+      simp only [Equiv_toFun, Equiv.symm_symm, single_toFun, he]
+    rw [← hsum_equiv e.symm, hs, hsum_single]
+  · rw [not_subsingleton_iff_nontrivial] at h
+    obtain ⟨b, hb⟩ := exists_ne a
+    let g := (s a).orderTop.untop <| LT.lt.ne_top (ha b hb)
+    have hg : (s a).orderTop = g := (WithTop.untop_eq_iff <| LT.lt.ne_top (ha b hb)).mp rfl
+    have hsupp : (s.coeff g).support = {a} := by
+      refine eq_singleton_iff_unique_mem.mpr ?_
+      constructor
+      · refine Finsupp.mem_support_iff.mpr ?_
+        rw [@coeff_def]
+        exact coeff_orderTop_ne hg
+      · intro c hc
+        contrapose hc
+        rw [@Finsupp.not_mem_support_iff]
+        refine coeff_eq_zero_of_lt_orderTop ?hi
+        rw [← hg]
+        exact ha c hc
+    have hgcoeff : s.hsum.coeff g = (s a).coeff g := by
+      rw [hsum_coeff_eq_sum, hsupp, sum_singleton]
+    have hsa : ¬ s a = 0 := ne_zero_iff_orderTop.mpr <| LT.lt.ne_top (ha b hb)
+    have hsh : ¬ s.hsum = 0 := ne_zero_of_coeff_ne_zero (hgcoeff ▸ coeff_orderTop_ne hg)
+    have : ∀ g', g' < g → s.coeff g' = 0 := by
+      intro g' hg'
+      ext c
+      simp only [coeff_toFun, Finsupp.coe_zero, Pi.zero_apply]
+      refine coeff_eq_zero_of_lt_orderTop <| lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hg') ?_
+      rw [← hg]
+      by_cases hc : c = a ; · rw [hc]
+      rw [← @Ne.eq_def] at hc
+      exact le_of_lt <| ha c hc
+    simp only [orderTop]
+    rw [dif_neg hsa, dif_neg hsh, WithTop.coe_eq_coe]
+    dsimp [Set.IsWF.min, WellFounded.min]
+-/
+
+
 
 end AddCommMonoid
 
@@ -357,7 +440,7 @@ theorem family_smul_coeff [Semiring R] [Module R V] (s : SummableFamily Γ R α)
     (FamilySMul s t).hsum.coeff g = ∑ gh ∈ VAddAntidiagonal s.isPWO_iUnion_support
       t.isPWO_iUnion_support g, (s.hsum.coeff gh.1) • (t.hsum.coeff gh.2) := by
   rw [hsum_coeff]
-  simp only [hsum_coeff_sum, FamilySMul_toFun, HahnModule.smul_coeff, Equiv.symm_apply_apply]
+  simp only [hsum_coeff_eq_sum, FamilySMul_toFun, HahnModule.smul_coeff, Equiv.symm_apply_apply]
   simp_rw [sum_vAddAntidiagonal_eq, Finset.smul_sum, Finset.sum_smul]
   rw [← sum_finsum_comm _ _ <| fun gh _ => smul_support_finite s t gh]
   refine sum_congr rfl fun gh _ => ?_
@@ -378,7 +461,7 @@ theorem hsum_family_smul [Semiring R] [Module R V] (s : SummableFamily Γ R α)
   · intro gh hgh
     simp_all only [mem_coe, mem_vaddAntidiagonal, mem_support, ne_eq, Set.mem_iUnion, and_true]
     constructor
-    · rw [hsum_coeff_sum] at hgh
+    · rw [hsum_coeff_eq_sum] at hgh
       have h' := Finset.exists_ne_zero_of_sum_ne_zero hgh.1
       simp_all
     · by_contra hi
