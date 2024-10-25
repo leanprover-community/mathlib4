@@ -610,10 +610,10 @@ protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
 private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → a + c ≤ b + d := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
 
-instance add_covariantClass : CovariantClass Cardinal Cardinal (· + ·) (· ≤ ·) :=
+instance addLeftMono : AddLeftMono Cardinal :=
   ⟨fun _ _ _ => add_le_add' le_rfl⟩
 
-instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + ·)) (· ≤ ·) :=
+instance addRightMono : AddRightMono Cardinal :=
   ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
 
 instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
@@ -970,6 +970,12 @@ instance WellOrderingRel.isWellOrder : IsWellOrder α WellOrderingRel :=
 
 instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
   ⟨⟨WellOrderingRel, inferInstance⟩⟩
+
+variable (α) in
+/-- The **well-ordering theorem** (or **Zermelo's theorem**): every type has a well-order -/
+theorem exists_wellOrder : ∃ (_ : LinearOrder α), WellFoundedLT α := by
+  classical
+  exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toIsWellFounded⟩
 
 /-! ### Small sets of cardinals -/
 
