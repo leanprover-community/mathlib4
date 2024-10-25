@@ -68,6 +68,7 @@ variable [Module S N] [IsScalarTower S R N]
 /-- For each basis `bm`, `toBilinHom` is the map that sends a quadratic map on a module `M` over `R`
 to its associated symmetric bilinear map.  As provided here, this has the structure of an
 `S`-linear map where `S` is a commutative subring of `R`. -/
+@[simps]
 noncomputable def toBilinHom (bm : Basis ι R M) : QuadraticMap R M N →ₗ[S] (BilinMap R M N) where
   toFun Q := Q.toBilin bm
   map_add' Q₁ Q₂ := by
