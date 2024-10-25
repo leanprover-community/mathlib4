@@ -88,7 +88,8 @@ variable [Nonempty ι]
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
 
 theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
-    (𝓝 (0 : WeakBilin B)).HasBasis (fun sr ↦ 0 < sr.2) (uncurry B.toSeminormFamily.basis) := by
+    (𝓝 (0 : WeakBilin B)).HasBasis (fun sr : Finset F × ℝ ↦ 0 < sr.2)
+      (fun sr ↦ (sr.1.sup B.toSeminormFamily).ball 0 sr.2) := by
   let p := B.toSeminormFamily
   rw [nhds_induced, nhds_pi]
   simp only [map_zero, LinearMap.zero_apply]
@@ -104,7 +105,7 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
       refine ⟨⟨U', U'.inf' hU₃' U.snd⟩, (Finset.lt_inf'_iff hU₃').2 (by simpa [U'] using hU₂),
         fun x hx y hy => ?_⟩
       simp only [Set.mem_preimage, Set.mem_pi, mem_ball_zero_iff]
-      rw [uncurry_apply_pair, SeminormFamily.basis, Seminorm.mem_ball_zero] at hx
+      rw [Seminorm.mem_ball_zero] at hx
       rw [← LinearMap.toSeminormFamily_apply]
       have hyU' : y ∈ U' := (Set.Finite.mem_toFinset hU₁).mpr hy
       have hp : p y ≤ U'.sup p := Finset.le_sup hyU'
@@ -116,7 +117,7 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
   rintro ⟨s, r⟩ hr
   refine ⟨(s, fun _ => r), ⟨by simp only [s.finite_toSet], fun y _ => hr⟩, fun x hx => ?_⟩
   simp only [Set.mem_preimage, Set.mem_pi, Finset.mem_coe, mem_ball_zero_iff] at hx
-  simp only [uncurry, SeminormFamily.basis, Seminorm.mem_ball, sub_zero]
+  simp only [Seminorm.mem_ball, sub_zero]
   refine Seminorm.finset_sup_apply_lt hr fun y hy => ?_
   rw [LinearMap.toSeminormFamily_apply]
   exact hx y hy

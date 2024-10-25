@@ -101,20 +101,20 @@ theorem IntermediateField.fixingSubgroup.top {K L : Type*} [Field K] [Field L] [
   ext
   simp [mem_fixingSubgroup_iff, DFunLike.ext_iff]
 
-abbrev galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] (E : IntermediateField K L) :
-    Set (L ≃ₐ[K] L) :=
-  IntermediateField.fixingSubgroup E
-
-theorem galBasis_isBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    Filter.IsBasis (fun E : IntermediateField K L ↦ FiniteDimensional K E) (galBasis K L) where
+theorem fixingSubgroup_isBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
+    Filter.IsBasis
+      (fun E : IntermediateField K L ↦ FiniteDimensional K E)
+      (fun E : IntermediateField K L ↦ (E.fixingSubgroup : Set (L ≃ₐ[K] L))) where
   nonempty := ⟨⊥, IntermediateField.finiteDimensional_bot K L⟩
   inter {E F} hE hF := ⟨E ⊔ F, finiteDimensional_sup E F hE hF, Set.subset_inter_iff.mpr
     ⟨IntermediateField.fixingSubgroup.antimono le_sup_left,
       IntermediateField.fixingSubgroup.antimono le_sup_right⟩⟩
 
 theorem galBasis_isGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    Filter.IsGroupBasis (fun E : IntermediateField K L ↦ FiniteDimensional K E) (galBasis K L) :=
-  .mk_of_subgroups (galBasis_isBasis K L) fun σ {E} hE ↦ by
+    Filter.IsGroupBasis
+      (fun E : IntermediateField K L ↦ FiniteDimensional K E)
+      (fun E : IntermediateField K L ↦ (E.fixingSubgroup : Set (L ≃ₐ[K] L))) :=
+  .mk_of_subgroups (fixingSubgroup_isBasis K L) fun σ {E} hE ↦ by
     let F := E.map σ.symm.toAlgHom
     refine ⟨F, im_finiteDimensional σ.symm, fun g hg ↦ ?_⟩
     simp_rw [SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff]
@@ -140,7 +140,7 @@ instance (K L : Type*) [Field K] [Field L] [Algebra K L] : TopologicalGroup (L �
 open scoped Topology in
 lemma krullTopology_basis_nhds_one (K L : Type*) [Field K] [Field L] [Algebra K L] :
     (𝓝 1 : Filter (L ≃ₐ[K] L)).HasBasis (fun E : IntermediateField K L ↦ FiniteDimensional K E)
-    (galBasis K L) :=
+      (fun E : IntermediateField K L ↦ (E.fixingSubgroup : Set (L ≃ₐ[K] L))) :=
   galBasis_isGroupBasis K L |>.nhds_one_hasBasis
 
 open scoped Topology in
@@ -197,7 +197,7 @@ instance krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
   let h_findim : FiniteDimensional K E := IntermediateField.adjoin.finiteDimensional
     (Algebra.IsIntegral.isIntegral x)
   have hxE : x ∈ E := IntermediateField.subset_adjoin _ _ <| Set.mem_singleton _
-  exact ⟨galBasis K L E, krullTopology_basis_nhds_one K L |>.mem_of_mem h_findim,
+  exact ⟨E.fixingSubgroup, krullTopology_basis_nhds_one K L |>.mem_of_mem h_findim,
     fun H ↦ hx (H ⟨x, hxE⟩)⟩
 
 end KrullT2
