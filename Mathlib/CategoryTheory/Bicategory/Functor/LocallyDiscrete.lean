@@ -121,7 +121,7 @@ be promoted to an oplax functor from `LocallyDiscrete I` to `B`.
 -/
 @[simps! obj map mapId mapComp]
 def Functor.toOplaxFunctor : OplaxFunctor (LocallyDiscrete I) B :=
-  oplaxfunctorOfIsLocallyDiscrete
+  oplaxFunctorOfIsLocallyDiscrete
     (fun ⟨X⟩ ↦ F.obj X) (fun ⟨f⟩ ↦ F.map f)
     (fun ⟨X⟩ ↦ eqToHom (by simp)) (fun f g ↦ eqToHom (by simp))
 
