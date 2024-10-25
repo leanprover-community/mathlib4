@@ -92,13 +92,13 @@ section deprecated
 
 set_option linter.deprecated false
 
-@[deprecated (since := "2024-10-25")]
 open Classical in
 /-- A successor of an element `x` in a well-founded order is a minimal element `y` such that
 `x < y` if one exists. Otherwise it is `x` itself.
 
 Deprecated. If you have a linear order, consider defining a `SuccOrder` instance through
 `ConditionallyCompleteLinearOrder.toSuccOrder`. -/
+@[deprecated (since := "2024-10-25")]
 protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (x : α) : α :=
   if h : ∃ y, r x y then wf.min { y | r x y } h else x
 
