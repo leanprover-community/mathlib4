@@ -179,7 +179,7 @@ theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) := by
 
 @[simp]
 theorem vonNeumann_of_isSuccPrelimit {o : Ordinal} (h : IsSuccPrelimit o) :
-    vonNeumann o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) := by
+    V_ o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) := by
   ext
   simpa [mem_vonNeumann] using h.lt_iff_forall_lt
 
