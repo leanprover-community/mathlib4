@@ -29,37 +29,54 @@ def homEquivOfSelf :
 
 end
 
-def exteriorPower {R : Type u} [CommRing R] (M : ModuleCat.{u} R) (n : ℕ) : ModuleCat.{u} R :=
+section
+
+variable {R : Type u} [CommRing R]
+
+def exteriorPower (M : ModuleCat.{u} R) (n : ℕ) : ModuleCat.{u} R :=
   ModuleCat.of R (⋀[R]^n M)
 
-def AlternatingMap {R : Type u} [CommRing R] (M N : ModuleCat.{u} R) (n : ℕ) :=
+def AlternatingMap (M N : ModuleCat.{u} R) (n : ℕ) :=
   M [⋀^Fin n]→ₗ[R] N
 
-instance {R : Type u} [CommRing R] {M N : ModuleCat.{u} R} {n : ℕ} :
+instance {M N : ModuleCat.{u} R} {n : ℕ} :
     FunLike (M.AlternatingMap N n) (Fin n → M) N :=
   inferInstanceAs (FunLike (M [⋀^Fin n]→ₗ[R] N) (Fin n → M) N)
 
+end
+
+namespace AlternatingMap
+
+variable {R : Type u} [CommRing R] {M N N' : ModuleCat.{u} R} {n : ℕ}
+
 @[ext]
-lemma AlternatingMap.ext {R : Type u} [CommRing R] {M N : ModuleCat.{u} R} {n : ℕ}
-    {φ φ' : M.AlternatingMap N n} (h : ∀ (m : Fin n → M), φ m = φ' m) : φ = φ' :=
+lemma ext {φ φ' : M.AlternatingMap N n} (h : ∀ (m : Fin n → M), φ m = φ' m) : φ = φ' :=
   DFunLike.coe_injective (by funext; apply h)
 
 @[ext 1100]
-lemma AlternatingMap.ext₀ {R : Type u} [CommRing R] {M N : ModuleCat.{u} R}
-    {φ φ' : M.AlternatingMap N 0} (h : φ 0 = φ' 0) : φ = φ' := by
+lemma ext₀ {φ φ' : M.AlternatingMap N 0} (h : φ 0 = φ' 0) : φ = φ' := by
   ext m
   obtain rfl : m = 0 := by funext x; fin_cases x
   exact h
 
-def AlternatingMap.postcomp {R : Type u} [CommRing R] {M N N' : ModuleCat.{u} R} {n : ℕ}
-    (φ : M.AlternatingMap N n) (f : N ⟶ N') :
+def postcomp (φ : M.AlternatingMap N n) (f : N ⟶ N') :
     M.AlternatingMap N' n :=
   f.compAlternatingMap φ
 
 @[simp]
-lemma AlternatingMap.postcomp_apply {R : Type u} [CommRing R] {M N N' : ModuleCat.{u} R} {n : ℕ}
-    (φ : M.AlternatingMap N n) (f : N ⟶ N') (m : Fin n → M) :
+lemma postcomp_apply (φ : M.AlternatingMap N n) (f : N ⟶ N') (m : Fin n → M) :
     φ.postcomp f m = f (φ m) := rfl
+
+@[simp]
+lemma postcomp_id (φ : M.AlternatingMap N n) :
+    φ.postcomp (𝟙 _) = φ := rfl
+
+@[simp]
+lemma postcomp_comp (φ : M.AlternatingMap N n)
+    (f : N ⟶ N') {N'' : ModuleCat.{u} R} (g : N' ⟶ N'') :
+    φ.postcomp (f ≫ g) = (φ.postcomp f).postcomp g := rfl
+
+end AlternatingMap
 
 @[simps]
 def alternatingMapFunctor {R : Type u} [CommRing R] (M : ModuleCat.{u} R) (n : ℕ) :
@@ -69,23 +86,68 @@ def alternatingMapFunctor {R : Type u} [CommRing R] (M : ModuleCat.{u} R) (n : �
 
 namespace AlternatingMap
 
-variable {R : Type u} [CommRing R] {M N₀ : ModuleCat.{u} R} {n : ℕ}
-  (φ : M.AlternatingMap N₀ n)
+variable {R : Type u} [CommRing R] {M N₀ N₁ : ModuleCat.{u} R} {n : ℕ}
 
-structure Universal where
+structure Universal (φ : M.AlternatingMap N₀ n) where
   desc {N : ModuleCat.{u} R} (ψ : M.AlternatingMap N n) : N₀ ⟶ N
   fac {N : ModuleCat.{u} R} (ψ : M.AlternatingMap N n) : φ.postcomp (desc ψ) = ψ
   postcomp_injective {N : ModuleCat.{u} R} {f g : N₀ ⟶ N}
     (h : φ.postcomp f = φ.postcomp g) : f = g
 
-variable {φ}
+variable (M n)
 
-def Universal.iso (hφ : φ.Universal) : M.exteriorPower n ≅ N₀ := by
-  sorry
+def univ (M : ModuleCat.{u} R) (n : ℕ) : M.AlternatingMap (M.exteriorPower n) n where
+  toFun := sorry
+  map_add' := sorry
+  map_smul' := sorry
+  map_eq_zero_of_eq' := sorry
+
+def univUniversal : (univ M n).Universal := sorry
+
+namespace Universal
+
+attribute [simp] fac
+
+variable {M n} {φ : M.AlternatingMap N₀ n}
+
+lemma hom_ext (hφ : φ.Universal) {N : ModuleCat.{u} R} {f g : N₀ ⟶ N}
+    (h : ∀ (m : Fin n → M), f (φ m) = g (φ m)) : f = g :=
+  hφ.postcomp_injective (by ext; apply h)
+
+variable (hφ : φ.Universal)
+
+@[simp]
+lemma fac_apply {N : ModuleCat.{u} R} (ψ : M.AlternatingMap N n) (m : Fin n → M) :
+    hφ.desc ψ (φ m) = ψ m := by
+  conv_rhs => rw [← hφ.fac ψ]
+  rfl
 
 section
 
-variable (r : (M.alternatingMapFunctor n).CorepresentableBy N₀)
+variable {ψ : M.AlternatingMap N₁ n} (hψ : ψ.Universal)
+
+def uniq : N₀ ≅ N₁ where
+  hom := hφ.desc ψ
+  inv := hψ.desc φ
+  hom_inv_id := hφ.postcomp_injective (by simp)
+  inv_hom_id := hψ.postcomp_injective (by simp)
+
+@[simp] lemma postcomp_uniq_hom : φ.postcomp (uniq hφ hψ).hom = ψ := by simp [uniq]
+@[simp] lemma postcomp_uniq_inv : ψ.postcomp (uniq hφ hψ).inv = φ := by simp [uniq]
+
+end
+
+def iso : M.exteriorPower n ≅ N₀ :=
+  (univUniversal M n).uniq hφ
+
+@[simp] lemma postcomp_iso_hom : (univ M n).postcomp hφ.iso.hom = φ := by simp [iso]
+@[simp] lemma postcomp_iso_inv : φ.postcomp hφ.iso.inv = univ M n := by simp [iso]
+
+end Universal
+
+section
+
+variable {M n} (r : (M.alternatingMapFunctor n).CorepresentableBy N₀)
 
 def ofCorepresentableBy : M.AlternatingMap N₀ n := r.homEquiv (𝟙 _)
 
@@ -104,16 +166,13 @@ def universalOfCorepresentableBy : (ofCorepresentableBy r).Universal where
 
 end
 
-variable (M)
+end AlternatingMap
 
-@[simps]
-def zero : M.AlternatingMap (ModuleCat.of R R) 0 where
-  toFun _ := (1 : R)
-  map_add' _ x := by fin_cases x
-  map_smul' _ x := by fin_cases x
-  map_eq_zero_of_eq' _ x := by fin_cases x
+section
 
-def equiv₀ (N : ModuleCat.{u} R) : M.AlternatingMap N 0 ≃ N :=
+variable {R : Type u} [CommRing R] (M N : ModuleCat.{u} R)
+
+def equiv₀ : M.AlternatingMap N 0 ≃ N :=
   AlternatingMap.constLinearEquivOfIsEmpty.toEquiv.symm
 
 def corepresentableBy₀ :
@@ -122,15 +181,42 @@ def corepresentableBy₀ :
   homEquiv_comp := by
     sorry
 
-def one : M.AlternatingMap M 1 where
-  toFun f := f 0
-  map_add' _ n _ _:= by fin_cases n; simp
-  map_smul' _ n _ _ := by fin_cases n; simp
-  map_eq_zero_of_eq' _ i j := by fin_cases i; fin_cases j; tauto
+def exteriorPower₀Iso : M.exteriorPower 0 ≅ of R R :=
+  (AlternatingMap.universalOfCorepresentableBy M.corepresentableBy₀).iso
 
-def oneUniversal : (one M).Universal := sorry
+@[simp]
+lemma _root_.Function.update_apply_of_subsingleton
+    {M : Type*} (φ : Fin 1 → M) (x : Fin 1) (m : M) (i : Fin 1) :
+    Function.update φ x m i = m := by
+  obtain rfl := Subsingleton.elim x i
+  simp
 
-end AlternatingMap
+def equiv₁ : M.AlternatingMap N 1 ≃ (M ⟶ N) where
+  toFun φ :=
+    { toFun := fun x ↦ φ (fun _ ↦ x)
+      map_add' := fun x y ↦ by convert φ.map_add 0 0 x y <;> simp
+      map_smul' := fun r x ↦ by convert φ.map_smul 0 0 r x <;> simp }
+  invFun f :=
+    { toFun := fun x ↦ f (x 0)
+      map_add' := fun _ i x y ↦ by fin_cases i; convert f.map_add x y <;> simp
+      map_smul' := fun _ i r x ↦ by fin_cases i; convert f.map_smul r x <;> simp
+      map_eq_zero_of_eq' := fun _ i j ↦ by fin_cases i; fin_cases j; tauto }
+  left_inv φ := by
+    ext m
+    obtain ⟨x, rfl⟩ : ∃ x, m = fun _ ↦ x := ⟨m 0, by ext i; fin_cases i; rfl⟩
+    rfl
+  right_inv f := rfl
+
+def corepresentableBy₁ :
+    (M.alternatingMapFunctor 1).CorepresentableBy M where
+  homEquiv {N} := (equiv₁ M N).symm
+  homEquiv_comp := by
+    sorry
+
+def exteriorPower₁Iso : M.exteriorPower 1 ≅ M :=
+  (AlternatingMap.universalOfCorepresentableBy M.corepresentableBy₁).iso
+
+end
 
 namespace exteriorPower
 
@@ -138,47 +224,35 @@ section
 
 variable {R : Type u} [CommRing R] {M : ModuleCat.{u} R}
 
-def lift {n : ℕ} {N : ModuleCat.{u} R} (φ : M.AlternatingMap N n) :
-    M.exteriorPower n ⟶ N := by
-  sorry
+def desc {n : ℕ} {N : ModuleCat.{u} R} (φ : M.AlternatingMap N n) :
+    M.exteriorPower n ⟶ N :=
+  (AlternatingMap.univUniversal M n).desc φ
 
-def mk {n : ℕ} (m : Fin n → M) : M.exteriorPower n := sorry
-
-@[simps]
-def mkAlternatingMap (n : ℕ) : M.AlternatingMap (M.exteriorPower n) n where
-  toFun := mk
-  map_add' := sorry
-  map_smul' := sorry
-  map_eq_zero_of_eq' := sorry
+def mk {n : ℕ} (m : Fin n → M) : M.exteriorPower n :=
+  AlternatingMap.univ M n m
 
 @[simp]
-lemma lift_mk {n : ℕ} {N : ModuleCat.{u} R} (φ : M [⋀^Fin n]→ₗ[R] N)
+lemma desc_mk {n : ℕ} {N : ModuleCat.{u} R} (φ : M [⋀^Fin n]→ₗ[R] N)
     (m : Fin n → M) :
-    lift φ (mk m) = φ m := by
-  sorry
+    desc φ (mk m) = φ m := by
+  simp [desc, mk]
 
 @[ext]
 lemma hom_ext {n : ℕ} {N : ModuleCat.{u} R} {f g : M.exteriorPower n ⟶ N}
     (h : ∀ (m : Fin n → M), f (mk m) = g (mk m)) :
-    f = g := by
-  sorry
+    f = g :=
+  (AlternatingMap.univUniversal M n).hom_ext h
 
 def map {N : ModuleCat.{u} R} (f : M ⟶ N) (n : ℕ) : M.exteriorPower n ⟶ N.exteriorPower n :=
-  lift (AlternatingMap.compLinearMap (mkAlternatingMap n) f)
+  desc (AlternatingMap.compLinearMap (AlternatingMap.univ N n) f)
 
 @[simp]
 lemma map_mk {N : ModuleCat.{u} R} (f : M ⟶ N) {n : ℕ} (m : Fin n → M) :
     map f n (mk m) = mk (Function.comp f m) := by
-  simp only [map, lift_mk, AlternatingMap.compLinearMap_apply, mkAlternatingMap_apply]
+  simp only [map, desc_mk, AlternatingMap.compLinearMap_apply]
   rfl
 
 variable (M)
-
-def iso₀ : M.exteriorPower 0 ≅ ModuleCat.of R R :=
-  (AlternatingMap.universalOfCorepresentableBy
-    (AlternatingMap.corepresentableBy₀ M)).iso
-
-def iso₁ : M.exteriorPower 1 ≅ M := (AlternatingMap.oneUniversal M).iso
 
 variable (R)
 
@@ -193,25 +267,24 @@ section ChangeOfRings
 
 variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
 
-def fromRestrictScalarsObjExteriorPower (M : ModuleCat.{u} S) (n : ℕ) :
+noncomputable def fromRestrictScalarsObjExteriorPower (M : ModuleCat.{u} S) (n : ℕ) :
     ((restrictScalars f).obj M).exteriorPower n ⟶
       (restrictScalars f).obj (M.exteriorPower n) :=
-  lift
+  desc
     { toFun := fun m ↦ mk m
-      map_add' := fun m i x y ↦ by
-        dsimp
-        sorry
-      map_smul' := sorry
-      map_eq_zero_of_eq' := sorry }
+      map_add' := fun m i x y ↦ (AlternatingMap.univ M n).map_add m i x y
+      map_smul' := fun m i r x ↦ (AlternatingMap.univ M n).map_smul m i (f r) x
+      map_eq_zero_of_eq' := fun m _ _ hm hij ↦
+        (AlternatingMap.univ M n).map_eq_zero_of_eq m hm hij }
 
 @[simp]
 lemma fromRestrictScalarsObjExteriorPower_mk (M : ModuleCat.{u} S) (n : ℕ)
     (m : Fin n → M) :
     fromRestrictScalarsObjExteriorPower f M n (mk m) = mk m := by
-  apply lift_mk
+  apply desc_mk
 
 @[simps]
-def restrictScalarsCompFunctorNatTrans (n : ℕ) :
+noncomputable def restrictScalarsCompFunctorNatTrans (n : ℕ) :
     restrictScalars f ⋙ functor R n ⟶ functor S n ⋙ restrictScalars f where
   app M := fromRestrictScalarsObjExteriorPower f M n
 
