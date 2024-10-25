@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.NumberTheory.Modular
-import Mathlib.NumberTheory.ModularForms.Basic
+import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 /-!
@@ -36,7 +36,7 @@ lemma CongruenceSubgroup.denom_coe1_eq_denom {g : SL(2, ℤ)} {τ : ℍ} :
   simp only [denom, coe1, Fin.isValue, ModularGroup.coe'_apply_complex]
 
 lemma SlashInvariantForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
-    [SlashInvariantFormClass F Γ(1) k]  (f : F) (τ : ℍ) :
+    [SlashInvariantFormClass F Γ(1) k] (f : F) (τ : ℍ) :
     ∃ ξ : ℍ, 1/2 ≤ ξ.im ∧ ‖f τ‖ ≤ ‖f ξ‖ := by
   obtain ⟨γ, hγ, hdenom⟩ := exists_translate' τ
   refine ⟨γ • τ, hγ, ?_⟩
@@ -60,17 +60,13 @@ lemma SlashInvariantForm.neg_wt_const_eq_zero {F : Type*} [FunLike F ℍ ℂ] (k
     [SlashInvariantFormClass F Γ(1) k] (hf : ⇑f = (fun _ => c)) : k = 0 ∨ c = 0 := by
   have hI := (slash_action_eqn'' k Γ(1) f ModularGroup.S) I
   have h2I2 := (slash_action_eqn'' k Γ(1) f ModularGroup.S) ⟨2 * Complex.I, by simp⟩
-  simp only [hf, SlashInvariantForm.toFun_eq_coe, toSlashInvariantForm_coe, subgroup_slash,
-    Subtype.forall, Gamma_mem, Fin.isValue, and_imp, denom_coe1_eq_denom, denom_S, Pi.mul_apply,
-    Pi.inv_apply] at *
-  nth_rw 1 [ hI] at h2I2
-  simp only [mul_eq_mul_right_iff] at h2I2
-  rcases h2I2 with H | H
+  simp only [hf, subgroup_to_sl_moeb, sl_moeb, denom_coe1_eq_denom, denom_S] at *
+  nth_rw 1 [h2I2] at hI
+  simp only [mul_eq_mul_right_iff] at hI
+  rcases hI with H | H
   · left
-    symm at H
     rw [UpperHalfPlane.I, mul_zpow, mul_left_eq_self₀] at H
     rcases H with H | H
     · apply Complex.zpow_eq_one k 2 (one_lt_two) H
-    · exfalso
-      exact (zpow_ne_zero k I_ne_zero) H
+    · exact False.elim (zpow_ne_zero k I_ne_zero H)
   · exact Or.inr H
