@@ -119,18 +119,25 @@ def ofNat (n : ℕ) : ONote := n
 @[simp] theorem natCast_succ (n : ℕ) : n.succ = oadd 0 n.succPNat 0 := rfl
 theorem natCast_one : (1 : ℕ) = (1 : ONote) := rfl
 
-instance (n : ℕ) : OfNat ONote n where
-  ofNat := n
-
 @[deprecated (since := "2024-10-17")] alias ofNat_zero := natCast_zero
 @[deprecated (since := "2024-10-17")] alias ofNat_one := natCast_one
 @[deprecated (since := "2024-10-17")] alias ofNat_succ := natCast_succ
 
 @[simp] theorem repr_natCast (n : ℕ) : repr n = n := by cases n <;> simp
-theorem repr_one : repr 1 = 1 := mod_cast repr_natCast 1
 theorem repr_zero : repr 0 = 0 := repr_natCast 0
+theorem repr_one : repr 1 = 1 := mod_cast repr_natCast 1
 
-@[deprecated (since := "2024-10-17")] alias repr_ofNat := repr_natCast
+instance (n : ℕ) : OfNat ONote n where
+  ofNat := n
+
+@[simp]
+theorem natCast_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n) : ONote) = OfNat.ofNat n :=
+  rfl
+
+@[simp]
+theorem repr_ofNat (n : ℕ) [n.AtLeastTwo] : repr (no_index (OfNat.ofNat n)) = n :=
+  repr_natCast n
 
 theorem omega0_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
   refine le_trans ?_ (le_add_right _ _)
@@ -1183,6 +1190,9 @@ instance : Preorder NONote where
 instance : Zero NONote :=
   ⟨⟨0, NF.zero⟩⟩
 
+instance : One NONote :=
+  ⟨⟨1, nf_one⟩⟩
+
 instance : Inhabited NONote :=
   ⟨0⟩
 
@@ -1198,12 +1208,25 @@ instance : WellFoundedRelation NONote :=
 instance : NatCast NONote :=
   ⟨fun n ↦ ⟨n, ⟨⟨_, nfBelow_natCast _⟩⟩⟩⟩
 
+@[simp] theorem repr_natCast (n : ℕ) : repr n = n := ONote.repr_natCast n
+@[simp] theorem repr_zero : repr 0 = 0 := ONote.repr_zero
+@[simp] theorem repr_one : repr 1 = 1 := ONote.repr_one
+
 instance (n : ℕ) : OfNat NONote n where
   ofNat := n
 
 /-- Convert a natural number to an ordinal notation -/
 @[deprecated (since := "2024-10-17")]
 def ofNat (n : ℕ) : NONote := n
+
+@[simp]
+theorem natCast_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n) : NONote) = OfNat.ofNat n :=
+  rfl
+
+@[simp]
+theorem repr_ofNat (n : ℕ) [n.AtLeastTwo] : repr (no_index (OfNat.ofNat n)) = n :=
+  repr_natCast n
 
 /-- Compare ordinal notations -/
 def cmp (a b : NONote) : Ordering :=
