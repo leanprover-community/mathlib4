@@ -402,15 +402,17 @@ lemma tilt_var_bound [IsProbabilityMeasure μ] (a b t : ℝ) {X : Ω → ℝ}
 
 theorem integrable_bounded [IsFiniteMeasure μ] (a b : ℝ)
     {X : Ω → ℝ} (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
-    Integrable X μ :=
-  memℒp_one_iff_integrable.mp
-    memℒp_of_bounded h (aestronglyMeasurable_iff_aemeasurable.mpr hX)
+    Integrable X μ := by
+  have m1 : HasFiniteIntegral X μ := by
+     apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
+     filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
+  exact ⟨aestronglyMeasurable_iff_aemeasurable.mpr hX, m1⟩
 
 /-- Derivation of `mgf X μ t` is `μ[exp (t * X ω) * X ω]`.
 In order to deal with the differentiation of parametric integrals,
 `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof. -/
 theorem tilt_first_deriv [IsFiniteMeasure μ] (t a b : ℝ)
-    {X : Ω → ℝ} (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b):
+    {X : Ω → ℝ} (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     let g := fun t ↦ mgf X μ t
     let g' := fun t ↦ μ[fun ω ↦ rexp (t * X ω) * X ω]
     Integrable (fun ω ↦ rexp (t * X ω) * X ω) μ → HasDerivAt g (g' t) t := by
@@ -561,7 +563,7 @@ theorem tilt_second_deriv [IsFiniteMeasure μ] (t a b : ℝ)
   exact HasDerivAt.exp (hasDerivAt_mul_const (X ω))
 
 theorem integrable_deriv_expt [IsFiniteMeasure μ] (t a b : ℝ)
-    {X : Ω → ℝ} (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b):
+    {X : Ω → ℝ} (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     Integrable (fun ω ↦ rexp (t * X ω) * X ω) μ := by
   have ha : ∀ᵐ ω ∂μ, a ≤ X ω := h.mono fun ω h ↦ h.1
   have hb : ∀ᵐ ω ∂μ, X ω ≤ b := h.mono fun ω h ↦ h.2
