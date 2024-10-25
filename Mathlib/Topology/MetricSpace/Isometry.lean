@@ -509,7 +509,7 @@ def sumArrowIsometryEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ
 
 theorem sumArrowIsometryEquivProdArrow_eq_homeomorph {α β : Type*} [Fintype α] [Fintype β] :
     sumArrowIsometryEquivProdArrow.toHomeomorph
-    = Homeomorph.sumArrowEquivProdArrow (ι := α) (ι' := β) (X := γ) :=
+    = Homeomorph.sumArrowHomeomorphProdArrow (ι := α) (ι' := β) (X := γ) :=
   rfl
 
 theorem _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
