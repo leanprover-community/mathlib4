@@ -2544,6 +2544,10 @@ import Mathlib.Data.Nat.PartENat
 import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.Prime.Factorial
+import Mathlib.Data.Nat.Prime.Infinite
+import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Nat.Prime.Pow
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
@@ -3801,7 +3805,6 @@ import Mathlib.Order.Interval.Set.SurjOn
 import Mathlib.Order.Interval.Set.UnorderedInterval
 import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.Irreducible
-import Mathlib.Order.IsWellOrderLimitElement
 import Mathlib.Order.Iterate
 import Mathlib.Order.JordanHolder
 import Mathlib.Order.KonigLemma
