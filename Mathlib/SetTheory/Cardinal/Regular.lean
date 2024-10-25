@@ -38,24 +38,20 @@ theorem IsSingular.not_isRegular (H : c.IsSingular) : ¬c.IsRegular :=
 theorem IsSingular.cof_ord_lt (H : c.IsSingular) : c.ord.cof < c :=
   lt_of_le_of_ne (cof_ord_le c) (fun h ↦ H.2 ⟨H.1, h.symm.le⟩)
 
-theorem IsSingular.pos (H : c.IsSingular) : 0 < c :=
-  aleph0_pos.trans_le H.1
-
-theorem IsSingular.nat_lt (H : c.IsSingular) (n : ℕ) : n < c :=
+theorem IsSingular.natCast_lt (H : c.IsSingular) (n : ℕ) : n < c :=
   (nat_lt_aleph0 n).trans_le H.aleph0_le
 
+theorem IsSingular.pos (H : c.IsSingular) : 0 < c :=
+  H.natCast_lt 0
+
 theorem IsSingular.ord_pos (H : c.IsSingular) : 0 < c.ord :=
-  pos_iff_ord_pos.mp H.pos
+  Cardinal.ord_pos.mpr H.pos
 
 theorem IsRegular.not_isSingular (H : c.IsRegular) : ¬c.IsSingular :=
   fun h ↦ h.2 H
 
-theorem isSingular_of_cof_lt (h : ℵ₀ ≤ c) (H : c.ord.cof < c) :
-    c.IsSingular :=
-  ⟨h, fun h ↦ H.ne h.cof_eq⟩
-
 theorem isSingular_iff_cof_lt (h : ℵ₀ ≤ c) : c.IsSingular ↔ c.ord.cof < c :=
-  ⟨fun h ↦ h.cof_ord_lt, fun h' ↦ isSingular_of_cof_lt h h'⟩
+  ⟨fun h ↦ h.cof_ord_lt, fun h' ↦ ⟨h, fun h ↦ h'.ne h.cof_eq⟩⟩
 
 theorem isRegular_or_isSingular (h : ℵ₀ ≤ c) : c.IsRegular ∨ c.IsSingular := by
   rw [IsSingular]
@@ -66,14 +62,23 @@ theorem isRegular_or_isSingular_or_lt_aleph0 :
   rw [lt_iff_not_ge]
   tauto
 
-theorem isRegular_of_not_isSingular (h : ℵ₀ ≤ c) (H : ¬c.IsSingular) :
+theorem isRegular.of_not_isSingular (h : ℵ₀ ≤ c) (H : ¬c.IsSingular) :
     c.IsRegular := by
   rw [IsSingular] at H
   tauto
 
+theorem isSingular_aleph_iff {o : Ordinal} (ho : o.IsLimit) :
+    (aleph o).IsSingular ↔ o.cof < aleph o := by
+  constructor
+  · intro h
+    have := h.cof_ord_lt
+    rwa [aleph_cof ho] at this
+  · intro h
+    exact (isSingular_iff_cof_lt (aleph0_le_aleph o)).mpr ((aleph_cof _) ▸ h)
+
 theorem isSingular_aleph_omega : (aleph ω).IsSingular := by
-  apply isSingular_of_cof_lt (aleph0_le_aleph ω)
-  rw [aleph_cof omega0_isLimit, cof_omega0, ← aleph_zero, aleph_lt]
+  apply (isSingular_aleph_iff omega0_isLimit).mpr
+  rw [cof_omega0, ← aleph_zero, aleph_lt]
   exact omega0_pos
 
 end Singular
