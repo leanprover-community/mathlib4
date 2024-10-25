@@ -74,6 +74,9 @@ root of `x`.
     IsConjRoot R x z := Eq.trans h₁ h₂
 
 variable (R A) in
+/--
+The setoid structure on `A` defined by the equivalence relation of `IsConjRoot R · ·`.
+-/
 def setoid : Setoid A where
   r := IsConjRoot R
   iseqv := ⟨fun _ => refl, symm, trans⟩
