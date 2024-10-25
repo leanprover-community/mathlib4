@@ -12,8 +12,8 @@ import Mathlib.Tactic.ByContra
 # Krull topology
 
 We define the Krull topology on `L ≃ₐ[K] L` for an arbitrary field extension `L/K`. In order to do
-this, we first define a `GroupFilterBasis` on `L ≃ₐ[K] L`, whose sets are `E.fixingSubgroup` for
-all intermediate fields `E` with `E/K` finite dimensional.
+this, we first show that the family of all `E.fixingSubgroup`, for `E` an intermediate field with
+`E/K` finite dimensional, is a group filter basis (in the sense of `Filter.IsGroupBasis`).
 
 ## Main Definitions
 
@@ -29,16 +29,22 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `galGroupBasis K L`. This is the same as `galBasis K L`, but with the added structure
   that it is a group filter basis on `L ≃ₐ[K] L`, rather than just a filter basis.
 
-- `krullTopology K L`. Given a field extension `L/K`, this is the topology on `L ≃ₐ[K] L`, induced
-  by the group filter basis `galGroupBasis K L`.
+- `krullTopology K L`. Given a field extension `L/K`, this is the group topology on `L ≃ₐ[K] L`
+  whose filter of neighborhoods at `1` admits as a basis the family of all `E.fixingSubgroup` for
+  `E` an intermediate field with `E/K` finite dimensional.
 
 ## Main Results
+
+- `fixingSubgroup_isGroupBasis K L`. Given a field extension `L/K`, the family of all
+  `E.fixingSubgroup`, for `E` an intermediate field with `E/K` finite dimensional, is a group
+  filter basis. Thus, it is a basis of neighborhoods of 1 for a unique group topology, namely
+  `krullTopology K L`.
 
 - `krullTopology_t2 K L`. For an integral field extension `L/K`, the topology `krullTopology K L`
   is Hausdorff.
 
-- `krullTopology_totallyDisconnected K L`. For an integral field extension `L/K`, the topology
-  `krullTopology K L` is totally disconnected.
+- `krullTopology_totallySeparated K L`. For an integral field extension `L/K`, the topology
+  `krullTopology K L` is totally separated.
 
 ## Notations
 
@@ -205,7 +211,7 @@ end KrullT2
 section TotallyDisconnected
 
 /-- If `L/K` is an algebraic field extension, then the Krull topology on `L ≃ₐ[K] L` is
-  totally disconnected. -/
+  totally separated. -/
 instance krullTopology_totallySeparated {K L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsIntegral K L] : TotallySeparatedSpace (L ≃ₐ[K] L) :=
   inferInstance
