@@ -154,6 +154,11 @@ abbrev IsLocallyDiscrete (B : Type*) [Bicategory B] := ∀ (b c : B), IsDiscrete
 instance (C : Type*) [Category C] : IsLocallyDiscrete (LocallyDiscrete C) :=
   fun _ _ ↦ Discrete.isDiscrete _
 
+instance (B : Type*) [Bicategory B] [IsLocallyDiscrete B] : Strict B where
+  id_comp f := obj_ext_of_isDiscrete (leftUnitor f).hom
+  comp_id f := obj_ext_of_isDiscrete (rightUnitor f).hom
+  assoc f g h := obj_ext_of_isDiscrete (associator f g h).hom
+
 end Bicategory
 
 end CategoryTheory

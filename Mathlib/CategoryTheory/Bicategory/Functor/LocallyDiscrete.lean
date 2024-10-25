@@ -8,11 +8,11 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Category.Cat
 
 /-!
-# Constructor for pseudofunctors from a strict locally discrete bicategory
+# Constructor for pseudofunctors from a locally discrete bicategory
 
 In this file, we define a constructor
 `pseudofunctorOfIsLocallyDiscrete` for the type `Pseudofunctor B C`
-when `C` is any bicategory, and `B` is a strict locally discrete category.
+when `C` is any bicategory, and `B` is a locally discrete category.
 Indeed, in this situation, we do not need to care about the field `map₂`
 of pseudofunctors because all the `2`-morphisms in `B` are identities.
 
@@ -29,7 +29,7 @@ open Bicategory
 case, we do not need to provide the `map₂` field of pseudofunctors. -/
 @[simps obj map mapId mapComp]
 def pseudofunctorOfIsLocallyDiscrete
-    {B C : Type*} [Bicategory B] [IsLocallyDiscrete B] [Bicategory C] [Strict B]
+    {B C : Type*} [Bicategory B] [IsLocallyDiscrete B] [Bicategory C]
     (obj : B → C)
     (map : ∀ {b b' : B}, (b ⟶ b') → (obj b ⟶ obj b'))
     (mapId : ∀ (b : B), map (𝟙 b) ≅ 𝟙 _)
@@ -61,7 +61,7 @@ def pseudofunctorOfIsLocallyDiscrete
 
 namespace LocallyDiscrete
 
-/-- Constructor for pseudofunctors from a strict locally discrete bicategory. In that
+/-- Constructor for pseudofunctors from a locally discrete bicategory. In that
 case, we do not need to provide the `map₂` field of pseudofunctors. -/
 @[simps! obj map mapId mapComp]
 def mkPseudofunctor {B₀ C : Type*} [Category B₀] [Bicategory C]
