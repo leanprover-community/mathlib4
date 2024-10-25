@@ -66,7 +66,7 @@ variable [MeasurableSpace X]
 section NormedAddCommGroup
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {f g : X → E} {s t : Set X} {μ ν : Measure X} {l l' : Filter X}
+  {f g : X → E} {s t : Set X} {μ : Measure X}
 
 theorem setIntegral_congr_ae₀ (hs : NullMeasurableSet s μ) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
     ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ :=

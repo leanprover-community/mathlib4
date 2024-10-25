@@ -7,19 +7,22 @@ import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 /-!
-# Constructor for pseudofunctors from a locally discrete bicategory
+# Pseudofunctors from locally discrete bicategories
 
-In this file, we define a constructor
-`pseudofunctorOfIsLocallyDiscrete` for the type `Pseudofunctor B C`
-when `C` is any bicategory, and `B` is a locally discrete category.
-Indeed, in this situation, we do not need to care about the field `map₂`
-of pseudofunctors because all the `2`-morphisms in `B` are identities.
+This file provides various ways of constructing pseudofunctors from locally discrete
+bicategories.
+
+Firstly, we define the constructors `pseudofunctorOfIsLocallyDiscrete` and
+`oplaxFunctorOfIsLocallyDiscrete` for defining pseudofunctors and oplax functors
+from a locally discrete bicategories. In this situation, we do not need to care about
+the field `map₂`,  because all the `2`-morphisms in `B` are identities.
 
 We also define a specialized constructor `LocallyDiscrete.mkPseudofunctor` when
 the source bicategory is of the form `B := LocallyDiscrete B₀` for a category `B₀`.
 
-A functor `F : I ⥤ B` with `B` a strict bicategory can also be promoted to a pseudofunctor
-(`Functor.toPseudofunctor`).
+We also prove that a functor `F : I ⥤ B` with `B` a strict bicategory can be promoted
+to a pseudofunctor (or oplax functor) (`Functor.toPseudofunctor`) with domain
+`LocallyDiscrete I`.
 
 -/
 
@@ -64,7 +67,7 @@ def pseudofunctorOfIsLocallyDiscrete
 /-- Constructor for oplax functors from a locally discrete bicategory. In that
 case, we do not need to provide the `map₂` field of oplax functors. -/
 @[simps obj map mapId mapComp]
-def oplaxfunctorOfIsLocallyDiscrete
+def oplaxFunctorOfIsLocallyDiscrete
     {B C : Type*} [Bicategory B] [IsLocallyDiscrete B] [Bicategory C]
     (obj : B → C)
     (map : ∀ {b b' : B}, (b ⟶ b') → (obj b ⟶ obj b'))
@@ -118,7 +121,7 @@ be promoted to an oplax functor from `LocallyDiscrete I` to `B`.
 -/
 @[simps! obj map mapId mapComp]
 def Functor.toOplaxFunctor : OplaxFunctor (LocallyDiscrete I) B :=
-  oplaxfunctorOfIsLocallyDiscrete
+  oplaxFunctorOfIsLocallyDiscrete
     (fun ⟨X⟩ ↦ F.obj X) (fun ⟨f⟩ ↦ F.map f)
     (fun ⟨X⟩ ↦ eqToHom (by simp)) (fun f g ↦ eqToHom (by simp))
 
