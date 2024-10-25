@@ -66,20 +66,21 @@ instance : Inhabited (Modification η η) :=
 variable {η θ} {ι : F ⟶ G}
 variable (Γ : Modification η θ)
 
--- /-- The modification between the underlying oplax transformations of oplax functors -/
--- @[simps]
--- def toOplax : Oplax.Modification η.toOplax θ.toOplax where
---   app a := Γ.app a
+open Oplax in
+/-- The modification between the underlying oplax transformations of oplax functors -/
+@[simps]
+def toOplax : Oplax.Modification η.toOplax θ.toOplax where
+  app a := Γ.app a
 
--- instance hasCoeToOplax : Coe (Modification η θ) (Oplax.Modification η.toOplax θ.toOplax) :=
---   ⟨toOplax⟩
+instance hasCoeToOplax : Coe (Modification η θ) (Oplax.Modification η.toOplax θ.toOplax) :=
+  ⟨toOplax⟩
 
--- /-- The modification between strong transformations of pseudofunctors associated to a modification
--- between the underlying oplax transformations of oplax functors. -/
--- @[simps]
--- def mkOfOplax (Γ : Oplax.Modification η.toOplax θ.toOplax) : Modification η θ where
---   app a := Γ.app a
---   naturality f := by simpa using Γ.naturality f
+/-- The modification between strong transformations of pseudofunctors associated to a modification
+between the underlying oplax transformations of oplax functors. -/
+@[simps]
+def mkOfOplax (Γ : Oplax.Modification η.toOplax θ.toOplax) : Modification η θ where
+  app a := Γ.app a
+  naturality f := by simpa using Γ.naturality f
 
 section
 
@@ -89,7 +90,7 @@ variable {a b c : B} {a' : C}
 theorem whiskerLeft_naturality (f : a' ⟶ F.obj b) (g : b ⟶ c) :
     f ◁ F.map g ◁ Γ.app c ≫ f ◁ (θ.naturality g).hom =
       f ◁ (η.naturality g).hom ≫ f ◁ Γ.app b ▷ G.map g := by
-  simp_rw [← whiskerLeft_comp, naturality]
+  simp_rw [← Bicategory.whiskerLeft_comp, naturality]
 
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :
@@ -148,8 +149,8 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
         simpa using
           congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
 
--- open Oplax in
--- def ModificationIso.ofOplax (Γ : η.toOplax ≅ θ.toOplax) : η ≅ θ :=
---   ModificationIso.ofComponents (fun a => Γ.app a) Γ.naturality
+open Oplax in
+def ModificationIso.ofOplax (Γ : η.toOplax ≅ θ.toOplax) : η ≅ θ :=
+  ModificationIso.ofComponents (fun a => Γ.app a) Γ.naturality
 
 end CategoryTheory.Pseudofunctor

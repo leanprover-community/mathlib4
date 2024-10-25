@@ -71,7 +71,7 @@ variable {a b c : B} {a' : C}
 @[reassoc (attr := simp)]
 theorem whiskerLeft_naturality (f : a' ⟶ F.obj b) (g : b ⟶ c) :
     f ◁ F.map g ◁ Γ.app c ≫ f ◁ θ.naturality g = f ◁ η.naturality g ≫ f ◁ Γ.app b ▷ G.map g := by
-  simp_rw [← whiskerLeft_comp, naturality]
+  simp_rw [← Bicategory.whiskerLeft_comp, naturality]
 
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :
