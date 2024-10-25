@@ -625,7 +625,6 @@ def isLimitConeOfIsRightKanExtension {c : Cone F} (hc : IsLimit c) :
     dsimp at this ⊢
     rw [← assoc, this, IsLimit.fac, NatTrans.comp_app, whiskerLeft_app])
 
-
 variable [HasLimit F] [HasLimit F']
 
 /-- If `F' : D ⥤ H` is a right Kan extension of `F : C ⥤ H` along `L : C ⥤ D`, the limit over `F'`
