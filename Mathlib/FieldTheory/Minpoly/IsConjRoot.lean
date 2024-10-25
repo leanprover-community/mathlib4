@@ -27,7 +27,9 @@ element over `K` and the minimal polynomial of `x` splits in `L`, then `x` is no
 there exists a different conjugate root of `x` in `L` over `K`.
 
 ## TODO
-Prove `IsConjRoot.smul`, if `x` and `y` are conjugate roots, then so are `r • x` and `r • y`.
+* move `IsConjRoot` to earlier files and refactor the theorems in field theory using `IsConjRoot`.
+
+* Prove `IsConjRoot.smul`, if `x` and `y` are conjugate roots, then so are `r • x` and `r • y`.
 
 ## Tags
 conjugate root, minimal polynomial
@@ -104,8 +106,6 @@ end IsConjRoot
 
 open IsConjRoot
 
-variable [IsDomain S]
-
 /--
 A variant of `isConjRoot_algHom_iff`, only assuming `Function.Injective f`,
 instead of `DivisionRing A`.
@@ -173,6 +173,8 @@ that `y = σ x`.
 theorem isConjRoot_iff_exists_algEquiv [Normal K L] {x y : L} :
     IsConjRoot K x y ↔ ∃ σ : L ≃ₐ[K] L, σ x = y :=
   ⟨exists_algEquiv, fun ⟨_, h⟩ => h ▸ isConjRoot_of_algEquiv _ _⟩
+
+variable [IsDomain S]
 
 /--
 Let `S / L / K` be a tower of extensions. For any two elements `y` and `x` in `S`, if `y` is a
