@@ -260,7 +260,6 @@ theorem inductionOn₃ {C : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂
   Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨γ, t, wo₃⟩ =>
     @H α r wo₁ β s wo₂ γ t wo₃
 
-#exit
 /-! ### The order on ordinals -/
 
 /--
