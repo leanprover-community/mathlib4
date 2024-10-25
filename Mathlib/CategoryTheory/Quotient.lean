@@ -164,30 +164,36 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
   rw [Equivalence.quot_mk_eq_iff, compClosure_eq_self r]
   simpa only [compClosure_eq_self r] using h.equivalence
 
-theorem CompClosure.congruence :
-    Congruence fun a b => Relation.EqvGen (@CompClosure C _ r a b) where
-  equivalence := Relation.EqvGen.is_equivalence _
-  compLeft f g g' rel := by
-    induction rel with
-    | rel _ _ h =>
-      let .intro f' m₁ m₂ g h := h
-      apply Relation.EqvGen.rel
-      rw [← Category.assoc, ← Category.assoc f]
-      exact ⟨_, _, _, _, h⟩
-    | refl => exact Relation.EqvGen.refl _
-    | symm _ _ _ ih => exact Relation.EqvGen.symm _ _ ih
-    | trans _ _ _ _ _ ih₁ ih₂ => exact Relation.EqvGen.trans _ _ _ ih₁ ih₂
-  compRight g rel := by
-    induction rel with
-    | rel _ _ h =>
-      let .intro f' m₁ m₂ g h := h
-      apply Relation.EqvGen.rel
-      repeat rw [Category.assoc]
-      exact ⟨_, _, _, _, h⟩
-    | refl => exact Relation.EqvGen.refl _
-    | symm _ _ _ ih => exact Relation.EqvGen.symm _ _ ih
-    | trans _ _ _ _ _ ih₁ ih₂ => exact Relation.EqvGen.trans _ _ _ ih₁ ih₂
+theorem functorHomRel_eq_compClosureEqvGen {X Y : C} (f g : X ⟶ Y) :
+    (functor r).homRel f g ↔ Relation.EqvGen (@CompClosure C _ r X Y) f g where
+  mp := fun a ↦ Quot.eqvGen_exact a
+  mpr := by
+    have : Relation.EqvGen (Functor.homRel (functor r) (X := X) (Y := Y)) =
+      Functor.homRel (functor r) (X := X) (Y := Y) :=
+        Equivalence.eqvGen_eq
+        ((Functor.homRelCongruence (functor r)).equivalence (X := X) (Y := Y))
+    rw [← this]
+    apply Relation.EqvGen.mono
+    intro f g
+    have := (Functor.homRelCongruence (functor r)).equivalence (X := X) (Y := Y)
+    intro rel
+    induction rel
+    unfold Functor.homRel
+    apply (Functor.homRelCongruence (functor r)).compLeft
+    apply (Functor.homRelCongruence (functor r)).compRight
+    unfold Functor.homRel
+    apply Quotient.sound
+    assumption
 
+theorem compClosure.congruence :
+    Congruence fun X Y => Relation.EqvGen (@CompClosure C _ r X Y) := by
+  have : (fun X Y => Relation.EqvGen (@CompClosure C _ r X Y)) =
+    (fun X Y => @Functor.homRel _ _ _ _ (functor r) X Y) := by
+    funext
+    ext
+    exact Iff.symm (functorHomRel_eq_compClosureEqvGen r _ _)
+  rw [this]
+  exact Functor.homRelCongruence (functor r)
 
 variable {D : Type _} [Category D] (F : C ⥤ D)
 
