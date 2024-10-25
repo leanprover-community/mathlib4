@@ -145,7 +145,8 @@ theorem sum_taylor_eq : ((taylor r f).sum fun i a => C a * (X - C r) ^ i) = f :=
   rw [← comp_eq_sum_left, sub_eq_add_neg, ← C_neg, ← taylor_apply, taylor_taylor, neg_add_cancel,
     taylor_zero]
 
-@[simps] noncomputable
+/-- `Polynomial.taylor` as an `AlgEquiv` for commutative rings -/
+@[simps]
 def taylorAlgEquiv : R[X] ≃ₐ[R] R[X] where
   __ := taylorAlgHom r
   invFun := fun p ↦ taylor (-r) p
