@@ -119,7 +119,7 @@ structure IsPrimitiveIdempotents (e : R) : Prop where
   [ne_zero : e ≠ 0]
   ne_sum_ortho' :
     ∀ (f g : R) (_ : OrthogonalIdempotents ![f, g])
-      (_ : f ≠ 0) (_ : g ≠ 0), e ≠ f + g
+      [NeZero f] [NeZero g], e ≠ f + g
 
 variable {e}
 
