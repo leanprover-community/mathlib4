@@ -187,7 +187,7 @@ theorem IsConjRoot.of_isScalarTower [IsScalarTower K L S] {x y : S} (hx : IsInte
 `y` is a conjugate root of `x` over `K` if and only if `y` is a root of the minimal polynomial of
 `x`. This is variant of `isConjRoot_iff_aeval_eq_zero`.
 -/
-theorem isConjRoot_iff_mem_aroots {x y : S} (h : IsIntegral K x) :
+theorem isConjRoot_iff_mem_minpoly_aroots {x y : S} (h : IsIntegral K x) :
     IsConjRoot K x y ↔ y ∈ (minpoly K x).aroots S := by
   rw [Polynomial.mem_aroots, isConjRoot_iff_aeval_eq_zero h]
   simp only [iff_and_self]
@@ -199,7 +199,7 @@ theorem isConjRoot_iff_mem_aroots {x y : S} (h : IsIntegral K x) :
 -/
 theorem isConjRoot_iff_mem_minpoly_rootSet {x y : S}
     (h : IsIntegral K x) : IsConjRoot K x y ↔ y ∈ (minpoly K x).rootSet S :=
-  (isConjRoot_iff_mem_aroots h).trans (by simp [rootSet])
+  (isConjRoot_iff_mem_minpoly_aroots h).trans (by simp [rootSet])
 
 namespace IsConjRoot
 
