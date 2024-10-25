@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.AffineSpace.Ordered
 import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Urysohn's lemma

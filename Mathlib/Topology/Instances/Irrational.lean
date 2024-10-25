@@ -5,6 +5,8 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Rat.Encodable
+import Mathlib.Topology.GDelta.UniformSpace
+import Mathlib.Topology.Separation.GDelta
 
 /-!
 # Topology of irrational numbers
