@@ -1,0 +1,13 @@
+TODO:
+push everything to branch
+parse through all swapRow theorems and do what i did for the others
+add docstring on theorems and lemmas
+make left and right of mulRow_mulRow_inv_cancel 
+simplify bodies of theorems
+add sections 
+check for delimiters and normal form
+final check if theorems have correct spacing
+
+
+FUTURE TODO:
+prove that elementary matrices are invertible?
