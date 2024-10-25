@@ -570,8 +570,8 @@ lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
 
 lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
 
-lemma dvd_comp_iff_of_degree_one (p q r : R[X]) (hd : r.degree = 1) (hl : IsUnit r.leadingCoeff) :
-    p ∣ q.comp r ↔ p.comp (C hl.unit.inv * (X - C (r.coeff 0))) ∣ q := by
+lemma dvd_comp_iff_of_degree_one (p q : R[X]) {r : R[X]} (hd : r.degree = 1) (hl : IsUnit
+    r.leadingCoeff) : p ∣ q.comp r ↔ p.comp (C hl.unit.inv * (X - C (r.coeff 0))) ∣ q := by
   convert map_dvd_iff <| algEquivOfDegreeOne hd hl using 2
   simp only [algEquivOfDegreeOne, Units.inv_eq_val_inv, algEquivOfCompEqX_apply, ← comp_eq_aeval,
     comp_assoc, mul_comp, C_comp, sub_comp, X_comp]
@@ -582,7 +582,7 @@ lemma dvd_comp_iff_of_degree_one (p q r : R[X]) (hd : r.degree = 1) (hl : IsUnit
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
   by_cases h : Nontrivial R
-  · simpa using dvd_comp_iff_of_degree_one p q (X - C a) (degree_X_sub_C _) (by simp)
+  · simpa using dvd_comp_iff_of_degree_one p q (degree_X_sub_C _) (by simp)
   · have : Subsingleton R[X] :=
       not_nontrivial_iff_subsingleton.mp (Polynomial.nontrivial_iff.not.mpr h)
     exact ⟨fun _ => dvd_of_eq (Subsingleton.allEq _ _), fun _ => dvd_of_eq (Subsingleton.allEq _ _)⟩
