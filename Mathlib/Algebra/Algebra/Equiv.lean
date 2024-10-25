@@ -44,8 +44,6 @@ class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semir
   /-- An equivalence of algebras commutes with the action of scalars. -/
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
--- Porting note: Removed nolint dangerousInstance from AlgEquivClass.toRingEquivClass
-
 namespace AlgEquivClass
 
 -- See note [lower instance priority]
@@ -141,7 +139,6 @@ protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R
 theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
   DFunLike.coe_injective
 
--- Porting note: Made to CoeOut instance from Coe, not dangerous anymore
 instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
   ⟨AlgEquiv.toRingEquiv⟩
 

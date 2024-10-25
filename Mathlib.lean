@@ -157,6 +157,7 @@ import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.CharP.IntermediateField
 import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Algebra.CharP.LocalRing
 import Mathlib.Algebra.CharP.MixedCharZero
 import Mathlib.Algebra.CharP.Pi
@@ -227,12 +228,16 @@ import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.GradedMulAction
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Action.Option
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Group.Action.Pretransitive
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Action.Sigma
 import Mathlib.Algebra.Group.Action.Sum
+import Mathlib.Algebra.Group.Action.TypeTags
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Group.Aut
@@ -314,6 +319,8 @@ import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Action.End
+import Mathlib.Algebra.GroupWithZero.Action.Faithful
 import Mathlib.Algebra.GroupWithZero.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.GroupWithZero.Action.Prod
@@ -422,6 +429,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.Algebra.Homology.Square
 import Mathlib.Algebra.Homology.TotalComplex
 import Mathlib.Algebra.Homology.TotalComplexShift
 import Mathlib.Algebra.Homology.TotalComplexSymmetry
@@ -478,8 +486,10 @@ import Mathlib.Algebra.Module.Card
 import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.Algebra.Module.DedekindDomain
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Equiv.Defs
+import Mathlib.Algebra.Module.Equiv.Opposite
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.Algebra.Module.GradedModule
 import Mathlib.Algebra.Module.Hom
@@ -494,7 +504,7 @@ import Mathlib.Algebra.Module.LinearMap.Star
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.Algebra.Module.LocalizedModuleIntegers
 import Mathlib.Algebra.Module.MinimalAxioms
-import Mathlib.Algebra.Module.Opposites
+import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
@@ -987,6 +997,7 @@ import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 import Mathlib.Analysis.CStarAlgebra.Basic
+import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
@@ -996,6 +1007,8 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
+import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
+import Mathlib.Analysis.CStarAlgebra.ContinuousMap
 import Mathlib.Analysis.CStarAlgebra.Exponential
 import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 import Mathlib.Analysis.CStarAlgebra.Hom
@@ -1006,6 +1019,7 @@ import Mathlib.Analysis.CStarAlgebra.Module.Synonym
 import Mathlib.Analysis.CStarAlgebra.Multiplier
 import Mathlib.Analysis.CStarAlgebra.Spectrum
 import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Analysis.CStarAlgebra.lpSpace
 import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 import Mathlib.Analysis.Calculus.AddTorsor.Coord
 import Mathlib.Analysis.Calculus.BumpFunction.Basic
@@ -1511,6 +1525,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
 import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Closed.Cartesian
+import Mathlib.CategoryTheory.Closed.Enrichment
 import Mathlib.CategoryTheory.Closed.Functor
 import Mathlib.CategoryTheory.Closed.FunctorCategory
 import Mathlib.CategoryTheory.Closed.FunctorToTypes
@@ -1525,6 +1540,7 @@ import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Comma.Presheaf.Basic
+import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
 import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
@@ -1672,6 +1688,7 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
 import Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IndYoneda
+import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Indization.IndObject
 import Mathlib.CategoryTheory.Limits.IsConnected
 import Mathlib.CategoryTheory.Limits.IsLimit
@@ -2381,7 +2398,9 @@ import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
-import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Perm.Lattice
+import Mathlib.Data.List.Perm.Subperm
 import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Pi
 import Mathlib.Data.List.Prime
@@ -4043,6 +4062,7 @@ import Mathlib.RingTheory.JacobsonIdeal
 import Mathlib.RingTheory.Kaehler.Basic
 import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Kaehler.Polynomial
+import Mathlib.RingTheory.Kaehler.TensorProduct
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.KrullDimension.Field
 import Mathlib.RingTheory.LaurentSeries
@@ -4696,6 +4716,7 @@ import Mathlib.Topology.Clopen
 import Mathlib.Topology.ClopenBox
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.Compactification.OnePointEquiv
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 import Mathlib.Topology.Compactness.Exterior
@@ -4906,7 +4927,8 @@ import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.RestrictGen
 import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.SeparatedMap
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Sequences
 import Mathlib.Topology.Sets.Closeds
