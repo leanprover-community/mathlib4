@@ -43,9 +43,8 @@ end LE
 section Preorder
 variable [Preorder α]
 
-theorem cofinal_univ : Cofinal (@Set.univ α) := by
-  intro a
-  exact ⟨a, ⟨⟩, le_rfl⟩
+theorem cofinal_univ : Cofinal (@Set.univ α) :=
+  fun a ↦ ⟨a, ⟨⟩, le_rfl⟩
 
 /-- A cofinal subset of a cofinal subset is cofinal. -/
 theorem cofinal_trans {s : Set α} {t : Set s} (hs : Cofinal s) (ht : Cofinal t) :
