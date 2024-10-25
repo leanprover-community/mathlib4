@@ -40,7 +40,7 @@ def ConnectedComponents (J : Type u₁) [Category.{v₁} J] : Type u₁ :=
 def Functor.mapConnectedComponents {K : Type u₂} [Category.{v₂} K] (F : J ⥤ K)
     (x : ConnectedComponents J) : ConnectedComponents K :=
   x |> Quotient.lift (Quotient.mk (Zigzag.setoid _) ∘ F.obj)
-    (fun _ _ ↦ Quot.sound ∘ zigzag_obj_of_zigzag F.toPrefunctor)
+    (fun _ _ ↦ Quot.sound ∘ zigzag_obj_of_zigzag F)
 
 @[simp]
 lemma Functor.mapConnectedComponents_mk {K : Type u₂} [Category.{v₂} K] (F : J ⥤ K) (j : J) :
@@ -59,7 +59,7 @@ def ConnectedComponents.functorToDiscrete   (X : Type*)
 def ConnectedComponents.liftFunctor (J) [Category J] {X : Type*} (F :J ⥤ Discrete X) :
     (ConnectedComponents J → X) :=
   Quotient.lift (fun c => (F.obj c).as)
-    (fun _ _ h => eq_of_zigzag X (zigzag_obj_of_zigzag F.toPrefunctor h))
+    (fun _ _ h => eq_of_zigzag X (zigzag_obj_of_zigzag F h))
 
 /-- Functions from connected components and functors to discrete category are in bijection -/
 def ConnectedComponents.typeToCatHomEquiv (J) [Category J] (X : Type*) :

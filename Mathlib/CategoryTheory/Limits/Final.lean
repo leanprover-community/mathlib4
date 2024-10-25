@@ -899,7 +899,7 @@ instance Grothendieck.pre_final [hG : Final G] : (Grothendieck.pre F G).Final :=
       (Grothendieck.Hom.mk gbj (𝟙 _))) ?_
     (.of_zag (.inl ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
       (eqToHom (by simp) ≫ gfj)) (by apply Grothendieck.ext <;> simp)⟩))
-  exact zigzag_obj_of_zigzag (Grothendieck.structuredArrowToStructuredArrowPre F G d f)
+  exact zigzag_prefunctor_obj_of_zigzag (Grothendieck.structuredArrowToStructuredArrowPre F G d f)
     (isPreconnected_zigzag (.mk gbi) (.mk gbj))
 
 end Grothendieck
