@@ -364,7 +364,7 @@ protected theorem secondCountableTopology [SecondCountableTopology E] (I : Model
 
 include I in
 protected theorem t1Space (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : T1Space M := by
-  have : T2Space H := I.closedEmbedding.toEmbedding.t2Space
+  have : T2Space H := I.isClosedEmbedding.toEmbedding.t2Space
   exact ChartedSpace.t1Space H M
 
 end ModelWithCorners
@@ -886,7 +886,7 @@ theorem nhdsWithin_extend_target_eq {y : M} (hy : y ∈ f.source) :
 
 theorem extend_target_eventuallyEq {y : M} (hy : y ∈ f.source) :
     (f.extend I).target =ᶠ[𝓝 (f.extend I y)] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extend_target_eq _ _ hy)
+  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extend_target_eq _ hy)
 
 theorem continuousAt_extend_symm' {x : E} (h : x ∈ (f.extend I).target) :
     ContinuousAt (f.extend I).symm x :=
@@ -977,7 +977,7 @@ theorem continuousOn_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M �
     ContinuousOn (f'.extend I' ∘ g ∘ (f.extend I).symm) (f.extend I '' s) ↔ ContinuousOn g s := by
   refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
   refine (continuousWithinAt_congr_set ?_).trans
-    (continuousWithinAt_writtenInExtend_iff _ _ _ (hs hx) (hmaps hx) hmaps)
+    (continuousWithinAt_writtenInExtend_iff _ (hs hx) (hmaps hx) hmaps)
   rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin_eq_image_of_subset,
     ← map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]
@@ -1184,7 +1184,7 @@ theorem extChartAt_target_mem_nhdsWithin_of_mem {x : M} {y : E} (hy : y ∈ (ext
 theorem extChartAt_target_union_comp_range_mem_nhds_of_mem {y : E} {x : M}
     (hy : y ∈ (extChartAt I x).target) : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 y := by
   rw [← nhdsWithin_univ, ← union_compl_self (range I), nhdsWithin_union]
-  exact Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin_of_mem I hy) self_mem_nhdsWithin
+  exact Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin_of_mem hy) self_mem_nhdsWithin
 
 /-- If we're boundaryless, `extChartAt` has open target -/
 theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I x).target := by
@@ -1225,7 +1225,7 @@ theorem nhdsWithin_extChartAt_target_eq' {x y : M} (hy : y ∈ (extChartAt I x).
 theorem nhdsWithin_extChartAt_target_eq_of_mem {x : M} {z : E} (hz : z ∈ (extChartAt I x).target) :
     𝓝[(extChartAt I x).target] z = 𝓝[range I] z := by
   rw [← PartialEquiv.right_inv (extChartAt I x) hz]
-  exact nhdsWithin_extChartAt_target_eq' _ ((extChartAt I x).map_target hz)
+  exact nhdsWithin_extChartAt_target_eq' ((extChartAt I x).map_target hz)
 
 theorem nhdsWithin_extChartAt_target_eq (x : M) :
     𝓝[(extChartAt I x).target] (extChartAt I x) x = 𝓝[range I] (extChartAt I x) x :=
@@ -1234,16 +1234,16 @@ theorem nhdsWithin_extChartAt_target_eq (x : M) :
 /-- Around a point in the target, `(extChartAt I x).target` and `range I` coincide locally. -/
 theorem extChartAt_target_eventuallyEq' {x y : M} (hy : y ∈ (extChartAt I x).source) :
     (extChartAt I x).target =ᶠ[𝓝 (extChartAt I x y)] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq' _ hy)
+  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq' hy)
 
 /-- Around a point in the target, `(extChartAt I x).target` and `range I` coincide locally. -/
 theorem extChartAt_target_eventuallyEq_of_mem {x : M} {z : E} (hz : z ∈ (extChartAt I x).target) :
     (extChartAt I x).target =ᶠ[𝓝 z] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq_of_mem _ hz)
+  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq_of_mem hz)
 
 theorem extChartAt_target_eventuallyEq {x : M} :
     (extChartAt I x).target =ᶠ[𝓝 (extChartAt I x x)] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq _ x)
+  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq x)
 
 lemma extChartAt_target_subset_closure_interior {x : M} :
     (extChartAt I x).target ⊆ closure (interior (extChartAt I x).target) := by
@@ -1251,15 +1251,15 @@ lemma extChartAt_target_subset_closure_interior {x : M} :
   rw [mem_closure_iff_nhds]
   intro t ht
   have A : t ∩ ((extChartAt I x).target ∪ (range I)ᶜ) ∈ 𝓝 y :=
-    inter_mem ht (extChartAt_target_union_comp_range_mem_nhds_of_mem I hy)
+    inter_mem ht (extChartAt_target_union_comp_range_mem_nhds_of_mem hy)
   have B : y ∈ closure (interior (range I)) := by
-    apply I.range_subset_closure_interior (extChartAt_target_subset_range I x hy)
+    apply I.range_subset_closure_interior (extChartAt_target_subset_range x hy)
   obtain ⟨z, ⟨tz, h'z⟩, hz⟩ :
       (t ∩ ((extChartAt I x).target ∪ (range ↑I)ᶜ) ∩ interior (range I)).Nonempty :=
     mem_closure_iff_nhds.1 B _ A
   refine ⟨z, ⟨tz, ?_⟩⟩
   have h''z : z ∈ (extChartAt I x).target := by simpa [interior_subset hz] using h'z
-  exact (extChartAt_target_eventuallyEq_of_mem _ h''z).symm.mem_interior hz
+  exact (extChartAt_target_eventuallyEq_of_mem h''z).symm.mem_interior hz
 
 theorem continuousAt_extChartAt_symm'' {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     ContinuousAt (extChartAt I x).symm y :=
@@ -1368,7 +1368,7 @@ theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
       ((extChartAt I x).target ∩
         (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source) : Set E) := by
   rw [← nhdsWithin_eq_iff_eventuallyEq]
-  exact hc.nhdsWithin_extChartAt_symm_preimage_inter_range I I'
+  exact hc.nhdsWithin_extChartAt_symm_preimage_inter_range
 
 /-! We use the name `ext_coord_change` for `(extChartAt I x').symm ≫ extChartAt I x`. -/
 

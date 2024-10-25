@@ -224,10 +224,7 @@ end PartialHomeomorph.MDifferentiable
 
 section extChartAt
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
-  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {s : Set M} {x y : M}
-  {z : E}
+variable [SmoothManifoldWithCorners I M] {s : Set M} {x y : M}
 
 theorem hasMFDerivAt_extChartAt (h : y ∈ (chartAt H x).source) :
     HasMFDerivAt I 𝓘(𝕜, E) (extChartAt I x) y (mfderiv I I (chartAt H x) y : _) :=
