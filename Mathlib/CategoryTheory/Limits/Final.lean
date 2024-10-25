@@ -3,7 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Types
@@ -115,6 +115,8 @@ theorem initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
     out := fun d =>
       @isConnected_of_isConnected_op _ _
         (isConnected_of_equivalent (costructuredArrowOpEquivalence F d).symm) }
+
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
 /-- If a functor `R : D ⥤ C` is a right adjoint, it is final. -/
 theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final R :=

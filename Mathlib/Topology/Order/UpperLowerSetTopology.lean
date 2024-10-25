@@ -95,7 +95,7 @@ protected def rec {β : WithUpperSet α → Sort*} (h : ∀ a, β (toUpperSet a)
 instance [Nonempty α] : Nonempty (WithUpperSet α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithUpperSet α) := ‹Inhabited α›
 
-variable [Preorder α] [Preorder β] [Preorder γ]
+variable [Preorder α] [Preorder β]
 
 instance : Preorder (WithUpperSet α) := ‹Preorder α›
 instance : TopologicalSpace (WithUpperSet α) := upperSet α

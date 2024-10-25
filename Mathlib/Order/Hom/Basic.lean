@@ -755,8 +755,6 @@ protected theorem injective (e : α ≃o β) : Function.Injective e :=
 protected theorem surjective (e : α ≃o β) : Function.Surjective e :=
   e.toEquiv.surjective
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem apply_eq_iff_eq (e : α ≃o β) {x y : α} : e x = e y ↔ x = y :=
   e.toEquiv.apply_eq_iff_eq
 
@@ -920,7 +918,6 @@ section LE
 
 variable [LE α] [LE β]
 
---@[simp] Porting note (#10618): simp can prove it
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
 

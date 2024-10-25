@@ -6,14 +6,11 @@ Authors: Xavier Roblot
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.Tactic.Rify
+import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 
 /-!
 # Number field discriminant
 This file defines the discriminant of a number field.
-
-## Main definitions
-
-* `NumberField.discr`: the absolute discriminant of a number field.
 
 ## Main result
 
@@ -38,40 +35,12 @@ open scoped Classical Real nonZeroDivisors
 
 variable (K : Type*) [Field K] [NumberField K]
 
-/-- The absolute discriminant of a number field. -/
-noncomputable abbrev discr : ℤ := Algebra.discr ℤ (RingOfIntegers.basis K)
-
-theorem coe_discr : (discr K : ℚ) = Algebra.discr ℚ (integralBasis K) :=
-  (Algebra.discr_localizationLocalization ℤ _ K (RingOfIntegers.basis K)).symm
-
-theorem discr_ne_zero : discr K ≠ 0 := by
-  rw [← (Int.cast_injective (α := ℚ)).ne_iff, coe_discr]
-  exact Algebra.discr_not_zero_of_basis ℚ (integralBasis K)
-
-theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ (𝓞 K)) :
-    Algebra.discr ℤ b = discr K := by
-  let b₀ := Basis.reindex (RingOfIntegers.basis K) (Basis.indexEquiv (RingOfIntegers.basis K) b)
-  rw [Algebra.discr_eq_discr (𝓞 K) b b₀, Basis.coe_reindex, Algebra.discr_reindex]
-
-theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃ₐ[ℚ] L) :
-    discr K = discr L := by
-  let f₀ : 𝓞 K ≃ₗ[ℤ] 𝓞 L := (f.restrictScalars ℤ).mapIntegralClosure.toLinearEquiv
-  rw [← Rat.intCast_inj, coe_discr, Algebra.discr_eq_discr_of_algEquiv (integralBasis K) f,
-    ← discr_eq_discr L ((RingOfIntegers.basis K).map f₀)]
-  change _ = algebraMap ℤ ℚ _
-  rw [← Algebra.discr_localizationLocalization ℤ (nonZeroDivisors ℤ) L]
-  congr
-  ext
-  simp only [Function.comp_apply, integralBasis_apply, Basis.localizationLocalization_apply,
-    Basis.map_apply]
-  rfl
-
 open MeasureTheory MeasureTheory.Measure ZSpan NumberField.mixedEmbedding
   NumberField.InfinitePlace ENNReal NNReal Complex
 
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =
-      (2 : ℝ≥0∞)⁻¹ ^ NrComplexPlaces K * sqrt ‖discr K‖₊ := by
+      (2 : ℝ≥0∞)⁻¹ ^ nrComplexPlaces K * sqrt ‖discr K‖₊ := by
   let f : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →+* ℂ) :=
     (canonicalEmbedding.latticeBasis K).indexEquiv (Pi.basisFun ℂ _)
   let e : (index K) ≃ Module.Free.ChooseBasisIndex ℤ (𝓞 K) := (indexEquiv K).trans f.symm
@@ -105,7 +74,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
 
 theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
-      |Algebra.norm ℚ (a : K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K *
+      |Algebra.norm ℚ (a : K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ nrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
   -- The smallest possible value for `exists_ne_zero_mem_ideal_of_norm_le`
   let B := (minkowskiBound K I * (convexBodySumFactor K)⁻¹).toReal ^ (1 / (finrank ℚ K : ℝ))
@@ -123,8 +92,8 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
   congr 1
   rw [eq_comm]
   calc
-    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ)⁻¹ ^ NrComplexPlaces K * sqrt ‖discr K‖₊ *
-          (2 : ℝ) ^ finrank ℚ K * ((2 : ℝ) ^ NrRealPlaces K * (π / 2) ^ NrComplexPlaces K /
+    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ)⁻¹ ^ nrComplexPlaces K * sqrt ‖discr K‖₊ *
+          (2 : ℝ) ^ finrank ℚ K * ((2 : ℝ) ^ nrRealPlaces K * (π / 2) ^ nrComplexPlaces K /
             (Nat.factorial (finrank ℚ K)))⁻¹ := by
       simp_rw [minkowskiBound, convexBodySumFactor,
         volume_fundamentalDomain_fractionalIdealLatticeBasis,
@@ -133,19 +102,19 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
       rw [ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.1))]
       simp_rw [NNReal.coe_inv, NNReal.coe_div, NNReal.coe_mul, NNReal.coe_pow, NNReal.coe_div,
         coe_real_pi, NNReal.coe_ofNat, NNReal.coe_natCast]
-    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (finrank ℚ K - NrComplexPlaces K - NrRealPlaces K +
-          NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
-            π⁻¹ ^ (NrComplexPlaces K) := by
+    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (finrank ℚ K - nrComplexPlaces K - nrRealPlaces K +
+          nrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
+            π⁻¹ ^ (nrComplexPlaces K) := by
       simp_rw [inv_div, div_eq_mul_inv, mul_inv, ← zpow_neg_one, ← zpow_natCast, mul_zpow,
         ← zpow_mul, neg_one_mul, mul_neg_one, neg_neg, Real.coe_sqrt, coe_nnnorm, sub_eq_add_neg,
         zpow_add₀ (two_ne_zero : (2 : ℝ) ≠ 0)]
       ring
-    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (2 * NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
-          Nat.factorial (finrank ℚ K) * π⁻¹ ^ (NrComplexPlaces K) := by
+    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (2 * nrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
+          Nat.factorial (finrank ℚ K) * π⁻¹ ^ (nrComplexPlaces K) := by
       congr
       rw [← card_add_two_mul_card_eq_rank, Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat]
       ring
-    _ = FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K * (finrank ℚ K).factorial *
+    _ = FractionalIdeal.absNorm I.1 * (4 / π) ^ nrComplexPlaces K * (finrank ℚ K).factorial *
           Real.sqrt |discr K| := by
       rw [Int.norm_eq_abs, zpow_mul, show (2 : ℝ) ^ (2 : ℤ) = 4 by norm_cast, div_pow,
         inv_eq_one_div, div_pow, one_pow, zpow_natCast]
@@ -153,7 +122,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
     ∃ (a : 𝓞 K), a ≠ 0 ∧
-      |Algebra.norm ℚ (a : K)| ≤ (4 / π) ^ NrComplexPlaces K *
+      |Algebra.norm ℚ (a : K)| ≤ (4 / π) ^ nrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
   obtain ⟨_, h_mem, h_nz, h_nm⟩ := exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K ↑1
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
@@ -360,7 +329,7 @@ theorem finite_of_discr_bdd_of_isReal :
         · exact (Nat.choose_le_choose _ (rank_le_rankOfDiscrBdd hK₂)).trans
             (Nat.choose_le_middle _ _)
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
-      exact (aeval_algebraMap_eq_zero_iff _ _ _).mpr (minpoly.aeval ℤ (x : K))
+      exact (aeval_algebraMap_eq_zero_iff A (x : K) _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
       convert hx₁
       · simp only [IntermediateField.lift_top]
@@ -409,7 +378,7 @@ theorem finite_of_discr_bdd_of_isComplex :
           exact (Nat.choose_le_choose _ (rank_le_rankOfDiscrBdd hK₂)).trans
             (Nat.choose_le_middle _ _)
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
-      exact (aeval_algebraMap_eq_zero_iff _ _ _).mpr (minpoly.aeval ℤ (x : K))
+      exact (aeval_algebraMap_eq_zero_iff A (x : K) _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
       convert hx₁
       · simp only [IntermediateField.lift_top]
@@ -441,61 +410,3 @@ theorem _root_.NumberField.finite_of_discr_bdd :
 end hermiteTheorem
 
 end NumberField
-
-namespace Rat
-
-open NumberField
-
-/-- The absolute discriminant of the number field `ℚ` is 1. -/
-@[simp]
-theorem numberField_discr : discr ℚ = 1 := by
-  let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
-    Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
-  calc NumberField.discr ℚ
-    _ = Algebra.discr ℤ b := by convert (discr_eq_discr ℚ b).symm
-    _ = Algebra.trace ℤ (𝓞 ℚ) (b default * b default) := by
-      rw [Algebra.discr_def, Matrix.det_unique, Algebra.traceMatrix_apply, Algebra.traceForm_apply]
-    _ = Algebra.trace ℤ (𝓞 ℚ) 1 := by
-      rw [Basis.map_apply, RingEquiv.toAddEquiv_eq_coe, AddEquiv.toIntLinearEquiv_symm,
-        AddEquiv.coe_toIntLinearEquiv, Basis.singleton_apply,
-        show (AddEquiv.symm ↑ringOfIntegersEquiv) (1 : ℤ) = ringOfIntegersEquiv.symm 1 by rfl,
-        map_one, mul_one]
-    _ = 1 := by rw [Algebra.trace_eq_matrix_trace b]; norm_num
-
-alias _root_.NumberField.discr_rat := numberField_discr
-
-end Rat
-
-variable {ι ι'} (K) [Field K] [DecidableEq ι] [DecidableEq ι'] [Fintype ι] [Fintype ι']
-
-/-- If `b` and `b'` are `ℚ`-bases of a number field `K` such that
-`∀ i j, IsIntegral ℤ (b.toMatrix b' i j)` and `∀ i j, IsIntegral ℤ (b'.toMatrix b i j)` then
-`discr ℚ b = discr ℚ b'`. -/
-theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
-    {b : Basis ι ℚ K} {b' : Basis ι' ℚ K} (h : ∀ i j, IsIntegral ℤ (b.toMatrix b' i j))
-    (h' : ∀ i j, IsIntegral ℤ (b'.toMatrix b i j)) : discr ℚ b = discr ℚ b' := by
-  replace h' : ∀ i j, IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b')) i j) := by
-    intro i j
-    convert h' i ((b.indexEquiv b').symm j)
-    simp [Basis.toMatrix_apply]
-  classical
-  rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', discr_of_matrix_vecMul,
-    ← one_mul (discr ℚ b), Basis.coe_reindex, discr_reindex]
-  congr
-  have hint : IsIntegral ℤ ((b.reindex (b.indexEquiv b')).toMatrix b').det :=
-    IsIntegral.det fun i j => h _ _
-  obtain ⟨r, hr⟩ := IsIntegrallyClosed.isIntegral_iff.1 hint
-  have hunit : IsUnit r := by
-    have : IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b'))).det :=
-      IsIntegral.det fun i j => h' _ _
-    obtain ⟨r', hr'⟩ := IsIntegrallyClosed.isIntegral_iff.1 this
-    refine isUnit_iff_exists_inv.2 ⟨r', ?_⟩
-    suffices algebraMap ℤ ℚ (r * r') = 1 by
-      rw [← RingHom.map_one (algebraMap ℤ ℚ)] at this
-      exact (IsFractionRing.injective ℤ ℚ) this
-    rw [RingHom.map_mul, hr, hr', ← Matrix.det_mul,
-      Basis.toMatrix_mul_toMatrix_flip, Matrix.det_one]
-  rw [← RingHom.map_one (algebraMap ℤ ℚ), ← hr]
-  cases' Int.isUnit_iff.1 hunit with hp hm
-  · simp [hp]
-  · simp [hm]
