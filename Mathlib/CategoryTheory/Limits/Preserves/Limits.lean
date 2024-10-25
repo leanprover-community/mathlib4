@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
@@ -148,10 +148,10 @@ def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ c
       rw [← Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv]
       apply colimit.hom_ext; intro j
       dsimp
-      erw [ι_colimMap_assoc]
+      rw [ι_colimMap_assoc]
       simp only [ι_preservesColimitsIso_inv, whiskerRight_app, Category.assoc,
         ι_preservesColimitsIso_inv_assoc, ← G.map_comp]
-      erw [ι_colimMap])
+      rw [ι_colimMap])
 
 end
 

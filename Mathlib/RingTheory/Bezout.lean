@@ -51,13 +51,13 @@ theorem TFAE [IsBezout R] [IsDomain R] :
     [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] := by
   classical
     tfae_have 1 → 2
-    · intro H; exact ⟨fun I => isPrincipal_of_FG _ (IsNoetherian.noetherian _)⟩
+    | H => ⟨fun I => isPrincipal_of_FG _ (IsNoetherian.noetherian _)⟩
     tfae_have 2 → 3
-    · intro; infer_instance
+    | _ => inferInstance
     tfae_have 3 → 4
-    · intro; infer_instance
+    | _ => inferInstance
     tfae_have 4 → 1
-    · rintro ⟨h⟩
+    | ⟨h⟩ => by
       rw [isNoetherianRing_iff, isNoetherian_iff_fg_wellFounded]
       refine ⟨RelEmbedding.wellFounded ?_ h⟩
       have : ∀ I : { J : Ideal R // J.FG }, ∃ x : R, (I : Ideal R) = Ideal.span {x} :=

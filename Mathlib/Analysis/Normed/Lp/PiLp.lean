@@ -91,7 +91,7 @@ section
 /- Register simplification lemmas for the applications of `PiLp` elements, as the usual lemmas
 for Pi types will not trigger. -/
 variable {𝕜 p α}
-variable [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (β i)] (c : 𝕜)
 variable (x y : PiLp p β) (i : ι)
 
@@ -121,6 +121,13 @@ theorem smul_apply : (c • x) i = c • x i :=
 @[simp]
 theorem neg_apply : (-x) i = -x i :=
   rfl
+
+variable (p) in
+/-- The projection on the `i`-th coordinate of `WithLp p (∀ i, α i)`, as a linear map. -/
+@[simps!]
+def projₗ (i : ι) : PiLp p β →ₗ[𝕜] β i :=
+  (LinearMap.proj i : (∀ i, β i) →ₗ[𝕜] β i) ∘ₗ (WithLp.linearEquiv p 𝕜 (∀ i, β i)).toLinearMap
+
 end
 
 /-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
@@ -354,7 +361,7 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
             PseudoMetricSpace.edist_dist]
           -- Porting note: `le_iSup` needed some help
           exact le_iSup (fun k => edist (f k) (g k)) i
-        · refine ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg _ ?_) (iSup_le fun i => ?_)
+        · refine ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg ?_) (iSup_le fun i => ?_)
           · rintro - ⟨i, rfl⟩
             exact dist_nonneg
           · change PseudoMetricSpace.edist _ _ ≤ _
@@ -413,8 +420,8 @@ theorem antilipschitzWith_equiv_aux :
         rw [this, ENNReal.coe_rpow_of_nonneg _ nonneg]
 
 theorem aux_uniformity_eq : 𝓤 (PiLp p β) = 𝓤[Pi.uniformSpace _] := by
-  have A : UniformInducing (WithLp.equiv p (∀ i, β i)) :=
-    (antilipschitzWith_equiv_aux p β).uniformInducing
+  have A : IsUniformInducing (WithLp.equiv p (∀ i, β i)) :=
+    (antilipschitzWith_equiv_aux p β).isUniformInducing
       (lipschitzWith_equiv_aux p β).uniformContinuous
   have : (fun x : PiLp p β × PiLp p β => (WithLp.equiv p _ x.fst, WithLp.equiv p _ x.snd)) = id :=
     by ext i <;> rfl
@@ -740,7 +747,7 @@ def _root_.LinearIsometryEquiv.piLpCurry :
   toLinearEquiv :=
     WithLp.linearEquiv _ _ _
       ≪≫ₗ LinearEquiv.piCurry 𝕜 α
-      ≪≫ₗ (LinearEquiv.piCongrRight fun i => (WithLp.linearEquiv _ _ _).symm)
+      ≪≫ₗ (LinearEquiv.piCongrRight fun _ => (WithLp.linearEquiv _ _ _).symm)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
   norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
     simp_rw [← coe_nnnorm, NNReal.coe_inj]
@@ -825,7 +832,6 @@ theorem edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
       edist b₁ b₂ := by
-  -- Porting note: was `simpa using`
   simp only [edist_nndist, nndist_equiv_symm_single_same p β i b₁ b₂]
 
 end Single
@@ -891,6 +897,13 @@ protected def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := WithLp.linearEquiv _ _ _
   continuous_toFun := continuous_equiv _ _
   continuous_invFun := continuous_equiv_symm _ _
+
+variable {𝕜} in
+/-- The projection on the `i`-th coordinate of `PiLp p β`, as a continuous linear map. -/
+@[simps!]
+def proj (i : ι) : PiLp p β →L[𝕜] β i where
+  __ := projₗ p β i
+  cont := continuous_apply i
 
 end Fintype
 

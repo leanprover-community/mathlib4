@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Algebra.Algebra.Spectrum
-import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Data.Set.Lattice
 
 /-!

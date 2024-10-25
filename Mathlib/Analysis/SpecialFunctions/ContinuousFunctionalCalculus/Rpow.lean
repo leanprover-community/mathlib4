@@ -5,8 +5,8 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Real powers defined via the continuous functional calculus
@@ -306,8 +306,10 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
 
 section unital_vs_nonunital
 
-variable [∀ (a : A), CompactSpace (spectrum ℝ a)]
-  [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
+variable [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
+
+-- provides instance `ContinuousFunctionalCalculus.compactSpace_spectrum`
+open scoped ContinuousFunctionalCalculus
 
 lemma nnrpow_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : a ^ x = a ^ (x : ℝ) := by
   rw [nnrpow_def (A := A), rpow_def, cfcₙ_eq_cfc]

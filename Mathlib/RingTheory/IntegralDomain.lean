@@ -54,7 +54,7 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [Decidabl
     inv_zero := by simp [Inv.inv, dif_pos rfl] }
 
 theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsDomain R]
-    [GCDMonoid R] [Unique Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
+    [GCDMonoid R] [Subsingleton Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
     ∃ d : R, a = d ^ n := by
   refine exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one ?_) h
   obtain ⟨x, y, hxy⟩ := cp
@@ -65,7 +65,7 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsD
 
 nonrec
 theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R] [IsDomain R]
-    [GCDMonoid R] [Unique Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
+    [GCDMonoid R] [Subsingleton Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
     (h : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → IsCoprime (f i) (f j))
     (hprod : ∏ i ∈ s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
   classical
@@ -92,9 +92,9 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
   __ := Fintype.groupWithZeroOfCancel R
   __ := ‹Ring R›
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
 can be found in `Mathlib.RingTheory.LittleWedderburn`. -/
@@ -109,14 +109,12 @@ end Ring
 
 variable [CommRing R] [IsDomain R] [Group G]
 
--- Porting note: Finset doesn't seem to have `{g ∈ univ | g^n = g₀}` notation anymore,
--- so we have to use `Finset.filter` instead
 theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
     {n : ℕ} (hn : 0 < n) (g₀ : G) :
-    Finset.card (Finset.univ.filter (fun g ↦ g^n = g₀)) ≤ Multiset.card (nthRoots n (f g₀)) := by
+    #{g | g ^ n = g₀} ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
   calc
-    _ ≤ (nthRoots n (f g₀)).toFinset.card := card_le_card_of_injOn f (by aesop) hf.injOn
+    _ ≤ #(nthRoots n (f g₀)).toFinset := card_le_card_of_injOn f (by aesop) hf.injOn
     _ ≤ _ := (nthRoots n (f g₀)).toFinset_card_le
 
 /-- A finite subgroup of the unit group of an integral domain is cyclic. -/
@@ -194,12 +192,11 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
         eq_comm] at hn
     replace hx1 : (x.val : R) - 1 ≠ 0 := -- Porting note: was `(x : R)`
       fun h => hx1 (Subtype.eq (Units.ext (sub_eq_zero.1 h)))
-    let c := (univ.filter fun g => f.toHomUnits g = 1).card
+    let c := #{g | f.toHomUnits g = 1}
     calc
       ∑ g : G, f g = ∑ g : G, (f.toHomUnits g : R) := rfl
-      _ = ∑ u ∈ univ.image f.toHomUnits,
-            (univ.filter fun g => f.toHomUnits g = u).card • (u : R) :=
-        (sum_comp ((↑) : Rˣ → R) f.toHomUnits)
+      _ = ∑ u ∈ univ.image f.toHomUnits, #{g | f.toHomUnits g = u} • (u : R) :=
+        sum_comp ((↑) : Rˣ → R) f.toHomUnits
       _ = ∑ u ∈ univ.image f.toHomUnits, c • (u : R) :=
         (sum_congr rfl fun u hu => congr_arg₂ _ ?_ rfl)
       -- remaining goal 1, proven below
@@ -211,7 +208,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       -- remaining goal 2, proven below
       _ = (0 : R) := smul_zero _
     · -- remaining goal 1
-      show (univ.filter fun g : G => f.toHomUnits g = u).card = c
+      show #{g : G | f.toHomUnits g = u} = c
       apply MonoidHom.card_fiber_eq_of_mem_range f.toHomUnits
       · simpa only [mem_image, mem_univ, true_and, Set.mem_range] using hu
       · exact ⟨1, f.toHomUnits.map_one⟩

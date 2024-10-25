@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Deprecated.Group
 
 /-!
@@ -347,7 +347,7 @@ theorem mem_closure_union_iff {M : Type*} [CommMonoid M] {s t : Set M} {x : M} :
             ⟨y, hy, z * hd, (closure.isSubmonoid _).mul_mem hz (subset_closure ht), by
               rw [← mul_assoc, List.prod_cons, ← hyzx, mul_comm hd]⟩)
         HL1,
-    fun ⟨y, hy, z, hz, hyzx⟩ =>
+    fun ⟨_, hy, _, hz, hyzx⟩ =>
     hyzx ▸
       (closure.isSubmonoid _).mul_mem (closure_mono Set.subset_union_left hy)
         (closure_mono Set.subset_union_right hz)⟩

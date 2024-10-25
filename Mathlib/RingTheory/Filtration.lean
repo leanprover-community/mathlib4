@@ -238,7 +238,7 @@ variable (F F')
 protected def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
   carrier := { f | ∀ i, f i ∈ F.N i }
   add_mem' hf hg i := Submodule.add_mem _ (hf i) (hg i)
-  zero_mem' i := Submodule.zero_mem _
+  zero_mem' _ := Submodule.zero_mem _
   smul_mem' r f hf i := by
     rw [Subalgebra.smul_def, PolynomialModule.smul_apply]
     apply Submodule.sum_mem
