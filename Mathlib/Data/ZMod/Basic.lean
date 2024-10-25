@@ -3,13 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Fintype.Units
-
 
 /-!
 # Integers mod `n`
