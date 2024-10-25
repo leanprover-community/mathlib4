@@ -74,7 +74,7 @@ theorem isSingular_aleph_iff {o : Ordinal} (ho : o.IsLimit) :
     have := h.cof_ord_lt
     rwa [aleph_cof ho] at this
   · intro h
-    exact (isSingular_iff_cof_lt (aleph0_le_aleph o)).mpr ((aleph_cof _) ▸ h)
+    exact (isSingular_iff_cof_lt (aleph0_le_aleph o)).mpr ((aleph_cof ho) ▸ h)
 
 theorem isSingular_aleph_omega : (aleph ω).IsSingular := by
   apply (isSingular_aleph_iff omega0_isLimit).mpr
