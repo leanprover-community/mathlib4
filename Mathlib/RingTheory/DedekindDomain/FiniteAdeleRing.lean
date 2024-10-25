@@ -395,12 +395,12 @@ lemma mul_nonZeroDivisor_mem_finiteIntegralAdeles (a : FiniteAdeleRing R K) :
     rw [← mul_assoc]
     exact mul_mem (h v (a v)) <| coe_mem_adicCompletionIntegers _ _
 
-abbrev basis (r : R⁰) : Submodule (R_hat R K) (FiniteAdeleRing R K) :=
+abbrev basis (r : R⁰) : Set (FiniteAdeleRing R K) :=
   Submodule.span (R_hat R K) {((r : R) : FiniteAdeleRing R K)}
 
 open Submodule in
 theorem basis_isBasis :
-    Filter.IsBasis (fun _ ↦ True) (fun r ↦ basis R K r : R⁰ → Set (FiniteAdeleRing R K)) where
+    Filter.IsBasis (fun _ ↦ True) (basis R K) where
   nonempty := ⟨1, trivial⟩
   inter {i j} _ _ := ⟨i * j, trivial, by
     simp only [basis, subset_inter_iff, SetLike.coe_subset_coe,
@@ -409,7 +409,7 @@ theorem basis_isBasis :
     exact ⟨⟨((j : R) : R_hat R K), by rw [mul_comm]; rfl⟩, ⟨((i : R) : R_hat R K), rfl⟩⟩⟩
 
 theorem basis_isRingBasis :
-    Filter.IsRingBasis (fun _ ↦ True) (fun r ↦ basis R K r : R⁰ → Set (FiniteAdeleRing R K)) := by
+    Filter.IsRingBasis (fun _ ↦ True) (basis R K) := by
   refine .mk_of_subgroups_of_comm (basis_isBasis R K) ?mul ?mul_left
   case mul_left =>
     rintro a r -
