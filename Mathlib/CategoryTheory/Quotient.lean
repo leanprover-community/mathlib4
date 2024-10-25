@@ -174,9 +174,7 @@ theorem functorHomRel_eq_compClosureEqvGen {X Y : C} (f g : X ⟶ Y) :
         ((Functor.homRelCongruence (functor r)).equivalence (X := X) (Y := Y))
     rw [← this]
     apply Relation.EqvGen.mono
-    intro f g
-    have := (Functor.homRelCongruence (functor r)).equivalence (X := X) (Y := Y)
-    intro rel
+    intro f g rel
     induction rel
     unfold Functor.homRel
     apply (Functor.homRelCongruence (functor r)).compLeft
