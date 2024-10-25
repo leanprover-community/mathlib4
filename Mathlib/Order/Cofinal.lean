@@ -3,19 +3,20 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.Bounds.Basic
+import Mathlib.Data.Set.Basic
+import Mathlib.Order.Bounds.Defs
 
 /-!
 # Cofinal sets
 
-A set `s` is cofinal when for every `a` there exists an element of `s` greater or equal to it. This
-file provides a basic API for the `Cofinal` predicate.
+A set `s` in an ordered type `α` is cofinal when for every `a : α` there exists an element of `s`
+greater or equal to it. This file provides a basic API for the `Cofinal` predicate.
 
 For the cofinality of a set as a cardinal, see `Mathlib.SetTheory.Cardinal.Cofinality`.
 
 ## TODO
 
-Define `Order.cof` in terms of `Cofinal`.
+- Define `Order.cof` in terms of `Cofinal`.
 -/
 
 variable {α : Type*}
