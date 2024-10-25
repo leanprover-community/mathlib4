@@ -271,15 +271,12 @@ theorem inductionOn₃ {C : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂
 
 instance test {α : Type*} [LinearOrder α] [WellFoundedLT α] : IsWellOrder α (· < ·) where
 
+open Classical in
 /-- To prove a result on ordinals, it suffices to prove it for order types of well-orders. -/
 @[elab_as_elim]
 theorem inductionOnWellOrder {C : Ordinal → Prop} (o : Ordinal)
-    (H : ∀ (α) [LinearOrder α] [WellFoundedLT α], C (typeLT α)) : C o := by
-  classical
-  refine inductionOn o fun α r wo ↦ ?_
-  letI : LinearOrder α := linearOrderOfSTO r
-  have : WellFoundedLT α := wo.toIsWellFounded
-  exact H α
+    (H : ∀ (α) [LinearOrder α] [WellFoundedLT α], C (typeLT α)) : C o :=
+  inductionOn o fun α r wo ↦ @H α (linearOrderOfSTO r) wo.toIsWellFounded
 
 open Classical in
 /-- To define a function on ordinals, it suffices to define them on order types of well-orders.
