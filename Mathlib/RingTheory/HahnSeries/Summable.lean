@@ -40,7 +40,7 @@ open Pointwise
 
 noncomputable section
 
-variable {Γ R α β : Type*}
+variable {Γ Γ' R V α β : Type*}
 
 namespace HahnSeries
 
@@ -273,10 +273,10 @@ theorem smul_support_subset_prod (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (gh : Γ × Γ') :
     (Function.support fun (i : α × β) ↦ (s i.1).coeff gh.1 • (t i.2).coeff gh.2) ⊆
     ((s.finite_co_support' gh.1).prod (t.finite_co_support' gh.2)).toFinset := by
-    intro _ hab
-    simp_all only [Function.mem_support, ne_eq, Set.Finite.coe_toFinset, Set.mem_prod,
-      Set.mem_setOf_eq]
-    exact ⟨left_ne_zero_of_smul hab, right_ne_zero_of_smul hab⟩
+  intro _ hab
+  simp_all only [Function.mem_support, ne_eq, Set.Finite.coe_toFinset, Set.mem_prod,
+    Set.mem_setOf_eq]
+  exact ⟨left_ne_zero_of_smul hab, right_ne_zero_of_smul hab⟩
 
 theorem smul_support_finite (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (gh : Γ × Γ') :
