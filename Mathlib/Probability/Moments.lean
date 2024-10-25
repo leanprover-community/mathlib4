@@ -402,9 +402,9 @@ lemma tilt_var_bound [IsProbabilityMeasure μ] (a b t : ℝ) {X : Ω → ℝ}
 
 theorem integrable_bounded [IsFiniteMeasure μ] (a b : ℝ)
     {X : Ω → ℝ} (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
-    Integrable X μ := by
-  apply MeasureTheory.memℒp_one_iff_integrable.mp
-  apply memℒp_of_bounded h (aestronglyMeasurable_iff_aemeasurable.mpr hX)
+    Integrable X μ :=
+  memℒp_one_iff_integrable.mp
+    memℒp_of_bounded h (aestronglyMeasurable_iff_aemeasurable.mpr hX)
 
 /-- Derivation of `mgf X μ t` is `μ[exp (t * X ω) * X ω]`.
 In order to deal with the differentiation of parametric integrals,
