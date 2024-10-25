@@ -55,40 +55,16 @@ variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
 
 namespace SeparationQuotientAddGroup
 
-/-- The null subgroup with respect to the norm. -/
-def nullSubgroup : AddSubgroup M where
-  carrier := {x : M | ‖x‖ = 0}
-  add_mem' {x y} (hx : ‖x‖ = 0) (hy : ‖y‖ = 0) := by
-    apply le_antisymm _ (norm_nonneg _)
-    refine (norm_add_le x y).trans_eq ?_
-    rw [hx, hy, add_zero]
-  zero_mem' := norm_zero
-  neg_mem' {x} (hx : ‖x‖ = 0) := by
-    simp only [mem_setOf_eq, norm_neg]
-    exact hx
-
-lemma inseparable_iff_norm_zero (x y : M) : Inseparable x y ↔ ‖x - y‖ = 0 := by
-  rw [Metric.inseparable_iff, dist_eq_norm]
-
-lemma isClosed_nullSubgroup : IsClosed (@nullSubgroup M _ : Set M) :=
-  isClosed_singleton.preimage continuous_norm
-
-instance : Nonempty (@nullSubgroup M _) := ⟨0⟩
+-- lemma inseparable_iff_norm_zero (x y : M) : Inseparable x y ↔ ‖x - y‖ = 0 := by
+--   rw [Metric.inseparable_iff, dist_eq_norm]
 
 variable (x : SeparationQuotient M)
 
 variable (z : M)
 
-/-- The norm of the image of `m : M` in the quotient by the null space is zero if and only if `m`
-belongs to the null space. -/
-theorem quotient_norm_eq_zero_iff (m : M) :
-    ‖mk m‖ = 0 ↔ m ∈ nullSubgroup := by
-  rw [norm_mk]
-  exact Eq.to_iff rfl
-
 /-- If for `(m : M)` it holds that `mk m = 0`, then `m  ∈ nullSubgroup`. -/
-theorem mk_eq_zero_iff (m : M) : mk m = 0 ↔ m ∈ nullSubgroup := by
-  rw [← quotient_norm_eq_zero_iff]
+theorem mk_eq_zero_iff (m : M) : mk m = 0 ↔ ‖m‖ = 0 := by
+  rw [← norm_mk]
   exact Iff.symm norm_eq_zero
 
 open NormedAddGroupHom
@@ -107,20 +83,17 @@ theorem normedMk.apply (m : M) : normedMk m = mk m := rfl
 theorem surjective_normedMk : Function.Surjective (@normedMk M _) :=
   surjective_quot_mk _
 
-/-- The kernel of `normedMk` is `nullSubgroup`. -/
-theorem ker_normedMk : (@normedMk M _).ker = nullSubgroup := by
-  ext _; exact mk_eq_zero_iff _
-
 /-- The operator norm of the projection is at most `1`. -/
 theorem norm_normedMk_le : ‖(@normedMk M _)‖ ≤ 1 :=
   NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp only [normedMk.apply, norm_mk,
     one_mul, le_refl]
 
-lemma eq_of_inseparable (f : NormedAddGroupHom M N) (hf : ∀ x ∈ nullSubgroup, f x = 0) :
+lemma eq_of_inseparable (f : NormedAddGroupHom M N) (hf : ∀ x, ‖x‖ = 0 → f x = 0) :
     ∀ x y, Inseparable x y → f x = f y :=
-  fun _ _ h ↦ eq_of_sub_eq_zero <| by
+  fun x y h ↦ eq_of_sub_eq_zero <| by
     rw [← map_sub]
-    exact hf _ <| inseparable_iff_norm_zero .. |>.mp h
+    rw [Metric.inseparable_iff, dist_eq_norm] at h
+    exact hf (x - y) h
 
 /-- The lift of a group hom to the separation quotient as a group hom. -/
 noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
@@ -137,13 +110,13 @@ noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
       exact le_opNorm f v'}
 
 @[simp]
-theorem liftNormedAddGroupHom_apply (f : NormedAddGroupHom M N) (hf : ∀ x ∈ nullSubgroup, f x = 0)
+theorem liftNormedAddGroupHom_apply (f : NormedAddGroupHom M N) (hf : ∀ x, ‖x‖ = 0 → f x = 0)
     (x : M) : liftNormedAddGroupHom f hf (mk x) = f x := rfl
 
 /-- For a norm-continuous group homomorphism `f`, its lift to the separation quotient
 is bounded by the norm of `f`-/
 theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
-    (hf : ∀ x ∈ nullSubgroup, f x = 0) (x : SeparationQuotient M) :
+    (hf : ∀ x, ‖x‖ = 0 → f x = 0) (x : SeparationQuotient M) :
     ‖liftNormedAddGroupHom f hf x‖ ≤ ‖f‖ * ‖x‖ := by
   obtain ⟨x', hx'⟩ := surjective_mk x
   rw [← hx']
@@ -151,7 +124,7 @@ theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
   exact le_opNorm f x'
 
 theorem liftNormedAddGroupHom_unique {N : Type*} [SeminormedAddCommGroup N]
-    (f : NormedAddGroupHom M N) (hf : ∀ s ∈ nullSubgroup, f s = 0)
+    (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0)
     (g : NormedAddGroupHom (SeparationQuotient M) N) (h : g.comp normedMk = f) :
     g = liftNormedAddGroupHom f hf := by
   ext x
@@ -161,45 +134,41 @@ theorem liftNormedAddGroupHom_unique {N : Type*} [SeminormedAddCommGroup N]
   rfl
 
 theorem norm_liftNormedAddGroupHom_le {N : Type*} [SeminormedAddCommGroup N]
-    (f : NormedAddGroupHom M N) (hf : ∀ s ∈ nullSubgroup, f s = 0) :
+    (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0) :
     ‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖ :=
   NormedAddGroupHom.opNorm_le_bound _ (norm_nonneg f) (norm_liftNormedAddGroupHom_apply_le f hf)
 
 theorem liftNormedAddGroupHom_norm_le {N : Type*} [SeminormedAddCommGroup N]
-    (f : NormedAddGroupHom M N) (hf : ∀ s ∈ nullSubgroup, f s = 0) {c : ℝ≥0} (fb : ‖f‖ ≤ c) :
+    (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0) {c : ℝ≥0} (fb : ‖f‖ ≤ c) :
     ‖liftNormedAddGroupHom f hf‖ ≤ c :=
   (norm_liftNormedAddGroupHom_le f hf).trans fb
 
 theorem liftNormedAddGroupHom_normNoninc {N : Type*} [SeminormedAddCommGroup N]
-    (f : NormedAddGroupHom M N) (hf : ∀ s ∈ nullSubgroup, f s = 0) (fb : f.NormNoninc) :
+    (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0) (fb : f.NormNoninc) :
     (liftNormedAddGroupHom f hf).NormNoninc := fun x => by
   have fb' : ‖f‖ ≤ (1 : ℝ≥0) := NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.mp fb
   simpa using NormedAddGroupHom.le_of_opNorm_le _
     (liftNormedAddGroupHom_norm_le f _ fb') _
 
 /-- The operator norm of the projection is `1` if the null space is not dense. -/
-theorem norm_normedMk (h : (@nullSubgroup M _ : Set M) ≠ univ) :
+theorem norm_normedMk (h : ∃ x : M, ‖x‖ ≠ 0) :
     ‖(@normedMk M _)‖ = 1 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ zero_le_one
   · simp only [normedMk.apply, one_mul]
     exact fun x ↦ Preorder.le_refl ‖SeparationQuotient.mk x‖
   · simp only [ge_iff_le, normedMk.apply]
-    intro N hN hx
-    rw [← nonempty_compl] at h
+    intro N _ hle
     obtain ⟨x, hxnn⟩ := h
     have : 0 < ‖x‖ := Ne.lt_of_le (Ne.symm hxnn) (norm_nonneg x)
-    exact one_le_of_le_mul_right₀ this (hx x)
+    exact one_le_of_le_mul_right₀ this (hle x)
 
 /-- The operator norm of the projection is `0` if the null space is dense. -/
-theorem norm_trivial_separationQuotient_mk (h : (@nullSubgroup M _ : Set M) = Set.univ) :
+theorem norm_trivial_separationQuotient_mk (h : ∀ x : M, ‖x‖ = 0) :
     ‖@normedMk M _‖ = 0 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ (le_refl 0)
   · intro x
-    have : x ∈ nullSubgroup := by
-      rw [← SetLike.mem_coe, h]
-      exact trivial
     simp only [normedMk.apply, zero_mul, norm_le_zero_iff]
-    exact (mk_eq_zero_iff x).mpr this
+    exact (mk_eq_zero_iff x).mpr (h x)
   · exact fun N => fun hN => fun _ => hN
 
 end SeparationQuotientAddGroup
