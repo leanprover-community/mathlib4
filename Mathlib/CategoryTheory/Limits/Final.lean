@@ -319,8 +319,20 @@ variable (G)
 
 https://stacks.math.columbia.edu/tag/04E7
 -/
+@[simps! (config := .lemmasOnly)]
 def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
   asIso (colimit.pre G F)
+
+/-- A pointfree version of `colimitIso`, stating that whiskering by `F` followed by taking the
+colimit is isomorpic to taking the colimit on the codomain of `F`. -/
+def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
+    (whiskeringLeft _ _ _).obj F ⋙ colim ≅ colim (J := D) (C := E) :=
+  NatIso.ofComponents (fun G => colimitIso F G) fun f => by
+    simp only [comp_obj, whiskeringLeft_obj_obj, colim_obj, comp_map, whiskeringLeft_obj_map,
+      colim_map, colimitIso_hom]
+    ext
+    simp only [comp_obj, ι_colimMap_assoc, whiskerLeft_app, colimit.ι_pre, colimit.ι_pre_assoc,
+      ι_colimMap]
 
 end
 
@@ -341,24 +353,6 @@ theorem hasColimit_of_comp [HasColimit (F ⋙ G)] : HasColimit G :=
 include F in
 theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShape D E where
   has_colimit := fun _ => hasColimit_of_comp F
-
-section
-
--- Porting note: this instance does not seem to be found automatically
---attribute [local instance] hasColimit_of_comp
-
-/-- When `F` is final, and `F ⋙ G` has a colimit, then `G` has a colimit also and
-`colimit (F ⋙ G) ≅ colimit G`
-
-https://stacks.math.columbia.edu/tag/04E7
--/
-def colimitIso' [HasColimit (F ⋙ G)] :
-    haveI : HasColimit G := hasColimit_of_comp F
-    colimit (F ⋙ G) ≅ colimit G :=
-  haveI : HasColimit G := hasColimit_of_comp F
-  asIso (colimit.pre G F)
-
-end
 
 end Final
 
@@ -602,8 +596,19 @@ variable (G)
 
 https://stacks.math.columbia.edu/tag/04E7
 -/
+@[simps! (config := .lemmasOnly)]
 def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
+
+/-- A pointfree version of `limitIso`, stating that whiskering by `F` followed by taking the
+limit is isomorpic to taking the limit on the codomain of `F`. -/
+def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
+    (whiskeringLeft _ _ _).obj F ⋙ lim ≅ lim (J := D) (C := E) :=
+  Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f => by
+    simp only [comp_obj, whiskeringLeft_obj_obj, lim_obj, comp_map, whiskeringLeft_obj_map, lim_map,
+      Iso.symm_hom, limitIso_inv]
+    ext
+    simp
 
 end
 
@@ -624,24 +629,6 @@ theorem hasLimit_of_comp [HasLimit (F ⋙ G)] : HasLimit G :=
 include F in
 theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D E where
   has_limit := fun _ => hasLimit_of_comp F
-
-section
-
--- Porting note: this instance does not seem to be found automatically
--- attribute [local instance] hasLimit_of_comp
-
-/-- When `F` is initial, and `F ⋙ G` has a limit, then `G` has a limit also and
-`limit (F ⋙ G) ≅ limit G`
-
-https://stacks.math.columbia.edu/tag/04E7
--/
-def limitIso' [HasLimit (F ⋙ G)] :
-    haveI : HasLimit G := hasLimit_of_comp F
-    limit (F ⋙ G) ≅ limit G :=
-  haveI : HasLimit G := hasLimit_of_comp F
-  (asIso (limit.pre G F)).symm
-
-end
 
 end Initial
 
