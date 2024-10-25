@@ -715,6 +715,15 @@ theorem prod_le_iff {s : Submonoid M} {t : Submonoid N} {u : Submonoid (M × N)}
       simpa using h2
     simpa using Submonoid.mul_mem _ h1' h2'
 
+@[to_additive closure_prod]
+theorem closure_prod {s : Set M} {t : Set N} (hs : 1 ∈ s) (ht : 1 ∈ t) :
+    closure (s ×ˢ t) = (closure s).prod (closure t) :=
+  le_antisymm
+    (closure_le.2 <| Set.prod_subset_prod_iff.2 <| .inl ⟨subset_closure, subset_closure⟩)
+    (prod_le_iff.2 ⟨
+      map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, ht⟩,
+      map_le_of_le_comap _ <| closure_le.2 fun _y hy => subset_closure ⟨hs, hy⟩⟩)
+
 end Submonoid
 
 namespace MonoidHom

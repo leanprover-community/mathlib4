@@ -1401,6 +1401,15 @@ theorem prod_le_iff {H : Subgroup G} {K : Subgroup N} {J : Subgroup (G × N)} :
 theorem prod_eq_bot_iff {H : Subgroup G} {K : Subgroup N} : H.prod K = ⊥ ↔ H = ⊥ ∧ K = ⊥ := by
   simpa only [← Subgroup.toSubmonoid_eq] using Submonoid.prod_eq_bot_iff
 
+@[to_additive closure_prod]
+theorem closure_prod {s : Set G} {t : Set N} (hs : 1 ∈ s) (ht : 1 ∈ t) :
+    closure (s ×ˢ t) = (closure s).prod (closure t) :=
+  le_antisymm
+    (closure_le _ |>.2 <| Set.prod_subset_prod_iff.2 <| .inl ⟨subset_closure, subset_closure⟩)
+    (prod_le_iff.2 ⟨
+      map_le_iff_le_comap.2 <| closure_le _ |>.2 fun _x hx => subset_closure ⟨hx, ht⟩,
+      map_le_iff_le_comap.2 <| closure_le _ |>.2 fun _y hy => subset_closure ⟨hs, hy⟩⟩)
+
 /-- Product of subgroups is isomorphic to their product as groups. -/
 @[to_additive prodEquiv
       "Product of additive subgroups is isomorphic to their product
