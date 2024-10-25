@@ -76,8 +76,9 @@ variable (R A) in
 Note this is heterobasic; the quadratic form on the left can take values in a larger ring than
 the one on the right. -/
 -- `noncomputable` is a performance workaround for mathlib4#7103
--- Should be `(congr₂ (AlgebraTensorModule.rid R A A)).toLinearMap ∘ₗ (tensorDistrib' R A)` but then
--- `associated_tmul` breaks
+-- Should be
+-- `(AlgebraTensorModule.rid R A A).congrQuadraticMap.toLinearMap ∘ₗ QuadraticMap.tensorDistrib R A`
+-- but then `associated_tmul` breaks
 noncomputable def tensorDistrib :
     QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
