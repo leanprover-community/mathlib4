@@ -922,7 +922,6 @@ namespace NNReal
 
 open NNReal
 
--- porting note (#10618): removed `@[simp]` because `simp` can prove this
 theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
 
 @[simp]
