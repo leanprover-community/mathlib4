@@ -170,88 +170,6 @@ theorem mem_mul {a b : FreeMonoid α} : m ∈ (a * b) ↔ m ∈ a ∨ m ∈ b :=
 
 end Mem
 
-/-! ### length -/
-
-section Length
-variable {a : FreeMonoid α}
-
-/-- the length of a free monoid element: 1.length = 0 and (a * b).length = a.length + b.length -/
-@[to_additive "the length of a additive free monoid element: 1.length = 0 and (a + b).length =
-  a.length + b.length"]
-def length (a : FreeMonoid α) : ℕ := List.length a
-
-@[to_additive (attr := simp)]
-theorem length_one : length (1 : FreeMonoid α) = 0 := rfl
-
-@[to_additive]
-theorem eq_one_of_length_eq_zero (h : length a = 0) : a = 1 :=
-  List.eq_nil_of_length_eq_zero h
-
-@[to_additive (attr := simp)]
-theorem length_of {m : α}: length (of m) = 1 := rfl
-
-@[to_additive]
-theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m := List.length_eq_one
-
-@[to_additive (attr := simp)]
-theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
-  List.length_append _ _
-
-end Length
-
-/-! ### symbols -/
-
-section Symbols
-variable [DecidableEq α]
-
-/-- the set of unique symbols in a free monoid element -/
-@[to_additive "the set of unique symbols in an additive free monoid element"]
-def symbols (a : FreeMonoid α) : Finset α := List.toFinset a
-
-@[to_additive (attr := simp)]
-theorem symbols_one : symbols (1 : FreeMonoid α) = ∅ := rfl
-
-@[to_additive (attr := simp)]
-theorem symbols_of {m : α} : symbols (of m : FreeMonoid α) = {m} := rfl
-
-@[to_additive (attr := simp)]
-theorem symbols_mul {a b : FreeMonoid α} : symbols (a * b : FreeMonoid α) =
-    (symbols a) ∪ (symbols b) := by
-  simp only [symbols, List.mem_toFinset, Finset.mem_union]
-  apply List.toFinset_append
-
-end Symbols
-
-/-! ### mem -/
-
-section mem
-variable {m : α}
-
-/-- membership in a free monoid element -/
-@[to_additive "membership in a free monoid element"]
-def mem (a : FreeMonoid α) (m : α) := m ∈ toList a
-
-@[to_additive]
-instance : Membership α (FreeMonoid α) := ⟨mem⟩
-
-@[to_additive]
-theorem mem_one_iff : m ∈ (1 : FreeMonoid α) ↔ False := List.mem_nil_iff _
-
-@[to_additive (attr := simp)]
-theorem mem_of {n : α} : m ∈ (of n) ↔ m = n := List.mem_singleton
-
-@[to_additive]
-theorem mem_of_self : m ∈ of m := List.mem_singleton_self _
-
-@[to_additive (attr := simp)]
-theorem mem_mul {a b : FreeMonoid α} : m ∈ (a * b) ↔ m ∈ a ∨ m ∈ b := List.mem_append
-
-@[to_additive (attr := simp)]
-theorem mem_symbols [DecidableEq α] {a : FreeMonoid α}: m ∈ FreeMonoid.symbols a ↔ m ∈ a :=
-  List.mem_toFinset
-
-end mem
-
 /-- Recursor for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of `[]` and `x :: xs`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator)
   "Recursor for `FreeAddMonoid` using `0` and
@@ -440,48 +358,12 @@ theorem map_surjective (f : α → β) : Function.Surjective f → Function.Surj
 
 end Map
 
-/-! ### reverse -/
-
-/-- reverses the symbols in a free monoid element -/
-@[to_additive "reverses the symbols in an additive free monoid element"]
-def reverse : FreeMonoid α → FreeMonoid α := List.reverse
-
-@[to_additive (attr := simp)]
-theorem reverse_mul {a b : FreeMonoid α} : reverse (a * b) = reverse b * reverse a :=
-  List.reverse_append _ _
-
 /-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
 @[to_additive]
 instance uniqueUnits : Unique (FreeMonoid α)ˣ where
   uniq u := Units.ext <| toList.injective <|
     have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
     (List.append_eq_nil.mp this).1
-
-@[to_additive (attr := simp)]
-theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Function.Surjective f := by
-  constructor
-  · intro fs d
-    rcases fs (FreeMonoid.of d) with ⟨b, hb⟩
-    induction' b using FreeMonoid.inductionOn' with head _ _
-    · have H := congr_arg length hb
-      simp only [length_one, length_of, Nat.zero_ne_one, map_one] at H
-    simp only [map_mul, map_of] at hb
-    use head
-    have H := congr_arg length hb
-    simp only [length_mul, length_of, add_right_eq_self, length_eq_zero] at H
-    rw [H, mul_one] at hb
-    exact FreeMonoid.of_injective hb
-  intro fs d
-  induction' d using FreeMonoid.inductionOn' with head tail ih
-  · use 1
-    rfl
-  specialize fs head
-  rcases fs with ⟨a, rfl⟩
-  rcases ih with ⟨b, rfl⟩
-  use FreeMonoid.of a * b
-  rfl
-
-end Map
 
 /-! ### reverse -/
 
