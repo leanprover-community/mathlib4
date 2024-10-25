@@ -22,20 +22,21 @@ local notation  "Γ(" n ")"  => CongruenceSubgroup.Gamma n
 
 /--The map from `SL(2, ℤ)` to `Γ(1)`. Its preferable to work with this, since levels of modular
 forms are terms of type Subgroup `SL(2, ℤ)`. -/
-@[coe]def coe1 : SL(2, ℤ) → Γ(1) :=
+@[coe]def CongruenceSubgroup.coe1 : SL(2, ℤ) → Γ(1) :=
   fun g => ⟨↑g, by simp [CongruenceSubgroup.Gamma_one_top]⟩
 
 instance : Coe SL(2, ℤ) Γ(1) := ⟨coe1⟩
 
-lemma coe_smul_eq_smul {g : SL(2, ℤ)} {τ : ℍ} : (g : Γ(1)) • τ = (g • τ) := by
+lemma CongruenceSubgroup.coe_smul_eq_smul {g : SL(2, ℤ)} {τ : ℍ} : (g : Γ(1)) • τ = (g • τ) := by
   simp only [coe1, Subgroup.mk_smul, ModularGroup.sl_moeb]
 
 @[simp]
-lemma denom_coe1_eq_denom {g : SL(2, ℤ)} {τ : ℍ} : denom (g : Γ(1)) τ = denom g τ := by
+lemma CongruenceSubgroup.denom_coe1_eq_denom {g : SL(2, ℤ)} {τ : ℍ} :
+    denom (g : Γ(1)) τ = denom g τ := by
   simp only [denom, coe1, Fin.isValue, ModularGroup.coe'_apply_complex]
 
-lemma ModularForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
-    [ModularFormClass F Γ(1) k] (f : F) (τ : ℍ) :
+lemma SlashInvariantForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
+    [SlashInvariantFormClass F Γ(1) k]  (f : F) (τ : ℍ) :
     ∃ ξ : ℍ, 1/2 ≤ ξ.im ∧ ‖f τ‖ ≤ ‖f ξ‖ := by
   obtain ⟨γ, hγ, hdenom⟩ := exists_translate' τ
   refine ⟨γ • τ, hγ, ?_⟩
@@ -48,12 +49,12 @@ lemma ModularForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F
   exact le_mul_of_one_le_left (norm_nonneg (f τ)) h3
 
 -- find_home suggests Mathlib.Topology.ContinuousMap.StarOrdered which seems wrong..
-lemma Complex.zpow_two_eq_one (k : ℤ) (h : (2 : ℂ) ^ k = 1) : k = 0 := by
-  have : (2 : ℂ)^k = (2 : ℝ)^k := by simp only [ofReal_ofNat]
+lemma Complex.zpow_eq_one (k : ℤ) (n : ℝ) (hn : 1 < n) (h : (n : ℂ) ^ k = 1) : k = 0 := by
+  have : (n : ℂ)^k = (n : ℝ)^k := by simp only [ofReal_natCast]
   rw [this] at h
   norm_cast at h
-  replace h : (2 : ℝ) ^ k = (2 : ℝ) ^ (0 : ℤ) := by simp only [zpow_zero, ← h]
-  exact zpow_right_injective₀ (by norm_num) (by norm_num) h
+  replace h : (n : ℝ) ^ k = (n : ℝ) ^ (0 : ℤ) := by simp only [zpow_zero, ← h]
+  exact zpow_right_injective₀ (a := (n : ℝ)) (by norm_cast at *; linarith) (by aesop) h
 
 lemma SlashInvariantForm.neg_wt_const_eq_zero {F : Type*} [FunLike F ℍ ℂ] (k : ℤ) (f : F) (c : ℂ)
     [SlashInvariantFormClass F Γ(1) k] (hf : ⇑f = (fun _ => c)) : k = 0 ∨ c = 0 := by
@@ -69,7 +70,7 @@ lemma SlashInvariantForm.neg_wt_const_eq_zero {F : Type*} [FunLike F ℍ ℂ] (k
     symm at H
     rw [UpperHalfPlane.I, mul_zpow, mul_left_eq_self₀] at H
     rcases H with H | H
-    · apply Complex.zpow_two_eq_one k H
+    · apply Complex.zpow_eq_one k 2 (one_lt_two) H
     · exfalso
       exact (zpow_ne_zero k I_ne_zero) H
   · exact Or.inr H
