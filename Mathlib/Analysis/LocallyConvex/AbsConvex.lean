@@ -309,10 +309,10 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   refine SeminormFamily.withSeminorms_of_hasBasis _ ?_
   refine (nhds_hasBasis_absConvex_open 𝕜 E).to_hasBasis (fun s hs => ?_) ?_
   · use ⟨{⟨s, hs.1, hs.2⟩}, 1⟩, one_pos
-    simp [SeminormFamily.basis, gaugeSeminormFamily_ball]
+    simp [gaugeSeminormFamily_ball]
   rintro ⟨t, r⟩ hr
-  refine ⟨(gaugeSeminormFamily 𝕜 E).basis t r, ?_, subset_rfl⟩
-  rw [SeminormFamily.basis, Seminorm.ball_finset_sup_eq_iInter _ _ _ hr]
+  refine ⟨(t.sup (gaugeSeminormFamily 𝕜 E)).ball 0 r, ?_, subset_rfl⟩
+  rw [Seminorm.ball_finset_sup_eq_iInter _ _ _ hr]
   -- We have to show that the intersection contains zero, is open, balanced, and convex
   refine
     ⟨mem_iInter₂.mpr fun _ _ => by simp [Seminorm.mem_ball_zero, hr],
