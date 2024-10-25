@@ -200,6 +200,11 @@ variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpa
 variable [TopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
 
+include instCFC in
+lemma ContinuousFunctionalCalculus.isCompact_spectrum (a : A) :
+    IsCompact (spectrum R a) :=
+  isCompact_iff_compactSpace.mpr inferInstance
+
 lemma StarAlgHom.ext_continuousMap [UniqueContinuousFunctionalCalculus R A]
     (a : A) (φ ψ : C(spectrum R a, R) →⋆ₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (.restrict (spectrum R a) <| .id R) = ψ (.restrict (spectrum R a) <| .id R)) :
@@ -350,6 +355,11 @@ lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     obtain (h | h) := h
     · rwa [cfc_apply_of_not_predicate _ h]
     · rwa [cfc_apply_of_not_continuousOn _ h]
+
+lemma cfc_commute_cfc (f g : R → R) (a : A) : Commute (cfc f a) (cfc g a) := by
+  refine cfc_cases (fun x ↦ Commute x (cfc g a)) a f (by simp) fun hf ha ↦ ?_
+  refine cfc_cases (fun x ↦ Commute _ x) a g (by simp) fun hg _ ↦ ?_
+  exact Commute.all _ _ |>.map _
 
 variable (R) in
 lemma cfc_id (ha : p a := by cfc_tac) : cfc (id : R → R) a = a :=
