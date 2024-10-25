@@ -49,7 +49,7 @@ lemma SlashInvariantForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [Fu
   exact le_mul_of_one_le_left (norm_nonneg (f τ)) h3
 
 -- find_home suggests Mathlib.Topology.ContinuousMap.StarOrdered which seems wrong..
-lemma Complex.zpow_eq_one (k : ℤ) (n : ℝ) (hn : 1 < n) (h : (n : ℂ) ^ k = 1) : k = 0 := by
+lemma Complex.zpow_eq_one (k : ℤ) {n : ℝ} (hn : 1 < n) (h : (n : ℂ) ^ k = 1) : k = 0 := by
   have : (n : ℂ)^k = (n : ℝ)^k := by simp only [ofReal_natCast]
   rw [this] at h
   norm_cast at h
@@ -67,6 +67,6 @@ lemma SlashInvariantForm.neg_wt_const_eq_zero {F : Type*} [FunLike F ℍ ℂ] (k
   · left
     rw [UpperHalfPlane.I, mul_zpow, mul_left_eq_self₀] at H
     rcases H with H | H
-    · apply Complex.zpow_eq_one k 2 (one_lt_two) H
+    · apply Complex.zpow_eq_one k (one_lt_two) H
     · exact False.elim (zpow_ne_zero k I_ne_zero H)
   · exact Or.inr H
