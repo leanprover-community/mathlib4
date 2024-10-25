@@ -64,7 +64,7 @@ def pseudofunctorOfIsLocallyDiscrete
 /-- Constructor for oplax functors from a locally discrete bicategory. In that
 case, we do not need to provide the `map₂` field of oplax functors. -/
 @[simps obj map mapId mapComp]
-def oplaxfunctorOfIsLocallyDiscrete
+def oplaxFunctorOfIsLocallyDiscrete
     {B C : Type*} [Bicategory B] [IsLocallyDiscrete B] [Bicategory C]
     (obj : B → C)
     (map : ∀ {b b' : B}, (b ⟶ b') → (obj b ⟶ obj b'))
