@@ -23,6 +23,7 @@ subspaces of affine spaces.
 noncomputable section
 
 open Affine
+open scoped Finset
 
 section AffineSpace'
 
@@ -87,18 +88,18 @@ variable {k}
 /-- The `vectorSpan` of a finite subset of an affinely independent
 family has dimension one less than its cardinality. -/
 theorem AffineIndependent.finrank_vectorSpan_image_finset [DecidableEq P]
-    {p : ι → P} (hi : AffineIndependent k p) {s : Finset ι} {n : ℕ} (hc : Finset.card s = n + 1) :
+    {p : ι → P} (hi : AffineIndependent k p) {s : Finset ι} {n : ℕ} (hc : #s = n + 1) :
     finrank k (vectorSpan k (s.image p : Set P)) = n := by
   classical
   have hi' := hi.range.mono (Set.image_subset_range p ↑s)
-  have hc' : (s.image p).card = n + 1 := by rwa [s.card_image_of_injective hi.injective]
+  have hc' : #(s.image p) = n + 1 := by rwa [s.card_image_of_injective hi.injective]
   have hn : (s.image p).Nonempty := by simp [hc', ← Finset.card_pos]
   rcases hn with ⟨p₁, hp₁⟩
   have hp₁' : p₁ ∈ p '' s := by simpa using hp₁
   rw [affineIndependent_set_iff_linearIndependent_vsub k hp₁', ← Finset.coe_singleton,
     ← Finset.coe_image, ← Finset.coe_sdiff, Finset.sdiff_singleton_eq_erase, ← Finset.coe_image]
     at hi'
-  have hc : (Finset.image (fun p : P => p -ᵥ p₁) ((Finset.image p s).erase p₁)).card = n := by
+  have hc : #(((s.image p).erase p₁).image (· -ᵥ p₁)) = n := by
     rw [Finset.card_image_of_injective _ (vsub_left_injective _), Finset.card_erase_of_mem hp₁]
     exact Nat.pred_eq_of_eq_succ hc'
   rwa [vectorSpan_eq_span_vsub_finset_right_ne k hp₁, finrank_span_finset_eq_card, hc]
@@ -132,7 +133,7 @@ variable (k)
 /-- The `vectorSpan` of `n + 1` points in an indexed family has
 dimension at most `n`. -/
 theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : Finset ι) {n : ℕ}
-    (hc : Finset.card s = n + 1) : finrank k (vectorSpan k (s.image p : Set P)) ≤ n := by
+    (hc : #s = n + 1) : finrank k (vectorSpan k (s.image p : Set P)) ≤ n := by
   classical
   have hn : (s.image p).Nonempty := by
     rw [Finset.image_nonempty, ← Finset.card_pos, hc]
@@ -214,7 +215,7 @@ open Finset in
 cardinality is at most the cardinality of that finset. -/
 lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
     (hs : AffineIndependent k ((↑) : s → V)) (hst : (s : Set V) ⊆ affineSpan k (t : Set V)) :
-    s.card ≤ t.card := by
+    #s ≤ #t := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
   · simp
   obtain rfl | ht' := t.eq_empty_or_nonempty
@@ -234,7 +235,7 @@ open Finset in
 another finset, then its cardinality is strictly less than the cardinality of that finset. -/
 lemma AffineIndependent.card_lt_card_of_affineSpan_lt_affineSpan {s t : Finset V}
     (hs : AffineIndependent k ((↑) : s → V))
-    (hst : affineSpan k (s : Set V) < affineSpan k (t : Set V)) : s.card < t.card := by
+    (hst : affineSpan k (s : Set V) < affineSpan k (t : Set V)) : #s < #t := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
   · simpa [card_pos] using hst
   obtain rfl | ht' := t.eq_empty_or_nonempty
@@ -255,7 +256,7 @@ cardinality, it equals that submodule. -/
 theorem AffineIndependent.vectorSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one
     [DecidableEq P] {p : ι → P}
     (hi : AffineIndependent k p) {s : Finset ι} {sm : Submodule k V} [FiniteDimensional k sm]
-    (hle : vectorSpan k (s.image p : Set P) ≤ sm) (hc : Finset.card s = finrank k sm + 1) :
+    (hle : vectorSpan k (s.image p : Set P) ≤ sm) (hc : #s = finrank k sm + 1) :
     vectorSpan k (s.image p : Set P) = sm :=
   Submodule.eq_of_le_of_finrank_eq hle <| hi.finrank_vectorSpan_image_finset hc
 
@@ -275,7 +276,7 @@ theorem AffineIndependent.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_ad
     [DecidableEq P] {p : ι → P}
     (hi : AffineIndependent k p) {s : Finset ι} {sp : AffineSubspace k P}
     [FiniteDimensional k sp.direction] (hle : affineSpan k (s.image p : Set P) ≤ sp)
-    (hc : Finset.card s = finrank k sp.direction + 1) : affineSpan k (s.image p : Set P) = sp := by
+    (hc : #s = finrank k sp.direction + 1) : affineSpan k (s.image p : Set P) = sp := by
   have hn : s.Nonempty := by
     rw [← Finset.card_pos, hc]
     apply Nat.succ_pos

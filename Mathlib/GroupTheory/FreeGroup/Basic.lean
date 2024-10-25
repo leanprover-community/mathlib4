@@ -838,7 +838,6 @@ protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C
   Quot.inductionOn z fun L =>
     List.recOn L C1 fun ⟨x, b⟩ _tl ih => Bool.recOn b (Cm _ _ (Ci _ <| Cp x) ih) (Cm _ _ (Cp x) ih)
 
--- porting note (#10618): simp can prove this: by simp only [@map_pure]
 @[to_additive]
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeGroup α) = pure (f x) :=
   map.of
@@ -855,7 +854,6 @@ theorem map_mul (f : α → β) (x y : FreeGroup α) : f <$> (x * y) = f <$> x *
 theorem map_inv (f : α → β) (x : FreeGroup α) : f <$> x⁻¹ = (f <$> x)⁻¹ :=
   (map f).map_inv x
 
--- porting note (#10618): simp can prove this: by simp only [@pure_bind]
 @[to_additive]
 theorem pure_bind (f : α → FreeGroup β) (x) : pure x >>= f = f x :=
   lift.of

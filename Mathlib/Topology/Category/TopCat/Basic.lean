@@ -53,10 +53,10 @@ instance instFunLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y :=
 instance instContinuousMapClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
   inferInstanceAs <| ContinuousMapClass C(X, Y) X Y
 
--- Porting note (#10618): simp can prove this; removed simp
+@[simp]
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
 
--- Porting note (#10618): simp can prove this; removed simp
+@[simp]
 theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) x = g (f x) := rfl
 
@@ -168,29 +168,41 @@ lemma isIso_of_bijective_of_isClosedMap {X Y : TopCat.{u}} (f : X ⟶ Y)
   inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
 
 -- Porting note: simpNF requested partially simped version below
-theorem openEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
-    OpenEmbedding (f ≫ g) ↔ OpenEmbedding f :=
-  (TopCat.homeoOfIso (asIso g)).openEmbedding.of_comp_iff f
+theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+    IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding f :=
+  (TopCat.homeoOfIso (asIso g)).isOpenEmbedding.of_comp_iff f
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_iff_comp_isIso := isOpenEmbedding_iff_comp_isIso
 
 @[simp]
-theorem openEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
-    OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding f := by
+theorem isOpenEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+    IsOpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ IsOpenEmbedding f := by
   simp only [← Functor.map_comp]
-  exact openEmbedding_iff_comp_isIso f g
+  exact isOpenEmbedding_iff_comp_isIso f g
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_iff_comp_isIso' := isOpenEmbedding_iff_comp_isIso'
 
 -- Porting note: simpNF requested partially simped version below
-theorem openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
-    OpenEmbedding (f ≫ g) ↔ OpenEmbedding g := by
+theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+    IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding g := by
   constructor
   · intro h
-    convert h.comp (TopCat.homeoOfIso (asIso f).symm).openEmbedding
+    convert h.comp (TopCat.homeoOfIso (asIso f).symm).isOpenEmbedding
     exact congrArg _ (IsIso.inv_hom_id_assoc f g).symm
-  · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).openEmbedding
+  · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_iff_isIso_comp := isOpenEmbedding_iff_isIso_comp
 
 @[simp]
-theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
-    OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding g := by
+theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+    IsOpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ IsOpenEmbedding g := by
   simp only [← Functor.map_comp]
-  exact openEmbedding_iff_isIso_comp f g
+  exact isOpenEmbedding_iff_isIso_comp f g
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_iff_isIso_comp' := isOpenEmbedding_iff_isIso_comp'
 
 end TopCat
