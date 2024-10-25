@@ -1262,7 +1262,7 @@ theorem ord_eq_zero {a : Cardinal} : a.ord = 0 ↔ a = 0 :=
   ord_injective.eq_iff' ord_zero
 
 theorem ord_ne_zero {a : Cardinal} : a.ord ≠ 0 ↔ a ≠ 0 :=
-  Iff.ne ord_eq_zero
+  ord_eq_zero.ne
 
 @[simp]
 theorem ord_eq_one {a : Cardinal} : a.ord = 1 ↔ a = 1 :=
@@ -1416,7 +1416,7 @@ theorem card_eq_zero {o} : card o = 0 ↔ o = 0 := by
   simpa using card_eq_nat (n := 0)
 
 theorem card_ne_zero {o} : card o ≠ 0 ↔ o ≠ 0 :=
-  Iff.ne card_eq_zero
+  card_eq_zero.ne
 
 @[simp]
 theorem card_eq_one {o} : card o = 1 ↔ o = 1 := by

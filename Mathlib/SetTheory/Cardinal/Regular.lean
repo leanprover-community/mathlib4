@@ -69,16 +69,13 @@ theorem isRegular.of_not_isSingular (h : ℵ₀ ≤ c) (H : ¬c.IsSingular) :
 
 theorem isSingular_aleph_iff {o : Ordinal} (ho : o.IsLimit) :
     (aleph o).IsSingular ↔ o.cof < aleph o := by
-  constructor
-  · intro h
-    have := h.cof_ord_lt
+  constructor <;> intro h
+  · have := h.cof_ord_lt
     rwa [aleph_cof ho] at this
-  · intro h
-    exact (isSingular_iff_cof_lt (aleph0_le_aleph o)).mpr ((aleph_cof ho) ▸ h)
+  · exact (isSingular_iff_cof_lt (aleph0_le_aleph o)).mpr ((aleph_cof ho) ▸ h)
 
 theorem isSingular_aleph_omega : (aleph ω).IsSingular := by
-  apply (isSingular_aleph_iff omega0_isLimit).mpr
-  rw [cof_omega0, ← aleph_zero, aleph_lt]
+  rw [isSingular_aleph_iff omega0_isLimit, cof_omega0, ← aleph_zero, aleph_lt]
   exact omega0_pos
 
 end Singular
