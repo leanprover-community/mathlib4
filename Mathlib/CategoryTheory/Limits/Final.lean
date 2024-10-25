@@ -306,7 +306,7 @@ variable (G)
 
 https://stacks.math.columbia.edu/tag/04E7
 -/
-@[simps!]
+@[simps! (config := .lemmasOnly)]
 def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
   asIso (colimit.pre G F)
 
@@ -342,20 +342,6 @@ theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShap
   has_colimit := fun _ => hasColimit_of_comp F
 
 section
-
--- Porting note: this instance does not seem to be found automatically
---attribute [local instance] hasColimit_of_comp
-
-/-- When `F` is cofinal, and `F ⋙ G` has a colimit, then `G` has a colimit also and
-`colimit (F ⋙ G) ≅ colimit G`
-
-https://stacks.math.columbia.edu/tag/04E7
--/
-def colimitIso' [HasColimit (F ⋙ G)] :
-    haveI : HasColimit G := hasColimit_of_comp F
-    colimit (F ⋙ G) ≅ colimit G :=
-  haveI : HasColimit G := hasColimit_of_comp F
-  asIso (colimit.pre G F)
 
 end
 
@@ -590,7 +576,7 @@ variable (G)
 
 https://stacks.math.columbia.edu/tag/04E7
 -/
-@[simps!]
+@[simps! (config := .lemmasOnly)]
 def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
 
@@ -600,7 +586,7 @@ def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ lim ≅ lim (J := D) (C := E) :=
   Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f => by
     simp only [comp_obj, whiskeringLeft_obj_obj, lim_obj, comp_map, whiskeringLeft_obj_map, lim_map,
-      limitIso_hom]
+      Iso.symm_hom, limitIso_inv]
     ext
     simp
 
@@ -625,20 +611,6 @@ theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D 
   has_limit := fun _ => hasLimit_of_comp F
 
 section
-
--- Porting note: this instance does not seem to be found automatically
--- attribute [local instance] hasLimit_of_comp
-
-/-- When `F` is initial, and `F ⋙ G` has a limit, then `G` has a limit also and
-`limit (F ⋙ G) ≅ limit G`
-
-https://stacks.math.columbia.edu/tag/04E7
--/
-def limitIso' [HasLimit (F ⋙ G)] :
-    haveI : HasLimit G := hasLimit_of_comp F
-    limit (F ⋙ G) ≅ limit G :=
-  haveI : HasLimit G := hasLimit_of_comp F
-  (asIso (limit.pre G F)).symm
 
 end
 
