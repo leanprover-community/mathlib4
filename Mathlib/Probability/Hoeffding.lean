@@ -172,7 +172,7 @@ theorem hoeffding [IsProbabilityMeasure μ] (t a b : ℝ) (X : Ω → ℝ) (hX :
       simp only [mul_neg, neg_mul, neg_neg, even_two, Even.neg_pow, sub_neg_eq_add] at this
       rw [<- (by ring : (-a + b) = b - a)]
       exact this
-    apply hoeffding_nonneg _ _ _ _ _ (by linarith : 0 ≤ - t) (AEMeasurable.neg hX)
+    apply hoeffding_nonneg _ _ _ _ _ (by linarith : 0 ≤ - t) hX.neg
     · simp only [Set.mem_Icc, neg_le_neg_iff, Filter.eventually_and]
       exact ⟨h.mono fun ω h ↦ h.2, h.mono fun ω h ↦ h.1⟩
     · rw [integral_neg]
