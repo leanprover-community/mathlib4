@@ -34,10 +34,7 @@ lemma coe_smul_eq_smul {g : SL(2, ℤ)} {τ : ℍ} : (g : Γ(1)) • τ = (g •
 lemma denom_coe1_eq_denom {g : SL(2, ℤ)} {τ : ℍ} : denom (g : Γ(1)) τ = denom g τ := by
   simp only [denom, coe1, Fin.isValue, ModularGroup.coe'_apply_complex]
 
-example (a b  : ℝ) (ha : 0 ≤ a) (hb: 1 ≤ b) : a ≤ b * a := by
-  exact le_mul_of_one_le_left ha hb
-
-lemma modform_exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
+lemma ModularForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
     [ModularFormClass F Γ(1) k] (f : F) (τ : ℍ) :
     ∃ ξ : ℍ, 1/2 ≤ ξ.im ∧ ‖f τ‖ ≤ ‖f ξ‖ := by
   obtain ⟨γ, hγ, hdenom⟩ := exists_translate' τ
@@ -58,7 +55,7 @@ lemma Complex.zpow_two_eq_one (k : ℤ) (h : (2 : ℂ) ^ k = 1) : k = 0 := by
   replace h : (2 : ℝ) ^ k = (2 : ℝ) ^ (0 : ℤ) := by simp only [zpow_zero, ← h]
   exact zpow_right_injective₀ (by norm_num) (by norm_num) h
 
-lemma const_modform_neg_wt_eq_zero_lvl_one {F : Type*} [FunLike F ℍ ℂ] (k : ℤ) (f : F) (c : ℂ)
+lemma SlashInvariantForm.neg_wt_const_eq_zero {F : Type*} [FunLike F ℍ ℂ] (k : ℤ) (f : F) (c : ℂ)
     [SlashInvariantFormClass F Γ(1) k] (hf : ⇑f = (fun _ => c)) : k = 0 ∨ c = 0 := by
   have hI := (slash_action_eqn'' k Γ(1) f ModularGroup.S) I
   have h2I2 := (slash_action_eqn'' k Γ(1) f ModularGroup.S) ⟨2 * Complex.I, by simp⟩
