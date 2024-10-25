@@ -469,7 +469,7 @@ theorem tilt_first_deriv [IsFiniteMeasure μ] (t a b : ℝ)
 /-- Derivation of `μ[fun ω ↦ rexp (t * X ω) * X ω]` is `μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]`.
 In order to deal with the differentiation of parametric integrals,
 `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof. -/
-theorem tilt_second_deriv  [IsFiniteMeasure μ] (t a b : ℝ)
+theorem tilt_second_deriv [IsFiniteMeasure μ] (t a b : ℝ)
     {X : Ω → ℝ} (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     let g := fun t ↦ μ[fun ω ↦ rexp (t * X ω) * X ω]
     let g' := fun t ↦ μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]
@@ -501,11 +501,11 @@ theorem tilt_second_deriv  [IsFiniteMeasure μ] (t a b : ℝ)
       _ = |t| * |X ω| := abs_mul t (X ω)
       _ ≤ |t| * c := by
         apply mul_le_mul_of_nonneg_left
-        rw [← (by dsimp only [c]; simp only
+        · rw [← (by dsimp only [c]; simp only
           [norm_eq_abs, abs_eq_self, le_max_iff, abs_nonneg, or_self] :
           |c| = c)]
-        exact le_trans' (le_abs_self (max ‖a‖ ‖b‖)) (abs_le_max_abs_abs ha hb)
-        exact abs_nonneg t
+          exact le_trans' (le_abs_self (max ‖a‖ ‖b‖)) (abs_le_max_abs_abs ha hb)
+        · exact abs_nonneg t
   · dsimp only [e']
     rw [aestronglyMeasurable_iff_aemeasurable]
     apply AEMeasurable.mul
@@ -580,7 +580,7 @@ theorem integrable_deriv_expt [IsFiniteMeasure μ] (t a b : ℝ)
         (abs_le_max_abs_abs ha hb) : |X ω| ≤ |c|) (abs_nonneg t)
 
 theorem integral_tilted [IsFiniteMeasure μ]
-    (t : ℝ) (f : ℝ → ℝ) {X : Ω → ℝ} (hX : AEMeasurable X μ):
+    (t : ℝ) (f : ℝ → ℝ) {X : Ω → ℝ} (hX : AEMeasurable X μ) :
     (μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ f (X ω)] =
     (μ[fun ω ↦ rexp (t * X ω) * f (X ω)]) / mgf X μ t := by
   calc
