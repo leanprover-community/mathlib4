@@ -79,14 +79,14 @@ theorem IntermediateField.mem_fixingSubgroup_iff {K L : Type*} [Field K] [Field 
 
 /-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L` -/
 @[simp]
-theorem IntermediateField.fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
+theorem IntermediateField.fixingSubgroup_bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
   ext
   simp [mem_fixingSubgroup_iff, mem_bot]
 
 /-- This lemma says that `Gal(K/K) = {1}` -/
 @[simp]
-theorem IntermediateField.fixingSubgroup.top {K L : Type*} [Field K] [Field L] [Algebra K L] :
+theorem IntermediateField.fixingSubgroup_top {K L : Type*} [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
   ext
   simp [mem_fixingSubgroup_iff, DFunLike.ext_iff]
@@ -180,7 +180,7 @@ def fixedByFinite (K L : Type*) [Field K] [Field L] [Algebra K L] : Set (Subgrou
 /-- If `L/K` is a field extension, then we have `Gal(L/K) ∈ fixedByFinite K L` -/
 theorem top_fixedByFinite {K L : Type*} [Field K] [Field L] [Algebra K L] :
     ⊤ ∈ fixedByFinite K L :=
-  ⟨⊥, IntermediateField.finiteDimensional_bot K L, IntermediateField.fixingSubgroup.bot⟩
+  ⟨⊥, IntermediateField.finiteDimensional_bot K L, IntermediateField.fixingSubgroup_bot⟩
 
 section KrullT2
 
@@ -221,5 +221,5 @@ instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type) [Field
   -- TODO: criterion `DiscreteTopology` in terms of `𝓝 1` ?
   rw [discreteTopology_iff_isOpen_singleton_one]
   change IsOpen (⊥ : Subgroup (L ≃ₐ[K] L))
-  rw [← IntermediateField.fixingSubgroup.top]
+  rw [← IntermediateField.fixingSubgroup_top]
   exact IntermediateField.fixingSubgroup_isOpen ⊤
