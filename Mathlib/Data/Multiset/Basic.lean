@@ -5,9 +5,11 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Perm.Subperm
 import Mathlib.Data.Set.List
 import Mathlib.Order.Hom.Basic
+import Mathlib.Data.List.Perm.Lattice
+import Mathlib.Data.List.Perm.Basic
 
 /-!
 # Multisets
