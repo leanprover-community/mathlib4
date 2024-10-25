@@ -210,18 +210,18 @@ theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
 
 /-- The unit interval as a submoniod of ℝ. -/
-def unitIntervalSubmonoid : Submonoid ℝ where
+def submonoid : Submonoid ℝ where
   carrier := unitInterval
   one_mem' := unitInterval.one_mem
   mul_mem' := unitInterval.mul_mem
 
-@[simp] theorem coe_unitIntervalSubmonoid : unitIntervalSubmonoid = unitInterval := rfl
-@[simp] theorem mem_unitIntervalSubmonoid {x} : x ∈ unitIntervalSubmonoid ↔ x ∈ unitInterval :=
+@[simp] theorem coe_unitIntervalSubmonoid : submonoid = unitInterval := rfl
+@[simp] theorem mem_unitIntervalSubmonoid {x} : x ∈ submonoid ↔ x ∈ unitInterval :=
   Iff.rfl
 
 protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
     (h : ∀ c ∈ t, f c ∈ unitInterval) :
-    ∏ c ∈ t, f c ∈ unitInterval := _root_.prod_mem (S := unitInterval.unitIntervalSubmonoid) h
+    ∏ c ∈ t, f c ∈ unitInterval := _root_.prod_mem (S := unitInterval.submonoid) h
 
 instance : LinearOrderedCommMonoidWithZero I where
   zero_mul i := zero_mul i
