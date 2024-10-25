@@ -76,7 +76,7 @@ variable [Module S N] [IsScalarTower S R N]
 
 @[simp]
 lemma smul_toBilin (bm : Basis ι R M) (s : S) (Q : QuadraticMap R M N) :
-    (s • Q).toBilin bm = s • (Q.toBilin bm) := by
+    (s • Q).toBilin bm = s • Q.toBilin bm := by
   refine bm.ext fun i => bm.ext fun j => ?_
   obtain h | rfl | h := lt_trichotomy i j
   · simp [h.ne, h, toBilin_apply, polar_smul]
