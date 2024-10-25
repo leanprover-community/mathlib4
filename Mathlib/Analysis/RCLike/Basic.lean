@@ -874,7 +874,7 @@ scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
 
 theorem ofReal_mul_pos_iff (x : ℝ) (z : K) :
     0 < x * z ↔ (x < 0 ∧ z < 0) ∨ (0 < x ∧ 0 < z) := by
-  simp_rw [pos_iff (z := x * z), pos_iff (z := z), neg_iff (z := z), re_ofReal_mul, im_ofReal_mul]
+  simp only [pos_iff (K := K), neg_iff (K := K), re_ofReal_mul, im_ofReal_mul]
   obtain hx | hx | hx := lt_trichotomy x 0
   · simp only [mul_pos_iff, not_lt_of_gt hx, false_and, hx, true_and, false_or, mul_eq_zero, hx.ne,
       or_false]
