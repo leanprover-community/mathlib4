@@ -3,11 +3,9 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Topology.Algebra.Module.WeakDual
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
-
-#align_import analysis.locally_convex.weak_dual from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
+import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
 # Weak Dual in Topological Vector Spaces
@@ -54,37 +52,30 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [M
 `fun x => ‖f x‖` -/
 def toSeminorm (f : E →ₗ[𝕜] 𝕜) : Seminorm 𝕜 E :=
   (normSeminorm 𝕜 𝕜).comp f
-#align linear_map.to_seminorm LinearMap.toSeminorm
 
 theorem coe_toSeminorm {f : E →ₗ[𝕜] 𝕜} : ⇑f.toSeminorm = fun x => ‖f x‖ :=
   rfl
-#align linear_map.coe_to_seminorm LinearMap.coe_toSeminorm
 
 @[simp]
 theorem toSeminorm_apply {f : E →ₗ[𝕜] 𝕜} {x : E} : f.toSeminorm x = ‖f x‖ :=
   rfl
-#align linear_map.to_seminorm_apply LinearMap.toSeminorm_apply
 
 theorem toSeminorm_ball_zero {f : E →ₗ[𝕜] 𝕜} {r : ℝ} :
     Seminorm.ball f.toSeminorm 0 r = { x : E | ‖f x‖ < r } := by
   simp only [Seminorm.ball_zero_eq, toSeminorm_apply]
-#align linear_map.to_seminorm_ball_zero LinearMap.toSeminorm_ball_zero
 
 theorem toSeminorm_comp (f : F →ₗ[𝕜] 𝕜) (g : E →ₗ[𝕜] F) :
     f.toSeminorm.comp g = (f.comp g).toSeminorm := by
   ext
   simp only [Seminorm.comp_apply, toSeminorm_apply, coe_comp, Function.comp_apply]
-#align linear_map.to_seminorm_comp LinearMap.toSeminorm_comp
 
 /-- Construct a family of seminorms from a bilinear form. -/
 def toSeminormFamily (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : SeminormFamily 𝕜 E F := fun y =>
   (B.flip y).toSeminorm
-#align linear_map.to_seminorm_family LinearMap.toSeminormFamily
 
 @[simp]
 theorem toSeminormFamily_apply {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {x y} : (B.toSeminormFamily y) x = ‖B x y‖ :=
   rfl
-#align linear_map.to_seminorm_family_apply LinearMap.toSeminormFamily_apply
 
 end LinearMap
 
@@ -121,7 +112,7 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
       refine lt_of_le_of_lt (hp x) (lt_of_lt_of_le hx ?_)
       exact Finset.inf'_le _ hyU'
     rw [Set.not_nonempty_iff_eq_empty.mp hU₃]
-    simp only [Set.empty_pi, Set.preimage_univ, Set.subset_univ, and_true_iff]
+    simp only [Set.empty_pi, Set.preimage_univ, Set.subset_univ, and_true]
     exact Exists.intro ((p 0).ball 0 1) (p.basisSets_singleton_mem 0 one_pos)
   rintro U (hU : U ∈ p.basisSets)
   rw [SeminormFamily.basisSets_iff] at hU
@@ -133,12 +124,10 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
   refine Seminorm.finset_sup_apply_lt hr fun y hy => ?_
   rw [LinearMap.toSeminormFamily_apply]
   exact hx y hy
-#align linear_map.has_basis_weak_bilin LinearMap.hasBasis_weakBilin
 
 theorem LinearMap.weakBilin_withSeminorms (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     WithSeminorms (LinearMap.toSeminormFamily B : F → Seminorm 𝕜 (WeakBilin B)) :=
   SeminormFamily.withSeminorms_of_hasBasis _ B.hasBasis_weakBilin
-#align linear_map.weak_bilin_with_seminorms LinearMap.weakBilin_withSeminorms
 
 end Topology
 

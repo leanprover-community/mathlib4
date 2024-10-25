@@ -23,8 +23,8 @@ Let `α` be a `Type`, `A B : Set α` two sets in `α`, and `C : Set A` a set in 
 - `A ↓∩ B` denotes `(Subtype.val ⁻¹' B : Set A)` (that is, `{x : ↑A | ↑x ∈ B}`).
 - `↑C` denotes `Subtype.val '' C` (that is, `{x : α | ∃ y ∈ C, ↑y = x}`).
 
-This notation, (together with the `↑` notation for `Set.CoeHead` in `Mathlib.Data.Set.Functor`)
-is scoped to the `Set.Notation` namespace.
+This notation, (together with the `↑` notation for `Set.CoeHead`)
+is defined in `Mathlib.Data.Set.Notation` and is scoped to the `Set.Notation` namespace.
 To enable it, use `open Set.Notation`.
 
 
@@ -41,19 +41,6 @@ open Set
 
 variable {ι : Sort*} {α : Type*} {A B C : Set α} {D E : Set A}
 variable {S : Set (Set α)} {T : Set (Set A)} {s : ι → Set α} {t : ι → Set A}
-
-namespace Set.Notation
-
-/--
-Given two sets `A` and `B`, `A ↓∩ B` denotes the intersection of `A` and `B` as a set in `Set A`.
-
-The notation is short for `((↑) ⁻¹' B : Set A)`, while giving hints to the elaborator
-that both `A` and `B` are terms of `Set α` for the same `α`.
-This set is the same as `{x : ↑A | ↑x ∈ B}`.
--/
-scoped notation3 A:67 " ↓∩ " B:67 => (Subtype.val ⁻¹' (B : type_of% A) : Set (A : Set _))
-
-end Set.Notation
 
 namespace Set
 

@@ -6,8 +6,6 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.SetTheory.Cardinal.Basic
 
-#align_import data.rat.denumerable from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
-
 /-!
 # Denumerability of ℚ
 
@@ -43,4 +41,3 @@ end Rat
 open Cardinal
 
 theorem Cardinal.mkRat : #ℚ = ℵ₀ := by simp only [mk_eq_aleph0]
-#align cardinal.mk_rat Cardinal.mkRat

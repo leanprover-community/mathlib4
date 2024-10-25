@@ -9,8 +9,6 @@ import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Data.Real.Irrational
 import Mathlib.Topology.Algebra.Polynomial
 
-#align_import number_theory.liouville.basic from "leanprover-community/mathlib"@"04e80bb7e8510958cd9aacd32fe2dc147af0b9f1"
-
 /-!
 
 # Liouville's theorem
@@ -32,7 +30,6 @@ In the implementation, the condition `x ≠ a/b` replaces the traditional equiva
 -/
 def Liouville (x : ℝ) :=
   ∀ n : ℕ, ∃ a b : ℤ, 1 < b ∧ x ≠ a / b ∧ |x - a / b| < 1 / (b : ℝ) ^ n
-#align liouville Liouville
 
 namespace Liouville
 
@@ -69,7 +66,6 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   -- Recall this is by contradiction: we obtained the inequality `b * q ≤ x * q ^ (b + 1)`, so
   -- we are done.
   exact not_le.mpr a1 (Nat.mul_lt_mul_pow_succ ap q1).le
-#align liouville.irrational Liouville.irrational
 
 open Polynomial Metric Set Real RingHom
 
@@ -112,13 +108,12 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N 
   · -- `j z a = z / (a + 1)`: we prove that this ratio is close to `α`
     have : j z a ∈ closedBall α ε := by
       refine mem_closedBall'.mp (le_trans ?_ ((one_div_le me0 e0).mpr (le_max_left _ _)))
-      exact (le_div_iff me0).mpr (not_le.mp dm1).le
+      exact (le_div_iff₀ me0).mpr (not_le.mp dm1).le
     -- use the "separation from `1`" (assumption `L`) for numerators,
     refine (L this).trans ?_
     -- remove a common factor and use the Lipschitz assumption `B`
     refine mul_le_mul_of_nonneg_left ((B this).trans ?_) (zero_le_one.trans (d0 a))
     exact mul_le_mul_of_nonneg_left (le_max_right _ M) dist_nonneg
-#align liouville.exists_one_le_pow_mul_dist Liouville.exists_one_le_pow_mul_dist
 
 theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : ℤ[X]} (f0 : f ≠ 0)
     (fa : eval α (map (algebraMap ℤ ℝ) f) = 0) :
@@ -136,7 +131,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
   -- Since the polynomial `fR` has finitely many roots, there is a closed interval centered at `α`
   -- such that `α` is the only root of `fR` in the interval.
   obtain ⟨ζ, z0, U⟩ : ∃ ζ > 0, closedBall α ζ ∩ fR.roots.toFinset = {α} :=
-    @exists_closedBall_inter_eq_singleton_of_discrete _ _ _ discrete_of_t1_of_finite _ ar
+    @exists_closedBall_inter_eq_singleton_of_discrete _ _ _ Finite.instDiscreteTopology _ ar
   -- Since `fR` is continuous, it is bounded on the interval above.
   obtain ⟨xm, -, hM⟩ : ∃ xm : ℝ, xm ∈ Icc (α - ζ) (α + ζ) ∧
       IsMaxOn (|fR.derivative.eval ·|) (Icc (α - ζ) (α + ζ)) xm :=
@@ -148,7 +143,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     @exists_one_le_pow_mul_dist ℤ ℕ ℝ _ _ _ (fun y => fR.eval y) α ζ |fR.derivative.eval xm| ?_ z0
       (fun y hy => ?_) fun z a hq => ?_
   -- 1: the denominators are positive -- essentially by definition;
-  · exact fun a => one_le_pow_of_one_le ((le_add_iff_nonneg_left 1).mpr a.cast_nonneg) _
+  · exact fun a => one_le_pow₀ ((le_add_iff_nonneg_left 1).mpr a.cast_nonneg)
   -- 2: the polynomial `fR` is Lipschitz at `α` -- as its derivative continuous;
   · rw [mul_comm]
     rw [Real.closedBall_eq_Icc] at hy
@@ -171,7 +166,6 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     refine U.subset ?_
     refine ⟨hq, Finset.mem_coe.mp (Multiset.mem_toFinset.mpr ?_)⟩
     exact (mem_roots fR0).mpr (IsRoot.def.mpr hy)
-#align liouville.exists_pos_real_of_irrational_root Liouville.exists_pos_real_of_irrational_root
 
 /-- **Liouville's Theorem** -/
 protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental ℤ x := by
@@ -197,11 +191,11 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
   -- recall, this is a proof by contradiction!
   refine lt_irrefl ((b : ℝ) ^ f.natDegree * |x - ↑a / ↑b|) ?_
   -- clear denominators at `a1`
-  rw [lt_div_iff' (pow_pos b0 _), pow_add, mul_assoc] at a1
+  rw [lt_div_iff₀' (pow_pos b0 _), pow_add, mul_assoc] at a1
   -- split the inequality via `1 / A`.
   refine (?_ : (b : ℝ) ^ f.natDegree * |x - a / b| < 1 / A).trans_le ?_
   -- This branch of the proof uses the Liouville condition and the Archimedean property
-  · refine (lt_div_iff' hA).mpr ?_
+  · refine (lt_div_iff₀' hA).mpr ?_
     refine lt_of_le_of_lt ?_ a1
     gcongr
     refine hn.le.trans ?_
@@ -213,8 +207,7 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
   · lift b to ℕ using zero_le_one.trans b1.le
     specialize h a b.pred
     rwa [← Nat.cast_succ, Nat.succ_pred_eq_of_pos (zero_lt_one.trans _), ← mul_assoc, ←
-      div_le_iff hA] at h
+      div_le_iff₀ hA] at h
     exact Int.ofNat_lt.mp b1
-#align liouville.transcendental Liouville.transcendental
 
 end Liouville

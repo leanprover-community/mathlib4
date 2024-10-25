@@ -10,25 +10,26 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 ## Main definitions
 
-* `QuadraticForm.Isometry`: `LinearMap`s which map between two different quadratic forms
+* `QuadraticMap.Isometry`: `LinearMap`s which map between two different quadratic forms
 
 ## Notation
 
 `Q₁ →qᵢ Q₂` is notation for `Q₁.Isometry Q₂`.
 -/
 
-variable {ι R M M₁ M₂ M₃ M₄ : Type*}
+variable {ι R M M₁ M₂ M₃ M₄ N : Type*}
 
-namespace QuadraticForm
+namespace QuadraticMap
 
 variable [CommSemiring R]
 variable [AddCommMonoid M]
 variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄]
+variable [AddCommMonoid N]
+variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄] [Module R N]
 
 /-- An isometry between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
 is a linear map between `M₁` and `M₂` that commutes with the quadratic forms. -/
-structure Isometry (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) extends M₁ →ₗ[R] M₂ where
+structure Isometry (Q₁ : QuadraticMap R M₁ N) (Q₂ : QuadraticMap R M₂ N) extends M₁ →ₗ[R] M₂ where
   /-- The quadratic form agrees across the map. -/
   map_app' : ∀ m, Q₂ (toFun m) = Q₁ m
 
@@ -37,8 +38,8 @@ namespace Isometry
 @[inherit_doc]
 notation:25 Q₁ " →qᵢ " Q₂:0 => Isometry Q₁ Q₂
 
-variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
-variable {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
+variable {Q₁ : QuadraticMap R M₁ N} {Q₂ : QuadraticMap R M₂ N}
+variable {Q₃ : QuadraticMap R M₃ N} {Q₄ : QuadraticMap R M₄ N}
 
 instance instFunLike : FunLike (Q₁ →qᵢ Q₂) M₁ M₂ where
   coe f := f.toLinearMap
@@ -71,18 +72,18 @@ theorem coe_toLinearMap (f : Q₁ →qᵢ Q₂) : ⇑f.toLinearMap = f :=
 
 /-- The identity isometry from a quadratic form to itself. -/
 @[simps!]
-def id (Q : QuadraticForm R M) : Q →qᵢ Q where
+def id (Q : QuadraticMap R M N) : Q →qᵢ Q where
   __ := LinearMap.id
   map_app' _ := rfl
 
 /-- The identity isometry between equal quadratic forms. -/
 @[simps!]
-def ofEq {Q₁ Q₂ : QuadraticForm R M₁} (h : Q₁ = Q₂) : Q₁ →qᵢ Q₂ where
+def ofEq {Q₁ Q₂ : QuadraticMap R M₁ N} (h : Q₁ = Q₂) : Q₁ →qᵢ Q₂ where
   __ := LinearMap.id
   map_app' _ := h ▸ rfl
 
 @[simp]
-theorem ofEq_rfl {Q : QuadraticForm R M₁} : ofEq (rfl : Q = Q) = .id Q := rfl
+theorem ofEq_rfl {Q : QuadraticMap R M₁ N} : ofEq (rfl : Q = Q) = .id Q := rfl
 
 /-- The composition of two isometries between quadratic forms. -/
 @[simps]
@@ -109,7 +110,7 @@ theorem comp_assoc (h : Q₃ →qᵢ Q₄) (g : Q₂ →qᵢ Q₃) (f : Q₁ →
   ext fun _ => rfl
 
 /-- There is a zero map from any module with the zero form. -/
-instance : Zero ((0 : QuadraticForm R M₁) →qᵢ Q₂) where
+instance : Zero ((0 : QuadraticMap R M₁ N) →qᵢ Q₂) where
   zero := { (0 : M₁ →ₗ[R] M₂) with map_app' := fun _ => map_zero _ }
 
 /-- There is a zero map from the trivial module. -/
@@ -124,4 +125,4 @@ instance [Subsingleton M₂] : Subsingleton (Q₁ →qᵢ Q₂) :=
 
 end Isometry
 
-end QuadraticForm
+end QuadraticMap
