@@ -225,7 +225,6 @@ all `x` and `y`. -/
 def seminormFamily : SeminormFamily 𝕜 (E →WOT[𝕜] F) (E × F⋆) :=
   fun ⟨x, y⟩ => seminorm x y
 
-open Function in
 lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis
     (fun sr : Finset (E × F⋆) × ℝ ↦ 0 < sr.2)
     (fun sr ↦ (sr.1.sup (seminormFamily 𝕜 E F)).ball 0 sr.2) := by
