@@ -273,7 +273,7 @@ def preAleph : Ordinal.{u} ≃o Cardinal.{u} := by
       (Ordinal.enum r ⟨_, h (succ s)⟩)
 
 @[simp]
-theorem type_cardinal : @type Cardinal (· < ·) _ = Ordinal.univ.{u, u + 1} := by
+theorem type_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
   rw [Ordinal.univ_id]
   exact Quotient.sound ⟨preAleph.symm.toRelIsoLT⟩
 
