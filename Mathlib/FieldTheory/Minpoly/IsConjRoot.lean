@@ -153,6 +153,14 @@ theorem isConjRoot_of_algEquiv (x : A) (s : A ≃ₐ[R] A) : IsConjRoot R x (s x
   Eq.symm (minpoly.algEquiv_eq s x)
 
 /--
+A variant of `isConjRoot_of_algEquiv`.
+Let `s` be an `R`-algebra isomorphism. Then `x` is a conjugate root of `s x`.
+-/
+@[simp]
+theorem isConjRoot_of_algEquiv' (x : A) (s : A ≃ₐ[R] A) : IsConjRoot R (s x) x :=
+  (minpoly.algEquiv_eq s x)
+
+/--
 Let `s₁` and `s₂` be two `R`-algebra isomorphisms. Then `s₂ x` is a conjugate root of `s₁ x`.
 -/
 @[simp]
