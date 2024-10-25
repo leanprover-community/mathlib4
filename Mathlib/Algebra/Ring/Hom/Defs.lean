@@ -329,7 +329,7 @@ class RingHomClass (F : Type*) (α β : outParam Type*)
 
 variable [FunLike F α β]
 
--- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
+-- See note [implicit instance arguments].
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
 /-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
@@ -649,8 +649,7 @@ theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β → α) = f :=
   rfl
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
+@[simp]
 theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β →+ α) = f := by
   ext

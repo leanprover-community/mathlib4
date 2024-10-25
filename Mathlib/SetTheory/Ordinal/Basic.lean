@@ -712,9 +712,6 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
 def omega0 : Ordinal.{u} :=
   lift <| @type ℕ (· < ·) _
 
-@[deprecated Ordinal.omega0 (since := "2024-09-26")]
-alias omega := omega0
-
 @[inherit_doc]
 scoped notation "ω" => Ordinal.omega0
 
@@ -792,14 +789,13 @@ theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
     card.{u} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   card_nat n
 
-instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
+instance instAddLeftMono : AddLeftMono Ordinal.{u} where
   elim c a b := by
     refine inductionOn₃ a b c fun α r _ β s _ γ t _ ⟨f⟩ ↦
       (RelEmbedding.ofMonotone (Sum.recOn · Sum.inl (Sum.inr ∘ f)) ?_).ordinal_type_le
     simp [f.map_rel_iff]
 
-instance add_swap_covariantClass_le :
-    CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
+instance instAddRightMono : AddRightMono Ordinal.{u} where
   elim c a b := by
     refine inductionOn₃ a b c fun α r _ β s _ γ t _  ⟨f⟩ ↦
       (RelEmbedding.ofMonotone (Sum.recOn · (Sum.inl ∘ f) Sum.inr) ?_).ordinal_type_le
@@ -1196,7 +1192,7 @@ theorem ord_nat (n : ℕ) : ord n = n :=
     (by
       induction' n with n IH
       · apply Ordinal.zero_le
-      · exact succ_le_of_lt (IH.trans_lt <| ord_lt_ord.2 <| natCast_lt.2 (Nat.lt_succ_self n)))
+      · exact succ_le_of_lt (IH.trans_lt <| ord_lt_ord.2 <| Nat.cast_lt.2 (Nat.lt_succ_self n)))
 
 @[simp]
 theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1

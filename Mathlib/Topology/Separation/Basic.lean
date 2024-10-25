@@ -7,7 +7,6 @@ import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.GDelta
 
 /-!
 # Separation properties of topological spaces.
@@ -50,18 +49,12 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
   us to conclude that this is equivalent to all subspaces being normal. Such a space is not
   necessarily Hausdorff or regular, even if it is T₀.
 * `T5Space`: A T₅ space is a completely normal T₁ space. T₅ implies T₄.
-* `PerfectlyNormalSpace`: A perfectly normal space is a normal space such that
-  closed sets are Gδ.
-* `T6Space`: A T₆ space is a Perfectly normal T₁ space. T₆ implies T₅.
+
+See `Mathlib.Topology.Separation.GDelta` for the definitions of `PerfectlyNormalSpace` and
+`T6Space`.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
-
-### TODO
-
-* Add perfectly normal and T6 spaces.
-* Use `hasSeparatingCovers_iff_separatedNhds` to prove that perfectly normal spaces
-  are completely normal.
 
 ## Main results
 
@@ -123,6 +116,8 @@ If the space is also Lindelöf:
 * [Willard's *General Topology*][zbMATH02107988]
 
 -/
+
+assert_not_exists UniformSpace
 
 open Function Set Filter Topology TopologicalSpace
 
@@ -899,36 +894,6 @@ instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_o
   replace contra := nonempty_inter isOpen_compl_singleton
     contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
   simp [compl_inter_self {x}] at contra
-
-theorem IsGδ.compl_singleton (x : X) [T1Space X] : IsGδ ({x}ᶜ : Set X) :=
-  isOpen_compl_singleton.isGδ
-
-@[deprecated (since := "2024-02-15")] alias isGδ_compl_singleton := IsGδ.compl_singleton
-
-theorem Set.Countable.isGδ_compl {s : Set X} [T1Space X] (hs : s.Countable) : IsGδ sᶜ := by
-  rw [← biUnion_of_singleton s, compl_iUnion₂]
-  exact .biInter hs fun x _ => .compl_singleton x
-
-theorem Set.Finite.isGδ_compl {s : Set X} [T1Space X] (hs : s.Finite) : IsGδ sᶜ :=
-  hs.countable.isGδ_compl
-
-theorem Set.Subsingleton.isGδ_compl {s : Set X} [T1Space X] (hs : s.Subsingleton) : IsGδ sᶜ :=
-  hs.finite.isGδ_compl
-
-theorem Finset.isGδ_compl [T1Space X] (s : Finset X) : IsGδ (sᶜ : Set X) :=
-  s.finite_toSet.isGδ_compl
-
-protected theorem IsGδ.singleton [FirstCountableTopology X] [T1Space X] (x : X) :
-    IsGδ ({x} : Set X) := by
-  rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
-  rw [← biInter_basis_nhds h_basis.toHasBasis]
-  exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
-
-@[deprecated (since := "2024-02-15")] alias isGδ_singleton := IsGδ.singleton
-
-theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs : s.Finite) :
-    IsGδ s :=
-  Finite.induction_on hs .empty fun _ _ ↦ .union (.singleton _)
 
 theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
   rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]
@@ -1864,9 +1829,12 @@ theorem Continuous.isClosedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} 
 alias Continuous.closedEmbedding := Continuous.isClosedEmbedding
 
 /-- A continuous surjective map from a compact space to a Hausdorff space is a quotient map. -/
-theorem QuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
-    (hsurj : Surjective f) (hcont : Continuous f) : QuotientMap f :=
-  hcont.isClosedMap.to_quotientMap hcont hsurj
+theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
+    (hsurj : Surjective f) (hcont : Continuous f) : IsQuotientMap f :=
+  hcont.isClosedMap.isQuotientMap hcont hsurj
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.of_surjective_continuous := IsQuotientMap.of_surjective_continuous
 
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by
@@ -1888,6 +1856,10 @@ theorem isIrreducible_iff_singleton [T2Space X] {S : Set X} : IsIrreducible S �
 theorem not_preirreducible_nontrivial_t2 (X) [TopologicalSpace X] [PreirreducibleSpace X]
     [Nontrivial X] [T2Space X] : False :=
   (PreirreducibleSpace.isPreirreducible_univ (X := X)).subsingleton.not_nontrivial nontrivial_univ
+
+theorem t2Space_antitone {X : Type*} : Antitone (@T2Space X) :=
+  fun inst₁ inst₂ h_top h_t2 ↦ @T2Space.of_injective_continuous _ _ inst₁ inst₂
+    h_t2 _ Function.injective_id <| continuous_id_of_le h_top
 
 end Separation
 
@@ -2411,62 +2383,6 @@ instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) 
 
 end CompletelyNormal
 
-section PerfectlyNormal
-
-/-- A topological space `X` is a *perfectly normal space* provided it is normal and
-closed sets are Gδ. -/
-class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace X : Prop where
-    closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
-
-/-- Lemma that allows the easy conclusion that perfectly normal spaces are completely normal. -/
-theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpace X]
-    (st_dis : Disjoint s t) (t_cl : IsClosed t) (t_gd : IsGδ t) : HasSeparatingCover s t := by
-  obtain ⟨T, T_open, T_count, T_int⟩ := t_gd
-  rcases T.eq_empty_or_nonempty with rfl | T_nonempty
-  · rw [T_int, sInter_empty] at st_dis
-    rw [(s.disjoint_univ).mp st_dis]
-    exact t.hasSeparatingCover_empty_left
-  obtain ⟨g, g_surj⟩ := T_count.exists_surjective T_nonempty
-  choose g' g'_open clt_sub_g' clg'_sub_g using fun n ↦ by
-    apply normal_exists_closure_subset t_cl (T_open (g n).1 (g n).2)
-    rw [T_int]
-    exact sInter_subset_of_mem (g n).2
-  have clg'_int : t = ⋂ i, closure (g' i) := by
-    apply (subset_iInter fun n ↦ (clt_sub_g' n).trans subset_closure).antisymm
-    rw [T_int]
-    refine subset_sInter fun t tinT ↦ ?_
-    obtain ⟨n, gn⟩ := g_surj ⟨t, tinT⟩
-    refine iInter_subset_of_subset n <| (clg'_sub_g n).trans ?_
-    rw [gn]
-  use fun n ↦ (closure (g' n))ᶜ
-  constructor
-  · rw [← compl_iInter, subset_compl_comm, ← clg'_int]
-    exact st_dis.subset_compl_left
-  · refine fun n ↦ ⟨isOpen_compl_iff.mpr isClosed_closure, ?_⟩
-    simp only [closure_compl, disjoint_compl_left_iff_subset]
-    rw [← closure_eq_iff_isClosed.mpr t_cl] at clt_sub_g'
-    exact subset_closure.trans <| (clt_sub_g' n).trans <| (g'_open n).subset_interior_closure
-
-instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
-    [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
-  completely_normal _ _ hd₁ hd₂ := separatedNhds_iff_disjoint.mp <|
-    hasSeparatingCovers_iff_separatedNhds.mp
-      ⟨(hd₂.hasSeparatingCover_closed_gdelta_right isClosed_closure <|
-         closed_gdelta isClosed_closure).mono (fun ⦃_⦄ a ↦ a) subset_closure,
-       ((Disjoint.symm hd₁).hasSeparatingCover_closed_gdelta_right isClosed_closure <|
-         closed_gdelta isClosed_closure).mono (fun ⦃_⦄ a ↦ a) subset_closure⟩
-
-/-- A T₆ space is a perfectly normal T₁ space. -/
-class T6Space (X : Type u) [TopologicalSpace X] extends T1Space X, PerfectlyNormalSpace X : Prop
-
--- see Note [lower instance priority]
-/-- A `T₆` space is a `T₅` space. -/
-instance (priority := 100) T6Space.toT5Space [T6Space X] : T5Space X where
-  -- follows from type-class inference
-
-end PerfectlyNormal
-
-
 /-- In a compact T₂ space, the connected component of a point equals the intersection of all
 its clopen neighbourhoods. -/
 theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : X) :
@@ -2659,8 +2575,8 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
     have hU : IsClopen U := isClopen_biInter_finset fun i _ => i.2.1
     exact ⟨U, (↑) '' U, hU, ha, subset_iInter₂ fun s _ => s.2.1.connectedComponent_subset s.2.2,
       (connectedComponents_preimage_image U).symm ▸ hU.biUnion_connectedComponent_eq⟩
-  rw [ConnectedComponents.quotientMap_coe.isClopen_preimage] at hU
+  rw [ConnectedComponents.isQuotientMap_coe.isClopen_preimage] at hU
   refine ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, ?_, hb mem_connectedComponent, disjoint_compl_left⟩
   exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
 
-set_option linter.style.longFile 2800
+set_option linter.style.longFile 2700

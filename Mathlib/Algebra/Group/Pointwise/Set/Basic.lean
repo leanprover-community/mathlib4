@@ -329,7 +329,6 @@ theorem mul_singleton : s * {b} = (· * b) '' s :=
 theorem singleton_mul : {a} * t = (a * ·) '' t :=
   image2_singleton_left
 
--- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
   image2_singleton
@@ -533,7 +532,6 @@ theorem div_singleton : s / {b} = (· / b) '' s :=
 theorem singleton_div : {a} / t = (· / ·) a '' t :=
   image2_singleton_left
 
--- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
   image2_singleton

@@ -755,11 +755,12 @@ protected noncomputable def opRingEquiv [Monoid G] :
       erw [unop_op, unop_op, single_mul_single]
       simp }
 
--- @[simp] -- Porting note (#10618): simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this.
+-- More specifically, the LHS simplifies to `Finsupp.single`, which implies there's some
+-- defeq abuse going on.
 theorem opRingEquiv_single [Monoid G] (r : k) (x : G) :
     MonoidAlgebra.opRingEquiv (op (single x r)) = single (op x) (op r) := by simp
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem opRingEquiv_symm_single [Monoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
     MonoidAlgebra.opRingEquiv.symm (single x r) = op (single x.unop r.unop) := by simp
 
@@ -1413,11 +1414,12 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
       erw [mapRange_single, single_mul_single, mapRange_single, mapRange_single]
       simp only [mapRange_single, single_mul_single, ← op_mul, add_comm] }
 
--- @[simp] -- Porting note (#10618): simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this.
+-- More specifically, the LHS simplifies to `Finsupp.single`, which implies there's some
+-- defeq abuse going on.
 theorem opRingEquiv_single [AddCommMonoid G] (r : k) (x : G) :
     AddMonoidAlgebra.opRingEquiv (op (single x r)) = single x (op r) := by simp
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem opRingEquiv_symm_single [AddCommMonoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
     AddMonoidAlgebra.opRingEquiv.symm (single x r) = op (single x r.unop) := by simp
 
