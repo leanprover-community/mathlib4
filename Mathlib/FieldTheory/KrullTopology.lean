@@ -110,7 +110,7 @@ theorem fixingSubgroup_isBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     ⟨IntermediateField.fixingSubgroup.antimono le_sup_left,
       IntermediateField.fixingSubgroup.antimono le_sup_right⟩⟩
 
-theorem galBasis_isGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
+theorem fixingSubgroup_isGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     Filter.IsGroupBasis
       (fun E : IntermediateField K L ↦ FiniteDimensional K E)
       (fun E : IntermediateField K L ↦ (E.fixingSubgroup : Set (L ≃ₐ[K] L))) :=
@@ -131,17 +131,17 @@ theorem galBasis_isGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
 `L ≃ₐ[K] L` induced by the group filter basis `galGroupBasis K L` -/
 instance krullTopology (K L : Type*) [Field K] [Field L] [Algebra K L] :
     TopologicalSpace (L ≃ₐ[K] L) :=
-  galBasis_isGroupBasis K L |>.topology
+  fixingSubgroup_isGroupBasis K L |>.topology
 
 /-- For a field extension `L/K`, the Krull topology on `L ≃ₐ[K] L` makes it a topological group. -/
 instance (K L : Type*) [Field K] [Field L] [Algebra K L] : TopologicalGroup (L ≃ₐ[K] L) :=
-  galBasis_isGroupBasis K L |>.instTopologicalGroup
+  fixingSubgroup_isGroupBasis K L |>.instTopologicalGroup
 
 open scoped Topology in
 lemma krullTopology_basis_nhds_one (K L : Type*) [Field K] [Field L] [Algebra K L] :
     (𝓝 1 : Filter (L ≃ₐ[K] L)).HasBasis (fun E : IntermediateField K L ↦ FiniteDimensional K E)
       (fun E : IntermediateField K L ↦ (E.fixingSubgroup : Set (L ≃ₐ[K] L))) :=
-  galBasis_isGroupBasis K L |>.nhds_one_hasBasis
+  fixingSubgroup_isGroupBasis K L |>.nhds_one_hasBasis
 
 open scoped Topology in
 lemma krullTopology_mem_nhds_one (K L : Type*) [Field K] [Field L] [Algebra K L]
@@ -165,7 +165,7 @@ theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field
 
 /-- For a field extension `L/K`, the Krull topology on `L ≃ₐ[K] L` makes it a topological group. -/
 instance (K L : Type*) [Field K] [Field L] [Algebra K L] : NonarchimedeanGroup (L ≃ₐ[K] L) :=
-  (galBasis_isGroupBasis K L).nonarchimedean_of_subgroups
+  fixingSubgroup_isGroupBasis K L |>.nonarchimedean_of_subgroups
 
 -- TODO : remove the three following declarations ? They don't seem to be used anywhere else.
 /-- Given a field extension `L/K`, `finiteExts K L` is the set of
