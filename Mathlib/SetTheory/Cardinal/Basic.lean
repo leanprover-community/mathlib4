@@ -719,8 +719,6 @@ instance : WellFoundedRelation Cardinal.{u} :=
 instance : WellFoundedLT Cardinal.{u} :=
   ⟨Cardinal.lt_wf⟩
 
-instance wo : @IsWellOrder Cardinal.{u} (· < ·) where
-
 instance : ConditionallyCompleteLinearOrderBot Cardinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
