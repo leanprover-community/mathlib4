@@ -25,26 +25,9 @@ The main results of this file are as follows.
 
 open scoped ComplexOrder
 
-lemma Complex.inv_natCast_cpow_ofReal_pos {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
-    0 < ((n : ℂ) ^ (x : ℂ))⁻¹ := by
-  refine RCLike.inv_pos_of_pos ?_
-  rw [show (n : ℂ) ^ (x : ℂ) = (n : ℝ) ^ (x : ℂ) from rfl, ← ofReal_cpow n.cast_nonneg']
-  positivity
-
 open Complex
 
 namespace LSeries
-
-lemma term_nonneg {a : ℕ → ℂ} {n : ℕ} (h : 0 ≤ a n) (x : ℝ) : 0 ≤ term a x n := by
-  rw [term_def]
-  rcases eq_or_ne n 0 with rfl | hn
-  · simp only [↓reduceIte, le_refl]
-  · simp only [hn, ↓reduceIte]
-    refine mul_nonneg h (inv_natCast_cpow_ofReal_pos hn x).le
-
-lemma term_pos {a : ℕ → ℂ} {n : ℕ} (hn : n ≠ 0) (h : 0 < a n) (x : ℝ) : 0 < term a x n := by
-  simp only [ne_eq, hn, not_false_eq_true, term_of_ne_zero]
-  refine mul_pos h <| inv_natCast_cpow_ofReal_pos hn x
 
 /-- If all values of a `ℂ`-valued arithmetic function are nonnegative reals and `x` is a
 real number in the domain of absolute convergence, then the `n`th iterated derivative
