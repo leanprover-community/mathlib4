@@ -164,28 +164,30 @@ variable {L} {Γ₀}
 
 namespace toNormedField
 
+variable {x x' : L}
+
 @[simp]
-theorem norm_le_iff {x x' : L} : ‖x‖ ≤ ‖x'‖ ↔ val.v x ≤ val.v x' :=
+theorem norm_le_iff : ‖x‖ ≤ ‖x'‖ ↔ val.v x ≤ val.v x' :=
   (Valuation.RankOne.strictMono val.v).le_iff_le
 
 @[simp]
-theorem norm_lt_iff {x x' : L} : ‖x‖ < ‖x'‖ ↔ val.v x < val.v x' :=
+theorem norm_lt_iff : ‖x‖ < ‖x'‖ ↔ val.v x < val.v x' :=
   (Valuation.RankOne.strictMono val.v).lt_iff_lt
 
 @[simp]
-theorem norm_le_one_iff {x : L} : ‖x‖ ≤ 1 ↔ val.v x ≤ 1 := by
+theorem norm_le_one_iff : ‖x‖ ≤ 1 ↔ val.v x ≤ 1 := by
   simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).le_iff_le (b := 1)
 
 @[simp]
-theorem norm_lt_one_iff {x : L} : ‖x‖ < 1 ↔ val.v x < 1 := by
+theorem norm_lt_one_iff : ‖x‖ < 1 ↔ val.v x < 1 := by
   simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (b := 1)
 
 @[simp]
-theorem one_le_norm_iff {x : L} : 1 ≤ ‖x‖ ↔ 1 ≤ val.v x := by
+theorem one_le_norm_iff : 1 ≤ ‖x‖ ↔ 1 ≤ val.v x := by
   simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).le_iff_le (a := 1)
 
 @[simp]
-theorem one_lt_norm_iff {x : L} : 1 < ‖x‖ ↔ 1 < val.v x := by
+theorem one_lt_norm_iff : 1 < ‖x‖ ↔ 1 < val.v x := by
   simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
 
 end toNormedField
