@@ -59,11 +59,21 @@ namespace OplaxNatTrans
 variable {B C : Type*} [Bicategory B] [Bicategory C]
   {F G : OplaxFunctor B C} (τ : OplaxNatTrans F G)
 
+/-- Variant of `naturality_id` involving `mapId`. -/
 lemma naturality_id' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b) :
     τ.naturality f ≫ τ.app _ ◁ G.mapId' f hf =
       F.mapId' f hf ▷ τ.app b ≫ (λ_ _).hom ≫ (ρ_ _).inv := by
   subst hf
   simp only [OplaxFunctor.mapId'_eq_mapId, naturality_id]
+
+/-- Variant of `naturality_comp` involving `mapComp'`. -/
+lemma naturality_comp' {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c) (h : fg = f ≫ g) :
+    τ.naturality fg ≫ _ ◁ G.mapComp' f g fg h =
+      F.mapComp' f g fg h ▷ _ ≫ (α_ _ _ _).hom ≫
+        _ ◁ τ.naturality g ≫ (α_ _ _ _).inv ≫ τ.naturality f ▷ _≫
+          (α_ _ _ _).hom := by
+  subst h
+  simp only [OplaxFunctor.mapComp'_eq_mapComp, naturality_comp]
 
 end OplaxNatTrans
 
@@ -71,11 +81,24 @@ end CategoryTheory
 
 open CategoryTheory Category Limits Opposite
 
-lemma ModuleCat.restrictScalarsPseudofunctor_mapId' {R : RingCat.{u}} (f : R ⟶ R) (hf : f = 𝟙 _) :
+/-- `ModuleCat.restrictScalarsPseudofunctor.toOplax.mapId'` identifies to
+`ModuleCat.restrictScalarsId'`. -/
+lemma ModuleCat.restrictScalarsPseudofunctor_mapId' {R : RingCat.{u}} (f : R ⟶ R)
+    (hf : f = 𝟙 _) :
   ModuleCat.restrictScalarsPseudofunctor.toOplax.mapId'
     ⟨f.op⟩ (by subst hf; rfl) = (ModuleCat.restrictScalarsId' f hf).hom := by
   subst hf
   apply OplaxFunctor.mapId'_eq_mapId
+
+/-- `ModuleCat.restrictScalarsPseudofunctor.toOplax.mapComp'` identifies to
+`ModuleCat.restrictScalarsComp'`. -/
+lemma ModuleCat.restrictScalarsPseudofunctor_mapComp' {R₀ R₁ R₂ : RingCat.{u}}
+    (f : R₀ ⟶ R₁) (g : R₁ ⟶ R₂) (fg : R₀ ⟶ R₂) (h : fg = f ≫ g) :
+  ModuleCat.restrictScalarsPseudofunctor.toOplax.mapComp'
+    ⟨g.op⟩ ⟨f.op⟩ ⟨fg.op⟩ (by subst h; rfl) =
+    (ModuleCat.restrictScalarsComp' f g fg h).hom := by
+  subst h
+  apply OplaxFunctor.mapComp'_eq_mapComp
 
 namespace PresheafOfModules
 
@@ -83,13 +106,15 @@ variable (τ : OplaxNatTrans ModuleCat.restrictScalarsPseudofunctor.{v, u}.toOpl
   ModuleCat.restrictScalarsPseudofunctor.{v, u}.toOplax)
   {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ RingCat.{u}}
 
+
+set_option maxHeartbeats 400000 in
 @[simps]
 noncomputable def functorOfOplaxNatTransObj (M : PresheafOfModules.{v} R) :
     PresheafOfModules.{v} R where
-  obj := fun X ↦ (τ.app (LocallyDiscrete.mk (op (R.obj X)))).obj (M.obj X)
-  map := fun {X Y} f ↦ (τ.app _).map (M.map f) ≫
+  obj X := (τ.app (LocallyDiscrete.mk (op (R.obj X)))).obj (M.obj X)
+  map {X Y} f := (τ.app _).map (M.map f) ≫
     (τ.naturality (Quiver.Hom.toLoc (R.map f).op)).app (M.obj Y)
-  map_id := fun X ↦ by
+  map_id X := by
     dsimp only
     rw [map_id, ← cancel_mono ((ModuleCat.restrictScalarsId' _ (R.map_id X)).hom.app _),
       assoc, Iso.inv_hom_id_app]
@@ -97,17 +122,32 @@ noncomputable def functorOfOplaxNatTransObj (M : PresheafOfModules.{v} R) :
       (τ.naturality_id' (b := ⟨⟨R.obj X⟩⟩) ⟨⟨R.map (𝟙 X)⟩⟩ (by rw [R.map_id]; rfl)) (M.obj X)
     dsimp at this
     erw [ModuleCat.restrictScalarsPseudofunctor_mapId'] at this
-    erw [this]
-    erw [Iso.hom_inv_id_app]
+    erw [this, Iso.hom_inv_id_app]
     dsimp
     rw [comp_id, ← Functor.map_comp, Iso.inv_hom_id, CategoryTheory.Functor.map_id]
-  map_comp := sorry
+  map_comp {X Y Z} f g := by
+    dsimp only
+    have := NatTrans.congr_app (τ.naturality_comp' (a := ⟨⟨R.obj Z⟩⟩)
+      (b := ⟨⟨R.obj Y⟩⟩) (c := ⟨⟨R.obj X⟩⟩) ⟨⟨R.map g⟩⟩ ⟨⟨R.map f⟩⟩ ⟨⟨R.map (f ≫ g)⟩⟩
+        (by rw [R.map_comp]; rfl)) (M.obj Z)
+    dsimp at this
+    erw [ModuleCat.restrictScalarsPseudofunctor_mapComp' _ _ _ (by simp)] at this
+    dsimp [Bicategory.associator] at this
+    rw [id_comp, id_comp, comp_id] at this
+    rw [assoc, ← cancel_mono ((ModuleCat.restrictScalarsComp' _ _ _ (R.map_comp f g)).hom.app _),
+      assoc, assoc, assoc, assoc, Iso.inv_hom_id_app]
+    erw [this, comp_id, map_comp]
+    dsimp
+    rw [← Functor.map_comp_assoc, assoc, assoc, Iso.inv_hom_id, comp_id,
+      Functor.map_comp_assoc, Functor.map_comp]
+    erw [← NatTrans.naturality_assoc]
+    rfl
 
 variable (R)
 
 /-- Any oplax natural transformation from `ModuleCat.restrictScalarsPseudofunctor`
 to itself induces a functor `PresheafOfModules R ⥤ PresheafOfModules R`. -/
-@[simps! obj_obj]
+@[simps]
 noncomputable def functorOfOplaxNatTrans :
   PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} R where
   obj := functorOfOplaxNatTransObj τ
