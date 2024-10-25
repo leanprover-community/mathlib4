@@ -49,7 +49,7 @@ seminorm, locally convex
 -/
 
 
-open NormedField Set Seminorm TopologicalSpace Filter List Function
+open NormedField Set Seminorm TopologicalSpace Filter List
 
 open NNReal Pointwise Topology Uniformity
 
@@ -70,6 +70,7 @@ namespace SeminormFamily
 
 variable (p : SeminormFamily 𝕜 E ι)
 
+/-- The basis of neighborhoods of zero defined by a family of seminorms. -/
 theorem isBasis : IsBasis
     (fun sr : Finset ι × ℝ ↦ 0 < sr.2) (fun sr ↦ (sr.1.sup p).ball 0 sr.2) where
   nonempty := ⟨⟨∅, 1⟩, one_pos⟩
@@ -77,7 +78,7 @@ theorem isBasis : IsBasis
     classical
     rintro ⟨s₁, r₁⟩ ⟨s₂, r₂⟩ h₁ h₂
     use ⟨s₁ ∪ s₂, min r₁ r₂⟩, lt_min h₁ h₂
-    simp only [uncurry, subset_inter_iff, ball_finset_sup_eq_iInter _ _ _ h₁,
+    simp only [subset_inter_iff, ball_finset_sup_eq_iInter _ _ _ h₁,
       ball_finset_sup_eq_iInter _ _ _ h₂, ball_finset_sup_eq_iInter _ _ _ (lt_min h₁ h₂)]
     exact
       ⟨Set.iInter₂_mono' fun i hi =>
@@ -111,7 +112,7 @@ theorem isModuleBasis : IsModuleBasis 𝕜
     rintro k ⟨s, r⟩ h
     rcases eq_or_ne k 0 with (hk|hk)
     · use ⟨s, r⟩, h
-      simp only [hk, zero_smul, uncurry, mapsTo', image_subset_iff, mem_ball, sub_self,
+      simp only [hk, zero_smul, mapsTo', image_subset_iff, mem_ball, sub_self,
         map_zero, h, preimage_const_of_mem, subset_univ]
     · simp_rw [mapsTo', image_subset_iff, (s.sup p).smul_ball_preimage 0 r k hk,
         smul_zero]
@@ -405,8 +406,7 @@ theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E
   use r, hr
   by_cases h : s.Nonempty
   · rw [Finset.sup_const h]
-  rw [Finset.not_nonempty_iff_eq_empty.mp h, Finset.sup_empty,
-    ball_bot _ hr]
+  rw [Finset.not_nonempty_iff_eq_empty.mp h, Finset.sup_empty, ball_bot _ hr]
   exact Set.subset_univ _
 
 end NormedSpace
@@ -422,7 +422,6 @@ theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp 
   rw [hp.hasBasis.isVonNBounded_iff]
   constructor
   · intro h I
-    simp only [uncurry] at h
     specialize h ⟨I, 1⟩ one_pos
     rcases h.exists_pos with ⟨r, hr, h⟩
     cases' NormedField.exists_lt_norm 𝕜 r with a ha

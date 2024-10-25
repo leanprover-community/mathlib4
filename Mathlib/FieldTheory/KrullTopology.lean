@@ -83,12 +83,6 @@ theorem IntermediateField.mem_fixingSubgroup_iff {K L : Type*} [Field K] [Field 
     (E : IntermediateField K L) (σ : L ≃ₐ[K] L) : σ ∈ E.fixingSubgroup ↔ ∀ x : L, x ∈ E → σ x = x :=
   ⟨fun hσ x hx => hσ ⟨x, hx⟩, fun h ⟨x, hx⟩ => h x hx⟩
 
-/-- The map `E ↦ Gal(L/E)` is inclusion-reversing -/
-theorem IntermediateField.fixingSubgroup.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
-    {E1 E2 : IntermediateField K L} (h12 : E1 ≤ E2) : E2.fixingSubgroup ≤ E1.fixingSubgroup := by
-  rintro σ hσ ⟨x, hx⟩
-  exact hσ ⟨x, h12 hx⟩
-
 /-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L` -/
 theorem IntermediateField.fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
@@ -100,6 +94,12 @@ theorem IntermediateField.fixingSubgroup.top {K L : Type*} [Field K] [Field L] [
     IntermediateField.fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
   ext
   simp [mem_fixingSubgroup_iff, DFunLike.ext_iff]
+
+/-- The map `E ↦ Gal(L/E)` is inclusion-reversing -/
+theorem IntermediateField.fixingSubgroup.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
+    {E1 E2 : IntermediateField K L} (h12 : E1 ≤ E2) : E2.fixingSubgroup ≤ E1.fixingSubgroup := by
+  rintro σ hσ ⟨x, hx⟩
+  exact hσ ⟨x, h12 hx⟩
 
 theorem fixingSubgroup_isBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     Filter.IsBasis

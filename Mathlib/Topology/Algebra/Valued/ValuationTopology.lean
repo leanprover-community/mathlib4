@@ -28,6 +28,7 @@ namespace Valuation
 
 variable (v : Valuation R Γ₀)
 
+/-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
 theorem isBasis : Filter.IsBasis (fun _ ↦ True) (fun γ ↦ v.ltAddSubgroup γ : Γ₀ˣ → Set R) where
   nonempty := ⟨1, trivial⟩
   inter {γ₀ γ₁} _ _ := by
