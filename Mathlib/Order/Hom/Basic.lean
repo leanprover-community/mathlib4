@@ -1307,3 +1307,36 @@ lemma denselyOrdered_iff_of_orderIsoClass {X Y F : Type*} [Preorder X] [Preorder
     exact ⟨EquivLike.inv f c, by simpa using hc⟩
 
 end DenselyOrdered
+
+/-- `Fin (n + 1)` is order equivalent to `Fin n` with a bottom element. -/
+def WithBot.orderIsoFin (n : ℕ) : WithBot (Fin n) ≃o Fin (n + 1) where
+  toFun x := x.recBotCoe 0 Fin.succ
+  invFun := by
+    rintro ⟨x, hx⟩
+    revert hx
+    refine x.casesOn (fun _ ↦ ⊥) fun x hx ↦ (⟨x, Nat.succ_lt_succ_iff.1 hx⟩ : Fin n)
+  left_inv x := by
+    refine x.recBotCoe ?_ fun x ↦ ?_ <;>
+    simp
+  right_inv := by
+    rintro ⟨(_ | x), hx⟩ <;>
+    simp
+  map_rel_iff' {x y} := by
+    refine x.recBotCoe ?_ fun x ↦ ?_ <;>
+    refine y.recBotCoe ?_ fun y ↦ ?_ <;>
+    simp [Fin.le_def]
+
+/-- `Fin (n + 1)` is order equivalent to `Fin n` with a top element. -/
+def WithTop.orderIsoFin (n : ℕ) : WithTop (Fin n) ≃o Fin (n + 1) where
+  toFun x := x.recTopCoe ⟨n, n.lt_succ_self⟩ fun x ↦ ⟨_, x.2.trans n.lt_succ_self⟩
+  invFun x := if h : x < n then (⟨x, h⟩ : Fin n) else ⊤
+  left_inv x := by
+    refine x.recTopCoe ?_ fun x ↦ ?_ <;>
+    simp
+  right_inv x := by
+    obtain hx | hx := Nat.lt_succ_iff_lt_or_eq.1 x.2 <;>
+    simp [hx, Fin.ext_iff]
+  map_rel_iff' {x y} := by
+    refine x.recTopCoe ?_ fun x ↦ ?_ <;>
+    refine y.recTopCoe ?_ fun y ↦ ?_ <;>
+    simp [Fin.le_def]
