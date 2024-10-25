@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Orientation
 
 /-!
 Documentation
@@ -23,11 +24,23 @@ finite-dimensional oriented vector space endowed with a nondegenerate symmetric 
 α ∧ ⋆β = ⟨α , β⟩ ω
 -/
 
+open ExteriorAlgebra LinearMap
+
+section Clifford
+
+variable {R : Type*} [CommRing R]
+variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
+variable (B : LinearMap.BilinForm R M) -- (Bsymm : B.IsSymm) --(Bnondeg : B.Nondegenerate)
+
+def Q := LinearMap.BilinMap.toQuadraticMap B
+def C := CliffordAlgebra (Q B)
+
+end Clifford
+
 noncomputable section InducedBilinearMap
 
-open ExteriorAlgebra Matrix LinearMap
 
-#check det
+#check Matrix.det
 #check Module.Finite.exists_fin
 
 variable (R : Type*) [CommRing R]
@@ -48,7 +61,8 @@ theorem span : ∀ (m : M), ∃ (c : Fin (dim R M) → R),
 #check span
 
 def F (ι₁ : Fin (dim R M) → R) (ι₂ : Fin (dim R M) → R) : R :=
-  det (of fun (i : Fin (dim R M)) (j : Fin (dim R M)) ↦ (ι₁ i) * (ι₂ j) * B (s R M i) (s R M j) )
+  Matrix.det (Matrix.of fun (i : Fin (dim R M)) (j : Fin (dim R M)) ↦
+  (ι₁ i) * (ι₂ j) * B (s R M i) (s R M j) )
 
 def F2 : M → M → R := fun m n ↦ F R M B (span R M m).choose (span R M n).choose
 
