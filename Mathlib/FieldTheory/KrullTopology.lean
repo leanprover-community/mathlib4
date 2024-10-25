@@ -160,7 +160,8 @@ theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field
     IsClosed (E.fixingSubgroup : Set (L ≃ₐ[K] L)) :=
   OpenSubgroup.isClosed ⟨E.fixingSubgroup, E.fixingSubgroup_isOpen⟩
 
-/-- For a field extension `L/K`, the Krull topology on `L ≃ₐ[K] L` makes it a topological group. -/
+/-- For a field extension `L/K`, the Krull topology on `L ≃ₐ[K] L` makes it a
+  nonarchimedean group. -/
 instance (K L : Type*) [Field K] [Field L] [Algebra K L] : NonarchimedeanGroup (L ≃ₐ[K] L) :=
   fixingSubgroup_isGroupBasis K L |>.nonarchimedean_of_subgroups
 
