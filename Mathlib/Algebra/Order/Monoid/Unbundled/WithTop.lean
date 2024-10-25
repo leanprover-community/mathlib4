@@ -520,7 +520,7 @@ instance isBotAbsorbing : IsBotAbsorbing (WithBot α) where
   bot_add a := rfl
   add_bot a := by cases a <;> rfl
 
-instance noBotAddends : NoBotSum (WithBot α) where
+instance noBotSum : NoBotSum (WithBot α) where
   eq_bot_or_eq_bot_of_add_eq_bot {a b h} := by match a, b with
   | ⊥, _ => simp
   | _, ⊥ => simp
