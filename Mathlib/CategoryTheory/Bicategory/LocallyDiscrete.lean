@@ -104,35 +104,6 @@ instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C) where
   comp_id _ := Discrete.ext (Category.comp_id _)
   assoc _ _ _ := Discrete.ext (Category.assoc _ _ _)
 
-attribute [local simp]
-  Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso Strict.associator_eqToIso
-
-variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, v₂} B] [Strict B]
-
-/--
-If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categories) `I ⥤ B` can
-be promoted to a pseudofunctor from `LocallyDiscrete I` to `B`.
--/
-@[simps]
-def Functor.toPseudoFunctor (F : I ⥤ B) : Pseudofunctor (LocallyDiscrete I) B where
-  obj i := F.obj i.as
-  map f := F.map f.as
-  map₂ η := eqToHom (congr_arg _ (LocallyDiscrete.eq_of_hom η))
-  mapId i := eqToIso (F.map_id i.as)
-  mapComp f g := eqToIso (F.map_comp f.as g.as)
-
-/--
-If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categories) `I ⥤ B` can
-be promoted to an oplax functor from `LocallyDiscrete I` to `B`.
--/
-@[simps]
-def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B where
-  obj i := F.obj i.as
-  map f := F.map f.as
-  map₂ η := eqToHom (congr_arg _ (LocallyDiscrete.eq_of_hom η))
-  mapId i := eqToHom (F.map_id i.as)
-  mapComp f g := eqToHom (F.map_comp f.as g.as)
-
 end
 
 section
