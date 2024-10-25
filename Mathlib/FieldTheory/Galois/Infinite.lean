@@ -354,7 +354,7 @@ theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
     rw [this] at n
     letI : Algebra.IsSeparable k L := Algebra.isSeparable_tower_bot_of_isSeparable k L K
     apply IsGalois.mk
-  · simp only [← restrictNormalHomKer L, IntermediateFieldEquivClosedSubgroup]
+  · simp only [← restrictNormalHom_ker L, IntermediateFieldEquivClosedSubgroup]
     exact MonoidHom.normal_ker (restrictNormalHom L)
 
 end InfiniteGalois
