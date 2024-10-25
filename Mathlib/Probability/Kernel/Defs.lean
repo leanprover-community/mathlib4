@@ -173,7 +173,7 @@ instance isFiniteKernel_zero (α β : Type*) {_ : MeasurableSpace α} {_ : Measu
 instance IsFiniteKernel.add (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (κ + η) := by
   refine ⟨⟨IsFiniteKernel.bound κ + IsFiniteKernel.bound η,
-    ENNReal.add_lt_top.mpr ⟨IsFiniteKernel.bound_lt_top κ, IsFiniteKernel.bound_lt_top η⟩,
+    add_lt_top.mpr ⟨IsFiniteKernel.bound_lt_top κ, IsFiniteKernel.bound_lt_top η⟩,
     fun a => ?_⟩⟩
   exact add_le_add (Kernel.measure_le_bound _ _ _) (Kernel.measure_le_bound _ _ _)
 
