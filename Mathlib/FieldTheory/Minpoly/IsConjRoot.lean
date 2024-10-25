@@ -27,7 +27,7 @@ element over `K` and the minimal polynomial of `x` splits in `L`, then `x` is no
 there exists a different conjugate root of `x` in `L` over `K`.
 
 ## TODO
-* move `IsConjRoot` to earlier files and refactor the theorems in field theory using `IsConjRoot`.
+* Move `IsConjRoot` to earlier files and refactor the theorems in field theory using `IsConjRoot`.
 
 * Prove `IsConjRoot.smul`, if `x` and `y` are conjugate roots, then so are `r • x` and `r • y`.
 
