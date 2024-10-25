@@ -72,7 +72,7 @@ instance {σ R : Type*} [Semiring R] [NoZeroDivisors R] :
     letI : WellFoundedGT σ := by
       change IsWellFounded σ fun x y ↦ WellOrderingRel x y
       exact IsWellOrder.toIsWellFounded
-    simpa only [← lexOrder_eq_top_iff_eq_zero, lexOrder_mul, WithTop.add_eq_top] using h
+    simpa only [← lexOrder_eq_top_iff_eq_zero, lexOrder_mul, add_eq_top] using h
 
 end MvPowerSeries
 
