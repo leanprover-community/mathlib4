@@ -293,7 +293,7 @@ theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsLimit 
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.symm.le) with ⟨p, hp⟩
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_lt hp.2.2
 
-theorem IsAcc.subset {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
+theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
     o.IsAcc T := by
   rw [isAcc_iff] at *
   exact ⟨ho.1, fun p plto ↦ (ho.2 p plto).casesOn fun s hs ↦ ⟨s, h hs.1, hs.2⟩⟩
@@ -365,7 +365,7 @@ theorem isClosedBelow_iff {S : Set Ordinal} {o : Ordinal} : IsClosedBelow S o �
   · intro h
     rw [isClosed_iff_clusterPt]
     intro r hr
-    match clusterPt_principal hr with
+    match clusterPt_principal.mp hr with
     | .inl h => exact h
     | .inr h' => exact h r.1 r.2 <| (accPt_subtype _ _).mpr h'
 
@@ -375,7 +375,7 @@ theorem IsClosedBelow.sInter {o : Ordinal} {S : Set (Set Ordinal)}
     (h : ∀ C ∈ S, IsClosedBelow C o) : IsClosedBelow (⋂₀ S) o := by
   rw [isClosedBelow_iff]
   intro p plto pAcc C CmemS
-  exact (h C CmemS).forall_lt p plto (pAcc.subset (sInter_subset_of_mem CmemS))
+  exact (h C CmemS).forall_lt p plto (pAcc.mono (sInter_subset_of_mem CmemS))
 
 theorem IsClosedBelow.iInter {ι : Type u} {f : ι → Set Ordinal} {o : Ordinal}
     (h : ∀ i, IsClosedBelow (f i) o) : IsClosedBelow (⋂ i, f i) o :=
