@@ -85,7 +85,7 @@ lemma smul_toBilin (bm : Basis ι R M) (s : S) (Q : QuadraticMap R M N) :
 
 /-- `QuadraticMap.toBilin` as an S-linear map -/
 @[simps]
-noncomputable def toBilinHom (bm : Basis ι R M) : QuadraticMap R M N →ₗ[S] (BilinMap R M N) where
+noncomputable def toBilinHom (bm : Basis ι R M) : QuadraticMap R M N →ₗ[S] BilinMap R M N where
   toFun Q := Q.toBilin bm
   map_add' := add_toBilin bm
   map_smul' := smul_toBilin S bm
