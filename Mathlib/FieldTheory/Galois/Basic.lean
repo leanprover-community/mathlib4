@@ -295,16 +295,11 @@ open IntermediateField
 
 open scoped Pointwise
 
-lemma AlgEquiv.restrictNormalHomKer (E : IntermediateField K L) [Normal K E]:
+lemma AlgEquiv.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E]:
     (restrictNormalHom E).ker = E.fixingSubgroup := by
-  ext σ
-  apply ((((mem_fixingSubgroup_iff (L ≃ₐ[K] L)).trans ⟨fun h ⟨x, hx⟩ ↦ Subtype.val_inj.mp <|
-    (restrictNormal_commutes σ E ⟨x, hx⟩).trans (h x hx) , _⟩).trans
-      AlgEquiv.ext_iff.symm)).symm
-  intro h x hx
-  have hs : ((restrictNormalHom E) σ) ⟨x, hx⟩ = σ • x :=
-    restrictNormal_commutes σ E ⟨x, hx⟩
-  exact hs ▸ (Subtype.val_inj.mpr (h ⟨x, hx⟩))
+  simp only [IntermediateField.fixingSubgroup, Subgroup.ext_iff, MonoidHom.mem_ker,
+    AlgEquiv.ext_iff, one_apply, Subtype.ext_iff, restrictNormalHom_apply, Subtype.forall,
+    mem_fixingSubgroup_iff, SetLike.mem_coe, AlgEquiv.smul_def, implies_true]
 
 namespace IsGalois
 
@@ -325,35 +320,32 @@ noncomputable def normalAutEquivQuotient [FiniteDimensional K L] [IsGalois K L]
     (H : Subgroup (L ≃ₐ[K] L)) [Subgroup.Normal H] :
     (L ≃ₐ[K] L) ⧸ H ≃* ((fixedField H) ≃ₐ[K] (fixedField H)) :=
   (QuotientGroup.quotientMulEquivOfEq ((fixingSubgroup_fixedField H).symm.trans
-  (AlgEquiv.restrictNormalHomKer (fixedField H)).symm)).trans <|
+  (AlgEquiv.restrictNormalHom_ker (fixedField H)).symm)).trans <|
   QuotientGroup.quotientKerEquivOfSurjective (restrictNormalHom (fixedField H)) <|
   restrictNormalHom_surjective L
 
 lemma normalAutEquivQuotient_apply [FiniteDimensional K L] [IsGalois K L]
     (H : Subgroup (L ≃ₐ[K] L)) [Subgroup.Normal H] (σ : (L ≃ₐ[K] L)) :
-    normalAutEquivQuotient H (QuotientGroup.mk σ) = (restrictNormalHom (fixedField H)) σ := rfl
+    normalAutEquivQuotient H σ = (restrictNormalHom (fixedField H)) σ := rfl
 
 open scoped Pointwise
 
+@[simp]
 theorem fixingSubgroup_conjugate_of_map (σ : L ≃ₐ[K] L) :
     (E.map σ).fixingSubgroup = (MulAut.conj σ) • E.fixingSubgroup := by
   ext τ
-  rw [IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff]
-  have : τ ∈ (MulAut.conj σ) • E.fixingSubgroup ↔ ∀ x : E, σ⁻¹ (τ (σ x)) = x :=
-    Subgroup.mem_pointwise_smul_iff_inv_smul_mem
   simp only [coe_map, AlgHom.coe_coe, Set.mem_image, SetLike.mem_coe, AlgEquiv.smul_def,
-    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, this, Subtype.forall]
-  exact ⟨fun h y hy ↦ (h y hy).symm ▸ (σ.left_inv y),
-    fun h y hy ↦ (σ.right_inv (τ (σ y))) ▸ congrArg σ.toFun (h y hy)⟩
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Subtype.forall,
+    Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← symm_apply_eq,
+    IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff]
+  rfl
 
 /-- Let `E` be an intermediateField of a Galois extension `L / K`. If `E / K` is
 Galois extension, then `E.fixingSubgroup` is a normal subgroup of `Gal(L / K)`. -/
 instance fixingSubgroup_normal_of_isGalois [IsGalois K L] [IsGalois K E] :
     E.fixingSubgroup.Normal := by
   apply Subgroup.Normal.of_conjugate_fixed (fun σ ↦ ?_)
-  have : E = ((IntermediateField.map (σ⁻¹ : L ≃ₐ[K] L) E) : IntermediateField K L) :=
-    (IntermediateField.normal_iff_forall_map_eq'.mp inferInstance σ⁻¹).symm
-  nth_rw 1 [this, IsGalois.fixingSubgroup_conjugate_of_map E σ⁻¹, map_inv, smul_inv_smul]
+  rw [← fixingSubgroup_conjugate_of_map, normal_iff_forall_map_eq'.mp inferInstance σ]
 
 end IsGalois
 
