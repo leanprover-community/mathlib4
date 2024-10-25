@@ -8,6 +8,7 @@ import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Separation properties of topological spaces.
