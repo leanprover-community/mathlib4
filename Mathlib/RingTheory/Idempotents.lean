@@ -114,7 +114,7 @@ structure OrthogonalIdempotents : Prop where
 
 /-- A primitive idempotent is primitive if it's not zero and `e ≠ e₁ + e₂` for any
   `e₁` and `e₂` idempotents and pairwisely orthogonal. -/
-structure IsPrimitiveIdempotents (e : R): Prop where
+structure IsPrimitiveIdempotents (e : R) : Prop where
   idem : IsIdempotentElem e
   [ne_zero : e ≠ 0]
   ne_sum_ortho' :
