@@ -57,7 +57,7 @@ namespace IsConjRoot
 /--
 Every element is a conjugate root of itself.
 -/
-theorem refl {x : A} : IsConjRoot R x x := rfl
+@[refl] theorem refl {x : A} : IsConjRoot R x x := rfl
 
 /--
 If `y` is a conjugate root of `x`, then `x` is also a conjugate root of `y`.
