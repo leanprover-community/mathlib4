@@ -6,7 +6,7 @@ Authors: Simon Hudon, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.Finset.Basic
 import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 
 /-!
 # Free monoid over a given alphabet
@@ -107,6 +107,69 @@ theorem toList_of_mul (x : α) (xs : FreeMonoid α) : toList (of x * xs) = x :: 
 @[to_additive]
 theorem of_injective : Function.Injective (@of α) := List.singleton_injective
 
+/-! ### Length -/
+
+section Length
+variable {a : FreeMonoid α}
+
+/-- The length of a free monoid element: 1.length = 0 and (a * b).length = a.length + b.length -/
+@[to_additive "The length of an additive free monoid element: 1.length = 0 and (a + b).length =
+  a.length + b.length"]
+def length (a : FreeMonoid α) : ℕ := List.length a
+
+@[to_additive (attr := simp)]
+theorem length_one : length (1 : FreeMonoid α) = 0 := rfl
+
+@[to_additive (attr := simp)]
+theorem length_eq_zero : length a = 0 ↔ a = 1 := List.length_eq_zero
+
+@[to_additive (attr := simp)]
+theorem length_of (m : α) : length (of m) = 1 := rfl
+
+@[to_additive existing]
+theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m :=
+  List.length_eq_one
+
+@[to_additive]
+theorem length_eq_two {v : FreeMonoid α} :
+    v.length = 2 ↔ ∃ c d, v = FreeMonoid.of c * FreeMonoid.of d := List.length_eq_two
+
+@[to_additive (attr := simp)]
+theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
+  List.length_append _ _
+
+@[to_additive]
+theorem of_ne_one (a : α) : of a ≠ 1 := by
+  intro h
+  have := congrArg FreeMonoid.length h
+  simp only [length_of, length_one, Nat.succ_ne_self] at this
+
+end Length
+
+section Mem
+variable {m : α}
+
+/-- Membership in a free monoid element -/
+@[to_additive "Membership in a free monoid element"]
+def mem (a : FreeMonoid α) (m : α) := m ∈ toList a
+
+@[to_additive]
+instance : Membership α (FreeMonoid α) := ⟨mem⟩
+
+@[to_additive]
+theorem not_mem_one : ¬ m ∈ (1 : FreeMonoid α) := List.not_mem_nil _
+
+@[to_additive (attr := simp)]
+theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
+
+@[to_additive]
+theorem mem_of_self : m ∈ of m := List.mem_singleton_self _
+
+@[to_additive (attr := simp)]
+theorem mem_mul {a b : FreeMonoid α} : m ∈ (a * b) ↔ m ∈ a ∨ m ∈ b := List.mem_append
+
+end Mem
+
 /-! ### length -/
 
 section Length
@@ -206,30 +269,26 @@ theorem recOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α)
     (ih : ∀ x xs, C xs → C (of x * xs)) : @recOn α C (of x * xs) h0 ih = ih x xs (recOn xs h0 ih) :=
   rfl
 
-/-! ### induction -/
+/-! ### Induction -/
+
 section induction_principles
 
-/-- an induction principle on free monoids, with cases for one, ofs, and multiplication -/
-@[to_additive (attr := elab_as_elim, induction_eliminator)]
+/-- An induction principle on free monoids, with cases for `1`, `FreeMonoid.of` and `*`. -/
+@[to_additive (attr := elab_as_elim, induction_eliminator)
+"An induction principle on free monoids, with cases for `0`, `FreeAddMonoid.of` and `+`."]
 protected theorem inductionOn {C : FreeMonoid α → Prop} (z : FreeMonoid α) (one : C 1)
     (of : ∀ (x : α), C (FreeMonoid.of x)) (mul : ∀ (x y : FreeMonoid α), C x → C y → C (x * y)) :
   C z := List.rec one (fun _ _ ih => mul [_] _ (of _) ih) z
 
-/-- an induction principle for free monoids more closely mirroring induction on lists -/
-@[to_additive (attr := elab_as_elim)]
+/-- An induction principle for free monoids which mirrors induction on lists, with cases analogous
+to the empty list and cons -/
+@[to_additive (attr := elab_as_elim) "An induction principle for free monoids which mirrors
+induction on lists, with cases analogous to the empty list and cons"]
 protected theorem inductionOn' {p : FreeMonoid α → Prop} (a : FreeMonoid α)
     (one : p (1 : FreeMonoid α)) (mul_of : ∀ b a, p a → p (of b * a)) : p a :=
   List.rec one (fun _ _ tail_ih => mul_of _ _ tail_ih) a
 
 end induction_principles
-
-@[to_additive]
-theorem eq_one_or_has_last_elem (u : FreeMonoid α): u = 1 ∨ ∃ front last, u = front * of last := by
-  have H : ∀ (front : FreeMonoid α) (last : α), front * of last = front.concat last := by
-    intro f l
-    simp only [List.concat_eq_append]; rfl
-  simp only [H]
-  exact List.eq_nil_or_concat _
 
 /-- A version of `List.cases_on` for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of
 `[]` and `x :: xs`. -/
@@ -263,7 +322,7 @@ def prodAux {M} [Monoid M] : List M → M
 @[to_additive]
 lemma prodAux_eq : ∀ l : List M, FreeMonoid.prodAux l = l.prod
   | [] => rfl
-  | (_ :: xs) => congr_arg (fun x => List.foldl (· * ·) x xs) (one_mul _).symm
+  | (_ :: xs) => by simp [prodAux, List.prod_eq_foldl]
 
 /-- Equivalence between maps `α → M` and monoid homomorphisms `FreeMonoid α →* M`. -/
 @[to_additive "Equivalence between maps `α → A` and additive monoid homomorphisms
@@ -274,8 +333,8 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
     map_one' := rfl
     map_mul' := fun _ _ ↦ by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
   invFun f x := f (of x)
-  left_inv f := rfl
-  right_inv f := hom_eq fun x ↦ rfl
+  left_inv _ := rfl
+  right_inv _ := hom_eq fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=
@@ -344,14 +403,14 @@ def map (f : α → β) : FreeMonoid α →* FreeMonoid β where
 @[to_additive (attr := simp)]
 theorem map_of (f : α → β) (x : α) : map f (of x) = of (f x) := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mem_map {m : β} : m ∈ map f a ↔ ∃ n ∈ a, f n = m := List.mem_map
 
 @[to_additive]
 theorem map_map {α₁ : Type*} {g : α₁ → α} {x : FreeMonoid α₁} :
     map f (map g x) = map (f ∘ g) x := by
   unfold map
-  simp [MonoidHom.comp_apply]
+  simp only [MonoidHom.coe_mk, OneHom.coe_mk, toList_ofList, List.map_map]
 
 @[to_additive]
 theorem toList_map (f : α → β) (xs : FreeMonoid α) : toList (map f xs) = xs.toList.map f := rfl
@@ -398,30 +457,54 @@ instance uniqueUnits : Unique (FreeMonoid α)ˣ where
     have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
     (List.append_eq_nil.mp this).1
 
-/-- if two types are isomorphic, the free monoids over those types are isomorphic -/
-@[to_additive "if two types are isomorphic, the additive free monoids over those types are
-isomorphic"]
-def congr_iso {α : Type u_1} {β : Type u_2} (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β := by
-  apply MulEquiv.mk' ⟨FreeMonoid.map e.toFun, FreeMonoid.map e.invFun, _, _⟩
-  · simp
-  all_goals
-  intro x
-  simp [map_map]
+@[to_additive (attr := simp)]
+theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Function.Surjective f := by
+  constructor
+  · intro fs d
+    rcases fs (FreeMonoid.of d) with ⟨b, hb⟩
+    induction' b using FreeMonoid.inductionOn' with head _ _
+    · have H := congr_arg length hb
+      simp only [length_one, length_of, Nat.zero_ne_one, map_one] at H
+    simp only [map_mul, map_of] at hb
+    use head
+    have H := congr_arg length hb
+    simp only [length_mul, length_of, add_right_eq_self, length_eq_zero] at H
+    rw [H, mul_one] at hb
+    exact FreeMonoid.of_injective hb
+  intro fs d
+  induction' d using FreeMonoid.inductionOn' with head tail ih
+  · use 1
+    rfl
+  specialize fs head
+  rcases fs with ⟨a, rfl⟩
+  rcases ih with ⟨b, rfl⟩
+  use FreeMonoid.of a * b
+  rfl
 
-/-- given an isomorphism between α and β, convert a relation predicate to
-have an underlying type of β -/
-@[to_additive "given an isomorphism between α and β, convert a relation predicate to
-have an underlying type of β"]
-def map_rel (e : α ≃ β) (rel : FreeMonoid α → FreeMonoid α → Prop) :
-    FreeMonoid β → FreeMonoid β  → Prop :=
-  fun a b ↦ rel (FreeMonoid.congr_iso e.symm a) (FreeMonoid.congr_iso e.symm b)
+end Map
 
-/-- given an isomorphism between α and β, pull back a relation predicate with underlying type β to
-one with underlying type α -/
-@[to_additive "given an isomorphism between α and β, pull back a relation predicate with underlying
-type β to one with underlying type α "]
-def comap_rel (e : α ≃ β) (rel : FreeMonoid β → FreeMonoid β → Prop) :
-    FreeMonoid α → FreeMonoid α → Prop :=
-  fun a b ↦ rel (FreeMonoid.congr_iso e a) (FreeMonoid.congr_iso e b)
+/-! ### reverse -/
+
+section Reverse
+/-- reverses the symbols in a free monoid element -/
+@[to_additive "reverses the symbols in an additive free monoid element"]
+def reverse : FreeMonoid α → FreeMonoid α := List.reverse
+
+@[to_additive (attr := simp)]
+theorem reverse_of (a : α) : reverse (of a) = of a := rfl
+
+@[to_additive]
+theorem reverse_mul {a b : FreeMonoid α} : reverse (a * b) = reverse b * reverse a :=
+  List.reverse_append _ _
+
+@[to_additive (attr := simp)]
+theorem reverse_reverse {a : FreeMonoid α} : reverse (reverse a) = a := by
+  apply List.reverse_reverse
+
+@[to_additive (attr := simp)]
+theorem length_reverse {a : FreeMonoid α} : a.reverse.length = a.length :=
+  List.length_reverse _
+
+end Reverse
 
 end FreeMonoid

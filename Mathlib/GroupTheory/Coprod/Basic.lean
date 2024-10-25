@@ -194,6 +194,9 @@ theorem induction_on' {C : M ∗ N → Prop} (m : M ∗ N)
   induction x using FreeMonoid.inductionOn' with
   | one => exact one
   | mul_of x xs ih =>
+  induction x using FreeMonoid.inductionOn' with
+  | one => exact one
+  | mul_of x xs ih =>
     cases x with
     | inl m => simpa using inl_mul m _ ih
     | inr n => simpa using inr_mul n _ ih

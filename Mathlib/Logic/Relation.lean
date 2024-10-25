@@ -100,7 +100,7 @@ theorem Transitive.comap (h : Transitive r) (f : α → β) : Transitive (r on f
   fun _ _ _ hab hbc ↦ h hab hbc
 
 theorem Equivalence.comap (h : Equivalence r) (f : α → β) : Equivalence (r on f) :=
-  ⟨h.reflexive.comap f, @(h.symmetric.comap f), @(h.transitive.comap f)⟩
+  ⟨fun a ↦ h.refl (f a), h.symm, h.trans⟩
 
 end Comap
 
@@ -213,7 +213,7 @@ instance [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relat
 
 end Map
 
-variable {r : α → α → Prop} {a b c d : α}
+variable {r : α → α → Prop} {a b c : α}
 
 /-- `ReflTransGen r`: reflexive transitive closure of `r` -/
 @[mk_iff ReflTransGen.cases_tail_iff]
@@ -245,7 +245,7 @@ namespace ReflGen
 
 theorem to_reflTransGen : ∀ {a b}, ReflGen r a b → ReflTransGen r a b
   | a, _, refl => by rfl
-  | a, b, single h => ReflTransGen.tail ReflTransGen.refl h
+  | _, _, single h => ReflTransGen.tail ReflTransGen.refl h
 
 theorem mono {p : α → α → Prop} (hp : ∀ a b, r a b → p a b) : ∀ {a b}, ReflGen r a b → ReflGen p a b
   | a, _, ReflGen.refl => by rfl

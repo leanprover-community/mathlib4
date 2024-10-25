@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
+Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Filtered.Basic
@@ -104,7 +104,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 e
-      erw [Set.preimage_iInter]
+      rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
       -- Porting note: needed more hand holding here
@@ -113,7 +113,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       rw [dif_pos he, ← Set.preimage_comp]
       apply congrFun
       apply congrArg
-      erw [← coe_comp, D.w] -- now `erw` after #13170
+      rw [← coe_comp, D.w]
       rfl
 
 end CofilteredLimit

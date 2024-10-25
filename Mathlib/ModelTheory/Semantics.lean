@@ -339,7 +339,7 @@ theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
         (ft n t).realize (Sum.elim v' xs') = t.realize (Sum.elim (v xs') (xs' ∘ Fin.natAdd _)))
     (h2 : ∀ (n) (R : L.Relations n) (x : Fin n → M), RelMap (fr n R) x = RelMap R x)
     (hv : ∀ (n) (xs : Fin (k + n) → M) (x : M), @v (n + 1) (snoc xs x : Fin _ → M) = v xs) :
-    (φ.mapTermRel ft fr fun n => castLE (add_assoc _ _ _).symm.le).Realize v' xs ↔
+    (φ.mapTermRel ft fr fun _ => castLE (add_assoc _ _ _).symm.le).Realize v' xs ↔
       φ.Realize (v xs) (xs ∘ Fin.natAdd _) := by
   induction φ with
   | falsum => rfl
@@ -353,7 +353,7 @@ theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → β 
     {xs : Fin (m + n) → M} :
     (φ.relabel g).Realize v xs ↔
       φ.Realize (Sum.elim v (xs ∘ Fin.castAdd n) ∘ g) (xs ∘ Fin.natAdd m) := by
-  rw [relabel, realize_mapTermRel_add_castLe] <;> intros <;> simp
+  apply realize_mapTermRel_add_castLe <;> simp
 
 theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + n') → M}
     (hmn : m + n' ≤ n + 1) :

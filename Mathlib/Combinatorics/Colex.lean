@@ -65,7 +65,7 @@ namespace Finset
 /-- Type synonym of `Finset α` equipped with the colexicographic order rather than the inclusion
 order. -/
 @[ext]
-structure Colex (α) :=
+structure Colex (α) where
   /-- `toColex` is the "identity" function between `Finset α` and `Finset.Colex α`. -/
   toColex ::
   /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
@@ -120,8 +120,8 @@ private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ 
   exact hb₂ hb₁
 
 instance instPartialOrder : PartialOrder (Colex α) where
-  le_refl s a ha ha' := (ha' ha).elim
-  le_antisymm s t hst hts := Colex.ext <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
+  le_refl _ _ ha ha' := (ha' ha).elim
+  le_antisymm _ _ hst hts := Colex.ext <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau

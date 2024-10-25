@@ -222,7 +222,7 @@ protected theorem ContDiffWithinAt.insert (h : ContDiffWithinAt 𝕜 n f s x) :
 
 /-- If a function is `C^n` within a set at a point, with `n ≥ 1`, then it is differentiable
 within this set at this point. -/
-theorem ContDiffWithinAt.differentiable_within_at' (h : ContDiffWithinAt 𝕜 n f s x) (hn : 1 ≤ n) :
+theorem ContDiffWithinAt.differentiableWithinAt' (h : ContDiffWithinAt 𝕜 n f s x) (hn : 1 ≤ n) :
     DifferentiableWithinAt 𝕜 f (insert x s) x := by
   rcases h 1 hn with ⟨u, hu, p, H⟩
   rcases mem_nhdsWithin.1 hu with ⟨t, t_open, xt, tu⟩
@@ -230,9 +230,12 @@ theorem ContDiffWithinAt.differentiable_within_at' (h : ContDiffWithinAt 𝕜 n 
   exact (differentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1 <|
     ((H.mono tu).differentiableOn le_rfl) x ⟨mem_insert x s, xt⟩
 
+@[deprecated (since := "2024-10-10")]
+alias ContDiffWithinAt.differentiable_within_at' := ContDiffWithinAt.differentiableWithinAt'
+
 theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s x) (hn : 1 ≤ n) :
     DifferentiableWithinAt 𝕜 f s x :=
-  (h.differentiable_within_at' hn).mono (subset_insert x s)
+  (h.differentiableWithinAt' hn).mono (subset_insert x s)
 
 /-- A function is `C^(n + 1)` on a domain iff locally, it has a derivative which is `C^n`. -/
 theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
@@ -347,7 +350,7 @@ protected theorem ContDiffWithinAt.eventually {n : ℕ} (h : ContDiffWithinAt �
     ∀ᶠ y in 𝓝[insert x s] x, ContDiffWithinAt 𝕜 n f s y := by
   rcases h.contDiffOn le_rfl with ⟨u, hu, _, hd⟩
   have : ∀ᶠ y : E in 𝓝[insert x s] x, u ∈ 𝓝[insert x s] y ∧ y ∈ u :=
-    (eventually_nhdsWithin_nhdsWithin.2 hu).and hu
+    (eventually_eventually_nhdsWithin.2 hu).and hu
   refine this.mono fun y hy => (hd y hy.2).mono_of_mem ?_
   exact nhdsWithin_mono y (subset_insert _ _) hy.1
 
@@ -451,7 +454,7 @@ protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs
     HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f s) s := by
   constructor
   · intro x _
-    simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.uncurry0_apply,
+    simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.curry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro m hm x hx
     rcases (h x hx) m.succ (Order.add_one_le_of_lt hm) with ⟨u, hu, p, Hp⟩
@@ -498,7 +501,7 @@ theorem contDiffOn_of_continuousOn_differentiableOn
   refine ⟨s, self_mem_nhdsWithin, ftaylorSeriesWithin 𝕜 f s, ?_⟩
   constructor
   · intro y _
-    simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.uncurry0_apply,
+    simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.curry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro k hk y hy
     convert (Hdiff k (lt_of_lt_of_le hk hm) y hy).hasFDerivWithinAt

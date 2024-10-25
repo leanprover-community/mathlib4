@@ -208,7 +208,7 @@ def Q : QuadraticForm K L :=
   QuadraticMap.ofPolar
     (fun x =>
       Quotient.liftOn' x Q' fun a b h => by
-        rw [Submodule.quotientRel_r_def] at h
+        rw [Submodule.quotientRel_def] at h
         suffices Q' (a - b) = 0 by rwa [Q'_sub, sub_eq_zero] at this
         apply Q'_zero_under_ideal (a - b) h)
     (fun a x => by

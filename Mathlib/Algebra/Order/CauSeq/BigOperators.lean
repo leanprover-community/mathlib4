@@ -188,7 +188,7 @@ lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
     · gcongr
       exact sub_le_self _ (abv_pow abv x n ▸ abv_nonneg _ _)
     refine div_nonneg (sub_nonneg.2 ?_) (sub_nonneg.2 <| le_of_lt hx1)
-    exact pow_le_one _ (by positivity) hx1.le
+    exact pow_le_one₀ (by positivity) hx1.le
   · intro n _
     rw [← one_mul (abv x ^ n), pow_succ']
     gcongr
@@ -213,7 +213,7 @@ lemma series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1
     positivity
   · have kn : k + n.succ ≥ n.succ := by
       rw [← zero_add n.succ]; exact add_le_add (Nat.zero_le _) (by simp)
-    erw [hk, Nat.succ_add, pow_succ r, ← mul_assoc]
+    rw [hk, Nat.succ_add, pow_succ r, ← mul_assoc]
     refine
       le_trans (by rw [mul_comm] <;> exact h _ (Nat.le_of_succ_le kn))
         (mul_le_mul_of_nonneg_right ?_ hr0)

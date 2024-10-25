@@ -6,7 +6,6 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Sublists
-import Mathlib.Data.List.InsertNth
 
 /-!
 # Free groups
@@ -128,7 +127,7 @@ theorem not_step_nil : ¬Step [] L := by
   generalize h' : [] = L'
   intro h
   cases' h with L₁ L₂
-  simp [List.nil_eq_append] at h'
+  simp [List.nil_eq_append_iff] at h'
 
 @[to_additive]
 theorem Step.cons_left_iff {a : α} {b : Bool} :
@@ -195,10 +194,10 @@ respectively. This is also known as Newman's diamond lemma. -/
   to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
   respectively. This is also known as Newman's diamond lemma."]
 theorem church_rosser : Red L₁ L₂ → Red L₁ L₃ → Join Red L₂ L₃ :=
-  Relation.church_rosser fun a b c hab hac =>
+  Relation.church_rosser fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
     | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | b, c, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, hcd.to_red⟩
+    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, hcd.to_red⟩
 
 @[to_additive]
 theorem cons_cons {p} : Red L₁ L₂ → Red (p :: L₁) (p :: L₂) :=
@@ -252,7 +251,7 @@ theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄
             by simp
           rcases ih this with ⟨w₁, w₂, rfl, h₁, h₂⟩
           exact ⟨w₁, w₂, rfl, h₁.tail Step.not, h₂⟩)
-    fun ⟨L₃, L₄, Eq, h₃, h₄⟩ => Eq.symm ▸ append_append h₃ h₄
+    fun ⟨_, _, Eq, h₃, h₄⟩ => Eq.symm ▸ append_append h₃ h₄
 
 /-- The empty word `[]` only reduces to itself. -/
 @[to_additive "The empty word `[]` only reduces to itself."]
@@ -287,7 +286,8 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
   generalize eq : [(x1, not b1), (x2, b2)] = L'
   intro L h'
   cases h'
-  simp [List.cons_eq_append, List.nil_eq_append] at eq
+  simp only [List.cons_eq_append_iff, List.cons.injEq, Prod.mk.injEq, and_false,
+    List.nil_eq_append_iff, exists_const, or_self, or_false, List.cons_ne_nil] at eq
   rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩
   simp at h
 
@@ -368,10 +368,10 @@ end Red
 
 @[to_additive FreeAddGroup.equivalence_join_red]
 theorem equivalence_join_red : Equivalence (Join (@Red α)) :=
-  equivalence_join_reflTransGen fun a b c hab hac =>
+  equivalence_join_reflTransGen fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
     | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | b, c, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
+    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
 
 @[to_additive FreeAddGroup.join_red_of_step]
 theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ :=
@@ -568,10 +568,10 @@ from the free group over `α` to `β` -/
   additive group homomorphism from the free additive group over `α` to `β`"]
 def lift : (α → β) ≃ (FreeGroup α →* β) where
   toFun f :=
-    MonoidHom.mk' (Quot.lift (Lift.aux f) fun L₁ L₂ => Red.Step.lift) <| by
+    MonoidHom.mk' (Quot.lift (Lift.aux f) fun _ _ => Red.Step.lift) <| by
       rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux]
   invFun g := g ∘ of
-  left_inv f := one_mul _
+  left_inv f := List.prod_singleton
   right_inv g :=
     MonoidHom.ext <| by
       rintro ⟨L⟩
@@ -592,7 +592,7 @@ theorem lift.mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f 
 
 @[to_additive (attr := simp)]
 theorem lift.of {x} : lift f (of x) = f x :=
-  one_mul _
+  List.prod_singleton
 
 @[to_additive]
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :

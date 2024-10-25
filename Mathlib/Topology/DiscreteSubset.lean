@@ -69,7 +69,7 @@ lemma tendsto_cofinite_cocompact_of_discrete [DiscreteTopology X]
 lemma IsClosed.tendsto_coe_cofinite_of_discreteTopology
     {s : Set X} (hs : IsClosed s) (_hs' : DiscreteTopology s) :
     Tendsto ((↑) : s → X) cofinite (cocompact _) :=
-  tendsto_cofinite_cocompact_of_discrete hs.closedEmbedding_subtype_val.tendsto_cocompact
+  tendsto_cofinite_cocompact_of_discrete hs.isClosedEmbedding_subtypeVal.tendsto_cocompact
 
 lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) :
