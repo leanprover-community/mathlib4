@@ -109,6 +109,11 @@ def prodOf {α : Type u} {β : Type v} (x : Gen α) (y : Gen β) : Gen (α × β
   let ⟨b⟩ ← ULiftable.up.{max u v} y
   pure (a, b)
 
+/-- Given two generators randomly choose one to produce a `Sum` -/
+def sumOf {α : Type u} {β : Type v} (x : Gen α) (y : Gen β) : Gen (α ⊕ β) :=
+  oneOf #[(do let ⟨a⟩ ← ULiftable.up.{max u v} x; return .inl a),
+    (do let ⟨b⟩ ← ULiftable.up.{max u v} y; return .inr b)] (pos := by simp)
+
 end Gen
 
 /-- Execute a `Gen` inside the `IO` monad using `size` as the example size -/

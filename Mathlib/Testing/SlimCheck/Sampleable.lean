@@ -175,6 +175,11 @@ instance Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
     let shrink2 := shrB.shrink snd |>.map fun x ↦ (fst, x)
     shrink1 ++ shrink2
 
+instance Sum.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
+    Shrinkable (α ⊕ β) where
+  shrink := fun v ↦
+    (v.map shrA.shrink shrB.shrink).elim (·.map .inl) (·.map .inr)
+
 instance Sigma.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
     Shrinkable ((_ : α) × β) where
   shrink := fun ⟨fst,snd⟩ ↦
@@ -242,6 +247,14 @@ instance Prod.sampleableExt {α : Type u} {β : Type v} [SampleableExt α] [Samp
   shrink := inferInstance
   sample := prodOf sample sample
   interp := Prod.map interp interp
+
+instance Sum.sampleableExt {α : Type u} {β : Type v} [SampleableExt α] [SampleableExt β] :
+    SampleableExt (α ⊕ β) where
+  proxy := (proxy α) ⊕ (proxy β)
+  proxyRepr := inferInstance
+  shrink := inferInstance
+  sample := sumOf sample sample
+  interp := Sum.map interp interp
 
 instance Prop.sampleableExt : SampleableExt Prop where
   proxy := Bool
