@@ -80,12 +80,8 @@ abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
     [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] :=
   NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B
 
--- Porting note: commented out, not dangerous
--- attribute [nolint dangerousInstance] NonUnitalAlgHomClass.toMulHomClass
-
 namespace NonUnitalAlgHomClass
 
--- Porting note: Made following instance non-dangerous through [...] -> [...] replacement
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass
   {F R S A B : Type*} {_ : Monoid R} {_ : Monoid S} {φ : outParam (R →* S)}

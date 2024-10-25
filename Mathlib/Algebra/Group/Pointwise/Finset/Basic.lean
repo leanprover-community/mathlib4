@@ -1188,7 +1188,6 @@ end Group
 
 section VSub
 
--- Porting note: Reordered [VSub α β] and [DecidableEq α] to make vsub less dangerous. Bad?
 variable [VSub α β] [DecidableEq α] {s s₁ s₂ t t₁ t₂ : Finset β} {u : Finset α} {a : α} {b c : β}
 
 /-- The pointwise subtraction of two finsets `s` and `t`: `s -ᵥ t = {x -ᵥ y | x ∈ s, y ∈ t}`. -/

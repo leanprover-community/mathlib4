@@ -67,7 +67,6 @@ theorem coeSubmodule_span (s : Set R) :
   rw [IsLocalization.coeSubmodule, Ideal.span, Submodule.map_span]
   rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem coeSubmodule_span_singleton (x : R) :
     coeSubmodule S (Ideal.span {x}) = Submodule.span R {(algebraMap R S) x} := by
   rw [coeSubmodule_span, Set.image_singleton]

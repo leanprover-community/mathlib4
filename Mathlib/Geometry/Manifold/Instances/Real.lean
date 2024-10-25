@@ -323,7 +323,7 @@ instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
   either the left chart or the right chart, leaving 4 possibilities that we handle successively. -/
   rcases he with (rfl | rfl) <;> rcases he' with (rfl | rfl)
   · -- `e = left chart`, `e' = left chart`
-    exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _ _ _)).1
+    exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
   · -- `e = left chart`, `e' = right chart`
     apply M.contDiffOn.congr
     rintro _ ⟨⟨hz₁, hz₂⟩, ⟨⟨z, hz₀⟩, rfl⟩⟩
@@ -347,7 +347,7 @@ instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
       PiLp.neg_apply, update_same, max_eq_left, hz₀, hz₁.le, mfld_simps]
     abel
   ·-- `e = right chart`, `e' = right chart`
-    exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _ _ _)).1
+    exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
 /-! Register the manifold structure on `Icc 0 1`, and also its zero and one. -/
 
