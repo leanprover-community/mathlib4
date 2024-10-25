@@ -141,7 +141,7 @@ theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 
   exact Valuation.map_eq_of_sub_lt _ y_in
 
 instance (priority := 100) : TopologicalRing R :=
-  (toUniformSpace_eq R Γ₀).symm ▸ v.isRingBasis.instTopologicalRing
+  (toUniformSpace_eq R Γ₀).symm ▸ v.isRingBasis.topologicalRing
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : Γ₀ˣ, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), (v (y - x) : Γ₀) < γ := by

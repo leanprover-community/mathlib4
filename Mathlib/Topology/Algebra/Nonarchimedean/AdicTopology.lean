@@ -90,7 +90,7 @@ theorem Ideal.isAdic_adicTopology (I : Ideal R) (M : Type*) [AddCommGroup M] [Mo
 instance (priority := 100) Ideal.instTopologicalAddGroup_adic
     (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M] :
     @TopologicalAddGroup M (I.adicTopology M) _ :=
-  (I.adicBasis_isAddGroupBasis M).instTopologicalAddGroup
+  (I.adicBasis_isAddGroupBasis M).topologicalAddGroup
 
 theorem IsAdic.topologicalAddGroup {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
     {_ : TopologicalSpace M} (h : IsAdic I M) :
@@ -184,7 +184,7 @@ theorem Ideal.adicBasis_isRingBasis :
 
 instance (priority := 100) Ideal.instTopologicalRing_adic :
     @TopologicalRing R (I.adicTopology R) _ :=
-  I.adicBasis_isRingBasis.instTopologicalRing
+  I.adicBasis_isRingBasis.topologicalRing
 
 theorem IsAdic.topologicalRing {I : Ideal R} {_ : TopologicalSpace R} (h : IsAdic I R) :
     TopologicalRing R :=
@@ -212,7 +212,7 @@ instance (priority := 100) Ideal.instContinuousSMul_adic (I : Ideal R) (M : Type
     [AddCommGroup M] [Module R M] :
     @ContinuousSMul R M _ (I.adicTopology R) (I.adicTopology M) :=
   letI := I.adicTopology R
-  (I.adicBasis_isModuleBasis M (I.isAdic_adicTopology R)).instContinuousSMul
+  (I.adicBasis_isModuleBasis M (I.isAdic_adicTopology R)).continuousSMul
 
 variable {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
   [TopologicalSpace R] [TopologicalSpace M] (hR : IsAdic I R) (hM : IsAdic I M)

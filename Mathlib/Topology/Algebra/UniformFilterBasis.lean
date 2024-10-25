@@ -33,12 +33,12 @@ variable {G : Type*} {ι : Type*} {p : ι → Prop} {s : ι → Set G} [AddCommG
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure. -/
 protected def uniformSpace : UniformSpace G :=
-  @TopologicalAddGroup.toUniformSpace G _ h.topology h.instTopologicalAddGroup
+  @TopologicalAddGroup.toUniformSpace G _ h.topology h.topologicalAddGroup
 
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure is compatible with its group structure. -/
 protected instance (priority := 100) uniformAddGroup : @UniformAddGroup G h.uniformSpace _ :=
-  @comm_topologicalAddGroup_is_uniform G _ h.topology h.instTopologicalAddGroup
+  @comm_topologicalAddGroup_is_uniform G _ h.topology h.topologicalAddGroup
 
 theorem cauchy_iff {F : Filter G} :
     @Cauchy G h.uniformSpace F ↔
