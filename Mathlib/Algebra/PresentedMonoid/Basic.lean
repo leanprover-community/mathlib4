@@ -144,18 +144,4 @@ theorem ext {M : Type*} [Monoid M] (rels : FreeMonoid α → FreeMonoid α → P
   rename_i x y hx hy
   rw [← mul_mk, map_mul, map_mul, hx, hy]
 
-section Isomorphism
-variable {β : Type*} (e : α ≃ β) (rels : FreeMonoid α → FreeMonoid α → Prop)
-
-/-- presented monoids over isomorphic types (with the relations converted appropriately)
-are isomorpic -/
-@[to_additive "presented additive monoids over isomorphic types (with the relations converted
-appropriately) are isomorpic"]
-noncomputable def equivPresentedMonoid (rel : FreeMonoid β → FreeMonoid β → Prop) :
-    PresentedMonoid rel ≃* PresentedMonoid (FreeMonoid.comap_rel e rel) :=
-  (Con.comapQuotientEquivOfSurj _ _ (EquivLike.surjective (FreeMonoid.congr_iso e))).symm.trans <|
-  Con.congr (Con.comap_conGen_of_Bijective (FreeMonoid.congr_iso e) (MulEquiv.bijective _) _ rel)
-
-end Isomorphism
-
 end PresentedMonoid
