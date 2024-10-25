@@ -937,7 +937,7 @@ lemma ge_of_forall_gt_iff_ge {x y : EReal} : (∀ z : ℝ, z < y → z ≤ x) �
 private lemma top_add_le_of_forall_add_le {a b : EReal} (h : ∀ c < ⊤, ∀ d < a, c + d ≤ b) :
     ⊤ + a ≤ b := by
   induction a with
-  | h_bot => exact add_bot ⊤ ▸ bot_le
+  | h_bot => exact add_bot (α := EReal) ⊤ ▸ bot_le
   | h_real a =>
     refine top_add_coe a ▸ le_of_forall_lt_iff_le.1 fun c b_c ↦ ?_
     specialize h (c - a + 1) (coe_lt_top (c - a + 1)) (a - 1)
