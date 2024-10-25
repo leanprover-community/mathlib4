@@ -11,10 +11,17 @@ import Mathlib.CategoryTheory.Category.Preorder
 /-!
 # Initial and terminal objects in a category.
 
+In this file we define the predicates `IsTerminal` and `IsInitial` as well as the class
+`InitialMonoClass`.
+
+The classes `HasTerminal` and `HasInitial` and the associated notations for terminal and inital
+objects are defined in `Terminal.lean`.
+
 ## References
 * [Stacks: Initial and final objects](https://stacks.math.columbia.edu/tag/002B)
 -/
 
+assert_not_exists CategoryTheory.Limits.HasLimit
 
 noncomputable section
 
