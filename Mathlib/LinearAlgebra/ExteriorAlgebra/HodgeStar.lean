@@ -29,6 +29,8 @@ finite-dimensional oriented vector space endowed with a nondegenerate symmetric 
 
 open ExteriorAlgebra CliffordAlgebra LinearMap
 
+namespace Hodge
+
 noncomputable section Clifford
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
@@ -36,17 +38,36 @@ variable [Nontrivial E]
 instance : Nonempty (Fin <| Module.finrank ℝ E) := Fin.pos_iff_nonempty.mp Module.finrank_pos
 variable (o : Orientation ℝ E (Fin <| Module.finrank ℝ E))
 
-def basis : OrthonormalBasis (Fin <| Module.finrank ℝ E) ℝ E :=
+def orientedBasis : OrthonormalBasis (Fin <| Module.finrank ℝ E) ℝ E :=
   OrthonormalBasis.adjustToOrientation (stdOrthonormalBasis ℝ E) o
 
-def vol : ExteriorAlgebra ℝ E := (ιMulti ℝ (Module.finrank ℝ E)) (basis o)
+def vol : ExteriorAlgebra ℝ E := (ιMulti ℝ (Module.finrank ℝ E)) (orientedBasis o)
 
 variable (B : LinearMap.BilinForm ℝ E) --(Bsymm : B.IsSymm) --(Bnondeg : B.Nondegenerate)
 
 def Q := BilinMap.toQuadraticMap B
 def C := CliffordAlgebra (Q B)
 
-def HodgeStar : (ExteriorAlgebra ℝ E) → (ExteriorAlgebra ℝ E) :=
+def star : (ExteriorAlgebra ℝ E) → (ExteriorAlgebra ℝ E) :=
   fun v ↦ equivExterior (Q B) ((equivExterior (Q B)).symm v * (equivExterior (Q B)).symm (vol o))
 
+theorem star_add : ∀ v w : ExteriorAlgebra ℝ E, star o B (v + w) = star o B v + star o B w := by
+  intro v w
+  unfold star
+  rw [map_add, add_mul, map_add]
+
+theorem star_smul : ∀ (r : ℝ) (v : ExteriorAlgebra ℝ E), star o B (r • v) = r • star o B v := by
+  intro r v
+  unfold star
+  rw [map_smul, smul_mul_assoc, map_smul]
+
+def starLinear : ExteriorAlgebra ℝ E →ₗ[ℝ] ExteriorAlgebra ℝ E where
+  toFun := star o B
+  map_add' := star_add o B
+  map_smul' := star_smul o B
+
+
+
 end Clifford
+
+end Hodge
