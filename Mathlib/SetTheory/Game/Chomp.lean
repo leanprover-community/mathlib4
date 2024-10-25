@@ -59,7 +59,9 @@ def validDivisorSet (D : Finset ℕ) : Prop :=
   | none => False
   | some α => validMentionableDivisors α (D.erase α)
 
-instance : DecidablePred validDivisorSet := by unfold validDivisorSet; sorry
+instance : DecidablePred validDivisorSet := by
+  unfold validDivisorSet
+  sorry
 
 /--
 A Chomp game is a natural number
@@ -71,40 +73,78 @@ which is the max number in the Finset.
 -/
 abbrev Board := Subtype validDivisorSet
 
+theorem never_empty (b : Board) : b.val ≠ ∅ := by
+  have x := b.property
+  sorry
+
 def controlling (b : Board) : ℕ := match b.val.max with
   -- b.val ≠ ∅ → b.val.max ≠ none
   | none => by solve_by_elim
   | some α => α
+
 
 /--
 Players can move by 'saying' a divisor.
 This constructs the list of possible games to be made
 in one move.
 -/
-def moves (b : Board) : Finset Board :=
-  have controller := controlling b
+def moves (b : Board) : Finset ℕ :=
   -- No divisors exist past b.n
-  have upperPossibleMoves := Finset.range controller
+  have upperPossibleMoves := Finset.range (controlling b)
   -- However, our only possible moves exist if the divisors + that move is still valid
   have moveset := upperPossibleMoves.val.filterMap fun x =>
     have newValid := b.val ∪ {x}
     have p := instDecidablePredFinsetNatValidDivisorSet newValid
     match p with
-    | isTrue isStillValid => Option.some (Subtype.mk newValid isStillValid)
-    | isFalse _ => Option.none
+    | isTrue _ => x
+    | isFalse _ => none
 
   moveset.toFinset
 
+def move (b : Board) (move : ℕ) : Board :=
+  have newValid := b.val ∪ {move}
+  have p := instDecidablePredFinsetNatValidDivisorSet newValid
+  match p with
+  | isTrue isStillValid => Subtype.mk newValid isStillValid
+  | isFalse _ => by solve_by_elim
+
+def upperBoundMoveCount (b : Board) : ℕ := (controlling b).properDivisors.card - (b.val.card - 1)
+
+theorem unchanging_controller (b : Board) (m : ℕ) :
+    controlling b = controlling (move b m) := by
+  unfold controlling
+  sorry
+
+theorem move_card {b : Board} {m : ℕ} (h : m ∈ moves b) :
+  Finset.card (move b m).val = Finset.card b.val + 1 := by sorry
+
+theorem moves_smaller {b : Board} {m : ℕ} (h : m ∈ moves b) :
+    upperBoundMoveCount (move b m) < upperBoundMoveCount b := by
+  simp [upperBoundMoveCount, move_card h, ← unchanging_controller b]
+  -- an unfinished game b will always have a move left
+  have x : b.val.card - 1 < (controlling b).properDivisors.card := by
+    sorry
+  refine Nat.sub_lt_sub_left ?a ?b
+  · exact x
+  have y : 0 < b.val.card := by
+    by_contra k
+    simp at k
+    have x : b.val ≠ ∅ := never_empty b
+    contradiction
+  exact Nat.sub_one_lt_of_lt y
+
 instance state : State Board where
-  turnBound s := (controlling s).properDivisors.card - s.val.card
-  l s := moves s
-  r s := moves s
+  turnBound s := upperBoundMoveCount s
+  l s := (moves s).image (move s)
+  r s := (moves s).image (move s)
   left_bound m := by
     simp only [Finset.mem_image, Prod.exists] at m
-    sorry
+    rcases m with ⟨_, ⟨h, rfl⟩⟩
+    exact moves_smaller h
   right_bound m := by
     simp only [Finset.mem_image, Prod.exists] at m
-    sorry
+    rcases m with ⟨_, ⟨h, rfl⟩⟩
+    exact moves_smaller h
 
 end Chomp
 
@@ -116,10 +156,6 @@ def chomp (b : Chomp.Board) : PGame :=
 instance shortChomp (b : Chomp.Board) : Short (chomp b) := by
   dsimp [chomp]
   infer_instance
-
-/-- All games of Chomp are impartial. -/
-instance impartialChomp (b : Chomp.Board) : Impartial (chomp b) := by
-  sorry
 
 end PGame
 
