@@ -335,14 +335,14 @@ def liftInitialSeg : Cardinal.{u} ≤i Cardinal.{max u v} := by
     rintro ⟨a, ⟨b, rfl⟩⟩
     exact ⟨b, rfl⟩
 
-theorem mem_range_of_le_lift {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
+theorem mem_range_lift_of_le {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a → b ∈ Set.range lift.{v, u} :=
   liftInitialSeg.mem_range_of_le
 
-@[deprecated mem_range_of_le_lift (since := "2024-10-07")]
+@[deprecated mem_range_lift_of_le (since := "2024-10-07")]
 theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a → ∃ a', lift.{v, u} a' = b :=
-  mem_range_of_le_lift
+  mem_range_lift_of_le
 
 /-- `Cardinal.lift` as an `OrderEmbedding`. -/
 @[deprecated Cardinal.liftInitialSeg (since := "2024-10-07")]
@@ -610,10 +610,10 @@ protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
 private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → a + c ≤ b + d := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
 
-instance add_covariantClass : CovariantClass Cardinal Cardinal (· + ·) (· ≤ ·) :=
+instance addLeftMono : AddLeftMono Cardinal :=
   ⟨fun _ _ _ => add_le_add' le_rfl⟩
 
-instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + ·)) (· ≤ ·) :=
+instance addRightMono : AddRightMono Cardinal :=
   ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
 
 instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
@@ -971,6 +971,12 @@ instance WellOrderingRel.isWellOrder : IsWellOrder α WellOrderingRel :=
 instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
   ⟨⟨WellOrderingRel, inferInstance⟩⟩
 
+variable (α) in
+/-- The **well-ordering theorem** (or **Zermelo's theorem**): every type has a well-order -/
+theorem exists_wellOrder : ∃ (_ : LinearOrder α), WellFoundedLT α := by
+  classical
+  exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toIsWellFounded⟩
+
 /-! ### Small sets of cardinals -/
 
 namespace Cardinal
@@ -1037,7 +1043,7 @@ theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
   apply ((le_csSup_iff' (bddAbove_image.{_,u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
   · intro c hc
     by_contra h
-    obtain ⟨d, rfl⟩ := Cardinal.mem_range_of_le_lift (not_le.1 h).le
+    obtain ⟨d, rfl⟩ := Cardinal.mem_range_lift_of_le (not_le.1 h).le
     simp_rw [lift_le] at h hc
     rw [csSup_le_iff' hs] at h
     exact h fun a ha => lift_le.1 <| hc (mem_image_of_mem _ ha)

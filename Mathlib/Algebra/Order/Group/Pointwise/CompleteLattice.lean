@@ -34,7 +34,7 @@ variable [One M]
 end One
 
 section Group
-variable [Group M] [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
+variable [Group M] [MulLeftMono M] [MulRightMono M]
   {s t : Set M}
 
 @[to_additive]
@@ -84,7 +84,7 @@ variable [One M]
 end One
 
 section Group
-variable [Group M] [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
+variable [Group M] [MulLeftMono M] [MulRightMono M]
   (s t : Set M)
 
 @[to_additive]

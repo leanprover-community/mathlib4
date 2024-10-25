@@ -671,7 +671,6 @@ theorem mem_localTrivAt_baseSet (b : B) : b ∈ (Z.localTrivAt b).baseSet := by
   rw [localTrivAt, ← baseSet_at]
   exact Z.mem_baseSet_at b
 
--- Porting note (#10618): was @[simp, mfld_simps], now `simp` can prove it
 theorem mk_mem_localTrivAt_source : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
   simp only [mfld_simps]
 

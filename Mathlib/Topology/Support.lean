@@ -6,7 +6,7 @@ Authors: Floris van Doorn, Patrick Massot
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # The topological support of a function
@@ -362,8 +362,7 @@ end MulZeroClass
 
 section OrderedAddGroup
 
-variable [TopologicalSpace α] [AddGroup β] [Lattice β]
-  [CovariantClass β β (· + ·) (· ≤ ·)]
+variable [TopologicalSpace α] [AddGroup β] [Lattice β] [AddLeftMono β]
 
 protected theorem HasCompactSupport.abs {f : α → β} (hf : HasCompactSupport f) :
     HasCompactSupport |f| :=
