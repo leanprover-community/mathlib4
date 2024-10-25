@@ -216,7 +216,6 @@ protected theorem map_mul : ∀ x y, e (x * y) = e x * e y :=
 protected theorem map_one : e 1 = 1 :=
   map_one e
 
--- @[simp] -- Porting note (#10618): simp can prove this
 @[deprecated map_smul (since := "2024-06-20")]
 protected theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
   map_smul _ _ _

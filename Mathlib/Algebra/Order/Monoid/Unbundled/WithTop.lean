@@ -113,12 +113,8 @@ theorem add_eq_coe :
   | some a, ⊤, c => by simp
   | some a, some b, c => by norm_cast; simp
 
--- Porting note (#10618): simp can already prove this.
--- @[simp]
 theorem add_coe_eq_top_iff {x : WithTop α} {y : α} : x + y = ⊤ ↔ x = ⊤ := by simp
 
--- Porting note (#10618): simp can already prove this.
--- @[simp]
 theorem coe_add_eq_top_iff {y : WithTop α} : ↑x + y = ⊤ ↔ y = ⊤ := by simp
 
 theorem add_right_cancel_iff [IsRightCancelAdd α] (ha : a ≠ ⊤) : b + a = c + a ↔ b = c := by
@@ -542,13 +538,9 @@ theorem bot_lt_add [LT α] {a b : WithBot α} : ⊥ < a + b ↔ ⊥ < a ∧ ⊥ 
 theorem add_eq_coe : a + b = x ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = x :=
   WithTop.add_eq_coe
 
--- Porting note (#10618): simp can already prove this.
--- @[simp]
 theorem add_coe_eq_bot_iff : a + y = ⊥ ↔ a = ⊥ :=
   WithTop.add_coe_eq_top_iff
 
--- Porting note (#10618): simp can already prove this.
--- @[simp]
 theorem coe_add_eq_bot_iff : ↑x + b = ⊥ ↔ b = ⊥ :=
   WithTop.coe_add_eq_top_iff
 
