@@ -120,7 +120,7 @@ instance linearOrder_toType (o : Ordinal) : LinearOrder o.toType :=
   @IsWellOrder.linearOrder _ o.out.r o.out.wo
 
 instance wellFoundedLT_toType_lt (o : Ordinal) : WellFoundedLT o.toType :=
-  o.out.wo.to_isWellFounded
+  o.out.wo.toIsWellFounded
 
 namespace Ordinal
 
