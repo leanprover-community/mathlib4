@@ -44,8 +44,6 @@ class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semir
   /-- An equivalence of algebras commutes with the action of scalars. -/
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
--- Porting note: Removed nolint dangerousInstance from AlgEquivClass.toRingEquivClass
-
 namespace AlgEquivClass
 
 -- See note [lower instance priority]
@@ -141,7 +139,6 @@ protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R
 theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
   DFunLike.coe_injective
 
--- Porting note: Made to CoeOut instance from Coe, not dangerous anymore
 instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
   ⟨AlgEquiv.toRingEquiv⟩
 
@@ -800,6 +797,18 @@ def toAlgEquiv (g : G) : A ≃ₐ[R] A :=
 theorem toAlgEquiv_injective [FaithfulSMul G A] :
     Function.Injective (MulSemiringAction.toAlgEquiv R A : G → A ≃ₐ[R] A) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => AlgEquiv.ext_iff.1 h r
+
+variable (G)
+
+/-- Each element of the group defines an algebra equivalence.
+
+This is a stronger version of `MulSemiringAction.toRingAut` and
+`DistribMulAction.toModuleEnd`. -/
+@[simps]
+def toAlgAut : G →* A ≃ₐ[R] A where
+  toFun := toAlgEquiv R A
+  map_one' := AlgEquiv.ext <| one_smul _
+  map_mul' g h := AlgEquiv.ext <| mul_smul g h
 
 end
 
