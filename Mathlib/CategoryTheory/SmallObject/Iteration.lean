@@ -170,7 +170,7 @@ instance : Category (Iteration ε j) where
   id := id
   comp := comp
 
-instance {J} {j : J} [ConditionallyCompleteLinearOrderBot J] [WellFoundedLT J] [SuccOrder J]
+instance {J} {j : J} [PartialOrder J] [OrderBot J] [WellFoundedLT J] [SuccOrder J]
     {iter₁ iter₂ : Iteration ε j} :
     Subsingleton (iter₁ ⟶ iter₂) where
   allEq f g := by
@@ -178,14 +178,19 @@ instance {J} {j : J} [ConditionallyCompleteLinearOrderBot J] [WellFoundedLT J] [
     suffices ∀ i hi, f.natTrans.app ⟨i, hi⟩ = g.natTrans.app ⟨i, hi⟩ by
       ext ⟨i, hi⟩ : 2
       apply this
-    refine fun i => SuccOrder.prelimitRecOn i ?_ ?_ <;>
-    intro j H IH hj
-    · simp [Hom.natTrans_app_succ, IH, (Order.lt_succ_of_not_isMax H).trans_le hj]
-    · obtain rfl | h_bot := eq_or_ne j ⊥
-      · simp only [natTrans_app_zero]
-      · apply (iter₁.isColimit j (Order.isSuccLimit_iff.2 ⟨h_bot, H⟩) hj).hom_ext
-        rintro ⟨k, hk⟩
-        simp [IH k hk]
+    intro i
+    induction i using SuccOrder.limitRecOn with
+    | hm j H =>
+      have := H.eq_bot
+      subst this
+      simp [natTrans_app_zero]
+    | hs j H IH =>
+      intro hj
+      simp [Hom.natTrans_app_succ, IH, (Order.lt_succ_of_not_isMax H).trans_le hj]
+    | hl j H IH =>
+      apply fun hj ↦ (iter₁.isColimit j H hj).hom_ext ?_
+      rintro ⟨k, hk⟩
+      simp [IH k hk]
 
 end Hom
 
