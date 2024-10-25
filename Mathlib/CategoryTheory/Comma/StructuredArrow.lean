@@ -5,7 +5,7 @@ Authors: Adam Topaz, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.Logic.Small.Set
 
