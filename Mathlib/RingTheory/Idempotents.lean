@@ -345,19 +345,7 @@ theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent_of_isMulCentral
     simpa [RingHom.mem_ker, sub_eq_zero] using congr_fun h₂.symm i
   exact h₁
 
-variable {ι M σ : Type*} [DecidableEq ι] [AddCommGroup M] [Module R M]
-open DirectSum
-variable (ℳ : ι → Submodule R M) [Decomposition ℳ] [(i : ι) → (x : (ℳ i)) → Decidable (x ≠ 0)]
-
-lemma decompose_unique  (rep₁ rep₂ : ⨁ i, ℳ i)
-    (h₁ : (∑ i ∈ rep₂.support, rep₂ i : M) = (∑ i ∈ rep₁.support, rep₁ i)) :
-    rep₁ = rep₂ := by
-  apply_fun (decompose ℳ).symm
-  rw [← sum_support_decompose ℳ (r := (decompose ℳ).symm rep₁),
-    ← sum_support_decompose ℳ (r := (decompose ℳ).symm rep₂)]
-  simp only [Equiv.apply_symm_apply]
-  exact h₁.symm
-
+open DirectSum in
 omit [Fintype I] in
 lemma decomp_ring_ortho_idem_is_idem [DecidableEq I] (V : I → Submodule R R)
     [Decomposition V] (e : ⨁ (i : I), (V i)) [(i : I) → (x : ↥(V i)) → Decidable (x ≠ 0)]
@@ -399,7 +387,7 @@ lemma decomp_ring_ortho_idem_is_idem [DecidableEq I] (V : I → Submodule R R)
         AddSubmonoid.mk_eq_zero, not_not, y] at hx hy ⊢
       exact (AddSubmonoid.mk_eq_zero (V x).toAddSubmonoid).mp hy
   have : x = y := by
-    apply decompose_unique
+    apply DirectSum.decompose_unique
     rw [hx3, hy3, mul_one]
     simp only [DFinsupp.single_apply, ↓reduceDIte, x]
   have := congr($this i)
@@ -408,6 +396,7 @@ lemma decomp_ring_ortho_idem_is_idem [DecidableEq I] (V : I → Submodule R R)
   rw [this.symm]
   simp only [DFinsupp.single_apply, ↓reduceDIte, x]
 
+open DirectSum in
 omit [Fintype I] in
 /-- If a ring can be decomposed into direct sum of finitely many left ideals `Vᵢ`
   where `1 = e₁ + ... + eₙ` and `eᵢ ∈ Vᵢ`, then `eᵢ` is a family of orthogonal
