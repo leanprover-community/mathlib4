@@ -45,7 +45,7 @@ variable (R) in
 We say that `y` is a conjugate root of `x` over `K` if the minimal polynomial of `x` is the
 same as the minimal polynomial of `y`.
 -/
-def IsConjRoot (x y : A) : Prop := (minpoly R x) = (minpoly R y)
+def IsConjRoot (x y : A) : Prop := minpoly R x = minpoly R y
 
 /--
 The definition of conjugate roots.
