@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Sean Leather
 -/
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Nodup
 
 /-!
 # Utilities for lists of sigmas
