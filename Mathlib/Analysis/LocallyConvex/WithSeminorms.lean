@@ -69,7 +69,7 @@ variable {𝕜 E ι}
 namespace SeminormFamily
 
 /-- The sets of a filter basis for the neighborhood filter of 0. -/
-def basis (p : SeminormFamily 𝕜 E ι) (s : Finset ι) (r : ℝ) : Set E :=
+abbrev basis (p : SeminormFamily 𝕜 E ι) (s : Finset ι) (r : ℝ) : Set E :=
   ball (s.sup p) 0 r
 
 variable (p : SeminormFamily 𝕜 E ι)
@@ -83,7 +83,7 @@ theorem basis_isBasis : IsBasis (fun sr ↦ 0 < sr.2) (uncurry p.basis) where
     classical
     rintro ⟨s₁, r₁⟩ ⟨s₂, r₂⟩ h₁ h₂
     use ⟨s₁ ∪ s₂, min r₁ r₂⟩, lt_min h₁ h₂
-    simp only [uncurry, basis, subset_inter_iff, ball_finset_sup_eq_iInter _ _ _ h₁,
+    simp only [uncurry, subset_inter_iff, ball_finset_sup_eq_iInter _ _ _ h₁,
       ball_finset_sup_eq_iInter _ _ _ h₂, ball_finset_sup_eq_iInter _ _ _ (lt_min h₁ h₂)]
     exact
       ⟨Set.iInter₂_mono' fun i hi =>
@@ -93,7 +93,7 @@ theorem basis_isBasis : IsBasis (fun sr ↦ 0 < sr.2) (uncurry p.basis) where
 
 theorem basis_isAddGroupBasis : IsAddGroupBasis (fun sr ↦ 0 < sr.2) (uncurry p.basis) := by
   refine .mk_of_comm _ _ p.basis_isBasis ?zero ?add ?neg
-  case zero => simp [uncurry, basis]
+  case zero => simp
   case add =>
     rintro ⟨s, r⟩ h
     use ⟨s, r / 2⟩, half_pos h
@@ -101,7 +101,7 @@ theorem basis_isAddGroupBasis : IsAddGroupBasis (fun sr ↦ 0 < sr.2) (uncurry p
   case neg =>
     rintro ⟨s, r⟩ h
     use ⟨s, r⟩, h
-    simp [basis]
+    simp
 
 theorem basis_isModuleBasis : IsModuleBasis 𝕜 (fun sr ↦ 0 < sr.2) (uncurry p.basis) where
   toIsAddGroupBasis := p.basis_isAddGroupBasis
@@ -115,15 +115,15 @@ theorem basis_isModuleBasis : IsModuleBasis 𝕜 (fun sr ↦ 0 < sr.2) (uncurry 
     rintro k ⟨s, r⟩ h
     rcases eq_or_ne k 0 with (hk|hk)
     · use ⟨s, r⟩, h
-      simp only [hk, zero_smul, uncurry, basis, mapsTo', image_subset_iff, mem_ball, sub_self,
+      simp only [hk, zero_smul, uncurry, mapsTo', image_subset_iff, mem_ball, sub_self,
         map_zero, h, preimage_const_of_mem, subset_univ]
-    · simp_rw [mapsTo', image_subset_iff, uncurry, basis, (s.sup p).smul_ball_preimage 0 r k hk,
+    · simp_rw [mapsTo', image_subset_iff, uncurry, (s.sup p).smul_ball_preimage 0 r k hk,
         smul_zero]
       use ⟨s, (r / ‖k‖)⟩, div_pos h (norm_pos_iff.mpr hk)
   smul_right := by
     rintro x ⟨s, r⟩ h
     rw [Filter.eventually_iff]
-    simp_rw [uncurry, basis, (s.sup p).mem_ball_zero, map_smul_eq_mul]
+    simp_rw [uncurry, (s.sup p).mem_ball_zero, map_smul_eq_mul]
     by_cases hx : 0 < (s.sup p) x
     · simp_rw [(lt_div_iff₀ hx).symm]
       rw [← _root_.ball_zero_eq]
@@ -137,7 +137,7 @@ theorem filter_eq_iInf (p : SeminormFamily 𝕜 E ι) :
   · rw [p.basis_isBasis.hasBasis.le_basis_iff (Metric.nhds_basis_ball.comap _)]
     intro ε hε
     use ⟨{i}, ε⟩, hε
-    simp [basis, ball_zero_eq_preimage_ball]
+    simp [ball_zero_eq_preimage_ball]
   · rw [p.basis_isBasis.hasBasis.ge_iff]
     rintro ⟨s, r⟩ h
     rw [uncurry, basis, Seminorm.ball_finset_sup_eq_iInter _ _ _ h, s.iInter_mem_sets]
@@ -429,7 +429,7 @@ theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp 
   rw [hp.hasBasis.isVonNBounded_iff]
   constructor
   · intro h I
-    simp only [uncurry, SeminormFamily.basis] at h
+    simp only [uncurry] at h
     specialize h ⟨I, 1⟩ one_pos
     rcases h.exists_pos with ⟨r, hr, h⟩
     cases' NormedField.exists_lt_norm 𝕜 r with a ha

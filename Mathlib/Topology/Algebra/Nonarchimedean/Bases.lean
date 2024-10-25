@@ -5,7 +5,6 @@ Authors: Patrick Massot, Anatole Dedecker
 -/
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Neighborhood bases for non-archimedean rings and modules

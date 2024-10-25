@@ -71,16 +71,6 @@ theorem IntermediateField.finiteDimensional_bot (K L : Type*) [Field K] [Field L
     FiniteDimensional K (⊥ : IntermediateField K L) :=
   .of_rank_eq_one IntermediateField.rank_bot
 
-/-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L` -/
-theorem IntermediateField.fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
-    IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
-  ext f
-  refine ⟨fun _ => Subgroup.mem_top _, fun _ => ?_⟩
-  rintro ⟨x, hx : x ∈ (⊥ : IntermediateField K L)⟩
-  rw [IntermediateField.mem_bot] at hx
-  rcases hx with ⟨y, rfl⟩
-  exact f.commutes y
-
 /-- If `E1` and `E2` are finite-dimensional intermediate fields, then so is their compositum.
 This rephrases a result already in mathlib so that it is compatible with our type classes -/
 theorem finiteDimensional_sup {K L : Type*} [Field K] [Field L] [Algebra K L]
@@ -99,17 +89,19 @@ theorem IntermediateField.fixingSubgroup.antimono {K L : Type*} [Field K] [Field
   rintro σ hσ ⟨x, hx⟩
   exact hσ ⟨x, h12 hx⟩
 
-@[simp] lemma IntermediateField.fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    IntermediateField.fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
-  ext
-  simp [mem_fixingSubgroup_iff, DFunLike.ext_iff]
-
-@[simp] lemma IntermediateField.fixingSubgroup_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
+/-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L` -/
+theorem IntermediateField.fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
   ext
   simp [mem_fixingSubgroup_iff, mem_bot]
 
-def galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] (E : IntermediateField K L) :
+/-- This lemma says that `Gal(K/K) = {1}` -/
+theorem IntermediateField.fixingSubgroup.top {K L : Type*} [Field K] [Field L] [Algebra K L] :
+    IntermediateField.fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
+  ext
+  simp [mem_fixingSubgroup_iff, DFunLike.ext_iff]
+
+abbrev galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] (E : IntermediateField K L) :
     Set (L ≃ₐ[K] L) :=
   IntermediateField.fixingSubgroup E
 
@@ -231,5 +223,5 @@ instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type) [Field
   -- TODO: criterion `DiscreteTopology` in terms of `𝓝 1` ?
   rw [discreteTopology_iff_isOpen_singleton_one]
   change IsOpen (⊥ : Subgroup (L ≃ₐ[K] L))
-  rw [← IntermediateField.fixingSubgroup_top]
+  rw [← IntermediateField.fixingSubgroup.top]
   exact IntermediateField.fixingSubgroup_isOpen ⊤
