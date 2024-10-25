@@ -503,12 +503,12 @@ def piCongrLeft {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι' → Type*}
 
 /-- `Equiv.sumArrowEquivProdArrow` as an `IsometryEquiv`.-/
 @[simps!]
-def sumArrowEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ) where
+def sumArrowIsometryEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ) where
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
   isometry_toFun _ _ := by simp [Prod.edist_eq, edist_pi_def, Finset.sup_univ_eq_iSup, iSup_sum]
 
-theorem sumArrowEquivProdArrow_eq_homeomorph {α β : Type*} [Fintype α] [Fintype β] :
-    sumArrowEquivProdArrow.toHomeomorph
+theorem sumArrowIsometryEquivProdArrow_eq_homeomorph {α β : Type*} [Fintype α] [Fintype β] :
+    sumArrowIsometryEquivProdArrow.toHomeomorph
     = Homeomorph.sumArrowEquivProdArrow (ι := α) (ι' := β) (X := γ) :=
   rfl
 

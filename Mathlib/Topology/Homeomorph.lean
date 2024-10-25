@@ -703,7 +703,7 @@ def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X whe
 
 /-- `Equiv.sumArrowEquivProdArrow` as a homeomorphism. The natural homeomorphism
 `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)` -/
-def sumArrowEquivProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)  where
+def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)  where
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
   continuous_toFun := by
     simp only [Equiv.sumArrowEquivProdArrow, Equiv.coe_fn_mk, continuous_prod_mk]
@@ -713,10 +713,10 @@ def sumArrowEquivProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → 
     | .inr i => by apply (continuous_apply _).comp' continuous_snd
 
 private theorem _root_.Fin.appendEquiv_eq_Homeomorph (m n : ℕ) : Fin.appendEquiv m n =
-    ((sumArrowEquivProdArrow).symm.trans
+    ((sumArrowHomeomorphProdArrow).symm.trans
     (piCongrLeft (Y := fun _ ↦ X) finSumFinEquiv)).toEquiv := by
   ext ⟨x1, x2⟩ l
-  simp only [sumArrowEquivProdArrow, Equiv.sumArrowEquivProdArrow,
+  simp only [sumArrowHomeomorphProdArrow, Equiv.sumArrowEquivProdArrow,
     finSumFinEquiv, Fin.addCases, Fin.appendEquiv, Fin.append, Equiv.coe_fn_mk]
   by_cases h : l < m
   · simp [h]
