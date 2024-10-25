@@ -344,6 +344,13 @@ theorem map_comp (g : β → γ) (f : α → β) : map (g ∘ f) = (map g).comp 
 @[to_additive (attr := simp)]
 theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦ rfl
 
+/-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
+@[to_additive]
+instance uniqueUnits : Unique (FreeMonoid α)ˣ where
+  uniq u := Units.ext <| toList.injective <|
+    have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
+    (List.append_eq_nil.mp this).1
+
 @[to_additive (attr := simp)]
 theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Function.Surjective f := by
   constructor
@@ -369,13 +376,6 @@ theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Functio
   rfl
 
 end Map
-
-/-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
-@[to_additive]
-instance uniqueUnits : Unique (FreeMonoid α)ˣ where
-  uniq u := Units.ext <| toList.injective <|
-    have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
-    (List.append_eq_nil.mp this).1
 
 /-! ### reverse -/
 
