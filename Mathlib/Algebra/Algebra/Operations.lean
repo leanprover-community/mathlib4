@@ -37,7 +37,8 @@ Additionally, in the `Pointwise` locale we promote `Submodule.pointwiseDistribMu
 `MulSemiringAction` as `Submodule.pointwiseMulSemiringAction`.
 
 When `R` is not necessarily commutative, and `A` is merely a `R`-module with a ring structure
-such that `IsScalarTower R A A` holds, we can still define `1 : Submodule R A` and
+such that `IsScalarTower R A A` holds (equivalent to the data of a ring homomorphism `R →+* A`
+by `ringHomEquivModuleIsScalarTower`), we can still define `1 : Submodule R A` and
 `Mul (Submodule R A)`, but `1` is only a left identity, not necessarily a right one.
 
 ## Tags
@@ -70,16 +71,20 @@ section Module
 
 variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
 
-/-- `1 : Submodule R A` is the submodule `R ∙ 1` of A. -/
+/-- `1 : Submodule R A` is the submodule `R ∙ 1` of A.
+TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
+once a version of `Algebra` without the `commutes'` field is introduced.
+See issue #18110.
+-/
 instance one : One (Submodule R A) :=
-  ⟨R ∙ 1⟩
+  ⟨LinearMap.range (LinearMap.toSpanSingleton R A 1)⟩
 
-theorem one_eq_span : (1 : Submodule R A) = R ∙ 1 := rfl
+theorem one_eq_span : (1 : Submodule R A) = R ∙ 1 :=
+  (LinearMap.span_singleton_eq_range _ _ _).symm
 
 theorem le_one_toAddSubmonoid : 1 ≤ (1 : Submodule R A).toAddSubmonoid := by
   rintro x ⟨n, rfl⟩
-  exact mem_span_singleton.mpr
-    ⟨n, show (n : R) • (1 : A) = n by rw [Nat.cast_smul_eq_nsmul, nsmul_one]⟩
+  exact ⟨n, show (n : R) • (1 : A) = n by rw [Nat.cast_smul_eq_nsmul, nsmul_one]⟩
 
 @[simp]
 theorem toSubMulAction_one : (1 : Submodule R A).toSubMulAction = 1 :=
@@ -141,7 +146,6 @@ theorem mul_bot : M * ⊥ = ⊥ :=
 theorem bot_mul : ⊥ * M = ⊥ :=
   toAddSubmonoid_injective (AddSubmonoid.bot_mul _)
 
--- @[simp] -- Porting note (#10618): simp can prove this once we have a monoid structure
 protected theorem one_mul : (1 : Submodule R A) * M = M := by
   refine le_antisymm (mul_le.mpr fun r hr m hm ↦ ?_) fun m hm ↦ ?_
   · obtain ⟨r, rfl⟩ := mem_span_singleton.mp hr
@@ -290,7 +294,6 @@ theorem span_mul_span : span R S * span R T = span R (S * T) := by
 
 variable {R} (M N P Q)
 
--- @[simp] -- Porting note (#10618): simp can prove this once we have a monoid structure
 protected theorem mul_one : M * 1 = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
   erw [span_mul_span, mul_one, span_eq]
@@ -582,9 +585,9 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseMulSemiringAction
 
 end
 
-end Ring
+end AlgebraSemiring
 
-section CommRing
+section AlgebraCommSemiring
 
 variable {A : Type v} [CommSemiring A] [Algebra R A]
 variable {M N : Submodule R A} {m n : A}
@@ -720,6 +723,6 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
 
 end Quotient
 
-end CommRing
+end AlgebraCommSemiring
 
 end Submodule
