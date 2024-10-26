@@ -7,7 +7,7 @@ Authors: Jujian Zhang, Junyan Xu
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.Algebra.Category.Grp.Injective
 
 /-!
 # Character module of a module
