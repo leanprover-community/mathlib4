@@ -59,8 +59,9 @@ noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) where
 
 /-- The operator norm of the projection is at most `1`. -/
 theorem norm_normedMk_le : ‖normedMk (M := M)‖ ≤ 1 :=
-  NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp only [normedMk.apply, norm_mk,
-    one_mul, le_refl]
+  NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp only [normedMk_apply,
+    ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mkAddMonoidHom_apply, norm_mk, one_mul,
+    le_refl]
 
 lemma eq_of_inseparable (f : NormedAddGroupHom M N) (hf : ∀ x, ‖x‖ = 0 → f x = 0) :
     ∀ x y, Inseparable x y → f x = f y :=
@@ -101,7 +102,8 @@ def liftNormedAddGroupHom_equiv {N : Type*} [SeminormedAddCommGroup N] :
   invFun := fun g => ⟨g.comp normedMk, by
     intro x hx
     rw [← norm_mk, norm_eq_zero] at hx
-    rw [comp_apply, normedMk.apply, hx]
+    rw [comp_apply, normedMk_apply, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+      mkAddMonoidHom_apply, hx]
     exact map_zero g⟩
   left_inv := by
     intro f
@@ -138,9 +140,9 @@ theorem liftNormedAddGroupHom_normNoninc {N : Type*} [SeminormedAddCommGroup N]
 theorem norm_normedMk (h : ∃ x : M, ‖x‖ ≠ 0) :
     ‖normedMk (M := M)‖ = 1 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ zero_le_one
-  · simp only [normedMk.apply, one_mul]
+  · simp only [normedMk_apply, one_mul]
     exact fun x ↦ Preorder.le_refl ‖SeparationQuotient.mk x‖
-  · simp only [ge_iff_le, normedMk.apply]
+  · simp only [ge_iff_le, normedMk_apply]
     intro N _ hle
     obtain ⟨x, hxnn⟩ := h
     have : 0 < ‖x‖ := Ne.lt_of_le (Ne.symm hxnn) (norm_nonneg x)
@@ -150,7 +152,8 @@ theorem norm_normedMk (h : ∃ x : M, ‖x‖ ≠ 0) :
 theorem norm_trivial_separationQuotient_mk (h : ∀ x : M, ‖x‖ = 0) :
     normedMk (M := M) = 0 := by
   ext x
-  simp only [normedMk.apply, zero_apply]
+  simp only [normedMk_apply, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mkAddMonoidHom_apply,
+    zero_apply]
   rw [← norm_eq_zero, norm_mk]
   exact h x
 
