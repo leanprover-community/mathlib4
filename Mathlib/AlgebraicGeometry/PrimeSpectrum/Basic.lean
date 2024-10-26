@@ -546,7 +546,7 @@ protected def pointsEquivIrreducibleCloseds :
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
 
 lemma zeroLocus_eq_iff {I J : Ideal R} :
-  zeroLocus (I : Set R) = zeroLocus J ↔ I.radical = J.radical := by
+    zeroLocus (I : Set R) = zeroLocus J ↔ I.radical = J.radical := by
   constructor
   · intro h; simp_rw [← vanishingIdeal_zeroLocus_eq_radical, h]
   · intro h; rw [← zeroLocus_radical, h, zeroLocus_radical]
