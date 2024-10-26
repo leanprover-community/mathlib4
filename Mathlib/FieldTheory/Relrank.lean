@@ -110,8 +110,7 @@ theorem relfinrank_mul_finrank_top (h : A ≤ B) : relfinrank A B * finrank B E 
 theorem relrank_top_left : relrank ⊤ A = 1 := relrank_eq_one_of_le le_top
 
 @[simp]
-theorem relfinrank_top_left : relfinrank ⊤ A = 1 := by
-  simp [relfinrank_eq_toNat_relrank]
+theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le_top
 
 @[simp]
 theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
@@ -496,8 +495,7 @@ theorem relfinrank_inf_mul_relfinrank_of_le (h : A ≤ B) :
 theorem relrank_top_left : relrank ⊤ A = 1 := relrank_eq_one_of_le le_top
 
 @[simp]
-theorem relfinrank_top_left : relfinrank ⊤ A = 1 := by
-  simp [relfinrank_eq_toNat_relrank]
+theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le_top
 
 @[simp]
 theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
