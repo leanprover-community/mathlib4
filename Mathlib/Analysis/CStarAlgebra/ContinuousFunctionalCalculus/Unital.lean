@@ -1056,7 +1056,7 @@ noncomputable def cfcHomSuperset {a : A} (ha : p a) {s : Set R} (hs : spectrum R
 
 lemma cfcHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
     Continuous (cfcHomSuperset ha hs) :=
-  (cfcHom_continuous ha).comp <| ContinuousMap.continuous_comp_left _
+  (cfcHom_continuous ha).comp <| ContinuousMap.continuous_precomp _
 
 lemma cfcHomSuperset_id {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
     cfcHomSuperset ha hs (.restrict s <| .id R) = a :=
