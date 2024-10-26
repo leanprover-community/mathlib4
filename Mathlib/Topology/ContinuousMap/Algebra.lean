@@ -697,6 +697,10 @@ def ContinuousMap.compRightAlgHom {α β : Type*} [TopologicalSpace α] [Topolog
   map_mul' _ _ := ext fun _ ↦ rfl
   commutes' _ := ext fun _ ↦ rfl
 
+theorem ContinuousMap.compRightAlgHom_continuous {α β : Type*} [TopologicalSpace α]
+    [TopologicalSpace β] (f : C(α, β)) : Continuous (compRightAlgHom R A f) :=
+  continuous_precomp f
+
 variable {A}
 
 /-- Coercion to a function as an `AlgHom`. -/

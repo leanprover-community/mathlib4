@@ -1548,4 +1548,4 @@ namespace Set
 
 end Set
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 1700
