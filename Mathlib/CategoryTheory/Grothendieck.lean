@@ -356,7 +356,7 @@ def functorFrom : Grothendieck F ⥤ E where
 
 /-- `Grothendieck.apply` and `Grothendieck.functorFrom` fulfill a kind of "β reduction", in which
 application and abstraction cancel each other out. -/
-theorem ι_functorFrom (c : C) : ι c ⋙ (functorFrom fib hom hom_id hom_comp) = fib c := by
+theorem ι_functorFrom (c : C) : ι F c ⋙ (functorFrom fib hom hom_id hom_comp) = fib c := by
   refine Functor.ext (fun _ => by rfl) ?_
   intro X Y f
   simp [hom_id]
