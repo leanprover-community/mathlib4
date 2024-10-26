@@ -39,7 +39,7 @@ transformations:
 
 -/
 
-namespace CategoryTheory
+namespace CategoryTheory.Pseudofunctor
 
 open Category Bicategory Oplax
 
@@ -118,7 +118,6 @@ def mkOfOplax {F G : Pseudofunctor B C} (η : F.toOplax ⟶ G) (η' : StrongCore
   app := η.app
   naturality := η'.naturality
   -- Not automatic as simp must convert F.toOplax.map₂ to F.map₂ in η.naturality_naturality etc
-  -- TODO: can this be avoided?
   naturality_naturality θ := by simpa using η.naturality_naturality θ
   naturality_id a := by simpa using η.naturality_id a
   naturality_comp f g := by simpa using η.naturality_comp f g
@@ -227,4 +226,4 @@ instance : CategoryStruct (Pseudofunctor B C) where
   id F := StrongTrans.id F
   comp := StrongTrans.vcomp
 
-end CategoryTheory
+end CategoryTheory.Pseudofunctor
