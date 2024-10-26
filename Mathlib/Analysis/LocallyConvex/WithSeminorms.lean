@@ -16,6 +16,7 @@ import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 ## Main definitions
 
+* `SeminormFamily.topology` : The topology induced by a family of seminorms.
 * `Seminorm.IsBounded`: A linear map `f : E →ₗ[𝕜] F` is bounded iff every seminorm in `F` can be
 bounded by a finite number of seminorms in `E`.
 
@@ -143,6 +144,7 @@ theorem filter_eq_iInf (p : SeminormFamily 𝕜 E ι) :
       ⟨Metric.ball 0 r, Metric.ball_mem_nhds 0 h,
         (p i).ball_zero_eq_preimage_ball.symm.subset⟩
 
+/-- The topology induced by a family of seminorms. -/
 abbrev topology (p : SeminormFamily 𝕜 E ι) : TopologicalSpace E := p.isAddGroupBasis.topology
 
 /-- If a family of seminorms is continuous, then their basis sets are neighborhoods of zero. -/
