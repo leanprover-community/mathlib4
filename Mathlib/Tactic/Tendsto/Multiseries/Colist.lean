@@ -7,12 +7,6 @@ universe u v w
 
 namespace TendstoTactic
 
--- (kernel) invalid nested inductive datatype 'Option', nested inductive datatypes parameters cannot contain local variables.
-
--- inductive PreMS' : ℕ → Type where
--- | const : ℝ → PreMS' 0
--- | colist {n : ℕ} (fn : ℕ → Option (ℝ × PreMS' n)) : PreMS' (n + 1)
-
 abbrev CoList' (α : Type u) : Type u := ℕ → Option α
 
 def CoListWF {α : Type u} (li : CoList' α) : Prop :=

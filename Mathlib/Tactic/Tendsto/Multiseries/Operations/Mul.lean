@@ -57,38 +57,6 @@ theorem mulMonomial_leadingExp {basis_hd : _} {basis_tl : _} {b : PreMS (basis_h
   · intro (b_deg, b_coef) b_tl
     simp [leadingExp]
 
-theorem mul_cons_cons_head {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg y_deg : ℝ} {x_coef y_coef : PreMS basis_tl}
-    {x_tl y_tl : PreMS (basis_hd :: basis_tl)} :
-    (mul (basis := basis_hd :: basis_tl) (CoList.cons (x_deg, x_coef) x_tl) (CoList.cons (y_deg, y_coef) y_tl)).head =
-    .some (x_deg + y_deg, x_coef.mul y_coef) := by
-  simp [mul]
-
-@[simp]
-theorem mul_leadingExp {basis_hd : _} {basis_tl : _} {x y : PreMS (basis_hd :: basis_tl)} :
-    (mul x y).leadingExp = x.leadingExp + y.leadingExp := by
-  apply x.casesOn
-  · simp [leadingExp]
-  intro (x_deg, x_coef) x_tl
-  apply y.casesOn
-  · simp [leadingExp]
-  intro (y_deg, y_coef) y_tl
-  have : CoList.head (mul (basis := basis_hd :: basis_tl) (CoList.cons (x_deg, x_coef) x_tl) (CoList.cons (y_deg, y_coef) y_tl)) = .some ?_ := by
-    exact mul_cons_cons_head
-  simp [leadingExp_of_head, this]
-
-theorem mul_eq_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {X Y : PreMS (basis_hd :: basis_tl)} (h : X.mul Y = CoList.nil) :
-    X = .nil ∨ Y = .nil := by
-  revert h
-  apply X.casesOn
-  · simp
-  · intro (X_deg, X_coef) X_tl
-    apply Y.casesOn
-    · simp
-    · intro (Y_deg, Y_coef) Y_tl h
-      apply_fun CoList.head at h
-      simp [mul_cons_cons_head] at h
-
 theorem mul_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {coef : PreMS basis_tl}
     {tl X Y : PreMS (basis_hd :: basis_tl)} (h : X.mul Y = .cons (deg, coef) tl) :
     ∃ X_deg X_coef X_tl Y_deg Y_coef Y_tl, X = .cons (X_deg, X_coef) X_tl ∧ Y = .cons (Y_deg, Y_coef) Y_tl := by
@@ -112,7 +80,7 @@ theorem mul_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg y_deg :
     mul (basis := basis_hd :: basis_tl) (CoList.cons (x_deg, x_coef) x_tl) (CoList.cons (y_deg, y_coef) y_tl) =
     CoList.cons (x_deg + y_deg, x_coef.mul y_coef) ((mulMonomial y_tl x_coef x_deg) +
       (x_tl.mul (CoList.cons (y_deg, y_coef) y_tl))) := by
-  simp [mul, merge1_cons_head_cons]
+  simp [mul]
 
 -- Note: the condition `x.wellOrdered` is required. Counterexample: `x = [1, 2]`, `y = [1]` (well-ordered).
 -- Then `lhs = [1, 2]` while `rhs = [2, 1]`.
@@ -155,6 +123,33 @@ theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg : ℝ} {x_co
       use x_tl
   · simp [motive]
     use x
+
+@[simp]
+theorem mul_leadingExp {basis_hd : _} {basis_tl : _} {x y : PreMS (basis_hd :: basis_tl)} :
+    (mul x y).leadingExp = x.leadingExp + y.leadingExp := by
+  apply x.casesOn
+  · simp [leadingExp]
+  intro (x_deg, x_coef) x_tl
+  apply y.casesOn
+  · simp [leadingExp]
+  intro (y_deg, y_coef) y_tl
+  have : CoList.head (mul (basis := basis_hd :: basis_tl) (CoList.cons (x_deg, x_coef) x_tl) (CoList.cons (y_deg, y_coef) y_tl)) = .some ?_ := by
+    simp
+    exact Eq.refl _
+  simp [leadingExp_of_head, this]
+
+theorem mul_eq_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {X Y : PreMS (basis_hd :: basis_tl)} (h : X.mul Y = CoList.nil) :
+    X = .nil ∨ Y = .nil := by
+  revert h
+  apply X.casesOn
+  · simp
+  · intro (X_deg, X_coef) X_tl
+    apply Y.casesOn
+    · simp
+    · intro (Y_deg, Y_coef) Y_tl h
+      apply_fun CoList.head at h
+      simp at h
 
 -- TODO : can be proven without coinduction?
 @[simp]
