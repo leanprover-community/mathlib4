@@ -17,18 +17,13 @@ transformations.
 
 * `OplaxTrans F G` : oplax transformations between oplax functors `F` and `G`
 * `OplaxTrans.vcomp η θ` : the vertical composition of oplax transformations `η` and `θ`
-* `StrongCore F G`: a structure on an oplax transformation between pseudofunctors (TODO)
-that promotes it to a strong transformation (TODO: PUT IN OTHER FILE...!)
-
-NAMESPACES:
-* All of this should be in an oplax namespace
 
 # TODO
 This file could also include lax and strong transformations between oplax functors.
 
 -/
 
-namespace CategoryTheory
+namespace CategoryTheory.Oplax
 
 open Category Bicategory
 
@@ -73,9 +68,8 @@ attribute [reassoc (attr := simp)] OplaxTrans.naturality_naturality OplaxTrans.n
 
 namespace OplaxTrans
 
-section
-
 variable {F : OplaxFunctor B C} {G H : OplaxFunctor B C} (η : OplaxTrans F G) (θ : OplaxTrans G H)
+
 section
 
 variable {a b c : B} {a' : C}
@@ -159,21 +153,6 @@ instance : CategoryStruct (OplaxFunctor B C) where
 instance : Inhabited (OplaxTrans F F) :=
   ⟨𝟙 F⟩
 
-end
-
-/-- A structure on an Oplax natural transformation that promotes it to a strong natural
-transformation.
-
-See `StrongNatTrans.mkOfOplax`. -/
-structure StrongCore {F G : OplaxFunctor B C} (η : OplaxTrans F G) where
-  naturality {a b : B} (f : a ⟶ b) : F.map f ≫ η.app b ≅ η.app a ≫ G.map f
-  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by aesop_cat
-
-attribute [nolint docBlame] CategoryTheory.OplaxTrans.StrongCore.naturality
-  CategoryTheory.OplaxTrans.StrongCore.naturality_hom
-
-attribute [simp] StrongCore.naturality_hom
-
 end OplaxTrans
 
-end CategoryTheory
+end CategoryTheory.Oplax

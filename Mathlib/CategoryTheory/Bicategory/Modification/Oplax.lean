@@ -42,7 +42,7 @@ for each 1-morphism `f : a ⟶ b`.
 -/
 @[ext]
 structure Modification (η θ : F ⟶ G) where
-  /-- The underlying family of 2-morphism. -/
+  /-- The underlying family of 2-morphisms. -/
   app (a : B) : η.app a ⟶ θ.app a
   /-- The naturality condition. -/
   naturality :
