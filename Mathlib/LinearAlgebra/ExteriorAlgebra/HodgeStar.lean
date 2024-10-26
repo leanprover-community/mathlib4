@@ -31,7 +31,7 @@ open ExteriorAlgebra CliffordAlgebra LinearMap
 
 namespace Hodge
 
-noncomputable section Clifford
+noncomputable section HodgeStar
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 variable [Nontrivial E]
@@ -66,8 +66,33 @@ def starLinear : ExteriorAlgebra ℝ E →ₗ[ℝ] ExteriorAlgebra ℝ E where
   map_add' := star_add o B
   map_smul' := star_smul o B
 
+omit [FiniteDimensional ℝ E] [Nontrivial E] in
+theorem equivExterior_one : equivExterior (Q B) 1 = 1 := by
+  simp only [equivExterior, map_neg, changeFormEquiv_apply, changeForm_one]
 
+theorem star_one : star o B 1 = vol o := by
+  unfold star
+  rw [← equivExterior_one, LinearEquiv.symm_apply_apply, one_mul, LinearEquiv.apply_symm_apply]
 
-end Clifford
+theorem star_vol : star o B (vol o) = 1 := by
+  unfold star
+  rw [← equivExterior_one B]
+  congr
+
+  sorry
+
+theorem star_star (v : ExteriorAlgebra ℝ E) : star o B (star o B v) = v := by
+  unfold star
+  rw [LinearEquiv.symm_apply_apply]
+
+  sorry
+
+theorem star_grading {i : ℕ} {v : ExteriorAlgebra ℝ E} :
+  v ∈ ⋀[ℝ]^i E → star o B v ∈ ⋀[ℝ]^(Module.finrank ℝ E - i) E := by
+  intro hv
+
+  sorry
+
+end HodgeStar
 
 end Hodge
