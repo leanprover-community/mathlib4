@@ -10,18 +10,20 @@ import Mathlib.Data.Set.Subsingleton
 /-!
 # Intervals
 
-In any preorder `α`, we define intervals (which on each side can be either infinite, open, or
-closed) using the following naming conventions:
+In any preorder `α`, we define intervals
+(which on each side can be either infinite, open, or closed) using the following naming conventions:
+
 - `i`: infinite
 - `o`: open
 - `c`: closed
 
-Each interval has the name `I` + letter for left side + letter for right side. For instance,
-`Ioc a b` denotes the interval `(a, b]`.
+Each interval has the name `I` + letter for left side + letter for right side.
+For instance, `Ioc a b` denotes the interval `(a, b]`.
+The definitions can be found in `Order/Interval/Set/Defs`.
 
-This file contains these definitions, and basic facts on inclusion, intersection, difference of
-intervals (where the precise statements may depend on the properties of the order, in particular
-for some statements it should be `LinearOrder` or `DenselyOrdered`).
+This file contains basic facts on inclusion, intersection, difference of intervals
+(where the precise statements may depend on the properties of the order,
+in particular for some statements it should be `LinearOrder` or `DenselyOrdered`).
 
 TODO: This is just the beginning; a lot of rules are missing
 -/
@@ -38,30 +40,6 @@ section Preorder
 
 variable [Preorder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-
-theorem Ioo_def (a b : α) : { x | a < x ∧ x < b } = Ioo a b :=
-  rfl
-
-theorem Ico_def (a b : α) : { x | a ≤ x ∧ x < b } = Ico a b :=
-  rfl
-
-theorem Iio_def (a : α) : { x | x < a } = Iio a :=
-  rfl
-
-theorem Icc_def (a b : α) : { x | a ≤ x ∧ x ≤ b } = Icc a b :=
-  rfl
-
-theorem Iic_def (b : α) : { x | x ≤ b } = Iic b :=
-  rfl
-
-theorem Ioc_def (a b : α) : { x | a < x ∧ x ≤ b } = Ioc a b :=
-  rfl
-
-theorem Ici_def (a : α) : { x | a ≤ x } = Ici a :=
-  rfl
-
-theorem Ioi_def (a : α) : { x | a < x } = Ioi a :=
-  rfl
 
 instance decidableMemIoo [Decidable (a < x ∧ x < b)] : Decidable (x ∈ Ioo a b) := by assumption
 
