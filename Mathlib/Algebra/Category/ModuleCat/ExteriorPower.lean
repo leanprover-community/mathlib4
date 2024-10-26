@@ -10,27 +10,46 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 -/
 
-universe v u
+universe w v u
+
+namespace LinearMap
+
+variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂]
+  [AddCommMonoid M] [AddCommMonoid M₂] [Module R M]
+  [Module R₂ M₂] {τ₁₂ : R →+* R₂}
+  {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
+  [RingHomSurjective τ₁₂] (f : F)
+
+end LinearMap
 
 namespace ExteriorAlgebra
 
-variable (R : Type u) [CommRing R] {n : ℕ} {M : Type v} [AddCommGroup M] [Module R M]
-
-lemma ιMulti_apply_mem_exteriorPower (m : Fin n → M) :
-    ιMulti R n m ∈ exteriorPower R n M := by
-      sorry
-
-variable (n M)
+variable (R : Type u) [CommRing R] (n : ℕ) (M : Type v) [AddCommGroup M] [Module R M]
 
 def exteriorProduct : AlternatingMap R M (exteriorPower R n M) (Fin n) where
-  toFun m := ⟨ιMulti R n m, ιMulti_apply_mem_exteriorPower R m⟩
+  toFun m := ⟨ιMulti R n m, ιMulti_range _ _ (by simp)⟩
   map_add' m i x y := Subtype.ext (by simp)
   map_smul' m i c x := Subtype.ext (by simp)
   map_eq_zero_of_eq' v i j hij hij' :=
     Subtype.ext ((ιMulti R (M := M) n).map_eq_zero_of_eq v hij hij')
 
-end ExteriorAlgebra
+namespace exteriorPower
 
+variable {R n M} {N : Type w} [AddCommGroup N] [Module R N]
+  (φ : AlternatingMap R M N (Fin n))
+
+def desc : exteriorPower R n M →ₗ[R] N := by
+  have := φ
+  sorry
+
+@[simp]
+lemma desc_exteriorProduct (m : Fin n → M) :
+    desc φ (exteriorProduct R n M m) = φ m := by
+  sorry
+
+end exteriorPower
+
+end ExteriorAlgebra
 
 open CategoryTheory
 
@@ -119,7 +138,14 @@ variable (M n)
 def univ (M : ModuleCat.{u} R) (n : ℕ) : M.AlternatingMap (M.exteriorPower n) n :=
   ExteriorAlgebra.exteriorProduct _ _ _
 
-def univUniversal : (univ M n).Universal := sorry
+def univUniversal : (univ M n).Universal where
+  desc {N} φ := ExteriorAlgebra.exteriorPower.desc φ
+  fac {N} φ := by
+    ext m
+    apply ExteriorAlgebra.exteriorPower.desc_exteriorProduct
+  postcomp_injective {N f g} h:= by
+    rw [← sub_eq_zero]
+    sorry
 
 namespace Universal
 
@@ -134,7 +160,7 @@ lemma hom_ext (hφ : φ.Universal) {N : ModuleCat.{u} R} {f g : N₀ ⟶ N}
 variable (hφ : φ.Universal)
 
 @[simp]
-lemma fac_apply {N : ModuleCat.{u} R} (ψ : M.AlternatingMap N n) (m : Fin n → M) :
+lemma desc_apply {N : ModuleCat.{u} R} (ψ : M.AlternatingMap N n) (m : Fin n → M) :
     hφ.desc ψ (φ m) = ψ m := by
   conv_rhs => rw [← hφ.fac ψ]
   rfl
@@ -195,8 +221,7 @@ def equiv₀ : M.AlternatingMap N 0 ≃ N :=
 def corepresentableBy₀ :
     (M.alternatingMapFunctor 0).CorepresentableBy (ModuleCat.of R R) where
   homEquiv {N} := N.homEquivOfSelf.trans (equiv₀ M N).symm
-  homEquiv_comp := by
-    sorry
+  homEquiv_comp _ _ := rfl
 
 def exteriorPower₀Iso : M.exteriorPower 0 ≅ of R R :=
   (AlternatingMap.universalOfCorepresentableBy M.corepresentableBy₀).iso
@@ -227,8 +252,7 @@ def equiv₁ : M.AlternatingMap N 1 ≃ (M ⟶ N) where
 def corepresentableBy₁ :
     (M.alternatingMapFunctor 1).CorepresentableBy M where
   homEquiv {N} := (equiv₁ M N).symm
-  homEquiv_comp := by
-    sorry
+  homEquiv_comp _ _ := rfl
 
 def exteriorPower₁Iso : M.exteriorPower 1 ≅ M :=
   (AlternatingMap.universalOfCorepresentableBy M.corepresentableBy₁).iso
