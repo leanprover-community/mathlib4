@@ -117,17 +117,17 @@ def coeAddHom : AddHom ℕ+ ℕ where
   toFun := Coe.coe
   map_add' := add_coe
 
-instance covariantClass_add_le : CovariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
-  Positive.covariantClass_add_le
+instance addLeftMono : AddLeftMono ℕ+ :=
+  Positive.addLeftMono
 
-instance covariantClass_add_lt : CovariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
-  Positive.covariantClass_add_lt
+instance addLeftStrictMono : AddLeftStrictMono ℕ+ :=
+  Positive.addLeftStrictMono
 
-instance contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
-  Positive.contravariantClass_add_le
+instance addLeftReflectLE : AddLeftReflectLE ℕ+ :=
+  Positive.addLeftReflectLE
 
-instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
-  Positive.contravariantClass_add_lt
+instance addLeftReflectLT : AddLeftReflectLT ℕ+ :=
+  Positive.addLeftReflectLT
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
 @[simps! (config := .asFn) apply]

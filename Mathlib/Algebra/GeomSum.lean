@@ -69,8 +69,6 @@ theorem zero_geom_sum : ∀ {n}, ∑ i ∈ range n, (0 : α) ^ i = if n = 0 then
 
 theorem one_geom_sum (n : ℕ) : ∑ i ∈ range n, (1 : α) ^ i = n := by simp
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem op_geom_sum (x : α) (n : ℕ) : op (∑ i ∈ range n, x ^ i) = ∑ i ∈ range n, op x ^ i := by
   simp
 
