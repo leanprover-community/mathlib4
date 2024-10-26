@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.Data.Real.Irrational
+import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # `Real.pi` is irrational
@@ -250,7 +251,7 @@ private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
   intros x hx
   simp only [uIoc_of_le, neg_le_self_iff, zero_le_one, mem_Ioc] at hx
   rw [norm_eq_abs, abs_mul, abs_pow]
-  refine mul_le_one (pow_le_one₀ (abs_nonneg _) ?_) (abs_nonneg _) (abs_cos_le_one _)
+  refine mul_le_one₀ (pow_le_one₀ (abs_nonneg _) ?_) (abs_nonneg _) (abs_cos_le_one _)
   rw [abs_le]
   constructor <;> nlinarith
 
@@ -262,7 +263,7 @@ reformulation of tendsto_pow_div_factorial_atTop, which asserts the same for `a 
 private lemma tendsto_pow_div_factorial_at_top_aux (a : ℝ) :
     Tendsto (fun n => (a : ℝ) ^ (2 * n + 1) / n !) atTop (nhds 0) := by
   rw [← mul_zero a]
-  refine ((tendsto_pow_div_factorial_atTop (a ^ 2)).const_mul a).congr (fun x => ?_)
+  refine ((FloorSemiring.tendsto_pow_div_factorial_atTop (a ^ 2)).const_mul a).congr (fun x => ?_)
   rw [← pow_mul, mul_div_assoc', _root_.pow_succ']
 
 /-- If `x` is rational, it can be written as `a / b` with `a : ℤ` and `b : ℕ` satisfying `b > 0`. -/

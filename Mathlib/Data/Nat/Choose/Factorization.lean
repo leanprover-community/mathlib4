@@ -39,8 +39,10 @@ theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n :
     refine le_of_not_lt fun hnk => h ?_
     simp [choose_eq_zero_of_lt hnk]
   rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_pos hkn)]
-  simp only [hp.multiplicity_choose hkn (lt_add_one _), PartENat.get_natCast]
-  exact (Finset.card_filter_le _ _).trans (le_of_eq (Nat.card_Ico _ _))
+  rw [← Nat.cast_le (α := ℕ∞), ← multiplicity.Finite.emultiplicity_eq_multiplicity]
+  · simp only [hp.emultiplicity_choose hkn (lt_add_one _), Nat.cast_le]
+    exact (Finset.card_filter_le _ _).trans (le_of_eq (Nat.card_Ico _ _))
+  apply Nat.multiplicity_finite_iff.2 ⟨hp.ne_one, choose_pos hkn⟩
 
 /-- A `pow` form of `Nat.factorization_choose_le` -/
 theorem pow_factorization_choose_le (hn : 0 < n) : p ^ (choose n k).factorization p ≤ n :=
@@ -59,8 +61,9 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
   · exact factorization_eq_zero_of_non_prime (choose n k) hp
   cases' lt_or_le n k with hnk hkn
   · simp [choose_eq_zero_of_lt hnk]
-  rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_pos hkn)]
-  simp only [hp.multiplicity_choose hkn (lt_add_one _), PartENat.get_natCast, Finset.card_eq_zero,
+  rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_pos hkn),
+    ← emultiplicity_eq_zero_iff_multiplicity_eq_zero]
+  simp only [hp.emultiplicity_choose hkn (lt_add_one _), cast_eq_zero, Finset.card_eq_zero,
     Finset.filter_eq_empty_iff, not_le]
   intro i hi
   rcases eq_or_lt_of_le (Finset.mem_Ico.mp hi).1 with (rfl | hi)
@@ -78,7 +81,7 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
         n < 3 * p := hn
         _ ≤ p * p := mul_le_mul_right' this p
         _ = p ^ 2 := (sq p).symm
-        _ ≤ p ^ i := pow_le_pow_right hp.one_lt.le hi
+        _ ≤ p ^ i := pow_right_mono₀ hp.one_lt.le hi
     rwa [mod_eq_of_lt (lt_of_le_of_lt hkn hn), mod_eq_of_lt (lt_of_le_of_lt tsub_le_self hn),
       add_tsub_cancel_of_le hkn]
 

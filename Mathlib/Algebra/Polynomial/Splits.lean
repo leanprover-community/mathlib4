@@ -370,7 +370,7 @@ theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
 theorem splits_of_splits_id {f : K[X]} : Splits (RingHom.id K) f → Splits i f :=
   UniqueFactorizationMonoid.induction_on_prime f (fun _ => splits_zero _)
     (fun _ hu _ => splits_of_degree_le_one _ ((isUnit_iff_degree_eq_zero.1 hu).symm ▸ by decide))
-    fun a p ha0 hp ih hfi =>
+    fun _ p ha0 hp ih hfi =>
     splits_mul _
       (splits_of_degree_eq_one _
         ((splits_of_splits_mul _ (mul_ne_zero hp.1 ha0) hfi).1.def.resolve_left hp.1 hp.irreducible

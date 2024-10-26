@@ -90,16 +90,13 @@ variable (ϕ : ∀ i : ι, N i →* M)
 -- We assume that the elements of different morphism commute
 variable (hcomm : Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y))
 
--- We use `f` and `g` to denote elements of `Π (i : ι), N i`
-variable (f g : ∀ i : ι, N i)
-
 namespace MonoidHom
 
 /-- The canonical homomorphism from a family of monoids. -/
 @[to_additive "The canonical homomorphism from a family of additive monoids. See also
 `LinearMap.lsum` for a linear version without the commutativity assumption."]
 def noncommPiCoprod : (∀ i : ι, N i) →* M where
-  toFun f := Finset.univ.noncommProd (fun i => ϕ i (f i)) fun i _ j _ h => hcomm h _ _
+  toFun f := Finset.univ.noncommProd (fun i => ϕ i (f i)) fun _ _ _ _ h => hcomm h _ _
   map_one' := by
     apply (Finset.noncommProd_eq_pow_card _ _ _ _ _).trans (one_pow _)
     simp
@@ -135,7 +132,7 @@ def noncommPiCoprodEquiv [DecidableEq ι] :
       ((∀ i, N i) →* M) where
   toFun ϕ := noncommPiCoprod ϕ.1 ϕ.2
   invFun f :=
-    ⟨fun i => f.comp (MonoidHom.mulSingle N i), fun i j hij x y =>
+    ⟨fun i => f.comp (MonoidHom.mulSingle N i), fun _ _ hij x y =>
       Commute.map (Pi.mulSingle_commute hij x y) f⟩
   left_inv ϕ := by
     ext
@@ -167,9 +164,6 @@ variable {G : Type*} [Group G]
 variable {ι : Type*}
 variable {H : ι → Type*} [∀ i, Group (H i)]
 variable (ϕ : ∀ i : ι, H i →* G)
-
--- We use `f` and `g` to denote elements of `Π (i : ι), H i`
-variable (f g : ∀ i : ι, H i)
 
 namespace MonoidHom
 -- The subgroup version of `MonoidHom.noncommPiCoprod_mrange`
@@ -250,9 +244,6 @@ namespace Subgroup
 -- We have a family of subgroups
 variable {G : Type*} [Group G]
 variable {ι : Type*} {H : ι → Subgroup G}
-
--- Elements of `Π (i : ι), H i` are called `f` and `g` here
-variable (f g : ∀ i : ι, H i)
 
 section CommutingSubgroups
 

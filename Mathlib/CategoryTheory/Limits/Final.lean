@@ -3,7 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Types
@@ -36,7 +36,7 @@ This readily implies 2., as `comp_hasColimit`, `hasColimit_of_comp`, and `colimi
 
 From 2. we can specialize to `G = coyoneda.obj (op d)` to obtain 3., as `colimitCompCoyonedaIso`.
 
-From 3., we prove 1. directly in `cofinal_of_colimit_comp_coyoneda_iso_pUnit`.
+From 3., we prove 1. directly in `final_of_colimit_comp_coyoneda_iso_pUnit`.
 
 Dually, we prove that if a functor `F : C ⥤ D` is initial, then any functor `G : D ⥤ E` has a
 limit if and only if `F ⋙ G` does, and these limits are isomorphic via `limit.pre G F`.
@@ -116,6 +116,8 @@ theorem initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
       @isConnected_of_isConnected_op _ _
         (isConnected_of_equivalent (costructuredArrowOpEquivalence F d).symm) }
 
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
+
 /-- If a functor `R : D ⥤ C` is a right adjoint, it is final. -/
 theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final R :=
   { out := fun c =>
@@ -170,13 +172,13 @@ instance (d : D) : Nonempty (StructuredArrow d F) :=
 variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)
 
 /--
-When `F : C ⥤ D` is cofinal, we denote by `lift F d` an arbitrary choice of object in `C` such that
+When `F : C ⥤ D` is final, we denote by `lift F d` an arbitrary choice of object in `C` such that
 there exists a morphism `d ⟶ F.obj (lift F d)`.
 -/
 def lift (d : D) : C :=
   (Classical.arbitrary (StructuredArrow d F)).right
 
-/-- When `F : C ⥤ D` is cofinal, we denote by `homToLift` an arbitrary choice of morphism
+/-- When `F : C ⥤ D` is final, we denote by `homToLift` an arbitrary choice of morphism
 `d ⟶ F.obj (lift F d)`.
 -/
 def homToLift (d : D) : d ⟶ F.obj (lift F d) :=
@@ -238,6 +240,17 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
             · rw [← Functor.map_comp_assoc] } }
   map f := { hom := f.hom }
 
+/-- Alternative equational lemma for `(extendCocone c).ι.app` in case a lift of the object
+is given explicitly. -/
+lemma extendCocone_obj_ι_app' (c : Cocone (F ⋙ G)) {X : D} {Y : C} (f : X ⟶ F.obj Y) :
+    (extendCocone.obj c).ι.app X = G.map f ≫ c.ι.app Y := by
+  apply induction (k₀ := f) (z := rfl) F fun Z g =>
+    G.map g ≫ c.ι.app Z = G.map f ≫ c.ι.app Y
+  · intro _ _ _ _ _ h₁ h₂
+    simp [← h₁, ← Functor.comp_map, c.ι.naturality, h₂]
+  · intro _ _ _ _ _ h₁ h₂
+    simp [← h₂, ← h₁, ← Functor.comp_map, c.ι.naturality]
+
 @[simp]
 theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
     G.map (homToLift F (F.obj j)) ≫ s.ι.app (lift F (F.obj j)) = s.ι.app j := by
@@ -256,7 +269,7 @@ theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
 
 variable (F G)
 
-/-- If `F` is cofinal,
+/-- If `F` is final,
 the category of cocones on `F ⋙ G` is equivalent to the category of cocones on `G`,
 for any `G : D ⥤ E`.
 -/
@@ -269,13 +282,13 @@ def coconesEquiv : Cocone (F ⋙ G) ≌ Cocone G where
 
 variable {G}
 
-/-- When `F : C ⥤ D` is cofinal, and `t : Cocone G` for some `G : D ⥤ E`,
+/-- When `F : C ⥤ D` is final, and `t : Cocone G` for some `G : D ⥤ E`,
 `t.whisker F` is a colimit cocone exactly when `t` is.
 -/
 def isColimitWhiskerEquiv (t : Cocone G) : IsColimit (t.whisker F) ≃ IsColimit t :=
   IsColimit.ofCoconeEquiv (coconesEquiv F G).symm
 
-/-- When `F` is cofinal, and `t : Cocone (F ⋙ G)`,
+/-- When `F` is final, and `t : Cocone (F ⋙ G)`,
 `extendCocone.obj t` is a colimit cocone exactly when `t` is.
 -/
 def isColimitExtendCoconeEquiv (t : Cocone (F ⋙ G)) :
@@ -301,13 +314,25 @@ section
 
 variable (G)
 
-/-- When `F : C ⥤ D` is cofinal, and `G : D ⥤ E` has a colimit, then `F ⋙ G` has a colimit also and
+/-- When `F : C ⥤ D` is final, and `G : D ⥤ E` has a colimit, then `F ⋙ G` has a colimit also and
 `colimit (F ⋙ G) ≅ colimit G`
 
 https://stacks.math.columbia.edu/tag/04E7
 -/
+@[simps! (config := .lemmasOnly)]
 def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
   asIso (colimit.pre G F)
+
+/-- A pointfree version of `colimitIso`, stating that whiskering by `F` followed by taking the
+colimit is isomorpic to taking the colimit on the codomain of `F`. -/
+def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
+    (whiskeringLeft _ _ _).obj F ⋙ colim ≅ colim (J := D) (C := E) :=
+  NatIso.ofComponents (fun G => colimitIso F G) fun f => by
+    simp only [comp_obj, whiskeringLeft_obj_obj, colim_obj, comp_map, whiskeringLeft_obj_map,
+      colim_map, colimitIso_hom]
+    ext
+    simp only [comp_obj, ι_colimMap_assoc, whiskerLeft_app, colimit.ι_pre, colimit.ι_pre_assoc,
+      ι_colimMap]
 
 end
 
@@ -317,7 +342,7 @@ def colimitCoconeOfComp (t : ColimitCocone (F ⋙ G)) : ColimitCocone G where
   cocone := extendCocone.obj t.cocone
   isColimit := (isColimitExtendCoconeEquiv F _).symm t.isColimit
 
-/-- When `F` is cofinal, and `F ⋙ G` has a colimit, then `G` has a colimit also.
+/-- When `F` is final, and `F ⋙ G` has a colimit, then `G` has a colimit also.
 
 We can't make this an instance, because `F` is not determined by the goal.
 (Even if this weren't a problem, it would cause a loop with `comp_hasColimit`.)
@@ -328,24 +353,6 @@ theorem hasColimit_of_comp [HasColimit (F ⋙ G)] : HasColimit G :=
 include F in
 theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShape D E where
   has_colimit := fun _ => hasColimit_of_comp F
-
-section
-
--- Porting note: this instance does not seem to be found automatically
---attribute [local instance] hasColimit_of_comp
-
-/-- When `F` is cofinal, and `F ⋙ G` has a colimit, then `G` has a colimit also and
-`colimit (F ⋙ G) ≅ colimit G`
-
-https://stacks.math.columbia.edu/tag/04E7
--/
-def colimitIso' [HasColimit (F ⋙ G)] :
-    haveI : HasColimit G := hasColimit_of_comp F
-    colimit (F ⋙ G) ≅ colimit G :=
-  haveI : HasColimit G := hasColimit_of_comp F
-  asIso (colimit.pre G F)
-
-end
 
 end Final
 
@@ -379,9 +386,9 @@ theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ 
 
 end Final
 
-/-- If `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit` for all `d : D`, then `F` is cofinal.
+/-- If `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit` for all `d : D`, then `F` is final.
 -/
-theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
+theorem final_of_colimit_comp_coyoneda_iso_pUnit
     (I : ∀ d, colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit) : Final F :=
   ⟨fun d => by
     have : Nonempty (StructuredArrow d F) := by
@@ -399,18 +406,18 @@ theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
     clear e y₁ y₂
     exact Final.zigzag_of_eqvGen_quot_rel t⟩
 
-/-- A variant of `cofinal_of_colimit_comp_coyoneda_iso_pUnit` where we bind the various claims
+/-- A variant of `final_of_colimit_comp_coyoneda_iso_pUnit` where we bind the various claims
     about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a single claim about
     the presheaf `colimit (F ⋙ yoneda)`. -/
-theorem cofinal_of_isTerminal_colimit_comp_yoneda
+theorem final_of_isTerminal_colimit_comp_yoneda
     (h : IsTerminal (colimit (F ⋙ yoneda))) : Final F := by
-  refine cofinal_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => ?_)
+  refine final_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => ?_)
   refine Types.isTerminalEquivIsoPUnit _ ?_
   let b := IsTerminal.isTerminalObj ((evaluation _ _).obj (Opposite.op d)) _ h
   exact b.ofIso <| preservesColimitIso ((evaluation _ _).obj (Opposite.op d)) (F ⋙ yoneda)
 
 /-- If the universal morphism `colimit (F ⋙ coyoneda.obj (op d)) ⟶ colimit (coyoneda.obj (op d))`
-is an isomorphism (as it always is when `F` is cofinal),
+is an isomorphism (as it always is when `F` is final),
 then `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit`
 (simply because `colimit (coyoneda.obj (op d)) ≅ PUnit`).
 -/
@@ -426,7 +433,7 @@ variable {C : Type v} [Category.{v} C] {D : Type v} [Category.{v} D] (F : C ⥤ 
 
 theorem final_iff_isIso_colimit_pre : Final F ↔ ∀ G : D ⥤ Type v, IsIso (colimit.pre G F) :=
   ⟨fun _ => inferInstance,
-   fun _ => cofinal_of_colimit_comp_coyoneda_iso_pUnit _ fun _ => Final.colimitCompCoyonedaIso _ _⟩
+   fun _ => final_of_colimit_comp_coyoneda_iso_pUnit _ fun _ => Final.colimitCompCoyonedaIso _ _⟩
 
 end SmallCategory
 
@@ -511,6 +518,17 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
             · rw [← Functor.map_comp] } }
   map f := { hom := f.hom }
 
+/-- Alternative equational lemma for `(extendCone c).π.app` in case a lift of the object
+is given explicitly. -/
+lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X ⟶ Y) :
+    (extendCone.obj c).π.app Y = c.π.app X ≫ G.map f := by
+  apply induction (k₀ := f) (z := rfl) F fun Z g =>
+    c.π.app Z ≫ G.map g = c.π.app X ≫ G.map f
+  · intro _ _ _ _ _ h₁ h₂
+    simp [← h₂, ← h₁, ← Functor.comp_map, c.π.naturality]
+  · intro _ _ _ _ _ h₁ h₂
+    simp [← h₁, ← Functor.comp_map, c.π.naturality, h₂]
+
 @[simp]
 theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
     s.π.app (lift F (F.obj j)) ≫ G.map (homToLift F (F.obj j)) = s.π.app j := by
@@ -578,8 +596,19 @@ variable (G)
 
 https://stacks.math.columbia.edu/tag/04E7
 -/
+@[simps! (config := .lemmasOnly)]
 def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
+
+/-- A pointfree version of `limitIso`, stating that whiskering by `F` followed by taking the
+limit is isomorpic to taking the limit on the codomain of `F`. -/
+def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
+    (whiskeringLeft _ _ _).obj F ⋙ lim ≅ lim (J := D) (C := E) :=
+  Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f => by
+    simp only [comp_obj, whiskeringLeft_obj_obj, lim_obj, comp_map, whiskeringLeft_obj_map, lim_map,
+      Iso.symm_hom, limitIso_inv]
+    ext
+    simp
 
 end
 
@@ -600,24 +629,6 @@ theorem hasLimit_of_comp [HasLimit (F ⋙ G)] : HasLimit G :=
 include F in
 theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D E where
   has_limit := fun _ => hasLimit_of_comp F
-
-section
-
--- Porting note: this instance does not seem to be found automatically
--- attribute [local instance] hasLimit_of_comp
-
-/-- When `F` is initial, and `F ⋙ G` has a limit, then `G` has a limit also and
-`limit (F ⋙ G) ≅ limit G`
-
-https://stacks.math.columbia.edu/tag/04E7
--/
-def limitIso' [HasLimit (F ⋙ G)] :
-    haveI : HasLimit G := hasLimit_of_comp F
-    limit (F ⋙ G) ≅ limit G :=
-  haveI : HasLimit G := hasLimit_of_comp F
-  (asIso (limit.pre G F)).symm
-
-end
 
 end Initial
 
