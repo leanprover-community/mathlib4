@@ -993,10 +993,10 @@ open Classical in
 `2^r₁` times the volume of its `plusPart` where `r₁` is the number of real places. -/
 theorem volume_eq_two_pow_mul_volume_plusPart (hA : ∀ x, x ∈ A ↔ (fun w ↦ |x.1 w|, x.2) ∈ A)
     (hm : MeasurableSet A) :
-    volume A = 2 ^ NrRealPlaces K * volume (plusPart A) := by
+    volume A = 2 ^ nrRealPlaces K * volume (plusPart A) := by
   simp_rw [← measure_congr (iUnion_negAtPart_ae A hA), measure_iUnion (disjoint_negAtPlusPart A)
     (fun _ ↦ measurableSet_negAtPlusPart A _ hm), volume_negAtPlusPart _ hm, tsum_fintype,
-    Finset.sum_const, Finset.card_univ, NrRealPlaces, nsmul_eq_mul, Fintype.card_set, Nat.cast_pow,
+    Finset.sum_const, Finset.card_univ, nrRealPlaces, nsmul_eq_mul, Fintype.card_set, Nat.cast_pow,
     Nat.cast_ofNat]
 
 end plusPart

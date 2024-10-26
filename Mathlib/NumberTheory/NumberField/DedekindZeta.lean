@@ -27,7 +27,7 @@ def dedekindZeta (s : ℂ) :=
 
 /-- Docstring. -/
 def residue : ℝ :=
-  (2 ^ NrRealPlaces K * (2 * π) ^ NrComplexPlaces K * regulator K * classNumber K) /
+  (2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
     (torsionOrder K *  Real.sqrt |discr K|)
 
 theorem residue_pos : 0 < residue K := by

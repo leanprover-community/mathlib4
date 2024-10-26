@@ -65,7 +65,7 @@ theorem ideal.tendsto_mk_eq_norm_le_div_atop (C : ClassGroup (𝓞 K)) :
     Tendsto (fun s : ℝ ↦
       (Nat.card {I : (Ideal (𝓞 K))⁰ //
         absNorm (I : Ideal (𝓞 K)) ≤ s ∧ ClassGroup.mk0 I = C} : ℝ) / s) atTop
-          (𝓝 ((2 ^ NrRealPlaces K * (2 * π) ^ NrComplexPlaces K * regulator K) /
+          (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K) /
             (torsionOrder K *  Real.sqrt |discr K|))) := by
   classical
   have h : ∀ s : ℝ,
@@ -105,7 +105,7 @@ theorem ideal.tendsto_mk_eq_norm_le_div_atop (C : ClassGroup (𝓞 K)) :
 theorem ideal.tendsto_norm_le_div_atop₀ :
     Tendsto (fun s : ℝ ↦
       (Nat.card {I : (Ideal (𝓞 K))⁰ // absNorm (I : Ideal (𝓞 K)) ≤ s} : ℝ) / s) atTop
-          (𝓝 ((2 ^ NrRealPlaces K * (2 * π) ^ NrComplexPlaces K * regulator K * classNumber K) /
+          (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
             (torsionOrder K *  Real.sqrt |discr K|))) := by
   classical
   convert Filter.Tendsto.congr' ?_
@@ -127,7 +127,7 @@ theorem ideal.tendsto_norm_le_div_atop₀ :
 
 theorem ideal.tendsto_norm_le_div_atop :
     Tendsto (fun s : ℝ ↦ (Nat.card {I : Ideal (𝓞 K) // absNorm I ≤ s} : ℝ) / s) atTop
-          (𝓝 ((2 ^ NrRealPlaces K * (2 * π) ^ NrComplexPlaces K * regulator K * classNumber K) /
+          (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
             (torsionOrder K *  Real.sqrt |discr K|))) := by
   have := (ideal.tendsto_norm_le_div_atop₀ K).add tendsto_inv_atTop_zero
   rw [add_zero] at this

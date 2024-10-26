@@ -210,7 +210,7 @@ theorem polarCoord_symm_abs (p : ℝ × ℝ) :
 
 open scoped ComplexOrder
 
-theorem polarCoord_symm_mem_polarCoord_source (x : ℝ × ℝ) :
+theorem polarCoord_symm_mem_polarCoord_source_iff {x : ℝ × ℝ} : 
     Complex.polarCoord.symm x ∈ Complex.polarCoord.source ↔
         x.1 ≠ 0 ∧ (x.1 > 0 → ∀ k : ℤ, π + k * (2 * π) ≠ x.2) ∧
           (x.1 < 0 →  ∀ k : ℤ, k * (2 * π) ≠ x.2) := by
@@ -221,9 +221,10 @@ theorem polarCoord_symm_mem_polarCoord_source (x : ℝ × ℝ) :
   obtain hx | hx | hx := lt_trichotomy x.1 0
   · simp_rw [hx, hx.ne, not_lt_of_gt hx, false_and, false_or, true_and, or_false]
     have : (x.1 * cexp (x.2 * I)).arg = π ↔ (cexp (x.2 * I)).arg = 0 := by
-      simp_rw [arg_eq_pi_iff_lt_zero, arg_eq_zero_iff_zero_le, ofReal_mul_neg_iff, hx,
-        not_lt_of_gt hx, true_and, false_and, or_false, lt_iff_le_and_ne, ne_eq, eq_comm,
-        exp_ne_zero, not_false_eq_true, and_true]
+      simp_rw [arg_eq_pi_iff_lt_zero, arg_eq_zero_iff_zero_le, ← coe_algebraMap,
+        RCLike.ofReal_mul_neg_iff, hx, not_lt_of_gt hx, true_and, false_and, or_false,
+        lt_iff_le_and_ne, ne_eq, eq_comm (a := 0) (b := cexp _), exp_ne_zero, not_false_eq_true,
+        and_true]
     simp_rw [this, arg_exp_mul_I, toIocMod_eq_iff, zero_add, zsmul_eq_mul, eq_comm,
       and_iff_right_iff_imp]
     exact fun _ ↦ ⟨neg_neg_iff_pos.mpr Real.pi_pos, by ring_nf; positivity⟩

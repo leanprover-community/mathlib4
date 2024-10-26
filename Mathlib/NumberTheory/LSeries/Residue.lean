@@ -62,7 +62,7 @@ theorem tendsto_rpow_mul_tsum_rpow {c : ℝ} (hc : c ≠ 0) (T : Finset ℕ) :
   refine Tendsto.mul (tendsto_nhdsWithin_of_tendsto_nhds ?_) ?_
   · refine Continuous.tendsto' ?_ 1 c (by rw [Real.rpow_one])
     exact continuous_const.rpow continuous_id fun _ ↦ Or.inl hc
-  · refine (riemannZeta_residue_one'.sub (tendsto_mul_sum_rpow T (fun n ↦ n))).congr' ?_
+  · refine (tendsto_sub_mul_tsum_nat_rpow.sub (tendsto_mul_sum_rpow T (fun n ↦ n))).congr' ?_
     filter_upwards [eventually_mem_nhdsWithin] with s hs
     simp_rw [sub_eq_iff_eq_add', ← mul_add, sum_add_tsum_compl (Real.summable_nat_rpow.mpr
       (neg_lt_neg_iff.mpr hs)), Real.rpow_neg (Nat.cast_nonneg _), one_div]

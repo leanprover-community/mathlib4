@@ -712,7 +712,7 @@ open Classical in
 theorem mapToUnitsPow_jacobian_det {c : realSpace K} (hc : 0 ≤ c w₀) :
     |(mapToUnitsPow_jacobian c).det| =
       (∏ w : {w : InfinitePlace K // w.IsComplex }, mapToUnitsPow₀ K (fun w ↦ c w) w)⁻¹ *
-        2⁻¹ ^ NrComplexPlaces K * |c w₀| ^ (rank K) * (finrank ℚ K) * regulator K := by
+        2⁻¹ ^ nrComplexPlaces K * |c w₀| ^ (rank K) * (finrank ℚ K) * regulator K := by
   have : LinearMap.toMatrix' (mapToUnitsPow_jacobian c).toLinearMap =
       Matrix.of fun w i ↦ mapToUnitsPow₀ K (fun w ↦ c w) w *
         mapToUnitsPow_jacobianCoeff w i c := by
@@ -730,12 +730,12 @@ theorem mapToUnitsPow_jacobian_det {c : realSpace K} (hc : 0 ≤ c w₀) :
     rw [Finset.prod_ite, Finset.prod_const_one, Finset.prod_const, one_mul, abs_pow]
     rw [Finset.filter_ne', Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ, rank]
   rw [this, mul_assoc, ← abs_mul, ← Matrix.det_mul_column]
-  have : (2 : ℝ)⁻¹ ^ NrComplexPlaces K = |∏ w : InfinitePlace K, (mult w : ℝ)⁻¹| := by
+  have : (2 : ℝ)⁻¹ ^ nrComplexPlaces K = |∏ w : InfinitePlace K, (mult w : ℝ)⁻¹| := by
     rw [Finset.abs_prod]
     simp_rw [mult, Nat.cast_ite, Nat.cast_one, Nat.cast_ofNat, apply_ite, abs_inv, abs_one, inv_one,
       Nat.abs_ofNat, Finset.prod_ite, Finset.prod_const_one, Finset.prod_const, one_mul]
     rw [Finset.filter_not, Finset.card_univ_diff, ← Fintype.card_subtype]
-    rw [card_eq_nrRealPlaces_add_nrComplexPlaces, ← NrRealPlaces, add_tsub_cancel_left]
+    rw [card_eq_nrRealPlaces_add_nrComplexPlaces, ← nrRealPlaces, add_tsub_cancel_left]
   rw [this, mul_assoc, ← abs_mul, ← Matrix.det_mul_row, abs_mul]
   congr
   · rw [abs_eq_self.mpr]
@@ -781,7 +781,7 @@ open ENNReal Classical in
 theorem setLIntegral_mapToUnitsPow {s : Set (realSpace K)} (hs₀ : MeasurableSet s)
     (hs₁ : s ⊆ {x | 0 ≤ x w₀}) (f : (InfinitePlace K → ℝ) → ℝ≥0∞) :
     ∫⁻ x in (mapToUnitsPow K) '' s, f x =
-      (2 : ℝ≥0∞)⁻¹ ^ NrComplexPlaces K * ENNReal.ofReal (regulator K) * (finrank ℚ K) *
+      (2 : ℝ≥0∞)⁻¹ ^ nrComplexPlaces K * ENNReal.ofReal (regulator K) * (finrank ℚ K) *
       ∫⁻ x in s, ENNReal.ofReal |x w₀| ^ rank K *
         ENNReal.ofReal (∏ i : {w : InfinitePlace K // IsComplex w},
           (mapToUnitsPow₀ K (fun w ↦ x w) i))⁻¹ * f (mapToUnitsPow K x) := by
@@ -926,7 +926,7 @@ theorem mapToUnitsPowComplex_prod_indicator_aux (x y : ℝ × ℝ) (hx : x ∈ S
       exact ⟨hx.2.1, this.2.1.symm⟩
     · rw [lt_iff_le_and_ne]
       exact ⟨hx.2.2, this.2.2⟩
-  have := (Complex.polarCoord_symm_mem_polarCoord_source x).mp ?_
+  have := (Complex.polarCoord_symm_mem_polarCoord_source_iff (x := x)).mp ?_
   · have hx₁ : 0 < x.1 := by
       refine lt_iff_le_and_ne.mpr ⟨?_, ?_⟩
       exact hx.1
@@ -1401,7 +1401,7 @@ theorem volume_normLessThanOnePlus_aux (n : ℕ) :
 
 open Classical in
 theorem volume_plusPart_normLessThanOne : volume (plusPart (normLessThanOne K)) =
-    NNReal.pi ^ NrComplexPlaces K * (regulator K).toNNReal := by
+    NNReal.pi ^ nrComplexPlaces K * (regulator K).toNNReal := by
   rw [plusPart_normLessThanOne, volume_mapToUnitsPowComplex_set_prod_set
     (measurableSet_box₁ K) (fun _ h ↦ le_of_lt (pos_of_mem_box₁ h)) (measurableSet_box₂ K)
     (Set.pi_mono fun _ _ ↦ Set.Ioc_subset_Icc_self)
@@ -1415,16 +1415,16 @@ theorem volume_plusPart_normLessThanOne : volume (plusPart (normLessThanOne K)) 
   have h₁ : ∀ x : InfinitePlace K → ℝ,
       0 < ∏ i : {w // IsComplex w}, (mapToUnitsPow₀ K) (fun w ↦ x w) i.val :=
     fun _ ↦ Finset.prod_pos fun _ _ ↦ mapToUnitsPow₀_pos _ _
-  have h₂ : rank K + NrComplexPlaces K + 1 = finrank ℚ K := by
+  have h₂ : rank K + nrComplexPlaces K + 1 = finrank ℚ K := by
     rw [rank, add_comm _ 1, ← add_assoc, add_tsub_cancel_of_le NeZero.one_le,
       card_eq_nrRealPlaces_add_nrComplexPlaces,  ← card_add_two_mul_card_eq_rank]
     ring
   calc
-    _ = (NNReal.pi : ENNReal) ^ NrComplexPlaces K * (regulator K).toNNReal * (finrank ℚ K) *
-          ∫⁻ x in box₁ K, ENNReal.ofReal |x w₀| ^ (rank K + NrComplexPlaces K) := by
+    _ = (NNReal.pi : ENNReal) ^ nrComplexPlaces K * (regulator K).toNNReal * (finrank ℚ K) *
+          ∫⁻ x in box₁ K, ENNReal.ofReal |x w₀| ^ (rank K + nrComplexPlaces K) := by
       simp_rw [← mul_assoc]
       congr
-      · rw [mul_comm, ← mul_assoc, NrComplexPlaces, Finset.card_univ, ← mul_pow,
+      · rw [mul_comm, ← mul_assoc, nrComplexPlaces, Finset.card_univ, ← mul_pow,
           ENNReal.inv_mul_cancel two_ne_zero ENNReal.two_ne_top, one_pow, one_mul,
           ← ENNReal.ofReal_coe_nnreal, NNReal.coe_real_pi]
       · ext x
@@ -1434,8 +1434,8 @@ theorem volume_plusPart_normLessThanOne : volume (plusPart (normLessThanOne K)) 
           ← ENNReal.ofReal_prod_of_nonneg (fun _ _ ↦ (mapToUnitsPow₀_pos _ _).le),
           ENNReal.ofReal_inv_of_pos (h₁ x), ENNReal.inv_mul_cancel
           (ENNReal.ofReal_ne_zero_iff.mpr (h₁ x)) ENNReal.ofReal_ne_top, mul_one, pow_add,
-          NrComplexPlaces, Finset.card_univ]
-    _ = NNReal.pi ^ NrComplexPlaces K * (regulator K).toNNReal := by
+          nrComplexPlaces, Finset.card_univ]
+    _ = NNReal.pi ^ nrComplexPlaces K * (regulator K).toNNReal := by
       rw [volume_normLessThanOnePlus_aux, ← Nat.cast_add_one, h₂, mul_assoc, ENNReal.mul_inv_cancel,
         mul_one]
       · rw [Nat.cast_ne_zero]
@@ -1446,7 +1446,7 @@ theorem volume_plusPart_normLessThanOne : volume (plusPart (normLessThanOne K)) 
 open Classical in
 theorem volume_normLessThanOne :
     volume (normLessThanOne K) =
-      2 ^ NrRealPlaces K * NNReal.pi ^ NrComplexPlaces K * (regulator K).toNNReal := by
+      2 ^ nrRealPlaces K * NNReal.pi ^ nrComplexPlaces K * (regulator K).toNNReal := by
   rw [volume_eq_two_pow_mul_volume_plusPart (normLessThanOne K) mem_normLessThanOne_iff
     (measurableSet_normLessThanOne K), volume_plusPart_normLessThanOne, mul_assoc]
 
