@@ -209,7 +209,7 @@ theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc
 theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
 
-/-- The unit interval as a submoniod of ℝ. -/
+/-- The unit interval as a submonoid of ℝ. -/
 def submonoid : Submonoid ℝ where
   carrier := unitInterval
   one_mem' := unitInterval.one_mem
