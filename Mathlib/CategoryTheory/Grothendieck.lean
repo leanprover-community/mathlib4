@@ -352,6 +352,8 @@ def functorFrom  :
   map_id X := by simp [hom_id]
   map_comp f g := by simp [hom_comp]
 
+/-- `Grothendieck.apply` and `Grothendieck.functorFrom` fulfill a kind of "β reduction", in which
+application and abstraction cancel each other out. -/
 theorem apply_functorFrom (c : C) : apply (functorFrom fib hom hom_id hom_comp) c = fib c := by
   refine Functor.ext (fun _ => by rfl) ?_
   intro X Y f
