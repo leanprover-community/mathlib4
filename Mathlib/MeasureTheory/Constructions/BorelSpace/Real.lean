@@ -483,7 +483,7 @@ section MeasurableMul
 
 variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
 
-lemma measurable_of_measurable_real_prod {f : EReal × β → γ}
+lemma measurable_of_real_prod {f : EReal × β → γ}
     (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))
     (h_bot : Measurable fun x ↦ f (⊥, x)) (h_top : Measurable fun x ↦ f (⊤, x)) :
     Measurable f := by
@@ -515,15 +515,15 @@ lemma measurable_of_measurable_real_prod {f : EReal × β → γ}
         (MeasurableEquiv.prodCongr MeasurableEquiv.erealEquivReal (MeasurableEquiv.Set.univ β))
     rwa [← MeasurableEquiv.measurable_comp_iff e.symm]
 
-lemma measurable_of_measurable_real_real {f : EReal × EReal → β}
+lemma measurable_of_real_real {f : EReal × EReal → β}
     (h_real : Measurable fun p : ℝ × ℝ ↦ f (p.1, p.2))
     (h_bot_left : Measurable fun r : ℝ ↦ f (⊥, r))
     (h_top_left : Measurable fun r : ℝ ↦ f (⊤, r))
     (h_bot_right : Measurable fun r : ℝ ↦ f (r, ⊥))
     (h_top_right : Measurable fun r : ℝ ↦ f (r, ⊤)) :
     Measurable f := by
-  refine measurable_of_measurable_real_prod ?_ ?_ ?_
-  · refine measurable_swap_iff.mp <| measurable_of_measurable_real_prod ?_ h_bot_right h_top_right
+  refine measurable_of_real_prod ?_ ?_ ?_
+  · refine measurable_swap_iff.mp <| measurable_of_real_prod ?_ h_bot_right h_top_right
     exact h_real.comp measurable_swap
   · exact measurable_of_measurable_real h_bot_left
   · exact measurable_of_measurable_real h_top_left
@@ -550,7 +550,7 @@ private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ 
     rwa [h1]
 
 instance : MeasurableMul₂ EReal := by
-  refine ⟨measurable_of_measurable_real_real ?_ ?_ ?_ ?_ ?_⟩
+  refine ⟨measurable_of_real_real ?_ ?_ ?_ ?_ ?_⟩
   · exact (measurable_fst.mul measurable_snd).coe_real_ereal
   · exact (measurable_const_mul _).comp measurable_coe_real_ereal
   · exact (measurable_const_mul _).comp measurable_coe_real_ereal
