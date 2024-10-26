@@ -237,7 +237,7 @@ theorem pluennecke_ruzsa_inequality_pow_div_pow_mul (hA : A.Nonempty) (B : Finse
     _ ≤ ((#(C * B) / #C) ^ m * #C) * ((#(C * B) / #C : ℚ≥0) ^ n * #C) := by
       gcongr <;> exact card_mul_pow_le (mul_aux hC hCA hCmin) _
     _ = (#(C * B) / #C) ^ (m + n) * #C * #C := by ring
-    _ ≤ (#(A * B) / #A) ^ (m + n) * #A * #C := by gcongr ((?_ ^ _) * #?_) * _; exact hCmin _ hA'
+    _ ≤ (#(A * B) / #A) ^ (m + n) * #A * #C := by gcongr (?_ ^ _) * #?_ * _; exact hCmin _ hA'
 
 /-- The **Plünnecke-Ruzsa inequality**. Division version. -/
 @[to_additive "The **Plünnecke-Ruzsa inequality**. Subtraction version."]
