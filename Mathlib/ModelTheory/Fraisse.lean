@@ -482,54 +482,108 @@ noncomputable def join (S : K) (T : K) : (U : K) × (S ↪[L] U) × (T ↪[L] U)
   exact ⟨⟨h.choose, h.choose_spec.1⟩, Classical.choice h.choose_spec.2.1,
     Classical.choice h.choose_spec.2.2⟩
 
+noncomputable def extend_and_join (A B : K) {f : A ≃ₚ[L] A} (f_fg : f.dom.FG) :
+    (C : K) × (A ↪[L] C) := by
+  let ⟨C', A_to_C', _, _⟩ := extend_finiteEquiv_in_class K_fraisse A f f_fg
+  let ⟨C, C'_to_C, _⟩ := join K_fraisse C' B
+  exact ⟨C, C'_to_C.comp A_to_C'⟩
+
 noncomputable def init_system : (n : ℕ) →
-    (A : K) × (Fin n → (B : K) × (B ↪[L] A))
+    (A : K) × (ℕ → (B : K) × (B ↪[L] A))
   | 0 => ⟨ess_surj_sequence K_fraisse 0,
     fun _ => ⟨_, Embedding.refl L _⟩⟩
-  | 1 => by
-    let A0 := (init_system 0).1
-    let id_A0 := Embedding.refl L A0
+  | n + 1 => by
+    let m1 := (Nat.unpair n).1
+    let m2 := (Nat.unpair n).2
+    let An := (init_system n).1
+    let Sn := (init_system n).2
+    let Am1 := (Sn m1).1
+    let Am1_to_An : Am1 ↪[L] An := (Sn m1).2
     let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
-      (countable_self_fgequiv_of_countable (L := L) (M := A0))).choose 0
-    let ⟨A, A0_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse A0 (f.map id_A0)
-      (PartialEquiv.map_dom id_A0 f ▸ FG.map _ f_fg)
-    let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse 1)
-    exact ⟨A', fun _ ↦ ⟨A0, A_to_A'.comp A0_to_A⟩⟩
-  | n + 2 => by
-    let m1 := (Nat.unpair (n + 1)).1
-    let m2 := (Nat.unpair (n + 1)).2
-    let An := (init_system (n + 1)).1
-    let Sn := (init_system (n + 1)).2
-    let B := (Sn ⟨m1, Nat.unpair_lt NeZero.one_le⟩).1
-    let B_to_An := (Sn ⟨m1, Nat.unpair_lt NeZero.one_le⟩).2
-    let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
-      (countable_self_fgequiv_of_countable (L := L) (M := B))).choose m2
-    let ⟨A, An_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse An (f.map B_to_An)
-      (PartialEquiv.map_dom B_to_An f ▸ FG.map _ f_fg)
+      (countable_self_fgequiv_of_countable (L := L) (M := Am1))).choose m2
+    let ⟨A, An_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse An (f.map Am1_to_An)
+      (PartialEquiv.map_dom Am1_to_An f ▸ FG.map _ f_fg)
     let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse (n+1))
-    exact ⟨A', fun m ↦ ⟨(Sn m).1, A_to_A'.comp (An_to_A.comp ((Sn m).2))⟩⟩
-  decreasing_by · sorry
-                · sorry
-                · sorry
+    exact ⟨A', fun m ↦ if m ≤ n then ⟨(Sn m).1, A_to_A'.comp (An_to_A.comp ((Sn m).2))⟩
+                        else ⟨_, Embedding.eq_embed (rfl)⟩⟩
 
 noncomputable def system : ℕ → K :=
   fun n ↦ (init_system K_fraisse n).1
 
-theorem system_eq {n} {m : Fin (n+1)} :
-    ((init_system K_fraisse (n+1)).2 m).1 = system K_fraisse m :=
-  sorry
+theorem system_eq {n : ℕ} {m : ℕ} (h : m ≤ n) :
+    system K_fraisse m = ((init_system K_fraisse n).2 m).1 := by
+  match n with
+    | 0 =>
+        cases h
+        rfl'
+    | n + 1 =>
+          rw [init_system]
+          simp only
+          split
+          · apply system_eq
+            assumption
+          · cases h
+            rfl'
+            contradiction
 
-noncomputable def maps_system (m n : ℕ) (h : m ≤ n): system K_fraisse m ↪[L] system K_fraisse n :=
-  sorry
+theorem system_eq' {n : ℕ} {m : ℕ} (h : m ≤ n) :
+    (system K_fraisse m : Bundled.{w} L.Structure) = ((init_system K_fraisse n).2 m).1 :=
+    congr_arg _ (system_eq K_fraisse h)
+variable (n m : ℕ)
+
+noncomputable def maps_system {m n : ℕ} (h : m ≤ n): system K_fraisse m ↪[L] system K_fraisse n :=
+  ((init_system K_fraisse n).2 m).2.comp (Embedding.eq_embed (system_eq' K_fraisse h))
+
+theorem if_then_else_right {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
+    (g : B ↪[L] C) (h : P = False) :
+      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).1 = B := by
+  simp only [h, ↓reduceIte]
+
+theorem map_from_eq_dep_pair {C : K} {P Q : (B : K) × (B ↪[L] C)} (h : P = Q) :
+    P.2 = Q.2.comp (Embedding.eq_embed (congr_arg _ (congr_arg Sigma.fst h))) := by
+  cases h
+  rfl
+
+theorem if_then_else_right_map {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
+    (g : B ↪[L] C) (h : P = False) :
+      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).2 =
+        g.comp (Embedding.eq_embed (congr_arg _ (if_then_else_right f g h))):= by
+  have h' : (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩) = ⟨B, g⟩ := by
+    simp [h]
+  apply map_from_eq_dep_pair h'
+
+theorem maps_system_same_step (m : ℕ) : maps_system K_fraisse (le_refl m)
+    = Embedding.refl L _ := by
+  cases m
+  rfl'
+  rename_i m
+  unfold maps_system
+  simp_rw [init_system]
+  have u : ∀ (n : ℕ), ((n+1 ≤ n) = False) := by intro n; simp
+  conv =>
+    lhs
+    congr
+    rw [if_then_else_right_map]
+    simp
+    · skip
+    · exact u m
+  simp only [add_le_iff_nonpos_right, nonpos_iff_eq_zero, one_ne_zero,
+    Embedding.eq_embed_trans]
+  rfl
+
+noncomputable def map_step (m : ℕ) : system K_fraisse m ↪[L] system K_fraisse (m+1) :=
+  maps_system K_fraisse (by linarith)
 
 theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
-    (maps_system K_fraisse _ _ h').comp (maps_system K_fraisse h) =
-      maps_system K_fraisse _ _ (h.trans h') := by
-  sorry
+    (maps_system K_fraisse h').comp (maps_system K_fraisse h) =
+      maps_system K_fraisse (h.trans h') := by
+  simp [maps_system]
+
+
 
 theorem all_fgequiv_extend {m : ℕ} : ∀ f : L.FGEquiv (system _ m) (system _ m),
     ∀ x : ↑(system K_fraisse m), ∃ n, ∃ h : m ≤ n, ∃ g : (system _ n) ≃ₚ[L] (system _ n),
-      maps_system _ _ _ h x ∈ g.dom ∧ f.val.map (maps_system K_fraisse _ _ h) ≤ g :=
+      maps_system _ h x ∈ g.dom ∧ f.val.map (maps_system K_fraisse h) ≤ g :=
   sorry
 
 theorem contains_K : ∀ M ∈ K, ∃ n, Nonempty (M ↪[L] system K_fraisse n) :=
@@ -543,10 +597,11 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
   let _ : (i : ℕ) → L.Structure ((Bundled.α ∘ Subtype.val ∘ system K_fraisse) i) :=
     fun i => Bundled.str _
   have _ : DirectedSystem (Bundled.α ∘ Subtype.val ∘ system K_fraisse)
-      fun i j h ↦ ⇑(maps_system K_fraisse i j h) :=
+      fun i j h ↦ ⇑(maps_system K_fraisse h) :=
     sorry
 
-  let M := DirectLimit (L := L) (Bundled.α ∘ Subtype.val ∘ system K_fraisse) (maps_system K_fraisse)
+  let M := DirectLimit (L := L) (Bundled.α ∘ Subtype.val ∘ system K_fraisse)
+    (@maps_system _ _ _ K_fraisse)
   use ⟨M, DirectLimit.instStructureDirectLimit ..⟩
   have M_c : Countable M := by
     rw [←Structure.cg_iff_countable (L := L)]
