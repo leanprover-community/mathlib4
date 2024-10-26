@@ -314,6 +314,7 @@ section FunctorFrom
 
 variable {E : Type*} [Category E]
 
+variable (F) in
 /-- The inclusion of a fiber `F.obj c` of a functor `F : C ⥤ Cat` into its Grothendieck
 construction.-/
 @[simps]
@@ -332,6 +333,11 @@ def ι (c : C) : F.obj c ⥤ Grothendieck F where
     congr 1
     simp only [eqToHom_comp_iff, Category.assoc, eqToHom_trans_assoc]
     apply Functor.congr_hom (F.map_id _).symm
+
+instance faithful_ι (c : C) : (ι F c).Faithful where
+  map_injective f := by
+    injection f with _ f
+    rwa [cancel_epi] at f
 
 variable (fib : ∀ c, F.obj c ⥤ E) (hom : ∀ {c c' : C} (f : c ⟶ c'), fib c ⟶ F.map f ⋙ fib c')
 variable (hom_id : ∀ c, hom (𝟙 c) = eqToHom (by simp only [Functor.map_id]; rfl))
