@@ -134,6 +134,12 @@ lean_exe pole where
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
 
+lean_exe unused where
+  root := `LongestPole.Unused
+  supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
+
 /-!
 ## Other configuration
 -/

@@ -154,8 +154,7 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       let c := cumulative.find! n'
       let t := total.find! n'
       let r := (t / c).toStringDecimals 2
-      table := table.push
-        #[n.get!.toString, toString (i |>.toUInt64), toString (c |>.toUInt64), r]
+      table := table.push #[n.get!.toString, toString i.toUInt64, toString c.toUInt64, r]
       n := slowest.find? n'
     let instructionsHeader := if args.hasFlag "loc" then "LoC" else "instructions"
     IO.println (formatTable
