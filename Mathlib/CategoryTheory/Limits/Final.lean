@@ -882,7 +882,7 @@ def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
     (by simp only [StructuredArrow.mk_right]
         apply Grothendieck.ext <;> simp)
 
-instance Grothendieck.pre_final [hG : Final G] : (Grothendieck.pre F G).Final := by
+instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final := by
   constructor
   rintro ⟨d, f⟩
   let ⟨u, c, g⟩ : Nonempty (StructuredArrow d G) := inferInstance
