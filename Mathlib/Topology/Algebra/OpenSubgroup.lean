@@ -749,7 +749,7 @@ theorem openSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSp
   use 1, einW, x, xin
   rw [one_mul]
 
-def NonemptyOpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]
+lemma openSubgroupSubClopenNhdsOfOne_nonempty {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] {U : Set G} {UClopen : IsClopen U} {einU : 1 ∈ U} :
     Nonempty {H : OpenSubgroup G // (H : Set G) ⊆ U} :=
   Nonempty.intro ⟨OpenSubgroupSubClopenNhdsOfOne UClopen einU,
