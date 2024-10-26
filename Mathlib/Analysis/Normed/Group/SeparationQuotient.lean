@@ -72,7 +72,7 @@ theorem surjective_normedMk : Function.Surjective (@normedMk M _) :=
   surjective_quot_mk _
 
 /-- The operator norm of the projection is at most `1`. -/
-theorem norm_normedMk_le : ‖(@normedMk M _)‖ ≤ 1 :=
+theorem norm_normedMk_le : ‖normedMk (M := M)‖ ≤ 1 :=
   NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp only [normedMk.apply, norm_mk,
     one_mul, le_refl]
 
