@@ -10,7 +10,27 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 -/
 
-universe u
+universe v u
+
+namespace ExteriorAlgebra
+
+variable (R : Type u) [CommRing R] {n : ℕ} {M : Type v} [AddCommGroup M] [Module R M]
+
+lemma ιMulti_apply_mem_exteriorPower (m : Fin n → M) :
+    ιMulti R n m ∈ exteriorPower R n M := by
+      sorry
+
+variable (n M)
+
+def exteriorProduct : AlternatingMap R M (exteriorPower R n M) (Fin n) where
+  toFun m := ⟨ιMulti R n m, ιMulti_apply_mem_exteriorPower R m⟩
+  map_add' m i x y := Subtype.ext (by simp)
+  map_smul' m i c x := Subtype.ext (by simp)
+  map_eq_zero_of_eq' v i j hij hij' :=
+    Subtype.ext ((ιMulti R (M := M) n).map_eq_zero_of_eq v hij hij')
+
+end ExteriorAlgebra
+
 
 open CategoryTheory
 
@@ -96,11 +116,8 @@ structure Universal (φ : M.AlternatingMap N₀ n) where
 
 variable (M n)
 
-def univ (M : ModuleCat.{u} R) (n : ℕ) : M.AlternatingMap (M.exteriorPower n) n where
-  toFun := sorry
-  map_add' := sorry
-  map_smul' := sorry
-  map_eq_zero_of_eq' := sorry
+def univ (M : ModuleCat.{u} R) (n : ℕ) : M.AlternatingMap (M.exteriorPower n) n :=
+  ExteriorAlgebra.exteriorProduct _ _ _
 
 def univUniversal : (univ M n).Universal := sorry
 
