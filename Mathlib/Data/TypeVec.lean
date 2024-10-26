@@ -419,8 +419,8 @@ theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i
 
 
 section
-variable {α β γ : TypeVec.{u} n}
-variable (p : α ⟹ «repeat» n Prop) (r : α ⊗ α ⟹ «repeat» n Prop)
+variable {α β : TypeVec.{u} n}
+variable (p : α ⟹ «repeat» n Prop)
 
 /-- left projection of a `prod` vector -/
 def prod.fst : ∀ {n} {α β : TypeVec.{u} n}, α ⊗ β ⟹ α

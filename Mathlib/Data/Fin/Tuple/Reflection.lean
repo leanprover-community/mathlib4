@@ -39,7 +39,7 @@ def seq : ∀ {m}, (Fin m → α → β) → (Fin m → α) → Fin m → β
 
 @[simp]
 theorem seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v = fun i => f i (v i)
-  | 0, f, v => Subsingleton.elim _ _
+  | 0, _, _ => Subsingleton.elim _ _
   | n + 1, f, v =>
     funext fun i => by
       simp_rw [seq, seq_eq]
@@ -140,7 +140,7 @@ example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
 -/
 @[simp]
 theorem sum_eq [AddCommMonoid α] : ∀ {m} (a : Fin m → α), sum a = ∑ i, a i
-  | 0, a => rfl
+  | 0, _ => rfl
   | 1, a => (Fintype.sum_unique a).symm
   | n + 2, a => by rw [Fin.sum_univ_castSucc, sum, sum_eq]
 

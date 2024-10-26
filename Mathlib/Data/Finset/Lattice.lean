@@ -629,7 +629,7 @@ protected theorem lt_sup_iff : a < s.sup f ↔ ∃ b ∈ s, a < f b := by
 
 @[simp]
 protected theorem sup_lt_iff (ha : ⊥ < a) : s.sup f < a ↔ ∀ b ∈ s, f b < a :=
-  ⟨fun hs b hb => lt_of_le_of_lt (le_sup hb) hs,
+  ⟨fun hs _ hb => lt_of_le_of_lt (le_sup hb) hs,
     Finset.cons_induction_on s (fun _ => ha) fun c t hc => by
       simpa only [sup_cons, sup_lt_iff, mem_cons, forall_eq_or_imp] using And.imp_right⟩
 
@@ -814,7 +814,7 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClas
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
 lemma nsmul_sup' {α β : Type*} [AddMonoid β] [LinearOrder β]
-    [CovariantClass β β (· + ·) (· ≤ ·)] [CovariantClass β β (swap (· + ·)) (· ≤ ·)]
+    [AddLeftMono β] [AddRightMono β]
     {s : Finset α} (hs : s.Nonempty) (f : α → β) (n : ℕ) :
     s.sup' hs (fun a => n • f a) = n • s.sup' hs f :=
   let ns : SupHom β β := { toFun := (n • ·), map_sup' := fun _ _ => (nsmul_right_mono n).map_max }
@@ -966,7 +966,7 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClas
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
 lemma nsmul_inf' {α β : Type*} [AddMonoid β] [LinearOrder β]
-    [CovariantClass β β (· + ·) (· ≤ ·)] [CovariantClass β β (swap (· + ·)) (· ≤ ·)]
+    [AddLeftMono β] [AddRightMono β]
     {s : Finset α} (hs : s.Nonempty) (f : α → β) (n : ℕ) :
     s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
   let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }

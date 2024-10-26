@@ -215,6 +215,9 @@ instance quotient {A} [CommRing A] [Algebra R A] [FormallyUnramified R A] (I : I
     FormallyUnramified R (A ⧸ I) :=
   FormallyUnramified.of_surjective (IsScalarTower.toAlgHom R A (A ⧸ I)) Ideal.Quotient.mk_surjective
 
+theorem iff_of_equiv (e : A ≃ₐ[R] B) : FormallyUnramified R A ↔ FormallyUnramified R B :=
+  ⟨fun _ ↦ of_equiv e, fun _ ↦ of_equiv e.symm⟩
+
 end of_surjective
 
 section BaseChange

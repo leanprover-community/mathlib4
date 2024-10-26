@@ -133,7 +133,7 @@ instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
     (a : A) [CompactSpace (spectrum ℝ a)] : CompactSpace (spectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
-  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 section QuasispectrumCompact
 
@@ -154,7 +154,7 @@ instance _root_.quasispectrum.instCompactSpaceNNReal [NormedSpace ℝ B] [IsScal
     CompactSpace (quasispectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← quasispectrum.preimage_algebraMap ℝ]
-  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 end QuasispectrumCompact
 
@@ -552,8 +552,8 @@ def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
   invFun f :=
     { val := f.toContinuousLinearMap
       property := by rw [eq_set_map_one_map_mul]; exact ⟨map_one f, map_mul f⟩ }
-  left_inv f := Subtype.ext <| ContinuousLinearMap.ext fun x => rfl
-  right_inv f := AlgHom.ext fun x => rfl
+  left_inv _ := Subtype.ext <| ContinuousLinearMap.ext fun _ => rfl
+  right_inv _ := AlgHom.ext fun _ => rfl
 
 @[simp]
 theorem equivAlgHom_coe (f : characterSpace 𝕜 A) : ⇑(equivAlgHom f) = f :=

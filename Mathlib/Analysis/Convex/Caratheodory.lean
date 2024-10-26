@@ -55,7 +55,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
   obtain ⟨g, gcombo, gsum, gpos⟩ := exists_nontrivial_relation_sum_zero_of_not_affine_ind h
   replace gpos := exists_pos_of_sum_zero_of_exists_nonzero g gsum gpos
   clear h
-  let s := @Finset.filter _ (fun z => 0 < g z) (fun _ => LinearOrder.decidableLT _ _) t
+  let s := {z ∈ t | 0 < g z}
   obtain ⟨i₀, mem, w⟩ : ∃ i₀ ∈ s, ∀ i ∈ s, f i₀ / g i₀ ≤ f i / g i := by
     apply s.exists_min_image fun z => f z / g z
     obtain ⟨x, hx, hgx⟩ : ∃ x ∈ t, 0 < g x := gpos
@@ -117,13 +117,13 @@ theorem minCardFinsetOfMemConvexHull_nonempty : (minCardFinsetOfMemConvexHull hx
   exact ⟨x, mem_minCardFinsetOfMemConvexHull hx⟩
 
 theorem minCardFinsetOfMemConvexHull_card_le_card {t : Finset E} (ht₁ : ↑t ⊆ s)
-    (ht₂ : x ∈ convexHull 𝕜 (t : Set E)) : (minCardFinsetOfMemConvexHull hx).card ≤ t.card :=
+    (ht₂ : x ∈ convexHull 𝕜 (t : Set E)) : #(minCardFinsetOfMemConvexHull hx) ≤ #t :=
   Function.argminOn_le _ _ _ (by exact ⟨ht₁, ht₂⟩)
 
 theorem affineIndependent_minCardFinsetOfMemConvexHull :
     AffineIndependent 𝕜 ((↑) : minCardFinsetOfMemConvexHull hx → E) := by
-  let k := (minCardFinsetOfMemConvexHull hx).card - 1
-  have hk : (minCardFinsetOfMemConvexHull hx).card = k + 1 :=
+  let k := #(minCardFinsetOfMemConvexHull hx) - 1
+  have hk : #(minCardFinsetOfMemConvexHull hx) = k + 1 :=
     (Nat.succ_pred_eq_of_pos (Finset.card_pos.mpr (minCardFinsetOfMemConvexHull_nonempty hx))).symm
   classical
   by_contra h
@@ -142,7 +142,7 @@ variable {s : Set E}
 
 /-- **Carathéodory's convexity theorem** -/
 theorem convexHull_eq_union : convexHull 𝕜 s =
-    ⋃ (t : Finset E) (hss : ↑t ⊆ s) (hai : AffineIndependent 𝕜 ((↑) : t → E)), convexHull 𝕜 ↑t := by
+    ⋃ (t : Finset E) (_ : ↑t ⊆ s) (_ : AffineIndependent 𝕜 ((↑) : t → E)), convexHull 𝕜 ↑t := by
   apply Set.Subset.antisymm
   · intro x hx
     simp only [exists_prop, Set.mem_iUnion]
@@ -163,7 +163,7 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := hx
   simp only [t.convexHull_eq, exists_prop, Set.mem_setOf_eq] at ht₃
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := ht₃
-  let t' := t.filter fun i => w i ≠ 0
+  let t' := {i ∈ t | w i ≠ 0}
   refine ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), ?_, ?_, ?_, ?_, ?_⟩
   · rw [Subtype.range_coe_subtype]
     exact Subset.trans (Finset.filter_subset _ t) ht₁

@@ -84,6 +84,9 @@ theorem of_equiv [FormallyEtale R A] (e : A ≃ₐ[R] B) : FormallyEtale R B :=
   FormallyEtale.iff_unramified_and_smooth.mpr
     ⟨FormallyUnramified.of_equiv e, FormallySmooth.of_equiv e⟩
 
+theorem iff_of_equiv (e : A ≃ₐ[R] B) : FormallyEtale R A ↔ FormallyEtale R B :=
+  ⟨fun _ ↦ of_equiv e, fun _ ↦ of_equiv e.symm⟩
+
 end OfEquiv
 
 section Comp
