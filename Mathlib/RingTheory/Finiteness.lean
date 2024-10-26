@@ -503,7 +503,7 @@ theorem exists_pow_le_of_le_radical_of_fg_radical {R : Type*} [CommSemiring R] {
     _ ≤ J := hk
 
 @[deprecated (since := "2024-10-24")]
-alias exists_pow_le_of_le_radical_of_fG := exists_pow_le_of_le_radical_of_radical_fg
+alias exists_pow_le_of_le_radical_of_fG := exists_pow_le_of_le_radical_of_fg_radical
 
 lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Ideal R}
     (h' : I ≤ J.radical) (h : I.FG) :
