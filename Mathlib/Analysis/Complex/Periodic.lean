@@ -52,8 +52,7 @@ theorem im_invQParam (q : ℂ) : im (invQParam h q) = -h / (2 * π) * Real.log (
 
 variable {h} -- next few theorems all assume h ≠ 0 or 0 < h
 
-theorem qParam_right_inv (hh : h ≠ 0) {e : ℂ} (hq : e ≠ 0) :
-    𝕢 h (invQParam h e) = e := by
+theorem qParam_right_inv (hh : h ≠ 0) {e : ℂ} (hq : e ≠ 0) : 𝕢 h (invQParam h e) = e := by
   simp only [qParam, invQParam, ← mul_assoc, mul_div_cancel₀ _ two_pi_I_ne_zero,
     mul_div_cancel_left₀ _ (ofReal_ne_zero.mpr hh), exp_log hq]
 
