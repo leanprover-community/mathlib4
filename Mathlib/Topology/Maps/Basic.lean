@@ -229,9 +229,6 @@ alias Embedding.map_nhds_of_mem := map_nhds_of_mem
 lemma tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y} (hg : IsEmbedding g) :
     Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) := hg.toInducing.tendsto_nhds_iff
 
-@[deprecated (since := "2024-10-26")]
-alias continuous := tendsto_nhds_iff
-
 lemma continuous_iff (hg : IsEmbedding g) : Continuous f ↔ Continuous (g ∘ f) :=
   hg.toInducing.continuous_iff
 
@@ -239,9 +236,6 @@ lemma continuous_iff (hg : IsEmbedding g) : Continuous f ↔ Continuous (g ∘ f
 alias Embedding.continuous_iff := continuous_iff
 
 lemma continuous (hf : IsEmbedding f) : Continuous f := hf.toInducing.continuous
-
-@[deprecated (since := "2024-10-26")]
-alias tendsto_nhds_iff := continuous
 
 lemma closure_eq_preimage_closure_image (hf : IsEmbedding f) (s : Set X) :
     closure s = f ⁻¹' closure (f '' s) :=
@@ -532,9 +526,6 @@ lemma IsOpenEmbedding.isEmbedding (hf : IsOpenEmbedding f) : IsEmbedding f := hf
 lemma IsOpenEmbedding.inducing (hf : IsOpenEmbedding f) : Inducing f :=
   hf.isEmbedding.toInducing
 
-@[deprecated (since := "2024-10-26")]
-alias IsOpenEmbedding.isOpenMap := IsOpenEmbedding.inducing
-
 lemma IsOpenEmbedding.isOpenMap (hf : IsOpenEmbedding f) : IsOpenMap f :=
   hf.isEmbedding.toInducing.isOpenMap hf.isOpen_range
 
@@ -610,9 +601,6 @@ lemma IsEmbedding.isOpenEmbedding_of_surjective (hf : IsEmbedding f) (hsurj : f.
 alias _root_.Embedding.toIsOpenEmbedding_of_surjective := IsEmbedding.isOpenEmbedding_of_surjective
 
 alias IsOpenEmbedding.of_isEmbedding := IsEmbedding.isOpenEmbedding_of_surjective
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.toIsOpenEmbedding_of_surjective := IsOpenEmbedding.of_isEmbedding
 
 @[deprecated (since := "2024-10-18")]
 alias _root_.Embedding.toOpenEmbedding_of_surjective := IsEmbedding.isOpenEmbedding_of_surjective
