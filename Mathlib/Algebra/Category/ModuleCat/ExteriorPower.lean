@@ -12,16 +12,6 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 universe w v u
 
-namespace LinearMap
-
-variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂]
-  [AddCommMonoid M] [AddCommMonoid M₂] [Module R M]
-  [Module R₂ M₂] {τ₁₂ : R →+* R₂}
-  {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
-  [RingHomSurjective τ₁₂] (f : F)
-
-end LinearMap
-
 namespace ExteriorAlgebra
 
 variable (R : Type u) [CommRing R] (n : ℕ) (M : Type v) [AddCommGroup M] [Module R M]
