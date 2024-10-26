@@ -30,6 +30,8 @@ def functor (T : C ⥤ D) : Dᵒᵖ ⥤ Cat where
   map_id d := Functor.ext (fun ⟨_, _, _⟩ => by simp [CostructuredArrow.map, Comma.mapRight])
   map_comp f g := Functor.ext (fun _ => by simp [CostructuredArrow.map, Comma.mapRight])
 
+end StructuredArrow
+
 namespace CostructuredArrow
 
 @[simps]
@@ -38,6 +40,28 @@ def functor (T : C ⥤ D) : D ⥤ Cat where
   map f := CostructuredArrow.map f
   map_id d := Functor.ext (fun ⟨_, _, _⟩ => by simp [CostructuredArrow.map, Comma.mapRight])
   map_comp f g := Functor.ext (fun _ => by simp [CostructuredArrow.map, Comma.mapRight])
+
+variable {E : Type u₃} [Category.{v₃} E]
+variable (L : C ⥤ D) (R : E ⥤ D)
+
+@[simps]
+def grothendieckPrecompFunctorToComma : Grothendieck (R ⋙ functor L) ⥤ Comma L R where
+  obj := fun P => ⟨P.fiber.left, P.base, P.fiber.hom⟩
+  map := fun f => ⟨f.fiber.left, f.base, by simp⟩
+
+@[simps]
+def commaToGrothendieckPrecompFunctor : Comma L R ⥤ Grothendieck (R ⋙ functor L) where
+  obj := fun X => ⟨X.right, mk X.hom⟩
+  map := fun f => ⟨f.right, homMk f.left⟩
+  map_id X := Grothendieck.ext _ _ rfl (by simp)
+  map_comp f g := Grothendieck.ext _ _ rfl (by simp)
+
+@[simps]
+def grothendieckPrecompFunctorEquivalence : Grothendieck (R ⋙ functor L) ≌ Comma L R where
+  functor := grothendieckPrecompFunctorToComma _ _
+  inverse := commaToGrothendieckPrecompFunctor _ _
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _)
 
 end CostructuredArrow
 
