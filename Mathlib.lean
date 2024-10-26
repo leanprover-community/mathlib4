@@ -712,6 +712,7 @@ import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Algebra.Order.Star.Conjneg
+import Mathlib.Algebra.Order.Star.Prod
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Algebra.Order.Sub.Prod
@@ -1726,6 +1727,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.Shapes.Connected
 import Mathlib.CategoryTheory.Limits.Shapes.Countable
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
@@ -2546,6 +2548,10 @@ import Mathlib.Data.Nat.PartENat
 import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.Prime.Factorial
+import Mathlib.Data.Nat.Prime.Infinite
+import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Nat.Prime.Pow
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
@@ -2796,6 +2802,7 @@ import Mathlib.FieldTheory.KummerExtension
 import Mathlib.FieldTheory.Laurent
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.FieldTheory.Minpoly.IsConjRoot
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.FieldTheory.Minpoly.MinpolyDiv
 import Mathlib.FieldTheory.MvPolynomial
@@ -3580,6 +3587,7 @@ import Mathlib.NumberTheory.LSeries.HurwitzZetaOdd
 import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
+import Mathlib.NumberTheory.LSeries.Positivity
 import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.LSeries.ZMod
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
@@ -3803,7 +3811,6 @@ import Mathlib.Order.Interval.Set.SurjOn
 import Mathlib.Order.Interval.Set.UnorderedInterval
 import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.Irreducible
-import Mathlib.Order.IsWellOrderLimitElement
 import Mathlib.Order.Iterate
 import Mathlib.Order.JordanHolder
 import Mathlib.Order.KonigLemma
@@ -4000,6 +4007,7 @@ import Mathlib.RingTheory.DualNumber
 import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EssentialFiniteness
 import Mathlib.RingTheory.Etale.Basic
+import Mathlib.RingTheory.Etale.Field
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Filtration
 import Mathlib.RingTheory.FiniteLength
@@ -4042,6 +4050,7 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.IsPrincipal
+import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Norm
@@ -4221,7 +4230,6 @@ import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Unramified.Basic
-import Mathlib.RingTheory.Unramified.Derivations
 import Mathlib.RingTheory.Unramified.Field
 import Mathlib.RingTheory.Unramified.Finite
 import Mathlib.RingTheory.Unramified.Pi
