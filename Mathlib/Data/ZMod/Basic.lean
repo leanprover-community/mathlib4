@@ -32,20 +32,16 @@ This is a ring hom if the ring has characteristic dividing `n`
 
 ## Implementations notes
 
-To talk about
+For `G` a group and `n` a natural number, `G` having characteristic dividing `n`
+(`∀ x : G, n • x = 0`) can be derived from `Module R G` where `R` has characteristic dividing `n`.
 
- PFR had an ad hoc definition of "elementary `p`-groups" which is strictly less general and practical than `Module (ZMod p)` in that
-* it only works for `p` a prime
-* it doesn't contain the data of the `ZMod p` action
+It is however painful to have the API for such groups `G` stated in this generality, as `R` does not
+appear anywhere in the lemmas' return type. Instead of writing the API in terms of a general `R`, we
+therefore specialise to the canonical ring of order `n`, namely `ZMod n`.
 
-I deleted that definition in favor of the `Module (ZMod p)` spelling in https://github.com/teorth/pfr/commit/813d4991dd85950ba9bd0fcaeae4940614a4adbf. My reasoning is that this spelling is already extensively used in `Algebra.Module.ZMod` and that generalising to an arbitrary ring of characteristic `p`  would result in pain when all we want to state is that our group has characteristic dividing `p`. Furthermore, `CharP` is slightly too strong in that it requires the characteristic to be `p` on the nose, rather than merely dividing it.
-
-Concretely, in your suggested lemma
-```
-lemma char_nsmul_eq_zero (R : Type*) (n : ℕ) [CharP n R] [Module R G] (x : G) : n • x = 0 := by
-```
-there is no way for Lean to figure `R` out from the resulting equality. And it would get boring to write `char_nsmul_eq_zero (ZMod n) n` every time.
-
+This spelling `Module (ZMod n) G` has the extra advantage of providing the canonical action by
+`ZMod n`. It is however Type-valued, so we might want to acquire a Prop-valued version in the
+future.
 -/
 
 assert_not_exists Submodule
