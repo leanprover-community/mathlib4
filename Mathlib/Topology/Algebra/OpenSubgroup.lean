@@ -690,19 +690,17 @@ lemma iUnion_pow {G : Type*} [Group G] {V : Set G} (einV : 1 ∈ V) :
     {x : G | ∃ n : ℕ, x ∈ V ^ n} = ⋃ n , V ^ (n + 1) := by
   ext x
   rw [Set.mem_setOf_eq, Set.mem_iUnion]
-  constructor
-  all_goals rintro ⟨n,hn⟩
-  · by_cases h : n = 0
-    · use 0
-      simp only [h, pow_zero, Set.mem_one] at hn
-      simpa only [zero_add, pow_one, hn] using einV
-    · use n - 1
-      rwa [Nat.sub_add_cancel <| Nat.one_le_iff_ne_zero.mpr h]
-  · use n + 1
+  refine ⟨fun ⟨n, hn⟩ ↦ ?_, fun ⟨n, _⟩ ↦ by use n + 1⟩
+  by_cases h : n = 0
+  · use 0
+    simp only [h, pow_zero, Set.mem_one] at hn
+    simpa only [zero_add, pow_one, hn] using einV
+  · use n - 1
+    rwa [Nat.sub_add_cancel <| Nat.one_le_iff_ne_zero.mpr h]
 
 namespace TopologicalGroup
 
-/-- An open subgroup that is contained in a given clopen neighborhood of `1`. -/
+/-- An arbitrary open subgroup that is contained in a given clopen neighborhood of `1`. -/
 @[to_additive "An open subgroup that is contained in a given clopen neighborhood of `1`."]
 def OpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]  [TopologicalGroup G]
     [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) : OpenSubgroup G where
@@ -750,6 +748,12 @@ theorem openSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSp
   rw [Set.mem_mul]
   use 1, einW, x, xin
   rw [one_mul]
+
+instance {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
+    {U : Set G} (UClopen : IsClopen U) (einU : 1 ∈ U) :
+    Nonempty {H : OpenSubgroup G // (H : Set G) ⊆ U} :=
+  Nonempty.intro ⟨OpenSubgroupSubClopenNhdsOfOne UClopen einU,
+    openSubgroupSubClopenNhdsOfOne_spec UClopen einU⟩
 
 end TopologicalGroup
 
