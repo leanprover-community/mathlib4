@@ -71,7 +71,7 @@ variable {M : Type*}
 
 @[to_additive]
 theorem exists_lt_pow [OrderedCommMonoid M] [MulArchimedean M]
-    [CovariantClass M M (· * ·) (· < ·)] {a : M} (ha : 1 < a) (b : M) :
+    [MulLeftStrictMono M] {a : M} (ha : 1 < a) (b : M) :
     ∃ n : ℕ, b < a ^ n :=
   let ⟨k, hk⟩ := MulArchimedean.arch b ha
   ⟨k + 1, hk.trans_lt <| pow_lt_pow_right' ha k.lt_succ_self⟩

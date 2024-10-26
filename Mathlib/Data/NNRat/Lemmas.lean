@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Order.Field.Rat
 
 /-!

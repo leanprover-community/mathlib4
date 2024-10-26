@@ -106,6 +106,11 @@ variable [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing 
 variable [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [instCFCₙ : NonUnitalContinuousFunctionalCalculus R p]
 
+include instCFCₙ in
+lemma NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (a : A) :
+    IsCompact (σₙ R a) :=
+  isCompact_iff_compactSpace.mpr inferInstance
+
 lemma NonUnitalStarAlgHom.ext_continuousMap [UniqueNonUnitalContinuousFunctionalCalculus R A]
     (a : A) (φ ψ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = ψ ⟨.restrict (σₙ R a) <| .id R, rfl⟩) :
@@ -173,7 +178,7 @@ theorem cfcₙHom_comp [UniqueNonUnitalContinuousFunctionalCalculus R A] (f : C(
   suffices cfcₙHom (cfcₙHom_predicate ha f) = φ from DFunLike.congr_fun this.symm g
   refine cfcₙHom_eq_of_continuous_of_map_id (cfcₙHom_predicate ha f) φ ?_ ?_
   · refine (cfcₙHom_isClosedEmbedding ha).continuous.comp <| continuous_induced_rng.mpr ?_
-    exact f'.toContinuousMap.continuous_comp_left.comp continuous_induced_dom
+    exact f'.toContinuousMap.continuous_precomp.comp continuous_induced_dom
   · simp only [φ, ψ, NonUnitalStarAlgHom.comp_apply, NonUnitalStarAlgHom.coe_mk',
       NonUnitalAlgHom.coe_mk]
     congr
@@ -266,6 +271,11 @@ lemma cfcₙ_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     · rwa [cfcₙ_apply_of_not_continuousOn _ h]
     · rwa [cfcₙ_apply_of_not_map_zero _ h]
     · rwa [cfcₙ_apply_of_not_predicate _ h]
+
+lemma cfcₙ_commute_cfcₙ (f g : R → R) (a : A) : Commute (cfcₙ f a) (cfcₙ g a) := by
+  refine cfcₙ_cases (fun x ↦ Commute x (cfcₙ g a)) a f (by simp) fun hf hf0 ha ↦ ?_
+  refine cfcₙ_cases (fun x ↦ Commute _ x) a g (by simp) fun hg hg0 _ ↦ ?_
+  exact Commute.all _ _ |>.map _
 
 variable (R) in
 include ha in

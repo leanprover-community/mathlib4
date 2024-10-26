@@ -265,7 +265,6 @@ protected theorem injective (e : M ≃* N) : Function.Injective e :=
 protected theorem surjective (e : M ≃* N) : Function.Surjective e :=
   EquivLike.surjective e
 
--- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem apply_eq_iff_eq (e : M ≃* N) {x y : M} : e x = e y ↔ x = y :=
   e.injective.eq_iff
