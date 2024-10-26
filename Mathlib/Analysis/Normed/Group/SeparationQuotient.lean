@@ -51,14 +51,11 @@ theorem mk_eq_zero_iff (m : M) : mk m = 0 ↔ ‖m‖ = 0 := by
 open NormedAddGroupHom
 
 /-- The morphism from a seminormed group to the quotient by the inseparable setoid. -/
+@[simps]
 noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) where
   __ := mkAddMonoidHom
   bound' := ⟨1, fun m => by simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
     mkAddMonoidHom_apply, norm_mk, one_mul, le_refl]⟩
-
-/-- `normedMk` agrees with `SeparationQuotient.mk`. -/
-@[simp]
-theorem normedMk.apply (m : M) : normedMk m = mk m := rfl
 
 /-- The operator norm of the projection is at most `1`. -/
 theorem norm_normedMk_le : ‖normedMk (M := M)‖ ≤ 1 :=
