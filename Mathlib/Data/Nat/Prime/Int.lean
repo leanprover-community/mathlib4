@@ -40,13 +40,14 @@ namespace Int
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem prime_ofNat {n : ℕ} : Prime (no_index (OfNat.ofNat n : ℤ)) ↔ Nat.Prime (OfNat.ofNat n) :=
+theorem prime_ofNat_iff {n : ℕ} :
+    Prime (no_index (OfNat.ofNat n : ℤ)) ↔ Nat.Prime (OfNat.ofNat n) :=
   Nat.prime_iff_prime_int.symm
 
 theorem prime_two : Prime (2 : ℤ) :=
-  prime_ofNat.mpr Nat.prime_two
+  prime_ofNat_iff.mpr Nat.prime_two
 
 theorem prime_three : Prime (3 : ℤ) :=
-  prime_ofNat.mpr Nat.prime_three
+  prime_ofNat_iff.mpr Nat.prime_three
 
 end Int
