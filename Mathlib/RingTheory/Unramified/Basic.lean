@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Kaehler.Basic
 
 # Unramified morphisms
 
-An `R`-algebra `A` is formally unramified f `Ω[A⁄R]` is trivial.
+An `R`-algebra `A` is formally unramified if `Ω[A⁄R]` is trivial.
 This is equivalent to the standard definition "for every `R`-algebra,
 every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists
 at most one lift `A →ₐ[R] B`".
