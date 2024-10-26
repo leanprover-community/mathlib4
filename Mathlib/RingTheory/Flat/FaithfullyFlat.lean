@@ -387,7 +387,7 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
     {N : Type*} [AddCommGroup N] [Module R N]
     {N' : Type*} [AddCommGroup N'] [Module R N']
     (f : N →ₗ[R] N') :
-    f = 0 ↔  LinearMap.rTensor M f = 0 :=
+    f = 0 ↔ LinearMap.rTensor M f = 0 :=
   zero_iff_lTensor_zero R M f |>.trans
   ⟨fun h => by ext n m; exact (TensorProduct.comm R N' M).injective <|
     (by simpa using congr($h (m ⊗ₜ n))), fun h => by
