@@ -31,7 +31,7 @@ universe u
 variable {Ω : Type u} [MeasurableSpace Ω] (μ : Measure Ω := by volume_tac)
 
 theorem cgf_zero_deriv [IsProbabilityMeasure μ] {X : Ω → ℝ} (h0 : μ[X] = 0) :
-  let f' := fun t ↦ ∫ (x : Ω), X x ∂Measure.tilted μ fun ω ↦ t * X ω;
+    let f' := fun t ↦ ∫ (x : Ω), X x ∂Measure.tilted μ fun ω ↦ t * X ω;
   f' 0 = 0 := by
   simp only [zero_mul, tilted_const', measure_univ, inv_one, one_smul]
   exact h0
