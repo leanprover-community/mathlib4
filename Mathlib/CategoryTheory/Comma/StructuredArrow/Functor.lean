@@ -17,18 +17,26 @@ that we can precompose it with another functor `L : E ⥤ D` to obtain a categor
 
 namespace CategoryTheory
 
-namespace CostructuredArrow
-
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+
+namespace StructuredArrow
+
+@[simps]
+def functor (T : C ⥤ D) : Dᵒᵖ ⥤ Cat where
+  obj d := .of <| StructuredArrow d.unop T
+  map f := map f.unop
+  map_id d := Functor.ext (fun ⟨_, _, _⟩ => by simp [CostructuredArrow.map, Comma.mapRight])
+  map_comp f g := Functor.ext (fun _ => by simp [CostructuredArrow.map, Comma.mapRight])
+
+namespace CostructuredArrow
 
 @[simps]
 def functor (T : C ⥤ D) : D ⥤ Cat where
   obj d := .of <| CostructuredArrow T d
   map f := CostructuredArrow.map f
-  map_id d := Functor.ext (fun _ => by simp only [map, Comma.mapRight, Functor.const_obj_obj,
-    Functor.const_map_app, right_eq_id, Cat.of_α, Category.comp_id, Cat.id_obj]; rfl)
+  map_id d := Functor.ext (fun ⟨_, _, _⟩ => by simp [CostructuredArrow.map, Comma.mapRight])
   map_comp f g := Functor.ext (fun _ => by simp [CostructuredArrow.map, Comma.mapRight])
 
 end CostructuredArrow
