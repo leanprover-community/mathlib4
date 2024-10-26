@@ -519,7 +519,7 @@ lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Idea
     obtain ⟨n₁, hn₁⟩ := h₁ (le_sup_left.trans hJ)
     obtain ⟨n₂, hn₂⟩ := h₂ (le_sup_right.trans hJ)
     use n₁ + n₂
-    exact Ideal.sup_pow_le_pow_sub_pow.trans (sup_le hn₁ hn₂)
+    exact Ideal.sup_pow_add_le_pow_sup_pow.trans (sup_le hn₁ hn₂)
 
 end Ideal
 
