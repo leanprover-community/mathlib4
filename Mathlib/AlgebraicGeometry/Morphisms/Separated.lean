@@ -141,7 +141,7 @@ instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSepa
 Suppose `X` is a reduced scheme and that `f g : X ⟶ Y` agree over some separated `Y ⟶ Z`.
 Then `f = g` if `ι ≫ f = ι ≫ g` for some dominant `ι`.
 -/
-lemma ext_of_isDominant [IsReduced X] {f g : X ⟶ Y}
+lemma ext_of_isDominant_of_isSeparated [IsReduced X] {f g : X ⟶ Y}
     (s : Y ⟶ Z) [IsSeparated s] (h : f ≫ s = g ≫ s)
     (ι : W ⟶ X) [IsDominant ι] (hU : ι ≫ f = ι ≫ g) : f = g := by
   let X' : Over Z := Over.mk (f ≫ s)
@@ -197,5 +197,15 @@ instance IsSeparated.hasAffineProperty :
   convert HasAffineProperty.of_isLocalAtTarget @IsSeparated with X Y f hY
   rw [Scheme.isSeparated_iff, ← terminal.comp_from f, IsSeparated.comp_iff]
   rfl
+
+/--
+Suppose `f g : X ⟶ Y` where `X` is a reduced scheme and `Y` is a separated scheme.
+Then `f = g` if `ι ≫ f = ι ≫ g` for some dominant `ι`.
+
+Also see `ext_of_isDominant_of_isSeparated` for the general version over arbitrary bases.
+-/
+lemma ext_of_isDominant [IsReduced X] {f g : X ⟶ Y} [Y.IsSeparated]
+    (ι : W ⟶ X) [IsDominant ι] (hU : ι ≫ f = ι ≫ g) : f = g :=
+  ext_of_isDominant_of_isSeparated (Limits.terminal.from _) (Limits.terminal.hom_ext _ _) ι hU
 
 end AlgebraicGeometry
