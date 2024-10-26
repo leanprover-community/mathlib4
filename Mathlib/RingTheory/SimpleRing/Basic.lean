@@ -83,9 +83,8 @@ lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.ce
 lemma injective_ringHom_or_subsingleton_codomain
     {R S : Type*} [NonAssocRing R] [IsSimpleRing R] [NonAssocRing S]
     (f : R →+* S) : Function.Injective f ∨ Subsingleton S :=
-  simple.eq_bot_or_eq_top (TwoSidedIdeal.ker f) |>.recOn
-    (fun h => Or.inl <| TwoSidedIdeal.ker_eq_bot _ |>.1 h)
-    (fun h => Or.inr <| subsingleton_iff_zero_eq_one.1 <| by
+  simple.eq_bot_or_eq_top (TwoSidedIdeal.ker f) |>.imp (TwoSidedIdeal.ker_eq_bot _ |>.1)
+    (fun h => subsingleton_iff_zero_eq_one.1 <| by
       have mem : 1 ∈ TwoSidedIdeal.ker f := h.symm ▸ TwoSidedIdeal.mem_top _
       rwa [TwoSidedIdeal.mem_ker, map_one, eq_comm] at mem)
 
