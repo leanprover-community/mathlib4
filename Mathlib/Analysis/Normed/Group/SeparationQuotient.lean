@@ -58,10 +58,10 @@ theorem mk_eq_zero_iff (m : M) : mk m = 0 ↔ ‖m‖ = 0 := by
 open NormedAddGroupHom
 
 /-- The morphism from a seminormed group to the quotient by the inseparable setoid. -/
-noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) :=
-  { mkAddMonoidHom with
-    bound' := ⟨1, fun m => by simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-      mkAddMonoidHom_apply, norm_mk, one_mul, le_refl]⟩}
+noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) where
+  __ := mkAddMonoidHom
+  bound' := ⟨1, fun m => by simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+    mkAddMonoidHom_apply, norm_mk, one_mul, le_refl]⟩}
 
 /-- `normedMk` agrees with `SeparationQuotient.mk`. -/
 @[simp]
