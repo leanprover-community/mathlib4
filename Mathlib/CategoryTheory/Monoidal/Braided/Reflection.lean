@@ -13,9 +13,9 @@ import Mathlib.Tactic.TFAE
 # Day's reflection theorem
 
 Let `D` be a symmetric monoidal closed category and let `C` be a reflective subcategory. Day's
-reflection theorem proves the equivalence of four conditions, which are all of the form that a map obtained
-by acting on the unit of the reflective adjunction, with the internal hom and tensor functors, is
-an isomorphism.
+reflection theorem proves the equivalence of four conditions, which are all of the form that a
+map obtained by acting on the unit of the reflective adjunction, with the internal hom and
+tensor functors, is an isomorphism.
 
 Suppose that `C` is itself monoidal and that the reflector is a monoidal functor. Then we can
 apply Day's reflection theorem to prove that `C` is also closed monoidal.
