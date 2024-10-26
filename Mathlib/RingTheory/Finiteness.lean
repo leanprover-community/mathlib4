@@ -493,7 +493,7 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
       rw [add_comm, Nat.add_sub_assoc h.le]
       apply Nat.le_add_right
 
-theorem exists_pow_le_of_le_radical_of_radical_fg {R : Type*} [CommSemiring R] {I J : Ideal R}
+theorem exists_pow_le_of_le_radical_of_fg_radical {R : Type*} [CommSemiring R] {I J : Ideal R}
     (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
     ∃ k : ℕ, I ^ k ≤ J := by
   obtain ⟨k, hk⟩ := J.exists_radical_pow_le_of_fg hJ
