@@ -54,6 +54,9 @@ namespace Ideal
 
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
+/-- Given a ring $R$, an $R$-module $M$ and an ideal $I$ of $R$, `I.adicBasis M n`
+is the submodule $I^n M$ of $M$. As the name suggest, this is a basis of neighborhoods
+of zero for the $I$--adic topology on $M$. -/
 abbrev adicBasis (n : ℕ) : Set M := (I ^ n • ⊤ : Submodule R M)
 
 @[simp]
@@ -73,8 +76,8 @@ theorem adicBasis_isAddGroupBasis :
     IsAddGroupBasis (fun _ ↦ True) (I.adicBasis M) :=
   .mk_of_subgroups_of_comm <| I.adicBasis_isBasis M
 
-/-- The topology on an `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
-written `I^n • ⊤` form a basis of neighborhoods of zero. -/
+/-- The $I$-adic topology on an $R$-module $M$, where $I$ is an ideal of $R$. Submodules $I^n M$,
+form a basis of neighborhoods of zero. -/
 def adicTopology : TopologicalSpace M :=
   I.adicBasis_isAddGroupBasis M |>.topology
 
@@ -120,7 +123,7 @@ theorem isAdic_iff_hasBasis_nhds_zero {I : Ideal R} {M : Type*} [AddCommGroup M]
     (I.isAdic_adicTopology M).topologicalAddGroup
     (H.eq_of_same_basis <| I.isAdic_adicTopology M |>.hasBasis_nhds_zero)⟩
 
-/-- A topological ring is `J`-adic if and only if it admits the powers of `J` as a basis of
+/-- A topological module is `J`-adic if and only if it admits the `Jⁿ M` as a basis of
 open neighborhoods of zero. -/
 theorem isAdic_iff {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
     {_ : TopologicalSpace M} [TopologicalAddGroup M] :
@@ -248,7 +251,7 @@ instance (priority := 100) : UniformSpace R :=
 instance (priority := 100) : UniformAddGroup R :=
   comm_topologicalAddGroup_is_uniform
 
-/-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
+/-- The adic topology on an `R` module coming from the ideal `WithIdeal.i`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
 def topologicalSpaceModule (M : Type*) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
   (i : Ideal R).adicTopology M
