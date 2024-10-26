@@ -159,7 +159,7 @@ def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n 
       by_cases hab : a = k ∧ b = l
       · rcases hab with ⟨ha, hb⟩
         subst ha hb
-        simp only [stdBasisMatrix, and_self, ↓reduceIte, StdBasisMatrix.mul_right_apply_same,
+        simp only [StdBasisMatrix.apply_same, StdBasisMatrix.mul_right_apply_same,
           StdBasisMatrix.mul_left_apply_same, one_mul, mul_one]
         rw [hy2 a b]
       · conv_lhs =>
