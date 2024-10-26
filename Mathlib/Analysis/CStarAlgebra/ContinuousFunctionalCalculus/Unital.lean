@@ -271,7 +271,7 @@ theorem cfcHom_comp [UniqueContinuousFunctionalCalculus R A] (f : C(spectrum R a
     (cfcHom ha).comp <| ContinuousMap.compStarAlgHom' R R f'
   suffices cfcHom (cfcHom_predicate ha f) = φ from DFunLike.congr_fun this.symm g
   refine cfcHom_eq_of_continuous_of_map_id (cfcHom_predicate ha f) φ ?_ ?_
-  · exact (cfcHom_isClosedEmbedding ha).continuous.comp f'.continuous_comp_left
+  · exact (cfcHom_isClosedEmbedding ha).continuous.comp f'.continuous_precomp
   · simp only [φ, StarAlgHom.comp_apply, ContinuousMap.compStarAlgHom'_apply]
     congr
     ext x
@@ -1034,3 +1034,32 @@ lemma CFC.one_le_iff (a : A) (ha : p a := by cfc_tac) :
 end Ring
 
 end Order
+
+/-! ### `cfcHom` on a superset of the spectrum -/
+
+section Superset
+
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
+    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+    [TopologicalSpace A] [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
+
+/-- The composition of `cfcHom` with the natural embedding `C(s, R) → C(spectrum R a, R)`
+whenever `spectrum R a ⊆ s`.
+
+This is sometimes necessary in order to consider the same continuous functions applied to multiple
+distinct elements, with the added constraint that `cfc` does not suffice. This can occur, for
+example, if it is necessary to use uniqueness of this continuous functional calculus. -/
+@[simps!]
+noncomputable def cfcHomSuperset {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
+    C(s, R) →⋆ₐ[R] A :=
+  cfcHom ha |>.comp <| ContinuousMap.compStarAlgHom' R R <| ⟨_, continuous_id.subtype_map hs⟩
+
+lemma cfcHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
+    Continuous (cfcHomSuperset ha hs) :=
+  (cfcHom_continuous ha).comp <| ContinuousMap.continuous_precomp _
+
+lemma cfcHomSuperset_id {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
+    cfcHomSuperset ha hs (.restrict s <| .id R) = a :=
+  cfcHom_id ha
+
+end Superset
