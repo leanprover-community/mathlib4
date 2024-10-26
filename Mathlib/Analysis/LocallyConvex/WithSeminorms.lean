@@ -225,11 +225,11 @@ variable {p : SeminormFamily 𝕜 E ι}
 
 theorem WithSeminorms.topologicalAddGroup (hp : WithSeminorms p) : TopologicalAddGroup E := by
   rw [hp.withSeminorms_eq]
-  exact p.isAddGroupBasis.instTopologicalAddGroup
+  exact p.isAddGroupBasis.topologicalAddGroup
 
 theorem WithSeminorms.continuousSMul (hp : WithSeminorms p) : ContinuousSMul 𝕜 E := by
   rw [hp.withSeminorms_eq]
-  exact p.isModuleBasis.instContinuousSMul
+  exact p.isModuleBasis.continuousSMul
 
 theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
     (𝓝 0).HasBasis (fun sr : Finset ι × ℝ ↦ 0 < sr.2) (fun sr ↦ (sr.1.sup p).ball 0 sr.2) := by
@@ -337,7 +337,7 @@ variable [t : TopologicalSpace E]
 theorem SeminormFamily.withSeminorms_of_nhds [TopologicalAddGroup E] (p : SeminormFamily 𝕜 E ι)
     (h : 𝓝 (0 : E) = p.isBasis.filter) : WithSeminorms p := by
   refine
-    ⟨TopologicalAddGroup.ext inferInstance p.isAddGroupBasis.instTopologicalAddGroup ?_⟩
+    ⟨TopologicalAddGroup.ext inferInstance p.isAddGroupBasis.topologicalAddGroup ?_⟩
   rw [p.isAddGroupBasis.nhds_zero_eq]
   exact h
 
@@ -396,7 +396,7 @@ theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E
   set p : SeminormFamily 𝕜 E (Fin 1) := fun _ => normSeminorm 𝕜 E with hp
   refine
     ⟨SeminormedAddCommGroup.toTopologicalAddGroup.ext
-        p.isAddGroupBasis.instTopologicalAddGroup ?_⟩
+        p.isAddGroupBasis.topologicalAddGroup ?_⟩
   refine Filter.HasBasis.eq_of_same_basis Metric.nhds_basis_ball ?_
   rw [← ball_normSeminorm 𝕜 E]
   refine
