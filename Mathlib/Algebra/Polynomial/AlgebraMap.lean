@@ -294,11 +294,31 @@ def algEquivOfCompEqX (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) : R
   refine AlgEquiv.ofAlgHom (aeval p) (aeval q) ?_ ?_ <;>
     exact AlgHom.ext fun _ ↦ by simp [← comp_eq_aeval, comp_assoc, hpq, hqp]
 
+@[simp]
+theorem algEquivOfCompEqX_eq_iff (p q p' q' : R[X])
+    (hpq : p.comp q = X) (hqp : q.comp p = X) (hpq' : p'.comp q' = X) (hqp' : q'.comp p' = X) :
+    algEquivOfCompEqX p q hpq hqp = algEquivOfCompEqX p' q' hpq' hqp' ↔ p = p' :=
+  ⟨fun h ↦ by simpa using congr($h X), fun h ↦ by ext1; simp [h]⟩
+
+@[simp]
+theorem algEquivOfCompEqX_symm (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) :
+    (algEquivOfCompEqX p q hpq hqp).symm = algEquivOfCompEqX q p hqp hpq := rfl
+
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
   with inverse `p(X) ↦ p(X-t)`. -/
 @[simps!]
 def algEquivAevalXAddC {R} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
+
+@[simp]
+theorem algEquivAevalXAddC_eq_iff {R} [CommRing R] (t t' : R) :
+    algEquivAevalXAddC t = algEquivAevalXAddC t' ↔ t = t' := by
+  simp [algEquivAevalXAddC]
+
+@[simp]
+theorem algEquivAevalXAddC_symm {R} [CommRing R] (t : R) :
+    (algEquivAevalXAddC t).symm = algEquivAevalXAddC (-t) := by
+  simp [algEquivAevalXAddC, sub_eq_add_neg]
 
 theorem aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x) :=
   algHom_ext <| by simp only [aeval_X, AlgHom.comp_apply]
