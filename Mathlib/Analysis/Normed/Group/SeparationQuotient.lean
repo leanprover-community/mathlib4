@@ -15,29 +15,23 @@ For any `SeminormedAddCommGroup M`, a `NormedAddCommGroup` instance has been def
 ## Main definitions
 
 We use `M` and `N` to denote seminormed groups.
-All the following definitions are in the `NullSubgroup` namespace. Hence we can access
-`NullSubgroup.normedMk` as `normedMk`.
-
-* `normedAddCommGroupQuotient` : The normed group structure on the quotient by the null subgroup.
-    This is an instance so there is no need to explicitly use it.
+All the following definitions are in the `SeparationQuotient` namespace. Hence we can access
+`SeparationQuotient.normedMk` as `normedMk`.
 
 * `normedMk` : the normed group hom from `M` to `SeparationQuotient M`.
 
-* `lift f hf`: implements the universal property of `SeparationQuotient M`. Here
-    `(f : NormedAddGroupHom M N)`, `(hf : ∀ s ∈ nullSubgroup M, f s = 0)` and
-    `lift f hf : NormedAddGroupHom (SeparationQuotient M) N`.
-
-* `IsQuotient`: given `f : NormedAddGroupHom M N`, `IsQuotient f` means `N` is isomorphic
-    to a quotient of `M` by the null subgroup, with projection `f`. Technically it asserts `f` is
-    surjective and the norm of `f x` is the infimum of the norms of `x + m` for `m` in `f.ker`.
+* `liftNormedAddGroupHom` : implements the universal property of `SeparationQuotient M`. Here
+    `(f : NormedAddGroupHom M N)`, `(hf : ∀ x : M, ‖x‖ = 0 → f x = 0)` and
+    `liftNormedAddGroupHom f hf : NormedAddGroupHom (SeparationQuotient M) N`.
 
 ## Main results
 
 * `norm_normedMk` : the operator norm of the projection is `1` if the subspace is not dense.
 
-* `IsQuotient.norm_lift`: Provided `f : normed_hom M N` satisfies `IsQuotient f`, for every
-     `n : N` and positive `ε`, there exists `m` such that `f m = n ∧ ‖m‖ < ‖n‖ + ε`.
+* `liftNormedAddGroupHom_unique` : characterizes `liftNormedAddGroupHom f hf` by the property that
+its composition with `normedMk` is equal to `f`.
 
+* `norm_liftNormedAddGroupHom_le` : `‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖`.
 
 ## Implementation details
 
@@ -49,33 +43,28 @@ For any `SeminormedAddCommGroup M`, we define a norm on `SeparationQuotient M` b
 
 noncomputable section
 
-open SeparationQuotient Metric Set Topology NNReal
+open SeparationQuotient NNReal
 
 variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
 
-namespace SeparationQuotientAddGroup
+namespace SeparationQuotient
 
--- lemma inseparable_iff_norm_zero (x y : M) : Inseparable x y ↔ ‖x - y‖ = 0 := by
---   rw [Metric.inseparable_iff, dist_eq_norm]
+variable (x : SeparationQuotient M) (z : M)
 
-variable (x : SeparationQuotient M)
-
-variable (z : M)
-
-/-- If for `(m : M)` it holds that `mk m = 0`, then `m  ∈ nullSubgroup`. -/
+/-- For `(m : M)`, `mk m = 0` if and only if `‖m‖ = 0`. -/
 theorem mk_eq_zero_iff (m : M) : mk m = 0 ↔ ‖m‖ = 0 := by
   rw [← norm_mk]
   exact Iff.symm norm_eq_zero
 
 open NormedAddGroupHom
 
-/-- The morphism from a seminormed group to the quotient by the null space. -/
+/-- The morphism from a seminormed group to the quotient by the inseparable setoid. -/
 noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) :=
   { mkAddMonoidHom with
     bound' := ⟨1, fun m => by simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
       mkAddMonoidHom_apply, norm_mk, one_mul, le_refl]⟩}
 
-/-- `mkAddGroupHom` agrees with `QuotientAddGroup.mk`. -/
+/-- `normedMk` agrees with `SeparationQuotient.mk`. -/
 @[simp]
 theorem normedMk.apply (m : M) : normedMk m = mk m := rfl
 
@@ -113,8 +102,6 @@ noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
 theorem liftNormedAddGroupHom_apply (f : NormedAddGroupHom M N) (hf : ∀ x, ‖x‖ = 0 → f x = 0)
     (x : M) : liftNormedAddGroupHom f hf (mk x) = f x := rfl
 
-/-- For a norm-continuous group homomorphism `f`, its lift to the separation quotient
-is bounded by the norm of `f`-/
 theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) (x : SeparationQuotient M) :
     ‖liftNormedAddGroupHom f hf x‖ ≤ ‖f‖ * ‖x‖ := by
@@ -133,6 +120,8 @@ theorem liftNormedAddGroupHom_unique {N : Type*} [SeminormedAddCommGroup N]
   simp only [h]
   rfl
 
+/-- For a norm-continuous group homomorphism `f`, its lift to the separation quotient
+is bounded by the norm of `f`-/
 theorem norm_liftNormedAddGroupHom_le {N : Type*} [SeminormedAddCommGroup N]
     (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0) :
     ‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖ :=
@@ -150,7 +139,8 @@ theorem liftNormedAddGroupHom_normNoninc {N : Type*} [SeminormedAddCommGroup N]
   simpa using NormedAddGroupHom.le_of_opNorm_le _
     (liftNormedAddGroupHom_norm_le f _ fb') _
 
-/-- The operator norm of the projection is `1` if the null space is not dense. -/
+/-- The operator norm of the projection is `1` if there is an element whose norm is different from
+`0`. -/
 theorem norm_normedMk (h : ∃ x : M, ‖x‖ ≠ 0) :
     ‖(@normedMk M _)‖ = 1 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ zero_le_one
@@ -162,7 +152,7 @@ theorem norm_normedMk (h : ∃ x : M, ‖x‖ ≠ 0) :
     have : 0 < ‖x‖ := Ne.lt_of_le (Ne.symm hxnn) (norm_nonneg x)
     exact one_le_of_le_mul_right₀ this (hle x)
 
-/-- The operator norm of the projection is `0` if the null space is dense. -/
+/-- The operator norm of the projection is `0` if all the elements have norm `0`. -/
 theorem norm_trivial_separationQuotient_mk (h : ∀ x : M, ‖x‖ = 0) :
     ‖@normedMk M _‖ = 0 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ (le_refl 0)
@@ -171,4 +161,4 @@ theorem norm_trivial_separationQuotient_mk (h : ∀ x : M, ‖x‖ = 0) :
     exact (mk_eq_zero_iff x).mpr (h x)
   · exact fun N => fun hN => fun _ => hN
 
-end SeparationQuotientAddGroup
+end SeparationQuotient
