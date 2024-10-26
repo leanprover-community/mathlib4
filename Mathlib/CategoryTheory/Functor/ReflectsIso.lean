@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Functor.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 
-#align_import category_theory.functor.reflects_isomorphisms from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
-
 /-!
 # Functors which reflect isomorphisms
 
@@ -40,7 +38,6 @@ Note that we do not assume or require that `F` is faithful.
 class Functor.ReflectsIsomorphisms (F : C ⥤ D) : Prop where
   /-- For any `f`, if `F.map f` is an iso, then so was `f`-/
   reflects : ∀ {A B : C} (f : A ⟶ B) [IsIso (F.map f)], IsIso f
-#align category_theory.reflects_isomorphisms CategoryTheory.Functor.ReflectsIsomorphisms
 
 @[deprecated (since := "2024-04-06")] alias ReflectsIsomorphisms := Functor.ReflectsIsomorphisms
 
@@ -48,7 +45,6 @@ class Functor.ReflectsIsomorphisms (F : C ⥤ D) : Prop where
 theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.map f)]
     [F.ReflectsIsomorphisms] : IsIso f :=
   ReflectsIsomorphisms.reflects F f
-#align category_theory.is_iso_of_reflects_iso CategoryTheory.isIso_of_reflects_iso
 
 lemma isIso_iff_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [F.ReflectsIsomorphisms] :
     IsIso (F.map f) ↔ IsIso f :=
@@ -62,7 +58,6 @@ instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
     (F : C ⥤ D) [F.Full] [F.Faithful] :
     F.ReflectsIsomorphisms :=
   (Functor.FullyFaithful.ofFullyFaithful F).reflectsIsomorphisms
-#align category_theory.of_full_and_faithful CategoryTheory.reflectsIsomorphisms_of_full_and_faithful
 
 instance reflectsIsomorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
     [F.ReflectsIsomorphisms] [G.ReflectsIsomorphisms] :
@@ -85,7 +80,6 @@ instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_refl
     haveI : Epi f := epi_of_epi_map F inferInstance
     haveI : Mono f := mono_of_mono_map F inferInstance
     exact isIso_of_mono_of_epi f
-#align category_theory.reflects_isomorphisms_of_reflects_monomorphisms_of_reflects_epimorphisms CategoryTheory.reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms
 
 instance (F : D ⥤ E) [F.ReflectsIsomorphisms] :
     ((whiskeringRight C D E).obj F).ReflectsIsomorphisms where

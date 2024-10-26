@@ -3,14 +3,13 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Tactic.GCongr.Core
-
-#align_import algebra.order.smul from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
+import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # Ordered scalar product
@@ -53,7 +52,6 @@ class OrderedSMul (R M : Type*) [OrderedSemiring R] [OrderedAddCommMonoid M] [SM
   protected smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, a < b → 0 < c → c • a < c • b
   /-- If `c • a < c • b` for some positive `c`, then `a < b`. -/
   protected lt_of_smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, c • a < c • b → 0 < c → a < b
-#align ordered_smul OrderedSMul
 
 variable {ι α β γ 𝕜 R M N : Type*}
 
@@ -79,7 +77,6 @@ theorem OrderedSMul.mk'' [OrderedSemiring 𝕜] [LinearOrderedAddCommMonoid M] [
     (h : ∀ ⦃c : 𝕜⦄, 0 < c → StrictMono fun a : M => c • a) : OrderedSMul 𝕜 M :=
   { smul_lt_smul_of_pos := fun hab hc => h hc hab
     lt_of_smul_lt_smul_of_pos := fun hab hc => (h hc).lt_iff_lt.1 hab }
-#align ordered_smul.mk'' OrderedSMul.mk''
 
 instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ M :=
   OrderedSMul.mk'' fun n hn a b hab => by
@@ -89,7 +86,6 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
       induction n with
       | zero => dsimp; rwa [one_nsmul, one_nsmul]
       | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add (ih n.succ_pos) hab]
-#align nat.ordered_smul Nat.orderedSMul
 
 instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
@@ -97,7 +93,6 @@ instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
     · simp only [Int.ofNat_eq_coe, Int.natCast_pos, natCast_zsmul] at hn ⊢
       exact strictMono_smul_left_of_pos hn
     · cases (Int.negSucc_not_pos _).1 hn
-#align int.ordered_smul Int.orderedSMul
 
 section LinearOrderedSemiring
 variable [LinearOrderedSemiring R] [LinearOrderedAddCommMonoid M] [SMulWithZero R M]
@@ -106,7 +101,6 @@ variable [LinearOrderedSemiring R] [LinearOrderedAddCommMonoid M] [SMulWithZero 
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
 instance LinearOrderedSemiring.toOrderedSMul : OrderedSMul R R :=
   OrderedSMul.mk'' fun _ => strictMono_mul_left_of_pos
-#align linear_ordered_semiring.to_ordered_smul LinearOrderedSemiring.toOrderedSMul
 
 end LinearOrderedSemiring
 
@@ -128,7 +122,6 @@ theorem OrderedSMul.mk' (h : ∀ ⦃a b : M⦄ ⦃c : 𝕜⦄, a < b → 0 < c �
   rw [← inv_smul_smul c a, ← inv_smul_smul c b]
   refine hlt' _ _ _ hab (pos_of_mul_pos_right ?_ hc.le)
   simp only [c.mul_inv, zero_lt_one]
-#align ordered_smul.mk' OrderedSMul.mk'
 
 instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :=
   OrderedSMul.mk' fun _ _ _ h hc =>
@@ -137,17 +130,13 @@ instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :
 instance Pi.orderedSMul {M : ι → Type*} [∀ i, OrderedAddCommMonoid (M i)]
     [∀ i, MulActionWithZero 𝕜 (M i)] [∀ i, OrderedSMul 𝕜 (M i)] : OrderedSMul 𝕜 (∀ i, M i) :=
   OrderedSMul.mk' fun _ _ _ h hc i => smul_le_smul_of_nonneg_left (h.le i) hc.le
-#align pi.ordered_smul Pi.orderedSMul
-
-#noalign pi.ordered_smul'
-#noalign pi.ordered_smul''
 
 end LinearOrderedSemifield
 
 section Invertible
 variable (α : Type*) {β : Type*}
 variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [CovariantClass β β (· + ·) (· ≤ ·)]
+  [AddLeftMono β]
 
 lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) : x ⊓ y = (⅟2 : α) • (x + y - |y - x|) := by
   rw [← two_nsmul_inf_eq_add_sub_abs_sub x y, two_smul, ← two_smul α,
@@ -162,7 +151,7 @@ end Invertible
 section DivisionSemiring
 variable (α : Type*) {β : Type*}
 variable [DivisionSemiring α] [NeZero (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [CovariantClass β β (· + ·) (· ≤ ·)]
+  [AddLeftMono β]
 
 lemma inf_eq_half_smul_add_sub_abs_sub' (x y : β) : x ⊓ y = (2⁻¹ : α) • (x + y - |y - x|) := by
   letI := invertibleOfNonzero (two_ne_zero' α)

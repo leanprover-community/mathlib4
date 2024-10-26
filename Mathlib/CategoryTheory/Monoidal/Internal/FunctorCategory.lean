@@ -1,13 +1,11 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.CommMon_
 import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-
-#align_import category_theory.monoidal.internal.functor_category from "leanprover-community/mathlib"@"f153a85a8dc0a96ce9133fed69e34df72f7f191f"
 
 /-!
 # `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`
@@ -88,7 +86,7 @@ def inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D) where
   map α :=
   { hom :=
     { app := fun X => (α.app X).hom
-      naturality := fun X Y f => congr_arg Mon_.Hom.hom (α.naturality f) } }
+      naturality := fun _ _ f => congr_arg Mon_.Hom.hom (α.naturality f) } }
 
 /-- The unit for the equivalence `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`.
 -/
@@ -119,8 +117,6 @@ def monFunctorCategoryEquivalence : Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D where
   inverse := inverse
   unitIso := unitIso
   counitIso := counitIso
-set_option linter.uppercaseLean3 false in
-#align category_theory.monoidal.Mon_functor_category_equivalence CategoryTheory.Monoidal.monFunctorCategoryEquivalence
 
 namespace ComonFunctorCategoryEquivalence
 
@@ -174,7 +170,7 @@ private def inverse : (C ⥤ Comon_ D) ⥤ Comon_ (C ⥤ D) where
   map α :=
   { hom :=
     { app := fun X => (α.app X).hom
-      naturality := fun X Y f => congr_arg Comon_.Hom.hom (α.naturality f) }
+      naturality := fun _ _ f => congr_arg Comon_.Hom.hom (α.naturality f) }
     hom_counit := by ext x; dsimp; rw [(α.app x).hom_counit]
     hom_comul := by ext x; dsimp; rw [(α.app x).hom_comul] }
 
@@ -225,8 +221,6 @@ def functor : CommMon_ (C ⥤ D) ⥤ C ⥤ CommMon_ D where
         { ((monFunctorCategoryEquivalence C D).functor.obj A.toMon_).obj X with
           mul_comm := congr_app A.mul_comm X } }
   map f := { app := fun X => ((monFunctorCategoryEquivalence C D).functor.map f).app X }
-set_option linter.uppercaseLean3 false in
-#align category_theory.monoidal.CommMon_functor_category_equivalence.functor CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.functor
 
 /-- Functor translating a functor into the category of commutative monoid objects
 to a commutative monoid object in the functor category
@@ -237,8 +231,6 @@ def inverse : (C ⥤ CommMon_ D) ⥤ CommMon_ (C ⥤ D) where
     { (monFunctorCategoryEquivalence C D).inverse.obj (F ⋙ CommMon_.forget₂Mon_ D) with
       mul_comm := by ext X; exact (F.obj X).mul_comm }
   map α := (monFunctorCategoryEquivalence C D).inverse.map (whiskerRight α _)
-set_option linter.uppercaseLean3 false in
-#align category_theory.monoidal.CommMon_functor_category_equivalence.inverse CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.inverse
 
 /-- The unit for the equivalence `CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D`.
 -/
@@ -247,8 +239,6 @@ def unitIso : 𝟭 (CommMon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
   NatIso.ofComponents (fun A =>
   { hom := { hom := { app := fun _ => 𝟙 _ }  }
     inv := { hom := { app := fun _ => 𝟙 _ }  } })
-set_option linter.uppercaseLean3 false in
-#align category_theory.monoidal.CommMon_functor_category_equivalence.unit_iso CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.unitIso
 
 /-- The counit for the equivalence `CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D`.
 -/
@@ -256,8 +246,6 @@ set_option linter.uppercaseLean3 false in
 def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ CommMon_ D) :=
   NatIso.ofComponents (fun A =>
     NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
-set_option linter.uppercaseLean3 false in
-#align category_theory.monoidal.CommMon_functor_category_equivalence.counit_iso CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.counitIso
 
 end CommMonFunctorCategoryEquivalence
 
@@ -273,7 +261,5 @@ def commMonFunctorCategoryEquivalence : CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D 
   inverse := inverse
   unitIso := unitIso
   counitIso := counitIso
-set_option linter.uppercaseLean3 false in
-#align category_theory.monoidal.CommMon_functor_category_equivalence CategoryTheory.Monoidal.commMonFunctorCategoryEquivalence
 
 end CategoryTheory.Monoidal

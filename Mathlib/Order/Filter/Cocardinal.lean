@@ -6,7 +6,7 @@ Authors: Josha Dekker
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.CardinalInter
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.Order.Filter.Bases
 
@@ -95,8 +95,7 @@ theorem _root_.Finset.eventually_cocardinal_nmem (s : Finset α) :
   eventually_cocardinal_nmem_of_card_lt <| lt_of_lt_of_le (finset_card_lt_aleph0 s) (hreg.aleph0_le)
 
 theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal α hreg, a ≠ x := by
-  simp [Set.finite_singleton x]
-  exact hreg.nat_lt 1
+  simpa [Set.finite_singleton x] using hreg.nat_lt 1
 
 /-- The filter defined by all sets that have countable complements. -/
 abbrev cocountable : Filter α := cocardinal α Cardinal.isRegular_aleph_one

@@ -6,8 +6,6 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupWithZero.Defs
 
-#align_import algebra.ring.opposite from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
-
 /-!
 # Opposites of groups with zero
 -/
@@ -68,7 +66,7 @@ instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵃᵒᵖ where
   __ := instMonoidWithZero
   __ := instNontrivial
   __ := instDivInvMonoid
-  mul_inv_cancel _ hx := unop_injective <| mul_inv_cancel <| unop_injective.ne hx
+  mul_inv_cancel _ hx := unop_injective <| mul_inv_cancel₀ <| unop_injective.ne hx
   inv_zero := unop_injective inv_zero
 
 end AddOpposite

@@ -1,13 +1,14 @@
 /-
 Copyright (c) 2023 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Lean.Meta.Tactic.Rewrites
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Order.Interval.Finset.Nat
+import Batteries.Data.MLList.Heartbeats
 
 /-!
 # The `rw_search` tactic
@@ -327,6 +328,4 @@ elab_rules : tactic |
 
 end RewriteSearch
 
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic

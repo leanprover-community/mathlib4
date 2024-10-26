@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Combinatorics.SimpleGraph.Path
 
 /-!
 # Connectivity of subgraphs and induced graphs
@@ -41,7 +41,6 @@ protected lemma preconnected_iff {H : G.Subgraph} :
 Note: This is a structure to make it so one can be precise about how dot notation resolves. -/
 protected structure Connected (H : G.Subgraph) : Prop where
   protected coe : H.coe.Connected
-#align simple_graph.subgraph.connected SimpleGraph.Subgraph.Connected
 
 instance {H : G.Subgraph} : Coe H.Connected H.coe.Connected := ⟨Connected.coe⟩
 
@@ -67,7 +66,6 @@ theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected 
   simp only [singletonSubgraph_verts, Set.mem_singleton_iff] at ha hb
   subst_vars
   rfl
-#align simple_graph.singleton_subgraph_connected SimpleGraph.Subgraph.singletonSubgraph_connected
 
 @[simp]
 theorem subgraphOfAdj_connected {v w : V} (hvw : G.Adj v w) : (G.subgraphOfAdj hvw).Connected := by
@@ -76,7 +74,6 @@ theorem subgraphOfAdj_connected {v w : V} (hvw : G.Adj v w) : (G.subgraphOfAdj h
   simp only [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at ha hb
   obtain rfl | rfl := ha <;> obtain rfl | rfl := hb <;>
     first | rfl | (apply Adj.reachable; simp)
-#align simple_graph.subgraph_of_adj_connected SimpleGraph.Subgraph.subgraphOfAdj_connected
 
 lemma top_induce_pair_connected_of_adj {u v : V} (huv : G.Adj u v) :
     ((⊤ : G.Subgraph).induce {u, v}).Connected := by
@@ -118,11 +115,9 @@ variable {u v w : V}
 protected def toSubgraph {u v : V} : G.Walk u v → G.Subgraph
   | nil => G.singletonSubgraph u
   | cons h p => G.subgraphOfAdj h ⊔ p.toSubgraph
-#align simple_graph.walk.to_subgraph SimpleGraph.Walk.toSubgraph
 
 theorem toSubgraph_cons_nil_eq_subgraphOfAdj (h : G.Adj u v) :
     (cons h nil).toSubgraph = G.subgraphOfAdj h := by simp
-#align simple_graph.walk.to_subgraph_cons_nil_eq_subgraph_of_adj SimpleGraph.Walk.toSubgraph_cons_nil_eq_subgraphOfAdj
 
 theorem mem_verts_toSubgraph (p : G.Walk u v) : w ∈ p.toSubgraph.verts ↔ w ∈ p.support := by
   induction' p with _ x y z h p' ih
@@ -130,7 +125,6 @@ theorem mem_verts_toSubgraph (p : G.Walk u v) : w ∈ p.toSubgraph.verts ↔ w �
   · have : w = y ∨ w ∈ p'.support ↔ w ∈ p'.support :=
       ⟨by rintro (rfl | h) <;> simp [*], by simp (config := { contextual := true })⟩
     simp [ih, or_assoc, this]
-#align simple_graph.walk.mem_verts_to_subgraph SimpleGraph.Walk.mem_verts_toSubgraph
 
 lemma start_mem_verts_toSubgraph (p : G.Walk u v) : u ∈ p.toSubgraph.verts := by
   simp [mem_verts_toSubgraph]
@@ -141,21 +135,17 @@ lemma end_mem_verts_toSubgraph (p : G.Walk u v) : v ∈ p.toSubgraph.verts := by
 @[simp]
 theorem verts_toSubgraph (p : G.Walk u v) : p.toSubgraph.verts = { w | w ∈ p.support } :=
   Set.ext fun _ => p.mem_verts_toSubgraph
-#align simple_graph.walk.verts_to_subgraph SimpleGraph.Walk.verts_toSubgraph
 
 theorem mem_edges_toSubgraph (p : G.Walk u v) {e : Sym2 V} :
     e ∈ p.toSubgraph.edgeSet ↔ e ∈ p.edges := by induction p <;> simp [*]
-#align simple_graph.walk.mem_edges_to_subgraph SimpleGraph.Walk.mem_edges_toSubgraph
 
 @[simp]
 theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = { e | e ∈ p.edges } :=
   Set.ext fun _ => p.mem_edges_toSubgraph
-#align simple_graph.walk.edge_set_to_subgraph SimpleGraph.Walk.edgeSet_toSubgraph
 
 @[simp]
 theorem toSubgraph_append (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).toSubgraph = p.toSubgraph ⊔ q.toSubgraph := by induction p <;> simp [*, sup_assoc]
-#align simple_graph.walk.to_subgraph_append SimpleGraph.Walk.toSubgraph_append
 
 @[simp]
 theorem toSubgraph_reverse (p : G.Walk u v) : p.reverse.toSubgraph = p.toSubgraph := by
@@ -166,18 +156,15 @@ theorem toSubgraph_reverse (p : G.Walk u v) : p.reverse.toSubgraph = p.toSubgrap
     rw [sup_comm]
     congr
     ext <;> simp [-Set.bot_eq_empty]
-#align simple_graph.walk.to_subgraph_reverse SimpleGraph.Walk.toSubgraph_reverse
 
 @[simp]
 theorem toSubgraph_rotate [DecidableEq V] (c : G.Walk v v) (h : u ∈ c.support) :
     (c.rotate h).toSubgraph = c.toSubgraph := by
   rw [rotate, toSubgraph_append, sup_comm, ← toSubgraph_append, take_spec]
-#align simple_graph.walk.to_subgraph_rotate SimpleGraph.Walk.toSubgraph_rotate
 
 @[simp]
 theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
     (p.map f).toSubgraph = p.toSubgraph.map f := by induction p <;> simp [*, Subgraph.map_sup]
-#align simple_graph.walk.to_subgraph_map SimpleGraph.Walk.toSubgraph_map
 
 @[simp]
 theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborSet w).Finite := by
@@ -190,12 +177,56 @@ theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborS
     refine Set.Finite.union ?_ ih
     refine Set.Finite.subset ?_ (neighborSet_subgraphOfAdj_subset ha)
     apply Set.toFinite
-#align simple_graph.walk.finite_neighbor_set_to_subgraph SimpleGraph.Walk.finite_neighborSet_toSubgraph
 
 lemma toSubgraph_le_induce_support (p : G.Walk u v) :
     p.toSubgraph ≤ (⊤ : G.Subgraph).induce {v | v ∈ p.support} := by
   convert Subgraph.le_induce_top_verts
   exact p.verts_toSubgraph.symm
+
+theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
+    w.toSubgraph.Adj (w.getVert i) (w.getVert (i + 1)) := by
+  induction w generalizing i with
+  | nil => cases hi
+  | cons hxy i' ih =>
+    cases i
+    · simp only [Walk.toSubgraph, Walk.getVert_zero, zero_add, getVert_cons_succ, Subgraph.sup_adj,
+      subgraphOfAdj_adj, true_or]
+    · simp only [Walk.toSubgraph, getVert_cons_succ, Subgraph.sup_adj, subgraphOfAdj_adj, Sym2.eq,
+      Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+      right
+      exact ih (Nat.succ_lt_succ_iff.mp hi)
+
+theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
+    w.toSubgraph.Adj u' v' ↔ ∃ i, s(w.getVert i, w.getVert (i + 1)) =
+      s(u', v') ∧ i < w.length := by
+  constructor
+  · intro hadj
+    unfold Walk.toSubgraph at hadj
+    match w with
+    | .nil =>
+      simp only [singletonSubgraph_adj, Pi.bot_apply, Prop.bot_eq_false] at hadj
+    | .cons h p =>
+      simp only [Subgraph.sup_adj, subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
+        Prod.swap_prod_mk] at hadj
+      cases hadj with
+      | inl hl =>
+        use 0
+        simp only [Walk.getVert_zero, zero_add, getVert_cons_succ]
+        refine ⟨?_, by simp only [length_cons, Nat.zero_lt_succ]⟩
+        simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+        cases hl with
+        | inl h1 => left; exact ⟨h1.1, h1.2⟩
+        | inr h2 => right; exact ⟨h2.1, h2.2⟩
+      | inr hr =>
+        obtain ⟨i, hi⟩ := (toSubgraph_adj_iff _).mp hr
+        use i + 1
+        simp only [getVert_cons_succ]
+        constructor
+        · exact hi.1
+        · simp only [Walk.length_cons, add_lt_add_iff_right, Nat.add_lt_add_right hi.2 1]
+  · rintro ⟨i, hi⟩
+    rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
+    exact toSubgraph_adj_getVert _ hi.2
 
 end Walk
 

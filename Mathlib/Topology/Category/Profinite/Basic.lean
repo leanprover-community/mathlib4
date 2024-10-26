@@ -1,13 +1,11 @@
 /-
 Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Calle Sönne
+Authors: Kevin Buzzard, Calle Sönne, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.LocallyConstant.Basic
-
-#align_import topology.category.Profinite.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # The category of Profinite Types
@@ -25,6 +23,9 @@ is called `Profinite.toTop`.
 A profinite type is defined to be a topological space which is
 compact, Hausdorff and totally disconnected.
 
+The category `Profinite` is defined using the structure `CompHausLike`. See the file
+`CompHausLike.Basic` for more information.
+
 ## TODO
 
 * Define procategories and prove that `Profinite` is equivalent to `Pro (FintypeCat)`.
@@ -38,7 +39,6 @@ profinite
 -- This was a global instance prior to #13170. We may experiment with removing it.
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
-set_option linter.uppercaseLean3 false
 
 universe v u
 
@@ -46,11 +46,10 @@ open CategoryTheory Topology CompHausLike
 
 /-- The type of profinite topological spaces. -/
 abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
-#align Profinite Profinite
 
 namespace Profinite
 
-instance  (X : Type*) [TopologicalSpace X]
+instance (X : Type*) [TopologicalSpace X]
     [TotallyDisconnectedSpace X] :  HasProp (fun Y ↦ TotallyDisconnectedSpace Y) X :=
   ⟨(inferInstance : TotallyDisconnectedSpace X)⟩
 
@@ -60,7 +59,6 @@ compact, Hausdorff and totally disconnected topological space.
 abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] : Profinite :=
   CompHausLike.of _ X
-#align Profinite.of Profinite.of
 
 instance : Inhabited Profinite :=
   ⟨Profinite.of PEmpty⟩
@@ -79,7 +77,6 @@ abbrev profiniteToCompHaus : Profinite ⥤ CompHaus :=
   compHausLikeToCompHaus _
 -- Porting note: deriving fails, adding manually.
 -- deriving Full, Faithful
-#align Profinite_to_CompHaus profiniteToCompHaus
 
 -- Porting note: added, as it is not found otherwise.
 instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
@@ -91,7 +88,6 @@ abbrev Profinite.toTopCat : Profinite ⥤ TopCat :=
   CompHausLike.compHausLikeToTop _
 -- Porting note: deriving fails, adding manually.
 -- deriving Full, Faithful
-#align Profinite.to_Top Profinite.toTopCat
 
 section Profinite
 
@@ -107,7 +103,6 @@ def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
   is_compact := Quotient.compactSpace
   is_hausdorff := ConnectedComponents.t2
   prop := ConnectedComponents.totallyDisconnectedSpace
-#align CompHaus.to_Profinite_obj CompHaus.toProfiniteObj
 
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of Profinite
 spaces in compact Hausdorff spaces.
@@ -120,23 +115,19 @@ def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
       continuous_toFun := Continuous.connectedComponentsLift_continuous g.2 }
   left_inv _ := ContinuousMap.ext <| ConnectedComponents.surjective_coe.forall.2 fun _ => rfl
   right_inv _ := ContinuousMap.ext fun _ => rfl
-#align Profinite.to_CompHaus_equivalence Profinite.toCompHausEquivalence
 
 /-- The connected_components functor from compact Hausdorff spaces to profinite spaces,
 left adjoint to the inclusion functor.
 -/
 def CompHaus.toProfinite : CompHaus ⥤ Profinite :=
   Adjunction.leftAdjointOfEquiv Profinite.toCompHausEquivalence fun _ _ _ _ _ => rfl
-#align CompHaus.to_Profinite CompHaus.toProfinite
 
 theorem CompHaus.toProfinite_obj' (X : CompHaus) :
     ↥(CompHaus.toProfinite.obj X) = ConnectedComponents X :=
   rfl
-#align CompHaus.to_Profinite_obj' CompHaus.toProfinite_obj'
 
 /-- Finite types are given the discrete topology. -/
 def FintypeCat.botTopology (A : FintypeCat) : TopologicalSpace A := ⊥
-#align Fintype.bot_topology FintypeCat.botTopology
 
 section DiscreteTopology
 
@@ -144,17 +135,15 @@ attribute [local instance] FintypeCat.botTopology
 
 theorem FintypeCat.discreteTopology (A : FintypeCat) : DiscreteTopology A :=
   ⟨rfl⟩
-#align Fintype.discrete_topology FintypeCat.discreteTopology
 
 attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `Profinite`, endowing a finite type with the
 discrete topology. -/
-@[simps]
+@[simps map_apply]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
   map f := ⟨f, by continuity⟩
-#align Fintype.to_Profinite FintypeCat.toProfinite
 
 attribute [nolint simpNF] FintypeCat.toProfinite_map_apply
 
@@ -167,6 +156,10 @@ def FintypeCat.toProfiniteFullyFaithful : toProfinite.FullyFaithful where
 instance : FintypeCat.toProfinite.Faithful := FintypeCat.toProfiniteFullyFaithful.faithful
 
 instance : FintypeCat.toProfinite.Full := FintypeCat.toProfiniteFullyFaithful.full
+
+instance (X : FintypeCat) : Fintype (FintypeCat.toProfinite.obj X) := inferInstanceAs (Fintype X)
+
+instance (X : FintypeCat) : Fintype (Profinite.of X) := inferInstanceAs (Fintype X)
 
 end DiscreteTopology
 
@@ -189,7 +182,6 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u v}) : L
       intro j k f
       ext ⟨g, p⟩
       exact (p f).symm }
-#align Profinite.limit_cone Profinite.limitCone
 
 /-- The limit cone `Profinite.limitCone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u v}) :
@@ -197,42 +189,33 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u 
   lift S :=
     (CompHaus.limitConeIsLimit.{v, u} (F ⋙ profiniteToCompHaus)).lift
       (profiniteToCompHaus.mapCone S)
-  uniq S m h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (profiniteToCompHaus.mapCone S) _ h
-#align Profinite.limit_cone_is_limit Profinite.limitConeIsLimit
+  uniq S _ h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (profiniteToCompHaus.mapCone S) _ h
 
 /-- The adjunction between CompHaus.to_Profinite and Profinite.to_CompHaus -/
 def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
   Adjunction.adjunctionOfEquivLeft _ _
-#align Profinite.to_Profinite_adj_to_CompHaus Profinite.toProfiniteAdjToCompHaus
 
 /-- The category of profinite sets is reflective in the category of compact Hausdorff spaces -/
 instance toCompHaus.reflective : Reflective profiniteToCompHaus where
   adj := Profinite.toProfiniteAdjToCompHaus
-#align Profinite.to_CompHaus.reflective Profinite.toCompHaus.reflective
 
 noncomputable instance toCompHaus.createsLimits : CreatesLimits profiniteToCompHaus :=
   monadicCreatesLimits _
-#align Profinite.to_CompHaus.creates_limits Profinite.toCompHaus.createsLimits
 
 noncomputable instance toTopCat.reflective : Reflective Profinite.toTopCat :=
   Reflective.comp profiniteToCompHaus compHausToTop
-#align Profinite.to_Top.reflective Profinite.toTopCat.reflective
 
 noncomputable instance toTopCat.createsLimits : CreatesLimits Profinite.toTopCat :=
   monadicCreatesLimits _
-#align Profinite.to_Top.creates_limits Profinite.toTopCat.createsLimits
 
 instance hasLimits : Limits.HasLimits Profinite :=
   hasLimits_of_hasLimits_createsLimits Profinite.toTopCat
-#align Profinite.has_limits Profinite.hasLimits
 
 instance hasColimits : Limits.HasColimits Profinite :=
   hasColimits_of_reflective profiniteToCompHaus
-#align Profinite.has_colimits Profinite.hasColimits
 
 noncomputable instance forgetPreservesLimits : Limits.PreservesLimits (forget Profinite) := by
   apply Limits.compPreservesLimits Profinite.toTopCat (forget TopCat)
-#align Profinite.forget_preserves_limits Profinite.forgetPreservesLimits
 
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
@@ -270,6 +253,8 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map
-#align Profinite.epi_iff_surjective Profinite.epi_iff_surjective
+
+/-- The pi-type of profinite spaces is profinite. -/
+def pi {α : Type u} (β : α → Profinite) : Profinite := .of (Π (a : α), β a)
 
 end Profinite

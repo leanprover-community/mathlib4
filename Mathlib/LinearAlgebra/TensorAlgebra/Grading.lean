@@ -6,8 +6,6 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
-#align_import linear_algebra.tensor_algebra.grading from "leanprover-community/mathlib"@"2a7ceb0e411e459553a303d48eecdbb8553bd7ed"
-
 /-!
 # Results about the grading structure of the tensor algebra
 
@@ -30,14 +28,12 @@ primarily an auxiliary construction used to provide `TensorAlgebra.gradedAlgebra
 nonrec def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ℕ, ↥(LinearMap.range (ι R : M →ₗ[_] _) ^ i) :=
   DirectSum.lof R ℕ (fun i => ↥(LinearMap.range (ι R : M →ₗ[_] _) ^ i)) 1 ∘ₗ
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
-#align tensor_algebra.graded_algebra.ι TensorAlgebra.GradedAlgebra.ι
 
 theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
       DirectSum.of (fun (i : ℕ) => ↥(LinearMap.range (TensorAlgebra.ι R : M →ₗ[_] _) ^ i)) 1
         ⟨TensorAlgebra.ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
   rfl
-#align tensor_algebra.graded_algebra.ι_apply TensorAlgebra.GradedAlgebra.ι_apply
 
 variable {R M}
 
@@ -66,6 +62,5 @@ instance gradedAlgebra :
       obtain ⟨_, rfl⟩ := hm
       rw [map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.of_mul_of]
       exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext (add_comm _ _) rfl)
-#align tensor_algebra.graded_algebra TensorAlgebra.gradedAlgebra
 
 end TensorAlgebra

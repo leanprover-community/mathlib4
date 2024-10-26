@@ -8,8 +8,6 @@ import Lean.Elab.Match
 import Lean.Elab.Deriving.Basic
 import Lean.Elab.PreDefinition.Main
 
-#align_import control.traversable.derive from "leanprover-community/mathlib"@"b01d6eb9d0a308807af54319b264d0994b91774b"
-
 /-!
 # Deriving handler for `Traversable` instances
 
@@ -57,7 +55,7 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
     return e
 
 /-- Get the auxiliary local declaration corresponding to the current declaration. If there are
-multiple declaraions it will throw. -/
+multiple declarations it will throw. -/
 def getAuxDefOfDeclName : TermElabM FVarId := do
   let some declName ← getDeclName? | throwError "no 'declName?'"
   let auxDeclMap := (← read).auxDeclToFullName

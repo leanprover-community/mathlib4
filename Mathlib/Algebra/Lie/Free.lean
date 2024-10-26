@@ -8,8 +8,6 @@ import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.UniversalEnveloping
 import Mathlib.GroupTheory.GroupAction.Ring
 
-#align_import algebra.lie.free from "leanprover-community/mathlib"@"841ac1a3d9162bf51c6327812ecb6e5e71883ac4"
-
 /-!
 # Free Lie algebras
 
@@ -80,38 +78,31 @@ inductive Rel : lib R X → lib R X → Prop
   | add_right {a b : lib R X} (c : lib R X) : Rel a b → Rel (a + c) (b + c)
   | mul_left (a : lib R X) {b c : lib R X} : Rel b c → Rel (a * b) (a * c)
   | mul_right {a b : lib R X} (c : lib R X) : Rel a b → Rel (a * c) (b * c)
-#align free_lie_algebra.rel FreeLieAlgebra.Rel
 
 variable {R X}
 
 theorem Rel.addLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a + b) (a + c) := by
   rw [add_comm _ b, add_comm _ c]; exact h.add_right _
-#align free_lie_algebra.rel.add_left FreeLieAlgebra.Rel.addLeft
 
 theorem Rel.neg {a b : lib R X} (h : Rel R X a b) : Rel R X (-a) (-b) := by
   simpa only [neg_one_smul] using h.smul (-1)
-#align free_lie_algebra.rel.neg FreeLieAlgebra.Rel.neg
 
 theorem Rel.subLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a - b) (a - c) := by
   simpa only [sub_eq_add_neg] using h.neg.addLeft a
-#align free_lie_algebra.rel.sub_left FreeLieAlgebra.Rel.subLeft
 
 theorem Rel.subRight {a b : lib R X} (c : lib R X) (h : Rel R X a b) : Rel R X (a - c) (b - c) := by
   simpa only [sub_eq_add_neg] using h.add_right (-c)
-#align free_lie_algebra.rel.sub_right FreeLieAlgebra.Rel.subRight
 
 theorem Rel.smulOfTower {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (t : S)
     (a b : lib R X) (h : Rel R X a b) : Rel R X (t • a) (t • b) := by
   rw [← smul_one_smul R t a, ← smul_one_smul R t b]
   exact h.smul _
-#align free_lie_algebra.rel.smul_of_tower FreeLieAlgebra.Rel.smulOfTower
 
 end FreeLieAlgebra
 
 /-- The free Lie algebra on the type `X` with coefficients in the commutative ring `R`. -/
 def FreeLieAlgebra :=
   Quot (FreeLieAlgebra.Rel R X)
-#align free_lie_algebra FreeLieAlgebra
 
 instance : Inhabited (FreeLieAlgebra R X) := by rw [FreeLieAlgebra]; infer_instance
 
@@ -170,29 +161,24 @@ variable {X}
 /-- The embedding of `X` into the free Lie algebra of `X` with coefficients in the commutative ring
 `R`. -/
 def of : X → FreeLieAlgebra R X := fun x => Quot.mk _ (lib.of R x)
-#align free_lie_algebra.of FreeLieAlgebra.of
 
 variable {L : Type w} [LieRing L] [LieAlgebra R L]
 
 /-- An auxiliary definition used to construct the equivalence `lift` below. -/
 def liftAux (f : X → CommutatorRing L) :=
   lib.lift R f
-#align free_lie_algebra.lift_aux FreeLieAlgebra.liftAux
 
 theorem liftAux_map_smul (f : X → L) (t : R) (a : lib R X) :
     liftAux R f (t • a) = t • liftAux R f a :=
   NonUnitalAlgHom.map_smul _ t a
-#align free_lie_algebra.lift_aux_map_smul FreeLieAlgebra.liftAux_map_smul
 
 theorem liftAux_map_add (f : X → L) (a b : lib R X) :
     liftAux R f (a + b) = liftAux R f a + liftAux R f b :=
   NonUnitalAlgHom.map_add _ a b
-#align free_lie_algebra.lift_aux_map_add FreeLieAlgebra.liftAux_map_add
 
 theorem liftAux_map_mul (f : X → L) (a b : lib R X) :
     liftAux R f (a * b) = ⁅liftAux R f a, liftAux R f b⁆ :=
   NonUnitalAlgHom.map_mul _ a b
-#align free_lie_algebra.lift_aux_map_mul FreeLieAlgebra.liftAux_map_mul
 
 theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a b) :
     liftAux R f a = liftAux R f b := by
@@ -204,7 +190,6 @@ theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a
   | add_right c' _ h₂ => simp only [liftAux_map_add, h₂]
   | mul_left c' _ h₂ => simp only [liftAux_map_mul, h₂]
   | mul_right c' _ h₂ => simp only [liftAux_map_mul, h₂]
-#align free_lie_algebra.lift_aux_spec FreeLieAlgebra.liftAux_spec
 
 /-- The quotient map as a `NonUnitalAlgHom`. -/
 def mk : lib R X →ₙₐ[R] CommutatorRing (FreeLieAlgebra R X) where
@@ -213,7 +198,6 @@ def mk : lib R X →ₙₐ[R] CommutatorRing (FreeLieAlgebra R X) where
   map_zero' := rfl
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
-#align free_lie_algebra.mk FreeLieAlgebra.mk
 
 /-- The functor `X ↦ FreeLieAlgebra R X` from the category of types to the category of Lie
 algebras over `R` is adjoint to the forgetful functor in the other direction. -/
@@ -231,39 +215,32 @@ def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
     ext ⟨a⟩
     let F' := F.toNonUnitalAlgHom.comp (mk R)
     exact NonUnitalAlgHom.congr_fun (lib.lift_comp_of R F') a
-#align free_lie_algebra.lift FreeLieAlgebra.lift
 
 @[simp]
 theorem lift_symm_apply (F : FreeLieAlgebra R X →ₗ⁅R⁆ L) : (lift R).symm F = F ∘ of R := rfl
-#align free_lie_algebra.lift_symm_apply FreeLieAlgebra.lift_symm_apply
 
 variable {R}
 
 @[simp]
 theorem of_comp_lift (f : X → L) : lift R f ∘ of R = f := (lift R).left_inv f
-#align free_lie_algebra.of_comp_lift FreeLieAlgebra.of_comp_lift
 
 @[simp]
 theorem lift_unique (f : X → L) (g : FreeLieAlgebra R X →ₗ⁅R⁆ L) : g ∘ of R = f ↔ g = lift R f :=
   (lift R).symm_apply_eq
-#align free_lie_algebra.lift_unique FreeLieAlgebra.lift_unique
 
 @[simp]
 theorem lift_of_apply (f : X → L) (x) : lift R f (of R x) = f x := by
   rw [← @Function.comp_apply _ _ _ (lift R f) (of R) x, of_comp_lift]
-#align free_lie_algebra.lift_of_apply FreeLieAlgebra.lift_of_apply
 
 @[simp]
 theorem lift_comp_of (F : FreeLieAlgebra R X →ₗ⁅R⁆ L) : lift R (F ∘ of R) = F := by
   rw [← lift_symm_apply]; exact (lift R).apply_symm_apply F
-#align free_lie_algebra.lift_comp_of FreeLieAlgebra.lift_comp_of
 
 @[ext]
 theorem hom_ext {F₁ F₂ : FreeLieAlgebra R X →ₗ⁅R⁆ L} (h : ∀ x, F₁ (of R x) = F₂ (of R x)) :
     F₁ = F₂ :=
   have h' : (lift R).symm F₁ = (lift R).symm F₂ := by ext; simp [h]
   (lift R).symm.injective h'
-#align free_lie_algebra.hom_ext FreeLieAlgebra.hom_ext
 
 variable (R X)
 
@@ -275,6 +252,5 @@ def universalEnvelopingEquivFreeAlgebra :
   AlgEquiv.ofAlgHom (UniversalEnvelopingAlgebra.lift R <| FreeLieAlgebra.lift R <| FreeAlgebra.ι R)
     (FreeAlgebra.lift R <| UniversalEnvelopingAlgebra.ι R ∘ FreeLieAlgebra.of R) (by ext; simp)
     (by ext; simp)
-#align free_lie_algebra.universal_enveloping_equiv_free_algebra FreeLieAlgebra.universalEnvelopingEquivFreeAlgebra
 
 end FreeLieAlgebra

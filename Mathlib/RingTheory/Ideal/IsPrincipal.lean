@@ -5,8 +5,6 @@ Authors: Xavier Roblot
 -/
 import Mathlib.RingTheory.PrincipalIdealDomain
 
-#align_import ring_theory.ideal.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
-
 /-!
 # Principal Ideals
 

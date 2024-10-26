@@ -25,7 +25,7 @@ whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 -/
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
@@ -33,8 +33,6 @@ class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCom
     OrderTop α where
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
   protected top_add' : ∀ x : α, ⊤ + x = ⊤
-#align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
-#align linear_ordered_add_comm_monoid_with_top.to_order_top LinearOrderedAddCommMonoidWithTop.toOrderTop
 
 /-- A linearly ordered commutative group with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
@@ -42,7 +40,6 @@ class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddComm
   SubNegMonoid α, Nontrivial α where
   protected neg_top : -(⊤ : α) = ⊤
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
-#align linear_ordered_add_comm_group_with_top LinearOrderedAddCommGroupWithTop
 
 instance WithTop.linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoidWithTop (WithTop α) :=
@@ -50,17 +47,15 @@ instance WithTop.linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid �
     top_add' := WithTop.top_add }
 
 section LinearOrderedAddCommMonoidWithTop
-variable [LinearOrderedAddCommMonoidWithTop α] {a b c d x y z : α} {n : ℕ}
+variable [LinearOrderedAddCommMonoidWithTop α]
 
 @[simp]
 theorem top_add (a : α) : ⊤ + a = ⊤ :=
   LinearOrderedAddCommMonoidWithTop.top_add' a
-#align top_add top_add
 
 @[simp]
 theorem add_top (a : α) : a + ⊤ = ⊤ :=
   Trans.trans (add_comm _ _) (top_add _)
-#align add_top add_top
 
 end LinearOrderedAddCommMonoidWithTop
 
@@ -70,7 +65,7 @@ open Function
 
 namespace LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] {a b c d : α}
+variable [LinearOrderedAddCommGroup α]
 
 instance instNeg : Neg (WithTop α) where neg := Option.map fun a : α => -a
 
@@ -88,7 +83,6 @@ instance instSub : Sub (WithTop α) where sub := WithTop.LinearOrderedAddCommGro
 @[simp, norm_cast]
 theorem coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
   rfl
-#align with_top.coe_neg WithTop.LinearOrderedAddCommGroup.coe_neg
 
 @[simp]
 theorem neg_top : -(⊤ : WithTop α) = ⊤ := rfl
@@ -117,8 +111,7 @@ instance : LinearOrderedAddCommGroupWithTop (WithTop α) where
   add_neg_cancel := by
     rintro (a | a) ha
     · exact (ha rfl).elim
-    · exact (WithTop.coe_add ..).symm.trans (WithTop.coe_eq_coe.2 (add_neg_self a))
-#align with_top.linear_ordered_add_comm_group_with_top WithTop.LinearOrderedAddCommGroup.instLinearOrderedAddCommGroupWithTop
+    · exact (WithTop.coe_add ..).symm.trans (WithTop.coe_eq_coe.2 (add_neg_cancel a))
 
 end LinearOrderedAddCommGroup
 

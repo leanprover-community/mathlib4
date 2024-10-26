@@ -6,8 +6,6 @@ Authors: Filippo A. E. Nuccio, Andrew Yang
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.Topology.NoetherianSpace
 
-#align_import algebraic_geometry.prime_spectrum.noetherian from "leanprover-community/mathlib"@"052f6013363326d50cb99c6939814a4b8eb7b301"
-
 /-!
 This file proves additional properties of the prime spectrum a ring is Noetherian.
 -/
@@ -21,11 +19,8 @@ open TopologicalSpace
 
 variable (R : Type u) [CommRing R] [IsNoetherianRing R]
 
-instance : NoetherianSpace (PrimeSpectrum R) := by
-  apply ((noetherianSpace_TFAE <| PrimeSpectrum R).out 0 1).mpr
-  have H := ‹IsNoetherianRing R›
-  rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at H
-  exact (closedsEmbedding R).dual.wellFounded H
+instance : NoetherianSpace (PrimeSpectrum R) :=
+  ((noetherianSpace_TFAE <| PrimeSpectrum R).out 0 1).mpr (closedsEmbedding R).dual.wellFoundedLT
 
 lemma _root_.minimalPrimes.finite_of_isNoetherianRing : (minimalPrimes R).Finite :=
   minimalPrimes.equivIrreducibleComponents R

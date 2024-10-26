@@ -306,7 +306,7 @@ theorem isLindelof_empty : IsLindelof (∅ : Set X) := fun _f hnf _ hsf ↦
 
 /-- A singleton set is a Lindelof set. -/
 @[simp]
-theorem isLindelof_singleton {x : X} : IsLindelof ({x} : Set X) := fun f hf _ hfa ↦
+theorem isLindelof_singleton {x : X} : IsLindelof ({x} : Set X) := fun _ hf _ hfa ↦
   ⟨x, rfl, ClusterPt.of_le_nhds'
     (hfa.trans <| by simpa only [principal_singleton] using pure_le_nhds x) hf⟩
 
@@ -511,7 +511,7 @@ theorem IsClosed.isLindelof [LindelofSpace X] (h : IsClosed s) : IsLindelof s :=
 theorem IsCompact.isLindelof (hs : IsCompact s) :
     IsLindelof s := by tauto
 
-/-- A σ-compact set `s` is Lindelöf-/
+/-- A σ-compact set `s` is Lindelöf -/
 theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
     IsLindelof s := by
   rw [IsSigmaCompact] at hs
@@ -564,7 +564,7 @@ theorem Filter.coLindelof_neBot_iff : NeBot (Filter.coLindelof X) ↔ NonLindelo
 theorem not_LindelofSpace_iff : ¬LindelofSpace X ↔ NonLindelofSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
 
-/-- A compact space `X` is Lindelöf.  -/
+/-- A compact space `X` is Lindelöf. -/
 instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
   { isLindelof_univ := isCompact_univ.isLindelof}
 
@@ -594,7 +594,7 @@ theorem Filter.comap_coLindelof_le {f : X → Y} (hf : Continuous f) :
   simpa using t.subset_preimage_image f
 
 theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) :
-    IsLindelof (range f) := by  rw [← image_univ]; exact isLindelof_univ.image hf
+    IsLindelof (range f) := by rw [← image_univ]; exact isLindelof_univ.image hf
 
 theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
   @range_diag X ▸ isLindelof_range (continuous_id.prod_mk continuous_id)
@@ -620,16 +620,23 @@ theorem Inducing.isLindelof_preimage {f : X → Y} (hf : Inducing f) (hf' : IsCl
   rwa [hf.isLindelof_iff, image_preimage_eq_inter_range]
 
 /-- The preimage of a Lindelöf set under a closed embedding is a Lindelöf set. -/
-theorem ClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : ClosedEmbedding f)
+theorem IsClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) :=
   hf.toInducing.isLindelof_preimage (hf.isClosed_range) hK
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.isLindelof_preimage := IsClosedEmbedding.isLindelof_preimage
+
 /-- A closed embedding is proper, ie, inverse images of Lindelöf sets are contained in Lindelöf.
-Moreover, the preimage of a Lindelöf set is Lindelöf, see `ClosedEmbedding.isLindelof_preimage`. -/
-theorem ClosedEmbedding.tendsto_coLindelof {f : X → Y} (hf : ClosedEmbedding f) :
+Moreover, the preimage of a Lindelöf set is Lindelöf, see
+`IsClosedEmbedding.isLindelof_preimage`. -/
+theorem IsClosedEmbedding.tendsto_coLindelof {f : X → Y} (hf : IsClosedEmbedding f) :
     Tendsto f (Filter.coLindelof X) (Filter.coLindelof Y) :=
   hasBasis_coLindelof.tendsto_right_iff.mpr fun _K hK =>
     (hf.isLindelof_preimage hK).compl_mem_coLindelof
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.tendsto_coLindelof := IsClosedEmbedding.tendsto_coLindelof
 
 /-- Sets of subtype are Lindelöf iff the image under a coercion is. -/
 theorem Subtype.isLindelof_iff {p : X → Prop} {s : Set { x // p x }} :
@@ -648,13 +655,19 @@ theorem IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.
   countable_coe_iff.mp
   (@countable_of_Lindelof_of_discrete _ _ (isLindelof_iff_LindelofSpace.mp hs) hs')
 
-protected theorem ClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X → Y}
-    (hf : ClosedEmbedding f) : NonLindelofSpace Y :=
+protected theorem IsClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X → Y}
+    (hf : IsClosedEmbedding f) : NonLindelofSpace Y :=
   nonLindelofSpace_of_neBot hf.tendsto_coLindelof.neBot
 
-protected theorem ClosedEmbedding.LindelofSpace [h : LindelofSpace Y] {f : X → Y}
-    (hf : ClosedEmbedding f) : LindelofSpace X :=
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.nonLindelofSpace := IsClosedEmbedding.nonLindelofSpace
+
+protected theorem IsClosedEmbedding.LindelofSpace [h : LindelofSpace Y] {f : X → Y}
+    (hf : IsClosedEmbedding f) : LindelofSpace X :=
   ⟨by rw [hf.toInducing.isLindelof_iff, image_univ]; exact hf.isClosed_range.isLindelof⟩
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.LindelofSpace := IsClosedEmbedding.LindelofSpace
 
 /-- Countable topological spaces are Lindelof. -/
 instance (priority := 100) Countable.LindelofSpace [Countable X] : LindelofSpace X where
@@ -692,7 +705,7 @@ for open sets in the definition, and then conclude that this holds for all sets 
 def IsHereditarilyLindelof (s : Set X) :=
   ∀ t ⊆ s, IsLindelof t
 
-/-- Type class for Hereditarily Lindelöf spaces.  -/
+/-- Type class for Hereditarily Lindelöf spaces. -/
 class HereditarilyLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a Hereditarily Lindelöf space, `Set.univ` is a Hereditarily Lindelöf set. -/
   isHereditarilyLindelof_univ : IsHereditarilyLindelof (univ : Set X)

@@ -6,8 +6,6 @@ Authors: Anatole Dedecker
 import Mathlib.Topology.Algebra.Module.StrongTopology
 import Mathlib.Topology.Algebra.Module.LocallyConvex
 
-#align_import analysis.locally_convex.strong_topology from "leanprover-community/mathlib"@"47b12e7f2502f14001f891ca87fbae2b4acaed3f"
-
 /-!
 # Local convexity of the strong topology
 
@@ -52,7 +50,6 @@ theorem locallyConvexSpace (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty)
       (LocallyConvexSpace.convex_basis_zero R F)) _
   rintro ⟨S, V⟩ ⟨_, _, hVconvex⟩ f hf g hg a b ha hb hab x hx
   exact hVconvex (hf x hx) (hg x hx) ha hb hab
-#align continuous_linear_map.strong_topology.locally_convex_space UniformConvergenceCLM.locallyConvexSpace
 
 end UniformConvergenceCLM
 

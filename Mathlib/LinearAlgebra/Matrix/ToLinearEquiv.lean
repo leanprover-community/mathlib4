@@ -10,8 +10,6 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
 
-#align_import linear_algebra.matrix.to_linear_equiv from "leanprover-community/mathlib"@"e42cfdb03b7902f8787a1eb552cb8f77766b45b9"
-
 /-!
 # Matrices and linear equivalences
 
@@ -53,19 +51,16 @@ See `Matrix.toLinearEquiv` for the same map on arbitrary modules.
 def toLinearEquiv' (P : Matrix n n R) (_ : Invertible P) : (n → R) ≃ₗ[R] n → R :=
   GeneralLinearGroup.generalLinearEquiv _ _ <|
     Matrix.GeneralLinearGroup.toLinear <| unitOfInvertible P
-#align matrix.to_linear_equiv' Matrix.toLinearEquiv'
 
 @[simp]
 theorem toLinearEquiv'_apply (P : Matrix n n R) (h : Invertible P) :
     (P.toLinearEquiv' h : Module.End R (n → R)) = Matrix.toLin' P :=
   rfl
-#align matrix.to_linear_equiv'_apply Matrix.toLinearEquiv'_apply
 
 @[simp]
 theorem toLinearEquiv'_symm_apply (P : Matrix n n R) (h : Invertible P) :
     (↑(P.toLinearEquiv' h).symm : Module.End R (n → R)) = Matrix.toLin' (⅟ P) :=
   rfl
-#align matrix.to_linear_equiv'_symm_apply Matrix.toLinearEquiv'_symm_apply
 
 end ToLinearEquiv'
 
@@ -90,17 +85,14 @@ noncomputable def toLinearEquiv [DecidableEq n] (A : Matrix n n R) (hA : IsUnit 
   right_inv x := by
     simp_rw [← LinearMap.comp_apply, ← Matrix.toLin_mul b b b, Matrix.mul_nonsing_inv _ hA,
       toLin_one, LinearMap.id_apply]
-#align matrix.to_linear_equiv Matrix.toLinearEquiv
 
 theorem ker_toLin_eq_bot [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) :
     LinearMap.ker (toLin b b A) = ⊥ :=
   ker_eq_bot.mpr (toLinearEquiv b A hA).injective
-#align matrix.ker_to_lin_eq_bot Matrix.ker_toLin_eq_bot
 
 theorem range_toLin_eq_top [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) :
     LinearMap.range (toLin b b A) = ⊤ :=
   range_eq_top.mpr (toLinearEquiv b A hA).surjective
-#align matrix.range_to_lin_eq_top Matrix.range_toLin_eq_top
 
 end ToLinearEquiv
 
@@ -129,7 +121,6 @@ theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M :
       rw [Matrix.toLin'_mul, Matrix.toLin'_one, Matrix.toLin'_toMatrix', LinearMap.comp_apply]
       exact (LinearEquiv.ofInjectiveEndo (Matrix.toLin' M) this).apply_symm_apply v
     exact Matrix.det_ne_zero_of_right_inverse this
-#align matrix.exists_mul_vec_eq_zero_iff_aux Matrix.exists_mulVec_eq_zero_iff_aux
 
 theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [CommRing A]
     [Nontrivial A] [Field K] [Algebra A K] [IsFractionRing A K] {M : Matrix n n A} :
@@ -164,17 +155,14 @@ theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Comm
       · simp_rw [RingHom.map_mulVec, mulVec, dotProduct, Function.comp_apply, hf,
           RingHom.mapMatrix_apply, Pi.smul_apply, smul_eq_mul, Algebra.smul_def]
       · rw [mulVec_smul, mul_eq, Pi.smul_apply, Pi.zero_apply, smul_zero]
-#align matrix.exists_mul_vec_eq_zero_iff' Matrix.exists_mulVec_eq_zero_iff'
 
 theorem exists_mulVec_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
     {M : Matrix n n A} : (∃ v ≠ 0, M *ᵥ v = 0) ↔ M.det = 0 :=
   exists_mulVec_eq_zero_iff' (FractionRing A)
-#align matrix.exists_mul_vec_eq_zero_iff Matrix.exists_mulVec_eq_zero_iff
 
 theorem exists_vecMul_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
     {M : Matrix n n A} : (∃ v ≠ 0, v ᵥ* M = 0) ↔ M.det = 0 := by
   simpa only [← M.det_transpose, ← mulVec_transpose] using exists_mulVec_eq_zero_iff
-#align matrix.exists_vec_mul_eq_zero_iff Matrix.exists_vecMul_eq_zero_iff
 
 theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
     {M : Matrix n n A} : Nondegenerate M ↔ M.det ≠ 0 := by
@@ -187,11 +175,8 @@ theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [
   · intro h v hv
     refine not_imp_not.mp (h v) (funext fun i => ?_)
     simpa only [dotProduct_mulVec, dotProduct_single, mul_one] using hv (Pi.single i 1)
-#align matrix.nondegenerate_iff_det_ne_zero Matrix.nondegenerate_iff_det_ne_zero
 
 alias ⟨Nondegenerate.det_ne_zero, Nondegenerate.of_det_ne_zero⟩ := nondegenerate_iff_det_ne_zero
-#align matrix.nondegenerate.det_ne_zero Matrix.Nondegenerate.det_ne_zero
-#align matrix.nondegenerate.of_det_ne_zero Matrix.Nondegenerate.of_det_ne_zero
 
 end Nondegenerate
 

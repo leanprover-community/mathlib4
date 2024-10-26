@@ -3,6 +3,7 @@ Copyright (c) 2023 Antoine Chambert-Loir and María Inés de Frutos-Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta, Eric Wieser
 -/
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Data.Finset.Basic
 import Mathlib.Order.Interval.Finset.Defs
@@ -88,7 +89,6 @@ theorem swap_mem_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} {xy 
 @[simp] theorem map_swap_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} :
     (antidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = antidiagonal n :=
   map_prodComm_antidiagonal
-#align finset.nat.map_swap_antidiagonal Finset.map_swap_antidiagonal
 
 section AddCancelMonoid
 variable [AddCancelMonoid A] [HasAntidiagonal A] {p q : A × A} {n : A}
@@ -101,7 +101,6 @@ theorem antidiagonal_congr (hp : p ∈ antidiagonal n) (hq : q ∈ antidiagonal 
   refine ⟨congr_arg Prod.fst, fun h ↦ Prod.ext h ((add_right_inj q.fst).mp ?_)⟩
   rw [mem_antidiagonal] at hp hq
   rw [hq, ← h, hp]
-#align finset.nat.antidiagonal_congr Finset.antidiagonal_congr
 
 /-- A point in the antidiagonal is determined by its first co-ordinate (subtype version of
 `Finset.antidiagonal_congr`). This lemma is used by the `ext` tactic. -/
@@ -135,19 +134,17 @@ theorem antidiagonal.fst_le {n : A} {kl : A × A} (hlk : kl ∈ antidiagonal n) 
   rw [le_iff_exists_add]
   use kl.2
   rwa [mem_antidiagonal, eq_comm] at hlk
-#align finset.nat.antidiagonal.fst_le Finset.antidiagonal.fst_le
 
 theorem antidiagonal.snd_le {n : A} {kl : A × A} (hlk : kl ∈ antidiagonal n) : kl.2 ≤ n := by
   rw [le_iff_exists_add]
   use kl.1
   rwa [mem_antidiagonal, eq_comm, add_comm] at hlk
-#align finset.nat.antidiagonal.snd_le Finset.antidiagonal.snd_le
 
 end CanonicallyOrderedAddCommMonoid
 
 section OrderedSub
 variable [CanonicallyOrderedAddCommMonoid A] [Sub A] [OrderedSub A]
-variable [ContravariantClass A A (· + ·) (· ≤ ·)]
+variable [AddLeftReflectLE A]
 variable [HasAntidiagonal A]
 
 theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
@@ -156,14 +153,13 @@ theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
   suffices a = m → (a + b = n ↔ m ≤ n ∧ b = n - m) by
     rw [mem_filter, mem_antidiagonal, apply_ite (fun n ↦ (a, b) ∈ n), mem_singleton,
       Prod.mk.inj_iff, ite_prop_iff_or]
-    simpa [ ← and_assoc, @and_right_comm _ (a = _), and_congr_left_iff]
+    simpa [← and_assoc, @and_right_comm _ (a = _), and_congr_left_iff]
   rintro rfl
   constructor
   · rintro rfl
     exact ⟨le_add_right le_rfl, (add_tsub_cancel_left _ _).symm⟩
   · rintro ⟨h, rfl⟩
     exact add_tsub_cancel_of_le h
-#align finset.nat.filter_fst_eq_antidiagonal Finset.filter_fst_eq_antidiagonal
 
 theorem filter_snd_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
     filter (fun x : A × A ↦ x.snd = m) (antidiagonal n) = if m ≤ n then {(n - m, m)} else ∅ := by
@@ -171,7 +167,6 @@ theorem filter_snd_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
     ext; simp
   rw [← map_swap_antidiagonal, filter_map]
   simp [this, filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
-#align finset.nat.filter_snd_eq_antidiagonal Finset.filter_snd_eq_antidiagonal
 
 end OrderedSub
 
@@ -186,11 +181,7 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
     rintro ⟨n, ⟨k, l⟩, h⟩
     rw [mem_antidiagonal] at h
     exact Sigma.subtype_ext h rfl
-  right_inv x := rfl
-#align finset.nat.sigma_antidiagonal_equiv_prod Finset.sigmaAntidiagonalEquivProd
-#align finset.nat.sigma_antidiagonal_equiv_prod_symm_apply_fst Finset.sigmaAntidiagonalEquivProd_symm_apply_fst
-#align finset.nat.sigma_antidiagonal_equiv_prod_symm_apply_snd_coe Finset.sigmaAntidiagonalEquivProd_symm_apply_snd_coe
-#align finset.nat.sigma_antidiagonal_equiv_prod_apply Finset.sigmaAntidiagonalEquivProd_apply
+  right_inv _ := rfl
 
 variable {A : Type*}
   [CanonicallyOrderedAddCommMonoid A]

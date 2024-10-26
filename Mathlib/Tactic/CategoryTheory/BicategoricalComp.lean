@@ -26,30 +26,22 @@ Used by the `⊗≫` bicategorical composition operator, and the `coherence` tac
 -/
 class BicategoricalCoherence (f g : a ⟶ b) where
   /-- The chosen structural isomorphism between to 1-morphisms. -/
-  hom : f ⟶ g
-  [isIso : IsIso hom]
-#align category_theory.bicategory.bicategorical_coherence CategoryTheory.BicategoricalCoherence
+  iso : f ≅ g
 
 /-- Notation for identities up to unitors and associators. -/
 scoped[CategoryTheory.Bicategory] notation " ⊗𝟙 " =>
-  BicategoricalCoherence.hom -- type as \ot 𝟙
-
-attribute [instance] BicategoricalCoherence.isIso
-
-noncomputable section
+  BicategoricalCoherence.iso -- type as \ot 𝟙
 
 /-- Construct an isomorphism between two objects in a bicategorical category
 out of unitors and associators. -/
-def bicategoricalIso (f g : a ⟶ b) [BicategoricalCoherence f g] : f ≅ g :=
-  asIso ⊗𝟙
-#align category_theory.bicategory.bicategorical_iso CategoryTheory.bicategoricalIso
+abbrev bicategoricalIso (f g : a ⟶ b) [BicategoricalCoherence f g] : f ≅ g :=
+  ⊗𝟙
 
 /-- Compose two morphisms in a bicategorical category,
 inserting unitors and associators between as necessary. -/
 def bicategoricalComp {f g h i : a ⟶ b} [BicategoricalCoherence g h]
     (η : f ⟶ g) (θ : h ⟶ i) : f ⟶ i :=
-  η ≫ ⊗𝟙 ≫ θ
-#align category_theory.bicategory.bicategorical_comp CategoryTheory.bicategoricalComp
+  η ≫ ⊗𝟙.hom ≫ θ
 
 -- type as \ot \gg
 @[inherit_doc bicategoricalComp]
@@ -59,8 +51,7 @@ scoped[CategoryTheory.Bicategory] infixr:80 " ⊗≫ " => bicategoricalComp
 inserting unitors and associators between as necessary. -/
 def bicategoricalIsoComp {f g h i : a ⟶ b} [BicategoricalCoherence g h]
     (η : f ≅ g) (θ : h ≅ i) : f ≅ i :=
-  η ≪≫ asIso ⊗𝟙 ≪≫ θ
-#align category_theory.bicategory.bicategorical_iso_comp CategoryTheory.bicategoricalIsoComp
+  η ≪≫ ⊗𝟙 ≪≫ θ
 
 @[inherit_doc bicategoricalIsoComp]
 scoped[CategoryTheory.Bicategory] infixr:80 " ≪⊗≫ " =>
@@ -70,88 +61,64 @@ namespace BicategoricalCoherence
 
 @[simps]
 instance refl (f : a ⟶ b) : BicategoricalCoherence f f :=
-  ⟨𝟙 _⟩
-#align category_theory.bicategory.bicategorical_coherence.refl CategoryTheory.BicategoricalCoherence.refl
+  ⟨Iso.refl _⟩
 
 @[simps]
 instance whiskerLeft (f : a ⟶ b) (g h : b ⟶ c)
     [BicategoricalCoherence g h] : BicategoricalCoherence (f ≫ g) (f ≫ h) :=
-  ⟨f ◁ ⊗𝟙⟩
-#align category_theory.bicategory.bicategorical_coherence.whisker_left CategoryTheory.BicategoricalCoherence.whiskerLeft
+  ⟨whiskerLeftIso f ⊗𝟙⟩
 
 @[simps]
 instance whiskerRight (f g : a ⟶ b) (h : b ⟶ c)
     [BicategoricalCoherence f g] : BicategoricalCoherence (f ≫ h) (g ≫ h) :=
-  ⟨⊗𝟙 ▷ h⟩
-#align category_theory.bicategory.bicategorical_coherence.whisker_right CategoryTheory.BicategoricalCoherence.whiskerRight
+  ⟨whiskerRightIso ⊗𝟙 h⟩
 
 @[simps]
 instance tensorRight (f : a ⟶ b) (g : b ⟶ b)
     [BicategoricalCoherence (𝟙 b) g] : BicategoricalCoherence f (f ≫ g) :=
-  ⟨(ρ_ f).inv ≫ f ◁ ⊗𝟙⟩
-#align category_theory.bicategory.bicategorical_coherence.tensor_right CategoryTheory.BicategoricalCoherence.tensorRight
+  ⟨(ρ_ f).symm ≪≫ (whiskerLeftIso f ⊗𝟙)⟩
 
 @[simps]
 instance tensorRight' (f : a ⟶ b) (g : b ⟶ b)
     [BicategoricalCoherence g (𝟙 b)] : BicategoricalCoherence (f ≫ g) f :=
-  ⟨f ◁ ⊗𝟙 ≫ (ρ_ f).hom⟩
-#align category_theory.bicategory.bicategorical_coherence.tensor_right' CategoryTheory.BicategoricalCoherence.tensorRight'
+  ⟨whiskerLeftIso f ⊗𝟙 ≪≫ (ρ_ f)⟩
 
 @[simps]
 instance left (f g : a ⟶ b) [BicategoricalCoherence f g] :
     BicategoricalCoherence (𝟙 a ≫ f) g :=
-  ⟨(λ_ f).hom ≫ ⊗𝟙⟩
-#align category_theory.bicategory.bicategorical_coherence.left CategoryTheory.BicategoricalCoherence.left
+  ⟨λ_ f ≪≫ ⊗𝟙⟩
 
 @[simps]
 instance left' (f g : a ⟶ b) [BicategoricalCoherence f g] :
     BicategoricalCoherence f (𝟙 a ≫ g) :=
-  ⟨⊗𝟙 ≫ (λ_ g).inv⟩
-#align category_theory.bicategory.bicategorical_coherence.left' CategoryTheory.BicategoricalCoherence.left'
+  ⟨⊗𝟙 ≪≫ (λ_ g).symm⟩
 
 @[simps]
 instance right (f g : a ⟶ b) [BicategoricalCoherence f g] :
     BicategoricalCoherence (f ≫ 𝟙 b) g :=
-  ⟨(ρ_ f).hom ≫ ⊗𝟙⟩
-#align category_theory.bicategory.bicategorical_coherence.right CategoryTheory.BicategoricalCoherence.right
+  ⟨ρ_ f ≪≫ ⊗𝟙⟩
 
 @[simps]
 instance right' (f g : a ⟶ b) [BicategoricalCoherence f g] :
     BicategoricalCoherence f (g ≫ 𝟙 b) :=
-  ⟨⊗𝟙 ≫ (ρ_ g).inv⟩
-#align category_theory.bicategory.bicategorical_coherence.right' CategoryTheory.BicategoricalCoherence.right'
+  ⟨⊗𝟙 ≪≫ (ρ_ g).symm⟩
 
 @[simps]
 instance assoc (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d)
     [BicategoricalCoherence (f ≫ g ≫ h) i] :
     BicategoricalCoherence ((f ≫ g) ≫ h) i :=
-  ⟨(α_ f g h).hom ≫ ⊗𝟙⟩
-#align category_theory.bicategory.bicategorical_coherence.assoc CategoryTheory.BicategoricalCoherence.assoc
+  ⟨α_ f g h ≪≫ ⊗𝟙⟩
 
 @[simps]
 instance assoc' (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d)
     [BicategoricalCoherence i (f ≫ g ≫ h)] :
     BicategoricalCoherence i ((f ≫ g) ≫ h) :=
-  ⟨⊗𝟙 ≫ (α_ f g h).inv⟩
-#align category_theory.bicategory.bicategorical_coherence.assoc' CategoryTheory.BicategoricalCoherence.assoc'
+  ⟨⊗𝟙 ≪≫ (α_ f g h).symm⟩
 
 end BicategoricalCoherence
 
 @[simp]
 theorem bicategoricalComp_refl {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) : η ⊗≫ θ = η ≫ θ := by
   dsimp [bicategoricalComp]; simp
-#align category_theory.bicategory.bicategorical_comp_refl CategoryTheory.bicategoricalComp_refl
-
-example {f' : a ⟶ d} {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} {h' : a ⟶ d} (η : f' ⟶ f ≫ g ≫ h)
-    (θ : (f ≫ g) ≫ h ⟶ h') : f' ⟶ h' :=
-    η ⊗≫ θ
-
--- To automatically insert unitors/associators at the beginning or end,
--- you can use `η ⊗≫ 𝟙 _`
-example {f' : a ⟶ d} {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} (η : f' ⟶ (f ≫ g) ≫ h) :
-    f' ⟶ f ≫ g ≫ h :=
-  η ⊗≫ 𝟙 _
-
-end
 
 end CategoryTheory

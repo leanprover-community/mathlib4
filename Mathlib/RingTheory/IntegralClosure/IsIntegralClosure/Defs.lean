@@ -5,8 +5,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
-#align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
-
 /-!
 # Integral closure as a characteristic predicate
 
@@ -30,8 +28,5 @@ class IsIntegralClosure (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing 
   [Algebra A B] : Prop where
   algebraMap_injective' : Function.Injective (algebraMap A B)
   isIntegral_iff : ∀ {x : B}, IsIntegral R x ↔ ∃ y, algebraMap A B y = x
-#align is_integral_closure IsIntegralClosure
 
 end IsIntegralClosure
-
-#align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"

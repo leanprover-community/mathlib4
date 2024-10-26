@@ -31,7 +31,7 @@ noncomputable section
 
 open scoped Polynomial Classical
 
-open Polynomial UniqueFactorizationMonoid
+open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain
 
 variable {k : Type*} [Field k]
 
@@ -91,7 +91,7 @@ theorem divRadical_hMul {a b : k[X]} (hc : IsCoprime a b) :
   by_cases hb : b = 0
   · rw [hb, MulZeroClass.mul_zero, divRadical, EuclideanDomain.zero_div, MulZeroClass.mul_zero]
   symm; apply eq_divRadical
-  rw [radical_hMul hc]
+  rw [radical_mul hc]
   rw [mul_mul_mul_comm, hMul_radical_divRadical, hMul_radical_divRadical]
 
 theorem divRadical_dvd_self (a : k[X]) : (divRadical a) ∣ a := by
