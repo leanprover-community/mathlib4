@@ -423,11 +423,9 @@ instance (o : Ordinal) : NoMaxOrder (ℵ_ o).ord.toType :=
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
   ext c
-  refine ⟨?_, fun hc ↦ ⟨preAleph.symm c - ω, ?_⟩⟩
-  · rintro ⟨o, rfl⟩
-    exact aleph0_le_aleph o
-  · rw [aleph_eq_preAleph, Ordinal.add_sub_cancel_of_le, preAleph.apply_symm_apply]
-    rwa [← aleph0_le_preAleph, preAleph.apply_symm_apply]
+  refine ⟨fun ⟨o, e⟩ => e ▸ aleph0_le_aleph _, fun hc ↦ ⟨preAleph.symm c - ω, ?_⟩⟩
+  rw [aleph_eq_preAleph, Ordinal.add_sub_cancel_of_le, preAleph.apply_symm_apply]
+  rwa [← aleph0_le_preAleph, preAleph.apply_symm_apply]
 
 theorem mem_range_aleph_iff {c : Cardinal} : c ∈ range aleph ↔ ℵ₀ ≤ c := by
   rw [range_aleph, mem_Ici]
