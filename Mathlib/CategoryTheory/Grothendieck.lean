@@ -345,8 +345,7 @@ variable (hom_comp : ∀ c₁ c₂ c₃ (f : c₁ ⟶ c₂) (g : c₂ ⟶ c₃),
 functors on the fibers of `Grothendieck F`, a family of natural transformations on morphisms in the
 base of `Grothendieck F` and coherence data for this family of natural transformations. -/
 @[simps]
-def functorFrom  :
-    Grothendieck F ⥤ E where
+def functorFrom : Grothendieck F ⥤ E where
   obj X := (fib X.base).obj X.fiber
   map {X Y} f := (hom f.base).app X.fiber ≫ (fib Y.base).map f.fiber
   map_id X := by simp [hom_id]
