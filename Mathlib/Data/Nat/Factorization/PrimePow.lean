@@ -137,6 +137,6 @@ theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
   · simp only [Nat.coprime_zero_right] at hab
     simp [hab, Finset.filter_singleton, not_isPrimePow_one]
   ext n
-  simp only [ha, hb, Finset.mem_union, Finset.mem_filter, Nat.mul_eq_zero, and_true_iff, Ne,
+  simp only [ha, hb, Finset.mem_union, Finset.mem_filter, Nat.mul_eq_zero, and_true, Ne,
     and_congr_left_iff, not_false_iff, Nat.mem_divisors, or_self_iff]
   apply hab.isPrimePow_dvd_mul

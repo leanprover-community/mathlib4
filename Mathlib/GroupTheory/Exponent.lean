@@ -8,6 +8,7 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.Peel
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-!
 # Exponent of a group
@@ -451,7 +452,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   rw [(Commute.all _ g).orderOf_mul_eq_mul_orderOf_of_coprime hcoprime, hpk',
     hg, ha, hk, pow_add, pow_add, pow_one, ← mul_assoc, ← mul_assoc,
     Nat.div_mul_cancel, mul_assoc, lt_mul_iff_one_lt_right <| hG.orderOf_pos t, ← pow_succ]
-  · exact one_lt_pow hp.one_lt a.succ_ne_zero
+  · exact one_lt_pow₀ hp.one_lt a.succ_ne_zero
   · exact hpk
 
 @[to_additive]
@@ -614,8 +615,8 @@ lemma mul_comm_of_exponent_two [IsCancelMul G] (hG : Monoid.exponent G = 2) (a b
   Commute.of_orderOf_dvd_two (fun g => hG ▸ Monoid.order_dvd_exponent g) a b
 
 /-- Any cancellative monoid of exponent two is abelian. -/
-@[to_additive (attr := reducible) "Any additive group of exponent two is abelian."]
-def commMonoidOfExponentTwo [IsCancelMul G] (hG : Monoid.exponent G = 2) : CommMonoid G where
+@[to_additive "Any additive group of exponent two is abelian."]
+abbrev commMonoidOfExponentTwo [IsCancelMul G] (hG : Monoid.exponent G = 2) : CommMonoid G where
   mul_comm := mul_comm_of_exponent_two hG
 
 end Monoid

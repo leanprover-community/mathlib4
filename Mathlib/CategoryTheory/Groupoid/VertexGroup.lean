@@ -43,7 +43,7 @@ instance vertexGroup (c : C) : Group (c ⟶ c) where
   one_mul := Category.id_comp
   mul_one := Category.comp_id
   inv := Groupoid.inv
-  mul_left_inv := inv_comp
+  inv_mul_cancel := inv_comp
 
 -- dsimp loops when applying this lemma to its LHS,
 -- probably https://github.com/leanprover/lean4/pull/2867

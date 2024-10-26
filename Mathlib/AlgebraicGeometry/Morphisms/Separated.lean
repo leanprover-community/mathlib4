@@ -16,9 +16,6 @@ A morphism of schemes is separated if its diagonal morphism is a closed immmersi
 
 ## TODO
 
-- Show separated is stable under composition and base change (this is immediate if
-  we show that closed immersions are stable under base change).
-- Show separated is local at the target.
 - Show affine morphisms are separated.
 
 -/
@@ -59,6 +56,24 @@ instance : MorphismProperty.RespectsIso @IsSeparated := by
   infer_instance
 
 instance (priority := 900) [IsSeparated f] : QuasiSeparated f where
+
+instance stableUnderComposition : MorphismProperty.IsStableUnderComposition @IsSeparated := by
+  rw [isSeparated_eq_diagonal_isClosedImmersion]
+  exact MorphismProperty.diagonal_isStableUnderComposition IsClosedImmersion.stableUnderBaseChange
+
+instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsSeparated f] [IsSeparated g] : IsSeparated (f ≫ g) :=
+  stableUnderComposition.comp_mem f g inferInstance inferInstance
+
+instance : MorphismProperty.IsMultiplicative @IsSeparated where
+  id_mem _ := inferInstance
+
+lemma stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsSeparated := by
+  rw [isSeparated_eq_diagonal_isClosedImmersion]
+  exact MorphismProperty.StableUnderBaseChange.diagonal IsClosedImmersion.stableUnderBaseChange
+
+instance : IsLocalAtTarget @IsSeparated := by
+  rw [isSeparated_eq_diagonal_isClosedImmersion]
+  infer_instance
 
 end IsSeparated
 

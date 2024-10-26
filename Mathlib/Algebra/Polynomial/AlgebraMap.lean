@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -102,7 +103,7 @@ instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
       rw [Ne, SetLike.ext_iff, not_forall]
       refine ⟨X, ?_⟩
-      simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top,
+      simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true, Algebra.mem_top,
         algebraMap_apply, not_forall]
       intro x
       rw [ext_iff, not_forall]
@@ -217,7 +218,7 @@ end CommSemiring
 section aeval
 
 variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
-variable [Algebra R A] [Algebra R A'] [Algebra R B]
+variable [Algebra R A] [Algebra R B]
 variable {p q : R[X]} (x : A)
 
 /-- Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
@@ -384,7 +385,7 @@ instance instCommSemiringAdjoinSingleton :
   { mul_comm := fun ⟨p, hp⟩ ⟨q, hq⟩ ↦ by
       obtain ⟨p', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hp
       obtain ⟨q', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hq
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Submonoid.mk_mul_mk, ← map_mul,
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, MulMemClass.mk_mul_mk, ← map_mul,
         mul_comm p' q'] }
 
 instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :
@@ -526,7 +527,7 @@ theorem eval_mul_X_sub_C {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 := by
   simp [coeff_monomial]
 
 theorem not_isUnit_X_sub_C [Nontrivial R] (r : R) : ¬IsUnit (X - C r) :=
-  fun ⟨⟨_, g, _hfg, hgf⟩, rfl⟩ => zero_ne_one' R <| by erw [← eval_mul_X_sub_C, hgf, eval_one]
+  fun ⟨⟨_, g, _hfg, hgf⟩, rfl⟩ => zero_ne_one' R <| by rw [← eval_mul_X_sub_C, hgf, eval_one]
 
 end Ring
 
@@ -538,10 +539,10 @@ theorem aeval_endomorphism {M : Type*} [CommRing R] [AddCommGroup M] [Module R M
 section StableSubmodule
 
 variable {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  {q : Submodule R M} {m : M} (hm : m ∈ q) (p : R[X])
+  {q : Submodule R M} {m : M}
 
 lemma aeval_apply_smul_mem_of_le_comap'
-    [Semiring A] [Algebra R A] [Module A M] [IsScalarTower R A M] (a : A)
+    [Semiring A] [Algebra R A] [Module A M] [IsScalarTower R A M] (hm : m ∈ q) (p : R[X]) (a : A)
     (hq : q ≤ q.comap (Algebra.lsmul R R M a)) :
     aeval a p • m ∈ q := by
   refine p.induction_on (M := fun f ↦ aeval a f • m ∈ q) (by simpa) (fun f₁ f₂ h₁ h₂ ↦ ?_)
@@ -553,7 +554,8 @@ lemma aeval_apply_smul_mem_of_le_comap'
     rw [← q.map_le_iff_le_comap] at hq
     exact hq ⟨_, hmq, rfl⟩
 
-lemma aeval_apply_smul_mem_of_le_comap (f : Module.End R M) (hq : q ≤ q.comap f) :
+lemma aeval_apply_smul_mem_of_le_comap
+    (hm : m ∈ q) (p : R[X]) (f : Module.End R M) (hq : q ≤ q.comap f) :
     aeval f p m ∈ q :=
   aeval_apply_smul_mem_of_le_comap' hm p f hq
 

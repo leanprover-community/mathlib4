@@ -24,7 +24,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddC
 
 section FiniteDimensional
 
-open Function FiniteDimensional
+open Function Module
 
 variable [CompleteSpace 𝕜]
 

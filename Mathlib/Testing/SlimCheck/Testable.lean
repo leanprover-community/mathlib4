@@ -423,7 +423,7 @@ end Testable
 
 section PrintableProp
 
-variable {α : Type*} {x y : α}
+variable {α : Type*}
 
 instance Eq.printableProp [Repr α] {x y : α} : PrintableProp (x = y) where
   printProp := s!"{repr x} = {repr y}"
@@ -558,7 +558,7 @@ scoped elab "mk_decorations" : tactic => do
   let goal ← getMainGoal
   let goalType ← goal.getType
   if let .app (.const ``Decorations.DecorationsOf _) body := goalType then
-    closeMainGoal (← addDecorations body)
+    closeMainGoal `mk_decorations (← addDecorations body)
 
 end Decorations
 

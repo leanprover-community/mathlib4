@@ -17,17 +17,13 @@ import Mathlib.Control.Traversable.Basic
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
 
-set_option autoImplicit true
-
 universe u
 
-variable {n : ℕ}
+variable {α β γ σ φ : Type*} {m n : ℕ}
 
 namespace Mathlib
 
 namespace Vector
-
-variable {α : Type*}
 
 @[inherit_doc]
 infixr:67 " ::ᵥ " => Vector.cons
@@ -76,12 +72,6 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 
 
 @[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.2
-
--- Porting note: not used in mathlib and coercions done differently in Lean 4
--- @[simp]
--- theorem length_coe (v : Vector α n) :
---     ((coe : { l : List α // l.length = n } → List α) v).length = n :=
---   v.2
 
 @[simp]
 theorem toList_map {β : Type*} (v : Vector α n) (f : α → β) :
@@ -312,7 +302,7 @@ retrieved via `head`, is the starting value `b : β`.
 @[simp]
 theorem scanl_head : (scanl f b v).head = b := by
   cases n
-  · have : v = nil := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton]
+  · have : v = nil := by simp only [eq_iff_true_of_subsingleton]
     simp only [this, scanl_nil, head_cons]
   · rw [← cons_head_tail v]
     simp only [← get_zero, get_eq_get, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
@@ -352,7 +342,7 @@ def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector 
 
 theorem mOfFn_pure {m} [Monad m] [LawfulMonad m] {α} :
     ∀ {n} (f : Fin n → α), (@mOfFn m _ _ _ fun i => pure (f i)) = pure (ofFn f)
-  | 0, f => rfl
+  | 0, _ => rfl
   | n + 1, f => by
     rw [mOfFn, @mOfFn_pure m _ _ _ n _, ofFn]
     simp
@@ -640,7 +630,7 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
   · simp! [cast, *, functor_norm]
     rfl
   · rw [Vector.traverse_def, ih]
-    simp [functor_norm, (· ∘ ·)]
+    simp [functor_norm, Function.comp_def]
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = (pure : _ → Id _) (map f x) := by
@@ -690,7 +680,7 @@ instance : LawfulTraversable.{u} (flip Vector n) where
 
 section Simp
 
-variable (xs : Vector α n)
+variable {x : α} {y : β} {s : σ} (xs : Vector α n)
 
 @[simp]
 theorem replicate_succ (val : α) :
@@ -729,7 +719,7 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
     · simp only [get_cons_succ, ih]
 
 @[simp]
-theorem mapAccumr_cons :
+theorem mapAccumr_cons {f : α → σ → σ × β} :
     mapAccumr f (x ::ᵥ xs) s
     = let r := mapAccumr f xs s
       let q := f x r.1
@@ -737,7 +727,7 @@ theorem mapAccumr_cons :
   rfl
 
 @[simp]
-theorem mapAccumr₂_cons :
+theorem mapAccumr₂_cons {f : α → β → σ → σ × φ} :
     mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s
     = let r := mapAccumr₂ f xs ys s
       let q := f x y r.1

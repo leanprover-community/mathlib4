@@ -3,12 +3,7 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
-import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Monoid representations
@@ -18,11 +13,10 @@ representations.
 
 ## Main definitions
 
-  * Representation.Representation
-  * Representation.character
-  * Representation.tprod
-  * Representation.linHom
-  * Representation.dual
+  * `Representation`
+  * `Representation.tprod`
+  * `Representation.linHom`
+  * `Representation.dual`
 
 ## Implementation notes
 
@@ -31,7 +25,7 @@ homomorphisms `G →* (V →ₗ[k] V)`. We use the abbreviation `Representation`
 
 The theorem `asAlgebraHom_def` constructs a module over the group `k`-algebra of `G` (implemented
 as `MonoidAlgebra k G`) corresponding to a representation. If `ρ : Representation k G V`, this
-module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G-module `M`
+module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G`-module `M`,
 `M.ofModule` is the associociated representation seen as a homomorphism.
 -/
 
@@ -371,8 +365,8 @@ tensor product `V ⊗[k] W`.
 -/
 noncomputable def tprod : Representation k G (V ⊗[k] W) where
   toFun g := TensorProduct.map (ρV g) (ρW g)
-  map_one' := by simp only [_root_.map_one, TensorProduct.map_one]
-  map_mul' g h := by simp only [_root_.map_mul, TensorProduct.map_mul]
+  map_one' := by simp only [map_one, TensorProduct.map_one]
+  map_mul' g h := by simp only [map_mul, TensorProduct.map_mul]
 
 local notation ρV " ⊗ " ρW => tprod ρV ρW
 
@@ -454,7 +448,7 @@ theorem dual_apply (g : G) : (dual ρV) g = Module.Dual.transpose (R := k) (ρV 
   rfl
 
 /-- Given $k$-modules $V, W$, there is a homomorphism $φ : V^* ⊗ W → Hom_k(V, W)$
-(implemented by `LinearAlgebra.Contraction.dualTensorHom`).
+(implemented by `dualTensorHom` in `Mathlib.LinearAlgebra.Contraction`).
 Given representations of $G$ on $V$ and $W$,there are representations of $G$ on $V^* ⊗ W$ and on
 $Hom_k(V, W)$.
 This lemma says that $φ$ is $G$-linear.

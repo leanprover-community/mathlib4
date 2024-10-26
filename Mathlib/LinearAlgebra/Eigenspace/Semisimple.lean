@@ -55,7 +55,7 @@ lemma IsSemisimple.genEigenspace_eq_eigenspace
 lemma IsSemisimple.maxGenEigenspace_eq_eigenspace
     (hf : f.IsSemisimple) (μ : R) :
     f.maxGenEigenspace μ = f.eigenspace μ := by
-  simp_rw [maxGenEigenspace, ← (f.genEigenspace μ).monotone.iSup_nat_add 1,
+  simp_rw [maxGenEigenspace_def, ← (f.genEigenspace μ).monotone.iSup_nat_add 1,
     hf.genEigenspace_eq_eigenspace μ (Nat.zero_lt_succ _), ciSup_const]
 
 end Module.End

@@ -7,7 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
-import Mathlib.Analysis.CstarAlgebra.Matrix
+import Mathlib.Analysis.CStarAlgebra.Matrix
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-! # Spectral theory of hermitian matrices
@@ -17,7 +17,7 @@ the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_ap
 
 ## Tags
 
-spectral theorem, diagonalization theorem-/
+spectral theorem, diagonalization theorem -/
 
 namespace Matrix
 

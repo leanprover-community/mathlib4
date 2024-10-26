@@ -198,7 +198,7 @@ theorem sum_card_slice_div_choose_le_one [Fintype α]
   classical
     rw [← sum_flip]
     refine (le_card_falling_div_choose le_rfl h𝒜).trans ?_
-    rw [div_le_iff] <;> norm_cast
+    rw [div_le_iff₀] <;> norm_cast
     · simpa only [Nat.sub_self, one_mul, Nat.choose_zero_right, falling] using
         Set.Sized.card_le (sized_falling 0 𝒜)
     · rw [tsub_self, choose_zero_right]

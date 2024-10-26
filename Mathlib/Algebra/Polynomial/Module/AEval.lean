@@ -46,7 +46,8 @@ instance instAddCommMonoid : AddCommMonoid <| AEval R M a := inferInstanceAs (Ad
 
 instance instModuleOrig : Module R <| AEval R M a := inferInstanceAs (Module R M)
 
-instance instFiniteOrig [Finite R M] : Finite R <| AEval R M a := inferInstanceAs (Finite R M)
+instance instFiniteOrig [Module.Finite R M] : Module.Finite R <| AEval R M a :=
+  ‹Module.Finite R M›
 
 instance instModulePolynomial : Module R[X] <| AEval R M a := compHom M (aeval a).toRingHom
 
@@ -79,7 +80,7 @@ instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a w
     apply (of R M a).symm.injective
     rw [of_symm_smul, map_smul, smul_assoc, map_smul, of_symm_smul]
 
-instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
+instance instFinitePolynomial [Module.Finite R M] : Module.Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
 
 /-- Construct an `R[X]`-linear map out of `AEval R M a` from a `R`-linear map out of `M`. -/
@@ -110,8 +111,7 @@ lemma annihilator_top_eq_ker_aeval [FaithfulSMul A M] :
 
 section Submodule
 
-variable {p : Submodule R M} (hp : p ≤ p.comap (Algebra.lsmul R R M a))
-  {q : Submodule R[X] <| AEval R M a}
+variable {p : Submodule R M} {q : Submodule R[X] <| AEval R M a}
 
 variable (R M) in
 /-- We can turn an `R[X]`-submodule into an `R`-submodule by forgetting the action of `X`. -/
@@ -132,13 +132,15 @@ def comapSubmodule :
 
 /-- An `R`-submodule which is stable under the action of `a` can be promoted to an
 `R[X]`-submodule. -/
-def mapSubmodule : Submodule R[X] <| AEval R M a :=
+def mapSubmodule (hp : p ≤ p.comap (Algebra.lsmul R R M a)) : Submodule R[X] <| AEval R M a :=
   { toAddSubmonoid := p.toAddSubmonoid.map (of R M a)
     smul_mem' := by
       rintro f - ⟨m : M, h : m ∈ p, rfl⟩
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, AddSubmonoid.mem_map,
         Submodule.mem_toAddSubmonoid]
       exact ⟨aeval a f • m, aeval_apply_smul_mem_of_le_comap' h f a hp, of_aeval_smul a f m⟩ }
+
+variable (hp : p ≤ p.comap (Algebra.lsmul R R M a))
 
 @[simp] lemma mem_mapSubmodule {m : AEval R M a} :
     m ∈ mapSubmodule a hp ↔ (of R M a).symm m ∈ p :=
@@ -192,6 +194,6 @@ lemma AEval'.X_smul_of (m : M) : (X : R[X]) • AEval'.of φ m = AEval'.of φ (�
 lemma AEval'.of_symm_X_smul (m : AEval' φ) :
     (AEval'.of φ).symm ((X : R[X]) • m) = φ ((AEval'.of φ).symm m) := AEval.of_symm_X_smul _ _
 
-instance [Finite R M] : Finite R[X] <| AEval' φ := inferInstance
+instance [Module.Finite R M] : Module.Finite R[X] <| AEval' φ := inferInstance
 
 end Module

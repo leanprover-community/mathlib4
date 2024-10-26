@@ -34,7 +34,7 @@ inductive RecData (α : Type u) : Type u
 
 #guard_msgs (drop info) in #synth LawfulTraversable RecData
 
-unsafe structure MetaStruct (α : Type u) : Type u :=
+unsafe structure MetaStruct (α : Type u) : Type u where
   x : α
   y : ℤ
   z : List α

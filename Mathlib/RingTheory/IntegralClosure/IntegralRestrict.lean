@@ -3,11 +3,11 @@ Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.LocalProperties
-import Mathlib.RingTheory.Localization.NormTrace
-import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+import Mathlib.RingTheory.RingHom.Finite
+import Mathlib.RingTheory.Localization.LocalizationLocalization
+import Mathlib.RingTheory.Localization.NormTrace
+
 /-!
 # Restriction of various maps between fields to integrally closed subrings.
 
@@ -227,6 +227,7 @@ open nonZeroDivisors
 variable [IsDomain Aₘ] [IsIntegrallyClosed Aₘ] [IsDomain Bₘ] [IsIntegrallyClosed Bₘ]
 variable [NoZeroSMulDivisors Aₘ Bₘ] [Module.Finite Aₘ Bₘ]
 
+include M in
 lemma Algebra.intTrace_eq_of_isLocalization
     (x : B) :
     algebraMap A Aₘ (Algebra.intTrace A B x) = Algebra.intTrace Aₘ Bₘ (algebraMap B Bₘ x) := by
@@ -287,13 +288,13 @@ def Algebra.intNormAux [Algebra.IsSeparable K L] :
 
 variable {A K L B}
 
-lemma Algebra.map_intNormAux [IsIntegrallyClosed A] [Algebra.IsSeparable K L] (x : B) :
+lemma Algebra.map_intNormAux [Algebra.IsSeparable K L] (x : B) :
     algebraMap A K (Algebra.intNormAux A K L B x) = Algebra.norm K (algebraMap B L x) := by
   dsimp [Algebra.intNormAux]
   exact IsIntegralClosure.algebraMap_mk' _ _ _
 
 variable (A B)
-variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
+variable [IsDomain A] [IsDomain B] [IsIntegrallyClosed B]
 variable [Module.Finite A B] [NoZeroSMulDivisors A B]
 variable [Algebra.IsSeparable (FractionRing A) (FractionRing B)] -- TODO: remove this
 
@@ -383,6 +384,7 @@ variable [IsDomain Aₘ] [IsIntegrallyClosed Aₘ] [IsDomain Bₘ] [IsIntegrally
 variable [NoZeroSMulDivisors Aₘ Bₘ] [Module.Finite Aₘ Bₘ]
 variable [Algebra.IsSeparable (FractionRing Aₘ) (FractionRing Bₘ)]
 
+include M in
 lemma Algebra.intNorm_eq_of_isLocalization (x : B) :
     algebraMap A Aₘ (Algebra.intNorm A B x) = Algebra.intNorm Aₘ Bₘ (algebraMap B Bₘ x) := by
   by_cases hM : 0 ∈ M

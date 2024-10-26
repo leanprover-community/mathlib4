@@ -71,8 +71,8 @@ end OpNorm
 
 section Prod
 
-variable (M₁ M₂ M₃ M₄ : Type*) (𝕜)
-variable
+variable (𝕜)
+variable (M₁ M₂ M₃ M₄ : Type*)
   [SeminormedAddCommGroup M₁] [NormedSpace 𝕜 M₁]
   [SeminormedAddCommGroup M₂] [NormedSpace 𝕜 M₂]
   [SeminormedAddCommGroup M₃] [NormedSpace 𝕜 M₃]

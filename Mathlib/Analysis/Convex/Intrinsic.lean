@@ -3,7 +3,7 @@ Copyright (c) 2023 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert, Yaël Dillies
 -/
-import Mathlib.Analysis.NormedSpace.AddTorsorBases
+import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 /-!
 # Intrinsic frontier and interior
@@ -116,8 +116,8 @@ alias ⟨Set.Nonempty.ofIntrinsicClosure, Set.Nonempty.intrinsicClosure⟩ := in
 
 @[simp]
 theorem intrinsicInterior_singleton (x : P) : intrinsicInterior 𝕜 ({x} : Set P) = {x} := by
-  simpa only [intrinsicInterior, preimage_coe_affineSpan_singleton, interior_univ, image_univ,
-    Subtype.range_coe] using coe_affineSpan_singleton _ _ _
+  simp only [intrinsicInterior, preimage_coe_affineSpan_singleton, interior_univ, image_univ,
+    Subtype.range_coe_subtype, mem_affineSpan_singleton, setOf_eq_eq_singleton]
 
 @[simp]
 theorem intrinsicFrontier_singleton (x : P) : intrinsicFrontier 𝕜 ({x} : Set P) = ∅ := by
@@ -125,8 +125,8 @@ theorem intrinsicFrontier_singleton (x : P) : intrinsicFrontier 𝕜 ({x} : Set 
 
 @[simp]
 theorem intrinsicClosure_singleton (x : P) : intrinsicClosure 𝕜 ({x} : Set P) = {x} := by
-  simpa only [intrinsicClosure, preimage_coe_affineSpan_singleton, closure_univ, image_univ,
-    Subtype.range_coe] using coe_affineSpan_singleton _ _ _
+  simp only [intrinsicClosure, preimage_coe_affineSpan_singleton, closure_univ, image_univ,
+    Subtype.range_coe_subtype, mem_affineSpan_singleton, setOf_eq_eq_singleton]
 
 /-!
 Note that neither `intrinsicInterior` nor `intrinsicFrontier` is monotone.
@@ -223,8 +223,8 @@ theorem image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
   let f := ((affineSpan 𝕜 s).isometryEquivMap φ).toHomeomorph
   have : φ.toAffineMap ∘ (↑) ∘ f.symm = (↑) := funext isometryEquivMap.apply_symm_apply
   rw [intrinsicInterior, intrinsicInterior, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s, ← this,
-    ← Function.comp.assoc, image_comp, image_comp, f.symm.image_interior, f.image_symm,
-    ← preimage_comp, Function.comp.assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
+    ← Function.comp_assoc, image_comp, image_comp, f.symm.image_interior, f.image_symm,
+    ← preimage_comp, Function.comp_assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
     Function.comp_id, preimage_comp, φ.injective.preimage_image]
 
 @[simp]
@@ -236,8 +236,8 @@ theorem image_intrinsicFrontier (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
   let f := ((affineSpan 𝕜 s).isometryEquivMap φ).toHomeomorph
   have : φ.toAffineMap ∘ (↑) ∘ f.symm = (↑) := funext isometryEquivMap.apply_symm_apply
   rw [intrinsicFrontier, intrinsicFrontier, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s, ← this,
-    ← Function.comp.assoc, image_comp, image_comp, f.symm.image_frontier, f.image_symm,
-    ← preimage_comp, Function.comp.assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
+    ← Function.comp_assoc, image_comp, image_comp, f.symm.image_frontier, f.image_symm,
+    ← preimage_comp, Function.comp_assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
     Function.comp_id, preimage_comp, φ.injective.preimage_image]
 
 @[simp]
@@ -249,8 +249,8 @@ theorem image_intrinsicClosure (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
   let f := ((affineSpan 𝕜 s).isometryEquivMap φ).toHomeomorph
   have : φ.toAffineMap ∘ (↑) ∘ f.symm = (↑) := funext isometryEquivMap.apply_symm_apply
   rw [intrinsicClosure, intrinsicClosure, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s, ← this,
-    ← Function.comp.assoc, image_comp, image_comp, f.symm.image_closure, f.image_symm,
-    ← preimage_comp, Function.comp.assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
+    ← Function.comp_assoc, image_comp, image_comp, f.symm.image_closure, f.image_symm,
+    ← preimage_comp, Function.comp_assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
     Function.comp_id, preimage_comp, φ.injective.preimage_image]
 
 end AffineIsometry

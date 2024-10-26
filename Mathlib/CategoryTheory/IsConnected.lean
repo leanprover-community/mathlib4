@@ -86,12 +86,12 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
   obj j := have := Nonempty.intro j
     Discrete.mk (Function.invFun F.obj (F.obj j))
   map {j _} f := have := Nonempty.intro j
-    ⟨⟨congr_arg (Function.invFun F.obj) (Discrete.ext _ _ (Discrete.eq_of_hom (F.map f)))⟩⟩
+    ⟨⟨congr_arg (Function.invFun F.obj) (Discrete.ext (Discrete.eq_of_hom (F.map f)))⟩⟩
 
 /-- Implementation detail of `isoConstant`. -/
 private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
     liftToDiscrete F ⋙ Discrete.functor F.obj ≅ F :=
-  NatIso.ofComponents (fun j => eqToIso Function.apply_invFun_apply) (by aesop_cat)
+  NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by aesop_cat)
 
 end IsPreconnected.IsoConstantAux
 
@@ -102,7 +102,7 @@ def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j :
     F ≅ (Functor.const J).obj (F.obj j) :=
   (IsPreconnected.IsoConstantAux.factorThroughDiscrete F).symm
     ≪≫ isoWhiskerRight (IsPreconnected.iso_constant _ j).some _
-    ≪≫ NatIso.ofComponents (fun j' => eqToIso Function.apply_invFun_apply) (by aesop_cat)
+    ≪≫ NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by aesop_cat)
 
 /-- If `J` is connected, any functor to a discrete category is constant on objects.
 The converse is given in `IsConnected.of_any_functor_const_on_obj`.
@@ -225,7 +225,7 @@ theorem isPreconnected_of_equivalent {K : Type u₂} [Category.{v₂} K] [IsPrec
           isoWhiskerLeft e.inverse (isoConstant (e.functor ⋙ F) (e.inverse.obj k))
         _ ≅ e.inverse ⋙ (Functor.const J).obj (F.obj k) :=
           isoWhiskerLeft _ ((F ⋙ Functor.const J).mapIso (e.counitIso.app k))
-        _ ≅ (Functor.const K).obj (F.obj k) := NatIso.ofComponents fun X => Iso.refl _⟩
+        _ ≅ (Functor.const K).obj (F.obj k) := NatIso.ofComponents fun _ => Iso.refl _⟩
 
 lemma isPreconnected_iff_of_equivalence {K : Type u₂} [Category.{v₂} K] (e : J ≌ K) :
     IsPreconnected J ↔ IsPreconnected K :=
@@ -245,7 +245,7 @@ lemma isConnected_iff_of_equivalence {K : Type u₂} [Category.{v₂} K] (e : J 
 instance isPreconnected_op [IsPreconnected J] : IsPreconnected Jᵒᵖ where
   iso_constant := fun {α} F X =>
     ⟨NatIso.ofComponents fun Y =>
-      eqToIso (Discrete.ext _ _ (Discrete.eq_of_hom ((Nonempty.some
+      eqToIso (Discrete.ext (Discrete.eq_of_hom ((Nonempty.some
         (IsPreconnected.iso_constant (F.rightOp ⋙ (Discrete.opposite α).functor) (unop X))).app
           (unop Y)).hom))⟩
 
@@ -330,6 +330,16 @@ def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
 theorem zigzag_obj_of_zigzag (F : J ⥤ K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
     Zigzag (F.obj j₁) (F.obj j₂) :=
   h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
+
+/-- A Zag in a discrete category entails an equality of its extremities -/
+lemma eq_of_zag (X) {a b : Discrete X} (h : Zag a b) : a.as = b.as :=
+  h.elim (fun ⟨f⟩ ↦ Discrete.eq_of_hom f) (fun ⟨f⟩ ↦ (Discrete.eq_of_hom f).symm)
+
+/-- A zigzag in a discrete category entails an equality of its extremities -/
+lemma eq_of_zigzag (X) {a b : Discrete X} (h : Zigzag a b) : a.as = b.as := by
+  induction h with
+  | refl => rfl
+  | tail _ h eq  => exact eq.trans (eq_of_zag _ h)
 
 -- TODO: figure out the right way to generalise this to `Zigzag`.
 theorem zag_of_zag_obj (F : J ⥤ K) [F.Full] {j₁ j₂ : J} (h : Zag (F.obj j₁) (F.obj j₂)) :

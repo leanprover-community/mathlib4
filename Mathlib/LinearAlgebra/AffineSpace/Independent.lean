@@ -81,6 +81,14 @@ theorem affineIndependent_iff_of_fintype [Fintype ι] (p : ι → P) :
 
 protected alias ⟨AffineIndependent.of_vadd, AffineIndependent.vadd⟩ := affineIndependent_vadd
 
+@[simp] lemma affineIndependent_smul {G : Type*} [Group G] [DistribMulAction G V]
+    [SMulCommClass G k V] {p : ι → V} {a : G} :
+    AffineIndependent k (a • p) ↔ AffineIndependent k p := by
+  simp (config := { contextual := true }) [AffineIndependent, weightedVSub_smul,
+    ← smul_comm (α := V) a, ← smul_sum, smul_eq_zero_iff_eq]
+
+protected alias ⟨AffineIndependent.of_smul, AffineIndependent.smul⟩ := affineIndependent_smul
+
 /-- A family is affinely independent if and only if the differences
 from a base point in that family are linearly independent. -/
 theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
@@ -96,7 +104,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         intro x
         rw [hfdef]
         dsimp only
-        erw [dif_neg x.property, Subtype.coe_eta]
+        rw [dif_neg x.property, Subtype.coe_eta]
       rw [hfg]
       have hf : ∑ ι ∈ s2, f ι = 0 := by
         rw [Finset.sum_insert
@@ -105,7 +113,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         rw [hfdef]
         dsimp only
         rw [dif_pos rfl]
-        exact neg_add_self _
+        exact neg_add_cancel _
       have hs2 : s2.weightedVSub p f = (0 : V) := by
         set f2 : ι → V := fun x => f x • (p x -ᵥ p i1) with hf2def
         set g2 : { x // x ≠ i1 } → V := fun x => g x • (p x -ᵥ p i1)
@@ -798,8 +806,7 @@ theorem ext {n : ℕ} {s1 s2 : Simplex k P n} (h : ∀ i, s1.points i = s2.point
   exact h i
 
 /-- Two simplices are equal if and only if they have the same points. -/
-theorem ext_iff {n : ℕ} (s1 s2 : Simplex k P n) : s1 = s2 ↔ ∀ i, s1.points i = s2.points i :=
-  ⟨fun h _ => h ▸ rfl, ext⟩
+add_decl_doc Affine.Simplex.ext_iff
 
 /-- A face of a simplex is a simplex with the given subset of
 points. -/
@@ -901,7 +908,7 @@ theorem centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n) {fs₁ fs₂ 
     (affineIndependent_iff_indicator_eq_of_affineCombination_eq k s.points).1 s.independent _ _ _ _
       (fs₁.sum_centroidWeightsIndicator_eq_one_of_card_eq_add_one k h₁)
       (fs₂.sum_centroidWeightsIndicator_eq_one_of_card_eq_add_one k h₂) h
-  simp_rw [Finset.coe_univ, Set.indicator_univ, Function.funext_iff,
+  simp_rw [Finset.coe_univ, Set.indicator_univ, funext_iff,
     Finset.centroidWeightsIndicator_def, Finset.centroidWeights, h₁, h₂] at ha
   ext i
   specialize ha i

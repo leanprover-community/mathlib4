@@ -15,9 +15,9 @@ import Mathlib.RingTheory.OreLocalization.OreSet
 
 - `IsLocalizedModule.lift_rank_eq`: `rank_Rₚ Mₚ = rank R M`.
 - `rank_quotient_add_rank_of_isDomain`: The **rank-nullity theorem** for commutative domains.
-
 -/
-open Cardinal nonZeroDivisors
+
+open Cardinal Module nonZeroDivisors
 
 section CommRing
 
@@ -28,6 +28,12 @@ variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
 variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
 variable (hp : p ≤ R⁰)
+
+section
+include hp
+
+section
+include f
 
 variable {S} in
 lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → N} (hf : LinearIndependent S v) :
@@ -77,9 +83,13 @@ lemma IsLocalizedModule.lift_rank_eq :
     apply hp (c * u i).prop
     exact hs t _ hc _ hit
 
+end
+
 lemma IsLocalizedModule.rank_eq {N : Type v} [AddCommGroup N]
     [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[R] N) [IsLocalizedModule p f] :
     Module.rank S N = Module.rank R M := by simpa using IsLocalizedModule.lift_rank_eq S p f hp
+
+end
 
 variable (R M) in
 theorem exists_set_linearIndependent_of_isDomain [IsDomain R] :

@@ -21,7 +21,7 @@ namespace WittVector
 
 open MvPolynomial
 
-variable {p : ℕ} {R S : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S]
+variable {p : ℕ} {R S : Type*} [CommRing R] [CommRing S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -49,13 +49,13 @@ theorem verschiebungFun_coeff_succ (x : 𝕎 R) (n : ℕ) :
   rfl
 
 @[ghost_simps]
-theorem ghostComponent_zero_verschiebungFun (x : 𝕎 R) :
+theorem ghostComponent_zero_verschiebungFun [hp : Fact p.Prime] (x : 𝕎 R) :
     ghostComponent 0 (verschiebungFun x) = 0 := by
   rw [ghostComponent_apply, aeval_wittPolynomial, Finset.range_one, Finset.sum_singleton,
     verschiebungFun_coeff_zero, pow_zero, pow_zero, pow_one, one_mul]
 
 @[ghost_simps]
-theorem ghostComponent_verschiebungFun (x : 𝕎 R) (n : ℕ) :
+theorem ghostComponent_verschiebungFun [hp : Fact p.Prime] (x : 𝕎 R) (n : ℕ) :
     ghostComponent (n + 1) (verschiebungFun x) = p * ghostComponent n x := by
   simp only [ghostComponent_apply, aeval_wittPolynomial]
   rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl,
@@ -96,6 +96,7 @@ example (p : ℕ) (f : ⦃R : Type _⦄ → [CommRing R] → WittVector p R → 
   inferInstance
 
 variable {p}
+variable [hp : Fact p.Prime]
 
 /--
 `verschiebung x` shifts the coefficients of `x` up by one, by inserting 0 as the 0th coefficient.
@@ -111,12 +112,11 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
   map_add' := by
     dsimp
     ghost_calc _ _
-    rintro ⟨⟩ <;> -- Uses the dumb induction principle, hence adding `Nat.zero_eq` to ghost_simps.
-      ghost_simp
+    rintro ⟨⟩ <;> ghost_simp
 
 /-- `WittVector.verschiebung` is a polynomial function. -/
 @[is_poly]
-theorem verschiebung_isPoly : IsPoly p fun R _Rcr => @verschiebung p R hp _Rcr :=
+theorem verschiebung_isPoly : IsPoly p fun _ _ => verschiebung (p := p) :=
   verschiebungFun_isPoly p
 
 /-- verschiebung is a natural transformation -/

@@ -22,9 +22,6 @@ variable {I : Type u}
 -- The indexing type
 variable {f : I → Type v}
 
--- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i : I)
-
 namespace Pi
 
 theorem _root_.IsSMulRegular.pi {α : Type*} [∀ i, SMul α <| f i] {k : α}

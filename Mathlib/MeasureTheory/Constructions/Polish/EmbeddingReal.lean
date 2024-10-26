@@ -63,4 +63,9 @@ lemma measurableEmbedding_embeddingReal (Ω : Type*) [MeasurableSpace Ω] [Stand
     MeasurableEmbedding (embeddingReal Ω) :=
   (exists_measurableEmbedding_real Ω).choose_spec
 
+@[fun_prop]
+lemma measurable_embeddingReal (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] :
+    Measurable (embeddingReal Ω) :=
+  (measurableEmbedding_embeddingReal Ω).measurable
+
 end MeasureTheory

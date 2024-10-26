@@ -23,6 +23,9 @@ example : 0 ≤ 3 := by positivity
 
 example : 0 < 3 := by positivity
 
+example : (0 : ℝ≥0∞) < 1 := by positivity
+example : (0 : ℝ≥0∞) < 2 := by positivity
+
 /- ## Goals working directly from a hypothesis -/
 -- set_option trace.Meta.debug true
 -- sudo set_option trace.Tactic.positivity true

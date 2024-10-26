@@ -194,7 +194,7 @@ end Module
 
 section Maps
 
-variable [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
+variable [AddCommMonoid F] [AddCommMonoid G]
 variable [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
 
 /-- The image of a convex cone under a `𝕜`-linear map is a convex cone. -/
@@ -339,7 +339,7 @@ theorem Salient.anti {S T : ConvexCone 𝕜 E} (h : T ≤ S) : S.Salient → T.S
 /-- A flat cone is always pointed (contains `0`). -/
 theorem Flat.pointed {S : ConvexCone 𝕜 E} (hS : S.Flat) : S.Pointed := by
   obtain ⟨x, hx, _, hxneg⟩ := hS
-  rw [Pointed, ← add_neg_self x]
+  rw [Pointed, ← add_neg_cancel x]
   exact add_mem S hx hxneg
 
 /-- A blunt cone (one not containing `0`) is always salient. -/
@@ -509,7 +509,7 @@ theorem salient_positive : Salient (positive 𝕜 E) := fun x xs hx hx' =>
     (calc
       0 < x := lt_of_le_of_ne xs hx.symm
       _ ≤ x + -x := le_add_of_nonneg_right hx'
-      _ = 0 := add_neg_self x
+      _ = 0 := add_neg_cancel x
       )
 
 /-- The positive cone of an ordered module is always pointed. -/
@@ -574,9 +574,9 @@ theorem mem_toCone : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ ∃ y ∈ s, 
 theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ s := by
   refine hs.mem_toCone.trans ⟨?_, ?_⟩
   · rintro ⟨c, hc, y, hy, rfl⟩
-    exact ⟨c⁻¹, inv_pos.2 hc, by rwa [smul_smul, inv_mul_cancel hc.ne', one_smul]⟩
+    exact ⟨c⁻¹, inv_pos.2 hc, by rwa [smul_smul, inv_mul_cancel₀ hc.ne', one_smul]⟩
   · rintro ⟨c, hc, hcx⟩
-    exact ⟨c⁻¹, inv_pos.2 hc, _, hcx, by rw [smul_smul, inv_mul_cancel hc.ne', one_smul]⟩
+    exact ⟨c⁻¹, inv_pos.2 hc, _, hcx, by rw [smul_smul, inv_mul_cancel₀ hc.ne', one_smul]⟩
 
 theorem subset_toCone : s ⊆ hs.toCone s := fun x hx =>
   hs.mem_toCone'.2 ⟨1, zero_lt_one, by rwa [one_smul]⟩

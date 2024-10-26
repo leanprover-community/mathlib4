@@ -5,11 +5,10 @@ Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Lo
 -/
 
 import Lean.Elab.Tactic.Location
+import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Order.Defs
 import Mathlib.Tactic.Conv
-import Mathlib.Init.Set
-import Lean.Elab.Tactic.Location
 
 /-!
 # The `push_neg` tactic
@@ -22,7 +21,7 @@ namespace Mathlib.Tactic.PushNeg
 
 open Lean Meta Elab.Tactic Parser.Tactic
 
-variable (p q : Prop) {α : Sort*} (s : α → Prop)
+variable (p q : Prop) {α : Sort*} {β : Type*} (s : α → Prop)
 
 theorem not_not_eq : (¬ ¬ p) = p := propext not_not
 theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
@@ -35,11 +34,15 @@ theorem not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not
 theorem not_iff : (¬ (p ↔ q)) = ((p ∧ ¬ q) ∨ (¬ p ∧ q)) := propext <|
   _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
 
-variable {β : Type*} [LinearOrder β]
+section LinearOrder
+variable [LinearOrder β]
+
 theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
 theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
 theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
 theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
+
+end LinearOrder
 
 theorem not_nonempty_eq (s : Set β) : (¬ s.Nonempty) = (s = ∅) := by
   have A : ∀ (x : β), ¬(x ∈ (∅ : Set β)) := fun x ↦ id
@@ -231,3 +234,5 @@ elab "push_neg" loc:(location)? : tactic =>
     pushNegLocalDecl
     pushNegTarget
     (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
+
+end Mathlib.Tactic.PushNeg

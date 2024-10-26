@@ -87,10 +87,10 @@ theorem inv_left (a : N ⋊[φ] G) : a⁻¹.left = φ a.right⁻¹ a.left⁻¹ :
 theorem inv_right (a : N ⋊[φ] G) : a⁻¹.right = a.right⁻¹ := rfl
 
 instance : Group (N ⋊[φ] G) where
-  mul_assoc a b c := SemidirectProduct.ext _ _ (by simp [mul_assoc]) (by simp [mul_assoc])
-  one_mul a := SemidirectProduct.ext _ _ (by simp) (one_mul a.2)
-  mul_one a := SemidirectProduct.ext _ _ (by simp) (mul_one _)
-  mul_left_inv a := SemidirectProduct.ext _ _ (by simp) (by simp)
+  mul_assoc a b c := SemidirectProduct.ext (by simp [mul_assoc]) (by simp [mul_assoc])
+  one_mul a := SemidirectProduct.ext (by simp) (one_mul a.2)
+  mul_one a := SemidirectProduct.ext (by simp) (mul_one _)
+  inv_mul_cancel a := SemidirectProduct.ext (by simp) (by simp)
 
 instance : Inhabited (N ⋊[φ] G) := ⟨1⟩
 
@@ -222,7 +222,7 @@ section Map
 variable {N₁ : Type*} {G₁ : Type*} [Group N₁] [Group G₁] {φ₁ : G₁ →* MulAut N₁}
 
 /-- Define a map from `N ⋊[φ] G` to `N₁ ⋊[φ₁] G₁` given maps `N →* N₁` and `G →* G₁` that
-  satisfy a commutativity condition `∀ n g, f₁ (φ g n) = φ₁ (f₂ g) (f₁ n)`.  -/
+  satisfy a commutativity condition `∀ n g, f₁ (φ g n) = φ₁ (f₂ g) (f₁ n)`. -/
 def map (f₁ : N →* N₁) (f₂ : G →* G₁)
     (h : ∀ g : G, f₁.comp (φ g).toMonoidHom = (φ₁ (f₂ g)).toMonoidHom.comp f₁) :
     N ⋊[φ] G →* N₁ ⋊[φ₁] G₁ where

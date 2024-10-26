@@ -5,6 +5,7 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.Card
 
@@ -44,7 +45,7 @@ open Nat.ModEq Int
 /-- Multiplicative commutative semigroup structure on `Fin n`. -/
 instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
   { inferInstanceAs (Mul (Fin n)) with
-    mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
+    mul_assoc := fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
       Fin.eq_of_val_eq <|
         calc
           a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
@@ -53,7 +54,7 @@ instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
     mul_comm := Fin.mul_comm }
 
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
-  fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
+  fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
   Fin.eq_of_val_eq <|
     calc
       a * ((b + c) % n) ≡ a * (b + c) [MOD n] := (Nat.mod_modEq _ _).mul_left _
@@ -103,7 +104,7 @@ namespace ZMod
 instance instUnique : Unique (ZMod 1) := Fin.uniqueFinOne
 
 instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
-  | 0, h => (h.ne rfl).elim
+  | 0, h => (h.ne _ rfl).elim
   | n + 1, _ => Fin.fintype (n + 1)
 
 instance infinite : Infinite (ZMod 0) :=
@@ -147,7 +148,7 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
     (inferInstanceAs (CommRing ℤ)).nsmul_succ
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_succ
   -- Porting note: `match` didn't work here
-  add_left_neg := Nat.casesOn n (@add_left_neg Int _) fun n => @add_left_neg (Fin n.succ) _
+  neg_add_cancel := Nat.casesOn n (@neg_add_cancel Int _) fun n => @neg_add_cancel (Fin n.succ) _
   add_comm := Nat.casesOn n (@add_comm Int _) fun n => @add_comm (Fin n.succ) _
   mul := Nat.casesOn n (@Mul.mul Int _) fun n => @Mul.mul (Fin n.succ) _
   mul_assoc := Nat.casesOn n (@mul_assoc Int _) fun n => @mul_assoc (Fin n.succ) _

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Adam Topaz, Dagur Asgeirsson
 -/
 import Mathlib.Topology.ExtremallyDisconnected
 import Mathlib.Topology.Category.CompHaus.Projective
@@ -30,6 +30,11 @@ can be lifted along epimorphisms).
 * `Stonean.toCompHaus` : the forgetful functor `Stonean ⥤ CompHaus` from Stonean
   spaces to compact Hausdorff spaces
 * `Stonean.toProfinite` : the functor from Stonean spaces to profinite spaces.
+
+## Implementation
+
+The category `Stonean` is defined using the structure `CompHausLike`. See the file
+`CompHausLike.Basic` for more information.
 
 -/
 universe u
@@ -83,7 +88,7 @@ abbrev fullyFaithfulToCompHaus : toCompHaus.FullyFaithful  :=
 
 open CompHausLike
 
-instance  (X : Type*) [TopologicalSpace X]
+instance (X : Type*) [TopologicalSpace X]
     [ExtremallyDisconnected X] : HasProp (fun Y ↦ ExtremallyDisconnected Y) X :=
   ⟨(inferInstance : ExtremallyDisconnected X)⟩
 
@@ -116,7 +121,7 @@ def mkFinite (X : Type*) [Finite X] [TopologicalSpace X] [DiscreteTopology X] : 
     apply isOpen_discrete (closure U)
 
 /--
-A morphism in `Stonean` is an epi iff it is surjective.
+A morphism in `Stonean` is an epi iff it is surjective.
 -/
 lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
@@ -186,7 +191,7 @@ end Stonean
 namespace CompHaus
 
 /-- If `X` is compact Hausdorff, `presentation X` is a Stonean space equipped with an epimorphism
-  down to `X` (see `CompHaus.presentation.π` and `CompHaus.presentation.epi_π`). It is a
+  down to `X` (see `CompHaus.presentation.π` and `CompHaus.presentation.epi_π`). It is a
   "constructive" witness to the fact that `CompHaus` has enough projectives. -/
 noncomputable
 def presentation (X : CompHaus) : Stonean where
@@ -253,7 +258,7 @@ end CompHaus
 namespace Profinite
 
 /-- If `X` is profinite, `presentation X` is a Stonean space equipped with an epimorphism down to
-    `X` (see `Profinite.presentation.π` and `Profinite.presentation.epi_π`). -/
+    `X` (see `Profinite.presentation.π` and `Profinite.presentation.epi_π`). -/
 noncomputable
 def presentation (X : Profinite) : Stonean where
   toTop := (profiniteToCompHaus.obj X).projectivePresentation.p.toTop

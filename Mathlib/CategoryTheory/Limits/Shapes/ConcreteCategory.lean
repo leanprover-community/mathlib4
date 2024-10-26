@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou, Scott Morrison, Adam Topaz
+Authors: Joël Riou, Kim Morrison, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -263,7 +263,7 @@ def multiequalizerEquivAux (I : MulticospanIndex C) :
     (I.multicospan ⋙ forget C).sections ≃
     { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } where
   toFun x :=
-    ⟨fun i => x.1 (WalkingMulticospan.left _), fun i => by
+    ⟨fun _ => x.1 (WalkingMulticospan.left _), fun i => by
       have a := x.2 (WalkingMulticospan.Hom.fst i)
       have b := x.2 (WalkingMulticospan.Hom.snd i)
       rw [← b] at a
@@ -271,7 +271,7 @@ def multiequalizerEquivAux (I : MulticospanIndex C) :
   invFun x :=
     { val := fun j =>
         match j with
-        | WalkingMulticospan.left a => x.1 _
+        | WalkingMulticospan.left _ => x.1 _
         | WalkingMulticospan.right b => I.fst b (x.1 _)
       property := by
         rintro (a | b) (a' | b') (f | f | f)

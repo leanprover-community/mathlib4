@@ -325,7 +325,7 @@ def prodPseudoEMetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
             (if · = 0 then edist f.fst g.fst else edist f.snd g.snd)
             (if · = 0 then edist g.fst h.fst else edist g.snd h.snd) hp
           simp only [Finset.mem_singleton, not_false_eq_true, Finset.sum_insert,
-            Finset.sum_singleton] at this
+            Finset.sum_singleton, reduceCtorEq] at this
           exact this
 
 attribute [local instance] WithLp.prodPseudoEMetricAux
@@ -420,12 +420,12 @@ theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricS
         gcongr <;> simp [edist]
       _ = (2 ^ (1 / p.toReal) : ℝ≥0) * edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) := by
         simp only [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel,
-          ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
+          ENNReal.rpow_one, ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
 
 theorem prod_aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     𝓤 (WithLp p (α × β)) = 𝓤[instUniformSpaceProd] := by
-  have A : UniformInducing (WithLp.equiv p (α × β)) :=
-    (prod_antilipschitzWith_equiv_aux p α β).uniformInducing
+  have A : IsUniformInducing (WithLp.equiv p (α × β)) :=
+    (prod_antilipschitzWith_equiv_aux p α β).isUniformInducing
       (prod_lipschitzWith_equiv_aux p α β).uniformContinuous
   have : (fun x : WithLp p (α × β) × WithLp p (α × β) =>
     ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id := by
@@ -673,7 +673,7 @@ theorem nnnorm_equiv_symm_fst (x : α) :
     simp [prod_nnnorm_eq_sup]
   | coe p =>
     have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
-    simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
+    simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
 
 @[simp]
 theorem nnnorm_equiv_symm_snd (y : β) :
@@ -683,7 +683,7 @@ theorem nnnorm_equiv_symm_snd (y : β) :
     simp [prod_nnnorm_eq_sup]
   | coe p =>
     have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
-    simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
+    simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
 
 @[simp]
 theorem norm_equiv_symm_fst (x : α) : ‖(WithLp.equiv p (α × β)).symm (x, 0)‖ = ‖x‖ :=
@@ -744,7 +744,7 @@ instance instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) :=
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
       rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, one_div, NNReal.rpow_inv_le_iff hp0,
-        NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel hp0.ne', NNReal.rpow_one, mul_add,
+        NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one, mul_add,
         ← NNReal.mul_rpow, ← NNReal.mul_rpow]
       exact add_le_add
         (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)

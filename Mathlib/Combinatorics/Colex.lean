@@ -65,7 +65,7 @@ namespace Finset
 /-- Type synonym of `Finset α` equipped with the colexicographic order rather than the inclusion
 order. -/
 @[ext]
-structure Colex (α) :=
+structure Colex (α) where
   /-- `toColex` is the "identity" function between `Finset α` and `Finset.Colex α`. -/
   toColex ::
   /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
@@ -120,8 +120,8 @@ private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ 
   exact hb₂ hb₁
 
 instance instPartialOrder : PartialOrder (Colex α) where
-  le_refl s a ha ha' := (ha' ha).elim
-  le_antisymm s t hst hts := Colex.ext _ _ <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
+  le_refl _ _ ha ha' := (ha' ha).elim
+  le_antisymm _ _ hst hts := Colex.ext <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
@@ -197,7 +197,7 @@ lemma toColex_lt_singleton : toColex s < toColex {a} ↔ ∀ b ∈ s, b < a := b
   · refine h.2 <| eq_singleton_iff_unique_mem.2 ⟨hb, fun c hc ↦ (h.1 _ hc).2 hb⟩
   · simp at h
 
-/-- `{a} ≤ s` in colex iff `s` contains an element greated than or equal to `a`. -/
+/-- `{a} ≤ s` in colex iff `s` contains an element greater than or equal to `a`. -/
 lemma singleton_le_toColex : (toColex {a} : Colex α) ≤ toColex s ↔ ∃ x ∈ s, a ≤ x := by
   simp [toColex_le_toColex]; by_cases a ∈ s <;> aesop
 
@@ -209,11 +209,15 @@ lemma singleton_le_singleton : (toColex {a} : Colex α) ≤ toColex {b} ↔ a �
 lemma singleton_lt_singleton : (toColex {a} : Colex α) < toColex {b} ↔ a < b := by
   simp [toColex_lt_singleton]
 
+lemma le_iff_sdiff_subset_lowerClosure {s t : Colex α} :
+    s ≤ t ↔ (ofColex s : Set α) \ ofColex t ⊆ lowerClosure (ofColex t \ ofColex s : Set α) := by
+  simp [le_def, Set.subset_def, and_assoc]
+
 section DecidableEq
 variable [DecidableEq α]
 
 instance instDecidableEq : DecidableEq (Colex α) := fun s t ↦
-  decidable_of_iff' (s.ofColex = t.ofColex) <| Colex.ext_iff _ _
+  decidable_of_iff' (s.ofColex = t.ofColex) Colex.ext_iff
 
 instance instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· ≤ ·) := fun s t ↦
   decidable_of_iff'
@@ -221,10 +225,6 @@ instance instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex �
 
 instance instDecidableLT [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· < ·) :=
   decidableLTOfDecidableLE
-
-lemma le_iff_sdiff_subset_lowerClosure {s t : Colex α} :
-    s ≤ t ↔ (ofColex s : Set α) \ ofColex t ⊆ lowerClosure (ofColex t \ ofColex s : Set α) := by
-  simp [le_def, Set.subset_def, and_assoc]
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_le_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
@@ -345,15 +345,15 @@ lemma lt_iff_exists_filter_lt :
     have mem_u {w : α} : w ∈ u ↔ w ∈ t ∧ w ∉ s ∧ ∀ a ∈ s, a ∉ t → a < w := by simp [u, and_assoc]
     have hu : u.Nonempty := h.imp fun _ ↦ mem_u.2
     let m := max' _ hu
-    have ⟨hmt, hms, hm⟩ : m ∈ t ∧ m ∉ s ∧ ∀ a ∈ s, a ∉ t → a < m := mem_u.1 $ max'_mem _ _
+    have ⟨hmt, hms, hm⟩ : m ∈ t ∧ m ∉ s ∧ ∀ a ∈ s, a ∉ t → a < m := mem_u.1 <| max'_mem _ _
     refine ⟨m, hmt, hms, fun a hma ↦ ⟨fun has ↦ not_imp_comm.1 (hm _ has) hma.asymm, fun hat ↦ ?_⟩⟩
     by_contra has
     have hau : a ∈ u := mem_u.2 ⟨hat, has, fun b hbs hbt ↦ (hm _ hbs hbt).trans hma⟩
-    exact hma.not_le $ le_max' _ _ hau
+    exact hma.not_le <| le_max' _ _ hau
   · rintro ⟨w, hwt, hws, hw⟩
     refine ⟨w, hwt, hws, fun a has hat ↦ ?_⟩
     by_contra! hwa
-    exact hat $ (hw $ hwa.lt_of_ne $ ne_of_mem_of_not_mem hwt hat).1 has
+    exact hat <| (hw <| hwa.lt_of_ne <| ne_of_mem_of_not_mem hwt hat).1 has
 
 /-- If `s ≤ t` in colex and `s.card ≤ t.card`, then `s \ {a} ≤ t \ {min t}` for any `a ∈ s`. -/
 lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : s.card ≤ t.card) (ha : a ∈ s) :
@@ -364,9 +364,9 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : s.card ≤ t.
   -- Case on whether `s = t`
   obtain rfl | h' := eq_or_ne s t
   -- If `s = t`, then `s \ {a} ≤ s \ {m}` because `m ≤ a`
-  · exact (erase_le_erase ha $ min'_mem _ _).2 $ min'_le _ _ $ ha
+  · exact (erase_le_erase ha <| min'_mem _ _).2 <| min'_le _ _ <| ha
   -- If `s ≠ t`, call `w` the colex witness. Case on whether `w < a` or `a < w`
-  replace hst := hst.lt_of_ne $ toColex_inj.not.2 h'
+  replace hst := hst.lt_of_ne <| toColex_inj.not.2 h'
   simp only [lt_iff_exists_filter_lt, mem_sdiff, filter_inj, and_assoc] at hst
   obtain ⟨w, hwt, hws, hw⟩ := hst
   obtain hwa | haw := (ne_of_mem_of_not_mem ha hws).symm.lt_or_lt
@@ -379,14 +379,15 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : s.card ≤ t.
     obtain rfl | hbt := hbt
     · assumption
     · by_contra! hab
-      exact hbt $ (hw $ hwa.trans_le hab).1 $ mem_of_mem_erase hbs
+      exact hbt <| (hw <| hwa.trans_le hab).1 <| mem_of_mem_erase hbs
   -- If `a < w`, case on whether `m < w` or `m = w`
   obtain rfl | hmw : m = w ∨ m < w := (min'_le _ _ hwt).eq_or_lt
   -- If `m = w`, then `s \ {a} = t \ {m}`
   · have : erase t m ⊆ erase s a := by
       rintro b hb
       rw [mem_erase] at hb ⊢
-      exact ⟨(haw.trans_le $ min'_le _ _ hb.2).ne', (hw $ hb.1.lt_of_le' $ min'_le _ _ hb.2).2 hb.2⟩
+      exact ⟨(haw.trans_le <| min'_le _ _ hb.2).ne',
+        (hw <| hb.1.lt_of_le' <| min'_le _ _ hb.2).2 hb.2⟩
     rw [eq_of_subset_of_card_le this]
     rw [card_erase_of_mem ha, card_erase_of_mem (min'_mem _ _)]
     exact tsub_le_tsub_right hcard _
@@ -398,7 +399,7 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : s.card ≤ t.
     obtain rfl | hbt := hbt
     · assumption
     · by_contra! hwb
-      exact hbt $ (hw $ hwb.lt_of_ne $ ne_of_mem_of_not_mem hwt hbt).1 $ mem_of_mem_erase hbs
+      exact hbt <| (hw <| hwb.lt_of_ne <| ne_of_mem_of_not_mem hwt hbt).1 <| mem_of_mem_erase hbs
 
 /-- Strictly monotone functions preserve the colex ordering. -/
 lemma toColex_image_le_toColex_image (hf : StrictMono f) :
@@ -421,8 +422,8 @@ instance instBoundedOrder : BoundedOrder (Colex α) where
   top := toColex univ
   le_top _x := toColex_le_toColex_of_subset <| subset_univ _
 
-@[simp] lemma toColex_univ [Fintype α] : toColex (univ : Finset α) = ⊤ := rfl
-@[simp] lemma ofColex_top [Fintype α] : ofColex (⊤ : Colex α) = univ := rfl
+@[simp] lemma toColex_univ : toColex (univ : Finset α) = ⊤ := rfl
+@[simp] lemma ofColex_top : ofColex (⊤ : Colex α) = univ := rfl
 
 end Fintype
 
