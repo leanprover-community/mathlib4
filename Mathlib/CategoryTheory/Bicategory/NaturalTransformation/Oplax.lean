@@ -16,19 +16,16 @@ transformations.
 ## Main definitions
 
 * `OplaxTrans F G` : oplax transformations between oplax functors `F` and `G`
-* `OplaxTrans.vcomp η θ` : the vertical composition of oplax transformations `η` and `θ`
-* `StrongCore F G`: a structure on an oplax transformation between pseudofunctors (TODO)
-that promotes it to a strong transformation (TODO: PUT IN OTHER FILE...!)
 
-NAMESPACES:
-* All of this should be in an oplax namespace
+Using this, we define a category instance on `OplaxTrans F G`, with composition given by vertical
+composition of oplax transformations.
 
 # TODO
 This file could also include lax and strong transformations between oplax functors.
 
 -/
 
-namespace CategoryTheory
+namespace CategoryTheory.Oplax
 
 open Category Bicategory
 
@@ -73,20 +70,7 @@ attribute [reassoc (attr := simp)] OplaxTrans.naturality_naturality OplaxTrans.n
 
 namespace OplaxTrans
 
-section
-
-variable (F : OplaxFunctor B C)
-
-/-- The identity oplax transformation. -/
-@[simps]
-def id : OplaxTrans F F where
-  app a := 𝟙 (F.obj a)
-  naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
-
-instance : Inhabited (OplaxTrans F F) :=
-  ⟨id F⟩
-
-variable {F} {G H : OplaxFunctor B C} (η : OplaxTrans F G) (θ : OplaxTrans G H)
+variable {F : OplaxFunctor B C} {G H : OplaxFunctor B C} (η : OplaxTrans F G) (θ : OplaxTrans G H)
 
 section
 
@@ -139,9 +123,17 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
 
 end
 
+variable (F) in
+/-- The identity oplax transformation. -/
+def id : OplaxTrans F F where
+  app a := 𝟙 (F.obj a)
+  naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
+
+instance : Inhabited (OplaxTrans F F) :=
+  ⟨id F⟩
+
 /-- Vertical composition of oplax transformations. -/
-@[simps]
-def vcomp (η : OplaxTrans F G) (θ : OplaxTrans G H) : OplaxTrans F H where
+def vcomp : OplaxTrans F H where
   app a := η.app a ≫ θ.app a
   naturality {a b} f :=
     (α_ _ _ _).inv ≫
@@ -162,16 +154,13 @@ def vcomp (η : OplaxTrans F G) (θ : OplaxTrans G H) : OplaxTrans F H where
         rw [whisker_exchange_assoc]; simp
       _ = _ := by simp
 
-variable (B C)
 
-@[simps id comp]
+@[simps! id_app id_naturality comp_app comp_naturality]
 instance : CategoryStruct (OplaxFunctor B C) where
   Hom := OplaxTrans
   id := OplaxTrans.id
   comp := OplaxTrans.vcomp
 
-end
-
 end OplaxTrans
 
-end CategoryTheory
+end CategoryTheory.Oplax

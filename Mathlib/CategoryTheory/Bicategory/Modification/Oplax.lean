@@ -9,18 +9,16 @@ import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 /-!
 # Modifications between oplax transformations
 
-A modification `Γ` between oplax transformations `η` and `θ` consists of a family of
-2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which satisfies the equation
-`(F.map f ◁ app b) ≫ θ.naturality f = η.naturality f ≫ (app a ▷ G.map f)`
-for each 1-morphism `f : a ⟶ b`.
+A modification `Γ` between oplax transformations `η` and `θ` consists of a family of 2-morphisms
+`Γ.app a : η.app a ⟶ θ.app a`, which for all 1-morphisms `f : a ⟶ b` satisfies the equation
+`(F.map f ◁ app b) ≫ θ.naturality f = η.naturality f ≫ app a ▷ G.map f`.
 
 ## Main definitions
 
-* `Modification η θ` : modifications between oplax transformations `η` and `θ`
-* `Modification.vcomp η θ` : the vertical composition of oplax transformations `η`
-  and `θ`
-* `OplaxTrans.category F G` : the category structure on the oplax transformations
-  between `F` and `G`
+* `Modification η θ` : modifications between oplax transformations `η` and `θ`.
+* `Oplax.homcategory F G` : the category structure on oplax transformations
+  between `F` and `G`, where the morphisms are modifications, and composition is given by vertical
+  composition of modifications.
 
 -/
 
@@ -28,45 +26,36 @@ namespace CategoryTheory.Oplax
 
 open Category Bicategory
 
-open scoped Bicategory
-
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
   {F G : OplaxFunctor B C} (η θ : F ⟶ G)
 
-/-- A modification `Γ` between oplax transformations `η` and `θ` consists of a family of
+variable {F G : OplaxFunctor B C}
+
+/-- A modification `Γ` between oplax natural transformations `η` and `θ` consists of a family of
 2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which satisfies the equation
 `(F.map f ◁ app b) ≫ θ.naturality f = η.naturality f ≫ (app a ▷ G.map f)`
 for each 1-morphism `f : a ⟶ b`.
 -/
 @[ext]
-structure Modification where
-  /-- The underlying family of 2-morphism. -/
+structure Modification (η θ : F ⟶ G) where
+  /-- The underlying family of 2-morphisms. -/
   app (a : B) : η.app a ⟶ θ.app a
   /-- The naturality condition. -/
   naturality :
     ∀ {a b : B} (f : a ⟶ b),
-      F.map f ◁ app b ≫ θ.naturality f = η.naturality f ≫ app a ▷ G.map f := by
-    aesop_cat
+      F.map f ◁ app b ≫ θ.naturality f = η.naturality f ≫ app a ▷ G.map f := by aesop_cat
 
 attribute [reassoc (attr := simp)] Modification.naturality
 
+variable {η θ ι : F ⟶ G}
+
 namespace Modification
-
-/-- The identity modification. -/
-@[simps]
-def id : Modification η η where app a := 𝟙 (η.app a)
-
-instance : Inhabited (Modification η η) :=
-  ⟨Modification.id η⟩
-
-variable {η θ} {ι : F ⟶ G}
-variable (Γ : Modification η θ)
 
 section
 
-variable {a b c : B} {a' : C}
+variable (Γ : Modification η θ) {a b c : B} {a' : C}
 
 @[reassoc (attr := simp)]
 theorem whiskerLeft_naturality (f : a' ⟶ F.obj b) (g : b ⟶ c) :
@@ -81,39 +70,24 @@ theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :
 
 end
 
-/-- Vertical composition of modifications. -/
-@[simps]
-def vcomp (Δ : Modification θ ι) : Modification η ι where
-  app a := Γ.app a ≫ Δ.app a
-
 end Modification
 
-/-- Category structure on the oplax transformations between OplaxFunctors. -/
+/-- Category structure on the oplax natural transformations between OplaxFunctors. -/
 @[simps]
 instance homcategory (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   Hom := Modification
-  id := Modification.id
-  comp := Modification.vcomp
+  id η := { app := fun a ↦ 𝟙 (η.app a) }
+  comp Γ Δ := { app := fun a => Γ.app a ≫ Δ.app a }
+
+instance : Inhabited (Modification η η) :=
+  ⟨𝟙 η⟩
 
 @[ext]
 lemma homcategory.ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β}
-    (w : ∀ b, m.app b = n.app b) : m = n := by
-  apply Modification.ext
-  ext
-  apply w
+    (w : ∀ b, m.app b = n.app b) : m = n :=
+  Modification.ext (funext w)
 
-@[simp]
-lemma Modification.id_app' {X : B} {F G : OplaxFunctor B C} (α : F ⟶ G) :
-    Modification.app (𝟙 α) X = 𝟙 (α.app X) := rfl
-
-@[simp]
-lemma Modification.comp_app' {X : B} {F G : OplaxFunctor B C} {α β γ : F ⟶ G}
-    (m : α ⟶ β) (n : β ⟶ γ) : (m ≫ n).app X = m.app X ≫ n.app X :=
-  rfl
-
-variable {η θ}
-
-/-- Construct a modification isomorphism between oplax transformations
+/-- Construct a modification isomorphism between oplax natural transformations
 by giving object level isomorphisms, and checking naturality only in the forward direction.
 -/
 @[simps]

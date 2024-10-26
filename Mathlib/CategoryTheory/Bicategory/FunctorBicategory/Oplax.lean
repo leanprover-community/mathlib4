@@ -17,7 +17,7 @@ Given bicategories `B` and `C`, we give a bicategory structure on `OplaxFunctor 
 
 namespace CategoryTheory
 
-open Category Bicategory
+open Category Bicategory Oplax
 
 open scoped Bicategory
 
