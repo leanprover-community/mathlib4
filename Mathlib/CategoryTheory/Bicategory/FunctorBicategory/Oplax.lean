@@ -70,7 +70,7 @@ variable (B C)
 example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂)
 [inst_1 : CategoryTheory.Bicategory C]
         {X Y Z : CategoryTheory.OplaxFunctor B C} (η : X ⟶ Y)
-        (θ : CategoryTheory.OplaxTrans Y Z) {a b : B} (f : a ⟶ b) :
+        (θ : Y ⟶ Z) {a b : B} (f : a ⟶ b) :
         (η ≫ θ).naturality f =
           (α_ (X.map f) (η.app b) (θ.app b)).inv ≫
             η.naturality f ▷ θ.app b ≫
@@ -82,11 +82,11 @@ example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂)
 /-- A bicategory structure on the oplax functors between bicategories. -/
 @[simps!]
 instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
-  whiskerLeft {_ _ _} η _ _ Γ := OplaxNatTrans.whiskerLeft η Γ
-  whiskerRight {_ _ _} _ _ Γ η := OplaxNatTrans.whiskerRight Γ η
-  associator {_ _ _} _ := OplaxNatTrans.associator
-  leftUnitor {_ _} := OplaxNatTrans.leftUnitor
-  rightUnitor {_ _} := OplaxNatTrans.rightUnitor
+  whiskerLeft {_ _ _} η _ _ Γ := OplaxTrans.whiskerLeft η Γ
+  whiskerRight {_ _ _} _ _ Γ η := OplaxTrans.whiskerRight Γ η
+  associator {_ _ _} _ := OplaxTrans.associator
+  leftUnitor {_ _} := OplaxTrans.leftUnitor
+  rightUnitor {_ _} := OplaxTrans.rightUnitor
   whisker_exchange {a b c f g h i} η θ := by
     ext
     exact whisker_exchange _ _
