@@ -15,7 +15,7 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 open Module
 
-variable {K L: Type*} [Field K] [Field L] [Algebra K L]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
   {S : IntermediateField K L}
 
 theorem IntermediateField.coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
