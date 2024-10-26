@@ -28,9 +28,6 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 
 * `norm_normedMk` : the operator norm of the projection is `1` if the subspace is not dense.
 
-* `liftNormedAddGroupHom_unique` : characterizes `liftNormedAddGroupHom f hf` by the property that
-its composition with `normedMk` is equal to `f`.
-
 * `norm_liftNormedAddGroupHom_le` : `‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖`.
 
 ## Implementation details
@@ -49,8 +46,6 @@ variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
 
 namespace SeparationQuotient
 
-variable (x : SeparationQuotient M) (z : M)
-
 /-- For `(m : M)`, `mk m = 0` if and only if `‖m‖ = 0`. -/
 theorem mk_eq_zero_iff (m : M) : mk m = 0 ↔ ‖m‖ = 0 := by
   rw [← norm_mk, norm_eq_zero]
@@ -61,15 +56,11 @@ open NormedAddGroupHom
 noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) where
   __ := mkAddMonoidHom
   bound' := ⟨1, fun m => by simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-    mkAddMonoidHom_apply, norm_mk, one_mul, le_refl]⟩}
+    mkAddMonoidHom_apply, norm_mk, one_mul, le_refl]⟩
 
 /-- `normedMk` agrees with `SeparationQuotient.mk`. -/
 @[simp]
 theorem normedMk.apply (m : M) : normedMk m = mk m := rfl
-
-/-- `normedMk` is surjective. -/
-theorem surjective_normedMk : Function.Surjective (@normedMk M _) :=
-  surjective_quot_mk _
 
 /-- The operator norm of the projection is at most `1`. -/
 theorem norm_normedMk_le : ‖normedMk (M := M)‖ ≤ 1 :=
@@ -84,6 +75,7 @@ lemma eq_of_inseparable (f : NormedAddGroupHom M N) (hf : ∀ x, ‖x‖ = 0 →
     exact hf (x - y) h
 
 /-- The lift of a group hom to the separation quotient as a group hom. -/
+@[simps]
 noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) : NormedAddGroupHom (SeparationQuotient M) N :=
   { SeparationQuotient.liftContinuousAddMonoidHom ⟨f.toAddMonoidHom, f.continuous⟩
@@ -97,10 +89,6 @@ noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
         liftContinuousAddCommMonoidHom_apply, AddMonoidHom.coe_coe, norm_mk]
       exact le_opNorm f v'}
 
-@[simp]
-theorem liftNormedAddGroupHom_apply (f : NormedAddGroupHom M N) (hf : ∀ x, ‖x‖ = 0 → f x = 0)
-    (x : M) : liftNormedAddGroupHom f hf (mk x) = f x := rfl
-
 theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) (x : SeparationQuotient M) :
     ‖liftNormedAddGroupHom f hf x‖ ≤ ‖f‖ * ‖x‖ := by
@@ -109,15 +97,27 @@ theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
   simp only [coe_toAddMonoidHom, lift_mk, norm_mk]
   exact le_opNorm f x'
 
-theorem liftNormedAddGroupHom_unique {N : Type*} [SeminormedAddCommGroup N]
-    (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0)
-    (g : NormedAddGroupHom (SeparationQuotient M) N) (h : g.comp normedMk = f) :
-    g = liftNormedAddGroupHom f hf := by
-  ext x
-  rcases surjective_normedMk x with ⟨x, rfl⟩
-  change g.comp normedMk x = _
-  simp only [h]
-  rfl
+/-- The equivalence between `NormedAddGroupHom M N` vanishing on the inseparable setoid and
+`NormedAddGroupHom (SeparationQuotient M) N`. -/
+def liftNormedAddGroupHom_equiv {N : Type*} [SeminormedAddCommGroup N] :
+    {f : NormedAddGroupHom M N // ∀ x, ‖x‖ = 0 → f x = 0} ≃
+    NormedAddGroupHom (SeparationQuotient M) N where
+  toFun := fun f => liftNormedAddGroupHom f f.prop
+  invFun := fun g => ⟨g.comp normedMk, by
+    intro x hx
+    rw [← norm_mk, norm_eq_zero] at hx
+    rw [comp_apply, normedMk.apply, hx]
+    exact map_zero g⟩
+  left_inv := by
+    intro f
+    exact rfl
+  right_inv := by
+    intro g
+    simp only
+    ext x
+    rcases surjective_mk x with ⟨x, rfl⟩
+    change g.comp normedMk x = _
+    rfl
 
 /-- For a norm-continuous group homomorphism `f`, its lift to the separation quotient
 is bounded by the norm of `f`-/
@@ -134,14 +134,14 @@ theorem liftNormedAddGroupHom_norm_le {N : Type*} [SeminormedAddCommGroup N]
 theorem liftNormedAddGroupHom_normNoninc {N : Type*} [SeminormedAddCommGroup N]
     (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0) (fb : f.NormNoninc) :
     (liftNormedAddGroupHom f hf).NormNoninc := fun x => by
-  have fb' : ‖f‖ ≤ (1 : ℝ≥0) := NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.mp fb
-  simpa using NormedAddGroupHom.le_of_opNorm_le _
-    (liftNormedAddGroupHom_norm_le f _ fb') _
+  have fb' : ‖f‖ ≤ 1 := NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.mp fb
+  exact le_trans (norm_liftNormedAddGroupHom_apply_le f hf x)
+    (mul_le_of_le_one_left (norm_nonneg x) fb')
 
 /-- The operator norm of the projection is `1` if there is an element whose norm is different from
 `0`. -/
 theorem norm_normedMk (h : ∃ x : M, ‖x‖ ≠ 0) :
-    ‖(@normedMk M _)‖ = 1 := by
+    ‖normedMk (M := M)‖ = 1 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ zero_le_one
   · simp only [normedMk.apply, one_mul]
     exact fun x ↦ Preorder.le_refl ‖SeparationQuotient.mk x‖
@@ -151,13 +151,12 @@ theorem norm_normedMk (h : ∃ x : M, ‖x‖ ≠ 0) :
     have : 0 < ‖x‖ := Ne.lt_of_le (Ne.symm hxnn) (norm_nonneg x)
     exact one_le_of_le_mul_right₀ this (hle x)
 
-/-- The operator norm of the projection is `0` if all the elements have norm `0`. -/
+/-- The the projection is `0` if all the elements have norm `0`. -/
 theorem norm_trivial_separationQuotient_mk (h : ∀ x : M, ‖x‖ = 0) :
-    ‖@normedMk M _‖ = 0 := by
-  apply NormedAddGroupHom.opNorm_eq_of_bounds _ (le_refl 0)
-  · intro x
-    simp only [normedMk.apply, zero_mul, norm_le_zero_iff]
-    exact (mk_eq_zero_iff x).mpr (h x)
-  · exact fun N => fun hN => fun _ => hN
+    normedMk (M := M) = 0 := by
+  ext x
+  simp only [normedMk.apply, zero_apply]
+  rw [← norm_eq_zero, norm_mk]
+  exact h x
 
 end SeparationQuotient
