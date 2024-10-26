@@ -80,9 +80,9 @@ class IsGroupBasis {G : Type*} {ι : Sort*} [Group G] (p : ι → Prop) (s : ι 
   inv : ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ (s i)⁻¹
   conj : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * · * x₀⁻¹) (s j) (s i)
 
-/-- Given a group `G`, `s : ι → Set G` and `p : ι → Prop`, `Filter.IsAddGroupBasis p s` is a
-strengthening of `Filter.IsBasis p s` with extra compatibility axioms ensuring that the generated
-filter is the filter of neighborhoods of the identity for some group topology on `G`
+/-- Given an additive group `G`, `s : ι → Set G` and `p : ι → Prop`, `Filter.IsAddGroupBasis p s`
+is a strengthening of `Filter.IsBasis p s` with extra compatibility axioms ensuring that the
+generated filter is the filter of neighborhoods of the identity for some group topology on `G`
 (`Filter.IsAddGroupBasis.topologicalAddGroup`). Conversely, *any* basis of neighborhoods of the
 identity in a topological group satisfies these conditions (`Filter.HasBasis.isAddGroupBasis`). -/
 class IsAddGroupBasis {G : Type*} {ι : Sort*} [AddGroup G] (p : ι → Prop) (s : ι → Set G)
@@ -92,8 +92,7 @@ class IsAddGroupBasis {G : Type*} {ι : Sort*} [AddGroup G] (p : ι → Prop) (s
   neg : ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ -(s i)
   conj : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x₀ + · + -x₀) (s j) (s i)
 
-attribute [to_additive existing] IsGroupBasis IsGroupBasis.conj
-  IsGroupBasis.toIsBasis
+attribute [to_additive existing] IsGroupBasis
 
 /-- A constructor for `IsGroupBasis` in the commutative case. -/
 @[to_additive "A constructor for `IsAddGroupBasis` in the commutative case."]
