@@ -364,7 +364,7 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
   map_one' := by
     beta_reduce -- Porting note(#12129): force the function to be applied
     rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk, dif_pos]
-    · simpa using ofFractionRing_one
+    · simpa [Localization.mk_eq_monoidOf_mk'] using ofFractionRing_one
     · simpa using Submonoid.one_mem _
   map_mul' x y := by
     beta_reduce -- Porting note(#12129): force the function to be applied

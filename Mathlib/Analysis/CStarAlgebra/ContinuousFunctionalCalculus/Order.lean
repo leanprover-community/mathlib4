@@ -39,9 +39,7 @@ open scoped NNReal
 
 namespace Unitization
 
-variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A]
-  [PartialOrder A] [StarRing A] [StarOrderedRing A] [CStarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
-  [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 instance instPartialOrder : PartialOrder (Unitization ℂ A) :=
     CStarAlgebra.spectralOrder _
@@ -103,8 +101,7 @@ lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A]
 
 section CStar_unital
 
-variable {A : Type*} [NormedRing A] [StarRing A] [CStarRing A] [CompleteSpace A]
-variable [NormedAlgebra ℂ A] [StarModule ℂ A]
+variable {A : Type*} [CStarAlgebra A]
 
 section StarOrderedRing
 
@@ -317,9 +314,7 @@ end CStar_unital
 
 section CStar_nonunital
 
-variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [PartialOrder A] [StarRing A]
-  [StarOrderedRing A] [CStarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
-  [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 namespace CStarAlgebra
 
@@ -370,8 +365,8 @@ lemma conjugate_le_norm_smul' {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
   suffices IsClosed {a : Unitization ℂ A | 0 ≤ a} by
-    rw [Unitization.isometry_inr (𝕜 := ℂ) |>.closedEmbedding.closed_iff_image_closed]
-    convert this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).closedEmbedding.isClosed_range
+    rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.closed_iff_image_closed]
+    convert this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).isClosedEmbedding.isClosed_range
     ext a
     simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_inter_iff, Set.mem_range, ← exists_and_left]
     congr! 2 with x
