@@ -562,7 +562,6 @@ instance : MeasurableMul₂ EReal := by
 
 end MeasurableMul
 
-
 end EReal
 
 /-- If a function `f : α → ℝ≥0` is measurable and the measure is σ-finite, then there exists
