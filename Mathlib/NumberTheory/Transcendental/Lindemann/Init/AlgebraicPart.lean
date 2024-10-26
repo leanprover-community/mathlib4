@@ -137,7 +137,7 @@ section mapDomainFixed
 
 variable (F : Type*) [Field F] [Algebra ℚ F]
 
-noncomputable def mapDomainFixed : Subalgebra F (F[K s]) where
+noncomputable def mapDomainFixed : Subalgebra F F[K s] where
   carrier := {x | ∀ f : Gal s, AddMonoidAlgebra.domCongrAut ℚ _ f.toAddEquiv x = x}
   mul_mem' {a b} ha hb f := by rw [map_mul, ha, hb]
   add_mem' {a b} ha hb f := by rw [map_add, ha, hb]
@@ -616,7 +616,7 @@ theorem linearIndependent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral �
   rw [← AlgHom.coe_toRingHom, ← RingHom.mem_ker] at hf
   exact linearIndependent_exp_aux1 s f f0 hf
 
-theorem linearIndependent_exp_aux3 (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
+theorem linearIndependent_exp_aux_int (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
     (h : ∑ i, v i * exp (u i) = 0) :
     ∃ (w : ℤ) (_w0 : w ≠ 0) (q : Finset (ConjRootClass ℚ (K (range u v))))
@@ -650,13 +650,13 @@ theorem linearIndependent_exp_aux3 (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ 
   · simp_rw [mul_comm _ (N : ℂ), mul_comm _ (N : ℚ), ← smul_smul, ← smul_sum, ← nsmul_eq_mul,
       Nat.cast_smul_eq_nsmul, ← smul_add, h, nsmul_zero]
 
-theorem linearIndependent_exp_aux4 (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
+theorem linearIndependent_exp_aux_aroots_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
     (h : ∑ i, v i * exp (u i) = 0) :
     ∃ (w : ℤ) (w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℚ[X]) (_p0 : ∀ j, (p j).eval 0 ≠ 0)
       (w' : Fin n → ℤ),
         (w + ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum : ℂ) = 0 := by
-  obtain ⟨w, w0, q, hq, w', h⟩ := linearIndependent_exp_aux3 u hu u_inj v hv v0 h
+  obtain ⟨w, w0, q, hq, w', h⟩ := linearIndependent_exp_aux_int u hu u_inj v hv v0 h
   let c : Fin q.card → ConjRootClass ℚ (K (range u v)) := fun j => q.equivFin.symm j
   have hc : ∀ j, c j ∈ q := fun j => Finset.coe_mem _
   refine ⟨w, w0, q.card, fun j => (c j).minpoly, ?_, fun j => w' (c j), ?_⟩
@@ -684,13 +684,13 @@ theorem linearIndependent_exp_aux4 (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ 
     rw [splits_map_iff, RingHom.id_comp]; exact c.splits_minpoly
   rw [this, c.aroots_minpoly_eq_carrier_val, Multiset.map_map, sum_eq_multiset_sum]; rfl
 
-theorem linearIndependent_exp_aux (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
+theorem linearIndependent_exp_aux_aroots_int (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
     (h : ∑ i, v i * exp (u i) = 0) :
     ∃ (w : ℤ) (w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℤ[X]) (_p0 : ∀ j, (p j).eval 0 ≠ 0)
       (w' : Fin n → ℤ),
         (w + ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum : ℂ) = 0 := by
-  obtain ⟨w, w0, n, p, hp, w', h⟩ := linearIndependent_exp_aux4 u hu u_inj v hv v0 h
+  obtain ⟨w, w0, n, p, hp, w', h⟩ := linearIndependent_exp_aux_aroots_rat u hu u_inj v hv v0 h
   choose b hb using
     fun j ↦ IsLocalization.integerNormalization_map_to_map (nonZeroDivisors ℤ) (p j)
   refine
