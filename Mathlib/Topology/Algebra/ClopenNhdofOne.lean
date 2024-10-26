@@ -33,8 +33,8 @@ theorem openNormalSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [Topolog
     fun _ b ↦ openSubgroupSubClopenNhdsOfOne_spec UClopen einU
       (Subgroup.normalCore_le (OpenSubgroupSubClopenNhdsOfOne UClopen einU).1 b)
 
-instance {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
-    {U : Set G} (UClopen : IsClopen U) (einU : 1 ∈ U) :
+def NonemptyOpenNormalSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]
+    [TopologicalGroup G] [CompactSpace G] {U : Set G} (UClopen : IsClopen U) (einU : 1 ∈ U) :
     Nonempty {H : OpenNormalSubgroup G // (H : Set G) ⊆ U} :=
   Nonempty.intro ⟨OpenNormalSubgroupSubClopenNhdsOfOne UClopen einU,
     openNormalSubgroupSubClopenNhdsOfOne_spec UClopen einU⟩
