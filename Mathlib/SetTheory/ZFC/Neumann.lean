@@ -27,7 +27,8 @@ namespace ZFSet
 
 - `vonNeumann_zero`: `V_ 0 = ∅`
 - `vonNeumann_succ`: `V_ (succ a) = powerset (V_ a)`
-- `vonNeumann_of_isSuccPrelimit`: `IsSuccPrelimit a → V_ a = ⋃ b < a, V_ b` -/
+- `vonNeumann_of_isSuccPrelimit`: `IsSuccPrelimit a → V_ a = ⋃ b < a, V_ b`
+-/
 noncomputable def vonNeumann (o : Ordinal) : ZFSet :=
   ⋃₀ range fun a : Set.Iio o ↦ powerset (vonNeumann a)
 termination_by o
