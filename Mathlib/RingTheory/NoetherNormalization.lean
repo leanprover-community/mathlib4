@@ -39,11 +39,12 @@ private noncomputable abbrev r : Fin (n + 1) → ℕ :=
     fun i ↦ if i = 0 then 1 else ((n + 1) * (up f)) ^ (n + 1 - i)
 
 /-$T$ is an algebraic isomorphism.-/
-private noncomputable abbrev T1 : MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k
-  := aeval (fun i ↦  if i = 0 then X 0 else X i + (X 0) ^ (r f i))
+private noncomputable abbrev T1 : MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
+  aeval (fun i ↦  if i = 0 then X 0 else X i + (X 0) ^ (r f i))
 
-private noncomputable abbrev T_inv : MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k
-  := aeval (fun i ↦  if i = 0 then X 0 else X i - (X 0) ^ (r f i))
+private noncomputable abbrev T_inv :
+    MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
+  aeval (fun i ↦  if i = 0 then X 0 else X i - (X 0) ^ (r f i))
 
 private lemma T_left_inv : (T_inv f).comp (T1 f) = AlgHom.id _ _ := by
   rw [comp_aeval, ← MvPolynomial.aeval_X_left]
@@ -73,8 +74,8 @@ private lemma a_j (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (i : Fin n
   ≤ (n + 1 : ℤ) ^ (n - i.succ) * up f ^ (n + 1 - i.succ) := by
 intro j
 by_cases h : j < i
-· have : (((n + 1 : ℤ) * up f) ^ (n + 1 - j.succ) * ((v j.succ) - (w j.succ))) = 0
-    := by simp only [sub_eq_zero.mpr (cast_inj.mpr (by_contra
+· have : (((n + 1 : ℤ) * up f) ^ (n + 1 - j.succ) * ((v j.succ) - (w j.succ))) = 0 := by
+    simp only [sub_eq_zero.mpr (cast_inj.mpr (by_contra
       (fun ne ↦ Fin.not_lt.mpr (pj j ne) h))), mul_zero]
   simp only [if_pos (Fin.ne_of_lt h), this, abs_zero, Int.succ_ofNat_pos, pow_pos,
     mul_pos_iff_of_pos_left, ← cast_pow]
@@ -112,10 +113,10 @@ private lemma equal (h : v 0 + ∑ x : Fin n, ((n + 1) * up f) ^ (n + 1 - x.succ
   ∑ j : Fin n, (((n + 1 : ℤ) * up f) ^ (n + 1 - j.succ) * ((v j.succ) - (w j.succ))) = 0 := by
   simp only [mul_sub, Finset.sum_sub_distrib, sub_add_sub_comm, Int.sub_eq_zero]
   calc
-    _ = (@Nat.cast ℤ) (v 0 + ∑ x : Fin n, ((n + 1) * up f) ^ (n + 1 - x.succ) * v x.succ)
-      := by simp only [cast_add, cast_sum, cast_mul, cast_pow, cast_one]
-    _ = (@Nat.cast ℤ) (w 0 + ∑ x : Fin n, ((n + 1) * up f) ^ (n + 1 - x.succ) * w x.succ)
-      := by rw [h]
+    _ = (@Nat.cast ℤ) (v 0 + ∑ x : Fin n, ((n + 1) * up f) ^ (n + 1 - x.succ) * v x.succ) := by
+      simp only [cast_add, cast_sum, cast_mul, cast_pow, cast_one]
+    _ = (@Nat.cast ℤ) (w 0 + ∑ x : Fin n, ((n + 1) * up f) ^ (n + 1 - x.succ) * w x.succ) := by
+      rw [h]
     _ = _ := by simp only [cast_add, cast_sum, cast_mul, cast_pow, cast_one]
 
 private lemma r_spec (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (neq : v ≠ w) :
@@ -395,5 +396,6 @@ theorem Noether_Normalization {R : Type*} [CommRing R] [Nontrivial R] [Algebra k
   have ne : RingHom.ker f ≠ ⊤ := fun h ↦ (h ▸ (not_one_mem_ker f)) trivial
   obtain ⟨r, _, g, injg, intg⟩ := exists_integral_inj (RingHom.ker f) (ne)
   use r, (ϕ.toAlgHom.comp g)
-  simp
+  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
+    EmbeddingLike.comp_injective, AlgHom.toRingHom_eq_coe]
   exact ⟨injg, IsIntegral.trans _ _ intg (isIntegral_of_surjective _ ϕ.surjective)⟩
