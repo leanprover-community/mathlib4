@@ -22,10 +22,10 @@ change the associated topology.
 Finally, it defines `WithIdeal`, a class registering an ideal in a ring and providing the
 corresponding adic topology to the type class inference system.
 
-
 ## Main definitions and results
 
-* `Ideal.adic_basis`: the basis of submodules given by powers of an ideal.
+* `Ideal.adicBasis`: the basis of submodules given by powers of an ideal.
+* `Ideal.adicBasis_isBasis`: `Ideal.adicBasis` is indeed a filter basis.
 * `Ideal.adicTopology`: the adic topology associated to an ideal. It has the above basis
   for neighborhoods of zero.
 * `Ideal.nonarchimedean`: the adic topology is non-archimedean
@@ -54,10 +54,15 @@ namespace Ideal
 
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
-abbrev adicBasis (n : ℕ) : Submodule R M := I ^ n • ⊤
+abbrev adicBasis (n : ℕ) : Set M := (I ^ n • ⊤ : Submodule R M)
+
+@[simp]
+theorem adicBasis_def :
+  I.adicBasis M = (fun n ↦ (I ^ n • ⊤ : Submodule R M) : ℕ → Set M) :=
+rfl
 
 theorem adicBasis_isBasis :
-    IsBasis (fun _ ↦ True) (fun n ↦ I.adicBasis M n : ℕ → Set M) where
+    IsBasis (fun _ ↦ True) (I.adicBasis M) where
   nonempty := ⟨0, trivial⟩
   inter := fun {i j} _ _ ↦
     ⟨max i j, trivial, le_inf_iff.mpr
@@ -65,7 +70,7 @@ theorem adicBasis_isBasis :
         smul_mono_left <| pow_le_pow_right (le_max_right i j)⟩⟩
 
 theorem adicBasis_isAddGroupBasis :
-    IsAddGroupBasis (fun _ ↦ True) (fun n ↦ I.adicBasis M n : ℕ → Set M) :=
+    IsAddGroupBasis (fun _ ↦ True) (I.adicBasis M) :=
   .mk_of_subgroups_of_comm <| I.adicBasis_isBasis M
 
 /-- The topology on an `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
@@ -100,17 +105,17 @@ theorem IsAdic.topologicalAddGroup {I : Ideal R} {M : Type*} [AddCommGroup M] [M
 /-- For the `I`-adic topology, the neighborhoods of zero has basis given by the powers of `I`. -/
 theorem IsAdic.hasBasis_nhds_zero {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
     {_ : TopologicalSpace M} (h : IsAdic I M) :
-    (𝓝 0).HasBasis (fun _ ↦ True) (fun n ↦ I.adicBasis M n : ℕ → Set M) :=
+    (𝓝 0).HasBasis (fun _ ↦ True) (I.adicBasis M) :=
   h ▸ (I.adicBasis_isAddGroupBasis M).nhds_zero_hasBasis
 
 theorem IsAdic.hasBasis_nhds {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
     {_ : TopologicalSpace M} (h : IsAdic I M) (m : M) :
-    (𝓝 m).HasBasis (fun _ ↦ True) (fun n ↦ m +ᵥ (I.adicBasis M n : Set M)) :=
+    (𝓝 m).HasBasis (fun _ ↦ True) (fun n ↦ m +ᵥ I.adicBasis M n) :=
   h ▸ (I.adicBasis_isAddGroupBasis M).nhds_hasBasis m
 
 theorem isAdic_iff_hasBasis_nhds_zero {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
     {_ : TopologicalSpace M} [TopologicalAddGroup M] : IsAdic I M ↔
-    (𝓝 0).HasBasis (fun _ ↦ True) (fun n ↦ I.adicBasis M n : ℕ → Set M) :=
+    (𝓝 0).HasBasis (fun _ ↦ True) (I.adicBasis M) :=
   ⟨IsAdic.hasBasis_nhds_zero, fun H ↦ TopologicalAddGroup.ext inferInstance
     (I.isAdic_adicTopology M).topologicalAddGroup
     (H.eq_of_same_basis <| I.isAdic_adicTopology M |>.hasBasis_nhds_zero)⟩
@@ -131,7 +136,7 @@ theorem isAdic_iff {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
 theorem IsAdic.pow {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
     {_ : TopologicalSpace M} (h : IsAdic I M) {n : ℕ} (hn : 0 < n) : IsAdic (I ^ n) M := by
   haveI := h.topologicalAddGroup
-  simp_rw [isAdic_iff_hasBasis_nhds_zero, Ideal.adicBasis, ← pow_mul] at h ⊢
+  simp_rw [isAdic_iff_hasBasis_nhds_zero, Ideal.adicBasis_def, ← pow_mul] at h ⊢
   exact h.to_hasBasis
     (fun k _ ↦ ⟨k, trivial, smul_mono_left <| Ideal.pow_le_pow_right <| n.le_mul_of_pos_left k hn⟩)
     (fun k _ ↦ ⟨n * k, trivial, subset_rfl⟩)
@@ -146,7 +151,7 @@ theorem isAdic_bot_iff {M : Type*} [AddCommGroup M] [Module R M] {_ : Topologica
   -- TODO: this should be an instance
   · haveI : TopologicalAddGroup M := ⟨⟩
     exact isAdic_iff_hasBasis_nhds_zero.mpr (nhds_discrete M ▸ (hasBasis_pure _).to_hasBasis
-      (fun _ _ ↦ ⟨1, trivial, by simp [Ideal.adicBasis]⟩) (by simp [Ideal.adicBasis]))
+      (fun _ _ ↦ ⟨1, trivial, by simp⟩) (by simp))
 
 instance (priority := 100) Ideal.instNonarchimedeanAddGroup_adic
     (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M] :
@@ -174,11 +179,11 @@ section Ring
 
 variable (I : Ideal R)
 
-theorem Ideal.adicBasis_eq (n : ℕ) : I.adicBasis R n = I ^ n := by
-  simp only [smul_eq_mul, mul_top]
+theorem Ideal.adicBasis_eq (n : ℕ) : I.adicBasis R n = (I ^ n : Submodule R R) := by
+  simp only [Ideal.adicBasis, smul_eq_mul, mul_top]
 
 theorem Ideal.adicBasis_isRingBasis :
-    IsRingBasis (fun _ ↦ True) (fun n ↦ I.adicBasis R n : ℕ → Set R) :=
+    IsRingBasis (fun _ ↦ True) (I.adicBasis R) :=
   .mk_of_ideals_of_comm (I.adicBasis_isBasis R)
     (fun {n} _ ↦ ⟨n, trivial, mul_subset_iff.mpr fun x _ _ hb ↦ Submodule.smul_mem _ x hb⟩)
 
@@ -204,7 +209,7 @@ section Module
 
 theorem Ideal.adicBasis_isModuleBasis [TopologicalSpace R] (I : Ideal R) (M : Type*)
     (hR : IsAdic I R) [AddCommGroup M] [Module R M] :
-    IsModuleBasis R (fun _ ↦ True) (fun n ↦ I.adicBasis M n : ℕ → Set M) :=
+    IsModuleBasis R (fun _ ↦ True) (I.adicBasis M) :=
   .mk_of_submodules_of_hasBasis hR.hasBasis_nhds_zero (I.adicBasis_isBasis M)
     (fun m i _ ↦ ⟨i, trivial, fun r hr ↦ Submodule.smul_mem_smul (by simpa using hr) trivial⟩)
 
