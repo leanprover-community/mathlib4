@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Exact
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.RingTheory.Localization.Defs
 
 /-!
 # Localized Module
@@ -1002,8 +1003,6 @@ theorem mk'_mul_mk' {M M' : Type*} [Semiring M] [Semiring M'] [Algebra R M] [Alg
 
 variable {f}
 
-/-- Porting note (#10618): simp can prove this
-@[simp] -/
 theorem mk'_eq_iff {m : M} {s : S} {m' : M'} : mk' f m s = m' ↔ f m = s • m' := by
   rw [← smul_inj f s, Submonoid.smul_def, ← mk'_smul, ← Submonoid.smul_def, mk'_cancel]
 

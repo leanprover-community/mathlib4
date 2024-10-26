@@ -65,6 +65,11 @@ lemma funext_iff_of_subsingleton [Subsingleton α] {g : α → β} (x y : α) :
   · rwa [Subsingleton.elim x z, Subsingleton.elim y z] at h
   · rw [h, Subsingleton.elim x y]
 
+theorem swap_lt {α} [Preorder α] : swap (· < · : α → α → _) = (· > ·) := rfl
+theorem swap_le {α} [Preorder α] : swap (· ≤ · : α → α → _) = (· ≥ ·) := rfl
+theorem swap_gt {α} [Preorder α] : swap (· > · : α → α → _) = (· < ·) := rfl
+theorem swap_ge {α} [Preorder α] : swap (· ≥ · : α → α → _) = (· ≤ ·) := rfl
+
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
 
@@ -893,7 +898,7 @@ lemma forall_existsUnique_iff {r : α → β → Prop} :
 if and only if it is `(f · = ·)` for some function `f`. -/
 lemma forall_existsUnique_iff' {r : α → β → Prop} :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → β, r = (f · = ·) := by
-  simp [forall_existsUnique_iff, Function.funext_iff]
+  simp [forall_existsUnique_iff, funext_iff]
 
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)

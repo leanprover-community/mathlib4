@@ -96,7 +96,7 @@ theorem coe_injective : @Function.Injective (VectorMeasure α M) (Set α → M) 
   congr
 
 theorem ext_iff' (v w : VectorMeasure α M) : v = w ↔ ∀ i : Set α, v i = w i := by
-  rw [← coe_injective.eq_iff, Function.funext_iff]
+  rw [← coe_injective.eq_iff, funext_iff]
 
 theorem ext_iff (v w : VectorMeasure α M) : v = w ↔ ∀ i : Set α, MeasurableSet i → v i = w i := by
   constructor
@@ -698,7 +698,7 @@ instance instPartialOrder : PartialOrder (VectorMeasure α M) where
   le_trans _ _ _ h₁ h₂ i hi := le_trans (h₁ i hi) (h₂ i hi)
   le_antisymm _ _ h₁ h₂ := ext fun i hi => le_antisymm (h₁ i hi) (h₂ i hi)
 
-variable {u v w : VectorMeasure α M}
+variable {v w : VectorMeasure α M}
 
 theorem le_iff : v ≤ w ↔ ∀ i, MeasurableSet i → v i ≤ w i := Iff.rfl
 
@@ -880,10 +880,9 @@ end
 section
 
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
-  [CovariantClass M M (· + ·) (· ≤ ·)] [ContinuousAdd M]
+  [AddLeftMono M] [ContinuousAdd M]
 
-instance covariant_add_le :
-    CovariantClass (VectorMeasure α M) (VectorMeasure α M) (· + ·) (· ≤ ·) :=
+instance instAddLeftMono : AddLeftMono (VectorMeasure α M) :=
   ⟨fun _ _ _ h i hi => add_le_add_left (h i hi) _⟩
 
 end
