@@ -484,7 +484,7 @@ lemma tendsto_m_density (hκν : fst κ ≤ ν) (a : α) [IsFiniteKernel ν]
 lemma measurable_density (κ : Kernel α (γ × β)) (ν : Kernel α γ)
     {s : Set β} (hs : MeasurableSet s) :
     Measurable (fun (p : α × γ) ↦ density κ ν p.1 p.2 s) :=
-  measurable_limsup (fun n ↦ measurable_densityProcess κ ν n hs)
+  .limsup (fun n ↦ measurable_densityProcess κ ν n hs)
 
 lemma measurable_density_left (κ : Kernel α (γ × β)) (ν : Kernel α γ) (x : γ)
     {s : Set β} (hs : MeasurableSet s) :
