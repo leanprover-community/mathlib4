@@ -95,10 +95,38 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : Quadra
     QuadraticForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
+variable (R A) in
+/-- The tensor product of two quadratic forms injects into quadratic forms on tensor products.
+
+Note this is heterobasic; the quadratic form on the left can take values in a larger ring than
+the one on the right. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
+noncomputable def tensorDistrib' :
+    QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
+  letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+  -- while `letI`s would produce a better term than `let`, they would make this already-slow
+  -- definition even slower.
+  let toQ := BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂)
+  let tmulB := BilinForm.tensorDistrib R A (M₁ := M₁) (M₂ := M₂)
+  let toB := AlgebraTensorModule.map
+      (QuadraticMap.associated : QuadraticForm A M₁ →ₗ[A] BilinForm A M₁)
+      (QuadraticMap.associated : QuadraticForm R M₂ →ₗ[R] BilinForm R M₂)
+  toQ ∘ₗ tmulB ∘ₗ toB
+
+/-- The tensor product of two quadratic forms, a shorthand for dot notation. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
+protected noncomputable abbrev tmul' (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+    QuadraticForm A (M₁ ⊗[R] M₂) :=
+  tensorDistrib' R A (Q₁ ⊗ₜ[R] Q₂)
+
+lemma helper [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+    (Q₁.tmul' Q₂) = (Q₁.tmul Q₂) := by aesop
+
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     associated (R := A) (Q₁.tmul Q₂)
       = BilinForm.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
-  rw [QuadraticForm.tmul, tensorDistrib, BilinForm.tmul]
+  simp_rw [← helper]
+  rw [QuadraticForm.tmul', tensorDistrib', BilinForm.tmul]
   dsimp
   have : Subsingleton (Invertible (2 : A)) := inferInstance
   convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
