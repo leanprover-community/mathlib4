@@ -70,6 +70,17 @@ protected abbrev tmul (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap R M₂ N₂
     BilinMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 
+variable (A) in
+/-- The base change of a bilinear map (also known as "extension of scalars"). -/
+protected def baseChange (B : BilinMap R M₂ N₂) : BilinMap A (A ⊗[R] M₂) (A ⊗[R] N₂) :=
+  BilinMap.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.mul A A) B
+
+@[simp]
+theorem baseChange_tmul (B₂ : BilinMap R M₂ N₂) (a : A) (m₂ : M₂)
+    (a' : A) (m₂' : M₂) :
+    B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (a * a') ⊗ₜ (B₂ m₂ m₂')  :=
+  rfl
+
 end BilinMap
 
 namespace BilinForm
