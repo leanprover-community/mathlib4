@@ -314,21 +314,18 @@ section FunctorFrom
 
 variable {E : Type*} [Category E]
 
-/-- Partially apply a functor `H` on the Grothendieck construction of a functor `F : C ⥤ Cat` to
-an object `c : C` to obtain a functor `F.obj c ⥤ E` on the fiber over `c`. -/
+/-- The inclusion of a fiber `F.obj c` of a functor `F : C ⥤ Cat` into its Grothendieck
+construction.-/
 @[simps]
-def apply (H : Grothendieck F ⥤ E) (c : C) : F.obj c ⥤ E where
-  obj d := H.obj ⟨c, d⟩
-  map f := H.map ⟨𝟙 _, eqToHom (by simp) ≫ f⟩
+def ι (c : C) : F.obj c ⥤ Grothendieck F where
+  obj d := ⟨c, d⟩
+  map f := ⟨𝟙 _, eqToHom (by simp) ≫ f⟩
   map_id d := by
-    rw [← H.map_id]
     dsimp
     congr
     simp only [Category.comp_id]
   map_comp f g := by
-    dsimp
-    rw [← H.map_comp]
-    congr 1
+    simp
     apply Grothendieck.ext _ _ (by simp)
     simp only [comp_base, ← Category.assoc, eqToHom_trans, comp_fiber, Functor.map_comp,
       eqToHom_map]
@@ -353,7 +350,7 @@ def functorFrom : Grothendieck F ⥤ E where
 
 /-- `Grothendieck.apply` and `Grothendieck.functorFrom` fulfill a kind of "β reduction", in which
 application and abstraction cancel each other out. -/
-theorem apply_functorFrom (c : C) : apply (functorFrom fib hom hom_id hom_comp) c = fib c := by
+theorem ι_functorFrom (c : C) : ι c ⋙ (functorFrom fib hom hom_id hom_comp) = fib c := by
   refine Functor.ext (fun _ => by rfl) ?_
   intro X Y f
   simp [hom_id]
