@@ -306,6 +306,40 @@ def pre (G : D ⥤ C) : Grothendieck (G ⋙ F) ⥤ Grothendieck F where
   map_id X := Grothendieck.ext _ _ (G.map_id _) (by simp)
   map_comp f g := Grothendieck.ext _ _ (G.map_comp _ _) (by simp)
 
+section FunctorFrom
+
+variable {E : Type*} [Category E]
+
+/-- Partially apply a functor `H` on the Grothendieck construction of a functor `F : C ⥤ Cat` to
+an object `c : C` to obtain a functor `F.obj c ⥤ E` on the fiber over `c`. -/
+@[simps]
+def apply (H : Grothendieck F ⥤ E) (c : C) : F.obj c ⥤ E where
+  obj d := H.obj ⟨c, d⟩
+  map f := H.map ⟨𝟙 _, eqToHom (by simp) ≫ f⟩
+  map_id d := by
+    rw [← H.map_id]
+    dsimp
+    congr
+    simp only [Category.comp_id]
+  map_comp f g := by
+    dsimp
+    rw [← H.map_comp]
+    congr 1
+    apply Grothendieck.ext _ _ (by simp)
+    simp only [comp_base, ← Category.assoc, eqToHom_trans, comp_fiber, Functor.map_comp,
+      eqToHom_map]
+    congr 1
+    simp only [eqToHom_comp_iff, Category.assoc, eqToHom_trans_assoc]
+    apply Functor.congr_hom (F.map_id _).symm
+
+def functorFrom (fib : ∀ c, F.obj c ⥤ E)
+    (hom : ∀ {c c' : C} (f : c ⟶ c'), ((fib c).hom _).obj _ ⟶ _) :
+    Grothendieck F ⥤ E where
+  obj := fun X => (fib X.base).obj X.fiber
+  map := _
+
+end FunctorFrom
+
 end Grothendieck
 
 end CategoryTheory
