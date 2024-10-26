@@ -106,6 +106,12 @@ theorem isRadical_vanishingIdeal (s : Set (PrimeSpectrum R)) : (vanishingIdeal s
     vanishingIdeal_zeroLocus_eq_radical]
   apply Ideal.radical_isRadical
 
+theorem zeroLocus_eq_iff {I J : Ideal R} :
+    zeroLocus (I : Set R) = zeroLocus J ↔ I.radical = J.radical := by
+  constructor
+  · intro h; simp_rw [← vanishingIdeal_zeroLocus_eq_radical, h]
+  · intro h; rw [← zeroLocus_radical, h, zeroLocus_radical]
+
 theorem vanishingIdeal_anti_mono_iff {s t : Set (PrimeSpectrum R)} (ht : IsClosed t) :
     s ⊆ t ↔ vanishingIdeal t ≤ vanishingIdeal s :=
   ⟨vanishingIdeal_anti_mono, fun h => by
@@ -544,12 +550,6 @@ protected def pointsEquivIrreducibleCloseds :
   __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
-
-lemma zeroLocus_eq_iff {I J : Ideal R} :
-    zeroLocus (I : Set R) = zeroLocus J ↔ I.radical = J.radical := by
-  constructor
-  · intro h; simp_rw [← vanishingIdeal_zeroLocus_eq_radical, h]
-  · intro h; rw [← zeroLocus_radical, h, zeroLocus_radical]
 
 /-- Also see `PrimeSpectrum.isClosed_singleton_iff_isMaximal` -/
 lemma isMax_iff {x : PrimeSpectrum R} :
