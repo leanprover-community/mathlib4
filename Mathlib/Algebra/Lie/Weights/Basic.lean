@@ -55,34 +55,39 @@ open Set Function TensorProduct LieModule
 section notation_genWeightSpaceOf
 
 /-- Until we define `LieModule.genWeightSpaceOf`, it is useful to have some notation as follows: -/
-local notation3 "𝕎("M", " χ", " x")" => (toEnd R L M x).maxGenEigenspace χ
+local notation3 "𝕎("M", " χ", " x", " k")" => (toEnd R L M x).genEigenspace χ k
 
 /-- See also `bourbaki1975b` Chapter VII §1.1, Proposition 2 (ii). -/
 protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
     [AddCommGroup M₁] [Module R M₁] [LieRingModule L M₁] [LieModule R L M₁] [AddCommGroup M₂]
     [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂] [AddCommGroup M₃] [Module R M₃]
-    [LieRingModule L M₃] [LieModule R L M₃] (g : M₁ ⊗[R] M₂ →ₗ⁅R,L⁆ M₃) (χ₁ χ₂ : R) (x : L) :
-    LinearMap.range ((g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (mapIncl 𝕎(M₁, χ₁, x) 𝕎(M₂, χ₂, x))) ≤
-      𝕎(M₃, χ₁ + χ₂, x) := by
+    [LieRingModule L M₃] [LieModule R L M₃]
+    (g : M₁ ⊗[R] M₂ →ₗ⁅R,L⁆ M₃) (χ₁ χ₂ : R) (x : L) (k₁ k₂ : ℕ∞) :
+    LinearMap.range ((g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (mapIncl 𝕎(M₁, χ₁, x, k₁) 𝕎(M₂, χ₂, x, k₂))) ≤
+      𝕎(M₃, χ₁ + χ₂, x, k₁ + k₂) := by
   -- Unpack the statement of the goal.
   intro m₃
   simp only [TensorProduct.mapIncl, LinearMap.mem_range, LinearMap.coe_comp,
     LieModuleHom.coe_toLinearMap, Function.comp_apply, Pi.add_apply, exists_imp,
-    Module.End.mem_maxGenEigenspace]
+    Module.End.mem_genEigenspace]
   rintro t rfl
   -- Set up some notation.
   let F : Module.End R M₃ := toEnd R L M₃ x - (χ₁ + χ₂) • ↑1
   -- The goal is linear in `t` so use induction to reduce to the case that `t` is a pure tensor.
   refine t.induction_on ?_ ?_ ?_
-  · use 0; simp only [LinearMap.map_zero, LieModuleHom.map_zero]
+  · use 0
+    simp only [Nat.cast_zero, zero_le, map_zero,
+      LieModuleHom.map_zero, Submodule.zero_mem, and_self]
   swap
   · rintro t₁ t₂ ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩; use max k₁ k₂
-    simp only [LieModuleHom.map_add, LinearMap.map_add,
-      LinearMap.pow_map_zero_of_le (le_max_left k₁ k₂) hk₁,
-      LinearMap.pow_map_zero_of_le (le_max_right k₁ k₂) hk₂, add_zero]
+    simp only [LieModuleHom.map_add, LinearMap.map_add, LinearMap.mem_ker,
+      LinearMap.pow_map_zero_of_le (le_max_left k₁ k₂) hk₁.2,
+      LinearMap.pow_map_zero_of_le (le_max_right k₁ k₂) hk₂.2, add_zero, and_true]
+    rintro n hn; refine ⟨_, rfl, ?_⟩ 
+    simp_all
   -- Now the main argument: pure tensors.
   rintro ⟨m₁, hm₁⟩ ⟨m₂, hm₂⟩
-  change ∃ k, (F ^ k) ((g : M₁ ⊗[R] M₂ →ₗ[R] M₃) (m₁ ⊗ₜ m₂)) = (0 : M₃)
+  change ∃ k : ℕ, k ≤ k₁ + k₂ ∧ (F ^ k) ((g : M₁ ⊗[R] M₂ →ₗ[R] M₃) (m₁ ⊗ₜ m₂)) = (0 : M₃)
   -- Eliminate `g` from the picture.
   let f₁ : Module.End R (M₁ ⊗[R] M₂) := (toEnd R L M₁ x - χ₁ • ↑1).rTensor M₂
   let f₂ : Module.End R (M₁ ⊗[R] M₂) := (toEnd R L M₂ x - χ₂ • ↑1).lTensor M₁
@@ -96,15 +101,16 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
       AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, LinearMap.toFun_eq_coe,
       LinearMap.coe_restrictScalars]
     abel
-  rsuffices ⟨k, hk⟩ : ∃ k : ℕ, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
+  rsuffices ⟨k, hk', hk⟩ : ∃ k : ℕ, k ≤ k₁ + k₂ ∧ ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
   · use k
-    change (F ^ k) (g.toLinearMap (m₁ ⊗ₜ[R] m₂)) = 0
-    rw [← LinearMap.comp_apply, LinearMap.commute_pow_left_of_commute h_comm_square,
-      LinearMap.comp_apply, hk, LinearMap.map_zero]
+    change k ≤ k₁ + k₂ ∧ (F ^ k) (g.toLinearMap (m₁ ⊗ₜ[R] m₂)) = 0
+    simpa only [← LinearMap.comp_apply, LinearMap.commute_pow_left_of_commute h_comm_square,
+      LinearMap.comp_apply, hk, LinearMap.map_zero, and_true]
   -- Unpack the information we have about `m₁`, `m₂`.
-  simp only [Module.End.mem_maxGenEigenspace] at hm₁ hm₂
-  obtain ⟨k₁, hk₁⟩ := hm₁
-  obtain ⟨k₂, hk₂⟩ := hm₂
+  simp only [Module.End.mem_genEigenspace] at hm₁ hm₂
+  obtain ⟨k₁, hk₁', hk₁⟩ := hm₁
+  obtain ⟨k₂, hk₂', hk₂⟩ := hm₂
+  simp only [LinearMap.mem_ker] at hk₁ hk₂
   have hf₁ : (f₁ ^ k₁) (m₁ ⊗ₜ m₂) = 0 := by
     simp only [f₁, hk₁, zero_tmul, LinearMap.rTensor_tmul, LinearMap.rTensor_pow]
   have hf₂ : (f₂ ^ k₂) (m₁ ⊗ₜ m₂) = 0 := by
@@ -119,6 +125,9 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   rw [hf_comm.add_pow']
   simp only [TensorProduct.mapIncl, Submodule.subtype_apply, Finset.sum_apply, Submodule.coe_mk,
     LinearMap.coeFn_sum, TensorProduct.map_tmul, LinearMap.smul_apply]
+  refine ⟨?_, ?_⟩ 
+  · push_cast
+    simpa only [tsub_le_iff_right] using (add_le_add hk₁' hk₂').trans <| self_le_add_right _ _
   -- The required sum is zero because each individual term is zero.
   apply Finset.sum_eq_zero
   rintro ⟨i, j⟩ hij
@@ -130,9 +139,9 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
       LinearMap.map_zero]
   · rw [LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hj hf₂, LinearMap.map_zero]
 
-lemma lie_mem_maxGenEigenspace_toEnd
-    {χ₁ χ₂ : R} {x y : L} {m : M} (hy : y ∈ 𝕎(L, χ₁, x)) (hm : m ∈ 𝕎(M, χ₂, x)) :
-    ⁅y, m⁆ ∈ 𝕎(M, χ₁ + χ₂, x) := by
+lemma lie_mem_genEigenspace_toEnd {χ₁ χ₂ : R} {k₁ k₂ : ℕ∞} {x y : L} {m : M}
+    (hy : y ∈ 𝕎(L, χ₁, x, k₁)) (hm : m ∈ 𝕎(M, χ₂, x, k₂)) :
+    ⁅y, m⁆ ∈ 𝕎(M, χ₁ + χ₂, x, k₁ + k₂) := by
   apply LieModule.weight_vector_multiplication L M M (toModuleHom R L M) χ₁ χ₂
   simp only [LieModuleHom.coe_toLinearMap, Function.comp_apply, LinearMap.coe_comp,
     TensorProduct.mapIncl, LinearMap.mem_range]
@@ -141,18 +150,23 @@ lemma lie_mem_maxGenEigenspace_toEnd
 
 variable (M)
 
+#check maxGenEigenSpace_toEnd_eq_top
+
 /-- If `M` is a representation of a nilpotent Lie algebra `L`, `χ` is a scalar, and `x : L`, then
 `genWeightSpaceOf M χ x` is the maximal generalized `χ`-eigenspace of the action of `x` on `M`.
 
 It is a Lie submodule because `L` is nilpotent. -/
-def genWeightSpaceOf [LieAlgebra.IsNilpotent R L] (χ : R) (x : L) : LieSubmodule R L M :=
-  { 𝕎(M, χ, x) with
+def genWeightSpaceOf [LieAlgebra.IsNilpotent R L] (χ : R) (x : L) (k : ℕ∞) : LieSubmodule R L M :=
+  { 𝕎(M, χ, x, k) with
     lie_mem := by
       intro y m hm
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
         Submodule.mem_toAddSubmonoid] at hm ⊢
       rw [← zero_add χ]
-      exact lie_mem_maxGenEigenspace_toEnd (by simp) hm }
+      exact lie_mem_genEigenspace_toEnd
+        -- `maxGenEigenSpace_toEnd_eq_top` no longer applies for general `k : ℕ∞`.
+        (by sorry /- simp only [maxGenEigenSpace_toEnd_eq_top, Submodule.mem_top] -/)
+        hm }
 
 end notation_genWeightSpaceOf
 
