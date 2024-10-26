@@ -371,7 +371,7 @@ if `f = 0`. -/
 lemma zero_iff_lTensor_zero [h: FaithfullyFlat R M]
     {N : Type*} [AddCommGroup N] [Module R N]
     {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N') :
-    f = 0 ↔  LinearMap.lTensor M f = 0 :=
+    f = 0 ↔ LinearMap.lTensor M f = 0 :=
   ⟨fun hf => hf.symm ▸ LinearMap.lTensor_zero M, fun hf => by
     have := lTensor_reflects_exact R M f LinearMap.id (by
       rw [LinearMap.exact_iff, hf, LinearMap.range_zero, LinearMap.ker_eq_bot]
