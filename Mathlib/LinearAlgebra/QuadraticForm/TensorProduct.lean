@@ -119,7 +119,7 @@ protected noncomputable abbrev tmul' (Q₁ : QuadraticForm A M₁) (Q₂ : Quadr
     QuadraticForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib' R A (Q₁ ⊗ₜ[R] Q₂)
 
-lemma helper [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+lemma helper (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₁.tmul' Q₂) = (Q₁.tmul Q₂) := by aesop
 
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
