@@ -17,11 +17,6 @@ Further development can be found on the branch `von_neumann_v2`.
 ## Definitions
 
 - `ZFSet.IsTransitive` means that every element of a set is a subset.
-- `ZFSet.vonNeumann` is the von Neumann hierarchy of sets.
-
-## Notation
-
-- `V_ o` is notation for `vonNeumann o`. It is scoped in the `ZFSet` namespace.
 
 ## TODO
 
@@ -97,90 +92,5 @@ theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :
   ⟨fun h _ hy => mem_powerset.2 <| h.subset_of_mem hy, fun H _ hy _ hz => mem_powerset.1 (H hy) hz⟩
 
 alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
-
-/-! ### Von Neumann hierarchy -/
-
-/-- The von Neumann hierarchy is defined so that `vonNeumann o` is the union of the powerset of all
-`vonNeumann a` for `a < o`. It satisfies the following properties:
-
-- `vonNeumann_zero`: `vonNeumann 0 = ∅`
-- `vonNeumann_succ`: `vonNeumann (succ a) = powerset (vonNeumann a)`
-- `vonNeumann_of_isSuccPrelimit`: `IsSuccPrelimit a → vonNeumann a = ⋃ b < a, vonNeumann b` -/
-noncomputable def vonNeumann (o : Ordinal) : ZFSet :=
-  ⋃₀ range fun a : Set.Iio o ↦ powerset (vonNeumann a)
-termination_by o
-decreasing_by exact a.2
-
-@[inherit_doc]
-scoped notation "V_ " => vonNeumann
-
-theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (V_ o) := by
-  rw [vonNeumann]
-  apply IsTransitive.sUnion'
-  simp_rw [mem_range]
-  rintro _ ⟨a, rfl⟩
-  exact (isTransitive_vonNeumann a).powerset
-termination_by o
-decreasing_by exact a.2
-
-theorem vonNeumann_mem_of_lt {a b : Ordinal} (h : a < b) : V_ a ∈ V_ b := by
-  rw [vonNeumann, mem_sUnion]
-  refine ⟨_, mem_range_self ⟨a, h⟩, ?_⟩
-  rw [mem_powerset]
-
-theorem vonNeumann_subset_of_le {a b : Ordinal} (h : a ≤ b) : V_ a ⊆ V_ b := by
-  obtain rfl | h := h.eq_or_lt
-  · rfl
-  · exact (isTransitive_vonNeumann _).subset_of_mem (vonNeumann_mem_of_lt h)
-
-theorem subset_vonNeumann {o : Ordinal} {x : ZFSet} : x ⊆ V_ o ↔ rank x ≤ o := by
-  rw [vonNeumann, rank_le_iff]
-  constructor <;> intro hx y hy
-  · apply (rank_lt_of_mem (hx hy)).trans_le
-    simp_rw [rank_le_iff, mem_sUnion, mem_range]
-    rintro z ⟨_, ⟨⟨a, rfl⟩, hz⟩⟩
-    have := a.2
-    rw [mem_powerset, subset_vonNeumann] at hz
-    exact hz.trans_lt a.2
-  · simp_rw [mem_sUnion, mem_range]
-    have := hx hy
-    refine ⟨_, Set.mem_range_self ⟨y.rank, this⟩, ?_⟩
-    rw [mem_powerset, subset_vonNeumann]
-termination_by o
-
-theorem mem_vonNeumann {o : Ordinal} {x : ZFSet} : x ∈ V_ o ↔ rank x < o := by
-  rw [vonNeumann]
-  simp_rw [mem_sUnion, mem_range]
-  constructor
-  · rintro ⟨_, ⟨⟨a, rfl⟩, h⟩⟩
-    rw [mem_powerset] at h
-    exact ((rank_mono h).trans (subset_vonNeumann.1 (subset_rfl))).trans_lt a.2
-  · intro hx
-    refine ⟨_, Set.mem_range_self ⟨x.rank, hx⟩, ?_⟩
-    rw [mem_powerset, subset_vonNeumann]
-
-@[simp]
-theorem rank_vonNeumann (o : Ordinal) : rank (V_ o) = o := by
-  apply le_antisymm
-  · rw [← subset_vonNeumann]
-  · exact le_of_forall_lt fun a ha ↦ rank_vonNeumann a ▸ rank_lt_of_mem (vonNeumann_mem_of_lt ha)
-termination_by o
-
-@[simp]
-theorem vonNeumann_zero : V_ 0 = ∅ := by
-  ext
-  rw [vonNeumann]
-  simp
-
-@[simp]
-theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) := by
-  ext
-  rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_succ_iff]
-
-@[simp]
-theorem vonNeumann_of_isSuccPrelimit {o : Ordinal} (h : IsSuccPrelimit o) :
-    V_ o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) := by
-  ext
-  simpa [mem_vonNeumann] using h.lt_iff_forall_lt
 
 end ZFSet
