@@ -86,7 +86,7 @@ lemma injective_ringHom_or_subsingleton_codomain
   simple.eq_bot_or_eq_top (TwoSidedIdeal.ker f) |>.recOn
     (fun h => Or.inl <| TwoSidedIdeal.ker_eq_bot _ |>.1 h)
     (fun h => Or.inr <| subsingleton_iff_zero_eq_one.1 <| by
-      have mem : 1 ∈ TwoSidedIdeal.ker f := h.symm ▸ ⟨⟩
+      have mem : 1 ∈ TwoSidedIdeal.ker f := h.symm ▸ TwoSidedIdeal.mem_top _
       rwa [TwoSidedIdeal.mem_ker, map_one, eq_comm] at mem)
 
 lemma injective_ringHom
