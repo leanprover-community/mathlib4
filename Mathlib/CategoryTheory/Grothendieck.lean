@@ -332,11 +332,33 @@ def apply (H : Grothendieck F ⥤ E) (c : C) : F.obj c ⥤ E where
     simp only [eqToHom_comp_iff, Category.assoc, eqToHom_trans_assoc]
     apply Functor.congr_hom (F.map_id _).symm
 
-def functorFrom (fib : ∀ c, F.obj c ⥤ E)
-    (hom : ∀ {c c' : C} (f : c ⟶ c'), ((fib c).hom _).obj _ ⟶ _) :
+variable (fib : ∀ c, F.obj c ⥤ E) (hom : ∀ {c c' : C} (f : c ⟶ c'), fib c ⟶ F.map f ⋙ fib c')
+variable (hom_id : ∀ c, hom (𝟙 c) = eqToHom (by simp only [Functor.map_id]; rfl))
+variable (hom_comp : ∀ c₁ c₂ c₃ (f : c₁ ⟶ c₂) (g : c₂ ⟶ c₃), hom (f ≫ g) =
+  hom f ≫ whiskerLeft (F.map f) (hom g) ≫ eqToHom (by simp only [Functor.map_comp]; rfl))
+
+/-- Construct a functor from `Grothendieck F` to another category `E` by providing a family of
+functors on the fibers of `Grothendieck F`, a family of natural transformations on morphisms in the
+base of `Grothendieck F` and coherence data for this family of natural transformations. -/
+@[simps]
+def functorFrom  :
     Grothendieck F ⥤ E where
-  obj := fun X => (fib X.base).obj X.fiber
-  map := _
+  obj X := (fib X.base).obj X.fiber
+  map {X Y} f := (hom f.base).app X.fiber ≫ (fib Y.base).map f.fiber
+  map_id X := by
+    dsimp
+    erw [hom_id]
+    simp
+  map_comp f g := by
+    dsimp
+    erw [hom_comp]
+    simp
+
+theorem apply_functorFrom (c : C) : apply (functorFrom fib hom hom_id hom_comp) c = fib c := by
+  refine Functor.ext (fun _ => by rfl) ?_
+  intro X Y f
+  simp
+  sorry
 
 end FunctorFrom
 
