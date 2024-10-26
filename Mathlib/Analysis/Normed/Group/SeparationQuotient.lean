@@ -53,8 +53,7 @@ variable (x : SeparationQuotient M) (z : M)
 
 /-- For `(m : M)`, `mk m = 0` if and only if `‖m‖ = 0`. -/
 theorem mk_eq_zero_iff (m : M) : mk m = 0 ↔ ‖m‖ = 0 := by
-  rw [← norm_mk]
-  exact Iff.symm norm_eq_zero
+  rw [← norm_mk, norm_eq_zero]
 
 open NormedAddGroupHom
 
