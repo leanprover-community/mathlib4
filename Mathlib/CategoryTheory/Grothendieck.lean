@@ -84,7 +84,6 @@ theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
 
 /-- The identity morphism in the Grothendieck category.
 -/
-@[simps]
 def id (X : Grothendieck F) : Hom X X where
   base := 𝟙 X.base
   fiber := eqToHom (by erw [CategoryTheory.Functor.map_id, Functor.id_obj X.fiber])
@@ -107,22 +106,27 @@ instance : Category (Grothendieck F) where
   comp := @fun _ _ _ f g => Grothendieck.comp f g
   comp_id := @fun X Y f => by
     dsimp; ext
-    · simp [comp]
-    · dsimp [comp]
+    · simp [comp, id]
+    · dsimp [comp, id]
       rw [← NatIso.naturality_2 (eqToIso (F.map_id Y.base)) f.fiber]
       simp
-  id_comp := @fun X Y f => by dsimp; ext <;> simp [comp]
+  id_comp := @fun X Y f => by dsimp; ext <;> simp [comp, id]
   assoc := @fun W X Y Z f g h => by
     dsimp; ext
-    · simp [comp]
-    · dsimp [comp]
+    · simp [comp, id]
+    · dsimp [comp, id]
       rw [← NatIso.naturality_2 (eqToIso (F.map_comp _ _)) f.fiber]
       simp
 
 @[simp]
-theorem id_fiber' (X : Grothendieck F) :
+theorem id_base (X : Grothendieck F) :
+    Hom.base (𝟙 X) = 𝟙 X.base := by
+  rfl
+
+@[simp]
+theorem id_fiber (X : Grothendieck F) :
     Hom.fiber (𝟙 X) = eqToHom (by erw [CategoryTheory.Functor.map_id, Functor.id_obj X.fiber]) :=
-  id_fiber X
+  rfl
 
 @[simp]
 theorem comp_base {X Y Z : Grothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -170,7 +174,7 @@ def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
   map {X Y} f :=
   { base := f.base
     fiber := (eqToHom (α.naturality f.base).symm).app X.fiber ≫ (α.app Y.base).map f.fiber }
-  map_id X := by simp only [Cat.eqToHom_app, id_fiber', eqToHom_map, eqToHom_trans]; rfl
+  map_id X := by simp only [Cat.eqToHom_app, id_fiber, eqToHom_map, eqToHom_trans]; rfl
   map_comp {X Y Z} f g := by
     dsimp
     congr 1
@@ -345,14 +349,8 @@ def functorFrom  :
     Grothendieck F ⥤ E where
   obj X := (fib X.base).obj X.fiber
   map {X Y} f := (hom f.base).app X.fiber ≫ (fib Y.base).map f.fiber
-  map_id X := by
-    dsimp
-    erw [hom_id]
-    simp
-  map_comp f g := by
-    dsimp
-    erw [hom_comp]
-    simp
+  map_id X := by simp [hom_id]
+  map_comp f g := by simp [hom_comp]
 
 theorem apply_functorFrom (c : C) : apply (functorFrom fib hom hom_id hom_comp) c = fib c := by
   refine Functor.ext (fun _ => by rfl) ?_
