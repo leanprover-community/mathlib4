@@ -116,6 +116,9 @@ abbrev IsEmbedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpa
     (f : α → β) (h : IsEmbedding f) : MetricSpace α :=
   .replaceTopology (.induced f h.inj m) h.induced
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.comapMetricSpace := IsEmbedding.comapMetricSpace
+
 instance Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
     MetricSpace (Subtype p) :=
   .induced Subtype.val Subtype.coe_injective ‹_›

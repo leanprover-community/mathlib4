@@ -55,4 +55,7 @@ theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfM
 theorem productOfMemOpens_isEmbedding [T0Space X] : IsEmbedding (productOfMemOpens X) :=
   .mk (productOfMemOpens_inducing X) (productOfMemOpens_injective X)
 
+@[deprecated (since := "2024-10-26")]
+alias productOfMemOpens_embedding := productOfMemOpens_isEmbedding
+
 end TopologicalSpace

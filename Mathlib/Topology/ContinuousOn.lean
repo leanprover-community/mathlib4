@@ -1107,10 +1107,16 @@ lemma IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsEmbed
     {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
   Inducing.continuousOn_iff hg.1
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.continuousOn_iff := IsEmbedding.continuousOn_iff
+
 lemma IsEmbedding.map_nhdsWithin_eq {f : α → β} (hf : IsEmbedding f) (s : Set α) (x : α) :
     map f (𝓝[s] x) = 𝓝[f '' s] f x := by
   rw [nhdsWithin, Filter.map_inf hf.inj, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
     inter_eq_self_of_subset_right (image_subset_range _ _)]
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.map_nhdsWithin_eq := IsEmbedding.map_nhdsWithin_eq
 
 theorem IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : IsOpenEmbedding f) (s : Set β)
     (x : α) : map f (𝓝[f ⁻¹' s] x) = 𝓝[s] f x := by

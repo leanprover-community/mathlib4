@@ -911,6 +911,9 @@ theorem Inducing.isCompact_iff {f : X → Y} (hf : Inducing f) :
 theorem IsEmbedding.isCompact_iff {f : X → Y} (hf : IsEmbedding f) :
     IsCompact s ↔ IsCompact (f '' s) := hf.toInducing.isCompact_iff
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isCompact_iff := IsEmbedding.isCompact_iff
+
 /-- The preimage of a compact set under an inducing map is a compact set. -/
 theorem Inducing.isCompact_preimage {f : X → Y} (hf : Inducing f) (hf' : IsClosed (range f))
     {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) := by

@@ -177,6 +177,9 @@ lemma isEmbedding_inducingFn : IsEmbedding (inducingFn 𝕜 E F) := by
   rw [ContinuousLinearMapWOT.ext_dual_iff]
   simpa [funext_iff] using hAB
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_inducingFn := isEmbedding_inducingFn
+
 open Filter in
 /-- The defining property of the weak operator topology: a function `f` tends to
 `A : E →WOT[𝕜] F` along filter `l` iff `y (f a x)` tends to `y (A x)` along the same filter. -/

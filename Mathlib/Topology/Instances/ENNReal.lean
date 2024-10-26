@@ -53,6 +53,9 @@ instance : MetrizableSpace ENNReal :=
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
   coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_coe := isEmbedding_coe
+
 theorem isOpen_ne_top : IsOpen { a : ℝ≥0∞ | a ≠ ∞ } := isOpen_ne
 
 theorem isOpen_Ico_zero : IsOpen (Ico 0 b) := by

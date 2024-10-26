@@ -78,6 +78,9 @@ lemma isEmbedding_toUniformOnFun :
     IsEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
   isUniformEmbedding_toUniformOnFun.isEmbedding
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_toUniformOnFun := isEmbedding_toUniformOnFun
+
 theorem uniformContinuous_coe_fun [∀ i, ContinuousSMul 𝕜 (E i)] :
     UniformContinuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=
   (UniformOnFun.uniformContinuous_toFun isVonNBounded_covers).comp
@@ -222,6 +225,9 @@ theorem isEmbedding_restrictScalars :
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
   (isUniformEmbedding_restrictScalars _).isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_restrictScalars := isEmbedding_restrictScalars
 
 @[continuity, fun_prop]
 theorem continuous_restrictScalars :

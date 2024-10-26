@@ -335,6 +335,9 @@ protected lemma IsUniformEmbedding.isEmbedding {f : α → β} (h : IsUniformEmb
   toInducing := h.toIsUniformInducing.inducing
   inj := h.inj
 
+@[deprecated (since := "2024-10-26")]
+alias IsUniformEmbedding.embedding := IsUniformEmbedding.isEmbedding
+
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.embedding := IsUniformEmbedding.isEmbedding
 
@@ -561,6 +564,9 @@ make sure that its topology is defeq to the original one. -/
 def IsEmbedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β]
     (f : α → β) (h : IsEmbedding f) : UniformSpace α :=
   (u.comap f).replaceTopology h.induced
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.comapUniformSpace := IsEmbedding.comapUniformSpace
 
 theorem Embedding.to_isUniformEmbedding {α β} [TopologicalSpace α] [u : UniformSpace β] (f : α → β)
     (h : IsEmbedding f) : @IsUniformEmbedding α β (h.comapUniformSpace f) u f :=

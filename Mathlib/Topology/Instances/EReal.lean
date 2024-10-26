@@ -51,6 +51,9 @@ instance : SecondCountableTopology EReal :=
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ → EReal) :=
   coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe_eq_Ioo]; exact ordConnected_Ioo
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_coe := isEmbedding_coe
+
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ → EReal) :=
   ⟨isEmbedding_coe, by simp only [range_coe_eq_Ioo, isOpen_Ioo]⟩
 
@@ -95,6 +98,9 @@ def neBotTopHomeomorphReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ₜ ℝ where
 theorem isEmbedding_coe_ennreal : IsEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   coe_ennreal_strictMono.isEmbedding_of_ordConnected <| by
     rw [range_coe_ennreal]; exact ordConnected_Ici
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_coe_ennreal := isEmbedding_coe_ennreal
 
 theorem isClosedEmbedding_coe_ennreal : IsClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   ⟨isEmbedding_coe_ennreal, by rw [range_coe_ennreal]; exact isClosed_Ici⟩

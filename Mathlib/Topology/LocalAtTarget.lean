@@ -38,7 +38,13 @@ theorem Set.restrictPreimage_isEmbedding (s : Set β) (h : IsEmbedding f) :
     IsEmbedding (s.restrictPreimage f) :=
   ⟨h.1.restrictPreimage s, h.2.restrictPreimage s⟩
 
+@[deprecated (since := "2024-10-26")]
+alias Set.restrictPreimage_embedding := Set.restrictPreimage_isEmbedding
+
 alias IsEmbedding.restrictPreimage := Set.restrictPreimage_isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.restrictPreimage := IsEmbedding.restrictPreimage
 
 theorem Set.restrictPreimage_isOpenEmbedding (s : Set β) (h : IsOpenEmbedding f) :
     IsOpenEmbedding (s.restrictPreimage f) :=
@@ -176,6 +182,9 @@ theorem isEmbedding_iff_of_iSup_eq_top (h : Continuous f) :
   · apply Set.injective_iff_injective_of_iUnion_eq_univ
     convert congr_arg SetLike.coe hU
     simp
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_iff_embedding_of_iSup_eq_top := isEmbedding_iff_of_iSup_eq_top
 
 theorem isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top (h : Continuous f) :
     IsOpenEmbedding f ↔ ∀ i, IsOpenEmbedding ((U i).1.restrictPreimage f) := by

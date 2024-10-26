@@ -145,6 +145,9 @@ lemma IsEmbedding.isTotallyDisconnected [TopologicalSpace β] {f : α → β} {s
     (hf : IsEmbedding f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
   isTotallyDisconnected_of_image hf.continuous.continuousOn hf.inj h
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isTotallyDisconnected := IsEmbedding.isTotallyDisconnected
+
 lemma IsEmbedding.isTotallyDisconnected_image [TopologicalSpace β] {f : α → β} {s : Set α}
     (hf : IsEmbedding f) : IsTotallyDisconnected (f '' s) ↔ IsTotallyDisconnected s := by
   refine ⟨hf.isTotallyDisconnected, fun hs u hus hu ↦ ?_⟩
@@ -153,9 +156,15 @@ lemma IsEmbedding.isTotallyDisconnected_image [TopologicalSpace β] {f : α → 
   rw [hf.toInducing.isPreconnected_image] at hu
   exact (hs v hvs hu).image _
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isTotallyDisconnected_image := IsEmbedding.isTotallyDisconnected_image
+
 lemma IsEmbedding.isTotallyDisconnected_range [TopologicalSpace β] {f : α → β}
     (hf : IsEmbedding f) : IsTotallyDisconnected (range f) ↔ TotallyDisconnectedSpace α := by
   rw [totallyDisconnectedSpace_iff, ← image_univ, hf.isTotallyDisconnected_image]
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isTotallyDisconnected_range := IsEmbedding.isTotallyDisconnected_range
 
 lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
     TotallyDisconnectedSpace s ↔ IsTotallyDisconnected s := by

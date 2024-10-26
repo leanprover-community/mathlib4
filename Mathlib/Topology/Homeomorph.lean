@@ -220,13 +220,19 @@ alias quotientMap := isQuotientMap
 theorem coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
   h.isQuotientMap.2.symm
 
-protected theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.inducing, h.injective⟩
+theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.inducing, h.injective⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding := isEmbedding
 
 /-- Homeomorphism given an embedding. -/
 noncomputable def ofIsEmbedding (f : X → Y) (hf : IsEmbedding f) : X ≃ₜ Set.range f where
   continuous_toFun := hf.continuous.subtype_mk _
   continuous_invFun := hf.continuous_iff.2 <| by simp [continuous_subtype_val]
   toEquiv := Equiv.ofInjective f hf.inj
+
+@[deprecated (since := "2024-10-26")]
+alias ofEmbedding := ofIsEmbedding
 
 protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
@@ -909,10 +915,13 @@ noncomputable def homeomorph : X ≃ₜ Y where
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
 protected lemma inducing : Inducing f := (hf.homeomorph f).inducing
 lemma isQuotientMap : IsQuotientMap f := (hf.homeomorph f).isQuotientMap
-protected lemma isEmbedding : IsEmbedding f := (hf.homeomorph f).isEmbedding
+lemma isEmbedding : IsEmbedding f := (hf.homeomorph f).isEmbedding
 lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
 lemma isClosedEmbedding : IsClosedEmbedding f := (hf.homeomorph f).isClosedEmbedding
 lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding := isEmbedding
 
 @[deprecated (since := "2024-10-22")]
 alias quotientMap := isQuotientMap
@@ -943,6 +952,9 @@ lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f
   mp hf := ⟨hf.isEmbedding, hf.surjective⟩
   mpr h := ⟨h.1.continuous, ((isOpenEmbedding_iff f).2 ⟨h.1, h.2.range_eq ▸ isOpen_univ⟩).isOpenMap,
     h.1.inj, h.2⟩
+
+@[deprecated (since := "2024-10-26")]
+alias isHomeomorph_iff_embedding_surjective := isHomeomorph_iff_isEmbedding_surjective
 
 /-- A map is a homeomorphism iff it is continuous, closed and bijective. -/
 lemma isHomeomorph_iff_continuous_isClosedMap_bijective  : IsHomeomorph f ↔

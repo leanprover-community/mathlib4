@@ -125,6 +125,9 @@ lemma isEmbedding_toContinuousMultilinearMap :
   haveI := comm_topologicalAddGroup_is_uniform (G := F)
   isUniformEmbedding_toContinuousMultilinearMap.isEmbedding
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_toContinuousMultilinearMap := isEmbedding_toContinuousMultilinearMap
+
 instance instTopologicalAddGroup : TopologicalAddGroup (E [⋀^ι]→L[𝕜] F) :=
   isEmbedding_toContinuousMultilinearMap.topologicalAddGroup
     (toContinuousMultilinearMapLinear (R := ℕ))
@@ -191,6 +194,9 @@ theorem isEmbedding_restrictScalars :
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
   (isUniformEmbedding_restrictScalars _).isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_restrictScalars := isEmbedding_restrictScalars
 
 @[continuity, fun_prop]
 theorem continuous_restrictScalars :

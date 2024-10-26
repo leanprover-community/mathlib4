@@ -250,6 +250,9 @@ theorem inducing_coeFn : Inducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) �
 theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
   ⟨inducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_coeFn := isEmbedding_coeFn
+
 variable (α)
 
 /-- Constant as a continuous bounded function. -/

@@ -280,9 +280,15 @@ protected theorem Inducing.isEmbedding [TopologicalSpace Y] [T0Space X] {f : X �
     (hf : Inducing f) : IsEmbedding f :=
   ⟨hf, hf.injective⟩
 
+@[deprecated (since := "2024-10-26")]
+alias Inducing.embedding := Inducing.isEmbedding
+
 lemma isEmbedding_iff_inducing [TopologicalSpace Y] [T0Space X] {f : X → Y} :
     IsEmbedding f ↔ Inducing f :=
   ⟨IsEmbedding.toInducing, Inducing.isEmbedding⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_iff_inducing := isEmbedding_iff_inducing
 
 theorem t0Space_iff_nhds_injective (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Injective (𝓝 : X → Filter X) :=
@@ -397,6 +403,9 @@ theorem t0Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
 protected theorem IsEmbedding.t0Space [TopologicalSpace Y] [T0Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T0Space X :=
   t0Space_of_injective_of_continuous hf.inj hf.continuous
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.t0Space := IsEmbedding.t0Space
 
 instance Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
   IsEmbedding.subtypeVal.t0Space
@@ -680,6 +689,9 @@ theorem t1Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
 protected theorem IsEmbedding.t1Space [TopologicalSpace Y] [T1Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T1Space X :=
   t1Space_of_injective_of_continuous hf.inj hf.continuous
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.t1Space := IsEmbedding.t1Space
 
 instance Subtype.t1Space {X : Type u} [TopologicalSpace X] [T1Space X] {p : X → Prop} :
     T1Space (Subtype p) :=
@@ -1552,6 +1564,9 @@ theorem IsEmbedding.t2Space [TopologicalSpace Y] [T2Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T2Space X :=
   .of_injective_continuous hf.inj hf.continuous
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.t2Space := IsEmbedding.t2Space
+
 instance ULift.instT2Space [T2Space X] : T2Space (ULift X) :=
   IsEmbedding.uliftDown.t2Space
 
@@ -2146,6 +2161,9 @@ theorem IsEmbedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T25Space X :=
   .of_injective_continuous hf.inj hf.continuous
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.t25Space := IsEmbedding.t25Space
+
 instance Subtype.instT25Space [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
   IsEmbedding.subtypeVal.t25Space
 
@@ -2175,6 +2193,9 @@ protected theorem IsEmbedding.t3Space [TopologicalSpace Y] [T3Space Y] {f : X �
     (hf : IsEmbedding f) : T3Space X :=
   { toT0Space := hf.t0Space
     toRegularSpace := hf.toInducing.regularSpace }
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.t3Space := IsEmbedding.t3Space
 
 instance Subtype.t3Space [T3Space X] {p : X → Prop} : T3Space (Subtype p) :=
   IsEmbedding.subtypeVal.t3Space
@@ -2339,6 +2360,9 @@ theorem IsEmbedding.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormal
   · rwa [← subset_compl_iff_disjoint_right, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_right]
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.completelyNormalSpace := IsEmbedding.completelyNormalSpace
+
 /-- A subspace of a completely normal space is a completely normal space. -/
 instance [CompletelyNormalSpace X] {p : X → Prop} : CompletelyNormalSpace { x // p x } :=
   IsEmbedding.subtypeVal.completelyNormalSpace
@@ -2356,6 +2380,9 @@ theorem IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y}
   completely_normal := by
     have := he.completelyNormalSpace
     exact completely_normal
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.t5Space := IsEmbedding.t5Space
 
 -- see Note [lower instance priority]
 /-- A `T₅` space is a `T₄` space. -/

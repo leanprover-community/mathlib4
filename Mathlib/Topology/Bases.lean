@@ -670,6 +670,9 @@ protected theorem _root_.IsEmbedding.firstCountableTopology {β : Type*}
     FirstCountableTopology α :=
   hf.1.firstCountableTopology
 
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.firstCountableTopology := IsEmbedding.firstCountableTopology
+
 namespace FirstCountableTopology
 
 /-- In a first-countable space, a cluster point `x` of a sequence

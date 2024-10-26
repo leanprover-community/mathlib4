@@ -264,6 +264,9 @@ theorem localization_comap_isEmbedding [Algebra R S] (M : Submonoid R) [IsLocali
     IsEmbedding (comap (algebraMap R S)) :=
   ⟨localization_comap_inducing S M, localization_comap_injective S M⟩
 
+@[deprecated (since := "2024-10-26")]
+alias localization_comap_embedding := localization_comap_isEmbedding
+
 theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Set.range (comap (algebraMap R S)) = { p | Disjoint (M : Set R) p.asIdeal } :=
   localization_specComap_range ..

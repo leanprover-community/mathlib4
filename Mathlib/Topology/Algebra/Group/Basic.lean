@@ -1567,6 +1567,9 @@ def toUnits_homeomorph [Group G] [TopologicalSpace G] [ContinuousInv G] : G ≃�
     IsEmbedding (val : Gˣ → G) :=
   toUnits_homeomorph.symm.isEmbedding
 
+@[deprecated (since := "2024-10-26")]
+alias Units.embedding_val := Units.isEmbedding_val
+
 namespace Units
 
 open MulOpposite (continuous_op continuous_unop)

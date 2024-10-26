@@ -43,6 +43,9 @@ protected lemma IsEmbedding.toPullbackDiag (f : X → Y) : IsEmbedding (toPullba
     rw [toPullbackDiag, nhds_induced, Filter.comap_comap, nhds_prod_eq, Filter.comap_prod]
     erw [Filter.comap_id, inf_idem]
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_toPullbackDiag := IsEmbedding.toPullbackDiag
+
 lemma Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     [TopologicalSpace X₁] [TopologicalSpace X₂] [TopologicalSpace Z₁] [TopologicalSpace Z₂]
     {f₁ : X₁ → Y₁} {g₁ : Z₁ → Y₁} {f₂ : X₂ → Y₂} {g₂ : Z₂ → Y₂}

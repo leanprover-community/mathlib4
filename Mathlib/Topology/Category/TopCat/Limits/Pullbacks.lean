@@ -190,6 +190,9 @@ theorem isEmbedding_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y �
     IsEmbedding <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨inducing_pullback_to_prod f g, (TopCat.mono_iff_injective _).mp inferInstance⟩
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_pullback_to_prod := isEmbedding_pullback_to_prod
+
 /-- If the map `S ⟶ T` is mono, then there is a description of the image of `W ×ₛ X ⟶ Y ×ₜ Z`. -/
 theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶ S) (g₁ : Y ⟶ T)
     (g₂ : Z ⟶ T) (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) [H₃ : Mono i₃] (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁)
@@ -270,7 +273,10 @@ theorem pullback_map_isEmbedding {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S) (f�
     IsEmbedding (prod.lift (pullback.fst f₁ f₂) (pullback.snd f₁ f₂) ≫ Limits.prod.map i₁ i₂) by
     simpa [← coe_comp] using this
   rw [coe_comp]
-  exact (isEmbedding_prod_map H₁ H₂).comp (isEmbedding_pullback_to_prod _ _)
+  exact (isEmbedding_prodMap H₁ H₂).comp (isEmbedding_pullback_to_prod _ _)
+
+@[deprecated (since := "2024-10-26")]
+alias pullback_map_embedding_of_embeddings := pullback_map_isEmbedding
 
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are open embeddings, and `S ⟶ T`
 is mono, then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an open embedding.
@@ -309,6 +315,9 @@ lemma snd_isEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsEmbedding f)
   erw [← coe_comp]
   simp
 
+@[deprecated (since := "2024-10-26")]
+alias snd_embedding_of_left_embedding := snd_isEmbedding_of_left
+
 theorem fst_isEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (H : IsEmbedding g) : IsEmbedding <| ⇑(pullback.fst f g) := by
   convert (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isEmbedding.comp
@@ -317,11 +326,17 @@ theorem fst_isEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
   erw [← coe_comp]
   simp
 
+@[deprecated (since := "2024-10-26")]
+alias fst_embedding_of_right_embedding := fst_isEmbedding_of_right
+
 theorem isEmbedding_of_pullback {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S} (H₁ : IsEmbedding f)
     (H₂ : IsEmbedding g) : IsEmbedding (limit.π (cospan f g) WalkingCospan.one) := by
   convert H₂.comp (snd_isEmbedding_of_left H₁ g)
   rw [← coe_comp, ← limit.w _ WalkingCospan.Hom.inr]
   rfl
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_of_pullback_embeddings := isEmbedding_of_pullback
 
 theorem snd_isOpenEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsOpenEmbedding f)
     (g : Y ⟶ S) : IsOpenEmbedding <| ⇑(pullback.snd f g) := by

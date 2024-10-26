@@ -131,6 +131,9 @@ lemma IsEmbedding.isLocallyClosed_iff {s : Set X}
   simp_rw [hf.toInducing.isLocallyClosed_iff,
     ← (image_injective.mpr hf.inj).eq_iff, image_preimage_eq_inter_range]
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isLocallyClosed_iff := IsEmbedding.isLocallyClosed_iff
+
 lemma IsLocallyClosed.image {s : Set X} (hs : IsLocallyClosed s)
     {f : X → Y} (hf : Inducing f) (hf' : IsLocallyClosed (range f)) :
     IsLocallyClosed (f '' s) := by

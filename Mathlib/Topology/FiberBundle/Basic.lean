@@ -264,6 +264,9 @@ theorem continuous_totalSpaceMk (x : B) : Continuous (@TotalSpace.mk B F E x) :=
 theorem totalSpaceMk_isEmbedding (x : B) : IsEmbedding (@TotalSpace.mk B F E x) :=
   ⟨totalSpaceMk_inducing F E x, TotalSpace.mk_injective x⟩
 
+@[deprecated (since := "2024-10-26")]
+alias totalSpaceMk_embedding := totalSpaceMk_isEmbedding
+
 theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
     IsClosedEmbedding (@TotalSpace.mk B F E x) :=
   ⟨totalSpaceMk_isEmbedding F E x, by

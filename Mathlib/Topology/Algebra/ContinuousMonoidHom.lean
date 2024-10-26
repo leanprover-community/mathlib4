@@ -240,6 +240,9 @@ theorem isEmbedding_toContinuousMap :
     IsEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
   ⟨inducing_toContinuousMap A B, toContinuousMap_injective⟩
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_toContinuousMap := isEmbedding_toContinuousMap
+
 @[to_additive]
 instance instContinuousEvalConst : ContinuousEvalConst (ContinuousMonoidHom A B) A B :=
   .of_continuous_forget (inducing_toContinuousMap A B).continuous

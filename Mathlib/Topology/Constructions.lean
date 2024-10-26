@@ -818,6 +818,9 @@ theorem IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding f) (hg
   { hf.toInducing.prodMap hg.toInducing with
     inj := fun ⟨x₁, z₁⟩ ⟨x₂, z₂⟩ => by simp [hf.inj.eq_iff, hg.inj.eq_iff] }
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.prodMap := IsEmbedding.prodMap
+
 @[deprecated (since := "2024-10-05")] alias Embedding.prod_map := Embedding.prodMap
 
 protected theorem IsOpenMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : IsOpenMap g) :
@@ -841,8 +844,14 @@ alias OpenEmbedding.prodMap := IsOpenEmbedding.prodMap
 lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
   .of_comp (continuous_id.prod_mk hf) continuous_fst .id
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_graph := isEmbedding_graph
+
 lemma isEmbedding_prodMk (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
   .of_comp (Continuous.Prod.mk x) continuous_snd .id
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_prod_mk := isEmbedding_prodMk
 
 theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
@@ -925,6 +934,9 @@ alias openEmbedding_inr := isOpenEmbedding_inr
 
 protected lemma IsEmbedding.inl : IsEmbedding (@inl X Y) := isOpenEmbedding_inl.1
 protected lemma IsEmbedding.inr : IsEmbedding (@inr X Y) := isOpenEmbedding_inr.1
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_inr := IsEmbedding.inr
 
 theorem isOpen_range_inl : IsOpen (range (inl : X → X ⊕ Y)) :=
   isOpenEmbedding_inl.2
@@ -1011,6 +1023,9 @@ theorem Inducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, f x ∈ t
 
 lemma IsEmbedding.subtypeVal : IsEmbedding ((↑) : Subtype p → X) :=
   ⟨inducing_subtype_val, Subtype.coe_injective⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_subtype_val := IsEmbedding.subtypeVal
 
 theorem IsClosedEmbedding.subtypeVal (h : IsClosed {a | p a}) :
     IsClosedEmbedding ((↑) : Subtype p → X) :=
@@ -1127,8 +1142,14 @@ protected lemma IsEmbedding.codRestrict {e : X → Y} (he : IsEmbedding e) (s : 
     (hs : ∀ x, e x ∈ s) : IsEmbedding (codRestrict e s hs) :=
   he.of_comp (he.continuous.codRestrict hs) continuous_subtype_val
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.codRestrict := IsEmbedding.codRestrict
+
 protected lemma IsEmbedding.inclusion {s t : Set X} (h : s ⊆ t) :
     IsEmbedding (inclusion h) := IsEmbedding.subtypeVal.codRestrict _ _
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_inclusion := IsEmbedding.inclusion
 
 /-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
 by `X`on `s` is discrete, then also the topology induces on `t` is discrete. -/
@@ -1580,6 +1601,9 @@ alias closedEmbedding_sigmaMk := isClosedEmbedding_sigmaMk
 lemma IsEmbedding.sigmaMk {i : ι} : IsEmbedding (@Sigma.mk ι σ i) :=
   isClosedEmbedding_sigmaMk.1
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_sigmaMk := IsEmbedding.sigmaMk
+
 theorem Sigma.nhds_mk (i : ι) (x : σ i) : 𝓝 (⟨i, x⟩ : Sigma σ) = Filter.map (Sigma.mk i) (𝓝 x) :=
   (isOpenEmbedding_sigmaMk.map_nhds_eq x).symm
 
@@ -1654,6 +1678,9 @@ lemma isEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i
   simp only [isEmbedding_iff, Injective.sigma_map, inducing_sigma_map h, forall_and,
     h.sigma_map_iff]
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_sigma_map := isEmbedding_sigmaMap
+
 theorem isOpenEmbedding_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} (h : Injective f₁) :
     IsOpenEmbedding (Sigma.map f₁ f₂) ↔ ∀ i, IsOpenEmbedding (f₂ i) := by
   simp only [isOpenEmbedding_iff_isEmbedding_isOpenMap, isOpenMap_sigma_map, isEmbedding_sigmaMap h,
@@ -1684,6 +1711,9 @@ theorem continuous_uLift_up [TopologicalSpace X] : Continuous (ULift.up : X → 
 
 lemma IsEmbedding.uliftDown [TopologicalSpace X] :
     IsEmbedding (ULift.down : ULift.{v, u} X → X) := ⟨⟨rfl⟩, ULift.down_injective⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_uLift_down := IsEmbedding.uliftDown
 
 theorem ULift.isClosedEmbedding_down [TopologicalSpace X] :
     IsClosedEmbedding (ULift.down : ULift.{v, u} X → X) :=

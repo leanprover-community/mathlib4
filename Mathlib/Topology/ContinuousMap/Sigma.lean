@@ -53,6 +53,9 @@ theorem isEmbedding_sigmaMk_comp [Nonempty X] :
         Function.eq_of_sigmaMk_comp <| congr_arg DFunLike.coe h
       simpa using hg
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_sigmaMk_comp := isEmbedding_sigmaMk_comp
+
 section ConnectedSpace
 
 variable [ConnectedSpace X]

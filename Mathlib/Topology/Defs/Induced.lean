@@ -109,6 +109,9 @@ structure IsEmbedding (f : X → Y) extends Inducing f : Prop where
   /-- A topological embedding is injective. -/
   inj : Function.Injective f
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding := IsEmbedding
+
 /-- An open embedding is an embedding with open range. -/
 @[mk_iff]
 structure IsOpenEmbedding (f : X → Y) extends IsEmbedding f : Prop where

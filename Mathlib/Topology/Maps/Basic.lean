@@ -168,48 +168,87 @@ theorem _root_.Function.Injective.isEmbedding_induced [t : TopologicalSpace Y] (
     @_root_.IsEmbedding X Y (t.induced f) t f :=
   @_root_.IsEmbedding.mk X Y (t.induced f) t _ (inducing_induced f) hf
 
+@[deprecated (since := "2024-10-26")]
+alias Function.Injective.embedding_induced := _root_.Function.Injective.isEmbedding_induced
+
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 lemma mk' (f : X → Y) (inj : Injective f) (induced : ∀ x, comap f (𝓝 (f x)) = 𝓝 x) :
     IsEmbedding f :=
   ⟨inducing_iff_nhds.2 fun x => (induced x).symm, inj⟩
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.mk' := mk'
+
 protected lemma id : IsEmbedding (@id X) := ⟨inducing_id, fun _ _ h => h⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_id := IsEmbedding.id
 
 protected lemma comp (hg : IsEmbedding g) (hf : IsEmbedding f) : IsEmbedding (g ∘ f) :=
   { hg.toInducing.comp hf.toInducing with inj := fun _ _ h => hf.inj <| hg.inj h }
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.comp := IsEmbedding.comp
+
 lemma of_comp_iff (hg : IsEmbedding g) : IsEmbedding (g ∘ f) ↔ IsEmbedding f := by
   simp_rw [isEmbedding_iff, hg.toInducing.of_comp_iff, hg.inj.of_comp_iff f]
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.of_comp_iff := of_comp_iff
 
 protected lemma of_comp (hf : Continuous f) (hg : Continuous g) (hgf : IsEmbedding (g ∘ f)) :
     IsEmbedding f where
   toInducing := inducing_of_inducing_compose hf hg hgf.toInducing
   inj := hgf.inj.of_comp
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_of_embedding_compose := IsEmbedding.of_comp
+
 lemma of_leftInverse {f : X → Y} {g : Y → X} (h : LeftInverse f g) (hf : Continuous f)
     (hg : Continuous g) : IsEmbedding g := .of_comp hg hf <| h.comp_eq_id.symm ▸ .id
 
 alias _root_.Function.LeftInverse.isEmbedding := of_leftInverse
 
+@[deprecated (since := "2024-10-26")]
+alias _root_.Function.LeftInverse.embedding := Function.LeftInverse.isEmbedding
+
 lemma map_nhds_eq (hf : IsEmbedding f) (x : X) :     (𝓝 x).map f = 𝓝[range f] f x :=
   hf.1.map_nhds_eq x
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.map_nhds_eq := map_nhds_eq
 
 lemma map_nhds_of_mem (hf : IsEmbedding f) (x : X) (h : range f ∈ 𝓝 (f x)) :
     (𝓝 x).map f = 𝓝 (f x) :=
   hf.1.map_nhds_of_mem x h
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.map_nhds_of_mem := map_nhds_of_mem
+
 lemma tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y} (hg : IsEmbedding g) :
     Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) := hg.toInducing.tendsto_nhds_iff
+
+@[deprecated (since := "2024-10-26")]
+alias continuous := tendsto_nhds_iff
 
 lemma continuous_iff (hg : IsEmbedding g) : Continuous f ↔ Continuous (g ∘ f) :=
   hg.toInducing.continuous_iff
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.continuous_iff := continuous_iff
+
 lemma continuous (hf : IsEmbedding f) : Continuous f := hf.toInducing.continuous
+
+@[deprecated (since := "2024-10-26")]
+alias tendsto_nhds_iff := continuous
 
 lemma closure_eq_preimage_closure_image (hf : IsEmbedding f) (s : Set X) :
     closure s = f ⁻¹' closure (f '' s) :=
   hf.1.closure_eq_preimage_closure_image s
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.closure_eq_preimage_closure_image := closure_eq_preimage_closure_image
 
 /-- The topology induced under an inclusion `f : X → Y` from a discrete topological space `Y`
 is the discrete topology on `X`.
@@ -218,8 +257,14 @@ See also `DiscreteTopology.of_continuous_injective`. -/
 lemma discreteTopology [DiscreteTopology Y] (hf : IsEmbedding f) : DiscreteTopology X :=
   .of_continuous_injective hf.continuous hf.inj
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.discreteTopology := discreteTopology
+
 lemma of_subsingleton [Subsingleton X] (f : X → Y) : IsEmbedding f :=
   ⟨.of_subsingleton f, f.injective_of_subsingleton⟩
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.of_subsingleton := of_subsingleton
 
 end IsEmbedding
 
@@ -487,6 +532,9 @@ lemma IsOpenEmbedding.isEmbedding (hf : IsOpenEmbedding f) : IsEmbedding f := hf
 lemma IsOpenEmbedding.inducing (hf : IsOpenEmbedding f) : Inducing f :=
   hf.isEmbedding.toInducing
 
+@[deprecated (since := "2024-10-26")]
+alias IsOpenEmbedding.isOpenMap := IsOpenEmbedding.inducing
+
 lemma IsOpenEmbedding.isOpenMap (hf : IsOpenEmbedding f) : IsOpenMap f :=
   hf.isEmbedding.toInducing.isOpenMap hf.isOpen_range
 
@@ -547,6 +595,9 @@ lemma IsOpenEmbedding.of_isEmbedding_isOpenMap (h₁ : IsEmbedding f) (h₂ : Is
     IsOpenEmbedding f :=
   ⟨h₁, h₂.isOpen_range⟩
 
+@[deprecated (since := "2024-10-26")]
+alias isOpenEmbedding_of_embedding_open := IsOpenEmbedding.of_isEmbedding_isOpenMap
+
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_of_embedding_open := IsOpenEmbedding.of_isEmbedding_isOpenMap
 
@@ -555,13 +606,22 @@ lemma IsEmbedding.isOpenEmbedding_of_surjective (hf : IsEmbedding f) (hsurj : f.
     IsOpenEmbedding f :=
   ⟨hf, hsurj.range_eq ▸ isOpen_univ⟩
 
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.toIsOpenEmbedding_of_surjective := IsEmbedding.isOpenEmbedding_of_surjective
+
 alias IsOpenEmbedding.of_isEmbedding := IsEmbedding.isOpenEmbedding_of_surjective
+
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.toIsOpenEmbedding_of_surjective := IsOpenEmbedding.of_isEmbedding
 
 @[deprecated (since := "2024-10-18")]
 alias _root_.Embedding.toOpenEmbedding_of_surjective := IsEmbedding.isOpenEmbedding_of_surjective
 
 lemma isOpenEmbedding_iff_isEmbedding_isOpenMap : IsOpenEmbedding f ↔ IsEmbedding f ∧ IsOpenMap f :=
   ⟨fun h => ⟨h.1, h.isOpenMap⟩, fun h => .of_isEmbedding_isOpenMap h.1 h.2⟩
+
+@[deprecated (since := "2024-10-26")]
+alias isOpenEmbedding_iff_embedding_open := isOpenEmbedding_iff_isEmbedding_isOpenMap
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_iff_embedding_open := isOpenEmbedding_iff_isEmbedding_isOpenMap
@@ -648,6 +708,9 @@ lemma of_isEmbedding_isClosedMap (h₁ : IsEmbedding f) (h₂ : IsClosedMap f) :
     IsClosedEmbedding f :=
   ⟨h₁, image_univ (f := f) ▸ h₂ univ isClosed_univ⟩
 
+@[deprecated (since := "2024-10-26")]
+alias _root_.IsClosedEmbedding.of_embedding_closed := of_isEmbedding_isClosedMap
+
 @[deprecated (since := "2024-10-20")]
 alias _root_.closedEmbedding_of_embedding_closed := of_isEmbedding_isClosedMap
 
@@ -675,6 +738,9 @@ theorem comp (hg : IsClosedEmbedding g) (hf : IsClosedEmbedding f) :
 lemma of_comp_iff (hg : IsClosedEmbedding g) : IsClosedEmbedding (g ∘ f) ↔ IsClosedEmbedding f := by
   simp_rw [isClosedEmbedding_iff, hg.isEmbedding.of_comp_iff, Set.range_comp,
     ← hg.closed_iff_image_closed]
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.of_comp_iff := of_comp_iff
 
 theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :
     closure (f '' s) = f '' closure s :=

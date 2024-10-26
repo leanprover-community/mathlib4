@@ -124,6 +124,9 @@ lemma IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
     (hf : IsEmbedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
   hf.toInducing.isSigmaCompact_iff
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isSigmaCompact_iff := IsEmbedding.isSigmaCompact_iff
+
 /-- Sets of subtype are σ-compact iff the image under a coercion is. -/
 lemma Subtype.isSigmaCompact_iff {p : X → Prop} {s : Set { a // p a }} :
     IsSigmaCompact s ↔ IsSigmaCompact ((↑) '' s : Set X) :=

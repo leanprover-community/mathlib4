@@ -103,6 +103,9 @@ theorem _root_.IsEmbedding.metrizableSpace [MetrizableSpace Y] {f : X → Y}
   letI : MetricSpace Y := metrizableSpaceMetric Y
   ⟨⟨hf.comapMetricSpace f, rfl⟩⟩
 
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.metrizableSpace := IsEmbedding.metrizableSpace
+
 instance MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpace s :=
   IsEmbedding.subtypeVal.metrizableSpace
 

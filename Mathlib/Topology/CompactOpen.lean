@@ -99,6 +99,9 @@ theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
     IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
   ⟨inducing_postcomp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_postcomp := isEmbedding_postcomp
+
 @[deprecated (since := "2024-10-19")] alias embedding_comp := isEmbedding_postcomp
 
 /-- `C(·, Z)` is a functor. -/

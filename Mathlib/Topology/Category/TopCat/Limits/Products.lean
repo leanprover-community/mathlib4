@@ -252,12 +252,15 @@ theorem inducing_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf
   erw [← hf.induced, ← hg.induced] -- now `erw` after #13170
   rfl -- `rfl` was not needed before #13170
 
-theorem isEmbedding_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsEmbedding f)
+theorem isEmbedding_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Limits.prod.map f g) :=
   ⟨inducing_prod_map hf.toInducing hg.toInducing, by
     haveI := (TopCat.mono_iff_injective _).mpr hf.inj
     haveI := (TopCat.mono_iff_injective _).mpr hg.inj
     exact (TopCat.mono_iff_injective _).mp inferInstance⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_prod_map := isEmbedding_prodMap
 
 end Prod
 

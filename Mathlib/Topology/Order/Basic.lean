@@ -237,6 +237,9 @@ theorem StrictMono.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] 
     (hf : StrictMono f) (hc : OrdConnected (range f)) : IsEmbedding f :=
   ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
 
+@[deprecated (since := "2024-10-26")]
+alias StrictMono.embedding_of_ordConnected := StrictMono.isEmbedding_of_ordConnected
+
 /-- On a `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]

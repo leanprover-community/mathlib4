@@ -613,6 +613,9 @@ theorem Inducing.isLindelof_iff {f : X → Y} (hf : Inducing f) :
 theorem IsEmbedding.isLindelof_iff {f : X → Y} (hf : IsEmbedding f) :
     IsLindelof s ↔ IsLindelof (f '' s) := hf.toInducing.isLindelof_iff
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isLindelof_iff := IsEmbedding.isLindelof_iff
+
 /-- The preimage of a Lindelöf set under an inducing map is a Lindelöf set. -/
 theorem Inducing.isLindelof_preimage {f : X → Y} (hf : Inducing f) (hf' : IsClosed (range f))
     {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) := by

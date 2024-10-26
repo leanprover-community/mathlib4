@@ -39,6 +39,9 @@ alias openEmbedding_coe := isOpenEmbedding_coe
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
   IsEmbedding.subtypeVal
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_coe := isEmbedding_coe
+
 theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
   isEmbedding_coe.continuous
 

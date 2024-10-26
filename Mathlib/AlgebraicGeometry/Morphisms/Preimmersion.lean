@@ -40,6 +40,9 @@ class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
 lemma Scheme.Hom.isEmbedding {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] : IsEmbedding f.base :=
   IsPreimmersion.base_embedding
 
+@[deprecated (since := "2024-10-26")]
+alias Scheme.Hom.embedding := Scheme.Hom.isEmbedding
+
 lemma Scheme.Hom.stalkMap_surjective {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] (x) :
     Function.Surjective (f.stalkMap x) :=
   IsPreimmersion.surj_on_stalks x
