@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich
 -/
 import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Tendsto
 
 /-!
 # (Co)product of a family of filters

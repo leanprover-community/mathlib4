@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Batteries.Classes.Order
+import Batteries.Tactic.Trans
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
 
@@ -124,6 +124,38 @@ lemma trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b
 instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrrefl α r] :
     IsAsymm α r :=
   ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
+
+instance IsIrrefl.decide [DecidableRel r] [IsIrrefl α r] :
+    IsIrrefl α (fun a b => decide (r a b) = true) where
+  irrefl := fun a => by simpa using irrefl a
+
+instance IsRefl.decide [DecidableRel r] [IsRefl α r] :
+    IsRefl α (fun a b => decide (r a b) = true) where
+  refl := fun a => by simpa using refl a
+
+instance IsTrans.decide [DecidableRel r] [IsTrans α r] :
+    IsTrans α (fun a b => decide (r a b) = true) where
+  trans := fun a b c => by simpa using trans a b c
+
+instance IsSymm.decide [DecidableRel r] [IsSymm α r] :
+    IsSymm α (fun a b => decide (r a b) = true) where
+  symm := fun a b => by simpa using symm a b
+
+instance IsAntisymm.decide [DecidableRel r] [IsAntisymm α r] :
+    IsAntisymm α (fun a b => decide (r a b) = true) where
+  antisymm := fun a b h₁ h₂ => antisymm _ _ (by simpa using h₁) (by simpa using h₂)
+
+instance IsAsymm.decide [DecidableRel r] [IsAsymm α r] :
+    IsAsymm α (fun a b => decide (r a b) = true) where
+  asymm := fun a b => by simpa using asymm a b
+
+instance IsTotal.decide [DecidableRel r] [IsTotal α r] :
+    IsTotal α (fun a b => decide (r a b) = true) where
+  total := fun a b => by simpa using total a b
+
+instance IsTrichotomous.decide [DecidableRel r] [IsTrichotomous α r] :
+    IsTrichotomous α (fun a b => decide (r a b) = true) where
+  trichotomous := fun a b => by simpa using trichotomous a b
 
 variable (r)
 

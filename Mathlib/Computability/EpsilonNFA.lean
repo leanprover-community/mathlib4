@@ -28,7 +28,7 @@ universe u v
 /-- An `εNFA` is a set of states (`σ`), a transition function from state to state labelled by the
   alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`).
   Note the transition function sends a state to a `Set` of states and can make ε-transitions by
-  inputing `none`.
+  inputting `none`.
   Since this definition allows for Automata with infinite states, a `Fintype` instance must be
   supplied for true `εNFA`'s. -/
 structure εNFA (α : Type u) (σ : Type v) where
