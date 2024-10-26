@@ -603,7 +603,7 @@ theorem pow_right_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n
   · rw [pow_succ, pow_succ]
     exact Ideal.mul_mono hn e
 
-lemma sup_pow_le_pow_sub_pow {R} [CommSemiring R] {I J : Ideal R} {n m : ℕ} :
+lemma sup_pow_add_le_pow_sup_pow {R} [CommSemiring R] {I J : Ideal R} {n m : ℕ} :
     (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔ J ^ m := by
   rw [← Ideal.add_eq_sup, ← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup]
   apply Finset.sup_le
