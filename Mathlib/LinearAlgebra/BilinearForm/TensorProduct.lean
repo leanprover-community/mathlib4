@@ -66,7 +66,7 @@ theorem tensorDistrib_tmul (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap R M₂
   rfl
 
 /-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
-protected abbrev tmul (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap  R M₂ N₂) :
+protected abbrev tmul (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap R M₂ N₂) :
     BilinMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 
