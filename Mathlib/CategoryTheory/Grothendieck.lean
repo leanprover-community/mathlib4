@@ -357,8 +357,7 @@ def functorFrom  :
 theorem apply_functorFrom (c : C) : apply (functorFrom fib hom hom_id hom_comp) c = fib c := by
   refine Functor.ext (fun _ => by rfl) ?_
   intro X Y f
-  simp
-  sorry
+  simp [hom_id]
 
 end FunctorFrom
 
