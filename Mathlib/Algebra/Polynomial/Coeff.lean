@@ -346,7 +346,7 @@ theorem natCast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coeff
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_coeff_zero := natCast_coeff_zero
 
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
@@ -366,7 +366,7 @@ theorem intCast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 =
 @[deprecated (since := "2024-04-17")]
 alias int_cast_coeff_zero := intCast_coeff_zero
 
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h

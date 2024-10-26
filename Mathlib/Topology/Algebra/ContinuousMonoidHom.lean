@@ -302,13 +302,13 @@ theorem continuous_comp [LocallyCompactSpace B] :
 theorem continuous_comp_left (f : ContinuousMonoidHom A B) :
     Continuous fun g : ContinuousMonoidHom B C => g.comp f :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
-    f.toContinuousMap.continuous_comp_left.comp (inducing_toContinuousMap B C).continuous
+    f.toContinuousMap.continuous_precomp.comp (inducing_toContinuousMap B C).continuous
 
 @[to_additive]
 theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
     Continuous fun g : ContinuousMonoidHom A B => f.comp g :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
-    f.toContinuousMap.continuous_comp.comp (inducing_toContinuousMap A B).continuous
+    f.toContinuousMap.continuous_postcomp.comp (inducing_toContinuousMap A B).continuous
 
 variable (E)
 
