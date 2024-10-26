@@ -26,6 +26,8 @@ theorem Differentiable.real_of_complex {e : ℂ → ℂ} (h : Differentiable ℂ
     Differentiable ℝ fun x : ℝ => e ↑x :=
   (h.restrictScalars ℝ).comp ofRealCLM.differentiable
 
+attribute [fun_prop] Polynomial.differentiable Differentiable.cexp Complex.continuous_abs
+
 set_option linter.style.multiGoal false in
 theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
     (deriv fun x ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s))) =
@@ -48,18 +50,11 @@ theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
       rw [sumIDeriv_eq_self_add, sumIDeriv_derivative]
     rw [mul_comm _ s, eval_add, mul_add, add_sub_cancel_right]
   rw [← mul_neg, neg_add', neg_mul, neg_neg, h, mul_left_comm]
-  any_goals apply Differentiable.differentiableAt
-  rotate_left 5; apply @Differentiable.real_of_complex fun c : ℂ => exp (-(c * s))
-  rotate_left; apply Differentiable.comp; apply @Differentiable.restrictScalars ℝ _ ℂ
-  any_goals
-    repeat'
-      first
-      | exact differentiable_id
-      | apply Polynomial.differentiable
-      | apply Differentiable.smul_const
-      | apply Differentiable.neg
-      | apply Differentiable.cexp
-      | apply Differentiable.mul_const
+  repeat'
+    first
+    | fun_prop
+    | apply Differentiable.comp
+    | apply @Differentiable.restrictScalars ℝ _ ℂ
 
 theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
     s * ∫ x in (0)..1, exp (-(x • s)) * p.eval (x • s) =
@@ -76,15 +71,12 @@ theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
   · intro x _
     apply (Differentiable.mul _ _).neg.differentiableAt
     · apply @Differentiable.real_of_complex fun c : ℂ => exp (-(c * s))
-      exact (differentiable_id.mul_const _).neg.cexp
+      fun_prop
     change Differentiable ℝ ((fun y : ℂ => p.sumIDeriv.eval y) ∘ fun x : ℝ => x • s)
     apply Differentiable.comp
-    · apply @Differentiable.restrictScalars ℝ _ ℂ; exact Polynomial.differentiable _
-    · exact differentiable_id'.smul_const _
-  · refine
-      (continuous_const.mul ((continuous_id'.smul continuous_const).neg.cexp.mul ?_)).continuousOn
-    change Continuous ((fun y : ℂ => p.eval y) ∘ fun x : ℝ => x • s)
-    exact p.continuous_aeval.comp (continuous_id'.smul continuous_const)
+    · apply @Differentiable.restrictScalars ℝ _ ℂ; fun_prop
+    · fun_prop
+  · fun_prop
 
 def P (p : ℂ[X]) (s : ℂ) :=
   exp s * p.sumIDeriv.eval 0 - p.sumIDeriv.eval s
@@ -124,19 +116,14 @@ theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
   obtain ⟨c', hc', h'⟩ := P_le_aux p s h; clear h
   let c₁ := max (Real.exp s.re) 1
   let c₂ := max (Real.exp (Complex.abs s)) 1
-  have h₂ : 0 ≤ Real.exp (Complex.abs s) := (Real.exp_pos _).le
-  let c₃ := max (Complex.abs s) 1; have h₃ : 0 ≤ (Complex.abs s) := Complex.abs.nonneg _
-  have hc : ∀ {x : ℝ}, 0 ≤ max x 1 := fun {x} => zero_le_one.trans (le_max_right _ _)
-  use c₁ * (c₂ * c' * c₃), mul_nonneg hc (mul_nonneg (mul_nonneg hc hc') hc)
+  let c₃ := max (Complex.abs s) 1
+  use c₁ * (c₂ * c' * c₃), by positivity
   intro q hq; refine (h' q).trans ?_; simp_rw [mul_pow]
-  have hcq : ∀ {x : ℝ}, 0 ≤ max x 1 ^ q := fun {x} => pow_nonneg hc q
-  have hcq' := pow_nonneg hc' q
   have le_max_one_pow : ∀ {x : ℝ}, x ≤ max x 1 ^ q := fun {x} =>
     (max_cases x 1).elim (fun h => h.1.symm ▸ le_self_pow₀ h.2 (zero_lt_one.trans_le hq).ne')
       fun h => by rw [h.1, one_pow]; exact h.2.le
-  refine mul_le_mul le_max_one_pow ?_ (mul_nonneg (mul_nonneg h₂ hcq') h₃) hcq
-  refine mul_le_mul ?_ le_max_one_pow h₃ (mul_nonneg hcq hcq')
-  exact mul_le_mul le_max_one_pow le_rfl hcq' hcq
+  gcongr
+  all_goals exact le_max_one_pow
 
 open Polynomial
 
@@ -159,9 +146,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
           (fun x : ℝ => max (x * abs s) 1 * Complex.abs (aeval (↑x * s) p)) '' Set.Icc 0 1 :=
         Set.image_subset _ Set.Ioc_subset_Icc_self
       refine (IsCompact.image isCompact_Icc ?_).isBounded.subset h
-      · refine ((continuous_id.mul continuous_const).max continuous_const).mul ?_
-        refine Complex.continuous_abs.comp (p.continuous_aeval.comp ?_)
-        exact continuous_ofReal.mul continuous_const
+      fun_prop
     cases' this.exists_norm_le with c h
     use c; intro q x hx
     specialize h (max (x * abs s) 1 * Complex.abs (aeval (↑x * s) p)) (Set.mem_image_of_mem _ hx)
@@ -219,7 +204,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
               (((p.aroots ℂ).erase r).map fun a : ℂ => X - C a).prod) ^
             q) := by
     rw [mul_left_comm, ← mul_pow, mul_left_comm (_ - _),
-      Multiset.prod_map_erase (f := fun a =>  X - C a) hr]
+      Multiset.prod_map_erase (f := fun a => X - C a) hr]
     have : Multiset.card (p.aroots ℂ) = (p.map (algebraMap ℤ ℂ)).natDegree :=
       splits_iff_card_roots.mp (IsAlgClosed.splits _)
     rw [C_leadingCoeff_mul_prod_multiset_X_sub_C this, Polynomial.map_mul, Polynomial.map_pow,

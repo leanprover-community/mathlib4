@@ -728,13 +728,30 @@ theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →�
   simp only [Finsupp.mem_support_iff, Ne, Finsupp.mapRange_apply]
   exact he.ne_iff' he0
 
+lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
+    Set.range (Finsupp.mapRange (α := α) e he₀) = {g | ∀ i, g i ∈ Set.range e} := by
+  ext g
+  constructor
+  · rintro ⟨g, rfl⟩ i
+    simp
+  · intro h
+    classical
+      use onFinset g.support (fun i ↦ if i ∈ g.support then (h i).choose else 0) (by aesop)
+      ext i; dsimp; split_ifs <;> simp_all [(h i).choose_spec]
+
+/-- `Finsupp.mapRange` of a injective function is injective. -/
+lemma mapRange_injective (e : M → N) (he₀ : e 0 = 0) (he : Injective e) :
+    Injective (Finsupp.mapRange (α := α) e he₀) := by
+  intro a b h
+  rw [Finsupp.ext_iff] at h ⊢
+  simp only [mapRange_apply] at h
+  exact fun i ↦ he (h i)
+
 /-- `Finsupp.mapRange` of a surjective function is surjective. -/
 lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
     Surjective (Finsupp.mapRange (α := α) e he₀) := by
-  classical
-  let d (n : N) : M := if n = 0 then 0 else surjInv he n
-  have : RightInverse d e := fun n ↦ by by_cases h : n = 0 <;> simp [d, h, he₀, surjInv_eq he n]
-  exact fun f ↦ ⟨mapRange d (by simp [d]) f, by simp [this.comp_eq_id]⟩
+  rw [← Set.range_iff_surjective, range_mapRange, he.range_eq]
+  simp
 
 end MapRange
 
