@@ -17,7 +17,7 @@ and `Mathlib/LinearAlgebra/FiniteDimensional.lean`.
 
 -/
 
-open Cardinal Submodule Set FiniteDimensional
+open Cardinal Module Module Set Submodule
 
 universe u v
 
@@ -27,7 +27,7 @@ variable {K : Type u} {V : Type v} [Ring K] [StrongRankCondition K] [AddCommGrou
 
 /-- The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
 
-See also `FiniteDimensional.finBasis`.
+See also `Module.finBasis`.
 -/
 noncomputable def Basis.ofRankEqZero [Module.Free K V] {ι : Type*} [IsEmpty ι]
     (hV : Module.rank K V = 0) : Basis ι K V :=
@@ -139,8 +139,10 @@ its span. -/
 theorem rank_submodule_eq_one_iff (s : Submodule K V) [Module.Free K s] :
     Module.rank K s = 1 ↔ ∃ v₀ ∈ s, v₀ ≠ 0 ∧ s ≤ K ∙ v₀ := by
   simp_rw [rank_eq_one_iff, le_span_singleton_iff]
-  refine ⟨fun ⟨⟨v₀, hv₀⟩, H, h⟩ ↦ ⟨v₀, hv₀, fun h' ↦ by simp [h'] at H, fun v hv ↦ ?_⟩,
-    fun ⟨v₀, hv₀, H, h⟩ ↦ ⟨⟨v₀, hv₀⟩, fun h' ↦ H (by simpa using h'), fun ⟨v, hv⟩ ↦ ?_⟩⟩
+  refine ⟨fun ⟨⟨v₀, hv₀⟩, H, h⟩ ↦ ⟨v₀, hv₀, fun h' ↦ by
+    simp only [h', ne_eq] at H; exact H rfl, fun v hv ↦ ?_⟩,
+    fun ⟨v₀, hv₀, H, h⟩ ↦ ⟨⟨v₀, hv₀⟩,
+      fun h' ↦ H (by rwa [AddSubmonoid.mk_eq_zero] at h'), fun ⟨v, hv⟩ ↦ ?_⟩⟩
   · obtain ⟨r, hr⟩ := h ⟨v, hv⟩
     exact ⟨r, by rwa [Subtype.ext_iff, coe_smul] at hr⟩
   · obtain ⟨r, hr⟩ := h v hv
@@ -184,7 +186,7 @@ theorem finrank_eq_one_iff [Module.Free K V] (ι : Type*) [Unique ι] :
     finrank K V = 1 ↔ Nonempty (Basis ι K V) := by
   constructor
   · intro h
-    exact ⟨basisUnique ι h⟩
+    exact ⟨Module.basisUnique ι h⟩
   · rintro ⟨b⟩
     simpa using finrank_eq_card_basis b
 
@@ -200,16 +202,16 @@ there is some `v : V` so every vector is a multiple of `v`.
 -/
 theorem finrank_le_one_iff [Module.Free K V] [Module.Finite K V] :
     finrank K V ≤ 1 ↔ ∃ v : V, ∀ w : V, ∃ c : K, c • v = w := by
-  rw [← rank_le_one_iff, ← finrank_eq_rank, ← natCast_le, Nat.cast_one]
+  rw [← rank_le_one_iff, ← finrank_eq_rank, Nat.cast_le_one]
 
 theorem Submodule.finrank_le_one_iff_isPrincipal
     (W : Submodule K V) [Module.Free K W] [Module.Finite K W] :
     finrank K W ≤ 1 ↔ W.IsPrincipal := by
-  rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, ← natCast_le, Nat.cast_one]
+  rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, Nat.cast_le_one]
 
 theorem Module.finrank_le_one_iff_top_isPrincipal [Module.Free K V] [Module.Finite K V] :
     finrank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
-  rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, ← natCast_le, Nat.cast_one]
+  rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, Nat.cast_le_one]
 
 variable (K V) in
 theorem lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank [Module.Free K V]

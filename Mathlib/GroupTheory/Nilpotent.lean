@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 import Mathlib.GroupTheory.Solvable
 import Mathlib.GroupTheory.Sylow
 import Mathlib.Algebra.Group.Subgroup.Order
+import Mathlib.GroupTheory.Commutator.Finite
 
 /-!
 
@@ -284,12 +285,13 @@ instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) :
 theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
   refine antitone_nat_of_succ_le fun n x hx => ?_
   simp only [mem_lowerCentralSeries_succ_iff, exists_prop, mem_top, exists_true_left,
-    true_and_iff] at hx
+    true_and] at hx
   refine
-    closure_induction hx ?_ (Subgroup.one_mem _) (@Subgroup.mul_mem _ _ _) (@Subgroup.inv_mem _ _ _)
+    closure_induction ?_ (Subgroup.one_mem _) (fun _ _ _ _ ↦ mul_mem) (fun _ _ ↦ inv_mem) hx
   rintro y ⟨z, hz, a, ha⟩
   rw [← ha, mul_assoc, mul_assoc, ← mul_assoc a z⁻¹ a⁻¹]
   exact mul_mem hz (Normal.conj_mem (lowerCentralSeries_normal n) z⁻¹ (inv_mem hz) a)
+
 
 /-- The lower central series of a group is a descending central series. -/
 theorem lowerCentralSeries_isDescendingCentralSeries :
@@ -446,10 +448,10 @@ theorem upperCentralSeries.map {H : Type*} [Group H] {f : G →* H} (h : Functio
 theorem lowerCentralSeries.map {H : Type*} [Group H] (f : G →* H) (n : ℕ) :
     Subgroup.map f (lowerCentralSeries G n) ≤ lowerCentralSeries H n := by
   induction' n with d hd
-  · simp [Nat.zero_eq]
+  · simp
   · rintro a ⟨x, hx : x ∈ lowerCentralSeries G d.succ, rfl⟩
-    refine closure_induction hx ?_ (by simp [f.map_one, Subgroup.one_mem _])
-      (fun y z hy hz => by simp [MonoidHom.map_mul, Subgroup.mul_mem _ hy hz]) (fun y hy => by
+    refine closure_induction (hx := hx) ?_ (by simp [f.map_one, Subgroup.one_mem _])
+      (fun y z _ _ hy hz => by simp [MonoidHom.map_mul, Subgroup.mul_mem _ hy hz]) (fun y _ hy => by
         rw [f.map_inv]; exact Subgroup.inv_mem _ hy)
     rintro a ⟨y, hy, z, ⟨-, rfl⟩⟩
     apply mem_closure.mpr
@@ -534,7 +536,7 @@ private theorem comap_center_subst {H₁ H₂ : Subgroup G} [Normal H₁] [Norma
 theorem comap_upperCentralSeries_quotient_center (n : ℕ) :
     comap (mk' (center G)) (upperCentralSeries (G ⧸ center G) n) = upperCentralSeries G n.succ := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, upperCentralSeries_zero, MonoidHom.comap_bot, ker_mk',
+  · simp only [upperCentralSeries_zero, MonoidHom.comap_bot, ker_mk',
       (upperCentralSeries_one G).symm]
   · let Hn := upperCentralSeries (G ⧸ center G) n
     calc
@@ -810,16 +812,15 @@ theorem isNilpotent_of_finite_tfae :
         ∀ (p : ℕ) (_hp : Fact p.Prime) (P : Sylow p G), (↑P : Subgroup G).Normal,
         Nonempty
           ((∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G)] := by
-  tfae_have 1 → 2
-  · exact @normalizerCondition_of_isNilpotent _ _
+  tfae_have 1 → 2 := @normalizerCondition_of_isNilpotent _ _
   tfae_have 2 → 3
-  · exact fun h H => NormalizerCondition.normal_of_coatom H h
+  | h, H => NormalizerCondition.normal_of_coatom H h
   tfae_have 3 → 4
-  · intro h p _ P; exact Sylow.normal_of_all_max_subgroups_normal h _
+  | h, p, _, P => Sylow.normal_of_all_max_subgroups_normal h _
   tfae_have 4 → 5
-  · exact fun h => Nonempty.intro (Sylow.directProductOfNormal fun {p hp hP} => h p hp hP)
+  | h => Nonempty.intro (Sylow.directProductOfNormal fun {p hp hP} => h p hp hP)
   tfae_have 5 → 1
-  · rintro ⟨e⟩; exact isNilpotent_of_product_of_sylow_group e
+  | ⟨e⟩ => isNilpotent_of_product_of_sylow_group e
   tfae_finish
 
 @[deprecated (since := "2024-06-05")] alias isNilpotent_of_finite_tFAE := isNilpotent_of_finite_tfae

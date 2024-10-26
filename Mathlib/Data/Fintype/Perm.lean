@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Tactic.Ring
+import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # `Fintype` instances for `Equiv` and `Perm`
@@ -36,7 +37,7 @@ theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length 
   | [] => rfl
   | a :: l => by
     rw [length_cons, Nat.factorial_succ]
-    simp only [permsOfList, length_append, length_permsOfList, length_bind, comp,
+    simp only [permsOfList, length_append, length_permsOfList, length_bind, comp_def,
      length_map, map_const', sum_replicate, smul_eq_mul, succ_mul]
     ring
 
@@ -46,7 +47,7 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
   | nil =>
     -- Porting note: applied `not_mem_nil` because it is no longer true definitionally.
     simp only [not_mem_nil] at h
-    exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| h x)
+    exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.byContradiction <| h x)
   | cons a l IH =>
   by_cases hfa : f a = a
   · refine mem_append_left _ (IH fun x hx => mem_of_ne_of_mem ?_ (h x hx))
@@ -132,7 +133,7 @@ theorem mem_perms_of_finset_iff :
     ∀ {s : Finset α} {f : Perm α}, f ∈ permsOfFinset s ↔ ∀ {x}, f x ≠ x → x ∈ s := by
   rintro ⟨⟨l⟩, hs⟩ f; exact mem_permsOfList_iff
 
-theorem card_perms_of_finset : ∀ s : Finset α, (permsOfFinset s).card = s.card ! := by
+theorem card_perms_of_finset : ∀ s : Finset α, #(permsOfFinset s) = (#s)! := by
   rintro ⟨⟨l⟩, hs⟩; exact length_permsOfList l
 
 /-- The collection of permutations of a fintype is a fintype. -/

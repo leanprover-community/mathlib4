@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger, Yaël Dillies
+Authors: Kim Morrison, Yaël Dillies
 -/
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Data.Set.Function
@@ -431,18 +431,18 @@ lemma directedOn_le_Iic (b : α) : DirectedOn (· ≤ ·) (Iic b) :=
   fun _x hx _y hy ↦ ⟨b, le_rfl, hx, hy⟩
 
 lemma directedOn_le_Icc (a b : α) : DirectedOn (· ≤ ·) (Icc a b) :=
-  fun _x hx _y hy ↦ ⟨b, right_mem_Icc.2 $ hx.1.trans hx.2, hx.2, hy.2⟩
+  fun _x hx _y hy ↦ ⟨b, right_mem_Icc.2 <| hx.1.trans hx.2, hx.2, hy.2⟩
 
 lemma directedOn_le_Ioc (a b : α) : DirectedOn (· ≤ ·) (Ioc a b) :=
-  fun _x hx _y hy ↦ ⟨b, right_mem_Ioc.2 $ hx.1.trans_le hx.2, hx.2, hy.2⟩
+  fun _x hx _y hy ↦ ⟨b, right_mem_Ioc.2 <| hx.1.trans_le hx.2, hx.2, hy.2⟩
 
 lemma directedOn_ge_Ici (a : α) : DirectedOn (· ≥ ·) (Ici a) :=
   fun _x hx _y hy ↦ ⟨a, le_rfl, hx, hy⟩
 
 lemma directedOn_ge_Icc (a b : α) : DirectedOn (· ≥ ·) (Icc a b) :=
-  fun _x hx _y hy ↦ ⟨a, left_mem_Icc.2 $ hx.1.trans hx.2, hx.1, hy.1⟩
+  fun _x hx _y hy ↦ ⟨a, left_mem_Icc.2 <| hx.1.trans hx.2, hx.1, hy.1⟩
 
 lemma directedOn_ge_Ico (a b : α) : DirectedOn (· ≥ ·) (Ico a b) :=
-  fun _x hx _y hy ↦ ⟨a, left_mem_Ico.2 $ hx.1.trans_lt hx.2, hx.1, hy.1⟩
+  fun _x hx _y hy ↦ ⟨a, left_mem_Ico.2 <| hx.1.trans_lt hx.2, hx.1, hy.1⟩
 
 end Preorder

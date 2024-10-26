@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Scott Morrison
+Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.TryThis
@@ -563,8 +563,4 @@ macro (name := abelConv) "abel" : conv =>
 @[inherit_doc abelConv] macro "abel!" : conv =>
   `(conv| first | discharge => abel1! | try_this abel_nf!)
 
-end Abel
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.Abel

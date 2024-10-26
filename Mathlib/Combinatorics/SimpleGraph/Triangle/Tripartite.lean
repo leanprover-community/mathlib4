@@ -155,7 +155,7 @@ instance graph.instDecidableRelAdj : DecidableRel (graph t).Adj
   toFun x := {in₀ x.1, in₁ x.2.1, in₂ x.2.2}
   inj' := fun ⟨a, b, c⟩ ⟨a', b', c'⟩ ↦ by simpa only [Finset.Subset.antisymm_iff, Finset.subset_iff,
     mem_insert, mem_singleton, forall_eq_or_imp, forall_eq, Prod.mk.inj_iff, or_false, false_or,
-    in₀, in₁, in₂, Sum.inl.inj_iff, Sum.inr.inj_iff] using And.left
+    in₀, in₁, in₂, Sum.inl.inj_iff, Sum.inr.inj_iff, reduceCtorEq] using And.left
 
 lemma toTriangle_is3Clique (hx : x ∈ t) : (graph t).IsNClique 3 (toTriangle x) := by
   simp only [toTriangle_apply, is3Clique_triple_iff, in₀₁_iff, in₀₂_iff, in₁₂_iff]
@@ -211,20 +211,20 @@ section Fintype
 variable [Fintype α] [Fintype β] [Fintype γ]
 
 lemma cliqueFinset_eq_image [NoAccidental t] : (graph t).cliqueFinset 3 = t.image toTriangle :=
-  coe_injective $ by push_cast; exact cliqueSet_eq_image _
+  coe_injective <| by push_cast; exact cliqueSet_eq_image _
 
 lemma cliqueFinset_eq_map [NoAccidental t] : (graph t).cliqueFinset 3 = t.map toTriangle := by
   simp [cliqueFinset_eq_image, map_eq_image]
 
-@[simp] lemma card_triangles [NoAccidental t] : ((graph t).cliqueFinset 3).card = t.card := by
+@[simp] lemma card_triangles [NoAccidental t] : #((graph t).cliqueFinset 3) = #t := by
   rw [cliqueFinset_eq_map, card_map]
 
 lemma farFromTriangleFree [ExplicitDisjoint t] {ε : 𝕜}
-    (ht : ε * ((Fintype.card α + Fintype.card β + Fintype.card γ) ^ 2 : ℕ) ≤ t.card) :
+    (ht : ε * ((Fintype.card α + Fintype.card β + Fintype.card γ) ^ 2 : ℕ) ≤ #t) :
     (graph t).FarFromTriangleFree ε :=
   farFromTriangleFree_of_disjoint_triangles (t.map toTriangle)
     (map_subset_iff_subset_preimage.2 fun x hx ↦ by simpa using toTriangle_is3Clique hx)
-    (map_toTriangle_disjoint t) $ by simpa [add_assoc] using ht
+    (map_toTriangle_disjoint t) <| by simpa [add_assoc] using ht
 
 end Fintype
 end DecidableEq

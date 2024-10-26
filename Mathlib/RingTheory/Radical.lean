@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Jineon Back and Seewoo Lee. All rights reserved.
+Copyright (c) 2024 Jineon Baek, Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
@@ -36,7 +36,7 @@ noncomputable section
 
 open scoped Classical
 
-open UniqueFactorizationMonoid
+namespace UniqueFactorizationMonoid
 
 -- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
 variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
@@ -45,6 +45,12 @@ variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
 /-- The finite set of prime factors of an element in a unique factorization monoid. -/
 def primeFactors (a : M) : Finset M :=
   (normalizedFactors a).toFinset
+
+theorem _root_.Associated.primeFactors_eq {a b : M} (h : Associated a b) :
+    primeFactors a = primeFactors b := by
+  unfold primeFactors
+  rw [h.normalizedFactors_eq]
+
 
 /--
 Radical of an element `a` in a unique factorization monoid is the product of
@@ -62,10 +68,8 @@ theorem radical_one_eq : radical (1 : M) = 1 := by
   rw [radical, primeFactors, normalizedFactors_one, Multiset.toFinset_zero, Finset.prod_empty]
 
 theorem radical_eq_of_associated {a b : M} (h : Associated a b) : radical a = radical b := by
-  rcases iff_iff_and_or_not_and_not.mp h.eq_zero_iff with (⟨rfl, rfl⟩ | ⟨ha, hb⟩)
-  · rfl
-  · simp_rw [radical, primeFactors]
-    rw [(associated_iff_normalizedFactors_eq_normalizedFactors ha hb).mp h]
+  unfold radical
+  rw [h.primeFactors_eq]
 
 theorem radical_unit_eq_one {a : M} (h : IsUnit a) : radical a = 1 :=
   (radical_eq_of_associated (associated_one_iff_isUnit.mpr h)).trans radical_one_eq
@@ -103,3 +107,5 @@ theorem radical_pow_of_prime {a : M} (ha : Prime a) {n : ℕ} (hn : 0 < n) :
     radical (a ^ n) = normalize a := by
   rw [radical_pow a hn]
   exact radical_of_prime ha
+
+end UniqueFactorizationMonoid

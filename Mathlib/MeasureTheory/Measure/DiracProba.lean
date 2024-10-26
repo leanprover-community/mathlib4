@@ -36,7 +36,7 @@ lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [Compl
   set g' := BoundedContinuousFunction.mkOfBound
       ⟨fun x ↦ Real.toNNReal (g x), continuous_real_toNNReal.comp g_cont.subtype_val⟩ 1 g_bdd
   set f := 1 - g'
-  refine ⟨f, by simp [f, g', gx_zero], fun y y_in_K ↦ by simp [f, g', g_one_on_K y_in_K]⟩
+  refine ⟨f, by simp [f, g', gx_zero], fun y y_in_K ↦ by simp [f, g', g_one_on_K y_in_K, tsub_self]⟩
 
 namespace MeasureTheory
 
@@ -101,7 +101,7 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (
              lintegral_dirac' _ (measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable)]
   apply not_tendsto_iff_exists_frequently_nmem.mpr
   refine ⟨Ioi 0, Ioi_mem_nhds (by simp only [ENNReal.coe_one, zero_lt_one]),
-          hU.mp (eventually_of_forall ?_)⟩
+          hU.mp (Eventually.of_forall ?_)⟩
   intro x x_notin_U
   rw [f_vanishes_outside x
         (compl_subset_compl.mpr (show interior U ⊆ U from interior_subset) x_notin_U)]

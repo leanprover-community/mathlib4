@@ -152,7 +152,7 @@ def homEquiv :
     invFun := fun f => lift f.1.1 f.1.2 f.2,
     left_inv := fun _ => hom_ext (by simp [DFunLike.ext_iff])
       (by simp [DFunLike.ext_iff])
-    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, Function.funext_iff] }
+    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, funext_iff] }
 
 /-- The map from the coproduct into the pushout -/
 def ofCoprodI : CoprodI G →* PushoutI φ :=
@@ -301,7 +301,7 @@ theorem prod_empty : (empty : NormalWord d).prod = 1 := by
   simp [prod, empty]
 
 /-- A constructor that multiplies a `NormalWord` by an element, with condition to make
-sure the underlying list does get longer.  -/
+sure the underlying list does get longer. -/
 @[simps!]
 noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : NormalWord d :=
@@ -328,7 +328,7 @@ variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
 /-- Given a word in `CoprodI`, if every letter is in the transversal and when
 we multiply by an element of the base group it still has this property,
-then the element of the base group we multiplied by was one.  -/
+then the element of the base group we multiplied by was one. -/
 theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     (hw : ∀ i g, ⟨i, g⟩ ∈ w.toList → g ∈ d.set i)
     (hφw : ∀ j g, ⟨j, g⟩ ∈ (CoprodI.of (φ i h) • w).toList → g ∈ d.set j) :
@@ -355,8 +355,9 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
         equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩ , hhead, Subtype.ext_iff,
         Prod.ext_iff, Subgroup.coe_mul] at h
       rcases h with ⟨h₁, h₂⟩
-      rw [h₂, equiv_one (d.compl i) (one_mem _) (d.one_mem _), mul_one,
-        ((injective_iff_map_eq_one' _).1 (d.injective i))] at h₁
+      rw [h₂, equiv_one (d.compl i) (one_mem _) (d.one_mem _)] at h₁
+      erw [mul_one] at h₁
+      simp only [((injective_iff_map_eq_one' _).1 (d.injective i))] at h₁
       contradiction
     · rw [Word.equivPair_head]
       dsimp
@@ -453,7 +454,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
 noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift
-      (fun i => MulAction.toEndHom)
+      (fun _ => MulAction.toEndHom)
       MulAction.toEndHom <| by
     intro i
     simp only [MulAction.toEndHom, DFunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
@@ -595,7 +596,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
-    by simp_all [Function.funext_iff, of_smul_eq_smul])
+    by simp_all [funext_iff, of_smul_eq_smul])
 
 theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
     Function.Injective (base φ) := by
@@ -606,7 +607,7 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
-    by simp_all [Function.funext_iff, base_smul_eq_smul])
+    by simp_all [funext_iff, base_smul_eq_smul])
 
 section Reduced
 
