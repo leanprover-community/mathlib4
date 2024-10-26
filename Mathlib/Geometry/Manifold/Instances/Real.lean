@@ -134,9 +134,9 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
   left_inv' := fun ⟨xval, xprop⟩ _ => by
     rw [Subtype.mk_eq_mk, update_eq_iff]
     exact ⟨max_eq_left xprop, fun i _ => rfl⟩
-  right_inv' x hx := update_eq_iff.2 ⟨max_eq_left hx, fun i _ => rfl⟩
+  right_inv' _ hx := update_eq_iff.2 ⟨max_eq_left hx, fun _ _ => rfl⟩
   source_eq := rfl
-  unique_diff' := by
+  uniqueDiffOn' := by
     have : UniqueDiffOn ℝ _ :=
       UniqueDiffOn.pi (Fin n) (fun _ => ℝ) _ _ fun i (_ : i ∈ ({0} : Set (Fin n))) =>
         uniqueDiffOn_Ici 0
@@ -155,11 +155,11 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
   source := univ
   target := { x | ∀ i, 0 ≤ x i }
   map_source' x _ := x.property
-  map_target' x _ := mem_univ _
+  map_target' _ _ := mem_univ _
   left_inv' x _ := by ext i; simp only [Subtype.coe_mk, x.2 i, max_eq_left]
   right_inv' x hx := by ext1 i; simp only [hx i, max_eq_left]
   source_eq := rfl
-  unique_diff' := by
+  uniqueDiffOn' := by
     have this : UniqueDiffOn ℝ _ :=
       UniqueDiffOn.univ_pi (Fin n) (fun _ => ℝ) _ fun _ => uniqueDiffOn_Ici 0
     simpa only [pi_univ_Ici] using this
@@ -323,7 +323,7 @@ instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
   either the left chart or the right chart, leaving 4 possibilities that we handle successively. -/
   rcases he with (rfl | rfl) <;> rcases he' with (rfl | rfl)
   · -- `e = left chart`, `e' = left chart`
-    exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _ _ _)).1
+    exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
   · -- `e = left chart`, `e' = right chart`
     apply M.contDiffOn.congr
     rintro _ ⟨⟨hz₁, hz₂⟩, ⟨⟨z, hz₀⟩, rfl⟩⟩
@@ -347,7 +347,7 @@ instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
       PiLp.neg_apply, update_same, max_eq_left, hz₀, hz₁.le, mfld_simps]
     abel
   ·-- `e = right chart`, `e' = right chart`
-    exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _ _ _)).1
+    exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
 /-! Register the manifold structure on `Icc 0 1`, and also its zero and one. -/
 

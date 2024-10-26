@@ -114,9 +114,9 @@ noncomputable def quotientEquivDirectSum :
 theorem finrank_quotient_eq_sum {ι} [Fintype ι] (b : Basis ι R S) [Nontrivial F]
     [∀ i, Module.Free F (R ⧸ span ({I.smithCoeffs b hI i} : Set R))]
     [∀ i, Module.Finite F (R ⧸ span ({I.smithCoeffs b hI i} : Set R))] :
-    FiniteDimensional.finrank F (S ⧸ I) =
-      ∑ i, FiniteDimensional.finrank F (R ⧸ span ({I.smithCoeffs b hI i} : Set R)) := by
+    Module.finrank F (S ⧸ I) =
+      ∑ i, Module.finrank F (R ⧸ span ({I.smithCoeffs b hI i} : Set R)) := by
   -- slow, and dot notation doesn't work
-  rw [LinearEquiv.finrank_eq <| quotientEquivDirectSum F b hI, FiniteDimensional.finrank_directSum]
+  rw [LinearEquiv.finrank_eq <| quotientEquivDirectSum F b hI, Module.finrank_directSum]
 
 end Ideal

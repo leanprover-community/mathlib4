@@ -93,7 +93,7 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
         -- check that it's not a simp-trivial equality:
         forallTelescope ty' fun _ ty' => do
           if let some (_, lhs, rhs) := ty'.eq? then
-            if ← Std.Tactic.Lint.isSimpEq lhs rhs then
+            if ← Batteries.Tactic.Lint.isSimpEq lhs rhs then
               throwError "applying simp to both sides reduces elementwise lemma for {src} \
                 to the trivial equality {ty'}. \
                 Either add `nosimp` or remove the `elementwise` attribute."

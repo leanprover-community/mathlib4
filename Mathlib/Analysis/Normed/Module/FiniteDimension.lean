@@ -48,7 +48,7 @@ universe u v w x
 
 noncomputable section
 
-open Set FiniteDimensional TopologicalSpace Filter Asymptotics Topology NNReal Metric
+open Asymptotics Filter Module Metric Module NNReal Set TopologicalSpace Topology
 
 namespace LinearIsometry
 
@@ -323,14 +323,14 @@ theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
 
 instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     SecondCountableTopology (E →L[𝕜] F) := by
-  set d := FiniteDimensional.finrank 𝕜 E
+  set d := Module.finrank 𝕜 E
   suffices
     ∀ ε > (0 : ℝ), ∃ n : (E →L[𝕜] F) → Fin d → ℕ, ∀ f g : E →L[𝕜] F, n f = n g → dist f g ≤ ε from
     Metric.secondCountable_of_countable_discretization fun ε ε_pos =>
       ⟨Fin d → ℕ, by infer_instance, this ε ε_pos⟩
   intro ε ε_pos
   obtain ⟨u : ℕ → F, hu : DenseRange u⟩ := exists_dense_seq F
-  let v := FiniteDimensional.finBasis 𝕜 E
+  let v := Module.finBasis 𝕜 E
   obtain
     ⟨C : ℝ, C_pos : 0 < C, hC :
       ∀ {φ : E →L[𝕜] F} {M : ℝ}, 0 ≤ M → (∀ i, ‖φ (v i)‖ ≤ M) → ‖φ‖ ≤ C * M⟩ :=
@@ -519,8 +519,8 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
   have : LocallyCompactSpace 𝕜 := by
     obtain ⟨v, hv⟩ : ∃ v : E, v ≠ 0 := exists_ne 0
     let L : 𝕜 → E := fun t ↦ t • v
-    have : ClosedEmbedding L := closedEmbedding_smul_left hv
-    apply ClosedEmbedding.locallyCompactSpace this
+    have : IsClosedEmbedding L := isClosedEmbedding_smul_left hv
+    apply IsClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
 
 @[deprecated (since := "2024-01-31")]
@@ -647,7 +647,7 @@ theorem summable_norm_iff {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
   refine ⟨Summable.of_norm, fun hf ↦ ?_⟩
   -- First we use a finite basis to reduce the problem to the case `E = Fin N → ℝ`
   suffices ∀ {N : ℕ} {g : α → Fin N → ℝ}, Summable g → Summable fun x => ‖g x‖ by
-    obtain v := finBasis ℝ E
+    obtain v := Module.finBasis ℝ E
     set e := v.equivFunL
     have H : Summable fun x => ‖e (f x)‖ := this (e.summable.2 hf)
     refine .of_norm_bounded _ (H.mul_left ↑‖(e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E)‖₊) fun i ↦ ?_
