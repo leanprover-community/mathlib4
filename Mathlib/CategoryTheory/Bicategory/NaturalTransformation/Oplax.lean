@@ -16,7 +16,9 @@ transformations.
 ## Main definitions
 
 * `OplaxTrans F G` : oplax transformations between oplax functors `F` and `G`
-* `OplaxTrans.vcomp η θ` : the vertical composition of oplax transformations `η` and `θ`
+
+Using this, we define a category instance on `OplaxTrans F G`, with composition given by vertical
+composition of oplax transformations.
 
 # TODO
 This file could also include lax and strong transformations between oplax functors.
