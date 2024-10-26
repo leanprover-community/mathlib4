@@ -125,7 +125,7 @@ def forget (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : �
 section
 
 -- TODO: different universe?
-variable {G : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
+variable {F} {G : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
   {H : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
 
 /-- The Grothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
@@ -181,21 +181,27 @@ def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) where
     dsimp
     ext
     · simp
-    simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
+    simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
   inv_hom_id := by
     dsimp
     ext
     · simp
-    simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
+    simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
 
 lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
   Functor.ext_of_iso (mapIdIso) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
 
 abbrev mapCompIso_hom (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ⟶ map α ⋙ map β where
   app a := eqToHom (by aesop_cat)
+  naturality := by
+    simp
+    sorry -- needs new bicategory code to function
 
 abbrev mapCompIso_inv (α : F ⟶ G) (β : G ⟶ H) : map α ⋙ map β ⟶ map (α ≫ β) where
   app a := eqToHom (by aesop_cat)
+  naturality := by
+    simp
+    sorry -- needs new bicategory code to function
 
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β where
   hom := mapCompIso_hom α β
@@ -204,12 +210,12 @@ def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ ma
     dsimp
     ext
     · simp
-    simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
+    simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
   inv_hom_id := by
     dsimp
     ext
     · simp
-    simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
+    simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
 
 lemma map_comp_eq (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) = map α ⋙ map β := by
   apply Functor.ext_of_iso (mapCompIso α β)
