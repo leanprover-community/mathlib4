@@ -3,10 +3,10 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Order.Nonneg.GeomSum
 import Mathlib.Algebra.Polynomial.Eval
-import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Cauchy's bound on polynomial roots.
@@ -57,13 +57,6 @@ lemma cauchyBound_smul {x : K} (hx : x ≠ 0) (p : K[X]) : cauchyBound (x • p)
   apply mul_div_mul_left
   simpa
 
-lemma NNReal.geom_sum {x : ℝ≥0} (h : 1 < x) (n : ℕ) :
-    ∑ i ∈ Finset.range n, x ^ i = (x ^ n - 1) / (x - 1) := by
-  apply eq_div_of_mul_eq (tsub_pos_of_lt h).ne'
-  apply eq_tsub_of_add_eq
-  convert geom_sum_mul_add (x - 1) n <;>
-  rw [tsub_add_cancel_of_le h.le]
-
 /--
 `cauchyBound` is a bound on the norm of polynomial roots.
 -/
@@ -84,7 +77,7 @@ theorem Polynomial.IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) (a : K) 
     rcases lt_or_gt_of_ne ha with ha | ha
     · apply ha.trans_le
       simp
-    · rw [NNReal.geom_sum ha] at this
+    · rw [Nonneg.geom_sum_of_one_lt ha] at this
       calc
         ‖a‖₊ = ‖a‖₊ - 1 + 1 := (tsub_add_cancel_of_le ha.le).symm
         _ = ‖a‖₊ ^ p.natDegree * (‖a‖₊ - 1) / ‖a‖₊ ^ p.natDegree + 1 := by
