@@ -19,13 +19,13 @@ import Mathlib.AlgebraicGeometry.FunctionField
   A rational map from `X` to `Y` (`X ⤏ Y`) is an equivalence class of partial maps.
 * `AlgebraicGeometry.Scheme.RationalMap.equivFunctionField`:
   Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and `X` is integral,
-  `S`-morphism `Spec K(X) ⟶ Y` corresponds bijectively to `S`-rational map from `X` to `Y`.
+  `S`-morphisms `Spec K(X) ⟶ Y` correspond bijectively to `S`-rational maps from `X` to `Y`.
 
 -/
 
 universe u
 
-open CategoryTheory
+open CategoryTheory hiding Quotient
 
 namespace AlgebraicGeometry
 
@@ -64,7 +64,7 @@ lemma ext (f g : X.PartialMap Y) (e : f.domain = g.domain)
   exact ⟨e, H⟩
 
 /-- The restriction of a partial map to a smaller domain. -/
-@[simps domain hom]
+@[simps hom, simps (config := .lemmasOnly) domain]
 noncomputable
 def restrict (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : X.PartialMap Y where
@@ -104,7 +104,7 @@ abbrev fromFunctionField [IrreducibleSpace X] (f : X.PartialMap Y) :
     ((genericPoint_specializes _).mem_open f.domain.2 f.dense_domain.nonempty.choose_spec)
 
 lemma fromSpecStalkOfMem_restrict (f : X.PartialMap Y)
-    (U : X.Opens) (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) {x} (hx : x ∈ U) :
+    {U : X.Opens} (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) {x} (hx : x ∈ U) :
     (f.restrict U hU hU').fromSpecStalkOfMem hx = f.fromSpecStalkOfMem (hU' hx) := by
   dsimp only [fromSpecStalkOfMem, restrict, Scheme.Opens.fromSpecStalkOfMem]
   have e : ⟨x, hU' hx⟩ = (X.homOfLE hU').base ⟨x, hx⟩ := by
@@ -121,13 +121,13 @@ lemma fromSpecStalkOfMem_restrict (f : X.PartialMap Y)
   rw [← stalkSpecializes_stalkMap_assoc, stalkMap_comp]
 
 lemma fromFunctionField_restrict (f : X.PartialMap Y) [IrreducibleSpace X]
-    (U : X.Opens) (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) :
+    {U : X.Opens} (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) :
     (f.restrict U hU hU').fromFunctionField = f.fromFunctionField :=
-  fromSpecStalkOfMem_restrict f _ _ _ _
+  fromSpecStalkOfMem_restrict f _ _ _
 
 /--
 Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and
-`X` is irreducible and "germ-injective" (e.g. when `X` is integral),
+`X` is irreducible germ-injective at `x` (e.g. when `X` is integral),
 any `S`-morphism `Spec 𝒪ₓ ⟶ Y` spreads out to a partial map from `X` to `Y`.
 -/
 noncomputable
@@ -170,7 +170,7 @@ def equiv (f g : X.PartialMap Y) : Prop :=
   ∃ (W : X.Opens) (hW : Dense (W : Set X)) (hWl : W ≤ f.domain) (hWr : W ≤ g.domain),
     (f.restrict W hW hWl).hom = (g.restrict W hW hWr).hom
 
-lemma iseqv_rel : _root_.Equivalence (@Scheme.PartialMap.equiv X Y) where
+lemma iseqv_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
   refl f := ⟨f.domain, f.dense_domain, by simp⟩
   symm {f g} := by
     intro ⟨W, hW, hWl, hWr, e⟩
@@ -206,8 +206,8 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
     simp only [TopologicalSpace.Opens.carrier_eq_coe, IsOpenMap.functor_obj_coe,
       TopologicalSpace.Opens.coe_inf, restrict_hom, ← Category.assoc] at e ⊢
     convert e using 2 <;> rw [← cancel_mono (Scheme.Opens.ι _)] <;> simp
-  · rw [← f.fromSpecStalkOfMem_restrict _ hdense inf_le_left ⟨hxf, hxg⟩,
-      ← g.fromSpecStalkOfMem_restrict _ hdense inf_le_right ⟨hxf, hxg⟩] at H
+  · rw [← f.fromSpecStalkOfMem_restrict hdense inf_le_left ⟨hxf, hxg⟩,
+      ← g.fromSpecStalkOfMem_restrict hdense inf_le_right ⟨hxf, hxg⟩] at H
     simpa only [fromSpecStalkOfMem, restrict_domain, Opens.fromSpecStalkOfMem, Spec.map_inv,
       restrict_hom, Category.assoc, IsIso.eq_inv_comp, IsIso.hom_inv_id_assoc] using H
 
@@ -216,7 +216,7 @@ end PartialMap
 /-- A rational map from `X` to `Y` (`X ⤏ Y`) is an equivalence class of partial maps,
 where two partial maps are equivalent if they are equal on a dense open subscheme.  -/
 def RationalMap (X Y : Scheme.{u}) : Type u :=
-  @_root_.Quotient (X.PartialMap Y) inferInstance
+  @Quotient (X.PartialMap Y) inferInstance
 
 /-- The notation for rational maps. -/
 scoped[AlgebraicGeometry] infix:10 " ⤏ " => Scheme.RationalMap
@@ -228,16 +228,16 @@ def PartialMap.toRationalMap (f : X.PartialMap Y) : X ⤏ Y := Quotient.mk _ f
 abbrev Hom.toRationalMap (f : X.Hom Y) : X ⤏ Y := f.toPartialMap.toRationalMap
 
 lemma PartialMap.toRationalMap_surjective : Function.Surjective (@toRationalMap X Y) :=
-  _root_.Quotient.exists_rep
+  Quotient.exists_rep
 
 lemma RationalMap.exists_rep (f : X ⤏ Y) : ∃ g : X.PartialMap Y, g.toRationalMap = f :=
-  _root_.Quotient.exists_rep f
+  Quotient.exists_rep f
 
 lemma PartialMap.toRationalMap_eq_iff {f g : X.PartialMap Y} :
     f.toRationalMap = g.toRationalMap ↔ f.equiv g :=
   Quotient.eq
 
-/-- A rational map restricts to a map from `Spec K(X)`. -/
+/-- The composition of a rational map and a morphism on the right. -/
 def RationalMap.compHom (f : X ⤏ Y) (g : Y ⟶ Z) : X ⤏ Z := by
   refine Quotient.map (PartialMap.compHom · g) ?_ f
   intro f₁ f₂ ⟨W, hW, hWl, hWr, e⟩
@@ -250,14 +250,14 @@ def RationalMap.compHom (f : X ⤏ Y) (g : Y ⟶ Z) : X ⤏ Z := by
 lemma RationalMap.compHom_toRationalMap (f : X.PartialMap Y) (g : Y ⟶ Z) :
     f.toRationalMap.compHom g = (f.compHom g).toRationalMap := rfl
 
-/-- The composition of a rational map and a morphism on the right. -/
+/-- A rational map restricts to a map from `Spec K(X)`. -/
 noncomputable
 def RationalMap.fromFunctionField [IrreducibleSpace X] (f : X ⤏ Y) :
     Spec X.functionField ⟶ Y := by
   refine Quotient.lift PartialMap.fromFunctionField ?_ f
   intro f g ⟨W, hW, hWl, hWr, e⟩
   have : f.restrict W hW hWl = g.restrict W hW hWr := by ext1; rfl; rw [e]; simp
-  rw [← f.fromFunctionField_restrict W hW hWl, this, g.fromFunctionField_restrict]
+  rw [← f.fromFunctionField_restrict hW hWl, this, g.fromFunctionField_restrict]
 
 @[simp]
 lemma RationalMap.fromFunctionField_toRationalMap [IrreducibleSpace X] (f : X.PartialMap Y) :
@@ -286,7 +286,7 @@ lemma RationalMap.eq_of_fromFunctionField_eq [IsIntegral X] (f g : X.RationalMap
 
 /--
 Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and `X` is integral,
-`S`-morphism `Spec K(X) ⟶ Y` corresponds bijectively to `S`-rational map from `X` to `Y`.
+`S`-morphisms `Spec K(X) ⟶ Y` correspond bijectively to `S`-rational maps from `X` to `Y`.
 -/
 noncomputable
 def RationalMap.equivFunctionField [IsIntegral X] [LocallyOfFiniteType sY] :
