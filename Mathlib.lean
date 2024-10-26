@@ -4048,6 +4048,7 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.IsPrincipal
+import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Norm
@@ -4227,7 +4228,6 @@ import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Unramified.Basic
-import Mathlib.RingTheory.Unramified.Derivations
 import Mathlib.RingTheory.Unramified.Field
 import Mathlib.RingTheory.Unramified.Finite
 import Mathlib.RingTheory.Unramified.Pi
