@@ -306,7 +306,8 @@ section Semiring
 variable {R : Type u} [Semiring R] {I J K L : Ideal R}
 
 @[simp]
-theorem one_eq_top : (1 : Ideal R) = ⊤ := Ideal.span_singleton_one
+theorem one_eq_top : (1 : Ideal R) = ⊤ := by
+  rw [Submodule.one_eq_span, ← Ideal.span, Ideal.span_singleton_one]
 
 theorem add_eq_one_iff : I + J = 1 ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = 1 := by
   rw [one_eq_top, eq_top_iff_one, add_eq_sup, Submodule.mem_sup]
@@ -377,15 +378,14 @@ theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
     I ^ n ≤ I ^ 1 := pow_le_pow_right (Nat.pos_of_ne_zero hn)
     _ = I := Submodule.pow_one _
 
-theorem pow_right_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
+theorem pow_right_mono (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
   induction' n with _ hn
   · rw [Submodule.pow_zero, Submodule.pow_zero]
   · rw [Submodule.pow_succ, Submodule.pow_succ]
     exact Ideal.mul_mono hn e
 
 @[simp]
-theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal R} :
-    I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
+theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
   ⟨fun hij =>
     or_iff_not_imp_left.mpr fun I_ne_bot =>
       J.eq_bot_iff.mpr fun j hj =>
@@ -393,24 +393,10 @@ theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal 
         Or.resolve_left (mul_eq_zero.mp ((I * J).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
     fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
 
-lemma sup_pow_add_le_pow_sup_pow {R} [CommSemiring R] {I J : Ideal R} {n m : ℕ} :
-    (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔ J ^ m := by
-  rw [← Ideal.add_eq_sup, ← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup]
-  apply Finset.sup_le
-  intros i hi
-  by_cases hn : n ≤ i
-  · exact (Ideal.mul_le_right.trans (Ideal.mul_le_right.trans
-      ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
-  · refine (Ideal.mul_le_right.trans (Ideal.mul_le_left.trans
-      ((Ideal.pow_le_pow_right ?_).trans le_sup_right)))
-    simp only [Finset.mem_range, Nat.lt_succ] at hi
-    rw [Nat.le_sub_iff_add_le hi]
-    nlinarith
-
-instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
+instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
-instance {R : Type*} [CommSemiring R] {S : Type*} [CommRing S] [Algebra R S]
+instance {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
     [NoZeroSMulDivisors R S] {I : Ideal S} : NoZeroSMulDivisors R I :=
   Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 
@@ -447,6 +433,19 @@ theorem sup_mul_right_self : I ⊔ I * J = I :=
 @[simp]
 theorem mul_right_self_sup : I * J ⊔ I = I :=
   sup_eq_right.2 Ideal.mul_le_right
+
+lemma sup_pow_add_le_pow_sup_pow {n m : ℕ} : (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔ J ^ m := by
+  rw [← Ideal.add_eq_sup, ← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup]
+  apply Finset.sup_le
+  intros i hi
+  by_cases hn : n ≤ i
+  · exact (Ideal.mul_le_right.trans (Ideal.mul_le_right.trans
+      ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
+  · refine (Ideal.mul_le_right.trans (Ideal.mul_le_left.trans
+      ((Ideal.pow_le_pow_right ?_).trans le_sup_right)))
+    simp only [Finset.mem_range, Nat.lt_succ] at hi
+    rw [Nat.le_sub_iff_add_le hi]
+    nlinarith
 
 variable (I J K)
 

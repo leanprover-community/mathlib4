@@ -148,9 +148,9 @@ theorem bot_mul : ⊥ * M = ⊥ :=
 
 protected theorem one_mul : (1 : Submodule R A) * M = M := by
   refine le_antisymm (mul_le.mpr fun r hr m hm ↦ ?_) fun m hm ↦ ?_
-  · obtain ⟨r, rfl⟩ := mem_span_singleton.mp hr
-    rw [smul_one_mul]; exact M.smul_mem r hm
-  · rw [← one_mul m]; exact mul_mem_mul (subset_span rfl) hm
+  · obtain ⟨r, rfl⟩ := hr
+    rw [LinearMap.toSpanSingleton_apply, smul_one_mul]; exact M.smul_mem r hm
+  · rw [← one_mul m]; exact mul_mem_mul (one_le.mp le_rfl) hm
 
 variable {M}
 
@@ -239,7 +239,7 @@ end Module
 variable {ι : Sort uι}
 variable {R : Type u} [CommSemiring R]
 
-section Ring
+section AlgebraSemiring
 
 variable {A : Type v} [Semiring A] [Algebra R A]
 variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
