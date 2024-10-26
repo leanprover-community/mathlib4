@@ -7,16 +7,16 @@ import Mathlib.GroupTheory.Index
 import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.OpenSubgroup
 /-!
-## The Open Normal Subgroup in a Clopen Neighborhood of One
-This file define `OpenNormalSubgroupSubClopenNhdsOfOne` , which strengthen the existing result of
-`OpenSubgroupSubClopenNhdsOfOne` into open normal subgroup.
+# Open normal subgroup in a clopen neighborhood of One
+This file defines `OpenNormalSubgroupSubClopenNhdsOfOne`, which strengthens the result of
+`OpenSubgroupSubClopenNhdsOfOne` into open *normal* subgroups.
 
-This file is split out because the need of more imports.
+This file is split out from the file `OpenSubgroup` because the need of more imports.
 -/
 
 namespace TopologicalGroup
 
-/-- The open normal subgroup contained in a clopen nhd of `1` in a compact topological group. -/
+/-- An arbitrary normal subgroup contained in a clopen nhd of `1` in a compact topological group. -/
 noncomputable def OpenNormalSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] {U : Set G}
     (UClopen : IsClopen U) (einU : 1 ∈ U) : OpenNormalSubgroup G :=
@@ -32,5 +32,11 @@ theorem openNormalSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [Topolog
     ((OpenNormalSubgroupSubClopenNhdsOfOne UClopen einU) : Set G) ⊆ U :=
     fun _ b ↦ openSubgroupSubClopenNhdsOfOne_spec UClopen einU
       (Subgroup.normalCore_le (OpenSubgroupSubClopenNhdsOfOne UClopen einU).1 b)
+
+instance {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
+    {U : Set G} (UClopen : IsClopen U) (einU : 1 ∈ U) :
+    Nonempty {H : OpenNormalSubgroup G // (H : Set G) ⊆ U} :=
+  Nonempty.intro ⟨OpenNormalSubgroupSubClopenNhdsOfOne UClopen einU,
+    openNormalSubgroupSubClopenNhdsOfOne_spec UClopen einU⟩
 
 end TopologicalGroup
