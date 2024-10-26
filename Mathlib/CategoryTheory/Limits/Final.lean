@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.PUnit
+import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 # Final and initial functors
@@ -847,5 +848,47 @@ instance CostructuredArrow.initial_pre (T : C ⥤ D) [Initial T] (S : D ⥤ E) (
   exact Initial.out f.left
 
 end
+
+section Grothendieck
+
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable (F : D ⥤ Cat) (G : C ⥤ D)
+
+open Functor
+
+/-- A prefunctor mapping structured arrows on `G` to structured arrows on `pre F G` with their
+action on fibers being the identity. -/
+def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
+    StructuredArrow d G ⥤q StructuredArrow ⟨d, f⟩ (pre F G) where
+  obj := fun X => StructuredArrow.mk (Y := ⟨X.right, (F.map X.hom).obj f⟩)
+    (Grothendieck.Hom.mk (by exact X.hom) (by dsimp; exact 𝟙 _))
+  map := fun g => StructuredArrow.homMk
+    (Grothendieck.Hom.mk (by exact g.right)
+      (eqToHom (by dsimp; rw [← StructuredArrow.w g, map_comp, Cat.comp_obj])))
+    (by simp only [StructuredArrow.mk_right]
+        apply Grothendieck.ext <;> simp)
+
+instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final := by
+  constructor
+  rintro ⟨d, f⟩
+  let ⟨u, c, g⟩ : Nonempty (StructuredArrow d G) := inferInstance
+  letI :  Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
+    ⟨u, ⟨c, (F.map g).obj f⟩, ⟨(by exact g), (by exact 𝟙 _)⟩⟩
+  apply zigzag_isConnected
+  rintro ⟨⟨⟨⟩⟩, ⟨bi, fi⟩, ⟨gbi, gfi⟩⟩ ⟨⟨⟨⟩⟩, ⟨bj, fj⟩, ⟨gbj, gfj⟩⟩
+  dsimp at fj fi gfi gbi gbj gfj
+  apply Zigzag.trans (j₂ := StructuredArrow.mk (Y := ⟨bi, ((F.map gbi).obj f)⟩)
+      (Grothendieck.Hom.mk gbi (𝟙 _)))
+    (.of_zag (.inr ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
+      (eqToHom (by simp) ≫ gfi)) (by apply Grothendieck.ext <;> simp)⟩))
+  refine Zigzag.trans (j₂ := StructuredArrow.mk (Y := ⟨bj, ((F.map gbj).obj f)⟩)
+      (Grothendieck.Hom.mk gbj (𝟙 _))) ?_
+    (.of_zag (.inl ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
+      (eqToHom (by simp) ≫ gfj)) (by apply Grothendieck.ext <;> simp)⟩))
+  exact zigzag_prefunctor_obj_of_zigzag (Grothendieck.structuredArrowToStructuredArrowPre F G d f)
+    (isPreconnected_zigzag (.mk gbi) (.mk gbj))
+
+end Grothendieck
 
 end CategoryTheory
