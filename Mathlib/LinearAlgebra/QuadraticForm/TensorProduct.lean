@@ -113,20 +113,12 @@ noncomputable def tensorDistrib' :
       (QuadraticMap.associated : QuadraticForm R M₂ →ₗ[R] BilinForm R M₂)
   toQ ∘ₗ tmulB ∘ₗ toB
 
-/-- The tensor product of two quadratic forms, a shorthand for dot notation. -/
--- `noncomputable` is a performance workaround for mathlib4#7103
-protected noncomputable abbrev tmul' (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
-    QuadraticForm A (M₁ ⊗[R] M₂) :=
-  tensorDistrib' R A (Q₁ ⊗ₜ[R] Q₂)
-
-lemma helper (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
-    (Q₁.tmul' Q₂) = (Q₁.tmul Q₂) := by aesop
+lemma helper2 : tensorDistrib' = tensorDistrib := rfl
 
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     associated (R := A) (Q₁.tmul Q₂)
       = BilinForm.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
-  simp_rw [← helper]
-  rw [QuadraticForm.tmul', tensorDistrib', BilinForm.tmul]
+  rw [QuadraticForm.tmul, ← helper2, tensorDistrib', BilinForm.tmul]
   dsimp
   have : Subsingleton (Invertible (2 : A)) := inferInstance
   convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
