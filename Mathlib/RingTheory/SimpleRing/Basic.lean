@@ -104,8 +104,8 @@ lemma iff_injective_ringHom_or_subsingleton_codomain (R : Type u) [NonAssocRing 
       exact le_antisymm (fun x hx => TwoSidedIdeal.mem_bot _ |>.2 <| H <| Quotient.sound' <|
         TwoSidedIdeal.rel_iff _ _ _ |>.2 <| by simpa) bot_le
     · right
-      refine le_antisymm le_top fun x _ => by
-        simpa using TwoSidedIdeal.rel_iff _ _ _ |>.1 <| Quotient.eq'.1 (H.elim (I.ringCon.mk' x) 0)⟩
+      exact le_antisymm le_top fun x _ => by
+        simpa using TwoSidedIdeal.rel_iff _ _ _ |>.1 <| Quotient.eq'.1 (H.elim (I.ringCon.mk' x) 0)
 
 universe u in
 lemma iff_injective_ringHom (R : Type u) [NonAssocRing R] [Nontrivial R] :
