@@ -59,10 +59,12 @@ is the submodule $I^n M$ of $M$. As the name suggest, this is a basis of neighbo
 of zero for the $I$--adic topology on $M$. -/
 abbrev adicBasis (n : ℕ) : Set M := (I ^ n • ⊤ : Submodule R M)
 
+/-- A restatement of the definition, convenient when rewriting `I.adicBasis M` instead
+of `I.adicBasis M n`. -/
 @[simp]
 theorem adicBasis_def :
-  I.adicBasis M = (fun n ↦ (I ^ n • ⊤ : Submodule R M) : ℕ → Set M) :=
-rfl
+    I.adicBasis M = (fun n ↦ (I ^ n • ⊤ : Submodule R M) : ℕ → Set M) :=
+  rfl
 
 theorem adicBasis_isBasis :
     IsBasis (fun _ ↦ True) (I.adicBasis M) where
