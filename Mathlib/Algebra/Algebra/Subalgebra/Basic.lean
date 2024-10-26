@@ -46,7 +46,6 @@ instance SubsemiringClass : SubsemiringClass (Subalgebra R A) A where
 theorem mem_toSubsemiring {S : Subalgebra R A} {x} : x ∈ S.toSubsemiring ↔ x ∈ S :=
   Iff.rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_carrier {s : Subalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -777,7 +776,9 @@ instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
 theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
 
-theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 := rfl
+/-- TODO: change proof to `rfl` when fixing #18110. -/
+theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
+  Submodule.one_eq_range.symm
 
 @[simp]
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
@@ -800,7 +801,8 @@ theorem map_top (f : A →ₐ[R] B) : (⊤ : Subalgebra R A).map f = f.range :=
 
 @[simp]
 theorem map_bot (f : A →ₐ[R] B) : (⊥ : Subalgebra R A).map f = ⊥ :=
-  Subalgebra.toSubmodule_injective <| Submodule.map_one _
+  Subalgebra.toSubmodule_injective <| by
+    simpa only [Subalgebra.map_toSubmodule, toSubmodule_bot] using Submodule.map_one _
 
 @[simp]
 theorem comap_top (f : A →ₐ[R] B) : (⊤ : Subalgebra R B).comap f = ⊤ :=
