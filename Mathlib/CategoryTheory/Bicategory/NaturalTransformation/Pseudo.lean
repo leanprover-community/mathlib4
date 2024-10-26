@@ -133,23 +133,6 @@ noncomputable def mkOfOplax' {F G : Pseudofunctor B C} (η : F.toOplax ⟶ G)
   naturality_id a := by simpa using η.naturality_id a
   naturality_comp f g := by simpa using η.naturality_comp f g
 
-section
-
-variable (F)
-
-/-- The identity strong transformation. -/
-def id : StrongTrans F F where
-  app a := 𝟙 (F.obj a)
-  naturality {a b} f := (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm
-
-@[simp]
-lemma id.toOplax : (id F).toOplax = 𝟙 F.toOplax :=
-  rfl
-
-instance : Inhabited (StrongTrans F F) :=
-  ⟨id F⟩
-
-end
 
 variable {H : Pseudofunctor B C} (η : StrongTrans F G) (θ : StrongTrans G H)
 
@@ -205,6 +188,15 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
 
 end
 
+variable (F) in
+/-- The identity strong transformation. -/
+def id : StrongTrans F F where
+  app a := 𝟙 (F.obj a)
+  naturality {a b} f := (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm
+
+instance : Inhabited (StrongTrans F F) :=
+  ⟨id F⟩
+
 /-- Vertical composition of strong transformations. -/
 def vcomp (η : StrongTrans F G) (θ : StrongTrans G H) :
     StrongTrans F H :=
@@ -221,9 +213,13 @@ variable (B C)
 
 @[simps! id_app id_naturality_hom id_naturality_inv comp_app comp_naturality_hom
 comp_naturality_inv]
-instance : CategoryStruct (Pseudofunctor B C) where
+instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
   Hom F G := StrongTrans F G
   id F := StrongTrans.id F
   comp := StrongTrans.vcomp
+
+@[simp]
+lemma id.toOplax (F : Pseudofunctor B C) : 𝟙 F = 𝟙 F.toOplax :=
+  rfl
 
 end CategoryTheory.Pseudofunctor
