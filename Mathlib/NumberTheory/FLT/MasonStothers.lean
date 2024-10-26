@@ -69,8 +69,7 @@ def divRadical (a : k[X]) : k[X] := a / (radical a)
 theorem hMul_radical_divRadical (a : k[X]) : (radical a) * (divRadical a) = a := by
   rw [divRadical]
   rw [← EuclideanDomain.mul_div_assoc]
-  refine' mul_div_cancel_left₀ _ _
-  exact radical_ne_zero a
+  ·refine mul_div_cancel_left₀ _ (radical_ne_zero a)
   exact radical_dvd_self a
 
 theorem divRadical_ne_zero {a : k[X]} (ha : a ≠ 0) : divRadical a ≠ 0 := by
@@ -145,28 +144,28 @@ theorem divRadical_dvd_wronskian_right (a b : k[X]) : (divRadical b) ∣ wronski
 @[simp]
 theorem dvd_derivative_iff {a : k[X]} : a ∣ derivative a ↔ derivative a = 0 := by
   constructor
-  intro h
-  by_cases a_nz : a = 0
-  · rw [a_nz]; simp only [derivative_zero]
-  by_contra deriv_nz
-  have deriv_lt := degree_derivative_lt a_nz
-  have le_deriv := Polynomial.degree_le_of_dvd h deriv_nz
-  have lt_self := le_deriv.trans_lt deriv_lt
-  simp only [lt_self_iff_false] at lt_self
+  · intro h
+    by_cases a_nz : a = 0
+    · rw [a_nz]; simp only [derivative_zero]
+    by_contra deriv_nz
+    have deriv_lt := degree_derivative_lt a_nz
+    have le_deriv := Polynomial.degree_le_of_dvd h deriv_nz
+    have lt_self := le_deriv.trans_lt deriv_lt
+    simp only [lt_self_iff_false] at lt_self
   intro h; rw [h]; simp
 
 theorem IsCoprime.wronskian_eq_zero_iff {a b : k[X]} (hc : IsCoprime a b) :
     wronskian a b = 0 ↔ derivative a = 0 ∧ derivative b = 0 := by
   constructor
-  intro hw
-  rw [wronskian, sub_eq_iff_eq_add, zero_add] at hw
-  constructor
-  · rw [← dvd_derivative_iff]
-    apply hc.dvd_of_dvd_mul_right
-    rw [← hw]; exact dvd_mul_right _ _
-  · rw [← dvd_derivative_iff]
-    apply hc.symm.dvd_of_dvd_mul_left
-    rw [hw]; exact dvd_mul_left _ _
+  · intro hw
+    rw [wronskian, sub_eq_iff_eq_add, zero_add] at hw
+    constructor
+    · rw [← dvd_derivative_iff]
+      apply hc.dvd_of_dvd_mul_right
+      rw [← hw]; exact dvd_mul_right _ _
+    · rw [← dvd_derivative_iff]
+      apply hc.symm.dvd_of_dvd_mul_left
+      rw [hw]; exact dvd_mul_left _ _
   intro hdab
   cases' hdab with hda hdb
   rw [wronskian]
@@ -242,12 +241,13 @@ theorem Polynomial.abc {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 
     rw [hw] at wab wbc
     cases' hab.wronskian_eq_zero_iff.mp wab.symm with ga gb
     cases' hbc.wronskian_eq_zero_iff.mp wbc.symm with _ gc
-    refine' ⟨ga, gb, gc⟩
+    refine ⟨ga, gb, gc⟩
   · left
     rw [max₃_add_distrib_right, max₃_le]
-    refine' ⟨_, _, _⟩
+    constructor
     · rw [rot3_mul] at abc_dr_dvd_w ⊢
       apply abc_subcall wbc <;> assumption
+    constructor
     · rw [rot3_mul, rot3_mul] at abc_dr_dvd_w ⊢
       apply abc_subcall wca <;> assumption
     · apply abc_subcall wab <;> assumption
