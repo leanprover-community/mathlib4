@@ -96,8 +96,9 @@ lemma injective_ringHom
 universe u in
 lemma iff_injective_ringHom_or_subsingleton_codomain (R : Type u) [NonAssocRing R] [Nontrivial R] :
     IsSimpleRing R ↔
-    ∀ {S : Type u} [NonAssocRing S] (f : R →+* S), Function.Injective f ∨ Subsingleton S :=
-  ⟨fun h _ _ => injective_ringHom_or_subsingleton_codomain, fun H => of_eq_bot_or_eq_top fun I => by
+    ∀ {S : Type u} [NonAssocRing S] (f : R →+* S), Function.Injective f ∨ Subsingleton S where
+  mp h _ _ := injective_ringHom_or_subsingleton_codomain
+  mpr H := of_eq_bot_or_eq_top fun I => by
     obtain H|H := H I.ringCon.mk'
     · left
       exact le_antisymm (fun x hx => TwoSidedIdeal.mem_bot _ |>.2 <| H <| Quotient.sound' <|
