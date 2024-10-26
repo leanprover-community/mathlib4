@@ -69,16 +69,16 @@ variable (Γ : Modification η θ)
 open Oplax in
 /-- The modification between the underlying oplax transformations of oplax functors -/
 @[simps]
-def toOplax : Oplax.Modification η.toOplax θ.toOplax where
+def toOplax : η.toOplax ⟶ θ.toOplax where
   app a := Γ.app a
 
-instance hasCoeToOplax : Coe (Modification η θ) (Oplax.Modification η.toOplax θ.toOplax) :=
+instance hasCoeToOplax : Coe (Modification η θ) (η.toOplax ⟶ θ.toOplax) :=
   ⟨toOplax⟩
 
 /-- The modification between strong transformations of pseudofunctors associated to a modification
 between the underlying oplax transformations of oplax functors. -/
 @[simps]
-def mkOfOplax (Γ : Oplax.Modification η.toOplax θ.toOplax) : Modification η θ where
+def mkOfOplax (Γ : η.toOplax ⟶ θ.toOplax) : Modification η θ where
   app a := Γ.app a
   naturality f := by simpa using Γ.naturality f
 

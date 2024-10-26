@@ -104,17 +104,17 @@ variable {F G : Pseudofunctor B C}
 
 -- /-- The underlying oplax transformation of a strong transformation. -/
 @[simps]
-def toOplax (η : StrongTrans F G) : OplaxTrans F.toOplax G.toOplax where
+def toOplax (η : StrongTrans F G) : F.toOplax ⟶ G.toOplax where
   app := η.app
   naturality f := (η.naturality f).hom
 
-instance hasCoeToOplax : Coe (StrongTrans F G) (OplaxTrans F.toOplax G) :=
+instance hasCoeToOplax : Coe (StrongTrans F G) (F.toOplax ⟶ G) :=
   ⟨toOplax⟩
 
 /-- Construct a strong transformation from an oplax transformation whose
 naturality 2-morphism is an isomorphism. -/
 @[simps]
-def mkOfOplax {F G : Pseudofunctor B C} (η : OplaxTrans F.toOplax G) (η' : StrongCore η) :
+def mkOfOplax {F G : Pseudofunctor B C} (η : F.toOplax ⟶ G) (η' : StrongCore η) :
     StrongTrans F G where
   app := η.app
   naturality := η'.naturality
@@ -126,7 +126,7 @@ def mkOfOplax {F G : Pseudofunctor B C} (η : OplaxTrans F.toOplax G) (η' : Str
 /-- Construct a strong transformation from an oplax transformation whose
 naturality 2-morphism is an isomorphism. -/
 @[simps]
-noncomputable def mkOfOplax' {F G : Pseudofunctor B C} (η : OplaxTrans F.toOplax G)
+noncomputable def mkOfOplax' {F G : Pseudofunctor B C} (η : F.toOplax ⟶ G)
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongTrans F G where
   app := η.app
   naturality := fun f => asIso (η.naturality _)
@@ -138,17 +138,14 @@ section
 
 variable (F)
 
-
 /-- The identity strong transformation. -/
 @[simps!]
-def id : StrongTrans F F :=
-  -- app a := 𝟙 (F.obj a)
-  -- naturality {a b} f := (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm
-  mkOfOplax (OplaxTrans.id F.toOplax)
-    { naturality := λ f ↦ (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm }
+def id : StrongTrans F F where
+  app a := 𝟙 (F.obj a)
+  naturality {a b} f := (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm
 
 @[simp]
-lemma id.toOplax : (id F).toOplax = OplaxTrans.id F.toOplax :=
+lemma id.toOplax : (id F).toOplax = 𝟙 F.toOplax :=
   rfl
 
 instance : Inhabited (StrongTrans F F) :=
@@ -211,28 +208,13 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
 end
 
 /-- Vertical composition of strong transformations. -/
-@[simps]
+@[simps!]
 def vcomp (η : StrongTrans F G) (θ : StrongTrans G H) :
-    StrongTrans F H where
-  app a := η.app a ≫ θ.app a
-  naturality {a b} f := (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
-    (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm
-  naturality_comp {a b c} f g :=
-  -- TODO: mkOfOplax should be used here
-    calc
-      _ =
-        (α_ _ _ _).inv ≫
-          (F.mapComp f g).hom ▷ η.app c ▷ θ.app c ≫
-            (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom ≫
-              F.map f ◁ (η.naturality g).hom ▷ θ.app c ≫
-                _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
-                  (F.map f ≫ η.app b) ◁ (θ.naturality g).hom ≫
-                    (η.naturality f).hom ▷ (θ.app b ≫ H.map g) ≫
-                      (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv ≫
-                        η.app a ◁ (θ.naturality f).hom ▷ H.map g ≫
-                          _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv := by
-        rw [whisker_exchange_assoc]; simp
-      _ = _ := by simp
+    StrongTrans F H :=
+  mkOfOplax (OplaxTrans.vcomp η.toOplax θ.toOplax)
+    { naturality := fun {a b} f ↦
+        (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
+        (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm }
 
 end
 
