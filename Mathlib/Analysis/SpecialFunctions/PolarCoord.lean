@@ -210,7 +210,7 @@ theorem polarCoord_symm_abs (p : ℝ × ℝ) :
 
 open scoped ComplexOrder
 
-theorem polarCoord_symm_mem_polarCoord_source_iff {x : ℝ × ℝ} : 
+theorem polarCoord_symm_mem_polarCoord_source_iff {x : ℝ × ℝ} :
     Complex.polarCoord.symm x ∈ Complex.polarCoord.source ↔
         x.1 ≠ 0 ∧ (x.1 > 0 → ∀ k : ℤ, π + k * (2 * π) ≠ x.2) ∧
           (x.1 < 0 →  ∀ k : ℤ, k * (2 * π) ≠ x.2) := by
