@@ -72,7 +72,7 @@ theorem eigenspace_inf_eigenspace
     (hAB : A ∘ₗ B = B ∘ₗ A) (γ : 𝕜) :
     eigenspace A α ⊓ eigenspace B γ = map (Submodule.subtype (eigenspace A α))
       (eigenspace (B.restrict (eigenspace_invariant_of_commute hAB α)) γ) :=
-  (eigenspace A α).inf_unifEigenspace _ _ (k := 1)
+  (eigenspace A α).inf_genEigenspace _ _ (k := 1)
 
 variable [FiniteDimensional 𝕜 E]
 
