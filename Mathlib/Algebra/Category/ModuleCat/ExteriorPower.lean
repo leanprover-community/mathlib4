@@ -4,13 +4,41 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 
 /-!
+# The exterior power operations on modules
 
 -/
 
 universe w v u
+
+namespace Submodule
+
+variable {R M N : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+  [AddCommMonoid N] [Module R N]
+
+lemma linearMap_eq_zero_iff_of_span_eq_top (f : M →ₗ[R] N)
+    {S : Set M} (hM : span R S = ⊤) :
+    f = 0 ↔ ∀ (s : S), f s = 0 := by
+  rw [← LinearMap.ker_eq_top, ← top_le_iff, ← hM, span_le]
+  aesop
+
+lemma linearMap_eq_zero_iff_of_eq_span {V : Submodule R M} (f : V →ₗ[R] N)
+    {S : Set M} (hV : V = span R S) :
+    f = 0 ↔ ∀ (s : S), f ⟨s, by simpa only [hV] using subset_span (by simp)⟩ = 0 := by
+  constructor
+  · rintro rfl s
+    rfl
+  · intro hf
+    rw [linearMap_eq_zero_iff_of_span_eq_top (S := (V.subtype ⁻¹' S))]
+    · subst hV
+      rintro ⟨⟨s, _⟩, hs⟩
+      exact hf ⟨s, hs⟩
+    · subst hV
+      simp
+
+end Submodule
 
 namespace ExteriorAlgebra
 
@@ -28,14 +56,35 @@ namespace exteriorPower
 variable {R n M} {N : Type w} [AddCommGroup N] [Module R N]
   (φ : AlternatingMap R M N (Fin n))
 
-def desc : exteriorPower R n M →ₗ[R] N := by
-  have := φ
-  sorry
+def desc : exteriorPower R n M →ₗ[R] N :=
+  LinearMap.comp (liftAlternating
+    (Function.update (fun n ↦ (0 : M [⋀^Fin n]→ₗ[R] N)) n φ)) (Submodule.subtype _)
 
 @[simp]
 lemma desc_exteriorProduct (m : Fin n → M) :
     desc φ (exteriorProduct R n M m) = φ m := by
-  sorry
+  dsimp [desc]
+  erw [liftAlternating_apply_ιMulti]
+  simp
+
+lemma linearMap_eq_zero_iff (f : exteriorPower R n M →ₗ[R] N) :
+    f = 0 ↔ ∀ (m : Fin n → M), f (exteriorProduct R n M m) = 0 := by
+  constructor
+  · rintro rfl _
+    rfl
+  · rw [Submodule.linearMap_eq_zero_iff_of_eq_span f
+      (ιMulti_span_fixedDegree R (M := M) n).symm]
+    rintro hf ⟨_, m, rfl⟩
+    exact hf m
+
+@[ext]
+lemma linearMap_ext {f g : exteriorPower R n M →ₗ[R] N}
+    (h : ∀ (m : Fin n → M), f (exteriorProduct R n M m) = g (exteriorProduct R n M m)) :
+    f = g := by
+  rw [← sub_eq_zero, linearMap_eq_zero_iff]
+  intro m
+  rw [LinearMap.sub_apply, sub_eq_zero]
+  exact h m
 
 end exteriorPower
 
@@ -105,6 +154,10 @@ lemma postcomp_comp (φ : M.AlternatingMap N n)
     (f : N ⟶ N') {N'' : ModuleCat.{u} R} (g : N' ⟶ N'') :
     φ.postcomp (f ≫ g) = (φ.postcomp f).postcomp g := rfl
 
+lemma congr_apply {φ φ' : M.AlternatingMap N n} (h : φ = φ') (m : Fin n → M) :
+    φ m = φ' m := by
+  rw [h]
+
 end AlternatingMap
 
 @[simps]
@@ -133,9 +186,8 @@ def univUniversal : (univ M n).Universal where
   fac {N} φ := by
     ext m
     apply ExteriorAlgebra.exteriorPower.desc_exteriorProduct
-  postcomp_injective {N f g} h:= by
-    rw [← sub_eq_zero]
-    sorry
+  postcomp_injective {N f g} h :=
+    ExteriorAlgebra.exteriorPower.linearMap_ext (congr_apply h)
 
 namespace Universal
 
@@ -283,9 +335,7 @@ lemma map_mk {N : ModuleCat.{u} R} (f : M ⟶ N) {n : ℕ} (m : Fin n → M) :
   simp only [map, desc_mk, AlternatingMap.compLinearMap_apply]
   rfl
 
-variable (M)
-
-variable (R)
+variable (M R)
 
 @[simps]
 def functor (n : ℕ): ModuleCat.{u} R ⥤ ModuleCat.{u} R where
