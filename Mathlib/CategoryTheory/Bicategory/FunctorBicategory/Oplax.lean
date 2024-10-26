@@ -51,44 +51,31 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
 /-- Associator for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
-  ModificationIso.ofComponents (fun a => α_ (η.app a) (θ.app a) (ι.app a)) (by aesop_cat)
+  ModificationIso.ofComponents (fun a => α_ (η.app a) (θ.app a) (ι.app a))
 
 /-- Left unitor for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
-  ModificationIso.ofComponents (fun a => λ_ (η.app a)) (by aesop_cat)
+  ModificationIso.ofComponents (fun a => λ_ (η.app a))
 
 /-- Right unitor for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
-  ModificationIso.ofComponents (fun a => ρ_ (η.app a)) (by aesop_cat)
+  ModificationIso.ofComponents (fun a => ρ_ (η.app a))
 
 end OplaxTrans
 
 variable (B C)
 
-example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂)
-[inst_1 : CategoryTheory.Bicategory C]
-        {X Y Z : CategoryTheory.OplaxFunctor B C} (η : X ⟶ Y)
-        (θ : Y ⟶ Z) {a b : B} (f : a ⟶ b) :
-        (η ≫ θ).naturality f =
-          (α_ (X.map f) (η.app b) (θ.app b)).inv ≫
-            η.naturality f ▷ θ.app b ≫
-              (α_ (η.app a) (Y.map f) (θ.app b)).hom ≫ η.app a ◁ θ.naturality f ≫
-(α_ (η.app a) (θ.app a) (Z.map f)).inv := by
-  simp
-  -- simp only [OplaxTrans.instCategoryStructOplaxFunctor_comp, OplaxTrans.vcomp_naturality]
-
 /-- A bicategory structure on the oplax functors between bicategories. -/
-@[simps!]
+@[simps! whiskerLeft_app whiskerRight_app associator_hom_app associator_inv_app
+rightUnitor_hom_app rightUnitor_inv_app leftUnitor_hom_app leftUnitor_inv_app]
 instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
   whiskerLeft {_ _ _} η _ _ Γ := OplaxTrans.whiskerLeft η Γ
   whiskerRight {_ _ _} _ _ Γ η := OplaxTrans.whiskerRight Γ η
   associator {_ _ _} _ := OplaxTrans.associator
   leftUnitor {_ _} := OplaxTrans.leftUnitor
   rightUnitor {_ _} := OplaxTrans.rightUnitor
-  whisker_exchange {a b c f g h i} η θ := by
-    ext
-    exact whisker_exchange _ _
+  whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
 
 end CategoryTheory

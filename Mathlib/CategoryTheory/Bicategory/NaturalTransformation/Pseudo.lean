@@ -211,12 +211,24 @@ end StrongTrans
 
 variable (B C)
 
-@[simps! id_app id_naturality_hom id_naturality_inv comp_app comp_naturality_hom
+-- TODO: custom names?
+@[simps! id_app id_naturality_hom id_naturality_inv comp_naturality_hom
 comp_naturality_inv]
 instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
   Hom F G := StrongTrans F G
   id F := StrongTrans.id F
   comp := StrongTrans.vcomp
+
+section
+
+variable {F G H : Pseudofunctor B C}
+
+@[simp]
+lemma StrongTrans.comp_app (η : F ⟶ G) (θ : G ⟶ H) (a : B) :
+    (η ≫ θ).app a = η.app a ≫ θ.app a :=
+  rfl
+
+end
 
 @[simp]
 lemma id.toOplax (F : Pseudofunctor B C) : 𝟙 F = 𝟙 F.toOplax :=

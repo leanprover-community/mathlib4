@@ -92,10 +92,9 @@ by giving object level isomorphisms, and checking naturality only in the forward
 -/
 @[simps]
 def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
-    (naturality :
-      ∀ {a b} (f : a ⟶ b),
-        F.map f ◁ (app b).hom ≫ θ.naturality f = η.naturality f ≫ (app a).hom ▷ G.map f) :
-    η ≅ θ where
+    (naturality : ∀ {a b} (f : a ⟶ b),
+      F.map f ◁ (app b).hom ≫ θ.naturality f =
+        η.naturality f ≫ (app a).hom ▷ G.map f := by aesop_cat) : η ≅ θ where
   hom := { app := fun a => (app a).hom }
   inv :=
     { app := fun a => (app a).inv
