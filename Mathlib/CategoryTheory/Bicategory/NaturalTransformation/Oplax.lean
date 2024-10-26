@@ -123,37 +123,43 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
 
 end
 
-@[simps id_app id_naturality comp_app comp_naturality]
-instance : CategoryStruct (OplaxFunctor B C) where
-  Hom := OplaxTrans
-  id F := {
-    app := fun a ↦ 𝟙 (F.obj a)
-    naturality := fun {_ _} f ↦ (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
-  }
-  comp {F G H} η θ := {
-    app := fun a ↦ η.app a ≫ θ.app a
-    naturality := fun {a b} f ↦
-      (α_ _ _ _).inv ≫
-        η.naturality f ▷ θ.app b ≫ (α_ _ _ _).hom ≫ η.app a ◁ θ.naturality f ≫ (α_ _ _ _).inv
-    naturality_comp := fun {a b c} f g ↦
-      calc
-        _ =
-          (α_ _ _ _).inv ≫
-            F.mapComp f g ▷ η.app c ▷ θ.app c ≫
-              (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom ≫
-                F.map f ◁ η.naturality g ▷ θ.app c ≫
-                  _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
-                    (F.map f ≫ η.app b) ◁ θ.naturality g ≫
-                      η.naturality f ▷ (θ.app b ≫ H.map g) ≫
-                        (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv ≫
-                          η.app a ◁ θ.naturality f ▷ H.map g ≫
-                            _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv := by
-          rw [whisker_exchange_assoc]; simp
-        _ = _ := by simp
-  }
+variable (F) in
+/-- The identity oplax transformation. -/
+def id : OplaxTrans F F where
+  app a := 𝟙 (F.obj a)
+  naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
 
 instance : Inhabited (OplaxTrans F F) :=
-  ⟨𝟙 F⟩
+  ⟨id F⟩
+
+/-- Vertical composition of oplax transformations. -/
+def vcomp : OplaxTrans F H where
+  app a := η.app a ≫ θ.app a
+  naturality {a b} f :=
+    (α_ _ _ _).inv ≫
+      η.naturality f ▷ θ.app b ≫ (α_ _ _ _).hom ≫ η.app a ◁ θ.naturality f ≫ (α_ _ _ _).inv
+  naturality_comp {a b c} f g :=
+    calc
+      _ =
+        (α_ _ _ _).inv ≫
+          F.mapComp f g ▷ η.app c ▷ θ.app c ≫
+            (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom ≫
+              F.map f ◁ η.naturality g ▷ θ.app c ≫
+                _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
+                  (F.map f ≫ η.app b) ◁ θ.naturality g ≫
+                    η.naturality f ▷ (θ.app b ≫ H.map g) ≫
+                      (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv ≫
+                        η.app a ◁ θ.naturality f ▷ H.map g ≫
+                          _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv := by
+        rw [whisker_exchange_assoc]; simp
+      _ = _ := by simp
+
+
+@[simps! id_app id_naturality comp_app comp_naturality]
+instance : CategoryStruct (OplaxFunctor B C) where
+  Hom := OplaxTrans
+  id := OplaxTrans.id
+  comp := OplaxTrans.vcomp
 
 end OplaxTrans
 
