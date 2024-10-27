@@ -27,12 +27,15 @@ open Projectivization
 
 open Classical
 
+/-- -/
 noncomputable def OnePoint_div {K : Type} [DivisionRing K] (a : K) (r : K): OnePoint K :=
     ite (r ≠ 0) (a / r) ∞
 
+/-- -/
 infix:50 " ÷ " => OnePoint_div
 
 
+/-- -/
 lemma div_slope_well_defined {K : Type} [Field K]
     (a b : { v : Fin 2 → K // v ≠ 0 })
     (h : ∃ c : Kˣ, (fun m : Kˣ ↦ m • b.1) c = a.1) :
@@ -50,11 +53,13 @@ lemma div_slope_well_defined {K : Type} [Field K]
     show c * b.1 0 * b.1 1 = b.1 0 * (c * b.1 1)
     ring
 
+/-- -/
 noncomputable def field_div_slope {K : Type} [Field K] (p : ℙ K (Fin 2 → K)) : OnePoint K :=
     Quotient.lift (fun u : { v : Fin 2 → K // v ≠ 0} ↦ OnePoint_div (u.1 0) (u.1 1))
     div_slope_well_defined p
 
 
+/-- -/
 lemma not_both_zero {K : Type} [Field K]
     (a : { v : Fin 2 → K // v ≠ 0}) (h : a.1 1 = 0) : a.1 0 ≠ 0 := by
   intro hc; apply a.2; ext s
@@ -67,10 +72,12 @@ lemma not_both_zero {K : Type} [Field K]
     subst this;simp_all
 
 
+/-- -/
 instance mys {K : Type} [Field K] :
     Setoid ({v : Fin 2 → K // v ≠ 0}) :=
   projectivizationSetoid K (Fin 2 → K)
 
+/-- -/
 lemma field_div_slope_inj_lifted {K : Type} [Field K]
     (a b : { v : Fin 2 → K // v ≠ 0 }) :
     field_div_slope ⟦a⟧ = field_div_slope ⟦b⟧ →
@@ -107,18 +114,22 @@ lemma field_div_slope_inj_lifted {K : Type} [Field K]
       List.ofFn_zero, List.cons.injEq, and_true]
     rw [g₀,g₂]; field_simp
 
+/-- -/
 lemma field_div_slope_injective {K : Type} [Field K]  :
     Function.Injective (@field_div_slope K _) :=
   Quotient.ind (fun a ↦ Quotient.ind (field_div_slope_inj_lifted a))
 
+/-- -/
 def slope_inv {K : Type} [Field K] (p : OnePoint K) : ℙ K (Fin 2 → K) := match p with
 |some t => mk' K ⟨![t, 1], by simp⟩
 |∞      => mk' K ⟨![1, 0], by simp⟩
 
+/-- -/
 noncomputable def field_f {K : Type} [Field K] :=
     (fun u : {v : Fin 2 → K // v ≠ 0} ↦
     if u.1 1 ≠ 0 then some (u.1 0 / u.1 1) else ∞)
 
+/-- -/
 lemma field_div_slope_inv {K : Type} [Field K] :
     Function.LeftInverse (@field_div_slope K _) (@slope_inv K _) := by
   intro a
@@ -128,11 +139,13 @@ lemma field_div_slope_inv {K : Type} [Field K] :
   |none => exact g₀
   |some t => exact g₁ t
 
+/-- -/
 lemma field_div_slope_surjective {K : Type} [Field K]:
     Function.Surjective (@field_div_slope K _) :=
   fun r ↦ ⟨slope_inv r, field_div_slope_inv r⟩
 
-noncomputable instance field_slope_equiv {K : Type} [Field K] :
+/-- -/
+noncomputable def field_slope_equiv {K : Type} [Field K] :
   OnePoint K ≃ ℙ K (Fin 2 → K) where
   toFun     := slope_inv
   invFun    := field_div_slope

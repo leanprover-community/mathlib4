@@ -29,16 +29,19 @@ calculus
 open scoped LinearAlgebra.Projectivization OnePoint
 open Projectivization
 
+/-- -/
 lemma abs_le_inv {a x : ℝ} (ha : a > 0) (G₀ : ¬x = 0)
     (hx : |x| ≤ a⁻¹) : x⁻¹ ≤ -a ∨ a ≤ x⁻¹ := by
   apply le_abs'.mp; rw [abs_inv, le_inv_comm₀]; repeat tauto
   rw [abs_pos]; exact G₀
 
 
+/-- -/
 lemma close_enough {x l y : ℝ} (hlu : l < x) (hy' : 2 * |x - y| ≤ |x - l|) : l < y := by
   nth_rewrite 2 [abs_eq_self.mpr] at hy'
   repeat linarith[le_abs_self (x - y)]
 
+/-- -/
 lemma symmetrize
     (P : ℝ → Prop)
     {a₀ : ℝ} (ha₀ : ∀ b ≤ a₀, P b)
@@ -60,6 +63,7 @@ lemma symmetrize
            _ ≤ a     := le_max_right |a₀| |a₁|
            _ ≤ _     := hr
 
+/-- -/
 lemma geometry_pos
     {y v : { v : Fin 2 → ℝ // ¬v = 0 }}
     (hv : dist y.1 v.1 < y.1 1)
@@ -77,12 +81,9 @@ lemma geometry_pos
   simp only [sub_zero] at g₁
   nth_rewrite 2 [← g₁] at h₂
   rw [← h₀, dist_comm] at h₂
-  have : dist 0 (y.1 1) < (dist 0 (y.1 1)) := by calc
-      _ ≤ dist 0 (y.1 1) + dist (v.1 1) 0 :=
-        (le_add_iff_nonneg_right (dist 0 (y.1 1))).mpr dist_nonneg
-      _ < _ := by nth_rewrite 2 [dist_comm] at h₂;exact h₂
   linarith
 
+/-- -/
 lemma geometry_neg
     {y v : { v : Fin 2 → ℝ // ¬v = 0 }}
     (hy : y.1 1 < 0)
@@ -101,6 +102,7 @@ lemma geometry_neg
   simp only [Fin.isValue, Pi.neg_apply, Left.neg_pos_iff] at Q
   tauto
 
+/-- -/
 lemma open_geometry_pos :
     IsOpen fun y : {v : Fin 2 → ℝ // v ≠ 0} ↦ 0 < y.1 1 := by
   rw [isOpen_iff_ball_subset]
@@ -111,6 +113,7 @@ lemma open_geometry_pos :
     use y.1 1; simp_all only [ne_eq, gt_iff_lt, Set.mem_setOf_eq, implies_true, and_true]; tauto
   · intro v hv; exact geometry_pos hv hy
 
+/-- -/
 lemma open_geometry_neg :
     IsOpen fun y : {v : Fin 2 → ℝ // v ≠ 0} ↦ y.1 1 < 0 := by
   rw [isOpen_iff_ball_subset]
@@ -122,15 +125,19 @@ lemma open_geometry_neg :
       and_true]; tauto
   · intro v hv; exact geometry_neg hy hv
 
+/-- -/
 lemma same_set₀ : fun y : {v : Fin 2 → ℝ // v ≠ 0} ↦ y.1 1 < 2 * y.1 1 = fun y ↦ 0 < y.1 1 := by
   ext y; constructor; repeat (intro;linarith)
 
+/-- -/
 lemma same_set₁ : fun y : {v : Fin 2 → ℝ // v ≠ 0} ↦ y.1 1 > 2 * y.1 1 = fun y ↦ 0 > y.1 1 := by
   ext y; constructor; repeat (intro;linarith)
 
+/-- -/
 lemma same_set₂ : fun y : {v : Fin 2 → ℝ // v ≠ 0} ↦ y.1 1 < (y.1 1) / 2 = fun y ↦ 0 > y.1 1 := by
   ext y; constructor; repeat (intro;linarith)
 
+/-- -/
 lemma open_nonzero
     {x : { v : Fin 2 → ℝ // v ≠ 0 }}
     (H₁ : ¬x.1 1 = 0) : ∃ t, (∀ y ∈ t, ¬y.1 1 = 0) ∧ IsOpen t ∧ x ∈ t := by
@@ -152,6 +159,7 @@ lemma open_nonzero
       · right; constructor; repeat linarith
       · left;  constructor; repeat linarith
 
+/-- -/
 theorem dist_cone_pos_pos {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 > 0) {s : ℝ} (hs : s ≥ 0) :
     (a 0 / (s+1) > 0) ∧ ∀ y, dist y a ≤ (a 0 / (s+1)) → y 1 > 0 → s ≤ y 0 / y 1 := by
   constructor
@@ -172,6 +180,7 @@ theorem dist_cone_pos_pos {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 > 0) 
     _       ≤ a 0 - (dist y a) := by linarith[dist_le_pi_dist y a 1]
     _       ≤ y 0              := by linarith[dist_le_pi_dist y a 0]
 
+/-- -/
 theorem dist_cone_pos_neg {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 > 0) {s : ℝ} (hs : s ≥ 0) :
     (a 0 / (s+1) > 0) ∧ ∀ y, dist y a ≤ (a 0 / (s+1)) → y 1 < 0 → y 0 / y 1 ≤  -s := by
   let Q₀ := dist_cone_pos_pos h₀ h₁ hs
@@ -195,6 +204,7 @@ theorem dist_cone_pos_neg {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 > 0) 
     simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons] at Q
     linarith
 
+/-- -/
 theorem dist_cone_neg_pos {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 <  0)
     {s : ℝ} (hs : s ≥ 0) :
     (- a 0 / (s+1) > 0) ∧ ∀ y, dist y a ≤ (- a 0 / (s+1)) → y 1 > 0 → y 0 / y 1 ≤  - s := by
@@ -223,6 +233,7 @@ theorem dist_cone_neg_pos {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 <  0)
     simp only [Fin.isValue, Pi.neg_apply, neg_div_neg_eq] at W
     exact W
 
+/-- -/
 theorem dist_cone_neg_neg {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 <  0) {s : ℝ} (hs : s ≥ 0) :
     (- a 0 / (s+1) > 0) ∧ ∀ y, dist y a ≤ (- a 0 / (s+1)) → y 1 < 0 → y 0 / y 1 ≥ s := by
   have Q := @dist_cone_pos_pos ![-a 0,a 1] (by tauto) (by
@@ -259,6 +270,7 @@ theorem dist_cone_neg_neg {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 <  0)
     simp only [Fin.isValue, Pi.neg_apply, neg_div_neg_eq] at W
     tauto
 
+/-- -/
 theorem dist_cone_pos {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 > 0) {s : ℝ} (hs : s ≥ 0) :
     ∃ δ > 0, ∀ y, dist y a ≤ δ →
       (y 1 < 0 → y 0 / y 1 ≤  -s)
@@ -271,6 +283,7 @@ theorem dist_cone_pos {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 > 0) {s :
     · exact (dist_cone_pos_neg h₀ h₁ hs).2 y hy
     · exact (dist_cone_pos_pos h₀ h₁ hs).2 y hy
 
+/-- -/
 theorem dist_cone_neg {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 < 0) {s : ℝ} (hs : s ≥ 0) :
     ∃ δ > 0, ∀ y, dist y a ≤ δ →
       (y 1 > 0 → y 0 / y 1 ≤  -s)
@@ -283,6 +296,7 @@ theorem dist_cone_neg {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 < 0) {s :
     · exact (dist_cone_neg_pos h₀ h₁ hs).2 y hy
     · exact (dist_cone_neg_neg h₀ h₁ hs).2 y hy
 
+/-- -/
 lemma pos_or_neg {a : { v : Fin 2 → ℝ // v ≠ 0 }} (H : a.1 1 = 0) : a.1 0 > 0 ∨ a.1 0 < 0 := by
   by_contra H
   push_neg at H

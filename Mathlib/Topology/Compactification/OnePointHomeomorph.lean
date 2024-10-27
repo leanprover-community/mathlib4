@@ -29,8 +29,10 @@ open Projectivization
 
 open Classical
 
+/-- The inverse of `r` is `1 / r`, with `1 / 0 = ∞`.-/
 noncomputable def OnePoint_inv (r : ℝ) : OnePoint ℝ := ite (r ≠ 0) (some ((1:ℝ)/r)) ∞
 
+/-- Ordinary division is continuous. -/
 lemma cont_inv_lift_ (a x:ℝ) (h : x ≠ 0) :
     ContinuousAt (fun x : ℝ ↦ ( (a / x) : OnePoint ℝ)) x := by
   apply ContinuousAt.comp'
@@ -39,6 +41,7 @@ lemma cont_inv_lift_ (a x:ℝ) (h : x ≠ 0) :
     · exact continuousAt_const
     repeat tauto
 
+/-- OnePoint_div is continuous. -/
 lemma cont_nonzero_ (a x:ℝ) (h: x ≠ 0) : ContinuousAt (OnePoint_div a) x := by
   rw [continuousAt_congr]
   · show ContinuousAt (fun x : ℝ ↦ ( (a / x) : OnePoint ℝ)) x
@@ -75,6 +78,7 @@ lemma cont_nonzero_ (a x:ℝ) (h: x ≠ 0) : ContinuousAt (OnePoint_div a) x := 
         · linarith
         · linarith
 
+/-- Auxiliary fact. -/
 lemma in_onepoint_set
     {t : Set (OnePoint ℝ)} {a₀ a₁ : ℝ}
     (ha : ∀ (b : ℝ), b ≤ -(max |a₀| |a₁|) ∨ (max |a₀| |a₁|) ≤ b → some b ∈ t)
@@ -85,6 +89,7 @@ lemma in_onepoint_set
   · simp_all
   · apply ha; apply abs_le_inv; repeat tauto
 
+/-- Auxiliary fact. -/
 lemma suffice
     (t : Set (OnePoint ℝ))
     (x : ℝ)
@@ -100,14 +105,17 @@ lemma suffice
     · intros;simp;linarith
   · apply hε.2
 
+/-- Function underlying homeomorphism. -/
 noncomputable def div_slope (p : ℙ ℝ (Fin 2 → ℝ)) : OnePoint ℝ :=
   Quotient.lift
     (fun u : { v : Fin 2 → ℝ // v ≠ 0} ↦
       OnePoint_div (u.1 0) (u.1 1)) div_slope_well_defined p
 
+/-- Division is injective. -/
 lemma div_slope_injective : Function.Injective div_slope :=
   Quotient.ind (fun a ↦ Quotient.ind (field_div_slope_inj_lifted a))
 
+/-- Division is continnuous. -/
 lemma continuous_slope_nonzero_case {x : { v : Fin 2 → ℝ // v ≠ 0 }} (hx : ¬x.1 1 = 0) :
     ContinuousAt (fun u ↦ u.1 0 ÷ u.1 1) x := by
   have : (fun u ↦ u.1 0 ÷ u.1 1) =ᶠ[nhds x] fun v ↦ OnePoint.some (v.1 0 / v.1 1) := by
@@ -124,6 +132,7 @@ lemma continuous_slope_nonzero_case {x : { v : Fin 2 → ℝ // v ≠ 0 }} (hx :
   · exact ContinuousAt.comp (continuousAt_apply 0 x.1) continuousAt_subtype_val
   · exact ContinuousAt.comp (continuousAt_apply 1 x.1) continuousAt_subtype_val
 
+/-- Auxiliary nhds lemma.  -/
 lemma slope_open_nonzero
     {t : Set (OnePoint ℝ)}
     (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ)
@@ -144,7 +153,7 @@ lemma slope_open_nonzero
   refine OnePoint.isOpen_def.mpr ?_
   tauto
 
-
+/-- Auxiliary uniformity lemma.  -/
 lemma slope_uniform_of_compact_pos
     {t : Set (OnePoint ℝ)}
     (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ)
@@ -188,6 +197,7 @@ lemma slope_uniform_of_compact_pos
         have h₀: dist x.1 a.1 ≤ δ := by linarith
         exact (hδ.2 x h₀).1 h₁
 
+/-- Auxiliary uniformity lemma.  -/
 lemma slope_uniform_of_compact_neg {t : Set (OnePoint ℝ)}
     (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ) (ht₂ : ∞ ∈ t)
     {a : { v : Fin 2 → ℝ // v ≠ 0 }} (H : a.1 1 = 0) (hl : a.1 0 < 0) :
@@ -226,6 +236,7 @@ lemma slope_uniform_of_compact_neg {t : Set (OnePoint ℝ)}
         have h₀: dist x.1 a.1 ≤ δ := by linarith
         exact (hδ.2 x h₀).2 hneg
 
+/-- Auxiliary uniformity lemma.  -/
 lemma slope_uniform_of_compact
     {t : Set (OnePoint ℝ)}
     (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ)
@@ -238,6 +249,7 @@ lemma slope_uniform_of_compact
   |inl hl => exact slope_uniform_of_compact_pos ht₀ ht₂ H hl
   |inr hr => exact slope_uniform_of_compact_neg ht₀ ht₂ H hr
 
+/-- Auxiliary openness lemma.  -/
 lemma slope_open
     {t : Set (OnePoint ℝ)}
     (h_t : IsOpen t ∧ ∞ ∈ t) :
@@ -258,10 +270,9 @@ lemma slope_open
     simp;use V;simp_all;tauto
   · exact slope_open_nonzero ht₀ ht₁ ha H
 
-
+/-- Auxiliary continuity lemma.  -/
 lemma continuous_slope_zero_case (x : { v : Fin 2 → ℝ // v ≠ 0 }) (H₁ : x.1 1 = 0) :
     ContinuousAt (fun u ↦ u.1 0 ÷ u.1 1) x := by
-  have : x.1 0 ≠ 0 := by apply not_both_zero;tauto
   unfold OnePoint_div
   rw [continuousAt_def]
   intro A hA
@@ -281,7 +292,7 @@ lemma continuous_slope_zero_case (x : { v : Fin 2 → ℝ // v ≠ 0 }) (H₁ : 
     apply slope_open
     tauto
 
-
+/-- Auxiliary continuity lemma.  -/
 theorem div_slope_continuous_unlifted :
     Continuous fun u : { v : Fin 2 → ℝ // v ≠ 0 } ↦ (u.1 0) ÷ (u.1 1) := by
   apply continuous_iff_continuousAt.mpr
@@ -290,12 +301,15 @@ theorem div_slope_continuous_unlifted :
   · apply continuous_slope_zero_case;tauto
   · apply continuous_slope_nonzero_case;tauto
 
+/-- Topology on projectivization. -/
 instance {n : ℕ}: TopologicalSpace (ℙ ℝ (Fin n → ℝ)) := instTopologicalSpaceQuot
 
+/-- div_slope is continuous. -/
 theorem div_slope_continuous : Continuous div_slope := by
   apply continuous_quot_lift
   apply div_slope_continuous_unlifted
 
+/-- List from unit circle to projectivization. -/
 def lift_unit_circle {n:ℕ}  : {v : Fin n → ℝ // dist v 0 = 1} → ℙ ℝ (Fin n → ℝ) := by
   intro v
   exact mk' ℝ ⟨v.1,by
@@ -304,6 +318,7 @@ def lift_unit_circle {n:ℕ}  : {v : Fin n → ℝ // dist v 0 = 1} → ℙ ℝ 
     rw [hc] at this;simp_all
   ⟩
 
+/-- List from unit circle to projectivization is surjective. -/
 lemma surjective_lift_unit_circle {n:ℕ} :
     Function.Surjective (@lift_unit_circle n) :=
   Quotient.ind (fun x ↦ by
@@ -317,14 +332,17 @@ lemma surjective_lift_unit_circle {n:ℕ} :
     simp
   )
 
+/-- List from unit circle to projectivization is continuous. -/
 lemma continuous_lift_unit_circle {n:ℕ} : Continuous (@lift_unit_circle n) := by
   unfold lift_unit_circle
   refine Continuous.comp' ?hg ?hf;
   · exact { isOpen_preimage := fun s a ↦ a }
   exact Isometry.continuous fun x1 ↦ congrFun rfl
 
+/-- Unit circle is compact. -/
 instance {n:ℕ} : CompactSpace {v : Fin n → ℝ // dist v 0 = 1} := Metric.sphere.compactSpace 0 1
 
+/-- Projectivization is compact. -/
 instance {n:ℕ} : CompactSpace (ℙ ℝ (Fin n → ℝ)) := by
   let Q := IsCompact.image CompactSpace.isCompact_univ (@continuous_lift_unit_circle n)
   have : lift_unit_circle '' Set.univ = Set.univ :=
