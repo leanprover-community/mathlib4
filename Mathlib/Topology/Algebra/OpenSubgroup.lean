@@ -467,42 +467,6 @@ open scoped Pointwise
 
 variable {G : Type*} [Group G]
 
-/-- The largest symmetric (self inverse) subset of a set. -/
-@[to_additive "The largest symmetric (self inverse) subset of a set."]
-def symmCore (V : Set G) : Set G := V ∩ V⁻¹
-
-@[to_additive]
-lemma symmCore_spec (V : Set G) : (symmCore V) = (symmCore V)⁻¹ := by
-  ext
-  simp only [symmCore, Set.mem_inter_iff, Set.mem_inv, Set.inter_inv, inv_inv, and_comm]
-
-@[to_additive]
-lemma iInter_symmCore_symm {α : Type*}
-    (S : Set α) (V : α → Set G) : ⋂ a ∈ S, symmCore (V a) = (⋂ a ∈ S, symmCore (V a))⁻¹ := by
-  ext x
-  constructor <;>
-  · intro h
-    simp only [Set.iInter_coe_set, Set.mem_iInter, Set.iInter_inv, Set.mem_inv] at h ⊢
-    intro s hs
-    rw [symmCore_spec]
-    simp only [Set.mem_inv, inv_inv, h s hs]
-
-/-- The set of tuples `(x,y)` in a set `W` which `x * y` is in `W` too. -/
-@[to_additive "The set of tuples `(x,y)` in a set `W` which `x + y` is in `W` too."]
-def mulClosurePairs (W : Set G) : Set (G × G) :=
-  (fun (x, y) ↦ x * y)⁻¹' W ∩ (W ×ˢ W)
-
-@[to_additive]
-lemma mulClosurePairs_open [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) : IsOpen (mulClosurePairs W) :=
-  IsOpen.inter (continuous_mul.isOpen_preimage W <| WOpen) (IsOpen.prod WOpen WOpen)
-
-@[to_additive]
-lemma mem_mulClosurePairs
-    {W : Set G} (einW : 1 ∈ W) (w : W) : ((w : G), 1) ∈ mulClosurePairs W := by
-  simp only [mulClosurePairs, Set.mem_inter_iff, Set.mem_preimage, Set.mem_prod, mul_one,
-    Subtype.coe_prop, Subtype.coe_prop, einW, and_self]
-
 /-- The first side of rectangle neighborhood of `(w,1)` in `mulClosurePairs`. -/
 @[to_additive "The first side of rectangle neighborhood of `(w,1)` in `addClosurePairs`."]
 def rectNhdSide [TopologicalSpace G]  [TopologicalGroup G]
@@ -556,13 +520,13 @@ lemma nhds_side_mul_sub [TopologicalSpace G]  [TopologicalGroup G]
 @[to_additive "The symm core of `rectNhdSideOne`."]
 def rectNhdSideOneCore [TopologicalSpace G]  [TopologicalGroup G]
     {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) : Set G :=
-  symmCore (rectNhdSideOne WOpen einW w)
+  Set.selfInvCore (rectNhdSideOne WOpen einW w)
 
 @[to_additive]
 lemma rectNhdSideOneCore_open [TopologicalSpace G]  [TopologicalGroup G]
     {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
     IsOpen (rectNhdSideOneCore WOpen einW w) := by
-  simp only [rectNhdSideOneCore, symmCore]
+  simp only [rectNhdSideOneCore, Set.selfInvCore]
   apply IsOpen.inter (rectNhdSideOne_open WOpen einW w)
     (IsOpen.inv (rectNhdSideOne_open WOpen einW w))
 
@@ -570,7 +534,7 @@ lemma rectNhdSideOneCore_open [TopologicalSpace G]  [TopologicalGroup G]
 lemma one_mem_rectNhdSideOneCore [TopologicalSpace G]  [TopologicalGroup G]
     {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
     1 ∈ (rectNhdSideOneCore WOpen einW w) := by
-  simp only [rectNhdSideOneCore, symmCore, Set.mem_inter_iff, Set.mem_inv, inv_one, and_self]
+  simp only [rectNhdSideOneCore, Set.selfInvCore, Set.mem_inter_iff, Set.mem_inv, inv_one, and_self]
   exact (one_mem_rectNhdSideOne WOpen einW w)
 
 @[to_additive]
@@ -596,7 +560,7 @@ lemma rectNhdSide_sub [TopologicalSpace G]  [TopologicalGroup G]
 lemma rectNhdSideOneCore_sub [TopologicalSpace G]  [TopologicalGroup G]
     {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
     (rectNhdSideOneCore WOpen einW w) ⊆ W := by
-  simp only [rectNhdSideOneCore, symmCore]
+  simp only [rectNhdSideOneCore, Set.selfInvCore]
   exact Set.Subset.trans Set.inter_subset_left (nhds_side_sub WOpen einW w).2
 
 @[to_additive]
@@ -648,7 +612,7 @@ lemma isopen [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W
 lemma symm [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
     (openSymmSubClopenNhdsOfOne WClopen einW) = (openSymmSubClopenNhdsOfOne WClopen einW)⁻¹ := by
   simp only [openSymmSubClopenNhdsOfOne, rectNhdSideOneCore]
-  apply iInter_symmCore_symm
+  apply Set.iInter_selfInvCore_symm
 
 @[to_additive]
 lemma one_mem [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
@@ -711,9 +675,7 @@ def OpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]  [
     use na + nb
     rw [pow_add]
     exact Set.mul_mem_mul hna hnb
-  one_mem':= by
-    use 1
-    simp only [pow_one, openSymmSubClopenNhdsOfOne.one_mem WClopen einW]
+  one_mem':= ⟨1, by simp only [pow_one, openSymmSubClopenNhdsOfOne.one_mem WClopen einW]⟩
   inv_mem':= by
     simp only [Set.mem_setOf_eq, forall_exists_index] at *
     intro x m hm
@@ -721,10 +683,8 @@ def OpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]  [
     rw [TopologicalGroup.openSymmSubClopenNhdsOfOne.symm]
     simpa only [inv_pow, Set.mem_inv, inv_inv] using hm
   isOpen' := by
-    set V := (openSymmSubClopenNhdsOfOne WClopen einW)
     simp only [iUnion_pow (openSymmSubClopenNhdsOfOne.one_mem WClopen einW)]
-    apply isOpen_iUnion
-    intro n
+    refine isOpen_iUnion (fun n ↦ ?_)
     rw [pow_succ]
     exact IsOpen.mul_left (openSymmSubClopenNhdsOfOne.isopen WClopen einW)
 
@@ -735,11 +695,10 @@ theorem openSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSp
   let V := (openSymmSubClopenNhdsOfOne WClopen einW)
   show {x : G | ∃ n : ℕ, x ∈ V ^ n} ⊆ W
   simp_rw [iUnion_pow (openSymmSubClopenNhdsOfOne.one_mem WClopen einW), Set.iUnion_subset_iff]
-  intro n nge
+  intro n _
   have mulVpow: W * V ^ (n + 1) ⊆ W := by
     induction' n with n ih
-    · simp only [zero_add, pow_one]
-      exact openSymmSubClopenNhdsOfOne.mul_sub WClopen einW
+    · simp only [zero_add, pow_one, openSymmSubClopenNhdsOfOne.mul_sub WClopen einW]
     · rw [pow_succ, ← mul_assoc]
       exact le_trans (Set.mul_subset_mul_right ih) <|
         openSymmSubClopenNhdsOfOne.mul_sub WClopen einW
@@ -749,7 +708,7 @@ theorem openSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSp
   use 1, einW, x, xin
   rw [one_mul]
 
-lemma openSubgroupSubClopenNhdsOfOne_nonempty {G : Type*} [Group G] [TopologicalSpace G]
+theorem openSubgroupSubClopenNhdsOfOne_nonempty {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] {U : Set G} {UClopen : IsClopen U} {einU : 1 ∈ U} :
     Nonempty {H : OpenSubgroup G // (H : Set G) ⊆ U} :=
   Nonempty.intro ⟨OpenSubgroupSubClopenNhdsOfOne UClopen einU,

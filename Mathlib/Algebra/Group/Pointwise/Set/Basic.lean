@@ -197,6 +197,28 @@ theorem sUnion_inv (S : Set (Set α)) : (⋃₀ S)⁻¹ = ⋃ s ∈ S, s⁻¹ :=
 theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
   preimage_compl
 
+variable {G : Type*} [Group G]
+
+/-- The largest symmetric (self inverse) subset of a set. -/
+@[to_additive "The largest symmetric (self inverse) subset of a set."]
+def selfInvCore (V : Set G) : Set G := V ∩ V⁻¹
+
+@[to_additive]
+lemma selfInvCore_spec (V : Set G) : (selfInvCore V) = (selfInvCore V)⁻¹ := by
+  ext
+  simp only [selfInvCore, Set.mem_inter_iff, Set.mem_inv, Set.inter_inv, inv_inv, and_comm]
+
+@[to_additive]
+lemma iInter_selfInvCore_symm {α : Type*}
+    (S : Set α) (V : α → Set G) : ⋂ a ∈ S, selfInvCore (V a) = (⋂ a ∈ S, selfInvCore (V a))⁻¹ := by
+  ext x
+  constructor <;>
+  · intro h
+    simp only [Set.iInter_coe_set, Set.mem_iInter, Set.iInter_inv, Set.mem_inv] at h ⊢
+    intro s hs
+    rw [selfInvCore_spec]
+    simp only [Set.mem_inv, inv_inv, h s hs]
+
 end Inv
 
 section InvolutiveInv
