@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Quotient
@@ -66,6 +67,13 @@ abbrev Quotient := (relations.G →₀ A) ⧸ Submodule.span A (Set.range relati
 /-- The canonical (surjective) linear map `(relations.G →₀ A) →ₗ[A] relations.Quotient`. -/
 def toQuotient : (relations.G →₀ A) →ₗ[A] relations.Quotient := Submodule.mkQ _
 
+lemma surjective_toQuotient : Function.Surjective relations.toQuotient :=
+  Submodule.mkQ_surjective _
+
+lemma ker_toQuotient :
+    LinearMap.ker relations.toQuotient = Submodule.span A (Set.range relations.relation) :=
+  Submodule.ker_mkQ _
+
 @[simp]
 lemma toQuotient_relation (r : relations.R) :
     relations.toQuotient (relations.relation r) = 0 := by
@@ -76,12 +84,17 @@ lemma toQuotient_relation (r : relations.R) :
 /-- The linear map `(relations.R →₀ A) →ₗ[A] (relations.G →₀ A)` corresponding to the relations
 given by `relations : Relations A`. -/
 noncomputable def map : (relations.R →₀ A) →ₗ[A] (relations.G →₀ A) :=
-  Finsupp.lift _ _ _ relations.relation
+  Finsupp.linearCombination _ relations.relation
 
 @[simp]
 lemma map_single (r : relations.R) :
     relations.map (Finsupp.single r 1) = relations.relation r := by
   simp [map]
+
+@[simp]
+lemma range_map :
+    LinearMap.range relations.map = Submodule.span A (Set.range relations.relation) :=
+  Finsupp.range_linearCombination _
 
 variable (M : Type v) [AddCommGroup M] [Module A M]
 
@@ -90,7 +103,7 @@ variable (M : Type v) [AddCommGroup M] [Module A M]
 structure Solution where
   /-- the image in `M` of each variable -/
   var (g : relations.G) : M
-  relation (r : relations.R) : Finsupp.lift _ A _ var (relations.relation r) = 0
+  relation (r : relations.R) : Finsupp.linearCombination _ var (relations.relation r) = 0
 
 namespace Solution
 
@@ -102,7 +115,7 @@ variable (solution : relations.Solution M)
 
 /-- Given `relations : Relations A` and a solution in `relations.Solution M`, this is
 the linear map `(relations.G →₀ A) →ₗ[A] M` canonically associated to the . -/
-noncomputable def π : (relations.G →₀ A) →ₗ[A] M := Finsupp.lift _ _ _ solution.var
+noncomputable def π : (relations.G →₀ A) →ₗ[A] M := Finsupp.linearCombination _ solution.var
 
 @[simp]
 lemma π_single (g : relations.G) :
@@ -140,10 +153,12 @@ noncomputable def fromQuotient : relations.Quotient →ₗ[A] M :=
   Submodule.liftQ _ solution.π solution.span_relation_le_ker_π
 
 @[simp]
-lemma fromQuotient_single (g : relations.G) :
-    solution.fromQuotient (Submodule.Quotient.mk (Finsupp.single g 1)) =
-      solution.var g := by
-  simp [fromQuotient]
+lemma fromQuotient_mk (x : relations.G →₀ A) :
+    solution.fromQuotient (Submodule.Quotient.mk x) = solution.π x := rfl
+
+@[simp]
+lemma fromQuotient_comp_toQuotient :
+  solution.fromQuotient.comp relations.toQuotient = solution.π := rfl
 
 variable {N : Type v'} [AddCommGroup N] [Module A N] (f : M →ₗ[A] N)
 
@@ -152,7 +167,7 @@ variable {N : Type v'} [AddCommGroup N] [Module A N] (f : M →ₗ[A] N)
 def postcomp : relations.Solution N where
   var g := f (solution.var g)
   relation r := by
-    have : Finsupp.lift _ A _ (fun g ↦ f (solution.var g)) = f.comp solution.π := by aesop
+    have : Finsupp.linearCombination _ (fun g ↦ f (solution.var g)) = f.comp solution.π := by aesop
     simp [this]
 
 end
@@ -165,10 +180,11 @@ variable (π : (relations.G →₀ A) →ₗ[A] M) (hπ : ∀ (r : relations.R),
 for `relations.Solution M` for which the data is given as
 a linear map `π : (relations.G →₀ A) →ₗ[A] M`. (See also `ofπ'` for an alternate
 vanishing criterion.) -/
+@[simps (config := .lemmasOnly)]
 noncomputable def ofπ : relations.Solution M where
   var g := π (Finsupp.single g 1)
   relation r := by
-    have : π = Finsupp.lift _ _ _ (fun g ↦ π (Finsupp.single g 1)) := by ext; simp
+    have : π = Finsupp.linearCombination _ (fun g ↦ π (Finsupp.single g 1)) := by ext; simp
     rw [← this]
     exact hπ r
 
@@ -183,6 +199,7 @@ variable (π : (relations.G →₀ A) →ₗ[A] M) (hπ : π.comp relations.map 
 
 /-- Variant of `ofπ` where the vanishing condition is expressed in terms
 of a composition of linear maps. -/
+@[simps! (config := .lemmasOnly)]
 noncomputable def ofπ' : relations.Solution M :=
   ofπ π (fun r ↦ by
     simpa using DFunLike.congr_fun hπ (Finsupp.single r 1))
@@ -201,6 +218,8 @@ namespace IsPresentation
 
 variable {solution : relations.Solution M} (h : solution.IsPresentation)
 
+include h
+
 /-- When `M` admits a presentation by generators and relations given
 by `solution : relations.Solutions M`, this is the associated linear equivalence
 `relations.Quotient ≃ₗ[A] M`. -/
@@ -215,6 +234,30 @@ lemma linearEquiv_symm_var (g : relations.G) :
     h.linearEquiv.symm (solution.var g) = Submodule.Quotient.mk (Finsupp.single g 1) :=
   h.linearEquiv.injective (by simp)
 
+lemma surjective_π : Function.Surjective solution.π := by
+  rw [← fromQuotient_comp_toQuotient, LinearMap.coe_comp]
+  exact h.bijective.2.comp relations.surjective_toQuotient
+
+lemma ker_π : LinearMap.ker solution.π = Submodule.span A (Set.range relations.relation) := by
+  rw [← ker_toQuotient, ← fromQuotient_comp_toQuotient, LinearMap.ker_comp,
+    LinearMap.ker_eq_bot.2 h.bijective.1, Submodule.comap_bot]
+
+lemma surjective_mapToKer : Function.Surjective solution.mapToKer := by
+  rintro ⟨x, hx⟩
+  rw [h.ker_π, ← relations.range_map] at hx
+  obtain ⟨r, rfl⟩ := hx
+  exact ⟨r, rfl⟩
+
+/-- The sequence `(relations.R →₀ A) → (relations.G →₀ A) → M → 0` is exact. -/
+lemma exact : Function.Exact relations.map solution.π := by
+  intro x₂
+  constructor
+  · intro hx₂
+    obtain ⟨x₁, hx₁⟩ := h.surjective_mapToKer ⟨x₂, hx₂⟩
+    exact ⟨x₁, by simpa only [mapToKer_coe, Subtype.ext_iff] using hx₁⟩
+  · rintro ⟨x₁, rfl⟩
+    rw [π_comp_map_apply]
+
 variable {N : Type v'} [AddCommGroup N] [Module A N]
 
 /-- If `M` admits a presentation by generators and relations, and we have a solution of the
@@ -226,9 +269,8 @@ noncomputable def desc (s : relations.Solution N) : M →ₗ[A] N :=
 lemma desc_var (s : relations.Solution N) (g : relations.G) :
     h.desc s (solution.var g) = s.var g := by
   dsimp [desc]
-  rw [linearEquiv_symm_var, fromQuotient_single]
+  rw [linearEquiv_symm_var, fromQuotient_mk, π_single]
 
-include h in
 lemma postcomp_injective {f f' : M →ₗ[A] N}
     (h' : solution.postcomp f = solution.postcomp f') : f = f' := by
   suffices f.comp solution.fromQuotient = f'.comp solution.fromQuotient by
@@ -271,12 +313,14 @@ end Solution
 
 end Relations
 
-variable {A} (M : Type v) [AddCommGroup M] [Module A M] (relations : Relations A)
+variable (M : Type v) [AddCommGroup M] [Module A M]
 
 /-- Given an `A`-module `M`, a term in this type is a presentation by `M` by
-generators and relations, where the shapes of the relations are given by
-a certain `relations : Relations A`. -/
+generators and relations. -/
+@[nolint checkUnivs]
 structure Presentation where
+  /-- the shape of the relations -/
+  relations : Relations A
   /-- a solution to the given equations -/
   solution : relations.Solution M
   isPresentation : solution.IsPresentation
