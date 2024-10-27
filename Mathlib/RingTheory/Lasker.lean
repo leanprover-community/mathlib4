@@ -56,9 +56,8 @@ lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := 
   obtain ⟨n, hn⟩ := monotone_stabilizes_iff_noetherian.mpr ‹_› ⟨f, hf⟩
   rcases h with ⟨-, h⟩
   specialize @h (I.colon (span {b ^ n})) (I + (span {b ^ n})) ?_
-  · refine le_antisymm ?_ (le_inf ?_ ?_)
-    · intro r
-      simp only [Submodule.add_eq_sup, sup_comm I, mem_inf, mem_colon_singleton,
+  · refine le_antisymm (fun r ↦ ?_) (le_inf (fun _ ↦ ?_) ?_)
+    · simp only [Submodule.add_eq_sup, sup_comm I, mem_inf, mem_colon_singleton,
         mem_span_singleton_sup, and_imp, forall_exists_index]
       rintro hrb t s hs rfl
       refine add_mem ?_ hs
@@ -67,8 +66,7 @@ lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := 
       rw [add_mul, mul_assoc, ← pow_add] at hrb
       rwa [← mem_colon_singleton, this, mem_colon_singleton,
            ← Ideal.add_mem_iff_left _ (Ideal.mul_mem_right _ _ hs)]
-    · intro
-      simpa only [mem_colon_singleton] using mul_mem_right _ _
+    · simpa only [mem_colon_singleton] using mul_mem_right _ _
     · simp
   rcases h with (h|h)
   · replace h : I = I.colon (span {b}) := by
