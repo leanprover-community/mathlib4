@@ -363,10 +363,8 @@ lemma IsIdempotentElem.range_prod__of_commute
   · intro a ha
     simp only [ContinuousLinearMap.coe_mul, Set.mem_range, Function.comp_apply]
     use a
-    rw [proj_apply Q hQ]
-    rw [proj_apply P hP]
-    apply ha.1
-    apply ha.2
+    rw [proj_apply Q hQ _ (Set.mem_of_mem_inter_right ha),
+      proj_apply P hP _ (Set.mem_of_mem_inter_left ha)]
 
 lemma IsLprojection.range_inter (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)) :
     Set.range P.val ∩ Set.range Q.val = Set.range (P ⊓ Q).val := by
