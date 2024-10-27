@@ -5,6 +5,8 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 import Mathlib.Topology.Algebra.Module.UniformConvergence
+import Mathlib.Topology.Algebra.SeparationQuotient.Section
+import Mathlib.Topology.Hom.ContinuousEvalConst
 
 /-!
 # Topology on continuous multilinear maps
@@ -65,15 +67,20 @@ section UniformAddGroup
 
 variable [UniformSpace F] [UniformAddGroup F]
 
+lemma isUniformInducing_toUniformOnFun :
+    IsUniformInducing (toUniformOnFun :
+      ContinuousMultilinearMap 𝕜 E F → ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) := ⟨rfl⟩
+
 lemma isUniformEmbedding_toUniformOnFun :
-    IsUniformEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) where
-  inj := DFunLike.coe_injective
-  comap_uniformity := rfl
+    IsUniformEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
+  ⟨isUniformInducing_toUniformOnFun, DFunLike.coe_injective⟩
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_toUniformOnFun := isUniformEmbedding_toUniformOnFun
 
-lemma embedding_toUniformOnFun : Embedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
+lemma embedding_toUniformOnFun :
+    Embedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F →
+      ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) :=
   isUniformEmbedding_toUniformOnFun.embedding
 
 theorem uniformContinuous_coe_fun [∀ i, ContinuousSMul 𝕜 (E i)] :
@@ -96,19 +103,33 @@ instance instUniformContinuousConstSMul {M : Type*}
   haveI := uniformContinuousConstSMul_of_continuousConstSMul M F
   isUniformEmbedding_toUniformOnFun.uniformContinuousConstSMul fun _ _ ↦ rfl
 
+theorem isUniformInducing_postcomp
+    {G : Type*} [AddCommGroup G] [UniformSpace G] [UniformAddGroup G] [Module 𝕜 G]
+    (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
+    IsUniformInducing (g.compContinuousMultilinearMap :
+      ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜 E G) := by
+  rw [← isUniformInducing_toUniformOnFun.of_comp_iff]
+  exact (UniformOnFun.postcomp_isUniformInducing hg).comp isUniformInducing_toUniformOnFun
+
 section CompleteSpace
 
-variable [∀ i, ContinuousSMul 𝕜 (E i)] [ContinuousConstSMul 𝕜 F] [CompleteSpace F] [T2Space F]
+variable [∀ i, ContinuousSMul 𝕜 (E i)] [ContinuousConstSMul 𝕜 F] [CompleteSpace F]
 
 open UniformOnFun in
 theorem completeSpace (h : RestrictGenTopology {s : Set (Π i, E i) | IsVonNBounded 𝕜 s}) :
     CompleteSpace (ContinuousMultilinearMap 𝕜 E F) := by
   classical
+  wlog hF : T2Space F generalizing F
+  · rw [(isUniformInducing_postcomp (SeparationQuotient.mkCLM _ _)
+      SeparationQuotient.isUniformInducing_mk).completeSpace_congr]
+    · exact this inferInstance
+    · intro f
+      use (SeparationQuotient.outCLM _ _).compContinuousMultilinearMap f
+      simp [DFunLike.ext_iff]
   have H : ∀ {m : Π i, E i},
       Continuous fun f : (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F ↦ toFun _ f m :=
     (uniformContinuous_eval (isVonNBounded_covers) _).continuous
-  rw [completeSpace_iff_isComplete_range isUniformEmbedding_toUniformOnFun.isUniformInducing,
-    range_toUniformOnFun]
+  rw [completeSpace_iff_isComplete_range isUniformInducing_toUniformOnFun, range_toUniformOnFun]
   simp only [setOf_and, setOf_forall]
   apply_rules [IsClosed.isComplete, IsClosed.inter]
   · exact UniformOnFun.isClosed_setOf_continuous h
@@ -152,6 +173,11 @@ end UniformAddGroup
 
 variable [TopologicalSpace F] [TopologicalAddGroup F]
 
+instance instTopologicalAddGroup : TopologicalAddGroup (ContinuousMultilinearMap 𝕜 E F) :=
+  letI := TopologicalAddGroup.toUniformSpace F
+  haveI := comm_topologicalAddGroup_is_uniform (G := F)
+  inferInstance
+
 instance instContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F] [ContinuousConstSMul M F] :
     ContinuousConstSMul M (ContinuousMultilinearMap 𝕜 E F) := by
@@ -188,20 +214,21 @@ theorem hasBasis_nhds_zero :
 
 variable [∀ i, ContinuousSMul 𝕜 (E i)]
 
-theorem continuous_eval_const (x : Π i, E i) :
-    Continuous fun p : ContinuousMultilinearMap 𝕜 E F ↦ p x := by
-  letI := TopologicalAddGroup.toUniformSpace F
-  haveI := comm_topologicalAddGroup_is_uniform (G := F)
-  exact (uniformContinuous_eval_const x).continuous
+instance : ContinuousEvalConst (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
+  continuous_eval_const x :=
+    let _ := TopologicalAddGroup.toUniformSpace F
+    have _ := comm_topologicalAddGroup_is_uniform (G := F)
+    (uniformContinuous_eval_const x).continuous
 
+@[deprecated (since := "2024-10-05")] protected alias continuous_eval_const := continuous_eval_const
 @[deprecated (since := "2024-04-10")] alias continuous_eval_left := continuous_eval_const
-
-theorem continuous_coe_fun :
-    Continuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=
-  continuous_pi continuous_eval_const
+@[deprecated (since := "2024-10-05")] protected alias continuous_coe_fun := continuous_coeFun
 
 instance instT2Space [T2Space F] : T2Space (ContinuousMultilinearMap 𝕜 E F) :=
-  .of_injective_continuous DFunLike.coe_injective continuous_coe_fun
+  .of_injective_continuous DFunLike.coe_injective continuous_coeFun
+
+instance instT3Space [T2Space F] : T3Space (ContinuousMultilinearMap 𝕜 E F) :=
+  inferInstance
 
 section RestrictScalars
 

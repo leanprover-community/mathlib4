@@ -562,9 +562,9 @@ theorem Tape.mk'_nth_nat {Γ} [Inhabited Γ] (L R : ListBlank Γ) (n : ℕ) :
 @[simp]
 theorem Tape.move_left_nth {Γ} [Inhabited Γ] :
     ∀ (T : Tape Γ) (i : ℤ), (T.move Dir.left).nth i = T.nth (i - 1)
-  | ⟨_, L, _⟩, -(n + 1 : ℕ) => (ListBlank.nth_succ _ _).symm
-  | ⟨_, L, _⟩, 0 => (ListBlank.nth_zero _).symm
-  | ⟨a, L, R⟩, 1 => (ListBlank.nth_zero _).trans (ListBlank.head_cons _ _)
+  | ⟨_, _, _⟩, -(_ + 1 : ℕ) => (ListBlank.nth_succ _ _).symm
+  | ⟨_, _, _⟩, 0 => (ListBlank.nth_zero _).symm
+  | ⟨_, _, _⟩, 1 => (ListBlank.nth_zero _).trans (ListBlank.head_cons _ _)
   | ⟨a, L, R⟩, (n + 1 : ℕ) + 1 => by
     rw [add_sub_cancel_right]
     change (R.cons a).nth (n + 1) = R.nth n
@@ -850,7 +850,7 @@ def FRespects {σ₁ σ₂} (f₂ : σ₂ → Option σ₂) (tr : σ₁ → σ�
 
 theorem frespects_eq {σ₁ σ₂} {f₂ : σ₂ → Option σ₂} {tr : σ₁ → σ₂} {a₂ b₂} (h : f₂ a₂ = f₂ b₂) :
     ∀ {b₁}, FRespects f₂ tr a₂ b₁ ↔ FRespects f₂ tr b₂ b₁
-  | some b₁ => reaches₁_eq h
+  | some _ => reaches₁_eq h
   | none => by unfold FRespects; rw [h]
 
 theorem fun_respects {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂} :
@@ -2257,9 +2257,9 @@ def trInit (k : K) (L : List (Γ k)) : List Γ'₂₁ :=
 
 theorem step_run {k : K} (q : Stmt₂) (v : σ) (S : ∀ k, List (Γ k)) : ∀ s : StAct₂ k,
     TM2.stepAux (stRun s q) v S = TM2.stepAux q (stVar v (S k) s) (update S k (stWrite v (S k) s))
-  | StAct.push f => rfl
+  | StAct.push _ => rfl
   | StAct.peek f => by unfold stWrite; rw [Function.update_eq_self]; rfl
-  | StAct.pop f => rfl
+  | StAct.pop _ => rfl
 
 end
 

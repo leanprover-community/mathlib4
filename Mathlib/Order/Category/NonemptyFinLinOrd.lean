@@ -86,7 +86,7 @@ instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrd LinOrd :=
 instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrd FinPartOrd where
   forget₂ :=
     { obj := fun X => FinPartOrd.of X
-      map := @fun X Y => id }
+      map := @fun _ _ => id }
 
 /-- Constructs an equivalence between nonempty finite linear orders from an order isomorphism
 between them. -/
@@ -121,7 +121,6 @@ instance {A B : NonemptyFinLinOrd.{u}} : FunLike (A ⟶ B) A B where
     ext x
     exact congr_fun h x
 
--- porting note (#10670): this instance was not necessary in mathlib
 instance {A B : NonemptyFinLinOrd.{u}} : OrderHomClass (A ⟶ B) A B where
   map_rel f _ _ h := f.monotone h
 

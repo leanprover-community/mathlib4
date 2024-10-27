@@ -252,11 +252,6 @@ theorem tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
   obtain ⟨n, hn₁, hn₂⟩ := exists_compact_mem_nhds x
   exact ⟨n, hn₂, h n hn₁ V hV⟩
 
-@[deprecated tendsto_iff_tendstoLocallyUniformly (since := "2023-09-03")]
-theorem tendstoLocallyUniformly_of_tendsto [WeaklyLocallyCompactSpace α] (h : Tendsto F p (𝓝 f)) :
-    TendstoLocallyUniformly (fun i a => F i a) f p :=
-  tendsto_iff_tendstoLocallyUniformly.1 h
-
 section Functorial
 
 variable {γ δ : Type*} [TopologicalSpace γ] [UniformSpace δ]

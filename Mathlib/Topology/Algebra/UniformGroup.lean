@@ -7,7 +7,7 @@ import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.DiscreteSubset
 import Mathlib.Tactic.Abel
 
@@ -416,6 +416,11 @@ theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
     TotallyBounded s ↔ ∀ U ∈ 𝓝 (1 : α), ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, y • U :=
   (𝓝 (1 : α)).basis_sets.uniformity_of_nhds_one_inv_mul_swapped.totallyBounded_iff.trans <| by
     simp [← preimage_smul_inv, preimage]
+
+@[to_additive]
+theorem totallyBounded_inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded (s⁻¹) := by
+  convert TotallyBounded.image hs uniformContinuous_inv
+  aesop
 
 section UniformConvergence
 
