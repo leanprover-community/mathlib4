@@ -23,7 +23,7 @@ homomorphism.
 
 -/
 
-open TensorProduct Coalgebra CoalgebraStruct
+open TensorProduct Coalgebra
 
 universe u v w
 
