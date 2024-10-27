@@ -147,11 +147,11 @@ theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by norm_cast
 theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
   coe_eq_zero.not
 
-@[norm_cast] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem coe_le_coe : (p : ℚ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 
-@[norm_cast] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 

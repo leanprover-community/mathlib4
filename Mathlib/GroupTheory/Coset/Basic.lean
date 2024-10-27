@@ -424,7 +424,7 @@ protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
 
 @[to_additive (attr := deprecated (since := "2024-08-04"))] alias eq' := QuotientGroup.eq
 
-@[to_additive] -- Porting note (#10618): `simp` can prove this.
+@[to_additive]
 theorem out_eq' (a : α ⧸ s) : mk a.out' = a :=
   Quotient.out_eq' a
 

@@ -249,8 +249,11 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
 
   exact Set.mem_image_of_mem _ (hε this)
 
-protected theorem quotientMap (surj : Surjective f) : QuotientMap f :=
-  (f.isOpenMap surj).to_quotientMap f.continuous surj
+theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=
+  (f.isOpenMap surj).isQuotientMap f.continuous surj
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap := isQuotientMap
 
 end
 

@@ -211,7 +211,6 @@ protected theorem map_sub (f : α → β) (x y : FreeAbelianGroup α) :
 theorem map_of (f : α → β) (y : α) : f <$> of y = of (f y) :=
   rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem pure_bind (f : α → FreeAbelianGroup β) (x) : pure x >>= f = f x :=
   lift.of _ _
 

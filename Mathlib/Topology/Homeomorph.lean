@@ -210,12 +210,15 @@ protected theorem inducing (h : X ≃ₜ Y) : Inducing h :=
 theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› :=
   h.inducing.1.symm
 
-protected theorem quotientMap (h : X ≃ₜ Y) : QuotientMap h :=
-  QuotientMap.of_quotientMap_compose h.symm.continuous h.continuous <| by
-    simp only [self_comp_symm, QuotientMap.id]
+theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
+  IsQuotientMap.of_comp h.symm.continuous h.continuous <| by
+    simp only [self_comp_symm, IsQuotientMap.id]
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap := isQuotientMap
 
 theorem coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
-  h.quotientMap.2.symm
+  h.isQuotientMap.2.symm
 
 protected theorem embedding (h : X ≃ₜ Y) : Embedding h :=
   ⟨h.inducing, h.injective⟩
@@ -314,7 +317,7 @@ alias denseEmbedding := isDenseEmbedding
 
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
-  h.quotientMap.isOpen_preimage
+  h.isQuotientMap.isOpen_preimage
 
 @[simp]
 theorem isOpen_image (h : X ≃ₜ Y) {s : Set X} : IsOpen (h '' s) ↔ IsOpen s := by
@@ -338,14 +341,17 @@ theorem isOpenEmbedding (h : X ≃ₜ Y) : IsOpenEmbedding h :=
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding := isOpenEmbedding
 
-protected theorem closedEmbedding (h : X ≃ₜ Y) : ClosedEmbedding h :=
-  closedEmbedding_of_embedding_closed h.embedding h.isClosedMap
+theorem isClosedEmbedding (h : X ≃ₜ Y) : IsClosedEmbedding h :=
+  .of_embedding_closed h.embedding h.isClosedMap
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding := isClosedEmbedding
 
 protected theorem normalSpace [NormalSpace X] (h : X ≃ₜ Y) : NormalSpace Y :=
-  h.symm.closedEmbedding.normalSpace
+  h.symm.isClosedEmbedding.normalSpace
 
 protected theorem t4Space [T4Space X] (h : X ≃ₜ Y) : T4Space Y :=
-  h.symm.closedEmbedding.t4Space
+  h.symm.isClosedEmbedding.t4Space
 
 theorem preimage_closure (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' closure s = closure (h ⁻¹' s) :=
   h.isOpenMap.preimage_closure_eq_closure_preimage h.continuous _
@@ -368,7 +374,7 @@ theorem image_frontier (h : X ≃ₜ Y) (s : Set X) : h '' frontier s = frontier
 @[to_additive]
 theorem _root_.HasCompactMulSupport.comp_homeomorph {M} [One M] {f : Y → M}
     (hf : HasCompactMulSupport f) (φ : X ≃ₜ Y) : HasCompactMulSupport (f ∘ φ) :=
-  hf.comp_closedEmbedding φ.closedEmbedding
+  hf.comp_isClosedEmbedding φ.isClosedEmbedding
 
 @[simp]
 theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
@@ -405,7 +411,7 @@ the domain is a locally compact space. -/
 theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
     LocallyCompactSpace X ↔ LocallyCompactSpace Y := by
   exact ⟨fun _ => h.symm.isOpenEmbedding.locallyCompactSpace,
-    fun _ => h.closedEmbedding.locallyCompactSpace⟩
+    fun _ => h.isClosedEmbedding.locallyCompactSpace⟩
 
 /-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
 @[simps toEquiv]
@@ -447,7 +453,7 @@ theorem comp_continuous_iff (h : X ≃ₜ Y) {f : Z → X} : Continuous (h ∘ f
 
 @[simp]
 theorem comp_continuous_iff' (h : X ≃ₜ Y) {f : Y → Z} : Continuous (f ∘ h) ↔ Continuous f :=
-  h.quotientMap.continuous_iff.symm
+  h.isQuotientMap.continuous_iff.symm
 
 theorem comp_continuousAt_iff (h : X ≃ₜ Y) (f : Z → X) (z : Z) :
     ContinuousAt (h ∘ f) z ↔ ContinuousAt f z :=
@@ -909,12 +915,16 @@ noncomputable def homeomorph : X ≃ₜ Y where
 
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
 protected lemma inducing : Inducing f := (hf.homeomorph f).inducing
-protected lemma quotientMap : QuotientMap f := (hf.homeomorph f).quotientMap
+lemma isQuotientMap : IsQuotientMap f := (hf.homeomorph f).isQuotientMap
 protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
 lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
-protected lemma closedEmbedding : ClosedEmbedding f := (hf.homeomorph f).closedEmbedding
+lemma isClosedEmbedding : IsClosedEmbedding f := (hf.homeomorph f).isClosedEmbedding
 lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
 
+@[deprecated (since := "2024-10-22")]
+alias quotientMap := isQuotientMap
+
+@[deprecated (since := "2024-10-20")] alias closedEmbedding := isClosedEmbedding
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding := isOpenEmbedding
 
