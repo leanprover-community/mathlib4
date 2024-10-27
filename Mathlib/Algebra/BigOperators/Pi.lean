@@ -14,6 +14,8 @@ This file contains theorems relevant to big operators in binary and arbitrary pr
 of monoids and groups
 -/
 
+open scoped Finset
+
 variable {ι κ α : Type*}
 
 namespace Pi
@@ -62,7 +64,7 @@ section CommSemiring
 variable [CommSemiring α]
 
 lemma prod_indicator_apply (s : Finset ι) (f : ι → Set κ) (g : ι → κ → α) (j : κ) :
-    ∏ i ∈ s, (f i).indicator (g i) j = (s.inf f).indicator (∏ i ∈ s, g i) j := by
+    ∏ i ∈ s, (f i).indicator (g i) j = (⋂ x ∈ s, f x).indicator (∏ i ∈ s, g i) j := by
   rw [Set.indicator]
   split_ifs with hj
   · rw [Finset.prod_apply]
@@ -73,8 +75,15 @@ lemma prod_indicator_apply (s : Finset ι) (f : ι → Set κ) (g : ι → κ �
     exact Finset.prod_eq_zero hi <| Set.indicator_of_not_mem hj _
 
 lemma prod_indicator (s : Finset ι) (f : ι → Set κ) (g : ι → κ → α) :
-    ∏ i ∈ s, (f i).indicator (g i) = (s.inf f).indicator (∏ i ∈ s, g i) := by
+    ∏ i ∈ s, (f i).indicator (g i) = (⋂ x ∈ s, f x).indicator (∏ i ∈ s, g i) := by
   ext a; simpa using prod_indicator_apply ..
+
+lemma prod_indicator_const_apply (s : Finset ι) (f : ι → Set κ) (g : κ → α) (j : κ) :
+    ∏ i ∈ s, (f i).indicator g j = (⋂ x ∈ s, f x).indicator (g ^ #s) j := by
+  simp [prod_indicator_apply]
+
+lemma prod_indicator_const (s : Finset ι) (f : ι → Set κ) (g : κ → α) :
+    ∏ i ∈ s, (f i).indicator g = (⋂ x ∈ s, f x).indicator (g ^ #s) := by simp [prod_indicator]
 
 end CommSemiring
 
