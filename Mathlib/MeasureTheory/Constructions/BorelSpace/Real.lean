@@ -33,12 +33,6 @@ universe u v w x y
 
 variable {α β γ δ : Type*} {ι : Sort y} {s t u : Set α}
 
-namespace EReal
-
-@[simp] lemma «forall» {p : EReal → Prop} : (∀ r, p r) ↔ p ⊥ ∧ p ⊤ ∧ ∀ r : ℝ, p r := sorry
-
-end EReal
-
 namespace Real
 
 theorem borel_eq_generateFrom_Ioo_rat :
