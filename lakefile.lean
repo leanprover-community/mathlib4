@@ -53,7 +53,7 @@ package mathlib where
   -- Mathlib also enforces these linter options, which are not active by default.
   moreServerOptions := mathlibOnlyLinters
   -- Use Batteries' test driver for `lake test`
-  testDriver := "batteries/test"
+  testDriver := "MathlibTest"
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -71,6 +71,9 @@ lean_lib Mathlib
 -- `scripts/mk_all.lean`.
 lean_lib Cache
 lean_lib LongestPole
+
+lean_lib MathlibTest where
+  globs := #[.submodules `MathlibTest]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
