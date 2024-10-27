@@ -30,6 +30,7 @@ Given `M` and `relations : Relations A`, we also introduce a structure
 which is a presentation of `M` by generators and relations.
 
 ## TODO
+* Relate this to `Module.FinitePresentation`
 * Behaviour of presentations with respect to the extension of scalars and
 the restriction of scalars
 
