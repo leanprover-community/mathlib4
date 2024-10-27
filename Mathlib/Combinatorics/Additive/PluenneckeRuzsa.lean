@@ -41,77 +41,81 @@ variable {G : Type*} [DecidableEq G]
 section Group
 variable [Group G] {A B C : Finset G}
 
+/-! ### Noncommutative Ruzsa triangle inequality -/
+
 /-- **Ruzsa's triangle inequality**. Division version. -/
 @[to_additive "**Ruzsa's triangle inequality**. Subtraction version."]
 theorem ruzsa_triangle_inequality_div_div_div (A B C : Finset G) :
-    #(A / C) * #B ≤ #(A / B) * #(B / C) := by
-  rw [← card_product (A / B), ← mul_one #((A / B) ×ˢ (B / C))]
-  refine card_mul_le_card_mul (fun b (a, c) ↦ a * c = b) (fun x hx ↦ ?_)
+    #(A / C) * #B ≤ #(A / B) * #(C / B) := by
+  rw [← card_product (A / B), ← mul_one #((A / B) ×ˢ (C / B))]
+  refine card_mul_le_card_mul (fun b (a, c) ↦ a / c = b) (fun x hx ↦ ?_)
     fun x _ ↦ card_le_one_iff.2 fun hu hv ↦
       ((mem_bipartiteBelow _).1 hu).2.symm.trans ?_
   · obtain ⟨a, ha, c, hc, rfl⟩ := mem_div.1 hx
-    refine card_le_card_of_injOn (fun b ↦ (a / b, b / c)) (fun b hb ↦ ?_) fun b₁ _ b₂ _ h ↦ ?_
+    refine card_le_card_of_injOn (fun b ↦ (a / b, c / b)) (fun b hb ↦ ?_) fun b₁ _ b₂ _ h ↦ ?_
     · rw [mem_bipartiteAbove]
-      exact ⟨mk_mem_product (div_mem_div ha hb) (div_mem_div hb hc), div_mul_div_cancel _ _ _⟩
+      exact ⟨mk_mem_product (div_mem_div ha hb) (div_mem_div hc hb), div_div_div_cancel_right ..⟩
     · exact div_right_injective (Prod.ext_iff.1 h).1
   · exact ((mem_bipartiteBelow _).1 hv).2
 
+/-- **Ruzsa's triangle inequality**. Mulinv-mulinv-mulinv version. -/
+@[to_additive "**Ruzsa's triangle inequality**. Addneg-addneg-addneg version."]
+theorem ruzsa_triangle_inequality_mulInv_mulInv_mulInv (A B C : Finset G) :
+    #(A * C⁻¹) * #B ≤ #(A * B⁻¹) * #(C * B⁻¹) := by
+  simpa [div_eq_mul_inv] using ruzsa_triangle_inequality_div_div_div A B C
+
 /-- **Ruzsa's triangle inequality**. Invmul-invmul-invmul version. -/
 @[to_additive "**Ruzsa's triangle inequality**. Negadd-negadd-negadd version."]
-theorem ruzsa_triangle_inequality_inv_mul_inv_mul_inv_mul (A B C : Finset G) :
-    #(C⁻¹ * A) * #B ≤ #(B⁻¹ * A) * #(C⁻¹ * B) := by
-  simpa [div_eq_mul_inv, ← map_op_mul, ← map_op_inv] using
-    ruzsa_triangle_inequality_div_div_div (G := Gᵐᵒᵖ) (A.map opEquiv.toEmbedding)
-      (B.map opEquiv.toEmbedding) (C.map opEquiv.toEmbedding)
+theorem ruzsa_triangle_inequality_invMul_invMul_invMul (A B C : Finset G) :
+    #B * #(A⁻¹ * C) ≤ #(B⁻¹ * A) * #(B⁻¹ * C) := by
+  simpa [mul_comm, div_eq_mul_inv, ← map_op_mul, ← map_op_inv] using
+    ruzsa_triangle_inequality_div_div_div (G := Gᵐᵒᵖ) (C.map opEquiv.toEmbedding)
+      (B.map opEquiv.toEmbedding) (A.map opEquiv.toEmbedding)
+
 
 /-- **Ruzsa's triangle inequality**. Div-mul-mul version. -/
 @[to_additive "**Ruzsa's triangle inequality**. Sub-add-add version."]
 theorem ruzsa_triangle_inequality_div_mul_mul (A B C : Finset G) :
     #(A / C) * #B ≤ #(A * B) * #(C * B) := by
-  rw [← div_inv_eq_mul, ← card_inv B, ← card_inv (C * B), mul_inv_rev, ← div_eq_mul_inv]
-  exact ruzsa_triangle_inequality_div_div_div _ _ _
+  simpa using ruzsa_triangle_inequality_div_div_div A B⁻¹ C
+
+/-- **Ruzsa's triangle inequality**. Mulinv-mul-mul version. -/
+@[to_additive "**Ruzsa's triangle inequality**. Addneg-add-add version."]
+theorem ruzsa_triangle_inequality_mulInv_mul_mul (A B C : Finset G) :
+    #(A * C⁻¹) * #B ≤ #(A * B) * #(C * B) := by
+  simpa using ruzsa_triangle_inequality_mulInv_mulInv_mulInv A B⁻¹ C
 
 /-- **Ruzsa's triangle inequality**. Invmul-mul-mul version. -/
 @[to_additive "**Ruzsa's triangle inequality**. Negadd-add-add version."]
-theorem ruzsa_triangle_inequality_inv_mul_mul_mul (A B C : Finset G) :
-    #(C⁻¹ * A) * #B ≤ #(B * A) * #(B * C) := by
-  simpa [div_eq_mul_inv, ← map_op_mul, ← map_op_inv] using
-    ruzsa_triangle_inequality_div_mul_mul (G := Gᵐᵒᵖ) (A.map opEquiv.toEmbedding)
-      (B.map opEquiv.toEmbedding) (C.map opEquiv.toEmbedding)
+theorem ruzsa_triangle_inequality_invMul_mul_mul (A B C : Finset G) :
+    #B * #(A⁻¹ * C) ≤ #(B * A) * #(B * C) := by
+  simpa using ruzsa_triangle_inequality_invMul_invMul_invMul A B⁻¹ C
+
 
 /-- **Ruzsa's triangle inequality**. Mul-div-mul version. -/
 @[to_additive "**Ruzsa's triangle inequality**. Add-sub-add version."]
 theorem ruzsa_triangle_inequality_mul_div_mul (A B C : Finset G) :
-    #(A * C) * #B ≤ #(A / B) * #(B * C) := by
-  rw [← div_inv_eq_mul, ← div_inv_eq_mul B]
-  exact ruzsa_triangle_inequality_div_div_div _ _ _
+    #B * #(A * C) ≤ #(B / A) * #(B * C) := by
+  simpa [div_eq_mul_inv] using ruzsa_triangle_inequality_invMul_mul_mul A⁻¹ B C
 
-/-- **Ruzsa's triangle inequality**. Mul-invmul-mul version. -/
-@[to_additive "**Ruzsa's triangle inequality**. Add-negadd-add version."]
-theorem ruzsa_triangle_inequality_mul_inv_mul_mul (A B C : Finset G) :
-    #(C * A) * #B ≤ #(B⁻¹ * A) * #(C * B) := by
-  simpa [div_eq_mul_inv, ← map_op_mul, ← map_op_inv] using
-    ruzsa_triangle_inequality_mul_div_mul (G := Gᵐᵒᵖ) (A.map opEquiv.toEmbedding)
-      (B.map opEquiv.toEmbedding) (C.map opEquiv.toEmbedding)
-
-/-- **Ruzsa's triangle inequality**. Mul-mul-div version. -/
-@[to_additive "**Ruzsa's triangle inequality**. Add-add-sub version."]
-theorem ruzsa_triangle_inequality_mul_mul_div (A B C : Finset G) :
-    #(C * A) * #B ≤ #(B * A) * #(B / C) := by
-  simpa [div_eq_mul_inv] using ruzsa_triangle_inequality_inv_mul_mul_mul A B C⁻¹
+/-- **Ruzsa's triangle inequality**. Mul-mulinv-mul version. -/
+@[to_additive "**Ruzsa's triangle inequality**. Add-addneg-add version."]
+theorem ruzsa_triangle_inequality_mul_mulInv_mul (A B C : Finset G) :
+    #B * #(A * C) ≤ #(B * A⁻¹) * #(B * C) := by
+  simpa [div_eq_mul_inv] using ruzsa_triangle_inequality_mul_div_mul A B C
 
 /-- **Ruzsa's triangle inequality**. Mul-mul-invmul version. -/
 @[to_additive "**Ruzsa's triangle inequality**. Add-add-negadd version."]
-theorem ruzsa_triangle_inequality_mul_mul_inv_mul (A B C : Finset G) :
+theorem ruzsa_triangle_inequality_mul_mul_invMul (A B C : Finset G) :
     #(A * C) * #B ≤ #(A * B) * #(C⁻¹ * B) := by
-  simpa [div_eq_mul_inv, ← map_op_mul, ← map_op_inv] using
-    ruzsa_triangle_inequality_mul_mul_div (G := Gᵐᵒᵖ) (A.map opEquiv.toEmbedding)
-      (B.map opEquiv.toEmbedding) (C.map opEquiv.toEmbedding)
+  simpa using ruzsa_triangle_inequality_mulInv_mul_mul A B C⁻¹
 
 end Group
 
 section CommGroup
 variable [CommGroup G] {A B C : Finset G}
+
+/-! ### Plünnecke-Petridis inequality -/
 
 @[to_additive]
 theorem pluennecke_petridis_inequality_mul (C : Finset G)
@@ -142,8 +146,7 @@ theorem pluennecke_petridis_inequality_mul (C : Finset G)
     card_mul_singleton A' x, add_comm #_, h₀,
     eq_tsub_of_add_eq (card_union_add_card_inter _ _)]
 
-/-! ### Sum triangle inequality -/
-
+/-! ### Commutative Ruzsa triangle inequality -/
 
 -- Auxiliary lemma for Ruzsa's triangle sum inequality, and the Plünnecke-Ruzsa inequality.
 @[to_additive]
