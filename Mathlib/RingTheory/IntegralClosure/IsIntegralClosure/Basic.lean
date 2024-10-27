@@ -366,8 +366,8 @@ lemma quotient_isIntegralElem_of_monic (g : S[X]) (mon : g.Monic) (I : Ideal S[X
 /- If `I` is an ideal of the polynomial ring `S[X]` and contains a monic polynomial `f`,
 then `S[X]/I` is integral over `S`. -/
 lemma quotient_isIntegral_of_monic (g : S[X]) (mon : g.Monic) (I : Ideal S[X])
-    (h : g ∈ I) : ((Ideal.Quotient.mkₐ S I).comp (Algebra.ofId S S[X])).IsIntegral :=
-  by
+    (h : g ∈ I) :
+      ((Ideal.Quotient.mkₐ S I).comp (Algebra.ofId S S[X])).IsIntegral := by
   have eq_top : Algebra.adjoin S {(Ideal.Quotient.mkₐ S I) X} = ⊤ := by
     ext g
     constructor
