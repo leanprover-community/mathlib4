@@ -133,9 +133,6 @@ noncomputable def mkOfOplax' {F G : Pseudofunctor B C} (η : F.toOplax ⟶ G)
   naturality_id a := by simpa using η.naturality_id a
   naturality_comp f g := by simpa using η.naturality_comp f g
 
-
-variable {H : Pseudofunctor B C} (η : StrongTrans F G) (θ : StrongTrans G H)
-
 variable (F) in
 /-- The identity strong transformation. -/
 def id : StrongTrans F F where
@@ -146,7 +143,7 @@ instance : Inhabited (StrongTrans F F) :=
   ⟨id F⟩
 
 /-- Vertical composition of strong transformations. -/
-def vcomp : StrongTrans F H :=
+def vcomp {H : Pseudofunctor B C} (η : StrongTrans F G) (θ : StrongTrans G H) : StrongTrans F H :=
   mkOfOplax (OplaxTrans.vcomp η.toOplax θ.toOplax)
     { naturality := fun {a b} f ↦
         (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
@@ -162,25 +159,21 @@ instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
   id F := StrongTrans.id F
   comp := StrongTrans.vcomp
 
-section
-
-variable {F G H : Pseudofunctor B C}
-
-@[simp]
-lemma comp_app (η : F ⟶ G) (θ : G ⟶ H) (a : B) :
-    (η ≫ θ).app a = η.app a ≫ θ.app a :=
-  rfl
-
-end
-
 @[simp]
 lemma id_toOplax (F : Pseudofunctor B C) : 𝟙 F = 𝟙 F.toOplax :=
   rfl
 
 section
 
-variable {F G : Pseudofunctor B C}
-variable {H : Pseudofunctor B C} (η : StrongTrans F G) (θ : StrongTrans G H)
+variable {F G H : Pseudofunctor B C} (η : F ⟶ G) (θ : G ⟶ H)
+
+@[simp]
+lemma comp_app  (a : B) :
+    (η ≫ θ).app a = η.app a ≫ θ.app a :=
+  rfl
+
+section
+
 variable {a b c : B} {a' : C}
 
 @[reassoc (attr := simp)]
@@ -230,10 +223,6 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
   η.toOplax.whiskerRight_naturality_id _
 
 end
-
-section
-
-variable {F G : Pseudofunctor B C}
 
 @[reassoc, to_app]
 lemma naturality_id_hom (α : F ⟶ G) (a : B) :
