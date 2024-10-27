@@ -353,12 +353,10 @@ def functorFrom : Grothendieck F ⥤ E where
   map_id X := by simp [hom_id]
   map_comp f g := by simp [hom_comp]
 
-/-- `Grothendieck.apply` and `Grothendieck.functorFrom` fulfill a kind of "β reduction", in which
-application and abstraction cancel each other out. -/
-theorem ι_functorFrom (c : C) : ι F c ⋙ (functorFrom fib hom hom_id hom_comp) = fib c := by
-  refine Functor.ext (fun _ => by rfl) ?_
-  intro X Y f
-  simp [hom_id]
+/-- `Grothendieck.ι F c` composed with `Grothendieck.functorFrom` is isomorphic a functor on a fiber
+on `F` supplied as the first argument to `Grothendieck.functorFrom`. -/
+def ιFunctorFromIso (c : C) : ι F c ⋙ (functorFrom fib hom hom_id hom_comp) ≅ fib c :=
+  NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [hom_id])
 
 end FunctorFrom
 
