@@ -289,10 +289,10 @@ lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
   simp only [SetLike.mem_coe, LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.smul_apply,
     sub_eq_zero, ← Finset.prod_erase_mul σ s hx, mul_smul, hs]
 
-instance Module.FinitePresentation.isLocalizedModule_map
-    {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
-    {N' : Type*} [AddCommGroup N'] [Module R N'] (g : N →ₗ[R] N') [IsLocalizedModule S g]
-    [Module.FinitePresentation R M] :
+variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
+variable {N' : Type*} [AddCommGroup N'] [Module R N'] (g : N →ₗ[R] N') [IsLocalizedModule S g]
+
+instance Module.FinitePresentation.isLocalizedModule_map [Module.FinitePresentation R M] :
       IsLocalizedModule S (IsLocalizedModule.map S f g) := by
   constructor
   · intro s
@@ -316,8 +316,6 @@ instance Module.FinitePresentation.isLocalizedModule_map
     simpa using LinearMap.congr_fun e (f x)
 
 instance Module.FinitePresentation.isLocalizedModule_mapExtendScalars
-    {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
-    {N' : Type*} [AddCommGroup N'] [Module R N'] (g : N →ₗ[R] N') [IsLocalizedModule S g]
     (Rₛ) [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ M'] [Module Rₛ N']
     [IsScalarTower R Rₛ M'] [IsScalarTower R Rₛ N'] [IsLocalization S Rₛ]
     [Module.FinitePresentation R M] :

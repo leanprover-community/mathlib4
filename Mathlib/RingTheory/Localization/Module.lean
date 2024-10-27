@@ -6,7 +6,7 @@ Authors: Junyan Xu, Anne Baanen
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
-import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Modules / vector spaces over localizations / fraction fields
@@ -116,6 +116,11 @@ theorem Basis.ofIsLocalizedModule_span :
     _ = span R (f '' (Set.range b)) := by congr; ext; simp
     _ = map f (span R (Set.range b)) := by rw [Submodule.map_span]
     _ = LinearMap.range f := by rw [b.span_eq, Submodule.map_top]
+
+include S f in
+theorem Module.free_of_isLocalizedModule [Module.Free R M] : Module.Free Rₛ Mₛ :=
+  Module.Free.of_basis
+    (Basis.ofIsLocalizedModule Rₛ S f (Module.Free.chooseBasis R M))
 
 end Basis
 
