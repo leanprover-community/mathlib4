@@ -60,7 +60,7 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
   simp only [id_obj, comp_obj, adjRetractionAux, Functor.map_inv, Functor.comp_map,
     braiding_naturality_right_assoc]
   slice_lhs 2 3 =>
-    simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, id_comp, comp_id]
+    simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, Category.id_comp, Category.comp_id]
   slice_lhs 2 4 =>
     rw [← adj.unit_naturality_assoc]
   simp
@@ -95,7 +95,7 @@ theorem isIso_tfae : List.TFAE
       have := braiding_naturality (𝟙 d) (adj.unit.app d')
       rw [← Iso.eq_comp_inv, id_tensorHom] at this
       rw [this]
-      simp only [map_comp, id_obj, comp_obj, tensorHom_id, assoc]
+      simp only [map_comp, id_obj, comp_obj, tensorHom_id, Category.assoc]
       infer_instance
     intro d d'
     -- We then write the tensor product of the two units as the composition of the whiskered units,
@@ -156,7 +156,7 @@ theorem isIso_tfae : List.TFAE
     refine ⟨fun f ↦ R.map ((adj.homEquiv _ _).symm f), ?_, by ext; simp⟩
     ext f
     simp only [comp_obj, coyoneda_obj_obj, id_obj, Adjunction.homEquiv_counit,
-      map_comp, types_comp_apply, coyoneda_map_app, Quiver.Hom.unop_op, assoc,
+      map_comp, types_comp_apply, coyoneda_map_app, Quiver.Hom.unop_op, Category.assoc,
       types_id_apply]
     have : f = R.map (R.preimage f) := by simp
     rw [this]
@@ -216,7 +216,7 @@ noncomputable def closed (c : C) : Closed c where
     · refine NatIso.ofComponents (fun _ ↦ ?_) (fun _ ↦ ?_)
       · exact (asIso (L.μ _ _)).symm ≪≫ asIso ((adj.counit.app _) ⊗ (adj.counit.app _))
       · simp only [comp_obj, id_obj, Functor.comp_map, tensorLeft_map, Iso.trans_hom, Iso.symm_hom,
-          asIso_inv, asIso_hom, Functor.id_map, assoc, IsIso.eq_inv_comp]
+          asIso_inv, asIso_hom, Functor.id_map, Category.assoc, IsIso.eq_inv_comp]
         rw [← L.μ_natural_right_assoc]
         simp [← id_tensorHom, ← tensor_comp]
     · exact NatIso.ofComponents (fun _ ↦ asIso (adj.unit.app ((ihom _).obj _)))
