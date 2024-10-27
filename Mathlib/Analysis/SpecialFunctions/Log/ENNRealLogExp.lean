@@ -134,6 +134,4 @@ end Measurability
 
 end ENNReal
 
-instance : PolishSpace EReal :=
-  IsClosedEmbedding.polishSpace ⟨ENNReal.logOrderIso.symm.toHomeomorph.isEmbedding,
-    ENNReal.logOrderIso.symm.toHomeomorph.range_coe ▸ isClosed_univ⟩
+instance : PolishSpace EReal := ENNReal.logOrderIso.symm.toHomeomorph.isClosedEmbedding.polishSpace

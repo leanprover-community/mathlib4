@@ -37,7 +37,7 @@ theorem continuous_unop : Continuous (unop : Mᵐᵒᵖ → M) :=
   continuous_induced_dom
 
 @[to_additive (attr := continuity)]
-  theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
+theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
   continuous_induced_rng.2 continuous_id
 
 /-- `MulOpposite.op` as a homeomorphism. -/
@@ -48,8 +48,7 @@ def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
   continuous_invFun := continuous_unop
 
 @[to_additive]
-instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ :=
-  opHomeomorph.t2Space
+instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ := opHomeomorph.t2Space
 
 @[to_additive]
 instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵐᵒᵖ :=

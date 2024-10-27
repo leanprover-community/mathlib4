@@ -20,8 +20,7 @@ since the types aren't definitionally equal.
 topological space, group action, domain action
 -/
 
-open Filter TopologicalSpace
-open scoped Topology
+open Filter TopologicalSpace Topology
 
 namespace DomMulAct
 
@@ -76,9 +75,6 @@ alias embedding_mk_symm := isEmbedding_mk_symm
 @[to_additive]
 theorem isOpenEmbedding_mk_symm : IsOpenEmbedding (@mk M).symm := mkHomeomorph.symm.isOpenEmbedding
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_mk_symm := isOpenEmbedding_mk_symm
-
 @[to_additive]
 theorem isClosedEmbedding_mk_symm : IsClosedEmbedding (@mk M).symm :=
   mkHomeomorph.symm.isClosedEmbedding
@@ -100,15 +96,11 @@ alias quotientMap_mk_symm := isQuotientMap_mk_symm
 @[to_additive] instance instT4Space [T4Space M] : T4Space Mᵈᵐᵃ := mkHomeomorph.t4Space
 @[to_additive] instance instT5Space [T5Space M] : T5Space Mᵈᵐᵃ := mkHomeomorph.t5Space
 
-@[to_additive]
-instance instR0Space [R0Space M] : R0Space Mᵈᵐᵃ := mkHomeomorph.symm.isEmbedding.r0Space
+@[to_additive] instance instR0Space [R0Space M] : R0Space Mᵈᵐᵃ := isEmbedding_mk_symm.r0Space
+@[to_additive] instance instR1Space [R1Space M] : R1Space Mᵈᵐᵃ := isEmbedding_mk_symm.r1Space
 
 @[to_additive]
-instance instR1Space [R1Space M] : R1Space Mᵈᵐᵃ := mkHomeomorph.symm.isEmbedding.r1Space
-
-@[to_additive]
-instance instRegularSpace [RegularSpace M] : RegularSpace Mᵈᵐᵃ :=
-  mkHomeomorph.symm.isEmbedding.regularSpace
+instance instRegularSpace [RegularSpace M] : RegularSpace Mᵈᵐᵃ := isEmbedding_mk_symm.regularSpace
 
 @[to_additive]
 instance instNormalSpace [NormalSpace M] : NormalSpace Mᵈᵐᵃ := mkHomeomorph.normalSpace
@@ -119,7 +111,7 @@ instance instCompletelyNormalSpace [CompletelyNormalSpace M] : CompletelyNormalS
 
 @[to_additive]
 instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵈᵐᵃ :=
-  mkHomeomorph.symm.isEmbedding.discreteTopology
+  isEmbedding_mk_symm.discreteTopology
 
 @[to_additive]
 instance instSeparableSpace [SeparableSpace M] : SeparableSpace Mᵈᵐᵃ :=
@@ -127,11 +119,11 @@ instance instSeparableSpace [SeparableSpace M] : SeparableSpace Mᵈᵐᵃ :=
 
 @[to_additive]
 instance instFirstCountableTopology [FirstCountableTopology M] : FirstCountableTopology Mᵈᵐᵃ :=
-  mkHomeomorph.symm.isEmbedding.firstCountableTopology
+  inducing_mk_symm.firstCountableTopology
 
 @[to_additive]
 instance instSecondCountableTopology [SecondCountableTopology M] : SecondCountableTopology Mᵈᵐᵃ :=
-  mkHomeomorph.symm.isEmbedding.secondCountableTopology
+  inducing_mk_symm.secondCountableTopology
 
 @[to_additive]
 instance instCompactSpace [CompactSpace M] : CompactSpace Mᵈᵐᵃ :=
