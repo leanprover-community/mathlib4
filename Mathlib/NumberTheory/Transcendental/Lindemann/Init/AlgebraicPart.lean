@@ -135,24 +135,23 @@ instance : Algebra ℚ (⊥ : IntermediateField ℚ (K s)) :=
 
 section mapDomainFixed
 
-variable (F : Type*) [Field F] [Algebra ℚ F]
+variable (K L G : Type*) [Field K] [Field L] [Algebra K L] [Field G] [Algebra K G]
 
-noncomputable def mapDomainFixed : Subalgebra F F[K s] where
-  carrier := {x | ∀ f : Gal s, AddMonoidAlgebra.domCongrAut ℚ _ f.toAddEquiv x = x}
+noncomputable def mapDomainFixed : Subalgebra L L[G] where
+  carrier := {x | ∀ f : G ≃ₐ[K] G, AddMonoidAlgebra.domCongrAut K _ f x = x}
   mul_mem' {a b} ha hb f := by rw [map_mul, ha, hb]
   add_mem' {a b} ha hb f := by rw [map_add, ha, hb]
   algebraMap_mem' r f := by
-    change Finsupp.equivMapDomain f.toEquiv (Finsupp.single _ _) = Finsupp.single _ _
-    rw [Finsupp.equivMapDomain_single]
-    change Finsupp.single (f 0) _ = _; rw [map_zero]
+    dsimp [AddMonoidAlgebra.domCongrAut]
+    rw [AddMonoidAlgebra.domCongr_single, map_zero]
 
-instance : CoeFun (mapDomainFixed s F) fun _ => (K s) → F where
+instance : CoeFun (mapDomainFixed K L G) fun _ => G → L where
   coe f := f.1
 
-theorem mem_mapDomainFixed_iff (x : F[K s]) :
-    x ∈ mapDomainFixed s F ↔ ∀ i j, i ∈ MulAction.orbit (Gal s) j → x i = x j := by
+theorem mem_mapDomainFixed_iff (x : L[G]) :
+    x ∈ mapDomainFixed K L G ↔ ∀ i j, i ∈ MulAction.orbit (G ≃ₐ[K] G) j → x i = x j := by
   simp_rw [MulAction.mem_orbit_iff]
-  change (∀ f : Gal s, Finsupp.equivMapDomain (↑(AlgEquiv.toAddEquiv f)) x = x) ↔ _
+  change (∀ f : G ≃ₐ[K] G, Finsupp.equivMapDomain (↑(AlgEquiv.toAddEquiv f)) x = x) ↔ _
   refine ⟨fun h i j hij => ?_, fun h f => ?_⟩
   · obtain ⟨f, rfl⟩ := hij
     rw [AlgEquiv.smul_def, ← DFunLike.congr_fun (h f) (f j)]
@@ -162,20 +161,22 @@ theorem mem_mapDomainFixed_iff (x : F[K s]) :
     rw [AlgEquiv.smul_def, AlgEquiv.apply_symm_apply]
 
 noncomputable def mapDomainFixedEquivSubtype :
-    mapDomainFixed s F ≃
-      { f : F[K s] // MulAction.orbitRel (Gal s) (K s) ≤ Setoid.ker f }
+    mapDomainFixed K L G ≃
+      { f : L[G] // MulAction.orbitRel (G ≃ₐ[K] G) G ≤ Setoid.ker f }
     where
-  toFun f := ⟨f, (mem_mapDomainFixed_iff s F f).mp f.2⟩
-  invFun f := ⟨f, (mem_mapDomainFixed_iff s F f).mpr f.2⟩
+  toFun f := ⟨f, (mem_mapDomainFixed_iff K L G f).mp f.2⟩
+  invFun f := ⟨f, (mem_mapDomainFixed_iff K L G f).mpr f.2⟩
   left_inv _ := rfl
   right_inv _ := rfl
 
-def toConjEquiv : mapDomainFixed s F ≃ (ConjRootClass ℚ (K s) →₀ F) := by
-  refine (mapDomainFixedEquivSubtype s F).trans ?_
+variable [FiniteDimensional K G] [Normal K G]
+
+def toConjEquiv : mapDomainFixed K L G ≃ (ConjRootClass K G →₀ L) := by
+  refine (mapDomainFixedEquivSubtype K L G).trans ?_
   let f'
-      (f : { f : F[K s] // MulAction.orbitRel (Gal s) (K s) ≤ Setoid.ker ↑f }) :=
-    Quotient.liftFinsupp (s := IsConjRoot.setoid _ _) (f : F[K s]) (by
-      change ∀ _ _, IsConjRoot ℚ _ _ → _
+      (f : { f : L[G] // MulAction.orbitRel (G ≃ₐ[K] G) G ≤ Setoid.ker ↑f }) :=
+    Quotient.liftFinsupp (s := IsConjRoot.setoid _ _) (f : L[G]) (by
+      change ∀ _ _, IsConjRoot K _ _ → _
       simp_rw [isConjRoot_iff_exists_algEquiv]
       exact f.2)
   refine
@@ -183,42 +184,43 @@ def toConjEquiv : mapDomainFixed s F ≃ (ConjRootClass ℚ (K s) →₀ F) := b
       invFun := fun f => ⟨?_, ?_⟩
       left_inv := ?_
       right_inv := ?_ }
-  · refine ⟨f.support.biUnion fun i => i.carrier.toFinset, fun x => f (ConjRootClass.mk ℚ x),
+  · refine ⟨f.support.biUnion fun i => i.carrier.toFinset, fun x => f (ConjRootClass.mk K x),
       fun i => ?_⟩
     simp_rw [mem_biUnion, Set.mem_toFinset, ConjRootClass.mem_carrier, Finsupp.mem_support_iff,
       exists_eq_right']
-  · change ∀ i j, i ∈ MulAction.orbit (Gal s) j → f (Quotient.mk'' i) = f (Quotient.mk'' j)
+  · change ∀ i j, i ∈ MulAction.orbit (G ≃ₐ[K] G) j → f (Quotient.mk'' i) = f (Quotient.mk'' j)
     exact fun i j h => congr_arg f (Quotient.sound' (isConjRoot_iff_exists_algEquiv.mpr h))
   · exact fun _ => Subtype.eq <| Finsupp.ext fun x => rfl
   · refine fun f => Finsupp.ext fun x => Quotient.inductionOn' x fun i => rfl
 
 @[simp]
-theorem toConjEquiv_apply_apply_mk (f : mapDomainFixed s F) (i : K s) :
-    toConjEquiv s F f (ConjRootClass.mk ℚ i) = f i :=
+theorem toConjEquiv_apply_apply_mk (f : mapDomainFixed K L G) (i : G) :
+    toConjEquiv K L G f (ConjRootClass.mk K i) = f i :=
   rfl
 
 @[simp]
-theorem toConjEquiv_symm_apply_apply (f : ConjRootClass ℚ (K s) →₀ F) (i : K s) :
-    (toConjEquiv s F).symm f i = f (ConjRootClass.mk ℚ i) :=
+theorem toConjEquiv_symm_apply_apply (f : ConjRootClass K G →₀ L) (i : G) :
+    (toConjEquiv K L G).symm f i = f (ConjRootClass.mk K i) :=
   rfl
 
 @[simp]
-theorem toConjEquiv_apply_zero_eq (f : mapDomainFixed s F) : toConjEquiv s F f 0 = f 0 := by
+theorem toConjEquiv_apply_zero_eq (f : mapDomainFixed K L G) : toConjEquiv K L G f 0 = f 0 := by
   rw [← ConjRootClass.mk_zero, toConjEquiv_apply_apply_mk]
 
 @[simp]
-theorem toConjEquiv_symm_apply_zero_eq (f : ConjRootClass ℚ (K s) →₀ F) :
-    (toConjEquiv s F).symm f 0 = f 0 := by rw [toConjEquiv_symm_apply_apply]; rfl
+theorem toConjEquiv_symm_apply_zero_eq (f : ConjRootClass K G →₀ L) :
+    (toConjEquiv K L G).symm f 0 = f 0 := by rw [toConjEquiv_symm_apply_apply]; rfl
 
-instance : AddCommMonoid (mapDomainFixed s F) :=
-  letI : AddCommGroup (mapDomainFixed s F) := NonUnitalNonAssocRing.toAddCommGroup
+-- shortcut
+instance : AddCommMonoid (mapDomainFixed K L G) :=
+  letI : AddCommGroup (mapDomainFixed K L G) := NonUnitalNonAssocRing.toAddCommGroup
   AddCommGroup.toAddCommMonoid
 
 @[simps]
-def toConjLinearEquiv : mapDomainFixed s F ≃ₗ[F] ConjRootClass ℚ (K s) →₀ F :=
-  { toConjEquiv s F with
-    toFun := toConjEquiv s F
-    invFun := (toConjEquiv s F).symm
+def toConjLinearEquiv : mapDomainFixed K L G ≃ₗ[L] ConjRootClass K G →₀ L :=
+  { toConjEquiv K L G with
+    toFun := toConjEquiv K L G
+    invFun := (toConjEquiv K L G).symm
     map_add' := fun x y => by
       ext i
       induction i
@@ -235,22 +237,23 @@ def toConjLinearEquiv : mapDomainFixed s F ≃ₗ[F] ConjRootClass ℚ (K s) →
 
 namespace Finsupp.ConjRootClass
 
-instance : One (ConjRootClass ℚ (K s) →₀ F) where
-  one := toConjLinearEquiv s F 1
+instance : One (ConjRootClass K G →₀ L) where
+  one := toConjLinearEquiv K L G 1
 
-theorem one_def : (1 : ConjRootClass ℚ (K s) →₀ F) = toConjLinearEquiv s F 1 :=
+theorem one_def : (1 : ConjRootClass K G →₀ L) = toConjLinearEquiv K L G 1 :=
   rfl
 
-instance : Mul (ConjRootClass ℚ (K s) →₀ F) where
+instance : Mul (ConjRootClass K G →₀ L) where
   mul x y :=
-    toConjLinearEquiv s F <| (toConjLinearEquiv s F).symm x * (toConjLinearEquiv s F).symm y
+    toConjLinearEquiv K L G <| (toConjLinearEquiv K L G).symm x * (toConjLinearEquiv K L G).symm y
 
-theorem mul_def (x y : ConjRootClass ℚ (K s) →₀ F) :
+theorem mul_def (x y : ConjRootClass K G →₀ L) :
     x * y =
-      toConjLinearEquiv s F ((toConjLinearEquiv s F).symm x * (toConjLinearEquiv s F).symm y) :=
+      toConjLinearEquiv K L G
+        ((toConjLinearEquiv K L G).symm x * (toConjLinearEquiv K L G).symm y) :=
   rfl
 
-instance : CommSemigroup (ConjRootClass ℚ (K s) →₀ F) where
+instance : CommSemigroup (ConjRootClass K G →₀ L) where
   mul_assoc a b c := by
     simp_rw [mul_def, LinearEquiv.symm_apply_apply, mul_assoc]
   mul_comm a b := by
@@ -258,49 +261,49 @@ instance : CommSemigroup (ConjRootClass ℚ (K s) →₀ F) where
     exact congr_arg _ (mul_comm _ _)
 
 instance : ZeroHomClass
-    ((mapDomainFixed s F) ≃ₗ[F] ConjRootClass ℚ (K s) →₀ F)
-    (mapDomainFixed s F)
-    (ConjRootClass ℚ (K s) →₀ F) :=
+    ((mapDomainFixed K L G) ≃ₗ[L] ConjRootClass K G →₀ L)
+    (mapDomainFixed K L G)
+    (ConjRootClass K G →₀ L) :=
   have : SemilinearMapClass
-      ((mapDomainFixed s F) ≃ₗ[F] ConjRootClass ℚ (K s) →₀ F)
-      (RingHom.id F)
-      (mapDomainFixed s F)
-      (ConjRootClass ℚ (K s) →₀ F) :=
+      ((mapDomainFixed K L G) ≃ₗ[L] ConjRootClass K G →₀ L)
+      (RingHom.id L)
+      (mapDomainFixed K L G)
+      (ConjRootClass K G →₀ L) :=
     inferInstance
   have : DistribMulActionSemiHomClass
-      ((mapDomainFixed s F) ≃ₗ[F] ConjRootClass ℚ (K s) →₀ F)
-      (RingHom.id F)
-      (mapDomainFixed s F)
-      (ConjRootClass ℚ (K s) →₀ F) :=
+      ((mapDomainFixed K L G) ≃ₗ[L] ConjRootClass K G →₀ L)
+      (RingHom.id L)
+      (mapDomainFixed K L G)
+      (ConjRootClass K G →₀ L) :=
     inferInstance
   have : AddMonoidHomClass
-      ((mapDomainFixed s F) ≃ₗ[F] ConjRootClass ℚ (K s) →₀ F)
-      (mapDomainFixed s F)
-      (ConjRootClass ℚ (K s) →₀ F) :=
+      ((mapDomainFixed K L G) ≃ₗ[L] ConjRootClass K G →₀ L)
+      (mapDomainFixed K L G)
+      (ConjRootClass K G →₀ L) :=
     inferInstance
   inferInstance
 
-instance : MulZeroClass (ConjRootClass ℚ (K s) →₀ F) where
+instance : MulZeroClass (ConjRootClass K G →₀ L) where
   zero_mul a :=
     graph_eq_empty.mp <| by rw [mul_def, map_zero, zero_mul, map_zero, graph_zero]
   mul_zero a := by
     rw [mul_comm]
     exact graph_eq_empty.mp <| by rw [mul_def, map_zero, zero_mul, map_zero, graph_zero]
 
-instance : AddEquivClass (↥(mapDomainFixed s F) ≃ₗ[F] ConjRootClass ℚ (K s) →₀ F) _ _ := by
+instance : AddEquivClass (↥(mapDomainFixed K L G) ≃ₗ[L] ConjRootClass K G →₀ L) _ _ := by
   infer_instance
 
-instance : AddHomClass (↥(mapDomainFixed s F) ≃ₗ[F] ConjRootClass ℚ (K s) →₀ F) _ _ :=
+instance : AddHomClass (↥(mapDomainFixed K L G) ≃ₗ[L] ConjRootClass K G →₀ L) _ _ :=
   AddEquivClass.instAddHomClass _
 
-instance : MulActionHomClass ((ConjRootClass ℚ (K s) →₀ F) ≃ₗ[F] ↥(mapDomainFixed s F)) F
-    (ConjRootClass ℚ (K s) →₀ F) ↥(mapDomainFixed s F) :=
+instance : MulActionHomClass ((ConjRootClass K G →₀ L) ≃ₗ[L] ↥(mapDomainFixed K L G)) L
+    (ConjRootClass K G →₀ L) ↥(mapDomainFixed K L G) :=
   inferInstance
 
-instance : CommRing (ConjRootClass ℚ (K s) →₀ F) :=
-  { (inferInstance : AddCommGroup (ConjRootClass ℚ (K s) →₀ F)),
-    (inferInstance : CommSemigroup (ConjRootClass ℚ (K s) →₀ F)),
-    (inferInstance : MulZeroClass (ConjRootClass ℚ (K s) →₀ F)) with
+instance : CommRing (ConjRootClass K G →₀ L) :=
+  { (inferInstance : AddCommGroup (ConjRootClass K G →₀ L)),
+    (inferInstance : CommSemigroup (ConjRootClass K G →₀ L)),
+    (inferInstance : MulZeroClass (ConjRootClass K G →₀ L)) with
     one_mul := fun a => by
       simp_rw [one_def, mul_def, LinearEquiv.symm_apply_apply, one_mul,
         LinearEquiv.apply_symm_apply]
@@ -312,11 +315,13 @@ instance : CommRing (ConjRootClass ℚ (K s) →₀ F) :=
     right_distrib := fun a b c => by
       simp only [mul_def, ← map_add, ← add_mul] }
 
--- Shortcut
-instance : SMulCommClass F { x // x ∈ mapDomainFixed s F } { x // x ∈ mapDomainFixed s F } :=
-  SetLike.instSMulCommClass (mapDomainFixed s F)
+attribute [local instance 900] Subalgebra.instSMulSubtypeMem
 
-instance : Algebra F (ConjRootClass ℚ (K s) →₀ F) :=
+-- Shortcut
+instance : SMulCommClass L (mapDomainFixed K L G) (mapDomainFixed K L G) :=
+  SetLike.instSMulCommClass (mapDomainFixed K L G)
+
+instance : Algebra L (ConjRootClass K G →₀ L) :=
   Algebra.ofModule'
     (fun r x => by
       rw [one_def, mul_def, map_smul, LinearEquiv.symm_apply_apply, smul_one_mul, ← map_smul,
@@ -325,25 +330,25 @@ instance : Algebra F (ConjRootClass ℚ (K s) →₀ F) :=
     rw [one_def, mul_def, map_smul, LinearEquiv.symm_apply_apply, mul_smul_one, ← map_smul,
       LinearEquiv.apply_symm_apply]
 
-theorem one_eq_single : (1 : ConjRootClass ℚ (K s) →₀ F) = Finsupp.single 0 1 := by
+theorem one_eq_single : (1 : ConjRootClass K G →₀ L) = Finsupp.single 0 1 := by
   rw [one_def, toConjLinearEquiv_apply]
   ext i
   induction i with | h i => ?_
   simp_rw [toConjEquiv_apply_apply_mk, OneMemClass.coe_one, AddMonoidAlgebra.one_def,
     Finsupp.single_apply,
-    eq_comm (b := i), eq_comm (b := ConjRootClass.mk ℚ i), ConjRootClass.mk_eq_zero_iff]
+    eq_comm (b := i), eq_comm (b := ConjRootClass.mk K i), ConjRootClass.mk_eq_zero_iff]
 
-theorem algebraMap_eq_single (x : F) :
-    algebraMap F (ConjRootClass ℚ (K s) →₀ F) x = Finsupp.single 0 x := by
+theorem algebraMap_eq_single (x : L) :
+    algebraMap L (ConjRootClass K G →₀ L) x = Finsupp.single 0 x := by
   rw [Algebra.algebraMap_eq_smul_one, one_eq_single, Finsupp.smul_single, smul_eq_mul, mul_one]
 
 end Finsupp.ConjRootClass
 
 @[simps]
-def toConjAlgEquiv : mapDomainFixed s F ≃ₐ[F] ConjRootClass ℚ (K s) →₀ F :=
-  { toConjLinearEquiv s F with
-    toFun := toConjLinearEquiv s F
-    invFun := (toConjLinearEquiv s F).symm
+def toConjAlgEquiv : mapDomainFixed K L G ≃ₐ[L] ConjRootClass K G →₀ L :=
+  { toConjLinearEquiv K L G with
+    toFun := toConjLinearEquiv K L G
+    invFun := (toConjLinearEquiv K L G).symm
     map_mul' := fun x y => by simp_rw [Finsupp.ConjRootClass.mul_def, LinearEquiv.symm_apply_apply]
     commutes' := fun r => by
       simp_rw [Finsupp.ConjRootClass.algebraMap_eq_single, toConjLinearEquiv_apply]
@@ -351,10 +356,10 @@ def toConjAlgEquiv : mapDomainFixed s F ≃ₐ[F] ConjRootClass ℚ (K s) →₀
       simp_rw [toConjEquiv_apply_apply_mk, SubalgebraClass.coe_algebraMap,
         AddMonoidAlgebra.coe_algebraMap, Algebra.id.map_eq_id, Function.comp_apply,
         RingHom.id_apply, AddMonoidAlgebra.single_apply,
-        eq_comm (b := i), eq_comm (b := ConjRootClass.mk ℚ i), ConjRootClass.mk_eq_zero_iff] }
+        eq_comm (b := i), eq_comm (b := ConjRootClass.mk K i), ConjRootClass.mk_eq_zero_iff] }
 
-theorem ToConjEquivSymmSingle.aux (x : ConjRootClass ℚ (K s)) (a : F) :
-    (Finsupp.indicator x.carrier.toFinset fun _ _ => a) ∈ mapDomainFixed s F := by
+theorem ToConjEquivSymmSingle.aux (x : ConjRootClass K G) (a : L) :
+    (Finsupp.indicator x.carrier.toFinset fun _ _ => a) ∈ mapDomainFixed K L G := by
   rw [mem_mapDomainFixed_iff]
   rintro i j h
   simp_rw [Finsupp.indicator_apply, Set.mem_toFinset]; dsimp; congr 1
@@ -362,9 +367,9 @@ theorem ToConjEquivSymmSingle.aux (x : ConjRootClass ℚ (K s)) (a : F) :
   apply Eq.congr_left
   rwa [ConjRootClass.mk_eq_mk, isConjRoot_iff_exists_algEquiv]
 
-theorem toConjEquiv_symm_single (x : ConjRootClass ℚ (K s)) (a : F) :
-    (toConjEquiv s F).symm (Finsupp.single x a) =
-      ⟨Finsupp.indicator x.carrier.toFinset fun _ _ => a, ToConjEquivSymmSingle.aux s F x a⟩ := by
+theorem toConjEquiv_symm_single (x : ConjRootClass K G) (a : L) :
+    (toConjEquiv K L G).symm (Finsupp.single x a) =
+      ⟨Finsupp.indicator x.carrier.toFinset fun _ _ => a, ToConjEquivSymmSingle.aux K L G x a⟩ := by
   rw [Equiv.symm_apply_eq]
   ext i; induction i with | h i => ?_
   rw [toConjEquiv_apply_apply_mk]
@@ -372,12 +377,12 @@ theorem toConjEquiv_symm_single (x : ConjRootClass ℚ (K s)) (a : F) :
   rw [Finsupp.single_apply, Finsupp.indicator_apply]; dsimp; congr 1
   rw [Set.mem_toFinset, ConjRootClass.mem_carrier, eq_comm (a := x)]
 
-theorem single_prod_apply_zero_ne_zero_iff (x : ConjRootClass ℚ (K s)) {a : F} (ha : a ≠ 0)
-    (y : ConjRootClass ℚ (K s)) {b : F} (hb : b ≠ 0) :
+theorem single_prod_apply_zero_ne_zero_iff [CharZero K] (x : ConjRootClass K G) {a : L} (ha : a ≠ 0)
+    (y : ConjRootClass K G) {b : L} (hb : b ≠ 0) :
     (Finsupp.single x a * Finsupp.single y b) 0 ≠ 0 ↔ x = -y := by
   simp_rw [Finsupp.ConjRootClass.mul_def, toConjLinearEquiv_apply, toConjLinearEquiv_symm_apply,
     toConjEquiv_apply_zero_eq, toConjEquiv_symm_single, MulMemClass.mk_mul_mk]
-  haveI := Nat.noZeroSMulDivisors ℚ F
+  haveI := Nat.noZeroSMulDivisors K L
   simp_rw [Finsupp.indicator_eq_sum_single, sum_mul, mul_sum, AddMonoidAlgebra.single_mul_single,
     (Finsupp.coe_finset_sum), sum_apply, Finsupp.single_apply, ← sum_product', sum_ite,
     sum_const_zero, add_zero, sum_const, smul_ne_zero_iff, mul_ne_zero_iff, iff_true_intro ha,
@@ -385,10 +390,10 @@ theorem single_prod_apply_zero_ne_zero_iff (x : ConjRootClass ℚ (K s)) {a : F}
     exists_prop', nonempty_prop, Prod.exists, mem_product, Set.mem_toFinset]
   exact ConjRootClass.exist_mem_carrier_add_eq_zero x y
 
-theorem single_prod_apply_zero_eq_zero_iff (x : ConjRootClass ℚ (K s)) {a : F} (ha : a ≠ 0)
-    (y : ConjRootClass ℚ (K s)) {b : F} (hb : b ≠ 0) :
+theorem single_prod_apply_zero_eq_zero_iff [CharZero K] (x : ConjRootClass K G) {a : L} (ha : a ≠ 0)
+    (y : ConjRootClass K G) {b : L} (hb : b ≠ 0) :
     (Finsupp.single x a * Finsupp.single y b) 0 = 0 ↔ x ≠ -y :=
-  (single_prod_apply_zero_ne_zero_iff s F x ha y hb).not_right
+  (single_prod_apply_zero_ne_zero_iff K L G x ha y hb).not_right
 
 end mapDomainFixed
 
@@ -416,7 +421,7 @@ theorem Eval_mapRange (x : ℚ[K s]) :
     Finsupp.support_mapRange_of_injective _ _ (algebraMap ℚ (K s)).injective]
 
 theorem Eval_toConjAlgEquiv_symm (x : ConjRootClass ℚ (K s) →₀ ℚ) :
-    Eval s ℚ ((toConjAlgEquiv s ℚ).symm x) =
+    Eval s ℚ ((toConjAlgEquiv ℚ ℚ (K s)).symm x) =
       ∑ c : ConjRootClass ℚ (K s) in x.support,
         x c • ∑ i : K s in c.carrier.toFinset, exp (algebraMap (K s) ℂ i) := by
   conv_lhs => rw [← x.sum_single, Finsupp.sum, map_sum]
@@ -434,8 +439,8 @@ end Eval
 instance instIsDomain1 : NoZeroDivisors (K s)[K s] := inferInstance
 instance instIsDomain2 : IsDomain ℚ[K s] := IsDomain.mk
 instance instIsDomain3 : IsDomain (ConjRootClass ℚ (K s) →₀ ℚ) :=
-  MulEquiv.isDomain (mapDomainFixed s ℚ) (toConjAlgEquiv s ℚ).symm
-instance : AddZeroClass { x // x ∈ mapDomainFixed s ℚ } := inferInstance
+  MulEquiv.isDomain (mapDomainFixed ℚ ℚ (K s)) (toConjAlgEquiv ℚ ℚ (K s)).symm
+instance : AddZeroClass (mapDomainFixed ℚ ℚ (K s)) := inferInstance
 
 theorem linearIndependent_range_aux
     (K : Type*) {L G R : Type*}
@@ -480,60 +485,76 @@ theorem linearIndependent_range_aux
     (by simpa using Finsupp.mapRange_injective _ _ (algebraMap K L).injective)] at y0
   exact ⟨y', y0, y_ker⟩
 
-theorem linearIndependent_exp_aux2 (s : Finset ℂ) (x : ℚ[K s]) (x0 : x ≠ 0)
-    (x_ker : x ∈ RingHom.ker (Eval s ℚ)) :
-    ∃ (w : ℚ) (_w0 : w ≠ 0) (q : Finset (ConjRootClass ℚ (K s)))
-      (_hq : (0 : ConjRootClass ℚ (K s)) ∉ q) (w' : ConjRootClass ℚ (K s) → ℚ),
-      (w + ∑ c in q, w' c • ∑ x in c.carrier.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
-  let V := ∏ f : Gal s, AddMonoidAlgebra.domCongrAut ℚ _ f.toAddEquiv x
-  have hV : V ∈ mapDomainFixed s ℚ := by
+theorem linearIndependent_exp_aux2_1
+    {K L R : Type*}
+    [Field K] [Field L] [Algebra K L] [FiniteDimensional K L] [Normal K L] [NoZeroDivisors K[L]]
+    [Semiring R] [Algebra K R]
+    (f : K[L] →ₐ[K] R)
+    (x : K[L]) (x0 : x ≠ 0) (x_ker : x ∈ RingHom.ker f) :
+    ∃ (y : ConjRootClass K L →₀ K) (_ : y ≠ 0),
+      f ((toConjAlgEquiv K K L).symm y) = 0 := by
+  let V := ∏ f : L ≃ₐ[K] L, AddMonoidAlgebra.domCongrAut K _ f.toAddEquiv x
+  have hV : V ∈ mapDomainFixed K K L := by
     intro f; dsimp only [V]
     rw [map_prod]; simp_rw [← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
     exact
       (Group.mulLeft_bijective f).prod_comp fun g =>
-        AddMonoidAlgebra.domCongrAut ℚ _ g.toAddEquiv x
+        AddMonoidAlgebra.domCongrAut K _ g.toAddEquiv x
   have V0 : V ≠ 0 := by
     dsimp only [V]; rw [prod_ne_zero_iff]; intro f _hf
     rwa [AddEquivClass.map_ne_zero_iff]
-  have V_ker : V ∈ RingHom.ker (Eval s ℚ) := by
+  have V_ker : V ∈ RingHom.ker f := by
     dsimp only [V]
-    rw [← mul_prod_erase (univ : Finset (Gal s)) _ (mem_univ 1)]
+    rw [← mul_prod_erase (univ : Finset (L ≃ₐ[K] L)) _ (mem_univ 1)]
     erw [map_one]
     rw [AlgEquiv.one_apply]
     exact Ideal.mul_mem_right _ _ x_ker
-  set V' := toConjAlgEquiv s ℚ ⟨V, hV⟩
-  have V'0 : V' ≠ 0 := by
-    dsimp only [V']; rw [AddEquivClass.map_ne_zero_iff]
+  refine ⟨toConjAlgEquiv K K L ⟨V, hV⟩, ?_, ?_⟩
+  · rw [AddEquivClass.map_ne_zero_iff]
     exact fun h => absurd (Subtype.mk.inj h) V0
-  obtain ⟨i, hi⟩ := Finsupp.support_nonempty_iff.mpr V'0
-  set V'' := V' * Finsupp.single (-i) (1 : ℚ) with V''_def
-  have hV'' : V'' 0 ≠ 0 := by
-    rw [V''_def, ← V'.sum_single, Finsupp.sum, ← add_sum_erase _ _ hi, add_mul, sum_mul,
+  · rwa [AlgEquiv.symm_apply_apply, Subtype.coe_mk]
+
+theorem linearIndependent_aux2_2
+    (x : ConjRootClass ℚ (K s) →₀ ℚ) (x0 : x ≠ 0)
+    (hx : Eval s ℚ ((toConjAlgEquiv ℚ ℚ (K s)).symm x) = 0) :
+    ∃ (w : ℚ) (_w0 : w ≠ 0) (q : Finset (ConjRootClass ℚ (K s)))
+      (_hq : (0 : ConjRootClass ℚ (K s)) ∉ q) (w' : ConjRootClass ℚ (K s) → ℚ),
+      (w + ∑ c in q, w' c • ∑ x in c.carrier.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
+  obtain ⟨i, hi⟩ := Finsupp.support_nonempty_iff.mpr x0
+  set x' := x * Finsupp.single (-i) (1 : ℚ) with x'_def
+  have hx' : x' 0 ≠ 0 := by
+    rw [x'_def, ← x.sum_single, Finsupp.sum, ← add_sum_erase _ _ hi, add_mul, sum_mul,
       Finsupp.add_apply]
     convert_to
-      ((Finsupp.single i (V' i) * Finsupp.single (-i) 1 : ConjRootClass ℚ (K s) →₀ ℚ) 0 + 0) ≠ 0
+      ((Finsupp.single i (x i) * Finsupp.single (-i) 1 : ConjRootClass ℚ (K s) →₀ ℚ) 0 + 0) ≠ 0
     · congr 1
       rw [Finsupp.finset_sum_apply]
       refine sum_eq_zero fun j hj => ?_
       rw [mem_erase, Finsupp.mem_support_iff] at hj
-      rw [single_prod_apply_zero_eq_zero_iff _ _ _ hj.2]
+      rw [single_prod_apply_zero_eq_zero_iff _ _ _ _ hj.2]
       · rw [neg_neg]; exact hj.1
       · exact one_ne_zero
     rw [add_zero, single_prod_apply_zero_ne_zero_iff]
     · rw [neg_neg]
     · rwa [Finsupp.mem_support_iff] at hi
     · exact one_ne_zero
-  have zero_mem : (0 : ConjRootClass ℚ (K s)) ∈ V''.support := by rwa [Finsupp.mem_support_iff]
-  have Eval_V'' : Eval s ℚ ((toConjAlgEquiv s ℚ).symm V'') = 0 := by
-    dsimp only [V'']
-    rw [map_mul, Subalgebra.coe_mul, map_mul, AlgEquiv.symm_apply_apply, Subtype.coe_mk]
-    rw [RingHom.mem_ker] at V_ker
-    rw [V_ker, MulZeroClass.zero_mul]
-  use V'' 0, hV'', V''.support.erase 0, not_mem_erase _ _, V''
-  rw [← Eval_V'', Eval_toConjAlgEquiv_symm, ← add_sum_erase _ _ zero_mem]
+  have zero_mem : (0 : ConjRootClass ℚ (K s)) ∈ x'.support := by rwa [Finsupp.mem_support_iff]
+  have Eval_x' : Eval s ℚ ((toConjAlgEquiv ℚ ℚ (K s)).symm x') = 0 := by
+    dsimp only [x']
+    rw [map_mul, Subalgebra.coe_mul, map_mul, hx, zero_mul]
+  use x' 0, hx', x'.support.erase 0, not_mem_erase _ _, x'
+  rw [← Eval_x', Eval_toConjAlgEquiv_symm, ← add_sum_erase _ _ zero_mem]
   congr 1
   simp_rw [ConjRootClass.carrier_zero, Set.toFinset_singleton, sum_singleton, map_zero, exp_zero,
     Rat.smul_one_eq_cast]
+
+theorem linearIndependent_exp_aux2 (s : Finset ℂ) (x : ℚ[K s]) (x0 : x ≠ 0)
+    (x_ker : x ∈ RingHom.ker (Eval s ℚ)) :
+    ∃ (w : ℚ) (_w0 : w ≠ 0) (q : Finset (ConjRootClass ℚ (K s)))
+      (_hq : (0 : ConjRootClass ℚ (K s)) ∉ q) (w' : ConjRootClass ℚ (K s) → ℚ),
+      (w + ∑ c in q, w' c • ∑ x in c.carrier.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
+  obtain ⟨y, y0, hy⟩ := linearIndependent_exp_aux2_1 _ x x0 x_ker
+  exact linearIndependent_aux2_2 s y y0 hy
 
 theorem linearIndependent_exp_aux1 (s : Finset ℂ) (x : (K s)[K s]) (x0 : x ≠ 0)
     (x_ker : x ∈ RingHom.ker (Eval s (K s))) :
