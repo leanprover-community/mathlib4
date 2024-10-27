@@ -131,7 +131,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
       cardPowDegree_nonzero _ h', cardPowDegree_nonzero _ hb, Algebra.smul_def, eq_intCast,
       Int.cast_pow, Int.cast_natCast, Int.cast_pow, Int.cast_natCast,
       log_mul (pow_ne_zero _ q_pos'.ne') hε.ne', ← rpow_natCast, ← rpow_natCast, log_rpow q_pos',
-      log_rpow q_pos', ← lt_div_iff (log_pos one_lt_q'), add_div,
+      log_rpow q_pos', ← lt_div_iff₀ (log_pos one_lt_q'), add_div,
       mul_div_cancel_right₀ _ (log_pos one_lt_q').ne']
   -- And that result follows from manipulating the result from `exists_approx_polynomial_aux`
   -- to turn the `-⌈-stuff⌉₊` into `+ stuff`.
@@ -160,7 +160,7 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
     cardPowDegree_nonzero _ hyz']
   have : (1 : ℤ) ≤ Fintype.card Fq := mod_cast (@Fintype.one_lt_card Fq _ _).le
   simp only [Int.cast_pow, Int.cast_natCast, le_max_iff]
-  refine Or.imp (pow_le_pow_right this) (pow_le_pow_right this) ?_
+  refine Or.imp (pow_le_pow_right₀ this) (pow_le_pow_right₀ this) ?_
   rw [natDegree_le_iff_degree_le, natDegree_le_iff_degree_le, ← le_max_iff, ←
     degree_eq_natDegree hxy', ← degree_eq_natDegree hyz']
   convert degree_add_le (x - y) (y - z) using 2

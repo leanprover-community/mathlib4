@@ -289,7 +289,7 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
   | nil => cases h₂
   | cons x' xs xs_ih =>
     cases i
-    · simp only [length_cons, lt_add_iff_pos_left, add_pos_iff, zero_lt_one, or_true,
+    · simp only [length_cons, lt_add_iff_pos_left, add_pos_iff, Nat.lt_add_one, or_true,
         getElem?_eq_getElem, getElem_cons_zero, Option.some.injEq] at h₂
       subst h₂
       cases ys
@@ -330,7 +330,7 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
         specialize xs_ih h₅ h₃ h₄ h₆
         simp only [Ne.symm h, xs_ih, List.mem_cons]
         suffices val ∈ ys by tauto
-        erw [← Option.mem_def, List.mem_dlookup_iff] at h₃
+        rw [← Option.mem_def, List.mem_dlookup_iff] at h₃
         · simp only [Prod.toSigma, List.mem_map, heq_iff_eq, Prod.exists] at h₃
           rcases h₃ with ⟨a, b, h₃, h₄, h₅⟩
           apply (List.of_mem_zip h₃).2
@@ -363,7 +363,7 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
     · symm; rw [h]
       rw [← List.applyId_zip_eq] <;> assumption
     · rw [← h₁.length_eq]
-      rw [List.getElem?_eq_some] at hx
+      rw [List.getElem?_eq_some_iff] at hx
       cases' hx with hx hx'
       exact hx
   · rw [← applyId_mem_iff h₀ h₁] at hx hy
@@ -423,7 +423,7 @@ one is a permutation of the other.
 -/
 protected def shrink {α : Type} [DecidableEq α] :
     InjectiveFunction α → List (InjectiveFunction α)
-  | ⟨xs, h₀, h₁⟩ => do
+  | ⟨_, h₀, h₁⟩ => do
     let ⟨xs', ys', h₀, h₁⟩ ← InjectiveFunction.shrinkPerm ⟨_, _, h₀, h₁⟩
     have h₃ : xs'.length ≤ ys'.length := le_of_eq (List.Perm.length_eq h₀)
     have h₄ : ys'.length ≤ xs'.length := le_of_eq (List.Perm.length_eq h₀.symm)

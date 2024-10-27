@@ -41,7 +41,7 @@ lemma logDeriv_mul (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a * b) = logDeriv a
 
 lemma logDeriv_div (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a / b) = logDeriv a - logDeriv b := by
   unfold logDeriv
-  field_simp [Derivation.leibniz_div]
+  field_simp [Derivation.leibniz_div, smul_sub]
   ring
 
 @[simp]

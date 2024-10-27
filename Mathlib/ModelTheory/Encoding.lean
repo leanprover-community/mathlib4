@@ -6,7 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.Computability.Encoding
 import Mathlib.Logic.Small.List
 import Mathlib.ModelTheory.Syntax
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Encodings and Cardinality of First-Order Syntax
@@ -33,15 +33,14 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 -/
 
 
-universe u v w u' v'
+universe u v w u'
 
 namespace FirstOrder
 
 namespace Language
 
 variable {L : Language.{u, v}}
-variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
-variable {α : Type u'} {β : Type v'}
+variable {α : Type u'}
 
 open FirstOrder Cardinal
 
@@ -83,7 +82,7 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
     simp only [h, length_append, length_map, length_finRange, le_add_iff_nonneg_right,
       _root_.zero_le, ↓reduceDIte, getElem_fin, cons.injEq, func.injEq, heq_eq_eq, true_and]
     refine ⟨funext (fun i => ?_), ?_⟩
-    · rw [List.getElem_append, List.getElem_map, List.getElem_finRange]
+    · rw [List.getElem_append_left, List.getElem_map, List.getElem_finRange]
       simp only [length_map, length_finRange, i.2]
     · simp only [length_map, length_finRange, drop_left']
 
@@ -244,7 +243,7 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
       simp only [Option.join, map_append, map_map, Option.bind_eq_some, id, exists_eq_right,
         get?_eq_some, length_append, length_map, length_finRange]
       refine ⟨lt_of_lt_of_le i.2 le_self_add, ?_⟩
-      rw [get_eq_getElem, getElem_append, getElem_map]
+      rw [get_eq_getElem, getElem_append_left, getElem_map]
       · simp only [getElem_finRange, Fin.eta, Function.comp_apply, Sum.getLeft?]
       · simp only [length_map, length_finRange, is_lt]
     rw [dif_pos]
