@@ -91,6 +91,7 @@ and derive further statements eventually leading to a contradiction.
 /-- The object we're trying to show doesn't exist: A nontrivial quadratic Dirichlet character
 whose L-function vanishes at `s =1`. -/
 structure BadChar (N : ℕ) [NeZero N] where
+  /-- The character we want to show cannot exist. -/
   χ : DirichletCharacter ℂ N
   χ_ne : χ ≠ 1
   χ_sq : χ ^ 2 = 1
