@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -227,7 +227,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where
       rw [map_neg, map_neg, ih]
     | add x y ihx ihy =>
       simp only [quot_add]
-      erw [m.map_add, (descMorphism F s).map_add, ihx, ihy]
+      rw [m.map_add, (descMorphism F s).map_add, ihx, ihy]
 
 end Colimits
 

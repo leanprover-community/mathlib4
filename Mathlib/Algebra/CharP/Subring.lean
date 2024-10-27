@@ -39,3 +39,11 @@ theorem center_char_eq_iff {R : Type u} [DivisionRing R] {p : ℕ} :
   (algebraMap (Subring.center R) R).charP_iff (Subtype.val_injective) p |>.symm
 
 end CharP
+
+namespace ExpChar
+
+theorem center_expChar_eq_iff {R : Type u} [DivisionRing R] {p : ℕ} :
+    ExpChar R p ↔ ExpChar (Subring.center R) p :=
+  (algebraMap (Subring.center R) R).expChar_iff Subtype.val_injective p |>.symm
+
+end ExpChar

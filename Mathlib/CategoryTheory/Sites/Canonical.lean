@@ -43,9 +43,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace Sheaf
 
-variable {P : Cᵒᵖ ⥤ Type v}
-variable {X Y : C} {S : Sieve X} {R : Presieve X}
-variable (J J₂ : GrothendieckTopology C)
+variable {P : Cᵒᵖ ⥤ Type v} {X : C} (J : GrothendieckTopology C)
 
 /--
 To show `P` is a sheaf for the binding of `U` with `B`, it suffices to show that `P` is a sheaf for
@@ -203,7 +201,7 @@ theorem isSheaf_yoneda_obj (X : C) : Presieve.IsSheaf (canonicalTopology C) (yon
   fun _ _ hS => sheaf_for_finestTopology _ (Set.mem_range_self _) _ hS
 
 /-- A representable functor is a sheaf for the canonical topology. -/
-theorem isSheaf_of_representable (P : Cᵒᵖ ⥤ Type v) [P.Representable] :
+theorem isSheaf_of_isRepresentable (P : Cᵒᵖ ⥤ Type v) [P.IsRepresentable] :
     Presieve.IsSheaf (canonicalTopology C) P :=
   Presieve.isSheaf_iso (canonicalTopology C) P.reprW (isSheaf_yoneda_obj _)
 
@@ -224,9 +222,9 @@ theorem of_yoneda_isSheaf (J : GrothendieckTopology C)
       apply h)
 
 /-- If `J` is subcanonical, then any representable is a `J`-sheaf. -/
-theorem isSheaf_of_representable {J : GrothendieckTopology C} (hJ : Subcanonical J)
-    (P : Cᵒᵖ ⥤ Type v) [P.Representable] : Presieve.IsSheaf J P :=
-  Presieve.isSheaf_of_le _ hJ (Sheaf.isSheaf_of_representable P)
+theorem isSheaf_of_isRepresentable {J : GrothendieckTopology C} (hJ : Subcanonical J)
+    (P : Cᵒᵖ ⥤ Type v) [P.IsRepresentable] : Presieve.IsSheaf J P :=
+  Presieve.isSheaf_of_le _ hJ (Sheaf.isSheaf_of_isRepresentable P)
 
 variable {J}
 
@@ -238,7 +236,7 @@ into the sheaf category.
 def yoneda (hJ : Subcanonical J) : C ⥤ Sheaf J (Type v) where
   obj X := ⟨CategoryTheory.yoneda.obj X, by
     rw [isSheaf_iff_isSheaf_of_type]
-    apply hJ.isSheaf_of_representable⟩
+    apply hJ.isSheaf_of_isRepresentable⟩
   map f := ⟨CategoryTheory.yoneda.map f⟩
 
 variable (hJ : Subcanonical J)

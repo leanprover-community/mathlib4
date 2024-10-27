@@ -27,6 +27,8 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Adjunction
 
+attribute [local simp] homEquiv_unit homEquiv_counit
+
 /-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
 @[simps! unit_app counit_app]
 def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G :=
@@ -36,13 +38,13 @@ def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣
         (opEquiv _ _)
     homEquiv_naturality_left_symm := by
       -- Porting note: This proof was handled by `obviously` in mathlib3. The only obstruction to
-      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` and
+      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` and
       -- `homEquiv` aren't firing.
       intros
       simp [opEquiv, homEquiv]
     homEquiv_naturality_right := by
       -- Porting note: This proof was handled by `obviously` in mathlib3. The only obstruction to
-      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` and
+      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` and
       -- `homEquiv` aren't firing.
       intros
       simp [opEquiv, homEquiv] }

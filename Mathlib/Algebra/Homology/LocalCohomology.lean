@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Emily Witt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Emily Witt, Scott Morrison, Jake Levinson, Sam van Gool
+Authors: Emily Witt, Kim Morrison, Jake Levinson, Sam van Gool
 -/
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.Category.ModuleCat.Colimits

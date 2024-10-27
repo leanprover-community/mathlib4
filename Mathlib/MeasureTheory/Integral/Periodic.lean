@@ -37,7 +37,7 @@ theorem isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
     IsAddFundamentalDomain (AddSubgroup.zmultiples T) (Ioc t (t + T)) μ := by
   refine IsAddFundamentalDomain.mk' nullMeasurableSet_Ioc fun x => ?_
   have : Bijective (codRestrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
-    (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_strictMono_left hT).injective).bijective
+    (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_left_strictMono hT).injective).bijective
   refine this.existsUnique_iff.2 ?_
   simpa only [add_comm x] using existsUnique_add_zsmul_mem_Ioc hT x t
 
@@ -45,7 +45,7 @@ theorem isAddFundamentalDomain_Ioc' {T : ℝ} (hT : 0 < T) (t : ℝ) (μ : Measu
     IsAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) (Ioc t (t + T)) μ := by
   refine IsAddFundamentalDomain.mk' nullMeasurableSet_Ioc fun x => ?_
   have : Bijective (codRestrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
-    (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_strictMono_left hT).injective).bijective
+    (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_left_strictMono hT).injective).bijective
   refine (AddSubgroup.equivOp _).bijective.comp this |>.existsUnique_iff.2 ?_
   simpa using existsUnique_add_zsmul_mem_Ioc hT x t
 

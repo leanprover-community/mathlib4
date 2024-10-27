@@ -3,11 +3,9 @@ Copyright (c) 2024 F. Nuccio, H. Zheng, W. He, S. Wu, Y. Yuan, W. Jiao. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Yi Yuan
 -/
-import Mathlib.FieldTheory.Separable
 import Mathlib.Algebra.CharP.LinearMaps
 import Mathlib.Algebra.Field.Power
 import Mathlib.FieldTheory.PurelyInseparable
-import Mathlib.Algebra.CharP.ExpChar
 
 /-!
 # The Jacobson-Noether theorem
@@ -78,8 +76,7 @@ open Polynomial
   such that `a ^ (p ^ n)` is contained in `k`. -/
 lemma exists_pow_mem_center_ofInseparable (p : ℕ) [hchar : ExpChar D p] (a : D)
     (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
-  have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (center_expChar_eq_iff.1 hchar)).1
-  -- **`bridge` and `bridge'` could also be useful somewhere else.**
+  have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (ExpChar.center_expChar_eq_iff.1 hchar)).1
   have bridge : ∀ x : k, (algebraMap k D) x = x := fun _ ↦ rfl
   have bridge' : k = (algebraMap k D).range := Subring.ext_iff.mpr <| fun x ↦
     ⟨fun hx ↦ Set.mem_range.mpr (Exists.intro ⟨x, hx⟩ rfl),
@@ -113,7 +110,7 @@ lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
   have inter : (δ a) ^ (p ^ m) = 0 := by
     refine LinearMap.ext_iff.2 ?_
     intro x
-    rw [δ_def' a, @sub_pow_expChar_pow_of_commute (D →ₗ[k] D) _ p _ m (f a) (g a) (fg_comm a)]
+    rw [δ_def' a, @sub_pow_expChar_pow_of_commute (D →ₗ[k] D) _ (f a) (g a) p m _ (fg_comm a)]
     show ((f a) ^ (p ^ m)).1 x - ((g a) ^ (p ^ m)).1 x = 0
     rw [f_pow, g_pow, sub_eq_zero_of_eq]
     suffices h : a ^ (p ^ m) ∈ k from (Subring.mem_center_iff.1 h x).symm
@@ -147,7 +144,7 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
     refine ⟨Nat.find exist, ⟨(Nat.find_spec exist).1, ?_, (Nat.find_spec exist).2⟩⟩
     set t := (Nat.find exist - 1 : ℕ) with ht
     by_cases choice : 0 < t
-    · have := @Nat.find_min (H := exist) _ t ?_
+    · have := @Nat.find_min (H := exist) _ _ t ?_
       · exact (@Nat.sub_add_cancel (Nat.find exist) 1 (by omega) ▸ ht ▸ not_and.1 this) choice
       · exact Nat.sub_one_lt <| ne_of_gt (Nat.find_spec exist).1
     · rw [not_lt, Nat.le_zero] at choice
@@ -184,7 +181,7 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
   rw [mul_sub, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul, ← mul_assoc, sub_eq_iff_eq_add] at deq
   obtain ⟨r, hr⟩ := (exists_pow_mem_center_ofInseparable p d hinsep)
   apply_fun (· ^ (p ^ r)) at deq
-  rw [add_pow_expChar_pow_of_commute D 1 _ (Commute.one_left _) , one_pow,
+  rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _) , one_pow,
     ← conj_nonComm_Algebra (ha := ha₀), ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
     self_eq_add_left] at deq
   exact one_ne_zero deq
@@ -210,89 +207,3 @@ theorem Jacobson_Noether' {L D : Type*} [Field L] [DivisionRing D]
   refine ⟨x, ⟨by rwa [← Subalgebra.center_toSubring L, hcenter] at hxd, IsSeparable.tower_top _ hx⟩⟩
 
 end JacobsonNoether
-
-#exit
-namespace test
-
-#help tactic infer
-open Algebra
-
-example {L D : Type*} [Field L] [DivisionRing D] [Algebra L D] [Algebra.IsAlgebraic L D]
-    (hcenter : Subalgebra.center L D = ⊥) (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
-    ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
-  -- have aux : Algebra.IsAlgebraic L D := inferInstance
-  -- let cmm1 : CommRing (⊥ : Subalgebra L D) := by
-  --   rw [← hcenter]
-  --   infer_instance
-  set a := Subring.center D with ha
-  have hac : (⊥ : Subalgebra L D).toSubring = a := by
-    · rw [← hcenter]
-      rfl
-  set φ := RingEquiv.subringCongr (hac).symm with hφ
-  let cmm2 : CommRing (⊥ : Subalgebra L D) := (φ.symm).commRing
-  -- have check : cmm1 = cmm2 := rfl
-  -- have : Algebra (⊥ : Subalgebra L D) D := by
-    -- have := (φ.toRingHom).toAlgebra
-
-  -- set c := @(Algebra.ofId L D).range with hc
-  -- set a := Subring.center D with ha
-  set ψ : L ≃+* (⊥ : Subalgebra L D) := by
-    · use ((Algebra.botEquiv L D).toRingEquiv).symm
-      · intro x y
-        simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_mul]
-      · intro x y
-        simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_add]
-
-
-
-  -- let comm : CommSemiring (⊥ : Subalgebra L D) := ψ.symm.commSemiring
-
-  let _ : Algebra L a := by
-    use (ψ.trans φ.symm).toRingHom.toAlgebra
-    -- · have := @RingHom.toAlgebra L (⊥ : Subalgebra L D) _ comm ψ.toRingHom
-    -- · have := Algebra L (⊥ : Subalgebra L D)
-
-      --use Algebra.ofId L D
-  let _ : IsScalarTower L a D := sorry
-  have aux2 : Algebra.IsAlgebraic a D := by
-    · apply Algebra.IsAlgebraic.tower_top_of_injective (R := L) (S := a) (A := D)
-      sorry
-  have := @JacobsonNoether.Jacobson_Noether D _ aux2
-
-    -- · rw [hc]
-  have hcc : c = ⊥ := rfl
-  have aux' := aux.1
-  have hab : a = b := rfl
-  rw [hcenter] at hb
-  have : Algebra.IsAlgebraic a D := by
-    constructor
-    intro x
-    have : IsAlgebraic L x := by
-      sorry
-    convert this
-
-
-
-
-
-  set k' := (⊥ : Subalgebra k D).toSubring with hk'
-  have hcenter' : k' = Subring.center D := by apply (hcenter.symm) ▸ hk'
-  have aux1 : (⊤ : Subring D) = (⊤ : Subalgebra k D).toSubring := rfl
-  have ntrivial : k' ≠ ⊤ := by
-    refine Ne.intro ?_
-    exact fun heq ↦
-      hneq <| Algebra.toSubring_eq_top.mp <| aux1 ▸ hk' ▸ heq
-  -- have := @JacobsonNoether.Jacobson_Noether D _ _ ntrivial
-
-    -- infer_instance
-    -- rw [← hcenter']
-    sorry
-  obtain ⟨x, hx⟩ := @JacobsonNoether.Jacobson_Noether D _ _ (hcenter' ▸ ntrivial)
-  use x
-  constructor
-  · simp_rw [← hcenter', hk'] at hx
-    exact hx.1
-  · have base := hx.2
-    sorry
-
-end test
