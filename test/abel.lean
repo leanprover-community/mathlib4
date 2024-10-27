@@ -51,6 +51,16 @@ example [AddCommGroup α] (a b c : α) :
     left; abel1
   right; trivial
 
+/-- `MyTrue` should be opaque to `abel`. -/
+private def MyTrue := True
+
+/--
+error: abel_nf made no progress
+-/
+#guard_msgs in
+example : MyTrue := by
+  abel_nf
+
 -- `abel!` should see through terms that are definitionally equal,
 def id' (x : α) := x
 example [AddCommGroup α] (a b : α) : a + b - b - id' a = 0 := by
@@ -72,6 +82,11 @@ example [AddCommGroup α] (x y z : α) : y = x + z - (x - y + z) := by
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/abel.20bug.3F/near/368707560
 example [AddCommGroup α] (a b s : α) : -b + (s - a) = s - b - a := by abel_nf
+
+-- inspired by automated testing
+example : True := by
+  have := 0
+  abel_nf
 
 /--
 error: abel_nf made no progress

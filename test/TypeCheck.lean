@@ -1,5 +1,6 @@
 import Mathlib.Tactic.TypeCheck
-import Std.Tactic.GuardMsgs
+
+set_option linter.unusedTactic false
 
 /-- A term where `inferType` returns `Prop`, but which does not type check. -/
 elab "wrong" : term =>
@@ -18,7 +19,9 @@ info: Prop
 ---
 info: Prop
 ---
-info: Nat -> Nat
+info: Nat → Nat
+---
+info: List Nat
 -/
 #guard_msgs in
 example : True := by
@@ -29,5 +32,6 @@ example : True := by
   type_check (True : _) -- Prop
   type_check ∀ x y : Nat, x = y -- Prop
   type_check fun x : Nat => 2 * x + 1 -- Nat -> Nat
+  type_check [1]
   fail_if_success type_check wrong
   trivial

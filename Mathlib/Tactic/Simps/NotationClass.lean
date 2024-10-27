@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 
+import Mathlib.Init
 import Lean.Elab.Exception
-import Std.Lean.NameMapAttribute
-import Std.Lean.Expr
-import Std.Tactic.Lint
+import Batteries.Lean.NameMapAttribute
+import Batteries.Lean.Expr
+import Batteries.Tactic.Lint
 
 /-!
 # `@[notation_class]` attribute for `@[simps]`
@@ -26,7 +27,7 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
     We also add it to non-heterogenous notation classes, like `Neg`, but it doesn't do much for any
     class that extends `Neg`.
   * `@[notation_class * <projName> Simps.findCoercionArgs]` is used to configure the
-    `SetLike` and `FunLike` coercions.
+    `SetLike` and `DFunLike` coercions.
   * The first name argument is the projection name we use as the key to search for this class
     (default: name of first projection of the class).
   * The second argument is the name of a declaration that has type
@@ -45,7 +46,7 @@ We partly define this as a separate definition so that the unused arguments lint
 def findArgType : Type := Name → Name → Array Expr → MetaM (Array (Option Expr))
 
 /-- Find arguments for a notation class -/
-def defaultfindArgs : findArgType := λ _ className args => do
+def defaultfindArgs : findArgType := fun _ className args ↦ do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
   let arity := classExpr.type.forallArity
   if arity == args.size then
@@ -57,29 +58,29 @@ def defaultfindArgs : findArgType := λ _ className args => do
       {className}"
 
 /-- Find arguments by duplicating the first argument. Used for `pow`. -/
-def copyFirst : findArgType := λ _ _ args => return (args.push <| args[0]?.getD default).map some
+def copyFirst : findArgType := fun _ _ args ↦ return (args.push <| args[0]?.getD default).map some
 
 /-- Find arguments by duplicating the first argument. Used for `smul`. -/
-def copySecond : findArgType := λ _ _ args => return (args.push <| args[1]?.getD default).map some
+def copySecond : findArgType := fun _ _ args ↦ return (args.push <| args[1]?.getD default).map some
 
 /-- Find arguments by prepending `ℕ` and duplicating the first argument. Used for `nsmul`. -/
-def nsmulArgs : findArgType := λ _ _ args =>
+def nsmulArgs : findArgType := fun _ _ args ↦
   return #[Expr.const `Nat [], args[0]?.getD default] ++ args |>.map some
 
 /-- Find arguments by prepending `ℤ` and duplicating the first argument. Used for `zsmul`. -/
-def zsmulArgs : findArgType := λ _ _ args =>
+def zsmulArgs : findArgType := fun _ _ args ↦
   return #[Expr.const `Int [], args[0]?.getD default] ++ args |>.map some
 
 /-- Find arguments for the `Zero` class. -/
-def findZeroArgs : findArgType := λ _ _ args =>
+def findZeroArgs : findArgType := fun _ _ args ↦
   return #[some <| args[0]?.getD default, some <| mkRawNatLit 0]
 
 /-- Find arguments for the `One` class. -/
-def findOneArgs : findArgType := λ _ _ args =>
+def findOneArgs : findArgType := fun _ _ args ↦
   return #[some <| args[0]?.getD default, some <| mkRawNatLit 1]
 
-/-- Find arguments of a coercion class (`FunLike` or `SetLike`) -/
-def findCoercionArgs : findArgType := λ str className args => do
+/-- Find arguments of a coercion class (`DFunLike` or `SetLike`) -/
+def findCoercionArgs : findArgType := fun str className args ↦ do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
   let arity := classExpr.type.forallArity
   let eStr := mkAppN (← mkConstWithLevelParams str) args
@@ -92,7 +93,7 @@ structure AutomaticProjectionData where
   /-- `className` is the name of the class we are looking for. -/
   className : Name
   /-- `isNotation` is a boolean that specifies whether this is notation
-    (false for the coercions `FunLike` and `SetLike`). If this is set to true, we add the current
+    (false for the coercions `DFunLike` and `SetLike`). If this is set to true, we add the current
     class as hypothesis during type-class synthesis. -/
   isNotation := true
   /-- The method to find the arguments of the class. -/

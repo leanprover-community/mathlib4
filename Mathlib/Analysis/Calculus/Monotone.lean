@@ -7,8 +7,6 @@ import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.MeasureTheory.Covering.OneDim
 import Mathlib.Order.Monotone.Extension
 
-#align_import analysis.calculus.monotone from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
-
 /-!
 # Differentiability of monotone functions
 
@@ -60,7 +58,6 @@ theorem tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : 
   have : ∀ᶠ y in l, y + c * (y - x) ^ 2 ≠ x := by apply Tendsto.mono_right h' hl self_mem_nhdsWithin
   filter_upwards [this] with y hy
   field_simp [sub_ne_zero.2 hy]
-#align tendsto_apply_add_mul_sq_div_sub tendsto_apply_add_mul_sq_div_sub
 
 /-- A Stieltjes function is almost everywhere differentiable, with derivative equal to the
 Radon-Nikodym derivative of the associated Stieltjes measure with respect to Lebesgue. -/
@@ -118,18 +115,17 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' L3 L2
     · filter_upwards [self_mem_nhdsWithin]
       rintro y (hy : y < x)
-      refine' div_le_div_of_nonpos_of_le (by linarith) ((sub_le_sub_iff_right _).2 _)
+      refine div_le_div_of_nonpos_of_le (by linarith) ((sub_le_sub_iff_right _).2 ?_)
       apply f.mono.le_leftLim
       have : ↑0 < (x - y) ^ 2 := sq_pos_of_pos (sub_pos.2 hy)
       norm_num; linarith
     · filter_upwards [self_mem_nhdsWithin]
       rintro y (hy : y < x)
-      refine' div_le_div_of_nonpos_of_le (by linarith) _
+      refine div_le_div_of_nonpos_of_le (by linarith) ?_
       simpa only [sub_le_sub_iff_right] using f.mono.leftLim_le (le_refl y)
   -- prove the result by splitting into left and right limits.
   rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, ← nhds_left'_sup_nhds_right', tendsto_sup]
   exact ⟨L4, L1⟩
-#align stieltjes_function.ae_has_deriv_at StieltjesFunction.ae_hasDerivAt
 
 /-- A monotone function is almost everywhere differentiable, with derivative equal to the
 Radon-Nikodym derivative of the associated Stieltjes measure with respect to Lebesgue. -/
@@ -168,12 +164,12 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
         norm_num; nlinarith
     -- apply the sandwiching argument, with the helper function and `g`
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' this hx.2
-    · filter_upwards [self_mem_nhdsWithin] with y (hy : x < y)
-      rw [← sub_pos] at hy
+    · filter_upwards [self_mem_nhdsWithin] with y hy
+      rw [mem_Ioi, ← sub_pos] at hy
       gcongr
       exact hf.rightLim_le (by nlinarith)
-    · filter_upwards [self_mem_nhdsWithin] with y (hy : x < y)
-      rw [← sub_pos] at hy
+    · filter_upwards [self_mem_nhdsWithin] with y hy
+      rw [mem_Ioi, ← sub_pos] at hy
       gcongr
       exact hf.le_rightLim le_rfl
   -- prove differentiability on the left, by sandwiching with values of `g`
@@ -191,31 +187,32 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
       · have : Ioo (x - 1) x ∈ 𝓝[<] x := by
           apply Ioo_mem_nhdsWithin_Iio; exact ⟨by linarith, le_refl _⟩
         filter_upwards [this]
-        rintro y ⟨hy : x - 1 < y, h'y : y < x⟩
+        rintro y hy
+        rw [mem_Ioo] at hy
         rw [mem_Iio]
         norm_num; nlinarith
     -- apply the sandwiching argument, with `g` and the helper function
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' hx.1 this
     · filter_upwards [self_mem_nhdsWithin]
-      rintro y (hy : y < x)
-      apply div_le_div_of_nonpos_of_le (sub_neg.2 hy).le
+      rintro y hy
+      rw [mem_Iio, ← sub_neg] at hy
+      apply div_le_div_of_nonpos_of_le hy.le
       exact (sub_le_sub_iff_right _).2 (hf.le_rightLim (le_refl _))
     · filter_upwards [self_mem_nhdsWithin]
-      rintro y (hy : y < x)
-      have : ↑0 < (y - x) ^ 2 := sq_pos_of_neg (sub_neg.2 hy)
-      apply div_le_div_of_nonpos_of_le (sub_neg.2 hy).le
+      rintro y hy
+      rw [mem_Iio, ← sub_neg] at hy
+      have : 0 < (y - x) ^ 2 := sq_pos_of_neg hy
+      apply div_le_div_of_nonpos_of_le hy.le
       exact (sub_le_sub_iff_right _).2 (hf.rightLim_le (by norm_num; linarith))
   -- conclude global differentiability
   rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, (nhds_left'_sup_nhds_right' x).symm,
     tendsto_sup]
   exact ⟨L2, L1⟩
-#align monotone.ae_has_deriv_at Monotone.ae_hasDerivAt
 
 /-- A monotone real function is differentiable Lebesgue-almost everywhere. -/
 theorem Monotone.ae_differentiableAt {f : ℝ → ℝ} (hf : Monotone f) :
     ∀ᵐ x, DifferentiableAt ℝ f x := by
   filter_upwards [hf.ae_hasDerivAt] with x hx using hx.differentiableAt
-#align monotone.ae_differentiable_at Monotone.ae_differentiableAt
 
 /-- A real function which is monotone on a set is differentiable Lebesgue-almost everywhere on
 this set. This version does not assume that `s` is measurable. For a formulation with
@@ -229,16 +226,15 @@ theorem MonotoneOn.ae_differentiableWithinAt_of_mem {f : ℝ → ℝ} {s : Set �
   apply ae_of_mem_of_ae_of_mem_inter_Ioo
   intro a b as bs _
   obtain ⟨g, hg, gf⟩ : ∃ g : ℝ → ℝ, Monotone g ∧ EqOn f g (s ∩ Icc a b) :=
-    (hf.mono (inter_subset_left s (Icc a b))).exists_monotone_extension
-      (hf.map_bddBelow (inter_subset_left _ _) ⟨a, fun x hx => hx.2.1, as⟩)
-      (hf.map_bddAbove (inter_subset_left _ _) ⟨b, fun x hx => hx.2.2, bs⟩)
+    (hf.mono inter_subset_left).exists_monotone_extension
+      (hf.map_bddBelow inter_subset_left ⟨a, fun x hx => hx.2.1, as⟩)
+      (hf.map_bddAbove inter_subset_left ⟨b, fun x hx => hx.2.2, bs⟩)
   filter_upwards [hg.ae_differentiableAt] with x hx
   intro h'x
   apply hx.differentiableWithinAt.congr_of_eventuallyEq _ (gf ⟨h'x.1, h'x.2.1.le, h'x.2.2.le⟩)
   have : Ioo a b ∈ 𝓝[s] x := nhdsWithin_le_nhds (Ioo_mem_nhds h'x.2.1 h'x.2.2)
   filter_upwards [self_mem_nhdsWithin, this] with y hy h'y
   exact gf ⟨hy, h'y.1.le, h'y.2.le⟩
-#align monotone_on.ae_differentiable_within_at_of_mem MonotoneOn.ae_differentiableWithinAt_of_mem
 
 /-- A real function which is monotone on a set is differentiable Lebesgue-almost everywhere on
 this set. This version assumes that `s` is measurable and uses `volume.restrict s`.
@@ -248,4 +244,3 @@ theorem MonotoneOn.ae_differentiableWithinAt {f : ℝ → ℝ} {s : Set ℝ} (hf
     (hs : MeasurableSet s) : ∀ᵐ x ∂volume.restrict s, DifferentiableWithinAt ℝ f s x := by
   rw [ae_restrict_iff' hs]
   exact hf.ae_differentiableWithinAt_of_mem
-#align monotone_on.ae_differentiable_within_at MonotoneOn.ae_differentiableWithinAt

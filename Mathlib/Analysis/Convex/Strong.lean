@@ -55,12 +55,10 @@ protected alias ⟨_, ConvexOn.uniformConvexOn_zero⟩ := uniformConvexOn_zero
 protected alias ⟨_, ConcaveOn.uniformConcaveOn_zero⟩ := uniformConcaveOn_zero
 
 lemma UniformConvexOn.mono (hψφ : ψ ≤ φ) (hf : UniformConvexOn s φ f) : UniformConvexOn s ψ f :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans <|
-    sub_le_sub_left (mul_le_mul_of_nonneg_left (hψφ _) <| by positivity) _⟩
+  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans <| by gcongr; apply hψφ⟩
 
 lemma UniformConcaveOn.mono (hψφ : ψ ≤ φ) (hf : UniformConcaveOn s φ f) : UniformConcaveOn s ψ f :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans' <|
-    add_le_add_left (mul_le_mul_of_nonneg_left (hψφ _) <| by positivity) _⟩
+  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans' <| by gcongr; apply hψφ⟩
 
 lemma UniformConvexOn.convexOn (hf : UniformConvexOn s φ f) (hφ : 0 ≤ φ) : ConvexOn ℝ s f := by
   simpa using hf.mono hφ
@@ -127,11 +125,10 @@ def StrongConcaveOn (s : Set E) (m : ℝ) : (E → ℝ) → Prop :=
 variable {s : Set E} {f : E → ℝ} {m n : ℝ}
 
 nonrec lemma StrongConvexOn.mono (hmn : m ≤ n) (hf : StrongConvexOn s n f) : StrongConvexOn s m f :=
-  hf.mono fun r ↦ mul_le_mul_of_nonneg_right (div_le_div_of_le zero_le_two hmn) <| by positivity
+  hf.mono fun r ↦ by gcongr
 
 nonrec lemma StrongConcaveOn.mono (hmn : m ≤ n) (hf : StrongConcaveOn s n f) :
-    StrongConcaveOn s m f :=
-  hf.mono fun r ↦ mul_le_mul_of_nonneg_right (div_le_div_of_le zero_le_two hmn) <| by positivity
+    StrongConcaveOn s m f := hf.mono fun r ↦ by gcongr
 
 @[simp] lemma strongConvexOn_zero : StrongConvexOn s 0 f ↔ ConvexOn ℝ s f := by
   simp [StrongConvexOn, ← Pi.zero_def]
