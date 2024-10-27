@@ -457,7 +457,8 @@ theorem mem_of_liesOver [P.LiesOver p] (x : A) : x ∈ p ↔ algebraMap A B x �
   rw [P.over_def p]
   rfl
 
-variable {P} in
+variable {P}
+
 theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
     [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p where
   over := by
@@ -465,6 +466,11 @@ theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
     rw [mem_comap, h, over_def P p, mem_comap, ← show _ = map σ P from comap_symm (σ : B ≃+* C)]
     rw [mem_comap, ← (AlgEquiv.commutes (σ : B ≃ₐ[A] C).symm x)]
     rfl
+
+theorem LiesOver.of_eq_comap_equiv [Q.LiesOver p] {E : Type*} [EquivLike E B C]
+    [AlgEquivClass E A B C] (σ : E) (h : P = Q.comap σ) : P.LiesOver p := by
+  rw [← show _ = Q.comap σ from map_symm (σ : B ≃+* C)] at h
+  exact of_eq_map_equiv p (σ : B ≃ₐ[A] C).symm h
 
 end Semiring
 
@@ -497,7 +503,7 @@ namespace Quotient
 
 variable (R : Type*) [CommSemiring R] {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
   [Algebra A B] [Algebra A C] [Algebra R A] [Algebra R B] [IsScalarTower R A B]
-  (P : Ideal B) {Q : Ideal C} (p : Ideal A) [P.LiesOver p]
+  (P : Ideal B) {Q : Ideal C} (p : Ideal A) [Q.LiesOver p] [P.LiesOver p]
 
 /-- If `P` lies over `p`, then canonically `B ⧸ P` is a `A ⧸ p`-algebra. -/
 instance algebraOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
@@ -532,16 +538,20 @@ theorem algebraMap_injective_of_liesOver :
 instance [P.IsPrime] : NoZeroSMulDivisors (A ⧸ p) (B ⧸ P) :=
   NoZeroSMulDivisors.of_algebraMap_injective (Quotient.algebraMap_injective_of_liesOver P p)
 
-def algEquivOfLiesOver {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
-    (h : Q = P.map σ) : letI := LiesOver.of_eq_map_equiv p σ h;
-    (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
-  letI := LiesOver.of_eq_map_equiv p σ h
-  {
+variable {P}
+
+def algEquivOfEqMap {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
+    (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) := {
   quotientEquiv P Q σ h with
   commutes' := by
     rintro ⟨x⟩
     exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
 }
+
+def algEquivOfEqComap {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
+    (h : P = Q.comap σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) := by
+  rw [← show _ = Q.comap σ from map_symm (σ : B ≃+* C)] at h
+  exact (algEquivOfEqMap p (σ : B ≃ₐ[A] C).symm h).symm
 
 end Quotient
 
