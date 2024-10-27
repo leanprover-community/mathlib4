@@ -128,10 +128,16 @@ theorem ι_preservesColimitIso_inv (j : J) :
     colimit.ι _ j ≫ (preservesColimitIso G F).inv = G.map (colimit.ι F j) :=
   IsColimit.comp_coconePointUniqueUpToIso_inv _ (colimit.isColimit (F ⋙ G)) j
 
+@[deprecated (since := "2024-10-27")]
+alias ι_preservesColimitsIso_inv := ι_preservesColimitIso_inv
+
 @[reassoc (attr := simp)]
 theorem ι_preservesColimitIso_hom (j : J) :
     G.map (colimit.ι F j) ≫ (preservesColimitIso G F).hom = colimit.ι (F ⋙ G) j :=
   (PreservesColimit.preserves (colimit.isColimit _)).comp_coconePointUniqueUpToIso_hom _ j
+
+@[deprecated (since := "2024-10-27")]
+alias ι_preservesColimitsIso_hom := ι_preservesColimitIso_hom
 
 @[reassoc (attr := simp)]
 theorem preservesColimitIso_inv_comp_desc (t : Cocone F) :
