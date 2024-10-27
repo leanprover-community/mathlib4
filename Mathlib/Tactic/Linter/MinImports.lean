@@ -31,8 +31,8 @@ namespace Mathlib.Linter
 /--
 `ImportState` is the structure keeping track of the data that the `minImports` linter uses.
 * `ig` is the import graph of the current file.
-* `minImps` is the `NameSet` of minimal imports for the file up to the current command to build.
-* `impsSize` is the number of transitive imports for the file up to the current command to build.
+* `minImps` is the `NameSet` of minimal imports to build the file up to the current command.
+* `impsSize` is the number of transitive imports to build the file up to the current command.
 -/
 structure ImportState where
   ig : Option (NameMap (Array Name)) := none
@@ -67,8 +67,8 @@ namespace MinImports
 
 open Mathlib.Command.MinImports
 
-/-- `impsBelow env ms` takes as input an `Environment` `env` and a `NameSet` of module names `ms`.
-It returns the modules that are transitively imported by `ms`.
+/-- `impsBelow ig ms` takes as input an `importGraph` `ig` and a `NameSet` of module names `ms`.
+It returns the modules that are transitively imported by `ms`, using the data in `ig`.
 -/
 def importsBelow (ig : NameMap (Array Name)) (ms : NameSet) : NameSet :=
   (ig.upstreamOf ms).fold (σ := NameSet) (fun _ ↦ ·.insert ·) {}
