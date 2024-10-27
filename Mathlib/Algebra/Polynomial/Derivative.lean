@@ -71,7 +71,7 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
     push_neg at h
     simp [h]
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
+@[simp]
 theorem derivative_zero : derivative (0 : R[X]) = 0 :=
   derivative.map_zero
 
@@ -98,7 +98,6 @@ theorem derivative_C_mul_X_sq (a : R) : derivative (C a * X ^ 2) = C (a * 2) * X
 theorem derivative_X_pow (n : ℕ) : derivative (X ^ n : R[X]) = C (n : R) * X ^ (n - 1) := by
   convert derivative_C_mul_X_pow (1 : R) n <;> simp
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_X_sq : derivative (X ^ 2 : R[X]) = C 2 * X := by
   rw [derivative_X_pow, Nat.cast_two, pow_one]
 
@@ -116,20 +115,17 @@ theorem derivative_X : derivative (X : R[X]) = 1 :=
 theorem derivative_one : derivative (1 : R[X]) = 0 :=
   derivative_C
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
+@[simp]
 theorem derivative_add {f g : R[X]} : derivative (f + g) = derivative f + derivative g :=
   derivative.map_add f g
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_X_add_C (c : R) : derivative (X + C c) = 1 := by
   rw [derivative_add, derivative_X, derivative_C, add_zero]
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
     derivative (∑ b ∈ s, f b) = ∑ b ∈ s, derivative (f b) :=
   map_sum ..
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S)
     (p : R[X]) : derivative (s • p) = s • derivative p :=
   derivative.map_smul_of_tower s p
@@ -560,18 +556,17 @@ section Ring
 
 variable [Ring R]
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
+@[simp]
 theorem derivative_neg (f : R[X]) : derivative (-f) = -derivative f :=
   LinearMap.map_neg derivative f
 
 theorem iterate_derivative_neg {f : R[X]} {k : ℕ} : derivative^[k] (-f) = -derivative^[k] f :=
   iterate_map_neg derivative k f
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
+@[simp]
 theorem derivative_sub {f g : R[X]} : derivative (f - g) = derivative f - derivative g :=
   LinearMap.map_sub derivative f g
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_X_sub_C (c : R) : derivative (X - C c) = 1 := by
   rw [derivative_sub, derivative_X, derivative_C, sub_zero]
 

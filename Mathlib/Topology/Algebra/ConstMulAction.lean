@@ -258,7 +258,7 @@ theorem subset_interior_smul_right {s : Set G} {t : Set α} : s • interior t �
 
 @[to_additive (attr := simp)]
 theorem smul_mem_nhds_smul_iff {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 (g • a) ↔ t ∈ 𝓝 a :=
-  (Homeomorph.smul g).openEmbedding.image_mem_nhds
+  (Homeomorph.smul g).isOpenEmbedding.image_mem_nhds
 
 @[to_additive] alias ⟨_, smul_mem_nhds_smul⟩ := smul_mem_nhds_smul_iff
 

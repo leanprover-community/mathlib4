@@ -129,10 +129,8 @@ theorem xn_succ (n : ℕ) : xn a1 (n + 1) = xn a1 n * a + d a1 * yn a1 n :=
 theorem yn_succ (n : ℕ) : yn a1 (n + 1) = xn a1 n + yn a1 n * a :=
   rfl
 
---@[simp] Porting note (#10618): `simp` can prove it
 theorem xn_one : xn a1 1 = a := by simp
 
---@[simp] Porting note (#10618): `simp` can prove it
 theorem yn_one : yn a1 1 = 1 := by simp
 
 /-- The Pell `x` sequence, considered as an integer sequence. -/
