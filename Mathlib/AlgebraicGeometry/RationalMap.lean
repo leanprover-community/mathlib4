@@ -290,7 +290,7 @@ Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and `X` is
 -/
 noncomputable
 def RationalMap.equivFunctionField [IsIntegral X] [LocallyOfFiniteType sY] :
-    { f : Spec X.functionField ⟶ Y // f ≫ sY = X.fromSpecStalk _ ≫ sX} ≃
+    { f : Spec X.functionField ⟶ Y // f ≫ sY = X.fromSpecStalk _ ≫ sX } ≃
       { f : X ⤏ Y // f.compHom sY = sX.toRationalMap } where
   toFun f := ⟨.ofFunctionField sX sY f f.2, PartialMap.toRationalMap_eq_iff.mpr
       ⟨_, PartialMap.dense_domain _, le_rfl, le_top, by simp [PartialMap.ofFromSpecStalk_comp]⟩⟩
