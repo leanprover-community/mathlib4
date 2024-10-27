@@ -36,30 +36,6 @@ is small, we leave this as a TODO.
 
 open CategoryTheory Limits
 
-universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
-
-section
-
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type u₃}
-  [Category.{v₃} E] {J : Type u₄} [Category.{v₄} J]
-  (F : C ⥤ D ⥤ E) [HasColimit F] (K : J ⥤ D) [HasColimit (F ⋙ (whiskeringLeft _ _ _).obj K)]
-
-@[simps!]
-def whiskeringLeft_comp_evaluation (j : J) : (whiskeringLeft J D E).obj K ⋙ (evaluation J E).obj j
-    ≅ (evaluation D E).obj (K.obj j) :=
-  NatIso.ofComponents (fun _ => Iso.refl _)
-
-@[simps!]
-noncomputable def myNatIso [HasColimitsOfShape C E] :
-    K ⋙ colimit F ≅ colimit (F ⋙ (whiskeringLeft _ _ _).obj K) :=
-  NatIso.ofComponents (fun j =>
-    (colimitObjIsoColimitCompEvaluation F (K.obj j))
-    ≪≫ HasColimit.isoOfNatIso (isoWhiskerLeft F (whiskeringLeft_comp_evaluation K j)).symm
-    ≪≫ HasColimit.isoOfNatIso (Functor.associator _ _ _).symm
-    ≪≫ (colimitObjIsoColimitCompEvaluation (F ⋙ (whiskeringLeft _ _ _).obj K) j).symm)
-
-end
-
 universe u
 
 variable {C : Type u} [SmallCategory C] [HasFiniteColimits C]
@@ -119,7 +95,8 @@ noncomputable def iso [IsFiltered (CostructuredArrow yoneda A)] :
         ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft _ _ _).obj K)) :=
           HasLimit.isoOfNatIso (HasColimit.isoOfNatIso (flip_functorToInterchange A K))
   _ ≅ limit (K ⋙ colimit (CostructuredArrow.proj yoneda A ⋙ yoneda)) :=
-        HasLimit.isoOfNatIso (myNatIso (CostructuredArrow.proj yoneda A ⋙ yoneda) K).symm
+        HasLimit.isoOfNatIso
+          (colimitCompWhiskeringLeftIsoCompColimit (CostructuredArrow.proj yoneda A ⋙ yoneda) K)
   _ ≅ limit (K ⋙ A) := HasLimit.isoOfNatIso (isoWhiskerLeft _
         (IsColimit.coconePointUniqueUpToIso
           (colimit.isColimit _) (Presheaf.isColimitTautologicalCocone A)))
@@ -136,8 +113,8 @@ theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post
   refine limit.hom_ext (fun j => colimit.hom_ext (fun i => ?_))
   simp only [Category.assoc]
 
-  -- `simp` is not too helpful here we will need to apply `NatTrans.comp_app_assoc` backwards at
-  -- certain points, so we rewrite the term manually.
+  -- `simp` is not too helpful here because we will need to apply `NatTrans.comp_app_assoc`
+  -- backwards at certain points, so we rewrite the term manually.
   rw [HasLimit.isoOfNatIso_hom_π, HasLimit.isoOfNatIso_hom_π_assoc, limit.post_π,
     colimitObjIsoColimitCompEvaluation_ι_inv_assoc (CostructuredArrow.proj yoneda A ⋙ yoneda),
     Iso.app_inv, ← NatTrans.comp_app_assoc, colimit.comp_coconePointUniqueUpToIso_inv,
@@ -146,17 +123,12 @@ theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     ι_colimitLimitIso_limit_π_assoc, isoAux_hom_app, ← NatTrans.comp_app_assoc,
     ← NatTrans.comp_app_assoc, Category.assoc, HasLimit.isoOfNatIso_hom_π,
-    preservesLimitsIso_hom_π_assoc, Iso.symm_hom, Iso.symm_hom, myNatIso_inv_app,
-    ← NatTrans.comp_app_assoc, HasColimit.isoOfNatIso_ι_hom, NatTrans.comp_app, Category.assoc,
-    Category.assoc, Category.assoc, Category.assoc]
-
-  -- It is unclear why this `erw` is needed.
-  erw [colimitObjIsoColimitCompEvaluation_ι_app_hom_assoc
-    ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft J Cᵒᵖ (Type u)).obj K) i j]
-
-  rw [HasColimit.isoOfNatIso_ι_inv_assoc, HasColimit.isoOfNatIso_ι_inv_assoc,
-    colimitObjIsoColimitCompEvaluation_ι_inv_assoc, isoWhiskerLeft_hom, whiskerLeft_app,
-    ← NatTrans.comp_app, colimit.comp_coconePointUniqueUpToIso_hom]
+    preservesLimitsIso_hom_π_assoc, Iso.symm_hom,
+    ← NatTrans.comp_app_assoc, HasColimit.isoOfNatIso_ι_hom,
+    ← NatTrans.comp_app_assoc, Category.assoc,
+    ι_colimitCompWhiskeringLeftIsoCompColimit_hom,
+    NatTrans.comp_app, Category.assoc, isoWhiskerLeft_hom, NatTrans.comp_app, Category.assoc,
+    ← NatTrans.comp_app, ← whiskerLeft_comp, colimit.comp_coconePointUniqueUpToIso_hom]
 
   have := i.hom.naturality (limit.π K j)
   dsimp only [yoneda_obj_obj, Functor.const_obj_obj] at this
