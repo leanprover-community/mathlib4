@@ -377,6 +377,13 @@ def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G (Monoi
 
 end DerivedInstances
 
+/-!
+#### Copies of `ext` lemmas and bundled `single`s from `Finsupp`
+
+As `MonoidAlgebra` is a type synonym, `ext` will not unfold it to find `ext` lemmas.
+We need bundled version of `Finsupp.single` with the right types to state these lemmas.
+-/
+
 section ExtLemmas
 
 /-- A copy of `Finsupp.ext` for `MonoidAlgebra`. -/
