@@ -19,16 +19,7 @@ The linters themselves are defined in `Mathlib.Tactic.Linter.TextBased`.
 In addition, this checks that `Mathlib.Init` is (transitively) imported in all of mathlib.
 -/
 
-open Cli Mathlib.Linter.TextBased --System.FilePath
-
-/-- Find all imports in a given file `path`; return the list of module names.
-This only considers imports of the form 'import Module.Name', i.e. not hidden in comments as in e.g.
-'import /- comment -/ Module.Name. -/
-def getAllImports (path: System.FilePath) : IO (List String) := do
-  let lines := ← IO.FS.lines path
-  return lines.toList.filter (fun l ↦ l.startsWith "import ") |>
-    .map fun l ↦ l.stripPrefix "import "
-
+open Cli Mathlib.Linter.TextBased
 
 /-- Check that `Mathlib.Init` is transitively imported in all of Mathlib. -/
 def checkInitImports : IO Bool := do
@@ -76,6 +67,7 @@ def checkInitImports : IO Bool := do
     return True
   return False
 
+
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   let style : ErrorFormat := match args.hasFlag "github" with
@@ -96,6 +88,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   if args.hasFlag "fix" then
     return 0
   else return min numberErrors 125
+
 
 /-- Setting up command line options and help text for `lake exe lint-style`. -/
 -- so far, no help options or so: perhaps that is fine?
