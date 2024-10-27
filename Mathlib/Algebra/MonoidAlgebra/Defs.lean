@@ -630,28 +630,6 @@ theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g 
 
 end MiscTheorems
 
-section Linear
-
-variable {A : Type*} [Semiring k] [Semiring A] [Module k A]
-
-variable (k A) in
-/-- Interpret `single i` as a linear map (but with `MonoidAlgebra` in the type, rather than
-`Finsupp`). -/
-def lsingle (i : G) : A →ₗ[k] MonoidAlgebra A G :=
-  Finsupp.lsingle i
-
-@[simp]
-lemma lsingle_apply (i : G) (a : A) :
-    lsingle k A i a = single i a := rfl
-
-@[ext]
-theorem lhom_ext {B : Type*} [AddCommMonoid B] [Module k B]
-    {f g : MonoidAlgebra A G →ₗ[k] B}
-    (h : ∀ a, f ∘ₗ lsingle k A a = g ∘ₗ lsingle k A a) : f = g :=
-  Finsupp.lhom_ext' h
-
-end Linear
-
 /-! #### Non-unital, non-associative algebra structure -/
 
 
@@ -1412,28 +1390,6 @@ def mapDomainRingHom (k : Type*) [Semiring k] {H F : Type*} [AddMonoid G] [AddMo
     map_mul' := fun x y => mapDomain_mul f x y }
 
 end MiscTheorems
-
-section Linear
-
-variable {A : Type*} [Semiring k] [Semiring A] [Module k A]
-
-variable (k A) in
-/-- Interpret `single i` as a linear map (but with `AddMonoidAlgebra` in the type, rather than
-`Finsupp`). -/
-def lsingle (i : G) : A →ₗ[k] A[G] :=
-  Finsupp.lsingle i
-
-@[simp]
-lemma lsingle_apply (i : G) (a : A) :
-    lsingle k A i a = single i a := rfl
-
-@[ext]
-theorem lhom_ext {B : Type*} [AddCommMonoid B] [Module k B]
-    {f g : A[G] →ₗ[k] B}
-    (h : ∀ a , f ∘ₗ lsingle k A a = g ∘ₗ lsingle k A a) : f = g :=
-  Finsupp.lhom_ext' h
-
-end Linear
 
 end AddMonoidAlgebra
 
