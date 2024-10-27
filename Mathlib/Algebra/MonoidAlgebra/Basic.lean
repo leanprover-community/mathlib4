@@ -501,30 +501,6 @@ theorem algHom_ext_iff {φ₁ φ₂ : k[G] →ₐ[k] A} :
 
 end lift
 
-section Linear
-
-variable {A : Type*} [Semiring k] [Semiring A] [Module k A]
-
-variable (k A) in
-/-- Interpret `single i` as a linear map (but with `AddMonoidAlgebra` in the type, rather than
-`Finsupp`). -/
-def lsingle (i : G) : A →ₗ[k] A[G] :=
-  Finsupp.lsingle i
-
-lemma lsingle_def (i : G) :
-    lsingle k A i = Finsupp.lsingle i := rfl
-
-lemma lsingle_apply (i : G) (a : A) :
-    lsingle k A i a = single i a := rfl
-
-@[ext]
-theorem lhom_ext {B : Type*} [AddCommMonoid B] [Module k B]
-    {f g : A[G] →ₗ[k] B}
-    (h : ∀ a b, f (single a b) = g (single a b)) : f = g :=
-  Finsupp.lhom_ext h
-
-end Linear
-
 theorem mapDomain_algebraMap (A : Type*) {H F : Type*} [CommSemiring k] [Semiring A] [Algebra k A]
     [AddMonoid G] [AddMonoid H] [FunLike F G H] [AddMonoidHomClass F G H]
     (f : F) (r : k) :
