@@ -359,12 +359,10 @@ theorem toIdeal_iInf {κ : Sort*} (s : κ → HomogeneousIdeal 𝒜) :
     (⨅ i, s i).toIdeal = ⨅ i, (s i).toIdeal := by
   rw [iInf, toIdeal_sInf, iInf_range]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem toIdeal_iSup₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
     (⨆ (i) (j), s i j).toIdeal = ⨆ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iSup]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem toIdeal_iInf₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
     (⨅ (i) (j), s i j).toIdeal = ⨅ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iInf]

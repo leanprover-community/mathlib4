@@ -35,7 +35,7 @@ namespace CanonicallyOrderedAdd
 -- see Note [lower instance priority]
 instance (priority := 100) toMulLeftMono [NonUnitalNonAssocSemiring α]
     [LE α] [CanonicallyOrderedAdd α] : MulLeftMono α := by
-  refine ⟨fun a b c h => ?_⟩
+  refine ⟨fun a b c h => ?_⟩; dsimp
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
@@ -101,11 +101,12 @@ protected theorem tsub_mul [MulRightMono α] {a b c : α}
 
 end AddLECancellable
 
-theorem mul_tsub [AddLeftReflectLE α] (a b c : α) :
-    a * (b - c) = a * b - a * c :=
+variable [AddLeftReflectLE α]
+
+theorem mul_tsub (a b c : α) : a * (b - c) = a * b - a * c :=
   Contravariant.AddLECancellable.mul_tsub
 
-theorem tsub_mul [MulRightMono α] [AddLeftReflectLE α] (a b c : α) :
+theorem tsub_mul [MulRightMono α] (a b c : α) :
     (a - b) * c = a * c - b * c :=
   Contravariant.AddLECancellable.tsub_mul
 
