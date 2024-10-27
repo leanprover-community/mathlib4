@@ -945,10 +945,10 @@ section PowQuot
 
 variable {R : Type*} [CommRing R] (I : Ideal R) (n : ℕ)
 
-/-- I ^ n ⧸ I ^ (n + 1) is equivalent as a quotient of I ^ n or as an ideal of
-R ⧸ I ^ (n + 1). -/
+/-- `I ^ n ⧸ I ^ (n + 1)` can be viewed as a quotient module and as ideal of `R ⧸ I ^ (n + 1)`.
+This definition gives the `R`-linear equivalence between the two. -/
 noncomputable
-def powQuotPowSuccEquivMapMkPowSuccPow :
+def powQuotPowSuccLinearEquivMapMkPowSuccPow :
     ((I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R))) ≃ₗ[R]
     Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n) := by
   refine { LinearMap.codRestrict
@@ -970,14 +970,14 @@ def powQuotPowSuccEquivMapMkPowSuccPow :
     refine ⟨Submodule.Quotient.mk ⟨y, hy⟩, ?_⟩
     simp
 
-/-- I ^ n ⧸ I ^ (n + 1) is equivalent as a quotient of I ^ n or as an ideal of
-R ⧸ I ^ (n + 1). Supplied as a plain equiv to bypass typeclass synthesis issues on complex
-`Module` goals. -/
+/-- `I ^ n ⧸ I ^ (n + 1)` can be viewed as a quotient module and as ideal of `R ⧸ I ^ (n + 1)`.
+This definition gives the equivalence between the two, instead of the `R`-linear equivalence,
+to bypass typeclass synthesis issues on complex `Module` goals. -/
 noncomputable
-def powQuotPowSuccEquivMapMkPowSuccPowEquiv :
+def powQuotPowSuccEquivMapMkPowSuccPow :
     ((I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R))) ≃
     Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n) :=
-  powQuotPowSuccEquivMapMkPowSuccPow I n
+  powQuotPowSuccLinearEquivMapMkPowSuccPow I n
 
 end PowQuot
 

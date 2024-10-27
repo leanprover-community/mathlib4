@@ -47,11 +47,9 @@ open scoped Classical
 universe x u v w
 
 variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
-variable {A : Type*} {A' A'' : Type*} {V : Type u} {V' : Type*}
+variable {A : Type*} {A' : Type*}
 variable (x : ι → A)
-variable [CommRing R] [CommRing A] [CommRing A'] [CommRing A'']
-variable [Algebra R A] [Algebra R A'] [Algebra R A'']
-variable {a b : R}
+variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`
   is algebraically independent over `R`, meaning that the canonical
@@ -365,22 +363,24 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply
         (aeval (fun o : Option ι => o.elim Polynomial.X fun s : ι => Polynomial.C (X s)) y) :=
   rfl
 
---@[simp] Porting note: removing simp because the linter complains about deterministic timeout
+/-- `simp`-normal form of `mvPolynomialOptionEquivPolynomialAdjoin_C` -/
+@[simp]
+theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C'
+    (hx : AlgebraicIndependent R x) (r) :
+    Polynomial.C (hx.aevalEquiv (C r)) = Polynomial.C (algebraMap _ _ r) := by
+  simp [aevalEquiv]
+
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C
     (hx : AlgebraicIndependent R x) (r) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (C r) = Polynomial.C (algebraMap _ _ r) := by
-  rw [AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply, aeval_C,
-    IsScalarTower.algebraMap_apply R (MvPolynomial ι R), ← Polynomial.C_eq_algebraMap,
-    Polynomial.map_C, RingHom.coe_coe, AlgEquiv.commutes]
+  simp
 
---@[simp] Porting note (#10618): simp can prove it
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
     (hx : AlgebraicIndependent R x) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X none) = Polynomial.X := by
   rw [AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply, aeval_X, Option.elim,
     Polynomial.map_X]
 
---@[simp] Porting note (#10618): simp can prove it
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
     (hx : AlgebraicIndependent R x) (i) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X (some i)) =
