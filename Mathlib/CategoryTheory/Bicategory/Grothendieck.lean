@@ -5,7 +5,7 @@ Authors: Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
+import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
 /-!
 # The Grothendieck construction
