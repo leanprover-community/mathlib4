@@ -136,8 +136,51 @@ noncomputable def mkOfOplax' {F G : Pseudofunctor B C} (η : F.toOplax ⟶ G)
 
 variable {H : Pseudofunctor B C} (η : StrongTrans F G) (θ : StrongTrans G H)
 
+variable (F) in
+/-- The identity strong transformation. -/
+def id : StrongTrans F F where
+  app a := 𝟙 (F.obj a)
+  naturality {a b} f := (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm
+
+instance : Inhabited (StrongTrans F F) :=
+  ⟨id F⟩
+
+/-- Vertical composition of strong transformations. -/
+def vcomp : StrongTrans F H :=
+  mkOfOplax (OplaxTrans.vcomp η.toOplax θ.toOplax)
+    { naturality := fun {a b} f ↦
+        (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
+        (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm }
+
+end
+
+@[simps! id_app id_naturality_hom id_naturality_inv comp_naturality_hom
+comp_naturality_inv]
+-- TODO: NAME
+instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
+  Hom F G := StrongTrans F G
+  id F := StrongTrans.id F
+  comp := StrongTrans.vcomp
+
 section
 
+variable {F G H : Pseudofunctor B C}
+
+@[simp]
+lemma comp_app (η : F ⟶ G) (θ : G ⟶ H) (a : B) :
+    (η ≫ θ).app a = η.app a ≫ θ.app a :=
+  rfl
+
+end
+
+@[simp]
+lemma id_toOplax (F : Pseudofunctor B C) : 𝟙 F = 𝟙 F.toOplax :=
+  rfl
+
+section
+
+variable {F G : Pseudofunctor B C}
+variable {H : Pseudofunctor B C} (η : StrongTrans F G) (θ : StrongTrans G H)
 variable {a b c : B} {a' : C}
 
 @[reassoc (attr := simp)]
@@ -188,79 +231,34 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
 
 end
 
-variable (F) in
-/-- The identity strong transformation. -/
-def id : StrongTrans F F where
-  app a := 𝟙 (F.obj a)
-  naturality {a b} f := (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm
-
-instance : Inhabited (StrongTrans F F) :=
-  ⟨id F⟩
-
-/-- Vertical composition of strong transformations. -/
-def vcomp (η : StrongTrans F G) (θ : StrongTrans G H) :
-    StrongTrans F H :=
-  mkOfOplax (OplaxTrans.vcomp η.toOplax θ.toOplax)
-    { naturality := fun {a b} f ↦
-        (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
-        (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm }
-
-end
-
-end StrongTrans
-
-variable (B C)
-
-@[simps! id_app id_naturality_hom id_naturality_inv comp_naturality_hom
-comp_naturality_inv]
-instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
-  Hom F G := StrongTrans F G
-  id F := StrongTrans.id F
-  comp := StrongTrans.vcomp
-
 section
-
-variable {F G H : Pseudofunctor B C}
-
-@[simp]
-lemma StrongTrans.comp_app (η : F ⟶ G) (θ : G ⟶ H) (a : B) :
-    (η ≫ θ).app a = η.app a ≫ θ.app a :=
-  rfl
-
-end
-
-@[simp]
-lemma id.toOplax (F : Pseudofunctor B C) : 𝟙 F = 𝟙 F.toOplax :=
-  rfl
 
 variable {F G : Pseudofunctor B C}
 
--- TODO: move after refactor
 @[reassoc, to_app]
-lemma StrongPseudoNatTrans.naturality_id_hom (α : F ⟶ G) (a : B) :
+lemma naturality_id_hom (α : F ⟶ G) (a : B) :
     (α.naturality (𝟙 a)).hom = (F.mapId a).hom ▷ α.app a ≫
       (λ_ (α.app a)).hom ≫ (ρ_ (α.app a)).inv ≫ α.app a ◁ (G.mapId a).inv := by
-  rw [← assoc, ← IsIso.comp_inv_eq]
-  simp
+  simp [← assoc, ← IsIso.comp_inv_eq]
 
 @[reassoc, to_app]
-lemma StrongPseudoNatTrans.naturality_naturality_hom (α : F ⟶ G) {a b : B}
+lemma naturality_naturality_hom (α : F ⟶ G) {a b : B}
     (f g : a ⟶ b) (η : f ≅ g):
       (α.naturality g).hom =
        (F.map₂ η.inv) ▷ α.app b ≫ (α.naturality f).hom ≫ α.app a ◁ G.map₂ η.hom := by
-  rw [← assoc, ← IsIso.comp_inv_eq]
-  simp -- small missing simp lemma for this one
-  sorry
+  simp [← IsIso.inv_comp_eq, ← G.map₂_inv η.inv]
 
 @[reassoc, to_app]
-lemma StrongPseudoNatTrans.naturality_comp_hom (α : F ⟶ G) {a b c : B}
+lemma naturality_comp_hom (α : F ⟶ G) {a b c : B}
     (f : a ⟶ b) (g : b ⟶ c) :
       (α.naturality (f ≫ g)).hom =
         (F.mapComp f g).hom ▷ α.app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ (α.naturality g).hom ≫
         (α_ _ _ _).inv ≫ (α.naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom ≫
         α.app a ◁ (G.mapComp f g).inv := by
-  rw [← assoc, ← IsIso.comp_inv_eq]
-  simp
+  simp [← assoc, ← IsIso.comp_inv_eq]
 
+end
+
+end StrongTrans
 
 end CategoryTheory.Pseudofunctor

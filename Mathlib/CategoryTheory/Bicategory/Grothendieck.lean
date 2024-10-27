@@ -146,21 +146,21 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
   map_id a := by
     ext1
     · dsimp
-    simp [StrongPseudoNatTrans.naturality_id_hom_app, ← Functor.map_comp_assoc]
+    · simp [StrongTrans.naturality_id_hom_app, ← Functor.map_comp_assoc]
   map_comp {a b c} f g := by
     ext
     · dsimp
-    dsimp
-    rw [StrongPseudoNatTrans.naturality_comp_hom_app]
-    simp only [map_comp, toOplax_toPrelaxFunctor, Cat.comp_obj, Strict.associator_eqToIso,
-      eqToIso_refl, Iso.refl_hom, Cat.id_app, Iso.refl_inv, id_comp, assoc, comp_id]
-    slice_lhs 2 4 => simp only [← Functor.map_comp, Iso.inv_hom_id_app, Cat.comp_obj, comp_id]
-    slice_lhs 2 3 => rw [← Functor.comp_map, NatTrans.naturality]
-    simp
+    · dsimp
+      rw [StrongTrans.naturality_comp_hom_app]
+      simp only [map_comp, toOplax_toPrelaxFunctor, Cat.comp_obj, Strict.associator_eqToIso,
+        eqToIso_refl, Iso.refl_hom, Cat.id_app, Iso.refl_inv, id_comp, assoc, comp_id]
+      slice_lhs 2 4 => simp only [← Functor.map_comp, Iso.inv_hom_id_app, Cat.comp_obj, comp_id]
+      slice_lhs 2 3 => rw [← Functor.comp_map, NatTrans.naturality]
+      simp
 
--- TODO: MAKE eqToIso things simp lemmas!!! would simplify things from here on out
 @[simp]
 lemma map_id_map {x y : ∫ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
+  -- TODO: why does aesop not work here?
   ext <;> simp
 
 @[simp]
@@ -186,6 +186,7 @@ lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
 abbrev mapCompIso_hom (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ⟶ map α ⋙ map β where
   app a := eqToHom (by aesop_cat)
   naturality := by
+    -- aesop should solve this...
     intro x y f
     simp only [comp_obj, eqToHom_refl, comp_id, Functor.comp_map, id_comp]
     ext <;> simp
