@@ -23,6 +23,8 @@ many primary ideals.
 ## Implementation details
 
 There is a generalization for submodules that needs to be implemented.
+Also, one needs to prove that the decomposition can be made minimal,
+and that minimal decompositions are equivalent.
 
 -/
 
