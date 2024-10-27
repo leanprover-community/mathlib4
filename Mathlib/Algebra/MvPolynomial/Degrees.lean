@@ -254,7 +254,7 @@ theorem monomial_le_degreeOf (i : σ) {f : MvPolynomial σ R} {m : σ →₀ ℕ
   apply Finset.le_sup h_m
 
 lemma degreeOf_monomial_eq [DecidableEq σ] (s : σ →₀ ℕ) (i : σ) (a : R) (ha : a ≠ 0) :
-    ((monomial s) a).degreeOf i = s i := by
+    (monomial s a).degreeOf i = s i := by
   rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]
 
 -- TODO we can prove equality here if R is a domain
