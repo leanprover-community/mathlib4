@@ -38,7 +38,8 @@ def formatTable (headers : Array String) (table : Array (Array String))
     String := Id.run do
   -- If no alignments are provided, default to left alignment for all columns.
   let alignments := alignments.getD (Array.mkArray headers.size Alignment.left)
-  -- escape all bar characters
+  -- Escape all vertical bar characters inside a table cell,
+  -- otherwise these could get interpreted as starting a new row or column.
   let escapedHeaders := headers.map (fun header => header.replace "|" "\\|")
   let escapedTable := table.map (fun row => row.map (fun cell => cell.replace "|" "\\|"))
   -- Compute the maximum width of each column.

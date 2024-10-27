@@ -13,16 +13,16 @@ macro "#logAsInfo" t:term : command =>
 
 /--
 info:
-| first           | second header   | third_header   |
-| :-------------- | :-------------: | -------------: |
-| item number one |    item two     |         item c |
-| the fourth item | the fourth item | escape \| this |
-| align left      |  align center   |    align right |
+| first           | second header   | third \| header |
+| :-------------- | :-------------: | --------------: |
+| item number one |    item two     |          item c |
+| the fourth item | the fourth item |  escape \| this |
+| align left      |  align center   |     align right |
 -/
 #guard_msgs in
 #logAsInfo "\n" ++ formatTable
-  #["first","second header","third_header"]
-  #[#["item number one","item two", "item c"],
-    #["the fourth item","the fourth item", "escape | this"],
-    #["align left","align center","align right"]]
+  #["first", "second header", "third | header"]
+  #[#["item number one", "item two", "item c"],
+    #["the fourth item", "the fourth item", "escape | this"],
+    #["align left", "align center", "align right"]]
   (.some #[.left,.center,.right])
