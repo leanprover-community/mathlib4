@@ -390,9 +390,17 @@ theorem liftPropWithinAt_congr_iff (h₁ : ∀ y ∈ s, g' y = g y) (hx : g' x =
     LiftPropWithinAt P g' s x ↔ LiftPropWithinAt P g s x :=
   hG.liftPropWithinAt_congr_iff_of_eventuallyEq (eventually_nhdsWithin_of_forall h₁) hx
 
+theorem liftPropWithinAt_congr_iff_of_mem (h₁ : ∀ y ∈ s, g' y = g y) (hx : x ∈ s) :
+    LiftPropWithinAt P g' s x ↔ LiftPropWithinAt P g s x :=
+  hG.liftPropWithinAt_congr_iff_of_eventuallyEq (eventually_nhdsWithin_of_forall h₁) (h₁ _ hx)
+
 theorem liftPropWithinAt_congr (h : LiftPropWithinAt P g s x) (h₁ : ∀ y ∈ s, g' y = g y)
     (hx : g' x = g x) : LiftPropWithinAt P g' s x :=
   (hG.liftPropWithinAt_congr_iff h₁ hx).mpr h
+
+theorem liftPropWithinAt_congr_of_mem (h : LiftPropWithinAt P g s x) (h₁ : ∀ y ∈ s, g' y = g y)
+    (hx : x ∈ s) : LiftPropWithinAt P g' s x :=
+  (hG.liftPropWithinAt_congr_iff h₁ (h₁ _ hx)).mpr h
 
 theorem liftPropAt_congr_iff_of_eventuallyEq (h₁ : g' =ᶠ[𝓝 x] g) :
     LiftPropAt P g' x ↔ LiftPropAt P g x :=

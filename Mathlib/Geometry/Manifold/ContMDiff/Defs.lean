@@ -578,47 +578,6 @@ theorem smooth_iff_target :
         ∀ y : M', SmoothOn I 𝓘(𝕜, E') (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) :=
   contMDiff_iff_target
 
-/-- If a function is `C^m` within a set at a point, for some finite `m`, then it is `C^m` within
-this set on an open set around the basepoint.
-TODO: unify with contMDiffAt_iff_contMDiffOn_nhds (especially check the naming wrt other parts
-of the library)
--/
-theorem ContMDiffWithinAt.contMDiffOn' {m : ℕ} (hm : (m : ℕ∞) ≤ n)
-    (h : ContMDiffWithinAt I I' n f s x) :
-    ∃ u, IsOpen u ∧ x ∈ u ∧ ContMDiffOn I I' m f (insert x s ∩ u) := by
-  obtain ⟨u, u_open, xu, hu⟩ : ∃ u, IsOpen u ∧
-     extChartAt I x x ∈ u ∧
-      ContDiffOn 𝕜 m ((extChartAt I' (f x)) ∘ f ∘ ↑(extChartAt I x).symm)
-        (insert (extChartAt I x x) (↑(extChartAt I x).symm ⁻¹' s ∩ range ↑I) ∩ u) :=
-    (contMDiffWithinAt_iff.1 h).2.contDiffOn' hm
-  obtain ⟨v, v_open, xv, hv⟩ :
-      ∃ v, IsOpen v ∧ x ∈ v ∧ v ∩ insert x s ⊆ f ⁻¹' (extChartAt I' (f x)).source := by
-    apply mem_nhdsWithin.1
-    exact (contMDiffWithinAt_iff.1 h).1.insert.preimage_mem_nhdsWithin
-      (extChartAt_source_mem_nhds (f x))
-  refine ⟨(extChartAt I x).source ∩ (extChartAt I x) ⁻¹' u ∩ v,
-    (isOpen_extChartAt_preimage' _ u_open).inter v_open, by simpa [xv] using xu, ?_⟩
-  apply (contMDiffOn_iff_of_subset_source' (x := x) (y := f x) _ _).2
-  · apply hu.mono
-    simp only [image_subset_iff]
-    rintro y ⟨hy, ⟨h'y, h''y⟩, -⟩
-    rcases mem_insert_iff.1 hy with rfl | Hy
-    · simp [-extChartAt, h''y]
-    · simp only [preimage_inter, mem_inter_iff, mem_preimage, mem_insert_iff, h'y,
-        PartialEquiv.left_inv, Hy, true_and, h''y, and_true]
-      exact Or.inr (mem_range_self _)
-  · exact inter_subset_right.trans (inter_subset_left.trans inter_subset_left)
-  · apply MapsTo.mono_left hv
-    mfld_set_tac
-
-/-- If a function is `C^m` within a set at a point, for some finite `m`, then it is `C^m` within
-this set on a neighborhood of the basepoint. -/
-theorem ContMDiffWithinAt.contMDiffOn {m : ℕ} (hm : (m : ℕ∞) ≤ n)
-    (h : ContMDiffWithinAt I I' n f s x) :
-    ∃ u ∈ 𝓝[insert x s] x, u ⊆ insert x s ∧ ContMDiffOn I I' m f u := by
-  let ⟨_u, uo, xu, h⟩ := h.contMDiffOn' hm
-  exact ⟨_, inter_mem_nhdsWithin _ (uo.mem_nhds xu), inter_subset_left, h⟩
-
 end SmoothManifoldWithCorners
 
 /-! ### Deducing smoothness from smoothness one step beyond -/
@@ -803,6 +762,30 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds
     rwa [contMDiffOn_iff_of_subset_source' hv₁ hv₂, PartialEquiv.image_symm_image_of_subset_target]
     exact hsub.trans inter_subset_left
 
+
+/-- If a function is `C^m` within a set at a point, for some finite `m`, then it is `C^m` within
+this set on an open set around the basepoint.
+-/
+theorem ContMDiffWithinAt.contMDiffOn'
+    [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
+    {m : ℕ} (hm : (m : ℕ∞) ≤ n)
+    (h : ContMDiffWithinAt I I' n f s x) :
+    ∃ u, IsOpen u ∧ x ∈ u ∧ ContMDiffOn I I' m f (insert x s ∩ u) := by
+  rcases contMDiffWithinAt_iff_contMDiffOn_nhds.1 (h.of_le hm) with ⟨t, ht, h't⟩
+  rcases mem_nhdsWithin.1 ht with ⟨u, u_open, xu, hu⟩
+  rw [inter_comm] at hu
+  exact ⟨u, u_open, xu, h't.mono hu⟩
+
+/-- If a function is `C^m` within a set at a point, for some finite `m`, then it is `C^m` within
+this set on a neighborhood of the basepoint. -/
+theorem ContMDiffWithinAt.contMDiffOn
+    [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
+    {m : ℕ} (hm : (m : ℕ∞) ≤ n)
+    (h : ContMDiffWithinAt I I' n f s x) :
+    ∃ u ∈ 𝓝[insert x s] x, u ⊆ insert x s ∧ ContMDiffOn I I' m f u := by
+  let ⟨_u, uo, xu, h⟩ := h.contMDiffOn' hm
+  exact ⟨_, inter_mem_nhdsWithin _ (uo.mem_nhds xu), inter_subset_left, h⟩
+
 /-- A function is `C^n` at a point, for `n : ℕ`, if and only if it is `C^n` on
 a neighborhood of this point. -/
 theorem contMDiffAt_iff_contMDiffOn_nhds
@@ -843,6 +826,15 @@ theorem ContMDiffWithinAt.congr (h : ContMDiffWithinAt I I' n f s x) (h₁ : ∀
 theorem contMDiffWithinAt_congr (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : f₁ x = f x) :
     ContMDiffWithinAt I I' n f₁ s x ↔ ContMDiffWithinAt I I' n f s x :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr_iff h₁ hx
+
+theorem ContMDiffWithinAt.congr_of_mem
+    (h : ContMDiffWithinAt I I' n f s x) (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : x ∈ s) :
+    ContMDiffWithinAt I I' n f₁ s x :=
+  (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr_of_mem h h₁ hx
+
+theorem contMDiffWithinAt_congr_of_mem (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : x ∈ s) :
+    ContMDiffWithinAt I I' n f₁ s x ↔ ContMDiffWithinAt I I' n f s x :=
+  (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr_iff_of_mem h₁ hx
 
 theorem ContMDiffWithinAt.congr_of_eventuallyEq (h : ContMDiffWithinAt I I' n f s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : ContMDiffWithinAt I I' n f₁ s x :=

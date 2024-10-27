@@ -968,7 +968,7 @@ protected lemma _root_.MDifferentiable.mpullback_vectorField
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point. -/
-protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField
+protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
     (hV : ContMDiffWithinAt I' I'.tangent m
       (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
     (hf : ContMDiffWithinAt I I' n f s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible)
@@ -1032,15 +1032,73 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField
   simp only [inverse_equiv_comp, inverse_comp_equiv, ContinuousLinearEquiv.symm_symm, ϕ]
   rfl
 
-lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq
+lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter_of_eq
     (hV : ContMDiffWithinAt I' I'.tangent m
       (fun (y : M') ↦ (V y : TangentBundle I' M')) t y₀)
     (hf : ContMDiffWithinAt I I' n f s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible)
-    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (h : y₀ = f x₀) :
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (h : f x₀ = y₀) :
     ContMDiffWithinAt I I.tangent m
       (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) (s ∩ f⁻¹' t) x₀ := by
   subst h
-  exact ContMDiffWithinAt.mpullbackWithin_vectorField hV hf hf' hx₀ hs hmn
+  exact ContMDiffWithinAt.mpullbackWithin_vectorField_inter hV hf hf' hx₀ hs hmn
+
+/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+Version within a set at a point. -/
+protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField
+    (hV : ContMDiffWithinAt I' I'.tangent m
+      (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
+    (hf : ContMDiffWithinAt I I' n f s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible)
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (hst : MapsTo f s t) :
+    ContMDiffWithinAt I I.tangent m
+      (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) s x₀ := by
+  convert ContMDiffWithinAt.mpullbackWithin_vectorField_inter hV hf hf' hx₀ hs hmn
+  exact left_eq_inter.mpr hst
+
+/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+Version within a set at a point. -/
+protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq
+    (hV : ContMDiffWithinAt I' I'.tangent m
+      (fun (y : M') ↦ (V y : TangentBundle I' M')) t y₀)
+    (hf : ContMDiffWithinAt I I' n f s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible)
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (hst : MapsTo f s t) (h : f x₀ = y₀) :
+    ContMDiffWithinAt I I.tangent m
+      (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) s x₀ := by
+  subst h
+  exact ContMDiffWithinAt.mpullbackWithin_vectorField hV hf hf' hx₀ hs hmn hst
+
+/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+Version within a set at a point, with a set used for the pullback possibly larger. -/
+protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField' {u : Set M}
+    (hV : ContMDiffWithinAt I' I'.tangent m
+      (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
+    (hf : ContMDiffWithinAt I I' n f u x₀) (hf' : (mfderivWithin I I' f u x₀).IsInvertible)
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (hst : MapsTo f s t) (hu : s ⊆ u) :
+    ContMDiffWithinAt I I.tangent m
+      (fun (y : M) ↦ (mpullbackWithin I I' f V u y : TangentBundle I M)) s x₀ := by
+  have hn : (1 : ℕ) ≤ n := le_trans le_add_self hmn
+  have hh : (mfderivWithin I I' f s x₀).IsInvertible := by
+    convert hf' using 1
+    exact (hf.mdifferentiableWithinAt hn).mfderivWithin_mono (hs _ hx₀) hu
+  apply (hV.mpullbackWithin_vectorField (hf.mono hu) hh hx₀ hs hmn
+    hst).congr_of_eventuallyEq_of_mem _ hx₀
+  have Y := contMDiffWithinAt_iff_contMDiffWithinAt_nhdsWithin.1 (hf.of_le hn)
+  simp_rw [insert_eq_of_mem (hu hx₀)] at Y
+  filter_upwards [self_mem_nhdsWithin, nhdsWithin_mono _ hu Y] with y hy h'y
+  simp only [mpullbackWithin, Bundle.TotalSpace.mk_inj]
+  rw [MDifferentiableWithinAt.mfderivWithin_mono (h'y.mdifferentiableWithinAt le_rfl) (hs _ hy) hu]
+
+/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+Version within a set at a point, with a set used for the pullback possibly larger. -/
+protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq' {u : Set M}
+    (hV : ContMDiffWithinAt I' I'.tangent m
+      (fun (y : M') ↦ (V y : TangentBundle I' M')) t y₀)
+    (hf : ContMDiffWithinAt I I' n f u x₀) (hf' : (mfderivWithin I I' f u x₀).IsInvertible)
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (hst : MapsTo f s t) (hu : s ⊆ u)
+    (hy₀ : f x₀ = y₀) :
+    ContMDiffWithinAt I I.tangent m
+      (fun (y : M) ↦ (mpullbackWithin I I' f V u y : TangentBundle I M)) s x₀ := by
+  subst hy₀
+  exact ContMDiffWithinAt.mpullbackWithin_vectorField' hV hf hf' hx₀ hs hmn hst hu
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version on a set. -/
@@ -1050,7 +1108,7 @@ protected lemma _root_.ContMDiffOn.mpullbackWithin_vectorField
     (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) :
     ContMDiffOn I I.tangent m
       (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) (s ∩ f ⁻¹' t) :=
-  fun _ hx₀ ↦ ContMDiffWithinAt.mpullbackWithin_vectorField
+  fun _ hx₀ ↦ ContMDiffWithinAt.mpullbackWithin_vectorField_inter
     (hV _ hx₀.2) (hf _ hx₀.1) (hf' _ hx₀) hx₀.1 hs hmn
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
@@ -1061,7 +1119,7 @@ protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField
     ContMDiffWithinAt I I.tangent m
       (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) (f ⁻¹' t) x₀ := by
   simp only [← contMDiffWithinAt_univ, ← mfderivWithin_univ, ← mpullbackWithin_univ] at hV hf hf' ⊢
-  simpa using hV.mpullbackWithin_vectorField hf hf' (mem_univ _) uniqueMDiffOn_univ hmn
+  simpa using hV.mpullbackWithin_vectorField_inter hf hf' (mem_univ _) uniqueMDiffOn_univ hmn
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, but with full pullback. -/
@@ -1538,7 +1596,8 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
   -- of two vector fields `V'` and `W'`.
   rw [← ContinuousLinearMap.IsInvertible.inverse_comp_apply_of_left
     (isInvertible_mfderiv_extChartAt (mem_extChartAt_source (f x₀)))]
-  rw [← mfderiv_comp_mfderivWithin _ mdifferentiableAt_extChartAt_self h'f (hu x₀ hx₀)]
+  rw [← mfderiv_comp_mfderivWithin _ (mdifferentiableAt_extChartAt
+    (ChartedSpace.mem_chart_source (f x₀))) h'f (hu x₀ hx₀)]
   rw [eq_comm, (isInvertible_mfderiv_extChartAt (mem_extChartAt_source x₀)).inverse_apply_eq]
   have : (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm (range I) (extChartAt I x₀ x₀)).inverse =
       mfderiv I 𝓘(𝕜, E) (extChartAt I x₀) x₀ := by
@@ -1552,13 +1611,15 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
   have : mfderivWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm (range I) (extChartAt I x₀ x₀) =
       mfderivWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm ((extChartAt I x₀).symm ⁻¹' s ∩ range I)
       (extChartAt I x₀ x₀) :=
-    (MDifferentiableWithinAt.mfderivWithin_mono mdifferentiableWithinAt_extChartAt_symm_self
+    (MDifferentiableWithinAt.mfderivWithin_mono
+      (mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x₀))
       (UniqueDiffWithinAt.uniqueMDiffWithinAt (hu x₀ hx₀)) inter_subset_right).symm
   rw [this]; clear this
   rw [← mfderivWithin_comp_of_eq]; rotate_left
   · apply MDifferentiableAt.comp_mdifferentiableWithinAt (I' := I') _ _ h'f
     exact mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source (f x₀))
-  · exact mdifferentiableWithinAt_extChartAt_symm_self.mono inter_subset_right
+  · exact (mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x₀)).mono
+      inter_subset_right
   · exact inter_subset_left
   · exact UniqueDiffWithinAt.uniqueMDiffWithinAt (hu x₀ hx₀)
   · simp
@@ -1656,7 +1717,7 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
     (hV : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) t (f x₀))
     (hW : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (W x : TangentBundle I' M')) t (f x₀))
     (hu : UniqueMDiffOn I s) (hf : ContMDiffWithinAt I I' 2 f s x₀) (hx₀ : x₀ ∈ s)
-    (hst : MapsTo f s t)
+    (hst : f ⁻¹' t ∈ 𝓝[s] x₀)
     (hsymm : IsSymmSndFDerivWithinAt 𝕜 ((extChartAt I' (f x₀)) ∘ f ∘ (extChartAt I x₀).symm)
       ((extChartAt I x₀).symm ⁻¹' s ∩ range I) (extChartAt I x₀ x₀)) :
     mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
@@ -1679,16 +1740,18 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
     let M' : E ≃L[𝕜] E' := M
     exact (completeSpace_congr (e := M'.toEquiv) M'.isUniformEmbedding).1 (by assumption)
   -- choose a small open set `v` around `x₀` where `f` is `C^2`
-  obtain ⟨u, u_open, x₀u, maps_u, u_smooth⟩ :
-      ∃ u, IsOpen u ∧ x₀ ∈ u ∧
+  obtain ⟨u, u_open, x₀u, ut, maps_u, u_smooth⟩ :
+      ∃ u, IsOpen u ∧ x₀ ∈ u ∧ s ∩ u ⊆ f ⁻¹' t ∧
         s ∩ u ⊆ f ⁻¹' (extChartAt I' (f x₀)).source ∧ ContMDiffOn I I' 2 f (s ∩ u) := by
     obtain ⟨u, u_open, x₀u, hu⟩ :
       ∃ u, IsOpen u ∧ x₀ ∈ u ∧ ContMDiffOn I I' 2 f (insert x₀ s ∩ u) := hf.contMDiffOn' le_rfl
     have : f ⁻¹' (extChartAt I' (f x₀)).source ∈ 𝓝[s] x₀ :=
       hf.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (f x₀))
-    rcases mem_nhdsWithin.1 this with ⟨w, w_open, x₀w, hw⟩
-    refine ⟨u ∩ w, u_open.inter w_open, by simp [x₀u, x₀w], ?_, ?_⟩
-    · apply Subset.trans _ hw
+    rcases mem_nhdsWithin.1 (Filter.inter_mem hst this) with ⟨w, w_open, x₀w, hw⟩
+    refine ⟨u ∩ w, u_open.inter w_open, by simp [x₀u, x₀w], ?_, ?_, ?_⟩
+    · apply Subset.trans _ (hw.trans inter_subset_left)
+      exact fun y hy ↦ ⟨hy.2.2, hy.1⟩
+    · apply Subset.trans _ (hw.trans inter_subset_right)
       exact fun y hy ↦ ⟨hy.2.2, hy.1⟩
     · apply hu.mono
       exact fun y hy ↦ ⟨subset_insert _ _ hy.1, hy.2.1⟩
@@ -1708,7 +1771,7 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s') (mpullbackWithin I I' f W s') s' x₀ := by
     apply mpullbackWithin_mlieBracketWithin_aux (t := t') (hV.mono inter_subset_left)
       (hW.mono inter_subset_left) (hu.inter u_open) u_smooth ⟨hx₀, x₀u⟩ inter_subset_right
-      (fun y hy ↦ ⟨hst hy.1, maps_u hy⟩)
+      (fun y hy ↦ ⟨ut hy, maps_u hy⟩)
     apply hsymm.congr_set
     have : (extChartAt I x₀).symm ⁻¹' u ∈ 𝓝 (extChartAt I x₀ x₀) := by
       apply (continuousAt_extChartAt_symm x₀).preimage_mem_nhds
@@ -1735,7 +1798,7 @@ lemma mpullbackWithin_mlieBracketWithin [IsRCLikeNormedField 𝕜]
     (hV : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) t (f x₀))
     (hW : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (W x : TangentBundle I' M')) t (f x₀))
     (hu : UniqueMDiffOn I s) (hf : ContMDiffWithinAt I I' 2 f s x₀) (hx₀ : x₀ ∈ s)
-    (hst : MapsTo f s t) (h'x₀ : x₀ ∈ closure (interior s)) :
+    (hst : f ⁻¹' t ∈ 𝓝[s] x₀) (h'x₀ : x₀ ∈ closure (interior s)) :
     mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
       mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
   apply mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt hV hW hu hf hx₀ hst
@@ -1765,8 +1828,178 @@ lemma mpullbackWithin_mlieBracketWithin [IsRCLikeNormedField 𝕜]
   · simp [hx₀]
   · exact (contMDiffWithinAt_iff.1 hf).2.congr_set A.symm
 
+lemma mpullback_mlieBracketWithin [IsRCLikeNormedField 𝕜]
+    {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : Set M} {t : Set M'}
+    (hV : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) t (f x₀))
+    (hW : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (W x : TangentBundle I' M')) t (f x₀))
+    (hu : UniqueMDiffOn I s) (hf : ContMDiffAt I I' 2 f x₀) (hx₀ : x₀ ∈ s)
+    (hst : f ⁻¹' t ∈ 𝓝[s] x₀) (h'x₀ : x₀ ∈ closure (interior s)) :
+    mpullback I I' f (mlieBracketWithin I' V W t) x₀ =
+      mlieBracketWithin I (mpullback I I' f V) (mpullback I I' f W) s x₀ := by
+  have : mpullback I I' f (mlieBracketWithin I' V W t) x₀ =
+      mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ := by
+    simp only [mpullback, mpullbackWithin]
+    congr
+    apply (mfderivWithin_eq_mfderiv (hu _ hx₀) _).symm
+    exact hf.mdifferentiableAt one_le_two
+  rw [this, mpullbackWithin_mlieBracketWithin hV hW hu hf.contMDiffWithinAt hx₀ hst h'x₀]
+  apply Filter.EventuallyEq.mlieBracketWithin_vectorField_of_insert
+  · rw [insert_eq_of_mem hx₀]
+    filter_upwards [nhdsWithin_le_nhds (contMDiffAt_iff_contMDiffAt_nhds.1 hf),
+      self_mem_nhdsWithin] with y hy h'y
+    simp only [mpullback, mpullbackWithin]
+    congr
+    apply mfderivWithin_eq_mfderiv (hu _ h'y)
+    exact hy.mdifferentiableAt one_le_two
+  · rw [insert_eq_of_mem hx₀]
+    filter_upwards [nhdsWithin_le_nhds (contMDiffAt_iff_contMDiffAt_nhds.1 hf),
+      self_mem_nhdsWithin] with y hy h'y
+    simp only [mpullback, mpullbackWithin]
+    congr
+    apply mfderivWithin_eq_mfderiv (hu _ h'y)
+    exact hy.mdifferentiableAt one_le_two
+
+lemma leibniz_identity_mlieBracketWithin [IsRCLikeNormedField 𝕜]
+    {U V W : Π (x : M), TangentSpace I x} {s : Set M} {x : M}
+    (hs : UniqueMDiffOn I s) (h's : s ⊆ closure (interior s)) (hx : x ∈ s)
+    (hU : ContMDiffWithinAt I I.tangent 2 (fun x ↦ (U x : TangentBundle I M)) s x)
+    (hV : ContMDiffWithinAt I I.tangent 2 (fun x ↦ (V x : TangentBundle I M)) s x)
+    (hW : ContMDiffWithinAt I I.tangent 2 (fun x ↦ (W x : TangentBundle I M)) s x) :
+    mlieBracketWithin I U (mlieBracketWithin I V W s) s x =
+      mlieBracketWithin I (mlieBracketWithin I U V s) W s x
+      + mlieBracketWithin I V (mlieBracketWithin I U W s) s x := by
+  have s_inter_mem : s ∩ (extChartAt I x).source ∈ 𝓝[s] x :=
+    inter_mem self_mem_nhdsWithin (nhdsWithin_le_nhds (extChartAt_source_mem_nhds x))
+  -- write everything as pullbacks of vector fields in `E` (denoted with primes), for which
+  -- the identity can be checked via direct calculation.
+  set U' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm U (range I) with hU'
+  set V' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I) with hV'
+  set W' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm W (range I) with hW'
+  have J0 (Z : Π (x : M), TangentSpace I x)
+      (hZ : ContMDiffWithinAt I I.tangent 2 (fun x ↦ (Z x : TangentBundle I M)) s x) :
+    ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent 2
+      (fun y ↦ (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm Z (range I) y :
+        TangentBundle 𝓘(𝕜, E) E))
+      ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x x) :=
+    ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq' hZ
+      (contMDiffWithinAt_extChartAt_symm_range (n := ⊤) _ (mem_extChartAt_target x))
+      (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x))
+      (by simp [hx]) (UniqueMDiffOn.uniqueDiffOn_target_inter hs x).uniqueMDiffOn le_top
+      ((mapsTo_preimage _ _).mono_left inter_subset_right)
+      (Subset.trans inter_subset_left (extChartAt_target_subset_range x)) (extChartAt_to_inv x)
+  have J1 (Z : Π (x : M), TangentSpace I x)
+      (hZ : ContMDiffWithinAt I I.tangent 2 (fun x ↦ (Z x : TangentBundle I M)) s x) :
+      ∀ᶠ y in 𝓝[s] x, ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent 2
+      (fun y ↦ (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm Z (range I) y :
+        TangentBundle 𝓘(𝕜, E) E))
+      ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x y) := by
+    have T := nhdsWithin_mono _ (subset_insert _ _)
+        (contMDiffWithinAt_iff_contMDiffWithinAt_nhdsWithin.1 (J0 Z hZ))
+    have A := (continuousAt_extChartAt (I := I) x).continuousWithinAt.preimage_mem_nhdsWithin'' T
+      rfl
+    apply (nhdsWithin_le_iff.2 _) A
+    filter_upwards [s_inter_mem] with y hy
+    simp only [mfld_simps] at hy
+    simp [hy.1, hy.2]
+  have J0U : ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent 2 (fun y ↦ (U' y : TangentBundle 𝓘(𝕜, E) E))
+    ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x x) := J0 U hU
+  have J0V : ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent 2 (fun y ↦ (V' y : TangentBundle 𝓘(𝕜, E) E))
+    ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x x) := J0 V hV
+  have J0W : ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent 2 (fun y ↦ (W' y : TangentBundle 𝓘(𝕜, E) E))
+    ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x x) := J0 W hW
+  have J1U : ∀ᶠ y in 𝓝[s] x, ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent 2
+    (fun y ↦ (U' y : TangentBundle 𝓘(𝕜, E) E))
+    ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x y) := J1 U hU
+  have J1V : ∀ᶠ y in 𝓝[s] x, ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent 2
+    (fun y ↦ (V' y : TangentBundle 𝓘(𝕜, E) E))
+    ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x y) := J1 V hV
+  have J1W : ∀ᶠ y in 𝓝[s] x, ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent 2
+    (fun y ↦ (W' y : TangentBundle 𝓘(𝕜, E) E))
+    ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x y) := J1 W hW
+  have J (Z : Π (x : M), TangentSpace I x) :
+      ∀ᶠ y in 𝓝[s] x, Z y = mpullback I 𝓘(𝕜, E) (extChartAt I x)
+        (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm Z (range I)) y := by
+    apply nhdsWithin_le_nhds
+    filter_upwards [extChartAt_source_mem_nhds (I := I) x] with y hy
+    have A : (extChartAt I x).symm (extChartAt I x y) = y := (extChartAt I x).left_inv hy
+    rw [mpullback_apply, mpullbackWithin_apply,
+      ← (isInvertible_mfderiv_extChartAt hy).inverse_comp_apply_of_right,
+      mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' hy, A]
+    simp only [ContinuousLinearMap.inverse_id, ContinuousLinearMap.coe_id', id_eq]
+  -- rewrite the vector fields as pullbacks of vector fields in `E`.
+  have JU : U =ᶠ[𝓝[s] x] mpullback I 𝓘(𝕜, E) (extChartAt I x) U' := J U
+  have JV : V =ᶠ[𝓝[s] x] mpullback I 𝓘(𝕜, E) (extChartAt I x) V' := J V
+  have JW : W =ᶠ[𝓝[s] x] mpullback I 𝓘(𝕜, E) (extChartAt I x) W' := J W
+  rw [JU.mlieBracketWithin_vectorField_eq_of_mem (JV.mlieBracketWithin_vectorField JW) hx,
+    (JU.mlieBracketWithin_vectorField JV).mlieBracketWithin_vectorField_eq_of_mem JW hx,
+    JV.mlieBracketWithin_vectorField_eq_of_mem (JU.mlieBracketWithin_vectorField JW) hx]
+  /-have : mlieBracketWithin I
+      (mpullback I 𝓘(𝕜, E) (extChartAt I x) V') (mpullback I 𝓘(𝕜, E) (extChartAt I x) W') s x
+    = mpullback I 𝓘(𝕜, E) (extChartAt I x) (mlieBracketWithin 𝓘(𝕜, E) V' W'
+      ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s)) x := by
+    apply (mpullback_mlieBracketWithin (J0V.mdifferentiableWithinAt one_le_two)
+      (J0W.mdifferentiableWithinAt one_le_two) hs contMDiffAt_extChartAt hx _ (h's hx)).symm
+    filter_upwards [s_inter_mem] with y hy
+    exact ⟨(extChartAt I x).map_source hy.2,
+      by simpa only [mem_preimage, (extChartAt I x).left_inv hy.2] using hy.1⟩ -/
+  have : ∀ᶠ y in 𝓝[s] x, mlieBracketWithin I
+        (mpullback I 𝓘(𝕜, E) (extChartAt I x) V') (mpullback I 𝓘(𝕜, E) (extChartAt I x) W') s y
+      = mpullback I 𝓘(𝕜, E) (extChartAt I x) (mlieBracketWithin 𝓘(𝕜, E) V' W'
+        ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s)) y := by
+    filter_upwards [eventually_eventually_nhdsWithin.2 s_inter_mem, J1V, J1W,
+      nhdsWithin_le_nhds (chart_source_mem_nhds H x), self_mem_nhdsWithin] with y hy hyV hyW h'y ys
+    symm
+    apply mpullback_mlieBracketWithin (hyV.mdifferentiableWithinAt one_le_two)
+      (hyW.mdifferentiableWithinAt one_le_two) hs (contMDiffAt_extChartAt' h'y) ys _ (h's ys)
+    filter_upwards [hy] with z (hz : z ∈ s ∩ (extChartAt I x).source)
+    exact ⟨(extChartAt I x).map_source hz.2,
+      by simpa only [mem_preimage, (extChartAt I x).left_inv hz.2] using hz.1⟩
+  rw [Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem EventuallyEq.rfl this hx,
+    ← mpullback_mlieBracketWithin]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#exit
+
+
+
+
+
+lemma leibniz_identity_mlieBracket [IsRCLikeNormedField 𝕜]
+    {U V W : Π (x : M), TangentSpace I x} {x : M}
+    (hU : ContMDiffAt I I.tangent 2 (fun x ↦ (U x : TangentBundle I M)) x)
+    (hV : ContMDiffAt I I.tangent 2 (fun x ↦ (V x : TangentBundle I M)) x)
+    (hW : ContMDiffAt I I.tangent 2 (fun x ↦ (W x : TangentBundle I M)) x) :
+    mlieBracket I U (mlieBracket I V W) x =
+      mlieBracket I (mlieBracket I U V) W x + mlieBracket I V (mlieBracket I U W) x := by
+  simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hU hV hW ⊢
+  exact leibniz_identity_mlieBracketWithin uniqueMDiffOn_univ (by simp) (mem_univ _) hU hV hW
+
 end VectorField
 
 end LieBracketManifold
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 1900
