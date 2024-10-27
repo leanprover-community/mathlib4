@@ -14,7 +14,7 @@ Given a ring `A`, we introduce a structure `Relations A` which
 contains the data that is necessary to define a module by generators and relations.
 A term `relations : Relations A` involves two index types: a type `G` for the
 generators and a type `R` for the relations. The relation attached to `r : R` is
-an element `G →₀ A` which expresses the coefficients of expected linear relation.
+an element `G →₀ A` which expresses the coefficients of the expected linear relation.
 
 One may think of `relations : Relations A` as a particular shape for systems of
 linear equations in any `A`-module `M`. Each `g : G` can be thought of as a
