@@ -3,7 +3,6 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
-import Mathlib.Topology.Compactification.OnePointEquiv
 import Mathlib.Topology.Compactification.OnePointSlope
 import Mathlib.Topology.Compactification.OnePointRealLemmas
 

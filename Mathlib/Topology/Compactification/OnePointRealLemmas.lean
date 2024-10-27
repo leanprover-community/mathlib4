@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.LinearAlgebra.Projectivization.Basic
-import Mathlib.Topology.Compactification.OnePoint
 import Mathlib.Topology.Instances.Real
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Analysis.Normed.Group.AddTorsor
 
-import Mathlib.Topology.Category.CompHaus.Basic
 /-!
 # Useful lemmas about real numbers
 
@@ -26,8 +26,6 @@ We prove some useful lemmas toward the homeomorphism in `OnePointHomemorph`.
 calculus
 -/
 
-open scoped LinearAlgebra.Projectivization OnePoint
-open Projectivization
 
 /-- -/
 lemma abs_le_inv {a x : ℝ} (ha : a > 0) (G₀ : ¬x = 0)
