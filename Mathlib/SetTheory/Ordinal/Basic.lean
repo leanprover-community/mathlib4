@@ -1136,9 +1136,7 @@ theorem lt_ord {c o} : o < ord c ↔ o.card < c :=
 
 @[simp]
 theorem card_ord (c) : (ord c).card = c := by
-  refine c.inductionOn fun α ↦ ?_
-  let ⟨r, _, e⟩ := ord_eq α
-  rw [e, card_type]
+  c.inductionOn fun α ↦ let ⟨r, _, e⟩ := ord_eq α; e ▸ card_type r
 
 theorem card_surjective : Function.Surjective card :=
   fun c ↦ ⟨_, card_ord c⟩
