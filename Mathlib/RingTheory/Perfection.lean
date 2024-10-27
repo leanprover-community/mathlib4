@@ -3,6 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.CharP.Subring
@@ -165,14 +166,14 @@ noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing
   toFun f :=
     { toFun := fun r => ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
         fun n => by erw [← f.map_pow, Function.iterate_succ_apply', frobeniusEquiv_symm_pow_p]⟩
-      map_one' := ext fun n => (congr_arg f <| iterate_map_one _ _).trans f.map_one
-      map_mul' := fun x y =>
-        ext fun n => (congr_arg f <| iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
-      map_zero' := ext fun n => (congr_arg f <| iterate_map_zero _ _).trans f.map_zero
-      map_add' := fun x y =>
-        ext fun n => (congr_arg f <| iterate_map_add _ _ _ _).trans <| f.map_add _ _ }
+      map_one' := ext fun _ => (congr_arg f <| iterate_map_one _ _).trans f.map_one
+      map_mul' := fun _ _ =>
+        ext fun _ => (congr_arg f <| iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
+      map_zero' := ext fun _ => (congr_arg f <| iterate_map_zero _ _).trans f.map_zero
+      map_add' := fun _ _ =>
+        ext fun _ => (congr_arg f <| iterate_map_add _ _ _ _).trans <| f.map_add _ _ }
   invFun := RingHom.comp <| coeff S p 0
-  left_inv f := RingHom.ext fun r => rfl
+  left_inv _ := RingHom.ext fun _ => rfl
   right_inv f := RingHom.ext fun r => ext fun n =>
     show coeff S p 0 (f (((frobeniusEquiv R p).symm)^[n] r)) = coeff S p n (f r) by
       rw [← coeff_iterate_frobenius _ 0 n, zero_add, ← RingHom.map_iterate_frobenius,
@@ -190,9 +191,9 @@ variable {R} {S : Type u₂} [CommSemiring S] [CharP S p]
 def map (φ : R →+* S) : Ring.Perfection R p →+* Ring.Perfection S p where
   toFun f := ⟨fun n => φ (coeff R p n f), fun n => by rw [← φ.map_pow, coeff_pow_p']⟩
   map_one' := Subtype.eq <| funext fun _ => φ.map_one
-  map_mul' f g := Subtype.eq <| funext fun n => φ.map_mul _ _
+  map_mul' _ _ := Subtype.eq <| funext fun _ => φ.map_mul _ _
   map_zero' := Subtype.eq <| funext fun _ => φ.map_zero
-  map_add' f g := Subtype.eq <| funext fun n => φ.map_add _ _
+  map_add' _ _ := Subtype.eq <| funext fun _ => φ.map_add _ _
 
 theorem coeff_map (φ : R →+* S) (f : Ring.Perfection R p) (n : ℕ) :
     coeff S p n (map p φ f) = φ (coeff R p n f) := rfl
@@ -237,7 +238,7 @@ theorem of : PerfectionMap p (Perfection.coeff R p 0) :=
 
 /-- For a perfect ring, it itself is the perfection. -/
 theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
-  { injective := fun x y hxy => hxy 0
+  { injective := fun _ _ hxy => hxy 0
     surjective := fun f hf =>
       ⟨f 0, fun n =>
         show ((frobeniusEquiv R p).symm)^[n] (f 0) = f n from

@@ -191,7 +191,7 @@ def pointedToBipointedFstBipointedToPointedFstAdjunction :
             cases x
             · exact f.map_snd.symm
             · rfl
-          right_inv := fun f => Pointed.Hom.ext rfl }
+          right_inv := fun _ => Pointed.Hom.ext rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
         funext x
@@ -211,7 +211,7 @@ def pointedToBipointedSndBipointedToPointedSndAdjunction :
             cases x
             · exact f.map_fst.symm
             · rfl
-          right_inv := fun f => Pointed.Hom.ext rfl }
+          right_inv := fun _ => Pointed.Hom.ext rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
         funext x

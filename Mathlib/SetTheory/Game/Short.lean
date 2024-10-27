@@ -219,11 +219,8 @@ instance shortNat : ∀ n : ℕ, Short n
 
 instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (no_index (OfNat.ofNat n)) := shortNat n
 
--- Porting note: `bit0` and `bit1` are deprecated so these instances can probably be removed.
-set_option linter.deprecated false in
 instance shortBit0 (x : PGame.{u}) [Short x] : Short (x + x) := by infer_instance
 
-set_option linter.deprecated false in
 instance shortBit1 (x : PGame.{u}) [Short x] : Short ((x + x) + 1) := shortAdd _ _
 
 /-- Auxiliary construction of decidability instances.
