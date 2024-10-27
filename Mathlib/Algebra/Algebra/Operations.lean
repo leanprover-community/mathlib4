@@ -168,11 +168,11 @@ variable (M N P)
 
 theorem mul_sup : M * (N ⊔ P) = M * N ⊔ M * P :=
   toAddSubmonoid_injective <| by
-    simp_rw [mul_toAddSubmonoid, sup_toAddSubmonoid, AddSubmonoid.mul_sup, mul_toAddSubmonoid]
+    simp only [mul_toAddSubmonoid, sup_toAddSubmonoid, AddSubmonoid.mul_sup]
 
 theorem sup_mul : (M ⊔ N) * P = M * P ⊔ N * P :=
   toAddSubmonoid_injective <| by
-    simp_rw [mul_toAddSubmonoid, sup_toAddSubmonoid, AddSubmonoid.sup_mul, mul_toAddSubmonoid]
+    simp only [mul_toAddSubmonoid, sup_toAddSubmonoid, AddSubmonoid.sup_mul]
 
 theorem mul_subset_mul : (↑M : Set A) * (↑N : Set A) ⊆ (↑(M * N) : Set A) :=
   AddSubmonoid.mul_subset_mul
@@ -187,11 +187,11 @@ variable {ι : Sort uι}
 
 theorem iSup_mul (s : ι → Submodule R A) (t : Submodule R A) : (⨆ i, s i) * t = ⨆ i, s i * t :=
   toAddSubmonoid_injective <| by
-    simp_rw [mul_toAddSubmonoid, iSup_toAddSubmonoid, AddSubmonoid.iSup_mul, mul_toAddSubmonoid]
+    simp only [mul_toAddSubmonoid, iSup_toAddSubmonoid, AddSubmonoid.iSup_mul]
 
 theorem mul_iSup (t : Submodule R A) (s : ι → Submodule R A) : (t * ⨆ i, s i) = ⨆ i, t * s i :=
   toAddSubmonoid_injective <| by
-    simp_rw [mul_toAddSubmonoid, iSup_toAddSubmonoid, AddSubmonoid.mul_iSup, mul_toAddSubmonoid]
+    simp only [mul_toAddSubmonoid, iSup_toAddSubmonoid, AddSubmonoid.mul_iSup]
 
 /-- Sub-`R`-modules of an `R`-module form an idempotent semiring. -/
 instance : NonUnitalSemiring (Submodule R A) where
