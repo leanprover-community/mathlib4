@@ -12,6 +12,8 @@ import Cli.Basic
 
 This files defines the `lint-style` executable which runs all text-based style linters.
 The linters themselves are defined in `Mathlib.Tactic.Linter.TextBased`.
+
+In addition, this checks that every file in `scripts` is documented in its top-level README.
 -/
 
 open Cli Mathlib.Linter.TextBased
@@ -50,15 +52,16 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   let mut allModules := #[]
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     allModules := allModules.append ((← IO.FS.lines s).map (·.stripPrefix "import "))
-  -- note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually
+  -- Note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually.
   allModules := allModules.erase "Batteries"
-  let numberError ← lintModules allModules style fix
+  let mut numberErrors := ← lintModules allModules style fix
+  if !(← checkScriptsDocumented) then numberErrors := numberErrors + 1
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.
   if args.hasFlag "fix" then
     return 0
-  else return min numberError 125
+  else return min numberErrors 125
 
 /-- Setting up command line options and help text for `lake exe lint-style`. -/
 -- so far, no help options or so: perhaps that is fine?
