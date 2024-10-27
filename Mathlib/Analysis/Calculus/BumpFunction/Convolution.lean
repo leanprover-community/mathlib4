@@ -115,7 +115,7 @@ theorem ae_convolution_tendsto_right_of_locallyIntegrable
     tendsto_nhdsWithin_iff.2 ⟨hφ, Eventually.of_forall (fun i ↦ (φ i).rOut_pos)⟩
   have := (h₀.comp (Besicovitch.tendsto_filterAt μ x₀)).comp hφ'
   simp only [Function.comp] at this
-  apply tendsto_integral_smul_of_tendsto_average_norm_sub (K ^ (FiniteDimensional.finrank ℝ G)) this
+  apply tendsto_integral_smul_of_tendsto_average_norm_sub (K ^ (Module.finrank ℝ G)) this
   · filter_upwards with i using
       hg.integrableOn_isCompact (isCompact_closedBall _ _)
   · apply tendsto_const_nhds.congr (fun i ↦ ?_)

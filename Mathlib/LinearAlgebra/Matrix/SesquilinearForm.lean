@@ -559,8 +559,7 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
   let v := Pᵀ.nonsingInvUnit (P.isUnit_det_transpose h')
   let x := A₁ᵀ * Pᵀ * J
   let y := J * P * A₂
-  -- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
-  suffices x * u.val = v.val * y ↔ (v⁻¹).val * x = y * (u⁻¹).val by
+  suffices x * u = v * y ↔ v⁻¹ * x = y * u⁻¹ by
     dsimp only [Matrix.IsAdjointPair]
     simp only [Matrix.transpose_mul]
     simp only [← mul_assoc, P.transpose_nonsing_inv]
