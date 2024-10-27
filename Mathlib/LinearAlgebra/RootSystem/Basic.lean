@@ -120,8 +120,8 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     ext i j
     refine P₁.root.injective ?_
     conv_rhs => rw [hr]
-    rw [root_reflection_perm, root_reflection_perm]
-    simp only [hr, he, hc', reflection_apply]
+    simp only [root_reflection_perm, reflection_apply, coroot']
+    simp only [hr, he, hc']
   suffices P₁.coroot = P₂.coroot by
     cases' P₁ with p₁; cases' P₂ with p₂; cases p₁; cases p₂; congr; exact hp this
   have := NoZeroSMulDivisors.int_of_charZero R M
@@ -254,7 +254,7 @@ private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZ
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h, ← PerfectPairing.toLin_apply] using hp k
   apply p.bijectiveRight.injective
   apply Dual.eq_of_preReflection_mapsTo hk₀ (finite_range root) hsp (hp k) (hs k)
-  · simp [α, β, α', β', sα, sβ, sα', hk, preReflection_apply, hp i, hp j, mul_two,
+  · simp [map_sub, α, β, α', β', sα, sβ, sα', hk, preReflection_apply, hp i, hp j, mul_two,
       mul_comm (p α β')]
     ring -- v4.7.0-rc1 issues
   · rw [hk, hij]

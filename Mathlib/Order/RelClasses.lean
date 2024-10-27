@@ -90,10 +90,6 @@ theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap 
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
 
 @[deprecated (since := "2024-07-30")]
-theorem IsTotalPreorder.swap (r) [IsTotalPreorder α r] : IsTotalPreorder α (swap r) :=
-  { @IsPreorder.swap α r _, @IsTotal.swap α r _ with }
-
-@[deprecated (since := "2024-07-30")]
 theorem IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) :=
   { @IsPartialOrder.swap α r _, @IsTotal.swap α r _ with }
 
@@ -158,7 +154,7 @@ See note [reducible non-instances]. -/
 abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
   le x y := x = y ∨ r x y
   lt := r
-  le_refl x := Or.inl rfl
+  le_refl _ := Or.inl rfl
   le_trans x y z h₁ h₂ :=
     match y, z, h₁, h₂ with
     | _, _, Or.inl rfl, h₂ => h₂
@@ -170,7 +166,7 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
     | _, _, Or.inl rfl => rfl
     | _, Or.inr h₁, Or.inr h₂ => (asymm h₁ h₂).elim
   lt_iff_le_not_le x y :=
-    ⟨fun h => ⟨Or.inr h, not_or_of_not (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
+    ⟨fun h => ⟨Or.inr h, not_or_intro (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_left fun e => h₂ <| e ▸ Or.inl rfl⟩
 
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
@@ -184,7 +180,7 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x 
   { __ := partialOrderOfSO r
     le_total := fun x y =>
       match y, trichotomous_of r x y with
-      | y, Or.inl h => Or.inl (Or.inr h)
+      | _, Or.inl h => Or.inl (Or.inr h)
       | _, Or.inr (Or.inl rfl) => Or.inl (Or.inl rfl)
       | _, Or.inr (Or.inr h) => Or.inr (Or.inr h),
     toMin := minOfLe,
@@ -776,9 +772,6 @@ instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
 instance [LinearOrder α] : IsTotal α (· ≥ ·) :=
   IsTotal.swap _
 
-@[deprecated (since := "2024-08-22")] instance [LinearOrder α] : IsTotalPreorder α (· ≤ ·) where
-@[deprecated (since := "2024-08-22")] instance [LinearOrder α] : IsTotalPreorder α (· ≥ ·) where
-
 instance [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
 
 instance [LinearOrder α] : IsLinearOrder α (· ≥ ·) where
@@ -798,9 +791,6 @@ instance [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
 instance [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
-
-@[deprecated (since := "2024-07-30")]
-instance [LinearOrder α] : IsIncompTrans α (· < ·) := by infer_instance
 
 @[deprecated (since := "2024-07-30")]
 instance [LinearOrder α] : IsStrictWeakOrder α (· < ·) := by infer_instance

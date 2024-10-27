@@ -10,12 +10,11 @@ import Mathlib.Data.Multiset.Basic
 # Construct a sorted list from a multiset.
 -/
 
+variable {α β : Type*}
 
 namespace Multiset
 
 open List
-
-variable {α β : Type*}
 
 section sort
 
@@ -25,42 +24,52 @@ variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm
 /-- `sort s` constructs a sorted list from the multiset `s`.
   (Uses merge sort algorithm.) -/
 def sort (s : Multiset α) : List α :=
-  Quot.liftOn s (mergeSort' r) fun _ _ h =>
-    eq_of_perm_of_sorted ((perm_mergeSort' _ _).trans <| h.trans (perm_mergeSort' _ _).symm)
-      (sorted_mergeSort' r _) (sorted_mergeSort' r _)
+  Quot.liftOn s (mergeSort · (r · ·)) fun _ _ h =>
+    eq_of_perm_of_sorted ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm)
+      (sorted_mergeSort IsTrans.trans
+        (fun a b => by simpa using IsTotal.total a b) _)
+      (sorted_mergeSort IsTrans.trans
+        (fun a b => by simpa using IsTotal.total a b) _)
 
 @[simp]
-theorem coe_sort (l : List α) : sort r l = mergeSort' r l :=
+theorem coe_sort (l : List α) : sort r l = mergeSort l (r · ·) :=
   rfl
 
 @[simp]
 theorem sort_sorted (s : Multiset α) : Sorted r (sort r s) :=
-  Quot.inductionOn s fun _l => sorted_mergeSort' r _
+  Quot.inductionOn s fun l => by
+    simpa using sorted_mergeSort (le := (r · ·)) IsTrans.trans
+      (fun a b => by simpa using IsTotal.total a b) l
 
 @[simp]
 theorem sort_eq (s : Multiset α) : ↑(sort r s) = s :=
-  Quot.inductionOn s fun _ => Quot.sound <| perm_mergeSort' _ _
+  Quot.inductionOn s fun _ => Quot.sound <| mergeSort_perm _ _
 
 @[simp]
 theorem mem_sort {s : Multiset α} {a : α} : a ∈ sort r s ↔ a ∈ s := by rw [← mem_coe, sort_eq]
 
 @[simp]
 theorem length_sort {s : Multiset α} : (sort r s).length = card s :=
-  Quot.inductionOn s <| length_mergeSort' _
+  Quot.inductionOn s <| length_mergeSort
 
 @[simp]
 theorem sort_zero : sort r 0 = [] :=
-  List.mergeSort'_nil r
+  List.mergeSort_nil
 
 @[simp]
 theorem sort_singleton (a : α) : sort r {a} = [a] :=
-  List.mergeSort'_singleton r a
+  List.mergeSort_singleton a
 
 theorem map_sort (f : α → β) (s : Multiset α)
     (hs : ∀ a ∈ s, ∀ b ∈ s, r a b ↔ r' (f a) (f b)) :
     (s.sort r).map f = (s.map f).sort r' := by
   revert s
-  exact Quot.ind fun _ => List.map_mergeSort' _ _ _ _
+  exact Quot.ind fun l h => map_mergeSort (l := l) (by simpa using h)
+
+theorem sort_cons (a : α) (s : Multiset α) :
+    (∀ b ∈ s, r a b) → sort r (a ::ₘ s) = a :: sort r s := by
+  refine Quot.inductionOn s fun l => ?_
+  simpa [mergeSort_eq_insertionSort] using insertionSort_cons r (a := a) (l := l)
 
 end sort
 

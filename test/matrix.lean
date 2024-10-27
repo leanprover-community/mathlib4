@@ -154,7 +154,7 @@ example {α : Type _} [CommRing α] {a b c d : α} :
       Fin.isValue, of_apply, cons_val', empty_val', cons_val_fin_one, cons_val_zero, det_unique,
       Fin.default_eq_zero, submatrix_apply, Fin.succ_zero_eq_one, cons_val_one, head_fin_const,
       Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul, Fin.zero_succAbove, head_cons,
-      Finset.univ_unique, Fin.val_succ, Fin.coe_fin_one, zero_add, pow_one, cons_val_succ, neg_mul,
+      Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero, zero_add, pow_one, cons_val_succ, neg_mul,
       Fin.succ_succAbove_zero, Finset.sum_const, Finset.card_singleton, smul_neg, one_smul]
   ring
 
@@ -167,7 +167,7 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
       submatrix_apply, Fin.succ_zero_eq_one, cons_val_one, head_cons, submatrix_submatrix,
       det_unique, Fin.default_eq_zero, Function.comp_apply, Fin.succ_one_eq_two, cons_val_two,
       tail_cons, head_fin_const, Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul,
-      Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.coe_fin_one, zero_add, pow_one,
+      Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero, zero_add, pow_one,
       neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib, Finset.sum_singleton, cons_val_succ,
       Fin.succ_succAbove_one, even_two, Even.neg_pow, one_pow, Finset.sum_const,
       Finset.card_singleton, one_smul]

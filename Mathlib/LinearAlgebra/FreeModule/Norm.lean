@@ -71,7 +71,7 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
 `F`-vector space is the degree of the norm of `f` relative to `F[X]`. -/
 theorem finrank_quotient_span_eq_natDegree_norm [Algebra F S] [IsScalarTower F F[X] S]
     (b : Basis ι F[X] S) {f : S} (hf : f ≠ 0) :
-    FiniteDimensional.finrank F (S ⧸ span ({f} : Set S)) = (Algebra.norm F[X] f).natDegree := by
+    Module.finrank F (S ⧸ span ({f} : Set S)) = (Algebra.norm F[X] f).natDegree := by
   haveI := Fintype.ofFinite ι
   have h := span_singleton_eq_bot.not.2 hf
   rw [natDegree_eq_of_degree_eq
