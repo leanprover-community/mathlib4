@@ -28,31 +28,32 @@ open CategoryTheory MonoidalCategory TensorProduct
 
 variable (R : Type u) [CommRing R]
 
-@[simps] noncomputable instance instMonoidalCategoryStruct :
+@[simps]
+noncomputable instance instMonoidalCategoryStruct :
     MonoidalCategoryStruct.{u} (BialgebraCat R) where
-  tensorObj := fun X Y => BialgebraCat.of R (X ⊗[R] Y)
-  whiskerLeft := fun X _ _ f => BialgebraCat.ofHom (f.1.lTensor X)
-  whiskerRight := fun f X => BialgebraCat.ofHom (f.1.rTensor X)
-  tensorHom := fun f g => BialgebraCat.ofHom (Bialgebra.TensorProduct.map f.1 g.1)
-  tensorUnit := BialgebraCat.of R R
-  associator := fun X Y Z => (Bialgebra.TensorProduct.assoc R X Y Z).toIso
-  leftUnitor := fun X => (Bialgebra.TensorProduct.lid R X).toIso
-  rightUnitor := fun X => (Bialgebra.TensorProduct.rid R X).toIso
+  tensorObj X Y := of R (X ⊗[R] Y)
+  whiskerLeft X _ _ f := ofHom (f.1.lTensor X)
+  whiskerRight f X := ofHom (f.1.rTensor X)
+  tensorHom f g := ofHom (Bialgebra.TensorProduct.map f.1 g.1)
+  tensorUnit := of R R
+  associator X Y Z := (Bialgebra.TensorProduct.assoc R X Y Z).toBialgebraCatIso
+  leftUnitor X := (Bialgebra.TensorProduct.lid R X).toBialgebraCatIso
+  rightUnitor X := (Bialgebra.TensorProduct.rid R X).toBialgebraCatIso
 
 /-- The data needed to induce a `MonoidalCategory` structure via
 `BialgebraCat.instMonoidalCategoryStruct` and the forgetful functor to algebras. -/
 @[simps]
 noncomputable def MonoidalCategory.inducingFunctorData :
     Monoidal.InducingFunctorData (forget₂ (BialgebraCat R) (AlgebraCat R)) where
-  μIso := fun X Y => Iso.refl _
-  whiskerLeft_eq := fun X Y Z f => by ext; rfl
-  whiskerRight_eq := fun X f => by ext; rfl
-  tensorHom_eq := fun f g => by ext; rfl
+  μIso _ _ := Iso.refl _
+  whiskerLeft_eq _ _ _ _ := by ext; rfl
+  whiskerRight_eq _ _ := by ext; rfl
+  tensorHom_eq _ _ := by ext; rfl
   εIso := Iso.refl _
-  associator_eq := fun X Y Z => Algebra.TensorProduct.ext
+  associator_eq _ _ _ := Algebra.TensorProduct.ext
       (Algebra.TensorProduct.ext (by ext; rfl) (by ext; rfl)) (by ext; rfl)
-  leftUnitor_eq := fun X => Algebra.TensorProduct.ext rfl (by ext; rfl)
-  rightUnitor_eq := fun X => Algebra.TensorProduct.ext (by ext; rfl) rfl
+  leftUnitor_eq _ := Algebra.TensorProduct.ext rfl (by ext; rfl)
+  rightUnitor_eq _ := Algebra.TensorProduct.ext (by ext; rfl) rfl
 
 noncomputable instance instMonoidalCategory : MonoidalCategory (BialgebraCat R) :=
   Monoidal.induced (forget₂ _ (AlgebraCat R)) (MonoidalCategory.inducingFunctorData R)
