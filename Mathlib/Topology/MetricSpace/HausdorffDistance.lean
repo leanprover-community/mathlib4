@@ -378,7 +378,6 @@ theorem hausdorffEdist_closure₂ : hausdorffEdist s (closure t) = hausdorffEdis
   simp [@hausdorffEdist_comm _ _ s _]
 
 /-- The Hausdorff edistance between sets or their closures is the same. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem hausdorffEdist_closure : hausdorffEdist (closure s) (closure t) = hausdorffEdist s t := by
   simp
 
@@ -777,7 +776,6 @@ theorem hausdorffDist_closure₂ : hausdorffDist s (closure t) = hausdorffDist s
   simp [hausdorffDist]
 
 /-- The Hausdorff distances between two sets and their closures coincide. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem hausdorffDist_closure : hausdorffDist (closure s) (closure t) = hausdorffDist s t := by
   simp [hausdorffDist]
 
