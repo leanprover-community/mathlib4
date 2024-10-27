@@ -1,6 +1,6 @@
 -- `Mathlib/AlgebraicGeometry/Morphisms/Immersion
-import Mathlib.ValuativeCriterion.ClosedImmersion
-import Mathlib.Topology.LocallyClosed
+import Mathlib
+import Mathlib.ValuativeCriterion.PullbackCarrier
 
 /-
 This is a stub. I(@erdOne) am working towards a better def via #14748 and #14377.
@@ -14,28 +14,6 @@ namespace AlgebraicGeometry
 universe u
 
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
-
-@[mk_iff]
-class IsImmersion (f : X ⟶ Y) : Prop where
-  base_embedding : Embedding f.1.base
-  isLocallyClosed_range : IsLocallyClosed (Set.range f.1.base)
-  surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
-
-namespace IsImmersion
-
-nonrec def coborderRange [IsImmersion f] : Opens Y :=
-  ⟨coborder (Set.range f.1.base), IsImmersion.isLocallyClosed_range.isOpen_coborder⟩
-
--- noncomputable
--- def liftCoborder [IsImmersion f] : X ⟶ Y ∣_ᵤ coborderRange f :=
---   IsOpenImmersion.lift (Scheme.ιOpens _) f (subset_coborder.trans_eq Subtype.range_val.symm)
-
--- instance [IsImmersion f] : IsClosedImmersion (liftCoborder f) := sorry
-
--- lemma liftCoborder_ι [IsImmersion f] : liftCoborder f ≫ Scheme.ιOpens (coborderRange f) = f :=
---   IsOpenImmersion.lift_fac _ _ _
-
-end IsImmersion
 
 -- Some of these belongs in `AlgebraicGeometry/Pullbacks`
 namespace Scheme.Pullback
@@ -53,8 +31,7 @@ def diagonalCover : (pullback.diagonalObj f).OpenCover :=
 
 /-- The image of `𝒱 i j₁ ×_{𝒰 i} 𝒱 i j₂` in `diagonalCover` with `j₁ = j₂`  -/
 noncomputable
-def diagonalCoverDiagonal :
-    Opens (pullback.diagonalObj f) :=
+def diagonalCoverDiagonal : (pullback.diagonalObj f).Opens :=
 ⨆ i : Σ i, (𝒱 i).J, ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange
 
 -- by def
@@ -62,7 +39,8 @@ lemma diagonalCover_map (I) : (diagonalCover f 𝒰 𝒱).map I =
     pullback.map _ _ _ _
     ((𝒱 I.fst).map _ ≫ pullback.fst _ _) ((𝒱 I.fst).map _ ≫ pullback.fst _ _) (𝒰.map _)
     (by simp only [Category.assoc, pullback.condition])
-    (by simp only [Category.assoc, pullback.condition]) := sorry
+    (by simp only [Category.assoc, pullback.condition]) := by
+  ext1 <;> simp [diagonalCover]
 
 /--
 Needs `Scheme.Pullback.range_map`
@@ -76,7 +54,7 @@ lemma diagonalCoverDiagonal_eq_top_of_injective (hf : Function.Injective f.1.bas
 Needs description of the underlying space of `X ×ₛ Y`
 -/
 lemma range_diagonal_subset_diagonalCoverDiagonal :
-    Set.range (pullback.diagonal f).1.base ⊆ (diagonalCoverDiagonal f 𝒰 𝒱).1 := sorry
+    Set.range (pullback.diagonal f).base ⊆ (diagonalCoverDiagonal f 𝒰 𝒱).1 := sorry
 
 -- by category theory
 def diagonalRestrictIsoDiagonal (i j) :
@@ -107,11 +85,7 @@ By `isClosedImmersion_diagonal_restrict` and `diagonalCoverDiagonal_eq_top_of_in
 
 https://stacks.math.columbia.edu/tag/0DVA
 -/
-lemma isClosedImmersion_diagonal_of_injective (hf : Function.Injective f.1.base) :
+lemma isClosedImmersion_diagonal_of_injective (hf : Function.Injective f.base) :
     IsClosedImmersion (pullback.diagonal f) := sorry
-
--- by def
-lemma IsClosedImmersion.of_isImmersion [IsImmersion f] (h : IsClosed (Set.range f.1.base)) :
-    IsClosedImmersion f := sorry
 
 end AlgebraicGeometry
