@@ -42,6 +42,8 @@ protected theorem _root_.Ideal.smul_eq_mul (I J : Ideal R) : I • J = I * J :=
 
 variable {I J : Ideal R} {N P : Submodule R M}
 
+theorem smul_toAddSubmonoid : (I • N).toAddSubmonoid = I.toAddSubmonoid • N.toAddSubmonoid := rfl
+
 theorem smul_mem_smul {r} {n} (hr : r ∈ I) (hn : n ∈ N) : r • n ∈ I • N :=
   AddSubmonoid.smul_mem_smul hr hn
 
@@ -94,7 +96,7 @@ variable (I J N P)
 
 @[simp]
 theorem smul_bot : I • (⊥ : Submodule R M) = ⊥ :=
-  le_bot_iff.mp <| smul_le.mpr <| by rintro _ _ _ rfl; rw [smul_zero]; exact zero_mem _
+  toAddSubmonoid_injective <| AddSubmonoid.addSubmonoid_smul_bot _
 
 @[simp]
 theorem bot_smul : (⊥ : Ideal R) • N = ⊥ :=
@@ -105,10 +107,8 @@ theorem top_smul : (⊤ : Ideal R) • N = N :=
   le_antisymm smul_le_right fun r hri => one_smul R r ▸ smul_mem_smul mem_top hri
 
 theorem smul_sup : I • (N ⊔ P) = I • N ⊔ I • P :=
-  le_antisymm (smul_le.mpr fun m hm np hnp ↦ by
-    obtain ⟨n, hn, p, hp, rfl⟩ := mem_sup.mp hnp
-    rw [smul_add]; exact add_mem_sup (smul_mem_smul hm hn) <| smul_mem_smul hm hp)
-    (sup_le (smul_mono_right _ le_sup_left) <| smul_mono_right _ le_sup_right)
+  toAddSubmonoid_injective <| by
+    simp only [smul_toAddSubmonoid, sup_toAddSubmonoid, AddSubmonoid.addSubmonoid_smul_sup]
 
 theorem sup_smul : (I ⊔ J) • N = I • N ⊔ J • N :=
   le_antisymm (smul_le.mpr fun mn hmn p hp ↦ by
@@ -130,10 +130,8 @@ protected theorem smul_inf_le (M₁ M₂ : Submodule R M) :
     I • (M₁ ⊓ M₂) ≤ I • M₁ ⊓ I • M₂ := smul_inf_le _ _ _
 
 theorem smul_iSup {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} : I • iSup t = ⨆ i, I • t i :=
-  le_antisymm (smul_le.mpr fun t ht s hs ↦ iSup_induction _ (C := (t • · ∈ _)) hs
-    (fun i s hs ↦ mem_iSup_of_mem i <| smul_mem_smul ht hs) (by simp_rw [smul_zero]; apply zero_mem)
-    fun _ _ ↦ by simp_rw [smul_add]; apply add_mem) <|
-    iSup_le fun i ↦ smul_mono_right _ (le_iSup _ i)
+  toAddSubmonoid_injective <| by
+    simp only [smul_toAddSubmonoid, iSup_toAddSubmonoid, AddSubmonoid.smul_iSup]
 
 @[deprecated smul_iInf_le (since := "2024-03-31")]
 protected theorem smul_iInf_le {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} :
@@ -396,8 +394,8 @@ theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
 instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
-instance {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
-    [NoZeroSMulDivisors R S] {I : Ideal S} : NoZeroSMulDivisors R I :=
+instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [Module S A]
+    [IsScalarTower R S A] [NoZeroSMulDivisors R A] {I : Submodule S A} : NoZeroSMulDivisors R I :=
   Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 
 end Semiring
