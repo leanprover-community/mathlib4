@@ -158,7 +158,7 @@ lemma fromQuotient_mk (x : relations.G →₀ A) :
 
 @[simp]
 lemma fromQuotient_comp_toQuotient :
-  solution.fromQuotient.comp relations.toQuotient = solution.π := rfl
+    solution.fromQuotient.comp relations.toQuotient = solution.π := rfl
 
 variable {N : Type v'} [AddCommGroup N] [Module A N] (f : M →ₗ[A] N)
 
