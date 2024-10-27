@@ -85,7 +85,8 @@ is expected to be '≤' or '='.
 example : natDegree (X : ℕ[X]) ≠ 0 := by compute_degree!
 
 /--
-error: 'compute_degree' inapplicable. The LHS must be an application of 'natDegree', 'degree', or 'coeff'.
+error:
+'compute_degree' inapplicable. The LHS must be an application of 'natDegree', 'degree', or 'coeff'.
 -/
 #guard_msgs in
 example : 0 ≤ 0 := by compute_degree!

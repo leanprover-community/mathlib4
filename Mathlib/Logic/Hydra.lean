@@ -7,8 +7,6 @@ import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Order.GameAdd
 
-#align_import logic.hydra from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
-
 /-!
 # Termination of a hydra game
 
@@ -55,7 +53,6 @@ variable {α : Type*}
   and the direct translation when `r` is irreflexive. -/
 def CutExpand (r : α → α → Prop) (s' s : Multiset α) : Prop :=
   ∃ (t : Multiset α) (a : α), (∀ a' ∈ t, r a' a) ∧ s' + {a} = s + t
-#align relation.cut_expand Relation.CutExpand
 
 variable {r : α → α → Prop}
 
@@ -72,19 +69,15 @@ theorem cutExpand_le_invImage_lex [DecidableEq α] [IsIrrefl α r] :
     simp only [count_add, count_singleton_self, count_eq_zero.2 (hr _ (irrefl_of r a)),
       add_zero] at he
     exact he ▸ Nat.lt_succ_self _
-#align relation.cut_expand_le_inv_image_lex Relation.cutExpand_le_invImage_lex
 
 theorem cutExpand_singleton {s x} (h : ∀ x' ∈ s, r x' x) : CutExpand r s {x} :=
   ⟨s, x, h, add_comm s _⟩
-#align relation.cut_expand_singleton Relation.cutExpand_singleton
 
 theorem cutExpand_singleton_singleton {x' x} (h : r x' x) : CutExpand r {x'} {x} :=
   cutExpand_singleton fun a h ↦ by rwa [mem_singleton.1 h]
-#align relation.cut_expand_singleton_singleton Relation.cutExpand_singleton_singleton
 
 theorem cutExpand_add_left {t u} (s) : CutExpand r (s + t) (s + u) ↔ CutExpand r t u :=
   exists₂_congr fun _ _ ↦ and_congr Iff.rfl <| by rw [add_assoc, add_assoc, add_left_cancel_iff]
-#align relation.cut_expand_add_left Relation.cutExpand_add_left
 
 lemma cutExpand_add_right {s' s} (t) : CutExpand r (s' + t) (s + t) ↔ CutExpand r s' s := by
   convert cutExpand_add_left t using 2 <;> apply add_comm
@@ -99,13 +92,11 @@ theorem cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
     exacts [⟨ht, h, erase_add_left_pos t h⟩, (@irrefl α r _ a (ht a h)).elim]
   · rintro ⟨ht, h, rfl⟩
     exact ⟨ht, mem_add.2 (Or.inl h), (erase_add_left_pos t h).symm⟩
-#align relation.cut_expand_iff Relation.cutExpand_iff
 
 theorem not_cutExpand_zero [IsIrrefl α r] (s) : ¬CutExpand r s 0 := by
   classical
   rw [cutExpand_iff]
   rintro ⟨_, _, _, ⟨⟩, _⟩
-#align relation.not_cut_expand_zero Relation.not_cutExpand_zero
 
 lemma cutExpand_zero {x} : CutExpand r 0 {x} := ⟨0, x, nofun, add_comm 0 _⟩
 
@@ -124,7 +115,6 @@ theorem cutExpand_fibration (r : α → α → Prop) :
   · refine ⟨(s₁, (s₂ + t).erase a), GameAdd.snd ⟨t, a, hr, ?_⟩, ?_⟩
     · rw [add_comm, singleton_add, cons_erase h]
     · rw [add_assoc, erase_add_right_pos _ h]
-#align relation.cut_expand_fibration Relation.cutExpand_fibration
 
 /-- `CutExpand` preserves leftward-closedness under a relation. -/
 lemma cutExpand_closed [IsIrrefl α r] (p : α → Prop)
@@ -162,7 +152,6 @@ theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Ac
     rw [← s.singleton_add a]
     rw [forall_mem_cons] at hs
     exact (hs.1.prod_gameAdd <| ihs fun a ha ↦ hs.2 a ha).of_fibration _ (cutExpand_fibration r)
-#align relation.acc_of_singleton Relation.acc_of_singleton
 
 /-- A singleton `{a}` is accessible under `CutExpand r` if `a` is accessible under `r`,
   assuming `r` is irreflexive. -/
@@ -175,11 +164,9 @@ theorem _root_.Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (Cu
   refine acc_of_singleton fun a' ↦ ?_
   rw [erase_singleton, zero_add]
   exact ih a' ∘ hr a'
-#align acc.cut_expand Acc.cutExpand
 
 /-- `CutExpand r` is well-founded when `r` is. -/
 theorem _root_.WellFounded.cutExpand (hr : WellFounded r) : WellFounded (CutExpand r) :=
   ⟨have := hr.isIrrefl; fun _ ↦ acc_of_singleton fun a _ ↦ (hr.apply a).cutExpand⟩
-#align well_founded.cut_expand WellFounded.cutExpand
 
 end Relation

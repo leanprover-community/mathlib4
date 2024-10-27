@@ -243,13 +243,13 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
     apply le_of_lt (hW _ _ ?_)
     have : W n * {z} ∈ 𝓝 z := (IsOpen.mul_right (W_open n)).mem_nhds (by simp [mem_W])
     obtain ⟨i, hi, ni⟩ : ∃ i, y i ∈ W n * {z} ∧ n < i :=
-      (((mapClusterPt_iff _ _ _).1 hz _ this).and_eventually (eventually_gt_atTop n)).exists
+      ((mapClusterPt_iff.1 hz _ this).and_eventually (eventually_gt_atTop n)).exists
     refine ⟨x * (y i) ⁻¹, ?_, y i * z⁻¹, by simpa using hi, by group⟩
     have I : V i ⊆ W n := iInter₂_subset n (by simp [ni])
     have J : x * (y i) ⁻¹ ∈ V i := by simpa [← hvy i] using hv i
     exact I J
   have B : μ (((x * z ⁻¹) • k) \ k) = 0 :=
-    le_antisymm (ge_of_tendsto u_lim (eventually_of_forall A)) bot_le
+    le_antisymm (ge_of_tendsto u_lim (Eventually.of_forall A)) bot_le
   have C : μ (k \ (z * x⁻¹) • k) = 0 := by
     have : μ ((z * x⁻¹) • (((x * z ⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
     rw [← this, smul_set_sdiff, smul_smul]
@@ -294,3 +294,9 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group :
     apply measure_congr
     exact everywherePosSubset_ae_eq_of_measure_ne_top K_closed.measurableSet
       K_comp.measure_lt_top.ne
+
+end TopologicalGroup
+
+end Measure
+
+end MeasureTheory

@@ -6,7 +6,6 @@ Authors: David Loeffler
 import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
-
 /-!
 # Asymptotics of `ζ s` as `s → 1`
 
@@ -38,7 +37,7 @@ namespace ZetaAsymptotics
 -- since the intermediate lemmas are of little interest in themselves we put them in a namespace
 
 /-!
-## Definitions
+## Definitions
 -/
 
 /-- Auxiliary function used in studying zeta-function asymptotics. -/
@@ -128,8 +127,8 @@ lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - γ) := by
   simp_rw [term_sum_one, sub_eq_neg_add]
   refine Tendsto.add ?_ tendsto_const_nhds
   have := (tendsto_eulerMascheroniSeq'.comp (tendsto_add_atTop_nat 1)).neg
-  refine this.congr' (eventually_of_forall (fun n ↦ ?_))
-  simp_rw [Function.comp_apply, eulerMascheroniSeq', if_false]
+  refine this.congr' (Eventually.of_forall (fun n ↦ ?_))
+  simp_rw [Function.comp_apply, eulerMascheroniSeq', reduceCtorEq, if_false]
   push_cast
   abel
 
