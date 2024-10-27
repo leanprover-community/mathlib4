@@ -257,9 +257,7 @@ theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
                 have : min δ ε ≤ δ := min_le_left δ ε
                 linarith
             show x₀ + (1/2) * min (x₀ - l) (u - x₀) < u
-            suffices x₀ + 1 / 2 * (u - x₀) < u by
-                have : min (x₀ - l) (u - x₀) ≤ (u - x₀) := by apply min_le_right
-                linarith
+            have : min (x₀ - l) (u - x₀) ≤ (u - x₀) := by apply min_le_right
             linarith
    · apply hb.1
      simp only [mem_Ioo] at hx
