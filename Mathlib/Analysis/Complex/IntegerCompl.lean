@@ -17,7 +17,7 @@ We also show that the upper half plane embeds into the integer complement.
 open UpperHalfPlane
 
 /--The complement of the integers in `ℂ`. -/
-def Complex.IntegerComplement := {z : ℂ // ¬ ∃ (n : ℤ), z = ↑n}
+abbrev Complex.IntegerComplement := {z : ℂ | ¬ ∃ (n : ℤ), z = ↑n}
 
 namespace Complex
 
@@ -28,12 +28,8 @@ noncomputable instance : UniformSpace ℂ_ℤ := instUniformSpaceSubtype
 instance : LocallyCompactSpace ℂ_ℤ := by
   apply IsOpen.locallyCompactSpace
   convert Complex.isOpen_compl_range_intCast
-  simp only [Set.mem_range, eq_comm]
-
-/--The coercion from IntegerComplement into the Complex numbers. -/
-@[coe] def coe (z : ℂ_ℤ) : ℂ := z.1
-
-instance : Coe ℂ_ℤ ℂ := ⟨coe⟩
+  rw [IntegerComplement]
+  aesop
 
 /--The coercion from the upper half plane into the IntegerComplement. -/
 @[coe] def ucoe : ℍ → ℂ_ℤ := fun z => ⟨z, by simpa using UpperHalfPlane.ne_int z⟩
