@@ -15,9 +15,9 @@ import Mathlib.RingTheory.OreLocalization.OreSet
 
 - `IsLocalizedModule.lift_rank_eq`: `rank_Rₚ Mₚ = rank R M`.
 - `rank_quotient_add_rank_of_isDomain`: The **rank-nullity theorem** for commutative domains.
-
 -/
-open Cardinal nonZeroDivisors
+
+open Cardinal Module nonZeroDivisors
 
 section CommRing
 
@@ -120,7 +120,7 @@ end CommRing
 
 section Ring
 
-variable {R} [Ring R] [IsDomain R] (S : Submonoid R)
+variable {R} [Ring R] [IsDomain R]
 
 /-- A domain that is not (left) Ore is of infinite rank.
 See [cohn_1995] Proposition 1.3.6 -/

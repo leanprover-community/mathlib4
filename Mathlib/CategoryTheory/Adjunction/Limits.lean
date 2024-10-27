@@ -90,6 +90,11 @@ def leftAdjointPreservesColimits : PreservesColimitsOfSize.{v, u} F where
               @Equiv.unique _ _ (IsColimit.isoUniqueCoconeMorphism.hom hc _)
                 ((adj.functorialityAdjunction _).homEquiv _ _) } }
 
+noncomputable
+instance colimPreservesColimits [HasColimitsOfShape J C] :
+    PreservesColimits (colim (J := J) (C := C)) :=
+  colimConstAdj.leftAdjointPreservesColimits
+
 -- see Note [lower instance priority]
 noncomputable instance (priority := 100) isEquivalencePreservesColimits
     (E : C ⥤ D) [E.IsEquivalence] :
@@ -193,6 +198,11 @@ def rightAdjointPreservesLimits : PreservesLimitsOfSize.{v, u} G where
               @Equiv.unique _ _ (IsLimit.isoUniqueConeMorphism.hom hc _)
                 ((adj.functorialityAdjunction' _).homEquiv _ _).symm } }
 
+noncomputable
+instance limPreservesLimits [HasLimitsOfShape J C] :
+    PreservesLimits (lim (J := J) (C := C)) :=
+  constLimAdj.rightAdjointPreservesLimits
+
 -- see Note [lower instance priority]
 noncomputable instance (priority := 100) isEquivalencePreservesLimits
     (E : D ⥤ C) [E.IsEquivalence] :
@@ -285,6 +295,8 @@ end ArbitraryUniverse
 
 variable {C : Type u₁} [Category.{v₀} C] {D : Type u₂} [Category.{v₀} D] {F : C ⥤ D} {G : D ⥤ C}
   (adj : F ⊣ G)
+
+attribute [local simp] homEquiv_unit homEquiv_counit
 
 -- Note: this is natural in K, but we do not yet have the tools to formulate that.
 /-- When `F ⊣ G`,
