@@ -74,8 +74,23 @@ def restrict (f : X.PartialMap Y) (U : X.Opens)
 
 @[simp]
 lemma restrict_id (f : X.PartialMap Y) : f.restrict f.domain f.dense_domain le_rfl = f := by
-  ext1
-  · rfl
+  ext1 <;> simp [restrict_domain]
+
+lemma restrict_id_hom (f : X.PartialMap Y) :
+    (f.restrict f.domain f.dense_domain le_rfl).hom = f.hom := by
+  simp
+
+@[simp]
+lemma restrict_restrict (f : X.PartialMap Y)
+    (U : X.Opens) (hU : Dense (U : Set X)) (hU' : U ≤ f.domain)
+    (V : X.Opens) (hV : Dense (V : Set X)) (hV' : V ≤ U) :
+    (f.restrict U hU hU').restrict V hV hV' = f.restrict V hV (hV'.trans hU') := by
+  ext1 <;> simp [restrict_domain]
+
+lemma restrict_restrict_hom (f : X.PartialMap Y)
+    (U : X.Opens) (hU : Dense (U : Set X)) (hU' : U ≤ f.domain)
+    (V : X.Opens) (hV : Dense (V : Set X)) (hV' : V ≤ U) :
+    ((f.restrict U hU hU').restrict V hV hV').hom = (f.restrict V hV (hV'.trans hU')).hom := by
   simp
 
 /-- The composition of a partial map and a morphism on the right. -/
@@ -187,6 +202,11 @@ lemma iseqv_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
 
 instance : Setoid (X.PartialMap Y) := ⟨@PartialMap.equiv X Y, iseqv_rel⟩
 
+lemma restrict_equiv (f : X.PartialMap Y) (U : X.Opens)
+    (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : (f.restrict U hU hU').equiv f :=
+  ⟨U, hU, le_rfl, hU', by simp⟩
+
+
 lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
     {x : X} [X.IsGermInjectiveAt x] (f g : X.PartialMap Y)
     (hxf : x ∈ f.domain) (hxg : x ∈ g.domain)
@@ -237,6 +257,12 @@ lemma PartialMap.toRationalMap_eq_iff {f g : X.PartialMap Y} :
     f.toRationalMap = g.toRationalMap ↔ f.equiv g :=
   Quotient.eq
 
+@[simp]
+lemma PartialMap.restrict_toRationalMap (f : X.PartialMap Y) (U : X.Opens)
+      (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) :
+    (f.restrict U hU hU').toRationalMap = f.toRationalMap :=
+  toRationalMap_eq_iff.mpr (f.restrict_equiv U hU hU')
+
 /-- The composition of a rational map and a morphism on the right. -/
 def RationalMap.compHom (f : X ⤏ Y) (g : Y ⟶ Z) : X ⤏ Z := by
   refine Quotient.map (PartialMap.compHom · g) ?_ f
@@ -248,7 +274,7 @@ def RationalMap.compHom (f : X ⤏ Y) (g : Y ⟶ Z) : X ⤏ Z := by
 
 @[simp]
 lemma RationalMap.compHom_toRationalMap (f : X.PartialMap Y) (g : Y ⟶ Z) :
-    f.toRationalMap.compHom g = (f.compHom g).toRationalMap := rfl
+    (f.compHom g).toRationalMap = f.toRationalMap.compHom g := rfl
 
 /-- A rational map restricts to a map from `Spec K(X)`. -/
 noncomputable
