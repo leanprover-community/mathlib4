@@ -11,9 +11,6 @@ import Mathlib.RingTheory.Noetherian
 /-!
 # Lasker ring
 
-A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into finitely
-many primary ideals.
-
 ## Main declarations
 
 - `IsLasker`: A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into
