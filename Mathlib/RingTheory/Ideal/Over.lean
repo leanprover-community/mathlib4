@@ -534,7 +534,14 @@ instance [P.IsPrime] : NoZeroSMulDivisors (A ⧸ p) (B ⧸ P) :=
 
 def algEquivOfLiesOver {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
     (h : Q = P.map σ) : letI := LiesOver.of_eq_map_equiv p σ h;
-    (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) := sorry
+    (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
+  letI := LiesOver.of_eq_map_equiv p σ h
+  {
+  quotientEquiv P Q σ h with
+  commutes' := by
+    rintro ⟨x⟩
+    exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
+}
 
 end Quotient
 
