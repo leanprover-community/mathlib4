@@ -93,10 +93,6 @@ instance instFunLike : FunLike (M [⋀^ι]→ₗ[R] N) (ι → M) N where
     rcases g with ⟨⟨_, _, _⟩, _⟩
     congr
 
--- shortcut instance
-instance coeFun : CoeFun (M [⋀^ι]→ₗ[R] N) fun _ => (ι → M) → N :=
-  ⟨DFunLike.coe⟩
-
 initialize_simps_projections AlternatingMap (toFun → apply)
 
 @[simp]
@@ -118,7 +114,7 @@ protected theorem congr_arg (f : M [⋀^ι]→ₗ[R] N) {x y : ι → M} (h : x 
 theorem coe_injective : Injective ((↑) : M [⋀^ι]→ₗ[R] N → (ι → M) → N) :=
   DFunLike.coe_injective
 
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem coe_inj {f g : M [⋀^ι]→ₗ[R] N} : (f : (ι → M) → N) = g ↔ f = g :=
   coe_injective.eq_iff
 

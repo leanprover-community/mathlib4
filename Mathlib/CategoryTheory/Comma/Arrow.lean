@@ -88,7 +88,6 @@ theorem mk_injective (A B : T) :
 theorem mk_inj (A B : T) {f g : A ⟶ B} : Arrow.mk f = Arrow.mk g ↔ f = g :=
   (mk_injective A B).eq_iff
 
-/- Porting note: was marked as dangerous instance so changed from `Coe` to `CoeOut` -/
 instance {X Y : T} : CoeOut (X ⟶ Y) (Arrow T) where
   coe := mk
 
@@ -184,11 +183,9 @@ theorem inv_left [IsIso sq] : (inv sq).left = inv sq.left :=
 theorem inv_right [IsIso sq] : (inv sq).right = inv sq.right :=
   IsIso.eq_inv_of_hom_inv_id <| by rw [← Comma.comp_right, IsIso.hom_inv_id, id_right]
 
-/- Porting note (#10618): simp can prove this so removed @[simp] -/
 theorem left_hom_inv_right [IsIso sq] : sq.left ≫ g.hom ≫ inv sq.right = f.hom := by
   simp only [← Category.assoc, IsIso.comp_inv_eq, w]
 
--- simp proves this
 theorem inv_left_hom_right [IsIso sq] : inv sq.left ≫ f.hom ≫ sq.right = g.hom := by
   simp only [w, IsIso.inv_comp_eq]
 
