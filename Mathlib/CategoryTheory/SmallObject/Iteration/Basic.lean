@@ -233,7 +233,7 @@ def eval {i : J} (hi : i ≤ j) : Iteration ε j ⥤ C ⥤ C where
 induced element in `Iteration ε i`. -/
 @[simps F isoZero isoSucc]
 def trunc (iter : Iteration ε j) {i : J} (hi : i ≤ j) : Iteration ε i where
-  F := restrictionLE (iter.F) hi
+  F := restrictionLE iter.F hi
   isoZero := iter.isoZero
   isoSucc k hk := iter.isoSucc k (lt_of_lt_of_le hk hi)
   mapSucc'_eq k hk := iter.mapSucc'_eq k (lt_of_lt_of_le hk hi)
