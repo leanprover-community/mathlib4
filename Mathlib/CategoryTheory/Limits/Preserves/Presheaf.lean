@@ -139,7 +139,7 @@ theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     ι_colimitLimitIso_limit_π_assoc, isoAux_hom_app, ← NatTrans.comp_app_assoc,
     ← NatTrans.comp_app_assoc, Category.assoc, HasLimit.isoOfNatIso_hom_π,
-    preservesLimitsIso_hom_π_assoc, Iso.symm_hom,
+    preservesLimitIso_hom_π_assoc, Iso.symm_hom,
     ← NatTrans.comp_app_assoc, HasColimit.isoOfNatIso_ι_hom,
     ← NatTrans.comp_app_assoc, Category.assoc,
     ι_colimitCompWhiskeringLeftIsoCompColimit_hom,
