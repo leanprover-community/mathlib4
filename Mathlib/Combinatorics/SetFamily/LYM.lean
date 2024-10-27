@@ -94,7 +94,7 @@ theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
     exact div_nonneg (cast_nonneg _) (cast_nonneg _)
   replace h𝒜 := card_mul_le_card_shadow_mul h𝒜
   rw [div_le_div_iff] <;> norm_cast
-  · cases' r with r
+  · rcases r with - | r
     · exact (hr rfl).elim
     rw [tsub_add_eq_add_tsub hr', add_tsub_add_eq_tsub_right] at h𝒜
     apply le_of_mul_le_mul_right _ (pos_iff_ne_zero.2 hr)
@@ -171,20 +171,20 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
     (∑ r ∈ range (k + 1),
         (#(𝒜 # (Fintype.card α - r)) : 𝕜) / (Fintype.card α).choose (Fintype.card α - r)) ≤
       (falling (Fintype.card α - k) 𝒜).card / (Fintype.card α).choose (Fintype.card α - k) := by
-  induction' k with k ih
-  · simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
+  induction k with
+  | zero =>
+    simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
       zero_eq, zero_add, range_one, sum_singleton, nonpos_iff_eq_zero, tsub_zero,
       choose_self, cast_one, div_one, cast_le]
     exact card_le_card (slice_subset_falling _ _)
-  rw [sum_range_succ, ← slice_union_shadow_falling_succ,
-    card_union_of_disjoint (IsAntichain.disjoint_slice_shadow_falling h𝒜), cast_add, _root_.add_div,
-    add_comm]
-  rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
-  exact
-    add_le_add_left
-      ((ih <| le_of_succ_le hk).trans <|
-        card_div_choose_le_card_shadow_div_choose (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <|
-          sized_falling _ _) _
+  | succ k ih =>
+    rw [sum_range_succ, ← slice_union_shadow_falling_succ,
+      card_union_of_disjoint (IsAntichain.disjoint_slice_shadow_falling h𝒜),
+      cast_add, _root_.add_div, add_comm]
+    rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
+    exact add_le_add_left ((ih <| le_of_succ_le hk).trans <|
+      card_div_choose_le_card_shadow_div_choose
+        (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <| sized_falling _ _) _
 
 end Falling
 
