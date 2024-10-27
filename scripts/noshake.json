@@ -265,7 +265,8 @@
    "Mathlib.Tactic.FunProp.Differentiable"],
   "Mathlib.Tactic.Finiteness":
   ["Mathlib.MeasureTheory.Constructions.Prod.Basic",
-   "Mathlib.Tactic.Finiteness.Attr"],
+   "Mathlib.Tactic.Finiteness.Attr",
+   "Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FinCases": ["Mathlib.Data.Fintype.Basic"],
   "Mathlib.Tactic.Eval": ["Qq.Macro"],
   "Mathlib.Tactic.DeriveFintype":
