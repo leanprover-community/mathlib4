@@ -40,15 +40,13 @@ theorem totallyBounded_convexHull (hs : TotallyBounded s) :
   obtain ⟨t, ⟨htf, hts⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hs) _ hV₁
   obtain ⟨t', ⟨htf', hts'⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp
     (IsCompact.totallyBounded (Finite.isCompact_convexHull htf)) _ hV₁)
-  use t'
-  have en {t₁ V₁ : Set E} : (⋃ y ∈ t₁, y +ᵥ V₁) = t₁ + V₁ := iUnion_add_left_image
-  simp_rw [en]
-  rw [en] at hts'
-  rw [en] at hts
-  exact ⟨htf', subset_trans (by
-    rw [← add_assoc]
-    apply le_trans (by
-      rw [ ← Convex.convexHull_eq hV₂]
-      exact le_trans (convexHull_mono hts) (convexHull_add_subset)
-    ) (add_subset_add_right hts'))
-    (add_subset_add_left (subset_trans (add_subset_add hV₃ hV₃) (add_subset_iff.mpr hW₂)))⟩
+  use t', htf'
+  simp only [iUnion_vadd_set, vadd_eq_add] at hts hts' ⊢
+  calc convexHull ℝ s
+    _ ⊆ convexHull ℝ (t + V) := convexHull_mono hts
+    _ ⊆ convexHull ℝ t + convexHull ℝ V := convexHull_add_subset
+    _ = convexHull ℝ t + V := by rw [hV₂.convexHull_eq]
+    _ ⊆ t' + V + V := add_subset_add_right hts'
+    _ = t' + (V + V) := by rw [add_assoc]
+    _ ⊆ t' + (W + W) := add_subset_add_left (add_subset_add hV₃ hV₃)
+    _ ⊆ t' + U := add_subset_add_left (add_subset_iff.mpr hW₂)
