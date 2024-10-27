@@ -116,21 +116,16 @@ theorem normalize_associated_iff {x y : α} : Associated (normalize x) y ↔ Ass
 theorem Associates.mk_normalize (x : α) : Associates.mk (normalize x) = Associates.mk x :=
   Associates.mk_eq_mk_iff_associated.2 (normalize_associated _)
 
-@[simp]
 theorem normalize_apply (x : α) : normalize x = x * normUnit x :=
   rfl
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem normalize_zero : normalize (0 : α) = 0 :=
   normalize.map_zero
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem normalize_one : normalize (1 : α) = 1 :=
   normalize.map_one
 
-theorem normalize_coe_units (u : αˣ) : normalize (u : α) = 1 := by simp
+theorem normalize_coe_units (u : αˣ) : normalize (u : α) = 1 := by simp [normalize_apply]
 
 theorem normalize_eq_zero {x : α} : normalize x = 0 ↔ x = 0 :=
   ⟨fun hx => (associated_zero_iff_eq_zero x).1 <| hx ▸ associated_normalize _, by
@@ -147,7 +142,8 @@ theorem normUnit_mul_normUnit (a : α) : normUnit (a * normUnit a) = 1 := by
   · rw [normUnit_zero, zero_mul, normUnit_zero]
   · rw [normUnit_mul h (Units.ne_zero _), normUnit_coe_units, mul_inv_eq_one]
 
-theorem normalize_idem (x : α) : normalize (normalize x) = normalize x := by simp
+@[simp]
+theorem normalize_idem (x : α) : normalize (normalize x) = normalize x := by simp [normalize_apply]
 
 theorem normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
     normalize a = normalize b := by
@@ -173,11 +169,11 @@ theorem Associated.eq_of_normalized
     a = b :=
   dvd_antisymm_of_normalize_eq ha hb h.dvd h.dvd'
 
---can be proven by simp
+@[simp]
 theorem dvd_normalize_iff {a b : α} : a ∣ normalize b ↔ a ∣ b :=
   Units.dvd_mul_right
 
---can be proven by simp
+@[simp]
 theorem normalize_dvd_iff {a b : α} : normalize a ∣ b ↔ a ∣ b :=
   Units.mul_right_dvd
 
@@ -216,8 +212,7 @@ theorem out_dvd_iff (a : α) (b : Associates α) : b.out ∣ a ↔ b ≤ Associa
 theorem out_top : (⊤ : Associates α).out = 0 :=
   normalize_zero
 
--- Porting note: lower priority to avoid linter complaints about simp-normal form
-@[simp 1100]
+@[simp]
 theorem normalize_out (a : Associates α) : normalize a.out = a.out :=
   Quotient.inductionOn a normalize_idem
 
@@ -287,8 +282,7 @@ theorem gcd_isUnit_iff_isRelPrime [GCDMonoid α] {a b : α} :
     IsUnit (gcd a b) ↔ IsRelPrime a b :=
   ⟨fun h _ ha hb ↦ isUnit_of_dvd_unit (dvd_gcd ha hb) h, (· (gcd_dvd_left a b) (gcd_dvd_right a b))⟩
 
--- Porting note: lower priority to avoid linter complaints about simp-normal form
-@[simp 1100]
+@[simp]
 theorem normalize_gcd [NormalizedGCDMonoid α] : ∀ a b : α, normalize (gcd a b) = gcd a b :=
   NormalizedGCDMonoid.normalize_gcd
 
@@ -399,7 +393,7 @@ theorem gcd_mul_left [NormalizedGCDMonoid α] (a b c : α) :
     gcd (a * b) (a * c) = normalize a * gcd b c :=
   (by_cases (by rintro rfl; simp only [zero_mul, gcd_zero_left, normalize_zero]))
     fun ha : a ≠ 0 =>
-    suffices gcd (a * b) (a * c) = normalize (a * gcd b c) by simpa [- normalize_apply]
+    suffices gcd (a * b) (a * c) = normalize (a * gcd b c) by simpa
     let ⟨d, eq⟩ := dvd_gcd (dvd_mul_right a b) (dvd_mul_right a c)
     gcd_eq_normalize
       (eq.symm ▸ mul_dvd_mul_left a
@@ -689,8 +683,7 @@ theorem lcm_eq_zero_iff [GCDMonoid α] (a b : α) : lcm a b = 0 ↔ a = 0 ∨ b 
       rwa [← mul_eq_zero, ← associated_zero_iff_eq_zero])
     (by rintro (rfl | rfl) <;> [apply lcm_zero_left; apply lcm_zero_right])
 
--- Porting note: lower priority to avoid linter complaints about simp-normal form
-@[simp 1100]
+@[simp]
 theorem normalize_lcm [NormalizedGCDMonoid α] (a b : α) : normalize (lcm a b) = lcm a b :=
   NormalizedGCDMonoid.normalize_lcm a b
 
@@ -766,7 +759,7 @@ theorem lcm_mul_left [NormalizedGCDMonoid α] (a b c : α) :
     lcm (a * b) (a * c) = normalize a * lcm b c :=
   (by_cases (by rintro rfl; simp only [zero_mul, lcm_zero_left, normalize_zero]))
     fun ha : a ≠ 0 =>
-    suffices lcm (a * b) (a * c) = normalize (a * lcm b c) by simpa [- normalize_apply]
+    suffices lcm (a * b) (a * c) = normalize (a * lcm b c) by simpa
     have : a ∣ lcm (a * b) (a * c) := (dvd_mul_right _ _).trans (dvd_lcm_left _ _)
     let ⟨_, eq⟩ := this
     lcm_eq_normalize
@@ -866,8 +859,7 @@ instance subsingleton_normalizedGCDMonoid_of_unique_units : Subsingleton (Normal
 theorem normUnit_eq_one (x : α) : normUnit x = 1 :=
   rfl
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
+@[simp]
 theorem normalize_eq (x : α) : normalize x = x :=
   mul_one x
 
