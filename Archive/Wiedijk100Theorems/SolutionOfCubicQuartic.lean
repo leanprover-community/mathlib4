@@ -25,9 +25,6 @@ where the discriminant equals zero.
 
 ## Proof outline
 
-Proofs of the cubic and formulas are similar in outline.
-
-For a cubic:
 1.  Given cubic $ax^3 + bx^2 + cx + d = 0$, we show it is equivalent to some "depressed cubic"
     $y^3 + 3py - 2q = 0$ where $y = x + b / (3a)$, $p = (3ac - b^2) / (9a^2)$, and
     $q = (9abc - 2b^3 - 27a^2d) / (54a^3)$ (`h₁` in `cubic_eq_zero_iff`).
