@@ -63,24 +63,11 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {S : Submodule
 lemma isPrimary_iff_zero_divisor_quotient_imp_nilpotent_smul :
     S.IsPrimary ↔ S ≠ ⊤ ∧ ∀ (r : R) (x : M ⧸ S), x ≠ 0 → r • x = 0 →
       ∃ n : ℕ, r ^ n • (⊤ : Submodule R (M ⧸ S)) = ⊥ := by
-  rw [isPrimary_iff]
-  refine and_congr_right fun _ ↦ ?_
-  simp_rw [← le_bot_iff, ← mkQ_map_self]
-  constructor
-  · rintro h r ⟨x⟩ hx hxr
-    simp only [Quotient.quot_mk_eq_mk, ne_eq, Quotient.mk_eq_zero, ← Quotient.mk_smul] at hx hxr
-    refine ((h hxr).resolve_left hx).imp fun n hn ↦ ?_
-    convert map_mono hn
-    simp only [map_pointwise_smul, map_top, range_mkQ]
-  · intro h r x hrx
-    refine (em _).imp_right fun hx ↦ (h r (Quotient.mk x) ?_ ?_).imp fun n hn ↦ ?_
-    · simpa using hx
-    · simpa [← Quotient.mk_smul] using hrx
-    · have := comap_mono (f := mkQ S) hn
-      simp only [mkQ_map_self, comap_bot, ker_mkQ] at this
-      refine this.trans' ?_
-      simp_rw [← ideal_span_singleton_smul, ← comap_top (f := mkQ S)]
-      exact smul_comap_le_comap_smul _ _ _
+  refine isPrimary_iff.trans (and_congr_right fun _ ↦ ?_)
+  simp_rw [S.mkQ_surjective.forall, ← map_smul, ne_eq, ← LinearMap.mem_ker, ker_mkQ]
+  congr! 2
+  rw [forall_comm, ← or_iff_not_imp_left, ← LinearMap.range_eq_top.mpr S.mkQ_surjective, ← map_top]
+  simp_rw [eq_bot_iff, ← map_pointwise_smul, map_le_iff_le_comap, comap_bot, ker_mkQ]
 
 end CommRing
 

@@ -37,14 +37,9 @@ lemma isPrimary_iff {I : Ideal R} :
 `Ideal.IsPrimary` with `Submodule.IsPrimary`. -/
 lemma isPrimary_iff' {I : Ideal R} :
     I.IsPrimary ↔ Submodule.IsPrimary I := by
-  rw [isPrimary_iff, Submodule.isPrimary_iff]
-  simp only [ne_eq, mem_radical_iff, smul_eq_mul, and_congr_right_iff,
-    ← Submodule.ideal_span_singleton_smul, smul_eq_mul, mul_top, span_singleton_le_iff_mem]
-  intro
-  constructor <;>
-  · intro h r x hrx
-    rw [mul_comm] at hrx
-    exact h hrx
+  rw [isPrimary_iff, Submodule.isPrimary_iff, forall_comm]
+  simp only [mul_comm, mem_radical_iff, and_congr_right_iff,
+    ← Submodule.ideal_span_singleton_smul, smul_eq_mul, mul_top, span_singleton_le_iff_mem] 
 
 theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : IsPrimary I :=
   ⟨hi.1, fun {_ _} hxy => (hi.mem_or_mem hxy).imp id fun hyi => le_radical hyi⟩
