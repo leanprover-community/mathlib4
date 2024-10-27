@@ -317,7 +317,7 @@ theorem comp_evaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b =
 @[simps!]
 def whiskeringLeftCompEvaluation (F : A ⥤ B) (a : A) :
     (whiskeringLeft A B C).obj F ⋙ (evaluation A C).obj a ≅ (evaluation B C).obj (F.obj a) :=
-  NatIso.ofComponents (fun _ => Iso.refl _)
+  Iso.refl _
 
 /-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F.obj a`. -/
 @[simp]
@@ -330,7 +330,7 @@ applying `F`. -/
 @[simps!]
 def whiskeringRightCompEvaluation (F : B ⥤ C) (a : A) :
     (whiskeringRight A B C).obj F ⋙ (evaluation _ _).obj a ≅ (evaluation _ _).obj a ⋙ F :=
-  NatIso.ofComponents (fun _ => Iso.refl _)
+  Iso.refl _
 
 /-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F` and then
 applying `F`. -/
