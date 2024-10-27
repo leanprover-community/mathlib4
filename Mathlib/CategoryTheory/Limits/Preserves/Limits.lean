@@ -54,10 +54,14 @@ theorem preservesLimitIso_hom_π (j) :
     (preservesLimitIso G F).hom ≫ limit.π _ j = G.map (limit.π F j) :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ j
 
+@[deprecated (since := "2024-10-27")] alias preservesLimitsIso_hom_π := preservesLimitIso_hom_π
+
 @[reassoc (attr := simp)]
 theorem preservesLimitIso_inv_π (j) :
     (preservesLimitIso G F).inv ≫ G.map (limit.π F j) = limit.π _ j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ j
+
+@[deprecated (since := "2024-10-27")] alias preservesLimitsIso_inv_π := preservesLimitIso_inv_π
 
 @[reassoc (attr := simp)]
 theorem lift_comp_preservesLimitIso_hom (t : Cone F) :
@@ -65,6 +69,9 @@ theorem lift_comp_preservesLimitIso_hom (t : Cone F) :
     limit.lift (F ⋙ G) (G.mapCone _) := by
   ext
   simp [← G.map_comp]
+
+@[deprecated (since := "2024-10-27")]
+alias lift_comp_preservesLimitsIso_hom := lift_comp_preservesLimitIso_hom
 
 instance : IsIso (limit.post F G) :=
   show IsIso (preservesLimitIso G F).hom from inferInstance
@@ -132,6 +139,9 @@ theorem preservesColimitIso_inv_comp_desc (t : Cocone F) :
     colimit.desc _ (G.mapCocone t) := by
   ext
   simp [← G.map_comp]
+
+@[deprecated (since := "2024-10-27")]
+alias preservesColimitsIso_inv_comp_desc := preservesColimitIso_inv_comp_desc
 
 instance : IsIso (colimit.post F G) :=
   show IsIso (preservesColimitIso G F).inv from inferInstance
