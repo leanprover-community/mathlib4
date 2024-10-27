@@ -29,7 +29,6 @@ def checkInitImports : IO Bool := do
   -- We simply parse Mathlib.lean; this avoids any need for external tools like grep.
   let allModules := (← IO.FS.lines "Mathlib.lean").map (fun line ↦ line.stripPrefix "import ")
     |>.filter (fun module ↦ module.startsWith "Mathlib")
-    --|>.map (fun module ↦ (System.mkFilePath (module.split (· == '.'))).addExtension "lean")
   for module in allModules do
     let path := (System.mkFilePath (module.split (· == '.'))).addExtension "lean"
     let hasMathlibImport := (← IO.FS.lines path).any fun s ↦ s.startsWith "import Mathlib"
@@ -40,7 +39,7 @@ def checkInitImports : IO Bool := do
   let imports := (← IO.FS.lines "Mathlib/Init.lean").filter (fun s ↦ s.startsWith "import ")
     |>.map (fun s ↦ s.stripPrefix "import ")
   let missing := modulesWithoutMathlibImports.filter (fun mod ↦ !imports.contains mod)
-    -- `DeclarationNames` is imported transitively; we manually allow this
+    -- `DeclarationNames` is imported transitively; we manually allow this.
     |>.erase "Mathlib.Tactic.DeclarationNames"
   if missing.size > 0 then
     IO.eprintln s!"error: the following {missing.size} modules are not imported in Mathlib.Init: \
@@ -53,8 +52,7 @@ def checkInitImports : IO Bool := do
   let mut modulesImportingHeaderLinter := #[]
   for module in allModules do
     let path := (System.mkFilePath (module.split (· == '.'))).addExtension "lean"
-    let importsHeaderLinter := (← IO.FS.lines path).contains "import Mathlib.Tactic.Linter.Header"
-    if importsHeaderLinter then
+    if (← IO.FS.lines path).contains "import Mathlib.Tactic.Linter.Header" then
       modulesImportingHeaderLinter := modulesImportingHeaderLinter.push module
   let mismatch := modulesImportingHeaderLinter.filter
     (fun mod ↦ !["Mathlib", "Mathlib.Tactic", "Mathlib.Init"].contains mod && !imports.contains mod)
