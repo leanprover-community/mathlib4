@@ -301,6 +301,13 @@ def algEquivOfCMulXAddC {R} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[
   algEquivOfCompEqX (C a * X + C b) (C ⅟ a * (X - C b))
       (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
 
+theorem algEquivOfCMulXAddC_symm_eq {R} [CommRing R] (a b : R) [Invertible a] :
+    (algEquivOfCMulXAddC a b).symm =  algEquivOfCMulXAddC (⅟ a) (- ⅟ a * b) := by
+  ext p : 1
+  simp only [algEquivOfCMulXAddC_symm_apply, neg_mul, algEquivOfCMulXAddC_apply, map_neg, map_mul]
+  congr
+  simp [mul_add, sub_eq_add_neg]
+
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
   with inverse `p(X) ↦ p(X-t)`. -/
 @[simps!]

@@ -166,70 +166,41 @@ theorem Splits.comp_of_map_degree_le_one {f : K[X]} {p : K[X]} (hd : (p.map i).d
         natDegree_comp, natDegree_C_mul (invertibleInvOf.ne_zero),
         natDegree_X_sub_C, mul_one] at this
 
-theorem comp_splits_iff_splits_of_degree_eq_one {f : K[X]} {p : K[X]} (hd : (p.map i).degree = 1) :
+theorem splits_iff_comp_splits_of_degree_eq_one {f : K[X]} {p : K[X]} (hd : (p.map i).degree = 1) :
     f.Splits i ↔ (f.comp p).Splits i := by
+  rw [← splits_id_iff_splits, ← splits_id_iff_splits (f := f.comp p), map_comp]
+  refine ⟨fun h => Splits.comp_of_map_degree_le_one (RingHom.id L)
+    (le_of_eq (map_id (R := L) ▸ hd)) h, fun h => ?_⟩
   let _ := invertibleOfNonzero (leadingCoeff_ne_zero.mpr
       (ne_zero_of_degree_gt (n := ⊥) (by rw [hd]; decide)))
-  rw [← splits_id_iff_splits, ← splits_id_iff_splits (f := f.comp p), map_comp, comp_eq_aeval, eq_X_add_C_of_degree_eq_one hd, ← algEquivOfCMulXAddC_apply]
+  have : (map i f) = ((map i f).comp (map i p)).comp ((C ⅟ (map i p).leadingCoeff *
+      (X - C ((map i p).coeff 0)))) := by
+    rw [comp_assoc]
+    nth_rw 1 [eq_X_add_C_of_degree_eq_one hd]
+    simp only [coeff_map, invOf_eq_inv, mul_sub, ← C_mul, add_comp, mul_comp, C_comp, X_comp,
+      ← mul_assoc]
+    field_simp
+  refine this ▸ Splits.comp_of_map_degree_le_one _ ?_ h
+  simp [degree_C (inv_ne_zero (Invertible.ne_zero (a := (map i p).leadingCoeff)))]
 
-  refine or_congr (by simp only [map_id, coeff_map, map_eq_zero_iff _ ((algEquivOfCMulXAddC _ _).injective)]) ⟨fun h g irr dvd => ?_, fun h g irr dvd => ?_⟩
-  exact Splits.
-  ⟨Splits.comp_of_map_degree_le_one i (hd ▸ le_refl _),
-    fun h => by
-      rw [← splits_id_iff_splits] at h
-      let _ := invertibleOfNonzero (leadingCoeff_ne_zero.mpr
-          (ne_zero_of_degree_gt (n := ⊥) (by rw [hd]; decide)))
-      rw [← algEquivOfCMulXAddC .symm_apply_apply]
-      exact Splits.comp_of_map_degree_le_one i (le_of_eq hd) h⟩
-
+/--
+This is a weaker variant of `Splits.comp_of_map_degree_le_one`,
+but its conditions are easier to check.
+-/
 theorem Splits.comp_of_degree_le_one {f : K[X]} {p : K[X]} (hd : p.degree ≤ 1)
-    (h : f.Splits i) : (f.comp p).Splits i := by
-  by_cases hzero : map i (f.comp p) = 0
-  · exact Or.inl hzero
-  cases h with
-  | inl h0 =>
-    exact Or.inl <| map_comp i _ _ ▸ h0.symm ▸ zero_comp
-  | inr h =>
-    right
-    intro g irr dvd
-    rw [map_comp] at dvd hzero
-    cases lt_or_eq_of_le <| (Polynomial.degree_map_le i p).trans hd with
-    | inl hd =>
-      rw [eq_C_of_degree_le_zero (Nat.WithBot.lt_one_iff_le_zero.mp hd), comp_C] at dvd hzero
-      refine False.elim (irr.1 (isUnit_of_dvd_unit dvd ?_))
-      simpa using hzero
-    | inr hd =>
-      rw [dvd_comp_iff_of_degree_one _ _ hd (by simp [← degree_eq_bot, hd])] at dvd
-      have := h (irr.map (algEquivOfDegreeOne hd _).symm) dvd
-      rw [degree_eq_natDegree irr.ne_zero]
-      rwa [algEquivOfDegreeOne_symm_apply, ← comp_eq_aeval,
-        degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
-        natDegree_comp, natDegree_C_mul (Units.ne_zero _), natDegree_X_sub_C, mul_one] at this
+    (h : f.Splits i) : (f.comp p).Splits i :=
+  Splits.comp_of_map_degree_le_one i ((degree_map_le i _).trans hd) h
 
 theorem Splits.comp_X_sub_C {i : L →+* F} (a : L) {f : L[X]}
     (h : f.Splits i) : (f.comp (X - C a)).Splits i :=
-  Splits.comp_of_degree_one i
+  Splits.comp_of_degree_le_one i (by simp) h
 
 theorem Splits.comp_X_add_C {i : L →+* F} (a : L) {f : L[X]}
-    (h : f.Splits i) : (f.comp (X + C a)).Splits i := by
-  simpa only [map_neg, sub_neg_eq_add] using h.comp_X_sub_C (-a)
+    (h : f.Splits i) : (f.comp (X + C a)).Splits i :=
+  Splits.comp_of_degree_le_one i (by simp) h
 
-theorem Splits.comp_neg_X {i : L →+* F} {f : L[X]} (h : f.Splits i) : (f.comp (-X)).Splits i := by
-  nontriviality L
-  cases h with
-  | inl h0 =>
-    left
-    simp [map_eq_zero] at h0 ⊢
-    exact h0.symm ▸ zero_comp
-  | inr h =>
-    right
-    intro g irr dvd
-    rw [map_comp, Polynomial.map_neg, map_X, dvd_comp_neg_X_iff] at dvd
-    have := h (irr.map algEquivAevalNegX) dvd
-    rw [degree_eq_natDegree irr.ne_zero]
-    rwa [algEquivAevalNegX_apply, ← comp_eq_aeval,
-      degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
-      natDegree_comp, natDegree_neg, natDegree_X, mul_one] at this
+theorem Splits.comp_neg_X {i : L →+* F} {f : L[X]} (h : f.Splits i) : (f.comp (-X)).Splits i :=
+  Splits.comp_of_degree_le_one i (by simp) h
 
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
     ∃ x, eval₂ i x f = 0 :=
