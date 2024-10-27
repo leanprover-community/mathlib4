@@ -100,6 +100,7 @@ import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
+import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 import Mathlib.Algebra.Category.ModuleCat.Free
@@ -1005,8 +1006,10 @@ import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.PosPart
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
@@ -1196,6 +1199,7 @@ import Mathlib.Analysis.Convex.StrictConvexBetween
 import Mathlib.Analysis.Convex.StrictConvexSpace
 import Mathlib.Analysis.Convex.Strong
 import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.Convex.TotallyBounded
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.Convolution
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
@@ -1496,12 +1500,13 @@ import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-import Mathlib.CategoryTheory.Bicategory.FunctorBicategory
+import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 import Mathlib.CategoryTheory.Bicategory.Grothendieck
 import Mathlib.CategoryTheory.Bicategory.Kan.Adjunction
 import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
 import Mathlib.CategoryTheory.Bicategory.SingleObj
@@ -1818,6 +1823,7 @@ import Mathlib.CategoryTheory.Monoidal.Bimod
 import Mathlib.CategoryTheory.Monoidal.Bimon_
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
+import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Comon_
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Center
@@ -1986,7 +1992,7 @@ import Mathlib.CategoryTheory.Sites.Types
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.SmallObject.Construction
-import Mathlib.CategoryTheory.SmallObject.Iteration
+import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 import Mathlib.CategoryTheory.Square
 import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Subobject.Comma
@@ -3187,7 +3193,9 @@ import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.LinearAlgebra.Matrix.ZPow
 import Mathlib.LinearAlgebra.Multilinear.Basic
 import Mathlib.LinearAlgebra.Multilinear.Basis
+import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 import Mathlib.LinearAlgebra.Multilinear.FiniteDimensional
+import Mathlib.LinearAlgebra.Multilinear.Pi
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.LinearAlgebra.Orientation
 import Mathlib.LinearAlgebra.PID
@@ -3319,8 +3327,6 @@ import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
-import Mathlib.MeasureTheory.Constructions.Prod.Basic
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Constructions.Projective
 import Mathlib.MeasureTheory.Constructions.SubmoduleQuotient
 import Mathlib.MeasureTheory.Constructions.UnitInterval
@@ -3422,6 +3428,7 @@ import Mathlib.MeasureTheory.Integral.MeanInequalities
 import Mathlib.MeasureTheory.Integral.PeakFunction
 import Mathlib.MeasureTheory.Integral.Periodic
 import Mathlib.MeasureTheory.Integral.Pi
+import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Integral.SetToL1
@@ -3436,6 +3443,7 @@ import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.MeasureTheory.MeasurableSpace.Invariants
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
+import Mathlib.MeasureTheory.MeasurableSpace.Prod
 import Mathlib.MeasureTheory.Measure.AEDisjoint
 import Mathlib.MeasureTheory.Measure.AEMeasurable
 import Mathlib.MeasureTheory.Measure.AddContent
@@ -3473,6 +3481,7 @@ import Mathlib.MeasureTheory.Measure.NullMeasurable
 import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.MeasureTheory.Measure.Portmanteau
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Measure.Restrict
 import Mathlib.MeasureTheory.Measure.SeparableMeasure
@@ -3969,6 +3978,7 @@ import Mathlib.RingTheory.Bezout
 import Mathlib.RingTheory.Bialgebra.Basic
 import Mathlib.RingTheory.Bialgebra.Equiv
 import Mathlib.RingTheory.Bialgebra.Hom
+import Mathlib.RingTheory.Bialgebra.TensorProduct
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.ClassGroup
@@ -4080,6 +4090,7 @@ import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.Kaehler.TensorProduct
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.KrullDimension.Field
+import Mathlib.RingTheory.Lasker
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.RingTheory.LocalProperties.Basic
