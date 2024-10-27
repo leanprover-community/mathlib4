@@ -27,35 +27,35 @@ open Set Filter Topology
 lemma deriv_pos_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ} (hf : deriv (deriv f) x₀ > 0)
     (hd : deriv f x₀ = 0) :
     ∃ u, x₀ < u ∧ ∀ b, b ∈ Ioo x₀ u → deriv f b > 0 := by
-    have hD' : DifferentiableAt ℝ (deriv f) x₀ := by
-        have :deriv (deriv f) x₀ ≠ 0 := by linarith
-        exact differentiableAt_of_deriv_ne_zero this
-    have h₀ := (@hasDerivAt_deriv_iff ℝ _ ℝ _ _ (deriv f) x₀).mpr (hD')
-    have h₁ := hasDerivAt_iff_tendsto_slope.mp h₀
-    rw [tendsto_nhds] at h₁
+  have hD' : DifferentiableAt ℝ (deriv f) x₀ := by
+    have : deriv (deriv f) x₀ ≠ 0 := by linarith
+    exact differentiableAt_of_deriv_ne_zero this
+  have h₀ := (@hasDerivAt_deriv_iff ℝ _ ℝ _ _ (deriv f) x₀).mpr (hD')
+  have h₁ := hasDerivAt_iff_tendsto_slope.mp h₀
+  rw [tendsto_nhds] at h₁
 
-    have j₁: slope (deriv f) x₀ ⁻¹' Ioi 0 ∈ 𝓝[>] x₀ :=
-      nhds_right'_le_nhds_ne x₀ <|h₁ (Set.Ioi 0) isOpen_Ioi hf
-    obtain ⟨u,hu⟩ := (@mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset ℝ _ _ _ x₀
-      (x₀ + 1) (slope (deriv f) x₀ ⁻¹' Ioi 0) (by simp)).mp j₁
-    unfold slope at hu
-    rw [hd] at hu
-    have G₀ : ∀ b, b ∈ Ioo x₀ u → deriv f b > 0 := by
-      intro b hb
-      have := hu.2 hb
-      simp at this
-      have q₀ : b - x₀ > 0 := by aesop
-      aesop
-    use u
-    simp at hu
-    tauto
+  have j₁: slope (deriv f) x₀ ⁻¹' Ioi 0 ∈ 𝓝[>] x₀ :=
+    nhds_right'_le_nhds_ne x₀ <|h₁ (Set.Ioi 0) isOpen_Ioi hf
+  obtain ⟨u,hu⟩ := (@mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset ℝ _ _ _ x₀
+    (x₀ + 1) (slope (deriv f) x₀ ⁻¹' Ioi 0) (by simp)).mp j₁
+  unfold slope at hu
+  rw [hd] at hu
+  have G₀ : ∀ b, b ∈ Ioo x₀ u → deriv f b > 0 := by
+    intro b hb
+    have := hu.2 hb
+    simp at this
+    have q₀ : b - x₀ > 0 := by aesop
+    aesop
+  use u
+  simp at hu
+  tauto
 
 /-- Added to Mathlib by Yael Dilles. -/
 lemma neg_of_neg_of_div_pos (a b : ℝ) (h : 0 < a/b) (h₁ : b < 0) : a < 0 := by
-    contrapose h
-    rw [not_lt]
-    rw [not_lt] at h
-    exact div_nonpos_of_nonneg_of_nonpos h (by linarith)
+  contrapose h
+  rw [not_lt]
+  rw [not_lt] at h
+  exact div_nonpos_of_nonneg_of_nonpos h (by linarith)
 
 /-- If `f''(x) > 0` then `f' < 0` on an interval to the left of `x`. -/
 lemma deriv_neg_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ} (hf : deriv (deriv f) x₀ > 0)
@@ -88,7 +88,10 @@ lemma deriv_neg_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ} (hf : deriv (
     simp at hu
     tauto
 
-/-- If `f''(x) > 0` then `f'` changes sign at `x`. -/
+/-- If `f''(x) > 0` then `f'` changes sign at `x`.
+This lemma applies to functions like `x^2 + 1[x ≥ 0]` as well as twice differentiable
+functions.
+-/
 lemma deriv_neg_pos_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
     (hf : deriv (deriv f) x₀ > 0) (hd : deriv f x₀ = 0) :
     ∃ ε, ε > 0 ∧ (∀ b, b ∈ Ioo (x₀-ε) x₀ → deriv f b < 0) ∧
