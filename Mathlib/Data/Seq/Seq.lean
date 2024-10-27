@@ -227,7 +227,7 @@ theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
   apply Subtype.eq
   dsimp [tail, cons]
 
--- @[simp]
+@[simp]
 theorem get?_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
   rfl
 
