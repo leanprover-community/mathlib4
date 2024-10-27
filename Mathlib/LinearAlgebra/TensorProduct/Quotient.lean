@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.Algebra.Module.Torsion
 
 /-!
 
@@ -171,6 +172,17 @@ noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
       refine Submodule.subset_span ?_
       simp only [Set.mem_image, Set.mem_setOf_eq]
       exact ⟨r ⊗ₜ m, ⟨r, hr, m, rfl⟩, rfl⟩)
+
+/-- As a module of the quotient ring, left tensoring a module with a quotient of the ring
+is the same as quotienting that module by the corresponding submodule. -/
+noncomputable def quotTensorEquivQuotSMul' (I : Ideal R) :
+    ((R ⧸ I) ⊗[R] M) ≃ₗ[R ⧸ I] (M ⧸ I • (⊤ : Submodule R M)) :=
+AddEquiv.toLinearEquiv (quotTensorEquivQuotSMul M I).toAddEquiv <| by
+    intro c x
+    refine Quotient.inductionOn c (fun c ↦ ?_)
+    show (quotTensorEquivQuotSMul M I).toLinearMap (c • x) =
+      c • (quotTensorEquivQuotSMul M I).toLinearMap x
+    rw [LinearMap.CompatibleSMul.map_smul]
 
 variable (M) in
 /-- Right tensoring a module with a quotient of the ring is the same as
