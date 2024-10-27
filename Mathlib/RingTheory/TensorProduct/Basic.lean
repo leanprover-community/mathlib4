@@ -949,7 +949,9 @@ theorem congr_trans [Algebra S C] [IsScalarTower R S C]
 theorem congr_symm (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) : congr f.symm g.symm = (congr f g).symm := rfl
 
 variable (R A B C) in
-/-- Tensor product of algebras analogue of `mul_left_comm`. -/
+/-- Tensor product of algebras analogue of `mul_left_comm`.
+
+This is the algebra version of `TensorProduct.leftComm`. -/
 def leftComm : A ⊗[R] B ⊗[R] C ≃ₐ[R] B ⊗[R] A ⊗[R] C :=
   let e₁ := (Algebra.TensorProduct.assoc R A B C).symm
   let e₂ := congr (Algebra.TensorProduct.comm R A B) (1 : C ≃ₐ[R] C)
@@ -971,7 +973,9 @@ theorem leftComm_toLinearEquiv :
     (leftComm R A B C : _ ≃ₗ[R] _) = _root_.TensorProduct.leftComm R A B C := rfl
 
 variable (R A B C D) in
-/-- Tensor product of algebras analogue of `mul_mul_mul_comm`. -/
+/-- Tensor product of algebras analogue of `mul_mul_mul_comm`.
+
+This is the algebra version of `TensorProduct.tensorTensorTensorComm`. -/
 def tensorTensorTensorComm : (A ⊗[R] B) ⊗[R] C ⊗[R] D ≃ₐ[R] (A ⊗[R] C) ⊗[R] B ⊗[R] D :=
   let e₁ := Algebra.TensorProduct.assoc R A B (C ⊗[R] D)
   let e₂ := congr (1 : A ≃ₐ[R] A) (leftComm R B C D)

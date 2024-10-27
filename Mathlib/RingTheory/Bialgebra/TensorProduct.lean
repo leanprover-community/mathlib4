@@ -129,7 +129,9 @@ theorem lid_tmul (r : R) (a : A) : Bialgebra.TensorProduct.lid R A (r ⊗ₜ a) 
 @[simp]
 theorem lid_symm_apply (a : A) : (Bialgebra.TensorProduct.lid R A).symm a = 1 ⊗ₜ a := rfl
 
-theorem coalgebra_rid_eq_algebra_rid_apply (x) :
+/- TODO: make this defeq, which would involve adding a heterobasic version of
+`Coalgebra.TensorProduct.rid`. -/
+theorem coalgebra_rid_eq_algebra_rid_apply (x : A ⊗[R] R) :
     Coalgebra.TensorProduct.rid R A x = Algebra.TensorProduct.rid R R A x :=
   congr($((TensorProduct.AlgebraTensorModule.rid_eq_rid R A).symm) x)
 
