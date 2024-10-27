@@ -63,7 +63,7 @@ structure Hom (X Y : ∫ F) where
   /-- The morphism in the fiber over the domain. -/
   fiber : X.fiber ⟶ (F.map base.op.toLoc).obj Y.fiber
 
-@[simps!]
+@[simps! id_base id_fiber comp_base comp_fiber]
 instance categoryStruct : CategoryStruct (∫ F) where
   Hom X Y := Hom X Y
   id X := {
@@ -125,6 +125,9 @@ def forget (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : �
 
 section
 
+attribute [local simp]
+  Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso Strict.associator_eqToIso
+
 -- TODO: different universe?
 variable {F} {G : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
   {H : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
@@ -143,8 +146,7 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
   map_id a := by
     ext1
     · dsimp
-    simp [StrongPseudoNatTrans.naturality_id_hom_app, ← Functor.map_comp_assoc,
-      Strict.leftUnitor_eqToIso, Strict.rightUnitor_eqToIso]
+    simp [StrongPseudoNatTrans.naturality_id_hom_app, ← Functor.map_comp_assoc]
   map_comp {a b c} f g := by
     ext
     · dsimp
@@ -159,10 +161,9 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
 -- TODO: MAKE eqToIso things simp lemmas!!! would simplify things from here on out
 @[simp]
 lemma map_id_map {x y : ∫ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
-  ext
-  · simp
-  · simp [Strict.rightUnitor_eqToIso, Strict.leftUnitor_eqToIso]
+  ext <;> simp
 
+@[simp]
 theorem map_comp_forget (α : F ⟶ G) : map α ⋙ forget G = forget F := rfl
 
 /-- TODO -/
@@ -173,11 +174,11 @@ def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) where
   hom_inv_id := by
     ext
     · simp
-    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
+    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
   inv_hom_id := by
     ext
     · simp
-    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
+    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
 
 lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
   Functor.ext_of_iso (mapIdIso) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
@@ -186,20 +187,15 @@ abbrev mapCompIso_hom (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ⟶ map α
   app a := eqToHom (by aesop_cat)
   naturality := by
     intro x y f
-    simp
-    apply Hom.ext
-    · simp [Strict.associator_eqToIso]
-    · simp
+    simp only [comp_obj, eqToHom_refl, comp_id, Functor.comp_map, id_comp]
+    ext <;> simp
 
 abbrev mapCompIso_inv (α : F ⟶ G) (β : G ⟶ H) : map α ⋙ map β ⟶ map (α ≫ β) where
   app a := eqToHom (by aesop_cat)
-  -- This can be automated!!
   naturality := by
     intro x y f
-    simp
-    apply Hom.ext
-    · simp [Strict.associator_eqToIso]
-    · simp
+    simp only [comp_obj, Functor.comp_map, eqToHom_refl, comp_id, id_comp]
+    ext <;> simp
 
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β where
   hom := mapCompIso_hom α β
@@ -207,18 +203,14 @@ def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ ma
   hom_inv_id := by
     ext
     · simp
-    · simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
+    · simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
   inv_hom_id := by
     ext
     · simp
-    · simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
+    · simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
 
-lemma map_comp_eq (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) = map α ⋙ map β := by
-  apply Functor.ext_of_iso (mapCompIso α β)
-  · intro x
-    simp [mapCompIso]
-  · intro x
-    simp [map]
+lemma map_comp_eq (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) = map α ⋙ map β :=
+  Functor.ext_of_iso (mapCompIso α β) (fun _ ↦ by simp [map]) (fun _ ↦ by simp [mapCompIso])
 
 end
 
