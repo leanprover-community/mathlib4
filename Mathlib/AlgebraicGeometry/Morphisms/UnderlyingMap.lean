@@ -20,6 +20,7 @@ of the underlying map of topological spaces, including
 - `Embedding`
 - `IsOpenEmbedding`
 - `IsClosedEmbedding`
+- `DenseRange` (`IsDominant`)
 
 -/
 
@@ -37,7 +38,7 @@ instance : MorphismProperty.RespectsIso (topologically Function.Injective) :=
   topologically_respectsIso _ (fun e ↦ e.injective) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance injective_isLocalAtTarget : IsLocalAtTarget (topologically Function.Injective) := by
-  refine topologically_isLocalAtTarget _ (fun _ s h ↦ h.restrictPreimage s)
+  refine topologically_isLocalAtTarget _ (fun _ s _ _ h ↦ h.restrictPreimage s)
     fun f ι U H _ hf x₁ x₂ e ↦ ?_
   obtain ⟨i, hxi⟩ : ∃ i, f x₁ ∈ U i := by simpa using congr(f x₁ ∈ $H)
   exact congr(($(@hf i ⟨x₁, hxi⟩ ⟨x₂, show f x₂ ∈ U i from e ▸ hxi⟩ (Subtype.ext e))).1)
@@ -76,7 +77,8 @@ instance : MorphismProperty.RespectsIso @Surjective :=
 instance surjective_isLocalAtTarget : IsLocalAtTarget @Surjective := by
   have : MorphismProperty.RespectsIso @Surjective := inferInstance
   rw [surjective_eq_topologically] at this ⊢
-  refine topologically_isLocalAtTarget _ (fun _ s h ↦ h.restrictPreimage s) fun f ι U H _ hf x ↦ ?_
+  refine topologically_isLocalAtTarget _ (fun _ s _ _ h ↦ h.restrictPreimage s) ?_
+  intro α β _ _ f ι U H _ hf x
   obtain ⟨i, hxi⟩ : ∃ i, x ∈ U i := by simpa using congr(x ∈ $H)
   obtain ⟨⟨y, _⟩, hy⟩ := hf i ⟨x, hxi⟩
   exact ⟨y, congr(($hy).1)⟩
@@ -89,9 +91,7 @@ instance : (topologically IsOpenMap).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isOpenMap) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isOpenMap_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenMap) :=
-  topologically_isLocalAtTarget _
-    (fun _ s hf ↦ hf.restrictPreimage s)
-    (fun _ _ _ hU _ hf ↦ (isOpenMap_iff_isOpenMap_of_iSup_eq_top hU).mpr hf)
+  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ isOpenMap_iff_isOpenMap_of_iSup_eq_top hU
 
 end IsOpenMap
 
@@ -101,9 +101,7 @@ instance : (topologically IsClosedMap).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isClosedMap) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isClosedMap_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedMap) :=
-  topologically_isLocalAtTarget _
-    (fun _ s hf ↦ hf.restrictPreimage s)
-    (fun _ _ _ hU _ hf ↦ (isClosedMap_iff_isClosedMap_of_iSup_eq_top hU).mpr hf)
+  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ isClosedMap_iff_isClosedMap_of_iSup_eq_top hU
 
 end IsClosedMap
 
@@ -113,9 +111,7 @@ instance : (topologically Embedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.embedding) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance embedding_isLocalAtTarget : IsLocalAtTarget (topologically Embedding) :=
-  topologically_isLocalAtTarget _
-    (fun _ s hf ↦ hf.restrictPreimage s)
-    (fun _ _ _ hU hfcont hf ↦ (embedding_iff_embedding_of_iSup_eq_top hU hfcont).mpr hf)
+  topologically_isLocalAtTarget' _ fun _ _ _ ↦ embedding_iff_embedding_of_iSup_eq_top
 
 end Embedding
 
@@ -125,9 +121,7 @@ instance : (topologically IsOpenEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isOpenEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isOpenEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenEmbedding) :=
-  topologically_isLocalAtTarget _
-    (fun _ s hf ↦ hf.restrictPreimage s)
-    (fun _ _ _ hU hfcont hf ↦ (isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top hU hfcont).mpr hf)
+  topologically_isLocalAtTarget' _ fun _ _ _ ↦ isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top
 
 end IsOpenEmbedding
 
@@ -137,10 +131,51 @@ instance : (topologically IsClosedEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isClosedEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isClosedEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedEmbedding) :=
-  topologically_isLocalAtTarget _
-    (fun _ s hf ↦ hf.restrictPreimage s)
-    (fun _ _ _ hU hfcont ↦ (isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top hU hfcont).mpr)
+  topologically_isLocalAtTarget' _
+    fun _ _ _ ↦ isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top
 
 end IsClosedEmbedding
+
+section IsDominant
+
+variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
+
+/-- A morphism of schemes is dominant if the underlying map has dense range. -/
+@[mk_iff]
+class IsDominant : Prop where
+  denseRange : DenseRange f.base
+
+lemma dominant_eq_topologically :
+    @IsDominant = topologically DenseRange := by ext; exact isDominant_iff _
+
+lemma Scheme.Hom.denseRange (f : X.Hom Y) [IsDominant f] : DenseRange f.base :=
+  IsDominant.denseRange
+
+instance (priority := 100) [Surjective f] : IsDominant f := ⟨f.surjective.denseRange⟩
+
+instance [IsDominant f] [IsDominant g] : IsDominant (f ≫ g) :=
+  ⟨g.denseRange.comp f.denseRange g.base.2⟩
+
+instance : MorphismProperty.IsMultiplicative @IsDominant where
+  id_mem := fun _ ↦ inferInstance
+  comp_mem := fun _ _ _ _ ↦ inferInstance
+
+lemma IsDominant.of_comp [H : IsDominant (f ≫ g)] : IsDominant g := by
+  rw [isDominant_iff, denseRange_iff_closure_range, ← Set.univ_subset_iff] at H ⊢
+  exact H.trans (closure_mono (Set.range_comp_subset_range f.base g.base))
+
+lemma IsDominant.comp_iff [IsDominant f] : IsDominant (f ≫ g) ↔ IsDominant g :=
+  ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
+
+instance IsDominant.respectsIso : MorphismProperty.RespectsIso @IsDominant :=
+  MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ f (_ : IsIso f) ↦ inferInstance
+
+instance IsDominant.isLocalAtTarget : IsLocalAtTarget @IsDominant :=
+  have : MorphismProperty.RespectsIso (topologically DenseRange) :=
+    dominant_eq_topologically ▸ IsDominant.respectsIso
+  dominant_eq_topologically ▸ topologically_isLocalAtTarget' DenseRange
+    fun _ _ _ hU _ ↦ denseRange_iff_denseRange_of_iSup_eq_top hU
+
+end IsDominant
 
 end AlgebraicGeometry

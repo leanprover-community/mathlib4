@@ -581,6 +581,18 @@ instance [SMul R M] [ContinuousConstSMul R M] [SMul R₁ M] [ContinuousConstSMul
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousConstSMul R M] [IsCentralScalar R M] :
     IsCentralScalar R C(α, M) where op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
+instance [SMul R M] [ContinuousConstSMul R M] [Mul M] [ContinuousMul M] [IsScalarTower R M M] :
+    IsScalarTower R C(α, M) C(α, M) where
+  smul_assoc _ _ _ := ext fun _ => smul_mul_assoc ..
+
+instance [SMul R M] [ContinuousConstSMul R M] [Mul M] [ContinuousMul M] [SMulCommClass R M M] :
+    SMulCommClass R C(α, M) C(α, M) where
+  smul_comm _ _ _ := ext fun _ => (mul_smul_comm ..).symm
+
+instance [SMul R M] [ContinuousConstSMul R M] [Mul M] [ContinuousMul M] [SMulCommClass M R M] :
+    SMulCommClass C(α, M) R C(α, M) where
+  smul_comm _ _ _ := ext fun _ => smul_comm (_ : M) ..
+
 instance [Monoid R] [MulAction R M] [ContinuousConstSMul R M] : MulAction R C(α, M) :=
   Function.Injective.mulAction _ coe_injective coe_smul
 
@@ -820,15 +832,13 @@ variable {β : Type*} [TopologicalSpace β]
 /-! `C(α, β)`is a lattice ordered group -/
 
 @[to_additive]
-instance instCovariantClass_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
-    [CovariantClass β β (· * ·) (· ≤ ·)] :
-    CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
+instance instMulLeftMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulLeftMono β] :
+    MulLeftMono C(α, β) :=
   ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
 
 @[to_additive]
-instance instCovariantClass_mul_le_right [PartialOrder β] [Mul β] [ContinuousMul β]
-    [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
-    CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
+instance instMulRightMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulRightMono β] :
+    MulRightMono C(α, β) :=
   ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
 
 variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]

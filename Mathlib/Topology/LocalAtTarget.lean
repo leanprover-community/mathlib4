@@ -199,6 +199,18 @@ theorem isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top (h : Continuous f
   · simp_rw [Set.range_restrictPreimage]
     apply isClosed_iff_coe_preimage_of_iSup_eq_top hU
 
+omit [TopologicalSpace α] in
+theorem denseRange_iff_denseRange_of_iSup_eq_top :
+    DenseRange f ↔ ∀ i, DenseRange ((U i).1.restrictPreimage f) := by
+  simp_rw [denseRange_iff_closure_range, Set.range_restrictPreimage,
+    ← (U _).2.isOpenEmbedding_subtypeVal.isOpenMap.preimage_closure_eq_closure_preimage
+      continuous_subtype_val]
+  simp only [Opens.carrier_eq_coe, SetLike.coe_sort_coe, preimage_eq_univ_iff,
+    Subtype.range_coe_subtype, SetLike.mem_coe]
+  rw [← iUnion_subset_iff, ← Set.univ_subset_iff, iff_iff_eq]
+  congr 1
+  simpa using congr(($hU).1).symm
+
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_iff_closedEmbedding_of_iSup_eq_top :=
  isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top
