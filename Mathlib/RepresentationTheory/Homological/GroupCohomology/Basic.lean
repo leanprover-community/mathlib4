@@ -148,7 +148,7 @@ theorem inhomogeneousCochains.d_def :
   CochainComplex.of_d _ _ _ _
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
-to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
+to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso :
     inhomogeneousCochains A ≅ (barResolution k G).linearYonedaObj k A := by
   refine HomologicalComplex.Hom.isoOfComponents
@@ -189,7 +189,7 @@ theorem cocyclesIso_inv_comp_iCocycles (n : ℕ) :
   ext
   simp only [cocyclesIso, Iso.trans_inv, Category.assoc, cyclesIsoSc'_inv_iCycles,
     ShortComplex.moduleCatCyclesIso_inv_iCycles]
-  simp [ModuleCat.coe_of, ModuleCat.comp_def, ModuleCat.hom_def]
+  simp [moduleCat_simps]
 
 @[reassoc (attr := simp, elementwise)]
 theorem cocyclesIso_hom_comp_subtype :

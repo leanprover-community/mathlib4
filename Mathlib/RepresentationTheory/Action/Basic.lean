@@ -64,7 +64,7 @@ variable (G : Type u) [Monoid G]
 
 section
 
-@[simps (config := .lemmasOnly)]
+@[simps]
 def trivial (X : V) : Action V G := { V := X, ρ := 1 }
 
 instance inhabited' : Inhabited (Action (Type u) G) :=

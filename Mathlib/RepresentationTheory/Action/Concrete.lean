@@ -19,89 +19,38 @@ universe u v
 
 open CategoryTheory Limits
 
+theorem CategoryTheory.types_end {X : Type*} : End X = Function.End X := rfl
+
+@[simp]
+theorem MulAction.toEndHom_apply {G A : Type*} [Monoid G] [MulAction G A] (g : G) (a : A) :
+    MulAction.toEndHom g a = g • a := rfl
+
 namespace Action
-
-section
-
-variable {G : Type u} [Monoid G] {A B : Action (Type u) G}
-
-def typeρ (X : Action (Type u) G) : G →* Function.End X.V :=
-  X.ρ
-
-@[simp]
-theorem typeρ_mk (X : Type u) (f : G →* Function.End X) :
-    (Action.mk X f).typeρ = f :=
-  rfl
-
-def hom (f : A ⟶ B) : A.V → B.V := f.hom
-
-theorem hom_def (f : A ⟶ B) : f.hom = hom f := rfl
-
-theorem types_hom_ext {f g : A ⟶ B} (h : hom f = hom g) : f = g :=
-  Action.hom_ext _ _ h
-
-@[simp]
-theorem comp_hom' (f : A ⟶ B) (g : B ⟶ A) : hom (f ≫ g) = hom g ∘ hom f := rfl
-
-@[simps]
-def mkHom' (f : A.V → B.V) (h : ∀ g, f ∘ A.typeρ g = B.typeρ g ∘ f) :
-    A ⟶ B where
-  hom := f
-  comm g := h g
-
-@[simp]
-theorem mkHom'_hom' (f : A.V → B.V) {h : ∀ g, f ∘ A.typeρ g = B.typeρ g ∘ f} :
-    hom (mkHom' f h) = f := rfl
-
-abbrev mkIso' (f : A.V ≃ B.V) (h : ∀ g, f ∘ A.typeρ g = B.typeρ g ∘ f) :
-    A ≅ B :=
-  Action.mkIso f.toIso h
-
-@[simp]
-theorem mkIso'_hom_hom' (f : A.V ≃ B.V) {h : ∀ g, f ∘ A.typeρ g = B.typeρ g ∘ f} :
-    hom (mkIso' f h).hom = f := rfl
-
-@[simp]
-theorem mkIso'_inv_hom' (f : A.V ≃ B.V) {h : ∀ g, f ∘ A.typeρ g = B.typeρ g ∘ f} :
-    hom (mkIso' f h).inv = f.symm := rfl
-
-@[simp]
-theorem trivial_typeρ_apply {X : Type u} (g : G) (x : X) :
-    (trivial G X).typeρ g x = x :=
-  rfl
-
-@[simp]
-theorem typeρ_mul_apply {A : Action (Type u) G} (g h : G) (x : A.V) :
-    A.typeρ (g * h) x = A.typeρ g (A.typeρ h x) := by
-  rw [map_mul]
-  rfl
-
-end
 
 section
 variable {G : Type u} [Group G] {A : Action (Type u) G}
 
 @[simp]
-theorem typeρ_inv_self_apply (g : G) (x : A.V) :
-    A.typeρ g⁻¹ (A.typeρ g x) = x :=
-  show (A.typeρ g⁻¹ * A.typeρ g) x = x by simp [← map_mul, Function.End.one_def]
+theorem ρ_inv_self_apply (g : G) (x : A.V) :
+    A.ρ g⁻¹ (A.ρ g x) = x :=
+  show (A.ρ g⁻¹ * A.ρ g) x = x by simp [← map_mul, Function.End.one_def]
 
 @[simp]
-theorem typeρ_self_inv_apply (g : G) (x : A.V) :
-    A.typeρ g (A.typeρ g⁻¹ x) = x :=
-  show (A.typeρ g * A.typeρ g⁻¹) x = x by simp [← map_mul, Function.End.one_def]
+theorem ρ_self_inv_apply (g : G) (x : A.V) :
+    A.ρ g (A.ρ g⁻¹ x) = x :=
+  show (A.ρ g * A.ρ g⁻¹) x = x by simp [← map_mul, Function.End.one_def]
 
 end
 
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
-@[simps (config := .lemmasOnly)]
+@[simps]
 def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) G where
   V := H
   ρ := @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
 theorem ofMulAction_apply {G H : Type u} [Monoid G] [MulAction G H] (g : G) (x : H) :
-    (ofMulAction G H).typeρ g x = (g • x : H) :=
+    (ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 
 /-- Given a family `F` of types with `G`-actions, this is the limit cone demonstrating that the

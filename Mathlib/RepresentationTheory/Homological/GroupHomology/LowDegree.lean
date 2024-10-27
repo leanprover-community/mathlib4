@@ -62,7 +62,7 @@ theorem dZero_range_eq_coinvariantsKer [DecidableEq G] :
     induction' y using Finsupp.induction with g a s _ _ h generalizing x
     · simp [← hy]
     · simpa [← hy, add_sub_add_comm, Finsupp.sum_add_index]
-        using Submodule.add_mem _ (mem_coinvariantsKer _ _ _ _ rfl) (h rfl)
+        using Submodule.add_mem _ (mem_coinvariantsKer_of_eq _ _ _ rfl) (h rfl)
 
 @[simp]
 theorem dZero_eq_zero [A.IsTrivial] : dZero A = 0 := by
@@ -778,22 +778,22 @@ def isoOneCycles : cycles A 1 ≅ ModuleCat.of k (oneCycles A) :=
 
 @[reassoc (attr := simp)]
 lemma isoOneCycles_hom_comp_subtype :
-    (isoOneCycles A).hom ≫ ModuleCat.ofHom (oneCycles A).subtype =
+    (isoOneCycles A).hom ≫ ModuleCat.asHom (oneCycles A).subtype =
       iCycles A 1 ≫ (oneChainsLEquiv A).toModuleIso.hom := by
   have := (shortComplexH1 A).moduleCatCyclesIso_hom_subtype
-  simp_all [shortComplexH1, ModuleCat.ofHom, isoOneCycles, oneCycles]
+  simp_all [shortComplexH1, ModuleCat.asHom, isoOneCycles, oneCycles]
 
 @[reassoc (attr := simp)]
 lemma isoOneCycles_inv_comp_iCycles :
     (isoOneCycles A).inv ≫ iCycles A 1 =
-      ModuleCat.ofHom (oneCycles A).subtype ≫ (oneChainsLEquiv A).toModuleIso.inv := by
+      ModuleCat.asHom (oneCycles A).subtype ≫ (oneChainsLEquiv A).toModuleIso.inv := by
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoOneCycles_hom_comp_subtype]
 
 @[reassoc (attr := simp)]
 lemma toCycles_comp_isoOneCycles_hom :
     toCycles A 2 1 ≫ (isoOneCycles A).hom =
       (twoChainsLEquiv A).toModuleIso.hom ≫
-        ModuleCat.ofHom (shortComplexH1 A).moduleCatToCycles := by
+        ModuleCat.asHom (shortComplexH1 A).moduleCatToCycles := by
   simp [isoOneCycles]
   rfl
 
@@ -848,22 +848,22 @@ def isoTwoCycles : cycles A 2 ≅ ModuleCat.of k (twoCycles A) :=
 
 @[reassoc (attr := simp)]
 lemma isoTwoCycles_hom_comp_subtype :
-    (isoTwoCycles A).hom ≫ ModuleCat.ofHom (twoCycles A).subtype =
+    (isoTwoCycles A).hom ≫ ModuleCat.asHom (twoCycles A).subtype =
       iCycles A 2 ≫ (twoChainsLEquiv A).toModuleIso.hom := by
   have := (shortComplexH2 A).moduleCatCyclesIso_hom_subtype
-  simp_all [shortComplexH2, ModuleCat.ofHom, isoTwoCycles, twoCycles]
+  simp_all [shortComplexH2, ModuleCat.asHom, isoTwoCycles, twoCycles]
 
 @[reassoc (attr := simp)]
 lemma isoTwoCycles_inv_comp_iCycles :
     (isoTwoCycles A).inv ≫ iCycles A 2 =
-      ModuleCat.ofHom (twoCycles A).subtype ≫ (twoChainsLEquiv A).toModuleIso.inv := by
+      ModuleCat.asHom (twoCycles A).subtype ≫ (twoChainsLEquiv A).toModuleIso.inv := by
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoTwoCycles_hom_comp_subtype]
 
 @[reassoc (attr := simp)]
 lemma toCycles_comp_isoTwoCycles_hom :
     toCycles A 3 2 ≫ (isoTwoCycles A).hom =
       (threeChainsLEquiv A).toModuleIso.hom ≫
-        ModuleCat.ofHom (shortComplexH2 A).moduleCatToCycles := by
+        ModuleCat.asHom (shortComplexH2 A).moduleCatToCycles := by
   simp [isoTwoCycles]
   rfl
 

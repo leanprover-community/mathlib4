@@ -283,7 +283,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
 @[simp]
 lemma classifyingSpaceUniversalCover_map_hom [Monoid G] {n m : SimplexCategoryᵒᵖ} (f : n ⟶ m)
     (x : Fin (n.unop.len + 1) → G) :
-    Action.hom ((classifyingSpaceUniversalCover G).map f) x = x ∘ f.unop.toOrderHom := rfl
+    ((classifyingSpaceUniversalCover G).map f).hom x = x ∘ f.unop.toOrderHom := rfl
 
 namespace classifyingSpaceUniversalCover
 
@@ -531,6 +531,7 @@ def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
 
 variable {k G}
 
+@[simp]
 lemma d_single (x : Gⁿ⁺¹) :
     hom (d k G n) (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
       Finset.univ.sum fun j : Fin (n + 1) =>
@@ -539,12 +540,13 @@ lemma d_single (x : Gⁿ⁺¹) :
 
 variable (k G)
 
-lemma d_comp_diagonalSucc_inv_eq :
-    d k G n ≫ (diagonalSucc k G n).inv =
-      (diagonalSucc k G (n + 1)).inv ≫ (standardResolution k G).d (n + 1) n :=
+lemma d_comp_diagonalSuccIsoFree_inv_eq :
+    d k G n ≫ (diagonalSuccIsoFree k G n).inv =
+      (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardResolution k G).d (n + 1) n :=
   free_ext _ _ fun i => by
-    simp only [comp_hom, LinearMap.coe_comp, Function.comp_apply, d_single, map_add, map_sum,
-      diagonalSucc_inv_single_single' (i 0), diagonalSucc_inv_single_single' (1 : G)]
+    simp only [hom_comp, LinearMap.coe_comp, Function.comp_apply, d_single, map_add,
+      diagonalSuccIsoFree_inv_single_single (i 0), map_sum,
+      diagonalSuccIsoFree_inv_single_single (1 : G)]
     simpa [standardResolution.d_eq, standardResolution.d_of (k := k) (Fin.partialProd i),
       Fin.sum_univ_succ, Fin.partialProd_contractNth_eq]
       using congr(Finsupp.single $(by ext j; exact (Fin.partialProd_succ' i j).symm) 1)
@@ -562,7 +564,7 @@ differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..
 noncomputable abbrev barResolution : ChainComplex (Rep k G) ℕ :=
   ChainComplex.of (fun n => Rep.free k G (Fin n → G)) (fun n => d k G n) fun n => by
     ext x
-    simp only [(diagonalSucc k G _).comp_inv_eq.1 (d_comp_diagonalSucc_inv_eq k G _),
+    simp only [(diagonalSuccIsoFree k G _).comp_inv_eq.1 (d_comp_diagonalSuccIsoFree_inv_eq k G _),
       Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc,
       Limits.zero_comp, Limits.comp_zero, Action.zero_hom]
 
@@ -574,9 +576,9 @@ theorem d_def : (barResolution k G).d (n + 1) n = d k G n := ChainComplex.of_d _
 /-- Isomorphism between the bar resolution and standard resolution, with `n`th map
 `(Gⁿ →₀ k[G]) → k[Gⁿ⁺¹]` sending `(g₁, ..., gₙ) ↦ (1, g₁, g₁g₂, ..., g₁...gₙ)`. -/
 def isoStandardResolution : barResolution k G ≅ standardResolution k G :=
-  HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSucc k G i).symm) fun i j => by
+  HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSuccIsoFree k G i).symm) fun i j => by
   rintro (rfl : j + 1 = i)
-  simp only [ChainComplex.of_x, Iso.symm_hom, d_def, d_comp_diagonalSucc_inv_eq]
+  simp only [ChainComplex.of_x, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
 
 /-- The chain complex `Rep.barResolution k G` as a projective resolution of `k` as a trivial
 `k`-linear `G`-representation. -/
