@@ -28,11 +28,16 @@ The "minImports" linter tracks information about minimal imports over several co
 
 namespace Mathlib.Linter
 
-/-- `minImportsRef` keeps track of cumulative imports across multiple commands. -/
-initialize minImportsRef : IO.Ref NameSet ← IO.mkRef {}
+/-- `minImportsRef` keeps track of cumulative imports across multiple commands.
+* The first component stores the `NameSet` of minimal modules required for the file to
+  build up to the current linting position.
+* The second component stores the number of modules that transitively imported by the `NameSet`
+  stored in the first component.
+-/
+initialize minImportsRef : IO.Ref (NameSet × Nat) ← IO.mkRef ({}, 0)
 
 /-- `#reset_min_imports` sets to empty the current list of cumulative imports. -/
-elab "#reset_min_imports" : command => minImportsRef.set {}
+elab "#reset_min_imports" : command => minImportsRef.set ({}, 0)
 
 /--
 The `minImports` linter incrementally computes the minimal imports needed for each file to build.
@@ -41,9 +46,9 @@ computed so far, it emits a warning mentioning the bigger minimal imports.
 
 Unlike the related `#min_imports` command, the linter takes into account notation and tactic
 information.
-It also works incrementally, providing information that it better suited, for instance, to split
+It also works incrementally, providing information that is better suited, for instance, to split
 files.
- -/
+-/
 register_option linter.minImports : Bool := {
   defValue := false
   descr := "enable the minImports linter"
@@ -53,18 +58,25 @@ namespace MinImports
 
 open Mathlib.Command.MinImports
 
+/-- `impsBelow env ms` takes as input an `Environment` `env` and a `NameSet` of module names `ms`.
+It returns the modules that are transitively imported by `ms`.
+-/
+def importsBelow (env : Environment) (ms : NameSet) : NameSet :=
+  (env.importGraph.upstreamOf ms).fold (σ := NameSet) (fun _ ↦ ·.insert ·) {}
+
 @[inherit_doc Mathlib.Linter.linter.minImports]
-def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
+def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.minImports (← getOptions) do
       return
-    if (← MonadState.get).messages.hasErrors then
+    if (← get).messages.hasErrors then
       return
     if stx == (← `(command| set_option $(mkIdent `linter.minImports) true)) then return
-    let importsSoFar ← minImportsRef.get
+    let env ← getEnv
+    let (importsSoFar, oldCumulImps) ← minImportsRef.get
     -- when the linter reaches the end of the file or `#exit`, it gives a report
     if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind then
       let explicitImportsInFile : NameSet :=
-        .fromArray (((← getEnv).imports.map (·.module)).erase `Init) Name.quickCmp
+        .fromArray ((env.imports.map (·.module)).erase `Init) Name.quickCmp
       let newImps := importsSoFar.diff explicitImportsInFile
       let currentlyUnneededImports := explicitImportsInFile.diff importsSoFar
       -- we read the current file, to do a custom parsing of the imports:
@@ -85,15 +97,21 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
         logWarningAt ((impMods.find? (·.isOfKind `import)).getD default)
           m!"-- missing imports\n{"\n".intercalate withImport.toList}"
     let id ← getId stx
-    let newImports := getIrredundantImports (← getEnv) (← getAllImports stx id)
+    let newImports := getIrredundantImports env (← getAllImports stx id)
     let tot := (newImports.append importsSoFar)
-    let redundant := (← getEnv).findRedundantImports tot.toArray
+    let redundant := env.findRedundantImports tot.toArray
     let currImports := tot.diff redundant
     let currImpArray := currImports.toArray.qsort Name.lt
     if currImpArray != #[] &&
        currImpArray ≠ importsSoFar.toArray.qsort Name.lt then
-      minImportsRef.modify fun _ => currImports
-      Linter.logLint linter.minImports stx m!"Imports increased to\n{currImpArray}"
+      let newCumulImps := (importsBelow env tot).size
+      minImportsRef.set (currImports, newCumulImps)
+      let new := currImpArray.filter (!importsSoFar.contains ·)
+      let redundant := importsSoFar.toArray.filter (!currImports.contains ·)
+      Linter.logLint linter.minImports stx
+        m!"Imports increased by {newCumulImps - oldCumulImps} to\n{currImpArray}\n\n\
+          Now redundant: {redundant}\n\n\
+          New imports: {new}\n"
 
 initialize addLinter minImportsLinter
 
