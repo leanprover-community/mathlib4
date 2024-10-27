@@ -29,7 +29,7 @@ def checkScriptsDocumented : IO Bool := do
   let readme : String ← IO.FS.readFile ("scripts" / "README.md")
   IO.println s!"found {allScripts.size} scripts: {",".intercalate (allScripts.map (·.toString)).toList}"
   -- These are data files for linter exceptions: don't complain about these *for now*.
-  let dataFiles := #["nolints.json", "noshake.json", "style-exceptions.txt", "nolints-style.txt"]
+  let dataFiles := #["noshake.json", "nolints-style.txt"]
   -- For now, there are no scripts in sub-directories that should be documented.
   let fileNames := allScripts.map (·.fileName.get!)
   let undocumented := fileNames.filter fun script ↦
