@@ -259,7 +259,7 @@ lemma PartialMap.toRationalMap_eq_iff {f g : X.PartialMap Y} :
 
 @[simp]
 lemma PartialMap.restrict_toRationalMap (f : X.PartialMap Y) (U : X.Opens)
-      (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) :
+    (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) :
     (f.restrict U hU hU').toRationalMap = f.toRationalMap :=
   toRationalMap_eq_iff.mpr (f.restrict_equiv U hU hU')
 
